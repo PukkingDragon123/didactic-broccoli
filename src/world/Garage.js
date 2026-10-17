@@ -151,7 +151,7 @@ export class Garage {
     p.fill(0xdde6e6);
     for (let i = 0; i < 32; i += 6) { p.rect(i, 0, 1, 32, 0xb8c4c4); p.rect(0, i, 32, 1, 0xb8c4c4); }
     const gt = p.texture();
-    const glassMat = new THREE.MeshStandardMaterial({ map: gt, roughness: 0.35, color: 0xfff4e4, emissive: 0xffc890, emissiveMap: gt, emissiveIntensity: 1.35, side: THREE.DoubleSide });
+    const glassMat = new THREE.MeshStandardMaterial({ map: gt, roughness: 0.35, color: 0xfff4e4, emissive: 0xffc890, emissiveMap: gt, emissiveIntensity: 0.95, side: THREE.DoubleSide });
     const glass = new THREE.Mesh(new THREE.PlaneGeometry(w.z1 - w.z0, w.y1 - w.y0), glassMat);
     glass.rotation.y = Math.PI / 2;
     glass.position.set(x - 0.01, cy, cz);

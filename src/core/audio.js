@@ -129,6 +129,9 @@ export class AudioEngine {
   // ---------------------------------------------------------------- primitives
   tone(dest, t, { type = 'sine', f = 440, f2 = null, dur = 0.2, vol = 0.3, attack = 0.002, curve = 'exp', detune = 0, glide = null } = {}) {
     const ctx = this.ctx;
+    const nyq = ctx.sampleRate * 0.47;
+    if (f > nyq) return null; // inaudible partial
+    if (f2 !== null) f2 = Math.min(f2, nyq);
     const o = ctx.createOscillator();
     o.type = type;
     o.frequency.setValueAtTime(f, t);

@@ -188,6 +188,7 @@ export async function installPC(game) {
       game.player.lookOverride = { pos: p, quat: new THREE.Quaternion().setFromRotationMatrix(m), fovDelta: 18 };
       document.getElementById('crosshair').classList.add('hidden-ch');
       glassS.visible = false;
+      game.held.anchor.visible = false;
       game.interaction.setHint(null);
       audio.play('uiClick', { vol: 0.8 });
       if (!site.booted) { audio.play('crtOn', { vol: 0.7 }); setTimeout(() => audio.play('modem', { vol: 0.6 }), 250); }
@@ -201,6 +202,7 @@ export async function installPC(game) {
       game.player.lookOverride = null;
       document.getElementById('crosshair').classList.remove('hidden-ch');
       glassS.visible = true;
+      game.held.anchor.visible = true;
       audio.play('uiClick', { vol: 0.6 });
       game.save();
     },
@@ -210,8 +212,8 @@ export async function installPC(game) {
 
   game.interaction.add(root, {
     highlight: monitor,
-    hint: (held) => (held ? null : { key: 'L', text: 'パソコン · Use the PC', sub: 'ガチャマート E-Mart: order, upgrade, sell' }),
-    use: (held) => { if (!held) pc.enter(); return false; },
+    hint: () => ({ key: 'L', text: 'パソコン · Use the PC', sub: 'ガチャマート E-Mart: order, upgrade, sell' }),
+    use: () => { pc.enter(); return false; },
   });
 
   // restore persistent visuals bought earlier

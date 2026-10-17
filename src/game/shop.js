@@ -219,7 +219,7 @@ export function placeCharms(g, newId = null) {
     if (id === 'maneki') m = propMesh('manekineko', { fallbackSize: [0.15, 0.22, 0.13] });
     else if (id === 'daruma') m = propMesh('daruma', { fallbackSize: [0.16, 0.18, 0.15] });
     else if (id === 'goldneko') { m = propMesh('manekineko', { fallbackSize: [0.15, 0.22, 0.13] }); m.material = voxelMaterials('gold'); m.scale.setScalar(1.25); }
-    else { m = makeItemMesh('omamori/pouch'); m.scale.setScalar(1.8); }
+    else { m = makeItemMesh('omamori/pouch'); m.scale.setScalar(2.6); }
     m.position.set(-0.32 + order.indexOf(id) * 0.21, 0.015, 0.12);
     g._kamidana.add(m);
     g._charmMeshes[id] = m;
