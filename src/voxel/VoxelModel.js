@@ -92,7 +92,7 @@ export class VoxelModel {
     const [ax, bx] = x0 < x1 ? [x0, x1] : [x1, x0];
     const [ay, by] = y0 < y1 ? [y0, y1] : [y1, y0];
     const [az, bz] = z0 < z1 ? [z0, z1] : [z1, z0];
-    for (let x = ax; x <= bx; x++) for (let y = ay; y <= by; y++) for (let z = az; z <= bz; z++) this.set(x, y, z, c);
+    for (let x = ax; x <= bx; x++) for (let y = ay; y <= by; y++) for (let z = az; z <= bz; z++) this.set(x, y, z, typeof c === 'function' ? c(x, y, z) : c);
     return this;
   }
 

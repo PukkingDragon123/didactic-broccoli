@@ -1,6 +1,6 @@
 // Series 12 — Kaiun Omamori (開運おまもり)
 // A premium run of lucky shrine charms: deep lacquer reds, real-gold accents and tiny glowing lanterns.
-import { C, shade, mix } from '../../voxel/palette.js';
+import { C, shade } from '../../voxel/palette.js';
 import { gloss, metal, glow } from '../../voxel/VoxelModel.js';
 
 const K = C.ink;
@@ -102,22 +102,24 @@ export default {
           return Math.abs(x) <= w - 1 && yy >= 1 && yy <= 14; // puffy silk front & back
         }, brocade);
         v.paint(() => v.box(-6, P, -2, 6, P, 2, RED_D)); // sewn bottom seam
-        // woven gold-bordered panel: 開 運 守
+        // woven gold-bordered panel: 御守
         v.project([
-          'GGGGG',
-          'GKSKG',
-          'GKKKG',
-          'GKSKG',
-          'GSSSG',
-          'GKKKG',
-          'GSKKG',
-          'GKKKG',
-          'GSSSG',
-          'GSKSG',
-          'GKKKG',
-          'GSSKG',
-          'GGGGG',
-        ], { G: GOLD, K: RED_D, S: SILK }, -2, P + 13, '+z', { raise: true });
+          'GGGGGGG',
+          'GSKKKKG',
+          'GKSKSSG',
+          'GSKKKKG',
+          'GKKKSKG',
+          'GSKKKKG',
+          'GSKSKSG',
+          'GSSSSSG',
+          'GSSKSSG',
+          'GKKKKKG',
+          'GKSSSKG',
+          'GKKKKKG',
+          'GSKSKSG',
+          'GSSKKSG',
+          'GGGGGGG',
+        ], { G: GOLD, K: RED_D, S: SILK }, -3, P + 14, '+z', { raise: true });
         // the back gets a gold diamond crest
         v.project(['..G..', '.GGG.', 'GGRGG', '.GGG.', '..G..'], { G: GOLD, R: RED_D }, -2, P + 10, '-z', { raise: true });
         // twisted purple cord: knot, little hanging loop, and two tassels down the shoulders
@@ -157,31 +159,28 @@ export default {
           const yy = y - B;
           return yy <= 10 ? Math.abs(x) <= 11 : Math.abs(x) <= 11 - 2 * (yy - 10);
         }, wood);
+        // painted rising sun, grass and a galloping chestnut horse
+        v.paint(() => v.cylinder(-8, B + 8, 0, 2.2, 1, C.vermilion, 'z'));
+        v.project(['G.G...G.G..G.G.G.G', '.G.....G..G....G..'], { G: C.grassDark }, -10, B + 1);
+        v.project([
+          '.....G......MM...',
+          '...........MBBB..',
+          '..........MBBWBB.',
+          '.........MBBB.BBB',
+          '.TT.GRRRGBBB.....',
+          'TTTBRRRRRBBB.....',
+          'T.BBBBBBBBBB.....',
+          '..BBBBBBBBBB.....',
+          '..BB......BB.....',
+          '.B.B......B.B....',
+          '.W..W....W...W...',
+        ], { M: K, T: K, B: 0x6b3a1e, W: 0xfdfaf3, R: C.vermilion, G: GOLD }, -7, B + 11);
         // roof rim (dark wood strips along the gable)
         const RIM = 0x8a5a32;
         for (let yy = 10; yy <= 15; yy++) {
           const w = 11 - 2 * (yy - 10);
           for (let x = Math.max(0, w - 2); x <= w; x++) { v.set(x, B + yy, 1, RIM); v.set(-x, B + yy, 1, RIM); }
         }
-        // painted rising sun, gold clouds and a galloping chestnut horse
-        v.paint(() => v.cylinder(-6, B + 8, 0, 2.6, 1, C.vermilion, 'z'));
-        v.project(['.GG.GG', 'GGGGGG'], { G: GOLD_D }, 4, B + 9);
-        v.project([
-          '............MM...',
-          '...........MBBB..',
-          '..........MBBWBB.',
-          '.........MBBB.BBB',
-          '........MBBB.....',
-          '.TT.GRRRRGBB.....',
-          'TTTBRRRRRRBB.....',
-          'T.BBBBBBBBBB.....',
-          '..BBBBBBBBBB.....',
-          '..BB......BB.....',
-          '.B.B......B.B....',
-          '.W..W....W...W...',
-        ], { M: K, T: K, B: 0x6b3a1e, W: 0xfdfaf3, R: C.vermilion, G: GOLD }, -8, B + 12);
-        // painted grass tufts
-        v.project(['G.G...G.G..G.G', '.G.....G..G...'], { G: C.grassDark }, -10, B + 1);
         // red & white cord through the hole
         v.set(0, B + 13, 1, gloss(C.red)); v.set(-1, B + 13, 1, gloss(W)); v.set(1, B + 13, 1, gloss(W));
         v.ring(0, B + 18, 0, gloss(C.red), 'z');
@@ -189,16 +188,15 @@ export default {
         v.box(-2, B + 11, 1, -2, B + 13, 1, gloss(C.red)); v.box(2, B + 11, 1, 2, B + 13, 1, gloss(W));
         // the wish, written vertically on the back + a red seal
         v.project([
+          'K...K...K.',
+          'K.K.K.K...',
+          '..K...K.K.',
           'K.K.K.K.K.',
-          'K.K.K.K.K.',
-          'K...K.K.K.',
-          'K.K.K...K.',
-          'K.K.K.K.K.',
-          '..K.K.K...',
+          'K...K...K.',
           'K.K...K.K.',
-          'K.K.K.K.K.',
-          '....K.....',
-        ], { K }, -5, B + 10, '-z');
+          '..K.K.K...',
+          'K.K.K...K.',
+        ], { K: 0x4a3a30 }, -5, B + 10, '-z');
         v.project(['RR', 'RR'], { R: C.vermilion }, -8, B + 3, '-z');
       },
     },
@@ -368,7 +366,7 @@ export default {
         fill(v, -8, 2, -6, 8, 6, 6, SM);
         fill(v, -9, 7, -7, 9, 8, 7, SL);
         v.paint(() => v.box(-6, 3, 6, 6, 5, 6, shade(0xa7a197, 0.85))); // carved panel
-        v.project(['K.KK.KKK', 'KKK..K.K', 'K.K..KKK'], { K: shade(0x858077, 0.72) }, -4, 5, '+z'); // 稲荷
+        v.project(['.KKK.....KKK.', 'K..K.KKK.K..K', '.KK...K...KK.'], { K: shade(0x858077, 0.72) }, -6, 5, '+z'); // carved cloud scrolls
         // moss creeping over the stone
         v.paint(() => {
           v.shape(-10, 0, -8, 10, 8, 8, (x, y, z) => (y === 1 || y === 8) && hash(x, y, z) < 0.3, (x, y, z) => (hash(z, x, y) > 0.5 ? C.moss : shade(C.moss, 1.2)));
@@ -507,7 +505,7 @@ export default {
           const zw = 5.4 * Math.sqrt(Math.max(0, 1 - (x / 13.2) ** 2));
           const t = (y - yb(x)) / Math.max(1, 9 - yb(x));
           return Math.abs(z) <= zw * (0.55 + 0.45 * t);
-        }, (x, y) => (y === 9 ? BRASS : y === 6 || y === 7 ? gloss(RED) : y <= 5 ? GOLD_D : GOLD));
+        }, (x, y) => (y === 9 ? GOLD_D : y === 6 || y === 7 ? gloss(RED) : y <= 5 ? GOLD_D : GOLD));
         v.paint(() => { for (let x = -10; x <= 10; x += 3) { v.box(x, 6, -6, x, 7, 6, GOLD_L); } });
         // dragon-head prow
         v.line(10, 8, 0, 13, 13, 0, GOLD, 1.3);
@@ -517,7 +515,9 @@ export default {
         v.set(17, 13, 0, GOLD_L);
         v.set(14, 15, 1, glow(0xff4030)); v.set(14, 15, -1, glow(0xff4030));
         v.line(12, 15, 1, 11, 17, 1, GOLD_L); v.line(12, 15, -1, 11, 17, -1, GOLD_L);
-        v.line(12, 13, 0, 10, 14, 0, gloss(VERM), 0.6);
+        for (let i = 0; i < 4; i++) v.set(11 - i * 0.4, 12 - i, 0, gloss(VERM)); // red mane down the neck
+        v.box(11, 11, 0, 11, 13, 0, gloss(VERM)); v.set(10, 10, 0, gloss(VERM)); v.set(12, 14, 0, gloss(VERM));
+        v.line(16, 12, 1, 17, 10, 2, gloss(VERM)); v.line(16, 12, -1, 17, 10, -2, gloss(VERM)); // whiskers
         // stern cabin
         v.box(-12, 10, -3, -8, 12, 3, gloss(RED));
         v.box(-13, 13, -4, -7, 13, 4, GOLD);
@@ -538,6 +538,7 @@ export default {
           '....G.G..',
           'GGGGGGGGG',
         ], { G: GOLD }, -5, 25, '+z');
+        v.project(['..GGG..', '.G...G.', 'G..G..G', 'G.GGG.G', 'G..G..G', '.G...G.', '..GGG..'], { G: GOLD }, -4, 24, '-z'); // treasure-jewel crest on the back
         v.layer(['RRWW', 'RRW.', 'RR..'], { R: gloss(C.red), W: gloss(W) }, { x: 0, y: 30, z: -3 });
         v.set(-1, 30, -3, C.woodDark);
         // treasure heap: gold koban mound

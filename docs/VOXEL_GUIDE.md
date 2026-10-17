@@ -58,7 +58,7 @@ export default {
 * **8 items per series**: exactly 3 `common`, 2 `uncommon`, 1 `rare`, 1 `ultra`, 1 `secret` (in that order).
 * `name` = short English name (≤ 26 chars), `jp` = authentic Japanese name, `desc` = one funny/charming
   sentence (≤ 90 chars). Secrets should be the funniest / most special (and begin desc with nothing special — the game handles the reveal).
-* **Size**: collectibles are rendered at 0.0045 m per voxel. Aim for 18–30 voxels in the largest dimension
+* **Size**: collectibles are rendered at ~0.0027 m per voxel (real miniature scale). Aim for 18–30 voxels in the largest dimension
   (max 32). Footprint should stay within ~28×28. Stand items on a small base if they would tip over.
   Rarer items should look more elaborate (more detail, more colours, small diorama bases, gloss/metal/glow accents).
 * Make every item instantly readable from a 3/4 front view, with a strong silhouette and a cute face where

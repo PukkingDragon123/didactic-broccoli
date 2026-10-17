@@ -72,22 +72,24 @@ export default {
         const petals = [0xf08a3a, 0xe0524a], centre = 0x8a4a1a, leaf = 0x7aa84a;
         wrap(v, 0, 0, 7.2, 48, (u, y, c) => {
           if (c !== body || y < 2 || y > 10) return undefined;
-          const row = y >= 7 ? 1 : 0, cy = row ? 8 : 4;
+          const row = y >= 6 ? 1 : 0, cy = row ? 8 : 4;
           let du = ((u - (row ? 4 : 0)) % 8 + 8) % 8;
           if (du > 4) du -= 8;
           const dy = y - cy;
-          if (du === 0 && dy === 0) return centre;
-          if (Math.abs(du) + Math.abs(dy) === 1) return petals[row];
-          if ((du === 2 && dy === -1) || (du === -2 && dy === 1)) return leaf;
+          const d = Math.abs(du) + Math.abs(dy);
+          if (d === 0) return centre;
+          if (d === 1) return mix(petals[row], 0xffe0a0, 0.35);
+          if (d === 2) return petals[row];
+          if ((du === 3 && dy === -1) || (du === -3 && dy === 1)) return leaf;
           return undefined;
         });
         v.paint(() => { v.cylinder(0, 1, 0, 8, 1, gloss(0xe0a46a)); });
         // front control panel: lever switch + cook / keep-warm lamps
-        v.box(-3, 3, 8, 3, 8, 8, gloss(0x7a4526));
-        v.box(-2, 4, 9, 2, 8, 9, gloss(0x7a4526));
-        v.set(-1, 7, 9, glow(0xff5a3a)); v.set(1, 7, 9, glow(0xffc23a));
-        v.box(-1, 4, 9, 1, 5, 9, gloss(C.cream));
-        v.box(-1, 5, 10, 1, 5, 11, gloss(C.orange)); // lever
+        v.box(-2, 3, 8, 2, 7, 9, gloss(0xd9c49a));
+        v.paint(() => v.box(-2, 3, 9, 2, 3, 9, gloss(0xb89a6a)));
+        v.set(-1, 6, 9, glow(0xff4a30)); v.set(1, 6, 9, glow(0xffc23a));
+        v.box(0, 3, 9, 0, 5, 9, C.charcoal);
+        v.box(0, 5, 10, 0, 5, 10, gloss(C.charcoal)); v.set(0, 5, 11, gloss(C.orange)); // cook lever
         // carry handle
         const hc = gloss(0x6b3a1e);
         for (const z of [-1, 0, 1]) {
@@ -146,7 +148,7 @@ export default {
         v.box(-6, 11, -3, 6, 12, -1, ph);
         v.paint(() => v.box(-6, 12, -3, 6, 12, -1, ph2));
         v.ellipsoid(-8, 11, -2, 2.2, 1.8, 2.2, ph); v.ellipsoid(8, 11, -2, 2.2, 1.8, 2.2, ph);
-        v.box(-10, 9, -4, 10, 9, 0, null); // flatten cup bottoms
+        v.box(-10, 9, -4, -6, 9, 0, null); v.box(6, 9, -4, 10, 9, 0, null); // flatten cup bottoms
         v.box(-9, 10, -3, -7, 10, -1, ph2); v.box(7, 10, -3, 9, 10, -1, ph2);
         // coiled cord down the left side
         let prev = null;
@@ -167,7 +169,7 @@ export default {
       id: 'senpuki', name: 'Piano-Key Fan', jp: '扇風機', rarity: 'common',
       desc: 'Talk into the blades: "We... are... aliens..." Every kid did it.',
       build(v) {
-        const bodyC = 0xf4efe2, trim = 0x6cc3b8, wire = metal(C.chrome);
+        const bodyC = 0xf4efe2, trim = 0x6cc3b8, wire = gloss(0xd9dde2);
         // oval base with piano keys
         v.shape(-9, 0, -7, 9, 1, 7, (x, y, z) => (x / 9.3) ** 2 + (z / 7.3) ** 2 <= 1, gloss(trim));
         v.shape(-8, 2, -6, 8, 2, 6, (x, y, z) => (x / 8.2) ** 2 + (z / 6.2) ** 2 <= 1, gloss(bodyC));
@@ -189,21 +191,20 @@ export default {
         // translucent blue blades
         v.shape(-8, cy - 8, -1, 8, cy + 8, -1, (x, y) => {
           const dx = x, dy = y - cy, r = Math.hypot(dx, dy);
-          if (r < 1.5 || r > 7.4) return false;
-          const a = (((Math.atan2(dy, dx) / (Math.PI * 2) + r * 0.03) * 4) % 1 + 1) % 1;
-          return a < 0.52;
-        }, glass(0x4aa8ff));
+          if (r < 1.5 || r > 7.6) return false;
+          const a = (((Math.atan2(dy, dx) / (Math.PI * 2) + r * 0.025) * 3) % 1 + 1) % 1;
+          return a < 0.6;
+        }, (x, y) => gloss(Math.hypot(x, y - cy) > 6.2 ? 0x8fd0ff : 0x52aef0));
         v.cylinder(0, cy, -2, 1.6, 2, gloss(bodyC), 'z'); // hub
         // wire guard: back ring, front ring, side straps, front spokes
         v.torus(0, cy, -3, 8.4, 0.5, wire, 'z');
         v.torus(0, cy, 1, 8.4, 0.5, wire, 'z');
-        v.torus(0, cy, 1, 5, 0.4, wire, 'z');
         for (let k = 0; k < 8; k++) {
-          const a = (k / 8) * Math.PI * 2;
+          const a = (k / 8) * Math.PI * 2 + Math.PI / 8;
           const ex = Math.round(Math.cos(a) * 8.4), ey = Math.round(Math.sin(a) * 8.4);
           v.line(ex, cy + ey, -3, ex, cy + ey, 1, wire);
           v.line(Math.round(Math.cos(a) * 2), cy + Math.round(Math.sin(a) * 2), 1, ex, cy + ey, 1, wire);
-          v.line(Math.round(Math.cos(a) * 3), cy + Math.round(Math.sin(a) * 3), -3, ex, cy + ey, -3, wire);
+          if (k % 2 === 0) v.line(Math.round(Math.cos(a) * 3), cy + Math.round(Math.sin(a) * 3), -3, ex, cy + ey, -3, wire);
         }
         // centre badge
         v.cylinder(0, cy, 1, 1.6, 2, gloss(trim), 'z');
@@ -253,11 +254,11 @@ export default {
         v.shape(-9, 8, 4, 3, 18, 5, (x, y, z) => scr(x, y) && (z === 4 || (x >= -7 && x <= 1 && y >= 10 && y <= 16)), (x, y) => glow(barAt(x, y)));
         // control panel: channel dial, volume knob, speaker grille
         v.box(6, 7, 5, 10, 19, 5, gloss(0xd9c49a));
-        v.project(['.T.T.', 'T...T', '.....', 'T...T', '.T.T.'], { T: C.darkbrown }, 6, 18);
-        v.cylinder(8, 16, 6, 2, 1, gloss(C.charcoal), 'z');
-        v.cylinder(8, 16, 7, 1, 1, gloss(C.charcoal), 'z');
-        v.set(8, 17, 7, gloss(C.white)); v.set(8, 18, 6, gloss(C.white));
-        v.cylinder(8, 12, 6, 1, 1, gloss(C.charcoal), 'z');
+        v.project(['T.T.T', '.....', 'T...T', '.....', 'T.T.T'], { T: C.darkbrown }, 6, 18);
+        v.box(7, 15, 6, 9, 17, 6, gloss(C.charcoal));
+        v.box(8, 15, 7, 8, 17, 7, gloss(C.charcoal));
+        v.set(8, 17, 7, gloss(C.white));
+        v.box(7, 12, 6, 9, 12, 6, gloss(C.charcoal)); v.box(8, 11, 6, 8, 13, 6, gloss(C.charcoal));
         v.set(8, 12, 7, metal(C.chrome));
         v.paint(() => { for (let y = 7; y <= 10; y++) v.box(6, y, 5, 10, y, 5, y % 2 ? gloss(0x6b4a2a) : gloss(0xb89060)); });
         v.box(-4, 6, 6, 0, 6, 6, metal(C.brass)); // little nameplate
@@ -295,28 +296,30 @@ export default {
         v.paint(() => v.box(-12, 1, -6, 12, 1, 6, blueD));
         // wavy decoration + badge on the front
         v.project(['.WW...WW...WW...WW...WW.', 'W..W.W..W.W..W.W..W.W..W'], { W: gloss(C.white) }, -12, 4);
-        v.box(-3, 8, 7, 3, 9, 7, metal(C.chrome));
-        v.box(-2, 8, 7, 2, 9, 7, gloss(C.navy));
-        v.box(-1, 9, 7, 1, 9, 7, metal(C.chrome));
+        v.box(-3, 8, 7, 3, 9, 7, gloss(0xdfe3e8));
+        v.box(-2, 9, 7, -1, 9, 7, gloss(C.navy)); v.box(1, 8, 7, 2, 8, 7, gloss(C.red)); v.set(0, 9, 7, gloss(C.navy)); v.set(0, 8, 7, gloss(C.red));
         // control console at the back
         v.box(-12, 16, -6, 12, 18, -4, top);
         v.paint(() => v.box(-12, 16, -6, 12, 16, -4, gloss(C.offwhite)));
         for (const [kx, kc] of [[-8, C.navy], [-3, C.orange], [7, C.navy]]) {
-          v.cylinder(kx, 17, -3, 1.2, 1, gloss(kc), 'z');
+          v.box(kx - 1, 16, -3, kx + 1, 18, -3, gloss(kc));
+          v.box(kx, 16, -2, kx, 18, -2, gloss(shade(kc, 1.25)));
           v.set(kx, 18, -2, gloss(C.white));
-          v.set(kx, 17, -2, gloss(kc));
           v.project(['T.T.T'], { T: C.gray }, kx - 2, 18, '-z');
         }
         // washing tub (left): open, full of foam
         v.box(-10, 5, -3, -2, 15, 4, null);
         v.box(-10, 5, -3, -2, 11, 4, gloss(0x7ec8ee));
-        v.paint(() => v.box(-10, 5, -3, -2, 14, 4, gloss(0xdde6ea)));
-        v.box(-10, 11, -3, -2, 11, 4, gloss(0x8fd4f4));
-        const foam = [[-8, 12.5, -1, 2], [-4.5, 12.5, 1.5, 2.2], [-3.5, 12.5, -2, 1.4], [-8.5, 13, 3, 1.4],
-          [-6, 14.5, 0, 1.8], [-4, 15.5, 2.5, 1.3], [-7.5, 15.5, -1.5, 1.3], [-5.5, 16.8, -0.5, 1.2]];
-        for (const [x, y, z, r] of foam) v.sphere(x, y, z, r, C.white);
-        v.sphere(-3.5, 17, -1, 1.2, glass(0xd8c8ff));
-        v.sphere(-8, 17.5, 1.5, 1, glass(0xbfe8ff));
+        v.paint(() => v.shape(-11, 5, -4, -1, 15, 5, (x, y, z) => x === -11 || x === -1 || z === -4 || z === 5, gloss(0xc2d0d8)));
+        v.paint(() => v.shape(-11, 15, -4, -1, 15, 5, (x, y, z) => x === -11 || x === -1 || z === -4 || z === 5, gloss(0x9aa8b2)));
+        v.box(-10, 11, -3, -2, 11, 4, gloss(0x6cc0f0));
+        v.paint(() => v.shape(-10, 11, -3, -2, 11, 4, (x, y, z) => hash(x, y, z) < 0.25, gloss(0xa8e0ff)));
+        const foam = [[-6, 12.5, 0.5, 2.4], [-4.5, 13.5, 2, 1.7], [-7.5, 13.5, -1, 1.7], [-6, 15, 0.5, 2],
+          [-5, 16.8, 1, 1.4], [-7, 16.6, 0, 1.2], [-6, 18.2, 0.5, 1]];
+        foam.forEach(([x, y, z, r], i) => v.sphere(x, y, z, r, i % 2 ? 0xf4f8fb : C.white));
+        v.sphere(-3.6, 15.5, 2.6, 1.2, glass(0xd8c8ff));
+        v.sphere(-8, 17.5, -0.5, 1.1, glass(0xbfe8ff));
+        v.sphere(-5, 19.6, 0.5, 0.9, glass(0xffd8f0));
         // a striped sock hanging over the front rim
         const sock = (y) => (y % 2 ? gloss(C.red) : gloss(C.white));
         for (let y = 12; y <= 15; y++) v.box(-7, y, 4, -6, y, 4, sock(y));
@@ -327,6 +330,10 @@ export default {
         v.paint(() => v.box(2, 15, -3, 10, 15, 4, gloss(0xe6edf0)));
         v.paint(() => { v.box(3, 15, -2, 9, 15, 3, gloss(0xf4f8fa)); });
         v.box(5, 16, 3, 7, 16, 3, gloss(C.lightgray));
+        // back: rating plate + power cord
+        v.paint(() => { v.box(-9, 6, -6, -4, 9, -6, gloss(C.offwhite)); v.box(-8, 8, -6, -5, 8, -6, gloss(C.gray)); v.box(-8, 7, -6, -6, 7, -6, gloss(C.lightgray)); });
+        v.line(6, 3, -7, 6, 1, -8, gloss(C.charcoal)); v.line(6, 1, -8, 9, 0, -9, gloss(C.charcoal));
+        v.box(9, 0, -10, 10, 1, -10, gloss(C.white)); v.set(9, 2, -10, metal(C.chrome)); v.set(10, 2, -10, metal(C.chrome));
         // drain hose curled on the floor
         v.line(-13, 4, 2, -13, 1, 4, gloss(C.gray));
         v.line(-13, 1, 4, -12, 0, 7, gloss(C.gray));
@@ -385,6 +392,13 @@ export default {
         for (const sx of [-10, 10]) v.box(sx, 16, -2, sx, 17, -1, chrome);
         v.box(-10, 18, -2, 10, 18, -1, chrome);
         v.box(-7, 19, -2, 7, 19, -1, gloss(C.charcoal));
+        // back: battery door, vent slots, spec sticker
+        v.box(-9, 3, -5, 9, 8, -5, gloss(0x3a3a40));
+        v.paint(() => { for (let x = -8; x <= 8; x += 2) v.box(x, 4, -5, x, 7, -5, gloss(0x232328)); });
+        v.box(-1, 8, -6, 1, 8, -6, gloss(0x3a3a40));
+        v.paint(() => { for (let y = 11; y <= 13; y++) for (let x = -11; x <= -4; x += 2) v.set(x + (y & 1), y, -4, C.black); });
+        v.paint(() => v.box(4, 10, -4, 9, 13, -4, C.paper));
+        v.paint(() => { v.box(5, 12, -4, 8, 12, -4, C.gray); v.box(5, 11, -4, 7, 11, -4, C.lightgray); });
         // telescopic antenna
         v.box(11, 16, -3, 12, 16, -2, gloss(C.charcoal));
         v.line(12, 17, -3, 9, 22, -3, chrome);
@@ -421,8 +435,9 @@ export default {
         });
         // lifted edge where the cat sneaks out: dark cavity glowing with heater light
         const cx = -3;
-        v.shape(-9, 2, 2, 3, 10, 12, (x, y, z) => ((x - cx) / 5.2) ** 2 + ((y - 2) / 7.5) ** 2 <= 1, null);
-        v.shape(-9, 2, 2, 3, 9, 3, (x, y, z) => ((x - cx) / 5.4) ** 2 + ((y - 2) / 7.6) ** 2 <= 1, (x, y) => (y <= 6 ? glow(0xff7a2a) : 0x4a1e14));
+        v.shape(-10, 2, 2, 4, 10, 12, (x, y, z) => ((x - cx) / 6.3) ** 2 + ((y - 2) / 7.8) ** 2 <= 1, null);
+        v.shape(-10, 2, 2, 4, 9, 3, (x, y, z) => ((x - cx) / 6.5) ** 2 + ((y - 2) / 7.9) ** 2 <= 1, (x, y) => (y <= 6 ? glow(0xff6a24) : 0x4a1e14));
+        v.box(cx - 6, 2, 4, cx + 6, 2, 9, glow(0xff8a3a));
         // table top board
         v.shape(-11, 11, -12, 11, 12, 10, (x, y, z) => !((x === -11 || x === 11) && (z === -12 || z === 10)), (x, y, z) => {
           if (y === 11 || x === -11 || x === 11 || z === -12 || z === 10) return gloss(C.woodDark);
@@ -440,25 +455,25 @@ export default {
         v.set(bx, 19, bzc, C.darkbrown); v.set(bx + 1, 19, bzc, C.leaf); v.set(bx + 1, 19, bzc + 1, C.leaf);
         v.paint(() => { v.set(bx - 1, 16, bzc + 3, gloss(0xffb04a)); v.set(bx + 2, 16, bzc + 3, gloss(0xffb04a)); });
         // a peeled mikan, opened like a flower
-        v.layer(['.o.o.', 'ooooo', '.ooo.', 'ooooo', '.o.o.'], { o: gloss(0xff941c) }, { x: 3, y: 13, z: 1, plane: 'xz' });
-        v.layer(['.s.', 'sws', '.s.'], { s: gloss(0xffb347), w: C.cream }, { x: 4, y: 14, z: 2, plane: 'xz' });
-        v.set(5, 15, 3, gloss(0xffb347));
+        v.layer(['oo...oo', 'owo.owo', '.owwwo.', '..www..', '.owwwo.', 'owo.owo', 'oo...oo'], { o: gloss(0xff941c), w: 0xfff0d2 }, { x: 2, y: 13, z: 0, plane: 'xz' });
+        v.sphere(5, 15, 3, 1.5, gloss(0xffb43c));
+        v.paint(() => { v.box(5, 14, 0, 5, 17, 6, gloss(0xe8901e)); v.box(2, 14, 3, 8, 17, 3, gloss(0xe8901e)); });
+        v.set(5, 17, 3, C.cream);
         // yunomi tea cup
         v.cylinder(6, 13, -6, 1.5, 4, gloss(0x8fae9c));
         v.paint(() => v.cylinder(6, 15, -6, 1.5, 1, gloss(0x5f7f6e)));
         v.cylinder(6, 16, -6, 0.6, 1, C.matcha);
         // the cat: hachiware, blissfully asleep, poking out from under the futon
-        const fur = C.charcoal, wht = C.white;
+        const fur = 0x9a958e, furD = 0x6a655f, wht = C.white;
         v.ellipsoid(cx, 5.2, 8.6, 4.3, 3.3, 3.4, wht);
-        v.paint(() => v.shape(cx - 5, 5, 4, cx + 5, 9, 13, (x, y) => Math.abs(x - cx) > 9 - y, fur));
+        v.paint(() => v.shape(cx - 5, 7, 4, cx + 5, 9, 13, (x, y) => y >= 8 || Math.abs(x - cx) >= 3, (x, y, z) => ((x + z) % 3 === 0 ? furD : fur)));
         ear(v, cx - 3, 8, 8, fur, C.pink, 3, 3);
         ear(v, cx + 3, 8, 8, fur, C.pink, 3, 3);
-        v.project(['.K...K.', 'K.K.K.K', 'P..N..P', '..K.K..'], { K: K, P: C.blush, N: C.hotpink }, cx - 3, 7);
-        v.project(['W.....W'], { W: C.lightgray }, cx - 3, 4);
+        v.project(['K.K.K.K', '.K...K.', 'P..N..P', '..K.K..'], { K: K, P: C.blush, N: C.hotpink }, cx - 3, 6);
         v.ellipsoid(cx - 2.2, 2.5, 12.3, 1.3, 0.9, 1.4, wht);
         v.ellipsoid(cx + 2.2, 2.5, 12.3, 1.3, 0.9, 1.4, wht);
         // ...and its tail escaping out the right side
-        for (const [x, z, c] of [[10.5, 0, fur], [12, 1, fur], [12.5, 3, fur], [12, 5, fur], [11, 6.5, wht]]) v.sphere(x, 3, z, 1, c);
+        for (const [x, z, c] of [[10.5, 0, fur], [12, 1, furD], [12.5, 3, fur], [12, 5, furD], [11, 6.5, fur]]) v.sphere(x, 3, z, 1, c);
       },
     },
     // ------------------------------------------------------------------ secret
@@ -483,6 +498,15 @@ export default {
           v.box(sx * 9, 13, -9, sx * 11, 13, 5, vinL);
           v.box(sx * 9, 6, 5, sx * 11, 6, 5, chrome);
         }
+        // back cover: quilted panels, motor vent, power cord
+        v.paint(() => {
+          for (let y = 11; y <= 23; y += 4) v.box(-8, y, -10, 8, y, -10, vinD);
+          v.box(-4, 3, -9, 4, 5, -9, gloss(C.charcoal));
+        });
+        v.paint(() => { for (let x = -3; x <= 3; x += 2) v.box(x, 3, -9, x, 5, -9, gloss(0x505055)); });
+        v.box(-5, 13, -11, 5, 20, -11, vinD);
+        v.paint(() => v.box(-3, 18, -11, 3, 19, -11, gloss(C.cream)));
+        v.line(6, 2, -9, 7, 1, -11, gloss(C.charcoal)); v.line(7, 1, -11, 10, 1, -11, gloss(C.charcoal));
         // coin box on the right armrest
         v.box(9, 14, 1, 11, 16, 5, chrome);
         v.box(10, 16, 2, 10, 16, 4, C.black);
@@ -512,16 +536,16 @@ export default {
         // big head, bald on top with a ring of white hair
         const hy = 21;
         v.sphere(0, hy, -1.5, 4.6, skin);
-        v.paint(() => v.shape(-6, hy - 2, -7, 6, hy + 1, 0, (x, y, z) => z <= -1 || Math.abs(x) >= 4, C.white));
-        v.paint(() => v.box(-6, hy + 2, -7, 6, hy + 6, 4, skin));
+        v.paint(() => v.shape(-6, hy - 1, -7, 6, hy + 1, 0, (x, y, z) => z <= -3 || (Math.abs(x) >= 4 && z <= -1), C.white));
         v.ellipsoid(-4.8, hy, -1, 0.8, 1.3, 1, skin); v.ellipsoid(4.8, hy, -1, 0.8, 1.3, 1, skin);
         // sleeping face: shut eyes, bushy brows, moustache, open snoring mouth
-        v.project(['WWW...WWW', '.........', 'KKK...KKK', '.........', 'P.......P'], { W: C.white, K: K, P: C.blush }, -4, hy + 2);
-        v.project(['WWWWW', '.WMW.'], { W: C.white, M: C.mouth }, -2, hy - 2, '+z', { raise: true });
-        v.box(-1, hy, 3, 1, hy, 4, C.skinShade);
-        v.set(0, hy + 1, 4, C.skinShade);
+        v.project(['.WW...WW.', '.........', '.KK...KK.', '.........', 'PP.....PP'], { W: C.lightgray, K: K, P: C.blush }, -4, hy + 3);
+        v.project(['WW.WW', '..M..'], { W: C.white, M: C.mouth }, -2, hy - 2, '+z', { raise: true });
+        v.set(0, hy - 1, 4, C.mouth);
+        v.box(-1, hy - 1, 4, 1, hy - 1, 4, C.white); v.set(0, hy - 1, 4, C.mouth);
+        v.box(0, hy, 3, 0, hy, 4, C.skinShade);
         // snot bubble (the universal sign of deep sleep)
-        v.sphere(2.2, hy - 0.6, 5.6, 1.7, glass(0xbfe8ff));
+        v.sphere(1.8, hy - 0.4, 5.6, 1.5, glass(0xbfe8ff));
         // folded bath towel on his head
         v.box(-2, hy + 4, -3, 2, hy + 5, 0, C.white);
         v.paint(() => { v.box(-2, hy + 4, -3, 2, hy + 5, -3, C.sky); v.box(-2, hy + 4, 0, 2, hy + 5, 0, C.sky); });

@@ -25,7 +25,7 @@ try {
 }
 
 const root = resolve(import.meta.dirname, '..');
-const server = await createServer({ root, configFile: resolve(root, 'vite.config.js'), server: { port: 0, host: '127.0.0.1' }, logLevel: 'error' });
+const server = await createServer({ root, configFile: resolve(root, 'vite.config.js'), server: { port: 0, host: '127.0.0.1', hmr: false, watch: { ignored: ['**/*'] } }, logLevel: 'error' });
 await server.listen();
 const addr = server.httpServer.address();
 const url = `http://127.0.0.1:${addr.port}/${page}`;
@@ -39,6 +39,9 @@ pg.on('pageerror', (e) => logs.push(`[pageerror] ${e.stack || e.message}`));
 try {
   await pg.goto(url, { waitUntil: 'load', timeout: 120000 });
   await pg.waitForFunction(() => window.__ready === true, null, { timeout: +(flags.timeout || 180000) });
+  // Vite may full-reload once if it discovers new dependencies; wait for the page to settle again
+  await pg.waitForTimeout(1500);
+  await pg.waitForFunction(() => window.__ready === true, null, { timeout: +(flags.timeout || 180000) });
   if (flags.eval) {
     const r = await pg.evaluate(flags.eval);
     if (r !== undefined) console.log('eval:', typeof r === 'string' ? r : JSON.stringify(r));
@@ -50,7 +53,7 @@ try {
     if (flags.wait2) await pg.waitForTimeout(+flags.wait2);
   }
   mkdirSync(dirname(resolve(root, out)), { recursive: true });
-  await pg.screenshot({ path: resolve(root, out) });
+  await pg.screenshot({ path: resolve(root, out), timeout: 120000 });
   console.log('saved', out);
 } catch (e) {
   console.error('ERROR', e.message);

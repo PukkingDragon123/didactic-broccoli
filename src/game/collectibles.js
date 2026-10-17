@@ -5,8 +5,8 @@ import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { getItem } from '../data/series/index.js';
 
-export const ITEM_VOXEL = 0.0045; // metres per voxel for collectibles
-export const ITEM_MAX = 0.15; // largest allowed dimension in metres (fits a shelf cubby)
+export const ITEM_VOXEL = 0.0027; // metres per voxel for collectibles (a 26-voxel figure ≈ 7 cm)
+export const ITEM_MAX = 0.088; // largest allowed dimension in metres (fits a shelf slot)
 
 const geoCache = new Map();
 
