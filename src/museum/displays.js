@@ -13,7 +13,7 @@ const ledMat = (c = 0xfff0d8, k = 1.8) => new THREE.MeshBasicMaterial({ color: n
 
 function add(group, mesh, x, y, z) { mesh.position.set(x, y, z); group.add(mesh); return mesh; }
 function slotRow(slots, n, y, z, width, rotY = 0) {
-  for (let i = 0; i < n; i++) slots.push({ pos: new THREE.Vector3(-width / 2 + (width / n) * (i + 0.5), y, z), rotY, size: [width / n - 0.01, 0.13, 0.12], plaqueZ: 0.05 });
+  for (let i = 0; i < n; i++) slots.push({ pos: new THREE.Vector3(-width / 2 + (width / n) * (i + 0.5), y, z), rotY, size: [width / n, 0.13, 0.12], plaqueZ: 0.05 });
 }
 function glassBox(group, w, h, d, x, y, z) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), glassMat());
@@ -55,7 +55,7 @@ export const BUILDERS = {
     for (const y of [0.4625, 0.8625, 1.2625]) slotRow(slots, 5, y, 0.02, 0.94);
     return { group: g, slots };
   },
-  pedestal() {
+  pedestal(opts = {}) {
     const g = new THREE.Group(), slots = [];
     add(g, boxMesh(0.42, 0.06, 0.42, colMat(0x2a2220, { roughness: 0.4 })), 0, 0.03, 0);
     add(g, boxMesh(0.34, 0.9, 0.34, colMat(0xf4f2ec, { roughness: 0.35 })), 0, 0.51, 0);
@@ -68,10 +68,13 @@ export const BUILDERS = {
     beam.userData.noRim = true;
     beam.raycast = () => {};
     g.add(beam);
-    const spot = new THREE.SpotLight(0xfff0d0, 6, 3.2, 0.32, 0.5, 1.5);
-    spot.position.set(0, 2.9, 0.05);
-    spot.target.position.set(0, 1.0, 0);
-    g.add(spot, spot.target);
+    // real spotlights are budgeted (each light costs every pixel); extra pedestals rely on the beam glow
+    if (opts.light !== false) {
+      const spot = new THREE.SpotLight(0xfff0d0, 6, 3.2, 0.32, 0.5, 1.5);
+      spot.position.set(0, 2.9, 0.05);
+      spot.target.position.set(0, 1.0, 0);
+      g.add(spot, spot.target);
+    }
     // velvet rope stanchions
     for (const sx of [-1, 1]) add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.8, 8), colMat(0xd4a83a, { metalness: 1, roughness: 0.3 })), sx * 0.32, 0.4, 0.38);
     const rope = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.012, 6, 16, Math.PI), colMat(0x9a1f2a, { roughness: 0.8 }));
@@ -211,8 +214,8 @@ export const BUILDERS = {
   },
 };
 
-export function buildDisplay(id) {
-  const r = BUILDERS[id]();
+export function buildDisplay(id, opts = {}) {
+  const r = BUILDERS[id](opts);
   r.group.traverse((m) => { if (m.isMesh && !m.material.transparent) { m.castShadow = true; m.receiveShadow = true; } });
   return r;
 }

@@ -480,12 +480,17 @@ export class Museum {
 
   /** Build the 3D object for a placed entry. */
   makeObject(kind, id) {
-    if (kind === 'display') return buildDisplay(id);
+    if (kind === 'display') {
+      const lit = this.placed.filter((p) => p.data.id === 'pedestal').length < 4;
+      return buildDisplay(id, { light: lit });
+    }
     const m = propMesh(id, { fallbackSize: [0.8, 1, 0.8] });
     const g = new THREE.Group(); g.add(m);
     const p = PROPS[id];
     let light = null;
-    if (p?.light) {
+    this.decorLights = this.decorLights || 0;
+    if (p?.light && this.decorLights < 5) {
+      this.decorLights++;
       light = new THREE.PointLight(p.light, 1.6, 3.5, 1.6);
       const h = m.geometry?.userData?.size?.y || 1;
       light.position.y = h * 0.7;
@@ -604,7 +609,7 @@ export class Museum {
       this.hideGhost();
       let g = this.ghostCache.get(key);
       if (!g) {
-        const o = this.makeObject(it.data.kind, it.data.id);
+        const o = it.data.kind === 'display' ? buildDisplay(it.data.id, { light: false }) : this.makeObject(it.data.kind, it.data.id);
         g = o.group;
         g.traverse((m) => {
           if (m.isLight) m.visible = false;
@@ -871,7 +876,7 @@ export class Museum {
     return yy - y;
   }
 
-  displayPreview(id) { return buildDisplay(id).group; }
+  displayPreview(id) { return buildDisplay(id, { light: false }).group; }
 
   // ------------------------------------------------------------------ purchases
   buyMuseum() {

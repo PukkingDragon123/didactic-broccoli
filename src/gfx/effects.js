@@ -249,7 +249,9 @@ export class Effects {
     }
     if (o.face) group.quaternion.copy(o.face);
     this.scene.add(group);
-    this.beams.push({ group, mats, t: 0, dur: o.dur || 2, spin: o.spin ?? 0.6, strength: o.strength ?? 0.8, follow: o.follow || null });
+    // push the burst slightly behind its subject (away from the viewer) so it frames rather than covers it
+    const back = new THREE.Vector3(0, 0, -(o.back || 0)).applyQuaternion(group.quaternion);
+    this.beams.push({ group, mats, t: 0, dur: o.dur || 2, spin: o.spin ?? 0.6, strength: o.strength ?? 0.8, follow: o.follow || null, back });
   }
 
   updateBeams(dt) {
@@ -261,7 +263,7 @@ export class Effects {
       const a = Math.min(1, k * 5) * (1 - Math.pow(k, 2)) * b.strength;
       for (const m of b.mats) m.uniforms.uA.value = a;
       b.group.rotateZ(dt * b.spin);
-      if (b.follow) b.group.position.copy(b.follow.getWorldPosition(new THREE.Vector3()));
+      if (b.follow) b.group.position.copy(b.follow.getWorldPosition(new THREE.Vector3())).add(b.back);
       b.group.scale.setScalar(0.6 + k * 0.6);
     }
   }

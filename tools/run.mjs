@@ -25,6 +25,7 @@ try {
   await pg.goto(url, { waitUntil: 'load', timeout: 120000 });
   await pg.waitForFunction(() => window.__ready === true, null, { timeout: 240000 });
   for (const s of steps) {
+    if (s.reload) { await pg.reload({ waitUntil: 'load' }); await pg.waitForFunction(() => window.__ready === true, null, { timeout: 240000 }); }
     if (s.eval) await pg.evaluate(s.eval);
     if (s.log) console.log('>', s.log, '=>', JSON.stringify(await pg.evaluate(s.log)));
     if (s.wait) await pg.waitForTimeout(s.wait);

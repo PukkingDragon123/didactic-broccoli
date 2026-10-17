@@ -41,6 +41,8 @@ export class Held {
     obj.traverse((m) => { if (m.isMesh) m.castShadow = false; });
     this.anchor.attach(obj);
     this.pose = kind === 'capsule' ? 'capsule' : kind === 'toy' ? 'toy' : kind === 'tool' ? 'tool' : 'box';
+    // miniatures are shown a little larger in hand so you can admire the detail
+    this.holdScale = kind === 'toy' ? 1.55 : kind === 'capsule' ? 1.2 : 1;
     this.startTrans(opts.pose || this.pose, opts.dur ?? 0.32);
     this.twist = 0;
     if (kind === 'toy') this.attachTag(data, opts.isNew);
@@ -51,8 +53,8 @@ export class Held {
   attachTag(data, isNew = false) {
     this.removeTag();
     const t = tagCard(data.key, data.finish, isNew);
-    t.position.set(-0.075, -0.012, 0.0);
-    t.rotation.set(0, 0.35, 0.06);
+    t.position.set(0.035, -0.105, -0.3);
+    t.rotation.set(-0.05, 0.3, 0.06);
     this.anchor.add(t);
     this.tag = t;
     this.tagT = 0;
@@ -64,8 +66,8 @@ export class Held {
     const obj = this.item.obj;
     const P = POSES[poseName];
     this.trans = {
-      fromP: obj.position.clone(), fromQ: obj.quaternion.clone(),
-      toP: P.pos.clone(), toQ: new THREE.Quaternion().setFromEuler(P.rot), t: 0, dur,
+      fromP: obj.position.clone(), fromQ: obj.quaternion.clone(), fromS: obj.scale.x,
+      toP: P.pos.clone(), toQ: new THREE.Quaternion().setFromEuler(P.rot), toS: (poseName === 'inspect' ? 1.25 : 1) * (this.holdScale || 1), t: 0, dur,
     };
     this.pose = poseName;
   }
@@ -94,7 +96,7 @@ export class Held {
     if (!it) return;
     const obj = it.obj;
     const fromP = obj.position.clone(), fromQ = obj.quaternion.clone(), fromS = obj.scale.clone();
-    const toS = scale ? new THREE.Vector3().setScalar(scale) : fromS.clone();
+    const toS = new THREE.Vector3().setScalar(scale ?? 1);
     this.game.tweens.add({
       dur, ease: ease.inOutCubic,
       update: (k) => {
@@ -146,6 +148,7 @@ export class Held {
       const k = ease.outCubic(Math.min(1, tr.t / tr.dur));
       obj.position.lerpVectors(tr.fromP, tr.toP, k);
       obj.quaternion.slerpQuaternions(tr.fromQ, tr.toQ, k);
+      if (!this.busy) obj.scale.setScalar(tr.fromS + (tr.toS - tr.fromS) * k);
       if (tr.t >= tr.dur) this.trans = null;
     }
     if (this.busy || !inp.locked || g.pc?.active) return;

@@ -84,6 +84,7 @@ export class Game {
     for (const fn of Game.plugins) await fn(this);
     progress(0.9);
     this.bakeEnvironment();
+    this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
     this.player.pos.set(0.4, 0, 2.6);
     this.player.yaw = 0.55;
     this.player.pitch = -0.12;
@@ -308,6 +309,13 @@ export class Game {
     });
   }
 
+  /** One-time contextual tip (shown once per save). */
+  tip(key, jp, en) {
+    if (this.state.flags['tip_' + key]) return;
+    this.state.flags['tip_' + key] = true;
+    this.news(`💡 ${jp}`, en, 6500);
+  }
+
   news(jp, en = '', ms = 4200) {
     const el = document.createElement('div');
     el.className = 'item';
@@ -386,6 +394,19 @@ export class Game {
     if (T.chime <= 0) { T.chime = 600; audio.play('townChime', { ...out(40, 20, 60), vol: 1, ref: 30 }); }
   }
 
+  tipCheck() {
+    if (this.frame % 20) return;
+    const h = this.held.item;
+    if (this.machines.some((m) => m.state === 'ready' && !m.hasMotor)) this.tip('crank', 'ハンドルを長押しで回そう', 'Hold the left mouse button on the machine to turn the handle');
+    if (!h && [...this.items.list].some((e) => e.kind === 'capsule')) this.tip('pick', 'カプセルを拾おう', 'Pick up the capsule from the tray');
+    if (h?.kind === 'capsule') this.tip('twist', '長押しでひねって開けよう', 'Hold left (or right) click to twist the capsule open');
+    if (h?.kind === 'toy' && !this.held.busy) this.tip('toy', '棚に飾る？それとも売る？', 'Display it on the shelf (right wall) or sell it in the 買取BOX by the PC');
+    if (this.machines.some((m) => m.data.stock.length === 0)) this.tip('empty', '売り切れ！PCで補充を注文しよう', 'Sold out — order capsule refills on the PC (back-right corner)');
+    if ([...this.items.list].some((e) => e.kind === 'box')) this.tip('box', 'お届け物！シャッター前に箱が届いたよ', 'Carry the box to a machine and click to pour in the capsules');
+    if (this.state.money >= 2400 && this.machines.length < 2) this.tip('machine2', '2台目のマシンが買えるよ', 'You can afford a second machine — check the PC');
+    if (Object.keys(this.state.completed).length >= 1 && !this.state.museum.owned) this.tip('museum', '博物館の扉が開けられるかも…', 'Series complete! The PC sells a museum licence for the back warehouse');
+  }
+
   // ------------------------------------------------------------------ loop
   update(dt) {
     this.frame++;
@@ -397,6 +418,7 @@ export class Game {
       this.player.update(dt);
       m.dx = sx; m.dy = sy;
     } else this.player.update(dt);
+    this.camera.updateMatrixWorld();
     this.interaction.update(dt);
     this.held.update(dt);
     this.physics.step(dt);
@@ -410,6 +432,8 @@ export class Game {
     this.garage.update(dt, this.time);
     this.lighting.update(dt, this.time);
     for (const fn of Game.updaters) fn(this, dt);
+    this.tipCheck();
+    this.thumbs.tick(1);
     this.ambientTick(dt);
     audio.updateListener(this.camera);
     // money counter roll-up

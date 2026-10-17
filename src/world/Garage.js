@@ -74,7 +74,7 @@ export class Garage {
     ceil.position.set(0, H + 0.06, 0);
     this.add(ceil);
     // steel beams
-    const beamMat = pixMat('steelGreen', { roughness: 0.6, metalness: 0.4 });
+    const beamMat = pixMat('steel', { roughness: 0.55, metalness: 0.5, color: 0x8a8f94 });
     for (const z of [-3.4, -0.6, 2.2]) {
       const b = boxMesh(8, 0.22, 0.12, beamMat);
       b.position.set(0, H - 0.11, z);
@@ -150,7 +150,8 @@ export class Garage {
     const p = new Pix(32, 32, 5);
     p.fill(0xdde6e6);
     for (let i = 0; i < 32; i += 6) { p.rect(i, 0, 1, 32, 0xb8c4c4); p.rect(0, i, 32, 1, 0xb8c4c4); }
-    const glassMat = new THREE.MeshPhysicalMaterial({ map: p.texture(), transparent: true, opacity: 0.55, roughness: 0.35, transmission: 0, color: 0xfff0dd, emissive: 0xffa860, emissiveIntensity: 0.55, side: THREE.DoubleSide });
+    const gt = p.texture();
+    const glassMat = new THREE.MeshStandardMaterial({ map: gt, roughness: 0.35, color: 0xfff4e4, emissive: 0xffc890, emissiveMap: gt, emissiveIntensity: 1.35, side: THREE.DoubleSide });
     const glass = new THREE.Mesh(new THREE.PlaneGeometry(w.z1 - w.z0, w.y1 - w.y0), glassMat);
     glass.rotation.y = Math.PI / 2;
     glass.position.set(x - 0.01, cy, cz);
@@ -307,11 +308,12 @@ export class Garage {
     this.game.player.addObstacle(T.x - T.w / 2, T.x + T.w / 2, T.z - T.d / 2, T.z + T.d / 2);
     // cutting mat
     const p = new Pix(64, 40, 9);
-    p.fill(0x2f6a4a);
-    for (let x = 0; x < 64; x += 4) p.rect(x, 0, 1, 40, 0x3f7a5a);
-    for (let y = 0; y < 40; y += 4) p.rect(0, y, 64, 1, 0x3f7a5a);
-    for (let x = 0; x < 64; x += 16) p.rect(x, 0, 1, 40, 0x7fb89a);
-    for (let y = 0; y < 40; y += 16) p.rect(0, y, 64, 1, 0x7fb89a);
+    p.fill(0x24503a);
+    for (let x = 0; x < 64; x += 4) p.rect(x, 0, 1, 40, 0x2e5c44);
+    for (let y = 0; y < 40; y += 4) p.rect(0, y, 64, 1, 0x2e5c44);
+    for (let x = 0; x < 64; x += 16) p.rect(x, 0, 1, 40, 0x5a8a72);
+    for (let y = 0; y < 40; y += 16) p.rect(0, y, 64, 1, 0x5a8a72);
+    p.noise(0.05);
     const mat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.004, 0.5), new THREE.MeshStandardMaterial({ map: p.texture(), roughness: 0.75 }));
     mat.position.set(T.x - 0.25, T.h + 0.002, T.z + 0.05);
     mat.receiveShadow = true;
@@ -500,9 +502,50 @@ export class Garage {
     P('gamePoster', 0.5, 0.75, 64, 112, G.maxX - 0.012, 2.15, 2.15, -Math.PI / 2, 0.01);
     P('idol', 0.45, 0.65, 64, 96, G.maxX - 0.012, 2.25, -2.4, -Math.PI / 2, -0.02);
     // left wall (facing +x)
-    P('kaijuPoster', 0.5, 0.7, 64, 96, G.minX + 0.07, 2.3, -2.0, Math.PI / 2, 0.015);
-    P('matsuri', 0.45, 0.68, 64, 112, G.minX + 0.07, 2.3, -0.25, Math.PI / 2, -0.02);
+    P('kaijuPoster', 0.5, 0.7, 64, 96, G.minX + 0.07, 2.25, -2.75, Math.PI / 2, 0.015);
+    P('matsuri', 0.45, 0.68, 64, 112, G.minX + 0.07, 2.25, -3.75, Math.PI / 2, -0.02);
+    this.buildGachaSign(G.minX + 0.08, 2.4, -0.6);
     P('lostCat', 0.35, 0.5, 48, 96, G.minX + 0.07, 2.25, 3.3, Math.PI / 2, 0.03);
+  }
+
+  /** Lit "ガチャコーナー" light-box sign + a string of paper lanterns over the machine row. */
+  buildGachaSign(x, y, z) {
+    const p = new Pix(160, 40, 8);
+    p.fill(0xfff4e0);
+    p.rect(0, 0, 160, 4, 0xe5383b); p.rect(0, 36, 160, 4, 0xe5383b);
+    p.text('ガチャガチャ', 80, 6, { size: 20, color: 0xe5383b, outline: 0xffffff, align: 'center' });
+    p.text('★ GACHA CORNER ★', 80, 26, { size: 9, color: 0x2a2220, align: 'center' });
+    for (let i = 0; i < 6; i++) { const cx = 12 + i * 27.2; p.circle(Math.round(i % 2 ? 150 : 10), 20, 0, 0xffffff); void cx; }
+    const t = p.texture();
+    const box = boxMesh(0.1, 0.42, 1.65, colMat(0x2a2220, { roughness: 0.5 }));
+    box.position.set(x + 0.05, y, z);
+    this.add(box);
+    const face = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.4), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.45, roughness: 0.6 }));
+    face.rotation.y = Math.PI / 2;
+    face.position.set(x + 0.105, y, z);
+    this.add(face);
+    // paper lanterns strung along the wall
+    const lanternMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb070).multiplyScalar(1.5) });
+    const capMat = colMat(0x2a2220);
+    const pts = [];
+    for (let i = 0; i <= 8; i++) {
+      const zz = -3.6 + i * 0.75;
+      const yy = 2.95 - Math.sin((i / 8) * Math.PI) * 0.22 - (i % 2) * 0.03;
+      pts.push(new THREE.Vector3(x + 0.35, yy, zz));
+    }
+    const cord = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.004, 4), capMat);
+    this.add(cord);
+    for (let i = 1; i < 8; i++) {
+      const pt = new THREE.CatmullRomCurve3(pts).getPoint(i / 8);
+      const l = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), lanternMat);
+      l.scale.y = 1.25;
+      l.position.copy(pt).add(new THREE.Vector3(0, -0.12, 0));
+      this.add(l);
+      for (const dy of [0.085, -0.085]) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.02, 10), capMat); c.position.copy(l.position).add(new THREE.Vector3(0, dy, 0)); this.add(c); }
+    }
+    const pl = new THREE.PointLight(0xffa860, 1.6, 4, 1.6);
+    pl.position.set(x + 0.6, 2.4, -0.6);
+    this.game.scene.add(pl);
   }
 
   buildLights() {

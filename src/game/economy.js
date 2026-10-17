@@ -10,7 +10,7 @@ export function itemValue(key, finish = 'normal') {
   const it = getItem(key);
   if (!it) return 0;
   const s = SERIES_BY_ID[it.series];
-  const base = s.price * 0.25 * RARITIES[it.rarity].value * (FINISHES[finish]?.mult || 1);
+  const base = s.price * 0.3 * RARITIES[it.rarity].value * (FINISHES[finish]?.mult || 1);
   return Math.max(5, Math.round(base / 5) * 5);
 }
 
@@ -21,7 +21,7 @@ export function singlePrice(key, finish = 'normal') {
 
 /** Cost per capsule when refilling a machine with a series. */
 export function capsuleCost(seriesId) {
-  return Math.round(SERIES_BY_ID[seriesId].price * 0.32);
+  return Math.round(SERIES_BY_ID[seriesId].price * 0.3);
 }
 
 /** Series "distribution licence" (lets you order refills). The first series is free. */

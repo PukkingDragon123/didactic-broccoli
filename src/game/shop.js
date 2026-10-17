@@ -108,7 +108,7 @@ export function buyShelf(g) {
   const n = g.state.shelves.length;
   if (n >= SHELF_SLOTS.length) return fail('壁がいっぱい · No wall space');
   if (!g.spend(SHELF_PRICES[n])) return fail('お金が足りません · Not enough money');
-  const data = { slot: n, items: Array(40).fill(null) };
+  const data = { slot: n, items: Array(48).fill(null) };
   g.state.shelves.push(data);
   const sh = new GarageShelf(g, data);
   g.shelves.push(sh);

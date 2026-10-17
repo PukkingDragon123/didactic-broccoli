@@ -33,6 +33,7 @@ export class DisplaySlots {
   }
 
   makeSlot(d, i) {
+    const ghostRef = () => (this.ghost.visible ? this.ghost : new THREE.Group());
     const [w, h, dd] = d.size || [0.12, 0.13, 0.12];
     const hit = new THREE.Mesh(new THREE.BoxGeometry(w, h, dd), hitMat);
     hit.position.copy(d.pos).add(new THREE.Vector3(0, h / 2, 0));
@@ -42,7 +43,7 @@ export class DisplaySlots {
     this.game.interaction.add(hit, {
       reach: 2.6,
       noHighlight: false,
-      get highlight() { return slot.mesh || hit; },
+      get highlight() { return slot.mesh || ghostRef(); },
       hint: (held) => this.hint(slot, held),
       use: (held) => this.use(slot, held),
     });

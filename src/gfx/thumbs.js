@@ -29,10 +29,34 @@ export class Thumbs {
     const finish = opts.finish || 'normal';
     const ck = `${key}|${finish}|${size}|${opts.silhouette ? 1 : 0}`;
     if (this.cache.has(ck)) return this.cache.get(ck);
-    const mesh = makeItemMesh(key, finish);
-    const canvas = this.renderObject(mesh, size, opts);
+    let canvas;
+    if (opts.silhouette) {
+      // derived from the coloured render: no second GPU pass
+      const base = this.item(key, { size, finish });
+      canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(base, 0, 0);
+      ctx.globalCompositeOperation = 'source-in';
+      ctx.fillStyle = '#3a2e36';
+      ctx.fillRect(0, 0, size, size);
+    } else {
+      const mesh = makeItemMesh(key, finish);
+      canvas = this.renderObject(mesh, size, opts);
+    }
     this.cache.set(ck, canvas);
     return canvas;
+  }
+
+  /** Render a few queued thumbnails per frame so shop pages never hitch. */
+  prewarm(keys, sizes = [32, 48]) {
+    this.queue = this.queue || [];
+    for (const s of sizes) for (const k of keys) this.queue.push([k, s]);
+  }
+
+  tick(n = 2) {
+    if (!this.queue?.length) return;
+    for (let i = 0; i < n && this.queue.length; i++) { const [k, s] = this.queue.shift(); this.item(k, { size: s }); }
   }
 
   /** Render any Object3D framed from a 3/4 front view into a transparent canvas. */

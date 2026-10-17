@@ -4,7 +4,7 @@ import { pixMat, boxMesh } from '../gfx/geo.js';
 import { SHELF_SLOTS } from '../world/Garage.js';
 import { DisplaySlots } from './Display.js';
 
-export const SHELF = { w: 1.7, h: 1.32, d: 0.17, boards: 5, perBoard: 8, y0: 0.72 };
+export const SHELF = { w: 1.3, h: 1.08, d: 0.15, boards: 6, perBoard: 8, y0: 0.8 };
 
 export class GarageShelf {
   constructor(game, data) {
@@ -22,7 +22,7 @@ export class GarageShelf {
     for (let b = 0; b < SHELF.boards; b++) {
       for (let i = 0; i < SHELF.perBoard; i++) {
         const x = -SHELF.w / 2 + (SHELF.w / SHELF.perBoard) * (i + 0.5);
-        defs.push({ pos: new THREE.Vector3(x, b * gapY + 0.022, SHELF.d / 2 - 0.02), rotY: 0, size: [0.2, gapY - 0.03, 0.15], plaqueZ: 0.055 });
+        defs.push({ pos: new THREE.Vector3(x, b * gapY + 0.016, SHELF.d / 2 - 0.015), rotY: 0, size: [SHELF.w / SHELF.perBoard, gapY - 0.03, 0.15], plaqueZ: 0.05 });
       }
     }
     if (data.items.length < defs.length) data.items.push(...Array(defs.length - data.items.length).fill(null));
@@ -33,7 +33,7 @@ export class GarageShelf {
     const wood = pixMat('woodLight', { roughness: 0.6 });
     const dark = pixMat('woodDark', { roughness: 0.7 });
     const { w, h, d, boards } = SHELF;
-    const back = boxMesh(w + 0.04, h + 0.06, 0.02, dark);
+    const back = boxMesh(w + 0.04, h + 0.06, 0.02, pixMat('felt', { roughness: 1, color: 0x8a6a9a }));
     back.position.set(0, h / 2 - 0.01, 0.01);
     this.root.add(back);
     for (const sx of [-1, 1]) {
@@ -42,10 +42,10 @@ export class GarageShelf {
       this.root.add(side);
     }
     const gapY = h / boards;
-    const ledMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffd8a0).multiplyScalar(1.6) });
+    const ledMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffc890).multiplyScalar(0.95) });
     for (let b = 0; b <= boards; b++) {
-      const board = boxMesh(w, 0.022, d, wood);
-      board.position.set(0, b * gapY + 0.011, d / 2);
+      const board = boxMesh(w, 0.016, d, wood);
+      board.position.set(0, b * gapY + 0.008, d / 2);
       this.root.add(board);
       // warm LED strip under each board
       if (b > 0) {
@@ -55,7 +55,7 @@ export class GarageShelf {
       }
     }
     // soft light spill on the shelf
-    const pl = new THREE.PointLight(0xffd8a0, 0.9, 1.6, 1.8);
+    const pl = new THREE.PointLight(0xffd8a0, 0.7, 1.4, 1.8);
     pl.position.set(0, h * 0.5, d + 0.18);
     this.root.add(pl);
   }

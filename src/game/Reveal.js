@@ -222,21 +222,21 @@ export class Reveal {
     } else if (r === 'uncommon') {
       audio.play('revealUncommon');
       E.sparks({ pos: wp(), count: 34, colors: [0x9cff9c, 0xffffff], speed: 0.65, size: 0.009, life: 0.8, star: 0.6 });
-      E.ring({ pos: wp(), face: camQ, size: 0.35, color: 0x8cff9a, dur: 0.6 });
+      E.ring({ pos: wp(), face: camQ, size: 0.12, color: 0x8cff9a, dur: 0.6 });
     } else if (r === 'rare') {
       audio.play('revealRare');
       E.sparks({ pos: wp(), count: 80, colors: [0x6cc8ff, 0xffffff, 0xb8e8ff], speed: 0.9, size: 0.01, life: 1.1, star: 0.8 });
-      E.ring({ pos: wp(), face: camQ, size: 0.5, color: 0x6cc8ff, dur: 0.7 });
+      E.ring({ pos: wp(), face: camQ, size: 0.18, color: 0x6cc8ff, dur: 0.7 });
       E.flash({ pos: wp(), color: 0x80c8ff, intensity: 3, distance: 2, dur: 0.6 });
-      E.beamBurst({ pos: wp(), face: camQ, count: 6, colors: [0x9fd9ff], length: 0.5, width: 0.03, dur: 1.4, strength: 0.5, follow: holder });
+      E.beamBurst({ pos: wp(), face: camQ, count: 6, colors: [0x9fd9ff], length: 0.14, width: 0.009, dur: 1.4, strength: 0.6, follow: holder, back: 0.06 });
       g.player.fovKick = 2;
     } else if (r === 'ultra') {
       audio.play('revealUltra');
-      E.beamBurst({ pos: wp(), face: camQ, count: 10, colors: [0xff8af0, 0xffd23f, 0xffffff], length: 0.8, width: 0.045, dur: 2.4, strength: 0.75, follow: holder });
+      E.beamBurst({ pos: wp(), face: camQ, count: 10, colors: [0xff8af0, 0xffd23f, 0xffffff], length: 0.2, width: 0.012, dur: 2.4, strength: 0.85, follow: holder, back: 0.07 });
       at(0.45, () => {
         E.sparks({ pos: wp(), count: 160, colors: [0xff8af0, 0xffd23f, 0xffffff], speed: 1.2, size: 0.012, life: 1.4, star: 0.9 });
         E.confetti({ pos: wp().add(new THREE.Vector3(0, 0.05, 0)), count: 90, speed: 2.4 });
-        E.ring({ pos: wp(), face: camQ, size: 0.8, color: 0xff8af0, dur: 0.8 });
+        E.ring({ pos: wp(), face: camQ, size: 0.26, color: 0xff8af0, dur: 0.8 });
         E.flash({ pos: wp(), color: 0xffb0f0, intensity: 5, distance: 3, dur: 0.9 });
         g.player.shake = 0.35;
         g.player.fovKick = 4;
@@ -248,9 +248,9 @@ export class Reveal {
       const flash = g.renderer.grade.uniforms.uFlash.value;
       flash.setRGB(1.2, 1.0, 0.6);
       g.tweens.add({ dur: 0.9, update: (k) => flash.setRGB(1.2 * (1 - k), 1.0 * (1 - k), 0.6 * (1 - k)) });
-      E.beamBurst({ pos: wp(), face: camQ, count: 16, colors: [0xffd23f, 0xffffff, 0xffe9a0], length: 1.4, width: 0.06, dur: 4.2, strength: 1, spin: 0.4, follow: holder });
+      E.beamBurst({ pos: wp(), face: camQ, count: 16, colors: [0xffd23f, 0xffffff, 0xffe9a0], length: 0.32, width: 0.016, dur: 4.2, strength: 1, spin: 0.4, follow: holder, back: 0.09 });
       E.sparks({ pos: wp(), count: 320, colors: [0xffd23f, 0xffffff, 0xff8af0, 0x9fd9ff], speed: 1.6, size: 0.014, life: 1.8, star: 0.9 });
-      for (let i = 0; i < 3; i++) at(i * 0.25, () => E.ring({ pos: wp(), face: camQ, size: 0.8 + i * 0.5, color: 0xffd23f, dur: 0.9 }));
+      for (let i = 0; i < 3; i++) at(i * 0.25, () => E.ring({ pos: wp(), face: camQ, size: 0.25 + i * 0.18, color: 0xffd23f, dur: 0.9 }));
       E.flash({ pos: wp(), color: 0xffe0a0, intensity: 10, distance: 5, dur: 1.6 });
       g.player.shake = 0.9;
       g.player.fovKick = 9;
@@ -290,10 +290,10 @@ export class Reveal {
         } else if (f === 'aurora') {
           audio.play('finishAurora');
           E.sparks({ pos: p, count: 160, colors: [0xff8af0, 0x8af0ff, 0xf0ff8a, 0xb08aff], speed: 1, size: 0.012, star: 0.8, life: 1.6 });
-          E.beamBurst({ pos: p, face: camQ, count: 12, colors: [0xff8af0, 0x8af0ff, 0xf0ff8a, 0xb08aff], length: 0.9, width: 0.04, dur: 2.2, follow: holder });
+          E.beamBurst({ pos: p, face: camQ, count: 12, colors: [0xff8af0, 0x8af0ff, 0xf0ff8a, 0xb08aff], length: 0.22, width: 0.011, dur: 2.2, follow: holder, back: 0.07 });
         } else if (f === 'diamond') {
           audio.play('finishDiamond');
-          E.beamBurst({ pos: p, face: camQ, count: 18, colors: [0xff6f6f, 0xffd23f, 0x6fff8f, 0x6fd8ff, 0xb06fff], length: 1.3, width: 0.03, dur: 3, strength: 0.9, follow: holder });
+          E.beamBurst({ pos: p, face: camQ, count: 18, colors: [0xff6f6f, 0xffd23f, 0x6fff8f, 0x6fd8ff, 0xb06fff], length: 0.3, width: 0.01, dur: 3, strength: 0.95, follow: holder, back: 0.08 });
           E.sparks({ pos: p, count: 220, colors: [0xffffff, 0xd8f8ff], speed: 1.4, size: 0.013, star: 1, life: 2 });
           E.flash({ pos: p, color: 0xe0f8ff, intensity: 8, distance: 3, dur: 1.4 });
           g.player.shake = Math.max(g.player.shake, 0.4);

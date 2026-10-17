@@ -502,7 +502,7 @@ export class Site {
     yy += this.heading(x, yy, w, 'コレクション棚', 'SHELVES', COL.green);
     const n = s.shelves.length;
     this.panel(x, yy, w, 44);
-    ui.text('壁掛けコレクション棚（40体）', x + 8, yy + 6, { size: 13 });
+    ui.text('壁掛けコレクション棚（48体）', x + 8, yy + 6, { size: 13 });
     ui.text(`設置済み ${n}/${SHELF_SLOTS.length}　LEDライト付き`, x + 8, yy + 24, { size: 9, color: COL.soft });
     if (n < SHELF_SLOTS.length) {
       ui.text(yen(SHELF_PRICES[n]), x + w - 110, yy + 14, { size: 14, color: COL.red, bold: true, align: 'right' });

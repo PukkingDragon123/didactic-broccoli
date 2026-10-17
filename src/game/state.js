@@ -17,7 +17,7 @@ export function defaultState() {
     opener: 0,
     charms: [],
     discovered: {}, // key -> { n, f: {finish: count} }
-    shelves: [{ slot: 0, items: Array(40).fill(null) }],
+    shelves: [{ slot: 0, items: Array(48).fill(null) }],
     storage: {}, // "key|finish" -> count
     completed: {}, // seriesId -> true
     deliveries: [], // pending boxes: {id, type, ...}
