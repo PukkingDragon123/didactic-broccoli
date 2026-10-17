@@ -1,6 +1,7 @@
 // Debug / automated-test helpers (enabled with ?debug or ?autotest).
 import * as THREE from 'three';
 import { rollCapsule } from './game/economy.js';
+import { ITEMS } from './data/series/index.js';
 
 export function installDebug(game, params) {
   if (params.get('q')) game.renderer.setQuality(params.get('q'));
@@ -37,11 +38,8 @@ export function installDebug(game, params) {
       const M = game.museum;
       if (!M.data.owned) M.buyMuseum();
       if (!fill) return;
-      const keys = Object.keys((window.__items ||= {}));
-      void keys;
-      const all = [];
-      import('./data/series/index.js').then(({ ITEMS }) => {
-        ITEMS.forEach((it) => all.push(it.key));
+      const all = ITEMS.map((it) => it.key);
+      {
         const place = (kind, id, x, z, rot = 0) => {
           const data = { uid: 'dbg' + Math.random().toString(36).slice(2), kind, id, x, z, rot, items: null };
           M.data.placed.push(data);
@@ -66,7 +64,7 @@ export function installDebug(game, params) {
         M.rebuildSurfaces();
         M.recompute();
         for (let i = 0; i < 10; i++) M.visitors.spawn();
-      });
+      }
     },
     lights(on) { game.garage.setLights(on); },
     state() { return JSON.parse(JSON.stringify({ money: game.state.money, pulls: game.state.pulls, held: game.held.item?.kind, machines: game.machines.map((m) => [m.state, m.data.stock.length]) })); },

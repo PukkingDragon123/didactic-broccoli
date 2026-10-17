@@ -21,13 +21,14 @@ function hash3(x, y, z) {
   return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
 }
 
-function jitterColor(hex, amt, x, y, z) {
-  if (amt <= 0) return hex;
-  const n = (hash3(x, y, z) - 0.5) * 2 * amt;
+function jitterColor(hex, amt, x, y, z, block = 1, q = 0) {
+  if (amt <= 0 && !q) return hex;
+  const n = amt > 0 ? (hash3(Math.floor(x / block), Math.floor(y / block), Math.floor(z / block)) - 0.5) * 2 * amt : 0;
   let r = (hex >> 16) & 255, g = (hex >> 8) & 255, b = hex & 255;
   r = Math.max(0, Math.min(255, Math.round(r * (1 + n))));
   g = Math.max(0, Math.min(255, Math.round(g * (1 + n))));
   b = Math.max(0, Math.min(255, Math.round(b * (1 + n * 1.1))));
+  if (q > 1) { r = Math.min(255, Math.round(r / q) * q); g = Math.min(255, Math.round(g / q) * q); b = Math.min(255, Math.round(b / q) * q); }
   return (r << 16) | (g << 8) | b;
 }
 
@@ -42,11 +43,13 @@ export function meshVoxels(model, opts = {}) {
   const grid = new Float64Array(W * H * D); // 0 = empty, else colour+1 (jittered) * 8 + mat
   const idx = (x, y, z) => x + W * (y + H * z);
   const jit = model.jitter ?? 0;
+  const jb = opts.jitterBlock ?? model.jitterBlock ?? 1;
+  const jq = opts.quantize ?? model.quantize ?? 0;
 
   model.forEach((x, y, z, v) => {
     const gx = x - b.minX + 1, gy = y - b.minY + 1, gz = z - b.minZ + 1;
     const mat = decMat(v);
-    const col = mat === MAT.GLOW || mat === MAT.GLASS ? decColor(v) : jitterColor(decColor(v), jit, x, y, z);
+    const col = mat === MAT.GLOW || mat === MAT.GLASS ? decColor(v) : jitterColor(decColor(v), jit, x, y, z, jb, jq);
     grid[idx(gx, gy, gz)] = (col + 1) * 8 + mat;
   });
 

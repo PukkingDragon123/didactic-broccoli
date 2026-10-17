@@ -58,10 +58,10 @@ const GradeShader = {
 };
 
 export const QUALITY = {
-  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap },
-  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap },
-  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap },
+  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3 },
+  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2 },
+  high: { pixelRatio: 1.0, shadows: 2048, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1 },
+  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1 },
 };
 
 export class Renderer {
@@ -153,6 +153,14 @@ export class Renderer {
   }
 
   render(dt, time) {
+    // shadow maps are refreshed at a quality-dependent rate (most casters are static)
+    this.frameN = (this.frameN || 0) + 1;
+    const r = this.renderer;
+    r.shadowMap.autoUpdate = false;
+    let need = this.frameN % (this.quality.shadowEvery || 1) === 0;
+    // a light that just started casting (or was resized) has no map yet: render it now
+    for (const l of this.shadowLights || []) if (l.castShadow && !l.shadow.map) need = true;
+    if (need) r.shadowMap.needsUpdate = true;
     this.grade.uniforms.uTime.value = time;
     this.composer.render(dt);
   }

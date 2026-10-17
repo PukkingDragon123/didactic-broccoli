@@ -23,7 +23,8 @@ export function propGeometry(id) {
     try {
       const v = new VoxelModel();
       def.build(v);
-      geo = meshVoxels(v, { voxelSize: def.voxel || 0.02 });
+      // props are large: jitter in 2-voxel blocks + light colour quantisation so flat areas merge into big quads
+      geo = meshVoxels(v, { voxelSize: def.voxel || 0.02, jitterBlock: 2, quantize: 6 });
     } catch (e) {
       console.warn('prop build failed', id, e);
     }

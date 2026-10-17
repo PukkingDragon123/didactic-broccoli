@@ -245,17 +245,17 @@ export class Garage {
     bw.position.set(0, 0.75, G.maxZ + 9.9);
     this.add(bw);
     // house facades & skyline
-    this.prop('house_front', -4.5, 0, G.maxZ + 11.2, Math.PI, { fallbackSize: [6, 6.5, 1], fallbackColor: 0xcfc6b2, receiveShadow: false });
-    this.prop('house_front', 4.2, 0, G.maxZ + 11.4, Math.PI, { fallbackSize: [6, 6.5, 1], fallbackColor: 0xc6bca8, receiveShadow: false, scale: 0.95 });
-    this.prop('vending', -0.6, 0, G.maxZ + 9.35, Math.PI, { fallbackSize: [1, 1.85, 0.75], fallbackColor: 0xd84040 });
-    this.prop('vending', 0.5, 0, G.maxZ + 9.35, Math.PI, { fallbackSize: [1, 1.85, 0.75], fallbackColor: 0x4070d8 });
-    this.prop('utility_pole', 2.6, 0, G.maxZ + 9.4, 0, { fallbackSize: [0.35, 8, 0.35], fallbackColor: 0x9a968e });
-    this.prop('street_light', -2.4, 0, G.maxZ + 9.4, Math.PI, { fallbackSize: [0.3, 4.5, 0.3], fallbackColor: 0x777777 });
-    this.prop('post_box', 1.5, 0, G.maxZ + 9.2, Math.PI, { fallbackSize: [0.45, 1.3, 0.4], fallbackColor: 0xd82020 });
-    this.prop('mirror_pole', -5.5, 0, G.maxZ + 1.6, Math.PI * 0.85, { fallbackSize: [0.6, 3.2, 0.3] });
-    this.prop('potted_row', 6.0, 0, G.maxZ + 1.0, Math.PI, { fallbackSize: [1.2, 1, 0.4], fallbackColor: 0x6a8a4a });
-    this.prop('hedge', -7.5, 0, G.maxZ + 1.0, 0, { fallbackSize: [2, 1, 0.6], fallbackColor: 0x4a7a3a });
-    this.prop('bicycle_parking', 5.2, 0, G.maxZ + 9.4, Math.PI, { fallbackSize: [0.7, 2.6, 0.1] });
+    this.prop('house_front', -4.5, 0, G.maxZ + 11.2, Math.PI, { castShadow: false, fallbackSize: [6, 6.5, 1], fallbackColor: 0xcfc6b2, receiveShadow: false });
+    this.prop('house_front', 4.2, 0, G.maxZ + 11.4, Math.PI, { castShadow: false, fallbackSize: [6, 6.5, 1], fallbackColor: 0xc6bca8, receiveShadow: false, scale: 0.95 });
+    this.prop('vending', -0.6, 0, G.maxZ + 9.35, Math.PI, { castShadow: false, fallbackSize: [1, 1.85, 0.75], fallbackColor: 0xd84040 });
+    this.prop('vending', 0.5, 0, G.maxZ + 9.35, Math.PI, { castShadow: false, fallbackSize: [1, 1.85, 0.75], fallbackColor: 0x4070d8 });
+    this.prop('utility_pole', 2.6, 0, G.maxZ + 9.4, 0, { castShadow: false, fallbackSize: [0.35, 8, 0.35], fallbackColor: 0x9a968e });
+    this.prop('street_light', -2.4, 0, G.maxZ + 9.4, Math.PI, { castShadow: false, fallbackSize: [0.3, 4.5, 0.3], fallbackColor: 0x777777 });
+    this.prop('post_box', 1.5, 0, G.maxZ + 9.2, Math.PI, { castShadow: false, fallbackSize: [0.45, 1.3, 0.4], fallbackColor: 0xd82020 });
+    this.prop('mirror_pole', -5.5, 0, G.maxZ + 1.6, Math.PI * 0.85, { castShadow: false, fallbackSize: [0.6, 3.2, 0.3] });
+    this.prop('potted_row', 6.0, 0, G.maxZ + 1.0, Math.PI, { castShadow: false, fallbackSize: [1.2, 1, 0.4], fallbackColor: 0x6a8a4a });
+    this.prop('hedge', -7.5, 0, G.maxZ + 1.0, 0, { castShadow: false, fallbackSize: [2, 1, 0.6], fallbackColor: 0x4a7a3a });
+    this.prop('bicycle_parking', 5.2, 0, G.maxZ + 9.4, Math.PI, { castShadow: false, fallbackSize: [0.7, 2.6, 0.1] });
     // neighbouring walls left/right of the garage frontage
     for (const sx of [-1, 1]) {
       const nw = boxMesh(12, 3.6, 0.3, pixMat('houseWall', { roughness: 0.9 }));
