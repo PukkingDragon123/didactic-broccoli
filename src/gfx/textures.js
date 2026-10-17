@@ -270,6 +270,150 @@ const RECIPES = {
     p.noise(0.1);
     return p;
   },
+  // ------------------------------------------------------------ museum floors
+  grassFloor() {
+    const p = new Pix(32, 32, 71);
+    p.fill(0x5fae45);
+    p.noise(0.08);
+    for (let i = 0; i < 90; i++) { const x = Math.floor(p.r() * 32), y = Math.floor(p.r() * 32); p.px(x, y, 0x7fce5a); p.px(x, y + 1, 0x4a9a38); }
+    p.speckle(0.006, [0xffffff, 0xffe066, 0xff9fd0]);
+    return p;
+  },
+  gravel() {
+    const p = new Pix(64, 64, 72);
+    p.fill(0xd8d2c4);
+    p.noise(0.06);
+    p.speckle(0.2, [0xc4bdae, 0xe8e2d6, 0xb8b0a0]);
+    for (let y = 2; y < 64; y += 5) for (let x = 0; x < 64; x++) { const yy = y + Math.round(Math.sin(x / 6) * 1.2); p.px(x, yy, 0xb8b0a0); p.px(x, yy + 1, 0xece6da); }
+    return p;
+  },
+  marble() {
+    const p = new Pix(64, 64, 73);
+    p.fill(0xf2efe8);
+    p.noise(0.025);
+    let x = 5, y = 0;
+    for (let i = 0; i < 90; i++) { p.px(x, y, 0xb8b4ac); p.px(x + 1, y, 0xd0ccc4); y++; x += Math.round((p.r() - 0.4) * 2); if (y > 63) { y = 0; x = Math.floor(p.r() * 64); } }
+    for (let i = 0; i < 40; i++) { const a = Math.floor(p.r() * 64), b = Math.floor(p.r() * 64); p.line(a, b, a + 6, b + 3, 0xd8d4cc); }
+    p.rect(0, 0, 64, 1, 0xc8c4bc); p.rect(0, 0, 1, 64, 0xc8c4bc); p.rect(0, 32, 64, 1, 0xc8c4bc); p.rect(32, 0, 1, 64, 0xc8c4bc);
+    return p;
+  },
+  carpet() {
+    const p = new Pix(32, 32, 74);
+    p.fill(0x9a1f2a);
+    p.noise(0.08);
+    for (let y = 0; y < 32; y += 8) for (let x = 0; x < 32; x += 8) { p.px(x + 4, y + 4, 0xd4a83a); p.px(x + 3, y + 4, 0xb8862a); p.px(x + 5, y + 4, 0xb8862a); p.px(x + 4, y + 3, 0xb8862a); p.px(x + 4, y + 5, 0xb8862a); }
+    return p;
+  },
+  candyFloor() {
+    const p = new Pix(32, 32, 75);
+    for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) p.px(x, y, ((x >> 3) + (y >> 3)) % 2 ? 0xffc8dc : 0xfff4f8);
+    p.speckle(0.03, [0xff6f91, 0x5cc4ff, 0xffd23f, 0x58c06c]);
+    return p;
+  },
+  waterFloor() {
+    const p = new Pix(32, 32, 76);
+    p.fill(0x3a9ad9);
+    for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) if (Math.sin(x / 3 + Math.sin(y / 4) * 2) > 0.85) p.px(x, y, 0x8fd4ff);
+    p.rect(0, 0, 32, 1, 0x2a7ab9); p.rect(0, 0, 1, 32, 0x2a7ab9);
+    return p;
+  },
+  spaceFloor() {
+    const p = new Pix(64, 64, 77);
+    p.fill(0x0f1430);
+    p.noise(0.15);
+    p.blotch(20, 40, 14, 0x3a1a5a, 0.4);
+    p.blotch(48, 14, 10, 0x1a3a6a, 0.4);
+    p.speckle(0.02, [0xffffff, 0xbfe0ff, 0xffe8a0]);
+    for (const [x, y] of [[10, 10], [50, 44], [30, 58]]) { p.px(x, y, 0xffffff); p.px(x - 1, y, 0x9fb8ff); p.px(x + 1, y, 0x9fb8ff); p.px(x, y - 1, 0x9fb8ff); p.px(x, y + 1, 0x9fb8ff); }
+    return p;
+  },
+  nightFloor() { const p = planks(64, 64, 8, 0x3a2a4a, { seed: 78 }); p.speckle(0.004, [0x9fe8a0]); return p; },
+  // ------------------------------------------------------------ museum walls
+  woodPanel() {
+    const p = new Pix(64, 64, 81);
+    for (let x = 0; x < 64; x += 8) {
+      const c = shadeC(0xa8784a, 0.9 + hash2(x, 1) * 0.2);
+      p.rect(x, 0, 8, 64, c);
+      for (let y = 0; y < 64; y += 2) if (p.r() < 0.5) p.px(x + 2 + Math.floor(p.r() * 4), y, shadeC(c, 0.85));
+      p.rect(x, 0, 1, 64, shadeC(c, 0.6));
+    }
+    p.noise(0.03);
+    return p;
+  },
+  shoji() {
+    const p = new Pix(64, 64, 82);
+    p.fill(0xf6f0e0);
+    p.noise(0.02);
+    for (let x = 0; x < 64; x += 16) p.rect(x, 0, 2, 64, 0x9a6a3f);
+    for (let y = 0; y < 64; y += 21) p.rect(0, y, 64, 2, 0x9a6a3f);
+    return p;
+  },
+  bambooWall() {
+    const p = new Pix(64, 64, 83);
+    p.fill(0x6a8a3a);
+    for (let x = 0; x < 64; x += 6) {
+      p.rect(x, 0, 5, 64, 0x9ab85a); p.rect(x, 0, 1, 64, 0xbcd87a); p.rect(x + 4, 0, 1, 64, 0x6a8a3a);
+      const off = Math.floor(hash2(x, 2) * 20);
+      for (let y = off; y < 64; y += 21) { p.rect(x, y, 5, 1, 0x5a7a2a); p.rect(x, y + 1, 5, 1, 0xc8e08a); }
+    }
+    return p;
+  },
+  sakuraWall() {
+    const p = new Pix(64, 64, 84);
+    p.fill(0xffeef2);
+    for (let i = 0; i < 18; i++) {
+      const x = Math.floor(hash2(i, 1) * 64), y = Math.floor(hash2(i, 2) * 64);
+      p.px(x, y, 0xffc2d4); p.px(x - 1, y, 0xff9fbf); p.px(x + 1, y, 0xff9fbf); p.px(x, y - 1, 0xff9fbf); p.px(x, y + 1, 0xff9fbf); p.px(x, y, 0xffe066);
+    }
+    p.noise(0.02);
+    return p;
+  },
+  candyStripe() {
+    const p = new Pix(32, 32, 85);
+    const cols = [0xffc8dc, 0xfff4f8, 0xc8e8ff, 0xfff4f8];
+    for (let x = 0; x < 32; x++) p.rect(x, 0, 1, 32, cols[Math.floor(x / 4) % 4]);
+    p.speckle(0.01, [0xffffff]);
+    return p;
+  },
+  seaWall() {
+    const p = new Pix(64, 64, 86);
+    p.gradient(0, 0, 64, 64, 0x6fc8f0, 0x1a5a9a);
+    const fish = (x, y, c) => { p.rect(x, y, 4, 2, c); p.px(x + 4, y - 1, c); p.px(x + 4, y + 2, c); p.px(x + 1, y, 0x111111); };
+    fish(8, 20, 0xff8c2e); fish(40, 34, 0xffd23f); fish(22, 48, 0xff6f91); fish(50, 12, 0xffffff);
+    for (let i = 0; i < 12; i++) p.circle(Math.floor(hash2(i, 3) * 64), Math.floor(hash2(i, 4) * 64), 1, 0xbfe8ff, 160);
+    for (let x = 0; x < 64; x += 5) { const h = 6 + Math.floor(hash2(x, 5) * 10); p.rect(x, 64 - h, 2, h, 0x2a8a4a); }
+    return p;
+  },
+  cosmosWall() {
+    const p = new Pix(64, 64, 87);
+    p.fill(0x0c0f26);
+    p.blotch(16, 20, 16, 0x3a1a6a, 0.45);
+    p.blotch(48, 44, 14, 0x1a3a7a, 0.45);
+    p.speckle(0.02, [0xffffff, 0xbfe0ff]);
+    p.circle(44, 18, 6, 0xe8a85a); p.line(34, 20, 54, 16, 0xf8d8a0);
+    p.circle(14, 50, 3, 0x7ad8ff);
+    return p;
+  },
+  neonWall() {
+    const p = new Pix(64, 64, 88);
+    p.gradient(0, 0, 64, 40, 0x1a1040, 0x5a2a6a);
+    p.rect(0, 40, 64, 24, 0x140c24);
+    for (let x = 0; x < 64; x += 9) {
+      const h = 14 + Math.floor(hash2(x, 6) * 22);
+      p.rect(x, 64 - h, 8, h, 0x22183a);
+      for (let wy = 64 - h + 2; wy < 62; wy += 3) for (let wx = x + 1; wx < x + 7; wx += 2) if (hash2(wx, wy) < 0.45) p.px(wx, wy, [0xffd08a, 0xff6fd0, 0x6fd8ff][Math.floor(hash2(wx, wy + 1) * 3)]);
+    }
+    p.speckle(0.006, [0xffffff], 255, 0, 0, 64, 30);
+    return p;
+  },
+  ghostWall() {
+    const p = new Pix(64, 64, 89);
+    p.fill(0x3a2a52);
+    p.noise(0.05);
+    const ghost = (x, y) => { p.rect(x, y, 6, 6, 0x6a5a8a); p.rect(x + 1, y - 1, 4, 1, 0x6a5a8a); p.px(x + 1, y + 6, 0x6a5a8a); p.px(x + 4, y + 6, 0x6a5a8a); p.px(x + 2, y + 2, 0x221a32); p.px(x + 4, y + 2, 0x221a32); };
+    ghost(10, 12); ghost(42, 30); ghost(20, 46); ghost(52, 6);
+    return p;
+  },
   rope() {
     const p = new Pix(8, 16, 65);
     for (let y = 0; y < 16; y++) for (let x = 0; x < 8; x++) p.px(x, y, ((x + y) % 4 < 2) ? 0xd9c08a : 0xb89a62);

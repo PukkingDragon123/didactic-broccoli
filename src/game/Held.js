@@ -120,7 +120,8 @@ export class Held {
     return null;
   }
 
-  primary() { /* left click with no target — handled in update (twist) */ }
+  /** left click with nothing targeted: boxes (furniture, roller) act on the world */
+  primary() { const it = this.item; if (it?.kind === 'box' && !this.busy) this.game.placement.primary?.(it); }
 
   update(dt) {
     const g = this.game;

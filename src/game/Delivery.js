@@ -58,6 +58,23 @@ export function makeBoxMesh(kind, info, size = [0.36, 0.24, 0.28]) {
   return group;
 }
 
+/** Paint roller (museum remodel tool). */
+export function makeRoller() {
+  const g = new THREE.Group();
+  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.3, 10), new THREE.MeshStandardMaterial({ color: 0xffd23f, roughness: 0.4 }));
+  handle.position.set(0, 0.15, 0);
+  g.add(handle);
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.008, 0.12), new THREE.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 0.9, roughness: 0.3 }));
+  arm.position.set(0, 0.3, 0.06);
+  g.add(arm);
+  const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.2, 16), new THREE.MeshStandardMaterial({ color: 0xf6f0e8, roughness: 0.95 }));
+  roll.rotation.z = Math.PI / 2;
+  roll.position.set(0, 0.3, 0.12);
+  g.add(roll);
+  g.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+  return g;
+}
+
 export class Delivery {
   constructor(game) {
     this.game = game;
@@ -85,6 +102,7 @@ export class Delivery {
   }
 
   meshFor(data) {
+    if (data.type === 'roller') return makeRoller();
     const kind = data.type === 'refill' ? 'refill' : data.type === 'single' ? 'single' : 'decor';
     return makeBoxMesh(kind, data, this.sizeFor(data));
   }

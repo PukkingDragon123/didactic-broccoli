@@ -37,7 +37,7 @@ export class Lighting {
       tb.mat.color.setScalar(0.15 + 2.05 * tubeK * d);
     }
     const lightsOn = g.garage.lightsOn ? 1 : 0.45;
-    L.sun.intensity = this.base.sun * (1 - this.dimLevel * 0.85);
+    L.sun.intensity = this.base.sun * (1 - this.dimLevel * 0.85) * (1 - (this.museumBlend || 0));
     L.hemi.intensity = this.base.hemi * (0.35 + 0.65 * lightsOn) * (1 - this.dimLevel * 0.8);
     L.desk.intensity = this.base.desk * (1 - this.dimLevel * 0.9);
     L.bounce.intensity = this.base.bounce * (1 - this.dimLevel * 0.8);

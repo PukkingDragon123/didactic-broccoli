@@ -92,7 +92,7 @@ export class Items {
     if (g.held.item) return false;
     this.detach(ent);
     audio.play('pickup', { vol: 0.8 });
-    g.held.take(ent.kind, ent.data, ent.obj, { ent });
+    g.held.take(ent.kind, ent.data, ent.obj, { ent, pose: ent.data?.type === 'roller' ? 'tool' : undefined });
     return true;
   }
 
