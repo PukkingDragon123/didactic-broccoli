@@ -90,7 +90,7 @@ export default {
         ], { K, G: inner, W: paper }, -5, 10);
         // tongue lolling out of the grin
         const T = gloss(C.tongue), Td = gloss(shade(C.tongue, 0.8));
-        v.box(-2, 6, 7, 0, 6, 7, T);
+        v.box(-2, 6, 5, 0, 6, 7, T);
         v.box(-2, 2, 8, 0, 6, 8, T);
         v.remove(-2, 2, 8); v.remove(0, 2, 8);
         v.box(-1, 3, 8, -1, 5, 8, Td);

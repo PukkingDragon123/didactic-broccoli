@@ -30,6 +30,7 @@ export function installDebug(game, params) {
     crank(i = 0) { const m = game.machines[i]; if (m.state === 'ready') m.startMotor(); },
     /** fast-forward the simulation without rendering */
     step(sec, dt = 1 / 60) { const n = Math.round(sec / dt); for (let i = 0; i < n; i++) game.update(dt); return game.time; },
+    pc(page = 'top', mx = 320, my = 240) { game.pc.enter(); game.pc.site.booted = true; game.pc.site.page = page; game.pc.site.mouse.x = mx; game.pc.site.mouse.y = my; game.player.camBlend = 1; },
     lights(on) { game.garage.setLights(on); },
     state() { return JSON.parse(JSON.stringify({ money: game.state.money, pulls: game.state.pulls, held: game.held.item?.kind, machines: game.machines.map((m) => [m.state, m.data.stock.length]) })); },
   };

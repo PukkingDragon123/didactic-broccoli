@@ -424,7 +424,7 @@ export default {
         // whoosh lines
         for (const j of [3, 6]) {
           const xr = 4 + FW + Math.floor(j * 0.5);
-          for (let k = 0; k < 3; k++) v.set(xr + k, 10 + j + (k === 2 ? 1 : 0), 8, 0xeaf6ff);
+          for (let k = 0; k < 2; k++) v.set(xr + k, 10 + j + k, 8, 0xeaf6ff);
         }
         // the shocked resident, futon-beater in hand
         const mx = -6, mz = 0;
