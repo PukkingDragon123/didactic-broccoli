@@ -1,0 +1,20 @@
+{
+  "name": "gacha-garage",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Gacha Garage - a cozy first-person voxel gachapon collecting game",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/dotgothic16": "^5.3.1",
+    "@fontsource/pixelify-sans": "^5.3.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  }
+}

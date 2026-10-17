@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gacha Garage · ガチャガレージ</title>
+  <meta name="description" content="A cozy first-person voxel gachapon collecting game set in a Japanese hobby garage." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='4' y='2' width='8' height='1' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='4' fill='%23fff'/%3E%3Crect x='2' y='5' width='12' height='2' fill='%23fff'/%3E%3Crect x='2' y='7' width='12' height='1' fill='%23c33'/%3E%3Crect x='2' y='8' width='12' height='3' fill='%23ff6f91'/%3E%3Crect x='3' y='11' width='10' height='2' fill='%23ff6f91'/%3E%3Crect x='4' y='13' width='8' height='1' fill='%23ff6f91'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="hud" class="hidden">
+    <div id="crosshair"><div class="dot"></div><div class="ring"></div></div>
+    <div id="hint"></div>
+    <div id="money"><span class="yen">¥</span><span class="val">0</span><span id="money-delta"></span></div>
+    <div id="news"></div>
+    <div id="caption"></div>
+  </div>
+
+  <div id="title" class="overlay">
+    <div class="title-inner">
+      <div class="logo-jp">ガチャガレージ</div>
+      <div class="logo-en">GACHA&nbsp;GARAGE</div>
+      <div class="tagline">a cozy capsule-toy collecting life</div>
+      <div class="start blink" id="start-btn">クリックでスタート · Click to start</div>
+      <div class="loading" id="loading">Loading… <span id="load-pct">0%</span></div>
+      <div class="controls">
+        <div><b>WASD</b> walk · <b>Mouse</b> look · <b>Shift</b> hurry</div>
+        <div><b>Left click</b> use / place · <b>Hold</b> crank &amp; twist</div>
+        <div><b>Right click</b> open / inspect · <b>Q</b> drop · <b>R</b> rotate · <b>Esc</b> pause</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay hidden">
+    <div class="panel">
+      <div class="panel-title">一時停止 <span>Paused</span></div>
+      <button id="resume-btn" class="big">つづける · Resume</button>
+      <label>Graphics
+        <select id="quality">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="ultra">Ultra</option>
+        </select>
+      </label>
+      <label>Master volume <input type="range" id="vol-master" min="0" max="1" step="0.01" /></label>
+      <label>Music volume <input type="range" id="vol-music" min="0" max="1" step="0.01" /></label>
+      <label>Ambience <input type="range" id="vol-amb" min="0" max="1" step="0.01" /></label>
+      <label>Mouse sensitivity <input type="range" id="sens" min="0.2" max="2.5" step="0.05" /></label>
+      <label>Field of view <input type="range" id="fov" min="60" max="95" step="1" /></label>
+      <label class="row"><input type="checkbox" id="hints" /> Show interaction hints</label>
+      <button id="reset-btn" class="danger">Reset save data</button>
+      <div class="foot">Progress saves automatically.</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
