@@ -479,7 +479,7 @@ export class Museum {
   }
 
   /** Build the 3D object for a placed entry. */
-  makeObject(kind, id) {
+  makeObject(kind, id, opts = {}) {
     if (kind === 'display') {
       const lit = this.placed.filter((p) => p.data.id === 'pedestal').length < 4;
       return buildDisplay(id, { light: lit });
@@ -488,9 +488,8 @@ export class Museum {
     const g = new THREE.Group(); g.add(m);
     const p = PROPS[id];
     let light = null;
-    this.decorLights = this.decorLights || 0;
-    if (p?.light && this.decorLights < 5) {
-      this.decorLights++;
+    const lit = this.placed.filter((e) => e.obj.light).length;
+    if (p?.light && !opts.preview && lit < 5) {
       light = new THREE.PointLight(p.light, 1.6, 3.5, 1.6);
       const h = m.geometry?.userData?.size?.y || 1;
       light.position.y = h * 0.7;
@@ -609,7 +608,7 @@ export class Museum {
       this.hideGhost();
       let g = this.ghostCache.get(key);
       if (!g) {
-        const o = it.data.kind === 'display' ? buildDisplay(it.data.id, { light: false }) : this.makeObject(it.data.kind, it.data.id);
+        const o = it.data.kind === 'display' ? buildDisplay(it.data.id, { light: false }) : this.makeObject(it.data.kind, it.data.id, { preview: true });
         g = o.group;
         g.traverse((m) => {
           if (m.isLight) m.visible = false;
@@ -687,6 +686,32 @@ export class Museum {
     this.game.effects.sparks({ pos: t.point.clone().add(new THREE.Vector3(0, 0.05, 0)), count: 14, colors: [0xffffff, 0xfff0c0], speed: 0.4, size: 0.015 });
     this.rebuildSurfaces();
     this.recompute();
+  }
+
+  updatePaintIndicator(t) {
+    if (!this.paintInd) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xfff0a0, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide }));
+      m.renderOrder = 4;
+      m.raycast = () => {};
+      this.group.add(m);
+      this.paintInd = m;
+    }
+    const m = this.paintInd;
+    m.visible = !!t;
+    if (!t) return;
+    m.material.opacity = 0.18 + Math.sin(this.game.time * 6) * 0.06;
+    if (t.kind === 'f') {
+      m.scale.set(1, 1, 1);
+      m.rotation.set(-Math.PI / 2, 0, 0);
+      m.position.set(this.x0 + t.i + 0.5, 0.01, ZN - t.j - 0.5);
+    } else {
+      m.scale.set(1, WALL_H, 1);
+      const y = WALL_H / 2;
+      if (t.side === 'N') { m.rotation.set(0, 0, 0); m.position.set(this.x0 + t.i + 0.5, y, ZN - 0.03); }
+      else if (t.side === 'S') { m.rotation.set(0, 0, 0); m.position.set(this.x0 + t.i + 0.5, y, this.zS + 0.02); }
+      else if (t.side === 'W') { m.rotation.set(0, Math.PI / 2, 0); m.position.set(this.x0 + 0.02, y, ZN - t.i - 0.5); }
+      else { m.rotation.set(0, Math.PI / 2, 0); m.position.set(this.x1 - 0.02, y, ZN - t.i - 0.5); }
+    }
   }
 
   rebuildSurfaces() {
@@ -886,6 +911,14 @@ export class Museum {
     if (!g.spend(MUSEUM_PRICE)) return { ok: false, msg: 'お金が足りません' };
     this.data.owned = true;
     this.data.level = 0;
+    // a few starter pieces so opening day isn't an empty room
+    const starter = [['display', 'case_glass', -2.5, -7.25, 1], ['display', 'case_glass', 2.5, -7.25, 3], ['display', 'shelf_open', -4.25, -10.5, 1], ['decor', 'plant_monstera', 4.25, -5.75, 0], ['decor', 'bonsai', 0, -12.75, 0]];
+    for (const [kind, id, x, z, rot] of starter) {
+      const def = this.defOf(kind, id);
+      if (!def) continue;
+      const sn = this.snap(def, new THREE.Vector3(x, 0, z), rot);
+      this.data.placed.push({ uid: 'st' + id + x, kind, id, x: sn.x, z: sn.z, rot, items: null });
+    }
     this.build();
     audio.play('thud', { pos: new THREE.Vector3(0, 1, -5), v: 1 });
     audio.play('complete', { vol: 0.8 });
@@ -966,7 +999,9 @@ export class Museum {
       if (pl) this.showGhost(held, pl); else this.hideGhost();
       if (g.input.keyPressed('KeyR')) this.boxSecondary(held);
     } else this.hideGhost();
-    if (held?.kind === 'box' && held.data.type === 'roller') {
+    const roller = held?.kind === 'box' && held.data.type === 'roller';
+    this.updatePaintIndicator(roller ? this.paintTarget() : null);
+    if (roller) {
       if (g.input.mouse.wheel || g.input.keyPressed('KeyR')) {
         const t = this.paintTarget();
         const k = t?.kind || 'f';

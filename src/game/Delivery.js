@@ -84,7 +84,7 @@ export class Delivery {
 
   /** Queue a delivery. data: {type:'refill'|'single'|'decor', ...} */
   order(data, opts = {}) {
-    data.id = nextId++;
+    data.oid = nextId++;
     this.queue.push({ data, delay: opts.delay ?? 2.2 });
   }
 

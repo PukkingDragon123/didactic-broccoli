@@ -10,7 +10,7 @@ const POSES = {
   capsule: { pos: new THREE.Vector3(0.15, -0.135, -0.34), rot: new THREE.Euler(0.25, 0.4, 0.1) },
   toy: { pos: new THREE.Vector3(0.13, -0.13, -0.32), rot: new THREE.Euler(0.12, -0.35, 0) },
   box: { pos: new THREE.Vector3(0.02, -0.3, -0.55), rot: new THREE.Euler(0.15, 0.2, 0) },
-  tool: { pos: new THREE.Vector3(0.16, -0.16, -0.38), rot: new THREE.Euler(0.2, 0.5, 0) },
+  tool: { pos: new THREE.Vector3(0.2, -0.26, -0.46), rot: new THREE.Euler(-0.75, 0.55, 0.3) },
   inspect: { pos: new THREE.Vector3(0, -0.005, -0.24), rot: new THREE.Euler(0.1, 0, 0) },
   reveal: { pos: new THREE.Vector3(0, -0.01, -0.3), rot: new THREE.Euler(0.05, 0, 0) },
 };
@@ -42,7 +42,7 @@ export class Held {
     this.anchor.attach(obj);
     this.pose = kind === 'capsule' ? 'capsule' : kind === 'toy' ? 'toy' : kind === 'tool' ? 'tool' : 'box';
     // miniatures are shown a little larger in hand so you can admire the detail
-    this.holdScale = kind === 'toy' ? 1.55 : kind === 'capsule' ? 1.2 : 1;
+    this.holdScale = kind === 'toy' ? 1.55 : kind === 'capsule' ? 1.2 : opts.pose === 'tool' ? 0.6 : 1;
     this.startTrans(opts.pose || this.pose, opts.dur ?? 0.32);
     this.twist = 0;
     if (kind === 'toy') this.attachTag(data, opts.isNew);

@@ -29,7 +29,7 @@ export function installDebug(game, params) {
     insert(i = 0) { game.machines[i].insertCoin(); },
     crank(i = 0) { const m = game.machines[i]; if (m.state === 'ready') m.startMotor(); },
     /** fast-forward the simulation without rendering */
-    step(sec, dt = 1 / 60) { const n = Math.round(sec / dt); for (let i = 0; i < n; i++) game.update(dt); return game.time; },
+    step(sec, dt = 1 / 60) { const n = Math.round(sec / dt); for (let i = 0; i < n; i++) { game.update(dt); game.scene.updateMatrixWorld(); } return game.time; },
     pc(page = 'top', mx = 320, my = 240) { game.pc.enter(); game.pc.site.booted = true; game.pc.site.page = page; game.pc.site.mouse.x = mx; game.pc.site.mouse.y = my; game.player.camBlend = 1; },
     museum(fill = true) {
       game.state.completed.mochi = true;
