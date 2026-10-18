@@ -1,6 +1,9 @@
 // Entry point: fonts, title screen, pause menu, main loop.
 import '@fontsource/dotgothic16/400.css';
 import '@fontsource/pixelify-sans/400.css';
+import '@fontsource/jersey-10/400.css';
+import '@fontsource/tiny5/400.css';
+import '@fontsource/silkscreen/400.css';
 import './style.css';
 import * as THREE from 'three';
 import { Game } from './game/Game.js';
@@ -27,6 +30,9 @@ async function loadFonts() {
     await Promise.all([
       document.fonts.load('16px "DotGothic16"', text),
       document.fonts.load('16px "Pixelify Sans"', 'ABCabc123'),
+      document.fonts.load('16px "Jersey 10"', 'ABCabc123'),
+      document.fonts.load('16px "Tiny5"', 'ABCabc123'),
+      document.fonts.load('16px "Silkscreen"', 'ABCabc123'),
     ]);
   } catch (e) { console.warn('font load', e); }
 }

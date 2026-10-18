@@ -168,11 +168,6 @@ export class Game {
       hint: (held) => (held ? null : { key: 'L', text: G.lightsOn ? '電気を消す · Lights off' : '電気をつける · Lights on', sub: 'Glow-in-the-dark finishes shine in the dark' }),
       use: () => { G.setLights(!G.lightsOn); this.state.lightsOn = G.lightsOn; audio.play(G.lightsOn ? 'lightsOn' : 'relay', { pos: G.lightSwitch.getWorldPosition(new THREE.Vector3()), vol: 0.8 }); return false; },
     });
-    // the cat
-    if (G.cat) this.interaction.add(G.cat, {
-      hint: (held) => (held ? null : { key: 'L', text: 'なでる · Pet the garage cat' }),
-      use: () => { audio.play('visitorHappy', { pos: G.cat.position, vol: 0.5 }); this.effects.sparks({ pos: G.cat.position.clone().add(new THREE.Vector3(0, 0.35, 0)), count: 6, colors: [0xff9fae], speed: 0.2, size: 0.02, gravity: -0.3, life: 1.2, star: 0 }); return false; },
-    });
   }
 
   // ------------------------------------------------------------------ economy actions

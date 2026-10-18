@@ -1,0 +1,13 @@
+import { createServer } from 'vite';
+import { createRequire } from 'node:module';
+const { chromium } = createRequire('/opt/node-tools/node_modules/')('playwright');
+const root = '/home/user/didactic-broccoli';
+const server = await createServer({ root, server: { port: 0, host: '127.0.0.1', hmr: false }, logLevel: 'error' });
+await server.listen();
+const b = await chromium.launch();
+const pg = await b.newPage({ viewport: { width: 1200, height: 900 } });
+await pg.goto(`http://127.0.0.1:${server.httpServer.address().port}/${process.argv[2]}`);
+await pg.waitForFunction(() => window.__ready === true, null, { timeout: 60000 });
+await pg.waitForTimeout(500);
+await pg.screenshot({ path: process.argv[3] });
+await b.close(); await server.close();

@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { rng } from '../core/util.js';
 
 export const FONT_JP = '"DotGothic16", "Pixelify Sans", monospace';
-export const FONT_EN = '"Pixelify Sans", "DotGothic16", monospace';
+export const FONT_EN = '"Tiny5", "Pixelify Sans", "DotGothic16", monospace';
+export const FONT_DISPLAY = '"Jersey 10", "Tiny5", "DotGothic16", monospace';
 
 const toRGB = (c) => (Array.isArray(c) ? c : [(c >> 16) & 255, (c >> 8) & 255, c & 255]);
 
