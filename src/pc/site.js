@@ -10,8 +10,9 @@ import {
 } from '../game/economy.js';
 import * as shop from '../game/shop.js';
 import { buildMachineModel } from '../world/machineModels.js';
+import { bannerTexture, bannerCanvas } from '../gfx/banner.js';
 import { propMesh } from '../world/props.js';
-import { DISPLAYS, FLOORS, WALLS, decorList, THEME_NAMES } from '../museum/catalog.js';
+import { DISPLAYS, decorList, THEME_NAMES } from '../museum/catalog.js';
 import { audio } from '../core/audio.js';
 import { SHELF_SLOTS } from '../world/Garage.js';
 
@@ -46,10 +47,21 @@ export class Site {
   machineThumb(type) {
     const k = 'm:' + type;
     if (!this.thumbCache.has(k)) {
-      const { group } = buildMachineModel(type);
+      const pick = { retro: 'mochi', standard: 'konbini', deluxe: 'dajare', royal: 'omamori' }[type] || 'mochi';
+      const { group } = buildMachineModel(type, { banner: bannerTexture(pick, this.game.thumbs, { faded: type === 'retro' }) });
       this.thumbCache.set(k, this.game.thumbs.renderObject(group, 80, { side: 0.6, up: 0.15 }));
     }
     return this.thumbCache.get(k);
+  }
+  /** Machine banner canvas; builds at most one new banner per frame so the page never hitches. */
+  bannerThumb(id) {
+    if (this.bannerReady?.has(id)) return this.bannerReady.get(id);
+    this.bannerReady = this.bannerReady || new Map();
+    if (this.bannerFrame === this.game.frame) return null;
+    this.bannerFrame = this.game.frame;
+    const c = bannerCanvas(id, this.game.thumbs);
+    this.bannerReady.set(id, c);
+    return c;
   }
   propThumb(id) {
     const k = 'p:' + id;
@@ -394,25 +406,22 @@ export class Site {
       const licensed = s.licenses.includes(se.id);
       const req = licenseRequirement(se.id);
       const locked = !licensed && disc < req;
-      const h = 100;
+      const h = 134;
       this.panel(x, yy, w, h, locked ? '#f0ece4' : '#fff');
-      // mini card
-      ui.rect(x + 4, yy + 4, 140, h - 8, se.card.bg);
-      ui.rect(x + 4, yy + 4, 140, 18, se.card.accent);
-      ui.text(se.jp, x + 8, yy + 6, { size: 12, color: '#fff', max: 132 });
-      ui.text(se.name, x + 8, yy + 26, { size: 9, color: se.card.text, font: FE, max: 132 });
-      ui.text(`1回 ${se.price}円`, x + 8, yy + 40, { size: 11, color: se.card.text });
+      // the actual machine banner as the product photo
+      const bn = this.bannerThumb(se.id);
+      ui.rect(x + 4, yy + 4, 146, h - 8, '#2a2220');
+      if (bn) ui.image(bn, x + 5, yy + 5, 144, 126);
+      if (locked) { ui.rect(x + 5, yy + 5, 144, 126, 'rgba(240,236,228,0.72)'); ui.text('🔒', x + 77, yy + 56, { size: 16, align: 'center' }); }
+      const ix = x + 158;
+      ui.text(se.jp, ix, yy + 6, { size: 14, color: se.card.text === '#f4ecff' || se.card.text === '#f6efe0' ? se.card.accent : se.card.text, max: 170 });
+      ui.text(se.name, ix, yy + 26, { size: 9, color: COL.soft, font: FE, max: 170 });
+      ui.text(`1回 ${se.price}円・全${se.items.length}種`, ix, yy + 42, { size: 11, color: COL.ink });
       const got = se.items.filter((it) => s.discovered[it.key]).length;
-      ui.text(`図鑑 ${got}/${se.items.length}`, x + 8, yy + 56, { size: 11, color: se.card.text });
-      if (s.completed[se.id]) { ui.rect(x + 80, yy + 52, 60, 18, COL.red); ui.text('コンプ!', x + 110, yy + 54, { size: 11, color: '#fff', align: 'center' }); }
-      ui.text(se.themes.map((t) => THEME_NAMES[t]?.[0] || t).join('・'), x + 8, yy + 76, { size: 9, color: se.card.text, max: 132 });
-      // lineup
-      se.items.forEach((it, i) => {
-        const tx = x + 150 + (i % 4) * 40, ty = yy + 6 + Math.floor(i / 4) * 44;
-        ui.rect(tx, ty, 38, 40, '#faf6ec');
-        ui.image(this.itemThumb(it.key, 32, locked || !s.discovered[it.key]), tx + 3, ty + 2, 32, 32);
-        ui.rect(tx, ty + 36, 38, 4, RARITIES[it.rarity].color);
-      });
+      ui.text(`図鑑 ${got}/${se.items.length}`, ix, yy + 60, { size: 11, color: COL.ink });
+      se.items.forEach((it, i) => ui.rect(ix + 62 + i * 10, yy + 62, 8, 8, s.discovered[it.key] ? RARITIES[it.rarity].color : '#e0dcd2'));
+      if (s.completed[se.id]) { ui.rect(ix, yy + 78, 60, 18, COL.red); ui.text('コンプ!', ix + 30, yy + 80, { size: 11, color: '#fff', align: 'center' }); }
+      ui.text(se.themes.map((t) => THEME_NAMES[t]?.[0] || t).join('・'), ix, yy + 104, { size: 9, color: COL.blue, max: 170 });
       // purchase area
       const bx = x + w - 150;
       if (licensed) {
@@ -624,4 +633,4 @@ export class Site {
   }
 }
 
-export { PAGES, X0, CW, Y0, Y1, DISPLAYS, FLOORS, WALLS, decorList, MUSEUM_EXPANSIONS, hex };
+export { PAGES, X0, CW, Y0, Y1, DISPLAYS, decorList, MUSEUM_EXPANSIONS, hex };

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop Signage</title>
+  <style>
+    html, body { margin: 0; background: #e8dcc4; color: #2a2016; font-family: 'DotGothic16', monospace; }
+    body { background: linear-gradient(#efe4cc, #e2d4b8); min-height: 100vh; }
+    #grid { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px 22px; padding: 14px; }
+    .cell { display: flex; flex-direction: column; gap: 4px; }
+    .lbl { font-size: 13px; line-height: 1.2; white-space: nowrap; }
+    .lbl b { color: #9a2a1e; font-weight: normal; margin-right: 6px; }
+    .lbl span { opacity: 0.7; }
+    canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; box-shadow: 2px 3px 0 rgba(60, 40, 20, 0.25); }
+    #err { position: fixed; top: 0; left: 0; color: #c00; white-space: pre; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <div id="err"></div>
+  <script type="module" src="/src/dev/shopart.js"></script>
+</body>
+</html>

@@ -43,7 +43,7 @@ export const BUILDERS = {
     glassBox(g, 0.96, 0.22, 0.46, 0, 0.84, 0);
     add(g, boxMesh(0.9, 0.06, 0.02, colMat(0xd4a83a, { metalness: 0.9, roughness: 0.3 })), 0, 0.7, 0.252);
     slotRow(slots, 4, 0.84, 0.02, 0.92);
-    return { group: g, slots };
+    return { group: g, slots, mats: [{ y: 0.8408, w: 0.94, d: 0.44 }] };
   },
   shelf_open() {
     const g = new THREE.Group(), slots = [];
@@ -53,7 +53,7 @@ export const BUILDERS = {
     for (const y of [0.05, 0.45, 0.85, 1.25]) add(g, boxMesh(0.97, 0.025, 0.36, wood), 0, y, 0);
     add(g, boxMesh(1.0, 0.03, 0.36, wood), 0, 1.55, 0);
     for (const y of [0.4625, 0.8625, 1.2625]) slotRow(slots, 5, y, 0.02, 0.94);
-    return { group: g, slots };
+    return { group: g, slots, mats: [0.4633, 0.8633, 1.2633].map((y) => ({ y, w: 0.95, d: 0.34 })) };
   },
   pedestal(opts = {}) {
     const g = new THREE.Group(), slots = [];
@@ -80,7 +80,7 @@ export const BUILDERS = {
     const rope = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.012, 6, 16, Math.PI), colMat(0x9a1f2a, { roughness: 0.8 }));
     rope.rotation.z = Math.PI; rope.position.set(0, 0.78, 0.38); rope.scale.y = 0.4;
     g.add(rope);
-    return { group: g, slots, spotlight: true };
+    return { group: g, slots, spotlight: true, mats: [{ y: 1.0008, w: 0.29, d: 0.29 }] };
   },
   cabinet_tall() {
     const g = new THREE.Group(), slots = [];
@@ -94,7 +94,7 @@ export const BUILDERS = {
       add(g, new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.008, 0.01), ledMat()), 0, y + 0.44, 0.19);
       slotRow(slots, 5, y + 0.007, 0.02, 0.92);
     }
-    return { group: g, slots };
+    return { group: g, slots, mats: [0.3, 0.78, 1.26].map((y) => ({ y: y + 0.0068, w: 0.93, d: 0.39 })) };
   },
   capsule_tower() {
     const g = new THREE.Group(), slots = [];
@@ -108,15 +108,17 @@ export const BUILDERS = {
       add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.012, 24), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, roughness: 0.1 })), 0, y, 0);
       for (const sx of [-1, 1]) slots.push({ pos: new THREE.Vector3(sx * 0.085, y + 0.006, 0.02), rotY: 0, size: [0.16, 0.3, 0.3], plaque: false });
     }
-    return { group: g, slots };
+    return { group: g, slots, mats: [0.3, 0.66, 1.02].map((y) => ({ y: y + 0.0068, r: 0.195 })) };
   },
   hinadan() {
     const g = new THREE.Group(), slots = [];
     const felt = pixMat('velvet', { roughness: 0.95, color: 0xffb0b0 });
+    const mats = [];
     for (let i = 0; i < 3; i++) {
       const h = 0.25 + i * 0.25, z = 0.33 - i * 0.3;
       add(g, boxMesh(1.5, h, 0.3, felt), 0, h / 2, z);
       slotRow(slots, 6, h, z + 0.02, 1.38);
+      mats.push({ y: h + 0.0008, z, w: 1.48, d: 0.29 });
     }
     // gold byobu screen
     const scr = voxMesh((v) => {
@@ -130,7 +132,7 @@ export const BUILDERS = {
       add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.25, 6), colMat(0x2a1a10)), sx * 0.66, 0.875, -0.27);
       add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.04, 0.12, 12), ledMat(0xffe0b0, 1.4)), sx * 0.66, 1.05, -0.27);
     }
-    return { group: g, slots };
+    return { group: g, slots, mats };
   },
   candy_jar() {
     const g = new THREE.Group(), slots = [];
@@ -186,7 +188,7 @@ export const BUILDERS = {
     for (let i = 0; i < 3; i++) add(g, new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.1), colMat(0xffffff, { extra: { side: THREE.DoubleSide } })), -0.3 + i * 0.3, 1.13, 0.24);
     slotRow(slots, 3, 0.645, 0.02, 0.9);
     slotRow(slots, 3, 0.936, 0.02, 0.9);
-    return { group: g, slots };
+    return { group: g, slots, mats: [{ y: 0.6408, w: 0.94, d: 0.42 }, { y: 0.9368, w: 0.93, d: 0.39 }] };
   },
   space_pod() {
     const g = new THREE.Group(), slots = [];
@@ -216,6 +218,8 @@ export const BUILDERS = {
 
 export function buildDisplay(id, opts = {}) {
   const r = BUILDERS[id](opts);
+  // displays without flat shelves get a round coaster under every slot
+  if (!r.mats) r.mats = r.slots.map((sl) => ({ x: sl.pos.x, y: sl.pos.y + 0.0008, z: sl.pos.z, r: Math.min(sl.size[0], sl.size[2]) * 0.42, onOwner: true }));
   r.group.traverse((m) => { if (m.isMesh && !m.material.transparent) { m.castShadow = true; m.receiveShadow = true; } });
   return r;
 }

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Banner Scenes</title>
+  <style>
+    html, body { margin: 0; background: #2a2622; color: #f3e9d2; font-family: 'DotGothic16', monospace; }
+    #grid { display: grid; gap: 14px 12px; padding: 10px; justify-content: start; }
+    .cell { display: flex; flex-direction: column; gap: 3px; }
+    .lbl { font-size: 13px; line-height: 1.2; text-shadow: 0 1px 0 #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lbl b { color: #ffd23f; font-weight: normal; margin-right: 6px; }
+    .lbl span { opacity: 0.8; margin-left: 6px; }
+    canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+    #err { position: fixed; top: 0; left: 0; color: #ff8080; white-space: pre; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <div id="err"></div>
+  <script type="module" src="/src/dev/scenes.js"></script>
+</body>
+</html>

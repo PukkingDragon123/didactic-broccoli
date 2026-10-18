@@ -22,7 +22,7 @@ export function defaultState() {
     completed: {}, // seriesId -> true
     deliveries: [], // pending boxes: {id, type, ...}
     loose: [], // items lying around in the world
-    museum: { owned: false, level: 0, floor: {}, walls: {}, placed: [], materials: ['wood', 'plaster'], ticket: 0, visitors: 0, income: 0 },
+    museum: { owned: false, level: 0, placed: [], styles: ['plain', 'felt'], ticket: 0, visitors: 0, income: 0 },
     decorOwned: {},
     stats: { secrets: 0, best: null, sold: 0, opened: 0 },
     flags: {},

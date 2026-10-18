@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { rollCapsule } from './game/economy.js';
 import { ITEMS } from './data/series/index.js';
+import { DISPLAY_STYLES } from './museum/styles.js';
 
 export function installDebug(game, params) {
   if (params.get('q')) game.renderer.setQuality(params.get('q'));
@@ -58,10 +59,9 @@ export function installDebug(game, params) {
         place('decor', 'lollipop', 4.25, -12.25, 0);
         place('decor', 'rocket', 4.0, -13.75, 0);
         place('decor', 'plant_monstera', 1.75, -5.75, 0);
-        M.data.floor['1,3'] = 'grass'; M.data.floor['2,3'] = 'grass'; M.data.floor['1,4'] = 'grass';
-        for (let i = 6; i < 10; i++) for (let j = 3; j < 8; j++) M.data.floor[i + ',' + j] = 'space';
-        M.data.walls['E:3'] = 'cosmos'; M.data.walls['E:4'] = 'cosmos'; M.data.walls['E:5'] = 'cosmos'; M.data.walls['W:5'] = 'sakura'; M.data.walls['W:6'] = 'sakura';
-        M.rebuildSurfaces();
+        M.data.styles = Object.keys(DISPLAY_STYLES);
+        const sheets = ['grass', 'stars', 'candy', 'tatami', 'moss', 'neon', 'felt'];
+        M.placed.filter((p) => p.display).forEach((p, i) => { p.data.style = sheets[i % sheets.length]; M.applyStyle(p); });
         M.recompute();
         for (let i = 0; i < 10; i++) M.visitors.spawn();
       }

@@ -1,7 +1,7 @@
 // A gacha machine in the world: coin-on-a-rope insertion, ratchet crank, capsule pile physics behind the
 // window, dispensing through the flap into the tray, refills, sold-out sign, display card and upgrade visuals.
 import * as THREE from 'three';
-import { buildMachineModel, buildHandle, buildMotor, buildHopper, MACHINE_SPECS } from '../world/machineModels.js';
+import { buildMachineModel, buildHandle, buildMotor, buildSlotModule, caseExtension, MACHINE_SPECS } from '../world/machineModels.js';
 import { MACHINE_SLOTS } from '../world/Garage.js';
 import { Physics } from '../core/physics.js';
 import { Rope } from './Rope.js';
@@ -11,7 +11,8 @@ import { capsuleColor, capsuleRadius } from './Capsule.js';
 import { pileGeometries } from './Capsule.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capacityFor, crankTime, rollCapsule, MACHINE_TYPES } from './economy.js';
-import { makeCard, makeHeader } from './cards.js';
+import { bannerTexture } from '../gfx/banner.js';
+import { makeItemMesh } from './collectibles.js';
 
 const UNIT_TOP = new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
 const UNIT_BOT = new THREE.SphereGeometry(0.985, 20, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
@@ -24,29 +25,38 @@ export class GachaMachine {
   constructor(game, data) {
     this.game = game;
     this.data = data;
+    this.init();
+  }
+
+  init() {
+    const game = this.game, data = this.data;
     const slot = MACHINE_SLOTS[data.slot];
     this.root = new THREE.Group();
     this.root.position.set(slot.x, 0, slot.z);
     this.root.rotation.y = slot.rotY;
     game.scene.add(this.root);
     this.root.updateMatrixWorld(true);
-    const { group, L, body } = buildMachineModel(data.type);
-    this.model = group;
-    this.L = L;
+    this.ext = caseExtension(data.up.cap || 0);
+    const built = buildMachineModel(data.type, { ext: this.ext, no: (data.slot || 0) + 1 });
+    this.model = built.group;
+    this.L = built.L;
     this.spec = MACHINE_SPECS[data.type];
-    this.body = body;
-    this.root.add(group);
+    this.body = built.body;
+    this.bannerMesh = built.bannerMesh;
+    this.domeAnchor = built.domeAnchor;
+    this.root.add(this.model);
     this.state = 'idle';
     this.angle = 0;
     this.inserted = 0;
     this.pending = [];
     this.shake = 0;
-    this.buildGlass();
+    this.motor = null;
+    this.buildSlot();
     this.buildTray();
     this.buildFlap();
     this.buildHandle();
     this.buildSoldOut();
-    this.buildCard();
+    this.buildBanner();
     this.buildPile();
     this.buildColliders();
     this.buildRope();
@@ -54,37 +64,26 @@ export class GachaMachine {
     this.registerInteract();
   }
 
+  /** Tear down and rebuild in place (the clear case grows with capacity upgrades). */
+  rebuild() {
+    this.dispose();
+    this.init();
+  }
+
   // ------------------------------------------------------------------ construction
   local(x, y, z) { return this.root.localToWorld(new THREE.Vector3(x, y, z)); }
 
-  buildGlass() {
-    const W = this.L.window;
-    const mat = new THREE.MeshPhysicalMaterial({ color: 0xf6fbff, transparent: true, opacity: 0.1, roughness: 0.04, clearcoat: 1, envMapIntensity: 2.2, depthWrite: false, side: THREE.DoubleSide, specularIntensity: 1 });
-    const front = new THREE.Mesh(new THREE.PlaneGeometry(W.x1 - W.x0 + 0.01, W.y1 - W.y0), mat);
-    front.position.set(0, (W.y0 + W.y1) / 2, W.z1 + 0.004);
-    front.renderOrder = 3;
-    front.userData.noRim = true;
-    this.root.add(front);
-    if (this.data.type === 'retro') {
-      for (const sx of [-1, 1]) {
-        const side = new THREE.Mesh(new THREE.PlaneGeometry(W.z1 - W.z0, W.y1 - W.y0), mat);
-        side.rotation.y = Math.PI / 2;
-        side.position.set(sx * (this.L.w / 2 - 0.005), (W.y0 + W.y1) / 2, (W.z0 + W.z1) / 2);
-        side.userData.noRim = true;
-        this.root.add(side);
-      }
-    }
-    // subtle glass highlight streak
-    const streak = new THREE.Mesh(new THREE.PlaneGeometry(0.03, (W.y1 - W.y0) * 0.8), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.12, depthWrite: false }));
-    streak.position.set(W.x0 + 0.06, (W.y0 + W.y1) / 2, W.z1 + 0.006);
-    streak.rotation.z = -0.25;
-    streak.userData.noRim = true;
-    this.root.add(streak);
+  buildSlot() {
+    const S = this.L.slot;
+    const m = buildSlotModule(!!this.spec.style.worn);
+    m.position.set(S.x, S.y, this.L.front + 0.0005);
+    this.model.add(m);
   }
 
   buildTray() {
     const T = this.L.tray;
-    const mat = new THREE.MeshPhysicalMaterial({ color: this.data.type === 'deluxe' ? 0x2a2622 : 0xe8ecf0, roughness: 0.25, metalness: 0.3, clearcoat: 0.6 });
+    const st = this.spec.style;
+    const mat = new THREE.MeshPhysicalMaterial({ color: st.worn ? 0xd8ccb0 : this.data.type === 'deluxe' ? 0xdcd2bc : 0xeef0f2, roughness: 0.3, metalness: 0.1, clearcoat: 0.6 });
     const g = new THREE.Group();
     const add = (w, h, d, x, y, z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
     const tw = T.x1 - T.x0, td = T.z1 - T.z0;
@@ -92,7 +91,6 @@ export class GachaMachine {
     add(0.008, T.wall, td, T.x0, T.y + T.wall / 2, (T.z0 + T.z1) / 2);
     add(0.008, T.wall, td, T.x1, T.y + T.wall / 2, (T.z0 + T.z1) / 2);
     add(tw, T.wall * 0.8, 0.008, 0, T.y + T.wall * 0.4, T.z1);
-    // support bracket
     add(tw * 0.6, 0.012, 0.01, 0, T.y - 0.02, T.z1 - 0.02).rotation.x = 0.6;
     this.root.add(g);
     this.trayGroup = g;
@@ -122,40 +120,71 @@ export class GachaMachine {
     const c = document.createElement('canvas');
     c.width = 64; c.height = 28;
     const ctx = c.getContext('2d');
-    ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 64, 28);
-    ctx.fillStyle = '#fff'; ctx.font = '20px DotGothic16'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('売切', 32, 15);
     const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter;
+    const draw = () => { ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 64, 28); ctx.fillStyle = '#fff'; ctx.font = '20px DotGothic16'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('売切', 32, 15); tex.needsUpdate = true; };
+    draw();
+    // the 売切 flag drops down over the coin slot
+    const S = this.L.slot;
     const pivot = new THREE.Group();
-    const H = this.L.handle;
-    pivot.position.set(0, H.y + 0.13, H.z + 0.01);
-    const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.04), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.5, emissive: 0x401010, side: THREE.DoubleSide }));
-    plate.position.y = -0.02;
+    pivot.position.set(S.x, S.y + 0.034, this.L.front + 0.016);
+    const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.075, 0.034), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.5, emissive: 0x401010, side: THREE.DoubleSide }));
+    plate.position.y = -0.019;
     pivot.add(plate);
     pivot.rotation.x = -Math.PI * 0.95;
     this.root.add(pivot);
     this.soldOut = { pivot, k: 0 };
-    this.redrawSoldOut = () => { ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 64, 28); ctx.fillStyle = '#fff'; ctx.fillText('売切', 32, 15); tex.needsUpdate = true; };
+    this.redrawSoldOut = draw;
   }
 
-  buildCard() {
-    if (this.cardMesh) { this.root.remove(this.cardMesh); this.cardMesh.material.map?.dispose(); }
+  /** The printed banner inside the case + the sample figures in the dome on top. */
+  buildBanner() {
     const series = this.data.series || 'mochi';
-    if (this.data.type === 'retro') {
-      const hd = this.spec.header;
-      const tex = makeHeader(series, this.game.thumbs);
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(hd.w, hd.h), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 }));
-      m.position.set(0, this.L.top + 0.025 + hd.h / 2 + 0.005, this.L.front - 0.016);
-      this.cardMesh = m;
-    } else {
-      const cd = this.spec.card;
-      const tex = makeCard(series, this.game.thumbs);
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(cd.w - 0.02, cd.h - 0.02), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.55, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.18 }));
-      m.position.set(0, this.L.top + 0.02 + (cd.h - 0.02) / 2, this.L.front - 0.035);
-      this.cardMesh = m;
+    const tex = bannerTexture(series, this.game.thumbs, { faded: this.data.type === 'retro' });
+    const m = this.bannerMesh.material;
+    m.map = tex; m.emissiveMap = tex; m.color.set(0xffffff); m.emissiveIntensity = 0.12; m.needsUpdate = true;
+    // sample figures (見本)
+    const A = this.domeAnchor;
+    A.clear();
+    const S = SERIES_BY_ID[series];
+    const D = this.L.dome;
+    const pick = (r, n = 0) => S.items.filter((i) => i.rarity === r)[n];
+    const wide = D.w >= 0.3;
+    const keys = (wide ? [pick('common', 0), pick('rare'), pick('ultra'), pick('uncommon', 0)] : [pick('common', 0), pick('ultra'), pick('uncommon', 0)]).filter(Boolean).map((i) => i.key);
+    const turn = new THREE.Group();
+    A.add(turn);
+    this.turntable = this.spec.style.crown ? turn : null;
+    const n = keys.length;
+    const cell = (D.w - 0.02) / n;
+    const standM = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+    keys.forEach((k, i) => {
+      const fig = makeItemMesh(k, 'normal');
+      const sz = fig.geometry.userData.size;
+      const sc = Math.min(1, (D.h - 0.03) / sz.y, (cell - 0.01) / Math.max(sz.x, sz.z));
+      fig.scale.setScalar(sc);
+      const x = -D.w / 2 + 0.01 + cell * (i + 0.5);
+      fig.position.set(x, 0.008, (i % 2 ? -0.025 : 0.02));
+      fig.rotation.y = -(i - (n - 1) / 2) * 0.28;
+      fig.castShadow = false;
+      turn.add(fig);
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(Math.min(0.03, cell * 0.42), Math.min(0.032, cell * 0.44), 0.008, 20), standM);
+      base.position.set(x, 0.004, fig.position.z);
+      turn.add(base);
+    });
+    if (this.turntable) turn.position.z = 0;
+    // 見本 card in the corner
+    if (!GachaMachine.sampleTex) {
+      const c = document.createElement('canvas'); c.width = 32; c.height = 16;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 32, 16); ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 32, 2); ctx.fillRect(0, 14, 32, 2);
+      ctx.fillStyle = '#222'; ctx.font = '12px DotGothic16'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('見本', 16, 8.5);
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
+      GachaMachine.sampleTex = t;
     }
-    this.cardMesh.userData.noRim = true;
-    this.root.add(this.cardMesh);
+    const card = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.02), new THREE.MeshStandardMaterial({ map: GachaMachine.sampleTex, roughness: 0.6 }));
+    card.position.set(D.w / 2 - 0.03, 0.012, D.d / 2 - 0.012);
+    card.rotation.x = -0.5;
+    card.userData.noRim = true;
+    A.add(card);
   }
 
   buildPile() {
@@ -246,6 +275,10 @@ export class GachaMachine {
     box(O.x1, hw, L.y0, O.y1 + 0.004, -hd, hd);
     box(O.x0, O.x1, L.y0, O.y1, -hd, L.front - 0.14);
     box(-hw - 0.02, hw + 0.02, 0, L.y0, -hd - 0.02, hd + 0.02, 'wood');
+    const D = L.dome;
+    box(-D.w / 2, D.w / 2, L.top, L.domeTop, D.z - D.d / 2, D.z + D.d / 2, 'glass');
+    if (L.bulge) box(-hw + 0.03, hw - 0.03, L.caseY0, L.caseY0 + L.caseH, hd, hd + L.bulge, 'glass');
+    if (L.sidePanel) box(hw, hw + 0.024, 0, L.top + 0.02, -hd - 0.015, hd + 0.015);
     // chute ramp
     const rampQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.32);
     const rc = this.local(0, O.y0 + 0.015, L.front - 0.07);
@@ -499,7 +532,7 @@ export class GachaMachine {
   pour(seriesId, n) {
     const g = this.game;
     this.data.series = seriesId;
-    this.buildCard();
+    this.buildBanner();
     audio.play('boxOpen', { pos: this.local(0, this.L.top, 0), vol: 0.7 });
     audio.play('pour', { pos: this.local(0, this.L.top, 0), n: Math.min(30, n), vol: 0.9 });
     for (let i = 0; i < n; i++) {
@@ -528,38 +561,20 @@ export class GachaMachine {
     // motor
     if (this.hasMotor && !this.motor) {
       this.motor = buildMotor();
-      this.motor.position.set(-this.L.w / 2 - 0.05, this.L.handle.y - 0.04, this.L.front - 0.08);
+      this.motor.position.set(-this.L.w / 2 - 0.05, this.L.handle.y - 0.04, this.L.front - 0.06);
       this.root.add(this.motor);
       const belt = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.004, 6, 24), new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 }));
-      belt.position.set(-this.L.w / 4 - 0.03, this.L.handle.y, this.L.front + 0.03);
-      belt.scale.set(2.4, 1, 1);
+      const bx0 = -this.L.w / 2 - 0.05, bx1 = this.L.handle.x;
+      belt.position.set((bx0 + bx1) / 2, this.L.handle.y, this.L.front + 0.025);
+      belt.scale.set((bx1 - bx0) / 0.09 + 0.6, 0.9, 1);
       this.root.add(belt);
     }
-    // hopper extension
-    const capL = up.cap || 0;
-    const want = capL >= 4 ? 2 : capL >= 2 ? 1 : 0;
-    if (want !== (this.hopperLevel || 0)) {
-      if (this.hopper) this.root.remove(this.hopper);
-      this.hopper = null;
-      if (want) {
-        this.hopper = buildHopper(this.L.w, this.L.d, want === 2);
-        const extra = this.spec.card ? -0.06 : 0.12;
-        this.hopper.position.set(0, this.L.top + (this.spec.card ? 0 : 0.02), extra - 0.02);
-        if (this.spec.card) this.hopper.position.z = -this.L.d * 0.12;
-        this.root.add(this.hopper);
-        // some capsules visible in the hopper
-        const inner = this.hopper.userData.inner;
-        const cnt = want === 2 ? 14 : 8;
-        for (let i = 0; i < cnt; i++) {
-          const m = new THREE.Mesh(UNIT_BOT, new THREE.MeshPhysicalMaterial({ color: capsuleColor(this.data.series), roughness: 0.25, clearcoat: 1 }));
-          const r = 0.034;
-          m.scale.setScalar(r);
-          m.position.set((Math.random() - 0.5) * (inner.w - 2 * r), r + 0.02 + Math.floor(i / 5) * r * 1.6, (Math.random() - 0.5) * (inner.d - 2 * r));
-          m.rotation.set(Math.random() * 6, Math.random() * 6, 0);
-          this.hopper.add(m);
-        }
-      }
-      this.hopperLevel = want;
+    // capacity: the clear case grows taller (rebuild in place when idle)
+    const ext = caseExtension(up.cap || 0);
+    if (ext !== this.ext && animate && this.state === 'idle') {
+      this.rebuild();
+      this.game.tweens.wait(0.05, () => this.applyUpgrades(true));
+      return;
     }
     this.rope.setCoins(this.coins);
     if (animate) {
@@ -603,7 +618,7 @@ export class GachaMachine {
       this.syncPile(dt);
     }
     this.rope.update(dt);
-    if (this.motor) this.motor.children.length; // keep reference
+    if (this.turntable) this.turntable.rotation.y += dt * 0.35;
   }
 
   dispose() {

@@ -123,8 +123,9 @@ function layout(entries) {
     scene.add(floor);
     const cam = new THREE.PerspectiveCamera(30, cw / ch, 0.001, 100);
     const back = params.get('angle') === 'back';
-    const dir = new THREE.Vector3(back ? -0.55 : 0.55, 0.42, back ? -1 : 1).normalize();
-    const dist = radius / Math.sin(THREE.MathUtils.degToRad(15)) * 1.15;
+    const front = params.get('angle') === 'front';
+    const dir = front ? new THREE.Vector3(0.12, 0.12, 1).normalize() : new THREE.Vector3(back ? -0.55 : 0.55, 0.42, back ? -1 : 1).normalize();
+    const dist = radius / Math.sin(THREE.MathUtils.degToRad(15)) * (+(params.get('zoom') || 1.15));
     cam.position.copy(center).addScaledVector(dir, dist);
     cam.lookAt(center);
     cells.push({ scene, cam, x: c * cw, y: r * ch, w: cw, h: ch, obj });

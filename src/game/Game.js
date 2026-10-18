@@ -329,13 +329,14 @@ export class Game {
   // ------------------------------------------------------------------ persistence
   restoreLoose() {
     for (const l of this.state.loose || []) {
+      if (l.d?.type === 'roller') continue; // the museum remodel roller was retired (walls are fixed now)
       const p = new THREE.Vector3(...l.p);
       if (l.kind === 'capsule') this.items.spawnCapsule(l.d, p);
       else if (l.kind === 'toy') this.items.spawnToy({ key: l.d.key, finish: l.d.finish }, p, { physics: false, rotY: l.r || 0 });
       else if (l.kind === 'box') this.items.spawnBox(l.d, p, this.delivery.meshFor(l.d));
     }
     // deliveries that never arrived
-    for (const d of this.state.deliveries || []) this.delivery.order(d, { delay: 1 });
+    for (const d of this.state.deliveries || []) if (d.type !== 'roller') this.delivery.order(d, { delay: 1 });
     this.state.deliveries = [];
   }
 

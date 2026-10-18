@@ -1,17 +1,19 @@
-// The collectible museum behind the garage: a decoratable hall with display furniture, decorations,
-// paintable floors/walls, visitors who pay for tickets, and a star rating driven by what you exhibit.
+// The collectible museum behind the garage, built like an old Shōwa-era Japanese shop (駄菓子屋 / toy shop):
+// fixed wooden architecture, enamel signs and pendant lamps. You customise it with display furniture,
+// display sheets (themed mats) and decorations; visitors pay for tickets and the star rating follows your exhibits.
 import * as THREE from 'three';
 import { Game } from '../game/Game.js';
 import { GARAGE } from '../world/Garage.js';
-import { tex } from '../gfx/textures.js';
 import { pixMat, boxMesh, colMat } from '../gfx/geo.js';
 import { Pix, FONT_EN } from '../gfx/pix.js';
+import { shopMat } from '../gfx/shopTextures.js';
 import { audio } from '../core/audio.js';
 import { ease, formatYen, hash2 } from '../core/util.js';
 import { DisplaySlots } from '../game/Display.js';
 import { buildDisplay } from './displays.js';
-import { DISPLAYS, FLOORS, WALLS, decorList, decorPrice, THEME_NAMES } from './catalog.js';
-import { PROPS, propMesh } from '../world/props.js';
+import { DISPLAYS, decorList, decorPrice, THEME_NAMES } from './catalog.js';
+import { DISPLAY_STYLES, STYLE_ORDER, sheetMesh, styleTile } from './styles.js';
+import { PROPS, propMesh, hasProp } from '../world/props.js';
 import { MUSEUM_PRICE, MUSEUM_REQ_COMPLETE, MUSEUM_EXPANSIONS, itemValue } from '../game/economy.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
@@ -20,43 +22,38 @@ import { Visitors } from './Visitors.js';
 import { makeBoxMesh } from '../game/Delivery.js';
 import { COL, yen } from '../pc/ui.js';
 
-const FLOOR_TEX = { wood: 'woodFloor', concrete: 'concrete', tatami: 'tatami', grass: 'grassFloor', gravel: 'gravel', brick: 'brick', marble: 'marble', carpet: 'carpet', candy: 'candyFloor', water: 'waterFloor', space: 'spaceFloor', night: 'nightFloor' };
-const WALL_TEX = { plaster: 'plaster', woodpanel: 'woodPanel', brickwall: 'brick', shoji: 'shoji', bamboo: 'bambooWall', sakura: 'sakuraWall', candystripe: 'candyStripe', sea: 'seaWall', cosmos: 'cosmosWall', neon: 'neonWall', ghostly: 'ghostWall' };
-const GLOWY = { space: 0.35, cosmos: 0.4, neon: 0.55, sea: 0.15 };
-const SURFACE_SOUND = { grass: 'grass', tatami: 'tatami', wood: 'wood', carpet: 'tatami', night: 'wood', candy: 'wood' };
+// optional pixel-art signage (src/gfx/shopArt.js)
+const artMods = import.meta.glob('../gfx/shopArt.js', { eager: true });
+const SHOP_ART = Object.values(artMods)[0]?.SHOP_ART || {};
+export const SHOP_TEXT = Object.values(artMods)[0]?.SHOP_TEXT || '';
 
 const ZN = GARAGE.minZ - 0.2; // museum north wall (back of the garage wall)
 const WALL_H = 3.6;
 const CELL = 0.5;
-const ENTRANCE = { x0: -1.0, x1: 1.0, h: 2.4 };
+const ENTRANCE = { x0: -1.0, x1: 1.0, h: 2.35 };
 const DOOR = { x0: -GARAGE.doorHalf, x1: GARAGE.doorHalf, h: GARAGE.doorH };
-
-const matCache = new Map();
-function surfMat(kind, id) {
-  const key = kind + id;
-  if (matCache.has(key)) return matCache.get(key);
-  const recipe = (kind === 'f' ? FLOOR_TEX : WALL_TEX)[id] || (kind === 'f' ? 'woodFloor' : 'plaster');
-  const t = tex(recipe);
-  const map = t.map.clone(); map.needsUpdate = true;
-  map.wrapS = map.wrapT = THREE.RepeatWrapping;
-  map.repeat.set(1 / t.size[0], 1 / t.size[1]);
-  const bump = t.bump.clone(); bump.needsUpdate = true; bump.wrapS = bump.wrapT = THREE.RepeatWrapping; bump.repeat.copy(map.repeat);
-  const m = new THREE.MeshStandardMaterial({
-    map, bumpMap: bump, bumpScale: 1.2,
-    roughness: id === 'marble' || id === 'water' ? 0.25 : id === 'candy' ? 0.4 : 0.85,
-    metalness: 0,
-  });
-  if (GLOWY[id]) { m.emissive = new THREE.Color(0xffffff); m.emissiveMap = map; m.emissiveIntensity = GLOWY[id]; }
-  matCache.set(key, m);
-  return m;
-}
+const KOSHI = 0.95; // wainscot height
+const NAGESHI = 2.55; // upper rail height
 
 let uidN = 1;
+
+const artTexCache = new Map();
+function artTexture(id) {
+  if (artTexCache.has(id)) return artTexCache.get(id);
+  const a = SHOP_ART[id];
+  if (!a) return null;
+  const p = new Pix(a.w, a.h, 4);
+  try { a.paint(p); } catch (e) { console.warn('shop art', id, e); }
+  const t = p.texture();
+  artTexCache.set(id, t);
+  return t;
+}
 
 export class Museum {
   constructor(game) {
     this.game = game;
     this.data = game.state.museum;
+    if (!this.data.styles) this.data.styles = ['plain', 'felt'];
     this.group = new THREE.Group();
     game.scene.add(this.group);
     this.placed = [];
@@ -65,7 +62,6 @@ export class Museum {
     this.inside = 0;
     this.ghostCache = new Map();
     this.ghost = null;
-    this.paintSel = { f: 0, w: 0 };
     if (this.data.owned) this.build();
   }
 
@@ -85,6 +81,7 @@ export class Museum {
     this.buildCeilingAndLights();
     this.buildEntrance();
     this.buildCounter();
+    this.buildWallDecor();
     this.buildObstacles();
     if (!this.placedBuilt) {
       for (const p of this.data.placed) this.spawnPlaced(p, false);
@@ -105,166 +102,162 @@ export class Museum {
     if (this.floorMeshes) for (const m of this.floorMeshes) { const i = this.game.placement.surfaces.indexOf(m); if (i >= 0) this.game.placement.surfaces.splice(i, 1); }
   }
 
-  floorKey(i, j) { return `${i},${j}`; }
-  floorAt(i, j) { return this.data.floor[this.floorKey(i, j)] || 'wood'; }
+  /** One quad list → mesh with UVs in metres (u along the wall / x, v up / z). */
+  quadMesh(quads, mat) {
+    const pos = [], uv = [], idx = [];
+    quads.forEach((q, k) => {
+      let P = q.p, U = q.uv;
+      if (q.n) {
+        const e1 = [P[1][0] - P[0][0], P[1][1] - P[0][1], P[1][2] - P[0][2]], e2 = [P[2][0] - P[0][0], P[2][1] - P[0][1], P[2][2] - P[0][2]];
+        const c = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+        if (c[0] * q.n[0] + c[1] * q.n[1] + c[2] * q.n[2] < 0) { P = [P[0], P[3], P[2], P[1]]; U = [U[0], U[1], U[6], U[7], U[4], U[5], U[2], U[3]]; }
+      }
+      pos.push(...P[0], ...P[1], ...P[2], ...P[3]);
+      uv.push(...U);
+      const B = k * 4;
+      idx.push(B, B + 1, B + 2, B, B + 2, B + 3);
+    });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    const m = new THREE.Mesh(g, mat);
+    m.receiveShadow = true;
+    return m;
+  }
 
   buildFloor() {
-    const { w, d } = this.dims;
-    const byMat = new Map();
-    for (let i = 0; i < w; i++) for (let j = 0; j < d; j++) {
-      const id = this.floorAt(i, j);
-      if (!byMat.has(id)) byMat.set(id, []);
-      byMat.get(id).push([i, j]);
-    }
-    this.floorMeshes = [];
-    for (const [id, cells] of byMat) {
-      const pos = [], uv = [], idx = [];
-      cells.forEach(([i, j], k) => {
-        const x = this.x0 + i, z = ZN - j - 1;
-        pos.push(x, 0, z, x + 1, 0, z, x + 1, 0, z + 1, x, 0, z + 1);
-        uv.push(x, -z, x + 1, -z, x + 1, -z - 1, x, -z - 1);
-        const b = k * 4;
-        idx.push(b, b + 2, b + 1, b, b + 3, b + 2);
-      });
-      const g = new THREE.BufferGeometry();
-      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-      g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
-      g.setIndex(idx);
-      g.computeVertexNormals();
-      const m = new THREE.Mesh(g, surfMat('f', id));
-      m.receiveShadow = true;
-      m.userData.museumFloor = true;
-      this.shell.add(m);
-      this.floorMeshes.push(m);
-      this.game.placement.addSurface(m);
-    }
+    const { x0, x1, zS } = this;
+    const q = { p: [[x0, 0, zS], [x0, 0, ZN], [x1, 0, ZN], [x1, 0, zS]], uv: [x0, -zS, x0, -ZN, x1, -ZN, x1, -zS] };
+    const m = this.quadMesh([q], shopMat('shopFloor', { roughness: 0.55, bump: 0.6 }));
+    m.userData.museumFloor = true;
+    this.shell.add(m);
+    this.floorMeshes = [m];
+    this.game.placement.addSurface(m);
   }
 
-  wallSegments() {
-    const { w, d } = this.dims;
-    const segs = [];
-    // N wall faces +... interior faces -z? The museum lies at z < ZN, so the N wall's interior face looks toward -z.
-    for (let i = 0; i < w; i++) segs.push({ side: 'N', i, a: this.x0 + i, b: this.x0 + i + 1, open: DOOR });
-    for (let i = 0; i < w; i++) segs.push({ side: 'S', i, a: this.x0 + i, b: this.x0 + i + 1, open: ENTRANCE });
-    for (let j = 0; j < d; j++) segs.push({ side: 'W', i: j, a: ZN - j - 1, b: ZN - j });
-    for (let j = 0; j < d; j++) segs.push({ side: 'E', i: j, a: ZN - j - 1, b: ZN - j });
-    return segs;
+  /** Horizontal spans of a wall band, cut around an opening. */
+  wallSpans(a, b, y0, y1, open) {
+    const out = [];
+    if (!open || open.x1 <= a || open.x0 >= b || y0 >= open.h) { out.push([a, b, y0, y1]); return out; }
+    if (open.x0 > a) out.push([a, open.x0, y0, y1]);
+    if (open.x1 < b) out.push([open.x1, b, y0, y1]);
+    if (y1 > open.h) out.push([Math.max(a, open.x0), Math.min(b, open.x1), Math.max(y0, open.h), y1]);
+    return out;
   }
-
-  wallAt(side, i) { return this.data.walls[`${side}:${i}`] || 'plaster'; }
 
   buildWalls() {
-    this.wallMeshes = [];
-    const byMat = new Map();
-    const quad = (list, side, s, e, y0, y1) => {
-      if (e - s < 0.001 || y1 - y0 < 0.001) return;
-      list.push({ side, s, e, y0, y1 });
-    };
-    this.wallHit = [];
-    for (const seg of this.wallSegments()) {
-      const id = this.wallAt(seg.side, seg.i);
-      if (!byMat.has(id)) byMat.set(id, []);
-      const list = byMat.get(id);
-      const o = seg.open;
-      if (o && seg.b > o.x0 && seg.a < o.x1) {
-        quad(list, seg.side, seg.a, Math.max(seg.a, o.x0), 0, WALL_H);
-        quad(list, seg.side, Math.min(seg.b, o.x1), seg.b, 0, WALL_H);
-        quad(list, seg.side, Math.max(seg.a, o.x0), Math.min(seg.b, o.x1), o.h, WALL_H);
-      } else quad(list, seg.side, seg.a, seg.b, 0, WALL_H);
-    }
     const { x0, x1, zS } = this;
-    const place = (q) => {
-      // returns 4 corners in interior-facing order + uv
-      const { side, s, e, y0, y1 } = q;
-      if (side === 'N') return [[s, y0, ZN - 0.012], [e, y0, ZN - 0.012], [e, y1, ZN - 0.012], [s, y1, ZN - 0.012], s, e];
-      if (side === 'S') return [[e, y0, zS], [s, y0, zS], [s, y1, zS], [e, y1, zS], -e, -s];
-      if (side === 'W') return [[x0, y0, e], [x0, y0, s], [x0, y1, s], [x0, y1, e], -e, -s];
-      return [[x1, y0, s], [x1, y0, e], [x1, y1, e], [x1, y1, s], s, e];
-    };
-    for (const [id, list] of byMat) {
-      const pos = [], uv = [], idx = [];
-      list.forEach((q, k) => {
-        const [a, b, c, dd, u0, u1] = place(q);
-        pos.push(...a, ...b, ...c, ...dd);
-        uv.push(u0, q.y0, u1, q.y0, u1, q.y1, u0, q.y1);
-        const B = k * 4;
-        idx.push(B, B + 1, B + 2, B, B + 2, B + 3);
-      });
-      const g = new THREE.BufferGeometry();
-      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-      g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
-      g.setIndex(idx);
-      g.computeVertexNormals();
-      const m = new THREE.Mesh(g, surfMat('w', id));
-      m.receiveShadow = true;
-      m.userData.wallSurf = true;
+    const sides = [
+      { a: x0, b: x1, open: DOOR, at: (u, y) => [u, y, ZN - 0.012], n: [0, 0, -1] },
+      { a: x0, b: x1, open: ENTRANCE, at: (u, y) => [u, y, zS], n: [0, 0, 1] },
+      { a: zS, b: ZN, open: null, at: (u, y) => [x0, y, u], n: [1, 0, 0] },
+      { a: zS, b: ZN, open: null, at: (u, y) => [x1, y, u], n: [-1, 0, 0] },
+    ];
+    const bands = [['koshiita', 0, KOSHI], ['shikkui', KOSHI, WALL_H]];
+    for (const [key, y0, y1] of bands) {
+      const quads = [];
+      for (const s of sides) {
+        for (const [a, b, ya, yb] of this.wallSpans(s.a, s.b, y0, y1, s.open)) {
+          if (b - a < 0.001 || yb - ya < 0.001) continue;
+          quads.push({ p: [s.at(a, ya), s.at(b, ya), s.at(b, yb), s.at(a, yb)], uv: [a, ya, b, ya, b, yb, a, yb], n: s.n });
+        }
+      }
+      const m = this.quadMesh(quads, shopMat(key, { roughness: key === 'shikkui' ? 0.92 : 0.6, bump: key === 'shikkui' ? 0.4 : 0.9, color: key === 'shikkui' ? 0xe4e0d8 : 0xffffff }));
       this.shell.add(m);
-      this.wallMeshes.push(m);
     }
+    // wooden trim: chair rail on the wainscot, nageshi rail, skirting, and posts (柱)
+    const wood = pixMat('woodDark', { roughness: 0.55 });
+    const W = x1 - x0, D = ZN - zS;
+    const trim = (w, h, d, x, y, z) => { const m = boxMesh(w, h, d, wood, { cast: false }); m.position.set(x, y, z); this.shell.add(m); return m; };
+    for (const [y, h, t] of [[KOSHI, 0.05, 0.035], [NAGESHI, 0.1, 0.04], [0.05, 0.1, 0.025]]) {
+      // N/S walls are cut around the openings
+      for (const [a, b] of this.wallSpans(x0, x1, y - h / 2, y + h / 2, DOOR).map((s) => [s[0], s[1]])) trim(b - a, h, t, (a + b) / 2, y, ZN - 0.012 - t / 2);
+      for (const [a, b] of this.wallSpans(x0, x1, y - h / 2, y + h / 2, ENTRANCE).map((s) => [s[0], s[1]])) trim(b - a, h, t, (a + b) / 2, y, zS + t / 2);
+      trim(t, h, D, x0 + t / 2, y, (ZN + zS) / 2);
+      trim(t, h, D, x1 - t / 2, y, (ZN + zS) / 2);
+    }
+    const post = (x, z) => trim(0.12, WALL_H, 0.12, x, WALL_H / 2, z);
+    for (const x of [x0 + 0.06, x1 - 0.06]) { post(x, ZN - 0.06); post(x, zS + 0.06); }
+    const nz = Math.max(1, Math.round(D / 2.2));
+    for (let i = 1; i < nz; i++) { const z = ZN - (D / nz) * i; post(x0 + 0.03, z); post(x1 - 0.03, z); }
+    const nx = Math.max(1, Math.round(W / 2.4));
+    for (let i = 1; i < nx; i++) {
+      const x = x0 + (W / nx) * i;
+      if (Math.abs(x) > 1.25) { post(x, ZN - 0.04); post(x, zS + 0.04); }
+    }
+    this.postSpacing = { nz, nx };
   }
 
   buildWallShell() {
     const { x0, x1, zS } = this;
-    // physics floor
     this.colliders.push(this.game.physics.addBox({ center: new THREE.Vector3(0, -0.1, (ZN + zS) / 2), half: new THREE.Vector3((x1 - x0) / 2, 0.1, (ZN - zS) / 2), material: 'wood' }));
-    // outer shell & thickness (plain), baseboards and crown moulding
-    const outer = colMat(0x8a8478, { roughness: 0.95 });
+    // outer shell: weathered clapboard (seen through the front doors)
+    const outer = shopMat('siding', { roughness: 0.9 });
     const T = 0.2;
     const W = x1 - x0;
     const D = ZN - zS;
-    const ob = (w, h, d, x, y, z) => { const m = boxMesh(w, h, d, outer, { cast: true, receive: false }); m.position.set(x, y + h / 2, z); this.shell.add(m); return m; };
-    // south wall shell with the entrance opening
+    const ob = (w, h, d, x, y, z) => {
+      const g = new THREE.BoxGeometry(w, h, d);
+      // metre UVs on the big faces
+      const uv = g.attributes.uv;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * Math.max(w, d), uv.getY(i) * h);
+      const m = new THREE.Mesh(g, outer); m.castShadow = true; m.position.set(x, y + h / 2, z); this.shell.add(m); return m;
+    };
     const eL = ENTRANCE.x0 - (x0 - T), eR = (x1 + T) - ENTRANCE.x1;
     ob(eL, WALL_H, T, x0 - T + eL / 2, 0, zS - T / 2 - 0.001);
     ob(eR, WALL_H, T, ENTRANCE.x1 + eR / 2, 0, zS - T / 2 - 0.001);
     ob(ENTRANCE.x1 - ENTRANCE.x0, WALL_H - ENTRANCE.h, T, 0, ENTRANCE.h, zS - T / 2 - 0.001);
     ob(T, WALL_H, D + T, x0 - T / 2 - 0.001, 0, (ZN + zS) / 2);
     ob(T, WALL_H, D + T, x1 + T / 2 + 0.001, 0, (ZN + zS) / 2);
-    // close the north wall where the museum is wider than the garage
     const gW = 4.2;
     if (x0 < -gW) { ob(-gW - x0, WALL_H, T, (x0 - gW) / 2, 0, ZN + T / 2); ob(x1 - gW, WALL_H, T, (x1 + gW) / 2, 0, ZN + T / 2); }
-    // re-face the entrance gap edges: cut the S outer shell (simple: an invisible collider-only opening)
-    const base = pixMat('woodDark', { roughness: 0.6 });
-    const bb = (w, d, x, z) => { const m = boxMesh(w, 0.1, d, base, { cast: false }); m.position.set(x, 0.05, z); this.shell.add(m); };
-    bb(W, 0.03, 0, ZN - 0.015); bb(W, 0.03, 0, zS + 0.015);
-    bb(0.03, D, x0 + 0.015, (ZN + zS) / 2); bb(0.03, D, x1 - 0.015, (ZN + zS) / 2);
-    const crown = colMat(0xf2ece0, { roughness: 0.6 });
-    const cr = (w, d, x, z) => { const m = boxMesh(w, 0.12, d, crown, { cast: false }); m.position.set(x, WALL_H - 0.06, z); this.shell.add(m); };
-    cr(W, 0.05, 0, ZN - 0.025); cr(W, 0.05, 0, zS + 0.025); cr(0.05, D, x0 + 0.025, (ZN + zS) / 2); cr(0.05, D, x1 - 0.025, (ZN + zS) / 2);
-    // physics walls
-    const pw = (cx, cz, hx, hz) => this.colliders.push(this.game.physics.addBox({ center: new THREE.Vector3(cx, WALL_H / 2, cz), half: new THREE.Vector3(hx, WALL_H / 2, hz), material: 'concrete' }));
+    const pw = (cx, cz, hx, hz) => this.colliders.push(this.game.physics.addBox({ center: new THREE.Vector3(cx, WALL_H / 2, cz), half: new THREE.Vector3(hx, WALL_H / 2, hz), material: 'wood' }));
     pw(0, zS - 0.1, W / 2, 0.1); pw(x0 - 0.1, (ZN + zS) / 2, 0.1, D / 2); pw(x1 + 0.1, (ZN + zS) / 2, 0.1, D / 2);
   }
 
   buildCeilingAndLights() {
     const { x0, x1, zS } = this;
     const W = x1 - x0, D = ZN - zS;
-    const ceilMat = pixMat('plaster', { roughness: 0.95, color: 0xffffff }).clone();
-    ceilMat.emissive = new THREE.Color(0x6a6258);
-    ceilMat.emissiveMap = ceilMat.map;
-    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(W, D), ceilMat);
-    ceil.rotation.x = Math.PI / 2;
-    ceil.position.set(0, WALL_H, (ZN + zS) / 2);
+    const ceilMat = shopMat('shopCeiling', { roughness: 0.85, emissive: 0x2a1c10, emissiveIntensity: 1 });
+    const ceil = this.quadMesh([{ p: [[x0, WALL_H, ZN], [x0, WALL_H, zS], [x1, WALL_H, zS], [x1, WALL_H, ZN]], uv: [x0, ZN, x0, zS, x1, zS, x1, ZN] }], ceilMat);
     this.shell.add(ceil);
-    // light panels + point lights
-    const panelMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff6e8).multiplyScalar(1.7) });
-    const nx = Math.max(2, Math.round(W / 5)), nz = Math.max(2, Math.round(D / 5));
+    // exposed beams (梁) across the room, lamps hang from them
+    const beamM = pixMat('woodDark', { roughness: 0.6 });
+    const nb = Math.max(2, Math.round(D / 2.6));
+    const beamZ = [];
+    for (let i = 0; i < nb; i++) {
+      const z = ZN - (D / nb) * (i + 0.5);
+      beamZ.push(z);
+      const b = boxMesh(W, 0.22, 0.16, beamM, { cast: false });
+      b.position.set(0, WALL_H - 0.11, z);
+      this.shell.add(b);
+    }
+    // enamel-shade pendant lamps
     this.lights = [];
-    for (let a = 0; a < nx; a++) for (let b = 0; b < nz; b++) {
-      const x = x0 + (W / nx) * (a + 0.5), z = ZN - (D / nz) * (b + 0.5);
-      const p = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), panelMat);
-      p.rotation.x = Math.PI / 2; p.position.set(x, WALL_H - 0.01, z);
-      this.shell.add(p);
-      if (this.lights.length < 6) {
-        const l = new THREE.PointLight(0xfff0dc, 5.5, 9, 1.4);
-        l.position.set(x, WALL_H - 0.4, z);
+    const nl = Math.max(2, Math.round(W / 3));
+    const lampY = 2.55;
+    let k = 0;
+    for (const z of beamZ) for (let a = 0; a < nl; a++) {
+      const x = x0 + (W / nl) * (a + 0.5);
+      const lamp = this.makeLamp();
+      lamp.position.set(x, lampY, z);
+      this.shell.add(lamp);
+      const cordY = lampY + (hasProp('shop_lamp') ? 0.68 : 0.2);
+      const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, WALL_H - 0.22 - cordY, 4), colMat(0x1a1a1a));
+      cord.position.set(x, (WALL_H - 0.22 + cordY) / 2, z);
+      this.shell.add(cord);
+      if (this.lights.length < 6 && (k++ % Math.max(1, Math.ceil((beamZ.length * nl) / 6)) === 0)) {
+        const l = new THREE.PointLight(0xffe2c4, 5.2, 8.5, 1.4);
+        l.position.set(x, lampY - 0.15, z);
         this.shell.add(l);
         this.lights.push(l);
       }
     }
-    // skylight sun (shadows) — only active while the player is inside
+    // sun through the skylight (shadows) — only active while the player is inside
     if (!this.sun) {
-      this.sun = new THREE.DirectionalLight(0xfff2e0, 0);
+      this.sun = new THREE.DirectionalLight(0xffe8cc, 0);
       this.sun.castShadow = true;
       this.sun.shadow.bias = -0.0005;
       this.sun.shadow.normalBias = 0.02;
@@ -279,62 +272,124 @@ export class Museum {
     this.sun.target.position.set(0, 0, (ZN + zS) / 2);
   }
 
+  makeLamp() {
+    if (hasProp('shop_lamp')) { const m = propMesh('shop_lamp'); m.castShadow = false; const g = new THREE.Group(); g.add(m); return g; }
+    const g = new THREE.Group();
+    const shade = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.14, 20, 1, true), new THREE.MeshStandardMaterial({ color: 0x2f5a3a, roughness: 0.35, side: THREE.DoubleSide }));
+    shade.position.y = 0.07;
+    g.add(shade);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffe0b0).multiplyScalar(2.2) }));
+    bulb.position.y = 0.02;
+    g.add(bulb);
+    return g;
+  }
+
   buildEntrance() {
     const zS = this.zS;
     const g = new THREE.Group();
     this.shell.add(g);
-    const frameM = colMat(0x5a6068, { metalness: 0.7, roughness: 0.35 });
-    const fb = (w, h, d, x, y, z) => { const m = boxMesh(w, h, d, frameM); m.position.set(x, y + h / 2, z); g.add(m); };
-    fb(0.08, ENTRANCE.h, 0.15, ENTRANCE.x0 - 0.04, 0, zS);
-    fb(0.08, ENTRANCE.h, 0.15, ENTRANCE.x1 + 0.04, 0, zS);
-    fb(ENTRANCE.x1 - ENTRANCE.x0 + 0.16, 0.1, 0.15, 0, ENTRANCE.h, zS);
-    // sliding glass doors
-    const gm = new THREE.MeshPhysicalMaterial({ color: 0xe8f4ff, transparent: true, opacity: 0.18, roughness: 0.04, clearcoat: 1, depthWrite: false, envMapIntensity: 2, side: THREE.DoubleSide });
+    const wood = pixMat('woodDark', { roughness: 0.55 });
+    const fb = (w, h, d, x, y, z, parent = g) => { const m = boxMesh(w, h, d, wood); m.position.set(x, y + h / 2, z); parent.add(m); return m; };
+    // door frame + threshold
+    fb(0.1, ENTRANCE.h, 0.16, ENTRANCE.x0 - 0.05, 0, zS);
+    fb(0.1, ENTRANCE.h, 0.16, ENTRANCE.x1 + 0.05, 0, zS);
+    fb(ENTRANCE.x1 - ENTRANCE.x0 + 0.2, 0.12, 0.18, 0, ENTRANCE.h, zS);
+    fb(ENTRANCE.x1 - ENTRANCE.x0, 0.03, 0.16, 0, 0, zS);
+    // wooden lattice glass sliding doors (格子戸)
+    const gm = new THREE.MeshPhysicalMaterial({ color: 0xeaf2f0, transparent: true, opacity: 0.2, roughness: 0.06, clearcoat: 1, depthWrite: false, envMapIntensity: 2, side: THREE.DoubleSide });
     this.doors = [];
+    const PW = 1.0, PH = ENTRANCE.h - 0.04;
     for (const s of [-1, 1]) {
       const panel = new THREE.Group();
-      const gl = new THREE.Mesh(new THREE.PlaneGeometry(1.0, ENTRANCE.h - 0.05), gm);
-      gl.position.y = ENTRANCE.h / 2;
+      fb(0.045, PH, 0.04, -PW / 2 + 0.0225, 0, 0, panel);
+      fb(0.045, PH, 0.04, PW / 2 - 0.0225, 0, 0, panel);
+      fb(PW, 0.05, 0.04, 0, PH - 0.05, 0, panel);
+      fb(PW, 0.42, 0.035, 0, 0, 0, panel); // wooden kick panel (腰板)
+      fb(PW, 0.035, 0.04, 0, 0.42, 0, panel);
+      // kumiko lattice over the glass
+      for (let i = 1; i < 3; i++) fb(0.018, PH - 0.47, 0.03, -PW / 2 + (PW / 3) * i, 0.45, 0.004, panel);
+      for (let j = 1; j < 5; j++) fb(PW, 0.018, 0.03, 0, 0.45 + ((PH - 0.5) / 5) * j, 0.004, panel);
+      const gl = new THREE.Mesh(new THREE.PlaneGeometry(PW - 0.08, PH - 0.5), gm);
+      gl.position.set(0, 0.45 + (PH - 0.5) / 2, 0);
       gl.renderOrder = 3;
+      gl.userData.noRim = true;
       panel.add(gl);
-      const edge = boxMesh(0.04, ENTRANCE.h - 0.05, 0.05, frameM); edge.position.set(-s * 0.48, ENTRANCE.h / 2, 0); panel.add(edge);
-      // "自動ドア" sticker
-      const st = new Pix(48, 16, 1); st.fill(0x2f6fd6); st.text('自動ドア', 24, 1, { size: 12, color: 0xffffff, align: 'center' });
-      const sm = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.06), new THREE.MeshBasicMaterial({ map: st.texture(), side: THREE.DoubleSide }));
-      sm.position.set(0, 1.2, 0.005); panel.add(sm);
-      panel.position.set(s * 0.5, 0, zS);
+      panel.position.set(s * 0.5, 0.03, zS + (s > 0 ? 0.025 : -0.025));
       g.add(panel);
       this.doors.push({ panel, s, open: 0 });
     }
-    // welcome mat
-    const mat = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.9), colMat(0x8a2a2a, { roughness: 1 }));
-    mat.rotation.x = -Math.PI / 2; mat.position.set(0, 0.004, zS + 0.6);
-    g.add(mat);
-    // outside plaza
-    const plaza = new THREE.Mesh(new THREE.PlaneGeometry(24, 8), pixMat('brick', { roughness: 0.9, color: 0xc8b8a8 }));
-    plaza.rotation.x = -Math.PI / 2; plaza.position.set(0, -0.01, zS - 4);
-    plaza.receiveShadow = true;
-    g.add(plaza);
+    // outside: noren curtain, signboard, awning, street
+    const out = zS - 0.2;
+    const norenTex = artTexture('noren');
+    const nm = new THREE.MeshStandardMaterial({ map: norenTex, color: norenTex ? 0xffffff : 0x22305a, roughness: 0.95, side: THREE.DoubleSide });
+    this.noren = [];
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 2.1, 8), colMat(0x8a6a3a, { roughness: 0.6 }));
+    rod.rotation.z = Math.PI / 2; rod.position.set(0, ENTRANCE.h + 0.04, out);
+    g.add(rod);
+    for (const s of [-1, 1]) {
+      const geo = new THREE.PlaneGeometry(0.98, 0.75, 1, 6);
+      geo.translate(0, -0.375, 0);
+      const uv = geo.attributes.uv;
+      for (let i = 0; i < uv.count; i++) uv.setX(i, s < 0 ? uv.getX(i) * 0.5 : 0.5 + uv.getX(i) * 0.5);
+      const pn = new THREE.Mesh(geo, nm);
+      pn.position.set(s * 0.5, ENTRANCE.h + 0.03, out);
+      pn.rotation.y = Math.PI; // printed side faces the street
+      g.add(pn);
+      this.noren.push(pn);
+    }
+    const signTex = artTexture('shop_sign');
+    if (signTex) {
+      const a = SHOP_ART.shop_sign;
+      const sw = 2.6, shH = sw * a.h / a.w;
+      const sign = new THREE.Mesh(new THREE.PlaneGeometry(sw, shH), new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.6, emissive: 0xffffff, emissiveMap: signTex, emissiveIntensity: 0.1 }));
+      sign.position.set(0, ENTRANCE.h + 0.62, zS - 0.215);
+      sign.rotation.y = Math.PI;
+      g.add(sign);
+    }
+    // striped awning (日除けテント)
+    const awn = new Pix(32, 8, 3);
+    for (let x = 0; x < 32; x++) for (let y = 0; y < 8; y++) awn.px(x, y, Math.floor(x / 4) % 2 ? 0xffffff : 0xc8282e);
+    for (let x = 0; x < 32; x++) awn.px(x, 7, 0x8a1a1e);
+    const at = awn.texture(); at.wrapS = THREE.RepeatWrapping; at.repeat.set(3, 1);
+    const awning = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 0.9), new THREE.MeshStandardMaterial({ map: at, roughness: 0.9, side: THREE.DoubleSide }));
+    awning.position.set(0, ENTRANCE.h + 1.05, zS - 0.55);
+    awning.rotation.x = -Math.PI / 2 + 0.55;
+    g.add(awning);
+    // stone step + street outside
+    const step = boxMesh(2.4, 0.08, 0.5, colMat(0x8a8680, { roughness: 0.95 }));
+    step.position.set(0, -0.03, zS - 0.45);
+    g.add(step);
+    const street = new THREE.Mesh(new THREE.PlaneGeometry(24, 8), pixMat('asphalt', { roughness: 0.95, color: 0xb0aaa0 }));
+    street.rotation.x = -Math.PI / 2; street.position.set(0, -0.012, zS - 4.4);
+    street.receiveShadow = true;
+    g.add(street);
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(40, 16), new THREE.MeshBasicMaterial({ color: 0xffb88a, fog: false }));
     sky.position.set(0, 6, zS - 12);
     g.add(sky);
-    for (let i = 0; i < 9; i++) {
-      const tr = propMesh(i % 3 === 0 ? 'sakura_tree' : 'pine_tree', { fallbackSize: [1.6, 3, 1.6], fallbackColor: 0x4a8a4a });
-      tr.position.set(-10 + i * 2.5 + hash2(i, 1), 0, zS - 6 - hash2(i, 2) * 2);
-      tr.scale.setScalar(0.8 + hash2(i, 3) * 0.4);
+    // houses across the street + trees
+    for (let i = 0; i < 5; i++) {
+      const h = hasProp('house_front') ? propMesh('house_front') : null;
+      if (h) { h.position.set(-8 + i * 4, 0, zS - 8.5); g.add(h); }
+    }
+    for (let i = 0; i < 4; i++) {
+      const tr = propMesh(i % 2 ? 'sakura_tree' : 'pine_tree', { fallbackSize: [1.6, 3, 1.6], fallbackColor: 0x4a8a4a });
+      tr.position.set(-7 + i * 4.6 + hash2(i, 1), 0, zS - 5.5 - hash2(i, 2));
+      tr.scale.setScalar(0.8 + hash2(i, 3) * 0.3);
       g.add(tr);
     }
+    if (hasProp('utility_pole')) { const pole = propMesh('utility_pole'); pole.position.set(3.2, 0, zS - 3.2); g.add(pole); }
     const sunOut = new THREE.PointLight(0xffc890, 3, 10, 1.5);
     sunOut.position.set(0, 3, zS - 3);
     g.add(sunOut);
-    // museum name board + star rating above the doors (inside)
+    // inside: wooden name board + star rating above the doors
     const p = new Pix(160, 40, 2);
-    p.fill(0x3a2a1c); p.frame(1, 1, 158, 38, 0xd4a83a);
-    p.text('ガチャ博物館', 80, 3, { size: 18, color: 0xf3e9d2, align: 'center' });
+    p.fill(0x3a2a1c);
+    for (let y = 0; y < 40; y += 3) for (let x = 0; x < 160; x++) if (hash2(x >> 3, y) < 0.3) p.px(x, y, 0x46321f);
+    p.frame(1, 1, 158, 38, 0xd4a83a);
+    p.text('ガチャ博物館', 80, 3, { size: 18, color: 0xf3e9d2, align: 'center', outline: 0x1a120a });
     p.text('GACHA MUSEUM', 80, 25, { size: 9, color: 0xd4a83a, align: 'center', font: FONT_EN });
     const board = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.45), new THREE.MeshStandardMaterial({ map: p.texture(), roughness: 0.6 }));
-    board.rotation.y = 0;
-    board.position.set(0, ENTRANCE.h + 0.45, zS + 0.03);
+    board.position.set(0, ENTRANCE.h + 0.42, zS + 0.03);
     g.add(board);
     this.starMeshes = [];
     const starShape = new THREE.Shape();
@@ -342,15 +397,15 @@ export class Museum {
     const sg = new THREE.ExtrudeGeometry(starShape, { depth: 0.015, bevelEnabled: false });
     for (let i = 0; i < 5; i++) {
       const st = new THREE.Mesh(sg, new THREE.MeshStandardMaterial({ color: 0x5a4a3a, metalness: 0.6, roughness: 0.4 }));
-      st.position.set(-0.44 + i * 0.22, ENTRANCE.h + 0.85, zS + 0.03);
+      st.position.set(-0.44 + i * 0.22, ENTRANCE.h + 0.82, zS + 0.03);
       g.add(st);
       this.starMeshes.push(st);
     }
-    // visitor counter LED
+    // visitor counter (old flip-digit style)
     this.counterCanvas = new Pix(64, 16, 3);
     this.counterTex = this.counterCanvas.texture();
     const cnt = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.12), new THREE.MeshBasicMaterial({ map: this.counterTex }));
-    cnt.position.set(1.7, 2.0, zS + 0.03);
+    cnt.position.set(-1.7, 2.0, zS + 0.03);
     g.add(cnt);
     this.updateCounterTex();
   }
@@ -358,62 +413,125 @@ export class Museum {
   updateCounterTex() {
     if (!this.counterCanvas) return;
     const p = this.counterCanvas;
-    p.fill(0x111111);
-    p.text(String(this.data.visitors || 0).padStart(6, '0'), 32, 1, { size: 13, color: 0xff6040, align: 'center', font: FONT_EN });
+    p.fill(0x1a1612);
+    for (let i = 0; i < 6; i++) p.rect(3 + i * 10, 2, 8, 12, 0x2a2420);
+    p.text(String(this.data.visitors || 0).padStart(6, '0').split('').join(' '), 32, 1, { size: 12, color: 0xf2e6c8, align: 'center', font: FONT_EN });
+    p.rect(0, 7, 64, 1, 0x0a0806);
     this.counterTex.needsUpdate = true;
   }
 
   buildCounter() {
     const zS = this.zS;
     const g = new THREE.Group();
-    g.position.set(2.1, 0, zS + 1.3);
+    // long axis along z, customer side faces west (toward the ticket queue)
+    g.position.set(1.85, 0, zS + 1.3);
+    g.rotation.y = -Math.PI / 2;
     this.shell.add(g);
-    const wood = pixMat('woodLight', { roughness: 0.55 });
-    const top = boxMesh(1.6, 0.05, 0.6, wood); top.position.set(0, 1.0, 0); g.add(top);
-    const front = boxMesh(1.6, 0.98, 0.04, pixMat('woodDark')); front.position.set(0, 0.49, 0.28); g.add(front);
-    const sideA = boxMesh(0.04, 0.98, 0.56, pixMat('woodDark')); sideA.position.set(-0.78, 0.49, 0); g.add(sideA);
-    const reg = propMesh('cash_register', { fallbackSize: [0.3, 0.2, 0.25], fallbackColor: 0x3a3a3a });
-    reg.position.set(0.4, 1.025, -0.05); reg.rotation.y = Math.PI; g.add(reg);
-    // 受付 sign + ticket price card
-    const p = new Pix(80, 40, 4); p.fill(0xffffff); p.frame(0, 0, 80, 40, 0xe5383b);
-    p.text('受付', 40, 2, { size: 16, color: 0xe5383b, align: 'center' });
-    p.text('RECEPTION', 40, 22, { size: 9, color: 0x333333, align: 'center', font: FONT_EN });
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.2), new THREE.MeshStandardMaterial({ map: p.texture(), side: THREE.DoubleSide }));
-    sign.position.set(-0.3, 1.2, 0.05); sign.rotation.y = Math.PI; g.add(sign);
+    if (hasProp('shop_counter')) {
+      const c = propMesh('shop_counter');
+      g.add(c);
+    } else {
+      const wood = pixMat('woodLight', { roughness: 0.55 });
+      const top = boxMesh(1.6, 0.05, 0.6, wood); top.position.set(0, 0.97, 0); g.add(top);
+      const front = boxMesh(1.6, 0.95, 0.04, pixMat('woodDark')); front.position.set(0, 0.475, 0.28); g.add(front);
+    }
+    const H = 0.96;
+    const reg = propMesh('cash_register', { fallbackSize: [0.3, 0.25, 0.28], fallbackColor: 0x8a7a5a });
+    reg.position.set(0.45, H, -0.08); reg.rotation.y = Math.PI; g.add(reg);
+    if (hasProp('abacus')) { const ab = propMesh('abacus'); ab.position.set(-0.1, H, -0.12); ab.rotation.y = Math.PI + 0.2; g.add(ab); }
+    if (hasProp('manekineko')) { const mn = propMesh('manekineko'); mn.position.set(-0.62, H, 0.05); g.add(mn); }
+    // 受付 sign + ticket price card (facing the customers)
+    const p = new Pix(80, 40, 4); p.fill(0xfff8e8); p.frame(0, 0, 80, 40, 0x8a2a1e); p.frame(2, 2, 76, 36, 0x8a2a1e);
+    p.text('受付', 40, 3, { size: 16, color: 0x8a2a1e, align: 'center' });
+    p.text('RECEPTION', 40, 23, { size: 9, color: 0x333333, align: 'center', font: FONT_EN });
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.18), new THREE.MeshStandardMaterial({ map: p.texture(), side: THREE.DoubleSide }));
+    sign.position.set(-0.3, H + 0.2, 0.05); g.add(sign);
     this.ticketPix = new Pix(64, 32, 5);
     this.ticketTex = this.ticketPix.texture();
     const tk = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.13), new THREE.MeshStandardMaterial({ map: this.ticketTex, side: THREE.DoubleSide }));
-    tk.position.set(-0.3, 1.04, 0.3); tk.rotation.set(-0.3, Math.PI, 0); g.add(tk);
+    tk.position.set(0.05, H + 0.05, 0.22); tk.rotation.set(-0.5, 0, 0); g.add(tk);
     // donation box
-    const don = boxMesh(0.2, 0.22, 0.16, colMat(0xffffff, { roughness: 0.3 }));
-    don.position.set(-0.62, 1.135, 0.1); g.add(don);
-    const dp = new Pix(32, 16, 6); dp.fill(0xffffff); dp.text('募金', 16, 1, { size: 12, color: 0xe5383b, align: 'center' });
-    const dl = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.09), new THREE.MeshBasicMaterial({ map: dp.texture() }));
-    dl.position.set(-0.62, 1.14, 0.181); dl.rotation.y = 0; g.add(dl);
+    const don = boxMesh(0.2, 0.22, 0.16, pixMat('woodLight', { roughness: 0.5 }));
+    don.position.set(-0.62, H + 0.11, -0.15); g.add(don);
+    const dp = new Pix(32, 16, 6); dp.fill(0xfff8e8); dp.text('募金', 16, 1, { size: 12, color: 0x8a2a1e, align: 'center' });
+    const dl = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.08), new THREE.MeshBasicMaterial({ map: dp.texture() }));
+    dl.position.set(-0.62, H + 0.12, -0.069); g.add(dl);
+    // shopkeeper's raised tatami nook behind the counter (上がり框)
+    const tat = pixMat('tatami', { roughness: 0.9 });
+    const nook = boxMesh(1.6, 0.36, 1.0, tat);
+    nook.position.set(0, 0.18, -0.95);
+    g.add(nook);
+    const edge = boxMesh(1.62, 0.06, 0.06, pixMat('woodDark'));
+    edge.position.set(0, 0.36, -0.45);
+    g.add(edge);
+    if (hasProp('garage_cat')) { const cat = propMesh('garage_cat'); cat.position.set(0.3, 0.36, -1.0); cat.rotation.y = 2.4; g.add(cat); }
     this.counter = g;
-    this.ticketPoint = new THREE.Vector3(1.2, 0, zS + 1.3);
-    this.donationPoint = new THREE.Vector3(1.3, 0, zS + 1.6);
+    this.ticketPoint = new THREE.Vector3(1.15, 0, zS + 1.3);
+    this.donationPoint = new THREE.Vector3(1.2, 0, zS + 1.75);
     this.updateTicketTex();
-    this.obstacles.push(this.game.player.addObstacle(2.1 - 0.82, 2.1 + 0.82, zS + 1.0, zS + 1.6));
+    this.obstacles.push(this.game.player.addObstacle(1.55, 3.5, zS + 0.45, zS + 2.15));
   }
 
   updateTicketTex() {
     if (!this.ticketPix) return;
     const p = this.ticketPix;
-    p.fill(0xfff6d8); p.frame(0, 0, 64, 32, 0xd4a83a);
+    p.fill(0xfff6d8); p.frame(0, 0, 64, 32, 0x8a2a1e);
     p.text('入館料', 32, 1, { size: 11, color: 0x333333, align: 'center' });
-    p.text(`${this.score.ticket || 40}円`, 32, 15, { size: 13, color: 0xe5383b, align: 'center' });
+    p.text(`${this.score.ticket || 40}円`, 32, 15, { size: 13, color: 0xd8282a, align: 'center' });
     this.ticketTex.needsUpdate = true;
+  }
+
+  /** Enamel signs, clock, calendar, menu tags and jar shelves on the fixed walls. */
+  buildWallDecor() {
+    const { x0, x1, zS } = this;
+    const D = ZN - zS;
+    const g = new THREE.Group();
+    this.shell.add(g);
+    const plate = (id, x, y, z, rotY, scale = 0.0045) => {
+      const t = artTexture(id);
+      if (!t) return null;
+      const a = SHOP_ART[id];
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(a.w * scale, a.h * scale), new THREE.MeshStandardMaterial({ map: t, roughness: 0.35, metalness: 0.1 }));
+      m.position.set(x, y, z); m.rotation.y = rotY;
+      m.userData.noRim = true;
+      g.add(m);
+      return m;
+    };
+    const signs = Object.keys(SHOP_ART).filter((k) => !['noren', 'shop_sign', 'calendar', 'menu_tags', 'poster_showa'].includes(k));
+    let si = 0;
+    const nextSign = () => signs.length ? signs[si++ % signs.length] : null;
+    // west & east walls: a sign between every pair of posts, high up
+    const nz = this.postSpacing?.nz || 3;
+    for (let i = 0; i < nz; i++) {
+      const z = ZN - (D / nz) * (i + 0.5);
+      const idW = nextSign(), idE = nextSign();
+      if (idW) { const a = SHOP_ART[idW]; plate(idW, x0 + 0.012, 1.5 + (a.h * 0.006) / 2, z, Math.PI / 2, 0.006); }
+      if (idE) { const a = SHOP_ART[idE]; plate(idE, x1 - 0.012, 1.5 + (a.h * 0.006) / 2, z, -Math.PI / 2, 0.006); }
+    }
+    // south wall beside the entrance
+    plate('poster_showa', -2.2, 1.75, zS + 0.012, 0, 0.006);
+    plate('calendar', 2.9, 1.85, zS + 0.012, 0, 0.0055);
+    // north wall (garage side) either side of the door
+    const n1 = nextSign(), n2 = nextSign();
+    if (n1) plate(n1, -2.4, 1.9, ZN - 0.024, Math.PI, 0.006);
+    if (n2) plate(n2, 2.4, 1.9, ZN - 0.024, Math.PI, 0.006);
+    // menu tags over the counter (on the east side of the reception)
+    plate('menu_tags', x1 - 0.012, 2.25, zS + 1.3, -Math.PI / 2, 0.006);
+    // pendulum clock + jar shelves
+    if (hasProp('pendulum_clock')) { const c = propMesh('pendulum_clock'); c.position.set(x1 - 0.07, 1.75, zS + 2.35); c.rotation.y = -Math.PI / 2; g.add(c); }
+    if (hasProp('wall_shelf_jars')) {
+      const s1 = propMesh('wall_shelf_jars'); s1.position.set(-2.6, 1.15, zS + 0.13); g.add(s1);
+      const s2 = propMesh('wall_shelf_jars'); s2.position.set(x0 + 0.13, 1.15, zS + 1.6); s2.rotation.y = Math.PI / 2; g.add(s2);
+    }
   }
 
   buildObstacles() {
     const P = this.game.player;
     const { x0, x1, zS } = this;
     const o = (a, b, c, d) => this.obstacles.push(P.addObstacle(a, b, c, d));
-    o(x0 - 0.3, x0, zS - 0.3, ZN + 0.1);
-    o(x1, x1 + 0.3, zS - 0.3, ZN + 0.1);
-    o(x0 - 0.3, x1 + 0.3, zS - 0.3, zS);
-    // garage back wall outside the garage footprint (museum wider than the garage)
+    o(x0 - 0.3, x0 + 0.06, zS - 0.3, ZN + 0.1);
+    o(x1 - 0.06, x1 + 0.3, zS - 0.3, ZN + 0.1);
+    o(x0 - 0.3, x1 + 0.3, zS - 0.3, zS + 0.05);
     if (x0 < -4) { o(x0, -4.2, ZN - 0.05, ZN + 0.2); o(4.2, x1, ZN - 0.05, ZN + 0.2); }
   }
 
@@ -449,12 +567,17 @@ export class Museum {
     const x = this.x0 + (i + 0.5) * CELL, z = ZN - (j + 0.5) * CELL;
     if (Math.abs(x) < 1.1 && z < this.zS + 2.2) return true; // entrance corridor
     if (Math.abs(x) < 0.9 && z > ZN - 1.6) return true; // garage door
-    if (x > 1.0 && x < 3.1 && z < this.zS + 2.0) return true; // reception
+    if (x > 1.0 && x < 3.6 && z < this.zS + 2.3) return true; // reception counter + tatami nook
     return false;
   }
 
   occupied(ignoreUid = null) {
     const occ = new Set();
+    // the counter and the shopkeeper's nook behind it
+    for (let i = 0; i < this.dims.w / CELL; i++) for (let j = 0; j < this.dims.d / CELL; j++) {
+      const x = this.x0 + (i + 0.5) * CELL, z = ZN - (j + 0.5) * CELL;
+      if (x > 1.5 && x < 3.6 && z > this.zS + 0.4 && z < this.zS + 2.2) occ.add(i + ',' + j);
+    }
     for (const p of this.placed) {
       if (p.data.uid === ignoreUid) continue;
       for (const [i, j] of this.footprintCells(p.def, p.data.x, p.data.z, p.data.rot)) occ.add(i + ',' + j);
@@ -506,7 +629,8 @@ export class Museum {
     obj.group.rotation.y = data.rot * Math.PI / 2;
     this.group.add(obj.group);
     obj.group.updateMatrixWorld(true);
-    const entry = { data, def, obj, display: null };
+    const entry = { data, def, obj, display: null, sheets: [] };
+    if (data.kind === 'display') this.applyStyle(entry);
     if (obj.slots.length) {
       if (!data.items || data.items.length !== obj.slots.length) data.items = Array(obj.slots.length).fill(null);
       entry.display = new DisplaySlots(this.game, obj.owner || obj.group, obj.slots, data.items, { glass: true, shadows: false });
@@ -514,7 +638,14 @@ export class Museum {
     // furniture root is interactable for "move" (F) hints
     obj.group.userData.museumEntry = entry;
     this.game.interaction.add(obj.group, {
-      hint: (held) => (held ? null : { key: 'F', text: `${def.jp || def.name} · Move`, sub: entry.display ? `${entry.display.keys().length}/${obj.slots.length} on display` : (def.themes || []).map((t) => THEME_NAMES[t]?.[1]).join(' · ') }),
+      hint: (held) => {
+        if (held) return null;
+        if (entry.display) {
+          const st = DISPLAY_STYLES[data.style || 'plain'];
+          return { key: 'R', text: `展示シート · Sheet: ${st.jp}`, sub: `F で移動 · F to move — ${entry.display.keys().length}/${obj.slots.length} on display` };
+        }
+        return { key: 'F', text: `${def.jp || def.name} · Move`, sub: (def.themes || []).map((t) => THEME_NAMES[t]?.[1]).join(' · ') };
+      },
       use: () => false,
     });
     // blocks the player + capsules
@@ -536,6 +667,33 @@ export class Museum {
     return entry;
   }
 
+  /** Lay the display's sheet (themed mat) on every shelf surface. */
+  applyStyle(entry) {
+    for (const m of entry.sheets) m.parent?.remove(m);
+    entry.sheets = [];
+    const id = entry.data.style || 'plain';
+    if (id === 'plain' || !DISPLAY_STYLES[id]) return;
+    for (const mat of entry.obj.mats || []) {
+      const m = sheetMesh(id, mat);
+      (mat.onOwner && entry.obj.owner ? entry.obj.owner : entry.obj.group).add(m);
+      entry.sheets.push(m);
+    }
+  }
+
+  /** Cycle through the sheets you own (R while looking at a display). */
+  cycleStyle(entry, dir = 1) {
+    const owned = STYLE_ORDER.filter((id) => this.data.styles.includes(id));
+    const cur = Math.max(0, owned.indexOf(entry.data.style || 'plain'));
+    entry.data.style = owned[(cur + dir + owned.length) % owned.length];
+    this.applyStyle(entry);
+    const c = new THREE.Vector3(entry.data.x, 0.9, entry.data.z);
+    audio.play('paper', { pos: c, vol: 0.8 });
+    this.game.effects.sparks({ pos: c, count: 16, colors: [0xffffff, 0xfff0c0], speed: 0.4, size: 0.012, radius: 0.4 });
+    if (owned.length <= 2) this.game.tip('sheets', 'E-Martで展示シートを買うと選べる柄が増えるよ', 'Buy more display sheets on E-Mart to theme your displays');
+    this.recompute();
+    this.game.save();
+  }
+
   removePlaced(entry) {
     const g = this.game;
     g.interaction.remove(entry.obj.group);
@@ -548,17 +706,9 @@ export class Museum {
 
   displays() { return this.placed.filter((p) => p.display).map((p) => p.display); }
 
-  // ------------------------------------------------------------------ held box / roller behaviour
+  // ------------------------------------------------------------------ held decor box behaviour
   boxHint(it) {
     const d = it.data;
-    if (d.type === 'roller') {
-      const t = this.paintTarget();
-      if (!t) return { key: 'L', text: 'リフォームローラー · Aim at a museum floor or wall', sub: 'Scroll to change finish · Q to put down' };
-      const list = t.kind === 'f' ? this.data.materials.filter((m) => FLOORS[m]) : this.data.materials.filter((m) => WALLS[m]);
-      const id = list[this.paintSel[t.kind] % list.length];
-      const def = (t.kind === 'f' ? FLOORS : WALLS)[id];
-      return { key: 'L', text: `塗る · Apply ${def?.jp || id}`, sub: `${def?.name || ''} — scroll to change (${list.length} owned)` };
-    }
     if (d.type !== 'decor') return null;
     if (!this.data.owned) return { key: 'Q', text: '博物館がまだありません · You need a museum first' };
     const pl = this.placementTarget(it);
@@ -572,7 +722,6 @@ export class Museum {
 
   primary(it) {
     const d = it.data;
-    if (d.type === 'roller') { this.paint(); return; }
     if (d.type !== 'decor') return;
     const pl = this.placementTarget(it);
     if (!pl || !pl.ok) { if (pl) audio.play('error', { vol: 0.4 }); return; }
@@ -645,84 +794,6 @@ export class Museum {
     this.recompute();
   }
 
-  // ------------------------------------------------------------------ painting
-  paintTarget() {
-    if (!this.data.owned) return null;
-    const hits = this.game.interaction.castAgainst([...this.floorMeshes, ...this.wallMeshes], 5);
-    for (const h of hits) {
-      if (h.object.userData.museumFloor) {
-        const i = Math.floor(h.point.x - this.x0), j = Math.floor(ZN - h.point.z);
-        if (i < 0 || j < 0 || i >= this.dims.w || j >= this.dims.d) return null;
-        return { kind: 'f', i, j, point: h.point };
-      }
-      const n = h.face?.normal.clone().transformDirection(h.object.matrixWorld);
-      if (!n || Math.abs(n.y) > 0.5) continue;
-      const p = h.point;
-      let side, idx;
-      if (Math.abs(p.z - ZN) < 0.05) { side = 'N'; idx = Math.floor(p.x - this.x0); }
-      else if (Math.abs(p.z - this.zS) < 0.05) { side = 'S'; idx = Math.floor(p.x - this.x0); }
-      else if (Math.abs(p.x - this.x0) < 0.05) { side = 'W'; idx = Math.floor(ZN - p.z); }
-      else if (Math.abs(p.x - this.x1) < 0.05) { side = 'E'; idx = Math.floor(ZN - p.z); }
-      else continue;
-      return { kind: 'w', side, i: idx, point: p };
-    }
-    return null;
-  }
-
-  paint() {
-    const t = this.paintTarget();
-    if (!t) return;
-    const list = t.kind === 'f' ? this.data.materials.filter((m) => FLOORS[m]) : this.data.materials.filter((m) => WALLS[m]);
-    if (!list.length) return;
-    const id = list[this.paintSel[t.kind] % list.length];
-    if (t.kind === 'f') {
-      if (this.floorAt(t.i, t.j) === id) return;
-      this.data.floor[this.floorKey(t.i, t.j)] = id;
-    } else {
-      if (this.wallAt(t.side, t.i) === id) return;
-      this.data.walls[`${t.side}:${t.i}`] = id;
-    }
-    audio.play('paint', { pos: t.point, vol: 0.8 });
-    this.game.effects.sparks({ pos: t.point.clone().add(new THREE.Vector3(0, 0.05, 0)), count: 14, colors: [0xffffff, 0xfff0c0], speed: 0.4, size: 0.015 });
-    this.rebuildSurfaces();
-    this.recompute();
-  }
-
-  updatePaintIndicator(t) {
-    if (!this.paintInd) {
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xfff0a0, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide }));
-      m.renderOrder = 4;
-      m.raycast = () => {};
-      this.group.add(m);
-      this.paintInd = m;
-    }
-    const m = this.paintInd;
-    m.visible = !!t;
-    if (!t) return;
-    m.material.opacity = 0.18 + Math.sin(this.game.time * 6) * 0.06;
-    if (t.kind === 'f') {
-      m.scale.set(1, 1, 1);
-      m.rotation.set(-Math.PI / 2, 0, 0);
-      m.position.set(this.x0 + t.i + 0.5, 0.01, ZN - t.j - 0.5);
-    } else {
-      m.scale.set(1, WALL_H, 1);
-      const y = WALL_H / 2;
-      if (t.side === 'N') { m.rotation.set(0, 0, 0); m.position.set(this.x0 + t.i + 0.5, y, ZN - 0.03); }
-      else if (t.side === 'S') { m.rotation.set(0, 0, 0); m.position.set(this.x0 + t.i + 0.5, y, this.zS + 0.02); }
-      else if (t.side === 'W') { m.rotation.set(0, Math.PI / 2, 0); m.position.set(this.x0 + 0.02, y, ZN - t.i - 0.5); }
-      else { m.rotation.set(0, Math.PI / 2, 0); m.position.set(this.x1 - 0.02, y, ZN - t.i - 0.5); }
-    }
-  }
-
-  rebuildSurfaces() {
-    for (const m of [...this.floorMeshes, ...this.wallMeshes]) {
-      this.shell.remove(m); m.geometry.dispose();
-      const i = this.game.placement.surfaces.indexOf(m); if (i >= 0) this.game.placement.surfaces.splice(i, 1);
-    }
-    this.buildFloor();
-    this.buildWalls();
-  }
-
   // ------------------------------------------------------------------ scoring
   recompute() {
     if (!this.data.owned) return;
@@ -734,15 +805,16 @@ export class Museum {
       if (p.data.kind === 'decor') beauty += p.def.beauty || 1;
       else beauty += (p.def.beauty || 1) * 0.5;
     }
-    // floors & walls add theme sources (sampled per cell) and beauty for variety
-    const floorCount = {};
-    for (const [k, id] of Object.entries(this.data.floor)) {
-      floorCount[id] = (floorCount[id] || 0) + 1;
-      const [i, j] = k.split(',').map(Number);
-      themeSources.push({ x: this.x0 + i + 0.5, z: ZN - j - 0.5, themes: FLOORS[id]?.themes || [], w: 0.15 });
+    // display sheets: a strong theme source on the display itself, plus a little beauty
+    const sheetKinds = new Set();
+    for (const p of this.placed) {
+      const st = DISPLAY_STYLES[p.data.style];
+      if (!st || st.id === 'plain') continue;
+      sheetKinds.add(st.id);
+      themeSources.push({ x: p.data.x, z: p.data.z, themes: st.themes, w: 1.6 });
+      beauty += 0.8;
     }
-    const variety = Object.keys(floorCount).length + new Set(Object.values(this.data.walls)).size;
-    beauty += variety * 1.5;
+    beauty += sheetKinds.size * 1.5;
     const museumKeys = new Set();
     for (const p of this.placed) {
       if (!p.display) continue;
@@ -795,7 +867,7 @@ export class Museum {
       ui.text('ガレージ裏の空き倉庫を', x + 16, yy + 12, { size: 16 });
       ui.text('あなただけのガチャ博物館に！', x + 16, yy + 34, { size: 20, color: '#6a2a9a', outline: '#fff' });
       ui.text('★ 来館者が入館料を払ってくれます（不労所得！）', x + 16, yy + 64, { size: 11 });
-      ui.text('★ ショーケース・装飾・床や壁を自由にカスタマイズ', x + 16, yy + 80, { size: 11 });
+      ui.text('★ 昭和レトロなお店で展示台・シート・装飾をカスタマイズ', x + 16, yy + 80, { size: 11 });
       ui.text('★ テーマが合う展示は評価アップ', x + 16, yy + 96, { size: 11 });
       const comp = Object.keys(s.completed).length;
       const ok = comp >= MUSEUM_REQ_COMPLETE;
@@ -806,7 +878,7 @@ export class Museum {
       ui.text('※完成した展示（シリーズを全部並べる）はコンプボーナスの対象です。', x + 4, yy, { size: 10, color: COL.soft });
       return yy + 20 - y;
     }
-    const tabs = [['displays', '展示台'], ['decor', '装飾'], ['surfaces', '床・壁'], ['expand', '拡張'], ['stats', '評価']];
+    const tabs = [['displays', '展示台'], ['decor', '装飾'], ['sheets', '展示シート'], ['expand', '拡張'], ['stats', '評価']];
     let tx = x;
     for (const [id, jp] of tabs) {
       const on = site.sub.museum === id;
@@ -843,31 +915,27 @@ export class Museum {
         ui.button(yen(p.price), cx + 6, cy + 106, cw - 12, 19, () => site.notify(this.buyFurniture('decor', p.id)), { size: 11, disabled: s.money < p.price, color: '#d8f0d8' });
       });
       yy += Math.ceil(list.length / 4) * 136;
-    } else if (sub === 'surfaces') {
-      ui.text('購入すると「リフォームローラー」で床や壁を塗れます。ホイールで仕上げを切替。', x + 4, yy, { size: 10, color: COL.soft });
-      yy += 16;
-      const block = (title, lib, kind) => {
-        yy += site.heading(x, yy, w, title, kind === 'f' ? 'FLOORS' : 'WALLS', kind === 'f' ? COL.green : COL.blue);
-        const cw = Math.floor((w - 12) / 4);
-        Object.values(lib).forEach((m, i) => {
-          const cx = x + (i % 4) * (cw + 4), cy = yy + Math.floor(i / 4) * 92;
-          site.panel(cx, cy, cw, 86);
-          const pix = tex((kind === 'f' ? FLOOR_TEX : WALL_TEX)[m.id]).map.image;
-          ui.image(pix, cx + 4, cy + 4, cw - 8, 34);
-          ui.text(m.jp, cx + cw / 2, cy + 42, { size: 10, align: 'center' });
-          ui.text(m.themes.map((t) => THEME_NAMES[t][0]).join('・'), cx + cw / 2, cy + 55, { size: 8, color: COL.blue, align: 'center', max: cw - 6 });
-          const own = this.data.materials.includes(m.id);
-          if (own) ui.text('購入済み ✓', cx + cw / 2, cy + 68, { size: 10, color: COL.green, align: 'center' });
-          else ui.button(yen(m.price), cx + 6, cy + 66, cw - 12, 17, () => site.notify(this.buyMaterial(m.id)), { size: 10, disabled: s.money < m.price });
-        });
-        yy += Math.ceil(Object.keys(lib).length / 4) * 92 + 6;
-      };
-      block('床材', FLOORS, 'f');
-      block('壁紙', WALLS, 'w');
-      if (!this.data.roller) {
-        ui.button('リフォームローラーを受け取る（無料）', x, yy, 260, 24, () => site.notify(this.giveRoller()), { color: COL.yellow });
-        yy += 30;
-      }
+    } else if (sub === 'sheets') {
+      ui.text('展示台の棚に敷くジオラマシート。展示台を見ながら R キーで切り替え！', x + 4, yy, { size: 10, color: COL.soft });
+      yy += 14;
+      ui.text('シリーズのテーマと合うシートに飾ると評価UP。お店の壁や床は昭和のまま変わりません。', x + 4, yy, { size: 10, color: COL.soft, max: w - 8 });
+      yy += 18;
+      const list = STYLE_ORDER.filter((id) => id !== 'plain').map((id) => DISPLAY_STYLES[id]);
+      const cw = Math.floor((w - 12) / 4);
+      list.forEach((m, i) => {
+        const cx = x + (i % 4) * (cw + 4), cy = yy + Math.floor(i / 4) * 98;
+        site.panel(cx, cy, cw, 92);
+        // swatch: the sheet tile at 1:1 pixels, framed like a sample card
+        const tile = styleTile(m.id).canvas;
+        ui.rect(cx + 5, cy + 4, cw - 10, 40, '#3a2a1c');
+        ui.image(tile, cx + 7, cy + 6, cw - 14, 36);
+        ui.text(m.jp, cx + cw / 2, cy + 47, { size: 11, align: 'center' });
+        ui.text(m.themes.map((t) => THEME_NAMES[t][0]).join('・'), cx + cw / 2, cy + 61, { size: 8, color: COL.blue, align: 'center', max: cw - 6 });
+        const own = this.data.styles.includes(m.id);
+        if (own) ui.text('購入済み ✓', cx + cw / 2, cy + 74, { size: 10, color: COL.green, align: 'center' });
+        else ui.button(yen(m.price), cx + 6, cy + 72, cw - 12, 17, () => site.notify(this.buyStyle(m.id)), { size: 10, disabled: s.money < m.price });
+      });
+      yy += Math.ceil(list.length / 4) * 98 + 6;
     } else if (sub === 'expand') {
       const lvl = this.data.level || 0;
       MUSEUM_EXPANSIONS.forEach((e, i) => {
@@ -893,7 +961,7 @@ export class Museum {
       ui.text(`来館ペース 約${sc.rate.toFixed(1)}人/分　入館料 ${yen(sc.ticket)}　展示中 ${sc.museumKeys}種`, x + 10, yy + 90, { size: 10, color: COL.blue });
       ui.text(`累計来館者 ${this.data.visitors || 0}人　累計収入 ${yen(this.data.income || 0)}`, x + 10, yy + 106, { size: 10, color: COL.green });
       yy += 138;
-      ui.text('ヒント：シリーズのテーマ（かわいい・食べ物・宇宙…）と同じ雰囲気の床や装飾の近くに飾ると評価UP！', x + 4, yy, { size: 10, color: COL.soft, max: w - 8 });
+      ui.text('ヒント：シリーズのテーマ（かわいい・食べ物・宇宙…）と同じ雰囲気のシートや装飾の近くに飾ると評価UP！', x + 4, yy, { size: 10, color: COL.soft, max: w - 8 });
       yy += 16;
       ui.text('スポットライト台はレア物の魅力が2倍。シリーズを博物館に全種並べるとセットボーナス。', x + 4, yy, { size: 10, color: COL.soft, max: w - 8 });
       yy += 20;
@@ -922,8 +990,7 @@ export class Museum {
     this.build();
     audio.play('thud', { pos: new THREE.Vector3(0, 1, -5), v: 1 });
     audio.play('complete', { vol: 0.8 });
-    g.news('🏛 ガチャ博物館オープン！', 'Your museum is open — the back door is unlocked!', 6000);
-    this.giveRoller();
+    g.news('🏮 ガチャ博物館オープン！', 'Your museum is open — the back door is unlocked!', 6000);
     g.save();
     return { ok: true, msg: '裏のドアが開きました！ The back door is open!' };
   }
@@ -940,22 +1007,15 @@ export class Museum {
     return { ok: true, msg: 'シャッター前に届きます · Delivered to the garage' };
   }
 
-  buyMaterial(id) {
+  buyStyle(id) {
     const g = this.game;
-    const def = FLOORS[id] || WALLS[id];
-    if (this.data.materials.includes(id)) return { ok: false, msg: '購入済み' };
+    const def = DISPLAY_STYLES[id];
+    if (!def) return { ok: false, msg: '?' };
+    if (this.data.styles.includes(id)) return { ok: false, msg: '購入済み' };
     if (!g.spend(def.price)) return { ok: false, msg: 'お金が足りません' };
-    this.data.materials.push(id);
-    if (!this.data.roller) this.giveRoller();
+    this.data.styles.push(id);
     g.save();
-    return { ok: true, msg: `${def.jp} — ローラーで塗れます` };
-  }
-
-  giveRoller() {
-    if (this.data.roller) return { ok: false, msg: '受け取り済み' };
-    this.data.roller = true;
-    this.game.delivery.order({ type: 'roller', label: 'リフォームローラー' }, { delay: 1 });
-    return { ok: true, msg: 'ローラーをお届けします' };
+    return { ok: true, msg: `${def.jp} — 展示台を見て R で敷けます` };
   }
 
   expand() {
@@ -972,11 +1032,7 @@ export class Museum {
     return { ok: true, msg: `${next.w}m × ${next.d}m に拡張！` };
   }
 
-  surfaceAt(p) {
-    if (!this.data.owned) return 'wood';
-    const i = Math.floor(p.x - this.x0), j = Math.floor(ZN - p.z);
-    return SURFACE_SOUND[this.floorAt(i, j)] || 'concrete';
-  }
+  surfaceAt() { return 'wood'; }
 
   groundAt() { return 0; }
 
@@ -992,23 +1048,23 @@ export class Museum {
     g.lighting.museumBlend = this.inside;
     if (audio.ready) audio.setRoom(inside ? 'museum' : 'garage');
     for (const p of this.placed) { p.obj.update?.(dt); p.display?.update(); }
-    // held box ghost / roller highlight
+    // held box ghost
     const held = g.held.item;
     if (held?.kind === 'box' && held.data.type === 'decor' && !g.held.busy) {
       const pl = this.placementTarget(held);
       if (pl) this.showGhost(held, pl); else this.hideGhost();
       if (g.input.keyPressed('KeyR')) this.boxSecondary(held);
     } else this.hideGhost();
-    const roller = held?.kind === 'box' && held.data.type === 'roller';
-    this.updatePaintIndicator(roller ? this.paintTarget() : null);
-    if (roller) {
-      if (g.input.mouse.wheel || g.input.keyPressed('KeyR')) {
-        const t = this.paintTarget();
-        const k = t?.kind || 'f';
-        this.paintSel[k] = (this.paintSel[k] + (g.input.mouse.wheel < 0 ? -1 : 1) + 100) % 100;
-        audio.play('uiHover', { vol: 0.6 });
+    // R = change the sheet of the display you're looking at
+    if (!held && g.input.keyPressed('KeyR') && g.input.locked && !g.pc?.active) {
+      const hits = g.interaction.castAgainst(this.placed.filter((p) => p.display).map((p) => p.obj.group), 3);
+      for (const h of hits) {
+        let o = h.object;
+        while (o && !o.userData.museumEntry) o = o.parent;
+        if (o) { this.cycleStyle(o.userData.museumEntry); break; }
       }
     }
+    for (const [i, n] of (this.noren || []).entries()) n.rotation.x = Math.sin(g.time * 1.3 + i * 1.7) * 0.05 + (this.doors?.[0]?.open || 0) * 0.25;
     // F = move furniture
     if (!held && g.input.keyPressed('KeyF') && g.input.locked && !g.pc?.active) {
       const hits = g.interaction.castAgainst(this.placed.map((p) => p.obj.group), 3);
@@ -1023,8 +1079,8 @@ export class Museum {
       const want = this.visitors?.nearDoor() || Math.hypot(g.player.pos.x, g.player.pos.z - this.zS) < 2 ? 1 : 0;
       const prev = d.open;
       d.open += (want - d.open) * Math.min(1, dt * 4);
-      d.panel.position.x = d.s * (0.5 + d.open * 0.95);
-      if (prev < 0.05 && d.open >= 0.05 && d.s > 0) audio.play('chimeEntrance', { pos: new THREE.Vector3(0, 2.2, this.zS), vol: 0.5 });
+      d.panel.position.x = d.s * (0.5 + d.open * 0.9);
+      if (prev < 0.05 && d.open >= 0.05 && d.s > 0) { audio.play('slideDoor', { pos: new THREE.Vector3(0, 1.2, this.zS), vol: 0.8 }); audio.play('furin', { pos: new THREE.Vector3(0, 2.3, this.zS), vol: 0.5 }); }
     }
     this.scoreT -= dt;
     if (this.scoreT <= 0) { this.scoreT = 2; this.recompute(); }
@@ -1039,9 +1095,9 @@ export async function installMuseum(game) {
   // routes held-box actions to the museum
   const pl = game.placement;
   const prevHint = pl.boxHint.bind(pl);
-  pl.boxHint = (it) => (it.data.type === 'decor' || it.data.type === 'roller' ? m.boxHint(it) : prevHint(it));
+  pl.boxHint = (it) => (it.data.type === 'decor' ? m.boxHint(it) : prevHint(it));
   const prevSec = pl.boxSecondary.bind(pl);
-  pl.boxSecondary = (it) => (it.data.type === 'decor' || it.data.type === 'roller' ? m.boxSecondary(it) : prevSec(it));
+  pl.boxSecondary = (it) => (it.data.type === 'decor' ? m.boxSecondary(it) : prevSec(it));
   pl.primary = (it) => m.primary(it);
 }
 

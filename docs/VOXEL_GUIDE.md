@@ -100,3 +100,13 @@ node tools/shoot.mjs "viewer.html?chars=visitors&variants=3" shots/visitors.png 
 ```
 Then open the PNG with the Read tool and iterate until every model looks great. The tool starts its own
 server, so it is safe to run in parallel. Errors print to the console and in red on the page.
+
+## Machines, banners and shop art
+* Machine cabinets: `src/world/machineModels.js` (`MACHINE_SPECS`, 5 mm voxels plus pixel-art decals).
+  Preview every type with its banner: `viewer.html?module=/src/dev/machines.js&angle=front&cols=4`
+  (`&type=standard&series=uchu&ext=0.06&lvl=3` to pick one).
+* Banners (台紙): `src/gfx/banner.js` composes `src/gfx/bannerScenes.js` (one painted 320×200 scene per series
+  plus `BANNER_TEXT` catchphrases) with the figures, the title logo and the lineup. Preview: `banners.html?scale=2[&only=mochi]`.
+  Scene previews: `scenes.html`.
+* Old-shop props: `src/data/props/shop.js`. Signage: `src/gfx/shopArt.js` (`SHOP_ART`), preview `shopart.html`.
+* Display sheets (themed mats for museum displays): `src/museum/styles.js`.

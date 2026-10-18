@@ -476,6 +476,13 @@ const SOUNDS = {
     a.burst(o, t, { dur: 0.015, vol: 0.4, type: 'highpass', f: 2000 });
     a.burst(o, t + 0.06, { dur: 0.02, vol: 0.25, type: 'highpass', f: 1600 });
   },
+  /** Wooden lattice door sliding in its track: a low rumble with little rattles of the glass. */
+  slideDoor(a, t, o) {
+    a.burst(o, t, { dur: 0.55, vol: 0.22, type: 'lowpass', f: 380, f2: 220, q: 0.7, attack: 0.04 });
+    a.burst(o, t, { dur: 0.5, vol: 0.06, type: 'bandpass', f: 1400, q: 3, attack: 0.05 });
+    for (let i = 0; i < 4; i++) a.burst(o, t + 0.06 + i * 0.11 + rand(0, 0.03), { dur: 0.018, vol: 0.07, type: 'bandpass', f: rand(2400, 3600), q: 6 });
+    a.burst(o, t + 0.56, { dur: 0.05, vol: 0.18, type: 'lowpass', f: 700 });
+  },
   chimeEntrance(a, t, o) {
     [76, 72, 79, 84].forEach((n, i) => a.bell(o, t + i * 0.28, NOTE(n), { dur: 1.2, vol: 0.09, partials: [1, 2, 3], decays: [1, 0.4, 0.2] }));
   },

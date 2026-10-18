@@ -9,13 +9,16 @@ import { installPC } from './pc/PC.js';
 import { installMuseum } from './museum/Museum.js';
 import { installDebug } from './debug.js';
 import { ITEMS } from './data/series/index.js';
+import { bannerGlyphs } from './gfx/banner.js';
+import { SHOP_TEXT } from './museum/Museum.js';
 
 const params = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);
 
 async function loadFonts() {
   // make sure every glyph we draw onto canvases is available before textures are generated
-  const text = ITEMS.map((i) => i.jp).join('') + 'ガチャマート全種回円売切新入荷シークレットあり対象年齢才以上補充満杯安全第一禁煙怪獣大決戦迷い猫さがしています夏祭り月火水木金土日貸倉庫入居者募集中買取高価保管みかんワレモノ注意カプセル在庫天地無用お米新潟県産ライブ中古フィギュア個お届け物スーパー大冒険一二三四五六七八九十百千万';
+  const text = ITEMS.map((i) => i.jp).join('') + 'ガチャマート全種回円売切新入荷シークレットあり対象年齢才以上補充満杯安全第一禁煙怪獣大決戦迷い猫さがしています夏祭り月火水木金土日貸倉庫入居者募集中買取高価保管みかんワレモノ注意カプセル在庫天地無用お米新潟県産ライブ中古フィギュア個お届け物スーパー大冒険一二三四五六七八九十百千万' +
+    'コイン投入口返却ボタン印を合わせてからコインを入れてくださいとりだしぐち見本円' + bannerGlyphs() + SHOP_TEXT;
   try {
     await Promise.all([
       document.fonts.load('16px "DotGothic16"', text),
