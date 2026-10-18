@@ -50,12 +50,15 @@ export class Player {
       if (inp.key('KeyS') || inp.key('ArrowDown')) fz += 1;
       if (inp.key('KeyA') || inp.key('ArrowLeft')) fx -= 1;
       if (inp.key('KeyD') || inp.key('ArrowRight')) fx += 1;
+      fx += inp.axis.x; fz += inp.axis.z;
     }
-    const len = Math.hypot(fx, fz);
-    const speed = (inp.key('ShiftLeft') || inp.key('ShiftRight')) ? 4.0 : 2.4;
+    const raw = Math.hypot(fx, fz);
+    const len = raw > 1 ? raw : (raw > 0.05 ? 1 : 0);
+    const analog = raw > 0 && raw <= 1 ? raw : 1;
+    const speed = ((inp.key('ShiftLeft') || inp.key('ShiftRight')) ? 4.0 : 2.4) * (inp.axis.x || inp.axis.z ? Math.max(0.35, analog) * 1.15 : 1);
     const target = this._v.set(0, 0, 0);
     if (len > 0) {
-      fx /= len; fz /= len;
+      fx /= raw; fz /= raw;
       const sin = Math.sin(this.yaw), cos = Math.cos(this.yaw);
       target.set(fx * cos + fz * sin, 0, -fx * sin + fz * cos).multiplyScalar(speed);
     }

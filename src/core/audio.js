@@ -476,6 +476,26 @@ const SOUNDS = {
     a.burst(o, t, { dur: 0.015, vol: 0.4, type: 'highpass', f: 2000 });
     a.burst(o, t + 0.06, { dur: 0.02, vol: 0.25, type: 'highpass', f: 1600 });
   },
+  /** Pigeon coo: two soft hooting glides. */
+  coo(a, t, o) {
+    for (let i = 0; i < 2; i++) a.tone(o, t + i * 0.42, { f: 410, f2: 300, dur: 0.32, vol: 0.06, type: 'sine', attack: 0.06 });
+    a.tone(o, t + 0.9, { f: 380, f2: 260, dur: 0.5, vol: 0.05, type: 'sine', attack: 0.08 });
+  },
+  /** Wing flaps of a startled pigeon. */
+  flutter(a, t, o) {
+    for (let i = 0; i < 9; i++) a.burst(o, t + i * 0.055, { dur: 0.04, vol: 0.18 - i * 0.015, type: 'bandpass', f: 900 + Math.random() * 500, q: 1.2 });
+  },
+  /** Cat meow: a rising-then-falling nasal tone. */
+  meow(a, t, o, opts = {}) {
+    const k = opts.pitch || 1;
+    a.tone(o, t, { f: 520 * k, f2: 880 * k, dur: 0.18, vol: 0.09, type: 'sawtooth', attack: 0.03 });
+    a.tone(o, t + 0.17, { f: 880 * k, f2: 460 * k, dur: 0.32, vol: 0.08, type: 'sawtooth' });
+    a.burst(o, t, { dur: 0.45, vol: 0.03, type: 'bandpass', f: 1600 * k, q: 4 });
+  },
+  /** Purr: a low rumble. */
+  purr(a, t, o) {
+    for (let i = 0; i < 10; i++) a.burst(o, t + i * 0.07, { dur: 0.06, vol: 0.08, type: 'lowpass', f: 140, q: 2 });
+  },
   /** Wooden lattice door sliding in its track: a low rumble with little rattles of the glass. */
   slideDoor(a, t, o) {
     a.burst(o, t, { dur: 0.55, vol: 0.22, type: 'lowpass', f: 380, f2: 220, q: 0.7, attack: 0.04 });

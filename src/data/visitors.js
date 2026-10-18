@@ -40,26 +40,28 @@ const sides = (fn) => { fn(-1); fn(1); };
 
 // ----------------------------------------------------------------------------- body frame + rig
 /**
- * Body proportions in voxels. Adults are ~47–50 voxels tall, the head (incl. hair) ~1/3 of that.
+ * Body proportions in voxels — chibi: adults are ~38–40 voxels tall and the big round head (incl. hair)
+ * is ~45–50% of that; the body is a stubby torso on short legs with short, chunky arms.
  * hipY: top row of the legs (hip pivot). pelvis: torso rows that overlap the legs below the pivot.
  * shY: top row of the torso/arms (shoulder line). lean: forward stoop (z shift of shoulders/head).
  */
 function frame(o = {}) {
   const f = {
-    hipY: 16, pelvis: 2, legIn: 1, legOut: 4, lz0: -1, lz1: 1,
-    shY: 29, tw: 4, tz0: -2, tz1: 2,
-    armIn: 5, armOut: 7, az0: -1, az1: 1, handY: 14, handH: 3,
-    hw: 7, hh: 14, hz0: -6, hz1: 6, hr: 4,
+    hipY: 9, pelvis: 2, legIn: 1, legOut: 4, lz0: -1, lz1: 1,
+    shY: 18, tw: 4, tz0: -2, tz1: 2,
+    armIn: 5, armOut: 7, az0: -1, az1: 1, handH: 3,
+    hw: 8, hh: 16, hz0: -7, hz1: 6, hr: 6,
     lean: 0, headFwd: 0, headDrop: 0,
     ...o,
   };
+  f.handY = o.handY ?? f.hipY;
   f.neckY = f.shY + 1;
   f.hy0 = f.shY + 2 - f.headDrop;
   f.hy1 = f.hy0 + f.hh - 1;
   f.ax = Math.round((f.armIn + f.armOut) / 2);
   f.lx = Math.round((f.legIn + f.legOut) / 2);
   f.waistY = o.waistY ?? f.hipY + 2;
-  f.eyeY = f.hy0 + (o.eyeRow ?? 5); // reference eye row (4-row eye patterns start one row higher)
+  f.eyeY = f.hy0 + (o.eyeRow ?? 6); // reference eye row: big eyes span eyeY+1 .. eyeY-3
   f.fringe = f.eyeY + 3; // default bottom row of the bangs (one free row above the eyes)
   f.pelvisY = f.hipY - f.pelvis; // bottom row of the torso
   return f;
@@ -149,7 +151,7 @@ function legs(p, f, o) {
   });
 }
 function shoeHeight(o) {
-  return { platform: 5, sandal: 2 }[o.shoe] ?? 3;
+  return { platform: 4, sandal: 2 }[o.shoe] ?? 3;
 }
 function shoe(m, f, o, s, xa, xb) {
   const st = o.shoe ?? 'sneaker';
@@ -177,9 +179,9 @@ function shoe(m, f, o, s, xa, xb) {
       if (z <= f.lz1 + 1) m.set(x, 2, z, back || instep ? gloss(c) : skin);
     } else if (st === 'platform') {
       const pc = o.platC ?? WH;
-      for (let y = 0; y <= 2; y++) m.set(x, y, z, y === 1 ? shade(pc, 0.88) : pc);
-      m.set(x, 3, z, gloss(front ? shade(c, 1.1) : c));
-      if (z <= f.lz1 + 1) m.set(x, 4, z, gloss(instep ? acc : c));
+      for (let y = 0; y <= 1; y++) m.set(x, y, z, y === 0 ? shade(pc, 0.88) : pc);
+      m.set(x, 2, z, gloss(front ? shade(c, 1.1) : c));
+      if (z <= f.lz1 + 1) m.set(x, 3, z, gloss(instep ? acc : c));
     } else if (st === 'boot') {
       m.set(x, 0, z, sole);
       m.set(x, 1, z, gloss(front ? shade(c, 1.12) : c));
@@ -291,19 +293,20 @@ function arms(p, f, o) {
 
 // ----------------------------------------------------------------------------- head, face, hair
 const EYES = {
-  // right-eye patterns: columns go inner -> outer, rows top -> bottom. The left eye is mirrored,
-  // except highlight pixels (W/w) which keep their screen side so both eyes catch the same light.
-  round: { rows: ['KK', 'WK', 'KK', 'II'], oy: 1 },
-  lash: { rows: ['KKL', 'WK.', 'KK.', 'II.'], oy: 1 },
-  big: { rows: ['KKKL', 'WKK.', 'KKw.', 'III.'], ox: -1, oy: 1 },
-  sparkle: { rows: ['KKKL', 'WIK.', 'IIw.', 'iii.'], ox: -1, oy: 1 },
-  tired: { rows: ['DD.', 'KKK', 'WK.', 'SS.'], oy: 1 },
-  happy: { rows: ['.K.', 'K.K'], ox: -1, oy: 0 },
-  calm: { rows: ['KKK', '.I.'], ox: -1, oy: 0 },
-  dot: { rows: ['K', 'K'], ox: 0, oy: 0 },
-  small: { rows: ['WK', 'KK'], oy: 0 },
-  sleepy: { rows: ['KK'], oy: -1 },
-  gyaru: { rows: ['KKKL', 'KWIK', 'KIwK', '.LL.'], ox: -1, oy: 1 },
+  // right-eye patterns: columns go inner -> outer, rows top -> bottom (top row at eyeY + oy). The left
+  // eye is mirrored (highlights included, so the face stays symmetric). Big chibi eyes are 3 wide and 4 tall (eyeY+1 .. eyeY-2): a dark top with a glossy
+  // highlight, a lighter iris below with a small second sparkle; girls get a lash flick on top.
+  round: { rows: ['KKK', 'KWK', 'KKI', 'IIi'], oy: 1 },
+  lash: { rows: ['...L', 'KKK.', 'KWK.', 'IIw.', 'iii.'], oy: 2 },
+  big: { rows: ['...L', 'KKK.', 'KWK.', 'KIw.', 'III.'], oy: 2 },
+  sparkle: { rows: ['...L', 'KKK.', 'KWK.', 'IIw.', 'iWi.'], oy: 2 },
+  tired: { rows: ['DDD', 'KKK', 'WKK', 'SSS'], oy: 1 },
+  happy: { rows: ['.KK.', 'K..K'], oy: 0 },
+  calm: { rows: ['K..K', '.KK.'], oy: 0 },
+  dot: { rows: ['K', 'K'], ox: 1, oy: 0 },
+  small: { rows: ['KK', 'WK', 'KK'], oy: 0 },
+  sleepy: { rows: ['KKK'], oy: -1 },
+  gyaru: { rows: ['...L', 'KKKL', 'KWK.', 'IIw.', 'iii.'], oy: 2 },
 };
 const MOUTHS = {
   smile: ['M.M', '.M.'],
@@ -333,20 +336,16 @@ function face(h, f, o) {
     D: shade(skin, 0.82), S: mix(shade(skin, 0.86), 0x8a6aa8, 0.18),
     M: o.mouthC ?? 0x8a3b3b, T: C.tongue, P: o.lipC ?? 0xff8fa8, B: o.blush || C.blush,
   };
-  const ex = o.eyeX ?? 3;
+  const ex = o.eyeX ?? 2;
   const ey = f.eyeY + (o.eyeDY ?? 0);
   const e = EYES[o.eyes ?? 'round'];
-  const rowsR = e.rows, rowsL = rowsR.map((r) => {
-    const a = [...r].reverse();
-    [...r].forEach((ch, i) => { if (ch === 'W' || ch === 'w') { const j = a.length - 1 - i; [a[i], a[j]] = [a[j], a[i]]; } });
-    return a.join('');
-  });
+  const rowsR = e.rows, rowsL = mirror(rowsR);
   const w = rowsR[0].length;
   const ox = e.ox ?? 0, oy = e.oy ?? 0;
-  if (o.blush !== false) {
-    const bw = o.blushW ?? 2;
-    h.project(['B'.repeat(bw)], L, ex + 1, ey - 3 + (o.blushDY ?? 0));
-    h.project(['B'.repeat(bw)], L, -ex - bw, ey - 3 + (o.blushDY ?? 0));
+  if (o.blush !== false) { // rosy cheeks just under the outer half of each eye
+    const bw = o.blushW ?? 2, by = ey - 3 + (o.blushDY ?? 0), bx = ex + 2 + (o.blushDX ?? 0);
+    h.project(['B'.repeat(bw)], L, bx, by);
+    h.project(['B'.repeat(bw)], L, -bx - bw + 1, by);
   }
   h.project(rowsR, L, ex + ox, ey + oy);
   h.project(rowsL, L, -ex - ox - w + 1, ey + oy);
@@ -359,12 +358,12 @@ function face(h, f, o) {
   }
   if (o.nose) h.project(['D'], L, 0, ey - 1);
   if (o.freckles) {
-    h.project(['D.D'], L, ex, ey - 3);
-    h.project(['D.D'], L, -ex - 2, ey - 3);
+    h.project(['D.D'], L, ex + 2, ey - 3);
+    h.project(['D.D'], L, -ex - 4, ey - 3);
   }
   const m = MOUTHS[o.mouth ?? 'smile'];
   const mw = m[0].length;
-  h.project(m, L, -Math.floor(mw / 2), f.hy0 + 2 + (m.length >= 3 ? 1 : 0) + (o.mouthDY ?? 0));
+  h.project(m, L, -Math.floor(mw / 2), ey - 3 + (o.mouthDY ?? 0));
 }
 
 /** Skull, ears, face. Hair/hats are added by the caller. */
@@ -472,27 +471,28 @@ function hairBun(h, f, hc, x, y, z, r) {
 // ----------------------------------------------------------------------------- head accessories
 /** Glasses: raised frame around both eyes + temples to the ears. */
 function glasses(h, f, o = {}) {
-  const fc = o.c ?? 0x2a2a30, ex = o.eyeX ?? 3, ey = f.eyeY + 1 + (o.eyeDY ?? 0);
+  const fc = o.c ?? 0x2a2a30, ex = o.eyeX ?? 2, ey = f.eyeY + 1 + (o.eyeDY ?? 0);
+  const y0 = ey - 4, y1 = ey + 1;
   const z = o.z ?? f.hz1 + 1;
   sides((s) => {
     const xa = s < 0 ? -ex - 3 : ex - 1, xb = s < 0 ? -ex + 1 : ex + 3;
-    for (let x = xa; x <= xb; x++) for (let y = ey - 4; y <= ey + 1; y++) {
-      const edge = x === xa || x === xb || y === ey - 4 || y === ey + 1;
+    for (let x = xa; x <= xb; x++) for (let y = y0; y <= y1; y++) {
+      const edge = x === xa || x === xb || y === y0 || y === y1;
       if (!edge) {
         if (o.lens) h.set(x, y, z, o.lens);
+        else if (o.glint && x === xb - 1 && y === y1 - 1) h.set(x, y, z, glass(0xf2f8ff)); // lens glint
         continue;
       }
-      if (o.round && (x === xa || x === xb) && (y === ey - 4 || y === ey + 1)) continue;
+      if (o.round && (x === xa || x === xb) && (y === y0 || y === y1)) continue;
       h.set(x, y, z, fc);
     }
     // temple arm back to the ear
-    if (o.arms !== false) for (let zz = -1; zz <= f.hz1 - 1; zz++) {
-      const x = s * (f.hw + 1);
-      if (zz >= f.hz1 - 2) h.set(s * (f.hw), ey, zz + 1, fc);
-      else h.set(x, ey, zz, fc);
+    if (o.arms !== false) {
+      for (let x = Math.abs(xb) + 1; x <= f.hw; x++) h.set(s * x, ey, z - 1 - Math.max(0, x - f.hw + 3), fc);
+      for (let zz = -1; zz <= f.hz1 - 3; zz++) h.set(s * (f.hw + 1), ey, zz, fc);
     }
   });
-  for (let x = -ex + 2; x <= ex - 2; x++) h.set(x, ey, z, fc); // bridge
+  for (let x = -ex + 2; x <= ex - 2; x++) h.set(x, ey - 1, z, fc); // bridge
 }
 
 /** Hats sit on top of the hair (overwriting it). type: 'cap' | 'school' | 'sun' | 'flat' | 'bucket'. */
@@ -514,9 +514,10 @@ function hat(h, f, type, o = {}) {
     });
     h.set(0, f.hy1 + 4, 0, shade(c, 0.85)); // button
     if (type === 'cap') {
-      for (let z = hz1 + 2; z <= hz1 + 5; z++) for (let x = -5; x <= 5; x++) {
-        if (z === hz1 + 5 && Math.abs(x) >= 4) continue;
-        if (z === hz1 + 4 && Math.abs(x) === 5) continue;
+      const bw = hw - 2;
+      for (let z = hz1 + 2; z <= hz1 + 5; z++) for (let x = -bw; x <= bw; x++) {
+        if (z === hz1 + 5 && Math.abs(x) >= bw - 1) continue;
+        if (z === hz1 + 4 && Math.abs(x) === bw) continue;
         h.set(x, yb, z, o.brim ?? shade(c, 0.9));
       }
       if (o.logo) h.project(['.L.', 'L.L', '.L.'], { L: o.logo }, -1, yb + 4, '+z');
@@ -524,14 +525,14 @@ function hat(h, f, type, o = {}) {
       // rolled brim all around + elastic chin strap
       const ring = rtest(-hw - 3, yb - 8, hz0 - 3, hw + 3, yb + 8, hz1 + 3, f.hr + 3);
       h.shape(-hw - 3, yb, hz0 - 3, hw + 3, yb, hz1 + 3, (x, y, z) => ring(x, y, z) && !dome(x, y, z), shade(c, 0.95));
-      for (let x = -4; x <= 4; x++) h.set(x, yb, hz1 + 3 + (Math.abs(x) <= 2 ? 1 : 0), shade(c, 0.95));
+      for (let x = -hw + 3; x <= hw - 3; x++) h.set(x, yb, hz1 + 3 + (Math.abs(x) <= hw - 5 ? 1 : 0), shade(c, 0.95));
       if (o.band) h.paint(() => h.shape(-hw - 2, yb + 1, hz0 - 2, hw + 2, yb + 1, hz1 + 2, () => true, o.band));
       sides((sx) => {
         for (let y = f.hy0 + 1; y < yb; y++) h.set(sx * (hw + 1), y, 1, 0x3a3436);
       });
     }
   } else if (type === 'sun' || type === 'bucket') {
-    const R = type === 'sun' ? hw + 5 : hw + 3;
+    const R = type === 'sun' ? hw + 4 : hw + 3;
     const crown = rtest(-hw - 1, yb - 8, hz0 - 1, hw + 1, f.hy1 + 3, hz1 + 1, f.hr + 1, 3);
     h.shape(-hw - 1, yb + 1, hz0 - 1, hw + 1, f.hy1 + 3, hz1 + 1, crown, col);
     // brim (slightly drooping at the rim)
@@ -552,8 +553,8 @@ function hat(h, f, type, o = {}) {
       const zf = hz1 + 1 + Math.min(2, top - y);
       for (let x = -hw + 1 + (top - y > 2 ? 0 : 1); x <= hw - 1 - (top - y > 2 ? 0 : 1); x++) for (let z = hz1 - 1; z <= zf; z++) h.set(x, y, z, col(x, y, z));
     }
-    for (let z = hz1 + 2; z <= hz1 + 4; z++) for (let x = -5; x <= 5; x++) {
-      if (z === hz1 + 4 && Math.abs(x) >= 4) continue;
+    for (let z = hz1 + 2; z <= hz1 + 4; z++) for (let x = -hw + 2; x <= hw - 2; x++) {
+      if (z === hz1 + 4 && Math.abs(x) >= hw - 3) continue;
       h.set(x, yb, z, shade(c, 0.8));
     }
     h.set(0, top + 1, 0, shade(c, 0.8)); // button
@@ -641,40 +642,40 @@ const HAIR = {
 };
 
 // ============================================================================ frames
-const F_GIRL = frame({ hipY: 16, shY: 29 });
-const F_BOY = frame({ hipY: 17, shY: 30 });
-const F_MAN = frame({ hipY: 17, shY: 31 });
-const F_KID = frame({ hipY: 9, legIn: 1, legOut: 3, shY: 19, tw: 3, tz0: -2, tz1: 1, armIn: 4, armOut: 6, handY: 8, hw: 6, hh: 12, hz0: -5, hz1: 5, hr: 4, waistY: 11 });
-const F_GRANDMA = frame({ hipY: 13, shY: 26, lean: 2, headFwd: 1, headDrop: 1, waistY: 15, handY: 12 });
-const F_GRANDPA = frame({ hipY: 16, shY: 29, lean: 1, headFwd: 1 });
+const F_GIRL = frame({ hipY: 9, shY: 18 });
+const F_BOY = frame({ hipY: 9, shY: 18 });
+const F_MAN = frame({ hipY: 10, shY: 19 });
+const F_KID = frame({ hipY: 7, legIn: 1, legOut: 3, shY: 13, tw: 3, tz0: -2, tz1: 1, armIn: 4, armOut: 6, handY: 6, hw: 7, hh: 14, hz0: -6, hz1: 5, hr: 5, waistY: 9, eyeRow: 5 });
+const F_GRANDMA = frame({ hipY: 7, shY: 16, lean: 2, headFwd: 1, headDrop: 1, waistY: 9, handY: 8 });
+const F_GRANDPA = frame({ hipY: 9, shY: 18, lean: 1, headFwd: 1 });
 
 // ============================================================================ characters
 export default {
   // ------------------------------------------------------------------------ schoolgirl
   schoolgirl: {
-    name: 'Schoolgirl', voxel: 0.032, variants: 3, rig: rigOf(F_GIRL),
+    name: 'Schoolgirl', voxel: 0.026, variants: 3, rig: rigOf(F_GIRL),
     build(p, v) {
       const f = F_GIRL;
       const V = [
         { skin: SKINS.light, hair: HAIR.black, style: 'hime', collar: C.navy, scarf: C.red, skirt: C.navy, socks: 0x2a2a34, sockY: 7, bag: 'hand', iris: 0x4a2a1c },
-        { skin: SKINS.fair, hair: HAIR.chestnut, style: 'twin', collar: C.navy, scarf: 0xe8506a, skirt: 0x5a6274, socks: WH, sockY: 6, bag: 'pack', tie: C.pink, iris: 0x7a4a2a },
-        { skin: SKINS.warm, hair: HAIR.darkbrown, style: 'bob', collar: 0x6a9ad0, scarf: C.navy, skirt: 0x3c5a8a, socks: WH, sockY: 8, bag: 'handL', iris: 0x3a5a8a },
+        { skin: SKINS.fair, hair: HAIR.chestnut, style: 'twin', collar: C.navy, scarf: 0xe8506a, skirt: 0x5a6274, socks: WH, sockY: 5, bag: 'pack', tie: C.pink, iris: 0x7a4a2a },
+        { skin: SKINS.warm, hair: HAIR.darkbrown, style: 'bob', collar: 0x6a9ad0, scarf: C.navy, skirt: 0x3c5a8a, socks: WH, sockY: 4, bag: 'handL', iris: 0x3a5a8a },
       ][v];
       const top = WH;
       const t = p.torso;
       legs(p, f, { skin: V.skin, socks: V.socks, sockY: V.sockY, shoe: 'loafer', shoeC: 0x6a3a22, soleC: 0x2a1a14 });
       torso(p, f, { skin: V.skin, col: outfit(f, { top, bottom: V.skirt }) });
-      skirt(p, f, { c: V.skirt, hemY: 10, flare: 2 });
+      skirt(p, f, { c: V.skirt, hemY: 6, flare: 2 });
       arms(p, f, { skin: V.skin, sleeve: top, sleeveY: f.handY + 3, cuff: V.collar, elbowFold: true,
         col: (x, y, z, c) => (y === f.handY + 4 ? WH : y === f.handY + 5 ? V.collar : null) });
       // sailor collar: square flap on the back with a white stripe
-      for (let y = f.shY - 6; y <= f.shY; y++) for (let x = -f.tw; x <= f.tw; x++) {
-        const edge = y === f.shY - 6 || Math.abs(x) === f.tw;
-        const stripe = !edge && (y === f.shY - 5 || Math.abs(x) === f.tw - 1);
+      for (let y = f.shY - 4; y <= f.shY; y++) for (let x = -f.tw; x <= f.tw; x++) {
+        const edge = y === f.shY - 4 || Math.abs(x) === f.tw;
+        const stripe = !edge && (y === f.shY - 3 || Math.abs(x) === f.tw - 1);
         t.set(x, y, f.tz0 - 1, stripe ? WH : V.collar);
       }
       // ... and a V in front
-      for (let y = f.shY - 6; y <= f.shY; y++) {
+      for (let y = f.shY - 4; y <= f.shY; y++) {
         const d = f.shY - y;
         const xin = Math.max(0, f.tw - 1 - d);
         for (let x = -f.tw; x <= f.tw; x++) {
@@ -682,21 +683,21 @@ export default {
           if (ax < xin || (ax > xin + 2 && y < f.shY)) continue;
           t.set(x, y, f.tz1, ax === xin + 1 && y < f.shY ? WH : V.collar);
         }
-        for (let x = -xin + 1; x <= xin - 1; x++) if (y > f.shY - 4) t.set(x, y, f.tz1, V.skin);
+        for (let x = -xin + 1; x <= xin - 1; x++) if (y > f.shY - 3) t.set(x, y, f.tz1, V.skin);
       }
       // sailor scarf: bow knot + two tails
-      t.layer(['RR.RR', 'RRKRR', '.RRR.', '.R.R.', '.R.R.', 'R...R'], { R: V.scarf, K: shade(V.scarf, 0.75) }, { x: -2, y: f.shY - 4, z: f.tz1 + 1 });
-      t.set(0, f.shY - 5, f.tz1 + 2, shade(V.scarf, 0.85));
+      t.layer(['RR.RR', 'RRKRR', '.R.R.', 'R...R'], { R: V.scarf, K: shade(V.scarf, 0.75) }, { x: -2, y: f.shY - 2, z: f.tz1 + 1 });
+      t.set(0, f.shY - 3, f.tz1 + 2, shade(V.scarf, 0.85));
       // head + hair
       const h = head(p, f, { skin: V.skin, eyes: 'lash', iris: V.iris, mouth: ['smile', 'open', 'wide'][v], ears: V.style === 'twin' });
       if (V.style === 'hime') {
         hairCap(h, f, V.hair, { bangs: bangsFrom(f.fringe, [0, 0, 1, 0, 0, 1, 0, -1]), side: f.hy0 - 3, ear: f.hy0 - 3, back: f.hy0 - 3 });
         hairBack(h, f, V.hair, { bottom: f.waistY + 2, z1: -3, taper: 2 });
-        sides((s) => h.box(s * (f.hw + 1), f.hy0 - 6, 2, s * f.hw, f.hy0 - 1, 4, V.hair)); // hime side locks
+        sides((s) => h.box(s * (f.hw + 1), f.hy0 - 4, 2, s * f.hw, f.hy0 - 1, 4, V.hair)); // hime side locks
         h.set(-2, f.hy1 + 2, 1, V.hair).set(-2, f.hy1 + 3, 0, V.hair).set(-1, f.hy1 + 4, 0, V.hair); // ahoge
       } else if (V.style === 'twin') {
         hairCap(h, f, V.hair, { bangs: bangsFrom(f.fringe, [1, 0, 0, 1, 0, 0, -1, -2]), side: f.eyeY - 3, ear: f.eyeY + 1, back: f.hy0 + 1 });
-        sides((s) => hairTail(h, f, V.hair, s * (f.hw + 2), f.hy1 - 3, -2, 15, 2.6, { dx: s * 1.2, dz: -1, tie: V.tie }));
+        sides((s) => hairTail(h, f, V.hair, s * (f.hw + 2), f.hy1 - 3, -2, 13, 2.6, { dx: s * 1.2, dz: -1, tie: V.tie }));
       } else {
         hairCap(h, f, V.hair, { bangs: bangsAsym(f.fringe, [0, 0, -1, 0, 0, 1, 0, 1, 1, 2, 2, 2, 1, 1, 0, -1, -2]), side: f.hy0 - 1, ear: f.hy0 - 1, back: f.hy0 - 1, vol: 2 });
         h.box(2, f.fringe + 2, f.hz1 + 2, 4, f.fringe + 2, f.hz1 + 2, gloss(C.yellow)); // hair clip
@@ -707,8 +708,8 @@ export default {
         const s = V.bag === 'hand' ? 1 : -1;
         const m = s > 0 ? p.armR : p.armL;
         const bc = V.bag === 'hand' ? 0x2a2426 : 0x6a4026;
-        const b = handBag(m, f, s, { c: gloss(bc), h: 8, len: 10, thick: 1 });
-        m.set(b.xm + s * 2, b.top - 2, 0, metal(C.gold)).set(b.xm + s * 2, b.top - 3, 0, metal(C.gold));
+        const b = handBag(m, f, s, { c: gloss(bc), h: 5, len: 8, thick: 1 });
+        m.set(b.xm + s * 2, b.top - 1, 0, metal(C.gold)).set(b.xm + s * 2, b.top - 2, 0, metal(C.gold));
         charm(m, b.xm + s * 2, b.top - 1, b.z1 - 1, C.pink, WH);
       } else {
         const bp = backpack(p, f, { c: 0xe9d7b8, strap: 0xc4a77e, pocket: 0xd8c09a, hw: 3, zip: 0xb09070 });
@@ -720,7 +721,7 @@ export default {
 
   // ------------------------------------------------------------------------ schoolboy
   schoolboy: {
-    name: 'Schoolboy', voxel: 0.031, variants: 3, rig: rigOf(F_BOY),
+    name: 'Schoolboy', voxel: 0.026, variants: 3, rig: rigOf(F_BOY),
     build(p, v) {
       const f = F_BOY;
       const V = [
@@ -742,7 +743,7 @@ export default {
       t.set(0, f.shY + 1, 2, null);
       for (let y = f.pelvisY + 2; y <= f.shY - 1; y += 2) t.set(0, y, f.tz1 + 1, metal(C.gold));
       t.set(-3, f.shY - 2, f.tz1, shade(jacket, 1.3)); // badge
-      const h = head(p, f, { skin: V.skin, eyes: 'round', iris: 0x3a2418, mouth: ['grin', 'smile', 'smirk'][v], brows: shade(V.hair, 0.8), browShape: ['BB'] });
+      const h = head(p, f, { skin: V.skin, eyes: 'round', iris: 0x3a2418, mouth: ['grin', 'smile', 'smirk'][v], brows: shade(V.hair, 0.8), browShape: ['BB'], mouthDY: V.specs ? -1 : 0 });
       if (V.style === 'spiky') {
         hairCap(h, f, V.hair, { bangs: bangsFrom(f.fringe, [1, 0, 1, -1, 1, 0, -1, -2]), side: f.eyeY, ear: f.eyeY + 1, back: f.hy0 + 1 });
         for (const [x, z, hgt] of [[-4, 2, 3], [-1, 3, 3], [2, 2, 4], [5, 0, 2], [-5, -2, 2], [0, -2, 3], [3, -4, 2]]) {
@@ -758,12 +759,12 @@ export default {
         const bp = backpack(p, f, { c: V.bagC, strap: 0x1a2240, pocket: shade(V.bagC, 1.15), hw: 3, zip: 0xd0d0d8 });
         charm(t, -2, bp.top - 1, bp.z0 - 1, C.lime, WH);
       } else if (V.bag === 'hand') {
-        handBag(p.armR, f, 1, { c: gloss(V.bagC), h: 8, len: 10, thick: 1 });
+        handBag(p.armR, f, 1, { c: gloss(V.bagC), h: 5, len: 8, thick: 1 });
       } else {
         // sports barrel bag in the left hand
         const m = p.armL, xm = -f.ax, top = f.handY - 2;
-        m.shape(xm - 2, top - 5, -5, xm + 2, top, 5, (x, y, z) => ((x - xm) / 2.6) ** 2 + ((y - top + 2.5) / 3.1) ** 2 <= 1 && Math.abs(z) <= 5,
-          (x, y, z) => (Math.abs(z) === 5 ? WH : y === top - 3 ? WH : V.bagC));
+        m.shape(xm - 2, top - 4, -4, xm + 2, top, 4, (x, y, z) => ((x - xm) / 2.6) ** 2 + ((y - top + 2) / 2.6) ** 2 <= 1 && Math.abs(z) <= 4,
+          (x, y, z) => (Math.abs(z) === 4 ? WH : y === top - 2 ? WH : V.bagC));
         for (let y = top + 1; y <= f.handY; y++) { m.set(xm, y, -2, 0x222222); m.set(xm, y, 2, 0x222222); }
       }
       finish(p, f);
@@ -772,7 +773,7 @@ export default {
 
   // ------------------------------------------------------------------------ salaryman
   salaryman: {
-    name: 'Salaryman', voxel: 0.032, variants: 3, rig: rigOf(F_MAN),
+    name: 'Salaryman', voxel: 0.026, variants: 3, rig: rigOf(F_MAN),
     build(p, v) {
       const f = F_MAN;
       const V = [
@@ -785,7 +786,7 @@ export default {
       torso(p, f, { skin: V.skin, col: outfit(f, { top: V.suit, bottom: V.suit, belt: 0x1a1414 }) });
       arms(p, f, { skin: V.skin, sleeve: V.suit, sleeveY: f.handY + 3, cuff: shirt, elbowFold: true });
       // shirt V, lapels, tie
-      for (let y = f.shY - 6; y <= f.shY; y++) {
+      for (let y = f.shY - 4; y <= f.shY; y++) {
         const d = f.shY - y, xin = Math.max(0, 3 - Math.floor(d / 2));
         for (let x = -xin; x <= xin; x++) t.set(x, y, f.tz1, shirt);
         sides((s) => t.set(s * (xin + 1), y, f.tz1, shade(V.suit, 1.18)));
@@ -798,14 +799,14 @@ export default {
       t.set(1, f.waistY + 3, f.tz1, metal(C.gold)).set(1, f.waistY + 5, f.tz1, metal(C.gold));
       t.set(-3, f.shY - 3, f.tz1, WH).set(-3, f.shY - 2, f.tz1, WH); // pocket square
       t.set(3, f.shY - 3, f.tz1, metal(C.gold)); // company pin
-      const h = head(p, f, { skin: V.skin, eyes: 'tired', iris: 0x3a2a22, mouth: V.mouth, brows: shade(V.hair, 0.85), browShape: ['.BB'], blush: false, nose: true });
+      const h = head(p, f, { skin: V.skin, eyes: 'tired', iris: 0x3a2a22, mouth: V.mouth, brows: shade(V.hair, 0.85), browShape: ['.BB'], blush: false, nose: true, mouthDY: V.specs ? -1 : 0 });
       hairCap(h, f, V.hair, { bangs: bangsAsym(f.fringe + 2, [0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 2, 1, 0, -1]), side: f.eyeY + 1, ear: f.eyeY + 1, back: f.hy0 + 1 });
       h.project(['K'], { K: shade(V.hair, 0.6) }, -2, f.hy1 + 1, '+y'); // parting
       if (V.specs) glasses(h, f, { c: 0x6a6a74 });
       if (v === 2) { // tired stubble
-        h.project(['S.S.S', '.S.S.'], { S: shade(V.skin, 0.84) }, -2, f.hy0 + 1);
+        h.project(['S.S.S', '.S.S.'], { S: shade(V.skin, 0.84) }, -2, f.hy0 + 2);
       }
-      const b = handBag(p.armR, f, 1, { c: gloss(V.case), h: 7, len: 11, thick: 1, handle: 0x1a1414 });
+      const b = handBag(p.armR, f, 1, { c: gloss(V.case), h: 5, len: 9, thick: 1, handle: 0x1a1414 });
       p.armR.set(b.xm + 2, b.top - 1, 0, metal(C.silver)).set(b.xm - 2, b.top - 1, 0, metal(C.silver));
       finish(p, f);
     },
@@ -813,7 +814,7 @@ export default {
 
   // ------------------------------------------------------------------------ office lady
   office_lady: {
-    name: 'Office Lady', voxel: 0.032, variants: 3, rig: rigOf(F_GIRL),
+    name: 'Office Lady', voxel: 0.026, variants: 3, rig: rigOf(F_GIRL),
     build(p, v) {
       const f = F_GIRL;
       const V = [
@@ -826,8 +827,8 @@ export default {
       else legs(p, f, { skin: V.skin, shoe: 'pump', shoeC: V.shoe, soleC: shade(V.shoe, 0.6), col: (x, y, z, c) => (c === V.skin || c === shade(V.skin, 0.96) ? mix(c, 0xd8b8a0, 0.25) : null) });
       torso(p, f, { skin: V.skin, col: outfit(f, { top: V.blouse, bottom: V.bottom, belt: V.slacks ? 0x3a2a22 : null }) });
       if (!V.slacks) {
-        skirt(p, f, { c: V.bottom, hemY: 9, flare: 0, pleats: false, col: (x, y, z, cc) => (x === 0 && z < 0 && y <= 10 ? null : (Math.abs(x) === 2 && z > 0 && y < 13 ? shade(cc, 0.92) : cc)) });
-        p.torso.set(0, 9, f.tz0 - 1, null).set(0, 10, f.tz0 - 1, null); // back slit
+        skirt(p, f, { c: V.bottom, hemY: 5, flare: 0, pleats: false, col: (x, y, z, cc) => (x === 0 && z < 0 && y <= 6 ? null : (Math.abs(x) === 2 && z > 0 && y < f.waistY ? shade(cc, 0.92) : cc)) });
+        p.torso.set(0, 5, f.tz0 - 1, null).set(0, 6, f.tz0 - 1, null); // back slit
       }
       arms(p, f, { skin: V.skin, sleeve: V.blouse, sleeveY: f.handY + 3, cuff: shade(V.blouse, 0.9), elbowFold: true });
       p.armL.box(-f.armIn, f.handY + 3, f.az0, -f.armIn, f.handY + 3, f.az1, metal(C.silver)); // wristwatch
@@ -858,8 +859,8 @@ export default {
         h.layer(['BB.BB', 'BBKBB', 'B...B'], { B: gloss(0x2a3a6a), K: gloss(C.gold) }, { x: -2, y: f.hy0 + 8, z: f.hz0 - 2, depth: 1 }); // ribbon barrette
       }
       // tote bag in the right hand
-      const b = handBag(p.armR, f, 1, { c: V.tote, h: 9, len: 9, thick: 1, drop: 2, handle: shade(V.tote, 0.75),
-        col: (x, y, z, cc, B) => (y === B.top - 3 && Math.abs(z) <= 2 && x === B.xm + 1 ? shade(V.tote, 0.82) : null) });
+      const b = handBag(p.armR, f, 1, { c: V.tote, h: 5, len: 7, thick: 1, drop: 1, handle: shade(V.tote, 0.75),
+        col: (x, y, z, cc, B) => (y === B.top - 2 && Math.abs(z) <= 1 && x === B.xm + 1 ? shade(V.tote, 0.82) : null) });
       p.armR.box(b.xm, b.top + 1, b.z0 + 2, b.xm, b.top + 1, b.z1 - 2, v === 2 ? 0xf2e6c8 : 0x9ab0c8); // papers peeking out
       finish(p, f);
     },
@@ -867,7 +868,7 @@ export default {
 
   // ------------------------------------------------------------------------ grandma
   grandma: {
-    name: 'Grandma', voxel: 0.03, variants: 3, rig: rigOf(F_GRANDMA),
+    name: 'Grandma', voxel: 0.026, variants: 3, rig: rigOf(F_GRANDMA),
     build(p, v) {
       const f = F_GRANDMA;
       const V = [
@@ -889,18 +890,18 @@ export default {
       // perm: puffy curly shell with bumpy surface
       hairCap(h, f, V.hair, { bangs: bangsFrom(f.fringe + 2, [1, 0, 1, 0, -1, 0, -1, -2]), side: f.eyeY - 1, ear: f.eyeY, back: f.hy0, vol: 2, top: 2, curl: 0.3, ring: false });
       for (let i = 0; i < 12; i++) { // little curls all round the perm
-        const a = (i + 0.5) / 12 * Math.PI * 2, rr = i % 2 ? 8.6 : 8.2;
-        const cz = Math.sin(a) * 7.2 - 0.5;
+        const a = (i + 0.5) / 12 * Math.PI * 2, rr = i % 2 ? 9.6 : 9.2;
+        const cz = Math.sin(a) * 8 - 0.5;
         if (cz > 3.5) continue;
         h.sphere(Math.cos(a) * rr, f.eyeY + 2 + (i % 3), cz, 1.3, shade(V.hair, i % 2 ? 0.9 : 1.05));
       }
       for (const [x, z] of [[-3, -2], [2, -3], [0, 1], [4, 0], [-4, 1]]) h.sphere(x, f.hy1 + 2, z, 1.4, shade(V.hair, 1.04));
       if (V.specs) {
         glasses(h, f, { c: 0xb08a5a, round: true });
-        for (let y = f.eyeY; y >= f.hy0 - 2; y--) h.set(f.hw + 1, y, 1, metal(C.gold)); // glasses chain
+        for (let y = f.eyeY; y >= f.hy0 + 1; y--) h.set(f.hw + 1, y, 1, metal(C.gold)); // glasses chain
       }
       // cloth bag with polka dots in the left hand
-      handBag(p.armL, f, -1, { c: V.bag, h: 8, len: 9, thick: 1, drop: 2, handle: shade(V.bag, 0.8),
+      handBag(p.armL, f, -1, { c: V.bag, h: 5, len: 7, thick: 1, drop: 1, handle: shade(V.bag, 0.8),
         col: (x, y, z, cc) => ((((y % 3) + 3) % 3 === 1) && (((z + (y % 6 < 3 ? 0 : 1)) % 2 + 2) % 2 === 0) ? V.bagDot : cc) });
       finish(p, f);
     },
@@ -908,7 +909,7 @@ export default {
 
   // ------------------------------------------------------------------------ grandpa
   grandpa: {
-    name: 'Grandpa', voxel: 0.031, variants: 3, rig: rigOf(F_GRANDPA),
+    name: 'Grandpa', voxel: 0.026, variants: 3, rig: rigOf(F_GRANDPA),
     build(p, v) {
       const f = F_GRANDPA;
       const V = [
@@ -929,9 +930,9 @@ export default {
       sides((s) => { for (let y = f.shY - 1; y <= f.shY; y++) t.set(s * f.tw, y, 0, V.shirt); }); // shirt shoulders
       for (let y = f.waistY + 2; y <= f.shY - 5; y += 2) t.set(0, y, f.tz1 + 1, gloss(0x5a4030));
       sides((s) => t.set(s * 2, f.waistY + 3, f.tz1 + 1, shade(V.vest, 0.8)));
-      const h = head(p, f, { skin: V.skin, eyes: v === 1 ? 'small' : 'calm', mouth: V.tache ? 'dot' : 'smile', brows: 0xf2eeea, browShape: ['BBB'], browDY: 0, blush: 0xffb0a8, nose: true });
+      const h = head(p, f, { skin: V.skin, eyes: v === 1 ? 'small' : 'calm', mouth: V.tache ? 'dot' : 'smile', brows: 0xf2eeea, browShape: ['BBB'], browDY: 0, blush: 0xffb0a8, nose: !V.tache, mouthDY: V.tache ? -2 : V.specs ? -1 : 0 });
       hairCap(h, f, 0xd8d4d0, { bangs: () => f.hy1, side: f.eyeY - 1, ear: f.eyeY - 1, back: f.hy0 + 1, ring: false });
-      if (V.tache) h.project(['WW.WW', 'W...W'], { W: 0xf4f0ec }, -2, f.hy0 + 3, '+z', { raise: true });
+      if (V.tache) h.project(['.WWW.', 'WW.WW'], { W: 0xf4f0ec }, -2, f.eyeY - 3, '+z', { raise: true });
       if (V.specs) glasses(h, f, { c: 0x3a3436 });
       hat(h, f, 'flat', { c: V.cap, tweed: true, y: f.fringe + 1 });
       // walking cane in the right hand
@@ -945,7 +946,7 @@ export default {
 
   // ------------------------------------------------------------------------ kid
   kid: {
-    name: 'Kid', voxel: 0.028, variants: 3, rig: rigOf(F_KID),
+    name: 'Kid', voxel: 0.024, variants: 3, rig: rigOf(F_KID),
     build(p, v) {
       const f = F_KID;
       const V = [
@@ -954,13 +955,13 @@ export default {
         { skin: SKINS.deep, shirt: C.lime, shorts: 0x6a5240, hair: HAIR.black, rand: 0x2a4a8a, hat: C.red, girl: false },
       ][v];
       const t = p.torso;
-      legs(p, f, { skin: V.skin, pants: V.shorts, pantsY: f.hipY - 3, hem: true, socks: WH, sockY: 4, sockStripe: V.girl ? C.pink : C.sky, shoe: 'sneaker', shoeC: WH, accent: V.rand === 0x2a2224 ? C.blue : V.rand });
+      legs(p, f, { skin: V.skin, pants: V.shorts, pantsY: f.hipY - 2, hem: true, socks: WH, sockY: 3, sockStripe: V.girl ? C.pink : C.sky, shoe: 'sneaker', shoeC: WH, accent: V.rand === 0x2a2224 ? C.blue : V.rand });
       torso(p, f, { skin: V.skin, col: outfit(f, { top: V.shirt, bottom: V.shorts, folds: false }) });
       arms(p, f, { skin: V.skin, sleeve: V.shirt, sleeveY: f.shY - 3, cuff: shade(V.shirt, 0.9) });
       // T-shirt print
-      if (v === 0) t.project(['.Y.', 'YYY', '.Y.'], { Y: C.yellow }, -1, f.shY - 3, '+z');
-      else if (v === 1) t.project(['R.R', 'RRR', '.R.'], { R: C.hotpink }, -1, f.shY - 3, '+z');
-      else t.project(['WWW', 'W.W'], { W: WH }, -1, f.shY - 3, '+z');
+      if (v === 0) t.project(['.Y.', 'YYY', '.Y.'], { Y: C.yellow }, -1, f.shY - 1, '+z');
+      else if (v === 1) t.project(['R.R', 'RRR', '.R.'], { R: C.hotpink }, -1, f.shY - 1, '+z');
+      else t.project(['WWW', 'W.W'], { W: WH }, -1, f.shY - 1, '+z');
       // name tag
       t.set(-2, f.shY - 2, f.tz1 + 1, WH);
       const h = head(p, f, { skin: V.skin, eyes: 'round', iris: 0x3a2418, mouth: ['open', 'smile', 'grin'][v], eyeX: 2, blushW: 2 });
@@ -982,7 +983,7 @@ export default {
 
   // ------------------------------------------------------------------------ tourist
   tourist: {
-    name: 'Tourist', voxel: 0.031, variants: 3, rig: rigOf(F_BOY),
+    name: 'Tourist', voxel: 0.026, variants: 3, rig: rigOf(F_BOY),
     build(p, v) {
       const f = F_BOY;
       const V = [
@@ -991,7 +992,7 @@ export default {
         { skin: SKINS.light, hair: HAIR.blonde, shirt: 0xb8a878, print: 'safari', shorts: 0x6a5a40, hat: 'cap', hatC: 0x2a8a7a, pack: 0xc84a3a, freckles: false, iris: 0x4a8a5a },
       ][v];
       const t = p.torso;
-      legs(p, f, { skin: V.skin, pants: V.shorts, pantsY: f.hipY - 5, hem: true, socks: v === 2 ? WH : null, sockY: 5, shoe: v === 0 ? 'sandal' : 'sneaker', shoeC: v === 0 ? 0x6a4a2a : 0x8a8a92, soleC: v === 0 ? 0x4a3020 : WH, accent: C.orange });
+      legs(p, f, { skin: V.skin, pants: V.shorts, pantsY: f.hipY - 3, hem: true, socks: v === 2 ? WH : null, sockY: 4, shoe: v === 0 ? 'sandal' : 'sneaker', shoeC: v === 0 ? 0x6a4a2a : 0x8a8a92, soleC: v === 0 ? 0x4a3020 : WH, accent: C.orange });
       const pr = (x, y, z, c) => {
         if (y <= f.waistY) return null;
         if (V.print === 'aloha') {
@@ -1023,15 +1024,16 @@ export default {
       }
       if (V.print === 'safari') sides((s) => { t.box(s * 2, f.shY - 4, f.tz1 + 1, s * 3, f.shY - 3, f.tz1 + 1, shade(V.shirt, 0.9)); t.set(s * 2, f.shY - 3, f.tz1 + 1, shade(V.shirt, 0.8)); });
       backpack(p, f, { c: V.pack, strap: shade(V.pack, 0.7), pocket: shade(V.pack, 1.15), hw: 3, depth: 4, top: f.shY, bottom: f.waistY - 1, zip: 0xd0c8b0 });
-      t.box(-3, f.shY + 1, f.tz0 - 4, 3, f.shY + 2, f.tz0 - 4, 0x3a5a8a); // bedroll
+      t.box(-3, f.waistY - 3, f.tz0 - 3, 3, f.waistY - 2, f.tz0 - 4, 0x3a5a8a); // bedroll
       // camera on a neck strap (first two) — the third holds it
       if (v < 2) {
-        sides((s) => { for (let y = f.shY - 5; y <= f.shY; y++) t.set(s * (1 + Math.floor((y - (f.shY - 5)) / 2)), y, f.tz1 + 1, 0x2a2a2a); });
-        t.box(-2, f.shY - 8, f.tz1 + 1, 2, f.shY - 6, f.tz1 + 2, 0x2a2a30);
-        t.box(-2, f.shY - 6, f.tz1 + 1, -1, f.shY - 6, f.tz1 + 2, metal(C.silver));
-        t.cylinder(0, f.shY - 7, f.tz1 + 3, 1, 2, 0x1a1a1e, 'z');
-        t.set(0, f.shY - 7, f.tz1 + 4, glass(0x6a8ac8));
-        t.set(1, f.shY - 6, f.tz1 + 2, glow(0xff5a4a));
+        sides((s) => { for (let y = f.shY - 2; y <= f.shY; y++) t.set(s * (2 + Math.floor((y - (f.shY - 2)) / 2)), y, f.tz1 + 1, 0x2a2a2a); });
+        const cy = f.shY - 4;
+        t.box(-2, cy - 1, f.tz1 + 1, 2, cy + 1, f.tz1 + 2, 0x2a2a30);
+        t.box(-2, cy + 1, f.tz1 + 1, -1, cy + 1, f.tz1 + 2, metal(C.silver));
+        t.cylinder(0, cy, f.tz1 + 3, 1, 2, 0x1a1a1e, 'z');
+        t.set(0, cy, f.tz1 + 4, glass(0x6a8ac8));
+        t.set(1, cy + 1, f.tz1 + 2, glow(0xff5a4a));
       } else {
         const m = p.armR, xm = f.ax;
         m.box(xm - 1, f.handY - 1, 1, xm + 1, f.handY + 1, 4, 0x2a2a30);
@@ -1041,12 +1043,12 @@ export default {
       }
       // folded map in the left hand
       const ml = p.armL, xl = -f.ax;
-      ml.shape(xl, f.handY - 1, 1, xl, f.handY + 5, 6, () => true, (x, y, z) => {
+      ml.shape(xl, f.handY - 1, 1, xl, f.handY + 3, 5, () => true, (x, y, z) => {
         if (z === 1 || y === f.handY - 1) return 0xd8ceb0;
         const n = hash(x, y, z, 61);
         return n < 0.25 ? 0x8ac87a : n < 0.4 ? 0x7ab8e8 : (y + z) % 4 === 0 ? 0xe8a05a : 0xf6f0dc;
       });
-      ml.set(xl, f.handY + 3, 3, C.red);
+      ml.set(xl, f.handY + 2, 3, C.red);
       const h = head(p, f, { skin: V.skin, eyes: 'round', iris: V.iris, mouth: ['open', 'grin', 'smile'][v], freckles: V.freckles, brows: shade(V.hair, 0.8), browDY: -1 });
       if (v === 1) {
         hairCap(h, f, V.hair, { bangs: bangsFrom(f.fringe + 1, [0, 0, 0, 0, 0, 0, -1, -2]), side: f.eyeY, ear: f.eyeY + 1, back: f.hy0 + 1, vol: 2, curl: 0.3, ring: false });
@@ -1063,7 +1065,7 @@ export default {
 
   // ------------------------------------------------------------------------ otaku
   otaku: {
-    name: 'Otaku', voxel: 0.031, variants: 3, rig: rigOf(F_BOY),
+    name: 'Otaku', voxel: 0.026, variants: 3, rig: rigOf(F_BOY),
     build(p, v) {
       const f = F_BOY;
       const V = [
@@ -1088,9 +1090,9 @@ export default {
       const bp = backpack(p, f, { c: V.pack, strap: shade(V.pack, 0.75), pocket: shade(V.pack, 1.25), hw: 3, depth: 4, top: f.shY - 1, bottom: f.waistY - 1, zip: 0xc8c8d0 });
       const posters = [[-2, 0xf6d0e0, -1], [1, 0xc8e8ff, 1], [2, 0xfff0a8, 2]];
       for (const [px, pc, lean] of posters.slice(0, v === 1 ? 2 : 3)) {
-        const y0 = bp.top - 2, len = 9 - Math.abs(lean);
+        const y0 = bp.top - 2, len = 6 - Math.abs(lean);
         for (let i = 0; i < len; i++) {
-          const y = y0 + i, z = bp.z0 + 1 - Math.round(i * 0.55), x = px + Math.round(lean * i * 0.25);
+          const y = y0 + i, z = bp.z0 + 1 - Math.round(i * 0.7), x = px + Math.round(lean * i * 0.35);
           t.set(x, y, z, i === len - 1 ? shade(pc, 0.85) : pc);
           t.set(x, y, z - 1, i % 3 === 1 ? C.hotpink : pc);
         }
@@ -1101,15 +1103,15 @@ export default {
       sides((s) => {
         const m = s < 0 ? p.armL : p.armR;
         const bc = s < 0 ? 0xf6f0e6 : 0xd8b88a;
-        const B = handBag(m, f, s, { c: bc, h: 8, len: 7, thick: 1, open: true, handle: 0x8a6a4a, handleZ: 1,
+        const B = handBag(m, f, s, { c: bc, h: 5, len: 6, thick: 1, open: true, handle: 0x8a6a4a, handleZ: 1,
           col: (x, y, z, cc, b) => (x === b.xm + s && y < b.top - 1 && y > b.bot + 1 && Math.abs(z) <= 2 ? (s < 0 ? (Math.abs(z) + y) % 3 === 0 ? C.hotpink : 0xffd0e0 : (y % 2 ? C.sky : WH)) : null) });
         if (s < 0) m.box(B.xm, B.top, -1, B.xm, B.top + 3, 0, 0xffa8c8); // box sticking out
         else m.box(B.xm, B.top, 1, B.xm, B.top + 4, 1, 0x8ac8f0); // poster tube
       });
-      const h = head(p, f, { skin: V.skin, eyes: 'round', iris: 0x2a2028, mouth: ['open', 'cat', 'grin'][v] });
+      const h = head(p, f, { skin: V.skin, eyes: 'round', iris: 0x2a2028, mouth: ['open', 'o', 'grin'][v], mouthDY: -1 });
       hairCap(h, f, V.hair, { bangs: bangsFrom(f.fringe, [0, 1, -1, 0, 1, -1, 0, -2]), side: f.eyeY - 1, ear: f.eyeY, back: f.hy0, vol: 1, top: 2 });
       for (const [x, z] of [[-3, 1], [2, 2], [0, -3], [4, -1]]) h.set(x, f.hy1 + 3, z, V.hair); // messy tufts
-      glasses(h, f, { c: V.specs, lens: glass(0xdfefff) });
+      glasses(h, f, { c: V.specs, glint: true });
       headband(h, f, f.fringe + 1, V.band, 2);
       h.project(['MM', 'MM'], { M: V.bandMark }, -1, f.fringe + 2, '+z', { raise: true });
       h.box(0, f.fringe + 1, f.hz0 - 2, 0, f.fringe + 2, f.hz0 - 2, shade(V.band, 0.9)); // knot
@@ -1121,7 +1123,7 @@ export default {
 
   // ------------------------------------------------------------------------ gyaru
   gyaru: {
-    name: 'Gyaru', voxel: 0.032, variants: 3, rig: rigOf(F_GIRL),
+    name: 'Gyaru', voxel: 0.026, variants: 3, rig: rigOf(F_GIRL),
     build(p, v) {
       const f = F_GIRL;
       const V = [
@@ -1131,9 +1133,9 @@ export default {
       ][v];
       const t = p.torso;
       const leopard = (x, y, z) => { const n = hash(x >> 0, y, z, 81); return n < 0.12 ? 0x3a2418 : n < 0.25 ? 0xa86a2a : null; };
-      legs(p, f, { skin: V.skin, socks: V.loose ? WH : null, sockY: 8, sockLoose: V.loose, shoe: 'platform', shoeC: V.shoe, platC: V.plat, accent: gloss(C.gold) });
+      legs(p, f, { skin: V.skin, socks: V.loose ? WH : null, sockY: 6, sockLoose: V.loose, shoe: 'platform', shoeC: V.shoe, platC: V.plat, accent: gloss(C.gold) });
       torso(p, f, { skin: V.skin, col: outfit(f, { top: V.top, bottom: V.skirt, folds: true, col: (x, y, z, c) => (v === 1 && y > f.waistY ? leopard(x, y, z) : null) }) });
-      skirt(p, f, { c: V.skirt, hemY: 12, flare: 1, pleats: v !== 1, col: (x, y, z, cc) => (v === 0 && ((x + 20) % 3 === 0 || (y % 3 === 0)) ? shade(cc, 0.8) : (v === 1 && hash(x, y, z, 82) < 0.15 ? shade(cc, 1.15) : null)) });
+      skirt(p, f, { c: V.skirt, hemY: 7, flare: 1, pleats: v !== 1, col: (x, y, z, cc) => (v === 0 && ((x + 20) % 3 === 0 || (y % 3 === 0)) ? shade(cc, 0.8) : (v === 1 && hash(x, y, z, 82) < 0.15 ? shade(cc, 1.15) : null)) });
       if (v === 2) { // hoodie: sleeves, pocket, strings
         arms(p, f, { skin: V.skin, sleeve: V.top, sleeveY: f.handY + 3, cuff: shade(V.top, 0.88) });
         t.box(-2, f.waistY + 1, f.tz1 + 1, 2, f.waistY + 3, f.tz1 + 1, shade(V.top, 0.92));
@@ -1184,7 +1186,7 @@ export default {
 
   // ------------------------------------------------------------------------ cosplayer
   cosplayer: {
-    name: 'Cosplayer', voxel: 0.031, variants: 3, rig: rigOf(F_GIRL),
+    name: 'Cosplayer', voxel: 0.026, variants: 3, rig: rigOf(F_GIRL),
     build(p, v) {
       const f = F_GIRL;
       const V = [
@@ -1193,12 +1195,12 @@ export default {
         { skin: SKINS.warm, hair: HAIR.blonde, dress: 0xffb03a, trim: WH, bow: C.hotpink, gem: C.red, iris: 0xc87a2a, wand: 'heart' },
       ][v];
       const t = p.torso;
-      legs(p, f, { skin: V.skin, socks: WH, sockY: 10, shoe: 'boot', shoeC: V.dress, soleC: shade(V.dress, 0.6), bootY: 6, cuffC: WH });
+      legs(p, f, { skin: V.skin, socks: WH, sockY: 7, shoe: 'boot', shoeC: V.dress, soleC: shade(V.dress, 0.6), bootY: 5, cuffC: WH });
       torso(p, f, { skin: V.skin, col: outfit(f, { top: V.dress, bottom: V.dress, folds: false, col: (x, y, z, c) => (y === f.waistY + 1 ? V.trim : null) }) });
-      skirt(p, f, { c: WH, hemY: 10, flare: 3, bell: true, pleats: false, col: (x, y, z, cc) => (y === 10 && (x + z) % 2 ? shade(WH, 0.9) : cc) }); // petticoat
-      skirt(p, f, { c: V.dress, hemY: 12, flare: 3, bell: true, pleats: true, stripe: WH, col: (x, y, z, cc) => (y === 12 ? (((x + z) & 1) ? V.trim : shade(V.trim, 0.92)) : null) });
+      skirt(p, f, { c: WH, hemY: 6, flare: 3, bell: true, pleats: false, col: (x, y, z, cc) => (y === 6 && (x + z) % 2 ? shade(WH, 0.9) : cc) }); // petticoat
+      skirt(p, f, { c: V.dress, hemY: 7, flare: 3, bell: true, pleats: true, stripe: WH, col: (x, y, z, cc) => (y === 7 ? (((x + z) & 1) ? V.trim : shade(V.trim, 0.92)) : null) });
       arms(p, f, { skin: V.skin, sleeve: V.dress, sleeveY: f.shY - 3, cuff: V.trim, puff: true, hand: WH, forearm: V.skin,
-        col: (x, y, z, c) => (y <= f.handY + 6 && y > f.handY + 2 ? (y === f.handY + 6 ? shade(V.dress, 1.1) : WH) : null) });
+        col: (x, y, z, c) => (y <= f.handY + 5 && y > f.handY + 2 ? (y === f.handY + 5 ? shade(V.dress, 1.1) : WH) : null) });
       // big chest bow with a gem + collar
       t.box(-1, f.shY - 4, f.tz1 + 1, 1, f.shY - 2, f.tz1 + 1, V.bow);
       sides((s) => { t.box(s * 2, f.shY - 4, f.tz1 + 1, s * 3, f.shY - 1, f.tz1 + 1, V.bow); t.set(s * 3, f.shY - 1, f.tz1 + 1, null); t.set(s * 2, f.shY - 5, f.tz1 + 1, V.bow).set(s * 3, f.shY - 6, f.tz1 + 1, shade(V.bow, 0.85)); });
@@ -1223,7 +1225,7 @@ export default {
       const h = head(p, f, { skin: V.skin, eyes: 'sparkle', iris: V.iris, mouth: 'open', ears: false, blushW: 2 });
       hairCap(h, f, V.hair, { bangs: bangsFrom(f.fringe, [1, -1, 0, 1, -1, 0, 0, -2]), side: f.hy0 - 2, ear: f.eyeY - 2, back: f.hy0 });
       sides((s) => {
-        hairTail(h, f, V.hair, s * (f.hw + 2), f.hy1 - 3, -2, 20, 2.4, { dx: s * 2, dz: -2, curl: 0.5 });
+        hairTail(h, f, V.hair, s * (f.hw + 2), f.hy1 - 3, -2, 16, 2.5, { dx: s * 2, dz: -2, curl: 0.5 });
         h.layer(['BB.BB', 'BBKBB', 'BB.BB'], { B: gloss(V.bow), K: gloss(shade(V.bow, 0.75)) }, { x: s * (f.hw + 2) - 2, y: f.hy1, z: 1, depth: 2 });
       });
       h.project(['..G..', '.GJG.', 'GGGGG'], { G: metal(C.gold), J: gloss(V.gem) }, -2, f.fringe + 3, '+z', { raise: true });
@@ -1233,7 +1235,7 @@ export default {
 
   // ------------------------------------------------------------------------ mom + baby
   mom_baby: {
-    name: 'Mom & Baby', voxel: 0.032, variants: 3, rig: rigOf(F_GIRL),
+    name: 'Mom & Baby', voxel: 0.026, variants: 3, rig: rigOf(F_GIRL),
     build(p, v) {
       const f = F_GIRL;
       const V = [
@@ -1276,13 +1278,13 @@ export default {
       t.project(['P.....P'], { P: C.blush }, bx - 3, by - 1, '+z');
       t.project(['M'], { M: 0xd05a6a }, bx, by - 1, '+z');
       if (V.ears === 'bear') sides((s) => { t.sphere(bx + s * 3, by + 3, bz - 1, 1.2, V.babyHat); t.set(bx + s * 3, by + 3, bz + 1, shade(V.babyHat, 1.25)); });
-      else if (V.ears === 'bunny') sides((s) => { t.box(bx + s * 2, by + 3, bz - 1, bx + s * 2, by + 7, bz - 1, V.babyHat); t.box(bx + s * 2, by + 4, bz, bx + s * 2, by + 6, bz, C.pink); });
+      else if (V.ears === 'bunny') sides((s) => { t.box(bx + s * 2, by + 3, bz - 1, bx + s * 2, by + 5, bz - 1, V.babyHat); t.set(bx + s * 2, by + 4, bz, C.pink); });
       else { t.set(bx, by + 4, bz - 1, shade(V.babyHat, 0.9)); t.sphere(bx, by + 5, bz - 1, 1, C.red); } // pom-pom
       // mom head
       const h = head(p, f, { skin: V.skin, eyes: v === 1 ? 'happy' : 'lash', iris: 0x4a2a1c, mouth: 'smile', mouthC: 0xb04a52, ears: V.style === 'low' });
       if (V.style === 'bun') {
         hairCap(h, f, V.hair, { bangs: bangsAsym(f.fringe, [-1, -1, 0, 0, 1, 1, 2, 2, 2, 2, 1, 1, 0, 0, 0, -1, -2]), side: f.eyeY - 3, ear: f.eyeY - 1, back: f.hy0 + 1 });
-        hairBun(h, f, V.hair, 0, f.hy1 - 2, f.hz0 - 2, 3.2);
+        hairBun(h, f, V.hair, 0, f.hy1 - 3, f.hz0 - 3, 3.6);
         h.line(-4, f.hy1 - 4, f.hz0 - 2, 3, f.hy1 - 1, f.hz0 - 3, gloss(C.woodDark)); // kanzashi hair stick
         h.set(-4, f.hy1 - 4, f.hz0 - 2, gloss(C.red)).set(-5, f.hy1 - 5, f.hz0 - 2, gloss(C.red));
       } else if (V.style === 'low') {
@@ -1292,7 +1294,7 @@ export default {
         hairCap(h, f, V.hair, { bangs: bangsAsym(f.fringe, [0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0, -1, -2]), side: f.hy0, ear: f.hy0, back: f.hy0, vol: 2, curl: 0.25 });
       }
       // nappy bag in the left hand
-      handBag(p.armL, f, -1, { c: shade(V.carrier, 1.1), h: 7, len: 9, thick: 1, drop: 1, col: (x, y, z, cc) => (y === f.handY - 5 ? WH : null) });
+      handBag(p.armL, f, -1, { c: shade(V.carrier, 1.1), h: 5, len: 7, thick: 1, drop: 1, col: (x, y, z, cc) => (y === f.handY - 4 ? WH : null) });
       finish(p, f);
     },
   },

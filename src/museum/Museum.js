@@ -15,7 +15,7 @@ import { DISPLAYS, decorList, decorPrice, THEME_NAMES } from './catalog.js';
 import { DISPLAY_STYLES, STYLE_ORDER, sheetMesh, styleTile } from './styles.js';
 import { PROPS, propMesh, hasProp } from '../world/props.js';
 import { MUSEUM_PRICE, MUSEUM_REQ_COMPLETE, MUSEUM_EXPANSIONS, itemValue } from '../game/economy.js';
-import { getItem, SERIES_BY_ID } from '../data/series/index.js';
+import { getItem, SERIES_BY_ID, MINI_SERIES } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
 import { Visitors } from './Visitors.js';
@@ -88,6 +88,7 @@ export class Museum {
       this.placedBuilt = true;
     }
     this.openGarageDoor();
+    this.game.goods?.refresh();
     if (!this.visitors) this.visitors = new Visitors(this);
     else this.visitors.rebuildGrid();
     this.recompute();
@@ -633,7 +634,7 @@ export class Museum {
     if (data.kind === 'display') this.applyStyle(entry);
     if (obj.slots.length) {
       if (!data.items || data.items.length !== obj.slots.length) data.items = Array(obj.slots.length).fill(null);
-      entry.display = new DisplaySlots(this.game, obj.owner || obj.group, obj.slots, data.items, { glass: true, shadows: false });
+      entry.display = new DisplaySlots(this.game, obj.owner || obj.group, obj.slots, data.items, { glass: true, shadows: false, prices: true });
     }
     // furniture root is interactable for "move" (F) hints
     obj.group.userData.museumEntry = entry;
@@ -815,6 +816,14 @@ export class Museum {
       beauty += 0.8;
     }
     beauty += sheetKinds.size * 1.5;
+    if (this.game.state.goods?.furin) beauty += 3;
+    // mini decos theme the display they stand in and add a little beauty
+    for (const p of this.placed) for (const it of p.display?.items || []) {
+      const item = it && getItem(it.k);
+      if (!item?.mini) continue;
+      themeSources.push({ x: p.data.x, z: p.data.z, themes: item.themes || [], w: 0.6 });
+      beauty += 0.6;
+    }
     const museumKeys = new Set();
     for (const p of this.placed) {
       if (!p.display) continue;
@@ -824,6 +833,7 @@ export class Museum {
         const item = getItem(it.k);
         if (!item) continue;
         museumKeys.add(it.k);
+        if (item.mini) continue;
         const series = SERIES_BY_ID[item.series];
         const appeal = 10 * Math.pow(RARITIES[item.rarity].value, 0.8) * Math.sqrt(FINISHES[it.f]?.mult || 1) * mult;
         // theme match from nearby sources
@@ -838,13 +848,14 @@ export class Museum {
         exhibits += appeal;
       }
     }
-    for (const se of Object.values(SERIES_BY_ID)) if (se.items.every((it) => museumKeys.has(it.key))) sets += 250 + se.price;
+    for (const se of Object.values(SERIES_BY_ID).filter((x) => !x.hidden)) if (se.items.every((it) => museumKeys.has(it.key))) sets += 250 + se.price;
     const beautyScore = 30 * Math.sqrt(beauty);
     const total = Math.round(exhibits + themes + beautyScore + sets);
     const TH = [0, 250, 800, 2000, 4500, 9000];
     let stars = 0; for (let i = 0; i < TH.length; i++) if (total >= TH[i]) stars = i;
-    const rate = Math.min(24, 0.6 + total / 220); // visitors per minute
-    const ticket = 40 + stars * 40;
+    const gs = this.game.state.goods || {};
+    const rate = Math.min(24, 0.6 + total / 220) * (gs.neon_open ? 1.15 : 1); // visitors per minute
+    const ticket = Math.round((40 + stars * 40) * (gs.ticket_machine ? 1.2 : 1) / 10) * 10;
     this.score = { total, stars, beauty: Math.round(beautyScore), exhibits: Math.round(exhibits), themes: Math.round(themes), sets, rate, ticket, nextAt: TH[stars + 1] || null, museumKeys: museumKeys.size };
     this.data.ticket = ticket;
     // diegetic star plaque
@@ -878,14 +889,15 @@ export class Museum {
       ui.text('※完成した展示（シリーズを全部並べる）はコンプボーナスの対象です。', x + 4, yy, { size: 10, color: COL.soft });
       return yy + 20 - y;
     }
-    const tabs = [['displays', '展示台'], ['decor', '装飾'], ['sheets', '展示シート'], ['expand', '拡張'], ['stats', '評価']];
+    const tabs = [['displays', '展示台'], ['minis', 'ミニデコ'], ['decor', '装飾'], ['sheets', '展示シート'], ['expand', '拡張'], ['stats', '評価']];
     let tx = x;
+    const tw = Math.floor((w - (tabs.length - 1) * 3) / tabs.length);
     for (const [id, jp] of tabs) {
       const on = site.sub.museum === id;
-      const hov = ui.hit(tx, yy, 94, 22, () => { site.sub.museum = id; site.scroll.museum = 0; audio.play('uiClick', { vol: 0.5 }); });
-      ui.rect(tx, yy, 94, 22, on ? '#6a2a9a' : hov ? '#e8d8f8' : '#f0e8f8');
-      ui.text(jp, tx + 47, yy + 4, { size: 12, color: on ? '#fff' : COL.ink, align: 'center' });
-      tx += 98;
+      const hov = ui.hit(tx, yy, tw, 22, () => { site.sub.museum = id; site.scroll.museum = 0; audio.play('uiClick', { vol: 0.5 }); });
+      ui.rect(tx, yy, tw, 22, on ? '#6a2a9a' : hov ? '#e8d8f8' : '#f0e8f8');
+      ui.text(jp, tx + tw / 2, yy + 5, { size: 10, color: on ? '#fff' : COL.ink, align: 'center' });
+      tx += tw + 3;
     }
     yy += 28;
     const sub = site.sub.museum;
@@ -915,6 +927,19 @@ export class Museum {
         ui.button(yen(p.price), cx + 6, cy + 106, cw - 12, 19, () => site.notify(this.buyFurniture('decor', p.id)), { size: 11, disabled: s.money < p.price, color: '#d8f0d8' });
       });
       yy += Math.ceil(list.length / 4) * 136;
+    } else if (sub === 'minis') {
+      ui.text('ちいさなジオラマ小物。展示台のスロットにフィギュアと並べて飾れます。', x + 4, yy, { size: 10, color: COL.soft });
+      yy += 18;
+      const list = MINI_SERIES.items;
+      const cw = Math.floor((w - 15) / 5);
+      list.forEach((it, i) => {
+        const cx = x + (i % 5) * (cw + 3), cy = yy + Math.floor(i / 5) * 96;
+        site.panel(cx, cy, cw, 90);
+        ui.image(site.itemThumb(it.key, 48), cx + (cw - 48) / 2, cy + 3, 48, 48);
+        ui.text(it.jp, cx + cw / 2, cy + 52, { size: 10, align: 'center', max: cw - 4 });
+        ui.button(yen(it.price), cx + 4, cy + 68, cw - 8, 17, () => site.notify(this.buyMini(it.key)), { size: 10, disabled: s.money < it.price, color: '#d8f0e8' });
+      });
+      yy += Math.ceil(list.length / 5) * 96;
     } else if (sub === 'sheets') {
       ui.text('展示台の棚に敷くジオラマシート。展示台を見ながら R キーで切り替え！', x + 4, yy, { size: 10, color: COL.soft });
       yy += 14;
@@ -1005,6 +1030,15 @@ export class Museum {
     g.delivery.order({ type: 'decor', kind, id, label: def.jp || def.name, name: def.name, jp: def.jp, rot: 0, boxSize });
     g.save();
     return { ok: true, msg: 'シャッター前に届きます · Delivered to the garage' };
+  }
+
+  buyMini(key) {
+    const g = this.game;
+    const it = getItem(key);
+    if (!it || !g.spend(it.price)) return { ok: false, msg: 'お金が足りません' };
+    g.delivery.order({ type: 'single', key, finish: 'normal', label: it.jp });
+    g.save();
+    return { ok: true, msg: 'シャッター前に届きます' };
   }
 
   buyStyle(id) {

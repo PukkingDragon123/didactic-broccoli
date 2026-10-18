@@ -8,12 +8,10 @@ import { VoxelModel, metal, gloss, glow } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { C, shade } from '../voxel/palette.js';
-import { hash2 } from '../core/util.js';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
 
 const VS = 0.005; // 5 mm voxels for cabinets
-const h3 = (x, y, z) => hash2(x * 7 + z * 131, y * 13 + z * 3);
 
 export const MACHINE_SPECS = {
   retro: {
@@ -76,84 +74,6 @@ export function layout(spec, ext = 0) {
 }
 
 // ----------------------------------------------------------------------------- voxel helpers
-/** Hollow box with rounded vertical edges (radius r) and a bevelled top edge. Wall thickness t (0 = solid). */
-function roundShell(v, x0, y0, z0, x1, y1, z1, r, t, col, { bevelTop = true, bevelBottom = false } = {}) {
-  const inside = (x, y, z, s) => {
-    const ax = x0 + s, bx = x1 - s, az = z0 + s, bz = z1 - s, ay = y0 + s, by = y1 - s;
-    if (x < ax || x > bx || z < az || z > bz || y < ay || y > by) return false;
-    const rr = Math.max(0, r - s);
-    const cx = x < ax + rr ? ax + rr : x > bx - rr ? bx - rr : x;
-    const cz = z < az + rr ? az + rr : z > bz - rr ? bz - rr : z;
-    const dx = x - cx, dz = z - cz;
-    if (dx * dx + dz * dz > rr * rr + rr * 0.8) return false;
-    const edge = x === ax || x === bx || z === az || z === bz || dx * dx + dz * dz > (rr - 1) * (rr - 1) + rr * 0.8;
-    if (s === 0 && edge && ((bevelTop && y === by) || (bevelBottom && y === ay))) return false;
-    return true;
-  };
-  v.shape(x0, y0, z0, x1, y1, z1, (x, y, z) => inside(x, y, z, 0) && !(t > 0 && inside(x, y, z, t)), col);
-}
-
-/** Lower unit: rounded shell, outlet recess with liner, seam lines, worn paint for the old machine. */
-function lowerBody(spec, L) {
-  const st = spec.style;
-  const v = new VoxelModel();
-  v.jitter = st.worn ? 0.02 : 0.008;
-  const W = Math.round(spec.w / VS), H = Math.round(spec.lowH / VS), D = Math.round(spec.d / VS);
-  const x0 = -W / 2, x1 = W / 2 - 1, z0 = -D / 2, z1 = D / 2 - 1;
-  const body = st.body;
-  roundShell(v, x0, 0, z0, x1, H - 1, z1, 4, 3, (x, y, z) => {
-    if (y <= 2) return shade(st.body2, 0.8); // dark skirt
-    if (st.panel && z === z1 && y < H - 6 && Math.abs(x) < W / 2 - 4) return gloss(st.panel); // deluxe: maroon front panel
-    return gloss(body);
-  }, { bevelTop: false });
-  // seam where the front panel meets the sides + top lip
-  v.paint(() => {
-    v.box(x0, H - 2, z0, x1, H - 1, z1, gloss(st.body2));
-    for (const sx of [x0 + 2, x1 - 2]) v.box(sx, 3, z1, sx, H - 3, z1, gloss(shade(body, 0.86)));
-  });
-  // outlet recess with a dark liner
-  const o = spec.outlet;
-  const ox0 = Math.round(-o.w / 2 / VS), ox1 = Math.round(o.w / 2 / VS) - 1;
-  const oy0 = Math.round(o.y0 / VS), oy1 = Math.round(o.y1 / VS);
-  v.box(ox0 - 2, oy0 - 2, z1 - 24, ox1 + 2, oy1 + 2, z1, 0x3a3a40);
-  v.box(ox0, oy0, z1 - 23, ox1, oy1, z1, null);
-  v.paint(() => { v.box(ox0, oy0 - 2, z1 - 23, ox1, oy0 - 1, z1, 0x5a5a62); });
-  // chrome lip around the outlet
-  v.paint(() => { v.box(ox0 - 2, oy1 + 1, z1, ox1 + 2, oy1 + 2, z1, metal(C.chrome)); v.box(ox0 - 2, oy0 - 2, z1, ox1 + 2, oy0 - 1, z1, metal(0xa8acb2)); });
-  // knob boss (raised white disc the knob sits in) + chrome bezel
-  const dx = Math.round(spec.dial.x / VS), dy = Math.round(spec.dial.y / VS);
-  const br = Math.round((spec.dial.knob + 0.008) / VS);
-  v.cylinder(dx, dy, z1 + 1, br, 1, gloss(shade(body, 1.02)), 'z');
-  v.paint(() => v.tube(dx, dy, z1 + 1, br, br - 1, 1, metal(C.chrome), 'z'));
-  if (st.worn) {
-    v.paint(() => {
-      for (let x = x0; x <= x1; x++) for (let y = 0; y < H; y++) {
-        const r = h3(x, y, z1);
-        if (r < 0.012) v.set(x, y, z1, 0x8a6a4a);
-        else if (r < 0.03) v.set(x, y, z1, shade(body, 0.9));
-      }
-      for (let z = z0; z <= z1; z++) for (let y = 0; y < H; y++) { if (h3(x0, y, z) < 0.02) v.set(x0, y, z, 0x8a6a4a); if (h3(x1, y, z) < 0.02) v.set(x1, y, z, 0x8a6a4a); }
-      // an old sticker on the side
-      v.box(x0, 18, z0 + 14, x0, 34, z0 + 34, 0xffe066);
-      v.box(x0, 21, z0 + 17, x0, 31, z0 + 31, 0xff6f91);
-    });
-  }
-  return v;
-}
-
-/** Top cap: rounded slab, slightly larger than the case. Crown for the royal machine. */
-function capBody(spec) {
-  const st = spec.style;
-  const v = new VoxelModel();
-  v.jitter = st.worn ? 0.02 : 0.006;
-  const W = Math.round((spec.w + 0.01) / VS), H = Math.round(spec.capH / VS), D = Math.round((spec.d + 0.01) / VS);
-  const x0 = -W / 2, x1 = W / 2 - 1, z0 = -D / 2, z1 = D / 2 - 1;
-  roundShell(v, x0, 0, z0, x1, H - 1, z1, 5, 0, gloss(st.body));
-  v.paint(() => v.box(x0, 0, z0, x1, 0, z1, gloss(st.body2)));
-  if (st.led) v.paint(() => { for (let x = x0 + 3; x <= x1 - 3; x++) v.set(x, 2, z1, glow(x % 6 < 3 ? st.led : st.led2)); });
-  return v;
-}
-
 /** Royal crown ornament for the dome top. */
 function crownModel() {
   const v = new VoxelModel();
@@ -187,24 +107,6 @@ function retroCrate() {
   v.box(-14, 0, -11, -13, TOP, -10, dark); v.box(12, 0, -11, 13, TOP, -10, dark);
   v.box(-14, 0, 10, -13, TOP, 11, dark); v.box(12, 0, 10, 13, TOP, 11, dark);
   v.project(['RRR.R.R.RRR', 'R...R.R.R.R', 'RRR.RRR.RRR'], { R: 0xd86a2a }, -5, 16);
-  return v;
-}
-
-/** Metal stand / rack base for the modern machines. */
-function modernStand(style, w, h, d) {
-  const v = new VoxelModel();
-  v.jitter = 0.015;
-  const W = Math.round(w / 0.01), H = Math.round(h / 0.01), D = Math.round(d / 0.01);
-  const x0 = -W / 2, x1 = W / 2 - 1, z0 = -D / 2, z1 = D / 2 - 1;
-  const c = style.stand;
-  roundShell(v, x0, 0, z0, x1, H - 1, z1, 2, 2, c, { bevelTop: false });
-  v.paint(() => {
-    v.box(x0, 0, z0, x1, 3, z1, shade(c, 0.55)); // toe kick
-    for (let y = 8; y < H - 8; y += 3) v.box(x0 + 6, y, z1, x1 - 6, y, z1, shade(c, 0.8)); // vents
-    v.box(x0, H - 2, z0, x1, H - 1, z1, shade(c, 1.06));
-    if (style.gold) { v.box(x0, H - 3, z1, x1, H - 3, z1, metal(C.gold)); v.box(x0, 4, z1, x1, 4, z1, metal(C.gold)); }
-  });
-  v.set(0, H - 6, z1, metal(C.brass)); // keyhole
   return v;
 }
 
@@ -410,6 +312,70 @@ function caseShellGeometry(w, d, h, bulge = 0) {
   return out;
 }
 
+// ----------------------------------------------------------------------------- bevelled blocky bodies
+// Smooth bevelled plastic (not voxels): chunky readable blocks with soft highlights, like toy-machine plastic.
+const plasticCache = new Map();
+function plastic(color, opts = {}) {
+  const k = color + JSON.stringify(opts);
+  if (!plasticCache.has(k)) plasticCache.set(k, new THREE.MeshPhysicalMaterial({ color, roughness: opts.rough ?? 0.32, clearcoat: opts.coat ?? 0.6, clearcoatRoughness: 0.25, metalness: opts.metal ?? 0, envMapIntensity: 1.1 }));
+  return plasticCache.get(k);
+}
+const rbox = (w, h, d, r, mat, seg = 3) => new THREE.Mesh(new RoundedBoxGeometry(w, h, d, seg, Math.min(r, w / 2, h / 2, d / 2)), mat);
+
+function blockyLower(spec) {
+  const st = spec.style;
+  const g = new THREE.Group();
+  const add = (m, x, y, z) => { m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+  const { w, d, lowH } = spec;
+  add(rbox(w, lowH - 0.012, d, 0.016, plastic(st.body)), 0, (lowH - 0.012) / 2 + 0.012, 0);
+  add(rbox(w - 0.004, 0.016, d - 0.004, 0.005, plastic(st.body2, { rough: 0.6, coat: 0 })), 0, 0.008, 0); // skirt
+  add(rbox(w + 0.004, 0.014, d + 0.004, 0.006, plastic(st.body2)), 0, lowH - 0.007, 0); // top lip
+  if (st.panel) add(rbox(w - 0.03, lowH - 0.05, 0.008, 0.006, plastic(st.panel)), 0, lowH / 2, d / 2 + 0.001);
+  // outlet: chrome lip around a dark recess
+  const o = spec.outlet, ow = o.w, oh = o.y1 - o.y0;
+  add(rbox(ow + 0.024, oh + 0.024, 0.012, 0.006, plastic(0xdfe3e8, { metal: 0.85, rough: 0.25 })), 0, o.y0 + oh / 2, d / 2 + 0.002);
+  add(new THREE.Mesh(new THREE.BoxGeometry(ow, oh, 0.004), new THREE.MeshStandardMaterial({ color: 0x16161a, roughness: 0.9 })), 0, o.y0 + oh / 2, d / 2 + 0.0075);
+  // knob boss with a chrome bezel
+  const br = spec.dial.knob + 0.008;
+  const boss = add(new THREE.Mesh(new THREE.CylinderGeometry(br, br, 0.008, 40), plastic(st.body)), spec.dial.x, spec.dial.y, d / 2 + 0.004);
+  boss.rotation.x = Math.PI / 2;
+  const bez = add(new THREE.Mesh(new THREE.TorusGeometry(br, 0.0035, 8, 40), plastic(0xe8ecf0, { metal: 0.9, rough: 0.2 })), spec.dial.x, spec.dial.y, d / 2 + 0.008);
+  void bez;
+  if (st.worn) for (const [x, y] of [[-0.1, 0.05], [0.12, 0.32], [-0.13, 0.28]]) add(new THREE.Mesh(new THREE.CircleGeometry(0.006, 6), new THREE.MeshStandardMaterial({ color: 0x8a6a4a, roughness: 1 })), x, y, d / 2 + 0.0012);
+  return g;
+}
+
+function blockyCap(spec) {
+  const st = spec.style;
+  const g = new THREE.Group();
+  const m = rbox(spec.w + 0.01, spec.capH, spec.d + 0.01, 0.014, plastic(st.body));
+  m.position.y = spec.capH / 2; m.castShadow = true; g.add(m);
+  const lip = rbox(spec.w + 0.006, 0.006, spec.d + 0.006, 0.003, plastic(st.body2));
+  lip.position.y = 0.003; g.add(lip);
+  if (st.led) {
+    const led = new THREE.Mesh(new THREE.BoxGeometry(spec.w * 0.9, 0.006, 0.004), new THREE.MeshBasicMaterial({ color: new THREE.Color(st.led).multiplyScalar(2) }));
+    led.position.set(0, 0.01, (spec.d + 0.01) / 2 + 0.002); g.add(led);
+  }
+  return g;
+}
+
+function blockyStand(spec) {
+  const st = spec.style;
+  const g = new THREE.Group();
+  const w = spec.w + 0.02, d = spec.d + 0.02, h = spec.y0;
+  const main = rbox(w, h - 0.03, d, 0.012, plastic(st.stand, { rough: 0.45, coat: 0.3 }));
+  main.position.y = h / 2 + 0.015; main.castShadow = true; main.receiveShadow = true; g.add(main);
+  const toe = rbox(w - 0.02, 0.04, d - 0.02, 0.008, plastic(shade(st.stand, 0.5), { rough: 0.8, coat: 0 }));
+  toe.position.y = 0.02; g.add(toe);
+  // vent slats
+  const ventM = plastic(shade(st.stand, 0.78), { rough: 0.6, coat: 0 });
+  for (let i = 0; i < 9; i++) { const v = new THREE.Mesh(new THREE.BoxGeometry(w - 0.12, 0.008, 0.004), ventM); v.position.set(0, 0.1 + i * (h - 0.25) / 9, d / 2 + 0.002); g.add(v); }
+  if (st.gold) for (const y of [0.05, h - 0.03]) { const t = new THREE.Mesh(new THREE.BoxGeometry(w, 0.008, 0.004), plastic(0xe8c050, { metal: 1, rough: 0.25 })); t.position.set(0, y, d / 2 + 0.003); g.add(t); }
+  const key = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.004, 16), plastic(0xd8b040, { metal: 1 }));
+  key.rotation.x = Math.PI / 2; key.position.set(0, h - 0.07, d / 2 + 0.003); g.add(key);
+  return g;
+}
+
 // ----------------------------------------------------------------------------- assembly
 const decalMat = (map, opts = {}) => new THREE.MeshStandardMaterial({ map, transparent: false, alphaTest: 0.5, roughness: 0.4, ...opts });
 
@@ -428,17 +394,17 @@ export function buildMachineModel(type, opts = {}) {
   const add = (m, cast = true) => { m.castShadow = cast; m.receiveShadow = true; group.add(m); parts.push(m); return m; };
 
   // lower unit
-  const body = add(new THREE.Mesh(geo(type + ':low', () => lowerBody(spec, L), VS, 'none'), mats));
+  const body = add(blockyLower(spec));
   body.position.y = L.y0;
   // faceplate decal
   const face = new THREE.Mesh(new THREE.PlaneGeometry(spec.w, spec.lowH), decalMat(faceplateTexture(type), { roughness: 0.35 }));
-  face.position.set(0, L.y0 + spec.lowH / 2, L.front + 0.0009);
+  face.position.set(0, L.y0 + spec.lowH / 2, L.front + (st.panel ? 0.0062 : 0.0009));
   face.userData.noRim = true;
   add(face, false);
   // stand
   let stand;
   if (st.stand === 'crate') stand = add(new THREE.Mesh(geo('retro-crate', retroCrate, 0.02), mats));
-  else stand = add(new THREE.Mesh(geo(type + ':stand', () => modernStand(st, spec.w + 0.02, spec.y0, spec.d + 0.02), 0.01, 'none'), mats));
+  else stand = add(blockyStand(spec));
 
   // capsule case: back print, floor, banner, clear shell
   const cy0 = L.caseY0, ch = L.caseH;
@@ -456,7 +422,7 @@ export function buildMachineModel(type, opts = {}) {
     post.position.set(sx * (spec.w / 2 - 0.006), cy0 + ch / 2, -spec.d / 2 + 0.006);
     add(post);
   }
-  const bannerMat = new THREE.MeshStandardMaterial({ map: opts.banner || null, color: opts.banner ? 0xffffff : 0xdddddd, roughness: 0.5, emissive: 0xffffff, emissiveMap: opts.banner || null, emissiveIntensity: opts.banner ? 0.12 : 0 });
+  const bannerMat = new THREE.MeshPhysicalMaterial({ map: opts.banner || null, color: opts.banner ? 0xffffff : 0xdddddd, roughness: 0.42, clearcoat: 0.8, clearcoatRoughness: 0.12, emissive: 0xffffff, emissiveMap: opts.banner || null, emissiveIntensity: opts.banner ? 0.12 : 0 });
   const bannerMesh = new THREE.Mesh(new THREE.PlaneGeometry(L.banner.w, L.banner.h), bannerMat);
   bannerMesh.position.set(L.banner.x, L.banner.y, L.banner.z);
   bannerMesh.userData.noRim = true;
@@ -488,7 +454,7 @@ export function buildMachineModel(type, opts = {}) {
     group.add(s);
   }
   // top cap + label
-  const cap = add(new THREE.Mesh(geo(type + ':cap', () => capBody(spec), VS, 'none'), mats));
+  const cap = add(blockyCap(spec));
   cap.position.y = cy0 + ch;
   const capLab = new THREE.Mesh(new THREE.PlaneGeometry(spec.w * 0.9, spec.w * 0.9 / 10), decalMat(capLabelTexture(type, opts.no || 1)));
   capLab.position.set(0, cy0 + ch + spec.capH / 2, (spec.d + 0.01) / 2 + 0.0008);
@@ -538,50 +504,37 @@ export function buildMachineModel(type, opts = {}) {
 
 /** Handle (rotating knob): white disc with a raised grip bar; the grip colour shows the crank upgrade. */
 export function buildHandle(r, level) {
-  const cols = [0xf4f4f0, 0xd8352a, 0x2f6fd6, C.chrome, C.gold, C.gold];
-  const v = new VoxelModel();
-  v.jitter = 0;
-  const VH = 0.0025;
-  const R = Math.round(r / VH);
-  v.cylinder(0, 0, 0, R, 3, gloss(0xf4f4f0), 'z');
-  v.paint(() => v.tube(0, 0, 2, R, R - 1, 1, gloss(0xd8d8d4), 'z'));
-  const gc = level >= 3 ? metal(cols[level]) : gloss(cols[level]);
-  const gw = Math.max(3, Math.round(R * 0.2));
-  // grip bar with rounded ends
-  v.shape(-gw, -R + 2, 3, gw, R - 2, 9, (x, y, z) => {
-    const e = Math.abs(y) - (R - 2 - gw);
-    if (e > 0 && x * x + e * e > gw * gw + 1) return false;
-    if (z === 9 && Math.abs(x) === gw) return false;
-    return true;
-  }, gc);
-  // yellow pointer triangle on the top end
-  for (let t = 0; t < 4; t++) for (let k = -t; k <= t; k++) v.set(k, R - 5 - t, 10, gloss(0xffd23f));
-  v.cylinder(0, 0, 3, Math.round(R * 0.3), 1, gloss(shade(cols[level] === 0xf4f4f0 ? 0xe0e0dc : cols[level], 0.9)), 'z');
-  const g = meshVoxels(v, { voxelSize: VH, origin: 'none' });
-  const mesh = new THREE.Mesh(g, voxelMaterials('normal'));
-  mesh.castShadow = true;
-  return mesh;
+  const cols = [0xf4f4f0, 0xd8352a, 0x2f6fd6, 0xe0e4ea, 0xe8c050, 0xe8c050];
+  const g = new THREE.Group();
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.97, 0.009, 48), plastic(0xf4f4f0));
+  disc.rotation.x = Math.PI / 2; disc.position.z = 0.0045; g.add(disc);
+  const gripM = level >= 3 ? plastic(cols[level], { metal: 0.9, rough: 0.22 }) : plastic(cols[level]);
+  const grip = rbox(r * 0.42, r * 1.86, 0.02, r * 0.18, gripM);
+  grip.position.z = 0.019; g.add(grip);
+  const tri = new THREE.Shape(); tri.moveTo(0, 0.012); tri.lineTo(-0.008, -0.004); tri.lineTo(0.008, -0.004); tri.closePath();
+  const tm = new THREE.Mesh(new THREE.ShapeGeometry(tri), new THREE.MeshStandardMaterial({ color: 0xffd23f, roughness: 0.4 }));
+  tm.position.set(0, r * 0.68, 0.0295); g.add(tm);
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.22, r * 0.22, 0.004, 24), plastic(cols[level] === 0xf4f4f0 ? 0xdcdcd6 : cols[level]));
+  hub.rotation.x = Math.PI / 2; hub.position.z = 0.0295; g.add(hub);
+  g.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+  return g;
 }
 
 /** Coin slot module (chrome ring, slot), coin-return button and keyhole. */
 export function buildSlotModule(worn = false) {
-  const v = new VoxelModel();
-  v.jitter = worn ? 0.05 : 0;
-  const ch = metal(worn ? 0xb0aca0 : C.chrome);
-  v.cylinder(0, 0, 0, 11, 2, ch, 'z');
-  v.cylinder(0, 0, 2, 9, 2, gloss(0xf2f2ee), 'z');
-  v.box(-1, -6, 3, 1, 6, 4, null);
-  v.box(-1, -6, 2, 1, 6, 2, 0x18181a);
-  // return button below-left
-  v.cylinder(-7, -19, 0, 5, 2, ch, 'z');
-  v.cylinder(-7, -19, 2, 4, 2, gloss(0xe8e8e4), 'z');
-  // keyhole lower right
-  v.cylinder(9, -30, 0, 4, 2, ch, 'z');
-  v.box(9, -32, 2, 9, -29, 2, 0x18181a);
-  const g = meshVoxels(v, { voxelSize: 0.0025, origin: 'none' });
-  const m = new THREE.Mesh(g, voxelMaterials('normal'));
-  m.castShadow = true;
-  return m;
+  const g = new THREE.Group();
+  const ch = plastic(worn ? 0xb0aca0 : 0xe4e8ec, { metal: 0.9, rough: worn ? 0.5 : 0.2 });
+  const cyl = (r, h, m, x, y, z) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 32), m); c.rotation.x = Math.PI / 2; c.position.set(x, y, z + h / 2); g.add(c); return c; };
+  cyl(0.028, 0.005, ch, 0, 0, 0);
+  cyl(0.023, 0.006, plastic(0xf2f2ee), 0, 0, 0.004);
+  const slot = new THREE.Mesh(new THREE.BoxGeometry(0.004, 0.028, 0.004), new THREE.MeshStandardMaterial({ color: 0x18181a }));
+  slot.position.set(0, 0, 0.0095); g.add(slot);
+  cyl(0.013, 0.005, ch, -0.018, -0.048, 0);
+  cyl(0.010, 0.007, plastic(0xe8e8e4), -0.018, -0.048, 0.003);
+  cyl(0.01, 0.005, ch, 0.024, -0.075, 0);
+  const kh = new THREE.Mesh(new THREE.BoxGeometry(0.002, 0.008, 0.002), new THREE.MeshStandardMaterial({ color: 0x18181a })); kh.position.set(0.024, -0.075, 0.0055); g.add(kh);
+  g.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+  return g;
 }
 
 /** Small electric motor (crank upgrade lv5). */

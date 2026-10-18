@@ -35,9 +35,14 @@ export function defaultState() {
 
 export function loadState() {
   try {
-    const raw = localStorage.getItem(KEY);
+    // visiting a friend's shop: their save is loaded read-only for this tab
+    let visit = null;
+    try { visit = sessionStorage.getItem(VISIT_KEY); } catch { /* storage blocked */ }
+    const own = (() => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; } })();
+    const raw = visit || localStorage.getItem(KEY);
     if (!raw) return defaultState();
     const s = JSON.parse(raw);
+    if (visit) { s.__visit = true; if (own?.settings) s.settings = own.settings; }
     const d = defaultState();
     // shallow-merge new fields for forward compatibility
     for (const k of Object.keys(d)) if (s[k] === undefined) s[k] = d[k];
@@ -50,6 +55,8 @@ export function loadState() {
     return defaultState();
   }
 }
+
+export const VISIT_KEY = 'gacha-garage-visit';
 
 export function saveState(state) {
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { console.warn('save failed', e); }

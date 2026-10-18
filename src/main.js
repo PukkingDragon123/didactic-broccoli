@@ -8,6 +8,10 @@ import { audio } from './core/audio.js';
 import { installPC } from './pc/PC.js';
 import { installMuseum } from './museum/Museum.js';
 import { installDebug } from './debug.js';
+import { isTouchDevice, installTouch } from './core/touch.js';
+import { MenuSigns } from './world/menuSigns.js';
+import { encodeShop, decodeShop } from './game/shareCode.js';
+import { VISIT_KEY } from './game/state.js';
 import { ITEMS } from './data/series/index.js';
 import { bannerGlyphs } from './gfx/banner.js';
 import { SHOP_TEXT } from './museum/Museum.js';
@@ -36,31 +40,111 @@ async function boot() {
   await game.init((p) => { pct.textContent = `${Math.round(p * 100)}%`; });
   if (params.has('debug') || params.has('autotest')) installDebug(game, params);
 
+  const touch = isTouchDevice() ? installTouch(game.input, { onPause: () => game.input.unlock() }) : null;
+  if (touch && !game.state.settings.quality) game.renderer.setQuality('low');
+
   $('loading').classList.add('hidden');
-  $('start-btn').classList.remove('hidden');
   let started = false;
   let titleT = 0;
+  let fly = null; // camera flight from the street into the garage
+  const sfx = (n, v = 0.5) => { try { audio.init(); audio.play(n, { vol: v }); } catch { /* audio not ready */ } };
 
   const start = () => {
     audio.init();
     game.startAudio();
+    if (!started && !fly) fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() };
     game.input.lock();
   };
-  $('title').addEventListener('click', start);
+  // the 3D signpost in the street
+  const signs = new MenuSigns(game.scene);
+  signs.enabled = true;
+  if (params.has('autotest')) signs.dispose();
+  const canvas = game.renderer.renderer.domElement;
+  const ndc = (e) => [(e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1];
+  canvas.addEventListener('pointermove', (e) => {
+    if (started || fly) return;
+    const id = signs.pick(game.camera, ...ndc(e));
+    if (id !== signs.hoverId && id) sfx('uiHover', 0.35);
+    signs.hoverId = id;
+    canvas.style.cursor = id ? 'pointer' : '';
+  });
+  canvas.addEventListener('click', (e) => {
+    if (started || fly) return;
+    const id = signs.pick(game.camera, ...ndc(e));
+    if (!id) return;
+    sfx('uiClick', 0.7);
+    if (id === 'play') start();
+    else openShare(id);
+  });
   $('resume-btn').addEventListener('click', (e) => { e.stopPropagation(); start(); });
+  $('m-gear').addEventListener('pointerenter', () => sfx('uiHover', 0.35));
+
+  // settings: gear on the menu, Esc / pause button in game
+  const openSettings = () => { $('pause').classList.remove('hidden'); $('resume-btn').classList.toggle('hidden', !started); $('leave-btn').classList.toggle('hidden', !game.visiting); };
+  $('m-gear').addEventListener('click', () => { sfx('uiClick', 0.6); openSettings(); });
+  for (const b of document.querySelectorAll('[data-close]')) b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    b.closest('.overlay').classList.add('hidden');
+    if (b.closest('#pause') && started) start();
+  });
+  $('leave-btn').addEventListener('click', () => { try { sessionStorage.removeItem(VISIT_KEY); } catch { /* ignore */ } location.reload(); });
+
+  // host / join: share a shop code, or open a friend's shop read-only
+  const share = $('share'), code = $('share-code'), act = $('share-act'), note = $('share-note');
+  const openShare = async (mode) => {
+    sfx('uiClick', 0.6);
+    share.classList.remove('hidden');
+    share.dataset.mode = mode;
+    note.textContent = '';
+    if (mode === 'host') {
+      if (game.visiting) { try { sessionStorage.removeItem(VISIT_KEY); } catch { /* ignore */ } location.reload(); return; }
+      $('share-title').textContent = 'みせをひらく';
+      code.readOnly = true;
+      code.value = '…';
+      game.save();
+      code.value = await encodeShop(game.state);
+      act.textContent = 'コピー';
+      note.textContent = 'このコードを友だちに送ろう';
+    } else {
+      $('share-title').textContent = 'あそびにいく';
+      code.readOnly = false;
+      code.value = '';
+      code.placeholder = 'GG1.…';
+      act.textContent = 'いく！';
+      note.textContent = '友だちのコードをはりつけてね';
+      setTimeout(() => code.focus(), 50);
+    }
+  };
+  act.addEventListener('click', async () => {
+    if (share.dataset.mode === 'host') {
+      try { await navigator.clipboard.writeText(code.value); note.textContent = 'コピーしました！'; }
+      catch { code.select(); note.textContent = '選択しました — コピーしてね'; }
+      return;
+    }
+    try {
+      const st = await decodeShop(code.value);
+      sessionStorage.setItem(VISIT_KEY, JSON.stringify(st));
+      sfx('purchase', 0.7);
+      location.reload();
+    } catch { note.textContent = 'コードが読めません'; sfx('error', 0.5); }
+  });
 
   game.input.onLockChange = (locked) => {
     if (locked) {
       started = true;
-      $('title').classList.add('hidden');
+      $('title').classList.add('fade');
+      setTimeout(() => $('title').classList.add('hidden'), 600);
       $('pause').classList.add('hidden');
       $('hud').classList.remove('hidden');
-      if (!game.state.flags.welcomed) {
+      touch?.show(true);
+      if (game.visiting) setTimeout(() => game.news(`🏮 ${game.state.__owner || 'ともだち'}のおみせ`, 'Visiting a friend (nothing is saved)', 6000), 1200);
+      else if (!game.state.flags.welcomed) {
         game.state.flags.welcomed = true;
-        setTimeout(() => game.news('ようこそ、ガチャガレージへ！', 'Welcome! Insert the fake coin into the old machine.', 7000), 900);
+        setTimeout(() => game.news('ようこそ、ガチャガレージへ！', 'Welcome!', 6000), 1400);
       }
     } else if (started && !params.has('autotest')) {
-      $('pause').classList.remove('hidden');
+      touch?.show(false);
+      openSettings();
       game.save();
     }
   };
@@ -74,7 +158,14 @@ async function boot() {
   const bind = (id, key) => $(id).addEventListener('input', (e) => { s[key] = +e.target.value; game.applySettings(); });
   bind('vol-master', 'master'); bind('vol-music', 'music'); bind('vol-amb', 'ambience'); bind('sens', 'sens'); bind('fov', 'fov');
   $('hints').addEventListener('change', (e) => { s.hints = e.target.checked; game.applySettings(); });
-  $('reset-btn').addEventListener('click', () => { if (confirm('Erase all progress and start over?')) game.reset(); });
+  // two-step confirm (dialogs aren't available everywhere)
+  let resetArm = 0;
+  $('reset-btn').addEventListener('click', () => {
+    if (Date.now() - resetArm < 4000) { game.reset(); return; }
+    resetArm = Date.now();
+    $('reset-btn').textContent = 'もう一度押すと消えます';
+    setTimeout(() => { $('reset-btn').textContent = 'Reset save data'; }, 4000);
+  });
   for (const el of document.querySelectorAll('#pause .panel')) el.addEventListener('click', (e) => e.stopPropagation());
 
   // ---------------- adaptive quality on first run
@@ -88,19 +179,39 @@ async function boot() {
     requestAnimationFrame(frame);
     const dt = Math.min(clock.getDelta(), 0.05);
     if (!started && !params.has('autotest')) {
-      // slow cinematic drift on the title screen
+      // the menu: a slow crane shot of your shop from the street at dusk
       titleT += dt;
-      titleCam.a = titleT * 0.05;
       const cam = game.camera;
-      cam.position.set(1.4 + Math.sin(titleCam.a) * 0.6, 1.45 + Math.sin(titleT * 0.2) * 0.05, 2.2 + Math.cos(titleCam.a) * 0.3);
-      cam.lookAt(-2.4, 1.0, -0.6);
+      const a = titleT * 0.06;
+      cam.position.set(2.4 + Math.sin(a) * 0.35, 1.3 + Math.sin(titleT * 0.17) * 0.05, 10.8 + Math.cos(a * 0.7) * 0.2);
+      cam.lookAt(0.1 + Math.sin(a) * 0.15, 1.5, 4.6);
       game.time += dt;
       for (const m of game.machines) m.update(dt, game.time);
       game.garage.update(dt, game.time);
+      game.street.update(dt, game.time);
       game.effects.update(dt, game.time);
       game.lighting.update(dt, game.time);
       game.tweens.update(dt);
+      signs.update(dt, game.time);
       game.render(dt);
+      return;
+    }
+    if (fly) {
+      // fly from the street, under the half-open shutter, to the player's eyes
+      game.update(dt);
+      fly.t += dt / 2.2;
+      const k = Math.min(1, fly.t);
+      const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      const cam = game.camera;
+      const end = cam.position.clone(), endQ = cam.quaternion.clone();
+      const p0 = fly.from, p1 = new THREE.Vector3(0.3, 1.05, 7.4), p2 = new THREE.Vector3(0.4, 1.2, 4.4);
+      const u = 1 - e;
+      const bez = p0.clone().multiplyScalar(u * u * u).add(p1.clone().multiplyScalar(3 * u * u * e)).add(p2.clone().multiplyScalar(3 * u * e * e)).add(end.clone().multiplyScalar(e * e * e));
+      cam.position.copy(bez);
+      cam.quaternion.copy(fly.q).slerp(endQ, Math.min(1, e * 1.15));
+      cam.updateMatrixWorld();
+      game.render(dt);
+      if (k >= 1) { fly = null; signs.dispose(); }
       return;
     }
     game.update(dt);

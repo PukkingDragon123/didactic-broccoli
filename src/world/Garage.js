@@ -2,10 +2,11 @@
 import * as THREE from 'three';
 import { worldBox, worldPlane, pixMat, boxMesh, colMat } from '../gfx/geo.js';
 import { posterTexture, Pix } from '../gfx/textures.js';
-import { propMesh } from './props.js';
+import { propMesh, hasProp } from './props.js';
+import { SHOP_ART } from '../gfx/shopArt.js';
 import { hash2 } from '../core/util.js';
 
-export const GARAGE = { minX: -4, maxX: 4, minZ: -5, maxZ: 5, height: 3.2, shutterY: 1.55, doorHalf: 0.6, doorH: 2.1 };
+export const GARAGE = { minX: -4, maxX: 4, minZ: -5, maxZ: 5, height: 3.2, shutterY: 2.25, doorHalf: 0.6, doorH: 2.1 };
 
 // Machine slots along the left wall (machine centre positions, facing +x)
 export const MACHINE_SLOTS = [-0.2, 0.85, -1.25, 1.9, -2.3, -3.35].map((z) => ({ x: -3.42, z, rotY: Math.PI / 2 }));
@@ -59,11 +60,11 @@ export class Garage {
   build() {
     const G = GARAGE;
     const H = G.height;
-    const concrete = pixMat('concrete', { roughness: 0.92, bump: 1.5 });
-    const block = pixMat('blockWall', { roughness: 0.95, bump: 2 });
-    const corr = pixMat('corrugated', { roughness: 0.55, metalness: 0.35, bump: 2.5 });
-    const ply = pixMat('plywood', { roughness: 0.8 });
-    const cwall = pixMat('concreteWall', { roughness: 0.95, bump: 1.5 });
+    const concrete = pixMat('floorHD', { roughness: 0.85, bump: 0.8, ppm: 64 });
+    const block = pixMat('blockHD', { roughness: 0.92, bump: 1, ppm: 64 });
+    const corr = pixMat('corrugatedHD', { roughness: 0.5, metalness: 0.35, bump: 1.5, ppm: 64 });
+    const ply = pixMat('plywoodHD', { roughness: 0.75, bump: 0.6, ppm: 64 });
+    const cwall = pixMat('concreteHD', { roughness: 0.92, bump: 1, ppm: 64 });
 
     // ------------------------------------------------------------ floor & ceiling
     const floor = this.solid(8.4, 0.2, 10.4, concrete, 0, -0.2, 0, { material: 'concrete', cast: false });
@@ -125,11 +126,17 @@ export class Garage {
     this.add(hood);
     // shutter rails
     for (const x of [-3.02, 3.02]) { const r = boxMesh(0.06, H, 0.12, colMat(0x6a706a, { metalness: 0.6 })); r.position.set(x, H / 2, G.maxZ + 0.05); this.add(r); }
-    // invisible barrier at the shutter for the player (it's half open but we stay inside)
-    this.game.player.addObstacle(-3.1, 3.1, G.maxZ - 0.02, G.maxZ + 0.3);
-    this.game.physics.addBox({ center: new THREE.Vector3(0, 0.6, G.maxZ + 0.1), half: new THREE.Vector3(3.1, 0.6, 0.1), material: 'metal' });
+    // the shutter is open: walk out onto the street. Bounds keep you on the lane.
+    const P = this.game.player;
+    P.addObstacle(-30, -11, G.maxZ, 30); P.addObstacle(11, 30, G.maxZ, 30);
+    P.addObstacle(-30, 30, G.maxZ + 8.7, 30);
+    P.addObstacle(-30, -4.1, G.maxZ - 0.1, G.maxZ + 0.4); P.addObstacle(4.1, 30, G.maxZ - 0.1, G.maxZ + 0.4);
+    P.addObstacle(-4.3, -3.0, G.maxZ - 0.1, G.maxZ + 0.35); P.addObstacle(3.0, 4.3, G.maxZ - 0.1, G.maxZ + 0.35);
+    this.game.physics.addBox({ center: new THREE.Vector3(0, -0.5, G.maxZ + 5), half: new THREE.Vector3(30, 0.5, 6), material: 'concrete' });
 
     this.buildOutside();
+    this.buildFacade();
+    this.buildStreetLife();
     this.buildFurniture();
     this.buildPosters();
     this.buildLights();
@@ -220,6 +227,73 @@ export class Garage {
     T([0.015, 0.16, 0.02], red, 0, 0.1, 0.36, 0.2); T([0.015, 0.16, 0.02], red, 0, 0.1, 0.4, -0.2);
   }
 
+  /** Quiet back-street dressing (from src/data/props/street2.js when present). */
+  buildStreetLife() {
+    const G = GARAGE, z = G.maxZ;
+    const P = (id, x, zz, rot = 0, block = false) => {
+      if (!hasProp(id)) return;
+      this.prop(id, x, 0, zz, rot, { castShadow: false, player: block });
+    };
+    P('garbage_station', -7.6, z + 1.2, 0, true);
+    P('recycle_cage', -9.4, z + 1.1, 0, true);
+    P('kei_car', 7.6, z + 2.4, Math.PI / 2, true);
+    P('mamachari', 5.2, z + 0.7, 0.2, true);
+    P('scooter', -5.3, z + 0.8, -0.3, true);
+    P('gate_house', -7.0, z + 8.3, Math.PI, true);
+    P('gate_house', 7.4, z + 8.3, Math.PI, true);
+    P('plant_pots', 3.3, z + 8.25, Math.PI, true);
+    P('jizo_shrine', 9.8, z + 7.9, Math.PI, true);
+    P('tomare_sign', -10.2, z + 4.0, Math.PI / 2, true);
+    P('ac_unit', -4.7, z + 0.55, 0, true);
+    P('power_box', 10.3, z + 0.6, 0, true);
+    P('manhole', 1.8, z + 4.4, 0);
+    P('drink_cans', -1.6, z + 7.6, 0);
+    P('laundry_pole', 9.0, z + 0.6, 0, true);
+  }
+
+  /** The shop front as seen from the street (the main menu shot): cladding, signboard, eave, lanterns, sky. */
+  buildFacade() {
+    const G = GARAGE, H = G.height;
+    const fz = G.maxZ + 0.21;
+    // dusk sky dome all around (the street-side view looks back over the roof)
+    const sky = new Pix(4, 64, 1);
+    sky.gradient(0, 0, 4, 64, 0x1a1840, 0xf08a5a);
+    sky.rect(0, 56, 4, 8, 0xffb070);
+    const st = sky.texture({ nearest: false });
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(70, 24, 12), new THREE.MeshBasicMaterial({ map: st, side: THREE.BackSide, fog: false, depthWrite: false }));
+    dome.renderOrder = -10;
+    this.add(dome);
+    // corrugated cladding on the two front piers
+    const clad = pixMat('corrugated', { roughness: 0.6, metalness: 0.35, color: 0x7aa6a0 });
+    for (const sx of [-1, 1]) { const c = boxMesh(1.24, H + 0.4, 0.04, clad); c.position.set(sx * 3.6, (H + 0.4) / 2, fz); this.add(c); }
+    // fascia + glowing shop signboard over the shutter
+    const fascia = boxMesh(8.4, 1.1, 0.12, pixMat('woodDark', { roughness: 0.6 }));
+    fascia.position.set(0, H + 0.5, fz + 0.02); this.add(fascia);
+    const p = new Pix(240, 30, 3);
+    p.fill(0xfff4e0); p.frame(0, 0, 240, 30, 0x2a2220); p.frame(2, 2, 236, 26, 0xe5383b);
+    p.text('ガチャガレージ', 120, 4, { size: 20, color: 0xe5383b, align: 'center', outline: 0xffffff });
+    p.circle(18, 15, 8, 0xff6f91); p.rect(10, 15, 17, 1, 0x2a2220); p.circle(222, 15, 8, 0x5cc4ff); p.rect(214, 15, 17, 1, 0x2a2220);
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(6.0, 0.75), new THREE.MeshStandardMaterial({ map: p.texture(), emissive: 0xffffff, emissiveMap: p.texture(), emissiveIntensity: 0.32, roughness: 0.5 }));
+    sign.position.set(0, H + 0.5, fz + 0.09); this.add(sign);
+    // tiled eave (庇) with a row of red lanterns
+    const eave = boxMesh(8.8, 0.08, 0.9, pixMat('tile', { roughness: 0.7, color: 0x6a7480 }));
+    eave.position.set(0, H + 1.1, fz + 0.4); eave.rotation.x = 0.18; this.add(eave);
+    const lanternM = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff5a3a).multiplyScalar(1.6) });
+    const capM = colMat(0x1a1a1a);
+    for (let i = 0; i < 6; i++) {
+      const x = -3.9 + i * 1.56;
+      if (Math.abs(x) < 0.5) continue;
+      const l = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), lanternM); l.scale.y = 1.3; l.position.set(x, H - 0.3, fz + 0.55); this.add(l);
+      for (const dy of [0.17, -0.17]) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.03, 10), capM); c.position.set(x, H - 0.3 + dy, fz + 0.55); this.add(c); }
+    }
+    const glow = new THREE.PointLight(0xff8a5a, 2.2, 6, 1.6); glow.position.set(0, H - 0.3, fz + 1.2); this.add(glow);
+    // dagashiya-style things out front
+    this.prop('gacha_twin', -2.95, 0, G.maxZ + 0.75, 0, { castShadow: false, fallbackSize: [0.9, 1, 0.4] });
+    this.prop('shop_bench', 2.9, 0, G.maxZ + 0.62, 0, { castShadow: false, fallbackSize: [0.9, 0.5, 0.35] });
+    this.prop('kakigori_flag', 4.15, 0, G.maxZ + 0.7, -0.3, { castShadow: false, fallbackSize: [0.4, 1.5, 0.2] });
+    this.prop('tanuki_statue', -4.05, 0, G.maxZ + 0.7, 0.3, { castShadow: false, fallbackSize: [0.4, 0.5, 0.3] });
+  }
+
   buildOutside() {
     const G = GARAGE;
     // apron + street
@@ -241,7 +315,7 @@ export class Garage {
     ditch.position.set(0, -0.05, G.maxZ + 1.45);
     this.add(ditch);
     // block wall across the street
-    const bw = boxMesh(30, 1.5, 0.15, pixMat('blockWall', { roughness: 0.95, bump: 2 }));
+    const bw = boxMesh(30, 1.5, 0.15, pixMat('blockHD', { roughness: 0.92, bump: 1, ppm: 64 }));
     bw.position.set(0, 0.75, G.maxZ + 9.9);
     this.add(bw);
     // house facades & skyline
@@ -479,33 +553,46 @@ export class Garage {
 
   buildPosters() {
     const G = GARAGE;
-    const P = (key, w, h, pw, ph, x, y, z, ry, tilt = 0) => {
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: posterTexture(key, pw, ph), roughness: 0.85 }));
-      m.position.set(x, y, z); m.rotation.set(0, ry, tilt);
-      m.receiveShadow = true;
-      this.add(m);
-      // tape corners
-      const tm = colMat(0xe8e0c8, { roughness: 0.6, extra: { transparent: true, opacity: 0.8 } });
-      for (const [sx, sy] of [[-1, 1], [1, 1]]) {
-        const t = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.025), tm);
-        t.position.set(sx * w / 2, sy * h / 2, 0.002); t.rotation.z = sx * 0.6;
-        m.add(t);
+    // framed 3D pieces (wooden or metal frame, glass front) and thick enamel tin plates
+    const artTex = new Map();
+    const tex = (id) => {
+      if (!artTex.has(id)) { const a = SHOP_ART[id]; const p = new Pix(a.w, a.h, 4); a.paint(p); artTex.set(id, p.texture()); }
+      return artTex.get(id);
+    };
+    const frameM = colMat(0x3a2418, { roughness: 0.5 });
+    const glassM = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.08, roughness: 0.05, clearcoat: 1, depthWrite: false });
+    const P = (id, scale, x, y, z, ry, { framed = true, tilt = 0 } = {}) => {
+      const a = SHOP_ART[id];
+      if (!a) return;
+      const w = a.w * scale, h = a.h * scale;
+      const g = new THREE.Group();
+      g.position.set(x, y, z); g.rotation.set(0, ry, tilt);
+      const art = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.006), [frameM, frameM, frameM, frameM, new THREE.MeshStandardMaterial({ map: tex(id), roughness: framed ? 0.7 : 0.3, metalness: framed ? 0 : 0.15 }), frameM]);
+      art.position.z = framed ? 0.012 : 0.004;
+      art.castShadow = true;
+      g.add(art);
+      if (framed) {
+        const t = 0.022;
+        for (const [fw, fh, fx, fy] of [[w + 2 * t, t, 0, h / 2 + t / 2], [w + 2 * t, t, 0, -h / 2 - t / 2], [t, h, -w / 2 - t / 2, 0], [t, h, w / 2 + t / 2, 0]]) {
+          const f = new THREE.Mesh(new THREE.BoxGeometry(fw, fh, 0.03), frameM); f.position.set(fx, fy, 0.015); f.castShadow = true; g.add(f);
+        }
+        const gl = new THREE.Mesh(new THREE.PlaneGeometry(w, h), glassM); gl.position.z = 0.0255; gl.userData.noRim = true; g.add(gl);
       }
-      return m;
+      this.add(g);
     };
     // back wall
-    P('gachaPoster', 0.5, 0.75, 64, 112, -0.9 - 0.4, 1.75, G.minZ + 0.012, 0, 0.02);
-    P('safety', 0.4, 0.4, 64, 48, 2.2, 2.2, G.minZ + 0.012, 0, -0.01);
-    P('calendar', 0.38, 0.55, 64, 96, 1.7, 1.55, G.minZ + 0.012, 0, 0);
-    P('nosmoking', 0.3, 0.38, 48, 52, 3.2, 1.9, G.minZ + 0.012, 0, 0.03);
+    P('poster_showa', 0.0068, -1.3, 1.75, G.minZ + 0.01, 0, { tilt: 0.01 });
+    P('calendar', 0.006, 1.7, 1.6, G.minZ + 0.01, 0);
+    P('tin_genkin', 0.0058, 2.55, 1.9, G.minZ + 0.01, 0, { framed: false });
+    P('tin_tanuki_katori', 0.0058, 3.2, 2.45, G.minZ + 0.01, 0, { framed: false, tilt: -0.02 });
     // right wall (facing -x)
-    P('gamePoster', 0.5, 0.75, 64, 112, G.maxX - 0.012, 2.15, 2.15, -Math.PI / 2, 0.01);
-    P('idol', 0.45, 0.65, 64, 96, G.maxX - 0.012, 2.25, -2.4, -Math.PI / 2, -0.02);
+    P('tin_milk_caramel', 0.0058, G.maxX - 0.01, 2.35, 2.2, -Math.PI / 2, { framed: false });
+    P('tin_neko_shoyu', 0.0058, G.maxX - 0.01, 1.95, -2.4, -Math.PI / 2, { framed: false });
     // left wall (facing +x)
-    P('kaijuPoster', 0.5, 0.7, 64, 96, G.minX + 0.07, 2.25, -2.75, Math.PI / 2, 0.015);
-    P('matsuri', 0.45, 0.68, 64, 112, G.minX + 0.07, 2.25, -3.75, Math.PI / 2, -0.02);
+    P('tin_gacha_ramune', 0.0058, G.minX + 0.07, 2.0, -2.75, Math.PI / 2, { framed: false });
+    P('tin_fuji_match', 0.0058, G.minX + 0.07, 2.0, -3.75, Math.PI / 2, { framed: false });
     this.buildGachaSign(G.minX + 0.08, 2.4, -0.6);
-    P('lostCat', 0.35, 0.5, 48, 96, G.minX + 0.07, 2.25, 3.3, Math.PI / 2, 0.03);
+    P('menu_tags', 0.006, G.minX + 0.07, 2.25, 3.3, Math.PI / 2);
   }
 
   /** Lit "ガチャコーナー" light-box sign + a string of paper lanterns over the machine row. */

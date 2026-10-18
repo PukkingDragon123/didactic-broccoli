@@ -57,6 +57,50 @@ const GradeShader = {
     }`,
 };
 
+// Anime-style ink outlines: edges where depth jumps (silhouettes and creases), drawn on the lit image.
+const OutlineShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    tDepth: { value: null },
+    uRes: { value: new THREE.Vector2(1, 1) },
+    uNear: { value: 0.05 },
+    uFar: { value: 120 },
+    uWidth: { value: 1.0 },
+    uStrength: { value: 0.85 },
+    uInk: { value: new THREE.Color(0x1c1016) },
+  },
+  vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: /* glsl */`
+    uniform sampler2D tDiffuse, tDepth;
+    uniform vec2 uRes; uniform float uNear, uFar, uWidth, uStrength; uniform vec3 uInk;
+    varying vec2 vUv;
+    float lin(vec2 uv) { float z = texture2D(tDepth, uv).x * 2.0 - 1.0; return (2.0 * uNear * uFar) / (uFar + uNear - z * (uFar - uNear)); }
+    void main() {
+      vec4 col = texture2D(tDiffuse, vUv);
+      vec2 o = uWidth / uRes;
+      float d = lin(vUv);
+      float dl = lin(vUv - vec2(o.x, 0.0)), dr = lin(vUv + vec2(o.x, 0.0));
+      float du = lin(vUv + vec2(0.0, o.y)), dd = lin(vUv - vec2(0.0, o.y));
+      // second derivative catches creases, first derivative catches silhouettes; both relative to distance
+      float lap = abs(dl + dr + du + dd - 4.0 * d) / d;
+      float jump = max(max(abs(dl - d), abs(dr - d)), max(abs(du - d), abs(dd - d))) / d;
+      float e = max(smoothstep(0.05, 0.12, lap), smoothstep(0.08, 0.16, jump));
+      e *= 1.0 - smoothstep(25.0, 60.0, d); // fade far away so the skyline stays soft
+      gl_FragColor = vec4(mix(col.rgb, uInk * col.rgb * 0.35 + uInk * 0.4, e * uStrength), col.a);
+    }`,
+};
+
+class OutlinePass extends ShaderPass {
+  constructor(camera) { super(OutlineShader); this.camera = camera; }
+  render(renderer, writeBuffer, readBuffer, dt, mask) {
+    const u = this.uniforms;
+    u.tDepth.value = readBuffer.depthTexture;
+    u.uNear.value = this.camera.near; u.uFar.value = this.camera.far;
+    u.uRes.value.set(readBuffer.width, readBuffer.height);
+    super.render(renderer, writeBuffer, readBuffer, dt, mask);
+  }
+}
+
 export const QUALITY = {
   low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3 },
   medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2 },
@@ -97,8 +141,13 @@ export class Renderer {
     if (this.composer) this.composer.dispose?.();
     const size = new THREE.Vector2(window.innerWidth, window.innerHeight);
     const rt = new THREE.WebGLRenderTarget(size.x * r.getPixelRatio(), size.y * r.getPixelRatio(), { type: THREE.HalfFloatType, samples: 0 });
+    rt.depthTexture = new THREE.DepthTexture(rt.width, rt.height);
+    rt.depthTexture.type = THREE.UnsignedIntType;
     const composer = new EffectComposer(r, rt);
     composer.addPass(new RenderPass(this.scene, this.camera));
+    this.outline = new OutlinePass(this.camera);
+    this.outline.uniforms.uWidth.value = Math.max(1, r.getPixelRatio());
+    composer.addPass(this.outline);
     this.gtao = null;
     if (q.ao) {
       const gtao = new GTAOPass(this.scene, this.camera, size.x, size.y);

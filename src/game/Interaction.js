@@ -143,6 +143,7 @@ export class Interaction {
     this.setHover(found);
     this.setHint(found?.hint || null);
     this.crossEl.classList.toggle('active', !!found);
+    if (found && !held && inp.buttonDown(2) && found.handler.alt) found.handler.alt(found.hit);
     if (found && inp.buttonDown(0)) {
       const res = found.handler.use?.(held, found.hit);
       if (found.handler.hold && res !== false && found.handler.hold.canStart?.() !== false) {

@@ -37,7 +37,9 @@ export function pixMat(key, opts = {}) {
   const t = tex(key);
   const map = t.map.clone();
   map.needsUpdate = true;
-  map.repeat.set(1 / t.size[0], 1 / t.size[1]);
+  // opts.ppm: pixels per metre (default 32, the garage's base density)
+  const k = (opts.ppm || 32) / 32;
+  map.repeat.set(1 / (t.size[0] * k), 1 / (t.size[1] * k));
   map.wrapS = map.wrapT = THREE.RepeatWrapping;
   const bump = t.bump.clone();
   bump.needsUpdate = true;

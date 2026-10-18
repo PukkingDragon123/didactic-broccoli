@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>Gacha Garage · ガチャガレージ</title>
   <meta name="description" content="A cozy first-person voxel gachapon collecting game set in a Japanese hobby garage." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='4' y='2' width='8' height='1' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='4' fill='%23fff'/%3E%3Crect x='2' y='5' width='12' height='2' fill='%23fff'/%3E%3Crect x='2' y='7' width='12' height='1' fill='%23c33'/%3E%3Crect x='2' y='8' width='12' height='3' fill='%23ff6f91'/%3E%3Crect x='3' y='11' width='10' height='2' fill='%23ff6f91'/%3E%3Crect x='4' y='13' width='8' height='1' fill='%23ff6f91'/%3E%3C/svg%3E" />
@@ -18,25 +18,41 @@
     <div id="caption"></div>
   </div>
 
-  <div id="title" class="overlay">
-    <div class="title-inner">
+  <div id="title" class="overlay menu">
+    <div class="menu-logo">
       <div class="logo-jp">ガチャガレージ</div>
       <div class="logo-en">GACHA&nbsp;GARAGE</div>
-      <div class="tagline">a cozy capsule-toy collecting life</div>
-      <div class="start blink" id="start-btn">クリックでスタート · Click to start</div>
-      <div class="loading" id="loading">Loading… <span id="load-pct">0%</span></div>
-      <div class="controls">
-        <div><b>WASD</b> walk · <b>Mouse</b> look · <b>Shift</b> hurry</div>
-        <div><b>Left click</b> use / place · <b>Hold</b> crank &amp; twist</div>
-        <div><b>Right click</b> open / inspect · <b>Q</b> drop · <b>R</b> rotate · <b>Esc</b> pause</div>
-      </div>
     </div>
+    <button class="gear" id="m-gear" aria-label="Settings"><svg viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="currentColor" d="M7 1h2v2h1V2h2v2h-1v1h1v1h2v2h-2v1h-1v1h1v2h-2v-1H9v2H7v-2H6v1H4v-2h1V9H4V8H2V6h2V5h1V4H4V2h2v1h1z"/><rect x="6" y="6" width="4" height="4" fill="#20262e"/></svg></button>
+    <div class="loading" id="loading"><span id="load-pct">0%</span></div>
+  </div>
+
+  <div id="share" class="overlay hidden">
+    <div class="panel">
+      <button class="x" data-close>&#x2715;</button>
+      <div class="panel-title" id="share-title">みせをひらく</div>
+      <textarea id="share-code" spellcheck="false" rows="5"></textarea>
+      <button id="share-act" class="big">コピー</button>
+      <div class="foot" id="share-note"></div>
+    </div>
+  </div>
+
+  <div id="touch" class="hidden">
+    <div id="stick"><div id="stick-knob"></div></div>
+    <button class="tb t-use" id="t-use">&#x25CF;</button>
+    <button class="tb t-alt" id="t-alt">&#x270B;</button>
+    <button class="tb t-drop" id="t-drop">Q</button>
+    <button class="tb t-rot" id="t-rot">R</button>
+    <button class="tb t-move" id="t-move">F</button>
+    <button class="tb t-pause" id="t-pause">&#x2016;</button>
   </div>
 
   <div id="pause" class="overlay hidden">
     <div class="panel">
-      <div class="panel-title">一時停止 <span>Paused</span></div>
-      <button id="resume-btn" class="big">つづける · Resume</button>
+      <button class="x" data-close>&#x2715;</button>
+      <div class="panel-title">せってい</div>
+      <button id="resume-btn" class="big">つづける</button>
+      <button id="leave-btn" class="hidden">メニューへ</button>
       <label>Graphics
         <select id="quality">
           <option value="low">Low</option>
@@ -52,7 +68,6 @@
       <label>Field of view <input type="range" id="fov" min="60" max="95" step="1" /></label>
       <label class="row"><input type="checkbox" id="hints" /> Show interaction hints</label>
       <button id="reset-btn" class="danger">Reset save data</button>
-      <div class="foot">Progress saves automatically.</div>
     </div>
   </div>
 

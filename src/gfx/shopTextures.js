@@ -10,6 +10,63 @@ const sh = (c, f) => {
 };
 
 const R = {
+  /** Plywood sheets: wavy grain, knots, a sheet seam with screws. */
+  plywoodHD() {
+    const p = new Pix(128, 128, 41);
+    p.fill(0xc49a63);
+    for (let y = 0; y < 128; y++) for (let x = 0; x < 128; x++) {
+      const w = Math.sin(y * 0.09 + Math.sin(x * 0.05) * 2.2 + x * 0.012) * 0.5 + 0.5;
+      if (w > 0.82) p.px(x, y, 0xb08654); else if (w < 0.1) p.px(x, y, 0xd2aa72);
+    }
+    for (const [kx, ky] of [[30, 40], [92, 96], [70, 18]]) { for (let a = 0; a < 6.28; a += 0.2) p.px(kx + Math.round(Math.cos(a) * 4), ky + Math.round(Math.sin(a) * 2), 0x8a6238); p.rect(kx - 1, ky, 3, 1, 0x6a4628); }
+    p.rect(0, 0, 1, 128, 0x7a5634); p.rect(1, 0, 1, 128, 0xd8b080);
+    for (let y = 8; y < 128; y += 24) { p.px(4, y, 0x5a5a5a); p.px(5, y, 0x8a8a8a); }
+    return p;
+  },
+  /** Cast concrete wall: form panel seams, tie holes, soft stains. */
+  concreteHD() {
+    const p = new Pix(128, 128, 42);
+    p.fill(0xa8a49c);
+    for (let i = 0; i < 9; i++) { const cx = hash2(i, 3) * 128, cy = hash2(i, 4) * 128, r = 10 + hash2(i, 5) * 22, c = hash2(i, 6) < 0.5 ? 0x9e9a92 : 0xb2aea6; for (let y = -r; y <= r; y++) for (let x = -r; x <= r; x++) if (x * x + y * y < r * r && ((x + y + 128) % 2 === 0)) p.px((Math.round(cx + x) + 128) % 128, (Math.round(cy + y) + 128) % 128, c); }
+    p.rect(0, 0, 128, 1, 0x8a867e); p.rect(0, 64, 128, 1, 0x8a867e); p.rect(0, 0, 1, 128, 0x8a867e);
+    for (const y of [16, 48, 80, 112]) for (const x of [16, 48, 80, 112]) { p.px(x, y, 0x86827a); p.px(x + 1, y, 0x8e8a82); }
+    for (let x = 0; x < 128; x++) if (hash2(x, 9) < 0.35) for (let y = 120; y < 128; y++) if ((x + y) % 2) p.px(x, y, 0x8e8a80);
+    return p;
+  },
+  /** Concrete block wall (ブロック塀): staggered blocks with mortar, chips and a stain or two. */
+  blockHD() {
+    const p = new Pix(128, 128, 45);
+    p.fill(0x8a867e);
+    for (let r = 0; r < 8; r++) for (let c = -1; c < 4; c++) {
+      const x0 = c * 32 + (r % 2) * 16, y0 = r * 16;
+      const base = sh(0xaaa69c, 0.94 + hash2(r, c + 5) * 0.1);
+      p.rect(x0 + 1, y0 + 1, 30, 14, base);
+      p.rect(x0 + 1, y0 + 1, 30, 1, sh(base, 1.08));
+      p.rect(x0 + 1, y0 + 14, 30, 1, sh(base, 0.85));
+      for (let k = 0; k < 10; k++) p.px(x0 + 2 + Math.floor(hash2(r * 7 + k, c) * 28), y0 + 2 + Math.floor(hash2(c * 3 + k, r) * 12), sh(base, 0.88));
+    }
+    for (let x = 0; x < 128; x++) if (hash2(x, 11) < 0.3) for (let y = 110; y < 128; y++) if ((x + y) % 2) p.px(x, y, 0x6e6a5e, 120);
+    return p;
+  },
+  /** Garage floor slab: joints, an oil stain, hairline cracks. */
+  floorHD() {
+    const p = new Pix(128, 128, 43);
+    p.fill(0x9c988e);
+    for (let y = 0; y < 128; y++) for (let x = 0; x < 128; x++) { const k = hash2(x, y); if (k < 0.06) p.px(x, y, 0x8e8a80); else if (k > 0.95) p.px(x, y, 0xaaa69c); }
+    p.rect(0, 0, 128, 2, 0x6e6a62); p.rect(0, 0, 2, 128, 0x6e6a62);
+    for (let y = -14; y <= 14; y++) for (let x = -20; x <= 20; x++) { const d = (x * x) / 400 + (y * y) / 196; if (d < 1 && (d < 0.6 || (x + y) % 2)) p.px(70 + x, 80 + y, d < 0.4 ? 0x5e5a54 : 0x76726a); }
+    let cx = 20, cy = 30; for (let i = 0; i < 40; i++) { p.px(cx, cy, 0x6a665e); cx += hash2(i, 1) < 0.5 ? 1 : 0; cy += 1; if (hash2(i, 2) < 0.3) cx += 1; }
+    return p;
+  },
+  /** Corrugated steel: ribbed shading with deliberate rust runs. */
+  corrugatedHD() {
+    const p = new Pix(128, 128, 44);
+    const ramp = [0x6e7a80, 0x88949a, 0xa4b0b6, 0x96a2a8, 0x7a868c, 0x606c72, 0x56626a, 0x626e74];
+    for (let x = 0; x < 128; x++) p.rect(x, 0, 1, 128, ramp[x % 8]);
+    for (let i = 0; i < 6; i++) { const x = Math.floor(hash2(i, 7) * 120); const len = 20 + hash2(i, 8) * 70; for (let y = 0; y < len; y++) { p.px(x, y, 0x8a5a3a, 200 - y * 2); if (y % 3 === 0) p.px(x + 1, y, 0x9a6a46, 120); } }
+    for (let y = 0; y < 128; y += 64) for (let x = 2; x < 128; x += 16) { p.px(x, y + 4, 0xd8dcde); p.px(x + 1, y + 4, 0x4a4a4a); }
+    return p;
+  },
   /** Old varnished floorboards, darker where feet have worn the varnish. */
   shopFloor() {
     const p = new Pix(128, 128, 31);

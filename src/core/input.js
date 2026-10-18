@@ -6,6 +6,8 @@ export class Input {
     this.pressed = new Set(); // keys pressed this frame
     this.mouse = { dx: 0, dy: 0, buttons: [false, false, false], down: [false, false, false], up: [false, false, false], wheel: 0 };
     this.locked = false;
+    this.axis = { x: 0, z: 0 }; // analog move (touch joystick)
+    this.touch = false;
     this.sensitivity = 1;
     this.invertY = false;
     this.onLockChange = null;
@@ -32,6 +34,7 @@ export class Input {
       this.mouse.down[e.button] = true;
     });
     document.addEventListener('mouseup', (e) => {
+      if (this.touch) return;
       this.mouse.buttons[e.button] = false;
       this.mouse.up[e.button] = true;
     });
@@ -47,14 +50,24 @@ export class Input {
     });
   }
 
+  /** Virtual mouse button (touch controls). */
+  press(b, down) {
+    if (down) { this.mouse.buttons[b] = true; this.mouse.down[b] = true; } else { this.mouse.buttons[b] = false; this.mouse.up[b] = true; }
+  }
+  tapKey(code) { this.pressed.add(code); }
+
   lock() {
+    if (this.touch) { if (!this.locked) { this.locked = true; this.onLockChange?.(true); } return; }
     if (this.locked) return;
     try {
       const p = this.el.requestPointerLock({ unadjustedMovement: true });
       if (p && p.catch) p.catch(() => { try { this.el.requestPointerLock(); } catch { /* ignore */ } });
     } catch { try { this.el.requestPointerLock(); } catch { /* ignore */ } }
   }
-  unlock() { if (document.pointerLockElement) document.exitPointerLock(); }
+  unlock() {
+    if (this.touch) { if (this.locked) { this.locked = false; this.axis.x = this.axis.z = 0; this.onLockChange?.(false); } return; }
+    if (document.pointerLockElement) document.exitPointerLock();
+  }
 
   key(code) { return this.keys.has(code); }
   keyPressed(code) { return this.pressed.has(code); }

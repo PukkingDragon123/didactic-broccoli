@@ -7,12 +7,11 @@ import { Pix, FONT_EN } from './pix.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { drawPattern } from '../game/cards.js';
 
-// scene painters are optional (src/gfx/bannerScenes.js); fall back to a simple painted backdrop
-const sceneMods = import.meta.glob('./bannerScenes.js', { eager: true });
-const sceneMod = Object.values(sceneMods)[0] || {};
-export const SCENES = sceneMod.SCENES || {};
-export const BANNER_TEXT = sceneMod.BANNER_TEXT || {};
-export const SCENE_TEXT = sceneMod.SCENE_TEXT || '';
+// scene painters live in src/gfx/bannerScenes*.js (one file per batch of series); merged here
+const sceneMods = Object.values(import.meta.glob('./bannerScenes*.js', { eager: true }));
+export const SCENES = Object.assign({}, ...sceneMods.map((m) => m.SCENES || {}));
+export const BANNER_TEXT = Object.assign({}, ...sceneMods.map((m) => m.BANNER_TEXT || {}));
+export const SCENE_TEXT = sceneMods.map((m) => m.SCENE_TEXT || '').join('');
 
 export const BANNER_W = 320;
 export const BANNER_H = 280;
@@ -32,6 +31,20 @@ const FALLBACK_CATCH = {
   yokai: ['こわくないよ？', '夜の神社で…'], onsen: ['いいお湯だな〜', '露天風呂へようこそ'], dajare: ['笑いが止まらない！', '爆笑ステージ'],
   kaiju: ['街がおやつに!?', '夕暮れの大決戦'], uchu: ['宇宙へ出発ニャ！', '星の見える基地'], omamori: ['ご利益たっぷり！', '開運祈願'],
 };
+/** Break a long title onto two lines where the script changes (kanji / kana / katakana) nearest the middle. */
+function splitTitle(t) {
+  const c = [...t];
+  if (c.length <= 8) return [t];
+  const kind = (ch) => (/[\u30a0-\u30ff]/.test(ch) ? 'k' : /[\u3040-\u309f]/.test(ch) ? 'h' : 'x');
+  let best = Math.ceil(c.length / 2), bd = 99;
+  for (let i = 2; i < c.length - 1; i++) {
+    const brk = kind(c[i]) !== kind(c[i - 1]) || c[i - 1] === 'の';
+    const d = Math.abs(i - c.length / 2) - (brk ? 2 : 0);
+    if (d < bd) { bd = d; best = i; }
+  }
+  return [c.slice(0, best).join(''), c.slice(best).join('')];
+}
+
 const RARITY_COL = { common: 0x9a9a9a, uncommon: 0x3fae5a, rare: 0x2f7fe0, ultra: 0xe04fb0, secret: 0xe8b020 };
 
 export function bannerText(id) {
@@ -144,6 +157,12 @@ function shadowEllipse(p, cx, cy, rx, ry, c) {
   }
 }
 
+/** Four-point sparkle. */
+function twinkle(p, x, y, k) {
+  for (let i = -k * 2; i <= k * 2; i++) { p.px(x + i, y, 0xffffff); p.px(x, y + i, 0xffffff); }
+  p.px(x - 1, y - 1, 0xfff4b0); p.px(x + 1, y + 1, 0xfff4b0); p.px(x + 1, y - 1, 0xfff4b0); p.px(x - 1, y + 1, 0xfff4b0);
+}
+
 /** Starburst badge. */
 function burst(p, cx, cy, r, c, edge) {
   for (let y = -r - 3; y <= r + 3; y++) for (let x = -r - 3; x <= r + 3; x++) {
@@ -208,11 +227,11 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   // ---- figures standing in the scene (ultra in the middle, rare & uncommon beside, commons outside)
   const byR = (r, n = 0) => s.items.filter((i) => i.rarity === r)[n];
   const cast = [
-    { it: byR('common', 0), x: 36, foot: 186, size: 56 },
-    { it: byR('common', 1), x: 284, foot: 186, size: 56 },
-    { it: byR('uncommon', 0), x: 96, foot: 176, size: 60 },
-    { it: byR('rare', 0), x: 224, foot: 176, size: 60 },
-    { it: byR('ultra', 0), x: 160, foot: 194, size: 76 },
+    { it: byR('common', 0), x: 38, foot: 188, size: 62 },
+    { it: byR('common', 1), x: 282, foot: 188, size: 62 },
+    { it: byR('uncommon', 0), x: 98, foot: 178, size: 68 },
+    { it: byR('rare', 0), x: 222, foot: 178, size: 68 },
+    { it: byR('ultra', 0), x: 160, foot: 196, size: 88, star: true },
   ].filter((c) => c.it);
   if (thumbs) {
     for (const c of cast) {
@@ -220,9 +239,14 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
       const b = alphaBounds(cv);
       const dx = Math.round(c.x - (b.x + b.w / 2)), dy = Math.round(c.foot - (b.y + b.h));
       shadowEllipse(p, c.x, c.foot - 1, Math.round(b.w * 0.42), Math.max(2, Math.round(b.w * 0.09)), 0x2a1e1a);
+      if (c.star) {
+        // a soft halo + twinkles behind the star figure
+        for (let r = 30; r > 0; r -= 3) for (let a = 0; a < 6.283; a += 0.06) if ((r + Math.round(a * 20)) % 4 === 0) p.px(c.x + Math.round(Math.cos(a) * r), c.foot - b.h / 2 + Math.round(Math.sin(a) * r * 0.9), 0xfff4b0, 70);
+      }
       p.flush();
       p.ctx.drawImage(cv, dx, dy);
       p.pull();
+      if (c.star) for (const [sx, sy, k] of [[-30, -46, 3], [28, -36, 2], [-22, -14, 2], [34, -62, 2]]) twinkle(p, c.x + sx, c.foot + sy, k);
     }
   }
 
@@ -248,7 +272,7 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   rrect(p, cx0 + 1, 7, cw - 2, 15, 3, ac2);
   p.text(catchTxt, cx0 + cw / 2, 8, { size: 12, color: 0xffffff, align: 'center', outline: shadeC(ac2, 0.55) });
   // title
-  const lines = TITLE_LINES[s.id] || [s.jp];
+  const lines = TITLE_LINES[s.id] || splitTitle(s.jp);
   const fillC = mixC(ac, 0xffffff, 0.08);
   if (lines.length === 1) {
     const n = [...lines[0]].length;
@@ -306,6 +330,16 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   p.text('©GACHA GARAGE', 250, fy + 3, { size: 10, color: 0x4a4a4a, align: 'center', font: FONT_EN });
   qr(p, W - 22, fy - 1 + 0, s.order || 3);
 
+  // premium series get a gold foil frame; brand-new series a NEW! corner ribbon
+  if (s.price >= 500) {
+    for (let i = 0; i < W; i++) for (const y of [0, 1, H - 2, H - 1]) p.px(i, y, ((i >> 2) % 3) ? 0xe8c050 : 0xfff2b0);
+    for (let j = 0; j < H; j++) for (const x of [0, 1, W - 2, W - 1]) p.px(x, j, ((j >> 2) % 3) ? 0xe8c050 : 0xfff2b0);
+  }
+  if ((s.order || 0) >= 13) {
+    rrect(p, 7, 48, 42, 15, 4, 0xffffff);
+    rrect(p, 8, 49, 40, 13, 3, 0xffd23f);
+    p.text('NEW!', 28, 49, { size: 10, color: 0xd8282a, align: 'center', font: FONT_EN });
+  }
   if (opts.faded) fade(p, 11);
   p.flush();
   cache.set(key, p.canvas);

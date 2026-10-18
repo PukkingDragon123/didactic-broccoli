@@ -9,6 +9,8 @@ import { radio } from '../core/music.js';
 import { timeUniform } from '../voxel/materials.js';
 import { Effects } from '../gfx/effects.js';
 import { Thumbs } from '../gfx/thumbs.js';
+import { Street } from '../world/Street.js';
+import { Goods } from './goods.js';
 import { Garage, GARAGE } from '../world/Garage.js';
 import { Player } from './Player.js';
 import { Interaction } from './Interaction.js';
@@ -31,6 +33,8 @@ export class Game {
     this.events = new Emitter();
     this.tweens = new Tweens();
     this.state = loadState();
+    this.visiting = !!this.state.__visit;
+    if (this.visiting) this.noSave = true;
     this.renderer = new Renderer(container);
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x1a1412);
@@ -66,6 +70,7 @@ export class Game {
     this.placement = new Placement(this);
     this.delivery = new Delivery(this);
     this.garage = new Garage(this);
+    this.street = new Street(this);
     this.lighting = new Lighting(this);
     progress(0.35);
     this.placement.addSurface(this.garage.floor);
@@ -82,6 +87,7 @@ export class Game {
     progress(0.75);
     // optional systems added by other modules (PC, museum)
     for (const fn of Game.plugins) await fn(this);
+    this.goods = new Goods(this);
     progress(0.9);
     this.bakeEnvironment();
     this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
@@ -253,6 +259,7 @@ export class Game {
 
   /** Record a discovery. Returns true if this item was never seen before. */
   discover(key, finish) {
+    if (getItem(key)?.mini) return false;
     const d = this.state.discovered;
     const isNew = !d[key];
     if (!d[key]) d[key] = { n: 0, f: {} };
@@ -292,6 +299,7 @@ export class Game {
   checkCompletion(seriesId, display, slot) {
     if (this.state.completed[seriesId]) return;
     const s = SERIES_BY_ID[seriesId];
+    if (!s || s.hidden) return;
     const shown = this.displayedKeys();
     if (!s.items.every((it) => shown.has(it.key))) return;
     this.state.completed[seriesId] = true;
@@ -424,6 +432,8 @@ export class Game {
     this.held.update(dt);
     this.physics.step(dt);
     for (const m of this.machines) m.update(dt, this.time);
+    this.street.update(dt, this.time);
+    this.goods?.update(dt);
     for (const s of this.shelves) s.update(dt);
     this.items.update(dt);
     this.reveal.update(dt, this.time);

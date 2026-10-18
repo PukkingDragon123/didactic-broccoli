@@ -9,6 +9,22 @@ import { itemValue } from './economy.js';
 
 const ghostMat = new THREE.MeshBasicMaterial({ color: 0xfff4d8, transparent: true, opacity: 0.28, depthWrite: false });
 const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+export const PRICE_STEPS = [0, 1.5, 2, 3, 5]; // price tag = market value × step (0 = not for sale)
+const tagCache = new Map();
+function tagMesh(price) {
+  if (tagCache.has(price)) return tagCache.get(price).clone();
+  const c = document.createElement('canvas'); c.width = 64; c.height = 24;
+  const x = c.getContext('2d');
+  x.fillStyle = '#fffaf0'; x.fillRect(0, 0, 64, 24); x.fillStyle = '#d8282a'; x.fillRect(0, 0, 64, 5);
+  x.beginPath(); x.arc(6, 14, 2.5, 0, 7); x.fillStyle = '#2a2220'; x.fill();
+  x.fillStyle = '#d8282a'; x.font = '14px "Pixelify Sans", monospace'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('¥' + price.toLocaleString(), 35, 15);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.019), new THREE.MeshStandardMaterial({ map: t, roughness: 0.6, side: THREE.DoubleSide }));
+  m.userData.noRim = true; m.castShadow = false; m.raycast = () => {};
+  tagCache.set(price, m);
+  return m.clone();
+}
 
 export class DisplaySlots {
   /**
@@ -46,6 +62,7 @@ export class DisplaySlots {
       get highlight() { return slot.mesh || ghostRef(); },
       hint: (held) => this.hint(slot, held),
       use: (held) => this.use(slot, held),
+      alt: () => this.cyclePrice(slot),
     });
     return slot;
   }
@@ -59,6 +76,7 @@ export class DisplaySlots {
     }
     if (!it) return null;
     const item = getItem(it.k);
+    if (this.opts.prices) return { key: 'L', text: it.pm ? `取る ・ 値札 ¥${this.priceOf(it).toLocaleString()}` : '取る ・ ✋ 値札をつける', sub: item?.name };
     return { key: 'L', text: `取る · Take ${item?.name || ''}`, sub: `¥${itemValue(it.k, it.f).toLocaleString()}` };
   }
 
@@ -132,16 +150,52 @@ export class DisplaySlots {
       this.owner.add(p);
       slot.plaque = p;
     }
+    this.updateTag(slot);
     if (pop) {
       m.scale.setScalar(0.6);
       this.game.tweens.add({ dur: 0.35, ease: (t) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2), update: (k) => m.scale.setScalar(0.6 + 0.4 * k) });
     }
   }
 
+  priceOf(it) { return Math.max(10, Math.round((itemValue(it.k, it.f) * (it.pm || 0)) / 10) * 10); }
+
+  /** Right click: cycle the price tag (not for sale → ×1.5 → ×2 → ×3 → ×5 market value). */
+  cyclePrice(slot) {
+    const it = this.items[slot.i];
+    if (!this.opts.prices || !it) return;
+    const i = PRICE_STEPS.indexOf(it.pm || 0);
+    it.pm = PRICE_STEPS[(i + 1) % PRICE_STEPS.length];
+    this.updateTag(slot);
+    audio.play(it.pm ? 'register' : 'paper', { pos: this.owner.localToWorld(slot.def.pos.clone()), vol: 0.5 });
+    this.game.save();
+  }
+
+  updateTag(slot) {
+    if (slot.tag) { this.owner.remove(slot.tag); slot.tag = null; }
+    const it = this.items[slot.i];
+    if (!it?.pm || !this.opts.prices) return;
+    const t = tagMesh(this.priceOf(it));
+    const off = new THREE.Vector3(0.032, 0.012, (slot.def.plaqueZ ?? 0.05) + 0.004).applyAxisAngle(new THREE.Vector3(0, 1, 0), slot.def.rotY || 0);
+    t.position.copy(slot.def.pos).add(off);
+    t.rotation.set(-0.5, (slot.def.rotY || 0) + 0.25, 0, 'YXZ');
+    this.owner.add(t);
+    slot.tag = t;
+  }
+
+  /** A visitor bought the item in slot i: remove it and return the price paid. */
+  sell(i) {
+    const it = this.items[i];
+    if (!it?.pm) return 0;
+    const price = this.priceOf(it);
+    this.clearItem(i);
+    return price;
+  }
+
   clearItem(i) {
     const slot = this.slots[i];
     if (slot.mesh) { this.owner.remove(slot.mesh); slot.mesh = null; }
     if (slot.plaque) { this.owner.remove(slot.plaque); slot.plaque = null; }
+    if (slot.tag) { this.owner.remove(slot.tag); slot.tag = null; }
     this.items[i] = null;
   }
 

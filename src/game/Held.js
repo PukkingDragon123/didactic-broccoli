@@ -13,6 +13,7 @@ const POSES = {
   tool: { pos: new THREE.Vector3(0.2, -0.26, -0.46), rot: new THREE.Euler(-0.75, 0.55, 0.3) },
   inspect: { pos: new THREE.Vector3(0, -0.005, -0.24), rot: new THREE.Euler(0.1, 0, 0) },
   reveal: { pos: new THREE.Vector3(0, -0.01, -0.3), rot: new THREE.Euler(0.05, 0, 0) },
+  pet: { pos: new THREE.Vector3(0.02, -0.34, -0.55), rot: new THREE.Euler(0.1, Math.PI + 0.3, 0) },
 };
 
 export class Held {
@@ -40,7 +41,7 @@ export class Held {
     this.item = { kind, data, obj, ent: opts.ent || null };
     obj.traverse((m) => { if (m.isMesh) m.castShadow = false; });
     this.anchor.attach(obj);
-    this.pose = kind === 'capsule' ? 'capsule' : kind === 'toy' ? 'toy' : kind === 'tool' ? 'tool' : 'box';
+    this.pose = kind === 'capsule' ? 'capsule' : kind === 'toy' ? 'toy' : kind === 'tool' ? 'tool' : kind === 'cat' ? 'pet' : 'box';
     // miniatures are shown a little larger in hand so you can admire the detail
     this.holdScale = kind === 'toy' ? 1.55 : kind === 'capsule' ? 1.2 : opts.pose === 'tool' ? 0.6 : 1;
     this.startTrans(opts.pose || this.pose, opts.dur ?? 0.32);
@@ -119,11 +120,16 @@ export class Held {
     if (it.kind === 'capsule') return { key: 'Hold L', text: 'ひねって開ける · Twist open', sub: 'Q drop' };
     if (it.kind === 'toy') return { key: 'R', text: 'じっくり見る · Inspect', sub: 'Place it on a shelf, sell it, or Q to set down' };
     if (it.kind === 'box') return this.game.placement?.boxHint(it) || { key: 'Q', text: '置く · Put down' };
+    if (it.kind === 'cat') return { key: 'L', text: 'なでる ・ Q おろす' };
     return null;
   }
 
   /** left click with nothing targeted: boxes (furniture, roller) act on the world */
-  primary() { const it = this.item; if (it?.kind === 'box' && !this.busy) this.game.placement.primary?.(it); }
+  primary() {
+    const it = this.item;
+    if (it?.kind === 'box' && !this.busy) this.game.placement.primary?.(it);
+    if (it?.kind === 'cat') this.game.street?.pet();
+  }
 
   update(dt) {
     const g = this.game;
@@ -221,15 +227,29 @@ export class Held {
       g.player.lookLocked = true;
       this.startTrans('inspect', 0.28);
       this.inspectRot.set(0.1, 0, 0);
+      this.inspectZoom = 0;
+      this.idleT = 0;
       audio.play('whoosh', { vol: 0.5, dur: 0.2, v: 0.08 });
+      g.reveal.caption?.(this.item.data, false);
+      // a soft studio key light rides along so every detail reads
+      if (!this.keyLight) { this.keyLight = new THREE.PointLight(0xfff4e8, 0, 1.2, 2); this.keyLight.position.set(0.12, 0.1, -0.05); this.anchor.add(this.keyLight); }
+      g.renderer.grade.uniforms.uVignette.value = 0.65;
     } else if (!want && this.inspecting) {
       this.inspecting = false;
       g.player.lookLocked = false;
       this.startTrans('toy', 0.28);
+      g.renderer.grade.uniforms.uVignette.value = 0.32;
     }
+    if (this.keyLight) this.keyLight.intensity += ((this.inspecting ? 1.6 : 0) - this.keyLight.intensity) * Math.min(1, dt * 8);
     if (this.inspecting && !this.trans) {
-      this.inspectRot.y += inp.mouse.dx * 0.008;
+      // drag to turn it over, wheel to zoom, let go of the mouse and it spins on its own
+      const moved = Math.abs(inp.mouse.dx) + Math.abs(inp.mouse.dy) > 0.5;
+      this.idleT = moved ? 0 : this.idleT + dt;
+      this.inspectRot.y += inp.mouse.dx * 0.008 + (this.idleT > 0.8 ? dt * 0.9 : 0);
       this.inspectRot.x = Math.max(-1.2, Math.min(1.2, this.inspectRot.x + inp.mouse.dy * 0.008));
+      if (inp.mouse.wheel) this.inspectZoom = Math.max(-0.08, Math.min(0.1, this.inspectZoom - inp.mouse.wheel * 0.02));
+      const P = POSES.inspect.pos;
+      this.item.obj.position.set(P.x, P.y, P.z + this.inspectZoom);
       this.item.obj.quaternion.setFromEuler(this.inspectRot);
     } else if (!this.inspecting && !this.trans) {
       this.spin += dt;
@@ -263,6 +283,11 @@ export class Held {
         g.items.spawnToy(rel.data, target, { rotY: yaw, physics: false });
         audio.play('place', { vol: 0.7 });
       });
+      return;
+    }
+    if (it.kind === 'cat') {
+      const target = g.player.pos.clone().add(new THREE.Vector3(fwd.x, 0, fwd.z).normalize().multiplyScalar(0.7));
+      this.putTo(target, new THREE.Quaternion(), (obj) => { obj.parent?.remove(obj); g.street?.releaseCat(target); }, { arc: 0.05 });
       return;
     }
     if (it.kind === 'box') {

@@ -11,6 +11,7 @@ import {
 import * as shop from '../game/shop.js';
 import { buildMachineModel } from '../world/machineModels.js';
 import { bannerTexture, bannerCanvas } from '../gfx/banner.js';
+import { GOODS } from '../game/goods.js';
 import { propMesh } from '../world/props.js';
 import { DISPLAYS, decorList, THEME_NAMES } from '../museum/catalog.js';
 import { audio } from '../core/audio.js';
@@ -478,6 +479,19 @@ export class Site {
   page_tools(x, y, w) {
     const ui = this.ui, g = this.game, s = g.state;
     let yy = y;
+    yy += this.heading(x, yy, w, 'お店グッズ', 'SHOP GOODS', COL.green);
+    for (const [id, d] of Object.entries(GOODS)) {
+      this.panel(x, yy, w, 40, s.goods?.[id] ? '#eef8ee' : '#fff');
+      ui.text(d.jp, x + 10, yy + 5, { size: 13 });
+      ui.text(d.desc, x + 10, yy + 23, { size: 9, color: COL.soft });
+      if (s.goods?.[id]) ui.text('設置済み ✓', x + w - 12, yy + 12, { size: 12, color: COL.green, align: 'right' });
+      else {
+        ui.text(yen(d.price), x + w - 100, yy + 12, { size: 12, color: COL.red, align: 'right', bold: true });
+        ui.button('購入', x + w - 92, yy + 8, 80, 24, () => this.notify(g.goods.buy(id)), { disabled: s.money < d.price, size: 12 });
+      }
+      yy += 44;
+    }
+    yy += 8;
     yy += this.heading(x, yy, w, 'カプセルオープナー', 'OPENING TOOLS');
     OPENERS.forEach((o, i) => {
       if (i === 0) return;

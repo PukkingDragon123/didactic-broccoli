@@ -9,6 +9,7 @@ export const START_MONEY = 300;
 export function itemValue(key, finish = 'normal') {
   const it = getItem(key);
   if (!it) return 0;
+  if (it.mini) return Math.max(10, Math.round((it.price * 0.5) / 10) * 10);
   const s = SERIES_BY_ID[it.series];
   const base = s.price * 0.3 * RARITIES[it.rarity].value * (FINISHES[finish]?.mult || 1);
   return Math.max(5, Math.round(base / 5) * 5);

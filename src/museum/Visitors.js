@@ -146,7 +146,7 @@ class Visitor {
         if (!this.path.length) {
           if (this.happy > 60 && !this.donated) {
             this.donated = true;
-            const tip = 10 * Math.ceil(this.happy / 120);
+            const tip = Math.round(10 * Math.ceil(this.happy / 120) * (this.sys.game.state.goods?.tip_jar ? 1.5 : 1));
             this.sys.game.addMoney(tip, true);
             m.data.income = (m.data.income || 0) + tip;
             audio.play('coinClink', { pos: m.donationPoint.clone().setY(1.1), v: 0.7 });
@@ -177,6 +177,31 @@ class Visitor {
     }
     const appeal = tg.appeal;
     this.happy += appeal;
+    // price-tagged items: a fair price sells often, a greedy one rarely
+    const d = tg.entry.display;
+    if (d && !this.bought) {
+      const stars = sys.museum.score.stars || 0;
+      for (let i = 0; i < d.items.length; i++) {
+        const it = d.items[i];
+        if (!it?.pm) continue;
+        const chance = ({ 1.5: 0.5, 2: 0.32, 3: 0.14, 5: 0.05 }[it.pm] || 0) * (1 + stars * 0.12);
+        if (Math.random() > chance) continue;
+        const name = getItem(it.k)?.jp || '';
+        const price = d.sell(i);
+        if (!price) break;
+        this.bought = true;
+        const g = sys.game;
+        g.addMoney(price, true);
+        sys.museum.data.income = (sys.museum.data.income || 0) + price;
+        sys.museum.data.sold = (sys.museum.data.sold || 0) + 1;
+        audio.play('register', { pos: this.pos.clone().setY(1.2), vol: 0.9 });
+        g.effects.coinBurst({ pos: this.pos.clone().setY(1.6), count: 10 });
+        sys.emote(this, 'wow');
+        g.news(`💴 ${name} が売れた！ ¥${price.toLocaleString()}`, 'Sold!', 4500);
+        g.save();
+        break;
+      }
+    }
     const kind = bestR === 'secret' || bestR === 'ultra' ? 'wow' : bestR === 'rare' ? 'star' : appeal > 5 ? 'heart' : 'note';
     sys.emote(this, kind);
     if (bestR === 'secret' || bestR === 'ultra') { this.jump = 0.5; }

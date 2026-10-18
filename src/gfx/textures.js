@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { Pix, bumpFrom, FONT_JP, FONT_EN } from './pix.js';
 import { hash2 } from '../core/util.js';
+import { shopPix } from './shopTextures.js';
 
 const cache = new Map();
 const bumpCache = new Map();
@@ -66,6 +67,11 @@ function planks(w, h, plankH, base, opts = {}) {
 }
 
 const RECIPES = {
+  plywoodHD: () => shopPix('plywoodHD'),
+  concreteHD: () => shopPix('concreteHD'),
+  floorHD: () => shopPix('floorHD'),
+  corrugatedHD: () => shopPix('corrugatedHD'),
+  blockHD: () => shopPix('blockHD'),
   concrete() {
     const p = new Pix(64, 64, 11);
     p.fill(0x8f8a84);
