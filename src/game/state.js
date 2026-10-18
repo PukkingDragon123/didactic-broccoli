@@ -1,18 +1,27 @@
 // Persistent game state (localStorage) + helpers.
-import { START_MONEY } from './economy.js';
+export const STORY_START_MONEY = 300;
+/** Story flags for a brand-new game (see src/game/Story.js). */
+export function newStoryState() {
+  return { v: 1, intro: false, shutter: false, cash: false, fed: false, swept: [], bags: [], tube: false, radio: false, opened: false };
+}
 
 const KEY = 'gacha-garage-save-v1';
 
 export function defaultState() {
   return {
     v: 1,
-    money: START_MONEY,
+    money: STORY_START_MONEY,
     earned: 0,
     pulls: 0,
     playTime: 0,
+    // Grandpa's old machines: one broken, one knocked over (and broken)
     machines: [
-      { id: 'm1', type: 'retro', slot: 0, up: { speed: 0, cap: 0, coins: 0 }, stock: Array(10).fill('mochi'), series: 'mochi' },
+      { id: 'm1', type: 'retro', slot: 0, up: { speed: 0, cap: 0, coins: 0 }, stock: Array(10).fill('mochi'), series: 'mochi', broken: true },
+      { id: 'm2', type: 'standard', slot: 1, up: { speed: 0, cap: 0, coins: 0 }, stock: Array(8).fill('mochi'), series: 'mochi', broken: true, fallen: true },
     ],
+    story: newStoryState(),
+    inventory: [{ kind: 'tool', d: { id: 'notebook' } }, { kind: 'tool', d: { id: 'key' } }, null, null, null],
+    promo: { flyers: 0, level: 0 },
     licenses: ['mochi'],
     opener: 0,
     charms: [],
@@ -27,8 +36,8 @@ export function defaultState() {
     stats: { secrets: 0, best: null, sold: 0, opened: 0 },
     flags: {},
     settings: { quality: null, master: 0.8, music: 0.55, ambience: 0.7, sens: 1, fov: 72, hints: true },
-    radio: 0,
-    lightsOn: true,
+    radio: -1,
+    lightsOn: false,
     seed: Math.floor(Math.random() * 1e9),
   };
 }
@@ -44,6 +53,9 @@ export function loadState() {
     const s = JSON.parse(raw);
     if (visit) { s.__visit = true; if (own?.settings) s.settings = own.settings; }
     const d = defaultState();
+    // saves from before the story: the shop is already up and running
+    if (s.story === undefined) s.story = { ...newStoryState(), intro: true, shutter: true, cash: true, fed: true, tube: true, radio: true, opened: true, complete: true };
+    if (s.inventory === undefined) s.inventory = [{ kind: 'tool', d: { id: 'notebook' } }, null, null, null, null];
     // shallow-merge new fields for forward compatibility
     for (const k of Object.keys(d)) if (s[k] === undefined) s[k] = d[k];
     s.settings = { ...d.settings, ...s.settings };

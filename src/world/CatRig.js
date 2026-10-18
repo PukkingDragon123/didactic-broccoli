@@ -102,7 +102,7 @@ export class CatRig {
       parent = seg;
     }
     this.pose = 'walk';
-    this.blend = { walk: 1, sit: 0, sleep: 0, groom: 0, held: 0 };
+    this.blend = { walk: 1, sit: 0, sleep: 0, groom: 0, held: 0, drink: 0 };
     this.t = Math.random() * 10;
     this.walkT = 0;
     this.speed = 0;
@@ -120,20 +120,20 @@ export class CatRig {
     const sw = Math.sin(this.walkT), moving = Math.min(1, speed * 3);
     const legH = 10 * VS;
     // hip height & pitch
-    const y = legH * (B.walk + B.groom * 0.95) + legH * 0.55 * B.sit + 6 * VS * B.sleep + 0.02 * B.held + Math.abs(Math.cos(this.walkT)) * 0.006 * moving * B.walk;
+    const y = legH * (B.walk + B.groom * 0.95 + B.drink * 0.86) + legH * 0.55 * B.sit + 6 * VS * B.sleep + 0.02 * B.held + Math.abs(Math.cos(this.walkT)) * 0.006 * moving * B.walk;
     this.hip.position.set(0, y, -6 * VS * B.sit);
-    this.hip.rotation.x = -0.75 * B.sit - 1.35 * B.held;
+    this.hip.rotation.x = -0.75 * B.sit - 1.35 * B.held + 0.16 * B.drink;
     this.hip.position.y += 0.12 * B.held;
     // legs
     const L = this.legs;
-    L.FL.rotation.x = sw * 0.6 * moving * B.walk + 0.75 * B.sit - 1.5 * B.sleep + 0.2 * B.held;
-    L.FR.rotation.x = -sw * 0.6 * moving * B.walk + 0.75 * B.sit - 1.5 * B.sleep + 0.2 * B.held + Math.max(0, Math.sin(this.t * 6)) * -1.4 * B.groom;
+    L.FL.rotation.x = sw * 0.6 * moving * B.walk + 0.75 * B.sit - 1.5 * B.sleep + 0.2 * B.held - 0.25 * B.drink;
+    L.FR.rotation.x = -sw * 0.6 * moving * B.walk + 0.75 * B.sit - 1.5 * B.sleep + 0.2 * B.held + Math.max(0, Math.sin(this.t * 6)) * -1.4 * B.groom - 0.25 * B.drink;
     L.BL.rotation.x = -sw * 0.6 * moving * B.walk - 0.9 * B.sit + 1.5 * B.sleep + 0.4 * B.held;
     L.BR.rotation.x = sw * 0.6 * moving * B.walk - 0.9 * B.sit + 1.5 * B.sleep + 0.4 * B.held;
     for (const k of ['FL', 'FR', 'BL', 'BR']) L[k].scale.y = 1 - 0.35 * B.sleep;
     // head: looks around, bobs while walking, ducks to groom, rests when sleeping
     const look = Math.sin(this.t * 0.4) * 0.5 * (B.sit + B.walk * (1 - moving)) + this.lookYaw;
-    this.head.rotation.set(0.75 * B.sit + 0.6 * B.held + Math.sin(this.walkT * 2) * 0.05 * moving + (0.5 + Math.sin(this.t * 6) * 0.15) * B.groom + 0.25 * B.sleep, look * (1 - B.sleep), -0.25 * B.groom);
+    this.head.rotation.set(0.75 * B.sit + 0.6 * B.held + Math.sin(this.walkT * 2) * 0.05 * moving + (0.5 + Math.sin(this.t * 6) * 0.15) * B.groom + 0.25 * B.sleep + (0.95 + Math.sin(this.t * 11) * 0.06) * B.drink, look * (1 - B.sleep - B.drink), -0.25 * B.groom);
     this.neck.position.y = (4 - 3 * B.sleep) * VS;
     // tail: up and curling while walking, curled around when sitting/sleeping, swishing when held
     this.tail.forEach((s, i) => {

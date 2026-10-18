@@ -578,6 +578,66 @@ const SOUNDS = {
   rotate(a, t, o) {
     a.burst(o, t, { dur: 0.06, vol: 0.12, type: 'bandpass', f: 1600, q: 2 });
   },
+  /** Straw broom swish across concrete. */
+  sweep(a, t, o) {
+    a.burst(o, t, { dur: 0.32, vol: 0.16, type: 'bandpass', f: 2600, f2: 1500, q: 0.7, attack: 0.04, buf: a.pink });
+    a.burst(o, t + 0.05, { dur: 0.2, vol: 0.05, type: 'highpass', f: 5000 });
+  },
+  /** Wrench on a bolt: a ratchet run and a metallic tink. */
+  wrench(a, t, o) {
+    for (let i = 0; i < 5; i++) a.burst(o, t + i * 0.045, { dur: 0.015, vol: 0.22, type: 'highpass', f: rand(2600, 3400) });
+    a.tone(o, t + 0.26, { f: rand(2300, 2900), dur: 0.35, vol: 0.05, type: 'triangle' });
+    a.tone(o, t + 0.26, { f: 160, f2: 90, dur: 0.06, vol: 0.12 });
+  },
+  /** Electric crackle (repairs, an old tube striking). */
+  zap(a, t, o) {
+    for (let i = 0; i < 6; i++) a.burst(o, t + i * 0.03 + rand(0, 0.02), { dur: 0.012, vol: 0.18, type: 'highpass', f: rand(3000, 6000) });
+    a.tone(o, t, { f: 60, dur: 0.18, vol: 0.05, type: 'square' });
+  },
+  /** An old key turning in a lock. */
+  keyTurn(a, t, o) {
+    a.burst(o, t, { dur: 0.05, vol: 0.2, f: 2400, q: 4 });
+    a.burst(o, t + 0.16, { dur: 0.03, vol: 0.3, type: 'highpass', f: 1800 });
+    a.tone(o, t + 0.16, { f: 900, f2: 600, dur: 0.08, vol: 0.06, type: 'triangle' });
+    a.burst(o, t + 0.3, { dur: 0.04, vol: 0.35, type: 'lowpass', f: 900 });
+  },
+  /** A roller shutter rattling up its rails. */
+  shutterRoll(a, t, o, p) {
+    const dur = p.dur || 2.4;
+    a.burst(o, t, { dur, vol: 0.2, type: 'bandpass', f: 500, f2: 900, q: 0.9, attack: 0.1, buf: a.brown, rate: 2 });
+    const n = Math.floor(dur * 14);
+    for (let i = 0; i < n; i++) a.burst(o, t + i * (dur / n) + rand(0, 0.02), { dur: 0.02, vol: 0.09, type: 'bandpass', f: rand(1400, 2600), q: 5 });
+    a.burst(o, t + dur, { dur: 0.12, vol: 0.3, type: 'lowpass', f: 600 });
+    a.tone(o, t + dur, { f: 130, f2: 70, dur: 0.2, vol: 0.2 });
+  },
+  /** Milk glugging into a bowl. */
+  milk(a, t, o) {
+    for (let i = 0; i < 7; i++) a.tone(o, t + i * 0.12 + rand(0, 0.03), { f: rand(380, 520), f2: rand(700, 900), dur: 0.07, vol: 0.05, attack: 0.01 });
+    a.burst(o, t, { dur: 0.9, vol: 0.05, type: 'lowpass', f: 900, buf: a.pink });
+  },
+  /** A commuter train rumbling over the girder bridge (clatter of the joints on top). */
+  train(a, t, o, p) {
+    const dur = p.dur || 6;
+    a.burst(o, t, { dur, vol: 0.35, type: 'lowpass', f: 220, f2: 140, attack: 1.2, buf: a.brown, rate: 1 });
+    a.burst(o, t, { dur, vol: 0.06, type: 'bandpass', f: 900, q: 1.2, attack: 1.5, buf: a.pink });
+    for (let i = 0; i < dur * 2.2; i++) {
+      const tt = t + 0.8 + i * 0.45;
+      a.burst(o, tt, { dur: 0.04, vol: 0.18, type: 'lowpass', f: 600 });
+      a.burst(o, tt + 0.11, { dur: 0.04, vol: 0.15, type: 'lowpass', f: 650 });
+    }
+  },
+  /** Typewriter blip for speech bubbles and subtitles. */
+  blip(a, t, o, p) {
+    a.tone(o, t, { type: 'square', f: (p.f || 620) * rand(0.94, 1.06), dur: 0.035, vol: 0.025 });
+  },
+  /** Page turn. */
+  page(a, t, o) {
+    a.burst(o, t, { dur: 0.22, vol: 0.12, type: 'bandpass', f: 1800, f2: 3800, q: 0.8, attack: 0.03, buf: a.pink });
+  },
+  /** Bright "task done" jingle. */
+  task(a, t, o) {
+    [76, 81, 88].forEach((n, i) => a.bell(o, t + i * 0.08, NOTE(n), { dur: 0.8, vol: 0.07, partials: [1, 2, 3], decays: [1, 0.4, 0.2] }));
+  },
 };
 
 // ======================================================================= loops

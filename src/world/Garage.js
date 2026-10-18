@@ -116,12 +116,19 @@ export class Garage {
     const sh = G.shutterY;
     this.solid(1.2, H, 0.2, cwall, -3.6 + 0.0, 0, G.maxZ + 0.1, { player: true, material: 'concrete' });
     this.solid(1.2, H, 0.2, cwall, 3.6, 0, G.maxZ + 0.1, { player: true, material: 'concrete' });
-    const shutter = boxMesh(6.0, H - sh - 0.35, 0.06, pixMat('shutter', { roughness: 0.55, metalness: 0.45, bump: 2 }));
-    shutter.position.set(0, sh + (H - sh - 0.35) / 2, G.maxZ + 0.05);
+    // roller shutter: its visible height changes as it rolls up into the hood (setShutter)
+    const shutter = new THREE.Mesh(new THREE.BufferGeometry(), pixMat('shutter', { roughness: 0.55, metalness: 0.45, bump: 2 }));
+    shutter.castShadow = true; shutter.receiveShadow = true;
+    shutter.position.set(0, 0, G.maxZ + 0.05);
+    shutter.name = 'shutter';
     this.add(shutter);
     const bar = boxMesh(6.0, 0.06, 0.1, colMat(0x5d625c, { metalness: 0.6, roughness: 0.4 }));
     bar.position.set(0, sh + 0.03, G.maxZ + 0.05);
     this.add(bar);
+    this.shutterMesh = shutter;
+    this.shutterBar = bar;
+    this.shutterOb = this.game.player.addObstacle(-3.0, 3.0, G.maxZ - 0.05, G.maxZ + 0.18);
+    this.shutterOpen = -1;
     const hood = boxMesh(6.4, 0.38, 0.4, pixMat('steel', { roughness: 0.6, metalness: 0.4 }));
     hood.position.set(0, H - 0.19, G.maxZ + 0.05);
     this.add(hood);
@@ -306,7 +313,6 @@ export class Garage {
     this.prop('stove_kettle', -2.15, lv2[2] + 0.012, G.minZ + 0.3, 0.3, { fallbackSize: [0.35, 0.3, 0.3] });
     this.prop('shelf_figures', -1.6, lv2[2] + 0.012, G.minZ + 0.32, 0, { fallbackSize: [0.4, 0.15, 0.1] });
     box(-2.0, lv2[3] + 0.012, G.minZ + 0.3, 0.6, 0.18, 0.4, 'fragile');
-    this.prop('daruma', -1.55, lv2[3] + 0.012, G.minZ + 0.32, 0.2, { fallbackSize: [0.16, 0.18, 0.15] });
 
     // ---------------- back-right: fridge + radio
     this.prop('fridge', 1.25, 0, G.minZ + 0.3, 0, { fallbackSize: [0.5, 0.85, 0.5], player: true, phys: true });
@@ -482,11 +488,13 @@ export class Garage {
     this.add(cord);
     for (let i = 1; i < 8; i++) {
       const pt = new THREE.CatmullRomCurve3(pts).getPoint(i / 8);
-      const l = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), lanternMat);
-      l.scale.y = 1.25;
+      // blocky paper lantern: a fat middle, slimmer top and bottom tiers, black caps
+      const l = new THREE.Group();
       l.position.copy(pt).add(new THREE.Vector3(0, -0.12, 0));
+      for (const [w, h, y] of [[0.13, 0.1, 0], [0.105, 0.035, 0.065], [0.105, 0.035, -0.065]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), lanternMat); b.position.y = y; l.add(b); }
+      for (const dy of [0.09, -0.09]) { const c = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.02, 0.06), capMat); c.position.y = dy; l.add(c); }
+      l.rotation.y = i * 0.3;
       this.add(l);
-      for (const dy of [0.085, -0.085]) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.02, 10), capMat); c.position.copy(l.position).add(new THREE.Vector3(0, dy, 0)); this.add(c); }
     }
     const pl = new THREE.PointLight(0xffa860, 1.6, 4, 1.6);
     pl.position.set(x + 0.6, 2.4, -0.6);
@@ -535,7 +543,7 @@ export class Garage {
       const pl = new THREE.PointLight(0xe9f0ff, 5.5, 9, 1.6);
       pl.position.set(x, G.height - 0.45, z);
       scene.add(pl);
-      this.lights.tubes.push({ light: pl, mat: tubeMat, base: 5.5 });
+      this.lights.tubes.push({ light: pl, mat: tubeMat, base: 5.5, fix });
     }
 
     // desk lamp spot over the work table
@@ -594,6 +602,7 @@ export class Garage {
     pool.rotation.x = -Math.PI / 2;
     pool.position.set(0, 0.004, G.maxZ - 1.6);
     this.add(pool);
+    this.pool = pool;
   }
 
   buildDust() {
@@ -629,18 +638,39 @@ export class Garage {
     this.dust = m;
   }
 
-  /** Room lights on/off (light switch). */
+  /** Roll the shutter: 0 = closed to the ground, 1 = open (tucked under the hood). */
+  setShutter(k, instant = false) {
+    void instant;
+    if (Math.abs(k - this.shutterOpen) < 1e-4) return;
+    this.shutterOpen = k;
+    const G = GARAGE, top = G.height - 0.35, low = G.shutterY;
+    const bottom = low * k, h = top - bottom;
+    const m = this.shutterMesh;
+    m.geometry.dispose();
+    m.geometry = worldBox(6.0, h, 0.06);
+    m.position.y = bottom + h / 2;
+    this.shutterBar.position.y = bottom + 0.03;
+    this.shutterOb.enabled = k < 0.85;
+    // daylight only pours in once it's up
+    if (this.lights.bounce) this.lights.bounce.intensity = 2.0 * k;
+    if (this.pool) this.pool.visible = k > 0.05;
+    if (this.pool) this.pool.material.uniforms.uColor.value.setHex(0xff9a50).multiplyScalar(k);
+  }
+
+  /** Room lights on/off (light switch). Dead tubes stay dark. */
   setLights(on) {
     this.lightsOn = on;
     for (const t of this.lights.tubes) {
-      t.light.intensity = on ? t.base : 0;
-      t.mat.color.setScalar(on ? 2.2 : 0.15);
+      const lit = on && !t.dead;
+      t.light.intensity = lit ? t.base : 0;
+      t.mat.color.setScalar(lit ? 2.2 : 0.15);
     }
     this.lights.hemi.intensity = on ? 0.55 : 0.18;
     this.lightToggle.position.y = on ? 0.012 : -0.012;
   }
 
   update(dt, t) {
+    this.town?.update(dt, t);
     if (this.shaftMat) this.shaftMat.uniforms.uTime.value = t;
     if (this.dust) this.dust.uniforms.uTime.value = t;
     // door animation

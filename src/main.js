@@ -55,10 +55,19 @@ async function boot() {
   let fly = null; // camera flight from the street into the garage
   const sfx = (n, v = 0.5) => { try { audio.init(); audio.play(n, { vol: v }); } catch { /* audio not ready */ } };
 
+  let intro = false; // the new-game intro cutscene is playing
   const start = () => {
     audio.init();
     game.startAudio();
-    if (!started && !fly) fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() };
+    const st = game.state.story;
+    if (!started && !fly && !intro && !game.story.done && !st.intro && !game.visiting) {
+      // a brand-new game: the intro cutscene instead of the fly-in
+      intro = true;
+      signs.dispose();
+      $('title').classList.add('fade');
+      setTimeout(() => $('title').classList.add('hidden'), 600);
+      game.cutscene.play((c) => game.story.introScene(c), { skippable: true }).then(() => { intro = false; started = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); });
+    } else if (!started && !fly && !intro) fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() };
     game.input.lock();
   };
   // the 3D signpost in the street
@@ -107,27 +116,27 @@ async function boot() {
     note.textContent = '';
     if (mode === 'host') {
       if (game.visiting) { try { sessionStorage.removeItem(VISIT_KEY); } catch { /* ignore */ } location.reload(); return; }
-      $('share-title').textContent = 'みせをひらく';
+      $('share-title').textContent = 'Host your shop';
       code.readOnly = true;
-      code.value = '…';
+      code.value = '...';
       game.save();
       code.value = await encodeShop(game.state);
-      act.textContent = 'コピー';
-      note.textContent = 'このコードを友だちに送ろう';
+      act.textContent = 'Copy code';
+      note.textContent = 'Send this code to a friend so they can visit your shop';
     } else {
-      $('share-title').textContent = 'あそびにいく';
+      $('share-title').textContent = 'Visit a friend';
       code.readOnly = false;
       code.value = '';
-      code.placeholder = 'GG1.…';
-      act.textContent = 'いく！';
-      note.textContent = '友だちのコードをはりつけてね';
+      code.placeholder = 'GG1....';
+      act.textContent = 'Go!';
+      note.textContent = "Paste your friend's shop code";
       setTimeout(() => code.focus(), 50);
     }
   };
   act.addEventListener('click', async () => {
     if (share.dataset.mode === 'host') {
-      try { await navigator.clipboard.writeText(code.value); note.textContent = 'コピーしました！'; }
-      catch { code.select(); note.textContent = '選択しました — コピーしてね'; }
+      try { await navigator.clipboard.writeText(code.value); note.textContent = 'Copied!'; }
+      catch { code.select(); note.textContent = 'Selected - copy it with Ctrl+C'; }
       return;
     }
     try {
@@ -135,7 +144,7 @@ async function boot() {
       sessionStorage.setItem(VISIT_KEY, JSON.stringify(st));
       sfx('purchase', 0.7);
       location.reload();
-    } catch { note.textContent = 'コードが読めません'; sfx('error', 0.5); }
+    } catch { note.textContent = "That code doesn't work"; sfx('error', 0.5); }
   });
 
   game.input.onLockChange = (locked) => {
@@ -146,12 +155,12 @@ async function boot() {
       $('pause').classList.add('hidden');
       $('hud').classList.remove('hidden');
       touch?.show(true);
-      if (game.visiting) setTimeout(() => game.news(`🏮 ${game.state.__owner || 'ともだち'}のおみせ`, 'Visiting a friend (nothing is saved)', 6000), 1200);
-      else if (!game.state.flags.welcomed) {
+      if (game.visiting) setTimeout(() => game.news(`${game.state.__owner || "A friend"}'s shop`, 'Visiting - nothing is saved', 6000), 1200);
+      else if (!game.state.flags.welcomed && game.story.done) {
         game.state.flags.welcomed = true;
-        setTimeout(() => game.news('ようこそ、ガチャガレージへ！', 'Welcome!', 6000), 1400);
+        setTimeout(() => game.news('Welcome back to GACHA GARAGE!', '', 6000), 1400);
       }
-    } else if (started && !params.has('autotest')) {
+    } else if (started && !params.has('autotest') && !game.uiOpen) {
       touch?.show(false);
       openSettings();
       game.save();
@@ -172,7 +181,7 @@ async function boot() {
   $('reset-btn').addEventListener('click', () => {
     if (Date.now() - resetArm < 4000) { game.reset(); return; }
     resetArm = Date.now();
-    $('reset-btn').textContent = 'もう一度押すと消えます';
+    $('reset-btn').textContent = 'Click again to erase everything';
     setTimeout(() => { $('reset-btn').textContent = 'Reset save data'; }, 4000);
   });
   for (const el of document.querySelectorAll('#pause .panel')) el.addEventListener('click', (e) => e.stopPropagation());
@@ -187,6 +196,7 @@ async function boot() {
   function frame() {
     requestAnimationFrame(frame);
     const dt = Math.min(clock.getDelta(), 0.05);
+    if (intro) { game.update(dt); game.render(dt); return; }
     if (!started && !params.has('autotest')) {
       // the menu: a slow crane shot of your shop from the street at dusk
       titleT += dt;
@@ -213,7 +223,9 @@ async function boot() {
       const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
       const cam = game.camera;
       const end = cam.position.clone(), endQ = cam.quaternion.clone();
-      const p0 = fly.from, p1 = new THREE.Vector3(0.3, 1.05, 7.4), p2 = new THREE.Vector3(0.4, 1.2, 4.4);
+      // under the half-open shutter into the garage, or (shutter still locked) a straight glide down the lane
+      const inside = game.player.pos.z < 5;
+      const p0 = fly.from, p1 = inside ? new THREE.Vector3(0.3, 1.05, 7.4) : p0.clone().lerp(end, 0.33), p2 = inside ? new THREE.Vector3(0.4, 1.2, 4.4) : p0.clone().lerp(end, 0.66);
       const u = 1 - e;
       const bez = p0.clone().multiplyScalar(u * u * u).add(p1.clone().multiplyScalar(3 * u * u * e)).add(p2.clone().multiplyScalar(3 * u * e * e)).add(end.clone().multiplyScalar(e * e * e));
       cam.position.copy(bez);

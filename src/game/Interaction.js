@@ -1,5 +1,18 @@
 // Crosshair raycasting, hover rim-highlight, contextual hints and click / hold dispatch.
 import * as THREE from 'three';
+import { iconHTML } from '../gfx/icons.js';
+
+/** 'LMB' / 'Hold LMB' / 'RMB' become little mouse icons (or a tap hint on touch screens). */
+function keyHTML(key) {
+  if (!key) return '';
+  const touch = document.body.classList.contains('touchmode');
+  const m = /^(Hold )?(LMB|RMB)$/.exec(key);
+  if (m) {
+    if (touch) return `<span class="k">${m[1] ? 'Hold' : 'Tap'}${m[2] === 'RMB' ? ' 2' : ''}</span>`;
+    return `<span class="k">${m[1] ? 'Hold ' : ''}${iconHTML(m[2] === 'LMB' ? 'mouse_left' : 'mouse_right', 2)}</span>`;
+  }
+  return `<span class="k">${key}</span>`;
+}
 
 const RIM = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
@@ -81,7 +94,7 @@ export class Interaction {
 
   setHint(hint) {
     const show = hint && this.showHints;
-    const html = show ? `<span class="k">${hint.key}</span>${hint.text}${hint.sub ? `<span class="sub">${hint.sub}</span>` : ''}` : '';
+    const html = show ? `${keyHTML(hint.key)}<span class="t">${hint.text}</span>${hint.sub ? `<span class="sub">${hint.sub}</span>` : ''}` : '';
     if (html !== this.lastHint) {
       this.lastHint = html;
       if (html) this.hintEl.innerHTML = html;
@@ -93,13 +106,15 @@ export class Interaction {
     RIM.uniforms.uTime.value += dt;
     const g = this.game;
     const inp = g.input;
-    if (!this.enabled || !inp.locked || g.pc?.active) {
+    if (!this.enabled || !inp.locked || g.pc?.active || g.uiOpen || g.held.reading) {
       this.setHover(null);
       this.setHint(null);
       this.crossEl.classList.remove('active');
       return;
     }
-    const held = g.held.item;
+    // a carried tool doesn't count as "busy hands" for ordinary objects while a slot is free (they then use g.held.holding())
+    const sel = g.held.item;
+    const held = sel?.kind === 'tool' && g.held.canTake() ? null : sel;
     // continue an active hold even if the crosshair drifts slightly
     if (this.holding) {
       const h = this.holding;
@@ -131,8 +146,8 @@ export class Interaction {
       found = { obj, handler, hit, hint };
       break;
     }
-    // fall back to the held item's own action (open capsule, place furniture...)
-    if (!found && held) {
+    // fall back to the held item's own action (open capsule, place furniture, read the notebook...)
+    if (!found && sel) {
       const hh = g.held.hint();
       this.setHover(null);
       this.setHint(hh);

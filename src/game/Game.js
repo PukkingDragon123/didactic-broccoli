@@ -26,6 +26,14 @@ import { loadState, saveState, clearState } from './state.js';
 import { itemValue, capsuleCost, CHARMS, OPENERS } from './economy.js';
 import { SERIES, SERIES_BY_ID, getItem } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
+import { Story } from './Story.js';
+import { Cutscene } from './Cutscene.js';
+import { Notebook } from './Notebook.js';
+import { Hotbar } from '../ui/Hotbar.js';
+import { makeToolMesh } from './Held.js';
+import { makeCapsule } from './Capsule.js';
+import { SUPPLY_BY_ID } from '../data/supplies.js';
+import { TOOLS } from '../data/tools.js';
 
 export class Game {
   constructor(container) {
@@ -65,6 +73,9 @@ export class Game {
     this.interaction = new Interaction(this);
     this.interaction.showHints = s.hints;
     this.held = new Held(this);
+    this.cutscene = new Cutscene(this);
+    this.notebook = new Notebook(this);
+    this.story = new Story(this);
     this.items = new Items(this);
     this.reveal = new Reveal(this);
     this.placement = new Placement(this);
@@ -81,6 +92,7 @@ export class Game {
     progress(0.6);
     for (const sh of this.state.shelves) this.shelves.push(new GarageShelf(this, sh));
     this.restoreLoose();
+    this.restoreInventory();
     this.setupFixedInteractables();
     this.applySettings();
     this.garage.setLights(this.state.lightsOn !== false);
@@ -88,12 +100,21 @@ export class Game {
     // optional systems added by other modules (PC, museum)
     for (const fn of Game.plugins) await fn(this);
     this.goods = new Goods(this);
+    this.story.init();
+    this.hotbar = new Hotbar(this);
     progress(0.9);
     this.bakeEnvironment();
     this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
-    this.player.pos.set(0.4, 0, 2.6);
-    this.player.yaw = 0.55;
-    this.player.pitch = -0.12;
+    if (!this.story.done && !this.state.story.shutter) {
+      // a new story: you're standing in the lane in front of Grandpa's locked shutter
+      this.player.pos.set(0.4, 0, GARAGE.maxZ + 2.8);
+      this.player.yaw = 0;
+      this.player.pitch = 0.08;
+    } else {
+      this.player.pos.set(0.4, 0, 2.6);
+      this.player.yaw = 0.55;
+      this.player.pitch = -0.12;
+    }
     this.updateMoney(true);
     progress(1);
     setInterval(() => this.save(), 15000);
@@ -135,9 +156,9 @@ export class Game {
     // sell box
     this.interaction.add(G.sellBox, {
       hint: (held) => {
-        if (!held) return { key: '·', text: '買取BOX · Sell box', sub: 'Drop collectibles here to sell them' };
-        if (held.kind === 'toy') return { key: 'L', text: `売る · Sell for ${formatYen(itemValue(held.data.key, held.data.finish))}`, sub: this.countOwned(held.data.key) > 0 ? 'You have another one on display' : 'Not on display anywhere!' };
-        if (held.kind === 'capsule') return { key: 'L', text: `未開封で売る · Sell unopened for ${formatYen(this.unopenedValue(held.data))}` };
+        if (!held) return { key: '', text: 'Sell box', sub: 'Drop figures here to sell them' };
+        if (held.kind === 'toy') return { key: 'LMB', text: `Sell for ${formatYen(itemValue(held.data.key, held.data.finish))}`, sub: this.countOwned(held.data.key) > 0 ? 'You have another one on display' : 'Not on display anywhere yet!' };
+        if (held.kind === 'capsule') return { key: 'LMB', text: `Sell unopened for ${formatYen(this.unopenedValue(held.data))}` };
         return null;
       },
       use: (held) => { if (held && (held.kind === 'toy' || held.kind === 'capsule')) this.sellHeld(); return false; },
@@ -146,28 +167,64 @@ export class Game {
     this.interaction.add(G.storageBox, {
       hint: (held) => {
         const n = Object.values(this.state.storage).reduce((a, b) => a + b, 0);
-        if (held?.kind === 'toy') return { key: 'L', text: 'しまう · Store for later', sub: `${n} stored · sell or retrieve on the PC` };
-        if (!held && n > 0) return { key: 'L', text: `取り出す · Take one out (${n} stored)` };
-        if (!held) return { key: '·', text: '保管BOX · Storage (empty)' };
+        if (held?.kind === 'toy') return { key: 'LMB', text: 'Store for later', sub: `${n} stored - sell or take them out on the PC` };
+        if (this.held.canTake() && n > 0) return { key: 'LMB', text: `Take one out (${n} stored)` };
+        if (!held) return { key: '', text: 'Storage bin (empty)' };
         return null;
       },
       use: (held) => {
         if (held?.kind === 'toy') this.storeHeld();
-        else if (!held) this.takeFromStorage();
+        else if (this.held.canTake()) this.takeFromStorage();
         return false;
       },
     });
-    // radio
+    // radio (dead until it gets batteries in a new story)
     radio.attach(G.radio.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.15, 0)));
     this.interaction.add(G.radio, {
-      hint: (held) => (held ? null : { key: 'L', text: radio.station < 0 ? 'ラジオをつける · Radio on' : `📻 ${radio.stations[radio.station].jp} — next station`, sub: radio.station >= 0 ? radio.stations[radio.station].name : '' }),
-      use: (held) => { if (held) return false; const st = radio.cycle(); this.state.radio = st; this.news(st < 0 ? 'ラジオを消した' : `📻 ${radio.stations[st].jp}`, st < 0 ? 'Radio off' : radio.stations[st].name); return false; },
+      hint: (held) => {
+        const sh = this.story.radioHint();
+        if (sh !== undefined) return sh;
+        return held ? null : { key: 'LMB', text: radio.station < 0 ? 'Turn the radio on' : 'Next station', sub: radio.station >= 0 ? radio.stations[radio.station].name : '' };
+      },
+      use: () => {
+        if (!this.story.useRadio()) return false;
+        const st = radio.cycle(); this.state.radio = st;
+        this.news(st < 0 ? 'Radio off' : `Radio: ${radio.stations[st].name}`);
+        return false;
+      },
+    });
+    // Mikawa-ya's counter across the lane opens the corner-shop list
+    const cs = G.town?.cornerShop;
+    if (cs?.counter) this.interaction.add(cs.counter, {
+      reach: 2.6,
+      hint: () => ({ key: 'LMB', text: 'Shop at Mikawa-ya', sub: 'Milk, brooms, tools, batteries, flyers' }),
+      use: () => { if (this.shopUI) this.shopUI.open('corner'); else this.news('The shop is closed right now'); return false; },
     });
     // light switch
     this.interaction.add(G.lightSwitch, {
-      hint: (held) => (held ? null : { key: 'L', text: G.lightsOn ? '電気を消す · Lights off' : '電気をつける · Lights on', sub: 'Glow-in-the-dark finishes shine in the dark' }),
+      hint: (held) => (held && held.kind !== 'tool' ? null : { key: 'LMB', text: G.lightsOn ? 'Lights off' : 'Lights on', sub: 'Glow-in-the-dark finishes shine in the dark' }),
       use: () => { G.setLights(!G.lightsOn); this.state.lightsOn = G.lightsOn; audio.play(G.lightsOn ? 'lightsOn' : 'relay', { pos: G.lightSwitch.getWorldPosition(new THREE.Vector3()), vol: 0.8 }); return false; },
     });
+  }
+
+  /** Buy something at Mikawa-ya: straight into your inventory, or onto the counter when your hands are full. */
+  buySupply(id) {
+    const sup = SUPPLY_BY_ID[id];
+    if (!sup) return { ok: false, msg: 'Not sold here.' };
+    if (this.state.money < sup.price) return { ok: false, msg: `You need ${formatYen(sup.price - this.state.money)} more.` };
+    this.spend(sup.price);
+    const extra = sup.uses ? { uses: sup.uses } : {};
+    // flyers stack up in one slot
+    if (sup.tool === 'flyers') {
+      const i = this.held.find('flyers');
+      if (i >= 0) { this.held.slots[i].data.uses += sup.uses; this.events.emit('slot', this.held.sel); this.save(); return { ok: true, msg: `${sup.name} added to your stack.` }; }
+    }
+    if (this.held.giveTool(sup.tool, extra)) { this.save(); return { ok: true, msg: `${sup.name} - in your bag (slot ${this.held.sel + 1}).` }; }
+    const c = this.garage.town?.cornerShop?.counter;
+    const p = c ? c.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.55, 0)) : this.player.pos.clone();
+    this.items.spawnTool({ id: sup.tool, ...extra }, p, Math.random() * 6);
+    this.save();
+    return { ok: true, msg: `${sup.name} - your hands are full, it's on the counter.` };
   }
 
   // ------------------------------------------------------------------ economy actions
@@ -209,7 +266,7 @@ export class Game {
     this.state.storage[pick]--;
     if (this.state.storage[pick] <= 0) delete this.state.storage[pick];
     const [key, finish] = pick.split('|');
-    if (this.held.item) { this.delivery.order({ type: 'single', key, finish, label: getItem(key)?.jp }, { delay: 0.5 }); return true; }
+    if (!this.held.canTake()) { this.delivery.order({ type: 'single', key, finish, label: getItem(key)?.name }, { delay: 0.5 }); return true; }
     const p = this.garage.storageBox.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.3, 0));
     const holder = new THREE.Group();
     holder.add(makeItemMeshLazy(key, finish));
@@ -308,21 +365,22 @@ export class Game {
       this.effects.coinBurst({ pos: p, count: 30, up: 2 });
       this.lighting.flicker(0.3);
       this.addMoney(reward);
-      this.news(`🎉 コンプリート！${s.jp}`, `Series complete! +${formatYen(reward)} bonus`);
+      this.news(`Series complete: ${s.name}!`, `+${formatYen(reward)} bonus`);
     });
   }
 
   /** One-time contextual tip (shown once per save). */
-  tip(key, jp, en) {
+  tip(key, text, sub = '') {
     if (this.state.flags['tip_' + key]) return;
     this.state.flags['tip_' + key] = true;
-    this.news(`💡 ${jp}`, en, 6500);
+    this.news(text, sub, 6500);
   }
 
-  news(jp, en = '', ms = 4200) {
+  /** A little toast in the corner: a main line and an optional smaller line. */
+  news(text, sub = '', ms = 4200) {
     const el = document.createElement('div');
     el.className = 'item';
-    el.innerHTML = `${jp}<span class="en">${en}</span>`;
+    el.innerHTML = `<span class="t">${text}</span>${sub ? `<span class="sub">${sub}</span>` : ''}`;
     this.newsEl.appendChild(el);
     requestAnimationFrame(() => el.classList.add('show'));
     setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 500); }, ms);
@@ -343,18 +401,31 @@ export class Game {
     this.state.deliveries = [];
   }
 
+  /** Rebuild the 5 inventory slots from the save. */
+  restoreInventory() {
+    const H = this.held;
+    (this.state.inventory || []).forEach((it, i) => {
+      if (!it || i >= H.slots.length) return;
+      let obj = null;
+      if (it.kind === 'tool' && TOOLS[it.d.id]) obj = makeToolMesh(it.d.id);
+      else if (it.kind === 'capsule') { const cap = makeCapsule(it.d.series, it.d.color); obj = cap.group; obj.userData.capRef = cap; }
+      else if (it.kind === 'toy') { obj = new THREE.Group(); obj.add(makeItemMeshLazy(it.d.key, it.d.finish)); }
+      else if (it.kind === 'box') obj = this.delivery.meshFor(it.d);
+      if (!obj) return;
+      H.anchor.add(obj);
+      H.sel = i;
+      H.slots[i] = null;
+      H.take(it.kind, it.d, obj, { dur: 0 });
+      if (i !== 0) H.pocket(H.slots[i]);
+    });
+    H.sel = 0;
+    if (H.slots[0]) { H.slots[0].obj.visible = true; H.pose = H.poseFor(H.slots[0]); H.holdScale = H.scaleFor(H.slots[0]); H.startTrans(H.pose, 0.01); }
+  }
+
   save() {
     if (this.noSave) return;
-    const loose = this.items.serialize();
-    // whatever you're holding is kept too
-    const h = this.held.item;
-    if (h && !this.held.busy) {
-      const p = this.player.pos;
-      if (h.kind === 'capsule') loose.push({ kind: 'capsule', d: h.data, p: [p.x, 1.0, p.z] });
-      else if (h.kind === 'toy') loose.push({ kind: 'toy', d: h.data, p: [p.x, 0, p.z] });
-      else if (h.kind === 'box') loose.push({ kind: 'box', d: h.data, p: [p.x, 0, p.z] });
-    }
-    this.state.loose = loose;
+    this.state.loose = this.items.serialize();
+    if (!this.held.busy) this.state.inventory = this.held.serialize();
     this.state.deliveries = this.delivery.queue.map((q) => q.data);
     saveState(this.state);
   }
@@ -401,14 +472,14 @@ export class Game {
   tipCheck() {
     if (this.frame % 20) return;
     const h = this.held.item;
-    if (this.machines.some((m) => m.state === 'ready' && !m.hasMotor)) this.tip('crank', 'ハンドルを長押しで回そう', 'Hold the left mouse button on the machine to turn the handle');
-    if (!h && [...this.items.list].some((e) => e.kind === 'capsule')) this.tip('pick', 'カプセルを拾おう', 'Pick up the capsule from the tray');
-    if (h?.kind === 'capsule') this.tip('twist', '長押しでひねって開けよう', 'Hold left (or right) click to twist the capsule open');
-    if (h?.kind === 'toy' && !this.held.busy) this.tip('toy', '棚に飾る？それとも売る？', 'Display it on the shelf (right wall) or sell it in the 買取BOX by the PC');
-    if (this.machines.some((m) => m.data.stock.length === 0)) this.tip('empty', '売り切れ！PCで補充を注文しよう', 'Sold out — order capsule refills on the PC (back-right corner)');
-    if ([...this.items.list].some((e) => e.kind === 'box')) this.tip('box', 'お届け物！シャッター前に箱が届いたよ', 'Carry the box to a machine and click to pour in the capsules');
-    if (this.state.money >= 2400 && this.machines.length < 2) this.tip('machine2', '2台目のマシンが買えるよ', 'You can afford a second machine — check the PC');
-    if (Object.keys(this.state.completed).length >= 1 && !this.state.museum.owned) this.tip('museum', '博物館の扉が開けられるかも…', 'Series complete! The PC sells a museum licence for the back warehouse');
+    if (this.machines.some((m) => m.state === 'ready' && !m.hasMotor)) this.tip('crank', 'Hold LMB on the handle to turn it');
+    if (!h && [...this.items.list].some((e) => e.kind === 'capsule')) this.tip('pick', 'Pick up the capsule from the tray');
+    if (h?.kind === 'capsule') this.tip('twist', 'Hold LMB to twist the capsule open');
+    if (h?.kind === 'toy' && !this.held.busy) this.tip('toy', 'Put it on the shelf or sell it?', 'Shelves are on the right wall, the sell box is by the PC');
+    if (this.machines.some((m) => m.data.stock.length === 0 && !m.data.broken)) this.tip('empty', 'Sold out!', 'Order capsule refills on the PC in the back corner');
+    if ([...this.items.list].some((e) => e.kind === 'box')) this.tip('box', 'A delivery arrived by the shutter', 'Carry the box to a machine and click to pour the capsules in');
+    if (this.story.done && this.state.money >= 2400 && this.machines.length < 3) this.tip('machine2', 'You can afford another machine', 'Check the PC');
+    if (Object.keys(this.state.completed).length >= 1 && !this.state.museum.owned) this.tip('museum', 'Series complete!', 'The PC sells a museum licence for the back warehouse');
   }
 
   // ------------------------------------------------------------------ loop
@@ -422,9 +493,12 @@ export class Game {
       this.player.update(dt);
       m.dx = sx; m.dy = sy;
     } else this.player.update(dt);
+    this.cutscene.update(dt);
     this.camera.updateMatrixWorld();
     this.interaction.update(dt);
     this.held.update(dt);
+    this.notebook.update(dt);
+    this.story.update(dt);
     this.physics.step(dt);
     for (const m of this.machines) m.update(dt, this.time);
     this.street.update(dt, this.time);

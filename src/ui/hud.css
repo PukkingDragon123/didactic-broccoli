@@ -1,0 +1,93 @@
+/* Lead-owned HUD pieces: inventory hotbar, cutscene letterbox / subtitles / title cards, fade, notebook reader. */
+
+/* ---------------------------------------------------------------- hotbar */
+#hotbar {
+  position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 6; pointer-events: none;
+}
+#hotbar .slots {
+  display: flex; gap: 4px; padding: 5px; pointer-events: auto;
+  background: linear-gradient(#3a2c22, #241a14); border: 3px solid #120c09; border-radius: 4px;
+  box-shadow: inset 0 2px 0 #5a4636, inset 0 -2px 0 #1a120d, 0 4px 0 rgba(0, 0, 0, 0.35), 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+#hotbar .slot {
+  position: relative; width: 56px; height: 56px; display: grid; place-items: center;
+  background: repeating-linear-gradient(45deg, #1d1612 0 4px, #211915 4px 8px); border: 2px solid #0e0a08; border-radius: 2px;
+  box-shadow: inset 0 0 0 2px #2e241d, inset 0 3px 6px rgba(0, 0, 0, 0.6);
+  transition: transform 0.12s cubic-bezier(.3, 1.6, .5, 1), box-shadow 0.12s, border-color 0.12s;
+  cursor: pointer; touch-action: none;
+}
+#hotbar .slot.sel {
+  transform: translateY(-5px); border-color: #ffd23f;
+  box-shadow: inset 0 0 0 2px #fff3b0, 0 0 0 2px #120c09, 0 0 14px rgba(255, 210, 63, 0.55);
+  background: radial-gradient(circle at 50% 40%, #4a3a26, #2a1f17 70%);
+}
+#hotbar .slot .ico { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35)); }
+#hotbar .slot.sel .ico { animation: hb-bob 1.6s ease-in-out infinite; }
+#hotbar .slot .key {
+  position: absolute; left: 3px; top: 1px; font: 8px 'Silkscreen', monospace; color: #b8a894; text-shadow: 1px 1px 0 #000; pointer-events: none;
+}
+#hotbar .slot.sel .key { color: #ffd23f; }
+#hotbar .slot .count {
+  position: absolute; right: 3px; bottom: 1px; font: 16px 'Jersey 10', monospace; color: #fff; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; pointer-events: none;
+}
+#hotbar .label {
+  font: 22px 'Jersey 10', monospace; color: #fff6e0; letter-spacing: 0.5px; padding: 2px 12px 3px;
+  text-shadow: 2px 2px 0 #1a1216, -1px 0 0 #1a1216, 0 -1px 0 #1a1216;
+  opacity: 0; transform: translateY(6px); transition: opacity 0.18s, transform 0.18s; white-space: nowrap;
+}
+#hotbar .label.show { opacity: 1; transform: none; }
+@keyframes hb-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+body.touchmode #hotbar { bottom: calc(10px + env(safe-area-inset-bottom)); }
+body.touchmode #hotbar .slot { width: 50px; height: 50px; }
+body.touchmode #hotbar .slot .ico { width: 42px; height: 42px; }
+@media (max-width: 520px) { #hotbar .slot { width: 46px; height: 46px; } #hotbar .slot .ico { width: 38px; height: 38px; } #hotbar .label { font-size: 18px; } }
+
+/* ---------------------------------------------------------------- cutscenes */
+#cutscene { position: fixed; inset: 0; pointer-events: none; z-index: 30; display: none; }
+#cutscene.on { display: block; }
+#cutscene .bar { position: absolute; left: 0; right: 0; height: 11vh; background: #050304; transition: transform 0.7s cubic-bezier(.6, 0, .3, 1); }
+#cutscene .bar.top { top: 0; transform: translateY(-100%); }
+#cutscene .bar.bot { bottom: 0; transform: translateY(100%); }
+#cutscene.letterbox .bar { transform: none; }
+#cutscene .sub {
+  position: absolute; left: 50%; bottom: calc(11vh + 22px); transform: translate(-50%, 8px); width: min(820px, 90vw); text-align: center;
+  font: 24px 'Tiny5', monospace; line-height: 1.35; color: #fff8ec; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+}
+#cutscene .sub.show { opacity: 1; transform: translate(-50%, 0); }
+#cutscene .sub .who { display: block; font: 18px 'Jersey 10', monospace; color: #ffd23f; letter-spacing: 1px; margin-bottom: 2px; }
+#cutscene .titlecard { position: absolute; left: 0; right: 0; top: 34%; text-align: center; opacity: 0; transform: scale(0.94); transition: opacity 0.6s, transform 0.9s cubic-bezier(.2, 1.4, .4, 1); }
+#cutscene .titlecard.show { opacity: 1; transform: none; }
+#cutscene .titlecard .t {
+  font: clamp(56px, 11vw, 132px) 'Jersey 10', monospace; color: #fff2d6; letter-spacing: 3px; line-height: 0.9;
+  text-shadow: 0 5px 0 #c8352a, 0 9px 0 #5a1414, 4px 4px 0 #1a0a0a, -3px -3px 0 #1a0a0a, 3px -3px 0 #1a0a0a, -3px 3px 0 #1a0a0a, 0 16px 30px rgba(0, 0, 0, 0.6);
+}
+#cutscene .titlecard .s { margin-top: 18px; font: 22px 'Tiny5', monospace; color: #ffe2b0; text-shadow: 2px 2px 0 #000; letter-spacing: 2px; }
+#cutscene .skip {
+  position: absolute; right: 24px; bottom: calc(11vh + 18px); width: 140px; height: 22px; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 2px;
+  overflow: hidden; opacity: 0; transition: opacity 0.2s;
+}
+#cutscene .skip.show { opacity: 1; }
+#cutscene .skip .fill { position: absolute; inset: 0; background: rgba(255, 210, 63, 0.75); transform-origin: left; transform: scaleX(0); }
+#cutscene .skip .lbl { position: relative; display: block; text-align: center; font: 13px 'Tiny5', monospace; line-height: 18px; color: #fff; text-shadow: 1px 1px 0 #000; }
+#fade { position: fixed; inset: 0; background: #000; opacity: 0; display: none; pointer-events: none; z-index: 29; }
+body.cine #hud, body.cine #hint, body.cine #crosshair, body.cine #news, body.cine #hotbar, body.cine #money { opacity: 0 !important; transition: opacity 0.4s; pointer-events: none; }
+body.cine #touch { display: none !important; }
+
+/* ---------------------------------------------------------------- notebook reader */
+#reader-ui {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 12; display: none; gap: 10px; align-items: center;
+  font: 15px 'Tiny5', monospace; color: #fff6e0; text-shadow: 1px 1px 0 #000;
+}
+#reader-ui.on { display: flex; }
+#reader-ui button {
+  font: 18px 'Jersey 10', monospace; color: #2a1a10; background: #f4e6c8; border: 2px solid #1a1216; border-radius: 2px; padding: 6px 14px; min-width: 44px; min-height: 40px;
+  box-shadow: 0 3px 0 #1a1216; cursor: pointer; pointer-events: auto;
+}
+#reader-ui button:active { transform: translateY(2px); box-shadow: 0 1px 0 #1a1216; }
+#reader-ui .pg { min-width: 70px; text-align: center; }
+body.reading #crosshair, body.reading #hint, body.reading #hotbar { opacity: 0; pointer-events: none; }
+
+/* hint keys rendered as pixel mouse icons */
+#hint .k img.px-icon { height: 1.6em; width: auto; vertical-align: middle; image-rendering: pixelated; margin: -4px 0; }

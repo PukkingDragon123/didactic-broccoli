@@ -1,5 +1,6 @@
 // The quiet back street outside the shop: a flock of pigeons that peck about and scatter when you come
-// close, and a stray cat that wanders, sits, and can be picked up and carried.
+// close, and Mikan the cat — a shy stray hiding in the garage until you feed her, then a friend who
+// wanders the shop and the lane and can be picked up and carried.
 import * as THREE from 'three';
 import { propMesh, hasProp } from './props.js';
 import { audio } from '../core/audio.js';
@@ -8,6 +9,8 @@ import { CatRig } from './CatRig.js';
 
 const BOUNDS = { x0: -18, x1: 18, z0: GARAGE.maxZ + 0.6, z1: GARAGE.maxZ + 8.6 };
 const rnd = (a, b) => a + Math.random() * (b - a);
+// where the shy stray hides inside the garage before she trusts you
+const HIDE = [new THREE.Vector3(0.35, 0, 0.1), new THREE.Vector3(0.7, 0, -4.25), new THREE.Vector3(-2.3, 0, -1.6)];
 
 function swapMesh(group, id, fallback) {
   group.clear();
@@ -112,8 +115,11 @@ export class Street {
   // and can be picked up (it dangles and swishes its tail) and put down again.
   buildCat() {
     const rig = new CatRig();
-    this.cat = { rig, g: rig.root, state: 'sit', t: 0, dur: 6, pos: new THREE.Vector3(3.6, 0, GARAGE.maxZ + 1.4), heading: -2.4, target: null, held: false, purr: 0 };
-    rig.setPose('sit');
+    const st = this.game.state.story;
+    const wild = !!st && !st.complete && !st.fed;
+    const start = wild ? HIDE[0].clone() : new THREE.Vector3(-1.4, 0, 2.6);
+    this.cat = { rig, g: rig.root, state: wild ? 'hide' : 'sit', t: 0, dur: 6, pos: start, heading: wild ? 0.6 : -2.4, target: null, held: false, purr: 0, wild, mew: 6 };
+    rig.setPose(wild ? 'sleep' : 'sit');
     rig.root.position.copy(this.cat.pos);
     rig.root.rotation.y = this.cat.heading;
     this.group.add(rig.root);
@@ -121,15 +127,20 @@ export class Street {
   }
 
   catInteract() {
-    this.game.interaction.add(this.cat.g, {
-      hint: (held) => (held ? null : { key: 'L', text: 'だっこする · Pick up' }),
-      use: () => { this.pickUpCat(); return false; },
+    const c = this.cat;
+    this.game.interaction.add(c.g, {
+      hint: (held) => {
+        if (c.wild) return { key: '', text: 'A shy stray cat', sub: 'She looks hungry...' };
+        if (c.state === 'drink') return null;
+        return this.game.held.canTake() ? { key: 'LMB', text: 'Pick up Mikan' } : { key: '', text: 'Mikan', sub: 'Free a slot to pick her up' };
+      },
+      use: () => { if (c.wild) this.fleeCat(); else this.pickUpCat(); return false; },
     });
   }
 
   pickUpCat() {
     const c = this.cat, game = this.game;
-    if (game.held.item || c.held) return;
+    if (!game.held.canTake() || c.held || c.wild) return;
     c.held = true;
     game.interaction.remove(c.g);
     const holder = new THREE.Group();
@@ -169,14 +180,31 @@ export class Street {
   setCatState(st, dur) {
     const c = this.cat;
     c.state = st; c.t = 0; c.dur = dur;
-    c.rig.setPose(st === 'approach' || st === 'walk' ? 'walk' : st);
+    c.rig.setPose(st === 'approach' || st === 'walk' || st === 'flee' || st === 'bowl' ? 'walk' : st === 'hide' ? 'sit' : st);
   }
 
+  // ---- story hooks: the shy stray inside the garage
+  /** Run to the hiding spot farthest from the player. */
+  fleeCat() {
+    const c = this.cat, pl = this.game.player.pos;
+    const far = HIDE.slice().sort((a, b) => Math.hypot(b.x - pl.x, b.z - pl.z) - Math.hypot(a.x - pl.x, a.z - pl.z))[0];
+    if (c.target && c.state === 'flee') return;
+    c.target = far.clone();
+    this.setCatState('flee', 8);
+    audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.5, pitch: 1.4 });
+  }
+
+  scareCat() { if (this.cat.wild) this.fleeCat(); }
+  catComeTo(bowl) { const c = this.cat; c.target = bowl.clone().add(new THREE.Vector3(0.05, 0, -0.27)); c.bowl = bowl.clone(); this.setCatState('bowl', 30); }
+  catArrived() { return this.cat.state === 'drink'; }
+  catDrink(sec) { const c = this.cat; this.setCatState('drink', sec); }
+  befriendCat() { const c = this.cat; c.wild = false; this.setCatState('sit', 8); }
+
   pickCatTarget() {
-    // favourite spots: under the eave, by the vending machines, the warm shutter, the gacha twins
-    const spots = [[3.4, 0.9], [-2.6, 1.0], [0.2, 0.9], [-0.6, 8.0], [4.6, 7.9], [-6.4, 2.0], [1.5, -1.5]];
+    // favourite spots: the bed by the heater, under the work table, the shutter's sunny apron, the vending machines, the bench
+    const spots = [[-1.5, 2.15], [0.4, 0.1], [1.0, 4.2], [-2.6, 6.0], [3.4, 5.9], [0.2, 5.9], [2.4, -0.4]];
     const sp = spots[Math.floor(Math.random() * spots.length)];
-    return new THREE.Vector3(sp[0] + rnd(-0.4, 0.4), 0, GARAGE.maxZ + sp[1]);
+    return new THREE.Vector3(sp[0] + rnd(-0.25, 0.25), 0, sp[1] + rnd(-0.2, 0.2));
   }
 
   updateCat(dt) {
@@ -186,18 +214,29 @@ export class Street {
     c.t += dt;
     const toPlayer = Math.hypot(pl.x - c.pos.x, pl.z - c.pos.z);
     let speed = 0;
-    if (c.state === 'walk' || c.state === 'approach') {
+    const cine = this.game.cutscene?.active;
+    if (c.wild && c.state === 'hide') {
+      // a hungry stray: keeps its distance and mews now and then
+      if (toPlayer < 1.7 && !cine && this.game.state.story?.shutter) this.fleeCat();
+      c.mew -= dt;
+      if (c.mew < 0) { c.mew = 7 + Math.random() * 9; if (toPlayer < 9) audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.45, pitch: 1.15 }); }
+    }
+    if (c.state === 'walk' || c.state === 'approach' || c.state === 'flee' || c.state === 'bowl') {
       if (c.state === 'approach') c.target = pl.clone().setY(0);
       const d = c.target.clone().sub(c.pos).setY(0);
       const len = d.length();
       const stop = c.state === 'approach' ? 0.55 : 0.08;
       if (len < stop || c.t > 14) {
-        // arrived: sit and look at you if you're near, otherwise groom or nap
-        const next = c.state === 'approach' ? 'sit' : (Math.random() < 0.35 ? 'sleep' : Math.random() < 0.5 ? 'groom' : 'sit');
-        this.setCatState(next, next === 'sleep' ? rnd(14, 30) : rnd(5, 10));
-        if (c.state === 'sit' && toPlayer < 2) { audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.55 }); this.game.effects.sparks({ pos: c.pos.clone().setY(0.45), count: 4, colors: [0xff9fae], speed: 0.15, size: 0.02, gravity: -0.3, life: 1, star: 0 }); }
+        if (c.state === 'bowl') { this.setCatState('drink', 60); c.heading = Math.atan2(c.bowl.x - c.pos.x, c.bowl.z - c.pos.z); }
+        else if (c.state === 'flee') this.setCatState('hide', 1e9);
+        else {
+          // arrived: sit and look at you if you're near, otherwise groom or nap
+          const next = c.state === 'approach' ? 'sit' : (Math.random() < 0.35 ? 'sleep' : Math.random() < 0.5 ? 'groom' : 'sit');
+          this.setCatState(next, next === 'sleep' ? rnd(14, 30) : rnd(5, 10));
+          if (c.state === 'sit' && toPlayer < 2) { audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.55 }); this.game.effects.sparks({ pos: c.pos.clone().setY(0.45), count: 4, colors: [0xff9fae], speed: 0.15, size: 0.02, gravity: -0.3, life: 1, star: 0 }); }
+        }
       } else {
-        speed = c.state === 'approach' ? 0.75 : 0.42;
+        speed = c.state === 'flee' ? 1.5 : c.state === 'approach' ? 0.75 : c.state === 'bowl' ? 0.8 : 0.42;
         const step = d.normalize().multiplyScalar(Math.min(len, dt * speed));
         // only cross the shutter line near the middle
         const nz = c.pos.z + step.z;
@@ -205,6 +244,8 @@ export class Street {
         else c.pos.add(step);
         c.heading = Math.atan2(step.x, step.z);
       }
+    } else if (c.wild || c.state === 'drink') {
+      // stays put (hiding / lapping milk)
     } else if (c.t > c.dur) {
       // curious about you now and then; otherwise off to a favourite spot
       if (toPlayer < 6 && Math.random() < 0.45) this.setCatState('approach', 10);
@@ -212,8 +253,9 @@ export class Street {
     } else if (c.state === 'sleep' && toPlayer < 1.2 && c.t > 2) {
       this.setCatState('sit', 6); // you woke it up
     }
+    if (c.state === 'drink' && !c.wild && c.t > c.dur) this.setCatState('sit', 6);
     // sitting cats watch you
-    if (c.state === 'sit' && toPlayer < 4) {
+    if ((c.state === 'sit' || c.state === 'hide') && toPlayer < 4) {
       const want = Math.atan2(pl.x - c.pos.x, pl.z - c.pos.z) - c.g.rotation.y;
       c.rig.lookYaw += ((((want + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * 0.8 - c.rig.lookYaw) * Math.min(1, dt * 3);
       c.rig.lookYaw = Math.max(-0.9, Math.min(0.9, c.rig.lookYaw));

@@ -4,6 +4,8 @@ import { makeCapsule, capsuleColor } from './Capsule.js';
 import { makeItemMesh } from './collectibles.js';
 import { audio } from '../core/audio.js';
 import { itemValue } from './economy.js';
+import { makeToolMesh } from './Held.js';
+import { TOOLS } from '../data/tools.js';
 
 let uid = 1;
 
@@ -74,14 +76,29 @@ export class Items {
     return ent;
   }
 
+  /** A carried tool lying in the world (milk, batteries, trash bags...). data: {id, ...} */
+  spawnTool(data, pos, rotY = 0) {
+    const g = this.game;
+    const obj = makeToolMesh(data.id);
+    const box = new THREE.Box3().setFromObject(obj);
+    obj.position.copy(pos).add(new THREE.Vector3(0, -box.min.y, 0));
+    obj.rotation.y = rotY;
+    g.scene.add(obj);
+    const ent = { id: uid++, kind: 'tool', data, obj, body: null };
+    this.registerPickup(ent);
+    this.list.add(ent);
+    return ent;
+  }
+
   registerPickup(ent) {
     const g = this.game;
     g.interaction.add(ent.obj, {
-      hint: (held) => {
-        if (held) return null;
-        if (ent.kind === 'capsule') return { key: 'L', text: '拾う · Pick up capsule' };
-        if (ent.kind === 'toy') return { key: 'L', text: '拾う · Pick up', sub: `¥${itemValue(ent.data.key, ent.data.finish).toLocaleString()}` };
-        return { key: 'L', text: '持つ · Pick up box', sub: ent.data.label || '' };
+      hint: () => {
+        if (!g.held.canTake()) return { key: '', text: 'Your hands are full', sub: 'Q puts the selected item down' };
+        if (ent.kind === 'capsule') return { key: 'LMB', text: 'Pick up capsule' };
+        if (ent.kind === 'toy') return { key: 'LMB', text: 'Pick up', sub: `¥${itemValue(ent.data.key, ent.data.finish).toLocaleString()}` };
+        if (ent.kind === 'tool') return { key: 'LMB', text: `Pick up ${TOOLS[ent.data.id]?.name || 'item'}` };
+        return { key: 'LMB', text: 'Pick up box', sub: ent.data.label || '' };
       },
       use: () => this.pickUp(ent),
     });
@@ -89,10 +106,12 @@ export class Items {
 
   pickUp(ent) {
     const g = this.game;
-    if (g.held.item) return false;
+    if (!g.held.canTake()) return false;
     this.detach(ent);
     audio.play('pickup', { vol: 0.8 });
+    if (ent.kind === 'tool') g.held.anchor.attach(ent.obj);
     g.held.take(ent.kind, ent.data, ent.obj, { ent, pose: ent.data?.type === 'roller' ? 'tool' : undefined });
+    this.game.events.emit('pickup', ent);
     return true;
   }
 
@@ -129,6 +148,7 @@ export class Items {
       if (e.kind === 'capsule') out.push({ kind: 'capsule', d: e.data, p: [p.x, p.y, p.z] });
       else if (e.kind === 'toy') out.push({ kind: 'toy', d: e.data, p: [p.x, p.y - (e.body ? e.body.radius : 0), p.z], r: e.obj.rotation.y });
       else if (e.kind === 'box') out.push({ kind: 'box', d: e.data, p: [p.x, p.y, p.z] });
+      else if (e.kind === 'tool' && !e.data.story) out.push({ kind: 'tool', d: e.data, p: [p.x, p.y, p.z], r: e.obj.rotation.y });
     }
     return out;
   }
