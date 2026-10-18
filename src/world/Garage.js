@@ -71,7 +71,7 @@ export class Garage {
     floor.name = 'floor';
     floor.userData.surface = true;
     this.floor = floor;
-    const ceil = boxMesh(8.4, 0.12, 10.4, pixMat('plywood', { roughness: 0.9, color: 0x9a8f80 }), { cast: false });
+    const ceil = boxMesh(8.4, 0.12, 10.4, pixMat('plywoodHD', { roughness: 0.9, color: 0x9a8f80, ppm: 64 }), { cast: false });
     ceil.position.set(0, H + 0.06, 0);
     this.add(ceil);
     // steel beams
