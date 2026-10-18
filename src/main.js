@@ -61,23 +61,26 @@ async function boot() {
   if (params.has('autotest')) signs.dispose();
   const canvas = game.renderer.renderer.domElement;
   const ndc = (e) => [(e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1];
-  canvas.addEventListener('pointermove', (e) => {
-    if (started || fly) return;
+  const menuOpen = () => !started && !fly && $('share').classList.contains('hidden') && $('pause').classList.contains('hidden');
+  // pointer events cover mouse, pen and touch alike; listen on the window so overlays never swallow them
+  window.addEventListener('pointermove', (e) => {
+    if (!menuOpen()) return;
     const id = signs.pick(game.camera, ...ndc(e));
     if (id !== signs.hoverId && id) sfx('uiHover', 0.35);
     signs.hoverId = id;
     canvas.style.cursor = id ? 'pointer' : '';
   });
-  canvas.addEventListener('click', (e) => {
-    if (started || fly) return;
-    const id = signs.pick(game.camera, ...ndc(e));
+  let downAt = null;
+  window.addEventListener('pointerdown', (e) => { if (menuOpen()) { downAt = { x: e.clientX, y: e.clientY, id: signs.pick(game.camera, ...ndc(e)) }; signs.hoverId = downAt.id; } });
+  window.addEventListener('pointerup', (e) => {
+    if (!menuOpen() || !downAt) return;
+    const id = signs.pick(game.camera, ...ndc(e)) || (Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 30 ? downAt.id : null);
+    downAt = null;
     if (!id) return;
     sfx('uiClick', 0.7);
     if (id === 'play') start();
     else openShare(id);
   });
-  $('resume-btn').addEventListener('click', (e) => { e.stopPropagation(); start(); });
-  $('m-gear').addEventListener('pointerenter', () => sfx('uiHover', 0.35));
 
   // settings: gear on the menu, Esc / pause button in game
   const openSettings = () => { $('pause').classList.remove('hidden'); $('resume-btn').classList.toggle('hidden', !started); $('leave-btn').classList.toggle('hidden', !game.visiting); };
@@ -183,8 +186,8 @@ async function boot() {
       titleT += dt;
       const cam = game.camera;
       const a = titleT * 0.06;
-      cam.position.set(2.4 + Math.sin(a) * 0.35, 1.3 + Math.sin(titleT * 0.17) * 0.05, 10.8 + Math.cos(a * 0.7) * 0.2);
-      cam.lookAt(0.1 + Math.sin(a) * 0.15, 1.5, 4.6);
+      cam.position.set(1.9 + Math.sin(a) * 0.3, 1.55 + Math.sin(titleT * 0.17) * 0.04, 10.6 + Math.cos(a * 0.7) * 0.2);
+      cam.lookAt(-0.5 + Math.sin(a) * 0.12, 1.9, 5.2);
       game.time += dt;
       for (const m of game.machines) m.update(dt, game.time);
       game.garage.update(dt, game.time);

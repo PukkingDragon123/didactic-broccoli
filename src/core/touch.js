@@ -30,7 +30,7 @@ export function installTouch(input, { onPause } = {}) {
   const looks = new Map();
   window.addEventListener('touchstart', (e) => {
     if (!input.locked) return;
-    for (const t of e.changedTouches) if (t.target.id === 'game-canvas' || t.target === document.body) looks.set(t.identifier, { x: t.clientX, y: t.clientY });
+    for (const t of e.changedTouches) if (t.target.id === 'game-canvas' || t.target === document.body) looks.set(t.identifier, { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, t0: performance.now() });
   }, { passive: true });
   window.addEventListener('touchmove', (e) => {
     for (const t of e.changedTouches) {
@@ -46,6 +46,12 @@ export function installTouch(input, { onPause } = {}) {
   const end = (e) => {
     for (const t of e.changedTouches) {
       if (t.identifier === stickId) { stickId = null; setStick(0, 0); }
+      const l = looks.get(t.identifier);
+      // a quick tap on the view acts like a click on whatever is under the crosshair
+      if (l && input.locked && performance.now() - l.t0 < 250 && Math.hypot(t.clientX - l.x0, t.clientY - l.y0) < 12) {
+        input.press(0, true);
+        setTimeout(() => input.press(0, false), 60);
+      }
       looks.delete(t.identifier);
     }
   };

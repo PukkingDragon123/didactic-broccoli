@@ -328,6 +328,10 @@ const MOUTHS = {
  * o: skin, eyes (style), iris, lash, eyeX (inner column of the right eye), mouth, blush (colour|false),
  *    brows (colour|false), browDY, browShape, nose (bool), mouthC, freckles
  */
+// Faces keep the original voxel design but are painted at runtime (src/game/faces.js), one pixel per voxel,
+// so they can blink and change expression; the head keeps plain skin. Set to false to bake them into the voxels.
+export const FACE_2D = true;
+
 function face(h, f, o) {
   const skin = o.skin ?? C.skin;
   const iris = o.iris ?? 0x5b3424;
@@ -339,31 +343,46 @@ function face(h, f, o) {
   const ex = o.eyeX ?? 2;
   const ey = f.eyeY + (o.eyeDY ?? 0);
   const e = EYES[o.eyes ?? 'round'];
-  const rowsR = e.rows, rowsL = mirror(rowsR);
-  const w = rowsR[0].length;
-  const ox = e.ox ?? 0, oy = e.oy ?? 0;
-  if (o.blush !== false) { // rosy cheeks just under the outer half of each eye
-    const bw = o.blushW ?? 2, by = ey - 3 + (o.blushDY ?? 0), bx = ex + 2 + (o.blushDX ?? 0);
-    h.project(['B'.repeat(bw)], L, bx, by);
-    h.project(['B'.repeat(bw)], L, -bx - bw + 1, by);
+  const cfg = {
+    L, ex, ey, style: o.eyes ?? 'round', eye: e.rows, ox: e.ox ?? 0, oy: e.oy ?? 0,
+    blush: o.blush === false ? null : { w: o.blushW ?? 2, y: ey - 3 + (o.blushDY ?? 0), x: ex + 2 + (o.blushDX ?? 0) },
+    brows: o.brows ? { shape: o.browShape ?? ['BB'], y: ey + 3 + (o.browDY ?? 0), c: o.brows } : null,
+    nose: !!o.nose, freckles: !!o.freckles, mouth: o.mouth ?? 'smile', mouthRows: MOUTHS[o.mouth ?? 'smile'], my: ey - 3 + (o.mouthDY ?? 0),
+  };
+  if (FACE_2D) {
+    // the face is painted at runtime (src/game/faces.js) one pixel per voxel, on the exact voxel surfaces, so
+    // the old voxel face can change expression; record the front surface depth of every face cell
+    const y0 = ey - 8, y1 = ey + 6, cells = [];
+    for (let y = y0; y <= y1; y++) for (let x = -f.hw; x <= f.hw; x++) {
+      for (let z = f.hz1 + 1; z >= f.hz0; z--) if (h.has(x, y, z)) { cells.push(x, y, z + 1); break; }
+    }
+    h.faceInfo = { ...cfg, skin, hw: f.hw, y0, y1, cells, zShift: f.lean + f.headFwd };
+    return;
   }
-  h.project(rowsR, L, ex + ox, ey + oy);
-  h.project(rowsL, L, -ex - ox - w + 1, ey + oy);
-  if (o.brows) {
-    const by = ey + 3 + (o.browDY ?? 0);
-    const bc = { B: o.brows };
-    const br = o.browShape ?? ['BB'];
-    h.project(br, bc, ex, by);
-    h.project(mirror(br), bc, -ex - br[0].length + 1, by);
+  paintFace(h, cfg);
+}
+
+/** Paints a face config (see face()) with VoxelModel.project-style calls: neutral = the original design. */
+function paintFace(h, c) {
+  const L = c.L, rowsR = c.eye, rowsL = mirror(rowsR), w = rowsR[0].length;
+  if (c.blush) {
+    h.project(['B'.repeat(c.blush.w)], L, c.blush.x, c.blush.y);
+    h.project(['B'.repeat(c.blush.w)], L, -c.blush.x - c.blush.w + 1, c.blush.y);
   }
-  if (o.nose) h.project(['D'], L, 0, ey - 1);
-  if (o.freckles) {
-    h.project(['D.D'], L, ex + 2, ey - 3);
-    h.project(['D.D'], L, -ex - 4, ey - 3);
+  h.project(rowsR, L, c.ex + c.ox, c.ey + c.oy);
+  h.project(rowsL, L, -c.ex - c.ox - w + 1, c.ey + c.oy);
+  if (c.brows) {
+    const bc = { B: c.brows.c };
+    h.project(c.brows.shape, bc, c.ex, c.brows.y);
+    h.project(mirror(c.brows.shape), bc, -c.ex - c.brows.shape[0].length + 1, c.brows.y);
   }
-  const m = MOUTHS[o.mouth ?? 'smile'];
-  const mw = m[0].length;
-  h.project(m, L, -Math.floor(mw / 2), ey - 3 + (o.mouthDY ?? 0));
+  if (c.nose) h.project(['D'], L, 0, c.ey - 1);
+  if (c.freckles) {
+    h.project(['D.D'], L, c.ex + 2, c.ey - 3);
+    h.project(['D.D'], L, -c.ex - 4, c.ey - 3);
+  }
+  const mw = c.mouthRows[0].length;
+  h.project(c.mouthRows, L, -Math.floor(mw / 2), c.my);
 }
 
 /** Skull, ears, face. Hair/hats are added by the caller. */

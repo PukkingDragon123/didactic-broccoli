@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import VISITORS from '../data/visitors.js';
 import { buildCharacter } from '../game/rig.js';
+import { Face } from '../game/faces.js';
 import { audio } from '../core/audio.js';
 import { Pix } from '../gfx/pix.js';
 import { getItem } from '../data/series/index.js';
@@ -37,6 +38,8 @@ class Visitor {
     const ch = buildCharacter(def, variant);
     this.ch = ch;
     this.root = ch.root;
+    if (ch.face) { this.face = new Face(ch.face); ch.parts.head.add(this.face.mesh); }
+    this.chatT = 4 + Math.random() * 10;
     sys.museum.group.add(this.root);
     this.speed = (def.id === 'kid' ? 1.25 : def.id === 'grandma' || def.id === 'grandpa' ? 0.65 : 0.95) * (0.9 + Math.random() * 0.2);
     this.phase = Math.random() * 6;
@@ -59,7 +62,15 @@ class Visitor {
     if (!this.path.length) this.path = [target.clone()];
   }
 
+  /** Change the 2D face's expression for a while. */
+  emote2d(expr, hold = 2) { this.face?.set(expr, hold); }
+
   update(dt, t) {
+    if (this.face) {
+      this.face.update(dt);
+      this.chatT -= dt;
+      if (this.chatT <= 0) { this.chatT = 6 + Math.random() * 12; if (this.face.expr === 'neutral') this.face.set('talk', 1.2 + Math.random()); }
+    }
     const m = this.sys.museum;
     const ch = this.ch;
     let moving = false;
@@ -111,6 +122,7 @@ class Visitor {
           m.data.income = (m.data.income || 0) + fee;
           m.updateCounterTex();
           audio.play('coinDrop', { pos: m.ticketPoint.clone().setY(1), vol: 0.6, ref: 1.5 });
+          this.emote2d('happy', 1.5);
           this.state = 'choose';
         }
         break;
@@ -151,7 +163,8 @@ class Visitor {
             m.data.income = (m.data.income || 0) + tip;
             audio.play('coinClink', { pos: m.donationPoint.clone().setY(1.1), v: 0.7 });
             this.sys.emote(this, 'note');
-          }
+            this.emote2d('happy', 2);
+          } else if (this.happy < 15) this.emote2d('sad', 3);
           this.path = [new THREE.Vector3(0, 0, m.zS + 0.3), new THREE.Vector3((Math.random() - 0.5) * 1.2, 0, m.zS - 4.5)];
           this.state = 'exit';
         }
@@ -197,6 +210,7 @@ class Visitor {
         audio.play('register', { pos: this.pos.clone().setY(1.2), vol: 0.9 });
         g.effects.coinBurst({ pos: this.pos.clone().setY(1.6), count: 10 });
         sys.emote(this, 'wow');
+        this.emote2d('love', 3);
         g.news(`💴 ${name} が売れた！ ¥${price.toLocaleString()}`, 'Sold!', 4500);
         g.save();
         break;
@@ -204,6 +218,7 @@ class Visitor {
     }
     const kind = bestR === 'secret' || bestR === 'ultra' ? 'wow' : bestR === 'rare' ? 'star' : appeal > 5 ? 'heart' : 'note';
     sys.emote(this, kind);
+    this.emote2d(kind === 'wow' ? 'wow' : kind === 'heart' ? 'love' : 'happy', 2.5);
     if (bestR === 'secret' || bestR === 'ultra') { this.jump = 0.5; }
     audio.play('visitorHappy', { pos: this.pos.clone().setY(1.5), vol: 0.5, ref: 1.5 });
     if (this.camera && tg.entry.display && Math.random() < 0.7) {

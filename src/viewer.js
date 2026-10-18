@@ -66,6 +66,13 @@ async function loadEntries() {
       const variants = def.variants || 1;
       for (let vi = 0; vi < Math.min(variants, +(params.get('variants') || 1)); vi++) {
         const ch = buildCharacter(def, vi);
+        if (ch.face) {
+          const { Face } = await import('./game/faces.js');
+          const fc = new Face(ch.face);
+          const ex = params.get('expr') || ['neutral', 'happy', 'wow', 'love', 'talk', 'sad', 'sleepy'][(entries.length) % 7];
+          fc.set(ex); fc.blinkT = 9; fc.draw();
+          ch.parts.head.add(fc.mesh);
+        }
         if (pose === 'walk') {
           ch.parts.legL.rotation.x = 0.45; ch.parts.legR.rotation.x = -0.45;
           ch.parts.armL.rotation.x = -0.5; ch.parts.armR.rotation.x = 0.5;

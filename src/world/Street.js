@@ -4,8 +4,9 @@ import * as THREE from 'three';
 import { propMesh, hasProp } from './props.js';
 import { audio } from '../core/audio.js';
 import { GARAGE } from './Garage.js';
+import { CatRig } from './CatRig.js';
 
-const BOUNDS = { x0: -11, x1: 11, z0: GARAGE.maxZ + 0.6, z1: GARAGE.maxZ + 8.6 };
+const BOUNDS = { x0: -18, x1: 18, z0: GARAGE.maxZ + 0.6, z1: GARAGE.maxZ + 8.6 };
 const rnd = (a, b) => a + Math.random() * (b - a);
 
 function swapMesh(group, id, fallback) {
@@ -107,16 +108,21 @@ export class Street {
   }
 
   // ------------------------------------------------------------------ the stray cat
+  // A jointed cat (CatRig) that wanders, sits, grooms, naps in sunny spots, sometimes trots over to you,
+  // and can be picked up (it dangles and swishes its tail) and put down again.
   buildCat() {
-    const g = new THREE.Group();
-    this.cat = { g, state: 'sit', t: 0, pos: new THREE.Vector3(3.6, 0, GARAGE.maxZ + 1.4), heading: -2.4, target: null, held: false };
-    swapMesh(g, 'stray_cat_sit', [0.3, 0.3, 0.4]);
-    g.position.copy(this.cat.pos);
-    g.rotation.y = this.cat.heading;
-    this.group.add(g);
-    const game = this.game;
-    game.interaction.add(g, {
-      hint: (held) => (held ? null : { key: 'L', text: 'だっこする · Pick up the cat' }),
+    const rig = new CatRig();
+    this.cat = { rig, g: rig.root, state: 'sit', t: 0, dur: 6, pos: new THREE.Vector3(3.6, 0, GARAGE.maxZ + 1.4), heading: -2.4, target: null, held: false, purr: 0 };
+    rig.setPose('sit');
+    rig.root.position.copy(this.cat.pos);
+    rig.root.rotation.y = this.cat.heading;
+    this.group.add(rig.root);
+    this.catInteract();
+  }
+
+  catInteract() {
+    this.game.interaction.add(this.cat.g, {
+      hint: (held) => (held ? null : { key: 'L', text: 'だっこする · Pick up' }),
       use: () => { this.pickUpCat(); return false; },
     });
   }
@@ -127,65 +133,93 @@ export class Street {
     c.held = true;
     game.interaction.remove(c.g);
     const holder = new THREE.Group();
-    const m = propMesh('stray_cat_held', { fallbackSize: [0.3, 0.4, 0.3] });
-    holder.add(m);
     holder.position.copy(c.g.getWorldPosition(new THREE.Vector3()));
     this.group.remove(c.g);
+    c.g.position.set(0, -0.12, 0);
+    c.g.rotation.set(0, 0, 0);
+    holder.add(c.g);
     game.scene.add(holder);
+    c.rig.setPose('held');
     game.held.take('cat', { cat: true }, holder);
     audio.play('meow', { vol: 0.8 });
   }
 
   /** Clicking while holding the cat: a little pet. */
   pet() {
+    const c = this.cat;
     audio.play('purr', { vol: 0.6 });
+    c.purr = 1.2;
     const p = this.game.held.item?.obj.getWorldPosition(new THREE.Vector3());
-    if (p) this.game.effects.sparks({ pos: p.add(new THREE.Vector3(0, 0.12, 0)), count: 6, colors: [0xff9fae], speed: 0.2, size: 0.02, gravity: -0.3, life: 1.2, star: 0 });
+    if (p) this.game.effects.sparks({ pos: p.add(new THREE.Vector3(0, 0.15, 0)), count: 6, colors: [0xff9fae], speed: 0.2, size: 0.02, gravity: -0.3, life: 1.2, star: 0 });
   }
 
   releaseCat(at) {
     const c = this.cat;
     c.held = false;
+    c.g.parent?.remove(c.g);
     c.pos.copy(at).setY(0);
-    c.state = 'walk'; c.t = 0;
-    c.target = null;
-    swapMesh(c.g, 'stray_cat', [0.3, 0.3, 0.45]);
     c.g.position.copy(c.pos);
     this.group.add(c.g);
-    this.game.interaction.add(c.g, {
-      hint: (held) => (held ? null : { key: 'L', text: 'だっこする · Pick up the cat' }),
-      use: () => { this.pickUpCat(); return false; },
-    });
+    this.setCatState('walk', 3);
+    c.target = c.pos.clone().add(new THREE.Vector3(Math.random() - 0.5, 0, 1.5));
+    this.catInteract();
     audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.6, pitch: 1.2 });
+  }
+
+  setCatState(st, dur) {
+    const c = this.cat;
+    c.state = st; c.t = 0; c.dur = dur;
+    c.rig.setPose(st === 'approach' || st === 'walk' ? 'walk' : st);
+  }
+
+  pickCatTarget() {
+    // favourite spots: under the eave, by the vending machines, the warm shutter, the gacha twins
+    const spots = [[3.4, 0.9], [-2.6, 1.0], [0.2, 0.9], [-0.6, 8.0], [4.6, 7.9], [-6.4, 2.0], [1.5, -1.5]];
+    const sp = spots[Math.floor(Math.random() * spots.length)];
+    return new THREE.Vector3(sp[0] + rnd(-0.4, 0.4), 0, GARAGE.maxZ + sp[1]);
   }
 
   updateCat(dt) {
     const c = this.cat;
-    if (c.held) return;
+    const pl = this.game.player.pos;
+    if (c.held) { c.rig.update(dt, 0); return; }
     c.t += dt;
-    if (c.state === 'sit' && c.t > rnd(6, 14)) {
-      c.state = 'walk'; c.t = 0;
-      c.target = new THREE.Vector3(rnd(-5, 6), 0, rnd(GARAGE.maxZ - 3.5, BOUNDS.z1 - 1));
-      swapMesh(c.g, 'stray_cat', [0.3, 0.3, 0.45]);
-    } else if (c.state === 'walk') {
-      if (!c.target) c.target = new THREE.Vector3(rnd(-5, 6), 0, rnd(GARAGE.maxZ - 3.5, BOUNDS.z1 - 1));
+    const toPlayer = Math.hypot(pl.x - c.pos.x, pl.z - c.pos.z);
+    let speed = 0;
+    if (c.state === 'walk' || c.state === 'approach') {
+      if (c.state === 'approach') c.target = pl.clone().setY(0);
       const d = c.target.clone().sub(c.pos).setY(0);
       const len = d.length();
-      if (len < 0.1 || c.t > 12) {
-        c.state = 'sit'; c.t = 0;
-        swapMesh(c.g, 'stray_cat_sit', [0.3, 0.3, 0.4]);
-        if (Math.random() < 0.5) audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.45 });
+      const stop = c.state === 'approach' ? 0.55 : 0.08;
+      if (len < stop || c.t > 14) {
+        // arrived: sit and look at you if you're near, otherwise groom or nap
+        const next = c.state === 'approach' ? 'sit' : (Math.random() < 0.35 ? 'sleep' : Math.random() < 0.5 ? 'groom' : 'sit');
+        this.setCatState(next, next === 'sleep' ? rnd(14, 30) : rnd(5, 10));
+        if (c.state === 'sit' && toPlayer < 2) { audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.55 }); this.game.effects.sparks({ pos: c.pos.clone().setY(0.45), count: 4, colors: [0xff9fae], speed: 0.15, size: 0.02, gravity: -0.3, life: 1, star: 0 }); }
       } else {
-        // the shutter: only cross it near the middle
-        const step = d.normalize().multiplyScalar(Math.min(len, dt * 0.55));
+        speed = c.state === 'approach' ? 0.75 : 0.42;
+        const step = d.normalize().multiplyScalar(Math.min(len, dt * speed));
+        // only cross the shutter line near the middle
         const nz = c.pos.z + step.z;
         if ((c.pos.z - GARAGE.maxZ) * (nz - GARAGE.maxZ) < 0 && Math.abs(c.pos.x) > 2.8) c.target.x = 0;
         else c.pos.add(step);
         c.heading = Math.atan2(step.x, step.z);
-        c.g.position.y = Math.abs(Math.sin(c.t * 8)) * 0.008;
       }
+    } else if (c.t > c.dur) {
+      // curious about you now and then; otherwise off to a favourite spot
+      if (toPlayer < 6 && Math.random() < 0.45) this.setCatState('approach', 10);
+      else { this.setCatState('walk', 12); c.target = this.pickCatTarget(); }
+    } else if (c.state === 'sleep' && toPlayer < 1.2 && c.t > 2) {
+      this.setCatState('sit', 6); // you woke it up
     }
-    c.g.position.x = c.pos.x; c.g.position.z = c.pos.z;
+    // sitting cats watch you
+    if (c.state === 'sit' && toPlayer < 4) {
+      const want = Math.atan2(pl.x - c.pos.x, pl.z - c.pos.z) - c.g.rotation.y;
+      c.rig.lookYaw += ((((want + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * 0.8 - c.rig.lookYaw) * Math.min(1, dt * 3);
+      c.rig.lookYaw = Math.max(-0.9, Math.min(0.9, c.rig.lookYaw));
+    } else c.rig.lookYaw *= 1 - Math.min(1, dt * 3);
+    c.rig.update(dt, speed);
+    c.g.position.set(c.pos.x, 0, c.pos.z);
     c.g.rotation.y += ((c.heading - c.g.rotation.y + Math.PI * 3) % (Math.PI * 2) - Math.PI) * Math.min(1, dt * 6);
   }
 

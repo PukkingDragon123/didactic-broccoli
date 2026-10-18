@@ -19,6 +19,7 @@ function buildGeometries(def, variant) {
   const vs = def.voxel || 0.03;
   g = {};
   for (const p of PART_NAMES) g[p] = parts[p].count ? meshVoxels(parts[p], { voxelSize: vs, origin: 'none' }) : null;
+  g.face = parts.head.faceInfo || null;
   geoCache.set(ck, g);
   return g;
 }
@@ -65,5 +66,5 @@ export function buildCharacter(def, variant = 0) {
     }
   }
   const box = new THREE.Box3().setFromObject(root);
-  return { root, inner, parts, height: box.max.y - box.min.y };
+  return { root, inner, parts, height: box.max.y - box.min.y, face: geos.face ? { ...geos.face, vs, neck: jointPos('neck') } : null };
 }

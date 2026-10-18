@@ -128,11 +128,11 @@ export class Garage {
     for (const x of [-3.02, 3.02]) { const r = boxMesh(0.06, H, 0.12, colMat(0x6a706a, { metalness: 0.6 })); r.position.set(x, H / 2, G.maxZ + 0.05); this.add(r); }
     // the shutter is open: walk out onto the street. Bounds keep you on the lane.
     const P = this.game.player;
-    P.addObstacle(-30, -11, G.maxZ, 30); P.addObstacle(11, 30, G.maxZ, 30);
-    P.addObstacle(-30, 30, G.maxZ + 8.7, 30);
-    P.addObstacle(-30, -4.1, G.maxZ - 0.1, G.maxZ + 0.4); P.addObstacle(4.1, 30, G.maxZ - 0.1, G.maxZ + 0.4);
+    P.addObstacle(-40, -25, G.maxZ, 30); P.addObstacle(25, 40, G.maxZ, 30);
+    P.addObstacle(-40, 40, G.maxZ + 8.7, 30);
+    P.addObstacle(-40, -4.1, G.maxZ - 0.1, G.maxZ + 0.5); P.addObstacle(4.1, 40, G.maxZ - 0.1, G.maxZ + 0.5);
     P.addObstacle(-4.3, -3.0, G.maxZ - 0.1, G.maxZ + 0.35); P.addObstacle(3.0, 4.3, G.maxZ - 0.1, G.maxZ + 0.35);
-    this.game.physics.addBox({ center: new THREE.Vector3(0, -0.5, G.maxZ + 5), half: new THREE.Vector3(30, 0.5, 6), material: 'concrete' });
+    this.game.physics.addBox({ center: new THREE.Vector3(0, -0.5, G.maxZ + 5), half: new THREE.Vector3(40, 0.5, 6), material: 'concrete' });
 
     this.buildOutside();
     this.buildFacade();
@@ -227,6 +227,82 @@ export class Garage {
     T([0.015, 0.16, 0.02], red, 0, 0.1, 0.36, 0.2); T([0.015, 0.16, 0.02], red, 0, 0.1, 0.4, -0.2);
   }
 
+  /** The lane beyond the shop: neighbours' houses and walls, a corner liquor shop, poles with sagging wires, lamps. */
+  buildNeighbourhood() {
+    const G = GARAGE, z = G.maxZ;
+    const block = pixMat('blockHD', { roughness: 0.92, bump: 1, ppm: 64 });
+    const wall = (x0, x1, zz, h = 1.4) => { const w = boxMesh(x1 - x0, h, 0.16, block); w.position.set((x0 + x1) / 2, h / 2, zz); this.add(w); };
+    // garage side: walls with gates, houses behind
+    for (const sx of [-1, 1]) {
+      const a = 4.2 * sx;
+      // a neighbour's tall side wall right next to the shop, then low block walls with gates
+      const side = boxMesh(2.2, 3.4, 0.3, pixMat('houseWall', { roughness: 0.9 })); side.position.set(sx * 5.3, 1.7, z + 0.15); this.add(side);
+      wall(sx > 0 ? 6.4 : -9.6, sx > 0 ? 9.6 : -6.4, z + 0.3);
+      wall(sx > 0 ? 12.7 : -18.6, sx > 0 ? 18.6 : -12.7, z + 0.3);
+      wall(sx > 0 ? 21.7 : -26, sx > 0 ? 26 : -21.7, z + 0.3);
+      void a;
+      for (const hx of [8, 15.6, 23.8]) this.prop('house_front', sx * hx, 0, z - 1.6, 0, { castShadow: false, receiveShadow: false, fallbackSize: [6, 6.5, 1] });
+      for (const gx of [11.15, 20.15]) if (hasProp('gate_house')) this.prop('gate_house', sx * gx, 0, z + 0.3, 0, { castShadow: false });
+    }
+    // across the lane: more houses, walls and a corner liquor shop (酒屋) with vending machines
+    for (const hx of [-21.5, -15.8, 10.4, 16.2, 22]) this.prop('house_front', hx, 0, z + 11.3, Math.PI, { castShadow: false, receiveShadow: false, fallbackSize: [6, 6.5, 1], scale: 0.9 + hash2(hx, 1) * 0.15 });
+    this.buildCornerShop(-12.6, z + 9.2);
+    // utility poles with three sagging wires per span
+    const poles = [-19, -11.5, 2.6, 11, 19.5];
+    for (const px of poles) if (Math.abs(px - 2.6) > 0.1) this.prop('utility_pole', px, 0, z + 9.4, 0, { castShadow: false, fallbackSize: [0.35, 8, 0.35] });
+    const wireM = new THREE.MeshBasicMaterial({ color: 0x1a1618 });
+    for (let i = 0; i < poles.length - 1; i++) {
+      for (const [dy, dz] of [[7.4, 0.5], [7.4, -0.5], [6.6, 0]]) {
+        const a = new THREE.Vector3(poles[i], dy, z + 9.4 + dz), b = new THREE.Vector3(poles[i + 1], dy, z + 9.4 + dz);
+        const pts = [];
+        for (let k = 0; k <= 16; k++) { const t = k / 16; const pt = a.clone().lerp(b, t); pt.y -= Math.sin(t * Math.PI) * 0.55; pts.push(pt); }
+        this.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.012, 4), wireM));
+      }
+    }
+    // a drop wire from the near pole to the shop roof
+    { const a = new THREE.Vector3(2.6, 6.6, z + 9.4), b = new THREE.Vector3(2.0, 3.6, z + 0.3); const pts = []; for (let k = 0; k <= 12; k++) { const t = k / 12; const pt = a.clone().lerp(b, t); pt.y -= Math.sin(t * Math.PI) * 0.4; pts.push(pt); } this.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.01, 4), wireM)); }
+    // more street lamps down the lane
+    for (const [lx, lit] of [[-15, true], [9.5, false], [21, false]]) {
+      this.prop('street_light', lx, 0, z + 9.4, Math.PI, { castShadow: false, fallbackSize: [0.3, 4.5, 0.3] });
+      if (lit) { const l = new THREE.PointLight(0xffd8a0, 3.5, 9, 1.6); l.position.set(lx, 4.0, z + 8.6); this.add(l); }
+    }
+  }
+
+  /** A tiny corner liquor/sundries shop across the lane: lit sign, striped awning, vending machines, crates. */
+  buildCornerShop(x, zz) {
+    const g = new THREE.Group();
+    g.position.set(x, 0, zz);
+    g.rotation.y = Math.PI;
+    this.add(g);
+    const facade = boxMesh(5.2, 3.4, 0.3, pixMat('houseWall', { roughness: 0.9, color: 0xd8ccb8 }));
+    facade.position.set(0, 1.7, -0.2); g.add(facade);
+    // glass shopfront glowing from inside
+    const win = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 1.9), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffe2b0).multiplyScalar(1.1) }));
+    win.position.set(-0.6, 1.05, -0.04); g.add(win);
+    for (let i = 0; i <= 4; i++) { const m = boxMesh(0.05, 1.95, 0.06, colMat(0x6a6e72, { metalness: 0.6 })); m.position.set(-2.1 + i * 0.75, 1.05, -0.02); g.add(m); }
+    // shelves silhouettes inside
+    for (let i = 0; i < 3; i++) { const sh = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 0.05), new THREE.MeshBasicMaterial({ color: 0x8a6a4a })); sh.position.set(-0.6, 0.5 + i * 0.5, -0.035); g.add(sh); }
+    // sign
+    const p = new Pix(160, 32, 9);
+    p.fill(0x1f3a7a); p.frame(1, 1, 158, 30, 0xffffff);
+    p.text('さかや・たばこ', 80, 6, { size: 18, color: 0xffffff, align: 'center' });
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 0.88), new THREE.MeshStandardMaterial({ map: p.texture(), emissive: 0xffffff, emissiveMap: p.texture(), emissiveIntensity: 0.35 }));
+    sign.position.set(0, 2.75, -0.03); g.add(sign);
+    // awning
+    const aw = new Pix(32, 8, 2);
+    for (let i = 0; i < 32; i++) for (let j = 0; j < 8; j++) aw.px(i, j, Math.floor(i / 4) % 2 ? 0xf2f0ea : 0x2f8a4a);
+    const at = aw.texture(); at.wrapS = THREE.RepeatWrapping; at.repeat.set(3, 1);
+    const awning = new THREE.Mesh(new THREE.PlaneGeometry(4.8, 0.8), new THREE.MeshStandardMaterial({ map: at, roughness: 0.9, side: THREE.DoubleSide }));
+    awning.position.set(0, 2.25, 0.3); awning.rotation.x = -Math.PI / 2 - 0.5; g.add(awning);
+    const shopLight = new THREE.PointLight(0xffe0b0, 2.5, 6, 1.6); shopLight.position.set(-0.6, 1.4, 0.8); g.add(shopLight);
+    // out front (local +z faces the lane after the rotation)
+    const put = (id, lx, lz, rot = 0) => { if (!hasProp(id)) return; const m = propMesh(id, { castShadow: false }); m.position.set(lx, 0, lz); m.rotation.y = rot; g.add(m); };
+    put('vending', 1.6, 0.25); put('vending', 2.55, 0.25);
+    put('beercrate', -2.3, 0.3, 0.2); put('shop_bench', -1.0, 0.45);
+    put('kakigori_flag', -2.4, 0.9, 0.4);
+    this.game.player.addObstacle(x - 2.9, x + 2.9, zz - 0.4, zz + 1.0);
+  }
+
   /** Quiet back-street dressing (from src/data/props/street2.js when present). */
   buildStreetLife() {
     const G = GARAGE, z = G.maxZ;
@@ -315,7 +391,7 @@ export class Garage {
     ditch.position.set(0, -0.05, G.maxZ + 1.45);
     this.add(ditch);
     // block wall across the street
-    const bw = boxMesh(30, 1.5, 0.15, pixMat('blockHD', { roughness: 0.92, bump: 1, ppm: 64 }));
+    const bw = boxMesh(60, 1.5, 0.15, pixMat('blockHD', { roughness: 0.92, bump: 1, ppm: 64 }));
     bw.position.set(0, 0.75, G.maxZ + 9.9);
     this.add(bw);
     // house facades & skyline
@@ -330,12 +406,7 @@ export class Garage {
     this.prop('potted_row', 6.0, 0, G.maxZ + 1.0, Math.PI, { castShadow: false, fallbackSize: [1.2, 1, 0.4], fallbackColor: 0x6a8a4a });
     this.prop('hedge', -7.5, 0, G.maxZ + 1.0, 0, { castShadow: false, fallbackSize: [2, 1, 0.6], fallbackColor: 0x4a7a3a });
     this.prop('bicycle_parking', 5.2, 0, G.maxZ + 9.4, Math.PI, { castShadow: false, fallbackSize: [0.7, 2.6, 0.1] });
-    // neighbouring walls left/right of the garage frontage
-    for (const sx of [-1, 1]) {
-      const nw = boxMesh(12, 3.6, 0.3, pixMat('houseWall', { roughness: 0.9 }));
-      nw.position.set(sx * 10.2, 1.8, G.maxZ + 0.15);
-      this.add(nw);
-    }
+    this.buildNeighbourhood();
     // sky backdrop
     const skyMat = new THREE.MeshBasicMaterial({ map: (() => { const t = posterlessSky(); return t; })(), fog: false });
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(140, 70), skyMat);
