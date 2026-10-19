@@ -4,8 +4,8 @@
 // Each entry: { name, voxel (metres per voxel), build(v) }. Facing +z, bottom-centre origin (menu_gear: centred).
 // Deterministic (hashed noise only). Small hand items use tiny voxels so they keep their detail.
 import { shade, mix } from '../../voxel/palette.js';
-import { VoxelModel, gloss, metal, glass, enc, decColor, decMat, MAT } from '../../voxel/VoxelModel.js';
-import { hash, vnoise, sh, fill, tint, grime, dust, speckle, blotch, edgeWear, path, text } from './garage.js';
+import { VoxelModel, gloss, metal, glass, decColor } from '../../voxel/VoxelModel.js';
+import { hash, vnoise, fill, grime, dust, speckle, blotch, edgeWear, path, text } from './garage.js';
 
 // ------------------------------------------------------------------ helpers
 const R = Math.round;
@@ -53,22 +53,10 @@ function drop(v, src, opts = {}) {
   return dy;
 }
 
-/** Surface test: true if any 6-neighbour is empty. */
-const exposed = (v, x, y, z) => !v.has(x + 1, y, z) || !v.has(x - 1, y, z) || !v.has(x, y + 1, z) || !v.has(x, y - 1, z) || !v.has(x, y, z + 1) || !v.has(x, y, z - 1);
-
-/** Remove interior voxels (keeps memory low for chunky solids; the mesher only needs the shell). */
-function hollow(v) {
-  const kill = [];
-  v.forEach((x, y, z) => { if (!exposed(v, x, y, z)) kill.push([x, y, z]); });
-  // keep a 1-voxel inner layer so thin parts never open up
-  const keep = new Set();
-  for (const [x, y, z] of kill) {
-    for (const [a, b, c] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) {
-      if (exposed(v, x + a, y + b, z + c) && v.has(x + a, y + b, z + c)) { keep.add(`${x},${y},${z}`); break; }
-    }
-  }
-  for (const [x, y, z] of kill) if (!keep.has(`${x},${y},${z}`)) v.remove(x, y, z);
-  return v;
+/** hollowBox that accepts a colour function (wall thickness t, open faces list). */
+function shell(v, x0, y0, z0, x1, y1, z1, c, t = 1, open = []) {
+  return v.shape(x0, y0, z0, x1, y1, z1, (x, y, z) => (x < x0 + t && !open.includes('left')) || (x > x1 - t && !open.includes('right')) ||
+    (y < y0 + t && !open.includes('bottom')) || (y > y1 - t && !open.includes('top')) || (z < z0 + t && !open.includes('back')) || (z > z1 - t && !open.includes('front')), c);
 }
 
 // tiny pixel fonts: 3x5 latin/digits and 5x7 latin for signs
@@ -162,9 +150,45 @@ function garbageBag(v, { seed = 1, w = 25, d = 21, h = 46, print = 0x2f9a4a, tin
   put(v, bag, { rz: lean });
 }
 
+/** Ceramic cat bowl with a painted fish motif; optionally filled with milk. */
+function catBowl(v, milk) {
+  v.jitter = 0.012;
+  const H = 17;
+  const ro = (y) => 15 + (y / H) * 7;
+  const NAVY = 0x2a4a90;
+  for (let y = 0; y <= H; y++) {
+    const r = ro(y), ri = y < 4 ? -1 : r - 3;
+    v.tube(0, y, 0, y === 0 ? r - 1.5 : r, y === 0 ? r - 3.5 : ri, 1, (x, yy, z) => {
+      const d = Math.hypot(x, z);
+      if (yy >= H - 1 && d > ro(yy) - 3.6) return gloss(0x2a5ab0); // blue glazed rim
+      if (d < ro(yy) - 2) return gloss(0xfbf9f2); // inside
+      const a = Math.atan2(x, z), u = ((a * ro(yy) % 21) + 21) % 21;
+      const fy = yy - 9;
+      const body = ((u - 9) / 6) ** 2 + (fy / 3.2) ** 2 < 1;
+      const tail = u > 13.5 && u < 17 && Math.abs(fy) < (u - 13.5) * 0.9;
+      if (body || tail) return gloss(Math.hypot(u - 5.5, fy - 0.8) < 0.9 ? 0xffffff : NAVY);
+      if (yy === 3 && (R(u) % 4 < 2)) return gloss(0x3a6ac0);
+      if ((yy === 13 && u > 1 && u < 2.2) || (yy === 14 && u > 2.4 && u < 3.4)) return gloss(0x6a8ad0); // bubbles
+      return gloss(shade(0xf6f3ea, 0.97 + hash(x, yy, z, 2) * 0.04));
+    });
+  }
+  // fish-bone motif painted on the inside floor
+  v.paint(() => stampRows(v, ['.#.#.#.#..', '##########', '.#.#.#.#..'], gloss(0x5a7ac0), -5, 3, -1, 'xz'));
+  v.paint(() => v.shape(-6, 3, -1, -6, 3, 1, () => true, gloss(0x5a7ac0)));
+  if (milk) {
+    for (let y = 4; y <= 13; y++) v.cylinder(0, y, 0, ro(y) - 3, 1, (x, yy, z) => {
+      if (yy < 13) return gloss(0xf6f2e8);
+      const d = Math.hypot(x, z);
+      return gloss(d > ro(13) - 4.4 ? 0xfffdf8 : (Math.hypot(x + 5, z + 5) < 2.2 ? 0xffffff : 0xfaf6ec));
+    });
+    // a little drip on the rim and a splash on the floor
+    v.set(14, 16, 17, gloss(0xfbf8f0)); v.set(14, 15, 18, gloss(0xfbf8f0));
+    v.shape(17, 0, 13, 26, 0, 22, (x, y, z) => Math.hypot(x - 21.5, (z - 17.5) * 1.3) < 2.6 + vnoise(x, 0, z, 2, 3) * 1.6, gloss(0xfbf8f0));
+  }
+}
+
 // shared colours
 const INK = 0x2a2226;
-const PAPER = 0xf4efe2;
 
 // ------------------------------------------------------------------ props
 const quest = {
@@ -311,8 +335,8 @@ const quest = {
       const NYU = ['.###.#.', '...#.#.', '.##..#.', '#####..', '..#..#.', '..#..#.', '.##...#'];
       for (const [x0, rows] of [[-9, GYU], [1, NYU]]) rows.forEach((r, i) => [...r].forEach((ch, j) => { if (ch === '#') { v.set(x0 + j, 36 - i, 9, gloss(BLUE)); v.set(x0 + j, 35 - i, 9, gloss(BLUE)); } }));
       for (let x = -8; x <= 7; x++) if (x % 3 !== 1) v.set(x, 41, 9, gloss(WHITE));
-      v.paint(() => stampRows(v, fontRows('1000'), gloss(WHITE), -8, 6, 9));
-      v.paint(() => stampRows(v, ['#.#.#.#..', '#####.#..', '#.#.#.#..', '#.#.#.###'], gloss(WHITE), 0, 5, 9));
+      v.paint(() => stampRows(v, fontRows('1000'), gloss(WHITE), -9, 6, 9));
+      v.paint(() => stampRows(v, ['##.#', '###.', '#.#.'], gloss(0xffd23f), 6, 4, 9)); // tiny 'ml'
       v.paint(() => stampRows(v, fontRows('MILK'), gloss(BLUE), -7, 26, 9));
       // sides: blue with a white nutrition panel on +x, a milk-drop logo on -x
       v.paint(() => v.shape(9, 0, -10, 9, H - 1, 8, () => true, (x, y, z) => gloss(y >= 14 && y <= 32 && z >= -7 && z <= 6 ? (y % 3 === 0 && y < 31 && z > -6 && z < 5 ? 0x9aa2b0 : WHITE) : (y <= 6 ? BLUE : y >= 44 ? BLUE : SKY))));
@@ -423,7 +447,6 @@ const quest = {
       blotch(v, -37, 0, -17, 37, 22, 17, gloss(0x7a2a1c), 0.82, 3, 9);
       grime(v, 0, 6, 0.82);
       dust(v, 0xb0a288, 0.18, 4, 3);
-      hollow(v);
     },
   },
 
@@ -464,7 +487,7 @@ const quest = {
   },
 
   // ------------------------------------------------------------- tied garbage bags
-  trash_bag: { name: 'Garbage Bag', voxel: 0.008, build(v) { garbageBag(v, { seed: 1, w: 25, d: 21, h: 46, print: 0x2f9a4a }); } },
+  trash_bag: { name: 'Garbage Bag', voxel: 0.008, build(v) { garbageBag(v, { seed: 1, w: 25, d: 21, h: 58, print: 0x2f9a4a }); } },
   trash_bag_b: { name: 'Garbage Bag (lumpy)', voxel: 0.008, build(v) { garbageBag(v, { seed: 2, w: 29, d: 23, h: 36, print: 0xe8782a, tint: 0xdbe6ee, lean: 0.12 }); } },
 
   // ------------------------------------------------------------- dust, leaves and scraps
@@ -606,7 +629,7 @@ const quest = {
 
   // ------------------------------------------------------------- flattened boxes and packing material
   cardboard_mess: {
-    name: 'Cardboard Mess', voxel: 0.01,
+    name: 'Cardboard Mess', voxel: 0.008,
     build(v) {
       v.jitter = 0.03;
       const board = (base, s) => (x, y, z) => shade(base, 0.94 + vnoise(x, y, z, 5, s) * 0.08 + hash(x, y, z, s) * 0.04);
@@ -631,7 +654,7 @@ const quest = {
       // an emptied box with its flaps folded open
       const box = new VoxelModel();
       const bf = board(0xc8a068, 4);
-      box.hollowBox(-11, 0, -9, 11, 15, 9, bf, 2, ['top']);
+      shell(box, -11, 0, -9, 11, 15, 9, bf, 2, ['top']);
       for (let i = 1; i <= 7; i++) {
         const y = 15 + R(i * 0.5);
         for (let x = -11; x <= 11; x++) for (const t of [0, -1]) { box.set(x, y + t, 9 + i, bf(x, y, 9 + i)); box.set(x, y + t, -9 - i, bf(x, y, -9 - i)); }
@@ -709,6 +732,286 @@ const quest = {
       path(v, [[1, top + 2, 1], [5, top + 1, 4], [7, top + 1, 7]], S);
       path(v, [[-2, top + 2, 1], [-5, top + 1, 5]], S);
       dust(v, 0xc8bc9c, 0.12, 4, 7);
+    },
+  },
+
+  // ------------------------------------------------------------- Grandpa's cash tin
+  cash_tin: {
+    name: "Grandpa's Cash Tin", voxel: 0.004,
+    build(v) {
+      v.jitter = 0.015;
+      const BLUE = 0x23468c, GOLD = 0xdcb04a;
+      const rT = 25, hT = 16;
+      // body: thin wall, solid floor, floral garland around the middle
+      for (let y = 0; y <= hT; y++) {
+        const r = y === 0 ? rT - 1 : y >= hT - 1 ? rT + 0.6 : rT;
+        v.tube(0, y, 0, r, y <= 1 ? -1 : r - 1.6, 1, (x, yy, z) => {
+          const a = Math.atan2(x, z), u = a * rT;
+          if (yy <= 1 || yy >= hT - 1) return gloss(shade(GOLD, yy >= hT ? 1.08 : 0.94));
+          if (yy === 2 || yy === hT - 2) return gloss(0xf0e6c8);
+          const cell = ((u % 13) + 13) % 13, fy = yy - 8.5;
+          const d = Math.hypot(cell - 6.5, fy);
+          if (d < 1.2) return gloss(0xe8b03a);
+          if (d < 3.2 && Math.abs(Math.atan2(fy, cell - 6.5) % 1.26) < 0.7) return gloss(0xfbf6ea);
+          if (d < 3.2) return gloss(0xd8303a);
+          if (Math.abs(fy + Math.sin(u * 0.5) * 1.5) < 0.6) return gloss(0x4a9a5a);
+          return gloss(shade(BLUE, 0.95 + hash(x, yy, z, 3) * 0.08));
+        });
+      }
+      blotch(v, -rT - 1, 0, -rT - 1, rT + 1, 5, rT + 1, gloss(0x8a5a3a), 0.8, 2, 4); // rust creeping up from the base
+      // contents: two banded bundles of notes, loose notes, coins
+      const note = (col, ink, band = false) => {
+        const m = new VoxelModel();
+        fill(m, -19, 0, -9, 19, 0, 9, (x, y, z) => {
+          if (band && Math.abs(x) <= 3) return 0xf4f0e6;
+          if (Math.abs(x) === 19 || Math.abs(z) === 9) return shade(col, 0.92);
+          if (Math.hypot(x - 10, z) < 5) return shade(col, 1.08); // watermark oval
+          if (x < -6 && x > -16 && Math.abs(z) < 5 && (x + z) % 2 === 0) return ink;
+          return shade(col, 0.97 + hash(x >> 1, 0, z >> 1, 6) * 0.05);
+        });
+        return m;
+      };
+      // everything inside is clipped to the tin's inner wall
+      const inside = new VoxelModel();
+      for (let i = 0; i < 6; i++) put(inside, note(0xdcc49a, 0x8a6a4a, i === 5), { dx: -2, dy: 2 + i, dz: -9, ry: 0.1 });
+      for (let i = 0; i < 4; i++) put(inside, note(0x9ab4d8, 0x3a4a8a, i === 3), { dx: 1, dy: 2 + i, dz: 9, ry: -0.15 });
+      put(inside, note(0xdcc49a, 0x8a6a4a), { dx: -3, dy: 8, dz: 1, ry: 0.42 });
+      put(inside, note(0x9ab4d8, 0x3a4a8a), { dx: 2, dy: 9, dz: 4, ry: -0.3 });
+      inside.forEach((x, y, z, val) => { if (Math.hypot(x, z) < rT - 1.8) v.set(x, y, z, val); });
+      const coin = (r, col) => { const m = new VoxelModel(); m.cylinder(0, 0, 0, r, 1, gloss(col)); m.set(0, 1, 0, gloss(shade(col, 1.1))); return m; };
+      drop(v, coin(3.4, 0xe0c060), { dx: -12, dz: 4 }); drop(v, coin(3, 0xd0d4d8), { dx: 12, dz: -4 }); drop(v, coin(3, 0xc0743a), { dx: -6, dz: 14 }); drop(v, coin(3, 0xd0d4d8), { dx: 8, dz: 12 });
+      // lid: blue with a gold rim, white floral ring and a cream medallion with a rose
+      const lid = new VoxelModel();
+      const rL = rT + 1.6;
+      for (let y = 0; y <= 4; y++) lid.tube(0, y, 0, rL, y === 4 ? -1 : rL - 1.2, 1, (x, yy, z) => {
+        const d = Math.hypot(x, z);
+        if (yy < 4 || d > rL - 2.2) return gloss(shade(GOLD, yy === 4 ? 1.06 : 0.92));
+        if (d < 10.5) {
+          const rose = Math.hypot(x, z - 1);
+          if (rose < 4.6) return gloss(Math.sin(rose * 2.4 + Math.atan2(x, z - 1) * 1.2) > 0.2 ? 0xd8303a : 0xa81e2a);
+          if (Math.abs(x) > 3 && Math.abs(z + 5) < 2) return gloss(0x4a9a5a);
+          return gloss(d > 9.5 ? GOLD : 0xf4ecd8);
+        }
+        if (d > 16 && d < 20.5) { const a = Math.atan2(x, z); return gloss(Math.sin(a * 16) > 0.3 ? 0xfbf6ea : BLUE); }
+        return gloss(shade(BLUE, 0.96 + hash(x, yy, z, 5) * 0.06));
+      });
+      // lid pushed aside: resting on the rim at the back-right, overhanging and dipping slightly
+      put(v, lid, { dx: 13, dy: hT + 3, dz: -9, rz: -0.12, rx: 0.05 });
+      // loose notes fanned over the bundles in the open front, and a coin that rolled out
+      drop(v, coin(3.4, 0xe0c060), { dx: -29, dz: 13 });
+      grime(v, 0, 4, 0.85);
+    },
+  },
+
+  // ------------------------------------------------------------- cat bowls
+  cat_bowl: { name: 'Cat Bowl', voxel: 0.003, build(v) { catBowl(v, false); } },
+  cat_bowl_milk: { name: 'Cat Bowl with Milk', voxel: 0.003, build(v) { catBowl(v, true); } },
+
+  // ------------------------------------------------------------- mikan box cat bed
+  cat_bed: {
+    name: 'Cardboard Cat Bed', voxel: 0.008,
+    build(v) {
+      v.jitter = 0.025;
+      const board = (x, y, z) => shade(0xc89a62, 0.93 + vnoise(x, y, z, 5, 2) * 0.08 + hash(x, y, z, 3) * 0.04);
+      const X = 25, Z = 19, H = 18;
+      shell(v, -X, 0, -Z, X - 1, H, Z - 1, board, 2, ['top']);
+      // flaps: the back one splays outwards, the front one is torn off, the short ones hang down the sides
+      for (let i = 1; i <= 8; i++) {
+        const y = H - R(i * 0.55);
+        for (let x = -X; x <= X - 1; x++) for (const t of [0, 1]) v.set(x, y - t, -Z - i, board(x, y, -Z - i));
+      }
+      for (let x = -X; x <= X - 1; x++) if (hash(x, 0, 0, 5) < 0.6) v.set(x, H + 1, Z - 1, board(x, H + 1, Z)); // torn stub
+      for (let y = H - 9; y <= H; y++) for (let z = -Z + 1; z <= Z - 2; z++) { v.set(X, y, z, board(X, y, z)); v.set(-X - 1, y, z, board(-X - 1, y, z)); }
+      // big orange みかん print on the front, green leaf mark
+      text(v, 'みかん', -23, 16, 0xe8701a, { dir: '+z', scale: 2 });
+      v.paint(() => v.shape(-X, 0, Z - 1, X - 1, 1, Z - 1, () => true, () => 0x3a8a4a));
+      // old towel inside: fluffy, striped, dented where the cat sleeps, draped over the right side
+      const towel = (x, y, z) => {
+        const stripe = ((z + 60) % 11) < 2;
+        const c = stripe ? 0xf6efe2 : 0xe8a0a8;
+        return shade(c, 0.88 + vnoise(x, y, z, 2, 6) * 0.16);
+      };
+      for (let x = -X + 2; x <= X - 3; x++) for (let z = -Z + 2; z <= Z - 3; z++) {
+        const nest = Math.max(0, 1 - (x / 15) ** 2 - (z / 11) ** 2);
+        const top = R(H - 3 + vnoise(x, 0, z, 4, 7) * 3 - nest * 7);
+        for (let y = 2; y <= top; y++) v.set(x, y, z, towel(x, y, z));
+      }
+      for (let z = -6; z <= 12; z++) {
+        const end = R(4 + vnoise(0, 0, z, 3, 8) * 4);
+        for (let y = end; y <= H + 1; y++) v.set(X + 1, y, z, towel(X + 1, y, z));
+        for (let x = X - 2; x <= X; x++) v.set(x, H + 1, z, towel(x, H + 1, z));
+      }
+      speckle(v, -X + 2, 8, -Z + 2, X + 1, H + 2, Z - 3, 0xfbfaf6, 0.02, 9); // cat hairs
+      grime(v, 0, 3, 0.85);
+    },
+  },
+
+  // ------------------------------------------------------------- stack of shop flyers
+  flyer_stack: {
+    name: 'Stack of Shop Flyers', voxel: 0.003,
+    build(v) {
+      v.jitter = 0.01;
+      const W = 35, D = 49; // A4
+      for (let i = 0; i < 6; i++) {
+        const sheet = new VoxelModel();
+        fill(sheet, -W, 0, -D, W - 1, 0, D - 1, () => (i % 2 ? 0xf6f4ee : 0xfbfaf6));
+        put(v, sheet, { dy: i, dx: R((hash(i, 1, 0, 2) - 0.5) * 3), dz: R((hash(i, 2, 0, 2) - 0.5) * 3), ry: (hash(i, 3, 0, 2) - 0.5) * (i === 5 ? 0.12 : 0.05) });
+      }
+      const y = v.bounds().maxY;
+      const P = (rows, col, x0, z0, scale = 1) => v.paint(() => stampRows(v, rows, col, x0, y, z0, 'xz', scale));
+      // header band + title
+      v.paint(() => v.shape(-W - 3, y, -D - 3, W + 3, y, -D + 11, () => true, () => 0xd8302a));
+      P(fontRows('GACHA GARAGE'), 0xffffff, -23, -D + 3);
+      P(fontRows('GRAND OPENING'), 0x2a2226, -25, -D + 15);
+      // capsule illustration
+      v.paint(() => v.shape(-W, y, -D, W, y, D, (x, yy, z) => Math.hypot(x + 13, z + 12) <= 13, (x, yy, z) => {
+        const d = Math.hypot(x + 13, z + 12);
+        if (d > 11.8 || Math.abs(z + 12) < 0.8) return INK;
+        if (z < -12) return Math.hypot(x + 18, z + 18) < 3 ? 0xffd6e0 : 0xff6f91;
+        return 0xeef4f8;
+      }));
+      // little gacha machine
+      v.paint(() => v.shape(4, y, -26, 26, y, 4, () => true, (x, yy, z) => {
+        if (z < -22) return 0xd8302a;
+        if (z < -8) return x === 4 || x === 26 || z === -9 ? INK : ((x + z) % 4 === 0 ? pick([0xff6f91, 0xffd23f, 0x3f86e8, 0x58c06c], hash(x, 0, z, 4)) : 0xcfeaf6);
+        if (Math.hypot(x - 15, z + 3) < 3.5) return 0xc8ccd2;
+        return 0xd8302a;
+      }));
+      // NEW burst
+      v.paint(() => v.shape(-W, y, -D, W, y, D, (x, yy, z) => Math.hypot(x - 22, z + 32) < 7 + Math.sin(Math.atan2(z + 32, x - 22) * 8) * 1.4, () => 0xffd23f));
+      P(fontRows('NEW'), 0xd8302a, 17, -34);
+      // details text, hours and a little map in the footer
+      for (const z of [12, 15, 18, 21]) v.paint(() => v.shape(-W + 6, y, z, W - 8, y, z, (x) => hash(x >> 1, 0, z, 5) < 0.85, () => 0x8a8a8a));
+      P(fontRows('OPEN 10-18'), 0x2a2226, -W + 6, 25);
+      v.paint(() => v.shape(10, y, D - 20, W - 5, y, D - 10, () => true, (x, yy, z) => (x === 10 || x === W - 5 || z === D - 20 || z === D - 10 ? INK : (x - z) % 6 === 0 || z === D - 15 ? 0xffffff : 0x9fd8b0)));
+      v.paint(() => v.shape(22, y, D - 16, 23, y, D - 15, () => true, () => 0xd8302a));
+      v.paint(() => v.shape(-W - 3, y, D - 6, W + 3, y, D + 3, () => true, (x) => (x % 4 === 0 ? 0xffffff : 0x3f86e8)));
+    },
+  },
+
+  // ------------------------------------------------------------- taped "out of order" sign
+  out_of_order: {
+    name: 'Out of Order Sign', voxel: 0.002,
+    build(v) {
+      v.jitter = 0.01;
+      const W = 50, H = 75;
+      fill(v, -W, 0, 0, W - 1, H - 1, 0, (x, y) => {
+        const b = Math.min(x + W, W - 1 - x, y, H - 1 - y);
+        if (b === 3 || b === 5) return 0xd8242a;
+        return shade(0xf8f6ee, 0.97 + hash(x >> 2, y >> 2, 0, 3) * 0.04);
+      });
+      // a curled bottom-right corner
+      const curl = [];
+      v.forEach((x, y, z, val) => { if (x > 40 && y < 9 && x - 40 > y) curl.push([x, y, val]); });
+      for (const [x, y, val] of curl) { v.remove(x, y, 0); v.set(x, y, 1 + (x - 40 > y + 4 ? 1 : 0), val); }
+      // hand-lettered marker text
+      const ink = 0x1e1a1a;
+      const line = (str, yTop) => { const rows = fontRows(str, F5); stampRows(v, rows, ink, -rows[0].length, yTop, 1, 'xy', 2); };
+      line('OUT OF', 65);
+      line('ORDER', 45);
+      const KO = ['.#...#..', '####.#..', '.#..####', '####.#.#', '#..#.#.#', '#..#..#.', '####.#.#', '....#..#'];
+      const SHO = ['###.#...', '#.######', '##..#.#.', '#.#####.', '##.#...#', '#..#####', '#....#..', '#.######'];
+      const CHU = ['...#....', '#######.', '#..#..#.', '#..#..#.', '#######.', '...#....', '...#....', '...#....'];
+      [KO, SHO, CHU].forEach((g, i) => stampRows(v, g, 0xd8242a, -25 + i * 18, 24, 1, 'xy', 2));
+      // two strips of tape over the top corners
+      for (const sx of [-1, 1]) {
+        for (let i = -13; i <= 13; i++) for (let j = -4; j <= 4; j++) {
+          const x = R((sx < 0 ? -W + 2 : W - 3) + (i * sx - j) * 0.7071 * 1), y = R(H - 3 + (i + j * sx) * 0.7071 * -1 * -1);
+          v.set(x, y, 1, gloss(Math.abs(j) === 4 ? 0xe2d8b0 : 0xeee6c6));
+        }
+      }
+    },
+  },
+
+  // ------------------------------------------------------------- corner cobweb
+  cobweb: {
+    name: 'Corner Cobweb', voxel: 0.004,
+    build(v) {
+      v.jitter = 0.02;
+      // anchored at the top-left corner (x = 0, y = 100), web plane facing +z, billowing slightly
+      const thread = gloss(0xe6e6e0), dusty = gloss(0xc4c0b4);
+      const at = (r, a) => [R(Math.cos(a) * r), R(100 - Math.sin(a) * r), R(Math.sin(Math.PI * clamp(r / 95, 0, 1)) * 3)];
+      const angles = [];
+      for (let i = 0; i <= 8; i++) angles.push((i / 8) * (Math.PI / 2) * 0.92 + 0.06 + (hash(i, 0, 0, 3) - 0.5) * 0.08);
+      const lens = angles.map((a, i) => 70 + hash(i, 1, 0, 3) * 28);
+      angles.forEach((a, i) => { for (let r = 0; r <= lens[i]; r++) v.set(...at(r, a), hash(i, r >> 3, 0, 4) < 0.15 ? dusty : thread); });
+      // edge threads along the two walls
+      for (let x = 0; x <= 96; x++) v.set(x, 100, 0, thread);
+      for (let y = 6; y <= 100; y++) v.set(0, y, 0, thread);
+      // sagging spiral threads between neighbouring spokes
+      for (const rk of [9, 16, 24, 33, 43, 54, 66, 79]) {
+        for (let i = 0; i < angles.length - 1; i++) {
+          if (rk > Math.min(lens[i], lens[i + 1]) - 3 || hash(i, rk, 0, 5) < 0.14) continue;
+          const steps = 24;
+          for (let k = 0; k <= steps; k++) {
+            const t = k / steps;
+            const a = angles[i] + (angles[i + 1] - angles[i]) * t;
+            const r = rk - Math.sin(Math.PI * t) * rk * 0.12;
+            v.set(...at(r, a), rk > 60 && hash(i, k, rk, 6) < 0.2 ? dusty : thread);
+          }
+        }
+      }
+      // a torn flap hanging down and a couple of dust clumps caught in the web
+      for (let y = 60; y >= 34; y--) v.set(R(58 + Math.sin(y * 0.3) * 1.5), y, 2, y < 38 ? dusty : thread);
+      v.box(57, 32, 2, 59, 33, 2, gloss(0x9a948a));
+      v.box(30, 70, 1, 31, 71, 1, gloss(0xa8a296)); v.set(18, 86, 1, gloss(0xb89060)); v.set(19, 86, 1, gloss(0x9a7040));
+    },
+  },
+
+  // ------------------------------------------------------------- the settings gear (spins in the 3D menu)
+  menu_gear: {
+    name: 'Machined Gear', voxel: 0.005,
+    build(v) {
+      v.jitter = 0.012;
+      const TEETH = 14, RT = 30, RR = 25.5, RIM = 22, HUB = 10;
+      const steel = (x, y, z, f = 1) => {
+        const a = Math.atan2(y + 0.5, x + 0.5), d = Math.hypot(x + 0.5, y + 0.5);
+        const brushed = 0.95 + hash(R(a * 60), 0, 0, 3) * 0.06 + (R(d) % 3 === 0 ? 0.03 : 0);
+        return metal(shade(0xd2dae2, brushed * f));
+      };
+      for (let x = -RT - 1; x <= RT; x++) for (let y = -RT - 1; y <= RT; y++) {
+        const px = x + 0.5, py = y + 0.5, d = Math.hypot(px, py), a = Math.atan2(py, px);
+        const pitch = TAU / TEETH;
+        const ph = ((a / pitch) % 1 + 1) % 1 - 0.5; // -0.5..0.5 across one tooth pitch
+        const tooth = d > RR && d <= RT && Math.abs(ph) <= 0.27 - (d - RR) / (RT - RR) * 0.09;
+        if (!(d <= RR || tooth)) continue;
+        // lightening holes in the web
+        let hole = false;
+        for (let k = 0; k < 5; k++) { const ha = k * TAU / 5 + 0.3; if (Math.hypot(px - Math.cos(ha) * 16, py - Math.sin(ha) * 16) < 4.2) hole = true; }
+        if (d < 3.2) hole = true; // axle bore
+        if (hole) continue;
+        const web = d > HUB && d < RIM;
+        const zr = web ? 3 : d <= HUB ? 8 : 6;
+        for (let z = -zr; z < zr; z++) {
+          const face = z === -zr || z === zr - 1;
+          let c;
+          if (d <= HUB) {
+            c = metal(shade(0xf0c054, face ? (R(d) % 2 ? 1.05 : 0.92) : 0.86));
+            if (d < 4.2) c = metal(0x6a5428);
+          } else if (tooth || d > RR - 1) c = steel(x, y, z, face ? 1.08 : 0.86);
+          else if (face && (d > RIM - 1 && d < RIM + 0.5)) c = steel(x, y, z, 0.8); // inner lip
+          else if (face && Math.abs(d - (HUB + 0.8)) < 0.6) c = steel(x, y, z, 0.78);
+          else c = steel(x, y, z, face ? 1 : 0.84);
+          v.set(x, y, z, c);
+        }
+        // tooth tip chamfer
+        if (tooth && d > RT - 1.2) { v.remove(x, y, -6); v.remove(x, y, 5); }
+      }
+      // hex bolts on both faces of the hub
+      for (let k = 0; k < 6; k++) {
+        const ba = k * TAU / 6;
+        const bx = Math.cos(ba) * 6.6 - 0.5, by = Math.sin(ba) * 6.6 - 0.5;
+        for (let x = Math.floor(bx - 2); x <= Math.ceil(bx + 2); x++) for (let y = Math.floor(by - 2); y <= Math.ceil(by + 2); y++) {
+          const dx = x - bx, dy = y - by;
+          if (Math.max(Math.abs(dx) * 0.866 + Math.abs(dy) * 0.5, Math.abs(dy)) > 1.75) continue;
+          for (const [z, top] of [[8, 9], [-9, -10]]) {
+            v.set(x, y, z, metal(0x8a929c)); v.set(x, y, top, metal(Math.hypot(dx, dy) < 0.8 ? 0x5a626c : 0xa8b0ba));
+          }
+        }
+      }
+      // keyway notch in the bore
+      for (let z = -8; z < 8; z++) { v.remove(-1, 2, z); v.remove(0, 2, z); v.remove(-1, 3, z); v.remove(0, 3, z); }
+      v.pivot = { x: 0, y: 0, z: 0 };
     },
   },
 };
