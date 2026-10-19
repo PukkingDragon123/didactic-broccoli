@@ -45,7 +45,6 @@ body.sui-on #hud, body.sui-on #touch { visibility: hidden; }
 .sui-buy:hover { background: #ffe168; }
 .sui-buy:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
 .sui-buy .l { flex: 1; min-width: 0; text-transform: uppercase; }
-.sui-buy .l small { display: block; text-transform: none; color: var(--text2); }
 .sui-buy .p { font: 30px/1 var(--f-head); color: #c8202a; white-space: nowrap; }
 .sui-buy.off { background: #ece6da; border-color: #b4a994; box-shadow: 0 4px 0 #b4a994; color: #968a78; cursor: not-allowed; }
 .sui-buy.off .p { color: #968a78; }
@@ -445,7 +444,7 @@ body.sui-on #hud, body.sui-on #touch { visibility: hidden; }
 @media (max-width: 420px) {
   .em-tt { font-size: 16px; }
   .em-title .sui-wallet { font-size: 30px; padding: 0 8px; }
-  .cn-noren { gap: 4px; margin-right: 120px; }
+  .cn-noren { gap: 4px; }
   .cn-noren span { font-size: 30px; }
   .cn-x { padding: 0 10px 0 4px; }
   .cn-head h1 { font-size: 30px; }

@@ -214,7 +214,8 @@ export class ShopUI {
     if (t.dataset.go) { this.go(t.dataset.go, { sub: t.dataset.sub }); return; }
     if (t.dataset.act === 'close') { this.close(); return; }
     if (t.dataset.act === 'back') { this.back(); return; }
-    if (t.dataset.h) { audio.play('uiClick', { vol: 0.45 }); this.h[+t.dataset.h]?.(t); }
+    // a double click must not buy twice: the page re-renders a fresh button under the cursor
+    if (t.dataset.h && performance.now() - (this._ranAt || 0) > 350) { audio.play('uiClick', { vol: 0.45 }); this.h[+t.dataset.h]?.(t); }
   }
 
   on(fn) { this.h.push(fn); return this.h.length - 1; }
@@ -233,6 +234,7 @@ export class ShopUI {
     }
     if (this.store === 'emart') this.refresh(); else this.renderCorner(true);
     this.flashMoney();
+    this._ranAt = performance.now();
   }
 
   toast(ok, title, msg, icon) {
@@ -299,13 +301,13 @@ export class ShopUI {
 
   // ------------------------------------------------------------------ widgets
   /** Purchase button with its reason line. block = why it can't be bought (other than money). */
-  buy(fn, { price = 0, label = 'Buy', icon = 'cart', block = null, blockLabel = 'Locked', text = {}, cls = '', small = '' } = {}) {
+  buy(fn, { price = 0, label = 'Buy', icon = 'cart', block = null, blockLabel = 'Locked', text = {}, cls = '' } = {}) {
     const id = this.on(() => this.run(fn, text));
     const money = this.game.state.money;
     const off = !!block || money < price;
     const why = block ? `${ic('lock')}${esc(block)}` : off ? `${ic('wallet')}Need ${yen(price - money)} more` : '';
     return `<div class="sui-bw ${cls}"><button class="sui-buy${off ? ' off' : ''}" data-h="${id}"${price ? ` data-price="${price}"` : ''}${block ? ' data-block="1"' : ''} aria-disabled="${off}">`
-      + `${ic(block ? 'lock' : icon)}<span class="l">${small ? `<small>${esc(small)}</small>` : ''}${esc(block ? blockLabel : label)}</span>`
+      + `${ic(block ? 'lock' : icon)}<span class="l">${esc(block ? blockLabel : label)}</span>`
       + `${price ? `<span class="p">${yen(price)}</span>` : block ? '' : '<span class="p">Free</span>'}</button><div class="sui-why">${why}</div></div>`;
   }
 

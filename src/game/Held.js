@@ -11,7 +11,7 @@ import { propMesh } from '../world/props.js';
 
 export const SLOTS = 5;
 
-const POSES = {
+export const POSES = {
   capsule: { pos: new THREE.Vector3(0.15, -0.135, -0.34), rot: new THREE.Euler(0.25, 0.4, 0.1) },
   toy: { pos: new THREE.Vector3(0.13, -0.13, -0.32), rot: new THREE.Euler(0.12, -0.35, 0) },
   box: { pos: new THREE.Vector3(0.02, -0.3, -0.55), rot: new THREE.Euler(0.15, 0.2, 0) },
@@ -20,7 +20,7 @@ const POSES = {
   reveal: { pos: new THREE.Vector3(0, -0.01, -0.3), rot: new THREE.Euler(0.05, 0, 0) },
   pet: { pos: new THREE.Vector3(0.02, -0.34, -0.55), rot: new THREE.Euler(0.1, Math.PI + 0.3, 0) },
   item: { pos: new THREE.Vector3(0.15, -0.16, -0.36), rot: new THREE.Euler(0.2, -0.45, 0.05) },
-  broom: { pos: new THREE.Vector3(0.26, -0.5, -0.62), rot: new THREE.Euler(0.55, 0.25, -0.3) },
+  broom: { pos: new THREE.Vector3(0.2, -0.3, -0.72), rot: new THREE.Euler(0.6, 0, -0.5) },
   long: { pos: new THREE.Vector3(0.12, -0.24, -0.5), rot: new THREE.Euler(0.1, -1.2, 0.35) },
   read: { pos: new THREE.Vector3(0, -0.035, -0.3), rot: new THREE.Euler(0.25, 0, 0) },
 };

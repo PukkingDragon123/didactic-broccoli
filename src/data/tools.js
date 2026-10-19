@@ -6,7 +6,7 @@
 export const TOOLS = {
   notebook: { name: "Grandpa's Notebook", icon: 'notebook', prop: 'grandpa_notebook', desc: 'His letter and a to-do list. Select it and click to read.', keep: true, hand: 0.15 },
   key: { name: 'Garage Key', icon: 'key', prop: 'garage_key', desc: 'Opens the shutter of the old garage.', keep: true, hand: 0.08 },
-  milk: { name: 'Milk', icon: 'milk', prop: 'milk_carton', desc: 'Fresh milk. Pour it into the cat bowl.', hand: 0.13 },
+  milk: { name: 'Milk', icon: 'milk', prop: 'milk_carton', desc: 'Fresh milk. Pour it into the cat bowl.', hand: 0.11 },
   broom: { name: 'Broom', icon: 'broom', prop: 'broom', desc: 'Click a mess to sweep it up.', keep: true, hand: 0.75, pose: 'broom' },
   batteries: { name: 'Batteries', icon: 'battery', prop: 'battery_pack', desc: "Fresh AA batteries for Grandpa's radio.", hand: 0.13 },
   toolkit: { name: 'Tool Kit', icon: 'toolkit', prop: 'toolkit_case', desc: 'Hold click on a broken machine to repair it.', keep: true, hand: 0.2 },
