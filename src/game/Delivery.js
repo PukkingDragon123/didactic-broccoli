@@ -2,36 +2,57 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { pixMat } from '../gfx/geo.js';
-import { Pix, FONT_EN } from '../gfx/pix.js';
+import { Pix, FONT_EN, FONT_DISPLAY } from '../gfx/pix.js';
 import { SERIES_BY_ID, getItem } from '../data/series/index.js';
 import { drawPattern } from './cards.js';
 import { ease } from '../core/util.js';
+import { wrapText, fitText } from './labels.js';
+import { DISPLAYS } from '../museum/catalog.js';
+import { PROPS } from '../world/props.js';
 
 const hex = (s) => parseInt(String(s).replace('#', ''), 16);
 let nextId = 1;
 
+/** English label for a held / delivered box (old saves may carry a Japanese `label`). */
+export function boxLabel(d) {
+  if (!d) return '';
+  if (d.type === 'refill') { const se = SERIES_BY_ID[d.series]; return se ? `${se.name} x${d.count}` : ''; }
+  if (d.type === 'single') return getItem(d.key)?.name || '';
+  if (d.type === 'decor') return (d.kind === 'display' ? DISPLAYS[d.id]?.name : PROPS[d.id]?.name) || d.name || '';
+  return d.name || '';
+}
+
+// box labels: 192x128 px, Tiny5 at 16 px and Jersey 10 at 28 / 56 px (their crisp sizes)
 function labelTex(kind, info) {
-  const p = new Pix(96, 64, 4);
+  const W = 192, H = 128;
+  const p = new Pix(W, H, 4);
+  const centre = (str, y, o) => p.text(str, W / 2, y, { align: 'center', font: FONT_EN, size: 16, ...o });
   if (kind === 'refill') {
     const s = SERIES_BY_ID[info.series];
-    drawPattern(p, 0, 0, 96, 64, s.card.pattern, hex(s.card.bg), hex(s.card.accent));
-    p.rect(0, 0, 96, 18, hex(s.card.accent));
-    p.text(s.jp, 48, 2, { size: 12, color: 0xffffff, align: 'center' });
-    p.text('カプセル', 48, 22, { size: 12, color: hex(s.card.text), align: 'center' });
-    p.text(`${info.count}個入`, 48, 38, { size: 14, color: 0xe5383b, outline: 0xffffff, align: 'center' });
+    drawPattern(p, 0, 0, W, H, s.card.pattern, hex(s.card.bg), hex(s.card.accent));
+    p.rect(0, 0, W, 28, hex(s.card.accent));
+    p.rect(0, 28, W, 2, 0x000000, 50);
+    centre('CAPSULE REFILL', 6, { color: 0xffffff });
+    p.rect(10, 36, W - 20, 48, 0xffffff, 215);
+    wrapText(p, s.name.toUpperCase(), W - 28, 16).forEach((l, i, a) => centre(l, (a.length > 1 ? 39 : 50) + i * 20, { color: hex(s.card.text) }));
+    p.text(`x${info.count}`, W / 2, 76, { size: 56, color: 0xe5383b, outline: 0xffffff, align: 'center', font: FONT_DISPLAY });
   } else if (kind === 'single') {
     p.fill(0xf2d070);
-    for (let y = 0; y < 64; y += 6) for (let x = (y / 6) % 2 ? 3 : 0; x < 96; x += 6) p.circle(x, y, 1, 0xf8e0a0);
-    p.rect(14, 16, 68, 32, 0xffffff);
-    p.text('中古フィギュア', 48, 18, { size: 9, color: 0x333333, align: 'center' });
-    p.text(getItem(info.key)?.jp || '', 48, 32, { size: 10, color: 0xe5383b, align: 'center' });
+    for (let y = 0; y < H; y += 8) for (let x = (y / 8) % 2 ? 4 : 0; x < W; x += 8) p.circle(x, y, 1, 0xf8e0a0);
+    p.rect(20, 26, W - 40, 76, 0xffffff);
+    p.frame(20, 26, W - 40, 76, 0xd8c070);
+    centre('USED FIGURE', 34, { color: 0x555555 });
+    const name = getItem(info.key)?.name || '';
+    wrapText(p, name, W - 56, 16).forEach((l, i, a) => centre(l, (a.length > 1 ? 58 : 68) + i * 20, { color: 0xe5383b }));
   } else {
     p.fill(0xc89a5f); p.noise(0.05);
-    p.rect(6, 6, 84, 52, 0xf7f0de);
-    p.text(info.jp || 'お届け物', 48, 10, { size: 12, color: 0x333333, align: 'center' });
-    p.text(info.name || '', 48, 28, { size: 9, color: 0x666666, align: 'center', font: FONT_EN });
-    p.rect(20, 42, 56, 12, 0xffd23f);
-    p.text('ワレモノ注意', 48, 42, { size: 9, color: 0xd8282a, align: 'center' });
+    p.rect(12, 12, W - 24, H - 24, 0xf7f0de);
+    centre('DELIVERY', 18, { color: 0x8a7a6a });
+    const name = info.name || boxLabel({ type: 'decor', ...info }) || '';
+    wrapText(p, name.toUpperCase(), W - 44, 16).forEach((l, i, a) => centre(l, (a.length > 1 ? 44 : 54) + i * 20, { color: 0x333333 }));
+    p.rect(30, 86, W - 60, 22, 0xffd23f);
+    p.rect(30, 106, W - 60, 2, 0xc8960c);
+    centre(fitText(p, 'FRAGILE', W - 64, 16), 88, { color: 0xd8282a });
   }
   return p.texture();
 }
@@ -89,7 +110,7 @@ export class Delivery {
   }
 
   spawnRefillBox(series, count, pos) {
-    const data = { type: 'refill', series, count, label: `${SERIES_BY_ID[series].jp} ×${count}` };
+    const data = { type: 'refill', series, count, label: `${SERIES_BY_ID[series].name} x${count}` };
     const mesh = makeBoxMesh('refill', data, this.sizeFor(data));
     return this.game.items.spawnBox(data, pos, mesh);
   }
@@ -137,7 +158,7 @@ export class Delivery {
       const q = this.queue.shift();
       this.arrive(q.data);
       this.busyT = 0.9;
-      if (!this.queue.length) this.game.news('お届け物です！ Delivery at the shutter', '');
+      if (!this.queue.length) this.game.news('Delivery!', 'A box is waiting by the shutter');
     }
   }
 }

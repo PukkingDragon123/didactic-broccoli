@@ -1,4 +1,4 @@
-// Purchase / sale actions shared by the E-Mart website and the museum.
+// Purchase / sale actions behind the GACHA-MART store (src/ui/ShopUI.js) and the museum. Each returns { ok, msg }.
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
@@ -22,8 +22,8 @@ export function discoveredCount(g) { return Object.keys(g.state.discovered).leng
 export function buyMachine(g, type) {
   const owned = g.state.machines.filter((m) => m.type === type).length;
   const price = machinePrice(type, owned);
-  if (g.state.machines.length >= MAX_MACHINES) return fail('設置スペースがありません · No space left in the garage');
-  if (!g.spend(price)) return fail('お金が足りません · Not enough money');
+  if (g.state.machines.length >= MAX_MACHINES) return fail('No free machine slot in the garage');
+  if (!g.spend(price)) return fail('Not enough money');
   const used = new Set(g.state.machines.map((m) => m.slot));
   const slot = MACHINE_SLOTS.findIndex((_, i) => !used.has(i));
   const series = g.state.licenses[g.state.licenses.length - 1] || 'mochi';
@@ -48,66 +48,66 @@ export function buyMachine(g, type) {
       root.updateMatrixWorld(true);
     },
   });
-  g.news(`${MACHINE_TYPES[type].jp} 設置完了！`, `New machine installed: ${MACHINE_TYPES[type].name}`);
+  g.news(`${MACHINE_TYPES[type].name} installed!`, 'New machine');
   g.save();
-  return okr('設置しました');
+  return okr(`${MACHINE_TYPES[type].name} installed in your garage`);
 }
 
 export function buyRefill(g, series, count) {
-  if (!g.state.licenses.includes(series)) return fail('取扱いがありません');
+  if (!g.state.licenses.includes(series)) return fail('You need the licence for this series first');
   const price = capsuleCost(series) * count;
-  if (!g.spend(price)) return fail('お金が足りません · Not enough money');
-  g.delivery.order({ type: 'refill', series, count, label: `${SERIES_BY_ID[series].jp} ×${count}` });
+  if (!g.spend(price)) return fail('Not enough money');
+  g.delivery.order({ type: 'refill', series, count, label: `${SERIES_BY_ID[series].name} x${count}` });
   g.save();
-  return okr('ご注文ありがとうございます');
+  return okr(`${count} capsules are on their way to the shutter`);
 }
 
 export function buyLicense(g, series) {
-  if (g.state.licenses.includes(series)) return fail('取扱い中');
-  if (discoveredCount(g) < licenseRequirement(series)) return fail(`図鑑 ${licenseRequirement(series)}種 以上が必要`);
-  if (!g.spend(licensePrice(series))) return fail('お金が足りません · Not enough money');
+  if (g.state.licenses.includes(series)) return fail('You already have this licence');
+  if (discoveredCount(g) < licenseRequirement(series)) return fail(`Discover ${licenseRequirement(series)} figures to unlock this series`);
+  if (!g.spend(licensePrice(series))) return fail('Not enough money');
   g.state.licenses.push(series);
-  g.news(`🆕 ${SERIES_BY_ID[series].jp} 取扱開始！`, `You can now order ${SERIES_BY_ID[series].name} refills`);
+  g.news(`New series: ${SERIES_BY_ID[series].name}!`, 'You can now order its refills on the PC');
   g.save();
-  return okr('取扱開始！');
+  return okr(`You can now order ${SERIES_BY_ID[series].name} refills`);
 }
 
 export function buyUpgrade(g, machine, kind) {
   const lvl = machine.data.up[kind] || 0;
-  if (lvl >= UPGRADES[kind].max) return fail('MAX');
+  if (lvl >= UPGRADES[kind].max) return fail('Already at max level');
   const cost = upgradeCost(kind, lvl, machine.data.type);
-  if (!g.spend(cost)) return fail('お金が足りません · Not enough money');
+  if (!g.spend(cost)) return fail('Not enough money');
   machine.data.up[kind] = lvl + 1;
   machine.applyUpgrades(true);
   g.save();
-  return okr('改造完了！');
+  return okr(`${UPGRADES[kind].name} fitted`);
 }
 
 export function buyOpener(g, tier) {
-  if (g.state.opener >= tier) return fail('購入済み');
-  if (tier > g.state.opener + 1) return fail('前のモデルが必要');
-  if (!g.spend(OPENERS[tier].price)) return fail('お金が足りません · Not enough money');
+  if (g.state.opener >= tier) return fail('You already have this');
+  if (tier > g.state.opener + 1) return fail('You need the previous model first');
+  if (!g.spend(OPENERS[tier].price)) return fail('Not enough money');
   g.state.opener = tier;
   placeOpenerTool(g, true);
-  g.news(`🔧 ${OPENERS[tier].jp}`, `${OPENERS[tier].name} — capsules open faster`);
+  g.news(`New tool: ${OPENERS[tier].name}`, 'Capsules open faster');
   g.save();
-  return okr('購入しました');
+  return okr(`${OPENERS[tier].name}: capsules open faster`);
 }
 
 export function buyCharm(g, id) {
-  if (g.state.charms.includes(id)) return fail('購入済み');
-  if (!g.spend(CHARMS[id].price)) return fail('お金が足りません · Not enough money');
+  if (g.state.charms.includes(id)) return fail('You already have this charm');
+  if (!g.spend(CHARMS[id].price)) return fail('Not enough money');
   g.state.charms.push(id);
   placeCharms(g, id);
-  g.news(`⛩ ${CHARMS[id].jp}`, `${CHARMS[id].name}: ${CHARMS[id].desc}`);
+  g.news(`${CHARMS[id].name} on the shrine shelf`, CHARMS[id].desc);
   g.save();
-  return okr('ご利益がありますように');
+  return okr(`${CHARMS[id].name} is on the shrine shelf. Good luck!`);
 }
 
 export function buyShelf(g) {
   const n = g.state.shelves.length;
-  if (n >= SHELF_SLOTS.length) return fail('壁がいっぱい · No wall space');
-  if (!g.spend(SHELF_PRICES[n])) return fail('お金が足りません · Not enough money');
+  if (n >= SHELF_SLOTS.length) return fail('No wall space left');
+  if (!g.spend(SHELF_PRICES[n])) return fail('Not enough money');
   const data = { slot: n, items: Array(48).fill(null) };
   g.state.shelves.push(data);
   const sh = new GarageShelf(g, data);
@@ -116,20 +116,20 @@ export function buyShelf(g) {
   g.tweens.add({ dur: 0.6, ease: ease.outBack, update: (k) => sh.root.scale.set(1, Math.max(0.01, k), 1) });
   audio.play('upgrade', { pos: sh.root.position });
   g.save();
-  return okr('設置しました');
+  return okr('A new shelf is up on the wall');
 }
 
 export function buySingle(g, key, finish = 'normal') {
   const price = singlePrice(key, finish);
-  if (!g.spend(price)) return fail('お金が足りません · Not enough money');
-  g.delivery.order({ type: 'single', key, finish, label: getItem(key)?.jp });
+  if (!g.spend(price)) return fail('Not enough money');
+  g.delivery.order({ type: 'single', key, finish, label: getItem(key)?.name });
   g.save();
-  return okr('ご注文ありがとうございます');
+  return okr(`${getItem(key)?.name || 'Your figure'} is on its way to the shutter`);
 }
 
 export function sellStored(g, k, n = 1) {
   const have = g.state.storage[k] || 0;
-  if (!have) return fail('在庫なし');
+  if (!have) return fail('None left in storage');
   const take = Math.min(n, have);
   const [key, finish] = k.split('|');
   const v = itemValue(key, finish) * take;
@@ -138,7 +138,7 @@ export function sellStored(g, k, n = 1) {
   g.addMoney(v);
   g.state.stats.sold += take;
   g.save();
-  return okr(`+¥${v.toLocaleString()}`);
+  return okr(`Sold ${take} for ¥${v.toLocaleString('en-US')}`);
 }
 
 export function sellAllStored(g) {
@@ -147,12 +147,12 @@ export function sellAllStored(g) {
     const [key, finish] = k.split('|');
     total += itemValue(key, finish) * c; n += c;
   }
-  if (!n) return fail('在庫なし');
+  if (!n) return fail('Your storage bin is empty');
   g.state.storage = {};
   g.addMoney(total);
   g.state.stats.sold += n;
   g.save();
-  return okr(`${n}点 +¥${total.toLocaleString()}`);
+  return okr(`Sold ${n} figure${n === 1 ? '' : 's'} for ¥${total.toLocaleString('en-US')}`);
 }
 
 /** Sell every displayed duplicate (keeps the best finish of each item on display). */
@@ -168,11 +168,11 @@ export function sellDisplayedDupes(g) {
     total += itemValue(e.it.k, e.it.f); n++;
     e.d.clearItem(e.i);
   }
-  if (!n) return fail('ダブりなし · No duplicates on display');
+  if (!n) return fail('No duplicates on display');
   g.addMoney(total);
   g.state.stats.sold += n;
   g.save();
-  return okr(`${n}点 +¥${total.toLocaleString()}`);
+  return okr(`Sold ${n} duplicate${n === 1 ? '' : 's'} for ¥${total.toLocaleString('en-US')}`);
 }
 
 // ------------------------------------------------------------------ visible tools & charms

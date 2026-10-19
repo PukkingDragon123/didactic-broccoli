@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { makeItemMesh } from './collectibles.js';
+import { boxLabel } from './Delivery.js';
 
 export class Placement {
   constructor(game) {
@@ -23,10 +24,10 @@ export class Placement {
 
   boxHint(it) {
     const d = it.data;
-    if (d.type === 'refill') return { key: 'Q', text: 'ガチャマシンへ · Take it to a machine', sub: `${d.label}` };
-    if (d.type === 'single') return { key: 'R', text: '開ける · Open the mailer' };
+    if (d.type === 'refill') return { key: '', text: 'Take it to a gacha machine', sub: `${boxLabel(d)} · Q to put down` };
+    if (d.type === 'single') return { key: 'RMB', text: 'Open the mailer', sub: boxLabel(d) };
     if (this.game.museum?.boxHint) return this.game.museum.boxHint(it);
-    return { key: 'Q', text: '置く · Put down' };
+    return { key: 'Q', text: 'Put down' };
   }
 
   boxSecondary(it) {

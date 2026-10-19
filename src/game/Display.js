@@ -6,6 +6,7 @@ import { makeItemMesh } from './collectibles.js';
 import { plaque } from './labels.js';
 import { getItem } from '../data/series/index.js';
 import { itemValue } from './economy.js';
+import { FONT_EN } from '../gfx/pix.js';
 
 const ghostMat = new THREE.MeshBasicMaterial({ color: 0xfff4d8, transparent: true, opacity: 0.28, depthWrite: false });
 const hitMat = new THREE.MeshBasicMaterial({ visible: false });
@@ -13,14 +14,24 @@ export const PRICE_STEPS = [0, 1.5, 2, 3, 5]; // price tag = market value × ste
 const tagCache = new Map();
 function tagMesh(price) {
   if (tagCache.has(price)) return tagCache.get(price).clone();
-  const c = document.createElement('canvas'); c.width = 64; c.height = 24;
+  // 88x32 paper tag: red band, string hole, price in Tiny5 (16 px, or 8 px when it would not fit)
+  const W = 88, H = 32;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d');
-  x.fillStyle = '#fffaf0'; x.fillRect(0, 0, 64, 24); x.fillStyle = '#d8282a'; x.fillRect(0, 0, 64, 5);
-  x.beginPath(); x.arc(6, 14, 2.5, 0, 7); x.fillStyle = '#2a2220'; x.fill();
-  x.fillStyle = '#d8282a'; x.font = '14px "Pixelify Sans", monospace'; x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.fillText('¥' + price.toLocaleString(), 35, 15);
+  x.fillStyle = '#fffaf0'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#efe4cc'; for (let i = 0; i < 40; i++) x.fillRect((i * 37) % W, 8 + ((i * 13) % (H - 8)), 1, 1);
+  x.fillStyle = '#d8282a'; x.fillRect(0, 0, W, 6);
+  x.fillStyle = '#a81e20'; x.fillRect(0, 6, W, 1);
+  x.fillStyle = '#2a2220'; x.fillRect(5, 16, 4, 4); x.fillRect(6, 15, 2, 6); x.fillRect(4, 17, 6, 2);
+  const txt = '¥' + price.toLocaleString('en-US');
+  let size = 16;
+  x.font = `${size}px ${FONT_EN}`;
+  if (x.measureText(txt).width > W - 18) { size = 8; x.font = `${size}px ${FONT_EN}`; }
+  const w = x.measureText(txt).width;
+  x.textBaseline = 'top'; x.fillStyle = '#c8202a';
+  x.fillText(txt, Math.round(14 + (W - 14 - w) / 2), size === 16 ? 10 : 15);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.019), new THREE.MeshStandardMaterial({ map: t, roughness: 0.6, side: THREE.DoubleSide }));
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(0.052, 0.019), new THREE.MeshStandardMaterial({ map: t, roughness: 0.6, side: THREE.DoubleSide }));
   m.userData.noRim = true; m.castShadow = false; m.raycast = () => {};
   tagCache.set(price, m);
   return m.clone();
@@ -72,12 +83,12 @@ export class DisplaySlots {
     if (held) {
       if (held.kind !== 'toy' || this.game.held.busy) return null;
       this.showGhost(slot, held.data.key);
-      return it ? { key: 'L', text: '入れ替え · Swap', sub: getItem(it.k)?.name } : { key: 'L', text: '飾る · Display here' };
+      return it ? { key: 'LMB', text: 'Swap', sub: getItem(it.k)?.name } : { key: 'LMB', text: 'Display here' };
     }
     if (!it) return null;
     const item = getItem(it.k);
-    if (this.opts.prices) return { key: 'L', text: it.pm ? `取る ・ 値札 ¥${this.priceOf(it).toLocaleString()}` : '取る ・ ✋ 値札をつける', sub: item?.name };
-    return { key: 'L', text: `取る · Take ${item?.name || ''}`, sub: `¥${itemValue(it.k, it.f).toLocaleString()}` };
+    if (this.opts.prices) return { key: 'LMB', text: `Take ${item?.name || ''}`, sub: it.pm ? `For sale at ¥${this.priceOf(it).toLocaleString('en-US')} · RMB to change` : 'RMB to add a price tag' };
+    return { key: 'LMB', text: `Take ${item?.name || ''}`, sub: `Worth ¥${itemValue(it.k, it.f).toLocaleString('en-US')}` };
   }
 
   showGhost(slot, key) {

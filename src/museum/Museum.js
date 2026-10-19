@@ -5,22 +5,21 @@ import * as THREE from 'three';
 import { Game } from '../game/Game.js';
 import { GARAGE } from '../world/Garage.js';
 import { pixMat, boxMesh, colMat } from '../gfx/geo.js';
-import { Pix, FONT_EN } from '../gfx/pix.js';
+import { Pix, FONT_EN, FONT_DISPLAY } from '../gfx/pix.js';
 import { shopMat } from '../gfx/shopTextures.js';
 import { audio } from '../core/audio.js';
-import { ease, formatYen, hash2 } from '../core/util.js';
+import { ease, hash2 } from '../core/util.js';
 import { DisplaySlots } from '../game/Display.js';
 import { buildDisplay } from './displays.js';
-import { DISPLAYS, decorList, decorPrice, THEME_NAMES } from './catalog.js';
-import { DISPLAY_STYLES, STYLE_ORDER, sheetMesh, styleTile } from './styles.js';
+import { DISPLAYS, decorPrice, THEME_NAMES } from './catalog.js';
+import { DISPLAY_STYLES, STYLE_ORDER, sheetMesh } from './styles.js';
 import { PROPS, propMesh, hasProp } from '../world/props.js';
-import { MUSEUM_PRICE, MUSEUM_REQ_COMPLETE, MUSEUM_EXPANSIONS, itemValue } from '../game/economy.js';
-import { getItem, SERIES_BY_ID, MINI_SERIES } from '../data/series/index.js';
+import { MUSEUM_PRICE, MUSEUM_REQ_COMPLETE, MUSEUM_EXPANSIONS } from '../game/economy.js';
+import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
 import { Visitors } from './Visitors.js';
-import { makeBoxMesh } from '../game/Delivery.js';
-import { COL, yen } from '../pc/ui.js';
+import { makeBoxMesh, boxLabel } from '../game/Delivery.js';
 
 // optional pixel-art signage (src/gfx/shopArt.js)
 const artMods = import.meta.glob('../gfx/shopArt.js', { eager: true });
@@ -383,12 +382,13 @@ export class Museum {
     sunOut.position.set(0, 3, zS - 3);
     g.add(sunOut);
     // inside: wooden name board + star rating above the doors
-    const p = new Pix(160, 40, 2);
+    const p = new Pix(192, 48, 2);
     p.fill(0x3a2a1c);
-    for (let y = 0; y < 40; y += 3) for (let x = 0; x < 160; x++) if (hash2(x >> 3, y) < 0.3) p.px(x, y, 0x46321f);
-    p.frame(1, 1, 158, 38, 0xd4a83a);
-    p.text('ガチャ博物館', 80, 3, { size: 18, color: 0xf3e9d2, align: 'center', outline: 0x1a120a });
-    p.text('GACHA MUSEUM', 80, 25, { size: 9, color: 0xd4a83a, align: 'center', font: FONT_EN });
+    for (let y = 0; y < 48; y += 3) for (let x = 0; x < 192; x++) if (hash2(x >> 3, y) < 0.3) p.px(x, y, 0x46321f);
+    p.frame(1, 1, 190, 46, 0xd4a83a);
+    p.frame(3, 3, 186, 42, 0x5a4026);
+    p.text('GACHA MUSEUM', 96, -1, { size: 28, color: 0xf3e9d2, align: 'center', outline: 0x1a120a, font: FONT_DISPLAY });
+    p.text('CAPSULE TOY COLLECTION', 96, 33, { size: 8, color: 0xd4a83a, align: 'center', font: FONT_EN });
     const board = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.45), new THREE.MeshStandardMaterial({ map: p.texture(), roughness: 0.6 }));
     board.position.set(0, ENTRANCE.h + 0.42, zS + 0.03);
     g.add(board);
@@ -416,7 +416,7 @@ export class Museum {
     const p = this.counterCanvas;
     p.fill(0x1a1612);
     for (let i = 0; i < 6; i++) p.rect(3 + i * 10, 2, 8, 12, 0x2a2420);
-    p.text(String(this.data.visitors || 0).padStart(6, '0').split('').join(' '), 32, 1, { size: 12, color: 0xf2e6c8, align: 'center', font: FONT_EN });
+    String(this.data.visitors || 0).padStart(6, '0').slice(-6).split('').forEach((c, i) => p.text(c, 3 + i * 10 + 4, 3, { size: 8, color: 0xf2e6c8, align: 'center', font: FONT_EN }));
     p.rect(0, 7, 64, 1, 0x0a0806);
     this.counterTex.needsUpdate = true;
   }
@@ -441,23 +441,23 @@ export class Museum {
     reg.position.set(0.45, H, -0.08); reg.rotation.y = Math.PI; g.add(reg);
     if (hasProp('abacus')) { const ab = propMesh('abacus'); ab.position.set(-0.1, H, -0.12); ab.rotation.y = Math.PI + 0.2; g.add(ab); }
     if (hasProp('manekineko')) { const mn = propMesh('manekineko'); mn.position.set(-0.62, H, 0.05); g.add(mn); }
-    // 受付 sign + ticket price card (facing the customers)
-    const p = new Pix(80, 40, 4); p.fill(0xfff8e8); p.frame(0, 0, 80, 40, 0x8a2a1e); p.frame(2, 2, 76, 36, 0x8a2a1e);
-    p.text('受付', 40, 3, { size: 16, color: 0x8a2a1e, align: 'center' });
-    p.text('RECEPTION', 40, 23, { size: 9, color: 0x333333, align: 'center', font: FONT_EN });
+    // reception sign + ticket price card (facing the customers)
+    const p = new Pix(160, 80, 4); p.fill(0xfff8e8); p.frame(0, 0, 160, 80, 0x8a2a1e); p.frame(4, 4, 152, 72, 0x8a2a1e); p.frame(5, 5, 150, 70, 0x8a2a1e);
+    p.text('RECEPTION', 80, 10, { size: 28, color: 0x8a2a1e, align: 'center', font: FONT_DISPLAY });
+    p.text('TICKETS HERE', 80, 50, { size: 16, color: 0x333333, align: 'center', font: FONT_EN });
     const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.18), new THREE.MeshStandardMaterial({ map: p.texture(), side: THREE.DoubleSide }));
     sign.position.set(-0.3, H + 0.2, 0.05); g.add(sign);
-    this.ticketPix = new Pix(64, 32, 5);
+    this.ticketPix = new Pix(128, 64, 5);
     this.ticketTex = this.ticketPix.texture();
     const tk = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.13), new THREE.MeshStandardMaterial({ map: this.ticketTex, side: THREE.DoubleSide }));
     tk.position.set(0.05, H + 0.05, 0.22); tk.rotation.set(-0.5, 0, 0); g.add(tk);
     // donation box
     const don = boxMesh(0.2, 0.22, 0.16, pixMat('woodLight', { roughness: 0.5 }));
     don.position.set(-0.62, H + 0.11, -0.15); g.add(don);
-    const dp = new Pix(32, 16, 6); dp.fill(0xfff8e8); dp.text('募金', 16, 1, { size: 12, color: 0x8a2a1e, align: 'center' });
+    const dp = new Pix(64, 32, 6); dp.fill(0xfff8e8); dp.frame(1, 1, 62, 30, 0xd8c8a8); dp.text('DONATE', 32, 8, { size: 16, color: 0x8a2a1e, align: 'center', font: FONT_EN });
     const dl = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.08), new THREE.MeshBasicMaterial({ map: dp.texture() }));
     dl.position.set(-0.62, H + 0.12, -0.069); g.add(dl);
-    // shopkeeper's raised tatami nook behind the counter (上がり框)
+    // shopkeeper's raised tatami nook behind the counter (agari-kamachi)
     const tat = pixMat('tatami', { roughness: 0.9 });
     const nook = boxMesh(1.6, 0.36, 1.0, tat);
     nook.position.set(0, 0.18, -0.95);
@@ -476,9 +476,9 @@ export class Museum {
   updateTicketTex() {
     if (!this.ticketPix) return;
     const p = this.ticketPix;
-    p.fill(0xfff6d8); p.frame(0, 0, 64, 32, 0x8a2a1e);
-    p.text('入館料', 32, 1, { size: 11, color: 0x333333, align: 'center' });
-    p.text(`${this.score.ticket || 40}円`, 32, 15, { size: 13, color: 0xd8282a, align: 'center' });
+    p.fill(0xfff6d8); p.frame(0, 0, 128, 64, 0x8a2a1e); p.frame(2, 2, 124, 60, 0xe8d0a8);
+    p.text('ADMISSION', 64, 6, { size: 16, color: 0x333333, align: 'center', font: FONT_EN });
+    p.text(`¥${(this.score.ticket || 40).toLocaleString('en-US')}`, 64, 24, { size: 28, color: 0xd8282a, align: 'center', font: FONT_DISPLAY });
     this.ticketTex.needsUpdate = true;
   }
 
@@ -643,9 +643,9 @@ export class Museum {
         if (held) return null;
         if (entry.display) {
           const st = DISPLAY_STYLES[data.style || 'plain'];
-          return { key: 'R', text: `展示シート · Sheet: ${st.jp}`, sub: `F で移動 · F to move — ${entry.display.keys().length}/${obj.slots.length} on display` };
+          return { key: 'R', text: `Change sheet: ${st.name}`, sub: `F to move · ${entry.display.keys().length}/${obj.slots.length} on display` };
         }
-        return { key: 'F', text: `${def.jp || def.name} · Move`, sub: (def.themes || []).map((t) => THEME_NAMES[t]?.[1]).join(' · ') };
+        return { key: 'F', text: `Move ${def.name || ''}`, sub: (def.themes || []).map((t) => THEME_NAMES[t]?.[1]).join(' · ') };
       },
       use: () => false,
     });
@@ -690,7 +690,7 @@ export class Museum {
     const c = new THREE.Vector3(entry.data.x, 0.9, entry.data.z);
     audio.play('paper', { pos: c, vol: 0.8 });
     this.game.effects.sparks({ pos: c, count: 16, colors: [0xffffff, 0xfff0c0], speed: 0.4, size: 0.012, radius: 0.4 });
-    if (owned.length <= 2) this.game.tip('sheets', 'E-Martで展示シートを買うと選べる柄が増えるよ', 'Buy more display sheets on E-Mart to theme your displays');
+    if (owned.length <= 2) this.game.tip('sheets', 'Buy more display sheets on the PC', 'Sheets theme your displays and raise the rating');
     this.recompute();
     this.game.save();
   }
@@ -711,10 +711,11 @@ export class Museum {
   boxHint(it) {
     const d = it.data;
     if (d.type !== 'decor') return null;
-    if (!this.data.owned) return { key: 'Q', text: '博物館がまだありません · You need a museum first' };
+    const label = boxLabel(d);
+    if (!this.data.owned) return { key: '', icon: 'lock', text: 'You need a museum first', sub: 'Q to put down' };
     const pl = this.placementTarget(it);
-    if (!pl) return { key: 'Q', text: '博物館へ運ぶ · Carry it into the museum', sub: d.label };
-    return pl.ok ? { key: 'L', text: `設置 · Place ${d.label || ''}`, sub: 'R / right-click to rotate' } : { key: '×', text: 'ここには置けません · Blocked', sub: 'R to rotate' };
+    if (!pl) return { key: '', text: 'Carry it into the museum', sub: label };
+    return pl.ok ? { key: 'LMB', text: `Place ${label}`, sub: 'R or RMB to rotate' } : { key: '', icon: 'warning', text: "Can't place it here", sub: 'R or RMB to rotate' };
   }
 
   boxSecondary(it) {
@@ -786,7 +787,7 @@ export class Museum {
     this.removePlaced(entry);
     this.data.placed.splice(this.data.placed.indexOf(data), 1);
     const def = entry.def;
-    const box = { type: 'decor', kind: data.kind, id: data.id, label: def.jp || def.name, rot: data.rot, moving: data, boxSize: [0.5, 0.35, 0.45] };
+    const box = { type: 'decor', kind: data.kind, id: data.id, label: def.name, name: def.name, rot: data.rot, moving: data, boxSize: [0.5, 0.35, 0.45] };
     const mesh = makeBoxMesh('decor', box, box.boxSize);
     mesh.position.set(data.x, 0.2, data.z);
     g.scene.add(mesh);
@@ -867,141 +868,14 @@ export class Museum {
     this.updateTicketTex();
   }
 
-  // ------------------------------------------------------------------ site (E-Mart museum page)
-  sitePage(site, x, y, w) {
-    const ui = site.ui, g = this.game, s = g.state;
-    let yy = y;
-    if (!this.data.owned) {
-      yy += site.heading(x, yy, w, '博物館オーナー募集！', 'OPEN YOUR OWN MUSEUM', '#6a2a9a');
-      ui.rect(x, yy, w, 150, '#f6eefc');
-      ui.frame(x, yy, w, 150, '#c8a8e8');
-      ui.text('ガレージ裏の空き倉庫を', x + 16, yy + 12, { size: 16 });
-      ui.text('あなただけのガチャ博物館に！', x + 16, yy + 34, { size: 20, color: '#6a2a9a', outline: '#fff' });
-      ui.text('★ 来館者が入館料を払ってくれます（不労所得！）', x + 16, yy + 64, { size: 11 });
-      ui.text('★ 昭和レトロなお店で展示台・シート・装飾をカスタマイズ', x + 16, yy + 80, { size: 11 });
-      ui.text('★ テーマが合う展示は評価アップ', x + 16, yy + 96, { size: 11 });
-      const comp = Object.keys(s.completed).length;
-      const ok = comp >= MUSEUM_REQ_COMPLETE;
-      ui.text(`条件：シリーズコンプ ${MUSEUM_REQ_COMPLETE}個以上（現在 ${comp}）`, x + 16, yy + 118, { size: 11, color: ok ? COL.green : COL.red });
-      ui.text(yen(MUSEUM_PRICE), x + w - 16, yy + 60, { size: 22, color: COL.red, align: 'right', bold: true });
-      ui.button('改装を依頼する', x + w - 170, yy + 100, 154, 30, () => site.notify(this.buyMuseum()), { disabled: !ok || s.money < MUSEUM_PRICE, color: COL.orange, size: 13 });
-      yy += 160;
-      ui.text('※完成した展示（シリーズを全部並べる）はコンプボーナスの対象です。', x + 4, yy, { size: 10, color: COL.soft });
-      return yy + 20 - y;
-    }
-    const tabs = [['displays', '展示台'], ['minis', 'ミニデコ'], ['decor', '装飾'], ['sheets', '展示シート'], ['expand', '拡張'], ['stats', '評価']];
-    let tx = x;
-    const tw = Math.floor((w - (tabs.length - 1) * 3) / tabs.length);
-    for (const [id, jp] of tabs) {
-      const on = site.sub.museum === id;
-      const hov = ui.hit(tx, yy, tw, 22, () => { site.sub.museum = id; site.scroll.museum = 0; audio.play('uiClick', { vol: 0.5 }); });
-      ui.rect(tx, yy, tw, 22, on ? '#6a2a9a' : hov ? '#e8d8f8' : '#f0e8f8');
-      ui.text(jp, tx + tw / 2, yy + 5, { size: 10, color: on ? '#fff' : COL.ink, align: 'center' });
-      tx += tw + 3;
-    }
-    yy += 28;
-    const sub = site.sub.museum;
-    if (sub === 'displays') {
-      for (const d of Object.values(DISPLAYS)) {
-        site.panel(x, yy, w, 70);
-        const th = site.displayThumb(d.id);
-        if (th) ui.image(th, x + 4, yy + 3, 64, 64);
-        ui.text(d.jp, x + 74, yy + 6, { size: 13 });
-        ui.text(d.name, x + 74, yy + 24, { size: 9, color: COL.soft });
-        ui.text(d.desc, x + 74, yy + 38, { size: 9, color: COL.ink, max: 250 });
-        ui.text(`${d.footprint[0]}×${d.footprint[1]}m  ${d.themes.map((t) => THEME_NAMES[t][0]).join('・')}`, x + 74, yy + 52, { size: 9, color: COL.blue });
-        ui.text(yen(d.price), x + w - 12, yy + 10, { size: 14, color: COL.red, bold: true, align: 'right' });
-        ui.button('注文', x + w - 92, yy + 36, 80, 24, () => site.notify(this.buyFurniture('display', d.id)), { disabled: s.money < d.price, size: 12 });
-        yy += 76;
-      }
-    } else if (sub === 'decor') {
-      const list = decorList();
-      const cw = Math.floor((w - 12) / 4);
-      list.forEach((p, i) => {
-        const cx = x + (i % 4) * (cw + 4), cy = yy + Math.floor(i / 4) * 136;
-        site.panel(cx, cy, cw, 130);
-        ui.image(site.propThumb(p.id), cx + (cw - 64) / 2, cy + 3, 64, 64);
-        ui.text(p.jp || p.name, cx + cw / 2, cy + 70, { size: 10, align: 'center', max: cw - 6 });
-        ui.text((p.themes || []).map((t) => THEME_NAMES[t]?.[0]).join('・'), cx + cw / 2, cy + 84, { size: 8, color: COL.blue, align: 'center', max: cw - 6 });
-        ui.stars(Math.min(5, Math.ceil(p.beauty / 2)), cx + cw / 2 - 17, cy + 96, '#ff8fb2');
-        ui.button(yen(p.price), cx + 6, cy + 106, cw - 12, 19, () => site.notify(this.buyFurniture('decor', p.id)), { size: 11, disabled: s.money < p.price, color: '#d8f0d8' });
-      });
-      yy += Math.ceil(list.length / 4) * 136;
-    } else if (sub === 'minis') {
-      ui.text('ちいさなジオラマ小物。展示台のスロットにフィギュアと並べて飾れます。', x + 4, yy, { size: 10, color: COL.soft });
-      yy += 18;
-      const list = MINI_SERIES.items;
-      const cw = Math.floor((w - 15) / 5);
-      list.forEach((it, i) => {
-        const cx = x + (i % 5) * (cw + 3), cy = yy + Math.floor(i / 5) * 96;
-        site.panel(cx, cy, cw, 90);
-        ui.image(site.itemThumb(it.key, 48), cx + (cw - 48) / 2, cy + 3, 48, 48);
-        ui.text(it.jp, cx + cw / 2, cy + 52, { size: 10, align: 'center', max: cw - 4 });
-        ui.button(yen(it.price), cx + 4, cy + 68, cw - 8, 17, () => site.notify(this.buyMini(it.key)), { size: 10, disabled: s.money < it.price, color: '#d8f0e8' });
-      });
-      yy += Math.ceil(list.length / 5) * 96;
-    } else if (sub === 'sheets') {
-      ui.text('展示台の棚に敷くジオラマシート。展示台を見ながら R キーで切り替え！', x + 4, yy, { size: 10, color: COL.soft });
-      yy += 14;
-      ui.text('シリーズのテーマと合うシートに飾ると評価UP。お店の壁や床は昭和のまま変わりません。', x + 4, yy, { size: 10, color: COL.soft, max: w - 8 });
-      yy += 18;
-      const list = STYLE_ORDER.filter((id) => id !== 'plain').map((id) => DISPLAY_STYLES[id]);
-      const cw = Math.floor((w - 12) / 4);
-      list.forEach((m, i) => {
-        const cx = x + (i % 4) * (cw + 4), cy = yy + Math.floor(i / 4) * 98;
-        site.panel(cx, cy, cw, 92);
-        // swatch: the sheet tile at 1:1 pixels, framed like a sample card
-        const tile = styleTile(m.id).canvas;
-        ui.rect(cx + 5, cy + 4, cw - 10, 40, '#3a2a1c');
-        ui.image(tile, cx + 7, cy + 6, cw - 14, 36);
-        ui.text(m.jp, cx + cw / 2, cy + 47, { size: 11, align: 'center' });
-        ui.text(m.themes.map((t) => THEME_NAMES[t][0]).join('・'), cx + cw / 2, cy + 61, { size: 8, color: COL.blue, align: 'center', max: cw - 6 });
-        const own = this.data.styles.includes(m.id);
-        if (own) ui.text('購入済み ✓', cx + cw / 2, cy + 74, { size: 10, color: COL.green, align: 'center' });
-        else ui.button(yen(m.price), cx + 6, cy + 72, cw - 12, 17, () => site.notify(this.buyStyle(m.id)), { size: 10, disabled: s.money < m.price });
-      });
-      yy += Math.ceil(list.length / 4) * 98 + 6;
-    } else if (sub === 'expand') {
-      const lvl = this.data.level || 0;
-      MUSEUM_EXPANSIONS.forEach((e, i) => {
-        site.panel(x, yy, w, 50, i <= lvl ? '#eef8ee' : '#fff');
-        ui.text(`${i === 0 ? '基本' : '拡張' + i}：${e.w}m × ${e.d}m`, x + 10, yy + 8, { size: 14 });
-        ui.text(`床面積 ${e.w * e.d}㎡`, x + 10, yy + 28, { size: 10, color: COL.soft });
-        if (i <= lvl) ui.text('完了 ✓', x + w - 12, yy + 16, { size: 13, color: COL.green, align: 'right' });
-        else if (i === lvl + 1) {
-          ui.text(yen(e.price), x + w - 120, yy + 16, { size: 14, color: COL.red, bold: true, align: 'right' });
-          ui.button('工事する', x + w - 104, yy + 12, 92, 26, () => site.notify(this.expand()), { disabled: s.money < e.price, color: COL.orange });
-        }
-        yy += 56;
-      });
-    } else {
-      const sc = this.score;
-      site.panel(x, yy, w, 130, '#fffaf0');
-      ui.text('来館者レビュー', x + 10, yy + 8, { size: 13 });
-      for (let i = 0; i < 5; i++) ui.sprite(['....X....', '...XXX...', 'XXXXXXXXX', '.XXXXXXX.', '..XXXXX..', '.XX...XX.', 'XX.....XX'], { X: i < sc.stars ? '#ffb000' : '#d8d0c0' }, x + 10 + i * 22, yy + 28, 2);
-      const quotes = ['まだ何もない…', 'ちょっとかわいい', 'なかなか楽しい！', 'また来たい！', '感動しました！！', '伝説のガチャ博物館…！'];
-      ui.text(`「${quotes[sc.stars]}」`, x + 130, yy + 32, { size: 13, color: '#6a2a9a' });
-      ui.text(`総合スコア ${sc.total}${sc.nextAt ? `（次の★まで ${sc.nextAt - sc.total}）` : ''}`, x + 10, yy + 56, { size: 11 });
-      ui.text(`展示 ${sc.exhibits}　テーマ一致 +${sc.themes}　美しさ +${sc.beauty}　セット展示 +${sc.sets}`, x + 10, yy + 74, { size: 10, color: COL.soft });
-      ui.text(`来館ペース 約${sc.rate.toFixed(1)}人/分　入館料 ${yen(sc.ticket)}　展示中 ${sc.museumKeys}種`, x + 10, yy + 90, { size: 10, color: COL.blue });
-      ui.text(`累計来館者 ${this.data.visitors || 0}人　累計収入 ${yen(this.data.income || 0)}`, x + 10, yy + 106, { size: 10, color: COL.green });
-      yy += 138;
-      ui.text('ヒント：シリーズのテーマ（かわいい・食べ物・宇宙…）と同じ雰囲気のシートや装飾の近くに飾ると評価UP！', x + 4, yy, { size: 10, color: COL.soft, max: w - 8 });
-      yy += 16;
-      ui.text('スポットライト台はレア物の魅力が2倍。シリーズを博物館に全種並べるとセットボーナス。', x + 4, yy, { size: 10, color: COL.soft, max: w - 8 });
-      yy += 20;
-    }
-    return yy - y;
-  }
-
   displayPreview(id) { return buildDisplay(id, { light: false }).group; }
 
   // ------------------------------------------------------------------ purchases
   buyMuseum() {
     const g = this.game;
-    if (this.data.owned) return { ok: false, msg: '購入済み' };
-    if (Object.keys(g.state.completed).length < MUSEUM_REQ_COMPLETE) return { ok: false, msg: 'シリーズをコンプリートしてね' };
-    if (!g.spend(MUSEUM_PRICE)) return { ok: false, msg: 'お金が足りません' };
+    if (this.data.owned) return { ok: false, msg: 'Already owned' };
+    if (Object.keys(g.state.completed).length < MUSEUM_REQ_COMPLETE) return { ok: false, msg: 'Complete a series first' };
+    if (!g.spend(MUSEUM_PRICE)) return { ok: false, msg: 'Not enough money' };
     this.data.owned = true;
     this.data.level = 0;
     // a few starter pieces so opening day isn't an empty room
@@ -1015,55 +889,55 @@ export class Museum {
     this.build();
     audio.play('thud', { pos: new THREE.Vector3(0, 1, -5), v: 1 });
     audio.play('complete', { vol: 0.8 });
-    g.news('🏮 ガチャ博物館オープン！', 'Your museum is open — the back door is unlocked!', 6000);
+    g.news('Your museum is open!', 'The back door of the garage is unlocked', 6000);
     g.save();
-    return { ok: true, msg: '裏のドアが開きました！ The back door is open!' };
+    return { ok: true, msg: 'The back door is open!' };
   }
 
   buyFurniture(kind, id) {
     const g = this.game;
     const def = this.defOf(kind, id);
     const price = kind === 'display' ? def.price : decorPrice(def);
-    if (!g.spend(price)) return { ok: false, msg: 'お金が足りません' };
+    if (!g.spend(price)) return { ok: false, msg: 'Not enough money' };
     const [w, d] = def.footprint;
     const boxSize = [Math.min(0.7, 0.3 + w * 0.2), Math.min(0.6, 0.25 + 0.15 * Math.max(w, d)), Math.min(0.6, 0.3 + d * 0.15)];
-    g.delivery.order({ type: 'decor', kind, id, label: def.jp || def.name, name: def.name, jp: def.jp, rot: 0, boxSize });
+    g.delivery.order({ type: 'decor', kind, id, label: def.name, name: def.name, rot: 0, boxSize });
     g.save();
-    return { ok: true, msg: 'シャッター前に届きます · Delivered to the garage' };
+    return { ok: true, msg: 'Ordered! It will arrive at the garage shutter' };
   }
 
   buyMini(key) {
     const g = this.game;
     const it = getItem(key);
-    if (!it || !g.spend(it.price)) return { ok: false, msg: 'お金が足りません' };
-    g.delivery.order({ type: 'single', key, finish: 'normal', label: it.jp });
+    if (!it || !g.spend(it.price)) return { ok: false, msg: 'Not enough money' };
+    g.delivery.order({ type: 'single', key, finish: 'normal', label: it.name });
     g.save();
-    return { ok: true, msg: 'シャッター前に届きます' };
+    return { ok: true, msg: `${it.name} will arrive at the garage shutter` };
   }
 
   buyStyle(id) {
     const g = this.game;
     const def = DISPLAY_STYLES[id];
     if (!def) return { ok: false, msg: '?' };
-    if (this.data.styles.includes(id)) return { ok: false, msg: '購入済み' };
-    if (!g.spend(def.price)) return { ok: false, msg: 'お金が足りません' };
+    if (this.data.styles.includes(id)) return { ok: false, msg: 'Already owned' };
+    if (!g.spend(def.price)) return { ok: false, msg: 'Not enough money' };
     this.data.styles.push(id);
     g.save();
-    return { ok: true, msg: `${def.jp} — 展示台を見て R で敷けます` };
+    return { ok: true, msg: `${def.name}: look at a display and press R to lay it` };
   }
 
   expand() {
     const g = this.game;
     const next = MUSEUM_EXPANSIONS[(this.data.level || 0) + 1];
-    if (!next) return { ok: false, msg: '最大です' };
-    if (!g.spend(next.price)) return { ok: false, msg: 'お金が足りません' };
+    if (!next) return { ok: false, msg: 'Already at full size' };
+    if (!g.spend(next.price)) return { ok: false, msg: 'Not enough money' };
     this.data.level++;
     this.build();
     g.player.shake = 0.5;
     audio.play('thud', { v: 1 });
     audio.play('upgrade');
     g.save();
-    return { ok: true, msg: `${next.w}m × ${next.d}m に拡張！` };
+    return { ok: true, msg: `Your museum is now ${next.w} x ${next.d} m!` };
   }
 
   surfaceAt() { return 'wood'; }

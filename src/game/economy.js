@@ -39,7 +39,7 @@ export function licenseRequirement(seriesId) {
 }
 
 export const MACHINE_TYPES = {
-  retro: { id: 'retro', name: 'Shōwa Retro 100', jp: '昭和レトロ', price: 0, baseCap: 10, crank: 1.7, desc: 'A rusty dagashi-ya machine. Character!', color: '#d8453a' },
+  retro: { id: 'retro', name: 'Showa Retro 100', jp: '昭和レトロ', price: 0, baseCap: 10, crank: 1.7, desc: 'A rusty dagashi-ya machine. Character!', color: '#d8453a' },
   standard: { id: 'standard', name: 'Gacha Station', jp: 'ガチャステーション', price: 2400, baseCap: 16, crank: 1.35, desc: 'Modern two-tone machine with a display card.', color: '#3f86e8' },
   deluxe: { id: 'deluxe', name: 'Deluxe 500', jp: 'デラックス500', price: 16000, baseCap: 24, crank: 1.1, desc: 'Black & gold, LED trim, premium vibes.', color: '#d4a83a' },
   royal: { id: 'royal', name: 'Royal Kirakira', jp: 'ロイヤルきらきら', price: 85000, baseCap: 36, crank: 0.9, desc: 'Chrome tower with neon. Luck +5%.', color: '#d94fb0', luck: 0.05 },

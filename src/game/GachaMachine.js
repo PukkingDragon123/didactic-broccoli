@@ -13,6 +13,7 @@ import { SERIES_BY_ID } from '../data/series/index.js';
 import { capacityFor, crankTime, rollCapsule, MACHINE_TYPES } from './economy.js';
 import { bannerTexture } from '../gfx/banner.js';
 import { makeItemMesh } from './collectibles.js';
+import { FONT_EN } from '../gfx/pix.js';
 
 const UNIT_TOP = new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
 const UNIT_BOT = new THREE.SphereGeometry(0.985, 20, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
@@ -118,12 +119,18 @@ export class GachaMachine {
 
   buildSoldOut() {
     const c = document.createElement('canvas');
-    c.width = 64; c.height = 28;
+    c.width = 128; c.height = 56;
     const ctx = c.getContext('2d');
     const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter;
-    const draw = () => { ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 64, 28); ctx.fillStyle = '#fff'; ctx.font = '20px DotGothic16'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('売切', 32, 15); tex.needsUpdate = true; };
+    const draw = () => {
+      ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 128, 56);
+      ctx.fillStyle = '#fff'; ctx.fillRect(4, 4, 120, 2); ctx.fillRect(4, 50, 120, 2); ctx.fillRect(4, 4, 2, 48); ctx.fillRect(122, 4, 2, 48);
+      ctx.font = `24px ${FONT_EN}`; ctx.textBaseline = 'top';
+      for (const [t, y] of [['SOLD', 3], ['OUT', 26]]) ctx.fillText(t, Math.round(64 - ctx.measureText(t).width / 2), y);
+      tex.needsUpdate = true;
+    };
     draw();
-    // the 売切 flag drops down over the coin slot
+    // the SOLD OUT flag drops down over the coin slot
     const S = this.L.slot;
     const pivot = new THREE.Group();
     pivot.position.set(S.x, S.y + 0.034, this.L.front + 0.016);
@@ -142,7 +149,7 @@ export class GachaMachine {
     const tex = bannerTexture(series, this.game.thumbs, { faded: this.data.type === 'retro' });
     const m = this.bannerMesh.material;
     m.map = tex; m.emissiveMap = tex; m.color.set(0xffffff); m.emissiveIntensity = 0.12; m.needsUpdate = true;
-    // sample figures (見本)
+    // sample figures
     const A = this.domeAnchor;
     A.clear();
     const S = SERIES_BY_ID[series];
@@ -171,12 +178,14 @@ export class GachaMachine {
       turn.add(base);
     });
     if (this.turntable) turn.position.z = 0;
-    // 見本 card in the corner
+    // SAMPLE card in the corner
     if (!GachaMachine.sampleTex) {
-      const c = document.createElement('canvas'); c.width = 32; c.height = 16;
+      const c = document.createElement('canvas'); c.width = 64; c.height = 32;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 32, 16); ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 32, 2); ctx.fillRect(0, 14, 32, 2);
-      ctx.fillStyle = '#222'; ctx.font = '12px DotGothic16'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('見本', 16, 8.5);
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 64, 32); ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 64, 4); ctx.fillRect(0, 28, 64, 4);
+      ctx.fillStyle = '#222'; ctx.font = `16px ${FONT_EN}`; ctx.textBaseline = 'top';
+      if (ctx.measureText('SAMPLE').width > 60) ctx.font = `8px ${FONT_EN}`;
+      ctx.fillText('SAMPLE', Math.round(32 - ctx.measureText('SAMPLE').width / 2), ctx.font.startsWith('16') ? 7 : 12);
       const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
       GachaMachine.sampleTex = t;
     }
@@ -331,19 +340,19 @@ export class GachaMachine {
     if (held) {
       if (held.kind === 'box' && held.data.type === 'refill') {
         const free = this.capacity - this.data.stock.length;
-        if (free <= 0) return { key: '×', text: '満杯 · Machine is full' };
+        if (free <= 0) return { key: '', icon: 'warning', text: 'Machine is full' };
         const s2 = SERIES_BY_ID[held.data.series];
-        return { key: 'L', text: `補充 · Refill with ${s2.name}`, sub: `+${Math.min(free, held.data.count)} capsules` };
+        return { key: 'LMB', text: `Refill with ${s2.name}`, sub: `+${Math.min(free, held.data.count)} capsules` };
       }
       return null;
     }
     const n = this.data.stock.length;
     if (this.state === 'idle') {
-      if (n <= 0) return { key: '×', text: '売り切れ · Sold out', sub: 'Order a capsule refill on the PC' };
-      return { key: 'L', text: 'コインを入れる · Insert the coin', sub: `${S.jp} · ${n}/${this.capacity} left` };
+      if (n <= 0) return { key: '', icon: 'warning', text: 'Sold out', sub: 'Order a capsule refill on the PC' };
+      return { key: 'LMB', text: 'Insert a coin', sub: `${S.name} · ${n}/${this.capacity} left` };
     }
-    if (this.state === 'ready') return this.hasMotor ? null : { key: 'Hold L', text: 'ハンドルを回す · Turn the handle', sub: `${Math.round((this.angle / (Math.PI * 2)) * 100)}%` };
-    if (this.state === 'cranking') return { key: 'Hold L', text: 'ガチャガチャ…', sub: `${Math.round((this.angle / (Math.PI * 2)) * 100)}%` };
+    if (this.state === 'ready') return this.hasMotor ? null : { key: 'Hold LMB', text: 'Turn the handle', sub: `${Math.round((this.angle / (Math.PI * 2)) * 100)}%` };
+    if (this.state === 'cranking') return { key: 'Hold LMB', text: 'Gacha-gacha...', sub: `${Math.round((this.angle / (Math.PI * 2)) * 100)}%` };
     return null;
   }
 

@@ -7,6 +7,7 @@ import { makeItemMesh } from './collectibles.js';
 import { getItem } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
+import { iconHTML } from '../gfx/icons.js';
 
 const DUR = { common: 1.0, uncommon: 1.35, rare: 1.9, ultra: 2.8, secret: 4.6 };
 
@@ -307,9 +308,10 @@ export class Reveal {
     const it = getItem(data.key);
     const R = RARITIES[it.rarity];
     const F = FINISHES[data.finish];
-    const stars = '★'.repeat(R.stars) + '☆'.repeat(5 - R.stars);
+    const stars = Array.from({ length: 5 }, (_, i) => iconHTML('star', 2, i < R.stars ? '' : 'off')).join('');
+    const finish = data.finish !== 'normal' ? `<span class="dot">&middot;</span><span style="color:${F.color}">${F.name}</span>` : '';
     const el = this.captionEl;
-    el.innerHTML = `<div class="stars" style="color:${R.color}">${stars}</div><div class="jp">${it.jp}${isNew ? ' <span style="color:#ff6f91;font-size:16px">NEW!</span>' : ''}</div><div class="en">${it.name} · ${R.name}${data.finish !== 'normal' ? ` · <span style="color:${F.color}">${F.name}</span>` : ''}</div>`;
+    el.innerHTML = `<div class="stars">${stars}</div><div class="name">${it.name}${isNew ? '<span class="new">NEW</span>' : ''}</div><div class="meta"><span style="color:${R.color}">${R.name}</span>${finish}</div>`;
     el.classList.add('show');
     clearTimeout(this._capT);
     this._capT = setTimeout(() => el.classList.remove('show'), (DUR[data.rarity] || 1) * 1000 + 1600);

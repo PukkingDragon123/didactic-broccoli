@@ -1,15 +1,15 @@
 // Shop goods: small upgrades you buy on E-Mart that show up in the world and help the business.
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
-import { Pix } from '../gfx/pix.js';
+import { Pix, FONT_EN } from '../gfx/pix.js';
 import { GARAGE } from '../world/Garage.js';
 
 export const GOODS = {
-  tip_jar: { jp: 'チップ瓶', name: 'Tip Jar', price: 1500, desc: '来館者のお気持ちが1.5倍', museum: true },
-  furin: { jp: '風鈴', name: 'Wind Chime', price: 1200, desc: '涼しい音色で美しさUP', museum: true },
-  capsule_bin: { jp: 'カプセル回収箱', name: 'Capsule Recycling Bin', price: 900, desc: '開けたカプセル1個につき¥5' },
-  ticket_machine: { jp: '券売機', name: 'Ticket Machine', price: 8000, desc: '入館料が20%アップ', museum: true },
-  neon_open: { jp: 'ネオン看板', name: 'Neon OPEN Sign', price: 12000, desc: 'お客さんが15%増える' },
+  tip_jar: { jp: 'チップ瓶', name: 'Tip Jar', price: 1500, desc: 'Museum visitors tip 1.5x more', museum: true },
+  furin: { jp: '風鈴', name: 'Wind Chime', price: 1200, desc: 'A cool, clear chime. Museum beauty up', museum: true },
+  capsule_bin: { jp: 'カプセル回収箱', name: 'Capsule Recycling Bin', price: 900, desc: '¥5 back for every capsule you open' },
+  ticket_machine: { jp: '券売機', name: 'Ticket Machine', price: 8000, desc: 'Museum tickets cost 20% more', museum: true },
+  neon_open: { jp: 'ネオン看板', name: 'Neon OPEN Sign', price: 12000, desc: '15% more customers' },
 };
 
 export const hasGood = (g, id) => !!g.state.goods?.[id];
@@ -24,7 +24,7 @@ function buildTipJar() {
   lid.rotation.x = Math.PI / 2; lid.position.y = 0.15; g.add(lid);
   const coins = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.05, 0.04, 16), mat(0xe0b860, { metalness: 0.9, roughness: 0.3 }));
   coins.position.y = 0.02; g.add(coins);
-  const p = new Pix(48, 20, 2); p.fill(0xfff8e0); p.text('TIPS', 24, 3, { size: 12, color: 0xd8282a, align: 'center' });
+  const p = new Pix(48, 20, 2); p.fill(0xfff8e0); p.text('TIPS', 24, 6, { size: 8, color: 0xd8282a, align: 'center', font: FONT_EN });
   const lab = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 0.034), mat(0xffffff, { map: p.texture() })); lab.position.set(0, 0.09, 0.0605); g.add(lab);
   g.userData.coins = coins;
   return g;
@@ -48,7 +48,7 @@ function buildBin() {
   const box = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.42, 0.28), mat(0x2f9a5a, { roughness: 0.4 }));
   box.position.y = 0.21; box.castShadow = true; g.add(box);
   const hole = new THREE.Mesh(new THREE.CircleGeometry(0.07, 20), mat(0x101010)); hole.rotation.x = -Math.PI / 2; hole.position.y = 0.421; g.add(hole);
-  const p = new Pix(64, 32, 4); p.fill(0x2f9a5a); p.text('カプセル', 32, 3, { size: 12, color: 0xffffff, align: 'center' }); p.text('回収', 32, 17, { size: 12, color: 0xffffff, align: 'center' });
+  const p = new Pix(64, 32, 4); p.fill(0x2f9a5a); p.text('CAPSULE', 32, 5, { size: 8, color: 0xffffff, align: 'center', font: FONT_EN }); p.text('RECYCLING', 32, 18, { size: 8, color: 0xffffff, align: 'center', font: FONT_EN });
   const lab = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.13), mat(0xffffff, { map: p.texture() })); lab.position.set(0, 0.26, 0.141); g.add(lab);
   return g;
 }
@@ -58,9 +58,9 @@ function buildTicketMachine() {
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.45, 0.42), mat(0xe8e4dc, { roughness: 0.35 }));
   body.position.y = 0.725; body.castShadow = true; g.add(body);
   const p = new Pix(96, 128, 5);
-  p.fill(0xe8e4dc); p.rect(6, 6, 84, 22, 0x1a3a7a); p.text('きっぷ', 48, 9, { size: 14, color: 0xffffff, align: 'center' });
+  p.fill(0xe8e4dc); p.rect(6, 6, 84, 22, 0x1a3a7a); p.text('TICKETS', 48, 8, { size: 16, color: 0xffffff, align: 'center', font: FONT_EN });
   for (let i = 0; i < 6; i++) { const x = 10 + (i % 3) * 27, y = 36 + Math.floor(i / 3) * 26; p.rect(x, y, 22, 20, i === 0 ? 0xffd23f : 0xffffff); p.frame(x, y, 22, 20, 0x8a8a8a); }
-  p.rect(30, 96, 36, 6, 0x101010); p.text('入館券', 48, 108, { size: 10, color: 0x2a2a2a, align: 'center' });
+  p.rect(30, 96, 36, 6, 0x101010); p.text('ADMISSION', 48, 110, { size: 8, color: 0x2a2a2a, align: 'center', font: FONT_EN });
   const face = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.59), mat(0xffffff, { map: p.texture(), emissive: 0xffffff, emissiveMap: p.texture(), emissiveIntensity: 0.15 }));
   face.position.set(0, 1.0, 0.211); g.add(face);
   return g;
@@ -71,7 +71,7 @@ function buildNeon() {
   const board = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.36, 0.04), mat(0x1a1420));
   g.add(board);
   const p = new Pix(90, 36, 6); p.fill(0x1a1420);
-  p.text('OPEN', 45, 6, { size: 22, color: 0xff4fa0, align: 'center', outline: 0x6a1a40 });
+  p.text('OPEN', 45, 6, { size: 24, color: 0xff4fa0, align: 'center', outline: 0x6a1a40, font: FONT_EN });
   const neon = new THREE.Mesh(new THREE.PlaneGeometry(0.86, 0.34), new THREE.MeshBasicMaterial({ map: p.texture(), color: new THREE.Color(1.8, 1.8, 1.8) }));
   neon.position.z = 0.021; g.add(neon);
   const light = new THREE.PointLight(0xff4fa0, 1.6, 4, 1.6); light.position.z = 0.4; g.add(light);
@@ -92,14 +92,14 @@ export class Goods {
   buy(id) {
     const g = this.game, def = GOODS[id];
     if (!def) return { ok: false, msg: '?' };
-    if (g.state.goods[id]) return { ok: false, msg: '購入済み' };
-    if (def.museum && !g.museum?.data.owned) return { ok: false, msg: '博物館が必要です' };
-    if (!g.spend(def.price)) return { ok: false, msg: 'お金が足りません' };
+    if (g.state.goods[id]) return { ok: false, msg: 'Already owned' };
+    if (def.museum && !g.museum?.data.owned) return { ok: false, msg: 'You need a museum first' };
+    if (!g.spend(def.price)) return { ok: false, msg: 'Not enough money' };
     g.state.goods[id] = true;
     this.place(id, true);
     g.museum?.recompute();
     g.save();
-    return { ok: true, msg: `${def.jp} を設置しました` };
+    return { ok: true, msg: `${def.name} installed!` };
   }
 
   place(id, animate) {

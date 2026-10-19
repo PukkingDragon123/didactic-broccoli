@@ -1,9 +1,8 @@
-// Museum visitors: cute voxel people who buy a ticket, walk (A* on a 0.5 m grid) to the exhibits that
-// interest them, inspect them, react (hearts, sparkles, camera flashes), donate if happy, and leave.
+// Museum visitors: low-poly people who buy a ticket, walk (A* on a 0.5 m grid) to the exhibits that
+// interest them, look closely, react (faces, hearts, camera flashes, a word or two), donate if happy, and leave.
 import * as THREE from 'three';
 import VISITORS from '../data/visitors.js';
-import { buildCharacter } from '../game/rig.js';
-import { Face } from '../game/faces.js';
+import { createHuman } from '../people/index.js';
 import { audio } from '../core/audio.js';
 import { Pix } from '../gfx/pix.js';
 import { getItem } from '../data/series/index.js';
@@ -31,14 +30,25 @@ function emote(kind) {
   return t;
 }
 
+// visitor archetypes -> human presets
+const PRESET = { mom_baby: 'mom', cosplayer: 'gyaru' };
+const LINES = {
+  look: ['So many figures!', 'Look how tiny this is.', 'I had this one as a kid!', 'The paint detail...', 'Is that a secret one?'],
+  wow: ['No way, a secret!', 'Wow, the gold one!', 'I have never seen this one!'],
+  happy: ['Cute!', 'What a nice little museum.', 'Worth the ticket.'],
+  buy: ['I will take it!', 'Sold! It is coming home with me.'],
+  sad: ['Hm. Not much to see yet.'],
+};
+let seedN = 1;
+
 class Visitor {
   constructor(sys, def, variant) {
     this.sys = sys;
     this.def = def;
-    const ch = buildCharacter(def, variant);
-    this.ch = ch;
-    this.root = ch.root;
-    if (ch.face) { this.face = new Face(ch.face); ch.parts.head.add(this.face.mesh); }
+    const h = createHuman({ preset: PRESET[def.id] || def.id, seed: (seedN++ * 7919 + variant * 31) % 100000 });
+    this.h = h;
+    this.root = h.root;
+    this.talkT = 0;
     this.chatT = 4 + Math.random() * 10;
     sys.museum.group.add(this.root);
     this.speed = (def.id === 'kid' ? 1.25 : def.id === 'grandma' || def.id === 'grandpa' ? 0.65 : 0.95) * (0.9 + Math.random() * 0.2);
@@ -62,18 +72,28 @@ class Visitor {
     if (!this.path.length) this.path = [target.clone()];
   }
 
-  /** Change the 2D face's expression for a while. */
-  emote2d(expr, hold = 2) { this.face?.set(expr, hold); }
+  /** Show a feeling on the face for a while (happy / wow / love / sad / talk). */
+  emote2d(expr, hold = 2) {
+    if (expr === 'talk') { this.talkT = hold; return; }
+    this.h.setExpression({ wow: 'surprised', love: 'happy' }[expr] || expr, hold);
+  }
+
+  say(kind, chance = 1) {
+    if (Math.random() > chance) return;
+    const lines = LINES[kind];
+    const b = this.sys.game.bubbles;
+    if (!lines || !b) return;
+    b.say(this.h, lines[Math.floor(Math.random() * lines.length)], { dur: 2.6, onChar: (ch) => { if (/[a-z]/i.test(ch) && Math.random() < 0.4) audio.play('blip', { f: 360 + this.h.height * 140, vol: 0.3 }); } });
+    this.talkT = 1.4;
+  }
 
   update(dt, t) {
-    if (this.face) {
-      this.face.update(dt);
-      this.chatT -= dt;
-      if (this.chatT <= 0) { this.chatT = 6 + Math.random() * 12; if (this.face.expr === 'neutral') this.face.set('talk', 1.2 + Math.random()); }
-    }
+    this.talkT = Math.max(0, this.talkT - dt);
+    this.chatT -= dt;
+    if (this.chatT <= 0) { this.chatT = 8 + Math.random() * 14; this.talkT = 1 + Math.random(); }
     const m = this.sys.museum;
-    const ch = this.ch;
     let moving = false;
+    let lookAt = null;
     if (this.path.length) {
       const tgt = this.path[0];
       const dx = tgt.x - this.pos.x, dz = tgt.z - this.pos.z;
@@ -86,21 +106,6 @@ class Visitor {
         this.facing = turn(this.facing, Math.atan2(dx, dz), dt * 6);
         moving = true;
       }
-    }
-    // animation
-    const P = ch.parts;
-    if (moving) {
-      this.phase += dt * this.speed * 6.5;
-      const s = Math.sin(this.phase);
-      P.legL.rotation.x = s * 0.55; P.legR.rotation.x = -s * 0.55;
-      P.armL.rotation.x = -s * 0.45; P.armR.rotation.x = s * 0.45;
-      ch.inner.position.y = Math.abs(Math.cos(this.phase)) * 0.025;
-      P.torso.rotation.x = 0.05;
-    } else {
-      const k = Math.min(1, dt * 6);
-      P.legL.rotation.x *= 1 - k; P.legR.rotation.x *= 1 - k;
-      if (this.state !== 'look' || !this.photo) { P.armL.rotation.x *= 1 - k; P.armR.rotation.x *= 1 - k; }
-      ch.inner.position.y = Math.sin(t * 2 + this.phase) * 0.004;
     }
     this.root.rotation.y = this.facing;
 
@@ -141,17 +146,16 @@ class Visitor {
       case 'look': {
         const c = this.target.center;
         this.facing = turn(this.facing, Math.atan2(c.x - this.pos.x, c.z - this.pos.z), dt * 5);
-        // lean in & look around the exhibit
-        P.torso.rotation.x = 0.12 + Math.sin(t * 1.3 + this.phase) * 0.04;
-        P.head.rotation.y = Math.sin(t * 0.9 + this.phase) * 0.45;
-        P.head.rotation.x = this.target.low ? 0.35 : 0.12;
+        // lean in and look over the exhibit
+        if (!this.browsing) { this.browsing = true; this.h.gesture('browse'); }
+        lookAt = this._look || (this._look = new THREE.Vector3());
+        this.sys.museum.group.localToWorld(lookAt.set(c.x + Math.sin(t * 0.9 + this.phase) * 0.3, this.target.low ? 0.7 : 1.1, c.z));
         this.timer -= dt;
         if (!this.reacted && this.timer < 2) {
           this.reacted = true;
           this.react();
         }
-        if (this.photo) { P.armR.rotation.x = -1.3; P.armL.rotation.x = -1.2; }
-        if (this.timer <= 0) { P.head.rotation.set(0, 0, 0); P.torso.rotation.x = 0; this.state = 'choose'; }
+        if (this.timer <= 0) { this.browsing = false; this.photo = false; this.h.clearGesture(); this.state = 'choose'; }
         break;
       }
       case 'leaving':
@@ -164,7 +168,7 @@ class Visitor {
             audio.play('coinClink', { pos: m.donationPoint.clone().setY(1.1), v: 0.7 });
             this.sys.emote(this, 'note');
             this.emote2d('happy', 2);
-          } else if (this.happy < 15) this.emote2d('sad', 3);
+          } else if (this.happy < 15) { this.emote2d('sad', 3); this.say('sad', 0.5); }
           this.path = [new THREE.Vector3(0, 0, m.zS + 0.3), new THREE.Vector3((Math.random() - 0.5) * 1.2, 0, m.zS - 4.5)];
           this.state = 'exit';
         }
@@ -174,6 +178,7 @@ class Visitor {
         break;
       default: break;
     }
+    this.h.update(dt, { speed: moving ? this.speed : 0, lookAt, talking: this.talkT > 0 });
   }
 
   react() {
@@ -199,7 +204,7 @@ class Visitor {
         if (!it?.pm) continue;
         const chance = ({ 1.5: 0.5, 2: 0.32, 3: 0.14, 5: 0.05 }[it.pm] || 0) * (1 + stars * 0.12);
         if (Math.random() > chance) continue;
-        const name = getItem(it.k)?.jp || '';
+        const name = getItem(it.k)?.name || '';
         const price = d.sell(i);
         if (!price) break;
         this.bought = true;
@@ -211,7 +216,8 @@ class Visitor {
         g.effects.coinBurst({ pos: this.pos.clone().setY(1.6), count: 10 });
         sys.emote(this, 'wow');
         this.emote2d('love', 3);
-        g.news(`💴 ${name} が売れた！ ¥${price.toLocaleString()}`, 'Sold!', 4500);
+        g.news(`Sold: ${name} for ¥${price.toLocaleString()}`, 'A museum visitor bought it', 4500);
+        this.say('buy');
         g.save();
         break;
       }
@@ -219,10 +225,12 @@ class Visitor {
     const kind = bestR === 'secret' || bestR === 'ultra' ? 'wow' : bestR === 'rare' ? 'star' : appeal > 5 ? 'heart' : 'note';
     sys.emote(this, kind);
     this.emote2d(kind === 'wow' ? 'wow' : kind === 'heart' ? 'love' : 'happy', 2.5);
-    if (bestR === 'secret' || bestR === 'ultra') { this.jump = 0.5; }
+    if (bestR === 'secret' || bestR === 'ultra') { this.h.gesture('cheer'); this.say('wow', 0.8); }
+    else this.say(appeal > 5 ? 'happy' : 'look', 0.35);
     audio.play('visitorHappy', { pos: this.pos.clone().setY(1.5), vol: 0.5, ref: 1.5 });
     if (this.camera && tg.entry.display && Math.random() < 0.7) {
       this.photo = true;
+      this.h.gesture('photo');
       sys.game.tweens.wait(0.5, () => {
         const p = this.pos.clone().setY(1.35);
         audio.play('shutter', { pos: p, vol: 0.6, ref: 1.5 });
@@ -231,7 +239,7 @@ class Visitor {
     }
   }
 
-  dispose() { this.root.parent?.remove(this.root); }
+  dispose() { this.sys.game.bubbles?.clear?.(this.h); this.h.dispose(); }
 }
 
 function turn(a, b, k) {
@@ -387,7 +395,7 @@ export class Visitors {
     const mat = new THREE.SpriteMaterial({ map: emote(kind), transparent: true, depthWrite: false });
     const s = new THREE.Sprite(mat);
     s.scale.setScalar(0.22);
-    s.position.copy(v.pos).add(new THREE.Vector3(0, v.ch.height + 0.25, 0));
+    s.position.copy(v.pos).add(new THREE.Vector3(0, v.h.height + 0.3, 0));
     this.museum.group.add(s);
     this.emotes.push({ s, t: 0 });
   }
@@ -415,7 +423,6 @@ export class Visitors {
       }
       const dx = a.pos.x - pp.x, dz = a.pos.z - pp.z, d = Math.hypot(dx, dz);
       if (d > 0.001 && d < 0.55) { a.pos.x += dx / d * (0.55 - d) * 0.5; a.pos.z += dz / d * (0.55 - d) * 0.5; }
-      if (a.jump > 0) { a.jump -= dt; a.ch.inner.position.y = Math.abs(Math.sin(a.jump * 12)) * 0.12; }
     }
     for (let i = this.list.length - 1; i >= 0; i--) if (this.list[i].dead) { this.list[i].dispose(); this.list.splice(i, 1); }
     for (let i = this.emotes.length - 1; i >= 0; i--) {

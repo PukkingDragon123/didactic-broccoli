@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Gacha Garage · ガチャガレージ</title>
-  <meta name="description" content="A cozy first-person voxel gachapon collecting game set in a Japanese hobby garage." />
+  <title>Gacha Garage</title>
+  <meta name="description" content="A cozy first-person voxel gachapon shop game set in Grandpa's old garage on a quiet back street." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='4' y='2' width='8' height='1' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='4' fill='%23fff'/%3E%3Crect x='2' y='5' width='12' height='2' fill='%23fff'/%3E%3Crect x='2' y='7' width='12' height='1' fill='%23c33'/%3E%3Crect x='2' y='8' width='12' height='3' fill='%23ff6f91'/%3E%3Crect x='3' y='11' width='10' height='2' fill='%23ff6f91'/%3E%3Crect x='4' y='13' width='8' height='1' fill='%23ff6f91'/%3E%3C/svg%3E" />
 </head>
 <body>
@@ -13,61 +13,69 @@
   <div id="hud" class="hidden">
     <div id="crosshair"><div class="dot"></div><div class="ring"></div></div>
     <div id="hint"></div>
-    <div id="money"><span class="yen">¥</span><span class="val">0</span><span id="money-delta"></span></div>
+    <div id="money"><span class="coin" data-icon="coin" data-scale="2"></span><span class="yen">¥</span><span class="val">0</span><span id="money-delta"></span></div>
     <div id="news"></div>
     <div id="caption"></div>
   </div>
 
   <div id="title" class="overlay menu">
     <div class="menu-logo">
-      <div class="logo-jp">ガチャガレージ</div>
-      <div class="logo-en">GACHA&nbsp;GARAGE</div>
+      <span class="logo-icon" data-icon="capsule" data-scale="3"></span>
+      <div class="logo-words">
+        <div class="logo-main">GACHA GARAGE</div>
+        <div class="logo-sub">CAPSULE TOY SHOP</div>
+      </div>
     </div>
-    <button class="gear" id="m-gear" aria-label="Settings"><svg viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="currentColor" d="M7 1h2v2h1V2h2v2h-1v1h1v1h2v2h-2v1h-1v1h1v2h-2v-1H9v2H7v-2H6v1H4v-2h1V9H4V8H2V6h2V5h1V4H4V2h2v1h1z"/><rect x="6" y="6" width="4" height="4" fill="#20262e"/></svg></button>
-    <div class="loading" id="loading"><span id="load-pct">0%</span></div>
+    <button class="gear" id="m-gear" aria-label="Settings" data-icon="gear" data-scale="2"></button>
+    <div class="loading" id="loading">
+      <div class="load-label">Loading <span id="load-pct">0%</span></div>
+      <div class="load-bar"><div class="load-fill"></div></div>
+    </div>
   </div>
 
   <div id="share" class="overlay hidden">
     <div class="panel">
-      <button class="x" data-close>&#x2715;</button>
-      <div class="panel-title" id="share-title">みせをひらく</div>
-      <textarea id="share-code" spellcheck="false" rows="5"></textarea>
-      <button id="share-act" class="big">コピー</button>
+      <button class="x" data-close aria-label="Close" data-icon="close" data-scale="2"></button>
+      <div class="panel-title"><span data-icon="share" data-scale="2"></span><span id="share-title">Host your shop</span></div>
+      <textarea id="share-code" spellcheck="false" rows="5" placeholder="Paste your friend's code"></textarea>
+      <button id="share-act" class="big" data-icon="copy" data-scale="2">Copy code</button>
       <div class="foot" id="share-note"></div>
     </div>
   </div>
 
   <div id="touch" class="hidden">
     <div id="stick"><div id="stick-knob"></div></div>
-    <button class="tb t-use" id="t-use">&#x25CF;</button>
-    <button class="tb t-alt" id="t-alt">&#x270B;</button>
-    <button class="tb t-drop" id="t-drop">Q</button>
-    <button class="tb t-rot" id="t-rot">R</button>
-    <button class="tb t-move" id="t-move">F</button>
-    <button class="tb t-pause" id="t-pause">&#x2016;</button>
+    <button class="tb t-use" id="t-use" aria-label="Use" data-icon="hand" data-scale="3"></button>
+    <button class="tb t-alt" id="t-alt" aria-label="Inspect" data-icon="eye" data-scale="2"></button>
+    <button class="tb t-drop" id="t-drop" aria-label="Drop" data-icon="drop" data-scale="2"></button>
+    <button class="tb t-rot" id="t-rot" aria-label="Rotate" data-icon="rotate" data-scale="2"></button>
+    <button class="tb t-move" id="t-move" aria-label="Move" data-icon="move" data-scale="2"></button>
+    <button class="tb t-pause" id="t-pause" aria-label="Pause" data-icon="pause" data-scale="2"></button>
   </div>
 
   <div id="pause" class="overlay hidden">
     <div class="panel">
-      <button class="x" data-close>&#x2715;</button>
-      <div class="panel-title">せってい</div>
-      <button id="resume-btn" class="big">つづける</button>
-      <button id="leave-btn" class="hidden">メニューへ</button>
-      <label>Graphics
-        <select id="quality">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="ultra">Ultra</option>
-        </select>
-      </label>
-      <label>Master volume <input type="range" id="vol-master" min="0" max="1" step="0.01" /></label>
-      <label>Music volume <input type="range" id="vol-music" min="0" max="1" step="0.01" /></label>
-      <label>Ambience <input type="range" id="vol-amb" min="0" max="1" step="0.01" /></label>
-      <label>Mouse sensitivity <input type="range" id="sens" min="0.2" max="2.5" step="0.05" /></label>
-      <label>Field of view <input type="range" id="fov" min="60" max="95" step="1" /></label>
-      <label class="row"><input type="checkbox" id="hints" /> Show interaction hints</label>
-      <button id="reset-btn" class="danger">Reset save data</button>
+      <button class="x" data-close aria-label="Close" data-icon="close" data-scale="2"></button>
+      <div class="panel-title"><span data-icon="gear" data-scale="2"></span>Settings</div>
+      <button id="resume-btn" class="big" data-icon="play" data-scale="2">Resume</button>
+      <button id="leave-btn" class="hidden" data-icon="home" data-scale="2">Back to menu</button>
+      <div class="rows">
+        <label><span class="lbl" data-icon="sparkle">Graphics</span>
+          <select id="quality">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="ultra">Ultra</option>
+          </select>
+        </label>
+        <label><span class="lbl" data-icon="sound_on">Master volume</span><input type="range" id="vol-master" min="0" max="1" step="0.01" /></label>
+        <label><span class="lbl" data-icon="music">Music</span><input type="range" id="vol-music" min="0" max="1" step="0.01" /></label>
+        <label><span class="lbl" data-icon="radio">Ambience</span><input type="range" id="vol-amb" min="0" max="1" step="0.01" /></label>
+        <label><span class="lbl" data-icon="mouse_left">Mouse sensitivity</span><input type="range" id="sens" min="0.2" max="2.5" step="0.05" /></label>
+        <label><span class="lbl" data-icon="eye">Field of view</span><input type="range" id="fov" min="60" max="95" step="1" /></label>
+        <label class="row"><span class="lbl" data-icon="info">Show hints</span><input type="checkbox" id="hints" /></label>
+      </div>
+      <button id="reset-btn" class="danger" data-icon="trash" data-scale="2">Reset save</button>
     </div>
   </div>
 

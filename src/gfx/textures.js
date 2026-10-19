@@ -1,6 +1,6 @@
 // Procedural pixel-art texture library (32 px per metre for architecture). All deterministic.
 import * as THREE from 'three';
-import { Pix, bumpFrom, FONT_JP, FONT_EN } from './pix.js';
+import { Pix, bumpFrom, FONT_JP, FONT_EN, FONT_DISPLAY } from './pix.js';
 import { hash2 } from '../core/util.js';
 import { shopPix } from './shopTextures.js';
 
@@ -72,6 +72,10 @@ const RECIPES = {
   floorHD: () => shopPix('floorHD'),
   corrugatedHD: () => shopPix('corrugatedHD'),
   blockHD: () => shopPix('blockHD'),
+  koshiita: () => shopPix('koshiita'),
+  shikkui: () => shopPix('shikkui'),
+  shopCeiling: () => shopPix('shopCeiling'),
+  siding: () => shopPix('siding'),
   concrete() {
     const p = new Pix(64, 64, 11);
     p.fill(0x8f8a84);
@@ -138,15 +142,25 @@ const RECIPES = {
     p.blotch(10, 60, 6, 0x7a4a2a, 0.4);
     return p;
   },
+  /** Roller shutter (2 m × 4 m): rolled slats with highlight/shadow lips, dents, chalky paint, rust at the foot and grime runs. */
   shutter() {
-    const p = new Pix(64, 64, 32);
-    for (let y = 0; y < 64; y++) {
+    const p = new Pix(64, 128, 32);
+    for (let y = 0; y < 128; y++) {
       const ph = y % 4;
-      p.rect(0, y, 64, 1, [0xb9bfb8, 0xa9afa8, 0x969c95, 0x7b817a][ph]);
+      for (let x = 0; x < 64; x++) {
+        const dent = hash2(x >> 2, y >> 2) < 0.03 ? 0.9 : 1;
+        p.px(x, y, shadeC([0xc2c8c1, 0xaab0a9, 0x969c95, 0x70766f][ph], dent * (0.97 + hash2(x >> 4, y >> 3) * 0.05)));
+      }
     }
-    p.noise(0.04);
-    for (let i = 0; i < 5; i++) p.blotch(Math.floor(p.r() * 64), Math.floor(p.r() * 64), 4, 0x8d6a4a, 0.35);
-    p.rect(0, 62, 64, 2, 0x5d625c);
+    // end locks (slat clips) every 2 m along the edges
+    for (let y = 1; y < 128; y += 4) { p.px(0, y, 0x5a605a); p.px(63, y, 0x5a605a); }
+    // chalky patches and grime runs from the top hood
+    for (let i = 0; i < 6; i++) p.blotch(Math.floor(p.r() * 64), Math.floor(p.r() * 128), 4, 0xd0d4cc, 0.25);
+    for (let i = 0; i < 10; i++) { const x = Math.floor(hash2(i, 5) * 64); const len = 20 + hash2(i, 6) * 70; for (let y = 0; y < len; y++) if (y % 4 !== 0) p.px(x, y, 0x5e625a, 90 * (1 - y / len)); }
+    // rust spots on slat lips + rusty foot
+    for (let i = 0; i < 26; i++) { const x = Math.floor(hash2(i, 7) * 64), y = Math.floor(hash2(i, 8) * 32) * 4 + 3; p.px(x, y, 0x8d5a3a); p.px(x + 1, y, 0x7a4a2a, 160); if (hash2(i, 9) < 0.5) p.px(x, y + 1, 0x8d6a4a, 120); }
+    for (let y = 112; y < 128; y++) for (let x = 0; x < 64; x++) if (hash2(x, y) < (y - 108) / 24) p.px(x, y, hash2(x, y + 3) < 0.5 ? 0x8d5a3a : 0x6e4a32, 140);
+    p.rect(0, 126, 64, 2, 0x4d524c);
     return p;
   },
   cardboard() {
@@ -257,11 +271,24 @@ const RECIPES = {
     p.speckle(0.004, [0xffffff], 255, 0, 0, 64, 30);
     return p;
   },
+  /** Fibre-cement siding (2 m tile): 25 cm boards with shadow lips, staggered butt joints with caulk, nail heads, rain grime. */
   houseWall() {
-    const p = new Pix(32, 32, 62);
-    p.fill(0xcfc6b2);
-    for (let y = 0; y < 32; y += 4) p.rect(0, y, 32, 1, 0xb8ae98);
-    p.noise(0.05);
+    const p = new Pix(64, 64, 62);
+    for (let row = 0; row < 8; row++) {
+      const y0 = row * 8, base = shadeC(0xd4cbb6, 0.97 + hash2(row, 1) * 0.05);
+      p.rect(0, y0, 64, 8, base);
+      for (let x = 0; x < 64; x++) if (hash2(x, row + 3) < 0.25) p.px(x, y0 + 2 + Math.floor(hash2(row, x) * 4), shadeC(base, 0.96));
+      p.rect(0, y0, 64, 1, shadeC(base, 1.08));
+      p.rect(0, y0 + 7, 64, 1, shadeC(base, 0.72));
+      p.rect(0, y0 + 6, 64, 1, shadeC(base, 0.92));
+      const jx = Math.floor(hash2(row, 9) * 64);
+      p.rect(jx, y0, 1, 7, 0xb8b0a0); p.px(jx + 1, y0 + 3, 0x9a9282);
+      for (let x = 6; x < 64; x += 16) p.px((x + row * 5) % 64, y0 + 4, 0xa8a090);
+    }
+    // grime runs under the windows / from the eaves
+    for (let i = 0; i < 6; i++) { const x = Math.floor(hash2(i, 21) * 64); const len = 10 + hash2(i, 22) * 40; for (let y = 0; y < len; y++) p.px(x + (y % 9 === 0 ? 1 : 0), y, 0x8a8270, 70 * (1 - y / len)); }
+    for (let x = 0; x < 64; x++) for (let y = 58; y < 64; y++) if ((x + y) % 2) p.px(x, y, 0x8a8270, 60);
+    p.noise(0.025);
     return p;
   },
   felt() {
@@ -274,6 +301,182 @@ const RECIPES = {
     const p = new Pix(32, 32, 64);
     p.fill(0x8a1f2a);
     p.noise(0.1);
+    return p;
+  },
+  // ------------------------------------------------------------ the lane outside (Town.js)
+  /** Old asphalt (8 m tile at 32 px/m): aggregate, tar-sealed cracks, a patch repair, oil drips. */
+  asphaltHD() {
+    const p = new Pix(256, 256, 101);
+    p.fill(0x4a4846);
+    for (let i = 0; i < 18; i++) p.blotch(Math.floor(hash2(i, 1) * 256), Math.floor(hash2(i, 2) * 256), 14 + Math.floor(hash2(i, 3) * 12), i % 2 ? 0x524f4c : 0x43413f, 0.35);
+    p.speckle(0.16, [0x3a3836, 0x5a5856, 0x625e5a, 0x6e6a64, 0x56524e]);
+    p.speckle(0.02, [0x8a8680, 0x9a948c]);
+    // tar-sealed cracks (glossy black) and open hairline cracks
+    const crackLine = (x, y, n, c, w, s) => { for (let i = 0; i < n; i++) { p.px(x, y, c); if (w > 1) p.px(x + 1, y, c); x += hash2(i, s) < 0.5 ? 1 : -1; y += hash2(i, s + 1) < 0.7 ? 1 : 0; x = (x + 256) % 256; y = (y + 256) % 256; } };
+    crackLine(40, 10, 140, 0x262422, 2, 3); crackLine(180, 120, 90, 0x262422, 2, 5);
+    crackLine(120, 30, 60, 0x34322f, 1, 7); crackLine(210, 200, 50, 0x34322f, 1, 9); crackLine(20, 180, 70, 0x34322f, 1, 11);
+    // patch repair (slightly darker, tidy cut edges)
+    p.rect(150, 20, 40, 26, 0x3e3c3a); p.speckle(0.18, [0x2e2c2a, 0x52504c, 0x5a5652], 255, 150, 20, 40, 26);
+    p.frame(150, 20, 40, 26, 0x2a2826);
+    // oil drips
+    for (const [x, y] of [[90, 200], [96, 206], [60, 90]]) p.blotch(x, y, 3, 0x2a2826, 0.5);
+    return p;
+  },
+  /** Worn white road paint (thermoplastic with aggregate showing through). */
+  roadPaint() {
+    const p = new Pix(32, 32, 113);
+    p.fill(0xe6e2d6);
+    p.speckle(0.16, [0xc8c4b8, 0xd4d0c4, 0xf2eee4]);
+    p.speckle(0.05, [0x6a6662, 0x8a8680, 0x5a5652]);
+    p.blotch(10, 20, 4, 0x8a8680, 0.3); p.blotch(26, 6, 3, 0x7a7670, 0.3);
+    return p;
+  },
+  /** Yellow/black hazard stripes (tiling). */
+  hazard() {
+    const p = new Pix(32, 32, 114);
+    for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) p.px(x, y, ((x + y) >> 3) % 2 ? 0x1e1c1a : 0xf0c018);
+    p.noise(0.08);
+    p.speckle(0.04, [0x8a7a5a, 0x5a4a3a]);
+    return p;
+  },
+  /** Concrete paving slabs (30 cm) for the strip along the far side. */
+  paving() {
+    const p = new Pix(64, 64, 102);
+    p.fill(0x9a958c);
+    for (let j = 0; j < 64; j += 10) for (let i = 0; i < 64; i += 10) { const c = shadeC(0xa29d94, 0.94 + hash2(i, j) * 0.1); p.rect(i + 1, j + 1, 9, 9, c); p.px(i + 1, j + 1, shadeC(c, 1.08)); }
+    p.speckle(0.12, [0x8a857c, 0xaaa59c]);
+    p.blotch(40, 20, 6, 0x6a665e, 0.3); p.blotch(12, 50, 5, 0x5a6a3a, 0.3);
+    return p;
+  },
+  /** U-gutter concrete lids (側溝の蓋): 50 cm lids with lifting slots, worn edges. */
+  gutterLid() {
+    const p = new Pix(64, 16, 103);
+    p.fill(0x8a867e);
+    for (let i = 0; i < 64; i += 16) {
+      const c = shadeC(0xa39f96, 0.92 + hash2(i, 1) * 0.12);
+      p.rect(i + 1, 1, 15, 14, c);
+      p.rect(i + 1, 1, 15, 1, shadeC(c, 1.1)); p.rect(i + 1, 14, 15, 1, shadeC(c, 0.8));
+      p.rect(i + 3, 6, 3, 3, 0x2a2826); p.px(i + 3, 6, 0x1a1816);
+      p.speckle(0.1, [shadeC(c, 0.88), shadeC(c, 1.06)], 255, i + 1, 1, 15, 14);
+    }
+    return p;
+  },
+  /** Galvanised steel grating (グレーチング). */
+  grate() {
+    const p = new Pix(16, 16, 104);
+    p.fill(0x1a1816);
+    for (let x = 0; x < 16; x += 2) p.rect(x, 0, 1, 16, (x % 4) ? 0x8a8e8e : 0x9aa0a0);
+    for (let y = 0; y < 16; y += 8) p.rect(0, y, 16, 1, 0x7a7e7e);
+    p.blotch(10, 12, 3, 0x6a4a2a, 0.4);
+    return p;
+  },
+  /** Red brick, English bond, with soot, efflorescence and a few replaced bricks (64 px/m). */
+  brickHD() {
+    const p = new Pix(128, 128, 105);
+    p.fill(0x8a8276);
+    for (let row = 0; row < 26; row++) {
+      const y0 = Math.round(row * 128 / 26), h = Math.round((row + 1) * 128 / 26) - y0;
+      const header = row % 2 === 1, bw = header ? 8 : 16, off = header ? 4 : 0;
+      for (let bx = -16; bx < 128; bx += bw) {
+        const k = hash2(bx + 40, row);
+        let c = shadeC([0x9a4a32, 0xa85a3c, 0x8a3e2c, 0xb4664a, 0x7a3a2a][Math.floor(k * 5)], 0.92 + hash2(bx, row + 7) * 0.14);
+        if (k > 0.97) c = 0xc08a6a;
+        for (let y = 1; y < h; y++) for (let x = 1; x < bw; x++) {
+          const X = bx + off + x;
+          if (X < 0 || X >= 128) continue;
+          p.px(X, y0 + y, hash2(X, y0 + y) < 0.12 ? shadeC(c, 0.85) : c);
+        }
+        if (bx + off + 1 >= 0) p.px(bx + off + 1, y0 + 1, shadeC(c, 1.15));
+      }
+    }
+    // soot/grime gradient from the top and runs of efflorescence
+    for (let x = 0; x < 128; x++) for (let y = 0; y < 30; y++) if (hash2(x, y) < (30 - y) / 40) p.px(x, y, 0x2a2420, 70);
+    for (let i = 0; i < 8; i++) { const x = Math.floor(hash2(i, 31) * 128), y0 = 30 + Math.floor(hash2(i, 32) * 70); for (let y = 0; y < 12; y++) if (hash2(x, y + i) < 0.7) p.px(x + (y % 5 === 0 ? 1 : 0), y0 + y, 0xe8e2d6, 120 - y * 9); }
+    for (let x = 0; x < 128; x++) for (let y = 116; y < 128; y++) if ((x + y) % 2) p.px(x, y, 0x3a3028, 60);
+    return p;
+  },
+  /** 間知石 retaining wall: diagonal dressed granite blocks with recessed joints and moss (64 px/m). */
+  kenchi() {
+    const p = new Pix(128, 128, 106);
+    p.fill(0x4a4844);
+    const S = 16; // half-diagonal of a stone
+    for (let j = -1; j <= 8; j++) for (let i = -1; i <= 8; i++) {
+      const cx = i * S * 2 + (j % 2 ? S : 0), cy = j * S;
+      const base = shadeC([0x9a968c, 0x8e8a82, 0xa6a196, 0x86827a][Math.floor(hash2(i + 20, j + 20) * 4)], 0.95 + hash2(i, j) * 0.1);
+      for (let y = -S + 2; y <= S - 2; y++) for (let x = -S + 2; x <= S - 2; x++) {
+        const d = Math.abs(x) + Math.abs(y);
+        if (d > S - 2) continue;
+        const X = ((cx + x) % 128 + 128) % 128, Y = ((cy + y) % 128 + 128) % 128;
+        let c = hash2(X, Y) < 0.18 ? shadeC(base, 0.88) : hash2(X + 1, Y) < 0.08 ? shadeC(base, 1.1) : base;
+        if (d > S - 4) c = shadeC(base, y < 0 ? 1.12 : 0.78);
+        p.px(X, Y, c);
+      }
+    }
+    // moss in the joints and water stains
+    for (let i = 0; i < 260; i++) { const x = Math.floor(hash2(i, 41) * 128), y = Math.floor(hash2(i, 42) * 128); const [r, g, b] = p.get(x, y); if (r < 90) p.px(x, y, [0x4a6a2a, 0x5a7a32, 0x3a5a22][i % 3]); }
+    for (let i = 0; i < 10; i++) { const x = Math.floor(hash2(i, 51) * 128); const y0 = Math.floor(hash2(i, 52) * 64); for (let y = 0; y < 30 + hash2(i, 53) * 40; y++) p.px(x, (y0 + y) % 128, 0x3a3a34, 80); }
+    return p;
+  },
+  /** Underpass wall: damp concrete with seepage streaks, calcite drips and soot (64 px/m). */
+  tunnelWall() {
+    const p = new Pix(128, 128, 107);
+    p.fill(0x8a867c);
+    for (let i = 0; i < 14; i++) p.blotch(Math.floor(hash2(i, 1) * 128), Math.floor(hash2(i, 2) * 128), 10 + Math.floor(hash2(i, 3) * 12), i % 2 ? 0x7a766c : 0x96928a, 0.45);
+    p.speckle(0.1, [0x7e7a70, 0x9a968c, 0x6e6a62]);
+    for (let x = 0; x < 128; x += 64) { p.rect(x, 0, 1, 128, 0x5e5a52); p.rect(x + 1, 0, 1, 128, 0xa29e94); }
+    for (let i = 0; i < 18; i++) { const x = Math.floor(hash2(i, 11) * 128); const len = 30 + hash2(i, 12) * 90; for (let y = 0; y < len; y++) { p.px(x, y, 0x3a3630, 140 * (1 - y / len)); if (y < len * 0.5) p.px(x + 1, y, 0x4a463e, 90 * (1 - y / len)); } }
+    for (let i = 0; i < 7; i++) { const x = Math.floor(hash2(i, 21) * 128); for (let y = 0; y < 8 + hash2(i, 22) * 14; y++) p.px(x, y, 0xe4e0d4, 150 - y * 8); }
+    for (let x = 0; x < 128; x++) for (let y = 100; y < 128; y++) if (hash2(x, y) < (y - 96) / 40) p.px(x, y, 0x3a382e, 90);
+    return p;
+  },
+  /** Kawara roof tiles seen down the slope: rounded tile columns (25 cm) with lapped courses and moss. */
+  roofTile() {
+    const p = new Pix(64, 64, 108);
+    const ramp = [0x9aa0a8, 0xa8aeb6, 0x9ca2aa, 0x8a9098, 0x7a8088, 0x6a7078, 0x5e646c, 0x80868e];
+    for (let x = 0; x < 64; x++) for (let y = 0; y < 64; y++) p.px(x, y, shadeC(ramp[x % 8], 0.96 + hash2(x >> 3, y >> 3) * 0.08));
+    for (let y = 0; y < 64; y += 9) for (let x = 0; x < 64; x++) { p.px(x, y, shadeC(ramp[x % 8], 0.7)); p.px(x, y + 1, shadeC(ramp[x % 8], 1.08)); }
+    for (let i = 0; i < 40; i++) { const x = Math.floor(hash2(i, 31) * 64), y = Math.floor(hash2(i, 32) * 64); if (x % 8 > 4) p.px(x, y, [0x5a6a3a, 0x6a7a42][i % 2]); }
+    p.noise(0.03);
+    return p;
+  },
+  /** Painted riveted steel (girders): mottled paint, rivet rows, rust blooms (64 px/m). */
+  girder() {
+    const p = new Pix(64, 64, 109);
+    p.fill(0x8a8478);
+    for (let i = 0; i < 8; i++) p.blotch(Math.floor(hash2(i, 1) * 64), Math.floor(hash2(i, 2) * 64), 6 + Math.floor(hash2(i, 3) * 6), i % 2 ? 0x7e786c : 0x948e82, 0.4);
+    for (const y of [3, 60]) for (let x = 2; x < 64; x += 5) { p.px(x, y, 0xb0aa9e); p.px(x + 1, y + 1, 0x5a5448); p.px(x + 1, y, 0x9a9488); }
+    for (let i = 0; i < 9; i++) { const x = Math.floor(hash2(i, 11) * 64), y = Math.floor(hash2(i, 12) * 64); p.blotch(x, y, 2, 0x7a4a2a, 0.6); for (let k = 1; k < 6 + hash2(i, 13) * 10; k++) p.px(x, y + k, 0x7a4a2a, 120 - k * 8); }
+    p.speckle(0.05, [0x6e685c, 0xa09a8e]);
+    return p;
+  },
+  /** Track ballast. */
+  ballast() {
+    const p = new Pix(32, 32, 110);
+    p.fill(0x6e6a64);
+    for (let i = 0; i < 220; i++) { const x = Math.floor(hash2(i, 1) * 32), y = Math.floor(hash2(i, 2) * 32), c = [0x8a867e, 0x5a5650, 0x9a968e, 0x7a7068, 0x4a4640][i % 5]; p.px(x, y, c); p.px(x + 1, y, shadeC(c, 0.85)); p.px(x, y + 1, shadeC(c, 0.75)); }
+    return p;
+  },
+  /** Stucco (モルタル) wall: trowel texture, hairline cracks, rain stains under sills. */
+  mortar() {
+    const p = new Pix(64, 64, 111);
+    p.fill(0xd6cfc0);
+    for (let i = 0; i < 10; i++) p.blotch(Math.floor(hash2(i, 1) * 64), Math.floor(hash2(i, 2) * 64), 8, i % 2 ? 0xccc5b6 : 0xdcd6c8, 0.35);
+    p.speckle(0.14, [0xc8c1b2, 0xe0dacc, 0xbeb6a6]);
+    let x = 12, y = 6; for (let i = 0; i < 30; i++) { p.px(x, y, 0xa49c8c); x += hash2(i, 5) < 0.5 ? 1 : 0; y++; if (hash2(i, 6) < 0.3) x--; }
+    for (let i = 0; i < 6; i++) { const sx = Math.floor(hash2(i, 9) * 64); for (let yy = 0; yy < 12 + hash2(i, 10) * 30; yy++) p.px(sx, yy, 0x9a9282, 70); }
+    return p;
+  },
+  /** Small square ceramic floor tiles for the corner shop (64 px/m). */
+  shopTile() {
+    const p = new Pix(64, 64, 112);
+    p.fill(0x9a948a);
+    for (let j = 0; j < 64; j += 8) for (let i = 0; i < 64; i += 8) {
+      const c = ((i + j) / 8) % 2 ? 0xd8d2c4 : 0xc2baa8;
+      p.rect(i + 1, j + 1, 7, 7, shadeC(c, 0.96 + hash2(i, j) * 0.06));
+      p.px(i + 1, j + 1, shadeC(c, 1.08));
+    }
+    p.speckle(0.04, [0x8a847a, 0xb0a898]);
+    p.blotch(40, 30, 10, 0x8a8478, 0.25);
     return p;
   },
   // ------------------------------------------------------------ museum floors
@@ -575,6 +778,336 @@ export function poster(key, w = 64, h = 96, seed = 3) {
 export function posterTexture(key, w, h) {
   const p = poster(key, w, h);
   return p.texture();
+}
+
+// ---------------------------------------------------------------------- town (unit-mapped: one texture per face)
+// Windows, doors, signboards, the commuter train and the distant skyline. townPix(key) -> cached Pix.
+const curtainCols = [0xd88a4a, 0x8ab0d8, 0xe0c890, 0xa8c878, 0xd89aa8];
+function sash(p, mull = true) {
+  const { w, h } = p;
+  p.frame(0, 0, w, h, 0xc8ccd0); p.frame(1, 1, w - 2, h - 2, 0x7a8086);
+  if (mull) { const m = w >> 1; p.rect(m - 1, 1, 2, h - 2, 0xb8bcc0); p.rect(m, 1, 1, h - 2, 0x8a9096); }
+  p.rect(2, h - 3, w - 4, 1, 0x9aa0a6);
+}
+function litGlass(p, k = 0) {
+  const { w, h } = p;
+  p.gradient(2, 2, w - 4, h - 4, 0xffe8b0, 0xffc070);
+  // warm lamp hot-spot near the ceiling
+  for (let y = 2; y < h * 0.4; y++) for (let x = 2; x < w - 2; x++) if (Math.abs(x - w / 2) < w * 0.25 - y * 0.3) p.px(x, y, 0xfff4d8, 120);
+  const cc = curtainCols[k % curtainCols.length];
+  const cw = Math.max(3, Math.round(w * (0.18 + hash2(k, 3) * 0.12)));
+  for (const side of [0, 1]) for (let x = 0; x < cw; x++) {
+    const X = side ? w - 3 - x : 2 + x;
+    const c = shadeC(cc, x % 2 ? 0.8 : 0.95);
+    for (let y = 3; y < h - 3; y++) p.px(X, y, c);
+  }
+  p.rect(2, 2, w - 4, 1, 0x5a4a3a);
+  if (hash2(k, 7) < 0.5) { p.rect(Math.round(w * 0.42), 3, Math.max(2, w >> 3), 2, 0x6a4a2a); p.rect(Math.round(w * 0.42), 5, Math.max(2, w >> 3), 1, 0xfffae8); }
+  if (hash2(k, 8) < 0.45) { const px0 = Math.round(w * 0.55 + hash2(k, 9) * w * 0.1); p.rect(px0, h - 7, 3, 3, 0x4a7a3a); p.rect(px0 + 1, h - 4, 2, 1, 0x8a5a3a); }
+  if (hash2(k, 10) < 0.3) { const hx = Math.round(w * 0.3 + hash2(k, 11) * w * 0.2); p.rect(hx, h - 10, 3, 3, 0x4a3428, 200); p.rect(hx - 1, h - 7, 5, 4, 0x5a4434, 190); }
+}
+const TOWN = {
+  winLit: (p) => { litGlass(p, 0); sash(p); },
+  winLit2: (p) => { litGlass(p, 1); sash(p); },
+  winLit3: (p) => { litGlass(p, 3); sash(p); },
+  winLit4: (p) => { litGlass(p, 4); sash(p); },
+  /** Unlit pane reflecting the dusk sky. */
+  winDark: (p) => {
+    const { w, h } = p;
+    p.gradient(2, 2, w - 4, h - 4, 0x6a5a78, 0x2a2c48);
+    for (let i = -h; i < w; i += Math.max(9, w >> 1)) for (let k = 0; k < h; k++) { p.px(i + k, h - 1 - k, 0x9a8090, 150); p.px(i + k + 1, h - 1 - k, 0x8a7488, 90); }
+    p.rect(2, 2, 2, h - 4, 0x3a3048); p.rect(w - 4, 2, 2, h - 4, 0x3a3048);
+    sash(p);
+  },
+  /** Frosted wired glass (bathroom), dimly lit. */
+  winFrost: (p) => {
+    const { w, h } = p;
+    p.fill(0xe8dcc0);
+    for (let y = 2; y < h; y += 3) for (let x = 2; x < w; x += 3) p.px(x + (y % 2), y, 0xc8bca0);
+    p.noise(0.04);
+    sash(p, false);
+  },
+  /** Lit shoji screen behind glass. */
+  winShoji: (p) => {
+    const { w, h } = p;
+    p.fill(0xfff0d0);
+    for (let x = 2; x < w; x += 5) p.rect(x, 2, 1, h - 4, 0x8a6a48);
+    for (let y = 2; y < h; y += 6) p.rect(2, y, w - 4, 1, 0x8a6a48);
+    sash(p);
+  },
+  /** TV-lit room (cool flicker baked in). */
+  winTV: (p) => {
+    const { w, h } = p;
+    p.gradient(2, 2, w - 4, h - 4, 0x9ab8e8, 0x5a78b8);
+    for (let x = 2; x < 2 + w * 0.2; x++) for (let y = 3; y < h - 3; y++) p.px(x, y, x % 2 ? 0x4a5a88 : 0x5a6a98);
+    p.rect(2, 2, w - 4, 1, 0x3a3a4a);
+    sash(p);
+  },
+  /** Lace curtain, lit. */
+  winLace: (p) => {
+    const { w, h } = p;
+    p.gradient(2, 2, w - 4, h - 4, 0xfff0d0, 0xf0d0a0);
+    for (let y = 3; y < h - 3; y++) for (let x = 3; x < w - 3; x++) if ((x + y * 2) % 5 === 0 || (x * 2 + y) % 7 === 0) p.px(x, y, 0xffffff, 170);
+    for (let x = 3; x < w - 3; x += 2) p.px(x, h - 4, 0xffffff);
+    sash(p);
+  },
+  /** Sliding entrance (genkan) doors: lattice over frosted glass, lit from the hall. */
+  doorGenkan: (p) => {
+    const { w, h } = p;
+    p.fill(0x4a3a2a);
+    for (const x0 of [2, w >> 1]) {
+      const pw = (w >> 1) - 2;
+      p.gradient(x0 + 1, 2, pw - 1, h - 4, 0xfff0c8, 0xf0c890);
+      for (let y = 4; y < h - 3; y += 4) p.rect(x0 + 1, y, pw - 1, 1, 0x6a5038);
+      p.rect(x0 + (pw >> 1), 2, 1, h - 4, 0x6a5038);
+      p.frame(x0, 1, pw + 1, h - 2, 0x3a2c20);
+    }
+    p.rect(0, h - 2, w, 2, 0x9a9088);
+  },
+  /** Beige steel apartment door with peephole, nameplate and newspaper slot. */
+  doorApt: (p) => {
+    const { w, h } = p;
+    p.fill(0xd8ccb0);
+    p.frame(0, 0, w, h, 0x8a8478); p.frame(1, 1, w - 2, h - 2, 0xe6dcc4);
+    p.rect(w - 5, Math.round(h * 0.48), 3, 2, 0xc8ccd0); p.px(w - 5, Math.round(h * 0.48) + 2, 0x8a8e90);
+    p.px(w >> 1, Math.round(h * 0.28), 0x2a2a2a);
+    p.rect(3, Math.round(h * 0.2), 6, 3, 0xfbf8f0); p.rect(4, Math.round(h * 0.2) + 1, 4, 1, 0x5a5a5a);
+    p.rect((w >> 1) - 3, Math.round(h * 0.62), 6, 2, 0x8a8478);
+    for (let y = h - 6; y < h; y++) for (let x = 1; x < w - 1; x++) if ((x + y) % 2) p.px(x, y, 0xa89c84, 120);
+  },
+  /** Closed shop's shutter with a faded old sign board above (tobacco shop). */
+  oldSign: (p) => {
+    const { w, h } = p;
+    p.fill(0xe8dcc0);
+    p.frame(0, 0, w, h, 0x5a4a3a);
+    p.text('TOBACCO', w / 2, 3, { size: 16, color: 0x8a3a2a, align: 'center', font: FONT_DISPLAY });
+    p.text('たばこ・塩', w / 2, h - 13, { size: 10, color: 0x3a5a8a, align: 'center' });
+    for (let i = 0; i < 12; i++) { const x = Math.floor(hash2(i, 1) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i) < 0.5) p.px(x, y, 0x8a7a60, 60); }
+    p.noise(0.06);
+  },
+  /** GACHA GARAGE lightbox face (lit). */
+  gachaSign: (p) => {
+    const { w, h } = p;
+    p.fill(0xfff4e2);
+    // soft fluorescent banding behind the acrylic
+    for (const y of [Math.round(h * 0.3), Math.round(h * 0.7)]) for (let x = 0; x < w; x++) p.px(x, y, 0xffffff, 90);
+    p.rect(0, 0, w, 5, 0xe5383b); p.rect(0, 5, w, 1, 0xb8282a);
+    p.rect(0, h - 11, w, 11, 0x2a5ab0); p.rect(0, h - 12, w, 1, 0x1a3a80);
+    p.text('CAPSULE TOYS  ·  ガチャガチャ  ·  TOYS & CHARMS', w / 2, h - 10, { size: 8, color: 0xffffff, align: 'center', font: FONT_EN });
+    const cap = (cx, cy, r, top) => {
+      for (let y = -r; y <= r; y++) for (let x = -r; x <= r; x++) {
+        const d = x * x + y * y;
+        if (d > r * r + r) continue;
+        let c = y < 0 ? top : 0xffffff;
+        if (d > (r - 1.5) * (r - 1.5)) c = 0x2a1a1a;
+        else if (y === 0 || y === 1) c = shadeC(top, 0.7);
+        p.px(cx + x, cy + y, c);
+      }
+      p.rect(cx - Math.round(r * 0.5), cy - Math.round(r * 0.55), 3, 2, 0xffffff);
+    };
+    cap(22, Math.round(h * 0.45), 13, 0xff6f91);
+    cap(w - 22, Math.round(h * 0.45), 13, 0x5cc4ff);
+    const ty = 6, size = Math.round(h * 0.72);
+    p.text('GACHA GARAGE', w / 2 + 2, ty + 2, { size, color: 0x3a1a1a, align: 'center', font: FONT_DISPLAY });
+    p.text('GACHA GARAGE', w / 2, ty, { size, color: 0xe5383b, align: 'center', font: FONT_DISPLAY, outline: 0x3a1a1a });
+    // highlight stripe on the letters
+    for (let x = 40; x < w - 40; x++) for (let y = ty + 4; y < ty + 7; y++) { const [r, g, b] = p.get(x, y); if (r > 200 && g < 90) p.px(x, y, 0xff7a6a); }
+  },
+  /** The same face, unlit, sun-faded and dusty (abandoned shop). */
+  gachaSignDusty: (p) => {
+    TOWN.gachaSign(p);
+    const { w, h } = p;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const [r, g, b] = p.get(x, y);
+      const l = r * 0.3 + g * 0.59 + b * 0.11;
+      const k = 0.55;
+      p.px(x, y, [(r * (1 - k) + l * k) * 0.72 + 18, (g * (1 - k) + l * k) * 0.7 + 14, (b * (1 - k) + l * k) * 0.66 + 8]);
+    }
+    for (let i = 0; i < 40; i++) { const x = Math.floor(hash2(i, 3) * w); const len = 6 + hash2(i, 4) * h; for (let y = 0; y < len; y++) p.px(x, y, 0x4a3e30, 90 * (1 - y / len)); }
+    p.speckle(0.08, [0x8a7e68, 0x6a6050, 0xa89c84], 140);
+    for (let i = 0; i < 9; i++) p.line(w - 1, 0, w - 1 - 14 + i * 1.6, 12 - Math.abs(i - 4) * 1.5, 0xd8d0c0, 110);
+    for (let i = 0; i < 6; i++) p.line(0, h - 1 - i * 2, 10 - i, h - 1, 0xd8d0c0, 90);
+  },
+  /** Projecting side sign (袖看板), both faces. */
+  sodeSign: (p) => {
+    const { w, h } = p;
+    p.fill(0xe5383b);
+    p.frame(0, 0, w, h, 0x3a1a1a); p.frame(1, 1, w - 2, h - 2, 0xfff4e2);
+    p.circle(w >> 1, 9, 6, 0xffffff); for (let x = -6; x <= 6; x++) for (let y = -6; y <= 0; y++) if (x * x + y * y <= 40) p.px((w >> 1) + x, 9 + y, 0xffd23f);
+    p.rect((w >> 1) - 6, 9, 13, 1, 0x3a1a1a);
+    [...'GACHA'].forEach((ch, i) => p.text(ch, w >> 1, 19 + i * 11, { size: 14, color: 0xfff4e2, align: 'center', font: FONT_DISPLAY, outline: 0x7a1010 }));
+  },
+  /** Blocky paper lantern panel. */
+  lantern: (p) => {
+    const { w, h } = p;
+    p.fill(0xd8302a);
+    for (let y = 1; y < h; y += 3) p.rect(0, y, w, 1, 0xb02420);
+    for (let x = 0; x < w; x++) { p.px(x, 0, 0x8a1a16); p.px(x, h - 1, 0x8a1a16); }
+    p.rect((w >> 1) - 4, (h >> 1) - 5, 8, 9, 0xfff0d8);
+    p.text('ガ', w >> 1, (h >> 1) - 6, { size: 9, color: 0x1a1414, align: 'center' });
+  },
+  /** のぼり flag: OPEN. */
+  nobori: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0);
+    p.rect(0, 0, w, 5, 0xe5383b); p.rect(w - 3, 0, 3, h, 0xe5383b);
+    [...'OPEN'].forEach((ch, i) => p.text(ch, (w - 3) >> 1, 7 + i * 13, { size: 16, color: 0xe5383b, align: 'center', font: FONT_DISPLAY }));
+    p.text('営', (w - 3) >> 1, 61, { size: 10, color: 0x2a5ab0, align: 'center' });
+    p.text('業', (w - 3) >> 1, 72, { size: 10, color: 0x2a5ab0, align: 'center' });
+    p.noise(0.03);
+  },
+  /** Hanging OPEN plate. */
+  openPlate: (p) => {
+    const { w, h } = p;
+    p.fill(0x2a6a3a); p.frame(0, 0, w, h, 0x1a3a22); p.frame(1, 1, w - 2, h - 2, 0xf4ecd8);
+    p.text('OPEN', w / 2, 2, { size: 12, color: 0xfff4e2, align: 'center', font: FONT_DISPLAY });
+  },
+  /** Corner shop signboard. */
+  mikawaya: (p) => {
+    const { w, h } = p;
+    p.fill(0x1f5a3a);
+    p.frame(0, 0, w, h, 0x0f2a1c); p.frame(2, 2, w - 4, h - 4, 0xf4ecd8);
+    p.circle(20, h >> 1, 12, 0xe5383b); p.circle(20, h >> 1, 9, 0xfbf8f0);
+    p.text('三', 20, (h >> 1) - 8, { size: 14, color: 0xe5383b, align: 'center' });
+    p.text('MIKAWA-YA', w / 2 + 8, 2, { size: Math.round(h * 0.62), color: 0xfbf4e2, align: 'center', font: FONT_DISPLAY, shadow: 0x0a1a10 });
+    p.text('GENERAL STORE  ·  三河屋  ·  SAKE & GROCERIES', w / 2 + 8, h - 12, { size: 8, color: 0xffd23f, align: 'center', font: FONT_EN });
+  },
+  /** Round height-limit sign (cut-out). */
+  clearance: (p) => {
+    const { w } = p;
+    const c = w / 2 - 0.5, r = w / 2 - 0.5;
+    for (let y = 0; y < w; y++) for (let x = 0; x < w; x++) { const d = Math.hypot(x - c, y - c); if (d <= r) p.px(x, y, d > r - 3.2 ? 0xd8282a : 0xfbf8f0); }
+    p.text('3.4m', c + 0.5, c - 5, { size: 9, color: 0x1a1a1a, align: 'center', font: FONT_EN });
+    for (let k = 0; k < 3; k++) { p.rect(c - 2 + k, 6 + k, 5 - 2 * k, 1, 0x1a1a1a); p.rect(c - 2 + k, w - 7 - k, 5 - 2 * k, 1, 0x1a1a1a); }
+  },
+  /** Supplementary plate under the round sign. */
+  clearancePlate: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x1a3a8a);
+    p.text('高さ制限 3.4m', w / 2, 1, { size: 9, color: 0x1a3a8a, align: 'center' });
+    p.text('HEIGHT LIMIT 3.4 m', w / 2, h - 9, { size: 8, color: 0x1a1a1a, align: 'center', font: FONT_EN });
+  },
+  /** Road text decal: 止まれ (white on transparent). */
+  tomare: (p) => {
+    const { w, h } = p;
+    p.text('止まれ', w / 2, -1, { size: h - 2, color: 0xeeeae0, align: 'center' });
+    for (let i = 0; i < w * h * 0.08; i++) { const x = Math.floor(p.r() * w), y = Math.floor(p.r() * h); const [r] = p.get(x, y); if (r > 200) p.px(x, y, 0xb8b4a8); }
+  },
+  /** Road text decal: 30 (speed limit). */
+  speed30: (p) => {
+    const { w, h } = p;
+    p.text('30', w / 2, -2, { size: h + 2, color: 0xeeeae0, align: 'center', font: FONT_DISPLAY });
+  },
+  /** Yellow/black hazard stripes. */
+  hazard: (p) => {
+    const { w, h } = p;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) p.px(x, y, ((x + y) >> 2) % 2 ? 0x1a1a1a : 0xf2c41a);
+    p.noise(0.08);
+  },
+  /** Enamel plate naming the underpass. */
+  underpassName: (p) => {
+    const { w, h } = p;
+    p.fill(0x1a3a8a); p.frame(0, 0, w, h, 0xfbf8f0);
+    p.text('上山ガード', w / 2, 1, { size: 10, color: 0xfbf8f0, align: 'center' });
+    p.text('KAMIYAMA UNDERPASS', w / 2, h - 9, { size: 8, color: 0xfbf8f0, align: 'center', font: FONT_EN });
+  },
+  /** Apartment name plate. */
+  aptName: (p) => {
+    const { w, h } = p;
+    p.fill(0xf4ecd8); p.frame(0, 0, w, h, 0x8a6a4a);
+    p.text('SAKURA HEIGHTS', w / 2, 2, { size: 8, color: 0x8a3a5a, align: 'center', font: FONT_EN });
+    p.text('さくら荘', w / 2, h - 11, { size: 9, color: 0x3a2a1a, align: 'center' });
+  },
+  /** Commuter car side (14 m × 3.25 m): ribbed stainless, coloured stripe, four doors. */
+  trainSide: (p) => trainSide(p, false),
+  trainSideE: (p) => trainSide(p, true),
+  trainFront: (p) => trainFront(p, false),
+  trainFrontE: (p) => trainFront(p, true),
+  /** Distant mid-rise facade with a window grid (map + lit-window mask). */
+  skyline: (p) => skyline(p, false),
+  skylineE: (p) => skyline(p, true),
+};
+const TRAIN_DOORS = [0.11, 0.37, 0.63, 0.89];
+function trainSide(p, emissive) {
+  const { w, h } = p;
+  const lit = (x, y, c) => p.px(x, y, emissive ? c : shadeC(c, 0.92));
+  p.fill(emissive ? 0x000000 : 0xc4c8cc);
+  if (!emissive) {
+    for (let x = 0; x < w; x += 64) p.rect(x, 6, 1, h - 12, 0x9aa0a6);
+    for (let y = 70; y < h - 8; y += 3) p.rect(0, y, w, 1, 0xaeb4b8);
+    p.rect(0, 0, w, 6, 0x8a9096); p.rect(0, 6, w, 1, 0x6a7076);
+    p.rect(0, h - 8, w, 8, 0x3a3e42);
+    p.rect(0, 18, w, 3, 0x2fae5a); p.rect(0, 60, w, 7, 0x2fae5a); p.rect(0, 67, w, 1, 0x1a7a3a);
+  }
+  const doorW = 40;
+  const doorX = TRAIN_DOORS.map((f) => Math.round(f * w - doorW / 2));
+  // windows between the doors (paired panes)
+  for (let i = 0; i < doorX.length - 1; i++) {
+    const a = doorX[i] + doorW + 8, b = doorX[i + 1] - 8;
+    const n = Math.max(1, Math.round((b - a) / 34));
+    const pw = Math.floor((b - a - (n - 1) * 4) / n);
+    for (let k = 0; k < n; k++) {
+      const x0 = a + k * (pw + 4);
+      if (!emissive) p.rect(x0 - 1, 25, pw + 2, 30, 0x4a4e52);
+      for (let y = 26; y < 54; y++) for (let x = x0; x < x0 + pw; x++) {
+        let c = y < 29 ? 0xffffff : 0xfff2d8;
+        if (y > 44) c = 0xd8c8a8;
+        if ((x - x0) % 9 === 4 && y > 30 && y < 34) c = 0x6a6a6a;
+        if (hash2(x >> 2, i * 5 + k) < 0.25 && y > 38 && y < 45 && (x % 4) < 3) c = 0x3a3028;
+        lit(x, y, c);
+      }
+      if (!emissive) p.rect(x0 + (pw >> 1), 26, 1, 28, 0x6a6e72);
+    }
+  }
+  // end windows beside the cab ends
+  for (const x0 of [6, w - 26]) { if (!emissive) p.rect(x0 - 1, 25, 22, 30, 0x4a4e52); for (let y = 26; y < 54; y++) for (let x = x0; x < x0 + 20; x++) lit(x, y, y > 44 ? 0xd8c8a8 : 0xfff2d8); }
+  // doors with tall windows
+  for (const x0 of doorX) {
+    if (!emissive) { p.rect(x0, 14, doorW, h - 22, 0xb8bcc0); p.frame(x0, 14, doorW, h - 22, 0x5a5e62); p.rect(x0 + doorW / 2, 14, 1, h - 22, 0x5a5e62); p.rect(x0, 18, doorW, 3, 0x2fae5a); }
+    for (const dx of [4, doorW / 2 + 4]) for (let y = 24; y < 58; y++) for (let x = x0 + dx; x < x0 + dx + doorW / 2 - 8; x++) lit(x, y, y > 50 ? 0xd8c8a8 : 0xfff0d0);
+  }
+}
+function trainFront(p, emissive) {
+  const { w, h } = p;
+  p.fill(emissive ? 0x000000 : 0xc4c8cc);
+  if (!emissive) {
+    p.rect(0, 0, w, 6, 0x8a9096);
+    p.rect(0, 58, w, 9, 0x2fae5a);
+    p.rect(0, h - 8, w, 8, 0x3a3e42);
+    p.rect(6, 20, w - 12, 34, 0x1a1e22);
+    p.rect(w / 2 - 1, 20, 2, 34, 0x8a9096);
+    p.rect(w / 2 - 12, 82, 24, 8, 0x2a2a2a);
+  }
+  // destination LED + cab glow + headlights
+  for (let y = 9; y < 17; y++) for (let x = w / 2 - 22; x < w / 2 + 22; x++) p.px(x, y, emissive ? 0xff9a2a : 0x2a1a0a);
+  p.text('LOCAL', w / 2, 8, { size: 8, color: emissive ? 0xffd090 : 0xff9a2a, align: 'center', font: FONT_EN });
+  for (const x0 of [8, w - 20]) for (let y = 70; y < 76; y++) for (let x = x0; x < x0 + 12; x++) p.px(x, y, emissive ? 0xffffff : 0xf8f4e8);
+  if (emissive) for (let y = 22; y < 52; y++) for (let x = 8; x < w - 8; x++) if (y > 40) p.px(x, y, 0x3a3020);
+}
+function skyline(p, emissive) {
+  const { w, h } = p;
+  p.fill(emissive ? 0x000000 : 0x6a5a6a);
+  for (let y = 4; y < h - 2; y += 6) for (let x = 3; x < w - 2; x += 5) {
+    const k = hash2(x * 3 + p.w, y * 7 + h);
+    const on = k < 0.33;
+    const c = on ? (k < 0.08 ? 0xd8e8ff : k < 0.2 ? 0xffd08a : 0xffe4b0) : 0x4a3e52;
+    if (emissive && !on) continue;
+    p.rect(x, y, 3, 3, c);
+    if (!emissive && hash2(x, y) < 0.2) p.rect(x, y + 3, 3, 1, 0x7a6a7a);
+  }
+  if (!emissive) { p.rect(0, 0, w, 2, 0x4a3e4a); for (let x = 0; x < w; x += 16) p.rect(x, 0, 1, h, 0x5a4a5a); }
+}
+
+const townCache = new Map();
+/** Cached Pix for a town texture key at the given pixel size. */
+export function townPix(key, w, h) {
+  const ck = key + w + 'x' + h;
+  if (!townCache.has(ck)) {
+    const p = new Pix(w, h, 7 + w);
+    TOWN[key](p);
+    townCache.set(ck, p);
+  }
+  return townCache.get(ck);
 }
 
 export { Pix, FONT_JP, FONT_EN };

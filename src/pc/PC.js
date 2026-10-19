@@ -1,12 +1,13 @@
 // The old beige PC on the desk: voxel hardware, a curved CRT screen shader, and "PC mode"
-// (camera glides to the monitor, a virtual mouse cursor drives the E-Mart website).
+// (the camera glides to the monitor, then the GACHA-MART store opens as a DOM overlay: src/ui/ShopUI.js).
 import * as THREE from 'three';
 import { VoxelModel, glow, metal, gloss } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { audio } from '../core/audio.js';
-import { Site } from './site.js';
+import { Screen } from './site.js';
 import { W, H } from './ui.js';
+import { ShopUI } from '../ui/ShopUI.js';
 import { hash2 } from '../core/util.js';
 import { Game } from '../game/Game.js';
 import { placeOpenerTool, placeCharms } from '../game/shop.js';
@@ -173,10 +174,14 @@ export async function installPC(game) {
   screenLight.position.set(0, 0.08, 0.45);
   root.add(screenLight);
 
-  const site = new Site(game, canvas);
+  const crt = new Screen(game, canvas);
+  const ui = new ShopUI(game);
+  game.shopUI = ui;
+  let booted = false;
   const pc = {
-    active: false, site, screen, root, tex, light: screenLight, redrawT: 0, cursor: site.mouse,
-    enter() {
+    active: false, screen, root, tex, light: screenLight, redrawT: 0, crt,
+    /** Sit down at the PC: glide to the monitor, then open the store (optionally on `page`). */
+    enter(page = null) {
       if (this.active) return;
       this.active = true;
       game.player.frozen = true;
@@ -186,33 +191,37 @@ export async function installPC(game) {
       const p = c.clone().addScaledVector(n, 0.275);
       const m = new THREE.Matrix4().lookAt(p, c, new THREE.Vector3(0, 1, 0));
       game.player.lookOverride = { pos: p, quat: new THREE.Quaternion().setFromRotationMatrix(m), fovDelta: 18 };
-      document.getElementById('crosshair').classList.add('hidden-ch');
       glassS.visible = false;
       game.held.anchor.visible = false;
       game.interaction.setHint(null);
       audio.play('uiClick', { vol: 0.8 });
-      if (!site.booted) { audio.play('crtOn', { vol: 0.7 }); setTimeout(() => audio.play('modem', { vol: 0.6 }), 250); }
-      site.mouse.x = W / 2; site.mouse.y = H / 2;
+      if (!booted) { booted = true; audio.play('crtOn', { vol: 0.7 }); setTimeout(() => audio.play('modem', { vol: 0.5 }), 250); }
+      ui.open('emart', page, { delay: 420, onClose: () => this.exit() });
       this.enteredFrame = game.frame;
     },
+    /** Stand up again (closes the store if it is still open). */
     exit() {
       if (!this.active) return;
       this.active = false;
+      if (ui.isOpen && ui.store === 'emart') ui.close();
       game.player.frozen = false;
       game.player.lookOverride = null;
-      document.getElementById('crosshair').classList.remove('hidden-ch');
       glassS.visible = true;
       game.held.anchor.visible = true;
-      audio.play('uiClick', { vol: 0.6 });
       game.save();
     },
   };
-  site.onExit = () => pc.exit();
+  // debug.js compatibility: dbg.pc(page) sets game.pc.site.page after enter()
+  pc.site = {
+    booted: true, mouse: { x: 0, y: 0 },
+    get page() { return ui.page; },
+    set page(p) { if (ui.isOpen) ui.go(p, { push: false, sound: false }); },
+  };
   game.pc = pc;
 
   game.interaction.add(root, {
     highlight: monitor,
-    hint: () => ({ key: 'L', text: 'パソコン · Use the PC', sub: 'ガチャマート E-Mart: order, upgrade, sell' }),
+    hint: () => ({ key: 'LMB', text: 'Use the PC', sub: 'GACHA-MART: order, upgrade, sell' }),
     use: () => { pc.enter(); return false; },
   });
 
@@ -223,26 +232,15 @@ export async function installPC(game) {
   Game.updaters.push((g, dt) => {
     const inp = g.input;
     screenMat.uniforms.uTime.value = g.time;
-    if (pc.active) {
-      if (inp.locked) {
-        const s = 0.85 * inp.sensitivity;
-        site.mouse.x = Math.max(0, Math.min(W - 1, site.mouse.x + inp.mouse.dx * s));
-        site.mouse.y = Math.max(0, Math.min(H - 1, site.mouse.y + inp.mouse.dy * s));
-        if (inp.buttonDown(0) && g.frame > pc.enteredFrame) site.click();
-        if (inp.mouse.wheel) site.wheel(inp.mouse.wheel);
-        if (inp.buttonDown(2) || inp.keyPressed('KeyE') || inp.keyPressed('Backspace') || inp.keyPressed('KeyQ') || inp.keyPressed('Tab')) pc.exit();
-      }
-      pc.redrawT -= dt; pc.acc = (pc.acc || 0) + dt;
-      if (pc.redrawT <= 0) { pc.redrawT = 1 / 40; site.draw(pc.acc, true); pc.acc = 0; tex.needsUpdate = true; }
-      screenLight.intensity = 0.7;
-    } else {
-      pc.redrawT -= dt; pc.acc = (pc.acc || 0) + dt;
-      if (pc.redrawT <= 0) {
-        pc.redrawT = 0.12;
-        site.draw(pc.acc, false); pc.acc = 0;
-        tex.needsUpdate = true;
-      }
-      screenLight.intensity = 0.35;
+    // still gliding in (store not up yet): right click / E / Q / Tab / Backspace stand back up
+    if (pc.active && !ui.isOpen && inp.locked && g.frame > pc.enteredFrame
+      && (inp.buttonDown(2) || ['KeyE', 'Backspace', 'KeyQ', 'Tab'].some((k) => inp.keyPressed(k)))) pc.exit();
+    pc.redrawT -= dt; pc.acc = (pc.acc || 0) + dt;
+    if (pc.redrawT <= 0) {
+      pc.redrawT = pc.active ? 1 / 24 : 0.12;
+      crt.draw(pc.acc, pc.active); pc.acc = 0;
+      tex.needsUpdate = true;
     }
+    screenLight.intensity = pc.active ? 0.7 : 0.35;
   });
 }
