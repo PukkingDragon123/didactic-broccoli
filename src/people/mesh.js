@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { BONE_INDEX } from './body.js';
 
 export const ATLAS = 256;
-const FACE_DENS = 390; // px per metre on the face block
+const FACE_DENS = 430; // px per metre on the face block
 const PAD = 1;
 
 function ring(y, r, ch) {
@@ -77,19 +77,25 @@ function segFaces(s) {
   return out;
 }
 
-/** Shelf-pack rectangles ({w, h}) into ATLAS x ATLAS; returns false on overflow. */
-function pack(rects, y0) {
+/** Skyline bottom-left packing of rectangles ({w, h}) into ATLAS x ATLAS; returns false on overflow. */
+function pack(rects) {
+  const sky = new Int16Array(ATLAS);
   const order = [...rects].sort((a, b) => b.h - a.h || b.w - a.w);
-  let x = 0, y = y0, rowH = 0;
-  const shelves = [];
   for (const r of order) {
-    // try to drop into the gap at the end of an earlier, taller shelf
-    let placed = false;
-    for (const sh of shelves) if (sh.x + r.w <= ATLAS && r.h <= sh.h) { r.x = sh.x; r.y = sh.y; sh.x += r.w; placed = true; break; }
-    if (placed) continue;
-    if (x + r.w > ATLAS) { shelves.push({ x, y, h: rowH }); y += rowH; x = 0; rowH = 0; }
-    r.x = x; r.y = y; x += r.w; rowH = Math.max(rowH, r.h);
-    if (y + r.h > ATLAS) return false;
+    if (r.w > ATLAS) return false;
+    let bx = -1, by = 1e9;
+    // candidate x: where the skyline steps (left-aligned) and where a step ends (right-aligned)
+    for (let x = 0; x + r.w <= ATLAS; x++) {
+      const left = x === 0 || sky[x] !== sky[x - 1];
+      const right = x + r.w === ATLAS || sky[x + r.w] !== sky[x + r.w - 1];
+      if (!left && !right) continue;
+      let y = 0;
+      for (let i = x; i < x + r.w; i++) if (sky[i] > y) { y = sky[i]; if (y >= by) break; }
+      if (y < by) { by = y; bx = x; }
+    }
+    if (by + r.h > ATLAS) return false;
+    r.x = bx; r.y = by;
+    for (let i = bx; i < bx + r.w; i++) sky[i] = by + r.h;
   }
   return true;
 }
@@ -112,16 +118,19 @@ export function buildMesh(plan) {
     loose.push(f);
   }
   const blockRect = { w: block.w + PAD * 2, h: block.h + PAD * 2 };
-  let scale = 1;
+  const sizeAt = (f, scale) => {
+    f.dens = 330 * scale * (f.seg.dens || 1) * (f.seg.mat === 'head' || f.seg.mat === 'ear' ? 1.2 : 1) * (f.kind === 'side' ? 1 : 0.7);
+    f.rect = { w: Math.max(1, Math.ceil((f.s1 - f.s0) * f.dens - 0.01)) + PAD * 2, h: Math.max(1, Math.ceil((f.r1 - f.r0) * f.dens - 0.01)) + PAD * 2 };
+  };
+  // first guess from the area budget, then shrink until everything packs
+  let area = 0;
+  for (const f of loose) { sizeAt(f, 1); area += f.rect.w * f.rect.h; }
+  let scale = Math.min(1.2, Math.sqrt((ATLAS * ATLAS * 0.86 - blockRect.w * blockRect.h) / area));
   for (let tries = 0; tries < 60; tries++) {
     const rects = [blockRect];
-    for (const f of loose) {
-      f.dens = 250 * scale * (f.seg.dens || 1) * (f.seg.mat === 'head' || f.seg.mat === 'ear' ? 1.2 : 1) * (f.kind === 'side' ? 1 : 0.7);
-      f.rect = { w: Math.max(1, Math.ceil((f.s1 - f.s0) * f.dens - 0.01)) + PAD * 2, h: Math.max(1, Math.ceil((f.r1 - f.r0) * f.dens - 0.01)) + PAD * 2 };
-      rects.push(f.rect);
-    }
-    if (pack(rects, 0)) break;
-    scale *= 0.97;
+    for (const f of loose) { sizeAt(f, scale); rects.push(f.rect); }
+    if (pack(rects)) break;
+    scale *= 0.975;
   }
   block.x = blockRect.x + PAD; block.y = blockRect.y + PAD;
   block.rect = blockRect;

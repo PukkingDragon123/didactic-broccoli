@@ -46,7 +46,7 @@ export class Pedestrians {
     this.list = [];
     this.group = new THREE.Group();
     game.scene.add(this.group);
-    this.bubbles = new Bubbles(game.camera, document.body);
+    this.bubbles = game.bubbles || (game.bubbles = new Bubbles(game.camera, document.body));
     this.spawnT = 3;
     this.seed = (game.state.seed || 1) % 100000;
     this.open = !!game.state.story?.complete;
@@ -87,8 +87,7 @@ export class Pedestrians {
     k.greetT -= dt;
     if (near && !k.near && k.greetT <= 0) { this.say(k.h, pick(LINES.keeper)); k.h.gesture('bow'); k.greetT = 25; }
     k.near = near;
-    k.h.update(dt, { speed: 0, lookAt: near ? this.game.camera.position : null, talking: k.talkT > 0 });
-    k.talkT = Math.max(0, (k.talkT || 0) - dt);
+    k.h.update(dt, { speed: 0, lookAt: near ? this.game.camera.position : null, talking: this.bubbles.isTalking(k.h) });
   }
 
   // ------------------------------------------------------------------ spawning

@@ -65,6 +65,6 @@ export function accSegments(spec, P, J) {
   if (cam) add('propCam', 'prop', p[1] - 0.04, p[1] + 0.04, [p[0], p[2], 0.06, 0.033], null, { ch: 0.2, dens: 1.6 });
   else add('phone', 'prop', p[1] - 0.07, p[1] + 0.07, [p[0], p[2], 0.035, 0.0045], null, { dens: 1.8 });
   const b = J.box;
-  add('parcel', 'box', b[1] - 0.12, b[1] + 0.12, [0, b[2], 0.2, 0.15], null, { ch: 0, dens: 0.8 });
+  add('parcel', 'box', b[1] - 0.11, b[1] + 0.11, [0, b[2], 0.18, 0.14], null, { ch: 0.06, dens: 0.4 });
   return S;
 }

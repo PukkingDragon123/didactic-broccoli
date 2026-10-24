@@ -56,7 +56,7 @@ function boostedMaterials(boost) {
 export class MenuGear {
   constructor(camera) {
     this.camera = camera;
-    this.boost = { value: 0.42 };
+    this.boost = { value: 0.7 };
     let geo = hasProp('menu_gear') ? propGeometry('menu_gear')?.clone() : null;
     if (geo) {
       geo.computeBoundingBox();
@@ -80,10 +80,13 @@ export class MenuGear {
     this.mesh.add(this.hull);
     // tilt the gear towards the room so its thickness reads, then spin it about its own axle
     this.tilt = new THREE.Group();
-    this.tilt.rotation.set(0.32, -0.42, 0);
+    this.tilt.rotation.set(0.28, -0.36, 0);
     this.tilt.add(this.mesh);
     this.root = new THREE.Group();
+    this.root.matrixAutoUpdate = false; // layout() writes its matrix (with the perspective shear)
     this.root.add(this.tilt);
+    this.shear = new THREE.Matrix4();
+    this.scaleM = new THREE.Matrix4();
     camera.add(this.root);
     this.hover = false;
     this.h = 0;
@@ -102,8 +105,13 @@ export class MenuGear {
     const k = 1 + this.h * 0.18;
     const r = this.sizePx / 2;
     this.ndc = { x: 1 - (2 * (MARGIN + r)) / W, y: 1 - (2 * (MARGIN + r)) / H, r };
-    this.root.position.set(this.ndc.x * half * cam.aspect, this.ndc.y * half, -DIST);
-    this.root.scale.setScalar(((this.sizePx / H) * 2 * half / 2 / this.radius) * k);
+    const px = this.ndc.x * half * cam.aspect, py = this.ndc.y * half;
+    const sc = ((this.sizePx / H) * 2 * half / 2 / this.radius) * k;
+    // this close to the lens and this far off-axis, perspective would shear the gear (its whole side band
+    // shows, ~1.5x wider); shift each point by its depth so it looks as if it sat on the view axis
+    this.shear.set(1, 0, -px / DIST, 0, 0, 1, -py / DIST, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    this.root.matrix.makeTranslation(px, py, -DIST).multiply(this.shear).multiply(this.scaleM.makeScale(sc, sc, sc));
+    this.root.matrixWorldNeedsUpdate = true;
   }
 
   pick(camera, ndcX, ndcY) {
@@ -116,8 +124,8 @@ export class MenuGear {
     this.h += ((this.hover ? 1 : 0) - this.h) * Math.min(1, dt * 10);
     this.spin += ((this.hover ? 4.2 : 0.7) - this.spin) * Math.min(1, dt * 4);
     this.mesh.rotation.z -= this.spin * dt;
-    this.tilt.rotation.y = -0.42 + Math.sin(performance.now() / 1300) * 0.06;
-    this.boost.value = 0.42 + this.h * 0.7;
+    this.tilt.rotation.y = -0.36 + Math.sin(performance.now() / 1300) * 0.06;
+    this.boost.value = 0.7 + this.h * 0.8;
     this.layout();
   }
 

@@ -7,7 +7,7 @@ export const sstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 export const mulc = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
-export const G = (x, y, sx, sy) => Math.exp(-(x * x) / (2 * sx * sx) - (y * y) / (2 * sy * sy));
+export const G = (x, y, sx, sy) => { const e = (x * x) / (2 * sx * sx) + (y * y) / (2 * sy * sy); return e > 9 ? 0 : Math.exp(-e); };
 
 /** Integer hash -> [0, 1). */
 export function h2(x, y, s = 0) {
@@ -43,18 +43,25 @@ export function over(o, c, t) {
  */
 export function hairPx(o, hair, u, v, k = 1, sheen = 0) {
   const s = Math.floor(u);
-  const strand = h2(s, 7, 3) * 0.55 + h2(s >> 1, 9, 4) * 0.45; // per-strand tone
-  const along = vnoise(s * 0.7, v * 0.18, 5);
+  const ha = h2(s, 7, 3), hb = h2(s >> 1, 9, 4);
+  const strand = ha * 0.55 + hb * 0.45; // per-strand tone
+  const along = 0.5 + 0.5 * Math.sin(v * 0.33 + ha * 6.28) * Math.sin(v * 0.11 + hb * 4);
   let t = 0.72 + strand * 0.42 + (along - 0.5) * 0.3;
   // clumps: darker gaps between hair locks
-  const clump = Math.sin((u + vnoise(v * 0.1, s * 0.2, 6) * 3) * 0.9);
-  t -= Math.max(0, -clump) * 0.18;
-  const c = hair.col;
-  o[0] = c[0] * t * k; o[1] = c[1] * t * k; o[2] = c[2] * t * k; o[3] = 255;
+  const clump = Math.sin((u + Math.sin(v * 0.12 + s * 0.7) * 1.6) * 0.9);
+  if (clump < 0) t += clump * 0.18;
+  const c = hair.col, kt = t * k;
+  o[0] = c[0] * kt; o[1] = c[1] * kt; o[2] = c[2] * kt; o[3] = 255;
   if (sheen > 0) {
     const sh = sheen * (0.55 + strand * 0.9) * (0.6 + along * 0.8);
-    over(o, hair.hi, Math.min(0.85, sh));
+    over(o, hair.hi, sh < 0.85 ? sh : 0.85);
   }
+  return o;
+}
+/** o *= k (with the same warm shadow shift as shadeInto). */
+export function scaleO(o, k, warm = 0.12) {
+  const d = 1 - k;
+  o[0] *= k * (1 + d * warm); o[1] *= k * (1 + d * warm * 0.2); o[2] *= k * (1 - d * warm * 0.9);
   return o;
 }
 

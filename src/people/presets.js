@@ -15,7 +15,7 @@ export const HUMAN_PRESETS = [
 export const STREET_WEIGHTS = { salaryman: 3, office_lady: 2.5, schoolgirl: 2, schoolboy: 2, grandma: 2, grandpa: 2, kid: 1.6, tourist: 1.4, otaku: 1.2, gyaru: 1, mom: 1.6, delivery: 0.9, construction: 0.7, shopkeeper: 0 };
 
 const SKIN = { fair: 0xf3d6c0, light: 0xecc8aa, medium: 0xe0b48e, warm: 0xd6a37a, tan: 0xc08a60, deep: 0xa06a46, pale: 0xf6dccc, brown: 0x8c5a3c, dark: 0x5e3a28 };
-const HAIR = { black: 0x1e1a1c, soft: 0x2c221e, dbrown: 0x3e2a20, brown: 0x6a4228, chestnut: 0x8a5632, caramel: 0xa8743e, blonde: 0xd8b878, ash: 0xb8aa94, grey: 0x9a9690, silver: 0xc4c0ba, white: 0xe2ded6, ginger: 0xa85a2c, lavgrey: 0xb0a8b6 };
+const HAIR = { black: 0x2a2428, soft: 0x352a26, dbrown: 0x4a3226, brown: 0x6a4228, chestnut: 0x8a5632, caramel: 0xa8743e, blonde: 0xd8b878, ash: 0xb8aa94, grey: 0x9a9690, silver: 0xc4c0ba, white: 0xe2ded6, ginger: 0xa85a2c, lavgrey: 0xb0a8b6 };
 const IRIS = { brown: 0x4a2c1c, dbrown: 0x2e1c14, hazel: 0x6a5230, blue: 0x4a6c94, green: 0x55704a, grey: 0x6a7480 };
 
 export function makeSpec(id, seed = 1, height) {
@@ -35,7 +35,7 @@ export function makeSpec(id, seed = 1, height) {
   spec.skin = spec.skin.map((v) => Math.max(0, Math.min(255, v * (1 + (r() - 0.5) * 0.05))));
   const hc = typeof spec.hair.col === 'number' ? hex(spec.hair.col) : spec.hair.col;
   spec.hair.col = hc;
-  spec.hair.hi = spec.hair.hi || (spec.hair.grey ? [250, 250, 248] : mixc(hc, [235, 225, 255], hc[0] < 70 ? 0.42 : 0.5));
+  spec.hair.hi = spec.hair.hi || (spec.hair.grey ? [250, 250, 248] : hc[0] < 80 ? mixc(hc, [176, 180, 214], 0.75) : mixc(hc, [255, 244, 222], 0.55));
   return spec;
 }
 
@@ -178,7 +178,7 @@ const BUILD = {
     acc: [{ kind: 'backpack', col: jit(pick([0x1e1e22, 0x3a3a40, 0x2a3a2a])), poster: ch(0.6) }],
     walk: { style: 'slouch' },
   }),
-  gyaru: ({ pick, ch, rr, jit }) => ({
+  gyaru: ({ pick, rr, jit }) => ({
     sex: 'f', age: 'adult', H: rr(1.54, 1.66), build: rr(0.9, 1.0), bust: rr(0.8, 1.2),
     skin: pick([SKIN.tan, SKIN.warm, SKIN.deep, SKIN.tan]),
     hair: { style: pick(['long', 'long', 'twintails', 'ponytail']), col: pick([HAIR.blonde, HAIR.caramel, HAIR.ash, HAIR.blonde]), volume: 1.3, part: 1 },
@@ -202,7 +202,7 @@ const BUILD = {
     acc: [ch(0.5) ? { kind: 'ecobag', col: jit(pick([0xd8c8a8, 0x8a9a7a, 0xe8e4dc])), leek: ch(0.7) } : { kind: 'tote', col: jit(pick([0xd8c8a8, 0x2a3048, 0x8a6a4a])), side: 1 }],
     walk: { style: 'normal' },
   }),
-  delivery: ({ pick, ch, rr, jit }) => {
+  delivery: ({ pick, rr, jit }) => {
     const c = pick([[0x2a6a3a, 0xe8e4dc], [0x2a3a6a, 0xf0c040], [0xb02a30, 0xf0f0ec], [0x3a3a40, 0xf08a30]]);
     return {
       sex: 'm', age: 'adult', H: rr(1.66, 1.8), build: rr(0.96, 1.1),

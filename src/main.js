@@ -13,6 +13,8 @@ import { installMuseum } from './museum/Museum.js';
 import { installDebug } from './debug.js';
 import { isTouchDevice, installTouch } from './core/touch.js';
 import { MenuSigns } from './world/menuSigns.js';
+import { MenuGear } from './world/menuGear.js';
+import { installStaticIcons, setLabel } from './ui/staticIcons.js';
 import { encodeShop, decodeShop } from './game/shareCode.js';
 import { VISIT_KEY } from './game/state.js';
 import { ITEMS } from './data/series/index.js';
@@ -38,6 +40,7 @@ async function loadFonts() {
 }
 
 async function boot() {
+  installStaticIcons(); // pixel icons on the static buttons (and the loading bar)
   const pct = $('load-pct');
   await loadFonts();
   const game = new Game($('app'));
@@ -59,6 +62,7 @@ async function boot() {
   const start = () => {
     audio.init();
     game.startAudio();
+    dropGear();
     const st = game.state.story;
     if (!started && !fly && !intro && !game.story.done && !st.intro && !game.visiting) {
       // a brand-new game: the intro cutscene instead of the fly-in
@@ -66,7 +70,7 @@ async function boot() {
       signs.dispose();
       $('title').classList.add('fade');
       setTimeout(() => $('title').classList.add('hidden'), 600);
-      game.cutscene.play((c) => game.story.introScene(c), { skippable: true }).then(() => { intro = false; started = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); });
+      game.cutscene.play((c) => game.story.introScene(c), { skippable: true }).then(() => { intro = false; started = true; game.held.anchor.visible = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); });
     } else if (!started && !fly && !intro) fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() };
     game.input.lock();
   };
@@ -74,21 +78,31 @@ async function boot() {
   const signs = new MenuSigns(game.scene);
   signs.enabled = true;
   if (params.has('autotest')) signs.dispose();
+  // the spinning 3D settings gear in the corner of the menu
+  let gear = params.has('autotest') ? null : new MenuGear(game.camera);
+  if (gear) document.body.classList.add('has-3d-gear');
+  const dropGear = () => { gear?.dispose(); gear = null; document.body.classList.remove('has-3d-gear'); };
+  // whatever's in your hands hangs off the camera: keep it out of the menu shot
+  game.held.anchor.visible = params.has('autotest');
   const canvas = game.renderer.renderer.domElement;
   const ndc = (e) => [(e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1];
   const menuOpen = () => !started && !fly && $('share').classList.contains('hidden') && $('pause').classList.contains('hidden');
   // pointer events cover mouse, pen and touch alike; listen on the window so overlays never swallow them
   window.addEventListener('pointermove', (e) => {
-    if (!menuOpen()) return;
-    const id = signs.pick(game.camera, ...ndc(e));
+    if (!menuOpen()) { if (gear) gear.hover = false; return; }
+    const overGear = !!gear?.pick(game.camera, ...ndc(e));
+    if (overGear && !gear.hover) sfx('uiHover', 0.35);
+    if (gear) gear.hover = overGear;
+    const id = overGear ? null : signs.pick(game.camera, ...ndc(e));
     if (id !== signs.hoverId && id) sfx('uiHover', 0.35);
     signs.hoverId = id;
-    canvas.style.cursor = id ? 'pointer' : '';
+    canvas.style.cursor = id || overGear ? 'pointer' : '';
   });
   let downAt = null;
-  window.addEventListener('pointerdown', (e) => { if (menuOpen()) { downAt = { x: e.clientX, y: e.clientY, id: signs.pick(game.camera, ...ndc(e)) }; signs.hoverId = downAt.id; } });
+  window.addEventListener('pointerdown', (e) => { if (menuOpen()) { downAt = { x: e.clientX, y: e.clientY, id: signs.pick(game.camera, ...ndc(e)), gear: !!gear?.pick(game.camera, ...ndc(e)) }; signs.hoverId = downAt.id; } });
   window.addEventListener('pointerup', (e) => {
     if (!menuOpen() || !downAt) return;
+    if (downAt.gear && gear?.pick(game.camera, ...ndc(e))) { downAt = null; sfx('uiClick', 0.6); openSettings(); return; }
     const id = signs.pick(game.camera, ...ndc(e)) || (Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 30 ? downAt.id : null);
     downAt = null;
     if (!id) return;
@@ -121,14 +135,14 @@ async function boot() {
       code.value = '...';
       game.save();
       code.value = await encodeShop(game.state);
-      act.textContent = 'Copy code';
+      setLabel(act, 'Copy code', 'copy');
       note.textContent = 'Send this code to a friend so they can visit your shop';
     } else {
       $('share-title').textContent = 'Visit a friend';
       code.readOnly = false;
       code.value = '';
       code.placeholder = 'GG1....';
-      act.textContent = 'Go!';
+      setLabel(act, 'Go!', 'play');
       note.textContent = "Paste your friend's shop code";
       setTimeout(() => code.focus(), 50);
     }
@@ -181,8 +195,8 @@ async function boot() {
   $('reset-btn').addEventListener('click', () => {
     if (Date.now() - resetArm < 4000) { game.reset(); return; }
     resetArm = Date.now();
-    $('reset-btn').textContent = 'Click again to erase everything';
-    setTimeout(() => { $('reset-btn').textContent = 'Reset save data'; }, 4000);
+    setLabel('reset-btn', 'Click again to erase', 'warning');
+    setTimeout(() => setLabel('reset-btn', 'Reset save', 'trash'), 4000);
   });
   for (const el of document.querySelectorAll('#pause .panel')) el.addEventListener('click', (e) => e.stopPropagation());
 
@@ -208,10 +222,12 @@ async function boot() {
       for (const m of game.machines) m.update(dt, game.time);
       game.garage.update(dt, game.time);
       game.street.update(dt, game.time);
+      game.pedestrians?.update(dt);
       game.effects.update(dt, game.time);
       game.lighting.update(dt, game.time);
       game.tweens.update(dt);
       signs.update(dt, game.time);
+      gear?.update(dt);
       game.render(dt);
       return;
     }
@@ -232,7 +248,7 @@ async function boot() {
       cam.quaternion.copy(fly.q).slerp(endQ, Math.min(1, e * 1.15));
       cam.updateMatrixWorld();
       game.render(dt);
-      if (k >= 1) { fly = null; signs.dispose(); }
+      if (k >= 1) { fly = null; signs.dispose(); game.held.anchor.visible = true; }
       return;
     }
     game.update(dt);

@@ -2,15 +2,40 @@
 // (x, y, z), face normal and part, so clothing is described in body space: hems, seams, plackets, buttons,
 // collars, pockets, belts, folds and patterns line up across faces. A soft baked occlusion / roundness pass
 // gives the boxes volume.
-import { hex, clamp01, sstep, lerp, mixc, G, h2, vnoise, shadeInto, over, hairPx } from './paintlib.js';
+import { clamp01, sstep, mixc, G, h2, vnoise, shadeInto, over, hairPx, scaleO } from './paintlib.js';
 import { ATLAS } from './mesh.js';
 
 const WHITE = [244, 242, 236], INK = [28, 22, 22], GOLD = [214, 170, 70], SILVER = [190, 190, 196];
+const C_255_255_255 = [255, 255, 255];
+const C_210_120_110 = [210, 120, 110];
+const C_70_72_84 = [70, 72, 84];
+const C_236_170_160 = [236, 170, 160];
+const C_246_214_206 = [246, 214, 206];
+const C_150_150_150 = [150, 150, 150];
+const C_200_140_70 = [200, 140, 70];
+const C_220_150_80 = [220, 150, 80];
+const C_255_245_235 = [255, 245, 235];
+const C_200_180_140 = [200, 180, 140];
+const C_255_248_238 = [255, 248, 238];
+const C_255_240_225 = [255, 240, 225];
+const C_150_100_70 = [150, 100, 70];
+const C_220_120_110 = [220, 120, 110];
+const C_255_230_215 = [255, 230, 215];
+const C_230_150_140 = [230, 150, 140];
+const C_215_115_105 = [215, 115, 105];
+const C_252_252_250 = [252, 252, 250];
+const C_40_60_120 = [40, 60, 120];
+const C_60_90_160 = [60, 90, 160];
+const C_120_90_60 = [120, 90, 60];
 
-export function paintAtlas(spec, P, faces, pix) {
+/**
+ * Paint every face of the atlas. A generator: yields after each face so the work can be time-sliced
+ * (see Human); run it to completion with paintAtlas().
+ */
+export function* paintAtlasJob(spec, P, faces, pix) {
   const ctx = makePainters(spec, P);
   const d = pix.d, o = new Float32Array(4);
-  const c = { x: 0, y: 0, z: 0, i: 0, j: 0 };
+  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 };
   for (const f of faces) {
     const fn = ctx[f.seg.mat] || ctx.body;
     c.f = f; c.seg = f.seg; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens;
@@ -29,6 +54,29 @@ export function paintAtlas(spec, P, faces, pix) {
         const p = (c.j * ATLAS + c.i) * 4;
         d[p] = o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0]; d[p + 1] = o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1]; d[p + 2] = o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2]; d[p + 3] = o[3];
       }
+    }
+    yield f;
+  }
+  pix.dirty = true;
+}
+export function paintAtlas(spec, P, faces, pix) { const it = paintAtlasJob(spec, P, faces, pix); while (!it.next().done); }
+
+/** Instant placeholder: every face filled with the colour its painter gives at the face centre. */
+export function paintAtlasFlat(spec, P, faces, pix) {
+  const ctx = makePainters(spec, P);
+  const d = pix.d, o = new Float32Array(4);
+  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 };
+  for (const f of faces) {
+    const fn = ctx[f.seg.mat] || ctx.body;
+    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens; c.kind = f.kind;
+    const R = f.rect, s = (f.s0 + f.s1) / 2, r = (f.r0 + f.r1) / 2;
+    c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
+    c.i = R.x + (R.w >> 1); c.j = R.y + (R.h >> 1); c.e = 0; c.rh = f.r1 - f.r0; c.rb = c.rt = c.rh / 2;
+    o[3] = 255;
+    fn(c, o);
+    for (let j = 0; j < R.h; j++) for (let i = 0; i < R.w; i++) {
+      const p = ((R.y + j) * ATLAS + R.x + i) * 4;
+      d[p] = o[0]; d[p + 1] = o[1]; d[p + 2] = o[2]; d[p + 3] = 255;
     }
   }
   pix.dirty = true;
@@ -73,14 +121,13 @@ function makePainters(spec, P) {
       if (c.part === 'traps' && c.kind === 'top') k *= 1.04;
     }
     // large soft variation so flat panels don't look printed
-    k *= 0.97 + 0.06 * vnoise(c.x * 14 + c.z * 9, c.y * 11, 3);
+    k *= 1 + 0.03 * Math.sin(c.x * 37 + c.z * 23 + Math.sin(c.y * 13) * 2) * Math.sin(c.y * 29 + c.x * 11);
     return k;
   }
-  const line = (c, v, at, w = 1) => Math.abs(v - at) < c.px * 0.5 * w;
   const front = (c) => c.nz > 0.45, back = (c) => c.nz < -0.45;
   /** Folds: soft dark creases that wander a little. */
   function fold(c, amp, freq, phase, along) {
-    const v = Math.sin(along * freq + phase + vnoise(along * 30, phase, 9) * 2.5);
+    const v = Math.sin(along * freq + phase + Math.sin(along * 37 + phase * 3) * 1.3);
     return 1 - amp * Math.max(0, v) ** 3;
   }
   function fabricK(c, kind) {
@@ -108,7 +155,7 @@ function makePainters(spec, P) {
     const dx = c.x - bx, dy = c.y - by, d = Math.sqrt(dx * dx + dy * dy);
     if (d > r + c.px * 0.6) return false;
     if (d > r - c.px * 0.4) over(o, mixc(col, INK, 0.6), 0.9);
-    else { o[0] = col[0]; o[1] = col[1]; o[2] = col[2]; if (dx < 0 && dy > 0) over(o, [255, 255, 255], 0.35); }
+    else { o[0] = col[0]; o[1] = col[1]; o[2] = col[2]; if (dx < 0 && dy > 0) over(o, C_255_255_255, 0.35); }
     return true;
   }
 
@@ -123,7 +170,7 @@ function makePainters(spec, P) {
       if (back(c) && Math.abs(dk) < 0.012 * H) { o[0] *= 0.9; o[1] *= 0.88; o[2] *= 0.88; }
     }
     if (c.part === 'farm' && back(c) && Math.abs(c.y - P.elbowY) < 0.01 * H) { o[0] *= 0.93; o[1] *= 0.9; o[2] *= 0.9; }
-    over(o, [210, 120, 110], 0.05 * clamp01(1 - Math.abs(c.e)));
+    over(o, C_210_120_110, 0.05 * clamp01(1 - Math.abs(c.e)));
   }
 
   function neckPx(c, o) {
@@ -132,7 +179,7 @@ function makePainters(spec, P) {
     const t = sstep(P.chin - 0.02 * hu, P.chin + 0.12 * hu, c.y);
     o[0] *= 1 - 0.32 * t; o[1] *= 1 - 0.36 * t; o[2] *= 1 - 0.34 * t;
     if (spec.sex === 'm' && spec.age !== 'kid' && front(c) && Math.abs(c.x) < 0.01 && Math.abs(c.y - (P.chin - 0.06 * hu)) < 0.012) { o[0] *= 1.05; o[1] *= 1.05; o[2] *= 1.05; }
-    if (spec.face.stubble && c.y > P.chin - 0.1 * hu && front(c)) over(o, [70, 72, 84], spec.face.stubble * 0.25 * h2(c.i, c.j, 77));
+    if (spec.face.stubble && c.y > P.chin - 0.1 * hu && front(c)) over(o, C_70_72_84, spec.face.stubble * 0.25 * h2(c.i, c.j, 77));
     collarPx(c, o);
   }
 
@@ -162,20 +209,18 @@ function makePainters(spec, P) {
   }
 
   function handPx(c, o) {
-    const gl = false;
-    skinPx(c, o, 1.02);
-    if (gl) return;
+    skinPx(c, o, 0.94);
     const sx = Math.sign(c.x) || 1;
     const palmIn = -sx * c.nx > 0.5; // palms face the thighs
-    if (palmIn) over(o, [236, 170, 160], 0.18);
+    if (palmIn) over(o, C_236_170_160, 0.18);
     if (c.part === 'fingers') {
       // separations between fingers (along the length, on the front/back/outer faces)
       if (c.kind === 'side' && Math.abs(c.nx) < 0.5) { const q = (c.e + 1) * 2; if (Math.abs(q - Math.round(q)) < 0.18 && q > 0.5 && q < 3.5) { o[0] *= 0.82; o[1] *= 0.78; o[2] *= 0.78; } }
-      if (c.kind === 'side' && !palmIn && c.rb < c.px * 2.2) over(o, [246, 214, 206], 0.45); // nails
+      if (c.kind === 'side' && !palmIn && c.rb < c.px * 2.2) over(o, C_246_214_206, 0.45); // nails
       if (c.kind === 'side' && c.rt < c.px * 1.2) { o[0] *= 0.88; o[1] *= 0.86; o[2] *= 0.86; } // knuckle crease
     }
     if (c.part === 'palm' && !palmIn && c.kind === 'side' && c.rb < c.px * 1.5) { o[0] *= 0.92; o[1] *= 0.9; o[2] *= 0.9; }
-    if (c.part === 'thumb' && c.rb < c.px * 1.8 && c.kind === 'side') over(o, [246, 214, 206], 0.35);
+    if (c.part === 'thumb' && c.rb < c.px * 1.8 && c.kind === 'side') over(o, C_246_214_206, 0.35);
   }
 
   // ---------------------------------------------------------------- tops
@@ -202,7 +247,7 @@ function makePainters(spec, P) {
     shadeInto(o, col, kk);
     // hem shadow (top overhangs the trousers) + hem line
     if (!arm && Math.abs(c.y - topHem) < c.px * 1.5 && k !== 'sailor') over(o, INK, 0.25);
-    if (arm && sleeve === 'short' && c.y - cuffY < 0.012 * H) { if (k === 'polo' || k === 'tee') { shadeInto(o, [o[0], o[1], o[2]], c.i % 2 ? 0.92 : 1.02); } if (Math.abs(c.y - cuffY - 0.012 * H) < c.px * 0.6) over(o, INK, 0.25); }
+    if (arm && sleeve === 'short' && c.y - cuffY < 0.012 * H) { if (k === 'polo' || k === 'tee') { scaleO(o, c.i % 2 ? 0.92 : 1.02); } if (Math.abs(c.y - cuffY - 0.012 * H) < c.px * 0.6) over(o, INK, 0.25); }
     if (arm && sleeve === 'long' && c.y - cuffY < 0.025 * H && ['cardigan', 'knit', 'workjacket', 'jacket', 'flannel', 'sailor', 'gakuran'].includes(k)) {
       if (k === 'sailor') { shadeInto(o, T.collar, kk); const q = (c.y - cuffY) / (0.025 * H); if (Math.abs(q - 0.45) < 0.12 || Math.abs(q - 0.75) < 0.12) shadeInto(o, T.stripe, kk); }
       else if (k === 'cardigan' || k === 'knit') shadeInto(o, col, kk * (c.i % 2 ? 0.88 : 1));
@@ -231,7 +276,7 @@ function makePainters(spec, P) {
       if ((k === 'suit' || k === 'blazer') && fr && c.y > vb && ax < vx + 0.03 * H) {
         const lx = ax - vx;
         if (Math.abs(lx - (0.028 * H - (c.y - vb) * 0.12)) < c.px * 0.7 && c.y < yN - 0.02 * H) over(o, INK, 0.35);
-        else if (lx < 0.026 * H) shadeInto(o, [o[0], o[1], o[2]], 1.06);
+        else if (lx < 0.026 * H) scaleO(o, 1.06);
         if (Math.abs(c.y - (yN - 0.035 * H)) < c.px * 0.6 && lx < 0.03 * H) over(o, INK, 0.3); // gorge
       }
       if (fr && c.y <= vb + 0.002) {
@@ -242,7 +287,7 @@ function makePainters(spec, P) {
       if (k === 'suit' || k === 'blazer') {
         // hip pocket flaps + breast pocket
         const py = P.pelvisY - 0.025 * H;
-        if (fr && ax > 0.022 * H && ax < 0.075 * H && c.y < py && c.y > py - 0.018 * H) { shadeInto(o, [o[0], o[1], o[2]], 1.05); if (Math.abs(c.y - py) < c.px * 0.7 || Math.abs(c.y - (py - 0.018 * H)) < c.px * 0.6) over(o, INK, 0.35); }
+        if (fr && ax > 0.022 * H && ax < 0.075 * H && c.y < py && c.y > py - 0.018 * H) { scaleO(o, 1.05); if (Math.abs(c.y - py) < c.px * 0.7 || Math.abs(c.y - (py - 0.018 * H)) < c.px * 0.6) over(o, INK, 0.35); }
         if (k === 'suit' && fr && c.x > 0.03 * H && c.x < 0.07 * H && Math.abs(c.y - (yB + 0.02 * H)) < c.px * 0.6) over(o, INK, 0.35);
       }
       if (k === 'cardigan' && fr && ax > 0.02 * H && ax < 0.065 * H && c.y < P.hipY + 0.06 * H && c.y > topHem + 0.025 * H) { if (Math.abs(c.y - (P.hipY + 0.06 * H)) < c.px * 0.7) over(o, INK, 0.35); }
@@ -288,7 +333,7 @@ function makePainters(spec, P) {
       const placketTo = k === 'polo' ? yB + 0.05 * H : topHem;
       if (fr && ax < 0.008 * H && c.y > placketTo) {
         if (Math.abs(ax - 0.008 * H) < c.px * 0.8) over(o, INK, 0.3);
-        if (k === 'workjacket' || k === 'jacket') { if (ax < c.px * 0.7) over(o, [150, 150, 150], 0.8); }
+        if (k === 'workjacket' || k === 'jacket') { if (ax < c.px * 0.7) over(o, C_150_150_150, 0.8); }
         else for (let b = 0; b < 8; b++) { const by = yN - 0.03 * H - b * (k === 'polo' ? 0.028 : 0.062) * H; if (by < placketTo) break; if (button(c, o, 0, by, 0.0042 * H, k === 'aloha' ? [240, 236, 220] : mixc(T.col, WHITE, 0.6))) break; }
       }
       if ((k === 'shirt' && spec.sex === 'm') || k === 'flannel' || k === 'workjacket') {
@@ -297,7 +342,7 @@ function makePainters(spec, P) {
           const px0 = sx * 0.05 * H, py0 = yB + 0.035 * H;
           if (fr && Math.abs(c.x - px0) < 0.022 * H && c.y < py0 && c.y > py0 - 0.05 * H) {
             if (Math.abs(Math.abs(c.x - px0) - 0.022 * H) < c.px || Math.abs(c.y - (py0 - 0.05 * H)) < c.px) over(o, INK, 0.3);
-            if (k !== 'shirt' && c.y > py0 - 0.012 * H) { shadeInto(o, [o[0], o[1], o[2]], 1.04); if (Math.abs(c.y - (py0 - 0.012 * H)) < c.px) over(o, INK, 0.35); }
+            if (k !== 'shirt' && c.y > py0 - 0.012 * H) { scaleO(o, 1.04); if (Math.abs(c.y - (py0 - 0.012 * H)) < c.px) over(o, INK, 0.35); }
           }
         }
       }
@@ -399,14 +444,14 @@ function makePainters(spec, P) {
       // side seams (outer), inseam (inner), trouser crease (front)
       const sx = Math.sign(c.x) || 1;
       if (sx * c.nx > 0.9 && Math.abs(c.e) < 0.1) over(o, k === 'jeans' ? [200, 140, 70] : INK, k === 'jeans' ? 0.5 : 0.2);
-      if (k === 'slacks' && !Bt.noCrease && fr && Math.abs(c.e) < 0.07) shadeInto(o, [o[0], o[1], o[2]], 1.1);
+      if (k === 'slacks' && !Bt.noCrease && fr && Math.abs(c.e) < 0.07) scaleO(o, 1.1);
       if (k === 'cargo' && sx * c.nx > 0.5 && c.part === 'thigh' && c.y < P.hipY - 0.07 * H && c.y > P.kneeY + 0.04 * H) {
         const top = P.hipY - 0.07 * H, fy = top - 0.022 * H;
-        if (c.y > fy) { shadeInto(o, [o[0], o[1], o[2]], 1.06); if (Math.abs(c.y - fy) < c.px) over(o, INK, 0.4); }
+        if (c.y > fy) { scaleO(o, 1.06); if (Math.abs(c.y - fy) < c.px) over(o, INK, 0.4); }
         if (Math.abs(c.y - top) < c.px || Math.abs(c.y - (P.kneeY + 0.04 * H)) < c.px || Math.abs(c.e) > 0.85) over(o, INK, 0.35);
       }
       if (c.y < botHem + 0.012 * H && Math.abs(c.y - botHem - 0.012 * H) < c.px * 0.7) over(o, INK, 0.3);
-      if (k === 'shorts' && c.y < botHem + 0.012 * H) shadeInto(o, [o[0], o[1], o[2]], 1.05);
+      if (k === 'shorts' && c.y < botHem + 0.012 * H) scaleO(o, 1.05);
       return;
     }
     // hips: fly, pockets, back pockets / yoke
@@ -414,11 +459,11 @@ function makePainters(spec, P) {
     if (fr && c.y < waist - 0.02 * H) {
       const pxl = P.hipsX * 0.62 + (waist - c.y) * 0.45; // slanted pocket opening
       if (Math.abs(ax - pxl) < c.px * 0.8 && c.y > waist - 0.075 * H) over(o, INK, 0.4);
-      if (k === 'jeans' && Math.abs(ax - pxl - c.px * 1.5) < c.px * 0.5 && c.y > waist - 0.075 * H) over(o, [200, 140, 70], 0.5);
-      if (k === 'jeans' && Math.abs(c.y - (waist - 0.075 * H)) < c.px && Math.abs(ax - pxl) < c.px * 1.4) over(o, [220, 150, 80], 0.9);
+      if (k === 'jeans' && Math.abs(ax - pxl - c.px * 1.5) < c.px * 0.5 && c.y > waist - 0.075 * H) over(o, C_200_140_70, 0.5);
+      if (k === 'jeans' && Math.abs(c.y - (waist - 0.075 * H)) < c.px && Math.abs(ax - pxl) < c.px * 1.4) over(o, C_220_150_80, 0.9);
     }
     if (bk && c.y < waist - 0.03 * H && c.y > waist - 0.1 * H && ax > 0.015 * H && ax < 0.07 * H) {
-      if (k === 'jeans') { if (Math.abs(c.y - (waist - 0.03 * H)) < c.px || Math.abs(ax - 0.015 * H) < c.px || Math.abs(ax - 0.07 * H) < c.px) over(o, [200, 140, 70], 0.5); }
+      if (k === 'jeans') { if (Math.abs(c.y - (waist - 0.03 * H)) < c.px || Math.abs(ax - 0.015 * H) < c.px || Math.abs(ax - 0.07 * H) < c.px) over(o, C_200_140_70, 0.5); }
       else if (Math.abs(c.y - (waist - 0.04 * H)) < c.px * 0.7 && ax > 0.025 * H && ax < 0.06 * H) over(o, INK, 0.45);
     }
   }
@@ -439,7 +484,7 @@ function makePainters(spec, P) {
       const tc = spec.tights || [60, 50, 54];
       const sheer = 0.55 + 0.25 * Math.abs(c.e);
       over(o, tc, sheer);
-      if (Math.abs(c.e) < 0.25 && front(c)) over(o, [255, 245, 235], 0.06);
+      if (Math.abs(c.e) < 0.25 && front(c)) over(o, C_255_245_235, 0.06);
     }
   }
 
@@ -455,7 +500,7 @@ function makePainters(spec, P) {
       if (-sx * c.nx > 0.5 && Math.abs(c.e) < 0.25 && Math.abs(((c.y / (0.012 * H)) % 1) - 0.5) < 0.18) over(o, GOLD, 0.8);
       if (Math.abs(c.y - bootTop) < c.px) over(o, INK, 0.4);
     }
-    if (k === 'boots' && front(c) && Math.abs(c.e) < 0.3 && Math.round(c.y / (0.01 * H)) % 2 === 0) over(o, [200, 180, 140], 0.6);
+    if (k === 'boots' && front(c) && Math.abs(c.e) < 0.3 && Math.round(c.y / (0.01 * H)) % 2 === 0) over(o, C_200_180_140, 0.6);
   }
   function shoePx(c, o) {
     const S = spec.shoes, k = S.kind, toe = c.part === 'toe';
@@ -478,7 +523,7 @@ function makePainters(spec, P) {
     if (leather) {
       // polished highlight on the toe and the heel
       const hi = (toe ? 0.35 : 0.12) * G(c.e, c.rb / Math.max(c.rh, 1e-4) - 0.6, 0.4, 0.25) * (c.kind === 'top' ? 1.2 : 0.8);
-      over(o, [255, 248, 238], hi);
+      over(o, C_255_248_238, hi);
       if (Math.abs(c.y - sole - c.px) < c.px * 0.6) over(o, INK, 0.4); // welt
     }
     if (k === 'sneaker' || k === 'comfort' || k === 'platform') {
@@ -569,14 +614,18 @@ function makePainters(spec, P) {
     return y > P.hairY;
   }
   function headPx(c, o) {
-    let k = 0.86 * (c.kind === 'bot' ? 0.62 : 1) * (1 + (h2(c.i, c.j, 21) - 0.5) * 0.035);
+    let k = (c.part === 'scalp' ? 0.86 - 0.08 * Math.abs(c.nx) - 0.08 * Math.max(0, -c.nz) : 0.86) * (c.kind === 'bot' ? 0.62 : 1) * (1 + (h2(c.i, c.j, 21) - 0.5) * 0.035);
     if (c.kind === 'side' && Math.abs(c.nx) > 0.4) k *= 0.96 - 0.06 * clamp01((P.zf - c.z) / (2 * P.hd));
     shadeInto(o, skin, k, 0.25);
-    if (c.kind === 'bot') { if (spec.face.stubble) over(o, [70, 72, 84], spec.face.stubble * 0.3 * h2(c.i, c.j, 77)); return; }
-    if (spec.face.stubble && c.part === 'jaw' && c.y < P.mouthY + 0.05 * hu) over(o, [70, 72, 84], spec.face.stubble * (0.15 + 0.2 * h2(c.i, c.j, 77)));
+    if (c.kind === 'bot') { if (spec.face.stubble) over(o, C_70_72_84, spec.face.stubble * 0.3 * h2(c.i, c.j, 77)); return; }
+    if (spec.face.stubble && c.part === 'jaw' && c.y < P.mouthY + 0.05 * hu) over(o, C_70_72_84, spec.face.stubble * (0.15 + 0.2 * h2(c.i, c.j, 77)));
     // ear shadow on the head side
     if (Math.abs(c.nx) > 0.5 && c.y > P.earBot - 0.03 * hu && c.y < P.earTop + 0.02 * hu && Math.abs(c.z - (P.hcz - 0.11 * hu)) < 0.1 * hu) { o[0] *= 0.88; o[1] *= 0.86; o[2] *= 0.86; }
-    if (hairStyle === 'bald' && c.y > P.earTop + 0.12 * hu) { if (c.kind === 'top') over(o, [255, 245, 235], 0.12 * G(c.x, c.z - P.hcz, 0.03, 0.04)); }
+    if (c.part === 'scalp') {
+      // shiny skull: soft highlight on top / front, age spots
+      over(o, C_255_240_225, c.kind === 'top' ? 0.18 * G(c.x, c.z - P.hcz - 0.01, 0.03, 0.035) : 0.1 * G(c.e, c.rb / c.rh - 0.6, 0.5, 0.3) * Math.max(0, c.nz));
+      if (h2(c.i >> 1, c.j >> 1, 93) > 0.97) over(o, C_150_100_70, 0.3);
+    }
     if (headHair(c)) {
       const t = c.kind === 'top' ? Math.atan2(c.x, c.z - P.hcz + 0.06 * hu) * 26 : c.i;
       hairPx(o, hair, t, c.j, 0.9, c.kind === 'top' ? 0.12 : 0.18 * G(0, c.y - (P.crown - 0.25 * hu), 1, 0.05 * hu));
@@ -588,15 +637,15 @@ function makePainters(spec, P) {
     let k = 0.86;
     if (!outward) k *= c.kind === 'side' && Math.abs(c.nz) > 0.5 ? 0.82 : 0.75;
     shadeInto(o, skin, k, 0.3);
-    over(o, [220, 120, 110], 0.12);
+    over(o, C_220_120_110, 0.12);
     if (outward) {
       // helix rim lighter, concha darker, lobe soft
       const ex = c.e, ey = (c.rb / c.rh) * 2 - 1;
       const rim = Math.max(Math.abs(ex), Math.abs(ey) * 0.9);
-      if (rim > 0.68) over(o, [255, 230, 215], 0.12);
+      if (rim > 0.68) over(o, C_255_230_215, 0.12);
       else if (rim > 0.45 && ey > -0.5) { o[0] *= 0.82; o[1] *= 0.76; o[2] *= 0.76; }
       if (Math.abs(ex + 0.1) < 0.22 && Math.abs(ey + 0.05) < 0.3) { o[0] *= 0.72; o[1] *= 0.64; o[2] *= 0.64; }
-      if (ey < -0.62) over(o, [230, 150, 140], 0.15);
+      if (ey < -0.62) over(o, C_230_150_140, 0.15);
     }
     if (spec.glasses && Math.abs(c.y - (P.eyeY + 0.02 * hu)) < c.px * 0.8 && c.nz > 0.3) over(o, spec.glasses.col, 0.9);
   }
@@ -607,42 +656,53 @@ function makePainters(spec, P) {
       if (nx * nx / (0.022 * hu) ** 2 + nz * nz / (0.03 * hu) ** 2 < 1 && Math.abs(c.x) > 0.008 * hu) shadeInto(o, [70, 36, 34], 1);
       return;
     }
-    shadeInto(o, skin, 0.82 + 0.06 * (c.rb / c.rh), 0.3);
-    if (c.rb / c.rh < 0.35) { o[0] *= 0.9; o[1] *= 0.86; o[2] *= 0.86; }
-    over(o, [215, 115, 105], 0.06);
+    shadeInto(o, skin, 0.86 + 0.08 * (c.rb / c.rh), 0.3);
+    if (c.rb / c.rh < 0.3) { o[0] *= 0.92; o[1] *= 0.88; o[2] *= 0.88; }
+    over(o, C_215_115_105, 0.06);
   }
 
   // ---------------------------------------------------------------- hair shells
   function hairShellPx(c, o) {
-    const part = c.part;
-    const u = c.kind === 'top' ? Math.atan2(c.x, c.z - P.hcz + 0.06 * hu) * 30 + (hair.style === 'sidepart' ? 0 : 0) : c.i + (c.kind === 'side' && Math.abs(c.nx) > 0.4 ? Math.round(c.rt / c.px * 0.35 * Math.sign(c.nx)) : 0);
-    const sheenY = P.crown - 0.24 * hu;
-    let sheen = c.kind === 'top' ? 0.18 * G(0, Math.hypot(c.x, c.z - P.hcz) - P.hw * 0.62, 1, 0.025 * hu) : 0.42 * G(0, c.y - sheenY, 1, 0.035 * hu);
-    if (part === 'tail' || part === 'hairLong') sheen = 0.3 * G(0, c.rt - 0.05, 1, 0.03);
+    const part = c.part, side = c.kind === 'side';
+    const sideways = side && Math.abs(c.nx) > 0.4;
+    // strands run down the sides (combed slightly back on the temples) and radiate from the crown on top
+    const u = c.kind === 'top' ? Math.atan2(c.x - (hair.part || 0) * P.hw * 0.3, c.z - P.hcz + 0.04 * hu) * 34 : c.i + (sideways ? Math.round(c.rt / c.px * 0.3) : 0);
+    let sheen;
+    if (c.kind === 'top') sheen = 0.3 * G(0, Math.hypot(c.x, c.z - P.hcz) - P.hw * 0.58, 1, 0.03 * hu);
+    else if (part === 'tail' || part === 'hairLong') sheen = 0.5 * G(0, c.rt - 0.035, 1, 0.022);
+    else if (part === 'bangs') sheen = 0.5 * G(0, c.rt / c.rh - 0.3, 1, 0.14);
+    else {
+      // an arc of sheen around the head, broken up by strands
+      const yb = P.crown - 0.2 * hu - 0.05 * hu * c.e * c.e + Math.sin(c.i * 0.9) * 0.008 * hu;
+      sheen = 0.45 * G(0, c.y - yb, 1, 0.03 * hu) * (0.55 + 0.45 * Math.sin(c.i * 0.37 + c.j * 0.05));
+    }
+    if (c.kind === 'bot' && (part === 'bangs' || part === 'fringe')) { o[3] = 0; return; } // thin strands: no visible underside
     let k = 1;
-    if (c.kind === 'bot') k = 0.55;
-    else if (c.kind === 'side') k = 0.92 + 0.08 * (1 - Math.abs(c.e)) - 0.15 * clamp01(1 - c.rb / (0.06 * hu));
-    if (part === 'hairSide' && c.nx * Math.sign(c.x || 1) < -0.5) k *= 0.6;
+    if (c.kind === 'bot') k = 0.5;
+    else if (side) k = 0.9 + 0.12 * (1 - c.e * c.e) - 0.18 * clamp01(1 - c.rb / (0.05 * hu));
+    if (part === 'hairSide' && c.nx * Math.sign(c.x || 1) < -0.5) k *= 0.55;
     if (hair.style === 'perm') {
-      // tight curls: blotchy rings
-      const q = vnoise(c.i * 0.55, c.j * 0.55, 8);
-      k *= 0.72 + 0.5 * Math.abs(Math.sin(q * 9));
-      hairPx(o, hair, c.i * 0.3, c.j * 0.3, k, sheen * 0.4);
+      // tight curls: blotchy rings with bright tops
+      const q = vnoise(c.i * 0.6, c.j * 0.6, 8), q2 = vnoise(c.i * 0.6 + 7, c.j * 0.6 - 3, 9);
+      k *= 0.7 + 0.45 * Math.abs(Math.sin(q * 9)) + 0.12 * (q2 - 0.5);
+      hairPx(o, hair, c.i * 0.25, c.j * 0.25, k, sheen * 0.35 + (Math.sin(q * 9) > 0.8 ? 0.25 : 0));
     } else hairPx(o, hair, u, c.j, k, sheen);
-    if (hair.grey && hair.style !== 'perm' && h2(c.i, c.j, 44) > 0.7) over(o, [250, 250, 250], 0.2);
-    // part line on top for side-parts
-    if (c.kind === 'top' && (hair.style === 'sidepart' || hair.style === 'long' || hair.style === 'bob') && hair.part && Math.abs(c.x - hair.part * P.hw * 0.3) < c.px * 0.7 && c.z > P.hcz - 0.1 * hu) shadeInto(o, skin, 0.8);
-    // ragged lower edges (alpha cut)
-    if (c.kind === 'side') {
+    if (hair.grey && hair.style !== 'perm' && h2(c.i, c.j, 44) > 0.72) over(o, C_252_252_250, 0.22);
+    // parting line on top
+    if (c.kind === 'top' && hair.part && ['sidepart', 'long', 'bob', 'short'].includes(hair.style) && Math.abs(c.x - hair.part * P.hw * 0.3) < c.px * 0.6 && c.z > P.hcz - 0.05 * hu) shadeInto(o, skin, 0.75);
+    // ragged lower edges (alpha cut), tapered sideburns, swept / curly fringes
+    if (side) {
       const cut = c.seg.cut;
       let edge = c.rb / c.px;
-      if (cut === 'side') edge = (c.rb - (c.e * Math.sign(hair.part || 1) + 1) * 0.02 * hu) / c.px;
-      else if (cut === 'swept') edge = (c.rb - (1 - c.e * hair.part) * 0.03 * hu) / c.px;
-      else if (cut === 'curly') edge = (c.rb - Math.abs(Math.sin(c.e * 7)) * 0.02 * hu) / c.px;
-      const depth = cut === 'messy' ? 4.5 : part === 'tail' ? 6 : part === 'hairCap' ? 2.4 : 2.6;
+      if (cut === 'side') edge = (c.rb - (c.e * Math.sign(hair.part || 1) + 1) * 0.025 * hu) / c.px;
+      else if (cut === 'swept') edge = (c.rb - (1 - c.e * (hair.part || 1)) * 0.035 * hu) / c.px;
+      else if (cut === 'curly') edge = (c.rb - Math.abs(Math.sin(c.e * 7)) * 0.025 * hu) / c.px;
+      if (part === 'hairSide' && sideways && (hair.style === 'short' || hair.style === 'sidepart' || hair.style === 'buzz' || hair.style === 'ponytail' || hair.style === 'bun')) edge = (c.rb - clamp01(-c.e) * 0.08 * hu) / c.px;
+      const depth = cut === 'messy' ? 5 : part === 'tail' ? 7 : part === 'hairCap' ? 3.5 : part === 'bangs' ? 4 : 2.8;
       const col = Math.floor(c.i / (cut === 'messy' ? 2 : 1));
-      if (edge < h2(col, 3, 17) * depth + (part === 'tail' ? Math.abs(c.e) * 6 : 0)) o[3] = 0;
-      else if (edge < depth + 1.5) { o[0] *= 0.82; o[1] *= 0.82; o[2] *= 0.82; }
+      const tip = h2(col, 3, 17) * depth + (part === 'tail' ? Math.abs(c.e) * 5 : 0) + (part === 'bangs' && h2(col >> 2, 5, 18) > 0.7 ? 2 : 0);
+      if (edge < tip) o[3] = 0;
+      else if (edge < depth + 1.5) { o[0] *= 0.8; o[1] *= 0.8; o[2] *= 0.8; }
     }
   }
 
@@ -654,12 +714,12 @@ function makePainters(spec, P) {
     if (k === 'sunhat') kk *= (c.i + c.j) % 2 ? 0.92 : 1.04;
     if (c.kind === 'side') kk *= 0.94 + 0.06 * (1 - c.e * c.e);
     shadeInto(o, col, kk);
-    if (k === 'hardhat') { over(o, [255, 255, 255], 0.25 * G(c.e, c.rb / c.rh - 0.6, 0.35, 0.25)); if (c.kind === 'side' && front(c) && Math.abs(c.e) < 0.3 && Math.abs(c.rb / c.rh - 0.5) < 0.2) shadeInto(o, [40, 150, 60], 0.95); }
-    if (k === 'cap' && c.kind === 'side' && front(c) && Math.abs(c.e) < 0.35 && c.rb / c.rh > 0.3 && c.rb / c.rh < 0.75) shadeInto(o, Hh.col2 || WHITE, 0.95);
+    if (k === 'hardhat') { over(o, C_255_255_255, 0.25 * G(c.e, c.rb / c.rh - 0.6, 0.35, 0.25)); if (c.kind === 'side' && c.nz > 0.9 && Math.abs(c.e) < 0.3 && Math.abs(c.rb / c.rh - 0.5) < 0.2 && (Math.abs(c.e) < 0.1 || Math.abs(c.rb / c.rh - 0.5) < 0.07)) shadeInto(o, [40, 150, 60], 0.95); }
+    if (k === 'cap' && c.kind === 'side' && c.nz > 0.9 && Math.abs(c.e) < 0.35 && c.rb / c.rh > 0.3 && c.rb / c.rh < 0.75) shadeInto(o, Hh.col2 || WHITE, 0.95);
     if (k === 'cap' && c.kind === 'top' && Math.hypot(c.x, c.z - P.hcz) < 0.008) shadeInto(o, mixc(col, INK, 0.3), 1);
     if ((k === 'sunhat' || k === 'bucket') && c.kind === 'side' && c.rb < 0.02 * hu + 0.012) shadeInto(o, Hh.col2 || mixc(col, INK, 0.3), 0.9);
     if (k === 'schoolhat' && c.kind === 'side' && c.rb < 0.012) shadeInto(o, mixc(col, WHITE, 0.4), 0.95);
-    if (k === 'headband') { shadeInto(o, col, 0.95 * (c.i % 3 ? 1 : 0.93)); if (front(c) && Math.abs(c.x) < 0.02) over(o, [40, 60, 120], 0.15); }
+    if (k === 'headband') { shadeInto(o, col, 0.95 * (c.i % 3 ? 1 : 0.93)); if (front(c) && Math.abs(c.x) < 0.02) over(o, C_40_60_120, 0.15); }
     if (c.kind === 'side' && c.rb < c.px * 1.2) over(o, INK, 0.25);
   }
   function hat2Px(c, o) {
@@ -743,7 +803,7 @@ function makePainters(spec, P) {
     }
     if (p === 'lens') {
       shadeInto(o, [28, 28, 30], 0.95);
-      if (c.kind === 'top' || c.kind === 'bot') { const r = Math.hypot(c.x - c.f.o[0] * 0 - 0, 0); shadeInto(o, [60, 70, 90], 1); over(o, [255, 255, 255], 0.3 * G(c.e, c.rb / Math.max(c.rh, 1e-4) - 0.7, 0.3, 0.2)); }
+      if (c.kind === 'top' || c.kind === 'bot') { shadeInto(o, [60, 70, 90], 1); over(o, C_255_255_255, 0.3 * G(c.e, c.rb / Math.max(c.rh, 1e-4) - 0.7, 0.3, 0.2)); }
       return;
     }
     if (p === 'phone') {
@@ -759,7 +819,7 @@ function makePainters(spec, P) {
         // the big flap over the back with a metal clasp
         if (back(c) && c.rb > c.rh * 0.25) { shadeInto(o, mixc(A.col, [255, 255, 255], 0.06), leatherK() * 1.04); if (Math.abs(c.rb - c.rh * 0.25) < c.px) over(o, INK, 0.4); }
         if (back(c) && Math.abs(c.e) < 0.12 && Math.abs(c.rb - c.rh * 0.3) < 0.012) shadeInto(o, GOLD, 1);
-        if (c.kind === 'top') over(o, [255, 255, 255], 0.15);
+        if (c.kind === 'top') over(o, C_255_255_255, 0.15);
       } else {
         if (edge(1)) over(o, INK, 0.3);
         if (p === 'backpack' && back(c) && c.rt < 0.012 && c.rt > 0.006) shadeInto(o, SILVER, 0.8);
@@ -769,13 +829,13 @@ function makePainters(spec, P) {
     }
     if (p === 'poster') { shadeInto(o, [236, 230, 214], 0.95); if (c.kind === 'top') shadeInto(o, [220, 100, 120], 1); if (Math.abs(c.e) < 0.2) shadeInto(o, [220, 100, 140], 0.9); return; }
     if (p === 'cane' || p === 'caneTop') { const A = acc('cane'); shadeInto(o, A.col, fabricK(c, 'leather') * (0.8 + 0.25 * (1 - c.e * c.e))); if (c.rb < 0.015 && p === 'cane') shadeInto(o, [30, 26, 24], 1); return; }
-    if (p === 'towel' || p === 'towelEnd') { shadeInto(o, WHITE, (0.88 + 0.12 * h2(c.i, c.j, 9)) * (c.kind === 'bot' ? 0.6 : 1) * fold(c, 0.1, 400, 0, c.x + c.z)); if (Math.abs(c.rb - 0.008) < c.px && p === 'towelEnd') over(o, [60, 90, 160], 0.6); return; }
+    if (p === 'towel' || p === 'towelEnd') { shadeInto(o, WHITE, (0.88 + 0.12 * h2(c.i, c.j, 9)) * (c.kind === 'bot' ? 0.6 : 1) * fold(c, 0.1, 400, 0, c.x + c.z)); if (Math.abs(c.rb - 0.008) < c.px && p === 'towelEnd') over(o, C_60_90_160, 0.6); return; }
     if (p === 'pouch') { shadeInto(o, acc('pouch').col, leatherK()); if (edge(1)) over(o, INK, 0.35); if (front(c) && Math.abs(c.rt - 0.015) < c.px) over(o, INK, 0.4); return; }
     if (p === 'parcel') {
       shadeInto(o, [196, 156, 104], fabricK(c, 'cotton') * (c.kind === 'top' ? 1.05 : 0.92));
       if (c.kind === 'top' && Math.abs(c.x) < 0.025) shadeInto(o, [214, 190, 140], 1);
       if (c.kind === 'side' && Math.abs(c.e) < 0.12 && c.rt < 0.04) shadeInto(o, [214, 190, 140], 1);
-      if (edge(1)) over(o, [120, 90, 60], 0.4);
+      if (edge(1)) over(o, C_120_90_60, 0.4);
       return;
     }
     shadeInto(o, [200, 0, 200], 1);

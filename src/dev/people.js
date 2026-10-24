@@ -1,16 +1,29 @@
-// Dev page for the low-poly humans (src/people). Renders with the game's post stack (ink outlines, AO, grade).
-//   ?show=all            every preset, 3/4 front view, full body         (&seed=3 &walk=1 &t=0.4 &cols=7)
-//   ?show=faces          close-ups: presets x expressions               (&presets=a,b &exprs=x,y &angle=0.3)
-//   ?show=gestures       one preset doing every gesture                  (&preset=salaryman &t=1.2)
-//   ?show=walk           sequential frames of the walk cycle (side view) (&preset=..&speed=1.3&n=8)
-//   ?show=turn           one human from several angles                   (&preset=..)
-//   ?show=bubbles        a little street scene with people talking in speech bubbles (&t=2.5)
-//   &q=high|medium|low   post-processing quality (default medium)        &w=..&h=.. tile size
+// Dev page for the low-poly humans (src/people). Renders with the game's post stack (ink outlines, grade).
+//   ?show=all            every preset, 3/4 front view, full body           (&seed=3 &walk=1 &t=0.4 &yaw=2.6 &cols=7)
+//   ?show=faces          close-ups: presets x expressions                  (&presets=a,b &exprs=x,y &yaw=0.3 &dist=0.6)
+//   ?show=gestures       gestures (also while walking with &speed=1.2)    (&preset=a,b &names=wave,bow &t=1.2)
+//   ?show=walk           frames of the walk cycle past a fixed side camera (&preset=kid &speed=1.3 &n=8 &span=1.1)
+//   ?show=turn           presets from several angles                       (&preset=a,b &angs=0,1.57 &zoom=head|upper)
+//   ?show=bubbles        a little street scene with people chatting        (&t=2.5 &replace=1 &cz=2.4 &cx=-1)
+//   ?show=atlas          the painted 256x256 atlases (&face=1: face block)  (&presets=a,b &scale=3 &expr=happy)
+//   ?show=perf           20 random humans: creation / paint / update timings (window.__perf)
+//   &hair=bob,long,..    cycle hair styles over the humans built; &nohat=1 removes hats
+//   &q=high|medium|low   post-processing quality (default medium)          &w=.. &h=.. tile size
 import '@fontsource/tiny5/400.css';
 import * as THREE from 'three';
 import { Renderer } from '../core/renderer.js';
-import { createHuman, HUMAN_PRESETS } from '../people/index.js';
+import { createHuman as mkHuman, HUMAN_PRESETS, Bubbles, Human } from '../people/index.js';
+import { makeSpec } from '../people/presets.js';
 import { Pix } from '../gfx/pix.js';
+
+let hairI = 0;
+function createHuman(o) {
+  if (!Q.get('hair') && !Q.has('nohat')) return mkHuman(o);
+  const spec = makeSpec(o.preset || 'salaryman', o.seed || 1, o.height);
+  if (Q.get('hair')) { const hs = Q.get('hair').split(','); spec.hair.style = hs[hairI++ % hs.length]; }
+  if (Q.has('nohat')) spec.hat = null;
+  return new Human(spec, { lazy: o.lazy });
+}
 
 const errBox = document.getElementById('err');
 window.addEventListener('error', (e) => { errBox.textContent += (e.message || e) + '\n'; });
@@ -23,9 +36,9 @@ const num = (k, d) => (Q.has(k) ? +Q.get(k) : d);
 // ------------------------------------------------------------------ scene: dusk street light
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x2a2230);
-const hemi = new THREE.HemisphereLight(0xffe4cc, 0x4a3a30, 1.1);
+const hemi = new THREE.HemisphereLight(0xffe8d6, 0x4a3a30, 1.35);
 scene.add(hemi);
-const sun = new THREE.DirectionalLight(0xffa868, 3.0);
+const sun = new THREE.DirectionalLight(0xffbf8a, 3.2);
 sun.position.set(-4, 4.5, 6);
 sun.castShadow = true;
 Object.assign(sun.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4, near: 0.5, far: 30 });
@@ -130,26 +143,29 @@ if (show === 'all') {
   const cols = num('cols', 7), w = num('w', 220), h = num('h', 360);
   grid.style.gridTemplateColumns = `repeat(${cols}, ${w}px)`;
   presetIds.forEach((id, i) => {
-    const hm = place(createHuman({ preset: id, seed: seed + i * 7 }), i * 3);
+    const hm = place(createHuman({ preset: id, seed: seed + i * 7, lazy: false }), i * 3);
     const walk = Q.has('walk');
     settle(hm, walk ? 2 + num('t', 0) : 1.5, { speed: walk ? num('speed', 1.25) : 0 });
     tile(w, h, hm.spec.name, `${hm.height.toFixed(2)} m · ${hm.tris} tris`, () => { only([hm]); frameBody(hm, num('yaw', 0.55)); });
   });
 } else if (show === 'turn') {
-  const hm = place(createHuman({ preset: Q.get('preset') || presetIds[0], seed }), 0);
-  settle(hm, 1.5);
+  const ids = Q.get('preset') ? Q.get('preset').split(',') : presetIds;
   const w = num('w', 260), h = num('h', 420);
-  const angs = [0, 0.75, 1.57, 2.4, 3.14, -1.57];
-  grid.style.gridTemplateColumns = `repeat(${angs.length}, ${w}px)`;
-  for (const a of angs) tile(w, h, hm.spec.name, `yaw ${a}`, () => { only([hm]); frameBody(hm, a, 0.05); });
+  const angs = Q.get('angs') ? Q.get('angs').split(',').map(Number) : [0, 0.75, 1.57, 2.4, 3.14, -1.57];
+  grid.style.gridTemplateColumns = `repeat(${num('cols', angs.length)}, ${w}px)`;
+  ids.forEach((id, i) => {
+    const hm = place(createHuman({ preset: id, seed: seed + i * 7, lazy: false }), i * 3);
+    settle(hm, 1.5);
+    for (const a of angs) tile(w, h, hm.spec.name, `yaw ${a}`, () => { only([hm]); frameBody(hm, a, num('pitch', 0.05)); });
+  });
 }
 
 else if (show === 'faces') {
   const exprs = Q.get('exprs') ? Q.get('exprs').split(',') : ['neutral', 'smile', 'happy', 'surprised', 'sad', 'angry', 'sleepy', 'blink'];
   const w = num('w', 180), h = num('h', 200);
-  grid.style.gridTemplateColumns = `repeat(${exprs.length}, ${w}px)`;
+  grid.style.gridTemplateColumns = `repeat(${num('cols', exprs.length)}, ${w}px)`;
   presetIds.forEach((id, i) => exprs.forEach((ex, k) => {
-    const hm = place(createHuman({ preset: id, seed: seed + i * 7 }), i * 3, k * 3);
+    const hm = place(createHuman({ preset: id, seed: seed + i * 7, lazy: false }), i * 3, k * 3);
     settle(hm, 0.5);
     hm.setExpression?.(ex);
     settle(hm, 0.5);
@@ -157,11 +173,65 @@ else if (show === 'faces') {
   }));
 }
 
+else if (show === 'walk') {
+  // the human really walks (+x) past a fixed side camera: planted feet must not slide between frames
+  const n = num('n', 8), speed = num('speed', 1.3), w = num('w', 190), h = num('h', 300), id = Q.get('preset') || 'salaryman';
+  const T = num('span', 1.1); // seconds covered by the frames
+  grid.style.gridTemplateColumns = `repeat(${n}, ${w}px)`;
+  for (let i = 0; i < n; i++) {
+    const hm = place(createHuman({ preset: id, seed, lazy: false }), 0, 0);
+    hm.root.rotation.y = Math.PI / 2;
+    const t0 = 2 + (T * i) / n, dt = 1 / 120;
+    let x = -speed * 2 - 0.6;
+    for (let t = 0; t < t0; t += dt) { x += speed * dt; hm.root.position.x = x; hm.update(dt, { speed }); }
+    tile(w, h, hm.spec.name, `t+${(T * i / n).toFixed(2)}s`, () => {
+      only([hm]);
+      camera.position.set(0, hm.height * 0.5, 4.2); camera.lookAt(0, hm.height * 0.45, 0); camTarget.set(0, hm.height * 0.45, 0);
+    });
+  }
+}
+else if (show === 'gestures') {
+  const names = Q.get('names') ? Q.get('names').split(',') : ['wave', 'bow', 'point', 'cheer', 'think', 'photo', 'talk', 'clap', 'shrug', 'browse', 'carry'];
+  const ids = Q.get('preset') ? Q.get('preset').split(',') : ['salaryman'];
+  const w = num('w', 200), h = num('h', 320);
+  grid.style.gridTemplateColumns = `repeat(${Math.min(names.length, num('cols', 6))}, ${w}px)`;
+  ids.forEach((id, j) => names.forEach((g, i) => {
+    const hm = place(createHuman({ preset: id, seed: seed + j, lazy: false }), i * 3, j * 3);
+    settle(hm, 1);
+    hm.gesture(g);
+    settle(hm, num('t', 1.0), { talking: g === 'talk', speed: num('speed', 0) });
+    tile(w, h, hm.spec.name, g, () => { only([hm]); frameBody(hm, num('yaw', 0.6), num('pitch', 0.08)); });
+  }));
+}
+else if (show === 'perf') {
+  const N = num('n', 20), out = [];
+  let t0 = performance.now();
+  const hs = [];
+  for (let i = 0; i < N; i++) hs.push(createHuman({ seed: 100 + i }));
+  const tc = performance.now() - t0;
+  t0 = performance.now();
+  let steps = 0, worst = 0;
+  let worstEnd = 0;
+  while (hs.some((h) => h.job)) { const h = hs.find((x) => x.job), a = performance.now(); const done = h.stepPaint(); const dtm = performance.now() - a; if (hs.indexOf(h) > 2) { if (done) worstEnd = Math.max(worstEnd, dtm); else worst = Math.max(worst, dtm); } steps++; }
+  const tp = performance.now() - t0;
+  const t1 = performance.now(); for (let i = 0; i < 5; i++) createHuman({ seed: 300 + i, lazy: false }).dispose(); const te = (performance.now() - t1) / 5;
+  hs.forEach((hm, i) => place(hm, (i % 5) * 1.2 - 2.4, -Math.floor(i / 5) * 1.5));
+  t0 = performance.now();
+  const F = 300;
+  for (let f = 0; f < F; f++) hs.forEach((hm, i) => hm.update(1 / 60, { speed: i % 3 ? 1.2 : 0, talking: i % 4 === 0, lookAt: i % 2 ? camera.position : null }));
+  const tu = (performance.now() - t0) / F;
+  const tris = hs.reduce((a, h) => a + h.tris, 0);
+  out.push(`${N} humans: create (lazy) ${(tc / N).toFixed(1)} ms each + time-sliced paint ${(tp / N).toFixed(1)} ms each (${steps} slices, worst ${worst.toFixed(1)} ms, final face step ${worstEnd.toFixed(1)} ms); eager create ${te.toFixed(1)} ms; update ${tu.toFixed(2)} ms/frame for all (incl. face repaints), ${tris} tris total (${(tris / N).toFixed(0)} avg)`);
+  const w = 900, h = 520;
+  grid.style.gridTemplateColumns = `${w}px`;
+  tile(w, h, out[0], '', () => { only(hs); camera.position.set(0, 2.2, 6.5); camera.lookAt(0, 0.9, -2); camTarget.set(0, 0.9, -2); });
+  console.log(out[0]); window.__perf = out[0];
+}
 else if (show === 'atlas') {
   const sc = num('scale', 3);
   grid.style.gridTemplateColumns = `repeat(${num('cols', 2)}, ${Q.has('face') ? 64 * sc : 256 * sc}px)`;
   presetIds.forEach((id, i) => {
-    const hm = createHuman({ preset: id, seed: seed + i * 7 });
+    const hm = createHuman({ preset: id, seed: seed + i * 7, lazy: false });
     if (Q.get('expr')) { hm.setExpression?.(Q.get('expr')); settle(hm, 0.5); }
     hm.pix.flush();
     const cell = document.createElement('div'); cell.className = 'cell';
@@ -174,6 +244,36 @@ else if (show === 'atlas') {
   });
 }
 
+if (show === 'bubbles') {
+  // a little dusk street scene: people chatting in speech bubbles, seen from the player's eye height
+  grid.remove();
+  const W = innerWidth, Hh = innerHeight;
+  const stage = document.getElementById('stage');
+  stage.appendChild(R.renderer.domElement);
+  R.renderer.setSize(W, Hh); R.composer.setSize(W, Hh);
+  camera.fov = 55; camera.aspect = W / Hh; camera.updateProjectionMatrix();
+  const cz = num('cz', 4.6), cx = num('cx', 0);
+  camera.position.set(cx, 1.62, cz); camera.lookAt(cx * 0.8, num('ly', 1.25), 0); camTarget.set(cx, 1.2, 0);
+  sun.position.set(-6, 5, 7); sun.target.position.set(0, 0, 0);
+  back.position.set(0, 12, -30);
+  const cast = [['salaryman', -2.1, -0.4, 0.5], ['schoolgirl', -0.7, 0.3, 0.15], ['grandpa', 0.8, -0.2, -0.4], ['kid', 1.7, 0.6, -0.5], ['gyaru', 3.2, -1.6, -0.6], ['tourist', -3.6, -2.2, 0.8]];
+  const hs = cast.map(([id, x, z, ry], i) => { const hm = place(createHuman({ preset: id, seed: seed + i * 5, lazy: false }), x, z); hm.root.rotation.y = ry; return hm; });
+  const bubbles = new Bubbles(camera, document.body);
+  const T = num('t', 2.6);
+  const script = [[0.0, 0, 'Is that old gacha garage open again?', 'say'], [0.3, 2, 'Hmm... I remember buying capsule toys here.', 'think'], [0.6, 3, 'WOW! A secret one!', 'shout'], [0.2, 1, 'No way!', 'say'], [0.9, 4, 'So cute!', 'say'], [1.4, 5, 'Excuse me, is this the way to the station?', 'say']];
+  if (Q.has('replace')) script.push([T - 0.2, 0, 'Oh! Wait, it says OPEN!', 'say']);
+  const dt = 1 / 60;
+  const said = new Set();
+  for (let t = 0; t < T; t += dt) {
+    script.forEach((sc, i) => { if (!said.has(i) && t >= sc[0]) { said.add(i); bubbles.say(hs[sc[1]], sc[2], { style: sc[3], dur: 6 }); } });
+    hs.forEach((hm, i) => hm.update(dt, { talking: bubbles.isTalking(hm), lookAt: i === 3 ? hs[2].root.position.clone().setY(1.4) : camera.position }));
+    if (t > 0.5 && !hs[3].currentGesture) hs[3].gesture('cheer');
+    if (t > 0.3 && !hs[2].currentGesture) hs[2].gesture('think');
+    bubbles.update(dt);
+  }
+  scene.updateMatrixWorld(true);
+  R.render(dt, T);
+}
 await renderTiles();
 document.getElementById('info').textContent = `${people.length} humans`;
 window.__ready = true;

@@ -34,6 +34,8 @@ import { makeToolMesh } from './Held.js';
 import { makeCapsule } from './Capsule.js';
 import { SUPPLY_BY_ID } from '../data/supplies.js';
 import { TOOLS } from '../data/tools.js';
+import { Bubbles } from '../people/index.js';
+import { Pedestrians } from '../world/Pedestrians.js';
 
 export class Game {
   constructor(container) {
@@ -45,8 +47,8 @@ export class Game {
     if (this.visiting) this.noSave = true;
     this.renderer = new Renderer(container);
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x1a1412);
-    this.scene.fog = new THREE.Fog(0xd88a6a, 16, 70);
+    this.scene.background = new THREE.Color(0xa9c4dd);
+    this.scene.fog = new THREE.Fog(0xd9cdb8, 25, 110);
     this.camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.03, 160);
     this.scene.add(this.camera);
     this.input = new Input(this.renderer.renderer.domElement);
@@ -102,6 +104,8 @@ export class Game {
     this.goods = new Goods(this);
     this.story.init();
     this.hotbar = new Hotbar(this);
+    this.bubbles = new Bubbles(this.camera, document.body);
+    this.pedestrians = new Pedestrians(this);
     progress(0.9);
     this.bakeEnvironment();
     this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
@@ -502,6 +506,7 @@ export class Game {
     this.physics.step(dt);
     for (const m of this.machines) m.update(dt, this.time);
     this.street.update(dt, this.time);
+    this.pedestrians?.update(dt);
     this.goods?.update(dt);
     for (const s of this.shelves) s.update(dt);
     this.items.update(dt);

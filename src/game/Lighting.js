@@ -14,7 +14,7 @@ export class Lighting {
   capture() {
     const L = this.game.garage.lights;
     this.base = {
-      sun: L.sun.intensity, hemi: L.hemi.intensity, desk: L.desk.intensity, bounce: L.bounce.intensity,
+      sun: L.sun.intensity, hemi: L.hemi.intensity, desk: L.desk.intensity, bounce: 2.0, // bounce is scaled by the shutter
     };
   }
 
@@ -33,14 +33,16 @@ export class Lighting {
     }
     const d = 1 - this.dimLevel * 0.93;
     for (const tb of L.tubes) {
-      tb.light.intensity = tb.base * tubeK * d;
-      tb.mat.color.setScalar(0.15 + 2.05 * tubeK * d);
+      const k = tb.dead ? 0 : tubeK; // a dead tube stays dark until it's replaced
+      tb.light.intensity = tb.base * k * d;
+      tb.mat.color.setScalar(0.15 + 2.05 * k * d);
     }
     const lightsOn = g.garage.lightsOn ? 1 : 0.45;
     L.sun.intensity = this.base.sun * (1 - this.dimLevel * 0.85) * (1 - (this.museumBlend || 0));
     L.hemi.intensity = this.base.hemi * (0.35 + 0.65 * lightsOn) * (1 - this.dimLevel * 0.8);
     L.desk.intensity = this.base.desk * (1 - this.dimLevel * 0.9);
-    L.bounce.intensity = this.base.bounce * (1 - this.dimLevel * 0.8);
+    // daylight bouncing in under the shutter only when it's rolled up
+    L.bounce.intensity = this.base.bounce * (1 - this.dimLevel * 0.8) * Math.max(0, g.garage.shutterOpen);
     if (g.renderer.grade) g.renderer.grade.uniforms.uExposure.value = 1 - this.dimLevel * 0.25;
     // glow-in-the-dark finish responds to darkness
     const darkness = Math.max(this.dimLevel, g.garage.lightsOn ? 0 : 0.7);

@@ -232,7 +232,7 @@ body.has-3d-gear #m-gear { display: none; }
 .t-alt { right: calc(max(28px, env(safe-area-inset-right)) + 108px); bottom: max(34px, env(safe-area-inset-bottom)); }
 .t-drop { right: calc(max(28px, env(safe-area-inset-right)) + 16px); bottom: calc(max(40px, env(safe-area-inset-bottom)) + 108px); }
 .t-rot { right: calc(max(28px, env(safe-area-inset-right)) + 88px); bottom: calc(max(40px, env(safe-area-inset-bottom)) + 90px); }
-.t-move { right: calc(max(28px, env(safe-area-inset-right)) + 156px); bottom: calc(max(40px, env(safe-area-inset-bottom)) + 56px); width: 48px; height: 48px; }
+.t-move { right: calc(max(28px, env(safe-area-inset-right)) + 172px); bottom: calc(max(40px, env(safe-area-inset-bottom)) + 62px); width: 48px; height: 48px; }
 .t-pause { right: max(22px, env(safe-area-inset-right)); top: max(22px, env(safe-area-inset-top)); width: 48px; height: 48px; }
 body.touchmode #hint .k { display: none; }
 body.touchmode #money { bottom: auto; top: max(14px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); font-size: 28px; line-height: 28px; }

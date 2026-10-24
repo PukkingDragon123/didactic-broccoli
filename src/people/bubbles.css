@@ -1,0 +1,18 @@
+/* Speech bubbles (src/people/Bubbles.js): a fixed overlay; every bubble is positioned with transforms only. */
+.hb-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; contain: strict; }
+.hb { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform, opacity; }
+.hb-in { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; }
+.hb-body { position: absolute; left: 0; top: 0; }
+.hb-bg, .hb-tail { position: absolute; image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+.hb-txt {
+  position: absolute; max-width: 220px; width: max-content; text-align: center;
+  font-family: 'Tiny5', 'Pixelify Sans', monospace; font-size: 20px; line-height: 22px; color: #2a1e24;
+  -webkit-font-smoothing: none; font-smooth: never; text-rendering: optimizeSpeed; letter-spacing: 0;
+  white-space: normal; overflow-wrap: break-word;
+}
+.hb.shout .hb-txt { color: #3a1414; }
+.hb.think .hb-txt { color: #3a3046; }
+.hb-w { display: inline-block; white-space: nowrap; }
+.hb-c { display: inline-block; opacity: 0; transform: translateY(5px) scale(0.4); }
+.hb-c.on { opacity: 1; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.9, 0.5, 1), opacity 0.06s linear; }
+.hb.shout .hb-c.on { transition: transform 0.16s cubic-bezier(0.2, 2.4, 0.5, 1), opacity 0.05s linear; }

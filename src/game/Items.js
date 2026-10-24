@@ -6,6 +6,7 @@ import { audio } from '../core/audio.js';
 import { itemValue } from './economy.js';
 import { makeToolMesh } from './Held.js';
 import { TOOLS } from '../data/tools.js';
+import { boxLabel } from './Delivery.js';
 
 let uid = 1;
 
@@ -98,7 +99,7 @@ export class Items {
         if (ent.kind === 'capsule') return { key: 'LMB', text: 'Pick up capsule' };
         if (ent.kind === 'toy') return { key: 'LMB', text: 'Pick up', sub: `¥${itemValue(ent.data.key, ent.data.finish).toLocaleString()}` };
         if (ent.kind === 'tool') return { key: 'LMB', text: `Pick up ${TOOLS[ent.data.id]?.name || 'item'}` };
-        return { key: 'LMB', text: 'Pick up box', sub: ent.data.label || '' };
+        return { key: 'LMB', text: 'Pick up box', sub: boxLabel(ent.data) };
       },
       use: () => this.pickUp(ent),
     });

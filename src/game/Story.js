@@ -47,7 +47,14 @@ export class Story {
   init() {
     const g = this.game, f = this.flags;
     const G = g.garage;
-    if (this.done) { G.setShutter(1, true); g.garage.town?.setShopOpen?.(true); return; }
+    if (this.done) {
+      G.setShutter(1, true);
+      g.garage.town?.setShopOpen?.(true);
+      // Mikan's corner by the heater
+      this.bed = G.prop('cat_bed', BED.x, 0, BED.z, 0.5, { fallbackSize: [0.5, 0.22, 0.4], fallbackColor: 0xb89068 });
+      this.setBowl(true);
+      return;
+    }
     // shutter
     G.setShutter(f.shutter ? 1 : 0, true);
     g.interaction.add(G.shutterMesh, { hint: (held) => this.shutterHint(held), use: () => this.useShutter(), noHighlight: false });

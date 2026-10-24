@@ -6,6 +6,7 @@ import { TOOLS } from '../data/tools.js';
 import { getItem } from '../data/series/index.js';
 import { makeCapsule } from '../game/Capsule.js';
 import { SLOTS } from '../game/Held.js';
+import { boxLabel } from '../game/Delivery.js';
 
 export class Hotbar {
   constructor(game) {
@@ -54,7 +55,7 @@ export class Hotbar {
     if (it.kind === 'toy') return getItem(it.data.key)?.name || 'Figure';
     if (it.kind === 'capsule') return 'Capsule';
     if (it.kind === 'cat') return 'Mikan';
-    return it.data?.labelEn || it.data?.label || 'Box';
+    return boxLabel(it.data) || 'Box';
   }
 
   refresh(announce) {

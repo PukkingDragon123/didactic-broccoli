@@ -505,7 +505,7 @@ export class Garage {
     const G = GARAGE;
     const scene = this.game.scene;
     // warm sunset sun, low through the shutter and window
-    const sun = new THREE.DirectionalLight(0xffa860, 3.2);
+    const sun = new THREE.DirectionalLight(0xffd8a8, 3.0);
     sun.position.set(-5.5, 5.2, 14);
     sun.target.position.set(0.5, 0, 0);
     sun.castShadow = true;
@@ -517,7 +517,7 @@ export class Garage {
     this.game.renderer.registerShadowLight(sun, 1);
     this.lights.sun = sun;
 
-    const hemi = new THREE.HemisphereLight(0xffe2c4, 0x3a2a20, 0.55);
+    const hemi = new THREE.HemisphereLight(0xb9cfe8, 0x6b5a4a, 0.75);
     scene.add(hemi);
     this.lights.hemi = hemi;
 
@@ -560,7 +560,7 @@ export class Garage {
     this.lights.desk = spot;
 
     // warm bounce from the low sun hitting the floor
-    const bounce = new THREE.PointLight(0xff9a5a, 2.0, 7, 1.8);
+    const bounce = new THREE.PointLight(0xffd0a0, 2.0, 7, 1.8);
     bounce.position.set(0, 0.6, 4.2);
     scene.add(bounce);
     this.lights.bounce = bounce;
@@ -568,7 +568,7 @@ export class Garage {
     // window light shafts + floor pools (additive volumes)
     const shaftMat = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
-      uniforms: { uColor: { value: new THREE.Color(0xffb070) }, uTime: { value: 0 }, uStrength: { value: 0.16 } },
+      uniforms: { uColor: { value: new THREE.Color(0xffdcb0) }, uTime: { value: 0 }, uStrength: { value: 0.13 } },
       vertexShader: 'varying vec2 vUv; varying vec3 vW; void main(){ vUv=uv; vW=(modelMatrix*vec4(position,1.)).xyz; gl_Position=projectionMatrix*viewMatrix*vec4(vW,1.); }',
       fragmentShader: `uniform vec3 uColor; uniform float uTime, uStrength; varying vec2 vUv; varying vec3 vW;
         void main(){ float edge = smoothstep(0.0,0.25,vUv.x)*smoothstep(1.0,0.75,vUv.x);
@@ -595,7 +595,7 @@ export class Garage {
     const poolGeo = new THREE.PlaneGeometry(6, 3.2);
     const pool = new THREE.Mesh(poolGeo, new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-      uniforms: { uColor: { value: new THREE.Color(0xff9a50) } },
+      uniforms: { uColor: { value: new THREE.Color(0xffcf98) } },
       vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
       fragmentShader: 'uniform vec3 uColor; varying vec2 vUv; void main(){ float a = smoothstep(0.0,0.5,vUv.x)*smoothstep(1.0,0.5,vUv.x)*pow(vUv.y,1.6); gl_FragColor = vec4(uColor*a*0.12,1.0); }',
     }));
@@ -654,7 +654,7 @@ export class Garage {
     // daylight only pours in once it's up
     if (this.lights.bounce) this.lights.bounce.intensity = 2.0 * k;
     if (this.pool) this.pool.visible = k > 0.05;
-    if (this.pool) this.pool.material.uniforms.uColor.value.setHex(0xff9a50).multiplyScalar(k);
+    if (this.pool) this.pool.material.uniforms.uColor.value.setHex(0xffcf98).multiplyScalar(k);
   }
 
   /** Room lights on/off (light switch). Dead tubes stay dark. */
@@ -665,7 +665,7 @@ export class Garage {
       t.light.intensity = lit ? t.base : 0;
       t.mat.color.setScalar(lit ? 2.2 : 0.15);
     }
-    this.lights.hemi.intensity = on ? 0.55 : 0.18;
+    this.lights.hemi.intensity = on ? 0.75 : 0.25;
     this.lightToggle.position.y = on ? 0.012 : -0.012;
   }
 

@@ -91,3 +91,6 @@ body.reading #crosshair, body.reading #hint, body.reading #hotbar { opacity: 0; 
 
 /* hint keys rendered as pixel mouse icons */
 #hint .k img.px-icon { height: 1.6em; width: auto; vertical-align: middle; image-rendering: pixelated; margin: -4px 0; }
+
+/* speech bubbles step aside for menus and the shop windows */
+body.sui-on .hb-layer, body.reading .hb-layer { opacity: 0; }

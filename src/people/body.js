@@ -18,7 +18,7 @@ export const BONE_INDEX = Object.fromEntries(BONES.map(([b], i) => [b, i]));
 export function proportions(s) {
   const H = s.H, f = s.sex === 'f';
   const a = s.age === 'kid' ? 0 : s.age === 'teen' ? 0.72 : 1; // adulthood
-  const ht = s.age === 'kid' ? 6.1 : s.age === 'teen' ? 7.0 : s.age === 'elder' ? 7.05 : f ? 7.2 : 7.45;
+  const ht = s.age === 'kid' ? 5.9 : s.age === 'teen' ? 6.85 : s.age === 'elder' ? 6.95 : f ? 7.05 : 7.25;
   const hu = H / ht; // head height (crown to chin)
   const k = (kid, adult) => H * (kid + (adult - kid) * a);
   const w = s.build || 1;
@@ -28,12 +28,12 @@ export function proportions(s) {
     neckBase: k(0.805, 0.84), shoulderY: k(0.776, 0.806), bustY: k(0.7, 0.728), waistY: k(0.618, 0.632),
     pelvisY: k(0.572, 0.588), hipY: k(0.492, 0.52), crotchY: k(0.442, 0.468), kneeY: k(0.268, 0.285), ankleY: k(0.05, 0.046),
     elbowY: k(0.6, 0.625), wristY: k(0.462, 0.48), tipY: k(0.375, 0.374),
-    shX: k(0.104, f ? 0.095 : 0.104) * (0.5 + 0.5 * w), hipX: k(0.052, f ? 0.056 : 0.052) * w,
-    chestTopX: k(0.08, f ? 0.072 : 0.079) * w, bustX: k(0.088, f ? 0.086 : 0.092) * w, waistX: k(0.086, f ? 0.068 : 0.081) * w,
+    shX: k(0.1, f ? 0.092 : 0.1) * (0.5 + 0.5 * w), hipX: k(0.052, f ? 0.056 : 0.052) * w,
+    chestTopX: k(0.078, f ? 0.07 : 0.077) * w, bustX: k(0.088, f ? 0.086 : 0.092) * w, waistX: k(0.086, f ? 0.068 : 0.081) * w,
     hipsX: k(0.092, f ? 0.104 : 0.093) * w, hipsZ: k(0.06, f ? 0.066 : 0.059) * w,
     chestZ: k(0.06, f ? 0.06 : 0.06) * w, waistZ: k(0.06, f ? 0.052 : 0.054) * w,
     bust: f && a > 0.5 ? 0.012 * H * (s.bust ?? 1) : 0, belly: (s.belly || 0) * 0.035 * H,
-    thighX: k(0.048, f ? 0.052 : 0.048) * w, armX: k(0.03, f ? 0.026 : 0.029) * (0.4 + 0.6 * w),
+    thighX: k(0.048, f ? 0.052 : 0.048) * w, armX: k(0.028, f ? 0.023 : 0.026) * (0.4 + 0.6 * w),
     footL: k(0.152, f ? 0.142 : 0.152), footX: k(0.031, f ? 0.027 : 0.03),
   };
   // head: width / depth from head height (kids slightly rounder), face landmarks measured from the chin
@@ -86,14 +86,16 @@ export function bodySegments(s, P) {
   add('neck', 'neck', 'skin', P.neckBase - 0.03 * h, P.chin + 0.16 * hu, [0, -0.012 * h, hu * (P.f ? 0.2 : 0.225), hu * 0.22], [0, -0.008 * h, hu * (P.f ? 0.19 : 0.215), hu * 0.21], { ch: 0.38, caps: 'none' });
   const sl = 0.06 * hu; // forehead slope
   add('cranium', 'head', 'head', P.noseY, P.crown, [0, P.hcz, P.hw, P.hd], [0, P.hcz - sl * 0.6, P.hw * 0.9, P.hd - sl * 0.4], { ch: 0.3, block: 'face' });
-  const jawTop = P.hw * 0.94, chinW = hu * (P.kid ? 0.2 : P.f ? 0.16 : 0.18);
+  const jawTop = P.hw * (P.f ? 0.92 : 0.95), chinW = hu * (P.kid ? 0.23 : P.f ? 0.165 : 0.2);
   add('jaw', 'head', 'head', P.chin, P.noseY + 0.02 * hu, [0, P.zf - 0.02 * hu - 0.15 * hu, chinW, 0.15 * hu], [0, P.zf - 0.33 * hu, jawTop, 0.33 * hu], { ch: 0.36, caps: 'bot', block: 'face' });
-  const nz = P.kid ? 0.8 : P.f ? 0.9 : 1;
-  add('nose', 'head', 'nose', P.noseY - 0.012 * hu, P.eyeY - 0.03 * hu, [0, P.zf + 0.05 * hu * nz, 0.07 * hu * nz, 0.058 * hu * nz], [0, P.zf + 0.008 * hu, 0.034 * hu, 0.022 * hu], { ch: 0.42, caps: 'bot', block: 'face' });
+  const nz = P.kid ? 0.72 : P.f ? 0.84 : 1;
+  add('nose', 'head', 'nose', P.noseY - 0.012 * hu, P.eyeY - 0.035 * hu, [0, P.zf + 0.042 * hu * nz, 0.062 * hu * nz, 0.046 * hu * nz], [0, P.zf + 0.004 * hu, 0.03 * hu, 0.02 * hu], { ch: 0.45, caps: 'bot', block: 'face' });
   add('ear', 'head', 'ear', P.earBot, P.earTop, [P.hw + 0.012 * hu, P.hcz - 0.1 * hu, 0.04 * hu, 0.07 * hu], [P.hw + 0.02 * hu, P.hcz - 0.12 * hu, 0.045 * hu, 0.08 * hu], { ch: 0.4, mirror: true, dens: 1.3 });
   // --- arms (left; mirrored)
   const ax = P.shX, aw = P.armX;
-  add('uarm', 'armL', 'body', P.elbowY - 0.01 * h, P.shoulderY + 0.012 * h, [ax, 0, aw * 0.76, aw * 0.8], [ax, -0.002 * h, aw, aw * 1.06], { ch: 0.34, mirror: true });
+  add('uarm', 'armL', 'body', P.elbowY - 0.01 * h, P.shoulderY - 0.012 * h, [ax, 0, aw * 0.76, aw * 0.8], [ax, -0.001 * h, aw * 0.98, aw * 1.04], { ch: 0.34, mirror: true, caps: 'bot' });
+  // rounded deltoid cap over the shoulder joint
+  add('uarm', 'armL', 'body', P.shoulderY - 0.034 * h, P.shoulderY + 0.009 * h, [ax, -0.001 * h, aw * 1.0, aw * 1.06], [ax - aw * 0.2, -0.002 * h, aw * 0.62, aw * 0.72], { ch: 0.45, mirror: true, caps: 'top' });
   add('farm', 'foreL', 'body', P.wristY, P.elbowY + 0.01 * h, [ax, 0.004 * h, aw * 0.5, aw * 0.62], [ax, 0.001 * h, aw * 0.72, aw * 0.78], { ch: 0.34, mirror: true });
   const hz = 0.004 * h, hs = P.f ? 0.92 : 1;
   add('palm', 'handL', 'hand', P.wristY - 0.054 * h * hs, P.wristY + 0.004 * h, [ax - 0.001 * h, hz, 0.0085 * h, 0.0255 * h * hs], [ax, hz, 0.0085 * h, 0.021 * h * hs], { ch: 0.25, mirror: true, dens: 1.25 });
