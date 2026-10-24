@@ -1,108 +1,114 @@
-# ガチャガレージ · Gacha Garage
+# GACHA GARAGE
 
-A cozy, first-person **voxel gachapon collecting game** set in a Japanese hobby garage at golden hour.
-Insert the fake coin on a rope, crank the handle, watch the capsule roll out, twist it open, and reveal
-a tiny handcrafted collectible. Display it, sell the duplicates, upgrade your machines, order new series
-from a retro Japanese shopping site on an old CRT PC — and eventually open your own museum that real
-little voxel visitors walk through.
+A cozy first-person **capsule-toy shop game**, set on a quiet Shōwa-era Japanese back street at golden hour.
+Grandpa has left you his old garage: a key, a notebook and a lot of dust. Clean it up, fix his machines,
+feed the stray cat, roll the shutter up again and run the happiest gacha corner in the neighbourhood.
+Crank the handle, twist the capsule open, put the tiny figures on display, and build a museum.
 
-Everything — models, textures, sounds and music — is generated in code at runtime. There are no
+Everything (models, textures, people, sounds and music) is generated in code at runtime. There are no
 external asset files.
 
 ## Play
 
 ```bash
 npm install
-npm run dev       # open the printed URL (Chrome / Edge / Firefox, desktop)
-npm run build     # static build in dist/ (relative paths; host anywhere)
+npm run dev       # open the printed URL (Chrome / Edge / Firefox; desktop or phone)
+npm run build     # static build in dist/ with relative paths; zip it for itch.io or host it anywhere
 ```
-
-Click the title screen to lock the mouse.
 
 | Input | Action |
 |---|---|
 | **WASD** / arrows | walk (**Shift** to hurry) |
 | **Mouse** | look |
-| **Left click** | use / place / pick up — **hold** to crank a handle or twist a capsule |
-| **Right click** | twist a capsule open · inspect a figure (move the mouse to turn it) · rotate furniture |
-| **Q** | drop / set down what you're holding |
-| **R** | rotate furniture you're carrying · change the sheet on the display you're looking at |
+| **Left click** | use / pick up / place. **Hold** to crank a handle, twist a capsule, sweep, lift or repair |
+| **Right click** | inspect a figure (move the mouse to turn it, wheel to zoom) · twist a capsule open |
+| **1–5** / **wheel** | switch inventory slot |
+| **Q** | put down what you're holding |
+| **R** | rotate furniture you're carrying · change the sheet of the display you're looking at |
 | **F** | move a piece of museum furniture |
-| **Scroll** | scroll web pages |
-| **Esc** | pause & settings (graphics quality, volumes, sensitivity, FOV, hints) |
+| **Esc** | pause & settings |
 
-Progress saves automatically to `localStorage`.
+On phones: a virtual stick and buttons, tap to use, tap the hotbar to switch items. Progress saves
+automatically to `localStorage`. Shops can be shared with a code (Host shop / Join friend on the menu).
 
 ## What's inside
 
-**The loop.** One sun-faded old 100-yen machine with a fake coin tied to a rope. Pull, open, discover,
-display or sell. Duplicates go in the 買取BOX by the PC, or into the storage bin to sell later in bulk.
-When a machine sells out (売切 flips up), order a refill box on the PC, carry it over and pour the capsules in.
+**The story start.** You arrive in the lane with Grandpa's notebook and the garage key. Read the notebook
+in first person: his letter, a to-do list that ticks itself off, tips, a sketch of the cat, and a map of
+the lane. Behind the shutter the shop is a mess:
+- dust piles to sweep with a broom;
+- trash bags to carry to the garbage station;
+- a knocked-over machine to lift and broken machines to repair with a tool kit;
+- a dead fluorescent tube and a radio without batteries;
+- Grandpa's cash tin on the steel rack.
 
-**Machines.** Modelled on real Japanese capsule-toy machines at 5 mm voxel resolution: a white lower unit
-with the blue coin dial and its yellow arrows, the coin slot, return button and keyhole, labels such as
-「3コイン」 and 「コイン投入口」, and a clear capsule case. Inside the case is the printed banner (台紙): a
-320×280 pixel-art illustration of the series, with its figures standing in the scene, a chunky title logo,
-the price and 全8種 badges, and the numbered lineup with the secret silhouette. A clear dome on top shows
-real sample figures (見本). Capacity upgrades make the case taller.
+Everything you need is on sale at Mikawa-ya, the little general store across the lane. Mikan, a shy
+calico stray, hides in the garage until you pour her some milk. When everything is fixed the sign lights
+up for the grand reopening.
 
-**Collectibles.** 12 series, 96 figures. Each series has common, uncommon, rare, ultra-rare and
-super-secret items:
-もちもちアニマル · ミニチュア食堂 · 傘コレクション · 昭和レトロ家電 · コンビニライフ · ミニチュアのお部屋 ·
-ゆるい妖怪 · おんせんどうぶつ · ダジャレ大作戦 · 怪獣おやつタイム · 宇宙ねこステーション · 開運おまもり.
-Any pull can also roll a special finish: Clear, Metallic, Glow-in-the-dark (turn the lights off!), Gold,
-Aurora or the ultra-rare Diamond.
+**Cutscenes:**
+- the intro along the lane;
+- opening the shutter;
+- feeding Mikan;
+- the grand reopening;
+- your first customer.
 
-**Reveals.** The reveal is physical, not a pop-up. Capsule halves fly off and bounce, the mini-book
-flutters to the floor, and each rarity gets its own light beams, sparkles, confetti, coin showers and
-sound. A secret makes the machine shake as it dispenses, the capsule leaks light while you twist it, and
-the garage goes dark before the burst.
+All of them can be skipped by holding a button.
 
-**Progression.** Machine upgrades all change the world visibly:
-- a faster crank gear (the handle colour changes, then a motor appears);
-- bigger hoppers (a clear capsule tank on top);
-- more coins strung on the rope (more capsules per crank).
+**People.** Low-poly, PS1-style neighbours with painted realistic faces, expressions, a procedural walk
+and gestures. They chat in pixel speech bubbles. Only a few walk the lane at first; hand out flyers to
+promote the shop and more come by, walk in and play your machines. Museum visitors are drawn from the same
+cast.
 
-You can also buy new machines (Gacha Station, Deluxe 500, Royal Kirakira), opening tools, and lucky charms
-for a kamidana shelf. New series are unlocked as your collection grows, and second-hand singles fill any gaps.
+**The loop.** Coin on a rope, crank, capsule, reveal. Display the figures or sell the duplicates. Refill
+sold-out machines from the PC, upgrade them, and buy new machines, tools and lucky charms. Any pull can
+roll a special finish (Clear, Metallic, Glow-in-the-dark, Gold, Aurora, Diamond).
 
-**ガチャマート E-Mart.** The old PC zooms in to a CRT running a 2003-style Japanese shopping site, with a
-marquee, a visitor counter, an under-construction sign, rankings and 1-click buying. It's all drawn in
-pixel art, with product photos rendered from the actual 3D models.
+**Collectibles.** 19 series and 152 figures, each with a printed pixel-art banner (daishi) in its machine.
 
-**The museum.** Complete a series and rent the old shop behind the garage. It's a fixed Shōwa-era
-interior: dark wooden wainscot under plaster walls, posts and beams, enamel-shade pendant lamps, enamel
-tin signs, wooden lattice glass doors with a noren, and a counter with an old cash register. You fill it with:
-- display furniture (glass cases, hina-dan steps, a capsule tower, a rotating star pod and more);
-- display sheets (展示シート): themed diorama mats such as meadow, tatami, beach, candy or starfield,
-  laid on a display's shelves (look at a display and press R);
-- decorations, including old-shop pieces like dagashi racks, a ramune cooler and a pink phone.
+**GACHA-MART.** The old PC opens an early-2000s web store with big, clear cards, for machines, capsule
+refills, upgrades, goods, the museum, second-hand figures, selling and your collection book.
 
-Matching themes (cute, food, space, shrine, candy…) between a series and the sheet or nearby decorations
-boost the score. Visitors pay at reception, walk to
-the exhibits that interest them, take photos, react and donate. The star plaque over the door shows your rating.
+**The museum.** Complete a series and rent the Shōwa-era shop behind the garage. Fill it with displays,
+diorama sheets and decorations; visitors pay, look around, take photos, buy price-tagged figures and
+leave tips.
+
+**The lane.** Houses, walls and alleys, utility poles and wires, vending machines, Mikawa-ya, pigeons,
+and railway underpass tunnels at both ends where trains rumble across.
 
 ## Tech
 
 - Three.js (WebGL) and Vite, in plain ES modules.
-- Rendering: a greedy voxel mesher with baked ambient occlusion; procedural pixel-art textures with bump
-  maps; a garage reflection probe; and post-processing (GTAO on high/ultra, bloom, colour grade, FXAA).
+- Rendering:
+  - a greedy voxel mesher with baked AO;
+  - procedural pixel-art textures with bump maps;
+  - a reflection probe;
+  - depth-based ink outlines;
+  - post-processing: GTAO on high/ultra, bloom, colour grade and FXAA.
+- People: one rigidly skinned low-poly mesh and one 256² painted atlas per person (1 draw call), with
+  procedural animation.
 - Gameplay systems:
   - custom sphere physics for capsules;
   - Verlet rope physics for the coin;
   - A* pathfinding for visitors;
-  - fully synthesised Web Audio, including a 3-station procedural radio.
-- Content lives in `src/data/` (series, props, visitors). The modelling API is documented in
-  `docs/VOXEL_GUIDE.md`. Preview models with `viewer.html?series=mochi`.
+  - a cutscene engine (generator scripts).
+- Audio: fully synthesised Web Audio, including a procedural radio.
+- Dev pages:
+  - `viewer.html?series=mochi` (models);
+  - `viewer.html?props=quest` (props);
+  - `people.html?show=all` (people);
+  - `icons.html` (pixel icons).
 
 ```
-src/core      renderer, input, physics, audio, music
+src/core      renderer, input, touch, physics, audio, music
 src/voxel     voxel model + mesher + finish materials
-src/gfx       pixel textures, particles, thumbnails
-src/world     garage, props, machine cabinets
-src/game      game hub, machines, capsules, reveal, shelves, shop, economy
-src/pc        CRT PC + E-Mart website
+src/gfx       pixel textures, pixel icons, particles, thumbnails, banners
+src/world     garage, town, street life, pedestrians, the cat, machine cabinets, menu signs
+src/people    low-poly humans, faces, gestures, speech bubbles
+src/game      game hub, inventory, story, cutscenes, notebook, machines, capsules, reveal, shop, economy
+src/ui        hotbar, shop UI (GACHA-MART + Mikawa-ya), HUD styles
+src/pc        CRT PC
 src/museum    museum hall, displays, visitors
-src/data      12 collectible series, props, visitors
+src/data      collectible series, props, tools, supplies
 tools/        headless screenshot / test runners (Playwright)
 ```

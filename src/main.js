@@ -1,9 +1,10 @@
 // Entry point: fonts, title screen, pause menu, main loop.
 import '@fontsource/dotgothic16/400.css';
 import '@fontsource/pixelify-sans/400.css';
-import '@fontsource/jersey-10/400.css';
-import '@fontsource/tiny5/400.css';
-import '@fontsource/silkscreen/400.css';
+import '@fontsource/grandstander/400.css';
+import '@fontsource/grandstander/600.css';
+import '@fontsource/grandstander/700.css';
+import './ui/fonts.css';
 import './style.css';
 import * as THREE from 'three';
 import { Game } from './game/Game.js';
@@ -32,9 +33,10 @@ async function loadFonts() {
     await Promise.all([
       document.fonts.load('16px "DotGothic16"', text),
       document.fonts.load('16px "Pixelify Sans"', 'ABCabc123'),
-      document.fonts.load('16px "Jersey 10"', 'ABCabc123'),
-      document.fonts.load('16px "Tiny5"', 'ABCabc123'),
-      document.fonts.load('16px "Silkscreen"', 'ABCabc123'),
+      document.fonts.load('16px "Grandstander"', 'ABCabc123'),
+      document.fonts.load('600 16px "Grandstander"', 'ABCabc123'),
+      document.fonts.load('16px "GG Bold"', 'ABCabc123'),
+      document.fonts.load('16px "GG Display"', 'ABCabc123'),
     ]);
   } catch (e) { console.warn('font load', e); }
 }
@@ -172,7 +174,7 @@ async function boot() {
       if (game.visiting) setTimeout(() => game.news(`${game.state.__owner || "A friend"}'s shop`, 'Visiting - nothing is saved', 6000), 1200);
       else if (!game.state.flags.welcomed && game.story.done) {
         game.state.flags.welcomed = true;
-        setTimeout(() => game.news('Welcome back to GACHA GARAGE!', '', 6000), 1400);
+        setTimeout(() => game.news('Welcome back!', '', 6000), 1400);
       }
     } else if (started && !params.has('autotest') && !game.uiOpen) {
       touch?.show(false);

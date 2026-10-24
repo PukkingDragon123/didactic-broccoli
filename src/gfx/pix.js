@@ -3,13 +3,13 @@ import * as THREE from 'three';
 import { rng } from '../core/util.js';
 
 // Pixel fonts are only crisp at their grid sizes (other sizes come out with uneven strokes once thresholded):
-//   FONT_EN (Tiny5, UI / body) and FONT_KEY (Silkscreen, caps) at 8 / 16 / 24 px,
-//   FONT_DISPLAY (Jersey 10, titles / big numbers) at 28 / 56 px, FONT_JP (DotGothic16) at 16 px.
+//   FONT_EN / FONT_KEY (Grandstander bold, UI / body / caps), FONT_DISPLAY (Grandstander black, titles / numbers),
+//   FONT_JP (DotGothic16, 16 px) for Japanese decorative art. Larger sizes keep the goofy fonts readable.
 // English text should use FONT_EN / FONT_DISPLAY; Japanese is kept for in-world decorative art only.
 export const FONT_JP = '"DotGothic16", "Pixelify Sans", monospace';
-export const FONT_EN = '"Tiny5", "DotGothic16", monospace';
-export const FONT_DISPLAY = '"Jersey 10", "Tiny5", "DotGothic16", monospace';
-export const FONT_KEY = '"Silkscreen", "Tiny5", monospace';
+export const FONT_EN = '"GG Bold", "Grandstander", "DotGothic16", sans-serif';
+export const FONT_DISPLAY = '"GG Display", "GG Bold", "DotGothic16", sans-serif';
+export const FONT_KEY = '"GG Bold", sans-serif';
 
 const toRGB = (c) => (Array.isArray(c) ? c : [(c >> 16) & 255, (c >> 8) & 255, c & 255]);
 

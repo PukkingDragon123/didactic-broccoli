@@ -11,7 +11,7 @@ const SIGNS = [
   { id: 'host', label: 'HOST SHOP', sub: 'SHARE YOUR SHOP CODE', bg: 0x16774a, sheen: 0x22905c, icon: 'host' },
   { id: 'join', label: 'JOIN FRIEND', sub: 'VISIT WITH A CODE', bg: 0x6e4220, sheen: 0x86542c, icon: 'join' },
 ];
-// plate texture: 2 texels per pixel-font pixel (Jersey 10 @ 56px, Tiny5 @ 16px, icons @ 2x)
+// plate texture: 2 texels per pixel-font pixel (GG Display @ 56px, Grandstander @ 16px, icons @ 2x)
 const TW = 420, TH = 112;
 const PW = 1.9, PH = PW * TH / TW;
 const GAP = 0.08;
@@ -126,7 +126,7 @@ export class MenuSigns {
       tex.anisotropy = 8;
       const face = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.36, metalness: 0.05, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.1 });
       const plate = new THREE.Mesh(roundedPlate(PW, PH, 0.035, 0.014), [face, backM]);
-      plate.castShadow = true;
+      plate.castShadow = false; // no big shadow across the shutter in the menu shot
       plate.userData.signId = s.id;
       pivot.add(plate);
       // stiffener rails + U-bolt clamps on the back

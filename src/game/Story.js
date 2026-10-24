@@ -488,14 +488,14 @@ export class Story {
     town?.setShopOpen?.(true);
     audio.play('complete', { vol: 0.9 });
     g.effects.confetti({ pos: new THREE.Vector3(0, 3.4, z + 0.8), count: 220, speed: 3 });
-    yield c.title('GACHA GARAGE', 'NOW OPEN', 2.8);
+    yield c.title('OPEN FOR BUSINESS', '', 2.6);
     c.say('Now, let the neighbours know we are open. Flyers from Mikawa-ya should help!', 2);
     yield c.wait(2.6);
     c.hideSay();
     yield c.toPlayer(1.0);
     this.flags.complete = true;
     g.pedestrians?.setOpen?.(true);
-    this.task('GACHA GARAGE is open for business!');
+    this.task('The shop is open for business!');
   }
 
   // ------------------------------------------------------------------ intro (new game)
@@ -511,7 +511,8 @@ export class Story {
     yield c.cam({ pos: new THREE.Vector3(-9, 1.65, z + 5.2), look: new THREE.Vector3(0, 1.8, z + 2), dur: 6.5, ease: (k) => k });
     c.say('He left it to me. A key, his notebook... and a lot of dust.', 1.8);
     yield c.cam({ pos: new THREE.Vector3(0.4, 1.55, z + 6.2), look: new THREE.Vector3(0, 3.0, z), dur: 3.6, path: [new THREE.Vector3(-4, 1.6, z + 6.4)] });
-    yield c.title('GACHA GARAGE', "Grandpa's old capsule toy shop", 2.6);
+    c.say("Grandpa's old capsule toy shop. Let's wake it up.", 1.4);
+    yield c.wait(2.6);
     c.hideSay();
     g.player.pos.set(0.4, 0, z + 2.8);
     g.player.yaw = 0; g.player.pitch = 0.08;

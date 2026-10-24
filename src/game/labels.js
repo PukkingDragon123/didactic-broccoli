@@ -1,5 +1,5 @@
 // Diegetic label cards (held-item tag, shelf plaques) drawn as pixel-art canvases.
-// Text uses the pixel fonts at their crisp sizes: Tiny5 8/16 px, Jersey 10 28 px.
+// Text uses the pixel fonts at their crisp sizes: Grandstander 8/16 px, GG Display 28 px.
 import * as THREE from 'three';
 import { Pix, FONT_EN, FONT_DISPLAY } from '../gfx/pix.js';
 import { iconCanvas } from '../gfx/icons.js';
@@ -68,7 +68,7 @@ export function tagCard(key, finish = 'normal', isNew = false) {
     p.rect(W - 90, 5, 52, 18, 0xe5383b);
     p.text('NEW', W - 64, 5, { size: 16, color: 0xffffff, align: 'center', font: FONT_EN });
   }
-  // item name in Jersey 10: big when it fits on two lines
+  // item name in GG Display: big when it fits on two lines
   let size = 56, lines = wrapText(p, it.name, W - 20, 56, FONT_DISPLAY, 2);
   if (lines.some((l) => l.endsWith('...'))) { size = 28; lines = wrapText(p, it.name, W - 20, 28, FONT_DISPLAY, 2); }
   const cap = capBox(p, size, FONT_DISPLAY);

@@ -14,7 +14,7 @@ export const PRICE_STEPS = [0, 1.5, 2, 3, 5]; // price tag = market value × ste
 const tagCache = new Map();
 function tagMesh(price) {
   if (tagCache.has(price)) return tagCache.get(price).clone();
-  // 88x32 paper tag: red band, string hole, price in Tiny5 (16 px, or 8 px when it would not fit)
+  // 88x32 paper tag: red band, string hole, price in Grandstander (16 px, or 8 px when it would not fit)
   const W = 88, H = 32;
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d');

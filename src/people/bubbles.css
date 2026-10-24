@@ -6,8 +6,8 @@
 .hb-bg, .hb-tail { position: absolute; image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
 .hb-txt {
   position: absolute; max-width: 220px; width: max-content; text-align: center;
-  font-family: 'Tiny5', 'Pixelify Sans', monospace; font-size: 20px; line-height: 22px; color: #2a1e24;
-  -webkit-font-smoothing: none; font-smooth: never; text-rendering: optimizeSpeed; letter-spacing: 0;
+  font-family: 'Grandstander', 'Pixelify Sans', monospace; font-size: 20px; line-height: 22px; color: #2a1e24;
+  letter-spacing: 0;
   white-space: normal; overflow-wrap: break-word;
 }
 .hb.shout .hb-txt { color: #3a1414; }

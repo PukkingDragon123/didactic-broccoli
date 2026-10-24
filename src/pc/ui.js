@@ -1,7 +1,7 @@
 // Tiny canvas kit for the picture on the garage PC's CRT (640x480 logical) + shared shop colours / yen format.
 export const W = 640, H = 480;
-export const FONT_HEAD = '"Jersey 10", "Tiny5", monospace';
-export const FONT_BODY = '"Tiny5", "Pixelify Sans", monospace';
+export const FONT_HEAD = '"GG Display", "Grandstander", monospace';
+export const FONT_BODY = '"Grandstander", "Pixelify Sans", monospace';
 
 export const COL = {
   bg: '#fffdf4', paper: '#ffffff', ink: '#2a2220', soft: '#7a6a60', line: '#d8ccb8',

@@ -8,7 +8,7 @@ import { meshVoxels } from '../voxel/mesher.js';
 import { hasProp, propGeometry } from './props.js';
 
 const DIST = 0.22; // metres in front of the camera
-const MARGIN = 20; // px from the screen corner
+const MARGIN = 34; // px from the screen corner
 
 function buildGearModel() {
   const v = new VoxelModel();

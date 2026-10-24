@@ -22,7 +22,7 @@ export function boxLabel(d) {
   return d.name || '';
 }
 
-// box labels: 192x128 px, Tiny5 at 16 px and Jersey 10 at 28 / 56 px (their crisp sizes)
+// box labels: 192x128 px, Grandstander at 16 px and GG Display at 28 / 56 px (their crisp sizes)
 function labelTex(kind, info) {
   const W = 192, H = 128;
   const p = new Pix(W, H, 4);

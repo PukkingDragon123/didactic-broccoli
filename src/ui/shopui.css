@@ -3,9 +3,9 @@
   --ink: #2a2220; --cream: #fffdf4; --line: #e2d8c4; --soft: #7a6a60; --text2: #5a4c44;
   --chrome: #e6dfcf; --hi: #fffaf0; --lo: #6a6050;
   --pink: #ff6f91; --red: #e5383b; --yellow: #ffd23f; --blue: #2f6fd6; --navy: #233a72; --green: #3cae5a; --orange: #ff8c2e; --gold: #d4a83a;
-  --f-body: 'Tiny5', 'Pixelify Sans', monospace;
-  --f-head: 'Jersey 10', 'Tiny5', monospace;
-  --f-tiny: 'Silkscreen', 'Tiny5', monospace;
+  --f-body: 'Grandstander', 'Pixelify Sans', monospace;
+  --f-head: 'GG Display', 'Grandstander', monospace;
+  --f-tiny: 'Grandstander', 'Grandstander', monospace;
   position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center;
   font: 16px/1.25 var(--f-body); color: var(--ink); user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
 }
@@ -96,7 +96,7 @@ body.sui-on #hud, body.sui-on #touch { visibility: hidden; }
 .sui-toast b { display: block; font: 30px/.9 var(--f-head); }
 .sui-toast span { color: var(--text2); }
 .sui-resume { position: fixed; inset: 0; z-index: 46; display: flex; align-items: center; justify-content: center; border: 0; background: rgba(12, 8, 6, .35); cursor: pointer; font: 16px var(--f-body); }
-.sui-resume span { display: inline-flex; align-items: center; gap: 12px; padding: 12px 22px 12px 14px; background: #fffdf4; color: #2a2220; border: 2px solid #2a2220; box-shadow: 0 4px 0 #2a2220; font: 30px/1 'Jersey 10', monospace; }
+.sui-resume span { display: inline-flex; align-items: center; gap: 12px; padding: 12px 22px 12px 14px; background: #fffdf4; color: #2a2220; border: 2px solid #2a2220; box-shadow: 0 4px 0 #2a2220; font: 30px/1 'GG Display', monospace; }
 
 /* ------------------------------------------------------------------ GACHA-MART window */
 .em { display: flex; flex-direction: column; width: min(1280px, calc(100vw - 48px)); height: min(940px, calc(100vh - 56px)); padding: 3px; background: var(--chrome); border: 2px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi); box-shadow: 0 0 0 2px var(--ink), 12px 14px 0 rgba(0, 0, 0, .38); }

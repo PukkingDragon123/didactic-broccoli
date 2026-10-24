@@ -327,7 +327,7 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   p.rect(0, fy, W, 1, dark);
   p.text('対象年齢15才以上', 5, fy + 3, { size: 10, color: 0xd8382a });
   for (let k = 0; k < 3; k++) for (let i = 0; i < 96; i += 3) if ((i * 7 + k * 13) % 11 > 2) p.rect(100 + i, fy + 4 + k * 4, 2, 1, 0xa8a8a8);
-  p.text('©GACHA GARAGE', 250, fy + 3, { size: 10, color: 0x4a4a4a, align: 'center', font: FONT_EN });
+  p.text('©CAPSULE TOY CO.', 250, fy + 3, { size: 10, color: 0x4a4a4a, align: 'center', font: FONT_EN });
   qr(p, W - 22, fy - 1 + 0, s.order || 3);
 
   // premium series get a gold foil frame; brand-new series a NEW! corner ribbon

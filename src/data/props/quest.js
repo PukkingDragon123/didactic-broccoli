@@ -861,7 +861,7 @@ const quest = {
       const P = (rows, col, x0, z0, scale = 1) => v.paint(() => stampRows(v, rows, col, x0, y, z0, 'xz', scale));
       // header band + title
       v.paint(() => v.shape(-W - 3, y, -D - 3, W + 3, y, -D + 11, () => true, () => 0xd8302a));
-      P(fontRows('GACHA GARAGE'), 0xffffff, -23, -D + 3);
+      P(fontRows('CAPSULE TOYS'), 0xffffff, -23, -D + 3);
       P(fontRows('GRAND OPENING'), 0x2a2226, -25, -D + 15);
       // capsule illustration
       v.paint(() => v.shape(-W, y, -D, W, y, D, (x, yy, z) => Math.hypot(x + 13, z + 12) <= 13, (x, yy, z) => {

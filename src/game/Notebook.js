@@ -111,7 +111,7 @@ export class Notebook {
     g.fillStyle = 'rgba(200,70,70,0.35)'; g.fillRect(side < 0 ? 62 : 54, 20, 2, PH - 40);
   }
 
-  text(g, str, x, y, { size = 30, color = INK, font = 'Jersey 10', max = PW - x - 30, lh = 34 } = {}) {
+  text(g, str, x, y, { size = 30, color = INK, font = 'GG Bold', max = PW - x - 30, lh = 34 } = {}) {
     g.font = `${size}px "${font}"`;
     g.fillStyle = color;
     g.textBaseline = 'alphabetic';
@@ -148,16 +148,16 @@ export class Notebook {
         'This was the happiest gacha corner on the street. Kids lined up after school, grown-ups pretended they were not excited.',
         'Clean it up, fix my old machines and roll that shutter up again. There is a little money in the biscuit tin on the steel rack.',
         'And feed the cat. She has been waiting.',
-      ]) y = this.text(g, p, L, y, { size: 26, lh: 34 }) + 8;
-      this.text(g, '- Grandpa', PW - 190, Math.min(PH - 40, y + 10), { size: 34 });
+      ]) y = this.text(g, p, L, y, { size: 22, lh: 28 }) + 7;
+      this.text(g, '- Grandpa', PW - 170, Math.min(PH - 34, y + 14), { size: 30 });
     } else if (n === 1) {
       this.text(g, 'TO DO', L, 72, { size: 44, color: RED });
       let y = 128;
       for (const t of st?.todo() || []) {
         this.check(g, L, y, t.done);
-        y = this.text(g, t.text, L + 36, y, { size: 26, color: t.done ? INK2 : INK, lh: 30 }) + 6;
+        y = this.text(g, t.text, L + 36, y, { size: 22, color: t.done ? INK2 : INK, lh: 26 }) + 8;
       }
-      this.text(g, 'Mikawa-ya, the little shop across the lane, sells all you need.', L, Math.max(y + 12, PH - 120), { size: 22, color: INK2, lh: 28 });
+      this.text(g, 'Mikawa-ya, the little shop across the lane, sells all you need.', L, Math.max(y + 12, PH - 100), { size: 19, color: INK2, lh: 24 });
     } else if (n === 2) {
       this.text(g, 'Running the shop', L, 72, { size: 38, color: RED });
       let y = 122;
@@ -167,12 +167,12 @@ export class Notebook {
         'Refills and new machines: the old PC in the back corner.',
         'Customers will not find us by magic. Hand out flyers on the street!',
         'Complete a series and something nice happens.',
-      ]) { g.fillStyle = INK; g.fillRect(L, y - 12, 8, 8); y = this.text(g, p, L + 20, y, { size: 24, lh: 30 }) + 8; }
+      ]) { g.fillStyle = INK; g.fillRect(L, y - 12, 8, 8); y = this.text(g, p, L + 20, y, { size: 21, lh: 27 }) + 9; }
     } else if (n === 3) {
       this.text(g, 'Mikan', L + 10, 80, { size: 44, color: RED });
       this.sketch(g, CAT, L + 30, 110, 14, { K: INK, O: '#e0a050', W: '#fbf4e4' });
-      let y = this.text(g, 'Calico. Likes milk, sunny spots and sleeping on the crates. Hates the broom.', L, 330, { size: 24, lh: 30 });
-      y = this.text(g, st?.flags.fed ? 'She trusts you now. :)' : 'Shy. Bring her milk first.', L, y + 8, { size: 24, color: INK2, lh: 30 });
+      let y = this.text(g, 'Calico. Likes milk, sunny spots and sleeping on the crates. Hates the broom.', L, 330, { size: 21, lh: 27 });
+      y = this.text(g, st?.flags.fed ? 'She trusts you now. :)' : 'Shy. Bring her milk first.', L, y + 8, { size: 21, color: INK2, lh: 27 });
     } else if (n === 4) {
       this.text(g, 'Our lane', L, 72, { size: 40, color: RED });
       // little ink map: tunnels at both ends, the garage, the shop, the garbage station
@@ -187,14 +187,14 @@ export class Notebook {
       this.text(g, 'tunnel', PW - 110, 312, { size: 20, color: INK2 });
       g.fillStyle = RED; g.beginPath(); g.arc(L + 195, 236, 7, 0, Math.PI * 2); g.fill();
       this.text(g, 'you are here', L + 210, 244, { size: 20, color: RED });
-      this.text(g, 'Garbage goes to the station by the recycle cage. Trains rumble over the tunnels every few minutes - you get used to it.', L, 430, { size: 22, lh: 28 });
+      this.text(g, 'Garbage goes to the station by the recycle cage. Trains rumble over the tunnels every few minutes - you get used to it.', L, 430, { size: 19, lh: 25 });
     } else {
       this.text(g, 'Collection', L, 72, { size: 40, color: RED });
       const s = this.game.state;
       let y = 130;
-      y = this.text(g, `Figures found: ${Object.keys(s.discovered).length}`, L, y, { size: 28 });
-      y = this.text(g, `Series completed: ${Object.keys(s.completed).length}`, L, y, { size: 28 });
-      y = this.text(g, `Capsules turned: ${s.pulls}`, L, y, { size: 28 });
+      y = this.text(g, `Figures found: ${Object.keys(s.discovered).length}`, L, y, { size: 24 });
+      y = this.text(g, `Series completed: ${Object.keys(s.completed).length}`, L, y, { size: 24 });
+      y = this.text(g, `Capsules turned: ${s.pulls}`, L, y, { size: 24 });
       this.text(g, 'Keep going, kiddo. I am proud of you.', L, y + 40, { size: 26, color: INK2 });
     }
   }

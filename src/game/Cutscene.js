@@ -56,6 +56,7 @@ export class Cutscene {
     g.camera.getWorldDirection(this.look).add(g.camera.position);
     g.player.frozen = true;
     g.interaction.enabled = false;
+    g.held.anchor.visible = false; // the cinematic camera shouldn't carry what's in your hands
     g.uiCine = true;
     document.body.classList.add('cine');
     this.el.classList.toggle('letterbox', letterbox);
@@ -72,6 +73,7 @@ export class Cutscene {
     this.fov = null;
     g.player.frozen = false;
     g.interaction.enabled = true;
+    g.held.anchor.visible = true;
     g.uiCine = false;
     document.body.classList.remove('cine');
     this.el.classList.remove('on', 'letterbox');

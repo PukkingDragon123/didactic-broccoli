@@ -214,7 +214,7 @@ function capLabelTexture(type, no = 1) {
   const spec = MACHINE_SPECS[type];
   const p = new Pix(160, 16, 4);
   p.fill(spec.style.body);
-  p.text('GACHA GARAGE', 6, 2, { size: 10, color: 0x4a4a4a, font: FONT_EN });
+  p.text('CAPSULE TOYS', 6, 2, { size: 10, color: 0x4a4a4a, font: FONT_EN });
   p.rect(112, 3, 42, 10, 0xffffff); p.frame(112, 3, 42, 10, 0x9a9a9a);
   p.text(`No.${String(no).padStart(3, '0')}`, 133, 2, { size: 8, color: 0x2a2a2a, align: 'center', font: FONT_EN });
   p.circle(102, 8, 3, spec.style.ring);
