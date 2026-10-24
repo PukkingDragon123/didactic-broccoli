@@ -886,66 +886,29 @@ const TOWN = {
     for (let i = 0; i < 12; i++) { const x = Math.floor(hash2(i, 1) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i) < 0.5) p.px(x, y, 0x8a7a60, 60); }
     p.noise(0.06);
   },
-  /** GACHA GARAGE lightbox face (lit). */
-  gachaSign: (p) => {
-    const { w, h } = p;
-    p.fill(0xfff4e2);
-    // soft fluorescent banding behind the acrylic
-    for (const y of [Math.round(h * 0.3), Math.round(h * 0.7)]) for (let x = 0; x < w; x++) p.px(x, y, 0xffffff, 90);
-    p.rect(0, 0, w, 5, 0xe5383b); p.rect(0, 5, w, 1, 0xb8282a);
-    p.rect(0, h - 11, w, 11, 0x2a5ab0); p.rect(0, h - 12, w, 1, 0x1a3a80);
-    p.text('CAPSULE TOYS  ·  ガチャガチャ  ·  TOYS & CHARMS', w / 2, h - 10, { size: 8, color: 0xffffff, align: 'center', font: FONT_EN });
-    const cap = (cx, cy, r, top) => {
-      for (let y = -r; y <= r; y++) for (let x = -r; x <= r; x++) {
-        const d = x * x + y * y;
-        if (d > r * r + r) continue;
-        let c = y < 0 ? top : 0xffffff;
-        if (d > (r - 1.5) * (r - 1.5)) c = 0x2a1a1a;
-        else if (y === 0 || y === 1) c = shadeC(top, 0.7);
-        p.px(cx + x, cy + y, c);
-      }
-      p.rect(cx - Math.round(r * 0.5), cy - Math.round(r * 0.55), 3, 2, 0xffffff);
-    };
-    cap(22, Math.round(h * 0.45), 13, 0xff6f91);
-    cap(w - 22, Math.round(h * 0.45), 13, 0x5cc4ff);
-    const ty = 6, size = Math.round(h * 0.72);
-    p.text('GACHA GARAGE', w / 2 + 2, ty + 2, { size, color: 0x3a1a1a, align: 'center', font: FONT_DISPLAY });
-    p.text('GACHA GARAGE', w / 2, ty, { size, color: 0xe5383b, align: 'center', font: FONT_DISPLAY, outline: 0x3a1a1a });
-    // highlight stripe on the letters
-    for (let x = 40; x < w - 40; x++) for (let y = ty + 4; y < ty + 7; y++) { const [r, g, b] = p.get(x, y); if (r > 200 && g < 90) p.px(x, y, 0xff7a6a); }
-  },
-  /** The same face, unlit, sun-faded and dusty (abandoned shop). */
-  gachaSignDusty: (p) => {
-    TOWN.gachaSign(p);
-    const { w, h } = p;
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const [r, g, b] = p.get(x, y);
-      const l = r * 0.3 + g * 0.59 + b * 0.11;
-      const k = 0.55;
-      p.px(x, y, [(r * (1 - k) + l * k) * 0.72 + 18, (g * (1 - k) + l * k) * 0.7 + 14, (b * (1 - k) + l * k) * 0.66 + 8]);
-    }
-    for (let i = 0; i < 40; i++) { const x = Math.floor(hash2(i, 3) * w); const len = 6 + hash2(i, 4) * h; for (let y = 0; y < len; y++) p.px(x, y, 0x4a3e30, 90 * (1 - y / len)); }
-    p.speckle(0.08, [0x8a7e68, 0x6a6050, 0xa89c84], 140);
-    for (let i = 0; i < 9; i++) p.line(w - 1, 0, w - 1 - 14 + i * 1.6, 12 - Math.abs(i - 4) * 1.5, 0xd8d0c0, 110);
-    for (let i = 0; i < 6; i++) p.line(0, h - 1 - i * 2, 10 - i, h - 1, 0xd8d0c0, 90);
-  },
-  /** Projecting side sign (袖看板), both faces. */
-  sodeSign: (p) => {
-    const { w, h } = p;
-    p.fill(0xe5383b);
-    p.frame(0, 0, w, h, 0x3a1a1a); p.frame(1, 1, w - 2, h - 2, 0xfff4e2);
-    p.circle(w >> 1, 9, 6, 0xffffff); for (let x = -6; x <= 6; x++) for (let y = -6; y <= 0; y++) if (x * x + y * y <= 40) p.px((w >> 1) + x, 9 + y, 0xffd23f);
-    p.rect((w >> 1) - 6, 9, 13, 1, 0x3a1a1a);
-    [...'GACHA'].forEach((ch, i) => p.text(ch, w >> 1, 19 + i * 11, { size: 14, color: 0xfff4e2, align: 'center', font: FONT_DISPLAY, outline: 0x7a1010 }));
-  },
   /** Blocky paper lantern panel. */
   lantern: (p) => {
     const { w, h } = p;
     p.fill(0xd8302a);
     for (let y = 1; y < h; y += 3) p.rect(0, y, w, 1, 0xb02420);
     for (let x = 0; x < w; x++) { p.px(x, 0, 0x8a1a16); p.px(x, h - 1, 0x8a1a16); }
-    p.rect((w >> 1) - 4, (h >> 1) - 5, 8, 9, 0xfff0d8);
-    p.text('ガ', w >> 1, (h >> 1) - 6, { size: 9, color: 0x1a1414, align: 'center' });
+    // black rims near the ends and a white band round the middle (no lettering)
+    p.rect(0, 2, w, 2, 0x2a1414); p.rect(0, h - 4, w, 2, 0x2a1414);
+    p.rect(0, (h >> 1) - 2, w, 3, 0xf4e8d8); p.rect(0, (h >> 1) + 1, w, 1, 0xb02420);
+  },
+  /** 暖簾 panel: indigo cotton with a white capsule mark and a darker hem. */
+  noren: (p) => {
+    const { w, h } = p;
+    p.fill(0x24345e);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if ((x * 3 + y * 5) % 11 === 0) p.px(x, y, 0x2c3e6c);
+    p.rect(0, 0, w, 3, 0x1a2648); p.rect(0, h - 3, w, 3, 0x1a2648);
+    // white 菱 crest (nested diamonds) on each panel
+    const cx = w >> 1, cy = Math.round(h * 0.5);
+    for (let y = -8; y <= 8; y++) for (let x = -8; x <= 8; x++) {
+      const d = Math.abs(x) + Math.abs(y);
+      if (d === 8 || d === 7 || d === 4 || d === 3 || d === 0) p.px(cx + x, cy + y, 0xf2eee4);
+    }
+    p.noise(0.04);
   },
   /** のぼり flag: OPEN. */
   nobori: (p) => {

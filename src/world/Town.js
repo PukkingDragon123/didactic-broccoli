@@ -1,14 +1,17 @@
-// The town outside the garage: a narrow Shōwa back lane at dusk running between two railway underpasses
-// (ガード下), the shop's own facade and big GACHA GARAGE lightbox, the neighbours' houses with depth, side
-// alleys, the enterable MIKAWA-YA corner store, utility poles and wires, commuter trains, sky and skyline.
+// The town outside the garage: a narrow Shōwa back lane in late golden hour running between two railway
+// underpasses (ガード下), the garage's plain old front (eave, blocky lanterns, noren), the neighbours' houses
+// with depth, side alleys, the enterable MIKAWA-YA corner store, utility poles and wires, commuter trains,
+// sky and skyline.
 //
 // Layout (metres): the garage is x∈[-4,4], z∈[-5,5]; the lane runs along x in front of it. Near building
 // line z=5.3, road z≈6.1..13.35, far building line z=14.9. Underpass mouths at x=±26 (opening z∈[6.6,12.6],
 // clearance 3.4 m); the walkable lane ends 2.5 m inside each (x=±28.5); the underpasses run to x=±36.
 //
 // Contracts:
-//   town.setShopOpen(open)  closed = unlit dusty sign, dark lanterns, no flags/bench (abandoned); open = lit.
-//                           Default open. Cheap to toggle (material/visibility swaps only).
+//   town.setShopOpen(open)  open = lanterns glowing, noren + OPEN flag/plate, bench and twin gacha out front;
+//                           closed = dark lanterns, weeds and a taped notice (abandoned). Default open; cheap toggle.
+//   town.tunnels = [{ x, z, dir, mouth }]  x = walkable end inside each underpass, z = road centre, dir = ±1 outward,
+//                           mouth = x of the portal.
 //   town.cornerShop = { counter: Object3D (click target), keeper: { pos: Vector3, rotY } (stands behind the
 //                       counter; rotY for a model that faces +z at 0 → faces the door), inside: { minX, maxX, minZ, maxZ } }
 //   town.lanes = [{ z, x0, x1 }]  straight pedestrian walking lines (one per side of the road), tunnel to tunnel.
@@ -61,7 +64,7 @@ function shadeAt(x, y, z) {
   const u = Math.abs(x);
   if (u < XT + 0.05 || u > XE + 0.3 || y > YE + 0.05 || z < TZ0 - 1.1 || z > TZ1 + 1.1) return 1;
   const into = sstep(XT + 0.1, XT + 3.6, u) * (1 - 0.6 * sstep(XE - 2.2, XE + 0.2, u));
-  return 1 - 0.62 * into;
+  return 1 - 0.5 * into;
 }
 
 const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _c = new THREE.Color(), _up = new THREE.Vector3(0, 1, 0);
@@ -397,14 +400,19 @@ export class Town {
     B.plane(this.M('floorHD', { roughness: 0.85, ppm: 64 }), 8.6, ZG0 - 5.2, 0, 0, (5.2 + ZG0) / 2, { uv: [0, 0.4] });
     // corrugated cladding on the two piers
     for (const sx of [-1, 1]) B.box(m.tinTeal, 1.3, H + 0.05, 0.05, sx * 3.65, 0, 5.235, { uv: [sx, 0], ao: 0.15 });
-    // 看板建築 false front above the shutter: parapet with returns, pilasters and coping
-    B.box(m.mortarP, 8.7, 2.6, 0.26, 0, H, 5.08, { uv: [0.4, 0] });
+    // a plain low false front above the shutter: corrugated cladding with returns, pilasters and coping
+    const PH = 1.15;
+    B.box(m.tinTeal, 8.7, PH, 0.26, 0, H, 5.08, { uv: [0.4, 0.3] });
     for (const sx of [-1, 1]) {
-      B.box(m.mortarP, 0.22, 2.6, 1.6, sx * 4.24, H, 4.3);
-      B.box(m.pv, 0.3, 2.62, 0.34, sx * 4.25, H, 5.12, { tint: 0x6a5a4e });
+      B.box(m.tinTeal, 0.22, PH, 1.6, sx * 4.24, H, 4.3, { uv: [0.2, 0.3] });
+      B.box(m.pv, 0.3, PH + 0.02, 0.34, sx * 4.25, H, 5.12, { tint: 0x5a5a52 });
     }
-    B.box(m.pv, 9.0, 0.14, 0.46, 0, H + 2.6, 5.1, { tint: 0x5a5048 });
-    B.box(m.pv, 8.8, 0.1, 0.36, 0, H + 2.74, 5.08, { tint: 0x4a4038 });
+    B.box(m.pv, 9.0, 0.12, 0.46, 0, H + PH, 5.1, { tint: 0x5a5650 });
+    B.box(m.pv, 8.8, 0.08, 0.36, 0, H + PH + 0.12, 5.08, { tint: 0x4a4640 });
+    // a few bolted-on bits: conduit, an old enamel lamp bracket, a meter box
+    B.box(m.pv, 6.8, 0.05, 0.05, 0, H + 0.95, 5.24, { tint: 0x3a3a38 });
+    for (const x of [-2.2, 2.2]) { B.box(m.metal, 0.05, 0.05, 0.4, x, H + 0.82, 5.42, { tint: 0x2a2c2e }); B.box(m.metal, 0.24, 0.1, 0.24, x, H + 0.7, 5.62, { tint: 0x2a3a2e }); }
+    B.box(m.pv, 0.32, 0.4, 0.12, -3.62, 2.2, 5.3, { tint: 0x8a8e88 });
     // the garage roof behind the parapet + an exterior skin on the exposed east wall
     B.box(m.tin, 8.7, 0.12, 10.6, 0, H + 0.14, -0.1, { k: 0.8 });
     B.box(m.tin, 0.06, H + 0.25, 10.4, 4.24, 0, -0.05, { uv: [0, 0.2], ao: 0.2, k: 0.9 });
@@ -416,8 +424,11 @@ export class Town {
     for (const sx of [-1, 1]) B.box(m.metal, 0.04, 0.5, 0.04, sx * 3.95, H - 0.4, 5.85, { rx: -0.9, tint: 0x5a5a58 });
     this.shop = { openG: new THREE.Group(), closedG: new THREE.Group() };
     this.add(this.shop.openG); this.add(this.shop.closedG);
-    this.buildSign(H);
     this.buildLanterns(H);
+    this.noren(H, this.shop.openG);
+    // the two lamp shades over the front only light up while the shop is open
+    const bulbs = [-2.2, 2.2].map((x) => { const g = new THREE.BoxGeometry(0.16, 0.03, 0.16); g.translate(x, H + 0.685, 5.62); return g; });
+    this.shop.openG.add(this.vmesh(mergeGeometries(bulbs), this.G));
     // out front: dagashiya-style things (open) — weeds and a taped notice (closed)
     const O = this.shop.openG, C = this.shop.closedG;
     this.single('gacha_twin', -2.55, 0, 5.62, 0, {}, O);
@@ -436,42 +447,20 @@ export class Town {
     notice.position.set(-3.5, 1.45, 5.27); notice.rotation.z = 0.04; C.add(notice);
   }
 
-  /** The big GACHA GARAGE lightbox: steel-framed box, acrylic face, brackets; plus a projecting side sign. */
-  buildSign(H) {
-    const S = this.shop;
-    const open = townPix('gachaSign', 320, 64).texture();
-    const dusty = townPix('gachaSignDusty', 320, 64).texture();
-    // the face glows by itself; it ignores the low sun so the lettering never washes out
-    const face = this.indoor(new THREE.MeshStandardMaterial({ map: open, emissive: 0xffffff, emissiveMap: open, emissiveIntensity: 1, roughness: 0.6 }));
-    const frame = new THREE.MeshStandardMaterial({ color: 0x3a3c40, roughness: 0.45, metalness: 0.6 });
-    const sw = 7.5, sh = 1.5, cy = H + 1.28, cz = 5.39;
-    const box = new THREE.Mesh(new THREE.BoxGeometry(sw, sh, 0.3), [frame, frame, frame, frame, face, frame]);
-    box.position.set(0, cy, cz);
-    this.add(box);
-    const B = this.B, mt = this.m.metal;
-    // chunky frame lips and corner caps
-    for (const y of [-1, 1]) B.box(mt, sw + 0.12, 0.08, 0.36, 0, cy + y * (sh / 2) - 0.04, cz, { tint: 0x4a4c50 });
-    for (const x of [-1, 1]) B.box(mt, 0.08, sh + 0.04, 0.36, x * (sw / 2 + 0.02), cy - sh / 2 - 0.02, cz, { tint: 0x4a4c50 });
-    // mounting brackets with bolts down to the parapet
-    for (const x of [-2.8, -0.9, 0.9, 2.8]) {
-      B.box(mt, 0.08, 0.08, 0.3, x, cy + sh / 2 + 0.02, 5.2, { tint: 0x5a5c60 });
-      B.box(mt, 0.08, 0.08, 0.3, x, cy - sh / 2 - 0.1, 5.2, { tint: 0x5a5c60 });
-      for (const dy of [0.06, -0.12]) B.box(mt, 0.04, 0.04, 0.02, x, cy + (dy > 0 ? sh / 2 + dy : -sh / 2 + dy), 5.37, { tint: 0x9a9ca0 });
+  /** 暖簾 over the doorway: three indigo panels with a white capsule mark (shown while open). */
+  noren(H, parent) {
+    const mat = this.T('noren', 24, 40, { rough: 0.95 });
+    const g = new THREE.Group();
+    for (let i = -1; i <= 1; i++) {
+      const panel = this.vmesh(new THREE.BoxGeometry(0.66, 0.72, 0.015), mat);
+      panel.position.set(i * 0.69, H - 0.48, 6.06);
+      panel.rotation.x = 0.03;
+      g.add(panel);
     }
-    // gooseneck lamps over the sign (decorative)
-    for (const x of [-2.4, 0, 2.4]) {
-      B.box(mt, 0.04, 0.04, 0.5, x, cy + sh / 2 + 0.24, 5.45, { tint: 0x2a2c2e });
-      B.box(mt, 0.2, 0.08, 0.14, x, cy + sh / 2 + 0.16, 5.72, { tint: 0x2a2c2e });
-    }
-    // projecting side sign (袖看板) on the east corner
-    const st = townPix('sodeSign', 24, 80).texture();
-    const sodeM = this.indoor(new THREE.MeshStandardMaterial({ map: st, emissive: 0xffffff, emissiveMap: st, emissiveIntensity: 0.9, roughness: 0.6 }));
-    const sode = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.9, 0.6), [sodeM, sodeM, frame, frame, frame, frame]);
-    sode.position.set(4.18, H + 1.2, 5.62);
-    this.add(sode);
-    B.box(mt, 0.06, 0.06, 0.62, 4.18, H + 2.17, 5.5, { tint: 0x4a4c50 });
-    B.box(mt, 0.06, 0.06, 0.62, 4.18, H + 0.2, 5.5, { tint: 0x4a4c50 });
-    Object.assign(S, { face, open, dusty, sodeM, signBox: box });
+    const rod = this.vmesh(new THREE.BoxGeometry(2.3, 0.03, 0.03), this.P(0.6));
+    rod.position.set(0, H - 0.1, 6.06);
+    g.add(rod);
+    parent.add(g);
   }
 
   /** Row of blocky paper lanterns under the eave. */
@@ -517,11 +506,6 @@ export class Town {
     const S = this.shop;
     if (!S) return;
     this.shopOpen = open;
-    S.face.map = open ? S.open : S.dusty;
-    S.face.emissiveIntensity = open ? 0.72 : 0;
-    S.face.color.setScalar(open ? 0.6 : 0.9);
-    S.sodeM.emissiveIntensity = open ? 0.7 : 0;
-    S.sodeM.color.setScalar(open ? 1 : 0.5);
     S.lanternM.emissiveIntensity = open ? 1.3 : 0;
     S.lanternM.color.setScalar(open ? 1 : 0.45);
     S.glow.intensity = open ? 2.4 : 0;
@@ -745,12 +729,10 @@ export class Town {
     this.blockWall(7.6, 9.75, ZB, s, { gaps: [[8.35, 9.2]] });
     this.gate(8.35, 9.2, ZB, s);
     this.prop('ac_unit', 9.3, 0, 1.75, 0);
-    this.prop('plant_pots', 8.95, 0, 4.85, Math.PI, { scale: 0.7 });
     // ---- alley A2 (dead end) between NE1 and NE2
     B.plane(m.strip, 1.5, 8.45, 10.55, 0.002, 5.2 - 4.225, { uv: [2, 2], k: 0.85 });
     this.blockWall(9.8, 11.3, -3.25, s, { h: 2.0, pillars: false });
     this.prop('twin_tub', 10.55, 0, -2.75, 0, { block: true });
-    this.prop('plant_pots', 11.0, 0, -0.6, -Math.PI / 2, { scale: 0.8 });
     this.prop('mamachari', 10.1, 0, 1.2, 0.08, { block: true });
     this.prop('propane', 11.05, 0, 2.6, -Math.PI / 2, { block: true });
     this.prop('weeds', 10.6, 0, -3.0, 0.4);
@@ -791,7 +773,6 @@ export class Town {
     this.yard(-15.2, -9.9, 3.7, ZB - 0.15, m.ground);
     this.blockWall(-15.2, -9.9, ZB, s, { h: 0.5, gaps: [[-10.95, -10.1]] });
     for (const x of [-14.15, -12.15]) this.prop('hedge', x, 0.5, ZB - 0.32, 0);
-    this.prop('mamachari', -10.55, 0, 4.4, 0.2);
     // ---- NW3: the old tobacco shop, shutter down for good
     this.house({ x: -18.0, z: ZB - 0.02, w: 5.15, d: 7.0, wallA: m.siding, wallB: m.wallBeige, roofM: m.roofGrey, trim: 0x3a2a20,
       win: [[1, -1.3, 1.4, 1.0, 'lit2', { tobukuro: 1 }], [1, 1.3, 1.4, 1.0, 'dark', { grille: true }], [0, 3.0, 1.0, 0.9, 'dark', { face: 'r' }], [1, 3.4, 1.0, 0.9, 'lit', { face: 'r' }]] });
@@ -799,7 +780,6 @@ export class Town {
     B.box(m.metal, 3.9, 0.3, 0.32, -18.2, 2.5, ZB + 0.1, { tint: 0x7a7e7a });
     B.box(this.T('oldSign', 96, 24, { rough: 0.9 }), 3.9, 0.55, 0.06, -18.2, 2.85, ZB + 0.04, { unit: true });
     this.prop('vending', -16.05, 0, 5.68, 0, { dim: true, block: true });
-    this.prop('beercrate', -20.25, 0, 5.5, 0.2);
     this.prop('weeds', -19.6, 0, 5.45, 0.2);
     // ---- NW4: garden house by the embankment
     this.house({ x: -23.25, z: 2.0, w: 4.8, d: 6.0, wallA: m.wallCream, wallB: m.wallCream, roofM: m.roofGreen, pent: true, trim: 0x5a4a3a,
@@ -858,7 +838,6 @@ export class Town {
     this.yard(16.8, 22.65, z, ZB - 0.15, m.strip);
     this.blockWall(16.8, 22.65, ZB, 1, { h: 0.9, gaps: [[18.6, 20.2]], pillars: false });
     this.prop('mamachari', 21.2, 0, 4.3, Math.PI / 2 - 0.1);
-    this.prop('mamachari', 21.5, 0, 3.7, Math.PI / 2 + 0.05);
     this.prop('scooter', 17.6, 0, 4.2, -Math.PI / 2 + 0.2);
     this.prop('recycle_cage', 17.6, 0, 3.0, 0);
   }
@@ -1008,9 +987,9 @@ export class Town {
     for (const sx of [dx0, dx1]) B.box(m.metal, 0.06, 2.25, 0.12, sx, 0, z0 + 0.06, { tint: 0xa8acb0 });
     // the two door leaves, slid open in front of the windows
     for (const [a, b] of [[dx0 - 0.85, dx0 - 0.02], [dx1 + 0.02, dx1 + 0.85]]) {
-      for (const sx of [a, b]) B.box(m.metal, 0.05, 2.18, 0.05, sx, 0.03, z0 - 0.04, { tint: 0xc0c4c8 });
-      for (const y of [0.03, 2.16]) B.box(m.metal, b - a, 0.05, 0.05, (a + b) / 2, y, z0 - 0.04, { tint: 0xc0c4c8 });
-      B.box(m.metal, b - a, 0.04, 0.05, (a + b) / 2, 0.95, z0 - 0.04, { tint: 0xc0c4c8 });
+      for (const sx of [a, b]) B.box(m.pv, 0.05, 2.18, 0.05, sx, 0.03, z0 - 0.04, { tint: 0xa8acb0 });
+      for (const y of [0.03, 2.16]) B.box(m.pv, b - a, 0.05, 0.05, (a + b) / 2, y, z0 - 0.04, { tint: 0xa8acb0 });
+      B.box(m.pv, b - a, 0.04, 0.05, (a + b) / 2, 0.95, z0 - 0.04, { tint: 0xa8acb0 });
       this.add(this.glassPane(b - a - 0.05, 2.1, (a + b) / 2, 1.08, z0 - 0.04));
     }
     // posters in the windows
@@ -1045,7 +1024,11 @@ export class Town {
     this.prop('wall_shelf_jars', -12.7, 1.35, z1 - 0.38, Math.PI, IN);
     this.prop('pendulum_clock', -14.4, 1.65, z1 - 0.3, Math.PI, IN);
     for (const x of [-13.9, -11.4]) this.prop('shop_lamp', x, H1 - 0.72, 17.2, 0, IN);
-    this.prop('beercrate', -15.0, 0, 19.2, 0.2, IN); this.prop('beercrate', -15.0, 0.28, 19.2, 0.1, IN); this.prop('beercrate', -14.55, 0, 19.3, -0.1, IN);
+    // stacked crates of bottles in the back corner
+    for (const [x, y, z, t] of [[-14.95, 0, 19.25, 0xc83a2a], [-14.95, 0.3, 19.25, 0xe8b830], [-14.45, 0, 19.3, 0xc83a2a]]) {
+      B.box(I(m.pv), 0.45, 0.28, 0.36, x, y, z, { tint: t });
+      for (let i = 0; i < 4; i++) B.box(I(m.gloss), 0.07, 0.1, 0.07, x - 0.15 + i * 0.1, y + 0.28, z, { tint: 0x5a3a1a });
+    }
     // the counter (click target): glass showcase + old register + bell + lucky cat
     const counter = new THREE.Group();
     counter.name = 'cornerShopCounter';
@@ -1226,7 +1209,13 @@ export class Town {
       this.prop('mirror_pole', s * (XE + 3.75), 0, 7.2, -s * Math.PI / 2);
       this.pool(s * (XE + 2.2), 12.6, 2.6, 0xffc880, 0.55);
       // a glowing vending machine at the junction draws the eye through the underpass
-      this.prop('vending', s * (XE + 3.6), 0, 9.9, -s * Math.PI / 2, { dim: true });
+      const vx = XE + 3.65;
+      B.push(0, 0, 0, 0, s < 0);
+      B.box(m.pv, 0.75, 1.82, 0.98, vx, 0, 9.9, { tint: 0xd8dce0 });
+      B.box(this.G, 0.04, 0.9, 0.78, vx - 0.39, 0.85, 9.9, { tint: 0x7a8a96 });
+      B.box(this.G, 0.04, 0.3, 0.78, vx - 0.39, 0.5, 9.9, { tint: 0x2a6a9a });
+      B.box(m.pv, 0.05, 0.12, 0.5, vx - 0.39, 0.2, 9.9, { tint: 0x2a2a2a });
+      B.pop();
       this.pool(s * (XE + 2.9), 9.9, 1.6, 0xcfe8ff, 0.5);
     }
   }
@@ -1280,8 +1269,8 @@ export class Town {
       for (const x of xs) if (Math.abs(x - p.x) < Math.abs(best - p.x)) best = x;
       wire(V(best, 5.3, zP - 0.1), p, 0.35, 0.01);
     }
-    wire(V(2.6, 5.3, zP - 0.1), V(3.9, 5.75, 5.15), 0.5, 0.01);
-    wire(V(-6.3, 5.3, zP - 0.1), V(-4.2, 5.75, 5.15), 0.5, 0.01);
+    wire(V(2.6, 5.3, zP - 0.1), V(3.9, 4.45, 5.15), 0.5, 0.01);
+    wire(V(-6.3, 5.3, zP - 0.1), V(-4.2, 4.45, 5.15), 0.5, 0.01);
     // street lights (heads glow; one real light by the vending machines)
     for (const [x, z, ry] of [[-2.4, 14.42, Math.PI / 2], [13.6, 14.42, Math.PI / 2], [-19.0, 5.48, -Math.PI / 2], [21.8, 5.5, -Math.PI / 2]]) {
       this.prop('street_light', x, 0, z, ry, { block: true });
@@ -1311,7 +1300,7 @@ export class Town {
     this.garbageStation = this.single('garbage_station', -6.6, 0, 5.82, 0, { block: true });
     this.prop('weeds', -5.4, 0, 5.42, 0);
     // manholes, a power box, weeds along the walls and under the embankment
-    for (const [x, z] of [[3.6, 9.4], [-14.8, 10.1], [18.4, 8.6], [-27.5, 9.0]]) this.prop('manhole', x, 0.001, z, hash2(x, z) * 6);
+    for (const [x, z] of [[3.6, 9.4], [-14.8, 10.1]]) this.prop('manhole', x, 0.001, z, hash2(x, z) * 6);
     this.prop('power_box', 16.7, 0, 5.62, 0, { block: true });
     for (const [x, z] of [[-25.4, 5.45], [25.3, 5.45], [-25.2, 14.75], [25.3, 14.8], [-11.6, 5.45], [12.6, 5.4], [-3.0, 14.75], [9.2, 14.8], [21.2, 14.78], [-24.0, 14.78]]) this.prop('weeds', x, 0, z, hash2(x, z) * 6, { scale: 0.8 + hash2(z, x) * 0.4 });
     for (const s of [-1, 1]) for (const z of [5.7, 13.95]) this.prop('weeds', s * 25.6, 0, z, s, { scale: 1.1 });
