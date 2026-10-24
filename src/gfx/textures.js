@@ -395,26 +395,27 @@ const RECIPES = {
     for (let x = 0; x < 128; x++) for (let y = 116; y < 128; y++) if ((x + y) % 2) p.px(x, y, 0x3a3028, 60);
     return p;
   },
-  /** 間知石 retaining wall: diagonal dressed granite blocks with recessed joints and moss (64 px/m). */
+  /** 間知石 retaining wall: diagonal dressed granite blocks in courses, fine joints, moss and water stains (64 px/m). */
   kenchi() {
     const p = new Pix(128, 128, 106);
-    p.fill(0x4a4844);
-    const S = 16; // half-diagonal of a stone
-    for (let j = -1; j <= 8; j++) for (let i = -1; i <= 8; i++) {
+    p.fill(0x7a766c);
+    const S = 12; // half-diagonal of a stone (~0.19 m)
+    for (let j = -1; j <= 11; j++) for (let i = -1; i <= 6; i++) {
       const cx = i * S * 2 + (j % 2 ? S : 0), cy = j * S;
-      const base = shadeC([0x9a968c, 0x8e8a82, 0xa6a196, 0x86827a][Math.floor(hash2(i + 20, j + 20) * 4)], 0.95 + hash2(i, j) * 0.1);
-      for (let y = -S + 2; y <= S - 2; y++) for (let x = -S + 2; x <= S - 2; x++) {
+      const base = shadeC([0xaaa598, 0x9e998e, 0xb4afa2, 0x948f84, 0xa8a090][Math.floor(hash2(i + 20, j + 20) * 5)], 0.96 + hash2(i, j) * 0.08);
+      for (let y = -S + 1; y <= S - 1; y++) for (let x = -S + 1; x <= S - 1; x++) {
         const d = Math.abs(x) + Math.abs(y);
-        if (d > S - 2) continue;
+        if (d > S - 1) continue;
         const X = ((cx + x) % 128 + 128) % 128, Y = ((cy + y) % 128 + 128) % 128;
-        let c = hash2(X, Y) < 0.18 ? shadeC(base, 0.88) : hash2(X + 1, Y) < 0.08 ? shadeC(base, 1.1) : base;
-        if (d > S - 4) c = shadeC(base, y < 0 ? 1.12 : 0.78);
+        let c = hash2(X, Y) < 0.14 ? shadeC(base, 0.92) : hash2(X + 1, Y) < 0.06 ? shadeC(base, 1.06) : base;
+        if (d > S - 3) c = shadeC(base, y < 0 ? 1.08 : 0.86);
+        if (d < 3) c = shadeC(base, 1.03);
         p.px(X, Y, c);
       }
     }
-    // moss in the joints and water stains
-    for (let i = 0; i < 260; i++) { const x = Math.floor(hash2(i, 41) * 128), y = Math.floor(hash2(i, 42) * 128); const [r, g, b] = p.get(x, y); if (r < 90) p.px(x, y, [0x4a6a2a, 0x5a7a32, 0x3a5a22][i % 3]); }
-    for (let i = 0; i < 10; i++) { const x = Math.floor(hash2(i, 51) * 128); const y0 = Math.floor(hash2(i, 52) * 64); for (let y = 0; y < 30 + hash2(i, 53) * 40; y++) p.px(x, (y0 + y) % 128, 0x3a3a34, 80); }
+    // moss creeping along joints, rust-brown water stains
+    for (let i = 0; i < 200; i++) { const x = Math.floor(hash2(i, 41) * 128), y = Math.floor(hash2(i, 42) * 128); const [r] = p.get(x, y); if (r < 128) p.px(x, y, [0x5a7a32, 0x6a8a3a, 0x4a6a2a][i % 3]); }
+    for (let i = 0; i < 8; i++) { const x = Math.floor(hash2(i, 51) * 128); const y0 = Math.floor(hash2(i, 52) * 64); for (let y = 0; y < 24 + hash2(i, 53) * 40; y++) p.px(x + (y % 7 === 0 ? 1 : 0), (y0 + y) % 128, 0x5a5244, 70); }
     return p;
   },
   /** Underpass wall: damp concrete with seepage streaks, calcite drips and soot (64 px/m). */
@@ -782,7 +783,7 @@ export function posterTexture(key, w, h) {
 
 // ---------------------------------------------------------------------- town (unit-mapped: one texture per face)
 // Windows, doors, signboards, the commuter train and the distant skyline. townPix(key) -> cached Pix.
-const curtainCols = [0xd88a4a, 0x8ab0d8, 0xe0c890, 0xa8c878, 0xd89aa8];
+const curtainCols = [0xd88a4a, 0x8ab0d8, 0xe0c890, 0xa8c878, 0xe8b088];
 function sash(p, mull = true) {
   const { w, h } = p;
   p.frame(0, 0, w, h, 0xc8ccd0); p.frame(1, 1, w - 2, h - 2, 0x7a8086);
@@ -814,9 +815,9 @@ const TOWN = {
   /** Unlit pane reflecting the dusk sky. */
   winDark: (p) => {
     const { w, h } = p;
-    p.gradient(2, 2, w - 4, h - 4, 0x6a5a78, 0x2a2c48);
-    for (let i = -h; i < w; i += Math.max(9, w >> 1)) for (let k = 0; k < h; k++) { p.px(i + k, h - 1 - k, 0x9a8090, 150); p.px(i + k + 1, h - 1 - k, 0x8a7488, 90); }
-    p.rect(2, 2, 2, h - 4, 0x3a3048); p.rect(w - 4, 2, 2, h - 4, 0x3a3048);
+    p.gradient(2, 2, w - 4, h - 4, 0x9ab4cc, 0x4a5868);
+    for (let i = -h; i < w; i += Math.max(9, w >> 1)) for (let k = 0; k < h; k++) { p.px(i + k, h - 1 - k, 0xc8d4dc, 140); p.px(i + k + 1, h - 1 - k, 0xb0c0cc, 80); }
+    p.rect(2, 2, 2, h - 4, 0x3a4250); p.rect(w - 4, 2, 2, h - 4, 0x3a4250);
     sash(p);
   },
   /** Frosted wired glass (bathroom), dimly lit. */
@@ -970,7 +971,8 @@ const TOWN = {
     p.circle(20, h >> 1, 12, 0xe5383b); p.circle(20, h >> 1, 9, 0xfbf8f0);
     p.text('三', 20, (h >> 1) - 8, { size: 14, color: 0xe5383b, align: 'center' });
     p.text('MIKAWA-YA', w / 2 + 8, 2, { size: Math.round(h * 0.62), color: 0xfbf4e2, align: 'center', font: FONT_DISPLAY, shadow: 0x0a1a10 });
-    p.text('GENERAL STORE  ·  三河屋  ·  SAKE & GROCERIES', w / 2 + 8, h - 12, { size: 8, color: 0xffd23f, align: 'center', font: FONT_EN });
+    p.text('GENERAL STORE  ·  SAKE & GROCERIES', w / 2 + 8, h - 12, { size: 8, color: 0xffd23f, align: 'center', font: FONT_EN });
+    p.text('三河屋', w - 22, h - 15, { size: 10, color: 0xfbf4e2, align: 'center' });
   },
   /** Round height-limit sign (cut-out). */
   clearance: (p) => {
@@ -1086,16 +1088,15 @@ function trainFront(p, emissive) {
 }
 function skyline(p, emissive) {
   const { w, h } = p;
-  p.fill(emissive ? 0x000000 : 0x6a5a6a);
-  for (let y = 4; y < h - 2; y += 6) for (let x = 3; x < w - 2; x += 5) {
+  p.fill(emissive ? 0x000000 : 0x7a8698);
+  if (!emissive) for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (hash2(x >> 3, y >> 2) < 0.15) p.px(x, y, 0x728090);
+  for (let y = 5; y < h - 2; y += 5) for (let x = 3; x < w - 2; x += 4) {
     const k = hash2(x * 3 + p.w, y * 7 + h);
-    const on = k < 0.33;
-    const c = on ? (k < 0.08 ? 0xd8e8ff : k < 0.2 ? 0xffd08a : 0xffe4b0) : 0x4a3e52;
+    const on = k < 0.06;
     if (emissive && !on) continue;
-    p.rect(x, y, 3, 3, c);
-    if (!emissive && hash2(x, y) < 0.2) p.rect(x, y + 3, 3, 1, 0x7a6a7a);
+    p.rect(x, y, 2, 2, on ? 0xc8b890 : 0x6c7888);
   }
-  if (!emissive) { p.rect(0, 0, w, 2, 0x4a3e4a); for (let x = 0; x < w; x += 16) p.rect(x, 0, 1, h, 0x5a4a5a); }
+  if (!emissive) { p.rect(0, 0, w, 2, 0x66727f); for (let x = 0; x < w; x += 16) p.rect(x, 0, 1, h, 0x6e7a88); }
 }
 
 const townCache = new Map();

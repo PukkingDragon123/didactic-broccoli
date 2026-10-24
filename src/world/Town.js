@@ -36,14 +36,32 @@ const LANE_Z = [7.3, 11.2];
 const TRAIN_CAR = 13.6, TRAIN_GAP = 0.5, TRAIN_N = 3;
 const TRAIN_LEN = TRAIN_N * TRAIN_CAR + (TRAIN_N - 1) * TRAIN_GAP;
 
+let INDOOR_CHUNK = null, SAFE_BUMP = null;
+/** Shader patch for town materials: NaN-safe bump mapping (degenerate derivatives on far/thin faces would
+ *  otherwise poison bloom into a black frame) and, for indoor materials, no low-sun contribution. */
+function townShader(m, indoor = false) {
+  if (!SAFE_BUMP) {
+    SAFE_BUMP = THREE.ShaderChunk.bumpmap_pars_fragment
+      .replace(/normalize\( dFdx\( surf_pos\.xyz \) \)/, 'normalize( dFdx( surf_pos.xyz ) + vec3( 1e-7 ) )')
+      .replace(/normalize\( dFdy\( surf_pos\.xyz \) \)/, 'normalize( dFdy( surf_pos.xyz ) + vec3( 1e-7 ) )')
+      .replace('return normalize( abs( fDet ) * surf_norm - vGrad );', 'vec3 bn = abs( fDet ) * surf_norm - vGrad; return dot( bn, bn ) > 1e-14 ? normalize( bn ) : surf_norm;');
+    INDOOR_CHUNK = THREE.ShaderChunk.lights_fragment_begin.replace('#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )', '#if 0');
+  }
+  m.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader.replace('#include <bumpmap_pars_fragment>', SAFE_BUMP);
+    if (indoor) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', INDOOR_CHUNK);
+  };
+  m.customProgramCacheKey = () => (indoor ? 'town-in' : 'town');
+  return m;
+}
 const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 /** Darkness inside the underpasses (multiplies vertex colours). */
 function shadeAt(x, y, z) {
   const u = Math.abs(x);
   if (u < XT + 0.05 || u > XE + 0.3 || y > YE + 0.05 || z < TZ0 - 1.1 || z > TZ1 + 1.1) return 1;
-  const into = sstep(XT + 0.1, XT + 4.5, u) * (1 - 0.7 * sstep(XE - 2.5, XE + 0.2, u));
-  return 1 - 0.88 * into;
+  const into = sstep(XT + 0.1, XT + 3.6, u) * (1 - 0.6 * sstep(XE - 2.2, XE + 0.2, u));
+  return 1 - 0.62 * into;
 }
 
 const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _c = new THREE.Color(), _up = new THREE.Vector3(0, 1, 0);
@@ -148,7 +166,7 @@ export class Town {
   M(key, opts = {}) {
     const ck = 'p:' + key + JSON.stringify(opts);
     if (!this.mats.has(ck)) {
-      const m = pixMat(key, opts).clone();
+      const m = townShader(pixMat(key, opts).clone());
       m.vertexColors = true;
       if (opts.decal) { m.polygonOffset = true; m.polygonOffsetFactor = -2; m.polygonOffsetUnits = -4; }
       this.mats.set(ck, m);
@@ -180,15 +198,28 @@ export class Town {
     return this.mats.get(ck);
   }
 
+  /** Clone of a lit material that ignores the low sun (interiors and the underpasses have no shadow coverage). */
+  indoor(mat) {
+    if (!this._indoor) this._indoor = new Map();
+    if (!this._indoor.has(mat)) {
+      this._indoor.set(mat, townShader(mat.clone(), true));
+    }
+    return this._indoor.get(mat);
+  }
+  indoorVoxel() {
+    if (!this._inVox) { const n = voxelMaterials('normal'); this._inVox = [this.indoor(n[0]), this.indoor(n[1]), this.indoor(n[2]), n[3], this.indoor(n[4])]; }
+    return this._inVox;
+  }
+
   initMats() {
     const M = (k, o) => this.M(k, o);
     this.m = {
       road: M('asphaltHD', { roughness: 0.95, bump: 0.5, ppm: 40 }),
-      paint: M('roadPaint', { roughness: 0.8, bump: 0.3, ppm: 64, decal: true }),
+      paint: M('roadPaint', { roughness: 0.8, bump: 0, ppm: 64, decal: true }),
       strip: M('concrete', { roughness: 0.95, color: 0xb8b0a2, ppm: 40 }),
       paving: M('paving', { roughness: 0.92, ppm: 40 }),
       lid: M('gutterLid', { roughness: 0.92, ppm: 40 }),
-      grate: M('grate', { roughness: 0.5, metalness: 0.5, ppm: 64 }),
+      grate: M('grate', { roughness: 0.5, metalness: 0.5, ppm: 64, bump: 0 }),
       ground: M('gravel', { roughness: 1, color: 0x8a8070, ppm: 32 }),
       block: M('blockHD', { roughness: 0.92, bump: 1, ppm: 64 }),
       found: M('concrete', { roughness: 0.95, color: 0x9a948a, ppm: 48 }),
@@ -199,7 +230,7 @@ export class Town {
       wallBlue: M('houseWall', { roughness: 0.9, color: 0xb8c4cc }),
       mortar: M('mortar', { roughness: 0.95 }),
       mortarG: M('mortar', { roughness: 0.95, color: 0xd0d4bc }),
-      mortarP: M('mortar', { roughness: 0.95, color: 0xead0c0 }),
+      mortarP: M('mortar', { roughness: 0.95, color: 0xe8dcc4 }),
       siding: M('siding', { roughness: 0.85, ppm: 64 }),
       tin: M('corrugatedHD', { roughness: 0.55, metalness: 0.35, bump: 1.2, ppm: 64, color: 0xa8b4b0 }),
       tinRed: M('corrugatedHD', { roughness: 0.6, metalness: 0.3, bump: 1.2, ppm: 64, color: 0xb87060 }),
@@ -214,7 +245,7 @@ export class Town {
       girder: M('girder', { roughness: 0.6, metalness: 0.3, ppm: 64, color: 0x9a8a80 }),
       ballast: M('ballast', { roughness: 1, ppm: 40 }),
       grass: M('grassFloor', { roughness: 1, color: 0x7a8a5a, ppm: 32 }),
-      hazard: M('hazard', { roughness: 0.6, ppm: 64 }),
+      hazard: M('hazard', { roughness: 0.6, ppm: 64, bump: 0 }),
       tile: M('shopTile', { roughness: 0.4, ppm: 64 }),
       koshi: M('koshiita', { roughness: 0.6, ppm: 64 }),
       shikkui: M('shikkui', { roughness: 0.92, ppm: 64, color: 0xeee6d8 }),
@@ -240,8 +271,8 @@ export class Town {
   /** Queue an instanced prop (static). o: block (player collision), dim (softer glow), scale. */
   prop(id, x, y, z, ry = 0, o = {}) {
     if (!hasProp(id)) return null;
-    const key = id + (o.dim ? ':dim' : '');
-    if (!this.inst.has(key)) this.inst.set(key, { id, dim: o.dim, list: [] });
+    const key = id + (o.dim ? ':dim' : '') + (o.indoor ? ':in' : '');
+    if (!this.inst.has(key)) this.inst.set(key, { id, dim: o.dim, indoor: o.indoor, list: [] });
     this.inst.get(key).list.push({ x, y, z, ry, s: o.scale || 1 });
     if (o.block) this.blockProp(id, x, z, ry, o.scale || 1, o.pad ?? 0.02);
     return true;
@@ -250,6 +281,7 @@ export class Town {
   single(id, x, y, z, ry = 0, o = {}, parent = this.group) {
     if (!hasProp(id)) return null;
     const m = propMesh(id, { castShadow: !!o.cast, receiveShadow: true });
+    if (o.indoor && Array.isArray(m.material)) m.material = this.indoorVoxel();
     m.position.set(x, y, z); m.rotation.y = ry;
     if (o.scale) m.scale.setScalar(o.scale);
     parent.add(m);
@@ -263,10 +295,10 @@ export class Town {
     this.game.player.addObstacle(x - ex, x + ex, z - ez, z + ez);
   }
   flushProps() {
-    for (const { id, dim, list } of this.inst.values()) {
+    for (const { id, dim, indoor, list } of this.inst.values()) {
       const geo = propGeometry(id);
       if (!geo) continue;
-      const im = new THREE.InstancedMesh(geo, dim ? this.dimVoxel() : voxelMaterials('normal'), list.length);
+      const im = new THREE.InstancedMesh(geo, indoor ? this.indoorVoxel() : dim ? this.dimVoxel() : voxelMaterials('normal'), list.length);
       list.forEach((it, i) => {
         _q.setFromAxisAngle(_up, it.ry);
         im.setMatrixAt(i, _m4.compose(_p.set(it.x, it.y, it.z), _q, _s.setScalar(it.s)));
@@ -321,7 +353,7 @@ export class Town {
     // a catch-all ground under everything (no void between lots)
     B.plane(m.ground, 110, 90, 0, -0.02, 8, { k: 0.8 });
     // the asphalt runs through both underpasses to the junctions beyond
-    B.plane(m.road, 84, ZR1 - ZG1, 0, 0, (ZG1 + ZR1) / 2, { sx: 84, sz: 4 });
+    B.plane(m.road, 2 * XT, ZR1 - ZG1, 0, 0, (ZG1 + ZR1) / 2);
     for (const s of [-1, 1]) B.plane(m.road, 4.2, 26, s * (XE + 2.1), 0, 9.6, { uv: [3, 1], k: 0.9 });
     // near strip (aprons, house fronts) and the far paved strip
     for (const sx of [-1, 1]) B.plane(m.strip, XT - 4.3, ZG0 - 5.2, sx * (XT + 4.3) / 2, 0, (5.2 + ZG0) / 2, { uv: [sx * 0.3, 0] });
@@ -344,8 +376,9 @@ export class Town {
     line(-24, -9.7, 13.0); line(-7.2, 24, 13.0);
     for (const s of [-1, 1]) {
       diag(s * 24, 6.45, s * XT, 6.95); diag(s * 24, 13.0, s * XT, 11.4);
-      line(Math.min(s * XT, s * (XE + 3)), Math.max(s * XT, s * (XE + 3)), 6.95);
-      line(Math.min(s * XT, s * XE), Math.max(s * XT, s * XE), 11.4);
+      const pin = this.indoor(m.paint);
+      B.box(pin, XE - XT + 3, 0.006, 0.15, s * (XT + XE + 3) / 2, 0, 6.95);
+      B.box(pin, XE - XT, 0.006, 0.15, s * (XT + XE) / 2, 0, 11.4);
       // hatched narrowing (導流帯) before the far-side kerb
       for (let i = 0; i < 4; i++) diag(s * (24.3 + i * 0.45), 13.0, s * (24.3 + i * 0.45 + 0.5), 13.0 - 0.45 - i * 0.28);
     }
@@ -408,7 +441,8 @@ export class Town {
     const S = this.shop;
     const open = townPix('gachaSign', 320, 64).texture();
     const dusty = townPix('gachaSignDusty', 320, 64).texture();
-    const face = new THREE.MeshStandardMaterial({ map: open, emissive: 0xffffff, emissiveMap: open, emissiveIntensity: 1, roughness: 0.35 });
+    // the face glows by itself; it ignores the low sun so the lettering never washes out
+    const face = this.indoor(new THREE.MeshStandardMaterial({ map: open, emissive: 0xffffff, emissiveMap: open, emissiveIntensity: 1, roughness: 0.6 }));
     const frame = new THREE.MeshStandardMaterial({ color: 0x3a3c40, roughness: 0.45, metalness: 0.6 });
     const sw = 7.5, sh = 1.5, cy = H + 1.28, cz = 5.39;
     const box = new THREE.Mesh(new THREE.BoxGeometry(sw, sh, 0.3), [frame, frame, frame, frame, face, frame]);
@@ -431,7 +465,7 @@ export class Town {
     }
     // projecting side sign (袖看板) on the east corner
     const st = townPix('sodeSign', 24, 80).texture();
-    const sodeM = new THREE.MeshStandardMaterial({ map: st, emissive: 0xffffff, emissiveMap: st, emissiveIntensity: 0.9, roughness: 0.4 });
+    const sodeM = this.indoor(new THREE.MeshStandardMaterial({ map: st, emissive: 0xffffff, emissiveMap: st, emissiveIntensity: 0.9, roughness: 0.6 }));
     const sode = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.9, 0.6), [sodeM, sodeM, frame, frame, frame, frame]);
     sode.position.set(4.18, H + 1.2, 5.62);
     this.add(sode);
@@ -484,9 +518,9 @@ export class Town {
     if (!S) return;
     this.shopOpen = open;
     S.face.map = open ? S.open : S.dusty;
-    S.face.emissiveIntensity = open ? 1.0 : 0;
-    S.face.roughness = open ? 0.35 : 0.9;
-    S.sodeM.emissiveIntensity = open ? 0.9 : 0;
+    S.face.emissiveIntensity = open ? 0.72 : 0;
+    S.face.color.setScalar(open ? 0.6 : 0.9);
+    S.sodeM.emissiveIntensity = open ? 0.7 : 0;
     S.sodeM.color.setScalar(open ? 1 : 0.5);
     S.lanternM.emissiveIntensity = open ? 1.3 : 0;
     S.lanternM.color.setScalar(open ? 1 : 0.45);
@@ -656,7 +690,7 @@ export class Town {
       const py = fy1 + 1.85;
       B.box(m.metal, w - 0.2, 0.03, 0.03, cx, py, d * 0.55, { tint: 0x7ab0d8 });
       for (const sx of [-1, 1]) B.box(m.metal, 0.03, 0.4, 0.03, cx + sx * (w / 2 - 0.15), py - 0.2, d * 0.55, { tint: 0x9aa0a6 });
-      const cols = [0xfbf8f0, 0x6a9ad8, 0xe86a7a, 0xffd23f, 0x5aa86a, 0xf4f0e8, 0x2a3a6a, 0xf2a0b8];
+      const cols = [0xfbf8f0, 0x6a9ad8, 0xe86a7a, 0xffd23f, 0x5aa86a, 0xf4f0e8, 0x2a3a6a, 0xe8c8a0];
       let x = b.x0 + 0.2;
       for (let i = 0; x < b.x1 - 0.35; i++) {
         const cw = 0.24 + hash2(seed + i, 3) * 0.3, ch = 0.35 + hash2(seed + i, 4) * 0.45;
@@ -699,7 +733,7 @@ export class Town {
   buildNearSide() {
     const m = this.m, B = this.B, s = 1;
     // ---- NE1: carport with the kei car, two-storey house
-    this.house({ x: 7.05, z: 1.4, w: 5.2, d: 6.2, wallA: m.wallBeige, roofM: m.roofGrey, pent: true, balcony: { x0: -2.3, x1: 0.9, futon: 0xf2a0b8 }, antenna: 1.2,
+    this.house({ x: 7.05, z: 1.4, w: 5.2, d: 6.2, wallA: m.wallBeige, roofM: m.roofGrey, pent: true, balcony: { x0: -2.3, x1: 0.9, futon: 0xf0d8b0 }, antenna: 1.2,
       win: [[0, 1.4, 1.5, 1.1, 'lit'], [0, -1.9, 0.7, 0.6, 'frost', { grille: true, sill: 1.3 }], [1, -0.7, 2.6, 1.85, 'lace', { sill: 0.05 }], [1, 1.8, 1.0, 1.0, 'dark', { tobukuro: 1 }],
         [0, 2.2, 1.2, 1.0, 'lit2', { face: 'r' }], [1, 4.0, 1.0, 1.0, 'dark', { face: 'r' }], [1, 2.0, 0.8, 0.9, 'lit3', { face: 'l' }]],
       door: { x: -0.4, kind: 'genkan', w: 1.3 } });
@@ -941,7 +975,8 @@ export class Town {
     const x0 = -15.45, x1 = -9.4, z0 = ZF, z1 = 19.95, cx = (x0 + x1) / 2, H1 = 2.85;
     const dx0 = -13.3, dx1 = -11.55; // door opening
     // floor + threshold
-    B.box(m.tile, x1 - x0 - 0.5, 0.06, z1 - z0 - 0.25, cx, -0.048, (z0 + z1) / 2 + 0.02, { k: 0.85 });
+    const I = (k) => this.indoor(k);
+    B.box(I(m.tile), x1 - x0 - 0.5, 0.06, z1 - z0 - 0.25, cx, -0.048, (z0 + z1) / 2 + 0.02, { k: 0.9 });
     B.box(m.metal, dx1 - dx0 + 0.2, 0.025, 0.12, (dx0 + dx1) / 2, 0, z0 + 0.02, { tint: 0xb8bcc0 });
     // shell: side walls (both floors), back wall, ceiling / 2F floor
     for (const [xa, xb] of [[x0, x0 + 0.25], [x1 - 0.25, x1]]) {
@@ -951,12 +986,13 @@ export class Town {
     // interior finishes: wainscot + plaster on the inner faces
     for (const sx of [-1, 1]) {
       const wx = sx < 0 ? x0 + 0.26 : x1 - 0.26;
-      B.box(m.koshi, 0.02, 0.9, z1 - z0 - 0.3, wx, 0, (z0 + z1) / 2, { ry: 0, k: 0.85 });
-      B.box(m.shikkui, 0.02, H1 - 0.9, z1 - z0 - 0.3, wx, 0.9, (z0 + z1) / 2, { k: 0.8 });
+      B.box(I(m.koshi), 0.02, 0.9, z1 - z0 - 0.3, wx, 0, (z0 + z1) / 2, { k: 0.9 });
+      B.box(I(m.shikkui), 0.02, H1 - 0.9, z1 - z0 - 0.3, wx, 0.9, (z0 + z1) / 2, { k: 0.9 });
     }
-    B.box(m.koshi, x1 - x0 - 0.5, 0.9, 0.02, cx, 0, z1 - 0.26, { k: 0.85 });
-    B.box(m.shikkui, x1 - x0 - 0.5, H1 - 0.9, 0.02, cx, 0.9, z1 - 0.26, { k: 0.8 });
-    B.box(m.ceil, x1 - x0 - 0.5, 0.06, z1 - z0 - 0.3, cx, H1 - 0.06, (z0 + z1) / 2 + 0.02, { k: 0.85 });
+    B.box(I(m.koshi), x1 - x0 - 0.5, 0.9, 0.02, cx, 0, z1 - 0.26, { k: 0.9 });
+    B.box(I(m.shikkui), x1 - x0 - 0.5, H1 - 0.9, 0.02, cx, 0.9, z1 - 0.26, { k: 0.9 });
+    B.box(I(m.ceil), x1 - x0 - 0.5, 0.06, z1 - z0 - 0.3, cx, H1 - 0.06, (z0 + z1) / 2 + 0.02, { k: 0.9 });
+    B.box(I(m.wood), x1 - x0 - 0.6, 0.02, 0.2, cx, 2.3, z0 + 0.21, { k: 0.8 });
     B.box(m.wood, x1 - x0 - 0.5, 0.22, z1 - z0, cx, H1, (z0 + z1) / 2, { k: 0.8 });
     // shopfront: piers, kick panels, display windows, transom, door frame, open sliding doors
     for (const [a, b] of [[x0, x0 + 0.3], [x1 - 0.3, x1]]) B.box(m.mortar, b - a, H1 + 0.1, 0.28, (a + b) / 2, 0, z0 + 0.14, { ao: 0.2 });
@@ -992,32 +1028,33 @@ export class Town {
       win: [[0, -1.4, 1.6, 1.1, 'lit', { tobukuro: -1, sill: 0.8 }], [0, 1.5, 1.4, 1.0, 'lit2', { sill: 0.8 }], [0, 2.5, 1.2, 1.0, 'lit3', { face: 'l', sill: 0.8 }], [0, 2.5, 1.0, 1.0, 'dark', { face: 'r', sill: 0.8 }]] });
     // side (alley) wall details: a frosted window, an AC unit, the back door lamp
     B.box(this.win.frost, 0.8, 0.6, 0.1, x1, 1.6, 18.4, { unit: true, ry: Math.PI / 2 });
-    this.prop('ac_unit', x1 + 0.22, 0, 17.0, Math.PI / 2);
+    this.prop('propane', x1 + 0.22, 0, 17.4, Math.PI / 2);
     this.prop('beercrate', -9.95, 0, 14.4, 0.15);
     this.prop('beercrate', -9.95, 0.28, 14.4, -0.1);
     this.prop('sign_stand', -11.15, 0, 14.5, Math.PI + 0.25, { block: true });
     // ---- interior
     const P = this.game.player;
-    this.prop('goods_shelf', x0 + 0.48, 0, 16.0, Math.PI / 2);
-    this.prop('goods_shelf2', x0 + 0.48, 0, 17.25, Math.PI / 2);
-    this.prop('goods_shelf', -12.71, 0, 16.6, Math.PI / 2);
-    this.prop('goods_shelf2', -13.15, 0, 16.6, -Math.PI / 2);
-    this.prop('milk_fridge', x1 - 0.6, 0, 18.55, -Math.PI / 2);
-    this.prop('dagashi_rack', x1 - 0.5, 0, 16.4, -Math.PI / 2);
-    this.prop('ramune_cooler', -10.85, 0, 15.4, Math.PI);
-    this.prop('wall_shelf_jars', -12.7, 1.35, z1 - 0.38, Math.PI);
-    this.prop('pendulum_clock', -14.4, 1.65, z1 - 0.3, Math.PI);
-    for (const x of [-13.9, -11.4]) this.prop('shop_lamp', x, H1 - 0.72, 17.2, 0);
-    for (const [x, z, r] of [[-15.0, 19.2, 0.2], [-14.6, 19.3, -0.1], [-15.0, 19.2, 0.1]]) this.prop('beercrate', x, z === 19.2 && r === 0.1 ? 0.28 : 0, z, r);
+    const IN = { indoor: true };
+    this.prop('goods_shelf', x0 + 0.48, 0, 16.0, Math.PI / 2, IN);
+    this.prop('goods_shelf2', x0 + 0.48, 0, 17.25, Math.PI / 2, IN);
+    this.prop('goods_shelf', -12.71, 0, 16.6, Math.PI / 2, IN);
+    this.prop('goods_shelf2', -13.15, 0, 16.6, -Math.PI / 2, IN);
+    this.prop('milk_fridge', x1 - 0.6, 0, 18.55, -Math.PI / 2, IN);
+    this.prop('dagashi_rack', x1 - 0.5, 0, 16.4, -Math.PI / 2, IN);
+    this.prop('ramune_cooler', -10.85, 0, 15.4, Math.PI, IN);
+    this.prop('wall_shelf_jars', -12.7, 1.35, z1 - 0.38, Math.PI, IN);
+    this.prop('pendulum_clock', -14.4, 1.65, z1 - 0.3, Math.PI, IN);
+    for (const x of [-13.9, -11.4]) this.prop('shop_lamp', x, H1 - 0.72, 17.2, 0, IN);
+    this.prop('beercrate', -15.0, 0, 19.2, 0.2, IN); this.prop('beercrate', -15.0, 0.28, 19.2, 0.1, IN); this.prop('beercrate', -14.55, 0, 19.3, -0.1, IN);
     // the counter (click target): glass showcase + old register + bell + lucky cat
     const counter = new THREE.Group();
     counter.name = 'cornerShopCounter';
     counter.position.set(-12.6, 0.45, 18.75); // origin 0.5 m under the counter top (things bought land on it)
-    this.single('shop_counter', 0, -0.45, 0, Math.PI, {}, counter);
-    this.single('cash_register', -0.45, 0.51, 0.1, 0, {}, counter);
-    this.single('call_bell', 0.45, 0.51, -0.15, 0.3, {}, counter);
-    this.single('manekineko', 0.65, 0.51, 0.15, Math.PI + 0.3, {}, counter);
-    this.single('abacus', 0.05, 0.51, 0.1, Math.PI + 0.1, {}, counter);
+    this.single('shop_counter', 0, -0.45, 0, Math.PI, IN, counter);
+    this.single('cash_register', -0.45, 0.51, 0.1, 0, IN, counter);
+    this.single('call_bell', 0.45, 0.51, -0.15, 0.3, IN, counter);
+    this.single('manekineko', 0.65, 0.51, 0.15, Math.PI + 0.3, IN, counter);
+    this.single('abacus', 0.05, 0.51, 0.1, Math.PI + 0.1, IN, counter);
     this.add(counter);
     this.game.physics.addBox({ center: new THREE.Vector3(-12.6, 0.48, 18.75), half: new THREE.Vector3(0.8, 0.48, 0.28), material: 'wood' });
     // fluorescent fixtures + the shop's light
@@ -1095,17 +1132,20 @@ export class Town {
         B.box(m.found, 0.6, 0.22, zb - za + 0.12, XT - 0.15, TH + 0.6, (za + zb) / 2, { tint: 0xd0c8b8 });
         B.box(m.brick, 0.5, YE - TH - 0.8, zb - za, XT - 0.12, TH + 0.82, (za + zb) / 2, { uv: [za, 0.4] });
         // hazard guards on the inner corners
-        B.box(m.hazard, 0.06, 1.6, 0.2, XT - 0.4, 0.2, za < TZ0 ? zb - 0.1 : za + 0.1);
+        B.box(m.hazard, 0.05, 1.5, 0.36, XT - 0.4, 0.3, za < TZ0 ? zb - 0.18 : za + 0.18);
+        B.box(m.hazard, 0.36, 1.5, 0.05, XT - 0.2, 0.3, za < TZ0 ? zb + 0.025 : za - 0.025);
       }
-      // underpass side walls (brick, stained), segmented so the darkness can deepen
+      // underpass side walls (brick, stained), segmented so the darkness can deepen; lit only by its lamps
+      const I = (k) => this.indoor(k);
+      B.plane(I(m.road), XE - XT, TZ1 - TZ0 + 0.4, (XT + XE) / 2, 0, (TZ0 + TZ1) / 2, { sx: 20, sz: 2, uv: [1.3, 0.2] });
       for (let x = XT + 0.05; x < XE - 0.01; x += 1) {
         const w = Math.min(1, XE - x);
-        B.box(m.brick, w, TH, 0.6, x + w / 2, 0, TZ0 - 0.3, { uv: [x, 0], ao: 0.25 });
-        B.box(m.brick, w, TH, 0.6, x + w / 2, 0, TZ1 + 0.3, { uv: [x + 0.3, 0], ao: 0.25 });
-        B.box(m.tunnel, w, 1.1, 0.02, x + w / 2, 0.2, TZ0 + 0.005, { uv: [x, 0], k: 0.9 });
-        B.box(m.found, w, 0.2, TZ1 - WALK, x + w / 2, 0, (WALK + TZ1) / 2, { uv: [x, 0] });
-        B.box(m.pv, w, 0.21, 0.08, x + w / 2, 0, WALK + 0.04, { tint: 0xc8c4b8 });
-        B.box(m.grate, w, 0.012, 0.26, x + w / 2, 0, TZ0 + 0.13);
+        B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ0 - 0.3, { uv: [x, 0], ao: 0.25 });
+        B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ1 + 0.3, { uv: [x + 0.3, 0], ao: 0.25 });
+        B.box(I(m.tunnel), w, 1.1, 0.02, x + w / 2, 0.2, TZ0 + 0.005, { uv: [x, 0], k: 0.9 });
+        B.box(I(m.found), w, 0.2, TZ1 - WALK, x + w / 2, 0, (WALK + TZ1) / 2, { uv: [x, 0] });
+        B.box(I(m.pv), w, 0.21, 0.08, x + w / 2, 0, WALK + 0.04, { tint: 0xc8c4b8 });
+        B.box(I(m.grate), w, 0.012, 0.26, x + w / 2, 0, TZ0 + 0.13);
       }
       // the girder bridge: riveted plate girders spanning the opening (outer face toward the lane), deck above
       const span0 = TZ0 - 1.45, span1 = TZ1 + 1.45;
@@ -1118,25 +1158,25 @@ export class Town {
         B.box(m.hazard, 0.02, 0.08, TZ1 - TZ0, gx + out * 0.22, TH - 0.02, (TZ0 + TZ1) / 2);
       }
       for (const gx of [27.6, 29.3, 31.6, 33.7, 35.2]) {
-        B.box(m.girder, 0.07, 0.82, TZ1 - TZ0 + 1.2, gx, TH + 0.08, (TZ0 + TZ1) / 2, { k: 0.9 });
-        B.box(m.girder, 0.34, 0.06, TZ1 - TZ0 + 1.2, gx, TH + 0.04, (TZ0 + TZ1) / 2, { k: 0.9 });
+        B.box(I(m.girder), 0.07, 0.82, TZ1 - TZ0 + 1.2, gx, TH + 0.08, (TZ0 + TZ1) / 2, { k: 0.9 });
+        B.box(I(m.girder), 0.34, 0.06, TZ1 - TZ0 + 1.2, gx, TH + 0.04, (TZ0 + TZ1) / 2, { k: 0.9 });
       }
       for (let x = XT + 0.1; x < XE; x += 1) {
         const w = Math.min(1, XE - x);
-        B.box(m.girder, w, 0.08, TZ1 - TZ0 + 1.2, x + w / 2, TH + 0.9, (TZ0 + TZ1) / 2, { k: 0.6 });
-        for (const z of [TZ0 + 1.2, (TZ0 + TZ1) / 2, TZ1 - 1.2]) B.box(m.girder, w, 0.18, 0.08, x + w / 2, TH + 0.45, z, { k: 0.9 });
+        B.box(I(m.girder), w, 0.08, TZ1 - TZ0 + 1.2, x + w / 2, TH + 0.9, (TZ0 + TZ1) / 2, { k: 0.6 });
+        for (const z of [TZ0 + 1.2, (TZ0 + TZ1) / 2, TZ1 - 1.2]) B.box(I(m.girder), w, 0.18, 0.08, x + w / 2, TH + 0.45, z, { k: 0.9 });
       }
       // cables and a caged fluorescent lamp on each wall
-      B.box(m.pv, XE - XT - 0.4, 0.06, 0.06, (XT + XE) / 2, 2.95, TZ0 + 0.05, { tint: 0x2a2a2a });
-      B.box(m.pv, XE - XT - 0.4, 0.04, 0.04, (XT + XE) / 2, 2.85, TZ0 + 0.04, { tint: 0x3a3a3a });
+      B.box(I(m.pv), XE - XT - 0.4, 0.06, 0.06, (XT + XE) / 2, 2.95, TZ0 + 0.05, { tint: 0x2a2a2a });
+      B.box(I(m.pv), XE - XT - 0.4, 0.04, 0.04, (XT + XE) / 2, 2.85, TZ0 + 0.04, { tint: 0x3a3a3a });
       for (const [lx, lz, f] of [[27.9, TZ0 + 0.08, 1], [33.2, TZ1 - 0.08, -1]]) {
-        B.box(m.pv, 0.7, 0.16, 0.14, lx, 2.62, lz, { tint: 0x8a8a84 });
+        B.box(I(m.pv), 0.7, 0.16, 0.14, lx, 2.62, lz, { tint: 0x8a8a84 });
         B.box(this.G, 0.6, 0.06, 0.05, lx, 2.6, lz + f * 0.08, { tint: 0xe8ffe0 });
-        for (let i = 0; i < 4; i++) B.box(m.metal, 0.02, 0.18, 0.02, lx - 0.27 + i * 0.18, 2.55, lz + f * 0.12, { tint: 0x4a4a48 });
+        for (let i = 0; i < 4; i++) B.box(I(m.metal), 0.02, 0.18, 0.02, lx - 0.27 + i * 0.18, 2.55, lz + f * 0.12, { tint: 0x4a4a48 });
       }
       // walkway guard rail
-      for (let x = XT + 0.6; x < XE - 0.2; x += 1.5) B.box(m.metal, 0.06, 0.95, 0.06, x, 0.2, WALK + 0.06, { tint: 0xe8e8e0 });
-      for (const y of [0.62, 1.12]) B.box(m.metal, XE - XT - 0.7, 0.05, 0.05, (XT + 0.6 + XE - 0.1) / 2, y, WALK + 0.06, { tint: 0xe8e8e0 });
+      for (let x = XT + 0.6; x < XE - 0.2; x += 1.5) B.box(I(m.metal), 0.06, 0.95, 0.06, x, 0.2, WALK + 0.06, { tint: 0xe8e8e0 });
+      for (const y of [0.62, 1.12]) B.box(I(m.metal), XE - XT - 0.7, 0.05, 0.05, (XT + 0.6 + XE - 0.1) / 2, y, WALK + 0.06, { tint: 0xe8e8e0 });
       // the embankment on top: grassy shoulders, ballast, sleepers, rails, fence, catenary
       const zA = -48, zB = 68, L = zB - zA, zc = (zA + zB) / 2;
       B.box(m.grass, XE - XT + 0.6, 0.3, L, (XT + XE) / 2 + 0.3, YE - 0.3, zc, { uv: [0, 0] });
@@ -1164,9 +1204,9 @@ export class Town {
       // the T-junction beyond the far end (seen through the underpass), kept dusky
       B.box(m.block, 0.15, 1.7, 26, XE + 4.1, 0, 9.6, { k: 0.6, uv: [1, 0] });
       B.box(m.found, 0.21, 0.07, 26, XE + 4.1, 1.7, 9.6, { k: 0.6 });
-      for (const [za, zb, h] of [[2.5, 8.6, 6.4], [9.4, 16.2, 5.8]]) {
-        B.box(m.mortar, 6, h, zb - za, XE + 7.4, 0, (za + zb) / 2, { k: 0.55 });
-        B.box(m.roofGrey, 6.6, 0.4, zb - za + 0.6, XE + 7.4, h, (za + zb) / 2, { k: 0.55 });
+      for (const [za, zb, h] of [[1.5, 9.1, 6.4], [9.1, 17.5, 5.8]]) {
+        B.box(m.mortar, 6, h, zb - za, XE + 7.4, 0, (za + zb) / 2, { k: 0.8 });
+        B.box(m.roofGrey, 6.6, 0.4, zb - za + 0.6, XE + 7.4, h, (za + zb) / 2, { k: 0.7 });
         B.box(this.win.lit, 1.4, 1.0, 0.1, XE + 4.38, 2.6, (za + zb) / 2, { unit: true, ry: -Math.PI / 2 });
       }
       B.pop();
@@ -1176,7 +1216,7 @@ export class Town {
       B.quad(this.T('clearancePlate', 64, 20, { rough: 0.4 }), 0.9, 0.28, gx, TH + 0.04, 10.2, { ry });
       B.quad(this.T('underpassName', 64, 20, { rough: 0.4 }), 0.62, 0.2, s * (XT - 0.39), 2.1, TZ1 + 0.72, { ry });
       // lamp light + soft pools
-      const tl = new THREE.PointLight(0xd8ffd0, 2.6, 7, 1.7);
+      const tl = new THREE.PointLight(0xe4f4dc, 4.0, 8, 1.6);
       tl.position.set(s * 28.0, 2.45, TZ0 + 0.6);
       this.add(tl);
       this.pool(s * 28.0, TZ0 + 0.9, 2.2, 0xa8d8a0, 0.5);
@@ -1185,6 +1225,9 @@ export class Town {
       this.prop('street_light', s * (XE + 3.6), 0, 12.6, s > 0 ? Math.PI : 0, {});
       this.prop('mirror_pole', s * (XE + 3.75), 0, 7.2, -s * Math.PI / 2);
       this.pool(s * (XE + 2.2), 12.6, 2.6, 0xffc880, 0.55);
+      // a glowing vending machine at the junction draws the eye through the underpass
+      this.prop('vending', s * (XE + 3.6), 0, 9.9, -s * Math.PI / 2, { dim: true });
+      this.pool(s * (XE + 2.9), 9.9, 1.6, 0xcfe8ff, 0.5);
     }
   }
 
@@ -1202,7 +1245,7 @@ export class Town {
     if (!this._pools?.length) return;
     const mat = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true,
-      vertexShader: 'attribute vec3 color; varying vec3 vC; varying vec2 vUv; void main(){ vUv = uv; vC = color; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      vertexShader: 'varying vec3 vC; varying vec2 vUv; void main(){ vUv = uv; vC = color; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
       fragmentShader: 'varying vec3 vC; varying vec2 vUv; void main(){ vec2 q = floor((vUv - 0.5) * 24.0) / 24.0; float d = length(q) * 2.0; float a = pow(max(0.0, 1.0 - d), 1.8); gl_FragColor = vec4(vC * a * 0.35, 1.0); }',
     });
     const mesh = new THREE.Mesh(mergeGeometries(this._pools), mat);
@@ -1277,41 +1320,45 @@ export class Town {
 
   // ---------------------------------------------------------------- sky & skyline
   buildSky() {
-    // dusk dome: pixel-quantised gradient brightest toward the setting sun, streaky clouds, first stars
-    const cl = new Pix64Clouds().texture;
+    // late golden hour, clear with a few clouds: blue zenith fading to warm haze, a glow band toward the low sun
+    const cl = new SkyClouds().texture;
     const mat = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, fog: false,
       uniforms: {
-        uSun: { value: new THREE.Vector3(-6, 0, 14).normalize() },
-        uZen: { value: new THREE.Color(0x26244e) }, uZenS: { value: new THREE.Color(0x4a3e78) },
-        uMid: { value: new THREE.Color(0x8a5a86) }, uMidS: { value: new THREE.Color(0xf09060) },
-        uHor: { value: new THREE.Color(0xd08070) }, uHorS: { value: new THREE.Color(0xffc080) },
+        uSun: { value: new THREE.Vector3(-6, 3.2, 14).normalize() },
+        uZen: { value: new THREE.Color(0x3f6fae) }, uUp: { value: new THREE.Color(0x6f9acb) },
+        uMid: { value: new THREE.Color(0xa9c4dd) }, uHor: { value: new THREE.Color(0xe9dcc4) },
+        uGlow: { value: new THREE.Color(0xf6d9a8) },
         uClouds: { value: cl },
       },
       vertexShader: 'varying vec3 vD; void main(){ vD = position; vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }',
-      fragmentShader: `uniform vec3 uSun, uZen, uZenS, uMid, uMidS, uHor, uHorS; uniform sampler2D uClouds; varying vec3 vD;
+      fragmentShader: `uniform vec3 uSun, uZen, uUp, uMid, uHor, uGlow; uniform sampler2D uClouds; varying vec3 vD;
         float bayer(vec2 p){ vec2 q = mod(floor(p), 4.0); int i = int(q.x) + int(q.y) * 4;
           float b[16]; b[0]=0.;b[1]=8.;b[2]=2.;b[3]=10.;b[4]=12.;b[5]=4.;b[6]=14.;b[7]=6.;b[8]=3.;b[9]=11.;b[10]=1.;b[11]=9.;b[12]=15.;b[13]=7.;b[14]=13.;b[15]=5.;
           for (int k = 0; k < 16; k++) if (k == i) return b[k] / 16.0; return 0.0; }
         void main(){
           vec3 d = normalize(vD);
-          float az = atan(d.z, d.x), h = d.y;
-          vec2 cell = vec2(floor(az * 160.0), floor(h * 260.0));
-          float sunK = pow(max(0.0, dot(normalize(vec3(d.x, 0.0, d.z)), normalize(vec3(uSun.x, 0.0, uSun.z)))), 2.0);
-          float hq = h + (bayer(cell) - 0.5) / 38.0;
-          float t1 = smoothstep(-0.02, 0.22, hq), t2 = smoothstep(0.18, 0.75, hq);
-          vec3 hor = mix(uHor, uHorS, sunK), mid = mix(uMid, uMidS, sunK * 0.9), zen = mix(uZen, uZenS, sunK * 0.6);
-          vec3 col = mix(hor, mid, t1);
-          col = mix(col, zen, t2);
-          col = floor(col * 40.0 + bayer(cell + 7.0)) / 40.0;
-          // streaky clouds lit from below on the sun side
-          vec2 uv = vec2(cell.x / 160.0 / 6.2832 + 0.5, (h + 0.02) * 3.2);
-          vec4 c = texture2D(uClouds, uv);
-          if (h > -0.02 && h < 0.3) col = mix(col, mix(c.rgb * vec3(0.7, 0.62, 0.8), c.rgb * vec3(1.25, 0.95, 0.75), sunK), c.a * smoothstep(-0.02, 0.05, h));
-          // first stars away from the sun
-          float st = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
-          if (st > 0.9985 && h > 0.3) col += vec3(0.9, 0.9, 1.0) * (1.0 - sunK) * smoothstep(0.3, 0.6, h);
-          if (h < 0.0) col = mix(hor, hor * 0.7, smoothstep(0.0, -0.2, h));
+          float h = d.y, hl = max(length(d.xz), 1e-4);
+          float az = atan(d.z, d.x + 1e-5);
+          vec2 cell = vec2(floor(az * 200.0), floor(h * 300.0));
+          float sunK = max(0.0, dot(d.xz / hl, normalize(uSun.xz)));
+          float hq = h + (bayer(cell) - 0.5) / 70.0;
+          vec3 col = mix(uHor, uMid, smoothstep(0.0, 0.14, hq));
+          col = mix(col, uUp, smoothstep(0.12, 0.4, hq));
+          col = mix(col, uZen, smoothstep(0.35, 0.95, hq));
+          // warm glow band hugging the horizon toward the sun, and a soft halo around it
+          col = mix(col, uGlow, pow(sunK, 4.0) * (1.0 - smoothstep(0.0, 0.3, h)) * 0.9);
+          float sd = max(0.0, dot(d, uSun));
+          col += vec3(1.0, 0.86, 0.62) * (pow(sd, 24.0) * 0.35 + pow(sd, 400.0) * 1.6);
+          col = floor(col * 64.0 + bayer(cell + 5.0)) / 64.0;
+          // a few soft clouds: off-white tops, warm lit edges, blue-grey undersides
+          vec2 uv = vec2(cell.x / 200.0 / 6.2832 + 0.5, (h - 0.02) * 2.2);
+          if (uv.y > 0.0 && uv.y < 1.0) {
+            vec4 c = texture2D(uClouds, uv);
+            vec3 cc = mix(c.rgb, c.rgb * vec3(1.05, 0.96, 0.86), pow(sunK, 2.0) * 0.7);
+            col = mix(col, cc, c.a * smoothstep(0.02, 0.09, h) * 0.92);
+          }
+          if (h < 0.0) col = mix(uHor, uHor * 0.85, smoothstep(0.0, -0.2, h));
           gl_FragColor = vec4(col, 1.0);
         }`,
     });
@@ -1326,17 +1373,18 @@ export class Town {
     const p = townPix('skyline', 64, 128), pe = townPix('skylineE', 64, 128);
     void pe;
     const t = p.texture(); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / 8, 1 / 16);
-    const mat = new THREE.MeshBasicMaterial({ map: t, fog: false, vertexColors: true });
+    const mat = new THREE.MeshBasicMaterial({ map: t, fog: true, vertexColors: true });
     const B = new Batch();
-    for (let i = 0; i < 46; i++) {
-      const a = (i / 46) * Math.PI * 2 + hash2(i, 1) * 0.08;
-      const r = 58 + hash2(i, 2) * 12;
-      const x = Math.cos(a) * r, z = 9.6 + Math.sin(a) * r * 0.9;
-      const w = 6 + hash2(i, 3) * 10, h = 7 + hash2(i, 4) * 20 * (hash2(i, 6) < 0.3 ? 1.4 : 1);
-      const k = 0.55 + hash2(i, 5) * 0.35;
+    for (let i = 0; i < 54; i++) {
+      const a = (i / 54) * Math.PI * 2 + hash2(i, 1) * 0.06;
+      const r = 64 + hash2(i, 2) * 10;
+      if (Math.abs(Math.cos(a)) > 0.82) continue;
+      const x = Math.cos(a) * r, z = 9.6 + Math.sin(a) * r * 0.92;
+      const w = 5 + hash2(i, 3) * 9, h = 6 + hash2(i, 4) * 10 + (hash2(i, 6) < 0.18 ? 10 : 0);
+      const k = 0.8 + hash2(i, 5) * 0.3;
       B.push(x, 0, z, -a + Math.PI / 2);
-      B.box(mat, w, h, 6, 0, 0, 0, { tint: new THREE.Color(0x9a8090).multiplyScalar(k).getHex(), uv: [hash2(i, 7) * 8, 0] });
-      if (hash2(i, 8) < 0.35) B.box(mat, 0.3, 3, 0.3, w * 0.3, h, 0, { tint: 0x3a2a3a });
+      B.box(mat, w, h, 6, 0, 0, 0, { tint: new THREE.Color(0xffffff).multiplyScalar(k).getHex(), uv: [hash2(i, 7) * 8, 0] });
+      if (hash2(i, 8) < 0.35) B.box(mat, 0.3, 3, 0.3, w * 0.3, h, 0, { tint: 0x8a96a6 });
       B.pop();
     }
     B.build(this.group, { receive: false });
@@ -1447,23 +1495,28 @@ export class Town {
   }
 }
 
-/** Pixel cloud band for the sky dome (alpha = coverage). */
-class Pix64Clouds {
+/** Pixel cumulus band for the sky dome (u = azimuth, v = height above the horizon, alpha = coverage). */
+class SkyClouds {
   constructor() {
-    const w = 256, h = 64;
+    const w = 512, h = 64;
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
     const img = x.createImageData(w, h), d = img.data;
-    for (let i = 0; i < 40; i++) {
-      const cx = hash2(i, 1) * w, cy = 6 + hash2(i, 2) * 44, len = 18 + hash2(i, 3) * 60, th = 1 + Math.floor(hash2(i, 4) * 3);
-      for (let k = 0; k < len; k++) {
-        const px = Math.floor(cx + k) % w;
-        const hh = Math.max(1, Math.round(Math.sin((k / len) * Math.PI) * th + 0.4));
+    const put = (px, py, rgb, a) => { px = ((px % w) + w) % w; if (py < 0 || py >= h) return; const o = (py * w + px) * 4; if (d[o + 3] >= a) return; d[o] = rgb[0]; d[o + 1] = rgb[1]; d[o + 2] = rgb[2]; d[o + 3] = a; };
+    const TOP = [244, 239, 230], WARM = [255, 226, 184], UNDER = [141, 152, 168], MIDC = [214, 214, 210];
+    for (let i = 0; i < 13; i++) {
+      const cx = Math.floor(hash2(i, 1) * w), base = 54 - Math.floor(hash2(i, 2) * 34), W = 26 + Math.floor(hash2(i, 3) * 60), H = 4 + Math.floor(hash2(i, 4) * 8);
+      for (let k = 0; k < W; k++) {
+        const t = k / W;
+        const env = Math.sin(t * Math.PI) ** 0.6;
+        const bumps = 0.6 + 0.4 * Math.abs(Math.sin(t * 7.3 + i)) * Math.abs(Math.sin(t * 3.1 + i * 2));
+        const hh = Math.max(1, Math.round(H * env * bumps));
         for (let j = 0; j < hh; j++) {
-          const py = Math.floor(cy) - j;
-          if (py < 0 || py >= h) continue;
-          const o = (py * w + px) * 4, lit = j === 0;
-          d[o] = lit ? 255 : 236; d[o + 1] = lit ? 196 : 170; d[o + 2] = lit ? 160 : 168; d[o + 3] = 200;
+          const py = base - j;
+          let col = j < 2 ? UNDER : j < 3 ? MIDC : TOP;
+          if (j >= hh - 1 && t < 0.6) col = WARM;
+          const edge = k < 2 || k > W - 3 || j === hh - 1;
+          put(cx + k, py, col, edge ? 150 : 225);
         }
       }
     }
