@@ -66,7 +66,8 @@ class BGM {
   constructor() {
     this.current = null; // the playing track / playlist id
     this.voices = [];
-    this.ducks = new Map();
+    this.ducks = new Map(); // key -> level
+    this.ends = new Map(); // key -> audio time a timed duck ends
     this.want = null;
     audio.onReady(() => { if (this.want) this.play(...this.want); });
   }
@@ -136,17 +137,23 @@ class BGM {
   }
 
   /** Dip the music bed (radio on, dialogue...). Several callers can duck at once via `key`; the deepest wins. */
-  duck(on, amount = 0.25, key = 'default') {
-    if (on) this.ducks.set(key, amount); else this.ducks.delete(key);
+  duck(on, amount = 0.25, key = 'default', until = 0) {
+    if (on) { this.ducks.set(key, amount); if (until) this.ends.set(key, until); } else { this.ducks.delete(key); this.ends.delete(key); }
     if (!this.setup()) return;
-    const a = Math.min(1, ...this.ducks.values()), g = this.bus.gain, t = audio.ctx.currentTime;
-    g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(a, t + (on ? 0.4 : 1.2));
+    const g = this.bus.gain, t = audio.ctx.currentTime;
+    const level = (at) => Math.min(1, ...[...this.ducks].filter(([k]) => !(this.ends.get(k) <= at)).map(([, v]) => v));
+    g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(level(t), t + (on ? 0.4 : 1.2));
+    // timed ducks (stingers) are released on the audio clock, so a busy main thread can't hold the bed down
+    for (const e of [...this.ends.values()].filter((e) => e > t + 0.4).sort((a, b) => a - b)) {
+      g.setValueAtTime(level(e - 0.01), e); g.linearRampToValueAtTime(level(e), e + 1.2);
+    }
   }
 
   duckFor(sec, amount = 0.3) {
+    if (!this.setup()) return;
     const key = 'st' + Math.random();
-    this.duck(true, amount, key);
-    setTimeout(() => this.duck(false, 0, key), (sec + 0.3) * 1000);
+    this.duck(true, amount, key, audio.ctx.currentTime + sec);
+    setTimeout(() => { this.ducks.delete(key); this.ends.delete(key); }, (sec + 1.5) * 1000);
   }
 
   /** One-shot jingle over the bed (which dips while it plays). */

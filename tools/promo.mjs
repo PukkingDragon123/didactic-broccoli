@@ -58,6 +58,7 @@ await pg.evaluate((cam) => {
   const c = g.street.cat;
   c.pos.set(1.6, 0, 5.6); c.heading = 0.6; g.street.setCatState('sit', 1e9);
   g.cutscene.play(function* (cs) { while (true) yield cs.wait(1e9); }, { skippable: false, letterbox: false });
+  g.cutscene.hand = 0; // no handheld drift: GIF loops must line up
   window.__cam = cam;
   window.__frame = (i, n) => {
     const T = window.__game.camera.position.constructor;

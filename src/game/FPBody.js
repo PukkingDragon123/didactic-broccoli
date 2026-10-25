@@ -31,12 +31,12 @@ const ARM_BONES = new Set(['armL', 'foreL', 'armR', 'foreR'].map((b) => BONE_IND
 // ---------------------------------------------------------------- hand model (left hand, hand-bone space, 1.72 m adult)
 // rest frame = the Human's: fingers point -y, the palm faces -x (towards the body), the thumb is on +z
 const FING = [ // knuckle [z, y], phalanx lengths, half width (z), half thickness (x)
-  { k: [0.026, -0.08], len: [0.034, 0.022, 0.018], w: 0.0084, t: 0.0078 },
-  { k: [0.0085, -0.083], len: [0.037, 0.025, 0.019], w: 0.0088, t: 0.008 },
-  { k: [-0.009, -0.081], len: [0.035, 0.023, 0.018], w: 0.0082, t: 0.0075 },
-  { k: [-0.0255, -0.075], len: [0.027, 0.017, 0.015], w: 0.0071, t: 0.0067 },
+  { k: [0.026, -0.08], len: [0.034, 0.022, 0.018], w: 0.0092, t: 0.0083 },
+  { k: [0.0085, -0.083], len: [0.037, 0.025, 0.019], w: 0.0096, t: 0.0086 },
+  { k: [-0.009, -0.081], len: [0.035, 0.023, 0.018], w: 0.009, t: 0.0081 },
+  { k: [-0.0255, -0.075], len: [0.027, 0.017, 0.015], w: 0.0079, t: 0.0073 },
 ];
-const THUMB = { base: [-0.005, -0.012, 0.019], len: [0.038, 0.03, 0.026], w: 0.0098, t: 0.0088 };
+const THUMB = { base: [-0.005, -0.012, 0.019], len: [0.038, 0.03, 0.026], w: 0.0106, t: 0.0092 };
 const T_RELAX = new THREE.Vector3(-0.3, -0.82, 0.5).normalize();
 const T_OPPOSE = new THREE.Vector3(-0.62, -0.78, 0.06).normalize();
 const T_TOWARD = new THREE.Vector3(-0.35, -0.1, -1).normalize(); // where the thumb curls to
@@ -559,6 +559,10 @@ export class FPBody {
   }
 
   setGrip(H, W, contact, palm, dir, f, opts = {}) {
+    // out of reach (a handle across the room, an item still flying in): slide it along the eye ray, so the hand
+    // still covers it on screen
+    const d = contact.length(), max = 0.52 * this.bs;
+    if (d > max) contact.multiplyScalar(max / d);
     this.handQ(H.sd, palm, dir, W.q, opts.axis);
     this.wrist(H, contact, W.q, opts.at || PALM_C, W.p);
     for (let i = 0; i < 5; i++) W.f[i] = f[i] ?? 0;
@@ -623,7 +627,7 @@ export class FPBody {
       const sx = this.size(0), sz = this.size(2);
       this.idir(sx > sz ? 1 : 0, 0, sx > sz ? 0 : 1, _v2);
       if (_v2.z > 0) _v2.negate();
-      this.ip(0.5, 0.86, 0.5, c);
+      this.ip(0.5, 0.86, 0.5, c).x -= 0.03;
       const st = purr > 0 ? Math.sin(this.t * 7.5) : 0;
       c.addScaledVector(_v2, st * 0.04).addScaledVector(up, (purr > 0 ? 0.008 * (1 - Math.cos(this.t * 7.5)) : 0) + 0.004);
       this.setGrip(H, W, c, up.clone().negate(), _v2, [0.18, 0.35, 0.2, 0.1]);
@@ -718,7 +722,7 @@ export class FPBody {
     this.toAnchor(_v.set(sd * -(nb.w * 0.86), -nb.h * 0.36, -0.01).applyMatrix4(half.matrixWorld), c);
     const fwd = this.dirToAnchor(_v.set(0, 0, 1).applyQuaternion(half.getWorldQuaternion(_q)), _v3);
     const upB = this.dirToAnchor(_v.set(-sd * 0.35, 1, 0).applyQuaternion(_q), _v2);
-    this.setGrip(H, W, c, fwd, upB, [0.22, 0.25, 0.85, 0.35]);
+    this.setGrip(H, W, c, fwd, upB, [0.28, 0.08, 0.85, 0.35]);
     return 'read';
   }
 
@@ -828,7 +832,7 @@ export class FPBody {
         const o = a.obj;
         if (!a.from) { a.from = o.position.clone(); a.fromQ = o.quaternion.clone(); }
         const reach = outCubic(Math.min(1, k / 0.35)), turn = smooth((k - 0.42) / 0.25);
-        o.position.copy(a.from).lerp(_v.set(0.04, -0.22, -0.46), reach);
+        o.position.copy(a.from).lerp(_v.set(0.05, -0.13, -0.42), reach);
         o.quaternion.copy(a.fromQ).slerp(_q.setFromEuler(_e.set(0.4, -0.2, 0)), reach).premultiply(_q2.setFromAxisAngle(Z, -turn * Math.PI / 2));
         if (turn > 0.3 && !a.clicked) { a.clicked = true; audio.play('keyTurn', { vol: 0.45 }); }
         return null; // the pinch grip on the key does the rest
@@ -925,7 +929,7 @@ export class FPBody {
     const cosA = clamp((a * a + l * l - c * c) / (2 * a * l), -1, 1), sinA = Math.sqrt(1 - cosA * cosA);
     // elbows out and down (body frame)
     this.rig.getWorldQuaternion(_q3).invert();
-    const pole = _v4.set(H.sd * 0.85, -1, -0.3).applyQuaternion(_q.copy(_q3).multiply(this.human.root.quaternion));
+    const pole = _v4.set(H.sd * 0.55, -1, -0.35).applyQuaternion(_q.copy(_q3).multiply(this.human.root.quaternion));
     pole.addScaledVector(dn, -pole.dot(dn));
     if (pole.lengthSq() < 1e-6) pole.set(H.sd, 0, 0);
     pole.normalize();

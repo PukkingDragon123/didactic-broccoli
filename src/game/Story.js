@@ -582,9 +582,14 @@ export class Story {
     yield c.title('OPEN FOR BUSINESS', '', 2.4);
     // party: everybody dances, the camera circles the crowd
     bgm.play('party', { fade: 0.6 });
-    const dance = (a, i) => a.h.gesture(GESTURES.dance ? 'dance' : 'cheer', { bpm: BPM, phase: 0, seed: i });
+    // everyone on the same beat: the song's own clock when it plays, else the scene's
+    let songT = 0;
+    c.every((dt) => { songT += dt; });
+    const beat0 = TRACKS.party?.beat0 || 0;
+    const clock = () => (bgm.time ?? songT) - beat0;
+    const dance = (a) => a.h.gesture(GESTURES.dance ? 'dance' : 'cheer', { bpm: BPM, clock });
     crowd.forEach(dance);
-    g.street?.setCatState?.('groove', 30, { bpm: BPM });
+    g.street?.setCatState?.('groove', 30, { bpm: BPM, clock });
     let t = 0;
     yield c.until((dt) => {
       t += dt;
@@ -592,7 +597,6 @@ export class Story {
       const k = t / 7.5;
       c.pos.set(-1.6 + k * 3.2, 1.55 + Math.sin(t * 0.6) * 0.1, z - 0.4 + Math.sin(k * Math.PI) * 0.5);
       c.look.set(-0.3 + k * 0.6, 1.05, z + 3.0);
-      if (!GESTURES.dance && t % 2.2 < dt) crowd.forEach(dance);
       return t > 7.5;
     });
     const keeper = g.pedestrians?.keeper;

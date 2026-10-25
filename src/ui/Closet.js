@@ -158,7 +158,7 @@ export class Closet {
   }
 
   get saved() { return (this.game.state.avatar = normalizeAvatar(this.game.state.avatar)); }
-  sfx(n, v = 0.5) { try { audio.init(); audio.play(n, { vol: v }); } catch { /* audio not ready */ } }
+  sfx(n, v = 0.5) { try { audio.play(n, { vol: v }); } catch { /* audio not ready */ } }
 
   /** Screen rectangle the panel leaves free (the character is framed inside it). */
   freeRect() {
