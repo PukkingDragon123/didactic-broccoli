@@ -349,7 +349,9 @@ export class FPBody {
   }
 
   give(hitWorld) {
-    const at = hitWorld ? this.toAnchor(hitWorld, V()) : V().set(0.05, -0.05, -0.8);
+    let at = hitWorld ? this.toAnchor(hitWorld, V()) : null;
+    if (!at || at.z > -0.25) at = V().set(0.05, -0.05, -0.8); // someone beside / behind you: just hold it out
+    at.y = Math.max(at.y, -0.18);
     this.play('give', 0.85, { at, hand: this.freeHand() });
   }
 
@@ -634,23 +636,19 @@ export class FPBody {
       return 'toy';
     }
     if (kind === 'cat') {
-      this.idir(0, 1, 0, up);
-      if (R) {
-        this.ip(0.5, 0.04, 0.5, c);
-        this.setGrip(H, W, c, up, N(-0.45, 0, -1, _v2), [0.32, 0.35, 0.25, 0.2]);
-        return 'cat';
+      // held up under her front legs, a hand either side of her chest; petting, the free hand strokes her head
+      const petting = this.game.time - (held.petT ?? -9) < 1.3;
+      if (!R && petting) {
+        const st = Math.sin(this.t * 7.5);
+        this.ip(0.5, 0.96, 0.55, c);
+        c.z += st * 0.03; c.y += 0.012 + 0.008 * (1 - Math.cos(this.t * 7.5));
+        this.setGrip(H, W, c, N(0.2, -1, 0.1, a), N(0.25, 0.1, -1, _v2), [0.2, 0.35, 0.2, 0.1]);
+        return 'pet';
       }
-      // the other hand only comes in to stroke her back when you pet her
-      const purr = Math.max(0, 1.3 - (this.game.time - (this.game.held.petT ?? -9)));
-      if (purr <= 0) return null;
-      const sx = this.size(0), sz = this.size(2);
-      this.idir(sx > sz ? 1 : 0, 0, sx > sz ? 0 : 1, _v2);
-      if (_v2.z > 0) _v2.negate();
-      this.ip(0.5, 0.86, 0.5, c).x -= 0.03;
-      const st = purr > 0 ? Math.sin(this.t * 7.5) : 0;
-      c.addScaledVector(_v2, st * 0.04).addScaledVector(up, (purr > 0 ? 0.008 * (1 - Math.cos(this.t * 7.5)) : 0) + 0.004);
-      this.setGrip(H, W, c, up.clone().negate(), _v2, [0.18, 0.35, 0.2, 0.1]);
-      return 'pet';
+      this.ip(0.5, 0.66, 0.5, c);
+      c.x += (R ? 1 : -1) * 0.068 * this.IS;
+      this.setGrip(H, W, c, N(R ? -1 : 1, 0.2, 0, a), N(R ? -0.15 : 0.15, 0.75, -0.55, _v2), [0.38, 0.3, 0.35, 0.2]);
+      return 'cat';
     }
     if (kind === 'box' && tool !== 'trash_bag' || pose === 'box' && !tool) {
       // flat hands on the sides, near the front corners
