@@ -177,10 +177,11 @@ export class Street {
     audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.6, pitch: 1.2 });
   }
 
-  setCatState(st, dur) {
+  /** 'groove' sits and bobs along to a beat: opts { bpm, phase, clock } (see CatRig.setPose). */
+  setCatState(st, dur, opts) {
     const c = this.cat;
     c.state = st; c.t = 0; c.dur = dur;
-    c.rig.setPose(st === 'approach' || st === 'walk' || st === 'flee' || st === 'bowl' ? 'walk' : st === 'hide' ? 'sit' : st);
+    c.rig.setPose(st === 'approach' || st === 'walk' || st === 'flee' || st === 'bowl' ? 'walk' : st === 'hide' ? 'sit' : st, opts);
   }
 
   // ---- story hooks: the shy stray inside the garage
@@ -255,7 +256,7 @@ export class Street {
     }
     if (c.state === 'drink' && !c.wild && c.t > c.dur) this.setCatState('sit', 6);
     // sitting cats watch you
-    if ((c.state === 'sit' || c.state === 'hide') && toPlayer < 4) {
+    if ((c.state === 'sit' || c.state === 'hide' || c.state === 'groove') && toPlayer < 4) {
       const want = Math.atan2(pl.x - c.pos.x, pl.z - c.pos.z) - c.g.rotation.y;
       c.rig.lookYaw += ((((want + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * 0.8 - c.rig.lookYaw) * Math.min(1, dt * 3);
       c.rig.lookYaw = Math.max(-0.9, Math.min(0.9, c.rig.lookYaw));

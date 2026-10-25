@@ -1,6 +1,9 @@
 // Renderer + post-processing stack (GTAO, bloom, colour grade, tone mapping, FXAA) with quality presets.
+// Viewmodel: whatever hangs off the camera (hands + held items, see vmRoots) is drawn in its own pass on top of the
+// scene so it never pokes into walls.
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { Pass } from 'three/addons/postprocessing/Pass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -101,6 +104,37 @@ class OutlinePass extends ShaderPass {
   }
 }
 
+export const VM_LAYER = 4;
+// the viewmodel is depth-tested as if VM_DEPTH times closer: only clip z changes (x/y, lighting and fog stay true), so it
+// sits in front of any wall the player can touch while depth ratios (ink outlines, creases) stay exactly the same
+export const VM_DEPTH = 0.45;
+
+class ViewmodelPass extends Pass {
+  constructor(scene, camera) {
+    super();
+    this.scene = scene; this.camera = camera;
+    this.needsSwap = false;
+    this.cam = new THREE.PerspectiveCamera();
+    this.cam.layers.set(VM_LAYER);
+    this.cam.matrixWorldAutoUpdate = false;
+  }
+  render(renderer, writeBuffer, readBuffer) {
+    const c = this.camera, v = this.cam, s = this.scene;
+    v.matrixWorld.copy(c.matrixWorld); v.matrixWorldInverse.copy(c.matrixWorldInverse);
+    v.projectionMatrix.copy(c.projectionMatrix);
+    v.projectionMatrix.elements[14] /= VM_DEPTH;
+    v.projectionMatrixInverse.copy(v.projectionMatrix).invert();
+    const bg = s.background, au = s.matrixWorldAutoUpdate, ac = renderer.autoClear;
+    s.background = null; s.matrixWorldAutoUpdate = false; renderer.autoClear = false;
+    renderer.setRenderTarget(this.renderToScreen ? null : readBuffer);
+    renderer.render(s, v);
+    s.background = bg; s.matrixWorldAutoUpdate = au; renderer.autoClear = ac;
+  }
+}
+const toVM = (o) => { if (o.isLight) o.layers.enable(VM_LAYER); else o.layers.set(VM_LAYER); };
+const toMain = (o) => { if (!o.isLight) o.layers.set(0); };
+const lightToVM = (o) => { if (o.isLight) o.layers.enable(VM_LAYER); };
+
 export const QUALITY = {
   low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3 },
   medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2 },
@@ -124,6 +158,8 @@ export class Renderer {
     this.composer = null;
     this.scene = null;
     this.camera = null;
+    this.vmRoots = new Set(); // subtrees drawn by the viewmodel pass (layers are switched just for the frame)
+    this.aoCam = new THREE.PerspectiveCamera(); // GTAO sees the scene + the viewmodel
   }
 
   setup(scene, camera) {
@@ -145,12 +181,13 @@ export class Renderer {
     rt.depthTexture.type = THREE.UnsignedIntType;
     const composer = new EffectComposer(r, rt);
     composer.addPass(new RenderPass(this.scene, this.camera));
+    composer.addPass(new ViewmodelPass(this.scene, this.camera));
     this.outline = new OutlinePass(this.camera);
     this.outline.uniforms.uWidth.value = Math.max(1, r.getPixelRatio());
     composer.addPass(this.outline);
     this.gtao = null;
     if (q.ao) {
-      const gtao = new GTAOPass(this.scene, this.camera, size.x, size.y);
+      const gtao = new GTAOPass(this.scene, this.aoCam, size.x, size.y);
       gtao.output = GTAOPass.OUTPUT.Default;
       gtao.blendIntensity = 0.85;
       gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
@@ -211,6 +248,11 @@ export class Renderer {
     for (const l of this.shadowLights || []) if (l.castShadow && !l.shadow.map) need = true;
     if (need) r.shadowMap.needsUpdate = true;
     this.grade.uniforms.uTime.value = time;
+    // lights must light both passes; new ones are picked up within a few frames
+    if (this.frameN % 8 === 1) this.scene.traverse(lightToVM);
+    if (this.gtao) { this.aoCam.copy(this.camera, false); this.aoCam.layers.enable(VM_LAYER); }
+    for (const o of this.vmRoots) o.traverse(toVM);
     this.composer.render(dt);
+    for (const o of this.vmRoots) o.traverse(toMain);
   }
 }

@@ -39,6 +39,8 @@ export function defaultState() {
     radio: -1,
     lightsOn: false,
     seed: Math.floor(Math.random() * 1e9),
+    // the player's character (src/people/avatar.js): base look + equipped (hat / outfit / face) and owned cosmetics
+    avatar: { v: 1, seed: 7, body: 'm', skin: 'light', hair: 'messy', hairCol: 'black', top: 'tee', topCol: 'tomato', bottom: 'jeans', hat: null, outfit: null, face: null, owned: [] },
   };
 }
 
@@ -61,6 +63,8 @@ export function loadState() {
     s.settings = { ...d.settings, ...s.settings };
     s.museum = { ...d.museum, ...s.museum };
     s.stats = { ...d.stats, ...s.stats };
+    s.avatar = { ...d.avatar, ...s.avatar };
+    if (!Array.isArray(s.avatar.owned)) s.avatar.owned = [];
     return s;
   } catch (e) {
     console.warn('save load failed', e);

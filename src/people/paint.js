@@ -90,9 +90,10 @@ function makePainters(spec, P) {
   const topHem = {
     suit: P.crotchY + 0.03 * H, blazer: P.hipY + 0.015 * H, gakuran: P.hipY + 0.004 * H, sailor: P.pelvisY - 0.008 * H, cardigan: P.hipY,
     knit: P.hipY + 0.012 * H, jacket: P.hipY + 0.01 * H, workjacket: P.hipY + 0.005 * H,
+    onesie: P.crotchY - 0.006 * H, happi: P.hipY - 0.012 * H, // costumes (cosmetics.js)
   }[T.kind] ?? (T.tuck ? waist : P.hipY + 0.022 * H);
   const sleeve = T.sleeve || (['tee', 'aloha', 'polo'].includes(T.kind) ? 'short' : 'long');
-  const cuffY = sleeve === 'short' ? P.elbowY + (T.kind === 'tee' && T.fitted ? 0.085 : 0.065) * H : P.wristY + 0.008 * H;
+  const cuffY = sleeve === 'short' ? P.elbowY + (T.kind === 'tee' && T.fitted ? 0.085 : 0.065) * H : sleeve === 'mid' ? P.elbowY - 0.055 * H : P.wristY + 0.008 * H;
   const skirt = Bt.kind === 'skirt';
   const botHem = Bt.kind === 'shorts' ? P.kneeY + (spec.age === 'kid' ? 0.075 : 0.05) * H : skirt ? Infinity : P.ankleY + 0.01 * H;
   const sockTop = spec.legs === 'kneesocks' ? P.kneeY - 0.025 * H : spec.legs === 'loosesocks' ? P.ankleY + 0.11 * H : spec.socks ? P.ankleY + 0.055 * H : 0;
@@ -192,7 +193,7 @@ function makePainters(spec, P) {
     else if (k === 'polo' || k === 'jacket' || k === 'blazer' || k === 'cardigan' || k === 'blouse') {
       col = k === 'polo' ? T.col : k === 'jacket' ? T.col : T.shirt || T.col; top = base + 0.022 * H;
       if ((k === 'blazer' || k === 'cardigan' || k === 'blouse') && front(c)) top = base + 0.008 * H;
-    } else if (k === 'knit' || k === 'tee' || k === 'sailor') { col = k === 'sailor' ? (T.col[0] > 128 ? T.col : T.col) : T.col; top = base + 0.006 * H; }
+    } else if (k === 'knit' || k === 'tee' || k === 'sailor' || k === 'onesie') { col = k === 'sailor' ? (T.col[0] > 128 ? T.col : T.col) : T.col; top = base + 0.006 * H; }
     if (!col || c.y > top) return;
     // open V at the throat for collared shirts without a tie
     if (!tie && k !== 'gakuran' && front(c) && Math.abs(c.x) < (c.y - base) * 0.9 + 0.004 && k !== 'knit' && k !== 'tee') return;
@@ -246,7 +247,9 @@ function makePainters(spec, P) {
     }
     shadeInto(o, col, kk);
     // hem shadow (top overhangs the trousers) + hem line
-    if (!arm && Math.abs(c.y - topHem) < c.px * 1.5 && k !== 'sailor') over(o, INK, 0.25);
+    if (!arm && Math.abs(c.y - topHem) < c.px * 1.5 && k !== 'sailor' && k !== 'onesie') over(o, INK, 0.25);
+    if (k === 'onesie' && T.spots && vnoise(around(c) * 34 + (arm ? 7 : 0), c.y * 34, 5) > 0.72) shadeInto(o, T.spots, kk * (T.spotK || 1));
+    if (k === 'happi' && arm && c.y - cuffY < 0.02 * H) { shadeInto(o, T.col3, kk); if (Math.abs(c.y - cuffY - 0.02 * H) < c.px * 0.7) over(o, INK, 0.3); }
     if (arm && sleeve === 'short' && c.y - cuffY < 0.012 * H) { if (k === 'polo' || k === 'tee') { scaleO(o, c.i % 2 ? 0.92 : 1.02); } if (Math.abs(c.y - cuffY - 0.012 * H) < c.px * 0.6) over(o, INK, 0.25); }
     if (arm && sleeve === 'long' && c.y - cuffY < 0.025 * H && ['cardigan', 'knit', 'workjacket', 'jacket', 'flannel', 'sailor', 'gakuran'].includes(k)) {
       if (k === 'sailor') { shadeInto(o, T.collar, kk); const q = (c.y - cuffY) / (0.025 * H); if (Math.abs(q - 0.45) < 0.12 || Math.abs(q - 0.75) < 0.12) shadeInto(o, T.stripe, kk); }
@@ -353,6 +356,36 @@ function makePainters(spec, P) {
       if (k === 'blouse' && T.cardigan) { /* open cardigan over the blouse */
         if (ax > 0.045 * H) { shadeInto(o, T.cardigan, bodyK(c) * fabricK(c, 'knit')); if (Math.abs(ax - 0.045 * H) < c.px) over(o, INK, 0.4); }
       }
+      return;
+    }
+    if (k === 'onesie') {
+      // animal suit: a soft belly panel (with plate stripes) and a zip up the front
+      if (T.col2 && fr) {
+        const by = (P.bustY + P.crotchY) / 2, bh = (P.bustY - P.crotchY) / 2 + 0.01 * H, bw = P.waistX * 0.8;
+        const q = (c.x / bw) ** 2 + ((c.y - by) / bh) ** 2;
+        if (q < 1) { shadeInto(o, T.col2, bodyK(c) * fabricK(c, 'knit') * (Math.floor((c.y - by) / (0.024 * H)) % 2 ? 0.93 : 1)); if (q > 0.88) over(o, INK, 0.2); }
+      }
+      if (fr && ax < c.px * 0.7 && c.y > P.hipY && c.y < yN) over(o, [120, 120, 126], 0.45);
+      return;
+    }
+    if (k === 'happi') {
+      // open front over a white undershirt, a contrasting collar band (eri) down both edges, a sash and a hem border
+      const ex = 0.014 * H + (yN - c.y) * 0.16, bw = 0.022 * H;
+      if (fr && ax < ex && c.y < yN - 0.004 * H) { innerPx(c, o, { kind: 'tee', col: [246, 244, 238] }); return; }
+      const band = (fr && ax < ex + bw) || (!fr && c.y > yN - 0.03 * H && (c.part === 'traps' || c.part === 'chestHi'));
+      if (band) {
+        shadeInto(o, T.col2, bodyK(c) * fabricK(c, 'cotton'));
+        if (fr && Math.abs(((c.y / (0.03 * H)) % 1) - 0.5) < 0.12 && Math.abs(ax - ex - bw / 2) < bw * 0.28) over(o, T.col3, 0.9);
+        if (fr && Math.abs(ax - ex - bw) < c.px) over(o, INK, 0.35);
+      } else {
+        // a little white cross pattern + the hem border
+        const u = around(c) / (0.034 * H), v = c.y / (0.034 * H), du = u - Math.round(u), dv = v - Math.round(v);
+        if ((Math.abs(du) < 0.06 && Math.abs(dv) < 0.2) || (Math.abs(dv) < 0.06 && Math.abs(du) < 0.2)) over(o, T.col3, 0.75);
+        if (c.y < topHem + 0.024 * H) { shadeInto(o, T.col3, bodyK(c)); const w = Math.sin(around(c) * 180) * 0.004 * H; if (Math.abs(c.y - topHem - 0.012 * H - w) < c.px * 0.8) over(o, T.col2, 0.9); }
+      }
+      // the sash
+      const sy = P.pelvisY + 0.012 * H;
+      if (Math.abs(c.y - sy) < 0.014 * H) { shadeInto(o, T.col2, bodyK(c) * (Math.abs(c.y - sy) < 0.004 * H ? 1.08 : 1)); if (Math.abs(Math.abs(c.y - sy) - 0.014 * H) < c.px) over(o, INK, 0.3); }
       return;
     }
     if (k === 'tee' || k === 'knit') {

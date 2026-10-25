@@ -6,6 +6,7 @@ import { Physics } from '../core/physics.js';
 import { Tweens, Emitter, formatYen } from '../core/util.js';
 import { audio } from '../core/audio.js';
 import { radio } from '../core/music.js';
+import { bgm } from '../core/bgm.js';
 import { timeUniform } from '../voxel/materials.js';
 import { Effects } from '../gfx/effects.js';
 import { Thumbs } from '../gfx/thumbs.js';
@@ -27,6 +28,7 @@ import { itemValue, capsuleCost, CHARMS, OPENERS } from './economy.js';
 import { SERIES, SERIES_BY_ID, getItem } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { Story } from './Story.js';
+import { Guide } from './Guide.js';
 import { Cutscene } from './Cutscene.js';
 import { Notebook } from './Notebook.js';
 import { Hotbar } from '../ui/Hotbar.js';
@@ -104,6 +106,7 @@ export class Game {
     this.goods = new Goods(this);
     this.story.init();
     this.hotbar = new Hotbar(this);
+    this.guide = new Guide(this);
     this.bubbles = new Bubbles(this.camera, document.body);
     this.pedestrians = new Pedestrians(this);
     progress(0.9);
@@ -111,9 +114,9 @@ export class Game {
     this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
     if (!this.story.done && !this.state.story.shutter) {
       // a new story: you're standing in the lane in front of Grandpa's locked shutter
-      this.player.pos.set(0.4, 0, GARAGE.maxZ + 2.8);
+      this.player.pos.set(0.4, 0, GARAGE.maxZ + 4.2);
       this.player.yaw = 0;
-      this.player.pitch = 0.08;
+      this.player.pitch = 0.1;
     } else {
       this.player.pos.set(0.4, 0, 2.6);
       this.player.yaw = 0.55;
@@ -202,7 +205,12 @@ export class Game {
     if (cs?.counter) this.interaction.add(cs.counter, {
       reach: 2.6,
       hint: () => ({ key: 'LMB', text: 'Shop at Mikawa-ya', sub: 'Milk, brooms, tools, batteries, flyers' }),
-      use: () => { if (this.shopUI) this.shopUI.open('corner'); else this.news('The shop is closed right now'); return false; },
+      use: () => {
+        if (!this.shopUI) { this.news('The shop is closed right now'); return false; }
+        // the first time: say hello to the shopkeeper behind the counter
+        if (!this.state.flags.metKeeper && this.pedestrians?.keeper) { this.state.flags.metKeeper = true; this.cutscene.play((c) => this.story.meetKeeperScene(c)).then(() => this.shopUI.open('corner')); } else this.shopUI.open('corner');
+        return false;
+      },
     });
     // light switch
     this.interaction.add(G.lightSwitch, {
@@ -456,8 +464,11 @@ export class Game {
     this.ambience = {
       room: A('roomtone', 0.25),
       hum: A('hum', 0.012, new THREE.Vector3(0, 2.9, 0)),
-      traffic: A('traffic', 0.12, new THREE.Vector3(0, 1, 12)),
+      traffic: A('traffic', 0.12, new THREE.Vector3(0, 1, 12)), // recorded street ambience once loaded
+      birds: A('birds', 0.07, new THREE.Vector3(-3, 6, 15)),
+      cicadas: A('cicadas', 0.06, new THREE.Vector3(5, 5, 18)),
     };
+    if (!bgm.current) bgm.play('garage', { fade: 3 }); // background music (main.js normally starts it with the fly-in)
     if (this.state.radio >= 0) radio.setStation(this.state.radio);
   }
 
@@ -503,6 +514,7 @@ export class Game {
     this.held.update(dt);
     this.notebook.update(dt);
     this.story.update(dt);
+    this.guide?.update(dt);
     this.physics.step(dt);
     for (const m of this.machines) m.update(dt, this.time);
     this.street.update(dt, this.time);

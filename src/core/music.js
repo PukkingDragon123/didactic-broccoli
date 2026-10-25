@@ -1,26 +1,30 @@
-// Procedural radio: three "stations" of generated music (lo-fi, city-pop, chiptune) played from the garage radio.
+// The garage radio: three stations (lo-fi, city-pop, chiptune) of real tracks (public/audio/music/radio_*,
+// see CREDITS.md) heard through a small band-limited, crackly speaker at the radio's position.
+// If a track can't be streamed the station falls back to generated music.
 import { audio } from './audio.js';
+import { bgm, Stream } from './bgm.js';
 
 const NOTE = (n) => 440 * Math.pow(2, (n - 69) / 12);
 
-// chord = [root midi, intervals...]
+// tracks: files in public/audio/music; chord = [root midi, intervals...] for the generated fallback
 const STATIONS = [
   {
-    name: 'FM Kissa 82.5', jp: '喫茶ローファイ', bpm: 76, swing: 0.58,
+    name: 'FM Kissa 82.5', jp: '喫茶ローファイ', bpm: 76, swing: 0.58, tracks: ['radio_lofi1', 'radio_lofi2'],
     prog: [[53, 0, 4, 7, 11, 14], [55, 0, 4, 7, 10, 14], [52, 0, 3, 7, 10, 14], [50, 0, 3, 7, 10, 14]], // royal road in F: Bbmaj9 C9 Am9 Dm9
     drums: 'lofi', lead: 'bell', ep: true,
   },
   {
-    name: 'Night Drive 89.1', jp: 'シティポップ', bpm: 104, swing: 0.5,
+    name: 'Night Drive 89.1', jp: 'シティポップ', bpm: 104, swing: 0.5, tracks: ['radio_city1'],
     prog: [[50, 0, 3, 7, 10, 14], [55, 0, 4, 7, 10, 14, 21], [48, 0, 4, 7, 11, 14], [57, 0, 3, 7, 10]], // Dm9 G13 Cmaj9 Am7
     drums: 'pop', lead: 'synth', ep: true,
   },
   {
-    name: 'Retro 8bit 77.7', jp: 'ピコピコ', bpm: 128, swing: 0.5,
+    name: 'Retro 8bit 77.7', jp: 'ピコピコ', bpm: 128, swing: 0.5, tracks: ['radio_chip1'],
     prog: [[48, 0, 4, 7], [45, 0, 3, 7], [53, 0, 4, 7], [55, 0, 4, 7]],
     drums: 'chip', lead: 'square', ep: false,
   },
 ];
+const STREAM_VOL = 0.42; // real tracks are mastered much louder than the generated ones
 
 export class Radio {
   constructor() {
@@ -45,6 +49,7 @@ export class Radio {
   setStation(i) {
     this.stop();
     this.station = i;
+    bgm.duck(i >= 0, 0.2, 'radio'); // the background music steps aside while the radio plays
     if (i < 0 || !audio.ready) return;
     const ctx = audio.ctx;
     // radio voicing: band-limited, slightly saturated, positional at the radio
@@ -60,17 +65,38 @@ export class Radio {
     this.in.connect(hp).connect(lp).connect(shaper).connect(this.out);
     this.crackle(i);
     this.def = STATIONS[i];
+    audio.play('relay', { pos: this.pos, vol: 0.4 });
+    this.ti = Math.floor(Math.random() * this.def.tracks.length);
+    if (!this.stream(true)) this.generate();
+  }
+
+  /** Stream the station's current track into the radio speaker; tune in mid-song the first time. */
+  stream(first) {
+    try {
+      const s = new Stream(`audio/music/${this.def.tracks[this.ti]}.mp3`, this.in, STREAM_VOL);
+      s.onfail = () => { if (this.cur !== s) return; s.dispose(); this.cur = null; if (this.def && !this.timer) this.generate(); };
+      s.onended = () => { if (this.cur !== s) return; s.dispose(); this.ti = (this.ti + 1) % this.def.tracks.length; this.stream(false); };
+      if (first) s.seekRandom();
+      s.play();
+      this.cur = s;
+      return true;
+    } catch (e) { console.warn('radio', e); return false; }
+  }
+
+  /** Fallback: generated music in the station's style. */
+  generate() {
+    const ctx = audio.ctx;
     this.step = 0;
     this.nextTime = ctx.currentTime + 0.4;
     this.bar = 0;
     this.melodyNote = 72;
-    audio.play('relay', { pos: this.pos, vol: 0.4 });
     this.timer = setInterval(() => this.schedule(), 40);
   }
 
   stop() {
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
+    if (this.cur) { this.cur.kill(0.08); this.cur = null; }
     if (this.crackleSrc) { try { this.crackleSrc.stop(); } catch { /* */ } this.crackleSrc = null; }
     if (this.out) {
       const o = this.out;
@@ -193,3 +219,4 @@ export class Radio {
 }
 
 export const radio = new Radio();
+if (/[?&](debug|autotest)\b/.test(location.search)) window.__radio = radio;

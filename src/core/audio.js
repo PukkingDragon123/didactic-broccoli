@@ -1,4 +1,5 @@
-// Procedural Web Audio sound engine: every sound in the game is synthesised at runtime.
+// Web Audio sound engine: recorded samples (public/audio, see CREDITS.md) with a procedural synth
+// version of every sound as the fallback (used while samples load, or if they can't be decoded).
 import * as THREE from 'three';
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -11,7 +12,15 @@ export class AudioEngine {
     this.volumes = { master: 0.8, sfx: 0.9, music: 0.55, ambience: 0.7 };
     this.loops = new Map();
     this._lastPlay = new Map();
+    this.buffers = new Map(); // 'sfx/coin_clink1' -> AudioBuffer
+    this._loading = new Map(); // key -> Promise<AudioBuffer|null>
+    this._lastVar = new Map();
+    this._readyFns = [];
+    this.samplesLoaded = 0; this.samplesFailed = 0; this.samplesTotal = 0;
   }
+
+  /** Run fn once the AudioContext exists (immediately if it already does). */
+  onReady(fn) { if (this.ready) fn(); else this._readyFns.push(fn); }
 
   init() {
     if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
@@ -38,6 +47,88 @@ export class AudioEngine {
     this.brown = this.makeNoise(4, 'brown');
     this.applyVolumes();
     this.ready = true;
+    for (const fn of this._readyFns.splice(0)) { try { fn(); } catch (e) { console.warn(e); } }
+    setTimeout(() => this.preload(), 50); // fetch + decode the samples in the background
+  }
+
+  // ---------------------------------------------------------------- recorded samples
+  /** Fetch + decode one file ('sfx/coin_clink1' -> audio/sfx/coin_clink1.mp3); resolves null on failure. */
+  loadBuffer(key) {
+    if (this.buffers.has(key)) return Promise.resolve(this.buffers.get(key));
+    if (this._loading.has(key)) return this._loading.get(key);
+    const p = (async () => {
+      try {
+        const res = await fetch(`audio/${key}.mp3`);
+        if (!res.ok) throw new Error(res.status + ' ' + key);
+        const data = await res.arrayBuffer();
+        const buf = await new Promise((ok, fail) => { const r = this.ctx.decodeAudioData(data, ok, fail); r?.catch?.(fail); });
+        buf._head = leadIn(buf); // skip MP3 encoder padding if the decoder kept it
+        this.buffers.set(key, buf);
+        this.samplesLoaded++;
+        return buf;
+      } catch (e) {
+        this.samplesFailed++;
+        if (this.samplesFailed <= 3) console.warn('audio: sample unavailable, using synth', key, e?.message || e);
+        return null;
+      }
+    })();
+    this._loading.set(key, p);
+    return p;
+  }
+
+  /** Load every sample in the background, a few at a time (UI and common sounds first). */
+  async preload() {
+    if (this._preloaded) return;
+    this._preloaded = true;
+    const keys = [...new Set([...Object.values(SAMPLES).flatMap(sampleKeys), ...Object.values(LOOP_SAMPLES)])];
+    this.samplesTotal = keys.length;
+    let i = 0;
+    const worker = async () => { while (i < keys.length) await this.loadBuffer(keys[i++]); };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+  }
+
+  /** Play a recorded variant of `name` (true), or false when no sample is decoded yet. */
+  playSample(name, opts = {}) {
+    const def = SAMPLES[name];
+    if (!def) return false;
+    let files = def.f;
+    if (def.by) files = files[def.by(opts)] || Object.values(files)[0];
+    const dir = def.dir || 'sfx';
+    const bufs = files.map((f) => this.buffers.get(`${dir}/${f}`)).filter(Boolean);
+    if (!bufs.length) return false;
+    const ctx = this.ctx;
+    const n = def.n || 1;
+    for (let k = 0; k < n; k++) {
+      // a different variant from last time
+      let vi = Math.floor(Math.random() * bufs.length);
+      if (bufs.length > 1 && vi === this._lastVar.get(name)) vi = (vi + 1) % bufs.length;
+      this._lastVar.set(name, vi);
+      const buf = bufs[vi];
+      const t = ctx.currentTime + (opts.delay || 0) + (n > 1 ? (k / n) * (def.spread || 1) + rand(0, 0.05) : 0);
+      const out = this.out(opts);
+      const s = ctx.createBufferSource();
+      s.buffer = buf;
+      const pj = def.pj ?? 0.05;
+      let rate = (def.rate ? def.rate(opts) : 1) * (1 + rand(-pj, pj));
+      if (def.fit && opts.dur) rate *= Math.min(1.25, Math.max(0.8, def.fit / opts.dur)); // stretch to the animation
+      s.playbackRate.value = rate;
+      const g = ctx.createGain();
+      const vol = typeof def.vol === 'function' ? def.vol(opts) : (def.vol ?? 1);
+      g.gain.value = vol * (1 + rand(-(def.vj ?? 0.1), def.vj ?? 0.1));
+      s.connect(g).connect(out);
+      const len = def.dur === true ? opts.dur : def.dur; // play only part of the sample, then fade
+      if (len) {
+        g.gain.setValueAtTime(g.gain.value, t + len);
+        g.gain.linearRampToValueAtTime(0, t + len + 0.06);
+        if (def.ramp) { s.playbackRate.setValueAtTime(rate * def.ramp[0], t); s.playbackRate.linearRampToValueAtTime(rate * def.ramp[1], t + len); }
+        s.start(t, buf._head, len + 0.08);
+      } else s.start(t, buf._head);
+      s.onended = () => { try { out.disconnect(); } catch { /* gone */ } };
+    }
+    if (def.duck) this.onDuck?.(bufs[0].duration);
+    for (const [other, delay, v = 1] of def.with || []) this.playSample(other, { ...opts, delay: (opts.delay || 0) + delay, vol: (opts.vol ?? 1) * v });
+    if (def.synth) this.playSynth(name, opts);
+    return true;
   }
 
   applyVolumes() {
@@ -182,26 +273,66 @@ export class AudioEngine {
 
   play(name, opts = {}) {
     if (!this.ready) return;
-    const fn = SOUNDS[name];
-    if (!fn) { console.warn('no sound', name); return; }
     try {
-      const out = this.out(opts);
-      fn(this, this.ctx.currentTime + (opts.delay || 0), out, opts);
+      if (this.playSample(name, opts)) return;
+      this.playSynth(name, opts);
     } catch (e) { console.warn(e); }
   }
 
-  /** Continuous loop sound with controllable gain (returns {set(v), stop()}). */
+  playSynth(name, opts = {}) {
+    const fn = SOUNDS[name];
+    if (!fn) { if (!SAMPLES[name]) console.warn('no sound', name); return; }
+    const out = this.out(opts);
+    fn(this, this.ctx.currentTime + (opts.delay || 0), out, opts);
+  }
+
+  /** Continuous loop sound with controllable gain (returns {set(v), stop(), stopAll()}).
+   *  Recorded loops start once decoded; until then the synth version (if any) plays and is crossfaded out. */
   loop(name, opts = {}) {
     if (!this.ready) return null;
-    const def = LOOPS[name];
-    if (!def) return null;
+    const def = LOOPS[name], key = LOOP_SAMPLES[name];
+    if (!def && !key) return null;
+    const ctx = this.ctx;
     const out = this.out({ ...opts, vol: 0 });
-    const handle = def(this, out, opts);
-    handle.out = out;
+    const handle = { out, synth: null, src: null, dead: false };
+    const startSample = (buf, xf) => {
+      const s = ctx.createBufferSource();
+      s.buffer = buf; s.loop = true;
+      s.loopStart = buf._head; s.loopEnd = buf.duration - leadIn(buf, true);
+      const g = ctx.createGain(); g.gain.value = xf ? 0 : 1;
+      s.connect(g).connect(out);
+      s.start(ctx.currentTime, rand(s.loopStart, s.loopEnd - 0.5));
+      if (xf) {
+        g.gain.setTargetAtTime(1, ctx.currentTime, xf / 3);
+        const old = handle.synth, sg = handle.sg;
+        if (old) { sg.gain.setTargetAtTime(0, ctx.currentTime, xf / 3); setTimeout(() => { try { old.stop?.(); } catch { /* stopped */ } }, xf * 2000); }
+        handle.synth = null;
+      }
+      handle.src = s;
+    };
+    const buf = key && this.buffers.get(key);
+    if (buf) startSample(buf, 0);
+    else {
+      if (def) {
+        handle.sg = ctx.createGain(); handle.sg.connect(out);
+        const h = def(this, handle.sg, opts);
+        handle.synth = h; handle.filter = h.filter; handle.osc = h.osc;
+      }
+      if (key) this.loadBuffer(key).then((b) => { if (b && !handle.dead) startSample(b, 2); });
+    }
     handle.set = (v, time = 0.1) => out.gain.setTargetAtTime(v, this.ctx.currentTime, time);
-    handle.stopAll = () => { out.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1); setTimeout(() => handle.stop?.(), 800); };
+    handle.stop = () => { handle.dead = true; try { handle.synth?.stop(); handle.src?.stop(); } catch { /* stopped */ } };
+    handle.stopAll = () => { out.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1); setTimeout(() => handle.stop(), 800); };
     return handle;
   }
+}
+
+/** Seconds of near-silence at the start (or end) of a decoded MP3: encoder padding some decoders keep. */
+function leadIn(buf, end = false) {
+  const d = buf.getChannelData(0), max = Math.min(d.length >> 1, 4096);
+  let i = 0;
+  while (i < max && Math.abs(d[end ? d.length - 1 - i : i]) < 0.002) i++;
+  return i > 200 && i < max ? i / buf.sampleRate : 0;
 }
 
 // ======================================================================= one-shots
@@ -689,4 +820,68 @@ const LOOPS = {
   },
 };
 
+// ======================================================================= recorded samples
+// name -> { f: files in public/audio/<dir>/ (or {group: files} picked by by(opts)), vol (number | fn(opts)),
+//   pj/vj: random pitch/volume spread, rate(opts), fit: seconds of the sample that should span opts.dur,
+//   dur: play only this long (true = opts.dur), ramp: playback-rate sweep over dur, n/spread: n hits spread over
+//   `spread` s, with: [[other, delay, vol]], synth: also play the synth version, duck: dips the music bed }
+// Anything without an entry here (or not decoded yet) uses the synth in SOUNDS.
+const V = (base, n) => Array.from({ length: n }, (_, i) => base + (i + 1));
+const SAMPLES = {
+  uiClick: { f: V('ui_click', 3), vol: 0.8 },
+  uiHover: { f: V('ui_hover', 2), vol: 0.06 },
+  error: { f: V('ui_error', 2), vol: 0.3, pj: 0.02 },
+  rotate: { f: V('ui_tick', 2), vol: 0.08 },
+  relay: { f: V('switch', 3), vol: 0.4 },
+  crankTick: { f: V('crank_tick', 3), vol: 0.14, rate: (p) => p.pitch ?? 1 },
+  footstep: {
+    by: (p) => ({ wood: 'wood', grass: 'grass', tatami: 'carpet' })[p.surface] || 'concrete',
+    f: { concrete: V('step_concrete', 5), wood: V('step_wood', 5), grass: V('step_grass', 4), carpet: V('step_carpet', 4) },
+    vol: 0.12, pj: 0.08, vj: 0.2,
+  },
+  capsuleHit: {
+    by: (p) => p.mat || 'wood',
+    f: { wood: V('hit_wood', 4), metal: V('hit_metal', 4), concrete: V('hit_concrete', 4), capsule: V('hit_plastic', 4), glass: V('hit_glass', 4) },
+    vol: (p) => 0.46 * Math.min(1, (p.speed ?? 1) / 3), pj: 0.12,
+  },
+  place: { by: (p) => (p.mat === 'glass' ? 'glass' : 'wood'), f: { wood: V('hit_wood', 4), glass: V('hit_glass', 4) }, vol: 0.36 },
+  thud: { f: V('thud', 4), vol: (p) => 1.1 * (p.v ?? 1), pj: 0.08 },
+  drop: { f: V('drop', 4), vol: 0.75 },
+  pickup: { f: V('cloth', 3), vol: 0.1 },
+  page: { f: V('page', 5), vol: 0.08 },
+  paper: { f: V('paper', 3), vol: 0.08 },
+  boxOpen: { f: V('box_open', 2), vol: 0.1 },
+  pour: { f: V('pour', 3), vol: 0.3, rate: () => 0.85, n: 4, spread: 1.1 },
+  flap: { f: V('flap', 3), vol: 0.15 },
+  gachan: { f: V('gachan', 3), vol: 0.2 },
+  coinInsert: { f: V('coin_insert', 4), vol: 0.4 },
+  coinClink: { f: V('coin_clink', 4), vol: (p) => 0.08 * (p.v ?? 1), pj: 0.08 },
+  coinDrop: { f: ['coin_drop1'], vol: 0.1 },
+  purchase: { f: ['coins_jingle'], vol: 0.25 },
+  sell: { f: ['coins_jingle'], vol: 0.3, synth: true },
+  keyTurn: { f: V('key_unlock', 2), vol: 0.3 },
+  doorbell: { f: ['doorbell'], vol: 0.8, pj: 0 },
+  shutter: { f: ['camera'], vol: 0.2 },
+  shutterRoll: { f: ['shutter_roll'], vol: 0.15, fit: 2.85, pj: 0.02 },
+  slideDoor: { f: ['slide_door'], vol: 0.06 },
+  twist: { f: ['ratchet'], vol: 0.12, dur: true, ramp: [0.92, 1.12], pj: 0.03 },
+  upgrade: { f: ['ratchet'], vol: 0.5, dur: 0.4, with: [['jingleSmall', 0.32, 0.8]] },
+  jingleSmall: { f: ['jingle_complete'], dir: 'music', vol: 0.5, pj: 0 },
+  milk: { f: ['pour_milk'], vol: 0.1 },
+  meow: { f: V('meow', 4), vol: 0.15, rate: (p) => p.pitch || 1 },
+  purr: { f: V('purr', 3), vol: 0.06 },
+  coo: { f: V('coo', 3), vol: 0.18 },
+  flutter: { f: ['wings1'], vol: 0.06, rate: () => 1.6 },
+  crow: { f: V('crow', 4), vol: 0.08 },
+  furin: { f: V('furin', 3), vol: 0.4, rate: () => rand(1.1, 1.3) },
+  task: { f: ['jingle_task'], dir: 'music', vol: 0.28, pj: 0 },
+  newItem: { f: ['jingle_new'], dir: 'music', vol: 0.25, pj: 0 },
+  complete: { f: ['jingle_open'], dir: 'music', vol: 0.55, pj: 0, duck: true },
+};
+const sampleKeys = (d) => (Array.isArray(d.f) ? d.f : Object.values(d.f).flat()).map((f) => `${d.dir || 'sfx'}/${f}`);
+// loop name -> recorded ambience (seamless loops)
+const LOOP_SAMPLES = { traffic: 'amb/street', birds: 'amb/birds', cicadas: 'amb/cicadas' };
+
 export const audio = new AudioEngine();
+export { SOUNDS, LOOPS, SAMPLES, LOOP_SAMPLES };
+if (/[?&](debug|autotest)\b/.test(location.search)) window.__audio = audio;

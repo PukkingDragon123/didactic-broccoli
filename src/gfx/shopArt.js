@@ -130,20 +130,6 @@ function digits(p, str, x, y, c) {
 }
 
 // ------------------------------------------------------------------ sprites
-const CAT = [
-  '.K...........K.',
-  '.KK.........KK.',
-  '.KPK.......KPK.',
-  '.KPPKKKKKKKPPK.',
-  'KKKKKKKKKKKKKKK',
-  'KKYYYKKKKKYYYKK',
-  'KKYKYKKKKKYKYKK',
-  'KKYYYKKKKKYYYKK',
-  'KKKKKKKPKKKKKKK',
-  '.KKKKKWKWKKKKK.',
-  '..KKKKKWKKKKK..',
-  '....KKKKKKK....',
-];
 const CRANE = [
   'KK....................',
   '.KWW..............KK..',
@@ -220,14 +206,16 @@ export const SHOP_ART = {
     w: 40, h: 120,
     paint(p) {
       plate(p, WHITE);
-      // red crown band with the black-cat emblem
+      // red crown band with the hexagon emblem
       p.rect(2, 2, 36, 27, RED);
       p.rect(2, 29, 36, 1, REDD);
       p.circle(20, 15, 11, WHITE);
       ring(p, 20, 15, 11, 1, INK);
-      p.sprite(CAT, { K: INK, P: 0xf08a9a, Y: 0xf2d040, W: WHITE }, 13, 9);
-      for (const s of [-1, 1]) for (const dy of [0, 2]) p.line(20 + s * 7, 17 + dy, 20 + s * 10, 16 + dy * 1.5, INK);
-      ctext(p, 'ねこ印', 20, 31, 12, RED);
+      // the brand mark: a tortoise-shell hexagon with 上 inside
+      const hx = (r) => [0, 1, 2, 3, 4, 5].map((i) => [20 + Math.cos(i * Math.PI / 3) * r, 15 + Math.sin(i * Math.PI / 3) * r]);
+      for (const r of [8, 7]) { const h = hx(r); h.forEach((q, i) => { const n = h[(i + 1) % 6]; p.line(Math.round(q[0]), Math.round(q[1]), Math.round(n[0]), Math.round(n[1]), INK); }); }
+      ctext(p, '上', 20, 9, 12, INK);
+      ctext(p, '亀甲印', 20, 31, 12, RED);
       // big vertical 醤油
       vtext(p, '醤油', 20, 46, 26, INK, { step: 27 });
       // bottom band: 特級 grade mark

@@ -1,28 +1,13 @@
 // Grandpa's notebook, read in first person: an open leather book lifted in front of the camera with
-// hand-inked pages (his letter, a live to-do list, shop tips, a sketch of the cat and a map of the lane).
+// hand-inked pages (his letter, a live to-do list, shop tips, an old photo of the cat and a map of the lane).
 // LMB / D / Right = next spread, RMB / A / Left = previous, Q / E / Esc = close. Touch: on-screen buttons.
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
+import { CatRig } from '../world/CatRig.js';
 
 const PW = 480, PH = 640; // page canvas size
 const INK = '#26345e', INK2 = '#5a6a9a', RED = '#b8322e';
-
-const CAT = [
-  '....K..........K....',
-  '...KOK........KOK...',
-  '...KOOK......KOOK...',
-  '..KOOOOKKKKKKOOOOK..',
-  '..KOOOOOOWWWOOOOOK..',
-  '.KOOOOOOWWWWWOOOOOK.',
-  '.KOOKKOOWWWWWOOKKOK.',
-  '.KOOKKOOWWWWWOOKKOK.',
-  '.KOOOOOOWWKWWOOOOOK.',
-  '.KOOOOOWWKWKWWOOOOK.',
-  '..KOOOOWWWWWWWOOOK..',
-  '...KKOOOWWWWWOOKK...',
-  '....KKKKKKKKKKKK....',
-];
 
 export class Notebook {
   constructor(game) {
@@ -131,8 +116,51 @@ export class Notebook {
     g.strokeStyle = RED; g.lineWidth = 5; g.beginPath(); g.moveTo(x + 3, y - 10); g.lineTo(x + 10, y - 2); g.lineTo(x + 26, y - 26); g.stroke();
   }
 
-  sketch(g, rows, x, y, k, legend) {
-    rows.forEach((row, j) => [...row].forEach((ch, i) => { if (legend[ch]) { g.fillStyle = legend[ch]; g.fillRect(x + i * k, y + j * k, k, k); } }));
+  /** An old instant photo of Mikan: the real 3D cat rendered once, on a warm backdrop, faded like a print. */
+  catPhoto(w, h) {
+    if (this.photo) return this.photo;
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const g = c.getContext('2d');
+    const bg = g.createLinearGradient(0, 0, 0, h);
+    bg.addColorStop(0, '#c9b190'); bg.addColorStop(0.62, '#a98d6c'); bg.addColorStop(0.63, '#8e7357'); bg.addColorStop(1, '#6e5842');
+    g.fillStyle = bg; g.fillRect(0, 0, w, h);
+    const sun = g.createRadialGradient(w * 0.75, h * 0.2, 0, w * 0.75, h * 0.2, w * 0.8);
+    sun.addColorStop(0, 'rgba(255,226,170,0.55)'); sun.addColorStop(1, 'rgba(255,226,170,0)');
+    g.fillStyle = sun; g.fillRect(0, 0, w, h);
+    try {
+      const rig = new CatRig();
+      rig.setPose('sit');
+      for (let i = 0; i < 40; i++) rig.update(0.05, 0);
+      const shot = this.game.thumbs.renderObject(rig.root, 320, { side: 0.85, up: 0.18, outline: false });
+      const s = Math.min(w, h) * 1.05;
+      g.drawImage(shot, (w - s) / 2 + 6, h - s + 18, s, s);
+    } catch (e) { console.warn(e); }
+    // faded print: warm cast, soft vignette, a little grain
+    g.globalCompositeOperation = 'multiply'; g.fillStyle = 'rgba(255,214,160,0.35)'; g.fillRect(0, 0, w, h);
+    g.globalCompositeOperation = 'source-over';
+    const vg = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.75);
+    vg.addColorStop(0, 'rgba(40,20,0,0)'); vg.addColorStop(1, 'rgba(40,20,0,0.45)');
+    g.fillStyle = vg; g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,248,230,0.12)'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 900; i++) { g.fillStyle = Math.random() < 0.5 ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'; g.fillRect(Math.random() * w, Math.random() * h, 1, 1); }
+    return (this.photo = c);
+  }
+
+  polaroid(g, x, y, rot, caption) {
+    const W = 250, H = 270, pw = 222, ph = 206;
+    g.save();
+    g.translate(x + W / 2, y + H / 2); g.rotate(rot); g.translate(-W / 2, -H / 2);
+    g.fillStyle = 'rgba(60,40,20,0.22)'; g.fillRect(5, 7, W, H);
+    g.fillStyle = '#f7f1e3'; g.fillRect(0, 0, W, H);
+    g.drawImage(this.catPhoto(pw, ph), 14, 14, pw, ph);
+    g.strokeStyle = 'rgba(0,0,0,0.12)'; g.lineWidth = 1; g.strokeRect(14.5, 14.5, pw - 1, ph - 1);
+    this.text(g, caption, 22, H - 20, { size: 22, color: INK, max: W - 30 });
+    // two strips of tape
+    g.fillStyle = 'rgba(236,224,180,0.75)';
+    g.save(); g.translate(W / 2 - 80, -6); g.rotate(-0.3); g.fillRect(-26, -9, 64, 22); g.restore();
+    g.save(); g.translate(W / 2 + 80, -4); g.rotate(0.35); g.fillRect(-30, -9, 64, 22); g.restore();
+    g.restore();
   }
 
   drawPage(g, n) {
@@ -169,9 +197,9 @@ export class Notebook {
         'Complete a series and something nice happens.',
       ]) { g.fillStyle = INK; g.fillRect(L, y - 12, 8, 8); y = this.text(g, p, L + 20, y, { size: 21, lh: 27 }) + 9; }
     } else if (n === 3) {
-      this.text(g, 'Mikan', L + 10, 80, { size: 44, color: RED });
-      this.sketch(g, CAT, L + 30, 110, 14, { K: INK, O: '#e0a050', W: '#fbf4e4' });
-      let y = this.text(g, 'Calico. Likes milk, sunny spots and sleeping on the crates. Hates the broom.', L, 330, { size: 21, lh: 27 });
+      this.text(g, 'Mikan', L + 10, 72, { size: 44, color: RED });
+      this.polaroid(g, L + 40, 96, -0.05, 'Mikan, last summer');
+      let y = this.text(g, 'Calico. Likes milk, sunny spots and sleeping on the crates. Hates the broom.', L, 412, { size: 21, lh: 27 });
       y = this.text(g, st?.flags.fed ? 'She trusts you now. :)' : 'Shy. Bring her milk first.', L, y + 8, { size: 21, color: INK2, lh: 27 });
     } else if (n === 4) {
       this.text(g, 'Our lane', L, 72, { size: 40, color: RED });
@@ -216,6 +244,7 @@ export class Notebook {
     const g = this.game, h = g.held;
     if (this.open || h.busy) return;
     this.open = true;
+    if (this.game.state.story) this.game.state.story.readNote = true;
     if (spread !== null) this.spread = spread;
     this.paintSpread();
     h.reading = true;
@@ -279,7 +308,8 @@ export class Notebook {
       const f = this.flip;
       f.t += dt / 0.45;
       const e = ease.inOutCubic(Math.min(1, f.t));
-      this.flipPage.rotation.y = f.dir > 0 ? 0.13 + e * (Math.PI - 0.26) : Math.PI - 0.13 - e * (Math.PI - 0.26);
+      // the leaf swings over the front of the book (towards the reader), not through its back
+      this.flipPage.rotation.y = f.dir > 0 ? 0.13 - e * (Math.PI + 0.26) : -Math.PI - 0.13 + e * (Math.PI + 0.26);
       this.flipPage.position.z = Math.sin(e * Math.PI) * 0.01;
       if (f.t >= 1) {
         this.spread = f.to;

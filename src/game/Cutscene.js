@@ -17,6 +17,9 @@ export class Cutscene {
     this.camOn = false;
     this.pos = new THREE.Vector3();
     this.look = new THREE.Vector3();
+    this.offset = new THREE.Vector3(); // extra camera offset on top of any move (footstep bob, shake)
+    this.hand = 0; // handheld drift amplitude (metres); a touch of it makes every shot feel filmed
+    this.handT = 0;
     this.fov = null;
     this.skipT = 0;
     this.skipping = false;
@@ -27,6 +30,15 @@ export class Cutscene {
     const fade = document.createElement('div');
     fade.id = 'fade';
     document.body.appendChild(fade);
+    // white flash between the present and a memory; the memory look itself is CSS on the canvas (body.memory)
+    const flash = document.createElement('div');
+    flash.id = 'flash';
+    document.body.appendChild(flash);
+    const mem = document.createElement('div');
+    mem.id = 'memory-vignette';
+    document.body.appendChild(mem);
+    this.flashEl = flash;
+    this.ticks = [];
     this.el = el;
     this.fadeEl = fade;
     this.subEl = el.querySelector('.sub');
@@ -49,6 +61,7 @@ export class Cutscene {
     this.skippable = skippable;
     this.skipping = false;
     this.skipT = 0;
+    this.hand = 0.006;
     this.gen = script(this);
     this.waiter = null;
     this.camOn = false;
@@ -82,6 +95,9 @@ export class Cutscene {
     this.skipEl.classList.remove('show');
     this.setFade(0);
     this.typing = null;
+    this.ticks = [];
+    this.offset.set(0, 0, 0);
+    this.memory(false);
     const r = this.resolve; this.resolve = null;
     r?.();
   }
@@ -108,16 +124,43 @@ export class Cutscene {
       if (!this.skipping) break;
     }
     if (this.typing) this.tickType(dt);
+    for (const fn of this.ticks) fn(dt);
     this.applyCamera();
   }
 
   applyCamera() {
     if (!this.camOn) return;
     const cam = this.game.camera;
-    cam.position.copy(this.pos);
-    cam.lookAt(this.look);
+    const t = (this.handT += 1 / 60), h = this.hand;
+    const nx = (Math.sin(t * 0.83) + Math.sin(t * 2.17 + 1.3) * 0.35) * h, ny = (Math.sin(t * 1.11 + 2) + Math.sin(t * 2.71) * 0.3) * h * 0.7;
+    cam.position.copy(this.pos).add(this.offset);
+    cam.position.x += nx; cam.position.y += ny;
+    cam.lookAt(this.look.x + this.offset.x + nx * 2.4, this.look.y + this.offset.y - ny * 2.0, this.look.z + this.offset.z);
     if (this.fov && Math.abs(cam.fov - this.fov) > 0.01) { cam.fov = this.fov; cam.updateProjectionMatrix(); }
     cam.updateMatrixWorld();
+  }
+
+  /** Run fn(dt) every frame until the cutscene ends (actors, bubbles that must keep moving under any waiter). */
+  every(fn) { this.ticks.push(fn); return null; }
+
+  /** Sepia memory look on/off (CSS filter on the canvas + vignette). */
+  memory(on) { document.body.classList.toggle('memory', !!on); return null; }
+
+  /** A quick white flash; `mid` runs at the brightest moment (swap the scene there). */
+  flash(mid = null, dur = 0.7) {
+    let t = 0, fired = false;
+    const el = this.flashEl;
+    return {
+      update: (dt) => {
+        t = Math.min(dur, t + dt);
+        const k = t / dur;
+        el.style.display = 'block';
+        el.style.opacity = k < 0.35 ? k / 0.35 : 1 - (k - 0.35) / 0.65;
+        if (!fired && k >= 0.35) { fired = true; mid?.(); }
+        if (t >= dur) { el.style.display = 'none'; el.style.opacity = 0; }
+        return t >= dur;
+      },
+    };
   }
 
   // ------------------------------------------------------------------ waiters

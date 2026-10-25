@@ -9,12 +9,15 @@ import './style.css';
 import * as THREE from 'three';
 import { Game } from './game/Game.js';
 import { audio } from './core/audio.js';
+import { bgm } from './core/bgm.js';
 import { installPC } from './pc/PC.js';
 import { installMuseum } from './museum/Museum.js';
+import { installFP } from './game/FPBody.js';
 import { installDebug } from './debug.js';
 import { isTouchDevice, installTouch } from './core/touch.js';
 import { MenuSigns } from './world/menuSigns.js';
 import { MenuGear } from './world/menuGear.js';
+import { MenuCrew } from './world/MenuCrew.js';
 import { installStaticIcons, setLabel } from './ui/staticIcons.js';
 import { encodeShop, decodeShop } from './game/shareCode.js';
 import { VISIT_KEY } from './game/state.js';
@@ -47,7 +50,7 @@ async function boot() {
   await loadFonts();
   const game = new Game($('app'));
   window.__game = game;
-  Game.plugins.push(installPC, installMuseum);
+  Game.plugins.push(installPC, installMuseum, installFP);
   await game.init((p) => { pct.textContent = `${Math.round(p * 100)}%`; });
   if (params.has('debug') || params.has('autotest')) installDebug(game, params);
 
@@ -61,19 +64,26 @@ async function boot() {
   const sfx = (n, v = 0.5) => { try { audio.init(); audio.play(n, { vol: v }); } catch { /* audio not ready */ } };
 
   let intro = false; // the new-game intro cutscene is playing
+  // menu music: browsers only allow audio after a gesture, so it starts on the first click / tap / key
+  const menuMusic = () => { if (started || fly || intro) return; try { audio.init(); if (!bgm.current) bgm.play('menu', { fade: 2.5 }); } catch { /* no audio */ } };
+  window.addEventListener('pointerdown', menuMusic, { once: true });
+  window.addEventListener('keydown', menuMusic, { once: true });
   const start = () => {
     audio.init();
     game.startAudio();
     dropGear();
+    if (crew?.busy) crew.closet.close();
     const st = game.state.story;
     if (!started && !fly && !intro && !game.story.done && !st.intro && !game.visiting) {
       // a brand-new game: the intro cutscene instead of the fly-in
       intro = true;
+      bgm.play('intro', { loop: false, fade: 2 });
       signs.dispose();
+      crew?.dispose(); crew = null;
       $('title').classList.add('fade');
       setTimeout(() => $('title').classList.add('hidden'), 600);
-      game.cutscene.play((c) => game.story.introScene(c), { skippable: true }).then(() => { intro = false; started = true; game.held.anchor.visible = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); });
-    } else if (!started && !fly && !intro) fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() };
+      game.cutscene.play((c) => game.story.introScene(c), { skippable: true }).then(() => { intro = false; started = true; game.held.anchor.visible = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); bgm.play('garage', { fade: 3 }); });
+    } else if (!started && !fly && !intro) { fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() }; bgm.play('garage', { fade: 3 }); crew?.leave(); }
     game.input.lock();
   };
   // the 3D signpost in the street
@@ -84,29 +94,36 @@ async function boot() {
   let gear = params.has('autotest') ? null : new MenuGear(game.camera);
   if (gear) document.body.classList.add('has-3d-gear');
   const dropGear = () => { gear?.dispose(); gear = null; document.body.classList.remove('has-3d-gear'); };
+  // you and your friends goofing around in the lane; click yourself for the closet
+  let crew = params.has('autotest') ? null : new MenuCrew(game);
+  game.menuCrew = crew;
   // whatever's in your hands hangs off the camera: keep it out of the menu shot
   game.held.anchor.visible = params.has('autotest');
   const canvas = game.renderer.renderer.domElement;
   const ndc = (e) => [(e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1];
-  const menuOpen = () => !started && !fly && $('share').classList.contains('hidden') && $('pause').classList.contains('hidden');
+  const menuOpen = () => !started && !fly && !crew?.busy && $('share').classList.contains('hidden') && $('pause').classList.contains('hidden');
   // pointer events cover mouse, pen and touch alike; listen on the window so overlays never swallow them
   window.addEventListener('pointermove', (e) => {
-    if (!menuOpen()) { if (gear) gear.hover = false; return; }
+    if (!menuOpen()) { if (gear) gear.hover = false; signs.hoverId = null; if (crew) crew.hover = false; return; }
     const overGear = !!gear?.pick(game.camera, ...ndc(e));
     if (overGear && !gear.hover) sfx('uiHover', 0.35);
     if (gear) gear.hover = overGear;
     const id = overGear ? null : signs.pick(game.camera, ...ndc(e));
     if (id !== signs.hoverId && id) sfx('uiHover', 0.35);
     signs.hoverId = id;
-    canvas.style.cursor = id || overGear ? 'pointer' : '';
+    const overMe = !id && !overGear && !!crew?.pick(game.camera, ...ndc(e));
+    if (crew) crew.hover = overMe && e.pointerType !== 'touch';
+    canvas.style.cursor = id || overGear || overMe ? 'pointer' : '';
   });
   let downAt = null;
-  window.addEventListener('pointerdown', (e) => { if (menuOpen()) { downAt = { x: e.clientX, y: e.clientY, id: signs.pick(game.camera, ...ndc(e)), gear: !!gear?.pick(game.camera, ...ndc(e)) }; signs.hoverId = downAt.id; } });
+  window.addEventListener('pointerdown', (e) => { if (menuOpen()) { downAt = { x: e.clientX, y: e.clientY, id: signs.pick(game.camera, ...ndc(e)), gear: !!gear?.pick(game.camera, ...ndc(e)), me: !!crew?.pick(game.camera, ...ndc(e)) }; signs.hoverId = downAt.id; } });
   window.addEventListener('pointerup', (e) => {
     if (!menuOpen() || !downAt) return;
     if (downAt.gear && gear?.pick(game.camera, ...ndc(e))) { downAt = null; sfx('uiClick', 0.6); openSettings(); return; }
     const id = signs.pick(game.camera, ...ndc(e)) || (Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 30 ? downAt.id : null);
+    const me = !id && downAt.me && (crew?.pick(game.camera, ...ndc(e)) || Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 30);
     downAt = null;
+    if (me) { sfx('uiClick', 0.6); crew.openCloset(); return; }
     if (!id) return;
     sfx('uiClick', 0.7);
     if (id === 'play') start();
@@ -192,6 +209,8 @@ async function boot() {
   const bind = (id, key) => $(id).addEventListener('input', (e) => { s[key] = +e.target.value; game.applySettings(); });
   bind('vol-master', 'master'); bind('vol-music', 'music'); bind('vol-amb', 'ambience'); bind('sens', 'sens'); bind('fov', 'fov');
   $('hints').addEventListener('change', (e) => { s.hints = e.target.checked; game.applySettings(); });
+  $('hands').checked = s.hands !== false;
+  $('hands').addEventListener('change', (e) => { s.hands = e.target.checked; game.fp?.setEnabled(s.hands); game.save(); });
   // two-step confirm (dialogs aren't available everywhere)
   let resetArm = 0;
   $('reset-btn').addEventListener('click', () => {
@@ -220,6 +239,8 @@ async function boot() {
       const a = titleT * 0.06;
       cam.position.set(1.9 + Math.sin(a) * 0.3, 1.55 + Math.sin(titleT * 0.17) * 0.04, 10.6 + Math.cos(a * 0.7) * 0.2);
       cam.lookAt(-0.5 + Math.sin(a) * 0.12, 1.9, 5.2);
+      crew?.update(dt); // may take the camera over (closet close-up)
+      if (gear) gear.root.visible = !crew?.busy;
       game.time += dt;
       for (const m of game.machines) m.update(dt, game.time);
       game.garage.update(dt, game.time);
@@ -249,8 +270,9 @@ async function boot() {
       cam.position.copy(bez);
       cam.quaternion.copy(fly.q).slerp(endQ, Math.min(1, e * 1.15));
       cam.updateMatrixWorld();
+      crew?.update(dt);
       game.render(dt);
-      if (k >= 1) { fly = null; signs.dispose(); game.held.anchor.visible = true; }
+      if (k >= 1) { fly = null; signs.dispose(); crew?.dispose(); crew = null; game.held.anchor.visible = true; }
       return;
     }
     game.update(dt);

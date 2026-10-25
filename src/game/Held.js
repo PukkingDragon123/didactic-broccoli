@@ -1,6 +1,7 @@
-// What you carry: a 5-slot inventory. The selected slot's item floats in front of the camera (no hands),
-// sways with movement, can be inspected (RMB), dropped (Q), and handed over to targets with smooth arcs.
-// Switch slots with 1-5, the mouse wheel or by tapping the hotbar; other slots are pocketed (hidden).
+// What you carry: a 5-slot inventory. The selected slot's item is held in front of the camera (your hands grip it,
+// see FPBody.js), sways with movement, can be inspected (RMB), dropped (Q), and handed over to targets with smooth arcs.
+// Switch slots with 1-5, the mouse wheel or by tapping the hotbar: the old item dips out, the new one comes up.
+// Everything on `anchor` is drawn by the renderer's viewmodel pass (on top, never inside walls).
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { damp, ease } from '../core/util.js';
@@ -18,9 +19,10 @@ export const POSES = {
   tool: { pos: new THREE.Vector3(0.2, -0.26, -0.46), rot: new THREE.Euler(-0.75, 0.55, 0.3) },
   inspect: { pos: new THREE.Vector3(0, -0.005, -0.24), rot: new THREE.Euler(0.1, 0, 0) },
   reveal: { pos: new THREE.Vector3(0, -0.01, -0.3), rot: new THREE.Euler(0.05, 0, 0) },
+  twist: { pos: new THREE.Vector3(0.03, -0.1, -0.31), rot: new THREE.Euler(0.35, 0.15, 0.05) },
   pet: { pos: new THREE.Vector3(0.02, -0.34, -0.55), rot: new THREE.Euler(0.1, Math.PI + 0.3, 0) },
   item: { pos: new THREE.Vector3(0.15, -0.16, -0.36), rot: new THREE.Euler(0.2, -0.45, 0.05) },
-  broom: { pos: new THREE.Vector3(0.2, -0.3, -0.72), rot: new THREE.Euler(0.6, 0, -0.5) },
+  broom: { pos: new THREE.Vector3(0.08, -0.35, -0.58), rot: new THREE.Euler(0.7, 0, 0.55) },
   long: { pos: new THREE.Vector3(0.12, -0.24, -0.5), rot: new THREE.Euler(0.1, -1.2, 0.35) },
   read: { pos: new THREE.Vector3(0, -0.035, -0.3), rot: new THREE.Euler(0.25, 0, 0) },
 };
@@ -45,6 +47,7 @@ export class Held {
     this.game = game;
     this.anchor = new THREE.Group();
     game.camera.add(this.anchor);
+    game.renderer.vmRoots.add(this.anchor);
     this.slots = Array(SLOTS).fill(null); // {kind, data, obj, ent?}
     this.sel = 0;
     this.sway = new THREE.Vector2();
@@ -85,7 +88,9 @@ export class Held {
     this.pose = this.poseFor(this.item);
     // miniatures are shown a little larger in hand so you can admire the detail
     this.holdScale = this.scaleFor(this.item, opts.pose);
-    this.startTrans(opts.pose || this.pose, opts.dur ?? 0.32);
+    // picked up from the world: it waits a moment for the hand to reach out and grab it
+    const far = this.game.fp?.live && obj.position.distanceTo(POSES[opts.pose || this.pose].pos) > 0.25;
+    this.startTrans(opts.pose || this.pose, far ? 0.4 : opts.dur ?? 0.32, far ? 0.12 : 0);
     this.twist = 0;
     if (kind === 'toy') this.attachTag(data, opts.isNew);
     else this.removeTag();
@@ -130,17 +135,18 @@ export class Held {
     const cur = this.item;
     if (this.inspecting) { this.inspecting = false; this.game.player.lookLocked = false; this.game.renderer.grade.uniforms.uVignette.value = 0.32; }
     if (cur?.kind === 'cat') this.drop(); // the cat won't go in your pocket
-    else this.pocket(cur);
+    else if (cur) { const pose = this.pose; this.pocket(cur); if (cur.obj.parent === this.anchor) this.lowering = { obj: cur.obj, it: cur, pose, t: 0, from: cur.obj.position.clone() }; cur.obj.visible = !!this.lowering; }
     this.sel = i;
     const it = this.item;
     if (it) {
+      if (this.lowering?.obj === it.obj) this.lowering = null;
       it.obj.visible = true;
       this.pose = this.poseFor(it);
       this.holdScale = this.scaleFor(it);
       const P = POSES[this.pose];
-      it.obj.position.copy(P.pos).add(new THREE.Vector3(0, -0.22, 0.05));
+      it.obj.position.copy(P.pos).add(new THREE.Vector3(0, -0.3, 0.06));
       it.obj.quaternion.setFromEuler(P.rot);
-      this.startTrans(this.pose, 0.22);
+      this.startTrans(this.pose, 0.26, this.lowering ? 0.09 : 0);
       if (it.kind === 'toy') this.attachTag(it.data);
     }
     audio.play('whoosh', { vol: 0.25, dur: 0.12, v: 0.05 });
@@ -153,7 +159,8 @@ export class Held {
   consume(slotIndex = this.sel) {
     const it = this.slots[slotIndex];
     if (!it) return;
-    it.obj.parent?.remove(it.obj);
+    // the hands may play it out (pour the milk...) and remove it themselves
+    if (!(slotIndex === this.sel && this.game.fp?.consumed(it))) it.obj.parent?.remove(it.obj);
     this.slots[slotIndex] = null;
     if (slotIndex === this.sel) { this.removeTag(); this.trans = null; this.game.events.emit('held', null); }
     this.game.events.emit('slot', this.sel);
@@ -175,12 +182,12 @@ export class Held {
 
   removeTag() { if (this.tag) { this.anchor.remove(this.tag); this.tag = null; } }
 
-  startTrans(poseName, dur = 0.3) {
+  startTrans(poseName, dur = 0.3, delay = 0) {
     const obj = this.item.obj;
     const P = POSES[poseName];
     this.trans = {
       fromP: obj.position.clone(), fromQ: obj.quaternion.clone(), fromS: obj.scale.x,
-      toP: P.pos.clone(), toQ: new THREE.Quaternion().setFromEuler(P.rot), toS: (poseName === 'inspect' ? 1.25 : 1) * (this.holdScale || 1), t: 0, dur,
+      toP: P.pos.clone(), toQ: new THREE.Quaternion().setFromEuler(P.rot), toS: (poseName === 'inspect' ? 1.25 : 1) * (this.holdScale || 1), t: 0, dur, delay,
     };
     this.pose = poseName;
   }
@@ -207,9 +214,11 @@ export class Held {
    * Fly the held object to a world transform, then call done(obj). parent: optional Object3D to attach to.
    */
   putTo(worldPos, worldQuat, done, { dur = 0.38, arc = 0.08, parent = null, scale = null } = {}) {
+    const pose = this.pose;
     const it = this.release();
     if (!it) return;
     const obj = it.obj;
+    this.flight = { obj, kind: it.kind, data: it.data, pose, dur, t: 0 }; // the hands follow it out
     const fromP = obj.position.clone(), fromQ = obj.quaternion.clone(), fromS = obj.scale.clone();
     const toS = new THREE.Vector3().setScalar(scale ?? 1);
     this.game.tweens.add({
@@ -256,9 +265,11 @@ export class Held {
     this.swayV.multiplyScalar(Math.max(0, 1 - 9 * dt));
     this.sway.addScaledVector(this.swayV, dt * 12);
     this.sway.clampScalar(-0.03, 0.03);
-    const bob = g.player.bobT;
+    const bob = g.player.bobT, t = g.time;
     const moving = Math.min(1, Math.hypot(g.player.vel.x, g.player.vel.z) / 2.4);
-    this.anchor.position.set(this.sway.x + Math.cos(bob) * 0.004 * moving, this.sway.y + Math.abs(Math.sin(bob)) * 0.006 * moving, 0);
+    // look-lag, walk bob and a slow breath; the hands tilt a little into turns
+    this.anchor.position.set(this.sway.x + Math.cos(bob) * 0.004 * moving + Math.sin(t * 0.83) * 0.0012, this.sway.y + Math.abs(Math.sin(bob)) * 0.006 * moving + Math.sin(t * 1.7) * 0.0022, 0);
+    this.anchor.rotation.set(this.sway.y * 1.6, 0, this.sway.x * 2.2 + Math.sin(t * 0.7) * 0.004);
 
     // slot switching: 1-5, mouse wheel (unless zooming an inspected figure)
     if (inp.locked && !g.pc?.active && !g.uiOpen && !this.reading) {
@@ -266,12 +277,21 @@ export class Held {
       if (inp.mouse.wheel && !this.inspecting) this.select(this.sel + Math.sign(inp.mouse.wheel));
     }
     if (this.swing !== undefined) this.swing = Math.max(0, this.swing - dt * 2.2);
+    // the previous slot's item dipping out of view
+    const lo = this.lowering;
+    if (lo) {
+      lo.t += dt / 0.12;
+      const k = Math.min(1, lo.t);
+      lo.obj.position.set(lo.from.x + 0.02 * k, lo.from.y - 0.32 * k * k, lo.from.z + 0.06 * k);
+      if (k >= 1) { if (this.item?.obj !== lo.obj) lo.obj.visible = false; this.lowering = null; }
+    }
 
     const it = this.item;
     if (!it) return;
     const obj = it.obj;
 
-    if (this.trans) {
+    if (this.trans?.delay > 0) this.trans.delay -= dt;
+    else if (this.trans) {
       const tr = this.trans;
       tr.t += dt;
       const k = ease.outCubic(Math.min(1, tr.t / tr.dur));
@@ -313,12 +333,15 @@ export class Held {
         this.twisting = true;
         audio.play('twist', { dur: openTime, vol: 0.8 });
         g.reveal.startTool(it);
+        // both hands: bring it in to the middle
+        if (g.fp?.live && this.pose === 'capsule') this.startTrans('twist', 0.2);
       }
       this.twist += dt / openTime;
     } else {
       if (this.twisting) g.reveal.stopTool();
       this.twisting = false;
       this.twist = Math.max(0, this.twist - dt * 2.5);
+      if (this.twist <= 0 && this.pose === 'twist' && !this.trans) this.startTrans('capsule', 0.25);
     }
     const cap = it.ent?.cap || it.obj.userData.capRef;
     const k = Math.min(1, this.twist);
@@ -411,6 +434,7 @@ export class Held {
       rel.obj.parent?.remove(rel.obj);
       g.items.spawnCapsule(rel.data, p, fwd.multiplyScalar(1.4).add(new THREE.Vector3(0, 0.6, 0)));
       audio.play('whoosh', { vol: 0.6, v: 0.1 });
+      this.tossed = g.time;
       return;
     }
     // place on the surface under the crosshair if one is close, otherwise in front of the feet

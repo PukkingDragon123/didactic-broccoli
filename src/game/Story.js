@@ -4,11 +4,14 @@
 // feed the cat, and the shop reopens (sign lights up, customers start wandering in).
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
+import { radio } from '../core/music.js';
+import { bgm, TRACKS } from '../core/bgm.js';
 import { ease } from '../core/util.js';
 import { propMesh } from '../world/props.js';
 import { GARAGE } from '../world/Garage.js';
 import { TOOLS } from '../data/tools.js';
 import { formatYen } from '../core/util.js';
+import { createHuman, GESTURES } from '../people/index.js';
 
 const TIN_MONEY = 2500;
 
@@ -74,7 +77,7 @@ export class Story {
     // Grandpa's cash tin on the steel rack
     if (!f.cash) {
       this.tin = G.prop('cash_tin', TIN.x, TIN.y, TIN.z, 0.2, { fallbackSize: [0.18, 0.08, 0.14], fallbackColor: 0x3a6aa8 });
-      g.interaction.add(this.tin, { hint: () => ({ key: 'LMB', text: "Open Grandpa's cash tin" }), use: () => { this.takeCash(); return false; } });
+      g.interaction.add(this.tin, { hint: () => ({ key: 'LMB', text: "Open Grandpa's cash tin" }), use: () => { if (!this.flags.cash) g.cutscene.play((c) => this.cashScene(c)); return false; } });
     }
     // the dead fluorescent tube
     const tube = G.lights.tubes[1];
@@ -84,7 +87,7 @@ export class Story {
       g.interaction.add(tube.fix, {
         reach: 2.6,
         hint: (held) => (g.held.holding('tube') ? { key: 'LMB', text: 'Replace the tube' } : { key: '', text: 'This light is dead', sub: 'Needs a new fluorescent tube' }),
-        use: () => { if (g.held.holding('tube')) this.fixTube(); return false; },
+        use: () => { if (g.held.holding('tube')) g.cutscene.play((c) => this.tubeScene(c)); return false; },
       });
     }
     if (!f.radio) g.state.radio = -1;
@@ -158,23 +161,35 @@ export class Story {
 
   *openShutterScene(c) {
     const g = this.game, G = g.garage, z = GARAGE.maxZ;
-    yield c.cam({ pos: new THREE.Vector3(0.9, 1.45, z + 1.1), look: new THREE.Vector3(0.2, 0.7, z), dur: 0.7 });
-    audio.play('keyTurn', { pos: new THREE.Vector3(0, 0.6, z), vol: 1 });
-    yield c.wait(0.7);
-    c.say("It's been years since anyone opened this.", 1.2);
-    yield c.cam({ pos: new THREE.Vector3(0.4, 1.3, z + 4.8), look: new THREE.Vector3(0, 1.1, z), dur: 1.2 });
-    audio.play('shutterRoll', { pos: new THREE.Vector3(0, 2, z), dur: 2.6, vol: 1 });
+    const V = (x, y, zz) => new THREE.Vector3(x, y, zz);
+    // the key in the old lock
+    yield c.cam({ pos: V(0.9, 1.45, z + 1.1), look: V(0.2, 0.7, z), dur: 0.7, fov: 50 });
+    audio.play('keyTurn', { pos: V(0, 0.6, z), vol: 1 });
+    yield c.all(c.wait(1.0), c.say("It's been years since anyone opened this.", 0.6));
+    // from inside the dark garage: the shutter rolls up and the evening pours in
+    yield c.fade(1, 0.25);
+    c.hideSay();
+    yield c.cam({ pos: V(-1.3, 0.5, 0.6), look: V(0.2, 1.0, z), fov: 64 });
+    yield c.fade(0, 0.25);
+    audio.play('shutterRoll', { pos: V(0, 2, z), dur: 2.8, vol: 1 });
     let t = 0;
-    yield { update: (dt) => { t = Math.min(1, t + dt / 2.6); G.setShutter(ease.inOutQuad(t)); if (Math.random() < dt * 14) g.effects.sparks({ pos: new THREE.Vector3((Math.random() - 0.5) * 5.5, 0.2 + t * 2, z + 0.2), count: 3, colors: dustColors, speed: 0.15, size: 0.035, gravity: -0.05, life: 1.8, star: 0, drag: 1 }); return t >= 1; } };
+    yield {
+      update: (dt) => {
+        t = Math.min(1, t + dt / 2.8);
+        G.setShutter(ease.inOutQuad(t));
+        c.pos.set(-1.3 + t * 0.4, 0.5 + t * 0.35, 0.6 + t * 0.5);
+        if (Math.random() < dt * 18) g.effects.sparks({ pos: V((Math.random() - 0.5) * 5.5, 0.2 + t * 2, z - 0.2 - Math.random() * 2), count: 3, colors: dustColors, speed: 0.15, size: 0.035, gravity: -0.05, life: 2.2, star: 0, drag: 1, radius: 1.2 });
+        return t >= 1;
+      },
+    };
     this.flags.shutter = true;
     g.player.pos.set(0.4, 0, z + 1.6);
     g.player.yaw = 0; g.player.pitch = -0.05;
     // the cat bolts deeper into the dark garage
     g.street?.scareCat?.();
-    yield c.cam({ pos: new THREE.Vector3(0.4, 1.5, z + 2.2), look: new THREE.Vector3(-0.3, 0.9, 0), dur: 1.6 });
-    c.say('Dusty... and something just ran under the table.', 1.6);
-    audio.play('meow', { pos: new THREE.Vector3(-1, 0.3, 1), vol: 0.6, pitch: 1.2 });
-    yield c.wait(2.6);
+    audio.play('meow', { pos: V(-1, 0.3, 1), vol: 0.6, pitch: 1.2 });
+    yield c.cam({ pos: V(0.4, 1.5, z + 2.4), look: V(-0.3, 0.9, 0), fov: 62 });
+    yield c.all(c.cam({ pos: V(0.4, 1.55, z + 1.8), look: V(-0.6, 0.7, 0.5), dur: 3.0 }), c.say('Dusty... and something just ran under the table.', 1.4));
     c.hideSay();
     yield c.toPlayer(0.8);
     this.task('Shutter open!');
@@ -421,7 +436,7 @@ export class Story {
   }
 
   // ------------------------------------------------------------------ cash, tube, radio
-  takeCash() {
+  takeCash(keepTin = false) {
     const g = this.game;
     if (this.flags.cash) return;
     this.flags.cash = true;
@@ -430,8 +445,13 @@ export class Story {
     audio.play('boxOpen', { pos: p, vol: 0.7 });
     g.effects.coinBurst({ pos: p, count: 14, up: 1.4, spread: 0.4, life: 1.2 });
     g.addMoney(TIN_MONEY);
-    g.tweens.add({ dur: 0.5, ease: ease.inQuad, update: (k) => this.tin.scale.setScalar(1 - k), done: () => this.tin.parent?.remove(this.tin) });
+    if (!keepTin) this.dropTin();
     this.task(`${formatYen(TIN_MONEY)} for supplies. Thanks, Grandpa.`);
+  }
+
+  dropTin() {
+    const t = this.tin;
+    if (t) this.game.tweens.add({ dur: 0.5, ease: ease.inQuad, update: (k) => t.scale.setScalar(1 - k), done: () => t.parent?.remove(t) });
   }
 
   fixTube() {
@@ -460,8 +480,66 @@ export class Story {
     g.held.consume();
     this.flags.radio = true;
     audio.play('relay', { vol: 0.6 });
-    this.task('The radio crackles back to life.');
+    g.cutscene.play((c) => this.radioScene(c));
     return false;
+  }
+
+  // ------------------------------------------------------------------ little cinematic moments
+  /** Meeting the shopkeeper of Mikawa-ya the first time you walk up to the counter. */
+  *meetKeeperScene(c) {
+    const g = this.game, P = g.pedestrians, k = P?.keeper;
+    if (!k) return;
+    const kp = k.h.root.position, V = (x, y, z) => new THREE.Vector3(x, y, z);
+    const head = V(kp.x, k.h.height - 0.08, kp.z);
+    yield c.cam({ pos: V(kp.x + 1.7, 1.45, kp.z - 2.0), look: head, dur: 1.0, fov: 48 });
+    k.look = c.pos;
+    k.h.gesture('bow');
+    P.say(k.h, 'Irasshaimase! Oh my... you have his eyes. You must be his grandkid!', 4.2);
+    yield c.cam({ pos: V(kp.x + 1.2, 1.5, kp.z - 1.7), look: head, dur: 4.2 });
+    k.h.gesture('point');
+    P.say(k.h, 'Milk is in the fridge, brooms by the door. Tell me what you need, dear.', 4.0);
+    yield c.cam({ pos: V(kp.x - 0.9, 1.55, kp.z - 1.5), look: V(kp.x - 0.4, 1.3, kp.z), dur: 4.0 });
+    k.look = null;
+    yield c.toPlayer(0.7);
+  }
+
+  /** Grandpa's biscuit tin: a close-up, the lid comes off, coins and a note. */
+  *cashScene(c) {
+    const g = this.game, t = this.tin;
+    if (!t) return;
+    const p = t.getWorldPosition(new THREE.Vector3());
+    yield c.cam({ pos: p.clone().add(new THREE.Vector3(0.55, 0.32, 0.75)), look: p, dur: 0.9, fov: 42 });
+    yield c.cam({ pos: p.clone().add(new THREE.Vector3(0.32, 0.26, 0.48)), look: p.clone().add(new THREE.Vector3(0, 0.03, 0)), dur: 1.1 });
+    this.takeCash(true);
+    yield c.all(c.cam({ pos: p.clone().add(new THREE.Vector3(0.22, 0.34, 0.5)), look: p.clone().add(new THREE.Vector3(0, 0.02, 0)), dur: 3.0 }), c.say(`${formatYen(TIN_MONEY)} and a note: "For brooms and milk. NOT capsules. - Gramps"`, 1.4));
+    c.hideSay();
+    this.dropTin();
+    yield c.toPlayer(0.7);
+  }
+
+  /** The new fluorescent tube strikes and the garage fills with light. */
+  *tubeScene(c) {
+    const g = this.game, tube = g.garage.lights.tubes[1];
+    const p = tube.light.position.clone();
+    yield c.cam({ pos: new THREE.Vector3(p.x + 1.6, 1.1, p.z + 1.8), look: p, dur: 0.9, fov: 58 });
+    this.fixTube();
+    yield c.wait(1.6);
+    yield c.all(c.cam({ pos: new THREE.Vector3(p.x + 0.4, 1.5, p.z + 3.2), look: new THREE.Vector3(p.x - 0.5, 1.0, p.z - 1.5), dur: 2.2 }), c.say('Much better. I can finally see the mess.', 1.0));
+    c.hideSay();
+    yield c.toPlayer(0.7);
+  }
+
+  /** Batteries in: the radio crackles, finds a station, and the garage has music again. */
+  *radioScene(c) {
+    const g = this.game, p = g.garage.radio.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.12, 0));
+    yield c.cam({ pos: p.clone().add(new THREE.Vector3(0.6, 0.15, 0.7)), look: p, dur: 0.9, fov: 46 });
+    yield c.wait(0.8);
+    g.state.radio = 0;
+    radio.setStation(0);
+    yield c.all(c.cam({ pos: p.clone().add(new THREE.Vector3(0.9, 0.35, 1.1)), look: p, dur: 2.8 }), c.say('The old radio still works! Grandpa never turned this station off.', 1.0));
+    c.hideSay();
+    yield c.toPlayer(0.7);
+    this.task('The radio crackles back to life.');
   }
 
   // ------------------------------------------------------------------ grand reopening
@@ -477,47 +555,192 @@ export class Story {
 
   *reopenScene(c) {
     const g = this.game, z = GARAGE.maxZ, town = g.garage.town;
+    const V = (x, y, zz) => new THREE.Vector3(x, y, zz);
+    const crowd = [];
+    const BPM = TRACKS.party?.bpm || 120;
     yield c.fade(1, 0.6);
-    yield c.cam({ pos: new THREE.Vector3(2.2, 1.4, z + 7.2), look: new THREE.Vector3(0, 2.6, z), fov: 60 });
-    yield c.fade(0, 0.8);
-    c.say('Grandpa... the garage is ready.', 1.2);
-    yield c.cam({ pos: new THREE.Vector3(1.2, 1.6, z + 5.6), look: new THREE.Vector3(0, 3.2, z), dur: 2.4 });
+    // the lane's passers-by step out of shot; the neighbours gather on the apron, facing the shutter
+    const peds = g.pedestrians;
+    for (const p of peds?.list || []) p.h.root.visible = false;
+    const cast = [['grandma', 3, -2.2, z + 2.6], ['kid', 8, -1.1, z + 1.9], ['schoolgirl', 11, 0.1, z + 2.3], ['salaryman', 5, 1.3, z + 2.8],
+      ['otaku', 2, 2.4, z + 2.1], ['mom', 6, -3.1, z + 3.6], ['construction', 4, 3.3, z + 3.4], ['schoolboy', 9, -0.6, z + 3.5], ['tourist', 13, 0.9, z + 4.1]];
+    for (const [preset, seed, x, zz] of cast) crowd.push(this.actor(c, preset, seed, x, zz, Math.PI + Math.atan2(-x * 0.25, 1.2)));
+    const cat = g.street?.cat;
+    if (cat && !cat.held) { cat.pos.set(0.6, 0, z + 1.1); cat.heading = Math.PI; g.street.setCatState?.('sit', 30); }
+    yield c.cam({ pos: V(2.6, 1.35, z + 7.6), look: V(0, 1.9, z), fov: 58 });
+    yield c.fade(0, 0.9);
+    yield c.all(c.cam({ pos: V(1.4, 1.55, z + 6.2), look: V(0, 2.2, z), dur: 3.2 }), c.say('Grandpa... the garage is ready.', 1.0));
+    c.hideSay();
+    // the lanterns flicker on
+    yield c.cam({ pos: V(0.6, 1.0, z + 4.6), look: V(0, 2.9, z), dur: 1.4, fov: 62 });
     audio.play('lightsOn', { vol: 1 });
-    // the sign flickers on
     for (let i = 0; i < 4; i++) { town?.setShopOpen?.(i % 2 === 0); yield c.wait(0.12 + i * 0.05); }
     town?.setShopOpen?.(true);
     audio.play('complete', { vol: 0.9 });
-    g.effects.confetti({ pos: new THREE.Vector3(0, 3.4, z + 0.8), count: 220, speed: 3 });
-    yield c.title('OPEN FOR BUSINESS', '', 2.6);
-    c.say('Now, let the neighbours know we are open. Flyers from Mikawa-ya should help!', 2);
-    yield c.wait(2.6);
+    g.effects.confetti({ pos: V(0, 3.4, z + 0.8), count: 260, speed: 3.2 });
+    for (const a of crowd) a.h.gesture(Math.random() < 0.5 ? 'cheer' : 'clap');
+    yield c.title('OPEN FOR BUSINESS', '', 2.4);
+    // party: everybody dances, the camera circles the crowd
+    bgm.play('party', { fade: 0.6 });
+    const dance = (a, i) => a.h.gesture(GESTURES.dance ? 'dance' : 'cheer', { bpm: BPM, phase: 0, seed: i });
+    crowd.forEach(dance);
+    g.street?.setCatState?.('groove', 30, { bpm: BPM });
+    let t = 0;
+    yield c.until((dt) => {
+      t += dt;
+      // from the shop doorway, looking out at the dancing crowd in the lane
+      const k = t / 7.5;
+      c.pos.set(-1.6 + k * 3.2, 1.55 + Math.sin(t * 0.6) * 0.1, z - 0.4 + Math.sin(k * Math.PI) * 0.5);
+      c.look.set(-0.3 + k * 0.6, 1.05, z + 3.0);
+      if (!GESTURES.dance && t % 2.2 < dt) crowd.forEach(dance);
+      return t > 7.5;
+    });
+    const keeper = g.pedestrians?.keeper;
+    yield c.all(c.cam({ pos: V(1.1, 1.5, z + 6.6), look: V(0, 1.5, z + 2.5), dur: 2.2 }), c.say('Now spread the word! Flyers from Mikawa-ya will bring customers in.', 1.6));
     c.hideSay();
-    yield c.toPlayer(1.0);
+    yield c.fade(1, 0.7);
+    this.dropActors(crowd);
+    for (const p of peds?.list || []) p.h.root.visible = true;
+    if (keeper) keeper.look = null;
+    g.street?.setCatState?.('sit', 4);
+    bgm.play('garage', { fade: 2 });
+    yield c.toPlayer(0);
+    yield c.fade(0, 0.7);
     this.flags.complete = true;
     g.pedestrians?.setOpen?.(true);
     this.task('The shop is open for business!');
   }
 
   // ------------------------------------------------------------------ intro (new game)
+  /** A person for a cutscene: placed, painted and kept animated until the scene ends. */
+  actor(c, preset, seed, x, z, rotY, look = null) {
+    const h = createHuman({ preset, seed });
+    h.finishPaint?.();
+    h.root.position.set(x, 0, z);
+    h.root.rotation.y = rotY;
+    this.game.scene.add(h.root);
+    const a = { h, look };
+    c.every((dt) => a.h && a.h.update(dt, { speed: 0, lookAt: a.look, talking: this.game.bubbles?.isTalking?.(a.h) }));
+    return a;
+  }
+
+  dropActors(list) {
+    for (const a of list) { this.game.bubbles?.clear?.(a.h); a.h.root.parent?.remove(a.h.root); a.h.dispose?.(); a.h = null; }
+    list.length = 0;
+  }
+
+  /** Dress the lane as it was in Grandpa's day (true) or put the dusty present back (false). */
+  memorySet(on) {
+    const g = this.game, G = g.garage, f = this.flags;
+    G.setShutter(on || f.shutter ? 1 : 0, true);
+    G.town?.setShopOpen?.(on || !!f.opened);
+    const tube = G.lights.tubes[1];
+    if (tube && !f.tube) tube.dead = !on;
+    G.setLights(on ? true : g.state.lightsOn !== false);
+    for (const p of this.piles.values()) p.mesh.visible = !on;
+    for (const e of g.items.list) if (e.data?.bag) e.obj.visible = !on;
+    for (const m of g.machines) {
+      if (m.data.fallen) this.layDown(m, on ? 0 : 1);
+      if (m.sign) m.sign.visible = !on;
+    }
+    if (g.street?.cat) g.street.cat.g.visible = !on;
+  }
+
+  /** Footsteps for a walking camera: a little bob on the cutscene's camera offset, a step sound per stride. */
+  walkBob(c, amp = 0.035) {
+    let t = 0;
+    this.bobOn = true;
+    c.every((dt) => {
+      const prev = Math.sin(t * Math.PI * 1.9);
+      t += dt;
+      const s = Math.sin(t * Math.PI * 1.9);
+      c.offset.y = this.bobOn ? Math.abs(s) * amp : c.offset.y * Math.max(0, 1 - dt * 6);
+      if (this.bobOn && prev * s < 0) audio.play('footstep', { vol: 0.35 });
+    });
+  }
+
   *introScene(c) {
     const g = this.game, z = GARAGE.maxZ;
     const town = g.garage.town;
-    const west = town?.tunnels?.find((t) => t.dir < 0) || { x: -24, z: z + 4.8 };
+    const V = (x, y, zz) => new THREE.Vector3(x, y, zz);
+    const actors = [];
     c.setFade(1);
-    yield c.cam({ pos: new THREE.Vector3(west.x + 1.5, 1.7, (west.z ?? z + 4.8) + 0.3), look: new THREE.Vector3(west.x + 10, 1.6, z + 4.6), fov: 62 });
-    yield c.wait(0.4);
-    c.say('Grandpa always said the old garage had a little magic in it.', 1.4);
-    yield c.fade(0, 1.6);
-    yield c.cam({ pos: new THREE.Vector3(-9, 1.65, z + 5.2), look: new THREE.Vector3(0, 1.8, z + 2), dur: 6.5, ease: (k) => k });
-    c.say('He left it to me. A key, his notebook... and a lot of dust.', 1.8);
-    yield c.cam({ pos: new THREE.Vector3(0.4, 1.55, z + 6.2), look: new THREE.Vector3(0, 3.0, z), dur: 3.6, path: [new THREE.Vector3(-4, 1.6, z + 6.4)] });
-    c.say("Grandpa's old capsule toy shop. Let's wake it up.", 1.4);
-    yield c.wait(2.6);
+    bgm.play('intro', { loop: false, fade: 1.2 });
+    // 1. the lane at golden hour; a train rumbles over the west underpass
+    yield c.cam({ pos: V(-16.5, 2.3, z + 5.8), look: V(-29, 4.6, z + 4.6), fov: 55 });
+    const tr = town?.trains?.find((t) => t.s < 0);
+    if (tr) {
+      town.runTrain(-1, 1);
+      const len = new THREE.Box3().setFromObject(tr.g).getSize(new THREE.Vector3()).z;
+      tr.z = 9.6 - len / 2 - 12.5 * 0.8;
+      tr.played = false;
+    }
+    yield c.wait(0.3);
+    yield c.all(c.fade(0, 2.2), c.cam({ pos: V(-17.6, 2.05, z + 5.2), look: V(-28, 4.4, z + 4.8), dur: 5.0, ease: (k) => k }), c.say('Grandpa always said our old garage had a little magic in it.', 1.0));
+    // 2. walking down the lane; the shopkeeper at Mikawa-ya waves from behind the counter
+    const keeper = g.pedestrians?.keeper;
+    yield c.cam({ pos: V(-23, 1.62, z + 4.3), look: V(-10, 1.55, z + 3.8), fov: 62 });
     c.hideSay();
-    g.player.pos.set(0.4, 0, z + 2.8);
-    g.player.yaw = 0; g.player.pitch = 0.08;
-    yield c.toPlayer(1.4);
+    this.walkBob(c);
+    yield c.cam({ pos: V(-14.6, 1.62, z + 4.3), look: V(-12.6, 1.5, z + 12), dur: 3.6, ease: (k) => k });
+    // the shopkeeper spots you and waves
+    this.bobOn = false;
+    if (keeper) {
+      keeper.look = c.pos;
+      keeper.h.gesture('wave');
+      g.pedestrians.say(keeper.h, "Oh! Aren't you his grandkid? Welcome home!", 3.4);
+    }
+    const kp = keeper ? keeper.h.root.position : V(-12.6, 0, z + 14.4);
+    yield c.cam({ pos: V(-13.4, 1.6, z + 5.4), look: V(kp.x, 1.45, kp.z), dur: 3.2, fov: 50 });
+    this.bobOn = true;
+    yield c.cam({ pos: V(-6.5, 1.62, z + 4.4), look: V(0, 1.6, z), dur: 3.4, fov: 62, ease: (k) => k });
+    if (keeper) keeper.look = null;
+    // 3. the shutter, closed for years
+    yield c.cam({ pos: V(-1.2, 1.62, z + 5.8), look: V(0, 1.9, z), dur: 2.4 });
+    this.bobOn = false;
+    yield c.all(c.cam({ pos: V(0.2, 1.55, z + 4.4), look: V(0, 1.75, z), dur: 3.6 }), c.say("Grandpa's capsule toy shop. It's been shut for years.", 0.8));
+    // 4. a memory: the shutter up, the lanterns lit, kids crowding his machines
+    yield c.flash(() => {
+      c.memory(true);
+      c.hideSay();
+      this.memorySet(true);
+      actors.push(
+        this.actor(c, 'grandpa', 41, 0.9, 3.7, 0.15),
+        this.actor(c, 'kid', 12, -2.35, 0.35, -Math.PI / 2),
+        this.actor(c, 'schoolgirl', 7, -2.1, 1.45, -Math.PI / 2 - 0.35),
+        this.actor(c, 'schoolboy', 3, -1.55, -0.55, -Math.PI / 2 + 0.4),
+        this.actor(c, 'kid', 29, 2.1, z + 1.2, -2.6));
+      c.pos.set(2.6, 1.55, z + 5.6); c.look.set(-1.0, 1.0, 1.6);
+    });
+    const [gp, k1, k2, k3, k4] = actors;
+    k1.h.gesture('browse'); k3.h.gesture('point');
+    yield c.all(c.cam({ pos: V(1.9, 1.5, z + 3.3), look: V(-0.4, 1.15, 1.8), dur: 4.4 }), c.say('After school, kids lined up around the block for his machines.', 0.8),
+      c.call(() => { k2.h.gesture('cheer'); audio.play('gachan', { pos: V(-3.2, 0.5, 0.8), vol: 0.8 }); }));
+    gp.look = c.pos; gp.h.gesture('wave');
+    k4.h.gesture('wave');
+    g.pedestrians?.say(gp.h, 'One coin, one turn. Good luck!', 3.2);
+    yield c.cam({ pos: V(1.6, 1.55, z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.6 });
+    yield c.say('He knew every one of them by name.', 1.4);
+    // 5. back to now: dust, a locked shutter... and something moving behind it
+    yield c.flash(() => {
+      c.memory(false);
+      c.hideSay();
+      this.dropActors(actors);
+      this.memorySet(false);
+      c.pos.set(0.9, 0.55, z + 1.6); c.look.set(0, 0.25, z);
+    });
+    yield c.wait(0.6);
+    audio.play('meow', { pos: V(-0.3, 0.3, z - 0.6), vol: 0.7, pitch: 1.15 });
+    audio.play('thud', { pos: V(-0.3, 0.4, z), v: 0.25 });
+    yield c.say('...Was that a cat?', 0.9);
+    // 6. back to your own eyes: the key and the notebook
+    g.player.pos.set(0.4, 0, z + 4.2);
+    g.player.yaw = 0; g.player.pitch = 0.1;
+    yield c.all(c.cam({ pos: V(0.4, 1.62, z + 4.2), look: V(0.3, 2.0, z - 1), dur: 2.0 }), c.say('He left me his key and his notebook. Time to wake this place up.', 1.2));
+    c.hideSay();
+    bgm.play('garage', { fade: 4 });
+    yield c.toPlayer(0.8);
     this.flags.intro = true;
-    g.news("Press 1 and click to read Grandpa's notebook", 'Number keys or the mouse wheel switch items', 7000);
+    g.guide?.pulse();
   }
 }

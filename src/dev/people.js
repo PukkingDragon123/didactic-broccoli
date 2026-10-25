@@ -3,6 +3,7 @@
 //   ?show=faces          close-ups: presets x expressions                  (&presets=a,b &exprs=x,y &yaw=0.3 &dist=0.6)
 //   ?show=gestures       gestures (also while walking with &speed=1.2)    (&preset=a,b &names=wave,bow &t=1.2)
 //   ?show=walk           frames of the walk cycle past a fixed side camera (&preset=kid &speed=1.3 &n=8 &span=1.1)
+//   ?show=dance          filmstrip of the dance over &beats beats      (&preset=a,b &style=bounce,bon|all &n=8 &bpm=120 &at=4 &stop=1)
 //   ?show=turn           presets from several angles                       (&preset=a,b &angs=0,1.57 &zoom=head|upper)
 //   ?show=bubbles        a little street scene with people chatting        (&t=2.5 &replace=1 &cz=2.4 &cx=-1)
 //   ?show=atlas          the painted 256x256 atlases (&face=1: face block)  (&presets=a,b &scale=3 &expr=happy)
@@ -203,6 +204,26 @@ else if (show === 'gestures') {
     tile(w, h, hm.spec.name, g, () => { only([hm]); frameBody(hm, num('yaw', 0.6), num('pitch', 0.08)); });
   }));
 }
+else if (show === 'dance') {
+  // one row per preset (or per style with &style=all): n frames spread over `beats` beats, starting `at` beats in
+  const ids = Q.get('preset') ? Q.get('preset').split(',') : ['salaryman'];
+  const styles = Q.get('style') === 'all' ? ['bounce', 'disco', 'step', 'wave', 'bon', 'twist', 'robot'] : (Q.get('style') || '').split(',').map((x) => x || undefined);
+  const n = num('n', 8), beats = num('beats', 2), bpm = num('bpm', 120), at = num('at', 4), w = num('w', 170), h = num('h', 280);
+  grid.style.gridTemplateColumns = `repeat(${n}, ${w}px)`;
+  let row = 0;
+  for (const id of ids) for (const st of styles) {
+    for (let i = 0; i < n; i++) {
+      const hm = place(createHuman({ preset: id, seed: seed + row, lazy: false }), i * 3, row * 3);
+      settle(hm, 1);
+      hm.gesture('dance', { bpm, style: st, mirror: Q.has('mirror') ? Q.get('mirror') === '1' : undefined });
+      const T = (at + (beats * i) / n) * 60 / bpm, dt = 1 / 120;
+      for (let t = 0; t < T - 1e-6; t += dt) hm.update(dt, Q.has('look') ? { lookAt: new THREE.Vector3(i * 3, 1.5, row * 3 + 5) } : {});
+      if (Q.has('stop')) { hm.stopDance(); settle(hm, num('stop', 1), {}, dt); }
+      tile(w, h, `${hm.spec.name} ${hm.gestures[0]?.pose && (hm.gestures.find((g) => g.name === 'dance')?.pose.style || '')}`, `b ${(at + beats * i / n).toFixed(2)}`, () => { only([hm]); frameBody(hm, num('yaw', 0.0), num('pitch', 0.06)); });
+    }
+    row++;
+  }
+}
 else if (show === 'perf') {
   const N = num('n', 20), out = [];
   let t0 = performance.now();
@@ -274,6 +295,27 @@ if (show === 'bubbles') {
   scene.updateMatrixWorld(true);
   R.render(dt, T);
 }
+if (show === 'avatar') {
+  // the player's avatar wearing each cosmetic (&items=dino,chicken &look=hair:bob,body:f &pose=selfie &zoom=head|upper &t=1.2)
+  const { createAvatarHuman, COSMETICS, AVATAR_DEFAULT } = await import('../people/avatar.js');
+  const look = Object.fromEntries((Q.get('look') || '').split(',').filter(Boolean).map((kv) => kv.split(':')));
+  const items = Q.get('items') ? Q.get('items').split(',') : ['none', ...COSMETICS.map((c) => c.id)];
+  const w = num('w', 200), h = num('h', 320);
+  grid.style.gridTemplateColumns = `repeat(${Math.min(items.length, num('cols', 6))}, ${w}px)`;
+  items.forEach((id, i) => {
+    const c = COSMETICS.find((x) => x.id === id);
+    const a = { ...AVATAR_DEFAULT, ...look };
+    if (c) a[c.slot] = id;
+    for (const extra of (Q.get('also') || '').split(',').filter(Boolean)) { const e = COSMETICS.find((x) => x.id === extra); if (e) a[e.slot] = extra; }
+    const hm = place(createAvatarHuman(a), i * 3);
+    settle(hm, 1);
+    if (Q.get('pose')) hm.gesture(Q.get('pose'), { side: num('side', 1) });
+    if (Q.get('expr')) hm.setExpression(Q.get('expr'));
+    settle(hm, num('t', 1.2), { speed: num('speed', 0) });
+    tile(w, h, c ? c.name : 'Default', c ? `¥${c.price}` : '', () => { only([hm]); frameBody(hm, num('yaw', 0.5), num('pitch', 0.08)); });
+  });
+}
+
 await renderTiles();
 document.getElementById('info').textContent = `${people.length} humans`;
 window.__ready = true;

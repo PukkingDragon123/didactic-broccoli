@@ -87,7 +87,7 @@ export class Pedestrians {
     k.greetT -= dt;
     if (near && !k.near && k.greetT <= 0) { this.say(k.h, pick(LINES.keeper)); k.h.gesture('bow'); k.greetT = 25; }
     k.near = near;
-    k.h.update(dt, { speed: 0, lookAt: near ? this.game.camera.position : null, talking: this.bubbles.isTalking(k.h) });
+    k.h.update(dt, { speed: 0, lookAt: k.look || (near ? this.game.camera.position : null), talking: this.bubbles.isTalking(k.h) });
   }
 
   // ------------------------------------------------------------------ spawning

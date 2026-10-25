@@ -1,11 +1,12 @@
 // Low-poly realistic humans for the street and the shop.
 //   const h = createHuman({ preset: 'salaryman', seed: 3 });   scene.add(h.root);
 //   h.update(dt, { speed, lookAt, talking });  h.setExpression('happy', 2);  h.gesture('wave');
+//   h.gesture('dance', { bpm: 120, style: 'bon', clock: () => songTime });  h.stopDance();   (styles: DANCES)
 //   const bubbles = new Bubbles(camera);  bubbles.say(h, 'Nice sunset today.');  bubbles.update(dt);
 import { Human } from './Human.js';
 import { HUMAN_PRESETS, makeSpec, streetPreset } from './presets.js';
 export { Bubbles } from './Bubbles.js';
-export { GESTURES } from './gestures.js';
+export { GESTURES, DANCES } from './gestures.js';
 export { EXPRESSIONS } from './face.js';
 export { HUMAN_PRESETS, Human };
 

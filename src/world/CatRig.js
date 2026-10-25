@@ -1,5 +1,6 @@
 // A jointed voxel cat: body, head, four legs and a 7-segment tail, posed and animated in code.
-// Poses: walk, sit, groom, sleep (loaf), held. The calico coat, eyes and eyelids are voxel-painted.
+// Poses: walk, sit, groom, sleep (loaf), held, drink, groove (sits and bobs along to a beat: setPose('groove',
+// { bpm, phase, clock })). The calico coat, eyes and eyelids are voxel-painted.
 import * as THREE from 'three';
 import { VoxelModel, gloss } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
@@ -102,7 +103,8 @@ export class CatRig {
       parent = seg;
     }
     this.pose = 'walk';
-    this.blend = { walk: 1, sit: 0, sleep: 0, groom: 0, held: 0, drink: 0 };
+    this.blend = { walk: 1, sit: 0, sleep: 0, groom: 0, held: 0, drink: 0, groove: 0 };
+    this.groove = { bpm: 120, phase: 0, clock: null }; this.grooveT = 0;
     this.t = Math.random() * 10;
     this.walkT = 0;
     this.speed = 0;
@@ -110,42 +112,54 @@ export class CatRig {
     this.lookYaw = 0;
   }
 
-  setPose(p) { this.pose = p; }
+  /** opts (groove): { bpm = 120, phase = 0 (beats), clock: () => seconds shared with the music / dancers }. */
+  setPose(p, opts) {
+    if (p === 'groove' && this.pose !== 'groove') this.grooveT = 0;
+    if (opts) Object.assign(this.groove, opts);
+    this.pose = p;
+  }
 
   update(dt, speed = 0) {
     this.t += dt;
     for (const k of Object.keys(this.blend)) this.blend[k] += ((k === this.pose ? 1 : 0) - this.blend[k]) * Math.min(1, dt * 5);
-    const B = this.blend;
+    const B = this.blend, G = B.groove, Bs = B.sit + G; // grooving = sitting + rhythm
     this.walkT += dt * speed * 22;
+    // groove: beats from the shared clock; a nod on every beat, a sway over each bar, paws tapping in turn
+    this.grooveT += dt;
+    const gr = this.groove, beat = (gr.clock ? gr.clock() : this.grooveT) * (gr.bpm || 120) / 60 + (gr.phase || 0);
+    const nod = ((1 + Math.cos(Math.PI * 2 * (beat - 0.08))) / 2) ** 1.5, sway = Math.sin(Math.PI * beat / 2);
+    const tap = Math.sin(Math.PI * beat), tapR = Math.max(0, tap) ** 2 * G, tapL = Math.max(0, -tap) ** 2 * G;
     const sw = Math.sin(this.walkT), moving = Math.min(1, speed * 3);
     const legH = 10 * VS;
     // hip height & pitch
-    const y = legH * (B.walk + B.groom * 0.95 + B.drink * 0.86) + legH * 0.55 * B.sit + 6 * VS * B.sleep + 0.02 * B.held + Math.abs(Math.cos(this.walkT)) * 0.006 * moving * B.walk;
-    this.hip.position.set(0, y, -6 * VS * B.sit);
-    this.hip.rotation.x = -0.75 * B.sit - 1.35 * B.held + 0.16 * B.drink;
+    const y = legH * (B.walk + B.groom * 0.95 + B.drink * 0.86) + legH * 0.55 * Bs + 6 * VS * B.sleep + 0.02 * B.held + Math.abs(Math.cos(this.walkT)) * 0.006 * moving * B.walk;
+    this.hip.position.set(0, y - nod * 0.004 * G, -6 * VS * Bs);
+    this.hip.rotation.x = -0.75 * Bs - 1.35 * B.held + 0.16 * B.drink;
+    this.hip.rotation.z = 0.07 * sway * G;
     this.hip.position.y += 0.12 * B.held;
     // legs
     const L = this.legs;
-    L.FL.rotation.x = sw * 0.6 * moving * B.walk + 0.75 * B.sit - 1.5 * B.sleep + 0.2 * B.held - 0.25 * B.drink;
-    L.FR.rotation.x = -sw * 0.6 * moving * B.walk + 0.75 * B.sit - 1.5 * B.sleep + 0.2 * B.held + Math.max(0, Math.sin(this.t * 6)) * -1.4 * B.groom - 0.25 * B.drink;
-    L.BL.rotation.x = -sw * 0.6 * moving * B.walk - 0.9 * B.sit + 1.5 * B.sleep + 0.4 * B.held;
-    L.BR.rotation.x = sw * 0.6 * moving * B.walk - 0.9 * B.sit + 1.5 * B.sleep + 0.4 * B.held;
+    L.FL.rotation.x = sw * 0.6 * moving * B.walk + 0.75 * Bs - 1.5 * B.sleep + 0.2 * B.held - 0.25 * B.drink - 0.9 * tapL;
+    L.FR.rotation.x = -sw * 0.6 * moving * B.walk + 0.75 * Bs - 1.5 * B.sleep + 0.2 * B.held + Math.max(0, Math.sin(this.t * 6)) * -1.4 * B.groom - 0.25 * B.drink - 0.9 * tapR;
+    L.BL.rotation.x = -sw * 0.6 * moving * B.walk - 0.9 * Bs + 1.5 * B.sleep + 0.4 * B.held;
+    L.BR.rotation.x = sw * 0.6 * moving * B.walk - 0.9 * Bs + 1.5 * B.sleep + 0.4 * B.held;
     for (const k of ['FL', 'FR', 'BL', 'BR']) L[k].scale.y = 1 - 0.35 * B.sleep;
     // head: looks around, bobs while walking, ducks to groom, rests when sleeping
-    const look = Math.sin(this.t * 0.4) * 0.5 * (B.sit + B.walk * (1 - moving)) + this.lookYaw;
-    this.head.rotation.set(0.75 * B.sit + 0.6 * B.held + Math.sin(this.walkT * 2) * 0.05 * moving + (0.5 + Math.sin(this.t * 6) * 0.15) * B.groom + 0.25 * B.sleep + (0.95 + Math.sin(this.t * 11) * 0.06) * B.drink, look * (1 - B.sleep - B.drink), -0.25 * B.groom);
+    const look = Math.sin(this.t * 0.4) * 0.5 * (Bs + B.walk * (1 - moving)) + this.lookYaw;
+    this.head.rotation.set(0.75 * Bs + 0.16 * nod * G - 0.06 * G + 0.6 * B.held + Math.sin(this.walkT * 2) * 0.05 * moving + (0.5 + Math.sin(this.t * 6) * 0.15) * B.groom + 0.25 * B.sleep + (0.95 + Math.sin(this.t * 11) * 0.06) * B.drink, look * (1 - B.sleep - B.drink) * (1 - G) + 0.12 * sway * G, -0.25 * B.groom - 0.26 * sway * G);
     this.neck.position.y = (4 - 3 * B.sleep) * VS;
     // tail: up and curling while walking, curled around when sitting/sleeping, swishing when held
     this.tail.forEach((s, i) => {
       const k = i / 6;
-      const swish = Math.sin(this.t * (B.held ? 5 : 2) - i * 0.6) * (0.08 + 0.25 * B.held + 0.1 * B.sit);
+      const swish = Math.sin(this.t * (B.held ? 5 : 2) - i * 0.6) * (0.08 + 0.25 * B.held + 0.1 * B.sit) * (1 - G) + Math.sin(Math.PI * beat - i * 0.45) * 0.24 * G;
       // +x lifts the tail (segments extend toward -z)
-      s.rotation.x = (i === 0 ? 1.15 : 0.1 + k * 0.18) * B.walk + (i === 0 ? -0.55 : -0.04) * B.sit + (i === 0 ? -0.35 : -0.02) * B.sleep + (i === 0 ? -0.9 : 0.05) * B.held + (i === 0 ? 0.6 : 0.05) * B.groom;
-      s.rotation.y = swish + (0.35 * B.sit + 0.45 * B.sleep) * (i > 0 ? 1 : 0.3);
+      s.rotation.x = (i === 0 ? 0.5 : 0.05) * G + (i === 0 ? 1.15 : 0.1 + k * 0.18) * B.walk + (i === 0 ? -0.55 : -0.04) * Bs + (i === 0 ? -0.35 : -0.02) * B.sleep + (i === 0 ? -0.9 : 0.05) * B.held + (i === 0 ? 0.6 : 0.05) * B.groom;
+      s.rotation.y = swish + (0.35 * B.sit + 0.1 * G + 0.45 * B.sleep) * (i > 0 ? 1 : 0.3);
     });
     // blinking; eyes closed when asleep
     this.blinkT -= dt;
     if (this.blinkT < 0) this.blinkT = 2 + Math.random() * 4;
-    this.lids.visible = B.sleep > 0.5 || this.blinkT < 0.12;
+    // a slow, contented blink every two bars while grooving
+    this.lids.visible = B.sleep > 0.5 || this.blinkT < 0.12 || (G > 0.5 && beat - Math.floor(beat / 8) * 8 > 7.6);
   }
 }

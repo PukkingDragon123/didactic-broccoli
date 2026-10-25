@@ -109,16 +109,22 @@ export class Human {
     if (name !== this.expr) { this.exprPrev = this.expr; this.expr = name; this.exprK = 0; }
     this.exprHold = hold;
   }
-  /** Start a gesture (see GESTURES). opts: { dur, hold, at: Vector3 (for 'point') }. */
+  /** Start a gesture (see GESTURES). opts: { dur, hold, at: Vector3 (for 'point') }; 'dance': { bpm, phase, style, ... }
+   *  (see dancePose in gestures.js). A dance being replaced finishes its step first. */
   gesture(name, opts = {}) {
     const G = GESTURES[name];
     if (!G) return;
-    for (const g of this.gestures) g.out = true;
+    for (const g of this.gestures) this.endGesture(g);
     const dur = opts.hold ? Infinity : opts.dur ?? G.dur;
     this.gestures.push({ name, t: 0, w: 0, v: 0, dur, out: false, opts, pose: newPose() });
-    if (G.expr && this.expr === 'neutral') this.setExpression(G.expr, Math.min(dur, 2.5));
+    if (G.legs) this.setExpression(G.expr, 0); // happy for as long as it lasts
+    else if (G.expr && this.expr === 'neutral') this.setExpression(G.expr, Math.min(dur, 2.5));
   }
-  clearGesture() { for (const g of this.gestures) g.out = true; }
+  /** Fade out the current gesture(s); a dance first finishes its step (both feet home), then fades. */
+  clearGesture() { for (const g of this.gestures) this.endGesture(g); }
+  stopDance() { for (const g of this.gestures) if (g.name === 'dance') this.endGesture(g); }
+  endGesture(g) { if (GESTURES[g.name]?.legs) g.stop = true; else g.out = true; }
+  get dancing() { return this.gestures.some((g) => g.name === 'dance' && !g.out && !g.stop); }
   get currentGesture() { const g = this.gestures.find((x) => !x.out && x.name[0] !== '_'); return g ? g.name : null; }
   /** World position ~0.25 m above the head (speech bubbles). */
   headTop(out = new THREE.Vector3()) {
@@ -182,6 +188,9 @@ export class Human {
     this.skirtS = { x: 0, s: 1, v: 0 };
     this.feet = [{ x: 0, y: 0, z: 0, p: 0 }, { x: 0, y: 0, z: 0, p: 0 }];
     this.thighFwd = [0, 0];
+    // full-body gesture offsets (dance): weight, hips [dx, dy, dz], hips rotation, feet [dx, dz, lift, pitch]
+    this.dnc = { w: 0, fw: 0, hips: [0, 0, 0], rot: [0, 0, 0], feet: [[0, 0, 0, 0], [0, 0, 0, 0]] };
+    this.hpPrev = null; this.hpV = new THREE.Vector3(); this.hpA = new THREE.Vector3();
   }
 
   update(dt, { speed = 0, lookAt = null, talking = false } = {}) {
@@ -202,6 +211,38 @@ export class Human {
       this.vel.lerp(_v, 1 - Math.exp(-dt * 20));
     }
     this.prevPos.copy(pos); this.hasPrev = true;
+    // --- idle fidgets: only while standing around with nothing else to do
+    const busy = this.gestures.some((g) => !g.out && g.name[0] !== '_');
+    if (this.spd < 0.05 && !busy && !talking && !lookAt) {
+      this.fidgetT -= dt;
+      if (this.fidgetT < 0) {
+        this.fidgetT = 7 + Math.random() * 14;
+        const f = FIDGETS[Math.floor(Math.random() * FIDGETS.length)];
+        if (!(f === '_watch' && this.holdL)) { for (const g of this.gestures) g.out = true; this.gestures.push({ name: f, t: 0, w: 0, v: 0, dur: GESTURES[f].dur, out: false, opts: {}, pose: newPose() }); }
+      }
+    } else if (this.spd > 0.12 || busy) for (const g of this.gestures) if (g.name[0] === '_') g.out = true;
+    // --- gestures (spring weights; finished ones fade out). Full-body ones (dance) also drive the hips and feet.
+    let gW = 0;
+    const D = this.dnc;
+    D.w = D.fw = 0; D.hips.fill(0); D.rot.fill(0); D.feet[0].fill(0); D.feet[1].fill(0);
+    for (let i = this.gestures.length - 1; i >= 0; i--) {
+      const g = this.gestures[i], G = GESTURES[g.name] || {}, Q = g.pose;
+      g.t += dt;
+      if (g.t > g.dur) this.endGesture(g);
+      if (g.stop && Q.home) g.out = true; // a stopped dance ends once its feet are home
+      g.v += (((g.out ? 0 : 1) - g.w) * 110 - g.v * 21) * dt; g.w = clamp(g.w + g.v * dt, 0, 1);
+      if (g.out && g.w < 0.01 && g.v <= 0.05 && !(Q.fw > 0)) { this.gestures.splice(i, 1); if (G.legs && this.expr === G.expr) this.setExpression('neutral'); continue; }
+      gesturePose(g.name, g.t, this, Q, g.opts);
+      if (!G.legs) { gW = Math.max(gW, g.w); continue; }
+      // the feet only join in / drop out while the step pattern is home, so they never slide
+      if (Q.home) Q.fw = g.out ? 0 : 1;
+      const w = smooth(g.w);
+      D.w += w; D.fw += Q.fw;
+      for (let j = 0; j < 3; j++) { D.hips[j] += Q.hips[j] * w; D.rot[j] += Q.hipsR[j] * w; }
+      for (let s = 0; s < 2; s++) for (let j = 0; j < 4; j++) D.feet[s][j] += Q.feet[s][j] * Q.fw;
+    }
+    if (D.fw > 1) for (const f of D.feet) for (let j = 0; j < 4; j++) f[j] /= D.fw;
+    if (D.w > 1) { for (let j = 0; j < 3; j++) { D.hips[j] /= D.w; D.rot[j] /= D.w; } D.w = 1; }
     // --- locomotion: the gait phase advances with the distance travelled
     const turnStep = Math.min(0.32, Math.abs(this.yawRate) * 0.14) * (1 - smooth(speed / 0.4));
     const spd = Math.max(0, speed) + turnStep;
@@ -221,7 +262,7 @@ export class Human {
     this.shiftT -= dt;
     if (this.shiftT < 0) { this.shiftT = 3 + Math.random() * 6; this.shiftTarget = Math.random() < 0.25 ? 0 : (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.4); }
     this.shiftV += ((this.shiftTarget - this.shift) * 5 - this.shiftV * 4.2) * dt; this.shift += this.shiftV * dt;
-    const idleW = 1 - W, sh = this.shift * idleW;
+    const idleW = 1 - W, sh = this.shift * idleW * (1 - D.w);
     for (let s = 0; s < 2; s++) {
       const sd = s === 0 ? 1 : -1;
       const q = (this.phase + (s === 0 ? 0 : 0.5)) % 1;
@@ -246,13 +287,20 @@ export class Human {
       const ix = sd * P.hipX * 1.05, iz = (sd > 0 ? 0.03 : -0.012) * (H / 1.7);
       const F = this.feet[s];
       F.x = lerp(ix, sd * P.hipX * 0.9, W); F.y = lerp(ah, ay, W); F.z = lerp(iz, az, W); F.p = pitch * W;
+      // dance steps on top of the stance: offset, lift, heel / toe raise (pivoting on the ball / heel: no sliding)
+      const d = D.feet[s];
+      if (d[0] || d[1] || d[2] || d[3]) {
+        const p = d[3] * idleW, cp = Math.cos(p), spp = Math.sin(p), lv = p > 0 ? ball : -heel;
+        F.x += d[0] * idleW; F.z += d[1] * idleW + (p > 0 ? ball : heel) * (1 - cp) * Math.sign(p) + ah * spp; F.p += p;
+        F.y += d[2] * idleW + ah * (cp - 1) + lv * spp;
+      }
     }
     // pelvis: sway over the stance leg, rotate with the stride, roll with the swing leg
     const sway = Math.cos(Math.PI * 2 * (this.phase - 0.3)) * W;
     const fwdL = (this.feet[0].z - this.feet[1].z) / Math.max(0.05, 2 * half);
-    const hipsYaw = -0.12 * fwdL * W * Math.min(1, 0.3 + this.spd);
-    const hipsRoll = 0.035 * sway + sh * 0.04;
-    const hipsX = (0.014 * sway + sh * 0.024) * (H / 1.7);
+    const hipsYaw = -0.12 * fwdL * W * Math.min(1, 0.3 + this.spd) + D.rot[1];
+    const hipsRoll = 0.035 * sway + sh * 0.04 + D.rot[2];
+    const hipsX = (0.014 * sway + sh * 0.024) * (H / 1.7) + D.hips[0];
     const hunch = st.hunch;
     // hip height: the highest that keeps both legs reachable (gives the natural bob) + a style bounce
     let hy = this.J.hips[1] - st.knee * H - hunch * 0.03 * H;
@@ -278,7 +326,7 @@ export class Human {
     this.glance[0] = lerp(this.glance[0], this.glanceTarget[0], 1 - Math.exp(-dt * 2.5));
     this.glance[1] = lerp(this.glance[1], this.glanceTarget[1], 1 - Math.exp(-dt * 2.5));
     // --- look-at (yaw / pitch relative to the body)
-    let ly = this.glance[0] + clamp(this.yawRate * 0.2, -0.55, 0.55), lp = this.glance[1];
+    let ly = this.glance[0] * (1 - D.w * 0.5) + clamp(this.yawRate * 0.2, -0.55, 0.55), lp = this.glance[1];
     if (lookAt) {
       this.root.updateWorldMatrix(true, false);
       _v.copy(lookAt);
@@ -288,27 +336,6 @@ export class Human {
     }
     for (let i = 0; i < 2; i++) { this.lookV[i] += (((i ? lp : ly) - this.look[i]) * 42 - this.lookV[i] * 12) * dt; this.look[i] += this.lookV[i] * dt; }
     const lookYaw = this.look[0], lookPitch = this.look[1];
-    // --- idle fidgets: only while standing around with nothing else to do
-    const busy = this.gestures.some((g) => !g.out && g.name[0] !== '_');
-    if (this.spd < 0.05 && !busy && !talking && !lookAt) {
-      this.fidgetT -= dt;
-      if (this.fidgetT < 0) {
-        this.fidgetT = 7 + Math.random() * 14;
-        const f = FIDGETS[Math.floor(Math.random() * FIDGETS.length)];
-        if (!(f === '_watch' && this.holdL)) { for (const g of this.gestures) g.out = true; this.gestures.push({ name: f, t: 0, w: 0, v: 0, dur: GESTURES[f].dur, out: false, opts: {}, pose: newPose() }); }
-      }
-    } else if (this.spd > 0.12 || busy) for (const g of this.gestures) if (g.name[0] === '_') g.out = true;
-    // --- gestures (spring weights; finished ones fade out)
-    let gW = 0;
-    for (let i = this.gestures.length - 1; i >= 0; i--) {
-      const g = this.gestures[i];
-      g.t += dt;
-      if (g.t > g.dur) g.out = true;
-      g.v += (((g.out ? 0 : 1) - g.w) * 110 - g.v * 21) * dt; g.w = clamp(g.w + g.v * dt, 0, 1);
-      if (g.out && g.w < 0.01 && g.v <= 0.05) { this.gestures.splice(i, 1); continue; }
-      gesturePose(g.name, g.t, this, g.pose, g.opts);
-      gW = Math.max(gW, g.w);
-    }
     // --- expression timing + body language
     if (this.exprHold > 0) { this.exprHold -= dt; if (this.exprHold <= 0) { this.exprPrev = this.expr; this.expr = 'neutral'; this.exprK = 0; } }
     this.exprK = Math.min(1, this.exprK + dt / 0.16);
@@ -319,8 +346,8 @@ export class Human {
     this.talkHold = Math.max(0, this.talkHold - dt);
     this.talkAmt = lerp(this.talkAmt, talkNow ? 1 : 0, 1 - Math.exp(-dt * 8));
     // ================================================================ pose the bones
-    b.hips.position.set(R.hips.x + hipsX, this.hipsY + this.mood[2] * Math.abs(Math.sin(this.t * 9)) * 0.008 * H, R.hips.z - hunch * 0.02 * H);
-    const hipsPitch = 0.03 * this.spd * W - hunch * 0.1;
+    b.hips.position.set(R.hips.x + hipsX, this.hipsY + this.mood[2] * Math.abs(Math.sin(this.t * 9)) * 0.008 * H * (1 - D.w) + D.hips[1], R.hips.z - hunch * 0.02 * H + D.hips[2]);
+    const hipsPitch = 0.03 * this.spd * W - hunch * 0.1 + D.rot[0];
     setQ(b.hips, hipsPitch, hipsYaw, hipsRoll);
     const lean = st.lean * Math.min(1.5, this.spd) * W;
     const talkNod = this.talkAmt * Math.sin(this.t * 5.3) * 0.025;
@@ -360,10 +387,10 @@ export class Human {
     for (const g of this.gestures) {
       const w = smooth(g.w), G = g.pose;
       if (w <= 0.001) continue;
-      if (G.L && (!this.holdL || g.name === 'carry')) this.armIK('L', G.L, w);
+      if (G.L && (!this.holdL || g.name === 'carry' || g.name === 'dance')) this.armIK('L', G.L, w);
       if (G.R) this.armIK('R', G.R, w);
       addQ(b.spine, G.spine, w); addQ(b.chest, G.chest, w); addQ(b.neck, G.neck, w); addQ(b.head, G.head, w);
-      b.hips.position.y += G.hips[1] * w; b.hips.position.z += G.hips[2] * w;
+      if (!GESTURES[g.name]?.legs) { b.hips.position.y += G.hips[1] * w; b.hips.position.z += G.hips[2] * w; }
       lift += G.lift * w;
       if (G.prop && w > 0.55) { b.prop.scale.setScalar(1); this.propAt = G.prop; }
       if (G.box && w > 0.25) b.box.scale.setScalar(1);
@@ -455,12 +482,18 @@ export class Human {
       S.x = clamp(S.x + S.vx * dt, -0.9, 0.9); S.z = clamp(S.z + S.vz * dt, -0.7, 0.7);
     };
     const turn = this.yawRate;
+    // the hips' own bounce / sway (dancing) shakes them too
+    const hp = b.hips.position, hv = _v.set(0, 0, 0);
+    if (this.hpPrev) { hv.subVectors(hp, this.hpPrev).divideScalar(dt); this.hpA.subVectors(hv, this.hpV).divideScalar(dt).clampLength(0, 20); this.hpV.copy(hv); }
+    else this.hpPrev = new THREE.Vector3();
+    this.hpPrev.copy(hp);
+    const hay = this.hpA.y * this.dnc.w, hax = this.hpA.x * this.dnc.w;
     for (let i = 0; i < 2; i++) {
       const T = this.tails[i];
-      spring(T, az * 0.9 + bounce * 2.5, -ax * 0.8 + sway * 5 + turn * 1.5, 40, 5);
+      spring(T, az * 0.9 + bounce * 2.5 + hay * 0.8, -ax * 0.8 + sway * 5 + turn * 1.5 - hax * 0.8, 40, 5);
       setQ(i === 0 ? b.tailL : b.tailR, T.x * 0.6 + W * this.spd * 0.18, 0, T.z * 0.6);
     }
-    spring(this.bagS, az * 0.6 + bounce * 1.6, -ax * 0.6 + sway * 3 + turn, 30, 4.5);
+    spring(this.bagS, az * 0.6 + bounce * 1.6 + hay * 0.6, -ax * 0.6 + sway * 3 + turn - hax * 0.6, 30, 4.5);
     setQ(b.bag, this.bagS.x * 0.3, 0, this.bagS.z * 0.3);
     // skirt follows the thighs and widens when the legs spread
     const tl = this.thighFwd[0], tr = this.thighFwd[1];
@@ -534,4 +567,4 @@ function addQ(bone, a, w) {
   _q.setFromEuler(_e.set(a[0] * w, a[1] * w, a[2] * w, 'YXZ'));
   bone.quaternion.multiply(_q);
 }
-function newPose() { return { L: null, R: null, spine: [0, 0, 0], chest: [0, 0, 0], neck: [0, 0, 0], head: [0, 0, 0], hips: [0, 0, 0], lift: 0, prop: false, box: false, eyes: null }; }
+function newPose() { return { L: null, R: null, spine: [0, 0, 0], chest: [0, 0, 0], neck: [0, 0, 0], head: [0, 0, 0], hips: [0, 0, 0], hipsR: [0, 0, 0], feet: [[0, 0, 0, 0], [0, 0, 0, 0]], home: true, fw: 0, lift: 0, prop: false, box: false, eyes: null }; }

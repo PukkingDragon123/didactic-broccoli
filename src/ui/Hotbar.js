@@ -7,6 +7,7 @@ import { getItem } from '../data/series/index.js';
 import { makeCapsule } from '../game/Capsule.js';
 import { SLOTS } from '../game/Held.js';
 import { boxLabel } from '../game/Delivery.js';
+import { CatRig } from '../world/CatRig.js';
 
 export class Hotbar {
   constructor(game) {
@@ -42,7 +43,15 @@ export class Hotbar {
       }
       return this.capCache.get(k);
     }
-    if (it.kind === 'cat') return iconURL('cat', 2);
+    if (it.kind === 'cat') {
+      if (!this.catURL) {
+        const rig = new CatRig();
+        rig.setPose('sit');
+        for (let i = 0; i < 40; i++) rig.update(0.05, 0);
+        this.catURL = g.thumbs.renderObject(rig.root, 96, { side: 0.8, up: 0.25, outline: false }).toDataURL();
+      }
+      return this.catURL;
+    }
     return iconURL('box', 2);
   }
 
@@ -70,6 +79,7 @@ export class Hotbar {
       const img = s.querySelector('.ico');
       const url = this.iconFor(it);
       if (url) { if (img.src !== url) img.src = url; img.style.display = ''; } else img.style.display = 'none';
+      img.classList.toggle('photo', it?.kind === 'cat');
       s.querySelector('.count').textContent = it?.data?.uses ? it.data.uses : '';
     });
     const it = h.item;
