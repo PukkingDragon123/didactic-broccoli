@@ -45,6 +45,7 @@ const PALM_C = [-0.0135, -0.05, 0.003]; // palm surface centre (left hand)
 const PINCH_C = [-0.022, -0.118, 0.022]; // between thumb and index tips
 const FIST_C = [-0.028, -0.078, 0.004]; // inside a closed fist
 const NBONES = BONES.length;
+const FAR = /^(crank|coin|steady|wrench|lift|tap|give)/; // hand poses on things out in the world
 const fingBone = (h, f, j) => NBONES + h * 15 + f * 3 + j; // h: 0 left, 1 right; f: 0-3 fingers, 4 thumb
 
 /** Low-poly segment: chamfered rings stacked along y, flat shaded, rigidly skinned to `bone`. rings: [y, hx, hz, cx?, cz?] */
@@ -119,7 +120,7 @@ export class FPBody {
     this.rig.visible = false;
     game.held.anchor.add(this.rig);
     this.hands = [0, 1].map((h) => ({
-      h, sd: h ? -1 : 1, src: '', k: 1, dur: 0.2, bump: 0, sb: 0,
+      h, sd: h ? -1 : 1, src: '', k: 1, dur: 0.2, bump: 0, sb: 0, farT: 0, bend: 0,
       want: new Pose(), out: new Pose(), from: new Pose(), shoulder: V(), natural: new Pose(),
     }));
     this.t = 0;
@@ -482,7 +483,9 @@ export class FPBody {
   // ------------------------------------------------------------------ what each hand wants this frame
   pose(H) {
     const W = H.want;
-    const src = this.choose(H, W);
+    let src = this.choose(H, W);
+    H.bend = 0;
+    if (FAR.test(src)) src = this.reachCap(H, W, src); else H.farT = 0;
     if (src !== H.src) {
       // cross-fade from wherever the hand is now
       H.from.copy(H.out);
@@ -492,6 +495,25 @@ export class FPBody {
       if (!H.src) H.k = 1;
       H.src = src;
     }
+  }
+
+  /**
+   * Things in the world out of arm's reach (a handle you click from across the room, a passer-by...): the hand reaches
+   * out towards it only as far as the arm goes, open as if grabbing, then comes back - never a stretched pole.
+   */
+  reachCap(H, W, src) {
+    const S = H.shoulder, arm = (this.la + this.lc) * this.bs, reach = arm * 0.88;
+    const d = _v2.subVectors(W.p, S), L = d.length();
+    // things below you (a machine's handle, its coin slot): you bend at the waist to reach them
+    const bend = clamp(d.dot(this.dirToAnchor(_v3.set(0, -1, 0), _v3)) * 0.45, 0, 0.22);
+    if (L <= arm * 0.99 + bend) { H.farT = 0; H.bend = bend; return src; }
+    H.farT += this.dt;
+    if (H.farT > 0.5) return this.freePose(H, W);
+    d.multiplyScalar(1 / L);
+    W.p.copy(S).addScaledVector(d, reach);
+    this.handQ(H.sd, N(H.sd * 0.45, -1, 0.1, _v3), d, W.q);
+    W.f[0] = 0.28; W.f[1] = 0.45; W.f[2] = 0.3; W.f[3] = 0.2; W.f[4] = 0;
+    return 'reach';
   }
 
   /** Fill W for hand H; returns a key naming what the hand is doing (a change starts a cross-fade). */
@@ -579,10 +601,6 @@ export class FPBody {
   }
 
   setGrip(H, W, contact, palm, dir, f, opts = {}) {
-    // out of reach (a handle across the room, an item still flying in): slide it along the eye ray, so the hand
-    // still covers it on screen
-    const d = contact.length(), max = 0.52 * this.bs;
-    if (d > max) contact.multiplyScalar(max / d);
     this.handQ(H.sd, palm, dir, W.q, opts.axis);
     this.wrist(H, contact, W.q, opts.at || PALM_C, W.p);
     for (let i = 0; i < 5; i++) W.f[i] = f[i] ?? 0;
@@ -626,9 +644,12 @@ export class FPBody {
       if (!R) return null;
       this.ip(0.5, 0, 0.5, c);
       if (pose === 'inspect' || held.inspecting) {
+        // fingers under the base from the right, thumb over its front edge: the forearm angles in from the lower right
         this.idir(0, 1, 0, up);
-        c.addScaledVector(up, -0.004);
-        this.setGrip(H, W, c, up, N(-0.35, 0, -1, _v2), [0.55, 0.12, 0.8, 0.45]);
+        const rt = _v3.set(1, -0.25, 0.35).addScaledVector(up, -_v3.dot(up)).normalize();
+        c.addScaledVector(up, -0.005).addScaledVector(rt, 0.04 * this.bs);
+        const palm = _v4.copy(up).addScaledVector(rt, -0.35).normalize();
+        this.setGrip(H, W, c, palm.clone(), _v5.copy(rt).negate().addScaledVector(up, 0.1).clone(), [0.42, 0.15, 0.75, 0.4]);
         return 'inspect';
       }
       c.y -= 0.004;
@@ -914,6 +935,7 @@ export class FPBody {
     let x = -sd * (0.28 - Math.max(0, fw) * 0.02), y = -0.224 + br * 0.004 + fw * 0.03 - step * 0.008 * wk, z = -0.32 - fw * 0.075;
     x = lerp(x, -sd * 0.24, run); y = lerp(y, -0.24 + Math.max(0, s) * 0.07 - step * 0.01, run); z = lerp(z, -0.3 - s * 0.14, run);
     if (g.held.inspecting) y -= 0.2; // out of the way while you admire a figure
+    y -= smooth((-0.2 - P.pitch) / 0.5) * 0.22; // looking down they drop out of view, then hang at your sides
     const ready = this.readyTarget(H);
     let key = 'free';
     if (ready) { x = ready.x; y = ready.y; z = ready.z; key = 'ready'; }
@@ -922,7 +944,7 @@ export class FPBody {
     this.handQ(sd, N(sd, ready ? -0.15 : -0.3, ready ? 0.15 : 0.05, _v2), N(sd * 0.22, (ready ? 0.15 : -0.08) + lift, -1, _v3), W.q);
     W.f[0] = ready ? 0.12 : lerp(0.46 + br * 0.03, 0.88, run); W.f[1] = ready ? 0.5 : 0.06; W.f[2] = ready ? 0.2 : lerp(0.3, 0.65, run); W.f[3] = lerp(0.3, 0.6, run); W.f[4] = 0;
     // looking down: your arms just hang at your sides
-    const kd = this.lookDown = smooth((-0.35 - P.pitch) / 0.6) * (ready ? 0 : 1);
+    const kd = this.lookDown = smooth((-0.7 - P.pitch) / 0.4) * (ready ? 0 : 1);
     if (kd > 0) { W.p.lerp(H.natural.p, kd); W.q.slerp(H.natural.q, kd); W.f[0] = lerp(W.f[0], 0.3, kd); }
     return key;
   }
@@ -960,14 +982,15 @@ export class FPBody {
     const bs = this.bs, a = this.la, c = this.lc, B = this.hb[H.h], O = H.out;
     // rig space: anchor rotated 180° about y and scaled by the body
     // viewmodel shoulders sit low under the view (forearms rise from the bottom edge instead of looming over it);
-    // when you look down with empty hands the arms hang from your body's real shoulders
-    H.sb += ((H.src === 'free' ? this.lookDown : 0) - H.sb) * Math.min(1, this.dt * 6);
+    // reaching out into the world, or hanging at your sides when you look down, the arms move from your real shoulders
+    const real = FAR.test(H.src) || H.src === 'reach' ? 1 : H.src === 'free' ? this.lookDown : 0;
+    H.sb += (real - H.sb) * Math.min(1, this.dt * 6);
     const sh = _v.set(-H.sd * 0.2 * bs, -0.37 * bs, 0.02).lerp(H.shoulder, H.sb);
     const S = this._S.set(-sh.x, sh.y, -sh.z).divideScalar(bs);
     const T = this._T.set(-O.p.x, O.p.y, -O.p.z).divideScalar(bs);
-    // lean in (the shoulder follows) for things a little out of reach
-    const d = _v3.subVectors(T, S), L0 = d.length(), reach = (a + c) * 0.985;
-    if (L0 > reach) { S.addScaledVector(d, Math.min(0.2, L0 - reach) / L0); d.subVectors(T, S); }
+    // lean in a touch for things just out of reach (bones never stretch: anything farther is capped in reachCap)
+    const d = _v3.subVectors(T, S), L0 = d.length(), reach = (a + c) * 0.97;
+    if (L0 > reach) { S.addScaledVector(d, Math.min((0.05 + H.bend) / bs, L0 - reach) / L0); d.subVectors(T, S); }
     const l = clamp(d.length(), (a + c) * 0.3, (a + c) * 0.999), dn = d.normalize();
     const cosA = clamp((a * a + l * l - c * c) / (2 * a * l), -1, 1), sinA = Math.sqrt(1 - cosA * cosA);
     // elbows out and down (body frame)

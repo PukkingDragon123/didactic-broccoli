@@ -196,7 +196,7 @@ export class Street {
   }
 
   scareCat() { if (this.cat.wild) this.fleeCat(); }
-  catComeTo(bowl) { const c = this.cat; c.target = bowl.clone().add(new THREE.Vector3(0.05, 0, -0.27)); c.bowl = bowl.clone(); this.setCatState('bowl', 30); }
+  catComeTo(bowl) { const c = this.cat; c.target = bowl.clone().add(new THREE.Vector3(0.04, 0, -0.18)); c.bowl = bowl.clone(); this.setCatState('bowl', 30); }
   catArrived() { return this.cat.state === 'drink'; }
   catDrink(sec) { const c = this.cat; this.setCatState('drink', sec); }
   befriendCat() { const c = this.cat; c.wild = false; this.setCatState('sit', 8); }
