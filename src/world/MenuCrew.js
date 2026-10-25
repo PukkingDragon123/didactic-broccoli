@@ -128,6 +128,8 @@ export class MenuCrew {
     setTimeout(() => { if (this.open) this.me.h.gesture('wave'); }, 500);
     this.camFrom = null; // captured on the next update (the crane pose)
     this.yawTarget = null;
+    // the friends stop what they're doing to watch the fashion show
+    for (const c of this.cast) if (c !== me) { c.h.clearGesture(); c.act = 'watch'; c.t = rnd(0.5, 1.5); }
     this.closet.open();
   }
 
@@ -149,6 +151,10 @@ export class MenuCrew {
     if (g === 'spin') { this.spin = 0.001; h.setExpression('happy', 1.6); }
     else h.gesture(g);
     if (id && ITEM_LINES[id] && Math.random() < 0.7) this.say(me, ITEM_LINES[id]);
+    // the audience goes wild
+    const fans = this.cast.filter((c) => c !== me);
+    fans.forEach((c, i) => setTimeout(() => { if (this.open && c.h.root.parent) { c.h.gesture(pick(['clap', 'cheer', 'clap', 'peace'])); c.t = 3; } }, 250 + i * 180 + Math.random() * 300));
+    if (Math.random() < 0.6 && fans.length) setTimeout(() => { if (this.open) this.say(pick(fans), pick(['So cute!', 'Iconic.', 'Wow!', 'Love it!', 'Fashion!', 'Yes! That one!', 'Hahaha!'])); }, 700);
     try { audio.play('pop', { vol: 0.5 }); } catch { /* no audio yet */ }
   }
 
@@ -171,6 +177,8 @@ export class MenuCrew {
   /** What each friend gets up to next (called when their timer runs out). */
   direct(c) {
     const h = c.h, A = this.cast.find((x) => x.role === 'selfie'), B = this.cast.find((x) => x.role === 'lean');
+    if (c.role !== 'me' && this.open) { c.act = 'watch'; c.t = rnd(3, 6); if (Math.random() < 0.3) h.gesture(pick(['clap', 'think', 'shrug'])); return; }
+    if (c.act === 'watch') c.act = null;
     switch (c.role) {
       case 'me': {
         if (c.act !== 'phone_idle' && !this.open) { this.startAct(c, 'phone_idle'); c.t = rnd(4, 8); break; }
@@ -222,6 +230,7 @@ export class MenuCrew {
       // where they look: their phone, the camera, or straight ahead (keeps the head still while posing)
       const P = h.P;
       if (c.role === 'me' && this.open) c.lookAt.copy(cam.position);
+      else if (c.act === 'watch' && me) me.h.headTop(c.lookAt).y -= 0.5;
       else if (c.role === 'me' && (this.hover || c.lookMode === 'cam')) c.lookAt.copy(cam.position);
       else if (c.role === 'me' && c.act === 'phone_idle') r.localToWorld(c.lookAt.set(-0.06 * P.H, P.waistY + 0.1 * P.H, 0.28 * P.H));
       else r.localToWorld(c.lookAt.set(0, P.eyeY, 2));
@@ -234,7 +243,9 @@ export class MenuCrew {
       }
       if (!spinning) {
         // you turn to face the closet camera; the turn steps come from the walk system
-        const want = c.role === 'me' && this.k > 0.02 && this.camTo ? Math.atan2(this.camTo.pos.x - r.position.x, this.camTo.pos.z - r.position.z) + (this.dragYaw || 0) : c.yaw;
+        const mp = me?.h.root.position;
+        const want = c.role === 'me' && this.k > 0.02 && this.camTo ? Math.atan2(this.camTo.pos.x - r.position.x, this.camTo.pos.z - r.position.z) + (this.dragYaw || 0)
+          : c.act === 'watch' && mp ? Math.atan2(mp.x - r.position.x, mp.z - r.position.z) : c.yaw;
         let d = Math.atan2(Math.sin(want - r.rotation.y), Math.cos(want - r.rotation.y));
         if (c.role !== 'me' || !this.open) d = Math.max(-dt * 3, Math.min(dt * 3, d));
         else if (this.dragging) d *= Math.min(1, dt * 30); else d *= Math.min(1, dt * 6);
@@ -283,16 +294,17 @@ export class MenuCrew {
     const W = innerWidth, H = innerHeight;
     const r = this.closet.freeRect(); // the part of the screen not covered by the panel
     const fov = 34, tanV = Math.tan(THREE.MathUtils.degToRad(fov / 2)), aspect = W / H;
-    // fit ~2.05 m of height into the free part of the view
-    const frac = r.h / H;
-    const dist = Math.max(2.2, Math.min(9, 2.05 / 2 / tanV / Math.max(0.3, frac) * (aspect < 0.8 ? 1.1 : 1)));
-    // stand back toward the street (away from the shutter), a little off to the side for a 3/4-ish angle
-    const dir = new THREE.Vector3(0.36, 0, 1).normalize();
+    // fit ~2.6 m of height (room for tall hats) into the free part of the view; narrow views need more distance
+    const frac = r.h / H, wfrac = r.w / W;
+    const fitH = 2.6 / 2 / tanV / Math.max(0.3, frac), fitW = 1.5 / 2 / (tanV * aspect) / Math.max(0.25, wfrac);
+    const dist = Math.max(2.4, Math.min(10, Math.max(fitH, fitW)));
+    // stand back toward the street (away from the shutter), slightly to the left so the friends stay out of shot
+    const dir = new THREE.Vector3(-0.12, 0, 1).normalize();
     const pos = new THREE.Vector3(p.x, 0, p.z).addScaledVector(dir, dist);
-    pos.y = 1.05;
+    pos.y = 1.15;
     // aim so your centre lands in the middle of the free rectangle
     const cx = ((r.x + r.w / 2) / W) * 2 - 1, cy = 1 - ((r.y + r.h / 2) / H) * 2;
-    const look = new THREE.Vector3(p.x, 0.9, p.z);
+    const look = new THREE.Vector3(p.x, 1.0, p.z);
     const fwd = look.clone().sub(pos).normalize(), right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
     look.addScaledVector(right, -cx * dist * tanV * aspect).add(new THREE.Vector3(0, -cy * dist * tanV, 0));
     out.pos = pos; out.look = look; out.fov = fov;

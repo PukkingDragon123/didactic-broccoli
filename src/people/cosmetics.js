@@ -110,10 +110,10 @@ function mannequin() {
   const v = vm(0.02);
   each(-8, 8, -5, 17, -8, 12, (x, y, z) => {
     const d = rbox(x, y, z, [0, 6, 2.4], [6.6, 10, 8.3], 3.6);
-    if (d <= 0) v.set(x, y, z, y > 12.5 && z < 9 ? 0xd9c3a2 : 0xe8d4b4);
+    if (d <= 0) v.set(x, y, z, y > 12.5 && z < 9 ? 0xa88a66 : 0xb89a74);
   });
-  each(-4, 4, -12, -5, -3, 4, (x, y, z) => { if (Math.hypot(x, (z - 0.5) * 1.1) < 4.2) v.set(x, y, z, 0xd2bc98); });
-  front(v, -3, 6, 0x9a8468); front(v, 3, 6, 0x9a8468); // painted dots for eyes
+  each(-4, 4, -12, -5, -3, 4, (x, y, z) => { if (Math.hypot(x, (z - 0.5) * 1.1) < 4.2) v.set(x, y, z, 0x9c805e); });
+  front(v, -3, 6, 0x5a4634); front(v, 3, 6, 0x5a4634); front(v, 0, 1, 0x8a6e50); // painted eyes + mouth
   return v;
 }
 

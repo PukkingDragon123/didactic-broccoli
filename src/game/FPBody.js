@@ -731,8 +731,9 @@ export class FPBody {
     const R = H.h === 1, c = _c;
     const fN = this.dirToAnchor(_v.set(0, 0, 1).applyQuaternion(m.root.getWorldQuaternion(_q)), _v3);
     if (!R) {
-      // the other hand steadies the machine
+      // the other hand steadies the machine (when you stand close enough)
       this.toAnchor(m.local(-m.L.w * 0.3, m.L.handle.y + 0.11, m.L.front + 0.012), c);
+      if (c.length() > 0.62) return this.freePose(H, W);
       this.setGrip(H, W, c, fN.clone().negate(), this.dirToAnchor(_v.set(0, 1, 0).applyQuaternion(_q), _v2), [0.12, 0.45, 0.25, 0.1]);
       return 'steady';
     }
@@ -777,6 +778,7 @@ export class FPBody {
     const upA = this.dirToAnchor(_v.set(0, 1, 0).applyQuaternion(_q), V());
     if (!R) {
       this.toAnchor(m.local(-m.L.w * 0.32, m.L.slot.y + 0.06, m.L.front + 0.012), c);
+      if (c.length() > 0.62) return this.freePose(H, W);
       this.setGrip(H, W, c, fN.clone().negate(), upA, [0.15, 0.4, 0.25, 0.1]);
       return 'steady';
     }

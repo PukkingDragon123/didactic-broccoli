@@ -136,15 +136,15 @@ body.closet-on canvas:active { cursor: grabbing; }
 .cl-back:hover { filter: brightness(1.06); }
 .cl-back:active { transform: translateY(3px); }
 
-/* drag hint over the 3D view */
+/* drag hint over the 3D view (top centre of the free area) */
 .cl-hint {
-  position: absolute; left: 50%; bottom: max(26px, env(safe-area-inset-bottom)); transform: translateX(calc(-50% - var(--cl-w) / 2 - 8px));
+  position: absolute; left: calc((100% - var(--cl-w) - var(--cl-gap)) / 2); top: max(18px, env(safe-area-inset-top)); transform: translateX(-50%);
   display: flex; align-items: center; gap: 10px; padding: 6px 14px 8px 10px; color: #fff4e0; white-space: nowrap;
   background: rgba(26, 18, 22, .72); box-shadow: 0 -2px 0 rgba(26, 18, 22, .72), 0 2px 0 rgba(26, 18, 22, .72), -2px 0 0 rgba(26, 18, 22, .72), 2px 0 0 rgba(26, 18, 22, .72);
   animation: cl-hint 1s .9s both; transition: opacity .6s;
 }
 .cl-hint.done { opacity: 0; }
-@keyframes cl-hint { from { opacity: 0; transform: translateX(calc(-50% - var(--cl-w) / 2 - 8px)) translateY(10px); } }
+@keyframes cl-hint { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
 .cl.closing .cl-hint { opacity: 0; }
 
 /* ------------------------------------------------------------------ small screens */
@@ -168,7 +168,7 @@ body.closet-on canvas:active { cursor: grabbing; }
   .cl-note { flex: 1; min-width: 0; font-size: 16px; }
   .cl-note > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cl-back { flex: none; min-height: 44px; padding: 0 14px; font-size: 24px !important; }
-  .cl-hint { bottom: max(12px, env(safe-area-inset-bottom)); }
+  .cl-hint { top: max(8px, env(safe-area-inset-top)); }
 }
 @media (max-width: 560px), (max-aspect-ratio: 4/5) {
   /* portrait: a bottom sheet; you stand in the top half */
@@ -190,7 +190,6 @@ body.closet-on canvas:active { cursor: grabbing; }
   .cl-note { flex: 1; min-width: 0; }
   .cl-note > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cl-back { flex: none; min-height: 46px; padding: 0 16px; font-size: 24px !important; }
-  .cl-hint { top: max(14px, env(safe-area-inset-top)); bottom: auto; transform: translateX(-50%); animation-name: cl-hint-p; }
-  @keyframes cl-hint-p { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+  .cl-hint { left: 50%; top: max(12px, env(safe-area-inset-top)); }
 }
 @media (prefers-reduced-motion: reduce) { .cl *, .cl-panel { animation: none !important; transition: none !important; } }

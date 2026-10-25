@@ -92,7 +92,12 @@ and railway underpass tunnels at both ends where trains rumble across.
   - Verlet rope physics for the coin;
   - A* pathfinding for visitors;
   - a cutscene engine (generator scripts).
-- Audio: fully synthesised Web Audio, including a procedural radio.
+- Audio: Web Audio with recorded sound effects, ambience and music (`public/audio`), streamed background music
+  with crossfades and ducking (`src/core/bgm.js`), a garage radio playing real tracks through a little speaker filter,
+  and a synthesised version of every sound as the fallback.
+  - Credits: music by Kevin MacLeod (incompetech.com, CC BY 4.0) plus CC0 / public-domain tracks, jingles and sounds
+    from Kenney, OpenGameArt and pdsounds.org; the full list with sources and licences is in [CREDITS.md](CREDITS.md)
+    (shipped as `CREDITS.txt`).
 - Dev pages:
   - `viewer.html?series=mochi` (models);
   - `viewer.html?props=quest` (props);
@@ -100,7 +105,7 @@ and railway underpass tunnels at both ends where trains rumble across.
   - `icons.html` (pixel icons).
 
 ```
-src/core      renderer, input, touch, physics, audio, music
+src/core      renderer, input, touch, physics, audio, music (radio), bgm
 src/voxel     voxel model + mesher + finish materials
 src/gfx       pixel textures, pixel icons, particles, thumbnails, banners
 src/world     garage, town, street life, pedestrians, the cat, machine cabinets, menu signs

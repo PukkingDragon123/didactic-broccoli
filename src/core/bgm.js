@@ -104,6 +104,8 @@ class BGM {
   get voice() { return this.voices.find((v) => !v.dead) || null; }
   /** BPM of the playing track (if it has one). */
   get bpm() { return TRACKS[this.voice?.tid]?.bpm || null; }
+  /** Seconds into the playing track (null when nothing plays or it failed); sync dancers with time - TRACKS.party.beat0. */
+  get time() { const v = this.voice; return v && !v.failed ? v.el.currentTime : null; }
 
   start(tid, fade) {
     for (const v of this.voices) v.kill(fade);
