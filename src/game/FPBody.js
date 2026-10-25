@@ -2,15 +2,16 @@
 //  - body: a full Human walking under the camera (legs, torso and feet when you look down). Its head and arms are only
 //    drawn into shadow maps (bone matrices collapsed for the colour passes), so you also cast a complete shadow.
 //  - arms: a viewmodel copy of the avatar's arms (rendered on top by the renderer's viewmodel pass, so they never poke
-//    into walls) with articulated hands (3-bone fingers + thumb), IK'd from the body's real shoulders to grips on
-//    whatever Held carries, plus contextual actions: coin, crank, twist, notebook, broom, wrench, lifting, pouring,
-//    flyers, petting, the shutter key, taps on switches... Every change of what a hand does is cross-faded.
+//    into walls) with articulated hands (3-bone fingers + thumb), IK'd to grips on whatever Held carries (one pose per
+//    kind of thing: cradled capsule, figure on the palm, book by the spine, broom in both fists...), plus contextual
+//    actions: coin, crank, twist, notebook pages, broom, wrench, lifting, pouring, flyers, petting, the shutter key,
+//    taps on switches. Empty hands rest low in the corners and swing with your stride. Every change of what a hand
+//    does is cross-faded; after cutscenes / the PC the hands rise back into view.
 import * as THREE from 'three';
 import { Game } from './Game.js';
 import { BONES, BONE_INDEX } from '../people/body.js';
 import { ATLAS } from '../people/mesh.js';
 import { createAvatarHuman } from '../people/avatar.js';
-import { TOOLS } from '../data/tools.js';
 import { audio } from '../core/audio.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -639,8 +640,9 @@ export class FPBody {
         this.setGrip(H, W, c, up, N(-0.45, 0, -1, _v2), [0.32, 0.35, 0.25, 0.2]);
         return 'cat';
       }
-      // the other hand rests on her back and strokes it when you pet her
-      const purr = this.game.street?.cat?.purr || 0;
+      // the other hand only comes in to stroke her back when you pet her
+      const purr = Math.max(0, 1.3 - (this.game.time - (this.game.held.petT ?? -9)));
+      if (purr <= 0) return null;
       const sx = this.size(0), sz = this.size(2);
       this.idir(sx > sz ? 1 : 0, 0, sx > sz ? 0 : 1, _v2);
       if (_v2.z > 0) _v2.negate();
@@ -816,9 +818,10 @@ export class FPBody {
       this.setGrip(H, W, c, fN.clone().negate(), upA, [0.15, 0.4, 0.25, 0.1]);
       return 'steady';
     }
-    // ratchet a bolt on the front panel
+    // ratchet a bolt on the front panel, where you're aiming
     this.props.wrench.visible = true;
-    const bolt = this.toAnchor(m.local(0.02, m.L.slot.y - 0.07, m.L.front + 0.012), V());
+    const hit = this.game.interaction.holding?.hit?.point;
+    const bolt = this.toAnchor(hit || m.local(0.02, m.L.slot.y - 0.07, m.L.front + 0.012), V());
     const th = 0.15 + Math.sin(this.t * 9) * 0.45;
     const arm = upA.clone().applyAxisAngle(fN, -1.2 + th).multiplyScalar(0.085 * this.bs);
     c.copy(bolt).add(arm).addScaledVector(fN, 0.012);
@@ -881,7 +884,7 @@ export class FPBody {
           // tip the carton over the bowl, a stream of milk, then away
           const tilt = smooth(k / 0.3) * (1 - smooth((k - 0.72) / 0.2));
           const away = smooth((k - 0.8) / 0.2);
-          o.position.copy(a.from).lerp(_v.set(0.02, -0.2, -0.42), smooth(k / 0.3)).y -= away * 0.35;
+          o.position.copy(a.from).lerp(_v.set(0.05, -0.1, -0.42), smooth(k / 0.3)).y -= away * 0.35;
           o.quaternion.copy(a.fromQ).premultiply(_q.setFromAxisAngle(Z, tilt * 1.9));
           if (tilt > 0.75 && Math.random() < 0.7) {
             const top = this.ip(0.5, 1, 0.5, _v3);
@@ -909,7 +912,7 @@ export class FPBody {
   freePose(H, W) {
     const g = this.game, P = g.player, sd = H.sd, s = this.swing[H.h], wk = this.walkW, run = this.runW;
     const br = Math.sin(this.t * 1.7 + H.h * 0.7), fw = s * wk, step = Math.abs(Math.sin(this.human.phase * Math.PI * 2));
-    let x = -sd * (0.29 - Math.max(0, fw) * 0.02), y = -0.236 + br * 0.004 + fw * 0.03 - step * 0.008 * wk, z = -0.32 - fw * 0.075;
+    let x = -sd * (0.28 - Math.max(0, fw) * 0.02), y = -0.224 + br * 0.004 + fw * 0.03 - step * 0.008 * wk, z = -0.32 - fw * 0.075;
     x = lerp(x, -sd * 0.24, run); y = lerp(y, -0.24 + Math.max(0, s) * 0.07 - step * 0.01, run); z = lerp(z, -0.3 - s * 0.14, run);
     if (g.held.inspecting) y -= 0.2; // out of the way while you admire a figure
     const ready = this.readyTarget(H);

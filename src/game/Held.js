@@ -20,8 +20,8 @@ export const POSES = {
   tool: { pos: new THREE.Vector3(0.2, -0.26, -0.46), rot: new THREE.Euler(-0.75, 0.55, 0.3) },
   inspect: { pos: new THREE.Vector3(0, -0.005, -0.24), rot: new THREE.Euler(0.1, 0, 0) },
   reveal: { pos: new THREE.Vector3(0, -0.05, -0.39), rot: new THREE.Euler(0.05, 0, 0) },
-  twist: { pos: new THREE.Vector3(0.03, -0.135, -0.41), rot: new THREE.Euler(0.4, 0.15, 0.05) },
-  pet: { pos: new THREE.Vector3(0.05, -0.25, -0.5), rot: new THREE.Euler(0.15, Math.PI + 0.3, 0) },
+  twist: { pos: new THREE.Vector3(0.02, -0.095, -0.4), rot: new THREE.Euler(0.4, 0.15, 0.05) },
+  pet: { pos: new THREE.Vector3(0.1, -0.2, -0.47), rot: new THREE.Euler(0.15, Math.PI + 0.45, 0) },
   item: { pos: new THREE.Vector3(0.14, -0.14, -0.4), rot: new THREE.Euler(0.2, -0.45, 0.05) },
   // held diagonally across the lower right, bristles forward (sweeps pivot on the upper hand)
   broom: { pos: new THREE.Vector3(0.398, -0.262, -0.696), rot: new THREE.Euler(0.287, 0.622, 1.102) },
@@ -29,8 +29,9 @@ export const POSES = {
   book: { pos: new THREE.Vector3(0.13, -0.09, -0.42), rot: new THREE.Euler(-1.78, 0.069, 2.829) },
   carton: { pos: new THREE.Vector3(0.095, -0.105, -0.39), rot: new THREE.Euler(0.1, -0.42, 0.03) },
   sheets: { pos: new THREE.Vector3(0.125, -0.15, -0.41), rot: new THREE.Euler(1.064, -0.123, 0.218) },
-  case: { pos: new THREE.Vector3(0.24, -0.2, -0.5), rot: new THREE.Euler(0.12, -0.55, 0.04) },
-  bag: { pos: new THREE.Vector3(0.22, -0.22, -0.52), rot: new THREE.Euler(0.1, -0.4, 0.06) },
+  // carried by the handle / knot, hanging low on the right
+  case: { pos: new THREE.Vector3(0.29, -0.29, -0.52), rot: new THREE.Euler(0.15, -0.25, 0.08) },
+  bag: { pos: new THREE.Vector3(0.28, -0.32, -0.55), rot: new THREE.Euler(0.1, -0.4, 0.08) },
   long: { pos: new THREE.Vector3(0.1, -0.17, -0.52), rot: new THREE.Euler(0.1, -1.2, 0.3) },
   read: { pos: new THREE.Vector3(0, -0.035, -0.3), rot: new THREE.Euler(0.25, 0, 0) },
 };
@@ -253,7 +254,7 @@ export class Held {
   hint() {
     const it = this.item;
     if (!it || this.busy) return null;
-    if (it.kind === 'capsule') return { key: 'Hold LMB', text: 'Twist open', sub: 'Q to drop' };
+    if (it.kind === 'capsule') return this.twisting ? null : { key: 'Hold LMB', text: 'Twist open', sub: 'Q to drop' };
     if (it.kind === 'toy') return { key: 'RMB', text: 'Inspect', sub: 'Put it on a shelf, sell it, or Q to set it down' };
     if (it.kind === 'box') return this.game.placement?.boxHint(it) || { key: 'Q', text: 'Put down' };
     if (it.kind === 'cat') return { key: 'LMB', text: 'Pet', sub: 'Q to put down' };
@@ -265,7 +266,7 @@ export class Held {
   primary() {
     const it = this.item;
     if (it?.kind === 'box' && !this.busy) this.game.placement.primary?.(it);
-    if (it?.kind === 'cat') this.game.street?.pet();
+    if (it?.kind === 'cat') { this.game.street?.pet(); this.petT = this.game.time; }
     if (it?.kind === 'tool' && !this.busy) this.game.story?.toolPrimary?.(it);
   }
 
@@ -400,7 +401,7 @@ export class Held {
       audio.play('whoosh', { vol: 0.5, dur: 0.2, v: 0.08 });
       g.reveal.caption?.(this.item.data, false);
       // a soft studio key light rides along so every detail reads
-      if (!this.keyLight) { this.keyLight = new THREE.PointLight(0xfff4e8, 0, 1.2, 2); this.keyLight.position.set(0.12, 0.1, -0.05); this.anchor.add(this.keyLight); }
+      if (!this.keyLight) { this.keyLight = new THREE.PointLight(0xfff4e8, 0, 1.2, 2); this.keyLight.position.set(0.16, 0.14, 0); this.anchor.add(this.keyLight); }
       g.renderer.grade.uniforms.uVignette.value = 0.65;
     } else if (!want && this.inspecting) {
       this.inspecting = false;
@@ -408,7 +409,7 @@ export class Held {
       this.startTrans('toy', 0.28);
       g.renderer.grade.uniforms.uVignette.value = 0.32;
     }
-    if (this.keyLight) this.keyLight.intensity += ((this.inspecting ? 1.6 : 0) - this.keyLight.intensity) * Math.min(1, dt * 8);
+    if (this.keyLight) this.keyLight.intensity += ((this.inspecting ? 0.55 : 0) - this.keyLight.intensity) * Math.min(1, dt * 8);
     if (this.inspecting && !this.trans) {
       // drag to turn it over, wheel to zoom, let go of the mouse and it spins on its own
       const moved = Math.abs(inp.mouse.dx) + Math.abs(inp.mouse.dy) > 0.5;
