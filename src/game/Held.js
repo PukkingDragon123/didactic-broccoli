@@ -23,8 +23,8 @@ export const POSES = {
   twist: { pos: new THREE.Vector3(0.03, -0.135, -0.41), rot: new THREE.Euler(0.4, 0.15, 0.05) },
   pet: { pos: new THREE.Vector3(0.05, -0.25, -0.5), rot: new THREE.Euler(0.15, Math.PI + 0.3, 0) },
   item: { pos: new THREE.Vector3(0.14, -0.14, -0.4), rot: new THREE.Euler(0.2, -0.45, 0.05) },
-  // held up on the right, leaning forward, bristles low ahead (sweeps pivot on the upper hand)
-  broom: { pos: new THREE.Vector3(0.324, -0.337, -0.697), rot: new THREE.Euler(0.638, 0.338, 0.421) },
+  // held diagonally across the lower right, bristles forward (sweeps pivot on the upper hand)
+  broom: { pos: new THREE.Vector3(0.398, -0.262, -0.696), rot: new THREE.Euler(0.287, 0.622, 1.102) },
   // a book held up by its spine, cover towards you
   book: { pos: new THREE.Vector3(0.13, -0.09, -0.42), rot: new THREE.Euler(-1.78, 0.069, 2.829) },
   carton: { pos: new THREE.Vector3(0.095, -0.105, -0.39), rot: new THREE.Euler(0.1, -0.42, 0.03) },
