@@ -15,6 +15,26 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 function weighted(list) { let t = list.reduce((s, [, w]) => s + w, 0) * Math.random(); for (const [v, w] of list) { if ((t -= w) <= 0) return v; } return list[0][0]; }
 const ease = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 
+/** A soft white burst for phone camera flashes (additive, bright enough to bloom). */
+function flashSprite() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  // fades to black (not just to transparent): additive blending then adds nothing at the edges
+  gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.3, '#fff6e4'); gr.addColorStop(0.6, '#6a645c'); gr.addColorStop(1, '#000000');
+  g.fillStyle = '#000'; g.fillRect(0, 0, 64, 64); g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  // a single point (not a Sprite): the AO pass skips points, so no grey square around the glow
+  const m = new THREE.PointsMaterial({ map: tex, size: 1.1, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false });
+  m.color.setScalar(2.2);
+  const s = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3)), m);
+  s.frustumCulled = false;
+  s.visible = false;
+  s.raycast = () => {};
+  return s;
+}
+
 // where everyone stands (right of the signpost; you on the street side of the walkers' lane at z 7.3, the friends in
 // front of the shutter), facing
 const SPOTS = {
@@ -63,6 +83,9 @@ export class MenuCrew {
     this.proxy = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.95, 0.6), new THREE.MeshBasicMaterial({ visible: false }));
     this.proxy.position.y = 0.95;
     this.closet = new Closet(game, this);
+    // the selfie taker's phone flash
+    this.flash = flashSprite();
+    this.flashT = 2;
   }
 
   get me() { return this.cast.find((c) => c.role === 'me'); }
@@ -148,7 +171,7 @@ export class MenuCrew {
     const h = me.h;
     const fun = ['cheer', 'spin', 'flex', 'peace', 'dab'];
     const g = id === 'spin' ? 'spin' : pick(fun);
-    if (g === 'spin') { this.spin = 0.001; h.setExpression('happy', 1.6); }
+    if (g === 'spin') { this.spin = 0.001; me.spinFrom = h.root.rotation.y; h.setExpression('happy', 1.6); }
     else h.gesture(g);
     if (id && ITEM_LINES[id] && Math.random() < 0.7) this.say(me, ITEM_LINES[id]);
     // the audience goes wild
@@ -207,7 +230,7 @@ export class MenuCrew {
         if (a === c.act) a = 'flex';
         if (a === 'dance') { h.gesture('dance', { bpm: 112 }); c.act = 'dance'; c.t = rnd(6, 10); }
         else { this.startAct(c, a); c.t = (GESTURES[a]?.dur || 2.5) + rnd(1, 3); }
-        if (Math.random() < 0.25) this.spinner = c;
+        if (Math.random() < 0.25) { this.spinner = c; c.spinFrom = h.root.rotation.y; }
         break;
       }
       default: break;
@@ -219,6 +242,11 @@ export class MenuCrew {
     const g = this.game, cam = g.camera;
     this.t += dt;
     const me = this.me;
+    // hovering yourself: you look up from the phone and wave
+    if (this.hover && !this.wasHover && me?.act === 'phone_idle' && this.t - (this.waveAt ?? -9) > 6) {
+      this.waveAt = this.t; me.h.gesture('wave'); me.h.setExpression('smile', 2); me.act = null; me.t = 2.6;
+    }
+    this.wasHover = this.hover;
     // timers, acting and looking
     for (const c of this.cast) {
       c.t -= dt;
@@ -239,7 +267,7 @@ export class MenuCrew {
       if (c === this.spinner || (c.role === 'me' && this.spin)) {
         const k = c.role === 'me' ? (this.spin += dt / 0.9) : (c.spinK = (c.spinK || 0) + dt / 1.1);
         if (k >= 1) { if (c.role === 'me') this.spin = 0; else { this.spinner = null; c.spinK = 0; } }
-        else { r.rotation.y = c.yaw + ease(k) * Math.PI * 2; spinning = true; }
+        else { r.rotation.y = (c.spinFrom ?? c.yaw) + ease(k) * Math.PI * 2; spinning = true; }
       }
       if (!spinning) {
         // you turn to face the closet camera; the turn steps come from the walk system
@@ -270,6 +298,7 @@ export class MenuCrew {
         if (c.role !== 'me' || Math.random() < 0.5) this.say(c, line);
       }
     }
+    this.updateFlash(dt);
     this.updateCamera(dt);
     // passers-by on the lane would walk right through the close-up: they step out of the shot meanwhile
     const peds = g.pedestrians?.list;
@@ -278,6 +307,23 @@ export class MenuCrew {
       const p = me.h.root.position, cz = cam.position.z + 0.6;
       for (const q of peds) { const r = q.h.root; r.visible = !this.hidPeds || !(Math.abs(r.position.x - p.x) < 2.6 && r.position.z > p.z - 0.4 && r.position.z < cz); }
     }
+  }
+
+  /** Snap! Now and then during the selfie the phone flashes. */
+  updateFlash(dt) {
+    const A = this.cast.find((c) => c.role === 'selfie' && c.act === 'selfie');
+    const f = this.flash;
+    if (!A || A.h.b.prop.scale.x === 0) { f.visible = false; return; }
+    if (f.parent !== A.h.b.prop) A.h.b.prop.add(f);
+    this.flashT -= dt;
+    if (this.flashT < 0) {
+      this.flashT = rnd(1.8, 3.6);
+      this.flashK = 0.16;
+      try { audio.play('shutter', { vol: 0.25 }); } catch { /* no audio yet */ }
+    }
+    this.flashK = Math.max(0, (this.flashK || 0) - dt);
+    f.visible = this.flashK > 0;
+    f.material.opacity = Math.min(1, this.flashK / 0.08);
   }
 
   /** Play was pressed: you become the camera (it flies off through your spot); the friends wave goodbye. */
@@ -290,15 +336,18 @@ export class MenuCrew {
 
   /** The closet framing: you, full body, on the side of the screen the panel leaves free. */
   closetPose(out) {
-    const cam = this.game.camera, me = this.me, p = me.h.root.position;
+    const p = this.me.h.root.position;
     const W = innerWidth, H = innerHeight;
     const r = this.closet.freeRect(); // the part of the screen not covered by the panel
-    const fov = 34, tanV = Math.tan(THREE.MathUtils.degToRad(fov / 2)), aspect = W / H;
-    // fit ~2.6 m of height (room for tall hats) into the free part of the view; narrow views need more distance
-    const frac = r.h / H, wfrac = r.w / W;
-    const fitH = 2.6 / 2 / tanV / Math.max(0.3, frac), fitW = 1.5 / 2 / (tanV * aspect) / Math.max(0.25, wfrac);
-    const dist = Math.max(2.4, Math.min(10, Math.max(fitH, fitW)));
-    // stand back toward the street (away from the shutter), slightly to the left so the friends stay out of shot
+    const aspect = W / H;
+    // fit ~2.6 m of height (room for tall hats) and ~1.5 m of width into the free part of the view at a 34 degree
+    // lens; the street is narrow (houses across the lane), so past ~3.6 m the lens widens instead
+    const need = Math.max(1.3 / Math.max(0.3, r.h / H), 0.75 / (aspect * Math.max(0.25, r.w / W))); // = dist * tan(fov / 2)
+    let tanV = Math.tan(THREE.MathUtils.degToRad(17)), dist = need / tanV;
+    if (dist > 3.6) { dist = 3.6; tanV = need / dist; }
+    dist = Math.max(2.4, dist);
+    const fov = THREE.MathUtils.radToDeg(2 * Math.atan(tanV));
+    // stand back toward the street (away from the shutter), slightly to the left so the friends stay mostly out of shot
     const dir = new THREE.Vector3(-0.12, 0, 1).normalize();
     const pos = new THREE.Vector3(p.x, 0, p.z).addScaledVector(dir, dist);
     pos.y = 1.15;
@@ -339,6 +388,7 @@ export class MenuCrew {
     for (const c of this.cast) { this.game.bubbles?.clear(c.h); c.h.dispose(); }
     this.cast.length = 0;
     this.group.removeFromParent();
+    this.flash.removeFromParent(); this.flash.geometry.dispose(); this.flash.material.map.dispose(); this.flash.material.dispose();
     if (this.baseFov) { this.game.camera.fov = this.baseFov; this.game.camera.updateProjectionMatrix(); }
   }
 }

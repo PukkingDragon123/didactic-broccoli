@@ -118,10 +118,11 @@ export class FPBody {
     this.rig.visible = false;
     game.held.anchor.add(this.rig);
     this.hands = [0, 1].map((h) => ({
-      h, sd: h ? -1 : 1, src: '', k: 1, dur: 0.2, bump: 0,
+      h, sd: h ? -1 : 1, src: '', k: 1, dur: 0.2, bump: 0, sb: 0,
       want: new Pose(), out: new Pose(), from: new Pose(), shoulder: V(), natural: new Pose(),
     }));
     this.t = 0;
+    this.presence = 0; this.lookDown = 0; this.dt = 1 / 60;
     this.legYaw = 0;
     this.swing = [0, 0];
     this.walkW = 0; this.runW = 0;
@@ -171,7 +172,7 @@ export class FPBody {
     this.bs = clamp(g.player.eye / P.eyeY, 0.8, 1.3);
     h.root.scale.setScalar(this.bs);
     this.la = P.shoulderY - P.elbowY; this.lc = P.elbowY - P.wristY;
-    this.k = P.H / 1.72;
+    this.k = P.H / 1.72 * 0.93; // hand size
     this.buildArms(h);
   }
 
@@ -213,8 +214,13 @@ export class FPBody {
       const r = T_RELAX.clone(), o = T_OPPOSE.clone(), tw = T_TOWARD.clone(); r.x *= sx; o.x *= sx; tw.x *= sx;
       return { relax: new THREE.Quaternion().setFromUnitVectors(_v.set(0, -1, 0), r), oppose: new THREE.Quaternion().setFromUnitVectors(_v.set(0, -1, 0), o), toward: tw };
     });
-    const hands = new THREE.SkinnedMesh(this.handGeometry(bones), new THREE.MeshStandardMaterial({ color: this.handColor(h), roughness: 0.72, vertexColors: true }));
+    // a little fill light of their own so your hands always read, even in the dark garage
+    const hc = this.handColor(h);
+    const hands = new THREE.SkinnedMesh(this.handGeometry(bones), new THREE.MeshStandardMaterial({ color: hc, roughness: 0.72, vertexColors: true, emissive: hc.clone().multiplyScalar(0.13) }));
     hands.bind(skel, arms.matrixWorld);
+    arms.material = h.mat.clone();
+    Object.assign(arms.material, { emissive: new THREE.Color(0xffffff), emissiveMap: h.tex, emissiveIntensity: 0.13 });
+    Object.assign(h.mat, { emissive: new THREE.Color(0xffffff), emissiveMap: h.tex, emissiveIntensity: 0.12 });
     for (const m of [arms, hands]) { m.frustumCulled = false; m.castShadow = false; m.receiveShadow = false; }
     this.rig.add(arms, hands);
     this.rig.scale.setScalar(this.bs);
@@ -310,7 +316,7 @@ export class FPBody {
     const h = this.human;
     if (!h) return;
     this.rig.remove(this.arms, this.handsMesh);
-    this.arms.geometry.dispose(); this.handsMesh.geometry.dispose(); this.handsMesh.material.dispose();
+    this.arms.geometry.dispose(); this.arms.material.dispose(); this.handsMesh.geometry.dispose(); this.handsMesh.material.dispose();
     this.arms.skeleton.dispose();
     h.dispose();
     this.human = null;
@@ -362,18 +368,24 @@ export class FPBody {
     const g = this.game;
     if (!this.active) return;
     dt = Math.min(dt, 0.05);
-    this.t += dt;
+    this.t += dt; this.dt = dt;
     const anchor = g.held.anchor, cam = g.camera, P = g.player;
+    // hands + body only while you're in control of your own eyes: not in the menu, fly-ins, cutscenes or at the PC;
+    // coming back, the hands (and what they hold) rise into view
+    const show = anchor.visible && !g.cutscene.active && !g.pc?.active && !g.uiCine;
+    this.presence = show ? Math.min(1, this.presence + dt / 0.5) : 0;
+    if (show && this.presence < 1) {
+      const e = 1 - outCubic(this.presence);
+      anchor.position.y -= e * 0.3; anchor.rotation.x -= e * 0.4;
+    }
     anchor.updateWorldMatrix(true, false);
     this.anchorInv.copy(anchor.matrixWorld).invert();
     this.rig.updateMatrixWorld(true);
-    // the body is drawn whenever the camera is behind your eyes (not in fly-ins, cutscene shots or the PC zoom)
     const eye = _v.set(P.pos.x, P.eye, P.pos.z);
-    const inGame = anchor.visible || g.cutscene.active;
     const near = cam.position.distanceTo(eye) < 0.16 && P.camBlend < 0.05;
     this.updateBody(dt);
-    this.human.root.visible = inGame && near;
-    this.rig.visible = anchor.visible && !g.pc?.active;
+    this.human.root.visible = show && near;
+    this.rig.visible = show;
     this.updateFlags(dt);
     if (!this.rig.visible) { this.unstash(); if (this.act) this.endAct(); return; }
     this.props.wrench.visible = this.props.flyer.visible = false;
@@ -381,6 +393,9 @@ export class FPBody {
     this.applyStash(dt);
     for (const H of this.hands) this.blend(H, dt);
     for (const H of this.hands) this.solve(H);
+    // looking down with empty hands, the arms are drawn with the world (depth-tested against your body) rather than
+    // on top of it
+    this.rig.userData.mainPass = this.lookDown > 0.6 && this.hands.every((H) => H.src === 'free');
     this.armsToBody();
   }
 
@@ -393,17 +408,19 @@ export class FPBody {
     const back = spd > 0.3 && fwd < -0.25 * spd;
     const off = spd > 0.3 ? clamp((back ? 1 : -1) * Math.atan2(side, Math.abs(fwd)), -1.05, 1.05) : 0;
     this.legYaw += (off - this.legYaw) * (1 - Math.exp(-dt * 7));
-    // the eyes sit just behind the face; looking down, the body slides back a little so you see your feet past your chest
+    // the eyes sit just behind the face
     const down = Math.max(0, -P.pitch);
-    const zb = (this.P.zf - 0.012) * this.bs + smooth(down / 1.3) * 0.17;
+    const zb = (this.P.zf - 0.012) * this.bs + smooth(down / 1.3) * 0.08;
     h.root.position.set(P.pos.x + sy * zb, 0, P.pos.z + cy * zb);
     h.root.rotation.y = P.yaw + Math.PI + this.legYaw;
     const ph = h.phase;
     h.update(dt, { speed: spd / this.bs });
     if (back) h.phase = (((2 * ph - h.phase) % 1) + 1) % 1; // walk backwards: run the gait in reverse
-    // the upper body keeps facing the view (and arches back a touch when you look down at your feet)
-    b.spine.quaternion.premultiply(_q.setFromAxisAngle(Y, -this.legYaw * 0.45));
-    b.chest.quaternion.premultiply(_q.setFromAxisAngle(Y, -this.legYaw * 0.55)).multiply(_q.setFromAxisAngle(X, -down * 0.06));
+    // the upper body keeps facing the view, and arches back when you look down so your belly, legs and feet show
+    // rather than a wall of chest
+    const arch = smooth(down / 1.2);
+    b.spine.quaternion.premultiply(_q.setFromAxisAngle(Y, -this.legYaw * 0.45)).multiply(_q.setFromAxisAngle(X, -arch * 0.3));
+    b.chest.quaternion.premultiply(_q.setFromAxisAngle(Y, -this.legYaw * 0.55)).multiply(_q.setFromAxisAngle(X, -arch * 0.22));
     b.neck.quaternion.setFromEuler(_e.set(-P.pitch * 0.3, 0, 0));
     b.head.quaternion.setFromEuler(_e.set(-P.pitch * 0.6, 0, 0));
     h.root.updateMatrixWorld(true);
@@ -588,7 +605,7 @@ export class FPBody {
         const k = Math.min(1, held.twist);
         this.idir(0, 1, 0, up);
         const side = _v3.set(1, 0, 0).addScaledVector(up, -up.x).normalize();
-        const o = _v2.copy(side).multiplyScalar(R ? 0.92 : -0.92).addScaledVector(up, R ? 0.42 : -0.38);
+        const o = _v2.copy(side).multiplyScalar(R ? 0.95 : -0.95).addScaledVector(up, R ? 0.3 : -0.32);
         if (R) o.applyAxisAngle(up, k * 1.4);
         c.addScaledVector(o, r);
         const palm = _v4.copy(o).negate().normalize();
@@ -641,7 +658,7 @@ export class FPBody {
       this.setGrip(H, W, c, palm, this.idir(0, -0.45, -1, _v2), [0.2, 0.3, 0.12, 0.1]);
       return 'box';
     }
-    if (tool === 'broom' || pose === 'broom') return this.stickPose(H, W, R ? 0.6 : 0.93, 'broom');
+    if (tool === 'broom' || pose === 'broom') return this.stickPose(H, W, R ? 0.6 : 0.9, 'broom');
     if (tool === 'tube' || pose === 'long') {
       const ax = this.longAxis();
       const u = [0.5, 0.5, 0.5]; u[ax] = 0.22;
@@ -651,7 +668,7 @@ export class FPBody {
       u[1] = ax === 1 ? u[1] : 0;
       this.ip(u[0], u[1], u[2], c);
       c.y -= 0.004;
-      this.setGrip(H, W, c, N(0, 1, 0.1, a), N(R ? -0.3 : 0.3, 0, -1, _v2), [0.38, 0.2, 0.3, 0.2]);
+      this.setGrip(H, W, c, N(0, 1, 0.1, a), N(R ? -0.3 : 0.3, 0, -1, _v2), [0.55, 0.12, 0.45, 0.3]);
       return 'long';
     }
     if (!R) return null;
@@ -673,11 +690,28 @@ export class FPBody {
       return 'pinch';
     }
     if (tool === 'milk') {
-      this.ip(1, 0.42, 0.5, c);
+      // wrapped round the carton's lower half from the right, fingers round the back, thumb on the front corner
+      this.ip(1, 0.34, 0.42, c);
       const palm = this.idir(-1, 0, 0, a);
       c.addScaledVector(palm, -0.004);
-      this.setGrip(H, W, c, palm, this.idir(0, 0, -1, _v2), [0.62, 0.1, 0.6, 0.4]);
+      this.setGrip(H, W, c, palm, this.idir(0, 0.15, -1, _v2), [0.6, 0.12, 0.55, 0.35]);
       return 'wrap';
+    }
+    if (tool === 'notebook') {
+      // held up from behind: fingers spread on the back cover, thumb over the spine onto the front
+      this.ip(0.2, 0, 0.3, c);
+      const palm = this.idir(0, 1, 0, a);
+      c.addScaledVector(palm, -0.006);
+      this.setGrip(H, W, c, palm, this.idir(0.3, 0, 1, _v2), [0.12, 0.3, 0.85, 0.35]);
+      return 'book';
+    }
+    if (tool === 'flyers' || tool === 'batteries') {
+      // a flat thing held at its lower right corner: fingers behind, thumb on the front
+      const flat = tool === 'flyers';
+      const n = this.idir(0, flat ? 1 : 0, flat ? 0 : 1, a);
+      this.ip(0.88, flat ? 0 : 0.22, flat ? 0.82 : 0, c).addScaledVector(n, -0.006);
+      this.setGrip(H, W, c, n, this.idir(flat ? -0.55 : -0.35, flat ? 0 : 1, flat ? -1 : 0, _v2), [0.38, 0.1, 0.9, 0.45], { at: [-0.012, -0.075, 0.012] });
+      return 'card';
     }
     // anything else: cradled on the palm
     this.ip(0.5, 0, 0.5, c);
@@ -694,7 +728,7 @@ export class FPBody {
     const uu = [0.5, 0.5, 0.5]; uu[ax] = u;
     this.ip(uu[0], uu[1], uu[2], c);
     const dir = this.idir(ax === 0 ? 1 : 0, ax === 1 ? 1 : 0, ax === 2 ? 1 : 0, _v2);
-    const palm = N(R ? -1 : 1, R ? -0.15 : 0.2, 0.35, _v);
+    const palm = R ? N(-0.4, 1, 0.2, _v) : N(1, 0.1, 0.25, _v);
     palm.addScaledVector(dir, -palm.dot(dir)).normalize();
     c.addScaledVector(palm, -0.004);
     this.setGrip(H, W, c, palm, dir, [0.86, 0, 0.6, 0.45], { axis: true, at: FIST_C });
@@ -869,23 +903,24 @@ export class FPBody {
     }
   }
 
-  // --- empty hands: low and relaxed, swinging with the legs, pumping when running; hanging at your sides when you
-  // look down; and the free hand rises a little, fingers open, when you aim at something to take or press
+  // --- empty hands: relaxed and low in the bottom corners, breathing; they swing with your legs when you walk and
+  // pump as fists when you run; looking down they hang at your sides; the free hand rises and opens a little when you
+  // aim at something to take or press
   freePose(H, W) {
     const g = this.game, P = g.player, sd = H.sd, s = this.swing[H.h], wk = this.walkW, run = this.runW;
-    const breath = Math.sin(this.t * 1.7 + H.h) * 0.005;
-    const fw = Math.max(0, s);
-    let x = -sd * (0.2 - run * 0.03), y = -0.43 + breath + fw * fw * 0.13 * wk, z = -0.2 - s * 0.1 * wk;
-    y = lerp(y, -0.32 + fw * 0.12, run); z = lerp(z, -0.18 - s * 0.16, run);
+    const br = Math.sin(this.t * 1.7 + H.h * 0.7), fw = s * wk, step = Math.abs(Math.sin(this.human.phase * Math.PI * 2));
+    let x = -sd * (0.29 - Math.max(0, fw) * 0.02), y = -0.236 + br * 0.004 + fw * 0.03 - step * 0.008 * wk, z = -0.32 - fw * 0.075;
+    x = lerp(x, -sd * 0.24, run); y = lerp(y, -0.24 + Math.max(0, s) * 0.07 - step * 0.01, run); z = lerp(z, -0.3 - s * 0.14, run);
+    if (g.held.inspecting) y -= 0.2; // out of the way while you admire a figure
     const ready = this.readyTarget(H);
     let key = 'free';
-    if (ready) { x = lerp(x, ready.x, ready.w); y = lerp(y, ready.y, ready.w); z = lerp(z, ready.z, ready.w); key = 'ready'; }
+    if (ready) { x = ready.x; y = ready.y; z = ready.z; key = 'ready'; }
     W.p.set(x, y, z);
-    const curl = lerp(lerp(0.32, 0.55, wk * 0.5), 0.9, run);
-    this.handQ(sd, N(sd * 0.9, ready ? -0.1 : -0.35, ready ? 0.2 : 0, _v2), N(sd * 0.12, ready ? 0.15 : -0.55, -1, _v3), W.q);
-    W.f[0] = ready ? 0.14 : curl; W.f[1] = ready ? 0.5 : 0.15; W.f[2] = ready ? 0.2 : 0.35 + run * 0.4; W.f[3] = 0.25 + run * 0.4; W.f[4] = 0;
+    const lift = fw * 0.25 + run * (0.3 + Math.max(0, s) * 0.3);
+    this.handQ(sd, N(sd, ready ? -0.15 : -0.3, ready ? 0.15 : 0.05, _v2), N(sd * 0.22, (ready ? 0.15 : -0.08) + lift, -1, _v3), W.q);
+    W.f[0] = ready ? 0.12 : lerp(0.46 + br * 0.03, 0.88, run); W.f[1] = ready ? 0.5 : 0.06; W.f[2] = ready ? 0.2 : lerp(0.3, 0.65, run); W.f[3] = lerp(0.3, 0.6, run); W.f[4] = 0;
     // looking down: your arms just hang at your sides
-    const kd = smooth((-0.25 - P.pitch) / 0.65) * (1 - (ready ? 1 : 0));
+    const kd = this.lookDown = smooth((-0.35 - P.pitch) / 0.6) * (ready ? 0 : 1);
     if (kd > 0) { W.p.lerp(H.natural.p, kd); W.q.slerp(H.natural.q, kd); W.f[0] = lerp(W.f[0], 0.3, kd); }
     return key;
   }
@@ -901,7 +936,7 @@ export class FPBody {
     if (!takeable) return null;
     this.toAnchor(hv.hit.point, _v);
     const d = _v.length();
-    return { x: -H.sd * 0.13 + _v.x / d * 0.05, y: -0.27, z: -0.32, w: 1 };
+    return { x: -H.sd * 0.2 + _v.x / d * 0.05, y: -0.2 + _v.y / d * 0.03, z: -0.36 };
   }
 
   // ------------------------------------------------------------------ blending + IK
@@ -922,7 +957,11 @@ export class FPBody {
   solve(H) {
     const bs = this.bs, a = this.la, c = this.lc, B = this.hb[H.h], O = H.out;
     // rig space: anchor rotated 180° about y and scaled by the body
-    const S = this._S.set(-H.shoulder.x, H.shoulder.y, -H.shoulder.z).divideScalar(bs);
+    // viewmodel shoulders sit low under the view (forearms rise from the bottom edge instead of looming over it);
+    // when you look down with empty hands the arms hang from your body's real shoulders
+    H.sb += ((H.src === 'free' ? this.lookDown : 0) - H.sb) * Math.min(1, this.dt * 6);
+    const sh = _v.set(-H.sd * 0.2 * bs, -0.37 * bs, 0.02).lerp(H.shoulder, H.sb);
+    const S = this._S.set(-sh.x, sh.y, -sh.z).divideScalar(bs);
     const T = this._T.set(-O.p.x, O.p.y, -O.p.z).divideScalar(bs);
     // lean in (the shoulder follows) for things a little out of reach
     const d = _v3.subVectors(T, S), L0 = d.length(), reach = (a + c) * 0.985;

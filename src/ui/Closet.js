@@ -5,9 +5,8 @@
 import './closet.css';
 import { iconHTML, defineIcon } from '../gfx/icons.js';
 import { audio } from '../core/audio.js';
-import { COSMETICS, COSMETIC_BY_ID, SLOTS } from '../people/cosmetics.js';
+import { COSMETICS, COSMETIC_BY_ID, SLOTS, cosmeticPreview } from '../people/cosmetics.js';
 import { LOOK, normalizeAvatar, createAvatarHuman } from '../people/avatar.js';
-import { cosmeticPreview } from '../people/cosmetics.js';
 
 defineIcon('cos_hat', { rows: [
   '................',
@@ -88,7 +87,6 @@ const yen = (n) => '¥' + Math.max(0, Math.floor(n)).toLocaleString('en-US');
 const ic = (n, s = 2, c = '') => iconHTML(n, s, c);
 const hexCss = (c) => '#' + c.toString(16).padStart(6, '0');
 const TABS = [...SLOTS, { id: 'look', name: 'Look', icon: 'people' }];
-const SLOT_OF = Object.fromEntries(SLOTS.map((s) => [s.id, s]));
 
 export class Closet {
   constructor(game, crew) {
@@ -157,7 +155,12 @@ export class Closet {
     window.addEventListener('keydown', this.onKey);
   }
 
-  get saved() { return (this.game.state.avatar = normalizeAvatar(this.game.state.avatar)); }
+  /** The saved avatar record (state.avatar), completed if an old save lacks fields. */
+  get saved() {
+    const a = this.game.state.avatar;
+    if (!a || !Array.isArray(a.owned) || !a.body) this.game.state.avatar = normalizeAvatar(a);
+    return this.game.state.avatar;
+  }
   sfx(n, v = 0.5) { try { audio.play(n, { vol: v }); } catch { /* audio not ready */ } }
 
   /** Screen rectangle the panel leaves free (the character is framed inside it). */
@@ -177,6 +180,8 @@ export class Closet {
     this.preview = { ...this.saved };
     this.root.classList.remove('hidden', 'closing');
     this.hintEl.classList.remove('done');
+    clearTimeout(this.hintTimer);
+    this.hintTimer = setTimeout(() => this.hintEl.classList.add('done'), 7000);
     document.body.classList.add('closet-on');
     this.render();
     this.sfx('page', 0.5);
@@ -329,21 +334,18 @@ export class Closet {
       return;
     }
     g.spend(c.price);
-    S.owned.push(c.id);
-    this.commit({ [c.slot]: c.id }, c.id);
+    this.commit({ owned: [...S.owned, c.id], [c.slot]: c.id }, c.id);
     this.sfx('purchase', 0.6);
     this.root.querySelector('.cl-wallet').classList.remove('flash'); void this.root.offsetWidth; this.root.querySelector('.cl-wallet').classList.add('flash');
   }
 
   /** Save a change to your look (and keep any other try-ons). react: an item id / 'spin' to celebrate, false = no. */
   commit(change, react = null) {
-    const S = this.saved;
-    Object.assign(S, change);
-    this.game.state.avatar = normalizeAvatar(S);
+    const A = this.game.state.avatar = normalizeAvatar({ ...this.saved, ...change });
     const P = this.preview = { ...this.preview, ...change };
-    // try-ons of items you don't own stay on the preview only
-    for (const s of SLOTS) if (P[s.id] && P[s.id] !== this.game.state.avatar[s.id] && !this.game.state.avatar.owned.includes(P[s.id])) { /* still trying */ } else P[s.id] = this.game.state.avatar[s.id];
-    for (const k of ['body', 'skin', 'hair', 'hairCol', 'top', 'topCol', 'bottom']) P[k] = this.game.state.avatar[k];
+    // the preview follows the saved look, except for slots where you're still trying on something you don't own
+    for (const sl of SLOTS) { const id = P[sl.id]; if (!(id && id !== A[sl.id] && !A.owned.includes(id))) P[sl.id] = A[sl.id]; }
+    for (const k of ['body', 'skin', 'hair', 'hairCol', 'top', 'topCol', 'bottom']) P[k] = A[k];
     this.crew.setLook(P);
     if (react !== false && react !== null) this.crew.react(react);
     else if (react === null) this.crew.react('spin');

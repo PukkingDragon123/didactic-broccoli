@@ -131,7 +131,12 @@ class ViewmodelPass extends Pass {
     s.background = bg; s.matrixWorldAutoUpdate = au; renderer.autoClear = ac;
   }
 }
-const toVM = (o) => { if (o.isLight) o.layers.enable(VM_LAYER); else o.layers.set(VM_LAYER); };
+// (a subtree flagged userData.mainPass stays in the normal pass, depth-tested against the world)
+const toVM = (o) => {
+  if (o.userData.mainPass) return;
+  if (o.isLight) o.layers.enable(VM_LAYER); else o.layers.set(VM_LAYER);
+  for (const c of o.children) toVM(c);
+};
 const toMain = (o) => { if (!o.isLight) o.layers.set(0); };
 const lightToVM = (o) => { if (o.isLight) o.layers.enable(VM_LAYER); };
 
@@ -251,7 +256,7 @@ export class Renderer {
     // lights must light both passes; new ones are picked up within a few frames
     if (this.frameN % 8 === 1) this.scene.traverse(lightToVM);
     if (this.gtao) { this.aoCam.copy(this.camera, false); this.aoCam.layers.enable(VM_LAYER); }
-    for (const o of this.vmRoots) o.traverse(toVM);
+    for (const o of this.vmRoots) toVM(o);
     this.composer.render(dt);
     for (const o of this.vmRoots) o.traverse(toMain);
   }

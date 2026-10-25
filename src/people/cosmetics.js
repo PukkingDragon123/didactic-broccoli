@@ -401,21 +401,31 @@ const H = {
     return v;
   },
   kitsune() {
-    const W = 0xf8f4ea, R = 0xd8302a, GD = 0xe0b040;
+    const W = 0xf8f4ea, W2 = 0xe8e2d4, R = 0xd8302a, GD = 0xe0b040;
     const v = vm(0.015);
-    each(-5, 5, -7, 7, 0, 3, (x, y, z) => { if ((x / 4.9) ** 2 + (y / 6.2) ** 2 + (z / 2.8) ** 2 <= 1) v.set(x, y, z, W); });
-    each(-3, 3, -6, 0, 1, 6, (x, y, z) => { if ((x / 2.3) ** 2 + ((y + 2.8) / 2.7) ** 2 + ((z - 2.6) / 2.6) ** 2 <= 1) v.set(x, y, z, W); });
-    for (const sx of [-1, 1]) for (let y = 4; y <= 10; y++) {
-      const w = 2.4 * (1 - (y - 4) / 6.5);
-      for (let x = Math.round(sx * 3 - w); x <= Math.round(sx * 3 + w); x++) { v.set(x, y, 0, W); v.set(x, y, 1, Math.abs(x - sx * 3) < w - 0.8 && y < 9 ? R : W); }
+    // a wide brow tapering to a pointed muzzle
+    for (let y = -7; y <= 4; y++) {
+      const w = y >= 1 ? 5.2 : 1.6 + (y + 7) * 0.45;
+      for (let x = -6; x <= 6; x++) {
+        if (Math.abs(x) > w + 0.3) continue;
+        const zt = Math.round(2.4 - (x / (w + 0.5)) ** 2 * 1.4);
+        for (let z = 0; z <= zt; z++) v.set(x, y, z, z === 0 ? W2 : W);
+      }
+    }
+    each(-2, 2, -7, -1, 1, 6, (x, y, z) => { if ((x / 1.9) ** 2 + ((y + 4) / 3.2) ** 2 + ((z - 2.4) / 2.6) ** 2 <= 1) v.set(x, y, z, W); });
+    // ears splayed outwards, red inside
+    for (const sx of [-1, 1]) for (let y = 4; y <= 9; y++) {
+      const c = sx * (3.3 + (y - 4) * 0.42), w = 2.3 * (1 - (y - 4) / 5.6);
+      for (let x = Math.round(c - w); x <= Math.round(c + w); x++) { v.set(x, y, 0, W2); v.set(x, y, 1, Math.abs(x - c) < w - 0.9 && y < 8 ? R : W); }
     }
     for (const sx of [-1, 1]) {
-      front(v, sx * 2, 1, INK); front(v, sx * 3, 2, INK); front(v, sx * 1, 1, INK);
-      front(v, sx * 2, 3, R); front(v, sx * 3, 4, R); front(v, sx * 4, 4, R); front(v, sx * 1, 3, R);
-      front(v, sx * 3, -2, R);
+      // slanted eye slits under flame-like red brows, a red cheek mark
+      front(v, sx * 1, 1, INK); front(v, sx * 2, 1, INK); front(v, sx * 3, 2, INK);
+      front(v, sx * 1, 3, R); front(v, sx * 2, 3, R); front(v, sx * 3, 4, R); front(v, sx * 4, 4, R);
+      front(v, sx * 3, -1, R); front(v, sx * 4, 0, R);
     }
-    front(v, 0, 5, GD); front(v, -1, 4, GD); front(v, 1, 4, GD);
-    front(v, 0, -1, INK); front(v, 0, -5, R); front(v, -1, -5, R); front(v, 1, -5, R);
+    front(v, 0, 4, GD); front(v, 0, 3, GD);
+    front(v, 0, -6, INK); front(v, 0, -7, INK); front(v, -1, -6, R); front(v, 1, -6, R);
     return v;
   },
   cord() {
@@ -480,7 +490,7 @@ export function applyCosmeticSpec(spec, look = {}) {
   const hat = COSMETIC_BY_ID[look.hat], out = COSMETIC_BY_ID[look.outfit];
   if (out?.id === 'dino' || out?.id === 'banana') {
     const dino = out.id === 'dino';
-    spec.top = { kind: 'onesie', col: hex(dino ? DINO : BANANA), col2: dino ? hex(DINO_BELLY) : null, spots: dino ? hex(DINO_D) : hex(BANANA_SPOT), spotK: dino ? 0.7 : 0.9 };
+    spec.top = { kind: 'onesie', col: hex(dino ? DINO : BANANA), col2: dino ? hex(DINO_BELLY) : null, spots: dino ? hex(DINO_D) : hex(BANANA_SPOT), spotK: dino ? 0.7 : 0.95, spotF: dino ? 34 : 70, spotT: dino ? 0.72 : 0.83 };
     spec.bottom = { kind: 'slacks', col: hex(dino ? DINO : BANANA), noCrease: true };
     spec.legs = 'skin'; spec.socks = null;
     spec.shoes = dino ? { kind: 'comfort', col: hex(DINO_D) } : { kind: 'sneaker', col: hex(0x6a4a24), col2: hex(BANANA) };
@@ -544,7 +554,7 @@ export function dressHuman(h, look = {}) {
     tail.position.set(0, P.hipY + 0.03 * P.H - J.hips[1], -P.hipsZ - 0.012);
     tail.scale.setScalar(V);
     b.hips.add(tail); rig.parts.push(tail);
-    const segs = [[9, 4.4, 3.6, 2], [8, 3.6, 2.8, 2], [7, 2.8, 2.0, 2], [6, 2.0, 0.9, 0]];
+    const segs = [[11, 5.2, 4.3, 2], [10, 4.3, 3.3, 3], [9, 3.3, 2.3, 2], [8, 2.3, 1.0, 0]];
     let parent = tail;
     const chain = [];
     segs.forEach(([len, r0, r1, sp], i) => {

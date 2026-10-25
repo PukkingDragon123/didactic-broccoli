@@ -20,22 +20,23 @@ export const POSES = {
   tool: { pos: new THREE.Vector3(0.2, -0.26, -0.46), rot: new THREE.Euler(-0.75, 0.55, 0.3) },
   inspect: { pos: new THREE.Vector3(0, -0.005, -0.24), rot: new THREE.Euler(0.1, 0, 0) },
   reveal: { pos: new THREE.Vector3(0, -0.05, -0.39), rot: new THREE.Euler(0.05, 0, 0) },
-  twist: { pos: new THREE.Vector3(0.03, -0.12, -0.37), rot: new THREE.Euler(0.35, 0.15, 0.05) },
-  pet: { pos: new THREE.Vector3(0.02, -0.34, -0.55), rot: new THREE.Euler(0.1, Math.PI + 0.3, 0) },
+  twist: { pos: new THREE.Vector3(0.03, -0.135, -0.41), rot: new THREE.Euler(0.4, 0.15, 0.05) },
+  pet: { pos: new THREE.Vector3(0.05, -0.25, -0.5), rot: new THREE.Euler(0.15, Math.PI + 0.3, 0) },
   item: { pos: new THREE.Vector3(0.14, -0.14, -0.4), rot: new THREE.Euler(0.2, -0.45, 0.05) },
-  // held diagonally across the view, bristles forward-right (sweeps pivot on the upper hand)
-  broom: { pos: new THREE.Vector3(0.23, -0.22, -0.615), rot: new THREE.Euler(0.271, 0.559, 1.088) },
+  // held up on the right, leaning forward, bristles low ahead (sweeps pivot on the upper hand)
+  broom: { pos: new THREE.Vector3(0.324, -0.337, -0.697), rot: new THREE.Euler(0.638, 0.338, 0.421) },
   // a book held up by its spine, cover towards you
-  book: { pos: new THREE.Vector3(0.115, -0.115, -0.41), rot: new THREE.Euler(-1.78, 0.069, 2.829) },
-  carton: { pos: new THREE.Vector3(0.12, -0.13, -0.39), rot: new THREE.Euler(0.1, -0.42, 0.03) },
+  book: { pos: new THREE.Vector3(0.13, -0.09, -0.42), rot: new THREE.Euler(-1.78, 0.069, 2.829) },
+  carton: { pos: new THREE.Vector3(0.095, -0.105, -0.39), rot: new THREE.Euler(0.1, -0.42, 0.03) },
   sheets: { pos: new THREE.Vector3(0.125, -0.15, -0.41), rot: new THREE.Euler(1.064, -0.123, 0.218) },
-  case: { pos: new THREE.Vector3(0.15, -0.25, -0.43), rot: new THREE.Euler(0.12, -0.55, 0.04) },
-  long: { pos: new THREE.Vector3(0.12, -0.24, -0.5), rot: new THREE.Euler(0.1, -1.2, 0.35) },
+  case: { pos: new THREE.Vector3(0.24, -0.2, -0.5), rot: new THREE.Euler(0.12, -0.55, 0.04) },
+  bag: { pos: new THREE.Vector3(0.22, -0.22, -0.52), rot: new THREE.Euler(0.1, -0.4, 0.06) },
+  long: { pos: new THREE.Vector3(0.1, -0.17, -0.52), rot: new THREE.Euler(0.1, -1.2, 0.3) },
   read: { pos: new THREE.Vector3(0, -0.035, -0.3), rot: new THREE.Euler(0.25, 0, 0) },
 };
 
 // tools held in your hands: their own pose and a natural size (largest dimension, m), overriding data/tools.js
-const HOLD = { notebook: ['book', 0.19], milk: ['carton', 0.165], flyers: ['sheets', 0.2], toolkit: ['case', 0.26], batteries: [null, 0.14], cash_tin: [null, 0.16] };
+const HOLD = { notebook: ['book', 0.19], milk: ['carton', 0.165], flyers: ['sheets', 0.2], toolkit: ['case', 0.26], batteries: [null, 0.14], cash_tin: [null, 0.16], broom: ['broom', 0.86], trash_bag: ['bag', 0.26] };
 
 /** A carried tool's mesh, centred on its holder so poses rotate it nicely. */
 export function makeToolMesh(id) {
@@ -92,7 +93,8 @@ export class Held {
       this.sel = free;
     }
     this.item = { kind, data, obj, ent: opts.ent || null };
-    obj.traverse((m) => { if (m.isMesh) m.castShadow = false; });
+    // in hand: no shadows either way (your own head and arms would darken whatever you hold)
+    obj.traverse((m) => { if (m.isMesh) { if (m.userData.rs === undefined) m.userData.rs = m.receiveShadow; m.castShadow = m.receiveShadow = false; } });
     const fromWorld = obj.parent !== this.anchor;
     this.anchor.attach(obj);
     obj.visible = true;
@@ -208,7 +210,7 @@ export class Held {
     if (!this.item) return null;
     const it = this.item;
     this.game.scene.attach(it.obj);
-    it.obj.traverse((m) => { if (m.isMesh && !m.userData.isRim) m.castShadow = true; });
+    it.obj.traverse((m) => { if (m.isMesh && !m.userData.isRim) { m.castShadow = true; if (m.userData.rs !== undefined) { m.receiveShadow = m.userData.rs; delete m.userData.rs; } } });
     it.obj.visible = true;
     this.item = null;
     this.trans = null;

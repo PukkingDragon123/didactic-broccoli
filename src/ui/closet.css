@@ -133,6 +133,7 @@ body.closet-on canvas:active { cursor: grabbing; }
   --face: #ffb0a0; --shade: #c86a5a;
   background: var(--face); box-shadow: inset 0 -4px 0 var(--shade), inset 0 2px 0 rgba(255, 255, 255, .6), 0 -2px 0 var(--ink), 0 2px 0 var(--ink), -2px 0 0 var(--ink), 2px 0 0 var(--ink), 0 6px 0 rgba(26, 18, 22, .35);
 }
+.cl-note:not(.show) + .cl-back { flex: 1; }
 .cl-back:hover { filter: brightness(1.06); }
 .cl-back:active { transform: translateY(3px); }
 
@@ -181,7 +182,7 @@ body.closet-on canvas:active { cursor: grabbing; }
 @media (max-width: 560px), (max-aspect-ratio: 4/5) {
   /* portrait: a bottom sheet; you stand in the top half */
   .cl { --cl-w: 0px; }
-  .cl-panel { top: auto; left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); bottom: max(8px, env(safe-area-inset-bottom)); width: auto; height: min(58vh, 640px); height: min(58dvh, 640px); animation-name: cl-up; }
+  .cl-panel { top: auto; left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); bottom: max(8px, env(safe-area-inset-bottom)); width: auto; height: min(54vh, 620px); height: min(54dvh, 620px); animation-name: cl-up; }
   .cl.closing .cl-panel { animation-name: cl-down; }
   @keyframes cl-up { from { opacity: 0; transform: translateY(60px); } }
   @keyframes cl-down { to { opacity: 0; transform: translateY(40px); } }
@@ -198,6 +199,7 @@ body.closet-on canvas:active { cursor: grabbing; }
   .cl-note { flex: 1; min-width: 0; }
   .cl-note > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cl-back { flex: none; min-height: 46px; padding: 0 16px; font-size: 24px !important; }
-  .cl-hint { left: 50%; top: max(12px, env(safe-area-inset-top)); }
+  .cl-hint { left: max(10px, env(safe-area-inset-left)); top: auto; bottom: calc(min(54dvh, 620px) + 18px); transform: none; padding: 4px 10px 6px 6px; animation-name: cl-hint-s; }
+  @keyframes cl-hint-s { from { opacity: 0; transform: translateY(10px); } }
 }
 @media (prefers-reduced-motion: reduce) { .cl *, .cl-panel { animation: none !important; transition: none !important; } }

@@ -248,7 +248,7 @@ function makePainters(spec, P) {
     shadeInto(o, col, kk);
     // hem shadow (top overhangs the trousers) + hem line
     if (!arm && Math.abs(c.y - topHem) < c.px * 1.5 && k !== 'sailor' && k !== 'onesie') over(o, INK, 0.25);
-    if (k === 'onesie' && T.spots && vnoise(around(c) * 34 + (arm ? 7 : 0), c.y * 34, 5) > 0.72) shadeInto(o, T.spots, kk * (T.spotK || 1));
+    if (k === 'onesie' && T.spots && vnoise(around(c) * (T.spotF || 34) + (arm ? 7 : 0), c.y * (T.spotF || 34), 5) > (T.spotT || 0.72)) shadeInto(o, T.spots, kk * (T.spotK || 1));
     if (k === 'happi' && arm && c.y - cuffY < 0.02 * H) { shadeInto(o, T.col3, kk); if (Math.abs(c.y - cuffY - 0.02 * H) < c.px * 0.7) over(o, INK, 0.3); }
     if (arm && sleeve === 'short' && c.y - cuffY < 0.012 * H) { if (k === 'polo' || k === 'tee') { scaleO(o, c.i % 2 ? 0.92 : 1.02); } if (Math.abs(c.y - cuffY - 0.012 * H) < c.px * 0.6) over(o, INK, 0.25); }
     if (arm && sleeve === 'long' && c.y - cuffY < 0.025 * H && ['cardigan', 'knit', 'workjacket', 'jacket', 'flannel', 'sailor', 'gakuran'].includes(k)) {

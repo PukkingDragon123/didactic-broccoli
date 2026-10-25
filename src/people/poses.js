@@ -57,7 +57,7 @@ Object.assign(EXTRA_POSES, {
     // other hand in the front pocket, elbow relaxed out
     g.L = arm(m(0.135), -m(0.105), m(0.065), 1, 0.15, -0.8);
     g.hands.L = [0.1, -0.7, 0.7, -1, 0, 0];
-    g.chest[0] = 0.05; g.chest[2] = -0.03; g.head[2] = 0.07; g.head[0] = 0.12;
+    g.chest[0] = 0.06; g.chest[2] = -0.03; g.neck[0] = 0.1; g.head[2] = 0.08; g.head[0] = 0.22;
     g.eyes = [0, 1.5];
   },
   selfie(t, h, g) {
