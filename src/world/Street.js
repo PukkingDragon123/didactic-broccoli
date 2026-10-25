@@ -111,8 +111,8 @@ export class Street {
   }
 
   // ------------------------------------------------------------------ the stray cat
-  // A jointed cat (CatRig) that wanders, sits, grooms, naps in sunny spots, sometimes trots over to you,
-  // and can be picked up (it dangles and swishes its tail) and put down again.
+  // A low-poly calico (CatRig) that wanders, sits, grooms, kneads and naps in sunny spots (stretching when she wakes),
+  // sometimes trots over to you with her tail up, and can be picked up (dangles, swishes, looks at you) and petted.
   buildCat() {
     const rig = new CatRig();
     const st = this.game.state.story;
@@ -160,6 +160,7 @@ export class Street {
     const c = this.cat;
     audio.play('purr', { vol: 0.6 });
     c.purr = 1.2;
+    c.rig.pet?.();
     const p = this.game.held.item?.obj.getWorldPosition(new THREE.Vector3());
     if (p) this.game.effects.sparks({ pos: p.add(new THREE.Vector3(0, 0.15, 0)), count: 6, colors: [0xff9fae], speed: 0.2, size: 0.02, gravity: -0.3, life: 1.2, star: 0 });
   }
@@ -181,7 +182,8 @@ export class Street {
   setCatState(st, dur, opts) {
     const c = this.cat;
     c.state = st; c.t = 0; c.dur = dur;
-    c.rig.setPose(st === 'approach' || st === 'walk' || st === 'flee' || st === 'bowl' ? 'walk' : st === 'hide' ? 'sit' : st, opts);
+    c.rig.setPose(st === 'approach' || st === 'walk' || st === 'flee' || st === 'bowl' ? 'walk' : st, opts);
+    c.rig.mood = st === 'flee' || st === 'hide' ? 'scared' : st === 'approach' || st === 'groove' ? 'happy' : 'calm';
   }
 
   // ---- story hooks: the shy stray inside the garage
@@ -201,6 +203,15 @@ export class Street {
   catDrink(sec) { const c = this.cat; this.setCatState('drink', sec); }
   befriendCat() { const c = this.cat; c.wild = false; this.setCatState('sit', 8); }
 
+  /** Height she rests at: the towel nest when inside Grandpa's box bed, else the floor. */
+  catFloor(p) {
+    const bed = this.game.story?.bed;
+    if (!bed) return 0;
+    if (!this.bedBox || this.bedBox.obj !== bed) { const b = new THREE.Box3().setFromObject(bed); this.bedBox = { obj: bed, b }; }
+    const b = this.bedBox.b;
+    return p.x > b.min.x + 0.05 && p.x < b.max.x - 0.05 && p.z > b.min.z + 0.05 && p.z < b.max.z - 0.05 ? b.min.y + (b.max.y - b.min.y) * 0.42 : 0;
+  }
+
   pickCatTarget() {
     // favourite spots: the bed by the heater, under the work table, the shutter's sunny apron, the vending machines, the bench
     const spots = [[-1.5, 2.15], [0.4, 0.1], [1.0, 4.2], [-2.6, 6.0], [3.4, 5.9], [0.2, 5.9], [2.4, -0.4]];
@@ -211,7 +222,10 @@ export class Street {
   updateCat(dt) {
     const c = this.cat;
     const pl = this.game.player.pos;
-    if (c.held) { c.rig.update(dt, 0); return; }
+    // eyes: slit pupils outside in the low sun, wide in the dim garage (wider still with the lights off)
+    const inside = c.pos.z < GARAGE.maxZ - 0.3 && !c.held;
+    c.rig.dark = inside ? (this.game.garage?.lightsOn ? 0.45 : 0.9) : 0.12;
+    if (c.held) { c.rig.lookAt = this.game.camera.position; c.rig.update(dt, 0); return; }
     c.t += dt;
     const toPlayer = Math.hypot(pl.x - c.pos.x, pl.z - c.pos.z);
     let speed = 0;
@@ -232,8 +246,8 @@ export class Street {
         else if (c.state === 'flee') this.setCatState('hide', 1e9);
         else {
           // arrived: sit and look at you if you're near, otherwise groom or nap
-          const next = c.state === 'approach' ? 'sit' : (Math.random() < 0.35 ? 'sleep' : Math.random() < 0.5 ? 'groom' : 'sit');
-          this.setCatState(next, next === 'sleep' ? rnd(14, 30) : rnd(5, 10));
+          const next = c.state === 'approach' ? 'sit' : (Math.random() < 0.35 ? 'knead' : Math.random() < 0.5 ? 'groom' : 'sit');
+          this.setCatState(next, next === 'knead' ? rnd(2.5, 4) : rnd(5, 10)); // kneading settles into a nap
           if (c.state === 'sit' && toPlayer < 2) { audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.55 }); this.game.effects.sparks({ pos: c.pos.clone().setY(0.45), count: 4, colors: [0xff9fae], speed: 0.15, size: 0.02, gravity: -0.3, life: 1, star: 0 }); }
         }
       } else {
@@ -247,7 +261,9 @@ export class Street {
       }
     } else if (c.wild || c.state === 'drink') {
       // stays put (hiding / lapping milk)
-    } else if (c.t > c.dur) {
+    } else if (c.t > c.dur && c.state === 'knead') this.setCatState('sleep', rnd(14, 30));
+    else if (c.t > c.dur && c.state === 'sleep') this.setCatState('stretch', 3.2); // waking up: a long stretch first
+    else if (c.t > c.dur) {
       // curious about you now and then; otherwise off to a favourite spot
       if (toPlayer < 6 && Math.random() < 0.45) this.setCatState('approach', 10);
       else { this.setCatState('walk', 12); c.target = this.pickCatTarget(); }
@@ -255,14 +271,18 @@ export class Street {
       this.setCatState('sit', 6); // you woke it up
     }
     if (c.state === 'drink' && !c.wild && c.t > c.dur) this.setCatState('sit', 6);
-    // sitting cats watch you
+    // sitting cats watch you (head and eyes follow the camera)
+    const watching = (c.state === 'sit' || c.state === 'hide' || c.state === 'groove' || c.state === 'knead' || (c.state === 'approach' && speed === 0)) && toPlayer < 4;
+    c.rig.lookAt = watching ? this.game.camera.position : null;
     if ((c.state === 'sit' || c.state === 'hide' || c.state === 'groove') && toPlayer < 4) {
       const want = Math.atan2(pl.x - c.pos.x, pl.z - c.pos.z) - c.g.rotation.y;
       c.rig.lookYaw += ((((want + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * 0.8 - c.rig.lookYaw) * Math.min(1, dt * 3);
       c.rig.lookYaw = Math.max(-0.9, Math.min(0.9, c.rig.lookYaw));
     } else c.rig.lookYaw *= 1 - Math.min(1, dt * 3);
     c.rig.update(dt, speed);
-    c.g.position.set(c.pos.x, 0, c.pos.z);
+    // in the cardboard bed she lies on the towel, not inside it (a little hop in / out)
+    c.y = (c.y || 0) + (this.catFloor(c.pos) - (c.y || 0)) * Math.min(1, dt * 8);
+    c.g.position.set(c.pos.x, c.y, c.pos.z);
     c.g.rotation.y += ((c.heading - c.g.rotation.y + Math.PI * 3) % (Math.PI * 2) - Math.PI) * Math.min(1, dt * 6);
   }
 

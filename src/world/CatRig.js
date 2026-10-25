@@ -87,6 +87,8 @@ export class CatRig {
     const len = (a, bj) => Math.hypot(bj[0] - J[a][0], bj[1] - J[a][1], bj[2] - J[a][2]);
     this.len = { arm: len('armL', J.foreL), fore: len('foreL', J.pawL), thigh: len('thighL', J.shinL), shin: len('shinL', J.metaL) };
     this.buildFace(A);
+    // the hover highlight's rim shells aren't skinned (they'd show a ghost in the bind pose): no rims on the cat
+    this.root.traverse((o) => { o.userData.noRim = true; });
     // state
     this.pose = 'sit';
     this.wF = Object.fromEntries(POSES.map((k) => [k, k === 'sit' ? 1 : 0]));
@@ -315,6 +317,7 @@ export class CatRig {
 
   update(dt, speed = 0) {
     dt = Math.min(dt, 0.1);
+    if (!(dt > 0)) return;
     this.started = true;
     this.t += dt; this.grooveT += dt;
     for (const k of POSES) this.poseT[k] += dt;
@@ -344,7 +347,8 @@ export class CatRig {
     // --- turning (spine bends into the turn, the tail swings out)
     const yaw = this.root.rotation.y;
     if (this.prevYaw === null) this.prevYaw = yaw;
-    this.yawRate = lerp(this.yawRate, wrap(yaw - this.prevYaw) / dt, 1 - Math.exp(-dt * 8)); this.prevYaw = yaw;
+    this.yawRate = lerp(this.yawRate, clamp(wrap(yaw - this.prevYaw) / dt, -12, 12), 1 - Math.exp(-dt * 8)); this.prevYaw = yaw;
+    if (!isFinite(this.yawRate)) this.yawRate = 0;
     // --- gait: walk (lateral sequence) -> trot (diagonal pairs) -> run (rotary gallop)
     // (speed is in world m/s; strides are in the rig's own, unscaled units)
     this.spd = lerp(this.spd, Math.max(0, speed), 1 - Math.exp(-dt * 6));
@@ -401,8 +405,14 @@ export class CatRig {
       this.root.updateWorldMatrix(true, false);
       _v2.copy(this.lookAt); this.root.worldToLocal(_v2); this.root.worldToLocal(_v);
       _v2.sub(_v);
-      const y0 = Math.atan2(_v2.x, _v2.z), p0 = -Math.atan2(_v2.y, Math.hypot(_v2.x, _v2.z));
-      if (Math.abs(y0) < 2) { ty = clamp(y0, -1.2, 1.2); tp = clamp(p0, -0.7, 0.5); }
+      let y0 = Math.atan2(_v2.x, _v2.z);
+      const p0 = -Math.atan2(_v2.y, Math.hypot(_v2.x, _v2.z));
+      if (this.wF.held > 0.5) {
+        // held facing away: she twists round over a shoulder to look back at you (keeps the side she picked)
+        if (Math.abs(y0) > 2.7) y0 = (this.lookSide || 1) * 2.7;
+        this.lookSide = Math.sign(y0) || 1;
+        ty = clamp(y0, -1.5, 1.5); tp = clamp(p0, -0.5, 0.5);
+      } else if (Math.abs(y0) < 2) { ty = clamp(y0, -1.2, 1.2); tp = clamp(p0, -0.7, 0.5); }
     }
     if (!engaged) { ty *= 0.15; tp *= 0.15; }
     for (let i = 0; i < 2; i++) { this.lookV[i] += (((i ? tp : ty) - this.look[i]) * 40 - this.lookV[i] * 11) * dt; this.look[i] += this.lookV[i] * dt; }
@@ -440,6 +450,7 @@ export class CatRig {
     b.armR.position.z = this.rest.armR.z + clamp((P.frz - FRONT_TOE[2]) * 0.3, -0.022, 0.03);
     this.need[0] = this.need[1] = -1;
     this.root.updateMatrixWorld(true);
+    this.ws = this.root.getWorldScale(_v).x; // the IK works in world units
     this.frontLeg('L', P.flx, P.fly, P.flz, P.flp);
     this.frontLeg('R', P.frx, P.fry, P.frz, P.frp);
     this.hindLeg('L', P.hlx, P.hly, P.hlz, P.hlm);
@@ -504,7 +515,7 @@ export class CatRig {
     const sh = arm.getWorldPosition(new THREE.Vector3());
     if (y < 0.012) this.reach(0, sh, wrist, this.len.arm + this.len.fore);
     const pole = _v4.set(sd * 0.25, -0.1, -1).transformDirection(R.matrixWorld);
-    const elbow = this.twoBone(sh, wrist, this.len.arm, this.len.fore, pole.clone(), new THREE.Vector3());
+    const elbow = this.twoBone(sh, wrist, this.len.arm * this.ws, this.len.fore * this.ws, pole.clone(), new THREE.Vector3());
     this.aim(arm, this.dirs['arm' + s], elbow.clone().sub(sh));
     this.aim(fore, this.dirs['fore' + s], wrist.clone().sub(elbow));
     this.aim(paw, this.dirs['paw' + s], pad.sub(wrist));
@@ -518,7 +529,7 @@ export class CatRig {
     const hip = th.getWorldPosition(new THREE.Vector3());
     if (y < 0.012) this.reach(1, hip, hock, this.len.thigh + this.len.shin);
     const pole = _v4.set(sd * 0.15, 0.1, 1).transformDirection(R.matrixWorld);
-    const knee = this.twoBone(hip, hock, this.len.thigh, this.len.shin, pole.clone(), new THREE.Vector3());
+    const knee = this.twoBone(hip, hock, this.len.thigh * this.ws, this.len.shin * this.ws, pole.clone(), new THREE.Vector3());
     this.aim(th, this.dirs['thigh' + s], knee.clone().sub(hip));
     this.aim(sh, this.dirs['shin' + s], hock.clone().sub(knee));
     this.aim(mt, this.dirs['meta' + s], toe.sub(hock));
@@ -561,6 +572,7 @@ export class CatRig {
     this.b.head.localToWorld(_v.set(0, 0.06, 0.07)).applyMatrix4(_m); _box.expandByPoint(_v);
     this.b.head.localToWorld(_v.set(0, -0.02, 0.07)).applyMatrix4(_m); _box.expandByPoint(_v);
     _box.expandByScalar(0.03);
+    if (!isFinite(_box.min.x + _box.max.y)) _box.set(_v.set(-0.25, 0, -0.45), _v2.set(0.25, 0.4, 0.35)); // never cull her by accident
     this.mesh.boundingBox.copy(_box); this.geo.boundingBox.copy(_box);
     _box.getBoundingSphere(this.mesh.boundingSphere);
   }

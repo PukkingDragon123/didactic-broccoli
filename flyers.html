@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flyers</title>
+  <style>
+    html, body { margin: 0; background: #2a2420; color: #f3e9d2; font-family: Grandstander, sans-serif; }
+    #grid { display: flex; flex-wrap: wrap; gap: 14px; padding: 14px; }
+    #grid figure { margin: 0; }
+    #grid canvas { display: block; width: var(--w, 300px); box-shadow: 4px 6px 0 rgba(0,0,0,.4); }
+    #grid figcaption { margin-top: 4px; font-size: 13px; opacity: .8; }
+    #err { position: fixed; top: 0; left: 0; color: #ff8080; white-space: pre; font-size: 12px; z-index: 9; }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <div id="err"></div>
+  <script type="module" src="/src/dev/flyers.js"></script>
+</body>
+</html>

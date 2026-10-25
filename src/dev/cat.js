@@ -49,13 +49,13 @@ export async function viewerEntries(params) {
       run(r, 2, speed);
       // measure stance-paw slip over the next frame
       // contact points: front pads / hind toes (same offsets as CatRig.updateBounds)
-      const pts = () => [['pawL', 0.017, -0.022], ['pawR', 0.017, -0.022], ['metaL', 0.04, -0.043], ['metaR', 0.04, -0.043]].map(([bn, z, y]) => r.b[bn].localToWorld(new THREE.Vector3(0, y, z)));
+      const pts = () => [['pawL', 0.015, -0.0246], ['pawR', 0.015, -0.0246], ['metaL', 0.036, -0.048], ['metaR', 0.036, -0.048]].map(([bn, z, y]) => r.b[bn].localToWorld(new THREE.Vector3(0, y, z)));
       run(r, (T * i) / n, speed);
       const before = pts();
       run(r, 1 / 60, speed);
       const after = pts();
       const slip = before.map((p, k) => (p.y < 0.012 && after[k].y < 0.012 ? Math.hypot(after[k].x - p.x, after[k].z - p.z) * 1000 : -1));
-      add(r, `t ${(i / n).toFixed(2)} · slip ${slip.map((s) => (s < 0 ? '-' : s.toFixed(1))).join(' ')}<br>y ${before.map((p) => (p.y * 1000).toFixed(0)).join(' ')}`);
+      add(r, `t ${(i / n).toFixed(2)} · slip ${slip.map((s) => (s < 0 ? '-' : s.toFixed(1))).join(' ')}<br>y ${before.map((p) => (p.y * 1000).toFixed(0)).join(' ')} need ${r.need.map((x) => (x * 1000).toFixed(0))} drop ${r.drop.map((x) => (x * 1000).toFixed(0))} pelY ${(r.P.pelY * 1000).toFixed(0)}`);
     }
   } else if (set === 'face') {
     // close-ups: the bounds are cut down to the head so the viewer frames the face

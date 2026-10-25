@@ -24,6 +24,7 @@ const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE
 const _m = new THREE.Matrix4(), _m2 = new THREE.Matrix4(), _box = new THREE.Box3(), _e = new THREE.Euler();
 const X = new THREE.Vector3(1, 0, 0), Y = new THREE.Vector3(0, 1, 0), Z = new THREE.Vector3(0, 0, 1);
 const N = (x, y, z, out = V()) => out.set(x, y, z).normalize();
+const finite = (v) => !!v && Number.isFinite(v.x + v.y + v.z);
 
 // the body's bones that stay out of the colour passes (the camera sits in the head; the viewmodel arms replace these)
 const HIDE = ['neck', 'head', 'tailL', 'tailR', 'armL', 'foreL', 'handL', 'armR', 'foreR', 'handR', 'prop'].map((b) => BONE_INDEX[b]);
@@ -343,14 +344,14 @@ export class FPBody {
   /** Held.consume: animate the item being used up (pour the milk, hand out the last flyer...). true = we own obj now. */
   consumed(it) {
     if (!this.live || it.kind !== 'tool') return false;
-    const id = it.data.id, obj = it.obj, hit = this.game.interaction.hover?.hit?.point;
+    const id = it.data.id, obj = it.obj, hp = this.game.interaction.hover?.hit?.point, hit = finite(hp) ? hp : null;
     if (id === 'flyers') { this.give(hit); return false; }
     this.play(id === 'milk' ? 'pour' : 'use', id === 'milk' ? 1.35 : 0.5, { obj, it, own: true, at: hit ? this.toAnchor(hit, V()) : null, from: obj.position.clone(), fromQ: obj.quaternion.clone(), fromS: obj.scale.x });
     return true;
   }
 
   give(hitWorld) {
-    let at = hitWorld ? this.toAnchor(hitWorld, V()) : null;
+    let at = finite(hitWorld) ? this.toAnchor(hitWorld, V()) : null;
     if (!at || at.z > -0.25) at = V().set(0.05, -0.05, -0.8); // someone beside / behind you: just hold it out
     at.y = Math.max(at.y, -0.18);
     this.play('give', 0.85, { at, hand: this.freeHand() });
@@ -451,7 +452,7 @@ export class FPBody {
     const uses = it?.kind === 'tool' && it.data.id === 'flyers' ? it.data.uses : -1;
     if (uses >= 0 && this.lastUses > uses && this.rig.visible) this.give(g.interaction.hover?.hit?.point || this.lastHover);
     this.lastUses = uses;
-    if (g.interaction.hover?.hit) this.lastHover = (this.lastHover || V()).copy(g.interaction.hover.hit.point);
+    if (finite(g.interaction.hover?.hit?.point)) this.lastHover = (this.lastHover || V()).copy(g.interaction.hover.hit.point);
     // capsule tossed away with Q
     if (held.tossed && held.tossed !== this.tossSeen) { this.tossSeen = held.tossed; if (this.rig.visible && !this.act) this.play('toss', 0.4); }
     // clicks on things with a free hand: reach out and press (decided a frame later, once the click has done its thing)
@@ -460,7 +461,7 @@ export class FPBody {
       const busy = this.act || g.interaction.holding || held.flight || this.coinMachine() || held.item !== T.item || held.trans?.delay > 0 || g.cutscene.active || g.uiOpen || g.pc?.active;
       if (!busy && this.rig.visible) this.play('tap', 0.42, { at: this.toAnchor(T.p, V()), hand: this.freeHand() });
     }
-    if (inp.buttonDown(0) && g.interaction.hover && !g.interaction.holding && !held.reading) this.tap = { p: g.interaction.hover.hit.point.clone(), item: held.item };
+    if (inp.buttonDown(0) && finite(g.interaction.hover?.hit?.point) && !g.interaction.holding && !held.reading) this.tap = { p: g.interaction.hover.hit.point.clone(), item: held.item };
     if (this.act) { this.act.t += dt; if (this.act.t >= this.act.dur) this.endAct(); }
     if (held.flight) { held.flight.t = (held.flight.t || 0) + dt; if (!held.flight.obj?.parent || held.flight.t > held.flight.dur) held.flight = null; }
   }
@@ -505,7 +506,7 @@ export class FPBody {
     const S = H.shoulder, arm = (this.la + this.lc) * this.bs, reach = arm * 0.88;
     const d = _v2.subVectors(W.p, S), L = d.length();
     // things below you (a machine's handle, its coin slot): you bend at the waist to reach them
-    const bend = clamp(d.dot(this.dirToAnchor(_v3.set(0, -1, 0), _v3)) * 0.45, 0, 0.22);
+    const bend = clamp(d.dot(this.dirToAnchor(_v3.set(0, -1, 0), _v3)) * 0.7, 0, 0.3);
     if (L <= arm * 0.99 + bend) { H.farT = 0; H.bend = bend; return src; }
     H.farT += this.dt;
     if (H.farT > 0.5) return this.freePose(H, W);
@@ -841,7 +842,7 @@ export class FPBody {
     // ratchet a bolt on the front panel, where you're aiming
     this.props.wrench.visible = true;
     const hit = this.game.interaction.holding?.hit?.point;
-    const bolt = this.toAnchor(hit || m.local(0.02, m.L.slot.y - 0.07, m.L.front + 0.012), V());
+    const bolt = this.toAnchor(finite(hit) ? hit : m.local(0.02, m.L.slot.y - 0.07, m.L.front + 0.012), V());
     const th = 0.15 + Math.sin(this.t * 9) * 0.45;
     const arm = upA.clone().applyAxisAngle(fN, -1.2 + th).multiplyScalar(0.085 * this.bs);
     c.copy(bolt).add(arm).addScaledVector(fN, 0.012);
@@ -944,14 +945,14 @@ export class FPBody {
     this.handQ(sd, N(sd, ready ? -0.15 : -0.3, ready ? 0.15 : 0.05, _v2), N(sd * 0.22, (ready ? 0.15 : -0.08) + lift, -1, _v3), W.q);
     W.f[0] = ready ? 0.12 : lerp(0.46 + br * 0.03, 0.88, run); W.f[1] = ready ? 0.5 : 0.06; W.f[2] = ready ? 0.2 : lerp(0.3, 0.65, run); W.f[3] = lerp(0.3, 0.6, run); W.f[4] = 0;
     // looking down: your arms just hang at your sides
-    const kd = this.lookDown = smooth((-0.7 - P.pitch) / 0.4) * (ready ? 0 : 1);
+    const kd = this.lookDown = smooth((-0.3 - P.pitch) / 0.5) * (ready ? 0 : 1);
     if (kd > 0) { W.p.lerp(H.natural.p, kd); W.q.slerp(H.natural.q, kd); W.f[0] = lerp(W.f[0], 0.3, kd); }
     return key;
   }
 
   readyTarget(H) {
     const g = this.game, hv = g.interaction.hover, it = g.held.item;
-    if (!hv || g.held.reading) return null;
+    if (!hv || g.held.reading || !finite(hv.hit?.point)) return null;
     const free = this.freeHand();
     if (H.h !== free || (it && it.obj.visible && free === 1)) return null;
     const o = hv.obj, m = g.machines.find((x) => x.root === o);
@@ -966,6 +967,8 @@ export class FPBody {
   // ------------------------------------------------------------------ blending + IK
   blend(H, dt) {
     const O = H.out, W = H.want;
+    if (!finite(W.p) || !Number.isFinite(W.q.w)) W.copy(O);
+    if (!finite(O.p)) { O.copy(W); H.from.copy(W); }
     H.k = Math.min(1, H.k + dt / H.dur);
     const e = smooth(H.k);
     if (e >= 1) O.copy(W);

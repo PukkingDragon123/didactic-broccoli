@@ -5,6 +5,9 @@
 //   peace       double peace signs by the cheeks
 //   film        filming with the phone held sideways at eye level
 //   dab, flex   exactly what they sound like
+//   nope / yep  turning away with a hand up / pointing happily to the own left (two-panel memes)
+//   hug         arms around something big in front of the chest;  explain  one hand raised, making a point
+//   read_flyer  holding a sheet in both hands at chest height and reading it
 // Poses can also set pose.propRot (extra phone rotation, chest frame) and pose.vsign ('L' | 'R' | 'LR': peace
 // fingers); avatar humans (cosmetics.js dressHuman) honour both.
 import { GESTURES, EXTRA_POSES } from './gestures.js';
@@ -24,6 +27,12 @@ Object.assign(GESTURES, {
   film: { dur: Infinity },
   dab: { dur: 2.2, expr: 'smile' },
   flex: { dur: 2.6, expr: 'grin' },
+  // meme poses (flyer art, src/gfx/flyers.js) and reading a flyer you were handed
+  nope: { dur: Infinity, expr: 'angry' },
+  yep: { dur: Infinity, expr: 'grin' },
+  hug: { dur: Infinity, expr: 'happy' },
+  explain: { dur: Infinity },
+  read_flyer: { dur: Infinity },
 });
 
 const smooth = (x) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
@@ -124,5 +133,50 @@ Object.assign(EXTRA_POSES, {
     g.R = arm(-sx - m(0.13), sy + m(0.2) + p, m(0.03), -1, -0.25, -0.4);
     g.hands.L = [-0.3, 1, 0, 0, 0, -1]; g.hands.R = [0.3, 1, 0, 0, 0, -1];
     g.chest[0] = -0.08; g.head[0] = -0.08; g.lift = m(0.012);
+  },
+  nope(t, h, g) {
+    const F = frame(h), { m, eye, zf } = F;
+    g.hands = H0();
+    g.L = arm(m(0.2), eye - m(0.2), zf + m(0.12), 1, -1, -0.3);
+    g.hands.L = [0.1, 1, 0.15, 1, 0, 0.55];
+    g.head[1] = -0.6; g.head[0] = -0.14; g.head[2] = 0.12; g.chest[1] = -0.18; g.neck[1] = -0.15;
+    g.eyes = [-2, -0.5];
+  },
+  yep(t, h, g) {
+    const F = frame(h), { m, sx, sy, P } = F;
+    g.hands = H0();
+    const d = nrm([0.85, 0.32, 0.5]), reach = (P.shoulderY - P.wristY) * 0.9;
+    g.L = arm(sx + d[0] * reach, sy + d[1] * reach, d[2] * reach, 1, -1, -0.4);
+    g.hands.L = [...d, 0, -0.4, 1];
+    g.head[1] = 0.42; g.head[0] = -0.06; g.chest[1] = 0.14;
+    g.eyes = [2, 0];
+    void m;
+  },
+  hug(t, h, g) {
+    const F = frame(h), { m } = F;
+    g.hands = H0();
+    const sq = Math.sin(t * 2.2) * m(0.006);
+    g.L = arm(m(0.1) - sq, m(0.02), m(0.33), 1, -0.3, -0.4);
+    g.R = arm(-m(0.1) + sq, m(0.02), m(0.33), -1, -0.3, -0.4);
+    g.hands.L = [-1, 0.05, 0.25, 0, 0, -1]; g.hands.R = [1, 0.05, 0.25, 0, 0, -1];
+    g.chest[0] = 0.1; g.head[0] = 0.12; g.head[2] = 0.22; g.spine[0] = 0.04;
+    g.eyes = [0, 0];
+  },
+  explain(t, h, g) {
+    const F = frame(h), { m, sy } = F;
+    g.hands = H0();
+    const b = Math.sin(t * 2.6) * m(0.008);
+    g.R = arm(-m(0.2), sy - m(0.08) + b, m(0.22), -1, -1, -0.3);
+    g.hands.R = [0.1, 0.8, 0.55, 0.65, 0.35, 0.6];
+    g.head[2] = 0.08; g.head[0] = 0.03; g.chest[1] = -0.06;
+  },
+  read_flyer(t, h, g) {
+    // the sheet sits at chest height in front of you (h.flyerAt, chest space); a hand on either side of it
+    const F = frame(h), { m } = F, at = h.flyerAt || [0, m(0.12), m(0.3)];
+    const w = m(0.105), shake = Math.sin(t * 9) * m(0.002) * (h.laughing ? 3 : 0);
+    g.L = arm(at[0] + w, at[1] - m(0.06) + shake, at[2] - m(0.02), 1, -0.6, -0.5);
+    g.R = arm(at[0] - w, at[1] - m(0.06) - shake, at[2] - m(0.02), -1, -0.6, -0.5);
+    g.head[0] = 0.32 + (h.laughing ? Math.sin(t * 11) * 0.04 : 0); g.neck[0] = 0.1; g.chest[0] = 0.04;
+    g.eyes = [0, 1.5];
   },
 });
