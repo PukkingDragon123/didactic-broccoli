@@ -258,7 +258,7 @@ export class MenuCrew {
       this.hintT -= dt;
       if (this.hintT < 0 && me) {
         this.hintT = 26;
-        this.say(me, document.body.classList.contains('touchmode') ? 'Psst! Tap me to change clothes.' : 'Psst! Click me to change clothes.', 4.2);
+        this.say(me, document.body.classList.contains('touchmode') ? 'Psst! Tap me!' : 'Psst! Click me!', 3.6);
         me.lookMode = 'cam'; me.t = 4.2; me.back = true;
       }
       this.chatT -= dt;

@@ -11,6 +11,7 @@ import { TOOLS } from '../data/tools.js';
 import { propMesh } from '../world/props.js';
 
 export const SLOTS = 5;
+const _q = new THREE.Quaternion(), _ax = new THREE.Vector3(), _p = new THREE.Vector3();
 
 export const POSES = {
   capsule: { pos: new THREE.Vector3(0.14, -0.13, -0.37), rot: new THREE.Euler(0.25, 0.4, 0.1) },
@@ -22,14 +23,23 @@ export const POSES = {
   twist: { pos: new THREE.Vector3(0.03, -0.12, -0.37), rot: new THREE.Euler(0.35, 0.15, 0.05) },
   pet: { pos: new THREE.Vector3(0.02, -0.34, -0.55), rot: new THREE.Euler(0.1, Math.PI + 0.3, 0) },
   item: { pos: new THREE.Vector3(0.14, -0.14, -0.4), rot: new THREE.Euler(0.2, -0.45, 0.05) },
-  broom: { pos: new THREE.Vector3(0.17, -0.27, -0.615), rot: new THREE.Euler(1.0, 0, 0.73) },
+  // held diagonally across the view, bristles forward-right (sweeps pivot on the upper hand)
+  broom: { pos: new THREE.Vector3(0.23, -0.22, -0.615), rot: new THREE.Euler(0.271, 0.559, 1.088) },
+  // a book held up by its spine, cover towards you
+  book: { pos: new THREE.Vector3(0.115, -0.115, -0.41), rot: new THREE.Euler(-1.78, 0.069, 2.829) },
+  carton: { pos: new THREE.Vector3(0.12, -0.13, -0.39), rot: new THREE.Euler(0.1, -0.42, 0.03) },
+  sheets: { pos: new THREE.Vector3(0.125, -0.15, -0.41), rot: new THREE.Euler(1.064, -0.123, 0.218) },
+  case: { pos: new THREE.Vector3(0.15, -0.25, -0.43), rot: new THREE.Euler(0.12, -0.55, 0.04) },
   long: { pos: new THREE.Vector3(0.12, -0.24, -0.5), rot: new THREE.Euler(0.1, -1.2, 0.35) },
   read: { pos: new THREE.Vector3(0, -0.035, -0.3), rot: new THREE.Euler(0.25, 0, 0) },
 };
 
+// tools held in your hands: their own pose and a natural size (largest dimension, m), overriding data/tools.js
+const HOLD = { notebook: ['book', 0.19], milk: ['carton', 0.165], flyers: ['sheets', 0.2], toolkit: ['case', 0.26], batteries: [null, 0.14], cash_tin: [null, 0.16] };
+
 /** A carried tool's mesh, centred on its holder so poses rotate it nicely. */
 export function makeToolMesh(id) {
-  const T = TOOLS[id] || {};
+  const T = { ...TOOLS[id], ...(HOLD[id] ? { hand: HOLD[id][1] } : null) };
   const holder = new THREE.Group();
   const m = propMesh(T.prop || id, { fallbackSize: [0.12, 0.12, 0.12], fallbackColor: 0xc8a070 });
   const box = new THREE.Box3().setFromObject(m);
@@ -83,13 +93,14 @@ export class Held {
     }
     this.item = { kind, data, obj, ent: opts.ent || null };
     obj.traverse((m) => { if (m.isMesh) m.castShadow = false; });
+    const fromWorld = obj.parent !== this.anchor;
     this.anchor.attach(obj);
     obj.visible = true;
     this.pose = this.poseFor(this.item);
     // miniatures are shown a little larger in hand so you can admire the detail
     this.holdScale = this.scaleFor(this.item, opts.pose);
     // picked up from the world: it waits a moment for the hand to reach out and grab it
-    const far = this.game.fp?.live && obj.position.distanceTo(POSES[opts.pose || this.pose].pos) > 0.25;
+    const far = fromWorld && this.game.fp?.live && obj.position.distanceTo(POSES[opts.pose || this.pose].pos) > 0.25;
     this.startTrans(opts.pose || this.pose, far ? 0.4 : opts.dur ?? 0.32, far ? 0.12 : 0);
     this.twist = 0;
     if (kind === 'toy') this.attachTag(data, opts.isNew);
@@ -109,7 +120,7 @@ export class Held {
 
   poseFor(it) {
     const k = it.kind;
-    if (k === 'tool') return TOOLS[it.data.id]?.pose || 'item';
+    if (k === 'tool') return HOLD[it.data.id]?.[0] || TOOLS[it.data.id]?.pose || 'item';
     return k === 'capsule' ? 'capsule' : k === 'toy' ? 'toy' : k === 'cat' ? 'pet' : 'box';
   }
 
@@ -300,11 +311,14 @@ export class Held {
       if (!this.busy) obj.scale.setScalar(tr.fromS + (tr.toS - tr.fromS) * k);
       if (tr.t >= tr.dur) this.trans = null;
     }
-    // broom sweeps: a quick side-to-side swish on top of the pose
-    if (it.kind === 'tool' && this.swing > 0 && !this.trans) {
+    // broom sweeps: the head swishes side to side, pivoting near the upper hand
+    if (it.kind === 'tool' && it.data.id === 'broom' && this.swing > 0 && !this.trans) {
       const P = POSES[this.pose], k = Math.sin(this.swing * Math.PI * 3) * this.swing;
-      obj.position.set(P.pos.x - k * 0.12, P.pos.y + Math.abs(k) * 0.03, P.pos.z);
-      obj.rotation.set(P.rot.x, P.rot.y, P.rot.z + k * 0.6);
+      const q = _q.setFromAxisAngle(_ax.set(0.15, 1, 0.3).normalize(), k * 0.55);
+      obj.quaternion.setFromEuler(P.rot).premultiply(q);
+      const piv = _p.set(0, 0.3, 0).applyEuler(P.rot).add(P.pos); // ~ the top hand
+      obj.position.copy(P.pos).sub(piv).applyQuaternion(q).add(piv);
+      obj.position.y += Math.abs(k) * 0.02;
     }
     if (this.busy || !inp.locked || g.pc?.active || this.reading) return;
 

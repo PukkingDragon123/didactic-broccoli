@@ -187,6 +187,7 @@ body.has-3d-gear #m-gear { display: none; }
 .panel label .lbl { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .panel label.row { justify-content: space-between; }
 .panel .foot { min-height: 20px; font-size: 16px; text-align: center; color: #7a6a5a; }
+.panel .foot.credits { margin-top: 10px; font-size: 11px; line-height: 14px; color: #8a7a68; }
 
 /* sliders */
 .panel input[type=range] { -webkit-appearance: none; appearance: none; width: 50%; height: 24px; margin: 0; background: transparent; cursor: pointer; }

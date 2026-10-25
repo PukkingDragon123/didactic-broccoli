@@ -150,7 +150,7 @@ body.closet-on canvas:active { cursor: grabbing; }
 /* ------------------------------------------------------------------ small screens */
 @media (max-height: 560px) and (min-width: 561px) {
   /* landscape phones: a narrower side panel, compact header / tabs / cards */
-  .cl { --cl-w: min(380px, 50vw); --cl-gap: max(8px, env(safe-area-inset-right)); }
+  .cl { --cl-w: min(360px, 46vw); --cl-gap: max(8px, env(safe-area-inset-right)); }
   .cl-panel { top: max(8px, env(safe-area-inset-top)); bottom: max(8px, env(safe-area-inset-bottom)); }
   .cl-head { padding: 6px 10px 8px 12px; }
   .cl-title { font-size: 28px; line-height: 28px; }
@@ -161,14 +161,22 @@ body.closet-on canvas:active { cursor: grabbing; }
   .cl-tab span { display: none; }
   .cl-body { padding: 2px 10px 10px; }
   .cl-tip, .cl-desc { display: none; }
-  .cl-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .cl-name { font-size: 20px; line-height: 22px; }
-  .cl-btn { min-height: 40px; }
+  /* compact list cards: thumbnail on the left, name + button on the right */
+  .cl-grid { grid-template-columns: 1fr; gap: 8px; }
+  .cl-card { display: grid; grid-template-columns: 76px 1fr; grid-template-rows: auto auto; column-gap: 10px; row-gap: 4px; align-items: center; padding: 6px 8px 6px 6px; }
+  .cl-pic { grid-row: 1 / 3; width: 76px; }
+  .cl-tag { left: 2px; top: 2px; padding: 0 4px 1px; font-size: 13px; line-height: 16px; }
+  .cl-tag .px-icon { display: none; }
+  .cl-name { margin: 0; font-size: 20px; line-height: 22px; }
+  .cl-btn { margin: 0 0 4px; min-height: 38px; }
+  .cl-btn.buy b { font-size: 20px; }
+  .cl-why { grid-column: 2; }
   .cl-foot { flex-direction: row; align-items: center; padding: 8px 10px 10px; }
   .cl-note { flex: 1; min-width: 0; font-size: 16px; }
   .cl-note > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cl-back { flex: none; min-height: 44px; padding: 0 14px; font-size: 24px !important; }
-  .cl-hint { top: max(8px, env(safe-area-inset-top)); }
+  .cl-hint { left: max(10px, env(safe-area-inset-left)); top: auto; bottom: max(10px, env(safe-area-inset-bottom)); transform: none; padding: 4px 10px 6px 6px; animation-name: cl-hint-s; }
+  @keyframes cl-hint-s { from { opacity: 0; transform: translateY(10px); } }
 }
 @media (max-width: 560px), (max-aspect-ratio: 4/5) {
   /* portrait: a bottom sheet; you stand in the top half */
