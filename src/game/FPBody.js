@@ -636,13 +636,14 @@ export class FPBody {
       return 'toy';
     }
     if (kind === 'cat') {
-      // held up under her front legs, a hand either side of her chest; petting, the free hand strokes her head
+      // held up under her front legs, a hand either side of her chest (points from her bounding box, so any cat model
+      // works); petting, the near hand strokes down her side
       const petting = this.game.time - (held.petT ?? -9) < 1.3;
       if (!R && petting) {
         const st = Math.sin(this.t * 7.5);
-        this.ip(0.5, 0.96, 0.55, c);
-        c.z += st * 0.03; c.y += 0.012 + 0.008 * (1 - Math.cos(this.t * 7.5));
-        this.setGrip(H, W, c, N(0.2, -1, 0.1, a), N(0.25, 0.1, -1, _v2), [0.2, 0.35, 0.2, 0.1]);
+        this.ip(0.5, 0.5, 0.5, c);
+        c.x -= 0.075 * this.IS + 0.006 * (1 - Math.cos(this.t * 7.5)); c.y += st * 0.04;
+        this.setGrip(H, W, c, N(1, -0.2, -0.15, a), N(0.1, 0.8, -0.6, _v2), [0.15, 0.35, 0.2, 0.1]);
         return 'pet';
       }
       this.ip(0.5, 0.66, 0.5, c);
