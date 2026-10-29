@@ -1,3 +1,6 @@
-/* The game's one font: Grandstander. Weight aliases so canvas text and CSS can name a weight as a family. */
-@font-face { font-family: 'GG Display'; font-display: block; src: url('../../node_modules/@fontsource/grandstander/files/grandstander-latin-900-normal.woff2') format('woff2'); }
-@font-face { font-family: 'GG Bold'; font-display: block; src: url('../../node_modules/@fontsource/grandstander/files/grandstander-latin-700-normal.woff2') format('woff2'); }
+/* The game's font: Alagard by Hewett Tsoi (Pix3M), a pixel font on a 16 px grid: crisp at 16 / 32 / 48 / 64 px.
+   One face answers every weight (so the browser never fakes a bold), and the old weight aliases still resolve
+   so canvas text that names 'GG Display' / 'GG Bold' keeps working. Japanese falls back to DotGothic16. */
+@font-face { font-family: 'Alagard'; font-weight: 100 900; font-display: block; src: url('../assets/fonts/alagard.woff2') format('woff2'); }
+@font-face { font-family: 'GG Display'; font-weight: 100 900; font-display: block; src: url('../assets/fonts/alagard.woff2') format('woff2'); }
+@font-face { font-family: 'GG Bold'; font-weight: 100 900; font-display: block; src: url('../assets/fonts/alagard.woff2') format('woff2'); }

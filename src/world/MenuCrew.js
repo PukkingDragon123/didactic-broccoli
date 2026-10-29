@@ -5,6 +5,7 @@
 //   const crew = new MenuCrew(game);  crew.update(dt) after the menu camera is placed (it may take the camera over)
 //   crew.pick(camera, ndcX, ndcY) -> true over your character;  crew.openCloset() / crew.dispose()
 import * as THREE from 'three';
+import { talk } from '../people/voice.js';
 import { audio } from '../core/audio.js';
 import { createAvatarHuman, randomAvatar, normalizeAvatar, COSMETIC_BY_ID } from '../people/avatar.js';
 import { GESTURES } from '../people/gestures.js';
@@ -194,7 +195,7 @@ export class MenuCrew {
 
   say(c, text, dur = 2.8) {
     if (!c || !this.game.bubbles) return;
-    this.game.bubbles.say(c.h, text, { dur, onChar: (ch) => { if (/[a-z]/i.test(ch) && Math.random() < 0.45) { try { audio.play('blip', { f: 420 + (c.h.height || 1.6) * 110, vol: 0.25 }); } catch { /* no audio */ } } } });
+    this.game.bubbles.say(c.h, text, { dur, onChar: talk(c.h, { vol: 0.7 }) });
   }
 
   /** What each friend gets up to next (called when their timer runs out). */

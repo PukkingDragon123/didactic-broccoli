@@ -1,4 +1,5 @@
-// Renderer + post-processing stack (GTAO, bloom, colour grade, tone mapping, FXAA) with quality presets.
+// Renderer + post-processing stack with quality presets: ink outlines + screen-space god rays from the low sun,
+// GTAO, bloom, colour grade, AgX filmic tone mapping, FXAA, then a light sharpen and dither (no banding).
 // Viewmodel: whatever hangs off the camera (hands + held items, see vmRoots) is drawn in its own pass on top of the
 // scene so it never pokes into walls.
 import * as THREE from 'three';
@@ -17,8 +18,8 @@ const GradeShader = {
     uTime: { value: 0 },
     uVignette: { value: 0.32 },
     uGrain: { value: 0.035 },
-    uSaturation: { value: 1.0 },
-    uContrast: { value: 1.04 },
+    uSaturation: { value: 1.14 },
+    uContrast: { value: 1.07 },
     uWarm: { value: 0.012 },
     uFlash: { value: new THREE.Color(0, 0, 0) },
     uAberration: { value: 0.0012 },
@@ -71,13 +72,22 @@ const OutlineShader = {
     uWidth: { value: 1.0 },
     uStrength: { value: 0.85 },
     uInk: { value: new THREE.Color(0x1c1016) },
+    // god rays: sky pixels (no depth written) marched toward the sun's screen position
+    uSun: { value: new THREE.Vector2(0.5, 0.5) },
+    uSunOn: { value: 0 },
+    uAspect: { value: 1 },
+    uShaft: { value: 0.75 },
+    uShaftCol: { value: new THREE.Color(1.0, 0.72, 0.42) },
   },
   vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
     uniform sampler2D tDiffuse, tDepth;
     uniform vec2 uRes; uniform float uNear, uFar, uWidth, uStrength; uniform vec3 uInk;
+    uniform vec2 uSun; uniform float uSunOn, uAspect, uShaft; uniform vec3 uShaftCol;
     varying vec2 vUv;
     float lin(vec2 uv) { float z = texture2D(tDepth, uv).x * 2.0 - 1.0; return (2.0 * uNear * uFar) / (uFar + uNear - z * (uFar - uNear)); }
+    float sky(vec2 uv) { return step(0.99999, texture2D(tDepth, uv).x); }
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
     void main() {
       vec4 col = texture2D(tDiffuse, vUv);
       vec2 o = uWidth / uRes;
@@ -89,20 +99,75 @@ const OutlineShader = {
       float jump = max(max(abs(dl - d), abs(dr - d)), max(abs(du - d), abs(dd - d))) / d;
       float e = max(smoothstep(0.05, 0.12, lap), smoothstep(0.08, 0.16, jump));
       e *= 1.0 - smoothstep(25.0, 60.0, d); // fade far away so the skyline stays soft
-      gl_FragColor = vec4(mix(col.rgb, uInk * col.rgb * 0.35 + uInk * 0.4, e * uStrength), col.a);
+      vec3 outc = mix(col.rgb, uInk * col.rgb * 0.35 + uInk * 0.4, e * uStrength);
+      // crepuscular rays: march from this pixel toward the sun, collecting open sky (wires, poles and roofs cut it)
+      if (uSunOn > 0.001) {
+        vec2 dv = (uSun - vUv) / 26.0;
+        vec2 uv = vUv + dv * hash(vUv * uRes) ; // jittered start hides the steps
+        float acc = 0.0, w = 1.0, wsum = 0.0;
+        for (int i = 0; i < 26; i++) {
+          uv += dv;
+          float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
+          acc += sky(uv) * w * inside; wsum += w; w *= 0.955;
+        }
+        float dist = length((uSun - vUv) * vec2(uAspect, 1.0));
+        float k = (acc / wsum) * exp(-dist * 2.4) * uShaft * uSunOn;
+        outc += uShaftCol * k * (1.0 - 0.6 * sky(vUv));
+      }
+      gl_FragColor = vec4(outc, col.a);
     }`,
 };
 
+const _sunDir = new THREE.Vector3(), _sunP = new THREE.Vector3(), _camDir = new THREE.Vector3();
 class OutlinePass extends ShaderPass {
-  constructor(camera) { super(OutlineShader); this.camera = camera; }
+  constructor(camera) { super(OutlineShader); this.camera = camera; this.sun = null; }
   render(renderer, writeBuffer, readBuffer, dt, mask) {
-    const u = this.uniforms;
+    const u = this.uniforms, cam = this.camera;
     u.tDepth.value = readBuffer.depthTexture;
-    u.uNear.value = this.camera.near; u.uFar.value = this.camera.far;
+    u.uNear.value = cam.near; u.uFar.value = cam.far;
     u.uRes.value.set(readBuffer.width, readBuffer.height);
+    u.uAspect.value = readBuffer.width / Math.max(1, readBuffer.height);
+    // the sun's screen position; the rays fade out when you look away from it
+    let on = 0;
+    const s = this.sun;
+    if (s && s.visible !== false && s.intensity > 0.05) {
+      _sunDir.subVectors(s.position, s.target.position).normalize();
+      cam.getWorldDirection(_camDir);
+      const facing = _camDir.dot(_sunDir);
+      if (facing > 0) {
+        _sunP.copy(cam.position).addScaledVector(_sunDir, 500).project(cam);
+        u.uSun.value.set(_sunP.x * 0.5 + 0.5, _sunP.y * 0.5 + 0.5);
+        on = THREE.MathUtils.smoothstep(facing, 0.1, 0.55) * Math.min(1, s.intensity / 1.5) * (this.rays ?? 1);
+      }
+    }
+    u.uSunOn.value = on;
     super.render(renderer, writeBuffer, readBuffer, dt, mask);
   }
 }
+
+// Last pass, in display space: a light contrast-adaptive sharpen (FXAA softens the pixel-art textures) and a
+// triangular dither so the sky gradients and dim interiors never band.
+const FinishShader = {
+  uniforms: { tDiffuse: { value: null }, uRes: { value: new THREE.Vector2(1, 1) }, uSharp: { value: 0.28 } },
+  vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: /* glsl */`
+    uniform sampler2D tDiffuse; uniform vec2 uRes; uniform float uSharp;
+    varying vec2 vUv;
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main() {
+      vec2 o = 1.0 / uRes;
+      vec3 c = texture2D(tDiffuse, vUv).rgb;
+      vec3 n = texture2D(tDiffuse, vUv + vec2(0.0, o.y)).rgb, s = texture2D(tDiffuse, vUv - vec2(0.0, o.y)).rgb;
+      vec3 e = texture2D(tDiffuse, vUv + vec2(o.x, 0.0)).rgb, w = texture2D(tDiffuse, vUv - vec2(o.x, 0.0)).rgb;
+      vec3 mn = min(c, min(min(n, s), min(e, w))), mx = max(c, max(max(n, s), max(e, w)));
+      // adaptive amount: less where the local contrast is already high (no halos on the ink lines)
+      vec3 amt = clamp(min(mn, 1.0 - mx) / max(mx, vec3(1e-3)), 0.0, 1.0);
+      vec3 k = -sqrt(amt) * uSharp * 0.2;
+      vec3 col = clamp((c + (n + s + e + w) * k) / (1.0 + 4.0 * k), 0.0, 1.0);
+      float d = hash(vUv * uRes) + hash(vUv * uRes + 0.37) - 1.0;
+      gl_FragColor = vec4(col + d / 255.0, 1.0);
+    }`,
+};
 
 export const VM_LAYER = 4;
 // the viewmodel is depth-tested as if VM_DEPTH times closer: only clip z changes (x/y, lighting and fog stay true), so it
@@ -141,10 +206,10 @@ const toMain = (o) => { if (!o.isLight) o.layers.set(0); };
 const lightToVM = (o) => { if (o.isLight) o.layers.enable(VM_LAYER); };
 
 export const QUALITY = {
-  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3 },
-  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2 },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1 },
-  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1 },
+  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, rays: 0, sharp: 0 },
+  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1 },
+  high: { pixelRatio: 1.0, shadows: 2048, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1 },
+  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1 },
 };
 
 export class Renderer {
@@ -152,8 +217,9 @@ export class Renderer {
     this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance', stencil: false });
     const r = this.renderer;
     r.outputColorSpace = THREE.SRGBColorSpace;
-    r.toneMapping = THREE.NeutralToneMapping;
-    r.toneMappingExposure = 1.0;
+    // AgX: filmic roll-off for the golden-hour sky and the lit signs (the grade below adds back the punch)
+    r.toneMapping = THREE.AgXToneMapping;
+    r.toneMappingExposure = 1.12;
     r.shadowMap.enabled = true;
     r.shadowMap.type = THREE.PCFShadowMap;
     container.appendChild(r.domElement);
@@ -189,6 +255,7 @@ export class Renderer {
     composer.addPass(new ViewmodelPass(this.scene, this.camera));
     this.outline = new OutlinePass(this.camera);
     this.outline.uniforms.uWidth.value = Math.max(1, r.getPixelRatio());
+    this.outline.rays = q.rays ?? 1;
     composer.addPass(this.outline);
     this.gtao = null;
     if (q.ao) {
@@ -209,6 +276,12 @@ export class Renderer {
     composer.addPass(this.grade);
     composer.addPass(new OutputPass());
     if (q.aa) composer.addPass(new FXAAPass());
+    this.finish = null;
+    if (q.sharp) {
+      this.finish = new ShaderPass(FinishShader);
+      composer.addPass(this.finish);
+    }
+    r.shadowMap.type = q.shadowType || THREE.PCFShadowMap;
     this.composer = composer;
     for (const l of this.shadowLights || []) this.applyShadowSize(l);
   }
@@ -241,6 +314,7 @@ export class Renderer {
     this.renderer.setSize(w, h);
     if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); }
     if (this.composer) this.composer.setSize(w, h);
+    if (this.finish) { const pr = this.renderer.getPixelRatio(); this.finish.uniforms.uRes.value.set(w * pr, h * pr); }
   }
 
   render(dt, time) {
@@ -253,6 +327,8 @@ export class Renderer {
     for (const l of this.shadowLights || []) if (l.castShadow && !l.shadow.map) need = true;
     if (need) r.shadowMap.needsUpdate = true;
     this.grade.uniforms.uTime.value = time;
+    // the sun for the god rays: the scene's shadow-casting directional light
+    if (!this.outline.sun && this.frameN % 30 === 1) this.scene.traverse((o) => { if (!this.outline.sun && o.isDirectionalLight && o.castShadow) this.outline.sun = o; });
     // lights must light both passes; new ones are picked up within a few frames
     if (this.frameN % 8 === 1) this.scene.traverse(lightToVM);
     if (this.gtao) { this.aoCam.copy(this.camera, false); this.aoCam.layers.enable(VM_LAYER); }

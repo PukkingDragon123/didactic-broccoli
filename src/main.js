@@ -1,9 +1,6 @@
 // Entry point: fonts, title screen, pause menu, main loop.
 import '@fontsource/dotgothic16/400.css';
 import '@fontsource/pixelify-sans/400.css';
-import '@fontsource/grandstander/400.css';
-import '@fontsource/grandstander/600.css';
-import '@fontsource/grandstander/700.css';
 import './ui/fonts.css';
 import './style.css';
 import * as THREE from 'three';
@@ -36,8 +33,7 @@ async function loadFonts() {
     await Promise.all([
       document.fonts.load('16px "DotGothic16"', text),
       document.fonts.load('16px "Pixelify Sans"', 'ABCabc123'),
-      document.fonts.load('16px "Grandstander"', 'ABCabc123'),
-      document.fonts.load('600 16px "Grandstander"', 'ABCabc123'),
+      document.fonts.load('16px "Alagard"', 'ABCabc123'),
       document.fonts.load('16px "GG Bold"', 'ABCabc123'),
       document.fonts.load('16px "GG Display"', 'ABCabc123'),
     ]);

@@ -1,7 +1,9 @@
 // Tiny canvas kit for the picture on the garage PC's CRT (640x480 logical) + shared shop colours / yen format.
+import { crispSize } from '../gfx/pix.js';
+
 export const W = 640, H = 480;
-export const FONT_HEAD = '"GG Display", "Grandstander", monospace';
-export const FONT_BODY = '"Grandstander", "Pixelify Sans", monospace';
+export const FONT_HEAD = '"Alagard", "DotGothic16", monospace';
+export const FONT_BODY = '"Alagard", "DotGothic16", monospace';
 
 export const COL = {
   bg: '#fffdf4', paper: '#ffffff', ink: '#2a2220', soft: '#7a6a60', line: '#d8ccb8',
@@ -14,6 +16,7 @@ export function yen(n) { return '¥' + Math.floor(n).toLocaleString('en-US'); }
 export function rect(g, x, y, w, h, c) { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
 
 export function text(g, s, x, y, { size = 16, color = COL.ink, font = FONT_BODY, align = 'left', outline = null, shadow = null } = {}) {
+  size = Math.max(16, crispSize(size, font)); // Alagard is crisp at 16 / 32 / 48 / 64 px
   g.font = `${size}px ${font}`;
   g.textAlign = align;
   g.textBaseline = 'top';

@@ -1,6 +1,6 @@
 # Credits
 
-Gacha Garage uses recorded music, sound effects and photos by the people below. Thank you! Every file shipped in `public/audio/` and `public/img/` is listed with its source and licence.
+Gacha Garage uses recorded music, sound effects, photos and a font by the people below. Thank you! Every file shipped in `public/audio/` and `public/img/` is listed with its source and licence.
 Files were edited for the game: trimmed, cut into segments, mixed to mono (sound effects, radio), loudness-normalised, given fades or crossfaded into seamless loops, and re-encoded as MP3. Some sounds are still synthesised in code (`src/core/audio.js`).
 
 ## Music (CC BY 4.0, attribution required)
@@ -325,6 +325,17 @@ Background music, menu, intro and party themes by Kevin MacLeod.
 - Source: http://downloads.tuxfamily.org/pdsounds/sounds/winding_a_music_box.mp3 (pdsounds.org archive (backup at pdsounds.tuxfamily.org))
 - Licence: Public domain
 - Shipped as: `audio/sfx/ratchet.mp3` (from winding_a_music_box.mp3 [0.22-0.72 s, 1.2-1.72 s, 2.2-2.72 s, 3.22-3.95 s])
+
+## Font
+
+### Alagard
+
+- Author: Hewett Tsoi (Pix3M)
+- Source: alagard.ttf, supplied by the project owner (originally published at https://www.dafont.com/alagard.font)
+- Licence: listed by the author as free to use (see the source page); supplied for this game by the project owner
+- Shipped as: `assets/fonts/alagard.woff2` (converted from TTF to WOFF2, unmodified glyphs); the game's UI,
+  speech bubbles, subtitles, PC store and in-world labels. Tiny labels and the flyers use a hand-made 5 x 7
+  bitmap font (`src/gfx/font5x7.js`) drawn for this game.
 
 ## Photos (CC BY 2.0, attribution required)
 

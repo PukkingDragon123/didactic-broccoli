@@ -20,7 +20,7 @@ export function defaultState() {
       { id: 'm2', type: 'standard', slot: 1, up: { speed: 0, cap: 0, coins: 0 }, stock: Array(8).fill('mochi'), series: 'mochi', broken: true, fallen: true },
     ],
     story: newStoryState(),
-    inventory: [{ kind: 'tool', d: { id: 'notebook' } }, { kind: 'tool', d: { id: 'key' } }, null, null, null],
+    inventory: [{ kind: 'tool', d: { id: 'key' } }, null, null, null, null],
     promo: { flyers: 0, level: 0 },
     licenses: ['mochi'],
     opener: 0,
@@ -57,7 +57,9 @@ export function loadState() {
     const d = defaultState();
     // saves from before the story: the shop is already up and running
     if (s.story === undefined) s.story = { ...newStoryState(), intro: true, shutter: true, cash: true, fed: true, tube: true, radio: true, opened: true, complete: true };
-    if (s.inventory === undefined) s.inventory = [{ kind: 'tool', d: { id: 'notebook' } }, null, null, null, null];
+    if (s.inventory === undefined) s.inventory = [null, null, null, null, null];
+    // Grandpa's notebook is gone (the objective card guides you): drop it from older saves
+    s.inventory = s.inventory.map((it) => (it?.d?.id === 'notebook' ? null : it));
     // shallow-merge new fields for forward compatibility
     for (const k of Object.keys(d)) if (s[k] === undefined) s[k] = d[k];
     s.settings = { ...d.settings, ...s.settings };

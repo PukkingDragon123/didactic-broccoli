@@ -10,7 +10,6 @@
 //   ?show=perf           20 random humans: creation / paint / update timings (window.__perf)
 //   &hair=bob,long,..    cycle hair styles over the humans built; &nohat=1 removes hats
 //   &q=high|medium|low   post-processing quality (default medium)          &w=.. &h=.. tile size
-import '@fontsource/grandstander/400.css';
 import * as THREE from 'three';
 import { Renderer } from '../core/renderer.js';
 import { createHuman as mkHuman, HUMAN_PRESETS, Bubbles, Human } from '../people/index.js';

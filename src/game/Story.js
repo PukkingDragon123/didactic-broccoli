@@ -1,4 +1,4 @@
-// The new-game story: you arrive with Grandpa's notebook and the garage key. Behind the shutter the shop is
+// The new-game story: you arrive with the garage key; the objective card in the corner tells you what's next. Behind the shutter the shop is
 // a mess — dust piles, trash bags, a knocked-over machine, broken ones, a dead light, a radio without
 // batteries and a hungry stray cat. Buy supplies at Mikawa-ya across the lane, clean up, fix everything,
 // feed the cat, and the shop reopens (sign lights up, customers start wandering in).
@@ -93,7 +93,7 @@ export class Story {
     if (!f.radio) g.state.radio = -1;
   }
 
-  // ------------------------------------------------------------------ to-do list (the notebook's right page)
+  // ------------------------------------------------------------------ to-do list (progress for the objective card)
   todo() {
     const f = this.flags, g = this.game;
     if (this.done) return [{ text: 'Reopen the garage', done: true }, { text: 'Find every figure!', done: false }];
@@ -118,7 +118,7 @@ export class Story {
 
   task(text) {
     audio.play('task', { vol: 0.7 });
-    this.game.news(text, 'To-do list updated');
+    this.game.news(text, 'Objective complete');
     this.game.save();
   }
 
@@ -127,7 +127,6 @@ export class Story {
     const id = it.data.id;
     const f = this.flags;
     const H = {
-      notebook: { key: 'LMB', text: 'Read the notebook' },
       key: f.shutter ? { key: '', text: 'Garage key' } : { key: '', text: 'Garage key', sub: 'Use it on the shutter' },
       milk: { key: '', text: 'Milk', sub: 'Pour it into the cat bowl by the heater' },
       broom: { key: 'Hold LMB', text: 'Sweep', sub: 'Point at a mess to clean it up' },
@@ -142,8 +141,7 @@ export class Story {
 
   toolPrimary(it) {
     const id = it.data.id;
-    if (id === 'notebook') this.game.notebook.show();
-    else if (id === 'broom') { this.game.held.swing = 1; audio.play('sweep', { vol: 0.5 }); }
+    if (id === 'broom') { this.game.held.swing = 1; audio.play('sweep', { vol: 0.5 }); }
   }
 
   // ------------------------------------------------------------------ shutter
@@ -426,7 +424,7 @@ export class Story {
     audio.play('purr', { pos: BOWL, vol: 0.8 });
     yield c.cam({ pos: new THREE.Vector3(BOWL.x + 0.75, 0.42, BOWL.z + 0.55), look: new THREE.Vector3(BOWL.x - 0.1, 0.12, BOWL.z - 0.05), dur: 2.2 });
     g.effects.sparks({ pos: BOWL.clone().add(new THREE.Vector3(0, 0.45, 0)), count: 10, colors: [0xff9fae, 0xff6f91], speed: 0.2, size: 0.03, gravity: -0.4, life: 1.6, star: 0 });
-    c.say("Grandpa's notebook calls her Mikan. Looks like she's staying.", 2);
+    c.say("Grandpa used to call her Mikan. Looks like she's staying.", 2);
     yield c.wait(3.4);
     this.flags.fed = true;
     st?.befriendCat?.();
@@ -737,10 +735,10 @@ export class Story {
     audio.play('meow', { pos: V(-0.3, 0.3, z - 0.6), vol: 0.7, pitch: 1.15 });
     audio.play('thud', { pos: V(-0.3, 0.4, z), v: 0.25 });
     yield c.say('...Was that a cat?', 0.9);
-    // 6. back to your own eyes: the key and the notebook
+    // 6. back to your own eyes: the key
     g.player.pos.set(0.4, 0, z + 4.2);
     g.player.yaw = 0; g.player.pitch = 0.1;
-    yield c.all(c.cam({ pos: V(0.4, 1.62, z + 4.2), look: V(0.3, 2.0, z - 1), dur: 2.0 }), c.say('He left me his key and his notebook. Time to wake this place up.', 1.2));
+    yield c.all(c.cam({ pos: V(0.4, 1.62, z + 4.2), look: V(0.3, 2.0, z - 1), dur: 2.0 }), c.say('He left me his key. Time to wake this place up.', 1.2));
     c.hideSay();
     bgm.play('garage', { fade: 4 });
     yield c.toPlayer(0.8);

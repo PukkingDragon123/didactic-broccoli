@@ -7,6 +7,7 @@ import { GARAGE, MACHINE_SLOTS } from './Garage.js';
 import { createHuman, Bubbles, HUMAN_PRESETS } from '../people/index.js';
 import { capsuleCost } from '../game/economy.js';
 import { formatYen } from '../core/util.js';
+import { talk } from '../people/voice.js';
 import { FLYERS, FLYER_BY_ID, FLYER_W, FLYER_H, flyerTexture } from '../gfx/flyers.js';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -127,7 +128,7 @@ export class Pedestrians {
   }
 
   say(h, text, dur = 3.2) {
-    this.bubbles.say(h, text, { dur, onChar: (ch) => { if (/[a-z]/i.test(ch) && Math.random() < 0.5) audio.play('blip', { f: 380 + (h.height || 1.6) * 120, vol: 0.4 }); } });
+    this.bubbles.say(h, text, { dur, onChar: talk(h) });
   }
 
   giveFlyer(p) {

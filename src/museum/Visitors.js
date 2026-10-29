@@ -1,6 +1,7 @@
 // Museum visitors: low-poly people who buy a ticket, walk (A* on a 0.5 m grid) to the exhibits that
 // interest them, look closely, react (faces, hearts, camera flashes, a word or two), donate if happy, and leave.
 import * as THREE from 'three';
+import { talk } from '../people/voice.js';
 import VISITORS from '../data/visitors.js';
 import { createHuman } from '../people/index.js';
 import { audio } from '../core/audio.js';
@@ -83,7 +84,7 @@ class Visitor {
     const lines = LINES[kind];
     const b = this.sys.game.bubbles;
     if (!lines || !b) return;
-    b.say(this.h, lines[Math.floor(Math.random() * lines.length)], { dur: 2.6, onChar: (ch) => { if (/[a-z]/i.test(ch) && Math.random() < 0.4) audio.play('blip', { f: 360 + this.h.height * 140, vol: 0.3 }); } });
+    b.say(this.h, lines[Math.floor(Math.random() * lines.length)], { dur: 2.6, onChar: talk(this.h, { vol: 0.8 }) });
     this.talkT = 1.4;
   }
 

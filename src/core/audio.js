@@ -218,13 +218,26 @@ export class AudioEngine {
   }
 
   // ---------------------------------------------------------------- primitives
-  tone(dest, t, { type = 'sine', f = 440, f2 = null, dur = 0.2, vol = 0.3, attack = 0.002, curve = 'exp', detune = 0, glide = null } = {}) {
+  /** A cached NES-style pulse wave (duty 0.125 / 0.25 / 0.5) for the 8-bit voices. */
+  pulse(duty = 0.25) {
+    this.pulses = this.pulses || new Map();
+    let w = this.pulses.get(duty);
+    if (!w) {
+      const N = 40, re = new Float32Array(N), im = new Float32Array(N);
+      for (let n = 1; n < N; n++) re[n] = (2 / (n * Math.PI)) * Math.sin(n * Math.PI * duty);
+      w = this.ctx.createPeriodicWave(re, im);
+      this.pulses.set(duty, w);
+    }
+    return w;
+  }
+
+  tone(dest, t, { type = 'sine', wave = null, f = 440, f2 = null, dur = 0.2, vol = 0.3, attack = 0.002, curve = 'exp', detune = 0, glide = null } = {}) {
     const ctx = this.ctx;
     const nyq = ctx.sampleRate * 0.47;
     if (f > nyq) return null; // inaudible partial
     if (f2 !== null) f2 = Math.min(f2, nyq);
     const o = ctx.createOscillator();
-    o.type = type;
+    if (wave) o.setPeriodicWave(wave); else o.type = type;
     o.frequency.setValueAtTime(f, t);
     if (f2 !== null) {
       if (glide === 'lin') o.frequency.linearRampToValueAtTime(f2, t + dur);
@@ -760,6 +773,22 @@ const SOUNDS = {
   /** Typewriter blip for speech bubbles and subtitles. */
   blip(a, t, o, p) {
     a.tone(o, t, { type: 'square', f: (p.f || 620) * rand(0.94, 1.06), dur: 0.035, vol: 0.025 });
+  },
+  /**
+   * 8-bit voice: one chirp per letter, NES-style pulse wave. p: { ch, base (Hz), duty (0.125 | 0.25 | 0.5), vol }.
+   * Every letter has its own note on a pentatonic scale above the speaker's base pitch, so words get a little
+   * melody; vowels are longer and slide down, consonants are short clicks. Punctuation stays silent.
+   */
+  voice(a, t, o, p) {
+    const ch = String(p.ch || 'a').toLowerCase();
+    const code = ch.charCodeAt(0);
+    if (!/[a-z0-9]/.test(ch)) return;
+    const v = 'aeiou'.indexOf(ch), vowel = v >= 0;
+    const PENTA = [0, 2, 4, 7, 9, 12, 14];
+    const semis = vowel ? [0, 4, 7, 2, 9][v] : PENTA[(code * 5) % PENTA.length];
+    const f = (p.base || 300) * Math.pow(2, semis / 12) * rand(0.985, 1.015);
+    const dur = vowel ? 0.075 : 0.042;
+    a.tone(o, t, { wave: a.pulse(p.duty || 0.25), f, f2: f * (vowel ? 0.9 : 1.06), dur, vol: (p.vol ?? 1) * (vowel ? 0.05 : 0.038), attack: 0.002, curve: 'lin' });
   },
   /** Page turn. */
   page(a, t, o) {

@@ -6,7 +6,7 @@
 .hb-bg, .hb-tail { position: absolute; image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
 .hb-txt {
   position: absolute; max-width: 220px; width: max-content; text-align: center;
-  font-family: 'Grandstander', 'Pixelify Sans', monospace; font-size: 20px; line-height: 22px; color: #2a1e24;
+  font-family: 'Alagard', 'Pixelify Sans', monospace; font-size: 16px; line-height: 22px; color: #2a1e24;
   letter-spacing: 0;
   white-space: normal; overflow-wrap: break-word;
 }

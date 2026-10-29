@@ -72,7 +72,6 @@ export class Guide {
     const broken = g.machines.filter((m) => m.data.broken && !m.data.fallen);
     const top = (m) => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, m.data.fallen ? 0.6 : 1.2, 0));
     const c = this.click();
-    if (!f.readNote && !f.shutter) return { id: 'read', icon: 'notebook', text: "Read Grandpa's notebook", sub: `Hold the notebook${this.pick('notebook')}, then ${c}` };
     if (!f.shutter) return { id: 'shutter', icon: 'key', text: 'Unlock the garage', sub: `Hold the key${this.pick('key')} and ${c} the shutter`, at: () => V(0, 1.15, GARAGE.maxZ + 0.05) };
     if (has('trash_bag')) return { id: 'bagout', icon: 'trash_bag', text: 'Take the bag out', sub: holding('trash_bag') ? `${cap(c)} the garbage station across the lane` : `Hold the bag${this.pick('trash_bag')}, ${c} the garbage station`, at: station };
     if (!f.cash) return { id: 'cash', icon: 'cash_tin', text: "Find Grandpa's cash tin", sub: 'On the steel rack at the back', at: () => S.tin?.getWorldPosition(this.v).clone().add(V(0, 0.15, 0)) };

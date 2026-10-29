@@ -1,8 +1,5 @@
 // Dev page: every flyer and promo poster (src/gfx/flyers.js).
 //   flyers.html?only=much,nope &w=600 (display width) &kind=promo|meme  (sheets are 150 x 212 px, shown pixelated)
-import '@fontsource/grandstander/400.css';
-import '@fontsource/grandstander/600.css';
-import '@fontsource/grandstander/700.css';
 import '../ui/fonts.css';
 import * as THREE from 'three';
 import { Thumbs } from '../gfx/thumbs.js';

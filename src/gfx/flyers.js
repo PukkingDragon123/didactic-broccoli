@@ -1,7 +1,7 @@
 // Shop flyers and promo posters as low-res pixel art (150 x 212 px, shown with nearest-neighbour scaling): real stock
 // photos (Google Open Images, CC BY 2.0: see CREDITS.md and public/img/photos) shrunk and ordered-dithered to a few
 // colour levels, the game's own 3D models rendered as aliased sprites with a 1 px outline, flat colour blocks and a
-// hand-made 5 x 7 bitmap font (below). Two kinds:
+// hand-made 5 x 7 bitmap font (src/gfx/font5x7.js). Two kinds:
 //   meme   ORIGINAL parodies of well-known meme formats starring the game's cast (handed out in the lane)
 //   promo  shop posters: the reopening, new series, the secret figures, special finishes (handed out and on the walls)
 // Each design is drawn once into its own canvas (lazily, one at a time) and cached; textures update in place.
@@ -23,6 +23,7 @@ import { makeItemMesh } from '../game/collectibles.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
+import { draw5, textW5 } from './font5x7.js';
 
 export const FLYER_W = 150, FLYER_H = 212; // pixels (A-series proportions)
 const W = FLYER_W, H = FLYER_H;
@@ -148,63 +149,10 @@ async function draw(id) {
   footer(g, d.foot);
 }
 
-// ------------------------------------------------------------------ the 5 x 7 bitmap font
-// Capitals, digits and a little punctuation ('#' = ink). Lower case is set in capitals.
-const GLYPHS = {
-  A: '.###.|#...#|#...#|#####|#...#|#...#|#...#', B: '####.|#...#|#...#|####.|#...#|#...#|####.', C: '.###.|#...#|#....|#....|#....|#...#|.###.',
-  D: '####.|#...#|#...#|#...#|#...#|#...#|####.', E: '#####|#....|#....|####.|#....|#....|#####', F: '#####|#....|#....|####.|#....|#....|#....',
-  G: '.###.|#...#|#....|#.###|#...#|#...#|.####', H: '#...#|#...#|#...#|#####|#...#|#...#|#...#', I: '###|.#.|.#.|.#.|.#.|.#.|###',
-  J: '..###|...#.|...#.|...#.|#..#.|#..#.|.##..', K: '#...#|#..#.|#.#..|##...|#.#..|#..#.|#...#', L: '#....|#....|#....|#....|#....|#....|#####',
-  M: '#...#|##.##|#.#.#|#.#.#|#...#|#...#|#...#', N: '#...#|##..#|#.#.#|#..##|#...#|#...#|#...#', O: '.###.|#...#|#...#|#...#|#...#|#...#|.###.',
-  P: '####.|#...#|#...#|####.|#....|#....|#....', Q: '.###.|#...#|#...#|#...#|#.#.#|#..#.|.##.#', R: '####.|#...#|#...#|####.|#.#..|#..#.|#...#',
-  S: '.####|#....|#....|.###.|....#|....#|####.', T: '#####|..#..|..#..|..#..|..#..|..#..|..#..', U: '#...#|#...#|#...#|#...#|#...#|#...#|.###.',
-  V: '#...#|#...#|#...#|#...#|#...#|.#.#.|..#..', W: '#...#|#...#|#...#|#.#.#|#.#.#|#.#.#|.#.#.', X: '#...#|#...#|.#.#.|..#..|.#.#.|#...#|#...#',
-  Y: '#...#|#...#|.#.#.|..#..|..#..|..#..|..#..', Z: '#####|....#|...#.|..#..|.#...|#....|#####',
-  0: '.###.|#...#|#..##|#.#.#|##..#|#...#|.###.', 1: '.#.|##.|.#.|.#.|.#.|.#.|###', 2: '.###.|#...#|....#|...#.|..#..|.#...|#####',
-  3: '####.|....#|....#|.###.|....#|....#|####.', 4: '...#.|..##.|.#.#.|#..#.|#####|...#.|...#.', 5: '#####|#....|####.|....#|....#|#...#|.###.',
-  6: '..##.|.#...|#....|####.|#...#|#...#|.###.', 7: '#####|....#|...#.|..#..|.#...|.#...|.#...', 8: '.###.|#...#|#...#|.###.|#...#|#...#|.###.',
-  9: '.###.|#...#|#...#|.####|....#|...#.|.##..',
-  ' ': '...|...|...|...|...|...|...', '.': '.|.|.|.|.|.|#', ',': '..|..|..|..|..|.#|#.', '!': '#|#|#|#|#|.|#', '?': '.###.|#...#|....#|...#.|..#..|.....|..#..',
-  ':': '.|.|#|.|.|#|.', '-': '...|...|...|###|...|...|...', '\'': '#|#|.|.|.|.|.', '"': '#.#|#.#|...|...|...|...|...', '/': '....#|...#.|...#.|..#..|.#...|.#...|#....',
-  '%': '##..#|##.#.|...#.|..#..|.#...|#.###|#..##', '&': '.#...|#.#..|#.#..|.#...|#.#.#|#..#.|.##.#', '(': '.#|#.|#.|#.|#.|#.|.#', ')': '#.|.#|.#|.#|.#|.#|#.',
-  '+': '.....|..#..|..#..|#####|..#..|..#..|.....', '×': '.....|#...#|.#.#.|..#..|.#.#.|#...#|.....', '·': '.|.|.|#|.|.|.', '=': '....|....|####|....|####|....|....',
-  '¥': '#...#|.#.#.|..#..|#####|..#..|#####|..#..', '#': '.#.#.|.#.#.|#####|.#.#.|#####|.#.#.|.#.#.', '*': '.....|#.#.#|.###.|#####|.###.|#.#.#|.....',
-};
-const FONT = {};
-for (const [ch, rows] of Object.entries(GLYPHS)) { const r = rows.split('|'); FONT[ch] = { w: r[0].length, rows: r }; }
-const ALIAS = { '’': '\'', '‘': '\'', '“': '"', '”': '"', '–': '-', '—': '-', 'Ū': 'U', 'ū': 'U', '…': '...', 'é': 'E' };
-const norm = (s) => [...String(s)].map((ch) => ALIAS[ch] ?? ch).join('').toUpperCase();
-
-/** Width in pixels of one line at scale s. */
-function textW(str, s = 1) {
-  let w = 0;
-  for (const ch of norm(str)) w += ((FONT[ch] || FONT['?']).w + 1) * s;
-  return Math.max(0, w - s);
-}
-/**
- * Bitmap text. (x, y) = top-left of the first line (align moves x). o: { s (scale), col, align, lh (pixels between
- * lines, default 3 x s), max (shrinks the scale to fit this width) }. Returns { w, h }.
- */
-function px(g, str, x, y, o = {}) {
-  const lines = String(str).split('\n');
-  let s = o.s || 1;
-  if (o.max) while (s > 1 && Math.max(...lines.map((l) => textW(l, s))) > o.max) s--;
-  g.save(); g.fillStyle = o.col || C.ink;
-  let yy = y, wmax = 0;
-  for (const line of lines) {
-    const lw = textW(line, s);
-    wmax = Math.max(wmax, lw);
-    let xx = Math.round(o.align === 'center' ? x - lw / 2 : o.align === 'right' ? x - lw : x);
-    for (const ch of norm(line)) {
-      const gl = FONT[ch] || FONT['?'];
-      gl.rows.forEach((row, ry) => { for (let rx = 0; rx < row.length; rx++) if (row[rx] === '#') g.fillRect(xx + rx * s, yy + ry * s, s, s); });
-      xx += (gl.w + 1) * s;
-    }
-    yy += 7 * s + (o.lh ?? 3 * s);
-  }
-  g.restore();
-  return { w: wmax, h: yy - y - (o.lh ?? 3 * s), s };
-}
+// ------------------------------------------------------------------ text: the hand-made 5 x 7 bitmap font (src/gfx/font5x7.js)
+const textW = textW5;
+/** Bitmap text (see draw5); ink colour by default. */
+const px = (g, str, x, y, o = {}) => draw5(g, str, x, y, { col: C.ink, ...o });
 
 // ------------------------------------------------------------------ pixel helpers
 function canvas2d(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
