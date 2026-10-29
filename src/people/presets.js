@@ -10,6 +10,8 @@ export const HUMAN_PRESETS = [
   { id: 'tourist', name: 'Tourist' }, { id: 'otaku', name: 'Otaku' }, { id: 'gyaru', name: 'Gyaru' },
   { id: 'mom', name: 'Young Mom' }, { id: 'delivery', name: 'Delivery Worker' },
   { id: 'construction', name: 'Construction Worker' }, { id: 'shopkeeper', name: 'Shopkeeper' },
+  // the lane's three regulars (src/npc): never picked for the street (no STREET_WEIGHTS entry)
+  { id: 'rohan', name: 'Kishibe Rohan' }, { id: 'josuke', name: 'Josuke' }, { id: 'okuyasu', name: 'Okuyasu' },
 ];
 // how often each preset shows up on the street (randomHuman)
 export const STREET_WEIGHTS = { salaryman: 3, office_lady: 2.5, schoolgirl: 2, schoolboy: 2, grandma: 2, grandpa: 2, kid: 1.6, tourist: 1.4, otaku: 1.2, gyaru: 1, mom: 1.6, delivery: 0.9, construction: 0.7, shopkeeper: 0 };
@@ -246,6 +248,49 @@ const BUILD = {
     };
   },
 };
+
+// ------------------------------------------------------------------ named characters (fixed looks, no dice)
+// The finishing touches the painted clothes can't do (Rohan's cropped top, Okuyasu's open jacket and scar, pins,
+// headband, sketchbook) are added by src/npc/looks.js; spec.garb asks hair.js for a long coat's skirts (garb.js).
+Object.assign(BUILD, {
+  // the weird mangaka: slim, sharp, a designer cropped top over pale trousers
+  rohan: () => ({
+    sex: 'm', age: 'adult', H: 1.76, build: 0.9,
+    skin: SKIN.fair,
+    hair: { style: 'rohan', col: [38, 58, 50], hi: [120, 168, 150], part: -1 },
+    face: { iris: [44, 120, 100], lid: 'double', tilt: 1.25, eyeW: 1.06, eyeH: 0.86, browW: 0.8, browArch: 1.5, lipFull: 0.78, blush: 0.12, browCol: [34, 46, 40] },
+    top: { kind: 'knit', col: [46, 112, 84], sleeve: 'short', crop: true },
+    bottom: { kind: 'slacks', col: [226, 214, 190], belt: [28, 24, 22], noCrease: false },
+    shoes: { kind: 'loafer', col: [52, 36, 30] }, socks: { col: [40, 70, 60] },
+    acc: [],
+    walk: { style: 'brisk' },
+  }),
+  // the pompadour: tall, broad, a long dark gakuran with little gold pins
+  josuke: () => ({
+    sex: 'm', age: 'teen', H: 1.85, build: 1.08,
+    skin: SKIN.light,
+    hair: { style: 'pompadour', col: [34, 30, 44], hi: [150, 150, 200] },
+    face: { iris: [64, 86, 140], lid: 'double', tilt: 0.55, eyeH: 1.0, browW: 1.25, browArch: 0.7, lipFull: 0.9 },
+    top: { kind: 'gakuran', col: [26, 30, 50] },
+    bottom: { kind: 'slacks', col: [26, 30, 50], belt: [24, 22, 20], noCrease: true },
+    shoes: { kind: 'boots', col: [30, 26, 24] }, socks: { col: [30, 30, 36] },
+    garb: { coat: { len: 0.82 } },
+    acc: [],
+    walk: { style: 'young' },
+  }),
+  // his best friend: stocky, rough buzzed spikes, a scar, the jacket worn open, baggy trousers
+  okuyasu: () => ({
+    sex: 'm', age: 'teen', H: 1.82, build: 1.16,
+    skin: SKIN.warm,
+    hair: { style: 'spiky', col: [52, 56, 70], hi: [150, 158, 186] },
+    face: { iris: hex(IRIS.dbrown), lid: 'mono', tilt: 0.05, eyeW: 0.92, eyeH: 0.78, browW: 1.7, browArch: 0.2, lipFull: 1.0, stubble: 0.08 },
+    top: { kind: 'gakuran', col: [30, 30, 40], open: true },
+    bottom: { kind: 'slacks', col: [30, 30, 40], belt: [24, 22, 20], noCrease: true, wide: true },
+    shoes: { kind: 'sneaker', col: [236, 234, 228], col2: [200, 50, 50] }, socks: { col: [236, 236, 236] },
+    acc: [],
+    walk: { style: 'heavy' },
+  }),
+});
 
 /** Pick a street preset id from a seed (weighted). */
 export function streetPreset(seed) {

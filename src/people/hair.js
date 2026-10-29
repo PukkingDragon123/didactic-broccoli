@@ -1,6 +1,7 @@
 // Hair and hats as a few chunky shells around the cranium (all on the head bone, except long hair below the
 // nape which rides on the chest, and pony / twin tails which hang from spring-driven tail bones).
 import { seg } from './body.js';
+import { garbSegments } from './garb.js';
 
 /** Cranium cross-section at height y, grown by (ex, ez) and shifted by dz. */
 function cs(P, y, ex = 0, ez = 0, dz = 0) {
@@ -17,7 +18,7 @@ function enclose(P, c, m = 0.01 * P.hu, ch = 0.3) {
 }
 
 export function hairSegments(spec, P, J) {
-  const S = [], hu = P.hu, st = spec.hair.style, hat = spec.hat?.kind;
+  const S = spec.garb ? garbSegments(spec, P, J) : [], hu = P.hu, st = spec.hair.style, hat = spec.hat?.kind;
   const add = (part, bone, mat, y0, y1, b, t, o) => { const x = seg(part, bone, mat, y0, y1, b, t, o); S.push(x); return x; };
   const vol = spec.hair.volume || 1;
   // --- the hair
@@ -90,6 +91,39 @@ export function hairSegments(spec, P, J) {
     } else if (st === 'bald') {
       sides(0.014 * hu, P.earBot + 0.02 * hu, P.earTop + 0.12 * hu, P.zf - 0.25 * hu);
       back(0.016 * hu, P.napeY, P.earTop + 0.1 * hu);
+    } else if (st === 'pompadour') {
+      // slicked-back sides and a towering quiff that juts out over the brow like a ship's prow
+      cap(0.045 * hu, P.hairY - 0.015 * hu, { dz: -0.01 * hu });
+      sides(0.026 * hu, P.earTop - 0.02 * hu, P.hairY, P.zf - 0.22 * hu);
+      back(0.04 * hu, P.napeY, P.hairY);
+      // two stacked shells: a wedge growing forward from the hairline to the prow, then a rounded crest
+      const yb = P.hairY - 0.05 * hu, ym = P.crown + 0.05 * hu * vol, yt = P.crown + 0.23 * hu * vol;
+      const prow = [0, P.zf + 0.03 * hu * vol, P.hw * 0.86, 0.37 * hu * vol];
+      const rot = { p: [0, yb, P.zf - 0.2 * hu], e: [0.12, 0, 0] };
+      add('pomp', 'head', 'hair', yb, ym, [0, P.zf - 0.21 * hu, P.hw * 0.9, 0.22 * hu], prow, { ch: 0.45, caps: 'bot', rot });
+      add('pompTop', 'head', 'hair', ym, yt, prow, [0, P.zf - 0.04 * hu * vol, P.hw * 0.62, 0.25 * hu * vol], { ch: 0.55, caps: 'top', rot });
+    } else if (st === 'rohan') {
+      // a full, slightly flared crop with a fringe swept to one side (a headband rides over it, src/npc/looks.js)
+      const pt = spec.hair.part || 1;
+      cap(0.06 * hu * vol, P.hairY - 0.02 * hu, { dz: 0.004 * hu, round: 0.9, ch: 0.42 });
+      sides(0.038 * hu, P.earTop - 0.07 * hu, P.hairY, P.zf - 0.16 * hu, 0.25);
+      back(0.05 * hu, P.napeY - 0.03 * hu, P.hairY, 1, 0.3);
+      add('fringe', 'head', 'hair', P.browY + 0.0 * hu, P.hairY + 0.08 * hu, [pt * P.hw * 0.28, P.zf + 0.016 * hu, P.hw * 0.62, 0.022 * hu], [pt * P.hw * 0.18, P.zf - 0.008 * hu, P.hw * 0.76, 0.032 * hu], { ch: 0.4, caps: 'none', cut: 'swept' });
+      // flicked-out ends behind the ears
+      for (const sx of [1, -1]) add('tuft', 'head', 'hair', P.earBot - 0.02 * hu, P.earTop + 0.02 * hu, [sx * (P.hw + 0.07 * hu), P.hcz - 0.24 * hu, 0.012 * hu, 0.04 * hu], [sx * (P.hw + 0.03 * hu), P.hcz - 0.2 * hu, 0.04 * hu, 0.09 * hu], { ch: 0.4, caps: 'top' });
+    } else if (st === 'spiky') {
+      // buzzed short at the sides, a rough crop of spikes on top
+      cap(0.025 * hu, P.hairY - 0.012 * hu, { round: 0.93 });
+      sides(0.014 * hu, P.earTop + 0.02 * hu, P.hairY, P.zf - 0.2 * hu);
+      back(0.016 * hu, P.napeY, P.hairY);
+      const y0 = P.crown - 0.05 * hu, len = 0.3 * hu * vol;
+      const SP = [[0, 0.8, 1.1], [-0.42, 0.72, 1], [0.42, 0.72, 1], [-0.2, 0.35, 1.15], [0.22, 0.38, 1.1], [-0.66, 0.3, 0.9], [0.66, 0.3, 0.9],
+        [0, -0.05, 1.1], [-0.45, -0.1, 1], [0.45, -0.1, 1], [-0.25, -0.5, 0.95], [0.25, -0.5, 0.95], [-0.6, -0.42, 0.8], [0.6, -0.42, 0.8], [0, -0.8, 0.85]];
+      for (const [fx, fz, w] of SP) {
+        const x = fx * P.hw * 0.8, z = P.hcz + fz * P.hd * 0.72, r = 0.085 * hu * w;
+        const y = y0 - fx * fx * 0.1 * hu - Math.max(0, -fz) ** 2 * 0.14 * hu - Math.max(0, fz - 0.5) * 0.08 * hu;
+        add('spike', 'head', 'hair', y, y + len * w, [x, z, r, r], [x + fx * 0.02 * hu, z, 0.006 * hu, 0.006 * hu], { ch: 0.25, caps: 'none', rot: { p: [x, y, z], e: [fz * 0.62, 0, -fx * 0.75] } });
+      }
     }
   }
   // a rounder skull top for bald heads (skin)

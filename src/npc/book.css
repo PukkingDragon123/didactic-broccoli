@@ -1,0 +1,39 @@
+/* Rohan's gag: you, opened like a book. A pixel-paper spread over a dimmed, purple-tinted screen. */
+#rb {
+  position: fixed; inset: 0; z-index: 22; display: none; align-items: center; justify-content: center; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(60, 20, 80, .35), rgba(20, 8, 30, .78));
+}
+#rb.on { display: flex; }
+#rb .rb-book {
+  position: relative; width: min(880px, 94vw); aspect-ratio: 1.56; display: flex; perspective: 1400px;
+  transform: scale(.2) rotate(-6deg); opacity: 0; transition: transform .55s cubic-bezier(.2, 1.25, .4, 1), opacity .3s;
+  filter: drop-shadow(8px 12px 0 rgba(0, 0, 0, .45));
+}
+#rb.open .rb-book { transform: none; opacity: 1; }
+#rb.closing .rb-book { transform: scale(.6) rotate(4deg); opacity: 0; transition: transform .35s ease-in, opacity .35s; }
+#rb .rb-page {
+  position: relative; flex: 1; padding: 4.5% 4.5% 4% 5%; color: #2a1e1a; font: 16px/22px 'DotGothic16', var(--font-ui); overflow: hidden;
+  background-color: #f3ead6; image-rendering: pixelated;
+  background-image: repeating-linear-gradient(to bottom, transparent 0 21px, rgba(120, 140, 190, .35) 21px 23px);
+  background-position: 0 6px;
+  box-shadow: inset 0 0 0 3px #1a1216, inset 0 -6px 0 #d8ccb2;
+}
+#rb .rb-page.l { box-shadow: inset 0 0 0 3px #1a1216, inset -22px 0 18px -14px rgba(90, 60, 40, .45), inset 0 -6px 0 #d8ccb2; }
+#rb .rb-page.r { transform-origin: left center; transform: rotateY(-100deg); transition: transform .6s .25s cubic-bezier(.3, 1.2, .5, 1);
+  box-shadow: inset 0 0 0 3px #1a1216, inset 22px 0 18px -14px rgba(90, 60, 40, .45), inset 0 -6px 0 #d8ccb2; }
+#rb.open .rb-page.r { transform: none; }
+#rb .rb-spine { position: absolute; left: 50%; top: -2%; bottom: -2%; width: 14px; margin-left: -7px; background: #6a3a2a; box-shadow: 0 0 0 3px #1a1216; }
+#rb .rb-h { font: 16px var(--font-key); letter-spacing: 3px; text-transform: uppercase; color: #8a35d8; margin-bottom: 6px; display: flex; justify-content: space-between; }
+#rb .rb-portrait { float: right; width: 30%; aspect-ratio: .82; margin: 0 0 8px 10px; background: #e8dcc0; box-shadow: 0 0 0 3px #1a1216; image-rendering: pixelated; }
+#rb .rb-portrait canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+#rb .rb-row { display: flex; gap: 8px; min-height: 22px; opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .25s; }
+#rb .rb-row.in { opacity: 1; transform: none; }
+#rb .rb-row .k { flex: none; color: #6a5a52; }
+#rb .rb-row .v { color: #1a1216; }
+#rb .rb-secret { margin-top: 10px; padding: 6px 8px; background: rgba(255, 79, 154, .12); box-shadow: 0 0 0 2px rgba(138, 53, 216, .35); }
+#rb .rb-write { position: absolute; left: 5%; right: 5%; bottom: 9%; font: 32px/34px 'Alagard', var(--font-key); color: #c0242e; transform: rotate(-2.5deg); text-shadow: 1px 1px 0 rgba(120, 0, 0, .25); }
+#rb .rb-write .cur { display: inline-block; width: 4px; height: 26px; margin-left: 2px; background: #c0242e; vertical-align: -3px; animation: rb-blink .5s steps(2) infinite; }
+@keyframes rb-blink { 50% { opacity: 0; } }
+#rb .rb-stamp { position: absolute; right: 7%; top: 6%; padding: 2px 8px; font: 16px var(--font-key); color: #c0242e; box-shadow: 0 0 0 3px #c0242e; transform: rotate(8deg); opacity: .8; }
+#rb .rb-foot { position: absolute; left: 5%; right: 5%; bottom: 3%; font-size: 16px; color: #8a7a70; display: flex; justify-content: space-between; }
+@media (max-width: 700px) { #rb .rb-page { font-size: 16px; line-height: 19px; padding: 3%; } #rb .rb-write { font-size: 22px; line-height: 24px; } }

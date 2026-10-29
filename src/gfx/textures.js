@@ -1239,6 +1239,127 @@ const TOWN = {
     p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x2a6ac8);
     p.text('牛乳', w / 2, (h >> 1) - 6, { size: 10, color: 0x2a6ac8, align: 'center' });
   },
+  // ---- the neighbourhood park (児童公園), the mangaka's villa, the steel tower
+  /** Green PVC-coated diamond wire mesh (alpha-cut, tiles; 8 px per diamond). */
+  fenceMesh: (p) => {
+    const { w, h } = p;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const a = (x + y) % 8, b = (x - y + 64) % 8;
+      if (a === 0 || b === 0) p.px(x, y, (a === 0 && b === 0) ? 0x2e5a3a : 0x4a7a52);
+    }
+  },
+  /** 上山町児童公園: the park's name board (white enamel, black brush lettering, little emblem). */
+  parkName: (p) => {
+    const { w, h } = p;
+    p.fill(0xf4f0e4); p.frame(0, 0, w, h, 0x3a4a3a);
+    p.text('上山町児童公園', w / 2, 3, { size: 9, color: 0x1a1a1a, align: 'center' });
+    for (let i = 0; i < 5; i++) { const x = Math.floor(hash2(i, 13) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i) < 0.3) p.px(x, y, 0x9a9488, 80); }
+  },
+  /** 児童公園 → direction plate on the alley corner (blue municipal sign). */
+  parkArrow: (p) => {
+    const { w, h } = p;
+    p.fill(0x1f4a9a); p.frame(0, 0, w, h, 0xf4f0e6);
+    p.text('児童公園', 22, 2, { size: 9, color: 0xfbf8f0, align: 'center' });
+    p.rect(w - 11, 7, 7, 2, 0xfbf8f0); for (let i = 0; i < 4; i++) p.rect(w - 11 - i, 4 + i, 1, 8 - 2 * i, 0xfbf8f0);
+    p.rect(w - 12, 7, 1, 2, 0xfbf8f0);
+  },
+  /** Public toilet plates: 男 (blue figure) | 女 (red figure). */
+  wcSign: (p) => {
+    const { w, h } = p, hw = w >> 1;
+    p.rect(0, 0, hw, h, 0x2a5ab0); p.rect(hw, 0, hw, h, 0xc8323a);
+    for (const [x0, skirt] of [[0, false], [hw, true]]) {
+      const cx = x0 + 6;
+      p.circle(cx, 3, 2, 0xfbf8f0);
+      if (skirt) { p.rect(cx - 2, 6, 5, 3, 0xfbf8f0); p.rect(cx - 3, 9, 7, 3, 0xfbf8f0); p.rect(cx - 1, 12, 1, 3, 0xfbf8f0); p.rect(cx + 1, 12, 1, 3, 0xfbf8f0); }
+      else { p.rect(cx - 2, 6, 5, 5, 0xfbf8f0); p.rect(cx - 2, 11, 2, 4, 0xfbf8f0); p.rect(cx + 1, 11, 2, 4, 0xfbf8f0); }
+      p.text(skirt ? '女' : '男', x0 + 17, 2, { size: 10, color: 0xfbf8f0, align: 'center' });
+    }
+  },
+  /** 公園のおやくそく: park rules board with pictograms (no ball games, no fireworks, dogs on a lead). */
+  parkRules: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x2a6a3a); p.rect(1, 1, w - 2, 11, 0x2a6a3a);
+    p.text('おやくそく', w / 2, 1, { size: 9, color: 0xfbf8f0, align: 'center' });
+    const ban = (x, y) => { for (let a = 0; a < 40; a++) { const t = a / 40 * Math.PI * 2; p.px(Math.round(x + Math.cos(t) * 5), Math.round(y + Math.sin(t) * 5), 0xd8282a); } for (let k = -3; k <= 3; k++) p.px(x + k, y + k, 0xd8282a); };
+    // ball, firework, bike
+    p.circle(8, 20, 3, 0x2a2a2a); ban(8, 20);
+    p.rect(19, 17, 2, 6, 0xe8a020); p.px(20, 15, 0xff4020); p.px(19, 16, 0xffd040); ban(20, 20);
+    p.circle(29, 21, 2, 0x2a2a2a); p.circle(34, 21, 2, 0x2a2a2a); p.line(29, 21, 32, 17, 0x2a2a2a); p.line(32, 17, 34, 21, 0x2a2a2a); ban(31, 20);
+    p.text('ボール遊び', w / 2, 28, { size: 8, color: 0x1a1a1a, align: 'center' });
+    p.text('きんし', w / 2, 37, { size: 8, color: 0xd8282a, align: 'center' });
+    p.rect(3, 46, w - 6, 1, 0x9a9a90);
+    p.text('上山町', w / 2, h - 10, { size: 8, color: 0x2a6a3a, align: 'center' });
+    for (let i = 0; i < 4; i++) { const x = Math.floor(hash2(i, 17) * w); for (let y = 12; y < h; y++) if (hash2(x, y + i) < 0.3) p.px(x, y, 0x8a8478, 70); }
+  },
+  /** 岸辺 name plate: dark granite with carved gold characters. */
+  kishibe: (p) => {
+    const { w, h } = p;
+    p.fill(0x2a2a2e);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (hash2(x * 3, y * 5) < 0.18) p.px(x, y, 0x3e3e44);
+    p.frame(0, 0, w, h, 0x18181a);
+    p.text('岸辺', w / 2, 0, { size: 10, color: 0xd8b860, align: 'center' });
+  },
+  /** 売地 (land for sale) board with a phone number. */
+  forSale: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0xd8282a); p.frame(1, 1, w - 2, h - 2, 0xd8282a);
+    p.text('売', w / 2, 3, { size: 12, color: 0xd8282a, align: 'center' });
+    p.text('地', w / 2, 16, { size: 12, color: 0xd8282a, align: 'center' });
+    p.text('不動産', w / 2, h - 20, { size: 8, color: 0x1a1a1a, align: 'center' });
+    p.text('3-0427', w / 2, h - 10, { size: 8, color: 0x1a1a1a, align: 'center', font: FONT_EN });
+    for (let i = 0; i < 5; i++) { const x = Math.floor(hash2(i, 23) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i) < 0.3) p.px(x, y, 0x9a8a6a, 80); }
+  },
+  /** 危険 高圧線 warning plate (red/white with a lightning bolt) for the pylon. */
+  danger: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x1a1a1a); p.rect(1, 1, w - 2, 10, 0xd8282a);
+    p.text('危険', w / 2, 0, { size: 9, color: 0xfbf8f0, align: 'center' });
+    const bx = w >> 1;
+    for (const [x, y] of [[2, 0], [1, 1], [0, 2], [-1, 3], [0, 4], [1, 4], [2, 4], [1, 5], [0, 6], [-1, 7], [-2, 8]]) p.rect(bx + x - 1, 13 + y, 2, 1, 0xf2c41a);
+    p.text('高圧線', w / 2, h - 11, { size: 8, color: 0xd8282a, align: 'center' });
+  },
+  /** Line/number plate bolted to the pylon leg. */
+  pylonPlate: (p) => {
+    const { w, h } = p;
+    p.fill(0xf4f0e6); p.frame(0, 0, w, h, 0x2a2a2a);
+    p.text('杜王線 31', w / 2, 1, { size: 8, color: 0x1a1a1a, align: 'center' });
+  },
+  /** 通行止め barrier board (the closed footpath under the tracks). */
+  closedSign: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0xd8282a);
+    p.text('通行止め', w / 2, 2, { size: 9, color: 0xd8282a, align: 'center' });
+    p.text('NO ENTRY', w / 2, h - 10, { size: 8, color: 0x1a1a1a, align: 'center', font: FONT_EN });
+  },
+  /** Western-style brass house number plate for the villa. */
+  villaNo: (p) => {
+    const { w, h } = p;
+    p.fill(0x1a2a24); p.frame(0, 0, w, h, 0xc8a050);
+    p.text('2-1', w / 2, 1, { size: 8, color: 0xd8b860, align: 'center', font: FONT_EN });
+  },
+  /** Old warehouse wall sign (painted straight onto corrugated steel, faded). */
+  warehouseSign: (p) => {
+    const { w, h } = p;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) p.px(x, y, hash2(x >> 1, y * 3) < 0.1 ? 0xd8d0b8 : 0xe8e0c8, 230);
+    p.text('上山倉庫', w / 2, 2, { size: 16, color: 0x2a4a7a, align: 'center' });
+    p.text('KAMIYAMA SOKO', w / 2, h - 10, { size: 8, color: 0x8a2a2a, align: 'center', font: FONT_EN });
+    for (let i = 0; i < 18; i++) { const x = Math.floor(hash2(i, 41) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i * 7) < 0.45) p.px(x, y, 0x9a8a72, 110); }
+  },
+  /** Children's chalk drawings on the park ground (alpha decal): hopscotch, a cat, a sun. */
+  chalk: (p) => {
+    const c = 0xf4f0e8, pk = 0xf8b8c8, bl = 0x9ac8f0;
+    // hopscotch (けんけんぱ): a column of squares with a pair in the middle
+    for (const y of [2, 14, 38, 50]) p.frame(12, y, 12, 12, c);
+    p.frame(6, 26, 12, 12, c); p.frame(18, 26, 12, 12, c);
+    p.text('1', 18, 52, { size: 8, color: c, align: 'center', font: FONT_EN }); p.text('2', 18, 40, { size: 8, color: c, align: 'center', font: FONT_EN });
+    // a sun
+    p.circle(46, 12, 5, 0xf8e070);
+    for (let a = 0; a < 8; a++) { const t = a / 8 * Math.PI * 2; p.line(46 + Math.round(Math.cos(t) * 7), 12 + Math.round(Math.sin(t) * 7), 46 + Math.round(Math.cos(t) * 9), 12 + Math.round(Math.sin(t) * 9), 0xf8e070); }
+    // a cat face
+    p.frame(38, 32, 14, 11, pk); p.px(38, 31, pk); p.px(39, 30, pk); p.px(51, 31, pk); p.px(50, 30, pk); p.px(42, 36, pk); p.px(47, 36, pk); p.rect(44, 39, 2, 1, pk);
+    // wavy lines
+    for (let x = 34; x < 62; x++) { p.px(x, 52 + Math.round(Math.sin(x * 0.6)), bl); p.px(x, 56 + Math.round(Math.sin(x * 0.6 + 1)), bl); }
+  },
 };
 function addrPlate(p, y0, town, no) {
   const w = p.w, h = 16;

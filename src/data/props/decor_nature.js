@@ -914,3 +914,6 @@ for (const p of Object.values(PROPS)) {
 }
 
 export default PROPS;
+
+// shared with the town prop libraries (src/data/props/park.js)
+export { hash as nhash, vnoise as nnoise, blob, limb, limbPath, bark, clipFloor };
