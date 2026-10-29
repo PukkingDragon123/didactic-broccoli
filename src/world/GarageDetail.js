@@ -152,7 +152,8 @@ export class PropBatch {
     const geo = propGeometry(id);
     if (!geo) return null;
     if (cast === undefined) cast = castsAt(V3(x, y + geo.userData.size.y * s / 2, z));
-    const key = (cast ? 'c' : 'n') + (z > 0 ? 'f' : 'b');
+    // six regions (left / right half × back / middle / front band) so what's off screen gets frustum-culled
+    const key = (cast ? 'c' : 'n') + (x < 0 ? 'L' : 'R') + (z < -1.7 ? 'b' : z < 1.7 ? 'm' : 'f');
     if (!this.sets.has(key)) this.sets.set(key, { cast, lists: [[], [], [], [], []] });
     const lists = this.sets.get(key).lists;
     const m = new THREE.Matrix4().compose(V3(x, y, z), new THREE.Quaternion().setFromAxisAngle(V3(0, 1, 0), ry), V3(s, s, s));
@@ -616,11 +617,11 @@ export class GarageDetail {
     this.prop('paint_tins', sx + 0.0, top, 1.1, -Math.PI / 2 + 0.4, { scale: 0.85 });
     cbox(1.55, 0.42, 0.3, 0.24, null, 0.05);
     cbox(1.52, 0.34, 0.16, 0.2, null, -0.12, 0xe8e0d0);
-    this.prop('manekineko', sx + 0.02, top, 2.0, -Math.PI / 2 + 0.25);
+    cbox(2.0, 0.3, 0.22, 0.22, null, 0.08, 0xe8dcc8);
     cbox(2.42, 0.32, 0.2, 0.22, 'stockLabel', 0.04);
     this.prop('manga_stack', sx + 0.02, top, 2.85, 0.5, { scale: 0.7 });
     cbox(3.3, 0.38, 0.28, 0.23, null, -0.06, 0xf0e4d0);
-    this.prop('cord_reel', sx + 0.0, top, 3.62, -Math.PI / 2 + 0.2, { scale: 0.8 });
+    cbox(3.62, 0.26, 0.18, 0.2, 'stockLabel', -0.1);
     // PC corner: shelf with binders, photo, memo, a tear-off calendar on the back wall
     const D = this.garage.pcDesk;
     B.box(m.ply, 0.22, 0.02, 1.2, G.maxX - 0.11, 1.78, D.z + 0.05, { tint: 0xd8c8b0 });
@@ -628,7 +629,7 @@ export class GarageDetail {
     const binders = [0x2a5aa8, 0x2a5aa8, 0xc8302a, 0x3a8a4a, 0xe8c43a, 0x2a2a2c, 0x2a5aa8];
     binders.forEach((c, i) => B.box(m.gloss, 0.2, 0.26 - (i % 3) * 0.02, 0.045, G.maxX - 0.12, 1.8, D.z - 0.5 + i * 0.05, { tint: c }));
     for (let i = 0; i < 7; i++) B.box(m.paint, 0.002, 0.08, 0.025, G.maxX - 0.221, 1.88, D.z - 0.5 + i * 0.05, { tint: 0xf4f0e6, ao: false });
-    this.prop('lucky_cat_big', G.maxX - 0.12, 1.8, D.z + 0.45, -Math.PI / 2, { scale: 0.5 });
+    this.prop('manekineko', G.maxX - 0.12, 1.8, D.z + 0.45, -Math.PI / 2 + 0.3);
     this.card('photo', '-x', G.maxX - 0.002, 1.42, D.z - 0.55, 0.12, 0.15, { rot: 0.06 });
     this.card('memo', '-x', G.maxX - 0.002, 1.45, D.z + 0.1, 0.14, 0.14, { rot: -0.08 });
     this.card('himekuri', '+z', 3.13, 1.62, G.minZ + 0.004, 0.15, 0.21);
@@ -653,7 +654,14 @@ export class GarageDetail {
     // capsules and a step stool for little ones in the gaps between the machines (never in front of a slot)
     this.prop('coin_changer', -3.73, 0, -4.1, Math.PI / 2, { block: true, phys: true });
     this.prop('capsule_return', -3.45, 0.006, -0.725, Math.PI / 2, { block: true, phys: true });
-    this.prop('capsule_crate', -3.62, 0.006, 0.33, Math.PI / 2, { block: true, phys: true });
+    // a carton of spare capsules (taped, labelled) with the jar of loose ones on top
+    const cx = -3.66, cz = 0.33;
+    B.box(m.cb, 0.36, 0.3, 0.42, cx, 0.006, cz, { tint: 0xf4ece0 });
+    B.box(m.paint, 0.362, 0.002, 0.05, cx, 0.306, cz, { tint: 0xd8c890, ao: false });
+    this.card('stockLabel', '+x', cx + 0.182, 0.2, cz, 0.22, 0.08);
+    this.prop('capsule_jar', cx, 0.308, cz, 0.4);
+    this.game.player.addObstacle(cx - 0.2, cx + 0.2, cz - 0.23, cz + 0.23);
+    this.game.physics.addBox({ center: V3(cx, 0.31, cz), half: V3(0.18, 0.31, 0.21), material: 'wood' });
     this.prop('step_stool', -3.5, 0.006, -1.775, Math.PI / 2, { block: true, phys: true });
     if (hasProp('asagao_pot')) this.prop('asagao_pot', -3.6, 0.006, -2.83, Math.PI / 2, { block: true, phys: true, scale: 0.8 });
     // the pink public phone (ピンク電話) at the end of the machine row, under the window
@@ -662,6 +670,27 @@ export class GarageDetail {
     const T = this.garage.table;
     this.prop('coin_tray', T.x - 0.72, T.h, T.z - 0.3, 0.25);
     this.prop('abacus', T.x - 0.7, T.h, T.z - 0.12, -0.15);
+    // storage along the plywood wall under the collection shelves: cartons, a tied newspaper bundle, flattened boxes
+    const ux = G.maxX - 0.17;
+    const carton = (z, w, h, d, tint, label = null, rot = 0, y = 0) => {
+      B.box(m.cb, d, h, w, ux + (0.15 - d / 2), y, z, { ry: rot, tint });
+      B.box(m.paint, d + 0.002, 0.002, 0.05, ux + (0.15 - d / 2), y + h, z, { ry: rot, tint: 0xd8c890, ao: false });
+      if (label) this.card(label, '-x', ux + 0.15 - d - 0.002, y + h * 0.55, z, Math.min(w * 0.7, 0.2), Math.min(h * 0.4, 0.075));
+    };
+    carton(-0.92, 0.42, 0.32, 0.3, 0xf0e6d8, 'stockLabel', 0.03);
+    carton(-0.5, 0.34, 0.24, 0.28, 0xe0d4c0, null, -0.05);
+    carton(-0.5, 0.26, 0.16, 0.22, 0xf4ece0, null, 0.12, 0.24);
+    // newspapers tied with string
+    for (let i = 0; i < 9; i++) B.box(m.paint, 0.27, 0.022, 0.38, ux + 0.0 + (hash2(i, 5) - 0.5) * 0.02, i * 0.022, -0.02, { ry: (hash2(i, 6) - 0.5) * 0.08, tint: i % 3 ? 0xe8e2d4 : 0xd8d0c0 });
+    for (const dz of [-0.09, 0.09]) B.box(m.paint, 0.275, 0.2, 0.008, ux, 0, -0.02 + dz, { tint: 0xf4f0e6, ao: false });
+    this.prop('cardboard_bundle', G.maxX - 0.235, 0, 1.25, Math.PI / 2, { block: true, phys: true, scale: 0.8 });
+    carton(1.68, 0.36, 0.3, 0.3, 0xe8dcc8, 'stockLabel', -0.04);
+    carton(2.75, 0.44, 0.34, 0.3, 0xf0e6d8, null, 0.04);
+    carton(3.25, 0.32, 0.24, 0.26, 0xe4d8c4, 'stockLabel', -0.08);
+    for (const [z0, z1, h] of [[-1.15, -0.27, 0.42], [-0.22, 0.18, 0.2], [1.5, 1.86, 0.31], [2.52, 3.42, 0.35]]) {
+      this.game.player.addObstacle(G.maxX - 0.34, G.maxX, z0, z1);
+      this.game.physics.addBox({ center: V3(G.maxX - 0.17, h / 2, (z0 + z1) / 2), half: V3(0.17, h / 2, (z1 - z0) / 2), material: 'wood' });
+    }
     // fire buckets left of the back door (outside the door's swing)
     this.prop('fire_buckets', -1.02, 0, -4.8, 0.2, { block: true, phys: true });
     // utility sink with the gas water heater above it, sandals in front
@@ -680,7 +709,6 @@ export class GarageDetail {
     // cobwebs in the high back corners
     if (hasProp('cobweb')) {
       this.prop('cobweb', G.minX + 0.194, G.height - 0.1 - 0.392, G.minZ + 0.012, 0);
-      this.prop('cobweb', G.maxX - 0.012, G.height - 0.1 - 0.31, G.minZ + 0.155, -Math.PI / 2, { scale: 0.8 });
     }
     void B; void m;
   }

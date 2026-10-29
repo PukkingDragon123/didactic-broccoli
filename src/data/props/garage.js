@@ -523,7 +523,7 @@ const garage = {
     name: 'Beer Crate', voxel: 0.01,
     build(v) {
       const yel = 0xf0bf2c;
-      fill(v, -22, 0, -17, 22, 20, 17, (x, y, z) => shade(yel, 0.93 + hash(x, y, z, 2) * 0.08 + (y === 20 ? 0.05 : 0)));
+      fill(v, -22, 0, -17, 22, 20, 17, (x, y, z) => shade(yel, 0.93 + hash(x >> 2, y >> 2, z >> 2, 2) * 0.08 + (y === 20 ? 0.05 : 0)));
       v.box(-21, 2, -16, 21, 20, 16, null);
       // lattice windows
       v.shape(-22, 4, -17, 22, 16, 17, (x, y, z) => {
@@ -541,7 +541,7 @@ const garage = {
       v.project(textRows('生'), { '#': shade(yel, 0.8) }, -3, 14, '+z');
       v.project(textRows('生'), { '#': shade(yel, 0.8) }, -3, 14, '-z');
       // bottles
-      const amber = (x, y, z) => gloss(shade(0x6a3010, 0.9 + hash(x, y, z, 4) * 0.12));
+      const amber = (x, y, z) => gloss(shade(0x6a3010, 0.9 + hash(x >> 1, y >> 2, z >> 1, 4) * 0.12));
       const cols = [-18, -9, 0, 9, 18], rz = [-12, -4, 4, 12];
       const empty = new Set([1, 11, 18]);
       cols.forEach((bx, i) => rz.forEach((bz, j) => {
@@ -1120,9 +1120,9 @@ const garage = {
         const y0 = i * 5, cov = covers[i];
         fill(v, -21 + dx, y0, -15 + dz, 21 + dx, y0 + 4, 14 + dz, (x, y, z) => {
           const ly = y - y0;
-          if (ly === 0 || ly === 4) return shade(cov, 0.94 + hash(x, y, z, 4) * 0.06);
+          if (ly === 0 || ly === 4) return shade(cov, 0.94 + hash(x >> 2, y, z >> 2, 4) * 0.06);
           if (x >= 21 + dx) return shade(cov, 0.85);
-          return shade(papers[(i * 3 + ly) % papers.length], 0.92 + hash(x, y, z, 5) * 0.07);
+          return shade(papers[(i * 3 + ly) % papers.length], 0.92 + hash(x >> 2, y, z >> 2, 5) * 0.07);
         });
         v.paint(() => { v.box(21 + dx, y0 + 2, -9 + dz, 21 + dx, y0 + 2, 6 + dz, 0xfbf8f0); v.box(21 + dx, y0 + 2, -9 + dz, 21 + dx, y0 + 2, -6 + dz, 0x2a2a2a); });
         top = { dx, dz, y: y0 + 4 };
@@ -1176,7 +1176,7 @@ const garage = {
           if (d > 27.3 && Math.abs(h) < 8) {
             if (Math.abs(h) === 3 || (Math.floor(a * 28 / Math.PI + (h > 0 ? 0.5 : 0)) % 2 === 0 && Math.abs(h) > 4)) c = 0x1a191a;
           } else if (Math.abs(h) >= 8 && d > 20 && d < 25 && Math.round(d) === 22 && Math.floor(a * 20) % 3 !== 0) c = 0x4e4c4c;
-          return shade(c, 0.92 + hash(x, y, z, s) * 0.12);
+          return shade(c, 0.92 + hash(x >> 2, y >> 1, z >> 2, s) * 0.12);
         });
       };
       tyre(0, 9, 0, 1); tyre(1, 28, -1, 2); tyre(-1, 47, 1, 3);
@@ -1477,7 +1477,7 @@ const garage = {
         v.sphere(cx, cy, cz, 3.4, (x, y, z) => {
           const d = ax === 0 ? y - cy : ax === 1 ? x - cx : z - cz;
           if (Math.abs(d) < 0.5) return gloss(shade(ca, 0.75));
-          return gloss(d > 0 ? shade(ca, 0.96 + hash(x, y, z, 1) * 0.06) : cbb);
+          return gloss(d > 0 ? shade(ca, 0.96 + hash(x >> 1, y >> 1, z >> 1, 1) * 0.06) : cbb);
         });
       };
       let k = 0;

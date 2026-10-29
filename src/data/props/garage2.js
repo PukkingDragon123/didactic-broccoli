@@ -2,7 +2,7 @@
 // coin changer, fire buckets, the utility sink with its wall water heater, paint tins, a cord reel, jars of
 // screws, a straw hat on a nail, window-sill plants and a wind chime, toilet sandals by the back door...
 // Each entry: { name, voxel (metres per voxel), build(v) }. Facing +z, bottom-centre origin, deterministic.
-import { shade, mix } from '../../voxel/palette.js';
+import { shade } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, tint, grime, dust, rod, edgeWear, text } from './garage.js';
 
@@ -38,7 +38,7 @@ const props = {
   capsule_return: {
     name: 'Capsule Return Box', voxel: 0.01,
     build(v) {
-      v.jitter = 0.02;
+      v.jitter = 0.008;
       const shell = (x, y, z) => gloss(shade(0xeeeae0, 0.96 + hash(x, y, z, 3) * 0.05));
       fill(v, -15, 0, -13, 14, 1, 12, gloss(0x3a3a3c));
       fill(v, -15, 2, -13, 14, 26, 12, shell);
@@ -73,8 +73,8 @@ const props = {
   coin_changer: {
     name: 'Coin Changer', voxel: 0.01,
     build(v) {
-      v.jitter = 0.015;
-      const body = paint(0xe6dfcc, 2, 0.08), navy = gloss(0x1f3a6a), dark = gloss(0x2a2c30), chrome = metal(0xc8ccd2);
+      v.jitter = 0.008;
+      const body = (x, y, z) => gloss(vnoise(x, y, z, 8, 2) > 0.66 ? 0xdcd4c0 : 0xe6dfcc), navy = gloss(0x1f3a6a), dark = gloss(0x2a2c30), chrome = metal(0xc8ccd2);
       fill(v, -20, 0, -17, 19, 4, 16, gloss(0x2a2a2c));
       fill(v, -20, 5, -17, 19, 103, 16, body);
       fill(v, -20, 92, -17, 19, 103, 16, navy);
@@ -114,6 +114,7 @@ const props = {
   fire_buckets: {
     name: 'Fire Buckets', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       const red = (k) => (i) => gloss(shade(0xd8302a, i >= 20 ? 1.06 : 0.93 + hash(i, k, 0, 3) * 0.08));
       for (let k = 0; k < 3; k++) {
         const y0 = k * 6;
@@ -133,8 +134,8 @@ const props = {
   utility_sink: {
     name: 'Utility Sink', voxel: 0.01,
     build(v) {
-      v.jitter = 0.02;
-      const ss = (x, y, z) => metal(shade(0xc4c8cc, 0.9 + vnoise(x, y * 3, z, 4, 3) * 0.14));
+      v.jitter = 0.008;
+      const ss = (x, y, z) => metal(vnoise(x, y * 3, z, 6, 3) > 0.62 ? 0xb8bcc0 : 0xc8ccd0);
       const leg = metal(0x9aa0a6);
       for (const x of [-30, 28]) for (const z of [-20, 18]) fill(v, x, 0, z, x + 1, 62, z + 1, leg);
       fill(v, -30, 14, -20, 29, 15, 19, metal(0x8a9096));
@@ -178,6 +179,7 @@ const props = {
   water_heater: {
     name: 'Instant Water Heater', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       const white = paint(0xf0ece2, 7, 0.06);
       v.shape(-15, 0, -8, 14, 43, 7, (x, y, z) => {
         const ex = Math.max(0, Math.abs(x + 0.5) - 12.5), ey = Math.max(0, Math.abs(y - 21.5) - 19.5), ez = Math.max(0, z - 4);
@@ -209,6 +211,7 @@ const props = {
   paint_tins: {
     name: 'Paint Tins', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       const tin = (cx, cz, r, h, label, drip, open = false, s = 0) => {
         const steel = (x, y, z) => metal(shade(0xb8bcc0, 0.9 + hash(x, y, z, s) * 0.1));
         v.cylinder(cx, 0, cz, r, h, steel);
@@ -238,6 +241,7 @@ const props = {
   cord_reel: {
     name: 'Cord Reel', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       const orange = paint(0xf07a1a, 3, 0.08);
       for (const x of [-11, 9]) v.cylinder(x, 15, 0, 14, 2, orange, 'x');
       for (let x = -9; x <= 8; x++) v.cylinder(x, 15, 0, 11, 1, (xx, y, z) => (((y + z + xx * 2) & 3) === 0 ? 0x3a3a3c : 0x1e1e20), 'x');
@@ -256,6 +260,7 @@ const props = {
   screw_jars: {
     name: 'Jars of Screws', voxel: 0.008,
     build(v) {
+      v.jitter = 0.008;
       const jar = (cx, r, h, lid, s) => {
         for (let y = 0; y < h; y++) for (let x = -r; x <= r; x++) for (let z = -r; z <= r; z++) {
           const d = Math.hypot(x, z);
@@ -277,6 +282,7 @@ const props = {
   straw_hat: {
     name: 'Straw Hat', voxel: 0.008,
     build(v) {
+      v.jitter = 0.008;
       const straw = (x, y, z) => shade(0xe8cc84, ((x + y * 3) % 5 === 0 || (x * 3 - y) % 7 === 0) ? 0.84 : 0.96 + hash(x, y, z, 2) * 0.06);
       v.shape(-24, -24, 0, 24, 24, 1, (x, y) => Math.hypot(x, y) <= 23.5, straw);
       v.shape(-13, -13, 2, 13, 13, 12, (x, y, z) => Math.hypot(x, y) <= 12.5 - Math.max(0, z - 9) * 1.5, straw);
@@ -291,6 +297,7 @@ const props = {
   rope_coil: {
     name: 'Rope Coil', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       const rope = (x, y, z) => (((x + y + z) & 1) ? 0xd8c08a : 0xb8a070);
       for (let k = 0; k < 4; k++) v.torus(R((k - 1.5) * 0.8), 14 - k, 3 + k * 2, 12 - k * 0.6, 1.4, rope, 'z');
       for (let y = 24; y <= 30; y++) v.set(0, y, 1, metal(0x6a6e72));
@@ -304,6 +311,7 @@ const props = {
   cactus_pot: {
     name: 'Little Cactus', voxel: 0.006,
     build(v) {
+      v.jitter = 0.008;
       frustum(v, 0, 0, 0, 4.4, 5.6, 8, (i) => (i >= 6 ? 0xc8683a : 0xb85a30));
       v.cylinder(0, 8, 0, 4.6, 1, 0x5a3a22);
       const g = (x, y, z) => shade(0x4a9a4a, 0.9 + ((x + z) & 1) * 0.12);
@@ -316,6 +324,7 @@ const props = {
   aloe_pot: {
     name: 'Aloe', voxel: 0.006,
     build(v) {
+      v.jitter = 0.008;
       frustum(v, 0, 0, 0, 5, 6, 9, (i) => gloss(i === 8 ? 0x4a6a9a : 0x3a5a8a));
       v.cylinder(0, 9, 0, 5.2, 1, 0x4a3424);
       for (let k = 0; k < 9; k++) {
@@ -332,6 +341,7 @@ const props = {
   furin: {
     name: 'Wind Chime', voxel: 0.006,
     build(v) {
+      v.jitter = 0.008;
       for (let y = 0; y <= 16; y++) for (let x = -3; x <= 3; x++) v.set(x, y, 0, y < 3 ? 0xc8302a : 0xf4eedc);
       for (let y = 6; y <= 14; y += 4) fill(v, -2, y, 1, 1, y, 1, 0x2a5aa8);
       for (let y = 17; y <= 24; y++) v.set(0, y, 0, gloss(0xe8e0d0));
@@ -346,6 +356,7 @@ const props = {
   tin_robot: {
     name: 'Tin Robot', voxel: 0.008,
     build(v) {
+      v.jitter = 0.008;
       const tinS = (x, y, z) => metal(shade(0xc8ccd4, 0.92 + hash(x, y, z, 6) * 0.1));
       for (const x of [-5, 2]) { fill(v, x, 0, -3, x + 3, 2, 4, gloss(0xc8302a)); fill(v, x, 3, -2, x + 3, 9, 2, tinS); }
       fill(v, -7, 10, -4, 6, 24, 4, tinS);
@@ -363,6 +374,7 @@ const props = {
   sandals: {
     name: 'Rubber Sandals', voxel: 0.008,
     build(v) {
+      v.jitter = 0.008;
       const sole = (cx, rot) => {
         for (let z = -14; z <= 14; z++) for (let x = -5; x <= 5; x++) {
           const w = 4.6 - Math.max(0, Math.abs(z) - 9) * 0.5;
@@ -381,6 +393,7 @@ const props = {
   fuel_can: {
     name: 'Fuel Can', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       const red = paint(0xc8302a, 4, 0.1);
       fill(v, -13, 0, -8, 12, 30, 7, red);
       for (const z of [-8, 7]) v.paint(() => { fill(v, -11, 4, z, 10, 4, z, gloss(0xa82822)); fill(v, -11, 26, z, 10, 26, z, gloss(0xa82822)); });
@@ -397,6 +410,7 @@ const props = {
   capsule_jar: {
     name: 'Capsule Jar', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       for (let y = 0; y < 26; y++) for (let x = -10; x <= 10; x++) for (let z = -10; z <= 10; z++) {
         const d = Math.hypot(x, z), r = 9.6 - Math.max(0, y - 21) * 0.9;
         if (d > r) continue;
@@ -415,6 +429,7 @@ const props = {
   coin_tray: {
     name: 'Coin Tray', voxel: 0.006,
     build(v) {
+      v.jitter = 0.008;
       fill(v, -14, 0, -10, 13, 0, 9, gloss(0x2a6ad8));
       v.hollowBox(-14, 1, -10, 13, 3, 9, gloss(0x3a7ae8), 1, ['top', 'bottom']);
       for (let i = 0; i < 9; i++) {
@@ -428,6 +443,7 @@ const props = {
   cardboard_bundle: {
     name: 'Cardboard Bundle', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       for (let k = 0; k < 7; k++) {
         const ox = R((hash(k, 1, 0, 5) - 0.5) * 4), oz = R((hash(k, 2, 0, 5) - 0.5) * 4);
         const c = (x, y, z) => shade(k % 3 ? 0xc49a62 : 0xb08a58, 0.94 + vnoise(x, y, z, 4, k) * 0.1);
@@ -442,6 +458,7 @@ const props = {
   step_stool: {
     name: 'Step Stool', voxel: 0.01,
     build(v) {
+      v.jitter = 0.008;
       const w = (x, y, z) => shade(0xb88a56, 0.9 + vnoise(x * 0.3, y * 3, z, 3, 2) * 0.16);
       fill(v, -16, 0, -12, -14, 38, 11, w); fill(v, 13, 0, -12, 15, 38, 11, w);
       fill(v, -16, 36, -12, 15, 38, 11, w);
