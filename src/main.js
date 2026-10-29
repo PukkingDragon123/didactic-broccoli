@@ -180,8 +180,10 @@ async function boot() {
     } catch { note.textContent = "That code doesn't work"; sfx('error', 0.5); }
   });
 
+  let freeTold = false;
   game.input.onLockChange = (locked) => {
     if (locked) {
+      if (game.input.free && !freeTold && !game.input.touch) { freeTold = true; setTimeout(() => game.news('Free-look mode', 'Move the mouse to look around; rest it at the screen edge to keep turning. Esc pauses.', 8000), 2500); }
       started = true;
       $('title').classList.add('fade');
       setTimeout(() => $('title').classList.add('hidden'), 600);

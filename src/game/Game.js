@@ -504,6 +504,7 @@ export class Game {
 
   // ------------------------------------------------------------------ loop
   update(dt) {
+    this.input.beginFrame(dt);
     this.frame++;
     this.time += dt;
     this.state.playTime += dt;
