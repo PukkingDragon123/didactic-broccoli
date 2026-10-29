@@ -117,6 +117,7 @@ export class Game {
     this.pedestrians = new Pedestrians(this);
     this.ghostAlley = new GhostAlley(this);
     this.timeStop = new TimeStop(this);
+    for (const fn of Game.late) await fn(this);
     progress(0.9);
     this.bakeEnvironment();
     this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
@@ -563,6 +564,7 @@ export class Game {
 
 Game.plugins = [];
 Game.updaters = [];
+Game.late = []; // installers that need the whole game built (src/plugins/*.js, registered in main.js)
 
 import { makeItemMesh } from './collectibles.js';
 function makeItemMeshLazy(k, f) { return makeItemMesh(k, f); }

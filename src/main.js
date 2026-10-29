@@ -47,6 +47,9 @@ async function boot() {
   const game = new Game($('app'));
   window.__game = game;
   Game.plugins.push(installPC, installMuseum, installFP);
+  // drop-in features: every src/plugins/*.js that exports install(game); they run once the world, the people and
+  // every core system exist (see Game.late)
+  for (const m of Object.values(import.meta.glob('./plugins/*.js', { eager: true }))) if (m.install) Game.late.push(m.install);
   await game.init((p) => { pct.textContent = `${Math.round(p * 100)}%`; });
   if (params.has('debug') || params.has('autotest')) installDebug(game, params);
 
