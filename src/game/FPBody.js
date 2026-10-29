@@ -294,11 +294,10 @@ export class FPBody {
     this.arms = arms; this.bones = bones;
     this.hb = ['L', 'R'].map((s, hi) => ({ arm: bones[BONE_INDEX['arm' + s]], fore: bones[BONE_INDEX['fore' + s]], hand: bones[BONE_INDEX['hand' + s]], tA: bones[twistBone(hi, 0)], tB: bones[twistBone(hi, 1)] }));
     this.calibrate();
-    // the little props a hand can carry (wrench for repairs, a flyer to hand out)
-    const R = this.hb[1].hand, L = this.hb[0].hand;
+    // the little props a hand can carry: the wrench rides in the right fist for repairs; the flyer being handed out is
+    // placed at the pinch every frame (placeFlyer)
     this.props.wrench.position.set(-this.FIST[0] * k, this.FIST[1] * k, this.FIST[2] * k);
-    R.add(this.props.wrench);
-    void L;
+    this.hb[1].hand.add(this.props.wrench);
     this.game.held.anchor.add(this.props.flyer);
   }
 
@@ -769,7 +768,7 @@ export class FPBody {
     const S = H.shoulder, arm = (this.la + this.lc) * this.bs, reach = arm * 0.88;
     // things below you (a machine's handle, its coin slot): you bend at the waist to reach them
     const lean = this.leanFor(S, W.p, this.leanDir(_v3), arm * 0.97);
-    if (lean <= 0.45) { H.farT = 0; H.bend = lean; return src; }
+    if (lean <= 0.55) { H.farT = 0; H.bend = lean; return src; }
     H.farT += this.dt;
     if (H.farT > 0.5) return this.freePose(H, W);
     const d = _v2.subVectors(W.p, S), L = d.length();
@@ -1152,7 +1151,10 @@ export class FPBody {
     const tan = _v3.crossVectors(Y, to);
     const k = st.k || 0, shake = Math.sin(this.t * 31) * 0.004 * k;
     _v.copy(box.position).addScaledVector(to, (ex ? gp.width : gp.depth) / 2 - 0.02).addScaledVector(Y, gp.height / 2 + 0.012 + k * 0.07 + shake);
-    _v.addScaledVector(tan, (R ? -1 : 1) * 0.17);
+    // each hand takes the end of the edge on its own side of the view (never crossed arms)
+    this.toAnchor(_v6.copy(_v).add(tan), _v5);
+    this.toAnchor(_v, c);
+    _v.addScaledVector(tan, ((_v5.x > c.x) === R ? 1 : -1) * 0.17);
     this.toAnchor(_v, c);
     const down = this.dirToAnchor(_v.set(0, -1, 0), V());
     this.setGrip(H, W, c, down, this.dirToAnchor(_v.copy(to).negate(), _v2), [0.62 + k * 0.2, 0.2, 0.4, 0.3, 0, 0.1]);

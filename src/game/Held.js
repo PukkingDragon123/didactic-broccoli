@@ -423,7 +423,7 @@ export class Held {
       audio.play('whoosh', { vol: 0.5, dur: 0.2, v: 0.08 });
       g.reveal.caption?.(this.item.data, false);
       // a soft studio key light rides along so every detail reads
-      if (!this.keyLight) { this.keyLight = new THREE.PointLight(0xfff4e8, 0, 1.2, 2); this.keyLight.position.set(0.16, 0.14, 0); this.anchor.add(this.keyLight); }
+      if (!this.keyLight) { this.keyLight = new THREE.PointLight(0xfff4e8, 0, 1.2, 2); this.keyLight.position.set(-0.1, 0.16, -0.04); this.anchor.add(this.keyLight); }
       g.renderer.grade.uniforms.uVignette.value = 0.65;
     } else if (!want && this.inspecting) {
       this.inspecting = false;
@@ -431,7 +431,7 @@ export class Held {
       this.startTrans('toy', 0.28);
       g.renderer.grade.uniforms.uVignette.value = 0.32;
     }
-    if (this.keyLight) this.keyLight.intensity += ((this.inspecting ? 0.55 : 0) - this.keyLight.intensity) * Math.min(1, dt * 8);
+    if (this.keyLight) this.keyLight.intensity += ((this.inspecting ? 0.24 : 0) - this.keyLight.intensity) * Math.min(1, dt * 8); // soft: your hand sits right under it
     if (this.inspecting && !this.trans) {
       // drag to turn it over, wheel to zoom, let go of the mouse and it spins on its own
       const moved = Math.abs(inp.mouse.dx) + Math.abs(inp.mouse.dy) > 0.5;
