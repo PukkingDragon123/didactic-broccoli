@@ -1,4 +1,5 @@
-// Dev page: every meme flyer design (src/gfx/flyers.js).   flyers.html?only=much,nope &w=600 (display width)
+// Dev page: every flyer and promo poster (src/gfx/flyers.js).
+//   flyers.html?only=much,nope &w=600 (display width) &kind=promo|meme  (sheets are 150 x 212 px, shown pixelated)
 import '@fontsource/grandstander/400.css';
 import '@fontsource/grandstander/600.css';
 import '@fontsource/grandstander/700.css';
@@ -16,12 +17,14 @@ renderer.setSize(8, 8);
 initFlyers(renderer, { thumbs: new Thumbs(renderer) });
 const grid = document.getElementById('grid');
 grid.style.setProperty('--w', (Q.get('w') || 300) + 'px');
-const list = Q.get('only') ? FLYERS.filter((f) => Q.get('only').split(',').includes(f.id)) : FLYERS;
+let list = Q.get('only') ? FLYERS.filter((f) => Q.get('only').split(',').includes(f.id)) : FLYERS;
+if (Q.get('kind')) list = list.filter((f) => f.kind === Q.get('kind'));
 for (const f of list) {
   const c = await whenFlyer(f.id);
+  c.dataset.id = f.id;
   const fig = document.createElement('figure');
   const cap = document.createElement('figcaption');
-  cap.textContent = `${f.id} - ${f.name}`;
+  cap.textContent = `${f.id} - ${f.name} (${f.kind})`;
   fig.append(c, cap);
   grid.append(fig);
 }

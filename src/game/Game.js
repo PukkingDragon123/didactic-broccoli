@@ -10,6 +10,8 @@ import { bgm } from '../core/bgm.js';
 import { timeUniform } from '../voxel/materials.js';
 import { Effects } from '../gfx/effects.js';
 import { Thumbs } from '../gfx/thumbs.js';
+import { initFlyers, prewarmFlyers } from '../gfx/flyers.js';
+import { Posters } from '../world/Posters.js';
 import { Street } from '../world/Street.js';
 import { Goods } from './goods.js';
 import { Garage, GARAGE } from '../world/Garage.js';
@@ -73,6 +75,7 @@ export class Game {
     if (s.quality) this.renderer.setQuality(s.quality);
     progress(0.1);
     this.thumbs = new Thumbs(this.renderer.renderer);
+    initFlyers(this.renderer.renderer, { thumbs: this.thumbs }); // flyers and posters are drawn lazily, in idle time
     this.effects = new Effects(this.scene, { groundAt: (x, z, y) => this.groundAt(x, z, y) });
     this.interaction = new Interaction(this);
     this.interaction.showHints = s.hints;
@@ -86,6 +89,7 @@ export class Game {
     this.delivery = new Delivery(this);
     this.garage = new Garage(this);
     this.street = new Street(this);
+    this.posters = new Posters(this);
     this.lighting = new Lighting(this);
     progress(0.35);
     this.placement.addSurface(this.garage.floor);
@@ -112,6 +116,7 @@ export class Game {
     progress(0.9);
     this.bakeEnvironment();
     this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
+    prewarmFlyers();
     if (!this.story.done && !this.state.story.shutter) {
       // a new story: you're standing in the lane in front of Grandpa's locked shutter
       this.player.pos.set(0.4, 0, GARAGE.maxZ + 4.2);

@@ -1,12 +1,14 @@
-// Shop flyers with meme art: ORIGINAL parodies of well-known meme formats starring the game's own cast, rendered from
-// the real 3D models (low-poly humans + cosmetics, Mikan the cat, gacha machines, capsules, figures) and laid out as
-// print-like A-series sheets: paper fibres, a little halftone, slight colour misregistration, ink wear and the shop
-// strip at the bottom. Captions use Anton (OFL, @fontsource/anton) and Grandstander.
+// Shop flyers and promo posters as low-res pixel art (150 x 212 px, shown with nearest-neighbour scaling): real stock
+// photos (Google Open Images, CC BY 2.0: see CREDITS.md and public/img/photos) shrunk and ordered-dithered to a few
+// colour levels, the game's own 3D models rendered as aliased sprites with a 1 px outline, flat colour blocks and a
+// hand-made 5 x 7 bitmap font (below). Two kinds:
+//   meme   ORIGINAL parodies of well-known meme formats starring the game's cast (handed out in the lane)
+//   promo  shop posters: the reopening, new series, the secret figures, special finishes (handed out and on the walls)
 // Each design is drawn once into its own canvas (lazily, one at a time) and cached; textures update in place.
 //   initFlyers(renderer, { thumbs })      the WebGLRenderer used for the 3D shots (+ Thumbs for machine banners)
 //   flyerCanvas(id) / flyerTexture(id)    the sheet (blank paper until drawn); whenFlyer(id) -> Promise<canvas>
-//   FLYERS: [{ id, name, lines }]         lines: what people say after reading it
-import '@fontsource/anton/400.css';
+//   upscaleFlyer(canvas, k)               a k x nearest-neighbour copy (exports)
+//   FLYERS: [{ id, kind, name, lines }]   lines: what people say after reading it;  POSTERS: the promo ones
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Human } from '../people/Human.js';
@@ -18,24 +20,47 @@ import { buildMachineModel } from '../world/machineModels.js';
 import { bannerTexture } from './banner.js';
 import { makeCapsule } from '../game/Capsule.js';
 import { makeItemMesh } from '../game/collectibles.js';
+import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
+import { RARITIES } from '../data/rarity.js';
+import { FINISHES } from '../data/finishes.js';
 
-export const FLYER_W = 600, FLYER_H = 848; // A-series proportions
+export const FLYER_W = 150, FLYER_H = 212; // pixels (A-series proportions)
 const W = FLYER_W, H = FLYER_H;
-const STRIP = 74; // the shop strip along the bottom
-const INK = '#1c1418';
+const FOOT = 14; // the shop line along the bottom
+const PH = H - FOOT; // the picture above it
+const PHOTO_DIR = 'img/photos/';
+// the flat colours (everything that isn't a photo or a sprite)
+const C = {
+  ink: '#1a1420', paper: '#f4ead6', white: '#fff8ec', red: '#c8322c', yellow: '#ffd23f', pink: '#ff7aa8', rose: '#b8325e',
+  mint: '#9ff0b0', blue: '#4f8bff', navy: '#22305e', gold: '#f0c050', grey: '#7a6e72', orange: '#ff8a3a', green: '#3fae4f', purple: '#8a4fd0',
+};
 
-/** The designs (order = the order the stack cycles through). */
+// numbers quoted on the posters come straight from the game data
+const RARITY_SUM = Object.values(RARITIES).reduce((a, r) => a + r.weight, 0);
+const SECRET_ODDS = Math.round(RARITY_SUM / RARITIES.secret.weight);
+const GLOW_ODDS = Math.round(1 / FINISHES.glow.chance);
+const FIGURES = SERIES.reduce((a, s) => a + s.items.length, 0);
+const MIN_PRICE = Math.min(...SERIES.map((s) => s.price));
+
+/** The designs (order = the order the stack cycles through: promos and memes alternate). */
 export const FLYERS = [
-  { id: 'much', name: 'Such Capsule', lines: ['Wow. Such flyer. Much want.', 'Very gacha... okay, I am in.', 'Haha, that cat is so smug!'] },
-  { id: 'nope', name: 'Nope / Yep', lines: ['Ha! That is me with online shopping.', '¥100 a turn? Okay, okay, I will come.', 'The dino suit, haha!'] },
-  { id: 'distracted', name: 'Distracted Customer', lines: ['That is literally me at lunch.', 'My salary is crying already.', 'Ha! Sorry, wallet.'] },
-  { id: 'brain', name: 'Galaxy Collector', lines: ['Inherit the garage... galaxy brain.', 'I am at step two. Help.', 'Haha, step four is the dream.'] },
-  { id: 'simply', name: 'One Does Not Simply', lines: ['So true. Nobody stops at one turn.', 'Just one more. Just one.', 'Haha, he looks so serious!'] },
-  { id: 'nobody', name: 'Me at 3am', lines: ['Haha, that is my kid.', 'Me at 3am, every night.', 'A chicken hat? I love it.'] },
-  { id: 'expect', name: 'Expectation / Reality', lines: ['Six duplicates. I felt that.', 'Ha! The secret one never comes.', 'The same hamster, again...'] },
-  { id: 'manager', name: 'New Manager', lines: ['A cat manager? I must meet her.', 'Paid in snacks, so cute!', 'I would work for snacks too.'] },
+  { id: 'reopen', kind: 'promo', name: 'Grand Reopening', lines: ['Grandpa\'s gacha garage is back!', 'I used to come here as a kid!', 'A shop cat too? I am going.'] },
+  { id: 'much', kind: 'meme', name: 'Such Capsule', lines: ['Wow. Such flyer. Much want.', 'Very gacha... okay, I am in.', 'Haha, that cat is so smug!'] },
+  { id: 'kaiju', kind: 'promo', name: 'Kaiju Snack Time', lines: ['A kaiju eating taiyaki? I need it.', 'Look at the size of him, haha!', 'My son loves monsters...'] },
+  { id: 'nope', kind: 'meme', name: 'Nope / Yep', lines: ['Ha! That is me with online shopping.', 'One turn at a time? Okay, I will come.', 'The dino suit, haha!'] },
+  { id: 'space', kind: 'promo', name: 'Uchu Neko Station', lines: ['Cats in space! So cute.', 'One small turn for a cat, haha.', 'I want the rocket one.'] },
+  { id: 'distracted', kind: 'meme', name: 'Distracted Customer', lines: ['That is literally me at lunch.', 'My salary is crying already.', 'Ha! Sorry, wallet.'] },
+  { id: 'sakura', kind: 'promo', name: 'Spring Sweets', lines: ['Sakura mochi figures? Lovely.', 'These look good enough to eat.', 'I will bring my grandma.'] },
+  { id: 'brain', kind: 'meme', name: 'Galaxy Collector', lines: ['Inherit the garage... galaxy brain.', 'I am at step two. Help.', 'Haha, step four is the dream.'] },
+  { id: 'secret', kind: 'promo', name: 'Super Secret', lines: [`One in ${SECRET_ODDS}? I feel lucky.`, 'A golden one... I must try.', 'Every series has a secret?'] },
+  { id: 'simply', kind: 'meme', name: 'One Does Not Simply', lines: ['So true. Nobody stops at one turn.', 'Just one more. Just one.', 'Haha, he looks so serious!'] },
+  { id: 'glow', kind: 'promo', name: 'Glow in the Dark', lines: ['They glow? Like, really glow?', 'That looks amazing at night.', 'Okay, that one is pretty cool.'] },
+  { id: 'nobody', kind: 'meme', name: 'Me at 3am', lines: ['Haha, that is my kid.', 'Me at 3am, every night.', 'A chicken hat? I love it.'] },
+  { id: 'expect', kind: 'meme', name: 'Expectation / Reality', lines: ['Six duplicates. I felt that.', 'Ha! The secret one never comes.', 'The same hamster, again...'] },
+  { id: 'manager', kind: 'meme', name: 'New Manager', lines: ['A cat manager? I must meet her.', 'Paid in snacks, so cute!', 'I would work for snacks too.'] },
 ];
 export const FLYER_BY_ID = Object.fromEntries(FLYERS.map((f, i) => [f.id, { ...f, index: i }]));
+export const POSTERS = FLYERS.filter((f) => f.kind === 'promo');
 
 // ------------------------------------------------------------------ canvases, textures, the render queue
 const sheets = new Map(); // id -> { canvas, tex, done, waiters }
@@ -46,10 +71,9 @@ const queue = [];
 function sheet(id) {
   let s = sheets.get(id);
   if (!s) {
-    const canvas = document.createElement('canvas');
-    canvas.width = W; canvas.height = H;
+    const canvas = canvas2d(W, H);
     const g = canvas.getContext('2d', { willReadFrequently: true });
-    paper(g, hashStr(id));
+    g.fillStyle = C.paper; g.fillRect(0, 0, W, H);
     s = { canvas, tex: null, done: false, waiters: [] };
     sheets.set(id, s);
   }
@@ -58,15 +82,16 @@ function sheet(id) {
 
 export function initFlyers(renderer, opts = {}) { env = { renderer, thumbs: opts.thumbs || null }; pump(); }
 
-/** The sheet for a design (blank printed paper until its art is drawn; asks for it to be drawn). */
+/** The sheet for a design (blank paper until its art is drawn; asks for it to be drawn). */
 export function flyerCanvas(id) { const s = sheet(id); want(id); return s.canvas; }
 export function flyerReady(id) { return !!sheets.get(id)?.done; }
-/** A texture of the sheet that updates itself once the art is in. */
+/** A texture of the sheet that updates itself once the art is in (crisp pixels up close). */
 export function flyerTexture(id) {
   const s = sheet(id);
   if (!s.tex) {
     s.tex = new THREE.CanvasTexture(s.canvas);
     s.tex.colorSpace = THREE.SRGBColorSpace;
+    s.tex.magFilter = THREE.NearestFilter;
     s.tex.anisotropy = 4;
   }
   want(id);
@@ -81,6 +106,13 @@ export function whenFlyer(id) {
 }
 /** Queue every design (low priority). */
 export function prewarmFlyers() { for (const f of FLYERS) want(f.id, true); }
+/** A k x bigger copy with hard pixel edges. */
+export function upscaleFlyer(src, k = 4) {
+  const c = canvas2d(src.width * k, src.height * k), g = c.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  g.drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
 
 function want(id, low = false) {
   const s = sheet(id);
@@ -107,17 +139,140 @@ function pump() {
 }
 
 async function draw(id) {
-  await Promise.all([document.fonts.load('64px Anton'), document.fonts.load('900 40px "GG Display"'), document.fonts.load('600 30px Grandstander'), document.fonts.load('30px "GG Bold"')]).catch(() => {});
-  const s = sheet(id);
-  const g = s.canvas.getContext('2d', { willReadFrequently: true });
-  const seed = hashStr(id);
-  paper(g, seed);
-  DESIGNS[id](g);
-  shopStrip(g, seed);
-  printFinish(g, seed);
+  const d = DESIGNS[id];
+  await Promise.all((d.photos || []).map(loadPhoto));
+  const g = sheet(id).canvas.getContext('2d', { willReadFrequently: true });
+  g.imageSmoothingEnabled = false;
+  rect(g, 0, 0, W, H, C.paper);
+  d.draw(g);
+  footer(g, d.foot);
 }
 
-// ------------------------------------------------------------------ the 3D studio
+// ------------------------------------------------------------------ the 5 x 7 bitmap font
+// Capitals, digits and a little punctuation ('#' = ink). Lower case is set in capitals.
+const GLYPHS = {
+  A: '.###.|#...#|#...#|#####|#...#|#...#|#...#', B: '####.|#...#|#...#|####.|#...#|#...#|####.', C: '.###.|#...#|#....|#....|#....|#...#|.###.',
+  D: '####.|#...#|#...#|#...#|#...#|#...#|####.', E: '#####|#....|#....|####.|#....|#....|#####', F: '#####|#....|#....|####.|#....|#....|#....',
+  G: '.###.|#...#|#....|#.###|#...#|#...#|.####', H: '#...#|#...#|#...#|#####|#...#|#...#|#...#', I: '###|.#.|.#.|.#.|.#.|.#.|###',
+  J: '..###|...#.|...#.|...#.|#..#.|#..#.|.##..', K: '#...#|#..#.|#.#..|##...|#.#..|#..#.|#...#', L: '#....|#....|#....|#....|#....|#....|#####',
+  M: '#...#|##.##|#.#.#|#.#.#|#...#|#...#|#...#', N: '#...#|##..#|#.#.#|#..##|#...#|#...#|#...#', O: '.###.|#...#|#...#|#...#|#...#|#...#|.###.',
+  P: '####.|#...#|#...#|####.|#....|#....|#....', Q: '.###.|#...#|#...#|#...#|#.#.#|#..#.|.##.#', R: '####.|#...#|#...#|####.|#.#..|#..#.|#...#',
+  S: '.####|#....|#....|.###.|....#|....#|####.', T: '#####|..#..|..#..|..#..|..#..|..#..|..#..', U: '#...#|#...#|#...#|#...#|#...#|#...#|.###.',
+  V: '#...#|#...#|#...#|#...#|#...#|.#.#.|..#..', W: '#...#|#...#|#...#|#.#.#|#.#.#|#.#.#|.#.#.', X: '#...#|#...#|.#.#.|..#..|.#.#.|#...#|#...#',
+  Y: '#...#|#...#|.#.#.|..#..|..#..|..#..|..#..', Z: '#####|....#|...#.|..#..|.#...|#....|#####',
+  0: '.###.|#...#|#..##|#.#.#|##..#|#...#|.###.', 1: '.#.|##.|.#.|.#.|.#.|.#.|###', 2: '.###.|#...#|....#|...#.|..#..|.#...|#####',
+  3: '####.|....#|....#|.###.|....#|....#|####.', 4: '...#.|..##.|.#.#.|#..#.|#####|...#.|...#.', 5: '#####|#....|####.|....#|....#|#...#|.###.',
+  6: '..##.|.#...|#....|####.|#...#|#...#|.###.', 7: '#####|....#|...#.|..#..|.#...|.#...|.#...', 8: '.###.|#...#|#...#|.###.|#...#|#...#|.###.',
+  9: '.###.|#...#|#...#|.####|....#|...#.|.##..',
+  ' ': '...|...|...|...|...|...|...', '.': '.|.|.|.|.|.|#', ',': '..|..|..|..|..|.#|#.', '!': '#|#|#|#|#|.|#', '?': '.###.|#...#|....#|...#.|..#..|.....|..#..',
+  ':': '.|.|#|.|.|#|.', '-': '...|...|...|###|...|...|...', '\'': '#|#|.|.|.|.|.', '"': '#.#|#.#|...|...|...|...|...', '/': '....#|...#.|...#.|..#..|.#...|.#...|#....',
+  '%': '##..#|##.#.|...#.|..#..|.#...|#.###|#..##', '&': '.#...|#.#..|#.#..|.#...|#.#.#|#..#.|.##.#', '(': '.#|#.|#.|#.|#.|#.|.#', ')': '#.|.#|.#|.#|.#|.#|#.',
+  '+': '.....|..#..|..#..|#####|..#..|..#..|.....', '×': '.....|#...#|.#.#.|..#..|.#.#.|#...#|.....', '·': '.|.|.|#|.|.|.', '=': '....|....|####|....|####|....|....',
+  '¥': '#...#|.#.#.|..#..|#####|..#..|#####|..#..', '#': '.#.#.|.#.#.|#####|.#.#.|#####|.#.#.|.#.#.', '*': '.....|#.#.#|.###.|#####|.###.|#.#.#|.....',
+};
+const FONT = {};
+for (const [ch, rows] of Object.entries(GLYPHS)) { const r = rows.split('|'); FONT[ch] = { w: r[0].length, rows: r }; }
+const ALIAS = { '’': '\'', '‘': '\'', '“': '"', '”': '"', '–': '-', '—': '-', 'Ū': 'U', 'ū': 'U', '…': '...', 'é': 'E' };
+const norm = (s) => [...String(s)].map((ch) => ALIAS[ch] ?? ch).join('').toUpperCase();
+
+/** Width in pixels of one line at scale s. */
+function textW(str, s = 1) {
+  let w = 0;
+  for (const ch of norm(str)) w += ((FONT[ch] || FONT['?']).w + 1) * s;
+  return Math.max(0, w - s);
+}
+/**
+ * Bitmap text. (x, y) = top-left of the first line (align moves x). o: { s (scale), col, align, lh (pixels between
+ * lines, default 3 x s), max (shrinks the scale to fit this width) }. Returns { w, h }.
+ */
+function px(g, str, x, y, o = {}) {
+  const lines = String(str).split('\n');
+  let s = o.s || 1;
+  if (o.max) while (s > 1 && Math.max(...lines.map((l) => textW(l, s))) > o.max) s--;
+  g.save(); g.fillStyle = o.col || C.ink;
+  let yy = y, wmax = 0;
+  for (const line of lines) {
+    const lw = textW(line, s);
+    wmax = Math.max(wmax, lw);
+    let xx = Math.round(o.align === 'center' ? x - lw / 2 : o.align === 'right' ? x - lw : x);
+    for (const ch of norm(line)) {
+      const gl = FONT[ch] || FONT['?'];
+      gl.rows.forEach((row, ry) => { for (let rx = 0; rx < row.length; rx++) if (row[rx] === '#') g.fillRect(xx + rx * s, yy + ry * s, s, s); });
+      xx += (gl.w + 1) * s;
+    }
+    yy += 7 * s + (o.lh ?? 3 * s);
+  }
+  g.restore();
+  return { w: wmax, h: yy - y - (o.lh ?? 3 * s), s };
+}
+
+// ------------------------------------------------------------------ pixel helpers
+function canvas2d(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function hashStr(s) { let x = 2166136261; for (let i = 0; i < s.length; i++) x = Math.imul(x ^ s.charCodeAt(i), 16777619); return x >>> 0; }
+function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = Math.imul(s ^ (s >>> 15), 2246822519) + 0x9e3779b9 >>> 0) / 4294967296); }
+function rect(g, x, y, w, h, col) { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+/** A pixel ellipse (flat colour; shadows under sprites). */
+function oval(g, cx, cy, rx, ry, col) {
+  g.fillStyle = col;
+  for (let y = -ry; y <= ry; y++) { const hw = Math.round(rx * Math.sqrt(Math.max(0, 1 - (y / (ry + 0.5)) ** 2))); if (hw > 0) g.fillRect(Math.round(cx - hw), Math.round(cy + y), hw * 2, 1); }
+}
+function put(g, img, x, y) { g.drawImage(img, Math.round(x), Math.round(y)); }
+
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+/** Reduce a canvas to a few levels per channel, with ordered dithering (dither 0..1). Alpha is kept. */
+function posterize(c, levels = 5, dither = 1) {
+  const g = c.getContext('2d', { willReadFrequently: true }), im = g.getImageData(0, 0, c.width, c.height), d = im.data, step = 255 / (levels - 1);
+  for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) {
+    const i = (y * c.width + x) * 4, t = (BAYER[(y & 3) * 4 + (x & 3)] / 16 - 0.47) * step * dither;
+    for (let k = 0; k < 3; k++) d[i + k] = Math.max(0, Math.min(255, Math.round((d[i + k] + t) / step) * step));
+  }
+  g.putImageData(im, 0, 0);
+  return c;
+}
+
+// ------------------------------------------------------------------ the photos
+const photos = new Map(); // name -> { img, promise }
+function loadPhoto(name) {
+  let p = photos.get(name);
+  if (!p) {
+    p = {};
+    p.promise = new Promise((res) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => { p.img = img; res(img); };
+      img.onerror = () => { console.warn('flyer photo missing', name); res(null); };
+      img.src = PHOTO_DIR + name + '.jpg';
+    });
+    photos.set(name, p);
+  }
+  return p.promise;
+}
+
+/**
+ * Fill a box with a photo shrunk to pixel size (cover-fit), graded, then posterized + dithered. o:
+ *   fx, fy  focal point 0..1, zoom (>1 crops in), sat (saturation kept 0..1), dark 0..1, tint [colour, alpha, blend],
+ *   wash [colour, alpha], levels (per channel, default 5), dither 0..1
+ */
+function photoBg(g, name, x, y, w, h, o = {}) {
+  const img = photos.get(name)?.img;
+  const c = canvas2d(w, h), k = c.getContext('2d', { willReadFrequently: true });
+  if (!img) { k.fillStyle = C.grey; k.fillRect(0, 0, w, h); } else {
+    const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(w / iw, h / ih) * (o.zoom || 1);
+    const dw = iw * s, dh = ih * s;
+    k.imageSmoothingQuality = 'high';
+    k.drawImage(img, (w - dw) * (o.fx ?? 0.5), (h - dh) * (o.fy ?? 0.5), dw, dh);
+  }
+  if (o.sat !== undefined && o.sat < 1) { k.globalCompositeOperation = 'saturation'; k.globalAlpha = 1 - o.sat; k.fillStyle = '#808080'; k.fillRect(0, 0, w, h); }
+  if (o.tint) { k.globalCompositeOperation = o.tint[2] || 'soft-light'; k.globalAlpha = o.tint[1]; k.fillStyle = o.tint[0]; k.fillRect(0, 0, w, h); }
+  k.globalAlpha = 1;
+  if (o.dark) { k.globalCompositeOperation = 'multiply'; const v = Math.round(255 * (1 - o.dark)); k.fillStyle = `rgb(${v},${v},${v})`; k.fillRect(0, 0, w, h); }
+  k.globalCompositeOperation = 'source-over';
+  if (o.wash) { k.globalAlpha = o.wash[1]; k.fillStyle = o.wash[0]; k.fillRect(0, 0, w, h); k.globalAlpha = 1; }
+  posterize(c, o.levels || 5, o.dither ?? 0.6);
+  put(g, c, x, y);
+}
+
+// ------------------------------------------------------------------ the 3D studio (renders tiny, aliased sprites)
 let studio = null;
 class Studio {
   constructor(renderer) {
@@ -126,61 +281,100 @@ class Studio {
     const pm = new THREE.PMREMGenerator(renderer);
     scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
     pm.dispose();
-    scene.environmentIntensity = 0.55;
-    scene.add(new THREE.HemisphereLight(0xfff2e4, 0x4a3a34, 1.05));
-    this.key = new THREE.DirectionalLight(0xfff0dc, 2.3); this.key.position.set(-1.6, 2.6, 2.6);
-    const rim = new THREE.DirectionalLight(0xc4dcff, 1.4); rim.position.set(2.2, 1.8, -2.4);
-    const fill = new THREE.DirectionalLight(0xffd6c0, 0.45); fill.position.set(2.4, 0.6, 2);
-    scene.add(this.key, rim, fill);
+    this.hemi = new THREE.HemisphereLight(0xfff2e4, 0x4a3a34, 1.05);
+    this.key = new THREE.DirectionalLight(0xfff0dc, 2.3);
+    this.rim = new THREE.DirectionalLight(0xc4dcff, 1.4);
+    this.fill = new THREE.DirectionalLight(0xffd6c0, 0.45); this.fill.position.set(2.4, 0.6, 2);
+    scene.add(this.hemi, this.key, this.rim, this.fill);
     this.cam = new THREE.PerspectiveCamera(30, 1, 0.01, 60);
-    this.rt = null;
+    this.rts = new Map();
   }
 
-  /** Render objects into a transparent canvas. o: { w, h, pos, look, fov, key: [x,y,z] } */
+  /**
+   * Render objects into a transparent w x h canvas: no anti-aliasing (hard pixel edges), alpha thresholded.
+   * o: { w, h, pos, look, fov, key: [x,y,z], keyCol, keyI, rim: [x,y,z], rimCol, rimI, hemi, env }
+   * c.proj([x,y,z]) -> [x, y] pixels in the shot (for shadows and labels).
+   */
   shot(objs, o) {
-    const r = this.r, w = Math.round(o.w), h = Math.round(o.h);
-    if (!this.rt || this.rt.width !== w || this.rt.height !== h) {
-      this.rt?.dispose();
-      this.rt = new THREE.WebGLRenderTarget(w, h, { samples: 4 });
-      this.rt.texture.colorSpace = THREE.SRGBColorSpace;
-    }
+    const r = this.r, w = Math.max(1, Math.round(o.w)), h = Math.max(1, Math.round(o.h)), key = w + 'x' + h;
+    let rt = this.rts.get(key);
+    if (!rt) { rt = new THREE.WebGLRenderTarget(w, h); rt.texture.colorSpace = THREE.SRGBColorSpace; this.rts.set(key, rt); }
     for (const ob of objs) { this.scene.add(ob); ob.updateMatrixWorld(true); }
-    if (o.key) this.key.position.set(...o.key); else this.key.position.set(-1.6, 2.6, 2.6);
+    this.key.position.set(...(o.key || [-1.6, 2.6, 2.6]));
+    this.key.color.set(o.keyCol ?? 0xfff0dc); this.key.intensity = o.keyI ?? 2.3;
+    this.rim.position.set(...(o.rim || [2.2, 1.8, -2.4]));
+    this.rim.color.set(o.rimCol ?? 0xc4dcff); this.rim.intensity = o.rimI ?? 1.4;
+    this.hemi.intensity = o.hemi ?? 1.05;
+    this.scene.environmentIntensity = o.env ?? 0.55;
     const cam = this.cam;
     cam.fov = o.fov || 30; cam.aspect = w / h;
     cam.position.set(...o.pos); cam.lookAt(...o.look);
     cam.updateProjectionMatrix(); cam.updateMatrixWorld();
     const prevRT = r.getRenderTarget(), prevC = r.getClearColor(new THREE.Color()), prevA = r.getClearAlpha();
-    r.setRenderTarget(this.rt);
+    r.setRenderTarget(rt);
     r.setClearColor(0x000000, 0);
     r.clear();
     r.render(this.scene, cam);
-    const px = new Uint8Array(w * h * 4);
-    r.readRenderTargetPixels(this.rt, 0, 0, w, h, px);
+    const pxs = new Uint8Array(w * h * 4);
+    r.readRenderTargetPixels(rt, 0, 0, w, h, pxs);
     r.setRenderTarget(prevRT);
     r.setClearColor(prevC, prevA);
     for (const ob of objs) this.scene.remove(ob);
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    const g = c.getContext('2d');
+    const c = canvas2d(w, h);
+    const g = c.getContext('2d', { willReadFrequently: true });
     const img = g.createImageData(w, h);
     for (let y = 0; y < h; y++) {
       const src = (h - 1 - y) * w * 4, dst = y * w * 4;
       for (let x = 0; x < w * 4; x += 4) {
-        const a = px[src + x + 3], k = a > 0 && a < 255 ? 255 / a : 1;
-        img.data[dst + x] = Math.min(255, px[src + x] * k); img.data[dst + x + 1] = Math.min(255, px[src + x + 1] * k); img.data[dst + x + 2] = Math.min(255, px[src + x + 2] * k);
-        img.data[dst + x + 3] = a;
+        const a = pxs[src + x + 3], k = a > 0 && a < 255 ? 255 / a : 1;
+        img.data[dst + x] = Math.min(255, pxs[src + x] * k); img.data[dst + x + 1] = Math.min(255, pxs[src + x + 1] * k); img.data[dst + x + 2] = Math.min(255, pxs[src + x + 2] * k);
+        img.data[dst + x + 3] = a < 24 ? 0 : a > 200 ? 255 : 150; // glass stays see-through, in one step
       }
     }
     g.putImageData(img, 0, 0);
+    const pc = cam.clone();
+    c.proj = (p) => { const v = new THREE.Vector3(...p).project(pc); return [(v.x * 0.5 + 0.5) * w, (0.5 - v.y * 0.5) * h]; };
     return c;
   }
 }
-function shot(objs, o) { studio = studio || new Studio(env.renderer); return studio.shot(objs, o); }
+/** A sprite: render, a few colour levels, then a 1 px dark outline around it (o.outline: colour or false). */
+function shot(objs, o) {
+  studio = studio || new Studio(env.renderer);
+  const c = studio.shot(objs, o);
+  if (o.grade) o.grade(c);
+  posterize(c, o.levels || 7, o.dither ?? 0);
+  if (o.outline !== false) outline(c, o.outline || C.ink);
+  return c;
+}
+function outline(c, col) {
+  const g = c.getContext('2d', { willReadFrequently: true }), im = g.getImageData(0, 0, c.width, c.height), d = im.data, w = c.width, h = c.height;
+  const rgb = [parseInt(col.slice(1, 3), 16), parseInt(col.slice(3, 5), 16), parseInt(col.slice(5, 7), 16)];
+  const solid = (x, y) => x >= 0 && y >= 0 && x < w && y < h && d[(y * w + x) * 4 + 3] === 255;
+  const add = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] === 0 && (solid(x - 1, y) || solid(x + 1, y) || solid(x, y - 1) || solid(x, y + 1))) add.push((y * w + x) * 4);
+  for (const i of add) { d[i] = rgb[0]; d[i + 1] = rgb[1]; d[i + 2] = rgb[2]; d[i + 3] = 255; }
+  g.putImageData(im, 0, 0);
+}
+/** Colour-grade a sprite in place (only where it has pixels). */
+function gradeRender(img, col, mode = 'multiply', a = 1) {
+  const t = canvas2d(img.width, img.height), k = t.getContext('2d');
+  k.drawImage(img, 0, 0); k.globalCompositeOperation = 'source-in'; k.fillStyle = col; k.fillRect(0, 0, t.width, t.height);
+  const g = img.getContext('2d');
+  g.save(); g.globalCompositeOperation = mode; g.globalAlpha = a; g.drawImage(t, 0, 0); g.restore();
+  return img;
+}
+/** Gold reads as gold: deeper and warmer than the studio's neutral room makes it. */
+const goldGrade = (img) => { gradeRender(img, '#e2a63c', 'multiply', 0.8); gradeRender(img, '#5a3200', 'screen', 0.2); };
 
 /** A camera looking at `look` from yaw / pitch (radians, 0 = from the front +z) at distance d. */
 function orbit(look, yaw, pitch, d) {
   return { pos: [look[0] + Math.sin(yaw) * Math.cos(pitch) * d, look[1] + Math.sin(pitch) * d, look[2] + Math.cos(yaw) * Math.cos(pitch) * d], look };
+}
+/** A flat shadow under a world point (x, 0, z) of a sprite drawn at (ox, oy), radius r metres. */
+function contact(g, img, ox, oy, x, z, r, col = 'rgba(20,12,18,0.45)') {
+  const [cx, cy] = img.proj([x, 0, z]), [ex] = img.proj([x + r, 0, z]), [, ey] = img.proj([x, 0, z + r]);
+  const rx = Math.max(2, Math.round(Math.abs(ex - cx))), ry = Math.max(1, Math.round(Math.max(Math.abs(ey - cy), rx * 0.22)));
+  oval(g, ox + cx, oy + cy, rx, ry, col);
 }
 
 // ------------------------------------------------------------------ the cast
@@ -229,17 +423,18 @@ function machine(type = 'retro', series = 'mochi') {
   return group;
 }
 
+const CAPSULE_COLS = [0xff9eb5, 0x9ed8ff, 0xfff09e, 0xb8f0a8, 0xffc890];
 /** A few capsules piled in the machine's window. */
-function fillMachine(group) {
-  const b = bbox(group), cols = [0xff9eb5, 0x9ed8ff, 0xfff09e, 0xb8f0a8, 0xffc890];
+function fillMachine(group, series = 'mochi', seed = 7) {
+  const b = bbox(group);
   const glass = [];
   group.traverse((o) => { if (o.isMesh && o.material && !Array.isArray(o.material) && o.material.transparent) glass.push(o); });
   const gb = glass.length ? glass.reduce((acc, o) => acc.union(bbox(o)), new THREE.Box3()) : new THREE.Box3(new THREE.Vector3(b.min.x * 0.6, b.max.y * 0.6, b.min.z * 0.5), new THREE.Vector3(b.max.x * 0.6, b.max.y * 0.85, b.max.z * 0.5));
   const c = gb.getCenter(new THREE.Vector3()), sz = gb.getSize(new THREE.Vector3());
   const r = Math.min(sz.x, sz.z) * 0.14, n = 14;
-  const rr = rng(7);
+  const rr = rng(seed);
   for (let i = 0; i < n; i++) {
-    const cp = capsule('mochi', cols[i % cols.length], r);
+    const cp = capsule(series, CAPSULE_COLS[i % CAPSULE_COLS.length], r);
     const row = Math.floor(i / 5);
     cp.position.set(c.x + (rr() - 0.5) * (sz.x - r * 2.4) * 0.9, gb.min.y + r * (1 + row * 1.6) + rr() * r * 0.4, c.z + (rr() - 0.5) * (sz.z - r * 2.4) * 0.8);
     cp.rotation.set(rr() * 6, rr() * 6, rr() * 6);
@@ -249,8 +444,7 @@ function fillMachine(group) {
 
 function capsule(series, color, r) {
   const c = makeCapsule(series, color, r ? { radius: r } : {});
-  const grp = c.group || c;
-  return grp;
+  return c.group || c;
 }
 
 function bbox(obj) { obj.updateMatrixWorld(true); return new THREE.Box3().setFromObject(obj); }
@@ -260,403 +454,296 @@ function fit(objs, o) {
   const c = b.getCenter(new THREE.Vector3()), sz = b.getSize(new THREE.Vector3());
   const fov = o.fov || 30, t = Math.tan(THREE.MathUtils.degToRad(fov / 2)), aspect = o.w / o.h;
   const d = Math.max(sz.y / 2 / t, Math.max(sz.x, sz.z) / 2 / (t * aspect)) * (o.margin || 1.1) + Math.max(sz.x, sz.z) / 2;
-  return { w: o.w, h: o.h, fov, ...orbit([c.x, c.y + sz.y * (o.dy || 0), c.z], o.yaw || 0, o.pitch ?? 0.12, d) };
+  return { ...o, fov, ...orbit([c.x, c.y + sz.y * (o.dy || 0), c.z], o.yaw || 0, o.pitch ?? 0.12, d) };
 }
-function dispose(objs) { for (const o of objs) { if (o.dispose) o.dispose(); else o.removeFromParent?.(); } }
-
-// ------------------------------------------------------------------ 2D helpers
-function hashStr(s) { let x = 2166136261; for (let i = 0; i < s.length; i++) x = Math.imul(x ^ s.charCodeAt(i), 16777619); return x >>> 0; }
-function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = Math.imul(s ^ (s >>> 15), 2246822519) + 0x9e3779b9 >>> 0) / 4294967296); }
-
-function paper(g, seed) {
-  const r = rng(seed);
-  g.save();
-  g.globalCompositeOperation = 'source-over';
-  g.fillStyle = '#f4eddc';
-  g.fillRect(0, 0, W, H);
-  // fibres
-  for (let i = 0; i < 700; i++) {
-    const x = r() * W, y = r() * H, a = r() * Math.PI, l = 3 + r() * 9;
-    g.strokeStyle = r() < 0.5 ? 'rgba(120,100,70,0.07)' : 'rgba(255,255,255,0.35)';
-    g.lineWidth = 0.6;
-    g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
-  }
-  g.restore();
+/** One figure on its own as a w x h sprite. */
+function figure(key, finish, o) {
+  const m = makeItemMesh(key, finish);
+  if (o.rot) m.rotation.y = o.rot;
+  return shot([m], fit([m], o));
 }
 
-/** Classic meme caption: Anton capitals, white with a heavy black outline; shrinks to fit maxW. Returns the bottom y. */
-function caption(g, text, cx, y, o = {}) {
-  let size = o.size || 62;
-  const maxW = o.maxW || W - 60, lines = String(text).toUpperCase().split('\n');
-  g.save();
-  const font = (s) => `${s}px Anton, Impact, sans-serif`;
-  g.font = font(size);
-  while (size > 18 && Math.max(...lines.map((l) => g.measureText(l).width)) > maxW) { size -= 2; g.font = font(size); }
-  g.textAlign = o.align || 'center'; g.textBaseline = 'top';
-  g.lineJoin = 'round'; g.miterLimit = 2;
-  const lh = size * (o.lh || 1.06);
-  lines.forEach((l, i) => {
-    const yy = y + i * lh;
-    if (o.rot) { g.save(); g.translate(cx, yy); g.rotate(o.rot); }
-    const X = o.rot ? 0 : cx, Y = o.rot ? 0 : yy;
-    if (o.stroke !== false) { g.strokeStyle = o.stroke || '#0e0a0c'; g.lineWidth = size * (o.sw || 0.17); g.strokeText(l, X, Y); }
-    g.fillStyle = o.fill || '#ffffff';
-    g.fillText(l, X, Y);
-    if (o.rot) g.restore();
-  });
-  g.restore();
-  return y + lines.length * lh;
+// ------------------------------------------------------------------ layout bits
+/** The shop line along the bottom of every sheet. */
+function footer(g, o = {}) {
+  rect(g, 0, PH, W, FOOT, o?.bg || C.red);
+  px(g, 'GACHA GARAGE', 4, PH + 4, { col: o?.fg || C.white });
+  px(g, `FROM ¥${MIN_PRICE}`, W - 4, PH + 4, { col: o?.price || C.yellow, align: 'right' });
 }
-
-/** Plain text (Grandstander), optional wrap width. */
-function text(g, str, x, y, o = {}) {
-  g.save();
-  g.font = o.font || '600 30px Grandstander, sans-serif';
-  g.fillStyle = o.fill || INK;
-  g.textAlign = o.align || 'left'; g.textBaseline = o.baseline || 'top';
-  if (o.rot) { g.translate(x, y); g.rotate(o.rot); x = 0; y = 0; }
-  if (o.shadow) { g.fillStyle = o.shadow; g.fillText(str, x + 2, y + 3); g.fillStyle = o.fill || INK; }
-  if (o.stroke) { g.lineJoin = 'round'; g.strokeStyle = o.stroke; g.lineWidth = o.sw || 6; g.strokeText(str, x, y); }
-  g.fillText(str, x, y);
-  g.restore();
+/** A solid band with one line of small text, centred. */
+function band(g, y, h, str, bg, col) { rect(g, 0, y, W, h, bg); if (str) px(g, str, W / 2, y + Math.round((h - 7) / 2), { col, align: 'center', max: W - 6 }); }
+/** A small label: text on a solid box. */
+function tag(g, str, cx, y, bg = C.ink, col = C.white) {
+  const w = textW(str) + 6;
+  rect(g, cx - w / 2, y, w, 11, bg);
+  px(g, str, cx, y + 2, { col, align: 'center' });
 }
-
-/** Draw a cut-out render with a sticker border (o.border px, colour) and an ink line. */
-function sticker(g, img, x, y, o = {}) {
-  const pad = (o.border || 0) + (o.ink ?? 2) + 2;
-  const c = document.createElement('canvas');
-  c.width = img.width + pad * 2; c.height = img.height + pad * 2;
-  const k = c.getContext('2d');
-  const ring = (rad, col) => {
-    if (rad <= 0) return;
-    const t = document.createElement('canvas'); t.width = c.width; t.height = c.height;
-    const tg = t.getContext('2d');
-    for (let a = 0; a < 16; a++) tg.drawImage(img, pad + Math.cos(a / 16 * Math.PI * 2) * rad, pad + Math.sin(a / 16 * Math.PI * 2) * rad);
-    tg.globalCompositeOperation = 'source-in'; tg.fillStyle = col; tg.fillRect(0, 0, t.width, t.height);
-    k.drawImage(t, 0, 0);
-  };
-  ring((o.border || 0) + (o.ink ?? 2), o.inkCol || INK);
-  ring(o.border || 0, o.borderCol || '#ffffff');
-  k.drawImage(img, pad, pad);
-  g.save();
-  if (o.shadow) { g.shadowColor = 'rgba(30,16,20,0.35)'; g.shadowBlur = 0; g.shadowOffsetX = o.shadow; g.shadowOffsetY = o.shadow; }
-  g.drawImage(c, x - pad, y - pad);
-  g.restore();
-}
-
-function panel(g, x, y, w, h, fill) {
-  g.save();
-  if (typeof fill === 'function') fill(g, x, y, w, h); else { g.fillStyle = fill; g.fillRect(x, y, w, h); }
-  g.restore();
-}
-function frameRect(g, x, y, w, h, lw = 4) { g.save(); g.strokeStyle = INK; g.lineWidth = lw; g.strokeRect(x + lw / 2, y + lw / 2, w - lw, h - lw); g.restore(); }
-function clip(g, x, y, w, h, fn) { g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip(); fn(); g.restore(); }
-
-function radial(g, x, y, w, h, inner, outer, cx = 0.5, cy = 0.45) {
-  const gr = g.createRadialGradient(x + w * cx, y + h * cy, 0, x + w * cx, y + h * cy, Math.max(w, h) * 0.75);
-  gr.addColorStop(0, inner); gr.addColorStop(1, outer);
-  g.fillStyle = gr; g.fillRect(x, y, w, h);
-}
-function rays(g, cx, cy, n, r, col, a0 = 0) {
-  g.save(); g.fillStyle = col;
-  for (let i = 0; i < n; i++) {
-    const a = a0 + (i / n) * Math.PI * 2, b = a + Math.PI / n;
-    g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); g.lineTo(cx + Math.cos(b) * r, cy + Math.sin(b) * r); g.closePath(); g.fill();
-  }
-  g.restore();
-}
-function bokeh(g, x, y, w, h, seed, cols) {
-  const r = rng(seed);
-  g.save();
-  for (let i = 0; i < 26; i++) {
-    const rad = 12 + r() * 46;
-    g.globalAlpha = 0.12 + r() * 0.22;
-    g.fillStyle = cols[Math.floor(r() * cols.length)];
-    g.beginPath(); g.arc(x + r() * w, y + r() * h * 0.75, rad, 0, Math.PI * 2); g.fill();
-  }
-  g.restore();
-}
-function sparkle(g, x, y, s, col = '#fff6b0') {
-  g.save(); g.fillStyle = col; g.strokeStyle = INK; g.lineWidth = 2;
-  g.beginPath();
-  for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, rr = i % 2 ? s * 0.28 : s; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
-  g.closePath(); g.fill(); g.stroke(); g.restore();
-}
-function shadowBlob(g, cx, cy, rw, rh, a = 0.28) {
-  g.save(); const gr = g.createRadialGradient(cx, cy, 0, cx, cy, rw);
-  gr.addColorStop(0, `rgba(40,22,26,${a})`); gr.addColorStop(1, 'rgba(40,22,26,0)');
-  g.fillStyle = gr; g.translate(cx, cy); g.scale(1, rh / rw); g.translate(-cx, -cy);
-  g.beginPath(); g.arc(cx, cy, rw, 0, Math.PI * 2); g.fill(); g.restore();
-}
-
-function shopStrip(g, seed) {
-  const y = H - STRIP;
-  g.save();
-  g.fillStyle = '#c8302a';
-  g.fillRect(0, y, W, STRIP);
-  g.fillStyle = '#e24c3c';
-  for (let x = -40; x < W; x += 28) { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 14, y); g.lineTo(x + 14 + STRIP * 0.5, y + STRIP); g.lineTo(x + STRIP * 0.5, y + STRIP); g.fill(); }
-  g.fillStyle = INK; g.fillRect(0, y, W, 4);
-  // a little capsule logo
-  const cx = 44, cy = y + STRIP / 2 + 1;
-  g.fillStyle = '#ffffff'; g.beginPath(); g.arc(cx, cy, 24, 0, Math.PI * 2); g.fill();
-  g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(cx, cy, 24, 0, Math.PI); g.fill();
-  g.strokeStyle = INK; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, 24, 0, Math.PI * 2); g.stroke();
-  g.beginPath(); g.moveTo(cx - 24, cy); g.lineTo(cx + 24, cy); g.stroke();
-  g.fillStyle = 'rgba(255,255,255,0.8)'; g.beginPath(); g.arc(cx - 8, cy - 10, 5, 0, Math.PI * 2); g.fill();
-  caption(g, 'GACHA GARAGE', 80, y + 8, { size: 36, align: 'left', maxW: 330, sw: 0.2 });
-  text(g, 'capsule toys  ·  Showa Lane, by the tunnel', 82, y + 50, { font: '600 15px Grandstander, sans-serif', fill: '#fff4e0' });
-  // price stamp
-  g.translate(W - 70, y + STRIP / 2 + 1); g.rotate(-0.12);
-  g.fillStyle = '#ffd23f'; g.strokeStyle = INK; g.lineWidth = 3;
-  g.beginPath(); for (let i = 0; i < 24; i++) { const a = (i / 24) * Math.PI * 2, rr = i % 2 ? 40 : 46; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr * 0.78); } g.closePath(); g.fill(); g.stroke();
-  g.fillStyle = INK; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.font = '900 25px "GG Display", Grandstander, sans-serif'; g.fillText('¥100', 0, -4);
-  g.font = '600 12px Grandstander, sans-serif'; g.fillText('A TURN', 0, 15);
-  g.restore();
-  void seed;
-}
-
-/** Print it: halftone dots in the inked areas, slight colour misregistration, worn ink specks, paper grain. */
-function printFinish(g, seed) {
-  const img = g.getImageData(0, 0, W, H), d = img.data, src = new Uint8ClampedArray(d);
-  const r = rng(seed ^ 0x5bd1e995);
-  const ox = r() < 0.5 ? 1 : -1, oy = 1;
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const i = (y * W + x) * 4;
-    const xr = Math.min(W - 1, Math.max(0, x + ox)), yb = Math.min(H - 1, y + oy);
-    const R = src[(y * W + xr) * 4], B = src[(yb * W + x) * 4 + 2], G = src[i + 1];
-    let rr = src[i] * 0.45 + R * 0.55, bb = src[i + 2] * 0.45 + B * 0.55, gg = G;
-    const lum = (rr * 0.3 + gg * 0.59 + bb * 0.11) / 255;
-    // halftone rosette on a 45 degree grid, stronger in the mid tones
-    const u = (x + y) / 4.6, v = (x - y) / 4.6, du = u - Math.round(u), dv = v - Math.round(v), dot = du * du + dv * dv;
-    const ht = lum < 0.92 ? (dot > 0.16 ? 0.94 : 1.0) + (1 - lum) * 0.02 : 1;
-    // grain + worn ink
-    const n = ((Math.imul(x * 374761393 + y * 668265263, 1274126177) >>> 0) / 4294967296);
-    let k = ht * (0.975 + n * 0.05);
-    if (n > 0.9965 && lum < 0.8) { rr = rr * 0.4 + 240 * 0.6; gg = gg * 0.4 + 232 * 0.6; bb = bb * 0.4 + 214 * 0.6; k = 1; }
-    d[i] = rr * k; d[i + 1] = gg * k; d[i + 2] = bb * k;
-  }
-  g.putImageData(img, 0, 0);
-  // a soft fold crease and a little edge wear
-  g.save();
-  const fy = H * (0.36 + r() * 0.3);
-  const gr = g.createLinearGradient(0, fy - 6, 0, fy + 6);
-  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.16)'); gr.addColorStop(0.55, 'rgba(60,40,30,0.08)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
-  g.fillStyle = gr; g.fillRect(0, fy - 6, W, 12);
-  const vg = g.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 0.75);
-  vg.addColorStop(0, 'rgba(120,90,60,0)'); vg.addColorStop(1, 'rgba(120,90,60,0.14)');
-  g.fillStyle = vg; g.fillRect(0, 0, W, H);
-  g.restore();
-}
+const M = 5; // the meme sheets' paper border
 
 // ------------------------------------------------------------------ the designs
-const M = 24; // outer margin
 const DESIGNS = {
-  // "such capsule": scattered colourful words around a smug cat
-  much(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2;
-    panel(g, x, y, w, h, (k) => radial(k, x, y, w, h, '#fff7e6', '#f7c9d8', 0.5, 0.55));
-    rays(g, W / 2, y + h * 0.58, 18, 640, 'rgba(255,255,255,0.32)', 0.1);
-    frameRect(g, x, y, w, h);
-    const c = cat({ yaw: 0.3, lookAt: [0.25, 0.3, 1.4] });
-    const img = shot([c.root], fit([c.root], { w: 520, h: 560, yaw: 0.15, pitch: 0.1, margin: 0.92 }));
-    c.root.removeFromParent();
-    shadowBlob(g, W / 2, y + h * 0.92, 190, 24, 0.3);
-    sticker(g, img, W / 2 - 260, y + h - 560 - 8, { border: 0, ink: 3 });
-    const words = [
-      ['wow', 80, 92, 64, '#ff3f9e', -0.12], ['such capsule', 300, 150, 44, '#2fb7ee', 0.06], ['very gacha', 130, 300, 46, '#40b830', -0.05],
-      ['much toy', 452, 262, 44, '#ff8a00', 0.1], ['so ¥100', 104, 560, 44, '#a04fe0', 0.08], ['amaze', 482, 470, 46, '#e83a3a', -0.08],
-      ['many series', 392, 668, 38, '#1fa898', -0.04], ['wow', 470, 92, 34, '#ffb300', 0.14],
-    ];
-    for (const [s, wx, wy, sz, col, rot] of words) text(g, s, wx, wy, { font: `700 ${sz}px "GG Bold", Grandstander, sans-serif`, fill: col, align: 'center', rot, stroke: 'rgba(255,255,255,0.85)', sw: 7 });
+  // ================================================================ promo posters
+  // the grand reopening: three machines and Mikan on a lit-up shopping street
+  reopen: {
+    photos: ['akiba_dusk'],
+    draw(g) {
+      photoBg(g, 'akiba_dusk', 0, 0, W, PH, { fx: 0.4, fy: 0.3, tint: ['#ff8a40', 0.25], dark: 0.15 });
+      band(g, 0, 40, '', C.ink);
+      px(g, 'GRAND', 6, 6, { s: 2, col: C.yellow });
+      px(g, 'REOPENING!', 6, 23, { s: 2, col: C.white });
+      const objs = [], set = [['retro', 'mochi', -0.5, 0.3], ['standard', 'konbini', 0, 0], ['deluxe', 'neko_cafe', 0.52, -0.3]];
+      for (const [type, s, x, ry] of set) { const m = machine(type, s); fillMachine(m, s, hashStr(s)); m.position.set(x, 0, Math.abs(x) * -0.25); m.rotation.y = ry; objs.push(m); }
+      const c = cat({ at: [0.36, 0, 0.78], yaw: -0.35, lookAt: [0, 0.5, 3], mood: 'happy' });
+      objs.push(c.root);
+      const img = shot(objs, { w: W, h: 140, ...orbit([0.04, 0.7, 0.1], 0, 0.07, 3.5), fov: 31, key: [-1.6, 2.4, 2.4], keyCol: 0xffe2c0, rimCol: 0xffc890, rimI: 1.6 });
+      c.root.removeFromParent();
+      for (const [, , x] of set) contact(g, img, 0, 44, x, Math.abs(x) * -0.25, 0.3);
+      put(g, img, 0, 44);
+      band(g, PH - 13, 13, `${SERIES.length} SERIES · ${FIGURES} FIGURES`, C.yellow, C.ink);
+    },
+  },
+
+  // a new series: a giant kaiju over the night skyline
+  kaiju: {
+    photos: ['skyline'],
+    draw(g) {
+      photoBg(g, 'skyline', 0, 0, W, PH, { fx: 0.55, fy: 0.62, zoom: 1.12, tint: ['#3a50ff', 0.25], dark: 0.1 });
+      const k = makeItemMesh('kaiju/taiyaki'); k.rotation.y = -0.45;
+      const b = bbox(k), sz = b.getSize(new THREE.Vector3()), ce = b.getCenter(new THREE.Vector3());
+      const img = shot([k], { w: 140, h: 150, ...orbit([ce.x, b.min.y + sz.y * 0.48, ce.z], 0.1, -0.12, sz.y * 2.3), fov: 32, key: [-0.8, 0.5, 1.6], keyCol: 0xffd0b0, keyI: 2.4, rim: [1.2, 0.4, -1.4], rimCol: 0x8aa0ff, rimI: 3, hemi: 0.7 });
+      put(g, img, 8, PH - 13 - 146);
+      px(g, 'NEW SERIES!', 6, 6, { col: C.yellow });
+      px(g, 'KAIJU\nSNACK TIME', 6, 18, { s: 2, col: C.white, lh: 4 });
+      band(g, PH - 13, 13, `8 FIGURES · ¥${SERIES_BY_ID.kaiju.price} A TURN`, C.ink, C.white);
+    },
+  },
+
+  // cats in space over the Milky Way
+  space: {
+    photos: ['milky_way'],
+    draw(g) {
+      photoBg(g, 'milky_way', 0, 0, W, PH, { fx: 0.45, fy: 0.4, zoom: 1.1, tint: ['#4a6aff', 0.25], levels: 4 });
+      const lights = { key: [-1.2, 1.6, 2], keyCol: 0xfff4e8, keyI: 2.6, rimCol: 0x8ab4ff, rimI: 2.4, hemi: 0.8 };
+      const items = [['uchu/rocket', 74, 4, 44, 0.2], ['uchu/saturn', 60, W - 66, 46, 0.6], ['uchu/ufo', 50, W - 58, 108, 0.5], ['uchu/astro', 66, 46, 108, -0.3]];
+      for (const [key, s, x, y, yaw] of items) put(g, figure(key, 'normal', { w: s, h: s, yaw, pitch: 0.25, margin: 1.02, ...lights }), x, y);
+      px(g, 'UCHU NEKO\nSTATION', 6, 6, { s: 2, col: C.white, lh: 4 });
+      band(g, PH - 13, 13, 'ONE SMALL TURN FOR A CAT', C.blue, C.white);
+    },
+  },
+
+  // spring sweets under the cherry blossoms
+  sakura: {
+    photos: ['sakura'],
+    draw(g) {
+      photoBg(g, 'sakura', 0, 0, W, PH, { fx: 0.5, fy: 0.3, tint: ['#ffb0d0', 0.25] });
+      band(g, 0, 40, '', C.paper);
+      px(g, 'SPRING', 6, 6, { s: 2, col: C.rose });
+      px(g, 'SWEETS', 6, 23, { s: 2, col: C.ink });
+      px(g, 'NEW!', W - 6, 6, { col: C.red, align: 'right' });
+      const keys = ['wagashi/dango', 'wagashi/sakura', 'wagashi/ichigo', 'wagashi/taiyaki', 'wagashi/dorayaki'];
+      const objs = keys.map((k, i) => { const m = makeItemMesh(k); const back = i % 2 === 0; m.position.set((i - 2) * 0.05, 0, back ? -0.03 : 0.02); m.rotation.y = (2 - i) * 0.18; return m; });
+      const img = shot(objs, fit(objs, { w: W, h: 120, yaw: 0.1, pitch: 0.3, margin: 0.75, key: [-1, 2.4, 2], keyCol: 0xfff0f4, rimCol: 0xffc0e0, rimI: 1.6, hemi: 1.2 }));
+      for (const o of objs) contact(g, img, 0, 60, o.position.x, o.position.z, 0.028);
+      put(g, img, 0, 60);
+      band(g, PH - 13, 13, `NIKONIKO WAGASHI · ¥${SERIES_BY_ID.wagashi.price}`, C.rose, C.white);
+    },
+  },
+
+  // the super secret: a gold figure under a warm streetlight
+  secret: {
+    photos: ['blossom_lamp'],
+    draw(g) {
+      photoBg(g, 'blossom_lamp', 0, 0, W, PH, { fx: 0.3, fy: 0.4, tint: ['#ffb040', 0.3], dark: 0.4, levels: 4 });
+      px(g, 'SUPER', 6, 6, { s: 2, col: C.gold });
+      px(g, 'SECRET', 6, 23, { s: 2, col: C.gold });
+      const img = figure('mochi/kagami', 'gold', { w: 110, h: 110, yaw: 0.35, pitch: 0.2, margin: 1.0, key: [-1.4, 1.8, 1.8], keyCol: 0xfff0d8, keyI: 2.4, rimCol: 0xffd090, rimI: 2.6, env: 0.9, hemi: 0.35, grade: goldGrade });
+      oval(g, W / 2 + 6, PH - 22, 34, 5, 'rgba(10,6,4,0.5)');
+      put(g, img, W / 2 - 50, PH - 22 - 104);
+      px(g, `1 IN ${SECRET_ODDS}`, W - 6, 50, { col: C.white, align: 'right' });
+      band(g, PH - 13, 13, 'EVERY SERIES HIDES ONE', C.gold, C.ink);
+    },
+    foot: { bg: C.ink },
+  },
+
+  // special finish: glow-in-the-dark figures under the neon
+  glow: {
+    photos: ['neon_night'],
+    draw(g) {
+      photoBg(g, 'neon_night', 0, 0, W, PH, { fx: 0.5, fy: 0.45, dark: 0.5, sat: 0.7, tint: ['#3020a0', 0.3], levels: 4 });
+      px(g, 'GLOW IN', 6, 6, { s: 2, col: C.mint });
+      px(g, 'THE DARK', 6, 23, { s: 2, col: C.mint });
+      const keys = [['neko_cafe/tora', -0.5], ['uchu/astro', 0], ['yokai/chochin', 0.5]];
+      const objs = keys.map(([k, ry], i) => { const m = makeItemMesh(k, 'glow'); m.position.set((i - 1) * 0.07, 0, i === 1 ? 0.02 : -0.02); m.rotation.y = ry; return m; });
+      put(g, shot(objs, fit(objs, { w: W, h: 110, yaw: 0.05, pitch: 0.22, margin: 0.9, key: [-1, 1.4, 1.5], keyCol: 0x9080ff, keyI: 0.9, rimCol: 0xff60d0, rimI: 2.2, hemi: 0.25, env: 0.25 })), 0, PH - 13 - 112);
+      band(g, PH - 13, 13, `1 IN ${GLOW_ODDS} TURNS · ${FINISHES.glow.mult}× VALUE`, C.mint, C.ink);
+    },
+    foot: { bg: C.ink },
+  },
+
+  // ================================================================ meme flyers
+  // "such capsule": colourful words around a smug cat, in front of a wall of machines
+  much: {
+    photos: ['gacha_wall'],
+    draw(g) {
+      photoBg(g, 'gacha_wall', M, M, W - M * 2, PH - M * 2, { fx: 0.45, sat: 0.5, wash: ['#fff8ec', 0.7], levels: 4, dither: 0.4 });
+      const c = cat({ yaw: 0.3, lookAt: [0.25, 0.3, 1.4] });
+      const img = shot([c.root], fit([c.root], { w: 110, h: 120, yaw: 0.15, pitch: 0.1, margin: 0.92 }));
+      c.root.removeFromParent();
+      oval(g, W / 2, PH - M - 8, 36, 4, 'rgba(20,12,18,0.3)');
+      put(g, img, W / 2 - 55, PH - M - 124);
+      const words = [['WOW', 12, 12, '#d0186e'], ['SUCH CAPSULE', 60, 28, '#1a5fc0'], ['VERY GACHA', 10, 64, '#1f7a1a'], ['MUCH TOY', 92, 52, '#c04a00'], [`SO ¥${MIN_PRICE}`, 10, 120, '#6a2fb0'], ['AMAZE', 104, 104, '#b8161c'], ['MANY SERIES', 80, 168, '#0d6a5e'], ['WOW', 118, 12, '#8a5a00']];
+      for (const [s, x, y, col] of words) px(g, s, x, y, { col });
+    },
   },
 
   // two-panel "nope / yep" with the dino onesie
-  nope(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2, cw = 270, rh = h / 2;
-    const dino = { v: 1, seed: 11, body: 'm', skin: 'warm', hair: 'messy', hairCol: 'black', top: 'tee', topCol: 'mustard', bottom: 'jeans', outfit: 'dino', owned: [] };
-    const bg = (k, X, Y, ww, hh) => radial(k, X, Y, ww, hh, '#ffe7b8', '#f2a65a', 0.45, 0.4);
-    for (let i = 0; i < 2; i++) {
-      panel(g, x, y + i * rh, cw, rh, (k) => bg(k, x, y + i * rh, cw, rh));
-      panel(g, x + cw, y + i * rh, w - cw, rh, '#fffdf6');
-    }
-    const shotOf = (gesture, expr, yaw) => {
-      const p = person(null, 0, { avatar: dino, gesture, expr, yaw, t: 1.6 });
-      const img = shot([p.root], { w: cw, h: rh, ...orbit([0.02, 1.4, 0], 0.15, 0.04, 1.75), fov: 30 });
-      p.dispose();
-      return img;
-    };
-    clip(g, x, y, cw, rh, () => g.drawImage(shotOf('nope', 'angry', -0.25), x, y));
-    clip(g, x, y + rh, cw, rh, () => g.drawImage(shotOf('yep', 'grin', 0.2), x, y + rh));
-    const tx = x + cw + (w - cw) / 2;
-    caption(g, 'BUYING TOYS\nONLINE', tx, y + 104, { size: 50, fill: INK, stroke: false, maxW: w - cw - 30 });
-    text(g, '(arrives in 6-8 weeks, maybe)', tx, y + 232, { font: '600 17px Grandstander, sans-serif', fill: '#8a7a6a', align: 'center' });
-    caption(g, 'GACHA GARAGE\n¥100 A TURN', tx, y + rh + 96, { size: 50, fill: '#c8302a', stroke: false, maxW: w - cw - 30 });
-    text(g, 'the GACHAN sound is free', tx, y + rh + 226, { font: '600 17px Grandstander, sans-serif', fill: '#8a7a6a', align: 'center' });
-    g.save(); g.strokeStyle = INK; g.lineWidth = 4;
-    g.beginPath(); g.moveTo(x, y + rh); g.lineTo(x + w, y + rh); g.moveTo(x + cw, y); g.lineTo(x + cw, y + h); g.stroke(); g.restore();
-    frameRect(g, x, y, w, h);
+  nope: {
+    photos: ['parcels', 'gacha_rows'],
+    draw(g) {
+      const cw = 66, rh = Math.round((PH - M * 2) / 2), y0 = M;
+      const dino = { v: 1, seed: 11, body: 'm', skin: 'warm', hair: 'messy', hairCol: 'black', top: 'tee', topCol: 'mustard', bottom: 'jeans', outfit: 'dino', owned: [] };
+      photoBg(g, 'parcels', M, y0, cw, rh, { fx: 0.5, fy: 0.45, sat: 0.4, tint: ['#6a8ac0', 0.3], levels: 4 });
+      photoBg(g, 'gacha_rows', M, y0 + rh, cw, rh, { fx: 0.4, fy: 0.5, tint: ['#ffb060', 0.25], levels: 4 });
+      const shotOf = (gesture, expr, yaw) => {
+        const p = person(null, 0, { avatar: dino, gesture, expr, yaw, t: 1.6 });
+        const img = shot([p.root], { w: cw, h: rh, ...orbit([0.02, 1.4, 0], 0.15, 0.04, 1.75), fov: 30 });
+        p.dispose();
+        return img;
+      };
+      put(g, shotOf('nope', 'angry', -0.25), M, y0);
+      put(g, shotOf('yep', 'grin', 0.2), M, y0 + rh);
+      const tx = M + cw + (W - M * 2 - cw) / 2;
+      px(g, 'BUYING\nTOYS\nONLINE', tx, y0 + 26, { align: 'center' });
+      px(g, `GACHA\nGARAGE\n¥${MIN_PRICE} A TURN`, tx, y0 + rh + 26, { align: 'center', col: C.red });
+      rect(g, M, y0 + rh, W - M * 2, 1, C.ink); rect(g, M + cw, y0, 1, rh * 2, C.ink);
+    },
   },
 
-  // "distracted customer": walking with your salary, eyes on the gacha machine
-  distracted(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2;
-    panel(g, x, y, w, h, (k) => { const gr = k.createLinearGradient(0, y, 0, y + h); gr.addColorStop(0, '#f6c88a'); gr.addColorStop(0.55, '#e88a62'); gr.addColorStop(0.56, '#8c6a5c'); gr.addColorStop(1, '#5e4a44'); k.fillStyle = gr; k.fillRect(x, y, w, h); });
-    bokeh(g, x, y, w, h, 7, ['#fff2c0', '#ffd27a', '#ffb090', '#ffe9d0']);
-    const mach = machine('deluxe', 'kaiju');
-    fillMachine(mach);
-    mach.position.set(0.95, 0, -0.9); mach.rotation.y = -0.55;
-    const head = new THREE.Vector3(0.95, 1.35, -0.6);
-    const her = person('office_lady', 5, { at: [-0.62, 0, -0.35], yaw: 0.55, expr: 'angry', lookAt: [0.1, 1.5, 0.35], noBag: true, t: 1.2 });
-    const me = person('salaryman', 3, { at: [0.05, 0, 0.35], yaw: -0.75, expr: 'surprised', lookAt: head.toArray(), speed: 1.1, noBag: true, t: 1.35 });
-    const img = shot([mach, her.root, me.root], { w, h, ...orbit([0.12, 0.95, -0.1], 0.02, 0.06, 4.7), fov: 34 });
-    her.dispose(); me.dispose();
-    shadowBlob(g, x + w * 0.5, y + h * 0.93, 240, 24, 0.25);
-    g.drawImage(img, x, y);
-    const lab = (s, lx, ly, size = 46) => caption(g, s, lx, ly, { size, maxW: 230 });
-    lab('MY SALARY', x + 120, y + 196);
-    lab('ME', x + w * 0.5 + 4, y + 104, 54);
-    lab('GACHA\nGARAGE', x + w - 96, y + 150);
-    frameRect(g, x, y, w, h);
+  // "distracted customer": walking down the back street with your salary, eyes on the gacha machine
+  distracted: {
+    photos: ['back_street'],
+    draw(g) {
+      const w = W - M * 2, h = PH - M * 2;
+      photoBg(g, 'back_street', M, M, w, h, { fx: 0.5, fy: 0.62, zoom: 1.05, tint: ['#ff9a50', 0.3] });
+      const mach = machine('deluxe', 'kaiju');
+      fillMachine(mach, 'kaiju');
+      mach.position.set(0.95, 0, -0.9); mach.rotation.y = -0.55;
+      const head = new THREE.Vector3(0.95, 1.35, -0.6);
+      const her = person('office_lady', 5, { at: [-0.62, 0, -0.35], yaw: 0.55, expr: 'angry', lookAt: [0.1, 1.5, 0.35], noBag: true, t: 1.2 });
+      const me = person('salaryman', 3, { at: [0.05, 0, 0.35], yaw: -0.75, expr: 'surprised', lookAt: head.toArray(), speed: 1.1, noBag: true, t: 1.35 });
+      const img = shot([mach, her.root, me.root], { w, h, ...orbit([0.12, 0.95, -0.1], 0.02, 0.06, 4.7), fov: 34, key: [-2.2, 1.8, 1.2], keyCol: 0xffd8a8, rimCol: 0xffc090, rimI: 1.6 });
+      her.dispose(); me.dispose();
+      for (const [x, z, r] of [[-0.62, -0.35, 0.28], [0.05, 0.35, 0.3], [0.95, -0.9, 0.34]]) contact(g, img, M, M, x, z, r);
+      put(g, img, M, M);
+      tag(g, 'MY SALARY', 34, 50);
+      tag(g, 'ME', 76, 30);
+      tag(g, 'GACHA', 118, 42);
+    },
   },
 
-  // galaxy-brain escalation: four rows, ever more radiant
-  brain(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2, rh = h / 4, tw = 300, iw = w - tw;
-    const rows = [
-      ['BUYING ONE\nFIGURE', ['#d8d4cc', '#a8a49c']],
-      ['COLLECTING THE\nWHOLE SERIES', ['#cfe8ff', '#5a8ad8']],
-      ['BUYING THE\nMACHINE', ['#fff6c0', '#ff9a2a']],
-      ['INHERITING\nGRANDPA\'S GARAGE', ['#ffffff', '#b03adf']],
-    ];
-    const shots = [];
-    { const f = makeItemMesh('mochi/shiba'); shots.push(shot([f], fit([f], { w: iw, h: rh, yaw: 0.4, pitch: 0.2, margin: 1.25 }))); }
-    {
-      const ids = ['mochi/shiba', 'mochi/mike', 'mochi/hamu', 'mochi/pen', 'mochi/lesser'];
-      const objs = ids.map((k, i) => { const m = makeItemMesh(k); const back = i < 3; m.position.set(back ? (i - 1) * 0.036 : (i - 3.5) * 0.036, 0, back ? -0.03 : 0); m.rotation.y = (i - 2) * -0.2; return m; });
-      shots.push(shot(objs, fit(objs, { w: iw, h: rh, yaw: 0.15, pitch: 0.2, margin: 1.1 })));
-    }
-    { const m = machine('standard', 'mochi'); fillMachine(m); shots.push(shot([m], fit([m], { w: iw, h: rh, yaw: 0.45, pitch: 0.12, margin: 1.15 }))); }
-    { const gp = person('grandpa', 4, { gesture: 'cheer', expr: 'happy', t: 1.1, noBag: true }); shots.push(shot([gp.root], { w: iw, h: rh, ...orbit([0, 1.3, 0], 0.15, 0.05, 2.3), fov: 30 })); gp.dispose(); }
-    rows.forEach(([label, [c0, c1]], i) => {
-      const ry = y + i * rh;
-      panel(g, x, ry, tw, rh, '#fffdf6');
-      caption(g, label, x + tw / 2, ry + rh / 2 - (label.includes('\n') ? 46 : 24), { size: 40, fill: INK, stroke: false, maxW: tw - 26 });
-      clip(g, x + tw, ry, iw, rh, () => {
-        radial(g, x + tw, ry, iw, rh, c0, c1, 0.5, 0.5);
-        if (i >= 1) rays(g, x + tw + iw / 2, ry + rh / 2, 10 + i * 6, 260, `rgba(255,255,255,${0.12 + i * 0.08})`, i);
-        if (i === 3) {
-          const r = rng(99);
-          for (let k = 0; k < 40; k++) { g.fillStyle = `rgba(255,255,255,${0.4 + r() * 0.6})`; g.fillRect(x + tw + r() * iw, ry + r() * rh, 2, 2); }
-          rays(g, x + tw + iw / 2, ry + rh / 2, 36, 300, 'rgba(255,240,140,0.22)', 0.3);
-        }
-        g.save();
-        if (i >= 2) { g.shadowColor = i === 3 ? '#fff6a0' : '#ffd060'; g.shadowBlur = 18 + i * 8; }
-        g.drawImage(shots[i], x + tw, ry);
-        g.restore();
-        if (i === 3) { sparkle(g, x + tw + 34, ry + 30, 14); sparkle(g, x + tw + iw - 30, ry + 44, 11); sparkle(g, x + tw + iw - 50, ry + rh - 30, 16); }
+  // galaxy-brain escalation: four rows, the last one in deep space
+  brain: {
+    photos: ['shutters', 'toy_shop', 'gacha_kaikan', 'galaxy'],
+    draw(g) {
+      const rh = Math.floor((PH - M * 2) / 4), tw = 70, iw = W - M * 2 - tw;
+      const rows = [
+        ['BUYING ONE\nFIGURE', 'shutters', { fx: 0.5, fy: 0.5, zoom: 1.3, sat: 0.2, levels: 4 }],
+        ['COLLECTING\nTHE WHOLE\nSERIES', 'toy_shop', { fx: 0.5, fy: 0.62, zoom: 1.25, levels: 4 }],
+        ['BUYING THE\nMACHINE', 'gacha_kaikan', { fx: 0.4, fy: 0.5, levels: 4 }],
+        ['INHERITING\nGRANDPA\'S\nGARAGE', 'galaxy', { fx: 0.5, fy: 0.5, zoom: 1.5, levels: 4 }],
+      ];
+      const shots = [];
+      { const f = makeItemMesh('mochi/shiba'); shots.push(shot([f], fit([f], { w: iw, h: rh, yaw: 0.4, pitch: 0.2, margin: 1.15 }))); }
+      {
+        const ids = ['mochi/shiba', 'mochi/mike', 'mochi/hamu', 'mochi/pen', 'mochi/lesser'];
+        const objs = ids.map((k, i) => { const m = makeItemMesh(k); const back = i < 3; m.position.set(back ? (i - 1) * 0.036 : (i - 3.5) * 0.036, 0, back ? -0.03 : 0); m.rotation.y = (i - 2) * -0.2; return m; });
+        shots.push(shot(objs, fit(objs, { w: iw, h: rh, yaw: 0.15, pitch: 0.2, margin: 1.0 })));
+      }
+      { const m = machine('standard', 'mochi'); fillMachine(m); shots.push(shot([m], fit([m], { w: iw, h: rh, yaw: 0.45, pitch: 0.12, margin: 1.05 }))); }
+      { const gp = person('grandpa', 4, { gesture: 'cheer', expr: 'happy', t: 1.1, noBag: true }); shots.push(shot([gp.root], { w: iw, h: rh, ...orbit([0, 1.3, 0], 0.15, 0.05, 2.3), fov: 30, rimCol: 0xe0a0ff, rimI: 2.4 })); gp.dispose(); }
+      rows.forEach(([lab, ph, po], i) => {
+        const ry = M + i * rh;
+        const n = lab.split('\n').length;
+        px(g, lab, M + tw / 2, ry + Math.round((rh - n * 10 + 3) / 2), { align: 'center' });
+        photoBg(g, ph, M + tw, ry, iw, rh, po);
+        put(g, shots[i], M + tw, ry);
+        if (i) rect(g, M, ry, W - M * 2, 1, C.ink);
       });
-    });
-    g.save(); g.strokeStyle = INK; g.lineWidth = 4; g.beginPath();
-    for (let i = 1; i < 4; i++) { g.moveTo(x, y + i * rh); g.lineTo(x + w, y + i * rh); }
-    g.moveTo(x + tw, y); g.lineTo(x + tw, y + h); g.stroke(); g.restore();
-    frameRect(g, x, y, w, h);
+      rect(g, M + tw, M, 1, rh * 4, C.ink);
+    },
   },
 
-  // "one does not simply" with Grandpa
-  simply(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2;
-    panel(g, x, y, w, h, (k) => radial(k, x, y, w, h, '#7a5236', '#22140e', 0.62, 0.38));
-    // blurry machines and a warm lamp in the back of the garage
-    g.save(); g.globalAlpha = 0.5;
-    for (const [mx, col] of [[x + 40, '#d8302a'], [x + 140, '#3f86e8'], [x + 430, '#ffd23f']]) { g.fillStyle = col; g.fillRect(mx, y + 210, 80, 190); g.fillStyle = 'rgba(220,240,255,0.6)'; g.fillRect(mx + 12, y + 226, 56, 70); }
-    g.restore();
-    g.save(); const lg = g.createRadialGradient(x + 420, y + 120, 0, x + 420, y + 120, 220); lg.addColorStop(0, 'rgba(255,214,140,0.65)'); lg.addColorStop(1, 'rgba(255,214,140,0)'); g.fillStyle = lg; g.fillRect(x, y, w, h); g.restore();
-    const gp = person('grandpa', 4, { gesture: 'explain', expr: 'sad', yaw: 0.2, t: 1.4, noBag: true, lookAt: [0.7, 1.55, 3] });
-    const img = shot([gp.root], { w, h, ...orbit([-0.08, 1.24, 0], 0.18, 0.04, 2.05), fov: 34, key: [-1.4, 2.2, 1.8] });
-    gp.dispose();
-    g.drawImage(img, x, y + 24);
-    caption(g, 'ONE DOES NOT SIMPLY', W / 2, y + 16, { size: 60, maxW: w - 30 });
-    caption(g, 'TURN THE HANDLE\nONLY ONCE', W / 2, y + h - 150, { size: 64, maxW: w - 30 });
-    frameRect(g, x, y, w, h);
+  // "one does not simply" with Grandpa in his garage
+  simply: {
+    photos: ['garage'],
+    draw(g) {
+      const bh = 26, ih = PH - M * 2 - bh * 2;
+      photoBg(g, 'garage', M, M + bh, W - M * 2, ih, { fx: 0.5, fy: 0.45, zoom: 1.1, tint: ['#ff9a40', 0.35], dark: 0.3, levels: 4 });
+      const gp = person('grandpa', 4, { gesture: 'shrug', expr: 'sad', yaw: 0.2, t: 1.4, noBag: true, lookAt: [0.7, 1.55, 3] });
+      put(g, shot([gp.root], { w: W - M * 2, h: ih, ...orbit([-0.04, 1.22, 0], 0.18, 0.04, 1.85), fov: 34, key: [-1.4, 2.2, 1.8], keyCol: 0xffe0b8, rimCol: 0xffb070, rimI: 2 }), M, M + bh);
+      gp.dispose();
+      px(g, 'ONE DOES NOT SIMPLY', W / 2, M + 10, { align: 'center' });
+      px(g, 'TURN THE HANDLE ONCE', W / 2, PH - M - 17, { align: 'center' });
+    },
   },
 
-  // "nobody: / me at 3am:" with the chicken-hat kid hugging a capsule
-  nobody(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2, th = 196;
-    panel(g, x, y, w, th, '#fffdf6');
-    const lines = ['Nobody:', 'Absolutely nobody:', 'Me at 3am:'];
-    lines.forEach((l, i) => text(g, l, x + 24, y + 22 + i * 56, { font: '700 36px "GG Bold", Grandstander, sans-serif', fill: INK }));
-    const iy = y + th;
-    panel(g, x, iy, w, h - th, (k) => { const gr = k.createLinearGradient(0, iy, 0, iy + h - th); gr.addColorStop(0, '#16224a'); gr.addColorStop(1, '#3a2a5a'); k.fillStyle = gr; k.fillRect(x, iy, w, h - th); });
-    const r = rng(5);
-    for (let k = 0; k < 70; k++) { g.fillStyle = `rgba(255,255,230,${0.3 + r() * 0.7})`; const s = r() < 0.15 ? 3 : 2; g.fillRect(x + r() * w, iy + r() * (h - th) * 0.6, s, s); }
-    g.save(); g.fillStyle = '#fff4c8'; g.shadowColor = '#fff4c8'; g.shadowBlur = 30; g.beginPath(); g.arc(x + w - 90, iy + 80, 38, 0, Math.PI * 2); g.fill();
-    g.shadowBlur = 0; g.fillStyle = '#16224a'; g.beginPath(); g.arc(x + w - 74, iy + 70, 34, 0, Math.PI * 2); g.fill(); g.restore();
-    // the street lamp's cone of light
-    g.save(); const cg = g.createLinearGradient(0, iy, 0, iy + h - th); cg.addColorStop(0, 'rgba(255,220,150,0.45)'); cg.addColorStop(1, 'rgba(255,220,150,0.05)'); g.fillStyle = cg;
-    g.beginPath(); g.moveTo(x + w * 0.42, iy); g.lineTo(x + w * 0.58, iy); g.lineTo(x + w * 0.9, iy + h - th); g.lineTo(x + w * 0.1, iy + h - th); g.closePath(); g.fill(); g.restore();
-    const kid = person('kid', 2, { look: { hat: 'chicken' }, gesture: 'hug', expr: 'happy', yaw: 0.25, t: 1.4, noHat: true, noBag: true, lookAt: [0.4, 0.9, 2] });
-    // a giant capsule in their arms
-    const P = kid.P, cap = capsule('mochi', 0xff6f91, 0.19);
-    cap.traverse((o) => { if (o.isMesh && o.material?.transparent) { o.material = new THREE.MeshStandardMaterial({ color: 0xfff6f0, roughness: 0.25 }); o.renderOrder = 0; } });
-    kid.b.chest.updateWorldMatrix(true, false);
-    const at = new THREE.Vector3(0, 0.03 * P.H, 0.32 * P.H / 1.72 + 0.04).applyMatrix4(kid.b.chest.matrixWorld);
-    cap.position.copy(at); cap.rotation.set(-0.35, 0.6, 0.2);
-    const img = shot([kid.root, cap], { w, h: h - th, ...orbit([0.02, 0.86, 0], 0.32, 0.12, 1.85), fov: 32, key: [-0.6, 2.4, 1.6] });
-    kid.dispose();
-    shadowBlob(g, x + w / 2, iy + (h - th) * 0.94, 150, 18, 0.45);
-    g.drawImage(img, x, iy);
-    g.save(); g.strokeStyle = INK; g.lineWidth = 4; g.beginPath(); g.moveTo(x, iy); g.lineTo(x + w, iy); g.stroke(); g.restore();
-    frameRect(g, x, y, w, h);
+  // "nobody: / me at 3am:" with the chicken-hat kid hugging a capsule in the rainy lane
+  nobody: {
+    photos: ['rainy_lane'],
+    draw(g) {
+      const th = 46, iy = M + th, ih = PH - M - iy;
+      px(g, 'NOBODY:\nABSOLUTELY NOBODY:\nME AT 3AM:', M + 4, M + 6, {});
+      photoBg(g, 'rainy_lane', M, iy, W - M * 2, ih, { fx: 0.38, fy: 0.45, tint: ['#3050c0', 0.35], dark: 0.3, levels: 4 });
+      const kid = person('kid', 2, { look: { hat: 'chicken' }, gesture: 'hug', expr: 'happy', yaw: 0.25, t: 1.4, noHat: true, noBag: true, lookAt: [0.4, 0.9, 2] });
+      // a giant capsule in their arms
+      const P = kid.P, cp = capsule('mochi', 0xff6f91, 0.19);
+      cp.traverse((o) => { if (o.isMesh && o.material?.transparent) { o.material = new THREE.MeshStandardMaterial({ color: 0xfff6f0, roughness: 0.25 }); o.renderOrder = 0; } });
+      kid.b.chest.updateWorldMatrix(true, false);
+      cp.position.copy(new THREE.Vector3(0, 0.03 * P.H, 0.32 * P.H / 1.72 + 0.04).applyMatrix4(kid.b.chest.matrixWorld)); cp.rotation.set(-0.35, 0.6, 0.2);
+      const img = shot([kid.root, cp], { w: W - M * 2, h: ih, ...orbit([0.02, 0.86, 0], 0.32, 0.12, 1.85), fov: 32, key: [-0.6, 2.4, 1.6], keyCol: 0xffe6b8, rimCol: 0x7090ff, rimI: 2.2 });
+      kid.dispose();
+      contact(g, img, M, iy, 0, 0, 0.3);
+      put(g, img, M, iy);
+    },
   },
 
-  // expectation (the secret gold one) vs reality (the 6th duplicate)
-  expect(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2, hw = w / 2, hh = 64;
-    for (const [i, lbl] of [[0, 'EXPECTATION'], [1, 'REALITY']]) {
-      panel(g, x + i * hw, y, hw, hh, '#fffdf6');
-      caption(g, lbl, x + i * hw + hw / 2, y + 10, { size: 44, fill: INK, stroke: false, maxW: hw - 20 });
-    }
-    const iy = y + hh, ih = h - hh;
-    clip(g, x, iy, hw, ih, () => { radial(g, x, iy, hw, ih, '#fff8d0', '#d89a20', 0.5, 0.5); rays(g, x + hw / 2, iy + ih * 0.52, 24, 520, 'rgba(255,255,255,0.3)'); });
-    panel(g, x + hw, iy, hw, ih, (k) => { k.fillStyle = '#b8b4ac'; k.fillRect(x + hw, iy, hw, ih); });
-    const gold = makeItemMesh('mochi/shiba', 'gold');
-    const imgA = shot([gold], fit([gold], { w: hw, h: ih * 0.8, yaw: 0.2, pitch: 0.15, margin: 1.0 }));
-    sticker(g, imgA, x, iy + ih * 0.06, { border: 0, ink: 2 });
-    for (const [sx, sy, s] of [[60, 120, 18], [220, 170, 14], [80, 430, 12], [210, 470, 20], [140, 90, 10]]) sparkle(g, x + sx, iy + sy, s);
-    caption(g, 'SECRET!', x + hw / 2, iy + ih - 92, { size: 44, fill: '#ffd23f', maxW: hw - 30, rot: -0.06 });
-    const dups = [];
-    for (let i = 0; i < 6; i++) { const m = makeItemMesh('mochi/hamu'); const row = i < 3 ? 0 : 1; m.position.set((i % 3 - 1) * 0.05 + row * 0.022, row * 0.024, row * -0.04 + (i % 2) * 0.01); m.rotation.y = (i * 1.7) % 1 - 0.5; dups.push(m); }
-    const imgB = shot(dups, fit(dups, { w: hw, h: ih * 0.7, yaw: 0.3, pitch: 0.35, margin: 0.85 }));
-    g.drawImage(imgB, x + hw, iy + ih * 0.17);
-    // "x6" in a red marker circle
-    g.save(); g.strokeStyle = '#d42a2a'; g.lineWidth = 5; g.beginPath(); g.ellipse(x + hw + hw * 0.76, iy + 120, 52, 40, -0.2, 0, Math.PI * 2); g.stroke();
-    g.font = '900 46px "GG Display", Grandstander, sans-serif'; g.fillStyle = '#d42a2a'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('x6', x + hw + hw * 0.76, iy + 122); g.restore();
-    text(g, 'the same hamster.', x + hw + hw / 2, iy + ih - 84, { font: '600 22px Grandstander, sans-serif', fill: '#3a3236', align: 'center' });
-    text(g, 'again.', x + hw + hw / 2, iy + ih - 54, { font: '600 22px Grandstander, sans-serif', fill: '#3a3236', align: 'center' });
-    g.save(); g.strokeStyle = INK; g.lineWidth = 4; g.beginPath(); g.moveTo(x + hw, y); g.lineTo(x + hw, y + h); g.moveTo(x, iy); g.lineTo(x + w, iy); g.stroke(); g.restore();
-    frameRect(g, x, y, w, h);
+  // expectation (the secret gold one, fireworks) vs reality (the 6th duplicate, rain)
+  expect: {
+    photos: ['fireworks', 'rain_window'],
+    draw(g) {
+      const hw = Math.floor((W - M * 2) / 2), iy = M + 16, ih = PH - M - iy;
+      px(g, 'EXPECT', M + hw / 2, M + 5, { align: 'center' });
+      px(g, 'REALITY', M + hw + hw / 2, M + 5, { align: 'center' });
+      photoBg(g, 'fireworks', M, iy, hw, ih, { fx: 0.5, fy: 0.4, tint: ['#ffc040', 0.25], levels: 4 });
+      photoBg(g, 'rain_window', M + hw, iy, hw, ih, { fx: 0.5, sat: 0.2, levels: 4 });
+      put(g, figure('mochi/shiba', 'gold', { w: hw, h: 90, yaw: 0.2, pitch: 0.15, margin: 1.0, env: 0.9, keyI: 2.4, keyCol: 0xfff0d8, rimCol: 0xffd090, rimI: 2.6, hemi: 0.35, grade: goldGrade }), M, iy + 30);
+      const dups = [];
+      for (let i = 0; i < 6; i++) { const m = makeItemMesh('mochi/hamu'); const row = i < 3 ? 0 : 1; m.position.set((i % 3 - 1) * 0.05 + row * 0.022, row * 0.024, row * -0.04 + (i % 2) * 0.01); m.rotation.y = (i * 1.7) % 1 - 0.5; dups.push(m); }
+      put(g, shot(dups, fit(dups, { w: hw, h: 80, yaw: 0.3, pitch: 0.35, margin: 0.85, keyCol: 0xdde4f0, keyI: 1.8, rimCol: 0xa0b0c8 })), M + hw, iy + 40);
+      px(g, '×6', M + hw * 2 - 4, iy + 6, { s: 2, col: C.red, align: 'right' });
+      tag(g, 'SECRET!', M + hw / 2, PH - M - 16, C.yellow, C.ink);
+      tag(g, 'AGAIN.', M + hw + hw / 2, PH - M - 16, C.white, C.ink);
+      rect(g, M + hw, M, 1, PH - M * 2, C.ink); rect(g, M, iy - 1, W - M * 2, 1, C.ink);
+    },
   },
 
-  // Mikan, the new manager, on top of a machine
-  manager(g) {
-    const x = M, y = M, w = W - M * 2, h = H - STRIP - M * 2;
-    panel(g, x, y, w, h, (k) => radial(k, x, y, w, h, '#bfe4ff', '#4a8fd8', 0.5, 0.42));
-    rays(g, W / 2, y + h * 0.42, 20, 700, 'rgba(255,255,255,0.18)', 0.2);
-    const m = machine('retro', 'mochi');
-    m.rotation.y = 0.32;
-    const b = bbox(m);
-    const c = cat({ at: [0, b.max.y - 0.005, -0.02], yaw: 0.3, lookAt: [0.6, b.max.y + 0.3, 2.4], mood: 'happy' });
-    fillMachine(m);
-    const box = bbox(c.root).union(new THREE.Box3(new THREE.Vector3(b.min.x * 0.7, b.max.y - 0.22, b.min.z * 0.7), new THREE.Vector3(b.max.x * 0.7, b.max.y, b.max.z * 0.7)));
-    const ih = h - 236;
-    const img = shot([m, c.root], fit([], { box, w, h: ih, yaw: 0.3, pitch: 0.16, margin: 1.0, fov: 32 }));
-    c.root.removeFromParent();
-    g.drawImage(img, x, y + 150);
-    caption(g, 'WE HAVE A NEW\nMANAGER', W / 2, y + 16, { size: 62, maxW: w - 30 });
-    caption(g, 'SHE IS PAID IN SNACKS', W / 2, y + h - 84, { size: 56, maxW: w - 30 });
-    frameRect(g, x, y, w, h);
+  // Mikan, the new manager, on top of a machine under a big summer sky
+  manager: {
+    photos: ['cumulus'],
+    draw(g) {
+      const bh = 26, ih = PH - M * 2 - bh * 2;
+      photoBg(g, 'cumulus', M, M + bh, W - M * 2, ih, { fx: 0.55, fy: 0.4, zoom: 1.05, tint: ['#5aa0ff', 0.15], levels: 4 });
+      const m = machine('standard', 'mochi');
+      m.rotation.y = 0.32;
+      const b = bbox(m);
+      const c = cat({ at: [0, b.max.y - 0.005, -0.02], yaw: 0.3, lookAt: [0.6, b.max.y + 0.3, 2.4], mood: 'happy' });
+      fillMachine(m);
+      const box = bbox(c.root).union(new THREE.Box3(new THREE.Vector3(b.min.x * 0.7, b.max.y - 0.45, b.min.z * 0.7), new THREE.Vector3(b.max.x * 0.7, b.max.y, b.max.z * 0.7)));
+      put(g, shot([m, c.root], fit([], { box, w: W - M * 2, h: ih, yaw: 0.3, pitch: 0.16, margin: 0.95, fov: 32 })), M, M + bh + 4);
+      c.root.removeFromParent();
+      rect(g, M, PH - M - bh, W - M * 2, bh, C.paper);
+      px(g, 'NEW MANAGER', W / 2, M + 10, { align: 'center' });
+      px(g, 'PAID IN SNACKS', W / 2, PH - M - 17, { align: 'center' });
+    },
   },
 };

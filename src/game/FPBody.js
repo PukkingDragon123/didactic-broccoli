@@ -8,6 +8,7 @@
 //    taps on switches. Empty hands rest low in the corners and swing with your stride. Every change of what a hand
 //    does is cross-faded; after cutscenes / the PC the hands rise back into view.
 import * as THREE from 'three';
+import { flyerTexture } from '../gfx/flyers.js';
 import { Game } from './Game.js';
 import { BONES, BONE_INDEX } from '../people/body.js';
 import { ATLAS } from '../people/mesh.js';
@@ -309,7 +310,9 @@ export class FPBody {
     grip.position.z = -0.005;
     wrench.add(shaft, jaw, grip);
     wrench.visible = false;
-    const flyer = new THREE.Mesh(new THREE.BoxGeometry(0.0015, 0.1, 0.072), new THREE.MeshStandardMaterial({ color: 0xfff4dc, roughness: 0.8 }));
+    // the sheet in your hand as you give it away: the design on both faces, plain paper edges
+    const paper = new THREE.MeshStandardMaterial({ color: 0xfff4dc, roughness: 0.8 }), art = new THREE.MeshStandardMaterial({ roughness: 0.8 });
+    const flyer = new THREE.Mesh(new THREE.BoxGeometry(0.0015, 0.1, 0.0707), [art, art, paper, paper, paper, paper]);
     flyer.rotation.set(0, 0, 0.5);
     flyer.visible = false;
     return { wrench, flyer };
@@ -351,6 +354,8 @@ export class FPBody {
   }
 
   give(hitWorld) {
+    const id = this.game.pedestrians?.lastFlyer, art = this.props.flyer.material[0];
+    if (id && art.userData.flyer !== id) { art.map = flyerTexture(id); art.userData.flyer = id; art.needsUpdate = true; }
     let at = finite(hitWorld) ? this.toAnchor(hitWorld, V()) : null;
     if (!at || at.z > -0.25) at = V().set(0.05, -0.05, -0.8); // someone beside / behind you: just hold it out
     at.y = Math.max(at.y, -0.18);

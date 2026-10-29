@@ -9,6 +9,7 @@ import { tagCard } from './labels.js';
 import { OPENERS } from './economy.js';
 import { TOOLS } from '../data/tools.js';
 import { propMesh } from '../world/props.js';
+import { FLYERS, flyerTexture } from '../gfx/flyers.js';
 
 export const SLOTS = 5;
 const _q = new THREE.Quaternion(), _ax = new THREE.Vector3(), _p = new THREE.Vector3();
@@ -49,6 +50,15 @@ export function makeToolMesh(id) {
   m.position.sub(c);
   holder.add(m);
   const sz = box.getSize(new THREE.Vector3());
+  if (id === 'flyers') {
+    // the top sheet shows the design you'll hand out next (Pedestrians keeps it current)
+    const top = new THREE.Mesh(new THREE.PlaneGeometry(sz.x * 0.97, sz.z * 0.97), new THREE.MeshStandardMaterial({ map: flyerTexture(FLYERS[0].id), roughness: 0.85 }));
+    top.rotation.x = -Math.PI / 2;
+    top.position.y = sz.y / 2 + 0.0005;
+    top.userData.flyer = FLYERS[0].id;
+    holder.add(top);
+    holder.userData.flyerTop = top;
+  }
   holder.userData.tool = id;
   holder.userData.handScale = (T.hand || 0.13) / Math.max(sz.x, sz.y, sz.z, 0.01);
   return holder;

@@ -1,6 +1,6 @@
 # Credits
 
-Gacha Garage uses recorded music and sound effects by the people below. Thank you! Every file shipped in `public/audio/` is listed with its source and licence.
+Gacha Garage uses recorded music, sound effects and photos by the people below. Thank you! Every file shipped in `public/audio/` and `public/img/` is listed with its source and licence.
 Files were edited for the game: trimmed, cut into segments, mixed to mono (sound effects, radio), loudness-normalised, given fades or crossfaded into seamless loops, and re-encoded as MP3. Some sounds are still synthesised in code (`src/core/audio.js`).
 
 ## Music (CC BY 4.0, attribution required)
@@ -326,8 +326,167 @@ Background music, menu, intro and party themes by Kevin MacLeod.
 - Licence: Public domain
 - Shipped as: `audio/sfx/ratchet.mp3` (from winding_a_music_box.mp3 [0.22-0.72 s, 1.2-1.72 s, 2.2-2.72 s, 3.22-3.95 s])
 
+## Photos (CC BY 2.0, attribution required)
+
+The pixel-art shop flyers and promo posters (`src/gfx/flyers.js`) are made from real stock photos from Google's Open Images
+dataset (https://storage.googleapis.com/openimages/web/index.html), which collects Flickr photos shared under Creative
+Commons licences. The photos were resized and re-encoded as JPEG; in the game they are cropped, shrunk to pixel-art
+size, colour-graded, posterized and ordered-dithered, and composited with renders of the game's 3D models and text.
+
+### Wall of Gachapon
+
+- Author: Steve Nagata
+- Source: https://www.flickr.com/photos/stevenagata/3922520498 (Open Images ID 91e4c8b4e33b7aad)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Wall of Gachapon" by Steve Nagata, licensed under CC BY 2.0
+- Shipped as: `img/photos/gacha_wall.jpg` (background of the flyer "Such Capsule")
+
+### Gashapon
+
+- Author: Dick Thomas Johnson
+- Source: https://www.flickr.com/photos/31029865@N06/16523289053 (Open Images ID 6c5e4bf79fbdf80c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Gashapon" by Dick Thomas Johnson, licensed under CC BY 2.0
+- Shipped as: `img/photos/gacha_rows.jpg` (background of the flyer "Nope / Yep")
+
+### Gachapon Kaikan @ Akihabara
+
+- Author: Guilhem Vellut
+- Source: https://www.flickr.com/photos/o_0/14179880703 (Open Images ID f3f4202bd43491a7)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Gachapon Kaikan @ Akihabara" by Guilhem Vellut, licensed under CC BY 2.0
+- Shipped as: `img/photos/gacha_kaikan.jpg` (background of the flyer "Galaxy Collector")
+
+### Parcels
+
+- Author: Nigel Lamb
+- Source: https://www.flickr.com/photos/xposurecreative/15951161816 (Open Images ID ce67ede4b1304909)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Parcels" by Nigel Lamb, licensed under CC BY 2.0
+- Shipped as: `img/photos/parcels.jpg` (background of the flyer "Nope / Yep")
+
+### Tokyo street green light
+
+- Author: Raphael Desrosiers
+- Source: https://www.flickr.com/photos/120167116@N06/13104875775 (Open Images ID 50d546d006457f9a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tokyo street green light" by Raphael Desrosiers, licensed under CC BY 2.0
+- Shipped as: `img/photos/back_street.jpg` (background of the flyer "Distracted Customer")
+
+### Tidy garage
+
+- Author: Bryn Pinzgauer
+- Source: https://www.flickr.com/photos/12394349@N06/4492572621 (Open Images ID 81d10e044f10492b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tidy garage" by Bryn Pinzgauer, licensed under CC BY 2.0
+- Shipped as: `img/photos/garage.jpg` (background of the flyer "One Does Not Simply")
+
+### Japan - Tokyo (Yanaka)
+
+- Author: Maya-Anaïs Yataghène
+- Source: https://www.flickr.com/photos/mayanais/9982510625 (Open Images ID 118f88ec4c94b2e0)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Japan - Tokyo (Yanaka)" by Maya-Anaïs Yataghène, licensed under CC BY 2.0
+- Shipped as: `img/photos/rainy_lane.jpg` (background of the flyer "Me at 3am")
+
+### Sumida River Fireworks Festival 2008
+
+- Author: kokorowashinjin
+- Source: https://www.flickr.com/photos/kokorowa/2704849865 (Open Images ID a46b7ab1f119beb7)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Sumida River Fireworks Festival 2008" by kokorowashinjin, licensed under CC BY 2.0
+- Shipped as: `img/photos/fireworks.jpg` (background of the flyer "Expectation / Reality")
+
+### rainy window in london
+
+- Author: trshdevil buffy
+- Source: https://www.flickr.com/photos/38783093@N02/4063757886 (Open Images ID bd8b05f928281d1b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "rainy window in london" by trshdevil buffy, licensed under CC BY 2.0
+- Shipped as: `img/photos/rain_window.jpg` (background of the flyer "Expectation / Reality")
+
+### A Large Cumulus Cloud
+
+- Author: oatsy40
+- Source: https://www.flickr.com/photos/oatsy40/7094086679 (Open Images ID caabe4a766133e6a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "A Large Cumulus Cloud" by oatsy40, licensed under CC BY 2.0
+- Shipped as: `img/photos/cumulus.jpg` (background of the flyer "New Manager")
+
+### M101 - Largest ever Hubble galaxy portrait
+
+- Author: Davide De Martin
+- Source: https://www.flickr.com/photos/ddemartin/13176755913 (Open Images ID aa3c4db34c3083b8)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "M101 - Largest ever Hubble galaxy portrait" by Davide De Martin, licensed under CC BY 2.0
+- Shipped as: `img/photos/galaxy.jpg` (background of the flyer "Galaxy Collector")
+
+### Toy Shop
+
+- Author: Garry Knight
+- Source: https://www.flickr.com/photos/garryknight/4853679621 (Open Images ID a95b5c28fd29fda6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Toy Shop" by Garry Knight, licensed under CC BY 2.0
+- Shipped as: `img/photos/toy_shop.jpg` (background of the flyer "Galaxy Collector")
+
+### Rusted Shutters
+
+- Author: alisdair
+- Source: https://www.flickr.com/photos/alisdair/3865157 (Open Images ID ec26d4c08dd8a179)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Rusted Shutters" by alisdair, licensed under CC BY 2.0
+- Shipped as: `img/photos/shutters.jpg` (background of the flyer "Galaxy Collector")
+
+### Beautiful Tokyo at Night
+
+- Author: tenaciousme
+- Source: https://www.flickr.com/photos/tenaciousme/2858959809 (Open Images ID c024eda1a1b5e669)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Beautiful Tokyo at Night" by tenaciousme, licensed under CC BY 2.0
+- Shipped as: `img/photos/skyline.jpg` (background of the poster "Kaiju Snack Time")
+
+### Tokyo at night
+
+- Author: luckygun
+- Source: https://www.flickr.com/photos/7642967@N04/444927026 (Open Images ID dfadf346e067eee5)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tokyo at night" by luckygun, licensed under CC BY 2.0
+- Shipped as: `img/photos/neon_night.jpg` (background of the poster "Open Till Late")
+
+### akihabara lights
+
+- Author: Jon Rawlinson
+- Source: https://www.flickr.com/photos/london/354784734/ (Open Images ID 41aaeec96d8411f5)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "akihabara lights" by Jon Rawlinson, licensed under CC BY 2.0
+- Shipped as: `img/photos/akiba_dusk.jpg` (background of the poster "Grand Reopening")
+
+### Sakura - A cherry blossom @Tokyo
+
+- Author: Yoshikazu TAKADA
+- Source: https://www.flickr.com/photos/yoshikazut/3378260849 (Open Images ID 61701280466d60ad)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Sakura - A cherry blossom @Tokyo" by Yoshikazu TAKADA, licensed under CC BY 2.0
+- Shipped as: `img/photos/sakura.jpg` (background of the poster "Nikoniko Wagashi")
+
+### The Milky Way
+
+- Author: Anish Kharkar
+- Source: https://www.flickr.com/photos/anishkharkar/7436159198/ (Open Images ID 4caa152e3113502d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "The Milky Way" by Anish Kharkar, licensed under CC BY 2.0
+- Shipped as: `img/photos/milky_way.jpg` (background of the poster "Uchu Neko Station")
+
+### cherry blossoms by streetlight
+
+- Author: schvin
+- Source: https://www.flickr.com/photos/schvin/7004538679 (Open Images ID 8cc8cf12781ede24)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "cherry blossoms by streetlight" by schvin, licensed under CC BY 2.0
+- Shipped as: `img/photos/blossom_lamp.jpg` (background of the poster "Secret Gold")
 ## Licences
 
 - CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/ (no attribution required; credited anyway)
 - CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+- CC BY 2.0: https://creativecommons.org/licenses/by/2.0/
 - Public domain: pdsounds.org recordings were released into the public domain by their recordists (see http://pdsounds.tuxfamily.org/license.txt).

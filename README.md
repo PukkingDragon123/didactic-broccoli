@@ -5,8 +5,9 @@ Grandpa has left you his old garage: a key, a notebook and a lot of dust. Clean 
 feed the stray cat, roll the shutter up again and run the happiest gacha corner in the neighbourhood.
 Crank the handle, twist the capsule open, put the tiny figures on display, and build a museum.
 
-Everything (models, textures, people, sounds and music) is generated in code at runtime. There are no
-external asset files.
+Models, textures and people are generated in code at runtime. Music and sound effects are recorded files
+(`public/audio`), and the shop's flyers and posters use real stock photos (`public/img/photos`); every one is
+credited in [CREDITS.md](CREDITS.md).
 
 ## Play
 
@@ -60,6 +61,18 @@ and gestures. They chat in pixel speech bubbles. Only a few walk the lane at fir
 promote the shop and more come by, walk in and play your machines. Museum visitors are drawn from the same
 cast.
 
+**Flyers and posters.** Fourteen pixel-art sheets (150 x 212 px) made from real stock photos (Google Open
+Images, CC BY 2.0), dithered down to a few colours, with the game's own 3D models rendered on top as
+outlined sprites and a hand-made 5 x 7 bitmap font:
+- eight meme flyers (Such Capsule, Nope / Yep, Distracted Customer, Galaxy Collector, One Does Not Simply,
+  Me at 3am, Expectation / Reality, New Manager), all original parodies starring the game's cast;
+- six promo posters (Grand Reopening, Kaiju Snack Time, Uchu Neko Station, Spring Sweets, Super Secret,
+  Glow in the Dark), with the odds and prices taken from the game data.
+
+The top sheet of the stack in your hands shows the design you hand out next. People stop, read the actual
+sheet, laugh and say something about that design. The promo posters are taped up on the garage piers (once
+the shop is open), the block wall across the lane, Mikawa-ya's window and the garage wall.
+
 **The loop.** Coin on a rope, crank, capsule, reveal. Display the figures or sell the duplicates. Refill
 sold-out machines from the PC, upgrade them, and buy new machines, tools and lucky charms. Any pull can
 roll a special finish (Clear, Metallic, Glow-in-the-dark, Gold, Aurora, Diamond).
@@ -102,7 +115,8 @@ and railway underpass tunnels at both ends where trains rumble across.
   - `viewer.html?series=mochi` (models);
   - `viewer.html?props=quest` (props);
   - `people.html?show=all` (people);
-  - `icons.html` (pixel icons).
+  - `icons.html` (pixel icons);
+  - `flyers.html?w=450` (flyers and posters; `node tools/export-flyers.mjs <dir> 4` saves them as PNGs).
 
 ```
 src/core      renderer, input, touch, physics, audio, music (radio), bgm

@@ -1,5 +1,5 @@
-// People of the lane: a few neighbours stroll from tunnel to tunnel. Promote the shop (hand out flyers)
-// and more of them come by; once GACHA GARAGE is open some turn in, play a machine (you earn the coins),
+// People of the lane: a few neighbours stroll from tunnel to tunnel. Promote the shop (hand out flyers: they stop,
+// read the actual sheet you gave them and react to it) and more of them come by; once GACHA GARAGE is open some turn in, play a machine (you earn the coins),
 // chat in speech bubbles and wander off again. Also the shopkeeper behind Mikawa-ya's counter.
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
@@ -7,6 +7,7 @@ import { GARAGE, MACHINE_SLOTS } from './Garage.js';
 import { createHuman, Bubbles, HUMAN_PRESETS } from '../people/index.js';
 import { capsuleCost } from '../game/economy.js';
 import { formatYen } from '../core/util.js';
+import { FLYERS, FLYER_BY_ID, FLYER_W, FLYER_H, flyerTexture } from '../gfx/flyers.js';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
@@ -15,7 +16,8 @@ const LINES = {
   closed: ['That old garage has been shut for years...', 'I used to buy capsule toys here as a kid.', 'Is someone cleaning the old gacha place?', 'Hm? Light in the garage?'],
   open: ['Oh! The gacha garage is open again!', 'Capsule toys? Just one go...', 'I remember this place!', 'Ooh, what series do they have?'],
   stroll: ['Getting chilly in the evenings.', 'The 6:40 train is late again.', 'Did I leave the rice cooker on?', 'Nice sunset today.', 'I should call my mother.'],
-  flyer: ['A flyer? Oh, a gacha shop! I will take a look.', 'Thank you! Capsule toys, how nostalgic.', 'Hm, maybe later. Thanks!', 'Ooh, cute. My kid will love this.'],
+  flyer: ['A flyer? Oh, a gacha shop! I will take a look.', 'Thank you! Capsule toys, how nostalgic.', 'Ooh, cute. My kid will love this.'],
+  afterFlyer: ['I will take a look later!', 'Thanks! I will keep this one.', 'I will tell my friends.', 'Okay, okay, I am curious now.'],
   play: ['Here goes...', 'Come on, the rare one...', 'One more turn, just one!', 'Please be the cat one...'],
   win: ['Yes! The one I wanted!', 'No way, a rare!', 'Look how tiny and detailed!', 'So cute!'],
   meh: ['Aww, I already have this one.', 'Next time...', 'Hm, not bad.', 'A double. Typical.'],
@@ -54,6 +56,8 @@ export class Pedestrians {
   }
 
   get promo() { return this.game.state.promo || (this.game.state.promo = { flyers: 0, level: 0 }); }
+  /** The design on top of your stack: the stack cycles through every flyer as you hand them out. */
+  nextFlyer() { return FLYERS[(this.promo.flyers || 0) % FLYERS.length].id; }
   setOpen(v) { this.open = v; this.spawnT = Math.min(this.spawnT, 4); }
 
   /** Promotion level 0..5 from flyers handed out (+1 each 8 flyers) and shop goods. */
@@ -114,6 +118,7 @@ export class Pedestrians {
   }
 
   remove(p) {
+    this.hideSheet(p);
     this.game.interaction.remove(p.h.root);
     this.bubbles.clear?.(p.h);
     p.h.root.parent?.remove(p.h.root);
@@ -129,16 +134,60 @@ export class Pedestrians {
     const g = this.game, it = g.held.item;
     if (!it || p.flyer) return;
     p.flyer = true;
+    const id = this.lastFlyer = this.nextFlyer();
     it.data.uses = (it.data.uses || 1) - 1;
     if (it.data.uses <= 0) g.held.consume(); else g.events.emit('slot', g.held.sel);
     this.promo.flyers++;
     audio.play('paper', { vol: 0.8 });
-    p.h.gesture('bow');
-    this.say(p.h, pick(LINES.flyer));
-    p.wait = 1.8;
+    // they stop, read it (the real sheet, in their hands) and react to that design
+    this.showSheet(p, id);
+    p.h.gesture('read_flyer');
+    p.read = { id, t: 0, said: false };
+    p.wait = 4.6;
     if (Math.random() < 0.65) p.wantsIn = true;
     const lv = this.level();
     if (lv > (this.promo.level || 0)) { this.promo.level = lv; g.news('Word is getting around!', `More people will visit (promotion level ${lv})`); audio.play('task', { vol: 0.6 }); }
+  }
+
+  /** The flyer in their hands while they read it (printed side up toward their face, the back shows the art too). */
+  showSheet(p, id) {
+    const h = p.h, k = h.P.H / 1.72;
+    h.flyerAt = [0, 0.12 * k, 0.3 * k];
+    const w = 0.24 * k, ht = w * FLYER_H / FLYER_W;
+    const g = new THREE.Group(), geo = new THREE.PlaneGeometry(w, ht);
+    // (a little self-light so the art still reads when the sheet is in their shadow)
+    const mat = (col) => new THREE.MeshStandardMaterial({ map: flyerTexture(id), emissiveMap: flyerTexture(id), emissive: 0x403a34, roughness: 0.85, color: col });
+    const front = new THREE.Mesh(geo, mat(0xffffff));
+    front.rotation.x = -0.4; // top edge away from the reader
+    const back = new THREE.Mesh(geo, mat(0xece4d4));
+    back.rotation.set(0.4, Math.PI, 0);
+    back.position.z = -0.002;
+    g.add(front, back);
+    g.rotation.y = Math.PI; // face the reader
+    g.position.set(...h.flyerAt);
+    h.b.chest.add(g);
+    p.sheet = g;
+  }
+  hideSheet(p) {
+    if (!p.sheet) return;
+    p.sheet.removeFromParent();
+    p.sheet.children[0].geometry.dispose();
+    for (const m of p.sheet.children) m.material.dispose();
+    p.sheet = null;
+  }
+
+  /** Reading a flyer: a beat to take it in, a laugh and a line about that design, then on their way. */
+  updateReading(p, dt) {
+    const r = p.read, h = p.h;
+    r.t += dt;
+    if (!r.said && r.t > 1.3) {
+      r.said = true;
+      h.laughing = true;
+      h.setExpression('happy', 2.6);
+      this.say(h, pick(FLYER_BY_ID[r.id]?.lines || LINES.flyer), 3);
+    }
+    if (r.t > 2.9) h.laughing = false;
+    if (r.t > 4.3) { h.clearGesture(); this.hideSheet(p); p.read = null; if (Math.random() < 0.5) this.say(h, pick(LINES.afterFlyer), 2.4); }
   }
 
   /** Waypoints from the lane into the shop to stand in front of a machine. */
@@ -210,9 +259,13 @@ export class Pedestrians {
       if (this.list.length < this.maxPeople()) this.spawn();
     }
     const pl = g.player.pos;
+    // keep the top sheet of the stack in your hands showing the next design
+    const it = g.held.item, top = it?.kind === 'tool' && it.data.id === 'flyers' ? it.obj.userData.flyerTop : null;
+    if (top && top.userData.flyer !== this.nextFlyer()) { top.userData.flyer = this.nextFlyer(); top.material.map = flyerTexture(top.userData.flyer); top.material.needsUpdate = true; }
     for (const p of [...this.list]) {
       const h = p.h, r = h.root;
       p.t += dt;
+      if (p.read) this.updateReading(p, dt);
       let speed = 0;
       p.wait = Math.max(0, p.wait - dt);
       const tgt = p.path[0];
