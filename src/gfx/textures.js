@@ -1027,7 +1027,7 @@ const TOWN = {
       const rim2 = !rim && (!inside(x - 2, y) || !inside(x + 2, y) || !inside(x, y - 2) || !inside(x, y + 2));
       const t = y / h + (hash2(x, y + 9) - 0.5) * 0.12;
       // dark wet rim (no reflection), then the water itself: near-black with a slight blue cast (the shader adds the sky)
-      let c = rim ? 0x2a2622 : rim2 ? 0x302c28 : t < 0.5 ? 0x1c2028 : 0x181c22;
+      let c = rim ? 0x2a2622 : rim2 ? 0x302c28 : t < 0.5 ? 0x1e1f22 : 0x1a1b1e;
       if (!rim && !rim2 && hash2(x, y + 77) < 0.03) c = 0x2a2622;
       p.px(x, y, c);
     }
@@ -1169,6 +1169,44 @@ const TOWN = {
     p.rect(cx + 1, 23, 3, 6, 0xf4c8a0); p.rect(cx + 3, 28, 5, 2, 0x1a1a1a);
     p.rect(cx - 6, 22, 3, 3, 0xf4c8a0); p.rect(cx - 9, 24, 4, 3, 0xf4c8a0); p.rect(cx - 11, 26, 3, 2, 0x1a1a1a);
     p.text('とびだし注意', cx, h - 11, { size: 8, color: 0xd8282a, align: 'center', outline: 0xfbf8f0 });
+  },
+  /** Hand-painted board on the rental garages: 貸ガレージ, vacancy, phone number. */
+  signGarage: (p) => {
+    const { w, h } = p;
+    p.fill(0xf4f0e2); p.frame(0, 0, w, h, 0x2a4a8a);
+    p.text('貸ガレージ', w / 2, 1, { size: 10, color: 0x2a4a8a, align: 'center' });
+    p.rect(3, 14, w - 6, 1, 0xd8282a);
+    p.text('空きあり', w / 2, 16, { size: 9, color: 0xd8282a, align: 'center' });
+    p.text('TEL 3-1729', w / 2, h - 9, { size: 8, color: 0x1a1a1a, align: 'center', font: FONT_EN });
+    for (let i = 0; i < 6; i++) { const x = Math.floor(hash2(i, 91) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i) < 0.35) p.px(x, y, 0x8a7a5a, 70); }
+  },
+  /** Front of an AC outdoor unit: casing, round fan grille, side fins, badge. */
+  acFront: (p) => {
+    const { w, h } = p;
+    p.fill(0xe8e6dc); p.frame(0, 0, w, h, 0xc8c6bc);
+    const cx = Math.round(w * 0.38), cy = h >> 1, R = Math.min(cx, cy) - 2;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const d = Math.hypot(x - cx, y - cy);
+      if (d > R) continue;
+      const a = Math.atan2(y - cy, x - cx);
+      let c = Math.sin(a * 3 + d * 0.35) > 0.25 ? 0x4a5054 : 0x1a1a1a;
+      if (Math.abs(((d + 1) % 3) - 1.5) < 0.5 || d > R - 1) c = 0x7a7e80;
+      if (d < 2) c = 0xe8e6dc;
+      p.px(x, y, c);
+    }
+    for (let y = 3; y < h - 3; y += 2) p.rect(w - 9, y, 6, 1, 0xb8b6ac);
+    p.rect(w - 9, 2, 6, 1, 0x2f6fd6);
+    p.rect(0, h - 2, w, 2, 0x9a988e);
+  },
+  /** よしず reed screen: vertical reeds tied with dark cords (alpha gaps). */
+  yoshizu: (p) => {
+    const { w, h } = p;
+    for (let x = 0; x < w; x++) {
+      if (x % 3 === 2 && hash2(x, 1) < 0.7) continue;
+      const c = shadeC(0xc4a464, 0.82 + hash2(x, 2) * 0.24);
+      for (let y = 0; y < h; y++) if (!(y > h - 3 && hash2(x, y) < 0.5)) p.px(x, y, hash2(x, y >> 2) < 0.06 ? shadeC(c, 0.75) : c);
+    }
+    for (let y = 4; y < h; y += 11) for (let x = 0; x < w; x++) p.px(x, y, 0x5a4024);
   },
   /** 町内会掲示板: the neighbourhood notice board, pinned with circulars and festival notices. */
   noticeBoard: (p) => {

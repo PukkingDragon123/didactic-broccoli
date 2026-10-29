@@ -1140,7 +1140,7 @@ export class Town {
     for (let j = 0; j < 3; j++) B.box(aw, x1 - x0 - 0.3, 0.07, 0.9 - j * 0.28, cx, 2.3 + j * 0.07, z0 - (0.9 - j * 0.28) / 2, { uv: [0.2, 0] });
     B.box(aw, x1 - x0 - 0.3, 0.22, 0.03, cx, 2.1, z0 - 0.9, { uv: [0.2, 0] });
     this.house({ x: cx, z: z0, w: x1 - x0, d: z1 - z0, side: -1, y0: H1 + 0.22, floors: 1, h1: 2.5, wallA: m.wallCream, roofM: m.roofGrey, antenna: 1.6,
-      win: [[0, -1.4, 1.6, 1.1, 'lit', { tobukuro: -1, sill: 0.8 }], [0, 1.5, 1.4, 1.0, 'lit2', { sill: 0.8 }], [0, 2.5, 1.2, 1.0, 'lit3', { face: 'l', sill: 0.8 }], [0, 2.5, 1.0, 1.0, 'dark', { face: 'r', sill: 0.8 }]] });
+      win: [[0, -1.4, 1.6, 1.1, 'lit', { tobukuro: -1, sill: 0.8 }], [0, 1.5, 1.4, 1.0, 'lit2', { sill: 0.8 }], [0, 2.5, 1.2, 1.0, 'lit3', { face: 'l', sill: 0.8, clean: true }], [0, 2.5, 1.0, 1.0, 'dark', { face: 'r', sill: 0.8 }]] });
     // side (alley) wall details: a frosted window, an AC unit, the back door lamp
     B.box(this.win.frost, 0.8, 0.6, 0.1, x1, 1.6, 18.4, { unit: true, ry: Math.PI / 2 });
     this.prop('propane', x1 + 0.22, 0, 17.4, Math.PI / 2);
@@ -1373,7 +1373,7 @@ export class Town {
       mat.onBeforeCompile = (sh) => {
         sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
           float pFr = pow( 1.0 - clamp( dot( normalize( vViewPosition ), normal ), 0.0, 1.0 ), 5.0 );
-          totalEmissiveRadiance += mix( vec3( 0.004, 0.008, 0.016 ), vec3( 0.085, 0.08, 0.07 ), pFr ) * step( diffuseColor.r, diffuseColor.b );`);
+          totalEmissiveRadiance += mix( vec3( 0.006, 0.007, 0.009 ), vec3( 0.085, 0.08, 0.07 ), pFr ) * step( diffuseColor.r, diffuseColor.b );`);
       };
       mat.customProgramCacheKey = () => 'puddle';
       this._puddleM = mat;
@@ -1508,7 +1508,9 @@ export class Town {
     };
     const atlas = new Pix(W, H, 1);
     atlas.flush();
-    for (const [k, [x, y, w, h]] of Object.entries(layout)) atlas.ctx.drawImage(townPix(k, w, h).flush().canvas, x, y);
+    for (const [k, [x, y, w, h]] of Object.entries(layout)) {
+      try { atlas.ctx.drawImage(townPix(k, w, h).flush().canvas, x, y); } catch (e) { console.warn('town sign atlas: no painter for', k, e); }
+    }
     atlas.pull();
     const mat = new THREE.MeshStandardMaterial({ map: atlas.texture(), vertexColors: true, roughness: 0.55 });
     return (this._signs = { W, H, layout, mat });
@@ -1605,9 +1607,10 @@ export class Town {
     B.quad(boy, 0.5, 0.86, 11.48, 0.02, 5.465, { ry: Math.PI, flipU: true, tint: 0x8a8a88 });
     P.addObstacle(11.3, 11.66, 5.38, 5.56);
     // Shōwa enamel signs on the alley walls and the old tobacco shop, a beware-of-dog sticker on a gate pillar
-    this.sign('enamelSoap', 0.27, 0.72, -7.462, 0.75, 15.95, { ry: -Math.PI / 2 });
-    this.sign('enamelRamune', 0.27, 0.72, -9.392, 0.85, 15.95, { ry: Math.PI / 2 });
-    this.sign('enamelUniform', 0.27, 0.72, -20.3, 0.85, ZB + 0.02, {});
+    // (alley A1 beside Mikawa-ya is reserved for the ghost-alley feature: nothing is added inside it)
+    this.sign('enamelSoap', 0.26, 0.7, -15.3, 0.95, ZF - 0.012, { ry: Math.PI });
+    this.sign('enamelRamune', 0.25, 0.68, -20.43, 0.85, ZB + 0.02, {});
+    this.sign('enamelUniform', 0.25, 0.68, -20.155, 0.85, ZB + 0.02, {});
     this.sign('signDog', 0.2, 0.13, 13.48, 0.95, ZB + 0.082, {});
     // post-mounted mailboxes on a few gate pillars, the rental garages' vacancy board
     for (const [x, z, f, c] of [[14.72, ZB, 1, 0x3a5a8a], [-21.18, ZF + 0.06, -1, 0xc83a2a], [17.42, ZF, -1, 0x4a6a4a], [-22.72, ZB, 1, 0x8a8e92]]) {
