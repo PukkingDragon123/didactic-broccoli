@@ -46,8 +46,12 @@ const flat = (roughness, metalness = 0, extra = {}) => new THREE.MeshStandardMat
 // ------------------------------------------------------------------------------------------------ batcher
 const _c = new THREE.Color();
 /** Static geometry batcher: transformed boxes / quads / tubes with baked vertex colours (tint × AO), merged per material. */
+/** Whether static geometry at (centre) can catch light that casts shadows: the low sun only reaches the front of the
+ *  room below ~2.3 m (through the shutter), the desk spot only the work table. Everything else skips the shadow maps. */
+const castsAt = (c) => c.z > -1.7 && c.y < 2.3;
+
 export class Batch {
-  constructor(shade) { this.lists = new Map(); this.shade = shade; }
+  constructor(shade) { this.lists = new Map(); this.casters = new Map(); this.shade = shade; }
   /** Add a geometry already in world space. o: tint, k (brightness), alpha (needs an RGBA material), ao (false = no AO), src (halo source). */
   geo(mat, g, o = {}) {
     if (!g.attributes.uv) g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
@@ -65,8 +69,11 @@ export class Batch {
     g.setAttribute('color', new THREE.BufferAttribute(col, rgba ? 4 : 3));
     if (mat.userData.halo) g.setAttribute('aSrc', new THREE.BufferAttribute(new Float32Array(n).fill(o.src ?? 2), 1));
     if (g.index) g = g.toNonIndexed();
-    if (!this.lists.has(mat)) this.lists.set(mat, []);
-    this.lists.get(mat).push(g);
+    let cast = o.cast;
+    if (cast === undefined) { g.computeBoundingBox(); cast = castsAt(g.boundingBox.getCenter(new THREE.Vector3())); }
+    const map = cast && !mat.transparent && !mat.userData.noCast && !mat.userData.halo ? this.casters : this.lists;
+    if (!map.has(mat)) map.set(mat, []);
+    map.get(mat).push(g);
     return g;
   }
   /** Box with its bottom at y. o: rx, ry, rz (about the box centre), unit (0..1 UVs), uv offset, plus geo() options. */
@@ -117,13 +124,13 @@ export class Batch {
   }
   build(parent, { cast = false, receive = true, order = 0 } = {}) {
     const out = [];
-    for (const [mat, list] of this.lists) {
+    for (const [castList, lists] of [[false, this.lists], [true, this.casters]]) for (const [mat, list] of lists) {
       const g = mergeGeometries(list, false);
       for (const x of list) x.dispose();
       if (!g) continue;
       g.computeBoundingSphere();
       const m = new THREE.Mesh(g, mat);
-      m.castShadow = cast && !mat.transparent && !mat.userData.noCast;
+      m.castShadow = cast && castList;
       m.receiveShadow = receive && !mat.userData.halo;
       m.matrixAutoUpdate = false;
       if (mat.userData.order) m.renderOrder = mat.userData.order;
@@ -133,17 +140,21 @@ export class Batch {
       parent.add(m);
       out.push(m);
     }
-    this.lists.clear();
+    this.lists.clear(); this.casters.clear();
     return out;
   }
 }
 
 /** Voxel props merged into one mesh per voxel material (static, no per-prop draw calls). */
 export class PropBatch {
-  constructor() { this.lists = [[], [], [], [], []]; }
-  add(id, x, y, z, ry = 0, s = 1) {
+  constructor() { this.sets = new Map(); }
+  add(id, x, y, z, ry = 0, s = 1, cast = undefined) {
     const geo = propGeometry(id);
     if (!geo) return null;
+    if (cast === undefined) cast = castsAt(V3(x, y + geo.userData.size.y * s / 2, z));
+    const key = (cast ? 'c' : 'n') + (z > 0 ? 'f' : 'b');
+    if (!this.sets.has(key)) this.sets.set(key, { cast, lists: [[], [], [], [], []] });
+    const lists = this.sets.get(key).lists;
     const m = new THREE.Matrix4().compose(V3(x, y, z), new THREE.Quaternion().setFromAxisAngle(V3(0, 1, 0), ry), V3(s, s, s));
     for (const gr of geo.groups) {
       // groups are contiguous vertex ranges (the mesher appends quads material by material)
@@ -159,26 +170,26 @@ export class PropBatch {
       for (let i = 0; i < gr.count; i++) ind[i] = idx[gr.start + i] - lo;
       sub.setIndex(new THREE.BufferAttribute(ind, 1));
       sub.applyMatrix4(m);
-      this.lists[gr.materialIndex].push(sub);
+      lists[gr.materialIndex].push(sub);
     }
     return true;
   }
   build(parent, cast = true) {
     const mats = voxelMaterials('normal');
-    this.lists.forEach((list, i) => {
+    for (const [key, set] of this.sets) set.lists.forEach((list, i) => {
       if (!list.length) return;
       const g = mergeGeometries(list, false);
       for (const x of list) x.dispose();
       g.computeBoundingSphere();
       const m = new THREE.Mesh(g, mats[i]);
-      m.castShadow = cast && i !== 4 && i !== 3;
+      m.castShadow = cast && set.cast && i !== 4 && i !== 3;
       m.receiveShadow = true;
       m.matrixAutoUpdate = false;
       m.userData.noRim = true;
-      m.name = 'garageDetail:props' + i;
+      m.name = 'garageDetail:props-' + key + i;
       parent.add(m);
     });
-    this.lists = [[], [], [], [], []];
+    this.sets.clear();
   }
 }
 
@@ -215,9 +226,9 @@ export function bakeInto(B, obj, parentMatrix = null) {
 }
 
 /** Place a voxel prop into a prop batch with optional player obstacle / capsule collider (from its bounds). */
-export function placeProp(game, PB, id, x, y, z, ry = 0, { scale = 1, block = false, phys = false, pad = 0.02, material = 'wood' } = {}) {
+export function placeProp(game, PB, id, x, y, z, ry = 0, { scale = 1, block = false, phys = false, pad = 0.02, material = 'wood', cast = undefined } = {}) {
   if (!hasProp(id)) return null;
-  PB.add(id, x, y, z, ry, scale);
+  PB.add(id, x, y, z, ry, scale, cast);
   const s = propSize(id).multiplyScalar(scale);
   const c = Math.abs(Math.cos(ry)), sn = Math.abs(Math.sin(ry));
   const ex = (s.x * c + s.z * sn) / 2, ez = (s.x * sn + s.z * c) / 2;
@@ -276,7 +287,7 @@ export class GarageDetail {
     card.name = 'cards';
     const glowM = new THREE.MeshBasicMaterial({ vertexColors: true }); glowM.color.setScalar(1.6); glowM.name = 'glow';
     this.m = {
-      decal: decal(0.85), oil: decal(0.28, 0.05, 1), card, ao, halo, glow: glowM,
+      decal: decal(0.85), oil: decal(0.5, 0.02, 1), card, ao, halo, glow: glowM,
       wood: surfMat('woodDark', { ppm: 48, roughness: 0.75, bump: 0.3, vertexColors: true }),
       woodL: surfMat('woodLight', { ppm: 48, roughness: 0.7, bump: 0.3, vertexColors: true }),
       ply: surfMat('plywoodHD', { ppm: 64, roughness: 0.78, bump: 0.25, vertexColors: true }),
@@ -324,24 +335,24 @@ export class GarageDetail {
     const G = this.G, B = this.B, m = this.m;
     const F = (n, x, z, w, h, o = {}) => this.decal(n, '+y', x, 0.0015 + (o.lift || 0), z, w, h, o);
     // where Grandpa's car used to stand: oil, drips and faded tyre tracks running in from the shutter
-    F('oilBig', 0.35, -1.75, 1.6, 1.2, { rot: 0.25, oil: true, tint: 0x8a857c });
-    F('oilSmall', -0.15, 3.05, 0.9, 0.68, { rot: -0.4, oil: true, tint: 0x8e8980 });
-    F('oilDrips', 0.9, -0.95, 0.5, 0.5, { oil: true, tint: 0x8a857c });
-    F('oilDrips', -0.55, 2.35, 0.45, 0.45, { rot: 1.2, oil: true, tint: 0x8a857c });
+    F('oilBig', 0.35, -1.75, 1.6, 1.2, { rot: 0.25, oil: true, tint: 0xb4ada2 });
+    F('oilSmall', -0.15, 3.05, 0.9, 0.68, { rot: -0.4, oil: true, tint: 0xb8b1a6 });
+    F('oilDrips', 0.9, -0.95, 0.5, 0.5, { oil: true, tint: 0xbab4aa });
+    F('oilDrips', -0.55, 2.35, 0.45, 0.45, { rot: 1.2, oil: true, tint: 0xbab4aa });
     for (const x of [-0.78, 0.82]) for (let k = 0; k < 2; k++) F('tyre', x + k * 0.04, 3.3 - k * 1.9, 0.2, 1.9, { rot: 0.02 * (k ? -1 : 1), tint: 0x9a958c, lift: 0.0002 });
     // cracks, a mortar patch, scuffs and spilt paint
-    F('crack', 2.1, 1.85, 1.6, 0.8, { rot: 0.6, tint: 0xa09b92 });
-    F('crack', -1.6, -3.1, 1.4, 0.7, { rot: -0.9, tint: 0xa09b92 });
-    F('crack', 1.9, 3.95, 1.2, 0.6, { rot: 2.2, tint: 0xa09b92 });
+    F('crack', 2.1, 1.85, 1.6, 0.8, { rot: 0.6, tint: 0xd0cac0 });
+    F('crack', -1.6, -3.1, 1.4, 0.7, { rot: -0.9, tint: 0xd0cac0 });
+    F('crack', 1.9, 3.95, 1.2, 0.6, { rot: 2.2, tint: 0xd0cac0 });
     F('patch', -1.15, -0.85, 0.9, 0.6, { rot: 0.3, tint: 0xa8a39a });
     F('paintBlue', 1.45, -0.75, 0.42, 0.42, { rot: 0.4, tint: 0xd0d8e8 });
     F('paintWhite', 2.75, -4.3, 0.5, 0.5, { rot: 1.1, tint: 0xe8e4dc });
     F('rings', 3.05, -4.55, 0.3, 0.3, { tint: 0xc0b8ac });
     F('rings', -2.6, -4.2, 0.28, 0.28, { rot: 1, tint: 0xc0b8ac });
-    for (const sz of [-3.35, -2.3, -1.25, -0.2, 0.85, 1.9]) F('scuffs', -2.7, sz, 0.75, 0.38, { rot: Math.PI / 2 + (hash2(sz * 10, 3) - 0.5) * 0.6, tint: 0xa8a39a, lift: 0.0072 });
-    for (const sz of [-0.55, 1.25, 3.05]) F('scuffs', 3.2, sz, 0.8, 0.4, { rot: Math.PI / 2, tint: 0xa8a39a });
-    F('scuffs', 0.2, 4.2, 1.6, 0.8, { rot: 0.1, tint: 0xa8a39a });
-    F('scuffs', 3.0, -3.0, 0.9, 0.45, { rot: 0.8, tint: 0xa8a39a });
+    for (const sz of [-3.35, -2.3, -1.25, -0.2, 0.85, 1.9]) F('scuffs', -2.75, sz, 0.6, 0.3, { rot: Math.PI / 2 + (hash2(sz * 10, 3) - 0.5) * 0.6, tint: 0xd8d2c8, lift: 0.0072 });
+    for (const sz of [-0.55, 1.25, 3.05]) F('scuffs', 3.3, sz, 0.5, 0.25, { rot: Math.PI / 2, tint: 0xf0eae0 });
+    F('scuffs', 0.2, 4.2, 1.3, 0.65, { rot: 0.1, tint: 0xd8d2c8 });
+    F('scuffs', 3.0, -3.0, 0.7, 0.35, { rot: 0.8, tint: 0xd8d2c8 });
     F('prints', 0.15, -3.6, 0.4, 0.8, { rot: 0.15, tint: 0xb0aa9e });
     F('damp', 2.55, -4.55, 0.9, 0.55, { tint: 0x8e8a82 });
     F('damp', 0.6, 4.45, 1.4, 0.5, { rot: 0.1, tint: 0x8e8a82 });
@@ -555,11 +566,11 @@ export class GarageDetail {
     grime('+z', G.doorHalf + 0.06, G.minZ, 1, 0, 4 - G.doorHalf - 0.06, 0.45, 0x9a968e);
     for (const x0 of [-3.0, 4.0]) grime('-z', x0, G.maxZ, -1, 0, 1.0, 0.4, 0x9a968e);
     // water stains and rust runs
-    this.decal('wallWater', '+x', G.minX + 0.0015, 1.38, 1.25, 0.5, 0.72, { tint: 0x9aa4a8 });
-    this.decal('wallWater', '+x', G.minX + 0.0015, 1.4, 2.55, 0.4, 0.66, { tint: 0x9aa4a8 });
-    this.decal('wallWater', '+z', -3.55, 2.55, G.minZ + 0.0012, 0.8, 1.2, { tint: 0x9a968e });
-    this.decal('wallWater', '-x', G.maxX - 0.0015, 2.75, 3.95, 0.7, 0.9, { tint: 0xa8865a });
-    this.decal('wallWater', '+z', 3.45, 2.6, G.minZ + 0.0012, 0.6, 1.0, { tint: 0x9a968e });
+    this.decal('wallWater', '+x', G.minX + 0.0015, 1.38, 1.25, 0.5, 0.72, { tint: 0xc4ccd0 });
+    this.decal('wallWater', '+x', G.minX + 0.0015, 1.4, 2.55, 0.4, 0.66, { tint: 0xc4ccd0 });
+    this.decal('wallWater', '+z', -3.55, 2.55, G.minZ + 0.0012, 0.8, 1.2, { tint: 0xc8c4bc });
+    this.decal('wallWater', '-x', G.maxX - 0.0015, 2.75, 3.95, 0.7, 0.9, { tint: 0xd0b48c });
+    this.decal('wallWater', '+z', 3.45, 2.6, G.minZ + 0.0012, 0.6, 1.0, { tint: 0xc8c4bc });
     for (const [z, y, h] of [[-4.3, 2.3, 0.6], [-2.85, 2.1, 0.5], [0.45, 2.2, 0.55], [3.9, 2.0, 0.7], [-1.9, 1.7, 0.4]]) this.decal('rust', '+x', G.minX + 0.0014, y, z, 0.05, h, { tint: 0xe0c8b8 });
     // ceiling leak stains between the joists
     for (const [x, z, w, r] of [[-1.5, -4.0, 1.1, 0.3], [2.1, 1.6, 0.9, -0.5], [-0.3, 3.4, 0.8, 1.2], [3.2, -2.6, 0.7, 2.0]]) this.decal(r > 0.5 ? 'ceilStain2' : 'ceilStain', '-y', x, H - 0.0015, z, w, w * 0.75, { rot: r, tint: 0xd0c4b4 });
@@ -645,6 +656,12 @@ export class GarageDetail {
     this.prop('capsule_crate', -3.62, 0.006, 0.33, Math.PI / 2, { block: true, phys: true });
     this.prop('step_stool', -3.5, 0.006, -1.775, Math.PI / 2, { block: true, phys: true });
     if (hasProp('asagao_pot')) this.prop('asagao_pot', -3.6, 0.006, -2.83, Math.PI / 2, { block: true, phys: true, scale: 0.8 });
+    // the pink public phone (ピンク電話) at the end of the machine row, under the window
+    this.prop('pink_phone', -3.72, 0, 2.62, Math.PI / 2, { block: true, phys: true });
+    // coin tray and an abacus on the far corner of the work table
+    const T = this.garage.table;
+    this.prop('coin_tray', T.x - 0.72, T.h, T.z - 0.3, 0.25);
+    this.prop('abacus', T.x - 0.7, T.h, T.z - 0.12, -0.15);
     // fire buckets left of the back door (outside the door's swing)
     this.prop('fire_buckets', -1.02, 0, -4.8, 0.2, { block: true, phys: true });
     // utility sink with the gas water heater above it, sandals in front
@@ -709,7 +726,7 @@ export class GarageDetail {
     blob(-3.25, G.minZ + 0.3, 1.5, 0.75, 0.55); blob(-1.85, G.minZ + 0.3, 1.5, 0.75, 0.55);
     blob(1.25, G.minZ + 0.3, 0.8, 0.8, 0.6); blob(2.62, G.minZ + 0.3, 0.9, 0.7, 0.5);
     blob(-0.95, 1.55, 0.7, 0.7, 0.5); blob(3.55, -2.15, 0.7, 0.7, 0.5); blob(3.55, -2.78, 0.75, 0.75, 0.5);
-    blob(3.0, 4.55, 0.7, 0.6, 0.5); blob(-2.65, 4.5, 0.8, 0.8, 0.5); blob(-3.55, 3.5, 0.75, 1.9, 0.4);
+    blob(2.95, 4.5, 0.7, 0.6, 0.5); blob(-2.65, 4.5, 0.8, 0.8, 0.5); blob(-3.55, 3.78, 0.75, 1.9, 0.4); blob(-3.72, 2.62, 0.5, 0.55, 0.5); blob(3.62, 4.66, 0.7, 0.75, 0.4);
     blob(-3.73, -4.1, 0.55, 0.6, 0.5);
     for (const sz of [-3.35, -2.3, -1.25, -0.2, 0.85, 1.9]) blob(-3.42, sz, 0.62, 0.62, 0.45, 0.0075);
     for (const sz of [-0.55, 1.25, 3.05]) blob(3.88, sz, 0.3, 1.5, 0.35);

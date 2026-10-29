@@ -73,7 +73,7 @@ export class Garage {
     // static decoration is merged into a few big meshes (SB: boxes / decals / cards, PB: voxel props)
     Object.assign(this, garageBatches(G));
     // the HD surfaces at their authored 64 px/m (worn slab, blocks, ribbed steel, plywood sheets, form concrete)
-    const concrete = surfMat('garageSlab', { ppm: 64, roughness: 0.84, bump: 0.3 });
+    const concrete = surfMat('garageSlab', { ppm: 64, roughness: 0.84, bump: 0.3, color: 0xd2cabe });
     const block = surfMat('blockHD', { ppm: 64, roughness: 0.92, bump: 0.5 });
     const corr = surfMat('corrugatedHD', { ppm: 64, roughness: 0.5, metalness: 0.35, bump: 0.7 });
     const ply = surfMat('plywoodHD', { ppm: 64, roughness: 0.75, bump: 0.3 });
@@ -84,7 +84,8 @@ export class Garage {
     floor.name = 'floor';
     floor.userData.surface = true;
     this.floor = floor;
-    const ceil = boxMesh(8.4, 0.12, 10.4, surfMat('plywoodHD', { ppm: 64, roughness: 0.9, color: 0xb0a490, bump: 0.25 }), { cast: false });
+    // the roof casts shadows: low sun only gets in through the shutter and the window (no light through the roof boards)
+    const ceil = boxMesh(8.4, 0.12, 10.4, surfMat('plywoodHD', { ppm: 64, roughness: 0.9, color: 0xb0a490, bump: 0.25 }), { cast: true });
     ceil.position.set(0, H + 0.06, 0);
     this.add(ceil);
     // (joists, steel H-beams, columns and the rest of the structure: GarageDetail)
@@ -382,7 +383,7 @@ export class Garage {
     this.sprop('broom', 3.9, 0, -1.6, -Math.PI / 2 + 0.15, { fallbackSize: [0.3, 1.3, 0.1] });
     this.sprop('fan', 1.82, 0, -4.6, -0.35, { fallbackSize: [0.4, 0.9, 0.35] });
     // left-front: bicycle, tyres, umbrella stand, cone
-    this.sprop('bicycle', -3.55, 0, 3.5, Math.PI / 2, { fallbackSize: [1.8, 1.0, 0.55], player: true });
+    this.sprop('bicycle', -3.55, 0, 3.78, Math.PI / 2, { fallbackSize: [1.8, 1.0, 0.55], player: true });
     this.sprop('tires', -2.65, 0, 4.5, 0.2, { fallbackSize: [0.6, 0.6, 0.6], player: true, phys: true });
     this.sprop('umbrella_stand', -1.9, 0, 4.72, 0, { fallbackSize: [0.25, 0.9, 0.25] });
     this.sprop('cone', -1.45, 0, 4.7, 0.4, { fallbackSize: [0.3, 0.7, 0.3] });

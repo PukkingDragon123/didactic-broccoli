@@ -70,19 +70,19 @@ export function decalAtlas() {
 
   // big oil stain under where Grandpa's car used to stand: soft outer halo, darker core, drip satellites
   A.cell('oilBig', 0, 0, 128, 96, (x0, y0, w, h) => {
-    blob(x0, y0, w, h, 3, [[1.0, 0xb4aea4], [0.82, 0x948e84], [0.55, 0x77716a], [0.3, 0x5c5752]], { lobes: 4, warp: 0.34 });
+    blob(x0, y0, w, h, 3, [[1.0, 0xc4beb4], [0.82, 0xaca69c], [0.55, 0x938d84], [0.3, 0x7e7870]], { lobes: 4, warp: 0.34 });
     for (let i = 0; i < 9; i++) {
       const a = hash2(i, 31) * 6.28, r = 0.62 + hash2(i, 32) * 0.3;
       const x = Math.round(x0 + w / 2 + Math.cos(a) * r * w / 2), y = Math.round(y0 + h / 2 + Math.sin(a) * r * h / 2);
       const rr = 1 + Math.floor(hash2(i, 33) * 3);
-      for (let yy = -rr; yy <= rr; yy++) for (let xx = -rr; xx <= rr; xx++) if (xx * xx + yy * yy <= rr * rr + 1) put(x + xx, y + yy, rr > 2 ? 0x77716a : 0x948e84);
+      for (let yy = -rr; yy <= rr; yy++) for (let xx = -rr; xx <= rr; xx++) if (xx * xx + yy * yy <= rr * rr + 1) put(x + xx, y + yy, rr > 2 ? 0x938d84 : 0xaca69c);
     }
   });
-  A.cell('oilSmall', 128, 0, 64, 48, (x0, y0, w, h) => blob(x0, y0, w, h, 5, [[1.0, 0xa8a298], [0.65, 0x807a72], [0.32, 0x625d58]], { lobes: 3, warp: 0.3 }));
+  A.cell('oilSmall', 128, 0, 64, 48, (x0, y0, w, h) => blob(x0, y0, w, h, 5, [[1.0, 0xbcb6ac], [0.65, 0x9c968c], [0.32, 0x847e76]], { lobes: 3, warp: 0.3 }));
   A.cell('oilDrips', 192, 0, 32, 32, (x0, y0) => {
     for (let i = 0; i < 7; i++) {
       const x = x0 + 4 + Math.floor(hash2(i, 41) * 24), y = y0 + 4 + Math.floor(hash2(i, 42) * 24), r = hash2(i, 43) < 0.4 ? 2 : 1;
-      for (let yy = -r; yy <= r; yy++) for (let xx = -r; xx <= r; xx++) if (xx * xx + yy * yy <= r * r + 0.5) put(x + xx, y + yy, r > 1 ? 0x6e6862 : 0x88827a);
+      for (let yy = -r; yy <= r; yy++) for (let xx = -r; xx <= r; xx++) if (xx * xx + yy * yy <= r * r + 0.5) put(x + xx, y + yy, r > 1 ? 0x8e8880 : 0xa29c92);
     }
   });
   // tyre track: a worn band with tread blocks, broken where the rubber didn't take
@@ -103,9 +103,9 @@ export function decalAtlas() {
       if (d > 1 || t > 0.95) continue;
       const tide = Math.abs(d - 0.92) < 0.06 || (Math.abs(d - 0.7) < 0.035 && t < 0.7);
       const runs = Math.abs(Math.sin(u * 37 + Math.floor(t * 3))) > 0.94 && t > 0.3;
-      if (tide) put(x, y, 0x9a8e7c);
-      else if (runs) put(x, y, 0xa89e8e);
-      else if (bayer(x, y) < (1 - t) * 0.55 + 0.1) put(x, y, 0xbcb4a6);
+      if (tide) put(x, y, 0xb0a594);
+      else if (runs) put(x, y, 0xbcb3a4);
+      else if (bayer(x, y) < (1 - t) * 0.3 + 0.04) put(x, y, 0xd0c8ba);
     }
   });
   A.cell('rust', 352, 0, 24, 128, (x0, y0, w, h) => {
@@ -468,7 +468,7 @@ export function cardAtlas() {
     p.frame(x, y, w, h, 0x8a8a84); p.frame(x + 1, y + 1, w - 2, h - 2, 0xdcdcd4);
     for (let k = 0; k < 4; k++) p.rect(x + 8, y + 6 + k * 3, w - 16, 1, 0x7a7a74);
     p.rect(x + 6, y + 22, w - 12, 12, 0xf6f4ec); p.frame(x + 6, y + 22, w - 12, 12, RED);
-    ink(p, 'TEL', x + w / 2, y + 25, RED, { align: 'center' });
+    ink(p, '100V', x + w / 2, y + 25, RED, { align: 'center' });
     p.rect(x + w - 6, y + 36, 3, 8, 0x5a5a56);
     for (let i = 0; i < 30; i++) p.px(x + Math.floor(hash2(i, 7) * w), y + h - 1 - Math.floor(hash2(i, 8) * 10), 0x9a8a6a);
   });

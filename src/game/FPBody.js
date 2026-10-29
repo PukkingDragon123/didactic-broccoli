@@ -30,7 +30,7 @@ const bell = (t) => Math.sin(Math.PI * clamp(t, 0, 1));
 /** 0 before a, eased to 1 at b. */
 const win = (t, a, b) => smooth((t - a) / (b - a));
 const V = () => new THREE.Vector3();
-const _v = V(), _v2 = V(), _v3 = V(), _v4 = V(), _v5 = V(), _v6 = V(), _c = V(), _up = V(), _ax = V();
+const _v = V(), _v2 = V(), _v3 = V(), _v4 = V(), _v5 = V(), _v6 = V(), _c = V(), _up = V();
 const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
 const _m = new THREE.Matrix4(), _m2 = new THREE.Matrix4(), _box = new THREE.Box3(), _e = new THREE.Euler();
 const X = new THREE.Vector3(1, 0, 0), Y = new THREE.Vector3(0, 1, 0), Z = new THREE.Vector3(0, 0, 1);
@@ -66,6 +66,7 @@ const NB = NBONES + 34;
 const F_PINCH = [0.62, 0.05, 0.97, 0.15, 0, 0.5];
 const F_FIST = [0.9, 0, 0.72, 0.5, 0, 0];
 const F_TAP = [0.85, 0, 0.6, 0.4, 1, 0];
+const KEY_REST = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.2, -0.45, 0.05)); // Held POSES.item
 
 /** One skinned, smooth-shaded mesh built from tubes of superellipse rings. */
 class SkinGeo {
@@ -164,10 +165,10 @@ function thumbBasis([d, n], out) {
 const mirrorQ = (q) => new THREE.Quaternion(q.x, -q.y, -q.z, q.w);
 
 // per-hand pose: wrist position (anchor space), hand orientation (rig space), fingers [curl, spread, thumb, thumbCurl,
-// point, cascade]
+// point, cascade], e: how far the wrist bends back (the forearm then comes from under the back of the hand: palm-up holds)
 class Pose {
-  constructor() { this.p = V(); this.q = new THREE.Quaternion(); this.f = [0.3, 0.2, 0.2, 0.2, 0, 0.3]; }
-  copy(o) { this.p.copy(o.p); this.q.copy(o.q); for (let i = 0; i < 6; i++) this.f[i] = o.f[i]; return this; }
+  constructor() { this.p = V(); this.q = new THREE.Quaternion(); this.f = [0.3, 0.2, 0.2, 0.2, 0, 0.3]; this.e = 0.25; }
+  copy(o) { this.p.copy(o.p); this.q.copy(o.q); for (let i = 0; i < 6; i++) this.f[i] = o.f[i]; this.e = o.e; return this; }
 }
 
 export class FPBody {
@@ -186,7 +187,9 @@ export class FPBody {
     this.t = 0;
     this.presence = 0; this.lookDown = 0; this.dt = 1 / 60;
     this.legYaw = 0;
-    this.swing = [0, 0];
+    this.swing = [0, 0]; this.swingS = [0, 0];
+    this.tgt = new Pose(); this.tgt2 = new Pose(); this.flyerK = 0;
+    this._qa = new THREE.Quaternion(); this._qb = new THREE.Quaternion(); this._qc = new THREE.Quaternion();
     this.walkW = 0; this.runW = 0;
     this.act = null; // timed action { name, t, dur, ... }
     this.bounds = new WeakMap();
@@ -194,7 +197,7 @@ export class FPBody {
     this.crank = { m: null, flip: 0, n: 0 };
     this.lastUses = -1;
     this.anchorInv = new THREE.Matrix4();
-    this.iner = { p: V(), v: V(), o: V(), ov: V(), on: false, applied: V() };
+    this.iner = { p: V(), v: V(), o: V(), ov: V(), on: false };
     this.tmp = Array.from({ length: 10 }, V);
     this._S = V(); this._T = V();
     this.IP = V(); this.IQ = new THREE.Quaternion(); this.IS = 1; this.B = new THREE.Box3();
@@ -295,8 +298,8 @@ export class FPBody {
     const R = this.hb[1].hand, L = this.hb[0].hand;
     this.props.wrench.position.set(-this.FIST[0] * k, this.FIST[1] * k, this.FIST[2] * k);
     R.add(this.props.wrench);
-    L.add(this.props.flyer);
-    this.props.flyer.position.set(this.PINCH[0] * k - 0.004, this.PINCH[1] * k - 0.03, this.PINCH[2] * k + 0.02);
+    void L;
+    this.game.held.anchor.add(this.props.flyer);
   }
 
   /** Contact points (hand units, left hand) measured on the posed fingers: pinch, fist, fingertip. */
@@ -590,26 +593,47 @@ export class FPBody {
       const e = 1 - outBack(this.presence, 0.9);
       anchor.position.y -= e * 0.3; anchor.rotation.x -= e * 0.4;
     }
+    const eye = _v.set(P.pos.x, P.eye, P.pos.z);
+    const near = cam.position.distanceTo(eye) < 0.16 && P.camBlend < 0.05;
+    this.leanIn(dt, show && near);
     this.inertia(dt, show && this.presence > 0.3);
     anchor.updateWorldMatrix(true, false);
     this.anchorInv.copy(anchor.matrixWorld).invert();
     this.rig.updateMatrixWorld(true);
-    const eye = _v.set(P.pos.x, P.eye, P.pos.z);
-    const near = cam.position.distanceTo(eye) < 0.16 && P.camBlend < 0.05;
     this.updateBody(dt);
     this.human.root.visible = show && near;
     this.rig.visible = show;
     this.updateFlags(dt);
     if (!this.rig.visible) { this.unstash(); if (this.act) this.endAct(); return; }
     this.props.wrench.visible = this.props.flyer.visible = false;
+    this.flyerK = 0;
     for (const H of this.hands) this.pose(H);
     this.applyStash(dt);
     for (const H of this.hands) this.blend(H, dt);
     for (const H of this.hands) this.solve(H);
+    this.placeFlyer();
     // looking down with empty hands, the arms are drawn with the world (depth-tested against your body) rather than
     // on top of it
     this.rig.userData.mainPass = this.lookDown > 0.6 && this.hands.every((H) => H.src === 'free');
     this.armsToBody();
+  }
+
+  /**
+   * Leaning in: working a machine's handle or coin slot (or lifting / repairing one) you bend at the waist, and your
+   * view dips towards it with you, so the arm can really get there. Eased in and out; the player's own camera is
+   * restored by Player.update every frame, so this never drifts.
+   */
+  leanIn(dt, on) {
+    const g = this.game, ho = g.interaction.holding;
+    const cover = ho && g.story?.covers ? [...g.story.covers.entries()].find(([, c]) => c.box === ho.obj) : null;
+    const want = on && this.enabled && (!!this.coinMachine() || !!cover || (!!ho && g.machines.some((m) => m.root === ho.obj)));
+    // lifting a machine off the floor: a proper crouch
+    if (want) this.leanD = cover?.[0].data.fallen ? 0.3 : 0.12;
+    this.leanK = (this.leanK || 0) + ((want ? 1 : 0) - (this.leanK || 0)) * (1 - Math.exp(-dt * (want ? 5 : 4)));
+    if (this.leanK < 1e-3 || !on) return;
+    const k = smoother(this.leanK), cam = g.camera, yaw = g.player.yaw, dn = this.leanD || 0.12, fw = Math.min(dn, 0.16);
+    cam.position.x -= Math.sin(yaw) * fw * k; cam.position.z -= Math.cos(yaw) * fw * k; cam.position.y -= dn * k;
+    cam.updateMatrixWorld();
   }
 
   /**
@@ -652,8 +676,8 @@ export class FPBody {
     if (back) h.phase = (((2 * ph - h.phase) % 1) + 1) % 1; // walk backwards: run the gait in reverse
     // the upper body keeps facing the view, and arches back when you look down so your belly, legs and feet show
     // rather than a wall of chest
-    const arch = smooth(down / 1.2);
-    b.spine.quaternion.premultiply(_q.setFromAxisAngle(Y, -this.legYaw * 0.45)).multiply(_q.setFromAxisAngle(X, -arch * 0.3));
+    const lean = smoother(this.leanK || 0) * ((this.leanD || 0.12) > 0.2 ? 1.4 : 1), arch = smooth(down / 1.2) * (1 - Math.min(1, lean));
+    b.spine.quaternion.premultiply(_q.setFromAxisAngle(Y, -this.legYaw * 0.45)).multiply(_q.setFromAxisAngle(X, -arch * 0.3 + lean * 0.42));
     b.chest.quaternion.premultiply(_q.setFromAxisAngle(Y, -this.legYaw * 0.55)).multiply(_q.setFromAxisAngle(X, -arch * 0.22));
     b.neck.quaternion.setFromEuler(_e.set(-P.pitch * 0.3, 0, 0));
     b.head.quaternion.setFromEuler(_e.set(-P.pitch * 0.6, 0, 0));
@@ -662,6 +686,7 @@ export class FPBody {
     const F = h.feet;
     this.swing[0] = clamp((F[1].z - F[0].z) / 0.42, -1, 1);
     this.swing[1] = -this.swing[0];
+    for (let i = 0; i < 2; i++) this.swingS[i] += (this.swing[i] - this.swingS[i]) * Math.min(1, dt * 9);
     this.walkW += (clamp(spd / 2.2, 0, 1) - this.walkW) * (1 - Math.exp(-dt * 6));
     this.runW += ((spd > 3.1 ? 1 : 0) - this.runW) * (1 - Math.exp(-dt * 5));
     // natural hanging hands (anchor-space wrist, rig-space orientation) + real shoulders, before we override the arms
@@ -722,14 +747,15 @@ export class FPBody {
       H.from.copy(H.out);
       H.k = 0;
       let dur = clamp(0.16 + d * 0.62, 0.17, 0.46);
-      if (src.startsWith('grip') && a.startsWith('ready')) dur = 0.15;
+      if (/^(tap|give|toss)/.test(src) || /^(tap|give|toss)/.test(a)) dur = 0.07;
+      else if (src.startsWith('grip') && a.startsWith('ready')) dur = 0.15;
       else if (src.startsWith('crank') && a.startsWith('crank')) dur = 0.13;
       else if (src.startsWith('free') && a.startsWith('grip')) dur = Math.max(dur, 0.32);
       H.dur = dur;
       H.bump = src.startsWith('crank') && a.startsWith('crank') ? 1 : 0;
       // reaching for something to hold: the hand opens on the way and closes on it
-      H.grab = !H.bump && W.f[0] > H.out.f[0] + 0.15 && !src.startsWith('free') ? 1 : 0;
-      H.arc = clamp((d - 0.03) / 0.15, 0, 1) * (src.startsWith('tap') || src.startsWith('give') ? 0.3 : 1);
+      H.grab = !H.bump && dur > 0.1 && W.f[0] > H.out.f[0] + 0.15 && !src.startsWith('free') ? 1 : 0;
+      H.arc = clamp((d - 0.03) / 0.15, 0, 1) * (dur < 0.1 ? 0 : 1);
       if (!a) H.k = 1;
       H.src = src;
     }
@@ -741,17 +767,34 @@ export class FPBody {
    */
   reachCap(H, W, src) {
     const S = H.shoulder, arm = (this.la + this.lc) * this.bs, reach = arm * 0.88;
-    const d = _v2.subVectors(W.p, S), L = d.length();
     // things below you (a machine's handle, its coin slot): you bend at the waist to reach them
-    const bend = clamp(d.dot(this.dirToAnchor(_v3.set(0, -1, 0), _v3)) * 0.7, 0, 0.3);
-    if (L <= arm * 0.99 + bend) { H.farT = 0; H.bend = bend; return src; }
+    const lean = this.leanFor(S, W.p, this.leanDir(_v3), arm * 0.97);
+    if (lean <= 0.45) { H.farT = 0; H.bend = lean; return src; }
     H.farT += this.dt;
     if (H.farT > 0.5) return this.freePose(H, W);
+    const d = _v2.subVectors(W.p, S), L = d.length();
     d.multiplyScalar(1 / L);
     W.p.copy(S).addScaledVector(d, reach);
     this.handQ(H.sd, N(H.sd * 0.45, -1, 0.1, _v3), d, W.q);
-    W.f[0] = 0.28; W.f[1] = 0.45; W.f[2] = 0.3; W.f[3] = 0.2; W.f[4] = 0; W.f[5] = 0.2;
+    W.f[0] = 0.28; W.f[1] = 0.45; W.f[2] = 0.3; W.f[3] = 0.2; W.f[4] = 0; W.f[5] = 0.2; W.e = 0.25;
     return 'reach';
+  }
+
+  /** Which way your shoulders go when you bend at the waist (anchor space): down and forward. */
+  leanDir(out) {
+    const cam = this.game.camera;
+    cam.getWorldDirection(out); out.y = 0;
+    if (out.lengthSq() < 1e-6) out.set(0, 0, -1);
+    out.normalize().multiplyScalar(0.3).add(_v6.set(0, -0.95, 0)); // mostly down, so the shoulder stays off screen
+    return this.dirToAnchor(out, out);
+  }
+
+  /** How far the shoulder S must lean along u to bring T within r (Infinity: never). */
+  leanFor(S, T, u, r) {
+    const D = _v5.subVectors(T, S), b = D.dot(u), c = D.lengthSq() - r * r;
+    if (c <= 0) return 0;
+    const disc = b * b - c;
+    return disc < 0 || b <= 0 ? Infinity : b - Math.sqrt(disc);
   }
 
   /** Fill W for hand H; returns a key naming what the hand is doing (a change starts a cross-fade). */
@@ -842,6 +885,7 @@ export class FPBody {
     this.handQ(H.sd, palm, dir, W.q, opts.axis);
     this.wrist(H, contact, W.q, opts.at || PALM_C, W.p);
     for (let i = 0; i < 6; i++) W.f[i] = f[i] ?? 0;
+    W.e = opts.ext ?? 0.25;
   }
 
   // ------------------------------------------------------------------ grips on things you carry
@@ -853,7 +897,7 @@ export class FPBody {
     if (pose === 'reveal') {
       this.ip(0.5, 0, 0.5, c);
       c.x += -sd * 0.03 * this.bs; c.y -= 0.006; c.z += 0.012;
-      this.setGrip(H, W, c, N(sd * 0.45, 1, 0.25, a), N(sd * 0.5, 0.15, -1, _v2), [0.42, 0.25, 0.3, 0.2, 0, 0.3]);
+      this.setGrip(H, W, c, N(sd * 0.45, 1, 0.25, a), N(sd * 0.5, 0.15, -1, _v2), [0.42, 0.25, 0.3, 0.2, 0, 0.3], { ext: 0.6 });
       return 'cup';
     }
     if (kind === 'capsule') {
@@ -875,23 +919,25 @@ export class FPBody {
       if (!R) return null;
       const palm = N(0.35, 1, 0.3, a);
       c.addScaledVector(palm, -r * 0.98);
-      this.setGrip(H, W, c, palm, N(-0.6, 0.1, -1, _v2), [0.62, 0.12, 0.55, 0.35, 0, 0.35]);
+      this.setGrip(H, W, c, palm, N(-0.6, 0.1, -1, _v2), [0.62, 0.12, 0.55, 0.35, 0, 0.35], { ext: 0.7 });
       return 'capsule';
     }
     if (kind === 'toy') {
       if (!R) return null;
       this.ip(0.5, 0, 0.5, c);
       if (pose === 'inspect' || held.inspecting) {
-        // fingers under the base from the right, thumb over its front edge: the forearm angles in from the lower right
+        // held up on the palm close to your eyes, like a phone: fingers under the base pointing ahead, thumb over its
+        // edge, the wrist bent back so the forearm comes up from below
         this.idir(0, 1, 0, up);
         const rt = _v3.set(1, -0.25, 0.35).addScaledVector(up, -_v3.dot(up)).normalize();
-        c.addScaledVector(up, -0.005).addScaledVector(rt, 0.04 * this.bs);
-        const palm = _v4.copy(up).addScaledVector(rt, -0.35).normalize();
-        this.setGrip(H, W, c, palm.clone(), _v5.copy(rt).negate().addScaledVector(up, 0.1).clone(), [0.42, 0.15, 0.75, 0.4, 0, 0.3]);
+        c.addScaledVector(up, -0.005).addScaledVector(rt, 0.026 * this.bs);
+        const palm = _v4.copy(up).addScaledVector(rt, -0.3).normalize();
+        const dir = _v5.set(-0.45, 0, -1).addScaledVector(up, -_v5.dot(up)).normalize();
+        this.setGrip(H, W, c, palm.clone(), dir.clone(), [0.4, 0.2, 0.7, 0.35, 0, 0.35], { ext: 1.0 });
         return 'inspect';
       }
       c.y -= 0.004;
-      this.setGrip(H, W, c, N(0.1, 1, 0.25, a), N(-0.55, 0.05, -1, _v2), [0.24, 0.35, 0.15, 0.1, 0, 0.35]);
+      this.setGrip(H, W, c, N(0.1, 1, 0.25, a), N(-0.55, 0.05, -1, _v2), [0.24, 0.35, 0.15, 0.1, 0, 0.35], { ext: 0.7 });
       return 'toy';
     }
     if (kind === 'cat') {
@@ -945,8 +991,11 @@ export class FPBody {
       return 'handle';
     }
     if (tool === 'key') {
+      // pinched by the bow; the grip turns with the key (in the lock, the wrist turns it)
       this.ip(0.5, 0.5, 0.5, c);
-      this.setGrip(H, W, c, N(-0.45, 0.6, 0.45, a), N(-0.6, 0.35, -0.8, _v2), F_PINCH, { at: this.PINCH });
+      _q.copy(KEY_REST).invert();
+      const palm = this.idir(...N(-0.45, 0.6, 0.45, _v4).applyQuaternion(_q).toArray(), a).clone(), dir = this.idir(...N(-0.6, 0.35, -0.8, _v4).applyQuaternion(_q).toArray(), _v2).clone();
+      this.setGrip(H, W, c, palm, dir, F_PINCH, { at: this.PINCH });
       return 'pinch';
     }
     if (tool === 'milk') {
@@ -984,7 +1033,7 @@ export class FPBody {
     // anything else: cradled on the palm
     this.ip(0.5, 0, 0.5, c);
     c.y -= 0.003;
-    this.setGrip(H, W, c, N(0.25, 1, 0.25, a), N(-0.6, 0.1, -1, _v2), [0.45, 0.15, 0.4, 0.3, 0, 0.3]);
+    this.setGrip(H, W, c, N(0.25, 1, 0.25, a), N(-0.6, 0.1, -1, _v2), [0.45, 0.15, 0.4, 0.3, 0, 0.3], { ext: 0.7 });
     return 'cradle';
   }
 
@@ -1036,6 +1085,7 @@ export class FPBody {
     }
     W.p.copy(at);
     for (let i = 0; i < 6; i++) W.f[i] = f[i] ?? 0;
+    W.e = 0.05;
   }
 
   readPose(nb, H, W) {
@@ -1138,41 +1188,57 @@ export class FPBody {
     switch (a.name) {
       case 'tap': {
         if (H.h !== a.hand) return null;
-        // a small wind-up, a quick reach, the fingertip presses in and holds a beat, then the hand eases back
-        const reach = k < 0.12 ? -0.06 * bell(k / 0.24) : k < 0.42 ? outCubic((k - 0.12) / 0.3) : k < 0.6 ? 1 + 0.035 * bell((k - 0.42) / 0.18) : 1 - inOutCubic((k - 0.6) / 0.4);
+        // a small draw-back, a quick reach, the fingertip presses in and holds a beat, then the hand eases back to
+        // whatever it was doing
+        const B = this.basePose(H), T = this.tgt;
         const at = _v3.copy(a.at);
         const d = at.length(), max = 0.55 * this.bs;
         if (d > max) at.multiplyScalar(max / d);
-        const rest = _v4.set(H.sd * -0.2, -0.3, -0.26);
-        c.copy(rest).lerp(at, reach * 0.94);
         const dir = _v2.copy(at).sub(_v.set(H.sd * -0.17, -0.3, 0)).normalize();
-        this.setGrip(H, W, c, N(H.sd * 0.6, -0.4, 0.1, _v4), dir, [0.85, 0, 0.6, 0.4, clamp(k * 5, 0, 1) * (1 - win(k, 0.8, 1)), 0], { at: this.TIP });
+        this.setGrip(H, T, at, N(H.sd * 0.6, -0.4, 0.1, _v4), dir, F_TAP, { at: this.TIP });
+        const r = k < 0.08 ? 0 : k < 0.4 ? outCubic((k - 0.08) / 0.32) : k < 0.58 ? 1 : 1 - inOutCubic((k - 0.58) / 0.42);
+        T.p.addScaledVector(dir, 0.012 * bell((k - 0.36) / 0.2)); // the press
+        B.p.addScaledVector(dir, -0.018 * bell(k / 0.16)); // wind-up
+        this.mixPose(W, B, T, r * 0.96, smooth(r * 1.4), win(k, 0, 0.22) * (1 - win(k, 0.7, 0.95)));
         return 'tap';
       }
       case 'give': {
         if (H.h !== a.hand) return null;
         // the free hand peels a sheet off the stack, holds it out to them, lets go and comes back
+        const B = this.basePose(H), T = this.tgt, P = this.tgt2;
         const it = g.held.item, stack = it?.kind === 'tool' && it.data.id === 'flyers' && it.obj.visible ? it.obj : null;
         const at = _v3.copy(a.at);
-        const d = at.length(), max = 0.6 * this.bs;
+        const d = at.length(), max = 0.58 * this.bs;
         if (d > max) at.multiplyScalar(max / d);
-        const rest = _v4.set(H.sd * -0.16, -0.34, -0.24);
-        if (stack && H.h === 0) { this.frame(stack); this.ip(0.15, 1, 0.2, rest); }
-        const out = k < 0.22 ? 0 : k < 0.5 ? inOutCubic((k - 0.22) / 0.28) : k < 0.62 ? 1 : 1 - inOutCubic((k - 0.62) / 0.38);
-        this.props.flyer.visible = H.h === 0 && k > 0.12 && k < 0.58;
-        c.copy(rest).lerp(at, out * 0.95);
-        if (k < 0.22) c.y += 0.012 * bell(k / 0.22);
-        const open = win(k, 0.56, 0.64) * (1 - win(k, 0.8, 1));
-        this.setGrip(H, W, c, N(H.sd * 0.3, 0.75, 0.2, _v4), _v2.copy(at).normalize(), [0.42 - open * 0.3, 0.1 + open * 0.3, 0.9 - open * 0.5, 0.5, 0, 0.5], { at: this.PINCH });
+        // the sheet's corner from the top of the stack (when the other hand holds it)
+        if (stack && H.h === 0) {
+          this.frame(stack);
+          this.ip(0.12, 1, 0.28, c);
+          this.setGrip(H, P, c, this.idir(0, -1, 0, _v4).clone(), this.idir(0.4, 0, -1, _v2).clone(), F_PINCH, { at: this.PINCH });
+          P.p.y += 0.016 * win(k, 0.2, 0.3);
+        } else P.copy(B);
+        this.setGrip(H, T, at, N(H.sd * 0.25, 0.2, 0.9, _v4), _v2.copy(at).normalize().clone(), F_PINCH, { at: this.PINCH });
+        T.p.addScaledVector(_v2, 0.02 * win(k, 0.5, 0.62));
+        const w1 = inOutCubic(k / 0.22), w2 = inOutCubic((k - 0.3) / 0.28), w3 = inOutCubic((k - 0.66) / 0.34);
+        this.mixPose(W, B, P, w1, smooth(w1 * 1.3), w1);
+        this.mixPose(W, W, T, w2, smooth(w2 * 1.25), 0);
+        this.mixPose(W, W, B, w3, w3, w3);
+        // let go: the fingers open as they take it
+        const open = win(k, 0.58, 0.66) * (1 - w3);
+        W.f[0] -= open * 0.35; W.f[1] += open * 0.3; W.f[2] -= open * 0.45;
+        this.flyerK = k > 0.24 && k < 0.64 ? 1 - win(k, 0.58, 0.64) : 0;
         return 'give';
       }
       case 'toss': {
         if (!R) return null;
-        // wind back, flick forward and up with the fingers opening, follow through, settle
-        const back = bell(k / 0.32), fling = k < 0.25 ? 0 : bell((k - 0.25) / 0.6);
-        c.set(0.17 + back * 0.02 - fling * 0.04, -0.27 - back * 0.03 + fling * 0.1, -0.3 + back * 0.05 - fling * 0.18);
-        const op = win(k, 0.3, 0.45);
-        this.setGrip(H, W, c, N(-0.2, 0.7 - fling + back * 0.2, 0.4, _v4), N(-0.3, 0.3 + fling * 0.6 - back * 0.3, -1, _v2), [0.6 - op * 0.45, 0.15 + op * 0.3, 0.5 - op * 0.3, 0.3, 0, 0.4]);
+        // a flick: forward and up with the fingers springing open, a little follow-through, then it settles back
+        const B = this.basePose(H), T = this.tgt;
+        T.copy(B);
+        const f = bell(k / 0.75) * (1 - 0.25 * win(k, 0.2, 0.5));
+        T.p.add(_v.set(-0.03, 0.09, -0.15));
+        this.handQ(H.sd, N(-0.1, 0.55, 0.5, _v4), N(-0.25, 0.75, -1, _v2), T.q);
+        T.f[0] = 0.08; T.f[1] = 0.45; T.f[2] = 0.15; T.f[3] = 0.1; T.f[4] = 0; T.f[5] = 0.3;
+        this.mixPose(W, B, T, outCubic(Math.min(1, k / 0.22)) * f, smooth(Math.min(1, k / 0.2)) * f, f);
         return 'toss';
       }
       case 'key': {
@@ -1181,9 +1247,10 @@ export class FPBody {
         const o = a.obj;
         if (!a.from) { a.from = o.position.clone(); a.fromQ = o.quaternion.clone(); }
         const reach = inOutCubic(k / 0.32), push = win(k, 0.3, 0.4), turn = smoother((k - 0.42) / 0.22), back = win(k, 0.86, 1);
-        o.position.copy(a.from).lerp(_v.set(0.05, -0.13, -0.42 - push * 0.015), reach);
-        o.position.z += back * 0.012;
-        o.quaternion.copy(a.fromQ).slerp(_q.setFromEuler(_e.set(0.4, -0.2, 0)), reach).premultiply(_q2.setFromAxisAngle(Z, -turn * Math.PI / 2));
+        o.position.copy(a.from).lerp(_v.set(0.07, -0.19, -0.48 - push * 0.025), reach);
+        o.position.z += back * 0.015;
+        // blade forward into the lock, then a quarter turn about it
+        o.quaternion.copy(a.fromQ).slerp(_q.setFromEuler(_e.set(0.2, 1.45, 0)), reach).premultiply(_q2.setFromAxisAngle(Z, -turn * Math.PI / 2));
         if (turn > 0.3 && !a.clicked) { a.clicked = true; audio.play('keyTurn', { vol: 0.45 }); }
         return null; // the pinch grip on the key does the rest
       }
@@ -1210,14 +1277,7 @@ export class FPBody {
           o.position.copy(a.from).lerp(_v3, inOutCubic(k / 0.62));
           o.scale.setScalar(a.fromS * (1 - smooth((k - 0.58) / 0.42)));
         }
-        if (!R) {
-          // the other hand steadies the carton from below while it pours
-          if (a.name !== 'pour' || k < 0.16 || k > 0.84) return null;
-          this.frame(o);
-          this.ip(0.5, 0, 0.45, c);
-          this.setGrip(H, W, c, N(0.2, 1, 0.2, _v4), N(0.6, 0.1, -1, _v2), [0.35, 0.3, 0.3, 0.2, 0, 0.3]);
-          return 'act-steady';
-        }
+        if (!R) return null;
         const r = this.gripPose(o, 'tool', a.it.data, 'item', H, W);
         return r ? 'act-' + a.name : null;
       }
@@ -1225,23 +1285,45 @@ export class FPBody {
     }
   }
 
+  /** What hand H would be doing without the current action (actions blend out of it and back into it). */
+  basePose(H) {
+    const a = this.act, B = H.base || (H.base = new Pose());
+    this.act = null;
+    this.choose(H, B);
+    this.act = a;
+    return B;
+  }
+
+  /** out = a blended towards b: position by wp, rotation by wq, fingers by wf. */
+  mixPose(out, a, b, wp, wq, wf) {
+    out.p.copy(a.p).lerp(b.p, wp);
+    out.q.copy(a.q).slerp(b.q, clamp(wq, 0, 1));
+    for (let i = 0; i < 6; i++) out.f[i] = lerp(a.f[i], b.f[i], wf);
+    out.e = lerp(a.e, b.e, wp);
+    return out;
+  }
+
   // --- empty hands: relaxed and low in the bottom corners, breathing; they swing with your legs when you walk and
   // pump as fists when you run; looking down they hang at your sides; the free hand rises and opens a little when you
   // aim at something to take or press
   freePose(H, W) {
-    const g = this.game, P = g.player, sd = H.sd, s = this.swing[H.h], wk = this.walkW, run = this.runW;
-    const br = Math.sin(this.t * 1.7 + H.h * 0.7), fw = s * wk, step = Math.abs(Math.sin(this.human.phase * Math.PI * 2));
-    let x = -sd * (0.275 - Math.max(0, fw) * 0.02), y = -0.235 + br * 0.004 + fw * 0.03 - step * 0.008 * wk, z = -0.33 - fw * 0.075;
-    x = lerp(x, -sd * 0.24, run); y = lerp(y, -0.25 + Math.max(0, s) * 0.07 - step * 0.01, run); z = lerp(z, -0.3 - s * 0.14, run);
+    const g = this.game, P = g.player, sd = H.sd, s = this.swingS[H.h], wk = this.walkW, run = this.runW;
+    const br = Math.sin(this.t * 1.7 + H.h * 0.7), step = Math.abs(Math.sin(this.human.phase * Math.PI * 2));
+    // walking: lower and looser, a pendulum swing (the forward hand a touch higher, the back one out of view) with a
+    // dip on every footfall
+    const fw = s * wk * (1 - run);
+    let x = -sd * (0.272 - 0.01 * fw), y = -0.238 + br * 0.004 - wk * 0.018 + 0.014 * fw + 0.012 * fw * fw - step * 0.007 * wk, z = -0.325 - fw * 0.05;
+    // running: loose fists pumping forward and up
+    if (run > 0) { x = lerp(x, -sd * (0.245 - 0.025 * Math.max(0, s)), run); y = lerp(y, -0.262 + Math.max(0, s) * 0.06 - step * 0.012, run); z = lerp(z, -0.3 - s * 0.11, run); }
     if (g.held.inspecting) y -= 0.2; // out of the way while you admire a figure
     y -= smooth((-0.2 - P.pitch) / 0.5) * 0.22; // looking down they drop out of view, then hang at your sides
     const ready = this.readyTarget(H);
     let key = 'free';
     if (ready) { x = ready.x; y = ready.y; z = ready.z; key = 'ready'; }
     W.p.set(x, y, z);
-    const lift = fw * 0.25 + run * (0.3 + Math.max(0, s) * 0.3);
+    const lift = fw * 0.16 + run * (0.3 + Math.max(0, s) * 0.3);
     this.handQ(sd, N(sd, ready ? -0.15 : -0.2, ready ? 0.15 : 0.05, _v2), N(sd * 0.22, (ready ? 0.15 : 0.1) + lift, -1, _v3), W.q);
-    W.f[0] = ready ? 0.12 : lerp(0.28 + br * 0.03, 0.9, run); W.f[1] = ready ? 0.5 : 0.15; W.f[2] = ready ? 0.2 : lerp(0.3, 0.65, run); W.f[3] = lerp(0.3, 0.6, run); W.f[4] = 0; W.f[5] = ready ? 0.1 : 0.45;
+    W.f[0] = ready ? 0.12 : lerp(0.28 + br * 0.03, 0.9, run); W.f[1] = ready ? 0.5 : 0.15; W.f[2] = ready ? 0.2 : lerp(0.3, 0.65, run); W.f[3] = lerp(0.3, 0.6, run); W.f[4] = 0; W.f[5] = ready ? 0.1 : 0.45; W.e = 0.2;
     // looking down: your arms just hang at your sides
     const kd = this.lookDown = smooth((-0.3 - P.pitch) / 0.5) * (ready ? 0 : 1);
     if (kd > 0) { W.p.lerp(H.natural.p, kd); W.q.slerp(H.natural.q, kd); W.f[0] = lerp(W.f[0], 0.3, kd); }
@@ -1278,6 +1360,7 @@ export class FPBody {
     O.q.copy(F.q).slerp(W.q, smoother(k * 1.2));
     const ef = smooth((k - 0.25) / 0.75);
     for (let i = 0; i < 6; i++) O.f[i] = lerp(F.f[i], W.f[i], ef);
+    O.e = lerp(F.e, W.e, e);
     // reaching to hold something: the hand opens on the way and closes on it
     if (H.grab) { const o = bell(Math.min(1, k * 1.15)); O.f[0] -= o * 0.42; O.f[1] += o * 0.25; O.f[2] -= o * 0.3; O.f[5] -= o * 0.3; }
     // re-grips open the hand on the way
@@ -1293,11 +1376,13 @@ export class FPBody {
     const real = FAR.test(H.src) || H.src === 'reach' ? 1 : H.src === 'free' ? this.lookDown : 0;
     H.sb += (real - H.sb) * Math.min(1, this.dt * 6);
     const sh = t[0].set(-sd * 0.2 * bs, -0.37 * bs, 0.02).lerp(H.shoulder, H.sb);
+    H.bendS = (H.bendS || 0) + (H.bend * H.sb - (H.bendS || 0)) * Math.min(1, this.dt * 8);
+    if (H.bendS > 1e-4) sh.addScaledVector(this.leanDir(t[1]), H.bendS); // bent at the waist: shoulders down and forward
     const S = this._S.set(-sh.x, sh.y, -sh.z).divideScalar(bs);
     const T = this._T.set(-O.p.x, O.p.y, -O.p.z).divideScalar(bs);
     // lean in a touch for things just out of reach (bones never stretch: anything farther is capped in reachCap)
     const d = t[1].subVectors(T, S), L0 = d.length(), reach = (a + c) * 0.97;
-    if (L0 > reach) { S.addScaledVector(d, Math.min((0.05 + H.bend) / bs, L0 - reach) / L0); d.subVectors(T, S); }
+    if (L0 > reach) { S.addScaledVector(d, Math.min(0.05 / bs, L0 - reach) / L0); d.subVectors(T, S); }
     const l = clamp(d.length(), (a + c) * 0.3, (a + c) * 0.999), dn = d.normalize();
     const cosA = clamp((a * a + l * l - c * c) / (2 * a * l), -1, 1), sinA = Math.sqrt(1 - cosA * cosA);
     // the elbow can sit anywhere on a circle around the shoulder-wrist line: take the spot that lines the forearm up
@@ -1309,7 +1394,7 @@ export class FPBody {
     if (pd.lengthSq() < 1e-6) pd.set(sd, 0, 0);
     pd.normalize();
     const C = t[3].copy(S).addScaledVector(dn, a * cosA);
-    const fI = t[4].set(0, 1, 0).applyQuaternion(O.q).multiplyScalar(0.97).addScaledVector(t[5].set(sd, 0, 0).applyQuaternion(O.q), 0.24).normalize();
+    const fI = t[4].set(0, 1, 0).applyQuaternion(O.q).multiplyScalar(Math.cos(O.e)).addScaledVector(t[5].set(sd, 0, 0).applyQuaternion(O.q), Math.sin(O.e)).normalize();
     const pI = t[5].copy(T).addScaledVector(fI, c).sub(C);
     pI.addScaledVector(dn, -pI.dot(dn));
     const bu = t[6].set(0, 1, 0).applyQuaternion(bodyQ);
@@ -1337,8 +1422,13 @@ export class FPBody {
     // forearm twist: the hand's roll about the forearm, spread along it (half way bone + wrist bone)
     const zF = t[7].set(0, 0, 1).applyQuaternion(Qf), zH = t[8].set(0, 0, 1).applyQuaternion(O.q);
     zH.addScaledVector(u2, -zH.dot(u2));
-    let tw = 0;
-    if (zH.lengthSq() > 1e-6) tw = clamp(Math.atan2(t[9].crossVectors(zF, zH).dot(u2), zF.dot(zH)), -1.9, 1.9);
+    let tw = H.tw || 0;
+    if (zH.lengthSq() > 1e-6) {
+      // unwrapped against last frame, so a roll past half a turn stops at the limit instead of flipping to the other one
+      const raw = Math.atan2(t[9].crossVectors(zF, zH).dot(u2), zF.dot(zH));
+      tw = clamp(raw + Math.round((tw - raw) / (Math.PI * 2)) * Math.PI * 2, -1.9, 1.9);
+    }
+    H.tw = tw;
     B.arm.position.copy(S);
     B.arm.quaternion.copy(Qu);
     B.fore.quaternion.copy(Qu).invert().multiply(Qf);
@@ -1368,18 +1458,54 @@ export class FPBody {
     bones[fingBone(h, 4, 2)].quaternion.setFromAxisAngle(Z, -sd * (0.14 + tcurl * 0.9));
   }
 
-  /** The body's arms copy the viewmodel ones, so your shadow holds what you hold. */
+  /** The sheet being handed out: pinched at its lower corner, standing up and facing them (you see its back). */
+  placeFlyer() {
+    const F = this.props.flyer, a = this.act;
+    F.visible = this.flyerK > 0.02 && a?.name === 'give';
+    if (!F.visible) return;
+    const H = this.hands[a.hand], hb = this.hb[H.h].hand, k = this.k;
+    hb.updateWorldMatrix(true, false);
+    const pin = _v.set(this.PINCH[0] * k * H.sd, this.PINCH[1] * k, this.PINCH[2] * k).applyMatrix4(hb.matrixWorld).applyMatrix4(this.anchorInv);
+    const n = N(H.sd * 0.15, 0.2, 1, _v2), up = _v3.set(-H.sd * 0.3, 1, 0);
+    up.addScaledVector(n, -up.dot(n)).normalize();
+    F.quaternion.setFromRotationMatrix(_m.makeBasis(n, up, _v4.crossVectors(n, up)));
+    const side = _v4.crossVectors(up, n).multiplyScalar(-H.sd); // towards the middle of the view
+    F.position.copy(pin).addScaledVector(up, 0.042).addScaledVector(side, 0.026).addScaledVector(n, 0.004);
+    F.scale.setScalar(this.flyerK);
+  }
+
+  /**
+   * Your shadow holds what you hold: the walking body's arms reach from its real shoulders to where the viewmodel hands
+   * are (2-bone IK in world space), hands turned the same way. Empty hands keep the body's own walking swing.
+   */
   armsToBody() {
-    const h = this.human, b = h.b;
+    const h = this.human, b = h.b, t = this.tmp, dt = this.dt;
     if (!this.rig.visible) return; // keep the natural swing
-    b.chest.updateWorldMatrix(true, false);
-    b.chest.getWorldQuaternion(_q2).invert();
-    this.rig.getWorldQuaternion(_q3);
+    h.root.updateMatrixWorld(true);
+    const a = this.la * this.bs, c = this.lc * this.bs;
+    b.chest.getWorldQuaternion(_q3);
     for (let i = 0; i < 2; i++) {
-      const s = i ? 'R' : 'L', B = this.hb[i];
-      b['arm' + s].quaternion.copy(_q2).multiply(_q.copy(_q3).multiply(B.arm.quaternion));
-      b['fore' + s].quaternion.copy(B.fore.quaternion);
-      b['hand' + s].quaternion.copy(B.tB.quaternion).multiply(B.hand.quaternion);
+      const H = this.hands[i], s = i ? 'R' : 'L', B = this.hb[i], sd = H.sd;
+      H.bw = (H.bw ?? 0) + ((/^(free|ready)/.test(H.src) ? 0 : 1) - (H.bw ?? 0)) * Math.min(1, dt * 6);
+      if (H.bw < 0.01) continue;
+      const S = b['arm' + s].getWorldPosition(t[0]), T = B.hand.getWorldPosition(t[1]);
+      const d = t[2].subVectors(T, S), l = clamp(d.length(), (a + c) * 0.3, (a + c) * 0.999), dn = d.normalize();
+      const cosA = clamp((a * a + l * l - c * c) / (2 * a * l), -1, 1), sinA = Math.sqrt(1 - cosA * cosA);
+      const pole = t[3].set(sd * 0.6, -1, -0.45).applyQuaternion(_q3);
+      pole.addScaledVector(dn, -pole.dot(dn));
+      if (pole.lengthSq() < 1e-8) pole.set(0, -1, 0);
+      pole.normalize();
+      const elbow = t[4].copy(S).addScaledVector(dn, a * cosA).addScaledVector(pole, a * sinA);
+      const u1 = t[5].subVectors(elbow, S).normalize(), u2 = t[6].subVectors(T, elbow).normalize();
+      const fwd = t[7].copy(u2).addScaledVector(u1, -u2.dot(u1));
+      if (fwd.lengthSq() < 1e-8) fwd.copy(pole).negate(); else fwd.normalize();
+      const by = t[8].copy(u1).negate(), bx = t[9].crossVectors(by, fwd);
+      const Qu = _q.setFromRotationMatrix(_m.makeBasis(bx, by, fwd));
+      const Qf = _q2.copy(Qu).multiply(this._qa.setFromAxisAngle(X, -Math.acos(clamp(u1.dot(u2), -1, 1))));
+      const w = smooth(H.bw);
+      b['arm' + s].quaternion.slerp(this._qb.copy(_q3).invert().multiply(Qu), w);
+      b['fore' + s].quaternion.slerp(this._qb.copy(Qu).invert().multiply(Qf), w);
+      b['hand' + s].quaternion.slerp(this._qb.copy(Qf).invert().multiply(B.hand.getWorldQuaternion(this._qc)), w);
     }
   }
 
