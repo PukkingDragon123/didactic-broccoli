@@ -8,6 +8,8 @@ import { createHuman, Bubbles, HUMAN_PRESETS } from '../people/index.js';
 import { capsuleCost } from '../game/economy.js';
 import { formatYen } from '../core/util.js';
 import { talk } from '../people/voice.js';
+import { BIZARRE } from '../people/bizarre.js';
+import { menace } from '../ui/menacing.js';
 import { FLYERS, FLYER_BY_ID, FLYER_W, FLYER_H, flyerTexture } from '../gfx/flyers.js';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -16,14 +18,16 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const LINES = {
   closed: ['That old garage has been shut for years...', 'I used to buy capsule toys here as a kid.', 'Is someone cleaning the old gacha place?', 'Hm? Light in the garage?'],
   open: ['Oh! The gacha garage is open again!', 'Capsule toys? Just one go...', 'I remember this place!', 'Ooh, what series do they have?'],
-  stroll: ['Getting chilly in the evenings.', 'The 6:40 train is late again.', 'Did I leave the rice cooker on?', 'Nice sunset today.', 'I should call my mother.'],
+  stroll: ['Getting chilly in the evenings.', 'The 6:40 train is late again.', 'Did I leave the rice cooker on?', 'Nice sunset today.', 'I should call my mother.',
+    'Yare yare... the train is late again.', 'They say the alley by Mikawa-ya is haunted. Never look back in there!', 'Is that a reference? It is, isn\'t it.',
+    'My horoscope said: beware of capsule toys.', 'Good grief. Mondays.'],
   flyer: ['A flyer? Oh, a gacha shop! I will take a look.', 'Thank you! Capsule toys, how nostalgic.', 'Ooh, cute. My kid will love this.'],
   afterFlyer: ['I will take a look later!', 'Thanks! I will keep this one.', 'I will tell my friends.', 'Okay, okay, I am curious now.'],
   play: ['Here goes...', 'Come on, the rare one...', 'One more turn, just one!', 'Please be the cat one...'],
-  win: ['Yes! The one I wanted!', 'No way, a rare!', 'Look how tiny and detailed!', 'So cute!'],
-  meh: ['Aww, I already have this one.', 'Next time...', 'Hm, not bad.', 'A double. Typical.'],
+  win: ['Yes! The one I wanted!', 'No way, a rare!', 'Look how tiny and detailed!', 'So cute!', 'Yes! Yes! YES!', 'This must be the work of fate!', 'NICE!'],
+  meh: ['Aww, I already have this one.', 'Next time...', 'Hm, not bad.', 'A double. Typical.', 'Yare yare daze. A duplicate.', 'Useless, useless, USELESS!'],
   bye: ['Thanks! I will come back.', 'See you!', 'I will tell my friends about this place.', 'What a nice little shop.'],
-  excuse: ['Excuse me!', 'Pardon me.', 'Oops, sorry!'],
+  excuse: ['Excuse me!', 'Pardon me.', 'Oops, sorry!', 'Oh? You\'re approaching me?'],
   keeper: ['Welcome! Irasshaimase!', 'Ah, Grandpa\'s kid! Need anything?', 'Milk is in the fridge, brooms by the door.', 'Come again!'],
 };
 
@@ -125,6 +129,13 @@ export class Pedestrians {
     p.h.root.parent?.remove(p.h.root);
     p.h.dispose?.();
     this.list.splice(this.list.indexOf(p), 1);
+  }
+
+  /** Menacing ゴゴゴ beside someone, if they're on screen. */
+  menaceOver(h) {
+    const v = h.headTop(new THREE.Vector3()).project(this.game.camera);
+    if (v.z > 1 || Math.abs(v.x) > 0.95 || Math.abs(v.y) > 0.95) return;
+    menace({ kind: 'go', at: [(v.x * 0.5 + 0.5) * innerWidth + 30, (0.5 - v.y * 0.5) * innerHeight + 60], n: 3, dur: 2.4 });
   }
 
   say(h, text, dur = 3.2) {
@@ -243,7 +254,8 @@ export class Pedestrians {
       m.openFlap?.();
       const lucky = Math.random() < 0.35;
       p.h.setExpression(lucky ? 'happy' : 'smile', 3);
-      p.h.gesture(lucky ? 'cheer' : 'shrug');
+      // a really good pull deserves a really bizarre pose
+      if (lucky && Math.random() < 0.5) { p.h.gesture(pick(BIZARRE)); this.menaceOver(p.h); } else p.h.gesture(lucky ? 'cheer' : 'shrug');
       this.say(p.h, pick(lucky ? LINES.win : LINES.meh));
       if (!g.state.flags.firstCustomer) { g.state.flags.firstCustomer = true; g.news(`Your first customer! +${formatYen(price)}`, 'Customers pay for every turn on your machines'); }
     });

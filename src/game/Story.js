@@ -135,6 +135,8 @@ export class Story {
       tube: { key: '', text: 'Fluorescent tube', sub: 'For the dead ceiling light' },
       trash_bag: { key: '', text: 'Trash bag', sub: 'Garbage station across the lane, left of the shop' },
       flyers: { key: '', text: `Flyers (${it.data.uses || 0} left)`, sub: 'Hand them to people on the street' },
+      watch: this.game.timeStop?.ready ? { key: 'LMB', text: 'Stop time', sub: 'Everything but you freezes for a few seconds' }
+        : this.game.timeStop?.active ? { key: '', text: 'Time has stopped', sub: 'Only you can move' } : { key: '', text: 'Old pocket watch', sub: 'Still winding back up...' },
     };
     return H[id] || { key: 'Q', text: `Put down ${TOOLS[id]?.name || ''}` };
   }
@@ -142,6 +144,7 @@ export class Story {
   toolPrimary(it) {
     const id = it.data.id;
     if (id === 'broom') { this.game.held.swing = 1; audio.play('sweep', { vol: 0.5 }); }
+    if (id === 'watch') this.game.timeStop?.start();
   }
 
   // ------------------------------------------------------------------ shutter
@@ -600,6 +603,7 @@ export class Story {
     const keeper = g.pedestrians?.keeper;
     yield c.all(c.cam({ pos: V(1.1, 1.5, z + 6.6), look: V(0, 1.5, z + 2.5), dur: 2.2 }), c.say('Now spread the word! Flyers from Mikawa-ya will bring customers in.', 1.6));
     c.hideSay();
+    yield c.tbc(3.2);
     yield c.fade(1, 0.7);
     this.dropActors(crowd);
     for (const p of peds?.list || []) p.h.root.visible = true;
@@ -740,6 +744,7 @@ export class Story {
     g.player.yaw = 0; g.player.pitch = 0.1;
     yield c.all(c.cam({ pos: V(0.4, 1.62, z + 4.2), look: V(0.3, 2.0, z - 1), dur: 2.0 }), c.say('He left me his key. Time to wake this place up.', 1.2));
     c.hideSay();
+    yield c.tbc(3.0);
     bgm.play('garage', { fade: 4 });
     yield c.toPlayer(0.8);
     this.flags.intro = true;

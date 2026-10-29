@@ -12,6 +12,8 @@ import { Effects } from '../gfx/effects.js';
 import { Thumbs } from '../gfx/thumbs.js';
 import { initFlyers, prewarmFlyers } from '../gfx/flyers.js';
 import { Posters } from '../world/Posters.js';
+import { GhostAlley } from '../world/GhostAlley.js';
+import { TimeStop } from './TimeStop.js';
 import { Street } from '../world/Street.js';
 import { Goods } from './goods.js';
 import { Garage, GARAGE } from '../world/Garage.js';
@@ -113,6 +115,8 @@ export class Game {
     this.guide = new Guide(this);
     this.bubbles = new Bubbles(this.camera, document.body);
     this.pedestrians = new Pedestrians(this);
+    this.ghostAlley = new GhostAlley(this);
+    this.timeStop = new TimeStop(this);
     progress(0.9);
     this.bakeEnvironment();
     this.thumbs.prewarm(SERIES.flatMap((se) => se.items.map((it) => it.key)));
@@ -508,7 +512,8 @@ export class Game {
     this.frame++;
     this.time += dt;
     this.state.playTime += dt;
-    timeUniform.value = this.time;
+    const frozen = this.timeStop?.frozen; // the pocket watch: everything but you holds still
+    if (!frozen) timeUniform.value = this.time;
     if (this.player.lookLocked) {
       const m = this.input.mouse; const sx = m.dx, sy = m.dy; m.dx = 0; m.dy = 0;
       this.player.update(dt);
@@ -521,15 +526,19 @@ export class Game {
     this.notebook.update(dt);
     this.story.update(dt);
     this.guide?.update(dt);
-    this.physics.step(dt);
-    for (const m of this.machines) m.update(dt, this.time);
-    this.street.update(dt, this.time);
-    this.pedestrians?.update(dt);
-    this.goods?.update(dt);
-    for (const s of this.shelves) s.update(dt);
-    this.items.update(dt);
+    this.timeStop?.update(dt);
+    if (!frozen) {
+      this.physics.step(dt);
+      for (const m of this.machines) m.update(dt, this.time);
+      this.street.update(dt, this.time);
+      this.pedestrians?.update(dt);
+      this.ghostAlley?.update(dt);
+      this.goods?.update(dt);
+      for (const s of this.shelves) s.update(dt);
+      this.items.update(dt);
+      this.delivery.update(dt);
+    }
     this.reveal.update(dt, this.time);
-    this.delivery.update(dt);
     this.tweens.update(dt);
     this.effects.update(dt, this.time);
     this.garage.update(dt, this.time);

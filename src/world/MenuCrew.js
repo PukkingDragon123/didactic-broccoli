@@ -170,7 +170,7 @@ export class MenuCrew {
     const me = this.me;
     if (!me) return;
     const h = me.h;
-    const fun = ['cheer', 'spin', 'flex', 'peace', 'dab'];
+    const fun = ['cheer', 'spin', 'flex', 'peace', 'dab', 'pose_point', 'pose_lean', 'pose_cross'];
     const g = id === 'spin' ? 'spin' : pick(fun);
     if (g === 'spin') { this.spin = 0.001; me.spinFrom = h.root.rotation.y; h.setExpression('happy', 1.6); }
     else h.gesture(g);
@@ -218,7 +218,7 @@ export class MenuCrew {
         break;
       case 'lean':
         if (A?.act === 'selfie') { this.startAct(c, 'groupie', { side: -1 }); c.t = A.t + 0.5; }
-        else { this.startAct(c, pick(['clap', 'shrug', 'peace', 'cheer'])); c.t = rnd(2.4, 4); }
+        else { this.startAct(c, pick(['clap', 'shrug', 'peace', 'cheer', 'pose_point', 'pose_cross'])); c.t = rnd(2.4, 4); }
         break;
       case 'film':
         if (c.act === 'film') { this.startAct(c, pick(['clap', 'think', 'cheer'])); c.t = rnd(2, 3); }

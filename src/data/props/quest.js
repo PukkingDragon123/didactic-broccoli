@@ -846,6 +846,37 @@ const quest = {
     },
   },
 
+  // ------------------------------------------------------------- the old pocket watch (it stops time, apparently)
+  pocket_watch: {
+    name: 'Old Pocket Watch', voxel: 0.0025,
+    build(v) {
+      v.jitter = 0.01;
+      const GOLD = 0xd8a840, r = 10, cy = 11;
+      const gold = (x, y, z) => metal(shade(GOLD, 0.88 + hash(x, y, z, 7) * 0.16));
+      // case with a domed back, a raised rim round the face
+      v.shape(-r - 1, cy - r - 1, -3, r + 1, cy + r + 1, 3, (x, y, z) => {
+        const d = Math.hypot(x, y - cy);
+        if (z < 0) return d <= r + 0.3 - (-z) * 1.5;
+        if (z === 3) return d <= r + 0.3 && d > r - 1.4;
+        return d <= r + 0.3;
+      }, gold);
+      // enamel dial: hour marks, a minute hand at twelve, the hour hand toward four, small seconds dial
+      v.paint(() => v.shape(-r, cy - r, 2, r, cy + r, 2, (x, y) => Math.hypot(x, y - cy) < r - 1.2, (x, y) => {
+        const dx = x, dy = y - cy, d = Math.hypot(dx, dy), a = Math.atan2(dx, dy);
+        const tick = Math.abs(((a / (TAU / 12)) % 1 + 1) % 1 - 0.5) > 0.42;
+        if (d > r - 3.6 && d < r - 1.6 && tick) return 0x1a1418;
+        if (Math.abs(dx) < 0.6 && dy > 0 && dy < r - 3.2) return 0x1a1418;
+        if (Math.abs(dy + dx * 0.55) < 0.7 && dx > 0 && dx < 5) return 0x1a1418;
+        if (Math.hypot(dx, dy + 4.5) < 2.1 && Math.hypot(dx, dy + 4.5) > 1.3) return 0x8a8078;
+        return gloss(0xf6f0e0);
+      }));
+      v.paint(() => v.shape(-1, cy - 1, 2, 1, cy + 1, 2, (x, y) => Math.hypot(x, y - cy) < 1.2, gloss(0xc8302a)));
+      // crown and bow
+      v.cylinder(0, cy + r + 1, 0, 1.7, 3, gold);
+      v.tube(0, cy + r + 7, -1, 3.6, 2.2, 2, gold, 'z');
+    },
+  },
+
   // ------------------------------------------------------------- stack of shop flyers
   flyer_stack: {
     name: 'Stack of Shop Flyers', voxel: 0.003,

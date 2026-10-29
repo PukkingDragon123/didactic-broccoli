@@ -59,6 +59,7 @@ export const FLYERS = [
   { id: 'nobody', kind: 'meme', name: 'Me at 3am', lines: ['Haha, that is my kid.', 'Me at 3am, every night.', 'A chicken hat? I love it.'] },
   { id: 'expect', kind: 'meme', name: 'Expectation / Reality', lines: ['Six duplicates. I felt that.', 'Ha! The secret one never comes.', 'The same hamster, again...'] },
   { id: 'manager', kind: 'meme', name: 'New Manager', lines: ['A cat manager? I must meet her.', 'Paid in snacks, so cute!', 'I would work for snacks too.'] },
+  { id: 'itwasme', kind: 'meme', name: 'But It Was Me', lines: ['Haha! The cat was in the capsule!', 'Is that a reference? It is.', 'Mikan, you menace.'] },
 ];
 export const FLYER_BY_ID = Object.fromEntries(FLYERS.map((f, i) => [f.id, { ...f, index: i }]));
 export const POSTERS = FLYERS.filter((f) => f.kind === 'promo');
@@ -427,6 +428,13 @@ function tag(g, str, cx, y, bg = C.ink, col = C.white) {
   px(g, str, cx, y + 2, { col, align: 'center' });
 }
 const M = 5; // the meme sheets' paper border
+// a menacing ゴ, hand-pixelled (the 5x7 font has no kana), with a 1 px ink edge
+const GO = ['........#.#', '........#.#', '#######....', '......#....', '......#....', '......#....', '......#....', '......#....', '#######....'];
+function goGlyph(g, x, y, s, col) {
+  for (const [ox, oy, c] of [[-1, 0, C.ink], [1, 0, C.ink], [0, -1, C.ink], [0, 1, C.ink], [1, 1, C.ink], [0, 0, col]]) {
+    GO.forEach((row, j) => { for (let i = 0; i < row.length; i++) if (row[i] === '#') rect(g, x + i * s + ox, y + j * s + oy, s, s, c); });
+  }
+}
 
 // ------------------------------------------------------------------ the designs
 const DESIGNS = {
@@ -692,6 +700,30 @@ const DESIGNS = {
       rect(g, M, PH - M - bh, W - M * 2, bh, C.paper);
       px(g, 'NEW MANAGER', W / 2, M + 10, { align: 'center' });
       px(g, 'PAID IN SNACKS', W / 2, PH - M - 17, { align: 'center' });
+    },
+  },
+
+  // "you expected a normal capsule? but it was me!": Mikan sitting in a split-open capsule, menacing ゴゴゴ
+  itwasme: {
+    photos: ['neon_night'],
+    draw(g) {
+      const bh = 26, ih = PH - M * 2 - bh * 2;
+      photoBg(g, 'neon_night', M, M + bh, W - M * 2, ih, { fx: 0.5, fy: 0.45, tint: ['#7a30d0', 0.45], dark: 0.42, levels: 4 });
+      // a big capsule split open: the coloured half as a cup she sits in, the clear lid tipped over beside it
+      const r = 0.15, cp = makeCapsule('mochi', 0xb070ff, { radius: r });
+      cp.paper.visible = false;
+      cp.bottom.children.forEach((o, i) => { if (i > 2) o.visible = false; });
+      cp.group.position.set(0, r, 0);
+      cp.top.position.set(-r * 2.1, -r * 0.55, -r * 0.5); cp.top.rotation.set(0.3, 0, 2.5);
+      const c = cat({ at: [0.01, r * 0.62, 0.02], yaw: 0.2, lookAt: [0.4, 0.45, 2.4], mood: 'happy' });
+      const objs = [cp.group, c.root];
+      put(g, shot(objs, fit(objs, { w: W - M * 2, h: ih, yaw: 0.25, pitch: 0.16, margin: 0.88, dy: 0.06, fov: 30, key: [-1.2, 1.6, 2.2], keyCol: 0xffd8f0, rimCol: 0xa070ff, rimI: 2.6 })), M, M + bh);
+      c.root.removeFromParent();
+      for (const [x, y, s] of [[M + 3, M + bh + 98, 2], [M + 9, M + bh + 72, 2], [M + 15, M + bh + 48, 1], [W - M - 27, M + bh + 34, 2], [W - M - 21, M + bh + 8, 2]]) goGlyph(g, x, y, s, C.purple);
+      rect(g, M, PH - M - bh, W - M * 2, bh, C.paper);
+      px(g, 'YOU EXPECTED A\nNORMAL CAPSULE?', W / 2, M + 4, { align: 'center', lh: 3 });
+      px(g, 'BUT IT WAS ME,', W / 2, PH - M - bh + 3, { align: 'center' });
+      px(g, 'MIKAN!', W / 2, PH - M - bh + 12, { align: 'center', col: C.red });
     },
   },
 };

@@ -790,6 +790,42 @@ const SOUNDS = {
     const dur = vowel ? 0.075 : 0.042;
     a.tone(o, t, { wave: a.pulse(p.duty || 0.25), f, f2: f * (vowel ? 0.9 : 1.06), dur, vol: (p.vol ?? 1) * (vowel ? 0.05 : 0.038), attack: 0.002, curve: 'lin' });
   },
+  /** Manga SFX rumble (src/ui/menacing.js): ゴゴゴ throbs low, ドドド thumps, ドン! hits once. */
+  menace(a, t, o, p) {
+    const kind = p.kind || 'go';
+    if (kind === 'don') {
+      a.tone(o, t, { wave: a.pulse(0.5), f: 98, f2: 49, dur: 0.6, vol: 0.12 });
+      a.burst(o, t, { dur: 0.35, vol: 0.18, type: 'lowpass', f: 900, f2: 120, attack: 0.002 });
+      return;
+    }
+    for (let i = 0; i < 4; i++) {
+      const tt = t + i * 0.13;
+      if (kind === 'do') {
+        a.tone(o, tt, { wave: a.pulse(0.5), f: 82, f2: 55, dur: 0.12, vol: 0.1 });
+        a.burst(o, tt, { dur: 0.08, vol: 0.12, type: 'lowpass', f: 600, attack: 0.002 });
+      } else a.tone(o, tt, { wave: a.pulse(0.25), f: 62 + i * 3, f2: 58, dur: 0.16, vol: 0.09, curve: 'lin' });
+    }
+  },
+  /** An original little chiptune sting for the freeze-frame ending: a falling run that lands on a held chord. */
+  tbc(a, t, o) {
+    const run = [76, 74, 71, 67, 64], w = a.pulse(0.25);
+    run.forEach((n, i) => a.tone(o, t + i * 0.09, { wave: w, f: NOTE(n), dur: 0.085, vol: 0.05, curve: 'lin' }));
+    for (const n of [52, 59, 64, 68]) a.tone(o, t + 0.5, { wave: a.pulse(0.125), f: NOTE(n), dur: 1.6, vol: 0.035, curve: 'lin', attack: 0.01 });
+    a.tone(o, t + 0.5, { type: 'triangle', f: NOTE(40), dur: 1.6, vol: 0.12, curve: 'lin' });
+  },
+  /** The pocket watch: time stops (a falling sweep under a deep gong) or, with p.resume, lurches back. */
+  timestop(a, t, o, p) {
+    const up = !!p.resume;
+    a.tone(o, t, { wave: a.pulse(0.125), f: up ? 110 : 880, f2: up ? 880 : 55, dur: up ? 0.5 : 0.9, vol: 0.05 });
+    a.tone(o, t, { type: 'triangle', f: up ? 55 : 196, f2: up ? 196 : 41, dur: up ? 0.6 : 1.2, vol: 0.14 });
+    if (!up) a.bell(o, t + 0.05, NOTE(36), { dur: 2.6, vol: 0.12, partials: [1, 2.76, 5.4], decays: [1, 0.5, 0.25] });
+    else a.burst(o, t, { dur: 0.4, vol: 0.12, type: 'bandpass', f: 400, f2: 3000, q: 0.7, attack: 0.01 });
+  },
+  /** One loud clock tick. */
+  clockTick(a, t, o, p) {
+    a.burst(o, t, { dur: 0.025, vol: 0.2 * (p.vol ?? 1), type: 'highpass', f: 2600, attack: 0.001 });
+    a.tone(o, t, { wave: a.pulse(0.5), f: 1760, dur: 0.03, vol: 0.03 * (p.vol ?? 1) });
+  },
   /** Page turn. */
   page(a, t, o) {
     a.burst(o, t, { dur: 0.22, vol: 0.12, type: 'bandpass', f: 1800, f2: 3800, q: 0.8, attack: 0.03, buf: a.pink });

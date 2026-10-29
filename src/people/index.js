@@ -4,6 +4,7 @@
 //   h.gesture('dance', { bpm: 120, style: 'bon', clock: () => songTime });  h.stopDance();   (styles: DANCES)
 //   const bubbles = new Bubbles(camera);  bubbles.say(h, 'Nice sunset today.');  bubbles.update(dt);
 import { Human } from './Human.js';
+import './bizarre.js'; // dramatic manga poses (gesture library)
 import { HUMAN_PRESETS, makeSpec, streetPreset } from './presets.js';
 export { Bubbles } from './Bubbles.js';
 export { GESTURES, DANCES } from './gestures.js';

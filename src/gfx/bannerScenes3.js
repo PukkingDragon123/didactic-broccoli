@@ -1,4 +1,4 @@
-// Hand-pixelled banner background scenes (台紙 daishi) for series 17-19: densha, umi, obake_yashiki.
+// Hand-pixelled banner background scenes (台紙 daishi) for series 17-20: densha, umi, obake_yashiki, bizarre.
 // Same contract as bannerScenes.js: each scene paints an opaque 320x200 illustration into (x, y, w, h).
 //   y 0-70    title zone      -> calm backdrop, framing objects only at the sides
 //   y 150-195 figure feet     -> a readable floor plane
@@ -862,6 +862,171 @@ function obake_yashiki(g, s) {
   g.px(17, 33, 0xff6a8a); g.px(19, 33, 0xff6a8a);
 }
 
+// --- bizarre: dusk showdown down a long street, two posers on the poles, menacing ゴゴゴ ------------
+const GO_ROWS = ['......1.1.', '.......1.1', '111111....', '111111....', '....11....', '....11....', '....11....', '111111....', '111111....'];
+/** Big slanted manga ゴ (pixel scale s): drop shadow, dark outline, lit fill. (x, y) = top-left. */
+function goSfx(g, x, y, s, fill, ink) {
+  const M = new Mask(g.w, g.h);
+  const H = GO_ROWS.length * s;
+  GO_ROWS.forEach((row, r) => [...row].forEach((ch, i) => {
+    if (ch !== '1') return;
+    for (let yy = 0; yy < s; yy++) M.rect(x + i * s + Math.round((H - r * s - yy) * 0.34), y + r * s + yy, s, 1);
+  }));
+  M.each((px, py) => { if (!M.has(px - 2, py - 2)) { g.px(px + 2, py + 2, ink); g.px(px + 3, py + 2, ink); } });
+  M.outline(g, ink);
+  M.fill(g, (px, py) => (!M.has(px, py - 1) ? lt(fill, 0.55) : !M.has(px - 1, py) ? lt(fill, 0.25) : tone(px, py, (py - M.y0) / (M.y1 - M.y0 + 1), [fill, dk(fill, 0.3)], 0.6)));
+}
+
+/** A posing silhouette (feet centre x, y), rim-lit on the side facing the sun, with a dithered purple aura. */
+function poser(g, x, y, kind, ink, rim, aura) {
+  const M = new Mask(g.w, g.h);
+  if (kind === 'point') {
+    // twisted at the waist, pointing across the street, other hand splayed over the brow
+    M.stroke([[x - 5, y], [x - 3, y - 7], [x - 1, y - 13]], 1.6);
+    M.stroke([[x + 5, y], [x + 3, y - 7], [x + 1, y - 13]], 1.6);
+    M.poly([[x - 4, y - 12], [x + 4, y - 12], [x + 5, y - 23], [x - 3, y - 24]]);
+    M.ell(x + 1, y - 28, 4, 4.5);
+    for (const [a, b] of [[-3, -33], [0, -34], [3, -33], [5, -31]]) M.stroke([[x + 1, y - 29], [x + 1 + a, y + b]], 0.8);
+    M.stroke([[x + 4, y - 22], [x + 10, y - 23], [x + 15, y - 24]], 1.3);
+    M.stroke([[x + 15, y - 24], [x + 19, y - 24]], 0.6);
+    M.stroke([[x - 3, y - 22], [x - 8, y - 27], [x - 3, y - 31]], 1.3);
+    for (const [a, b] of [[-6, -35], [-4, -36], [-2, -35], [0, -34]]) M.stroke([[x - 3, y - 31], [x + a, y + b]], 0.5);
+  } else {
+    // leaning back at an impossible angle, hand over the face, the other arm flung back
+    M.stroke([[x - 4, y], [x - 3, y - 7], [x, y - 12]], 1.6);
+    M.stroke([[x + 4, y], [x + 3, y - 6], [x + 1, y - 12]], 1.6);
+    M.poly([[x - 3, y - 11], [x + 4, y - 12], [x + 12, y - 21], [x + 6, y - 24]]);
+    M.ell(x + 12, y - 27, 4, 4.5);
+    M.stroke([[x + 7, y - 22], [x + 3, y - 27], [x + 8, y - 29]], 1.3);
+    for (const [a, b] of [[5, -33], [7, -34], [9, -33], [11, -32]]) M.stroke([[x + 8, y - 29], [x + a, y + b]], 0.5);
+    M.stroke([[x + 11, y - 20], [x + 16, y - 16], [x + 20, y - 12]], 1.3);
+  }
+  // aura: dithered purple halo hugging the outline
+  for (let py = M.y0 - 4; py <= M.y1 + 4; py++) for (let px = M.x0 - 4; px <= M.x1 + 4; px++) {
+    if (M.has(px, py)) continue;
+    let d = 9;
+    for (let j = -3; j <= 3; j++) for (let i = -3; i <= 3; i++) if (M.has(px + i, py + j)) d = Math.min(d, Math.hypot(i, j));
+    if (d < 4) g.dpx(px, py, d < 1.5 ? aura : dk(aura, 0.3), 1 - d / 4);
+  }
+  const lit = kind === 'point' ? 1 : -1; // the sun is in the middle of the street
+  M.fill(g, (px, py) => (!M.has(px + lit, py) || !M.has(px + lit, py - 1) ? rim : ink));
+}
+
+function bizarre(g, s) {
+  const W = g.w;
+  const purple = hex(s.card.accent), pink = hex(s.card.accent2);
+  const ink = 0x1c0e2c, VX = 160, HZ = 122;
+
+  // dusk sky + sun at the end of the street, manga focus lines, screentone in the corners
+  g.vgrad(0, 0, W, HZ, [0x2a1452, 0x45207a, 0x6e2a8e, 0xa63a8e, 0xdc5a80, 0xff8e6a, 0xffc478], 0.55);
+  for (let y = 0; y < HZ; y++) for (let x = 0; x < W; x++) {
+    const a = Math.atan2(y - 118, x - VX), d = Math.hypot(x - VX, (y - 118) * 1.4);
+    if (Math.floor(((a + Math.PI) / (2 * Math.PI)) * 44) % 2 === 0 && bay(x, y) < 0.55 - d / 520) g.px(x, y, mix(g.get(x, y), 0xffe2b0, 0.16));
+    const c = Math.max(0, 1 - Math.hypot(Math.min(x, W - 1 - x), y) / 90);
+    if (x % 4 === 0 && y % 4 === 0 && c > 0.05) { g.px(x, y, dk(g.get(x, y), 0.35)); if (c > 0.45) g.px(x + 1, y, dk(g.get(x, y), 0.3)); }
+  }
+  g.light(VX, 116, 90, 54, 0xffe6a8, 0.28, 0.9);
+  g.ell(VX, 116, 25, 25, (x, y, nx, ny) => (ny > 0.15 && (y % 5 === 0 || y % 5 === 1) ? null : tone(x, y, 0.5 + ny * 0.5, [0xfff8dc, 0xffe6a0, 0xffc870], 0.5)));
+  // long thin dusk clouds lit from below
+  for (const [x, y, w] of [[18, 92, 52], [40, 100, 38], [222, 86, 64], [250, 96, 44], [96, 66, 30], [196, 70, 26]]) {
+    g.hl(x, x + w, y, 0x7a2a7a); g.hl(x + 3, x + w - 2, y + 1, 0xff9a7a); g.hl(x + 6, x + w - 8, y - 1, 0x5a2272);
+  }
+  bird(g, 214, 58, 0x2a1238, true); bird(g, 228, 64, 0x2a1238); bird(g, 102, 52, 0x2a1238);
+
+  // the town on the horizon: houses and flats stepping up toward the edges, rim-lit by the sun
+  const town = (side) => {
+    let x = side < 0 ? VX - 14 : VX + 14;
+    while (side < 0 ? x > -10 : x < W + 10) {
+      const far = Math.abs(x - VX);
+      const w = Math.round(6 + far * 0.1 + g.rnd(0, 6)), h = Math.round(3 + far * 0.3 + g.rnd(-3, 7));
+      const x0 = side < 0 ? x - w : x, top = HZ - h;
+      const body = mix(0x3a1e58, 0x26143e, Math.min(1, far / 160));
+      const gable = g.r() < 0.55;
+      if (gable) {
+        const peak = top - Math.round(w * 0.35);
+        g.poly([[x0 - 1, top + 1], [x0 + w / 2, peak], [x0 + w + 1, top + 1]], dk(body, 0.2));
+        g.line(x0 + w / 2, peak, side < 0 ? x0 + w + 1 : x0 - 1, top + 1, pink);
+      } else if (g.r() < 0.5) {
+        g.rect(x0 + 2, top - 3, 3, 3, dk(body, 0.25)); g.vl(x0 + 3, top - 5, top - 4, dk(body, 0.25));
+      }
+      g.rect(x0, top, w, h, body);
+      g.hl(x0, x0 + w - 1, top, gable ? dk(body, 0.2) : mix(body, pink, 0.6));
+      g.vl(side < 0 ? x0 + w - 1 : x0, top, HZ - 1, mix(body, pink, 0.45));
+      for (let wy = top + 3; wy < HZ - 2; wy += 4) for (let wx = x0 + 2; wx < x0 + w - 2; wx += 3) if (g.r() < 0.22) { g.px(wx, wy, 0xffd27a); g.px(wx, wy + 1, 0xe8a04a); }
+      x += side * (w + (g.r() < 0.3 ? 1 : 0));
+    }
+  };
+  town(-1); town(1);
+  g.hl(0, W, HZ - 1, 0x2a1440);
+
+  // the street: asphalt fanning out from the sun, sun glare down the middle, dashed centre line, kerbs + pavement
+  const edge = (y) => (y - HZ) * 1.55 + 2;
+  for (let y = HZ; y < 200; y++) {
+    const e = edge(y), dz = 40 / (y - HZ + 1);
+    for (let x = 0; x < W; x++) {
+      const dx = Math.abs(x - VX);
+      let c;
+      if (dx <= e) {
+        c = tone(x, y, (y - HZ) / 78, [0x3a2846, 0x4a3456, 0x58406a], 0.5);
+        const glare = 1 - dx / (2 + (y - HZ) * 0.42);
+        if (glare > 0 && bay(x, y) < glare * (1 - (y - HZ) / 110)) c = mix(c, 0xffa070, 0.45);
+        if (dx < 0.6 + (y - HZ) * 0.03 && Math.floor(dz * 6) % 2 === 0) c = 0xf0dcf0;
+      } else if (dx <= e + 1 + (y - HZ) * 0.06) {
+        c = 0xb89ac8; // kerb
+      } else {
+        const u = (x - VX) / (y - HZ + 0.5);
+        c = tone(x, y, (y - HZ) / 78, [0x4a3062, 0x5e4276, 0x6e5286], 0.5);
+        if (Math.abs((u * 3 + 100) % 1) < 0.05 * (y - HZ) / 30 || Math.floor(dz * 8) % 4 === 0) c = dk(c, 0.18);
+      }
+      g.px(x, y, c);
+    }
+  }
+
+  // utility poles marching down both pavements, sagging wires converging on the sun
+  const poles = [];
+  for (const side of [-1, 1]) {
+    for (const k of [1, 0.55, 0.33, 0.2, 0.12]) {
+      const yb = HZ + 78 * k, xb = VX + side * (edge(yb) + 8 * k + 4), hgt = 112 * k;
+      poles.push({ side, k, xb: Math.round(xb), yb: Math.round(yb), yt: Math.round(yb - hgt) });
+    }
+  }
+  for (const side of [-1, 1]) {
+    const ps = poles.filter((p) => p.side === side);
+    for (let i = 0; i < ps.length - 1; i++) for (const off of [0, 3]) {
+      const a = ps[i], b = ps[i + 1];
+      const ya = a.yt + 2 + off * a.k, yb2 = b.yt + 2 + off * b.k;
+      for (let t = 0; t <= 1; t += 1 / Math.max(8, Math.abs(a.xb - b.xb))) {
+        const x = a.xb + (b.xb - a.xb) * t, y = ya + (yb2 - ya) * t + Math.sin(t * Math.PI) * 6 * a.k;
+        g.px(x, y, 0x1e1030);
+      }
+    }
+  }
+  for (const p of [...poles].sort((a, b) => a.k - b.k)) {
+    const w = Math.max(1, Math.round(5 * p.k)), x0 = p.xb - (w >> 1);
+    g.rect(x0, p.yt, w, p.yb - p.yt, 0x2a1838);
+    g.vl(p.side < 0 ? x0 + w - 1 : x0, p.yt, p.yb, mix(0x2a1838, pink, 0.5));
+    const arm = Math.round(20 * p.k);
+    g.rect(p.xb - arm, p.yt + Math.round(4 * p.k), arm * 2 + 1, Math.max(1, Math.round(2 * p.k)), 0x24122e);
+    if (p.k > 0.5) for (const ix of [-arm + 2, arm - 2]) { g.px(p.xb + ix, p.yt + 2, 0xd8d0e0); g.px(p.xb + ix, p.yt + 3, 0x9a8aa8); }
+  }
+
+  // the two posers, up on the crossarms of the second pair of poles, facing off across the street
+  const pl = poles.find((p) => p.side < 0 && p.k === 0.55), pr = poles.find((p) => p.side > 0 && p.k === 0.55);
+  const armY = (p) => p.yt + Math.round(4 * p.k) - 1;
+  poser(g, pl.xb + 1, armY(pl), 'point', ink, pink, purple);
+  poser(g, pr.xb - 3, armY(pr), 'lean', ink, 0xffc478, purple);
+
+  // menacing ゴゴゴ
+  const goInk = 0x1a0a28;
+  goSfx(g, 0, 70, 3, purple, goInk);
+  goSfx(g, 22, 102, 2, lt(purple, 0.12), goInk);
+  goSfx(g, 4, 126, 3, mix(purple, pink, 0.25), goInk);
+  goSfx(g, 272, 34, 3, purple, goInk);
+  goSfx(g, 286, 66, 2, mix(purple, pink, 0.35), goInk);
+  // a few speed sparks around the posers
+  for (const [x, y] of [[pl.xb + 26, 72], [pl.xb + 32, 82], [pr.xb - 30, 70], [pr.xb - 24, 60], [52, 64]]) twinkle(g, x, y, 0xfff4c0, 0xffb0d8);
+}
+
 // =============================================================================================
 // palette reduction: keeps each scene on a limited, cohesive palette
 // =============================================================================================
@@ -897,12 +1062,14 @@ export const SCENES = {
   densha: wrap(densha, 37),
   umi: wrap(umi, 38),
   obake_yashiki: wrap(obake_yashiki, 39),
+  bizarre: wrap(bizarre, 40),
 };
 
 export const BANNER_TEXT = {
   densha: { catch: 'ガタンゴトン、ちびでんしゃ発車！', sub: 'がちゃ駅 1番線' },
   umi: { catch: 'ゆらゆら～ぷかぷか水族館', sub: '大水槽の前でひとやすみ' },
   obake_yashiki: { catch: 'うらめしや～！…でもこわくないよ', sub: 'おばけ屋敷 ただいま営業中' },
+  bizarre: { catch: 'ゴゴゴ…ポーズを決めろ！', sub: '夕やけ通りの対決' },
 };
 
 /** Every glyph the scenes draw with p.text in DotGothic16 (preload with document.fonts.load). */

@@ -14,6 +14,7 @@ export const TOOLS = {
   trash_bag: { name: 'Trash Bag', icon: 'trash_bag', prop: 'trash_bag', desc: 'Take it out to the garbage station across the lane.', hand: 0.3, pose: 'box' },
   flyers: { name: 'Flyers', icon: 'flyer', prop: 'flyer_stack', desc: 'Hand one to people on the street to bring in customers.', hand: 0.13 },
   cash_tin: { name: "Grandpa's Cash Tin", icon: 'cash_tin', prop: 'cash_tin', desc: 'Savings for supplies.', hand: 0.13 },
+  watch: { name: 'Old Pocket Watch', icon: 'watch', prop: 'pocket_watch', desc: 'Click to stop time for a few seconds. It needs a minute to wind back up.', keep: true, hand: 0.075 },
 };
 
 export const toolName = (id) => TOOLS[id]?.name || id;

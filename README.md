@@ -34,9 +34,8 @@ automatically to `localStorage`. Shops can be shared with a code (Host shop / Jo
 
 ## What's inside
 
-**The story start.** You arrive in the lane with Grandpa's notebook and the garage key. Read the notebook
-in first person: his letter, a to-do list that ticks itself off, tips, a sketch of the cat, and a map of
-the lane. Behind the shutter the shop is a mess:
+**The story start.** You arrive in the lane with Grandpa's garage key. A single objective card (and a
+waypoint) tells you what to do next. Behind the shutter the shop is a mess:
 - dust piles to sweep with a broom;
 - trash bags to carry to the garbage station;
 - a knocked-over machine to lift and broken machines to repair with a tool kit;
@@ -61,11 +60,11 @@ and gestures. They chat in pixel speech bubbles. Only a few walk the lane at fir
 promote the shop and more come by, walk in and play your machines. Museum visitors are drawn from the same
 cast.
 
-**Flyers and posters.** Fourteen pixel-art sheets (150 x 212 px) made from real stock photos (Google Open
+**Flyers and posters.** Fifteen pixel-art sheets (150 x 212 px) made from real stock photos (Google Open
 Images, CC BY 2.0), dithered down to a few colours, with the game's own 3D models rendered on top as
 outlined sprites and a hand-made 5 x 7 bitmap font:
-- eight meme flyers (Such Capsule, Nope / Yep, Distracted Customer, Galaxy Collector, One Does Not Simply,
-  Me at 3am, Expectation / Reality, New Manager), all original parodies starring the game's cast;
+- nine meme flyers (Such Capsule, Nope / Yep, Distracted Customer, Galaxy Collector, One Does Not Simply,
+  Me at 3am, Expectation / Reality, New Manager, But It Was Me), all original parodies starring the game's cast;
 - six promo posters (Grand Reopening, Kaiju Snack Time, Uchu Neko Station, Spring Sweets, Super Secret,
   Glow in the Dark), with the odds and prices taken from the game data.
 
@@ -77,7 +76,7 @@ the shop is open), the block wall across the lane, Mikawa-ya's window and the ga
 sold-out machines from the PC, upgrade them, and buy new machines, tools and lucky charms. Any pull can
 roll a special finish (Clear, Metallic, Glow-in-the-dark, Gold, Aurora, Diamond).
 
-**Collectibles.** 19 series and 152 figures, each with a printed pixel-art banner (daishi) in its machine.
+**Collectibles.** 20 series and 160 figures, each with a printed pixel-art banner (daishi) in its machine.
 
 **GACHA-MART.** The old PC opens an early-2000s web store with big, clear cards, for machines, capsule
 refills, upgrades, goods, the museum, second-hand figures, selling and your collection book.
@@ -87,7 +86,23 @@ diorama sheets and decorations; visitors pay, look around, take photos, buy pric
 leave tips.
 
 **The lane.** Houses, walls and alleys, utility poles and wires, vending machines, Mikawa-ya, pigeons,
-and railway underpass tunnels at both ends where trains rumble across.
+and railway underpass tunnels at both ends where trains rumble across. The tunnels are pitch black a few
+metres in; people walk out of the dark.
+
+**Bizarre touches.** An affectionate nod to a certain long-running manga about bizarre adventures. The
+characters, art and names are all original:
+- menacing ゴゴゴ / ドドド / ドン! sound effects pop up for ultra and secret pulls;
+- dramatic poses: lucky customers and the menu crew strike them;
+- the Bizarre Pose Club (奇妙なポーズ部), a new 8-figure series: The Pointer, Leaning Salaryman, Menacing
+  Calico, Pompadour Senpai, To Be Continued, Phantom Partner, the Time-Stop Pocket Watch and the secret
+  Ghost Alley Girl;
+- "TO BE CONTINUED" freeze frames end the intro and the reopening;
+- the ghost alley beside Mikawa-ya: a see-through girl and her ghost cat ask you to walk them to the Jizō
+  shrine. Don't look back. Look back and something drags you out of the alley; make it and the shrine
+  leaves you a rare capsule;
+- the old pocket watch (Mikawa-ya, ¥4,000) stops time for five seconds. A negative-colour shockwave goes
+  out, the world turns grey and holds still, and you can still walk around. It needs a minute to wind up;
+- the lines people say on the street ("Yare yare... the train is late again.").
 
 ## Tech
 

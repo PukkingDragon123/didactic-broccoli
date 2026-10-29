@@ -8,6 +8,7 @@ import { getItem } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
 import { iconHTML } from '../gfx/icons.js';
+import { menace } from '../ui/menacing.js';
 
 const DUR = { common: 1.0, uncommon: 1.35, rare: 1.9, ultra: 2.8, secret: 4.6 };
 
@@ -93,6 +94,7 @@ export class Reveal {
       // the world goes dark, the capsule rises and trembles
       g.lighting.dim(true, 5);
       audio.play('secretDim', { vol: 1 });
+      menace({ kind: 'go', dur: 3.4 }); // something menacing is coming...
       held.startTrans('reveal', 1.2);
       let t = 0;
       const shaker = g.tweens.add({
@@ -233,6 +235,7 @@ export class Reveal {
       g.player.fovKick = 2;
     } else if (r === 'ultra') {
       audio.play('revealUltra');
+      menace({ kind: 'do', dur: 2.4 });
       E.beamBurst({ pos: wp(), face: camQ, count: 10, colors: [0xff8af0, 0xffd23f, 0xffffff], length: 0.2, width: 0.012, dur: 2.4, strength: 0.85, follow: holder, back: 0.07 });
       at(0.45, () => {
         E.sparks({ pos: wp(), count: 160, colors: [0xff8af0, 0xffd23f, 0xffffff], speed: 1.2, size: 0.012, life: 1.4, star: 0.9 });
@@ -246,6 +249,7 @@ export class Reveal {
     } else if (r === 'secret') {
       g.state.stats.secrets++;
       audio.play('secretBurst', { vol: 1 });
+      menace({ kind: 'don', at: [innerWidth * 0.5 - 160, innerHeight * 0.18], dur: 2.2 });
       const flash = g.renderer.grade.uniforms.uFlash.value;
       flash.setRGB(1.2, 1.0, 0.6);
       g.tweens.add({ dur: 0.9, update: (k) => flash.setRGB(1.2 * (1 - k), 1.0 * (1 - k), 0.6 * (1 - k)) });

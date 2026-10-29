@@ -38,7 +38,7 @@ export const POSES = {
 };
 
 // tools held in your hands: their own pose and a natural size (largest dimension, m), overriding data/tools.js
-const HOLD = { notebook: ['book', 0.19], milk: ['carton', 0.165], flyers: ['sheets', 0.2], toolkit: ['case', 0.26], batteries: [null, 0.14], cash_tin: [null, 0.16], broom: ['broom', 0.86], trash_bag: ['bag', 0.26] };
+const HOLD = { notebook: ['book', 0.19], milk: ['carton', 0.165], flyers: ['sheets', 0.2], toolkit: ['case', 0.26], batteries: [null, 0.14], cash_tin: [null, 0.16], watch: [null, 0.1], broom: ['broom', 0.86], trash_bag: ['bag', 0.26] };
 
 /** A carried tool's mesh, centred on its holder so poses rotate it nicely. */
 export function makeToolMesh(id) {
@@ -114,7 +114,7 @@ export class Held {
     this.holdScale = this.scaleFor(this.item, opts.pose);
     // picked up from the world: it waits a moment for the hand to reach out and grab it
     const far = fromWorld && this.game.fp?.live && obj.position.distanceTo(POSES[opts.pose || this.pose].pos) > 0.25;
-    this.startTrans(opts.pose || this.pose, far ? 0.4 : opts.dur ?? 0.32, far ? 0.12 : 0);
+    this.startTrans(opts.pose || this.pose, far ? 0.42 : opts.dur ?? 0.32, far ? 0.12 : 0, { arc: far ? 0.06 : 0.02 });
     this.twist = 0;
     if (kind === 'toy') this.attachTag(data, opts.isNew);
     else this.removeTag();
@@ -170,7 +170,7 @@ export class Held {
       const P = POSES[this.pose];
       it.obj.position.copy(P.pos).add(new THREE.Vector3(0, -0.3, 0.06));
       it.obj.quaternion.setFromEuler(P.rot);
-      this.startTrans(this.pose, 0.26, this.lowering ? 0.09 : 0);
+      this.startTrans(this.pose, 0.34, this.lowering ? 0.1 : 0, { settle: true });
       if (it.kind === 'toy') this.attachTag(it.data);
     }
     audio.play('whoosh', { vol: 0.25, dur: 0.12, v: 0.05 });
@@ -206,12 +206,14 @@ export class Held {
 
   removeTag() { if (this.tag) { this.anchor.remove(this.tag); this.tag = null; } }
 
-  startTrans(poseName, dur = 0.3, delay = 0) {
+  /** Move the held item to a pose. opts: { arc (m, lifts mid-way), settle (a touch of overshoot as it lands in the hand) } */
+  startTrans(poseName, dur = 0.3, delay = 0, opts = {}) {
     const obj = this.item.obj;
     const P = POSES[poseName];
     this.trans = {
       fromP: obj.position.clone(), fromQ: obj.quaternion.clone(), fromS: obj.scale.x,
       toP: P.pos.clone(), toQ: new THREE.Quaternion().setFromEuler(P.rot), toS: (poseName === 'inspect' ? 1.25 : 1) * (this.holdScale || 1), t: 0, dur, delay,
+      arc: opts.arc || 0, settle: !!opts.settle,
     };
     this.pose = poseName;
   }
@@ -304,9 +306,11 @@ export class Held {
     // the previous slot's item dipping out of view
     const lo = this.lowering;
     if (lo) {
-      lo.t += dt / 0.12;
-      const k = Math.min(1, lo.t);
-      lo.obj.position.set(lo.from.x + 0.02 * k, lo.from.y - 0.32 * k * k, lo.from.z + 0.06 * k);
+      lo.t += dt / 0.15;
+      const k = Math.min(1, lo.t), kk = k * k * (1.6 - 0.6 * k);
+      lo.obj.position.set(lo.from.x + 0.025 * k, lo.from.y - 0.32 * kk, lo.from.z + 0.06 * k);
+      if (!lo.q) lo.q = lo.obj.quaternion.clone();
+      lo.obj.quaternion.copy(lo.q).premultiply(_q.setFromAxisAngle(_ax.set(1, 0, 0.3).normalize(), -0.5 * kk));
       if (k >= 1) { if (this.item?.obj !== lo.obj) lo.obj.visible = false; this.lowering = null; }
     }
 
@@ -318,20 +322,28 @@ export class Held {
     else if (this.trans) {
       const tr = this.trans;
       tr.t += dt;
-      const k = ease.outCubic(Math.min(1, tr.t / tr.dur));
+      // weight: eased in and out (or rising and settling with a little overshoot), the item turning a beat ahead of
+      // its travel, lifted along a slight arc when it comes from further away
+      const u = Math.min(1, tr.t / tr.dur);
+      const k = tr.settle ? 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2) : u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      const kr = ease.outCubic(Math.min(1, u * 1.25));
       obj.position.lerpVectors(tr.fromP, tr.toP, k);
-      obj.quaternion.slerpQuaternions(tr.fromQ, tr.toQ, k);
+      if (tr.arc) obj.position.y += Math.sin(Math.PI * u) * tr.arc;
+      obj.quaternion.slerpQuaternions(tr.fromQ, tr.toQ, tr.settle ? k : kr);
       if (!this.busy) obj.scale.setScalar(tr.fromS + (tr.toS - tr.fromS) * k);
       if (tr.t >= tr.dur) this.trans = null;
     }
-    // broom sweeps: the head swishes side to side, pivoting near the upper hand
+    // broom sweeps, pivoting near the upper hand: a quick push of the bristles across (pressed into the floor), then an
+    // easier swing back that drifts a touch past rest and settles
     if (it.kind === 'tool' && it.data.id === 'broom' && this.swing > 0 && !this.trans) {
-      const P = POSES[this.pose], k = Math.sin(this.swing * Math.PI * 3) * this.swing;
-      const q = _q.setFromAxisAngle(_ax.set(0.15, 1, 0.3).normalize(), k * 0.55);
+      const P = POSES[this.pose], u = 1 - this.swing;
+      const v = (u - 0.35) / 0.65, io = v < 0.5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2;
+      const k = u < 0.35 ? ease.outCubic(u / 0.35) : 1 - io - 0.16 * Math.sin(Math.PI * v);
+      const q = _q.setFromAxisAngle(_ax.set(0.15, 1, 0.3).normalize(), k * 0.6);
       obj.quaternion.setFromEuler(P.rot).premultiply(q);
       const piv = _p.set(0, 0.3, 0).applyEuler(P.rot).add(P.pos); // ~ the top hand
       obj.position.copy(P.pos).sub(piv).applyQuaternion(q).add(piv);
-      obj.position.y += Math.abs(k) * 0.02;
+      obj.position.y -= Math.sin(Math.PI * Math.min(1, u / 0.45)) * 0.016;
     }
     if (this.busy || !inp.locked || g.pc?.active || this.reading) return;
 

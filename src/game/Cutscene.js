@@ -4,6 +4,7 @@
 // Hold Space / Enter / click to skip: every waiter then finishes at once, so the script's side effects still run.
 import * as THREE from 'three';
 import { talk } from '../people/voice.js';
+import { toBeContinued } from '../ui/menacing.js';
 import { audio } from '../core/audio.js';
 
 const smooth = (k) => k * k * (3 - 2 * k);
@@ -206,14 +207,23 @@ export class Cutscene {
     return { update: (dt) => { t = Math.min(dur, t + dt); this.setFade(from + (to - from) * smooth(t / dur)); return t >= dur; } };
   }
 
-  /** Typewriter subtitle. Yield it to wait until typed + `hold` seconds. */
+  /** Sepia freeze-frame with the "to be continued" arrow (src/ui/menacing.js); waits until it has played. */
+  tbc(dur = 3.2) {
+    let done = false;
+    if (this.skipping) return null;
+    const p = toBeContinued(dur);
+    p.then(() => { done = true; });
+    return { update: () => { if (this.skipping && !done) p.cancel(); return done || this.skipping; } };
+  }
+
   /** The player's voice in subtitles (src/people/voice.js). */
   get voice() { return this._voice || (this._voice = talk(null, { base: 245, duty: 0.25, vol: 1.2 })); }
 
-  say(text, hold = 2.2, who = '') {
+  /** Typewriter subtitle. Yield it to wait until typed + `hold` seconds. voice: an onChar chirp (default: yours). */
+  say(text, hold = 2.2, who = '', voice = null) {
     this.subEl.innerHTML = (who ? `<span class="who">${who}</span>` : '') + '<span class="txt"></span>';
     this.subEl.classList.add('show');
-    this.typing = { text, i: 0, t: 0, el: this.subEl.querySelector('.txt') };
+    this.typing = { text, i: 0, t: 0, el: this.subEl.querySelector('.txt'), voice: voice || this.voice };
     let t = 0;
     const len = text.length / 38 + hold;
     return { update: (dt) => (t += dt) >= len };
@@ -227,7 +237,7 @@ export class Cutscene {
     ty.t += dt * 38;
     const n = Math.min(ty.text.length, Math.floor(ty.t));
     if (n > ty.i) {
-      for (let i = ty.i; i < n; i++) this.voice(ty.text[i]); // your own 8-bit voice
+      for (let i = ty.i; i < n; i++) ty.voice(ty.text[i]); // 8-bit voice (yours unless someone else is talking)
       ty.i = n;
       ty.el.textContent = ty.text.slice(0, n);
     }
