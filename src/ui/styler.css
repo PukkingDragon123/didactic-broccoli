@@ -1,0 +1,26 @@
+/* The main menu's quick styling arrows beside your character (src/ui/MenuStyler.js). Pixel buttons, no effects. */
+#styler { position: fixed; inset: 0; pointer-events: none; z-index: 4; opacity: 0; }
+#styler > * { position: absolute; left: 0; top: 0; pointer-events: auto; }
+#styler .st-arrow {
+  width: 36px; height: 36px; padding: 0; display: grid; place-items: center; cursor: pointer;
+  background: #fff8ec; border: 3px solid #1a1420; box-shadow: 0 3px 0 #1a1420;
+}
+#styler .st-arrow:hover { background: #ffd23f; }
+#styler .st-arrow:active { transform: translateY(2px); box-shadow: 0 1px 0 #1a1420; }
+#styler .st-swatch {
+  width: 24px; height: 24px; padding: 0; cursor: pointer; border: 3px solid #1a1420; box-shadow: 0 3px 0 #1a1420;
+  font: 16px 'Alagard', monospace; line-height: 18px; color: #1a1420; background: #fff8ec;
+}
+#styler .st-swatch:hover { outline: 3px solid #ffd23f; }
+#styler .st-tag {
+  pointer-events: none; white-space: nowrap; padding: 4px 10px 6px; background: #1a1420; color: #fff8ec;
+  font: 16px 'Alagard', monospace;
+}
+#styler .st-tag.pop { animation: st-pop 0.24s steps(3); }
+@keyframes st-pop { from { margin-top: 8px; } to { margin-top: 0; } }
+#styler .st-hint {
+  pointer-events: none; white-space: nowrap; padding: 2px 8px 4px; background: #fff8ec; color: #1a1420;
+  border: 3px solid #1a1420; font: 16px 'Alagard', monospace;
+}
+#styler .st-hint.gone { display: none; }
+@media (max-width: 560px) { #styler .st-arrow { width: 32px; height: 32px; } }

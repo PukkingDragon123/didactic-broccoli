@@ -15,6 +15,7 @@ import { isTouchDevice, installTouch } from './core/touch.js';
 import { MenuSigns } from './world/menuSigns.js';
 import { MenuGear } from './world/menuGear.js';
 import { MenuCrew } from './world/MenuCrew.js';
+import { MenuStyler } from './ui/MenuStyler.js';
 import { installStaticIcons, setLabel } from './ui/staticIcons.js';
 import { encodeShop, decodeShop } from './game/shareCode.js';
 import { VISIT_KEY } from './game/state.js';
@@ -71,6 +72,7 @@ async function boot() {
     audio.init();
     game.startAudio();
     dropGear();
+    styler?.dispose(); styler = null;
     if (crew?.busy) crew.closet.close();
     const st = game.state.story;
     if (!started && !fly && !intro && !game.story.done && !st.intro && !game.visiting) {
@@ -96,6 +98,8 @@ async function boot() {
   // you and your friends goofing around in the lane; click yourself for the closet
   let crew = params.has('autotest') ? null : new MenuCrew(game);
   game.menuCrew = crew;
+  // arrows beside you to restyle hair / top / bottoms (and colours) right on the menu
+  let styler = crew ? new MenuStyler(game, crew) : null;
   // whatever's in your hands hangs off the camera: keep it out of the menu shot
   game.held.anchor.visible = params.has('autotest');
   const canvas = game.renderer.renderer.domElement;
@@ -241,6 +245,7 @@ async function boot() {
       cam.position.set(1.9 + Math.sin(a) * 0.3, 1.55 + Math.sin(titleT * 0.17) * 0.04, 10.6 + Math.cos(a * 0.7) * 0.2);
       cam.lookAt(-0.5 + Math.sin(a) * 0.12, 1.9, 5.2);
       crew?.update(dt); // may take the camera over (closet close-up)
+      styler?.update(dt, titleT > 0.8 && menuOpen());
       if (gear) gear.root.visible = !crew?.busy;
       game.time += dt;
       for (const m of game.machines) m.update(dt, game.time);
