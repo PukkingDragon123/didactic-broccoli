@@ -18,8 +18,8 @@ const GradeShader = {
     uTime: { value: 0 },
     uVignette: { value: 0.32 },
     uGrain: { value: 0.035 },
-    uSaturation: { value: 1.14 },
-    uContrast: { value: 1.07 },
+    uSaturation: { value: 1.18 },
+    uContrast: { value: 1.13 },
     uWarm: { value: 0.012 },
     uFlash: { value: new THREE.Color(0, 0, 0) },
     uAberration: { value: 0.0012 },
@@ -269,7 +269,7 @@ export class Renderer {
     }
     this.bloom = null;
     if (q.bloom) {
-      this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.42, 0.55, 0.92);
+      this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.32, 0.25, 0.92);
       composer.addPass(this.bloom);
     }
     this.grade = new ShaderPass(GradeShader);
