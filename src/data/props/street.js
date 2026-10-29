@@ -1,7 +1,7 @@
 // Street props — what you see outside the half-open garage shutter at golden-hour dusk.
 // Each entry: { name, voxel (metres per voxel), build(v) }. Facing +z, bottom-centre origin.
 import { C, shade, mix } from '../../voxel/palette.js';
-import { gloss, glow, glass, enc, MAT } from '../../voxel/VoxelModel.js';
+import { gloss, glow, glass, metal, enc, MAT } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, sh, fill, tint, grime, dust, speckle, blotch, rod, path, text, textRows } from './garage.js';
 
 /** Weathered concrete colour function. */
@@ -475,6 +475,114 @@ const street = {
       path(v, [[X0, 62, 5], [X0 + 3, 59, 3], [X0 + 5, 58, 1]], 0x1e1e1e);
       grime(v, 0, 6, 0.8);
     },
+  },
+};
+
+// ------------------------------------------------------------- lane clutter (軒先): pots, planters, fire buckets...
+/** Flower pot (tapered cylinder with rim and soil) at (cx, y0, cz); returns the soil height. */
+function pot(v, cx, y0, cz, r0, r1, h, col) {
+  for (let i = 0; i < h; i++) {
+    const r = r0 + (r1 - r0) * i / Math.max(1, h - 1) + (i >= h - 2 ? 0.6 : 0);
+    v.cylinder(cx, y0 + i, cz, r, 1, typeof col === 'function' ? col : gloss(shade(col, i >= h - 2 ? 1.08 : 0.96)));
+  }
+  v.cylinder(cx, y0 + h - 1, cz, r1 - 0.9, 1, 0x4a3222);
+  return y0 + h;
+}
+const leafFn = (c, s = 9) => (x, y, z) => gloss(shade(c, vnoise(x, y, z, 3, s) > 0.55 ? 1.08 : 0.92));
+
+street.pot_cluster = {
+  name: 'Cluster of Pots', voxel: 0.012,
+  build(v) {
+    v.jitter = 0.02;
+    // big terracotta pot with a boxwood ball
+    let t = pot(v, -22, 0, 0, 8, 11, 18, 0xc0643a);
+    v.ellipsoid(-22, t + 8, 0, 11, 9, 10, (x, y, z) => { const n = vnoise(x, y, z, 3.5, 3); return gloss(n < 0.42 ? 0x2f5a2a : n < 0.68 ? 0x3f7a32 : 0x5a9a3a); });
+    // glazed blue pot with an aloe
+    t = pot(v, 0, 0, 3, 5.5, 7, 11, 0x2a5a8a);
+    for (let k = 0; k < 9; k++) { const a = k * 0.7 + 0.3, len = 10 + (k % 3) * 3; v.line(0, t, 3, Math.round(Math.cos(a) * len * 0.5), t + len, 3 + Math.round(Math.sin(a) * len * 0.4), gloss(k % 2 ? 0x6a9a6a : 0x7aaa78), 0.6); }
+    // little plastic pot of red geraniums
+    t = pot(v, 14, 0, -4, 4.5, 6, 9, 0xe8e4da);
+    v.ellipsoid(14, t + 3, -4, 6, 3.5, 5.5, leafFn(0x4a8a3a));
+    for (const [dx, dy, dz] of [[-2, 6, 1], [3, 7, -1], [0, 8, 2]]) v.sphere(14 + dx, t + dy, -4 + dz, 1.8, gloss(hash(dx, dy, dz, 1) < 0.5 ? 0xe5383b : 0xff5a4a));
+    // a forgotten pot with a dead stick in it, and an empty one stacked on its side
+    t = pot(v, 27, 0, 4, 4, 5.5, 8, 0xb06038);
+    v.line(27, t, 4, 29, t + 14, 4, 0x6a5a40); v.line(28, t + 8, 4, 31, t + 11, 5, 0x6a5a40);
+    v.cylinder(36, 5, -2, 4.6, 9, gloss(0xc0643a), 'x');
+    v.cylinder(37, 5, -2, 3.4, 8, null, 'x');
+    // a saucer of water for the cats
+    v.cylinder(-6, 0, 10, 3.5, 1, gloss(0xd8d4cc)); v.cylinder(-6, 1, 10, 2.5, 1, glass(0xb8d8e8));
+    blotch(v, -40, 0, -12, 44, 4, 14, 0x5a6a3a, 0.78, 3, 5);
+    dust(v, 0x9a8a70, 0.15);
+  },
+};
+
+street.styro_planter = {
+  name: 'Styrofoam Vegetable Planters', voxel: 0.014,
+  build(v) {
+    v.jitter = 0.02;
+    const styro = (x, y, z) => shade(0xf2f0e8, vnoise(x, y, z, 6, 3) > 0.6 ? 0.94 : 1);
+    for (const [cx, w] of [[-18, 15], [17, 15]]) {
+      fill(v, cx - w, 0, -11, cx + w, 18, 11, styro);
+      fill(v, cx - w + 1, 18, -10, cx + w - 1, 18, 10, (x, y, z) => shade(0x4a3020, 0.85 + hash(x, y, z, 4) * 0.25));
+      v.box(cx - w + 2, 8, 11, cx + w - 2, 8, 11, 0xd8d4c8);
+    }
+    // cherry tomatoes on bamboo stakes (left), cucumbers on a little net (right)
+    for (const x of [-27, -18, -9]) {
+      v.line(x, 18, 0, x, 70, 0, 0xc8b078);
+      for (let y = 20; y < 66; y++) {
+        if (hash(x, y, 0, 5) < 0.55) v.set(x + Math.round((hash(x, y, 1, 6) - 0.5) * 6), y, Math.round((hash(x, y, 2, 6) - 0.5) * 6), leafFn(0x3f7a32)(x, y, 0));
+        if (hash(x, y, 3, 7) < 0.06) v.sphere(x + (hash(x, y, 4, 7) < 0.5 ? -3 : 3), y, 2, 1.4, gloss(hash(x, y, 5, 7) < 0.7 ? 0xe5383b : 0xf2a21a));
+      }
+    }
+    for (const x of [6, 28]) v.line(x, 18, -8, x, 64, -8, 0xc8b078);
+    for (let y = 22; y <= 62; y += 6) v.line(6, y, -8, 28, y, -8, 0xe8e4d8);
+    for (let x = 7; x <= 27; x += 4) v.line(x, 18, -8, x, 62, -8, 0xe8e4d8);
+    for (let i = 0; i < 90; i++) {
+      const x = 6 + Math.floor(hash(i, 1, 0, 8) * 22), y = 20 + Math.floor(hash(i, 2, 0, 8) * 42);
+      v.set(x, y, -7, leafFn(0x4a8a3a)(x, y, -7)); v.set(x + 1, y, -7, leafFn(0x5a9a42)(x, y, -6));
+      if (i % 13 === 0) v.box(x, y - 4, -6, x, y, -6, gloss(0x3a7a2a));
+      if (i % 17 === 0) v.set(x, y + 1, -6, gloss(0xffd23f));
+    }
+    dust(v, 0x9a8a70, 0.1);
+  },
+};
+
+street.fire_buckets = {
+  name: 'Fire Buckets (防火用水)', voxel: 0.014,
+  build(v) {
+    v.jitter = 0.02;
+    const red = (x, y, z) => gloss(shade(0xd42a21, vnoise(x, y, z, 5, 1) > 0.6 ? 0.92 : 1));
+    // little steel stand
+    for (const x of [-20, 20]) for (const z of [-8, 8]) v.box(x, 0, z, x, 30, z, gloss(0x5a6a5a));
+    fill(v, -21, 30, -9, 21, 31, 9, () => gloss(0x6a7a6a));
+    fill(v, -21, 8, -9, 21, 8, 9, () => gloss(0x5a6a5a));
+    // three buckets on top, one upside down, labels
+    for (const [cx, y0, up] of [[-11, 32, 1], [11, 32, 1], [0, 47, -1]]) {
+      for (let i = 0; i < 14; i++) v.cylinder(cx, y0 + i, 0, up > 0 ? 6 + i * 0.18 : 8.5 - i * 0.18, 1, red);
+      if (up > 0) { v.cylinder(cx, y0 + 13, 0, 7.6, 1, null); v.cylinder(cx, y0 + 12, 0, 7.2, 1, glass(0x8ab0c0)); v.torus(cx, y0 + 14, 0, 7.6, 0.5, metal(0xb8bcc0), 'y'); }
+      fill(v, cx - 3, y0 + 4, 7, cx + 3, y0 + 9, 8, () => gloss(0xfbf8f0));
+      v.box(cx - 2, y0 + 7, 9, cx + 2, y0 + 7, 9, 0x1a1a1a); v.box(cx - 2, y0 + 5, 9, cx + 1, y0 + 5, 9, 0x1a1a1a);
+    }
+    blotch(v, -22, 0, -10, 22, 46, 10, gloss(0x8a4a2a), 0.84, 2, 6);
+    grime(v, 0, 10, 0.8);
+  },
+};
+
+street.fire_ext_box = {
+  name: 'Fire Extinguisher Box', voxel: 0.015,
+  build(v) {
+    const red = (x, y, z) => gloss(shade(0xd42a21, 0.92 + vnoise(x, y, z, 5, 2) * 0.1));
+    v.cylinder(0, 0, -2, 2.2, 2, (x, y, z) => shade(0x9a968e, 0.95 + hash(x, y, z, 1) * 0.08));
+    v.cylinder(0, 2, -2, 1.4, 64, (x, y, z) => gloss(shade(0xa8aeb2, 0.9 + vnoise(x, y, z, 3, 3) * 0.15)));
+    fill(v, -11, 52, -6, 11, 88, 6, red);
+    v.shape(-12, 88, -7, 12, 91, 8, (x, y, z) => y <= 91 - (z + 7) / 8, (x, y, z) => gloss(shade(0xb82018, y >= 90 ? 1.05 : 0.95)));
+    // white label band + door outline + handle
+    fill(v, -9, 76, 7, 9, 84, 7, () => gloss(0xfbf8f0));
+    for (const x of [-6, -1, 4]) v.box(x, 78, 8, x + 2, 82, 8, gloss(0xd42a21));
+    v.paint(() => v.shape(-10, 53, 6, 10, 74, 6, (x, y) => y === 53 || y === 74 || Math.abs(x) === 10, gloss(0x8a1a16)));
+    v.box(7, 62, 7, 8, 66, 8, metal(0xd8dce0));
+    blotch(v, -12, 52, -7, 12, 91, 8, gloss(0x7a2a1a), 0.86, 2, 8);
+    grime(v, 0, 12, 0.78);
   },
 };
 

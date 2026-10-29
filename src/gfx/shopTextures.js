@@ -268,6 +268,79 @@ const R = {
     for (let y0 = 0; y0 < 128; y0 += 32) { p.rect(0, y0, 128, 3, 0x5a3e24); p.rect(0, y0, 128, 1, 0x7a5636); }
     return p;
   },
+  /** Grandpa's garage slab (4 m × 4 m tile at 64 px/m): power-trowel tones, aggregate, saw-cut joints with spalled
+   *  edges and dirt in them, hairline cracks, rust and cement spots, scuffed lighter wear. No big landmarks
+   *  (the oil stains and tyre marks are placed once as decals so nothing visibly repeats). */
+  garageSlab() {
+    const W = 256, p = new Pix(W, W, 46);
+    const base = 0x9a958b;
+    p.fill(base);
+    // broad trowel tones, then medium blotches, ordered-dithered so they stay pixel-crisp
+    for (let i = 0; i < 26; i++) patch(p, hash2(i, 3) * W, hash2(i, 4) * W, 18 + hash2(i, 5) * 34, 14 + hash2(i, 8) * 30, [0x948f85, 0xa29d93, 0x8f8a80, 0xa6a196][i % 4], 0.55);
+    for (let i = 0; i < 40; i++) patch(p, hash2(i, 13) * W, hash2(i, 14) * W, 4 + hash2(i, 15) * 9, 3 + hash2(i, 16) * 8, [0x928d83, 0xa49f95][i % 2], 0.6);
+    // power-trowel swirl arcs (very faint)
+    for (let k = 0; k < 18; k++) {
+      const cx = hash2(k, 21) * W, cy = hash2(k, 22) * W, r = 10 + hash2(k, 23) * 22, a0 = hash2(k, 24) * 6.28;
+      for (let a = a0; a < a0 + 2.2; a += 0.6 / r) wpx(p, cx + Math.cos(a) * r, cy + Math.sin(a) * r * 0.8, k % 2 ? 0xa39e94 : 0x928d84, 150);
+    }
+    // aggregate and pinholes
+    for (let i = 0; i < 2600; i++) {
+      const x = hash2(i, 31) * W, y = hash2(i, 32) * W, k = hash2(i, 33);
+      wpx(p, x, y, k < 0.45 ? 0x878278 : k < 0.75 ? 0xaba69c : k < 0.9 ? 0x7e7a72 : 0xb8b2a6);
+    }
+    // saw-cut control joints every 2 m: dark cut, bright lip, dirt-filled stretches and spalled chips
+    for (const j of [0, 128]) {
+      for (let t = 0; t < W; t++) {
+        wpx(p, j, t, 0x4e4a44); wpx(p, j + 1, t, hash2(t, j + 1) < 0.3 ? 0x6a665e : 0xaaa59b);
+        wpx(p, t, j, 0x4e4a44); wpx(p, t, j + 1, hash2(j + 3, t) < 0.3 ? 0x6a665e : 0xaaa59b);
+        if (hash2(t, j + 5) < 0.04) { const s = hash2(t, j + 6) < 0.5 ? -1 : 1; wpx(p, j + s * 1, t, 0x6e6a62); wpx(p, j + s * 2, t, 0x7a766e); wpx(p, j + s, t + 1, 0x6e6a62); }
+        if (hash2(j + 7, t) < 0.04) { const s = hash2(j + 8, t) < 0.5 ? -1 : 1; wpx(p, t, j + s, 0x6e6a62); wpx(p, t, j + s * 2, 0x7a766e); wpx(p, t + 1, j + s, 0x6e6a62); }
+      }
+    }
+    // hairline cracks wandering off the joints
+    crack(p, 40, 2, 70, 0x6a665e, 1, 11); crack(p, 170, 130, 54, 0x6a665e, -1, 12); crack(p, 210, 20, 36, 0x6a665e, 1, 13);
+    for (let i = 0, x = 130, y = 60; i < 60; i++) { wpx(p, x, y, 0x6a665e); x += 1; if (hash2(i, 19) < 0.35) y += hash2(i, 20) < 0.5 ? 1 : -1; }
+    // rust pin-spots (rebar chairs, dropped nails) and pale cement splashes
+    for (let i = 0; i < 26; i++) { const x = hash2(i, 41) * W, y = hash2(i, 42) * W; wpx(p, x, y, 0x8a5a3a); if (hash2(i, 43) < 0.5) { wpx(p, x + 1, y, 0xa0704a, 160); wpx(p, x, y + 1, 0xa0704a, 120); } }
+    for (let i = 0; i < 10; i++) patch(p, hash2(i, 51) * W, hash2(i, 52) * W, 2 + hash2(i, 53) * 3, 2 + hash2(i, 54) * 2, 0xb6b0a4, 0.9);
+    // darker grime pockets
+    for (let i = 0; i < 14; i++) patch(p, hash2(i, 61) * W, hash2(i, 62) * W, 3 + hash2(i, 63) * 6, 2 + hash2(i, 64) * 5, 0x86817a, 0.7);
+    return p;
+  },
+  /** Shōwa vinyl P-tiles, 30 cm (20 px at 66.7 px/m; 6 × 6 tiles): cream / sage checker with marbling, scuffs,
+   *  chipped corners, a cracked tile and one missing tile showing black adhesive. */
+  pTile() {
+    const T = 20, N = 6, W = T * N, p = new Pix(W, W, 47);
+    for (let ty = 0; ty < N; ty++) for (let tx = 0; tx < N; tx++) {
+      const cream = (tx + ty) % 2 === 0;
+      const base = cream ? sh(0xd8ceb4, 0.97 + hash2(tx, ty) * 0.06) : sh(0x8fa08a, 0.95 + hash2(tx, ty + 9) * 0.08);
+      const x0 = tx * T, y0 = ty * T;
+      const missing = tx === 4 && ty === 1;
+      for (let y = 0; y < T; y++) for (let x = 0; x < T; x++) {
+        let c = base;
+        // directional marbling streaks
+        const m = Math.sin((x + y * 0.6) * 0.55 + Math.sin(y * 0.4 + tx) * 2 + ty * 3);
+        if (m > 0.86) c = sh(base, cream ? 0.9 : 0.86); else if (m < -0.92) c = sh(base, 1.06);
+        if (hash2(x0 + x, y0 + y) < 0.05) c = sh(c, 0.92);
+        if (missing) c = hash2(x0 + x, y0 + y + 3) < 0.25 ? 0x3a3530 : (Math.sin(x * 1.3 + y * 0.9) > 0.3 ? 0x24201c : 0x8a857a);
+        p.px(x0 + x, y0 + y, c);
+      }
+      if (!missing) {
+        // bevel: light top/left, dark gap bottom/right
+        p.rect(x0, y0, T, 1, sh(base, 1.06)); p.rect(x0, y0, 1, T, sh(base, 1.04));
+        p.rect(x0, y0 + T - 1, T, 1, 0x5a544a); p.rect(x0 + T - 1, y0, 1, T, 0x5a544a);
+        // chipped corner
+        if (hash2(tx + 3, ty + 7) < 0.3) { p.px(x0 + 1, y0 + 1, 0x4a443c); p.px(x0 + 2, y0 + 1, 0x6a645a); p.px(x0 + 1, y0 + 2, 0x6a645a); }
+        // scuffs / heel marks
+        for (let k = 0; k < 3; k++) if (hash2(tx * 5 + k, ty) < 0.45) { const sx = x0 + 3 + Math.floor(hash2(k, tx + ty) * 13), sy = y0 + 3 + Math.floor(hash2(ty, k + tx) * 13); p.px(sx, sy, 0x4a4640); p.px(sx + 1, sy, 0x5a564e); }
+      } else {
+        p.frame(x0, y0, T, T, 0x5a544a);
+      }
+      // a cracked tile
+      if (tx === 1 && ty === 4) for (let i = 0, x = 2, y = 3; i < 18; i++) { p.px(x0 + x, y0 + y, 0x4a443c); x += 1; if (hash2(i, 77) < 0.4) y += 1; }
+    }
+    return p;
+  },
   /** Dark weathered clapboard (exterior). */
   siding() {
     const p = new Pix(64, 64, 35);

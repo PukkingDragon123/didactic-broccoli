@@ -76,6 +76,8 @@ const RECIPES = {
   shikkui: () => shopPix('shikkui'),
   shopCeiling: () => shopPix('shopCeiling'),
   siding: () => shopPix('siding'),
+  garageSlab: () => shopPix('garageSlab'),
+  pTile: () => shopPix('pTile'),
   concrete() {
     const p = new Pix(64, 64, 11);
     p.fill(0x8f8a84);
@@ -991,7 +993,235 @@ const TOWN = {
   /** Distant mid-rise facade with a window grid (map + lit-window mask). */
   skyline: (p) => skyline(p, false),
   skylineE: (p) => skyline(p, true),
+
+  // ---- lane weathering decals (alpha-cut; tint with vertex colours)
+  /** Grime streaks running down a wall from a sill / eave / girder (dense at the top, thinning out). */
+  stainDrip: (p) => {
+    const { w, h } = p;
+    for (let x = 0; x < w; x++) {
+      if (hash2(x >> 1, 3) < 0.35) continue;
+      const len = h * (0.25 + 0.75 * hash2(x >> 1, 4) ** 1.4);
+      for (let y = 0; y < len; y++) if (BAYER4[(y & 3) * 4 + (x & 3)] / 16 < 0.85 - (y / len) * 0.8) p.px(x, y, (x >> 1) % 3 ? 0x4e463c : 0x463e36);
+    }
+    for (let x = 0; x < w; x++) if (BAYER4[x & 3] < 10) p.px(x, 0, 0x443c34);
+  },
+  /** Splash-back dirt and moss at the foot of a wall. */
+  stainBase: (p) => {
+    const { w, h } = p;
+    for (let x = 0; x < w; x++) {
+      const top = h * (0.45 + 0.5 * hash2(x >> 2, 9));
+      for (let y = 0; y < h; y++) {
+        const t = (h - 1 - y) / top;
+        if (t < 1 && BAYER4[(y & 3) * 4 + (x & 3)] / 16 < (1 - t) * 0.95) p.px(x, y, hash2(x >> 1, y >> 1) < 0.25 ? 0x4a5a2a : y > h * 0.7 ? 0x3e382e : 0x524a3c);
+      }
+    }
+  },
+  /** Rain puddle: irregular blob, sky reflection in the middle, dark wet rim. */
+  puddle: (p) => {
+    const { w, h } = p;
+    const blobs = [[0.5, 0.5, 0.36], [0.32, 0.42, 0.22], [0.68, 0.58, 0.24], [0.5, 0.3, 0.18], [0.42, 0.68, 0.2]];
+    const inside = (x, y) => blobs.some(([bx, by, r]) => Math.hypot(x / w - bx, (y / h - by) * 1.1) < r);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if (!inside(x, y)) continue;
+      const rim = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1);
+      const rim2 = !rim && (!inside(x - 2, y) || !inside(x + 2, y) || !inside(x, y - 2) || !inside(x, y + 2));
+      const t = y / h + (hash2(x, y + 9) - 0.5) * 0.12;
+      // dark wet rim (no reflection), then the water itself: near-black with a slight blue cast (the shader adds the sky)
+      let c = rim ? 0x2a2622 : rim2 ? 0x302c28 : t < 0.5 ? 0x1c2028 : 0x181c22;
+      if (!rim && !rim2 && hash2(x, y + 77) < 0.03) c = 0x2a2622;
+      p.px(x, y, c);
+    }
+  },
+  /** Branching asphalt crack (tar-black lines). */
+  roadCrack: (p) => {
+    const { w, h } = p;
+    const walk = (x, y, n, dx, s) => {
+      for (let i = 0; i < n; i++) {
+        p.px(x, y, 0x1e1c1a);
+        if (hash2(i, s) < 0.3) p.px(x + 1, y, 0x2a2826);
+        x += dx + (hash2(i, s + 1) < 0.35 ? (hash2(i, s + 2) < 0.5 ? -1 : 1) : 0);
+        y += hash2(i, s + 3) < 0.75 ? 1 : 0;
+        if (x < 0 || x >= w || y >= h) return;
+        if (n > 12 && hash2(i, s + 4) < 0.05) walk(x, y, n >> 1, dx ? 0 : (hash2(i, s + 5) < 0.5 ? 1 : -1), s + 10);
+      }
+    };
+    walk(w >> 1, 0, h * 1.4, 0, 1);
+  },
+  /** Fire hydrant lid (消火栓) with its painted yellow ring. */
+  lidHydrant: (p) => {
+    const { w } = p;
+    const c = (w - 1) / 2;
+    for (let y = 0; y < w; y++) for (let x = 0; x < w; x++) {
+      const d = Math.hypot(x - c, y - c);
+      if (d > c) continue;
+      if (d > c - 3) p.px(x, y, hash2(x, y) < 0.15 ? 0x8a7a3a : 0xe8c018);
+      else if (d > c - 5) p.px(x, y, 0x5a5856);
+      else p.px(x, y, ((x + y) % 4 === 0 || (x - y + 64) % 4 === 0) ? 0x2a2826 : 0x4a4644);
+    }
+    p.text('消火栓', c + 1, c - 5, { size: 9, color: 0xe8c018, align: 'center' });
+  },
+  /** Small round water-valve lid. */
+  lidValve: (p) => {
+    const { w } = p;
+    const c = (w - 1) / 2;
+    for (let y = 0; y < w; y++) for (let x = 0; x < w; x++) {
+      const d = Math.hypot(x - c, y - c);
+      if (d > c) continue;
+      p.px(x, y, d > c - 1.5 ? 0x6a6866 : (x + y) % 3 === 0 ? 0x2e2c2a : 0x4a4644);
+    }
+    p.rect(Math.round(c) - 1, Math.round(c) - 1, 3, 3, 0x8a8682);
+  },
+  /** Square cast-iron utility lid with a grid pattern. */
+  lidSquare: (p) => {
+    const { w, h } = p;
+    p.fill(0x6a6866);
+    p.rect(1, 1, w - 2, h - 2, 0x3a3836);
+    for (let y = 3; y < h - 3; y++) for (let x = 3; x < w - 3; x++) if ((x % 3 === 0) || (y % 3 === 0)) p.px(x, y, 0x55524e);
+    p.rect((w >> 1) - 3, (h >> 1) - 1, 6, 2, 0x8a8682);
+    p.noise(0.06);
+  },
+  /** Grit, leaves and cigarette ends along the kerb (alpha strip). */
+  gutterGrit: (p) => {
+    const { w, h } = p;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const t = y / (h - 1);
+      if (hash2(x, y + 5) < 0.55 * (1 - t) + 0.05) p.px(x, y, [0x4a4440, 0x5a524a, 0x3a3634][Math.floor(hash2(x, y + 6) * 3)]);
+    }
+    for (let k = 0; k < w / 6; k++) {
+      const x = Math.floor(hash2(k, 21) * w), y = Math.floor(hash2(k, 22) * h * 0.6);
+      const c = [0x9a6a2a, 0xb8862a, 0x7a5a2a, 0x6a7a3a, 0xe8e4d8][Math.floor(hash2(k, 23) * 5)];
+      p.px(x, y, c); p.px(x + 1, y, shadeC(c, 0.85));
+      if (hash2(k, 24) < 0.5) p.px(x, y + 1, shadeC(c, 0.75));
+    }
+  },
+  // ---- lane signage
+  /** ひったくり注意 (beware of bag snatchers) board, as seen at every underpass. */
+  signSnatch: (p) => {
+    const { w, h } = p;
+    p.fill(0xf2d21a); p.frame(0, 0, w, h, 0x1a1a1a);
+    p.rect(2, 2, w - 4, 11, 0xd8282a);
+    p.text('注意', w / 2, 1, { size: 10, color: 0xfbf8f0, align: 'center' });
+    p.text('ひったくり', w / 2, 15, { size: 9, color: 0x1a1a1a, align: 'center' });
+    p.text('BEWARE OF', w / 2, h - 18, { size: 8, color: 0x1a1a1a, align: 'center', font: FONT_EN });
+    p.text('SNATCHERS', w / 2, h - 10, { size: 8, color: 0x1a1a1a, align: 'center', font: FONT_EN });
+    for (let i = 0; i < 6; i++) { const x = Math.floor(hash2(i, 31) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i) < 0.3) p.px(x, y, 0x8a7a3a, 90); }
+  },
+  /** Blue 住居表示 address plates: an atlas of three 40 x 16 plates stacked vertically. */
+  addrs: (p) => { addrPlate(p, 0, '上山町', '2-14'); addrPlate(p, 16, '上山町', '3-7'); addrPlate(p, 32, '上山町', '2-9'); },
+  /** Shōwa enamel advertising signs (fictional brands). */
+  enamelSoap: (p) => {
+    const { w, h } = p;
+    p.fill(0x1f4a8a); p.frame(0, 0, w, h, 0xf4ecd8); p.frame(1, 1, w - 2, h - 2, 0x0f2a5a);
+    p.circle(w >> 1, 9, 6, 0xf4ecd8);
+    for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2 - Math.PI / 2; p.circle(Math.round((w >> 1) + Math.cos(a) * 3), Math.round(9 + Math.sin(a) * 3), 2, 0xf08aa8); }
+    p.px(w >> 1, 9, 0xffd23f);
+    [...'サクラ石鹸'].forEach((ch, i) => p.text(ch, w / 2, 17 + i * 11, { size: 10, color: 0xfbf8f0, align: 'center' }));
+    enamelWear(p);
+  },
+  enamelRamune: (p) => {
+    const { w, h } = p;
+    p.fill(0xf4ecd8); p.frame(0, 0, w, h, 0xc8282a); p.frame(1, 1, w - 2, h - 2, 0xc8282a);
+    p.rect(w / 2 - 2, 4, 4, 3, 0x2a6a9a); p.rect(w / 2 - 3, 7, 6, 10, 0x6ab8d8); p.rect(w / 2 - 2, 9, 1, 6, 0xd8f0f8);
+    [...'金星ラムネ'].forEach((ch, i) => p.text(ch, w / 2, 19 + i * 11, { size: 10, color: 0xc8282a, align: 'center' }));
+    enamelWear(p);
+  },
+  enamelUniform: (p) => {
+    const { w, h } = p;
+    p.fill(0xf2c41a); p.frame(0, 0, w, h, 0x1a1a1a);
+    p.rect(2, 2, w - 4, 12, 0x1a1a1a);
+    p.text('学生', w / 2, 2, { size: 10, color: 0xf2c41a, align: 'center' });
+    [...'学生服'].forEach((ch, i) => p.text(ch, w / 2, 18 + i * 13, { size: 12, color: 0x1a1a1a, align: 'center' }));
+    p.text('タカラヤ', w / 2, h - 13, { size: 9, color: 0xc8282a, align: 'center' });
+    enamelWear(p);
+  },
+  /** 猛犬注意 sticker for gates. */
+  signDog: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0xd8282a);
+    p.text('猛犬注意', w / 2, 1, { size: 9, color: 0xd8282a, align: 'center' });
+    p.rect(4, h - 5, 6, 3, 0x2a2a2a); p.rect(3, h - 7, 2, 2, 0x2a2a2a); p.px(10, h - 6, 0x2a2a2a);
+  },
+  /** Wooden name plates (表札): an atlas of five 12 x 24 plates side by side, a family name written down each. */
+  names: (p) => ['田中', '山本', '佐藤', '鈴木', '小林'].forEach((n, i) => namePlate(p, i * 12, n)),
+  /** すだれ bamboo blind (alpha gaps between the slats). */
+  sudare: (p) => {
+    const { w, h } = p;
+    for (let y = 0; y < h; y++) {
+      if (y % 3 === 2) continue;
+      const c = shadeC(0xc8a868, (y % 3 ? 0.88 : 1) * (0.92 + hash2(y, 7) * 0.12));
+      for (let x = 0; x < w; x++) if (!(y > h - 4 && hash2(x, y) < 0.4)) p.px(x, y, hash2(x, y + 9) < 0.08 ? shadeC(c, 0.8) : c);
+    }
+    for (const x of [3, w >> 1, w - 4]) for (let y = 0; y < h; y++) p.px(x, y, 0x6a4a2a);
+    p.rect(0, 0, w, 2, 0x5a3a20);
+  },
+  /** 飛び出し注意 boy board (cut-out). */
+  tobidashi: (p) => {
+    const { w, h } = p;
+    const cx = w >> 1;
+    p.rect(cx - 1, h - 10, 2, 10, 0x8a8e92);
+    // yellow cap, face, red shirt, blue shorts, running legs and arms
+    p.rect(cx - 4, 1, 8, 3, 0xf2c41a); p.rect(cx + 2, 3, 4, 1, 0xf2c41a);
+    p.rect(cx - 4, 4, 8, 6, 0xf4c8a0); p.px(cx + 1, 6, 0x1a1a1a); p.px(cx + 3, 6, 0x1a1a1a); p.rect(cx + 1, 8, 2, 1, 0xc83a2a);
+    p.rect(cx - 5, 10, 10, 9, 0xd8282a);
+    p.rect(cx + 5, 11, 6, 2, 0xd8282a); p.rect(cx + 10, 10, 2, 2, 0xf4c8a0);
+    p.rect(cx - 10, 13, 5, 2, 0xd8282a); p.rect(cx - 12, 14, 2, 2, 0xf4c8a0);
+    p.rect(cx - 5, 19, 10, 4, 0x2a52a8);
+    p.rect(cx + 1, 23, 3, 6, 0xf4c8a0); p.rect(cx + 3, 28, 5, 2, 0x1a1a1a);
+    p.rect(cx - 6, 22, 3, 3, 0xf4c8a0); p.rect(cx - 9, 24, 4, 3, 0xf4c8a0); p.rect(cx - 11, 26, 3, 2, 0x1a1a1a);
+    p.text('とびだし注意', cx, h - 11, { size: 8, color: 0xd8282a, align: 'center', outline: 0xfbf8f0 });
+  },
+  /** 町内会掲示板: the neighbourhood notice board, pinned with circulars and festival notices. */
+  noticeBoard: (p) => {
+    const { w, h } = p;
+    p.fill(0x3a5a3a); p.frame(0, 0, w, h, 0x5a4030); p.frame(1, 1, w - 2, h - 2, 0x6a4a34);
+    for (let y = 2; y < h - 2; y++) for (let x = 2; x < w - 2; x++) if (hash2(x, y) < 0.12) p.px(x, y, 0x34503a);
+    const sheet = (x, y, sw, sh, c, ink, lines) => {
+      p.rect(x, y, sw, sh, c); p.rect(x + 1, y + sh, sw, 1, 0x2a3a2a);
+      for (let i = 0; i < lines; i++) p.rect(x + 2, y + 3 + i * 3, Math.max(2, sw - 4 - ((i * 5) % 4)), 1, ink);
+      p.px(x + (sw >> 1), y + 1, 0xd8282a);
+    };
+    sheet(3, 3, 12, 15, 0xf4f0e6, 0x5a5a5a, 4);
+    sheet(17, 4, 13, 10, 0xffe680, 0x8a3a1a, 2);
+    p.text('祭', 23, 5, { size: 9, color: 0xd8282a, align: 'center' });
+    sheet(32, 3, 11, 14, 0xf8d8e0, 0x6a3a5a, 3);
+    sheet(5, 20, 10, 9, 0xd8ecf8, 0x2a4a8a, 2);
+    sheet(18, 17, 14, 12, 0xf4f0e6, 0x3a3a3a, 3);
+    sheet(35, 19, 9, 10, 0xe8f4d8, 0x3a6a2a, 2);
+  },
+  /** Hand-lettered board for a home piano class. */
+  signPiano: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x8a5a3a);
+    p.text('ピアノ教室', w / 2, 1, { size: 9, color: 0x3a2a6a, align: 'center' });
+    for (let x = 3; x < w - 3; x += 4) p.px(x, h - 3, x % 8 ? 0x1a1a1a : 0xe5383b);
+  },
+  /** 牛乳 milk box label. */
+  signMilk: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x2a6ac8);
+    p.text('牛乳', w / 2, (h >> 1) - 6, { size: 10, color: 0x2a6ac8, align: 'center' });
+  },
 };
+function addrPlate(p, y0, town, no) {
+  const w = p.w, h = 16;
+  p.rect(0, y0, w, h, 0x1f4a9a); p.frame(0, y0, w, h, 0xf4f0e6);
+  p.text(town, w / 2, y0, { size: 9, color: 0xfbf8f0, align: 'center' });
+  p.text(no, w / 2, y0 + h - 9, { size: 8, color: 0xfbf8f0, align: 'center', font: FONT_EN });
+}
+function namePlate(p, x0, name) {
+  const w = 12, h = p.h;
+  p.rect(x0, 0, w, h, 0xc8a070);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (hash2(x >> 1, y * 3) < 0.25) p.px(x0 + x, y, 0xb08a5a);
+  p.frame(x0, 0, w, h, 0x6a4a2a);
+  [...name].forEach((ch, i) => p.text(ch, x0 + w / 2, 1 + i * 11, { size: 10, color: 0x1a1410, align: 'center' }));
+}
+function enamelWear(p) {
+  const { w, h } = p;
+  for (let i = 0; i < 9; i++) { const x = Math.floor(hash2(i, 61) * w), y = Math.floor(hash2(i, 62) * h); p.px(x, y, 0x2a2420); p.px(x + 1, y, 0x5a3a2a); if (i % 3 === 0) p.px(x, y + 1, 0x7a4a2a); }
+  for (const [x, y] of [[2, 2], [w - 3, 2], [2, h - 3], [w - 3, h - 3]]) p.px(x, y, 0x8a8a88);
+  for (let x = 0; x < w; x++) for (let y = h - 6; y < h; y++) if (hash2(x, y + 70) < 0.25) p.px(x, y, 0x6a4a2a, 140);
+}
+const BAYER4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 const TRAIN_DOORS = [0.11, 0.37, 0.63, 0.89];
 function trainSide(p, emissive) {
   const { w, h } = p;
