@@ -162,3 +162,4 @@ body.touchmode #guide { top: max(14px, env(safe-area-inset-top)); width: min(250
 body.has-goal #news { top: calc(max(20px, env(safe-area-inset-top)) + var(--goal-h, 0px) + 14px); }
 body.touchmode #guide .g-t { font-size: 16px; line-height: 19px; }
 body.touchmode #guide .g-s { font-size: 16px; line-height: 15px; }
+#waypoint.center { opacity: 0 !important; }

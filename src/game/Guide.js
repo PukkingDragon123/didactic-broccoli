@@ -179,6 +179,8 @@ export class Guide {
     wp.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px)`;
     wp.classList.add('on');
     wp.classList.toggle('off', off);
+    // looking right at it: the hover hint under the crosshair says it all, so the marker steps aside
+    wp.classList.toggle('center', !off && Math.abs(px - W / 2) < 170 && Math.abs(py - H / 2) < 110);
     if (off) this.wpArrow.style.transform = `rotate(${Math.atan2(-y, x)}rad)`;
     this.wpD.textContent = `${Math.round(dist)} m`;
   }
