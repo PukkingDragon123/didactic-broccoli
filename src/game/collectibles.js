@@ -47,6 +47,9 @@ export function itemGeometry(key, opts = {}) {
   return g;
 }
 
+/** Is this item's up-res geometry already built (cheap to show)? */
+export function hasItemGeometry(key) { return geoCache.has(key); }
+
 /** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
   let geo;

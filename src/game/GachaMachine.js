@@ -20,7 +20,8 @@ import { capsuleColor, capsuleRadius, capsuleSize, capsuleStyle, pileGeometries,
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capacityFor, crankTime, rollCapsule, MACHINE_TYPES } from './economy.js';
 import { bannerTexture } from '../gfx/banner.js';
-import { makeItemMesh } from './collectibles.js';
+import { makeItemMesh, itemGeometry, hasItemGeometry } from './collectibles.js';
+import { mergeByMaterial } from '../voxel/merge.js';
 import { FONT_EN } from '../gfx/pix.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { pocketCash } from './cash.js';
@@ -33,7 +34,7 @@ const _m = new THREE.Matrix4();
 const _s = new THREE.Vector3(1, 1, 1);
 const _q = new THREE.Quaternion();
 const _ax = new THREE.Vector3();
-const _v = new THREE.Vector3();
+const _v = new THREE.Vector3(), _v2 = new THREE.Vector3();
 const PRICE_MIN = 100, PRICE_MAX = 3000;
 const MAX_COINS_SHOWN = 40;
 const HAND_PLACED_BEFORE_POUR = 3;
@@ -236,6 +237,7 @@ export class GachaMachine {
     m.map = tex; m.emissiveMap = tex; m.color.set(0xffffff); m.emissiveIntensity = 0.1; m.needsUpdate = true;
     const A = this.domeAnchor;
     A.clear();
+    this.disposeFigures();
     const S = SERIES_BY_ID[series];
     const D = this.L.dome;
     const pick = (r, n = 0) => S.items.filter((i) => i.rarity === r)[n];
@@ -246,16 +248,59 @@ export class GachaMachine {
     this.turntable = this.spec.style.crown ? turn : null;
     const n = keys.length;
     const cell = (D.w - 0.02) / n;
-    keys.forEach((k, i) => {
+    // performance: the sample figures are drawn as one merged mesh (one draw call per material, not per figure and
+    // material). Each figure keeps its own level of detail as in src/game/collectibles.js (coarse voxels, the up-res
+    // ones within 1.7 m of the camera, back beyond 2.1 m): the merged geometry is the matching mix (see updateFigures).
+    const figs = keys.map((k, i) => {
       const fig = makeItemMesh(k, 'normal');
       const sz = fig.geometry.userData.size;
       const sc = Math.min(1, (D.h - 0.02) / sz.y, (cell - 0.01) / Math.max(sz.x, sz.z));
       fig.scale.setScalar(sc);
       fig.position.set(-D.w / 2 + 0.01 + cell * (i + 0.5), 0, (i % 2 ? -0.02 : 0.015));
       fig.rotation.y = -(i - (n - 1) / 2) * 0.28;
-      fig.castShadow = false;
-      turn.add(fig);
+      fig.updateMatrix();
+      const lod = fig.userData.lod; // (unset: one detail level only)
+      return { key: k, matrix: fig.matrix, pos: fig.position, lod: !!lod, hi: !lod || lod.hi, geo: fig.geometry, mats: fig.material };
     });
+    if (!figs.length) return;
+    const F = this.figs = { list: figs, turn, t: 0, cache: new Map(), mask: -1, mesh: new THREE.Mesh(undefined, figs[0].mats) };
+    F.mesh.castShadow = false; F.mesh.receiveShadow = true;
+    F.mesh.userData.figures = keys;
+    this.setFigureMask(figs.reduce((m, f, i) => m | (f.hi ? 1 << i : 0), 0));
+    turn.add(F.mesh);
+  }
+
+  disposeFigures() { if (this.figs) for (const g of this.figs.cache.values()) g.dispose(); this.figs = null; }
+
+  /** The merged sample figures with figure i up-res when bit i of mask is set. */
+  setFigureMask(mask) {
+    const F = this.figs;
+    if (!F || mask === F.mask) return;
+    F.mask = mask;
+    let g = F.cache.get(mask);
+    if (!g) {
+      g = mergeByMaterial(F.list.map((f, i) => ({ geometry: !f.lod ? f.geo : itemGeometry(f.key, (mask >> i) & 1 ? {} : { lowres: true }), matrix: f.matrix })));
+      F.cache.set(mask, g);
+    }
+    F.mesh.geometry = g;
+  }
+
+  /** Detail levels of the sample figures by distance (the same rule and rate as updateItemLod in collectibles.js). */
+  updateFigures(dt) {
+    const F = this.figs;
+    if (!F || !F.list.some((f) => f.lod) || (F.t -= dt) > 0) return;
+    F.t = 0.1;
+    const cam = this.game.camera.getWorldPosition(_v);
+    let mask = F.mask, built = 0;
+    F.list.forEach((f, i) => {
+      if (!f.lod) return;
+      const d2 = F.turn.localToWorld(_v2.copy(f.pos)).distanceToSquared(cam), hi = (mask >> i) & 1;
+      if (!hi && d2 < 1.7 * 1.7) {
+        if (!hasItemGeometry(f.key)) { if (built >= 1) return; built++; }
+        mask |= 1 << i;
+      } else if (hi && d2 > 2.1 * 2.1) mask &= ~(1 << i);
+    });
+    this.setFigureMask(mask);
   }
 
   /** Slide the old card up out of the open top and the new one down into its slot. */
@@ -866,6 +911,7 @@ export class GachaMachine {
     }
     this.rope.update(dt);
     if (this.turntable) this.turntable.rotation.y += dt * 0.35;
+    this.updateFigures(dt);
     // the recommended price follows the shop's demand model: keep the plate current
     this.recT = (this.recT ?? Math.random() * 4) - dt;
     if (this.recT <= 0) { this.recT = 4; if (this.game.sim?.recommendedPrice && this.recommended !== this.shownRec) this.drawPrice(); }
@@ -873,6 +919,7 @@ export class GachaMachine {
 
   dispose() {
     this.game.scene.remove(this.root);
+    this.disposeFigures();
     this.rope.dispose();
     for (const c of this.colliders) this.game.physics.removeCollider(c);
     this.game.player.removeObstacle(this.footprint);
