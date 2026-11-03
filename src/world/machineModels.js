@@ -12,6 +12,7 @@ import { voxelMaterials } from '../voxel/materials.js';
 import { C, shade, mix } from '../voxel/palette.js';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
+import { mergeByMaterial } from '../voxel/merge.js';
 
 export const VS = 0.005; // 5 mm voxels
 const vx = (m) => Math.round(m / VS);
@@ -607,6 +608,27 @@ function windowGeometry(w, d, h) {
 }
 
 // ----------------------------------------------------------------------------- assembly
+/**
+ * Performance: parts that move together are drawn as one mesh, one draw call per material, instead of one per part and
+ * material (a machine went from ~45 draw calls to ~half). The meshes are built as before, then replaced by one merged
+ * mesh in the same parent (with the first part's flags and userData); the merged geometry is shared per machine
+ * type and key, like the part geometries.
+ */
+const mergedCache = new Map();
+function mergeParts(key, meshes) {
+  const parent = meshes[0].parent;
+  for (const m of meshes) m.updateMatrix();
+  let g = mergedCache.get(key);
+  if (!g) { g = mergeByMaterial(meshes.map((m) => ({ geometry: m.geometry, matrix: m.matrix }))); mergedCache.set(key, g); }
+  const first = meshes[0], out = new THREE.Mesh(g, first.material);
+  out.castShadow = first.castShadow; out.receiveShadow = first.receiveShadow;
+  out.userData = { ...first.userData };
+  out.renderOrder = first.renderOrder;
+  for (const m of meshes) parent.remove(m);
+  parent.add(out);
+  return out;
+}
+
 const decalMat = new Map();
 function dmat(map, opts = {}) {
   const k = map.uuid + JSON.stringify(opts);
@@ -653,6 +675,7 @@ export function buildMachineModel(type, opts = {}) {
     const side = plane(spec.d, spec.lowH, dmat(sideTexture(type), { roughness: 0.4 }));
     side.position.set(sx * (spec.w / 2 + 0.0006), L.y0 + spec.lowH / 2, 0);
     side.rotation.y = sx * Math.PI / 2;
+    side.userData.side = true;
     group.add(side);
   }
   // capsule window: frame, back print, display card, clear walls
@@ -750,10 +773,14 @@ export function buildMachineModel(type, opts = {}) {
   plus.position.set(L.plate.x + L.buttons.dx, L.buttons.y, L.front);
   minus.userData.part = 'priceDown'; plus.userData.part = 'priceUp';
   group.add(minus, plus);
-  // the body voxels are positioned by their own origin: shift the parts that were built in machine coordinates
+  // one mesh for what never moves (stand, lower unit, window frame, tray), one for the lid with its topper, one for the
+  // two side prints (the moving parts and everything you click on a part of stay separate)
+  const fixed = mergeParts(`${type}:fixed`, [body, stand, frame, tray]);
+  mergeParts(`${type}:lid`, [lidMesh, topper]);
+  mergeParts(`${type}:sides`, group.children.filter((o) => o.userData.side));
   return {
-    group, L, body, stand, bannerMesh, bannerHolder, domeAnchor, lid, lidPivot, drawer, coinAnchor, flapPivot, handleGroup, handlePivot: hpiv,
-    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [shell, hood], tray,
+    group, L, body: fixed, stand: fixed, bannerMesh, bannerHolder, domeAnchor, lid, lidPivot, drawer, coinAnchor, flapPivot, handleGroup, handlePivot: hpiv,
+    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [shell, hood], tray: fixed,
   };
 }
 

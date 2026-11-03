@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { GARAGE, MACHINE_SLOTS } from './Garage.js';
-import { createHuman, Bubbles, HUMAN_PRESETS } from '../people/index.js';
+import { createHuman, Bubbles, HUMAN_PRESETS, prebuildHuman, takeHuman, humanReady } from '../people/index.js';
 import { capsuleCost } from '../game/economy.js';
 import { formatYen } from '../core/util.js';
 import { talk } from '../people/voice.js';
@@ -85,6 +85,7 @@ export class Pedestrians {
     this.open = !!game.state.story?.complete;
     this.askT = 20;
     this.buildKeeper();
+    this.prebuildNext();
     game.events.on('slap', (e) => this.onSlap(e));
   }
 
@@ -130,17 +131,35 @@ export class Pedestrians {
     if (near && !k.near && k.greetT <= 0) { this.say(k.h, pick(LINES.keeper)); k.h.gesture('bow'); k.greetT = 25; }
     k.near = near;
     if (d > 30) return;
-    k.h.update(dt, { speed: 0, lookAt: k.look || (near ? this.game.camera.position : null), talking: this.bubbles.isTalking(k.h) });
+    // animation: full rate up close, a few frames a second farther away or off screen (like the passers-by: performance,
+    // fewer bone uploads)
+    const talking = this.bubbles.isTalking(k.h);
+    let adt = dt;
+    if (d > 9 && !talking) {
+      k.lodT = (k.lodT || 0) - dt; k.acc = (k.acc || 0) + dt;
+      if (k.lodT > 0) return;
+      _v.copy(k.h.root.position); _v.y += 1;
+      const v = _v.project(this.game.camera);
+      k.lodT = v.z < 1 && Math.abs(v.x) < 1.15 && Math.abs(v.y) < 1.2 ? (d > 25 ? 0.15 : 0.05) : 0.4;
+      adt = Math.min(0.1, k.acc); k.acc = 0;
+    }
+    k.h.update(adt, { speed: 0, lookAt: k.look || (near ? this.game.camera.position : null), talking });
   }
 
   // ------------------------------------------------------------------ spawning
+  // performance: the next passer-by (the next seed) is built and painted in the background, in idle time
+  // (src/people/prebuild.js), so a spawn takes a finished person instead of building one on the spot
+  prebuildNext() { prebuildHuman({ seed: this.seed }, this.game.renderer?.renderer); }
+
   spawn() {
     const g = this.game, town = g.garage.town;
     const lanes = town?.lanes?.length ? town.lanes : [{ z: GARAGE.maxZ + 2.2, x0: -24, x1: 24 }, { z: GARAGE.maxZ + 8.0, x0: -24, x1: 24 }];
     const lane = pick(lanes);
     const dir = Math.random() < 0.5 ? 1 : -1;
     const x0 = dir > 0 ? lane.x0 : lane.x1, x1 = dir > 0 ? lane.x1 : lane.x0;
-    const h = createHuman({ seed: this.seed++ });
+    const h = takeHuman({ seed: this.seed }) || createHuman({ seed: this.seed });
+    this.seed++;
+    this.prebuildNext();
     h.root.position.set(x0, 0, lane.z + rnd(-0.3, 0.3));
     h.root.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2;
     this.group.add(h.root);
@@ -515,8 +534,13 @@ export class Pedestrians {
     this.updateKeeper(dt);
     this.spawnT -= dt;
     if (this.spawnT <= 0 && !g.cutscene?.active) {
-      this.spawnT = this.interval() * rnd(0.7, 1.3);
-      if (this.list.length < this.maxPeople()) this.spawn();
+      // (if the next person isn't finished in the background yet, they get up to two seconds more)
+      const wait = this.list.length < this.maxPeople() && !humanReady({ seed: this.seed }) && (this.spawnWait = (this.spawnWait || 0) + dt) < 2;
+      if (!wait) {
+        this.spawnWait = 0;
+        this.spawnT = this.interval() * rnd(0.7, 1.3);
+        if (this.list.length < this.maxPeople()) this.spawn();
+      }
     }
     const pl = g.player.pos;
     // keep the top sheet of the stack in your hands showing the next design

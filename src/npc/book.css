@@ -37,3 +37,25 @@
 #rb .rb-stamp { position: absolute; right: 7%; top: 6%; padding: 2px 8px; font: 16px var(--font-key); color: #c0242e; box-shadow: 0 0 0 3px #c0242e; transform: rotate(8deg); opacity: .8; }
 #rb .rb-foot { position: absolute; left: 5%; right: 5%; bottom: 3%; font-size: 16px; color: #8a7a70; display: flex; justify-content: space-between; }
 @media (max-width: 700px) { #rb .rb-page { font-size: 16px; line-height: 19px; padding: 3%; } #rb .rb-write { font-size: 22px; line-height: 24px; } }
+
+/* ---- on paper (src/ui/paper.js + paper.css): the pages get real grain, the portrait a paper clip, the secret a
+   pink carbon slip, PRIVATE a rubber stamp and a coffee ring where someone put their cup down. Stepped motion. */
+body.paper-ui #rb .rb-book { transition: transform .55s steps(6), opacity .3s steps(3); }
+body.paper-ui #rb.closing .rb-book { transition: transform .35s steps(4), opacity .35s steps(4); }
+body.paper-ui #rb .rb-page {
+  color: var(--pp-ink);
+  background: repeating-linear-gradient(to bottom, transparent 0 21px, rgba(47, 90, 154, .22) 21px 23px) 0 6px, var(--pp-grain-cream) 0 0 / 96px;
+  background-color: #eee4ca;
+}
+body.paper-ui #rb .rb-page.r { transition: transform .6s .25s steps(6); }
+body.paper-ui #rb .rb-page.r::after { content: ''; position: absolute; right: 9%; bottom: 16%; width: 84px; height: 84px; background: var(--pp-coffee) 0 0 / 84px 84px; image-rendering: pixelated; pointer-events: none; }
+body.paper-ui #rb .rb-h { color: var(--pp-red); border-bottom: 2px solid var(--pp-red); padding-bottom: 2px; }
+body.paper-ui #rb .rb-row { transition: opacity .25s steps(3), transform .25s steps(3); }
+body.paper-ui #rb .rb-row .k { color: var(--pp-ink2); }
+body.paper-ui #rb .rb-row .v { color: var(--pp-ink); }
+body.paper-ui #rb .rb-portrait { position: relative; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 0 0 0 3px var(--pp-ink), 4px 5px 0 rgba(26, 18, 22, .3); }
+body.paper-ui #rb .rb-portrait::after { content: ''; position: absolute; left: 14px; top: -14px; width: 16px; height: 44px; background: var(--pp-clip) 0 0 / 16px 44px; image-rendering: pixelated; }
+body.paper-ui #rb .rb-secret { padding: 6px 10px; color: var(--pp-ink); background: var(--pp-grain-pink) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(200, 50, 44, .35), 3px 4px 0 rgba(26, 18, 22, .25); }
+body.paper-ui #rb .rb-write { color: var(--pp-red); text-shadow: none; }
+body.paper-ui #rb .rb-stamp { color: var(--pp-red); box-shadow: inset 0 0 0 3px var(--pp-red), inset 0 0 0 5px transparent, inset 0 0 0 7px rgba(200, 50, 44, .6); padding: 4px 12px; letter-spacing: 3px; }
+body.paper-ui #rb .rb-foot { color: var(--pp-ink2); }

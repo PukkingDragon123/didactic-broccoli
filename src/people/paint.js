@@ -29,19 +29,22 @@ const C_60_90_160 = [60, 90, 160];
 const C_120_90_60 = [120, 90, 60];
 
 /**
- * Paint every face of the atlas. A generator: yields after each face so the work can be time-sliced
- * (see Human); run it to completion with paintAtlas().
+ * Paint every face of the atlas. A generator: yields after each face (and every ~1200 texels inside a big one) so the
+ * work can be time-sliced (see Human); run it to completion with paintAtlas().
  */
 export function* paintAtlasJob(spec, P, faces, pix) {
   const ctx = makePainters(spec, P);
   const d = pix.d, o = new Float32Array(4);
   const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 };
+  let run = 0; // texels since the last yield: big faces (a coat's back) are split over several steps too
   for (const f of faces) {
     const fn = ctx[f.seg.mat] || ctx.body;
     c.f = f; c.seg = f.seg; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens;
     c.kind = f.kind;
     const R = f.rect, sw = f.s1 - f.s0, rh = f.r1 - f.r0;
     for (let j = 0; j < R.h; j++) {
+      if (run >= 1200) { run = 0; yield null; }
+      run += R.w;
       const r = f.r1 - (j - 0.5) / f.dens; // in-plane up coordinate
       for (let i = 0; i < R.w; i++) {
         const s = f.s0 + (i - 0.5) / f.dens;

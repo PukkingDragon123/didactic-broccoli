@@ -225,3 +225,90 @@ body.closet-on canvas:active { cursor: grabbing; }
 .cl-empty { grid-column: 1 / -1; padding: 24px 8px; text-align: center; color: #7a6a5a; }
 .cl-tab span { font-size: 14px; }
 .cl-pic .cl-tag img, .cl-pic .cl-rar img { width: auto; height: auto; transform: none; transition: none; }
+
+/* ================================================================ on paper (the kit: src/ui/paper.js + paper.css)
+   The closet is a mail-order catalogue page: cream stock with a torn edge, a kraft header band, index tabs on manila,
+   each piece a cut-out card with its picture on graph paper, stamps for Wearing / Trying on / Owned, paper-slip
+   buttons that lift a texel and get a pencil line on hover (never a glow), paint chips for colours. */
+body.paper-ui .cl { color: var(--pp-ink); }
+body.paper-ui .cl button:focus-visible { outline: 2px dashed var(--pp-red); outline-offset: 2px; }
+body.paper-ui .cl-panel {
+  image-rendering: pixelated; border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background: var(--pp-grain-cream) 0 0 / 96px padding-box; background-color: transparent; box-shadow: none;
+  filter: drop-shadow(6px 8px 0 rgba(26, 18, 22, .45));
+  animation-timing-function: steps(5);
+}
+body.paper-ui .cl-head {
+  margin: 0 0 2px; padding: 6px 12px 8px 14px; background: var(--pp-grain-kraft) 0 0 / 96px;
+  box-shadow: inset 0 -2px 0 #3a2a20, 0 4px 0 rgba(58, 42, 32, .18);
+}
+body.paper-ui .cl-title { color: #2a1c14; text-shadow: none; }
+body.paper-ui .cl-wallet { color: var(--pp-ink); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), 2px 3px 0 rgba(26, 18, 22, .4); }
+body.paper-ui .cl-wallet.flash { animation: pp-cl-flash .5s steps(3); }
+@keyframes pp-cl-flash { 30% { transform: translateY(-3px); } }
+/* index tabs */
+body.paper-ui .cl-tab { color: var(--pp-ink2); background: var(--pp-grain-manila) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(58, 42, 32, .55), 2px 3px 0 rgba(26, 18, 22, .25); transition: none; }
+body.paper-ui .cl-tab:hover { background: var(--pp-grain-manila) 0 0 / 96px; transform: translate(-1px, -1px); }
+body.paper-ui .cl-tab.on { color: var(--pp-ink); background: var(--pp-grain-note) 0 0 / 96px; transform: translateY(-4px); box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -4px 0 var(--pp-red), 2px 4px 0 rgba(26, 18, 22, .35); }
+body.paper-ui .cl-tip, body.paper-ui .cl-desc, body.paper-ui .cl-empty { color: var(--pp-ink2); }
+/* the cards */
+body.paper-ui .cl-card {
+  background: var(--pp-grain-receipt) 0 0 / 96px; image-rendering: pixelated; animation-timing-function: steps(4);
+  box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 6px 0 var(--rc, transparent), 4px 5px 0 rgba(26, 18, 22, .3);
+}
+body.paper-ui .cl-card.worn { background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-blue), inset 0 6px 0 var(--rc, transparent), 4px 5px 0 rgba(26, 18, 22, .3); }
+body.paper-ui .cl-card.trying { background: var(--pp-grain-note) 0 0 / 96px; }
+body.paper-ui .cl-pic { background: var(--pp-grain-graph) 0 0 / 64px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .3); }
+body.paper-ui .cl-pic:hover { filter: none; }
+body.paper-ui .cl-pic img { transition: opacity .25s steps(3); }
+body.paper-ui .cl-pic:hover img { transform: translateY(-2px); }
+body.paper-ui .cl-card.trying .cl-pic, body.paper-ui .cl-card.worn .cl-pic { box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .3), inset 0 0 0 4px var(--pp-receipt), inset 0 0 0 6px var(--pp-red); }
+body.paper-ui .cl-card.worn .cl-pic { box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .3), inset 0 0 0 4px var(--pp-receipt), inset 0 0 0 6px var(--pp-blue); }
+/* stamps on the picture */
+body.paper-ui .cl-tag { color: var(--pp-ink); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), 2px 2px 0 rgba(26, 18, 22, .3); }
+body.paper-ui .cl-tag.on { color: var(--pp-blue); box-shadow: inset 0 0 0 2px var(--pp-blue), 2px 2px 0 rgba(26, 18, 22, .3); }
+body.paper-ui .cl-tag.try { color: var(--pp-red); background: var(--pp-grain-pink) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-red), 2px 2px 0 rgba(26, 18, 22, .3); animation: pp-cl-blink 1.2s steps(1) infinite; }
+@keyframes pp-cl-blink { 50% { background: var(--pp-grain-receipt) 0 0 / 96px; } }
+body.paper-ui .cl-tag.own { color: #2f6a3a; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px #2f6a3a, 2px 2px 0 rgba(26, 18, 22, .3); }
+body.paper-ui .cl-tag.lock { background: var(--pp-grain-kraft) 0 0 / 96px; box-shadow: inset 0 0 0 2px #3a2a20; }
+body.paper-ui .cl-name { color: var(--pp-ink); }
+body.paper-ui .cl-why { color: var(--pp-red); }
+/* paper-slip buttons */
+body.paper-ui .cl-btn, body.paper-ui .cl-back {
+  color: var(--pp-ink); filter: none; transition: none; image-rendering: pixelated;
+  background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), 3px 4px 0 rgba(26, 18, 22, .4);
+}
+body.paper-ui .cl-btn:hover, body.paper-ui .cl-back:hover {
+  filter: none; transform: translate(-1px, -1px);
+  background: var(--pp-pencil) center bottom 5px / 64px 6px repeat-x, var(--pp-grain-receipt) 0 0 / 96px;
+  box-shadow: inset 0 0 0 2px var(--pp-ink), 4px 5px 0 rgba(26, 18, 22, .4);
+}
+body.paper-ui .cl-btn:active, body.paper-ui .cl-back:active { transform: translate(2px, 3px); box-shadow: inset 0 0 0 2px var(--pp-ink), 1px 1px 0 rgba(26, 18, 22, .4); }
+body.paper-ui .cl-btn.buy, body.paper-ui .cl-btn.buy:hover { background-color: transparent; }
+body.paper-ui .cl-btn.buy { background: var(--pp-grain-note) 0 0 / 96px; }
+body.paper-ui .cl-btn.buy:hover { background: var(--pp-pencil-red) center bottom 5px / 64px 6px repeat-x, var(--pp-grain-note) 0 0 / 96px; }
+body.paper-ui .cl-btn.buy b { color: var(--pp-red); }
+body.paper-ui .cl-btn.go { color: var(--pp-blue); box-shadow: inset 0 0 0 2px var(--pp-blue), 3px 4px 0 rgba(26, 18, 22, .4); }
+body.paper-ui .cl-btn.off, body.paper-ui .cl-btn.off:hover { color: var(--pp-ink2); transform: none; background: var(--pp-grain-cream) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(94, 80, 70, .45), 2px 2px 0 rgba(26, 18, 22, .2); }
+body.paper-ui .cl-btn.off b { color: var(--pp-ink2); }
+body.paper-ui .cl-btn.dice { color: var(--pp-ink); background: var(--pp-grain-pink) 0 0 / 96px; }
+body.paper-ui .cl-back { color: var(--pp-red); background: var(--pp-grain-pink) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-red), 3px 4px 0 rgba(26, 18, 22, .4); }
+body.paper-ui .cl-back:hover { background: var(--pp-pencil-red) center bottom 6px / 64px 6px repeat-x, var(--pp-grain-pink) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-red), 4px 5px 0 rgba(26, 18, 22, .4); }
+/* look tab: chips and paint chips */
+body.paper-ui .cl-lbl { color: var(--pp-red); }
+body.paper-ui .cl-chip { color: var(--pp-ink); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .55), 2px 3px 0 rgba(26, 18, 22, .25); image-rendering: pixelated; }
+body.paper-ui .cl-chip:hover { background: var(--pp-grain-receipt) 0 0 / 96px; transform: translate(-1px, -1px); }
+body.paper-ui .cl-chip.on { color: var(--pp-ink); background: var(--pp-grain-note) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -4px 0 var(--pp-red), 2px 3px 0 rgba(26, 18, 22, .3); }
+body.paper-ui .cl-sw { box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .2), 0 0 0 2px var(--pp-ink), 3px 4px 0 rgba(26, 18, 22, .3); transition: none; }
+body.paper-ui .cl-sw:hover { transform: translate(-1px, -1px); }
+body.paper-ui .cl-sw.on { transform: translateY(-3px); box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .2), 0 0 0 2px var(--pp-ink), 0 0 0 4px var(--pp-receipt), 0 0 0 6px var(--pp-red), 3px 6px 0 rgba(26, 18, 22, .3); }
+/* footer: a dashed fold, the sticky note about what you're trying on */
+body.paper-ui .cl-foot { box-shadow: none; background: repeating-linear-gradient(90deg, rgba(36, 26, 30, .35) 0 6px, transparent 6px 10px) 0 0 / 100% 2px no-repeat; }
+body.paper-ui .cl-note { color: var(--pp-ink); background: var(--pp-grain-note) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .4), 2px 3px 0 rgba(26, 18, 22, .3); image-rendering: pixelated; }
+body.paper-ui .cl-note b { color: var(--pp-red); }
+body.paper-ui .cl-mini { color: var(--pp-ink); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink); }
+body.paper-ui .cl-how { color: var(--pp-ink2); background: var(--pp-grain-graph) 0 0 / 64px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .3); image-rendering: pixelated; }
+body.paper-ui .cl-how b { color: var(--pp-ink); }
+body.paper-ui .cl-rar { color: var(--pp-ink); box-shadow: 0 -2px 0 var(--pp-ink), 0 2px 0 var(--pp-ink), -2px 0 0 var(--pp-ink), 2px 0 0 var(--pp-ink); }
+/* the drag hint over the 3D view */
+body.paper-ui .cl-hint { color: var(--pp-ink); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 3px 4px 0 rgba(26, 18, 22, .45); image-rendering: pixelated; transition: opacity .6s steps(4); }

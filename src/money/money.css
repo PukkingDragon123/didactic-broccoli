@@ -22,3 +22,25 @@
   font: 18px 'DotGothic16', monospace; width: 220px; border: 2px solid #1a1216; background: #fffaf0; color: #1a1216; padding: 2px 6px; outline: none;
 }
 .box-label small { font-size: 12px; opacity: .7; }
+
+/* ---- on paper (src/ui/paper.js + paper.css): the slip loses its dark frame and gets torn zig-zag ends and a hard
+   shadow; the box label is a strip of kraft tape with a white sticker you write on in marker. */
+body.paper-ui .atm-receipt {
+  padding: 0; background: none; box-shadow: none; image-rendering: pixelated;
+  border: 12px solid transparent; border-width: 12px 0; border-image: var(--pp-zig-receipt) 6 / 12px 0 round;
+  filter: drop-shadow(4px 5px 0 rgba(26, 18, 22, .45));
+}
+body.paper-ui .atm-receipt::after { /* a fold crease across the slip */
+  content: ''; position: absolute; left: 0; right: 0; top: 46%; height: 2px; background: rgba(36, 26, 30, .1); box-shadow: 0 2px 0 rgba(255, 252, 244, .35);
+}
+body.paper-ui .box-label {
+  gap: 10px; padding: 2px 8px 4px; color: #2a1c14; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-kraft) 6 / 12px round;
+  background: var(--pp-grain-kraft) 0 0 / 96px padding-box; box-shadow: none; filter: var(--pp-shadow, drop-shadow(3px 4px 0 rgba(26, 18, 22, .45)));
+}
+body.paper-ui .box-label::before { content: ''; position: absolute; left: -18px; top: -14px; width: 60px; height: 18px; background: var(--pp-tape) 0 0 / 60px 18px; image-rendering: pixelated; transform: rotate(-8deg); }
+body.paper-ui .box-label input {
+  font: 16px/20px 'DotGothic16', monospace; color: #141014; border: 0; padding: 4px 8px 2px; letter-spacing: 1px;
+  background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px #2a1c14, 2px 3px 0 rgba(26, 18, 22, .35); caret-color: var(--pp-red, #c8322c);
+}
+body.paper-ui .box-label small { font-size: 16px; opacity: 1; color: #4a3424; }

@@ -50,3 +50,23 @@ body.cine #tk-self { bottom: calc(40px + env(safe-area-inset-bottom)); }
 #tk-book .row.good b { color: #2a7a3a; }
 #tk-book .row.q b { color: #3a5aa8; }
 #tk-book .close { margin-top: 10px; text-align: center; color: #6a5a50; }
+
+/* ---- on paper (src/ui/paper.js + paper.css): the guestbook is a ruled page with a red margin and a dog-eared corner, its
+   kinds of entry in coloured pen, a coffee ring from the counter, and the close line pencilled at the foot. */
+body.paper-ui #tk-book { background: rgba(26, 18, 22, .55); }
+body.paper-ui #tk-book .pg {
+  position: relative; padding: 4px 18px 10px 44px; color: var(--pp-ink); image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-dog-cream) 8 / 16px round;
+  background:
+    linear-gradient(to right, transparent 0 30px, rgba(200, 50, 44, .45) 30px 32px, transparent 32px) padding-box,
+    repeating-linear-gradient(to bottom, transparent 0 18px, rgba(47, 90, 154, .18) 18px 20px) 0 2px padding-box,
+    var(--pp-grain-cream) 0 0 / 96px padding-box;
+  box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #tk-book .pg::after { content: ''; position: absolute; right: 26px; bottom: 6px; width: 56px; height: 56px; background: var(--pp-coffee) 0 0 / 56px 56px; image-rendering: pixelated; pointer-events: none; }
+body.paper-ui #tk-book h2 { color: var(--pp-red); padding-bottom: 2px; background: var(--pp-pencil-red) 0 100% / 64px 6px repeat-x; display: inline-block; }
+body.paper-ui #tk-book .sub, body.paper-ui #tk-book .row i, body.paper-ui #tk-book .close { color: var(--pp-ink2); }
+body.paper-ui #tk-book .row b { color: var(--pp-red); }
+body.paper-ui #tk-book .row.good b { color: #2f6a3a; }
+body.paper-ui #tk-book .row.q b { color: var(--pp-blue); }
+body.paper-ui #tk-book .close { margin-top: 8px; }

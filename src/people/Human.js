@@ -43,6 +43,46 @@ function pump(budget = 3) {
   }
 }
 
+// the face update's key for an expression blend (previous > current, blend step)
+const exprKeyOf = (prev, cur, k) => prev + '>' + cur + k;
+const NEUTRAL_KEY = exprKeyOf('neutral', 'neutral', 1); // a face painted with exprParams('neutral')
+
+// Bone matrices relative to the mesh, uploaded only when the pose changed (performance). three.js multiplies every bone's
+// world matrix into the bone texture and re-uploads it each frame the person is drawn, so someone walking re-uploads it
+// even on frames their animation was skipped (Pedestrians animates people far away a few times a second). Here the
+// skinning is 'detached' with an identity bind matrix (the mesh is bound at the origin, unparented: see the constructor)
+// and the bone texture holds bone-to-mesh matrices, so the vertex shader gives exactly the same positions
+// (modelMatrix * boneToMesh = boneWorld); walking and turning move only the mesh's own matrix, and the texture is
+// re-uploaded only when a bone actually moved relative to the body.
+const _bm = new THREE.Matrix4();
+function poseOnlySkinning(mesh) {
+  const sk = mesh.skeleton, bones = sk.bones, n = bones.length;
+  mesh.bindMode = THREE.DetachedBindMode;
+  mesh.bindMatrixInverse.copy(mesh.bindMatrix).invert(); // identity (bound at the origin)
+  // each bone's parent index (-1: the mesh); bones are listed parents first
+  const parent = bones.map((b) => (b.parent === mesh ? -1 : bones.indexOf(b.parent)));
+  if (parent.some((p, i) => p >= i || (p < 0 && bones[i].parent !== mesh))) return; // not a plain hierarchy: leave it
+  const rel = bones.map(() => new THREE.Matrix4());
+  sk.update = function () {
+    const out = this.boneMatrices, inv = this.boneInverses;
+    let changed = false;
+    for (let i = 0; i < n; i++) {
+      const r = rel[i];
+      if (parent[i] < 0) r.copy(bones[i].matrix); else r.multiplyMatrices(rel[parent[i]], bones[i].matrix);
+      const e = _bm.multiplyMatrices(r, inv[i]).elements, o = i * 16;
+      for (let k = 0; k < 16; k++) { const v = Math.fround(e[k]); if (out[o + k] !== v) { out[o + k] = v; changed = true; } }
+    }
+    if (changed && this.boneTexture) this.boneTexture.needsUpdate = true;
+  };
+  // raycasts and bounding boxes: three's per-vertex skinning gives world space when the bind matrices are identity;
+  // bring it back to the mesh's space like the attached mode did
+  const apply = mesh.applyBoneTransform, seen = new THREE.Matrix4(), inv = new THREE.Matrix4();
+  mesh.applyBoneTransform = function (index, v) {
+    if (!seen.equals(this.matrixWorld)) { seen.copy(this.matrixWorld); inv.copy(seen).invert(); }
+    return apply.call(this, index, v).applyMatrix4(inv);
+  };
+}
+
 // scratch objects (no per-frame allocation)
 const _e = new THREE.Euler(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _m = new THREE.Matrix4();
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3(), _v4 = new THREE.Vector3(), _v5 = new THREE.Vector3();
@@ -53,21 +93,27 @@ export class Human {
     this.spec = spec;
     this.preset = spec.id;
     this.height = spec.H;
-    const plan = buildPlan(spec);
+    // (opts.built: { plan, mesh } already made by a background build, src/people/prebuild.js)
+    const plan = opts.built?.plan || buildPlan(spec);
     this.P = plan.P; this.J = plan.J;
-    const m = buildMesh(plan);
+    const m = opts.built?.mesh || buildMesh(plan);
     this.tris = m.tris;
     this.pix = new Pix(ATLAS, ATLAS, spec.seed || 1);
     this.face = new FacePainter(spec, this.P, m.block, this.pix);
     this.E = exprParams('neutral');
     this.tex = this.pix.texture();
-    if (opts.lazy === false) { paintAtlas(spec, this.P, m.faces, this.pix); this.face.paint(this.E); this.pix.flush(); }
-    else {
+    if (opts.lazy === false) {
+      paintAtlas(spec, this.P, m.faces, this.pix); this.face.paint(this.E); this.pix.flush();
+      this.faceExprKey = NEUTRAL_KEY;
+    } else if (opts.prebuild) {
+      // built in the background: no placeholder, whoever builds it steps the whole job (stepPaint) before showing it
+      this.job = this.paintJob(m.faces);
+    } else {
       // instant flat-coloured placeholder; the detailed atlas is painted over the next frames (time-sliced)
       paintAtlasFlat(spec, this.P, m.faces, this.pix);
       this.face.paintFlat();
       this.pix.flush();
-      this.job = (function* (h) { yield* paintAtlasJob(spec, h.P, m.faces, h.pix); yield* h.face.bakeJob(); })(this);
+      this.job = this.paintJob(m.faces);
       JOBS.add(this);
     }
     this.mat = new THREE.MeshStandardMaterial({ map: this.tex, roughness: 0.85, metalness: 0, alphaTest: 0.5 });
@@ -86,6 +132,7 @@ export class Human {
     this.mesh.add(this.bones[0]);
     this.mesh.updateMatrixWorld(true);
     this.mesh.bind(new THREE.Skeleton(this.bones));
+    poseOnlySkinning(this.mesh);
     this.mesh.castShadow = true; this.mesh.receiveShadow = true;
     this.mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, spec.H * 0.5, 0), spec.H * 0.8);
     this.mesh.userData.human = this;
@@ -139,11 +186,23 @@ export class Human {
     if (!this.job.next().done) return false;
     this.job = null;
     JOBS.delete(this);
-    this.face.paint(this.E);
-    this.pix.flush();
     this.tex.needsUpdate = true;
-    this.faceExprKey = null;
+    // the face now shows this.E (neutral): the face update repaints only what differs from it (the eyes, the mouth)
+    // instead of the whole face again
+    this.faceExprKey = NEUTRAL_KEY; this.faceEyeKey = this.faceMouthKey = null;
     return true;
+  }
+  /** The detailed atlas a step at a time: every face of the body, the face caches, the face itself in bands of rows,
+   *  then the canvas in bands. The same pixels as painting it in one go, without the long last step that used to
+   *  paint the whole face and upload the whole canvas at once (performance). */
+  *paintJob(faces) {
+    yield* paintAtlasJob(this.spec, this.P, faces, this.pix);
+    yield* this.face.bakeJob();
+    const B = this.face.B;
+    for (let y = 0; y < B.h; y += 8) { this.face.paint(this.E, [0, y, B.w, Math.min(B.h, y + 8)]); yield; }
+    const pix = this.pix;
+    for (let y = 0; y < ATLAS; y += 64) { pix.ctx.putImageData(pix.img, 0, 0, 0, y, ATLAS, 64); yield; }
+    pix.dirty = false;
   }
   /** Finish painting the detailed atlas now (e.g. for a close-up right after creation). */
   finishPaint() { while (this.job) this.stepPaint(); return this; }
@@ -543,7 +602,7 @@ export class Human {
     E.lookX = Math.round(ex);
     E.lookY = Math.round(clamp(ey + (E.lookY || 0), -1, 2) * 2) / 2;
     // repaint only what changed
-    const exprKey = this.exprPrev + '>' + this.expr + k;
+    const exprKey = exprKeyOf(this.exprPrev, this.expr, k);
     const eyeKey = E.blink * 100 + E.lookX * 10 + E.lookY;
     const mouthKey = E.open * 1e4 + E.round * 100 + E.mouthW + E.teeth * 1e6;
     if (this.job) return;

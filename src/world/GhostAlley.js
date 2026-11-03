@@ -179,6 +179,7 @@ export class GhostAlley {
     // a depth-only copy drawn first, so only her outer surface shows through (no arms seen through the body)
     const pre = new THREE.SkinnedMesh(h.mesh.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, map: h.tex, alphaTest: 0.5, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2 }));
     pre.bind(h.mesh.skeleton, h.mesh.bindMatrix);
+    pre.bindMode = h.mesh.bindMode; // the skeleton holds bone-to-body matrices (src/people/Human.js poseOnlySkinning)
     pre.renderOrder = 1; pre.boundingSphere = h.mesh.boundingSphere;
     h.mesh.add(pre);
     this.pre = pre;

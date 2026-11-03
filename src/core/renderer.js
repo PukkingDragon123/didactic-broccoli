@@ -183,6 +183,42 @@ const FinishShader = {
     }`,
 };
 
+// Performance: ambient occlusion at a reduced resolution (QUALITY.aoScale), brought back up by a depth-aware upsample:
+// each pixel blends the four nearest AO texels like a bilinear lookup, but weighted by how close each texel's depth is to
+// its own, so the AO of a wall behind never bleeds onto the edge of something in front (no halos). It also multiplies
+// the AO into the scene in the same pass (GTAOPass did a full-screen copy and then a multiply blend).
+const AOUpsampleShader = {
+  uniforms: {
+    tDiffuse: { value: null }, tAO: { value: null }, tDepth: { value: null }, aoSize: { value: new THREE.Vector2(1, 1) },
+    intensity: { value: 1 }, cameraNear: { value: 0.05 }, cameraFar: { value: 120 },
+  },
+  vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: /* glsl */`
+    #include <packing>
+    uniform sampler2D tDiffuse, tAO;
+    uniform highp sampler2D tDepth;
+    uniform vec2 aoSize;
+    uniform float intensity, cameraNear, cameraFar;
+    varying vec2 vUv;
+    float viewZ(vec2 uv) { return perspectiveDepthToViewZ(texture2D(tDepth, uv).x, cameraNear, cameraFar); }
+    void main() {
+      vec4 col = texture2D(tDiffuse, vUv);
+      float z = viewZ(vUv);
+      vec2 p = vUv * aoSize - 0.5, b = floor(p), f = p - b;
+      vec3 ao = vec3(0.0);
+      float ws = 0.0;
+      for (int j = 0; j < 2; j++) for (int i = 0; i < 2; i++) {
+        // the AO texel's centre: the depth the AO pass saw there
+        vec2 t = (b + vec2(float(i), float(j)) + 0.5) / aoSize;
+        float bw = (i == 0 ? 1.0 - f.x : f.x) * (j == 0 ? 1.0 - f.y : f.y);
+        float w = bw / (0.01 + abs(viewZ(t) - z) / max(-z, 1e-3));
+        ao += texture2D(tAO, t).rgb * w; ws += w;
+      }
+      ao /= max(ws, 1e-6);
+      gl_FragColor = vec4(col.rgb * mix(vec3(1.0), ao, intensity), col.a);
+    }`,
+};
+
 export const VM_LAYER = 4;
 // the viewmodel is depth-tested as if VM_DEPTH times closer: only clip z changes (x/y, lighting and fog stay true), so it
 // sits in front of any wall the player can touch while depth ratios (ink outlines, creases) stay exactly the same
@@ -236,10 +272,11 @@ function casterState(o) {
 // shadowEvery: the fastest a shadow map is redrawn while something in it moves (frames); a still scene redraws none.
 // shadowMinR: casters smaller than this (bounding radius, m) don't trigger a redraw by moving.
 // view: draw distance of small props (src/world/propCull.js). crowd: how many passers-by the lane holds (Pedestrians).
+// aoScale: the resolution ambient occlusion is computed at (AOUpsampleShader brings it back up).
 export const QUALITY = {
   low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6 },
   medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8 },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1 },
+  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1 },
   ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1 },
 };
 
@@ -301,15 +338,30 @@ export class Renderer {
       // The composer alternates its two targets, so the depth texture is picked up each frame from the viewmodel pass.
       gtao.setGBuffer(composer.renderTarget2.depthTexture);
       const gtaoRender = gtao.render.bind(gtao);
+      const k = q.aoScale && q.aoScale < 1 ? q.aoScale : 1;
+      const up = k < 1 ? new ShaderPass(AOUpsampleShader) : null;
       gtao.render = (rr, wb, rb, dt, mask) => {
         const d = this.vmPass.target?.depthTexture;
         if (d && gtao.depthTexture !== d) { gtao.depthTexture = d; gtao.gtaoMaterial.uniforms.tDepth.value = d; gtao.pdMaterial.uniforms.tDepth.value = d; }
         gtaoRender(rr, wb, rb, dt, mask);
+        if (up) {
+          const u = up.uniforms;
+          u.tAO.value = gtao.pdRenderTarget.texture; u.tDepth.value = gtao.depthTexture; u.intensity.value = gtao.blendIntensity;
+          u.cameraNear.value = this.aoCam.near; u.cameraFar.value = this.aoCam.far;
+          up.renderToScreen = gtao.renderToScreen;
+          up.render(rr, wb, rb);
+        }
       };
-      gtao.output = GTAOPass.OUTPUT.Default;
+      if (up) {
+        // AO and its denoise at k x the resolution; the upsample writes the frame (GTAOPass itself outputs nothing)
+        const setSize = gtao.setSize.bind(gtao);
+        gtao.setSize = (w, h) => { setSize(Math.max(1, Math.round(w * k)), Math.max(1, Math.round(h * k))); up.uniforms.aoSize.value.set(gtao.width, gtao.height); };
+        gtao.output = GTAOPass.OUTPUT.Off;
+      } else gtao.output = GTAOPass.OUTPUT.Default;
       gtao.blendIntensity = 0.85;
       gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
-      gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
+      // (the denoise radius is in AO pixels: the same footprint on screen at any scale)
+      gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6 * k, rings: 2, samples: 12 });
       composer.addPass(gtao);
       this.gtao = gtao;
     }

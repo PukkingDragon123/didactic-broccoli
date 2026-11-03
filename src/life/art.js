@@ -100,6 +100,29 @@ function paper(p, kind, seed) {
   p.frame(0, 0, p.w, p.h, P.edge);
   // a torn top edge on memo sheets
   if (kind === 'memo' || kind === 'yellow') for (let x = 0; x < p.w; x++) { const d = Math.floor(r() * 2.2); for (let y = 0; y < d; y++) p.d[(y * p.w + x) * 4 + 3] = 0; }
+  // the ring his cup left on some of them: a stepped, broken loop of weak coffee (its own dice, so the sheets above
+  // keep their old tears)
+  const rc = rng(seed * 7 + 3);
+  if (rc() < 0.2) {
+    const rad = 8 + Math.floor(rc() * 4), cx = Math.floor(p.w * (0.5 + rc() * 0.3)), cy = Math.floor(p.h * (0.55 + rc() * 0.3)), ph = rc() * 6;
+    for (let y = cy - rad - 1; y <= cy + rad + 1; y++) for (let x = cx - rad - 1; x <= cx + rad + 1; x++) {
+      const d = Math.hypot(x - cx, y - cy), a = Math.atan2(y - cy, x - cx);
+      if (d < rad - 0.5 || d >= rad + 0.7 || Math.sin(a * 2 + ph) > 0.7) continue;
+      p.px(x, y, 0x9a6a3a, Math.sin(a + ph) > 0 ? 64 : 40);
+    }
+  }
+  p.dirty = true;
+}
+
+/** A dog-eared bottom-right corner: the corner folded back over the page, showing the plain back of the sheet. */
+function dogEar(p, kind, F = 6) {
+  const P = PAPERS[kind] || PAPERS.memo, W = p.w, H = p.h;
+  for (let dy = 0; dy <= F; dy++) for (let dx = 0; dx <= F; dx++) {
+    const x = W - 1 - dx, y = H - 1 - dy, s = dx + dy;
+    if (s < F) { p.d[(y * W + x) * 4 + 3] = 0; continue; } // the corner itself, folded away
+    if (s === F || dx === F || dy === F) p.px(x, y, P.edge); // the crease and the flap's cut edges
+    else { p.px(x, y, P.bg); p.px(x, y, 0x5a4a3a, 22); } // the back of the sheet, a touch shaded
+  }
   p.dirty = true;
 }
 
@@ -151,6 +174,8 @@ export function paintNote(def, done = () => false) {
       y += 12;
     }
   }
+  // some sheets have been in his pocket: a dog-eared corner
+  if (def.paper !== 'card' && rng((def.seed || 3) * 13 + 5)() < 0.3) dogEar(p, def.paper || 'memo');
   // a strip of yellowed tape across the top
   if (def.tape !== false) {
     const tw = 22, tx = (W - tw) >> 1;

@@ -9,3 +9,14 @@
 #note-ui.on { display: flex; }
 #note-ui .k { display: inline-block; min-width: 18px; padding: 0 4px; color: #2a1a10; background: #f4e6c8; border: 2px solid #1a1216; text-shadow: none; text-align: center; }
 body.touchmode #note-ui .k { display: none; }
+
+/* ---- on paper (src/ui/paper.js + paper.css): "put it down" is a scrap of Grandpa's memo pad, ruled in blue, with
+   the key on a kraft tag. */
+body.paper-ui #note-ui {
+  padding: 2px 12px 4px 8px; color: var(--pp-ink); text-shadow: none; image-rendering: pixelated; border-radius: 0;
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background: repeating-linear-gradient(to bottom, transparent 0 20px, rgba(47, 90, 154, .18) 20px 22px) 0 2px padding-box, var(--pp-grain-cream) 0 0 / 96px padding-box;
+  box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #note-ui:hover { transform: translate(-50%, -1px); }
+body.paper-ui #note-ui .k { color: #3a2a20; border: 0; background: var(--pp-grain-kraft) 0 0 / 96px; box-shadow: inset 0 0 0 2px #3a2a20, inset 0 -4px 0 rgba(58, 42, 32, .25); padding: 0 6px; }

@@ -135,3 +135,19 @@ body.cine .mp-roster, body.cine .mp-log { opacity: 0; transition: opacity .4s; }
 
 body.touchmode .mp-roster { top: auto; bottom: 150px; width: 180px; }
 body.touchmode .mp-log { bottom: 230px; }
+
+/* ------------------------------------------------------------- finishing touches on the paper (second pass) */
+/* links in the menu panel are pencilled, not paper slips */
+body.paper-ui .panel button.mp-link, body.paper-ui .panel button.mp-link:hover { min-height: 0; background: none; box-shadow: none; transform: none; color: var(--pp-blue, #2f5a9a); }
+body.paper-ui .panel button.mp-link:hover { background: var(--pp-pencil-blue) center bottom 2px / 64px 6px repeat-x; }
+body.paper-ui .panel button:disabled, body.paper-ui .panel button:disabled:hover { filter: none; transform: none; color: var(--pp-ink2, #5e5046); background: var(--pp-grain-cream) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(94, 80, 70, .45); }
+/* the chat key: a kraft key tag like the hint's */
+body.paper-ui .mp-chat .k { color: #3a2a20; background: var(--pp-grain-kraft) 0 0 / 96px; box-shadow: inset 0 0 0 2px #3a2a20; image-rendering: pixelated; }
+/* the guest list is stapled; the fine has a paper clip holding the carbon copy behind it */
+body.paper-ui .mp-list { position: relative; }
+body.paper-ui .mp-list::before { content: ''; position: absolute; left: 10px; top: -10px; width: 24px; height: 8px; background: var(--pp-staple) 0 0 / 24px 8px; image-rendering: pixelated; }
+body.paper-ui .mp-ticket { box-shadow: 8px 10px 0 -2px #ecc8c2; } /* the pink carbon copy peeking out behind */
+body.paper-ui .mp-ticket::after { content: ''; position: absolute; left: 20px; top: -24px; width: 16px; height: 44px; background: var(--pp-clip) 0 0 / 16px 44px; image-rendering: pixelated; }
+/* the session is over: the notebook panel, its text in ink */
+body.paper-ui .mp-end { background: rgba(26, 18, 22, .62); }
+body.paper-ui .mp-endt { color: var(--pp-ink, #241a1e); }

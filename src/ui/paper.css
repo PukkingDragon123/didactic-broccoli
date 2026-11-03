@@ -42,6 +42,8 @@ body.paper-ui #guide .g-head { color: var(--pp-red); }
 body.paper-ui #guide .g-n { color: var(--pp-ink2); }
 body.paper-ui #guide .g-t { color: var(--pp-ink); }
 body.paper-ui #guide .g-s { color: var(--pp-ink2); }
+/* the hotbar tag's number sits beside its punched hole (so it still shows when the tags are tucked down) */
+body.paper-ui #hotbar .slot .key { left: 14px; top: 0; }
 body.paper-ui #guide .g-card.done .g-t { color: var(--pp-red); text-decoration-color: var(--pp-red); }
 body.paper-ui #guide .g-ico { background: rgba(36, 26, 30, .06); box-shadow: 0 0 0 2px rgba(36, 26, 30, .25); }
 body.paper-ui #guide .g-bar { background: rgba(36, 26, 30, .1); box-shadow: 0 0 0 2px var(--pp-ink); }
@@ -181,3 +183,203 @@ body.paper-ui .panel-title {
   background: none; box-shadow: inset 0 -3px 0 var(--pp-red), inset 0 -6px 0 transparent;
 }
 body.paper-ui .panel .rows { background: rgba(255, 252, 244, .5); box-shadow: 0 0 0 2px rgba(36, 26, 30, .25); }
+
+/* ================================================================ second pass: the rest of the core HUD on paper */
+body.paper-ui {
+  --pp-cream: #eee4ca;
+  --pp-receipt: #f6f3ea;
+  --pp-hard: 3px 4px 0 rgba(26, 18, 22, .45);
+}
+/* the paper "button": a receipt slip ruled in ink; hover lifts it a texel and pencils a line under it (never a glow) */
+body.paper-ui .panel button, body.paper-ui #reader-ui button, body.paper-ui #daysum button {
+  color: var(--pp-ink); text-shadow: none; filter: none; image-rendering: pixelated; border: 0; border-radius: 0;
+  background: var(--pp-grain-receipt) 0 0 / 96px; background-color: var(--pp-receipt);
+  box-shadow: inset 0 0 0 2px var(--pp-ink), var(--pp-hard);
+  transition: none;
+}
+body.paper-ui .panel button:hover, body.paper-ui #reader-ui button:hover, body.paper-ui #daysum button:hover {
+  filter: none; transform: translate(-1px, -1px);
+  background: var(--pp-pencil) center bottom 6px / 64px 6px repeat-x, var(--pp-grain-receipt) 0 0 / 96px;
+  box-shadow: inset 0 0 0 2px var(--pp-ink), 4px 5px 0 rgba(26, 18, 22, .45);
+}
+body.paper-ui .panel button:active, body.paper-ui #reader-ui button:active, body.paper-ui #daysum button:active {
+  transform: translate(2px, 3px); box-shadow: inset 0 0 0 2px var(--pp-ink), 1px 1px 0 rgba(26, 18, 22, .45);
+}
+body.paper-ui .panel button:focus-visible { outline: 2px dashed var(--pp-red); outline-offset: 4px; }
+
+/* ---------------------------------------------------------------- settings: the notebook page's controls */
+body.paper-ui #pause, body.paper-ui #share { background: rgba(26, 18, 22, .55); }
+body.paper-ui .panel button.big { color: var(--pp-ink); background: var(--pp-grain-note) 0 0 / 96px; background-color: #f6e284; }
+body.paper-ui .panel button.big:hover { background: var(--pp-pencil-red) center bottom 8px / 64px 6px repeat-x, var(--pp-grain-note) 0 0 / 96px; }
+body.paper-ui .panel button.danger { color: var(--pp-red); background: var(--pp-grain-pink) 0 0 / 96px; background-color: #f0d4d0; box-shadow: inset 0 0 0 2px var(--pp-red), var(--pp-hard); }
+body.paper-ui .panel button.danger:hover { background: var(--pp-pencil-red) center bottom 6px / 64px 6px repeat-x, var(--pp-grain-pink) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-red), 4px 5px 0 rgba(26, 18, 22, .45); }
+/* the close button: a red-pen cross on the page */
+body.paper-ui .panel button.x { background: var(--pp-x) center / 24px 24px no-repeat; box-shadow: none; }
+body.paper-ui .panel button.x::before, body.paper-ui .panel button.x .px-icon { visibility: hidden; }
+body.paper-ui .panel button.x:hover { background: var(--pp-x) center / 24px 24px no-repeat; transform: rotate(8deg); box-shadow: none; }
+body.paper-ui .panel label, body.paper-ui .panel .foot { color: var(--pp-ink); }
+body.paper-ui .panel .foot.credits { color: var(--pp-ink2); }
+body.paper-ui .panel input[type=checkbox] { width: 24px; height: 24px; background: var(--pp-box) 0 0 / 24px 24px; box-shadow: none; image-rendering: pixelated; }
+body.paper-ui .panel input[type=checkbox]:checked { background: var(--pp-tick) 0 0 / 24px 24px; }
+body.paper-ui .panel input[type=range]::-webkit-slider-runnable-track {
+  height: 6px; background: linear-gradient(90deg, var(--pp-red) 0 var(--fill, 50%), rgba(36, 26, 30, .14) var(--fill, 50%));
+  box-shadow: 0 -2px 0 var(--pp-ink), 0 2px 0 var(--pp-ink), -2px 0 0 var(--pp-ink), 2px 0 0 var(--pp-ink);
+}
+body.paper-ui .panel input[type=range]::-webkit-slider-thumb {
+  width: 14px; height: 22px; margin-top: -8px; background: var(--pp-grain-kraft) 0 0 / 96px; image-rendering: pixelated;
+  box-shadow: inset 0 0 0 2px #3a2a20, inset 0 6px 0 rgba(58, 42, 32, .2), 2px 3px 0 rgba(26, 18, 22, .4);
+}
+body.paper-ui .panel input[type=range]::-moz-range-track { background: rgba(36, 26, 30, .14); box-shadow: 0 0 0 2px var(--pp-ink); }
+body.paper-ui .panel input[type=range]::-moz-range-progress { background: var(--pp-red); }
+body.paper-ui .panel input[type=range]::-moz-range-thumb { border-color: #3a2a20; background: #c9a068; }
+body.paper-ui .panel select { color: var(--pp-ink); background: var(--ic-down, none) right 6px center / 20px 20px no-repeat, var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), 2px 3px 0 rgba(26, 18, 22, .35); }
+body.paper-ui #share textarea { color: var(--pp-ink); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), 2px 3px 0 rgba(26, 18, 22, .3); }
+body.paper-ui #share textarea::placeholder { color: rgba(94, 80, 70, .55); }
+
+/* ---------------------------------------------------------------- the crosshair stays a tiny pixel mark, paper-toned */
+body.paper-ui #crosshair .dot { background: #efe6cf; box-shadow: 0 0 0 2px rgba(36, 26, 30, .7); transition: transform .12s steps(2); }
+body.paper-ui #crosshair .ring { --c: #efe6cf; filter: drop-shadow(2px 2px 0 rgba(36, 26, 30, .75)); transition: transform .14s steps(3), opacity .14s steps(3); }
+body.paper-ui #crosshair.busy .ring { --c: #f0d060; }
+
+/* the hint's key: a little kraft key tag */
+body.paper-ui #hint .k { color: #3a2a20; background: var(--pp-grain-kraft) 0 0 / 96px; box-shadow: inset 0 0 0 2px #3a2a20, inset 0 -4px 0 rgba(58, 42, 32, .25); }
+
+/* ---------------------------------------------------------------- the money change: a pencilled stub torn off the receipt */
+body.paper-ui #money-delta { /* to the right of the wallet, so it never hides under the clock ticket */
+  left: calc(100% + 6px); bottom: 2px; margin: 0; padding: 0 4px; font-size: 32px; line-height: 30px; color: var(--pp-blue); text-shadow: none; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round; background: var(--pp-grain-receipt) 0 0 / 96px padding-box;
+  filter: var(--pp-shadow); transition: opacity .3s steps(3), transform .6s steps(4);
+}
+body.paper-ui #money-delta.neg { color: var(--pp-red); }
+body.paper-ui.touchmode #money-delta { left: 50%; top: 100%; bottom: auto; margin: 6px 0 0; transform: translateX(-50%); }
+body.paper-ui.touchmode #money-delta.show { transform: translate(-50%, 4px); }
+/* touch: the clock ticket hangs under the wallet (the first pass's bottom offset must not stretch it down the screen) */
+body.paper-ui.touchmode #simclock { bottom: auto; }
+
+/* ---------------------------------------------------------------- the capsule reveal: the paper insert from the capsule */
+body.paper-ui #caption {
+  padding: 2px 14px 6px; color: var(--pp-ink); image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-dog-cream) 8 / 16px round;
+  background: var(--pp-grain-cream) 0 0 / 96px padding-box; filter: var(--pp-shadow);
+  transition: opacity .4s steps(4), transform .4s steps(4);
+}
+body.paper-ui #caption::before { /* a staple through the fold */
+  content: ''; position: absolute; left: 18px; top: -4px; width: 24px; height: 8px; background: var(--pp-staple) 0 0 / 24px 8px; image-rendering: pixelated;
+}
+body.paper-ui #caption .name { color: var(--pp-ink); text-shadow: none; }
+body.paper-ui #caption .meta { margin-top: 2px; color: var(--pp-ink2); text-shadow: none; }
+body.paper-ui #caption .meta span[style] { display: inline-block; padding: 0 8px 2px; background: var(--pp-ink); }
+body.paper-ui #caption .meta .dot { color: var(--pp-ink2); opacity: 1; }
+body.paper-ui #caption .new { color: var(--pp-red); background: none; box-shadow: inset 0 0 0 2px var(--pp-red); transform: rotate(-6deg); vertical-align: 12px; }
+
+/* ---------------------------------------------------------------- touch buttons: card tags you press flat */
+body.paper-ui .tb {
+  background: var(--pp-grain-cream) 0 0 / 96px; image-rendering: pixelated; opacity: .9;
+  box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -4px 0 rgba(36, 26, 30, .18), var(--pp-hard);
+}
+body.paper-ui .tb.on { background: var(--pp-grain-note) 0 0 / 96px; transform: translate(2px, 3px); box-shadow: inset 0 0 0 2px var(--pp-ink), 1px 1px 0 rgba(26, 18, 22, .45); }
+body.paper-ui .t-use { background: var(--pp-grain-pink) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-red), inset 0 0 0 6px transparent, inset 0 -4px 0 rgba(200, 50, 44, .2), var(--pp-hard); }
+body.paper-ui #stick { border-radius: 0; background: var(--pp-grain-kraft) 0 0 / 96px; opacity: .55; box-shadow: none;
+  clip-path: polygon(30% 0, 70% 0, 70% 6%, 82% 6%, 82% 12%, 88% 12%, 88% 18%, 94% 18%, 94% 30%, 100% 30%, 100% 70%, 94% 70%, 94% 82%, 88% 82%, 88% 88%, 82% 88%, 82% 94%, 70% 94%, 70% 100%, 30% 100%, 30% 94%, 18% 94%, 18% 88%, 12% 88%, 12% 82%, 6% 82%, 6% 70%, 0 70%, 0 30%, 6% 30%, 6% 18%, 12% 18%, 12% 12%, 18% 12%, 18% 6%, 30% 6%); }
+body.paper-ui #stick-knob { border-radius: 0; background: var(--pp-grain-cream) 0 0 / 96px; box-shadow: inset 0 0 0 3px var(--pp-ink);
+  clip-path: polygon(25% 0, 75% 0, 75% 10%, 90% 10%, 90% 25%, 100% 25%, 100% 75%, 90% 75%, 90% 90%, 75% 90%, 75% 100%, 25% 100%, 25% 90%, 10% 90%, 10% 75%, 0 75%, 0 25%, 10% 25%, 10% 10%, 25% 10%); }
+
+/* ---------------------------------------------------------------- the main menu: a stepped vignette, a paper loading slip */
+body.paper-ui .menu {
+  background:
+    linear-gradient(180deg, rgba(14, 10, 18, .42) 0 6%, rgba(14, 10, 18, .26) 6% 13%, rgba(14, 10, 18, .12) 13% 22%, transparent 22%),
+    linear-gradient(90deg, rgba(14, 10, 18, .24) 0 9%, rgba(14, 10, 18, .1) 9% 20%, transparent 20%);
+}
+body.paper-ui .menu .loading {
+  width: min(320px, 70vw); padding: 0 8px 4px; color: var(--pp-ink); text-shadow: none; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-manila) 6 / 12px round; background: var(--pp-grain-manila) 0 0 / 96px padding-box;
+  filter: var(--pp-shadow);
+}
+body.paper-ui .menu .loading::before { /* the tag's punched hole */
+  content: ''; position: absolute; left: -2px; top: calc(50% - 6px); width: 8px; height: 8px; background: rgba(26, 18, 22, .7); box-shadow: 0 0 0 2px #e8d0a0;
+}
+body.paper-ui .menu .loading .load-bar { height: 14px; padding: 2px; background: rgba(36, 26, 30, .08); box-shadow: inset 0 0 0 2px var(--pp-ink); }
+body.paper-ui .menu .loading .load-fill { background: repeating-linear-gradient(90deg, var(--pp-ink) 0 2px, transparent 2px 6px); box-shadow: none; margin: 2px; height: calc(100% - 4px); }
+body.paper-ui .gear {
+  color: var(--pp-ink); background: var(--pp-grain-cream) 0 0 / 96px; image-rendering: pixelated;
+  box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -4px 0 rgba(36, 26, 30, .18), 4px 5px 0 rgba(26, 18, 22, .45);
+}
+
+/* ---------------------------------------------------------------- the waypoint: a push pin with a manila tag on a string */
+body.paper-ui #waypoint .wp-in { animation: pp-wp-bob 1.4s steps(4) infinite; }
+@keyframes pp-wp-bob { 50% { margin-top: -4px; } }
+body.paper-ui #waypoint .wp-pin { width: 20px; height: 24px; transform: none; background: var(--pp-pin) 0 0 / 20px 24px; image-rendering: pixelated; box-shadow: none; }
+body.paper-ui #waypoint .wp-pin::after { display: none; }
+body.paper-ui #waypoint .wp-d {
+  position: relative; margin-top: 6px; padding: 0 6px 2px 14px; color: var(--pp-ink); text-shadow: none; image-rendering: pixelated;
+  background: var(--pp-grain-manila) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(58, 42, 32, .55), var(--pp-hard);
+}
+body.paper-ui #waypoint .wp-d::before { content: ''; position: absolute; left: 4px; top: 7px; width: 4px; height: 4px; background: rgba(26, 18, 22, .7); box-shadow: 0 0 0 2px #f0dca8; }
+body.paper-ui #waypoint .wp-d::after { content: ''; position: absolute; left: calc(50% - 1px); top: -8px; width: 2px; height: 8px; background: #d8c8a0; box-shadow: 1px 0 0 rgba(26, 18, 22, .35); }
+body.paper-ui #waypoint .wp-arrow::before {
+  left: 16px; top: -12px; width: 16px; height: 24px; border: 0; background: var(--pp-red); filter: drop-shadow(2px 2px 0 rgba(26, 18, 22, .6));
+  clip-path: polygon(0 0, 4px 0, 4px 4px, 8px 4px, 8px 8px, 12px 8px, 12px 10px, 16px 10px, 16px 14px, 12px 14px, 12px 16px, 8px 16px, 8px 20px, 4px 20px, 4px 24px, 0 24px);
+}
+
+/* ---------------------------------------------------------------- the notebook reader's page buttons */
+body.paper-ui #reader-ui { color: var(--pp-ink); text-shadow: none; }
+body.paper-ui #reader-ui button { font-family: var(--font-ui); padding: 4px 12px 6px; }
+body.paper-ui #reader-ui .pg { padding: 0 8px 2px; color: var(--pp-ink); background: var(--pp-grain-manila) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(58, 42, 32, .55), var(--pp-hard); image-rendering: pixelated; }
+
+/* ---------------------------------------------------------------- cutscene subtitles: a torn strip of note paper */
+body.paper-ui #cutscene .sub {
+  color: var(--pp-ink); outline: 0; padding: 4px 16px 6px; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 34px, rgba(47, 90, 154, .14) 34px 36px) 0 4px padding-box,
+    var(--pp-grain-cream) 0 0 / 96px padding-box;
+  box-shadow: none; filter: drop-shadow(4px 5px 0 rgba(0, 0, 0, .5));
+}
+body.paper-ui #cutscene .sub::before { content: ''; position: absolute; left: 28px; top: -20px; width: 60px; height: 18px; background: var(--pp-tape) 0 0 / 60px 18px; image-rendering: pixelated; }
+body.paper-ui #cutscene .sub .who { display: table; color: var(--pp-red); padding-bottom: 4px; background: var(--pp-pencil-red) 0 100% / 64px 6px repeat-x; image-rendering: pixelated; }
+body.paper-ui #cutscene .sub .txt::after { background: var(--pp-ink); }
+/* hold to skip: a receipt strip that fills with red pencil */
+body.paper-ui #cutscene .skip { border: 0; border-radius: 0; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), var(--pp-hard); image-rendering: pixelated; }
+body.paper-ui #cutscene .skip .fill { background: repeating-linear-gradient(90deg, rgba(200, 50, 44, .55) 0 2px, rgba(200, 50, 44, .3) 2px 4px); transition: transform .1s steps(2); }
+body.paper-ui #cutscene .skip .lbl { color: var(--pp-ink); text-shadow: none; }
+/* the day's title card: a page of the tear-off calendar (日めくり) */
+body.paper-ui #cutscene .titlecard {
+  left: 50%; right: auto; width: max-content; max-width: 92vw; translate: -50% 0; padding: 4px 34px 12px; color: var(--pp-ink); image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-spiral) 6 / 12px round;
+  background: linear-gradient(var(--pp-red) 0 6px, transparent 6px) padding-box, var(--pp-grain-cream) 0 0 / 96px padding-box;
+  filter: drop-shadow(6px 8px 0 rgba(0, 0, 0, .5)); transition: opacity .5s steps(5), transform .6s steps(5);
+}
+body.paper-ui #cutscene .titlecard::before { /* the pad's binding the page was torn from */
+  content: ''; position: absolute; left: -12px; right: -12px; top: -24px; height: 14px; background: #6a1f1c;
+  box-shadow: inset 0 -4px 0 #4a1412, inset 0 2px 0 #8a2a26, 4px 5px 0 rgba(0, 0, 0, .45);
+}
+body.paper-ui #cutscene .titlecard .t { font-size: 80px; line-height: 72px; letter-spacing: 2px; color: var(--pp-ink); text-shadow: none; margin-top: 12px; }
+body.paper-ui #cutscene .titlecard .s { margin-top: 10px; font-size: 32px; line-height: 32px; color: var(--pp-ink2); text-shadow: none; letter-spacing: 0; }
+body.paper-ui #cutscene .titlecard .s:empty { display: none; }
+@media (max-width: 760px) {
+  body.paper-ui #cutscene .titlecard .t { font-size: 48px; line-height: 46px; }
+  body.paper-ui #cutscene .titlecard .s { font-size: 16px; line-height: 20px; }
+}
+
+/* ---------------------------------------------------------------- level up / day summary: ink on the white parts too */
+body.paper-ui #levelup li small { font-size: 16px; line-height: 16px; }
+body.paper-ui #daysum .ds-card { position: relative; }
+body.paper-ui #daysum .ds-card::after { /* closed for the day: 済 */
+  content: ''; position: absolute; right: 16px; top: 4px; width: 40px; height: 40px; background: var(--pp-hanko-sumi) 0 0 / 40px 40px; image-rendering: pixelated; transform: rotate(-8deg); opacity: .9;
+}
+body.paper-ui #daysum .ds-h { padding-right: 56px; }
+body.paper-ui #daysum .ds-grid em { color: var(--pp-ink); }
+body.paper-ui #daysum .ds-grid .neg em { color: var(--pp-red); }
+body.paper-ui #daysum .ds-grid .pos em { color: var(--pp-blue); }
+body.paper-ui #daysum .ds-sec { border-top: 2px dashed rgba(36, 26, 30, .45); }
+body.paper-ui #daysum .ds-sec small { color: var(--pp-ink2); font-size: 16px; line-height: 18px; }
+body.paper-ui #daysum .ds-sec .warn { color: var(--pp-red); }
+body.paper-ui #daysum .ds-sec .gold { color: var(--pp-blue); }
+body.paper-ui #daysum button { padding: 4px 12px 6px; }
+body.paper-ui #daysum button:not(.alt) { background: var(--pp-grain-note) 0 0 / 96px; }
+body.paper-ui #daysum button kbd { color: var(--pp-ink2); opacity: 1; }
+
+/* ---------------------------------------------------------------- the goal card, done: a pencil scribble through the line */
+/* the hotbar tag's number sits beside its punched hole (so it still shows when the tags are tucked down) */
+body.paper-ui #hotbar .slot .key { left: 14px; top: 0; }
+body.paper-ui #guide .g-card.done .g-t { text-decoration: none; background: var(--pp-scribble) 0 50% / 48px 16px repeat-x; image-rendering: pixelated; }

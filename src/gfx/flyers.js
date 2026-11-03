@@ -143,12 +143,18 @@ function pump() {
 async function draw(id) {
   const d = DESIGNS[id];
   await Promise.all((d.photos || []).map(loadPhoto));
-  const g = sheet(id).canvas.getContext('2d', { willReadFrequently: true });
+  // drawn off-screen and copied onto the sheet at the end: the 3D shots now finish asynchronously, over several idle
+  // moments, and the sheet should never show half a design
+  const c = canvas2d(W, H), g = c.getContext('2d', { willReadFrequently: true });
   g.imageSmoothingEnabled = false;
   rect(g, 0, 0, W, H, C.paper);
-  d.draw(g);
+  await d.draw(g);
   footer(g, d.foot);
+  sheet(id).canvas.getContext('2d', { willReadFrequently: true }).drawImage(c, 0, 0);
 }
+
+// the rest of a design waits for the browser's next idle moment (performance: a design is drawn a piece at a time)
+const idleTurn = () => new Promise((res) => (window.requestIdleCallback ? requestIdleCallback(() => res(), { timeout: 600 }) : setTimeout(res, 30)));
 
 // ------------------------------------------------------------------ text: the hand-made 5 x 7 bitmap font (src/gfx/font5x7.js)
 const textW = textW5;
@@ -244,7 +250,7 @@ class Studio {
    * o: { w, h, pos, look, fov, key: [x,y,z], keyCol, keyI, rim: [x,y,z], rimCol, rimI, hemi, env }
    * c.proj([x,y,z]) -> [x, y] pixels in the shot (for shadows and labels).
    */
-  shot(objs, o) {
+  async shot(objs, o) {
     const r = this.r, w = Math.max(1, Math.round(o.w)), h = Math.max(1, Math.round(o.h)), key = w + 'x' + h;
     let rt = this.rts.get(key);
     if (!rt) { rt = new THREE.WebGLRenderTarget(w, h); rt.texture.colorSpace = THREE.SRGBColorSpace; this.rts.set(key, rt); }
@@ -265,10 +271,15 @@ class Studio {
     r.clear();
     r.render(this.scene, cam);
     const pxs = new Uint8Array(w * h * 4);
-    r.readRenderTargetPixels(rt, 0, 0, w, h, pxs);
+    // performance: read back asynchronously (a pixel-pack buffer + fence, like src/gfx/thumbs.js) instead of making the
+    // CPU wait for the GPU to finish everything queued before it; the sprite is finished once the pixels arrive
+    const read = r.readRenderTargetPixelsAsync ? r.readRenderTargetPixelsAsync(rt, 0, 0, w, h, pxs) : r.readRenderTargetPixels(rt, 0, 0, w, h, pxs);
     r.setRenderTarget(prevRT);
     r.setClearColor(prevC, prevA);
     for (const ob of objs) this.scene.remove(ob);
+    const pc = cam.clone();
+    await read;
+    await idleTurn();
     const c = canvas2d(w, h);
     const g = c.getContext('2d', { willReadFrequently: true });
     const img = g.createImageData(w, h);
@@ -281,15 +292,14 @@ class Studio {
       }
     }
     g.putImageData(img, 0, 0);
-    const pc = cam.clone();
     c.proj = (p) => { const v = new THREE.Vector3(...p).project(pc); return [(v.x * 0.5 + 0.5) * w, (0.5 - v.y * 0.5) * h]; };
     return c;
   }
 }
 /** A sprite: render, a few colour levels, then a 1 px dark outline around it (o.outline: colour or false). */
-function shot(objs, o) {
+async function shot(objs, o) {
   studio = studio || new Studio(env.renderer);
-  const c = studio.shot(objs, o);
+  const c = await studio.shot(objs, o);
   if (o.grade) o.grade(c);
   posterize(c, o.levels || 7, o.dither ?? 0);
   if (o.outline !== false) outline(c, o.outline || C.ink);
@@ -327,17 +337,19 @@ function contact(g, img, ox, oy, x, z, r, col = 'rgba(20,12,18,0.45)') {
 }
 
 // ------------------------------------------------------------------ the cast
-/** A preset human (+ cosmetics); posed with a gesture / expression and settled. */
-function person(preset, seed, o = {}) {
+/** A preset human (+ cosmetics); posed with a gesture / expression and settled. Their atlas is painted a few ms at a
+ *  time in idle moments (the same pixels as painting it in one go). */
+async function person(preset, seed, o = {}) {
   let h;
-  if (o.avatar) h = createAvatarHuman(o.avatar);
+  if (o.avatar) { h = createAvatarHuman(o.avatar, { lazy: true }); await paintIdle(h); }
   else {
     const spec = makeSpec(preset, seed);
     if (o.noHat) spec.hat = null;
     if (o.noBag) spec.acc = spec.acc.filter((a) => a.kind === 'camera' || a.kind === 'towel' || a.kind === 'apron');
     if (o.spec) o.spec(spec);
     if (o.look) applyCosmeticSpec(spec, o.look);
-    h = new Human(spec, { lazy: false });
+    h = new Human(spec, { prebuild: true });
+    await paintIdle(h);
     dressHuman(h, o.look || {}); // (also gives the poses their hand directions)
   }
   h.root.position.set(...(o.at || [0, 0, 0]));
@@ -350,6 +362,11 @@ function person(preset, seed, o = {}) {
   const n = Math.round((o.t ?? 1.4) * 30);
   for (let i = 0; i < n; i++) { h.blinkT = 9; h.update(1 / 30, { speed: o.speed || 0, lookAt: look }); }
   return h;
+}
+
+async function paintIdle(h) {
+  let t = performance.now();
+  while (!h.stepPaint()) if (performance.now() - t > 4) { await idleTurn(); t = performance.now(); }
 }
 
 function cat(o = {}) {
@@ -442,7 +459,7 @@ const DESIGNS = {
   // the grand reopening: three machines and Mikan on a lit-up shopping street
   reopen: {
     photos: ['akiba_dusk'],
-    draw(g) {
+    async draw(g) {
       photoBg(g, 'akiba_dusk', 0, 0, W, PH, { fx: 0.4, fy: 0.3, tint: ['#ff8a40', 0.25], dark: 0.15 });
       band(g, 0, 40, '', C.ink);
       px(g, 'GRAND', 6, 6, { s: 2, col: C.yellow });
@@ -451,7 +468,7 @@ const DESIGNS = {
       for (const [type, s, x, ry] of set) { const m = machine(type, s); fillMachine(m, s, hashStr(s)); m.position.set(x, 0, Math.abs(x) * -0.25); m.rotation.y = ry; objs.push(m); }
       const c = cat({ at: [0.36, 0, 0.78], yaw: -0.35, lookAt: [0, 0.5, 3], mood: 'happy' });
       objs.push(c.root);
-      const img = shot(objs, { w: W, h: 140, ...orbit([0.04, 0.7, 0.1], 0, 0.07, 3.5), fov: 31, key: [-1.6, 2.4, 2.4], keyCol: 0xffe2c0, rimCol: 0xffc890, rimI: 1.6 });
+      const img = await shot(objs, { w: W, h: 140, ...orbit([0.04, 0.7, 0.1], 0, 0.07, 3.5), fov: 31, key: [-1.6, 2.4, 2.4], keyCol: 0xffe2c0, rimCol: 0xffc890, rimI: 1.6 });
       c.root.removeFromParent();
       for (const [, , x] of set) contact(g, img, 0, 44, x, Math.abs(x) * -0.25, 0.3);
       put(g, img, 0, 44);
@@ -462,11 +479,11 @@ const DESIGNS = {
   // a new series: a giant kaiju over the night skyline
   kaiju: {
     photos: ['skyline'],
-    draw(g) {
+    async draw(g) {
       photoBg(g, 'skyline', 0, 0, W, PH, { fx: 0.55, fy: 0.62, zoom: 1.12, tint: ['#3a50ff', 0.25], dark: 0.1 });
       const k = makeItemMesh('kaiju/taiyaki'); k.rotation.y = -0.45;
       const b = bbox(k), sz = b.getSize(new THREE.Vector3()), ce = b.getCenter(new THREE.Vector3());
-      const img = shot([k], { w: 140, h: 150, ...orbit([ce.x, b.min.y + sz.y * 0.48, ce.z], 0.1, -0.12, sz.y * 2.3), fov: 32, key: [-0.8, 0.5, 1.6], keyCol: 0xffd0b0, keyI: 2.4, rim: [1.2, 0.4, -1.4], rimCol: 0x8aa0ff, rimI: 3, hemi: 0.7 });
+      const img = await shot([k], { w: 140, h: 150, ...orbit([ce.x, b.min.y + sz.y * 0.48, ce.z], 0.1, -0.12, sz.y * 2.3), fov: 32, key: [-0.8, 0.5, 1.6], keyCol: 0xffd0b0, keyI: 2.4, rim: [1.2, 0.4, -1.4], rimCol: 0x8aa0ff, rimI: 3, hemi: 0.7 });
       put(g, img, 8, PH - 13 - 146);
       px(g, 'NEW SERIES!', 6, 6, { col: C.yellow });
       px(g, 'KAIJU\nSNACK TIME', 6, 18, { s: 2, col: C.white, lh: 4 });
@@ -477,11 +494,11 @@ const DESIGNS = {
   // cats in space over the Milky Way
   space: {
     photos: ['milky_way'],
-    draw(g) {
+    async draw(g) {
       photoBg(g, 'milky_way', 0, 0, W, PH, { fx: 0.45, fy: 0.4, zoom: 1.1, tint: ['#4a6aff', 0.25], levels: 4 });
       const lights = { key: [-1.2, 1.6, 2], keyCol: 0xfff4e8, keyI: 2.6, rimCol: 0x8ab4ff, rimI: 2.4, hemi: 0.8 };
       const items = [['uchu/rocket', 74, 4, 44, 0.2], ['uchu/saturn', 60, W - 66, 46, 0.6], ['uchu/ufo', 50, W - 58, 108, 0.5], ['uchu/astro', 66, 46, 108, -0.3]];
-      for (const [key, s, x, y, yaw] of items) put(g, figure(key, 'normal', { w: s, h: s, yaw, pitch: 0.25, margin: 1.02, ...lights }), x, y);
+      for (const [key, s, x, y, yaw] of items) put(g, await figure(key, 'normal', { w: s, h: s, yaw, pitch: 0.25, margin: 1.02, ...lights }), x, y);
       px(g, 'UCHU NEKO\nSTATION', 6, 6, { s: 2, col: C.white, lh: 4 });
       band(g, PH - 13, 13, 'ONE SMALL TURN FOR A CAT', C.blue, C.white);
     },
@@ -490,7 +507,7 @@ const DESIGNS = {
   // spring sweets under the cherry blossoms
   sakura: {
     photos: ['sakura'],
-    draw(g) {
+    async draw(g) {
       photoBg(g, 'sakura', 0, 0, W, PH, { fx: 0.5, fy: 0.3, tint: ['#ffb0d0', 0.25] });
       band(g, 0, 40, '', C.paper);
       px(g, 'SPRING', 6, 6, { s: 2, col: C.rose });
@@ -498,7 +515,7 @@ const DESIGNS = {
       px(g, 'NEW!', W - 6, 6, { col: C.red, align: 'right' });
       const keys = ['wagashi/dango', 'wagashi/sakura', 'wagashi/ichigo', 'wagashi/taiyaki', 'wagashi/dorayaki'];
       const objs = keys.map((k, i) => { const m = makeItemMesh(k); const back = i % 2 === 0; m.position.set((i - 2) * 0.05, 0, back ? -0.03 : 0.02); m.rotation.y = (2 - i) * 0.18; return m; });
-      const img = shot(objs, fit(objs, { w: W, h: 120, yaw: 0.1, pitch: 0.3, margin: 0.75, key: [-1, 2.4, 2], keyCol: 0xfff0f4, rimCol: 0xffc0e0, rimI: 1.6, hemi: 1.2 }));
+      const img = await shot(objs, fit(objs, { w: W, h: 120, yaw: 0.1, pitch: 0.3, margin: 0.75, key: [-1, 2.4, 2], keyCol: 0xfff0f4, rimCol: 0xffc0e0, rimI: 1.6, hemi: 1.2 }));
       for (const o of objs) contact(g, img, 0, 60, o.position.x, o.position.z, 0.028);
       put(g, img, 0, 60);
       band(g, PH - 13, 13, `NIKONIKO WAGASHI · ¥${SERIES_BY_ID.wagashi.price}`, C.rose, C.white);
@@ -508,11 +525,11 @@ const DESIGNS = {
   // the super secret: a gold figure under a warm streetlight
   secret: {
     photos: ['blossom_lamp'],
-    draw(g) {
+    async draw(g) {
       photoBg(g, 'blossom_lamp', 0, 0, W, PH, { fx: 0.3, fy: 0.4, tint: ['#ffb040', 0.3], dark: 0.4, levels: 4 });
       px(g, 'SUPER', 6, 6, { s: 2, col: C.gold });
       px(g, 'SECRET', 6, 23, { s: 2, col: C.gold });
-      const img = figure('mochi/kagami', 'gold', { w: 110, h: 110, yaw: 0.35, pitch: 0.2, margin: 1.0, key: [-1.4, 1.8, 1.8], keyCol: 0xfff0d8, keyI: 2.4, rimCol: 0xffd090, rimI: 2.6, env: 0.9, hemi: 0.35, grade: goldGrade });
+      const img = await figure('mochi/kagami', 'gold', { w: 110, h: 110, yaw: 0.35, pitch: 0.2, margin: 1.0, key: [-1.4, 1.8, 1.8], keyCol: 0xfff0d8, keyI: 2.4, rimCol: 0xffd090, rimI: 2.6, env: 0.9, hemi: 0.35, grade: goldGrade });
       oval(g, W / 2 + 6, PH - 22, 34, 5, 'rgba(10,6,4,0.5)');
       put(g, img, W / 2 - 50, PH - 22 - 104);
       px(g, `1 IN ${SECRET_ODDS}`, W - 6, 50, { col: C.white, align: 'right' });
@@ -524,13 +541,13 @@ const DESIGNS = {
   // special finish: glow-in-the-dark figures under the neon
   glow: {
     photos: ['neon_night'],
-    draw(g) {
+    async draw(g) {
       photoBg(g, 'neon_night', 0, 0, W, PH, { fx: 0.5, fy: 0.45, dark: 0.5, sat: 0.7, tint: ['#3020a0', 0.3], levels: 4 });
       px(g, 'GLOW IN', 6, 6, { s: 2, col: C.mint });
       px(g, 'THE DARK', 6, 23, { s: 2, col: C.mint });
       const keys = [['neko_cafe/tora', -0.5], ['uchu/astro', 0], ['yokai/chochin', 0.5]];
       const objs = keys.map(([k, ry], i) => { const m = makeItemMesh(k, 'glow'); m.position.set((i - 1) * 0.07, 0, i === 1 ? 0.02 : -0.02); m.rotation.y = ry; return m; });
-      put(g, shot(objs, fit(objs, { w: W, h: 110, yaw: 0.05, pitch: 0.22, margin: 0.9, key: [-1, 1.4, 1.5], keyCol: 0x9080ff, keyI: 0.9, rimCol: 0xff60d0, rimI: 2.2, hemi: 0.25, env: 0.25 })), 0, PH - 13 - 112);
+      put(g, await shot(objs, fit(objs, { w: W, h: 110, yaw: 0.05, pitch: 0.22, margin: 0.9, key: [-1, 1.4, 1.5], keyCol: 0x9080ff, keyI: 0.9, rimCol: 0xff60d0, rimI: 2.2, hemi: 0.25, env: 0.25 })), 0, PH - 13 - 112);
       band(g, PH - 13, 13, `1 IN ${GLOW_ODDS} TURNS · ${FINISHES.glow.mult}× VALUE`, C.mint, C.ink);
     },
     foot: { bg: C.ink },
@@ -540,10 +557,10 @@ const DESIGNS = {
   // "such capsule": colourful words around a smug cat, in front of a wall of machines
   much: {
     photos: ['gacha_wall'],
-    draw(g) {
+    async draw(g) {
       photoBg(g, 'gacha_wall', M, M, W - M * 2, PH - M * 2, { fx: 0.45, sat: 0.5, wash: ['#fff8ec', 0.7], levels: 4, dither: 0.4 });
       const c = cat({ yaw: 0.3, lookAt: [0.25, 0.3, 1.4] });
-      const img = shot([c.root], fit([c.root], { w: 110, h: 120, yaw: 0.15, pitch: 0.1, margin: 0.92 }));
+      const img = await shot([c.root], fit([c.root], { w: 110, h: 120, yaw: 0.15, pitch: 0.1, margin: 0.92 }));
       c.root.removeFromParent();
       oval(g, W / 2, PH - M - 8, 36, 4, 'rgba(20,12,18,0.3)');
       put(g, img, W / 2 - 55, PH - M - 124);
@@ -555,19 +572,19 @@ const DESIGNS = {
   // two-panel "nope / yep" with the dino onesie
   nope: {
     photos: ['parcels', 'gacha_rows'],
-    draw(g) {
+    async draw(g) {
       const cw = 66, rh = Math.round((PH - M * 2) / 2), y0 = M;
       const dino = { v: 1, seed: 11, body: 'm', skin: 'warm', hair: 'messy', hairCol: 'black', top: 'tee', topCol: 'mustard', bottom: 'jeans', outfit: 'dino', owned: [] };
       photoBg(g, 'parcels', M, y0, cw, rh, { fx: 0.5, fy: 0.45, sat: 0.4, tint: ['#6a8ac0', 0.3], levels: 4 });
       photoBg(g, 'gacha_rows', M, y0 + rh, cw, rh, { fx: 0.4, fy: 0.5, tint: ['#ffb060', 0.25], levels: 4 });
-      const shotOf = (gesture, expr, yaw) => {
-        const p = person(null, 0, { avatar: dino, gesture, expr, yaw, t: 1.6 });
-        const img = shot([p.root], { w: cw, h: rh, ...orbit([0.02, 1.4, 0], 0.15, 0.04, 1.75), fov: 30 });
+      const shotOf = async (gesture, expr, yaw) => {
+        const p = await person(null, 0, { avatar: dino, gesture, expr, yaw, t: 1.6 });
+        const img = await shot([p.root], { w: cw, h: rh, ...orbit([0.02, 1.4, 0], 0.15, 0.04, 1.75), fov: 30 });
         p.dispose();
         return img;
       };
-      put(g, shotOf('nope', 'angry', -0.25), M, y0);
-      put(g, shotOf('yep', 'grin', 0.2), M, y0 + rh);
+      put(g, await shotOf('nope', 'angry', -0.25), M, y0);
+      put(g, await shotOf('yep', 'grin', 0.2), M, y0 + rh);
       const tx = M + cw + (W - M * 2 - cw) / 2;
       px(g, 'BUYING\nTOYS\nONLINE', tx, y0 + 26, { align: 'center' });
       px(g, `GACHA\nGARAGE\n¥${MIN_PRICE} A TURN`, tx, y0 + rh + 26, { align: 'center', col: C.red });
@@ -578,16 +595,16 @@ const DESIGNS = {
   // "distracted customer": walking down the back street with your salary, eyes on the gacha machine
   distracted: {
     photos: ['back_street'],
-    draw(g) {
+    async draw(g) {
       const w = W - M * 2, h = PH - M * 2;
       photoBg(g, 'back_street', M, M, w, h, { fx: 0.5, fy: 0.62, zoom: 1.05, tint: ['#ff9a50', 0.3] });
       const mach = machine('deluxe', 'kaiju');
       fillMachine(mach, 'kaiju');
       mach.position.set(0.95, 0, -0.9); mach.rotation.y = -0.55;
       const head = new THREE.Vector3(0.95, 1.35, -0.6);
-      const her = person('office_lady', 5, { at: [-0.62, 0, -0.35], yaw: 0.55, expr: 'angry', lookAt: [0.1, 1.5, 0.35], noBag: true, t: 1.2 });
-      const me = person('salaryman', 3, { at: [0.05, 0, 0.35], yaw: -0.75, expr: 'surprised', lookAt: head.toArray(), speed: 1.1, noBag: true, t: 1.35 });
-      const img = shot([mach, her.root, me.root], { w, h, ...orbit([0.12, 0.95, -0.1], 0.02, 0.06, 4.7), fov: 34, key: [-2.2, 1.8, 1.2], keyCol: 0xffd8a8, rimCol: 0xffc090, rimI: 1.6 });
+      const her = await person('office_lady', 5, { at: [-0.62, 0, -0.35], yaw: 0.55, expr: 'angry', lookAt: [0.1, 1.5, 0.35], noBag: true, t: 1.2 });
+      const me = await person('salaryman', 3, { at: [0.05, 0, 0.35], yaw: -0.75, expr: 'surprised', lookAt: head.toArray(), speed: 1.1, noBag: true, t: 1.35 });
+      const img = await shot([mach, her.root, me.root], { w, h, ...orbit([0.12, 0.95, -0.1], 0.02, 0.06, 4.7), fov: 34, key: [-2.2, 1.8, 1.2], keyCol: 0xffd8a8, rimCol: 0xffc090, rimI: 1.6 });
       her.dispose(); me.dispose();
       for (const [x, z, r] of [[-0.62, -0.35, 0.28], [0.05, 0.35, 0.3], [0.95, -0.9, 0.34]]) contact(g, img, M, M, x, z, r);
       put(g, img, M, M);
@@ -600,7 +617,7 @@ const DESIGNS = {
   // galaxy-brain escalation: four rows, the last one in deep space
   brain: {
     photos: ['shutters', 'toy_shop', 'gacha_kaikan', 'galaxy'],
-    draw(g) {
+    async draw(g) {
       const rh = Math.floor((PH - M * 2) / 4), tw = 70, iw = W - M * 2 - tw;
       const rows = [
         ['BUYING ONE\nFIGURE', 'shutters', { fx: 0.5, fy: 0.5, zoom: 1.3, sat: 0.2, levels: 4 }],
@@ -609,14 +626,14 @@ const DESIGNS = {
         ['INHERITING\nGRANDPA\'S\nGARAGE', 'galaxy', { fx: 0.5, fy: 0.5, zoom: 1.5, levels: 4 }],
       ];
       const shots = [];
-      { const f = makeItemMesh('mochi/shiba'); shots.push(shot([f], fit([f], { w: iw, h: rh, yaw: 0.4, pitch: 0.2, margin: 1.15 }))); }
+      { const f = makeItemMesh('mochi/shiba'); shots.push(await shot([f], fit([f], { w: iw, h: rh, yaw: 0.4, pitch: 0.2, margin: 1.15 }))); }
       {
         const ids = ['mochi/shiba', 'mochi/mike', 'mochi/hamu', 'mochi/pen', 'mochi/lesser'];
         const objs = ids.map((k, i) => { const m = makeItemMesh(k); const back = i < 3; m.position.set(back ? (i - 1) * 0.036 : (i - 3.5) * 0.036, 0, back ? -0.03 : 0); m.rotation.y = (i - 2) * -0.2; return m; });
-        shots.push(shot(objs, fit(objs, { w: iw, h: rh, yaw: 0.15, pitch: 0.2, margin: 1.0 })));
+        shots.push(await shot(objs, fit(objs, { w: iw, h: rh, yaw: 0.15, pitch: 0.2, margin: 1.0 })));
       }
-      { const m = machine('standard', 'mochi'); fillMachine(m); shots.push(shot([m], fit([m], { w: iw, h: rh, yaw: 0.45, pitch: 0.12, margin: 1.05 }))); }
-      { const gp = person('grandpa', 4, { gesture: 'cheer', expr: 'happy', t: 1.1, noBag: true }); shots.push(shot([gp.root], { w: iw, h: rh, ...orbit([0, 1.3, 0], 0.15, 0.05, 2.3), fov: 30, rimCol: 0xe0a0ff, rimI: 2.4 })); gp.dispose(); }
+      { const m = machine('standard', 'mochi'); fillMachine(m); shots.push(await shot([m], fit([m], { w: iw, h: rh, yaw: 0.45, pitch: 0.12, margin: 1.05 }))); }
+      { const gp = await person('grandpa', 4, { gesture: 'cheer', expr: 'happy', t: 1.1, noBag: true }); shots.push(await shot([gp.root], { w: iw, h: rh, ...orbit([0, 1.3, 0], 0.15, 0.05, 2.3), fov: 30, rimCol: 0xe0a0ff, rimI: 2.4 })); gp.dispose(); }
       rows.forEach(([lab, ph, po], i) => {
         const ry = M + i * rh;
         const n = lab.split('\n').length;
@@ -632,11 +649,11 @@ const DESIGNS = {
   // "one does not simply" with Grandpa in his garage
   simply: {
     photos: ['garage'],
-    draw(g) {
+    async draw(g) {
       const bh = 26, ih = PH - M * 2 - bh * 2;
       photoBg(g, 'garage', M, M + bh, W - M * 2, ih, { fx: 0.5, fy: 0.45, zoom: 1.1, tint: ['#ff9a40', 0.35], dark: 0.3, levels: 4 });
-      const gp = person('grandpa', 4, { gesture: 'shrug', expr: 'sad', yaw: 0.2, t: 1.4, noBag: true, lookAt: [0.7, 1.55, 3] });
-      put(g, shot([gp.root], { w: W - M * 2, h: ih, ...orbit([-0.04, 1.22, 0], 0.18, 0.04, 1.85), fov: 34, key: [-1.4, 2.2, 1.8], keyCol: 0xffe0b8, rimCol: 0xffb070, rimI: 2 }), M, M + bh);
+      const gp = await person('grandpa', 4, { gesture: 'shrug', expr: 'sad', yaw: 0.2, t: 1.4, noBag: true, lookAt: [0.7, 1.55, 3] });
+      put(g, await shot([gp.root], { w: W - M * 2, h: ih, ...orbit([-0.04, 1.22, 0], 0.18, 0.04, 1.85), fov: 34, key: [-1.4, 2.2, 1.8], keyCol: 0xffe0b8, rimCol: 0xffb070, rimI: 2 }), M, M + bh);
       gp.dispose();
       px(g, 'ONE DOES NOT SIMPLY', W / 2, M + 10, { align: 'center' });
       px(g, 'TURN THE HANDLE ONCE', W / 2, PH - M - 17, { align: 'center' });
@@ -646,17 +663,17 @@ const DESIGNS = {
   // "nobody: / me at 3am:" with the chicken-hat kid hugging a capsule in the rainy lane
   nobody: {
     photos: ['rainy_lane'],
-    draw(g) {
+    async draw(g) {
       const th = 46, iy = M + th, ih = PH - M - iy;
       px(g, 'NOBODY:\nABSOLUTELY NOBODY:\nME AT 3AM:', M + 4, M + 6, {});
       photoBg(g, 'rainy_lane', M, iy, W - M * 2, ih, { fx: 0.38, fy: 0.45, tint: ['#3050c0', 0.35], dark: 0.3, levels: 4 });
-      const kid = person('kid', 2, { look: { hat: 'chicken' }, gesture: 'hug', expr: 'happy', yaw: 0.25, t: 1.4, noHat: true, noBag: true, lookAt: [0.4, 0.9, 2] });
+      const kid = await person('kid', 2, { look: { hat: 'chicken' }, gesture: 'hug', expr: 'happy', yaw: 0.25, t: 1.4, noHat: true, noBag: true, lookAt: [0.4, 0.9, 2] });
       // a giant capsule in their arms
       const P = kid.P, cp = capsule('mochi', 0xff6f91, 0.19);
       cp.traverse((o) => { if (o.isMesh && o.material?.transparent) { o.material = new THREE.MeshStandardMaterial({ color: 0xfff6f0, roughness: 0.25 }); o.renderOrder = 0; } });
       kid.b.chest.updateWorldMatrix(true, false);
       cp.position.copy(new THREE.Vector3(0, 0.03 * P.H, 0.32 * P.H / 1.72 + 0.04).applyMatrix4(kid.b.chest.matrixWorld)); cp.rotation.set(-0.35, 0.6, 0.2);
-      const img = shot([kid.root, cp], { w: W - M * 2, h: ih, ...orbit([0.02, 0.86, 0], 0.32, 0.12, 1.85), fov: 32, key: [-0.6, 2.4, 1.6], keyCol: 0xffe6b8, rimCol: 0x7090ff, rimI: 2.2 });
+      const img = await shot([kid.root, cp], { w: W - M * 2, h: ih, ...orbit([0.02, 0.86, 0], 0.32, 0.12, 1.85), fov: 32, key: [-0.6, 2.4, 1.6], keyCol: 0xffe6b8, rimCol: 0x7090ff, rimI: 2.2 });
       kid.dispose();
       contact(g, img, M, iy, 0, 0, 0.3);
       put(g, img, M, iy);
@@ -666,16 +683,16 @@ const DESIGNS = {
   // expectation (the secret gold one, fireworks) vs reality (the 6th duplicate, rain)
   expect: {
     photos: ['fireworks', 'rain_window'],
-    draw(g) {
+    async draw(g) {
       const hw = Math.floor((W - M * 2) / 2), iy = M + 16, ih = PH - M - iy;
       px(g, 'EXPECT', M + hw / 2, M + 5, { align: 'center' });
       px(g, 'REALITY', M + hw + hw / 2, M + 5, { align: 'center' });
       photoBg(g, 'fireworks', M, iy, hw, ih, { fx: 0.5, fy: 0.4, tint: ['#ffc040', 0.25], levels: 4 });
       photoBg(g, 'rain_window', M + hw, iy, hw, ih, { fx: 0.5, sat: 0.2, levels: 4 });
-      put(g, figure('mochi/shiba', 'gold', { w: hw, h: 90, yaw: 0.2, pitch: 0.15, margin: 1.0, env: 0.9, keyI: 2.4, keyCol: 0xfff0d8, rimCol: 0xffd090, rimI: 2.6, hemi: 0.35, grade: goldGrade }), M, iy + 30);
+      put(g, await figure('mochi/shiba', 'gold', { w: hw, h: 90, yaw: 0.2, pitch: 0.15, margin: 1.0, env: 0.9, keyI: 2.4, keyCol: 0xfff0d8, rimCol: 0xffd090, rimI: 2.6, hemi: 0.35, grade: goldGrade }), M, iy + 30);
       const dups = [];
       for (let i = 0; i < 6; i++) { const m = makeItemMesh('mochi/hamu'); const row = i < 3 ? 0 : 1; m.position.set((i % 3 - 1) * 0.05 + row * 0.022, row * 0.024, row * -0.04 + (i % 2) * 0.01); m.rotation.y = (i * 1.7) % 1 - 0.5; dups.push(m); }
-      put(g, shot(dups, fit(dups, { w: hw, h: 80, yaw: 0.3, pitch: 0.35, margin: 0.85, keyCol: 0xdde4f0, keyI: 1.8, rimCol: 0xa0b0c8 })), M + hw, iy + 40);
+      put(g, await shot(dups, fit(dups, { w: hw, h: 80, yaw: 0.3, pitch: 0.35, margin: 0.85, keyCol: 0xdde4f0, keyI: 1.8, rimCol: 0xa0b0c8 })), M + hw, iy + 40);
       px(g, '×6', M + hw * 2 - 4, iy + 6, { s: 2, col: C.red, align: 'right' });
       tag(g, 'SECRET!', M + hw / 2, PH - M - 16, C.yellow, C.ink);
       tag(g, 'AGAIN.', M + hw + hw / 2, PH - M - 16, C.white, C.ink);
@@ -686,7 +703,7 @@ const DESIGNS = {
   // Mikan, the new manager, on top of a machine under a big summer sky
   manager: {
     photos: ['cumulus'],
-    draw(g) {
+    async draw(g) {
       const bh = 26, ih = PH - M * 2 - bh * 2;
       photoBg(g, 'cumulus', M, M + bh, W - M * 2, ih, { fx: 0.55, fy: 0.4, zoom: 1.05, tint: ['#5aa0ff', 0.15], levels: 4 });
       const m = machine('standard', 'mochi');
@@ -695,7 +712,7 @@ const DESIGNS = {
       const c = cat({ at: [0, b.max.y - 0.005, -0.02], yaw: 0.3, lookAt: [0.6, b.max.y + 0.3, 2.4], mood: 'happy' });
       fillMachine(m);
       const box = bbox(c.root).union(new THREE.Box3(new THREE.Vector3(b.min.x * 0.7, b.max.y - 0.45, b.min.z * 0.7), new THREE.Vector3(b.max.x * 0.7, b.max.y, b.max.z * 0.7)));
-      put(g, shot([m, c.root], fit([], { box, w: W - M * 2, h: ih, yaw: 0.3, pitch: 0.16, margin: 0.95, fov: 32 })), M, M + bh + 4);
+      put(g, await shot([m, c.root], fit([], { box, w: W - M * 2, h: ih, yaw: 0.3, pitch: 0.16, margin: 0.95, fov: 32 })), M, M + bh + 4);
       c.root.removeFromParent();
       rect(g, M, PH - M - bh, W - M * 2, bh, C.paper);
       px(g, 'NEW MANAGER', W / 2, M + 10, { align: 'center' });
@@ -706,7 +723,7 @@ const DESIGNS = {
   // "you expected a normal capsule? but it was me!": Mikan sitting in a split-open capsule, menacing ゴゴゴ
   itwasme: {
     photos: ['neon_night'],
-    draw(g) {
+    async draw(g) {
       const bh = 26, ih = PH - M * 2 - bh * 2;
       photoBg(g, 'neon_night', M, M + bh, W - M * 2, ih, { fx: 0.5, fy: 0.45, tint: ['#7a30d0', 0.45], dark: 0.42, levels: 4 });
       // a big capsule split open: the coloured half as a cup she sits in, the clear lid tipped over beside it
@@ -717,7 +734,7 @@ const DESIGNS = {
       cp.top.position.set(-r * 2.1, -r * 0.55, -r * 0.5); cp.top.rotation.set(0.3, 0, 2.5);
       const c = cat({ at: [0.01, r * 0.62, 0.02], yaw: 0.2, lookAt: [0.4, 0.45, 2.4], mood: 'happy' });
       const objs = [cp.group, c.root];
-      put(g, shot(objs, fit(objs, { w: W - M * 2, h: ih, yaw: 0.25, pitch: 0.16, margin: 0.88, dy: 0.06, fov: 30, key: [-1.2, 1.6, 2.2], keyCol: 0xffd8f0, rimCol: 0xa070ff, rimI: 2.6 })), M, M + bh);
+      put(g, await shot(objs, fit(objs, { w: W - M * 2, h: ih, yaw: 0.25, pitch: 0.16, margin: 0.88, dy: 0.06, fov: 30, key: [-1.2, 1.6, 2.2], keyCol: 0xffd8f0, rimCol: 0xa070ff, rimI: 2.6 })), M, M + bh);
       c.root.removeFromParent();
       for (const [x, y, s] of [[M + 3, M + bh + 98, 2], [M + 9, M + bh + 72, 2], [M + 15, M + bh + 48, 1], [W - M - 27, M + bh + 34, 2], [W - M - 21, M + bh + 8, 2]]) goGlyph(g, x, y, s, C.purple);
       rect(g, M, PH - M - bh, W - M * 2, bh, C.paper);

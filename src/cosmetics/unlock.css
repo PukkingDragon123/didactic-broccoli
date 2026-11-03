@@ -40,3 +40,7 @@ body.cine #cx-unlock { opacity: 0; }
 body.closet-on #cx-unlock { left: max(20px, env(safe-area-inset-left)); transform: translate(0, -160%); }
 body.closet-on #cx-unlock.show { transform: translate(0, 0); }
 body.closet-on #cx-unlock .cxu-card { width: min(440px, calc(100vw - var(--cl-w, 452px) - 80px)); }
+/* second paper pass: a steel clip holds the picture to the card, the "from" line is pencilled at the 16 px grid */
+#cx-unlock .cxu-pic { position: relative; }
+#cx-unlock .cxu-pic::after { content: ''; position: absolute; left: 10px; top: -16px; width: 16px; height: 44px; background: var(--pp-clip, none) 0 0 / 16px 44px; image-rendering: pixelated; }
+#cx-unlock i { font-size: 16px; line-height: 18px; color: #5e5046; padding-bottom: 2px; background: var(--pp-pencil, none) 0 100% / 64px 6px repeat-x; image-rendering: pixelated; }

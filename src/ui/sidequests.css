@@ -75,3 +75,72 @@ body.has-sq.has-goal #news { top: calc(max(20px, env(safe-area-inset-top)) + var
 #sq-marks .mk.on { display: block; }
 @keyframes sq-bob { 50% { margin-top: -36px; } }
 body.cine #sq-marks, body.sui-on #sq-marks, body.reading #sq-marks { display: none; }
+
+/* ================================================================ on paper (the kit: src/ui/paper.js + paper.css)
+   The list is a page torn out of a spiral notebook (ruled, a hand-drawn box per quest, its title struck with a highlighter in the quest's colour);
+   a new quest arrives as an airmail envelope with the quest's colour as its stamp, a finished one gets a red 済;
+   choices are paper slips; the ! / ? over people are little sticky tags. Hard pixel shadows, steps() motion. */
+body.paper-ui #sidequests .sq-card {
+  padding: 2px 8px 4px 10px; color: var(--pp-ink); image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-spiral) 6 / 12px round;
+  background:
+    linear-gradient(to right, transparent 0 32px, rgba(200, 50, 44, .4) 32px 34px, transparent 34px) padding-box,
+    repeating-linear-gradient(to bottom, transparent 0 18px, rgba(47, 90, 154, .16) 18px 20px) 0 4px padding-box,
+    var(--pp-grain-cream) 0 0 / 96px padding-box;
+  box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #sidequests .sq-card * { text-shadow: none; }
+body.paper-ui #sidequests .sq-head { color: var(--pp-red); padding-left: 30px; }
+body.paper-ui #sidequests .sq-key { color: #3a2a20; background: var(--pp-grain-kraft) 0 0 / 96px; box-shadow: inset 0 0 0 2px #3a2a20; }
+body.paper-ui #sidequests .sq-dot { width: 24px; height: 24px; margin-top: -2px; transform: none; image-rendering: pixelated; background: var(--pp-box) 0 0 / 24px 24px; box-shadow: none; }
+/* the quest's colour: a highlighter stroke through the lower half of its title */
+body.paper-ui #sidequests .sq-t { display: inline-block; max-width: 100%; vertical-align: top; color: var(--pp-ink); padding: 0 2px; margin-left: -2px;
+  background: linear-gradient(transparent 0 10px, color-mix(in srgb, var(--qc) 50%, transparent) 10px 18px, transparent 18px); }
+body.paper-ui #sidequests .sq-g, body.paper-ui #sidequests .sq-s, body.paper-ui #sidequests .sq-n { color: var(--pp-ink2); }
+body.paper-ui #sidequests .sq-sub { opacity: 1; color: var(--pp-blue); }
+body.paper-ui #sidequests .sq-q.flash { animation: pp-sq-flash 1.2s steps(6) 1; }
+@keyframes pp-sq-flash { 0%, 40% { background: rgba(240, 208, 96, .6); } 100% { background: transparent; } }
+
+/* the banner: an airmail envelope */
+body.paper-ui #sq-banner { transition: transform .45s steps(6); }
+body.paper-ui #sq-banner .sq-b-in {
+  position: relative; padding: 2px 52px 6px 22px; color: var(--pp-ink); image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-airmail) 6 / 12px round;
+  background: var(--pp-grain-receipt) 0 0 / 96px padding-box; box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #sq-banner .sq-b-in * { text-shadow: none; }
+body.paper-ui #sq-banner .sq-b-in::after { /* the stamp, in the quest's colour, with a perforated rim */
+  content: ''; position: absolute; right: 2px; top: 0; width: 28px; height: 32px; image-rendering: pixelated;
+  background: linear-gradient(var(--qc), var(--qc)) 6px 6px / 16px 20px no-repeat, var(--pp-grain-receipt) 0 0 / 96px;
+  box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .3), 2px 2px 0 rgba(26, 18, 22, .3);
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 4px) 0 0 / 100% 2px no-repeat, repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 4px) 0 100% / 100% 2px no-repeat,
+    repeating-linear-gradient(#000 0 2px, transparent 2px 4px) 0 0 / 2px 100% no-repeat, repeating-linear-gradient(#000 0 2px, transparent 2px 4px) 100% 0 / 2px 100% no-repeat, linear-gradient(#000, #000) 2px 2px / calc(100% - 4px) calc(100% - 4px) no-repeat;
+}
+body.paper-ui #sq-banner.sq-b-done .sq-b-in::after { width: 40px; height: 40px; right: 0; top: 2px; background: var(--pp-hanko-sumi) 0 0 / 40px 40px; box-shadow: none; -webkit-mask: none; transform: rotate(-8deg); opacity: .9; }
+body.paper-ui #sq-banner .sq-b-l { color: var(--pp-red); }
+body.paper-ui #sq-banner .sq-b-t { color: var(--pp-ink); }
+body.paper-ui #sq-banner .sq-b-s { color: var(--pp-ink2); }
+body.paper-ui #sq-banner.sq-b-done .sq-b-l { color: var(--pp-blue); }
+body.paper-ui #sq-banner.sq-b-done .sq-b-t { color: var(--pp-red); }
+
+/* choices: paper slips */
+body.paper-ui #sq-choice button {
+  color: var(--pp-ink); image-rendering: pixelated; padding: 6px 14px 8px;
+  background: var(--pp-grain-cream) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .3), var(--pp-hard, 3px 4px 0 rgba(26, 18, 22, .45));
+}
+body.paper-ui #sq-choice button .n { color: var(--pp-ink2); }
+body.paper-ui #sq-choice button.sel {
+  color: var(--pp-ink); background: var(--pp-pencil-red) left 36px bottom 4px / 64px 6px repeat-x, var(--pp-grain-note) 0 0 / 96px;
+  box-shadow: inset 4px 0 0 var(--pp-red), inset 0 0 0 2px rgba(36, 26, 30, .3), var(--pp-hard, 3px 4px 0 rgba(26, 18, 22, .45)); transform: translateX(4px);
+}
+body.paper-ui #sq-choice button.sel .n { color: var(--pp-red); }
+body.paper-ui #sq-choice .hint { align-self: center; padding: 0 8px 2px; color: var(--pp-ink2); text-shadow: none; opacity: 1; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 2px 3px 0 rgba(26, 18, 22, .4); image-rendering: pixelated; }
+
+/* ! and ? over people: sticky tags */
+body.paper-ui #sq-marks .mk {
+  color: var(--pp-ink); background: var(--pp-grain-note) 0 0 / 96px; image-rendering: pixelated;
+  box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -4px 0 rgba(36, 26, 30, .15), 3px 4px 0 rgba(26, 18, 22, .5);
+  animation: pp-sq-bob 1.2s steps(4) infinite;
+}
+body.paper-ui #sq-marks .mk.q { color: var(--pp-blue); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-blue), inset 0 -4px 0 rgba(47, 90, 154, .15), 3px 4px 0 rgba(26, 18, 22, .5); }
+@keyframes pp-sq-bob { 50% { margin-top: -34px; } }

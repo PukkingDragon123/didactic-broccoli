@@ -24,3 +24,16 @@
 }
 #styler .st-hint.gone { display: none; }
 @media (max-width: 560px) { #styler .st-arrow { width: 32px; height: 32px; } }
+
+/* ---- on paper (src/ui/paper.js + paper.css): the arrows are little cream card tags, the swatches paint chips, the
+   name a kraft price tag, the hint a scrap of note paper. Hover lifts a texel; never a highlight or a glow. */
+body.paper-ui #styler .st-arrow, body.paper-ui #styler .st-swatch, body.paper-ui #styler .st-hint { image-rendering: pixelated; border: 0; }
+body.paper-ui #styler .st-arrow { background: var(--pp-grain-cream) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -4px 0 rgba(36, 26, 30, .15), 3px 4px 0 rgba(26, 18, 22, .45); }
+body.paper-ui #styler .st-arrow:hover { background: var(--pp-grain-note) 0 0 / 96px; transform: translate(-1px, -1px); box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -4px 0 rgba(36, 26, 30, .15), 4px 5px 0 rgba(26, 18, 22, .45); }
+body.paper-ui #styler .st-arrow:active { transform: translate(2px, 3px); box-shadow: inset 0 0 0 2px var(--pp-ink), 1px 1px 0 rgba(26, 18, 22, .45); }
+body.paper-ui #styler .st-swatch { color: var(--pp-ink); box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 -5px 0 rgba(0, 0, 0, .18), 3px 4px 0 rgba(26, 18, 22, .45); }
+body.paper-ui #styler .st-swatch.st-body { background: var(--pp-grain-receipt) 0 0 / 96px !important; }
+body.paper-ui #styler .st-swatch:hover { outline: 0; transform: translate(-1px, -1px); }
+body.paper-ui #styler .st-tag { position: absolute; padding: 2px 10px 4px 18px; color: #2a1c14; background: var(--pp-grain-kraft) 0 0 / 96px; box-shadow: inset 0 0 0 2px #3a2a20, 3px 4px 0 rgba(26, 18, 22, .45); }
+body.paper-ui #styler .st-tag::before { content: ''; position: absolute; left: 6px; top: calc(50% - 2px); width: 4px; height: 4px; background: rgba(26, 18, 22, .7); box-shadow: 0 0 0 2px #e8d0a0; }
+body.paper-ui #styler .st-hint { color: var(--pp-ink); background: var(--pp-grain-note) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .4), 3px 4px 0 rgba(26, 18, 22, .45); }

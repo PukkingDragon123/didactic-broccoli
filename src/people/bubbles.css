@@ -24,3 +24,8 @@
   .ft-big .ft-in, .ft-big .ft-name { font-size: 32px; line-height: 34px; }
   .ft-big .ft-in { max-width: min(560px, 40vw); }
 }
+
+/* ---- on paper (the strips themselves are in src/ui/paper.css): the speaker's name in red pen with a dashed rule
+   under it, the off-screen arrow in red ink. */
+body.paper-ui .ft-name { padding-bottom: 1px; margin-bottom: 2px; box-shadow: 0 2px 0 rgba(200, 50, 44, .25); }
+body.paper-ui .ft-arrow { background: var(--pp-red, #c8322c); }
