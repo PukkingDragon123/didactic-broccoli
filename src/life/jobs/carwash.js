@@ -239,7 +239,7 @@ export class CarWash {
     for (const o of [this.bucket, this.sponge, this.ladle]) o.parent?.remove(o);
     g.player.removeObstacle(this.bucketOb);
     // Mr. Tanaka drives off a little later
-    const car = this.car, ob = this.ob;
-    g.tweens.wait(this.stage === 'done' ? 25 : 0.1, () => { car.parent?.remove(car); g.player.removeObstacle(ob); });
+    const car = this.car, ob = this.ob, gone = () => { car.parent?.remove(car); g.player.removeObstacle(ob); };
+    if (this.stage === 'done') this.jobs.leaveBehind(car.position, gone, 16); else gone();
   }
 }

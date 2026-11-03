@@ -7,7 +7,7 @@
 //   van.setLights(on)  van.setBrake(on)   van.eye(out) driver's eye (world)   van.doorStep(out) where you stand once out
 //   van.park() (obstacle + physics + door click)
 import * as THREE from 'three';
-import { VoxelModel, gloss, metal, glass, MAT } from '../voxel/VoxelModel.js';
+import { VoxelModel, gloss, metal, glass } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { audio } from '../core/audio.js';

@@ -9,7 +9,6 @@ import { meshVoxels } from '../../voxel/mesher.js';
 import { voxelMaterials } from '../../voxel/materials.js';
 import { propMesh } from '../../world/props.js';
 import { audio } from '../../core/audio.js';
-import { ease } from '../../core/util.js';
 
 const VS = 0.016;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -19,6 +18,7 @@ const KURO = V(-18.6, 0, 14.25);
 const SNIFF = [[-6.3, 14.0], [2.6, 14.0], [10.0, 14.0], [-12.0, 6.0], [-24.0, 6.4], [5.4, 5.6], [-16.3, 13.9]];
 const LEASH = 2.3, NSEG = 12;
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _m = new THREE.Matrix4(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 0, 1);
+const _hand = new THREE.Vector3(), _col = new THREE.Vector3(), _want = new THREE.Vector3(), _toP = new THREE.Vector3();
 
 // ------------------------------------------------------------------ the shiba model (parts with their own pivots)
 const PAL = {
@@ -303,10 +303,10 @@ export class DogWalk {
     if (this.stage === 'pickup' || !this.leash) { d.wag = 0.7; return; }
     // lost the leash (dropped it)? She waits where she is
     const held = this.hasLeash();
-    const hand = this.hand(_v);
-    const collar = d.collar(new THREE.Vector3());
+    const hand = this.hand(_hand);
+    const collar = d.collar(_col);
     const pp = P.pos;
-    const toP = _v2.set(pp.x - d.pos.x, 0, pp.z - d.pos.z), dist = toP.length();
+    const toP = _toP.set(pp.x - d.pos.x, 0, pp.z - d.pos.z), dist = toP.length();
     let want = null, speed = 0;
     // Kuro across the lane: Pochi spots him
     const kd = d.pos.distanceTo(KURO);
@@ -339,10 +339,10 @@ export class DogWalk {
       const spot = SNIFF.find(([x, z], i) => !this.sniffed.has(i) && Math.hypot(d.pos.x - x, d.pos.z - z) < 2.2);
       if (spot) {
         const i = SNIFF.indexOf(spot);
-        want = V(spot[0], 0, spot[1]); speed = 1.6;
+        want = _want.set(spot[0], 0, spot[1]); speed = 1.6;
         if (Math.hypot(d.pos.x - spot[0], d.pos.z - spot[1]) < 0.55) { this.sniffed.add(i); d.pose = 'sniff'; this.sniffT = 2.4 + Math.random(); }
       } else if (dist > 0.9) {
-        want = _v.set(pp.x, 0, pp.z).addScaledVector(toP.normalize(), -0.7); speed = Math.min(3.2, 0.6 + (dist - 0.9) * 1.8);
+        want = _want.set(pp.x, 0, pp.z).addScaledVector(toP.normalize(), -0.7); speed = Math.min(3.2, 0.6 + (dist - 0.9) * 1.8);
       }
       // business, out by the tunnel
       if (this.stage === 'out' && !this.pooped && d.pos.x < -18 && d.pose === 'stand') { this.pooped = true; d.pose = 'squat'; this.squatT = 2.4; audio.play('whine', { pos: d.pos, vol: 0.4 }); }
@@ -438,7 +438,8 @@ export class DogWalk {
     for (let i = 0; i < g.held.slots.length; i++) { const s = g.held.slots[i]; if (s?.kind === 'tool' && ['leash', 'poop_bags'].includes(s.data.id) && s.data.job === 'dog') g.held.consume(i); }
     // Pochi stays home (a while), Kuro goes back to his porch
     const dog = this.dog, kuro = this.kuro;
-    g.tweens.wait(this.stage === 'done' ? 20 : 0.1, () => { dog.dispose(); kuro.dispose(); });
+    if (this.stage === 'done') this.jobs.leaveBehind(dog.pos, () => { dog.dispose(); kuro.dispose(); });
+    else { dog.dispose(); kuro.dispose(); }
     this.stage = 'done';
   }
 }

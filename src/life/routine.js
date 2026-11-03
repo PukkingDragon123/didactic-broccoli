@@ -18,6 +18,12 @@ export class Routine {
     this.roll = null;
     this.hookShutter();
     this.hookEndDay();
+    if (this.done && this.locked) {
+      // closed up last time: you come back to the locked shutter from the lane
+      game.garage.setShutter(0, true);
+      // (after Game.init has placed you inside: the first tick, before the fly-in from the menu)
+      game.tweens.wait(0.05, () => { game.player.pos.set(0.4, 0, GARAGE.maxZ + 1.6); game.player.yaw = 0; game.player.pitch = 0.05; });
+    }
   }
 
   get done() { return !!this.game.story?.done; }
@@ -53,7 +59,7 @@ export class Routine {
   hint() {
     const g = this.game, k = g.garage.shutterOpen, out = this.outside();
     if (k < 0.02 && this.locked) {
-      if (!out) return { key: '', text: 'The shutter is locked', sub: 'From outside' };
+      if (!out) return { key: 'LMB', text: 'Slide the inside latch', sub: 'Unlocks the shutter' };
       return g.held.holding('key') ? { key: 'LMB', text: 'Unlock the shutter' } : { key: '', text: 'Locked for the night', sub: `Hold the key${this.pick('key')} and click` };
     }
     if (k < 0.98) return { key: 'Hold LMB', text: 'Roll the shutter up', sub: this.roll ? `${Math.round(k * 100)}%` : 'Good morning!' };
@@ -66,7 +72,8 @@ export class Routine {
   use() {
     const g = this.game;
     if (g.garage.shutterOpen < 0.02 && this.locked) {
-      if (!g.held.holding('key') || !this.outside()) return false;
+      if (!this.outside()) { audio.play('lockClick', { pos: V(0, 0.5, GARAGE.maxZ), vol: 0.9 }); this.life.s.locked = false; g.save(); return false; }
+      if (!g.held.holding('key')) return false;
       // the key in the padlock at the bottom bar
       audio.play('keyTurn', { pos: V(0, 0.5, GARAGE.maxZ), vol: 1 });
       if (g.fp?.live) g.fp.play('key', 1.0, { obj: g.held.item.obj });

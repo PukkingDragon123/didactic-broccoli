@@ -165,11 +165,13 @@ export class Jobs {
       else this.thread.post({ from: 'them', text: this.active ? 'Finish the job you are on first!' : 'Someone took that one already. Try again tomorrow.', delay: 1.2 });
     });
     if (!this.s.posted) this.postOffers();
+    this.game.events?.on?.('noteRead', ({ id }) => { if (id === 'pc') this.postOffers(); });
   }
 
   postOffers() {
     const g = this.game;
-    if (!this.thread) return;
+    // nothing on the messenger until the jobs matter (Grandpa's note on the computer desk sends you to them)
+    if (!this.thread || !(g.story?.done || this.life.notes?.isRead('pc'))) return;
     const day = g.clock?.day ?? 1;
     if (this.s.posted === day) return;
     this.s.posted = day;
@@ -180,8 +182,18 @@ export class Jobs {
   }
 
   // ------------------------------------------------------------------ per frame
+  /** Things a finished job leaves behind (Pochi back at her gate, the washed car) go once you've walked away. */
+  leaveBehind(at, remove, far = 14) { (this.leftovers ||= []).push({ at: at.clone(), remove, far }); }
+
   update(dt) {
     if (this.active) this.active.update(dt);
+    if (this.leftovers?.length) {
+      const p = this.game.player.pos;
+      for (let i = this.leftovers.length - 1; i >= 0; i--) {
+        const L = this.leftovers[i];
+        if (Math.hypot(p.x - L.at.x, p.z - L.at.z) > L.far) { L.remove(); this.leftovers.splice(i, 1); }
+      }
+    }
     this.refreshT = (this.refreshT || 0) - dt;
     if (this.refreshT <= 0) { this.refreshT = 2; this.refreshBoard(); }
   }

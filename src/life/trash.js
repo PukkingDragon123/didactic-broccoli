@@ -9,7 +9,7 @@ import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { propMesh, propGeometry } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { VoxelModel, gloss, metal, glass, glow } from '../voxel/VoxelModel.js';
+import { VoxelModel, gloss, metal, glow } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { createHuman } from '../people/index.js';
 
@@ -245,7 +245,7 @@ export class Trash {
     this.t += dt;
     if (this.wobble > 0) { this.wobble = Math.max(0, this.wobble - dt * 2); this.can.rotation.z = Math.sin(this.t * 30) * 0.03 * this.wobble; }
     const c = g.clock;
-    if (c && !this.truck && g.story?.done && this.isCollectionDay(c.day) && this.s.lastPickup !== c.day && c.minuteOfDay >= COLLECT_MIN) {
+    if (c && !this.truck && g.story?.done && this.isCollectionDay(c.day) && this.s.lastPickup !== c.day && c.minuteOfDay >= COLLECT_MIN && !g.courier?.busy) {
       this.s.lastPickup = c.day;
       if (c.minuteOfDay < 12 * 60 && !g.cutscene.active) this.callTruck();
       else this.collect(); // it came while you weren't looking
@@ -394,8 +394,10 @@ function buildTruck() {
     // cab (front +z)
     v.box(-16, 5, 26, 16, 34, 45, white);
     v.box(-16, 5, 26, 16, 34, 26, white);
-    for (let y = 21; y <= 32; y++) for (let x = -14; x <= 14; x++) v.set(x, y, 45, glass(0x46525e));
-    for (const s of [-1, 1]) for (let y = 21; y <= 32; y++) for (let z = 30; z <= 43; z++) v.set(s * 16, y, z, glass(0x46525e));
+    // dark window glass (the cab is solid behind it) with a pale reflection streak
+    const pane = (a, y) => gloss(Math.abs(((a + y) % 9) - 4) < 1 ? 0x5a6a7a : 0x232c36);
+    for (let y = 21; y <= 32; y++) for (let x = -14; x <= 14; x++) v.set(x, y, 45, pane(x, y));
+    for (const s of [-1, 1]) for (let y = 21; y <= 32; y++) for (let z = 30; z <= 43; z++) v.set(s * 16, y, z, pane(z, y));
     v.box(-16, 5, 46, 16, 8, 46, metal(0x8a8e92));
     v.box(-12, 10, 46, 12, 15, 46, (x, y) => gloss(y % 2 ? 0x2a2a2c : 0x46464a));
     for (const s of [-1, 1]) { v.box(s * 13, 11, 46, s * 15, 14, 46, gloss(0xf2f0e0)); v.box(s * 13, 11, 47, s * 15, 14, 47, glow(0xfff0c0)); }

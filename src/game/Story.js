@@ -791,7 +791,7 @@ export class Story {
     van?.setBrake(true);
     yield c.cam({ pos: V(1.2, 0.55, z + 1.15), look: V(4.2, 0.9, PARK.z), fov: 46 });
     yield c.fade(0, 0.25);
-    yield c.until(() => D.x - PARK.x < 0.01 || !van);
+    yield c.until(() => D.x - PARK.x < 0.01 || !van || c.skipping);
     van?.suspend(0.03, 0);
     yield c.wait(0.25);
     van?.suspend(0, 0);

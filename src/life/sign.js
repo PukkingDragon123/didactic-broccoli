@@ -3,6 +3,7 @@
 // come in while it shows OPEN (game.sim.isOpen reads life.signOpen). The town's own painted OPEN plate on that pier is
 // put away (this sign replaces it). The shop lanterns follow the sign once the shop has reopened.
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { propMesh } from '../world/props.js';
@@ -38,12 +39,8 @@ export class OpenSign {
     board.castShadow = true; board.receiveShadow = true;
     grp.add(board);
     const cordM = new THREE.MeshStandardMaterial({ color: 0x8a6a4a, roughness: 0.9 });
-    for (const s of [-1, 1]) {
-      const c = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.23, 0.006), cordM);
-      c.position.set(s * 0.075, -0.075, 0);
-      c.rotation.z = s * 0.95;
-      grp.add(c);
-    }
+    const cords = [-1, 1].map((s) => { const c = new THREE.BoxGeometry(0.006, 0.23, 0.006); c.rotateZ(s * 0.95); c.translate(s * 0.075, -0.075, 0); return c; });
+    grp.add(new THREE.Mesh(mergeGeometries(cords), cordM));
     g.scene.add(grp);
     this.grp = grp;
     this.board = board;
@@ -132,6 +129,7 @@ export class OpenSign {
     const g = this.game, S = g.garage.town?.shop;
     if (!S?.lanternM || !g.story?.done) return;
     const on = this.life.signOpen;
+    g.garage.town.shopOpen = on; // the town's sky update lights the lanterns from this (src/world/Town.js applySky)
     S.lanternM.emissiveIntensity = on ? 1.3 : 0;
     S.lanternM.color.setScalar(on ? 1 : 0.45);
     if (S.glow) S.glow.intensity = on ? 2.4 : 0;

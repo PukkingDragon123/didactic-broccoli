@@ -3,12 +3,16 @@
 // to bag, the cardboard to flatten, Grandpa's junk boxes (one hides the OPEN sign), the change float for the cash tray,
 // and the first machine: its delivery crate (straps, carton sleeve, foam blocks) and its plug.
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { propMesh } from '../world/props.js';
 import { GARAGE, MACHINE_SLOTS } from '../world/Garage.js';
 import { Pix } from '../gfx/pix.js';
 import { dustPatch, dissolveMat } from './art.js';
+import { talk } from '../people/voice.js';
+
+const DRIVER = talk(null, { base: 165, duty: 0.5 }); // the delivery man's 8-bit voice
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const DUST = [0x9a8a78, 0x7a6e62, 0xb8a894];
@@ -126,11 +130,12 @@ export class Chores {
     const glass = new THREE.Mesh(new THREE.PlaneGeometry(half, h), new THREE.MeshStandardMaterial({ map: ft, roughness: 0.35, color: 0xfff4e4, emissive: 0xffc890, emissiveMap: ft, emissiveIntensity: 0.95 }));
     glass.rotation.y = Math.PI / 2;
     sash.add(glass);
-    for (const [w, hh, z, y] of [[0.025, h, -half / 2, 0], [0.025, h, half / 2, 0], [half, 0.025, 0, h / 2], [half, 0.025, 0, -h / 2]]) {
-      const b = new THREE.Mesh(new THREE.BoxGeometry(0.03, hh, w === 0.025 ? 0.025 : w), frame);
-      b.position.set(0.012, y, z);
-      sash.add(b);
-    }
+    const bars = [[0.025, h, -half / 2, 0], [0.025, h, half / 2, 0], [half, 0.025, 0, h / 2], [half, 0.025, 0, -h / 2]].map(([w, hh, z, y]) => {
+      const b = new THREE.BoxGeometry(0.03, hh, w === 0.025 ? 0.025 : w);
+      b.translate(0.012, y, z);
+      return b;
+    });
+    sash.add(new THREE.Mesh(mergeGeometries(bars), frame));
     // the crescent latch in the middle
     const latch = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.05), new THREE.MeshStandardMaterial({ color: 0xd8c070, metalness: 0.7, roughness: 0.3 }));
     latch.position.set(0.03, 0, half / 2 - 0.02);
@@ -436,15 +441,16 @@ export class Chores {
   // ------------------------------------------------------------------ the cash tray on the counter
   buildTray(done = false) {
     const g = this.game, f = this.f;
-    this.coins = new THREE.Group();
+    // stacks of 100-yen coins in the tray: one merged mesh
     const silver = new THREE.MeshStandardMaterial({ color: 0xd8dbe2, metalness: 0.85, roughness: 0.3 });
-    const geo = new THREE.CylinderGeometry(0.0115, 0.0115, 0.022, 8);
+    const stacks = [];
     for (let i = 0; i < 6; i++) {
-      const c = new THREE.Mesh(geo, silver);
-      c.position.set(-0.05 + (i % 3) * 0.035, 0.016, -0.02 + Math.floor(i / 3) * 0.035);
-      c.scale.y = 0.6 + (i * 0.37 % 1) * 0.6;
-      this.coins.add(c);
+      const h = 0.022 * (0.6 + (i * 0.37 % 1) * 0.6);
+      const c = new THREE.CylinderGeometry(0.0115, 0.0115, h, 8);
+      c.translate(-0.05 + (i % 3) * 0.035, 0.005 + h / 2, -0.02 + Math.floor(i / 3) * 0.035);
+      stacks.push(c);
     }
+    this.coins = new THREE.Mesh(mergeGeometries(stacks), silver);
     this.coins.position.set(TRAY.x, TRAY.y, TRAY.z);
     this.coins.rotation.y = 0.25;
     this.coins.visible = done || !!f.tray;
@@ -536,7 +542,7 @@ export class Chores {
     yield c.cam({ pos: V(1.6, 1.6, z + 5.2), look: V(0, 1.2, z), dur: 0.01, fov: 58 });
     yield c.fade(1, 0.01);
     yield c.fade(0, 0.6);
-    c.say('Delivery! Sign here, please... where do you want it?', 1.2, 'Driver');
+    c.say('Delivery! Sign here, please... where do you want it?', 1.2, 'Driver', DRIVER);
     audio.play('doorbell', { pos: V(1.5, 1.6, 4.9), vol: 0.9 });
     yield c.wait(2.0);
     yield c.fade(1, 0.45);
@@ -547,7 +553,7 @@ export class Chores {
     audio.play('thud', { pos: V(S.x, 0.5, S.z), v: 0.9 });
     yield c.cam({ pos: V(S.x + 2.4, 1.5, S.z + 1.4), look: V(S.x, 0.9, S.z), fov: 56 });
     yield c.fade(0, 0.5);
-    yield c.all(c.wait(1.6), c.say('Heavy... it\'s all yours. Mind the straps!', 0.8, 'Driver'));
+    yield c.all(c.wait(1.6), c.say('Heavy... it\'s all yours. Mind the straps!', 0.8, 'Driver', DRIVER));
     c.hideSay();
     yield c.toPlayer(0.8);
     g.story.task('Your machine is here! Unbox it.');

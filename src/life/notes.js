@@ -50,12 +50,13 @@ export const NOTES = {
     ],
   },
   tin: {
-    paper: 'yellow', w: 112, h: 136, seed: 14, where: 'on the steel rack',
+    paper: 'yellow', w: 112, h: 162, seed: 14, where: 'on the steel rack',
     rows: [
       { big: 'THE TIN' },
       { task: 'tin', text: 'SAVINGS. FOR BROOMS AND MILK.' },
       { red: 'NOT CAPSULES.' },
       { task: 'tray', text: 'COIN BAG = CHANGE FLOAT. INTO THE TRAY ON THE COUNTER.' },
+      'PS: THE RADIO EATS AA BATTERIES.',
       { doodle: 'tin', scale: 2, x: 10, inline: true }, { doodle: 'coins', scale: 2, x: 40 },
     ],
   },
@@ -123,6 +124,7 @@ export class Notes {
     this.s = life.s;
     if (!Array.isArray(this.s.notes)) this.s.notes = [];
     this.pix = new Map(); // id -> { p (Pix), tex }
+    this.dirty = new Set(); // notes waiting for a repaint
     this.world = new Map(); // id -> mesh
     this.open_ = null;
     this.t = 0;
@@ -168,7 +170,8 @@ export class Notes {
     e.p.ctx.drawImage(p.canvas, 0, 0);
     e.tex.needsUpdate = true;
   }
-  refreshAll() { for (const id of this.pix.keys()) this.refresh(id); }
+  /** Repaint every note's ticks, one note a frame (a chore just got done). */
+  refreshAll() { for (const id of this.pix.keys()) this.dirty.add(id); }
 
   /** A note taped somewhere: pos (centre), rotY (its face looks along +z turned by rotY), flat (lying on a surface), size (height, m). */
   place(id, { pos, rotY = 0, flat = false, size = 0.17, tilt = 0, envelope = false, parent = null }) {
@@ -215,6 +218,7 @@ export class Notes {
     const def = NOTES[id];
     if (!def) return false;
     this.refresh(id);
+    this.dirty.delete(id);
     this.mat.map = this.tex(id);
     this.mat.needsUpdate = true;
     const H = PAPER_H, W = H * (def.w / def.h);
@@ -262,6 +266,7 @@ export class Notes {
 
   update(dt) {
     const g = this.game, inp = g.input;
+    if (this.dirty.size) { const id = this.dirty.values().next().value; this.dirty.delete(id); this.refresh(id); }
     if (!this.open_) {
       if (this.sheet.parent && this.closing !== undefined) {
         this.closing += dt / 0.25;

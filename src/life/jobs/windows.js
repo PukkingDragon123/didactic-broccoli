@@ -14,7 +14,7 @@ const PANES = [
   { x0: -11.51, x1: -10.73, z: 14.843 },
   { x0: -10.66, x1: -9.75, z: 14.985 },
 ];
-const Y0 = 0.75, Y1 = 2.1, PW = 26, PH = 42;
+const Y0 = 0.75, Y1 = 2.1, PW = 16, PH = 26;
 const BUCKET = V(-13.05, 0, 14.6);
 const GRIME = [0xc8bca4, 0xb4a890, 0xd8ccb2, 0xa89c86];
 
@@ -34,12 +34,16 @@ export class WindowWash {
       const r = rng(90 + i);
       // grime: an even film with streaks, fly specks and a rain line along the bottom
       let n = 0;
+      // a dusty film in clumps (a coarse value noise), heavier in diagonal streaks and along the bottom where the rain
+      // splashes up; clean glass shows through the gaps
+      const cell = [];
+      for (let k = 0; k < 7 * 9; k++) cell.push(r());
+      const nz = (x, y) => { const fx = x / 3, fy = y / 3, ix = Math.floor(fx), iy = Math.floor(fy), ux = fx - ix, uy = fy - iy, c = (a, b) => cell[((b % 9) * 7 + (a % 7)) % cell.length]; return c(ix, iy) * (1 - ux) * (1 - uy) + c(ix + 1, iy) * ux * (1 - uy) + c(ix, iy + 1) * (1 - ux) * uy + c(ix + 1, iy + 1) * ux * uy; };
       for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) {
-        // a dusty film: dithered, heavier in streaks and along the bottom where the rain splashes up
-        const streak = Math.sin(x * 0.9 + y * 0.12 + i) > 0.55;
-        if (r() < 0.38 + (y > PH - 9 ? 0.35 : 0) + (streak ? 0.25 : 0)) { p.px(x, y, GRIME[Math.floor(r() * 4)]); n++; }
+        const streak = Math.abs(((x + y * 0.6 + i * 3) % 9) - 4) < 1;
+        if (nz(x, y) + (y > PH - 6 ? 0.3 : 0) + (streak ? 0.2 : 0) > 0.55) { p.px(x, y, GRIME[Math.floor(r() * 4)]); n++; }
       }
-      for (let k = 0; k < 10; k++) p.px(Math.floor(r() * PW), Math.floor(r() * PH), 0x4a4038);
+      for (let k = 0; k < 6; k++) p.px(Math.floor(r() * PW), Math.floor(r() * PH), 0x6a5e4e);
       p.flush();
       const tex = p.texture();
       const mesh = new THREE.Mesh(new THREE.PlaneGeometry(P.x1 - P.x0, Y1 - Y0), new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, roughness: 0.6, transparent: false }));
@@ -128,7 +132,7 @@ export class WindowWash {
     for (let s = 0; s <= steps; s++) {
       const cx = last.x + (x - last.x) * s / steps, cy = last.y + (y - last.y) * s / steps;
       // the blade: a wide horizontal band (rubber edge) wiping everything under it
-      for (let yy = Math.round(cy) - 1; yy <= Math.round(cy) + 1; yy++) for (let xx = Math.round(cx) - 6; xx <= Math.round(cx) + 6; xx++) {
+      for (let yy = Math.round(cy) - 1; yy <= Math.round(cy); yy++) for (let xx = Math.round(cx) - 4; xx <= Math.round(cx) + 4; xx++) {
         if (xx < 0 || yy < 0 || xx >= PW || yy >= PH) continue;
         D[(yy * PW + xx) * 4 + 3] = 0;
       }
@@ -137,7 +141,7 @@ export class WindowWash {
     pane.p.flush(); pane.tex.needsUpdate = true;
     pane.last = { x, y };
     pane.moved = (pane.moved || 0) + d;
-    if (pane.moved > 6) { pane.moved = 0; audio.play('squeegee', { pos: pane.mesh.position, vol: 0.8 }); g.held.swing = 0.4; }
+    if (pane.moved > 4) { pane.moved = 0; audio.play('squeegee', { pos: pane.mesh.position, vol: 0.8 }); g.held.swing = 0.4; }
     pane.left = this.count(pane);
     if (pane.left / pane.total < 0.07) {
       pane.clean = true;

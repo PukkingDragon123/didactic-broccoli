@@ -64,6 +64,9 @@ export class Life {
     this.routine = new Routine(g, this);
     this.hookHands();
     this.hookPower();
+    // a job that was running when the game was last saved is gone: so are its tools
+    const H = g.held;
+    for (let i = 0; i < H.slots.length; i++) { const it = H.slots[i]; if (it?.kind === 'tool' && it.data?.job && !this.jobs.active) H.consume(i); }
     g.story?.setup?.(this);
     Game.updaters.push((gg, dt) => this.update(dt));
   }
