@@ -9,6 +9,8 @@
 //   wallet     host -> all 'W' { pg, rg } (piggy bank = the team wallet, register); guest -> host 'bal' { k, d }
 //              host -> guest 'fix' { cash } when the shared money ran out under them. Cash and bank stay personal.
 //   clock      host -> all 'clk' { d, m, p } once a second (guests run their clock locally in between)
+//   displays   'dsp' { k, i, it } both ways: a figure put on / taken off a wall shelf or a museum case
+//   fixtures   'fx' { l, sh, so } both ways: the garage lights, the shutter, the OPEN sign
 //   orders     guest -> host 'order' { d, o } (the host's courier brings it); 'disc' { k, f } (the collection book)
 //   ledger     guest -> host 'me' { cash, bank, pin, inv } (the host keeps a friend's pockets for next time)
 // Guests run the lane's people and customers themselves for show only: a customer's turn on a guest's screen
@@ -47,7 +49,12 @@ export class WorldSync {
   get s() { return this.mp.s; }
   get host() { return this.mp.isHost; }
   /** Did the local player just do something (a click or a key)? */
-  acting() { return performance.now() - this.lastAct < ACT_WINDOW; }
+  acting() {
+    if (performance.now() - this.lastAct < ACT_WINDOW) return true;
+    const g = this.game;
+    // a hold (cranking a handle, pouring...) or your own test turn still dispensing
+    return !!(g.input?.button?.(0) || g.machines.some((m) => m.state === 'dispensing' || m.state === 'returning' || m.state === 'cranking'));
+  }
   apply(fn) { this.applying++; try { return fn(); } finally { this.applying--; } }
 
   // ------------------------------------------------------------------ the snapshot a joining guest loads
@@ -85,6 +92,8 @@ export class WorldSync {
     S.on('it-', (m, from) => this.onItemDel(m, from));
     S.on('dec', (m, from) => this.onDecor(m, from));
     S.on('dst', (m, from) => this.onDecorSt(m, from));
+    S.on('fx', (m, from) => this.onFixtures(m, from));
+    S.on('dsp', (m, from) => this.onDisplay(m, from));
   }
 
   installHost() {
@@ -197,10 +206,14 @@ export class WorldSync {
       if (n % 3 === 1) this.sendBalances();
       if (n % 10 === 0) { this.sendClock(); this.sendItemPositions(); }
       if (n % 10 === 5) this.sendDecorSt();
+      if (n % 5 === 3) this.sendFixtures();
+      if (n % 5 === 4) this.syncDisplays();
     } else {
       if (n % 2 === 0) this.guestMachineOps();
       if (n % 5 === 2) this.guestDecorSt();
       if (n % 30 === 7) this.sendLedger();
+      if (n % 5 === 3) this.guestFixtures();
+      if (n % 5 === 4) this.syncDisplays();
     }
   }
 
@@ -588,6 +601,72 @@ export class WorldSync {
     if (this.host) this.s.broadcast(m, from);
   }
 
+  // ------------------------------------------------------------------ figures on shelves and in the museum's cases
+  /** Every display with a key both sides agree on: wall shelves by their order, museum fittings by uid. */
+  displays() {
+    const g = this.game, out = [];
+    g.shelves.forEach((sh, i) => { if (sh.display) out.push(['s' + i, sh.display]); });
+    for (const p of g.museum?.placed || []) if (p.display) out.push(['m' + p.data.uid, p.display]);
+    return out;
+  }
+  /** Host: what changed goes to everyone. Guest: what we put down / took goes to the host. */
+  syncDisplays() {
+    const seen = (this.dspSeen ||= new Map());
+    for (const [k, d] of this.displays()) {
+      d.items.forEach((it, i) => {
+        const key = k + '|' + i, j = JSON.stringify(it || null), prev = seen.get(key);
+        if (prev === j) return;
+        seen.set(key, j);
+        if (prev === undefined) return;
+        if (this.host) this.s.broadcast({ t: 'dsp', k, i, it: it || null });
+        else if (this.acting()) this.s.toHost({ t: 'dsp', k, i, it: it || null });
+      });
+    }
+  }
+  onDisplay(m, from) {
+    const d = this.displays().find((x) => x[0] === m.k)?.[1];
+    if (!d || !d.slots[m.i]) return;
+    const cur = JSON.stringify(d.items[m.i] || null), want = JSON.stringify(m.it || null);
+    (this.dspSeen ||= new Map()).set(m.k + '|' + m.i, want);
+    if (cur !== want) {
+      this.apply(() => {
+        if (!m.it) d.clearItem(m.i);
+        else { d.items[m.i] = { ...m.it }; d.showItem(m.i, d.items[m.i], true); if (this.host) this.game.onDisplayChanged?.(m.it.k, d, d.slots[m.i]); }
+      });
+    }
+    if (this.host) this.s.broadcast(m, from);
+  }
+
+  // ------------------------------------------------------------------ the garage itself: lights, shutter, OPEN sign
+  fixtures() {
+    const g = this.game, G = g.garage;
+    return { l: G.lightsOn ? 1 : 0, sh: Math.round((G.shutterOpen ?? 1) * 50) / 50, so: g.life?.signOpen ? 1 : 0 };
+  }
+  sendFixtures() {
+    const f = this.fixtures(), j = JSON.stringify(f);
+    if (j === this.fxSent && !this.forceW) return;
+    this.fxSent = j;
+    this.s.broadcast({ t: 'fx', ...f });
+  }
+  /** Guest: we flicked the switch / rolled the shutter / flipped the sign. */
+  guestFixtures() {
+    if (!this.fxBase) return;
+    const f = this.fixtures(), b = this.fxBase;
+    if (f.l === b.l && f.sh === b.sh && f.so === b.so) return;
+    if (!this.acting()) return;
+    this.fxBase = f;
+    this.s.toHost({ t: 'fx', ...f });
+  }
+  onFixtures(m, from) {
+    const g = this.game, G = g.garage, f = this.fixtures();
+    this.apply(() => {
+      if (m.l !== undefined && m.l !== f.l) { G.setLights(!!m.l); g.state.lightsOn = !!m.l; }
+      if (m.sh !== undefined && Math.abs(m.sh - f.sh) > 0.01) G.setShutter(m.sh);
+      if (m.so !== undefined && m.so !== f.so && g.life?.sign?.flip) g.life.sign.flip(!!m.so, { quiet: true });
+    });
+    if (this.host) { this.fxSent = ''; void from; } else this.fxBase = this.fixtures();
+  }
+
   // ------------------------------------------------------------------ a guest's own pockets, kept by the host
   sendLedger() {
     const g = this.game, W = g.wallet;
@@ -611,7 +690,7 @@ export class WorldSync {
   }
 
   /** Host: everything once more (after a guest rejoins). */
-  resync() { this.mSent.clear(); this.forceW = true; }
+  resync() { this.mSent.clear(); this.forceW = true; this.fxSent = ''; }
 }
 
 const _p = new THREE.Vector3();

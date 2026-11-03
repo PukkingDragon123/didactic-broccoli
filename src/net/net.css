@@ -96,7 +96,8 @@ body.cine .mp-roster, body.cine .mp-log { opacity: 0; transition: opacity .4s; }
   color: var(--pp-ink, #241a1e); background: var(--pp-grain-receipt, #f6f3ea) 0 0 / 96px;
   box-shadow: 0 2px 0 rgba(26, 18, 22, .45), 2px 0 0 rgba(26, 18, 22, .2);
 }
-.mp-l b { font-weight: normal; }
+.mp-l b { font-weight: normal; color: var(--pp-red, #c8322c); }
+.mp-l i { display: inline-block; width: 8px; height: 8px; margin: 0 6px 2px 0; box-shadow: 0 0 0 2px var(--pp-ink, #241a1e); vertical-align: middle; }
 .mp-l.sys { color: var(--pp-ink2, #5e5046); background: var(--pp-grain-cream, #eee4ca) 0 0 / 96px; }
 .mp-l.me { color: var(--pp-blue, #2f5a9a); }
 .mp-l.old { opacity: 0; transition: opacity .6s steps(3); }
@@ -114,7 +115,7 @@ body.cine .mp-roster, body.cine .mp-log { opacity: 0; transition: opacity .4s; }
 
 /* ------------------------------------------------------------- a police fine: a stamped ticket */
 .mp-ticket {
-  position: fixed; left: 50%; top: 16%; z-index: 35; width: 300px; margin-left: -150px; padding: 0 10px 8px; font: 16px/20px var(--font-ui);
+  position: fixed; right: max(24px, 5vw); top: max(170px, 28%); z-index: 35; width: 300px; padding: 0 10px 8px; font: 16px/20px var(--font-ui);
   border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
   background: linear-gradient(var(--pp-red, #c8322c) 0 4px, transparent 4px) padding-box, var(--pp-grain-receipt, #f6f3ea) 0 0 / 96px padding-box;
   filter: var(--pp-shadow, drop-shadow(3px 4px 0 rgba(26, 18, 22, .45)));

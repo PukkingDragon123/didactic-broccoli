@@ -11,6 +11,7 @@ import { installPC } from './pc/PC.js';
 import { installMuseum } from './museum/Museum.js';
 import { installFP } from './game/FPBody.js';
 import { installDebug } from './debug.js';
+import { autoQuality } from './core/autoQuality.js';
 import { isTouchDevice, installTouch } from './core/touch.js';
 import { MenuSigns } from './world/menuSigns.js';
 import { MenuGear } from './world/menuGear.js';
@@ -161,6 +162,8 @@ async function boot() {
   const share = $('share'), code = $('share-code'), act = $('share-act'), note = $('share-note');
   const openShare = (mode) => {
     if (!game.mp) return openShareCode(mode);
+    // hosting from a read-only visit: back to your own shop first
+    if (mode === 'host' && game.visiting && !game.mp.isGuest) { try { sessionStorage.removeItem(VISIT_KEY); } catch { /* ignore */ } location.reload(); return; }
     sfx('uiClick', 0.6);
     game.mp.ui.menu(mode, { onPlay: () => start(), fallback: (m, pasted) => openShareCode(m, pasted) });
   };
@@ -247,9 +250,9 @@ async function boot() {
   });
   for (const el of document.querySelectorAll('#pause .panel')) el.addEventListener('click', (e) => e.stopPropagation());
 
-  // ---------------- adaptive quality on first run
-  let fpsSamples = [];
-  const autoQuality = !s.quality;
+  // ---------------- adaptive quality on first run (src/core/autoQuality.js): until a preset is picked in Settings
+  const aq = params.has('autotest') || touch ? null : autoQuality(game, { onChange: (name) => { $('quality').value = name; } });
+  let lastNow = performance.now();
 
   // ---------------- loop
   const clock = new THREE.Clock();
@@ -304,14 +307,9 @@ async function boot() {
     }
     game.update(dt);
     game.render(dt);
-    if (autoQuality && fpsSamples.length < 240) {
-      fpsSamples.push(dt);
-      if (fpsSamples.length === 240) {
-        const avg = fpsSamples.slice(60).reduce((a, b) => a + b, 0) / 180;
-        if (avg > 1 / 30) { game.renderer.setQuality('low'); $('quality').value = 'low'; }
-        else if (avg > 1 / 50) { game.renderer.setQuality('medium'); $('quality').value = 'medium'; }
-      }
-    }
+    const now = performance.now();
+    aq?.frame((now - lastNow) / 1000); // the real frame time (dt above is clamped)
+    lastNow = now;
   }
   frame();
   window.__ready = true;

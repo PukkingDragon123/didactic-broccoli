@@ -153,7 +153,8 @@ export class Social {
     const byName = this.s.players.get(by)?.name || 'Someone', toName = this.s.players.get(to)?.name || 'someone';
     if (by !== me) this.mp.avatar(by)?.action('slap');
     if (to === me) {
-      // PAF! in the face: the screen shakes and you stagger back
+      // PAF! in the face: the screen shakes and you stagger back (and wake up, if you were asleep)
+      if (this.mp.sleep?.asleep) this.mp.sleep.getUp();
       const B = this.mp.avatar(by), P = g.player;
       const dir = B ? _v.subVectors(P.pos, B.root.position).setY(0) : _v.set(Math.sin(P.yaw), 0, Math.cos(P.yaw));
       if (dir.lengthSq() < 1e-4) dir.set(Math.sin(P.yaw), 0, Math.cos(P.yaw));
@@ -179,6 +180,7 @@ export class Social {
     if (!R?.state || this.game.held.item) return false;
     const P = this.game.player.pos, s = R.state;
     const dx = P.x - s[0], dz = P.z - s[2], d = Math.hypot(dx, dz);
+    if ((s[5] | 0) & 1) return d < 1.8; // asleep: they won't notice a thing
     if (d > 1.35 || d < 0.05) return false;
     const fx = -Math.sin(s[3]), fz = -Math.cos(s[3]); // where they're looking
     return (fx * dx + fz * dz) / d < -0.3;
@@ -195,8 +197,9 @@ export class Social {
     const r = this.rapOf(by);
     if (Date.now() - (r.lastSteal || 0) < STEAL_COOLDOWN) { this.s.send(by, { t: 'feed', x: 'Your hands are still shaking from the last one... wait a bit.' }); return; }
     const dx = ps[0] - pv[0], dz = ps[2] - pv[2], d = Math.hypot(dx, dz);
-    const behind = d > 0.01 && ((-Math.sin(pv[3])) * dx + (-Math.cos(pv[3])) * dz) / d < -0.1;
-    if (d > 1.8 || !behind) { this.s.send(by, { t: 'feed', x: 'They noticed you! Get behind them first.' }); return; }
+    const asleep = (pv[5] | 0) & 1;
+    const behind = asleep || (d > 0.01 && ((-Math.sin(pv[3])) * dx + (-Math.cos(pv[3])) * dz) / d < -0.1);
+    if (d > (asleep ? 2.4 : 1.8) || !behind) { this.s.send(by, { t: 'feed', x: 'They noticed you! Get behind them first.' }); return; }
     r.lastSteal = Date.now();
     this.s.send(to, { t: 'rob', by, pct: 15 + Math.floor(Math.random() * 21) });
     this.s.broadcast({ t: 'stole', by }, by);
@@ -240,7 +243,7 @@ export class Social {
   onLoot(m) {
     const g = this.game, W = g.wallet;
     const who = m.from === 'police' ? 'The police' : this.s.players.get(m.from)?.name || 'Someone';
-    if (m.amount > 0) { this.mp.world.apply(() => { W.s.cash += m.amount; }); g.updateMoney(false, m.amount); try { audio.play('register', { vol: 0.4 }); } catch { /* */ } }
+    if (m.amount > 0) { this.mp.world.apply(() => { W.s.cash += m.amount; }); g.updateMoney(false, m.amount); try { audio.play(m.from === 'police' || m.back ? 'register' : 'pickpocket', { vol: 0.6 }); } catch { /* */ } }
     if (m.from === 'police') this.mp.ui?.toast(`The police returned ${yen(m.amount)} to you`);
     else if (m.back) this.mp.ui?.toast(`Got it back! ${yen(m.amount)} from ${who}`);
     else this.mp.ui?.toast(m.amount ? `You lifted ${yen(m.amount)} from ${who}'s pocket. Run!` : `${who}'s pockets were empty...`);

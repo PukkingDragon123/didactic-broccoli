@@ -92,7 +92,7 @@ export class Multiplayer {
     this.ui.show(true);
     clearInterval(this.timer);
     this.timer = setInterval(() => this.tick(), 100);
-    addEventListener('pagehide', () => { if (this.active) this.s.close(this.isHost ? 'host-left' : 'left'); });
+    addEventListener('pagehide', () => { if (!this.active) return; if (this.isGuest) this.world.sendLedger(); this.s.close(this.isHost ? 'host-left' : 'left'); });
     if (s.isGuest) setTimeout(() => this.ui.log(`Joined ${s.welcome?.hostName || 'your friend'}'s shop (room ${s.code}). T to chat.`, 'sys'), 500);
     g.events.emit('mp', { type: 'start', role: s.role, code: s.code });
   }
@@ -107,7 +107,7 @@ export class Multiplayer {
     this.game.interaction.add(R.hit, {
       reach: 1.8,
       hint: (held) => {
-        if (R.asleep) return { key: held ? '' : 'E', text: `${R.name} is asleep`, sub: held ? '' : social.canSteal(R) ? 'E: pick their pocket while they snore' : 'Shh...' };
+        if (R.asleep) { const can = !held && social.canSteal(R); return { key: can ? 'E' : '', text: `${R.name} is asleep`, sub: can ? 'Pick their pocket while they snore...' : 'Shh...' }; }
         if (held) return { key: '', text: R.name };
         if (social.canSteal(R)) return { key: 'E', text: `Pick ${R.name}'s pocket`, sub: 'Sneaky... · LMB slap' };
         return { key: '', text: R.name, sub: 'LMB slap · sneak up behind them to pick their pocket' };
@@ -166,7 +166,7 @@ export class Multiplayer {
   /** Leave (a guest: back to your own shop) or close the room (the host: everyone is sent home). */
   leave() {
     if (!this.active) return;
-    if (this.isGuest) { this.s.close('left'); clearSession(); setTimeout(() => location.reload(), 300); return; }
+    if (this.isGuest) { this.world.sendLedger(); this.s.close('left'); clearSession(); setTimeout(() => location.reload(), 300); return; }
     this.s.close('host-closed');
     clearInterval(this.timer);
     for (const id of [...this.avatars.keys()]) this.removeAvatar(id);

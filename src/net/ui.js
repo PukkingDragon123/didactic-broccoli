@@ -53,7 +53,7 @@ export class NetUI {
       this.bindName();
       this.hostRoom();
     } else {
-      box.innerHTML = `<div class="panel-title">${iconHTML('share', 2)}<span>Join a friend</span></div>${nameRow}
+      box.innerHTML = `<div class="panel-title">${iconHTML('share', 2)}<span>Join friend</span></div>${nameRow}
         <label class="mp-codein"><small>Room code</small><input id="mp-join" maxlength="300" spellcheck="false" autocomplete="off" placeholder="ABCDE"></label>
         <button class="big" id="mp-go">${iconHTML('play', 2)}Join!</button>
         <div class="foot" id="mp-note">Ask your friend for the five-letter room code</div>
@@ -202,7 +202,7 @@ export class NetUI {
   /** A line in the chat log. kind: 'me' | 'them' | 'sys'. */
   log(text, kind = 'sys', name = '', color = '') { this.log2(text, kind, name, color); }
   log2(text, kind, name, color) {
-    const line = el('div', `mp-l ${kind}`, name ? `<b style="color:${color}">${esc(name)}</b> ${esc(text)}` : esc(text));
+    const line = el('div', `mp-l ${kind}`, name ? `<i style="background:${color}"></i><b>${esc(name)}</b> ${esc(text)}` : esc(text));
     this.logEl.appendChild(line);
     while (this.logEl.children.length > 8) this.logEl.firstChild.remove();
     line._t = performance.now();
@@ -210,7 +210,8 @@ export class NetUI {
     if (kind === 'them') sfx('netChat', 0.5);
   }
 
-  toast(text, kind = '') { this.game.news(text, '', kind === 'warn' ? 5200 : 4200); this.log2(text, 'sys', '', ''); }
+  /** A note in the corner (warn: pranks on you stay in the chat log too). */
+  toast(text, kind = '') { this.game.news(text, '', kind === 'warn' ? 5200 : 4200); if (kind === 'warn') this.log2(text, 'sys', '', ''); }
 
   /** A police fine: a stamped ticket that drops in for a few seconds (and a line in the log). */
   ticket(amount, why, sub = '') {

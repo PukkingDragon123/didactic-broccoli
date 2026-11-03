@@ -45,6 +45,15 @@ async function open(name, query = '', { autotest = true, room = null } = {}) {
     async shot(path) { const f = resolve(root, path); mkdirSync(dirname(f), { recursive: true }); await pg.screenshot({ path: f, timeout: 120000 }); console.log(`saved ${path}`); },
     async reload() { await pg.reload({ waitUntil: 'load', timeout: 240000 }); await ready(pg, name); },
     ready: () => ready(pg, name),
+    /** Stop drawing every frame (the game keeps running): two live pages in one software-GL browser are slow. */
+    async quiet() { await pg.evaluate(() => { const g = window.__game; if (!g._render) { g._render = g.render; g.render = () => {}; } }); },
+    /** Draw one frame now and screenshot it. */
+    async snap(path) {
+      await pg.evaluate(() => { const g = window.__game; g.camera.updateMatrixWorld(); (g._render || g.render).call(g, 0.016); });
+      const f = resolve(root, path); mkdirSync(dirname(f), { recursive: true }); await pg.screenshot({ path: f, timeout: 120000 }); console.log(`saved ${path}`);
+    },
+    /** Poll until js is truthy (ms timeout; returns false instead of throwing). */
+    async until(js, ms = 30000) { try { await pg.waitForFunction(js, null, { timeout: ms, polling: 250 }); return true; } catch { console.log(`  (${name}) timed out waiting for: ${String(js).slice(0, 80)}`); return false; } },
     async waitFor(js, ms = 20000) { await pg.waitForFunction(js, null, { timeout: ms, polling: 200 }); },
   };
   pages.push(P);

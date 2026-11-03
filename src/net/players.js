@@ -131,6 +131,7 @@ function nameTag(name, color) {
   const sp = new THREE.Sprite(mat);
   const px = 0.0058; // metres per canvas pixel at the tag
   sp.scale.set(c.width * px, c.height * px, 1);
+  sp.userData.base = sp.scale.clone();
   sp.renderOrder = 5;
   sp.userData.noRim = true;
   sp.raycast = () => {};
@@ -244,8 +245,9 @@ export class RemotePlayer {
   }
 
   action(kind) {
-    if (kind === 'slap') this.h.gesture('mp_slap');
-    else if (kind === 'steal') this.h.gesture('mp_steal');
+    if (this.asleep) return;
+    if (kind === 'slap') { this.h.gesture('mp_slap'); this.emoteT = 0.6; }
+    else if (kind === 'steal') { this.h.gesture('mp_steal'); this.emoteT = 1; }
   }
 
   setAsleep(on) {
@@ -262,6 +264,8 @@ export class RemotePlayer {
     } else {
       r.rotation.x = 0;
       r.position.set(0, 0, 0);
+      this.hit.rotation.set(0, 0, 0);
+      this.hit.position.set(0, (this.h.height || 1.7) * 0.48, 0);
       this.h.clearGesture();
       this.h.setExpression('neutral');
       if (this.held) { const c = this.held; this.held = ''; this.setHeld(c); }
@@ -280,7 +284,10 @@ export class RemotePlayer {
     if (this.asleep) {
       // lying down: their view sits at the head, looking along the body; the body's root is at the feet
       r.position.set(s[0] - Math.sin(s[3]) * 1.5, s[1], s[2] - Math.cos(s[3]) * 1.5);
-      this.h.root.rotation.y = s[3] + Math.PI;
+      const ry = this.h.root.rotation.y = s[3] + Math.PI, half = (this.h.height || 1.7) * 0.48;
+      // the hit box lies down with them
+      this.hit.rotation.set(-Math.PI / 2, ry, 0, 'YXZ');
+      this.hit.position.set(-Math.sin(ry) * half, 0.16, -Math.cos(ry) * half);
     } else {
       r.position.set(s[0], s[1], s[2]);
       // the body turns with the view (a little lazily, like a person following their head)
@@ -297,11 +304,19 @@ export class RemotePlayer {
       look = _look.set(r.position.x - Math.sin(yw) * Math.cos(p) * 3, r.position.y + eye + Math.sin(p) * 3, r.position.z - Math.cos(yw) * Math.cos(p) * 3);
     }
     this.h.update(dt, { speed: this.speed < 0.08 ? 0 : this.speed, lookAt: look, talking: !!this.game.bubbles?.isTalking?.(this.h) });
-    if (this.emoteT > 0) { this.emoteT -= dt; if (this.speed > 0.4 && this.h.currentGesture && this.h.currentGesture !== 'mp_hold' && this.h.currentGesture !== 'carry') { this.emoteT = 0; this.h.clearGesture(); this.held = '_'; } }
+    // a pose / slap is over (or they walked off): back to holding whatever they hold
+    if (this.emoteT > 0) {
+      this.emoteT -= dt;
+      const walked = this.speed > 0.4;
+      if (this.emoteT <= 0 || walked) { this.emoteT = 0; if (walked) this.h.clearGesture(); this.held = '_'; }
+    }
     // the tag floats over the head
     const top = this.asleep ? _v.copy(r.position).add({ x: 0, y: 0.55, z: 0 }) : this.h.headTop(_v);
-    this.tag.position.set(top.x, top.y + (this.asleep ? 0 : 0.05), top.z);
+    this.tag.position.set(top.x, top.y - (this.asleep ? 0 : 0.12), top.z); // just over the hair (speech floats above it)
     this.tag.material.opacity = flags & F.AWAY ? 0.55 : 1;
+    // up close the tag shrinks a little, so it never covers a face
+    const cd = this.game.camera.position.distanceTo(this.tag.position), k = Math.min(1, Math.max(0.6, cd / 3));
+    this.tag.scale.copy(this.tag.userData.base).multiplyScalar(k);
     // little pixel z's over a sleeper
     if (this.asleep) {
       this.zT = (this.zT || 0) - dt;

@@ -73,11 +73,18 @@ class Conn {
   constructor(id, raw, closeRaw) {
     this.id = id;
     this.open = true;
-    this.onData = null;
+    this._onData = null;
+    this._early = [];
     this.onClose = null;
     this._raw = raw;
     this._closeRaw = closeRaw;
-    this.feed = unchunker((s) => { try { this.onData?.(s); } catch (e) { console.error('[net] message handler', e); } });
+    // messages that arrive before anyone listens wait for the listener
+    this.feed = unchunker((s) => { if (!this._onData) { this._early.push(s); return; } try { this._onData(s); } catch (e) { console.error('[net] message handler', e); } });
+  }
+  get onData() { return this._onData; }
+  set onData(fn) {
+    this._onData = fn;
+    while (fn && this._early.length && this._onData === fn) { const s = this._early.shift(); try { fn(s); } catch (e) { console.error('[net] message handler', e); } }
   }
   send(str) { if (!this.open) return; try { sendChunked(this._raw, str); } catch (e) { console.warn('[net] send failed', e); } }
   close() { if (!this.open) return; this.open = false; try { this._closeRaw?.(); } catch { /* already gone */ } }
@@ -95,7 +102,7 @@ class PeerTransport {
   }
 
   /** Make a peer and wait for the broker to say hello. */
-  async peer(id, timeout = 12000) {
+  async peer(id, timeout = 10000) {
     const Peer = await this.lib();
     return new Promise((resolve, reject) => {
       let done = false;

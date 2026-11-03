@@ -64,7 +64,7 @@ export class Session {
 
   accept(c) {
     // the first thing a guest says is hello; anything else first (or nothing for a while) closes the line
-    const t = setTimeout(() => { if (!c.id2) c.close(); }, 15000);
+    const t = setTimeout(() => { if (!c.id2) c.close(); }, Math.max(60000, WAIT));
     c.onData = async (str) => {
       let m; try { m = JSON.parse(str); } catch { return; }
       if (c.id2) { this.fromGuest(c.id2, m, str.length); return; }
@@ -140,7 +140,7 @@ export class Session {
     s.me = me;
     s.lastHost = Date.now();
     const answer = await new Promise((resolve, reject) => {
-      const t = setTimeout(() => reject(new NetError('timeout', "The host didn't answer.")), probe ? 8000 : 45000);
+      const t = setTimeout(() => reject(new NetError('timeout', "The host didn't answer.")), probe ? 15000 : Math.max(90000, WAIT));
       conn.onData = (str) => {
         let m; try { m = JSON.parse(str); } catch { return; }
         if (m.t === 'welcome' || m.t === 'probe' || m.t === 'deny') { clearTimeout(t); resolve(m); return; }

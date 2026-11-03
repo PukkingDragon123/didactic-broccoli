@@ -25,7 +25,6 @@ function officerHuman(seed) {
   const spec = makeSpec('delivery', seed);
   Object.assign(spec, {
     name: 'Officer', H: 1.74, build: 1.04,
-    hair: { style: 'short', col: [36, 30, 30] },
     hat: { kind: 'cap', col: [34, 44, 82], col2: [222, 190, 92] },
     top: { kind: 'polo', col: [168, 198, 228], band: [34, 44, 82], sleeve: 'short', uniform: true },
     bottom: { kind: 'slacks', col: [32, 38, 66], noCrease: true },
@@ -302,6 +301,7 @@ export class Police {
     const c = this.cop, g = this.game;
     if (!c) return;
     c.phase = 'talk';
+    try { audio.play('policeWhistle', { pos: c.npc.pos, vol: 0.7 }); } catch { /* */ }
     const n = c.npc, me = this.s.myId;
     const caller = m.by === me ? 'you' : this.s.players.get(m.by)?.name || 'someone';
     const what = m.guilty ? [m.slaps ? `${m.slaps} slap${m.slaps > 1 ? 's' : ''}` : '', m.steals ? `picking pockets (${yen(m.stolen)})` : ''].filter(Boolean).join(' and ') : '';
@@ -322,6 +322,7 @@ export class Police {
       await t.say(intro, { gesture: 'bow' });
       await t.say(ask, { expr: 'angry' });
       const i = await t.choose(m.guilty ? ['It wasn\'t me!', '...Yes. I did it.', 'They started it!'] : ['I didn\'t do anything!', 'Who, me? Never.', '...Is this a prank?'], { time: 9 });
+      c.pleaded = true;
       this.s.toHost({ t: 'cop', ph: 'plea', v: m.guilty ? i : -1 });
       const line = await Promise.race([verdict, new Promise((r) => setTimeout(() => r(null), 9000))]);
       if (line) await t.say(line, { expr: m.guilty ? 'angry' : 'neutral' });
