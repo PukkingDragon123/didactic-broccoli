@@ -24,6 +24,9 @@ const GradeShader = {
     uFlash: { value: new THREE.Color(0, 0, 0) },
     uAberration: { value: 0.0012 },
     uExposure: { value: 1.0 },
+    // body state (src/needs/Needs.js through renderer.fx): tired (a darker, duller edge), lid (eyelids closing from top and
+    // bottom), double (drunk double vision: a second, offset copy), wobble (drunk: the picture sways)
+    uTired: { value: 0 }, uLid: { value: 0 }, uDouble: { value: 0 }, uWobble: { value: 0 },
   },
   vertexShader: /* glsl */`
     varying vec2 vUv;
@@ -31,27 +34,36 @@ const GradeShader = {
   fragmentShader: /* glsl */`
     uniform sampler2D tDiffuse;
     uniform float uTime, uVignette, uGrain, uSaturation, uContrast, uWarm, uAberration, uExposure;
+    uniform float uTired, uLid, uDouble, uWobble;
     uniform vec3 uFlash;
     varying vec2 vUv;
     float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
     void main() {
-      vec2 c = vUv - 0.5;
+      vec2 uv = vUv;
+      if (uWobble > 0.001) uv += vec2(sin(vUv.y * 7.0 + uTime * 1.3), cos(vUv.x * 5.0 + uTime * 0.9)) * 0.005 * uWobble;
+      vec2 c = uv - 0.5;
       float r2 = dot(c, c);
       vec2 off = c * r2 * uAberration * 8.0;
       vec3 col;
-      col.r = texture2D(tDiffuse, vUv + off).r;
-      col.g = texture2D(tDiffuse, vUv).g;
-      col.b = texture2D(tDiffuse, vUv - off).b;
+      col.r = texture2D(tDiffuse, uv + off).r;
+      col.g = texture2D(tDiffuse, uv).g;
+      col.b = texture2D(tDiffuse, uv - off).b;
+      if (uDouble > 0.001) {
+        vec2 d2 = vec2(sin(uTime * 0.7), cos(uTime * 0.53) * 0.35) * 0.018 * uDouble;
+        col = mix(col, texture2D(tDiffuse, uv + d2).rgb, 0.42 * min(1.0, uDouble * 1.6));
+      }
       col *= uExposure;
       // saturation & contrast in linear HDR (gentle)
       float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
-      col = mix(vec3(l), col, uSaturation);
+      col = mix(vec3(l), col, uSaturation * (1.0 - 0.35 * uTired));
       col = max(vec3(0.0), (col - 0.18) * uContrast + 0.18);
       // warm cinematic split: shadows slightly teal, highlights warm
       col += vec3(uWarm, uWarm * 0.4, -uWarm * 0.6) * smoothstep(0.1, 1.2, l);
       col += vec3(-0.004, 0.002, 0.008) * (1.0 - smoothstep(0.0, 0.25, l));
-      // vignette
-      col *= 1.0 - uVignette * smoothstep(0.08, 0.55, r2 * 1.6);
+      // vignette (tired: deeper and closer in)
+      col *= 1.0 - min(0.96, uVignette + uTired * 0.6) * smoothstep(0.08 - uTired * 0.07, 0.55 - uTired * 0.15, r2 * 1.6);
+      // eyelids: dark bands closing in from the top and bottom
+      if (uLid > 0.001) col *= 1.0 - smoothstep(1.02 - uLid * 1.04, 1.1 - uLid * 1.04, abs(vUv.y - 0.5) * 2.0);
       // flash (reveals)
       col += uFlash;
       // film grain
@@ -231,6 +243,7 @@ export class Renderer {
     this.camera = null;
     this.vmRoots = new Set(); // subtrees drawn by the viewmodel pass (layers are switched just for the frame)
     this.aoCam = new THREE.PerspectiveCamera(); // GTAO sees the scene + the viewmodel
+    this.fx = { tired: 0, lid: 0, double: 0, wobble: 0 }; // body-state look, written by src/needs (survives quality changes)
   }
 
   setup(scene, camera) {
@@ -326,7 +339,9 @@ export class Renderer {
     // a light that just started casting (or was resized) has no map yet: render it now
     for (const l of this.shadowLights || []) if (l.castShadow && !l.shadow.map) need = true;
     if (need) r.shadowMap.needsUpdate = true;
-    this.grade.uniforms.uTime.value = time;
+    const gu = this.grade.uniforms, fx = this.fx;
+    gu.uTime.value = time;
+    gu.uTired.value = fx.tired; gu.uLid.value = fx.lid; gu.uDouble.value = fx.double; gu.uWobble.value = fx.wobble;
     // the sun for the god rays: the scene's shadow-casting directional light
     if (!this.outline.sun && this.frameN % 30 === 1) this.scene.traverse((o) => { if (!this.outline.sun && o.isDirectionalLight && o.castShadow) this.outline.sun = o; });
     // lights must light both passes; new ones are picked up within a few frames

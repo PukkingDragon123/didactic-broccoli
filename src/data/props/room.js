@@ -523,4 +523,53 @@ const room = {
   },
 };
 
+// ------------------------------------------------------------------ the bed you make every morning (src/places/room/Room.js)
+const QUILT = (x, y, z) => {
+  const u = ((x + 40) % 8), w = ((z + 80) % 8);
+  if ((u === 3 && w === 3) || (u === 7 && w === 7)) return 0xf4efe4;
+  if ((u + w) % 8 === 0 && hash(x >> 2, 0, z >> 2, 4) < 0.4) return 0x8fb0d8;
+  return shade(0x3a5a9a, 0.92 + vnoise(x, 0, z, 5, 3) * 0.14);
+};
+Object.assign(room, {
+  bed_base: {
+    name: 'Futon', voxel: 0.02,
+    build(v) {
+      v.shape(-25, 0, -50, 24, 4, 49, (x, y, z) => {
+        const ex = Math.max(0, Math.abs(x + 0.5) - 22.5), ez = Math.max(0, Math.abs(z + 0.5) - 47.5), ey = Math.max(0, y - 2);
+        return ex * ex + ez * ez + ey * ey <= 6.5;
+      }, (x, y, z) => (y < 4 ? shade(x % 6 === 0 ? 0xd8cbb0 : 0xeee4cc, 0.95 + hash(x, y, z, 1) * 0.06) : shade(0xf8f4ea, 0.97 + hash(x, y, z, 2) * 0.04)));
+      v.shape(-12, 4, -47, 11, 11, -35, (x, y, z) => {
+        const nx = (x + 0.5) / 12.5, nz = (z + 41) / 6.5, ny = (y - 4) / 7;
+        return nx * nx * 0.6 + nz * nz + ny * ny * 1.1 <= 1.15;
+      }, (x, y, z) => ((x + 40) % 4 < 2) !== ((z + 40) % 4 < 2) ? 0xf6a65a : (((x + 40) % 4 < 2) ? 0xfbe6c8 : 0xfbd2a6));
+    },
+  },
+  /** Made: pulled straight and smooth, the top folded back neatly under the pillow. */
+  bed_duvet_made: {
+    name: 'Comforter', voxel: 0.02,
+    build(v) {
+      v.shape(-26, 4, -30, 25, 9, 48, (x, y, z) => {
+        const edge = Math.max(0, Math.abs(x + 0.5) - 23.5);
+        const top = 8 - edge * 2;
+        return y <= top && y >= 4 - (edge > 0 ? 3 : 0);
+      }, QUILT);
+      v.shape(-25, 9, -32, 24, 10, -24, () => true, (x, y, z) => shade(0xf2e6cc, 0.95 + hash(x, y, z, 9) * 0.06));
+    },
+  },
+  /** Slept in: kicked into a heap to one side, a corner flipped over showing the lining, the pillow end bare. */
+  bed_duvet_messy: {
+    name: 'Comforter', voxel: 0.02,
+    build(v) {
+      v.shape(-30, 3, -24, 28, 20, 48, (x, y, z) => {
+        const n = vnoise(x, 0, z, 9, 21), lump = Math.sin(z * 0.16 + 1.3) * 2.2 + Math.sin(x * 0.21 + z * 0.07) * 1.6;
+        const heap = 6 + Math.round(n * 7 + lump + Math.max(0, 8 - Math.abs(x - 8) * 0.45));
+        const ex = x < -18 ? (-18 - x) * 0.9 : x > 22 ? (x - 22) * 1.4 : 0;
+        return y <= heap - ex && y >= 3 + (ex > 0 ? 0 : 0) && z > -24 + Math.round(Math.abs(Math.sin(x * 0.2)) * 3);
+      }, (x, y, z) => (y > 14 && hash(x >> 1, y, z >> 1, 3) < 0.3 ? shade(0xf2e6cc, 0.96) : QUILT(x, y, z)));
+      // the flipped corner: cream lining up
+      v.shape(-27, 4, 30, -10, 8, 47, (x, y, z) => y <= 5 + Math.round((x + 27) * 0.18) && z - 30 < (x + 27) * 1.1, (x, y, z) => shade(0xf2e6cc, 0.94 + hash(x, y, z, 7) * 0.06));
+    },
+  },
+});
+
 export default room;

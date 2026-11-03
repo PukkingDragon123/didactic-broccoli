@@ -9,7 +9,7 @@
 //   buildCornerShop(town) sets town.cornerShop = {
 //     counter, keeper: { pos, rotY }, inside: { minX, maxX, minZ, maxZ }, door,         (the contract)
 //     seat: { pos, rotY, y },  stock: [...],  tv: { pos },  ashtray, detail,  update(dt, playerPos) }
-//   stock entries (sold physically by src/plugins/mikawaya.js):
+//   stock entries (sold physically by src/places/mikawaya/Mikawaya.js):
 //     { id: supply id, prop, units: [{ p: Vector3, q: Quaternion, s }], restock: seconds, jar?: true (an endless
 //       source: units are the jars themselves), label }
 import * as THREE from 'three';

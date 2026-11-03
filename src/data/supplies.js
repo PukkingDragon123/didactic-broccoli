@@ -1,6 +1,6 @@
 // What the corner shop across the lane sells. Every item stands on Mikawa-ya's shelves (src/world/CornerShop.js stock,
-// sold physically by src/plugins/mikawaya.js); bought items go straight into your inventory (or wait on the counter if
-// your hands are full). Handled by game.buySupply(id).
+// sold physically by src/places/mikawaya/Mikawaya.js: look at a thing, click, pay cash, it is in your hands).
+// Food and drink (onigiri, bread, cup noodles, vending drinks, ramen) live in src/needs/foods.js.
 export const SUPPLIES = [
   { id: 'milk', tool: 'milk', name: 'Milk', price: 150, desc: 'Fresh milk for the hungry cat.' },
   { id: 'broom', tool: 'broom', name: 'Broom', price: 600, desc: 'Sweep up dust and rubbish.' },

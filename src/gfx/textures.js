@@ -469,6 +469,87 @@ const RECIPES = {
     for (let i = 0; i < 6; i++) { const sx = Math.floor(hash2(i, 9) * 64); for (let yy = 0; yy < 12 + hash2(i, 10) * 30; yy++) p.px(sx, yy, 0x9a9282, 70); }
     return p;
   },
+  // ------------------------------------------------------------ the neighbours' houses (2 m tiles at 32 px/m)
+  /** 下見板張り: weathered dark clapboard (old wooden house), 20 cm boards with lapped shadows, battens every 90 cm. */
+  boardWall() {
+    const p = new Pix(64, 64, 141);
+    for (let row = 0; row < 10; row++) {
+      const y0 = Math.round(row * 6.4), base = shadeC(0x5a4634, 0.86 + hash2(row, 3) * 0.24);
+      for (let y = y0; y < y0 + 7 && y < 64; y++) for (let x = 0; x < 64; x++) {
+        let c = base;
+        if (hash2(x >> 2, y * 7 + row) < 0.18) c = shadeC(base, 0.86);
+        if (hash2(x, y + row * 13) < 0.04) c = shadeC(base, 1.18);
+        p.px(x, y, c);
+      }
+      p.rect(0, y0, 64, 1, shadeC(base, 1.25));
+      p.rect(0, Math.min(63, y0 + 5), 64, 1, shadeC(base, 0.55));
+    }
+    // vertical battens (押縁) with nail heads, sun-bleached top boards
+    for (const x of [14, 43]) { p.rect(x, 0, 3, 64, 0x4a3828); p.rect(x, 0, 1, 64, 0x6a5440); for (let y = 3; y < 64; y += 6) p.px(x + 1, y, 0x2a2018); }
+    for (let x = 0; x < 64; x++) for (let y = 0; y < 10; y++) if (hash2(x, y + 50) < 0.25) p.px(x, y, 0x8a7a64, 90);
+    p.noise(0.04);
+    return p;
+  },
+  /** Prefab house panel (1970s light-steel prefab): ribbed enamelled panels with a joint every 90 cm. */
+  prefabPanel() {
+    const p = new Pix(64, 64, 142);
+    p.fill(0xe8e0cc);
+    for (let x = 0; x < 64; x += 4) { p.rect(x, 0, 1, 64, 0xf4eedc); p.rect(x + 3, 0, 1, 64, 0xcfc6b0); }
+    for (const x of [0, 29]) { p.rect(x, 0, 2, 64, 0x9a9282); p.rect(x + 2, 0, 1, 64, 0xb8b0a0); }
+    for (let i = 0; i < 5; i++) { const x = Math.floor(hash2(i, 41) * 64); for (let y = 0; y < 18 + hash2(i, 42) * 40; y++) p.px(x, y, 0xa49c8a, 90 - y); }
+    for (let x = 0; x < 64; x++) for (let y = 58; y < 64; y++) if ((x + y) % 2) p.px(x, y, 0x9a907c, 70);
+    p.noise(0.02);
+    return p;
+  },
+  /** 腰壁タイル: small brown mosaic tiles for a wall's lower band (64 px/m: 4 cm tiles). */
+  tileSkirt() {
+    const p = new Pix(64, 64, 143);
+    p.fill(0x6a5444);
+    const cols = [0x9a6a4a, 0x8a5a3e, 0xa87a54, 0x7a5038, 0xb08458];
+    for (let y = 0; y < 64; y += 4) for (let x = 0; x < 64; x += 4) {
+      const c = cols[Math.floor(hash2(x, y) * cols.length)];
+      p.rect(x, y, 3, 3, c); p.px(x, y, shadeC(c, 1.15));
+    }
+    return p;
+  },
+  /** 大谷石: soft yellow-green porous Ōya stone blocks (90 x 30 cm) with brown flecks. */
+  oyaStone() {
+    const p = new Pix(64, 64, 144);
+    p.fill(0xb8b490);
+    for (let row = 0; row < 7; row++) {
+      const y0 = Math.round(row * 9.6), off = row % 2 ? 14 : 0;
+      for (let x = 0; x < 64; x++) for (let y = y0; y < y0 + 10 && y < 64; y++) p.px(x, y, shadeC(0xb4b08a, 0.92 + hash2((x + off) >> 4, row) * 0.14));
+      p.rect(0, y0, 64, 1, 0x8a866a);
+      for (let x = off; x < 64 + 29; x += 29) p.rect(x % 64, y0, 1, 10, 0x8a866a);
+    }
+    p.speckle(0.08, [0x8a6a42, 0x7a5a3a, 0xa08a5a]);
+    p.speckle(0.05, [0xd0ccaa]);
+    for (let i = 0; i < 6; i++) p.blotch(Math.floor(hash2(i, 7) * 64), 50 + Math.floor(hash2(i, 8) * 14), 7, 0x5a6a3a, 0.3);
+    return p;
+  },
+  /** 瓦棒葺き: standing-seam coloured steel roof (prefabs, sheds): seams every 45 cm, chalky paint, rust at the laps. */
+  metalRoof() {
+    const p = new Pix(64, 64, 145);
+    p.fill(0x8a5a42);
+    for (let x = 0; x < 64; x += 14) { p.rect(x, 0, 2, 64, 0xa87458); p.rect(x + 2, 0, 1, 64, 0x5a3a2a); }
+    for (let i = 0; i < 9; i++) p.blotch(Math.floor(hash2(i, 11) * 64), Math.floor(hash2(i, 12) * 64), 5, i % 2 ? 0x9a6a50 : 0x7a4e3a, 0.4);
+    for (let i = 0; i < 8; i++) { const x = Math.floor(hash2(i, 13) * 64); for (let y = 0; y < 6 + hash2(i, 14) * 18; y++) p.px(x, y, 0x5a3420, 120); }
+    p.noise(0.03);
+    return p;
+  },
+  /** Coloured cement slate shingles (カラーベスト): modern 1980s roofs. */
+  slateRoof() {
+    const p = new Pix(64, 64, 146);
+    p.fill(0x4a4e58);
+    for (let row = 0; row < 8; row++) {
+      const y0 = row * 8, off = row % 2 ? 8 : 0;
+      for (let x = 0; x < 64; x++) for (let y = y0; y < y0 + 8; y++) p.px(x, y, shadeC(0x50545e, 0.9 + hash2((x + off) >> 4, row * 3) * 0.18));
+      p.rect(0, y0 + 7, 64, 1, 0x30343c);
+      for (let x = off; x < 64; x += 16) p.rect(x, y0, 1, 7, 0x383c44);
+    }
+    p.speckle(0.03, [0x6a6e78, 0x3a3e46]);
+    return p;
+  },
   /** Small square ceramic floor tiles for the corner shop (64 px/m). */
   shopTile() {
     const p = new Pix(64, 64, 112);
@@ -1360,7 +1441,151 @@ const TOWN = {
     // wavy lines
     for (let x = 34; x < 62; x++) { p.px(x, 52 + Math.round(Math.sin(x * 0.6)), bl); p.px(x, 56 + Math.round(Math.sin(x * 0.6 + 1)), bl); }
   },
+  // ---- the neighbours' houses
+  /** 雨戸: closed steel rain shutters (vertical ribbed panels, a lock bar, rust at the foot). */
+  amado: (p) => {
+    const { w, h } = p;
+    p.fill(0xb8b4a8);
+    for (let x = 0; x < w; x += 3) { p.rect(x, 0, 1, h, 0xd0ccc0); p.rect(x + 2, 0, 1, h, 0x9a968a); }
+    for (const x of [Math.round(w / 3), Math.round(w * 2 / 3)]) p.rect(x, 0, 1, h, 0x6a665c);
+    p.frame(0, 0, w, h, 0x7a766c);
+    for (let x = 1; x < w - 1; x++) for (let y = h - 4; y < h; y++) if (hash2(x, y) < 0.4) p.px(x, y, 0x8a5a3a, 150);
+    for (let i = 0; i < 4; i++) { const x = Math.floor(hash2(i, 5) * w); for (let y = 0; y < h * 0.6; y++) if (hash2(x, y) < 0.7) p.px(x, y, 0x8a8478, 70); }
+  },
+  /** Old wooden lattice genkan doors (dark cedar, 格子 over frosted glass, lit from the hall). */
+  doorWood: (p) => {
+    const { w, h } = p;
+    p.fill(0x3a2a1c);
+    for (const x0 of [1, w >> 1]) {
+      const pw = (w >> 1) - 1;
+      p.gradient(x0 + 1, 2, pw - 2, h - 10, 0xf8e4b8, 0xe0b880);
+      for (let x = x0 + 2; x < x0 + pw - 1; x += 2) p.rect(x, 2, 1, h - 10, 0x4a3422);
+      p.rect(x0 + 1, h - 8, pw - 2, 6, 0x5a4230); p.rect(x0 + 1, h - 8, pw - 2, 1, 0x7a5a40);
+      p.frame(x0, 1, pw, h - 2, 0x2a1c12);
+    }
+    p.rect(0, h - 2, w, 2, 0x8a8478);
+  },
+  /** A Western-style front door: painted panels, a slit window, brass handle (80s houses). */
+  doorWest: (p) => {
+    const { w, h } = p;
+    p.fill(0x6a3e26);
+    p.frame(0, 0, w, h, 0x3a2414);
+    for (const [y0, hh] of [[4, Math.round(h * 0.38)], [Math.round(h * 0.5), Math.round(h * 0.4)]]) { p.frame(3, y0, w - 6, hh, 0x4a2c1a); p.rect(4, y0 + 1, w - 8, 1, 0x8a5a3a); }
+    p.rect((w >> 1) - 2, 6, 4, Math.round(h * 0.3), 0xf0d8a0); p.rect((w >> 1) - 2, 6, 1, Math.round(h * 0.3), 0xfff0c8);
+    p.rect(w - 6, Math.round(h * 0.48), 3, 2, 0xd8b060); p.px(w - 5, Math.round(h * 0.48) + 2, 0x8a6a30);
+    p.noise(0.03);
+  },
+  /** たばこ窓口: the tobacco shop's little sales window: red plate above sliding glass, display of packs behind. */
+  tobaccoWin: (p) => {
+    const { w, h } = p;
+    p.fill(0x2a2a2a);
+    p.rect(0, 0, w, 12, 0xd8282a); p.frame(0, 0, w, 12, 0x8a1414);
+    p.text('たばこ', w / 2, -1, { size: 12, color: 0xfbf8f0, align: 'center' });
+    p.gradient(2, 13, w - 4, h - 15, 0x9aa8b0, 0x4a5058);
+    const cols = [0xfbf8f0, 0x2a4a9a, 0xd8282a, 0x3a8a4a, 0xe8c040, 0x1a1a1a];
+    for (let r = 0; r < 3; r++) for (let x = 3; x < w - 4; x += 4) p.rect(x, 15 + r * 6, 3, 4, cols[Math.floor(hash2(x, r) * cols.length)]);
+    p.rect(w >> 1, 13, 1, h - 15, 0x8a9096);
+    p.rect(0, h - 2, w, 2, 0x8a8478);
+  },
+  /** 透かしブロック: decorative perforated wall block (alpha holes): interlocking quarter-circle "flower" pattern. */
+  blockDeco: (p) => {
+    const { w, h } = p;
+    p.fill(0xb4b0a6);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const u = (x % 12) - 5.5, v = (y % 12) - 5.5;
+      const r = Math.hypot(Math.abs(u) - 5.5, Math.abs(v) - 5.5);
+      if (r > 3.2 && r < 6.2 && Math.abs(u) < 5 && Math.abs(v) < 5) { p.d[(y * w + x) * 4 + 3] = 0; continue; }
+      if (r >= 6.2 && r < 7.2) p.px(x, y, 0x8a867c);
+      else if (hash2(x, y) < 0.08) p.px(x, y, 0xc8c4ba);
+    }
+    for (let x = 0; x < w; x += 12) { p.rect(x, 0, 1, h, 0x8a867c); }
+    p.dirty = true;
+  },
+  /** Family name plates (表札): an atlas of 12 x 24 wooden plates, one family name written down each. */
+  namesL: (p) => NAMES.forEach((n, i) => namePlate(p, i * 12, n)),
+  /** 太田不動産 enamel plate (the landlady's agency) for her gate pillar. */
+  otaFudosan: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x1f4a9a); p.rect(1, 1, w - 2, 10, 0x1f4a9a);
+    p.text('太田不動産', w / 2, 0, { size: 9, color: 0xfbf8f0, align: 'center' });
+    p.text('貸家・アパート', w / 2, 12, { size: 8, color: 0x1a1a1a, align: 'center' });
+    p.text('TEL 3-2711', w / 2, h - 9, { size: 8, color: 0xd8282a, align: 'center', font: FONT_EN });
+    enamelWear(p);
+  },
+  /** 入居者募集 vacancy board on the apartment's corridor. */
+  aptRecruit: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0xd8282a);
+    p.text('入居者募集', w / 2, 1, { size: 9, color: 0xd8282a, align: 'center' });
+    p.text('2DK 4.5万', w / 2, 12, { size: 8, color: 0x1a1a1a, align: 'center' });
+    p.text('太田不動産', w / 2, h - 10, { size: 8, color: 0x1f4a9a, align: 'center' });
+  },
+  /** 貸家 (house for rent) board. */
+  forRent: (p) => {
+    const { w, h } = p;
+    p.fill(0xfbf8f0); p.frame(0, 0, w, h, 0x1f4a9a); p.frame(1, 1, w - 2, h - 2, 0x1f4a9a);
+    p.text('貸家', w / 2, 2, { size: 12, color: 0x1f4a9a, align: 'center' });
+    p.text('FOR RENT', w / 2, 16, { size: 8, color: 0xd8282a, align: 'center', font: FONT_EN });
+    p.text('太田不動産', w / 2, h - 10, { size: 8, color: 0x1a1a1a, align: 'center' });
+    for (let i = 0; i < 5; i++) { const x = Math.floor(hash2(i, 77) * w); for (let y = 0; y < h; y++) if (hash2(x, y + i) < 0.3) p.px(x, y, 0x9a8a6a, 70); }
+  },
+  /** 赤ちゃんが寝ています: a hand-drawn card taped by the Watanabes' intercom. */
+  babySign: (p) => {
+    const { w, h } = p;
+    p.fill(0xfff4f4); p.frame(0, 0, w, h, 0xe890a8);
+    p.text('赤ちゃん', w / 2, 1, { size: 8, color: 0xd85a7a, align: 'center' });
+    p.text('ねてます', w / 2, 10, { size: 8, color: 0x5a5a8a, align: 'center' });
+    p.text('Zzz', w / 2, h - 9, { size: 8, color: 0x8a9ad8, align: 'center', font: FONT_EN });
+  },
+  /** The note on the Yabukis' gate. */
+  patrolNote: (p) => {
+    const { w, h } = p;
+    p.fill(0xf4ecd4); p.frame(0, 0, w, h, 0xb8a888);
+    p.text('OUT ON', w / 2, 2, { size: 8, color: 0x2a2a2a, align: 'center', font: FONT_EN });
+    p.text('PATROL', w / 2, 11, { size: 8, color: 0xd8282a, align: 'center', font: FONT_EN });
+    p.text('-Y', w - 6, h - 9, { size: 8, color: 0x2a2a2a, align: 'center', font: FONT_EN });
+  },
+  /** Apartment room numbers (101-103, 201-203): an atlas of six 16 x 8 plates. */
+  aptNos: (p) => {
+    ['101', '102', '103', '201', '202', '203'].forEach((n, i) => {
+      const x0 = (i % 3) * 16, y0 = Math.floor(i / 3) * 8;
+      p.rect(x0, y0, 16, 8, 0xe8e4d8); p.frame(x0, y0, 16, 8, 0x8a8a84);
+      p.tinyText(n, x0 + 8, y0, { color: 0x1a1a1a, align: 'center' });
+    });
+  },
+  /** 給湯器: a wall-hung gas water heater's front (vents, maker badge, pilot window). */
+  heaterFace: (p) => {
+    const { w, h } = p;
+    p.fill(0xe8e6de); p.frame(0, 0, w, h, 0xb8b6ae);
+    for (let y = 3; y < 10; y += 2) p.rect(3, y, w - 6, 1, 0x7a7a74);
+    p.rect(3, h - 7, 5, 3, 0x2a2a2a); p.px(4, h - 6, 0xff7a3a);
+    p.rect(w - 9, h - 6, 6, 2, 0x2f6fd6);
+  },
+  /** A curling notice taped to the tobacco shop's shutter. */
+  closedNotice: (p) => {
+    const { w, h } = p;
+    p.fill(0xf8f4e8); p.frame(0, 0, w, h, 0xc8c0a8);
+    p.text('閉店', w / 2, 2, { size: 12, color: 0x1a1a1a, align: 'center' });
+    for (let i = 0; i < 4; i++) p.rect(4, 18 + i * 4, w - 8 - (i % 2) * 6, 1, 0x6a6a6a);
+    p.text('40年 ありがとう', w / 2, h - 11, { size: 8, color: 0xd8282a, align: 'center' });
+  },
+  /** 鳩舎: pigeon loft board (the Hatodas' racing pigeons). */
+  pigeonBoard: (p) => {
+    const { w, h } = p;
+    p.fill(0xf4f0e2); p.frame(0, 0, w, h, 0x3a5a8a);
+    p.text('鳩田鳩舎', w / 2, 1, { size: 9, color: 0x3a5a8a, align: 'center' });
+  },
+  /** Gas meter dial face. */
+  gasMeter: (p) => {
+    const { w, h } = p;
+    p.fill(0xd8d8d0); p.frame(0, 0, w, h, 0x8a8a84);
+    p.rect(2, 2, w - 4, 4, 0x1a1a1a); for (let x = 3; x < w - 3; x += 2) p.px(x, 3, 0xe8e8e0);
+    p.rect(2, h - 4, 4, 2, 0xe8c040);
+  },
 };
+const NAMES = ['鈴木', '太田', '日下', '木村', '田中', '鳩田', '矢吹', '森', '渡辺', '東方', '虹村', '山田', '佐藤', '小林', '山本', '伊藤', '加藤'];
+export const NAME_INDEX = Object.fromEntries(NAMES.map((n, i) => [n, i]));
+export const NAME_COUNT = NAMES.length;
 function addrPlate(p, y0, town, no) {
   const w = p.w, h = 16;
   p.rect(0, y0, w, h, 0x1f4a9a); p.frame(0, y0, w, h, 0xf4f0e6);

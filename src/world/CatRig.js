@@ -26,7 +26,7 @@ export const CAT_SCALE = 1;
 const LEGS = ['legFL', 'legFR', 'legBL', 'legBR'];
 const CLOSED = new Set(['sleepy', 'content', 'squeeze']);
 const LOOKS = Object.fromEntries(['open', 'wide', 'slit', 'half'].map((e) => [e, { '': e, L: e + 'L', R: e + 'R' }]));
-const POSES = ['walk', 'sit', 'groom', 'sleep', 'held', 'drink', 'groove', 'hide', 'stretch', 'knead'];
+const POSES = ['walk', 'sit', 'groom', 'sleep', 'held', 'drink', 'groove', 'hide', 'stretch', 'knead', 'stalk'];
 const LEG = 7 * VS; // rest leg length (pivot to the floor)
 const KEYS = ['y', 'z', 'pitch', 'roll', 'yaw', 'squash', 'hp', 'hy', 'hr', 'stab', 'earB', 'earO', 'tailUp', 'tailCurl', 'tailSide', 'swish', 'swishF', 'puff',
   'fl', 'fr', 'bl', 'br', 'flUp', 'frUp', 'fold', 'hindFold', 'purr'];
@@ -146,6 +146,14 @@ export class CatRig {
       case 'hide':
         // crouched low, ready to bolt: ears flat, wide eyes, tail tucked along her side
         return Object.assign(p, { y: -0.03, squash: 0.08, hp: 0.12, earB: 1, tailUp: -0.4, tailSide: 0.5, tailCurl: 0.02, puff: 0.6, swish: 0.03, fold: 0.6, hindFold: 0.3 });
+      case 'stalk': {
+        // hunting: belly low, shoulders up, ears forward, eyes locked on, the tail low with a twitching tip;
+        // wiggle (0..1, set by Street.js just before a pounce) shakes the hindquarters side to side
+        const wg = this.wiggle || 0, w = Math.sin(t * 17);
+        Object.assign(p, { y: -0.028, squash: 0.06, pitch: 0.06, hp: -0.08, earO: 0.6, tailUp: -0.25, tailSide: 0.05, tailCurl: 0.06, swish: 0.25, swishF: 2.4, fold: 0.35, hindFold: 0.45 });
+        p.roll = w * 0.07 * wg; p.z = w * 0.004 * wg; p.hindFold += 0.25 * wg;
+        return p;
+      }
       case 'groove': {
         Object.assign(p, this.poseParams('sit', this.tmp2 || (this.tmp2 = {}), 0));
         const gr = this.groove, beat = (gr.clock ? gr.clock() : this.grooveT) * (gr.bpm || 120) / 60 + (gr.phase || 0);
@@ -222,7 +230,7 @@ export class CatRig {
       for (const key of EXTRA) if (key !== 'tailBeat') P[key] += T[key] * w;
       if (k === 'groove') P.tailBeat = T.tailBeat;
     }
-    const wWalk = this.w.walk / sum;
+    const wWalk = (this.w.walk + (this.w.stalk || 0) * 0.8) / sum; // (a creeping stalk keeps the gait, low)
     // --- turning: the tail swings out
     const yaw = this.root.rotation.y;
     if (this.prevYaw === null) this.prevYaw = yaw;

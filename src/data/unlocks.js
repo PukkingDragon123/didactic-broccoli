@@ -21,7 +21,7 @@ const NAMES = {
   'market:buy': 'Second-hand figure market', 'market:sell': 'Sell to collectors', 'market:auction': 'Collector auctions',
   'market:clothes': 'Off-Hobby thrift clothes', 'market:tipjar': 'Off-Hobby tip jars', 'market:display': 'Off-Hobby shelves and stands',
   'market:junk': 'Off-Hobby junk lots', 'market:charms': 'Off-Hobby luck charms', 'market:grading': 'KGS figure grading',
-  'staff:1': 'Hire a part-timer', 'staff:2': 'Hire a second helper',
+  'staff:1': 'Hire a part-timer', 'staff:2': 'Hire a second helper', 'staff:3': 'Hire a third helper',
   museum: 'Museum licence (back warehouse)', 'museum:expand1': 'Museum expansion I', 'museum:expand2': 'Museum expansion II', 'museum:expand3': 'Museum expansion III',
 };
 
@@ -50,6 +50,7 @@ const TABLE = {
   19: ['museum:expand2'],
   20: ['charm:goldneko'],
   22: ['museum:expand3'],
+  24: ['staff:3'],
 };
 
 export const UNLOCKS = [];

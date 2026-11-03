@@ -741,71 +741,22 @@ const street2 = {
       // pad with a painted yellow border
       fill(v, -38, 0, -26, 38, 1, 25, (x, y, z) => (vnoise(x, 0, z, 10, 2) > 0.7 ? 0xa8a49c : 0xb4b0a8));
       v.paint(() => v.shape(-38, 1, -26, 38, 1, 25, (x, y, z) => Math.abs(x) >= 37 || z >= 24 || z <= -25, gloss(0xf2d23a)));
-      // translucent 45L bags: lumpy, contents showing through, printed city logo, knotted ears
-      const CONTENT = [0xd8c890, 0xe8a8a0, 0xa8c8a0, 0xc8b8d8, 0xf0d080];
-      const bag = (cx, y0, cz, rx, ry, rz, s, print) => {
-        const cy = y0 + ry - 1;
-        const tone = (x, y, z) => {
-          let c = 0xeef0ea;
-          const n = vnoise(x, y, z, 2.6, s + 1);
-          if (n > 0.68) c = mix(c, CONTENT[Math.floor(hash(x >> 2, y >> 2, z >> 2, s) * CONTENT.length)], 0.32);
-          if (y === cy + 2 && z > cz && Math.abs(x - cx) < rx - 2 && (x + s) % 3 !== 0) c = print;
-          if (y === cy + 4 && z > cz && Math.abs(x - cx) < 3) c = print;
-          return gloss(c);
-        };
-        v.shape(cx - rx - 2, y0, cz - rz - 2, cx + rx + 2, cy + ry + 2, cz + rz + 2, (x, y, z) => {
-          const n = vnoise(x, y, z, 4, s) * 0.26 - 0.13;
-          const e = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + ((z - cz) / rz) ** 2;
-          return e <= 1 + n;
-        }, tone);
-        let ty = cy + ry + 1; while (ty > y0 && !v.has(cx, ty, cz)) ty--;
-        v.ellipsoid(cx, ty + 1, cz, 1.6, 1.4, 1.6, gloss(0xe6e8e2));
-        for (const sx of [-1, 1]) { v.set(cx + sx * 2, ty + 2, cz, gloss(0xeef0ea)); v.set(cx + sx * 3, ty + 3, cz, gloss(0xeef0ea)); v.set(cx + sx * 2, ty + 4, cz, gloss(0xe6e8e2)); }
-      };
-      bag(-26, 2, -14, 9, 11, 8, 1, 0x3a9a4a);
-      bag(-8, 2, -15, 9, 12, 8, 2, 0x3a9a4a);
-      bag(10, 2, -13, 8, 10, 8, 3, 0xe8783a);
-      bag(-27, 2, 6, 8, 10, 8, 4, 0x3a9a4a);
-      bag(-9, 2, 5, 9, 9, 9, 5, 0x3a9a4a);
-      bag(-17, 16, -4, 9, 7, 7, 6, 0xe8783a);
-      // "can't collect" sticker on one bag
-      v.project(['YYYYY', 'YKKKY', 'YYYYY', 'YKKYY', 'YYYYY'], { Y: gloss(0xffd23f), K: 0x3a3a3a }, 5, 12, '+z');
-      // drape the net: dilate the bag height field with a slope so it falls to the ground
-      const NX0 = -37, NX1 = 30, NZ0 = -25, NZ1 = 24;
-      const H = new Map(), k2 = (x, z) => x * 1000 + z;
-      v.forEach((x, y, z) => { if (y >= 2) { const k = k2(x, z); if (!H.has(k) || H.get(k) < y) H.set(k, y); } });
-      const N = new Map();
-      for (let x = NX0; x <= NX1; x++) for (let z = NZ0; z <= NZ1; z++) {
-        let best = -99;
-        for (let dx = -9; dx <= 9; dx++) for (let dz = -9; dz <= 9; dz++) {
-          const h = H.get(k2(x + dx, z + dz));
-          if (h !== undefined) best = Math.max(best, h - Math.hypot(dx, dz) * 3.2);
-        }
-        if (best >= -9) N.set(k2(x, z), Math.max(1, Math.floor(best)));
-      }
-      const netC = () => gloss(0x2f9a6a);
-      for (let x = NX0; x <= NX1; x++) for (let z = NZ0; z <= NZ1; z++) {
-        if (!N.has(k2(x, z))) continue;
-        const edge = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dz]) => !N.has(k2(x + dx, z + dz)));
-        const lx = (z + 60) % 4 === 0, lz = (x + 60) % 4 === 0; // strand running along x / along z
-        if (!edge && !lx && !lz) continue;
-        const n = N.get(k2(x, z));
-        let lo = n;
-        const nb = [...(lx || edge ? [[1, 0], [-1, 0]] : []), ...(lz || edge ? [[0, 1], [0, -1]] : [])];
-        for (const [dx, dz] of nb) { const m = N.get(k2(x + dx, z + dz)); if (m !== undefined) lo = Math.min(lo, m); }
-        lo = Math.max(lo, n - (edge ? 1 : 4));
-        for (let y = lo + 1; y <= n + 1; y++) if (!v.has(x, y, z)) v.set(x, y, z, edge ? gloss(0xf2c83a) : netC(x, y, z));
-        if (edge && (x + z) % 9 === 0) v.set(x, 2, z, gloss(0x4a4a4c));
-      }
-      // a crow inspecting the pile
-      let cy = 0; while (v.has(-14, cy + 1, -6) || cy < 20) cy++;
-      const crow = gloss(0x1c1e24), crowL = gloss(0x343a4a);
-      v.ellipsoid(-14, cy + 6, -6, 3.5, 3.6, 6, (x, y, z) => (y > cy + 7 && z < -4 ? crowL : crow));
-      v.sphere(-14, cy + 10, -1, 3, crow);
-      v.cone(-14, cy + 10, 2, 1.4, 4, gloss(0x2a2a2e), 'z');
-      v.set(-16, cy + 11, 0, gloss(0xe8e8e8)); v.set(-12, cy + 11, 0, gloss(0xe8e8e8));
-      v.box(-15, cy + 4, -14, -13, cy + 6, -11, crow);
-      for (const sx of [-1, 1]) { v.box(-14 + sx, cy + 1, -6, -14 + sx, cy + 2, -6, 0x3a3a3a); v.box(-14 + sx, cy + 1, -5, -14 + sx, cy + 1, -4, 0x3a3a3a); }
+      // bag-less: the life system puts the bags out (src/life/trash.js). The crow-proof net lies rolled up along the
+      // back edge, held down by two bricks; a stray bit of litter and a cigarette butt in the corner
+      const netC = (x, y, z) => gloss((x + y * 3 + z) % 4 === 0 ? 0x226a4a : 0x2f9a6a);
+      for (let x = -35; x <= 30; x++) v.shape(x, 1, -24, x, 7, -18, (xx, y, z) => (y - 4) ** 2 + (z + 21) ** 2 <= 9.5, netC);
+      for (let x = -35; x <= 30; x += 9) v.shape(x, 1, -24, x, 7, -18, (xx, y, z) => { const r = (y - 4) ** 2 + (z + 21) ** 2; return r <= 10.5 && r > 6; }, gloss(0xf2c83a));
+      for (const bx of [-30, 18]) fill(v, bx, 2, -17, bx + 4, 4, -15, (x, y, z) => shade(0xa84a3a, 0.9 + hash(x, y, z, 5) * 0.15));
+      v.box(-20, 2, 8, -18, 2, 10, 0xe8e4d8); v.set(-19, 3, 9, 0xd8d0c0);
+      v.box(24, 2, 14, 26, 2, 14, 0xe8e0c8); v.set(26, 2, 14, 0xd8782a);
+      // a crow on the board's top edge, eyeing the empty pad
+      const crow = gloss(0x1c1e24), crowL = gloss(0x343a4a), cy = 75;
+      v.ellipsoid(20, cy + 5, -23, 3.5, 3.4, 5.5, (x, y, z) => (y > cy + 6 && z < -21 ? crowL : crow));
+      v.sphere(20, cy + 9, -19, 2.8, crow);
+      v.cone(20, cy + 9, -16, 1.3, 3.5, gloss(0x2a2a2e), 'z');
+      v.set(18, cy + 10, -18, gloss(0xe8e8e8)); v.set(22, cy + 10, -18, gloss(0xe8e8e8));
+      v.box(19, cy + 3, -30, 21, cy + 5, -27, crow);
+      for (const sx of [-1, 1]) v.box(20 + sx, cy + 1, -23, 20 + sx, cy + 1, -22, 0x3a3a3a);
       // rules sign board on legs
       const galv = (x, y, z) => gloss(shade(0xa8aeb2, 0.92 + hash(x, y, z, 3) * 0.08));
       for (const x of [6, 32]) fill(v, x, 2, -24, x + 1, 73, -23, galv);

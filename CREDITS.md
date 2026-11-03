@@ -887,6 +887,157 @@ each print is cropped, shrunk to pixel-art size, colour-graded and ordered-dithe
 - Attribution: "The Forbidden City" by whatleydude, licensed under CC BY 2.0
 - Shipped as: `img/photos/prints/forbidden_city.jpg` (a wall print)
 
+### Lane posters (the posters and notices around the lane)
+
+The posters and neighbourhood notices pasted up on the lane's walls, poles, the old tobacco shop's shutter and the park
+(`src/world/LanePosters.js`) print these photos (and some of the flyer photos above), picked at random each time you
+play. In the game each one is cover-cropped to a few dozen pixels, colour-graded like old print, posterized with an
+ordered dither and lettered with the pixel fonts.
+
+#### Sumo Wrestling
+
+- Author: SteFou!
+- Source: https://www.flickr.com/photos/stephen-oung/6082800765 (Open Images ID 0deee1bb956b2216)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Sumo Wrestling" by SteFou!, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/sumo.jpg` (a sumo tour poster)
+
+#### しながわ水族館_SHINAGAWA AQUARIUM_072
+
+- Author: ajari
+- Source: https://www.flickr.com/photos/ajari/2658869951 (Open Images ID 12b1f929640f1227)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "しながわ水族館_SHINAGAWA AQUARIUM_072" by ajari, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/aquarium.jpg` (an aquarium poster)
+
+#### Kitty
+
+- Author: Sergey Neznamov
+- Source: https://www.flickr.com/photos/kejz/18906420218 (Open Images ID 2061937fe90d4e71)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Kitty" by Sergey Neznamov, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/cat_birman.jpg` (a lost-cat notice)
+
+#### Snow monkeys in hot spring Japan
+
+- Author: Chi Tranter
+- Source: https://www.flickr.com/photos/chitranter/14212780326 (Open Images ID 2a1c261ad12e6f62)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Snow monkeys in hot spring Japan" by Chi Tranter, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/snow_monkeys.jpg` (a travel poster)
+
+#### Shiba Inu Dog Portrait (cc)
+
+- Author: Jason Hargrove
+- Source: https://www.flickr.com/photos/salty_soul/4115686100 (Open Images ID 318cacc523658be4)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Shiba Inu Dog Portrait (cc)" by Jason Hargrove, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/shiba.jpg` (a lost-dog notice)
+
+#### Elephant
+
+- Author: Glenn Beltz
+- Source: https://www.flickr.com/photos/n28307/14024870691 (Open Images ID 3546e315dd033322)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Elephant" by Glenn Beltz, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/elephant.jpg` (a zoo poster)
+
+#### Black Cat
+
+- Author: corbin_dana
+- Source: https://www.flickr.com/photos/51415056@N08/8120563404 (Open Images ID 4d2786e4d0239451)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Black Cat" by corbin_dana, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/cat_black.jpg` (a lost-cat notice)
+
+#### Baseball in Tokyo
+
+- Author: Qrodo Photos
+- Source: https://www.flickr.com/photos/qrodoflickr/4279797402 (Open Images ID 6c906fe112f15285)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Baseball in Tokyo" by Qrodo Photos, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/baseball.jpg` (a baseball tournament poster)
+
+#### Mt. Fuji (morning)
+
+- Author: Akuppa John Wigham
+- Source: https://www.flickr.com/photos/90664717@N00/10972784826 (Open Images ID 6e1e87bb95452e41)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Mt. Fuji (morning)" by Akuppa John Wigham, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/fuji_morning.jpg` (a travel poster)
+
+#### Giraffe
+
+- Author: Przemek Więch
+- Source: https://www.flickr.com/photos/pewu/1368526080 (Open Images ID 7222bd0a37b46602)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Giraffe" by Przemek Więch, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/giraffe.jpg` (a zoo poster)
+
+#### My cat
+
+- Author: M S
+- Source: https://www.flickr.com/photos/monikaszyma/2679353123 (Open Images ID 73caeb335f576904)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "My cat" by M S, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/cat_grey.jpg` (a lost-cat notice)
+
+#### Mt. Fuji From Izu Peninsula
+
+- Author: Kirt Cathey
+- Source: https://www.flickr.com/photos/kirtcathey/15627387724/ (Open Images ID 78539e8d9556eb55)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Mt. Fuji From Izu Peninsula" by Kirt Cathey, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/fuji_izu.jpg` (a travel poster)
+
+#### Hikari Shinkansen
+
+- Author: alisdair
+- Source: https://www.flickr.com/photos/alisdair/2849800683 (Open Images ID 842fcd9c97854956)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Hikari Shinkansen" by alisdair, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/shinkansen.jpg` (a travel poster)
+
+#### Beach
+
+- Author: Ralph Daily
+- Source: https://www.flickr.com/photos/ralphandjenny/7712244098 (Open Images ID 934ee278c3b493ca)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Beach" by Ralph Daily, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/sailboat.jpg` (a travel poster)
+
+#### 柴犬の子供 (Shiba inu puppy)
+
+- Author: Toshihiro Gamo
+- Source: https://www.flickr.com/photos/dakiny/8347673287 (Open Images ID a21093132630d7a2)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "柴犬の子供 (Shiba inu puppy)" by Toshihiro Gamo, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/shiba_puppy.jpg` (a lost-dog notice)
+
+#### Kakigori @ Kira Kira Ginza
+
+- Author: Seika
+- Source: https://www.flickr.com/photos/nseika/6183261909 (Open Images ID b27664c9ed82adff)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Kakigori @ Kira Kira Ginza" by Seika, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/kakigori.jpg` (the kakigori notice and the summer festival poster)
+
+#### Cat portrait
+
+- Author: Slava V.
+- Source: https://www.flickr.com/photos/slava_v/3039864889 (Open Images ID d3487e4cf55c90d3)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Cat portrait" by Slava V., licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/cat_fluffy.jpg` (a lost-cat notice)
+
+#### ガクアジサイ(額紫陽花) /  Japanese Hydrangea
+
+- Author: Toshihiro Gamo
+- Source: https://www.flickr.com/photos/dakiny/9037371303 (Open Images ID e5572ed148dc0b76)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "ガクアジサイ(額紫陽花) /  Japanese Hydrangea" by Toshihiro Gamo, licensed under CC BY 2.0
+- Shipped as: `img/photos/lane/hydrangea.jpg` (a travel poster)
+
 ## Licences
 
 - CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/ (no attribution required; credited anyway)

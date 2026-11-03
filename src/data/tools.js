@@ -1,4 +1,5 @@
-// Things you can carry in the 5-slot inventory besides capsules, figures and delivery boxes.
+// Things you can carry in the 6-slot inventory (food and drink, the watering can, seeds and meal tickets are added by
+// src/needs/eat.js) besides capsules, figures and delivery boxes.
 // Each tool has a 2D icon (src/gfx/icons.js) and a blocky voxel prop (src/data/props/*.js) shown while held.
 //   kind 'tool' items carry data { id } (+ optional fields such as uses left).
 //   hand: the size (largest dimension, metres) the prop is shown at in front of the camera.
@@ -15,7 +16,7 @@ export const TOOLS = {
   flyers: { name: 'Flyers', icon: 'flyer', prop: 'flyer_stack', desc: 'Hand one to people on the street to bring in customers.', hand: 0.13 },
   cash_tin: { name: "Grandpa's Cash Tin", icon: 'cash_tin', prop: 'cash_tin', desc: 'Savings for supplies.', hand: 0.13 },
   watch: { name: 'Old Pocket Watch', icon: 'watch', prop: 'pocket_watch', desc: 'Click to stop time for a few seconds. It needs a minute to wind back up.', keep: true, hand: 0.075 },
-  // Mikawa-ya's dagashi (eaten / drunk with a click, see src/plugins/mikawaya.js)
+  // Mikawa-ya's dagashi (eaten / drunk with a click, see src/places/mikawaya/Mikawaya.js)
   ramune: { name: 'Ramune', icon: 'ramune', prop: 'ramune_bottle', desc: 'Click to pop the marble and drink it.', hand: 0.17 },
   puffstick: { name: 'Puff Stick', icon: 'puffstick', prop: 'puff_stick', desc: 'Click to eat it. Mind the crumbs.', hand: 0.14 },
   candy: { name: 'Fruit Candy', icon: 'candy', prop: 'candy_piece', desc: 'Click to pop it in your mouth.', hand: 0.07 },

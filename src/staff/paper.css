@@ -1,0 +1,74 @@
+/* Staff paperwork on the paper kit (src/ui/paper.css): the applicant's CV (cream sheet, photo taped on, red hanko),
+   the kraft staff card, the wage slip (a till receipt). Pixel art: 2x texels, ink text, hard shadows, steps() motion. */
+#staff-paper { position: fixed; inset: 0; pointer-events: none; z-index: 24; }
+#staff-paper .sp-paper {
+  position: absolute; color: var(--pp-ink, #241a1e); font: 16px/18px 'Alagard', 'DotGothic16', monospace; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background: var(--pp-grain-cream) 0 0 / 96px padding-box; background-color: #eee4ca;
+  filter: var(--pp-shadow, drop-shadow(3px 4px 0 rgba(26, 18, 22, .45)));
+  animation: sp-in 0.32s steps(4) both;
+}
+#staff-paper .sp-paper.out { animation: sp-out 0.28s steps(3) both; }
+@keyframes sp-in { from { transform: translateY(-30px) rotate(var(--rot, 0deg)); opacity: 0; } to { transform: translateY(0) rotate(var(--rot, 0deg)); opacity: 1; } }
+@keyframes sp-out { to { transform: translateY(24px) rotate(var(--rot, 0deg)); opacity: 0; } }
+#staff-paper table { border-collapse: collapse; }
+#staff-paper th { padding: 0 8px 0 0; text-align: left; font-weight: normal; color: var(--pp-ink2, #5e5046); vertical-align: top; }
+#staff-paper td { padding: 0; }
+#staff-paper small { font-size: 16px; color: var(--pp-ink2, #5e5046); }
+#staff-paper .sp-red { color: var(--pp-red, #c8322c); }
+#staff-paper .sp-hanko { position: absolute; width: 48px; height: 48px; background: var(--pp-hanko) 0 0 / 48px 48px; image-rendering: pixelated; opacity: 0.9; }
+
+/* ---- the CV: a ruled sheet, top-left, a little crooked */
+#staff-paper .sp-cv {
+  --rot: 1.5deg; right: max(22px, env(safe-area-inset-right)); top: 70px; width: 290px; padding: 4px 10px 8px;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 18px, rgba(47, 90, 154, .12) 18px 20px) padding-box,
+    var(--pp-grain-cream) 0 0 / 96px padding-box;
+}
+#staff-paper .sp-tape { position: absolute; left: calc(50% - 40px); top: -20px; width: 80px; height: 24px; background: var(--pp-tape) 0 0 / 80px 24px; image-rendering: pixelated; }
+#staff-paper .sp-cvh { display: flex; align-items: baseline; gap: 8px; padding-bottom: 2px; border-bottom: 2px solid var(--pp-ink, #241a1e); }
+#staff-paper .sp-cvh b { font-size: 32px; line-height: 32px; font-weight: normal; }
+#staff-paper .sp-cvh span { font-family: 'DotGothic16', monospace; }
+#staff-paper .sp-cvh small { margin-left: auto; }
+#staff-paper .sp-cvtop { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0 2px; }
+#staff-paper .sp-photo { position: relative; flex: none; display: block; width: 96px; height: 96px; outline: 2px solid var(--pp-ink, #241a1e); }
+#staff-paper .sp-photo img { display: block; width: 96px; height: 96px; image-rendering: pixelated; }
+/* a steel paper clip over the photo's top edge (stepped pixel shape) */
+#staff-paper .sp-clip { position: absolute; left: 12px; top: -8px; width: 10px; height: 26px; border: 2px solid #8e99a6; border-bottom-color: #5d6774; background: transparent; box-shadow: 2px 2px 0 rgba(26, 18, 22, .3); }
+#staff-paper .sp-sec { margin-top: 4px; color: var(--pp-red, #c8322c); border-bottom: 2px dashed rgba(36, 26, 30, .35); }
+#staff-paper ul { margin: 2px 0; padding-left: 16px; }
+#staff-paper li { margin: 0; }
+#staff-paper .sp-stats { margin: 2px 0; }
+#staff-paper .sp-q { margin: 2px 0 0; color: var(--pp-ink2, #5e5046); }
+#staff-paper .sp-box { display: inline-flex; gap: 2px; vertical-align: middle; margin-right: 6px; }
+#staff-paper .sp-box i { width: 8px; height: 8px; box-shadow: inset 0 0 0 2px var(--pp-ink, #241a1e); }
+#staff-paper .sp-box i.x { background: var(--pp-ink, #241a1e); }
+#staff-paper .sp-cv .sp-hanko { right: 4px; top: 40px; width: 40px; height: 40px; background-size: 40px 40px; transform: rotate(-8deg); }
+#staff-paper .sp-cvtop table { margin-right: 30px; }
+
+/* ---- the staff card: a kraft tag with a punched hole, top-right */
+#staff-paper .sp-card {
+  --rot: 2deg; right: max(22px, env(safe-area-inset-right)); top: 150px; width: 300px; padding: 2px 10px 6px 26px;
+  border-image-source: var(--pp-edge-kraft); background: var(--pp-grain-kraft) 0 0 / 96px padding-box; background-color: #c9a068;
+}
+#staff-paper .sp-hole { position: absolute; left: 4px; top: calc(50% - 6px); width: 12px; height: 12px; background: rgba(26, 18, 22, .55); box-shadow: inset 2px 2px 0 rgba(0, 0, 0, .4); }
+#staff-paper .sp-cardh { color: var(--pp-ink, #241a1e); border-bottom: 2px solid var(--pp-ink, #241a1e); margin-bottom: 4px; }
+#staff-paper .sp-name { font-weight: normal; }
+#staff-paper .sp-foot { margin-top: 4px; color: var(--pp-ink2, #5e5046); }
+#staff-paper .sp-card .sp-hanko { right: 4px; top: -6px; width: 40px; height: 40px; background-size: 40px 40px; transform: rotate(6deg); }
+#staff-paper .sp-cardh { padding-right: 40px; }
+
+/* ---- the wage slip: a receipt with zig-zag ends, right side */
+#staff-paper .sp-slip {
+  --rot: -1deg; right: max(22px, env(safe-area-inset-right)); top: 150px; width: 240px; padding: 6px 10px 10px;
+  border-image: var(--pp-zig-receipt) 6 / 12px round; background: var(--pp-grain-receipt) 0 0 / 96px padding-box; background-color: #f6f3ea;
+}
+#staff-paper .sp-sliph { display: flex; flex-direction: column; align-items: center; padding-bottom: 4px; border-bottom: 2px dashed var(--pp-ink, #241a1e); }
+#staff-paper .sp-slip table { width: 100%; margin: 4px 0; }
+#staff-paper .sp-slip td { vertical-align: top; padding: 1px 0; }
+#staff-paper .sp-slip td:last-child { text-align: right; }
+#staff-paper .sp-slip tr.unpaid td { color: var(--pp-red, #c8322c); text-decoration: line-through; }
+#staff-paper .sp-tot { display: flex; justify-content: space-between; padding-top: 3px; border-top: 2px solid var(--pp-ink, #241a1e); }
+#staff-paper .sp-tot b { font-weight: normal; color: var(--pp-red, #c8322c); }
+#staff-paper .sp-stamp { position: absolute; right: 14px; top: 46px; padding: 0 6px; color: var(--pp-red, #c8322c); box-shadow: inset 0 0 0 2px var(--pp-red, #c8322c); transform: rotate(-12deg); opacity: 0.85; letter-spacing: 2px; }
+#staff-paper .sp-stamp.bad { color: #8a1a1a; box-shadow: inset 0 0 0 2px #8a1a1a; }

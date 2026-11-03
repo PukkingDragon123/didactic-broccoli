@@ -1,0 +1,31 @@
+/* The energy battery beside the clock (src/needs/Needs.js): pixel boxes only, no gradients or glows. It sits dim and
+   lights up for a moment when it changes; it blinks (in steps) when you're about to drop. */
+.nd-stat { position: relative; display: inline-flex; align-items: center; gap: 4px; opacity: .6; transition: opacity .3s steps(3); }
+.nd-stat.lit { opacity: 1; }
+/* a battery inked on the ticket: an ink outline with a nub, segments coloured in like a stamp */
+.nd-bat { position: relative; display: inline-flex; gap: 2px; padding: 2px; height: 14px; box-sizing: border-box; background: rgba(36, 26, 30, .06); box-shadow: 0 0 0 2px var(--pp-ink, #241a1e); margin-right: 5px; }
+.nd-bat::after { content: ''; position: absolute; right: -5px; top: 3px; width: 3px; height: 4px; background: var(--pp-ink, #241a1e); }
+.nd-bat i { display: block; width: 4px; height: 10px; background: rgba(36, 26, 30, .1); }
+.nd-bat.hi i.on { background: #4e9a52; box-shadow: inset 0 2px 0 #8ac87a; }
+.nd-bat.mid i.on { background: #d8a22a; box-shadow: inset 0 2px 0 #f4d070; }
+.nd-bat.lo i.on { background: #d8742a; box-shadow: inset 0 2px 0 #f4a868; }
+.nd-bat.crit i.on { background: var(--pp-red, #c8322c); box-shadow: inset 0 2px 0 #f08a7a; animation: ndblink 1s steps(2) infinite; }
+@keyframes ndblink { 50% { background: rgba(200, 50, 44, .25); box-shadow: none; } }
+.nd-buffs { display: inline-flex; gap: 1px; }
+.nd-buffs .px-icon { width: 18px; height: 18px; image-rendering: pixelated; }
+/* a number pencilled in above the battery, then gone */
+.nd-pop { position: absolute; left: 2px; bottom: 100%; font: 16px/16px 'Alagard', monospace; white-space: nowrap; opacity: 0; pointer-events: none; }
+.nd-pop.up { color: #3a7a3e; }
+.nd-pop.down { color: var(--pp-red, #c8322c); }
+.nd-pop.show { animation: ndpop 1.5s steps(8) forwards; }
+@keyframes ndpop { 0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px); } }
+#hud > .nd-stat { position: absolute; left: 24px; bottom: 160px; }
+
+/* a pigeon got you: a splat in the corner of your view for a moment */
+#nd-splat { position: fixed; z-index: 45; width: 192px; height: 192px; pointer-events: none; image-rendering: pixelated; opacity: 0; }
+#nd-splat.on { animation: ndsplat 3.4s steps(10) forwards; }
+@keyframes ndsplat { 0% { opacity: 0; transform: scale(.6); } 6% { opacity: 1; transform: scale(1.05); } 12% { transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(26px); } }
+
+/* operating a machine (src/places/vending/panel.js): the hint line sits low, out of the machine's face */
+body.nd-panel #hint { top: auto !important; bottom: 108px; }
+body.nd-panel #crosshair { opacity: 0; }

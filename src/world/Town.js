@@ -1,28 +1,49 @@
 // The town outside the garage: a narrow Shōwa back lane in late golden hour running between two railway
 // underpasses (ガード下), the garage's plain old front (eave, blocky lanterns, noren), the neighbours' houses
-// with depth, side alleys, the enterable MIKAWA-YA corner store, utility poles and wires, commuter trains,
-// sky and skyline.
+// (src/world/Neighbours.js: each one its own build, with rooms behind the windows, src/world/interiors.js), side
+// alleys, the enterable MIKAWA-YA corner store, utility poles and wires, commuter trains, sky and skyline; behind the
+// near side the park, the back street and the mangaka's villa (src/world/Park.js), the steel tower on the hill beyond
+// the tracks (src/world/Pylon.js), and photo posters all over (src/world/LanePosters.js).
 //
 // Layout (metres): the garage is x∈[-4,4], z∈[-5,5]; the lane runs along x in front of it. Near building
 // line z=5.3, road z≈6.1..13.35, far building line z=14.9. Underpass mouths at x=±26 (opening z∈[6.6,12.6],
 // clearance 3.4 m); the walkable lane ends 2.5 m inside each (x=±28.5); the underpasses run to x=±36.
+// Alley A1 (x∈[-9.4,-7.45], beside Mikawa-ya) is the ghost alley (src/world/GhostAlley.js); alley A2 (x∈[9.8,11.3],
+// between NE1 and NE2) is the passage to the park (it turns east behind NE2 at z≈-4.2; the museum lot stays west).
 //
 // Contracts:
-//   town.setShopOpen(open)  open = lanterns glowing, noren + OPEN flag/plate, bench and twin gacha out front;
-//                           closed = dark lanterns, weeds and a taped notice (abandoned). Default open; cheap toggle.
+//   town.setShopOpen(open)  open = noren + OPEN flag/plate, bench and twin gacha out front (and the lanterns on);
+//                           closed = weeds and a taped notice (abandoned). Default open; cheap toggle.
+//   town.setLanterns(on)    the blocky lanterns under the eave on/off (they glow with the time of day while on);
+//                           writing town.shopOpen = bool also sets them (src/life/sign.js does).
+//   town.openPlate          the painted OPEN plate Mesh on the right pier (in the open group; hide it to hang your own).
 //   town.tunnels = [{ x, z, dir, mouth }]  x = walkable end inside each underpass, z = road centre, dir = ±1 outward,
 //                           mouth = x of the portal.
 //   town.cornerShop = { counter: Object3D (click target), keeper: { pos: Vector3, rotY } (stands behind the
 //                       counter; rotY for a model that faces +z at 0 → faces the door), inside: { minX, maxX, minZ, maxZ } }
 //   town.lanes = [{ z, x0, x1 }]  straight pedestrian walking lines (one per side of the road), tunnel to tunnel.
 //   town.spawnPoints = [Vector3]  deep inside each underpass (dark, out of sight) at the ends of the lanes.
-//   town.garbageStation         Object3D of the neighbourhood garbage station (x≈-6.6, z≈5.8).
+//   town.garbageStation         Object3D of the neighbourhood garbage station (x≈-6.6, z≈5.8): a bare pad, the rolled-up
+//                               crow net and the rules board; no bags (src/life/trash.js draws those).
+//   town.doors = [{ id, house, family, pos, gate, bell, rotY, side, unit?, atDoor?, knockOnly? }]  every front door:
+//                pos = on the step outside the door (y = floor height for upstairs flats), gate = where you pass the
+//                building line / wall, bell = the intercom you ring (y = its height), rotY = facing out of the door,
+//                side = +1 house faces +z (near side, the villa) / -1 faces -z. ids: suzuki ota heights (=101)
+//                heights102..heights203 kusaka kimura tanaka tobacco hatoda yabuki mori watanabe josuke okuyasu
+//                yamada forrent garage6 rohan (the villa). src/npc/doors.js reads it.
+//   town.spots = { name: { pos: Vector3, rotY, seat?, note } }  the park, the villa and the A2 passage: a2Mouth, passage,
+//                rohan_sketch, rohan_gate, villaGate, villaDoor, josuke_hang, okuyasu_hang, park_bench, park_swings,
+//                park_entrance, park_sandbox, park_slide.
+//   town.paths = { park: [Vector3...], villa: [Vector3...] }  waypoints from the lane (mouth of A2) into the park and on
+//                round to the villa's gate (Lane.route only knows the lane: walk these instead).
+//   town.park = { spots, route, bounds, entrance, gate }   town.pylon = { group, main: { x, z, base } }
 //   town.update(dt, t)          trains (+ sound) and small animations; called from Garage.update.
 //   town.runTrain(side?, dir?)  force a train over the west (-1) or east (+1) underpass (debug/screenshots).
+//   town.batch() / town.signInto(batch, key, ...)  a fresh static batcher and the shared sign atlas, for add-ons.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox, pixMat } from '../gfx/geo.js';
-import { townPix, posterTexture, Pix } from '../gfx/textures.js';
+import { townPix, posterTexture, Pix, NAME_COUNT } from '../gfx/textures.js';
 import { propGeometry, propMesh, hasProp, propSize } from './props.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { hash2 } from '../core/util.js';
@@ -30,6 +51,11 @@ import { audio } from '../core/audio.js';
 import { GARAGE } from './Garage.js';
 import { installTunnelDarkness } from './tunnelDark.js';
 import { buildCornerShop } from './CornerShop.js';
+import { interiorMaterial, interiorQuad, setInteriorSky, ROOM } from './interiors.js';
+import { buildNeighbours } from './Neighbours.js';
+import { buildPark } from './Park.js';
+import { buildPylon } from './Pylon.js';
+import { buildLanePosters } from './LanePosters.js';
 
 // ------------------------------------------------------------------ layout
 const ZB = 5.3, ZG0 = 5.75, ZG1 = 6.1, ZR1 = 13.35, ZG3 = 13.7, ZF = 14.9;
@@ -63,6 +89,13 @@ function townShader(m, indoor = false) {
   m.customProgramCacheKey = () => (indoor ? 'town-in' : 'town');
   return m;
 }
+// window kinds that look into a room (interiors.js): [room, lit, curtain]
+const ROOMS = {
+  lit: [ROOM.living, 1, 1], lit2: [ROOM.kid, 1, 3], lit3: [ROOM.washitsu, 1, 2], lit4: [ROOM.living, 1, 2], lace: [ROOM.living, 0.9, 2],
+  tv: [ROOM.tv, 0.5, 1], dark: [ROOM.living, 0, 1], kitchen: [ROOM.kitchen, 1, 0], stair: [ROOM.stair, 0.6, 0], empty: [ROOM.empty, 0, 0],
+};
+// props that stay drawn even when built inside a zone (they show over the roofs)
+const ZONE_ALWAYS = new Set(['keyaki_tree', 'utility_pole', 'street_light']);
 const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 /** Baked shade under the bridge decks (the real darkness inside is per-pixel, see tunnelDark.js). */
@@ -248,6 +281,16 @@ export class Town {
       roofBrown: M('roofTile', { roughness: 0.6, metalness: 0.1, color: 0xd09a80 }),
       roofGreen: M('roofTile', { roughness: 0.6, metalness: 0.1, color: 0xa8c0a0 }),
       brick: M('brickHD', { roughness: 0.92, bump: 1, ppm: 64 }),
+      board: M('boardWall', { roughness: 0.9, bump: 0.8 }),
+      boardL: M('boardWall', { roughness: 0.9, bump: 0.8, color: 0xc8b8a0 }),
+      prefab: M('prefabPanel', { roughness: 0.6, bump: 0.6 }),
+      prefabB: M('prefabPanel', { roughness: 0.6, bump: 0.6, color: 0xc8a888 }),
+      skirt: M('tileSkirt', { roughness: 0.5, bump: 0.5, ppm: 64 }),
+      oya: M('oyaStone', { roughness: 0.95, bump: 1 }),
+      roofMetal: M('metalRoof', { roughness: 0.55, metalness: 0.3, bump: 0.6 }),
+      roofMetalB: M('metalRoof', { roughness: 0.55, metalness: 0.3, bump: 0.6, color: 0x7a9ab8 }),
+      roofSlate: M('slateRoof', { roughness: 0.6, metalness: 0.1, bump: 0.6 }),
+      roofIbushi: M('roofTile', { roughness: 0.45, metalness: 0.25, color: 0x8a909a }),
       kenchi: M('kenchi', { roughness: 0.95, bump: 1.2, ppm: 64 }),
       tunnel: M('tunnelWall', { roughness: 0.95, bump: 0.8, ppm: 64 }),
       girder: M('girder', { roughness: 0.6, metalness: 0.3, ppm: 64, color: 0x9a8a80 }),
@@ -271,10 +314,15 @@ export class Town {
       lit: W('winLit', 0.75), lit2: W('winLit2', 0.75), lit3: W('winLit3', 0.75), lit4: W('winLit4', 0.75),
       dark: W('winDark'), frost: W('winFrost', 0.35), shoji: W('winShoji', 0.7), tv: W('winTV', 0.6), lace: W('winLace', 0.7),
     };
-    this.doors = { genkan: this.T('doorGenkan', 32, 40, { glow: 0.55, rough: 0.4 }), apt: this.T('doorApt', 18, 40, { rough: 0.5, metal: 0.2 }) };
+    this.doorMats = {
+      genkan: this.T('doorGenkan', 32, 40, { glow: 0.55, rough: 0.4 }), apt: this.T('doorApt', 18, 40, { rough: 0.5, metal: 0.2 }),
+      wood: this.T('doorWood', 32, 40, { glow: 0.5, rough: 0.6 }), west: this.T('doorWest', 18, 40, { glow: 0.3, rough: 0.5 }),
+    };
+    this.win.amado = this.T('amado', 32, 24, { rough: 0.55, metal: 0.25 });
     // lit windows and doorway glass glow softly by day and properly after dark: [material, day, night] (see applySky)
     const wl = this.win;
-    this.nightGlow = [[wl.lit, 0.3, 1.35], [wl.lit2, 0.3, 1.3], [wl.lit3, 0.3, 1.35], [wl.lit4, 0.3, 1.3], [wl.frost, 0.12, 0.6], [wl.shoji, 0.28, 1.2], [wl.tv, 0.3, 1.05], [wl.lace, 0.28, 1.15], [this.doors.genkan, 0.18, 0.95]];
+    this.nightGlow = [[wl.lit, 0.3, 1.35], [wl.lit2, 0.3, 1.3], [wl.lit3, 0.3, 1.35], [wl.lit4, 0.3, 1.3], [wl.frost, 0.12, 0.6], [wl.shoji, 0.28, 1.2], [wl.tv, 0.3, 1.05], [wl.lace, 0.28, 1.15], [this.doorMats.genkan, 0.18, 0.95], [this.doorMats.wood, 0.15, 0.9], [this.doorMats.west, 0.1, 0.6]];
+    this.interiorM = interiorMaterial();
     this.glass = new THREE.MeshPhysicalMaterial({ color: 0xeaf2f0, transparent: true, opacity: 0.18, roughness: 0.05, clearcoat: 1, depthWrite: false });
   }
 
@@ -282,8 +330,9 @@ export class Town {
   /** Queue an instanced prop (static). o: block (player collision), dim (softer glow), scale. */
   prop(id, x, y, z, ry = 0, o = {}) {
     if (!hasProp(id)) return null;
-    const key = id + (o.dim ? ':dim' : '') + (o.indoor ? ':in' : '');
-    if (!this.inst.has(key)) this.inst.set(key, { id, dim: o.dim, indoor: o.indoor, list: [] });
+    const zone = o.zone ?? (this._zone && !ZONE_ALWAYS.has(id) ? this._zone : null);
+    const key = id + (o.dim ? ':dim' : '') + (o.indoor ? ':in' : '') + (zone ? '@' + zone : '');
+    if (!this.inst.has(key)) this.inst.set(key, { id, dim: o.dim, indoor: o.indoor, zone, list: [] });
     this.inst.get(key).list.push({ x, y, z, ry, s: o.scale || 1 });
     if (o.block) this.blockProp(id, x, z, ry, o.scale || 1, o.pad ?? 0.02);
     return true;
@@ -306,7 +355,7 @@ export class Town {
     this.game.player.addObstacle(x - ex, x + ex, z - ez, z + ez);
   }
   flushProps() {
-    for (const { id, dim, indoor, list } of this.inst.values()) {
+    for (const { id, dim, indoor, zone, list } of this.inst.values()) {
       const geo = propGeometry(id);
       if (!geo) continue;
       const im = new THREE.InstancedMesh(geo, indoor ? this.indoorVoxel() : dim ? this.dimVoxel() : voxelMaterials('normal'), list.length);
@@ -317,10 +366,24 @@ export class Town {
       im.castShadow = false; im.receiveShadow = true;
       im.computeBoundingSphere();
       im.name = 'props:' + id;
-      this.group.add(im);
+      (zone ? this.zoneGroup(zone) : this.group).add(im);
     }
     this.inst.clear();
   }
+  /** A group of props that is only drawn near where it can be seen (zones: 'park', behind the near-side houses). */
+  zoneGroup(name) {
+    if (!this.zones) this.zones = {};
+    if (!this.zones[name]) { const g = new THREE.Group(); g.name = 'zone:' + name; this.group.add(g); this.zones[name] = g; }
+    return this.zones[name];
+  }
+  /** The park's props are hidden by the houses everywhere except in the A2 passage, the park and the lane at its mouth. */
+  updateZones() {
+    const z = this.zones?.park;
+    if (!z) return;
+    const p = this.game.camera.position;
+    z.visible = (p.z < 5.6 && p.x > 9.4) || (p.x > 7 && p.x < 14.5 && p.z < 10.5) || this.forceZones === true;
+  }
+
   /** Voxel material set with a gentler glow (vending machines, lit signs up close). */
   dimVoxel() {
     if (!this._dim) {
@@ -338,8 +401,11 @@ export class Town {
     this.buildSky();
     this.buildGround();
     this.buildShopFront();
-    this.buildNearSide();
-    this.buildFarSide();
+    this.buildNeighbours();
+    // behind the near side: alley A2 opens into the passage, the park, the back street and the mangaka's villa
+    this._zone = 'park';
+    try { this.park = buildPark(this); } catch (e) { console.error('Town: park failed', e); this.park = null; }
+    this._zone = null;
     this.buildCornerShop();
     this.buildUnderpasses();
     this.buildPoles();
@@ -348,16 +414,39 @@ export class Town {
     try { this.buildDetails(); } catch (e) { console.error('Town.buildDetails failed', e); }
     this.buildBackdrop();
     this.buildBounds();
+    try { buildLanePosters(this); } catch (e) { console.error('Town: lane posters failed', e); }
     this.B.build(this.group);
     this.flushProps();
     this.buildTrains();
+    try { this.pylon = buildPylon(this); } catch (e) { console.error('Town: pylon failed', e); }
     this.setShopOpen(true);
+    this.buildSpots();
     // contracts for pedestrians
     this.lanes = LANE_Z.map((z) => ({ z, x0: -XE + 1, x1: XE - 1 }));
     // x = the walkable end inside each underpass, mouth = its portal, dir = outward
     this.tunnels = [-1, 1].map((s) => ({ x: s * XW, z: (TZ0 + TZ1) / 2, dir: s, mouth: s * XT }));
     this.spawnPoints = [];
     for (const s of [-1, 1]) for (const z of LANE_Z) this.spawnPoints.push(new THREE.Vector3(s * (XE - 1), 0, z));
+  }
+
+  /** town.spots (park, villa, passage) and town.paths (waypoints from the lane into the park), the villa's door. */
+  buildSpots() {
+    const pk = this.park, V3 = (x, z) => new THREE.Vector3(x, 0, z);
+    const spot = (x, z, rotY, extra = {}) => ({ pos: V3(x, z), rotY, ...extra });
+    this.spots = {
+      a2Mouth: spot(10.55, 6.2, Math.PI, { note: 'the mouth of alley A2 on the lane (the way to the park)' }),
+      passage: spot(10.55, 0.5, Math.PI, { note: 'halfway down the A2 passage' }),
+      ...(pk?.spots || {}),
+    };
+    if (pk) {
+      const g = pk.gate;
+      this.spots.villaGate = spot(g.x, g.z + 0.45, Math.PI, { note: 'on the back street at the villa gate, facing it' });
+      this.spots.villaDoor = spot(16.5, -21.55, 0, { note: 'the villa front door (inside the garden)' });
+      this.doors.push({ id: 'rohan', house: 'villa', family: 'Kishibe', side: 1, rotY: 0, pos: V3(16.5, -21.55), gate: V3(g.x, g.z), bell: new THREE.Vector3(17.2, 0.85, g.z + 0.23) });
+    }
+    // walking paths (Vector3 waypoints) for anyone going from the lane into the park and on to the villa
+    const inPark = [V3(10.55, 7.0), V3(10.55, 4.6), V3(10.5, -4.2), V3(12.6, -4.5), V3(13.8, -6.6), V3(17.6, -8.6)];
+    this.paths = { park: inPark, villa: [...inPark, V3(18.3, -15.6), V3(18.3, -18.85), V3(16.5, -19.5)] };
   }
 
   // ---------------------------------------------------------------- ground & road
@@ -450,6 +539,8 @@ export class Town {
     // OPEN plate hanging on the right pier
     const plate = this.vmesh(new THREE.BoxGeometry(0.42, 0.18, 0.02), this.T('openPlate', 32, 14, { glow: 0.25 }));
     plate.position.set(3.62, 1.95, 5.28); O.add(plate);
+    plate.name = 'openPlate';
+    this.openPlate = plate; // the painted OPEN plate on the right pier (hide it if something else hangs there)
     const cord = this.vmesh(new THREE.BoxGeometry(0.3, 0.01, 0.01), this.P(0.8)); cord.position.set(3.62, 2.12, 5.28); O.add(cord);
     for (const [x, z] of [[-4.2, 5.45], [4.25, 5.4], [-1.2, 5.32]]) this.single('weeds', x, 0, z, hash2(x, z) * 3, { scale: 0.9 }, C);
     const notice = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshStandardMaterial({ map: posterTexture('museumSign', 48, 64), roughness: 0.95, color: 0xc8c0b0 }));
@@ -515,26 +606,46 @@ export class Town {
     const S = this.shop;
     if (!S) return;
     this.shopOpen = open;
-    S.lanternM.emissiveIntensity = open ? 1.3 : 0;
-    S.lanternM.color.setScalar(open ? 1 : 0.45);
-    S.glow.intensity = open ? 2.4 : 0;
     S.openG.visible = open;
     S.closedG.visible = !open;
     for (const o of S.obs || []) o.enabled = open;
   }
 
+  /** The lanterns under the eave (lit with the time of day while on); setting shopOpen also sets them. */
+  setLanterns(on) {
+    const S = this.shop;
+    this.lanternsOn = !!on;
+    if (!S?.lanternM) return;
+    S.lanternM.emissiveIntensity = on ? 1.3 : 0;
+    S.lanternM.color.setScalar(on ? 1 : 0.45);
+    S.glow.intensity = on ? 2.4 : 0;
+    if (this._lastSky) this.applySky(this._lastSky);
+  }
+  get shopOpen() { return !!this._shopOpen; }
+  set shopOpen(v) { this._shopOpen = !!v; this.setLanterns(v); }
+
   // ---------------------------------------------------------------- houses
   /**
    * A house with real depth in its own frame (front wall at local z=0, body toward -z), turned to face the lane.
-   * o: { x, z, w, d, side(+1 near/-1 far), y0, floors, h1, h2, wallA, wallB, roof('gable'|'shed'|'flat'), roofM,
-   *      eave, pent, balcony:{x0,x1}, win:[[floor, u, w, h, kind, {face,sill,grille,tobukuro}]], door:{x, kind, w}, antenna, gutterTint }
+   * o: { x, z, w, d, side(+1 near/-1 far), y0, floors, h1, h2, wallA, wallB, roof('gable'|'hip'|'shed'|'flat'), roofM,
+   *      eave, verge, step, rise, pent, balcony:{x0,x1,d,futon,laundry,panel,dish,pots},
+   *      win:[[floor, u, w, h, kind, { face('f'|'l'|'r'), sill, grille, tobukuro, hood, sudare, flowers, amado,
+   *            room, curtain, cc, lit, depth }]],
+   *      door:{ x, kind('genkan'|'wood'|'west'|'apt'), w, mail, lamp(±1 side), name (表札 index), porch('tile'|'stone'),
+   *             umbrella, milk, canopy:false },
+   *      antenna, gutterTint, trim, skirt:{h, mat}, corner (tint of corner boards), tiles (eave tile row, default on
+   *      kawara roofs), rafters, vents (foundation vents, default on), ac:[[floor, u]], solar, lite, extra(B, info) }
+   * Windows whose kind names a room (lit, lit2..4, lace, tv, dark, kitchen, stair, empty) look into a real room
+   * (src/world/interiors.js) unless the house is lite; frost / shoji / amado stay flat.
+   * extra(B, { W, D, base, fy, top }) is called with the house frame still pushed (local coordinates).
    */
   house(o) {
     const B = this.B, m = this.m;
     const W = o.w, D = o.d, side = o.side ?? 1, seed = Math.floor(Math.abs(o.x * 3.7 + o.z * 1.3));
     this._lite = !!o.lite;
+    this._depth = D;
     B.push(o.x, o.y0 || 0, o.z, side > 0 ? 0 : Math.PI);
-    const base = o.y0 ? 0 : 0.4;
+    const base = o.y0 ? 0 : (o.base ?? 0.4);
     if (base) B.box(m.found, W + 0.08, base, D + 0.08, 0, 0, -D / 2, { uv: [seed, 0] });
     const h1 = o.h1 ?? 2.65, h2 = (o.floors ?? 2) > 1 ? (o.h2 ?? 2.55) : 0;
     const fy = [base, base + h1];
@@ -547,10 +658,23 @@ export class Town {
       top += h2;
     }
     this.roof(W, D, top, o, wallB);
-    // pent roof (下屋) over the ground floor, skipping the balcony
+    // pent roof (下屋) over the ground floor, skipping the balcony, with its own eave tiles
     if (o.pent && h2) {
       const spans = o.balcony ? [[-W / 2 - 0.12, o.balcony.x0 - 0.05], [o.balcony.x1 + 0.05, W / 2 + 0.12]] : [[-W / 2 - 0.12, W / 2 + 0.12]];
-      for (const [a, b] of spans) if (b - a > 0.3) for (let j = 0; j < 3; j++) B.box(o.roofM || m.roofGrey, b - a, 0.11, 0.78 - j * 0.24, (a + b) / 2, fy[1] - 0.34 + j * 0.11, (0.78 - j * 0.24) / 2, { uv: [j * 0.3, 0] });
+      const pm = o.pentM || o.roofM || m.roofGrey;
+      for (const [a, b] of spans) if (b - a > 0.3) {
+        for (let j = 0; j < 3; j++) B.box(pm, b - a, 0.11, 0.78 - j * 0.24, (a + b) / 2, fy[1] - 0.34 + j * 0.11, (0.78 - j * 0.24) / 2, { uv: [j * 0.3, 0], k: 1 - j * 0.04 });
+        if (this.isKawara(pm) && o.tiles !== false) this.eaveTiles(a, b, fy[1] - 0.36, 0.78, pm === m.roofBlue ? 0x5a7aa8 : 0x5a5e66);
+        B.box(m.pv, b - a, 0.06, 0.04, (a + b) / 2, fy[1] - 0.4, 0.8, { tint: 0x4a4a48 });
+      }
+    }
+    // the lane face: tile skirt (腰壁), corner boards, foundation vents (床下換気口)
+    if (o.skirt) B.box(o.skirt.mat || m.skirt, W + 0.02, o.skirt.h ?? 0.9, 0.03, 0, base, 0.012, { uv: [seed, 0] });
+    if (o.corner !== undefined) for (const sx of [-1, 1]) B.box(m.pv, 0.07, top - base, 0.07, sx * (W / 2 - 0.02), base, 0.02, { tint: o.corner });
+    if (base && o.vents !== false && !o.lite) for (const vx of [-W * 0.3, W * 0.3]) {
+      if (o.door && Math.abs(vx - o.door.x) < (o.door.w ?? 1.4) / 2 + 0.4) continue;
+      B.box(m.pv, 0.4, 0.15, 0.03, vx, 0.12, 0.04, { tint: 0x3a3a38 });
+      for (let i = 0; i < 4; i++) B.box(m.metal, 0.02, 0.13, 0.02, vx - 0.15 + i * 0.1, 0.13, 0.055, { tint: 0x8a8a84 });
     }
     if (o.balcony) this.balcony(o.balcony, fy[1], seed);
     for (const w of o.win || []) this.window(W, w, fy);
@@ -568,21 +692,42 @@ export class Town {
     }
     B.box(m.pv, 0.08, top, 0.08, (W / 2 + 0.06) * (seed % 2 ? -1 : 1), 0, -D + 0.15, { tint: gt });
     if (!o.lite) this.weather(W, D, base, fy, top, seed, !!h2, o);
-    // side-wall services: meter box, gas meter
+    // side-wall services: an electric meter and the gas meter with its pipe
     const sx = seed % 2 ? 1 : -1;
-    B.box(m.pv, 0.06, 0.4, 0.3, sx * (W / 2 + 0.03), base + 1.1, -1.2, { tint: 0xc8c4bc });
-    B.box(m.pv, 0.06, 0.28, 0.22, sx * (W / 2 + 0.03), base + 0.7, -2.1, { tint: 0xb8bcb0 });
-    if (o.antenna) {
+    if (!o.lite) {
+      B.box(m.pv, 0.06, 0.4, 0.3, sx * (W / 2 + 0.03), base + 1.1, -1.2, { tint: 0xc8c4bc });
+      B.box(m.gloss, 0.02, 0.12, 0.16, sx * (W / 2 + 0.065), base + 1.3, -1.2, { tint: 0x2a2c2e });
+      B.box(m.pv, 0.08, 0.3, 0.24, sx * (W / 2 + 0.04), base + 0.65, -2.1, { tint: 0xb8bcb0 });
+      this.sign('gasMeter', 0.18, 0.12, sx * (W / 2 + 0.081), base + 0.8, -2.1, { ry: sx * Math.PI / 2 });
+      B.box(m.metal, 0.04, base + 0.65, 0.04, sx * (W / 2 + 0.05), 0, -2.3, { tint: 0xc8b848 });
+    }
+    if (o.antenna !== undefined) {
       const ax = o.antenna, ay = this._ridgeY, az = -D / 2;
       B.box(m.metal, 0.04, 1.6, 0.04, ax, ay, az, { tint: 0xb8bcc0 });
       B.box(m.metal, 0.03, 0.03, 1.4, ax, ay + 1.45, az, { tint: 0xb8bcc0 });
       for (let i = 0; i < 6; i++) B.box(m.metal, 0.5 - i * 0.05, 0.02, 0.02, ax, ay + 1.47, az - 0.6 + i * 0.24, { tint: 0xc8ccd0 });
+      for (const sz of [-1, 1]) this.beam(m.metal, B.world(ax, ay + 1.1, az), B.world(ax + 0.9, ay - 0.15, az + sz * 0.9), 0.012, { tint: 0x8a8a88 });
     }
     // wire anchor at the front eave corner for service drops
     const anchor = B.world((W / 2 - 0.3) * (seed % 2 ? 1 : -1), top - 0.3, 0.3);
     (side > 0 ? this.anchors.near : this.anchors.far).push(anchor);
+    const info = { W, D, base, fy, top, seed, ridge: this._ridgeY };
+    if (o.extra) o.extra(B, info);
     B.pop();
-    return { top, anchor };
+    return { top, anchor, ridge: this._ridgeY };
+  }
+
+  /** Is this one of the kawara (clay tile) roof materials? */
+  isKawara(mat) { const m = this.m; return mat === m.roofGrey || mat === m.roofBlue || mat === m.roofBrown || mat === m.roofGreen || mat === m.roofIbushi; }
+
+  /** A row of round eave-tile ends (軒瓦) along local x at height y, the front lip at z. */
+  eaveTiles(x0, x1, y, z, tint = 0x5a5e66) {
+    const B = this.B, n = Math.max(2, Math.round((x1 - x0) / 0.26)), s = (x1 - x0) / n;
+    for (let i = 0; i < n; i++) {
+      const x = x0 + (i + 0.5) * s, k = 0.9 + hash2(Math.round(x * 13), Math.round(y * 7)) * 0.2;
+      B.box(this.m.ridge, s - 0.03, 0.11, 0.06, x, y - 0.015, z + 0.03, { tint, k });
+      B.box(this.m.ridge, s * 0.45, 0.05, 0.02, x, y + 0.015, z + 0.065, { tint, k: k * 1.12 });
+    }
   }
 
   /** Weathering and services on a house's lane face (in the house's frame): splash-back dirt, soot under the eaves,
@@ -590,7 +735,7 @@ export class Town {
   weather(W, D, base, fy, top, seed, two, o) {
     const B = this.B, m = this.m, drip = this.decal('stainDrip', 16, 48), sb = this.decal('stainBase', 32, 16);
     if (base) this.stainRow(sb, -W / 2 - 0.035, W / 2 + 0.035, 0, base, 0.052, 0, 0xb0aca4);
-    if (!o.y0) this.stainRow(sb, -W / 2, W / 2, base, 0.4, 0.011, 0, 0xd0ccc4);
+    if (!o.y0) this.stainRow(sb, -W / 2, W / 2, base, 0.4, o.skirt ? 0.03 : 0.011, 0, 0xd0ccc4);
     if (!o.y0) for (const sx of [-1, 1]) this.stainRow(sb, -D, 0, base, 0.55, sx * (W / 2 + 0.011), sx * Math.PI / 2, 0xc0bcb4, 'z');
     if (o.roof !== 'flat') this.stainRow(drip, -W / 2, W / 2, top - 0.6, 0.6, 0.011, 0, 0xb8b4ac);
     for (let i = 0; i < 2; i++) {
@@ -615,6 +760,8 @@ export class Town {
       B.box(m.pv, 0.06, 0.06, 0.24, u + 0.26, ay - 0.06, 0.17, { tint: 0x3a3a3a });
       B.box(m.pv, 0.09, 0.62, 0.07, u + 0.45, ay + 0.1, 0.04, { tint: 0xe0d8c4 });
       B.box(m.pv, 0.1, 0.1, 0.16, u + 0.45, ay + 0.1, 0.12, { tint: 0xd8d0bc });
+      // the condensate drain dribbling down the wall
+      B.box(m.pv, 0.025, 0.4, 0.025, u - 0.3, ay - 0.4, 0.12, { tint: 0x8a8a84 });
     }
   }
 
@@ -628,31 +775,55 @@ export class Town {
     }
   }
 
-  /** Stepped (blocky) roof: gable with ridge along x, a shed, or a flat roof with parapet. */
+  /** Stepped (blocky) roof: gable with ridge along x, a hip roof, a shed, or a flat roof with parapet. */
   roof(W, D, yb, o, attic) {
     const B = this.B, m = this.m;
     const rm = o.roofM || m.roofGrey, kind = o.roof || 'gable';
     const e = o.eave ?? 0.45, es = o.verge ?? 0.3, s = o.step ?? 0.3, r = o.rise ?? 0.13;
     const barge = o.barge ?? 0x4a3a2e, RW = W + 2 * es;
+    const kawara = this.isKawara(rm) && o.tiles !== false && !o.lite;
+    const tileTint = rm === m.roofBlue ? 0x5a7aa8 : rm === m.roofBrown ? 0x8a5a48 : rm === m.roofGreen ? 0x6a7a5a : 0x5a5e66;
     if (kind === 'flat') {
       B.box(m.conc, W + 0.1, 0.5, D + 0.1, 0, yb, -D / 2, { k: 0.9 });
       B.box(m.pv, W + 0.16, 0.08, D + 0.16, 0, yb + 0.5, -D / 2, { tint: 0x8a8680 });
       this._ridgeY = yb + 0.58;
       return;
     }
-    // soffits under the front/back eaves
-    B.box(m.pv, RW, 0.04, e, 0, yb - 0.04, e / 2, { tint: 0xd0c8b8 });
-    if (kind === 'gable') B.box(m.pv, RW, 0.04, e, 0, yb - 0.04, -D - e / 2, { tint: 0xd0c8b8 });
+    // soffits under the eaves (with rafter ends 垂木 on old houses)
+    B.box(m.pv, RW, 0.04, e, 0, yb - 0.04, e / 2, { tint: o.soffit ?? 0xd0c8b8 });
+    if (kind !== 'shed') B.box(m.pv, RW, 0.04, e, 0, yb - 0.04, -D - e / 2, { tint: o.soffit ?? 0xd0c8b8 });
+    if (o.rafters) for (let x = -RW / 2 + 0.15; x < RW / 2 - 0.1; x += 0.45) B.box(m.wood, 0.07, 0.08, e - 0.02, x, yb - 0.12, e / 2, { tint: 0x5a4434 });
+    // fascia board (鼻隠し) along the front eave: a strong dark line under the tiles
+    if (!o.lite) B.box(m.pv, RW, 0.15, 0.04, 0, yb - 0.1, e - 0.01, { tint: o.fascia ?? (o.rafters ? 0x3a2c22 : 0x6a6258) });
+    if (kind === 'hip') {
+      // courses shrinking on all four sides, a short ridge on top
+      let w = RW, d = D + 2 * e, y = yb;
+      for (let i = 0; i < 40; i++) {
+        B.box(rm, w, r, d, 0, y, -D / 2, { uv: [i * 0.13, i * 0.07], k: 0.96 + hash2(i, 7) * 0.08 });
+        if (i === 0 && kawara) this.eaveTiles(-w / 2, w / 2, y + 0.02, e, tileTint);
+        if (w - 2 * s < 0.5 || d - 2 * s < 0.5) break;
+        w -= 2 * s; d -= 2 * s; y += r;
+      }
+      const rl = Math.max(0.3, w - d + 0.3);
+      B.box(m.ridge, rl, 0.14, 0.3, 0, y + r, -D / 2, { tint: 0x4a5058 });
+      this._ridgeY = y + r + 0.14;
+      return;
+    }
     const mid = kind === 'gable' ? -D / 2 : -D - e;
     for (let i = 0; ; i++) {
-      const y = yb + i * r, zo = e - i * s, zi = zo - s;
+      const y = yb + i * r, zo = e - i * s, zi = zo - s, k = 0.95 + hash2(i, Math.round(yb * 10)) * 0.08;
       if (zi <= mid + 0.001) {
         if (kind === 'gable') {
           const len = 2 * (zo - mid);
           B.box(rm, RW, r, len, 0, y, mid, { uv: [i * 0.1, 0] });
+          // ridge: stacked noshi tiles over a white mortar line, round cap, onigawara at the ends
           B.box(m.ridge, RW + 0.08, 0.14, 0.34, 0, y + r, mid, { tint: 0x5a6068 });
+          if (kawara) B.box(m.pv, RW + 0.02, 0.05, 0.4, 0, y + r - 0.02, mid, { tint: 0xe8e4da });
           B.box(m.ridge, RW + 0.12, 0.09, 0.2, 0, y + r + 0.14, mid, { tint: 0x4a5058 });
-          for (const sx of [-1, 1]) B.box(m.ridge, 0.14, 0.36, 0.42, sx * (RW / 2 + 0.06), y + r - 0.02, mid, { tint: 0x4a5058 });
+          for (const sx of [-1, 1]) {
+            B.box(m.ridge, 0.14, 0.36, 0.42, sx * (RW / 2 + 0.06), y + r - 0.02, mid, { tint: 0x4a5058 });
+            if (kawara) B.box(m.ridge, 0.1, 0.16, 0.26, sx * (RW / 2 + 0.1), y + r + 0.3, mid, { tint: 0x3a4048 });
+          }
           for (const sx of [-1, 1]) B.box(m.pv, 0.05, r + 0.02, len, sx * (RW / 2 + 0.025), y - 0.01, mid, { tint: barge });
           this._ridgeY = y + r + 0.23;
         } else {
@@ -662,8 +833,14 @@ export class Town {
         }
         break;
       }
-      B.box(rm, RW, r, s, 0, y, zi + s / 2, { uv: [i * 0.13, 0] });
-      if (kind === 'gable') B.box(rm, RW, r, s, 0, y, -D - zi - s / 2, { uv: [i * 0.13, 0.5] });
+      B.box(rm, RW, r, s, 0, y, zi + s / 2, { uv: [i * 0.13, 0], k });
+      if (kind === 'gable') B.box(rm, RW, r, s, 0, y, -D - zi - s / 2, { uv: [i * 0.13, 0.5], k });
+      if (i === 0 && kawara) this.eaveTiles(-RW / 2, RW / 2, y + 0.02, e, tileTint);
+      // moss and lichen in the lower courses of old tile roofs
+      if (kawara && i < 4 && !o.lite) for (let j = 0; j < 3; j++) {
+        const h = hash2(i * 7 + j, Math.round(yb * 13 + W)), mx = (h - 0.5) * (RW - 0.6);
+        if (h < 0.55) B.box(m.pv, 0.18 + h * 0.4, 0.02, s * 0.7, mx, y + r, zi + s / 2, { tint: h < 0.25 ? 0x5a6a3a : 0x7a8058 });
+      }
       const a0 = kind === 'gable' ? Math.max(-D, -D - zi) : -D, a1 = Math.min(0, zi);
       if (a1 - a0 > 0.01) B.box(attic, W, r, a1 - a0, 0, y, (a0 + a1) / 2);
       for (const sx of [-1, 1]) {
@@ -686,7 +863,11 @@ export class Town {
     }
   }
 
-  /** Window with sash texture, sill, optional grille (面格子) and shutter box (戸袋). Spec: [floor, u, w, h, kind, opts]. */
+  /**
+   * Window: a room behind the glass (interiors.js) or a flat pane, with an aluminium casing standing proud of the wall,
+   * sill flashing, and options: grille (面格子), tobukuro (戸袋, ±1 side), amado (closed rain shutters), hood, sudare,
+   * flowers. Spec: [floor, u, w, h, kind, opts].
+   */
   window(W, spec, fy) {
     const B = this.B, m = this.m;
     const [fl, u, w, h, kind, opt = {}] = spec;
@@ -694,22 +875,35 @@ export class Town {
     let x, z, ry;
     if (face === 'f') { x = u; z = 0; ry = 0; } else if (face === 'l') { x = -W / 2; z = -u; ry = -Math.PI / 2; } else { x = W / 2; z = -u; ry = Math.PI / 2; }
     const nx = Math.sin(ry), nz = Math.cos(ry), tx = Math.cos(ry), tz = -Math.sin(ry);
-    const y = fy[fl] + (opt.sill ?? (fl ? 0.85 : 0.9));
-    B.box(this.win[kind], w, h, 0.1, x, y, z, { unit: true, ry });
-    // frame reveal + sill flashing
-    B.box(m.metal, w + 0.1, 0.05, 0.12, x + nx * 0.05, y - 0.06, z + nz * 0.05, { ry, tint: 0xb8bcc0 });
-    B.box(m.metal, w + 0.06, 0.04, 0.08, x + nx * 0.03, y + h, z + nz * 0.03, { ry, tint: 0x9aa0a6 });
+    const sill = opt.sill ?? (fl ? 0.85 : 0.9), y = fy[fl] + sill;
+    const room = !this._lite && !opt.amado && ROOMS[kind];
+    const wp = B.world(x, y, z);
+    if (opt.amado) B.box(this.win.amado, w, h, 0.1, x, y, z, { unit: true, ry });
+    else if (room) {
+      const k = Math.floor(hash2(Math.round(wp.x * 3.1), Math.round(wp.z * 2.7 + y * 5)) * 997);
+      interiorQuad(B, this.interiorM, x + nx * 0.004, y, z + nz * 0.004, ry, {
+        w, h, sill, depth: Math.max(1.6, Math.min(3.4, (opt.depth ?? (face === 'f' ? this._depth : W)) - 0.5)),
+        kind: opt.room ?? room[0], lit: opt.lit ?? room[1], curtain: opt.curtain ?? room[2], cc: opt.cc ?? (k % 8), seed: k,
+      });
+    } else B.box(this.win[kind] || this.win.dark, w, h, 0.1, x, y, z, { unit: true, ry });
+    // casing (jambs + head) standing proud of the wall, sill flashing below
+    const ft = opt.frame ?? 0xb8bcc0;
+    for (const s of [-1, 1]) B.box(m.metal, 0.05, h + 0.04, 0.08, x + tx * s * (w / 2 + 0.02) + nx * 0.035, y - 0.02, z + tz * s * (w / 2 + 0.02) + nz * 0.035, { ry, tint: ft });
+    B.box(m.metal, w + 0.1, 0.05, 0.12, x + nx * 0.05, y - 0.06, z + nz * 0.05, { ry, tint: ft });
+    B.box(m.metal, w + 0.06, 0.05, 0.09, x + nx * 0.035, y + h, z + nz * 0.035, { ry, tint: 0x9aa0a6 });
     if (opt.grille) {
-      for (let i = 0; i <= Math.round(w / 0.11); i++) { const t = -w / 2 + i * (w / Math.round(w / 0.11)); B.box(m.metal, 0.022, h + 0.08, 0.022, x + tx * t + nx * 0.11, y - 0.04, z + tz * t + nz * 0.11, { ry, tint: 0xc8ccd0 }); }
+      const n = Math.round(w / 0.11);
+      for (let i = 0; i <= n; i++) { const t = -w / 2 + i * (w / n); B.box(m.metal, 0.022, h + 0.08, 0.022, x + tx * t + nx * 0.11, y - 0.04, z + tz * t + nz * 0.11, { ry, tint: 0xc8ccd0 }); }
       for (const yy of [y - 0.04, y + h + 0.02]) B.box(m.metal, w + 0.04, 0.03, 0.03, x + nx * 0.11, yy, z + nz * 0.11, { ry, tint: 0xb8bcc0 });
     }
     if (opt.tobukuro) {
       const t = (w / 2 + 0.22) * opt.tobukuro;
       B.box(m.pv, 0.42, h + 0.12, 0.12, x + tx * t + nx * 0.06, y - 0.06, z + tz * t + nz * 0.06, { ry, tint: opt.tbTint ?? 0x8a7a62 });
+      B.box(m.pv, 0.44, 0.04, 0.14, x + tx * t + nx * 0.06, y + h + 0.06, z + tz * t + nz * 0.06, { ry, tint: 0x5a5a58 });
     }
     if (opt.hood) B.box(m.pv, w + 0.3, 0.05, 0.36, x + nx * 0.18, y + h + 0.12, z + nz * 0.18, { ry, tint: 0x6a6a68 });
     // rain streaks under the sill
-    const wp = B.world(x, y, z), hk = hash2(Math.round(wp.x * 7 + wp.z * 3), Math.round(y * 5));
+    const hk = hash2(Math.round(wp.x * 7 + wp.z * 3), Math.round(y * 5));
     if (hk < 0.6 && !opt.clean && !this._lite) { const dh = 0.3 + hk * 0.6; B.quad(this.decal('stainDrip', 16, 48), w * 0.8, dh, x + nx * 0.012, y - 0.08 - dh, z + nz * 0.012, { ry, tint: 0xd8d4cc, flipU: hk < 0.3 }); }
     // summer bamboo blind (すだれ) hung over the window
     if (opt.sudare) {
@@ -728,25 +922,33 @@ export class Town {
     }
   }
 
-  /** Front door: genkan sliding doors or a steel apartment door, with step, canopy, lamp, name plate and mailbox. */
+  /** Front door: sliding genkan doors (glass lattice), old wooden ones, a Western door or a steel apartment door, with
+   *  casing, a tiled or stone step, canopy, lamp, 表札 name plate, intercom, mailbox, milk box and an umbrella stand. */
   door(d, base, win = [], fy = [base, base + 2.65]) {
     const B = this.B, m = this.m;
-    const w = d.w ?? (d.kind === 'apt' ? 0.9 : 1.5), x = d.x, y = base + (d.y ?? 0);
-    B.box(this.doors[d.kind || 'genkan'], w, 2.0, 0.1, x, y, 0, { unit: true });
-    B.box(m.metal, w + 0.12, 0.06, 0.12, x, y + 2.0, 0.02, { tint: 0x8a8478 });
-    if (!d.noStep) B.box(m.found, w + 0.5, Math.max(0.1, base - 0.02), 0.6, x, 0, 0.3, { uv: [x, 0] });
-    if (!d.noCanopy) { B.box(m.pv, w + 0.6, 0.06, 0.75, x, y + 2.28, 0.37, { tint: 0x5a5a58 }); B.box(m.pv, w + 0.6, 0.12, 0.04, x, y + 2.22, 0.74, { tint: 0x4a4a48 }); }
+    const kind = d.kind || 'genkan', w = d.w ?? (kind === 'apt' || kind === 'west' ? 0.9 : 1.5), x = d.x, y = base + (d.y ?? 0);
+    B.box(this.doorMats[kind], w, 2.0, 0.1, x, y, 0, { unit: true });
+    const ct = kind === 'wood' ? 0x3a2a1c : kind === 'west' ? 0xe8e4dc : 0x8a8478;
+    for (const s of [-1, 1]) B.box(m.pv, 0.07, 2.08, 0.1, x + s * (w / 2 + 0.035), y, 0.03, { tint: ct });
+    B.box(m.metal, w + 0.16, 0.07, 0.12, x, y + 2.0, 0.03, { tint: ct });
+    if (!d.noStep) {
+      const pm = d.porch === 'stone' ? m.found : d.porch === 'tile' ? m.tile : m.found;
+      B.box(pm, w + 0.5, Math.max(0.1, base - 0.02), 0.6, x, 0, 0.3, { uv: [x, 0], tint: d.porch === 'tile' ? 0xc8a890 : 0xffffff });
+      if (base > 0.25) B.box(m.found, w + 0.3, base / 2, 0.3, x, 0, 0.75, { uv: [x, 0.5], k: 0.95 });
+    }
+    if (!d.noCanopy) { B.box(m.pv, w + 0.6, 0.06, 0.75, x, y + 2.28, 0.37, { tint: 0x5a5a58 }); B.box(m.pv, w + 0.6, 0.12, 0.04, x, y + 2.22, 0.74, { tint: 0x4a4a48 }); for (const s of [-1, 1]) B.box(m.metal, 0.03, 0.03, 0.75, x + s * (w / 2 + 0.2), y + 2.08, 0.37, { rx: -0.25, tint: 0x6a6a68 }); }
     const lx = x + (w / 2 + 0.25) * (d.lamp ?? 1);
+    if (!this._lite) { const lp = B.world(x, 0, 0.75); this.pool(lp.x, lp.z, 1.25, 0xffc880, 0.42); }
     B.box(m.pv, 0.16, 0.22, 0.08, lx, y + 1.95, 0.04, { tint: 0x2a2a2a });
     B.box(this.G, 0.11, 0.15, 0.04, lx, y + 1.98, 0.09, { tint: 0xffd890 });
-    // 表札 name plate on a little wooden backing, the intercom below it
-    const dp = B.world(x, 0, 0), nk = Math.floor(hash2(Math.round(dp.x * 5), Math.round(dp.z * 5)) * 5) + 1;
+    // 表札 name plate on a little wooden backing, the door chime button below it
+    const dp = B.world(x, 0, 0), nk = d.name ?? Math.floor(hash2(Math.round(dp.x * 5), Math.round(dp.z * 5)) * NAME_COUNT);
     B.box(m.pv, 0.13, 0.25, 0.03, lx, y + 1.42, 0.015, { tint: 0x5a4030 });
-    this.sign('names', 0.1, 0.2, lx, y + 1.445, 0.031, {}, [(nk - 1) * 12, 0, 12, 24]);
+    this.sign('namesL', 0.1, 0.2, lx, y + 1.445, 0.031, {}, [nk * 12, 0, 12, 24]);
     B.box(m.pv, 0.08, 0.12, 0.04, lx, y + 1.22, 0.03, { tint: 0xd8d4cc });
     B.box(this.G, 0.02, 0.02, 0.01, lx, y + 1.3, 0.052, { tint: 0xff6040 });
-    if (d.mail) B.box(m.pv, 0.32, 0.36, 0.14, lx, y + 0.8, 0.08, { tint: d.mail });
-    // an old wooden milk box (牛乳箱) on the other side
+    if (d.mail) { B.box(m.pv, 0.32, 0.36, 0.14, lx, y + 0.8, 0.08, { tint: d.mail }); B.box(m.pv, 0.22, 0.03, 0.01, lx, y + 1.06, 0.155, { tint: 0x1a1a1a }); }
+    // an old wooden milk box (牛乳箱) on the other side, or an umbrella stand by the step
     const mx = x - (w / 2 + 0.28) * (d.lamp ?? 1);
     const clear = !win.some(([fl, u, ww, , , op = {}]) => fl === 0 && (op.face || 'f') === 'f' && Math.abs(u - mx) < ww / 2 + 0.14 && fy[0] + (op.sill ?? 0.9) < y + 1.3);
     if (d.milk !== false && clear && hash2(nk, Math.round(dp.x)) < 0.6) {
@@ -754,17 +956,33 @@ export class Town {
       B.box(m.wood, 0.22, 0.03, 0.17, mx, y + 1.24, 0.08);
       this.sign('signMilk', 0.15, 0.09, mx, y + 1.1, 0.152);
     }
+    if (d.umbrella !== false && kind !== 'apt') this.umbrellaStand(x - (w / 2 + 0.2) * (d.lamp ?? 1), 0.0, 0.3, nk);
   }
 
-  /** 2F balcony: slab, aluminium railing, laundry pole with washing and maybe a futon airing. */
+  /** 傘立て: a little stand by the door with two or three umbrellas (local frame of the current batch). */
+  umbrellaStand(x, y, z, seed = 0) {
+    const B = this.B, m = this.m, cols = [0x2a3a6a, 0xe86a7a, 0xf4f0e6, 0x3a6a3a, 0x1a1a1a, 0xffd23f];
+    B.box(m.metal, 0.2, 0.34, 0.2, x, y, z, { tint: 0x8a8e90 });
+    B.box(m.metal, 0.22, 0.03, 0.22, x, y + 0.34, z, { tint: 0x6a6e70 });
+    for (let i = 0; i < 3; i++) {
+      const c = cols[Math.floor(hash2(seed + i, 11) * cols.length)], dx = (i - 1) * 0.05, lean = (i - 1) * 0.12;
+      B.box(m.pv, 0.07, 0.62, 0.07, x + dx, y + 0.2, z + (hash2(i, seed) - 0.5) * 0.06, { rz: lean, tint: c });
+      B.box(m.pv, 0.02, 0.14, 0.02, x + dx + lean * 0.4, y + 0.8, z, { rz: lean, tint: 0x3a2a1a });
+    }
+  }
+
+  /** 2F balcony: slab, aluminium railing (or a panel), laundry pole with washing, maybe a futon airing over the rail
+   *  (with clips), a pinch hanger of socks, a BS dish (b.dish) and potted plants (b.pots). */
   balcony(b, fy1, seed) {
     const B = this.B, m = this.m;
     const w = b.x1 - b.x0, cx = (b.x0 + b.x1) / 2, d = b.d ?? 0.95;
     B.box(m.conc, w + 0.1, 0.16, d, cx, fy1 - 0.16, d / 2, { k: 0.95, uv: [seed, 0] });
+    B.box(m.pv, w + 0.12, 0.04, d + 0.02, cx, fy1 - 0.2, d / 2, { tint: 0x8a8680 });
     const rt = b.tint ?? 0xc8ccd0;
     if (b.panel) {
       B.box(m.pv, w + 0.1, 1.0, 0.05, cx, fy1, d - 0.03, { tint: b.panel });
       for (const sx of [-1, 1]) B.box(m.pv, 0.05, 1.0, d, cx + sx * (w / 2 + 0.02), fy1, d / 2, { tint: b.panel });
+      B.box(m.metal, w + 0.14, 0.05, 0.08, cx, fy1 + 1.0, d - 0.03, { tint: 0x9aa0a6 });
     } else {
       B.box(m.metal, w + 0.1, 0.05, 0.06, cx, fy1 + 1.0, d - 0.03, { tint: rt });
       B.box(m.metal, w + 0.1, 0.04, 0.05, cx, fy1 + 0.1, d - 0.03, { tint: rt });
@@ -776,20 +994,45 @@ export class Town {
       const py = fy1 + 1.85;
       B.box(m.metal, w - 0.2, 0.03, 0.03, cx, py, d * 0.55, { tint: 0x7ab0d8 });
       for (const sx of [-1, 1]) B.box(m.metal, 0.03, 0.4, 0.03, cx + sx * (w / 2 - 0.15), py - 0.2, d * 0.55, { tint: 0x9aa0a6 });
-      const cols = [0xfbf8f0, 0x6a9ad8, 0xe86a7a, 0xffd23f, 0x5aa86a, 0xf4f0e8, 0x2a3a6a, 0xe8c8a0];
+      const cols = b.colors || [0xfbf8f0, 0x6a9ad8, 0xe86a7a, 0xffd23f, 0x5aa86a, 0xf4f0e8, 0x2a3a6a, 0xe8c8a0];
       let x = b.x0 + 0.2;
       for (let i = 0; x < b.x1 - 0.35; i++) {
-        const cw = 0.24 + hash2(seed + i, 3) * 0.3, ch = 0.35 + hash2(seed + i, 4) * 0.45;
-        if (hash2(seed + i, 5) < 0.8) B.box(m.pv, cw, ch, 0.03, x + cw / 2, py - ch, d * 0.55, { tint: cols[Math.floor(hash2(seed + i, 6) * cols.length)], ry: (hash2(i, seed) - 0.5) * 0.3 });
+        const small = b.small ? 0.5 : 1;
+        const cw = (0.24 + hash2(seed + i, 3) * 0.3) * small, ch = (0.35 + hash2(seed + i, 4) * 0.45) * small;
+        if (hash2(seed + i, 5) < 0.8) {
+          const c = cols[Math.floor(hash2(seed + i, 6) * cols.length)], r = (hash2(i, seed) - 0.5) * 0.3;
+          B.box(m.pv, cw, ch, 0.03, x + cw / 2, py - ch, d * 0.55, { tint: c, ry: r });
+          // a coat hanger hook on the pole
+          B.box(m.metal, 0.012, 0.08, 0.012, x + cw / 2, py - 0.06, d * 0.55, { tint: 0x8a8a88 });
+          // shirts get sleeves
+          if (ch > 0.55 && !b.small) for (const s of [-1, 1]) B.box(m.pv, 0.1, 0.18, 0.03, x + cw / 2 + s * (cw / 2 + 0.04), py - 0.24, d * 0.55, { tint: c, rz: s * 0.5, ry: r });
+        }
         x += cw + 0.1;
       }
+      // a pinch hanger (ピンチハンガー) of socks and small things at one end
+      const hx = b.x0 + 0.35, hz = d * 0.55;
+      B.box(m.metal, 0.4, 0.02, 0.26, hx, py - 0.28, hz, { tint: 0x7ab0d8 });
+      for (let i = 0; i < 6; i++) B.box(m.pv, 0.05, 0.12 + (i % 3) * 0.03, 0.012, hx - 0.15 + (i % 3) * 0.15, py - 0.42 - (i % 3) * 0.03, hz + (i < 3 ? -0.12 : 0.12), { tint: [0xfbf8f0, 0x2a3a6a, 0xe86a7a, 0x5aa86a][(i + seed) % 4] });
     }
-    if (b.futon) B.box(m.pv, Math.min(1.5, w - 0.3), 0.55, 0.14, cx + (b.futonX ?? 0), fy1 + 0.6, d + 0.04, { tint: b.futon });
+    if (b.futon) {
+      const fw = Math.min(1.5, w - 0.3), fx = cx + (b.futonX ?? 0);
+      B.box(m.pv, fw, 0.06, 0.18, fx, fy1 + 1.0, d - 0.03, { tint: b.futon });
+      B.box(m.pv, fw, 0.6, 0.07, fx, fy1 + 0.45, d + 0.04, { tint: b.futon, k: 0.95 });
+      B.box(m.pv, fw, 0.45, 0.06, fx, fy1 + 0.6, d - 0.1, { tint: b.futon, k: 0.85 });
+      for (const s of [-1, 1]) B.box(m.pv, 0.06, 0.14, 0.22, fx + s * fw * 0.35, fy1 + 0.98, d - 0.03, { tint: 0x2a8ae8 });
+    }
+    if (b.dish) { B.box(m.metal, 0.03, 0.4, 0.03, b.x1 - 0.15, fy1 + 1.0, d - 0.03, { tint: 0x8a8a88 }); B.box(m.pv, 0.42, 0.42, 0.05, b.x1 - 0.15, fy1 + 1.3, d + 0.05, { rx: -0.3, tint: 0xe8e8e0 }); B.box(m.metal, 0.03, 0.03, 0.3, b.x1 - 0.15, fy1 + 1.5, d + 0.2, { tint: 0x5a5a58 }); }
+    if (b.pots) for (let i = 0; i < b.pots; i++) {
+      const px = b.x1 - 0.25 - i * 0.32;
+      B.box(m.pv, 0.22, 0.2, 0.22, px, fy1, d - 0.2, { tint: 0xb4603a });
+      B.box(m.pv, 0.28, 0.25 + hash2(i, seed) * 0.2, 0.28, px, fy1 + 0.2, d - 0.2, { tint: hash2(seed, i) < 0.5 ? 0x4a8a3a : 0x3e7a34 });
+    }
   }
 
-  /** Block wall along a building line with gaps; z is the wall's lane-side face. */
-  blockWall(x0, x1, z, side, { h = 1.3, gaps = [], pillars = true, clean = [] } = {}) {
-    const B = this.B, m = this.m, t = 0.15, zc = z - side * t / 2;
+  /** Block wall along a building line with gaps; z is the wall's lane-side face. Options: mat (e.g. Ōya stone), deco
+   *  (a top course of perforated decorative blocks, 透かしブロック), tint. */
+  blockWall(x0, x1, z, side, { h = 1.3, gaps = [], pillars = true, clean = [], mat = null, deco = false, tint = 0xffffff } = {}) {
+    const B = this.B, m = this.m, t = 0.15, zc = z - side * t / 2, wm = mat || m.block;
     const drip = this.decal('stainDrip', 16, 48), sb = this.decal('stainBase', 32, 16), ry = side > 0 ? 0 : Math.PI, zf = z + side * 0.011;
     // weathering on the lane face, split around spots that must stay clean (posters)
     const stain = (a, b) => {
@@ -804,12 +1047,19 @@ export class Town {
     let x = x0;
     for (const [a, b] of [...gaps, [x1, x1]]) {
       if (a - x > 0.05) {
-        B.box(m.block, a - x, h, t, (x + a) / 2, 0, zc, { uv: [x * 0.7, 0], ao: 0.15 });
+        const pa = x + (pillars && x > x0 ? 0.27 : 0), pb = a - (pillars && a < x1 ? 0.27 : 0);
+        if (deco && pb - pa > 1.2 && h > 0.9) {
+          // solid courses, then a band of perforated blocks between short solid ends
+          B.box(wm, a - x, h - 0.2, t, (x + a) / 2, 0, zc, { uv: [x * 0.7, 0], ao: 0.15, tint });
+          const d0 = pa + 0.4, d1 = pb - 0.4, len = d1 - d0;
+          this.quadUV(this.decoBlockM(), len, 0.2, (d0 + d1) / 2, h - 0.2, zc, [0, 0, len / 0.8, 1], { tint: 0xd8d4ca });
+          for (const [e0, e1] of [[x, d0], [d1, a]]) if (e1 - e0 > 0.01) B.box(wm, e1 - e0, 0.2, t, (e0 + e1) / 2, h - 0.2, zc, { uv: [e0 * 0.7, 0.5], tint });
+        } else B.box(wm, a - x, h, t, (x + a) / 2, 0, zc, { uv: [x * 0.7, 0], ao: 0.15, tint });
         B.box(m.found, a - x + 0.04, 0.07, t + 0.06, (x + a) / 2, h, zc, { uv: [x, 0] });
-        stain(x + (pillars && x > x0 ? 0.27 : 0), a - (pillars && a < x1 ? 0.27 : 0));
+        stain(pa, pb);
       }
       if (b > a && pillars) for (const px of [a - 0.12, b + 0.12]) {
-        B.box(m.block, 0.3, h + 0.25, 0.3, px, 0, zc, { uv: [px, 0.3], ao: 0.15 });
+        B.box(wm, 0.3, h + 0.25, 0.3, px, 0, zc, { uv: [px, 0.3], ao: 0.15, tint });
         B.box(m.found, 0.36, 0.08, 0.36, px, h + 0.25, zc);
       }
       x = b;
@@ -854,85 +1104,8 @@ export class Town {
   /** Yard surface between a house front and the building line. */
   yard(x0, x1, z0, z1, mat) { this.B.plane(mat || this.m.strip, x1 - x0, z1 - z0, (x0 + x1) / 2, 0.002, (z0 + z1) / 2, { uv: [x0, z0], k: 0.92 }); }
 
-  buildNearSide() {
-    const m = this.m, B = this.B, s = 1;
-    // ---- NE1: carport with the kei car, two-storey house
-    this.house({ x: 7.05, z: 1.4, w: 5.2, d: 6.2, wallA: m.wallBeige, roofM: m.roofGrey, pent: true, balcony: { x0: -2.3, x1: 0.9, futon: 0xf0d8b0 }, antenna: 1.2,
-      win: [[0, 1.4, 1.5, 1.1, 'lit', { flowers: true }], [0, -1.9, 0.7, 0.6, 'frost', { grille: true, sill: 1.3 }], [1, -0.7, 2.6, 1.85, 'lace', { sill: 0.05 }], [1, 1.8, 1.0, 1.0, 'dark', { tobukuro: 1 }],
-        [0, 2.2, 1.2, 1.0, 'lit2', { face: 'r' }], [1, 4.0, 1.0, 1.0, 'dark', { face: 'r' }], [1, 2.0, 0.8, 0.9, 'lit3', { face: 'l' }]],
-      door: { x: -0.4, kind: 'genkan', w: 1.3 } });
-    this.yard(4.35, 9.75, 1.4, ZB - 0.15, m.strip);
-    for (const [x, z] of [[4.6, 5.0], [7.5, 5.0], [4.6, 2.0], [7.5, 2.0]]) B.box(m.metal, 0.08, 2.35, 0.08, x, 0, z, { tint: 0xa8acae });
-    B.box(m.metal, 3.2, 0.06, 3.5, 6.05, 2.36, 3.5, { rx: -0.05, tint: 0x9aa8b0 });
-    B.box(m.metal, 3.2, 0.12, 0.08, 6.05, 2.28, 5.25, { tint: 0x8a9096 });
-    this.prop('kei_car', 6.05, 0, 3.15, 0, { block: true });
-    this.blockWall(7.6, 9.75, ZB, s, { gaps: [[8.35, 9.2]] });
-    this.gate(8.35, 9.2, ZB, s);
-    this.prop('ac_unit', 9.3, 0, 1.75, 0);
-    // ---- alley A2 (dead end) between NE1 and NE2
-    B.plane(m.strip, 1.5, 8.45, 10.55, 0.002, 5.2 - 4.225, { uv: [2, 2], k: 0.85 });
-    this.blockWall(9.8, 11.3, -3.25, s, { h: 2.0, pillars: false });
-    this.prop('twin_tub', 10.55, 0, -2.75, 0, { block: true });
-    this.prop('mamachari', 10.1, 0, 1.2, 0.08, { block: true });
-    this.prop('propane', 11.05, 0, 2.6, -Math.PI / 2, { block: true });
-    this.prop('weeds', 10.6, 0, -3.0, 0.4);
-    // ---- NE2: mortar house behind a gate
-    this.house({ x: 13.95, z: 3.9, w: 5.2, d: 6.8, wallA: m.mortarG, wallB: m.mortarG, roofM: m.roofBlue, pent: true, antenna: -1.5, trim: 0x5a6a5a, solar: 0.9,
-      win: [[0, -1.4, 1.6, 1.1, 'lit3', { grille: true }], [0, 1.6, 0.8, 0.6, 'frost', { sill: 1.3, grille: true }], [1, -1.2, 1.6, 1.1, 'shoji', { tobukuro: -1 }], [1, 1.4, 1.4, 1.1, 'lit', { hood: true, sudare: 0.7 }],
-        [0, 2.0, 1.2, 1.0, 'dark', { face: 'l' }], [1, 3.5, 1.0, 0.9, 'lit4', { face: 'l' }], [1, 2.2, 0.8, 0.9, 'dark', { face: 'r' }]],
-      door: { x: 0.3, kind: 'genkan', w: 1.3, mail: 0xc83a2a }, ac: [[1, 0.12]] });
-    this.yard(11.3, 16.6, 3.9, ZB - 0.15, m.ground);
-    this.blockWall(11.3, 16.6, ZB, s, { gaps: [[13.6, 14.6]] });
-    this.gate(13.6, 14.6, ZB, s, 0.6);
-    this.prop('potted_row', 12.3, 0, 4.6, 0);
-    this.prop('ac_unit', 16.35, 0, 1.6, -Math.PI / 2);
-    // ---- NE3: SAKURA HEIGHTS, a two-storey apartment with an exterior corridor and steel stairs
-    this.apartment(19.35, 2.2);
-    // ---- NE4: a little one-storey house with a garden, right up against the embankment
-    this.house({ x: 24.2, z: 2.6, w: 2.9, d: 5.8, floors: 1, h1: 2.6, wallA: m.siding, roofM: m.roofBrown, eave: 0.55, verge: 0.25, barge: 0x3a2a20,
-      win: [[0, 0.3, 1.6, 1.15, 'shoji', { tobukuro: -1 }], [0, 2.4, 1.2, 1.0, 'lit', { face: 'l' }]] });
-    this.yard(22.75, 25.7, 2.6, ZB - 0.15, m.ground);
-    for (const x of [23.3, 24.35, 25.4]) this.prop('bamboo_fence', x, 0, ZB - 0.1, 0);
-    this.blockWall(22.6, 22.8, ZB, s, { pillars: false });
-    this.prop('pine_tree', 23.4, 0, 3.8, 0.6, { scale: 0.9 });
-    this.prop('stone_lantern', 25.0, 0, 3.6, -0.4, { scale: 0.8 });
-
-    // ---- NW1: house beside the shop (garbage station out front)
-    this.house({ x: -7.05, z: 3.4, w: 5.25, d: 7.0, wallA: m.siding, wallB: m.wallCream, roofM: m.roofBrown, pent: true, antenna: 1.0, trim: 0x4a3a2a,
-      win: [[0, -1.2, 1.6, 1.15, 'lit', { grille: true }], [0, 1.7, 0.8, 0.6, 'frost', { sill: 1.3 }], [1, -1.4, 1.5, 1.1, 'lit2', { tobukuro: -1 }], [1, 1.3, 1.5, 1.1, 'tv'],
-        [0, 2.4, 1.0, 1.0, 'lit4', { face: 'l' }], [1, 1.8, 1.0, 0.9, 'dark', { face: 'l' }]],
-      door: { x: 0.6, kind: 'genkan', w: 1.2, lamp: -1, mail: 0x8a8e92 }, ac: [[1, -0.05]] });
-    this.yard(-9.75, -4.35, 3.4, ZB - 0.15, m.strip);
-    this.blockWall(-9.75, -4.35, ZB, s, { gaps: [[-5.35, -4.6]] });
-    this.prop('plant_pots', -8.6, 0, 4.85, Math.PI, { scale: 0.75 });
-    // ---- NW2: house behind a hedge
-    this.house({ x: -12.55, z: 3.7, w: 5.2, d: 6.6, wallA: m.mortar, wallB: m.wallGrey, roofM: m.roofGrey, pent: true, balcony: { x0: -0.6, x1: 2.3 }, antenna: -1.4,
-      win: [[0, -1.3, 1.6, 1.1, 'lit2', { flowers: true }], [0, 1.6, 1.2, 1.1, 'shoji', { grille: true }], [1, 0.85, 2.4, 1.85, 'lit4', { sill: 0.05 }], [1, -1.6, 1.2, 1.0, 'dark', { hood: true }],
-        [0, 2.5, 1.2, 1.0, 'dark', { face: 'r' }], [1, 2.2, 1.0, 0.9, 'lit', { face: 'r' }], [1, 3.2, 0.9, 0.9, 'lit3', { face: 'l' }]],
-      door: { x: 0.1, kind: 'genkan', w: 1.2 } });
-    this.yard(-15.2, -9.9, 3.7, ZB - 0.15, m.ground);
-    this.blockWall(-15.2, -9.9, ZB, s, { h: 0.5, gaps: [[-10.95, -10.1]] });
-    for (const x of [-14.15, -12.15]) this.prop('hedge', x, 0.5, ZB - 0.32, 0);
-    // ---- NW3: the old tobacco shop, shutter down for good
-    this.house({ x: -18.0, z: ZB - 0.02, w: 5.15, d: 7.0, wallA: m.siding, wallB: m.wallBeige, roofM: m.roofGrey, trim: 0x3a2a20,
-      win: [[1, -1.3, 1.4, 1.0, 'lit2', { tobukuro: 1 }], [1, 1.3, 1.4, 1.0, 'dark', { grille: true }], [0, 3.0, 1.0, 0.9, 'dark', { face: 'r' }], [1, 3.4, 1.0, 0.9, 'lit', { face: 'r' }]] });
-    B.box(m.shutterM, 3.6, 2.1, 0.06, -18.2, 0.4, ZB + 0.01, { uv: [0, 0.3] });
-    B.box(m.metal, 3.9, 0.3, 0.32, -18.2, 2.5, ZB + 0.1, { tint: 0x7a7e7a });
-    B.box(this.T('oldSign', 96, 24, { rough: 0.9 }), 3.9, 0.55, 0.06, -18.2, 2.85, ZB + 0.04, { unit: true });
-    this.prop('vending', -16.05, 0, 5.68, 0, { dim: true, block: true });
-    this.prop('weeds', -19.6, 0, 5.45, 0.2);
-    // ---- NW4: garden house by the embankment
-    this.house({ x: -23.25, z: 2.0, w: 4.8, d: 6.0, wallA: m.wallCream, wallB: m.wallCream, roofM: m.roofGreen, pent: true, trim: 0x5a4a3a,
-      win: [[0, -0.9, 1.8, 1.15, 'shoji', { tobukuro: 1 }], [1, 0.9, 1.4, 1.0, 'lit', { sudare: 0.65 }], [1, -1.3, 0.9, 0.9, 'dark'], [0, 2.4, 1.0, 1.0, 'lit3', { face: 'r' }]],
-      door: { x: 1.3, kind: 'genkan', w: 1.2, lamp: -1 } });
-    this.yard(-25.7, -20.85, 2.0, ZB - 0.15, m.ground);
-    this.blockWall(-25.7, -20.85, ZB, s, { gaps: [[-22.6, -21.8]] });
-    this.gate(-22.6, -21.8, ZB, s, 0.2);
-    this.prop('pine_tree', -24.7, 0, 3.6, 0.2);
-    this.prop('laundry_pole', -23.4, 0, 3.75, 0, { scale: 0.85 });
-    // second row behind (skyline over the roofs; clear of the museum behind the garage)
-    for (const [x, w, h] of [[-23, 6, 6.2], [-17, 5.5, 7.4], [-13.2, 3.4, 5.8], [13.8, 5, 7.0], [19.6, 6, 6.0], [24.4, 3.6, 7.6]]) this.backHouse(x, -6.3, w, 7, h, 1);
-  }
+  /** Both sides of the lane: the neighbours' houses, their gates and the town.doors list (src/world/Neighbours.js). */
+  buildNeighbours() { buildNeighbours(this); }
 
   /** Cheap second-row house (body + stepped roof + a couple of windows). */
   backHouse(x, z, w, d, h, side) {
@@ -940,135 +1113,6 @@ export class Town {
     const k = Math.floor(hash2(x, z) * 4);
     this.house({ x, z, w, d, side, lite: true, floors: h > 6.5 ? 2 : 1, h1: h > 6.5 ? 2.7 : 3.2, h2: h - 3.4, wallA: walls[k], roofM: roofs[(k + 1) % 4], step: 0.45, rise: 0.2,
       win: [[0, -w / 4, 1.3, 1.0, hash2(x, 1) < 0.5 ? 'lit' : 'dark'], [h > 6.5 ? 1 : 0, w / 4, 1.2, 1.0, hash2(x, 2) < 0.6 ? 'lit3' : 'dark']] });
-  }
-
-  /** SAKURA HEIGHTS: exterior corridor, steel stairs, three doors a floor, mailboxes and bicycles. */
-  apartment(x, z) {
-    const B = this.B, m = this.m, W = 5.0, D = 7.0;
-    this.house({ x, z, w: W, d: D, wallA: m.wallBlue, wallB: m.wallBlue, roof: 'shed', roofM: m.tin, eave: 0.6, step: 0.5, rise: 0.08, trim: 0x8a8e92, gutterTint: 0x7a7e82,
-      win: [[0, -1.75, 0.6, 0.5, 'frost', { sill: 1.45, grille: true }], [0, 0.0, 0.6, 0.5, 'frost', { sill: 1.45, grille: true }], [0, 1.75, 0.6, 0.5, 'lit', { sill: 1.45, grille: true }],
-        [1, -1.75, 0.6, 0.5, 'lit', { sill: 1.45, grille: true }], [1, 0.0, 0.6, 0.5, 'frost', { sill: 1.45, grille: true }], [1, 1.75, 0.6, 0.5, 'frost', { sill: 1.45, grille: true }],
-        [0, 2.5, 1.2, 1.0, 'lit2', { face: 'l' }], [1, 2.5, 1.2, 1.0, 'dark', { face: 'l' }], [0, 5.0, 1.2, 1.0, 'tv', { face: 'l' }], [1, 5.0, 1.2, 1.0, 'lit', { face: 'l' }]] });
-    B.push(x, 0, z, 0);
-    const fy = [0.4, 3.05];
-    for (const [i, fl] of [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1]]) {
-      const dx = -1.15 + i * 1.75;
-      B.box(this.doors.apt, 0.85, 1.95, 0.1, dx, fy[fl], 0, { unit: true });
-      B.box(this.G, 0.1, 0.1, 0.04, dx + 0.6, fy[fl] + 2.05, 0.06, { tint: hash2(i, fl) < 0.6 ? 0xffe0a0 : 0x9a9a8a });
-      B.box(m.pv, 0.3, 0.4, 0.1, dx - 0.65, fy[fl] + 0.2, 0.08, { tint: 0x9aa4a8 });
-    }
-    // 2F corridor slab + solid parapet, columns
-    B.box(m.conc, W + 0.9, 0.18, 1.2, 0.45, fy[1] - 0.18, 0.6, { k: 0.95 });
-    B.box(m.pv, W + 0.9, 1.0, 0.06, 0.45, fy[1], 1.17, { tint: 0xd8dce0 });
-    B.box(m.pv, W + 0.9, 0.06, 0.12, 0.45, fy[1] + 1.0, 1.17, { tint: 0x8a9096 });
-    for (const cx of [-W / 2 + 0.05, 0, W / 2 + 0.85]) B.box(m.metal, 0.1, fy[1], 0.1, cx, 0, 1.15, { tint: 0x8a9096 });
-    B.box(this.T('aptName', 48, 20), 0.9, 0.36, 0.04, -1.4, fy[1] + 0.35, 1.21, { unit: true });
-    // steel stairs on the east end rising along -z
-    const sx = W / 2 + 0.45, n = 14;
-    const rx = -Math.atan2(fy[1] - 0.2, 3.3);
-    for (let i = 0; i < n; i++) B.box(m.metal, 0.75, 0.04, 0.26, sx, 0.2 + (i + 1) * (fy[1] - 0.2) / n - 0.04, -2.95 + i * 0.24, { tint: 0x7a8288 });
-    for (const dx of [-0.4, 0.4]) B.box(m.metal, 0.05, 0.25, 4.36, sx + dx, 1.6 - 0.125, -1.3, { rx, tint: 0x6a7278 });
-    B.box(m.metal, 0.04, 0.04, 4.36, sx + 0.42, 2.5, -1.3, { rx, tint: 0xc8ccd0 });
-    B.box(m.metal, 0.06, 0.9, 0.06, sx + 0.42, 0.2, -2.95, { tint: 0xc8ccd0 });
-    // mailboxes, bicycles
-    B.box(m.metal, 0.9, 0.55, 0.32, -2.0, 0.9, 1.0, { tint: 0xb8bcc0 });
-    for (let i = 0; i < 6; i++) B.box(m.pv, 0.13, 0.12, 0.02, -2.38 + (i % 3) * 0.29 + 0.07, 1.0 + Math.floor(i / 3) * 0.24, 1.17, { tint: 0x9aa0a6 });
-    B.box(m.metal, 0.08, 0.9, 0.08, -2.0, 0, 1.0, { tint: 0x8a8e92 });
-    B.pop();
-    this.yard(16.8, 22.65, z, ZB - 0.15, m.strip);
-    this.blockWall(16.8, 22.65, ZB, 1, { h: 0.9, gaps: [[18.6, 20.2]], pillars: false });
-    this.prop('mamachari', 21.2, 0, 4.3, Math.PI / 2 - 0.1);
-    this.prop('scooter', 17.6, 0, 4.2, -Math.PI / 2 + 0.2);
-    this.prop('recycle_cage', 17.6, 0, 3.0, 0);
-  }
-
-  buildFarSide() {
-    const m = this.m, B = this.B, s = -1;
-    // ---- FW1
-    this.house({ x: -23.25, z: 16.3, w: 4.8, d: 7, side: s, wallA: m.wallGrey, wallB: m.wallGrey, roofM: m.roofBlue, pent: true, antenna: -1,
-      win: [[0, 1.0, 1.6, 1.1, 'lit', { flowers: true }], [1, 1.0, 1.6, 1.1, 'lace'], [1, -1.4, 0.9, 0.9, 'dark', { tobukuro: -1 }], [0, 2.5, 1.0, 1.0, 'lit3', { face: 'r' }], [1, 2.8, 1.0, 0.9, 'dark', { face: 'r' }]],
-      door: { x: -1.1, kind: 'genkan', w: 1.2 }, ac: [[1, -0.35]] });
-    this.yard(-25.7, -20.85, ZF + 0.15, 16.3, m.ground);
-    this.woodFence(-25.7, -20.85, ZF, s, { gaps: [[-22.15, -21.3]] });
-    this.gate(-22.15, -21.3, ZF, s, 0.5);
-    // ---- FW2
-    this.house({ x: -18.1, z: 15.9, w: 5.0, d: 7, side: s, wallA: m.mortar, wallB: m.mortarP, roofM: m.roofBrown, pent: true, balcony: { x0: -2.1, x1: 0.8, futon: 0xfbf8f0, futonX: -0.2 },
-      win: [[0, -1.3, 1.6, 1.1, 'lit4', { grille: true }], [0, 1.4, 1.2, 1.1, 'dark'], [1, -0.65, 2.4, 1.85, 'lit2', { sill: 0.05 }], [1, 1.6, 0.9, 0.9, 'lit', { sudare: 0.7 }], [0, 2.3, 1.0, 1.0, 'lit', { face: 'l' }], [1, 3.3, 0.9, 0.9, 'dark', { face: 'l' }]],
-      door: { x: 0.9, kind: 'genkan', w: 1.1, lamp: -1, mail: 0x3a6a3a } });
-    this.yard(-20.6, -15.55, ZF + 0.15, 15.9, m.strip);
-    this.blockWall(-20.6, -15.55, ZF, s, { gaps: [[-18.6, -17.7]] });
-    this.prop('vending', -17.0, 0, 14.45, Math.PI, { dim: true, block: true });
-    this.prop('vending', -16.0, 0, 14.45, Math.PI, { dim: true, block: true });
-    this.prop('drink_cans', -16.5, 0, 13.9, 0.6);
-    // (corner shop x∈[-15.45,-9.4] is built separately; alley A1 x∈[-9.4,-7.45] with the Jizō shrine at its end)
-    B.box(m.block, 0.15, 1.9, 2.5, -9.47, 0, 21.2, { ao: 0.15 });
-    this.prop('jizo_shrine', -8.42, 0, 21.4, Math.PI, { block: true });
-    this.prop('plant_pots', -9.05, 0, 19.8, Math.PI / 2, { scale: 0.7 });
-    this.prop('weeds', -7.8, 0, 20.4, 1.2);
-    this.prop('mirror_pole', -8.45, 0, 5.52, 0, { block: true });
-    this.prop('tomare_sign', -7.15, 0, 14.72, 0, { block: true });
-    B.box(m.block, 0.15, 1.9, 7.6, -7.38, 0, 18.6, { uv: [0, 0], ao: 0.15 });
-    B.box(m.found, 0.21, 0.07, 7.6, -7.38, 1.9, 18.6);
-    B.box(m.block, 2.2, 1.9, 0.15, -8.42, 0, 22.45, { ao: 0.15 });
-    // ---- FE1
-    this.house({ x: -4.5, z: 16.5, w: 5.4, d: 7, side: s, wallA: m.wallCream, wallB: m.wallBeige, roofM: m.roofGrey, pent: true, antenna: 1.4,
-      win: [[0, -1.4, 1.6, 1.1, 'lit2'], [0, 1.6, 0.8, 0.6, 'frost', { sill: 1.3, grille: true }], [1, -1.2, 1.6, 1.1, 'lit', { tobukuro: -1 }], [1, 1.5, 1.2, 1.0, 'tv'],
-        [0, 2.5, 1.0, 1.0, 'lit3', { face: 'l' }], [1, 3.0, 1.0, 0.9, 'dark', { face: 'r' }]],
-      door: { x: 0.3, kind: 'genkan', w: 1.2, mail: 0xc83a2a }, ac: [[1, 0.2]] });
-    this.yard(-7.4, -1.7, ZF + 0.15, 16.5, m.ground);
-    this.blockWall(-7.4, -1.7, ZF, s, { gaps: [[-4.4, -3.5]], clean: [[-6.5, -4.55]] });
-    this.gate(-4.4, -3.5, ZF, s, 0.45);
-    // ---- FE2 (vending machines, post box and the lit street lamp out front)
-    this.house({ x: 1.4, z: 16.6, w: 5.8, d: 7, side: s, wallA: m.siding, wallB: m.wallCream, roofM: m.roofBlue, pent: true, balcony: { x0: -0.4, x1: 2.6 }, trim: 0x3a2a20,
-      win: [[0, -1.6, 1.6, 1.1, 'lit', { flowers: true }], [0, 1.6, 1.2, 1.0, 'lit3', { grille: true }], [1, 1.1, 2.6, 1.85, 'lace', { sill: 0.05 }], [1, -1.9, 1.0, 1.0, 'dark', { hood: true }],
-        [0, 2.2, 1.0, 1.0, 'lit4', { face: 'r' }], [1, 2.5, 1.0, 0.9, 'lit2', { face: 'l' }]],
-      door: { x: -0.1, kind: 'genkan', w: 1.2, lamp: -1 } });
-    this.yard(-1.7, 4.45, ZF + 0.15, 16.6, m.strip);
-    this.blockWall(-1.7, 4.45, ZF, s, { gaps: [[3.0, 3.8]] });
-    // ---- FE3
-    this.house({ x: 7.25, z: 16.0, w: 5.3, d: 7, side: s, wallA: m.mortarG, wallB: m.mortarG, roofM: m.roofGrey, pent: true, antenna: -1.2,
-      win: [[0, -1.2, 1.8, 1.15, 'shoji', { tobukuro: 1 }], [0, 1.7, 0.8, 0.6, 'frost', { sill: 1.3 }], [1, -1.3, 1.5, 1.1, 'lit4', { sudare: 0.6 }], [1, 1.4, 1.5, 1.1, 'dark', { tobukuro: 1 }],
-        [0, 2.6, 1.1, 1.0, 'lit', { face: 'l' }], [1, 2.6, 1.0, 0.9, 'lit2', { face: 'r' }]],
-      door: { x: 0.4, kind: 'genkan', w: 1.2 }, ac: [[1, 0.05]] });
-    this.yard(4.55, 9.95, ZF + 0.15, 16.0, m.ground);
-    this.blockWall(4.55, 9.95, ZF, s, { h: 0.55, gaps: [[6.9, 7.8]] });
-    for (const x of [5.6, 8.85]) this.prop('hedge', x, 0.55, ZF + 0.3, Math.PI, { scale: 0.95 });
-    this.prop('potted_row', 7.35, 0, 14.48, Math.PI, { scale: 0.8 });
-    // ---- FE4: modern-ish house with a shed roof and a driveway
-    this.house({ x: 12.7, z: 18.4, w: 5.0, d: 6.4, side: s, wallA: m.wallGrey, wallB: m.siding, roof: 'shed', roofM: m.tin, eave: 0.5, step: 0.4, rise: 0.1, trim: 0x2a2a2a, gutterTint: 0x3a3a3a,
-      win: [[0, -1.5, 1.4, 1.1, 'lit2'], [1, -0.6, 2.8, 0.9, 'lit', { sill: 0.9 }], [1, 1.9, 0.6, 0.9, 'dark'], [0, 2.4, 1.0, 1.0, 'dark', { face: 'l' }], [1, 3.4, 1.0, 0.9, 'tv', { face: 'r' }]],
-      door: { x: 1.2, kind: 'apt', w: 0.95, mail: 0x2a2a2a } });
-    this.yard(10.15, 15.3, ZF, 18.4, m.strip);
-    this.prop('scooter', 11.3, 0, 16.5, Math.PI / 2 + 0.2, { block: true });
-    this.prop('mamachari', 14.4, 0, 16.0, -Math.PI / 2 - 0.15, { block: true });
-    this.prop('mirror_pole', 10.6, 0, 14.6, Math.PI, { block: true });
-    // ---- FE5
-    this.house({ x: 18.2, z: 16.0, w: 5.2, d: 7, side: s, wallA: m.mortarP, wallB: m.wallCream, roofM: m.roofBrown, pent: true, solar: -0.6, balcony: { x0: -2.2, x1: 0.6, futon: 0x6a9ad8 },
-      win: [[0, -1.4, 1.6, 1.1, 'lit3'], [0, 1.6, 1.0, 1.0, 'dark', { grille: true }], [1, -0.8, 2.4, 1.85, 'lit', { sill: 0.05 }], [1, 1.6, 1.0, 1.0, 'lit2', { sudare: 0.75 }],
-        [0, 2.6, 1.0, 1.0, 'lit', { face: 'r' }], [1, 3.1, 1.0, 0.9, 'dark', { face: 'l' }]],
-      door: { x: 1.4, kind: 'genkan', w: 1.1, lamp: -1 } });
-    this.yard(15.5, 20.9, ZF + 0.15, 16.0, m.strip);
-    this.blockWall(15.5, 20.9, ZF, s, { gaps: [[16.4, 17.3]] });
-    this.gate(16.4, 17.3, ZF, s, 0.3);
-    this.prop('plant_pots', 19.6, 0, 14.53, Math.PI, { scale: 0.8 });
-    // ---- FE6: rental garages (貸しガレージ)
-    B.push(23.4, 0, 15.2, Math.PI);
-    B.box(m.found, 4.7, 0.12, 5.2, 0, 0, -2.6);
-    B.box(m.tin, 4.6, 2.7, 5.0, 0, 0.1, -2.6, { uv: [0, 0], ao: 0.2 });
-    for (const dx of [-1.15, 1.15]) {
-      B.box(m.shutterM, 2.0, 2.2, 0.05, dx, 0.1, 0.02);
-      B.box(m.metal, 2.2, 0.26, 0.3, dx, 2.3, 0.12, { tint: 0x7a7e7a });
-      B.box(m.pv, 0.3, 0.12, 0.02, dx + 0.6, 1.9, 0.06, { tint: 0xf4f0e6 });
-    }
-    B.box(m.tinRed, 5.0, 0.08, 5.5, 0, 2.8, -2.6, { rx: 0.06 });
-    B.pop();
-    this.yard(21.05, 25.7, ZF, 15.2, m.strip);
-    this.prop('weeds', 22.1, 0, 15.0, 2);
-    this.prop('weeds', 25.2, 0, 14.95, 0.6);
-    // second row and a mid-rise block over the roofs
-    for (const [x, w, h] of [[-23, 5.5, 7.6], [-17.2, 5, 6.2], [-11.6, 5.6, 7.2], [-5.4, 5.4, 6.0], [0.6, 5.6, 7.8], [6.6, 5.2, 6.4], [12.6, 5.8, 7.4], [18.6, 5.2, 6.1], [24.0, 4.6, 7.0]]) this.backHouse(x, 24.6 + hash2(x, 3) * 1.2, w, 7, h, -1);
-    this.midrise(-6, 36, 16, 12.5);
-    this.midrise(14, 38, 12, 15.5);
   }
 
   /** Four/five-storey マンション with a window grid and lit windows (background). */
@@ -1375,12 +1419,13 @@ export class Town {
   }
 
   /** Vertical quad (like Batch.quad) showing the sub-rectangle uv = [u0, v0, u1, v1] of its texture (atlases). */
-  quadUV(mat, w, h, x, y, z, [u0, v0, u1, v1], o = {}) {
+  quadUV(mat, w, h, x, y, z, [u0, v0, u1, v1], o = {}, B = this.B) {
     const g = new THREE.PlaneGeometry(w, h), uv = g.attributes.uv;
     for (let i = 0; i < uv.count; i++) uv.setXY(i, u0 + uv.getX(i) * (u1 - u0), v0 + uv.getY(i) * (v1 - v0));
+    if (o.rz) g.rotateZ(o.rz);
     if (o.ry) g.rotateY(o.ry);
     g.translate(x, y + h / 2, z);
-    return this.B.geo(mat, g, o);
+    return B.geo(mat, g, o);
   }
   /** One of the three blue 住居表示 address plates from the atlas. */
   addrPlate(k, w, h, x, y, z, o = {}) { return this.sign('addrs', w, h, x, y, z, o, [0, k * 16, 40, 16]); }
@@ -1389,11 +1434,16 @@ export class Town {
    *  all merge into a single draw call. layout: painter key -> [x, y, w, h] in atlas pixels. */
   signs() {
     if (this._signs) return this._signs;
-    const W = 160, H = 128;
+    const W = 256, H = 192;
     const layout = {
       enamelSoap: [0, 0, 24, 64], enamelRamune: [24, 0, 24, 64], enamelUniform: [48, 0, 24, 64], signSnatch: [72, 0, 32, 44], addrs: [104, 0, 40, 48],
-      noticeBoard: [0, 64, 48, 32], signGarage: [48, 64, 48, 32], names: [96, 64, 60, 24],
-      acFront: [0, 96, 36, 25], signPiano: [36, 96, 40, 14], signDog: [76, 96, 24, 16], signMilk: [100, 96, 16, 10],
+      parkRules: [144, 0, 40, 60], forSale: [184, 0, 32, 40], danger: [216, 0, 24, 32],
+      noticeBoard: [0, 64, 48, 32], signGarage: [48, 64, 48, 32], forRent: [96, 64, 32, 32], otaFudosan: [128, 64, 48, 26], aptRecruit: [176, 64, 40, 26], closedNotice: [216, 64, 32, 32],
+      acFront: [0, 96, 36, 25], signPiano: [36, 96, 40, 14], signDog: [76, 96, 24, 16], signMilk: [100, 96, 16, 10], babySign: [116, 96, 24, 24], patrolNote: [140, 96, 28, 24],
+      heaterFace: [168, 96, 24, 20], gasMeter: [192, 96, 12, 10], aptNos: [204, 96, 48, 16],
+      namesL: [0, 128, 12 * NAME_COUNT, 24], kishibe: [204, 128, 24, 12], villaNo: [228, 128, 20, 10],
+      parkName: [0, 152, 72, 18], parkArrow: [72, 152, 48, 16], wcSign: [120, 152, 48, 16], pylonPlate: [168, 152, 48, 14], closedSign: [216, 152, 40, 16],
+      pigeonBoard: [0, 176, 40, 12],
     };
     const atlas = new Pix(W, H, 1);
     atlas.flush();
@@ -1405,9 +1455,31 @@ export class Town {
     return (this._signs = { W, H, layout, mat });
   }
   /** Vertical sign quad showing atlas entry `key` (or the sub-rectangle sub = [x, y, w, h] px inside it). */
-  sign(key, w, h, x, y, z, o = {}, sub = null) {
+  sign(key, w, h, x, y, z, o = {}, sub = null) { return this.signInto(this.B, key, w, h, x, y, z, o, sub); }
+  /** sign() into another batch (see batch()). */
+  signInto(B, key, w, h, x, y, z, o = {}, sub = null) {
     const S = this.signs(), [rx, ry, rw, rh] = S.layout[key], [sx, sy, sw, sh] = sub || [0, 0, rw, rh];
-    return this.quadUV(S.mat, w, h, x, y, z, [(rx + sx) / S.W, 1 - (ry + sy + sh) / S.H, (rx + sx + sw) / S.W, 1 - (ry + sy) / S.H], o);
+    return this.quadUV(S.mat, w, h, x, y, z, [(rx + sx) / S.W, 1 - (ry + sy + sh) / S.H, (rx + sx + sw) / S.W, 1 - (ry + sy) / S.H], o, B);
+  }
+  /** A fresh static batcher (merge per material, baked vertex colours); build(parent) when done. */
+  batch(shade) { return new Batch(shade); }
+  /** Green PVC-coated wire mesh (alpha-cut, double-sided, repeating). */
+  fenceMeshM() {
+    if (!this.mats.has('fenceMesh')) {
+      const map = townPix('fenceMesh', 16, 16).texture();
+      map.wrapS = map.wrapT = THREE.RepeatWrapping;
+      this.mats.set('fenceMesh', new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.35, side: THREE.DoubleSide }));
+    }
+    return this.mats.get('fenceMesh');
+  }
+  /** 透かしブロック: the perforated decorative block course (alpha-cut, double-sided, 0.2 m motifs). */
+  decoBlockM() {
+    if (!this.mats.has('decoBlock')) {
+      const map = townPix('blockDeco', 48, 12).texture();
+      map.wrapS = THREE.RepeatWrapping;
+      this.mats.set('decoBlock', new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.92, alphaTest: 0.5, side: THREE.DoubleSide }));
+    }
+    return this.mats.get('decoBlock');
   }
 
   /** Square-section bar between two world points (guy wires, braces). */
@@ -1474,18 +1546,18 @@ export class Town {
     // ---- house-front clutter: pots, planters, fire buckets, bicycles, an extinguisher box, a reed screen
     this.prop('pot_cluster', 12.45, 0, 5.5, 0, { block: true, scale: 0.8 });
     this.prop('fire_ext_box', 15.7, 0, 5.5, 0, { block: true });
-    this.prop('styro_planter', 15.75, 0, 4.55, 0);
+    this.prop('styro_planter', 15.85, 0, 4.6, 0);
     this.prop('pot_cluster', -19.75, 0, 14.65, Math.PI, { block: true, scale: 0.85 });
     this.prop('fire_buckets', 15.8, 0, 14.62, Math.PI, { block: true });
     this.prop('styro_planter', -24.9, 0, 14.6, Math.PI, { block: true, scale: 0.85 });
     this.prop('fire_ext_box', -20.75, 0, 14.72, Math.PI, { block: true });
     this.prop('mamachari', 22.35, 0, 14.5, -Math.PI / 2 + 0.05, { block: true });
     this.prop('mamachari', -14.55, 0, 5.62, Math.PI / 2 - 0.06, { block: true });
-    // a reed screen (よしず) leaning against the garden house, rolled at the top
+    // a reed screen (よしず) leaning against the side of the garden house, rolled at the top
     {
-      const g = new THREE.PlaneGeometry(0.95, 1.9); g.rotateX(-0.27); g.translate(23.05, 0.93, 2.6 + 0.27);
+      const g = new THREE.PlaneGeometry(0.95, 1.9); g.rotateX(-0.27); g.rotateY(Math.PI / 2); g.translate(25.65 + 0.27, 0.93, 1.6);
       B.geo(this.T('yoshizu', 30, 60, { alpha: true, rough: 0.9 }), g, {});
-      B.box(m.pv, 1.0, 0.12, 0.12, 23.05, 1.76, 2.66, { tint: 0xb89a5a });
+      B.box(m.pv, 0.12, 0.12, 1.0, 25.71, 1.76, 1.6, { tint: 0xb89a5a });
     }
     this.prop('pot_cluster', -21.2, 0, 2.45, 0, { scale: 0.7 });
     // stepping stones from the gate to the door in the garden of NW4
@@ -1500,13 +1572,8 @@ export class Town {
     this.sign('enamelSoap', 0.26, 0.7, -15.3, 0.95, ZF - 0.012, { ry: Math.PI });
     this.sign('enamelRamune', 0.25, 0.68, -20.43, 0.85, ZB + 0.02, {});
     this.sign('enamelUniform', 0.25, 0.68, -20.155, 0.85, ZB + 0.02, {});
-    this.sign('signDog', 0.2, 0.13, 13.48, 0.95, ZB + 0.082, {});
-    // post-mounted mailboxes on a few gate pillars, the rental garages' vacancy board
-    for (const [x, z, f, c] of [[14.72, ZB, 1, 0x3a5a8a], [-21.18, ZF + 0.06, -1, 0xc83a2a], [17.42, ZF, -1, 0x4a6a4a], [-22.72, ZB, 1, 0x8a8e92]]) {
-      B.box(m.pv, 0.3, 0.32, 0.13, x, 0.72, z + f * 0.14, { tint: c });
-      B.box(m.pv, 0.33, 0.04, 0.16, x, 1.04, z + f * 0.14, { tint: c, k: 0.85 });
-      B.box(m.pv, 0.2, 0.02, 0.01, x, 0.95, z + f * 0.21, { tint: 0x1a1a1a });
-    }
+    this.sign('signDog', 0.2, 0.13, -22.21, 0.95, ZF - 0.1, { ry: Math.PI });
+    // the rental garages' vacancy board (the gate pillars' intercoms, name plates and mailboxes: Neighbours.js)
     this.sign('signGarage', 0.6, 0.4, 24.55, 1.25, 15.14, { ry: Math.PI });
     // a pinch hanger of socks and a towel drying under the edge of NE1's carport roof
     {
@@ -1523,7 +1590,7 @@ export class Town {
     this.sign('noticeBoard', 0.92, 0.6, 17.45, 1.01, 5.527);
     B.box(m.tinTeal, 1.12, 0.04, 0.3, 17.45, 1.72, 5.56, { rx: -0.25 });
     P.addObstacle(16.95, 17.95, 5.42, 5.62);
-    this.sign('signPiano', 0.5, 0.18, 6.4, 0.25, ZF - 0.022, { ry: Math.PI });
+    this.sign('signPiano', 0.5, 0.18, -2.6, 0.85, ZF - 0.022, { ry: Math.PI });
     // a few birds perched on the thick cable between the poles
     for (const [i, t] of [[0, 0.4], [0, 0.47], [3, 0.55], [4, 0.3], [4, 0.36], [5, 0.62]]) {
       const a = poles[i], b = poles[i + 1], x = a + (b - a) * t, y = 5.0 - Math.sin(t * Math.PI) * 0.35;
@@ -1697,9 +1764,11 @@ export class Town {
     if (this.poolK) this.poolK.value = 0.55 + 1.6 * night;
     if (this.streetLamp) this.streetLamp.intensity = night > 0.3 ? 5.2 * Math.min(1, (night - 0.3) / 0.25) : 0;
     if (this.vendingLight) this.vendingLight.intensity = 1.6 + 1.2 * night;
+    setInteriorSky({ night, sky: _c.copy(L.hor).lerp(L.up, 0.45).multiplyScalar(1 - 0.5 * night) });
+    this._lastSky = L;
     const S = this.shop;
     if (S?.lanternM) {
-      const on = (this.shopOpen ? 1 : 0) * (L.power === false ? 0 : 1);
+      const on = (this.lanternsOn ? 1 : 0) * (L.power === false ? 0 : 1);
       S.lanternM.emissiveIntensity = on * (0.8 + 0.6 * night);
       S.glow.intensity = on * (1.2 + 1.8 * night);
     }
@@ -1718,8 +1787,10 @@ export class Town {
       P.addObstacle(ra, rb, WALK, WALK + 0.12);
     }
     // near building line (walls, yards) except the garage opening and the A2 alley
-    for (const [a, b] of [[-XT, -4.3], [4.3, 9.8], [11.3, XT]]) P.addObstacle(a, b, -60, ZB);
-    P.addObstacle(9.65, 9.85, -60, ZB); P.addObstacle(11.25, 11.45, -60, ZB); P.addObstacle(9.6, 11.5, -60, -3.1);
+    // (x > 11.3 is fenced by the park's own bounds and Sakura Heights' walkable yard: src/world/Park.js, Neighbours.js)
+    for (const [a, b] of [[-XT, -4.3], [4.3, 9.8]]) P.addObstacle(a, b, -60, ZB);
+    P.addObstacle(9.65, 9.85, -60, ZB);
+    if (!this.park) { P.addObstacle(11.3, XT, -60, ZB); P.addObstacle(9.6, 11.5, -60, -3.1); }
     // far building line except the corner shop door and the A1 alley
     for (const [a, b] of [[-XT, -15.45], [-7.45, XT]]) P.addObstacle(a, b, ZF, 60);
     P.addObstacle(-9.55, -9.3, ZF, 60); P.addObstacle(-7.5, -7.25, ZF, 60); P.addObstacle(-9.6, -7.2, 22.3, 60);
@@ -1795,6 +1866,8 @@ export class Town {
 
   update(dt, t) {
     void t;
+    if (this.interiorM) this.interiorM.uniforms.uTime.value += dt;
+    this.updateZones();
     if (!this.trains) return;
     for (const tr of this.trains) {
       if (!tr.g.visible) { tr.wait -= dt; if (tr.wait <= 0) this.runTrain(tr.s); continue; }

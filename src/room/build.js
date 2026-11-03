@@ -330,13 +330,11 @@ export function buildRoom(game, group) {
   };
   const block = (xa, xb, za, zb) => out.obstacles.push([xa, xb, za, zb]);
   // bedding
-  const fu = prop('room_futon', R.futon.x, 0, R.futon.z, 0, 1, 'futon');
-  out.targets.futon = fu;
+  // (the futon itself, made or slept in, is added by src/places/room/Room.js at out.futonAt)
+  out.futonAt = { x: R.futon.x, z: R.futon.z };
   block(R.futon.x - 0.5, R.futon.x + 0.5, R.futon.z - 1.0, R.futon.z + 1.0);
   prop('room_plush', R.futon.x + 0.28, 0.08, R.futon.z - 0.72, 0.5, 1, 'plush');
-  prop('room_laundry', -0.35, 0, 0.12, 0.4);
-  prop('room_boxes', x0 + 0.27, 0, zPart - 0.3, 0.15);
-  block(x0, x0 + 0.52, zPart - 0.55, zPart);
+  prop('room_laundry', -0.42, 0, 0.18, 0.4);
   // desk + PC + chair against the east wall (desk front faces -x)
   const dk = R.desk;
   prop('room_desk', dk.x, 0, dk.z, -Math.PI / 2, 1, 'desk');
@@ -353,10 +351,15 @@ export function buildRoom(game, group) {
   prop('room_chair', dk.x - 0.62, 0, dk.z + 0.08, Math.PI / 2 + 0.35, 1, 'chair');
   block(dk.x - 0.86, dk.x - 0.38, dk.z - 0.18, dk.z + 0.32);
   // bookshelf + figure display shelf + calendar on the east wall
-  prop('room_bookshelf', x1 - 0.16, 0, -0.55, -Math.PI / 2, 1, 'bookshelf');
-  block(x1 - 0.32, x1, -0.78, -0.32);
-  prop('daruma', x1 - 0.16, 0.91, -0.66, -Math.PI / 2 - 0.3, 0.7);
-  prop('manga_stack', x1 - 0.3, 0, 0.12, 0.3, 0.9);
+  // the bookshelf against the partition, a small sofa along the east wall facing the window
+  prop('room_bookshelf', x0 + 0.48, 0, zPart - 0.26, Math.PI, 1, 'bookshelf');
+  block(x0 + 0.24, x0 + 0.72, zPart - 0.42, zPart);
+  prop('daruma', x0 + 0.38, 0.91, zPart - 0.26, Math.PI + 0.3, 0.7);
+  prop('manga_stack', x0 + 0.95, 0, zPart - 0.24, 0.3, 0.9);
+  const sofaAt = { x: x1 - 0.27, z: -0.32 };
+  prop('sofa_retro', sofaAt.x, 0, sofaAt.z, -Math.PI / 2, 0.8, 'sofa');
+  block(sofaAt.x - 0.24, x1, sofaAt.z - 0.42, sofaAt.z + 0.42);
+  out.sofaAt = sofaAt;
   const fs = prop('room_figshelf', x1 - 0.1, 1.18, dk.z, -Math.PI / 2, 1, 'figShelf');
   out.targets.figShelf = fs;
   // figure slots on the three ledges (room-local positions; figures face -x into the room)
@@ -376,8 +379,8 @@ export function buildRoom(game, group) {
   prop('room_zabuton', 0.2, 0, -0.08, 0.1);
   prop('room_phone', -0.06, 0.33, -1.0, 0.3);
   // trash bin, clock, AC
-  prop('room_trash', 1.0, 0, -0.55, 0);
-  block(0.88, 1.12, -0.67, -0.43);
+  prop('room_trash', -0.52, 0, z0 + 0.22, 0);
+  block(-0.64, -0.4, z0, z0 + 0.34);
   prop('room_clock', -0.95, 1.55, zPart - 0.105, Math.PI);
   prop('room_ac', 1.15, 2.04, zPart - 0.21, Math.PI);
   prop('room_hanger', x0 + 0.04, 1.08, -0.05, Math.PI / 2, 1);

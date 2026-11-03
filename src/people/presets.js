@@ -15,6 +15,8 @@ export const HUMAN_PRESETS = [
   // more named locals (src/npc/roster.js): never picked for the street either
   { id: 'hatoda', name: 'Mr. Hatoda' }, { id: 'gonta', name: 'Gonta' }, { id: 'kuromaru', name: 'Lord Kuromaru' },
   { id: 'gomuzo', name: 'Captain Gomuzo' }, { id: 'yabuki', name: 'Mr. Yabuki' }, { id: 'kusaka', name: 'Dr. Kusaka' },
+  // job applicants from the Inspired site (src/staff): never picked for the street either
+  { id: 'kappa', name: 'Kappa' }, { id: 'tanuki', name: 'Tanuki' }, { id: 'yurei', name: 'Yurei' }, { id: 'ninja', name: 'Not a Ninja' },
 ];
 // how often each preset shows up on the street (randomHuman)
 export const STREET_WEIGHTS = { salaryman: 3, office_lady: 2.5, schoolgirl: 2, schoolboy: 2, grandma: 2, grandpa: 2, kid: 1.6, tourist: 1.4, otaku: 1.2, gyaru: 1, mom: 1.6, delivery: 0.9, construction: 0.7, shopkeeper: 0 };
@@ -376,6 +378,63 @@ Object.assign(BUILD, {
     shoes: { kind: 'boots', col: hex(0x5a3a24) }, socks: { col: [120, 110, 90] },
     acc: [{ kind: 'shoulderbag', col: hex(0x6a4a2a), side: 1 }],
     walk: { style: 'normal' },
+  }),
+});
+
+// ------------------------------------------------------------------ job applicants in disguise (src/staff, Inspired)
+// The base bodies of the odd ones who apply for shop jobs; their voxel extras (the kappa's dish, beak and shell, the
+// tanuki's ears, tail and leaf, the yurei's forehead triangle, the ninja's mask) are added by src/staff/looks.js.
+Object.assign(BUILD, {
+  // a river kappa in a borrowed tee: short, green, a bowl cut ringing the (voxel) dish
+  kappa: () => ({
+    sex: 'm', age: 'adult', H: 1.42, build: 0.95, belly: 0.5,
+    skin: [112, 172, 92],
+    hair: { style: 'bowl', col: [38, 66, 42], hi: [96, 138, 90] },
+    face: { iris: [214, 172, 44], lid: 'double', tilt: 0.3, eyeW: 1.2, eyeH: 1.2, browW: 0.55, lipFull: 0.7, blush: 0, browCol: [30, 54, 34] },
+    top: { kind: 'tee', col: [232, 222, 156], print: 'none' },
+    bottom: { kind: 'shorts', col: [62, 112, 142] },
+    shoes: { kind: 'sandal', col: [112, 82, 52] },
+    acc: [],
+    walk: { style: 'young' },
+  }),
+  // a tanuki passing as a businessman: round belly, dark eye patches, a Shigaraki straw hat
+  tanuki: () => ({
+    sex: 'm', age: 'adult', H: 1.56, build: 1.12, belly: 1.4,
+    skin: [198, 152, 106],
+    hair: { style: 'short', col: [86, 62, 44] },
+    face: { iris: [60, 36, 20], lid: 'mono', tilt: 0.1, eyeW: 1.15, eyeH: 1.05, browW: 1.3, lipFull: 0.9, blush: 0.45, stubble: 0.2, makeup: { liner: 0.7, lash: 0, shadow: [72, 52, 40] } },
+    hat: { kind: 'sunhat', col: [214, 180, 112], col2: [122, 82, 42] },
+    top: { kind: 'jacket', col: [122, 94, 64], shirt: [236, 228, 210] },
+    bottom: { kind: 'slacks', col: [88, 72, 56], belt: [40, 30, 22] },
+    shoes: { kind: 'sandal', col: [72, 52, 36] }, socks: { col: [236, 232, 220] },
+    acc: [],
+    walk: { style: 'heavy' },
+  }),
+  // a yurei: white burial kimono (blouse + long skirt), very long black hair, no colour in the face
+  yurei: () => ({
+    sex: 'f', age: 'teen', H: 1.56, build: 0.88, bust: 0.5,
+    skin: [232, 236, 238],
+    hair: { style: 'long', col: [20, 18, 24], hi: [70, 74, 96], volume: 1.25 },
+    face: { iris: [40, 44, 60], lid: 'double', tilt: 0.9, eyeH: 0.8, browW: 0.7, lipFull: 0.7, blush: 0, lipstick: [190, 196, 204], makeup: { liner: 0.4, lash: 0.3, shadow: [170, 180, 196] } },
+    top: { kind: 'blouse', col: [244, 244, 240], sleeve: 'long' },
+    bottom: { kind: 'skirt', cut: 'long', col: [240, 240, 236] },
+    legs: 'socks', socks: { col: [244, 244, 240] },
+    shoes: { kind: 'sandal', col: [230, 226, 216] },
+    acc: [],
+    walk: { style: 'dainty' },
+  }),
+  // definitely not a ninja: all black, a headband, split-toe tabi
+  ninja: () => ({
+    sex: 'm', age: 'adult', H: 1.72, build: 0.96,
+    skin: [224, 180, 142],
+    hair: { style: 'short', col: [26, 24, 28] },
+    face: { iris: [40, 28, 20], lid: 'mono', tilt: 0.9, eyeW: 0.95, eyeH: 0.8, browW: 1.3, browArch: 1.2 },
+    hat: { kind: 'headband', col: [30, 32, 46] },
+    top: { kind: 'workjacket', col: [36, 38, 52], sleeve: 'long' },
+    bottom: { kind: 'tobi', col: [34, 36, 48] },
+    shoes: { kind: 'tabi', col: [28, 28, 34] },
+    acc: [],
+    walk: { style: 'brisk' },
   }),
 });
 

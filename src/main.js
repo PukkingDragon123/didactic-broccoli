@@ -18,6 +18,7 @@ import { MenuCrew } from './world/MenuCrew.js';
 import { MenuStyler } from './ui/MenuStyler.js';
 import { installStaticIcons, setLabel } from './ui/staticIcons.js';
 import { encodeShop, decodeShop } from './game/shareCode.js';
+import { prepareNet } from './net/boot.js';
 import { VISIT_KEY } from './game/state.js';
 import { ITEMS } from './data/series/index.js';
 import { bannerGlyphs } from './gfx/banner.js';
@@ -43,6 +44,10 @@ async function loadFonts() {
 
 async function boot() {
   installStaticIcons(); // pixel icons on the static buttons (and the loading bar)
+  // multiplayer: a guest's tab connects to the host first and loads the host's world (src/net/boot.js)
+  const loadLabel = document.querySelector('#loading .load-label');
+  const netBoot = await prepareNet((t) => { if (loadLabel) loadLabel.innerHTML = `${t} <span id="load-pct"></span>`; });
+  if (netBoot && loadLabel) loadLabel.innerHTML = 'Loading <span id="load-pct">0%</span>';
   const pct = $('load-pct');
   await loadFonts();
   const game = new Game($('app'));
@@ -134,18 +139,32 @@ async function boot() {
   });
 
   // settings: gear on the menu, Esc / pause button in game
-  const openSettings = () => { $('pause').classList.remove('hidden'); $('resume-btn').classList.toggle('hidden', !started); $('leave-btn').classList.toggle('hidden', !game.visiting); };
+  const openSettings = () => {
+    $('pause').classList.remove('hidden'); $('resume-btn').classList.toggle('hidden', !started);
+    const mpOn = !!game.mp?.active;
+    $('leave-btn').classList.toggle('hidden', !game.visiting && !mpOn);
+    if (mpOn) setLabel('leave-btn', game.mp.isHost ? 'Close the room' : 'Leave the room', 'home');
+  };
   $('m-gear').addEventListener('click', () => { sfx('uiClick', 0.6); openSettings(); });
   for (const b of document.querySelectorAll('[data-close]')) b.addEventListener('click', (e) => {
     e.stopPropagation();
     b.closest('.overlay').classList.add('hidden');
     if (b.closest('#pause') && started) start();
   });
-  $('leave-btn').addEventListener('click', () => { try { sessionStorage.removeItem(VISIT_KEY); } catch { /* ignore */ } location.reload(); });
+  $('leave-btn').addEventListener('click', () => {
+    if (game.mp?.active) { const host = game.mp.isHost; game.mp.leave(); if (host) $('leave-btn').classList.add('hidden'); return; }
+    try { sessionStorage.removeItem(VISIT_KEY); } catch { /* ignore */ }
+    location.reload();
+  });
 
-  // host / join: share a shop code, or open a friend's shop read-only
+  // host / join: a live room (multiplayer, src/net/), or the fallback: share a shop code / open a friend's shop read-only
   const share = $('share'), code = $('share-code'), act = $('share-act'), note = $('share-note');
-  const openShare = async (mode) => {
+  const openShare = (mode) => {
+    if (!game.mp) return openShareCode(mode);
+    sfx('uiClick', 0.6);
+    game.mp.ui.menu(mode, { onPlay: () => start(), fallback: (m, pasted) => openShareCode(m, pasted) });
+  };
+  const openShareCode = async (mode, pasted = '') => {
     sfx('uiClick', 0.6);
     share.classList.remove('hidden');
     share.dataset.mode = mode;
@@ -162,7 +181,7 @@ async function boot() {
     } else {
       $('share-title').textContent = 'Visit a friend';
       code.readOnly = false;
-      code.value = '';
+      code.value = pasted;
       code.placeholder = 'GG1....';
       setLabel(act, 'Go!', 'play');
       note.textContent = "Paste your friend's shop code";
@@ -183,6 +202,8 @@ async function boot() {
     } catch { note.textContent = "That code doesn't work"; sfx('error', 0.5); }
   });
 
+  if (game.mp?.bootError) { openShare('join'); game.mp.ui.note(`Couldn't get back into the room: ${game.mp.bootError.message}`, true); }
+
   let freeTold = false;
   game.input.onLockChange = (locked) => {
     if (locked) {
@@ -193,7 +214,7 @@ async function boot() {
       $('pause').classList.add('hidden');
       $('hud').classList.remove('hidden');
       touch?.show(true);
-      if (game.visiting) setTimeout(() => game.news(`${game.state.__owner || "A friend"}'s shop`, 'Visiting - nothing is saved', 6000), 1200);
+      if (game.visiting) setTimeout(() => game.news(`${game.state.__owner || "A friend"}'s shop`, game.mp?.isGuest ? `Playing together · room ${game.mp.s.code} · T to chat` : 'Visiting - nothing is saved', 6000), 1200);
       else if (!game.state.flags.welcomed && game.story.done) {
         game.state.flags.welcomed = true;
         setTimeout(() => game.news('Welcome back!', '', 6000), 1400);

@@ -1,8 +1,9 @@
-// Knocking on doors: every house along the lane has an intercom at its gate (invisible click targets at the gate
-// line; Town.js is untouched). Ring and somebody answers (the lane's named people come out themselves when they're at
-// home, the other neighbours have their own little chats), or a family member answers through the intercom, or
-// nobody does. At night people are asleep (or very cross). Ring and walk off before they come out: pinpon dash, and
-// they remember. Emits 'doorbell' { house } (Gonta's quest listens).
+// Knocking on doors: every house along the lane has an intercom at its gate (the click target sits on the intercom
+// that src/world/Neighbours.js builds; positions come from town.doors: { id, bell, gate, pos, side }). Ring and
+// somebody answers (the lane's named people come out themselves when they're at home, the other neighbours have their
+// own little chats), or a family member answers through the intercom, or nobody does. At night people are asleep (or
+// very cross). Ring and walk off before they come out: pinpon dash, and they remember. Emits 'doorbell' { house }
+// (Gonta's quest listens).
 import * as THREE from 'three';
 import { Npc } from './Npc.js';
 import { createHuman } from '../people/index.js';
@@ -41,7 +42,7 @@ const RES = {
     chat: (L, n) => ({ start: [{ say: 'Shhh! The baby JUST fell asleep!', style: 'think' }, { choose: [{ text: '(whisper) Sorry!', rel: 1, then: ['(whisper) It\'s okay. Come back when she\'s awake. She likes the colourful capsules.'] }, { text: 'IS THIS A BAD TIME?', rel: -2, then: [{ sound: 'error', say: '...She\'s awake now. Thanks.' }] }], time: 5, timeout: 1 }] }) },
   yamada: { name: 'Mrs. Yamada', role: 'Kuromaru\'s mother', preset: 'mom', seed: 7, color: '#d0a8d8',
     chat: (L, n) => ({ start: ['Oh! Are you one of Hiroshi\'s friends? He doesn\'t... have many.', { choose: [{ text: 'You mean Lord Kuromaru?', then: ['...Is that what he calls himself now? Oh dear. Please be nice to him. He\'s a good boy.'] }, { text: 'Yes, I\'m a friend.', rel: 1, then: ['Oh, how wonderful! I\'ll tell him! HIROSHI! A FRIEND CAME BY!'] }] }] }) },
-  gontaMom: { name: 'Gonta\'s mum', role: 'Sakura Heights 102', preset: 'mom', seed: 5, color: '#f0c040',
+  gontaMom: { name: 'Gonta\'s mum', role: 'Sakura Heights 101', preset: 'mom', seed: 5, color: '#f0c040',
     chat: (L, n) => ({ start: [{ say: 'GONTA! ...Oh. Sorry. I thought you were him. Is he in trouble again?', style: 'shout' }, { choose: [{ text: 'He pranked me.', then: ['Of course he did. I\'ll take his snacks away. Again.'] }, { text: 'No, just saying hello.', rel: 1, then: ['That\'s a first! Hello!'] }] }] }) },
 };
 function rentLine(g) {
@@ -60,11 +61,12 @@ export const DOOR_QUESTS = [{
   reward: { money: 1000, text: 'The landlady approves (a little)' },
 }];
 
-/** The houses of the lane: bell = the intercom at the gate, door = their front door, who = a lane person or resident. */
+/** The houses of the lane: bell = the intercom at the gate, door = their front door, who = a lane person or resident.
+ *  The coordinates below are fallbacks: town.doors (src/world/Neighbours.js) overrides bell / door / gate / side. */
 const HOUSES = [
   { id: 'suzuki', family: 'Suzuki', bell: [6.65, NEAR], door: [6.65, 1.4], res: 'suzuki' },
   { id: 'ota', family: 'Ota', bell: [14.1, NEAR], door: [14.25, 3.9], res: 'ota' },
-  { id: 'heights', family: 'Sakura Heights 102', bell: [19.95, NEAR], door: [19.95, 2.4], npc: 'gonta', res: 'gontaMom', out: 'Gonta? Out causing trouble. As usual.' },
+  { id: 'heights', family: 'Sakura Heights 101', bell: [19.95, NEAR], door: [19.95, 2.4], npc: 'gonta', res: 'gontaMom', out: 'Gonta? Out causing trouble. As usual.' },
   { id: 'kusaka', family: 'Kusaka', bell: [22.7, NEAR], door: [23.0, 3.4], npc: 'kusaka', out: null },
   { id: 'kimura', family: 'Kimura', bell: [-5.55, NEAR], door: [-6.45, 3.4], res: 'kimura' },
   { id: 'tanaka', family: 'Tanaka', bell: [-13.15, NEAR], door: [-12.45, 3.7], res: 'tanaka' },
@@ -81,6 +83,23 @@ const HOUSES = [
   { id: 'rohan', family: 'Kishibe', bell: [10.55, -2.85], door: [10.55, -2.6], npc: 'rohan', note: 'A sign on the gate: NO VISITORS. THIS MEANS YOU.', grumpy: true },
 ];
 
+/** Take each house's intercom, gate and front door from the town (Neighbours.js builds them and lists town.doors). */
+function fromTown(game) {
+  const list = game.garage?.town?.doors;
+  if (!Array.isArray(list)) return;
+  for (const H of HOUSES) {
+    const d = list.find((e) => e.id === H.id);
+    if (!d) continue;
+    if (d.bell) { H.bell = [d.bell.x, d.bell.z]; H.bellY = d.bell.y; }
+    if (d.pos) H.door = [d.pos.x, d.pos.z];
+    if (d.gate) H.gate = [d.gate.x, d.gate.z];
+    H.side = d.side; // +1: the house faces +z (near side, the villa), -1: faces -z (far side)
+    H.atDoor = !!d.atDoor; // apartments: the bell is at the flat's own door
+  }
+}
+/** +1 if the street is toward +z from this house's gate. */
+const outward = (H) => H.side ?? (H.bell[1] > 10 ? -1 : 1);
+
 export class Doors {
   constructor(game, lane) {
     this.game = game;
@@ -88,13 +107,14 @@ export class Doors {
     this.residents = {};
     this.busy = null;
     this.rings = {};
+    fromTown(game);
     for (const H of HOUSES) this.add(H);
   }
 
   add(H) {
-    const g = this.game, far = H.bell[1] > 10, alley = H.bell[1] < 0;
-    const box = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.4, 0.3), hitMat);
-    box.position.set(H.bell[0], 1.05, H.bell[1] + (alley ? -0.1 : far ? 0.12 : -0.12));
+    const g = this.game, out = outward(H);
+    const box = new THREE.Mesh(new THREE.BoxGeometry(H.atDoor ? 0.5 : 0.7, H.atDoor ? 0.7 : 1.4, 0.3), hitMat);
+    box.position.set(H.bell[0], H.atDoor ? H.bellY ?? 1.3 : 1.05, H.bell[1] - out * 0.12);
     box.name = 'doorbell:' + H.id;
     g.scene.add(box);
     H.box = box;
@@ -111,7 +131,7 @@ export class Doors {
   }
 
   /** The bell's own position (lines from the intercom float there). */
-  speaker(H) { const p = new THREE.Vector3(H.bell[0], 1.55, H.bell[1]); return () => p; }
+  speaker(H) { const p = new THREE.Vector3(H.bell[0], (H.bellY ?? 1.0) + 0.55, H.bell[1]); return () => p; }
 
   intercom(H, text, style = 'say') {
     const g = this.game;
@@ -174,15 +194,16 @@ export class Doors {
   async answer(H, n) {
     const g = this.game, L = this.lane;
     const door = new THREE.Vector3(H.door[0], 0, H.door[1]);
-    // they step out through the gate onto the lane side, where you can see them
-    const side = H.bell[1] > 10 ? 1 : -1;
-    const gate = new THREE.Vector3(H.bell[0] + 0.35, 0, H.bell[1] - side * 0.42);
+    // they step out through the gate onto the lane side, where you can see them (flats: just outside their door)
+    const out = outward(H), gx = H.gate ? H.gate[0] : H.bell[0] + 0.35, gz = H.gate ? H.gate[1] : H.bell[1];
+    const inside = H.atDoor ? [] : [new THREE.Vector3(gx, 0, gz - out * 0.3)];
+    const gate = H.atDoor ? new THREE.Vector3(door.x + 0.2, 0, door.z + out * 0.45) : new THREE.Vector3(gx + 0.15, 0, gz + out * 0.45);
     const own = !!L.list.includes(n);
     if (own) { L.cancel(n); n.activity = 'door'; }
     n.place(door, Math.atan2(gate.x - door.x, gate.z - door.z));
     n.setPresent(true);
     sfx('slideDoor', { pos: door.clone().setY(1), vol: 0.5 });
-    n.walk([new THREE.Vector3(H.bell[0], 0, H.bell[1] + side * 0.3), gate], { face: Math.atan2(g.player.pos.x - gate.x, g.player.pos.z - gate.z) });
+    n.walk([...inside, gate], { face: Math.atan2(g.player.pos.x - gate.x, g.player.pos.z - gate.z) });
     n.ghost = true;
     await g.talk.until(() => !n.walking);
     n.ghost = false;
@@ -200,7 +221,7 @@ export class Doors {
       n.mem.seen = g.clock?.stamp ?? 0;
     }
     await this.wait(0.6);
-    n.walk([new THREE.Vector3(H.bell[0], 0, H.bell[1] + side * 0.3), door]); n.ghost = true;
+    n.walk([...inside, door]); n.ghost = true;
     await g.talk.until(() => !n.walking);
     n.ghost = false;
     n.setPresent(false);

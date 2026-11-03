@@ -1,0 +1,41 @@
+/* The Staff Rota program (Capsule 98): a week grid and a card per person. Flat 1999 dialog styling, pixel fonts. */
+.c98 .rt { display: flex; flex-direction: column; overflow: hidden; background: var(--face, #c8c0b0); }
+.c98 .rt-top { padding: 6px 6px 4px; overflow-x: auto; }
+.c98 .rt-week { width: 100%; border-collapse: collapse; background: #fff; }
+.c98 .rt-week th, .c98 .rt-week td { padding: 1px 4px; border: 1px solid #9a9488; text-align: center; font-weight: normal; white-space: nowrap; }
+.c98 .rt-week th { background: #e8e4d8; line-height: 16px; }
+.c98 .rt-week th small { font-size: 16px; color: #6a6458; }
+.c98 .rt-week th.today, .c98 .rt-week td.today { background: #fff4c0; }
+.c98 .rt-week td.rt-n { text-align: left; background: #f4f0e6; }
+.c98 .rt-week td.on { color: #1a3a6a; }
+.c98 .rt-week td.off { color: #a8a094; background: #f0ece4; }
+.c98 .rt-week td.na { color: #c8c0b4; }
+.c98 .rt-week td.on.r-restock { box-shadow: inset 4px 0 0 #3f86e8; } .c98 .rt-week td.on.r-clean { box-shadow: inset 4px 0 0 #58c06c; }
+.c98 .rt-week td.on.r-greet { box-shadow: inset 4px 0 0 #ff6f91; } .c98 .rt-week td.on.r-coins { box-shadow: inset 4px 0 0 #ffd23f; }
+.c98 .rt-week td.on.r-courier { box-shadow: inset 4px 0 0 #ff8a3a; } .c98 .rt-week td.on.r-guard { box-shadow: inset 4px 0 0 #6442ae; }
+.c98 .rt-week tr { cursor: var(--cur-hand, pointer); }
+.c98 .rt-week tr.sel td.rt-n { background: #0a246a; color: #fff; }
+.c98 .rt-cards { flex: 1; overflow-y: auto; padding: 2px 6px 6px; }
+.c98 .rt-card { display: flex; gap: 8px; margin-bottom: 6px; padding: 6px; background: #f4f0e6; border: 1px solid #9a9488; box-shadow: inset 1px 1px 0 #fff; }
+.c98 .rt-card.sel { background: #fffaf0; border-color: #0a246a; }
+.c98 .rt-l { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100px; flex: none; }
+.c98 .rt-phw { display: block; width: 96px; height: 96px; border: 1px solid #4a4038; }
+.c98 .rt-ph { display: block; width: 96px; height: 96px; image-rendering: pixelated; }
+.c98 .rt-mood { padding: 0 4px; color: #fff; background: #7a7a7a; }
+.c98 .rt-mood.m0 { background: #a8242a; } .c98 .rt-mood.m1 { background: #c4561c; } .c98 .rt-mood.m2 { background: #2a5aa8; } .c98 .rt-mood.m3 { background: #2f8a48; }
+.c98 .rt-mbar { width: 96px; height: 6px; background: #d8d0c0; border: 1px solid #6a6458; }
+.c98 .rt-mbar i { display: block; height: 100%; background: #2f8a48; }
+.c98 .rt-m { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.c98 .rt-name b { font-family: var(--f-title); font-weight: normal; }
+.c98 .rt-title { padding: 0 4px; background: #2f8a48; color: #fff; }
+.c98 .rt-dim { color: #6a6458; }
+.c98 .rt-bad { color: #c8202a; font-weight: normal; }
+.c98 .rt-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.c98 .rt-row label { color: #4a4438; }
+.c98 .rt-row select { max-width: 200px; }
+.c98 .rt-req { padding: 2px 4px; background: #fff4c0; border: 1px solid #d0a830; }
+.c98 .rt-log { margin: 0; padding-left: 18px; color: #3a3428; }
+.c98 .rt-log li { line-height: 18px; }
+.c98 .rt-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+.c98 .rt-fire { color: #a8242a; }
+.c98 .rt-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 100%; text-align: center; padding: 20px; }

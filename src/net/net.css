@@ -1,0 +1,136 @@
+/* Multiplayer UI (src/net/ui.js) on paper (the kit: src/ui/paper.js + paper.css): the room code on a taped sticky
+   note, the guest list and the join box on receipt paper, the room badge a torn note (hold Tab: the rap sheet, with a
+   hanko when someone has been fined), chat lines as receipt strips, police fines as a stamped ticket. Pixel art only:
+   2x texels, ink text, hard pixel shadows, no glows. Fallback colours keep it readable without the kit. */
+.mp-hide { display: none !important; }
+
+/* shared paper bits */
+.mp-paper, .mp-roster, .mp-ticket, .mp-codebox, .mp-list, .mp-chat {
+  --ink: var(--pp-ink, #241a1e); --ink2: var(--pp-ink2, #5e5046); --red: var(--pp-red, #c8322c); --blue: var(--pp-blue, #2f5a9a);
+  color: var(--ink); image-rendering: pixelated; text-shadow: none;
+}
+
+/* ------------------------------------------------------------- the menu panels (inside the notebook-page .panel) */
+.mp-menu { display: flex; flex-direction: column; gap: 12px; }
+.mp-menu .panel-title .px-icon { flex: none; }
+.mp-menu small { color: var(--pp-ink2, #7a6a5a); font-size: 16px; }
+.mp-name, .mp-codein { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; }
+.mp-name .lbl { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.mp-name input, .mp-codein input {
+  width: 55%; min-width: 0; padding: 4px 8px 2px; border: 0; font: 16px/20px var(--font-ui); color: var(--pp-ink, #241a1e);
+  background: var(--pp-grain-receipt, #f6f3ea) 0 0 / 96px; image-rendering: pixelated;
+  box-shadow: inset 0 -2px 0 var(--pp-ink, #241a1e), 2px 3px 0 rgba(26, 18, 22, .3);
+}
+.mp-codein { flex-direction: column; align-items: stretch; gap: 6px; }
+.mp-codein input { width: 100%; font-size: 48px; line-height: 52px; text-align: center; letter-spacing: 10px; text-transform: uppercase; padding: 8px 4px 4px; }
+.mp-codein input::placeholder { color: rgba(94, 80, 70, .35); }
+.mp-name input:focus, .mp-codein input:focus { outline: 2px dashed var(--pp-red, #c8322c); outline-offset: 4px; }
+
+/* the room code: a yellow sticky note taped to the page */
+.mp-codebox {
+  position: relative; margin: 14px 6px 4px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 10px; padding: 4px 6px 2px 8px;
+  border: 12px solid transparent; border-image: var(--pp-edge-note) 6 / 12px round;
+  background: var(--pp-grain-note, #f6e284) 0 0 / 96px padding-box; filter: var(--pp-shadow, drop-shadow(3px 4px 0 rgba(26, 18, 22, .45)));
+  transform: rotate(-1deg);
+}
+.mp-codebox::before {
+  content: ''; position: absolute; left: calc(50% - 40px); top: -24px; width: 80px; height: 24px;
+  background: var(--pp-tape) 0 0 / 80px 24px; image-rendering: pixelated;
+}
+.mp-codebox small { grid-column: 1 / 3; color: var(--red); letter-spacing: 2px; }
+.mp-code { font-family: var(--font-display); font-size: 64px; line-height: 64px; letter-spacing: 12px; color: var(--ink); user-select: text; -webkit-user-select: text; cursor: text; }
+.mp-code.off { color: rgba(94, 80, 70, .45); }
+.mp-codebox button { align-self: center; }
+
+/* who's in: a receipt */
+.mp-list {
+  display: flex; flex-direction: column; gap: 2px; padding: 2px 8px 4px;
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
+  background: var(--pp-grain-receipt, #f6f3ea) 0 0 / 96px padding-box; filter: var(--pp-shadow, none);
+}
+.mp-list small { color: var(--ink2); border-bottom: 2px dashed var(--ink2); padding-bottom: 2px; margin-bottom: 2px; }
+.mp-p { display: flex; align-items: center; gap: 8px; }
+.mp-p i, .mp-r i { display: inline-block; flex: none; width: 10px; height: 10px; box-shadow: 0 0 0 2px var(--pp-ink, #241a1e); }
+.mp-p em { color: var(--ink2); font-style: normal; }
+.mp-p.wait { color: var(--ink2); animation: mp-blink 1.6s steps(2) infinite; }
+@keyframes mp-blink { 50% { opacity: .45; } }
+.mp-menu .foot.bad { color: var(--pp-red, #b03a2e); }
+.mp-small { font-size: 16px; text-align: center; color: var(--pp-ink2, #9a8a76); }
+.panel button.mp-link { min-height: 0; padding: 4px; background: none; box-shadow: none; filter: none; color: var(--pp-blue, #7a5a3a); text-decoration: underline; text-underline-offset: 4px; }
+.panel button:disabled { filter: grayscale(.8) brightness(.9); cursor: default; }
+
+/* ------------------------------------------------------------- in game: the room badge, a torn note (Tab: the rap sheet) */
+.mp-roster {
+  position: absolute; right: max(18px, env(safe-area-inset-right)); top: max(26px, env(safe-area-inset-top)); width: 236px;
+  display: flex; flex-direction: column; gap: 2px; padding: 0 4px 2px 6px; font: 16px/20px var(--font-ui);
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background: var(--pp-grain-cream, #eee4ca) 0 0 / 96px padding-box; filter: var(--pp-shadow, drop-shadow(3px 4px 0 rgba(26, 18, 22, .45)));
+  pointer-events: none;
+}
+.mp-roster::before {
+  content: ''; position: absolute; left: calc(50% - 30px); top: -20px; width: 60px; height: 18px;
+  background: var(--pp-tape) 0 0 / 60px 18px; image-rendering: pixelated;
+}
+.mp-roster .mp-h { display: flex; align-items: center; gap: 6px; color: var(--red); border-bottom: 2px solid var(--red); padding-bottom: 2px; margin-bottom: 2px; }
+.mp-roster .mp-h small { margin-left: auto; color: var(--ink2); font-size: 16px; }
+.mp-r { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0 8px; }
+.mp-r .n { overflow: hidden; white-space: nowrap; }
+.mp-r .n em, .mp-r .pg { color: var(--ink2); font-style: normal; }
+.mp-r.me .n { color: var(--blue); }
+.mp-r .rap, .mp-roster .mp-keys { display: none; grid-column: 2 / 4; color: var(--ink2); font-size: 16px; line-height: 18px; }
+.mp-r .rap.bad { color: var(--red); }
+.mp-r .stamp { display: none; position: absolute; right: 4px; width: 32px; height: 32px; background: var(--pp-hanko) 0 0 / 32px; image-rendering: pixelated; transform: rotate(-8deg); opacity: .85; }
+.mp-roster.full { width: 360px; }
+.mp-roster.full .mp-r { position: relative; padding: 2px 0; border-bottom: 2px dashed rgba(36, 26, 30, .2); }
+.mp-roster.full .rap, .mp-roster.full .mp-r .stamp { display: block; }
+.mp-roster.full .mp-keys { display: block; margin-top: 4px; }
+body.cine .mp-roster, body.cine .mp-log { opacity: 0; transition: opacity .4s; }
+
+/* ------------------------------------------------------------- chat: receipt strips */
+.mp-log {
+  position: absolute; left: max(22px, env(safe-area-inset-left)); bottom: calc(max(18px, env(safe-area-inset-bottom)) + 196px); width: min(420px, 60vw);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font: 16px/20px var(--font-ui); pointer-events: none;
+}
+.mp-l {
+  padding: 1px 8px 2px; max-width: 100%; overflow-wrap: anywhere; image-rendering: pixelated;
+  color: var(--pp-ink, #241a1e); background: var(--pp-grain-receipt, #f6f3ea) 0 0 / 96px;
+  box-shadow: 0 2px 0 rgba(26, 18, 22, .45), 2px 0 0 rgba(26, 18, 22, .2);
+}
+.mp-l b { font-weight: normal; }
+.mp-l.sys { color: var(--pp-ink2, #5e5046); background: var(--pp-grain-cream, #eee4ca) 0 0 / 96px; }
+.mp-l.me { color: var(--pp-blue, #2f5a9a); }
+.mp-l.old { opacity: 0; transition: opacity .6s steps(3); }
+.mp-log.open .mp-l.old { opacity: 1; }
+/* the line you type into: a slip on a receipt pad */
+.mp-chat {
+  position: fixed; left: max(22px, env(safe-area-inset-left)); bottom: calc(max(18px, env(safe-area-inset-bottom)) + 150px); width: min(440px, 70vw); z-index: 20;
+  display: flex; align-items: center; gap: 8px; padding: 0 6px;
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
+  background: var(--pp-grain-receipt, #f6f3ea) 0 0 / 96px padding-box; filter: var(--pp-shadow, none);
+}
+.mp-chat .k { padding: 0 6px; color: #fff4e0; background: var(--red); font: 16px/22px var(--font-key); }
+.mp-chat input { flex: 1; min-width: 0; border: 0; padding: 4px 2px; font: 16px/20px var(--font-ui); color: var(--ink); background: transparent; outline: none; caret-color: var(--red); box-shadow: inset 0 -2px 0 rgba(36, 26, 30, .25); }
+.mp-chat input::placeholder { color: rgba(94, 80, 70, .55); }
+
+/* ------------------------------------------------------------- a police fine: a stamped ticket */
+.mp-ticket {
+  position: fixed; left: 50%; top: 16%; z-index: 35; width: 300px; margin-left: -150px; padding: 0 10px 8px; font: 16px/20px var(--font-ui);
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
+  background: linear-gradient(var(--pp-red, #c8322c) 0 4px, transparent 4px) padding-box, var(--pp-grain-receipt, #f6f3ea) 0 0 / 96px padding-box;
+  filter: var(--pp-shadow, drop-shadow(3px 4px 0 rgba(26, 18, 22, .45)));
+  transform: translateY(-30px) rotate(1.5deg); opacity: 0; transition: transform .35s steps(5), opacity .35s steps(5); pointer-events: none;
+}
+.mp-ticket.show { transform: rotate(1.5deg); opacity: 1; }
+.mp-ticket .tk-h { display: flex; justify-content: space-between; padding-top: 8px; color: var(--red); border-bottom: 2px dashed var(--ink); }
+.mp-ticket .tk-h b { font-weight: normal; letter-spacing: 2px; }
+.mp-ticket .tk-amt { margin: 6px 0 2px; font-family: var(--font-display); font-size: 48px; line-height: 44px; color: var(--ink); }
+.mp-ticket .tk-why { color: var(--ink2); padding-right: 56px; }
+.mp-ticket .tk-stamp { position: absolute; right: 6px; bottom: 6px; width: 48px; height: 48px; background: var(--pp-hanko) 0 0 / 48px; image-rendering: pixelated; transform: rotate(-12deg) scale(1.6); opacity: 0; transition: transform .25s steps(3) .45s, opacity .25s steps(3) .45s; }
+.mp-ticket.show .tk-stamp { transform: rotate(-12deg); opacity: .9; }
+
+/* ------------------------------------------------------------- the session is over */
+.mp-end { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; background: rgba(12, 8, 6, .72); }
+.mp-endt { font-size: 16px; line-height: 22px; text-align: center; padding: 6px 0; }
+
+body.touchmode .mp-roster { top: auto; bottom: 150px; width: 180px; }
+body.touchmode .mp-log { bottom: 230px; }

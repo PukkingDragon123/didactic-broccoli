@@ -1,4 +1,5 @@
-// Shop codes: your save, deflated and base64url-encoded, so a friend can open a read-only copy of your shop.
+// Shop codes: your save, deflated and base64url-encoded, so a friend can open a read-only copy of your shop (the
+// fallback when live multiplayer (src/net/) cannot get online). packJSON / unpackJSON carry the live world snapshot.
 const PREFIX = 'GG1.';
 
 async function pipe(bytes, stream) {
@@ -23,4 +24,20 @@ export async function decodeShop(code) {
   const s = JSON.parse(json);
   if (!s || !Array.isArray(s.machines)) throw new Error('broken shop code');
   return s;
+}
+
+/** Any JSON value, deflated and base64url-encoded (the multiplayer world snapshot a joining friend downloads). */
+export async function packJSON(obj) {
+  const json = new TextEncoder().encode(JSON.stringify(obj));
+  return toB64(await pipe(json, new CompressionStream('deflate-raw')));
+}
+export async function unpackJSON(str) {
+  return JSON.parse(new TextDecoder().decode(await pipe(fromB64(String(str)), new DecompressionStream('deflate-raw'))));
+}
+
+/** A room code (live multiplayer, five letters) or an old shop code (GG1...)? */
+export function codeKind(s) {
+  const c = String(s || '').trim();
+  if (c.replace(/\s+/g, '').startsWith(PREFIX)) return 'shop';
+  return /^[A-Za-z0-9]{5}$/.test(c.replace(/[\s-]/g, '')) ? 'room' : null;
 }

@@ -1,6 +1,7 @@
 // The quiet back street outside the shop: a flock of pigeons that peck about and scatter when you come
-// close, and Mikan the cat — a shy stray hiding in the garage until you feed her, then a friend who
-// wanders the shop and the lane and can be picked up and carried.
+// close (and now and then leave a dropping: src/places/pigeons.js), and Mikan the cat — a shy stray hiding in the
+// garage until you feed her, then a friend who wanders the shop and the lane, can be picked up and carried, and
+// sometimes stalks a pigeon (crouch, creep, a wiggle, the pounce: the whole flock bursts away).
 import * as THREE from 'three';
 import { propMesh, hasProp } from './props.js';
 import { audio } from '../core/audio.js';
@@ -64,8 +65,10 @@ export class Street {
           p.g.position.y = Math.abs(Math.sin(p.t * 9)) * 0.012;
         }
         p.g.rotation.y = p.heading;
+        // a little something left on the pavement now and then
+        if (Math.random() < dt * 0.0012) this.game.places?.pigeons?.drop(p.pos.x - Math.sin(p.heading) * 0.08, 0.1, p.pos.z - Math.cos(p.heading) * 0.08);
         // too close: everybody up!
-        if (Math.hypot(pl.x - p.pos.x, pl.z - p.pos.z) < 2.2 || p.scare) this.flyOff(p);
+        if (Math.hypot(pl.x - p.pos.x, pl.z - p.pos.z) < 2.2 || p.scare) this.flyOff(p, p.scareFrom);
       } else if (p.state === 'fly') {
         p.vel.y += dt * 1.5;
         p.pos.addScaledVector(p.vel, dt);
@@ -83,10 +86,11 @@ export class Street {
         const d = p.target.clone().sub(p.pos);
         const len = d.length();
         p.g.children[0].scale.y = 0.7 + Math.abs(Math.sin(p.t * 16)) * 0.5;
-        if (len < 0.05) { p.state = 'walk'; p.pos.y = 0; swapMesh(p.g, 'pigeon', [0.25, 0.2, 0.3]); p.heading = rnd(0, 6.28); }
+        if (!p.dropped && p.pos.y > 2 && Math.random() < dt * 0.12) { p.dropped = true; this.game.places?.pigeons?.drop(p.pos.x, p.pos.y - 0.1, p.pos.z); }
+        if (len < 0.05) { p.state = 'walk'; p.pos.y = 0; p.dropped = false; swapMesh(p.g, 'pigeon', [0.25, 0.2, 0.3]); p.heading = rnd(0, 6.28); }
         else { p.pos.addScaledVector(d.normalize(), Math.min(len, dt * 3)); p.g.rotation.y = Math.atan2(d.x, d.z); }
       }
-      p.scare = false;
+      p.scare = false; p.scareFrom = null;
       p.g.position.x = p.pos.x; p.g.position.z = p.pos.z;
       if (p.state !== 'walk') p.g.position.y = p.pos.y;
     }
@@ -99,16 +103,17 @@ export class Street {
     }
   }
 
-  flyOff(p) {
+  /** Up and away from `from` (default: you). */
+  flyOff(p, from = null) {
     if (p.state !== 'walk') return;
     p.state = 'fly';
     swapMesh(p.g, 'pigeon_fly', [0.5, 0.15, 0.3]);
-    const away = p.pos.clone().sub(this.game.player.pos).setY(0).normalize();
+    const away = p.pos.clone().sub(from || this.game.player.pos).setY(0).normalize();
     p.vel.set(away.x * 2.5 + rnd(-0.6, 0.6), 1.6, away.z * 2.5 + 1);
     p.g.rotation.y = Math.atan2(p.vel.x, p.vel.z);
     audio.play('flutter', { pos: p.pos.clone().setY(0.3), vol: 0.8 });
     // the rest of the flock goes too
-    for (const o of this.pigeons) if (o !== p && o.state === 'walk' && o.pos.distanceTo(p.pos) < 3) o.scare = true;
+    for (const o of this.pigeons) if (o !== p && o.state === 'walk' && o.pos.distanceTo(p.pos) < 3) { o.scare = true; o.scareFrom = from; }
   }
 
   // ------------------------------------------------------------------ the stray cat
@@ -255,8 +260,9 @@ export class Street {
   setCatState(st, dur, opts) {
     const c = this.cat;
     c.state = st; c.t = 0; c.dur = dur;
-    c.rig.setPose(st === 'approach' || st === 'walk' || st === 'flee' || st === 'bowl' || st === 'puddle' ? 'walk' : st === 'lap' ? 'drink' : st, opts);
+    c.rig.setPose(st === 'approach' || st === 'walk' || st === 'flee' || st === 'bowl' || st === 'puddle' || st === 'pounce' ? 'walk' : st === 'lap' ? 'drink' : st, opts);
     c.rig.mood = st === 'flee' || st === 'hide' ? 'scared' : st === 'approach' || st === 'groove' ? 'happy' : 'calm';
+    if (st !== 'stalk') { c.rig.wiggle = 0; c.wig = 0; }
   }
 
   // ---- story hooks: the shy stray inside the garage
@@ -312,7 +318,9 @@ export class Street {
       c.mew -= dt;
       if (c.mew < 0) { c.mew = 7 + Math.random() * 9; if (toPlayer < 9) audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.45, pitch: 1.15 }); }
     }
-    if (c.state === 'walk' || c.state === 'approach' || c.state === 'flee' || c.state === 'bowl' || c.state === 'puddle') {
+    if (c.state === 'stalk') speed = this.stalk(dt);
+    else if (c.state === 'pounce') speed = this.pounceStep(dt);
+    else if (c.state === 'walk' || c.state === 'approach' || c.state === 'flee' || c.state === 'bowl' || c.state === 'puddle') {
       if (c.state === 'approach') c.target = pl.clone().setY(0);
       const d = c.target.clone().sub(c.pos).setY(0);
       const len = d.length();
@@ -347,6 +355,7 @@ export class Street {
       // spilt milk or a full bowl first; curious about you now and then; otherwise off to a favourite spot
       const P = this.game.pour, q = P?.nearestPuddle(c.pos, 5);
       if (q) { c.puddle = q; const d = _a.set(q.x - c.pos.x, 0, q.z - c.pos.z); const L = d.length() || 1; c.target = new THREE.Vector3(q.x - d.x / L * 0.17, 0, q.z - d.z / L * 0.17); this.setCatState('puddle', 14); }
+      else if (this.tryHunt()) { /* stalking a pigeon */ }
       else if (P && P.bowlLevel > 0.12 && Math.random() < 0.3 && this.game.story?.bowl) this.catComeTo(this.game.story.bowl.getWorldPosition(_b).setY(0));
       else if (toPlayer < 6 && Math.random() < 0.45) this.setCatState('approach', 10);
       else { this.setCatState('walk', 12); c.target = this.pickCatTarget(); }
@@ -356,7 +365,7 @@ export class Street {
     if (c.state === 'drink' && !c.wild && c.t > c.dur) this.setCatState('sit', 6);
     // sitting cats watch you (head and eyes follow the camera)
     const watching = (c.state === 'sit' || c.state === 'hide' || c.state === 'groove' || c.state === 'knead' || (c.state === 'approach' && speed === 0)) && toPlayer < 4;
-    c.rig.lookAt = watching ? this.game.camera.position : null;
+    c.rig.lookAt = watching ? this.game.camera.position : c.state === 'stalk' && c.prey ? c.prey.g.position : null;
     if ((c.state === 'sit' || c.state === 'hide' || c.state === 'groove') && toPlayer < 4) {
       const want = Math.atan2(pl.x - c.pos.x, pl.z - c.pos.z) - c.g.rotation.y;
       c.rig.lookYaw += ((((want + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * 0.8 - c.rig.lookYaw) * Math.min(1, dt * 3);
@@ -365,8 +374,72 @@ export class Street {
     c.rig.update(dt, speed);
     // in the cardboard bed she lies on the towel, not inside it (a little hop in / out)
     c.y = (c.y || 0) + (this.catFloor(c.pos) - (c.y || 0)) * Math.min(1, dt * 8);
-    c.g.position.set(c.pos.x, c.y, c.pos.z);
+    c.g.position.set(c.pos.x, c.y + (c.jumpY || 0), c.pos.z);
     c.g.rotation.y += ((c.heading - c.g.rotation.y + Math.PI * 3) % (Math.PI * 2) - Math.PI) * Math.min(1, dt * 6);
+  }
+
+  // ---- the hunt: crouch, creep up on a pigeon, wiggle, pounce (the flock bursts away; she never catches one)
+  tryHunt() {
+    const c = this.cat, pl = this.game.player.pos;
+    if (c.wild || c.held || this.petting || Math.random() > 0.4) return false;
+    let best = null, bd = 7;
+    for (const p of this.pigeons) {
+      if (p.state !== 'walk') continue;
+      const d = Math.hypot(p.pos.x - c.pos.x, p.pos.z - c.pos.z);
+      if (d < bd && d > 1.2 && Math.hypot(p.pos.x - pl.x, p.pos.z - pl.z) > 2.6) { bd = d; best = p; }
+    }
+    if (!best) return false;
+    c.prey = best;
+    this.setCatState('stalk', 22);
+    return true;
+  }
+
+  stalk(dt) {
+    const c = this.cat, p = c.prey;
+    if (!p || p.state !== 'walk' || c.t > 20) { this.setCatState('sit', rnd(3, 5)); c.rig.say('wide', null, 1.2); return 0; }
+    const d = _a.set(p.pos.x - c.pos.x, 0, p.pos.z - c.pos.z), len = d.length();
+    c.heading = Math.atan2(d.x, d.z);
+    c.rig.lookAt = _b.copy(p.pos).setY(0.12);
+    if (len > 1.05) {
+      // creeping: a few steps, freeze, a few more
+      const go = Math.sin(c.t * 2.2) > -0.3 ? 1 : 0;
+      c.pos.addScaledVector(d.normalize(), Math.min(len, dt * 0.24 * go));
+      c.rig.wiggle = 0;
+      return 0.24 * go;
+    }
+    c.wig = (c.wig || 0) + dt;
+    c.rig.wiggle = Math.min(1, c.wig * 2);
+    if (c.wig > 1.25) this.pounce();
+    return 0;
+  }
+
+  pounce() {
+    const c = this.cat, p = c.prey;
+    const dir = _a.set(p.pos.x - c.pos.x, 0, p.pos.z - c.pos.z).normalize();
+    c.jump = { t: 0, from: c.pos.clone(), to: p.pos.clone().setY(0).addScaledVector(dir, 0.25) };
+    this.setCatState('pounce', 2);
+    c.rig.say('wide', 'open', 0.5);
+    this.flyOff(p, c.pos);
+    audio.play('meow', { pos: c.pos.clone().setY(0.3), vol: 0.5, pitch: 1.3 });
+    this.game.events.emit('catPounce', { at: c.pos.clone() });
+  }
+
+  pounceStep(dt) {
+    const c = this.cat, J = c.jump;
+    if (!J) { this.setCatState('sit', 3); return 0; }
+    J.t += dt;
+    const k = Math.min(1, J.t / 0.42);
+    c.pos.lerpVectors(J.from, J.to, k);
+    c.jumpY = Math.sin(k * Math.PI) * 0.24;
+    if (k >= 1) {
+      c.jumpY = 0; c.jump = null; c.prey = null;
+      // missed, of course: sits and watches them go, pretending it was the plan
+      this.setCatState('sit', rnd(4, 7));
+      c.rig.say('wide', null, 1.4);
+      c.rig.lookAt = null;
+      return 0;
+    }
+    return 2.4;
   }
 
   update(dt, t) {
