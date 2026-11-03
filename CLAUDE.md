@@ -9,6 +9,8 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   round glows, no smooth gradients, no additive blobs.
 - 2D art is pixel art: no text effects (glows, gradients, bevels), no "AI-looking" slick posters, no circles-and-
   sparkles filler. Fonts: Alagard (UI), the 5x7 bitmap font for tiny text, DotGothic16 for kana.
+- UI is paper, in detailed pixel art: notes, tickets, receipts, tags, notebook pages (src/ui/paper.js + paper.css: grain,
+  torn / zig-zag edges, masking tape, hanko stamps), ink-coloured text, hard pixel shadows. New UI uses this kit.
 - 3D art is chunky voxel / low-poly with pixel textures. First-person arms are blocky but connected and flexible.
 - Real photos used for 2D backgrounds come from Google Open Images (CC BY), credited in CREDITS.md.
 - People talk in 8-bit voices (src/people/voice.js).

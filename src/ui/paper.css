@@ -1,0 +1,183 @@
+/* The HUD as paper (textures from src/ui/paper.js): Grandpa's list is a taped-up sticky note, the clock a tear-off
+   ticket, the wallet and toasts are receipts, inventory slots are kraft price tags, the LEVEL UP card a stamped
+   certificate, the day summary a long till receipt. Pixel-art only: 2x texels, hard ink shadows, no glows. */
+body.paper-ui {
+  --pp-ink: #241a1e;
+  --pp-ink2: #5e5046;
+  --pp-red: #c8322c;
+  --pp-blue: #2f5a9a;
+  --pp-shadow: drop-shadow(3px 4px 0 rgba(26, 18, 22, .45));
+}
+
+/* ---------------------------------------------------------------- shared: torn paper with a hard shadow */
+body.paper-ui #guide .g-card,
+body.paper-ui #simclock,
+body.paper-ui #hint,
+body.paper-ui #levelup .lu-card,
+body.paper-ui #hotbar .label {
+  color: var(--pp-ink); image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background: var(--pp-grain-cream) 0 0 / 96px padding-box;
+  box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #guide .g-card *, body.paper-ui #simclock *, body.paper-ui #hint *, body.paper-ui #levelup *, body.paper-ui #daysum *,
+body.paper-ui #news .item *, body.paper-ui #money * { text-shadow: none; }
+
+/* ---------------------------------------------------------------- Grandpa's list: a sticky note with tape */
+body.paper-ui #guide .g-card {
+  padding: 2px 6px 4px 14px;
+  border-image-source: var(--pp-edge-note);
+  background:
+    linear-gradient(to right, transparent 0 4px, rgba(200, 50, 44, .5) 4px 6px, transparent 6px) padding-box,
+    repeating-linear-gradient(to bottom, transparent 0 20px, rgba(47, 90, 154, .16) 20px 22px) padding-box,
+    var(--pp-grain-note) 0 0 / 96px padding-box;
+}
+body.paper-ui #guide .g-card::before {
+  content: ''; position: absolute; left: calc(50% - 40px); top: -22px; width: 80px; height: 24px;
+  background: var(--pp-tape) 0 0 / 80px 24px; image-rendering: pixelated; filter: none;
+}
+body.paper-ui #guide .g-card.pulse { animation: pp-pulse 0.9s steps(4) 2; }
+@keyframes pp-pulse { 50% { transform: translateY(-4px) scale(1.03); } }
+body.paper-ui #guide .g-head { color: var(--pp-red); }
+body.paper-ui #guide .g-n { color: var(--pp-ink2); }
+body.paper-ui #guide .g-t { color: var(--pp-ink); }
+body.paper-ui #guide .g-s { color: var(--pp-ink2); }
+body.paper-ui #guide .g-card.done .g-t { color: var(--pp-red); text-decoration-color: var(--pp-red); }
+body.paper-ui #guide .g-ico { background: rgba(36, 26, 30, .06); box-shadow: 0 0 0 2px rgba(36, 26, 30, .25); }
+body.paper-ui #guide .g-bar { background: rgba(36, 26, 30, .1); box-shadow: 0 0 0 2px var(--pp-ink); }
+body.paper-ui #guide .g-bar i { background: var(--pp-red); }
+
+/* ---------------------------------------------------------------- the clock: a tear-off ticket with a red band */
+body.paper-ui #simclock {
+  padding: 2px 4px 0 0; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 92px);
+  border-image-source: var(--pp-edge-receipt);
+  background: linear-gradient(var(--pp-red) 0 4px, transparent 4px) padding-box, var(--pp-grain-receipt) 0 0 / 96px padding-box;
+}
+body.paper-ui #simclock .sc-row { padding-top: 4px; }
+body.paper-ui #simclock .sc-time { color: var(--pp-ink); }
+body.paper-ui #simclock .sc-date, body.paper-ui #simclock .sc-day { color: var(--pp-ink2); }
+body.paper-ui #simclock.special .sc-day, body.paper-ui #simclock.off .sc-time { color: var(--pp-red); }
+body.paper-ui #simclock .sc-lv b { color: var(--pp-blue); }
+body.paper-ui #simclock .sc-bar { background: rgba(36, 26, 30, .1); box-shadow: 0 0 0 2px var(--pp-ink); }
+body.paper-ui #simclock .sc-pop { text-shadow: 2px 0 0 #1a1216, -2px 0 0 #1a1216, 0 2px 0 #1a1216, 0 -2px 0 #1a1216; }
+
+/* ---------------------------------------------------------------- the wallet: a till receipt */
+body.paper-ui #money {
+  color: var(--pp-ink); padding: 0 8px 0 2px; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
+  background: var(--pp-grain-receipt) 0 0 / 96px padding-box; box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #money .yen { color: var(--pp-red); }
+
+/* ---------------------------------------------------------------- toasts: receipt slips */
+body.paper-ui #news .item {
+  color: var(--pp-ink); padding: 0 8px 2px 6px; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
+  background: var(--pp-grain-receipt) 0 0 / 96px padding-box; box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #news .item .en, body.paper-ui #news .item .sub { color: var(--pp-ink2); }
+
+/* ---------------------------------------------------------------- the crosshair hint: a small label */
+body.paper-ui #hint { padding: 0 6px 2px; border-image-source: var(--pp-edge-receipt); background: var(--pp-grain-receipt) 0 0 / 96px padding-box; }
+body.paper-ui #hint .sub { color: var(--pp-ink2); }
+
+/* ---------------------------------------------------------------- inventory: kraft price tags */
+body.paper-ui #hotbar .slot {
+  background: var(--pp-grain-kraft) 0 0 / 96px; image-rendering: pixelated;
+  border: 2px solid #3a2a20; border-radius: 0;
+  box-shadow: inset 0 -3px 0 rgba(58, 42, 32, .35), 3px 4px 0 rgba(26, 18, 22, .4);
+}
+body.paper-ui #hotbar .slot::after {
+  content: ''; position: absolute; left: 4px; top: 4px; width: 4px; height: 4px; background: #3a2a20;
+  box-shadow: 0 0 0 2px #e8d0a0; /* the punched hole with its reinforcement ring, square */
+}
+body.paper-ui #hotbar .slot.sel {
+  background: var(--pp-grain-receipt) 0 0 / 96px; border-color: var(--pp-red);
+  box-shadow: inset 0 0 0 2px var(--pp-red), 3px 6px 0 rgba(26, 18, 22, .4);
+}
+body.paper-ui #hotbar .slot .key { color: #3a2a20; text-shadow: none; }
+body.paper-ui #hotbar .slot.sel .key { color: var(--pp-red); }
+body.paper-ui #hotbar .slot .count { color: var(--pp-ink); text-shadow: 1px 0 0 #fff8ec, -1px 0 0 #fff8ec, 0 1px 0 #fff8ec, 0 -1px 0 #fff8ec; }
+body.paper-ui #hotbar .label { padding: 0 6px; border-image-source: var(--pp-edge-receipt); background: var(--pp-grain-receipt) 0 0 / 96px padding-box; text-shadow: none; }
+
+/* ---------------------------------------------------------------- LEVEL UP: a certificate with a hanko */
+body.paper-ui #levelup .lu-card { padding: 4px 22px 8px 10px; position: relative; }
+body.paper-ui #levelup .lu-card::after {
+  content: ''; position: absolute; right: 2px; bottom: 2px; width: 32px; height: 32px;
+  background: var(--pp-hanko) 0 0 / 32px; image-rendering: pixelated;
+}
+body.paper-ui #levelup .lu-h b { color: var(--pp-red); }
+body.paper-ui #levelup .lu-h span, body.paper-ui #levelup p { color: var(--pp-ink2); }
+body.paper-ui #levelup li small { color: var(--pp-ink2); }
+
+/* ---------------------------------------------------------------- the day summary: a long till receipt */
+body.paper-ui #daysum .ds-card {
+  color: var(--pp-ink); padding: 6px 12px 8px; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
+  background: var(--pp-grain-receipt) 0 0 / 96px padding-box; box-shadow: none; filter: var(--pp-shadow);
+}
+body.paper-ui #daysum .ds-h { border-bottom: 2px dashed var(--pp-ink); }
+body.paper-ui #daysum .ds-h b { color: var(--pp-ink); }
+body.paper-ui #daysum .ds-h span { color: var(--pp-ink2); }
+
+/* ---------------------------------------------------------------- small paper details */
+/* the tags hang loose: no dark rail behind them */
+body.paper-ui #hotbar .slots { background: none; box-shadow: none; border: 0; }
+/* Grandpa's note curls up at the bottom right corner (a stepped pixel fold) */
+body.paper-ui #guide .g-card::after {
+  content: ''; position: absolute; right: -12px; bottom: -12px; width: 16px; height: 16px; image-rendering: pixelated;
+  background:
+    linear-gradient(135deg, transparent 0 50%, #c9b25e 50% 62%, #e2c86c 62%) 0 0 / 16px 16px;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 75%, 25% 75%, 25% 50%, 50% 50%, 50% 25%, 75% 25%, 75% 0);
+}
+/* receipts: a perforation line along the top */
+body.paper-ui #news .item::before, body.paper-ui #daysum .ds-card::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 2px; height: 2px;
+  background: repeating-linear-gradient(to right, rgba(36, 26, 30, .3) 0 4px, transparent 4px 8px);
+}
+body.paper-ui #news .item { position: relative; }
+
+/* ---------------------------------------------------------------- floating speech: little paper strips */
+body.paper-ui .ft-in {
+  color: var(--pp-ink); image-rendering: pixelated;
+  background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45), 2px 0 0 rgba(26, 18, 22, .2);
+}
+body.paper-ui .ft-big .ft-in { background: var(--pp-grain-receipt) 0 0 / 96px; }
+body.paper-ui .ft-think .ft-in { color: #5a5070; background: var(--pp-grain-cream) 0 0 / 96px; }
+body.paper-ui .ft-shout .ft-in { color: var(--pp-red); background: var(--pp-grain-note) 0 0 / 96px; }
+body.paper-ui .ft-me .ft-in { color: var(--pp-blue); }
+body.paper-ui .ft-name { color: var(--pp-red); }
+
+/* ---------------------------------------------------------------- chat choices: paper slips */
+body.paper-ui .tk-opt { color: var(--pp-ink); background: var(--pp-grain-cream) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45); image-rendering: pixelated; }
+body.paper-ui .tk-opt .n { color: var(--pp-ink2); }
+body.paper-ui .tk-opt.sel { background: var(--pp-grain-note) 0 0 / 96px; color: var(--pp-ink); box-shadow: inset 4px 0 0 var(--pp-red), 0 2px 0 rgba(26, 18, 22, .45); }
+body.paper-ui .tk-opt.sel .n { color: var(--pp-red); }
+body.paper-ui .tk-opt.picked { background: var(--pp-grain-note) 0 0 / 96px; color: var(--pp-red); }
+body.paper-ui .tk-choices.quick .tk-opt { background: var(--pp-grain-cream) 0 0 / 96px; }
+body.paper-ui .tk-choices .tk-prompt { color: var(--pp-red); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45); }
+body.paper-ui .tk-timer { background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45); }
+body.paper-ui .tk-timer i { background: rgba(36, 26, 30, .15); }
+body.paper-ui .tk-timer i.on { background: var(--pp-ink); }
+body.paper-ui .tk-timer.low i.on { background: var(--pp-red); }
+body.paper-ui #tk-self span { color: var(--pp-blue); background: var(--pp-grain-receipt) 0 0 / 96px; }
+
+/* ---------------------------------------------------------------- panels (settings, share...): notebook pages */
+body.paper-ui .panel {
+  padding: 0 14px 12px 24px; color: var(--pp-ink);
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 22px, rgba(47, 90, 154, .12) 22px 24px) padding-box,
+    var(--pp-grain-cream) 0 0 / 96px padding-box;
+  box-shadow: none; filter: var(--pp-shadow);
+}
+/* the spiral binding down the left edge */
+body.paper-ui .panel::before {
+  content: ''; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 12px; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 4px, #4a4a52 4px 6px, #9a9aa2 6px 10px, #4a4a52 10px 12px, transparent 12px 18px);
+}
+body.paper-ui .panel-title {
+  margin: 0 -14px 8px -24px; padding: 8px 52px 10px 30px; color: var(--pp-ink); text-shadow: none;
+  background: none; box-shadow: inset 0 -3px 0 var(--pp-red), inset 0 -6px 0 transparent;
+}
+body.paper-ui .panel .rows { background: rgba(255, 252, 244, .5); box-shadow: 0 0 0 2px rgba(36, 26, 30, .25); }
