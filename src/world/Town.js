@@ -56,6 +56,7 @@ import { buildNeighbours } from './Neighbours.js';
 import { buildPark } from './Park.js';
 import { buildPylon } from './Pylon.js';
 import { buildLanePosters } from './LanePosters.js';
+import { InstanceCuller } from './propCull.js';
 
 // ------------------------------------------------------------------ layout
 const ZB = 5.3, ZG0 = 5.75, ZG1 = 6.1, ZR1 = 13.35, ZG3 = 13.7, ZF = 14.9;
@@ -366,7 +367,9 @@ export class Town {
       im.castShadow = false; im.receiveShadow = true;
       im.computeBoundingSphere();
       im.name = 'props:' + id;
+      im.matrixAutoUpdate = false;
       (zone ? this.zoneGroup(zone) : this.group).add(im);
+      (this.cull ||= new InstanceCuller()).add(im); // only the instances in view are drawn (src/world/propCull.js)
     }
     this.inst.clear();
   }
@@ -1868,6 +1871,7 @@ export class Town {
     void t;
     if (this.interiorM) this.interiorM.uniforms.uTime.value += dt;
     this.updateZones();
+    this.cull?.update(this.game.camera, this.game.renderer?.quality?.view ?? 1);
     if (!this.trains) return;
     for (const tr of this.trains) {
       if (!tr.g.visible) { tr.wait -= dt; if (tr.wait <= 0) this.runTrain(tr.s); continue; }

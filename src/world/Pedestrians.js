@@ -102,7 +102,10 @@ export class Pedestrians {
     return Math.min(5, lv);
   }
 
-  maxPeople() { return this.open ? 2 + this.level() * 2 : 1; }
+  // the quality preset's crowd factor thins the passers-by on slower machines (each one is a skinned, animated person);
+  // more of the ones who do come by turn in (spawn), so the shop gets about the same number of customers
+  get crowd() { return this.game.renderer?.quality?.crowd ?? 1; }
+  maxPeople() { return this.open ? Math.max(2, Math.round((2 + this.level() * 2) * this.crowd)) : 1; }
   interval() { return this.open ? 26 / (1 + this.level() * 0.6) : 45; }
 
   // ------------------------------------------------------------------ the shopkeeper of Mikawa-ya
@@ -148,7 +151,7 @@ export class Pedestrians {
       kind: h.spec.id, name: `the ${(h.spec.name || 'customer').toLowerCase()}`, patience: rnd(0.3, 1), mood: 0, voice: talk(h), tts: h.tts, asked: false, lodT: 0, acc: 0,
     };
     // will they come in? collectors may come for the figures on the stands instead of (or as well as) the machines
-    if (this.open && Math.random() < 0.18 + this.level() * 0.1) p.wantsIn = true;
+    if (this.open && Math.random() < Math.min(0.95, (0.18 + this.level() * 0.1) / this.crowd)) p.wantsIn = true;
     if (this.open && ['otaku', 'tourist', 'salaryman', 'gyaru', 'office_lady'].includes(p.kind) && Math.random() < 0.45) p.collector = true;
     // a simple box to click / slap (the skinned body doesn't need to be ray-tested)
     const box = new THREE.Mesh(new THREE.BoxGeometry(0.55, h.height * 0.95, 0.5), hitMat);

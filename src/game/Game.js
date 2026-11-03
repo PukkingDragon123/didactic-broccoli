@@ -606,7 +606,18 @@ export class Game {
     this.input.endFrame();
   }
 
-  render(dt) { this.renderer.render(dt, this.time); }
+  render(dt) {
+    // performance: while you sit at the PC the desktop (a DOM layer, src/pc/PC.js) covers nearly the whole view, so the
+    // 3D room around the monitor is redrawn 15 times a second instead of every frame (the canvas keeps showing the last
+    // frame in between); moving in and out of the seat is drawn at the full rate
+    if (this.pc?.active && this.pc.mode === 'seated') {
+      this._pcDt = (this._pcDt || 0) + dt;
+      if (this.frame % 4) return;
+      dt = this._pcDt;
+    }
+    this._pcDt = 0;
+    this.renderer.render(dt, this.time);
+  }
 }
 
 Game.plugins = [];

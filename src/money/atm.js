@@ -86,6 +86,12 @@ export class Atm {
     this.screen.userData.noRim = true;
     this.root.add(this.screen);
 
+    // ---- the small controls (soft keys, keypad) hang off one group that is hidden from 9 m away (performance: about 30
+    // draw calls you could never make out from across the lane; you can only press them from 1.9 m anyway)
+    this.detail = new THREE.Group();
+    this.detail.name = 'atm:controls';
+    this.root.add(this.detail);
+
     // ---- soft keys beside the screen
     this.soft = [];
     const softMat = new THREE.MeshStandardMaterial({ color: 0xb8bec4, roughness: 0.4, metalness: 0.3 });
@@ -93,7 +99,7 @@ export class Atm {
     for (const side of [-1, 1]) KEY_Y.forEach((y, i) => {
       const k = new THREE.Mesh(softGeo, softMat);
       k.position.set(side * 0.25, y, 0.226);
-      this.root.add(k);
+      this.detail.add(k);
       const id = (side < 0 ? 'L' : 'R') + (i + 1);
       k.userData.home = k.position.z;
       this.soft.push(k);
@@ -102,7 +108,9 @@ export class Atm {
 
     // ---- the keypad on the console (12 digits / blanks + cancel, clear, enter)
     this.keys = [];
+    // (one box with two material groups, sides then the printed top: 2 draw calls a key instead of one per face)
     const kgeo = new THREE.BoxGeometry(0.045, 0.012, 0.032);
+    { const ix = kgeo.index.array, faces = [0, 1, 3, 4, 5, 2], out = []; for (const f of faces) for (let i = 0; i < 6; i++) out.push(ix[f * 6 + i]); kgeo.setIndex(out); kgeo.clearGroups(); kgeo.addGroup(0, 30, 0); kgeo.addGroup(30, 6, 1); }
     const layout = [['1', '2', '3', 'CANCEL'], ['4', '5', '6', 'CLEAR'], ['7', '8', '9', 'ENTER'], ['', '0', '', '']];
     const fcol = { CANCEL: ['#e5383b', '#fff4f0'], CLEAR: ['#ffd23f', '#2a2c30'], ENTER: ['#3fae5a', '#f4fff4'] };
     layout.forEach((row, r) => row.forEach((lab, col) => {
@@ -110,12 +118,12 @@ export class Atm {
       const f = fcol[lab];
       const cap = new THREE.MeshStandardMaterial({ map: keyTexture(f ? lab : lab, f ? f[0] : '#dfe3e6', f ? f[1] : '#2a2c30'), roughness: 0.45 });
       const side = new THREE.MeshStandardMaterial({ color: f ? new THREE.Color(f[0]).multiplyScalar(0.7) : 0x9aa0a6, roughness: 0.5 });
-      const k = new THREE.Mesh(kgeo, [side, side, cap, side, side, side]);
+      const k = new THREE.Mesh(kgeo, [side, cap]);
       k.position.set(-0.27 + col * 0.056 + (f ? 0.008 : 0), 0.766, 0.245 + r * 0.037);
       if (f) k.scale.x = 1.25;
       k.userData.home = k.position.y;
       k.userData.key = lab;
-      this.root.add(k);
+      this.detail.add(k);
       this.keys.push(k);
       g.interaction.add(k, { reach: 1.9, hint: () => this.keyHint(lab), use: () => { this.press(k); this.onKey(lab); return false; } });
     }));
@@ -582,6 +590,8 @@ export class Atm {
     this.t += dt;
     const P = g.player.pos;
     const dist = Math.hypot(P.x - this.root.position.x, P.z - this.root.position.z);
+    const near = dist < 9 || !!this.session;
+    if (this.detail.visible !== near) this.detail.visible = near;
     if (dist > 14) return; // out of sight: nothing to animate
     // the tray shutter
     if (Math.abs(this.shutterK - this.shutterWant) > 0.001) {

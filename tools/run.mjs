@@ -1,9 +1,11 @@
 // Scripted browser test runner.
 // Usage: node tools/run.mjs "index.html?autotest&q=low" steps.json   (or steps inline as JSON string)
 // steps: [{"eval":"js"}, {"wait":1000}, {"shot":"shots/a.png"}, {"log":"js expression to print"}]
+//        {"snap":"shots/a.png"}: render one frame and save the 3D canvas itself (no HTML HUD); unlike "shot" it never waits
+//        for the compositor, so it works even when SwiftShader is far behind (tools/perf.mjs, busy machines)
 import { createServer } from 'vite';
 import { createRequire } from 'node:module';
-import { mkdirSync, readFileSync, existsSync } from 'node:fs';
+import { mkdirSync, readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const [page = 'index.html?autotest&q=low', stepsArg = '[]', width = '1280', height = '720'] = process.argv.slice(2);
@@ -29,6 +31,12 @@ try {
     if (s.eval) await pg.evaluate(s.eval);
     if (s.log) console.log('>', s.log, '=>', JSON.stringify(await pg.evaluate(s.log)));
     if (s.wait) await pg.waitForTimeout(s.wait);
+    if (s.snap) {
+      const url = await pg.evaluate(() => { const g = window.__game; g.renderer.render(0, g.time); return g.renderer.renderer.domElement.toDataURL('image/png'); });
+      mkdirSync(dirname(resolve(root, s.snap)), { recursive: true });
+      writeFileSync(resolve(root, s.snap), Buffer.from(url.split(',')[1], 'base64'));
+      console.log('saved', s.snap);
+    }
     if (s.shot) { mkdirSync(dirname(resolve(root, s.shot)), { recursive: true }); await pg.screenshot({ path: resolve(root, s.shot), timeout: 120000 }); console.log('saved', s.shot); }
   }
 } catch (e) { console.error('ERROR', e.message); }

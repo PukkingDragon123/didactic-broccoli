@@ -11,6 +11,8 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
+import { LightPool } from '../gfx/lightPool.js';
+import '../gfx/sunMask.js'; // no direct sun inside Mikawa-ya (patches the light chunk at import)
 
 const GradeShader = {
   uniforms: {
@@ -196,6 +198,7 @@ class ViewmodelPass extends Pass {
     this.cam.matrixWorldAutoUpdate = false;
   }
   render(renderer, writeBuffer, readBuffer) {
+    this.target = readBuffer; // where the scene was drawn this frame (its depth feeds GTAO)
     const c = this.camera, v = this.cam, s = this.scene;
     v.matrixWorld.copy(c.matrixWorld); v.matrixWorldInverse.copy(c.matrixWorldInverse);
     v.projectionMatrix.copy(c.projectionMatrix);
@@ -209,19 +212,35 @@ class ViewmodelPass extends Pass {
   }
 }
 // (a subtree flagged userData.mainPass stays in the normal pass, depth-tested against the world)
+// (point lights handed to the light pool stay on its hidden layer: the pool's proxies light both passes)
 const toVM = (o) => {
   if (o.userData.mainPass) return;
-  if (o.isLight) o.layers.enable(VM_LAYER); else o.layers.set(VM_LAYER);
+  if (o.isLight) { if (!o.userData.pooled) o.layers.enable(VM_LAYER); } else o.layers.set(VM_LAYER);
   for (const c of o.children) toVM(c);
 };
 const toMain = (o) => { if (!o.isLight) o.layers.set(0); };
-const lightToVM = (o) => { if (o.isLight) o.layers.enable(VM_LAYER); };
+const lightToVM = (o) => { if (o.isLight && !o.userData.pooled) o.layers.enable(VM_LAYER); };
 
+// Shadow casters' last-seen state, for the shadow update policy (Renderer.updateShadows)
+const _sph = new THREE.Sphere(), _lp = new THREE.Vector3(), _lt = new THREE.Vector3(), _cp = new THREE.Vector3(), _vpm = new THREE.Matrix4();
+const FAR_MOVER = 15; // m: casters moving farther than this from the camera refresh the shadow map at a third of the rate
+// (kept in WeakMaps, not userData: Object3D.clone() copies userData through JSON)
+const CASTER = new WeakMap(), SHADOW = new WeakMap();
+function casterState(o) {
+  let st = CASTER.get(o);
+  if (!st) { st = { m: new Float64Array(16), v: -1, pv: -1, sphere: new THREE.Sphere(), prev: new THREE.Sphere(), skinned: !!o.isSkinnedMesh, skinT: 0 }; st.m[0] = NaN; CASTER.set(o, st); }
+  return st;
+}
+
+// lights: point lights evaluated per pixel (src/gfx/lightPool.js picks the most relevant ones in view).
+// shadowEvery: the fastest a shadow map is redrawn while something in it moves (frames); a still scene redraws none.
+// shadowMinR: casters smaller than this (bounding radius, m) don't trigger a redraw by moving.
+// view: draw distance of small props (src/world/propCull.js). crowd: how many passers-by the lane holds (Pedestrians).
 export const QUALITY = {
-  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, rays: 0, sharp: 0 },
-  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1 },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1 },
-  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1 },
+  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6 },
+  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8 },
+  high: { pixelRatio: 1.0, shadows: 2048, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1 },
+  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1 },
 };
 
 export class Renderer {
@@ -244,6 +263,9 @@ export class Renderer {
     this.vmRoots = new Set(); // subtrees drawn by the viewmodel pass (layers are switched just for the frame)
     this.aoCam = new THREE.PerspectiveCamera(); // GTAO sees the scene + the viewmodel
     this.fx = { tired: 0, lid: 0, double: 0, wobble: 0 }; // body-state look, written by src/needs (survives quality changes)
+    this.lightPool = new LightPool(VM_LAYER);
+    this.casters = []; this.prevCasters = new Set(); this.moved = []; // shadow casters seen by this frame's walk
+    this.shadowStats = { casters: 0, moved: 0, updates: 0, movers: [] };
   }
 
   setup(scene, camera) {
@@ -265,7 +287,8 @@ export class Renderer {
     rt.depthTexture.type = THREE.UnsignedIntType;
     const composer = new EffectComposer(r, rt);
     composer.addPass(new RenderPass(this.scene, this.camera));
-    composer.addPass(new ViewmodelPass(this.scene, this.camera));
+    this.vmPass = new ViewmodelPass(this.scene, this.camera);
+    composer.addPass(this.vmPass);
     this.outline = new OutlinePass(this.camera);
     this.outline.uniforms.uWidth.value = Math.max(1, r.getPixelRatio());
     this.outline.rays = q.rays ?? 1;
@@ -273,6 +296,16 @@ export class Renderer {
     this.gtao = null;
     if (q.ao) {
       const gtao = new GTAOPass(this.scene, this.aoCam, size.x, size.y);
+      // performance: AO from the depth buffer the scene pass already drew (normals rebuilt from depth) instead of
+      // drawing the whole scene a second time with a normal material (that doubled the draw calls on high / ultra).
+      // The composer alternates its two targets, so the depth texture is picked up each frame from the viewmodel pass.
+      gtao.setGBuffer(composer.renderTarget2.depthTexture);
+      const gtaoRender = gtao.render.bind(gtao);
+      gtao.render = (rr, wb, rb, dt, mask) => {
+        const d = this.vmPass.target?.depthTexture;
+        if (d && gtao.depthTexture !== d) { gtao.depthTexture = d; gtao.gtaoMaterial.uniforms.tDepth.value = d; gtao.pdMaterial.uniforms.tDepth.value = d; }
+        gtaoRender(rr, wb, rb, dt, mask);
+      };
       gtao.output = GTAOPass.OUTPUT.Default;
       gtao.blendIntensity = 0.85;
       gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
@@ -295,6 +328,7 @@ export class Renderer {
       composer.addPass(this.finish);
     }
     r.shadowMap.type = q.shadowType || THREE.PCFShadowMap;
+    if (this.lightPool.size !== (q.lights || 6)) this.lightPool.setSize(q.lights || 6);
     this.composer = composer;
     for (const l of this.shadowLights || []) this.applyShadowSize(l);
   }
@@ -330,15 +364,114 @@ export class Renderer {
     if (this.finish) { const pr = this.renderer.getPixelRatio(); this.finish.uniforms.uRes.value.set(w * pr, h * pr); }
   }
 
-  render(dt, time) {
-    // shadow maps are refreshed at a quality-dependent rate (most casters are static)
-    this.frameN = (this.frameN || 0) + 1;
-    const r = this.renderer;
+  /** One walk over the scene per frame: point lights for the light pool, shadow casters for the shadow policy. */
+  scan() {
+    const pool = this.lightPool, casters = this.casters;
+    casters.length = 0;
+    const walk = (o, vis) => {
+      vis = vis && o.visible;
+      if (o.isPointLight) { if (!o.userData.poolProxy) pool.offer(o, vis); }
+      else if (vis && o.castShadow && (o.isMesh || o.isPoints || o.isLine)) casters.push(o);
+      const ch = o.children;
+      for (let i = 0; i < ch.length; i++) walk(ch[i], vis);
+    };
+    walk(this.scene, true);
+  }
+
+  /** Shadow update policy (performance). Most casters never move, so a shadow map is only redrawn when its light moved
+   *  or turned (the sun steps 4 times a second while the clock runs), when a caster inside its frustum moved, appeared,
+   *  disappeared or changed shape (people standing still: every 6th frame), or when it has no map yet; and then at most
+   *  every `shadowEvery` frames (every 3 x shadowEvery when everything that moved is over FAR_MOVER metres away).
+   *  A still scene redraws no shadows at all; with the light's whole area out of view, none either. */
+  updateShadows() {
+    const r = this.renderer, every = this.quality.shadowEvery || 1, moved = this.moved, minR = this.quality.shadowMinR || 0;
+    if (this.debugShadows) this.shadowStats.movers = [];
     r.shadowMap.autoUpdate = false;
-    let need = this.frameN % (this.quality.shadowEvery || 1) === 0;
-    // a light that just started casting (or was resized) has no map yet: render it now
-    for (const l of this.shadowLights || []) if (l.castShadow && !l.shadow.map) need = true;
-    if (need) r.shadowMap.needsUpdate = true;
+    // casters that changed since the last frame (world matrix, instances, vertices, skinning) or came / went
+    moved.length = 0;
+    const now = new Set(this.casters);
+    for (const o of this.casters) {
+      const st = casterState(o), e = o.matrixWorld.elements, m = st.m;
+      const iv = o.instanceMatrix ? o.instanceMatrix.version + (o.count || 0) * 1e6 : 0, pv = o.geometry?.attributes?.position?.version ?? 0;
+      let ch = iv !== st.v || pv !== st.pv || !this.prevCasters.has(o);
+      if (!ch) for (let i = 0; i < 16; i++) if (e[i] !== m[i]) { ch = true; break; }
+      // a person standing still still breathes and fidgets: their shadow is refreshed every 6th frame
+      if (!ch && st.skinned && ++st.skinT >= 6) ch = true;
+      if (!ch) continue;
+      st.skinT = 0;
+      m.set(e); st.v = iv; st.pv = pv;
+      if (o.isInstancedMesh && !o.boundingSphere) o.computeBoundingSphere();
+      const bs = o.boundingSphere || o.geometry?.boundingSphere || (o.geometry?.computeBoundingSphere?.(), o.geometry?.boundingSphere);
+      st.prev.copy(st.sphere); // where its shadow was (it may have left the light's frustum)
+      if (bs) st.sphere.copy(bs).applyMatrix4(o.matrixWorld); else st.sphere.set(_lp.setFromMatrixPosition(o.matrixWorld), 1);
+      // small things (a pigeon, a capsule) don't force a redraw on the cheaper presets: their shadows catch up with the
+      // next redraw (the sun's next step at the latest)
+      if (st.sphere.radius < minR) continue;
+      moved.push(st.sphere, st.prev);
+      if (this.debugShadows && this.shadowStats.movers.length < 12) this.shadowStats.movers.push(`${o.parent?.name || ''}/${o.name || o.type} r=${st.sphere.radius.toFixed(2)}`);
+    }
+    for (const o of this.prevCasters) if (!now.has(o) && casterState(o).sphere.radius >= minR) moved.push(casterState(o).sphere); // hidden / removed
+    this.prevCasters = now;
+    let any = false;
+    _cp.setFromMatrixPosition(this.camera.matrixWorld);
+    for (const l of this.shadowLights || []) {
+      const sh = l.shadow;
+      sh.autoUpdate = false;
+      // pending: 0 nothing to redraw, 1 only things moving far from you (redrawn at a third of the rate: their shadows
+      // are small on screen), 2 redraw at the preset's rate (the light moved, something near you moved, it came back)
+      let st = SHADOW.get(l);
+      if (!st) SHADOW.set(l, st = { pos: new THREE.Vector3(NaN), tgt: new THREE.Vector3(), pending: 2, age: 1e9 });
+      st.age++;
+      if (!l.castShadow) continue;
+      if (!sh.map) { sh.needsUpdate = true; any = true; st.pending = 0; st.age = 0; continue; }
+      let vis = l.intensity > 0.01;
+      for (let a = l; vis && a; a = a.parent) vis = a.visible;
+      if (!vis || !this.shadowInView(l)) { st.pending = 2; continue; } // off, or its whole area is out of view: redraw later
+      _lp.setFromMatrixPosition(l.matrixWorld);
+      if (l.target) _lt.setFromMatrixPosition(l.target.matrixWorld);
+      if (!_lp.equals(st.pos) || (l.target && !_lt.equals(st.tgt))) { st.pending = 2; st.pos.copy(_lp); st.tgt.copy(_lt); }
+      if (st.pending < 2 && moved.length) {
+        const f = sh.getFrustum();
+        for (const sp of moved) {
+          if (sp.radius < 0 || !f.intersectsSphere(sp)) continue;
+          st.pending = Math.max(st.pending, sp.center.distanceTo(_cp) - sp.radius < FAR_MOVER ? 2 : 1);
+          if (st.pending === 2) break;
+        }
+      }
+      if (st.pending && st.age >= (st.pending === 2 ? every : every * 3)) { sh.needsUpdate = true; any = true; st.pending = 0; st.age = 0; this.shadowStats.updates++; }
+    }
+    if (any) r.shadowMap.needsUpdate = true;
+    this.shadowStats.casters = this.casters.length; this.shadowStats.moved = moved.length >> 1;
+  }
+
+  /** Can the camera see any part of the area this light's shadow map covers? (a sphere around its shadow frustum) */
+  shadowInView(l) {
+    const c = l.shadow.camera, f = this._viewF;
+    _lp.setFromMatrixPosition(l.matrixWorld);
+    _lt.setFromMatrixPosition(l.target ? l.target.matrixWorld : l.matrixWorld).sub(_lp);
+    if (_lt.lengthSq() < 1e-8) return true;
+    _lt.normalize();
+    if (c.isOrthographicCamera) {
+      _sph.center.copy(_lp).addScaledVector(_lt, (c.near + c.far) / 2);
+      _sph.radius = 0.5 * Math.hypot(c.right - c.left, c.top - c.bottom, c.far - c.near);
+    } else {
+      const far = l.distance || c.far, a = Math.min(1.45, l.angle ?? 1);
+      _sph.center.copy(_lp).addScaledVector(_lt, far / 2);
+      _sph.radius = Math.hypot(far / 2, far * Math.tan(a));
+    }
+    return f.intersectsSphere(_sph);
+  }
+
+  render(dt, time) {
+    this.frameN = (this.frameN || 0) + 1;
+    const s = this.scene;
+    // world matrices once per frame: every pass below (scene, viewmodel, GTAO's normal pass) reuses them
+    s.updateMatrixWorld();
+    this._viewF ||= new THREE.Frustum();
+    this._viewF.setFromProjectionMatrix(_vpm.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
+    this.scan();
+    this.lightPool.update(s, this.camera, dt);
+    this.updateShadows();
     const gu = this.grade.uniforms, fx = this.fx;
     gu.uTime.value = time;
     gu.uTired.value = fx.tired; gu.uLid.value = fx.lid; gu.uDouble.value = fx.double; gu.uWobble.value = fx.wobble;
@@ -348,7 +481,9 @@ export class Renderer {
     if (this.frameN % 8 === 1) this.scene.traverse(lightToVM);
     if (this.gtao) { this.aoCam.copy(this.camera, false); this.aoCam.layers.enable(VM_LAYER); }
     for (const o of this.vmRoots) toVM(o);
-    this.composer.render(dt);
+    const au = s.matrixWorldAutoUpdate;
+    s.matrixWorldAutoUpdate = false;
+    try { this.composer.render(dt); } finally { s.matrixWorldAutoUpdate = au; }
     for (const o of this.vmRoots) o.traverse(toMain);
   }
 }

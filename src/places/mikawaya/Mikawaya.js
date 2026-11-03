@@ -217,6 +217,9 @@ export class Mikawaya {
     const d = Math.hypot(pp.x - h.root.position.x, pp.z - h.root.position.z);
     const near = d < 30;
     this.group.visible = d < 14;
+    // the shop's own per-frame part (src/world/CornerShop.js: the TV, the lamp, and the ~70k-triangle clutter mesh that
+    // is only drawn within 11 m); nothing called it before, so the clutter was drawn from anywhere on the map
+    this.cs.update?.(dt, pp);
     // restocking
     for (const u of this.units) if (u.gone && u.t !== Infinity) { u.t -= dt; if (u.t <= 0) this.setGone(u, false); }
     if (this.t % 5 < dt) this.refreshFert();

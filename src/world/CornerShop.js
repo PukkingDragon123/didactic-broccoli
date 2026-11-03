@@ -359,8 +359,12 @@ export function buildCornerShop(t) {
     Bi.box(t.G, 0.05, 0.04, 1.4, x - 0.05, H1 - 0.17, 16.5, { tint: 0xfff6e8 });
     Bi.box(t.G, 0.05, 0.04, 1.4, x + 0.05, H1 - 0.17, 16.5, { tint: 0xfff6e8 });
   }
-  const L = new THREE.PointLight(0xfff0d8, 8.5, 9.5, 1.4);
-  L.position.set(-12.3, 2.3, 17.5);
+  // (exposure: it used to be 8.5 at 0.55 m under the ceiling, which blew the ceiling out to white and bloomed into a
+  // haze over the counter; lower and softer it lights the stock and the counter the same, the ceiling 2.5x less.
+  // By day it is turned down further (update below): daylight from the shop front does part of the work.)
+  const LAMP_I = 6.2;
+  const L = new THREE.PointLight(0xfff0d8, LAMP_I, 9.5, 1.4);
+  L.position.set(-12.5, 2.08, 16.65); // over the shop floor, clear of the old man's hat behind the counter
   t.add(L);
 
   // ---- assemble: batch + two merged voxel meshes + the TV screen
@@ -391,6 +395,7 @@ export function buildCornerShop(t) {
     tris: { fixtures: fixtures.userData.tris, detail: detail.userData.tris },
     /** Per frame (from the plugin): the TV, and the small clutter only when you're close enough to see it. */
     update(dt, pp) {
+      L.intensity = LAMP_I * (0.72 + 0.28 * (t.game.lighting?.state?.night ?? 1));
       const d = Math.hypot(pp.x - -12.4, pp.z - 17.2);
       detail.visible = d < 11;
       scr.visible = d < 16;
