@@ -59,7 +59,9 @@ export class Monologue {
       if (g.time - q.t < 8) this.say(q.text, { force: true }); // a thought that's gone stale stays unsaid
     }
     // thinking out loud on demand
-    if (g.input.keyPressed?.('KeyT') && g.input.locked && !g.uiOpen && !g.pc?.active && !g.cutscene?.active) this.say(this.musing(), { force: true });
+    // (T is the chat key in a multiplayer room, and labels a cardboard box you're looking at)
+    if (g.input.keyPressed?.('KeyT') && g.input.locked && !g.uiOpen && !g.pc?.active && !g.cutscene?.active && !g.mp?.active
+      && g.interaction?.hover?.obj?.userData?.piece?.def?.feature !== 'storage') this.say(this.musing(), { force: true });
     this.watch(dt);
   }
 

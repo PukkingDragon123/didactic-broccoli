@@ -1,13 +1,14 @@
 # GACHA GARAGE
 
-A cozy first-person **capsule-toy shop game**, set on a quiet Shōwa-era Japanese back street at golden hour.
-Grandpa has left you his old garage: a key, a notebook and a lot of dust. Clean it up, fix his machines,
-feed the stray cat, roll the shutter up again and run the happiest gacha corner in the neighbourhood.
-Crank the handle, twist the capsule open, put the tiny figures on display, and build a museum.
+A first-person **capsule-toy shop sim** in a Shōwa-era Japanese back lane, spring 1999.
+Grandpa left you his garage, a key, a biscuit tin of savings and a stack of handwritten notes. You drive his
+rusty kei van into the lane, roll the shutter up and start from nothing: no machines, ¥1,500 in your pocket,
+the electricity off and a shy cat living behind the junk boxes.
 
-Models, textures and people are generated in code at runtime. Music and sound effects are recorded files
-(`public/audio`), and the shop's flyers and posters use real stock photos (`public/img/photos`); every one is
-credited in [CREDITS.md](CREDITS.md).
+Voxel and low-poly 3D, pixel-art 2D, a paper UI, 8-bit voices. Models, textures and people are generated in
+code at runtime. Music and sound effects are recorded files (`public/audio`). Posters, flyers, prints and
+thrift-shop clothes use real photos from Google Open Images (CC BY 2.0), pixelated. Every one is credited in
+[CREDITS.md](CREDITS.md).
 
 ## Play
 
@@ -21,128 +22,155 @@ npm run build     # static build in dist/ with relative paths; zip it for itch.i
 |---|---|
 | **WASD** / arrows | walk (**Shift** to hurry) |
 | **Mouse** | look |
-| **Left click** | use / pick up / place. **Hold** to crank a handle, twist a capsule, sweep, lift or repair |
-| **Right click** | inspect a figure (move the mouse to turn it, wheel to zoom) · twist a capsule open |
-| **1–5** / **wheel** | switch inventory slot |
-| **Q** | put down what you're holding |
-| **R** | rotate furniture you're carrying · change the sheet of the display you're looking at |
-| **F** | move a piece of museum furniture |
-| **Esc** | pause & settings |
+| **Left click** | use / pick up / place. **Hold** to crank, twist, sweep, pet. With empty hands: slap |
+| **Right click** | inspect a figure · twist a capsule open · pick the cat up |
+| **1–6** / **wheel** | inventory slot (six of them) |
+| **Q** / **G** | drop what you're holding (anything, the key included) |
+| **R** | rotate the furniture you're placing |
+| **F** | move a piece of furniture |
+| **E** | a prop's second function |
+| **T** | think out loud. In a multiplayer room: chat. On a cardboard box: write a label |
+| **Tab** (hold) | check your watch and wallet (and the room's list of players) |
+| **J** | fold the side-quest notes away |
+| **Esc** | pause and settings |
 
-On phones: a virtual stick and buttons, tap to use, tap the hotbar to switch items. Progress saves
-automatically to `localStorage`. Shops can be shared with a code (Host shop / Join friend on the menu).
+On phones there's a virtual stick and buttons: tap to use, tap the inventory to switch. Progress saves to
+`localStorage` automatically.
 
 ## What's inside
 
-**The story start.** You arrive in the lane with Grandpa's garage key. A single objective card (and a
-waypoint) tells you what to do next. Behind the shutter the shop is a mess:
-- dust piles to sweep with a broom;
-- trash bags to carry to the garbage station;
-- a knocked-over machine to lift and broken machines to repair with a tool kit;
-- a dead fluorescent tube and a radio without batteries;
-- Grandpa's cash tin on the steel rack.
+**Opening up.** The intro drives you down the lane in Grandpa's van. After that, his notes tell you what to
+do, in about thirty small, physical steps:
+- read the KIDDO envelope and unlock the shutter;
+- flip the breaker, air the place out, wipe the counter and count the cash tin;
+- find the old OPEN sign in a junk box;
+- feed Mikan (pour the milk yourself; it really pours);
+- sweep up and take the trash out;
+- do a neighbour's odd job to afford a used machine;
+- order the machine, unbox it, plug it in and fill it;
+- set its price, then hang the sign.
 
-Everything you need is on sale at Mikawa-ya, the little general store across the lane. Mikan, a shy
-calico stray, hides in the garage until you pour her some milk. When everything is fixed the sign lights
-up for the grand reopening.
+**The shop.**
+- **Machines:** voxel machines with a lockable lid, a price plate and a coin box. Their coins go nowhere
+  until you collect them.
+- **Restocking:** cut the carton tape, open the flaps, drop capsules in one by one and swap the display card.
+- **Pricing:** each machine's plate shows a recommended price based on how good the shop is. Charge more
+  and fewer people play, and some of them complain out loud and in the guestbook.
+- **Customers:** they ask questions, haggle and need quick answers (timed choices).
+- **Shells:** they drop their empty capsule shells in the bin. You empty it into the dumpster, and the
+  garbage truck comes on collection days.
+- **Your own pulls:** you get to keep the shell in your hand. Drop it, sweep it up, or keep it in a box.
+- **Figures:** 22 series and 176 figures. Secrets are 1 in 500. Rare finishes include clear, metallic,
+  glow, gold, aurora and diamond.
+- **Selling figures:** show rare ones on stands, pack them in a blister and sell them with your own price tag.
+- **Toys:** some toys are playable, such as a foam-dart pistol, a squishy, a wind-up robot and a kendama.
 
-**Cutscenes:**
-- the intro along the lane;
-- opening the shutter;
-- feeding Mikan;
-- the grand reopening;
-- your first customer.
+**The computer (Capsule 98).** Sit down and the camera moves into the CRT. There's no pop-up window: it's a
+small desktop OS with these apps:
+- **Off-Hobby:** a second-hand marketplace with random lots, grades, flaws and funny variants (stickers,
+  doodles, sun fade). You chat and haggle with sellers, bid in auctions, sell with your own price tags, and
+  send figures off for KGS grading.
+- **Daikoku Toys:** the wholesaler for machines and capsule stock.
+- **Furniture, property and job sites:**
+  - Hirano Kagu for furniture whose features work (phones, a gumball machine, a robot vacuum, storage boxes);
+  - Ota Real Estate for the annex next door and the four-floor Gacha Kaikan mall with escalators and an elevator;
+  - Inspired for staff. Interview procedurally generated applicants (a kappa, a tanuki, a ghost, a gyaru…)
+    and give them shifts.
+- **Other apps:**
+  - kirakira-closet for clothes, including thrift pieces printed with real photos;
+  - a lucky-charm shop;
+  - mail with spam, a messenger for quests and suppliers, the bank, loans, bills and a phone;
+  - a codex of figures, people and yokai, plus Steam-style achievements.
 
-All of them can be skipped by holding a button.
+**Deliveries.** Orders come in a cream van with FREE CANDY painted on the side. Gen-san the driver remembers
+your name and hands you a sweet every time.
 
-**People.** Low-poly, PS1-style neighbours with painted realistic faces, expressions, a procedural walk
-and gestures. They chat in pixel speech bubbles. Only a few walk the lane at first; hand out flyers to
-promote the shop and more come by, walk in and play your machines. Museum visitors are drawn from the same
-cast.
+**Days.**
+- **Clock:** a real day/night cycle and a calendar, with rent day, bill days, holidays and festivals.
+- **Bills:** electricity and rent arrive as bills you pay from the bank.
+- **Energy:** eat at Mikawa-ya, the vending machines (37 drinks with pros and cons, and you can get drunk),
+  or Ramen Yamada (a physical menu, gyoza and beer, dish-washing shifts). Sleep in your own bed, in a room
+  you decorate.
+- **End of day:** close the shutter and the camera pulls up into the sunset over the day's receipt.
+- **Levels:** levelling up unlocks things. There are no upgrade shops. Money comes from your machines' coin
+  boxes and from selling.
+- **Side jobs:** dog walking, car washing, window cleaning, street sweeping and konbini shifts.
+- **Plants:** grow them with advice from the biologist down the lane.
 
-**Flyers and posters.** Fifteen pixel-art sheets (150 x 212 px) made from real stock photos (Google Open
-Images, CC BY 2.0), dithered down to a few colours, with the game's own 3D models rendered on top as
-outlined sprites and a hand-made 5 x 7 bitmap font:
-- nine meme flyers (Such Capsule, Nope / Yep, Distracted Customer, Galaxy Collector, One Does Not Simply,
-  Me at 3am, Expectation / Reality, New Manager, But It Was Me), all original parodies starring the game's cast;
-- six promo posters (Grand Reopening, Kaiju Snack Time, Uchu Neko Station, Spring Sweets, Super Secret,
-  Glow in the Dark), with the odds and prices taken from the game data.
+**The lane.**
+- **Neighbours:** named neighbours with routines, memories and quests. You can ring their bells.
+- **Conversations:** talk in cinematic scenes with floating text and choices, no speech bubbles.
+- **Characters:**
+  - a manga artist who wants to draw you;
+  - two schoolboys with strong opinions about hair;
+  - a masked old shopkeeper who loves cigars;
+  - a pigeon man, a prankster, a sorcerer, a rubber pirate;
+  - a man living in a bush who watches the street. You can confront him.
+- **At night:** yokai come out, and there are more of them to collect.
+- **Around town:** the steel pylon on the skyline, the park, Mikawa-ya, Sakura Heights, and the ghost alley
+  where you must not look back.
 
-The top sheet of the stack in your hands shows the design you hand out next. People stop, read the actual
-sheet, laugh and say something about that design. The promo posters are taped up on the garage piers (once
-the shop is open), the block wall across the lane, Mikawa-ya's window and the garage wall.
+**Multiplayer.** Host your shop and friends join with a room code (WebRTC, via PeerJS):
+- you share the piggy bank;
+- you can slap each other and pick each other's pockets;
+- you can call 110, and the police fine whoever pranked;
+- guests sleep on cardboard;
+- without a connection, a visit code opens a read-only copy of a friend's shop.
 
-**The loop.** Coin on a rope, crank, capsule, reveal. Display the figures or sell the duplicates. Refill
-sold-out machines from the PC, upgrade them, and buy new machines, tools and lucky charms. Any pull can
-roll a special finish (Clear, Metallic, Glow-in-the-dark, Gold, Aurora, Diamond).
-
-**Collectibles.** 20 series and 160 figures, each with a printed pixel-art banner (daishi) in its machine.
-
-**GACHA-MART.** The old PC opens an early-2000s web store with big, clear cards, for machines, capsule
-refills, upgrades, goods, the museum, second-hand figures, selling and your collection book.
-
-**The museum.** Complete a series and rent the Shōwa-era shop behind the garage. Fill it with displays,
-diorama sheets and decorations; visitors pay, look around, take photos, buy price-tagged figures and
-leave tips.
-
-**The lane.** Houses, walls and alleys, utility poles and wires, vending machines, Mikawa-ya, pigeons,
-and railway underpass tunnels at both ends where trains rumble across. The tunnels are pitch black a few
-metres in; people walk out of the dark.
-
-**Bizarre touches.** An affectionate nod to a certain long-running manga about bizarre adventures. The
-characters, art and names are all original:
-- menacing ゴゴゴ / ドドド / ドン! sound effects pop up for ultra and secret pulls;
-- dramatic poses: lucky customers and the menu crew strike them;
-- the Bizarre Pose Club (奇妙なポーズ部), a new 8-figure series: The Pointer, Leaning Salaryman, Menacing
-  Calico, Pompadour Senpai, To Be Continued, Phantom Partner, the Time-Stop Pocket Watch and the secret
-  Ghost Alley Girl;
-- "TO BE CONTINUED" freeze frames end the intro and the reopening;
-- the ghost alley beside Mikawa-ya: a see-through girl and her ghost cat ask you to walk them to the Jizō
-  shrine. Don't look back. Look back and something drags you out of the alley; make it and the shrine
-  leaves you a rare capsule;
-- the old pocket watch (Mikawa-ya, ¥4,000) stops time for five seconds. A negative-colour shockwave goes
-  out, the world turns grey and holds still, and you can still walk around. It needs a minute to wind up;
-- the lines people say on the street ("Yare yare... the train is late again.").
+**A nod to a certain bizarre manga.** ゴゴゴ sound effects, dramatic poses, "TO BE CONTINUED" freeze frames,
+a time-stopping pocket watch and the Bizarre Pose Club series. These are affectionate fan homages.
 
 ## Tech
 
-- Three.js (WebGL) and Vite, in plain ES modules.
-- Rendering:
+- **Engine:** Three.js (WebGL) and Vite, in plain ES modules. Quality presets go from Low to Ultra, with an
+  auto-suggest.
+- **Rendering:**
   - a greedy voxel mesher with baked AO;
-  - procedural pixel-art textures with bump maps;
-  - a reflection probe;
+  - procedural pixel-art textures;
+  - one-draw-call pixel-sprite particles;
   - depth-based ink outlines;
-  - post-processing: GTAO on high/ultra, bloom, colour grade and FXAA.
-- People: one rigidly skinned low-poly mesh and one 256² painted atlas per person (1 draw call), with
-  procedural animation.
-- Gameplay systems:
-  - custom sphere physics for capsules;
-  - Verlet rope physics for the coin;
-  - A* pathfinding for visitors;
-  - a cutscene engine (generator scripts).
-- Audio: Web Audio with recorded sound effects, ambience and music (`public/audio`), streamed background music
-  with crossfades and ducking (`src/core/bgm.js`), a garage radio playing real tracks through a little speaker filter,
-  and a synthesised version of every sound as the fallback.
-  - Credits: music by Kevin MacLeod (incompetech.com, CC BY 4.0) plus CC0 / public-domain tracks, jingles and sounds
-    from Kenney, OpenGameArt and pdsounds.org; the full list with sources and licences is in [CREDITS.md](CREDITS.md)
-    (shipped as `CREDITS.txt`).
-- Dev pages:
-  - `viewer.html?series=mochi` (models);
-  - `viewer.html?props=quest` (props);
-  - `people.html?show=all` (people);
-  - `icons.html` (pixel icons);
-  - `flyers.html?w=450` (flyers and posters; `node tools/export-flyers.mjs <dir> 4` saves them as PNGs).
+  - post-processing: GTAO on high and ultra, bloom, colour grade and FXAA.
+- **People:** one skinned low-poly mesh and one painted atlas per person, with procedural animation and
+  8-bit voices. Real speech synthesis is optional.
+- **Systems:** sphere physics for capsules, Verlet rope, liquid pour, A* pathfinding, and a generator-based
+  cutscene engine.
+- **Extending:** drop-in features live in `src/plugins/*.js` (export `install(game)`). Save data goes through
+  `ensureState(game, key, defaults)` and systems talk through `game.events`.
 
 ```
-src/core      renderer, input, touch, physics, audio, music (radio), bgm
-src/voxel     voxel model + mesher + finish materials
-src/gfx       pixel textures, pixel icons, particles, thumbnails, banners
-src/world     garage, town, street life, pedestrians, the cat, machine cabinets, menu signs
-src/people    low-poly humans, faces, gestures, speech bubbles
-src/game      game hub, inventory, story, cutscenes, notebook, machines, capsules, reveal, shop, economy
-src/ui        hotbar, shop UI (GACHA-MART + Mikawa-ya), HUD styles
-src/pc        CRT PC
-src/museum    museum hall, displays, visitors
-src/data      collectible series, props, tools, supplies
-tools/        headless screenshot / test runners (Playwright)
+src/core      renderer, input, touch, physics, audio, music
+src/voxel     voxel models, mesher, finish materials
+src/gfx       pixel textures and icons, particles, fonts, posters
+src/world     garage, town, neighbours, pedestrians, the cat, the ghost alley
+src/people    low-poly humans, faces, gestures, floating text, voices
+src/npc       named neighbours, routines, memory, doors
+src/talk      cinematic conversations, self-talk, guestbook
+src/game      game hub, inventory, story, machines, capsules, reveal, toys, shells
+src/sim       clock, calendar, bills, loans, levels, day summary
+src/os        Capsule 98 desktop and its apps and websites (src/pc: the desk and the CRT)
+src/market    Off-Hobby, Daikoku Toys, delivery van, grading, auctions
+src/money     wallet, physical cash, ATM, piggy bank
+src/build     furniture catalogue, placement, storage boxes, robot vacuum
+src/life      intro, Grandpa's notes, opening steps, jobs, trash
+src/needs     energy, food, drinks
+src/places    Mikawa-ya, vending machines, Ramen Yamada, your room, plants, pigeons
+src/staff     the Inspired job site and employees
+src/growth    flat 103, the annex, the Gacha Kaikan
+src/cosmetics clothes, closet, rewards
+src/net       multiplayer
+src/plugins   drop-in features
+src/ui        paper UI kit, HUD, menu
+tools/        headless runners, screenshots, perf, Steam capture
 ```
+
+## Testing
+
+```bash
+node tools/run.mjs "index.html?autotest&q=low" steps.json   # scripted headless run (wait / eval / shot / log)
+node tools/perf.mjs                                         # frame-time and draw-call profile
+node tools/net-test.mjs                                     # two players over the loopback transport
+node tools/steam-capture.mjs docs/steam/raw high            # store screenshots
+```
+
+`window.dbg` (src/debug.js) has helpers for scripted runs: `dbg.view(x, z, yaw, pitch)`, `dbg.time(h)`,
+`dbg.shopOpen()`, `dbg.pc(page)` and more. The Steam store page text and images are in [docs/steam](docs/steam).

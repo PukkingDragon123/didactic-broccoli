@@ -1,9 +1,9 @@
 # Gacha Garage roadmap
 
-The owner's wishlist for the big rework, grouped by area. Status: **in progress** (an agent is on it now),
-**planned** (next phases), **adapted** (done differently, reason noted).
+The owner's wishlist for the big rework, grouped by area. Status: **done** (in the game now), **adapted** (done
+differently, reason noted), and the known gaps at the bottom.
 
-## Phase 1 — foundations (in progress)
+## Phase 1 — foundations (done)
 - Feel: no white hover highlight anywhere; every particle is a 2D pixel-art sprite; blocky first-person arms
   (old hand model) that are connected and flexible; empty-hand click = slap; drop any item, key included;
   6 inventory slots.
@@ -22,7 +22,7 @@ The owner's wishlist for the big rework, grouped by area. Status: **in progress*
   money only from coin boxes and sales, much rarer odds, an empty start where you buy your first machine,
   faster early progression and more customers, an end-of-day summary that zooms out over the sunset.
 
-## Phase 2 — commerce, people, life (planned)
+## Phase 2 — commerce, people, life (done)
 - Commerce: an "Off-Hobby" second-hand marketplace (random items with grades, flaws and funny variants such as
   stickers and doodles), supplier sites, luck charms category (traditional Japanese items), thrift clothes,
   talking to sellers and haggling (timed choices), deliveries by a "FREE CANDY" van whose old driver remembers you
@@ -46,7 +46,7 @@ The owner's wishlist for the big rework, grouped by area. Status: **in progress*
 - World: neighbours' houses much better; the park, the mangaka's villa and the steel tower; a more faithful
   "don't look back" alley.
 
-## Phase 3 — growth, multiplayer, release (planned)
+## Phase 3 — growth, multiplayer, release (done)
 - Bigger home (more rooms), buy the empty building next door, grow the shop up to a mall with an escalator and
   an elevator.
 - Employees from a job site you unlock ("Inspired"): interviews, procedural funny candidates (a kappa...),
@@ -54,7 +54,8 @@ The owner's wishlist for the big rework, grouped by area. Status: **in progress*
 - Multiplayer: the host owns the world, friends sleep on cardboard; shared piggy-bank wallet; slapping,
   stealing and calling the police (110) on friends, with fines for pranks.
 - Cosmetics: achievements and quests that reward cosmetics, cosmetics on the web shop, thrift clothes.
-- Minimal traditional UI: more things happen in the world (signs, papers, screens) instead of panels.
+- Minimal traditional UI: more things happen in the world (signs, papers, screens) instead of panels; what UI
+  is left is paper: notes, receipts, tags and notebook pages in pixel art.
 - Performance pass (the game should never lag), then the Steam page: capsule art, description, four screenshots.
 
 ## Adapted
@@ -64,3 +65,11 @@ The owner's wishlist for the big rework, grouped by area. Status: **in progress*
   and original pixel art instead.
 - The biologist character has realistic adult proportions, with hair and clothes swaying; no chest physics.
 - The guy hiding in the bush is just a weird local camping out and spying on the street; no kids involved.
+
+## Known gaps
+- Multiplayer needs a normal web host (WebRTC through PeerJS); inside a sandboxed preview it falls back to the
+  read-only visit code.
+- Real voices use the browser's speech synthesis, so they sound different on every OS (switch them off in
+  Settings).
+- Kaikan shoppers walk the floors but don't ride the escalators yet; staff work the garage, not the annex or the
+  mall floors.
