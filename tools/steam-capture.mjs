@@ -38,10 +38,17 @@ const SETUP = `
 const HIDE_HUD = `for (const id of ['hud', 'guide', 'waypoint', 'simclock', 'money', 'hotbar', 'news', 'touch']) { const e = document.getElementById(id); if (e) e.style.visibility = 'hidden'; }`;
 
 const SCENES = [
-  { name: 'shot1_lane_golden', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(17.2); dbg.view(3.6, 11.6, 0.55, -0.02); dbg.step(2, 0.1);`] },
-  { name: 'shot2_garage_reveal', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(14); dbg.view(0.6, 1.4, 1.25, -0.12); dbg.capsule('bizarre', 'ultra'); dbg.step(0.4, 0.1); dbg.open(); dbg.step(1.2, 0.1);`] },
-  { name: 'shot3_pc_offhobby', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(11); dbg.pc && dbg.pc('top'); dbg.step(1, 0.1);`, `__game.os?.open?.('browser', { url: 'http://www.off-hobby.jp/' }); 0`] },
-  { name: 'shot4_lane_night', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(21.5); dbg.view(-5.5, 10.4, 2.6, 0.02); dbg.step(2, 0.1);`] },
+  // 1. the lane at golden hour, the shop open, neighbours about
+  { name: 'shot1_lane_golden', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(17.2); dbg.people.spawnAll(); dbg.people.place('kusaka', 1.2, 7.4); dbg.people.place('hatoda', -1.6, 9.6); dbg.view(3.6, 11.6, 0.55, -0.02); dbg.step(2, 0.1);`] },
+  // 2. a capsule cracked open by the machines (ultra rare)
+  { name: 'shot2_garage_reveal', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(14); dbg.view(0.6, 1.4, 1.25, -0.12); dbg.capsule('kaiju', 'ultra'); dbg.step(0.4, 0.1); dbg.open(); dbg.step(1.2, 0.1);`] },
+  // 3. sitting at Capsule 98, browsing the second-hand site
+  { name: 'shot3_pc_offhobby', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(11); dbg.pc('top'); dbg.step(1, 0.1);`, `__game.os.open('offhobby'); 0`] },
+  // 4. the lane after dark: lanterns, lit windows
+  { name: 'shot4_lane_night', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(21.5); dbg.people.spawnAll(); dbg.view(-5.5, 10.4, 2.6, 0.02); dbg.step(2, 0.1);`] },
+  // 5. a conversation: floating text and choices, no speech bubbles
+  { name: 'shot5_chat', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(10.5); dbg.view(1.6, 8.6, 0.1, 0); dbg.people.place('hatoda', 1.3, 7.0); dbg.step(0.5, 0.1);`, `dbg.people.chat('hatoda'); 0`, `dbg.people.run(4)`] },
+  // the raw render behind the capsule art (no HUD, no hands)
   { name: 'capsule_main', w: 1232, h: 706, hud: false, steps: [`${SETUP} dbg.time(17.3); dbg.people.clean(true); dbg.people.place('hatoda', -0.6, 5.4); dbg.people.place('kusaka', 2.6, 6.2); dbg.view(1.4, 10.2, 0.12, 0.05); dbg.step(1.5, 0.1);`] },
 ];
 
