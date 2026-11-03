@@ -263,13 +263,13 @@ export class Cashier {
   askPay() {
     const c = this.cust;
     const t = c.total;
-    c.paid = t > 1000 ? 5000 : Math.random() < 0.18 ? Math.ceil(t / 100) * 100 + (Math.random() < 0.5 ? 0 : 0) : 1000;
+    c.paid = t > 1000 ? 5000 : Math.random() < 0.18 ? Math.ceil(t / 100) * 100 : 1000;
     if (c.paid < t) c.paid = 5000;
     c.change = c.paid - t;
     c.give = 0;
     c.state = 'pay';
     this.gear.basket.visible = false;
-    this.game.pedestrians?.say?.(c.h, pick([`${yen(c.paid)}, please.`, 'Here you go.', `Sorry, only a ${yen(c.paid)} note.`]));
+    this.game.pedestrians?.say?.(c.h, c.paid >= 1000 ? pick([`${yen(c.paid)}, please.`, 'Here you go.', `Sorry, only a ${yen(c.paid)} note.`]) : pick([`Here, ${yen(c.paid)} in coins.`, `${yen(c.paid)}. Keep the... no, I want the change.`]));
     // the note on the counter
     const n = noteMesh(c.paid >= 5000 ? 5000 : 1000);
     n.position.copy(BASKET).add(V(0, 0.005, -0.02)); n.rotation.set(-Math.PI / 2, 0, 0.3);

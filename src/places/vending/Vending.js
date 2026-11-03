@@ -27,6 +27,9 @@ const SPOTS = [
   { id: 'fw2a', x: -17.0, z: 14.45, rot: Math.PI, menu: 'corner', name: 'Drinks', jp: 'のみもの' },
   { id: 'fw2b', x: -16.0, z: 14.45, rot: Math.PI, menu: 'sake', name: 'Beer & Chu-hi', jp: 'お酒', night: true },
   { id: 'nw3', x: -16.05, z: 5.68, rot: 0, menu: 'odd', name: 'Oddities', jp: 'めずらしい' },
+  // the park plaza's pair (src/world/Park.js), where the teens hang out
+  { id: 'park1', x: 16.22, z: -4.07, rot: -Math.PI / 2, menu: 'soda', name: 'Soda & Sports', jp: 'ジュース', park: true },
+  { id: 'park2', x: 16.22, z: -5.09, rot: -Math.PI / 2, menu: 'coffee', name: 'Coffee & Tea', jp: 'コーヒー・お茶', park: true },
 ];
 // the prop's display window (local metres): x -0.43..0.27, y 0.92..1.74, glass face at z 0.34
 const WIN = { x0: -0.44, x1: 0.28, y0: 0.91, y1: 1.75, z: 0.368 };
@@ -48,7 +51,7 @@ export class Vending {
       hint: () => this.hint(),
       onExit: () => { this.cur = null; },
     });
-    for (const sp of SPOTS) this.build(sp);
+    for (const sp of SPOTS) if (!sp.park || game.garage.town?.park) this.build(sp);
     loadLabelFonts(Object.values(FOODS)).then(() => { for (const m of this.list) this.draw(m); });
   }
 

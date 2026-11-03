@@ -23,8 +23,6 @@
 
 /* a pigeon got you: a splat in the corner of your view for a moment */
 #nd-splat { position: fixed; z-index: 45; width: 192px; height: 192px; pointer-events: none; image-rendering: pixelated; opacity: 0; }
-#nd-splat.on { animation: ndsplat 3.4s steps(10) forwards; }
-@keyframes ndsplat { 0% { opacity: 0; transform: scale(.6); } 6% { opacity: 1; transform: scale(1.05); } 12% { transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(26px); } }
 
 /* operating a machine (src/places/vending/panel.js): the hint line sits low, out of the machine's face */
 body.nd-panel #hint { top: auto !important; bottom: 108px; }

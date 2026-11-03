@@ -154,7 +154,8 @@ export class Droppings {
     el.style.left = right ? 'auto' : `${rnd(20, 120)}px`;
     el.style.right = right ? `${rnd(20, 120)}px` : 'auto';
     el.style.top = `${rnd(10, 90)}px`;
-    el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+    this.hitT = 4; // shown for a moment, then it slides off in steps (driven by the game clock: see update)
+    el.style.opacity = '1'; el.style.transform = 'scale(1.05)';
     g.tweens.wait(0.6, () => g.monologue?.say(pick(['...Seriously?', 'On my HEAD?!', 'They say it\'s good luck. They\'re lying.', 'Unko ga tsuita... "luck has come". Great.']), { force: true }));
     g.events.emit('pooped', { hits: this.s.hits });
   }
@@ -174,6 +175,16 @@ export class Droppings {
 
   update(dt) {
     const g = this.game, P = g.player.pos;
+    if (this.hitT > 0) {
+      this.hitT -= dt;
+      const el = this.overlay, t = this.hitT;
+      if (t <= 0) { el.style.opacity = '0'; el.style.transform = ''; }
+      else {
+        const out = t < 1 ? Math.ceil(t * 4) / 4 : 1; // a stepped fade, no smooth gradient
+        el.style.opacity = String(out);
+        el.style.transform = `translateY(${Math.round((1 - out) * 6) * 4}px)`;
+      }
+    }
     const outside = !this.places.where && P.z > GARAGE.maxZ + 0.5 && P.z < 14.5 && Math.abs(P.x) < 24;
     if (!this.fly && outside && !g.cutscene?.active) {
       this.flyT -= dt;
