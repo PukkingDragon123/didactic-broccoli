@@ -1,0 +1,67 @@
+/* Property paperwork on the paper kit (src/ui/paper.css): a lease or sales contract on cream stock, taped at the top,
+   the other party's red seal already on it and an empty box for yours. Pixel art: 2x texels, ink text, hard shadows,
+   steps() motion only. */
+#growth-paper { position: fixed; inset: 0; z-index: 30; display: none; align-items: center; justify-content: center; pointer-events: none; }
+#growth-paper.on { display: flex; }
+#growth-paper .gp-dim { position: absolute; inset: 0; background: rgba(26, 18, 22, .35); pointer-events: auto; }
+#growth-paper .gp-doc {
+  position: relative; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 40px); overflow: hidden auto; pointer-events: auto;
+  color: var(--pp-ink, #241a1e); font: 16px/18px 'Alagard', 'DotGothic16', monospace; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 18px, rgba(47, 90, 154, .1) 18px 20px) padding-box,
+    var(--pp-grain-cream) 0 0 / 96px padding-box;
+  background-color: #eee4ca; padding: 6px 16px 10px;
+  filter: drop-shadow(4px 5px 0 rgba(26, 18, 22, .5));
+  transform: rotate(-0.6deg);
+  animation: gp-in 0.32s steps(4) both;
+}
+#growth-paper .gp-doc.out { animation: gp-out 0.28s steps(3) both; }
+@keyframes gp-in { from { transform: translateY(-40px) rotate(-0.6deg); opacity: 0; } to { transform: translateY(0) rotate(-0.6deg); opacity: 1; } }
+@keyframes gp-out { to { transform: translateY(30px) rotate(-0.6deg); opacity: 0; } }
+#growth-paper .gp-tape { position: absolute; left: calc(50% - 40px); top: -4px; width: 80px; height: 24px; background: var(--pp-tape) 0 0 / 80px 24px; image-rendering: pixelated; }
+#growth-paper .gp-head { display: flex; align-items: baseline; gap: 10px; border-bottom: 2px solid var(--pp-ink, #241a1e); padding: 10px 0 2px; }
+#growth-paper .gp-head b { font-size: 32px; line-height: 32px; font-weight: normal; }
+#growth-paper .gp-head span { font-family: 'DotGothic16', monospace; color: var(--pp-red, #c8322c); }
+#growth-paper .gp-head small { margin-left: auto; color: var(--pp-ink2, #5e5046); }
+#growth-paper .gp-parties { display: grid; grid-template-columns: auto 1fr; gap: 0 10px; margin: 6px 0 4px; }
+#growth-paper .gp-parties i { font-style: normal; color: var(--pp-ink2, #5e5046); }
+#growth-paper .gp-prop { margin: 4px 0; padding: 2px 6px; background: rgba(36, 26, 30, .06); box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .25); }
+#growth-paper .gp-prop b { color: var(--pp-blue, #2f5a9a); font-weight: normal; }
+#growth-paper .gp-prop small { font-family: 'DotGothic16', monospace; color: var(--pp-ink2, #5e5046); margin-left: 6px; }
+#growth-paper table { width: 100%; border-collapse: collapse; margin: 4px 0; }
+#growth-paper td { padding: 0 2px; border-bottom: 2px dashed rgba(36, 26, 30, .2); }
+#growth-paper td:last-child { text-align: right; white-space: nowrap; }
+#growth-paper tr.total td { color: var(--pp-red, #c8322c); border-bottom: 2px solid var(--pp-ink, #241a1e); }
+#growth-paper ol { margin: 4px 0; padding-left: 20px; color: var(--pp-ink2, #5e5046); }
+#growth-paper li { margin: 0; }
+#growth-paper .gp-seals { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; }
+#growth-paper .gp-seal { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 120px; }
+#growth-paper .gp-seal small { color: var(--pp-ink2, #5e5046); }
+#growth-paper .gp-box { position: relative; width: 64px; height: 64px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .35); }
+#growth-paper .gp-box.empty::after { content: '印'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DotGothic16', monospace; color: rgba(36, 26, 30, .3); font-size: 24px; }
+#growth-paper .gp-box .gp-theirs { position: absolute; left: 8px; top: 8px; width: 48px; height: 48px; background: var(--pp-hanko) 0 0 / 48px 48px; image-rendering: pixelated; opacity: .9; }
+#growth-paper .gp-box img { position: absolute; left: 4px; top: 4px; width: 56px; height: 56px; image-rendering: pixelated; animation: gp-stamp 0.36s steps(3) both; }
+@keyframes gp-stamp { from { transform: scale(1.8); opacity: 0; } 60% { transform: scale(0.92); opacity: 1; } to { transform: scale(1); opacity: .92; } }
+#growth-paper .gp-sign { font-family: 'DotGothic16', monospace; border-bottom: 2px solid var(--pp-ink, #241a1e); min-width: 120px; text-align: center; }
+#growth-paper .gp-msg { min-height: 18px; margin-top: 4px; color: var(--pp-red, #c8322c); text-align: center; }
+#growth-paper .gp-btns { display: flex; gap: 10px; justify-content: center; margin-top: 6px; }
+#growth-paper .gp-btns button {
+  font: 16px/18px 'Alagard', monospace; color: var(--pp-ink, #241a1e); cursor: pointer; padding: 2px 10px 4px; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round;
+  background: var(--pp-grain-receipt) 0 0 / 96px padding-box; filter: drop-shadow(2px 3px 0 rgba(26, 18, 22, .4));
+}
+#growth-paper .gp-btns button:hover { color: var(--pp-red, #c8322c); }
+#growth-paper .gp-btns button:active { transform: translateY(2px); }
+#growth-paper .gp-btns button[disabled] { color: var(--pp-ink2, #5e5046); cursor: default; }
+#growth-paper .gp-btns kbd { font: inherit; margin-left: 6px; color: var(--pp-ink2, #5e5046); }
+
+/* the renovation checklist that's pinned up in the annex is drawn in 3D; this is the order slip for machines */
+#growth-paper .gp-slip { width: min(420px, calc(100vw - 32px)); border-image-source: var(--pp-zig-receipt); background: var(--pp-grain-receipt) 0 0 / 96px padding-box; transform: rotate(0.5deg); }
+#growth-paper .gp-opt { display: flex; align-items: center; gap: 8px; width: 100%; margin: 2px 0; padding: 2px 6px; text-align: left; font: inherit; color: inherit; cursor: pointer; background: none; border: 0; box-shadow: inset 0 -2px 0 rgba(36, 26, 30, .15); }
+#growth-paper .gp-opt:hover:not([disabled]) { background: rgba(200, 50, 44, .08); }
+#growth-paper .gp-opt[disabled] { color: var(--pp-ink2, #5e5046); cursor: default; }
+#growth-paper .gp-opt i { font-style: normal; width: 12px; height: 12px; flex: none; box-shadow: inset 0 0 0 2px var(--pp-ink, #241a1e); }
+#growth-paper .gp-opt b { font-weight: normal; flex: 1; }
+#growth-paper .gp-opt span { color: var(--pp-red, #c8322c); }
+#growth-paper .gp-opt small { color: var(--pp-ink2, #5e5046); }

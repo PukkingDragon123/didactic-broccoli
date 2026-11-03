@@ -66,14 +66,15 @@ export class GachaMachine {
 
   init() {
     const game = this.game, data = this.data;
-    const slot = MACHINE_SLOTS[data.slot];
+    // data.at = { x, z, rotY }: a machine standing outside the garage (the annex, the Kaikan: src/growth/machines.js)
+    const slot = data.at || MACHINE_SLOTS[data.slot];
     this.root = new THREE.Group();
     this.root.position.set(slot.x, 0, slot.z);
     this.root.rotation.y = slot.rotY;
     game.scene.add(this.root);
     this.root.updateMatrixWorld(true);
     this.ext = 0;
-    const built = buildMachineModel(data.type, { no: (data.slot || 0) + 1 });
+    const built = buildMachineModel(data.type, { no: data.no ?? (data.slot || 0) + 1 });
     this.parts = built;
     this.model = built.group;
     this.L = built.L;
@@ -193,7 +194,7 @@ export class GachaMachine {
     this.data.cash = 0;
     const from = this.coinAnchorWorld();
     this.updateCoins();
-    pocketCash(this.game, amount, from, { coins: Math.min(MAX_COINS_SHOWN, Math.ceil(amount / 100)), label: `Coin box of machine No.${(this.data.slot || 0) + 1}` });
+    pocketCash(this.game, amount, from, { coins: Math.min(MAX_COINS_SHOWN, Math.ceil(amount / 100)), label: `Coin box of machine No.${this.data.no ?? (this.data.slot || 0) + 1}` });
     this.game.events.emit('coinsCollected', { machine: this, amount });
     this.game.save();
     return amount;
@@ -636,7 +637,7 @@ export class GachaMachine {
         this.lid.key = null;
         this.lid.locked = true;
         this.lid.busy = false;
-        if (this.placed) g.news(`Machine No.${(this.data.slot || 0) + 1} restocked`, `${this.data.stock.length}/${this.capacity} capsules · locked`);
+        if (this.placed) g.news(`Machine No.${this.data.no ?? (this.data.slot || 0) + 1} restocked`, `${this.data.stock.length}/${this.capacity} capsules · locked`);
         this.placed = 0;
         g.save();
       } });

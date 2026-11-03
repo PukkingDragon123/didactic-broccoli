@@ -23,6 +23,8 @@ const RENT_DUE = 27, ELEC_ISSUE = 10, ELEC_DUE = 20, WATER_ISSUE = 5, WATER_DUE 
 const KWH_YEN = 26, ELEC_BASE = 780, WATER_BASE = 1100, WATER_PER_HOUR = 8;
 const NAMES = { rent: 'Garage rent', electricity: 'Electricity', water: 'Water' };
 const FROM = { rent: 'Ota Real Estate', electricity: 'Kanto Electric Power', water: 'City Waterworks' };
+/** Other systems' bill kinds (src/growth/: leases and mortgages), so letters and the bank show their names. */
+export function registerBillKind(kind, name, from) { NAMES[kind] = name; FROM[kind] = from; }
 
 export class Bills {
   constructor(game) {
