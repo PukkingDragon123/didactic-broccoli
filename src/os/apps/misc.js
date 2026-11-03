@@ -7,7 +7,7 @@ export function installMisc(game, os) {
   // ================================================================== Notepad
   const nst = os.st.notes ||= { docs: null, nextId: 1 };
   nst.docs ||= [
-    { id: nst.nextId++, name: 'README.TXT', text: "Kiddo,\r\n\r\nIf you're reading this, you found the computer. Good. It's older than you, so be gentle with it.\r\n\r\nThe store for capsules and machines is on the Internet now. Double-click Navigator and go to GACHA-MART. The bank is in Shinkin Online. Mr. Daikoku sends deals on Pichat - always ask for a better price, he expects it.\r\n\r\nPay the rent on time. Mrs. Ota is kind, but she remembers everything.\r\n\r\nFeed the cat. Officially I never fed the cat.\r\n\r\n- Grandpa\r\n" },
+    { id: nst.nextId++, name: 'README.TXT', text: "Kiddo,\r\n\r\nIf you're reading this, you found the computer. Good. It's older than you, so be gentle with it.\r\n\r\nCapsules and machines are ordered on the Internet now. Double-click Navigator: Daikoku Toys for new, Off-Hobby for second-hand. The bank is in Shinkin Online. Mr. Daikoku sends deals on Pichat - always ask for a better price, he expects it.\r\n\r\nPay the rent on time. Mrs. Ota is kind, but she remembers everything.\r\n\r\nFeed the cat. Officially I never fed the cat.\r\n\r\n- Grandpa\r\n" },
     { id: nst.nextId++, name: 'todo.txt', text: '- clean the garage\r\n- fix the shutter\r\n- order capsules\r\n- \r\n' },
   ];
   os.registerApp({

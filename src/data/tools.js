@@ -19,6 +19,8 @@ export const TOOLS = {
   ramune: { name: 'Ramune', icon: 'ramune', prop: 'ramune_bottle', desc: 'Click to pop the marble and drink it.', hand: 0.17 },
   puffstick: { name: 'Puff Stick', icon: 'puffstick', prop: 'puff_stick', desc: 'Click to eat it. Mind the crumbs.', hand: 0.14 },
   candy: { name: 'Fruit Candy', icon: 'candy', prop: 'candy_piece', desc: 'Click to pop it in your mouth.', hand: 0.07 },
+  // from the gumball machine (src/build/features.js)
+  gumball: { name: 'Gumball', icon: 'gumball', prop: 'gumball', desc: 'Click to chew it. Blow a bubble!', hand: 0.045 },
 };
 
 export const toolName = (id) => TOOLS[id]?.name || id;

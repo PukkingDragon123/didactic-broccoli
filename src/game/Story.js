@@ -1,23 +1,34 @@
-// The new-game story: you arrive with the garage key; the objective card in the corner tells you what's next. Behind the shutter the shop is
-// a mess — dust piles, trash bags, a knocked-over machine, broken ones, a dead light, a radio without
-// batteries and a hungry stray cat. Buy supplies at Mikawa-ya across the lane, clean up, fix everything,
-// feed the cat, and the shop reopens (sign lights up, customers start wandering in).
+// The new-game story. You drive Grandpa's old van into the lane at dusk and find his letter taped to the shutter of
+// his shut-up capsule-toy garage; from there his notes, taped up all round the garage (src/life/notes.js), are your
+// to-do list, one small physical job at a time: unlock the shutter, flip the main breaker, lights, air the place out,
+// wipe the counter, the cash tin and the change float, his junk boxes (one hides the old OPEN sign), milk for Mikan,
+// a broom and a new tube from Mikawa-ya, sweep, bag the rubbish and take it all out to the garbage station; then odd
+// jobs for the neighbours until you can afford a used machine, its delivery crate to unbox, plug in, stock and price,
+// and finally the sign on its hook, flipped to OPEN: the grand reopening.
+//   story.done   story.isDone(taskId)   story.goal() -> { id, icon, text, sub, at } for the objective card
+//   story.todo() -> [{ text, done }]   story.task(text) (a ticked-off chore: jingle, toast, save)
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { radio } from '../core/music.js';
 import { bgm, TRACKS } from '../core/bgm.js';
-import { ease } from '../core/util.js';
+import { ease, formatYen } from '../core/util.js';
 import { propMesh } from '../world/props.js';
-import { GARAGE } from '../world/Garage.js';
+import { GARAGE, MACHINE_SLOTS } from '../world/Garage.js';
+import { buildMachineModel } from '../world/machineModels.js';
 import { TOOLS } from '../data/tools.js';
-import { formatYen } from '../core/util.js';
 import { createHuman, GESTURES } from '../people/index.js';
+import { machinePrice, capsuleCost } from './economy.js';
 import { Pour } from './Pour.js';
 import { Game } from './Game.js';
+import { PARK } from '../life/van.js';
+import { SINK, BREAKER, WINDOW, TRAY, JUNK, RUBBISH, CARDBOARD } from '../life/chores.js';
+import { HOOK } from '../life/sign.js';
+import { BOARD } from '../life/jobs.js';
 
 const TIN_MONEY = 2500;
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
-// the mess (floor positions inside the garage)
+// the mess (floor positions inside the garage): dust to sweep (broom), rubbish to bag, cardboard to flatten
 const PILES = [
   { id: 'p1', prop: 'dust_pile', x: -1.7, z: 3.4, r: 0.4 },
   { id: 'p2', prop: 'rubbish_pile', x: 1.25, z: 2.7, r: 1.2 },
@@ -26,11 +37,14 @@ const PILES = [
   { id: 'p5', prop: 'rubbish_pile', x: 0.7, z: -3.5, r: 5.3 },
   { id: 'p6', prop: 'dust_pile', x: 2.35, z: -1.3, r: 0.9 },
 ];
+const DUST_PILES = ['p1', 'p4', 'p6'];
+// bags of rubbish Grandpa already tied off
 const BAGS = [
   { id: 'b1', x: -2.35, z: -3.85, r: 0.3 },
-  { id: 'b2', x: 2.65, z: 3.95, r: 2.1, prop: 'b' },
   { id: 'b3', x: -0.55, z: 4.3, r: 4.4 },
 ];
+// everything that has to go out to the garbage station
+const TRASH = ['b1', 'b3', 'r_p2', 'r_p5', 'c_p3', 'j1', 'j2'];
 const BOWL = new THREE.Vector3(-0.95, 0, 2.38);
 const BED = new THREE.Vector3(-1.55, 0, 2.15);
 const TIN = new THREE.Vector3(-1.52, 1.712, -4.66);
@@ -41,45 +55,50 @@ export class Story {
   constructor(game) {
     this.game = game;
     this.piles = new Map();
-    this.covers = new Map();
+    this.covers = new Map(); // (fallen machines from very old saves; FPBody looks here)
     this.t = 0;
   }
 
   get flags() { return this.game.state.story; }
   get done() { return !!this.flags.complete; }
+  get life() { return this.game.life; }
+  pileDefs() { return PILES; }
 
-  /** Called once everything (garage, town, machines, PC, museum) exists. */
+  /** Called once garage, town, machines and PC exist (before the plugins): the shutter and Mikan's corner. */
   init() {
-    const g = this.game, f = this.flags;
-    const G = g.garage;
-    if (this.done) {
-      G.setShutter(1, true);
-      g.garage.town?.setShopOpen?.(true);
-      // Mikan's corner by the heater
-      this.bed = G.prop('cat_bed', BED.x, 0, BED.z, 0.5, { fallbackSize: [0.5, 0.22, 0.4], fallbackColor: 0xb89068 });
-      this.setBowl(true);
-      return;
-    }
-    // shutter
-    G.setShutter(f.shutter ? 1 : 0, true);
-    g.interaction.add(G.shutterMesh, { hint: (held) => this.shutterHint(held), use: () => this.useShutter(), noHighlight: false });
-    g.garage.town?.setShopOpen?.(!!f.opened);
-    // piles of dust & rubbish
-    for (const p of PILES) if (!f.swept.includes(p.id)) this.addPile(p);
-    // trash bags still lying around (not thrown out and not in your pockets)
-    const carried = new Set(g.held.slots.filter((s) => s?.data?.bag).map((s) => s.data.bag));
-    for (const b of BAGS) if (!f.bags.includes(b.id) && !carried.has(b.id)) g.items.spawnTool({ id: 'trash_bag', story: true, bag: b.id }, new THREE.Vector3(b.x, 0, b.z), b.r);
-    this.setupGarbage();
-    // machines: knocked over and broken
-    for (const m of g.machines) this.setupMachine(m);
-    // the cat's corner by the heater
+    const g = this.game, f = this.flags, G = g.garage;
+    for (const k of ['swept', 'bags', 'wiped', 'bagged', 'junkOpen', 'junkOut', 'plugged']) if (!Array.isArray(f[k])) f[k] = [];
+    G.setShutter(this.done || f.shutter ? 1 : 0, true);
+    g.garage.town?.setShopOpen?.(this.done || !!f.opened);
     this.bed = G.prop('cat_bed', BED.x, 0, BED.z, 0.5, { fallbackSize: [0.5, 0.22, 0.4], fallbackColor: 0xb89068 });
     this.bowl = null;
     this.setBowl(f.fed);
+    if (!this.done && !f.radio) g.state.radio = -1;
+  }
+
+  /** Everything else, once game.life exists (src/plugins/life.js). */
+  setup(life) {
+    const g = this.game, f = this.flags, G = g.garage;
+    life.chores.setup();
+    if (this.done) return;
+    // Grandpa's notes, where you'll need them
+    const N = life.notes, T = G.table, D = G.pcDesk;
+    if (!f.shutter) N.place('letter', { pos: V(0.85, 1.32, GARAGE.maxZ + 0.095), envelope: true, tilt: -0.06 });
+    N.place('power', { pos: V(T.x, T.h + 0.008, T.z + 0.32), flat: true, rotY: 0.08, size: 0.17 });
+    N.place('clean', { pos: V(SINK.x - 0.1, 0.715, SINK.z + 0.226), size: 0.15, tilt: 0.04 });
+    N.place('tin', { pos: V(-1.18, 1.43, -4.452), size: 0.13, tilt: -0.05 });
+    N.place('cat', { pos: V(-0.95, 0.566, 1.55), flat: true, rotY: 0.3, size: 0.13 });
+    N.place('pc', { pos: V(D.x - 0.2, D.h + 0.003, D.z + 0.55), flat: true, rotY: -Math.PI / 2 + 0.1, size: 0.13 });
+    N.place('machine', { pos: V(GARAGE.minX + 0.012, 1.3, 0.35), rotY: Math.PI / 2, size: 0.17, tilt: 0.03 });
+    // the mess
+    for (const p of PILES) if (DUST_PILES.includes(p.id) && !f.swept.includes(p.id)) this.addPile(p);
+    const carried = new Set(g.held.slots.filter((s) => s?.data?.bag).map((s) => s.data.bag));
+    for (const b of BAGS) if (!f.bags.includes(b.id) && !carried.has(b.id)) g.items.spawnTool({ id: 'trash_bag', story: true, bag: b.id }, V(b.x, 0, b.z), b.r);
+    life.chores.respawnBags();
     // Grandpa's cash tin on the steel rack
     if (!f.cash) {
       this.tin = G.prop('cash_tin', TIN.x, TIN.y, TIN.z, 0.2, { fallbackSize: [0.18, 0.08, 0.14], fallbackColor: 0x3a6aa8 });
-      g.interaction.add(this.tin, { hint: () => ({ key: 'LMB', text: "Open Grandpa's cash tin" }), use: () => { if (!this.flags.cash) g.cutscene.play((c) => this.cashScene(c)); return false; } });
+      g.interaction.add(this.tin, { hint: () => ({ key: 'LMB', text: "Open Grandpa's cash tin", sub: 'A biscuit tin, heavier than biscuits' }), use: () => { if (!this.flags.cash) g.cutscene.play((c) => this.cashScene(c)); return false; } });
     }
     // the dead fluorescent tube
     const tube = G.lights.tubes[1];
@@ -88,52 +107,222 @@ export class Story {
       G.setLights(G.lightsOn);
       g.interaction.add(tube.fix, {
         reach: 2.6,
-        hint: (held) => (g.held.holding('tube') ? { key: 'LMB', text: 'Replace the tube' } : { key: '', text: 'This light is dead', sub: 'Needs a new fluorescent tube' }),
+        hint: () => (g.held.holding('tube') ? { key: 'LMB', text: 'Replace the tube' } : { key: '', text: 'This light is dead', sub: 'Needs a new fluorescent tube (Mikawa-ya)' }),
         use: () => { if (g.held.holding('tube')) g.cutscene.play((c) => this.tubeScene(c)); return false; },
       });
     }
-    if (!f.radio) g.state.radio = -1;
+    // bookkeeping from the other systems
+    g.events.on('trashOut', ({ item }) => {
+      const tag = item?.bag || item?.junk;
+      if (!tag || this.done) return;
+      if (!f.bags.includes(tag)) f.bags.push(tag);
+      if (item.junk && !f.junkOut.includes(item.junk)) f.junkOut.push(item.junk);
+      const left = TRASH.filter((t) => !f.bags.includes(t)).length;
+      if (TRASH.includes(tag)) this.task(left ? `Out it goes. ${left} more to take out.` : 'All the junk is out!');
+    });
+    g.events.on('machinePrice', () => { if (!this.done && g.machines.length) this.markPriced(); });
+    g.events.on('noteRead', ({ first }) => { if (first) { audio.play('task', { vol: 0.35 }); g.guide?.pulse(); } });
+    g.events.on('signFlip', ({ open }) => { if (open) this.trySignOpen(); });
   }
 
-  // ------------------------------------------------------------------ to-do list (progress for the objective card)
+  markPriced() {
+    if (this.flags.priced) return;
+    this.flags.priced = true;
+    this.task('Price set. Kids pay with their pocket money, remember.');
+  }
+
+  // ------------------------------------------------------------------ the to-do list
+  machine() { return this.game.machines[0] || null; }
+  machineReady() {
+    const m = this.machine(), f = this.flags;
+    return !!m && m.data.stock.length > 0 && !m.lidOpen && (!f.crate || f.crate.stage === 'done');
+  }
+  totalMoney() { const W = this.game.wallet; return W ? W.cash + W.bank : this.game.state.money; }
+
+  /** Is a to-do (a box on one of Grandpa's notes) done? */
+  isDone(id) {
+    const g = this.game, f = this.flags, L = this.life, N = L?.notes;
+    const m = this.machine();
+    switch (id) {
+      case 'letter': return !!N?.isRead('letter') || f.shutter;
+      case 'shutter': return !!f.shutter;
+      case 'read_power': return !!N?.isRead('power');
+      case 'breaker': return !!L?.power;
+      case 'lights': return !!L?.power && g.garage.lightsOn;
+      case 'window': return !!f.windowDone;
+      case 'tube': return !!f.tube;
+      case 'read_clean': return !!N?.isRead('clean');
+      case 'wipe': return f.wiped.length >= 4;
+      case 'sweep': return DUST_PILES.every((p) => f.swept.includes(p));
+      case 'bag': return [...RUBBISH, ...CARDBOARD].every((p) => f.bagged.includes(p) || f.swept.includes(p));
+      case 'trashout': return TRASH.every((t) => f.bags.includes(t) || (t.startsWith('r_') || t.startsWith('c_')) && f.swept.includes(t.slice(2)));
+      case 'read_tin': return !!N?.isRead('tin');
+      case 'tin': return !!f.cash;
+      case 'tray': return !!f.tray;
+      case 'read_junk': return !!N?.isRead('junk') || f.junkOpen.length > 0;
+      case 'junk': return f.junkOpen.length >= JUNK.length;
+      case 'read_cat': return !!N?.isRead('cat');
+      case 'feed': return !!f.fed;
+      case 'read_pc': return !!N?.isRead('pc');
+      case 'job': return (L?.jobs?.s.count || 0) > 0 || g.machines.length > 0 || this.totalMoney() >= machinePrice('retro', 0) + 300;
+      case 'buymachine': return g.machines.length > 0;
+      case 'delivery': return !!m && (!f.crate || !['wait', 'arriving'].includes(f.crate.stage));
+      case 'read_machine': return !!N?.isRead('machine');
+      case 'unbox': return !!m && (!f.crate || ['plug', 'done'].includes(f.crate.stage));
+      case 'plug': return !!m && (!f.crate || f.crate.stage === 'done');
+      case 'restock': return !!m && m.data.stock.length > 0 && !m.lidOpen;
+      case 'price': return !!f.priced;
+      case 'read_sign': return !!L?.s.sign.found;
+      case 'hang': return !!L?.s.sign.hung;
+      case 'open': return !!f.opened;
+      default: return false;
+    }
+  }
+
+  /** The order the objective card walks you through (some of them come from notes you haven't read yet). */
+  static ORDER = ['letter', 'shutter', 'read_power', 'breaker', 'lights', 'window', 'read_clean', 'wipe', 'read_tin', 'tin', 'tray', 'read_junk', 'junk', 'read_cat', 'shop', 'feed', 'tube', 'sweep', 'bag', 'trashout', 'read_pc', 'job', 'buymachine', 'delivery', 'read_machine', 'unbox', 'plug', 'restock', 'price', 'read_sign', 'hang', 'open'];
+
   todo() {
-    const f = this.flags, g = this.game;
-    if (this.done) return [{ text: 'Reopen the garage', done: true }, { text: 'Find every figure!', done: false }];
-    const fixed = g.machines.filter((m) => !m.data.broken && !m.data.fallen).length;
-    return [
-      { text: 'Open the shutter with the key', done: f.shutter },
-      { text: 'Find the cash tin on the steel rack', done: f.cash },
-      { text: 'Buy milk and feed the cat', done: f.fed },
-      { text: `Sweep up the mess (${f.swept.length}/${PILES.length})`, done: f.swept.length >= PILES.length },
-      { text: `Take out the trash bags (${f.bags.length}/${BAGS.length})`, done: f.bags.length >= BAGS.length },
-      ...(g.machines.length ? [{ text: `Fix my old machines (${fixed}/${g.machines.length})`, done: fixed >= g.machines.length }] : []),
-      { text: 'New tube for the dead light', done: f.tube },
-      { text: 'Batteries for the radio', done: f.radio },
-      { text: 'Grand reopening!', done: f.opened },
-    ];
+    return Story.ORDER.filter((id) => id !== 'shop').map((id) => ({ id, done: this.isDone(id) }));
   }
 
-  coreDone() {
-    const f = this.flags, g = this.game;
-    return f.shutter && f.fed && f.swept.length >= PILES.length && f.bags.length >= BAGS.length && g.machines.every((m) => !m.data.broken && !m.data.fallen);
+  /** Mikawa-ya shopping list for what the notes you've read ask for. */
+  shopping() {
+    const g = this.game, f = this.flags, H = g.held, N = this.life?.notes;
+    const need = [];
+    if (N?.isRead('cat') && !f.fed && !H.has('milk')) need.push('milk');
+    if (N?.isRead('clean') && !this.isDone('sweep') && !H.has('broom')) need.push('a broom');
+    if (N?.isRead('power') && !f.tube && !H.has('tube')) need.push('a fluorescent tube');
+    return need;
+  }
+
+  goal() {
+    for (const id of Story.ORDER) {
+      if (id === 'shop') { const need = this.shopping(); if (need.length) return this.goalFor('shop', need); continue; }
+      if (!this.isDone(id)) return this.goalFor(id);
+    }
+    return { id: 'ready', icon: 'sparkle', text: 'The garage is ready!', sub: 'Stand back and take a look...' };
+  }
+
+  /** The objective card for one to-do: what to do, Grandpa's words, and where. */
+  goalFor(id, extra) {
+    const g = this.game, H = g.held, f = this.flags, G = g.garage, L = this.life;
+    const touch = document.body.classList.contains('touchmode'), c = touch ? 'tap' : 'click', hold = touch ? 'hold the use button' : 'hold left click';
+    const pick = (t) => { const i = H.find(t); return i < 0 ? '' : touch ? ` (slot ${i + 1})` : ` (press ${i + 1})`; };
+    const note = (n) => () => L.notes.world.get(n)?.getWorldPosition(V(0, 0, 0));
+    const read = (n, where) => ({ id: 'read:' + n, icon: 'note', text: `Read Grandpa's note ${where}`, sub: 'His handwriting: one job at a time', at: note(n) });
+    const gp = (s) => `Grandpa: "${s}"`;
+    const m = this.machine();
+    const mTop = () => m.root.getWorldPosition(V(0, 0, 0)).add(V(0, 1.2, 0));
+    const counter = () => g.garage.town?.cornerShop?.counter?.getWorldPosition(V(0, 0, 0)).setY(1.25) || null;
+    const pc = () => V(G.pcDesk.x, G.pcDesk.h + 0.55, G.pcDesk.z);
+    const near = (list, at) => { const p = g.player.pos; let best = null, bd = Infinity; for (const o of list) { const q = at(o); const d = (q.x - p.x) ** 2 + (q.z - p.z) ** 2; if (d < bd) { bd = d; best = q; } } return best; };
+    switch (id) {
+      case 'letter': return { id, icon: 'note', text: "Read Grandpa's letter", sub: 'An envelope taped to the shutter', at: note('letter') };
+      case 'shutter': return { id, icon: 'key', text: 'Unlock the shutter', sub: H.holding('key') ? `${c[0].toUpperCase() + c.slice(1)} the shutter` : `${gp("My key's on your ring.")} Hold it${pick('key')}`, at: () => V(0, 1.15, GARAGE.maxZ + 0.05) };
+      case 'read_power': return read('power', 'on the counter');
+      case 'breaker': return { id, icon: 'breaker', text: 'Flip the main breaker', sub: gp('Grey box by the back door. Flip it up.'), at: () => V(BREAKER.x, 2.0, BREAKER.z) };
+      case 'lights': return { id, icon: 'bulb', text: 'Switch the lights on', sub: gp('Light switch, same wall.'), at: () => G.lightSwitch.getWorldPosition(V(0, 0, 0)) };
+      case 'window': return { id, icon: 'window', text: 'Open the window', sub: gp('It stinks of cardboard in here.'), at: () => V(WINDOW.x + 0.1, 2.1, (WINDOW.z0 + WINDOW.z1) / 2) };
+      case 'read_clean': return read('clean', 'on the sink');
+      case 'wipe': {
+        const it = H.slots.find((s) => s?.data?.id === 'rag');
+        if (!it) return { id, icon: 'rag', text: 'Wipe the dusty counter', sub: gp("Rag's by the tap. Wet it, wipe the counter."), at: () => V(SINK.x - 0.18, 1.0, SINK.z + 0.18) };
+        if (!it.data.wet) return { id: 'wipe:wet', icon: 'rag', text: 'Wet the rag', sub: H.holding('rag') ? `${c[0].toUpperCase() + c.slice(1)} the sink` : `Hold the rag${pick('rag')}, ${c} the sink`, at: () => V(SINK.x, 1.0, SINK.z) };
+        return { id: 'wipe:go', icon: 'rag', text: `Wipe the counter (${4 - f.wiped.length} spots)`, sub: H.holding('rag') ? `Point at the dust and ${hold}` : `Hold the rag${pick('rag')}`, at: () => V(G.table.x, G.table.h + 0.2, G.table.z) };
+      }
+      case 'read_tin': return read('tin', 'on the steel rack');
+      case 'tin': return { id, icon: 'cash_tin', text: "Open Grandpa's cash tin", sub: gp('Savings. For brooms and milk.'), at: () => this.tin?.getWorldPosition(V(0, 0, 0)).add(V(0, 0.15, 0)) };
+      case 'tray': return { id, icon: 'coin_float', text: 'Fill the cash tray', sub: H.holding('coin_float') ? `${c[0].toUpperCase() + c.slice(1)} the tray on the counter` : `${gp('Coin bag = change float.')} Hold it${pick('coin_float')}`, at: () => V(TRAY.x, TRAY.y + 0.15, TRAY.z) };
+      case 'read_junk': return read('junk', 'on the boxes');
+      case 'junk': {
+        const left = JUNK.filter((j) => !f.junkOpen.includes(j.id));
+        return { id, icon: 'junk_box', text: `Look in Grandpa's junk boxes (${left.length})`, sub: gp('Keep anything that says OPEN!'), at: () => near(left, (j) => V(j.x, 0.6, j.z)) };
+      }
+      case 'read_cat': return read('cat', 'on the heater');
+      case 'shop': return { id: 'shop:' + extra.join(), icon: 'shop', text: 'Shop at Mikawa-ya', sub: `Buy ${extra.length < 2 ? extra[0] : `${extra.slice(0, -1).join(', ')} and ${extra[extra.length - 1]}`} at the little store across the lane`, at: counter };
+      case 'feed': return { id, icon: 'bowl', text: 'Feed Mikan', sub: H.holding('milk') ? `Tip it over the bowl: ${hold}` : `${gp('Bowl by the heater.')} Hold the milk${pick('milk')}`, at: () => this.bowl?.getWorldPosition(V(0, 0, 0)).add(V(0, 0.3, 0)) };
+      case 'tube': return { id, icon: 'tube', text: 'Replace the dead tube', sub: H.holding('tube') ? `${c[0].toUpperCase() + c.slice(1)} the dark light` : `Hold the tube${pick('tube')}`, at: () => G.lights.tubes[1]?.light.position.clone() };
+      case 'sweep': { const piles = [...this.piles.values()]; return { id, icon: 'broom', text: `Sweep up the dust (${piles.length} left)`, sub: H.holding('broom') ? `Point at the dust and ${hold}` : `Hold the broom${pick('broom')}`, at: () => near(piles, (p) => p.mesh.position.clone().setY(0.45)) }; }
+      case 'bag': {
+        const left = [...(L?.chores.piles.values() || [])];
+        const card = left.every((p) => p.card);
+        return { id, icon: card ? 'cardboard' : 'bin_bags', text: card ? 'Flatten the cardboard' : `Bag up the rubbish (${left.length})`, sub: card ? hold[0].toUpperCase() + hold.slice(1) + ' on it' : H.holding('bin_bags') ? `Point at a heap and ${hold}` : H.has('bin_bags') ? `Hold the bin bags${pick('bin_bags')}` : gp('Bin bags under the sink.'), at: () => (left.length ? near(left, (p) => p.m.position.clone().setY(0.4)) : V(SINK.x, 0.4, SINK.z)) };
+      }
+      case 'trashout': {
+        const tags = new Set(H.slots.filter((s) => s?.data?.bag || s?.data?.junk).map((s) => s.data.bag || s.data.junk));
+        if (tags.size) return { id: 'trash:carry', icon: 'trash_bag', text: 'Take it to the garbage station', sub: H.slots.some((s) => s === H.item && (s?.data?.bag || s?.data?.junk)) ? `Across the lane, left of the shop: ${c} it` : 'Hold what you carry, click the station', at: () => V(-6.6, 1.2, 5.8) };
+        const lying = [...g.items.list].filter((e) => TRASH.includes(e.data?.bag || e.data?.junk));
+        const left = TRASH.filter((t) => !f.bags.includes(t)).length;
+        return { id, icon: 'trash_bag', text: `Take out the trash (${left} left)`, sub: 'Pick it up (you can carry several), out to the garbage station', at: lying.length ? () => near(lying, (e) => e.obj.position.clone().setY(0.6)) : () => V(-6.6, 1.2, 5.8) };
+      }
+      case 'read_pc': return read('pc', 'on the computer desk');
+      case 'job': {
+        const jg = L?.jobs.goal();
+        if (jg) return jg;
+        return { id, icon: 'board', text: 'Find an odd job', sub: gp('Neighbours need a hand. Board by the station.'), at: () => V(BOARD.x, 1.5, BOARD.z) };
+      }
+      case 'buymachine': {
+        const jg = L?.jobs.goal();
+        if (jg) return jg;
+        const price = machinePrice('retro', 0);
+        const total = this.totalMoney();
+        if (total < price) return { id: 'buy:earn', icon: 'yen', text: `Earn ${formatYen(price - total)} more`, sub: `A used machine costs ${formatYen(price)}. Odd jobs on the notice board`, at: () => V(BOARD.x, 1.5, BOARD.z) };
+        return this.bankGoal(price, 'machine') || { id, icon: 'machine', text: 'Buy your first machine', sub: `${c[0].toUpperCase() + c.slice(1)} the computer: GACHA-MART, Machines. ${gp('A used one is fine.')}`, at: pc };
+      }
+      case 'delivery': return { id, icon: 'truck', text: 'Wait for the delivery', sub: 'GACHA-MART said "shortly". The van comes to the shutter', at: () => V(0, 1.2, GARAGE.maxZ + 0.2) };
+      case 'read_machine': return read('machine', 'on the machine wall');
+      case 'unbox': {
+        const st = f.crate?.stage;
+        const text = st === 'straps' ? 'Cut the straps' : st === 'sleeve' ? 'Lift off the carton' : 'Pull out the foam blocks';
+        return { id: 'unbox:' + st, icon: 'box', text, sub: st === 'sleeve' ? `${hold[0].toUpperCase() + hold.slice(1)} on it` : gp('Straps, carton, foam.'), at: mTop };
+      }
+      case 'plug': return { id, icon: 'plug', text: 'Plug it in', sub: gp('Plug it in behind. One per socket.'), at: () => V(MACHINE_SLOTS[m.data.slot].x + 0.1, 0.3, MACHINE_SLOTS[m.data.slot].z + 0.33) };
+      case 'restock': {
+        const box = [...g.items.list].find((e) => e.kind === 'box' && e.data?.type === 'refill');
+        if (H.item?.kind === 'box' && H.item.data?.type === 'refill') return { id: 'restock:fill', icon: 'box', text: 'Fill your machine', sub: m.lidOpen ? `Put the capsules in one by one (${c}), then lock the lid` : `${c[0].toUpperCase() + c.slice(1)} the machine: unlock the lid`, at: mTop };
+        if (box) return { id: 'restock:box', icon: 'box', text: 'Your capsules arrived', sub: 'Pick up the carton by the shutter', at: () => box.obj.position.clone().setY(0.7) };
+        if (m.lidOpen) return { id: 'restock:lid', icon: 'machine', text: 'Close and lock the lid', sub: `${c[0].toUpperCase() + c.slice(1)} the machine`, at: mTop };
+        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'mochi') * 10, 'capsules') || { id: 'restock:order', icon: 'capsule', text: 'Order a box of capsules', sub: `On the computer: GACHA-MART, Capsules. ${gp('Fill it up.')}`, at: pc };
+        return { id: 'restock:wait', icon: 'box', text: 'Wait for the capsules', sub: 'The box comes to the shutter', at: () => V(0, 0.8, GARAGE.maxZ - 0.6) };
+      }
+      case 'price': return { id, icon: 'yen', text: 'Set the price', sub: `The plate on the machine: - and +. ${gp('Kids pay 100.')}`, at: () => m.local(0, m.L.slot.y - 0.1, m.L.front + 0.05) };
+      case 'read_sign': {
+        if (!L?.s.sign.found) return { id: 'sign:find', icon: 'open_sign', text: 'Pick up the old OPEN sign', sub: 'By the junk boxes', at: () => [...g.items.list].find((e) => e.data?.id === 'open_sign')?.obj.position.clone().setY(0.5) };
+        return { id, icon: 'note', text: "Read Grandpa's card", sub: 'It came with the sign', at: null };
+      }
+      case 'hang': return { id, icon: 'open_sign', text: 'Hang the OPEN sign', sub: H.holding('open_sign') ? `On the hook right of the shutter: ${c} it` : `Hold the sign${pick('open_sign')}, the hook right of the shutter`, at: () => V(HOOK.x, HOOK.y - 0.2, HOOK.z + 0.1) };
+      case 'open': return { id, icon: 'open_sign', text: this.machineReady() ? 'Flip the sign to OPEN!' : 'Get the machine ready', sub: this.machineReady() ? gp("Flip it to OPEN when the machine's ready.") : 'Stocked, lid locked', at: () => L.sign.board.getWorldPosition(V(0, 0, 0)) };
+      default: return null;
+    }
+  }
+
+  /** Online shopping is paid from the bank: when the cash is in your wallet, the ATM across the lane first. */
+  bankGoal(amount, what) {
+    const W = this.game.wallet, L = this.life;
+    if (!W || W.bank >= amount || W.cash + W.bank < amount) return null;
+    return { id: 'bank:' + what, icon: 'wallet', text: 'Put your cash in the bank', sub: `GACHA-MART takes card payments: ${formatYen(amount - W.bank)} more into the bank, at the ATM across the lane`, at: L?.atmPos ? () => L.atmPos() : null };
   }
 
   task(text) {
     audio.play('task', { vol: 0.7 });
-    this.game.news(text, 'Objective complete');
+    this.game.news(text, 'Done');
     this.game.save();
+    this.life?.notes?.refreshAll();
   }
 
   // ------------------------------------------------------------------ tool hints & clicks (nothing targeted)
   toolHint(it) {
     const id = it.data.id;
     const f = this.flags;
+    const L = this.life?.toolHint?.(it);
+    if (L) return L;
     const H = {
-      key: f.shutter ? { key: '', text: 'Garage key' } : { key: '', text: 'Garage key', sub: 'Use it on the shutter' },
+      key: f.shutter ? { key: '', text: 'Garage key', sub: 'For the shutter padlock' } : { key: '', text: 'Garage key', sub: 'Use it on the shutter' },
       milk: { key: '', text: 'Milk', sub: 'Pour it into the cat bowl by the heater' },
       broom: { key: 'Hold LMB', text: 'Sweep', sub: 'Point at a mess to clean it up' },
       batteries: { key: '', text: 'Batteries', sub: 'For the radio on the fridge' },
-      toolkit: { key: '', text: 'Tool kit', sub: 'Hold LMB on a broken machine' },
+      toolkit: { key: '', text: 'Tool kit', sub: 'For repairs' },
       tube: { key: '', text: 'Fluorescent tube', sub: 'For the dead ceiling light' },
       trash_bag: { key: '', text: 'Trash bag', sub: 'Garbage station across the lane, left of the shop' },
       flyers: { key: '', text: `Flyers (${it.data.uses || 0} left)`, sub: 'Hand them to people on the street' },
@@ -149,23 +338,25 @@ export class Story {
     if (id === 'watch') this.game.timeStop?.start();
   }
 
-  // ------------------------------------------------------------------ shutter
-  shutterHint(held) {
+  // ------------------------------------------------------------------ shutter (until the reopening; then src/life/routine.js)
+  shutterHint() {
     if (this.flags.shutter) return null;
+    if (!this.life?.notes.isRead('letter')) return { key: '', text: 'Locked', sub: "There's a letter taped to it" };
     if (this.game.held.holding('key')) return { key: 'LMB', text: 'Unlock the shutter' };
-    return { key: '', text: 'Locked', sub: this.game.held.has('key') ? "Select Grandpa's key (2) and click" : 'It needs a key' };
+    const i = this.game.held.find('key');
+    return { key: '', text: 'Locked', sub: i >= 0 ? `Select Grandpa's key (${i + 1}) and click` : 'It needs a key' };
   }
 
   useShutter() {
-    if (this.flags.shutter || !this.game.held.holding('key')) return false;
+    if (this.flags.shutter || !this.game.held.holding('key') || !this.life?.notes.isRead('letter')) return false;
     this.game.cutscene.play((c) => this.openShutterScene(c));
     return false;
   }
 
   *openShutterScene(c) {
     const g = this.game, G = g.garage, z = GARAGE.maxZ;
-    const V = (x, y, zz) => new THREE.Vector3(x, y, zz);
-    // the key in the old lock
+    this.life?.notes.remove('letter');
+    // the key in the old padlock
     yield c.cam({ pos: V(0.9, 1.45, z + 1.1), look: V(0.2, 0.7, z), dur: 0.7, fov: 50 });
     audio.play('keyTurn', { pos: V(0, 0.6, z), vol: 1 });
     yield c.all(c.wait(1.0), c.say("It's been years since anyone opened this.", 0.6));
@@ -188,17 +379,16 @@ export class Story {
     this.flags.shutter = true;
     g.player.pos.set(0.4, 0, z + 1.6);
     g.player.yaw = 0; g.player.pitch = -0.05;
-    // the cat bolts deeper into the dark garage
     g.street?.scareCat?.();
     audio.play('meow', { pos: V(-1, 0.3, 1), vol: 0.6, pitch: 1.2 });
     yield c.cam({ pos: V(0.4, 1.5, z + 2.4), look: V(-0.3, 0.9, 0), fov: 62 });
-    yield c.all(c.cam({ pos: V(0.4, 1.55, z + 1.8), look: V(-0.6, 0.7, 0.5), dur: 3.0 }), c.say('Dusty... and something just ran under the table.', 1.4));
+    yield c.all(c.cam({ pos: V(0.4, 1.55, z + 1.8), look: V(0.2, 0.8, 0.3), dur: 3.0 }), c.say('Dark and dusty... and something just ran under the table. No power, either.', 1.4));
     c.hideSay();
     yield c.toPlayer(0.8);
     this.task('Shutter open!');
   }
 
-  // ------------------------------------------------------------------ dust piles
+  // ------------------------------------------------------------------ dust piles (broom)
   addPile(p) {
     const g = this.game;
     const m = propMesh(p.prop, { fallbackSize: [0.6, 0.08, 0.5], fallbackColor: 0x8a7a66 });
@@ -210,7 +400,7 @@ export class Story {
     g.interaction.add(m, {
       hint: () => (g.held.holding('broom')
         ? { key: 'Hold LMB', text: 'Sweep up', sub: pile.k > 0 ? `${Math.round(pile.k * 100)}%` : '' }
-        : { key: '', text: 'Dust and rubbish', sub: 'Sweep it with a broom (Mikawa-ya)' }),
+        : { key: '', text: 'Dust', sub: 'Sweep it with a broom (Mikawa-ya)' }),
       use: () => (g.held.holding('broom') ? undefined : false),
       hold: {
         canStart: () => g.held.holding('broom'),
@@ -230,7 +420,7 @@ export class Story {
       pile.next = 0.42;
       g.held.swing = 1;
       audio.play('sweep', { pos: p, vol: 0.8 });
-      g.effects.sparks({ pos: p.clone().add(new THREE.Vector3(0, 0.1, 0)), count: 10, colors: dustColors, speed: 0.35, size: 0.03, gravity: -0.08, life: 1.4, star: 0, drag: 1.4, radius: 0.4 });
+      g.effects.sparks({ pos: p.clone().add(V(0, 0.1, 0)), count: 10, colors: dustColors, speed: 0.35, size: 0.03, gravity: -0.08, life: 1.4, star: 0, drag: 1.4, radius: 0.4 });
     }
     const s = 1 - pile.k * 0.85;
     pile.mesh.scale.set(s, s * s, s);
@@ -240,155 +430,10 @@ export class Story {
       this.piles.delete(pile.def.id);
       this.flags.swept.push(pile.def.id);
       audio.play('dust', { pos: p, vol: 0.8 });
-      g.effects.sparks({ pos: p.clone().add(new THREE.Vector3(0, 0.15, 0)), count: 18, colors: [0xffffff, 0xfff0c0], speed: 0.4, size: 0.015, gravity: -0.1, life: 0.8, star: 1 });
-      const left = PILES.length - this.flags.swept.length;
+      g.effects.sparks({ pos: p.clone().add(V(0, 0.15, 0)), count: 18, colors: [0xffffff, 0xfff0c0], speed: 0.4, size: 0.015, gravity: -0.1, life: 0.8, star: 1 });
+      const left = this.piles.size;
       this.task(left ? `Swept! ${left} more to go` : 'The floor is clean!');
     }
-  }
-
-  // ------------------------------------------------------------------ trash bags -> garbage station
-  setupGarbage() {
-    const g = this.game;
-    const town = g.garage.town;
-    let st = town?.garbageStation;
-    if (!st) town?.group.traverse((o) => { if (!st && o.userData.propId === 'garbage_station') st = o; });
-    if (!st) return;
-    this.station = st;
-    g.interaction.add(st, {
-      hint: () => (g.held.holding('trash_bag') ? { key: 'LMB', text: 'Throw out the trash bag' } : null),
-      use: () => { if (g.held.holding('trash_bag')) this.throwBag(); return false; },
-      reach: 2.6,
-    });
-  }
-
-  throwBag() {
-    const g = this.game, it = g.held.item;
-    const target = this.station.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.5, 0.1));
-    g.held.putTo(target, new THREE.Quaternion(), (obj) => {
-      obj.parent?.remove(obj);
-      audio.play('thud', { pos: target, v: 0.4 });
-      if (it.data.bag && !this.flags.bags.includes(it.data.bag)) this.flags.bags.push(it.data.bag);
-      const left = BAGS.length - this.flags.bags.length;
-      if (it.data.story) this.task(left ? `Trash out! ${left} bag${left > 1 ? 's' : ''} left` : 'All the trash is out!');
-    }, { dur: 0.45, arc: 0.3, scale: 0.6 });
-  }
-
-  // ------------------------------------------------------------------ machines
-  setupMachine(m) {
-    const d = m.data;
-    if (!d.broken && !d.fallen) return;
-    const g = this.game;
-    if (d.fallen) this.layDown(m, 1);
-    if (d.broken && !m.sign) {
-      const s = propMesh('out_of_order', { fallbackSize: [0.2, 0.15, 0.01], fallbackColor: 0xf4f0e0 });
-      s.position.set(0, m.L.slot.y + 0.16, m.L.front + 0.004);
-      s.rotation.z = 0.06;
-      m.root.add(s);
-      m.sign = s;
-    }
-    this.cover(m);
-    void g;
-  }
-
-  /** Tip a machine onto its side (k = 1) or stand it up (k = 0). */
-  layDown(m, k) {
-    const slot = m.root.userData.slot || (m.root.userData.slot = { pos: m.root.position.clone(), q: m.root.quaternion.clone() });
-    const roll = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), (Math.PI / 2 - 0.06) * k);
-    m.root.quaternion.copy(slot.q).multiply(roll);
-    m.root.position.copy(slot.pos).add(new THREE.Vector3(0, (m.L.w / 2) * Math.sin(k * Math.PI / 2), 0));
-    m.root.updateMatrixWorld(true);
-    const hide = k > 0.01;
-    if (m.rope) { m.rope.mesh.visible = !hide; for (const c of m.rope.coins) c.visible = !hide; }
-  }
-
-  /** An invisible box over a machine that takes the clicks while it's fallen / broken. */
-  cover(m) {
-    const g = this.game;
-    this.uncover(m);
-    const bb = new THREE.Box3().setFromObject(m.model).expandByScalar(0.03);
-    const size = bb.getSize(new THREE.Vector3()), c = bb.getCenter(new THREE.Vector3());
-    const box = new THREE.Mesh(new THREE.BoxGeometry(size.x, size.y, size.z), new THREE.MeshBasicMaterial({ visible: false }));
-    box.position.copy(c);
-    g.scene.add(box);
-    const ob = m.data.fallen ? g.player.addObstacle(bb.min.x, bb.max.x, bb.min.z, bb.max.z) : null;
-    const st = { box, ob, k: 0, next: 0 };
-    this.covers.set(m, st);
-    g.interaction.add(box, {
-      highlight: m.model,
-      hint: () => {
-        const d = m.data;
-        if (d.fallen) return { key: 'Hold LMB', text: 'Lift the machine back up', sub: st.k > 0 ? `${Math.round(st.k * 100)}%` : '' };
-        if (g.held.holding('toolkit')) return { key: 'Hold LMB', text: 'Repair the machine', sub: st.k > 0 ? `${Math.round(st.k * 100)}%` : '' };
-        return { key: '', text: 'Out of order', sub: 'Needs a tool kit (Mikawa-ya)' };
-      },
-      use: () => (m.data.fallen || g.held.holding('toolkit') ? undefined : false),
-      hold: {
-        canStart: () => m.data.fallen || g.held.holding('toolkit'),
-        start: () => { st.next = 0; },
-        update: (dt) => (m.data.fallen ? this.lift(m, st, dt) : this.repair(m, st, dt)),
-        done: () => st.k >= 1 || st.anim,
-        end: () => { if (!st.anim && st.k < 1) st.k = 0; },
-      },
-    });
-  }
-
-  uncover(m) {
-    const st = this.covers.get(m);
-    if (!st) return;
-    const g = this.game;
-    g.interaction.remove(st.box);
-    st.box.parent?.remove(st.box);
-    if (st.ob) g.player.removeObstacle(st.ob);
-    this.covers.delete(m);
-  }
-
-  lift(m, st, dt) {
-    const g = this.game;
-    st.k = Math.min(1, st.k + dt / 1.1);
-    g.player.shake = Math.max(g.player.shake, 0.25);
-    if (st.k < 1 || st.anim) return;
-    st.anim = true;
-    audio.play('crankGrind', { pos: m.root.position, vol: 1 });
-    let t = 0;
-    g.tweens.add({
-      dur: 0.9, ease: ease.outBack,
-      update: (k) => { t = k; this.layDown(m, 1 - k); },
-      done: () => {
-        void t;
-        this.layDown(m, 0);
-        m.data.fallen = false;
-        audio.play('thud', { pos: m.root.position, v: 0.9 });
-        g.player.shake = 0.6;
-        g.effects.sparks({ pos: m.root.position.clone().add(new THREE.Vector3(0.3, 0.1, 0)), count: 26, colors: dustColors, speed: 0.6, size: 0.04, gravity: -0.05, life: 1.8, star: 0, drag: 1.2, radius: 0.6 });
-        this.cover(m);
-        this.task('Machine back on its feet. Now it needs fixing.');
-      },
-    });
-  }
-
-  repair(m, st, dt) {
-    const g = this.game;
-    st.k = Math.min(1, st.k + dt / 3.2);
-    st.next -= dt;
-    const front = m.local(0, m.L.slot.y, m.L.front + 0.05);
-    if (st.next <= 0) {
-      st.next = 0.45;
-      audio.play(Math.random() < 0.3 ? 'zap' : 'wrench', { pos: front, vol: 0.9 });
-      g.effects.sparks({ pos: front, count: 8, colors: [0xfff4a0, 0xffb040, 0xffffff], speed: 0.9, size: 0.012, gravity: 1.2, life: 0.5, star: 0.6 });
-      g.held.swing = 0.6;
-    }
-    if (st.k < 1) return;
-    m.data.broken = false;
-    this.uncover(m);
-    if (m.sign) {
-      const s = m.sign; m.sign = null;
-      const p0 = s.position.clone();
-      g.tweens.add({ dur: 0.7, ease: ease.inQuad, update: (k) => { s.position.set(p0.x + k * 0.15, p0.y - k * 0.9, p0.z + k * 0.25); s.rotation.z = 0.06 + k * 2.4; }, done: () => s.parent?.remove(s) });
-    }
-    audio.play('upgrade', { pos: front, vol: 0.9 });
-    g.effects.sparks({ pos: front, count: 40, colors: [0xffd23f, 0xffffff, 0x9fe0ff], speed: 0.9, size: 0.012, star: 1 });
-    const left = g.machines.filter((x) => x.data.broken || x.data.fallen).length;
-    this.task(left ? 'Fixed! It turns like new.' : 'Every machine works again!');
   }
 
   // ------------------------------------------------------------------ the cat
@@ -413,8 +458,7 @@ export class Story {
   *feedScene(c) {
     const g = this.game;
     const st = g.street;
-    yield c.cam({ pos: new THREE.Vector3(BOWL.x + 1.3, 0.75, BOWL.z + 1.1), look: new THREE.Vector3(BOWL.x - 0.1, 0.12, BOWL.z), dur: 1.0 });
-    // she peeks out from behind the heater and trots over
+    yield c.cam({ pos: V(BOWL.x + 1.3, 0.75, BOWL.z + 1.1), look: V(BOWL.x - 0.1, 0.12, BOWL.z), dur: 1.0 });
     if (st?.cat) { const cp = st.cat.pos; if (Math.hypot(cp.x - BOWL.x, cp.z - BOWL.z) > 2.6) cp.set(BOWL.x - 1.9, 0, BOWL.z - 1.1); }
     st?.catComeTo?.(BOWL);
     c.say('Psst... come on. It is for you.', 1.4);
@@ -423,9 +467,9 @@ export class Story {
     yield c.wait(0.4);
     st?.catDrink?.(4);
     audio.play('purr', { pos: BOWL, vol: 0.8 });
-    yield c.cam({ pos: new THREE.Vector3(BOWL.x + 0.75, 0.42, BOWL.z + 0.55), look: new THREE.Vector3(BOWL.x - 0.1, 0.12, BOWL.z - 0.05), dur: 2.2 });
-    g.effects.hearts({ pos: BOWL.clone().add(new THREE.Vector3(0, 0.35, 0)), count: 3, size: 0.04, spread: 0.12 });
-    c.say("Grandpa used to call her Mikan. Looks like she's staying.", 2);
+    yield c.cam({ pos: V(BOWL.x + 0.75, 0.42, BOWL.z + 0.55), look: V(BOWL.x - 0.1, 0.12, BOWL.z - 0.05), dur: 2.2 });
+    g.effects.hearts({ pos: BOWL.clone().add(V(0, 0.35, 0)), count: 3, size: 0.04, spread: 0.12 });
+    c.say("Mikan. Grandpa's note was right: she's staying.", 2);
     yield c.wait(3.4);
     this.flags.fed = true;
     st?.befriendCat?.();
@@ -434,18 +478,18 @@ export class Story {
     this.task('Mikan the cat trusts you now!');
   }
 
-  // ------------------------------------------------------------------ cash, tube, radio
+  // ------------------------------------------------------------------ cash tin, tube, radio
   takeCash(keepTin = false) {
     const g = this.game;
     if (this.flags.cash) return;
     this.flags.cash = true;
     g.interaction.remove(this.tin);
-    const p = this.tin.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.1, 0.05));
+    const p = this.tin.getWorldPosition(V(0, 0, 0)).add(V(0, 0.1, 0.05));
     audio.play('boxOpen', { pos: p, vol: 0.7 });
     g.effects.coinBurst({ pos: p, count: 14, up: 1.4, spread: 0.4, life: 1.2 });
-    g.addMoney(TIN_MONEY);
+    if (g.wallet) g.wallet.via('cash', () => g.addMoney(TIN_MONEY, false, "Grandpa's tin")); else g.addMoney(TIN_MONEY);
+    this.life?.chores.giveFloat(p);
     if (!keepTin) this.dropTin();
-    this.task(`${formatYen(TIN_MONEY)} for supplies. Thanks, Grandpa.`);
   }
 
   dropTin() {
@@ -459,23 +503,23 @@ export class Story {
     g.interaction.remove(tube.fix);
     this.flags.tube = true;
     audio.play('zap', { pos: tube.light.position, vol: 0.8 });
-    // the new tube strikes with a couple of flickers
-    let t = 0;
-    g.tweens.add({ dur: 1.4, update: (k) => { t = k; const on = k > 0.9 || Math.sin(k * 40) > 0.4; tube.dead = !on; G.setLights(G.lightsOn); }, done: () => { void t; tube.dead = false; G.setLights(G.lightsOn); if (!G.lightsOn) G.setLights(true); g.state.lightsOn = true; } });
-    this.task('Let there be light!');
+    // the new tube strikes with a couple of flickers (if there's power to strike it)
+    g.tweens.add({ dur: 1.4, update: (k) => { const on = k > 0.9 || Math.sin(k * 40) > 0.4; tube.dead = !on; G.setLights(G.lightsOn); }, done: () => { tube.dead = false; G.setLights(G.lightsOn); } });
+    this.task('New tube in.');
   }
 
   radioHint() {
     const g = this.game;
     if (this.done || this.flags.radio) return undefined;
+    if (!this.life?.power) return { key: '', text: "Grandpa's radio", sub: 'Dead. No power, and it wants batteries' };
     if (g.held.holding('batteries')) return { key: 'LMB', text: 'Put the batteries in' };
-    return { key: '', text: "Grandpa's radio", sub: 'Dead. It takes AA batteries' };
+    return { key: '', text: "Grandpa's radio", sub: 'Dead. It takes AA batteries (Mikawa-ya)' };
   }
 
   useRadio() {
     const g = this.game;
-    if (this.done || this.flags.radio) return false;
-    if (!g.held.holding('batteries')) return true;
+    if (this.done || this.flags.radio) return true;
+    if (!g.held.holding('batteries')) return false;
     g.held.consume();
     this.flags.radio = true;
     audio.play('relay', { vol: 0.6 });
@@ -488,7 +532,7 @@ export class Story {
   *meetKeeperScene(c) {
     const g = this.game, P = g.pedestrians, k = P?.keeper;
     if (!k) return;
-    const kp = k.h.root.position, V = (x, y, z) => new THREE.Vector3(x, y, z);
+    const kp = k.h.root.position;
     const head = V(kp.x, k.h.height - 0.08, kp.z);
     yield c.cam({ pos: V(kp.x + 1.7, 1.45, kp.z - 2.0), look: head, dur: 1.0, fov: 48 });
     k.look = c.pos;
@@ -502,63 +546,76 @@ export class Story {
     yield c.toPlayer(0.7);
   }
 
-  /** Grandpa's biscuit tin: a close-up, the lid comes off, coins and a note. */
+  /** Grandpa's biscuit tin: a close-up, the lid comes off, notes, coins and the change float. */
   *cashScene(c) {
-    const g = this.game, t = this.tin;
+    const t = this.tin;
     if (!t) return;
-    const p = t.getWorldPosition(new THREE.Vector3());
-    yield c.cam({ pos: p.clone().add(new THREE.Vector3(0.55, 0.32, 0.75)), look: p, dur: 0.9, fov: 42 });
-    yield c.cam({ pos: p.clone().add(new THREE.Vector3(0.32, 0.26, 0.48)), look: p.clone().add(new THREE.Vector3(0, 0.03, 0)), dur: 1.1 });
+    const p = t.getWorldPosition(V(0, 0, 0));
+    yield c.cam({ pos: p.clone().add(V(0.55, 0.32, 0.75)), look: p, dur: 0.9, fov: 42 });
+    yield c.cam({ pos: p.clone().add(V(0.32, 0.26, 0.48)), look: p.clone().add(V(0, 0.03, 0)), dur: 1.1 });
     this.takeCash(true);
-    yield c.all(c.cam({ pos: p.clone().add(new THREE.Vector3(0.22, 0.34, 0.5)), look: p.clone().add(new THREE.Vector3(0, 0.02, 0)), dur: 3.0 }), c.say(`${formatYen(TIN_MONEY)} and a note: "For brooms and milk. NOT capsules. - Gramps"`, 1.4));
+    yield c.all(c.cam({ pos: p.clone().add(V(0.22, 0.34, 0.5)), look: p.clone().add(V(0, 0.02, 0)), dur: 3.0 }), c.say(`${formatYen(TIN_MONEY)} in old notes, and a cloth bag of 100-yen coins: the change float.`, 1.4));
     c.hideSay();
     this.dropTin();
     yield c.toPlayer(0.7);
+    this.task(`${formatYen(TIN_MONEY)} for supplies. Thanks, Grandpa.`);
   }
 
   /** The new fluorescent tube strikes and the garage fills with light. */
   *tubeScene(c) {
     const g = this.game, tube = g.garage.lights.tubes[1];
     const p = tube.light.position.clone();
-    yield c.cam({ pos: new THREE.Vector3(p.x + 1.6, 1.1, p.z + 1.8), look: p, dur: 0.9, fov: 58 });
+    yield c.cam({ pos: V(p.x + 1.6, 1.1, p.z + 1.8), look: p, dur: 0.9, fov: 58 });
     this.fixTube();
     yield c.wait(1.6);
-    yield c.all(c.cam({ pos: new THREE.Vector3(p.x + 0.4, 1.5, p.z + 3.2), look: new THREE.Vector3(p.x - 0.5, 1.0, p.z - 1.5), dur: 2.2 }), c.say('Much better. I can finally see the mess.', 1.0));
+    yield c.all(c.cam({ pos: V(p.x + 0.4, 1.5, p.z + 3.2), look: V(p.x - 0.5, 1.0, p.z - 1.5), dur: 2.2 }), c.say(g.garage.lightsOn ? 'Much better. I can finally see the mess.' : "It's in. Now it just needs the switch.", 1.0));
     c.hideSay();
     yield c.toPlayer(0.7);
   }
 
   /** Batteries in: the radio crackles, finds a station, and the garage has music again. */
   *radioScene(c) {
-    const g = this.game, p = g.garage.radio.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.12, 0));
-    yield c.cam({ pos: p.clone().add(new THREE.Vector3(0.6, 0.15, 0.7)), look: p, dur: 0.9, fov: 46 });
+    const g = this.game, p = g.garage.radio.getWorldPosition(V(0, 0, 0)).add(V(0, 0.12, 0));
+    yield c.cam({ pos: p.clone().add(V(0.6, 0.15, 0.7)), look: p, dur: 0.9, fov: 46 });
     yield c.wait(0.8);
     g.state.radio = 0;
     radio.setStation(0);
-    yield c.all(c.cam({ pos: p.clone().add(new THREE.Vector3(0.9, 0.35, 1.1)), look: p, dur: 2.8 }), c.say('The old radio still works! Grandpa never turned this station off.', 1.0));
+    yield c.all(c.cam({ pos: p.clone().add(V(0.9, 0.35, 1.1)), look: p, dur: 2.8 }), c.say('The old radio still works! Grandpa never turned this station off.', 1.0));
     c.hideSay();
     yield c.toPlayer(0.7);
     this.task('The radio crackles back to life.');
   }
 
-  // ------------------------------------------------------------------ grand reopening
+  // ------------------------------------------------------------------ grand reopening (the sign flipped to OPEN)
+  trySignOpen() {
+    const g = this.game, f = this.flags;
+    if (this.done || f.opened) return;
+    if (!this.machineReady()) {
+      g.news('Not yet...', this.machine() ? 'Grandpa: "When the machine\'s ready." Stock it and lock the lid' : 'Grandpa: "When the machine\'s ready." You have no machine yet', 5000);
+      g.tweens.wait(1.6, () => this.life?.sign.flip(false));
+      return;
+    }
+    f.opened = true;
+    g.tweens.wait(0.9, () => g.cutscene.play((c) => this.reopenScene(c)));
+  }
+
   update(dt) {
     if (this.done) return;
     this.t += dt;
-    const f = this.flags;
-    if (!f.opened && this.coreDone() && !this.game.cutscene.active && !this.game.notebook?.open) {
-      this.readyT = (this.readyT || 0) + dt;
-      if (this.readyT > 1.5) { f.opened = true; this.game.cutscene.play((c) => this.reopenScene(c)); }
+    const g = this.game, m = this.machine();
+    // looking at the price plate and pressing it counts as setting the price
+    if (m && !this.flags.priced && g.input.buttonDown(0)) {
+      const h = g.interaction.hover;
+      if (h?.obj === m.root) { const part = m.partOf(h.hit); if (part === 'priceUp' || part === 'priceDown' || part === 'plate') this.priceT = (this.priceT || 0) + 1; }
+      if (this.priceT >= 2) this.markPriced();
     }
   }
 
   *reopenScene(c) {
     const g = this.game, z = GARAGE.maxZ, town = g.garage.town;
-    const V = (x, y, zz) => new THREE.Vector3(x, y, zz);
     const crowd = [];
     const BPM = TRACKS.party?.bpm || 120;
     yield c.fade(1, 0.6);
-    // the lane's passers-by step out of shot; the neighbours gather on the apron, facing the shutter
     const peds = g.pedestrians;
     for (const p of peds?.list || []) p.h.root.visible = false;
     const cast = [['grandma', 3, -2.2, z + 2.6], ['kid', 8, -1.1, z + 1.9], ['schoolgirl', 11, 0.1, z + 2.3], ['salaryman', 5, 1.3, z + 2.8],
@@ -568,10 +625,11 @@ export class Story {
     if (cat && !cat.held) { cat.pos.set(0.6, 0, z + 1.1); cat.heading = Math.PI; g.street.setCatState?.('sit', 30); }
     yield c.cam({ pos: V(2.6, 1.35, z + 7.6), look: V(0, 1.9, z), fov: 58 });
     yield c.fade(0, 0.9);
-    yield c.all(c.cam({ pos: V(1.4, 1.55, z + 6.2), look: V(0, 2.2, z), dur: 3.2 }), c.say('Grandpa... the garage is ready.', 1.0));
+    yield c.all(c.cam({ pos: V(1.4, 1.55, z + 6.2), look: V(0, 2.2, z), dur: 3.2 }), c.say('Grandpa... the garage is open again.', 1.0));
     c.hideSay();
-    // the lanterns flicker on
-    yield c.cam({ pos: V(0.6, 1.0, z + 4.6), look: V(0, 2.9, z), dur: 1.4, fov: 62 });
+    // the sign, then the lanterns flicker on
+    yield c.cam({ pos: V(HOOK.x - 0.8, 1.7, z + 1.6), look: V(HOOK.x, HOOK.y - 0.3, HOOK.z), dur: 1.4, fov: 50 });
+    yield c.cam({ pos: V(0.6, 1.0, z + 4.6), look: V(0, 2.9, z), dur: 1.2, fov: 62 });
     audio.play('lightsOn', { vol: 1 });
     for (let i = 0; i < 4; i++) { town?.setShopOpen?.(i % 2 === 0); yield c.wait(0.12 + i * 0.05); }
     town?.setShopOpen?.(true);
@@ -579,9 +637,7 @@ export class Story {
     g.effects.confetti({ pos: V(0, 3.4, z + 0.8), count: 260, speed: 3.2 });
     for (const a of crowd) a.h.gesture(Math.random() < 0.5 ? 'cheer' : 'clap');
     yield c.title('OPEN FOR BUSINESS', '', 2.4);
-    // party: everybody dances, the camera circles the crowd
     bgm.play('party', { fade: 0.6 });
-    // everyone on the same beat: the song's own clock when it plays, else the scene's
     let songT = 0;
     c.every((dt) => { songT += dt; });
     const beat0 = TRACKS.party?.beat0 || 0;
@@ -592,14 +648,13 @@ export class Story {
     let t = 0;
     yield c.until((dt) => {
       t += dt;
-      // from the shop doorway, looking out at the dancing crowd in the lane
       const k = t / 7.5;
       c.pos.set(-1.6 + k * 3.2, 1.55 + Math.sin(t * 0.6) * 0.1, z - 0.4 + Math.sin(k * Math.PI) * 0.5);
       c.look.set(-0.3 + k * 0.6, 1.05, z + 3.0);
       return t > 7.5;
     });
     const keeper = g.pedestrians?.keeper;
-    yield c.all(c.cam({ pos: V(1.1, 1.5, z + 6.6), look: V(0, 1.5, z + 2.5), dur: 2.2 }), c.say('Now spread the word! Flyers from Mikawa-ya will bring customers in.', 1.6));
+    yield c.all(c.cam({ pos: V(1.1, 1.5, z + 6.6), look: V(0, 1.5, z + 2.5), dur: 2.2 }), c.say('Flip the sign every morning, flip it back every night. Flyers from Mikawa-ya bring people in.', 1.6));
     c.hideSay();
     yield c.tbc(3.2);
     yield c.fade(1, 0.7);
@@ -613,6 +668,7 @@ export class Story {
     yield c.toPlayer(0);
     yield c.fade(0, 0.7);
     this.flags.complete = true;
+    this.life?.sign.applyLanterns();
     g.pedestrians?.setOpen?.(true);
     this.task('The shop is open for business!');
   }
@@ -635,21 +691,34 @@ export class Story {
     list.length = 0;
   }
 
-  /** Dress the lane as it was in Grandpa's day (true) or put the dusty present back (false). */
+  /** Dress the garage as it was in Grandpa's day (true) or put the dusty present back (false). */
   memorySet(on) {
-    const g = this.game, G = g.garage, f = this.flags;
+    const g = this.game, G = g.garage, f = this.flags, L = this.life;
     G.setShutter(on || f.shutter ? 1 : 0, true);
     G.town?.setShopOpen?.(on || !!f.opened);
     const tube = G.lights.tubes[1];
     if (tube && !f.tube) tube.dead = !on;
-    G.setLights(on ? true : g.state.lightsOn !== false);
+    if (L) { const p = L.s.power; L.s.power = on || p; G.setLights(on ? true : g.state.lightsOn === true); L.s.power = p; this.memPower = p; }
     for (const p of this.piles.values()) p.mesh.visible = !on;
-    for (const e of g.items.list) if (e.data?.bag) e.obj.visible = !on;
-    for (const m of g.machines) {
-      if (m.data.fallen) this.layDown(m, on ? 0 : 1);
-      if (m.sign) m.sign.visible = !on;
+    for (const e of g.items.list) if (e.data?.bag || e.data?.junk) e.obj.visible = !on;
+    if (L) {
+      for (const st of L.chores.piles.values()) st.m.visible = !on;
+      for (const st of L.chores.junk.values()) st.m.visible = !on;
+      for (const n of L.notes.world.values()) n.visible = !on;
+      L.van.root.visible = !on;
     }
     if (g.street?.cat) g.street.cat.g.visible = !on;
+    // his machines, three of them, in their old spots
+    if (on && !this.memMachines) {
+      this.memMachines = [0, 2, 4].map((i, k) => {
+        const S = MACHINE_SLOTS[i];
+        const b = buildMachineModel(k === 1 ? 'standard' : 'retro', { no: k + 1 });
+        b.group.position.set(S.x, 0, S.z);
+        b.group.rotation.y = S.rotY;
+        g.scene.add(b.group);
+        return b.group;
+      });
+    } else if (!on && this.memMachines) { for (const m of this.memMachines) m.parent?.remove(m); this.memMachines = null; }
   }
 
   /** Footsteps for a walking camera: a little bob on the cutscene's camera offset, a step sound per stride. */
@@ -665,47 +734,89 @@ export class Story {
     });
   }
 
+  /**
+   * Arrival: Grandpa's van comes out of the dark east underpass under a passing train, rolls down the lane at dusk
+   * (a shot from the driver's seat as the garage slides by), pulls up across from the shutter, the engine dies and
+   * ticks as it cools, you climb out. A memory of the shop in his day, then the envelope on the shutter.
+   */
   *introScene(c) {
-    const g = this.game, z = GARAGE.maxZ;
-    const town = g.garage.town;
-    const V = (x, y, zz) => new THREE.Vector3(x, y, zz);
+    const g = this.game, z = GARAGE.maxZ, town = g.garage.town, van = this.life?.van;
     const actors = [];
     c.setFade(1);
     bgm.play('intro', { loop: false, fade: 1.2 });
-    // 1. the lane at golden hour; a train rumbles over the west underpass
-    yield c.cam({ pos: V(-16.5, 2.3, z + 5.8), look: V(-29, 4.6, z + 4.6), fov: 55 });
-    const tr = town?.trains?.find((t) => t.s < 0);
+    // the van and its drive (positions per frame, from the script's targets)
+    const D = { x: 34, v: 0, to: 34, brake: false, cab: false, engine: null };
+    if (van) {
+      van.setPose(D.x, PARK.z, PARK.heading); van.setLights(true); van.setBrake(false); van.setDoor(0);
+      try { D.engine = audio.loop('vanEngine', {}); D.engine?.set(0.22, 1.0); } catch { D.engine = null; }
+      c.every((dt) => {
+        if (!van) return;
+        const left = D.x - D.to;
+        // cruise toward the target, braking over the last few metres
+        const want = left <= 0.001 ? 0 : D.brake ? Math.min(D.v, Math.max(0.35, left * 1.1)) : D.speed || 0;
+        D.v += (want - D.v) * Math.min(1, dt * (D.brake ? 3 : 1.5));
+        const step = Math.min(left, D.v * dt);
+        D.x -= step;
+        van.setPose(D.x, PARK.z, PARK.heading);
+        van.roll(step);
+        van.suspend((D.brake && D.v > 0.2 ? 0.02 : 0) + Math.sin(D.x * 3.1) * 0.003 * Math.min(1, D.v), Math.abs(Math.sin(D.x * 2.3)) * 0.006 * Math.min(1, D.v));
+        if (D.engine?.osc) D.engine.osc.frequency.value = 34 + D.v * 6;
+        if (D.cab) { van.eye(c.pos); c.pos.y -= 0.1; van.ahead(9, c.look); c.look.y -= 1.9; }
+      });
+    }
+    // 1. the east underpass at dusk: a train thunders over, headlights come out of the dark
+    const tr = town?.trains?.find((t) => t.s > 0);
     if (tr) {
-      town.runTrain(-1, 1);
-      const len = new THREE.Box3().setFromObject(tr.g).getSize(new THREE.Vector3()).z;
-      tr.z = 9.6 - len / 2 - 12.5 * 0.8;
+      town.runTrain(1, -1);
+      const len = new THREE.Box3().setFromObject(tr.g).getSize(V(0, 0, 0)).z;
+      tr.z = 9.6 + len / 2 + 10;
       tr.played = false;
     }
-    yield c.wait(0.3);
-    yield c.all(c.fade(0, 2.2), c.cam({ pos: V(-17.6, 2.05, z + 5.2), look: V(-28, 4.4, z + 4.8), dur: 5.0, ease: (k) => k }), c.say('Grandpa always said our old garage had a little magic in it.', 1.0));
-    // 2. walking down the lane; the shopkeeper at Mikawa-ya waves from behind the counter
-    const keeper = g.pedestrians?.keeper;
-    yield c.cam({ pos: V(-23, 1.62, z + 4.3), look: V(-10, 1.55, z + 3.8), fov: 62 });
+    yield c.cam({ pos: V(17.5, 0.75, 11.9), look: V(30, 1.3, 10.6), fov: 52 });
+    D.to = 21; D.speed = 3.2;
+    yield c.all(c.fade(0, 2.0), c.wait(3.6), c.say('Grandpa\'s lane. The trains still rattle the windows.', 1.0));
+    yield c.cam({ pos: V(15.5, 0.85, 11.3), look: V(D.x - 2, 1.0, PARK.z), dur: 1.4 });
+    // 2. from the driver's seat: the lane rolls by, the old garage on the right
+    yield c.fade(1, 0.3);
     c.hideSay();
-    this.walkBob(c);
-    yield c.cam({ pos: V(-14.6, 1.62, z + 4.3), look: V(-12.6, 1.5, z + 12), dur: 3.6, ease: (k) => k });
-    // the shopkeeper spots you and waves
+    D.cab = true; D.to = 6.5; D.speed = 2.6;
+    if (van) { van.eye(c.pos); c.pos.y -= 0.1; van.ahead(9, c.look); c.look.y -= 1.9; }
+    c.fov = 70;
+    yield c.fade(0, 0.3);
+    yield c.all(c.wait(3.0), c.say('There it is. Gacha Garage.', 1.6));
+    // 3. outside, low by the shutter: it pulls up across the lane, brake lights, a little nose dip
+    yield c.fade(1, 0.25);
+    c.hideSay();
+    D.cab = false; D.to = PARK.x; D.brake = true;
+    van?.setBrake(true);
+    yield c.cam({ pos: V(1.2, 0.55, z + 1.15), look: V(4.2, 0.9, PARK.z), fov: 46 });
+    yield c.fade(0, 0.25);
+    yield c.until(() => D.x - PARK.x < 0.01 || !van);
+    van?.suspend(0.03, 0);
+    yield c.wait(0.25);
+    van?.suspend(0, 0);
+    // engine off: a cough, the lights die, the hot block ticks
+    audio.play('engineOff', { vol: 0.9 });
+    D.engine?.stopAll(); D.engine = null;
+    van?.setLights(false); van?.setBrake(false);
+    g.effects.puff({ pos: van ? van.local(0.4, 0.25, -1.75) : V(5, 0.3, PARK.z), count: 5, color: 0x9a948a, size: 0.06, speed: 0.2, up: 0.15, life: 1.6 });
+    yield c.cam({ pos: V(PARK.x - 1.9, 0.75, PARK.z - 1.35), look: V(PARK.x - 1.4, 0.55, PARK.z - 0.4), dur: 0.01, fov: 40 });
+    for (let i = 0; i < 4; i++) { audio.play('engineTick', { pos: V(PARK.x - 1.5, 0.6, PARK.z), vol: 1 }); yield c.wait(0.35 + i * 0.12); }
+    yield c.say('Made it. The old thing still runs.', 0.8);
+    // 4. getting out: from the seat, the door swings open, out onto the road, the shutter across the lane
+    c.hideSay();
+    if (van) { van.eye(c.pos); c.look.copy(van.local(-1.2, 1.2, 0.9)); }
+    c.fov = 64;
+    yield c.wait(0.4);
+    audio.play('carDoor', { pos: c.pos, vol: 1 });
+    let k = 0;
+    yield c.until((dt) => { k = Math.min(1, k + dt / 0.6); van?.setDoor(ease.outCubic(k)); return k >= 1; });
+    const out = van ? van.doorStep(V(0, 0, 0)).setY(1.58) : V(PARK.x, 1.58, PARK.z - 1.3);
+    this.walkBob(c, 0.03);
+    yield c.cam({ pos: out, look: V(0.3, 1.5, z), dur: 1.6, fov: 64, path: [c.pos.clone().lerp(out, 0.5).setY(1.25)] });
     this.bobOn = false;
-    if (keeper) {
-      keeper.look = c.pos;
-      keeper.h.gesture('wave');
-      g.pedestrians.say(keeper.h, "Oh! Aren't you his grandkid? Welcome home!", 3.4);
-    }
-    const kp = keeper ? keeper.h.root.position : V(-12.6, 0, z + 14.4);
-    yield c.cam({ pos: V(-13.4, 1.6, z + 5.4), look: V(kp.x, 1.45, kp.z), dur: 3.2, fov: 50 });
-    this.bobOn = true;
-    yield c.cam({ pos: V(-6.5, 1.62, z + 4.4), look: V(0, 1.6, z), dur: 3.4, fov: 62, ease: (k) => k });
-    if (keeper) keeper.look = null;
-    // 3. the shutter, closed for years
-    yield c.cam({ pos: V(-1.2, 1.62, z + 5.8), look: V(0, 1.9, z), dur: 2.4 });
-    this.bobOn = false;
-    yield c.all(c.cam({ pos: V(0.2, 1.55, z + 4.4), look: V(0, 1.75, z), dur: 3.6 }), c.say("Grandpa's capsule toy shop. It's been shut for years.", 0.8));
-    // 4. a memory: the shutter up, the lanterns lit, kids crowding his machines
+    yield c.all(c.cam({ pos: out.clone().lerp(V(0.4, 1.58, z + 3.6), 0.35), look: V(0, 1.75, z), dur: 3.2 }), c.say("Grandpa's capsule toy shop. Shut for years.", 0.8));
+    // 5. a memory: the shutter up, the lanterns lit, kids crowding his machines
     yield c.flash(() => {
       c.memory(true);
       c.hideSay();
@@ -720,30 +831,30 @@ export class Story {
     });
     const [gp, k1, k2, k3, k4] = actors;
     k1.h.gesture('browse'); k3.h.gesture('point');
-    yield c.all(c.cam({ pos: V(1.9, 1.5, z + 3.3), look: V(-0.4, 1.15, 1.8), dur: 4.4 }), c.say('After school, kids lined up around the block for his machines.', 0.8),
+    yield c.all(c.cam({ pos: V(1.9, 1.5, z + 3.3), look: V(-0.4, 1.15, 1.8), dur: 4.0 }), c.say('After school, kids lined up around the block for his machines.', 0.8),
       c.call(() => { k2.h.gesture('cheer'); audio.play('gachan', { pos: V(-3.2, 0.5, 0.8), vol: 0.8 }); }));
     gp.look = c.pos; gp.h.gesture('wave');
     k4.h.gesture('wave');
     g.pedestrians?.say(gp.h, 'One coin, one turn. Good luck!', 3.2);
-    yield c.cam({ pos: V(1.6, 1.55, z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.6 });
-    yield c.say('He knew every one of them by name.', 1.4);
-    // 5. back to now: dust, a locked shutter... and something moving behind it
+    yield c.cam({ pos: V(1.6, 1.55, z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.4 });
+    // 6. back to now: a locked shutter, and a letter taped to it
     yield c.flash(() => {
       c.memory(false);
       c.hideSay();
       this.dropActors(actors);
       this.memorySet(false);
-      c.pos.set(0.9, 0.55, z + 1.6); c.look.set(0, 0.25, z);
+      c.pos.set(1.4, 1.35, z + 1.5); c.look.set(0.85, 1.3, z);
     });
-    yield c.wait(0.6);
-    audio.play('meow', { pos: V(-0.3, 0.3, z - 0.6), vol: 0.7, pitch: 1.15 });
-    audio.play('thud', { pos: V(-0.3, 0.4, z), v: 0.25 });
-    yield c.say('...Was that a cat?', 0.9);
-    // 6. back to your own eyes: the key
-    g.player.pos.set(0.4, 0, z + 4.2);
-    g.player.yaw = 0; g.player.pitch = 0.1;
-    yield c.all(c.cam({ pos: V(0.4, 1.62, z + 4.2), look: V(0.3, 2.0, z - 1), dur: 2.0 }), c.say('He left me his key. Time to wake this place up.', 1.2));
+    audio.play('meow', { pos: V(-0.3, 0.3, z - 0.6), vol: 0.6, pitch: 1.15 });
+    yield c.all(c.cam({ pos: V(1.1, 1.38, z + 0.75), look: V(0.85, 1.32, z), dur: 2.4, fov: 44 }), c.say('...an envelope. KIDDO. His handwriting.', 0.9));
     c.hideSay();
+    // your own eyes, by the van, the shutter across the lane
+    if (van) { D.x = PARK.x; van.setPose(PARK.x, PARK.z, PARK.heading); van.setDoor(1); van.setLights(false); van.setBrake(false); van.suspend(0, 0); }
+    D.engine?.stopAll(); D.engine = null;
+    const st = out.clone().setY(0);
+    g.player.pos.set(st.x, 0, st.z);
+    g.player.yaw = Math.atan2(-(0.85 - st.x), -(GARAGE.maxZ - st.z)); // facing the envelope on the shutter
+    g.player.pitch = -0.02;
     yield c.tbc(3.0);
     bgm.play('garage', { fade: 4 });
     yield c.toPlayer(0.8);

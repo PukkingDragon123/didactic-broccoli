@@ -9,8 +9,9 @@ import { RARITIES, RARITY_ORDER } from '../data/rarity.js';
 import { FINISHES, rollFinish } from '../data/finishes.js';
 import { unlockLevel, machineSlotsAt } from '../data/unlocks.js';
 
-/** Cash in your pocket on a brand-new save (Grandpa's tin adds more during the opening chores). */
-export const START_MONEY = 1800;
+/** Cash in your pocket on a brand-new save (the drive ate the rest). Grandpa's tin adds ¥2,000 for supplies during the
+ *  opening, and the first machine costs more than both: the neighbours' odd jobs (src/life/jobs.js) make up the rest. */
+export const START_MONEY = 1500;
 
 /** Dealer buy-back price of one collectible (the sell box). Rare tiers are worth many times the pull price. */
 export function itemValue(key, finish = 'normal') {
@@ -47,7 +48,7 @@ export function licenseRequirement() { return 0; }
 
 // price = the used / new price of the first one of a type (more of the same cost more, see machinePrice)
 export const MACHINE_TYPES = {
-  retro: { id: 'retro', name: 'Showa Retro 100', jp: '昭和レトロ', price: 1800, used: true, baseCap: 10, crank: 1.7, power: 0, desc: 'A second-hand dagashi-ya machine. Rusty, mechanical, full of character.', color: '#d8453a' },
+  retro: { id: 'retro', name: 'Showa Retro 100', jp: '昭和レトロ', price: 4200, used: true, baseCap: 10, crank: 1.7, power: 0, desc: 'A second-hand dagashi-ya machine. Rusty, mechanical, full of character.', color: '#d8453a' },
   standard: { id: 'standard', name: 'Gacha Station', jp: 'ガチャステーション', price: 6800, baseCap: 16, crank: 1.35, power: 0.015, desc: 'Modern two-tone machine with a lit display card.', color: '#3f86e8' },
   deluxe: { id: 'deluxe', name: 'Deluxe 500', jp: 'デラックス500', price: 26000, baseCap: 24, crank: 1.1, power: 0.05, desc: 'Black & gold, LED trim, premium vibes. Customers pay more for it.', color: '#d4a83a' },
   royal: { id: 'royal', name: 'Royal Kirakira', jp: 'ロイヤルきらきら', price: 98000, baseCap: 36, crank: 0.9, power: 0.12, desc: 'Chrome tower with neon. Luck +5%.', color: '#d94fb0', luck: 0.05 },

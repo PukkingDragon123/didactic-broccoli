@@ -84,7 +84,7 @@ export class Loans {
       if (late >= 4) once('warn', () => this.mail('Second notice', 'Please repay your loan. From a week late we will collect payments from your account.'));
       if (late >= 7) {
         // collection: whatever you have, every morning
-        const take = Math.min(this.left(l), Math.max(0, Math.floor(this.game.state.money * 0.5)));
+        const take = Math.min(this.left(l), Math.max(0, Math.floor((this.game.wallet?.bank ?? this.game.state.money) * 0.5)));
         if (take > 0 && this.sim.payDigital(take, 'Loan collection')) {
           l.paid += take;
           if (this.left(l) <= 0) l.closed = day;

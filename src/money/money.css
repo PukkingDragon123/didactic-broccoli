@@ -1,0 +1,24 @@
+/* Money UI bits: the ATM receipt you just took (a pixel-scaled copy of the printed slip). */
+.atm-receipt {
+  position: fixed; right: 26px; bottom: 120px; z-index: 40; pointer-events: none;
+  padding: 6px; background: #1a1216; box-shadow: 4px 4px 0 rgba(26, 18, 22, .45);
+  transform: translateY(16px) rotate(2deg); opacity: 0; transition: opacity .25s steps(4), transform .25s steps(4);
+}
+.atm-receipt.show { opacity: 1; transform: translateY(0) rotate(-2deg); }
+.atm-receipt canvas { display: block; width: 160px; height: 256px; image-rendering: pixelated; }
+
+/* The placement validity icon next to the crosshair (src/build/Builder.js). */
+#build-ic { position: absolute; left: 50%; top: 50%; margin: 10px 0 0 10px; pointer-events: none; display: none; }
+#build-ic.on { display: block; }
+#build-ic img { display: block; image-rendering: pixelated; }
+
+/* The label prompt for storage boxes. */
+.box-label {
+  position: fixed; left: 50%; top: 58%; transform: translateX(-50%); z-index: 45;
+  background: #f2e6cc; border: 3px solid #1a1216; box-shadow: 4px 4px 0 rgba(26, 18, 22, .5); padding: 8px 10px;
+  font-family: 'Alagard', 'DotGothic16', sans-serif; color: #1a1216; display: flex; gap: 8px; align-items: center;
+}
+.box-label input {
+  font: 18px 'DotGothic16', monospace; width: 220px; border: 2px solid #1a1216; background: #fffaf0; color: #1a1216; padding: 2px 6px; outline: none;
+}
+.box-label small { font-size: 12px; opacity: .7; }

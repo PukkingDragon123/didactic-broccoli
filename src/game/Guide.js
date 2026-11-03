@@ -1,13 +1,13 @@
-// The guide: one clear goal at a time in the top-right card (with how to do it), and a marker floating over
-// the place to go (pinned to the screen edge with an arrow when it's off-screen). Goals follow the story's
-// to-do list in a sensible order, then a few first steps of running the shop, then it bows out.
+// The guide: one clear goal at a time in the top-left card, and a marker floating over the place to go (pinned to the
+// screen edge with an arrow when it's off-screen). During the opening the card is Grandpa's to-do list: each goal comes
+// from one of his notes and quotes him (src/game/Story.js goal()). A side job you've taken (src/life/jobs.js) comes
+// first while it runs; once the shop is open, the daily routine (open up in the morning, close up at night,
+// src/life/routine.js) and a few first steps of running the shop.
 import * as THREE from 'three';
-import { GARAGE } from '../world/Garage.js';
-import { iconHTML } from '../gfx/icons.js';
+import { iconHTML, hasIcon } from '../gfx/icons.js';
 import { SHELF_PRICES } from './economy.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
-const list = (a) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`);
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 
 export class Guide {
@@ -26,6 +26,7 @@ export class Guide {
     hud.appendChild(wp);
     this.el = el;
     this.card = el.querySelector('.g-card');
+    this.lbl = el.querySelector('.g-lbl');
     this.wp = wp;
     this.wpD = wp.querySelector('.wp-d');
     this.wpArrow = wp.querySelector('.wp-arrow');
@@ -34,6 +35,7 @@ export class Guide {
     this.n = '';
     this.swapT = 0; // >0 while the card shows "done" before the next goal slides in
     this.v = new THREE.Vector3();
+    this.label = '';
     // toasts stack under the card (hud.css reads --goal-h)
     new ResizeObserver(() => document.body.style.setProperty('--goal-h', `${el.offsetHeight}px`)).observe(el);
   }
@@ -55,38 +57,15 @@ export class Guide {
 
   // ------------------------------------------------------------------ what to do next
   goal() {
-    const g = this.game, S = g.story;
+    const g = this.game, S = g.story, L = g.life;
     if (!S) return null;
-    if (!S.done) return this.storyGoal();
+    const job = L?.jobs?.goal();
+    if (job) { this.label = 'Odd job'; return job; }
+    if (!S.done) { this.label = "Grandpa's list"; return S.goal(); }
+    const day = L?.routine?.goal();
+    if (day) { this.label = 'Today'; return day; }
+    this.label = 'Goal';
     return this.shopGoal();
-  }
-
-  storyGoal() {
-    const g = this.game, S = g.story, f = this.flags, H = g.held;
-    const has = (id) => H.has(id), holding = (id) => H.holding(id);
-    const town = g.garage.town;
-    const counter = () => (town?.cornerShop?.counter ? town.cornerShop.counter.getWorldPosition(this.v).clone().setY(1.25) : null);
-    const station = () => (S.station ? S.station.getWorldPosition(this.v).clone().setY(1.3) : null);
-    const piles = [...S.piles.values()];
-    const bags = [...g.items.list].filter((e) => e.data?.bag);
-    const fallen = g.machines.filter((m) => m.data.fallen);
-    const broken = g.machines.filter((m) => m.data.broken && !m.data.fallen);
-    const top = (m) => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, m.data.fallen ? 0.6 : 1.2, 0));
-    const c = this.click();
-    if (!f.shutter) return { id: 'shutter', icon: 'key', text: 'Unlock the garage', sub: `Hold the key${this.pick('key')} and ${c} the shutter`, at: () => V(0, 1.15, GARAGE.maxZ + 0.05) };
-    if (has('trash_bag')) return { id: 'bagout', icon: 'trash_bag', text: 'Take the bag out', sub: holding('trash_bag') ? `${cap(c)} the garbage station across the lane` : `Hold the bag${this.pick('trash_bag')}, ${c} the garbage station`, at: station };
-    if (!f.cash) return { id: 'cash', icon: 'cash_tin', text: "Find Grandpa's cash tin", sub: 'On the steel rack at the back', at: () => S.tin?.getWorldPosition(this.v).clone().add(V(0, 0.15, 0)) };
-    const need = [];
-    if (!f.fed && !has('milk')) need.push('milk');
-    if (piles.length && !has('broom')) need.push('a broom');
-    if (broken.length && !has('toolkit')) need.push('a tool kit');
-    if (need.length) return { id: 'shop:' + need.join(), icon: 'shop', text: 'Shop at Mikawa-ya', sub: `Buy ${list(need)} at the little store across the lane`, at: counter };
-    if (!f.fed) return { id: 'feed', icon: 'bowl', text: 'Feed the stray cat', sub: holding('milk') ? 'Hold LMB to pour the milk into the bowl' : `Hold the milk${this.pick('milk')}, then hold LMB to pour it into the bowl by the heater`, at: () => S.bowl?.getWorldPosition(this.v).clone().add(V(0, 0.3, 0)) };
-    if (piles.length) return { id: 'sweep', icon: 'broom', text: `Sweep up the mess (${piles.length} left)`, sub: holding('broom') ? `Point at the dust and hold ${this.touch ? 'the use button' : 'left click'}` : `Hold the broom${this.pick('broom')}`, at: () => this.nearest(piles, (p) => p.mesh.position.clone().setY(0.45)) };
-    if (fallen.length) return { id: 'lift', icon: 'machine', text: 'Lift the fallen machine', sub: `Hold ${this.touch ? 'the use button' : 'left click'} on it`, at: () => top(fallen[0]) };
-    if (bags.length) return { id: 'bags', icon: 'trash_bag', text: `Take out the trash (${bags.length} left)`, sub: 'Pick up a bag, carry it to the garbage station', at: () => this.nearest(bags, (e) => e.obj.position.clone().setY(0.7)) };
-    if (broken.length) return { id: 'repair', icon: 'toolkit', text: `Repair the machines (${broken.length} left)`, sub: holding('toolkit') ? `Hold ${this.touch ? 'the use button' : 'left click'} on a machine` : `Hold the tool kit${this.pick('toolkit')}`, at: () => this.nearest(broken, top) };
-    return { id: 'ready', icon: 'sparkle', text: 'The garage is ready!', sub: 'Stand back and take a look...' };
   }
 
   shopGoal() {
@@ -95,22 +74,11 @@ export class Guide {
     const town = g.garage.town;
     const counter = () => (town?.cornerShop?.counter ? town.cornerShop.counter.getWorldPosition(this.v).clone().setY(1.25) : null);
     const c = this.click();
-    // an empty garage first needs a machine and a box of capsules (both from GACHA-MART on the PC)
     const D = g.garage.pcDesk;
     const pc = D ? () => V(D.x, D.h + 0.55, D.z) : null;
-    const mTop = (m) => () => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, 1.2, 0));
-    if (!g.machines.length) return { id: 'buymachine', icon: 'machine', text: 'Buy your first machine', sub: `${cap(c)} the PC in the back corner: GACHA-MART, Machines`, at: pc };
-    if (!F.guideStocked) {
-      const m0 = g.machines[0];
-      if (g.machines.some((m) => m.data.stock.length)) F.guideStocked = true;
-      else {
-        const box = [...g.items.list].find((e) => e.kind === 'box' && e.data?.type === 'refill');
-        if (H.item?.kind === 'box' && H.item.data?.type === 'refill') return { id: 'pour', icon: 'box', text: 'Fill your machine', sub: `${cap(c)} the machine to pour the capsules in`, at: mTop(m0) };
-        if (box) return { id: 'box', icon: 'box', text: 'Your capsules arrived', sub: 'Pick up the box by the shutter', at: () => box.obj.position.clone().setY(0.7) };
-        if (!g.delivery.queue?.length) return { id: 'buycaps', icon: 'capsule', text: 'Order a box of capsules', sub: 'On the PC: GACHA-MART, Capsules', at: pc };
-        return { id: 'waitbox', icon: 'box', text: 'Wait for the delivery', sub: 'The box comes to the shutter', at: () => V(0, 0.8, GARAGE.maxZ - 0.6) };
-      }
-    }
+    // a machine sold out: order more capsules
+    const empty = g.machines.find((m) => !m.data.stock.length);
+    if (empty && !g.delivery.queue?.length && ![...g.items.list].some((e) => e.kind === 'box' && e.data?.type === 'refill')) return { id: 'restock', icon: 'capsule', text: 'A machine is sold out', sub: 'Order capsules on the computer: GACHA-MART', at: pc };
     const flyers = s.promo?.flyers || 0;
     if (flyers < 3) {
       if (!H.has('flyers')) return { id: 'buyflyers', icon: 'flyer', text: 'Spread the word', sub: 'Buy flyers at Mikawa-ya', at: counter };
@@ -133,9 +101,9 @@ export class Guide {
 
   doneTotal() {
     const S = this.game.story;
-    if (!S) return [0, 0];
-    if (!S.done) { const t = S.todo(); return [t.filter((x) => x.done).length, t.length]; }
-    return [0, 0];
+    if (!S || S.done || this.label !== "Grandpa's list") return [0, 0];
+    const t = S.todo();
+    return [t.filter((x) => x.done).length, t.length];
   }
 
   // ------------------------------------------------------------------ per frame
@@ -146,14 +114,18 @@ export class Guide {
     this.el.classList.toggle('on', vis);
     if (document.body.classList.contains('has-goal') !== vis) document.body.classList.toggle('has-goal', vis);
     if (!on) { this.marker(null); return; }
-    const goal = this.goal();
+    // the goal is worked out a few times a second (it walks the whole to-do list)
+    this.gT = (this.gT || 0) - dt;
+    if (this.gT <= 0 || this.swapT > 0) { this.gT = 0.2; this.cur = this.goal(); }
+    const goal = this.cur;
+    if (this.lbl.textContent !== this.label) this.lbl.textContent = this.label;
     const [done, total] = this.doneTotal();
     const n = total ? `${Math.min(done + 1, total)}/${total}` : '';
     const gid = goal?.id || null;
     if (this.swapT > 0) this.swapT -= dt;
     else if (gid !== (this.shown?.id || null)) {
       // the old goal is finished: tick it off first (not when you've just lost an item and must shop again)
-      if (this.shown && !this.card.classList.contains('done') && !/^(shop|buyflyers)/.test(gid || '')) { this.card.classList.add('done'); this.swapT = 0.9; }
+      if (this.shown && !this.card.classList.contains('done') && !/^(shop|buyflyers)/.test(gid || '') && gid?.split(':')[0] !== this.shown.id.split(':')[0]) { this.card.classList.add('done'); this.swapT = 0.9; }
       else this.show(goal, n, total ? done / total : 0);
     } else if (goal && (goal.text !== this.shown.text || goal.sub !== this.shown.sub || n !== this.n)) {
       this.el.querySelector('.g-t').textContent = goal.text;
@@ -170,7 +142,7 @@ export class Guide {
     this.shown = goal;
     this.n = n;
     if (!goal) return;
-    this.el.querySelector('.g-ico').innerHTML = goal.icon ? iconHTML(goal.icon, 2) : '';
+    this.el.querySelector('.g-ico').innerHTML = goal.icon && hasIcon(goal.icon) ? iconHTML(goal.icon, 2) : '';
     this.el.querySelector('.g-t').textContent = goal.text;
     this.el.querySelector('.g-s').textContent = goal.sub || '';
     this.el.querySelector('.g-n').textContent = n;

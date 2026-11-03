@@ -1,18 +1,26 @@
-/* Speech bubbles (src/people/Bubbles.js): a fixed overlay; every bubble is positioned with transforms only. */
-.hb-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; contain: strict; }
-.hb { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform, opacity; }
-.hb-in { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; }
-.hb-body { position: absolute; left: 0; top: 0; }
-.hb-bg, .hb-tail { position: absolute; image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
-.hb-txt {
-  position: absolute; max-width: 220px; width: max-content; text-align: center;
-  font-family: 'Alagard', 'Pixelify Sans', monospace; font-size: 16px; line-height: 22px; color: #2a1e24;
-  letter-spacing: 0;
+/* Floating text (src/people/Bubbles.js): a fixed overlay; every line is positioned with transforms only.
+   Crisp Alagard on a small dark strip: no outlines, glows, gradients or rounded bubbles. */
+.ft-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; contain: strict; }
+.ft { position: absolute; left: 0; top: 0; will-change: transform, opacity; opacity: 0; }
+.ft-in {
+  position: relative; display: block; width: max-content; max-width: 240px; padding: 1px 6px 3px;
+  background: rgba(18, 12, 16, 0.66); color: #fff4e0; text-align: center;
+  font-family: 'Alagard', 'DotGothic16', monospace; font-size: 16px; line-height: 18px; letter-spacing: 0;
   white-space: normal; overflow-wrap: break-word;
 }
-.hb.shout .hb-txt { color: #3a1414; }
-.hb.think .hb-txt { color: #3a3046; }
-.hb-w { display: inline-block; white-space: nowrap; }
-.hb-c { display: inline-block; opacity: 0; transform: translateY(5px) scale(0.4); }
-.hb-c.on { opacity: 1; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.9, 0.5, 1), opacity 0.06s linear; }
-.hb.shout .hb-c.on { transition: transform 0.16s cubic-bezier(0.2, 2.4, 0.5, 1), opacity 0.05s linear; }
+.ft-w { display: inline-block; white-space: nowrap; }
+.ft-c { visibility: hidden; }
+.ft-c.on { visibility: visible; }
+.ft-think .ft-in { color: #c8bce0; background: rgba(18, 12, 16, 0.5); }
+.ft-shout .ft-in { color: #ffd23f; }
+.ft-me .ft-in { color: #bfe8ff; }
+.ft-big .ft-in { max-width: min(380px, 42vw); text-align: left; padding: 3px 8px 5px; background: rgba(18, 12, 16, 0.74); }
+.ft-name { font-size: 16px; line-height: 18px; color: #ffd23f; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; }
+/* off-screen speakers: a little pixel arrow at the strip's outer side, pointing where they are */
+.ft-arrow { display: none; position: absolute; top: 50%; width: 8px; height: 12px; margin-top: -6px; background: #ffd23f; }
+.ft[data-edge='r'] .ft-arrow { display: block; right: -10px; clip-path: polygon(0 0, 2px 0, 2px 2px, 4px 2px, 4px 4px, 6px 4px, 6px 5px, 8px 5px, 8px 7px, 6px 7px, 6px 8px, 4px 8px, 4px 10px, 2px 10px, 2px 12px, 0 12px); }
+.ft[data-edge='l'] .ft-arrow { display: block; left: -10px; clip-path: polygon(8px 0, 6px 0, 6px 2px, 4px 2px, 4px 4px, 2px 4px, 2px 5px, 0 5px, 0 7px, 2px 7px, 2px 8px, 4px 8px, 4px 10px, 6px 10px, 6px 12px, 8px 12px); }
+@media (min-height: 900px) {
+  .ft-big .ft-in, .ft-big .ft-name { font-size: 32px; line-height: 34px; }
+  .ft-big .ft-in { max-width: min(560px, 40vw); }
+}

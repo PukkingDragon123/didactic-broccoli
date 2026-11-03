@@ -1,0 +1,52 @@
+/* Cinematic chat (src/talk/Talk.js): floating choices next to you, a stepped timer for "hurry!" answers, the inner
+   monologue line near the bottom of the view. Pixel style: Alagard, flat dark strips, no glows or gradients. */
+.tk-choices {
+  position: fixed; left: 0; top: 0; z-index: 26; display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  opacity: 0; pointer-events: auto; will-change: transform, opacity; max-width: min(420px, 46vw);
+}
+.tk-choices .tk-prompt { font: 16px/18px var(--font-ui); color: #ffd23f; background: rgba(18, 12, 16, .7); padding: 1px 8px 3px; }
+.tk-opt {
+  display: flex; gap: 8px; align-items: baseline; border: 0; border-radius: 0; margin: 0; cursor: pointer; text-align: left;
+  font: 16px/18px var(--font-ui); color: #fff4e0; background: rgba(18, 12, 16, .7); padding: 2px 10px 4px 6px;
+}
+.tk-opt .n { flex: none; min-width: 14px; color: #a89a84; }
+.tk-opt.sel { background: #fff0d0; color: #2a1a10; }
+.tk-opt.sel .n { color: #b8322e; }
+.tk-opt.picked { background: #ffd23f; color: #2a1a10; }
+.tk-choices.quick .tk-opt { background: rgba(18, 12, 16, .62); }
+.tk-timer { display: flex; gap: 2px; margin-top: 2px; padding: 3px; background: rgba(18, 12, 16, .7); }
+.tk-timer i { display: block; width: 12px; height: 6px; background: #3a2e30; }
+.tk-timer i.on { background: #ffd23f; }
+.tk-timer.low i.on { background: #e5383b; }
+@media (min-height: 900px) {
+  .tk-opt, .tk-choices .tk-prompt { font-size: 32px; line-height: 34px; }
+  .tk-choices { max-width: min(640px, 44vw); }
+}
+body.touchmode .tk-opt { padding: 8px 14px 10px 10px; }
+
+/* talking to yourself: a murmur line low in the view */
+#tk-self {
+  position: fixed; left: 50%; bottom: calc(118px + env(safe-area-inset-bottom)); z-index: 5; transform: translateX(-50%);
+  pointer-events: none; max-width: min(560px, 80vw); text-align: center; opacity: 0;
+}
+#tk-self span { display: inline; font: 16px/20px var(--font-ui); color: #bfe8ff; background: rgba(18, 12, 16, .6); padding: 1px 8px 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+body.cine #tk-self { bottom: calc(40px + env(safe-area-inset-bottom)); }
+
+/* the guestbook page */
+#tk-book {
+  position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; background: rgba(10, 6, 8, .55);
+}
+#tk-book.on { display: flex; }
+#tk-book .pg {
+  width: min(560px, 92vw); max-height: 84vh; overflow: auto; padding: 18px 22px 16px; color: #2a2230; font: 16px/20px var(--font-ui);
+  background: #efe4c8; box-shadow: 0 -4px 0 #1a1216, 0 4px 0 #1a1216, -4px 0 0 #1a1216, 4px 0 0 #1a1216, 8px 10px 0 rgba(0, 0, 0, .35);
+  background-image: repeating-linear-gradient(#efe4c8 0 19px, #d8c8a8 19px 20px);
+}
+#tk-book h2 { margin: 0 0 6px; font: 32px/34px var(--font-ui); color: #b8322e; }
+#tk-book .sub { color: #6a5a50; margin-bottom: 8px; }
+#tk-book .row { padding: 0 0 0 14px; text-indent: -14px; }
+#tk-book .row b { color: #b8322e; font-weight: normal; }
+#tk-book .row i { color: #6a5a50; font-style: normal; }
+#tk-book .row.good b { color: #2a7a3a; }
+#tk-book .row.q b { color: #3a5aa8; }
+#tk-book .close { margin-top: 10px; text-align: center; color: #6a5a50; }

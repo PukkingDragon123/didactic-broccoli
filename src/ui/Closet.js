@@ -218,7 +218,7 @@ export class Closet {
 
   itemsHTML(slot) {
     const S = this.saved, P = this.preview, money = this.game.state.money;
-    const items = COSMETICS.filter((c) => c.slot === slot);
+    const items = COSMETICS.filter((c) => c.slot === slot && (!c.thrift || S.owned.includes(c.id))); // thrift finds only once you own them (Off-Hobby)
     const cards = items.map((c) => {
       const owned = S.owned.includes(c.id), worn = S[slot] === c.id, trying = P[slot] === c.id && !worn;
       let btn;

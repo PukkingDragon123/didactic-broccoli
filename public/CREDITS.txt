@@ -495,6 +495,396 @@ size, colour-graded, posterized and ordered-dithered, and composited with render
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "cherry blossoms by streetlight" by schvin, licensed under CC BY 2.0
 - Shipped as: `img/photos/blossom_lamp.jpg` (background of the poster "Secret Gold")
+
+### Wall prints (the photo posters you buy for the shop)
+
+Photo posters (`src/build/photos.js`) print one of these at random (or one of the flyer photos above). In the game
+each print is cropped, shrunk to pixel-art size, colour-graded and ordered-dithered to the game's palette.
+
+#### Bamboo Forest Kyoto
+
+- Author: Noel Reynolds
+- Source: https://www.flickr.com/photos/29237715@N05/6977837068 (Open Images ID 2ecac85f7dca3ed6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Bamboo Forest Kyoto" by Noel Reynolds, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/bamboo_forest.jpg` (a wall print)
+
+#### Shibuya by night
+
+- Author: kazuletokyoite
+- Source: https://www.flickr.com/photos/chaojikazu/415349868 (Open Images ID ac18f2609189ed0c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Shibuya by night" by kazuletokyoite, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/shibuya_night.jpg` (a wall print)
+
+#### Ramen Tatsu
+
+- Author: kennejima
+- Source: https://www.flickr.com/photos/kennejima/9611376100 (Open Images ID ab5db1052892491e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Ramen Tatsu" by kennejima, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/ramen_bowl.jpg` (a wall print)
+
+#### Tonkotsu Ramen from Ramen O-San
+
+- Author: insatiablemunch
+- Source: https://www.flickr.com/photos/insatiablemunchies/16426322035 (Open Images ID 696a74b550a2fd80)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tonkotsu Ramen from Ramen O-San" by insatiablemunch, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/tonkotsu_ramen.jpg` (a wall print)
+
+#### Spicy Niboshi Ramen @ Nagi Niboshio @ Shibuya
+
+- Author: Guilhem Vellut
+- Source: https://www.flickr.com/photos/o_0/12502420275 (Open Images ID ae758b012fe3675d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Spicy Niboshi Ramen @ Nagi Niboshio @ Shibuya" by Guilhem Vellut, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/niboshi_ramen.jpg` (a wall print)
+
+#### Sushi
+
+- Author: Paul Robinson
+- Source: https://www.flickr.com/photos/paulrobinson/5648546622 (Open Images ID 7fe88f740b443ce2)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Sushi" by Paul Robinson, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/sushi_plate.jpg` (a wall print)
+
+#### Tuna, Tokyo Fish Market
+
+- Author: Jay Bergesen
+- Source: https://www.flickr.com/photos/jaybergesen/151683430 (Open Images ID 03457334cfcf9fbe)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tuna, Tokyo Fish Market" by Jay Bergesen, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/tuna_market.jpg` (a wall print)
+
+#### Shinto shrine north of Takeshima
+
+- Author: Ken Mayer
+- Source: https://www.flickr.com/photos/ken_mayer/4888390682 (Open Images ID a3e27363e1851c4f)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Shinto shrine north of Takeshima" by Ken Mayer, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/shinto_shrine.jpg` (a wall print)
+
+#### Sakura in bloom @ Kitanomaru Garden
+
+- Author: Guilhem Vellut
+- Source: https://www.flickr.com/photos/o_0/13507918384 (Open Images ID 9158122036a2a8bb)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Sakura in bloom @ Kitanomaru Garden" by Guilhem Vellut, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/camellia.jpg` (a wall print)
+
+#### Expo Park Sakura
+
+- Author: Chris Gladis
+- Source: https://www.flickr.com/photos/mshades/2370381055 (Open Images ID 8a80deec6eddc365)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Expo Park Sakura" by Chris Gladis, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/sakura_branch.jpg` (a wall print)
+
+#### Koi Fish
+
+- Author: Scott Oves
+- Source: https://www.flickr.com/photos/silicon640c/7330406480 (Open Images ID b44438f638c80b08)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Koi Fish" by Scott Oves, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/koi_fish.jpg` (a wall print)
+
+#### Bubbles and Koi
+
+- Author: Caitlin Doe
+- Source: https://www.flickr.com/photos/crazycatchthecat/4492112533 (Open Images ID a30b783d5a0fa64f)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Bubbles and Koi" by Caitlin Doe, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/koi_pond.jpg` (a wall print)
+
+#### Tundra the Snowy Owl
+
+- Author: Will Thomas
+- Source: https://www.flickr.com/photos/96491161@N03/11343754276 (Open Images ID 3ba77b66efaaa00f)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tundra the Snowy Owl" by Will Thomas, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/snowy_owl.jpg` (a wall print)
+
+#### Arctic fox
+
+- Author: NASA ICE
+- Source: https://www.flickr.com/photos/nasa_ice/16815839970 (Open Images ID 594d8d6107291df2)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Arctic fox" by NASA ICE, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/arctic_fox.jpg` (a wall print)
+
+#### Red Panda aka FireFox
+
+- Author: Mike Bowler
+- Source: https://www.flickr.com/photos/mbowler/2395176469 (Open Images ID 1a815b736f2bcf06)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Red Panda aka FireFox" by Mike Bowler, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/red_panda.jpg` (a wall print)
+
+#### Grumpy Penguin
+
+- Author: Karri Huhtanen
+- Source: https://www.flickr.com/photos/damork/9172985482 (Open Images ID 1654d220ef8dfb40)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Grumpy Penguin" by Karri Huhtanen, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/penguin.jpg` (a wall print)
+
+#### young kitten
+
+- Author: Angelin Song
+- Source: https://www.flickr.com/photos/96308648@N05/8885888537 (Open Images ID 15fab63c26dd0012)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "young kitten" by Angelin Song, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/kitten_grey.jpg` (a wall print)
+
+#### Fireworks 2
+
+- Author: Sonja Lovas
+- Source: https://www.flickr.com/photos/sonjalovas/4666272054 (Open Images ID 29f045f0b28400e4)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Fireworks 2" by Sonja Lovas, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/fireworks_burst.jpg` (a wall print)
+
+#### Satamisaki Lighthouse
+
+- Author: hiroaki
+- Source: https://www.flickr.com/photos/hwat/16536205690 (Open Images ID 59d6fb527f4930ee)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Satamisaki Lighthouse" by hiroaki, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/lighthouse_island.jpg` (a wall print)
+
+#### Waterfall @ Cameron Highlands, Malaysia
+
+- Author: Tim Parkinson
+- Source: https://www.flickr.com/photos/timparkinson/205467571 (Open Images ID 7bc74f844c4a79ae)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Waterfall @ Cameron Highlands, Malaysia" by Tim Parkinson, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/waterfall.jpg` (a wall print)
+
+#### Saturn Rocket
+
+- Author: Milan Boers
+- Source: https://www.flickr.com/photos/milanboers/3506607667 (Open Images ID e99305af8f07d33e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Saturn Rocket" by Milan Boers, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/saturn_rocket.jpg` (a wall print)
+
+#### Tulips
+
+- Author: FotoGuy 49057
+- Source: https://www.flickr.com/photos/fotoguy49057/16688185916 (Open Images ID d4457bb0551265a6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tulips" by FotoGuy 49057, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/tulips.jpg` (a wall print)
+
+#### sunflower two
+
+- Author: Jean Rogers
+- Source: https://www.flickr.com/photos/supergran/4323776584 (Open Images ID ad785bfa3fba1db6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "sunflower two" by Jean Rogers, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/sunflowers.jpg` (a wall print)
+
+#### Hong Kong Tram
+
+- Author: Andrew Hitchcock
+- Source: https://www.flickr.com/photos/adpowers/20870250 (Open Images ID 95a1a8b139845a76)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Hong Kong Tram" by Andrew Hitchcock, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/forest_railway.jpg` (a wall print)
+
+#### Dinosaur at Parc de Prehistoire
+
+- Author: Andy Hay
+- Source: https://www.flickr.com/photos/andyhay/15085992095 (Open Images ID 3e7203df7270b059)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Dinosaur at Parc de Prehistoire" by Andy Hay, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/dinosaur.jpg` (a wall print)
+
+#### The Ferris Wheel
+
+- Author: Battle Creek CVB
+- Source: https://www.flickr.com/photos/battlecreekcvb/5430554075 (Open Images ID b85f66e46dfe5707)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "The Ferris Wheel" by Battle Creek CVB, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/ferris_wheel.jpg` (a wall print)
+
+#### The Lantern Festival
+
+- Author: Martin Chen
+- Source: https://www.flickr.com/photos/rla579/2288136299 (Open Images ID 875667d43e5399c0)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "The Lantern Festival" by Martin Chen, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/lantern_festival.jpg` (a wall print)
+
+#### Chinese Lanterns
+
+- Author: Bogdan Migulski
+- Source: https://www.flickr.com/photos/migulski/158732540 (Open Images ID 2745b217667bddbf)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Chinese Lanterns" by Bogdan Migulski, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/lantern_corridor.jpg` (a wall print)
+
+#### Fuji
+
+- Author: leighklotz
+- Source: https://www.flickr.com/photos/leighklotz/16268822043 (Open Images ID 2eb2032ec57f7ebf)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Fuji" by leighklotz, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/wisteria.jpg` (a wall print)
+
+#### 弘前市 Hirosaki City, Frozen apples
+
+- Author: Ari Helminen
+- Source: https://www.flickr.com/photos/picsoflife/6734373901/ (Open Images ID 3c293f2af69faf4c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "弘前市 Hirosaki City, Frozen apples" by Ari Helminen, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/snow_apple.jpg` (a wall print)
+
+#### Lake Manitouwabing
+
+- Author: Jim Marshall
+- Source: https://www.flickr.com/photos/aboutparrysound/5148747107 (Open Images ID f0150ba38fd38bd0)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Lake Manitouwabing" by Jim Marshall, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/lake_islands.jpg` (a wall print)
+
+#### Snow leopard
+
+- Author: Roger Ahlbrand
+- Source: https://www.flickr.com/photos/rogersview/4613300543 (Open Images ID 1b086e36b62a2151)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Snow leopard" by Roger Ahlbrand, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/snow_leopard.jpg` (a wall print)
+
+#### Penguins, Bergen zoo
+
+- Author: Michela Simoncini
+- Source: https://www.flickr.com/photos/comunicati/8614527612 (Open Images ID a0d143b2e76221c4)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Penguins, Bergen zoo" by Michela Simoncini, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/penguins.jpg` (a wall print)
+
+#### Panda Sleeping
+
+- Author: Owen Byrne
+- Source: https://www.flickr.com/photos/ojbyrne/2632062081 (Open Images ID 7d819a9b9a563e7b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Panda Sleeping" by Owen Byrne, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/panda.jpg` (a wall print)
+
+#### Vegas Neon Sign in Daylight
+
+- Author: MsSaraKelly
+- Source: https://www.flickr.com/photos/mssarakelly/14281025644 (Open Images ID ebb27557bbeaa7e5)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Vegas Neon Sign in Daylight" by MsSaraKelly, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/neon_sign.jpg` (a wall print)
+
+#### Pagoda
+
+- Author: tess/
+- Source: https://www.flickr.com/photos/davenport/33893588 (Open Images ID 6f3f5d36fa8793bc)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Pagoda" by tess/, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/peace_pagoda.jpg` (a wall print)
+
+#### Kawai Kanjiro's House, Kyoto
+
+- Author: np&djjewell
+- Source: https://www.flickr.com/photos/10110263@N03/4607483765 (Open Images ID d7a6cc325ae04b7c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Kawai Kanjiro's House, Kyoto" by np&djjewell, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/kawai_house.jpg` (a wall print)
+
+#### Bonfire on the beach
+
+- Author: Tobias Toft
+- Source: https://www.flickr.com/photos/tobiastoft/3704807740 (Open Images ID 49e8408820ae6f28)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Bonfire on the beach" by Tobias Toft, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/beach_bonfire.jpg` (a wall print)
+
+#### Covehead lighthouse
+
+- Author: Andrea Schaffer
+- Source: https://www.flickr.com/photos/aschaf/7618357174 (Open Images ID 69abafd1450b5203)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Covehead lighthouse" by Andrea Schaffer, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/lighthouse.jpg` (a wall print)
+
+#### kittens
+
+- Author: Alachua County
+- Source: https://www.flickr.com/photos/alachuacounty/16734351962 (Open Images ID ab59703165cd4e16)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "kittens" by Alachua County, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/black_kittens.jpg` (a wall print)
+
+#### One of our kittens
+
+- Author: David~O
+- Source: https://www.flickr.com/photos/8106459@N07/1813130354 (Open Images ID c5fc3ac209ec4026)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "One of our kittens" by David~O, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/fluffy_kitten.jpg` (a wall print)
+
+#### Lake Fryxell
+
+- Author: Simon Steinberger
+- Source: https://www.flickr.com/photos/91435925@N04/8299098493 (Open Images ID fa7ef2cc42a86068)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Lake Fryxell" by Simon Steinberger, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/frozen_lake.jpg` (a wall print)
+
+#### autumn leaves
+
+- Author: wracam
+- Source: https://www.flickr.com/photos/40666961@N06/15529581262 (Open Images ID 3c36b35792077022)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "autumn leaves" by wracam, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/cat_in_leaves.jpg` (a wall print)
+
+#### Waterfall ice cave
+
+- Author: Guttorm Flatabø
+- Source: https://www.flickr.com/photos/dittaeva/4382717864 (Open Images ID d4bcc6f610320728)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Waterfall ice cave" by Guttorm Flatabø, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/ice_cave.jpg` (a wall print)
+
+#### Tappi-Kaitei Station
+
+- Author: Kzaral
+- Source: https://www.flickr.com/photos/kzaral/8417577570 (Open Images ID 41062afb85d538e6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tappi-Kaitei Station" by Kzaral, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/tappi_station.jpg` (a wall print)
+
+#### Sandia Peak Sunset
+
+- Author: John Fowler
+- Source: https://www.flickr.com/photos/snowpeak/11361194135 (Open Images ID da63faf7420d01fb)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Sandia Peak Sunset" by John Fowler, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/sunset_peak.jpg` (a wall print)
+
+#### Maldives islands, Indian Ocean
+
+- Author: flowcomm
+- Source: https://www.flickr.com/photos/flowcomm/15071737036 (Open Images ID ac11b36e6b2a747e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Maldives islands, Indian Ocean" by flowcomm, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/atoll.jpg` (a wall print)
+
+#### The Forbidden City
+
+- Author: whatleydude
+- Source: https://www.flickr.com/photos/whatleydude/5682747913 (Open Images ID 6e0bd79b44facceb)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "The Forbidden City" by whatleydude, licensed under CC BY 2.0
+- Shipped as: `img/photos/prints/forbidden_city.jpg` (a wall print)
+
 ## Licences
 
 - CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/ (no attribution required; credited anyway)

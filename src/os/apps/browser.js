@@ -27,7 +27,7 @@ const looksLikeUrl = (s) => /^[a-z]+:\/\//i.test(s) || (/^[^\s]+\.[a-z]{2,}([/?]
 export function installBrowser(game, os) {
   const st = os.st.web ||= { bookmarks: null, visited: {}, history: [], dialed: false };
   st.bookmarks ||= [
-    ['CapsuleNet', 'http://www.capsule.ne.jp/'], ['GACHA-MART', 'http://www.gacha-mart.co.jp/'], ['Morio Shimbun', 'http://www.morio-shimbun.jp/'],
+    ['CapsuleNet', 'http://www.capsule.ne.jp/'], ['Off-Hobby', 'http://www.off-hobby.jp/'], ['Morio Shimbun', 'http://www.morio-shimbun.jp/'],
     ['Tenki Net Weather', 'http://www.tenki.ne.jp/'], ['BuzzLane Ads', 'http://www.buzzlane.jp/'], ['Daikoku Toy Wholesale', 'http://www.daikoku-toys.co.jp/'],
   ];
   const sites = new Map();

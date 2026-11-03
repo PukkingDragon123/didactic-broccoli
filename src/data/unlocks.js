@@ -3,7 +3,8 @@
 //   slots:<n>          room for n machines              shelf:<n>     the n-th wall shelf
 //   opener:<tier>      capsule opener tier              charm:<id>    lucky charm on the shrine shelf
 //   goods:<id>         shop goods (src/game/goods.js)   decor:<cat>   shop furniture / decor category
-//   market:<what>      second-hand marketplace          staff:<n>     hire the n-th employee
+//   market:<what>      Off-Hobby (src/market): buy, sell, auction, grading and the shop's categories
+//                      (clothes, tipjar, display, junk, charms)            staff:<n>     hire the n-th employee
 //   museum, museum:expand<n>                            the warehouse museum and its expansions
 // Ids that are not in the table are never locked.
 import { SERIES } from './series/index.js';
@@ -18,6 +19,8 @@ const NAMES = {
   'goods:tip_jar': 'Museum tip jar', 'goods:furin': 'Museum wind chime', 'goods:ticket_machine': 'Museum ticket machine',
   'decor:posters': 'Posters and signs', 'decor:plants': 'Potted plants', 'decor:lights': 'Lamps and string lights', 'decor:retro': 'Showa furniture', 'decor:premium': 'Premium fittings',
   'market:buy': 'Second-hand figure market', 'market:sell': 'Sell to collectors', 'market:auction': 'Collector auctions',
+  'market:clothes': 'Off-Hobby thrift clothes', 'market:tipjar': 'Off-Hobby tip jars', 'market:display': 'Off-Hobby shelves and stands',
+  'market:junk': 'Off-Hobby junk lots', 'market:charms': 'Off-Hobby luck charms', 'market:grading': 'KGS figure grading',
   'staff:1': 'Hire a part-timer', 'staff:2': 'Hire a second helper',
   museum: 'Museum licence (back warehouse)', 'museum:expand1': 'Museum expansion I', 'museum:expand2': 'Museum expansion II', 'museum:expand3': 'Museum expansion III',
 };
@@ -27,12 +30,12 @@ const KINDS = { machine: 'Machine', slots: 'Space', shelf: 'Furniture', opener: 
 // level -> ids (series licences are added below: a series' `order` is its level)
 const TABLE = {
   1: ['machine:retro', 'slots:2', 'shelf:1'],
-  2: ['goods:capsule_bin', 'decor:posters'],
-  3: ['machine:standard', 'slots:3', 'opener:1'],
+  2: ['goods:capsule_bin', 'decor:posters', 'market:clothes', 'market:tipjar'],
+  3: ['machine:standard', 'slots:3', 'opener:1', 'market:display', 'market:junk'],
   4: ['shelf:2', 'market:buy'],
-  5: ['charm:maneki', 'decor:plants'],
+  5: ['charm:maneki', 'decor:plants', 'market:charms'],
   6: ['slots:4', 'goods:neon_open', 'market:sell'],
-  7: ['decor:lights'],
+  7: ['decor:lights', 'market:grading'],
   8: ['machine:deluxe', 'charm:daruma'],
   9: ['shelf:3', 'opener:2'],
   10: ['slots:5', 'staff:1'],

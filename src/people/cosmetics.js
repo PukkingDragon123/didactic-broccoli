@@ -499,6 +499,7 @@ export function applyCosmeticSpec(spec, look = {}) {
     spec.top = { kind: 'happi', col: hex(0x2a3f78), col2: hex(0xc8302a), col3: hex(0xf4f0e4), sleeve: 'mid' };
     spec.acc = spec.acc.filter((a) => a.kind !== 'backpack' && a.kind !== 'randoseru');
   } else if (out?.id === 'box') spec.acc = spec.acc.filter((a) => !['backpack', 'randoseru', 'shoulderbag', 'tote', 'camera', 'apron'].includes(a.kind));
+  else if (out?.spec) out.spec(spec); // catalogue entries that bring their own look (thrift tees, src/market/thrift.js)
   // anything covering the whole head tucks the hair in (only the hair below the band stays)
   if (hat?.cover || out?.hood) spec.hat = { kind: 'hood' };
   else if (hat) spec.hat = null;

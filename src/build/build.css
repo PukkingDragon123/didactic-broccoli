@@ -1,0 +1,20 @@
+/* Hirano Kagu, the furniture store web page (src/build/shopSite.js), in the 1999 look of the other sites. */
+.hk { background: #f6efdc; color: #2a2016; font: 13px/1.35 "Pixelify Sans", "DotGothic16", sans-serif; padding: 0 0 12px; min-height: 100%; }
+.hk-head { background: #6a3e1e; color: #f6e6c4; padding: 8px 12px; display: flex; gap: 10px; align-items: baseline; border-bottom: 4px solid #c8902a; }
+.hk-head b { font-family: "DotGothic16", monospace; font-size: 22px; }
+.hk-head span { font-family: "Alagard", serif; font-size: 16px; letter-spacing: 2px; }
+.hk-head i { margin-left: auto; font-size: 11px; opacity: .8; }
+.hk-tabs { padding: 6px 12px; background: #ead8b0; border-bottom: 1px solid #c8b088; }
+.hk-tabs a { color: #6a3e1e; }
+.hk-tabs a.on { font-weight: bold; color: #c8302a; text-decoration: none; }
+.hk-note { margin: 8px 12px; padding: 4px 8px; background: #fff8e4; border: 1px dashed #c8b088; font-size: 12px; }
+.hk-item { display: flex; gap: 10px; align-items: center; margin: 6px 12px; padding: 6px; background: #fffaf0; border: 1px solid #d8c8a4; }
+.hk-th { width: 72px; height: 72px; image-rendering: pixelated; background: #efe4c8; flex: none; }
+.hk-txt { flex: 1; }
+.hk-txt small { color: #8a7a5a; }
+.hk-txt p { margin: 2px 0; }
+.hk-does { color: #2a5aa8; font-size: 12px; }
+.hk-buy { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 90px; }
+.hk-price { font-size: 16px; color: #c8302a; font-weight: bold; }
+.hk-lock { font-size: 11px; color: #8a7a5a; }
+.hk-foot { margin: 10px 12px 0; font-size: 11px; color: #8a7a5a; }

@@ -12,6 +12,9 @@ export const HUMAN_PRESETS = [
   { id: 'construction', name: 'Construction Worker' }, { id: 'shopkeeper', name: 'Shopkeeper' },
   // the lane's three regulars (src/npc): never picked for the street (no STREET_WEIGHTS entry)
   { id: 'rohan', name: 'Kishibe Rohan' }, { id: 'josuke', name: 'Josuke' }, { id: 'okuyasu', name: 'Okuyasu' },
+  // more named locals (src/npc/roster.js): never picked for the street either
+  { id: 'hatoda', name: 'Mr. Hatoda' }, { id: 'gonta', name: 'Gonta' }, { id: 'kuromaru', name: 'Lord Kuromaru' },
+  { id: 'gomuzo', name: 'Captain Gomuzo' }, { id: 'yabuki', name: 'Mr. Yabuki' }, { id: 'kusaka', name: 'Dr. Kusaka' },
 ];
 // how often each preset shows up on the street (randomHuman)
 export const STREET_WEIGHTS = { salaryman: 3, office_lady: 2.5, schoolgirl: 2, schoolboy: 2, grandma: 2, grandpa: 2, kid: 1.6, tourist: 1.4, otaku: 1.2, gyaru: 1, mom: 1.6, delivery: 0.9, construction: 0.7, shopkeeper: 0 };
@@ -289,6 +292,90 @@ Object.assign(BUILD, {
     shoes: { kind: 'sneaker', col: [236, 234, 228], col2: [200, 50, 50] }, socks: { col: [236, 236, 236] },
     acc: [],
     walk: { style: 'heavy' },
+  }),
+});
+
+// ------------------------------------------------------------------ more named locals (src/npc/roster.js)
+Object.assign(BUILD, {
+  // the pigeon man: flat cap, round glasses, a tweedy jacket and a bag of bread crusts
+  hatoda: () => ({
+    sex: 'm', age: 'elder', H: 1.62, build: 0.98, belly: 0.35,
+    skin: SKIN.medium,
+    hair: { style: 'short', col: HAIR.grey, grey: 1 },
+    face: { wrinkles: 1, spots: 1, mustache: true, browW: 1.3, lipFull: 0.75, stubble: 0.2 },
+    glasses: { kind: 'round', col: [70, 50, 34], thick: 1 },
+    hat: { kind: 'flatcap', col: hex(0x6a6a52) },
+    top: { kind: 'jacket', col: hex(0x9a8a6a), shirt: hex(0xe8e0d0) },
+    bottom: { kind: 'slacks', col: hex(0x5a5448), belt: [50, 36, 26] },
+    shoes: { kind: 'sandal', col: hex(0x4a3a2a) }, socks: { col: [236, 236, 232] },
+    acc: [{ kind: 'ecobag', col: hex(0xd8c8a8), leek: false }],
+    walk: { style: 'elder', hunch: 0.5 },
+  }),
+  // the prankster: a cap, a loud tee, shorts, a backpack full of rubber snakes
+  gonta: () => ({
+    sex: 'm', age: 'teen', H: 1.58, build: 0.94,
+    skin: SKIN.warm,
+    hair: { style: 'messy', col: HAIR.soft },
+    face: { blush: 0.5, browW: 1.15, browArch: 1.2 },
+    hat: { kind: 'cap', col: hex(0xe85a2a), col2: [240, 240, 236] },
+    top: { kind: 'tee', col: hex(0xf0c040), print: 'star', col2: hex(0xd83a2a) },
+    bottom: { kind: 'shorts', col: hex(0x3a4a7a) },
+    legs: 'socks', socks: { col: [246, 246, 244] },
+    shoes: { kind: 'sneaker', col: hex(0xf0f0ec), col2: hex(0xd83a2a) },
+    acc: [{ kind: 'backpack', col: hex(0x2a6a3a) }],
+    walk: { style: 'kid' },
+  }),
+  // the self-proclaimed sorcerer: a dark hoodie (hood up: src/npc/looks.js), black jeans, an eyepatch, pale
+  kuromaru: () => ({
+    sex: 'm', age: 'adult', H: 1.73, build: 0.88,
+    skin: SKIN.pale,
+    hair: { style: 'messy', col: HAIR.black },
+    face: { iris: [120, 40, 60], lid: 'double', tilt: 1.1, browW: 0.9, browArch: 1.6, makeup: { liner: 0.7, lash: 0.2 }, lipFull: 0.8 },
+    hat: { kind: 'hood' },
+    top: { kind: 'knit', col: [40, 34, 52], sleeve: 'long' },
+    bottom: { kind: 'jeans', col: [34, 32, 40], belt: [24, 22, 20] },
+    shoes: { kind: 'sneaker', col: hex(0x1e1e22), col2: hex(0xf0f0ec) }, socks: { col: [30, 30, 36] },
+    acc: [],
+    walk: { style: 'slouch' },
+  }),
+  // the straw-hat pirate: a red short-sleeved shirt worn open, rolled denim shorts, sandals, a scar under one eye
+  gomuzo: () => ({
+    sex: 'm', age: 'teen', H: 1.72, build: 0.96,
+    skin: SKIN.warm,
+    hair: { style: 'messy', col: HAIR.black },
+    face: { iris: hex(IRIS.dbrown), lid: 'mono', tilt: 0.2, eyeW: 1.12, eyeH: 1.1, browW: 1.1, lipFull: 1.0, blush: 0.2 },
+    hat: { kind: 'sunhat', col: hex(0xe8c878), col2: hex(0xc02a2a) },
+    top: { kind: 'shirt', col: hex(0xc8282a), sleeve: 'short', open: true },
+    bottom: { kind: 'shorts', col: hex(0x3a5a9a) },
+    shoes: { kind: 'sandal', col: hex(0x6a4a2a) },
+    acc: [],
+    walk: { style: 'young' },
+  }),
+  // the guy in the bush: camouflage-ish work jacket, cargo trousers, a cap, stubble and a pair of binoculars
+  yabuki: () => ({
+    sex: 'm', age: 'adult', H: 1.7, build: 1.0, belly: 0.2,
+    skin: SKIN.medium,
+    hair: { style: 'buzz', col: HAIR.dbrown },
+    face: { stubble: 0.7, browW: 1.3, browArch: 0.4, eyeH: 0.9 },
+    hat: { kind: 'cap', col: hex(0x5a6238), col2: hex(0x3a4226) },
+    top: { kind: 'workjacket', col: hex(0x5e6640), sleeve: 'long' },
+    bottom: { kind: 'cargo', col: hex(0x4a4a34) },
+    shoes: { kind: 'boots', col: hex(0x3a2a20) }, socks: { col: [60, 60, 50] },
+    acc: [{ kind: 'pouch', col: hex(0x3a3a2a) }],
+    walk: { style: 'heavy' },
+  }),
+  // the biologist: an adult woman in field clothes: a sage polo under a khaki vest, cargo trousers, boots, a ponytail
+  kusaka: () => ({
+    sex: 'f', age: 'adult', H: 1.67, build: 0.96, bust: 0.95,
+    skin: SKIN.light,
+    hair: { style: 'ponytail', col: HAIR.dbrown, part: 1 },
+    face: { makeup: { liner: 0.2, lash: 0.5, blush: [230, 150, 140] }, lipstick: hex(0xc07a70), blush: 0.3, browW: 1.0 },
+    glasses: { kind: 'round', col: [120, 90, 60], thick: 1 },
+    top: { kind: 'polo', col: hex(0xcadab8), vest: hex(0x9a8a5e), sleeve: 'long' },
+    bottom: { kind: 'cargo', col: hex(0x7a6e52) },
+    shoes: { kind: 'boots', col: hex(0x5a3a24) }, socks: { col: [120, 110, 90] },
+    acc: [{ kind: 'shoulderbag', col: hex(0x6a4a2a), side: 1 }],
+    walk: { style: 'normal' },
   }),
 });
 

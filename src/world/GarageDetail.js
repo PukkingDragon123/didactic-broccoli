@@ -4,8 +4,8 @@
 //     drain, banded contact AO along every floor / wall / ceiling junction and under the furniture, grime bands;
 //   * structure: wooden joists, steel H-beams, wall columns and girts, skirting, conduit and old knob-and-tube wiring
 //     with porcelain insulators, a breaker panel, outlets with plugged-in cables, inverted-Fuji fluorescent fixtures;
-//   * dressing: coin changer, capsule return box, fire buckets, the sink with its gas water heater, a high shelf of
-//     clutter, window-sill plants and a wind chime, handwritten cards, kids' drawings, a clock and a tear-off calendar;
+//   * dressing (kept to the fixtures: the shop starts empty, you buy and place the rest): coin changer, capsule return
+//     box, the sink with its gas water heater, an empty high shelf, a wind chime, the pink phone, a few notices;
 //   * fake light: additive pixel halos on the ceiling / walls / floor that follow the tubes (no extra real lights).
 // Contract: new GarageDetail(garage, G) after the garage's furniture and lights exist; update() once per frame.
 import * as THREE from 'three';
@@ -579,22 +579,17 @@ export class GarageDetail {
     // ---- left (machine) wall: price & info cards, kids' drawings, the window sill
     const lx = G.minX + 0.004;
     this.card('return', '+x', lx, 1.78, -0.725, 0.2, 0.125, { rot: 0.03 });
-    this.card('drawCat', '+x', lx, 1.72, 0.33, 0.24, 0.18, { rot: -0.05 });
-    this.card('drawGacha', '+x', lx, 1.64, -1.55, 0.24, 0.18, { rot: 0.04 });
-    this.card('newCard', '+x', lx, 1.8, -2.02, 0.17, 0.14, { rot: -0.08 });
     this.card('changeCard', '+x', lx, 1.62, -4.1, 0.2, 0.125, { rot: 0.02 });
     this.card('rules', '+x', lx, 1.72, 4.35, 0.25, 0.28, { rot: -0.03 });
     // window sill plants and a wind chime under the head
     const win = this.garage.window;
-    this.prop('cactus_pot', G.minX + 0.08, win.y0, win.z0 + 0.25, 0.5);
-    this.prop('aloe_pot', G.minX + 0.08, win.y0, win.z1 - 0.3, 1.3);
     this.prop('furin', G.minX + 0.2, win.y1 - 0.03 - 0.264, (win.z0 + win.z1) / 2 + 0.2, Math.PI / 2);
     B.box(m.paint, 0.004, 0.03, 0.004, G.minX + 0.2, win.y1 - 0.035, (win.z0 + win.z1) / 2 + 0.2, { tint: 0xe8e0d0, ao: false });
     // curtain rod and a faded café curtain bunched at one side
     B.box(m.chrome, 0.012, 0.012, win.z1 - win.z0 + 0.2, G.minX + 0.12, win.y1 + 0.02, (win.z0 + win.z1) / 2, { tint: 0xc8ccd0, ao: false });
     for (let i = 0; i < 6; i++) B.box(m.paint, 0.02, win.y1 - win.y0 - 0.04, 0.035, G.minX + 0.11 + (i % 2) * 0.012, win.y0 + 0.03, win.z1 - 0.03 - i * 0.032, { tint: i % 2 ? 0xd8c8a0 : 0xe8dcb8 });
 
-    // ---- right wall: a long high shelf of clutter on steel brackets, breaker-side clock and notes
+    // ---- right wall: a long high shelf on steel brackets (empty: an attach point), the PC corner
     const sx = G.maxX - 0.13, sy = 2.45, sz0 = -1.12, sz1 = 3.78;
     B.box(m.ply, 0.26, 0.025, sz1 - sz0, sx, sy, (sz0 + sz1) / 2, { tint: 0xd8c8b0 });
     B.box(m.wood, 0.02, 0.04, sz1 - sz0, sx - 0.13, sy - 0.015, (sz0 + sz1) / 2, { tint: 0xa88a6a });
@@ -603,46 +598,19 @@ export class GarageDetail {
       B.box(m.steel, 0.02, 0.18, 0.02, G.maxX - 0.01, sy - 0.18, z, { tint: 0x5a6066 });
       B.box(m.steel, 0.012, 0.22, 0.012, G.maxX - 0.09, sy - 0.15, z, { rz: 0.72, tint: 0x5a6066 });
     }
-    const top = sy + 0.025;
-    const cbox = (z, w, h, d, label = null, rot = 0, tint = 0xffffff) => {
-      B.box(m.cb, d, h, w, sx + 0.01, top, z, { ry: rot, tint });
-      B.box(m.paint, d + 0.002, 0.002, 0.05, sx + 0.01, top + h, z, { ry: rot, tint: 0xd8c890, ao: false });
-      if (label) this.card(label, '-x', sx + 0.01 - d / 2 - 0.002, top + h * 0.5, z, Math.min(w * 0.8, 0.2), Math.min(h * 0.6, 0.075));
-    };
-    cbox(-0.86, 0.36, 0.24, 0.22, 'stockLabel');
-    this.prop('capsule_jar', sx + 0.02, top, -0.42, 0.3);
-    this.prop('tin_robot', sx + 0.02, top, -0.12, -Math.PI / 2 + 0.3);
-    this.prop('daruma', sx + 0.02, top, 0.22, -Math.PI / 2 - 0.2);
-    this.prop('screw_jars', sx + 0.02, top, 0.62, -Math.PI / 2);
-    this.prop('paint_tins', sx + 0.0, top, 1.1, -Math.PI / 2 + 0.4, { scale: 0.85 });
-    cbox(1.55, 0.42, 0.3, 0.24, null, 0.05);
-    cbox(1.52, 0.34, 0.16, 0.2, null, -0.12, 0xe8e0d0);
-    cbox(2.0, 0.3, 0.22, 0.22, null, 0.08, 0xe8dcc8);
-    cbox(2.42, 0.32, 0.2, 0.22, 'stockLabel', 0.04);
-    this.prop('manga_stack', sx + 0.02, top, 2.85, 0.5, { scale: 0.7 });
-    cbox(3.3, 0.38, 0.28, 0.23, null, -0.06, 0xf0e4d0);
-    cbox(3.62, 0.26, 0.18, 0.2, 'stockLabel', -0.1);
-    // PC corner: shelf with binders, photo, memo, a tear-off calendar on the back wall
+    // (the shelf starts empty: it is an attach point for small things, src/build/)
+    // PC corner: shelf with binders, a photo and a memo
     const D = this.garage.pcDesk;
     B.box(m.ply, 0.22, 0.02, 1.2, G.maxX - 0.11, 1.78, D.z + 0.05, { tint: 0xd8c8b0 });
     for (const z of [D.z - 0.45, D.z + 0.55]) B.box(m.steel, 0.18, 0.02, 0.02, G.maxX - 0.09, 1.76, z, { tint: 0x5a6066 });
     const binders = [0x2a5aa8, 0x2a5aa8, 0xc8302a, 0x3a8a4a, 0xe8c43a, 0x2a2a2c, 0x2a5aa8];
     binders.forEach((c, i) => B.box(m.gloss, 0.2, 0.26 - (i % 3) * 0.02, 0.045, G.maxX - 0.12, 1.8, D.z - 0.5 + i * 0.05, { tint: c }));
     for (let i = 0; i < 7; i++) B.box(m.paint, 0.002, 0.08, 0.025, G.maxX - 0.221, 1.88, D.z - 0.5 + i * 0.05, { tint: 0xf4f0e6, ao: false });
-    this.prop('manekineko', G.maxX - 0.12, 1.8, D.z + 0.45, -Math.PI / 2 + 0.3);
     this.card('photo', '-x', G.maxX - 0.002, 1.42, D.z - 0.55, 0.12, 0.15, { rot: 0.06 });
     this.card('memo', '-x', G.maxX - 0.002, 1.45, D.z + 0.1, 0.14, 0.14, { rot: -0.08 });
-    this.card('himekuri', '+z', 3.13, 1.62, G.minZ + 0.004, 0.15, 0.21);
-    B.box(m.chrome, 0.012, 0.012, 0.012, 3.13, 1.73, G.minZ + 0.006, { tint: 0x9aa0a6, ao: false });
-    // the back wall: clock over the door, a safety-first board above the racks, the sink with its water heater
-    const cy = G.doorH + 0.5;
-    B.box(m.gloss, 0.36, 0.36, 0.05, 0, cy - 0.18, G.minZ + 0.025, { tint: 0x8a5a32 });
-    this.card('clock', '+z', 0, cy, G.minZ + 0.0515, 0.32, 0.32);
+    // the back wall: a safety-first board above the racks (the clock and calendar are yours to buy and hang)
     this.card('anzen', '+z', -2.65, 2.55, G.minZ + 0.012, 0.6, 0.45, { rot: 0.01 });
     this.card('hinoyojin', '-z', -3.55, 1.75, G.maxZ - 0.012, 0.12, 0.36);
-    this.prop('rope_coil', -3.22, 1.5, G.maxZ - 0.055, Math.PI);
-    this.prop('straw_hat', G.maxX - 0.056, 2.1, 4.62, -Math.PI / 2);
-    B.box(m.chrome, 0.03, 0.01, 0.01, G.maxX - 0.015, 2.47, 4.62, { tint: 0x9aa0a6, ao: false });
     // calendar / tin plate swap space: hooks with a dustpan and a hand brush by the pegboard
     this.decal('smudge', '-x', G.maxX - 0.0012, 1.1, 3.0, 0.4, 0.3, { tint: 0x8a6a50 });
   }
@@ -650,57 +618,15 @@ export class GarageDetail {
   // ---------------------------------------------------------------------------------------------- shop dressing
   dressing() {
     const G = this.G, B = this.B, m = this.m;
-    // gacha corner: the coin changer at the back of the machine row, capsule return box, a crate of spare
-    // capsules and a step stool for little ones in the gaps between the machines (never in front of a slot)
+    // gacha corner: the coin changer at the back of the machine row and the capsule return box (in the gaps between
+    // the machines, never in front of a slot)
     this.prop('coin_changer', -3.73, 0, -4.1, Math.PI / 2, { block: true, phys: true });
     this.prop('capsule_return', -3.45, 0.006, -0.725, Math.PI / 2, { block: true, phys: true });
-    // a carton of spare capsules (taped, labelled) with the jar of loose ones on top
-    const cx = -3.66, cz = 0.33;
-    B.box(m.cb, 0.36, 0.3, 0.42, cx, 0.006, cz, { tint: 0xf4ece0 });
-    B.box(m.paint, 0.362, 0.002, 0.05, cx, 0.306, cz, { tint: 0xd8c890, ao: false });
-    this.card('stockLabel', '+x', cx + 0.182, 0.2, cz, 0.22, 0.08);
-    this.prop('capsule_jar', cx, 0.308, cz, 0.4);
-    this.game.player.addObstacle(cx - 0.2, cx + 0.2, cz - 0.23, cz + 0.23);
-    this.game.physics.addBox({ center: V3(cx, 0.31, cz), half: V3(0.18, 0.31, 0.21), material: 'wood' });
-    this.prop('step_stool', -3.5, 0.006, -1.775, Math.PI / 2, { block: true, phys: true });
-    if (hasProp('asagao_pot')) this.prop('asagao_pot', -3.6, 0.006, -2.83, Math.PI / 2, { block: true, phys: true, scale: 0.8 });
     // the pink public phone (ピンク電話) at the end of the machine row, under the window
     this.prop('pink_phone', -3.72, 0, 2.62, Math.PI / 2, { block: true, phys: true });
-    // coin tray and an abacus on the far corner of the work table
-    const T = this.garage.table;
-    this.prop('coin_tray', T.x - 0.72, T.h, T.z - 0.3, 0.25);
-    this.prop('abacus', T.x - 0.7, T.h, T.z - 0.12, -0.15);
-    // storage along the plywood wall under the collection shelves: cartons, a tied newspaper bundle, flattened boxes
-    const ux = G.maxX - 0.17;
-    const carton = (z, w, h, d, tint, label = null, rot = 0, y = 0) => {
-      B.box(m.cb, d, h, w, ux + (0.15 - d / 2), y, z, { ry: rot, tint });
-      B.box(m.paint, d + 0.002, 0.002, 0.05, ux + (0.15 - d / 2), y + h, z, { ry: rot, tint: 0xd8c890, ao: false });
-      if (label) this.card(label, '-x', ux + 0.15 - d - 0.002, y + h * 0.55, z, Math.min(w * 0.7, 0.2), Math.min(h * 0.4, 0.075));
-    };
-    carton(-0.92, 0.42, 0.32, 0.3, 0xf0e6d8, 'stockLabel', 0.03);
-    carton(-0.5, 0.34, 0.24, 0.28, 0xe0d4c0, null, -0.05);
-    carton(-0.5, 0.26, 0.16, 0.22, 0xf4ece0, null, 0.12, 0.24);
-    // newspapers tied with string
-    for (let i = 0; i < 9; i++) B.box(m.paint, 0.27, 0.022, 0.38, ux + 0.0 + (hash2(i, 5) - 0.5) * 0.02, i * 0.022, -0.02, { ry: (hash2(i, 6) - 0.5) * 0.08, tint: i % 3 ? 0xe8e2d4 : 0xd8d0c0 });
-    for (const dz of [-0.09, 0.09]) B.box(m.paint, 0.275, 0.2, 0.008, ux, 0, -0.02 + dz, { tint: 0xf4f0e6, ao: false });
-    this.prop('cardboard_bundle', G.maxX - 0.235, 0, 1.25, Math.PI / 2, { block: true, phys: true, scale: 0.8 });
-    carton(1.68, 0.36, 0.3, 0.3, 0xe8dcc8, 'stockLabel', -0.04);
-    carton(2.75, 0.44, 0.34, 0.3, 0xf0e6d8, null, 0.04);
-    carton(3.25, 0.32, 0.24, 0.26, 0xe4d8c4, 'stockLabel', -0.08);
-    for (const [z0, z1, h] of [[-1.15, -0.27, 0.42], [-0.22, 0.18, 0.2], [1.5, 1.86, 0.31], [2.52, 3.42, 0.35]]) {
-      this.game.player.addObstacle(G.maxX - 0.34, G.maxX, z0, z1);
-      this.game.physics.addBox({ center: V3(G.maxX - 0.17, h / 2, (z0 + z1) / 2), half: V3(0.17, h / 2, (z1 - z0) / 2), material: 'wood' });
-    }
-    // fire buckets left of the back door (outside the door's swing)
-    this.prop('fire_buckets', -1.02, 0, -4.8, 0.2, { block: true, phys: true });
-    // utility sink with the gas water heater above it, sandals in front
+    // utility sink with the gas water heater above it
     this.prop('utility_sink', 2.62, 0, G.minZ + 0.24, 0, { block: true, phys: true });
     this.prop('water_heater', 2.8, 1.36 - 0.24, G.minZ + 0.2, 0);
-    this.prop('sandals', 2.5, 0.002, -4.32, 0.25);
-    // the PC corner: cord reel under the desk
-    this.prop('cord_reel', 3.72, 0, -4.35, -Math.PI / 2 - 0.3, { phys: true });
-    // paint tins on the beer crates by the shutter
-    this.prop('paint_tins', 2.95, 0.58, 4.5, 0.4, { scale: 0.85 });
     // the long hooked pole for pulling the shutter down, leaning by the left pier
     const hp = V3(-3.12, 0, G.maxZ - 0.09), ht = V3(-3.16, 2.05, G.maxZ - 0.04);
     B.tube(m.steel, [hp, ht], 0.009, { tint: 0x8a8e92, radial: 5 });
@@ -754,7 +680,7 @@ export class GarageDetail {
     blob(-3.25, G.minZ + 0.3, 1.5, 0.75, 0.55); blob(-1.85, G.minZ + 0.3, 1.5, 0.75, 0.55);
     blob(1.25, G.minZ + 0.3, 0.8, 0.8, 0.6); blob(2.62, G.minZ + 0.3, 0.9, 0.7, 0.5);
     blob(-0.95, 1.55, 0.7, 0.7, 0.5); blob(3.55, -2.15, 0.7, 0.7, 0.5); blob(3.55, -2.78, 0.75, 0.75, 0.5);
-    blob(2.95, 4.5, 0.7, 0.6, 0.5); blob(-2.65, 4.5, 0.8, 0.8, 0.5); blob(-3.55, 3.78, 0.75, 1.9, 0.4); blob(-3.72, 2.62, 0.5, 0.55, 0.5); blob(3.62, 4.66, 0.7, 0.75, 0.4);
+    blob(-3.72, 2.62, 0.5, 0.55, 0.5);
     blob(-3.73, -4.1, 0.55, 0.6, 0.5);
     for (const sz of [-3.35, -2.3, -1.25, -0.2, 0.85, 1.9]) blob(-3.42, sz, 0.62, 0.62, 0.45, 0.0075);
     for (const sz of [-0.55, 1.25, 3.05]) blob(3.88, sz, 0.3, 1.5, 0.35);

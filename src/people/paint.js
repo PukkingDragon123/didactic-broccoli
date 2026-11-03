@@ -398,6 +398,11 @@ function makePainters(spec, P) {
         if (T.print === 'circle') m = Math.hypot(dx, dy) < r && Math.hypot(dx, dy) > r * 0.55;
         else if (T.print === 'star') { const a = Math.atan2(dy, dx), rr = r * (0.55 + 0.45 * Math.abs(Math.cos(a * 2.5))); m = Math.hypot(dx, dy) < rr; }
         else if (T.print === 'heart') { const X = dx / r, Y = dy / r + 0.2; m = (X * X + Y * Y - 0.5) ** 3 - X * X * Y * Y * Y < 0; }
+        else if (T.print === 'pix' && T.pix) {
+          // a pixel picture (thrift tees: { w, h, data: [r, g, b, ...] }) in a square on the chest
+          const s = r * 1.25, u = (dx + s) / (2 * s), w = 1 - (dy + s) / (2 * s);
+          if (u >= 0 && u < 1 && w >= 0 && w < 1) { const i = (Math.floor(w * T.pix.h) * T.pix.w + Math.floor(u * T.pix.w)) * 3; shadeInto(o, [T.pix.data[i], T.pix.data[i + 1], T.pix.data[i + 2]], bodyK(c) * 0.98); }
+        }
         if (m) shadeInto(o, T.col2, bodyK(c) * 0.98);
       }
     }

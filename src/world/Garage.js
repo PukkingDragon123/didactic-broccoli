@@ -1,4 +1,5 @@
-// The garage: architecture, outside street at dusk, lighting, clutter and fixed interactables.
+// The garage: architecture, outside street at dusk, lighting and fixed interactables. It starts nearly empty: the
+// furniture and decor you buy are placed with the builder (src/build/) on the attach points below (ATTACH).
 import * as THREE from 'three';
 import { worldBox, worldPlane, pixMat, boxMesh, colMat } from '../gfx/geo.js';
 import { posterTexture, Pix } from '../gfx/textures.js';
@@ -14,6 +15,54 @@ export const GARAGE = { minX: -4, maxX: 4, minZ: -5, maxZ: 5, height: 3.2, shutt
 export const MACHINE_SLOTS = [-0.2, 0.85, -1.25, 1.9, -2.3, -3.35].map((z) => ({ x: -3.42, z, rotY: Math.PI / 2 }));
 // Collection shelves on the right wall (centre z), facing -x
 export const SHELF_SLOTS = [-0.55, 1.25, 3.05].map((z) => ({ x: 3.93, z, rotY: -Math.PI / 2 }));
+
+// Attach points for placing furniture and decor (src/build/Builder.js). All world-space, the garage being fixed.
+//   surfaces: flat tops you can put small things on: { id, x0, x1, z0, z1, y, h (headroom) }
+//   walls: hanging zones: { id, face ('+x' wall at x = minX facing +x, '-x', '+z'), at (the wall plane), u0, u1 (along the
+//          wall: z for the side walls, x for the back wall), y0, y1 }
+//   wallBlock: what is already on the walls: { face, u0, u1, y0, y1 }
+//   floorBlock: fixed things standing on the floor that aren't player obstacles; keepClear: segments people walk
+//          along and spots that must stay free: { a: [x, z], b: [x, z], r }
+const RACK_Y = [0.08, 0.62, 1.16, 1.7];
+export const ATTACH = {
+  surfaces: [
+    { id: 'table', x0: -0.68, x1: 1.08, z0: -0.33, z1: 0.53, y: 0.78, h: 0.7 },
+    { id: 'desk', x0: 3.29, x1: 3.95, z0: -4.68, z1: -3.2, y: 0.74, h: 0.9 },
+    ...[-3.25, -1.85].flatMap((x, r) => RACK_Y.map((y, i) => ({ id: `rack${r}_${i}`, x0: x - 0.58, x1: x + 0.58, z0: -4.92, z1: -4.5, y: y + 0.0125, h: i < 3 ? 0.5 : 0.9 }))),
+    { id: 'highShelf', x0: 3.75, x1: 3.98, z0: -1.1, z1: 3.76, y: 2.475, h: 0.5 },
+    { id: 'sill', x0: -3.99, x1: -3.83, z0: 1.0, z1: 2.7, y: 1.75, h: 0.55 },
+  ],
+  walls: [
+    { id: 'back', face: '+z', at: -4.995, u0: -3.95, u1: 3.95, y0: 0.35, y1: 2.9 },
+    { id: 'right', face: '-x', at: 3.995, u0: -4.9, u1: 4.9, y0: 0.35, y1: 2.42 },
+    { id: 'left', face: '+x', at: -3.995, u0: -4.9, u1: 4.9, y0: 1.0, y1: 2.7 },
+  ],
+  wallBlock: [
+    { face: '+z', u0: -0.82, u1: 0.82, y0: 0, y1: 2.25 }, // the back door and its frame
+    { face: '+z', u0: 0.78, u1: 0.98, y0: 1.1, y1: 3.2 }, // light switch and conduit
+    { face: '+z', u0: 0.93, u1: 1.31, y0: 1.75, y1: 3.2 }, // breaker panel
+    { face: '+z', u0: -3.95, u1: -1.2, y0: 0, y1: 1.98 }, // the steel racks
+    { face: '+z', u0: -2.97, u1: -2.33, y0: 2.3, y1: 2.8 }, // the safety-first board
+    { face: '+z', u0: 0.9, u1: 1.6, y0: 0, y1: 1.2 }, // fridge and radio
+    { face: '+z', u0: 2.1, u1: 3.2, y0: 0, y1: 1.7 }, // the sink and the water heater
+    { face: '+z', u0: 3.2, u1: 3.95, y0: 0, y1: 0.8 }, // the PC desk end
+    { face: '-x', u0: -4.75, u1: -3.15, y0: 0, y1: 2.1 }, // the PC desk, its shelf, photos
+    { face: '-x', u0: -3.1, u1: -1.85, y0: 0, y1: 0.6 }, // sell box and storage bin
+    { face: '+x', u0: -4.45, u1: -3.75, y0: 0, y1: 1.4 }, // coin changer
+    { face: '+x', u0: 0.95, u1: 2.75, y0: 1.6, y1: 2.75 }, // the window
+    { face: '+x', u0: -1.48, u1: 0.28, y0: 2.12, y1: 2.7 }, // the GACHA CORNER light box
+    { face: '+x', u0: -4.9, u1: 4.9, y0: 2.7, y1: 3.3 }, // lanterns and wiring
+  ],
+  keepClear: [
+    { a: [0.4, 5.2], b: [0.4, 4.2], r: 0.45 }, // in under the shutter
+    { a: [0.4, 4.2], b: [-2.2, 3.1], r: 0.42 }, // customers' path to the machines
+    { a: [-2.45, 3.1], b: [-2.45, -3.6], r: 0.42 }, // ...and along the machine row
+    { a: [1.6, 4.1], b: [1.6, 4.1], r: 0.62 }, // the delivery spot
+    { a: [0, -4.4], b: [0, -3.9], r: 0.75 }, // the museum door swing
+    { a: [2.95, -3.9], b: [2.6, -3.4], r: 0.38 }, // the PC chair
+    { a: [3.05, -2.45], b: [3.05, -2.45], r: 0.3 }, // in front of the sell box and bin
+  ],
+};
 
 export class Garage {
   constructor(game) {
@@ -105,11 +154,6 @@ export class Garage {
 
     // right wall (x=+4): plywood boards (hobby wall)
     this.solid(0.2, H, 10.4, ply, G.maxX + 0.1, 0, 0, { player: true });
-    // pegboard over the right wall near the front
-    const peg = boxMesh(0.02, 0.9, 1.1, pixMat('pegboard', { roughness: 0.9 }));
-    peg.position.set(G.maxX - 0.02, 1.55, 4.3);
-    this.bake(peg);
-    this.buildTools(G.maxX - 0.04, 1.55, 4.36);
 
     // back wall (z=-5): exposed concrete with the museum door opening
     const dh = G.doorHalf;
@@ -269,8 +313,6 @@ export class Garage {
     mat.receiveShadow = true;
     this.bake(mat);
     this.sprop('desk_lamp', T.x + 0.68, T.h, T.z - 0.28, -Math.PI * 0.75, { fallbackSize: [0.2, 0.5, 0.3], fallbackColor: 0x334455 });
-    this.sprop('manga_stack', T.x + 0.62, T.h, T.z + 0.22, 0.3, { fallbackSize: [0.3, 0.3, 0.22], scale: 0.7 });
-    this.sprop('stool', T.x - 0.3, 0, T.z + 0.85, 0.4, { fallbackSize: [0.35, 0.45, 0.35] });
     // shadow under the table top on the low shelf
     const sh = boxMesh(T.w - 0.22, 0.002, T.d - 0.22, colMat(0x2a2420, { roughness: 1, extra: { transparent: true, opacity: 0.35, depthWrite: false } }), { cast: false });
     sh.position.set(T.x, 0.194, T.z);
@@ -308,45 +350,9 @@ export class Garage {
       this.game.player.addObstacle(x - w / 2, x + w / 2, z - d / 2, z + d / 2);
       return levels;
     };
-    const lv1 = rack(-3.25, G.minZ + 0.3);
-    const lv2 = rack(-1.85, G.minZ + 0.3);
-    const cb = pixMat('cardboard', { roughness: 0.95, bump: 1 });
-    const tapeMat = colMat(0xc8a878, { roughness: 0.4, extra: { transparent: true, opacity: 0.85 } });
-    const labels = new Map();
-    const labelMat = (key) => {
-      if (!labels.has(key)) labels.set(key, new THREE.MeshStandardMaterial({ map: posterTexture(key, 72, 40), roughness: 0.9 }));
-      return labels.get(key);
-    };
-    const box = (x, y, z, w, h, d, label = null, rot = 0) => {
-      const b = boxMesh(w, h, d, cb);
-      b.position.set(x, y + h / 2, z); b.rotation.y = rot;
-      // packing tape
-      const tape = boxMesh(w + 0.002, 0.002, 0.05, tapeMat, { cast: false });
-      tape.position.set(0, h / 2 + 0.001, 0);
-      b.add(tape);
-      if (label) {
-        const lab = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(w * 0.85, 0.36), Math.min(h * 0.7, 0.2)), labelMat(label));
-        lab.position.set(0, 0, d / 2 + 0.002);
-        b.add(lab);
-      }
-      this.bake(b);
-      return b;
-    };
-    box(-3.55, lv1[0] + 0.012, G.minZ + 0.32, 0.5, 0.36, 0.4, 'mikanBox');
-    box(-3.0, lv1[0] + 0.012, G.minZ + 0.3, 0.42, 0.42, 0.38, 'capsuleStock');
-    box(-3.4, lv1[1] + 0.012, G.minZ + 0.3, 0.55, 0.3, 0.4, 'fragile');
-    this.sprop('toolbox', -2.95, lv1[1] + 0.012, G.minZ + 0.32, 0.1, { fallbackSize: [0.45, 0.22, 0.2], fallbackColor: 0xc82a2a });
-    this.sprop('crt_tv', -3.3, lv1[2] + 0.012, G.minZ + 0.3, 0.15, { fallbackSize: [0.5, 0.55, 0.45], scale: 0.85 });
-    this.sprop('helmet', -2.85, lv1[2] + 0.012, G.minZ + 0.32, -0.4, { fallbackSize: [0.26, 0.16, 0.3] });
-    box(-3.4, lv1[3] + 0.012, G.minZ + 0.3, 0.45, 0.25, 0.38, null, 0.05);
-    box(-2.95, lv1[3] + 0.012, G.minZ + 0.3, 0.32, 0.2, 0.3, 'mikanBox', -0.1);
-    this.sprop('capsule_crate', -2.05, lv2[0] + 0.012, G.minZ + 0.3, 0, { fallbackSize: [0.5, 0.35, 0.4] });
-    this.sprop('rice_sack', -1.5, lv2[0] + 0.012, G.minZ + 0.3, 0.1, { fallbackSize: [0.5, 0.4, 0.35] });
-    box(-2.1, lv2[1] + 0.012, G.minZ + 0.3, 0.5, 0.4, 0.4, 'capsuleStock');
-    this.sprop('noodle_box', -1.55, lv2[1] + 0.012, G.minZ + 0.3, 0, { fallbackSize: [0.35, 0.35, 0.25] });
-    this.sprop('stove_kettle', -2.15, lv2[2] + 0.012, G.minZ + 0.3, 0.3, { fallbackSize: [0.35, 0.3, 0.3] });
-    this.sprop('shelf_figures', -1.6, lv2[2] + 0.012, G.minZ + 0.32, 0, { fallbackSize: [0.4, 0.15, 0.1] });
-    box(-2.0, lv2[3] + 0.012, G.minZ + 0.3, 0.6, 0.18, 0.4, 'fragile');
+    // the racks start empty: their shelves are attach points (ATTACH.surfaces)
+    rack(-3.25, G.minZ + 0.3);
+    rack(-1.85, G.minZ + 0.3);
 
     // ---------------- back-right: fridge + radio, the fan by the sink
     this.sprop('fridge', 1.25, 0, G.minZ + 0.3, 0, { fallbackSize: [0.5, 0.85, 0.5], player: true, phys: true });
@@ -372,23 +378,8 @@ export class Garage {
     this.game.player.addObstacle(D.x - D.w / 2, D.x + D.w / 2, D.z - D.d / 2, D.z + D.d / 2);
     this.sprop('pipe_chair', D.x - 0.72, 0, D.z + 0.05, Math.PI / 2 + 0.15, { fallbackSize: [0.45, 0.8, 0.45] });
 
-    // ---------------- the heater by the table, the front corners
+    // ---------------- the heater by the table (Mikan's warm corner); the rest of the floor is yours to furnish
     this.sprop('heater', -0.95, 0, 1.55, 0.3, { fallbackSize: [0.45, 0.55, 0.45], player: true, phys: true });
-    this.sprop('fuel_can', -0.52, 0, 1.44, 0.35, { player: true, phys: true });
-    this.sprop('beercrate', 2.95, 0, 4.5, 0.1, { fallbackSize: [0.45, 0.3, 0.35], phys: true, player: true });
-    this.sprop('beercrate', 2.95, 0.3, 4.5, -0.05, { fallbackSize: [0.45, 0.3, 0.35] });
-    this.sprop('polytank', 2.45, 0, 4.72, 0.25, { fallbackSize: [0.3, 0.45, 0.2], player: true });
-    // the step ladder leans in the front-right corner (clear of the third shelf slot); broom by the sell box
-    this.sprop('ladder', 3.62, 0, 4.66, 0, { fallbackSize: [0.5, 1.5, 0.6], player: true });
-    this.sprop('broom', 3.9, 0, -1.6, -Math.PI / 2 + 0.15, { fallbackSize: [0.3, 1.3, 0.1] });
-    this.sprop('fan', 1.82, 0, -4.6, -0.35, { fallbackSize: [0.4, 0.9, 0.35] });
-    // left-front: bicycle, tyres, umbrella stand, cone
-    this.sprop('bicycle', -3.55, 0, 3.78, Math.PI / 2, { fallbackSize: [1.8, 1.0, 0.55], player: true });
-    this.sprop('tires', -2.65, 0, 4.5, 0.2, { fallbackSize: [0.6, 0.6, 0.6], player: true, phys: true });
-    this.sprop('umbrella_stand', -1.9, 0, 4.72, 0, { fallbackSize: [0.25, 0.9, 0.25] });
-    this.sprop('cone', -1.45, 0, 4.7, 0.4, { fallbackSize: [0.3, 0.7, 0.3] });
-    this.sprop('bucket', 2.05, 0, 4.78, 0, { fallbackSize: [0.3, 0.3, 0.3] });
-    this.sprop('watering_can', 1.75, 0, 4.82, -0.6, { fallbackSize: [0.35, 0.3, 0.15] });
 
     // ---------------- sell box & storage bin (by the PC)
     this.sellBox = this.makeCrate(3.55, -2.15, 0.5, 0.42, 0.42, 'sellBox');
@@ -480,19 +471,9 @@ export class Garage {
       }
       this.bake(g);
     };
-    // back wall
-    P('poster_showa', 0.0068, -1.3, 1.75, G.minZ + 0.01, 0, { tilt: 0.01 });
-    P('calendar', 0.006, 1.64, 1.62, G.minZ + 0.01, 0);
-    P('tin_genkin', 0.0058, 2.03, 2.02, G.minZ + 0.01, 0, { framed: false, tilt: 0.015 });
-    P('tin_tanuki_katori', 0.0058, 3.2, 2.45, G.minZ + 0.01, 0, { framed: false, tilt: -0.02 });
-    // right wall (facing -x)
-    P('tin_milk_caramel', 0.0058, G.maxX - 0.01, 2.08, 2.2, -Math.PI / 2, { framed: false });
-    P('tin_neko_shoyu', 0.0058, G.maxX - 0.01, 1.95, -2.4, -Math.PI / 2, { framed: false });
-    // left wall (facing +x)
-    P('tin_gacha_ramune', 0.0058, G.minX + 0.07, 2.0, -2.75, Math.PI / 2, { framed: false });
-    P('tin_fuji_match', 0.0058, G.minX + 0.07, 2.0, -3.75, Math.PI / 2, { framed: false });
+    // the walls start bare: posters, clocks and signs are bought and hung with the builder (ATTACH.walls)
+    void P;
     this.buildGachaSign(G.minX + 0.14, 2.4, -0.6); // mounted proud of the steel column behind it
-    P('menu_tags', 0.006, G.minX + 0.07, 2.25, 3.3, Math.PI / 2);
   }
 
   /** Lit "ガチャコーナー" light-box sign + a string of paper lanterns over the machine row. */

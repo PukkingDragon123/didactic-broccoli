@@ -1,0 +1,102 @@
+/* Off-Hobby, KGS and the Daikoku Toys order desk: plain 1999 web pages, flat colours, pixel photos. */
+.c98 .st-oh { max-width: 860px; margin: 0 auto; padding: 6px 10px 12px; background: #fff8ee; }
+.c98 .oh-top { display: flex; align-items: center; gap: 12px; padding: 4px 8px; background: #e8452a; color: #fff; }
+.c98 .oh-logo { display: flex; align-items: center; gap: 6px; text-decoration: none !important; color: #fff !important; }
+.c98 .oh-logo b { font: 32px/34px var(--f-title); font-weight: normal; }
+.c98 .oh-logo b i { font-style: normal; color: #ffd23f; }
+.c98 .oh-tag { color: #ffe2c8; }
+.c98 .oh-search { margin-left: auto; display: flex; gap: 4px; }
+.c98 .oh-search .c98-field { width: 170px; }
+.c98 .oh-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; padding: 2px 8px; background: #2a3a6a; }
+.c98 .oh-bar a { color: #fff !important; text-decoration: none; }
+.c98 .oh-bar a:hover { text-decoration: underline; }
+.c98 .oh-bar b { display: inline-block; min-width: 16px; padding: 0 3px; background: #ffd23f; color: #2a2220; text-align: center; font-weight: normal; }
+.c98 .oh-acct { margin-left: auto; color: #c8d4ff; }
+.c98 .oh-cols { display: grid; grid-template-columns: 170px 1fr; gap: 10px; margin-top: 8px; }
+.c98 .oh-cats { list-style: none; margin: 0; padding: 0; border: 1px solid #e0b898; background: #fff; align-self: start; }
+.c98 .oh-cats li { padding: 1px 6px; border-bottom: 1px dotted #e8d0b8; }
+.c98 .oh-cats li.on { background: #ffe8d0; }
+.c98 .oh-cats li.lock { color: #9a8a7a; }
+.c98 .oh-cats .oh-ch { background: #e8452a; color: #fff; }
+.c98 .oh-cats small { color: #9a8a7a; }
+.c98 .oh-main h2 { margin: 4px 0 6px; padding: 0 6px; background: #ffe8d0; border-left: 4px solid #e8452a; }
+.c98 .oh-main h1 { font-size: 16px; line-height: 22px; margin: 0 0 6px; font-family: var(--f-title); }
+.c98 .oh-hero { display: flex; flex-direction: column; padding: 4px 8px; margin-bottom: 4px; background: #fff; border: 2px solid #ffd23f; }
+.c98 .oh-hero b { font-family: var(--f-title); font-weight: normal; color: #e8452a; }
+.c98 .oh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
+.c98 .oh-card { position: relative; display: flex; flex-direction: column; padding: 4px; background: #fff; border: 1px solid #e0c8b0; color: #2a2220 !important; text-decoration: none !important; }
+.c98 .oh-card:hover { border-color: #e8452a; }
+.c98 .oh-card.sold { color: #9a8a7a !important; }
+.c98 .oh-pw { position: relative; display: block; align-self: center; width: 96px; height: 96px; background: #f0e8dc; }
+.c98 .oh-ph { display: block; image-rendering: pixelated; }
+.c98 .oh-ph:not([src]) { visibility: hidden; }
+.c98 .oh-soldst { position: absolute; left: 8px; top: 34px; padding: 0 6px; background: #c8202a; color: #fff; font: 16px/22px var(--f-title); font-style: normal; transform: rotate(-12deg); box-shadow: 0 0 0 2px #fff; }
+.c98 .oh-ct { display: block; height: 40px; overflow: hidden; margin-top: 3px; }
+.c98 .oh-cp { color: #c8202a; font-family: var(--f-title); }
+.c98 .oh-cs { color: #8a7a6a; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.c98 .oh-cg { position: absolute; right: 4px; top: 4px; width: 18px; height: 18px; background: var(--gc); color: #fff; text-align: center; line-height: 18px; font-family: var(--f-title); }
+.c98 .oh-cg.big { position: static; display: inline-block; width: 22px; height: 22px; line-height: 22px; }
+.c98 .oh-new { margin-right: 4px; padding: 0 3px; background: #ffd23f; color: #c8202a; animation: c98-flash2 .9s steps(1) infinite; }
+.c98 .oh-auc { color: #2a5aa8; font-family: var(--f-ui); }
+.c98 .oh-empty { padding: 14px; text-align: center; color: #8a7a6a; background: #fff; border: 1px dashed #e0c8b0; }
+.c98 .oh-ticker { margin-top: 8px; padding: 2px 6px; background: #2a2220; color: #ffd23f; white-space: nowrap; overflow: hidden; }
+.c98 .oh-gen { margin-top: 8px; padding: 4px 8px; background: #ffeef4; border: 2px dashed #ff6f91; }
+.c98 .oh-blurb { margin: 0 0 6px; color: #6a5a4a; }
+.c98 .oh-item { display: grid; grid-template-columns: 200px 1fr 170px; gap: 10px; }
+.c98 .oh-ipic { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; background: #fff; border: 1px solid #e0c8b0; color: #9a8a7a; }
+.c98 .oh-ipic .oh-ph { width: 192px; height: 192px; background: #f0e8dc; }
+.c98 .oh-iinfo p { margin: 0 0 6px; }
+.c98 .oh-big { font: 32px/36px var(--f-title); color: #c8202a; }
+.c98 .oh-soldtxt { color: #8a7a6a; }
+.c98 .oh-flaws { margin: 6px 0; padding: 4px 6px; background: #fff; border: 1px solid #e0c8b0; }
+.c98 .oh-flaws ul { margin: 2px 0 0; }
+.c98 .oh-quote { color: #6a5a4a; }
+.c98 .oh-why { color: #c8202a; }
+.c98 .oh-ok { color: #1d8a3a; font-weight: normal; }
+.c98 .oh-seller { padding: 6px; background: #fff; border: 1px solid #e0c8b0; align-self: start; }
+.c98 .oh-seller .c98-ava { float: right; margin: 0 0 4px 4px; image-rendering: pixelated; }
+.c98 .oh-sbl { margin: 4px 0; color: #6a5a4a; }
+.c98 .oh-stars { color: #e8a820; letter-spacing: 1px; }
+.c98 .oh-stars i { color: #d8d0c8; font-style: normal; }
+.c98 .oh-bid .c98-field { width: 90px; }
+.c98 .oh-tabs { margin: 0 0 8px; }
+.c98 .oh-t, .c98 .kg-t { width: 100%; background: #fff; }
+.c98 .oh-t th, .c98 .oh-t td, .c98 .kg-t th, .c98 .kg-t td { padding: 2px 6px; border: 1px solid #e0c8b0; text-align: left; font-weight: normal; vertical-align: middle; }
+.c98 .oh-t th { background: #ffe8d0; }
+.c98 .oh-t .oh-ph, .c98 .kg-t .oh-ph { width: 48px; height: 48px; }
+.c98 .oh-sell { display: flex; gap: 12px; align-items: flex-start; }
+.c98 .oh-sell > .oh-ph { width: 96px; height: 96px; background: #fff; border: 1px solid #e0c8b0; }
+.c98 .oh-sf p { margin: 0 0 6px; }
+.c98 .oh-sf input[name="price"] { width: 90px; }
+.c98 .oh-sf textarea { width: 100%; }
+.c98 .oh-dl dt { margin-top: 6px; font-family: var(--f-title); color: #e8452a; }
+.c98 .oh-dl dd { margin: 0 0 0 12px; }
+.c98 .oh-foot { margin-top: 10px; padding-top: 4px; border-top: 1px solid #e0c8b0; color: #8a7a6a; text-align: center; }
+
+/* KGS */
+.c98 .st-kgs { max-width: 720px; margin: 0 auto; padding: 8px 12px; background: #fbfbf8; }
+.c98 .kg-head { display: flex; align-items: center; gap: 12px; padding: 6px 10px; background: #1e1e22; color: #fff; }
+.c98 .kg-head b { padding: 0 8px; background: #c8302a; font: 32px/36px var(--f-title); font-weight: normal; }
+.c98 .kg-head span { display: flex; flex-direction: column; font-family: var(--f-title); }
+.c98 .kg-head small { font-family: var(--f-ui); color: #a8a8b0; }
+.c98 .st-kgs h2 { border-bottom: 2px solid #c8302a; }
+.c98 .kg-t th { background: #e8e8ec; }
+.c98 .kg-scale { display: flex; flex-wrap: wrap; gap: 4px; }
+.c98 .kg-scale span { padding: 0 6px; background: #fff; border: 1px solid #c8c8cc; }
+.c98 .kg-scale b { color: #c8302a; font-weight: normal; }
+
+/* Daikoku Toys order desk + the closed GACHA-MART page + Museum Works */
+.c98 .st-dk2 { max-width: 760px; margin: 0 auto; padding: 8px 12px; background: #f6f8ff; }
+.c98 .dk-nav { display: flex; flex-wrap: wrap; gap: 2px 12px; padding: 2px 8px; margin-bottom: 8px; background: #1a3570; }
+.c98 .dk-nav a { color: #fff !important; text-decoration: none; }
+.c98 .dk-nav a.on { color: #ffd23f !important; }
+.c98 .dk-nav span { margin-left: auto; color: #c8d4ff; }
+.c98 .dk-t2 { width: 100%; margin: 4px 0 10px; background: #fff; }
+.c98 .dk-t2 th, .c98 .dk-t2 td { padding: 2px 6px; border: 1px solid #a8b8d8; text-align: left; font-weight: normal; vertical-align: middle; }
+.c98 .dk-t2 th { background: #dde6f8; }
+.c98 .dk-t2 .oh-ph { width: 48px; height: 48px; }
+.c98 .dk-note { padding: 4px 8px; background: #fff4c0; border: 1px solid #e8c860; }
+.c98 .dk-lock { color: #8a8a9a; }
+.c98 .st-gm { max-width: 640px; margin: 20px auto; padding: 14px; text-align: center; background: #fff; border: 4px double #e5383b; }
+.c98 .st-gm h1 { color: #e5383b; }
+.c98 .st-gm ul { text-align: left; display: inline-block; }

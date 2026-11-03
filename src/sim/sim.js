@@ -50,7 +50,7 @@ export class Sim {
   payDigital(amount, reason = '') {
     amount = Math.round(amount);
     if (!(amount > 0)) return true;
-    const ok = this.game.spend(amount, reason);
+    const g = this.game, ok = g.wallet ? g.wallet.via('bank', () => g.spend(amount, reason)) : g.spend(amount, reason);
     if (ok) this.s.today.spent += amount;
     return ok;
   }
@@ -60,7 +60,7 @@ export class Sim {
     amount = Math.round(amount);
     if (!(amount > 0)) return;
     const g = this.game;
-    g.addMoney(amount, false, reason);
+    if (g.wallet) g.wallet.via('bank', () => g.addMoney(amount, false, reason)); else g.addMoney(amount, false, reason);
     if (!income) {
       g.state.earned = Math.max(0, (g.state.earned || 0) - amount);
       if (this.s.seen) this.s.seen.earned = g.state.earned;
@@ -72,6 +72,7 @@ export class Sim {
   isOpen() {
     const g = this.game;
     if (!g.story?.done) return false;
+    if (g.life && !g.life.signOpen) return false; // the OPEN sign on its hook (src/life/sign.js)
     const h = g.clock?.hours ?? 12;
     return h >= this.s.hours.open && h < this.s.hours.close && (g.garage?.shutterOpen ?? 1) > 0.5;
   }
@@ -112,7 +113,7 @@ export class Sim {
       if (p && p.y < 0.35 && p.x > G.minX && p.x < G.maxX && p.z > G.minZ && p.z < G.maxZ) loose += e.data?.bag ? 3 : 1;
     }
     const piles = g.story?.piles?.size || 0;
-    add('clean', 'Cleanliness', 1 - piles * 0.14 - loose * 0.05 - this.s.dirt * 0.6, 0.2, 'Sweep up and keep the floor clear');
+    add('clean', 'Cleanliness', 1 - piles * 0.14 - loose * 0.05 - this.s.dirt * 0.6 - (g.life?.dirt?.() || 0) * 0.6, 0.2, 'Sweep up, empty the trash can, keep the floor clear'); // life.dirt: src/life/Life.js
     // lighting: the ceiling lights (if there's power) or daylight through the open shutter
     const tubes = g.garage?.lights?.tubes || [];
     const working = tubes.length ? tubes.filter((x) => !x.dead).length / tubes.length : 0;
@@ -121,7 +122,7 @@ export class Sim {
     add('light', 'Lighting', Math.max(lamps, day * 0.7), 0.2, 'Turn the lights on, especially after dark');
     // decor: goods, charms, museum decor
     const nDecor = Object.keys(g.state.goods || {}).length + (g.state.charms?.length || 0) + Object.keys(g.state.decorOwned || {}).length;
-    add('decor', 'Decor', 1 - Math.exp(-nDecor / 4), 0.15, 'Shop goods, charms and decorations');
+    add('decor', 'Decor', Math.max(1 - Math.exp(-nDecor / 4), g.decor?.quality?.() ?? 0), 0.15, 'Furniture, posters, plants, charms and shop goods'); // game.decor: src/build/Decor.js
     // displays: figures on show
     let shown = 0;
     for (const sh of g.state.shelves || []) for (const it of sh.items || []) if (it) shown++;

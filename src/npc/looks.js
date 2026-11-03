@@ -19,6 +19,7 @@ import { shadeInto, over, h2, mixc, G } from '../people/paintlib.js';
 import { VoxelModel, metal, gloss } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
+import { MODELS as PROPS, vmesh as vmeshP } from './props.js';
 
 const INK = [28, 22, 22], GOLD = [214, 170, 70];
 const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1 };
@@ -186,14 +187,43 @@ const PAINT = {
     });
     scar(h);
   },
+
+  /** The pirate: the red shirt hangs open over a bare chest; a stitched scar under his left eye. */
+  gomuzo(h) {
+    const P = h.P, H = P.H, spec = h.spec;
+    const yN = P.neckBase, hem = P.hipY + 0.006 * H;
+    const open = (y) => 0.022 * H + Math.max(0, yN - y) * 0.17;
+    retouch(h, (c, o) => {
+      const ax = Math.abs(c.x);
+      if (TORSO[c.part] && front(c) && c.y > hem - 0.02 * H && c.y < yN + 0.012 * H) {
+        const w = open(c.y);
+        if (ax < w) {
+          skinAt(c, o, P, spec.skin);
+          if (Math.abs(c.y - (P.bustY ?? P.shoulderY - 0.09 * H)) < c.px * 0.8 && ax > 0.01 * H && ax < 0.06 * H) over(o, [150, 80, 70], 0.18);
+          if (ax < c.px * 0.7 && c.y < (P.bustY ?? yN - 0.1 * H)) over(o, [150, 80, 70], 0.1);
+          return true;
+        }
+        if (ax < w + 0.007 * H) { shadeInto(o, [150, 22, 26], bodyK(c, P)); if (ax > w + 0.007 * H - c.px * 1.2) over(o, INK, 0.45); return true; }
+      }
+      if (c.part === 'neck' && front(c) && c.y < yN + 0.045 * H && ax < 0.014 * H + (c.y - yN + 0.01 * H) * 0.5) { skinAt(c, o, P, spec.skin, 0.95); return true; }
+      return false;
+    });
+    const L = h.face.L, s = h.face.s;
+    faceScar(h, [L.cx + L.hw * 0.3, L.eyeY + 5.5 * s], [L.cx + L.hw * 0.62, L.eyeY + 4.5 * s]);
+  },
 };
 
 /** Okuyasu's scar: a pale diagonal through his left brow, drawn into the face painter's top layer so every repaint keeps it. */
 function scar(h) {
+  const L = h.face.L, s = h.face.s;
+  faceScar(h, [L.cx + L.hw * 0.18, L.browY - 9 * s], [L.cx + L.hw * 0.62, L.eyeY - 1.5 * s], true);
+}
+
+/** A scar line from a to b in face-painter pixels (y down, +x = the wearer's left), with stitch marks. */
+function faceScar(h, a, b, jumpEye = false) {
   const F = h.face;
   F.bake();
   const B = F.B, L = F.L, s = F.s, lay = F.lay;
-  const a = [L.cx + L.hw * 0.18, L.browY - 9 * s], b = [L.cx + L.hw * 0.62, L.eyeY - 1.5 * s];
   const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
   for (let j = 0; j < B.h; j++) for (let i = 0; i < B.w; i++) {
     const x = i + 0.5, y = j + 0.5;
@@ -201,7 +231,7 @@ function scar(h) {
     if (t < -0.05 || t > 1.05) continue;
     const dist = Math.abs((x - a[0]) * dy - (y - a[1]) * dx) / len;
     // skip the eye itself (the scar jumps the lid)
-    if (Math.abs(y - L.eyeY) < L.eh * 1.3 && Math.abs(Math.abs(x - L.cx) - L.eyeX) < L.ew * 1.2) continue;
+    if (jumpEye && Math.abs(y - L.eyeY) < L.eh * 1.3 && Math.abs(Math.abs(x - L.cx) - L.eyeX) < L.ew * 1.2) continue;
     const w = 0.9 * s * (1 - Math.abs(t - 0.5) * 0.7);
     const q = j * B.w + i;
     let col = null, al = 0;
@@ -412,9 +442,46 @@ const DRESS = {
   },
 };
 
-/** Build a character: preset look, retouched atlas, props, hand-pose support. */
+Object.assign(DRESS, {
+  // the sorcerer: hood up, an eyepatch, a lacquered chopstick for a wand
+  kuromaru(h) {
+    const hg = headGroup(h);
+    hg.add(vmeshP('kuro:hood', PROPS.hood));
+    const patch = vmeshP('kuro:patch', PROPS.eyepatch);
+    patch.scale.setScalar(0.5);
+    hg.add(patch);
+    const wand = vmeshP('kuro:wand', PROPS.wand);
+    wand.scale.setScalar(0.005);
+    wand.position.set(-0.004, -0.075, 0.03);
+    wand.rotation.set(1.3, 0, 0);
+    h.b.handR.add(wand);
+    h.npcProps.wand = wand;
+  },
+  // the bush guy: binoculars at his eyes (shown while he spies)
+  yabuki(h) {
+    const P = h.P, J = h.J;
+    const bino = vmeshP('yab:bino', PROPS.binoculars);
+    bino.scale.setScalar(0.01);
+    bino.position.set(0, P.eyeY - J.head[1], P.zf - J.head[2] + 0.075);
+    bino.visible = false;
+    h.b.head.add(bino);
+    h.npcProps.bino = bino;
+  },
+  // the pirate: a manga steak in the right hand (shown while he eats)
+  gomuzo(h) {
+    const meat = vmeshP('gomu:meat', PROPS.meat);
+    meat.scale.setScalar(0.012);
+    meat.position.set(-0.01, -0.09, 0.05);
+    meat.rotation.set(0, 0, 1.2);
+    meat.visible = false;
+    h.b.handR.add(meat);
+    h.npcProps.meat = meat;
+  },
+});
+
+/** Build a character: preset look, retouched atlas, props, hand-pose support. People without a retouch paint lazily. */
 export function createCharacter(id, { seed = 7, height } = {}) {
-  const h = createHuman({ preset: id, seed, height, lazy: false });
+  const h = createHuman({ preset: id, seed, height, lazy: !PAINT[id] });
   h.npcProps = {};
   PAINT[id]?.(h);
   DRESS[id]?.(h);

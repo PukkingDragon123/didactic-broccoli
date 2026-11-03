@@ -1,17 +1,15 @@
 // The built-in World Wide Web of 1999 (registered with game.os.browser.registerSite):
 //   capsule.ne.jp        CapsuleNet, the portal: search, directory, headlines, weather
-//   gacha-mart.co.jp     GACHA-MART, the capsule store (the shop's ordering pages, embedded from src/ui/ShopUI.js)
 //   morio-shimbun.jp     the town paper        tenki.ne.jp     the weather        buzzlane.jp   promote your shop
-//   daikoku-toys.co.jp   the wholesaler        capsule98.co.jp the OS maker (help, updates)
+//   capsule98.co.jp      the OS maker (help, updates)
+// The shops live in src/market/ (registered by src/plugins/market.js): off-hobby.jp (second-hand marketplace),
+// daikoku-toys.co.jp (the wholesaler's order desk), kgs-grading.jp, museum-works.jp, and gacha-mart.co.jp, which has
+// closed its web store and points to them.
 //   free-gacha-prize.biz / geohouses.ne.jp/~okuyasu / kappa-dance.ne.jp: the silly side of the web
 import { h, esc, ic } from './ui.js';
 import { yen } from '../OS.js';
-import { portrait } from '../art.js';
 import { now, MONTHS, WEEKDAYS, dateOfDay } from '../time.js';
 import { hash2 } from '../../core/util.js';
-import { ShopUI } from '../../ui/ShopUI.js';
-import { SERIES } from '../../data/series/index.js';
-import { capsuleCost } from '../../game/economy.js';
 
 const today = (game) => { const t = now(game); return `${WEEKDAYS[t.weekday]}, ${MONTHS[t.month]} ${t.date}, ${t.year}`; };
 const counter = (n, len = 7) => `<span class="st-counter">${String(n).padStart(len, '0').split('').map((d) => `<i>${d}</i>`).join('')}</span>`;
@@ -39,7 +37,7 @@ export function installSites(game, os, browser) {
 
   // ================================================================== CapsuleNet portal
   const DIRECTORY = [
-    ['Shopping', [['GACHA-MART', 'http://www.gacha-mart.co.jp/'], ['Daikoku Toy Wholesale', 'http://www.daikoku-toys.co.jp/']]],
+    ['Shopping', [['Off-Hobby (second-hand)', 'http://www.off-hobby.jp/'], ['Daikoku Toy Wholesale', 'http://www.daikoku-toys.co.jp/'], ['Kura Museum Works', 'http://www.museum-works.jp/']]],
     ['News & Media', [['The Morio Shimbun', 'http://www.morio-shimbun.jp/']]],
     ['Weather', [['Tenki Net', 'http://www.tenki.ne.jp/']]],
     ['Business', [['BuzzLane Ads', 'http://www.buzzlane.jp/'], ['Morio Shinkin Bank', 'http://www.capsule.ne.jp/search?q=bank']]],
@@ -56,9 +54,9 @@ export function installSites(game, os, browser) {
       const heads = headlines(game).slice(0, 5);
       page.innerHTML = `<div class="st-portal">
         <div class="pt-top"><div class="pt-logo">${ic('os_logo', 2)}<b>Capsule<i>Net</i></b><small>Japan's friendly Internet</small></div>
-          <div class="pt-nav"><a href="/search?q=mail">Mail</a> | <a href="http://www.morio-shimbun.jp/">News</a> | <a href="http://www.tenki.ne.jp/">Weather</a> | <a href="http://www.gacha-mart.co.jp/">Shopping</a> | <a href="http://www.capsule98.co.jp/help">Help</a></div></div>
+          <div class="pt-nav"><a href="/search?q=mail">Mail</a> | <a href="http://www.morio-shimbun.jp/">News</a> | <a href="http://www.tenki.ne.jp/">Weather</a> | <a href="http://www.off-hobby.jp/">Shopping</a> | <a href="http://www.capsule98.co.jp/help">Help</a></div></div>
         <form class="pt-search"><input class="c98-field" name="q" placeholder="" autocomplete="off"><button class="c98-btn" type="submit">Search</button><span class="c98-dim">Tip: try "capsules" or "weather"</span></form>
-        <div class="pt-ad">${promo ? `<a href="http://www.gacha-mart.co.jp/" class="pt-own">${ic('capsule', 2)}<span><b>GACHA GARAGE</b> - ${esc(promo.text || 'Capsule toys on the lane!')}</span><em>AD</em></a>` : `<a href="http://www.free-gacha-prize.biz/" class="pt-spam"><b>!! YOU HAVE WON !!</b> Claim your FREE gacha machine NOW <em>CLICK HERE</em></a>`}</div>
+        <div class="pt-ad">${promo ? `<a href="http://www.off-hobby.jp/" class="pt-own">${ic('capsule', 2)}<span><b>GACHA GARAGE</b> - ${esc(promo.text || 'Capsule toys on the lane!')}</span><em>AD</em></a>` : `<a href="http://www.free-gacha-prize.biz/" class="pt-spam"><b>!! YOU HAVE WON !!</b> Claim your FREE gacha machine NOW <em>CLICK HERE</em></a>`}</div>
         <div class="pt-cols">
           <div class="pt-dir"><h3>Web Directory</h3>${DIRECTORY.map(([c, l]) => `<div class="pt-cat"><b>${esc(c)}</b><br>${l.map(([n, u]) => `<a href="${u}">${esc(n)}</a>`).join(', ')}</div>`).join('')}</div>
           <div class="pt-mid"><h3>Today's Headlines <small>${esc(today(game))}</small></h3><ul>${heads.map((a) => `<li><a href="http://www.morio-shimbun.jp/article/${a.id}">${esc(a.title)}</a></li>`).join('')}</ul>
@@ -94,23 +92,6 @@ export function installSites(game, os, browser) {
       ${q && !hits.length ? `<p>No pages were found containing <b>"${esc(q)}"</b>. Check your spelling, or browse the <a href="/">directory</a>.</p>` : ''}</div>`;
     page.querySelector('form').addEventListener('submit', (e) => { e.preventDefault(); const v = page.querySelector('input').value.trim(); if (v) ctx.nav(`/search?q=${encodeURIComponent(v)}`); });
   }
-
-  // ================================================================== GACHA-MART (the store pages from ShopUI)
-  reg({
-    domain: 'gacha-mart.co.jp', title: 'GACHA-MART - Capsule Toy Web Store', keywords: 'capsules gacha machines store shop buy toys figures refill upgrade museum sell', blurb: 'Capsule toys, machines and more, delivered to your garage!',
-    render(page, path, nav, ctx) {
-      ctx.full(true);
-      const p = path.replace(/^\/|\/$/g, '') || 'home';
-      const shop = ShopUI.embed(game, page, {
-        page: p,
-        onNav: (pg) => ctx.replace(pg === 'home' ? '/' : `/${pg}/`),
-        onStatus: (s) => ctx.status(s),
-      });
-      os.bank.ctx = 'GACHA-MART web order';
-      browser.storePage = () => shop.page;
-      return () => { shop.destroy(); os.bank.ctx = null; browser.storePage = () => null; };
-    },
-  });
 
   // ================================================================== The Morio Shimbun
   reg({
@@ -204,19 +185,7 @@ export function installSites(game, os, browser) {
     },
   });
 
-  // ================================================================== Daikoku Toy Wholesale
-  reg({
-    domain: 'daikoku-toys.co.jp', title: 'Daikoku Toy Wholesale', keywords: 'wholesale supplier capsules bulk toys daikoku', blurb: 'Capsule toys by the box since 1971. Bulk discounts for shops.',
-    render(page) {
-      const rows = SERIES.filter((s) => !s.hidden).slice(0, 12).map((s) => `<tr><td>${esc(s.name)}</td><td>${yen(capsuleCost(s.id))}</td><td>${yen(Math.round(capsuleCost(s.id) * 0.85))}</td><td>${game.state.licenses?.includes(s.id) ? 'Licensed' : '<span class="c98-dim">licence needed</span>'}</td></tr>`).join('');
-      page.innerHTML = `<div class="st-dk"><div class="dk-head">${portrait({ bg: 0xffd23f, hair: 'bald', glasses: 0x2a2220, mouth: 'grin', shirt: 0x2a5aa8 }, 2)}<div><b>Daikoku Toy Wholesale</b><small>Capsule toys by the box since 1971 - Asakusabashi, Tokyo</small></div></div>
-        <p>We supply capsule toy shops all over Kanto. Order in bulk and save! Prices are per capsule, delivered to your shutter by Lane Express.</p>
-        <table class="dk-t"><tr><th>Series</th><th>List price</th><th>Wholesale (50+)</th><th>Your shop</th></tr>${rows}</table>
-        <p><b>Contact our sales manager, Mr. Daikoku:</b><br>Pichat ID: <a data-href="pichat:daikoku" class="dk-pi">daikoku_toys</a> &middot; Tel. <b>03-3866-1971</b> (weekdays 9-18)</p>
-        <p class="c98-dim">Daikoku Toy Wholesale is not responsible for capsules opened by cats.</p></div>`;
-      page.querySelector('.dk-pi').addEventListener('click', (e) => { e.stopPropagation(); os.open('messenger', { thread: 'daikoku' }); });
-    },
-  });
+  // (Daikoku Toy Wholesale's order desk: src/market/supplier.js)
 
   // ================================================================== Capsule 98 support
   reg({
@@ -229,7 +198,7 @@ export function installSites(game, os, browser) {
           <dt>Getting around</dt><dd>Double-click an icon to start a program. Drag a window by its title bar; drag its edges to resize it. Right-click things for more options.</dd>
           <dt>Standing up</dt><dd>Press <b>Esc</b>, or click the power button on the Start menu, to stand up from the computer. Capsule 98 keeps running while you're away.</dd>
           <dt>Keyboard shortcuts</dt><dd>Alt+F4 closes a window. In Capsule Navigator: Backspace goes back, F5 reloads, Ctrl+D adds a bookmark.</dd>
-          <dt>Ordering stock</dt><dd>Use GACHA-MART in Capsule Navigator, or make a deal with a supplier on Pichat.</dd>
+          <dt>Ordering stock</dt><dd>New machines and capsules: the Daikoku Toys order desk (or Mr. Daikoku's deals on Pichat). Second-hand everything: Off-Hobby. Deliveries come by courier.</dd>
           <dt>Bills and loans</dt><dd>Open Shinkin Online on the desktop. Bills arrive in your Mailbox; pay them before the due date to avoid late fees.</dd>
           <dt>Spam</dt><dd>Never pay a "processing fee" to claim a prize. Use the Spam button in Mailbox and the Block button in Pichat.</dd></dl></div>`;
         return;

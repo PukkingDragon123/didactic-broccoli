@@ -42,6 +42,8 @@ import { SUPPLY_BY_ID } from '../data/supplies.js';
 import { TOOLS } from '../data/tools.js';
 import { Bubbles } from '../people/index.js';
 import { Pedestrians } from '../world/Pedestrians.js';
+import { Wallet } from '../money/wallet.js';
+import { iconHTML } from '../gfx/icons.js';
 
 export class Game {
   constructor(container) {
@@ -49,6 +51,7 @@ export class Game {
     this.events = new Emitter();
     this.tweens = new Tweens();
     this.state = loadState();
+    this.wallet = new Wallet(this); // cash / bank / piggy / register (src/money/wallet.js); state.money aliases it
     this.visiting = !!this.state.__visit;
     if (this.visiting) this.noSave = true;
     this.renderer = new Renderer(container);
@@ -67,7 +70,9 @@ export class Game {
     this.newsEl = document.getElementById('news');
     this.moneyEl = document.querySelector('#money .val');
     this.deltaEl = document.getElementById('money-delta');
-    this.shownMoney = this.state.money;
+    this.shownCash = this.wallet.cash;
+    const coinEl = document.querySelector('#money .coin');
+    if (coinEl) { coinEl.innerHTML = iconHTML('wallet', 2); coinEl.removeAttribute('data-icon'); }
     this.ambT = { furin: 6, crow: 25, higurashi: 4, crossing: 90, chime: 240 };
   }
 
@@ -233,8 +238,8 @@ export class Game {
   buySupply(id) {
     const sup = SUPPLY_BY_ID[id];
     if (!sup) return { ok: false, msg: 'Not sold here.' };
-    if (this.state.money < sup.price) return { ok: false, msg: `You need ${formatYen(sup.price - this.state.money)} more.` };
-    this.spend(sup.price);
+    if (this.wallet.cash < sup.price) return { ok: false, msg: `You need ${formatYen(sup.price - this.wallet.cash)} more cash.${this.wallet.bank >= sup.price ? ' The ATM is across the lane.' : ''}` };
+    this.wallet.via('cash', () => this.spend(sup.price, `Mikawa-ya: ${sup.name}`));
     const extra = sup.uses ? { uses: sup.uses } : {};
     // flyers stack up in one slot
     if (sup.tool === 'flyers') {
@@ -299,22 +304,57 @@ export class Game {
     return true;
   }
 
-  addMoney(v, quiet = false) {
-    this.state.money += v;
-    if (v > 0) this.state.earned += v;
-    this.updateMoney(false, v);
-    if (!quiet && v > 0 && audio.canPlay('coin', 0.05)) audio.play('register', { vol: 0.35 });
+  /** Money in. Where it goes: your wallet (cash), or the bank while you sit at the computer or when the caller
+   *  routes it there (game.wallet.via('bank', ...), game.sim.receiveDigital). reason labels the bank statement. */
+  addMoney(v, quiet = false, reason = '') {
+    v = Math.round(+v || 0);
+    if (!v) return;
+    if (v < 0) { this.takeMoney(-v); return; }
+    const W = this.wallet, ch = W.channel();
+    W.s[ch] += v;
+    this.state.earned += v;
+    if (ch === 'cash') this.updateMoney(false, v);
+    else if (!quiet && !this.pc?.active) this.news(`+${formatYen(v)} into your bank account`, typeof reason === 'string' && reason && !reason.includes(':') ? reason : 'Check it on the computer or at the ATM');
+    W.emit(ch, v);
+    if (!quiet && audio.canPlay('coin', 0.05)) audio.play('register', { vol: 0.35 });
   }
 
-  spend(v) {
-    if (this.state.money < v) return false;
-    this.state.money -= v;
-    this.updateMoney(false, -v);
+  /** Money out: cash from your wallet (the corner shop, vending machines, ramen...), or the bank at the computer /
+   *  through game.sim.payDigital. Returns false (and nothing changes) when that side can't cover it. */
+  spend(v, reason = '') {
+    v = Math.round(+v || 0);
+    if (v <= 0) return true;
+    const W = this.wallet, ch = W.channel();
+    if (W.s[ch] < v) { this.shortOf(ch, v); return false; }
+    W.s[ch] -= v;
+    if (ch === 'cash') this.updateMoney(false, -v);
+    W.emit(ch, -v);
+    void reason;
     return true;
   }
 
+  /** Take up to v from the current side without failing (old code paths that subtracted money directly). */
+  takeMoney(v) {
+    const W = this.wallet, ch = W.channel(), t = Math.min(W.s[ch], Math.round(v));
+    if (t <= 0) return 0;
+    W.s[ch] -= t;
+    if (ch === 'cash') this.updateMoney(false, -t);
+    W.emit(ch, -t);
+    return t;
+  }
+
+  /** Why a payment failed, with a pointer to the other side of your money (once in a while). */
+  shortOf(ch, v) {
+    const W = this.wallet;
+    if (this.time - (this._shortT ?? -99) < 6) return;
+    this._shortT = this.time;
+    if (ch === 'cash' && W.bank + W.piggy >= v) this.news('Not enough cash in your wallet', W.bank >= v ? 'Withdraw some at the ATM across the lane' : 'Shake some out of the piggy bank', 5200);
+    else if (ch === 'bank' && W.cash >= v) this.news('Not enough money in the bank', 'Deposit cash at the ATM across the lane', 5200);
+  }
+
+  /** The HUD counter shows the cash in your wallet; delta pops a +/- line next to it. */
   updateMoney(instant = false, delta = 0) {
-    if (instant) this.shownMoney = this.state.money;
+    if (instant) this.shownCash = this.wallet.cash;
     if (delta) {
       const el = this.deltaEl;
       el.textContent = (delta > 0 ? '+' : '−') + formatYen(Math.abs(delta)).replace('¥', '¥');
@@ -324,6 +364,10 @@ export class Game {
       this._dT = setTimeout(() => el.classList.remove('show'), 1600);
     }
   }
+
+  /** The money counter as shown: your wallet, or the bank balance while you're on the computer. */
+  get shownMoney() { return this.wallet?.channel() === 'bank' ? this.wallet.bank : this.shownCash; }
+  set shownMoney(v) { this.shownCash = v; }
 
   luck() {
     let finish = OPENERS[this.state.opener]?.luck || 0, rare = 0;
@@ -504,7 +548,7 @@ export class Game {
     if (h?.kind === 'toy' && !this.held.busy) this.tip('toy', 'Put it on the shelf or sell it?', 'Shelves are on the right wall, the sell box is by the PC');
     if (this.machines.some((m) => m.data.stock.length === 0 && !m.data.broken)) this.tip('empty', 'Sold out!', 'Order capsule refills on the PC in the back corner');
     if ([...this.items.list].some((e) => e.kind === 'box')) this.tip('box', 'A delivery arrived by the shutter', 'Carry the box to a machine and click to pour the capsules in');
-    if (this.story.done && this.state.money >= 2400 && this.machines.length < 3) this.tip('machine2', 'You can afford another machine', 'Check the PC');
+    if (this.story.done && this.wallet.cash + this.wallet.bank >= 2400 && this.machines.length < 3) this.tip('machine2', 'You can afford another machine', 'Check the PC');
     if (Object.keys(this.state.completed).length >= 1 && !this.state.museum.owned) this.tip('museum', 'Series complete!', 'The PC sells a museum licence for the back warehouse');
   }
 
@@ -550,13 +594,15 @@ export class Game {
     this.thumbs.tick(1);
     this.ambientTick(dt);
     audio.updateListener(this.camera);
-    // money counter roll-up
-    if (this.shownMoney !== this.state.money) {
-      const diff = this.state.money - this.shownMoney;
-      this.shownMoney += Math.abs(diff) < 2 ? diff : diff * Math.min(1, dt * 8);
-      if (Math.abs(this.state.money - this.shownMoney) < 0.5) this.shownMoney = this.state.money;
+    // money counter roll-up (the cash in your wallet)
+    const cash = this.wallet.cash;
+    if (this.shownCash !== cash) {
+      const diff = cash - this.shownCash;
+      this.shownCash += Math.abs(diff) < 2 ? diff : diff * Math.min(1, dt * 8);
+      if (Math.abs(cash - this.shownCash) < 0.5) this.shownCash = cash;
     }
-    this.moneyEl.textContent = Math.round(this.shownMoney).toLocaleString('ja-JP');
+    const txt = Math.round(this.shownCash).toLocaleString('ja-JP');
+    if (txt !== this._moneyTxt) { this._moneyTxt = txt; this.moneyEl.textContent = txt; }
     this.input.endFrame();
   }
 

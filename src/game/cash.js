@@ -1,9 +1,9 @@
 // Physical cash from the machines' coin boxes.
 //
 // pocketCash() is THE one place coin-box money reaches the player: the ¥100 coins fly out of the drawer into a
-// little cloth coin bag in your hand, the bag jingles and is tucked away, and the amount is counted onto your money
-// display coin by coin. Phase 2 (wallet cash vs bank, ATM) turns this into a real carried cash item: replace the
-// body of pocketCash (keep its signature) and every caller follows.
+// little cloth coin bag in your left hand, each one counted into your wallet (game.wallet.cash, the HUD counter) with
+// a clink, then the bag gives a jingle and is tucked away. It is always cash (never the bank), even if called while
+// you sit at the computer. Banknotes (the ATM, the register, the piggy bank) use src/money/cashfx.js cashInHand().
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { VoxelModel, metal } from '../voxel/VoxelModel.js';
@@ -11,6 +11,7 @@ import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { yenCoinGeometry } from '../world/machineModels.js';
 import './gachaSfx.js';
+import '../money/sfx.js';
 
 let bagGeo = null;
 function coinBagGeometry() {
@@ -75,7 +76,7 @@ export function pocketCash(game, amount, from, opts = {}) {
         c.parent?.remove(c);
         const v = i === n - 1 ? amount - paid : share;
         paid += v;
-        g.addMoney(v, true);
+        if (g.wallet) g.wallet.via('cash', () => g.addMoney(v, true)); else g.addMoney(v, true);
         audio.play('coinClink', { v: 0.9 });
         bag.scale.setScalar(1 + 0.12 * Math.sin(i * 1.7) ** 2);
       },
@@ -85,7 +86,8 @@ export function pocketCash(game, amount, from, opts = {}) {
   audio.play('coinScoop', { pos: from, vol: 0.9 });
   g.tweens.wait(end, () => {
     audio.play('register', { vol: 0.5 });
-    if (opts.label !== false) g.news(`+¥${amount.toLocaleString('en-US')}`, opts.label || 'Coins from the coin box, into your coin bag');
+    if (opts.label !== false) g.news(`+¥${amount.toLocaleString('en-US')}`, opts.label ? `${opts.label}, into your wallet` : 'Coins from the coin box, into your wallet');
+    audio.play('walletSnap', { vol: 0.5, delay: 0.3 });
     // tuck the bag away
     const p0 = bag.position.clone();
     g.tweens.add({ dur: 0.35, update: (k) => { bag.position.set(p0.x - k * 0.05, p0.y - k * 0.3, p0.z); bag.rotation.z = k * 0.6; }, done: () => bag.parent?.remove(bag) });

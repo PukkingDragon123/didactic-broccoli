@@ -3,8 +3,10 @@
 //   'corner' — MIKAWA-YA, the little general store across the lane (wooden menu board, paper price tags)
 // open(store, page) / close(). While open the pointer is released and game.uiOpen is true, so main.js
 // must not treat that unlock as "pause". Every purchase goes through shop.js / goods / museum and returns {ok, msg}.
-// ShopUI.embed(game, host, { page, onNav(page), onStatus(text) }) mounts the GACHA-MART pages (no window chrome)
-// inside another element: the computer's web browser hosts the store this way. Returns { page, go(p), destroy() }.
+// ShopUI.embed(game, host, { page, pages?, brand?, onNav(page), onStatus(text) }) mounts store pages (no window chrome)
+// inside another element: the computer's web browser hosts them this way. pages: the page ids to offer (the museum
+// fittings site uses ['museum', 'book']); brand: { name, slogan, marquee }. Returns { page, go(p), destroy() }.
+// (GACHA-MART itself closed: machines and capsules come from Daikoku Toys and Off-Hobby, see src/market/.)
 import './shopui.css';
 import { iconHTML } from '../gfx/icons.js';
 import { audio } from '../core/audio.js';
@@ -109,6 +111,8 @@ export class ShopUI {
   constructor(game, opts = {}) {
     this.game = game;
     this.embedded = !!opts.embed;
+    this.pages = opts.pages ? PAGES.filter((p) => opts.pages.includes(p.id)) : PAGES;
+    this.brand = opts.brand || null;
     this.eopts = opts;
     this.onClose = null;
     this.store = null;
@@ -399,11 +403,12 @@ export class ShopUI {
 
   /** The store as a web page inside the PC's browser (the browser draws the address bar and status line). */
   embedFrame() {
-    const nav = PAGES.map((p) => `<button class="em-nb" data-go="${p.id}">${ic(p.icon)}<span>${esc(p.label)}</span><i class="em-badge" data-badge="${p.id}"></i></button>`).join('');
-    return `<div class="sui-win em em-embed" aria-label="GACHA-MART web store">
+    const B = this.brand || { name: 'GACHA-MART', slogan: 'Capsule toys, machines &amp; more.<br>Delivered to your garage!', icon: 'capsule' };
+    const nav = this.pages.map((p) => `<button class="em-nb" data-go="${p.id}">${ic(p.icon)}<span>${esc(p.label)}</span><i class="em-badge" data-badge="${p.id}"></i></button>`).join('');
+    return `<div class="sui-win em em-embed" aria-label="${esc(B.name)}">
       <div class="em-brand">
-        <div class="em-logo">${ic('capsule', 2)}<b>GACHA-MART</b></div>
-        <div class="em-slogan">Capsule toys, machines &amp; more.<br>Delivered to your garage!</div>
+        <div class="em-logo">${ic(B.icon || 'capsule', 2)}<b>${esc(B.name)}</b></div>
+        <div class="em-slogan">${B.slogan}</div>
         <div class="sui-wallet" title="Your money">${ic('coin')}<span class="v" data-money>${yen(this.game.state.money)}</span></div>
         <div class="em-marq"><span>${esc(this.marquee())}</span></div>
       </div>
@@ -417,13 +422,14 @@ export class ShopUI {
 
   marquee() {
     const s = this.game.state;
+    if (this.brand?.marquee) return this.brand.marquee;
     return `Welcome to GACHA-MART!   *   Your collection: ${Object.keys(s.discovered).length} / ${ITEMS.length} figures   *   Rope coins can be used again and again (the manager pretends not to know)   *   Got duplicates? Sell them here!   *   Complete a series for a big bonus   *   Museum owners wanted!   *`;
   }
 
   // ------------------------------------------------------------------ navigation
   go(page, { push = true, sound = true, focus = null, sub = null } = {}) {
     page = OLD_PAGES[page] || page;
-    if (!PAGE_BY_ID[page]) page = 'home';
+    if (!PAGE_BY_ID[page] || !this.pages.some((p) => p.id === page)) page = this.pages.some((p) => p.id === 'home') ? 'home' : this.pages[0].id;
     if (this.store !== 'emart') return;
     if (sub && page === 'museum') this.sub.museum = sub;
     if (push && this.page !== page) this.hist.push(this.page);

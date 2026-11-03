@@ -30,6 +30,16 @@ Object.assign(GESTURES, {
   swipe: { dur: 2.0, expr: 'furious' },
   shout: { dur: 2.0, expr: 'furious' },
   arms_crossed: { dur: Infinity },
+  // more lane people (src/npc/roster.js)
+  feed: { dur: 2.2, expr: 'smile' },
+  binoculars: { dur: Infinity },
+  spell: { dur: 3.2, expr: 'smug' },
+  gomu: { dur: 1.6, expr: 'furious' },
+  knock: { dur: 1.4 },
+  laugh: { dur: 2.4, expr: 'happy' },
+  cower: { dur: 1.8, expr: 'surprised' },
+  inspect: { dur: Infinity, expr: 'smile' },
+  stomp: { dur: 1.6, expr: 'angry' },
 });
 
 const arm = (x, y, z, px, py, pz) => ({ t: [x, y, z], p: [px, py, pz], hand: [0, 0, 0] });
@@ -174,6 +184,96 @@ Object.assign(EXTRA_POSES, {
     g.R = arm(-sx - m(0.06), sy + m(0.02) + b, m(0.14), -1, -1, -0.5);
     g.hands.L = [0, 1, 0.2, 0, 0, 1]; g.hands.R = [0, 1, 0.2, 0, 0, 1];
     g.spine[0] = 0.12; g.chest[0] = 0.06; g.head[0] = -0.2;
+  },
+  // tossing crumbs from the bag in a wide underhand arc
+  feed(t, h, g) {
+    const { sx, sy, m } = frame(h);
+    g.hands = { L: null, R: null };
+    const k = (t % 1.1) / 1.1, s = smooth(k < 0.5 ? k * 2 : 2 - k * 2);
+    g.R = arm(-sx * 0.6 - s * m(0.18), -m(0.12) + s * m(0.22), m(0.18) + s * m(0.22), -1, -0.6, -0.4);
+    g.hands.R = [0.1, -0.4 + s, 0.8, -0.3, -1 + s * 2, 0.2];
+    g.L = arm(m(0.1), -m(0.06), m(0.15), 1, -0.4, -0.6);
+    g.chest[0] = 0.12 + s * 0.05; g.spine[0] = 0.1; g.head[0] = 0.3;
+    void sy;
+  },
+  // both hands up at the eyes holding binoculars, scanning slowly
+  binoculars(t, h, g) {
+    const { eye, zf, m } = frame(h);
+    g.hands = { L: null, R: null };
+    const pan = Math.sin(t * 0.35) * 0.35 + Math.sin(t * 1.3) * 0.05;
+    g.L = arm(m(0.045), eye - m(0.02), zf + m(0.06), 1, -1, -0.2);
+    g.R = arm(-m(0.045), eye - m(0.02), zf + m(0.06), -1, -1, -0.2);
+    g.hands.L = [0.2, 1, 0.3, -1, 0, 0.2]; g.hands.R = [-0.2, 1, 0.3, 1, 0, 0.2];
+    g.chest[1] = pan * 0.6; g.head[1] = pan * 0.4; g.head[0] = -0.03;
+  },
+  // the sorcerer's stance: wand flung up and out, the other hand clawed over the eyepatch
+  spell(t, h, g) {
+    const { sx, sy, eye, zf, m } = frame(h);
+    g.hands = { L: null, R: null };
+    const k = smooth(t / 0.4), shake = Math.sin(t * 40) * m(0.004) * (t > 0.4 ? 1 : 0);
+    g.R = arm(-sx - m(0.3) * k, sy + m(0.4) * k + shake, m(0.12) + m(0.1) * k, -1, -0.5, -0.2);
+    g.hands.R = [-0.3, 1, 0.3, -1, 0, 0.3];
+    g.L = arm(-m(0.03), eye - m(0.02), zf + m(0.05), 1, -1, -0.3);
+    g.hands.L = [-0.4, 0.8, 0.5, -0.8, 0, -0.6];
+    g.chest[1] = 0.25 * k; g.spine[2] = -0.08 * k; g.head[0] = -0.12 * k; g.head[2] = 0.15 * k;
+  },
+  // a rubber punch: wind up, then the right arm shoots straight out (the lane stretches the bones)
+  gomu(t, h, g) {
+    const { sx, sy, m } = frame(h);
+    g.hands = { L: null, R: null };
+    const wind = t < 0.45 ? smooth(t / 0.45) : 0, out = t >= 0.45 ? 1 : 0;
+    g.R = arm(-sx * 0.5 + m(0.02), sy - m(0.06) + out * m(0.04), m(0.1) - wind * m(0.25) + out * m(0.45), -1, -0.6, -0.4);
+    g.hands.R = [0, 0.1, 1, -0.3, -1, 0];
+    g.L = arm(sx * 0.6, sy - m(0.12), m(0.2), 1, -0.6, -0.5);
+    g.chest[1] = -0.4 * wind + 0.3 * out; g.spine[0] = 0.1 * out; g.head[0] = -0.1;
+  },
+  // knock knock: the right fist raps a door at head height
+  knock(t, h, g) {
+    const { eye, zf, m } = frame(h);
+    g.hands = { L: null, R: null };
+    const r = Math.max(0, Math.sin(t * 16)) * (t < 1.1 ? 1 : 0);
+    g.R = arm(-m(0.12), eye - m(0.12), zf + m(0.36) - r * m(0.06), -1, -0.8, -0.2);
+    g.hands.R = [0, 0.3, 1, -0.4, -1, 0];
+    g.head[0] = 0.05;
+  },
+  // doubled up with laughter, a hand on the belly
+  laugh(t, h, g) {
+    const { m } = frame(h);
+    g.hands = { L: null, R: null };
+    const b = Math.abs(Math.sin(t * 12));
+    g.L = arm(m(0.06), -m(0.04), m(0.18), 1, -0.5, -0.6);
+    g.R = arm(-m(0.08), m(0.02), m(0.2), -1, -0.5, -0.6);
+    g.spine[0] = 0.18 + b * 0.05; g.chest[0] = 0.1; g.head[0] = -0.2 + b * 0.08;
+  },
+  // flinching away, hands up in front of the face
+  cower(t, h, g) {
+    const { eye, zf, m } = frame(h);
+    g.hands = { L: null, R: null };
+    const s = Math.sin(t * 30) * m(0.006);
+    g.L = arm(m(0.07) + s, eye - m(0.05), zf + m(0.14), 1, -1, 0.2);
+    g.R = arm(-m(0.07) - s, eye - m(0.07), zf + m(0.13), -1, -1, 0.2);
+    g.hands.L = [0, 1, 0.1, 0, 0, 1]; g.hands.R = [0, 1, 0.1, 0, 0, 1];
+    g.spine[0] = -0.1; g.chest[0] = -0.1; g.head[0] = 0.2; g.head[1] = 0.3;
+  },
+  // bent over a plant (or anything small), a hand on the knee, the other one pointing at it
+  inspect(t, h, g) {
+    const { sx, m } = frame(h);
+    g.hands = { L: null, R: null };
+    g.L = arm(sx * 0.6, -m(0.3), m(0.2), 1, -0.3, -0.5);
+    g.R = arm(-m(0.06), -m(0.12) + Math.sin(t * 2) * m(0.02), m(0.38), -1, -0.8, -0.2);
+    g.hands.R = [0, -0.4, 1, -0.4, -1, 0];
+    g.spine[0] = 0.32; g.chest[0] = 0.12; g.head[0] = 0.25 + Math.sin(t * 0.7) * 0.05;
+    g.hips[1] = -m(0.04);
+  },
+  // an angry stomp with fists down
+  stomp(t, h, g) {
+    const { sx, m } = frame(h);
+    g.hands = { L: null, R: null };
+    const b = Math.abs(Math.sin(t * 9));
+    g.L = arm(sx + m(0.04), -m(0.3), m(0.02), 1, 0, -0.8);
+    g.R = arm(-sx - m(0.04), -m(0.3), m(0.02), -1, 0, -0.8);
+    g.hands.L = [0, -1, 0.2, 1, 0, 0]; g.hands.R = [0, -1, 0.2, -1, 0, 0];
+    g.hips[1] = -b * m(0.03); g.chest[0] = 0.08; g.head[0] = 0.12;
   },
   arms_crossed(t, h, g) {
     const { sy, m } = frame(h);
