@@ -299,6 +299,7 @@ if (show === 'avatar') {
   const { createAvatarHuman, COSMETICS, AVATAR_DEFAULT } = await import('../people/avatar.js');
   const look = Object.fromEntries((Q.get('look') || '').split(',').filter(Boolean).map((kv) => kv.split(':')));
   const items = Q.get('items') ? Q.get('items').split(',') : ['none', ...COSMETICS.map((c) => c.id)];
+  await (await import('../cosmetics/prints.js')).ensurePrints(items); // photo-print tees
   const w = num('w', 200), h = num('h', 320);
   grid.style.gridTemplateColumns = `repeat(${Math.min(items.length, num('cols', 6))}, ${w}px)`;
   items.forEach((id, i) => {

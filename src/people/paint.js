@@ -392,15 +392,16 @@ function makePainters(spec, P) {
       // crew neck rib
       if (c.y > yN - 0.012 * H && (c.part === 'traps' || c.part === 'chestHi')) shadeInto(o, col, bodyK(c) * (c.i % 2 ? 0.88 : 1));
       if (k === 'knit' && c.y < topHem + 0.025 * H) shadeInto(o, col, bodyK(c) * (c.i % 2 ? 0.86 : 1));
-      if (k === 'tee' && fr && T.print && T.print !== 'none' && T.print !== 'border' && T.print !== 'stripes') {
-        const cy = yB + 0.01 * H, dx = c.x, dy = c.y - cy, r = 0.04 * H;
+      if ((k === 'tee' || (k === 'knit' && T.print === 'pix')) && fr && T.print && T.print !== 'none' && T.print !== 'border' && T.print !== 'stripes') {
+        const cy = yB + (0.01 + (T.pixY || 0)) * H, dx = c.x, dy = c.y - cy, r = 0.04 * H;
         let m = false;
         if (T.print === 'circle') m = Math.hypot(dx, dy) < r && Math.hypot(dx, dy) > r * 0.55;
         else if (T.print === 'star') { const a = Math.atan2(dy, dx), rr = r * (0.55 + 0.45 * Math.abs(Math.cos(a * 2.5))); m = Math.hypot(dx, dy) < rr; }
         else if (T.print === 'heart') { const X = dx / r, Y = dy / r + 0.2; m = (X * X + Y * Y - 0.5) ** 3 - X * X * Y * Y * Y < 0; }
         else if (T.print === 'pix' && T.pix) {
           // a pixel picture (thrift tees: { w, h, data: [r, g, b, ...] }) in a square on the chest
-          const s = r * 1.25, u = (dx + s) / (2 * s), w = 1 - (dy + s) / (2 * s);
+          // (pixS scales it up for big prints; a portrait picture keeps its aspect)
+          const s = r * 1.25 * (T.pixS || 1), sy = s * T.pix.h / T.pix.w, u = (dx + s) / (2 * s), w = 1 - (dy + sy) / (2 * sy);
           if (u >= 0 && u < 1 && w >= 0 && w < 1) { const i = (Math.floor(w * T.pix.h) * T.pix.w + Math.floor(u * T.pix.w)) * 3; shadeInto(o, [T.pix.data[i], T.pix.data[i + 1], T.pix.data[i + 2]], bodyK(c) * 0.98); }
         }
         if (m) shadeInto(o, T.col2, bodyK(c) * 0.98);

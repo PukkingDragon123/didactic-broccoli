@@ -1,0 +1,41 @@
+/* Minimal HUD (src/style/hud.js): the paper HUD tucks away and peeks back in when something happens (body.pk-<part>)
+   or while you check your wallet (body.hud-check). Stepped motion only, like everything else on the paper HUD. */
+body.hud-min #money, body.hud-min #simclock { transition: opacity .3s steps(3), translate .3s steps(3); }
+body.hud-min:not(.pk-money) #money { opacity: 0; translate: -48px 0; pointer-events: none; }
+body.hud-min:not(.pk-clock) #simclock { opacity: 0; translate: -48px 0; }
+body.touchmode.hud-min:not(.pk-clock) #simclock { translate: 0 -24px; }
+
+/* Grandpa's note slides up under the top edge, its bottom strip (progress bar, curled corner) still showing */
+body.hud-min #guide .g-card { transition: translate .4s steps(5); }
+body.hud-min:not(.pk-guide) #guide .g-card { translate: 0 calc(-100% + 30px); }
+body.hud-min.has-goal:not(.pk-guide) #news { top: calc(max(20px, env(safe-area-inset-top)) + 46px); }
+body.hud-min:not(.pk-quests) #sidequests { opacity: 0 !important; }
+body.hud-min.has-goal:not(.pk-guide) #sidequests { top: calc(max(20px, env(safe-area-inset-top)) + 40px); }
+
+/* the hotbar's price tags slide down to a thin row of tag tops (the selected one a touch higher) */
+body.hud-min #hotbar .slots { transition: translate .25s steps(4); }
+body.hud-min:not(.pk-hotbar) #hotbar .slots { translate: 0 56px; }
+body.hud-min.touchmode:not(.pk-hotbar) #hotbar .slots { translate: 0 44px; }
+
+/* XP pops float free while the clock ticket is away */
+#hm-pops { position: absolute; left: max(26px, env(safe-area-inset-left)); bottom: calc(max(18px, env(safe-area-inset-bottom)) + 120px); display: flex; flex-direction: column; align-items: flex-start; pointer-events: none; }
+body:not(.hud-min) #hm-pops { display: none; }
+.hm-pop {
+  font: 16px/20px 'Alagard', monospace; color: #b6ee8c;
+  text-shadow: 2px 0 0 #1a1216, -2px 0 0 #1a1216, 0 2px 0 #1a1216, 0 -2px 0 #1a1216;
+  animation: hm-pop 1.5s steps(8) forwards;
+}
+@keyframes hm-pop { 0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px); } }
+body.cine #hm-pops, body.dressing #hm-pops { opacity: 0; }
+
+/* in the mirror (src/cosmetics/wardrobe.js) the HUD steps aside */
+body.dressing #hud, body.dressing #touch { opacity: 0 !important; pointer-events: none !important; transition: opacity .3s; }
+
+/* settings: a one-line tip under the checkbox */
+.hm-tip { margin: -4px 0 8px 34px; font-size: 14px; line-height: 16px; color: var(--pp-ink2, #8a7a6a); }
+
+/* touch: the wallet button (hold to check) */
+#t-check { position: absolute; left: calc(max(14px, env(safe-area-inset-left)) + 6px); top: calc(max(14px, env(safe-area-inset-top)) + 4px); }
+
+/* checking your wallet: the crosshair and its hint step aside */
+body.hud-check #hint, body.hud-check #crosshair { opacity: 0 !important; transition: opacity .15s; }

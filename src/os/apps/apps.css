@@ -232,3 +232,8 @@
 .c98 .pop-c { background: #58c06c; color: #102a10; }
 .c98 .pop-fake { display: flex; justify-content: center; gap: 6px; }
 @keyframes c98-flash2 { 50% { background: #c8202a; color: #ffd23f; } }
+/* progress counters on locked achievements (src/style/achievements.js) */
+.c98 .ac-a .ac-bar { display: block; height: 8px; margin: 4px 0 1px; background: #141a28; max-width: 220px; }
+.c98 .ac-a .ac-bar i { display: block; height: 100%; background: repeating-linear-gradient(90deg, #8ea0c0 0 6px, transparent 6px 8px); }
+.c98 .ac-a.got .ac-bar i { background: #ffd23f; }
+.c98 .ac-a .ac-n { color: #8ea0c0; }

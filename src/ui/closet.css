@@ -203,3 +203,25 @@ body.closet-on canvas:active { cursor: grabbing; }
   @keyframes cl-hint-s { from { opacity: 0; transform: translateY(10px); } }
 }
 @media (prefers-reduced-motion: reduce) { .cl *, .cl-panel { animation: none !important; transition: none !important; } }
+
+/* rarity, locked pieces and how to get them (src/cosmetics) */
+.cl-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 2px 10px; flex-wrap: wrap; }
+.cl-tools .cl-tip { margin: 0; flex: 1 1 180px; }
+.cl-filt { display: flex; gap: 6px; }
+.cl-filt .cl-chip { min-height: 30px; padding: 2px 10px 4px; }
+.cl-rar {
+  position: absolute; right: 6px; top: 6px; padding: 0 6px 1px; font-style: normal; font-size: 14px; line-height: 16px; color: #241a1e;
+  background: var(--rc, #c9c2b4); box-shadow: 0 -2px 0 #241a1e, 0 2px 0 #241a1e, -2px 0 0 #241a1e, 2px 0 0 #241a1e;
+}
+.cl-card { box-shadow: 0 -2px 0 var(--ink), 0 2px 0 var(--ink), -2px 0 0 var(--ink), 2px 0 0 var(--ink), inset 0 4px 0 var(--rc, transparent), 4px 6px 0 rgba(26, 18, 22, .16); }
+.cl-card.locked .cl-pic img { filter: saturate(.7) brightness(.92); }
+.cl-tag.lock { padding: 2px 4px; background: #5e5046; }
+.cl-how {
+  display: flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 4px; padding: 4px 8px 6px; color: #5e5046; font-size: 14px; line-height: 16px;
+  background: #efe6d2; box-shadow: inset 0 0 0 2px rgba(42, 34, 32, .25);
+}
+.cl-how span { display: flex; flex-direction: column; min-width: 0; }
+.cl-how b { font-weight: normal; color: #241a1e; font-size: 16px; line-height: 18px; overflow-wrap: anywhere; }
+.cl-empty { grid-column: 1 / -1; padding: 24px 8px; text-align: center; color: #7a6a5a; }
+.cl-tab span { font-size: 14px; }
+.cl-pic .cl-tag img, .cl-pic .cl-rar img { width: auto; height: auto; transform: none; transition: none; }

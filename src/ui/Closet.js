@@ -1,12 +1,20 @@
-// The closet: a simple shop + wardrobe for your character, opened from the main menu by clicking yourself.
-// Tabs for hats / outfits / face items (cards with a rendered thumbnail, price, Buy / Wear / Take off) and your
-// free base look (body, skin, hair, clothes). Clicking a card tries it on (preview, not saved); buying spends
-// yen (state.money) and puts it on. Every saved change emits game.events 'avatar'. Drag the 3D view to turn.
+// The closet: a simple shop + wardrobe for your character, opened from the main menu by clicking yourself (and from
+// the mirror in your room, src/cosmetics/wardrobe.js, with a stage of its own instead of the menu crew).
+// Tabs for hats / outfits / face items / bags / shoes (cards with a rendered thumbnail, a rarity stamp, price, Buy /
+// Wear / Take off) and your free base look (body, skin, hair, clothes). Clicking a card tries it on (preview, not
+// saved); buying spends yen (state.money) and puts it on. Pieces the closet doesn't sell say how you get them
+// (an achievement, a side quest, a capsule bonus, the kirakira-closet.jp web shop, a thrift find). Every saved change
+// emits game.events 'avatar'. Drag the 3D view to turn.
 import './closet.css';
 import { iconHTML, defineIcon } from '../gfx/icons.js';
 import { audio } from '../core/audio.js';
 import { COSMETICS, COSMETIC_BY_ID, SLOTS, cosmeticPreview } from '../people/cosmetics.js';
-import { LOOK, normalizeAvatar, createAvatarHuman } from '../people/avatar.js';
+import { LOOK, normalizeAvatar } from '../people/avatar.js';
+import { sourceOf, RARITY_RANK } from '../cosmetics/catalog.js';
+import { cosmeticThumb } from '../cosmetics/thumbs.js';
+import { hasPrint, printOf, loadPrint } from '../cosmetics/prints.js';
+import { RARITIES } from '../data/rarity.js';
+import { SERIES_BY_ID } from '../data/series/index.js';
 
 defineIcon('cos_hat', { rows: [
   '................',
@@ -93,6 +101,7 @@ export class Closet {
     this.game = game;
     this.crew = crew;
     this.tab = 'outfit';
+    this.filter = 'all';
     this.isOpen = false;
     this.thumbs = new Map(); // key -> data URL
     this.queue = [];
@@ -218,23 +227,52 @@ export class Closet {
 
   itemsHTML(slot) {
     const S = this.saved, P = this.preview, money = this.game.state.money;
-    const items = COSMETICS.filter((c) => c.slot === slot && (!c.thrift || S.owned.includes(c.id))); // thrift finds only once you own them (Off-Hobby)
+    const own = (c) => S.owned.includes(c.id);
+    // thrift finds only once you own them (Off-Hobby); everything else shows, the locked ones with how to get them
+    const all = COSMETICS.filter((c) => c.slot === slot && (!c.thrift || own(c)));
+    const rank = (c) => (S[slot] === c.id ? 0 : own(c) ? 1 : c.shop || (!c.web && !c.exclusive && !c.thrift) ? 2 : c.web ? 3 : 4);
+    const items = all.filter((c) => this.filter !== 'owned' || own(c))
+      .sort((a, b) => rank(a) - rank(b) || (RARITY_RANK[a.rarity] ?? 0) - (RARITY_RANK[b.rarity] ?? 0) || a.price - b.price);
     const cards = items.map((c) => {
-      const owned = S.owned.includes(c.id), worn = S[slot] === c.id, trying = P[slot] === c.id && !worn;
+      const owned = own(c), worn = S[slot] === c.id, trying = P[slot] === c.id && !worn;
+      const R = RARITIES[c.rarity] || RARITIES.common;
+      const sellable = c.shop || (!c.web && !c.exclusive && !c.thrift);
       let btn;
       if (worn) btn = `<button class="cl-btn" data-act="off" data-id="${c.id}">${ic('minus', 2)}<span>Take off</span></button>`;
       else if (owned) btn = `<button class="cl-btn go" data-act="wear" data-id="${c.id}">${ic('check', 2)}<span>Wear</span></button>`;
-      else btn = `<button class="cl-btn buy${money < c.price ? ' off' : ''}" data-act="buy" data-id="${c.id}">${ic('cart', 2)}<span>Buy</span><b>${yen(c.price)}</b></button>`;
-      const tag = worn ? `<i class="cl-tag on">Wearing</i>` : trying ? `<i class="cl-tag try">Trying on</i>` : owned ? `<i class="cl-tag own">${ic('check', 1)}Owned</i>` : '';
-      return `<div class="cl-card${worn ? ' worn' : ''}${trying ? ' trying' : ''}" data-id="${c.id}">
-        <button class="cl-pic" data-act="try" data-id="${c.id}" aria-label="Try on ${esc(c.name)}"><img data-th="${this.thumbKey(c.id)}" alt="" width="160" height="160" draggable="false">${tag}</button>
+      else if (sellable) btn = `<button class="cl-btn buy${money < c.price ? ' off' : ''}" data-act="buy" data-id="${c.id}">${ic('cart', 2)}<span>Buy</span><b>${yen(c.price)}</b></button>`;
+      else btn = `<div class="cl-how">${this.howHTML(c)}</div>`;
+      const tag = worn ? `<i class="cl-tag on">Wearing</i>` : trying ? `<i class="cl-tag try">Trying on</i>` : owned ? `<i class="cl-tag own">${ic('check', 1)}Owned</i>` : !sellable ? `<i class="cl-tag lock">${ic('lock', 1)}</i>` : '';
+      return `<div class="cl-card${worn ? ' worn' : ''}${trying ? ' trying' : ''}${!owned && !sellable ? ' locked' : ''}" data-id="${c.id}" style="--rc:${R.color}">
+        <button class="cl-pic" data-act="try" data-id="${c.id}" aria-label="Try on ${esc(c.name)}"><img data-th="${this.thumbKey(c.id)}" alt="" width="160" height="160" draggable="false">${tag}<i class="cl-rar">${esc(R.name)}</i></button>
         <div class="cl-name">${esc(c.name)}</div>
         <div class="cl-desc">${esc(c.desc)}</div>
         ${btn}
         <div class="cl-why"></div>
       </div>`;
     }).join('');
-    return `<div class="cl-tip">${slot === 'outfit' ? 'Tap a card to try it on.' : slot === 'hat' ? 'Tap a card to try it on. Hats sit on top of your hair or hood.' : 'Tap a card to try it on.'}</div><div class="cl-grid">${cards}</div>`;
+    const n = all.filter(own).length;
+    const tip = slot === 'hat' ? 'Hats sit on top of your hair or hood.' : slot === 'bag' ? 'Bags show from behind: drag to turn around.' : slot === 'shoes' ? 'Look down in first person to admire them.' : '';
+    return `<div class="cl-tools"><span class="cl-tip">Tap a card to try it on. ${tip}</span>
+      <span class="cl-filt"><button class="cl-chip${this.filter === 'all' ? ' on' : ''}" data-act="filter" data-v="all">All ${all.length}</button><button class="cl-chip${this.filter === 'owned' ? ' on' : ''}" data-act="filter" data-v="owned">Owned ${n}</button></span></div>
+      <div class="cl-grid">${cards || '<div class="cl-empty">Nothing here yet. Earn some!</div>'}</div>`;
+  }
+
+  /** Where a piece the closet doesn't sell comes from. */
+  howHTML(c) {
+    const g = this.game, s = sourceOf(c);
+    if (s.kind === 'ach') {
+      const a = g.os?.achievements?.list?.().find((x) => x.id === s.id);
+      const hidden = a?.hidden && a.got == null;
+      return `${ic('os_trophy', 1)}<span>Achievement<b>${esc(hidden ? 'Hidden: keep playing' : a?.name || 'Secret')}</b></span>`;
+    }
+    if (s.kind === 'quest') {
+      const q = g.sideQuests?.get?.(s.id);
+      return `${ic('star', 1)}<span>Side quest<b>${esc(q ? `${q.title}${q.giverName ? ` (${q.giverName})` : ''}` : 'Ask around the lane')}</b></span>`;
+    }
+    if (s.kind === 'capsule') return `${ic('capsule', 1)}<span>Rare capsule bonus<b>${esc(SERIES_BY_ID[s.id]?.name || 'a gacha series')}</b></span>`;
+    if (s.kind === 'web') return `${ic('cart', 1)}<span>Online, ${yen(c.price)}<b>kirakira-closet.jp</b></span>`;
+    return `${ic('cart', 1)}<span>Second-hand<b>Off-Hobby thrift</b></span>`;
   }
 
   lookHTML() {
@@ -264,32 +302,30 @@ export class Closet {
   // ------------------------------------------------------------------ thumbnails
   thumbKey(id) {
     const c = COSMETIC_BY_ID[id];
-    if (c.slot !== 'outfit') return id;
+    if (c.slot === 'hat' || c.slot === 'face') return id;
     const S = this.saved;
     return `${id}|${S.body}|${S.skin}|${S.hair}|${S.hairCol}|${S.top}|${S.topCol}|${S.bottom}`;
   }
 
   tickThumbs() {
-    const key = this.queue.shift();
-    if (!key) return;
-    if (!this.thumbs.has(key)) {
-      const id = key.split('|')[0], c = COSMETIC_BY_ID[id];
-      let url = null;
-      try {
-        const T = this.game.thumbs;
-        if (c.slot === 'outfit') {
-          const h = createAvatarHuman({ ...this.saved, hat: null, face: null, outfit: id }, { lazy: false });
-          for (let i = 0; i < 4; i++) h.update(1 / 30, {});
-          h.root.rotation.y = 0.35;
-          h.root.updateMatrixWorld(true);
-          url = T.renderObject(h.root, 192, { outline: false, side: 0.25, up: 0.12 }).toDataURL();
-          h.dispose();
-        } else url = T.renderObject(cosmeticPreview(id), 192, { outline: false, side: 0.55, up: 0.22 }).toDataURL();
-      } catch (e) { console.warn('closet thumb', e); }
-      if (url) this.thumbs.set(key, url);
+    // one new render per frame (cached ones go straight in)
+    for (let n = 0; n < 12; n++) {
+      const key = this.queue.shift();
+      if (!key) return;
+      const id = key.split('|')[0];
+      let fresh = false;
+      if (!this.thumbs.has(key)) {
+        // photo-print tees wait for their print
+        if (hasPrint(id) && !printOf(id)) { loadPrint(id).then(() => { if (this.isOpen) this.queue.push(key); }); continue; }
+        const t0 = performance.now();
+        const url = cosmeticThumb(this.game, id, { size: 192, look: this.saved });
+        fresh = performance.now() - t0 > 4;
+        if (url) this.thumbs.set(key, url);
+      }
+      const u = this.thumbs.get(key);
+      if (u) this.body.querySelectorAll(`img[data-th="${CSS.escape(key)}"]`).forEach((img) => { img.src = u; });
+      if (fresh) return;
     }
-    const u = this.thumbs.get(key);
-    if (u) this.body.querySelectorAll(`img[data-th="${CSS.escape(key)}"]`).forEach((img) => { img.src = u; });
   }
 
   // ------------------------------------------------------------------ actions
@@ -303,6 +339,7 @@ export class Closet {
     else if (act === 'buy') this.buy(c, b);
     else if (act === 'wear') this.wear(c);
     else if (act === 'off') { this.commit({ [c.slot]: null }); this.sfx('pickup', 0.5); }
+    else if (act === 'filter') { this.filter = b.dataset.v; this.sfx('uiClick', 0.5); this.render(); }
     else if (act === 'reset') { this.preview = { ...this.saved }; this.crew.setLook(this.preview); this.sfx('uiClick'); this.render(); }
     else if (act === 'base') { this.commit({ [b.dataset.k]: b.dataset.v }, false); this.sfx('uiClick', 0.5); }
     else if (act === 'random') {
@@ -316,16 +353,22 @@ export class Closet {
     const P = this.preview, S = this.saved;
     P[c.slot] = P[c.slot] === c.id ? (S[c.slot] === c.id ? null : S[c.slot]) : c.id;
     this.crew.setLook(P);
+    if (hasPrint(c.id) && !printOf(c.id)) loadPrint(c.id).then(() => { if (this.isOpen && this.preview[c.slot] === c.id) this.crew.setLook(this.preview); });
     if (P[c.slot] === c.id) this.crew.react(c.id);
     this.sfx('pickup', 0.5);
     this.render();
   }
 
-  wear(c) { this.commit({ [c.slot]: c.id }, c.id); this.sfx('pickup', 0.6); }
+  wear(c) {
+    this.commit({ [c.slot]: c.id }, c.id);
+    this.sfx('pickup', 0.6);
+    if (hasPrint(c.id) && !printOf(c.id)) loadPrint(c.id).then(() => this.game.events.emit('avatar', this.game.state.avatar));
+  }
 
   buy(c, btn) {
     const S = this.saved, g = this.game;
     if (S.owned.includes(c.id)) { this.wear(c); return; }
+    if (!(c.shop || (!c.web && !c.exclusive && !c.thrift))) return; // rewards and web / thrift pieces aren't sold here
     if (g.state.money < c.price) {
       const why = btn.parentElement.querySelector('.cl-why');
       why.textContent = `You need ${yen(c.price - g.state.money)} more`;

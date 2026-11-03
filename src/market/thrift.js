@@ -53,7 +53,7 @@ export const thriftPrint = (id) => prints.get(id) || null;
 for (const t of THRIFT) {
   if (COSMETIC_BY_ID[t.id]) continue;
   const c = {
-    id: t.id, slot: 'outfit', name: t.name, price: t.price, thrift: true,
+    id: t.id, slot: 'outfit', name: t.name, price: t.price, thrift: true, rarity: t.photo ? 'uncommon' : 'common',
     desc: t.photo ? 'A thrift find with a photo print. One of a kind (probably).' : 'A thrift find. Soft from a thousand washes.',
     spec(spec) {
       const print = t.photo ? (prints.get(t.id) ? 'pix' : 'none') : t.print;

@@ -6,7 +6,9 @@
 //   applyCosmeticSpec(spec, look)      before building the Human (outfit colours, hair under hoods)
 //   dressHuman(h, look)                attach the pieces; wraps h.update (animation) and h.dispose
 //   cosmeticPreview(id)                an Object3D for thumbnails (mannequin head + the hat / glasses)
-// look = { hat, outfit, face } (cosmetic ids or null).
+// look = { hat, outfit, face, bag, shoes } (cosmetic ids or null).
+// More catalogue entries are registered by src/cosmetics/catalog.js: they bring their own spec(spec, look) (painted
+// clothes, hats, glasses, bags, shoes), dress(ctx) (voxel parts, see dressHuman) and preview(add) (thumbnails).
 import * as THREE from 'three';
 import { VoxelModel, gloss } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
@@ -17,6 +19,8 @@ export const SLOTS = [
   { id: 'hat', name: 'Hats', icon: 'cos_hat' },
   { id: 'outfit', name: 'Outfits', icon: 'cos_shirt' },
   { id: 'face', name: 'Face', icon: 'cos_glasses' },
+  { id: 'bag', name: 'Bags', icon: 'cos_bag' },
+  { id: 'shoes', name: 'Shoes', icon: 'cos_shoe' },
 ];
 
 // colours shared between the painted suit and its voxel parts
@@ -116,6 +120,9 @@ function mannequin() {
   front(v, -3, 6, 0x5a4634); front(v, 3, 6, 0x5a4634); front(v, 0, 1, 0x8a6e50); // painted eyes + mouth
   return v;
 }
+
+/** The voxel helpers, for catalogue entries modelled elsewhere (src/cosmetics/voxels.js). */
+export const VOX = { vm, each, rbox, front, side, hash, hood, gloss, cached, HOOD_IN, MOUTH, TOOTH, INK };
 
 // ------------------------------------------------------------------ the models (head units unless noted)
 const H = {
@@ -504,6 +511,8 @@ export function applyCosmeticSpec(spec, look = {}) {
   if (hat?.cover || out?.hood) spec.hat = { kind: 'hood' };
   else if (hat) spec.hat = null;
   if (look.face) spec.glasses = null;
+  // the other slots' catalogue entries that paint the body (painted hats, glasses, bags, shoes)
+  for (const c of [hat, COSMETIC_BY_ID[look.face], COSMETIC_BY_ID[look.bag], COSMETIC_BY_ID[look.shoes]]) if (c?.spec && !(c === hat && out?.hood)) c.spec(spec, look);
   return spec;
 }
 
@@ -529,6 +538,7 @@ export function dressHuman(h, look = {}) {
   const kx = P.hw / (0.335 * hu), kz = P.hd / (0.42 * hu);
   const rig = { h, parts: [], anims: [], t: Math.random() * 10 };
   const hat = COSMETIC_BY_ID[look.hat], out = COSMETIC_BY_ID[look.outfit], face = COSMETIC_BY_ID[look.face];
+  const bag = COSMETIC_BY_ID[look.bag], shoes = COSMETIC_BY_ID[look.shoes];
   // head rig in head units
   const head = new THREE.Group();
   head.name = 'cosmetics:head';
@@ -608,11 +618,14 @@ export function dressHuman(h, look = {}) {
       k.position.set(hoodOn || hat?.cover ? 9.6 : 7.4, 10.5, 1.2);
       k.rotation.set(-0.15, 1.2, 0.32);
       if (!hoodOn && !hat?.cover) add(head, 'cord', H.cord);
-    } else {
+    } else if (H[face.id]) {
       const g = add(eyes, face.id, H[face.id]);
       g.position.z = hoodOn || hat?.cover ? 0.6 : 0;
     }
   }
+  // ---- catalogue entries with voxel parts of their own (src/cosmetics/catalog.js)
+  const ctx = { h, P, J, b, spec, U, kx, kz, head, crown, eyes, add, rig, hoodOn, hat, out, face, bag, shoes, lift, eyeY, mesh, pivotGroup };
+  for (const c of [out, hat, face, bag, shoes]) if (c?.dress) { try { c.dress(ctx); } catch (e) { console.warn('cosmetic', c.id, e); } }
   // ---- peace-sign fingers (shown by gestures that ask for them: pose.vsign = 'L' | 'R' | 'LR')
   const sk = spec.skin;
   const skinMat = new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(sk[0] / 255 * 0.92, sk[1] / 255 * 0.9, sk[2] / 255 * 0.9, THREE.SRGBColorSpace), roughness: 0.85 });
@@ -749,7 +762,8 @@ function updateRig(rig, dt) {
       A.vx += (-A.x * 90 - A.vx * 6 + acc.z * 0.5) * dt; A.x += A.vx * dt;
       A.vz += (-A.z * 90 - A.vz * 6 - acc.x * 0.5) * dt; A.z += A.vz * dt;
       A.g.rotation.set(A.x * A.amp, 0, A.z * A.amp);
-    } else if (A.kind === 'ears') {
+    } else if (A.kind === 'fn') A.fn(dt, rig, acc);
+    else if (A.kind === 'ears') {
       A.t -= dt;
       if (A.t < 0) { A.t = 2.5 + Math.random() * 5; A.w = 1; }
       A.w = Math.max(0, A.w - dt * 2.5);
@@ -787,7 +801,9 @@ export function cosmeticPreview(id) {
       break;
     }
     case 'kitsune': add('kitsune', H.kitsune, [7.4, 10.5, 1.2], [-0.15, 1.2, 0.32]); add('cord', H.cord); break;
-    default: if (H[id]) add(id, H[id], [0, 6, 0]);
+    default:
+      if (c.preview) c.preview(add, g, lift);
+      else if (H[id]) add(id, H[id], [0, 6, 0]);
   }
   g.scale.setScalar(0.0117);
   return root;

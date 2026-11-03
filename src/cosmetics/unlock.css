@@ -1,0 +1,42 @@
+/* The unlock card (src/cosmetics/grant.js): a cream paper card taped to the top of the screen, the piece's picture in a
+   kraft frame, a rarity stamp in the gacha's colours. Pixel art only: hard edges, stepped motion, no glows. */
+#cx-unlock {
+  position: fixed; left: 50%; top: calc(max(18px, env(safe-area-inset-top)) + 6px); z-index: 45; pointer-events: none;
+  transform: translate(-50%, -160%); transition: transform .32s steps(5);
+  font-family: var(--font-ui); color: #241a1e;
+}
+#cx-unlock.show { transform: translate(-50%, 0); }
+#cx-unlock .cxu-card {
+  position: relative; display: flex; align-items: center; gap: 12px; width: min(490px, 92vw); padding: 6px 34px 8px 8px;
+  image-rendering: pixelated; background: #eee4ca;
+  border: 12px solid transparent; border-image: var(--pp-edge-cream, none) 6 / 12px round;
+  background: var(--pp-grain-cream, none) 0 0 / 96px padding-box, #eee4ca padding-box;
+  filter: drop-shadow(3px 4px 0 rgba(26, 18, 22, .45));
+}
+#cx-unlock .cxu-card::before {
+  content: ''; position: absolute; left: calc(50% - 40px); top: -22px; width: 80px; height: 24px;
+  background: var(--pp-tape, none) 0 0 / 80px 24px; image-rendering: pixelated;
+}
+#cx-unlock .cxu-card::after {
+  content: ''; position: absolute; right: -4px; bottom: -4px; width: 32px; height: 32px;
+  background: var(--pp-hanko, none) 0 0 / 32px; image-rendering: pixelated; opacity: .9;
+}
+#cx-unlock .cxu-pic {
+  flex: none; display: grid; place-items: center; width: 112px; height: 112px;
+  background: #c9a068; box-shadow: inset 0 0 0 2px #241a1e, inset 0 0 0 6px var(--rc), inset 0 0 0 8px #241a1e;
+}
+#cx-unlock .cxu-pic img { width: 96px; height: 96px; image-rendering: pixelated; }
+#cx-unlock .cxu-txt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+#cx-unlock small { color: #c8322c; font-size: 16px; line-height: 18px; text-transform: uppercase; letter-spacing: 1px; }
+#cx-unlock b { font-family: var(--font-display); font-weight: normal; font-size: 28px; line-height: 30px; color: #241a1e; }
+#cx-unlock .cxu-rar {
+  display: inline-block; padding: 0 8px 2px; font-size: 16px; line-height: 18px; color: #241a1e; background: var(--rc);
+  box-shadow: 0 -2px 0 #241a1e, 0 2px 0 #241a1e, -2px 0 0 #241a1e, 2px 0 0 #241a1e;
+}
+#cx-unlock em { font-style: normal; color: #5e5046; font-size: 16px; line-height: 18px; margin-top: 2px; }
+#cx-unlock i { font-style: normal; color: #8a7a6a; font-size: 14px; line-height: 16px; }
+body.cine #cx-unlock { opacity: 0; }
+/* with the closet open, the card keeps to the free side of the screen */
+body.closet-on #cx-unlock { left: max(20px, env(safe-area-inset-left)); transform: translate(0, -160%); }
+body.closet-on #cx-unlock.show { transform: translate(0, 0); }
+body.closet-on #cx-unlock .cxu-card { width: min(440px, calc(100vw - var(--cl-w, 452px) - 80px)); }

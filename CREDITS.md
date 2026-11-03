@@ -344,7 +344,11 @@ dataset (https://storage.googleapis.com/openimages/web/index.html), which collec
 Commons licences. The photos were resized and re-encoded as JPEG; in the game they are cropped, shrunk to pixel-art
 size, colour-graded, posterized and ordered-dithered, and composited with renders of the game's 3D models and text.
 Some of them are also the prints on the thrift tees sold on Off-Hobby (`src/market/thrift.js`), shrunk to 12 x 12 pixels
-and posterized.
+and posterized, and on the big-print tees and photo knits of the Kirakira Closet web shop (`src/cosmetics/catalog.js`,
+`src/cosmetics/prints.js`: koi_fish, red_panda, snowy_owl, saturn_rocket, ferris_wheel, lantern_festival, sushi_plate,
+sunflowers, shibuya_night, panda, penguins, lane/fuji_morning, lane/shinkansen, lane/shiba_puppy; the thrift list adds
+penguin, arctic_fox, wisteria, waterfall, lighthouse, lane/snow_monkeys, lane/kakigori, lane/hydrangea), cropped, shrunk
+to 16 x 16 pixels and reduced to six or seven screen-print inks. The photos and their credits are the ones listed below.
 
 ### Wall of Gachapon
 

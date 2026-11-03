@@ -90,6 +90,15 @@ export const THRIFT = [
   { id: 'thrift_heart', name: 'Big Heart Tee', print: 'heart', col: 0xf2f0ea, col2: 0xe85a7a, price: 500 },
   { id: 'thrift_breton', name: 'Breton Stripe Tee', print: 'border', col: 0xf2f0ea, col2: 0x2a3658, price: 600 },
   { id: 'thrift_candy', name: 'Candy Stripe Tee', print: 'stripes', col: 0xff9ab8, col2: 0xf2f0ea, price: 600 },
+  // more photo prints (src/cosmetics adds the big-print tees sold new on kirakira-closet.jp)
+  { id: 'thrift_penguin', name: 'Penguin Tee', photo: 'prints/penguin', col: 0x6aa6dc, price: 900 },
+  { id: 'thrift_fox', name: 'Arctic Fox Tee', photo: 'prints/arctic_fox', col: 0x3a4a5a, price: 1100 },
+  { id: 'thrift_wisteria', name: 'Wisteria Tee', photo: 'prints/wisteria', col: 0xf2f0ea, price: 800 },
+  { id: 'thrift_waterfall', name: 'Waterfall Tee', photo: 'prints/waterfall', col: 0x2a4a3a, price: 800 },
+  { id: 'thrift_lighthouse', name: 'Lighthouse Tee', photo: 'prints/lighthouse', col: 0x2a3658, price: 900 },
+  { id: 'thrift_monkeys', name: 'Snow Monkey Tee', photo: 'lane/snow_monkeys', col: 0xd8d4cc, price: 1200 },
+  { id: 'thrift_kakigori', name: 'Kakigori Tee', photo: 'lane/kakigori', col: 0xff9ab8, price: 700 },
+  { id: 'thrift_hydrangea', name: 'Hydrangea Tee', photo: 'lane/hydrangea', col: 0x7a4a82, price: 800 },
 ];
 export const THRIFT_BY_ID = Object.fromEntries(THRIFT.map((t) => [t.id, t]));
 
@@ -251,7 +260,7 @@ export function rollItem(g, r, cat) {
   if (cat === 'tipjars') return { t: 'tipjar', id: pick(Object.keys(TIPJAR_DEFS), r), grade, flaws: flawPool('decor'), variant: rollVariant(r, 'decor', grade) };
   if (cat === 'clothes') {
     const owned = new Set(g.state.avatar?.owned || []);
-    const pool = [...THRIFT.map((x) => x.id), ...COSMETICS.filter((c) => !c.thrift).map((c) => c.id)].filter((id) => !owned.has(id));
+    const pool = [...THRIFT.map((x) => x.id), ...COSMETICS.filter((c) => !c.thrift && !c.exclusive).map((c) => c.id)].filter((id) => !owned.has(id)); // (rewards are never sold)
     if (!pool.length) return null;
     return { t: 'garment', cid: pick(pool, r), grade: grade === 'J' ? 'C' : grade, flaws: flawPool('garment'), variant: r() < 0.45 ? { smell: pick(SMELLS, r) } : null };
   }

@@ -6,7 +6,8 @@
 import { Human } from './Human.js';
 import { makeSpec } from './presets.js';
 import { hex, mixc } from './paintlib.js';
-import { applyCosmeticSpec, dressHuman, COSMETICS, COSMETIC_BY_ID } from './cosmetics.js';
+import { applyCosmeticSpec, dressHuman, COSMETICS, COSMETIC_BY_ID, SLOTS } from './cosmetics.js';
+import '../cosmetics/catalog.js'; // the bigger wardrobe: more hats, glasses, outfits, bags, shoes, photo-print tees
 import './poses.js';
 
 export { COSMETICS, COSMETIC_BY_ID };
@@ -36,11 +37,11 @@ export const LOOK = {
 };
 const col = (list, id) => (list.find((o) => o.id === id) || list[0]).col;
 
-/** A brand-new save's character: Grandpa's grandkid in a tee and jeans. hat / outfit / face: equipped cosmetic ids. */
+/** A brand-new save's character: Grandpa's grandkid in a tee and jeans. hat / outfit / face / bag / shoes: equipped cosmetic ids. */
 export const AVATAR_DEFAULT = {
   v: 1, seed: 7,
   body: 'm', skin: 'light', hair: 'messy', hairCol: 'black', top: 'tee', topCol: 'tomato', bottom: 'jeans',
-  hat: null, outfit: null, face: null,
+  hat: null, outfit: null, face: null, bag: null, shoes: null,
   owned: [],
 };
 
@@ -48,7 +49,7 @@ export const AVATAR_DEFAULT = {
 export function normalizeAvatar(a) {
   const r = { ...AVATAR_DEFAULT, ...(a || {}) };
   r.owned = Array.isArray(r.owned) ? r.owned.filter((id) => COSMETIC_BY_ID[id]) : [];
-  for (const s of ['hat', 'outfit', 'face']) if (r[s] && COSMETIC_BY_ID[r[s]]?.slot !== s) r[s] = null;
+  for (const { id: s } of SLOTS) if (r[s] && COSMETIC_BY_ID[r[s]]?.slot !== s) r[s] = null;
   return r;
 }
 

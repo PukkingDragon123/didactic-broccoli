@@ -54,17 +54,42 @@ export class Thumbs {
     for (const s of sizes) for (const k of keys) this.queue.push([k, s]);
   }
 
+  // Performance: the prewarm used to read every thumbnail back synchronously (readRenderTargetPixels), one per frame for
+  // the first minutes of play. A synchronous read waits for the GPU to finish everything queued before it, so each one
+  // stalled the whole frame. Prewarmed thumbnails now use the async read (a pixel-pack buffer + fence): the GPU copies
+  // the pixels when it gets there and the canvas is finished a frame or two later. One in flight at a time.
+  // (Thumbnails asked for on demand with item() are still rendered synchronously, as before.)
   tick(n = 2) {
-    if (!this.queue?.length) return;
-    for (let i = 0; i < n && this.queue.length; i++) { const [k, s] = this.queue.shift(); this.item(k, { size: s }); }
+    if (!this.queue?.length || this.pending) return;
+    for (let i = 0; i < n && this.queue.length; i++) {
+      const [key, size] = this.queue.shift();
+      const ck = `${key}|normal|${size}|0`;
+      if (this.cache.has(ck)) continue;
+      if (!this.renderer.readRenderTargetPixelsAsync) { this.item(key, { size }); continue; }
+      this.shoot(makeItemMesh(key, 'normal', size <= 64 ? { lowres: true } : { hires: true }), size, {});
+      this.pending = true;
+      this.renderer.readRenderTargetPixelsAsync(this.rt, 0, 0, size, size, new Uint8Array(size * size * 4))
+        .then((px) => { if (!this.cache.has(ck)) this.cache.set(ck, this.toCanvas(px, size, {})); })
+        .catch(() => { /* lost context or unreadable target: item() renders it on demand later */ })
+        .finally(() => { this.pending = false; });
+      break;
+    }
   }
 
-  /** Render any Object3D framed from a 3/4 front view into a transparent canvas. */
+  /** Render any Object3D framed from a 3/4 front view into a transparent canvas (opts.box: frame this box instead). */
   renderObject(obj, size, opts = {}) {
+    this.shoot(obj, size, opts);
+    const px = new Uint8Array(size * size * 4);
+    this.renderer.readRenderTargetPixels(this.rt, 0, 0, size, size, px);
+    return this.toCanvas(px, size, opts);
+  }
+
+  /** Draw obj into this.rt (size x size), framed from a 3/4 front view. */
+  shoot(obj, size, opts = {}) {
     const r = this.renderer;
     if (this.rt.width !== size) this.rt.setSize(size, size);
     this.scene.add(obj);
-    const box = new THREE.Box3().setFromObject(obj);
+    const box = opts.box || new THREE.Box3().setFromObject(obj);
     const c = box.getCenter(new THREE.Vector3());
     const rad = box.getSize(new THREE.Vector3()).length() * 0.5;
     const dir = new THREE.Vector3(opts.side ?? 0.5, opts.up ?? 0.35, 1).normalize();
@@ -79,12 +104,14 @@ export class Thumbs {
     r.setClearColor(0x000000, 0);
     r.clear();
     r.render(this.scene, this.cam);
-    const px = new Uint8Array(size * size * 4);
-    r.readRenderTargetPixels(this.rt, 0, 0, size, size, px);
     r.setRenderTarget(prevRT);
     r.setClearColor(prevClear, prevAlpha);
     r.toneMapping = prevTM;
     this.scene.remove(obj);
+  }
+
+  /** RGBA pixels read back from the render target (bottom-up) -> the finished pixel-art canvas. */
+  toCanvas(px, size, opts = {}) {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = size;
     const ctx = canvas.getContext('2d');
