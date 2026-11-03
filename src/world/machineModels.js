@@ -110,13 +110,20 @@ function grime(v, st, yMax) {
   if (!st.worn) return;
   v.recolor((x, y, z, c, mat) => {
     if (mat === 2 || mat === 3) return undefined;
-    const h = hash(x >> 1, y >> 1, z >> 1, 3);
+    const h = hash(x >> 2, y >> 2, z >> 2, 3);
     const low = 1 - y / yMax;
     if (h < 0.05 + low * 0.1) return mix(c, 0x6a5440, 0.28 + h);
     if (h > 0.985) return mix(c, 0xa5532c, 0.55); // rust speck
     if (h > 0.96 && y % 7 === 0) return mix(c, 0xffffff, 0.25); // scuff
     return undefined;
   });
+}
+
+/** Old machines: a hand-painted wobble in the colour, in 4-voxel patches quantised so the faces still merge. */
+function worn(v, st) {
+  v.jitter = st.worn ? 0.016 : 0;
+  v.jitterBlock = 4;
+  v.quantize = st.worn ? 10 : 0;
 }
 
 /** A rounded rectangle (in x/y) proud of the front face at z, depth dz. */
@@ -132,8 +139,7 @@ function plateXY(v, cx, cy, w, h, z, dz, c, r = 1) {
 function bodyModel(type) {
   const spec = MACHINE_SPECS[type], st = spec.style, L = layout(spec);
   const v = new VoxelModel();
-  v.jitter = st.worn ? 0.03 : 0;
-  v.jitterBlock = 2;
+  worn(v, st);
   const W = vx(spec.w), H = vx(spec.lowH), Dd = vx(spec.d);
   const x0 = -W / 2, x1 = W / 2 - 1, z0 = -Dd / 2, z1 = Dd / 2 - 1;
   const B = plas(st, st.body), B2 = plas(st, st.body2), T = plas(st, st.trim);
@@ -193,8 +199,7 @@ function bodyModel(type) {
 function caseModel(type) {
   const spec = MACHINE_SPECS[type], st = spec.style;
   const v = new VoxelModel();
-  v.jitter = st.worn ? 0.025 : 0;
-  v.jitterBlock = 2;
+  worn(v, st);
   const W = vx(spec.w), H = vx(spec.caseH), Dd = vx(spec.d);
   const x0 = -W / 2, x1 = W / 2 - 1, z0 = -Dd / 2, z1 = Dd / 2 - 1;
   const B = plas(st, st.body), T = plas(st, st.trim);
@@ -226,8 +231,7 @@ function caseModel(type) {
 function lidModel(type) {
   const spec = MACHINE_SPECS[type], st = spec.style;
   const v = new VoxelModel();
-  v.jitter = st.worn ? 0.03 : 0;
-  v.jitterBlock = 2;
+  worn(v, st);
   const W = vx(spec.w), H = vx(spec.capH), Dd = vx(spec.d);
   const x0 = -W / 2 - 1, x1 = W / 2, z0 = -Dd / 2 - 1, z1 = Dd / 2;
   const B = plas(st, st.body), T = plas(st, st.header);
@@ -289,7 +293,7 @@ function crownModel() {
 function drawerModel(type) {
   const spec = MACHINE_SPECS[type], st = spec.style, L = layout(spec);
   const v = new VoxelModel();
-  v.jitter = st.worn ? 0.03 : 0;
+  worn(v, st);
   const CB = L.coinBox;
   const w = vx(CB.x1 - CB.x0), h = vx(CB.y1 - CB.y0), dep = vx(CB.depth);
   // drawer coordinates: x 0..w-1, y 0..h-1, z from -dep (back) to 0 (front panel)
@@ -343,7 +347,7 @@ function flapModel(type) {
 function trayModel(type) {
   const spec = MACHINE_SPECS[type], st = spec.style, L = layout(spec);
   const v = new VoxelModel();
-  v.jitter = st.worn ? 0.03 : 0;
+  worn(v, st);
   const T = L.tray;
   const x0 = vx(T.x0), x1 = vx(T.x1) - 1, z0 = vx(T.z0), z1 = vx(T.z1) - 1, wall = vx(T.wall);
   const c = metal(st.worn ? 0xb8b2a4 : st.gold ? 0x3a3634 : CHROME);
@@ -374,6 +378,8 @@ function buttonModel(sign, dark) {
 function retroCrate() {
   const v = new VoxelModel();
   v.jitter = 0.06;
+  v.jitterBlock = 2;
+  v.quantize = 12;
   const wood = 0xb88a52, dark = 0x7a5530;
   const TOP = 27;
   for (let y = 0; y <= TOP; y++) {

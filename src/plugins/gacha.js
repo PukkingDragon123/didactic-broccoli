@@ -4,13 +4,37 @@ import * as THREE from 'three';
 import { GachaMachine } from '../game/GachaMachine.js';
 import { MACHINE_SLOTS } from '../world/Garage.js';
 import { capacityFor } from '../game/economy.js';
+import { openBoxStep } from '../game/capsuleBox.js';
+import { SERIES_BY_ID } from '../data/series/index.js';
 
 let extras = [];
 try { extras = Object.values(import.meta.glob('../game/{shells,toys,packaging}.js', { eager: true })); } catch { /* none yet */ }
 
 export function install(game) {
   for (const m of extras) m.installInto?.(game);
+  cartonHooks(game);
   game.gachaDebug = debugHelpers(game);
+}
+
+/** A capsule carton in your hands: open it anywhere, one step per click (tape, then flaps). */
+function cartonHooks(g) {
+  const H = g.held;
+  const isCarton = (it) => it?.kind === 'box' && it.data?.type === 'refill';
+  const hint = H.hint.bind(H), primary = H.primary.bind(H);
+  H.hint = () => {
+    const it = H.item;
+    if (!isCarton(it) || H.busy) return hint();
+    const name = SERIES_BY_ID[it.data.series]?.name || '';
+    const st = it.data.stage ?? 0;
+    if (st === 0) return { key: 'LMB', text: 'Cut the tape', sub: `${name} x${it.data.count} · or take it to a machine` };
+    if (st === 1) return { key: 'LMB', text: 'Fold the flaps open', sub: `${name} x${it.data.count}` };
+    return { key: 'Q', text: `${name} x${it.data.count}`, sub: 'Take it to a machine and lift the lid' };
+  };
+  H.primary = () => {
+    const it = H.item;
+    if (isCarton(it) && !H.busy && (it.data.stage ?? 0) < 2) { openBoxStep(it, g.camera.getWorldPosition(new THREE.Vector3())); return; }
+    primary();
+  };
 }
 
 function debugHelpers(g) {

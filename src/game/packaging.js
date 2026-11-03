@@ -105,16 +105,16 @@ function stationMesh() {
   if (!stationGeo) {
     const v = new VoxelModel();
     v.jitter = 0.02;
-    // a stack of blister cards
-    for (let i = 0; i < 6; i++) { v.box(-16, i, -8, -4, i, 6, i === 5 ? 0xf4ece0 : 0xe8e0d0); v.paint(() => v.box(-16, i, 3, -4, i, 6, 0xe5383b)); }
-    // the heat sealer: grey box, red lever
-    v.box(0, 0, -7, 12, 6, 6, gloss(0x8a909a));
-    v.box(1, 7, -6, 11, 7, 5, metal(0xd8dde4));
-    v.box(2, 8, 2, 10, 9, 3, gloss(0xd8282a));
+    // a stack of blister cards (cream backing, red headers)
+    for (let i = 0; i < 6; i++) { v.box(-16, i, -8, -4, i, 6, i === 5 ? 0xe8dcc4 : 0xd8ccb0); v.paint(() => v.box(-16, i, 3, -4, i, 6, 0xc8352a)); }
+    // the heat sealer: dark grey body, a matte steel plate, red lever
+    v.box(0, 0, -7, 12, 6, 6, gloss(0x4a5058));
+    v.box(1, 7, -6, 11, 7, 5, 0x8a9098);
+    v.box(2, 8, 2, 10, 9, 3, gloss(0xc8352a));
     v.box(9, 1, 7, 10, 2, 7, gloss(0x3cae5a)); // pilot light
     // a little box of acrylic stands
-    v.hollowBox(-14, 7, -7, -6, 13, 1, glass(0xe8f4fa), 1, ['top']);
-    v.box(-13, 8, -6, -7, 9, 0, glass(0xd8eef8));
+    v.hollowBox(-14, 7, -7, -6, 13, 1, glass(0xd8e8f0), 1, ['top']);
+    v.box(-13, 8, -6, -7, 9, 0, glass(0xc8dce8));
     stationGeo = meshVoxels(v, { voxelSize: 0.01, origin: 'bottom' });
   }
   const m = new THREE.Mesh(stationGeo, voxelMaterials('normal'));

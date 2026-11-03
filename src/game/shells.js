@@ -110,6 +110,14 @@ export function installInto(game) {
     },
   });
   shells.returnBox = hitBox;
+  /** A customer drops their empty capsule into the return box (people code: call when they bin it). */
+  shells.customerBin = () => {
+    S.returned++;
+    audio.play('capsuleHit', { pos: hitBox.position.clone().add(new THREE.Vector3(0, RETURN_BOX.h / 2, 0)), speed: 1, mat: 'capsule', vol: 0.6 });
+    g.events.emit('shellReturned', { count: S.returned, customer: true });
+  };
+  /** World position of the return box's slot (where people walk to bin a shell). */
+  shells.binPos = () => hitBox.position.clone().add(new THREE.Vector3(0, RETURN_BOX.h / 2, 0));
 
   // ---- held-item hooks for the 'shell' kind (instance-level wrappers, Held.js untouched)
   const H = g.held;

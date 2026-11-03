@@ -122,7 +122,7 @@ function paperPrint(N, part, seriesId) {
 }
 
 // ------------------------------------------------------------------ geometry + materials (cached)
-const RES = { hi: 16, lo: 10 };
+const RES = { hi: 16, lo: 8 };
 const geoCache = new Map();
 function partGeo(key, build, r, N) {
   if (!geoCache.has(key)) geoCache.set(key, meshVoxels(build(), { voxelSize: (2 * r) / N, origin: 'none' }));

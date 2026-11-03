@@ -690,7 +690,10 @@ export class GachaMachine {
     this.game.save();
   }
 
-  drawPrice() { this.parts.plate.draw(this.price, this.game.sim?.recommendedPrice ? this.recommended : null); }
+  drawPrice() {
+    this.shownRec = this.game.sim?.recommendedPrice ? this.recommended : null;
+    this.parts.plate.draw(this.price, this.shownRec);
+  }
 
   // ------------------------------------------------------------------ the owner's test turn
   insertCoin() {
@@ -862,6 +865,9 @@ export class GachaMachine {
     }
     this.rope.update(dt);
     if (this.turntable) this.turntable.rotation.y += dt * 0.35;
+    // the recommended price follows the shop's demand model: keep the plate current
+    this.recT = (this.recT ?? Math.random() * 4) - dt;
+    if (this.recT <= 0) { this.recT = 4; if (this.game.sim?.recommendedPrice && this.recommended !== this.shownRec) this.drawPrice(); }
   }
 
   dispose() {

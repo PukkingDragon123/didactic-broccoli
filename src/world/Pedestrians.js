@@ -235,29 +235,53 @@ export class Pedestrians {
 
   playMachine(p) {
     const g = this.game, m = p.machine;
-    if (!m || m.data.broken || !m.data.stock.length) { this.say(p.h, 'Sold out? Aww.'); this.routeOut(p); return; }
+    const playable = m && !m.data.broken && (m.canPlay ? m.canPlay() : m.data.stock.length > 0);
+    if (!playable) { this.say(p.h, 'Sold out? Aww.'); this.routeOut(p); return; }
     p.state = 'play';
     p.t = 0;
     p.h.gesture('browse');
+    // the price plate: too steep and they walk off grumbling (counted in the day's complaints)
+    if (g.sim?.playChance && Math.random() > g.sim.playChance(m)) {
+      const line = g.sim.complaint?.(m, { count: false }) || pick(['Pricey...', 'For one capsule? No way.', 'Maybe next time.']);
+      g.tweens.wait(1.4, () => { p.h.setExpression('sad', 2.5); p.h.gesture('shrug'); this.say(p.h, line, 3.2); });
+      g.events.emit('complaint', { machine: m, text: line, who: p.h });
+      g.tweens.wait(4.2, () => { p.h.clearGesture?.(); this.routeOut(p); });
+      return;
+    }
     this.say(p.h, pick(LINES.play), 2);
     const pos = m.local(0, 1.0, m.L.front + 0.1);
-    g.tweens.wait(1.3, () => { audio.play('coinInsert', { pos, vol: 0.6 }); });
-    for (let i = 0; i < 4; i++) g.tweens.wait(1.8 + i * 0.28, () => audio.play('crankTick', { pos, vol: 0.5 }));
-    g.tweens.wait(3.1, () => {
-      if (!m.data.stock.length) return;
-      const series = takeCapsule(m);
-      const price = capsuleCost(series) * 2;
-      g.addMoney(price);
+    // old machines without a coin box: the coin and the crank by hand
+    if (!m.customerPlay) {
+      g.tweens.wait(1.3, () => { audio.play('coinInsert', { pos, vol: 0.6 }); });
+      for (let i = 0; i < 4; i++) g.tweens.wait(1.8 + i * 0.28, () => audio.play('crankTick', { pos, vol: 0.5 }));
+    }
+    g.tweens.wait(m.customerPlay ? 1.2 : 3.1, () => {
+      let price, series;
+      if (m.customerPlay) {
+        // their coins drop into the machine's coin box: you collect them by hand later
+        const r = m.customerPlay();
+        if (!r) return;
+        ({ price, series } = r);
+      } else {
+        if (!m.data.stock.length) return;
+        series = takeCapsule(m);
+        price = capsuleCost(series) * 2;
+        g.addMoney(price);
+        audio.play('gachan', { pos, vol: 0.7 });
+        m.openFlap?.();
+      }
       g.state.stats.customers = (g.state.stats.customers || 0) + 1;
-      audio.play('gachan', { pos, vol: 0.7 });
-      g.effects.coinBurst({ pos: pos.clone().add(new THREE.Vector3(0, 0.3, 0)), count: 6, up: 1.2, spread: 0.3, life: 1 });
-      m.openFlap?.();
+      // the empty shell: into the capsule return box, or (sometimes) dropped on your floor
+      g.tweens.wait(2.6, () => {
+        if (Math.random() < 0.7 && g.shells?.customerBin) g.shells.customerBin();
+        else g.items.spawnShell?.(p.h.root.position.clone().add(new THREE.Vector3(0, 0.9, 0)), { series });
+      });
       const lucky = Math.random() < 0.35;
       p.h.setExpression(lucky ? 'happy' : 'smile', 3);
       // a really good pull deserves a really bizarre pose
       if (lucky && Math.random() < 0.5) { p.h.gesture(pick(BIZARRE)); this.menaceOver(p.h); } else p.h.gesture(lucky ? 'cheer' : 'shrug');
       this.say(p.h, pick(lucky ? LINES.win : LINES.meh));
-      if (!g.state.flags.firstCustomer) { g.state.flags.firstCustomer = true; g.news(`Your first customer! +${formatYen(price)}`, 'Customers pay for every turn on your machines'); }
+      if (!g.state.flags.firstCustomer) { g.state.flags.firstCustomer = true; g.news(`Your first customer! ${formatYen(price)} in the coin box`, 'Open the coin box drawer to collect it'); }
     });
     g.tweens.wait(6.2, () => { p.h.clearGesture?.(); if (Math.random() < 0.6) this.say(p.h, pick(LINES.bye)); this.routeOut(p); });
   }
@@ -303,7 +327,8 @@ export class Pedestrians {
         if (nearShop && !p.visited) {
           p.visited = true;
           if (Math.random() < 0.5) this.say(h, pick(this.open ? LINES.open : LINES.closed));
-          const m = this.open && p.wantsIn ? g.machines.filter((x) => !x.data.broken && !x.data.fallen && x.data.stock.length)[Math.floor(Math.random() * 3)] || g.machines.find((x) => !x.data.broken && x.data.stock.length) : null;
+          const open = this.open && (!g.sim?.isOpen || g.sim.isOpen());
+          const m = open && p.wantsIn ? g.machines.filter((x) => !x.data.broken && !x.data.fallen && x.data.stock.length)[Math.floor(Math.random() * 3)] || g.machines.find((x) => !x.data.broken && x.data.stock.length) : null;
           if (m && !this.list.some((o) => o !== p && o.machine === m && (o.state === 'goIn' || o.state === 'play'))) {
             this.routeIn(p, m);
             if (!g.state.flags.firstVisitScene && !g.cutscene.active) { g.state.flags.firstVisitScene = true; g.cutscene.play((c) => this.firstCustomerScene(c, p)); }
