@@ -44,7 +44,7 @@ export const SPOTS = {
   doorJosuke: [1.5, 16.4, Math.PI],
   doorOkuyasu: [6.85, 15.8, Math.PI],
   doorHatoda: [-21.95, 2.2, 0],
-  doorGonta: [19.95, 2.4, 0],
+  doorGonta: [18.2, 2.4, 0], // Sakura Heights 101 (102 is your own flat)
   doorKuro: [11.5, 18.2, Math.PI],
   doorGomu: [22.25, 15.4, Math.PI],
   doorYabuki: [-22.15, 16.1, Math.PI],

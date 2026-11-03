@@ -4,7 +4,7 @@
 // A see-through girl in a school uniform waits there with her ghost dog. The rules are the old ones:
 //   she walks you in to the shrine; to leave, you walk back out to the street, and whatever you hear behind you,
 //   you must NOT look back until you're out. Footsteps follow you, something whispers, the dog barks, somebody who
-//   sounds just like her asks you to turn round, and the shadows of hands crawl past your feet. Look back and the
+//   sounds just like her asks you to turn round, and pale hand prints crawl past your feet. Look back and the
 //   hands come out of the dark, grab you and drag you down the alley (you come to on the street, nothing worse).
 //   Make it out and she waves from the shrine; the shrine's gift waits on the post box.
 // Save flags (game.state.flags): ghostMet, ghostAlley (done, the reward was given), ghostFails (times caught).
@@ -265,7 +265,7 @@ export class GhostAlley {
     pl.position.set(-7.462, 1.42, 15.75);
     pl.rotation.y = -Math.PI / 2;
     G.add(pl);
-    // the hands (sprites out of the dark) and their crawling shadows on the ground
+    // the hands (sprites out of the dark) and their pale prints crawling along the ground
     const sheet = handSheet();
     this.hands = [];
     for (let i = 0; i < 18; i++) {
@@ -279,7 +279,7 @@ export class GhostAlley {
     this.shadows = [];
     for (let i = 0; i < 4; i++) {
       const t = sheet.clone(); t.repeat.set(1 / 3, 1); t.offset.x = 1 / 3; t.needsUpdate = true;
-      const m = new THREE.MeshBasicMaterial({ map: t, color: 0x000000, transparent: true, opacity: 0.62, alphaTest: 0.3, depthWrite: false });
+      const m = new THREE.MeshBasicMaterial({ map: t, color: 0x5a78c8, transparent: true, opacity: 0.5, alphaTest: 0.3, depthWrite: false });
       const s = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 1.05), m);
       s.rotation.x = -Math.PI / 2; s.visible = false; s.renderOrder = 3;
       G.add(s);
@@ -343,7 +343,7 @@ export class GhostAlley {
     }
     const night = Math.max(0.35, g.lighting?.state?.night ?? 0.6);
     this.bulbM.color.setRGB(1, 0.85, 0.56).multiplyScalar(0.2 + this.flick * 1.3);
-    this.poolM.opacity = 0.34 * this.flick * night;
+    this.poolM.opacity = 0.55 * this.flick * Math.max(0.5, night);
     const dPl = P.pos.distanceTo(h.root.position), near = dPl < 7;
     const show = this.present && dPl < 30;
     h.root.visible = this.dog.root.visible = show;
@@ -424,7 +424,7 @@ export class GhostAlley {
     } catch { /* audio not ready */ }
   }
 
-  /** Hand sprites rising out of the dark (caught) and hand shadows crawling ahead of you (walking out). */
+  /** Hand sprites rising out of the dark (caught) and pale hand prints crawling ahead of you (walking out). */
   updateHands(dt) {
     const g = this.game, P = g.player;
     for (const H of this.hands) {

@@ -182,10 +182,10 @@ function spots() {
     ['rent', null, 40, 58, 0.26, 18.45, 0.72, nF, Math.PI, 0.02],
     ['zoo', 'zoo', 48, 68, 0.36, 19.15, 0.6, nF, Math.PI, -0.02],
     // utility poles (notices tied at eye height, facing the lane)
-    ['lost', 'cats', 40, 58, 0.22, -22.4, 1.25, 14.32 - 0.17, Math.PI, 0.0],
-    ['festival', 'fest', 40, 58, 0.24, 10.0, 1.2, 14.32 - 0.17, Math.PI, 0.0],
-    ['lost', 'cats', 40, 58, 0.22, -16.3, 1.3, 14.32 - 0.17, Math.PI, 0.0],
-    ['rent', null, 40, 58, 0.22, 17.6, 1.25, 14.32 - 0.17, Math.PI, 0.0],
+    ['lost', 'cats', 40, 58, 0.22, -22.4, 1.25, 14.32 - 0.24, Math.PI, 0.0],
+    ['festival', 'fest', 40, 58, 0.24, 10.0, 1.2, 14.32 - 0.24, Math.PI, 0.0],
+    ['lost', 'cats', 40, 58, 0.22, -16.3, 1.3, 14.32 - 0.24, Math.PI, 0.0],
+    ['rent', null, 40, 58, 0.22, 17.6, 1.25, 14.32 - 0.24, Math.PI, 0.0],
     // the underpass piers (guerrilla posters on the brick, facing the lane)
     ['event', 'event', 48, 68, 0.38, -(XT - 0.4), 1.15, 13.25, Math.PI / 2, 0.02],
     ['travel', 'travel', 48, 68, 0.38, XT - 0.4, 1.12, 13.3, -Math.PI / 2, -0.02],

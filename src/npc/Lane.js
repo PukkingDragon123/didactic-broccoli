@@ -16,6 +16,9 @@ import { audio } from '../core/audio.js';
 import { BIZARRE } from '../people/bizarre.js';
 import { menace } from '../ui/menacing.js';
 
+// Lane spot names that now map onto the town's own spots: Rohan heads home up the A2 passage to his villa.
+const TOWN_SPOT = { doorRohan: 'passage' };
+
 const V = (x, z) => new THREE.Vector3(x, 0, z);
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
@@ -81,7 +84,12 @@ export class Lane {
   /** A spot name, [x, z] or a Vector3 -> { pos, rotY }. */
   spot(s) {
     if (!s) return null;
-    if (typeof s === 'string') { const sp = SPOTS[s]; return sp ? { pos: V(sp[0], sp[1]), rotY: sp[2] ?? 0 } : null; }
+    if (typeof s === 'string') {
+      // spots the town now owns (the A2 passage to the park and the villa behind it)
+      const ts = this.game.garage?.town?.spots?.[TOWN_SPOT[s] || s];
+      if (ts) return { pos: ts.pos.clone().setY(0), rotY: ts.rotY ?? 0 };
+      const sp = SPOTS[s]; return sp ? { pos: V(sp[0], sp[1]), rotY: sp[2] ?? 0 } : null;
+    }
     if (Array.isArray(s)) return { pos: V(s[0], s[1]), rotY: s[2] ?? null };
     return { pos: s.clone().setY(0), rotY: null };
   }
