@@ -59,3 +59,28 @@ Runs in a modern browser (Chrome, Edge, Firefox, Safari 16+). Desktop: any GPU f
 ## Credits line (store page footer)
 
 Music by Kevin MacLeod (incompetech.com), CC BY 4.0. Photos used for posters, flyers and prints from Google Open Images (CC BY 2.0), full list in CREDITS.txt. Alagard font by Hewett Tsoi.
+
+## Images in this folder
+
+All made from real in-game renders (`tools/steam-capture.mjs`), the capsules pixelated and lettered by
+`tools/steam-art.py`: Alagard for the logo, the game's own 5x7 bitmap font for the tagline, no filters.
+
+| File | Steam slot | Size |
+|---|---|---|
+| `capsule_main_1232x706.png` | Main capsule | 1232 x 706 |
+| `header_920x430.png` | Header capsule | 920 x 430 |
+| `small_462x174.png` | Small capsule | 462 x 174 |
+| `vertical_748x896.png` | Vertical capsule | 748 x 896 |
+| `library_600x900.png` | Library capsule | 600 x 900 |
+| `screenshots/01_lane_golden_hour.jpg` | Screenshot: the lane at golden hour, shop open | 1920 x 1080 |
+| `screenshots/02_ultra_rare.jpg` | Screenshot: an ultra-rare kaiju out of its capsule | 1920 x 1080 |
+| `screenshots/03_capsule98_offhobby.jpg` | Screenshot: Capsule 98 and the Off-Hobby marketplace | 1920 x 1080 |
+| `screenshots/04_mikawaya_night.jpg` | Screenshot: Mikawa-ya after dark | 1920 x 1080 |
+| `screenshots/05_mr_hatoda.jpg` | Screenshot: a chat with Mr. Hatoda, the pigeon man | 1920 x 1080 |
+
+Steam asks for at least five screenshots, so there are five. Re-render everything with:
+
+```bash
+node tools/steam-capture.mjs docs/steam/raw high
+python3 tools/steam-art.py docs/steam/raw/capsule_main.png path/to/alagard.ttf docs/steam
+```

@@ -3,7 +3,7 @@
 the logo in Alagard at whole multiples of its pixel grid with a hard ink outline. No filters, no glows.
 
 usage: python3 tools/steam-art.py RAW.png ALAGARD.ttf OUT_DIR
-writes capsule_main_1232x706.png, header_920x430.png, small_462x174.png
+writes capsule_main_1232x706.png, header_920x430.png, small_462x174.png, vertical_748x896.png, library_600x900.png
 """
 import re
 import sys
@@ -70,7 +70,7 @@ def outlined(draw, xy, text, font, fill, u=1, ink=INK):
     draw.text((x, y), text, font=font, fill=fill)
 
 
-def logo(small, font_path, where='bottom-left', u=1, tag=True, big=None):
+def logo(small, font_path, where='bottom-left', u=1, tag=True, big=None, tk=None):
     """Draw the logo onto the low-res canvas so it upscales with the art. u = small pixels per logo unit:
     Alagard is set at 32*u px (a multiple of its 16-px design size, so its pixels stay whole)."""
     d = ImageDraw.Draw(small)
@@ -80,7 +80,8 @@ def logo(small, font_path, where='bottom-left', u=1, tag=True, big=None):
     title1, title2 = 'GACHA', 'GARAGE'
     block_w = max(d.textlength(title1, font=f), d.textlength(title2, font=f))
     lh = big + 2 * u
-    tag_h = 14 * u if tag else 0
+    tk = tk or u  # small pixels per pixel of the 5x7 tagline
+    tag_h = 14 * tk if tag else 0
     if where == 'bottom-left':
         x, y = 8 * u, H - lh * 2 - tag_h - 8 * u
     elif where == 'center':
@@ -92,16 +93,17 @@ def logo(small, font_path, where='bottom-left', u=1, tag=True, big=None):
     if tag:
         # a red price-sticker strip with the tagline in the 5x7 font, ink edge and a lighter top lip
         tagline = 'A CAPSULE-TOY SHOP IN A BACK LANE'
-        tw = text5_w(tagline) * u
+        k = tk
+        tw = text5_w(tagline) * k
         ty = y + lh * 2 + 3 * u
-        d.rectangle([x - u, ty - u, x + tw + 6 * u - 1, ty + 11 * u - 1], fill=INK)
-        d.rectangle([x, ty, x + tw + 5 * u - 1, ty + 9 * u - 1], fill=RED)
-        d.rectangle([x + u, ty + u, x + tw + 4 * u - 1, ty + 2 * u - 1], fill=(226, 92, 76))
-        draw5(small, tagline, x + 3 * u, ty + 2 * u, CREAM, u)
+        d.rectangle([x - k, ty - k, x + tw + 6 * k - 1, ty + 11 * k - 1], fill=INK)
+        d.rectangle([x, ty, x + tw + 5 * k - 1, ty + 9 * k - 1], fill=RED)
+        d.rectangle([x + k, ty + k, x + tw + 4 * k - 1, ty + 2 * k - 1], fill=(226, 92, 76))
+        draw5(small, tagline, x + 3 * k, ty + 2 * k, CREAM, k)
     return small
 
 
-def make(raw, font_path, out, size, scale, where, u, big=None):
+def make(raw, font_path, out, size, scale, where, u, big=None, tag=None, tk=None):
     W, H = size
     # cover-crop the raw render to the target aspect
     rw, rh = raw.size
@@ -110,7 +112,7 @@ def make(raw, font_path, out, size, scale, where, u, big=None):
     ox, oy = (img.width - W) // 2, (img.height - H) // 2
     img = img.crop((ox, oy, ox + W, oy + H))
     small = pixelate(img, scale)
-    small = logo(small, font_path, where, u, tag=W >= 900, big=big)
+    small = logo(small, font_path, where, u, tag=(W >= 900) if tag is None else tag, big=big, tk=tk)
     final = small.resize((small.width * scale, small.height * scale), Image.NEAREST)
     canvas = Image.new('RGB', (W, H), INK)
     canvas.paste(final, ((W - final.width) // 2, (H - final.height) // 2))
@@ -123,5 +125,8 @@ if __name__ == '__main__':
     raw = Image.open(raw_path).convert('RGB')
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     make(raw, font_path, out / 'capsule_main_1232x706.png', (1232, 706), 2, 'bottom-left', 2)
-    make(raw, font_path, out / 'header_920x430.png', (920, 430), 2, 'bottom-left', 1, big=48)
+    make(raw, font_path, out / 'header_920x430.png', (920, 430), 2, 'bottom-left', 1, big=48, tk=1)
     make(raw, font_path, out / 'small_462x174.png', (462, 174), 2, 'center', 1, big=32)
+    # portrait capsules: the shop front cropped tall, the logo low over the road
+    make(raw, font_path, out / 'vertical_748x896.png', (748, 896), 2, 'bottom-left', 2, tag=True, tk=1)
+    make(raw, font_path, out / 'library_600x900.png', (600, 900), 2, 'bottom-left', 1, big=48, tag=True, tk=1)

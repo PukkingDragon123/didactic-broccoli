@@ -35,6 +35,8 @@ const SETUP = `
   try { g.garage.lights.tubes.forEach((t) => { t.dead = false; }); g.garage.setLights(true); } catch {}
   try { g.life && (g.life.signOpen = true); } catch {}
 `;
+// store screenshots keep the paper HUD but drop the hint tag, the tucked goal strip and the waypoint pin
+const TIDY_HUD = `for (const id of ['hint', 'guide', 'waypoint']) { const e = document.getElementById(id); if (e) e.style.visibility = 'hidden'; }`;
 const HIDE_HUD = `for (const id of ['hud', 'guide', 'waypoint', 'simclock', 'money', 'hotbar', 'news', 'touch']) { const e = document.getElementById(id); if (e) e.style.visibility = 'hidden'; }`;
 
 const SCENES = [
@@ -43,7 +45,7 @@ const SCENES = [
   // 2. a capsule cracked open by the machines (ultra rare)
   { name: 'shot2_garage_reveal', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(14); dbg.view(0.6, 1.4, 1.25, -0.12); dbg.capsule('kaiju', 'ultra'); dbg.step(0.4, 0.1); dbg.open(); dbg.step(1.2, 0.1);`] },
   // 3. sitting at Capsule 98, browsing the second-hand site
-  { name: 'shot3_pc_offhobby', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(11); dbg.pc('top'); dbg.step(1, 0.1);`, `__game.os.open('offhobby'); 0`] },
+  { name: 'shot3_pc_offhobby', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(11); dbg.pc('top'); dbg.step(1, 0.1);`, `__game.os.open('browser', { url: 'http://www.off-hobby.jp/', max: true }); dbg.step(4, 0.1); 0`] },
   // 4. the lane after dark: lanterns, lit windows
   { name: 'shot4_lane_night', w: 1920, h: 1080, steps: [`${SETUP} dbg.time(21.5); dbg.people.spawnAll(); dbg.view(-5.5, 10.4, 2.6, 0.02); dbg.step(2, 0.1);`] },
   // 5. a conversation: floating text and choices, no speech bubbles
@@ -63,7 +65,7 @@ for (const sc of SCENES) {
   await pg.waitForFunction(() => window.__ready === true, null, { timeout: 400000 });
   await pg.waitForTimeout(1500);
   for (const s of sc.steps) { await pg.evaluate(s); await pg.waitForTimeout(2500); }
-  if (sc.hud === false) await pg.evaluate(HIDE_HUD);
+  await pg.evaluate(sc.hud === false ? HIDE_HUD : TIDY_HUD);
   await pg.waitForTimeout(4000);
   await pg.screenshot({ path: resolve(root, outDir, `${sc.name}.png`), timeout: 400000 });
   console.log('saved', sc.name);
