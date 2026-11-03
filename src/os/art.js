@@ -504,6 +504,35 @@ const ICONS = {
     'xbbLGGLLLLbbbxx.',
     'xxxxxxxxxxxxxxx.',
   ] },
+  os_phone: { rows: [
+    '..RRRRRRRRRRRR..',
+    '.RQQQQQQQQQQQRr.',
+    'RQRRr......RRRqr',
+    'RRr..........rr.',
+    '....RRRRRRRR....',
+    '...RQQQQQQQQr...',
+    '..RQRWRWRWRRRr..',
+    '..RRRRRRRRRRRr..',
+    '..RRRWRWRWRRRr..',
+    '..RRRRRRRRRRRr..',
+    '..RRRWRWRWRRRr..',
+    '..rrrrrrrrrrrr..',
+  ] },
+  os_trophy: { rows: [
+    '..YYYYYYYYYYYY..',
+    'YYYZZZZZZZZZyYYY',
+    'Y.YZZZZZZZZZyY.Y',
+    'Y.YZZZZZZZZZyY.Y',
+    '.YYZZZZZZZZZyYY.',
+    '...YZZZZZZZyY...',
+    '....YZZZZZyY....',
+    '......YZy.......',
+    '......YZy.......',
+    '.....YZZZy......',
+    '...TTTTTTTTT....',
+    '...TAAAAAAAt....',
+    '...ttttttttt....',
+  ] },
   os_music: { rows: [
     '......kkkkkkkk..',
     '......kVVVVVVk..',
@@ -602,7 +631,7 @@ function teal(p) {
   p.fill(0x2b7d7a);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if ((x + y * 3) % 8 === 0) p.px(x, y, 0x2f8783);
   const cols = [0xff6f91, 0x5cc4ff, 0xffd23f, 0x58c06c, 0xd94fb0, 0xff8c2e];
-  for (let r = 0, y = 10; y < h; y += 28, r++) for (let x = (r % 2) * 20 + 10; x < w; x += 40) if (hash2(x, y) < 0.42) capsuleSprite(p, x, y, cols[Math.floor(hash2(y, x) * cols.length)]);
+  for (let r = 0, y = 12; y < h; y += 40, r++) for (let x = (r % 2) * 30 + 14; x < w; x += 60) if (hash2(x, y) < 0.45) capsuleSprite(p, x, y, cols[Math.floor(hash2(y, x) * cols.length)], 2);
 }
 
 function dusk(p) {

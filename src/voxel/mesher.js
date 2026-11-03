@@ -34,6 +34,8 @@ function jitterColor(hex, amt, x, y, z, block = 1, q = 0) {
   return (r << 16) | (g << 8) | b;
 }
 
+const ORDER_P = [0, 1, 2, 3], ORDER_N = [0, 3, 2, 1];
+
 /**
  * @param {import('./VoxelModel.js').VoxelModel} model
  * @param {{voxelSize?:number, origin?:'bottom'|'center'|'none'}} opts
@@ -56,17 +58,6 @@ export function meshVoxels(model, opts = {}) {
     grid[idx(gx, gy, gz)] = (col + 1) * 8 + mat;
   });
 
-  const matOf = (g) => g % 8;
-  const solidAt = (x, y, z) => {
-    if (x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D) return false;
-    const g = grid[idx(x, y, z)];
-    return g !== 0 && matOf(g) !== MAT.GLASS;
-  };
-  const cellAt = (x, y, z) => {
-    if (x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D) return 0;
-    return grid[idx(x, y, z)];
-  };
-
   // origin offset (in voxel units, grid space)
   let ox, oy, oz;
   if (model.pivot) {
@@ -79,49 +70,53 @@ export function meshVoxels(model, opts = {}) {
     ox = 1 + b.w / 2; oy = 1; oz = 1 + b.d / 2;
   }
 
-  const buckets = [[], [], [], [], [], [], [], []]; // per material: arrays of [pos(12), nrm(3), col(12)]
+  // per material: flat lists of quads (4 positions, 4 colours, 1 normal axis/dir, 1 flip flag)
+  const P = [[], [], [], [], [], [], [], []], Cl = [[], [], [], [], [], [], [], []], Nr = [[], [], [], [], [], [], [], []];
   const dims = [W, H, D];
+  const stride = [1, W, W * H];
+  const origin = [ox, oy, oz];
+  // solid (non-glass) occupancy for AO
+  const solid = new Uint8Array(grid.length);
+  for (let i = 0; i < grid.length; i++) { const g = grid[i]; solid[i] = g !== 0 && g % 8 !== MAT.GLASS ? 1 : 0; }
   const x = [0, 0, 0];
-  const q = [0, 0, 0];
+  const pos = [0, 0, 0];
+  const aos = [0, 0, 0, 0];
 
   for (let d = 0; d < 3; d++) {
     const u = (d + 1) % 3, v = (d + 2) % 3;
     const du = dims[u], dv = dims[v];
+    const su = stride[u], sv = stride[v], sd = stride[d];
     const mask = new Float64Array(du * dv);
     for (const dir of [1, -1]) {
-      q[0] = q[1] = q[2] = 0; q[d] = dir;
+      const sq = dir * sd;
       for (x[d] = 1; x[d] < dims[d] - 1; x[d]++) {
         // build mask
         let n = 0;
         for (x[v] = 0; x[v] < dv; x[v]++) {
-          for (x[u] = 0; x[u] < du; x[u]++, n++) {
+          x[u] = 0;
+          let ci = x[0] + W * (x[1] + H * x[2]);
+          for (; x[u] < du; x[u]++, n++, ci += su) {
             mask[n] = 0;
-            const a = cellAt(x[0], x[1], x[2]);
+            const a = grid[ci];
             if (a === 0) continue;
-            const nb = cellAt(x[0] + q[0], x[1] + q[1], x[2] + q[2]);
-            const aGlass = matOf(a) === MAT.GLASS;
+            const nb = grid[ci + sq];
+            const aGlass = a % 8 === MAT.GLASS;
             if (nb !== 0) {
-              const nbGlass = matOf(nb) === MAT.GLASS;
-              if (!nbGlass) continue; // hidden by solid neighbour
+              if (nb % 8 !== MAT.GLASS) continue; // hidden by solid neighbour
               if (aGlass) continue; // glass next to glass
             }
-            // AO for the 4 corners, sampled in the layer in front of the face
-            const px = x[0] + q[0], py = x[1] + q[1], pz = x[2] + q[2];
-            const ao = [0, 0, 0, 0];
+            let aoBits = 255;
             if (!aGlass) {
-              const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
-              for (let c = 0; c < 4; c++) {
-                const [cu, cv] = corners[c];
-                const s1p = [px, py, pz]; s1p[u] += cu;
-                const s2p = [px, py, pz]; s2p[v] += cv;
-                const cp = [px, py, pz]; cp[u] += cu; cp[v] += cv;
-                const s1 = solidAt(s1p[0], s1p[1], s1p[2]) ? 1 : 0;
-                const s2 = solidAt(s2p[0], s2p[1], s2p[2]) ? 1 : 0;
-                const cc = solidAt(cp[0], cp[1], cp[2]) ? 1 : 0;
-                ao[c] = s1 && s2 ? 0 : 3 - (s1 + s2 + cc);
-              }
-            } else { ao[0] = ao[1] = ao[2] = ao[3] = 3; }
-            mask[n] = a * 256 + (ao[0] | (ao[1] << 2) | (ao[2] << 4) | (ao[3] << 6)) + 1;
+              // AO for the 4 corners, sampled in the layer in front of the face: (-1,-1) (1,-1) (1,1) (-1,1)
+              const p = ci + sq;
+              const sl = solid[p - su], sr = solid[p + su], sb = solid[p - sv], st = solid[p + sv];
+              const a0 = sl && sb ? 0 : 3 - (sl + sb + solid[p - su - sv]);
+              const a1 = sr && sb ? 0 : 3 - (sr + sb + solid[p + su - sv]);
+              const a2 = sr && st ? 0 : 3 - (sr + st + solid[p + su + sv]);
+              const a3 = sl && st ? 0 : 3 - (sl + st + solid[p - su + sv]);
+              aoBits = a0 | (a1 << 2) | (a2 << 4) | (a3 << 6);
+            }
+            mask[n] = a * 256 + aoBits + 1;
           }
         }
         // greedy merge
@@ -145,28 +140,24 @@ export function meshVoxels(model, opts = {}) {
             const mat = cell % 8;
             const colHex = (cell - mat) / 8 - 1;
             const lc = linear(colHex);
-            const aos = [aoBits & 3, (aoBits >> 2) & 3, (aoBits >> 4) & 3, (aoBits >> 6) & 3];
-            const pos = [x[0], x[1], x[2]];
-            pos[u] = i; pos[v] = j;
-            if (dir === 1) pos[d] = x[d] + 1;
-            const corner = (cu, cv) => {
-              const p = [pos[0], pos[1], pos[2]];
-              p[u] += cu; p[v] += cv;
-              return [(p[0] - ox) * vs, (p[1] - oy) * vs, (p[2] - oz) * vs];
-            };
-            const c0 = corner(0, 0), c1 = corner(w, 0), c2 = corner(w, h), c3 = corner(0, h);
-            const nrm = [0, 0, 0]; nrm[d] = dir;
+            aos[0] = aoBits & 3; aos[1] = (aoBits >> 2) & 3; aos[2] = (aoBits >> 4) & 3; aos[3] = (aoBits >> 6) & 3;
+            pos[d] = dir === 1 ? x[d] + 1 : x[d]; pos[u] = i; pos[v] = j;
+            const bx = (pos[0] - origin[0]) * vs, by = (pos[1] - origin[1]) * vs, bz = (pos[2] - origin[2]) * vs;
+            const eu = [0, 0, 0], ev = [0, 0, 0];
+            eu[u] = w * vs; ev[v] = h * vs;
             const glowy = mat === MAT.GLOW;
-            const cols = aos.map((a) => {
-              const f = glowy ? 1 : aoCurve[a];
-              return [lc[0] * f, lc[1] * f, lc[2] * f];
-            });
-            let verts, vc;
-            if (dir === 1) { verts = [c0, c1, c2, c3]; vc = cols; }
-            else { verts = [c0, c3, c2, c1]; vc = [cols[0], cols[3], cols[2], cols[1]]; }
-            const A = dir === 1 ? aos : [aos[0], aos[3], aos[2], aos[1]];
-            const flip = A[0] + A[2] < A[1] + A[3];
-            buckets[mat].push({ verts, nrm, vc, flip });
+            const pl = P[mat], cl = Cl[mat];
+            // corners c0 (0,0) c1 (w,0) c2 (w,h) c3 (0,h); the -dir face winds the other way
+            const order = dir === 1 ? ORDER_P : ORDER_N;
+            for (let k = 0; k < 4; k++) {
+              const c = order[k];
+              const cu = c === 1 || c === 2 ? 1 : 0, cv = c >= 2 ? 1 : 0;
+              pl.push(bx + eu[0] * cu + ev[0] * cv, by + eu[1] * cu + ev[1] * cv, bz + eu[2] * cu + ev[2] * cv);
+              const f = glowy ? 1 : aoCurve[aos[c]];
+              cl.push(lc[0] * f, lc[1] * f, lc[2] * f);
+            }
+            const A0 = aos[order[0]], A1 = aos[order[1]], A2 = aos[order[2]], A3 = aos[order[3]];
+            Nr[mat].push(d * 2 + (dir === 1 ? 0 : 1), A0 + A2 < A1 + A3 ? 1 : 0);
             // clear mask
             for (let l = 0; l < h; l++) for (let k = 0; k < w; k++) mask[n + k + l * du] = 0;
             i += w; n += w;
@@ -178,24 +169,23 @@ export function meshVoxels(model, opts = {}) {
 
   // assemble
   let quadCount = 0;
-  for (const b2 of buckets) quadCount += b2.length;
+  for (const nr of Nr) quadCount += nr.length / 2;
   const positions = new Float32Array(quadCount * 4 * 3);
   const normals = new Float32Array(quadCount * 4 * 3);
   const colors = new Float32Array(quadCount * 4 * 3);
   const indices = new (quadCount * 4 > 65535 ? Uint32Array : Uint16Array)(quadCount * 6);
   const geo = new THREE.BufferGeometry();
   let vi = 0, ii = 0;
-  for (let mat = 0; mat < buckets.length; mat++) {
-    const list = buckets[mat];
-    if (!list.length) continue;
+  for (let mat = 0; mat < 8; mat++) {
+    const nr = Nr[mat];
+    if (!nr.length) continue;
     const start = ii;
-    for (const f of list) {
-      for (let k = 0; k < 4; k++) {
-        positions.set(f.verts[k], (vi + k) * 3);
-        normals.set(f.nrm, (vi + k) * 3);
-        colors.set(f.vc[k], (vi + k) * 3);
-      }
-      if (f.flip) {
+    positions.set(P[mat], vi * 3);
+    colors.set(Cl[mat], vi * 3);
+    for (let q = 0; q < nr.length; q += 2) {
+      const ax = nr[q] >> 1, sgn = nr[q] & 1 ? -1 : 1;
+      for (let k = 0; k < 4; k++) normals[(vi + k) * 3 + ax] = sgn;
+      if (nr[q + 1]) {
         indices[ii++] = vi + 1; indices[ii++] = vi + 2; indices[ii++] = vi + 3;
         indices[ii++] = vi + 1; indices[ii++] = vi + 3; indices[ii++] = vi;
       } else {

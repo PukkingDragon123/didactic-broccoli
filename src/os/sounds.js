@@ -58,6 +58,26 @@ const V = {
     [48, 48, 53, 55].forEach((n, i) => a.tone(o, t + i * 0.48, { type: 'triangle', f: NOTE(n), dur: 0.4, vol: 0.05 }));
   },
 
+  // ---------------------------------------------------------------- the phone (real telephone tones, a bit 8-bit)
+  dtmf(a, t, o, p) {
+    a.tone(o, t, { type: 'sine', f: p.f1 || 697, dur: 0.09, vol: 0.05, curve: 'lin' });
+    a.tone(o, t, { type: 'sine', f: p.f2 || 1209, dur: 0.09, vol: 0.05, curve: 'lin' });
+  },
+  dialTone(a, t, o) { a.tone(o, t, { type: 'sine', f: 400, dur: 0.9, vol: 0.04, attack: 0.01, curve: 'lin' }); },
+  ringback(a, t, o) {
+    // Japanese ring-back: 400 Hz warbled at 16 Hz, one second on
+    for (let i = 0; i < 16; i++) a.tone(o, t + i / 16, { type: 'sine', f: 400, dur: 1 / 32, vol: 0.05, curve: 'lin' });
+  },
+  busyTone(a, t, o) { for (let i = 0; i < 4; i++) a.tone(o, t + i * 0.5, { type: 'sine', f: 400, dur: 0.25, vol: 0.05, curve: 'lin' }); },
+  sitTone(a, t, o) { [950, 1400, 1800].forEach((f, i) => a.tone(o, t + i * 0.33, { type: 'sine', f, dur: 0.28, vol: 0.04, curve: 'lin' })); },
+  timeSignal(a, t, o) { [0, 1, 2].forEach((i) => a.tone(o, t + i, { type: 'sine', f: 440, dur: 0.1, vol: 0.05 })); a.tone(o, t + 3, { type: 'sine', f: 880, dur: 1.0, vol: 0.05 }); },
+  phoneRing(a, t, o) {
+    // a desk phone's electronic ring: two quick trills
+    for (let k = 0; k < 2; k++) for (let i = 0; i < 10; i++) a.tone(o, t + k * 0.45 + i * 0.035, { wave: a.pulse(0.5), f: i % 2 ? 1300 : 1050, dur: 0.03, vol: 0.03 });
+  },
+  hookUp(a, t, o) { a.burst(o, t, { dur: 0.03, vol: 0.2, type: 'bandpass', f: 1800, q: 2 }); a.tone(o, t, { f: 180, f2: 90, dur: 0.06, vol: 0.12 }); },
+  hookDown(a, t, o) { a.burst(o, t, { dur: 0.05, vol: 0.25, type: 'lowpass', f: 700 }); a.tone(o, t, { f: 140, f2: 60, dur: 0.08, vol: 0.15 }); },
+
   // ---------------------------------------------------------------- the desk
   chairScrape(a, t, o) {
     a.burst(o, t, { dur: 0.32, vol: 0.12, type: 'bandpass', f: 380, f2: 620, q: 3, buf: a.pink });

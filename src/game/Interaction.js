@@ -115,6 +115,8 @@ export class Interaction {
       if (inp.buttonDown(0)) g.held.primary();
       return;
     }
+    // an empty hand and nothing to use: a slap (FPBody; never at the cat)
+    if (!sel && inp.buttonDown(0) && (!found || !found.hint?.key) && !found?.obj?.userData?.catRig) g.fp?.slap?.();
     this.setHover(found);
     this.setHint(found?.hint || null);
     this.crossEl.classList.toggle('active', !!found);

@@ -72,7 +72,7 @@ function shadeAt(x, y, z) {
   return 1 - 0.45 * sstep(XT - 0.4, XT + 1.4, u);
 }
 
-const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _c = new THREE.Color(), _up = new THREE.Vector3(0, 1, 0);
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _c = new THREE.Color(), _c2 = new THREE.Color(), _up = new THREE.Vector3(0, 1, 0);
 
 /**
  * Static geometry batcher: boxes/planes are transformed, given baked vertex colours (tint × underpass
@@ -272,6 +272,9 @@ export class Town {
       dark: W('winDark'), frost: W('winFrost', 0.35), shoji: W('winShoji', 0.7), tv: W('winTV', 0.6), lace: W('winLace', 0.7),
     };
     this.doors = { genkan: this.T('doorGenkan', 32, 40, { glow: 0.55, rough: 0.4 }), apt: this.T('doorApt', 18, 40, { rough: 0.5, metal: 0.2 }) };
+    // lit windows and doorway glass glow softly by day and properly after dark: [material, day, night] (see applySky)
+    const wl = this.win;
+    this.nightGlow = [[wl.lit, 0.3, 1.35], [wl.lit2, 0.3, 1.3], [wl.lit3, 0.3, 1.35], [wl.lit4, 0.3, 1.3], [wl.frost, 0.12, 0.6], [wl.shoji, 0.28, 1.2], [wl.tv, 0.3, 1.05], [wl.lace, 0.28, 1.15], [this.doors.genkan, 0.18, 0.95]];
     this.glass = new THREE.MeshPhysicalMaterial({ color: 0xeaf2f0, transparent: true, opacity: 0.18, roughness: 0.05, clearcoat: 1, depthWrite: false });
   }
 
@@ -1275,10 +1278,12 @@ export class Town {
   }
   flushPools() {
     if (!this._pools?.length) return;
+    this.poolK = this.poolK || { value: 1 }; // light pools grow stronger after dark (applySky)
     const mat = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true,
+      uniforms: { uK: this.poolK },
       vertexShader: 'varying vec3 vC; varying vec2 vUv; void main(){ vUv = uv; vC = color; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-      fragmentShader: 'varying vec3 vC; varying vec2 vUv; void main(){ vec2 q = floor((vUv - 0.5) * 24.0) / 24.0; float d = length(q) * 2.0; float a = pow(max(0.0, 1.0 - d), 1.8); gl_FragColor = vec4(vC * a * 0.35, 1.0); }',
+      fragmentShader: 'uniform float uK; varying vec3 vC; varying vec2 vUv; void main(){ vec2 q = floor((vUv - 0.5) * 24.0) / 24.0; float d = length(q) * 2.0; float a = pow(max(0.0, 1.0 - d), 1.8); gl_FragColor = vec4(vC * a * 0.35 * uK, 1.0); }',
     });
     const mesh = new THREE.Mesh(mergeGeometries(this._pools), mat);
     mesh.renderOrder = 2;
@@ -1325,6 +1330,7 @@ export class Town {
     const lamp = new THREE.PointLight(0xffc880, 4, 9, 1.5);
     lamp.position.set(-2.4, 3.9, 13.7);
     this.add(lamp);
+    this.streetLamp = lamp; // switched by the time of day (applySky), never removed: no shader rebuilds
   }
 
   // ---------------------------------------------------------------- street dressing
@@ -1335,6 +1341,7 @@ export class Town {
     const vl = new THREE.PointLight(0xdff0ff, 2.2, 5, 1.6);
     vl.position.set(-0.1, 1.2, 13.4);
     this.add(vl);
+    this.vendingLight = vl;
     this.pool(-0.1, 13.4, 1.6, 0xcfe8ff, 0.45);
     this.pool(-16.5, 13.5, 1.5, 0xcfe8ff, 0.4);
     this.pool(-16.05, 6.3, 1.2, 0xcfe8ff, 0.35);
@@ -1540,7 +1547,8 @@ export class Town {
 
   // ---------------------------------------------------------------- sky & skyline
   buildSky() {
-    // late golden hour, clear with a few clouds: blue zenith fading to warm haze, a glow band toward the low sun
+    // the sky dome: zenith-to-horizon bands, a glow band toward the sun, pixel clouds, pixel stars and moon at night.
+    // Every colour is a uniform driven by the time of day (applySky); the defaults are the late golden hour.
     const cl = new SkyClouds().texture;
     const mat = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, fog: false,
@@ -1549,13 +1557,19 @@ export class Town {
         uZen: { value: new THREE.Color(0x3f6fae) }, uUp: { value: new THREE.Color(0x6f9acb) },
         uMid: { value: new THREE.Color(0xa9c4dd) }, uHor: { value: new THREE.Color(0xe9dcc4) },
         uGlow: { value: new THREE.Color(0xf6d9a8) },
+        uSunCol: { value: new THREE.Color(1.0, 0.86, 0.62) }, uSunK: { value: 1 },
+        uCloud: { value: new THREE.Vector3(1, 1, 1) },
+        uMoon: { value: new THREE.Vector3(0.5, 0.6, -0.6).normalize() }, uMoonK: { value: 0 },
+        uNight: { value: 0 }, uTwinkle: { value: 0 },
         uClouds: { value: cl },
       },
       vertexShader: 'varying vec3 vD; void main(){ vD = position; vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }',
-      fragmentShader: `uniform vec3 uSun, uZen, uUp, uMid, uHor, uGlow; uniform sampler2D uClouds; varying vec3 vD;
+      fragmentShader: `uniform vec3 uSun, uZen, uUp, uMid, uHor, uGlow, uSunCol, uCloud, uMoon; uniform float uSunK, uMoonK, uNight, uTwinkle;
+        uniform sampler2D uClouds; varying vec3 vD;
         float bayer(vec2 p){ vec2 q = mod(floor(p), 4.0); int i = int(q.x) + int(q.y) * 4;
           float b[16]; b[0]=0.;b[1]=8.;b[2]=2.;b[3]=10.;b[4]=12.;b[5]=4.;b[6]=14.;b[7]=6.;b[8]=3.;b[9]=11.;b[10]=1.;b[11]=9.;b[12]=15.;b[13]=7.;b[14]=13.;b[15]=5.;
           for (int k = 0; k < 16; k++) if (k == i) return b[k] / 16.0; return 0.0; }
+        float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
         void main(){
           vec3 d = normalize(vD);
           float h = d.y, hl = max(length(d.xz), 1e-4);
@@ -1569,19 +1583,43 @@ export class Town {
           // warm glow band hugging the horizon toward the sun, and a soft halo around it
           col = mix(col, uGlow, pow(sunK, 4.0) * (1.0 - smoothstep(0.0, 0.3, h)) * 0.9);
           float sd = max(0.0, dot(d, uSun));
-          col += vec3(1.0, 0.86, 0.62) * (pow(sd, 24.0) * 0.35 + pow(sd, 400.0) * 1.6);
+          col += uSunCol * (pow(sd, 24.0) * 0.35 + pow(sd, 400.0) * 1.6) * uSunK;
+          // night: one-cell pixel stars that twinkle in steps, fading out toward the hazy horizon
+          if (uNight > 0.01 && h > 0.05) {
+            float r = hash(cell);
+            if (r > 0.9955) {
+              float tw = step(0.45, fract(r * 91.7 + uTwinkle * 0.37));
+              col += vec3(0.78, 0.82, 0.96) * uNight * (0.35 + 0.45 * tw) * smoothstep(0.05, 0.25, h) * (r > 0.9993 ? 1.6 : 1.0);
+            }
+          }
           col = floor(col * 64.0 + bayer(cell + 5.0)) / 64.0;
-          // a few soft clouds: off-white tops, warm lit edges, blue-grey undersides
+          // a few soft clouds: off-white tops, warm lit edges, blue-grey undersides (tinted by the time of day)
           vec2 uv = vec2(cell.x / 200.0 / 6.2832 + 0.5, (h - 0.02) * 2.2);
           if (uv.y > 0.0 && uv.y < 1.0) {
             vec4 c = texture2D(uClouds, uv);
-            vec3 cc = mix(c.rgb, c.rgb * vec3(1.05, 0.96, 0.86), pow(sunK, 2.0) * 0.7);
+            vec3 cc = mix(c.rgb, c.rgb * vec3(1.05, 0.96, 0.86), pow(sunK, 2.0) * 0.7) * uCloud;
             col = mix(col, cc, c.a * smoothstep(0.02, 0.09, h) * 0.92);
+          }
+          // the moon: a chunky pixel disc with a few darker maria
+          float md = dot(d, uMoon);
+          if (uMoonK > 0.01 && md > 0.99) {
+            vec3 mx = normalize(cross(vec3(0.0, 1.0, 0.0), uMoon)), my = cross(uMoon, mx);
+            vec2 mp = vec2(dot(d, mx), dot(d, my)) / 0.024;
+            vec2 mc = floor(mp * 7.0);
+            vec2 mq = (mc + 0.5) / 7.0;
+            float r2 = dot(mq, mq);
+            if (r2 < 1.0) {
+              float n = hash(mc + 3.0);
+              vec3 moon = mix(vec3(0.95, 0.93, 0.84), vec3(0.74, 0.74, 0.72), step(0.72, n) * step(r2, 0.62));
+              moon *= 1.0 - 0.16 * step(0.7, r2);
+              col = mix(col, moon * 1.1, uMoonK);
+            }
           }
           if (h < 0.0) col = mix(uHor, uHor * 0.85, smoothstep(0.0, -0.2, h));
           gl_FragColor = vec4(col, 1.0);
         }`,
     });
+    this.skyMat = mat;
     const dome = new THREE.Mesh(new THREE.SphereGeometry(80, 32, 16), mat);
     dome.renderOrder = -10;
     dome.frustumCulled = false;
@@ -1594,6 +1632,28 @@ export class Town {
     void pe;
     const t = p.texture(); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / 8, 1 / 16);
     const mat = new THREE.MeshBasicMaterial({ map: t, fog: true, vertexColors: true });
+    // after dark the skyline sinks into blue and its windows light up one by one (a per-window switch-on time in alpha)
+    const W = 64, H = 128, win = new Uint8Array(W * H * 4);
+    const warm = [[255, 214, 150], [255, 228, 176], [250, 196, 128], [226, 236, 255], [255, 236, 200]];
+    for (let y = 5; y < H - 2; y += 5) for (let x = 3; x < W - 2; x += 4) {
+      const k = hash2(x * 5 + 11, y * 3 + 7);
+      if (k > 0.36) continue;
+      const c = warm[Math.floor(hash2(x, y + 99) * warm.length)], on = Math.floor((k / 0.36) * 230) + 10;
+      for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) {
+        const o = (((H - 1 - (y + dy)) * W) + x + dx) * 4; // canvas rows run top-down, texture rows bottom-up
+        win[o] = c[0]; win[o + 1] = c[1]; win[o + 2] = c[2]; win[o + 3] = on;
+      }
+    }
+    const wt = new THREE.DataTexture(win, W, H, THREE.RGBAFormat);
+    wt.magFilter = wt.minFilter = THREE.NearestFilter; wt.wrapS = wt.wrapT = THREE.RepeatWrapping; wt.colorSpace = THREE.SRGBColorSpace;
+    wt.needsUpdate = true;
+    this.skyline = { dim: { value: new THREE.Color(1, 1, 1) }, win: { value: 0 } };
+    mat.onBeforeCompile = (sh) => {
+      sh.uniforms.uDim = this.skyline.dim; sh.uniforms.uWin = this.skyline.win; sh.uniforms.uWinMap = { value: wt };
+      sh.fragmentShader = 'uniform vec3 uDim; uniform float uWin; uniform sampler2D uWinMap;\n' + sh.fragmentShader.replace('#include <opaque_fragment>',
+        'vec4 wN = texture2D( uWinMap, vMapUv ); outgoingLight = outgoingLight * uDim + wN.rgb * step( wN.a, uWin ) * 1.25;\n#include <opaque_fragment>');
+    };
+    mat.customProgramCacheKey = () => 'skyline-night';
     const B = new Batch();
     for (let i = 0; i < 54; i++) {
       const a = (i / 54) * Math.PI * 2 + hash2(i, 1) * 0.06;
@@ -1608,6 +1668,41 @@ export class Town {
       B.pop();
     }
     B.build(this.group, { receive: false });
+  }
+
+  // ---------------------------------------------------------------- time of day
+  /**
+   * Day / night for the town's own materials, called a few times a second by src/game/Lighting.js with the sky look
+   * (src/sim/sky.js) plus { sunDir, moonDir, sunK, moonK, twinkle, power }. Only uniforms and intensities change:
+   * nothing is added, removed or hidden, so no shader is ever rebuilt.
+   */
+  applySky(L) {
+    const u = this.skyMat?.uniforms;
+    const night = L.night;
+    if (u) {
+      u.uZen.value.copy(L.zen); u.uUp.value.copy(L.up); u.uMid.value.copy(L.mid); u.uHor.value.copy(L.hor); u.uGlow.value.copy(L.glow);
+      u.uSun.value.copy(L.sunDir);
+      u.uSunCol.value.copy(L.sun).lerp(_c.setRGB(1, 0.86, 0.62), 0.5);
+      u.uSunK.value = L.sunK;
+      u.uCloud.value.set(L.cloud[0], L.cloud[1], L.cloud[2]);
+      u.uMoon.value.copy(L.moonDir); u.uMoonK.value = L.moonK;
+      u.uNight.value = night; u.uTwinkle.value = L.twinkle || 0;
+    }
+    if (this.skyline) {
+      // silhouettes: daylight grey-blue -> deep dusk blue; windows switch on as it gets dark
+      this.skyline.dim.value.setRGB(1, 1, 1).lerp(_c.setRGB(0.2, 0.24, 0.38), night * 0.92).multiply(_c2.setRGB(L.fog.r * 0.4 + 0.6, L.fog.g * 0.4 + 0.6, L.fog.b * 0.4 + 0.6));
+      this.skyline.win.value = Math.min(1, Math.max(0, (night - 0.15) / 0.75)) * 0.98;
+    }
+    for (const [m, d, n] of this.nightGlow || []) m.emissiveIntensity = d + (n - d) * night;
+    if (this.poolK) this.poolK.value = 0.55 + 1.6 * night;
+    if (this.streetLamp) this.streetLamp.intensity = night > 0.3 ? 5.2 * Math.min(1, (night - 0.3) / 0.25) : 0;
+    if (this.vendingLight) this.vendingLight.intensity = 1.6 + 1.2 * night;
+    const S = this.shop;
+    if (S?.lanternM) {
+      const on = (this.shopOpen ? 1 : 0) * (L.power === false ? 0 : 1);
+      S.lanternM.emissiveIntensity = on * (0.8 + 0.6 * night);
+      S.glow.intensity = on * (1.2 + 1.8 * night);
+    }
   }
 
   // ---------------------------------------------------------------- bounds

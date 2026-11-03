@@ -3,6 +3,8 @@
 //   'corner' — MIKAWA-YA, the little general store across the lane (wooden menu board, paper price tags)
 // open(store, page) / close(). While open the pointer is released and game.uiOpen is true, so main.js
 // must not treat that unlock as "pause". Every purchase goes through shop.js / goods / museum and returns {ok, msg}.
+// ShopUI.embed(game, host, { page, onNav(page), onStatus(text) }) mounts the GACHA-MART pages (no window chrome)
+// inside another element: the computer's web browser hosts the store this way. Returns { page, go(p), destroy() }.
 import './shopui.css';
 import { iconHTML } from '../gfx/icons.js';
 import { audio } from '../core/audio.js';
@@ -10,8 +12,8 @@ import { SERIES, SERIES_BY_ID, ITEMS, getItem, MINI_SERIES } from '../data/serie
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
 import {
-  MACHINE_TYPES, MACHINE_ORDER, MAX_MACHINES, machinePrice, UPGRADES, upgradeCost, capsuleCost, licensePrice,
-  licenseRequirement, OPENERS, CHARMS, SHELF_PRICES, singlePrice, itemValue, crankTime,
+  MACHINE_TYPES, MACHINE_ORDER, MAX_MACHINES, machinePrice, capsuleCost, licensePrice,
+  licenseRequirement, OPENERS, CHARMS, SHELF_PRICES, singlePrice, itemValue,
   MUSEUM_PRICE, MUSEUM_REQ_COMPLETE, MUSEUM_EXPANSIONS,
 } from '../game/economy.js';
 import * as shop from '../game/shop.js';
@@ -51,7 +53,6 @@ const PAGES = [
   { id: 'home', label: 'Home', icon: 'home', tip: 'Welcome! Everything you order is delivered to the garage shutter.' },
   { id: 'machines', label: 'Machines', icon: 'machine', tip: 'New machines are installed right away and come half full.' },
   { id: 'capsules', label: 'Capsules', icon: 'capsule', tip: 'Carry a refill box to a machine and click to pour the capsules in.' },
-  { id: 'upgrades', label: 'Upgrades', icon: 'upgrade', tip: 'Upgrades are fitted to your machine instantly.' },
   { id: 'goods', label: 'Goods & Tools', icon: 'wrench', tip: 'Shop goods, capsule openers, lucky charms and shelves.' },
   { id: 'museum', label: 'Museum', icon: 'museum', tip: 'Turn the empty warehouse behind the garage into a museum.' },
   { id: 'used', label: 'Used Figures', icon: 'figure', tip: 'Missing one figure? Buy it second-hand (premium prices).' },
@@ -59,7 +60,7 @@ const PAGES = [
   { id: 'book', label: 'Collection', icon: 'book', tip: 'Every figure you have discovered, series by series.' },
 ];
 const PAGE_BY_ID = Object.fromEntries(PAGES.map((p) => [p.id, p]));
-const OLD_PAGES = { top: 'home', refill: 'capsules', upgrade: 'upgrades', tools: 'goods' }; // canvas-site names
+const OLD_PAGES = { top: 'home', refill: 'capsules', upgrade: 'machines', upgrades: 'machines', tools: 'goods' }; // canvas-site names
 
 const GOODS_EN = {
   tip_jar: { desc: 'Museum visitors tip 1.5x more.', icon: 'coin' },
@@ -68,7 +69,6 @@ const GOODS_EN = {
   ticket_machine: { desc: 'Museum tickets sell for 20% more.', icon: 'ticket' },
   neon_open: { desc: 'A glowing OPEN sign: 15% more visitors.', icon: 'bulb' },
 };
-const UP_ICON = { speed: 'speed', cap: 'capacity', coins: 'coin' };
 const MUSEUM_TABS = [['displays', 'Displays', 'display'], ['minis', 'Mini Decos', 'sparkle'], ['decor', 'Decor', 'deco'], ['sheets', 'Sheets', 'flag'], ['expand', 'Expand', 'map'], ['stats', 'Rating', 'star']];
 const REVIEW = ['Nothing to see yet...', 'Kind of cute.', 'Pretty fun!', 'I want to come back!', 'I was moved!!', 'A legendary gacha museum...!'];
 
@@ -99,8 +99,17 @@ const itemTh = (key, { size = 48, px = 2, sil = false, finish = 'normal', cls = 
 
 // ------------------------------------------------------------------ the overlay
 export class ShopUI {
-  constructor(game) {
+  /** Mount the GACHA-MART pages inside `host` (the PC's browser). */
+  static embed(game, host, opts = {}) {
+    const ui = new ShopUI(game, { ...opts, embed: host });
+    ui.go(opts.page || 'home', { push: false, sound: false });
+    return { get page() { return ui.page; }, go: (p) => ui.go(p), destroy: () => ui.destroy() };
+  }
+
+  constructor(game, opts = {}) {
     this.game = game;
+    this.embedded = !!opts.embed;
+    this.eopts = opts;
     this.onClose = null;
     this.store = null;
     this.page = 'home';
@@ -114,6 +123,21 @@ export class ShopUI {
     this.counter = 12345 + Math.floor(Math.random() * 400);
 
     const root = document.createElement('div');
+    if (this.embedded) {
+      root.className = 'sui sui-embed';
+      root.dataset.store = 'emart';
+      root.innerHTML = '<div class="sui-frame"></div><div class="sui-toasts" aria-live="polite"></div>';
+      opts.embed.appendChild(root);
+      this.root = root;
+      this.frame = root.querySelector('.sui-frame');
+      this.toasts = root.querySelector('.sui-toasts');
+      this.store = 'emart';
+      this._open = true;
+      this.build('emart');
+      root.addEventListener('click', (e) => this.onClick(e));
+      this.raf = requestAnimationFrame(() => this.pump());
+      return;
+    }
     root.className = 'sui hidden';
     root.innerHTML = '<div class="sui-backdrop"></div><div class="sui-frame"></div><div class="sui-toasts" aria-live="polite"></div>';
     document.body.appendChild(root);
@@ -146,6 +170,14 @@ export class ShopUI {
   }
 
   get isOpen() { return this._open; }
+
+  /** Unmount an embedded store. */
+  destroy() {
+    this._open = false;
+    cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    this.root.remove();
+  }
 
   /** Open a store. opts: { delay (ms) before the window pops in, onClose (called once) }. */
   open(store = 'emart', page = null, opts = {}) {
@@ -252,7 +284,7 @@ export class ShopUI {
 
   // ------------------------------------------------------------------ per-frame: wallet, affordability, thumbnails
   pump() {
-    if (!this._open) { this.raf = 0; return; }
+    if (!this._open || (this.embedded && !this.root.isConnected)) { this.raf = 0; return; }
     this.raf = requestAnimationFrame(() => this.pump());
     const g = this.game;
     const shown = Math.round(g.shownMoney ?? g.state.money);
@@ -329,7 +361,7 @@ export class ShopUI {
   build(store) {
     if (this._built === store) return;
     this._built = store;
-    this.frame.innerHTML = store === 'emart' ? this.emartFrame() : this.cornerFrame();
+    this.frame.innerHTML = this.embedded ? this.embedFrame() : store === 'emart' ? this.emartFrame() : this.cornerFrame();
     this.el = {
       main: this.frame.querySelector('.em-main, .cn-board'),
       page: this.frame.querySelector('.em-page, .cn-items'),
@@ -365,6 +397,24 @@ export class ShopUI {
     </div>`;
   }
 
+  /** The store as a web page inside the PC's browser (the browser draws the address bar and status line). */
+  embedFrame() {
+    const nav = PAGES.map((p) => `<button class="em-nb" data-go="${p.id}">${ic(p.icon)}<span>${esc(p.label)}</span><i class="em-badge" data-badge="${p.id}"></i></button>`).join('');
+    return `<div class="sui-win em em-embed" aria-label="GACHA-MART web store">
+      <div class="em-brand">
+        <div class="em-logo">${ic('capsule', 2)}<b>GACHA-MART</b></div>
+        <div class="em-slogan">Capsule toys, machines &amp; more.<br>Delivered to your garage!</div>
+        <div class="sui-wallet" title="Your money">${ic('coin')}<span class="v" data-money>${yen(this.game.state.money)}</span></div>
+        <div class="em-marq"><span>${esc(this.marquee())}</span></div>
+      </div>
+      <div class="em-body">
+        <nav class="em-nav" aria-label="Categories">${nav}
+          <div class="em-counter"><small>You are visitor No.</small><b class="em-digits"></b></div></nav>
+        <main class="em-main"><div class="em-page"></div></main>
+      </div>
+    </div>`;
+  }
+
   marquee() {
     const s = this.game.state;
     return `Welcome to GACHA-MART!   *   Your collection: ${Object.keys(s.discovered).length} / ${ITEMS.length} figures   *   Rope coins can be used again and again (the manager pretends not to know)   *   Got duplicates? Sell them here!   *   Complete a series for a big bonus   *   Museum owners wanted!   *`;
@@ -378,7 +428,9 @@ export class ShopUI {
     if (sub && page === 'museum') this.sub.museum = sub;
     if (push && this.page !== page) this.hist.push(this.page);
     if (sound && this.page !== page) audio.play('uiClick', { vol: 0.5 });
+    const moved = this.page !== page;
     this.page = page;
+    if (this.embedded && (moved || !push)) this.eopts.onNav?.(page);
     this.render(true);
     if (focus) {
       const el = this.el.page.querySelector(`[data-focus="${CSS.escape(focus)}"]`);
@@ -413,8 +465,9 @@ export class ShopUI {
     const empty = g.machines.filter((m) => m.data.stock.length === 0).length;
     const badges = { sell: stored || '', capsules: empty ? '!' : '' };
     for (const b of el.nav.querySelectorAll('[data-badge]')) { const v = badges[b.dataset.badge] ?? ''; b.textContent = v; b.classList.toggle('show', v !== ''); }
-    el.url.textContent = `http://www.gacha-mart.co.jp/${this.page === 'home' ? '' : this.page + '/'}`;
-    el.status.textContent = PAGE_BY_ID[this.page].tip;
+    if (el.url) el.url.textContent = `http://www.gacha-mart.co.jp/${this.page === 'home' ? '' : this.page + '/'}`;
+    if (el.status) el.status.textContent = PAGE_BY_ID[this.page].tip;
+    if (this.embedded) this.eopts.onStatus?.(PAGE_BY_ID[this.page].tip);
     const d = this.frame.querySelector('.em-digits');
     if (d) d.innerHTML = String(this.counter + s.pulls).padStart(7, '0').split('').map((c) => `<i>${c}</i>`).join('');
     this.frame.querySelector('.em-back')?.classList.toggle('dim', !this.hist.length);
@@ -482,14 +535,6 @@ export class ShopUI {
         buy: () => shop.buyRefill(g, se.id, n), text: { ok: `${n} capsules are on their way to the shutter.` },
       });
     }
-    let best = null;
-    g.machines.forEach((mm, i) => {
-      for (const k of Object.keys(UPGRADES)) {
-        const c = upgradeCost(k, mm.data.up[k] || 0, mm.data.type);
-        if (c !== null && (!best || c < best.price)) best = { title: UPGRADES[k].name, sub: `${UPGRADES[k].desc(mm.data.up[k] || 0)} - No.${i + 1}`, price: c, img: thumb(`m|${mm.data.type}|64`, 64, 64, 'rec-img'), buy: () => shop.buyUpgrade(g, mm, k), btn: 'Upgrade' };
-      }
-    });
-    if (best) out.push(best);
     const nextOpen = OPENERS[s.opener + 1];
     if (nextOpen) out.push({ title: nextOpen.name, sub: `Opens capsules in ${nextOpen.time}s`, price: nextOpen.price, img: `<span class="rec-img ic">${ic('opener', 2)}</span>`, buy: () => shop.buyOpener(g, s.opener + 1) });
     else if (s.machines.length < MAX_MACHINES) {
@@ -553,29 +598,6 @@ export class ShopUI {
           <div class="sui-themes">${se.themes.map((t) => `<span>${esc(themeName(t))}</span>`).join('')}</div></div>
         <div class="series-buy">${action}</div></article>`;
     }
-    return out + '</div>';
-  }
-
-  p_upgrades() {
-    const g = this.game;
-    let out = this.head('Machine Upgrades', 'Parts are fitted to your machine the moment you buy them.');
-    if (!g.machines.length) return out + `<div class="sui-empty">${ic('machine', 3)}<p>You have no machines yet.</p>${this.btn('Shop machines', () => this.go('machines'), { icon: 'arrow_right', cls: 'primary' })}</div>`;
-    out += '<div class="sui-list">';
-    g.machines.forEach((m, idx) => {
-      const T = MACHINE_TYPES[m.data.type];
-      const se = SERIES_BY_ID[m.data.series];
-      const tiles = Object.entries(UPGRADES).map(([k, U]) => {
-        const lvl = m.data.up[k] || 0;
-        const cost = upgradeCost(k, lvl, m.data.type);
-        const act = cost === null ? `<div class="up-max">${ic('crown')}MAX LEVEL</div>` : this.buy(() => shop.buyUpgrade(g, m, k), { price: cost, label: 'Upgrade', icon: 'upgrade', text: { ok: `${U.name} fitted to machine No.${idx + 1}!`, icon: 'upgrade' } });
-        return `<div class="up-tile${cost === null ? ' max' : ''}"><div class="up-h">${ic(UP_ICON[k] || 'upgrade', 2)}<b>${esc(U.name)}</b></div>
-          <div class="up-lv"><small>Level ${lvl} / ${U.max}</small>${this.pips(lvl, U.max)}</div>
-          <p>${cost === null ? 'Fully upgraded!' : `Next: ${esc(U.desc(lvl))}`}</p>${act}</div>`;
-      }).join('');
-      out += `<article class="sui-card mach"><div class="mach-h">${thumb(`m|${m.data.type}|64`, 64, 64)}<div><h2><span class="no">No.${idx + 1}</span> ${esc(T.name)}</h2>
-        <div class="sui-specs"><span>${ic('capsule')}${esc(se?.name || '-')}</span><span>${ic('capacity')}${m.data.stock.length} / ${m.capacity} capsules</span><span>${ic('speed')}${crankTime(m.data).toFixed(2)}s crank</span></div></div></div>
-        <div class="up-tiles">${tiles}</div></article>`;
-    });
     return out + '</div>';
   }
 

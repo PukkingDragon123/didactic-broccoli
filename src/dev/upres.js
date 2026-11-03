@@ -10,7 +10,7 @@ export async function viewerEntries(params) {
   const skip = +(params.get('skip') || 0);
   const out = [];
   const o = {};
-  for (const k of ['mode', 'sigma', 'threshold']) if (params.get(k)) o[k] = isNaN(+params.get(k)) ? params.get(k) : +params.get(k);
+  for (const k of ['mode', 'sigma', 'threshold', 'jitter']) if (params.get(k)) o[k] = isNaN(+params.get(k)) ? params.get(k) : +params.get(k);
   if (params.get('recolor')) o.recolor = params.get('recolor') === '1';
   if (params.get('ao') === 'hard') o.aoCurve = [0.5, 0.68, 0.84, 1.0];
   setItemUpres(true, o);
@@ -22,7 +22,7 @@ export async function viewerEntries(params) {
         out.push({ obj: m, label: `${it.name}<br><span class="r">before · ${m.geometry.userData.quads * 2} tris</span>` });
       }
       if (only !== 'before') {
-        const m = makeItemMesh(it.key, params.get('finish') || 'normal');
+        const m = makeItemMesh(it.key, params.get('finish') || 'normal', { hires: true });
         out.push({ obj: m, label: `${it.name}<br><span class="r">after · ${m.geometry.userData.quads * 2} tris</span>` });
       }
     }

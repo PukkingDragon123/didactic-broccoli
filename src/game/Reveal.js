@@ -88,7 +88,7 @@ export class Reveal {
     const held = g.held;
     held.busy = true;
     const data = item.data;
-    const cap = item.ent?.cap;
+    const cap = item.ent?.cap || item.obj.userData.capRef;
     g.state.stats.opened++;
     if (data.rarity === 'secret') {
       // the world goes dark, the capsule rises and trembles
@@ -125,14 +125,20 @@ export class Reveal {
     const camQ = g.camera.getWorldQuaternion(new THREE.Quaternion());
     audio.play('pop', { vol: 1, v: data.rarity === 'secret' ? 1.3 : 1 });
     g.player.fovKick = data.rarity === 'secret' ? 0 : 1.5;
-    // halves fly apart as physical debris
+    // the insert flutters out; the empty halves stay with you (src/game/shells.js) or, without it, fly off as debris
     if (cap) {
-      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camQ);
-      const up = new THREE.Vector3(0, 1, 0);
-      this.spawnDebris(cap.top, cap.r, right.clone().multiplyScalar(-0.9).add(up.clone().multiplyScalar(1.6)));
-      this.spawnDebris(cap.bottom, cap.r, right.clone().multiplyScalar(0.9).add(up.clone().multiplyScalar(0.5)));
       if (cap.paper) this.spawnPaper(cap.paper);
       audio.play('paper', { vol: 0.6, delay: 0.1 });
+      if (g.shells) {
+        cap.top.parent?.remove(cap.top); cap.bottom.parent?.remove(cap.bottom);
+        const sd = { series: data.series, color: data.color };
+        g.tweens.wait((DUR[data.rarity] || 1) + 0.2, () => g.shells.give(sd));
+      } else {
+        const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camQ);
+        const up = new THREE.Vector3(0, 1, 0);
+        this.spawnDebris(cap.top, cap.r, right.clone().multiplyScalar(-0.9).add(up.clone().multiplyScalar(1.6)));
+        this.spawnDebris(cap.bottom, cap.r, right.clone().multiplyScalar(0.9).add(up.clone().multiplyScalar(0.5)));
+      }
     }
     // the capsule group itself is now empty
     held.release()?.obj.parent?.remove(item.obj);

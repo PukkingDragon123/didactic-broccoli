@@ -2,12 +2,15 @@
 //  - body: a full Human walking under the camera (legs, torso and feet when you look down). Its head and arms are only
 //    drawn into shadow maps (bone matrices collapsed for the colour passes), so you also cast a complete shadow.
 //  - arms: a viewmodel rig of their own (rendered on top by the renderer's viewmodel pass, so they never poke into
-//    walls): one continuous, smoothly skinned limb per side (shoulder, sleeve, elbow, forearm, wrist, palm, 3-bone
-//    fingers and thumb) painted from the avatar's atlas (sleeves) and skin colour, so arm and hand are one piece. The
+//    walls): a blocky, flat-shaded low-poly limb per side (chamfered boxes for the sleeve, upper arm, forearm, palm and
+//    the three segments of every finger and the thumb) welded ring to ring and with hinge blocks at the elbow and every
+//    knuckle, so it bends without cracks; painted from the avatar's atlas (sleeves) and skin colour. The
 //    forearm twists along its length (two twist bones) and the IK picks the elbow that lines the forearm up with the
 //    back of the hand, so wrists stay natural. Hands grip whatever Held carries (one pose per kind of thing: cradled
 //    capsule, figure on the palm, broom in both fists...) and act out contextual actions: coin, crank, twist, notebook
-//    pages, broom, wrench, lifting, pouring, flyers, petting, the shutter key, taps on switches. Empty hands rest low in
+//    pages, broom, wrench, lifting, pouring (the carton tips in your grip), flyers, the shutter key, taps on switches,
+//    stroking the cat (in your arms or where she sits: you crouch and run a palm from her head down her back), a flinch
+//    when she swats, and an open-palm slap when you click with an empty hand (FPBody.slap). Empty hands rest low in
 //    the corners, breathe and swing with your stride. Every change of what a hand does is an eased move along a slight
 //    arc, fingers opening on the way to a grip; the whole viewmodel lags a touch behind the head's accelerations, so it
 //    has weight. After cutscenes / the PC the hands rise back into view.
@@ -18,6 +21,8 @@ import { BONES, BONE_INDEX } from '../people/body.js';
 import { ATLAS } from '../people/mesh.js';
 import { createAvatarHuman } from '../people/avatar.js';
 import { audio } from '../core/audio.js';
+import { talk } from '../people/voice.js';
+import './sfx.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -45,7 +50,6 @@ const HIDE = ['neck', 'head', 'tailL', 'tailR', 'armL', 'foreL', 'handL', 'armR'
 // Rest frame (rig space, metres; a left arm hanging at the side): +x lateral / the back of the hand, -x towards the body /
 // the palm, +z forward / the thumb side, the arm runs down -y. Hand space: origin at the wrist joint, same axes.
 // Sizes are for a 1.72 m man and scale with the avatar (k: hand size, ar: arm girth).
-const SIDES = 12, FSIDES = 8;
 const FING = [ // knuckle [x, y, z], phalanx lengths, half width (z), half thickness (x)
   { k: [-0.001, -0.088, 0.0258], len: [0.04, 0.024, 0.0195], w: 0.0096, t: 0.0089 },
   { k: [-0.0005, -0.0915, 0.0087], len: [0.044, 0.027, 0.0205], w: 0.0099, t: 0.0092 },
@@ -58,7 +62,7 @@ const T_RELAX = [[-0.44, -0.76, 0.48], [0.4, 0.1, 1]];
 const T_OPPOSE = [[-0.35, -0.936, 0.06], [0.936, -0.35, -0.04]]; // fitted: with F_PINCH the pads meet
 const PALM_C = [-0.0172, -0.056, 0.002]; // palm surface centre (left hand, hand units)
 const NBONES = BONES.length;
-const FAR = /^(crank|coin|steady|wrench|lift|tap|give)/; // hand poses on things out in the world
+const FAR = /^(crank|coin|steady|wrench|lift|tap|give|stroke|slap)/; // hand poses on things out in the world
 const fingBone = (h, f, j) => NBONES + h * 15 + f * 3 + j; // h: 0 left, 1 right; f: 0-3 fingers, 4 thumb
 const twistBone = (h, i) => NBONES + 30 + h * 2 + i; // forearm twist: i 0 half way, 1 full (the wrist end)
 const NB = NBONES + 34;
@@ -68,69 +72,68 @@ const F_FIST = [0.9, 0, 0.72, 0.5, 0, 0];
 const F_TAP = [0.85, 0, 0.6, 0.4, 1, 0];
 const KEY_REST = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.2, -0.45, 0.05)); // Held POSES.item
 
-/** One skinned, smooth-shaded mesh built from tubes of superellipse rings. */
-class SkinGeo {
-  constructor() { this.pos = []; this.uv = []; this.col = []; this.si = []; this.sw = []; this.grp = []; this.idx = []; }
+/** Chamfered-box cross-section (8 corners, x / z half sizes, chamfer as a share of the smaller one). */
+function octagon(hx, hz, ch) {
+  const c = ch * Math.min(hx, hz);
+  return [[hx, hz - c], [hx - c, hz], [-hx + c, hz], [-hx, hz - c], [-hx, -hz + c], [-hx + c, -hz], [hx - c, -hz], [hx, -hz + c]];
+}
+
+/**
+ * Blocky low-poly limbs: chamfered boxes lofted ring by ring, flat shaded (every face its own vertices and normal),
+ * skinned per ring. A ring weighted to a different bone than its neighbour welds two blocks together, so joints bend
+ * without cracks; hinge blocks across the joints keep the corners filled when they bend a long way.
+ */
+class BlockGeo {
+  constructor(texV) { this.pos = []; this.nrm = []; this.uv = []; this.col = []; this.si = []; this.sw = []; this.idx = []; this.texV = texV; }
   get count() { return this.pos.length / 3; }
-  vert(p, u, v, col, w, g) {
-    this.pos.push(p.x, p.y, p.z); this.uv.push(u, v); this.col.push(col[0], col[1], col[2]); this.grp.push(g);
+  vert(p, n, u, col, w) {
+    this.pos.push(p.x, p.y, p.z); this.nrm.push(n.x, n.y, n.z); this.uv.push(u, this.texV(p.y)); this.col.push(col[0], col[1], col[2]);
     let s = 0;
     for (const x of w) s += x[1];
     for (let i = 0; i < 4; i++) { const x = w[i]; this.si.push(x ? x[0] : 0); this.sw.push(x ? x[1] / (s || 1) : 0); }
-    return this.count - 1;
   }
-  /** A triangle facing away from `ref` (a point inside the solid). */
-  tri(a, b, c, ref) {
-    const P = this.pos, A = _v.fromArray(P, a * 3);
-    const n = _v2.fromArray(P, b * 3).sub(A).cross(_v3.fromArray(P, c * 3).sub(A));
-    if (n.lengthSq() < 1e-18) return;
-    if (n.dot(_v4.copy(A).sub(ref)) < 0) this.idx.push(a, c, b); else this.idx.push(a, b, c);
+  /** One flat face (3 or 4 points, any winding) turned to face away from `ref`. */
+  face(pts, us, ws, ref, tint) {
+    const A = pts[0], n = _v2.subVectors(pts[1], A).cross(_v3.subVectors(pts[2], A));
+    if (pts.length === 4 && n.lengthSq() < 1e-16) n.subVectors(pts[2], A).cross(_v3.subVectors(pts[3], A));
+    if (n.lengthSq() < 1e-16) return;
+    n.normalize();
+    let order = pts.map((_, i) => i);
+    if (n.dot(_v4.subVectors(A, ref)) < 0) { n.negate(); order = order.reverse(); }
+    const col = tint ? tint(n) : ONE, b = this.count;
+    for (const i of order) this.vert(pts[i], n, us[i], col, ws[i]);
+    this.idx.push(b, b + 1, b + 2);
+    if (pts.length === 4) this.idx.push(b, b + 2, b + 3);
   }
   /**
-   * rings: [{ c, ex, ey, ez, rx, rz, pw, ox, oz, flat, w: [[bone, weight]...], v, tint(cos, sin), ref }] along -ey.
-   * capA / capB: domed ends (height) at the first / last ring.
+   * rings: [{ y, hx, hz, ox, oz, w: [[bone, weight]...] }] stacked along -ey from `o` (rest rig space); ex / ez span
+   * the cross-section. o.ch: chamfer, o.caps: 'both' | 'start' | 'end' | 'none', o.tint(normal, i) -> rgb multiplier
+   * (i: segment index, -1 start cap, -2 end cap).
    */
-  tube(rings, n, g, capA = 0, capB = 0) {
-    const ids = rings.map((R) => {
-      const row = [], q = 2 / (R.pw || 2);
-      for (let k = 0; k <= n; k++) {
-        const t = -Math.PI / 2 + (2 * Math.PI * k) / n, c = Math.cos(t), s = Math.sin(t);
-        const x = R.rx * Math.sign(c) * Math.abs(c) ** q * (c < 0 ? R.flat || 1 : 1) + (R.ox || 0);
-        const z = R.rz * Math.sign(s) * Math.abs(s) ** q + (R.oz || 0);
-        const p = _v5.copy(R.c).addScaledVector(R.ex, x).addScaledVector(R.ez, z);
-        row.push(this.vert(p, k / n, R.v, R.tint ? R.tint(c, s) : ONE, R.w, g));
-      }
-      return row;
-    });
+  loft(o, rings) {
+    const { ex, ey, ez } = o, O = o.o, ch = o.ch ?? 0.3;
+    const C = rings.map((R) => _c.copy(O).addScaledVector(ey, R.y).addScaledVector(ex, R.ox || 0).addScaledVector(ez, R.oz || 0).clone());
+    const P = rings.map((R, i) => octagon(R.hx, R.hz, R.ch ?? ch).map(([x, z]) => C[i].clone().addScaledVector(ex, x).addScaledVector(ez, z)));
+    const U = octagon(1, 1, ch).map(([x, z]) => (Math.atan2(z, x) / (Math.PI * 2) + 1.25) % 1);
     for (let i = 0; i < rings.length - 1; i++) {
-      const A = ids[i], B = ids[i + 1], ref = rings[i].ref || _v6.copy(rings[i].c).add(rings[i + 1].c).multiplyScalar(0.5);
-      for (let k = 0; k < n; k++) { this.tri(A[k], A[k + 1], B[k], ref); this.tri(A[k + 1], B[k + 1], B[k], ref); }
-    }
-    const cap = (R, row, d) => {
-      const tip = this.vert(_v5.copy(R.c).addScaledVector(R.ey, d).addScaledVector(R.ex, R.ox || 0).addScaledVector(R.ez, R.oz || 0), 0.5, R.v, R.tip || (R.tint ? R.tint(0, 0) : ONE), R.w, g);
-      const ref = _v6.copy(R.c).addScaledVector(R.ey, -d * 0.5);
-      for (let k = 0; k < n; k++) this.tri(row[k], row[k + 1], tip, ref);
-    };
-    if (capA) cap(rings[0], ids[0], capA);
-    if (capB) cap(rings[rings.length - 1], ids[ids.length - 1], -capB);
-  }
-  /** Smooth normals: faces averaged over every vertex at the same spot of the same part (texture seams included). */
-  normals() {
-    const P = this.pos, I = this.idx, acc = new Map(), keys = [];
-    for (let i = 0; i < this.count; i++) keys.push(`${this.grp[i]}|${Math.round(P[i * 3] * 2e4)}|${Math.round(P[i * 3 + 1] * 2e4)}|${Math.round(P[i * 3 + 2] * 2e4)}`);
-    for (let t = 0; t < I.length; t += 3) {
-      const A = _v.fromArray(P, I[t] * 3), n = _v2.fromArray(P, I[t + 1] * 3).sub(A).cross(_v3.fromArray(P, I[t + 2] * 3).sub(A));
-      for (let j = 0; j < 3; j++) {
-        const k = keys[I[t + j]];
-        let s = acc.get(k);
-        if (!s) acc.set(k, (s = [0, 0, 0]));
-        s[0] += n.x; s[1] += n.y; s[2] += n.z;
+      const A = P[i], B = P[i + 1], ref = C[i].clone().add(C[i + 1]).multiplyScalar(0.5), wa = rings[i].w, wb = rings[i + 1].w;
+      const tint = o.tint ? (n) => o.tint(n, i) : null;
+      for (let k = 0; k < 8; k++) {
+        const k2 = (k + 1) % 8;
+        let u0 = U[k], u1 = U[k2];
+        if (u1 < u0) u1 += 1;
+        this.face([A[k], A[k2], B[k2], B[k]], [u0, u1, u1, u0], [wa, wa, wb, wb], ref, tint);
       }
     }
-    this.nrm = [];
-    for (let i = 0; i < this.count; i++) { const s = acc.get(keys[i]) || [0, 1, 0], l = Math.hypot(s[0], s[1], s[2]) || 1; this.nrm.push(s[0] / l, s[1] / l, s[2] / l); }
+    const cap = (i, j, id) => {
+      const ref = C[j], w = rings[i].w, tint = o.tint ? (n) => o.tint(n, id) : null;
+      for (let k = 0; k < 8; k++) this.face([C[i], P[i][k], P[i][(k + 1) % 8]], [0.5, U[k], U[(k + 1) % 8]], [w, w, w], ref, tint);
+    };
+    const caps = o.caps ?? 'both';
+    if (caps === 'both' || caps === 'start') cap(0, 1, -1);
+    if (caps === 'both' || caps === 'end') cap(rings.length - 1, rings.length - 2, -2);
   }
-  /** Add the mirror image (x -> -x) with remapped bones. */
+  /** Mirror everything (x -> -x) with remapped bones. */
   mirror(boneMap) {
     const n = this.count, ni = this.idx.length;
     for (let i = 0; i < n; i++) {
@@ -139,7 +142,6 @@ class SkinGeo {
       this.uv.push(this.uv[i * 2], this.uv[i * 2 + 1]);
       this.col.push(this.col[i * 3], this.col[i * 3 + 1], this.col[i * 3 + 2]);
       for (let j = 0; j < 4; j++) { this.si.push(boneMap(this.si[i * 4 + j])); this.sw.push(this.sw[i * 4 + j]); }
-      this.grp.push(this.grp[i]);
     }
     for (let t = 0; t < ni; t += 3) this.idx.push(this.idx[t] + n, this.idx[t + 2] + n, this.idx[t + 1] + n);
   }
@@ -199,6 +201,7 @@ export class FPBody {
     this.anchorInv = new THREE.Matrix4();
     this.iner = { p: V(), v: V(), o: V(), ov: V(), on: false };
     this.tmp = Array.from({ length: 10 }, V);
+    this._pv = Array.from({ length: 4 }, V); // scratch for poses on the cat, the pour, the slap
     this._S = V(); this._T = V();
     this.IP = V(); this.IQ = new THREE.Quaternion(); this.IS = 1; this.B = new THREE.Box3();
     this.PINCH = [-0.03, -0.13, 0.03]; this.FIST = [-0.03, -0.085, 0.004]; this.TIP = [-0.003, -0.19, 0.026];
@@ -405,98 +408,91 @@ export class FPBody {
     return cols[Math.floor(cols.length * 0.6)];
   }
 
-  /** Left arm (sleeve, skin from the upper arm to the knuckles, fingers, thumb) in the rest pose, then mirrored. */
+  /**
+   * Left arm in the rest pose as welded blocks: sleeve (the avatar's top) over a boxy upper arm, an elbow hinge block,
+   * a forearm that twists along its length, a wrist welded to a flat palm, chunky three-segment fingers and thumb with
+   * knuckle hinge blocks at every joint. Flat shaded, then mirrored for the right arm.
+   */
   limbGeometry() {
-    const P = this.P, G = new SkinGeo(), k = this.k, ar = this.ar, T = this.tex;
+    const P = this.P, k = this.k, ar = this.ar, T = this.tex;
+    const G = new BlockGeo(T.v);
     const { shX, shoulderY: sh, elbowY: el, wristY: wr } = P;
-    const Lu = sh - el, Lf = el - wr;
+    const Lf = el - wr;
     const ARM = BONE_INDEX.armL, FORE = BONE_INDEX.foreL, HAND = BONE_INDEX.handL, TA = twistBone(0, 0), TB = twistBone(0, 1);
-    // skin weights along the arm (rest height): upper arm | elbow | forearm twisting progressively | wrist | hand
-    const armW = (y) => {
-      const e = smooth((el + 0.03 - y) / 0.06), s = clamp((el - 0.02 - y) / (Lf - 0.04), 0, 1), hw = smooth((wr + 0.024 - y) / 0.044);
-      const f = e * (1 - hw), w = [[ARM, 1 - e], [HAND, hw]];
-      if (s < 0.5) w.push([FORE, f * (1 - 2 * s)], [TA, f * 2 * s]); else w.push([TA, f * (2 - 2 * s)], [TB, f * (2 * s - 1)]);
-      return w.filter((x) => x[1] > 1e-4);
+    const AX = { ex: X, ey: Y, ez: Z, o: new THREE.Vector3(shX, 0, 0) };
+    const HINGE_X = { ex: Y, ey: X, ez: Z }; // a block across the elbow (it bends about the arm's x)
+    // the forearm twist spread along it: elbow end on the forearm bone, half way the first twist bone, the wrist the second
+    const tw = (y) => { const s = clamp((el - y) / Lf, 0, 1); return s < 0.5 ? [[FORE, 1 - 2 * s], [TA, 2 * s]] : [[TA, 2 - 2 * s], [TB, 2 * s - 1]]; };
+    const up = [[sh + 0.012, 0.032, 0.036, -0.003], [sh - 0.03, 0.041, 0.044, 0], [el + 0.07, 0.037, 0.0395, 0], [el - 0.004, 0.035, 0.037, 0]];
+    const fore = [[el + 0.012, 0.036, 0.037, -0.002], [el - 0.04, 0.039, 0.0405, 0], [el - 0.45 * Lf, 0.0335, 0.037, 0], [el - 0.8 * Lf, 0.025, 0.032, 0], [wr + 0.012, 0.0205, 0.0298, 0]];
+    const prof = (L, y) => {
+      if (y >= L[0][0]) return L[0];
+      for (let i = 0; i < L.length - 1; i++) if (y <= L[i][0] && y >= L[i + 1][0]) { const t = (L[i][0] - y) / (L[i][0] - L[i + 1][0]); return [y, lerp(L[i][1], L[i + 1][1], t), lerp(L[i][2], L[i + 1][2], t), lerp(L[i][3], L[i + 1][3], t)]; }
+      return L[L.length - 1];
     };
-    // skin profile [y, rx (lateral), rz (front-back), oz]: deltoid, biceps, elbow, forearm muscles, a flat wrist
-    const prof = [
-      [sh + 0.012, 0.03, 0.035, -0.004], [sh - 0.006, 0.041, 0.045, 0], [sh - 0.22 * Lu, 0.0445, 0.046, 0], [sh - 0.55 * Lu, 0.0395, 0.042, 0.002],
-      [el + 0.2 * Lu, 0.0355, 0.038, 0.001], [el + 0.035, 0.035, 0.036, -0.001], [el + 0.012, 0.036, 0.0355, -0.003], [el - 0.012, 0.0375, 0.037, -0.002],
-      [el - 0.04, 0.0392, 0.0395, 0], [el - 0.3 * Lf, 0.0362, 0.0378, 0], [el - 0.55 * Lf, 0.0305, 0.0348, 0], [el - 0.8 * Lf, 0.0242, 0.0316, 0],
-      [wr + 0.012, 0.0198, 0.0293, 0],
-    ].map(([y, rx, rz, oz]) => [y, rx * ar, rz * ar, oz * ar]);
-    const profAt = (y) => {
-      for (let i = 0; i < prof.length - 1; i++) {
-        const A = prof[i], B = prof[i + 1];
-        if (y <= A[0] && y >= B[0]) { const t = (A[0] - y) / (A[0] - B[0]); return [y, lerp(A[1], B[1], t), lerp(A[2], B[2], t), lerp(A[3], B[3], t)]; }
-      }
-      return y > prof[0][0] ? prof[0].slice() : [y, ...prof[prof.length - 1].slice(1)];
+    const ring = (p, w, grow = 0, extra) => ({ y: p[0], hx: p[1] * ar + grow, hz: p[2] * ar + grow, oz: p[3] * ar, w, ...extra });
+    const palmTint = (n) => (n.x < -0.5 ? [1.04, 0.95, 0.93] : ONE);
+    const dark = () => [0.42, 0.42, 0.46];
+    // --- skin: upper arm (inside the sleeve), the elbow hinge, forearm -> wrist -> palm in one welded piece
+    G.loft({ ...AX }, up.map((p) => ring(p, [[ARM, 1]])));
+    const hr = 0.037 * ar, hw = 0.034 * ar;
+    G.loft({ ...HINGE_X, o: new THREE.Vector3(shX, el, -0.002 * ar), ch: 0.42 }, [{ y: -hw, hx: hr, hz: hr, w: [[FORE, 1]] }, { y: hw, hx: hr, hz: hr, w: [[FORE, 1]] }]);
+    const PALM = [[-0.003, 0.0178, 0.0292, -0.0006, 0], [-0.03, 0.0162, 0.0358, -0.0018, 0.0012], [-0.062, 0.0152, 0.0384, -0.0012, 0], [-0.083, 0.0142, 0.0388, -0.0006, 0], [-0.0935, 0.0098, 0.0345, 0.0004, 0]];
+    const arm = fore.map((p) => ring(p, tw(p[0])));
+    const nArm = arm.length;
+    for (const [y, hx, hz, ox, oz] of PALM) arm.push({ y: wr + y * k, hx: hx * k, hz: hz * k, ox: ox * k, oz: oz * k, w: [[HAND, 1]], ch: 0.26 });
+    G.loft({ ...AX, tint: (n, i) => (i >= nArm - 1 || i === -2 ? palmTint(n) : ONE) }, arm);
+    // --- fingers: rigid blocks per segment, overlapping into hinge blocks at each joint (the knuckles)
+    const nail = (n, i) => (i >= 1 && n.x > 0.6 ? [1.13, 1.05, 1.04] : palmTint(n));
+    const digit = (base, F, b0, lens, w0, t0, thumb) => {
+      const { ex, ey, ez } = F;
+      let o = base.clone();
+      lens.forEach((L, j) => {
+        const b = b0 + j, w = w0 * (1 - j * 0.06), t = t0 * (1 - j * 0.07);
+        const rings = j === 0 && thumb ? [
+          { y: 0.016 * k, hx: t * 1.1, hz: w * 1.15, w: [[HAND, 1]] }, { y: 0.004 * k, hx: t * 1.38, hz: w * 1.32, w: [[HAND, 0.75], [b, 0.25]] },
+          { y: -0.008 * k, hx: t * 1.32, hz: w * 1.26, w: [[HAND, 0.35], [b, 0.65]] }, { y: -L * 0.55, hx: t * 1.1, hz: w * 1.06, w: [[b, 1]] },
+          { y: -L, hx: t, hz: w, w: [[b, 1]] }, { y: -L - 0.3 * w, hx: t * 0.84, hz: w * 0.86, w: [[b, 1]] },
+        ] : j === 2 ? [
+          { y: 0.3 * w, hx: t * 0.84, hz: w * 0.86 }, { y: 0, hx: t * 0.95, hz: w * 0.95 }, { y: -L + 0.35 * w, hx: t * 0.88, hz: w * 0.9 }, { y: -L - 0.15 * w, hx: t * 0.55, hz: w * 0.62 },
+        ] : [
+          { y: j ? 0.3 * w : 0.012 * k, hx: t * 0.86, hz: w * 0.88 }, { y: 0, hx: t * 0.98, hz: w * 0.98 }, { y: -L, hx: t * 0.94, hz: w * 0.94 }, { y: -L - 0.3 * w, hx: t * 0.8, hz: w * 0.82 },
+        ];
+        for (const r of rings) r.w = r.w || [[b, 1]];
+        G.loft({ ex, ey, ez, o, ch: 0.32, tint: j === 2 ? nail : palmTint }, rings);
+        // the hinge block at this segment's root (knuckle), turning with it about the digit's z
+        if (j > 0 || !thumb) {
+          const r = t * (j ? 0.9 : 0.95);
+          G.loft({ ex, ey: ez, ez: ey, o, ch: 0.42, tint: palmTint }, [{ y: -w * 0.86, hx: r, hz: r, w: [[b, 1]] }, { y: w * 0.86, hx: r, hz: r, w: [[b, 1]] }]);
+        }
+        o = o.clone().addScaledVector(ey, -L);
+      });
     };
-    const ring = (y, rx, rz, oz, extra) => ({ c: new THREE.Vector3(shX, y, 0), ex: X, ey: Y, ez: Z, rx, rz, oz, pw: 2, w: armW(y), v: T.v(y), ...extra });
-    // --- sleeve: a little looser than the arm, a snug cuff on long sleeves, an open hem with a lip on short ones
-    const cuff = T.cuffY, long = T.sleeve === 'long';
-    const sl = [];
-    const ys = [...prof.map((p) => p[0]).filter((y) => y > cuff + 0.006), cuff + 0.03, cuff + 0.012].sort((a, b) => b - a);
-    for (const y of ys) {
-      if (sl.length && Math.abs(sl[sl.length - 1].c.y - y) < 0.004) continue;
-      const [, rx, rz, oz] = profAt(y), near = smooth(1 - (y - cuff) / 0.035);
-      const off = (0.0062 + (long ? -0.0014 : 0.0045) * near) * ar;
-      sl.push(ring(y, rx + off, rz + off, oz));
-    }
-    {
-      const [, rx, rz, oz] = profAt(cuff), off = (long ? 0.0048 : 0.0105) * ar;
-      sl.push(ring(cuff, rx + off, rz + off, oz, { v: T.v(cuff + 0.003), ref: new THREE.Vector3(shX, cuff + 0.05, 0) }));
-      // the hem folds in to the skin: the inside of the sleeve, in shadow
-      sl.push(ring(cuff + 0.004, rx + 0.0014, rz + 0.0014, oz, { v: T.v(cuff + 0.004), tint: () => [0.42, 0.42, 0.46] }));
-    }
-    G.tube(sl, SIDES, 'sleeve', 0.02 * ar, 0);
-    // --- skin: from inside the sleeve, down the arm, through the wrist and the palm to the knuckles
-    const sk = [];
-    const top = Math.min(cuff + 0.03, sh + 0.006);
-    sk.push(ring(top, ...profAt(top).slice(1)));
-    for (const p of prof) if (p[0] < top - 0.006) sk.push(ring(p[0], p[1], p[2], p[3]));
-    const palmTint = (c) => { const p = smooth((-c - 0.15) / 0.5); return [1 + 0.035 * p, 1 - 0.045 * p, 1 - 0.06 * p]; };
-    const PALM = [ // [y, rx, rz, ox, oz, pw] hand space
-      [0, 0.0184, 0.0289, -0.0003, 0, 2.2], [-0.014, 0.0174, 0.0306, -0.0012, 0.0008, 2.5], [-0.034, 0.0161, 0.0352, -0.0018, 0.0012, 2.9],
-      [-0.057, 0.0151, 0.0382, -0.0012, 0.0002, 3.2], [-0.077, 0.0141, 0.039, -0.0006, -0.0005, 3.3], [-0.0875, 0.0123, 0.0377, 0.0004, -0.001, 3.1],
-      [-0.0945, 0.0086, 0.0335, 0.0009, -0.0012, 2.7],
-    ];
-    for (const [y, rx, rz, ox, oz, pw] of PALM) {
-      const yy = wr + y * k;
-      sk.push({ c: new THREE.Vector3(shX, yy, 0), ex: X, ey: Y, ez: Z, rx: rx * k, rz: rz * k, ox: ox * k, oz: oz * k, pw, w: armW(yy), v: T.v(yy), tint: palmTint });
-    }
-    G.tube(sk, SIDES, 'skin', 0.012, 0.0035 * k);
-    // --- fingers: one tube each from inside the palm to the tip, skin blended across every joint
-    const fingTint = (nail) => (c, s) => {
-      const p = palmTint(c);
-      if (nail && c > 0.45) return [1.12, 1.05, 1.04];
-      if (Math.abs(s) > 0.75 && !nail) return [p[0] * 0.95, p[1] * 0.93, p[2] * 0.93];
-      return p;
-    };
-    const tubeAlong = (base, ex, ey, ez, wv, tv, b0, L, g, thumb) => {
-      const L01 = L[0] + L[1], L012 = L01 + L[2], b1 = b0 + 1, b2 = b0 + 2;
-      const R = (y, sx, sz, w, nail = false, ox = 0) => ({ c: base.clone().addScaledVector(ey, y), ex, ey, ez, rx: tv * sx, rz: wv * sz, ox: ox * tv, pw: 2.3, flat: 0.92, w, v: T.v(base.y + y * ey.y), tint: fingTint(nail), tip: nail ? [1.06, 1, 1] : null });
-      const rings = thumb ? [
-        R(0.016 * k, 1.15, 1.25, [[HAND, 1]]), R(0.005 * k, 1.42, 1.38, [[HAND, 0.8], [b0, 0.2]]), R(-0.008 * k, 1.38, 1.3, [[HAND, 0.45], [b0, 0.55]]),
-        R(-L[0] * 0.55, 1.12, 1.08, [[HAND, 0.1], [b0, 0.9]]),
-      ] : [
-        R(0.013 * k, 0.8, 0.86, [[HAND, 1]]), R(0.004 * k, 1.0, 1.0, [[HAND, 0.7], [b0, 0.3]]), R(-0.006 * k, 1.0, 1.0, [[HAND, 0.22], [b0, 0.78]]),
-        R(-L[0] * 0.5, 0.92, 0.93, [[b0, 1]]),
-      ];
-      const j = thumb ? 1.06 : 1;
-      rings.push(
-        R(-L[0] + 0.0045 * k, 0.9 * j, 0.9 * j, [[b0, 0.82], [b1, 0.18]]), R(-L[0], 0.93 * j, 0.91 * j, [[b0, 0.5], [b1, 0.5]], false, 0.06), R(-L[0] - 0.0045 * k, 0.89 * j, 0.88 * j, [[b0, 0.18], [b1, 0.82]]),
-        R(-L[0] - L[1] * 0.5, 0.86 * j, 0.86 * j, [[b1, 1]]),
-        R(-L01 + 0.0035 * k, 0.84 * j, 0.84 * j, [[b1, 0.85], [b2, 0.15]]), R(-L01, 0.85 * j, 0.84 * j, [[b1, 0.5], [b2, 0.5]], false, 0.05), R(-L01 - 0.0035 * k, 0.82 * j, 0.82 * j, [[b1, 0.15], [b2, 0.85]]),
-        R(-L01 - L[2] * 0.5, 0.8 * j, 0.83 * j, [[b2, 1]], true), R(-L012 + 0.002 * k, 0.7 * j, 0.76 * j, [[b2, 1]], true),
-      );
-      G.tube(rings, FSIDES, g, 0, wv * 0.62);
-    };
-    FING.forEach((F, fi) => tubeAlong(new THREE.Vector3(shX + F.k[0] * k, wr + F.k[1] * k, F.k[2] * k), X, Y, Z, F.w * k, F.t * k, fingBone(0, fi, 0), F.len.map((x) => x * k), 'f' + fi, false));
+    FING.forEach((F, fi) => digit(new THREE.Vector3(shX + F.k[0] * k, wr + F.k[1] * k, F.k[2] * k), { ex: X, ey: Y, ez: Z }, fingBone(0, fi, 0), F.len.map((x) => x * k), F.w * k * 1.08, F.t * k * 1.06, false));
     const tq = this.thumbQ[0].relax;
-    tubeAlong(new THREE.Vector3(shX + THUMB.base[0] * k, wr + THUMB.base[1] * k, THUMB.base[2] * k), X.clone().applyQuaternion(tq), Y.clone().applyQuaternion(tq), Z.clone().applyQuaternion(tq),
-      THUMB.w * k, THUMB.t * k, fingBone(0, 4, 0), THUMB.len.map((x) => x * k), 'thumb', true);
-    G.normals();
+    digit(new THREE.Vector3(shX + THUMB.base[0] * k, wr + THUMB.base[1] * k, THUMB.base[2] * k), { ex: X.clone().applyQuaternion(tq), ey: Y.clone().applyQuaternion(tq), ez: Z.clone().applyQuaternion(tq) },
+      fingBone(0, 4, 0), THUMB.len.map((x) => x * k), THUMB.w * k * 1.06, THUMB.t * k * 1.06, true);
+    // --- sleeve: a size up from the arm, hinged at the elbow when it reaches past it, a cuff band and the dark inside of the hem
+    const cuff = T.cuffY, long = T.sleeve === 'long', off = 0.0065 * ar;
+    const hem = (L, w) => {
+      const p = prof(L, cuff), lip = (long ? 0.0028 : 0.0042) * ar;
+      return [ring(prof(L, cuff + 0.013), w(cuff + 0.013), off, { y: cuff + 0.013 }), ring(prof(L, cuff + 0.0125), w(cuff + 0.0125), off + lip, { y: cuff + 0.0125 }),
+        ring(p, w(cuff), off + lip, { y: cuff }), ring(p, w(cuff), 0.0014 * ar, { y: cuff + 0.002 })];
+    };
+    const sleeveTint = (nRings) => (n, i) => (i === nRings - 2 ? dark() : ONE);
+    if (cuff > el + 0.01) {
+      // short sleeve: ends above the elbow
+      const rs = up.filter((p) => p[0] > cuff + 0.02).map((p) => ring(p, [[ARM, 1]], off));
+      rs.push(...hem(up, () => [[ARM, 1]]));
+      G.loft({ ...AX, caps: 'start', tint: sleeveTint(rs.length) }, rs);
+    } else {
+      G.loft({ ...AX }, up.map((p) => ring(p, [[ARM, 1]], off)));
+      const sr = hr + off;
+      G.loft({ ...HINGE_X, o: new THREE.Vector3(shX, el, -0.002 * ar), ch: 0.42 }, [{ y: -hw - off, hx: sr, hz: sr, w: [[FORE, 1]] }, { y: hw + off, hx: sr, hz: sr, w: [[FORE, 1]] }]);
+      const rs = fore.filter((p) => p[0] > cuff + 0.02).map((p) => ring(p, tw(p[0]), off));
+      rs.push(...hem(fore, tw));
+      G.loft({ ...AX, caps: 'start', tint: sleeveTint(rs.length) }, rs);
+    }
     const L2R = (b) => (b === ARM ? BONE_INDEX.armR : b === FORE ? BONE_INDEX.foreR : b === HAND ? BONE_INDEX.handR : b >= NBONES + 30 ? b + 2 : b >= NBONES ? b + 15 : b);
     G.mirror(L2R);
     return G.geometry();
@@ -553,7 +549,7 @@ export class FPBody {
     if (!this.live || it.kind !== 'tool') return false;
     const id = it.data.id, obj = it.obj, hp = this.game.interaction.hover?.hit?.point, hit = finite(hp) ? hp : null;
     if (id === 'flyers') { this.give(hit); return false; }
-    this.play(id === 'milk' ? 'pour' : 'use', id === 'milk' ? 1.7 : 0.62, { obj, it, own: true, at: hit ? this.toAnchor(hit, V()) : null, from: obj.position.clone(), fromQ: obj.quaternion.clone(), fromS: obj.scale.x });
+    this.play('use', 0.62, { obj, it, own: true, at: hit ? this.toAnchor(hit, V()) : null, from: obj.position.clone(), fromQ: obj.quaternion.clone(), fromS: obj.scale.x });
     return true;
   }
 
@@ -572,6 +568,17 @@ export class FPBody {
     this.act = { name, t: 0, dur, ...data };
   }
 
+  /** The hand on the cat (Street.petting: pt = the stroke point on her fur, lift = 0..1 between strokes). */
+  strokePose(pet, H, W) {
+    const rig = this.game.street.cat.rig, P = this._pv, c = _c;
+    rig.headTop(P[0]); rig.backTop(0.85, P[1]);
+    const along = this.dirToAnchor(P[1].sub(P[0]).normalize(), P[1]).clone();
+    this.toAnchor(pet.pt, c);
+    const palm = this.dirToAnchor(P[0].set(0, -1, 0), P[0]).clone();
+    this.setGrip(H, W, c, palm, along, [0.14 + pet.lift * 0.25, 0.4, 0.22, 0.1, 0, 0.25 + pet.lift * 0.2]);
+    return 'stroke';
+  }
+
   freeHand() { const it = this.game.held.item; return it && it.obj.visible && !this.game.held.reading ? 0 : 1; }
 
   toAnchor(world, out) { return out.copy(world).applyMatrix4(this.anchorInv); }
@@ -586,6 +593,7 @@ export class FPBody {
     const anchor = g.held.anchor, cam = g.camera, P = g.player;
     // hands + body only while you're in control of your own eyes: not in the menu, fly-ins, cutscenes or at the PC;
     // coming back, the hands (and what they hold) rise into view
+    this.updateRecoils(dt);
     const show = anchor.visible && !g.cutscene.active && !g.pc?.active && !g.uiCine;
     this.presence = show ? Math.min(1, this.presence + dt / 0.55) : 0;
     if (show && this.presence < 1) {
@@ -625,9 +633,10 @@ export class FPBody {
   leanIn(dt, on) {
     const g = this.game, ho = g.interaction.holding;
     const cover = ho && g.story?.covers ? [...g.story.covers.entries()].find(([, c]) => c.box === ho.obj) : null;
-    const want = on && this.enabled && (!!this.coinMachine() || !!cover || (!!ho && g.machines.some((m) => m.root === ho.obj)));
+    const pet = !!g.street?.petting;
+    const want = on && this.enabled && (pet || !!this.coinMachine() || !!cover || (!!ho && g.machines.some((m) => m.root === ho.obj)));
     // lifting a machine off the floor: a proper crouch
-    if (want) this.leanD = cover?.[0].data.fallen ? 0.3 : 0.12;
+    if (want) this.leanD = pet ? 0.42 : cover?.[0].data.fallen ? 0.3 : 0.12;
     this.leanK = (this.leanK || 0) + ((want ? 1 : 0) - (this.leanK || 0)) * (1 - Math.exp(-dt * (want ? 5 : 4)));
     if (this.leanK < 1e-3 || !on) return;
     const k = smoother(this.leanK), cam = g.camera, yaw = g.player.yaw, dn = this.leanD || 0.12, fw = Math.min(dn, 0.16);
@@ -715,7 +724,12 @@ export class FPBody {
       if (!busy && this.rig.visible) this.play('tap', 0.5, { at: this.toAnchor(T.p, V()), hand: this.freeHand() });
     }
     if (inp.buttonDown(0) && finite(g.interaction.hover?.hit?.point) && !g.interaction.holding && !held.reading) this.tap = { p: g.interaction.hover.hit.point.clone(), item: held.item };
-    if (this.act) { this.act.t += dt; if (this.act.t >= this.act.dur) this.endAct(); }
+    if (this.act) {
+      this.act.t += dt;
+      const a = this.act;
+      if (a.name === 'slap' && !a.hitDone && a.t >= a.dur * a.impact) { a.hitDone = true; this.slapImpact(a.hit); }
+      if (a.t >= a.dur) this.endAct();
+    }
     if (held.flight) { held.flight.t = (held.flight.t || 0) + dt; if (!held.flight.obj?.parent || held.flight.t > held.flight.dur) held.flight = null; }
   }
 
@@ -746,7 +760,7 @@ export class FPBody {
       H.from.copy(H.out);
       H.k = 0;
       let dur = clamp(0.16 + d * 0.62, 0.17, 0.46);
-      if (/^(tap|give|toss)/.test(src) || /^(tap|give|toss)/.test(a)) dur = 0.07;
+      if (/^(tap|give|toss|slap|flinch)/.test(src) || /^(tap|give|toss|slap|flinch)/.test(a)) dur = 0.07;
       else if (src.startsWith('grip') && a.startsWith('ready')) dur = 0.15;
       else if (src.startsWith('crank') && a.startsWith('crank')) dur = 0.13;
       else if (src.startsWith('free') && a.startsWith('grip')) dur = Math.max(dur, 0.32);
@@ -804,6 +818,9 @@ export class FPBody {
       const r = this.actPose(a, H, W);
       if (r) return r;
     }
+    // stroking the cat where she sits: the free hand, palm down, from her head along her back
+    const pet = g.street?.petting;
+    if (pet && H.h === this.freeHand()) return this.strokePose(pet, H, W);
     // holds on world things
     const ho = g.interaction.holding;
     if (ho) {
@@ -940,15 +957,28 @@ export class FPBody {
       return 'toy';
     }
     if (kind === 'cat') {
-      // held up under her front legs, a hand either side of her chest (points from her bounding box, so any cat model
-      // works); petting, the near hand strokes down her side
+      // held up under her front legs, a hand either side of her chest; petting, the near hand strokes from the top of
+      // her head down her back
+      const rig = obj.children.find((o) => o.userData.catRig)?.userData.catRig;
       const petting = this.game.time - (held.petT ?? -9) < 1.4;
-      if (!R && petting) {
-        const ph = (this.t * 1.6) % 1, down = ph < 0.62, k = down ? smooth(ph / 0.62) : 1 - smooth((ph - 0.62) / 0.38);
-        this.ip(0.5, 0.5, 0.5, c);
-        c.x -= 0.074 * this.IS + (down ? 0 : 0.012 * bell((ph - 0.62) / 0.38)); c.y += 0.045 - k * 0.09; c.z += (down ? 0 : -0.01);
-        this.setGrip(H, W, c, N(1, -0.25, -0.15, a), N(0.1, 0.85 - k * 0.3, -0.55, _v2), [0.12 + (down ? 0 : 0.2), 0.3, 0.2, 0.1, 0, 0.2]);
+      if (rig && !R && petting) {
+        const ph = (this.t * 1.4) % 1, down = ph < 0.66, u = down ? smooth(ph / 0.66) : 1 - smooth((ph - 0.66) / 0.34);
+        const P = this._pv;
+        rig.headTop(P[0]); rig.backTop(0.7, P[1]);
+        this.toAnchor(P[2].copy(P[0]).lerp(P[1], u), c);
+        c.y += down ? 0.004 : 0.03 * bell((ph - 0.66) / 0.34);
+        const along = this.dirToAnchor(P[1].sub(P[0]).normalize(), P[1]);
+        this.setGrip(H, W, c, this.dirToAnchor(P[0].set(0, -1, 0), P[0]).clone(), along.clone(), [0.16 + (down ? 0 : 0.2), 0.35, 0.2, 0.1, 0, 0.2]);
         return 'pet';
+      }
+      if (rig) {
+        const P = this._pv;
+        this.toAnchor(rig.chestSide(R ? -1 : 1, P[0]), c);
+        this.toAnchor(rig.b.body.getWorldPosition(P[1]), P[1]);
+        const palm = P[2].subVectors(P[1], c).setY(0).normalize();
+        c.addScaledVector(palm, 0.004);
+        this.setGrip(H, W, c, palm.clone(), N(R ? -0.15 : 0.15, 0.75, -0.55, _v2), [0.38, 0.3, 0.35, 0.2, 0, 0.3]);
+        return 'cat';
       }
       this.ip(0.5, 0.66, 0.5, c);
       c.x += (R ? 1 : -1) * 0.068 * this.IS;
@@ -1256,34 +1286,127 @@ export class FPBody {
         if (turn > 0.3 && !a.clicked) { a.clicked = true; audio.play('keyTurn', { vol: 0.45 }); }
         return null; // the pinch grip on the key does the rest
       }
-      case 'pour':
       case 'use': {
+        // used up (the last flyer, an empty carton...): it goes out and away
         const o = a.obj;
         if (!o.parent) return null;
-        if (a.name === 'pour') {
-          // lift the carton over the bowl, tip it (a stream of milk), tip it back, lower it away
-          const lift = inOutCubic(k / 0.28), tilt = smooth((k - 0.2) / 0.22) * (1 - smooth((k - 0.72) / 0.14)), away = inOutCubic((k - 0.84) / 0.16);
-          o.position.copy(a.from).lerp(_v.set(0.05, -0.08, -0.42), lift);
-          o.position.y += Math.sin(this.t * 13) * 0.0015 * tilt - away * 0.35;
-          o.quaternion.copy(a.fromQ).premultiply(_q.setFromAxisAngle(Z, tilt * 1.85 + lift * 0.08));
-          if (tilt > 0.75 && Math.random() < 0.7) {
-            this.frame(o);
-            const top = this.ip(0.5, 1, 0.5, _v3);
-            _v.copy(top).applyMatrix4(this.game.held.anchor.matrixWorld);
-            g.effects.sparks({ pos: _v, count: 2, colors: [0xffffff, 0xf4f0e8], speed: 0.15, size: 0.012, gravity: 2.5, life: 0.5, star: 0, radius: 0.005 });
-          }
-        } else {
-          const at = a.at || _v3.set(0.05, -0.1, -0.6);
-          const d = at.length(), max = 0.5 * this.bs;
-          _v3.copy(at); if (d > max) _v3.multiplyScalar(max / d);
-          o.position.copy(a.from).lerp(_v3, inOutCubic(k / 0.62));
-          o.scale.setScalar(a.fromS * (1 - smooth((k - 0.58) / 0.42)));
-        }
+        const at = a.at || _v3.set(0.05, -0.1, -0.6);
+        const d = at.length(), max = 0.5 * this.bs;
+        _v3.copy(at); if (d > max) _v3.multiplyScalar(max / d);
+        o.position.copy(a.from).lerp(_v3, inOutCubic(k / 0.62));
+        o.scale.setScalar(a.fromS * (1 - smooth((k - 0.58) / 0.42)));
         if (!R) return null;
         const r = this.gripPose(o, 'tool', a.it.data, 'item', H, W);
         return r ? 'act-' + a.name : null;
       }
+      case 'slap': {
+        if (H.h !== a.hand) return null;
+        // wind up out to the side, then a fast flat-palm swing through the target, a little follow-through, back
+        const B = this.basePose(H), T = this.tgt, Q = this.tgt2, P = this._pv;
+        const at = P[2].copy(a.at), d = at.length(), max = 0.56 * this.bs;
+        if (d > max) at.multiplyScalar(max / d);
+        const wind = P[3].set(-H.sd * 0.27, -0.05, -0.24);
+        const travel = P[1].subVectors(at, wind).normalize();
+        const up = N(0, 1, -0.25, P[0]);
+        this.setGrip(H, Q, wind.clone(), travel.clone(), up.clone(), [0.04, 0.5, 0.05, 0.05, 0, 0]);
+        this.setGrip(H, T, at.clone(), travel.clone(), up.clone(), [0.0, 0.42, 0.0, 0.0, 0, 0]);
+        T.p.addScaledVector(travel, 0.035 * win(k, 0.38, 0.5));
+        const w1 = inOutCubic(k / 0.26), w2 = k < 0.26 ? 0 : outCubic((k - 0.26) / 0.14), w3 = inOutCubic((k - 0.6) / 0.4);
+        this.mixPose(W, B, Q, w1, w1, w1);
+        this.mixPose(W, W, T, w2, w2, w2);
+        this.mixPose(W, W, B, w3, w3, w3);
+        return 'slap';
+      }
+      case 'flinch': {
+        if (H.h !== a.hand) return null;
+        // yanked back from a swat or a nibble, fingers splayed, a shake
+        const B = this.basePose(H), T = this.tgt;
+        T.copy(B);
+        T.p.add(_v.set(-H.sd * 0.04, -0.06, 0.13));
+        T.p.x += Math.sin(this.t * 55) * 0.007 * (1 - k);
+        T.f[0] = 0; T.f[1] = 0.75; T.f[2] = 0.1;
+        const w = win(k, 0, 0.12) * (1 - win(k, 0.45, 1));
+        this.mixPose(W, B, T, w, w, w);
+        return 'flinch';
+      }
       default: return null;
+    }
+  }
+
+  // ------------------------------------------------------------------ the empty hand
+  /** Yank the free hand back (the cat swatted it). */
+  flinch() { if (this.live) this.play('flinch', 0.5, { hand: this.freeHand() }); }
+
+  /**
+   * Click with an empty hand and nothing to use: an open-palm slap at whatever is in front of you. A hit (a person, a
+   * machine, a wall...) gets a smack and a pixel "PAF!"; people flinch and tell you off. Thin air: just the swing.
+   */
+  slap() {
+    const g = this.game;
+    if (!this.live || this.act || g.held.item || g.cutscene.active) return false;
+    const ray = this.slapRay || (this.slapRay = new THREE.Raycaster());
+    g.camera.getWorldPosition(_v); g.camera.getWorldDirection(_v2);
+    ray.set(_v, _v2); ray.far = 1.05;
+    const I = g.interaction, peds = g.pedestrians?.list?.map((p) => p.h.root) || [];
+    const hits = ray.intersectObjects([...I.targets, ...I.blockers, ...peds], true);
+    let hit = null;
+    for (const h of hits) {
+      let o = h.object, cat = false;
+      for (let q = o; q; q = q.parent) if (q.userData.catRig) { cat = true; break; }
+      if (cat) return false; // never Mikan
+      if (o.isPoints || o.isLine) continue;
+      hit = h; break;
+    }
+    const at = hit ? this.toAnchor(hit.point, V()) : V().set(-0.03, -0.07, -0.52);
+    this.play('slap', 0.46, { hand: 1, at, hit, impact: 0.36 });
+    audio.play('whoosh', { vol: 0.16, v: 0.15, dur: 0.12 });
+    return true;
+  }
+
+  slapImpact(hit) {
+    const g = this.game;
+    if (!hit) return;
+    const p = hit.point.clone(), toCam = g.camera.getWorldPosition(_v).sub(p).normalize();
+    g.effects.emit({ sprite: 'paf', pos: p.clone().addScaledVector(toCam, 0.07), life: 0.6, size: 0.26, seq: [0, 1, 1, 1, 1, 2, 2, 3], fade: 0.12 });
+    g.effects.sparks({ pos: p.clone().addScaledVector(toCam, 0.04), count: 5, colors: [0xffd23f, 0xffffff], speed: 0.5, size: 0.012, star: 1, life: 0.35, gravity: 0 });
+    audio.play('smack', { pos: p, vol: 1 });
+    g.player.shake = Math.max(g.player.shake || 0, 0.06);
+    let human = null;
+    for (let o = hit.object; o && !human; o = o.parent) human = o.userData.human || null;
+    if (!human) { const ped = g.pedestrians?.list?.find((q) => { let o = hit.object; while (o) { if (o === q.h.root) return true; o = o.parent; } return false; }); human = ped?.h || null; }
+    if (human) this.slapped(human, p);
+    else {
+      const m = g.machines.find((x) => { let o = hit.object; while (o) { if (o === x.root) return true; o = o.parent; } return false; });
+      if (m) m.shake = Math.max(m.shake || 0, 0.25);
+      const ent = [...g.items.list].find((e) => e.obj === hit.object || e.obj === hit.object.parent);
+      if (ent?.body) ent.body.vel.addScaledVector(toCam.negate().setY(0.3), 1.2);
+    }
+    g.events.emit('slap', { point: p, object: hit.object, human });
+  }
+
+  /** Someone got slapped: they flinch (a jolt away from you), go wide-eyed then cross, and tell you off. */
+  slapped(h, at) {
+    const g = this.game;
+    h.setExpression?.('surprised', 0.5);
+    setTimeout(() => h.setExpression?.('angry', 3), 450);
+    const lines = ['Ow!', 'HEY!', 'What was that for?!', 'Ouch! Rude!', 'Did you just slap me?!', 'Kids these days...'];
+    const B = g.pedestrians?.bubbles || g.bubbles;
+    try { B?.say(h, lines[Math.floor(Math.random() * lines.length)], { dur: 2.4, style: 'shout', onChar: talk(h) }); } catch { /* no bubbles */ }
+    const r = h.root, away = _v.subVectors(r.position, g.player.pos).setY(0).normalize();
+    this.recoils = (this.recoils || []).filter((q) => q.root !== r);
+    this.recoils.push({ root: r, t: 0, x: r.rotation.x, z: r.rotation.z, ax: away.z, az: -away.x });
+    void at;
+  }
+
+  updateRecoils(dt) {
+    const R = this.recoils;
+    if (!R?.length) return;
+    for (let i = R.length - 1; i >= 0; i--) {
+      const q = R[i];
+      q.t += dt;
+      const w = q.t < 0.08 ? q.t / 0.08 : Math.exp(-(q.t - 0.08) * 5) * Math.cos((q.t - 0.08) * 18);
+      q.root.rotation.x = q.x + q.ax * 0.22 * w; q.root.rotation.z = q.z + q.az * 0.22 * w;
+      if (q.t > 1.2) { q.root.rotation.x = q.x; q.root.rotation.z = q.z; R.splice(i, 1); }
     }
   }
 

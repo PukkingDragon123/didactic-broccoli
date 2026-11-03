@@ -9,6 +9,7 @@ import { ease } from '../core/util.js';
 import { wrapText, fitText } from './labels.js';
 import { DISPLAYS } from '../museum/catalog.js';
 import { PROPS } from '../world/props.js';
+import { makeCapsuleBox } from './capsuleBox.js';
 
 const hex = (s) => parseInt(String(s).replace('#', ''), 16);
 let nextId = 1;
@@ -110,8 +111,8 @@ export class Delivery {
   }
 
   spawnRefillBox(series, count, pos) {
-    const data = { type: 'refill', series, count, label: `${SERIES_BY_ID[series].name} x${count}` };
-    const mesh = makeBoxMesh('refill', data, this.sizeFor(data));
+    const data = { type: 'refill', series, count, stage: 2, label: `${SERIES_BY_ID[series].name} x${count}` };
+    const mesh = makeCapsuleBox(data);
     return this.game.items.spawnBox(data, pos, mesh);
   }
 
@@ -124,6 +125,7 @@ export class Delivery {
 
   meshFor(data) {
     if (data.type === 'roller') return makeRoller();
+    if (data.type === 'refill') return makeCapsuleBox(data); // sealed carton (tape, flaps, capsules inside)
     const kind = data.type === 'refill' ? 'refill' : data.type === 'single' ? 'single' : 'decor';
     return makeBoxMesh(kind, data, this.sizeFor(data));
   }

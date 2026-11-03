@@ -41,7 +41,7 @@ export class Thumbs {
       ctx.fillStyle = '#3a2e36';
       ctx.fillRect(0, 0, size, size);
     } else {
-      const mesh = makeItemMesh(key, finish);
+      const mesh = makeItemMesh(key, finish, size <= 64 ? { lowres: true } : { hires: true });
       canvas = this.renderObject(mesh, size, opts);
     }
     this.cache.set(ck, canvas);

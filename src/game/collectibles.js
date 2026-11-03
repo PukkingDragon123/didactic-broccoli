@@ -49,10 +49,49 @@ export function itemGeometry(key, opts = {}) {
 
 /** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
-  const mesh = new THREE.Mesh(itemGeometry(key, opts), voxelMaterials(finish));
+  let geo;
+  const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));
+  if (lod) geo = geoCache.get(key) || itemGeometry(key, { lowres: true });
+  else geo = itemGeometry(key, opts);
+  const mesh = new THREE.Mesh(geo, voxelMaterials(finish));
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   mesh.userData.itemKey = key;
   mesh.userData.finish = finish;
+  if (lod) { mesh.userData.lod = { key, hi: geo === geoCache.get(key), orphan: 0 }; LOD.live.add(mesh); }
   return mesh;
+}
+
+function wantsUpres(item) { return !!item && item.upres !== false && !item.mini; }
+
+// ------------------------------------------------------------------ level of detail
+// Figures far from the camera (a full shelf across the room) draw their original coarse voxels; the 2x up-res mesh
+// is swapped in (and built, a couple per frame at most) once you come close or pick one up.
+const LOD = { on: false, live: new Set(), near: 1.7, far: 2.1, t: 0 };
+const _p = new THREE.Vector3();
+
+/** Turn distance-based detail on (the game does; dev viewers get full detail straight away). */
+export function enableItemLod(on = true) { LOD.on = on; }
+
+/** Per-frame: swap detail levels by distance to `camPos`; builds at most `budget` new hi-res meshes. */
+export function updateItemLod(camPos, budget = 2) {
+  let built = 0;
+  const n2 = LOD.near * LOD.near, f2 = LOD.far * LOD.far;
+  for (const m of LOD.live) {
+    const L = m.userData.lod;
+    let root = m;
+    while (root.parent) root = root.parent;
+    if (!root.isScene) { if (++L.orphan > 4) LOD.live.delete(m); continue; }
+    L.orphan = 0;
+    m.getWorldPosition(_p);
+    const d2 = _p.distanceToSquared(camPos);
+    if (!L.hi && d2 < n2) {
+      if (!geoCache.has(L.key)) { if (built >= budget) continue; built++; }
+      m.geometry = itemGeometry(L.key);
+      L.hi = true;
+    } else if (L.hi && d2 > f2) {
+      m.geometry = itemGeometry(L.key, { lowres: true });
+      L.hi = false;
+    }
+  }
 }

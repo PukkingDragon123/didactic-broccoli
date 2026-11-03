@@ -14,6 +14,7 @@ export class Effects {
   constructor(scene, opts = {}) {
     this.scene = scene;
     this.groundAt = opts.groundAt || (() => 0);
+    this.camera = opts.camera || null;
     this.fx = new PixFX(scene, { groundAt: this.groundAt });
     this.lights = [];
     this.fields = [];
@@ -120,12 +121,17 @@ export class Effects {
     this.sparks({ pos: _v.copy(o.pos).setY(o.pos.y + 0.1), count: 10, colors: [o.color ?? 0xffe9a0, 0xffffff], speed: 0.6, size: 0.014, star: 1, life: 0.7 });
   }
 
-  /** A short point-light flash (lighting, not a sprite). */
+  /** A short point-light flash (lighting, not a sprite). Kept modest, and dimmed further when it goes off right in
+   *  front of your face (a reveal in your hands), so it lights the scene rather than blowing out into a soft glow. */
   flash(o) {
-    const l = new THREE.PointLight(o.color ?? 0xffffff, o.intensity ?? 6, o.distance ?? 3, 1.5);
+    const cam = this.camera;
+    let k = 0.4;
+    if (cam) { const d = cam.getWorldPosition(_v).distanceTo(o.pos); k *= Math.min(1, (d / 1.2) ** 2); }
+    const base = (o.intensity ?? 6) * k;
+    const l = new THREE.PointLight(o.color ?? 0xffffff, base, o.distance ?? 3, 1.5);
     l.position.copy(o.pos);
     this.scene.add(l);
-    this.lights.push({ l, t: 0, dur: o.dur || 0.5, base: o.intensity ?? 6 });
+    this.lights.push({ l, t: 0, dur: o.dur || 0.5, base });
   }
 
   /** Dust / smoke puffs. opts: pos, count, color(s), size, speed, up, gravity (negative rises), life, radius. */

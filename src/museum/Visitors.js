@@ -5,31 +5,12 @@ import { talk } from '../people/voice.js';
 import VISITORS from '../data/visitors.js';
 import { createHuman } from '../people/index.js';
 import { audio } from '../core/audio.js';
-import { Pix } from '../gfx/pix.js';
 import { getItem } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 
 const CELL = 0.5;
 const DEF_IDS = Object.keys(VISITORS);
 for (const id of DEF_IDS) VISITORS[id].id = id;
-
-// ---------------------------------------------------------------- emote sprites
-const emoteTex = {};
-function emote(kind) {
-  if (emoteTex[kind]) return emoteTex[kind];
-  const p = new Pix(16, 16, 1);
-  const L = { R: 0xff5a7a, r: 0xffb0c0, Y: 0xffd23f, y: 0xfff0a0, K: 0x2a2220, W: 0xffffff, B: 0x5cc4ff };
-  const S = {
-    heart: ['................', '...RR.....RR....', '..RrrR...RrrR...', '.RrWrrR.RrrrrR..', '.RrrrrrRrrrrrR..', '.RrrrrrrrrrrrR..', '..RrrrrrrrrrR...', '...RrrrrrrrR....', '....RrrrrrR.....', '.....RrrrR......', '......RrR.......', '.......R........'],
-    star: ['.......Y........', '.......Y........', '......YyY.......', 'YYYYYYyyyYYYYYY.', '.YyyyyyyyyyyyY..', '...YyyyyyyyyY...', '....YyyyyyyY....', '....YyyY.YyyY...', '...YyY.....YyY..', '...Y.........Y..'],
-    wow: ['..KK......KK....', '..KYK....KYK....', '..KYK....KYK....', '..KYK....KYK....', '..KYK....KYK....', '..KYK....KYK....', '..KK......KK....', '................', '..KK......KK....', '..KYK....KYK....', '..KK......KK....'],
-    note: ['......KKKKKK....', '......KBBBBK....', '......K....K....', '......K....K....', '......K....K....', '..KKK.K..KKK....', '.KBBBKK.KBBBK...', '.KBBBK..KBBBK...', '..KKK....KKK....'],
-  };
-  p.sprite(S[kind], L, 0, 2);
-  const t = p.texture();
-  emoteTex[kind] = t;
-  return t;
-}
 
 // visitor archetypes -> human presets
 const PRESET = { mom_baby: 'mom', cosplayer: 'gyaru' };
@@ -236,6 +217,7 @@ class Visitor {
         const p = this.pos.clone().setY(1.35);
         audio.play('shutter', { pos: p, vol: 0.6, ref: 1.5 });
         sys.game.effects.flash({ pos: p.add(new THREE.Vector3(Math.sin(this.facing) * 0.3, 0, Math.cos(this.facing) * 0.3)), color: 0xffffff, intensity: 5, distance: 3, dur: 0.18 });
+        sys.game.effects.emit({ sprite: 'flash', pos: p, life: 0.2, size: 0.24, color: 0xfff6e4, fade: 0.3 }); // the pixel starburst of the camera flash
       });
     }
   }
@@ -254,7 +236,6 @@ export class Visitors {
     this.game = museum.game;
     this.list = [];
     this.spawnT = 3;
-    this.emotes = [];
     this.rebuildGrid();
   }
 
@@ -392,13 +373,10 @@ export class Visitors {
     this.list.push(v);
   }
 
+  /** A pixel emote popping up over a visitor's head (shared pixel-sprite effects: one draw call for all of them). */
   emote(v, kind) {
-    const mat = new THREE.SpriteMaterial({ map: emote(kind), transparent: true, depthWrite: false });
-    const s = new THREE.Sprite(mat);
-    s.scale.setScalar(0.22);
-    s.position.copy(v.pos).add(new THREE.Vector3(0, v.h.height + 0.3, 0));
-    this.museum.group.add(s);
-    this.emotes.push({ s, t: 0 });
+    const S = { heart: ['heart', 0xffffff], star: ['spark', 0xffd23f], wow: ['bang', 0xffffff], note: ['note', 0x5cc4ff] }[kind] || ['heart', 0xffffff];
+    this.game.effects.mark({ sprite: S[0], color: S[1], pos: v.pos.clone().add(new THREE.Vector3(0, v.h.height + 0.3, 0)), size: 0.16, life: 1.8, rise: 0.25, dx: 0.02, anim: S[0] === 'spark' ? 'life' : 'loop', fps: 4 });
   }
 
   update(dt) {
@@ -426,13 +404,5 @@ export class Visitors {
       if (d > 0.001 && d < 0.55) { a.pos.x += dx / d * (0.55 - d) * 0.5; a.pos.z += dz / d * (0.55 - d) * 0.5; }
     }
     for (let i = this.list.length - 1; i >= 0; i--) if (this.list[i].dead) { this.list[i].dispose(); this.list.splice(i, 1); }
-    for (let i = this.emotes.length - 1; i >= 0; i--) {
-      const e = this.emotes[i];
-      e.t += dt;
-      e.s.position.y += dt * 0.25;
-      e.s.material.opacity = e.t < 0.2 ? e.t / 0.2 : Math.max(0, 1 - (e.t - 1.2) / 0.6);
-      e.s.scale.setScalar(0.22 * (e.t < 0.15 ? 0.6 + e.t * 2.6 : 1));
-      if (e.t > 1.8) { m.group.remove(e.s); e.s.material.dispose(); this.emotes.splice(i, 1); }
-    }
   }
 }

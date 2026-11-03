@@ -12,6 +12,8 @@ import { GARAGE } from '../world/Garage.js';
 import { TOOLS } from '../data/tools.js';
 import { formatYen } from '../core/util.js';
 import { createHuman, GESTURES } from '../people/index.js';
+import { Pour } from './Pour.js';
+import { Game } from './Game.js';
 
 const TIN_MONEY = 2500;
 
@@ -104,7 +106,7 @@ export class Story {
       { text: 'Buy milk and feed the cat', done: f.fed },
       { text: `Sweep up the mess (${f.swept.length}/${PILES.length})`, done: f.swept.length >= PILES.length },
       { text: `Take out the trash bags (${f.bags.length}/${BAGS.length})`, done: f.bags.length >= BAGS.length },
-      { text: `Fix my old machines (${fixed}/${g.machines.length})`, done: fixed >= g.machines.length },
+      ...(g.machines.length ? [{ text: `Fix my old machines (${fixed}/${g.machines.length})`, done: fixed >= g.machines.length }] : []),
       { text: 'New tube for the dead light', done: f.tube },
       { text: 'Batteries for the radio', done: f.radio },
       { text: 'Grand reopening!', done: f.opened },
@@ -391,25 +393,21 @@ export class Story {
 
   // ------------------------------------------------------------------ the cat
   setBowl(full) {
+    // the bowl's milk is a level that rises as you pour (src/game/Pour.js) and falls as Mikan drinks
     const g = this.game, G = g.garage;
+    void full;
+    if (!g.pour) { g.pour = new Pour(g); Game.updaters.push((gg, dt) => gg.pour.update(dt)); }
     if (this.bowl) { g.interaction.remove(this.bowl); this.bowl.parent?.remove(this.bowl); }
-    this.bowl = G.prop(full ? 'cat_bowl_milk' : 'cat_bowl', BOWL.x, 0, BOWL.z, 0.3, { fallbackSize: [0.16, 0.05, 0.16], fallbackColor: full ? 0xf4f0e8 : 0xd86a4a });
+    this.bowl = G.prop('cat_bowl', BOWL.x, 0, BOWL.z, 0.3, { fallbackSize: [0.16, 0.05, 0.16], fallbackColor: 0xd86a4a });
+    g.pour.attachBowl(this.bowl);
     g.interaction.add(this.bowl, {
       hint: () => {
-        if (g.held.holding('milk')) return { key: 'LMB', text: 'Pour the milk' };
+        if (g.held.holding('milk')) return { key: 'Hold LMB', text: 'Pour the milk', sub: g.pour.bowlLevel > 0.95 ? 'It is full!' : 'Tip the carton over the bowl' };
         if (!this.flags.fed) return { key: '', text: 'An empty cat bowl', sub: 'She looks hungry. Milk from Mikawa-ya?' };
         return null;
       },
-      use: () => { if (g.held.holding('milk')) this.pourMilk(); return false; },
+      use: () => false,
     });
-  }
-
-  pourMilk() {
-    const g = this.game;
-    g.held.consume();
-    audio.play('milk', { pos: BOWL, vol: 1 });
-    this.setBowl(true);
-    if (!this.flags.fed) g.cutscene.play((c) => this.feedScene(c));
   }
 
   *feedScene(c) {
@@ -426,7 +424,7 @@ export class Story {
     st?.catDrink?.(4);
     audio.play('purr', { pos: BOWL, vol: 0.8 });
     yield c.cam({ pos: new THREE.Vector3(BOWL.x + 0.75, 0.42, BOWL.z + 0.55), look: new THREE.Vector3(BOWL.x - 0.1, 0.12, BOWL.z - 0.05), dur: 2.2 });
-    g.effects.sparks({ pos: BOWL.clone().add(new THREE.Vector3(0, 0.45, 0)), count: 10, colors: [0xff9fae, 0xff6f91], speed: 0.2, size: 0.03, gravity: -0.4, life: 1.6, star: 0 });
+    g.effects.hearts({ pos: BOWL.clone().add(new THREE.Vector3(0, 0.35, 0)), count: 3, size: 0.04, spread: 0.12 });
     c.say("Grandpa used to call her Mikan. Looks like she's staying.", 2);
     yield c.wait(3.4);
     this.flags.fed = true;
@@ -605,6 +603,8 @@ export class Story {
     c.hideSay();
     yield c.tbc(3.2);
     yield c.fade(1, 0.7);
+    // the party goes on into the night: the shop's first business day starts the next morning (src/sim/clock.js)
+    g.clock?.skipTo?.(8, { nextDay: true });
     this.dropActors(crowd);
     for (const p of peds?.list || []) p.h.root.visible = true;
     if (keeper) keeper.look = null;

@@ -161,6 +161,26 @@ art('anger', [
 ], { R: 0xe8303a });
 art('bang', [['.K.', 'KYK', 'KYK', 'KYK', '.K.', 'KYK', '.K.']], { K: 0x2a1a12, Y: 0xfff0a0 });
 art('note', [['..aa', '..ab', '..a.', 'aaa.', 'aab.']]);
+// --- "PAF!": a comic impact burst for a slap (spiky yellow star, white letters with a dark outline)
+const FONT3 = { P: ['WW.', 'W.W', 'WW.', 'W..', 'W..'], A: ['.W.', 'W.W', 'WWW', 'W.W', 'W.W'], F: ['WWW', 'W..', 'WW.', 'W..', 'W..'], '!': ['W', 'W', 'W', '.', 'W'] };
+code('paf', 4, 31, 19, (k, set) => {
+  const cx = 15, cy = 9, sc = [0.45, 1, 1, 0.75][k];
+  for (let y = 0; y < 19; y++) for (let x = 0; x < 31; x++) {
+    const dx = x - cx, dy = (y - cy) / 0.62, a = Math.atan2(dy, dx), r = Math.hypot(dx, dy);
+    const R = (10 + (Math.cos(a * 7 + 0.4) > 0.25 ? 4.2 : 0)) * sc;
+    if (k === 3 && (x * 3 + y * 5) % 4 === 0) continue;
+    if (r <= R - 1.7) set(x, y, r < R * 0.55 ? 'Y' : 'H'); else if (r <= R - 0.6) set(x, y, 'O'); else if (r <= R + 0.35) set(x, y, 'K');
+  }
+  if (k === 1 || k === 2) {
+    // red comic letters with a dark drop shadow, right on the yellow
+    const word = 'PAF!', x0 = cx - 6, y0 = cy - 2 - (k === 1 ? 1 : 0);
+    const pts = [];
+    let x = x0;
+    for (const ch of word) { const g = FONT3[ch]; g.forEach((row, yy) => { for (let xx = 0; xx < row.length; xx++) if (row[xx] === 'W') pts.push([x + xx, y0 + yy]); }); x += g[0].length + 1; }
+    for (const [px, py] of pts) { set(px + 1, py + 1, 'K'); }
+    for (const [px, py] of pts) set(px, py, 'R');
+  }
+}, { Y: 0xfff09a, H: 0xffd23f, O: 0xff7a2a, K: 0x2a1a12, R: 0xd8262e });
 
 const tex = new THREE.DataTexture(atlas, AW, AH, THREE.RGBAFormat, THREE.UnsignedByteType);
 tex.magFilter = tex.minFilter = THREE.NearestFilter;
@@ -218,6 +238,7 @@ const FS = /* glsl */`
   }`;
 
 const _c = new THREE.Color(), _v = new THREE.Vector3();
+const ATTRS = ['position', 'aFrame', 'aCol', 'aPF'];
 
 export class PixFX {
   constructor(scene, opts = {}) {
@@ -310,7 +331,7 @@ export class PixFX {
     L.length = n;
     const g = this.points.geometry;
     g.setDrawRange(0, n);
-    if (n) for (const k of ['position', 'aFrame', 'aCol', 'aPF']) { const a = g.attributes[k]; a.clearUpdateRanges(); a.addUpdateRange(0, n * a.itemSize); a.needsUpdate = true; }
+    if (n) for (const k of ATTRS) { const a = g.attributes[k]; a.clearUpdateRanges(); a.addUpdateRange(0, n * a.itemSize); a.needsUpdate = true; }
   }
 
   step(p, dt) {

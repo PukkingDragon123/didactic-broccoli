@@ -1,24 +1,29 @@
 // Persistent game state (localStorage) + helpers.
-export const STORY_START_MONEY = 300;
+//
+// Save format v2 (key gacha-garage-save-v2): the shop-sim progression (clock, calendar, bills, levels). A fresh v2
+// save starts with an empty garage: no machines, no shelves, only the starter series licence and a little cash.
+// Saves from v1 are not carried over (the new progression starts fresh) except for the settings and your avatar.
+import { START_MONEY } from './economy.js';
+
+export const STORY_START_MONEY = START_MONEY;
 /** Story flags for a brand-new game (see src/game/Story.js). */
 export function newStoryState() {
   return { v: 1, intro: false, shutter: false, cash: false, fed: false, swept: [], bags: [], tube: false, radio: false, opened: false };
 }
 
-const KEY = 'gacha-garage-save-v1';
+const KEY = 'gacha-garage-save-v2';
+const OLD_KEYS = ['gacha-garage-save-v1'];
+export const SAVE_VERSION = 2;
 
 export function defaultState() {
   return {
-    v: 1,
-    money: STORY_START_MONEY,
+    v: SAVE_VERSION,
+    money: START_MONEY,
     earned: 0,
     pulls: 0,
     playTime: 0,
-    // Grandpa's old machines: one broken, one knocked over (and broken)
-    machines: [
-      { id: 'm1', type: 'retro', slot: 0, up: { speed: 0, cap: 0, coins: 0 }, stock: Array(10).fill('mochi'), series: 'mochi', broken: true },
-      { id: 'm2', type: 'standard', slot: 1, up: { speed: 0, cap: 0, coins: 0 }, stock: Array(8).fill('mochi'), series: 'mochi', broken: true, fallen: true },
-    ],
+    // an empty garage: you buy (and stock) your first machine yourself
+    machines: [],
     story: newStoryState(),
     inventory: [{ kind: 'tool', d: { id: 'key' } }, null, null, null, null],
     promo: { flyers: 0, level: 0 },
@@ -26,7 +31,7 @@ export function defaultState() {
     opener: 0,
     charms: [],
     discovered: {}, // key -> { n, f: {finish: count} }
-    shelves: [{ slot: 0, items: Array(48).fill(null) }],
+    shelves: [], // wall shelves are bought on the PC (SHELF_PRICES)
     storage: {}, // "key|finish" -> count
     completed: {}, // seriesId -> true
     deliveries: [], // pending boxes: {id, type, ...}
@@ -44,18 +49,32 @@ export function defaultState() {
   };
 }
 
+const readJSON = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch { return null; } };
+
+/** A fresh v2 save that keeps the settings and the avatar of an older save (if there is one). */
+function freshFromOld() {
+  const d = defaultState();
+  for (const k of OLD_KEYS) {
+    const old = readJSON(k);
+    if (!old) continue;
+    if (old.settings) d.settings = { ...d.settings, ...old.settings };
+    if (old.avatar) { d.avatar = { ...d.avatar, ...old.avatar }; if (!Array.isArray(d.avatar.owned)) d.avatar.owned = []; }
+    break;
+  }
+  return d;
+}
+
 export function loadState() {
   try {
     // visiting a friend's shop: their save is loaded read-only for this tab
     let visit = null;
     try { visit = sessionStorage.getItem(VISIT_KEY); } catch { /* storage blocked */ }
-    const own = (() => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; } })();
-    const raw = visit || localStorage.getItem(KEY);
-    if (!raw) return defaultState();
-    const s = JSON.parse(raw);
-    if (visit) { s.__visit = true; if (own?.settings) s.settings = own.settings; }
+    const own = readJSON(KEY);
+    if (!visit && !own) return freshFromOld();
+    const s = visit ? JSON.parse(visit) : own;
+    if (visit) { s.__visit = true; const mine = own || freshFromOld(); if (mine?.settings) s.settings = mine.settings; }
     const d = defaultState();
-    // saves from before the story: the shop is already up and running
+    // shop codes from before the story: the shop is already up and running
     if (s.story === undefined) s.story = { ...newStoryState(), intro: true, shutter: true, cash: true, fed: true, tube: true, radio: true, opened: true, complete: true };
     if (s.inventory === undefined) s.inventory = [null, null, null, null, null];
     // Grandpa's notebook is gone (the objective card guides you): drop it from older saves

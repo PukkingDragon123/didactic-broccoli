@@ -2,7 +2,7 @@
 //
 // Two shape smoothers (both keep 1-voxel features such as eyes, whiskers, keychain rings and thin plates intact):
 //  * 'field' (default): the occupancy is resampled at the 2x sub-voxel centres through a small separable Gaussian
-//    (σ ≈ 0.75 voxel) and thresholded at 0.5, which shaves outer stair-steps and fills inner ones, so curved bodies
+//    (σ ≈ 0.9 voxel) and thresholded at 0.5, which shaves outer stair-steps and fills inner ones, so curved bodies
 //    come out rounder while flat faces stay flat. Thin voxels (empty on both sides along an axis) are never shaved and
 //    1-voxel gaps are never filled.
 //  * 'epx': Scale2x / EPX generalised to 3D: per pair of axes, N1 == N2 && N1 != O2 && N2 != O1 -> take N1.
@@ -28,7 +28,7 @@ export function upres2x(model, opts = {}) {
   const ox = b.minX - P, oy = b.minY - P, oz = b.minZ - P;
   model.forEach((x, y, z, v) => { S[(x - ox) + W * ((y - oy) + H * (z - oz))] = v; });
   const out = new VoxelModel();
-  out.jitter = model.jitter;
+  out.jitter = (model.jitter ?? 0) * (opts.jitter ?? 1);
   out.jitterBlock = 2;
   out.quantize = model.quantize;
   out.aoCurve = opts.aoCurve ?? AO_SOFT;
@@ -41,7 +41,7 @@ export function upres2x(model, opts = {}) {
 
 // ------------------------------------------------------------------ field smoother
 function field({ S, W, H, D, ox, oy, oz }, map, opts) {
-  const sigma = opts.sigma ?? 0.75, thr = opts.threshold ?? 0.5;
+  const sigma = opts.sigma ?? 0.9, thr = opts.threshold ?? 0.5;
   const carve = opts.carve !== false, fill = opts.fill !== false, recolor = !!opts.recolor;
   // per-axis taps for a sub-voxel on the + side (offset +0.25): cells at -1, 0, +1, +2
   const g = (d) => Math.exp(-(d * d) / (2 * sigma * sigma));

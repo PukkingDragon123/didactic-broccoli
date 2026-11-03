@@ -1,6 +1,6 @@
-// What you carry: a 5-slot inventory. The selected slot's item is held in front of the camera (your hands grip it,
+// What you carry: a 6-slot inventory. The selected slot's item is held in front of the camera (your hands grip it,
 // see FPBody.js), sways with movement, can be inspected (RMB), dropped (Q), and handed over to targets with smooth arcs.
-// Switch slots with 1-5, the mouse wheel or by tapping the hotbar: the old item dips out, the new one comes up.
+// Switch slots with 1-6, the mouse wheel or by tapping the hotbar: the old item dips out, the new one comes up.
 // Everything on `anchor` is drawn by the renderer's viewmodel pass (on top, never inside walls).
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
@@ -11,7 +11,7 @@ import { TOOLS } from '../data/tools.js';
 import { propMesh } from '../world/props.js';
 import { FLYERS, flyerTexture } from '../gfx/flyers.js';
 
-export const SLOTS = 5;
+export const SLOTS = 6;
 const _q = new THREE.Quaternion(), _ax = new THREE.Vector3(), _p = new THREE.Vector3();
 
 export const POSES = {
@@ -270,6 +270,7 @@ export class Held {
     if (it.kind === 'toy') return { key: 'RMB', text: 'Inspect', sub: 'Put it on a shelf, sell it, or Q to set it down' };
     if (it.kind === 'box') return this.game.placement?.boxHint(it) || { key: 'Q', text: 'Put down' };
     if (it.kind === 'cat') return { key: 'LMB', text: 'Pet', sub: 'Q to put down' };
+    if (it.kind === 'tool' && it.data.id === 'milk' && this.game.pour) return this.game.pour.hint(it);
     if (it.kind === 'tool') return this.game.story?.toolHint?.(it) ?? { key: 'Q', text: `Put down ${TOOLS[it.data.id]?.name || ''}` };
     return null;
   }
@@ -297,7 +298,7 @@ export class Held {
     this.anchor.position.set(this.sway.x + Math.cos(bob) * 0.004 * moving + Math.sin(t * 0.83) * 0.0012, this.sway.y + Math.abs(Math.sin(bob)) * 0.006 * moving + Math.sin(t * 1.7) * 0.0022, 0);
     this.anchor.rotation.set(this.sway.y * 1.6, 0, this.sway.x * 2.2 + Math.sin(t * 0.7) * 0.004);
 
-    // slot switching: 1-5, mouse wheel (unless zooming an inspected figure)
+    // slot switching: 1-6, mouse wheel (unless zooming an inspected figure)
     if (inp.locked && !g.pc?.active && !g.uiOpen && !this.reading) {
       for (let i = 0; i < SLOTS; i++) if (inp.keyPressed('Digit' + (i + 1))) this.select(i);
       if (inp.mouse.wheel && !this.inspecting) this.select(this.sel + Math.sign(inp.mouse.wheel));
@@ -345,6 +346,8 @@ export class Held {
       obj.position.copy(P.pos).sub(piv).applyQuaternion(q).add(piv);
       obj.position.y -= Math.sin(Math.PI * Math.min(1, u / 0.45)) * 0.016;
     }
+    // the milk carton tips while you hold LMB (src/game/Pour.js pours from it)
+    if (it.kind === 'tool' && it.data.id === 'milk' && !this.trans && g.pour) g.pour.poseCarton(it, POSES[this.pose], dt);
     if (this.busy || !inp.locked || g.pc?.active || this.reading) return;
 
     // drop
@@ -455,7 +458,6 @@ export class Held {
     const cam = g.camera;
     const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(cam.quaternion);
     if (it.kind === 'tool') {
-      if (TOOLS[it.data.id]?.keep) { g.news(`Better keep the ${TOOLS[it.data.id].name.toLowerCase()} with you.`); audio.play('error', { vol: 0.3 }); return; }
       const hit = g.placement.surfaceHit(2.2);
       const target = hit && hit.point.y < 1.3 ? hit.point.clone() : g.player.pos.clone().add(new THREE.Vector3(fwd.x, 0, fwd.z).normalize().multiplyScalar(0.6));
       if (!hit) target.y = 0;

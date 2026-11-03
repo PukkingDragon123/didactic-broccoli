@@ -1,11 +1,17 @@
-// Purchase / sale actions behind the GACHA-MART store (src/ui/ShopUI.js) and the museum. Each returns { ok, msg }.
+// Purchase / sale actions behind the GACHA-MART store (src/ui/ShopUI.js, the PC) and the museum. Each returns { ok, msg }.
+//
+// Money flows: everything bought online (machines, capsule boxes, licences, shelves, tools, charms, used figures) is
+// a digital charge through payOnline (game.sim.payDigital: the bank balance once cash and bank are split); selling
+// from the storage bin on the PC is a digital payment in (game.sim.receiveDigital). Levels gate what you may buy
+// (game.progress.unlocked, src/data/unlocks.js); there are no machine upgrades any more.
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import {
-  MACHINE_TYPES, MAX_MACHINES, machinePrice, upgradeCost, UPGRADES, capsuleCost, licensePrice, licenseRequirement,
-  OPENERS, CHARMS, SHELF_PRICES, singlePrice, itemValue, capacityFor,
+  MACHINE_TYPES, maxMachines, machinePrice, capsuleCost, licensePrice, licenseLevel,
+  OPENERS, CHARMS, SHELF_PRICES, singlePrice, itemValue,
 } from './economy.js';
+import { unlockLevel } from '../data/unlocks.js';
 import { MACHINE_SLOTS, SHELF_SLOTS } from '../world/Garage.js';
 import { GachaMachine } from './GachaMachine.js';
 import { GarageShelf } from './Shelf.js';
@@ -17,19 +23,45 @@ import { makeItemMesh } from './collectibles.js';
 const fail = (msg) => ({ ok: false, msg });
 const okr = (msg) => ({ ok: true, msg });
 
+/** A digital (online) charge: the one place shop purchases take money. */
+export function payOnline(g, amount, reason) {
+  return g.sim?.payDigital ? g.sim.payDigital(amount, reason) : g.spend(amount);
+}
+/** A digital payment in (selling on the PC). */
+export function receiveOnline(g, amount, reason) {
+  if (g.sim?.receiveDigital) g.sim.receiveDigital(amount, reason); else g.addMoney(amount);
+}
+const level = (g) => g.progress?.level ?? 99;
+/** null when `id` is unlocked at the current level, else the "Reach level N" message. */
+function gate(g, id) {
+  if (!g.progress || g.progress.unlocked(id)) return null;
+  return `Reach shop level ${unlockLevel(id)} to unlock this`;
+}
+const xp = (g, n, why) => g.progress?.addXP(n, why);
+
 export function discoveredCount(g) { return Object.keys(g.state.discovered).length; }
 
+/** Machines the garage has room for right now (by shop level). */
+export function machineRoom(g) { return maxMachines(level(g)); }
+
 export function buyMachine(g, type) {
+  const T = MACHINE_TYPES[type];
+  if (!T) return fail('Unknown machine');
+  const lock = gate(g, `machine:${type}`);
+  if (lock) return fail(lock);
   const owned = g.state.machines.filter((m) => m.type === type).length;
   const price = machinePrice(type, owned);
-  if (g.state.machines.length >= MAX_MACHINES) return fail('No free machine slot in the garage');
-  if (!g.spend(price)) return fail('Not enough money');
+  const room = machineRoom(g);
+  if (g.state.machines.length >= room) return fail(room < MACHINE_SLOTS.length ? `Room for ${room} machines at this level` : 'No free machine slot in the garage');
   const used = new Set(g.state.machines.map((m) => m.slot));
   const slot = MACHINE_SLOTS.findIndex((_, i) => !used.has(i));
+  if (slot < 0) return fail('No free machine slot in the garage');
+  if (!payOnline(g, price, `machine:${type}`)) return fail('Not enough money');
   const series = g.state.licenses[g.state.licenses.length - 1] || 'mochi';
-  const data = { id: 'm' + Date.now().toString(36), type, slot, up: { speed: 0, cap: 0, coins: 0 }, stock: [], series };
-  const startStock = Math.round(capacityFor(data) / 2);
-  data.stock = Array(startStock).fill(series);
+  // machines arrive empty: order a capsule box and pour it in. `up` stays at zero (upgrades are gone; older code
+  // still reads it). price = the coin price on the machine's price plate.
+  const data = { id: 'm' + Date.now().toString(36), type, slot, up: { speed: 0, cap: 0, coins: 0 }, stock: [], series, price: Math.max(100, Math.round(SERIES_BY_ID[series].price / 100) * 100) };
+  if (g.sim?.recommendedPrice) data.price = g.sim.recommendedPrice({ data });
   g.state.machines.push(data);
   const m = new GachaMachine(g, data);
   g.machines.push(m);
@@ -48,15 +80,17 @@ export function buyMachine(g, type) {
       root.updateMatrixWorld(true);
     },
   });
-  g.news(`${MACHINE_TYPES[type].name} installed!`, 'New machine');
+  g.news(`${T.name} installed!`, 'It arrives empty: order capsules on the PC');
+  xp(g, g.state.machines.length === 1 ? 60 : 30, 'machine');
+  g.events.emit('machineBought', { machine: m, type });
   g.save();
-  return okr(`${MACHINE_TYPES[type].name} installed in your garage`);
+  return okr(`${T.name} installed in your garage`);
 }
 
 export function buyRefill(g, series, count) {
   if (!g.state.licenses.includes(series)) return fail('You need the licence for this series first');
   const price = capsuleCost(series) * count;
-  if (!g.spend(price)) return fail('Not enough money');
+  if (!payOnline(g, price, `capsules:${series}`)) return fail('Not enough money');
   g.delivery.order({ type: 'refill', series, count, label: `${SERIES_BY_ID[series].name} x${count}` });
   g.save();
   return okr(`${count} capsules are on their way to the shutter`);
@@ -64,29 +98,21 @@ export function buyRefill(g, series, count) {
 
 export function buyLicense(g, series) {
   if (g.state.licenses.includes(series)) return fail('You already have this licence');
-  if (discoveredCount(g) < licenseRequirement(series)) return fail(`Discover ${licenseRequirement(series)} figures to unlock this series`);
-  if (!g.spend(licensePrice(series))) return fail('Not enough money');
+  if (g.progress && !g.progress.unlocked(`series:${series}`)) return fail(`Reach shop level ${licenseLevel(series)} to unlock this series`);
+  if (!payOnline(g, licensePrice(series), `licence:${series}`)) return fail('Not enough money');
   g.state.licenses.push(series);
   g.news(`New series: ${SERIES_BY_ID[series].name}!`, 'You can now order its refills on the PC');
+  xp(g, 40, 'licence');
   g.save();
   return okr(`You can now order ${SERIES_BY_ID[series].name} refills`);
-}
-
-export function buyUpgrade(g, machine, kind) {
-  const lvl = machine.data.up[kind] || 0;
-  if (lvl >= UPGRADES[kind].max) return fail('Already at max level');
-  const cost = upgradeCost(kind, lvl, machine.data.type);
-  if (!g.spend(cost)) return fail('Not enough money');
-  machine.data.up[kind] = lvl + 1;
-  machine.applyUpgrades(true);
-  g.save();
-  return okr(`${UPGRADES[kind].name} fitted`);
 }
 
 export function buyOpener(g, tier) {
   if (g.state.opener >= tier) return fail('You already have this');
   if (tier > g.state.opener + 1) return fail('You need the previous model first');
-  if (!g.spend(OPENERS[tier].price)) return fail('Not enough money');
+  const lock = gate(g, `opener:${tier}`);
+  if (lock) return fail(lock);
+  if (!payOnline(g, OPENERS[tier].price, `opener:${tier}`)) return fail('Not enough money');
   g.state.opener = tier;
   placeOpenerTool(g, true);
   g.news(`New tool: ${OPENERS[tier].name}`, 'Capsules open faster');
@@ -96,7 +122,9 @@ export function buyOpener(g, tier) {
 
 export function buyCharm(g, id) {
   if (g.state.charms.includes(id)) return fail('You already have this charm');
-  if (!g.spend(CHARMS[id].price)) return fail('Not enough money');
+  const lock = gate(g, `charm:${id}`);
+  if (lock) return fail(lock);
+  if (!payOnline(g, CHARMS[id].price, `charm:${id}`)) return fail('Not enough money');
   g.state.charms.push(id);
   placeCharms(g, id);
   g.news(`${CHARMS[id].name} on the shrine shelf`, CHARMS[id].desc);
@@ -107,24 +135,37 @@ export function buyCharm(g, id) {
 export function buyShelf(g) {
   const n = g.state.shelves.length;
   if (n >= SHELF_SLOTS.length) return fail('No wall space left');
-  if (!g.spend(SHELF_PRICES[n])) return fail('Not enough money');
-  const data = { slot: n, items: Array(48).fill(null) };
+  const lock = gate(g, `shelf:${n + 1}`);
+  if (lock) return fail(lock);
+  if (!payOnline(g, SHELF_PRICES[n], 'shelf')) return fail('Not enough money');
+  const used = new Set(g.state.shelves.map((s) => s.slot));
+  const slot = SHELF_SLOTS.findIndex((_, i) => !used.has(i));
+  const data = { slot, items: Array(48).fill(null) };
   g.state.shelves.push(data);
   const sh = new GarageShelf(g, data);
   g.shelves.push(sh);
   sh.root.scale.set(1, 0.01, 1);
   g.tweens.add({ dur: 0.6, ease: ease.outBack, update: (k) => sh.root.scale.set(1, Math.max(0.01, k), 1) });
   audio.play('upgrade', { pos: sh.root.position });
+  xp(g, 20, 'shelf');
   g.save();
   return okr('A new shelf is up on the wall');
 }
 
 export function buySingle(g, key, finish = 'normal') {
+  const lock = gate(g, 'market:buy');
+  if (lock) return fail(lock);
   const price = singlePrice(key, finish);
-  if (!g.spend(price)) return fail('Not enough money');
+  if (!payOnline(g, price, `single:${key}`)) return fail('Not enough money');
   g.delivery.order({ type: 'single', key, finish, label: getItem(key)?.name });
   g.save();
   return okr(`${getItem(key)?.name || 'Your figure'} is on its way to the shutter`);
+}
+
+/** Bookkeeping for every figure sale (the sell box, the PC, sell-all): stats, XP, the day's summary. */
+export function noteSale(g, n, value, via = 'pc') {
+  g.state.stats.sold += n;
+  g.events.emit('sold', { n, value, via });
 }
 
 export function sellStored(g, k, n = 1) {
@@ -135,8 +176,8 @@ export function sellStored(g, k, n = 1) {
   const v = itemValue(key, finish) * take;
   g.state.storage[k] = have - take;
   if (g.state.storage[k] <= 0) delete g.state.storage[k];
-  g.addMoney(v);
-  g.state.stats.sold += take;
+  receiveOnline(g, v, 'sell');
+  noteSale(g, take, v);
   g.save();
   return okr(`Sold ${take} for ¥${v.toLocaleString('en-US')}`);
 }
@@ -149,8 +190,8 @@ export function sellAllStored(g) {
   }
   if (!n) return fail('Your storage bin is empty');
   g.state.storage = {};
-  g.addMoney(total);
-  g.state.stats.sold += n;
+  receiveOnline(g, total, 'sell');
+  noteSale(g, n, total);
   g.save();
   return okr(`Sold ${n} figure${n === 1 ? '' : 's'} for ¥${total.toLocaleString('en-US')}`);
 }
@@ -169,8 +210,8 @@ export function sellDisplayedDupes(g) {
     e.d.clearItem(e.i);
   }
   if (!n) return fail('No duplicates on display');
-  g.addMoney(total);
-  g.state.stats.sold += n;
+  receiveOnline(g, total, 'sell');
+  noteSale(g, n, total);
   g.save();
   return okr(`Sold ${n} duplicate${n === 1 ? '' : 's'} for ¥${total.toLocaleString('en-US')}`);
 }

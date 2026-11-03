@@ -1,4 +1,4 @@
-// The 5-slot inventory bar: detailed 2D sprites of what you carry (pixel icons for tools, rendered
+// The 6-slot inventory bar: detailed 2D sprites of what you carry (pixel icons for tools, rendered
 // thumbnails for figures and capsules), the selected slot raised, the item's name popping up on change.
 import './hud.css';
 import { iconURL } from '../gfx/icons.js';

@@ -1,0 +1,76 @@
+/* Shop-sim HUD: the pixel clock + level bar (above the money), XP pops, the LEVEL UP card, the day summary. */
+#simclock {
+  position: absolute; left: max(22px, env(safe-area-inset-left)); bottom: calc(max(18px, env(safe-area-inset-bottom)) + 66px);
+  display: flex; flex-direction: column; gap: 2px; padding: 5px 12px 6px 8px; min-width: 170px;
+  font: 16px/18px 'Alagard', monospace; color: #fff4d6; image-rendering: pixelated;
+  background: var(--tex-dark, none) 0 0 / 64px, rgba(26, 18, 22, .8);
+  box-shadow: inset 0 2px 0 rgba(255, 244, 214, .12), 0 -3px 0 var(--ink, #1a1216), 0 3px 0 var(--ink, #1a1216), -3px 0 0 var(--ink, #1a1216), 3px 0 0 var(--ink, #1a1216), 5px 6px 0 rgba(0, 0, 0, .3);
+  pointer-events: none;
+}
+#simclock.pre .sc-lv { display: none; }
+#simclock .sc-row { display: flex; align-items: center; gap: 6px; }
+#simclock .sc-ic { display: flex; width: 34px; justify-content: center; }
+#simclock .sc-time { font-size: 28px; line-height: 26px; letter-spacing: 1px; text-shadow: 0 2px 0 var(--ink, #1a1216); }
+#simclock .sc-date { margin-left: auto; padding-left: 8px; color: var(--muted, #c9bca6); }
+#simclock .sc-day { color: var(--muted, #c9bca6); font-size: 14px; line-height: 16px; white-space: nowrap; }
+#simclock .sc-day:empty { display: none; }
+#simclock.special .sc-day { color: #ffd23f; }
+#simclock.off .sc-time { color: #ff9c9c; }
+#simclock .sc-lv { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+#simclock .sc-lv b { font-weight: normal; color: #ffd23f; min-width: 44px; }
+#simclock .sc-bar { position: relative; flex: 1; height: 8px; background: #3a2a30; box-shadow: 0 0 0 2px var(--ink, #1a1216); }
+#simclock .sc-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #7fd17f; box-shadow: inset 0 2px 0 #b6ee8c, inset 0 -2px 0 #2f8a48; transition: width .4s steps(6); }
+#simclock .sc-pops { position: absolute; right: 8px; bottom: 100%; display: flex; flex-direction: column; align-items: flex-end; }
+#simclock .sc-pop { color: #b6ee8c; text-shadow: 2px 0 0 #1a1216, -2px 0 0 #1a1216, 0 2px 0 #1a1216, 0 -2px 0 #1a1216; animation: scpop 1.5s steps(8) forwards; }
+@keyframes scpop { 0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px); } }
+body.cine #simclock, body.cine #levelup { opacity: 0 !important; transition: opacity .4s; }
+body.touchmode #simclock { bottom: auto; top: calc(max(14px, env(safe-area-inset-top)) + 54px); left: 50%; transform: translateX(-50%); min-width: 0; }
+
+#levelup {
+  position: fixed; left: 50%; top: 18%; transform: translate(-50%, -24px); z-index: 30; opacity: 0; pointer-events: none;
+  transition: opacity .3s, transform .4s steps(5);
+}
+#levelup.show { opacity: 1; transform: translate(-50%, 0); }
+#levelup .lu-card {
+  min-width: 280px; max-width: min(420px, 90vw); padding: 12px 18px 14px; font: 16px/20px 'Alagard', monospace; color: #fff4d6; image-rendering: pixelated;
+  background: var(--tex-dark, none) 0 0 / 64px, rgba(26, 18, 22, .92);
+  box-shadow: inset 0 3px 0 #ffd23f, 0 -4px 0 #1a1216, 0 4px 0 #1a1216, -4px 0 0 #1a1216, 4px 0 0 #1a1216, 6px 8px 0 rgba(0, 0, 0, .35);
+}
+#levelup .lu-h { display: flex; align-items: center; gap: 12px; }
+#levelup .lu-h b { display: block; font-weight: normal; font-size: 32px; line-height: 30px; color: #ffd23f; text-shadow: 0 3px 0 #1a1216; }
+#levelup .lu-h span { color: #c9bca6; }
+#levelup ul { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+#levelup li { display: flex; align-items: center; gap: 10px; }
+#levelup li small { display: block; color: #8e99a6; font-size: 12px; line-height: 12px; }
+#levelup p { margin: 8px 0 0; color: #c9bca6; }
+
+/* ------------------------------------------------------------------ the end-of-day summary card */
+#daysum { position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; pointer-events: none; }
+#daysum.on { display: flex; }
+#daysum .ds-card {
+  pointer-events: auto; width: min(520px, 92vw); padding: 14px 20px 16px; font: 16px/20px 'Alagard', monospace; color: #fff4d6; image-rendering: pixelated;
+  background: var(--tex-dark, none) 0 0 / 64px, rgba(26, 18, 22, .9);
+  box-shadow: inset 0 3px 0 #ff9a48, 0 -4px 0 #1a1216, 0 4px 0 #1a1216, -4px 0 0 #1a1216, 4px 0 0 #1a1216, 8px 10px 0 rgba(0, 0, 0, .35);
+  opacity: 0; transform: translateY(18px); transition: opacity .35s, transform .45s steps(6);
+}
+#daysum.show .ds-card { opacity: 1; transform: none; }
+#daysum .ds-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 2px solid #4a3a3e; padding-bottom: 6px; }
+#daysum .ds-h b { font-weight: normal; font-size: 28px; line-height: 28px; color: #ffd23f; text-shadow: 0 3px 0 #1a1216; }
+#daysum .ds-h span { color: #c9bca6; }
+#daysum .ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; margin: 10px 0 8px; }
+#daysum .ds-grid div { display: flex; align-items: center; gap: 8px; }
+#daysum .ds-grid em { font-style: normal; margin-left: auto; color: #fff4d6; }
+#daysum .ds-grid .neg em { color: #ff9c9c; }
+#daysum .ds-grid .pos em { color: #9cff9c; }
+#daysum .ds-sec { margin-top: 8px; padding-top: 6px; border-top: 2px solid #4a3a3e; }
+#daysum .ds-sec small { display: block; color: #8e99a6; font-size: 12px; line-height: 14px; margin-bottom: 2px; }
+#daysum .ds-sec .warn { color: #ff9c9c; }
+#daysum .ds-sec .gold { color: #ffd23f; }
+#daysum .ds-btns { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }
+#daysum button {
+  font: 16px/18px 'Alagard', monospace; color: #1a1216; background: #ffd23f; border: 0; padding: 7px 14px 8px; cursor: pointer;
+  box-shadow: inset 0 -3px 0 #d0930f, 0 -2px 0 #1a1216, 0 2px 0 #1a1216, -2px 0 0 #1a1216, 2px 0 0 #1a1216;
+}
+#daysum button.alt { background: #c9bca6; box-shadow: inset 0 -3px 0 #8e8070, 0 -2px 0 #1a1216, 0 2px 0 #1a1216, -2px 0 0 #1a1216, 2px 0 0 #1a1216; }
+#daysum button:hover { transform: translateY(1px); }
+#daysum button kbd { font: inherit; opacity: .6; margin-left: 6px; }

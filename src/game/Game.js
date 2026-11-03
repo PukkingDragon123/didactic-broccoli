@@ -78,7 +78,7 @@ export class Game {
     progress(0.1);
     this.thumbs = new Thumbs(this.renderer.renderer);
     initFlyers(this.renderer.renderer, { thumbs: this.thumbs }); // flyers and posters are drawn lazily, in idle time
-    this.effects = new Effects(this.scene, { groundAt: (x, z, y) => this.groundAt(x, z, y) });
+    this.effects = new Effects(this.scene, { groundAt: (x, z, y) => this.groundAt(x, z, y), camera: this.camera });
     this.interaction = new Interaction(this);
     this.interaction.showHints = s.hints;
     this.held = new Held(this);
@@ -417,13 +417,14 @@ export class Game {
       if (l.kind === 'capsule') this.items.spawnCapsule(l.d, p);
       else if (l.kind === 'toy') this.items.spawnToy({ key: l.d.key, finish: l.d.finish }, p, { physics: false, rotY: l.r || 0 });
       else if (l.kind === 'box') this.items.spawnBox(l.d, p, this.delivery.meshFor(l.d));
+      else if (l.kind === 'tool' && TOOLS[l.d?.id]) this.items.spawnTool(l.d, p, l.r || 0); // put down anywhere, even the key
     }
     // deliveries that never arrived
     for (const d of this.state.deliveries || []) if (d.type !== 'roller') this.delivery.order(d, { delay: 1 });
     this.state.deliveries = [];
   }
 
-  /** Rebuild the 5 inventory slots from the save. */
+  /** Rebuild the inventory slots from the save (older saves have fewer slots: the rest start empty). */
   restoreInventory() {
     const H = this.held;
     (this.state.inventory || []).forEach((it, i) => {

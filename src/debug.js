@@ -67,6 +67,13 @@ export function installDebug(game, params) {
       }
     },
     lights(on) { game.garage.setLights(on); },
+    /** Set the time of day (hour, fractional ok) and recompute the lighting now. */
+    time(hour, day = game.clock?.day) { game.clock?.set(day, hour); game.lighting?.refresh(); game.lighting?.update(0, game.time); return game.clock?.format(); },
+    /** Jump to a day number (keeps the hour). */
+    day(n, hour) { game.clock?.set(n, hour ?? game.clock.hours); game.bills?.onDay(game.clock.day); game.lighting?.refresh(); return game.clock?.format(); },
+    /** Skip the opening chores: shop open, story complete. */
+    shopOpen() { const f = game.state.story; Object.assign(f, { intro: true, shutter: true, cash: true, fed: true, tube: true, radio: true, opened: true, complete: true }); game.garage.setShutter(1, true); game.garage.town?.setShopOpen?.(true); game.pedestrians?.setOpen?.(true); game.clock.s.started = true; },
+    xp(n) { game.progress?.addXP(n, 'debug'); return [game.progress.level, game.progress.xp, game.progress.next]; },
     state() { return JSON.parse(JSON.stringify({ money: game.state.money, pulls: game.state.pulls, held: game.held.item?.kind, machines: game.machines.map((m) => [m.state, m.data.stock.length]) })); },
   };
   game.debug = d;

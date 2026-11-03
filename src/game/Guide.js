@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { GARAGE } from '../world/Garage.js';
 import { iconHTML } from '../gfx/icons.js';
+import { SHELF_PRICES } from './economy.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const list = (a) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`);
@@ -80,7 +81,7 @@ export class Guide {
     if (piles.length && !has('broom')) need.push('a broom');
     if (broken.length && !has('toolkit')) need.push('a tool kit');
     if (need.length) return { id: 'shop:' + need.join(), icon: 'shop', text: 'Shop at Mikawa-ya', sub: `Buy ${list(need)} at the little store across the lane`, at: counter };
-    if (!f.fed) return { id: 'feed', icon: 'bowl', text: 'Feed the stray cat', sub: holding('milk') ? `${cap(c)} the bowl by the heater` : `Hold the milk${this.pick('milk')}, ${c} the bowl by the heater`, at: () => S.bowl?.getWorldPosition(this.v).clone().add(V(0, 0.3, 0)) };
+    if (!f.fed) return { id: 'feed', icon: 'bowl', text: 'Feed the stray cat', sub: holding('milk') ? 'Hold LMB to pour the milk into the bowl' : `Hold the milk${this.pick('milk')}, then hold LMB to pour it into the bowl by the heater`, at: () => S.bowl?.getWorldPosition(this.v).clone().add(V(0, 0.3, 0)) };
     if (piles.length) return { id: 'sweep', icon: 'broom', text: `Sweep up the mess (${piles.length} left)`, sub: holding('broom') ? `Point at the dust and hold ${this.touch ? 'the use button' : 'left click'}` : `Hold the broom${this.pick('broom')}`, at: () => this.nearest(piles, (p) => p.mesh.position.clone().setY(0.45)) };
     if (fallen.length) return { id: 'lift', icon: 'machine', text: 'Lift the fallen machine', sub: `Hold ${this.touch ? 'the use button' : 'left click'} on it`, at: () => top(fallen[0]) };
     if (bags.length) return { id: 'bags', icon: 'trash_bag', text: `Take out the trash (${bags.length} left)`, sub: 'Pick up a bag, carry it to the garbage station', at: () => this.nearest(bags, (e) => e.obj.position.clone().setY(0.7)) };
@@ -94,6 +95,22 @@ export class Guide {
     const town = g.garage.town;
     const counter = () => (town?.cornerShop?.counter ? town.cornerShop.counter.getWorldPosition(this.v).clone().setY(1.25) : null);
     const c = this.click();
+    // an empty garage first needs a machine and a box of capsules (both from GACHA-MART on the PC)
+    const D = g.garage.pcDesk;
+    const pc = D ? () => V(D.x, D.h + 0.55, D.z) : null;
+    const mTop = (m) => () => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, 1.2, 0));
+    if (!g.machines.length) return { id: 'buymachine', icon: 'machine', text: 'Buy your first machine', sub: `${cap(c)} the PC in the back corner: GACHA-MART, Machines`, at: pc };
+    if (!F.guideStocked) {
+      const m0 = g.machines[0];
+      if (g.machines.some((m) => m.data.stock.length)) F.guideStocked = true;
+      else {
+        const box = [...g.items.list].find((e) => e.kind === 'box' && e.data?.type === 'refill');
+        if (H.item?.kind === 'box' && H.item.data?.type === 'refill') return { id: 'pour', icon: 'box', text: 'Fill your machine', sub: `${cap(c)} the machine to pour the capsules in`, at: mTop(m0) };
+        if (box) return { id: 'box', icon: 'box', text: 'Your capsules arrived', sub: 'Pick up the box by the shutter', at: () => box.obj.position.clone().setY(0.7) };
+        if (!g.delivery.queue?.length) return { id: 'buycaps', icon: 'capsule', text: 'Order a box of capsules', sub: 'On the PC: GACHA-MART, Capsules', at: pc };
+        return { id: 'waitbox', icon: 'box', text: 'Wait for the delivery', sub: 'The box comes to the shutter', at: () => V(0, 0.8, GARAGE.maxZ - 0.6) };
+      }
+    }
     const flyers = s.promo?.flyers || 0;
     if (flyers < 3) {
       if (!H.has('flyers')) return { id: 'buyflyers', icon: 'flyer', text: 'Spread the word', sub: 'Buy flyers at Mikawa-ya', at: counter };
@@ -103,7 +120,9 @@ export class Guide {
     const m = g.machines.find((x) => !x.data.broken && x.data.stock.length);
     if (!(s.stats.opened > 0) && m) return { id: 'pull', icon: 'capsule', text: 'Try a machine yourself', sub: `Hold ${this.touch ? 'the use button' : 'left click'} on the handle, then twist the capsule open`, at: () => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, 1.0, 0)) };
     const shelved = s.shelves.some((sh) => sh.items.some(Boolean));
-    if (!shelved && !F.guideShelf) {
+    if (!g.shelves.length && !F.guideShelf) {
+      if (s.money >= SHELF_PRICES[0]) return { id: 'buyshelf', icon: 'shelf', text: 'Buy a wall shelf', sub: 'For showing off your figures: GACHA-MART, Goods & Tools', at: pc };
+    } else if (!shelved && !F.guideShelf) {
       const sh = g.shelves[0]?.root;
       return { id: 'shelf', icon: 'shelf', text: 'Show off a figure', sub: `Hold a figure and ${c} the shelf. Doubles sell in the box by the PC`, at: sh ? () => sh.getWorldPosition(this.v).clone().add(V(0, 1.3, 0)) : null };
     }
