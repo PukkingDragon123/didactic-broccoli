@@ -3,7 +3,7 @@
 // then read the CVs as applicants trickle in: a portrait rendered from their actual 3D look, age, where they're from,
 // what they've done, star ratings for every job, their quirks and Inspired's own "notes" (the red flags). Invite them
 // to an interview at a time that suits, message them on Pichat, hire after the interview, or say no.
-import { h, esc, ic } from '../os/apps/ui.js';
+import { esc, ic } from '../os/apps/ui.js';
 import { defineIcon } from '../gfx/icons.js';
 import { formatYen } from '../core/util.js';
 import { ROLES, HOURS, QUIRKS, WAGE_MIN, WAGE_MAX, WAGE_STD, AD_FEE, WEEKDAY, shiftText } from './data.js';

@@ -187,6 +187,7 @@ export const JOBS = {
     yield w.wait(0.3);
     m.openLid();
     yield w.wait(1.1);
+    if (!m.lidOpen) { returnCarton(g, w, box, src); return; } // (someone else is using it)
     // cut the tape, fold the flaps
     while ((box.data.stage ?? 0) < 2) { openBoxStep(box, m.local(0, m.L.top, 0.3)); yield w.wait(0.55 * w.slow); }
     w.npc.gesture('stock');
@@ -203,7 +204,7 @@ export const JOBS = {
     // a careless restocker (or a sleepy one) can walk off with the lid unlocked: customers can't play until you shut it
     const st = w.rec.stats || {};
     const forget = Math.random() < (st.reliability <= 1 ? 0.3 : st.reliability <= 2 ? 0.15 : 0.02) * (w.rec.quirks?.includes('sleepy') ? 1.6 : 1);
-    if (!forget) { m.closeLid(); yield w.wait(1.3); }
+    if (!forget) { if (m.lidOpen && !m.lid.busy) m.closeLid(); yield w.wait(1.3); }
     else { w.staff.mistake(w, `Left machine No.${(m.data.slot || 0) + 1}'s lid open`, 'Customers can\'t play it until it\'s closed and locked'); }
     w.log(`Restocked machine No.${(m.data.slot || 0) + 1} with ${n} capsules`);
     w.stat('restock', n);
@@ -344,7 +345,9 @@ export const JOBS = {
     if (st.honesty <= 2 && kinds.includes('lie') && Math.random() < 0.6) i = kinds.indexOf('lie');
     if (w.rec.quirks?.includes('chatty') && kinds.includes('joke') && Math.random() < 0.5) i = kinds.indexOf('joke');
     if (i < 0) i = 0;
-    const [ans, kind] = Q.a[i];
+    let [ans, kind] = Q.a[i];
+    // questions meant for the owner get passed on
+    if (/Grandpa/.test(Q.q)) { ans = pick(['Not me, that\'s the boss! But yes, it\'s Grandpa\'s grandkid\'s shop now.', 'That\'s my boss! They\'re around here somewhere.']); kind = 'honest'; }
     w.npc.gesture('talk');
     w.say(ans, { dur: 3.2 });
     g.guestbook?.add?.({ kind: 'question', who: cap(p.name), text: `"${Q.q}" ${w.rec.given} (staff): "${ans}"` });
@@ -431,8 +434,9 @@ export const JOBS = {
   },
 
   *patrol(w) {
-    const pts = [V(0.4, 6.7), V(-5.6, 6.6), V(-2, 7.1), V(5.8, 6.6), V(2.2, 7.1), V(0.4, 4.0)];
     const g = w.game;
+    const pts = [V(0.4, 6.7), V(-5.6, 6.6), V(-2, 7.1), V(5.8, 6.6), V(2.2, 7.1)];
+    if ((g.garage?.shutterOpen ?? 1) > 0.5) pts.push(V(0.4, 4.0)); // inside only while the shutter's up
     for (let i = 0; i < 3; i++) {
       const p = pick(pts);
       yield w.goTo(p);

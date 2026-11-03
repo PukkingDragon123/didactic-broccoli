@@ -23,7 +23,8 @@ import { Worker } from './worker.js';
 import { findJob, JOBS, idle, abortJob, postOf } from './tasks.js';
 import { interviewScript, staffChat } from './chats.js';
 import { makeApplicant, skillFor } from './applicants.js';
-import { portrait } from './looks.js';
+import { portraitCached, portraitLater } from './looks.js';
+import { node } from './nav.js';
 import { showCV, hideCV, showCard, showSlip } from './paper.js';
 import { ROLES, HOURS, QUIRKS, SPECIAL_IDS, ARCHETYPES, inShift, WAGE_STD, AD_FEE, PAYDAY, MSG, BYE_LINES, WORK_LINES, WEEKDAY, shiftText, weekdayOf } from './data.js';
 import './poses.js';
@@ -276,8 +277,9 @@ export class Staff {
     const M = this.game.os?.messenger;
     if (!M) return null;
     const id = 'staff:' + p.id;
-    let avatar = null;
-    try { avatar = portrait(this.game, p.look, { size: 32, bg: 0xe8dcc0 }); } catch { avatar = null; }
+    // the 3D portrait when it's ready (rendered a frame later, so a burst of messages never hitches)
+    let avatar = portraitCached(p.look, { size: 32 });
+    if (!avatar) portraitLater(this.game, p.look, (u) => { if (u) M.thread({ id, avatar: u }); }, { size: 32, bg: 0xe8dcc0 });
     const t = M.thread({ id, name: p.name, avatar: avatar || { bg: 0xe8dcc0, shirt: 0x3f86e8 }, kind: 'npc', about: p.status === 'hired' ? `${ROLES[p.role]?.name} at Gacha Garage` : `Applied on Inspired: ${ROLES[p.role]?.name}` });
     if (!this.replyHooked.has(id)) {
       this.replyHooked.add(id);
@@ -428,7 +430,7 @@ export class Staff {
 
   /** They take their things and walk out, slowly (a cardboard box in their arms). */
   sadExit(w) {
-    const g = this.game, n = w.npc;
+    const n = w.npc;
     n.expr('sad', 8);
     const box = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.2, 0.26), new THREE.MeshStandardMaterial({ color: 0xc89a5f, roughness: 0.95 }));
     box.geometry.translate(0, 0.1, 0);
@@ -469,7 +471,6 @@ export class Staff {
 
   // ------------------------------------------------------------------ the day / night
   onNewDay(day, skipped) {
-    const g = this.game;
     if (!this.s.staff.length) { this.nightCheck(day); return; }
     // Friday: wages from the bank
     const wd = weekdayOf(day);
@@ -633,7 +634,6 @@ export class Staff {
     w.spawn(V(side * 13, 6.6), side > 0 ? -Math.PI / 2 : Math.PI / 2);
     w.state = 'coming';
     this.visitors.set(p.id, w);
-    const self = this;
     const inside = (g.garage?.shutterOpen ?? 1) > 0.5;
     const wait = inside ? V(1.25, 2.9) : V(0.9, 6.9);
     w.run((function* () {
@@ -687,7 +687,7 @@ export class Staff {
       let res = null;
       try { res = await g.talk.start(w.npc, interviewScript(this, w), { id: p.id, name: p.name, color: p.color }); } finally { hideCV(); }
       if (!this.applicant(p.id)) return;
-      if (res?.hire) { p.status = 'interviewed'; this.hire(p.id, { wage: res.wage }); }
+      if (res?.hire) { p.status = 'interviewed'; this.hire(p.id, { wage: res.wage }); const r = this.rec(p.id); if (r) this.morale(r, Math.round((res.score || 0) * 3), 'a good interview'); }
       else if (res?.reject) this.reject(p.id);
       else {
         p.status = 'interviewed';
@@ -784,7 +784,8 @@ export class Staff {
     const [post, yaw] = postOf(r.role);
     const g = this.game, self = this;
     w.run((function* () {
-      yield w.goTo(post, yaw);
+      const closed = !self.shutterOpen() && !r.quirks?.includes('ghost') && r.role !== 'guard';
+      yield closed ? w.goTo(V(0.4 + ((r.seed || 1) % 3 - 1) * 0.7, 6.9), Math.PI) : w.goTo(post, yaw);
       w.state = 'working';
       if (w.npc.playerDist < 10) w.say(pick(r.arch === 'salaryman' ? ['Good morning. (Bow.) Reporting for duty.'] : r.arch === 'ghost' ? ['Good evening... I am here...'] : r.arch === 'gyaru' ? ['Morning!! Ugh, so early!!'] : ['Morning, boss!', 'Hi! Starting my shift!', 'Hello! What\'s first?', 'Good morning!']), { dur: 2.6 });
       w.log(`Started a shift (${shiftText(r.hours)})`);
@@ -802,6 +803,8 @@ export class Staff {
       yield w.wait(0.5);
       if (w.npc.playerDist < 12) w.say(pick(BYE_LINES[r.arch] || BYE_LINES.local), { dur: 2.6 });
       if (r.arch === 'ninja') { w.puff(); w.despawn(); return; }
+      // shutter already down: out through the gap at the side door (they're simply gone at the door)
+      if (w.inside && !self.shutterOpen() && !r.quirks?.includes('ghost')) { yield w.goTo(node('door')); w.log('Went home'); w.despawn(); return; }
       yield w.goTo(V(side * 13, 6.6));
       w.log('Went home');
       w.despawn();
@@ -809,10 +812,26 @@ export class Staff {
     })());
   }
 
+  shutterOpen() { return (this.game.garage?.shutterOpen ?? 1) > 0.5; }
+
   nextJob(w) {
     const r = w.rec, st = r.stats || {};
     // a slacker takes long breaks; anyone fed up drags their feet
     if ((w.nextAt || 0) > w.time) return;
+    // the shutter's still down: wait at the shop front (a ghost just drifts through; the guard patrols outside)
+    if (!this.shutterOpen() && !w.inside && !r.quirks?.includes('ghost') && r.role !== 'guard') {
+      const front = V(0.4 + ((r.seed || 1) % 3 - 1) * 0.7, 6.9);
+      w.job = null;
+      w.mood = { label: 'waiting for the shutter' };
+      w.run((function* () {
+        if (w.npc.distTo(front) > 0.4) yield w.goTo(front, Math.PI);
+        if (w.npc.playerDist < 14 && Math.random() < 0.5) w.say(pick(['Boss? The shutter\'s still down!', 'Hellooo? Can I come in?', '(Knock knock.)']), { dur: 2.6 });
+        yield w.wait(rnd(10, 18));
+        w.mood = null;
+      })());
+      w.nextAt = w.time + 1;
+      return;
+    }
     const job = r.role === 'guard' ? (inShift('night', this.game.clock?.hours ?? 12) || inShift('evening', this.game.clock?.hours ?? 12) ? { kind: 'patrol', label: 'on patrol' } : findJob({ ...w, rec: { ...r, role: 'clean' }, staff: this, game: this.game, pos: w.pos, toldNoCartons: true })) : findJob(w);
     if (job && JOBS[job.kind]) {
       w.job = job;

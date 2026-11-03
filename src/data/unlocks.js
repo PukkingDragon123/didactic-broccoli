@@ -6,6 +6,8 @@
 //   market:<what>      Off-Hobby (src/market): buy, sell, auction, grading and the shop's categories
 //                      (clothes, tipjar, display, junk, charms)            staff:<n>     hire the n-th employee
 //   museum, museum:expand<n>                            the warehouse museum and its expansions
+//   estate:<what>      property on Ota Real Estate's site (src/growth): home103 (the flat next door), hobby (its hobby
+//                      room), annex (the old tobacco shop), mall (the Gacha Kaikan building), mall2..mall4 (its floors)
 // Ids that are not in the table are never locked.
 import { SERIES } from './series/index.js';
 
@@ -22,10 +24,12 @@ const NAMES = {
   'market:clothes': 'Off-Hobby thrift clothes', 'market:tipjar': 'Off-Hobby tip jars', 'market:display': 'Off-Hobby shelves and stands',
   'market:junk': 'Off-Hobby junk lots', 'market:charms': 'Off-Hobby luck charms', 'market:grading': 'KGS figure grading',
   'staff:1': 'Hire a part-timer', 'staff:2': 'Hire a second helper', 'staff:3': 'Hire a third helper',
+  'estate:home103': 'Rent flat 103 next door (kitchen + bath)', 'estate:hobby': 'Hobby room in flat 103', 'estate:annex': 'Buy the old tobacco shop (shop annex)',
+  'estate:mall': 'Buy the Gacha Kaikan building', 'estate:mall2': 'Kaikan 2F fit-out', 'estate:mall3': 'Kaikan 3F fit-out', 'estate:mall4': 'Kaikan 4F fit-out',
   museum: 'Museum licence (back warehouse)', 'museum:expand1': 'Museum expansion I', 'museum:expand2': 'Museum expansion II', 'museum:expand3': 'Museum expansion III',
 };
 
-const KINDS = { machine: 'Machine', slots: 'Space', shelf: 'Furniture', opener: 'Tool', charm: 'Charm', goods: 'Goods', decor: 'Decor', market: 'Market', staff: 'Staff', museum: 'Museum', series: 'Series' };
+const KINDS = { machine: 'Machine', slots: 'Space', shelf: 'Furniture', opener: 'Tool', charm: 'Charm', goods: 'Goods', decor: 'Decor', market: 'Market', staff: 'Staff', museum: 'Museum', series: 'Series', estate: 'Property' };
 
 // level -> ids (series licences are added below: a series' `order` is its level)
 const TABLE = {
@@ -34,13 +38,13 @@ const TABLE = {
   3: ['machine:standard', 'slots:3', 'opener:1', 'market:display', 'market:junk'],
   4: ['shelf:2', 'market:buy'],
   5: ['charm:maneki', 'decor:plants', 'market:charms'],
-  6: ['slots:4', 'goods:neon_open', 'market:sell'],
+  6: ['slots:4', 'goods:neon_open', 'market:sell', 'estate:home103'],
   7: ['decor:lights', 'market:grading'],
   8: ['machine:deluxe', 'charm:daruma'],
-  9: ['shelf:3', 'opener:2'],
+  9: ['shelf:3', 'opener:2', 'estate:hobby'],
   10: ['slots:5', 'staff:1'],
   11: ['decor:retro'],
-  12: ['charm:omamori'],
+  12: ['charm:omamori', 'estate:annex'],
   13: ['museum', 'goods:tip_jar', 'goods:furin', 'goods:ticket_machine'],
   14: ['slots:6', 'market:auction'],
   15: ['machine:royal'],
@@ -48,9 +52,11 @@ const TABLE = {
   17: ['staff:2'],
   18: ['opener:3'],
   19: ['museum:expand2'],
-  20: ['charm:goldneko'],
-  22: ['museum:expand3'],
+  20: ['charm:goldneko', 'estate:mall'],
+  22: ['museum:expand3', 'estate:mall2'],
   24: ['staff:3'],
+  25: ['estate:mall3'],
+  28: ['estate:mall4'],
 };
 
 export const UNLOCKS = [];

@@ -20,7 +20,7 @@
 
 /* ---- the CV: a ruled sheet, top-left, a little crooked */
 #staff-paper .sp-cv {
-  --rot: 1.5deg; right: max(22px, env(safe-area-inset-right)); top: 70px; width: 290px; padding: 4px 10px 8px;
+  --rot: 1.5deg; right: max(22px, env(safe-area-inset-right)); top: 70px; width: 330px; padding: 4px 10px 8px;
   background:
     repeating-linear-gradient(to bottom, transparent 0 18px, rgba(47, 90, 154, .12) 18px 20px) padding-box,
     var(--pp-grain-cream) 0 0 / 96px padding-box;
@@ -43,8 +43,8 @@
 #staff-paper .sp-box { display: inline-flex; gap: 2px; vertical-align: middle; margin-right: 6px; }
 #staff-paper .sp-box i { width: 8px; height: 8px; box-shadow: inset 0 0 0 2px var(--pp-ink, #241a1e); }
 #staff-paper .sp-box i.x { background: var(--pp-ink, #241a1e); }
-#staff-paper .sp-cv .sp-hanko { right: 4px; top: 40px; width: 40px; height: 40px; background-size: 40px 40px; transform: rotate(-8deg); }
-#staff-paper .sp-cvtop table { margin-right: 30px; }
+#staff-paper .sp-cv .sp-hanko { right: 8px; bottom: 6px; width: 40px; height: 40px; background-size: 40px 40px; transform: rotate(-8deg); }
+#staff-paper .sp-q { padding-right: 44px; }
 
 /* ---- the staff card: a kraft tag with a punched hole, top-right */
 #staff-paper .sp-card {

@@ -120,7 +120,7 @@ export function interviewScript(staff, w) {
       if (r.arch === 'kappa') splash(g, w);
       if (r.arch === 'tanuki') leaves(g, npc.pos, 4);
       t.effects({ rel: 2, set: { hired: true }, remember: 'hired me at the gacha garage' });
-      return { hire: true, wage };
+      return { hire: true, wage, score };
     }
     if (d === 0) {
       await t.say('Oh! But... you don\'t have room for me yet? I\'ll wait. Call me when you do!', { expr: 'surprised' });

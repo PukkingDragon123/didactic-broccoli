@@ -200,7 +200,7 @@ export class Worker {
   // ------------------------------------------------------------------ talking
   say(text, opts = {}) {
     if (!this.npc?.present || this.npc.talkLock || !text) return null;
-    if (this.npc.playerDist > 14 && !opts.always) return null;
+    if ((this.npc.playerDist > 14 || this.game.pc?.active) && !opts.always) return null; // (not over the PC screen)
     return this.npc.say(text, opts);
   }
   log(text) {
