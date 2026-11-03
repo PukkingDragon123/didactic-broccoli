@@ -47,6 +47,8 @@ export function installPhone(game, os) {
     },
   };
 
+  os.on('ready', () => { if (ringing && !os.wins.some((w) => w.app === 'phone')) os.open('phone', {}); });
+
   class Call {
     constructor(number, entry, ui) { this.number = number; this.name = entry?.name || number; this.ui = ui; this.ended = false; this.t0 = performance.now(); this.voice = entry?.voice || { base: 200 + (norm(number).length * 37) % 160, duty: 0.25 }; }
     say(text, who = this.name) {
@@ -260,14 +262,14 @@ export function installPhone(game, os) {
     await c.say(`Today: ${f.name.toLowerCase()}, high ${f.hi} degrees, low ${f.lo}. Chance of rain, ${f.rain} percent.`, 'Weather Line');
     await c.say(`Tomorrow: ${f2.name.toLowerCase()}, high ${f2.hi} degrees. That is the end of the forecast.`, 'Weather Line');
   } });
-  R('0120-117-889', { name: 'Lane Express (deliveries)', icon: 'box', voice: { base: 190, duty: 0.25 }, async onCall(c) {
+  R('0120-117-889', { name: 'Lane Express (deliveries)', icon: 'map', voice: { base: 190, duty: 0.25 }, async onCall(c) {
     const n = game.delivery?.queue?.length || 0;
     await c.say('Lane Express, thank you for calling! Let me look up your address... the garage on the back lane.');
     const v = await c.ask(n ? `You have ${n} parcel${n > 1 ? 's' : ''} on the way. Our driver is out on the lane now.` : 'There are no parcels on the way to you right now.', [{ label: 'When will it arrive?', value: 'when' }, { label: 'Thanks, bye!', value: 'bye' }]);
     if (v === 'when') await c.say(n ? 'Very soon! It will be left at your shutter. Please carry it in before the crows find it.' : 'Order something first, then we can talk about arrival times! Ha ha.');
     else if (v) await c.say('Thank you for using Lane Express!');
   } });
-  R('03-3866-1971', { name: 'Daikoku Toy Wholesale', icon: 'os_bank', voice: { base: 160, duty: 0.25 }, async onCall(c) {
+  R('03-3866-1971', { name: 'Daikoku Toy Wholesale', icon: 'cart', voice: { base: 160, duty: 0.25 }, async onCall(c) {
     const v = await c.ask("Daikoku Toys! Daikoku speaking. Oh, it's the gacha garage! How's business?", [{ label: 'Got any deals for me?', value: 'deal' }, { label: 'Just saying hi', value: 'hi' }]);
     if (v === 'deal') { await c.say("For you? Always! I'll send it over on Pichat right now. Check your messages!"); os.content?.daikokuDeal?.(true); }
     else if (v) await c.say('Ha ha! Business is business, but hello is free. Call me when you need capsules!');
@@ -284,7 +286,7 @@ export function installPhone(game, os) {
     else if (v === '2') { const due = game.bills?.due?.() || []; await c.say(due.length ? `You have ${due.length} unpaid bill${due.length > 1 ? 's' : ''}, totalling ${NUMWORDS(due.reduce((a, b) => a + b.amount, 0))} yen. Pay them in Shinkin Online.` : 'You have no unpaid bills. Thank you!', 'Bank'); }
     else if (v === '0') { await c.say('All of our operators are busy. Please hold.', 'Bank'); os.sound('osMidi'); if (!(await c.wait(2000))) return; os.sound('osMidi'); if (!(await c.wait(2000))) return; await c.say('...Thank you for holding. The bank is now closed for lunch.', 'Bank'); }
   } });
-  R('0120-38-4444', { name: 'Pizza La Morio', icon: 'bowl', voice: { base: 210, duty: 0.5 }, async onCall(c) {
+  R('0120-38-4444', { name: 'Pizza La Morio', icon: 'heart', voice: { base: 210, duty: 0.5 }, async onCall(c) {
     const v = await c.ask('Pizza La Morio, thank you for calling! Delivery or pick-up?', [{ label: 'Delivery to the back lane', value: 'd' }, { label: 'What toppings do you have?', value: 't' }]);
     if (v === 'd') await c.say("Ah... the back lane? Sorry, our scooters don't go through the underpass. The driver says it's haunted.");
     else if (v === 't') await c.say('Corn, mayonnaise, potato, teriyaki chicken, and our special: corn mayonnaise potato teriyaki chicken!');

@@ -62,7 +62,8 @@ export class Clock {
     if (this.holds.size) return [...this.holds][0];
     if (!g.story?.done && !this.s.started) return 'opening';
     if (g.cutscene?.active) return 'cutscene';
-    if (g.uiOpen || g.pc?.active) return 'menu';
+    if (g.pc?.active) return null; // sitting at the computer is part of the work day: time keeps running
+    if (g.uiOpen) return 'menu';
     if (g.timeStop?.frozen) return 'timestop';
     if (g.held?.reading) return 'reading';
     if (g.input && !g.input.locked) return 'paused';

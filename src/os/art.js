@@ -1,7 +1,7 @@
 // Capsule 98 pixel art: desktop / app icons (registered in the shared icon set, so iconHTML('os_mail') works
 // anywhere), tiny chrome glyphs (window buttons, arrows, ticks), the wallpapers and the little contact portraits.
 // Everything is hand-pixelled grids or drawn pixel by pixel, scaled up with nearest-neighbour only.
-import { defineIcon, iconHTML, iconURL } from '../gfx/icons.js';
+import { defineIcon, iconHTML, iconURL, iconCanvas } from '../gfx/icons.js';
 import { Pix } from '../gfx/pix.js';
 import { hash2 } from '../core/util.js';
 
@@ -594,6 +594,8 @@ export function registerOSIcons() {
   for (const [k, def] of Object.entries(ICONS)) defineIcon(k, def);
 }
 export const ic = (name, scale = 1, cls = '') => iconHTML(name, scale, cls);
+/** The biggest whole-pixel scale of an icon that fits in px (16-px UI glyphs and 24-px item sprites alike). */
+export const icFit = (name, px, cls = '') => iconHTML(name, Math.max(1, Math.floor(px / Math.max(iconCanvas(name, 1).width, iconCanvas(name, 1).height))), cls);
 export { iconURL };
 
 // ------------------------------------------------------------------ wallpapers (320 x 240 pixel paintings)
@@ -723,7 +725,7 @@ export function portraitURL(look = {}) {
     p.flush();
     const u = p.canvas.toDataURL(); portraitCache.set(key, u); return u;
   }
-  const [sk, skd] = SKIN[look.skin || 'fair'];
+  const [sk, skd] = look.sil ? [0x4a4046, 0x3a3236] : SKIN[look.skin || 'fair'];
   const hc = look.hairCol ?? 0x2a2428;
   // shoulders / shirt
   p.rect(3, 19, 18, 5, look.shirt ?? 0x3f86e8); p.rect(9, 19, 6, 2, sk);
@@ -751,8 +753,9 @@ export function portraitURL(look = {}) {
   }
   if (look.band) { p.rect(5, 6, 14, 2, look.band); }
   if (look.cap) { p.rect(5, 2, 14, 5, look.capCol ?? 0xe5383b); p.rect(4, 6, 10, 2, look.capCol ?? 0xe5383b); p.rect(10, 3, 3, 2, 0xffffff); }
-  // face
+  // face (a silhouette has none)
   const eyeY = 10;
+  if (look.sil) { p.flush(); const u = p.canvas.toDataURL(); portraitCache.set(key, u); return u; }
   if (look.closed) { p.rect(8, eyeY + 1, 3, 1, ink); p.rect(13, eyeY + 1, 3, 1, ink); }
   else { p.rect(8, eyeY, 2, 2, ink); p.rect(14, eyeY, 2, 2, ink); p.px(8, eyeY, 0xffffff); p.px(14, eyeY, 0xffffff); }
   if (look.brows) { p.rect(7, eyeY - 2, 4, 1, hc); p.rect(13, eyeY - 2, 4, 1, hc); }

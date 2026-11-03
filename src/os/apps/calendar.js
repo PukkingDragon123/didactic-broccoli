@@ -43,16 +43,17 @@ export function installCalendar(game, os) {
         for (let i = 0; i < first; i++) grid.append(h('div', { class: 'cal-c empty' }));
         for (let d = 1; d <= days; d++) {
           const day = dayOfDate(game, y, m, d);
-          const sp = specials(day);
+          const sp = specials(day), loud = sp.filter((x) => !x.quiet), tagged = loud.length ? loud : sp;
           const wd = (first + d - 1) % 7;
           const cell = h('div', { class: `cal-c${day === t.day ? ' today' : ''}${day === sel ? ' sel' : ''}${day < t.day ? ' past' : ''}${wd === 0 || sp.some((s) => s.kind === 'holiday') ? ' red' : wd === 6 ? ' blue' : ''}` },
             h('span', { class: 'cal-n', text: d }),
-            h('div', { class: 'cal-tags' }, ...sp.slice(0, 2).map((s) => h('span', { class: `cal-tag k-${s.kind || 'event'}`, text: s.name }))),
-            sp.length > 2 ? h('span', { class: 'cal-more', text: `+${sp.length - 2}` }) : null);
+            h('div', { class: 'cal-tags' }, ...tagged.slice(0, 2).map((s) => h('span', { class: `cal-tag k-${s.kind || 'event'}`, text: s.name }))),
+            tagged.length > 2 ? h('span', { class: 'cal-more', text: `+${tagged.length - 2}` }) : null);
           cell.addEventListener('click', () => { sel = day; draw(); });
           cell.addEventListener('dblclick', () => note(day));
           grid.append(cell);
         }
+        for (let i = (first + days) % 7; i && i < 7; i++) grid.append(h('div', { class: 'cal-c empty' }));
         drawSide();
         win.status(`Today: ${WEEKDAYS[t.weekday]}, ${MONTHS[t.month]} ${t.date}, ${t.year} (day ${t.day})`, game.calendar?.season ? `${game.calendar.season()}` : '');
       };

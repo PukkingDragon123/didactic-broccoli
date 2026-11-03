@@ -134,7 +134,7 @@
 .c98 .cal-title { min-width: 170px; text-align: center; font: 16px/20px var(--f-title); font-weight: normal; }
 .c98 .cal .c98-split { padding: 0 4px 4px; }
 .c98 .cal-left { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.c98 .cal-grid { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: minmax(0, 1fr); gap: 1px; padding: 1px; background: var(--sh); box-shadow: var(--sunken); }
+.c98 .cal-grid { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: 22px; grid-auto-rows: minmax(0, 1fr); gap: 1px; padding: 1px; background: var(--sh); box-shadow: var(--sunken); }
 .c98 .cal-wd { padding: 1px 4px; background: var(--face); text-align: center; }
 .c98 .cal-c { position: relative; min-height: 0; overflow: hidden; padding: 1px 3px; background: var(--field); }
 .c98 .cal-c.empty { background: var(--lt); }
@@ -172,6 +172,7 @@
 .c98 .cx-c span { max-width: 80px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-bottom: 2px; }
 .c98 .cx-c i { position: absolute; right: 3px; top: 1px; font-style: normal; color: var(--dim); }
 .c98 .cx-th { width: 48px; height: 48px; image-rendering: pixelated; }
+.c98 .cx-th:not([src]) { visibility: hidden; }
 .c98 .cx-info { flex: none; min-height: 44px; padding: 4px 6px; background: var(--field); box-shadow: var(--thin-down); }
 .c98 .cx-r { display: inline-block; padding: 0 4px; box-shadow: inset 0 -3px var(--rc); }
 .c98 .cx-f { display: inline-block; padding: 0 4px; margin: 1px 2px 0 0; background: var(--fc); color: #1a1416; }

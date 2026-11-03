@@ -220,8 +220,9 @@ export async function installPC(game) {
     const targetCss = Math.min(innerHeight * 0.8, innerWidth * 0.94 * 0.75);
     const dev = targetCss * dpr;
     const k = Math.max(1, Math.round(dev / 760));
-    const Lh = Math.max(480, Math.floor(dev / k)), Lw = Math.round(Lh * 4 / 3);
-    const zoom = k / dpr;
+    let Lh = Math.floor(dev / k), zoom = k / dpr;
+    if (Lh < 480) { Lh = 480; zoom = dev / 480 / dpr; } // a small window: scale a 640x480 desktop down
+    const Lw = Math.round(Lh * 4 / 3);
     return { Lw, Lh, zoom, hCss: Lh * zoom };
   };
   const poses = () => {
@@ -284,7 +285,7 @@ export async function installPC(game) {
       P.pos.set(ps.standP.x, 0, ps.standP.z);
       P.vel.set(0, 0, 0);
       P.yaw = Math.atan2(ps.n.x, ps.n.z);
-      P.pitch = -0.32;
+      P.pitch = -0.42;
       const eye = V().set(ps.standP.x, P.eye, ps.standP.z);
       const eyeQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(P.pitch, P.yaw, 0, 'YXZ'));
       this.path = { kind: 'out', t: 0, t0: performance.now(), dur: 1.15, from: cam.position.clone(), fromQ: cam.quaternion.clone(), fromFov: cam.fov, ps, eye, eyeQ };

@@ -130,7 +130,7 @@ export function installCodex(game, os) {
         for (const p of people) {
           const ok = !!p.met?.();
           if (ok) n++;
-          grid.append(h('div', { class: `cx-pc${ok ? '' : ' unk'}` }, h('img', { class: 'c98-ava', src: portraitURL(ok ? p.look : { ...p.look, bg: 0x3a3236, shirt: 0x1a1416, hairCol: 0x1a1416, skin: 'tan' }), width: 72, height: 72, style: ok ? null : { filter: 'brightness(0)' } }),
+          grid.append(h('div', { class: `cx-pc${ok ? '' : ' unk'}` }, h('img', { class: 'c98-ava', src: portraitURL(ok ? p.look : p.look.cat ? { bg: 0xd8d0c0, robot: false, hair: 'bald', sil: true, shirt: 0x3a3236 } : { ...p.look, bg: 0xd8d0c0, sil: true, shirt: 0x3a3236, hairCol: 0x3a3236, band: null, cap: false, glasses: null, beard: null }), width: 72, height: 72 }),
             h('div', { html: ok ? `<b>${esc(p.name)}</b><small>${esc(p.role || '')}</small><p>${esc(p.desc || '')}</p>` : '<b>???</b><small>Not met yet</small><p>Someone on the lane you haven\'t met.</p>' })));
         }
         panel.append(grid);

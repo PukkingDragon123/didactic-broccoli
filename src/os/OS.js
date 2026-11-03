@@ -188,6 +188,8 @@ export class CapsuleOS {
     for (const n of Object.keys(CURSORS)) this.root.style.setProperty(`--cur-${n}`, cursorCSS(n, s));
   }
   get deskH() { return this.H - TASKBAR_H; }
+  /** True while someone sits at the computer (the desktop is on screen). */
+  get isOpen() { return this.seated; }
 
   /** Client (window) coordinates -> local screen pixels. */
   local(e) {
@@ -403,6 +405,7 @@ export class CapsuleOS {
     m._items = items;
     m._parent = parent;
     m._onClose = onClose;
+    m._t0 = performance.now();
     for (const it of items) {
       if (it.sep) { m.append(h('div', { class: 'c98-msep' })); continue; }
       const sub = typeof it.sub === 'function' ? it.sub() : it.sub;
@@ -419,7 +422,7 @@ export class CapsuleOS {
       });
       row.addEventListener('pointerup', (e) => {
         e.stopPropagation();
-        if (it.disabled) return;
+        if (it.disabled || (e.button === 2 && performance.now() - m._t0 < 300)) return; // the release of the right-click that opened it
         if (sub) { this.openSub(m, row, sub); return; }
         this.closeMenus();
         this.sound('osMenu');
@@ -833,6 +836,7 @@ export class CapsuleOS {
       if (dlg?._key?.(e)) { e.preventDefault(); return; }
       if (e.code === 'Escape') {
         e.preventDefault();
+        e.stopPropagation(); // the game's own Esc (pause) must not see it: we're standing up, not pausing
         if (this.menus.length || this.startMenu) { this.closeMenus(); return; }
         if (dlg) { dlg._cancel(); return; }
         this.standUp();

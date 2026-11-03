@@ -210,7 +210,7 @@ select.c98-field { padding-right: 2px; }
 .c98-group { position: relative; margin: 10px 0 8px; padding: 12px 10px 8px; box-shadow: inset 1px 1px var(--sh), inset -1px -1px var(--hi), inset 2px 2px var(--hi), inset -2px -2px var(--sh); }
 .c98-group > legend, .c98-group > .lg { position: absolute; left: 8px; top: -11px; padding: 0 4px; background: var(--face); }
 .c98-tabs { display: flex; padding: 0 4px; margin-top: 4px; position: relative; z-index: 1; }
-.c98-tab { height: 24px; padding: 0 12px; margin-right: -2px; background: var(--face); border: 0; box-shadow: inset 1px 1px var(--hi), inset -1px 0 var(--dk), inset -2px 0 var(--sh), inset 2px 2px var(--lt); margin-top: 2px; }
+.c98-tab { white-space: nowrap; height: 24px; padding: 0 9px; margin-right: -2px; background: var(--face); border: 0; box-shadow: inset 1px 1px var(--hi), inset -1px 0 var(--dk), inset -2px 0 var(--sh), inset 2px 2px var(--lt); margin-top: 2px; }
 .c98-tab.on { height: 27px; margin-top: 0; margin-bottom: -2px; padding: 0 14px; z-index: 2; position: relative; }
 .c98-tabpanel { position: relative; flex: 1; min-height: 0; margin: 0 4px 4px; padding: 10px; box-shadow: var(--raised); overflow: auto; }
 .c98-prog { position: relative; height: 18px; padding: 2px; background: var(--field); box-shadow: var(--thin-down); }

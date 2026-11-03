@@ -4,6 +4,7 @@
 //   game.os.achievements.unlock(id) -> true the first time;  .has(id), .list(), .progress() -> { got, total }
 // Unlocks of ids not defined yet are remembered and shown once they're defined.
 import { h, esc, ic } from './ui.js';
+import { icFit } from '../art.js';
 import { yen } from '../OS.js';
 import { now, stampText } from '../time.js';
 
@@ -22,7 +23,7 @@ export function installAchievements(game, os) {
       const a = defs.get(id) || { id, name: id, desc: '', icon: 'os_trophy' };
       const r = typeof a.reward === 'number' ? a.reward : a.reward?.yen;
       if (r > 0) game.addMoney(r, true, `Achievement: ${a.name}`);
-      const html = `<span class="ach-ic">${ic(a.icon || 'os_trophy', 2)}</span><div><small>Achievement unlocked</small><b>${esc(a.name)}</b>${r > 0 ? `<small>+${yen(r)}</small>` : ''}</div>`;
+      const html = `<span class="ach-ic">${icFit(a.icon || 'os_trophy', 44)}</span><div><small>Achievement unlocked</small><b>${esc(a.name)}</b>${r > 0 ? `<small>+${yen(r)}</small>` : ''}</div>`;
       if (!os.toast(html, 4600, 'osCoin')) game.news?.('Achievement unlocked!', `${a.name}${r > 0 ? ` (+${yen(r)})` : ''}`, 5000);
       for (const v of views) v();
       game.events.emit('achievement', { id, name: a.name });
@@ -65,7 +66,7 @@ export function installAchievements(game, os) {
         for (const a of all.sort((x, y) => (y.got != null) - (x.got != null) || (x.got ?? 0) - (y.got ?? 0))) {
           const got = a.got != null, secret = a.hidden && !got;
           const r = typeof a.reward === 'number' ? a.reward : a.reward?.yen;
-          list.append(h('div', { class: `ac-a${got ? ' got' : ''}` }, h('span', { class: 'ach-ic', html: ic(secret ? 'lock' : a.icon || 'os_trophy', 2) }),
+          list.append(h('div', { class: `ac-a${got ? ' got' : ''}` }, h('span', { class: 'ach-ic', html: icFit(secret ? 'lock' : a.icon || 'os_trophy', 44) }),
             h('div', { html: `<b>${esc(secret ? 'Hidden achievement' : a.name)}</b><small>${esc(secret ? 'Keep playing to find out.' : a.desc || '')}</small>` }),
             h('span', { class: 'ac-d', html: got ? `Unlocked<br>${esc(stampText(game, a.got, tn))}` : r > 0 ? `Reward<br>${yen(r)}` : 'Locked' })));
         }
