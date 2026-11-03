@@ -12,6 +12,10 @@
 //                       [--frames 24] [--sync 6] [--out shots/perf/run.json] [--shots shots/perf/before] [--profile medium]
 //                       [--size 1280x720]
 // --profile <q>: also record a sampled CPU profile per view at that quality and print the top self-time functions.
+// --lane <s>: a lane run instead of the views: <s> seconds of game time on the lane by day at a fixed step (--dt, default
+//   0.05 s; Math.random seeded so runs compare) while passers-by spawn every ~4 s. Reports p50 / p95 / p99 / max of the
+//   main-thread work per frame (update + render submission + background slices run since the previous frame, see
+//   src/core/idle.js), what each spawn() call cost and the worst frames with what was in them. --runs n repeats it.
 import { createServer } from 'vite';
 import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -51,6 +55,7 @@ const ABL = {
   fog: ['window.__fog = __game.scene.fog; __game.scene.fog = null;', '__game.scene.fog = __fog;'],
 };
 const ABLATE = args.includes('--ablate') ? flag('ablate-set', Object.keys(ABL).join(',')).split(',') : null;
+const LANE = +flag('lane', 0), LANE_DT = +flag('dt', 0.05), RUNS = +flag('runs', 1);
 const LEAVE = 'try { if (game.pc?.active) { game.pc.exit(); game.pc.finishExit(); } } catch (e) {} try { if (game.places?.where) game.places.exit({ instant: true }); } catch (e) {}';
 
 let chromium;
@@ -63,6 +68,8 @@ const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=sw
 const ctx = await browser.newContext({ viewport: { width: W, height: H } });
 // a save with a quality set, so the first-run auto quality never switches presets under us (and the shop is running)
 await ctx.addInitScript((q) => { try { localStorage.setItem('gacha-garage-save-v2', JSON.stringify({ settings: { quality: q }, perfRun: true })); } catch { /* */ } }, QS[0]);
+// lane runs: a seeded Math.random (mulberry32), so who walks by and when is the same from run to run
+if (LANE) await ctx.addInitScript(() => { let s = 0x2f6b1d3; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; });
 const pg = await ctx.newPage();
 const logs = [];
 pg.on('console', (m) => { if (['error', 'warning'].includes(m.type()) && !/Clock|GPU stall|willReadFrequently/.test(m.text())) logs.push(`[${m.type()}] ${m.text()}`); });
@@ -133,9 +140,12 @@ function instrument(labels) {
         if (P.frame) P.frames.push(P.frame);
         P.frame = { t: {}, c: {}, interval: P.lastStart ? t - P.lastStart : 0, heap: m, heapUp: P.lastHeap && m > P.lastHeap ? m - P.lastHeap : 0 };
         P.lastHeap = m;
+        // background slices (src/core/idle.js) that ran since the previous frame count towards this one
+        if (P.idle) { P.frame.t.idle = P.idle.ms - (P.lastIdle ?? P.idle.ms); P.frame.c.idleSlices = P.idle.slices - (P.lastSlices ?? P.idle.slices); }
       }
+      if (P.idle) { P.lastIdle = P.idle.ms; P.lastSlices = P.idle.slices; }
       P.lastStart = t;
-      try { return u.call(this, dt); } finally { add('update', now() - t); }
+      try { return u.call(this, P.dt || dt); } finally { add('update', now() - t); }
     };
     g.update.__perf = u;
     g.render = function (dt) {
@@ -143,7 +153,7 @@ function instrument(labels) {
       r.info.autoReset = false; r.info.reset();
       if (P.sync) P.fence();
       const t = now();
-      try { return rd.call(this, dt); } finally {
+      try { return rd.call(this, P.dt || dt); } finally {
         if (P.sync) P.fence();
         add('render', now() - t);
         cnt('drawCalls', r.info.render.calls); cnt('triangles', r.info.render.triangles);
@@ -261,6 +271,44 @@ function summarize() {
 
 const waitFrames = (n) => pg.evaluate((n) => new Promise((res) => { const g = window.__game; let k = 0; const r0 = g.render; g.render = function (dt) { const x = r0.call(this, dt); if (++k >= n) { g.render = r0; res(); } return x; }; }), n);
 
+// ------------------------------------------------------------------ --lane: frame-time percentiles over a lane run
+const pct = (a, q) => (a.length ? a[Math.min(a.length - 1, Math.floor(q * a.length))] : 0);
+async function laneRun(labels) {
+  await pg.evaluate(async () => {
+    const P = window.__perf;
+    try { P.idle = (await import('/src/core/idle.js')).idleStats; } catch { P.idle = null; }
+    dbg.time(11); dbg.view(3, 9.6, Math.PI / 2, 0.02);
+    const Pd = game.pedestrians;
+    Pd.promo.flyers = 40; Pd.interval = () => 4; Pd.maxPeople = () => 12; Pd.spawnT = 0.5;
+    const sp = Pd.spawn;
+    Pd.spawn = function (...a) { const t = performance.now(); try { return sp.apply(this, a); } finally { const ms = performance.now() - t; P.add('spawn', ms); P.cnt('spawns'); (P.spawnLog ||= []).push(+ms.toFixed(2)); } };
+    P.dt = 0;
+  });
+  await pg.evaluate(instrument, labels);
+  results.lane = { dt: LANE_DT, seconds: LANE, q: QS[0], runs: [] };
+  for (let run = 0; run < RUNS; run++) {
+    const n = Math.round(LANE / LANE_DT);
+    await pg.evaluate((dt) => { const P = window.__perf; P.dt = dt; P.spawnLog = []; }, LANE_DT);
+    await waitFrames(30); // warm-up at the fixed step (shaders, the first background builds)
+    await pg.evaluate(() => { const P = window.__perf; P.on = true; P.sync = false; P.frames = []; P.frame = null; P.spawnLog = []; });
+    await waitFrames(n + 1);
+    const F = await pg.evaluate(() => { const P = window.__perf; P.on = false; const F = P.frames.map((f) => ({ t: f.t, c: f.c })); P.frames = []; P.frame = null; return { F, spawns: P.spawnLog, people: game.pedestrians.list.length }; });
+    const fr = F.F.map((f, i) => ({ i, u: f.t.update || 0, r: f.t.render || 0, idle: f.t.idle || 0, spawn: f.t.spawn || 0, ped: f.t.pedestrians || 0, up: (f.c['gl.texImage2D'] || 0) + (f.c['gl.texSubImage2D'] || 0), buf: (f.c['gl.bufferData'] || 0), spawns: f.c.spawns || 0 }));
+    for (const f of fr) { f.cpu = f.u + f.r; f.work = f.cpu + f.idle; }
+    const stat = (k) => { const a = fr.map((f) => f[k]).sort((x, y) => x - y); return { mean: +(a.reduce((x, y) => x + y, 0) / Math.max(1, a.length)).toFixed(2), p50: +pct(a, 0.5).toFixed(2), p95: +pct(a, 0.95).toFixed(2), p99: +pct(a, 0.99).toFixed(2), max: +(a[a.length - 1] || 0).toFixed(2) }; };
+    const worst = [...fr].sort((a, b) => b.work - a.work).slice(0, 8).map((f) => ({ frame: f.i, work: +f.work.toFixed(1), update: +f.u.toFixed(1), render: +f.r.toFixed(1), idle: +f.idle.toFixed(1), pedestrians: +f.ped.toFixed(1), spawn: +f.spawn.toFixed(1), uploads: f.up, bufferData: f.buf }));
+    const spawnFrames = fr.filter((f) => f.spawns);
+    const R = { frames: fr.length, work: stat('work'), cpu: stat('cpu'), update: stat('u'), pedestrians: stat('ped'), idle: stat('idle'), spawnCalls: F.spawns, spawnFrameWork: spawnFrames.map((f) => +f.work.toFixed(1)), texUploadsPerFrame: +(fr.reduce((a, f) => a + f.up, 0) / Math.max(1, fr.length)).toFixed(2), peopleAtEnd: F.people, worst };
+    results.lane.runs.push(R);
+    save();
+    console.log(`lane run ${run + 1}/${RUNS} @${QS[0]} (${R.frames} frames of ${LANE_DT}s):`);
+    for (const k of ['work', 'cpu', 'update', 'pedestrians', 'idle']) console.log(`  ${k.padEnd(12)} mean ${R[k].mean}  p50 ${R[k].p50}  p95 ${R[k].p95}  p99 ${R[k].p99}  max ${R[k].max} ms`);
+    console.log(`  spawn() calls (ms): ${R.spawnCalls.join(' ')}   frames with a spawn (work ms): ${R.spawnFrameWork.join(' ')}`);
+    console.log(`  texture uploads / frame ${R.texUploadsPerFrame}; people at the end ${R.peopleAtEnd}`);
+    console.log('  worst frames:', R.worst.map((w) => `#${w.frame} ${w.work}ms (u ${w.update} r ${w.render} idle ${w.idle} ped ${w.pedestrians} spawn ${w.spawn} up ${w.uploads})`).join('\n               '));
+  }
+}
+
 // ------------------------------------------------------------------ run
 const results = { size: `${W}x${H}`, date: new Date().toISOString(), views: {} };
 const profiles = {};
@@ -281,7 +329,8 @@ try {
   await cdp.send('Debugger.disable');
   console.log('updaters:', labels.join(', '));
   await pg.evaluate(instrument, labels);
-  for (const v of VIEWS_ON) {
+  if (LANE) await laneRun(labels);
+  else for (const v of VIEWS_ON) {
     await pg.evaluate(LEAVE);
     await pg.evaluate(VIEWS[v]);
     await waitFrames(6);

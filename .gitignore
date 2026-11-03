@@ -4,3 +4,4 @@ dist
 *.log
 shots/
 docs/steam/raw/
+__pycache__/
