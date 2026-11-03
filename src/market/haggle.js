@@ -6,7 +6,7 @@
 //   mk.chat.open(listingId)        start / continue the conversation about a listing
 //   mk.chat.scamVanish(order)      the "seller" of a parcel that never came goes quiet
 import { seller, PERSONA, variantLines, GRADES } from './catalog.js';
-import { marketState, nicePrice, yen, pick, whenText, stamp } from './util.js';
+import { marketState, nicePrice, yen, pick, whenText } from './util.js';
 
 const SPEED = { grandma: [6, 10], kid: [1, 2.5], scammy: [0.8, 1.6], chatty: [1, 2], desperate: [1, 2.2] };
 const delay = (s) => { const [a, b] = SPEED[s.pers] || [1.8, 3.6]; return a + Math.random() * (b - a); };

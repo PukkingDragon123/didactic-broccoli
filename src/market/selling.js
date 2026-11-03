@@ -138,6 +138,7 @@ export function installSelling(g, mk) {
   let lastTick = stamp(g);
   function tick() {
     const now = stamp(g);
+    if (now < lastTick) lastTick = now; // the clock was set back (debug)
     const steps = Math.min(30, Math.floor((now - lastTick) / 20));
     if (steps <= 0) return;
     lastTick += steps * 20;

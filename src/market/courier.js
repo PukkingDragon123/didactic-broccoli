@@ -228,7 +228,8 @@ export class Courier {
     const DS = G.deliverySpot;
     const drop = open ? V3(DS.x, 0, DS.z) : V3(DS.x, 0, 5.72);
     const front = [drop.x + 0.1, 6.4];
-    yield this.walk(open ? [[rx - 0.2, 7.0], front, [drop.x + 0.05, drop.z + 0.55]] : [[rx - 0.2, 7.0], [drop.x + 0.05, drop.z + 0.5]]);
+    // (a pickup-only stop: he just comes to the shutter)
+    yield this.walk(!v.entries.length ? [[rx - 0.2, 7.0], [drop.x + 0.05, 6.2]] : open ? [[rx - 0.2, 7.0], front, [drop.x + 0.05, drop.z + 0.55]] : [[rx - 0.2, 7.0], [drop.x + 0.05, drop.z + 0.5]]);
     if (v.entries.length) {
       yield this.face(drop.x, drop.z);
       D.clearGesture();

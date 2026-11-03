@@ -171,6 +171,9 @@ function vanGeos() {
   return geos;
 }
 
+/** Mesh the van's voxels ahead of its first visit (idle time), so the first delivery doesn't hitch. */
+export function prewarmVan() { vanGeos(); }
+
 /** The van: root faces +x (its nose); y = 0 is the road. */
 export function buildVan() {
   const G = vanGeos();

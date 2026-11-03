@@ -11,10 +11,11 @@ import { propMesh } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
-import { Pix, FONT_EN } from '../gfx/pix.js';
+import { Pix } from '../gfx/pix.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { COSMETIC_BY_ID, cosmeticPreview } from '../people/cosmetics.js';
-import { CHARM_DEFS, TIPJAR_DEFS, itemTitle } from './catalog.js';
+import { CHARM_DEFS, TIPJAR_DEFS, itemTitle, BUILD } from './catalog.js';
+const BUILD_MODELS = Object.values(import.meta.glob('../build/models.js', { eager: true }))[0] || null;
 import { decorate, decorateFigure, tintMaterial } from './variants.js';
 import { garmentMesh } from './thrift.js';
 import { audio } from '../core/audio.js';
@@ -152,6 +153,11 @@ export function itemObject(g, it) {
     }
     case 'brick': return propMesh('mk_brick');
     case 'trinket': return propMesh(`mk_trinket_${it.id}`, { fallbackSize: [0.05, 0.05, 0.05] });
+    case 'furn': {
+      const def = BUILD?.FURNITURE?.[it.id];
+      try { if (def && BUILD_MODELS?.buildPiece) return BUILD_MODELS.buildPiece(def, {}).root; } catch { /* fall through */ }
+      return boxPhoto(def?.name || 'furniture', 'used');
+    }
     default: return boxPhoto(it.t || 'item');
   }
 }

@@ -343,6 +343,8 @@ The pixel-art shop flyers and promo posters (`src/gfx/flyers.js`) are made from 
 dataset (https://storage.googleapis.com/openimages/web/index.html), which collects Flickr photos shared under Creative
 Commons licences. The photos were resized and re-encoded as JPEG; in the game they are cropped, shrunk to pixel-art
 size, colour-graded, posterized and ordered-dithered, and composited with renders of the game's 3D models and text.
+Some of them are also the prints on the thrift tees sold on Off-Hobby (`src/market/thrift.js`), shrunk to 12 x 12 pixels
+and posterized.
 
 ### Wall of Gachapon
 

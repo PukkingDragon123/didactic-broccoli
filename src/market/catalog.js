@@ -20,6 +20,10 @@ import { DISPLAYS, decorList } from '../museum/catalog.js';
 import { unlockLevel } from '../data/unlocks.js';
 import { rng, pick, rint, wpick, nicePrice, clamp, hash2 } from './util.js';
 
+// the shop furniture catalogue (src/build, when it's there): Off-Hobby sells it used too
+export const BUILD = Object.values(import.meta.glob('../build/catalogue.js', { eager: true }))[0] || null;
+const furnPool = (g, cats) => (BUILD ? BUILD.CATALOGUE.filter((f) => cats.includes(f.category) && (!f.unlock || !g.progress || g.progress.unlocked(f.unlock)) && f.feature !== 'vacuum') : []);
+
 // ------------------------------------------------------------------ categories
 export const CATS = [
   { id: 'machines', name: 'Gacha Machines', icon: 'machine', gate: null, blurb: 'Retired machines from closed shops, basements and one very confused grandma.' },
@@ -243,6 +247,7 @@ export function rollItem(g, r, cat) {
     const ids = Object.keys(CHARM_DEFS).filter((id) => !CHARM_DEFS[id].rare || r() < 0.25);
     return { t: 'charm', id: pick(ids, r), grade, flaws: flawPool('charm'), variant: rollVariant(r, 'charm', grade) };
   }
+  if (cat === 'tipjars' && BUILD?.FURNITURE?.tip_jar && r() < 0.3) return { t: 'furn', id: r() < 0.7 ? 'tip_jar' : 'piggy_bank', grade, flaws: flawPool('decor') };
   if (cat === 'tipjars') return { t: 'tipjar', id: pick(Object.keys(TIPJAR_DEFS), r), grade, flaws: flawPool('decor'), variant: rollVariant(r, 'decor', grade) };
   if (cat === 'clothes') {
     const owned = new Set(g.state.avatar?.owned || []);
@@ -251,6 +256,8 @@ export function rollItem(g, r, cat) {
     return { t: 'garment', cid: pick(pool, r), grade: grade === 'J' ? 'C' : grade, flaws: flawPool('garment'), variant: r() < 0.45 ? { smell: pick(SMELLS, r) } : null };
   }
   if (cat === 'decor') {
+    const furn = furnPool(g, ['decor', 'signs', 'fun', 'electric']);
+    if (furn.length && r() < 0.55) return { t: 'furn', id: pick(furn, r).id, grade, flaws: flawPool('decor') };
     const museum = !!g.museum?.data?.owned;
     const goods = Object.keys(GOODS).filter((id) => !g.state.goods?.[id] && (!GOODS[id].museum || museum));
     const deco = museum ? decorList() : [];
@@ -259,6 +266,8 @@ export function rollItem(g, r, cat) {
     return { t: 'goods', id: pick(goods, r), grade, flaws: flawPool('decor') };
   }
   if (cat === 'display') {
+    const furn = furnPool(g, ['furniture', 'storage']);
+    if (furn.length && r() < 0.35) return { t: 'furn', id: pick(furn, r).id, grade, flaws: flawPool('decor') };
     const museum = !!g.museum?.data?.owned;
     const n = g.state.shelves?.length || 0;
     const roll = wpick([['shelf', n < 3 ? 3 : 0], ['stands', 4], ['blister', 3], ['mdisplay', museum ? 3 : 0]], r);
@@ -310,6 +319,7 @@ export function itemTitle(it) {
     case 'blister': return `Blister packs x${it.n} (half a roll)`;
     case 'junk': return `Mystery junk box (${{ S: 'small', M: 'medium', L: 'LARGE' }[it.size]})`;
     case 'slab': return `KGS ${it.score} ${getItem(it.key)?.name || ''}`;
+    case 'furn': return `Used ${BUILD?.FURNITURE?.[it.id]?.name || it.id}`;
     case 'packaged': return `Sealed ${getItem(it.key)?.name || ''}`;
     default: return it.name || it.t;
   }
@@ -332,6 +342,7 @@ function baseValue(g, it) {
     case 'stands': return it.n * 140;
     case 'blister': return it.n * 22;
     case 'junk': return { S: 400, M: 900, L: 1600 }[it.size] || 600;
+    case 'furn': return (BUILD?.FURNITURE?.[it.id]?.price || 1000) * 0.75;
     default: return 500;
   }
 }
@@ -395,11 +406,11 @@ function listingNote(s, it, r) {
     grandma: ['This belonged to my grandson. He is in university now.', 'I am not sure what this is but it is cute.', 'Found it in the cupboard. Very clean.'],
     chatty: ['Long story about this one, ask me!!', 'Found at a flea market in Saitama :)', 'My cat approves of this item.'],
   }[s.pers];
-  return pick(P, r) + (s.honest !== false ? fl : '');
+  return pick(P, r) + (PERSONA[s.pers].honest >= 0.9 ? fl : '');
 }
 
 /** A whole day's batch (deterministic per save seed and day). */
-export function generateDay(g, S, day, n = 24, salt = 0) {
+export function generateDay(g, S, day, n = 34, salt = 0) {
   const r = rng((S.seed ^ (day * 2654435761) ^ (salt * 40503)) >>> 0);
   const out = [];
   // a couple of everything open, then the random mix

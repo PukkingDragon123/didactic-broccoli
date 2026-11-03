@@ -57,6 +57,11 @@ export function installWorld(game, mk) {
     if ((kind === 'toy' || kind === 'packaged') && data?.variant) decorateFigure(obj, data.variant);
     return r;
   };
+  // a figure sealed in a blister card keeps its stickers (packaging.js makes the packaged data from the held toy)
+  let lastOut = null;
+  const putTo0 = H.putTo.bind(H);
+  H.putTo = (...a) => { const it = H.item; lastOut = it?.kind === 'toy' ? it : null; return putTo0(...a); };
+  g.events.on('figurePacked', ({ data }) => { if (lastOut?.data?.variant && lastOut.data.key === data.key) data.variant = lastOut.data.variant; lastOut = null; });
   const spawnToy0 = g.items.spawnToy.bind(g.items);
   g.items.spawnToy = (data, pos, opts) => { const e = spawnToy0(data, pos, opts); if (data?.variant) decorateFigure(e.obj, data.variant); return e; };
   if (!DisplaySlots.prototype._mkt) {
@@ -105,7 +110,7 @@ export function installWorld(game, mk) {
     const e = [...g.items.list].find((x) => x.kind === 'toy' && x.data.key === l.d.key && !x.data.variant && Math.abs(x.obj.position.x - l.p[0]) < 0.02 && Math.abs(x.obj.position.z - l.p[2]) < 0.02);
     if (e) { e.data.variant = l.d.variant; decorateFigure(e.obj, l.d.variant); }
   }
-  for (const s of H.slots) if (s?.kind === 'toy' && s.data.variant) decorateFigure(s.obj, s.data.variant);
+  for (const s of H.slots) if ((s?.kind === 'toy' || s?.kind === 'packaged') && s.data.variant) decorateFigure(s.obj, s.data.variant);
   for (const d of g.allDisplays()) d.items.forEach((it, i) => { if (it?.v && d.slots[i]?.mesh) decorateFigure(d.slots[i].mesh, it.v); });
 
   // ================================================================== 'mkt' things in your hands and in the world
@@ -333,7 +338,6 @@ export function installWorld(game, mk) {
   if (g.sim?.footfall) { const ff = g.sim.footfall.bind(g.sim); g.sim.footfall = () => ff() * (1 + mk.luck().foot); }
 
   // ================================================================== tip jars: customers drop coins in
-  let seenCust = g.state.stats?.customers || 0;
   const jarCoins = new Map();
   function updateJar(rec, obj) {
     let c = jarCoins.get(rec);
@@ -348,23 +352,32 @@ export function installWorld(game, mk) {
     c.scale.set(1, 0.3 + k * 3, 1);
     c.position.y = 0.012 + k * 0.03;
   }
-  mk.tick = () => {
-    const n = g.state.stats?.customers || 0;
-    if (n > seenCust) {
-      const jars = M.loose.filter((r) => r.d.t === 'tipjar' && inGarage(r.p));
-      const L = mk.luck();
-      for (let i = seenCust; i < n; i++) for (const r of jars) {
-        const def = TIPJAR_DEFS[r.d.id], gm = GRADES[r.d.grade || 'B']?.mult ?? 0.6;
-        if (Math.random() < 0.1 * (def?.rate || 1) * (0.6 + gm * 0.5) / Math.max(1, jars.length * 0.7)) {
-          r.d.cash = (r.d.cash || 0) + [10, 10, 10, 50, 100][Math.floor(Math.random() * 5)] * (1 + L.tips);
-          r.d.cash = Math.round(r.d.cash / 10) * 10;
-          const o = looseObjs.get(r);
-          if (o) { updateJar(r, o); audio.play('coinDrop', { pos: o.position, vol: 0.5 }); }
-        }
-      }
-    }
-    seenCust = n;
+  const myJars = () => M.loose.filter((r) => r.d.t === 'tipjar' && inGarage(r.p));
+  const dropTip = (r, amt) => {
+    r.d.cash = Math.round(((r.d.cash || 0) + amt * (1 + mk.luck().tips)) / 10) * 10;
+    const o = looseObjs.get(r);
+    if (o) { updateJar(r, o); audio.play('coinDrop', { pos: o.position, vol: 0.5 }); }
   };
+  // the shop furniture (src/build) has its own tip jar and its customers tip into the nearest jar: Off-Hobby's funny
+  // jars take their share of those tips; with no furniture jar about, customers who play tip into ours directly
+  if (g.decor?.tip) {
+    const tip0 = g.decor.tip.bind(g.decor);
+    g.decor.tip = (amount, from) => {
+      const mine = myJars(), theirs = g.decor.byFeature?.('tipjar')?.length || 0;
+      if (mine.length && Math.random() < mine.length / (mine.length + theirs)) { dropTip(mine[Math.floor(Math.random() * mine.length)], amount); return true; }
+      return tip0(amount, from);
+    };
+  }
+  g.events.on('machinePlay', ({ customer }) => {
+    if (!customer || g.decor?.byFeature?.('tipjar')?.length) return;
+    const jars = myJars();
+    if (!jars.length) return;
+    const r = jars[Math.floor(Math.random() * jars.length)];
+    const def = TIPJAR_DEFS[r.d.id], gm = GRADES[r.d.grade || 'B']?.mult ?? 0.6;
+    const q = g.sim?.shopQuality?.().score ?? 0.5;
+    if (Math.random() < (0.08 + 0.22 * q) * (def?.rate || 1) * (0.6 + gm * 0.5)) g.tweens.wait(2.4, () => dropTip(r, [10, 10, 50, 50, 100][Math.floor(Math.random() * 5)]));
+  });
+  mk.tick = () => {};
 
   // ================================================================== the OUTGOING crate
   const crate = propMesh('mk_outbox', { fallbackSize: [0.48, 0.21, 0.34] });

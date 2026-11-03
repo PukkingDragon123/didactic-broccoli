@@ -20,7 +20,8 @@
 .c98 .oh-cats .oh-ch { background: #e8452a; color: #fff; }
 .c98 .oh-cats small { color: #9a8a7a; }
 .c98 .oh-main h2 { margin: 4px 0 6px; padding: 0 6px; background: #ffe8d0; border-left: 4px solid #e8452a; }
-.c98 .oh-main h1 { font-size: 16px; line-height: 22px; margin: 0 0 6px; font-family: var(--f-title); }
+.c98 .br-page .st-oh h1 { font: 16px/22px var(--f-title); margin: 0 0 6px; }
+.c98 .br-page .st-oh h2 { font: 16px/22px var(--f-title); }
 .c98 .oh-hero { display: flex; flex-direction: column; padding: 4px 8px; margin-bottom: 4px; background: #fff; border: 2px solid #ffd23f; }
 .c98 .oh-hero b { font-family: var(--f-title); font-weight: normal; color: #e8452a; }
 .c98 .oh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }

@@ -12,7 +12,7 @@ import { placeCharms, placeOpenerTool } from '../game/shop.js';
 import { maxMachines, MACHINE_TYPES, OPENERS, CHARMS } from '../game/economy.js';
 import { MACHINE_SLOTS, SHELF_SLOTS } from '../world/Garage.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
-import { generateDay, makeListing, seller, catOpen, junkContents, itemTitle, CAT_BY_ID } from './catalog.js';
+import { generateDay, makeListing, seller, catOpen, junkContents, itemTitle, CAT_BY_ID, BUILD } from './catalog.js';
 import { marketState, nextId, stamp, today, rng, rint, yen, whenText, pick } from './util.js';
 
 export function installOrders(g, mk) {
@@ -54,6 +54,7 @@ export function installOrders(g, mk) {
     if ((it.t === 'mdecor' || it.t === 'mdisplay') && !g.museum?.data?.owned) return 'You need a museum for this';
     if (it.t === 'goods' && g.state.goods?.[it.id]) return 'You already have one';
     if (it.t === 'garment' && (g.state.avatar?.owned || []).includes(it.cid)) return 'Already in your closet';
+    if (it.t === 'furn') { const f = BUILD?.FURNITURE?.[it.id]; if (!f) return 'Not available'; if (f.unlock && g.progress && !g.progress.unlocked(f.unlock)) return `Reach shop level ${g.progress.levelFor(f.unlock)} first`; }
     return null;
   };
 
@@ -130,6 +131,7 @@ export function installOrders(g, mk) {
         return { type: 'decor', kind, id: it.id, label: def?.name || it.id, name: def?.name || it.id, rot: 0, boxSize: [Math.min(0.7, 0.3 + w * 0.2), Math.min(0.6, 0.25 + 0.15 * Math.max(w, d)), Math.min(0.6, 0.3 + d * 0.15)], order: o.id };
       }
       case 'junk': return { ...parcel([...junkContents(g, it), ...extra], it.size === 'L' ? 'L' : 'M'), junk: true };
+      case 'furn': return { ...(BUILD.furnitureBox(it.id, { used: true, grade: it.grade }) || {}), from, order: o.id };
       default: return parcel([...extra]);
     }
   }

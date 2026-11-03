@@ -4,6 +4,7 @@
 // ship. See src/market/*.js. Exposes game.market (the shop API) and game.courier (the van).
 import * as THREE from 'three';
 import { Courier } from '../market/courier.js';
+import { prewarmVan } from '../market/van.js';
 import { installWorld, mktName } from '../market/world.js';
 import { installOrders } from '../market/orders.js';
 import { installHaggle } from '../market/haggle.js';
@@ -50,6 +51,7 @@ export function install(game) {
   const mine = THRIFT.filter((t) => t.photo && owned.has(t.id)).map((t) => t.id);
   if (mine.length) loadPrints(mine).then(() => g.events.emit('avatar'));
   setTimeout(() => loadPrints(), 8000); // the rest, quietly, for listing photos and the folded tees
+  setTimeout(() => { try { prewarmVan(); } catch (e) { console.warn('van', e); } }, 12000);
 
   // the hotbar knows market things
   const HB = g.hotbar;
