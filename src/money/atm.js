@@ -131,13 +131,14 @@ export class Atm {
     this.card.visible = false;
     this.root.add(this.card);
 
-    this.trayHit = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.2, 0.14), hitMat);
-    this.trayHit.position.set(0, 0.5, 0.29);
+    // the cash slot on the front of the console, under the keypad (notes come out flat, sticking towards you)
+    this.trayHit = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.07, 0.16), hitMat);
+    this.trayHit.position.set(-0.1, 0.7, 0.42);
     this.root.add(this.trayHit);
     g.interaction.add(this.trayHit, { reach: 1.9, hint: () => this.trayHint(), use: () => { this.onTray(); return false; } });
-    const shutter = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.14, 0.006), new THREE.MeshStandardMaterial({ color: 0x5a6066, roughness: 0.35, metalness: 0.6 }));
-    shutter.geometry.translate(0, -0.07, 0);
-    shutter.position.set(0, 0.6, 0.243);
+    const shutter = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.042, 0.004), new THREE.MeshStandardMaterial({ color: 0x5a6066, roughness: 0.35, metalness: 0.6 }));
+    shutter.geometry.translate(0, -0.021, 0);
+    shutter.position.set(-0.1, 0.721, 0.383);
     this.root.add(shutter);
     this.shutter = shutter;
     this.shutterK = 0; this.shutterWant = 0;
@@ -516,11 +517,11 @@ export class Atm {
     this.clearNotes();
     const st = noteStack(v, { max: 10 });
     st.rotation.y = Math.PI / 2;
-    st.position.set(0, 0.452, 0.2);
+    st.position.set(-0.1, 0.698, 0.3);
     this.root.add(st);
     this.notes = st;
-    const z0 = 0.2;
-    this.game.tweens.add({ delay: 0.25, dur: 0.5, update: (k) => { st.position.z = z0 + 0.075 * k; } });
+    const z0 = 0.3;
+    this.game.tweens.add({ delay: 0.25, dur: 0.5, update: (k) => { st.position.z = z0 + 0.1 * k; } });
   }
   clearNotes() { if (this.notes) { this.notes.parent?.remove(this.notes); this.notes = null; } }
 
@@ -573,7 +574,7 @@ export class Atm {
   // ------------------------------------------------------------------ positions
   screenPos() { return this.screen.getWorldPosition(new THREE.Vector3()); }
   cardPos() { return this.root.localToWorld(new THREE.Vector3(0.21, 0.79, 0.32)); }
-  trayPos() { return this.root.localToWorld(new THREE.Vector3(0, 0.47, 0.3)); }
+  trayPos() { return this.root.localToWorld(new THREE.Vector3(-0.1, 0.705, 0.42)); }
 
   // ------------------------------------------------------------------ per frame
   update(dt) {

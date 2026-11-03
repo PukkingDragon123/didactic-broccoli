@@ -497,13 +497,13 @@ export class Chores {
       st.ob = g.player.addObstacle(-1.81, -1.39, nz - 0.25, nz + 0.25);
       if (st.J.id === 'j2') this.life.notes.place('junk', { pos: V(-1.58, 0.402, nz), flat: true, rotY: -Math.PI / 2, size: 0.14 });
     }
-    // bought on the computer: GACHA-MART's men bring the crate round in a little while; carried in by Gen-san's van
+    // bought on the computer: the delivery men bring the crate round in a little while; carried in by Gen-san's van
     // (a second-hand one from the market, src/market/orders.js): it's here already, crate and all
     const viaVan = !!(g.courier?.busy || g.courier?.visit);
     f.crate = { id: m.data.id, stage: viaVan ? 'straps' : 'wait', t: 24 };
     if (viaVan) { this.buildCrate(m); g.story.task('Your machine is here, still in its crate.'); return; }
     this.hideMachine(m, true);
-    g.news('Order confirmed', 'GACHA-MART: the delivery men bring it round shortly', 6000);
+    g.news('Order confirmed', 'The delivery men bring it round shortly', 6000);
   }
 
   machine() { const c = this.f.crate; return c ? this.game.machines.find((m) => m.data.id === c.id) : null; }
@@ -643,7 +643,7 @@ export class Chores {
   crateTex() {
     const p = new Pix(48, 64, 9);
     p.fill(0xc89a5f); p.noise(0.06);
-    p.rect(0, 0, 48, 10, 0xe5383b); p.tinyText('GACHA-MART', 24, 2, { color: 0xffffff, align: 'center' });
+    p.rect(0, 0, 48, 10, 0xe5383b); p.tinyText('DAIKOKU', 24, 2, { color: 0xffffff, align: 'center' });
     p.tinyText('FRAGILE', 24, 18, { color: 0xd8282a, align: 'center' });
     p.tinyText('THIS', 24, 30, { color: 0x2a2020, align: 'center' }); p.tinyText('SIDE UP', 24, 39, { color: 0x2a2020, align: 'center' });
     for (const x of [12, 36]) { p.rect(x - 1, 50, 2, 9, 0x2a2020); p.rect(x - 3, 52, 6, 1, 0x2a2020); p.rect(x - 2, 51, 4, 1, 0x2a2020); }

@@ -24,6 +24,7 @@ export class Npc {
     this.name = def.name;
     this.color = def.color || '#ffd23f';
     this.h = def.build ? def.build(def) : createCharacter(def.look || def.id, { seed: def.seed ?? 7, height: def.height });
+    this.h.ownSlapLines = true; // the lane (Lane.onSlap) gives them their own reaction to a slap
     this.isHuman = !!this.h.spec;
     this.h.root.name = 'npc:' + def.id;
     group.add(this.h.root);

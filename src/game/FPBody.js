@@ -1391,7 +1391,7 @@ export class FPBody {
     setTimeout(() => h.setExpression?.('angry', 3), 450);
     const lines = ['Ow!', 'HEY!', 'What was that for?!', 'Ouch! Rude!', 'Did you just slap me?!', 'Kids these days...'];
     const B = g.pedestrians?.bubbles || g.bubbles;
-    try { B?.say(h, lines[Math.floor(Math.random() * lines.length)], { dur: 2.4, style: 'shout', onChar: talk(h) }); } catch { /* no bubbles */ }
+    if (!h.ownSlapLines) try { B?.say(h, lines[Math.floor(Math.random() * lines.length)], { dur: 2.4, style: 'shout', onChar: talk(h) }); } catch { /* no bubbles */ }
     const r = h.root, away = _v.subVectors(r.position, g.player.pos).setY(0).normalize();
     this.recoils = (this.recoils || []).filter((q) => q.root !== r);
     this.recoils.push({ root: r, t: 0, x: r.rotation.x, z: r.rotation.z, ax: away.z, az: -away.x });

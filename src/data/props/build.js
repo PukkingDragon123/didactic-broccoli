@@ -51,11 +51,11 @@ const props = {
       // card slot block (right of the keypad) with its green light; the receipt slot on the ledge front
       fill(v, 6, 38, 11, 14, 41, 15, grey);
       v.paint(() => { v.box(7, 39, 15, 13, 39, 15, dark); v.box(7, 40, 15, 13, 40, 15, glow(0x2a9a4a)); });
-      v.paint(() => v.box(7, 35, 18, 13, 35, 18, dark));
-      // the cash tray (y 22..30): a dark mouth with a lip
-      fill(v, -12, 21, 9, 11, 31, 11, grey);
-      v.box(-10, 23, 11, 9, 29, 11, dark);
-      fill(v, -12, 20, 11, 11, 21, 14, grey);
+      v.paint(() => v.box(7, 35, 18, 13, 35, 18, dark)); // receipt slot
+      v.paint(() => { v.box(-12, 34, 18, 2, 35, 18, dark); v.box(-13, 33, 18, 3, 33, 18, grey); v.box(-13, 36, 18, 3, 36, 18, grey); }); // the cash slot
+      // a coin tray door below (decoration: this kiosk takes notes only)
+      fill(v, -12, 21, 9, 11, 31, 10, grey);
+      v.paint(() => { v.box(-10, 23, 10, 9, 23, 10, dark); v.box(-10, 29, 10, 9, 29, 10, dark); v.box(-10, 23, 10, -10, 29, 10, dark); v.box(9, 23, 10, 9, 29, 10, dark); });
       // instruction plate and the coins sticker
       fill(v, -12, 12, 10, 11, 18, 10, enamel(0xf6f2e6, 0.02, 5));
       v.paint(() => { for (let y = 13; y <= 17; y += 2) v.box(-10, y, 10, R(-10 + hash(y, 1) * 6 + 10), y, 10, 0x6a6e74); v.box(4, 13, 10, 9, 17, 10, 0xe5383b); });

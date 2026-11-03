@@ -105,7 +105,7 @@ export function cashInHand(game, amount, { from = null, onNote = null, done = nu
   const { notes, coins } = splitCash(amount);
   const anchor = g.held.anchor;
   const hand = new THREE.Group(); // the fan of notes in your left hand
-  hand.position.set(-0.11, -0.115, -0.36);
+  hand.position.set(-0.075, -0.1, -0.34);
   hand.rotation.set(1.15, 0.3, 0.12);
   anchor.add(hand);
   const shown = notes.slice(0, 10);

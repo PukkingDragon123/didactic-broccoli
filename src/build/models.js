@@ -47,9 +47,9 @@ const ghostCache = new Map();
 function ghostMaterial(src) {
   const key = src.uuid;
   if (ghostCache.has(key)) return ghostCache.get(key);
-  const m = new THREE.MeshStandardMaterial({ color: 0xffffff, map: src.map || null, vertexColors: !!src.vertexColors, roughness: 1, metalness: 0, transparent: true, opacity: 0.62, depthWrite: true });
+  const m = new THREE.MeshStandardMaterial({ color: 0xffffff, map: src.map || null, vertexColors: !!src.vertexColors, roughness: 1, metalness: 0, transparent: true, opacity: 0.55, depthWrite: true });
   if (src.color && !src.map) m.color.copy(src.color);
-  m.color.multiplyScalar(0.5);
+  m.color.multiplyScalar(0.42);
   m.userData.base = m.color.getHex(); // (a hex number: survives material.clone(), which JSON-copies userData)
   ghostCache.set(key, m);
   return m;
@@ -220,10 +220,10 @@ function neonCanvas(design, lit) {
   } else if (design === 1) {
     frame('#ffd23f', '#4a3e1a');
     const rows = ['ガ', 'チ', 'ャ'].map((k) => GLYPHS[k]);
-    let x = 10;
-    for (const r of rows) { glyph(r, x, 8, 3, '#ffd23f', '#4a3e1a', '#fff8d0'); x += r[0].length * 3 + 4; }
+    let x = 8;
+    for (const r of rows) { glyph(r, x, 12, 2, '#ffd23f', '#4a3e1a', '#fff8d0'); x += r[0].length * 2 + 3; }
     // a capsule
-    const cx = 78, cy = 20;
+    const cx = 74, cy = 20;
     for (let a = 0; a < 40; a++) { const t = a / 40 * Math.PI * 2; const x2 = Math.round(cx + Math.cos(t) * 9), y2 = Math.round(cy + Math.sin(t) * 9); g.fillStyle = tube(t < Math.PI ? '#ff5a5a' : '#ffffff', '#3a2a2a'); g.fillRect(x2, y2, 2, 2); }
     g.fillStyle = tube('#ffffff', '#3a3a3a'); g.fillRect(cx - 9, cy, 19, 1);
   } else {
@@ -352,7 +352,7 @@ function storageBox(root, parts, st) {
   parts.label = label; parts.labelTex = lt;
   // what peeks out of the top
   const peek = new THREE.Group();
-  peek.position.y = h - 0.05;
+  peek.position.y = h - 0.01;
   root.add(peek);
   parts.peek = peek;
   setFlaps(parts, true);

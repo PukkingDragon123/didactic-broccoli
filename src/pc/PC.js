@@ -316,7 +316,7 @@ export async function installPC(game) {
     set booted(v) { if (v && pc.path) { pc.path.t0 = -1e9; if (os.power !== 'on') os.powerOn({ instant: true }); } },
     get booted() { return os.power === 'on'; },
     get page() { return os.browser?.storePage?.() || null; },
-    set page(p) { if (os.power === 'on') os.open('browser', { url: `http://www.gacha-mart.co.jp/${p === 'top' || p === 'home' ? '' : p + '/'}` }); },
+    set page(p) { if (os.power === 'on') os.open('browser', { url: `http://www.daikoku-toys.co.jp/${p === 'top' || p === 'home' ? '' : p + '/'}` }); },
   };
 
   os.onPointer = (u, v) => {

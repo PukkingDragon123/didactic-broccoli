@@ -1,7 +1,8 @@
 // game.decor: the furniture and decor placed in the shop (bought from the catalogue, placed with the builder).
 //   decor.pieces (Map uid -> piece), decor.list(), decor.count(), decor.byFeature(name)
 //   decor.quality() -> 0..1          what the furniture adds to the shop (game.sim.shopQuality's 'decor' part)
-//   decor.seats() -> [{ pos, rotY, piece, taken }]   benches and sofas customers can sit on (People: route there)
+//   decor.seats() -> [{ pos, rotY, piece, index, height, taken }]   benches and sofas people can sit on;
+//   decor.takeSeat(uid, index, on)   mark one taken / free (People: route there, sit, chat)
 //   decor.tip(amount, fromPos)       a happy customer tips into the nearest tip jar (false when there is none)
 //   decor.toRegister(amount, fromPos) a customer pays at the counter: into the register / coin tray (the wallet's
 //                                    register balance); false when there is no register
@@ -134,7 +135,6 @@ export class Decor {
     this.collide(p);
     p.feature?.moved?.(p, this.game);
     for (const uid of [oldOn, d.on]) { const u = uid && this.pieces.get(uid); if (u?.feature === STORAGE) STORAGE.refresh(u, this.game); }
-    // what stood on it comes along
     this.game.save();
   }
 
@@ -228,6 +228,15 @@ export class Decor {
     return out;
   }
 
+  /** Mark a seat taken / free (people code: when someone sits down or gets up). */
+  takeSeat(uid, index = 0, on = true) {
+    const p = this.pieces.get(uid);
+    if (!p) return false;
+    p.taken ||= [];
+    p.taken[index] = on;
+    return true;
+  }
+
   nearest(feature, pos) {
     let best = null, bd = Infinity;
     for (const p of this.byFeature(feature)) { const d = p.root.position.distanceToSquared(pos || this.game.player.pos); if (d < bd) { bd = d; best = p; } }
@@ -294,7 +303,7 @@ export class Decor {
       if (S.t > 0.5 && (inp.key('KeyW') || inp.key('KeyA') || inp.key('KeyS') || inp.key('KeyD') || inp.axis.x || inp.axis.z)) this.standUp();
       else if (S.t > 0.45) { g.player.pos.x = S.pos.x; g.player.pos.z = S.pos.z; }
     }
-    if (!inp.locked || g.uiOpen || g.pc?.active || g.held.reading || g.builder?.moving) return;
+    if (!inp.locked || g.uiOpen || g.pc?.active || g.held.reading || g.builder?.moving || g.talk?.active || g.cutscene?.active) return;
     const p = this.hovered();
     if (!p) return;
     if (inp.keyPressed('KeyE') && p.feature?.secondary && !(g.held.item?.kind === 'box' && g.held.item.data?.type === 'furniture')) { p.feature.secondary(p, g); g.events.emit('decorUse', { id: p.def.id, uid: p.data.uid, alt: true }); }

@@ -215,8 +215,7 @@ export class Lane {
     try { g.effects.mark({ sprite: 'anger', pos: n.h.headTop(new THREE.Vector3()), color: 0xe5383b, life: 1.6, size: 0.05 }); } catch { /* */ }
     const lines = d.lines?.slapped || ['OW!', 'Hey!'];
     const line = n.mem.slaps > 2 && d.lines?.slappedAgain ? pick(d.lines.slappedAgain) : pick(lines);
-    // (FPBody's generic "Ow!" makes way for their own reaction)
-    setTimeout(() => { if (n.present) { g.bubbles.clear(n.h); n.say(line, { style: 'shout', dur: 2.8 }); } }, 120);
+    setTimeout(() => { if (n.present) n.say(line, { style: 'shout', dur: 2.8 }); }, 120);
     d.onSlap?.(this, n);
     g.events.emit('npcSlapped', { id: n.id, slaps: n.mem.slaps });
   }

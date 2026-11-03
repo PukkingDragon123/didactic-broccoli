@@ -58,7 +58,7 @@ export const STORAGE = {
       try { m = itemMesh(g, it.kind, it.d); } catch { m = null; }
       if (!m) return;
       const b = new THREE.Box3().setFromObject(m), size = b.getSize(new THREE.Vector3());
-      const k = Math.min(1.2, 0.13 / Math.max(size.x, size.y, size.z, 0.01));
+      const k = Math.min(1.4, 0.15 / Math.max(size.x, size.y, size.z, 0.01));
       m.scale.multiplyScalar(k);
       const n = a.length;
       m.position.set((i - (n - 1) / 2) * 0.12, 0.01 + (i % 2) * 0.015, (i % 2 ? 0.04 : -0.03));

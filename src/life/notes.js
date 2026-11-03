@@ -84,7 +84,7 @@ export const NOTES = {
     paper: 'yellow', w: 112, h: 168, seed: 17, where: 'on the computer desk',
     rows: [
       { big: 'MACHINES' },
-      "THEY'RE ON THE COMPUTER NOW. GACHA-MART.",
+      "THEY'RE ON THE COMPUTER NOW. OFF-HOBBY = USED, DAIKOKU = NEW.",
       { red: 'MONEY? NOT IN THE TIN! EARN IT.' },
       { task: 'job', text: 'NEIGHBOURS NEED A HAND. BOARD BY THE STATION.' },
       { task: 'buymachine', text: 'CASH IN THE BANK (ATM), THEN BUY ONE. A USED ONE IS FINE.' },

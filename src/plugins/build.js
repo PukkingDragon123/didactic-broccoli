@@ -8,10 +8,11 @@ import { audio } from '../core/audio.js';
 import { iconURL } from '../gfx/icons.js';
 import { Decor } from '../build/Decor.js';
 import { Builder } from '../build/Builder.js';
-import { FURNITURE, CATALOGUE, furnitureBox } from '../build/catalogue.js';
+import { FURNITURE, CATALOGUE, furnitureBox, orderFurniture } from '../build/catalogue.js';
 import { eatGumball } from '../build/features.js';
 import { installFurnitureSite } from '../build/shopSite.js';
 import { installInputGate } from '../money/gate.js';
+import { POSES } from '../game/Held.js';
 import '../build/build.css';
 import '../build/icons.js';
 import '../money/sfx.js';
@@ -42,6 +43,15 @@ function heldHooks(g) {
   P.boxHint = (it) => (isFurn(it) ? g.builder.boxHint(it) : hint0(it));
   P.boxSecondary = (it) => { if (!isFurn(it)) sec0(it); };
   P.primary = (it) => (isFurn(it) ? g.builder.primary(it) : prim0?.(it));
+  // carried furniture cartons are held smaller, low on the right, so you can see where you're putting them
+  POSES.carton_side = { pos: new THREE.Vector3(0.2, -0.27, -0.5), rot: new THREE.Euler(0.12, -0.5, 0.04) };
+  const scaleFor = H.scaleFor.bind(H), poseFor = H.poseFor.bind(H);
+  H.poseFor = (it) => (isFurn(it) ? 'carton_side' : poseFor(it));
+  H.scaleFor = (it, pose) => {
+    if (!isFurn(it)) return scaleFor(it, pose);
+    const b = FURNITURE[it.data.id].box || [0.3, 0.3, 0.3];
+    return Math.min(1, 0.24 / Math.max(...b));
+  };
   const hint = H.hint.bind(H), primary = H.primary.bind(H);
   H.hint = () => (H.item?.kind === 'tool' && H.item.data.id === 'gumball' && !H.busy ? { key: 'LMB', text: 'Chew the gumball', sub: 'Q to put it down' } : hint());
   H.primary = () => {
@@ -137,6 +147,8 @@ function debug(g) {
     place(id, x, z, rot = 0, y = 0, wall = null, st = null) { return !!g.decor.place(id, { x, y, z, rot, wall }, { st, animate: false }); },
     list: () => g.decor.list().map((p) => [p.def.id, +p.data.x.toFixed(2), +p.data.y.toFixed(2), +p.data.z.toFixed(2)]),
     ids: () => CATALOGUE.map((f) => f.id),
+    /** Buy one (from the bank) and have it delivered. */
+    order: (id) => orderFurniture(g, id),
     use(id) { const p = g.decor.byFeature(FURNITURE[id]?.feature || id)[0] || g.decor.list().find((q) => q.def.id === id); if (p) g.decor.use(p, g.held.item); return !!p; },
     second(id) { const p = g.decor.list().find((q) => q.def.id === id); if (p?.feature?.secondary) p.feature.secondary(p, g); return !!p; },
     quality: () => [g.decor.quality(), g.sim?.shopQuality?.()],

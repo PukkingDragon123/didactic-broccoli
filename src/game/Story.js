@@ -268,9 +268,9 @@ export class Story {
         const price = machinePrice('retro', 0);
         const total = this.totalMoney();
         if (total < price) return { id: 'buy:earn', icon: 'yen', text: `Earn ${formatYen(price - total)} more`, sub: `A used machine costs ${formatYen(price)}. Odd jobs on the notice board`, at: () => V(BOARD.x, 1.5, BOARD.z) };
-        return this.bankGoal(price, 'machine') || { id, icon: 'machine', text: 'Buy your first machine', sub: `${c[0].toUpperCase() + c.slice(1)} the computer: GACHA-MART, Machines. ${gp('A used one is fine.')}`, at: pc };
+        return this.bankGoal(price, 'machine') || { id, icon: 'machine', text: 'Buy your first machine', sub: `${c[0].toUpperCase() + c.slice(1)} the computer: Off-Hobby (used) or Daikoku Toys (new). ${gp('A used one is fine.')}`, at: pc };
       }
-      case 'delivery': return { id, icon: 'truck', text: 'Wait for the delivery', sub: 'GACHA-MART said "shortly". The van comes to the shutter', at: () => V(0, 1.2, GARAGE.maxZ + 0.2) };
+      case 'delivery': return { id, icon: 'truck', text: 'Wait for the delivery', sub: 'Gen-san brings it in the FREE CANDY van, to the shutter', at: () => V(0, 1.2, GARAGE.maxZ + 0.2) };
       case 'read_machine': return read('machine', 'on the machine wall');
       case 'unbox': {
         const st = f.crate?.stage;
@@ -283,7 +283,7 @@ export class Story {
         if (H.item?.kind === 'box' && H.item.data?.type === 'refill') return { id: 'restock:fill', icon: 'box', text: 'Fill your machine', sub: m.lidOpen ? `Put the capsules in one by one (${c}), then lock the lid` : `${c[0].toUpperCase() + c.slice(1)} the machine: unlock the lid`, at: mTop };
         if (box) return { id: 'restock:box', icon: 'box', text: 'Your capsules arrived', sub: 'Pick up the carton by the shutter', at: () => box.obj.position.clone().setY(0.7) };
         if (m.lidOpen) return { id: 'restock:lid', icon: 'machine', text: 'Close and lock the lid', sub: `${c[0].toUpperCase() + c.slice(1)} the machine`, at: mTop };
-        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'mochi') * 10, 'capsules') || { id: 'restock:order', icon: 'capsule', text: 'Order a box of capsules', sub: `On the computer: GACHA-MART, Capsules. ${gp('Fill it up.')}`, at: pc };
+        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'mochi') * 10, 'capsules') || { id: 'restock:order', icon: 'capsule', text: 'Order a box of capsules', sub: `On the computer: Daikoku Toys, Capsules. ${gp('Fill it up.')}`, at: pc };
         return { id: 'restock:wait', icon: 'box', text: 'Wait for the capsules', sub: 'The box comes to the shutter', at: () => V(0, 0.8, GARAGE.maxZ - 0.6) };
       }
       case 'price': return { id, icon: 'yen', text: 'Set the price', sub: `The plate on the machine: - and +. ${gp('Kids pay 100.')}`, at: () => m.local(0, m.L.slot.y - 0.1, m.L.front + 0.05) };
@@ -301,7 +301,7 @@ export class Story {
   bankGoal(amount, what) {
     const W = this.game.wallet, L = this.life;
     if (!W || W.bank >= amount || W.cash + W.bank < amount) return null;
-    return { id: 'bank:' + what, icon: 'wallet', text: 'Put your cash in the bank', sub: `GACHA-MART takes card payments: ${formatYen(amount - W.bank)} more into the bank, at the ATM across the lane`, at: L?.atmPos ? () => L.atmPos() : null };
+    return { id: 'bank:' + what, icon: 'wallet', text: 'Put your cash in the bank', sub: `Online shops take card payments: ${formatYen(amount - W.bank)} more into the bank, at the ATM across the lane`, at: L?.atmPos ? () => L.atmPos() : null };
   }
 
   task(text) {
