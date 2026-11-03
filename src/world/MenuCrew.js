@@ -16,26 +16,6 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 function weighted(list) { let t = list.reduce((s, [, w]) => s + w, 0) * Math.random(); for (const [v, w] of list) { if ((t -= w) <= 0) return v; } return list[0][0]; }
 const ease = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 
-/** A soft white burst for phone camera flashes (additive, bright enough to bloom). */
-function flashSprite() {
-  const c = document.createElement('canvas');
-  c.width = c.height = 64;
-  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-  // fades to black (not just to transparent): additive blending then adds nothing at the edges
-  gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.3, '#fff6e4'); gr.addColorStop(0.6, '#6a645c'); gr.addColorStop(1, '#000000');
-  g.fillStyle = '#000'; g.fillRect(0, 0, 64, 64); g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  // a single point (not a Sprite): the AO pass skips points, so no grey square around the glow
-  const m = new THREE.PointsMaterial({ map: tex, size: 1.1, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false });
-  m.color.setScalar(2.2);
-  const s = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3)), m);
-  s.frustumCulled = false;
-  s.visible = false;
-  s.raycast = () => {};
-  return s;
-}
-
 // where everyone stands (right of the signpost; you on the street side of the walkers' lane at z 7.3, the friends in
 // front of the shutter), facing
 const SPOTS = {
@@ -84,8 +64,7 @@ export class MenuCrew {
     this.proxy = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.95, 0.6), new THREE.MeshBasicMaterial({ visible: false }));
     this.proxy.position.y = 0.95;
     this.closet = new Closet(game, this);
-    // the selfie taker's phone flash
-    this.flash = flashSprite();
+    // the selfie taker's phone flash (a pixel starburst from the shared sprite effects, plus a blink of light)
     this.flashT = 2;
   }
 
@@ -313,18 +292,15 @@ export class MenuCrew {
   /** Snap! Now and then during the selfie the phone flashes. */
   updateFlash(dt) {
     const A = this.cast.find((c) => c.role === 'selfie' && c.act === 'selfie');
-    const f = this.flash;
-    if (!A || A.h.b.prop.scale.x === 0) { f.visible = false; return; }
-    if (f.parent !== A.h.b.prop) A.h.b.prop.add(f);
+    if (!A || A.h.b.prop.scale.x === 0) return;
     this.flashT -= dt;
     if (this.flashT < 0) {
       this.flashT = rnd(1.8, 3.6);
-      this.flashK = 0.16;
+      const fx = this.game.effects, phone = A.h.b.prop;
+      fx?.emit({ sprite: 'flash', follow: phone, pos: new THREE.Vector3(), life: 0.2, size: 0.26, color: 0xfff6e4, fade: 0.3 });
+      fx?.flash({ pos: phone.getWorldPosition(new THREE.Vector3()), color: 0xfff6e4, intensity: 2.5, distance: 2, dur: 0.15 });
       try { audio.play('shutter', { vol: 0.25 }); } catch { /* no audio yet */ }
     }
-    this.flashK = Math.max(0, (this.flashK || 0) - dt);
-    f.visible = this.flashK > 0;
-    f.material.opacity = Math.min(1, this.flashK / 0.08);
   }
 
   /** Play was pressed: you become the camera (it flies off through your spot); the friends wave goodbye. */
@@ -389,7 +365,6 @@ export class MenuCrew {
     for (const c of this.cast) { this.game.bubbles?.clear(c.h); c.h.dispose(); }
     this.cast.length = 0;
     this.group.removeFromParent();
-    this.flash.removeFromParent(); this.flash.geometry.dispose(); this.flash.material.map.dispose(); this.flash.material.dispose();
     if (this.baseFov) { this.game.camera.fov = this.baseFov; this.game.camera.updateProjectionMatrix(); }
   }
 }

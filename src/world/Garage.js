@@ -638,36 +638,13 @@ export class Garage {
   }
 
   buildDust() {
-    // floating dust motes catching the light
-    const n = 380;
-    const pos = new Float32Array(n * 3);
-    const seed = new Float32Array(n);
-    for (let i = 0; i < n; i++) {
-      pos[i * 3] = -3.8 + Math.random() * 7.6;
-      pos[i * 3 + 1] = 0.2 + Math.random() * 2.8;
-      pos[i * 3 + 2] = -4.8 + Math.random() * 9.6;
-      seed[i] = Math.random() * 100;
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    g.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
-    const m = new THREE.ShaderMaterial({
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-      uniforms: { uTime: { value: 0 }, uPx: { value: window.innerHeight } },
-      vertexShader: `attribute float seed; uniform float uTime, uPx; varying float vA;
-        void main(){ vec3 p = position;
-          p.x += sin(uTime*0.13 + seed)*0.25; p.y += sin(uTime*0.09 + seed*1.7)*0.18; p.z += cos(uTime*0.11 + seed*0.7)*0.25;
-          vec4 mv = modelViewMatrix*vec4(p,1.);
-          // brighter inside the sunlit front half
-          float lit = smoothstep(-1.0, 3.5, p.z) * 0.8 + 0.2;
-          vA = lit * (0.5 + 0.5*sin(uTime*0.8 + seed*3.0));
-          gl_PointSize = uPx * 0.0045 / -mv.z; gl_Position = projectionMatrix*mv; }`,
-      fragmentShader: 'varying float vA; void main(){ vec2 c = gl_PointCoord-0.5; if(dot(c,c)>0.25) discard; gl_FragColor = vec4(vec3(1.0,0.85,0.6)*vA*0.55,1.0); }',
+    // floating dust motes catching the light: pixel motes (src/gfx/pixfx.js), brighter in the sunlit front half
+    const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    this.dustField = this.game.effects?.motes({
+      count: 380, min: new THREE.Vector3(-3.8, 0.2, -4.8), max: new THREE.Vector3(3.8, 3.0, 4.8), size: 0.007,
+      colors: [0xfff0d0, 0xffe2b0, 0xf4e8d8],
+      lit: (x, y, z) => (smooth(-1, 3.5, z) * 0.8 + 0.2) * (0.35 + 0.65 * Math.max(0, this.shutterOpen)),
     });
-    const pts = new THREE.Points(g, m);
-    pts.frustumCulled = false;
-    this.add(pts);
-    this.dust = m;
   }
 
   /** Roll the shutter: 0 = closed to the ground, 1 = open (tucked under the hood). */
@@ -705,7 +682,6 @@ export class Garage {
     this.town?.update(dt, t);
     this.detail?.update(dt, t);
     if (this.shaftMat) this.shaftMat.uniforms.uTime.value = t;
-    if (this.dust) this.dust.uniforms.uTime.value = t;
     // door animation
     const d = this.door;
     const target = d.wantOpen ? 1 : 0;

@@ -763,7 +763,7 @@ export class Museum {
         g = o.group;
         g.traverse((m) => {
           if (m.isLight) m.visible = false;
-          if (m.isMesh) { m.material = new THREE.MeshBasicMaterial({ color: 0x9fffb0, transparent: true, opacity: 0.32, depthWrite: false }); m.castShadow = false; m.raycast = () => {}; }
+          if (m.isMesh) { m.material = new THREE.MeshStandardMaterial({ color: 0x9fffb0, roughness: 1, transparent: true, opacity: 0.45, depthWrite: false }); m.castShadow = false; m.raycast = () => {}; } // lit: never a glow
         });
         g.userData.key = key;
         this.ghostCache.set(key, g);
@@ -773,7 +773,7 @@ export class Museum {
     }
     this.ghost.position.set(pl.x, 0.002, pl.z);
     this.ghost.rotation.y = (it.data.rot || 0) * Math.PI / 2;
-    const col = pl.ok ? 0x9fffb0 : 0xff8080;
+    const col = pl.ok ? 0x4a9a58 : 0xa83a32;
     this.ghost.traverse((m) => { if (m.isMesh) m.material.color.setHex(col); });
     this.ghost.visible = true;
   }

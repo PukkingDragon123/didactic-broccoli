@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { MAT, decColor, decMat } from './VoxelModel.js';
 
 const AO_CURVE = [0.5, 0.68, 0.84, 1.0];
+// finer models (2x up-res collectibles) crease at every half-step: a lighter curve keeps them from looking etched
+export const AO_SOFT = [0.62, 0.77, 0.9, 1.0];
 const linCache = new Map();
 function linear(hex) {
   let c = linCache.get(hex);
@@ -45,6 +47,7 @@ export function meshVoxels(model, opts = {}) {
   const jit = model.jitter ?? 0;
   const jb = opts.jitterBlock ?? model.jitterBlock ?? 1;
   const jq = opts.quantize ?? model.quantize ?? 0;
+  const aoCurve = opts.aoCurve ?? model.aoCurve ?? AO_CURVE;
 
   model.forEach((x, y, z, v) => {
     const gx = x - b.minX + 1, gy = y - b.minY + 1, gz = z - b.minZ + 1;
@@ -155,7 +158,7 @@ export function meshVoxels(model, opts = {}) {
             const nrm = [0, 0, 0]; nrm[d] = dir;
             const glowy = mat === MAT.GLOW;
             const cols = aos.map((a) => {
-              const f = glowy ? 1 : AO_CURVE[a];
+              const f = glowy ? 1 : aoCurve[a];
               return [lc[0] * f, lc[1] * f, lc[2] * f];
             });
             let verts, vc;

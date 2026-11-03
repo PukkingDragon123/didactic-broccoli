@@ -153,10 +153,10 @@ export class MenuSigns {
       it.t += dt;
       const want = this.enabled && this.hoverId === it.id ? 1 : 0;
       it.hover += (want - it.hover) * Math.min(1, dt * 10);
-      // a hovered plate catches the light and leans out a touch on its clamps
-      it.pivot.position.z = it.hover * 0.05;
-      it.pivot.rotation.y = it.hover * 0.12 + Math.sin(time * 0.8 + it.t) * 0.004;
-      it.face.emissiveIntensity = 0.1 + it.hover * 0.45;
+      // a hovered plate leans out on its clamps and rocks a little (no glow: it only moves)
+      it.pivot.position.z = it.hover * 0.06;
+      it.pivot.rotation.y = it.hover * 0.16 + Math.sin(time * 0.8 + it.t) * 0.004;
+      it.pivot.rotation.z = it.hover * Math.sin(time * 9 + it.t) * 0.012;
     }
   }
 

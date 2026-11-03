@@ -1,5 +1,6 @@
 // Display slots: physically place collectibles on shelves / in cases. Shared by the garage shelves and
-// every museum exhibit. Each slot shows a ghost preview while you aim with a toy in hand.
+// every museum exhibit. Each slot shows a dark, shadow-like stand-in of the figure while you aim with a toy in hand
+// (lit, never bright: no white ghosts or glows).
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { makeItemMesh } from './collectibles.js';
@@ -8,7 +9,7 @@ import { getItem } from '../data/series/index.js';
 import { itemValue } from './economy.js';
 import { FONT_EN } from '../gfx/pix.js';
 
-const ghostMat = new THREE.MeshBasicMaterial({ color: 0xfff4d8, transparent: true, opacity: 0.28, depthWrite: false });
+const ghostMat = new THREE.MeshStandardMaterial({ color: 0x2a2220, roughness: 1, metalness: 0, transparent: true, opacity: 0.5, depthWrite: false });
 const hitMat = new THREE.MeshBasicMaterial({ visible: false });
 export const PRICE_STEPS = [0, 1.5, 2, 3, 5]; // price tag = market value × step (0 = not for sale)
 const tagCache = new Map();
@@ -60,7 +61,6 @@ export class DisplaySlots {
   }
 
   makeSlot(d, i) {
-    const ghostRef = () => (this.ghost.visible ? this.ghost : new THREE.Group());
     const [w, h, dd] = d.size || [0.12, 0.13, 0.12];
     const hit = new THREE.Mesh(new THREE.BoxGeometry(w, h, dd), hitMat);
     hit.position.copy(d.pos).add(new THREE.Vector3(0, h / 2, 0));
@@ -69,8 +69,6 @@ export class DisplaySlots {
     const slot = { i, def: d, hit, mesh: null, plaque: null };
     this.game.interaction.add(hit, {
       reach: 2.6,
-      noHighlight: false,
-      get highlight() { return slot.mesh || ghostRef(); },
       hint: (held) => this.hint(slot, held),
       use: (held) => this.use(slot, held),
       alt: () => this.cyclePrice(slot),

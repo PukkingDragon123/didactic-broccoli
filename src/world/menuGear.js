@@ -125,7 +125,7 @@ export class MenuGear {
     this.spin += ((this.hover ? 4.2 : 0.7) - this.spin) * Math.min(1, dt * 4);
     this.mesh.rotation.z -= this.spin * dt;
     this.tilt.rotation.y = -0.36 + Math.sin(performance.now() / 1300) * 0.06;
-    this.boost.value = 0.7 + this.h * 0.8;
+    this.boost.value = 0.7; // hover only spins it faster (never brightens)
     this.layout();
   }
 

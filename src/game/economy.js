@@ -1,17 +1,24 @@
 // Prices, values and the E-Mart catalogue. All economy tuning lives here.
+//
+// The money loop: buy capsule boxes wholesale (capsuleCost), customers pay the machine's price plate into its coin box
+// (collect it by hand), and the real profit is in the figures: open capsules and sell the good pulls (itemValue).
+// There are no machine upgrades any more; shop levels (src/data/unlocks.js, game.progress) unlock machines, series,
+// furniture and the rest.
 import { SERIES, SERIES_BY_ID, getItem } from '../data/series/index.js';
 import { RARITIES, RARITY_ORDER } from '../data/rarity.js';
 import { FINISHES, rollFinish } from '../data/finishes.js';
+import { unlockLevel, machineSlotsAt } from '../data/unlocks.js';
 
-export const START_MONEY = 300;
+/** Cash in your pocket on a brand-new save (Grandpa's tin adds more during the opening chores). */
+export const START_MONEY = 1800;
 
-/** Sell value of one collectible. */
+/** Dealer buy-back price of one collectible (the sell box). Rare tiers are worth many times the pull price. */
 export function itemValue(key, finish = 'normal') {
   const it = getItem(key);
   if (!it) return 0;
   if (it.mini) return Math.max(10, Math.round((it.price * 0.5) / 10) * 10);
   const s = SERIES_BY_ID[it.series];
-  const base = s.price * 0.3 * RARITIES[it.rarity].value * (FINISHES[finish]?.mult || 1);
+  const base = s.price * (RARITIES[it.rarity].sell ?? 0.25) * (FINISHES[finish]?.mult || 1);
   return Math.max(5, Math.round(base / 5) * 5);
 }
 
@@ -20,70 +27,57 @@ export function singlePrice(key, finish = 'normal') {
   return Math.round(itemValue(key, finish) * 4.5 / 10) * 10;
 }
 
-/** Cost per capsule when refilling a machine with a series. */
+/** Wholesale cost per capsule when refilling a machine with a series. */
 export function capsuleCost(seriesId) {
   return Math.round(SERIES_BY_ID[seriesId].price * 0.3);
 }
 
-/** Series "distribution licence" (lets you order refills). The first series is free. */
+/** Series "distribution licence" (lets you order refills). The starter series is free. */
 export function licensePrice(seriesId) {
   const s = SERIES_BY_ID[seriesId];
   if (s.order === 1) return 0;
-  return Math.round((s.price * 18 * Math.pow(1.32, s.order - 1)) / 100) * 100;
+  return Math.round((s.price * 15 * Math.pow(1.25, s.order - 1)) / 100) * 100;
 }
 
-/** Discovered-item requirement before a series licence can be bought. */
-export function licenseRequirement(seriesId) {
-  const s = SERIES_BY_ID[seriesId];
-  return Math.max(0, Math.floor((s.order - 1) * 4.5));
-}
+/** Shop level a series licence needs (src/data/unlocks.js). */
+export function licenseLevel(seriesId) { return unlockLevel(`series:${seriesId}`); }
 
+/** Old discovered-figures requirement: series are gated by shop level now (licenseLevel), so this is always 0. */
+export function licenseRequirement() { return 0; }
+
+// price = the used / new price of the first one of a type (more of the same cost more, see machinePrice)
 export const MACHINE_TYPES = {
-  retro: { id: 'retro', name: 'Showa Retro 100', jp: '昭和レトロ', price: 0, baseCap: 10, crank: 1.7, desc: 'A rusty dagashi-ya machine. Character!', color: '#d8453a' },
-  standard: { id: 'standard', name: 'Gacha Station', jp: 'ガチャステーション', price: 2400, baseCap: 16, crank: 1.35, desc: 'Modern two-tone machine with a display card.', color: '#3f86e8' },
-  deluxe: { id: 'deluxe', name: 'Deluxe 500', jp: 'デラックス500', price: 16000, baseCap: 24, crank: 1.1, desc: 'Black & gold, LED trim, premium vibes.', color: '#d4a83a' },
-  royal: { id: 'royal', name: 'Royal Kirakira', jp: 'ロイヤルきらきら', price: 85000, baseCap: 36, crank: 0.9, desc: 'Chrome tower with neon. Luck +5%.', color: '#d94fb0', luck: 0.05 },
+  retro: { id: 'retro', name: 'Showa Retro 100', jp: '昭和レトロ', price: 1800, used: true, baseCap: 10, crank: 1.7, power: 0, desc: 'A second-hand dagashi-ya machine. Rusty, mechanical, full of character.', color: '#d8453a' },
+  standard: { id: 'standard', name: 'Gacha Station', jp: 'ガチャステーション', price: 6800, baseCap: 16, crank: 1.35, power: 0.015, desc: 'Modern two-tone machine with a lit display card.', color: '#3f86e8' },
+  deluxe: { id: 'deluxe', name: 'Deluxe 500', jp: 'デラックス500', price: 26000, baseCap: 24, crank: 1.1, power: 0.05, desc: 'Black & gold, LED trim, premium vibes. Customers pay more for it.', color: '#d4a83a' },
+  royal: { id: 'royal', name: 'Royal Kirakira', jp: 'ロイヤルきらきら', price: 98000, baseCap: 36, crank: 0.9, power: 0.12, desc: 'Chrome tower with neon. Luck +5%.', color: '#d94fb0', luck: 0.05 },
 };
 export const MACHINE_ORDER = ['retro', 'standard', 'deluxe', 'royal'];
+/** Machine spots in the garage (MACHINE_SLOTS); how many you may fill depends on your level (maxMachines). */
 export const MAX_MACHINES = 6;
+/** How many machines the shop has room for at a level. */
+export function maxMachines(level = 1) { return Math.min(MAX_MACHINES, Math.max(1, machineSlotsAt(level))); }
+/** Shop level a machine model needs. */
+export function machineLevel(type) { return unlockLevel(`machine:${type}`); }
 
 export function machinePrice(type, owned) {
   const base = MACHINE_TYPES[type].price;
   return Math.round(base * Math.pow(1.45, owned) / 100) * 100;
 }
 
-export const UPGRADES = {
-  speed: {
-    name: 'Crank Gearbox', jp: 'ハンドルギア', max: 5,
-    desc: (l) => (l >= 5 ? 'Motorised crank — it turns itself!' : `Crank turns faster (lv ${l + 1})`),
-    cost: [180, 650, 2000, 6000, 18000],
-  },
-  cap: {
-    name: 'Capsule Hopper', jp: 'カプセル容量', max: 5,
-    desc: (l) => `Holds ${capacityFor(null, l + 1)} capsules`,
-    cost: [260, 900, 2800, 8000, 24000],
-  },
-  coins: {
-    name: 'Rope Coins', jp: 'ロープのコイン', max: 4,
-    desc: (l) => `${l + 2} coins on the rope = ${l + 2} capsules per crank`,
-    cost: [900, 3600, 12000, 38000],
-  },
-};
+// Machine upgrades were removed (levels unlock better machines instead). These stubs keep older imports working:
+// nothing to list, nothing to buy.
+export const UPGRADES = {};
+export function upgradeCost() { return null; }
 
-export function upgradeCost(kind, level, type = 'retro') {
-  const mult = { retro: 1, standard: 1.4, deluxe: 2.2, royal: 3.5 }[type] || 1;
-  const c = UPGRADES[kind].cost[level];
-  return c === undefined ? null : Math.round((c * mult) / 10) * 10;
+/** Capsules a machine holds. */
+export function capacityFor(machine) {
+  return machine ? MACHINE_TYPES[machine.type]?.baseCap ?? 10 : 10;
 }
 
-export function capacityFor(machine, capLevel = machine?.up?.cap || 0) {
-  const base = machine ? MACHINE_TYPES[machine.type].baseCap : 10;
-  return Math.round(base * [1, 1.5, 2, 3, 4, 6][capLevel]);
-}
-
+/** Seconds for one full turn of the handle. */
 export function crankTime(machine) {
-  const base = MACHINE_TYPES[machine.type].crank;
-  return base * [1, 0.78, 0.6, 0.45, 0.33, 0.3][machine.up.speed || 0];
+  return MACHINE_TYPES[machine?.type]?.crank ?? 1.5;
 }
 
 export const OPENERS = [
@@ -100,7 +94,8 @@ export const CHARMS = {
   goldneko: { name: 'Golden Maneki-neko', jp: '金の招き猫', price: 75000, finishLuck: 0.35, rareLuck: 0.25, desc: 'Ridiculously lucky. Glows a bit.' },
 };
 
-export const SHELF_PRICES = [0, 1800, 6500];
+/** Wall shelves: the n-th shelf costs SHELF_PRICES[n] (a fresh shop has none). */
+export const SHELF_PRICES = [800, 2400, 7200];
 export const MUSEUM_PRICE = 30000;
 export const MUSEUM_REQ_COMPLETE = 1;
 export const MUSEUM_EXPANSIONS = [

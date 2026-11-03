@@ -1,4 +1,5 @@
-// Crosshair raycasting, hover rim-highlight, contextual hints and click / hold dispatch.
+// Crosshair raycasting, contextual hints and click / hold dispatch. Hover feedback is the crosshair and its hint text
+// only: nothing in the world is ever outlined, rimmed or made to glow.
 import * as THREE from 'three';
 import { iconHTML } from '../gfx/icons.js';
 
@@ -13,15 +14,6 @@ function keyHTML(key) {
   }
   return `<span class="k">${key}</span>`;
 }
-
-const RIM = new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-  uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color(0xfff0c8) } },
-  vertexShader: `varying vec3 vN; varying vec3 vV;
-    void main(){ vec3 p = position + normal * 0.0012; vec4 mv = modelViewMatrix*vec4(p,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
-  fragmentShader: `uniform float uTime; uniform vec3 uColor; varying vec3 vN; varying vec3 vV;
-    void main(){ float f = pow(1.0 - abs(dot(vN, vV)), 2.2); float pulse = 0.55 + 0.25*sin(uTime*5.0); gl_FragColor = vec4(uColor * (f*0.9 + 0.06) * pulse, 1.0); }`,
-});
 
 export class Interaction {
   constructor(game) {
@@ -41,7 +33,7 @@ export class Interaction {
     this.hintUses = {};
   }
 
-  /** handler: { hint(held, hit) -> {key,text,sub}|null, use(held, hit), hold?:{start, update(dt), end}, highlight?:Object3D, reach? } */
+  /** handler: { hint(held, hit) -> {key,text,sub}|null, use(held, hit), hold?:{start, update(dt), end}, alt?(hit), reach? } */
   add(obj, handler) {
     obj.userData.handler = handler;
     this.targets.push(obj);
@@ -59,38 +51,7 @@ export class Interaction {
     return null;
   }
 
-  setHover(h) {
-    if (this.hover?.obj !== h?.obj) {
-      if (this.hover) this.unhighlight(this.hover);
-      if (h) this.highlight(h);
-    }
-    this.hover = h;
-  }
-
-  highlight(h) {
-    const root = h.handler.highlight || h.obj;
-    if (h.handler.noHighlight) return;
-    h._rims = [];
-    root.traverse((m) => {
-      if (!m.isMesh || m.userData.isRim || m.userData.noRim || !m.visible || m.isInstancedMesh) return;
-      let rim = m.userData.rim;
-      if (!rim) {
-        rim = new THREE.Mesh(m.geometry, RIM);
-        rim.userData.isRim = true;
-        rim.raycast = () => {};
-        rim.renderOrder = 5;
-        m.userData.rim = rim;
-      }
-      if (rim.geometry !== m.geometry) rim.geometry = m.geometry;
-      m.add(rim);
-      h._rims.push(rim);
-    });
-  }
-
-  unhighlight(h) {
-    for (const r of h._rims || []) r.parent?.remove(r);
-    h._rims = [];
-  }
+  setHover(h) { this.hover = h; }
 
   setHint(hint) {
     const show = hint && this.showHints;
@@ -103,7 +64,6 @@ export class Interaction {
   }
 
   update(dt) {
-    RIM.uniforms.uTime.value += dt;
     const g = this.game;
     const inp = g.input;
     if (!this.enabled || !inp.locked || g.pc?.active || g.uiOpen || g.held.reading) {
