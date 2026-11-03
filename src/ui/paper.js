@@ -101,8 +101,6 @@ function dogEar(img, S, B, base) {
     else if (u >= B - 1 - k && v >= B - 1 - k && dc <= 2 * k) put(x, y, u === B - 1 - k || v === B - 1 - k ? line : back); // the flap
     else if (u >= B - 2 - k && v >= B - 2 - k && dc <= 2 * k + 1 && (u === B - 2 - k || v === B - 2 - k)) put(x, y, sh); // its shadow
   }
-}  g.putImageData(img, 0, 0);
-  return c.toDataURL();
 }
 
 /** Masking tape: translucent beige with frayed ends and a faint crease. */

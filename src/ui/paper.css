@@ -257,8 +257,8 @@ body.paper-ui.touchmode #money-delta.show { transform: translate(-50%, 4px); }
 body.paper-ui.touchmode #simclock { bottom: auto; }
 
 /* ---------------------------------------------------------------- the capsule reveal: the paper insert from the capsule */
-body.paper-ui #caption {
-  padding: 2px 14px 6px; color: var(--pp-ink); image-rendering: pixelated;
+body.paper-ui #caption { /* compact and low, so the figure in your hands stays in view */
+  bottom: max(13vh, 96px); padding: 0 12px 2px; color: var(--pp-ink); image-rendering: pixelated;
   border: 12px solid transparent; border-image: var(--pp-dog-cream) 8 / 16px round;
   background: var(--pp-grain-cream) 0 0 / 96px padding-box; filter: var(--pp-shadow);
   transition: opacity .4s steps(4), transform .4s steps(4);
@@ -266,8 +266,9 @@ body.paper-ui #caption {
 body.paper-ui #caption::before { /* a staple through the fold */
   content: ''; position: absolute; left: 18px; top: -4px; width: 24px; height: 8px; background: var(--pp-staple) 0 0 / 24px 8px; image-rendering: pixelated;
 }
-body.paper-ui #caption .name { color: var(--pp-ink); text-shadow: none; }
-body.paper-ui #caption .meta { margin-top: 2px; color: var(--pp-ink2); text-shadow: none; }
+body.paper-ui #caption .stars { margin-bottom: 0; }
+body.paper-ui #caption .name { line-height: 46px; color: var(--pp-ink); text-shadow: none; }
+body.paper-ui #caption .meta { margin-top: 0; color: var(--pp-ink2); text-shadow: none; }
 body.paper-ui #caption .meta span[style] { display: inline-block; padding: 0 8px 2px; background: var(--pp-ink); }
 body.paper-ui #caption .meta .dot { color: var(--pp-ink2); opacity: 1; }
 body.paper-ui #caption .new { color: var(--pp-red); background: none; box-shadow: inset 0 0 0 2px var(--pp-red); transform: rotate(-6deg); vertical-align: 12px; }
@@ -317,7 +318,7 @@ body.paper-ui #waypoint .wp-d {
 body.paper-ui #waypoint .wp-d::before { content: ''; position: absolute; left: 4px; top: 7px; width: 4px; height: 4px; background: rgba(26, 18, 22, .7); box-shadow: 0 0 0 2px #f0dca8; }
 body.paper-ui #waypoint .wp-d::after { content: ''; position: absolute; left: calc(50% - 1px); top: -8px; width: 2px; height: 8px; background: #d8c8a0; box-shadow: 1px 0 0 rgba(26, 18, 22, .35); }
 body.paper-ui #waypoint .wp-arrow::before {
-  left: 16px; top: -12px; width: 16px; height: 24px; border: 0; background: var(--pp-red); filter: drop-shadow(2px 2px 0 rgba(26, 18, 22, .6));
+  left: 30px; top: -12px; width: 16px; height: 24px; border: 0; background: var(--pp-red); filter: drop-shadow(2px 2px 0 rgba(26, 18, 22, .6));
   clip-path: polygon(0 0, 4px 0, 4px 4px, 8px 4px, 8px 8px, 12px 8px, 12px 10px, 16px 10px, 16px 14px, 12px 14px, 12px 16px, 8px 16px, 8px 20px, 4px 20px, 4px 24px, 0 24px);
 }
 

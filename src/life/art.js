@@ -108,7 +108,7 @@ function paper(p, kind, seed) {
     for (let y = cy - rad - 1; y <= cy + rad + 1; y++) for (let x = cx - rad - 1; x <= cx + rad + 1; x++) {
       const d = Math.hypot(x - cx, y - cy), a = Math.atan2(y - cy, x - cx);
       if (d < rad - 0.5 || d >= rad + 0.7 || Math.sin(a * 2 + ph) > 0.7) continue;
-      p.px(x, y, 0x9a6a3a, Math.sin(a + ph) > 0 ? 64 : 40);
+      p.px(x, y, 0x8a5a2e, Math.sin(a + ph) > 0 ? 92 : 60);
     }
   }
   p.dirty = true;
