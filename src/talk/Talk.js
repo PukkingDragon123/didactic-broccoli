@@ -83,7 +83,8 @@ export function speaker(who, opts = {}) {
 // ------------------------------------------------------------------ floating choices
 /** A stack of numbered options floating at a screen point (projected from the world each frame). */
 class ChoiceList {
-  constructor(talk, options, { time = 0, at, prompt = '', quick = false } = {}) {
+  constructor(talk, options, { time = 0, at, prompt = '', quick = false, beside = false } = {}) {
+    this.beside = beside; // left edge just right of the anchor (quick replies float beside the person asking)
     this.talk = talk;
     this.options = options;
     this.time = time; this.left = time;
@@ -136,7 +137,7 @@ class ChoiceList {
     window.addEventListener('keydown', this.onKey, true);
   }
   move(d) { this.sel = (this.sel + this.options.length + d) % this.options.length; this.paint(); sfx('uiHover', 0.25); }
-  paint() { this.btns.forEach((b, i) => b.classList.toggle('sel', i === this.sel)); }
+  paint() { if (!this.quick) this.btns.forEach((b, i) => b.classList.toggle('sel', i === this.sel)); }
   pick(i) {
     if (this.result !== null) return;
     this.result = i;
@@ -148,7 +149,7 @@ class ChoiceList {
     this.t += dt;
     if (this.result === null) {
       // the mouse (pointer locked): vertical motion moves the highlight, a click picks it
-      if (!this.quick && inp.locked) {
+      if (!this.quick && inp.locked && !inp.free && !inp.touch) {
         this.acc += inp.mouse.dy || 0;
         if (Math.abs(this.acc) > 46) { this.move(Math.sign(this.acc)); this.acc = 0; }
         if (inp.mouse.wheel) { this.move(Math.sign(inp.mouse.wheel)); inp.mouse.wheel = 0; }
@@ -172,8 +173,9 @@ class ChoiceList {
     if (this.at) {
       const p = this.at(_u).project(g.camera);
       if (p.z < 1) {
-        x = (p.x * 0.5 + 0.5) * W - this.w / 2;
+        x = (p.x * 0.5 + 0.5) * W - (this.beside ? -36 : this.w / 2);
         y = (-p.y * 0.5 + 0.5) * H - this.h / 2;
+        if (this.beside && x + this.w > W - 12) x = (p.x * 0.5 + 0.5) * W - 36 - this.w; // no room on the right: the left side
       }
     }
     x = Math.round(Math.max(12, Math.min(W - this.w - 12, x)));
@@ -214,8 +216,10 @@ export class Talk {
   quick(who, options, { time = 6, prompt = '' } = {}) {
     if (this.session) return Promise.resolve(-1);
     for (const q of this.quickList) q.list.pick(-1);
-    const list = new ChoiceList(this, options, { time, prompt, quick: true });
-    return new Promise((res) => this.quickList.push({ list, res, who }));
+    const spk = speaker(who);
+    const at = spk ? (out) => { spk.headPos(out); out.y -= 0.3; return out; } : null;
+    const list = new ChoiceList(this, options, { time, prompt, quick: true, at, beside: true });
+    return new Promise((res) => this.quickList.push({ list, res, who, spk }));
   }
 
   /** Start a conversation. Resolves with the script's end value (or null if it couldn't start). */
@@ -248,6 +252,8 @@ export class Talk {
     for (let i = this.waiters.length - 1; i >= 0; i--) { const w = this.waiters[i]; if (w.fn(dt)) { this.waiters.splice(i, 1); w.res(); } }
     for (let i = this.quickList.length - 1; i >= 0; i--) {
       const q = this.quickList[i];
+      // walked away from whoever asked: the question goes unanswered
+      if (q.list.result === null && q.spk) { q.spk.feet(_v); if (Math.hypot(_v.x - this.game.player.pos.x, _v.z - this.game.player.pos.z) > 7) q.list.pick(-1); }
       if (q.list.update(dt)) { q.list.dispose(); this.quickList.splice(i, 1); q.res(q.list.result); }
     }
     this.session?.update(dt);

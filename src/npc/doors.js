@@ -174,14 +174,15 @@ export class Doors {
   async answer(H, n) {
     const g = this.game, L = this.lane;
     const door = new THREE.Vector3(H.door[0], 0, H.door[1]);
+    // they step out through the gate onto the lane side, where you can see them
     const side = H.bell[1] > 10 ? 1 : -1;
-    const gate = new THREE.Vector3(H.bell[0], 0, H.bell[1] + side * 0.55);
+    const gate = new THREE.Vector3(H.bell[0] + 0.35, 0, H.bell[1] - side * 0.42);
     const own = !!L.list.includes(n);
     if (own) { L.cancel(n); n.activity = 'door'; }
     n.place(door, Math.atan2(gate.x - door.x, gate.z - door.z));
     n.setPresent(true);
     sfx('slideDoor', { pos: door.clone().setY(1), vol: 0.5 });
-    n.walk([gate], { face: Math.atan2(g.player.pos.x - gate.x, g.player.pos.z - gate.z) });
+    n.walk([new THREE.Vector3(H.bell[0], 0, H.bell[1] + side * 0.3), gate], { face: Math.atan2(g.player.pos.x - gate.x, g.player.pos.z - gate.z) });
     n.ghost = true;
     await g.talk.until(() => !n.walking);
     n.ghost = false;
@@ -199,7 +200,7 @@ export class Doors {
       n.mem.seen = g.clock?.stamp ?? 0;
     }
     await this.wait(0.6);
-    n.walk([door]); n.ghost = true;
+    n.walk([new THREE.Vector3(H.bell[0], 0, H.bell[1] + side * 0.3), door]); n.ghost = true;
     await g.talk.until(() => !n.walking);
     n.ghost = false;
     n.setPresent(false);

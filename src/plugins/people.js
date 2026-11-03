@@ -8,11 +8,12 @@ import { Talk } from '../talk/Talk.js';
 import { Speech } from '../talk/speech.js';
 import { Monologue } from '../talk/monologue.js';
 import { Guestbook } from '../talk/guestbook.js';
-import { Lane } from '../npc/Lane.js';
+import { Lane, ACTS } from '../npc/Lane.js';
 import { Doors, DOOR_QUESTS } from '../npc/doors.js';
 import { ROSTER } from '../npc/roster.js';
 import { lostPigeon } from '../npc/roster2.js';
 import { laneMemory } from '../npc/memory.js';
+import { yokaiSelfLit } from '../npc/props.js';
 import { SideQuests } from '../game/SideQuests.js';
 import { setIcon } from '../ui/staticIcons.js';
 import * as THREE from 'three';
@@ -43,6 +44,7 @@ export function install(game) {
   // a quest that asks you to talk to someone shows a marker over their head
   markers(g, lane);
   Game.updaters.push((game, dt) => {
+    yokaiSelfLit.value = 0.6 * (1 - (g.clock?.daylight?.() ?? 1));
     talk.update(dt);
     lane.update(dt);
     doors.update(dt);
@@ -201,6 +203,17 @@ function debugPeople(g) {
       return [n.pos.x, n.pos.z];
     },
     chat(id) { const n = L.npc(id); if (n) L.chat(n); return !!n; },
+    /** Make someone come and knock on your shutter (their own reason, or a plain hello). */
+    knock(id) {
+      const n = L.npc(id);
+      if (!n) return false;
+      const why = n.def.knock?.(L, n) || { id: 'hello' + Date.now(), call: 'Hello? Anyone home?', sub: 'Someone is at your shop front' };
+      L.cancel(n); n.activity = 'knock';
+      L.run(n, ACTS.knock.call(L, n, why));
+      return why.id;
+    },
+    /** A character's special move (the pirate's rubber punch...). */
+    move(id) { const n = L.npc(id); n?.def.move?.(L, n); return !!n?.def.move; },
     where() { return L.list.map((n) => [n.id, n.activity, n.present, +n.pos.x.toFixed(1), +n.pos.z.toFixed(1)]); },
     release() { for (const n of L.list) if (n.activity === 'debug') n.activity = null; },
     /** Step the game while letting chats (async scripts) advance: await dbg.people.run(sec). */

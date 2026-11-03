@@ -11,15 +11,15 @@
 import * as THREE from 'three';
 import { BIZARRE } from '../people/bizarre.js';
 import { audio } from '../core/audio.js';
-import { GARAGE } from '../world/Garage.js';
 import { SERIES_BY_ID, getItem } from '../data/series/index.js';
-import { formatYen } from '../core/util.js';
-import { MORE } from './roster2.js';
+import { MORE, FOODS } from './roster2.js';
+import { ProfileBook } from './book.js';
+import { rohanPoster } from './poster.js';
 
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const rnd = (a, b) => a + Math.random() * (b - a);
 const V = (x, z) => new THREE.Vector3(x, 0, z);
-const _v = new THREE.Vector3(), _w = new THREE.Vector3();
+const _w = new THREE.Vector3();
 
 /** Places on the lane: [x, z, facing yaw]. Doors are the real front doors (behind the building line). */
 export const SPOTS = {
@@ -101,7 +101,16 @@ export function heldFigure(g, series) {
   return it;
 }
 /** Hand the held item over (it leaves your hands). */
-export function giveHeld(g) { const it = g.held.item; if (!it) return null; g.held.consume?.(); try { audio.play('pickup', { vol: 0.6 }); } catch { /* */ } return it; }
+export function giveHeld(g, n = null) {
+  const it = g.held.item;
+  if (!it) return null;
+  const what = it.kind === 'tool' ? it.data?.id : getItem(it.data?.key)?.name || it.kind;
+  g.held.consume?.();
+  try { audio.play('pickup', { vol: 0.6 }); } catch { /* */ }
+  if (n?.id) g.laneMemory?.gift(n.id, what);
+  g.events.emit('npcGift', { id: n?.id, what });
+  return it;
+}
 
 // ------------------------------------------------------------------ Josuke & Okuyasu banter (from the earlier work)
 const BANTER = [
@@ -136,7 +145,7 @@ const ROHAN = {
     remember: ['You slapped me. I drew it. You look terrible in chapter 12.'],
     discover: ['Wait. Show me that.', 'That pose is anatomically impossible. I love it.', 'Hm. The paint on that one is lazy.'],
   },
-  setup(L, n) { n.popT = rnd(80, 140); n.muttT = rnd(8, 16); n.nearT = 0; },
+  setup(L, n) { n.popT = rnd(80, 140); n.muttT = rnd(8, 16); n.nearT = 0; if (n.mem.flags.poster) hangPoster(L.game); },
   idle(L, n, dt) {
     const g = L.game, pd = n.playerDist;
     if (n.h.currentGesture !== 'sketch' && !n.h.currentGesture?.startsWith('pose') && n.h.currentGesture !== 'flourish') n.gesture('sketch');
@@ -170,7 +179,8 @@ const ROHAN = {
       ...opener(L, n, { first, firstHello: ['...Kishibe Rohan. Manga artist. You run the gacha garage.', "Don't introduce yourself. I already know your face. I've drawn it twice."], hello: ['Ah. The gacha person.', 'You again.', 'Hm. Your expression today is... average.'] }),
       { say: 'Answer me quickly. No thinking. The most frightening thing about running a capsule toy shop?', gesture: 'sketch' },
       { choose: [{ text: 'An empty machine.', set: { fear: 'empty' }, then: ['Hm. Practical. Boring, but true.'] }, { text: 'Kids with sticky hands.', set: { fear: 'sticky' }, rel: 1, then: ['HA! Now THAT is real. Good.'] }, { text: 'The secret figure never coming out.', set: { fear: 'secret' }, rel: 1, then: ['Hope and despair in a plastic egg. Yes... YES.'] }], time: 5, timeout: 'slow' },
-      { choose: [{ text: 'Can I see your sketchbook?', then: [{ if: 'rel>=3', then: ['...Fine. One page.', { gesture: 'flourish' }, 'That is you. Yes, the nose is accurate.'], else: ['Absolutely not.'] }] }, { text: 'Why do you stare at people?', then: ['Reality is the best reference. Everything else is a copy of a copy.'] }, { text: 'Bye, Rohan.', then: ['Hmph.'] }] },
+      { choose: [{ text: 'Can I see your sketchbook?', then: [{ if: 'rel>=3', then: ['...Fine. One page.', { gesture: 'flourish' }, 'That is you. Yes, the nose is accurate.'], else: ['Absolutely not.'] }] },
+        { text: 'What do you see when you look at me?', if: 'rel>=2', then: ['You want to know? Hold still. I am going to READ you.', { gesture: 'flourish', do: () => readYou(L) }, 'Fascinating. Thank you for the reference.', { rel: 1 }] }, { text: 'Why do you stare at people?', then: ['Reality is the best reference. Everything else is a copy of a copy.'] }, { text: 'Bye, Rohan.', then: ['Hmph.'] }] },
     ], slow: ['Too slow. You THOUGHT about it. Useless.', { rel: -1 }] };
   },
   quests: [{
@@ -179,7 +189,7 @@ const ROHAN = {
       { text: 'Display a rare (or better) figure', sub: 'On a shelf or an acrylic stand', check: (g) => rareOnDisplay(g) },
       { text: 'Show it to Rohan', sub: 'He sketches by the block wall across the lane', talk: 'rohan' },
     ],
-    reward: { money: 3000, text: 'Your shop in his manga' },
+    reward: { money: 3000, text: 'A Rohan poster for your shop front', fn: (g) => { g.laneMemory.person('rohan').flags.poster = true; hangPoster(g); } },
   }, {
     id: 'yokai_hunt', title: 'Things that go bump', giver: 'rohan', giverName: 'Rohan', color: '#4fd0a8',
     steps: [
@@ -194,6 +204,25 @@ const rohanQuestScript = { start: [
   'Put one on display in that garage of yours. Then show me. I will pay.',
   { choose: [{ text: 'Deal.', quest: 'rohan_ref', rel: 1, then: ['Good. Do not keep me waiting.'] }, { text: 'What do I get?', then: ['Money. And immortality in a weekly magazine. Obviously.', { quest: 'rohan_ref' }] }, { text: 'No.', rel: -1, then: ['...You will regret that. Probably in chapter 9.'] }] },
 ] };
+/** Rohan opens you like a book: your profile, a secret, and a line he writes in red ink. */
+async function readYou(L) {
+  const g = L.game, b = new ProfileBook(g);
+  const run = (w) => (w ? g.talk.until((dt) => w.update(dt)) : null);
+  await run(b.open());
+  await run(b.reveal());
+  await run(b.write(pick(['Will show Kishibe Rohan every rare figure. Gladly.', 'Cannot slap Kishibe Rohan.', 'Keeps the secret figure for Rohan.'])));
+  await g.talk.wait(0.8);
+  await run(b.close());
+  L.mem.note('rohan', 'read you like a book');
+}
+/** His poster for your shop: taped to the left pier of the shop front (more people find their way in). */
+export function hangPoster(g) {
+  if (g.rohanPoster) return;
+  const p = rohanPoster(0.46);
+  p.position.set(-3.62, 1.72, 5.29);
+  g.scene.add(p);
+  g.rohanPoster = p;
+}
 function rareOnDisplay(g) {
   for (const d of g.allDisplays?.() || []) for (const it of d.items) if (it && ['rare', 'ultra', 'secret', 'epic', 'legendary'].includes(getItem(it.k)?.rarity)) return true;
   for (const s of g.packing?.stands || []) { const it = s.display.items[0]; if (it && ['rare', 'ultra', 'secret', 'epic', 'legendary'].includes(getItem(it.k)?.rarity)) return true; }
@@ -304,7 +333,7 @@ const JOSUKE = {
         { text: 'See you.', then: ['Later.'] },
       ], time: 9, timeout: 4 },
     ],
-    hero: ['Wait. Is that... from the Bizarre series?', { choose: [{ text: 'It\'s yours.', do: () => giveHeld(g), advance: 'bizarre_hero', rel: 2, then: [{ gesture: 'pose_point', say: 'GREAT! This must be the work of fate!' }] }, { text: 'Just showing off.', then: ['...Mean.'] }] }],
+    hero: ['Wait. Is that... from the Bizarre series?', { choose: [{ text: 'It\'s yours.', do: () => giveHeld(g, n), advance: 'bizarre_hero', rel: 2, then: [{ gesture: 'pose_point', say: 'GREAT! This must be the work of fate!' }] }, { text: 'Just showing off.', then: ['...Mean.'] }] }],
     crew: ['Join a PIRATE crew? That straw hat guy?', { choose: [{ text: 'He says you get free meat.', then: ['...Tempting. But no. Tell him I said "maybe".', { advance: 'crew' }] }, { text: 'Think about it.', then: ['I thought about it. No. ...Maybe.', { advance: 'crew' }] }] }],
     };
   },
@@ -403,7 +432,7 @@ const OKUYASU = {
       { if: () => q?.isActive('crew') && q.step('crew')?.talk === 'okuyasu', then: 'crew' },
       { if: () => q?.isActive('snacks') && q.stepIndex('snacks') === 1, then: 'snackDone' },
       { if: () => !q?.isActive('snacks') && !q?.isDone('snacks'), then: snackScript.start },
-      { choose: [{ text: 'Are you hungry?', then: ['Always. Why? Do you have food? Do you?', { me: 'No.' }, '...Why would you ask then...'] }, { text: 'What\'s Josuke like?', then: ['Josuke? He\'s the best! Don\'t talk about his hair though. Seriously.'] }, { text: 'Bye!', then: ['Byeee!'] }], time: 10, timeout: 2 },
+      { choose: [{ text: 'Want a snack?', if: () => FOODS.some((id) => L.game.held.holding?.(id)), then: [{ do: () => giveHeld(L.game, n), rel: 2, gesture: 'eat' }, 'SNAAAACK! You\'re the BEST! Josuke, look! A SNACK!'] }, { text: 'Are you hungry?', then: ['Always. Why? Do you have food? Do you?', { me: 'No.' }, '...Why would you ask then...'] }, { text: 'What\'s Josuke like?', then: ['Josuke? He\'s the best! Don\'t talk about his hair though. Seriously.'] }, { text: 'Bye!', then: ['Byeee!'] }], time: 10, timeout: 2 },
     ],
     snackDone: ['You did it?! The FOOD capsules?!', { advance: 'snacks', rel: 2 }, 'I\'m gonna play them ALL. ...Tomorrow. When I have money.'],
     crew: ['A pirate? With a hat? ...Is there food on the ship?', { choose: [{ text: 'So much meat.', then: ['I\'M IN! ...Wait, Josuke has to come too.', { advance: 'crew' }] }, { text: 'Probably not.', then: ['Then NO. ...Okay maybe.', { advance: 'crew' }] }] }],

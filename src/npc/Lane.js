@@ -21,6 +21,7 @@ const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const _v = new THREE.Vector3(), _w = new THREE.Vector3();
 export const LANE_Z0 = 6.35, LANE_Z1 = 13.2;
+const LOOSE = new Set(['wander', 'spot', 'survey', 'prank', 'night', 'gate']); // activities a new hour may interrupt
 
 /** Is p on the lane (the road and the sidewalks) or inside the garage? */
 export function walkable(p) {
@@ -142,8 +143,10 @@ export class Lane {
 
   checkRoutines() {
     for (const n of this.list) {
-      if (n.busy || this.busy(n) || n.activity === 'debug' || n.activity === 'door') continue;
+      if (n.busy || n.activity === 'debug' || n.activity === 'door') continue;
       const w = this.want(n);
+      // a stroll or a survey gives way to the next part of the day at once; visits and knocks finish first
+      if (this.busy(n)) { if (w !== n.activity && LOOSE.has(n.activity)) { this.cancel(n); if (!n.inBush) n.ghost = false; } else continue; }
       if (w === n.activity && (w !== 'spot' || n.present)) {
         // idle at the spot: maybe pop into the shop or come to knock on your shutter
         if (n.present && w === 'spot') this.maybeOuting(n);

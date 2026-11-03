@@ -7,6 +7,8 @@ import { getItem } from '../data/series/index.js';
 import { opener, heldFigure, giveHeld, SPOTS } from './roster.js';
 
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
+/** Things you can hand to the hungry ones (Mikawa-ya's snacks, milk, Gen-san's candy). */
+export const FOODS = ['milk', 'ramune', 'puffstick', 'candy', 'gumball', 'gen_candy'];
 const rnd = (a, b) => a + Math.random() * (b - a);
 const V = (x, z) => new THREE.Vector3(x, 0, z);
 const sp = (name) => { const s = SPOTS[name]; return V(s[0], s[1]); };
@@ -254,7 +256,7 @@ const KUROMARU = {
         { text: 'Farewell, Dark Lord.', rel: 1, then: ['Farewell. Walk in shadow. ...Mind the step, it\'s dark.'] },
       ], time: 10, timeout: 2 },
     ],
-    give: ['That relic... it reeks of the other world! Give it to me!', { choose: [{ text: 'Take it, Dark Lord.', do: () => giveHeld(g), advance: 'relic', rel: 2, then: [{ gesture: 'spell', say: 'YES! The seal is complete! Your shop is now protected by the Ninth Shadow!' }, 'Also here is money. My mother says I have to pay for things.'] }, { text: 'Never!', then: ['Then the darkness will wait. It\'s very patient.'] }] }] };
+    give: ['That relic... it reeks of the other world! Give it to me!', { choose: [{ text: 'Take it, Dark Lord.', do: () => giveHeld(g, n), advance: 'relic', rel: 2, then: [{ gesture: 'spell', say: 'YES! The seal is complete! Your shop is now protected by the Ninth Shadow!' }, 'Also here is money. My mother says I have to pay for things.'] }, { text: 'Never!', then: ['Then the darkness will wait. It\'s very patient.'] }] }] };
   },
   quests: [{
     id: 'relic', title: 'The cursed relic', giver: 'kuromaru', giverName: 'Lord Kuromaru', color: '#9a6ad8',
@@ -300,14 +302,15 @@ const GOMUZO = {
     if ((n.punchT -= dt) <= 0) { n.punchT = rnd(30, 50); rubberPunch(L, n); }
   },
   onSlap(L, n) { L.mem.rel('gomuzo', 2); }, // rubber: no hard feelings
+  move: (L, n) => rubberPunch(L, n),
   chat(L, n, { first }) {
     const g = L.game, q = g.sideQuests;
-    const milk = g.held.holding?.('milk');
+    const food = FOODS.find((id) => g.held.holding?.(id));
     return { start: [
       ...opener(L, n, { first, firstHello: ['Hey! I\'m Gomuzo! I\'m gonna be the King of this lane!', 'And you\'re gonna join my crew!'], hello: ['Hey! It\'s you!', 'Crewmate!', 'Hahaha! Hi!'] }),
       { if: () => q?.isActive('crew') && q.stepIndex('crew') === 2, then: 'crewDone' },
       { choose: [
-        { text: 'Give him the milk.', if: () => milk, then: [{ do: () => giveHeld(g), rel: 2 }, 'MILK! I love milk! Not as much as meat. But I LOVE it!'] },
+        { text: 'Here, have this.', if: () => !!food, then: [{ do: () => giveHeld(g, n), rel: 2 }, () => (food === 'milk' ? 'MILK! I love milk! Not as much as meat. But I LOVE it!' : 'FOOD! Thank you, crewmate! *gulp* ...Got any more?')] },
         { text: 'Join your crew? Sure.', if: () => !q?.isActive('crew') && !q?.isDone('crew'), quest: 'crew', then: ['YES! Now we need more! Get the pompadour guy and his hungry friend!'] },
         { text: 'Why are you made of rubber?', then: ['I ate a weird gummy when I was a kid! Now I\'m stretchy!', { do: () => rubberPunch(L, n) }, 'See?! Hahaha!'] },
         { text: 'Are you hungry?', then: ['YES.'] },

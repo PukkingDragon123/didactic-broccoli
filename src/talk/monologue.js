@@ -32,7 +32,7 @@ export class Monologue {
   say(text, { force = false } = {}) {
     if (!text) return;
     const g = this.game;
-    if (!force && g.time - this.last < 5) { if (this.queue.length < 2) this.queue.push(text); return; }
+    if (!force && g.time - this.last < 5) { if (this.queue.length < 2) this.queue.push({ text, t: g.time }); return; }
     this.last = g.time;
     this.text = String(text);
     this.el.innerHTML = '<span></span>';
@@ -54,7 +54,10 @@ export class Monologue {
       const k = this.t < 0.15 ? Math.ceil((this.t / 0.15) * 3) / 3 : this.t > this.life ? Math.max(0, 1 - Math.floor(((this.t - this.life) / 0.3) * 4) / 4) : 1;
       this.el.style.opacity = k.toFixed(2);
       if (this.t > this.life + 0.3) { this.text = null; this.el.textContent = ''; }
-    } else if (this.queue.length && g.time - this.last > 2.5) this.say(this.queue.shift(), { force: true });
+    } else if (this.queue.length && g.time - this.last > 2.5) {
+      const q = this.queue.shift();
+      if (g.time - q.t < 8) this.say(q.text, { force: true }); // a thought that's gone stale stays unsaid
+    }
     // thinking out loud on demand
     if (g.input.keyPressed?.('KeyT') && g.input.locked && !g.uiOpen && !g.pc?.active && !g.cutscene?.active) this.say(this.musing(), { force: true });
     this.watch(dt);

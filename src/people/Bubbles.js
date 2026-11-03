@@ -171,6 +171,9 @@ export class Bubbles {
     }
     // nearer speakers keep their place; farther ones that would overlap slide aside or float up
     vis.sort((a, b) => a.dist - b.dist);
+    // at most two people talk from the screen edges at once (the nearest)
+    let edges = 0;
+    for (let i = 0; i < vis.length; i++) if (vis[i].edge && ++edges > 2) { this.hide(vis[i]); vis.splice(i--, 1); }
     const placed = this.placed;
     placed.length = 0;
     for (const b of vis) {

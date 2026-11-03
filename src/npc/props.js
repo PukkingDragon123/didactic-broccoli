@@ -324,6 +324,25 @@ const YOKAI = {
   },
 };
 
+// Yokai are faintly self-lit after dark (flat, from their own colours: readable in an unlit lane, never a halo)
+export const yokaiSelfLit = { value: 0 };
+let _ymats = null;
+function yokaiMaterials() {
+  if (_ymats) return _ymats;
+  _ymats = voxelMaterials('normal').map((m, i) => {
+    if (i > 2) return m;
+    const c = m.clone();
+    c.onBeforeCompile = (sh) => {
+      sh.uniforms.uSelf = yokaiSelfLit;
+      sh.fragmentShader = sh.fragmentShader.replace('void main() {', 'uniform float uSelf;\nvoid main() {')
+        .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += diffuseColor.rgb * uSelf;');
+    };
+    c.customProgramCacheKey = () => 'yokai-self-' + i;
+    return c;
+  });
+  return _ymats;
+}
+
 /** An animated voxel yokai with the Human-like API the lane uses. kind: kappa | kitsune | tanuki | kasa. */
 export class Creature {
   constructor(kind) {
@@ -338,6 +357,7 @@ export class Creature {
     this.body.add(this.mesh);
     this.tails = [];
     if (kind === 'kitsune') for (let i = 0; i < 3; i++) { const t = vmesh('kitsuneTail', YOKAI.kitsuneTail, vox); t.position.set((i - 1) * 0.08, 0.1, -0.1); t.rotation.set(-0.9, (i - 1) * 0.5, 0); this.body.add(t); this.tails.push(t); }
+    this.body.traverse((o) => { if (o.isMesh) o.material = yokaiMaterials(); });
     this.height = { kappa: 0.95, kitsune: 0.65, tanuki: 0.95, kasa: 1.15 }[kind];
     this.t = Math.random() * 5;
     this.gestures = [];

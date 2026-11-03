@@ -98,6 +98,7 @@ export class Pedestrians {
     const g = this.game, p = this.promo;
     let lv = Math.floor(p.flyers / 8);
     if (g.state.goods?.neon_open) lv += 1;
+    if (g.state.npcs?.people?.rohan?.flags?.poster) lv += 1; // Rohan's poster on the shop front
     return Math.min(5, lv);
   }
 
