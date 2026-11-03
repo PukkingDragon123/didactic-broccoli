@@ -21,7 +21,7 @@ import { SERIES_BY_ID } from '../data/series/index.js';
 import { capacityFor, crankTime, rollCapsule, MACHINE_TYPES } from './economy.js';
 import { bannerTexture } from '../gfx/banner.js';
 import { makeItemMesh, itemGeometry, hasItemGeometry } from './collectibles.js';
-import { mergeByMaterial } from '../voxel/merge.js';
+import { mergeByMaterial, partsBox } from '../voxel/merge.js';
 import { FONT_EN } from '../gfx/pix.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { pocketCash } from './cash.js';
@@ -466,7 +466,7 @@ export class GachaMachine {
     box(T.x0 - 0.01, T.x0, T.y, T.y + T.wall, T.z0, T.z1);
     box(T.x1, T.x1 + 0.01, T.y, T.y + T.wall, T.z0, T.z1);
     box(T.x0, T.x1, T.y, T.y + T.wall * 0.8, T.z1 - 0.004, T.z1 + 0.004);
-    const bb = new THREE.Box3().setFromObject(this.model);
+    const bb = partsBox(this.model);
     this.footprint = this.game.player.addObstacle(bb.min.x - 0.02, bb.max.x + 0.02, bb.min.z - 0.02, bb.max.z + 0.02);
     this.worldBox = bb;
   }
@@ -475,7 +475,7 @@ export class GachaMachine {
     const H = this.L.hook;
     const anchor = this.local(H.x, H.y, H.z);
     this.rope = new Rope(this.game.scene, anchor, 0.46, 16);
-    const bb = new THREE.Box3().setFromObject(this.model).expandByScalar(0.008);
+    const bb = partsBox(this.model).expandByScalar(0.008);
     this.rope.boxes.push(bb);
     for (let i = 0; i < 60; i++) this.rope.update(1 / 60);
   }

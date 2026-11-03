@@ -43,8 +43,11 @@ function pump(budget = 3) {
   }
 }
 
-// the face update's key for an expression blend (previous > current, blend step)
+// the face update's keys: the expression blend (previous > current, blend step), the eyes and the mouth (the painter
+// reads a missing parameter as 0, and so do these)
 const exprKeyOf = (prev, cur, k) => prev + '>' + cur + k;
+const eyeKeyOf = (E) => (E.blink || 0) * 100 + (E.lookX || 0) * 10 + (E.lookY || 0);
+const mouthKeyOf = (E) => (E.open || 0) * 1e4 + (E.round || 0) * 100 + (E.mouthW ?? 1) + (E.teeth || 0) * 1e6;
 const NEUTRAL_KEY = exprKeyOf('neutral', 'neutral', 1); // a face painted with exprParams('neutral')
 
 // Bone matrices relative to the mesh, uploaded only when the pose changed (performance). three.js multiplies every bone's
@@ -104,7 +107,7 @@ export class Human {
     this.tex = this.pix.texture();
     if (opts.lazy === false) {
       paintAtlas(spec, this.P, m.faces, this.pix); this.face.paint(this.E); this.pix.flush();
-      this.faceExprKey = NEUTRAL_KEY;
+      this.painted();
     } else if (opts.prebuild) {
       // built in the background: no placeholder, whoever builds it steps the whole job (stepPaint) before showing it
       this.job = this.paintJob(m.faces);
@@ -187,11 +190,12 @@ export class Human {
     this.job = null;
     JOBS.delete(this);
     this.tex.needsUpdate = true;
-    // the face now shows this.E (neutral): the face update repaints only what differs from it (the eyes, the mouth)
-    // instead of the whole face again
-    this.faceExprKey = NEUTRAL_KEY; this.faceEyeKey = this.faceMouthKey = null;
+    this.painted();
     return true;
   }
+  /** The face now shows this.E (neutral, eyes open and ahead, mouth shut): the face update repaints only what differs
+   *  from that, instead of the whole face again on the first frame (and re-uploading the atlas just after a spawn). */
+  painted() { this.faceExprKey = NEUTRAL_KEY; this.faceEyeKey = eyeKeyOf(this.E); this.faceMouthKey = mouthKeyOf(this.E); }
   /** The detailed atlas a step at a time: every face of the body, the face caches, the face itself in bands of rows,
    *  then the canvas in bands. The same pixels as painting it in one go, without the long last step that used to
    *  paint the whole face and upload the whole canvas at once (performance). */
@@ -603,8 +607,8 @@ export class Human {
     E.lookY = Math.round(clamp(ey + (E.lookY || 0), -1, 2) * 2) / 2;
     // repaint only what changed
     const exprKey = exprKeyOf(this.exprPrev, this.expr, k);
-    const eyeKey = E.blink * 100 + E.lookX * 10 + E.lookY;
-    const mouthKey = E.open * 1e4 + E.round * 100 + E.mouthW + E.teeth * 1e6;
+    const eyeKey = eyeKeyOf(E);
+    const mouthKey = mouthKeyOf(E);
     if (this.job) return;
     if (exprKey !== this.faceExprKey) { this.faceExprKey = exprKey; this.faceEyeKey = eyeKey; this.faceMouthKey = mouthKey; f.paint(E); this.flushFace(null); return; }
     if (eyeKey !== this.faceEyeKey) { this.faceEyeKey = eyeKey; this.flushFace(f.paint(E, f.eyeRect())); }

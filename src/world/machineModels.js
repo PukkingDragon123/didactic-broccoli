@@ -610,9 +610,10 @@ function windowGeometry(w, d, h) {
 // ----------------------------------------------------------------------------- assembly
 /**
  * Performance: parts that move together are drawn as one mesh, one draw call per material, instead of one per part and
- * material (a machine went from ~45 draw calls to ~half). The meshes are built as before, then replaced by one merged
- * mesh in the same parent (with the first part's flags and userData); the merged geometry is shared per machine
- * type and key, like the part geometries.
+ * material (with the merged sample figures, GachaMachine.buildBanner, the garage's four machines went from 181 draw
+ * calls to 129). The meshes are built as before, then replaced by one merged mesh in the same parent (with the first
+ * part's flags and userData); the merged geometry is shared per machine type and key, like the part geometries.
+ * (Bounding boxes that must match the separate parts: partsBox in src/voxel/merge.js.)
  */
 const mergedCache = new Map();
 function mergeParts(key, meshes) {

@@ -89,6 +89,7 @@ const OutlineShader = {
     // god rays: sky pixels (no depth written) marched toward the sun's screen position
     uSun: { value: new THREE.Vector2(0.5, 0.5) },
     uSunOn: { value: 0 },
+    uDepthAlpha: { value: 0 }, // 1: write the linear depth (m) to alpha, for the AO upsample after it (AOUpsampleShader)
     uAspect: { value: 1 },
     uShaft: { value: 0.75 },
     uShaftCol: { value: new THREE.Color(1.0, 0.72, 0.42) },
@@ -97,7 +98,7 @@ const OutlineShader = {
   fragmentShader: /* glsl */`
     uniform sampler2D tDiffuse, tDepth;
     uniform vec2 uRes; uniform float uNear, uFar, uWidth, uStrength; uniform vec3 uInk;
-    uniform vec2 uSun; uniform float uSunOn, uAspect, uShaft; uniform vec3 uShaftCol;
+    uniform vec2 uSun; uniform float uSunOn, uAspect, uShaft, uDepthAlpha; uniform vec3 uShaftCol;
     varying vec2 vUv;
     float lin(vec2 uv) { float z = texture2D(tDepth, uv).x * 2.0 - 1.0; return (2.0 * uNear * uFar) / (uFar + uNear - z * (uFar - uNear)); }
     float sky(vec2 uv) { return step(0.99999, texture2D(tDepth, uv).x); }
@@ -128,7 +129,7 @@ const OutlineShader = {
         float k = (acc / wsum) * exp(-dist * 2.4) * uShaft * uSunOn;
         outc += uShaftCol * k * (1.0 - 0.6 * sky(vUv));
       }
-      gl_FragColor = vec4(outc, col.a);
+      gl_FragColor = vec4(outc, uDepthAlpha > 0.5 ? d : col.a);
     }`,
 };
 
@@ -186,36 +187,33 @@ const FinishShader = {
 // Performance: ambient occlusion at a reduced resolution (QUALITY.aoScale), brought back up by a depth-aware upsample:
 // each pixel blends the four nearest AO texels like a bilinear lookup, but weighted by how close each texel's depth is to
 // its own, so the AO of a wall behind never bleeds onto the edge of something in front (no halos). It also multiplies
-// the AO into the scene in the same pass (GTAOPass did a full-screen copy and then a multiply blend).
+// the AO into the scene in the same pass (GTAOPass did a full-screen copy and then a multiply blend). The depths come
+// from the alpha channel of its input: the outline pass just before it leaves each pixel's linear depth there
+// (OutlineShader uDepthAlpha), because this pass writes into the target that holds the scene's depth buffer.
 const AOUpsampleShader = {
-  uniforms: {
-    tDiffuse: { value: null }, tAO: { value: null }, tDepth: { value: null }, aoSize: { value: new THREE.Vector2(1, 1) },
-    intensity: { value: 1 }, cameraNear: { value: 0.05 }, cameraFar: { value: 120 },
-  },
+  uniforms: { tDiffuse: { value: null }, tAO: { value: null }, aoSize: { value: new THREE.Vector2(1, 1) }, intensity: { value: 1 } },
   vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
-    #include <packing>
     uniform sampler2D tDiffuse, tAO;
-    uniform highp sampler2D tDepth;
     uniform vec2 aoSize;
-    uniform float intensity, cameraNear, cameraFar;
+    uniform float intensity;
     varying vec2 vUv;
-    float viewZ(vec2 uv) { return perspectiveDepthToViewZ(texture2D(tDepth, uv).x, cameraNear, cameraFar); }
+    float depthAt(vec2 uv) { vec2 s = vec2(textureSize(tDiffuse, 0)); return texelFetch(tDiffuse, ivec2(clamp(floor(uv * s), vec2(0.0), s - 1.0)), 0).a; }
     void main() {
       vec4 col = texture2D(tDiffuse, vUv);
-      float z = viewZ(vUv);
+      float z = col.a;
       vec2 p = vUv * aoSize - 0.5, b = floor(p), f = p - b;
       vec3 ao = vec3(0.0);
       float ws = 0.0;
       for (int j = 0; j < 2; j++) for (int i = 0; i < 2; i++) {
-        // the AO texel's centre: the depth the AO pass saw there
+        // the AO texel's centre (the depth the AO pass saw there)
         vec2 t = (b + vec2(float(i), float(j)) + 0.5) / aoSize;
         float bw = (i == 0 ? 1.0 - f.x : f.x) * (j == 0 ? 1.0 - f.y : f.y);
-        float w = bw / (0.01 + abs(viewZ(t) - z) / max(-z, 1e-3));
+        float w = bw / (0.01 + abs(depthAt(t) - z) / max(z, 1e-3));
         ao += texture2D(tAO, t).rgb * w; ws += w;
       }
       ao /= max(ws, 1e-6);
-      gl_FragColor = vec4(col.rgb * mix(vec3(1.0), ao, intensity), col.a);
+      gl_FragColor = vec4(col.rgb * mix(vec3(1.0), ao, intensity), 1.0);
     }`,
 };
 
@@ -345,9 +343,7 @@ export class Renderer {
         if (d && gtao.depthTexture !== d) { gtao.depthTexture = d; gtao.gtaoMaterial.uniforms.tDepth.value = d; gtao.pdMaterial.uniforms.tDepth.value = d; }
         gtaoRender(rr, wb, rb, dt, mask);
         if (up) {
-          const u = up.uniforms;
-          u.tAO.value = gtao.pdRenderTarget.texture; u.tDepth.value = gtao.depthTexture; u.intensity.value = gtao.blendIntensity;
-          u.cameraNear.value = this.aoCam.near; u.cameraFar.value = this.aoCam.far;
+          up.uniforms.tAO.value = gtao.pdRenderTarget.texture; up.uniforms.intensity.value = gtao.blendIntensity;
           up.renderToScreen = gtao.renderToScreen;
           up.render(rr, wb, rb);
         }
@@ -357,6 +353,7 @@ export class Renderer {
         const setSize = gtao.setSize.bind(gtao);
         gtao.setSize = (w, h) => { setSize(Math.max(1, Math.round(w * k)), Math.max(1, Math.round(h * k))); up.uniforms.aoSize.value.set(gtao.width, gtao.height); };
         gtao.output = GTAOPass.OUTPUT.Off;
+        this.outline.uniforms.uDepthAlpha.value = 1;
       } else gtao.output = GTAOPass.OUTPUT.Default;
       gtao.blendIntensity = 0.85;
       gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });

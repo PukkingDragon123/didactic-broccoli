@@ -24,6 +24,7 @@ import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
 import { draw5, textW5 } from './font5x7.js';
+import { partsBox } from '../voxel/merge.js';
 
 export const FLYER_W = 150, FLYER_H = 212; // pixels (A-series proportions)
 const W = FLYER_W, H = FLYER_H;
@@ -413,7 +414,7 @@ function capsule(series, color, r) {
   return c.group || c;
 }
 
-function bbox(obj) { obj.updateMatrixWorld(true); return new THREE.Box3().setFromObject(obj); }
+function bbox(obj) { obj.updateMatrixWorld(true); return partsBox(obj); }
 /** Fit objects (or a box) into a w x h shot from yaw / pitch. o: { w, h, yaw, pitch, fov, margin, dy (look offset, fraction of height) } */
 function fit(objs, o) {
   const b = o.box || objs.reduce((acc, ob) => acc.union(bbox(ob)), new THREE.Box3());

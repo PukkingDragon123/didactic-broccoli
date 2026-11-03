@@ -1,10 +1,31 @@
 // Merge meshes that share one material array (voxel meshes: voxelMaterials(...)) into one geometry with a single group
 // per material (performance: one draw call per material instead of one per part and material).
 //   mergeByMaterial([{ geometry, matrix }]) -> BufferGeometry   (matrix: the part's transform in the merged mesh's space)
+//   partsBox(object) -> Box3   Box3.setFromObject, but merged meshes are measured part by part (see below)
 // Every part needs the same attributes (voxel meshes: position, normal, color); positions and normals are transformed.
 import * as THREE from 'three';
 
-const _v = new THREE.Vector3(), _nm = new THREE.Matrix3();
+const _v = new THREE.Vector3(), _nm = new THREE.Matrix3(), _b = new THREE.Box3();
+
+/**
+ * The bounding box Box3.setFromObject(obj) gave before the merge: each merged mesh counts as its separate parts' boxes
+ * (geometry.userData.partBoxes). Turned by anything but a right angle, one box around all the parts is a little bigger
+ * than the parts' boxes turned one by one, and collision footprints and framings are measured with these boxes.
+ */
+export function partsBox(obj, box = new THREE.Box3()) {
+  box.makeEmpty();
+  obj.updateWorldMatrix(true, true);
+  obj.traverse((o) => {
+    const g = o.geometry;
+    if (!g) return;
+    const parts = g.userData?.partBoxes;
+    if (parts) { for (const b of parts) box.union(_b.copy(b).applyMatrix4(o.matrixWorld)); return; }
+    if (o.boundingBox !== undefined) { if (o.boundingBox === null) o.computeBoundingBox(); _b.copy(o.boundingBox); }
+    else { if (g.boundingBox === null) g.computeBoundingBox(); _b.copy(g.boundingBox); }
+    box.union(_b.applyMatrix4(o.matrixWorld));
+  });
+  return box;
+}
 
 export function mergeByMaterial(parts) {
   const names = Object.keys(parts[0].geometry.attributes);
@@ -50,5 +71,10 @@ export function mergeByMaterial(parts) {
   out.setIndex(new THREE.BufferAttribute(idx, 1));
   out.computeBoundingBox();
   out.computeBoundingSphere();
+  out.userData.partBoxes = parts.map((p) => {
+    if (!p.geometry.boundingBox) p.geometry.computeBoundingBox();
+    const b = p.geometry.boundingBox.clone();
+    return p.matrix ? b.applyMatrix4(p.matrix) : b;
+  });
   return out;
 }
