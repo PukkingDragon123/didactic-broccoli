@@ -52,3 +52,7 @@ body.driving.touchmode #drive-touch { display: block; }
 #drive-touch .dt-out { left: 50%; bottom: max(40px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: 150px; height: 56px; display: none; }
 #drive-touch.seated .dt-out { display: flex; }
 #drive-touch.seated .dt-l, #drive-touch.seated .dt-r, #drive-touch.seated .dt-gas, #drive-touch.seated .dt-brk, #drive-touch.seated .dt-hb, #drive-touch.seated .dt-horn, #drive-touch.seated .dt-skip { display: none; }
+/* while you drive, nothing of the game HUD shows (the minimal-HUD peeks included): only the note, the monologue and skip */
+body.driving #hud, body.driving #hotbar, body.driving #guide, body.driving #waypoint, body.driving #crosshair, body.driving #hint,
+body.driving #money, body.driving #money-delta, body.driving #news, body.driving #simclock, body.driving #sidequests, body.driving #sq-marks,
+body.driving #hm-pops, body.driving #levelup { visibility: hidden !important; }

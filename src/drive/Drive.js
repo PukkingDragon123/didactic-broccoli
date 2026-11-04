@@ -44,7 +44,7 @@ const HL = 1.72, HW = 0.74; // the van's half length / half width
 const EYE = V3(-0.34, 1.44, 0.98); // the driver's eye in the van's body space
 const LOOK0 = -0.13; // resting pitch: the lane ahead, the wheel and the dial low in view
 // the lane (src/world/Town.js): you start in the dark of the east underpass, on the left of its roadway
-const START = { x: 35.6, z: 10.0 };
+const START = { x: 31.6, z: 10.0 }; // under the tracks (x 30 / 33), the dash just catching the light from the mouth
 const RECTS = [{ x0: 25.0, x1: 38.6, z0: 6.62, z1: 11.6 }, { x0: -24, x1: 25.6, z0: 6.15, z1: 13.32 }]; // underpass, lane
 const PATH = [[39, 10.0], [30, 10.0], [22, 10.5], [14, 11.6], [8, 12.35], [PARK.x, PARK.z], [-6, PARK.z]];
 // where the camera settles once you're parked: Grandpa's first shot from the seat (src/grandpa/scenes.js tapScene)
@@ -152,7 +152,8 @@ export class Drive {
         const el = m.elements, s = Math.hypot(el[0], el[1], el[2]), ry = Math.atan2(el[8], el[0]);
         const x = el[12], y = el[13], z = el[14];
         if (sz.y * s < 0.45 || y > 0.5) continue; // flat things on the road (lids, cans, weeds) and things up on walls
-        const hx = (sz.x * s) / 2, hz = (sz.z * s) / 2, c = Math.abs(Math.cos(ry)), sn = Math.abs(Math.sin(ry));
+        // tall things (poles, lamps, trees) stand on a slim foot: their crossarms and crowns are far overhead
+        const tall = sz.y * s > 3, hx = tall ? 0.22 : (sz.x * s) / 2, hz = tall ? 0.22 : (sz.z * s) / 2, c = Math.abs(Math.cos(ry)), sn = Math.abs(Math.sin(ry));
         const ex = hx * c + hz * sn, ez = hx * sn + hz * c;
         if (ex > 3 || ez > 3) continue;
         if (inRoad(x - ex, x + ex, z - ez, z + ez)) boxes.push({ minX: x - ex, maxX: x + ex, minZ: z - ez, maxZ: z + ez });
@@ -275,8 +276,8 @@ export class Drive {
     const P = this.phys, r = this.path, q = r.nearest(P.x, P.z, {});
     let vt = 5.2;
     const d = Math.hypot(P.x - PARK.x, P.z - PARK.z);
-    if (P.x < PARK.x + 12) vt = Math.min(vt, Math.max(0.6, d * 0.7));
-    if (P.x < PARK.x + 0.3) vt = 0;
+    if (d < 12) vt = Math.min(vt, Math.max(0.6, d * 0.7));
+    if (d < 0.4) vt = 0;
     const tp = r.at(q.s + Math.max(4, Math.abs(P.v) * 1.1), 0, {});
     const dx = tp.x - P.x, dz = tp.z - P.z;
     const alpha = wrapA(Math.atan2(dx, dz) - P.h);
