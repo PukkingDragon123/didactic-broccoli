@@ -126,8 +126,8 @@ function debugCrowd(g, C, A, D, cat) {
       const Pd = P(), m = g.machines[i];
       const out = [];
       for (let k = 0; k < n; k++) {
-        const p = Pd.spawn();
-        for (const q of [p, p.mate].filter(Boolean)) { if (q !== p) { Pd.remove(q); } }
+        let p = null;
+        for (let t = 0; t < 12; t++) { if (p) Pd.remove(p); p = Pd.spawn(); if (p.mate) Pd.remove(p.mate); if (!p.bike && !p.dog) break; }
         p.h.root.position.set(0.4 + (k - 1) * 0.7, 0, 6.4 + k * 0.4); p.path = []; p.plan = []; p.wantsIn = true;
         Pd.routeIn(p, m);
         out.push(p.state);

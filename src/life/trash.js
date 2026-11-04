@@ -9,8 +9,7 @@ import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { propMesh, propGeometry } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { VoxelModel, gloss, metal, glow } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
+import { garbageTruckParts, TRUCK } from '../vehicles/garbageTruck.js';
 import { createHuman } from '../people/index.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -382,82 +381,32 @@ export class Trash {
   }
 }
 
-// ------------------------------------------------------------------ the truck model (voxel, 5 cm)
-let truckGeo = null;
+// ------------------------------------------------------------------ the truck model (src/vehicles/garbageTruck.js)
+/** The packer truck: root (faces +z), body (dips when it brakes), blade (the rotating packer plate), wheels, roll(d). */
 function buildTruck() {
-  const VS = 0.05;
-  if (!truckGeo) {
-    const v = new VoxelModel();
-    v.jitter = 0.02;
-    const white = (x, y, z) => gloss(((x + y * 3 + z) % 11 ? 0xf2f2ee : 0xe6e6e0));
-    const blue = gloss(0x3a7ab8);
-    // cab (front +z)
-    v.box(-16, 5, 26, 16, 34, 45, white);
-    v.box(-16, 5, 26, 16, 34, 26, white);
-    // dark window glass (the cab is solid behind it) with a pale reflection streak
-    const pane = (a, y) => gloss(Math.abs(((a + y) % 9) - 4) < 1 ? 0x5a6a7a : 0x232c36);
-    for (let y = 21; y <= 32; y++) for (let x = -14; x <= 14; x++) v.set(x, y, 45, pane(x, y));
-    for (const s of [-1, 1]) for (let y = 21; y <= 32; y++) for (let z = 30; z <= 43; z++) v.set(s * 16, y, z, pane(z, y));
-    v.box(-16, 5, 46, 16, 8, 46, metal(0x8a8e92));
-    v.box(-12, 10, 46, 12, 15, 46, (x, y) => gloss(y % 2 ? 0x2a2a2c : 0x46464a));
-    for (const s of [-1, 1]) { v.box(s * 13, 11, 46, s * 15, 14, 46, gloss(0xf2f0e0)); v.box(s * 13, 11, 47, s * 15, 14, 47, glow(0xfff0c0)); }
-    v.box(-16, 17, 46, 16, 18, 46, blue);
-    v.box(-3, 6, 47, 3, 8, 47, gloss(0xf2f2f2));
-    // the packer body: white with a blue band, rounded top, a hopper mouth at the back
-    v.shape(-17, 6, -40, 17, 44, 24, (x, y, z) => { const r = Math.abs(x) - 13; return !(y > 40 && r > 0 && (r * r + (y - 40) ** 2) > 16); }, (x, y) => (y >= 18 && y <= 21 ? blue : white(x, y, 0)));
-    v.box(-17, 8, -48, 17, 30, -41, white);
-    for (let y = 12; y <= 26; y++) for (let x = -13; x <= 13; x++) { v.set(x, y, -48, 0x1e1e1e); v.set(x, y, -47, 0x2a2a2a); }
-    v.box(-17, 6, -50, 17, 7, -48, metal(0x8a8e92)); // the back step
-    for (const s of [-1, 1]) { v.box(s * 18, 10, -49, s * 18, 28, -49, metal(0xb8bcc0)); v.box(s * 15, 27, -50, s * 17, 29, -49, gloss(0xd8282a)); }
-    // 清掃車 on the sides
-    stampFontV(v, '清掃車', 0, 30, 17, 0x2a5a8a);
-    stampFontV(v, '清掃車', 0, 30, -17, 0x2a5a8a);
-    v.box(-17, 3, -40, 17, 5, 40, 0x1e1e1e); // chassis
-    truckGeo = { body: meshVoxels(v, { voxelSize: VS, origin: 'none' }) };
-    const w = new VoxelModel();
-    w.cylinder(0, 0, 0, 9, 4, (x, y, z) => (y * y + z * z > 30 ? 0x1e1e1e : metal(0xb8bcc0)), 'x');
-    truckGeo.wheel = meshVoxels(w, { voxelSize: VS, origin: 'center' });
-    const b = new VoxelModel();
-    b.box(-12, -14, 0, 12, 0, 1, metal(0x8a8e92));
-    b.pivot = { x: 0, y: 0, z: 0 };
-    truckGeo.blade = meshVoxels(b, { voxelSize: VS });
-  }
-  const mats = voxelMaterials('normal');
+  const P = garbageTruckParts(), M = P.mats, T = TRUCK;
   const root = new THREE.Group();
+  root.name = 'garbageTruck';
   const body = new THREE.Group();
   root.add(body);
-  const bm = new THREE.Mesh(truckGeo.body, mats);
-  bm.castShadow = true;
+  const bm = new THREE.Mesh(P.body, M.body);
+  bm.castShadow = true; bm.receiveShadow = true;
   body.add(bm);
-  const blade = new THREE.Mesh(truckGeo.blade, mats);
-  blade.position.set(0, 27 * VS, -46 * VS);
+  const gl = new THREE.Mesh(P.glass, M.glass);
+  gl.renderOrder = 2; gl.raycast = () => {};
+  body.add(gl);
+  const blade = new THREE.Mesh(P.blade, M.body);
+  blade.position.set(0, T.BLADE.y, T.BLADE.z);
   body.add(blade);
   const wheels = [];
-  for (const [x, z] of [[-15, 35], [15, 35], [-15, -24], [15, -24]]) {
-    const wm = new THREE.Mesh(truckGeo.wheel, mats);
-    wm.position.set(x * VS + VS * 0.5, 9 * VS, z * VS);
+  for (const [x, z, front] of [[-T.TRACKF, T.AXF, 1], [T.TRACKF, T.AXF, 1], [-T.TRACKR, T.AXR, 0], [T.TRACKR, T.AXR, 0]]) {
+    const geo = (front ? P.wheelF : P.wheelR)[x > 0 ? 0 : 1];
+    const wm = new THREE.Mesh(geo, M.body);
+    wm.position.set(x, T.WR, z);
     wm.castShadow = true;
     root.add(wm);
     wheels.push(wm);
   }
   let dist = 0;
-  return { root, body, blade, wheels, roll: (d) => { dist += d; for (const w of wheels) w.rotation.x = dist / (9 * VS); } };
-}
-
-/** Kanji / kana in the DotGothic16 face stamped onto a side of a voxel model (x = ±side), centred on z. */
-function stampFontV(v, str, z0, y0, side, col) {
-  const c = document.createElement('canvas');
-  c.width = 16 * str.length + 8; c.height = 22;
-  const g = c.getContext('2d');
-  g.font = '16px "DotGothic16", monospace';
-  g.textBaseline = 'top';
-  g.fillStyle = '#fff';
-  g.fillText(str, 4, 2);
-  const d = g.getImageData(0, 0, c.width, c.height).data;
-  const w = c.width;
-  for (let y = 0; y < c.height; y++) for (let x = 0; x < w; x++) {
-    if (d[(y * w + x) * 4 + 3] < 110) continue;
-    const zz = side > 0 ? z0 + (w >> 1) - x : z0 - (w >> 1) + x;
-    v.set(side + Math.sign(side), y0 - y, zz, gloss(col));
-  }
+  return { root, body, blade, wheels, roll: (d) => { dist += d; for (const w of wheels) w.rotation.x = dist / T.WR; } };
 }

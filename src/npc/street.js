@@ -229,7 +229,7 @@ export class StreetDirector {
   plan(p) {
     const A = ARCH[p.arch] || ARCH.visitor, g = this.game, h = this.hour % 24;
     const out = [];
-    if (!A.n || A.n[1] === 0) { this.count(p.arch === 'dogwalker' ? 'dogwalk' : p.arch === 'cyclist' ? 'cycle' : p.arch === 'jogger' ? 'jog' : 'pass'); return out; }
+    if (!A.n || A.n[1] === 0) { if (!A.dog && !A.bike && !A.jog) this.count('pass'); return out; } // (the walk itself is counted when they're made)
     const n = Math.round(rnd(A.n[0], A.n[1] + 0.49));
     const used = new Set();
     for (let i = 0; i < n; i++) {

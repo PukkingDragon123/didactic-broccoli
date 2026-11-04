@@ -3,8 +3,8 @@
 // breaks up pixel by pixel and the suds build up; the sponge runs dry, dip it again), then scoop water with the ladle
 // and sluice each panel clean. When every panel shines, his envelope is yours.
 import * as THREE from 'three';
-import { propMesh, propGeometry } from '../../world/props.js';
-import { voxelMaterials } from '../../voxel/materials.js';
+import { propMesh } from '../../world/props.js';
+import { keiWagonMesh } from '../../vehicles/keiWagon.js';
 import { audio } from '../../core/audio.js';
 import { carDirt, dissolvePix, dissolveMat } from '../art.js';
 
@@ -22,21 +22,8 @@ const PANELS = [
   { id: 't', o: [0, 3, -0.25], d: [0, -1, 0], w: 1.05, h: 1.9, px: [22, 40] },
 ];
 
-/** The kei wagon in Mr. Tanaka's colour: the mint paint of the town's one, recoloured cherry red. */
-let carGeo = null;
-function redCar() {
-  if (carGeo) return carGeo;
-  const src = propGeometry('kei_car');
-  if (!src) return null;
-  carGeo = src.clone();
-  const c = carGeo.attributes.color;
-  for (let i = 0; i < c.count; i++) {
-    const r = c.getX(i), g = c.getY(i), b = c.getZ(i);
-    if (g > r * 1.12 && b > r * 0.95 && g > 0.2) c.setXYZ(i, g * 1.05, r * 0.22, r * 0.2);
-  }
-  c.needsUpdate = true;
-  return carGeo;
-}
+// Mr. Tanaka's cherry-red kei wagon: src/vehicles/keiWagon.js (low-poly, one pixel atlas, real glass); its body is
+// the mesh the panels' rays land on.
 
 function sudsPix(seed, w, h) {
   return dissolvePix(w, h, seed, (p, r) => {
@@ -55,9 +42,7 @@ export class CarWash {
 
   start() {
     const g = this.game;
-    const geo = redCar();
-    const car = geo ? new THREE.Mesh(geo, voxelMaterials('normal')) : propMesh('kei_car');
-    car.castShadow = true; car.receiveShadow = true;
+    const car = keiWagonMesh();
     car.position.set(CAR.x, 0, CAR.z);
     car.rotation.y = CAR.rot;
     g.scene.add(car);

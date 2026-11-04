@@ -308,6 +308,7 @@ export class Renderer {
     this.vmRoots = new Set(); // subtrees drawn by the viewmodel pass (layers are switched just for the frame)
     this.aoCam = new THREE.PerspectiveCamera(); // GTAO sees the scene + the viewmodel
     this.fx = { tired: 0, lid: 0, double: 0, wobble: 0 }; // body-state look, written by src/needs (survives quality changes)
+    this.vignette = GradeShader.uniforms.uVignette.value; // the grade's resting vignette (Held's inspect view darkens it, then returns here)
     this.lightPool = new LightPool(VM_LAYER);
     this.casters = []; this.prevCasters = new Set(); this.moved = []; // shadow casters seen by this frame's walk
     this.shadowStats = { casters: 0, moved: 0, updates: 0, movers: [] };

@@ -157,7 +157,7 @@ export class Held {
     i = ((i % SLOTS) + SLOTS) % SLOTS;
     if (i === this.sel || this.busy || this.twisting) return false;
     const cur = this.item;
-    if (this.inspecting) { this.inspecting = false; this.game.player.lookLocked = false; this.game.renderer.grade.uniforms.uVignette.value = 0.32; }
+    if (this.inspecting) { this.inspecting = false; this.game.player.lookLocked = false; this.game.renderer.grade.uniforms.uVignette.value = this.game.renderer.vignette ?? 0.12; }
     if (cur?.kind === 'cat') this.drop(); // the cat won't go in your pocket
     else if (cur) { const pose = this.pose; this.pocket(cur); if (cur.obj.parent === this.anchor) this.lowering = { obj: cur.obj, it: cur, pose, t: 0, from: cur.obj.position.clone() }; cur.obj.visible = !!this.lowering; }
     this.sel = i;
@@ -432,7 +432,7 @@ export class Held {
       this.inspecting = false;
       g.player.lookLocked = false;
       this.startTrans('toy', 0.28);
-      g.renderer.grade.uniforms.uVignette.value = 0.32;
+      g.renderer.grade.uniforms.uVignette.value = g.renderer.vignette ?? 0.12;
     }
     if (this.keyLight) this.keyLight.intensity += ((this.inspecting ? 0.24 : 0) - this.keyLight.intensity) * Math.min(1, dt * 8); // soft: your hand sits right under it
     if (this.inspecting && !this.trans) {
