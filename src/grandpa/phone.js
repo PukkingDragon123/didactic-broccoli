@@ -163,16 +163,18 @@ export function postcardArt() {
   // hills on the left with the town, the island on the horizon
   for (let x = 0; x < 70; x++) { const h = Math.round(22 + Math.sin(x * 0.09) * 6 + Math.sin(x * 0.31) * 2 - x * 0.18); rect(x, 62 - h, 1, h, '#4a5a6a'); }
   for (let x = 0; x < 60; x++) { const h = Math.round(10 + Math.sin(x * 0.2 + 1) * 3 - x * 0.1); rect(x, 62 - h, 1, h, '#3a4858'); }
-  for (let i = 0; i < 26; i++) { const x = 4 + ((i * 37) % 56), y = 46 + ((i * 13) % 12); rect(x, y, 2, 2, i % 3 ? '#ffd890' : '#f0f0e0'); }
+  // the town's lit windows on the hillside: single warm pixels, a few doubled
+  const hillTop = (x) => 62 - Math.round(10 + Math.sin(x * 0.2 + 1) * 3 - x * 0.1);
+  for (let i = 0; i < 34; i++) { const x = 3 + ((i * 29 + 7) % 54), top = hillTop(x) + 2, y = top + ((i * 7) % Math.max(1, 60 - top)); if (y < 61) rect(x, y, i % 4 ? 1 : 2, 1, i % 5 ? '#ffd890' : '#f4ece0'); }
   for (let x = 136; x < 160; x++) { const h = Math.round(4 - Math.abs(x - 147) * 0.3); if (h > 0) rect(x, 62 - h, 1, h, '#5a5a74'); }
   // the sea: stepped rows of wave dashes, the sun's road on the water
   ['#5a6a8a', '#4a5a7a', '#3e4e6c', '#34425e', '#2a3650'].forEach((col, i) => rect(0, 62 + i * 10, W, 10, col));
   for (let y = 63; y < H; y += 3) for (let x = (y * 7) % 11; x < W; x += 11) rect(x, y, 4, 1, y < 80 ? '#8a9ab8' : '#6a7a98');
   for (let y = 63; y < 92; y += 2) { const w = Math.max(2, 14 - (y - 63) * 0.4); rect(Math.round(120 - w / 2 + Math.sin(y) * 2), y, Math.round(w), 1, '#ffd890'); }
-  // the hot-spring mark and its steam
-  rect(16, 82, 22, 14, '#e8dcc0'); rect(17, 83, 20, 12, '#c84a3a');
-  for (let k = 0; k < 3; k++) for (let y = 0; y < 7; y++) px(21 + k * 6 + (y % 3 === 1 ? 1 : 0), 84 + y, '#f4ece0');
-  rect(20, 91, 14, 2, '#f4ece0');
+  // the hot-spring mark on a little cream sign: a bowl and three wavy plumes of steam
+  rect(14, 78, 26, 22, '#3a2a2a'); rect(15, 79, 24, 20, '#f4ece0');
+  for (let x = -7; x <= 7; x++) { const y = Math.round(Math.sqrt(Math.max(0, 49 - x * x)) * 0.55); px(27 + x, 91 + y, '#c83a2a'); if (Math.abs(x) === 7) px(27 + x, 90, '#c83a2a'); }
+  for (let k = -1; k <= 1; k++) for (let y = 0; y < 8; y++) px(27 + k * 4 + [0, 1, 1, 0, -1, -1, 0, 1][y], 82 + y, '#c83a2a');
   // ATAMI, and a postmark circle
   c.fillStyle = '#2a2622';
   draw5(c, 'GREETINGS FROM', 6, 4, { s: 1, col: '#3a2a2a' });

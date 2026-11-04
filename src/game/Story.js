@@ -781,7 +781,7 @@ export class Story {
     this.newGameRunning = true;
     try {
       if (g.drive?.start) {
-        try { await g.drive.start({ from: 'start', exitPrompt: !g.grandpa?.gp }); } catch (e) { console.error('drive', e); }
+        try { await g.drive.start({ exitPrompt: !g.grandpa?.gp }); } catch (e) { console.error('drive', e); }
         // whatever happened, the van ends up parked in its spot
         const van = this.life?.van;
         if (van && Math.hypot(van.root.position.x - PARK.x, van.root.position.z - PARK.z) > 0.5) { van.setPose(PARK.x, PARK.z, PARK.heading); g.events.emit('drive:parked', {}); }

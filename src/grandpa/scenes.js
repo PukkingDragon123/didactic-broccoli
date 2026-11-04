@@ -13,6 +13,7 @@ import { propMesh } from '../world/props.js';
 import { buildGrandpaHuman } from './Grandpa.js';
 import { Taxi } from './props.js';
 import { SISTER, TOWN } from './data.js';
+import { talk as blipVoice } from '../people/voice.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const Z = GARAGE.maxZ;
@@ -194,7 +195,7 @@ async function hug(sys, me, t) {
 
 function keyRing() {
   const m = propMesh('garage_key', { fallbackSize: [0.06, 0.02, 0.1], fallbackColor: 0xc8a040 });
-  m.scale.setScalar(0.9);
+  m.scale.setScalar(1.7); // (a touch big, so it reads in the shot)
   m.castShadow = false;
   return m;
 }
@@ -305,12 +306,11 @@ export function* taxiArriveScene(c, sys) {
   gp.place(V(1.5, 0, 6.15), -0.9);
   gp.lookAt = V(-8, 1.2, TAXI_Z);
   P.pos.set(0.15, 0, 6.5); P.yaw = Math.atan2(-(1.5 - 0.15), -(6.15 - 6.5)); P.pitch = -0.05;
-  const me = avatar(c, sys, V(0.15, 0, 6.5), Math.atan2(1.5 - 0.15, 6.15 - 6.5));
-  if (me) me.look = 'gp';
+  g.bubbles?.clear(gp.h);
   // the taxi comes in from the west underpass
   const taxi = sys.taxi = new Taxi(g);
   g.scene.add(taxi.root);
-  const T = { x: -24, v: 4.2, to: TAXI_STOP };
+  const T = { x: -18, v: 4.2, to: TAXI_STOP };
   taxi.setPose(T.x, TAXI_Z, Math.PI / 2);
   let engine = null;
   try { engine = audio.loop('taxiEngine', {}); engine?.set(0.2, 0.5); } catch { engine = null; }
@@ -344,11 +344,10 @@ export function* taxiArriveScene(c, sys) {
   yield c.until((dt) => { k = Math.min(1, k + dt / 0.8); taxi.setDoor(ease.outCubic(k)); return k >= 1; });
   gp.lookAt = 'player';
   gp.faceTo(V(0.15, 0, 6.5));
-  yield c.cam({ pos: V(-0.55, 1.55, 7.45), look: V(1.5, 1.35, 6.15), fov: 44 });
+  yield c.cam({ pos: V(-0.6, 1.4, 7.7), look: V(1.3, 1.25, 6.3), fov: 46 });
   yield line(c, sys, 'Booked it this morning, in case today went badly.', 0.8);
   gp.expr('smile', 2);
   yield line(c, sys, "It went fine. I'm still taking it.", 0.9);
-  me?.hide();
   g.bubbles?.clear(gp.h);
   yield c.toPlayer(0.6);
 }
@@ -411,6 +410,12 @@ export function* taxiLeaveScene(c, sys) {
   let k = 0;
   yield c.until((dt) => { k = Math.min(1, k + dt / 1.3); gp.pos.lerpVectors(from, seat, ease.inOutQuad(k)); return k >= 1; });
   gp.faceTo(Math.PI / 2);
+  // the driver knows him (everyone in the lane does)
+  const driver = new THREE.Object3D();
+  driver.position.set(-0.4, 1.35, 0.3);
+  taxi.root.add(driver);
+  g.bubbles?.say(driver, `Toku-san! Off to ${TOWN}, then?`, { dur: 2.8, onChar: blipVoice(null, { base: 190, duty: 0.25, vol: 0.7 }) });
+  yield c.wait(2.2);
   yield line(c, sys, 'Station, please. The slow way. Past the river.', 0.6);
   // c. the door shuts by itself
   audio.play('taxiDoor', { pos: door, close: true, vol: 1 });

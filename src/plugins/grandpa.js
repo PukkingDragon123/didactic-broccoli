@@ -6,6 +6,7 @@ import { Game } from '../game/Game.js';
 import { GrandpaSystem, STOOL } from '../grandpa/index.js';
 import * as scenes from '../grandpa/scenes.js';
 import { Story } from '../game/Story.js';
+import { postcardArt } from '../grandpa/phone.js';
 
 export function install(game) {
   // after every other plugin (game.life, game.talk, game.os must exist)
@@ -47,6 +48,8 @@ function debugGrandpa(g, sys) {
     /** Run a call's cinematic straight away (no PC). */
     call(id = 'arrived') { const fake = { ended: false, say: () => Promise.resolve(true), hangup() { this.ended = true; } }; sys.phone.cinematic(fake, sys.phone.script(id)); return true; },
     postcard() { sys.phone.postcard(); return true; },
+    /** The postcard's pixel art as a data URL (2x). */
+    postcardArt: () => postcardArt(),
     /** Keep picking the first floating choice whenever one shows (on: false stops). */
     autoPick(on = true, i = 0) { clearInterval(this._auto); if (on) this._auto = setInterval(() => pickChoice(i), 250); return on; },
     pick: pickChoice,

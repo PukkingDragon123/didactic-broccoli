@@ -54,7 +54,7 @@ export class GrandpaSystem {
     if (s.left || g.story.done || g.visiting || g.mp?.isGuest) {
       this.mode = 'gone';
       // his empty stool out front and his notebook on the desk, until the shop reopens
-      if (s.met && s.left && !g.story.done && !g.visiting) { this.buildStool(); this.placeNotebook(); }
+      if (s.met && s.left && !g.visiting) { if (!g.story.done) this.buildStool(); this.placeNotebook(); }
       Game.updaters.push((gg, dt) => this.update(dt));
       return;
     }
@@ -196,10 +196,11 @@ export class GrandpaSystem {
   }
   /** (every frame while hidden: people who wander in later are kept out of shot too) */
   sweepCrowd() {
-    const g = this.game;
+    const g = this.game, quiet = (this.quietT = (this.quietT || 0) + 1) % 15 === 0;
     for (const p of [...(g.pedestrians?.list || []), ...(g.lane?.list || [])]) {
       const r = p.h?.root;
       if (r && r.visible && Math.hypot(r.position.x - 1.5, r.position.z - 8) < 15) { r.visible = false; this.hidden.add(r); }
+      if (quiet && r && this.hidden.has(r)) g.bubbles?.clear(p.h); // (and what they were saying)
     }
   }
 
@@ -242,10 +243,10 @@ export class GrandpaSystem {
     g.save();
   }
 
-  /** His notebook on the computer desk: click to read (a note in src/life/notes.js). */
+  /** His notebook on the computer desk, for good: click to read (a note in src/life/notes.js). */
   placeNotebook() {
     const g = this.game, D = g.garage.pcDesk;
-    if (this.book || !g.life?.notes || g.story.done) return;
+    if (this.book || !g.life?.notes) return;
     const m = propMesh('grandpa_notebook', { fallbackSize: [0.15, 0.03, 0.2], fallbackColor: 0x5a3420 });
     m.position.set(D.x - 0.12, D.h + 0.002, D.z + 0.12);
     m.rotation.y = -Math.PI / 2 + 0.25;
