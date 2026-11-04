@@ -1,5 +1,5 @@
 // Renderer + post-processing stack with quality presets: ink outlines + screen-space god rays from the low sun,
-// GTAO, bloom, colour grade, AgX filmic tone mapping, FXAA, then a light sharpen and dither (no banding).
+// GTAO, bloom, colour grade, neutral tone mapping, FXAA, then a light sharpen and dither (no banding).
 // Viewmodel: whatever hangs off the camera (hands + held items, see vmRoots) is drawn in its own pass on top of the
 // scene so it never pokes into walls.
 import * as THREE from 'three';
@@ -14,17 +14,21 @@ import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { LightPool } from '../gfx/lightPool.js';
 import '../gfx/sunMask.js'; // no direct sun inside Mikawa-ya (patches the light chunk at import)
 
+// The look: a bright picture-book afternoon. Gentle pastel saturation, a soft contrast curve in log space (it never
+// clips the darks), and the darkest tones lifted toward a cool lilac so nothing goes pure black.
 const GradeShader = {
   uniforms: {
     tDiffuse: { value: null },
     uTime: { value: 0 },
-    uVignette: { value: 0.32 },
-    uGrain: { value: 0.035 },
-    uSaturation: { value: 1.18 },
-    uContrast: { value: 1.13 },
-    uWarm: { value: 0.012 },
+    uVignette: { value: 0.12 },
+    uGrain: { value: 0.02 },
+    uSaturation: { value: 0.86 },
+    uContrast: { value: 0.9 },
+    uWarm: { value: 0.004 },
+    // the floor the shadows are lifted to (linear, added to the darkest tones and fading out by the mid-tones)
+    uLift: { value: new THREE.Color(0.016, 0.015, 0.028) },
     uFlash: { value: new THREE.Color(0, 0, 0) },
-    uAberration: { value: 0.0012 },
+    uAberration: { value: 0.0006 },
     uExposure: { value: 1.0 },
     // body state (src/needs/Needs.js through renderer.fx): tired (a darker, duller edge), lid (eyelids closing from top and
     // bottom), double (drunk double vision: a second, offset copy), wobble (drunk: the picture sways)
@@ -37,7 +41,7 @@ const GradeShader = {
     uniform sampler2D tDiffuse;
     uniform float uTime, uVignette, uGrain, uSaturation, uContrast, uWarm, uAberration, uExposure;
     uniform float uTired, uLid, uDouble, uWobble;
-    uniform vec3 uFlash;
+    uniform vec3 uFlash, uLift;
     varying vec2 vUv;
     float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
     void main() {
@@ -55,13 +59,15 @@ const GradeShader = {
         col = mix(col, texture2D(tDiffuse, uv + d2).rgb, 0.42 * min(1.0, uDouble * 1.6));
       }
       col *= uExposure;
-      // saturation & contrast in linear HDR (gentle)
+      // pastel: saturation down (tired: duller still)
       float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
       col = mix(vec3(l), col, uSaturation * (1.0 - 0.35 * uTired));
-      col = max(vec3(0.0), (col - 0.18) * uContrast + 0.18);
-      // warm cinematic split: shadows slightly teal, highlights warm
-      col += vec3(uWarm, uWarm * 0.4, -uWarm * 0.6) * smoothstep(0.1, 1.2, l);
-      col += vec3(-0.004, 0.002, 0.008) * (1.0 - smoothstep(0.0, 0.25, l));
+      // soft contrast around mid grey in log space: a power curve, so the darks are eased up, never clipped to black
+      col = 0.18 * pow(max(col, vec3(0.0)) / 0.18, vec3(uContrast));
+      // the darkest tones are lifted toward a cool lilac (no crushed blacks), fading out by the mid-tones
+      col += uLift * (0.05 / (0.05 + l));
+      // a hint of warmth in the highlights
+      col += vec3(uWarm, uWarm * 0.45, -uWarm * 0.3) * smoothstep(0.15, 1.2, l);
       // vignette (tired: deeper and closer in)
       col *= 1.0 - min(0.96, uVignette + uTired * 0.6) * smoothstep(0.08 - uTired * 0.07, 0.55 - uTired * 0.15, r2 * 1.6);
       // eyelids: dark bands closing in from the top and bottom
@@ -86,6 +92,9 @@ const OutlineShader = {
     uWidth: { value: 1.0 },
     uStrength: { value: 0.85 },
     uInk: { value: new THREE.Color(0x1c1016) },
+    // the line is the surface's own colour darkened through a plum ink (cartoon ink: dark on dark things, a deeper shade
+    // of the colour on bright ones, never a heavy black stroke across a sunny wall)
+    uInkK: { value: new THREE.Color(0.24, 0.2, 0.28) },
     // god rays: sky pixels (no depth written) marched toward the sun's screen position
     uSun: { value: new THREE.Vector2(0.5, 0.5) },
     uSunOn: { value: 0 },
@@ -97,7 +106,7 @@ const OutlineShader = {
   vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
     uniform sampler2D tDiffuse, tDepth;
-    uniform vec2 uRes; uniform float uNear, uFar, uWidth, uStrength; uniform vec3 uInk;
+    uniform vec2 uRes; uniform float uNear, uFar, uWidth, uStrength; uniform vec3 uInk, uInkK;
     uniform vec2 uSun; uniform float uSunOn, uAspect, uShaft, uDepthAlpha; uniform vec3 uShaftCol;
     varying vec2 vUv;
     float lin(vec2 uv) { float z = texture2D(tDepth, uv).x * 2.0 - 1.0; return (2.0 * uNear * uFar) / (uFar + uNear - z * (uFar - uNear)); }
@@ -114,7 +123,7 @@ const OutlineShader = {
       float jump = max(max(abs(dl - d), abs(dr - d)), max(abs(du - d), abs(dd - d))) / d;
       float e = max(smoothstep(0.05, 0.12, lap), smoothstep(0.08, 0.16, jump));
       e *= 1.0 - smoothstep(25.0, 60.0, d); // fade far away so the skyline stays soft
-      vec3 outc = mix(col.rgb, uInk * col.rgb * 0.35 + uInk * 0.4, e * uStrength);
+      vec3 outc = mix(col.rgb, col.rgb * uInkK + uInk * 0.4, e * uStrength);
       // crepuscular rays: march from this pixel toward the sun, collecting open sky (wires, poles and roofs cut it)
       if (uSunOn > 0.001) {
         vec2 dv = (uSun - vUv) / 26.0;
@@ -283,9 +292,10 @@ export class Renderer {
     this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance', stencil: false });
     const r = this.renderer;
     r.outputColorSpace = THREE.SRGBColorSpace;
-    // AgX: filmic roll-off for the golden-hour sky and the lit signs (the grade below adds back the punch)
-    r.toneMapping = THREE.AgXToneMapping;
-    r.toneMappingExposure = 1.12;
+    // Khronos PBR Neutral: true hues (the lanterns stay red, the sky stays blue) and a soft shoulder for the lit signs;
+    // the grade before it sets the bright, pastel cartoon look
+    r.toneMapping = THREE.NeutralToneMapping;
+    r.toneMappingExposure = 1.2;
     r.shadowMap.enabled = true;
     r.shadowMap.type = THREE.PCFShadowMap;
     container.appendChild(r.domElement);
@@ -364,7 +374,7 @@ export class Renderer {
     }
     this.bloom = null;
     if (q.bloom) {
-      this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.32, 0.25, 0.92);
+      this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.24, 0.2, 1.15);
       composer.addPass(this.bloom);
     }
     this.grade = new ShaderPass(GradeShader);

@@ -1,6 +1,7 @@
 // The guide: one clear goal at a time in the top-left card, and a marker floating over the place to go (pinned to the
 // screen edge with an arrow when it's off-screen). During the opening the card is Grandpa's to-do list: each goal comes
-// from one of his notes and quotes him (src/game/Story.js goal()). A side job you've taken (src/life/jobs.js) comes
+// from one of his notes and quotes him (src/game/Story.js goal()); while he's there in person (src/grandpa/) the card is
+// headed "Grandpa" and carries his own short line under the job (goal.say). A side job you've taken (src/life/jobs.js) comes
 // first while it runs; once the shop is open, the daily routine (open up in the morning, close up at night,
 // src/life/routine.js) and a few first steps of running the shop.
 import * as THREE from 'three';
@@ -18,7 +19,7 @@ export class Guide {
     el.id = 'guide';
     el.innerHTML = '<div class="g-card"><div class="g-head"><span class="g-lbl">Goal</span><span class="g-n"></span></div>'
       + '<div class="g-row"><span class="g-ico"></span><div class="g-txt"><div class="g-t"></div><div class="g-s"></div></div><span class="g-tick"></span></div>'
-      + '<div class="g-bar"><i></i></div></div>';
+      + '<div class="g-say"></div><div class="g-bar"><i></i></div></div>';
     hud.appendChild(el);
     const wp = document.createElement('div');
     wp.id = 'waypoint';
@@ -61,7 +62,7 @@ export class Guide {
     if (!S) return null;
     const job = L?.jobs?.goal();
     if (job) { this.label = 'Odd job'; return job; }
-    if (!S.done) { this.label = "Grandpa's list"; return S.goal(); }
+    if (!S.done) { const goal = S.goal(); this.label = goal?.say ? 'Grandpa' : "Grandpa's list"; return goal; }
     const day = L?.routine?.goal();
     if (day) { this.label = 'Today'; return day; }
     this.label = 'Goal';
@@ -101,7 +102,7 @@ export class Guide {
 
   doneTotal() {
     const S = this.game.story;
-    if (!S || S.done || this.label !== "Grandpa's list") return [0, 0];
+    if (!S || S.done || (this.label !== "Grandpa's list" && this.label !== 'Grandpa')) return [0, 0];
     const t = S.todo();
     return [t.filter((x) => x.done).length, t.length];
   }
@@ -127,9 +128,10 @@ export class Guide {
       // the old goal is finished: tick it off first (not when you've just lost an item and must shop again)
       if (this.shown && !this.card.classList.contains('done') && !/^(shop|buyflyers)/.test(gid || '') && gid?.split(':')[0] !== this.shown.id.split(':')[0]) { this.card.classList.add('done'); this.swapT = 0.9; }
       else this.show(goal, n, total ? done / total : 0);
-    } else if (goal && (goal.text !== this.shown.text || goal.sub !== this.shown.sub || n !== this.n)) {
+    } else if (goal && (goal.text !== this.shown.text || goal.sub !== this.shown.sub || goal.say !== this.shown.say || n !== this.n)) {
       this.el.querySelector('.g-t').textContent = goal.text;
       this.el.querySelector('.g-s').textContent = goal.sub || '';
+      this.say(goal.say);
       this.el.querySelector('.g-n').textContent = this.n = n;
       this.el.querySelector('.g-bar i').style.transform = `scaleX(${total ? done / total : 0})`;
       this.shown = goal;
@@ -145,11 +147,24 @@ export class Guide {
     this.el.querySelector('.g-ico').innerHTML = goal.icon && hasIcon(goal.icon) ? iconHTML(goal.icon, 2) : '';
     this.el.querySelector('.g-t').textContent = goal.text;
     this.el.querySelector('.g-s').textContent = goal.sub || '';
+    this.say(goal.say);
     this.el.querySelector('.g-n').textContent = n;
     this.el.querySelector('.g-bar').style.display = n ? '' : 'none';
     this.el.querySelector('.g-bar i').style.transform = `scaleX(${frac})`;
     void this.card.offsetWidth;
     this.card.classList.add('in');
+  }
+
+  /** Grandpa's line on the card (while he's with you): "Grandpa: <line>". */
+  say(line) {
+    const el = this.el.querySelector('.g-say');
+    if (!line) { if (el.textContent) el.textContent = ''; delete el.dataset.line; return; }
+    if (el.dataset.line === line) return;
+    el.dataset.line = line;
+    el.innerHTML = '';
+    const b = document.createElement('b');
+    b.textContent = 'Grandpa: ';
+    el.append(b, document.createTextNode(`"${line}"`));
   }
 
   marker(goal) {

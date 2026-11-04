@@ -446,3 +446,23 @@ export function streetPreset(seed) {
   for (const k of ids) { if (x < STREET_WEIGHTS[k]) return k; x -= STREET_WEIGHTS[k]; }
   return ids[0];
 }
+
+// ------------------------------------------------------------------ Grandpa himself (src/grandpa/): one fixed look
+// Flat cap, thick round glasses, a white moustache, a brown cardigan over a cream shirt, grey slacks, socks and
+// sandals, an old man's stoop (his cane is a separate voxel prop, src/grandpa/props.js). Never on the street.
+HUMAN_PRESETS.push({ id: 'gramps', name: 'Grandpa (Tokuzo)' });
+Object.assign(BUILD, {
+  gramps: () => ({
+    sex: 'm', age: 'elder', H: 1.57, build: 1.03, belly: 0.55,
+    skin: SKIN.medium,
+    hair: { style: 'short', col: HAIR.white, grey: 1 },
+    face: { iris: hex(IRIS.dbrown), lid: 'mono', tilt: 0.45, wrinkles: 1, spots: 1, mustache: true, browW: 1.4, browArch: 0.6, lipFull: 0.72, stubble: 0.12, blush: 0.5 },
+    glasses: { kind: 'round', col: [48, 36, 30], thick: 1.8 },
+    hat: { kind: 'flatcap', col: hex(0x5c4a3a) },
+    top: { kind: 'cardigan', col: hex(0x7a5030), shirt: hex(0xece2cc) },
+    bottom: { kind: 'slacks', col: hex(0x5e5b56), belt: [50, 36, 26] },
+    shoes: { kind: 'sandal', col: hex(0x4a3626) }, socks: { col: [212, 206, 194] },
+    acc: [],
+    walk: { style: 'elder', hunch: 0.9 },
+  }),
+});

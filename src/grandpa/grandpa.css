@@ -1,0 +1,15 @@
+/* Grandpa on the objective card while he's with you: his short line, pencilled under the job (src/game/Guide.js
+   .g-say). Paper kit colours (src/ui/paper.css), hard edges, no glows. */
+#guide .g-say { margin-top: 6px; padding: 3px 6px 3px 24px; position: relative; font: 16px/18px var(--font-key); color: #ffe7b0; background: rgba(255, 244, 214, .08); box-shadow: 0 0 0 2px rgba(255, 244, 214, .12); }
+#guide .g-say:empty { display: none; }
+#guide .g-say::before {
+  /* a little pixel speech mark: a 3x2 block with a tail, square pixels */
+  content: ''; position: absolute; left: 6px; top: 6px; width: 12px; height: 8px; background: currentColor;
+  box-shadow: 2px 8px 0 -0px transparent;
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 50% 75%, 25% 100%, 25% 75%, 0 75%);
+}
+#guide .g-say b { color: inherit; font-weight: normal; letter-spacing: 1px; }
+body.paper-ui #guide .g-say { color: var(--pp-blue); background: rgba(47, 90, 154, .08); box-shadow: 0 0 0 2px rgba(47, 90, 154, .28); }
+body.paper-ui #guide .g-say b { color: var(--pp-red); }
+body.touchmode #guide .g-say { font-size: 16px; line-height: 16px; }
+#guide .g-card.done .g-say { opacity: 0.4; }

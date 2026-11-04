@@ -6,6 +6,7 @@
 //   prebuildHuman({ seed: 9 }, renderer); ... takeHuman({ seed: 9 }) || createHuman({ seed: 9 })   (built in idle time)
 import { Human } from './Human.js';
 import './bizarre.js'; // dramatic manga poses (gesture library)
+import './lifePoses.js'; // everyday gestures on the lane (crank, purse, smoke, drink...)
 import { HUMAN_PRESETS, makeSpec, streetPreset } from './presets.js';
 export { Bubbles } from './Bubbles.js';
 export { prebuildHuman, takeHuman, humanReady, dropHuman } from './prebuild.js';

@@ -553,8 +553,10 @@ export class Garage {
         tube.position.set(x + dx, top - 0.108, z);
         this.bake(tube);
       }
-      const pl = new THREE.PointLight(0xe9f0ff, 5.5, 9, 1.6);
-      pl.position.set(x, G.height - 0.45, z);
+      // (a soft falloff, so the two fixtures light the whole room evenly like a cartoon interior; the light hangs a metre
+      // under the ceiling, as if the fixture's reflector threw it down: 0.45 m under it, it blew the boards out to white)
+      const pl = new THREE.PointLight(0xf0f2ff, 5.5, 9.5, 1.45);
+      pl.position.set(x, G.height - 0.95, z);
       scene.add(pl);
       this.lights.tubes.push({ light: pl, mat: tubeMat, base: 5.5, fix });
     }

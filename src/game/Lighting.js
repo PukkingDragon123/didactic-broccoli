@@ -11,10 +11,12 @@ import * as THREE from 'three';
 import { glowUniform } from '../voxel/materials.js';
 import { skyLook } from '../sim/sky.js';
 import { createSim } from '../sim/index.js';
+import { GARAGE } from '../world/Garage.js';
 
 const GOLDEN = new THREE.Vector3(-5.5, 5.2, 14).sub(new THREE.Vector3(0.5, 0, 0)).normalize(); // the original low sun
-const _v = new THREE.Vector3(), _c = new THREE.Color();
+const _v = new THREE.Vector3(), _c = new THREE.Color(), _c2 = new THREE.Color();
 const MOON = new THREE.Color(0x8ea8e8);
+const ROOM_KEY = new THREE.Vector3(0.35, 1, 0.5).normalize(); // inside a room: the lamp's light on people and hands
 
 export class Lighting {
   constructor(game) {
@@ -63,7 +65,7 @@ export class Lighting {
     this.moonDir.set(-sun.dir.x, Math.max(0.42, -sun.dir.y * 0.8 + 0.3), -sun.dir.z).normalize();
     S.night = L.night; S.day = L.day;
     S.sunI = L.si;
-    S.moonI = 0.42 * Math.min(1, Math.max(0, (-sun.alt - 3) / 8));
+    S.moonI = 0.6 * Math.min(1, Math.max(0, (-sun.alt - 3) / 8));
     // how much the sun is shining in through the shutter (the lane side) and how close it is to the original golden shot
     S.sunIn = Math.max(0, sun.dir.z) * Math.min(1, Math.max(0, sun.alt / 6));
     S.golden = Math.pow(Math.max(0, this.sunDir.dot(GOLDEN)), 6) * Math.min(1, Math.max(0, sun.alt / 6));
@@ -88,7 +90,7 @@ export class Lighting {
     if (G.shaftMat) G.shaftMat.uniforms.uStrength.value = 0.13 * S.golden;
     // the frosted window: warm daylight behind it by day, a faint moonlit blue at night
     const W = this.winGlass;
-    if (W) { W.m.emissiveIntensity = W.k * (0.12 + 0.88 * S.day); W.m.emissive.copy(W.col).lerp(_c.setHex(0x51608a), S.night); }
+    if (W) { W.m.emissiveIntensity = W.k * (0.12 + 0.62 * S.day); W.m.emissive.copy(W.col).lerp(_c.setHex(0x51608a), S.night); }
     if (G.pool) G.pool.material.uniforms.uColor.value.setHex(0xffcf98).multiplyScalar(Math.max(0, G.shutterOpen) * Math.min(1, S.sunIn * 1.3 + 0.15 * S.day));
   }
 
@@ -121,8 +123,10 @@ export class Lighting {
     const sunI = look ? (useMoon ? S.moonI : S.sunI) : this.base.sun;
     sun.intensity = sunI * (1 - this.dimLevel * 0.85) * (1 - (this.museumBlend || 0));
     if (look) { L.hemi.color.copy(look.hs); L.hemi.groundColor.copy(look.hg); }
+    // the sky's fill light (the cartoon look leans on it: the shade side of everything stays light); the garage's own
+    // light switch only takes a little of it away
     const hemiI = look ? look.hi : this.base.hemi;
-    L.hemi.intensity = hemiI * (0.42 + 0.58 * lightsK) * (1 - this.dimLevel * 0.8);
+    L.hemi.intensity = hemiI * (0.8 + 0.2 * lightsK) * (1 - this.dimLevel * 0.8);
     L.desk.intensity = this.base.desk * (power ? 1 : 0) * (1 - this.dimLevel * 0.9);
     // daylight bouncing in under the shutter only when it's rolled up (warm when the sun shines in, cool skylight else)
     const bounceK = look ? Math.min(1, S.sunIn * 1.2 + 0.3 * S.day) : 1;
@@ -131,10 +135,40 @@ export class Lighting {
     // ambient reflections (the baked garage probe): dimmer at night, a little help from the room lights
     g.scene.environmentIntensity = (look ? S.env + lightsK * 0.12 * S.night : 0.85) * (1 - this.dimLevel * 0.6);
     if (g.renderer.grade) g.renderer.grade.uniforms.uExposure.value = (look ? S.exp : 1) * (1 - this.dimLevel * 0.25);
+    // standing in the garage with its lights on: the fill turns into a warm room fill (mostly after dark, when the sky
+    // gives little), and the baked probe, which is the lit garage itself, counts for more
+    const P = g.player.pos, G = GARAGE;
+    const inG = Math.min(1, Math.max(0, Math.min(P.x - G.minX, G.maxX - P.x, P.z - G.minZ, G.maxZ + 0.6 - P.z) / 0.8));
+    const warm = inG * lightsK * (0.2 + 0.8 * S.night) * (1 - this.dimLevel);
+    if (warm > 0.001) {
+      L.hemi.color.lerp(_c.setHex(0xf0e4d6), warm * 0.75);
+      L.hemi.groundColor.lerp(_c.setHex(0x8c7868), warm * 0.75);
+      L.hemi.intensity += (1.15 - L.hemi.intensity) * warm * 0.75;
+      g.scene.environmentIntensity += 0.45 * warm;
+    }
+    const room = g.places?.current?.();
+    if (room) this.roomLight(room, sun, L.hemi, sunI);
     // glow-in-the-dark finish responds to darkness
     const darkness = Math.max(this.dimLevel, lightsK ? 0 : 0.45 + 0.25 * (S.night || 0));
     this.glowBoost = Math.max(0, this.glowBoost - dt * 0.3);
     glowUniform.value = 0.6 + darkness * 2.4 + this.glowBoost + Math.sin(t * 2) * 0.05;
     g.museum?.updateLighting?.(this.dimLevel);
+  }
+
+  /** Inside an off-map room (src/places, src/growth) its own surfaces ignore the sun and are lit by the room's lamp (a
+   *  term in their materials), but people and your hands use the scene lights, and the moon turned them a cold grey.
+   *  Light them like the room: the key light (the sun light, which those room surfaces never see) comes from overhead in
+   *  the lamp's colour, and the sky fill becomes a soft warm indoor fill (it also lifts the corners the lamp misses).
+   *  With the room's lamp switched off it falls back to the sky outside, dimmed. */
+  roomLight(room, sun, hemi, sunI) {
+    const lamp = room.lamp, on = lamp ? Math.min(1, Math.max(0, lamp.k ?? 1)) : 1, off = 1 - on, look = this.look;
+    const dim = 1 - this.dimLevel * 0.85;
+    sun.position.copy(this.target0).addScaledVector(ROOM_KEY, 16);
+    sun.color.lerp(_c.set(lamp?.color ?? 0xfff2e0), on);
+    sun.intensity = (1.5 * on + 0.35 * sunI * off) * dim;
+    _c.set(lamp?.color ?? 0xfff2e0).lerp(_c2.setHex(0xe6e2f2), 0.55);
+    hemi.color.lerp(_c, on);
+    hemi.groundColor.lerp(_c.setHex(0x8c7868), on);
+    hemi.intensity = (1.25 * on + 0.55 * (look ? look.hi : 1) * off) * dim;
   }
 }

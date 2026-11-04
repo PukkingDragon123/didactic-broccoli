@@ -82,14 +82,13 @@ async function boot() {
     if (crew?.busy) crew.closet.close();
     const st = game.state.story;
     if (!started && !fly && !intro && !game.story.done && !st.intro && !game.visiting) {
-      // a brand-new game: the intro cutscene instead of the fly-in
+      // a brand-new game: the drive into the lane and meeting Grandpa (src/game/Story.js newGame) instead of the fly-in
       intro = true;
-      bgm.play('intro', { loop: false, fade: 2 });
       signs.dispose();
       crew?.dispose(); crew = null;
       $('title').classList.add('fade');
       setTimeout(() => $('title').classList.add('hidden'), 600);
-      game.cutscene.play((c) => game.story.introScene(c), { skippable: true }).then(() => { intro = false; started = true; game.held.anchor.visible = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); bgm.play('garage', { fade: 3 }); });
+      game.story.newGame().then(() => { intro = false; started = true; game.held.anchor.visible = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); bgm.play('garage', { fade: 3 }); });
     } else if (!started && !fly && !intro) { fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() }; bgm.play('garage', { fade: 3 }); crew?.leave(); }
     game.input.lock();
   };

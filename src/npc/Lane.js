@@ -11,6 +11,7 @@ import { Npc } from './Npc.js';
 import './poses.js';
 import { laneMemory } from './memory.js';
 import { ROSTER, SPOTS, greetingFor } from './roster.js';
+import { HOUSES, outward } from './doors.js';
 import { GARAGE, MACHINE_SLOTS } from '../world/Garage.js';
 import { audio } from '../core/audio.js';
 import { BIZARRE } from '../people/bizarre.js';
@@ -94,15 +95,28 @@ export class Lane {
     return { pos: s.clone().setY(0), rotY: null };
   }
 
-  /** Waypoints from a to b along the lane (through the shop door when either end is inside the garage). */
+  /** The house whose front door is at p (people come out through their own gate, not through the hedge). */
+  houseAt(p) {
+    for (const H of HOUSES) if (H.door && Math.hypot(H.door[0] - p.x, H.door[1] - p.z) < 0.7) return H;
+    return null;
+  }
+  gatePts(H) {
+    const o = outward(H), gx = H.gate ? H.gate[0] : H.bell[0] + 0.35, gz = H.gate ? H.gate[1] : H.bell[1];
+    return [V(gx, gz - o * 0.3), V(gx + 0.15, gz + o * 0.55)];
+  }
+  /** Waypoints from a to b along the lane (through the shop door when either end is inside the garage, through the
+   *  garden gate when either end is a front door). */
   route(a, b) {
     const pts = [];
     const inGarage = (p) => Math.abs(p.x) < GARAGE.maxX && p.z < GARAGE.maxZ;
     const onLane = (p) => p.z > 5.9 && p.z < 14.7 && Math.abs(p.x) < 27;
     const toLane = (p) => V(p.x, Math.min(LANE_Z1, Math.max(LANE_Z0, p.z)));
-    if (inGarage(a) && !inGarage(b)) pts.push(V(0.4, GARAGE.maxZ - 0.6), V(0.4, GARAGE.maxZ + 1.2));
+    const Ha = this.houseAt(a), Hb = this.houseAt(b);
+    if (Ha && Ha !== Hb) pts.push(...this.gatePts(Ha));
+    else if (inGarage(a) && !inGarage(b)) pts.push(V(0.4, GARAGE.maxZ - 0.6), V(0.4, GARAGE.maxZ + 1.2));
     else if (!inGarage(a) && !onLane(a)) pts.push(toLane(a));
-    if (inGarage(b) && !inGarage(a)) pts.push(V(0.4, GARAGE.maxZ + 1.2), V(0.4, GARAGE.maxZ - 0.6));
+    if (Hb && Hb !== Ha) pts.push(...this.gatePts(Hb).reverse());
+    else if (inGarage(b) && !inGarage(a)) pts.push(V(0.4, GARAGE.maxZ + 1.2), V(0.4, GARAGE.maxZ - 0.6));
     else if (!inGarage(b) && !onLane(b)) pts.push(toLane(b));
     pts.push(b.clone().setY(0));
     return pts;
@@ -138,6 +152,7 @@ export class Lane {
   /** The hour as a float, the day and whether it is night. */
   get hour() { return this.game.clock?.hours ?? 15; }
   get night() { const h = this.hour; return h >= 20 || h < 5; }
+  get weekend() { try { const d = this.game.calendar?.dateOf(this.game.clock?.day ?? 1); return d.weekday === 0 || d.weekday === 6 || (d.specials || []).some((s) => s.kind === 'holiday'); } catch { return false; } }
   get shopOpen() { const g = this.game; return !!(g.state.story?.complete || g.story?.done) && (!g.sim?.isOpen || g.sim.isOpen()); }
 
   /** What someone wants to be doing now: 'home' | 'spot' | 'wander' | 'visit' | custom act names. */
@@ -145,7 +160,9 @@ export class Lane {
     const d = n.def, h = this.hour;
     if (d.afterOpening && !this.game.story?.done && !this.game.state.story?.complete) return 'home';
     if (n.today?.override && this.time < n.today.until) return n.today.override;
-    for (const [a, b, act] of d.hours || []) if (a <= b ? h >= a && h < b : h >= a || h < b) return act;
+    // weekends and holidays: their own day where they have one (no school, no work)
+    const hours = (this.weekend && d.weekend) || d.hours || [];
+    for (const [a, b, act] of hours) if (a <= b ? h >= a && h < b : h >= a || h < b) return act;
     return 'home';
   }
 
@@ -180,7 +197,7 @@ export class Lane {
   /** A machine someone can play (stocked, working, not in use). */
   machineFor() {
     const g = this.game;
-    const ok = g.machines.filter((m) => !m.data.broken && !m.data.fallen && m.data.stock.length > 0 && !(g.pedestrians?.list || []).some((p) => p.machine === m && (p.state === 'goIn' || p.state === 'play')) && !this.list.some((n) => n.machine === m));
+    const ok = g.machines.filter((m) => !m.data.broken && !m.data.fallen && m.data.stock.length > 0 && !m._user && !(m._queue?.length) && !(g.pedestrians?.list || []).some((p) => p.machine === m && (p.state === 'goIn' || p.state === 'play' || p.state === 'queue')) && !this.list.some((n) => n.machine === m));
     return ok.length ? pick(ok) : null;
   }
 
@@ -292,7 +309,9 @@ const ACTS = {
   *wander(n) {
     this.appear(n);
     for (let i = 0; i < 3; i++) {
-      const p = V(rnd(-22, 22), rnd(LANE_Z0 + 0.3, LANE_Z1 - 0.3));
+      let p = V(rnd(-22, 22), rnd(LANE_Z0 + 0.3, LANE_Z1 - 0.3));
+      // not into a parked van or a prop
+      for (let k = 0; k < 8 && this.game.crowd?.blocked(p.x, p.z, 0.4); k++) p = V(rnd(-22, 22), rnd(LANE_Z0 + 0.3, LANE_Z1 - 0.3));
       yield this.goTo(n, p, { speed: n.speed * 0.8 });
       yield this.wait(rnd(2, 6));
       if (Math.random() < 0.4 && n.def.lines?.idle && n.playerDist < 10) n.say(pick(n.def.lines.idle));
@@ -305,6 +324,7 @@ const ACTS = {
     const m = this.machineFor();
     if (!m) { n.activity = null; return; }
     n.machine = m;
+    m._user = m._user || n;
     this.appear(n);
     if (d.lines?.visit && n.playerDist < 12) n.say(pick(d.lines.visit));
     const slot = MACHINE_SLOTS[m.data.slot] || { x: -3.42, z: 0 };
@@ -324,9 +344,22 @@ const ACTS = {
         this.mem.gossip('overpriced', { who: n.name, id: n.id });
         yield this.wait(2.6);
       } else {
+        // coins out of the purse, into the slot, a turn of the handle, bend for the capsule, twist it open
+        if (n.isHuman) n.gesture('purse');
+        yield this.wait(rnd(1.2, 2));
+        if (n.isHuman) n.gesture('insert');
+        yield this.wait(0.35);
         if (m.customerPlay) r = m.customerPlay();
         g.state.stats.customers = (g.state.stats.customers || 0) + 1;
-        yield this.wait(2.2);
+        yield this.wait((r ? Math.min(10, r.coins || 1) : 2) * 0.13 + 0.2);
+        if (n.isHuman) n.gesture('crank');
+        yield this.wait(1.05);
+        if (n.isHuman) n.gesture('reach_low');
+        yield this.wait(1.0);
+        if (n.isHuman) n.gesture('twist_open');
+        yield this.wait(0.6);
+        try { audio.play('pop', { pos: n.pos.clone().setY(1.1), vol: 0.45 }); } catch { /* */ }
+        yield this.wait(0.4);
         n.clearGesture();
         n.look = 'player';
         const lucky = Math.random() < 0.4;
@@ -339,6 +372,7 @@ const ACTS = {
       }
     }
     n.clearGesture(); n.look = null; n.machine = null;
+    if (m._user === n) { m._user = null; const nx = m._queue?.shift(); if (nx && g.pedestrians?.list.includes(nx)) { m._user = nx; nx.state = 'goIn'; nx.path = [g.pedestrians.standOf(m)]; } }
     n.activity = null; // back to the routine
   },
   /** Come to your shop front, knock and call for you; wait a while for you to come and talk. */

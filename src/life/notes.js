@@ -1,4 +1,6 @@
-// Grandpa's notes: paper notes taped around the garage (and an envelope on the shutter). Click one and you pick it up
+// Grandpa's notes: paper notes taped around the garage (and an envelope on the shutter), written before you arrived
+// (he walks you through the first ones in person, src/grandpa/, and they carry on after he's gone; the last one is a
+// page of the notebook he gives you at the taxi, kept on the computer desk). Click one and you pick it up
 // and read it in first person, a sheet of his handwriting held up in both hands (pixel art, src/life/art.js). Every
 // note is a little to-do list: its boxes tick themselves (in red pen) as you do the jobs, and the objective card quotes
 // him (src/game/Guide.js). Notes you've read stay where they are, so you can read them again.
@@ -15,7 +17,7 @@ export const NOTES = {
     paper: 'letter', w: 144, h: 196, seed: 11, where: 'on the shutter',
     rows: [
       { big: 'KIDDO,' },
-      "IF YOU'RE READING THIS, YOU MADE IT. THE GARAGE IS YOURS NOW.",
+      "IF I'M ASLEEP ON MY STOOL WHEN YOU GET HERE, LET ME SLEEP. THE GARAGE IS YOURS NOW.",
       "IT'S BEEN SHUT A WHILE. IT NEEDS A HAND.",
       "I LEFT NOTES WHERE YOU'LL NEED THEM. ONE THING AT A TIME.",
       { gap: 2 },
@@ -81,14 +83,15 @@ export const NOTES = {
     ],
   },
   pc: {
-    paper: 'yellow', w: 112, h: 168, seed: 17, where: 'on the computer desk',
+    paper: 'yellow', w: 112, h: 184, seed: 17, where: 'on the computer desk',
     rows: [
       { big: 'MACHINES' },
       "THEY'RE ON THE COMPUTER NOW. OFF-HOBBY = USED, DAIKOKU = NEW.",
       { red: 'MONEY? NOT IN THE TIN! EARN IT.' },
       { task: 'job', text: 'NEIGHBOURS NEED A HAND. BOARD BY THE STATION.' },
       { task: 'buymachine', text: 'CASH IN THE BANK (ATM), THEN BUY ONE. A USED ONE IS FINE.' },
-      { doodle: 'dog', scale: 2, x: 8, inline: true }, { doodle: 'car', scale: 2, right: true },
+      "PS: I'M ON THE TRAIN BY NOW. YOU'LL BE FINE.",
+      { doodle: 'car', scale: 2, right: true },
     ],
   },
   machine: {
@@ -110,6 +113,21 @@ export const NOTES = {
       { task: 'open', text: "FLIP IT TO OPEN WHEN THE MACHINE'S READY." },
       "FLIP IT BACK EVERY NIGHT. THAT'S THE WHOLE JOB, KIDDO.",
       { doodle: 'sign', scale: 2, x: 10, inline: true }, { doodle: 'heart', scale: 2, x: 34 },
+    ],
+  },
+  // the page of the notebook he hands you at the taxi (src/grandpa/; it lies on the computer desk afterwards)
+  book: {
+    paper: 'letter', w: 144, h: 204, seed: 21, where: 'in his notebook', tape: false,
+    rows: [
+      { big: 'THE REST OF IT' },
+      'TOLD YOU I WROTE IT ALL DOWN. THIS IS THE PEN ONE.',
+      { task: 'read_pc', text: 'MY NOTE ON THE COMPUTER DESK.' },
+      { task: 'job', text: 'ODD JOBS FOR MONEY. BOARD BY THE STATION.' },
+      { task: 'buymachine', text: 'BUY A MACHINE. USED IS FINE.' },
+      { task: 'restock', text: 'FILL IT UP. KIDS PAY 100.' },
+      { task: 'open', text: 'HANG MY SIGN. FLIP IT TO OPEN.' },
+      { red: 'RING ME: 0557-81-1937. NOT AFTER 8. BATH.' },
+      { sign: '- GRAMPS' },
     ],
   },
 };

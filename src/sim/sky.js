@@ -43,15 +43,17 @@ export function sunTimes(yday) {
 // ------------------------------------------------------------------ looks by sun altitude (degrees)
 // Each key: alt, sky (zenith, upper, mid, horizon, glow toward the sun), sun colour + intensity, hemisphere sky/ground
 // + intensity, fog colour, cloud tint, ambient env intensity, exposure, warmth of the grade.
+// The look is a bright picture-book day: a soft pastel sky, a creamy (not orange) sun, and a strong lilac-blue sky fill
+// (the hemisphere light) so the shade side of everything stays light and cool. Night is a deep but readable blue.
 const KEYS = [
-  { alt: -18, zen: 0x05081a, up: 0x0a1230, mid: 0x111c3e, hor: 0x1c2848, glow: 0x24304e, sun: 0x000000, si: 0, hs: 0x3a4c7c, hg: 0x14141e, hi: 0.5, fog: 0x0e1426, cloud: [0.16, 0.19, 0.28], env: 0.16, exp: 1.12, warm: 0 },
-  { alt: -9, zen: 0x0c1438, up: 0x1a2656, mid: 0x2c3a70, hor: 0x51558a, glow: 0x7a5a78, sun: 0x000000, si: 0, hs: 0x46588a, hg: 0x1c1a24, hi: 0.52, fog: 0x1e2440, cloud: [0.24, 0.24, 0.36], env: 0.2, exp: 1.08, warm: 0 },
-  { alt: -3, zen: 0x22346e, up: 0x3e5290, mid: 0x7a74a4, hor: 0xd08a78, glow: 0xf08a5a, sun: 0xff7040, si: 0, hs: 0x6a70a0, hg: 0x2c2228, hi: 0.62, fog: 0x4a4460, cloud: [0.55, 0.42, 0.5], env: 0.38, exp: 1.02, warm: 0.006 },
-  { alt: 2, zen: 0x34589a, up: 0x5c7cb4, mid: 0xb4a4b0, hor: 0xf4b07a, glow: 0xff9448, sun: 0xff9a58, si: 1.2, hs: 0x9aa4c8, hg: 0x5a4438, hi: 0.62, fog: 0xb09888, cloud: [0.95, 0.72, 0.66], env: 0.55, exp: 1.0, warm: 0.014 },
-  { alt: 10, zen: 0x3f6fae, up: 0x6f9acb, mid: 0xa9c4dd, hor: 0xe9dcc4, glow: 0xf6d0a0, sun: 0xffc890, si: 2.6, hs: 0xb4c8e4, hg: 0x6b5a4a, hi: 0.72, fog: 0xd6c8b4, cloud: [1, 0.94, 0.86], env: 0.8, exp: 1.0, warm: 0.012 },
-  { alt: 19, zen: 0x3f6fae, up: 0x6f9acb, mid: 0xa9c4dd, hor: 0xe9dcc4, glow: 0xf6d9a8, sun: 0xffd8a8, si: 3.0, hs: 0xb9cfe8, hg: 0x6b5a4a, hi: 0.75, fog: 0xd9cdb8, cloud: [1, 1, 1], env: 0.85, exp: 1.0, warm: 0.012 },
-  { alt: 35, zen: 0x3a74c4, up: 0x67a0dc, mid: 0x9ec6e6, hor: 0xd4e0e8, glow: 0xeef0e4, sun: 0xfff0dc, si: 3.2, hs: 0xc4d8f0, hg: 0x76665a, hi: 0.8, fog: 0xc8d2d8, cloud: [1, 1, 1], env: 0.9, exp: 0.97, warm: 0.006 },
-  { alt: 70, zen: 0x3a76c8, up: 0x64a2e0, mid: 0x98c6ea, hor: 0xcadcea, glow: 0xf0f2ea, sun: 0xfff6ec, si: 3.3, hs: 0xc8dcf2, hg: 0x7a6a5c, hi: 0.82, fog: 0xc4d0d8, cloud: [1, 1, 1], env: 0.9, exp: 0.95, warm: 0.004 },
+  { alt: -18, zen: 0x0c1636, up: 0x16224a, mid: 0x223262, hor: 0x34477c, glow: 0x3a4a7c, sun: 0x000000, si: 0, hs: 0x5e70b4, hg: 0x2a2a42, hi: 0.95, fog: 0x1e2a50, cloud: [0.26, 0.3, 0.44], env: 0.28, exp: 1.0, warm: 0 },
+  { alt: -9, zen: 0x15214e, up: 0x223468, mid: 0x36488a, hor: 0x5c6aa0, glow: 0x86709a, sun: 0x000000, si: 0, hs: 0x6678b8, hg: 0x302e48, hi: 1.0, fog: 0x2c3660, cloud: [0.34, 0.34, 0.5], env: 0.32, exp: 1.0, warm: 0 },
+  { alt: -3, zen: 0x34487e, up: 0x50649e, mid: 0x8a86b8, hor: 0xd8a4a0, glow: 0xeea486, sun: 0xff9a78, si: 0, hs: 0x9094c8, hg: 0x4a4050, hi: 1.2, fog: 0x6a6488, cloud: [0.66, 0.54, 0.64], env: 0.5, exp: 1.0, warm: 0.003 },
+  { alt: 2, zen: 0x4a6eac, up: 0x7290c4, mid: 0xbcb4c8, hor: 0xf2c4a0, glow: 0xffb684, sun: 0xffb880, si: 1.4, hs: 0xb0b2dc, hg: 0x7a6658, hi: 1.4, fog: 0xc4b0a8, cloud: [0.98, 0.82, 0.8], env: 0.7, exp: 1.02, warm: 0.006 },
+  { alt: 10, zen: 0x5684c4, up: 0x82a8d8, mid: 0xb4cee6, hor: 0xece2d2, glow: 0xf8dcb8, sun: 0xffd6a8, si: 2.6, hs: 0xbcc4ea, hg: 0x8a7a6a, hi: 1.55, fog: 0xdcd2c6, cloud: [1, 0.96, 0.9], env: 0.95, exp: 1.0, warm: 0.005 },
+  { alt: 19, zen: 0x5684c4, up: 0x82a8d8, mid: 0xb4cee6, hor: 0xece2d2, glow: 0xf8e4c4, sun: 0xffe8cc, si: 2.9, hs: 0xc0cced, hg: 0x8a7a6a, hi: 1.6, fog: 0xdfd6ca, cloud: [1, 1, 1], env: 1.0, exp: 1.0, warm: 0.005 },
+  { alt: 35, zen: 0x568ad0, up: 0x80b0e2, mid: 0xaed2ee, hor: 0xdce8ee, glow: 0xf2f2ea, sun: 0xfff4e6, si: 3.0, hs: 0xc8d6f2, hg: 0x928272, hi: 1.65, fog: 0xd4dce2, cloud: [1, 1, 1], env: 1.05, exp: 0.98, warm: 0.003 },
+  { alt: 70, zen: 0x568cd4, up: 0x7eb2e6, mid: 0xaad2f0, hor: 0xd6e6f0, glow: 0xf4f4ee, sun: 0xfff8f0, si: 3.1, hs: 0xccdaf4, hg: 0x968676, hi: 1.7, fog: 0xd0dae2, cloud: [1, 1, 1], env: 1.05, exp: 0.96, warm: 0.002 },
 ];
 const COLS = ['zen', 'up', 'mid', 'hor', 'glow', 'sun', 'hs', 'hg', 'fog'];
 const NUMS = ['si', 'hi', 'env', 'exp', 'warm'];

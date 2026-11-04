@@ -17,7 +17,7 @@ const hitMat = new THREE.MeshBasicMaterial({ visible: false });
 const sfx = (n, o = {}) => { try { audio.play(n, o); } catch { /* audio not ready */ } };
 
 /** Residents who are not part of the lane's cast (built on first answer). */
-const RES = {
+export const RES = {
   suzuki: { name: 'Mr. Suzuki', role: 'Neighbour (salaryman)', preset: 'salaryman', seed: 9, color: '#8aa0c8', tts: { pitch: 0.85 },
     chat: (L, n, f) => ({ start: [...opener(L, n, { first: f, firstHello: ['Ah... you\'re the one who reopened the gacha place. Suzuki. Next to the carport.'], hello: ['Oh. Evening.', 'Ah, it\'s you.'] }), 'My son spends his whole allowance at your shop, you know.', { choose: [{ text: 'Sorry about that!', rel: 1, then: ['Ha. Don\'t be. He\'s happier than I am. I sell insurance.'] }, { text: 'Tell him to bring friends!', then: ['...You\'re a businessman already. Your grandfather would laugh.'] }] }] }) },
   ota: { name: 'Mrs. Ota', role: 'Landlady', preset: 'grandma', seed: 12, color: '#c87a9a', tts: { pitch: 1.0, rate: 0.95 },
@@ -63,7 +63,7 @@ export const DOOR_QUESTS = [{
 
 /** The houses of the lane: bell = the intercom at the gate, door = their front door, who = a lane person or resident.
  *  The coordinates below are fallbacks: town.doors (src/world/Neighbours.js) overrides bell / door / gate / side. */
-const HOUSES = [
+export const HOUSES = [
   { id: 'suzuki', family: 'Suzuki', bell: [6.65, NEAR], door: [6.65, 1.4], res: 'suzuki' },
   { id: 'ota', family: 'Ota', bell: [14.1, NEAR], door: [14.25, 3.9], res: 'ota' },
   { id: 'heights', family: 'Sakura Heights 101', bell: [19.95, NEAR], door: [19.95, 2.4], npc: 'gonta', res: 'gontaMom', out: 'Gonta? Out causing trouble. As usual.' },
@@ -98,7 +98,7 @@ function fromTown(game) {
   }
 }
 /** +1 if the street is toward +z from this house's gate. */
-const outward = (H) => H.side ?? (H.bell[1] > 10 ? -1 : 1);
+export const outward = (H) => H.side ?? (H.bell[1] > 10 ? -1 : 1);
 
 export class Doors {
   constructor(game, lane) {
@@ -165,6 +165,14 @@ export class Doors {
       }
       if (H.grumpy) { this.intercom(H, r.n > 1 ? 'I SAID: GO. AWAY.' : 'Go away. I\'m working.', r.n > 1 ? 'shout' : 'say'); if (r.n > 1) L.mem.rel(H.npc, -1); return; }
       if (!n && !H.res) { g.monologue?.say('No answer.'); return; }
+      if (!n && this.game.residents?.away?.(H.res)) { g.monologue?.say(pick(['No answer. At work, probably.', 'Nobody home.'])); return; }
+      // a resident out on the lane (their routine, src/npc/residents.js) can't answer the intercom
+      const out = !n && this.residents[H.res]?.present ? this.residents[H.res] : null;
+      if (out) {
+        if (out.playerDist < 14) { L.cancel(out); out.activity = null; out.faceTo(g.player.pos); out.say(pick(['Ara? Were you looking for me?', 'Oh! That\'s my bell. Can I help you?', 'Hm? I\'m right here!']), {}); out.look = 'player'; }
+        else g.monologue?.say(pick(['No answer. They must be out.', 'Nobody home.']));
+        return;
+      }
       this.intercom(H, pick(['Coming!', 'Just a moment!', 'Yes, yes, coming...']));
       await this.wait(2.4);
       const who = n || this.resident(H);
@@ -199,7 +207,7 @@ export class Doors {
     const inside = H.atDoor ? [] : [new THREE.Vector3(gx, 0, gz - out * 0.3)];
     const gate = H.atDoor ? new THREE.Vector3(door.x + 0.2, 0, door.z + out * 0.45) : new THREE.Vector3(gx + 0.15, 0, gz + out * 0.45);
     const own = !!L.list.includes(n);
-    if (own) { L.cancel(n); n.activity = 'door'; }
+    L.cancel(n); n.activity = 'door';
     n.place(door, Math.atan2(gate.x - door.x, gate.z - door.z));
     n.setPresent(true);
     sfx('slideDoor', { pos: door.clone().setY(1), vol: 0.5 });
@@ -225,7 +233,7 @@ export class Doors {
     await g.talk.until(() => !n.walking);
     n.ghost = false;
     n.setPresent(false);
-    if (own) n.activity = null;
+    n.activity = null;
   }
 
   update(dt) { for (const n of Object.values(this.residents)) if (n.present) n.update(dt); }

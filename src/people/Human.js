@@ -174,6 +174,15 @@ export class Human {
   clearGesture() { for (const g of this.gestures) this.endGesture(g); }
   stopDance() { for (const g of this.gestures) if (g.name === 'dance') this.endGesture(g); }
   endGesture(g) { if (GESTURES[g.name]?.legs) g.stop = true; else g.out = true; }
+  /** Sit down on a seat whose top is at height seatY (0 / null: stand up again). Blended over ~0.7 s: the hips lower
+   *  and slide back, the thighs come forward, the hands settle on the knees (unless a gesture has them). The caller
+   *  puts the root over the seat. */
+  sit(seatY) { this.seatY = seatY > 0 ? seatY : 0; if (seatY > 0) this.seatH = seatY; }
+  get seated() { return this.sitK > 0.95; }
+  /** A small nod (k ~0.5) or a polite little bow of the head (k ~1): a head-only channel that plays over any gesture. */
+  nod(k = 0.6) { this.nodT = 0; this.nodK = k; }
+  /** A startled flinch (head back, shoulders up) over whatever they are doing. */
+  flinch(k = 1) { this.flinchT = 0; this.flinchK = k; }
   get dancing() { return this.gestures.some((g) => g.name === 'dance' && !g.out && !g.stop); }
   get currentGesture() { const g = this.gestures.find((x) => !x.out && x.name[0] !== '_'); return g ? g.name : null; }
   /** World position ~0.25 m above the head (speech bubbles). */
@@ -254,6 +263,10 @@ export class Human {
     // full-body gesture offsets (dance): weight, hips [dx, dy, dz], hips rotation, feet [dx, dz, lift, pitch]
     this.dnc = { w: 0, fw: 0, hips: [0, 0, 0], rot: [0, 0, 0], feet: [[0, 0, 0, 0], [0, 0, 0, 0]] };
     this.hpPrev = null; this.hpV = new THREE.Vector3(); this.hpA = new THREE.Vector3();
+    // sitting, nods / flinches, gait modifiers (jog: 0..1 running style, tipsy: 0..1 sway)
+    this.seatY = 0; this.seatH = 0.42; this.sitK = 0; this.sitV = 0;
+    this.nodT = 9; this.nodK = 0; this.flinchT = 9; this.flinchK = 0;
+    this.jog = 0; this.jogK = 0; this.tipsy = 0;
   }
 
   update(dt, { speed = 0, lookAt = null, talking = false } = {}) {
@@ -315,12 +328,14 @@ export class Human {
     const W = this.walkW;
     const legLen = this.thighLen + this.shinLen;
     const inPlace = turnStep > 0.05 && speed < 0.2;
-    const stepLen = clamp(legLen * (0.3 + 0.42 * this.spd), 0.16, legLen * 1.15) * st.step * (inPlace ? 0.3 : 1);
+    this.jogK = lerp(this.jogK, this.jog, 1 - Math.exp(-dt * 3));
+    const jk = this.jogK;
+    const stepLen = clamp(legLen * (0.3 + 0.42 * this.spd), 0.16, legLen * (1.15 + 0.25 * jk)) * st.step * (inPlace ? 0.3 : 1);
     if (this.spd > 0.01) this.phase = (this.phase + this.spd * dt / (2 * stepLen * (inPlace ? 3.3 : 1))) % 1;
     else if (W < 0.02) this.phase = 0.05; // ready to step off with the left foot
     const SS = 0.6, half = SS * stepLen;
     const fl = P.footL, ah = P.ankleY, heel = 0.22 * fl, ball = 0.56 * fl;
-    const liftH = (0.04 + 0.03 * this.spd) * (H / 1.7) * (st.bounce > 1.5 ? 1.3 : 1) * (st.hunch > 0.15 ? 0.7 : 1);
+    const liftH = (0.04 + 0.03 * this.spd) * (H / 1.7) * (st.bounce > 1.5 ? 1.3 : 1) * (st.hunch > 0.15 ? 0.7 : 1) * (1 + 1.3 * jk);
     // idle weight shift (pelvis moves over one leg; the feet stay planted thanks to the IK)
     this.shiftT -= dt;
     if (this.shiftT < 0) { this.shiftT = 3 + Math.random() * 6; this.shiftTarget = Math.random() < 0.25 ? 0 : (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.4); }
@@ -412,35 +427,57 @@ export class Human {
     b.hips.position.set(R.hips.x + hipsX, this.hipsY + this.mood[2] * Math.abs(Math.sin(this.t * 9)) * 0.008 * H * (1 - D.w) + D.hips[1], R.hips.z - hunch * 0.02 * H + D.hips[2]);
     const hipsPitch = 0.03 * this.spd * W - hunch * 0.1 + D.rot[0];
     setQ(b.hips, hipsPitch, hipsYaw, hipsRoll);
-    const lean = st.lean * Math.min(1.5, this.spd) * W;
+    // sitting: the hips lower onto the seat and slide back (blended); the legs follow after the IK below
+    this.sitV += (((this.seatY > 0 ? 1 : 0) - this.sitK) * 30 - this.sitV * 10) * dt; this.sitK = clamp(this.sitK + this.sitV * dt, 0, 1);
+    const sk = smooth(this.sitK);
+    if (sk > 0.001) { b.hips.position.y -= Math.max(0, P.hipY - this.seatH) * sk; b.hips.position.z -= 0.1 * H / 1.7 * sk; }
+    // jogging bounce, a tipsy sway
+    if (jk > 0.01) b.hips.position.y += W * jk * Math.abs(Math.sin(this.phase * Math.PI * 2)) * 0.022 * H;
+    const tip = this.tipsy ? this.tipsy * Math.sin(this.t * 1.1) : 0;
+    const lean = st.lean * Math.min(1.5, this.spd) * W + 0.1 * jk * W;
     const talkNod = this.talkAmt * Math.sin(this.t * 5.3) * 0.025;
     // big turns are shared with the chest
     const chestYawN = lookYaw * 0.08 + (lookYaw > 0.8 ? lookYaw - 0.8 : lookYaw < -0.8 ? lookYaw + 0.8 : 0) * 0.7;
-    setQ(b.spine, 0.02 + lean + hunch * 0.5 + breath * 0.008 + 0.0, -hipsYaw * 0.4 + lookYaw * 0.04, -hipsRoll * 0.55);
+    setQ(b.spine, 0.02 + lean + hunch * 0.5 + breath * 0.008 + 0.0, -hipsYaw * 0.4 + lookYaw * 0.04, -hipsRoll * 0.55 + tip * 0.07);
     setQ(b.chest, 0.01 + hunch * 0.55 + this.mood[1] - breath * 0.012, -hipsYaw * 1.15 + chestYawN, -hipsRoll * 0.4 - this.yawRate * this.spd * 0.03);
     // head stabilised against the torso, then turned toward the look target
     const torsoYaw = hipsYaw * (1 - 0.4 - 1.15) + lookYaw * 0.04 + chestYawN;
     const headYaw = clamp(lookYaw - torsoYaw, -1.0, 1.0);
     const torsoPitch = hipsPitch + 0.03 + lean + hunch * 1.05 + this.mood[1];
     const bob = W * Math.sin(this.phase * Math.PI * 4 + 0.6) * 0.015 * st.bounce;
-    setQ(b.neck, -torsoPitch * 0.4 + this.mood[0] * 0.4, headYaw * 0.35, hipsRoll * 0.3);
-    setQ(b.head, -torsoPitch * 0.5 - lookPitch * 0.85 + this.mood[0] * 0.6 + bob + talkNod, headYaw * 0.65, hipsRoll * 0.3 + Math.sin(this.t * 0.37) * 0.02 * idleW);
+    // the nod / flinch channel
+    this.nodT += dt; this.flinchT += dt;
+    const nodA = this.nodT < 0.75 ? this.nodK * (this.nodT < 0.22 ? smooth(this.nodT / 0.22) : 1 - smooth((this.nodT - 0.22) / 0.53)) : 0;
+    const flinA = this.flinchT < 0.9 ? this.flinchK * (this.flinchT < 0.08 ? this.flinchT / 0.08 : 1 - smooth((this.flinchT - 0.08) / 0.82)) : 0;
+    setQ(b.neck, -torsoPitch * 0.4 + this.mood[0] * 0.4 + nodA * 0.12 - flinA * 0.12, headYaw * 0.35, hipsRoll * 0.3);
+    setQ(b.head, -torsoPitch * 0.5 - lookPitch * 0.85 + this.mood[0] * 0.6 + bob + talkNod + nodA * 0.28 - flinA * 0.22, headYaw * 0.65, hipsRoll * 0.3 + Math.sin(this.t * 0.37) * 0.02 * idleW + tip * 0.14);
     this.eyeLead = clamp((ly - lookYaw) * 4 + (lookYaw - torsoYaw - headYaw) * 3, -2.2, 2.2);
     this.eyeLeadY = clamp((lp - lookPitch) * 4 - lookPitch * 1.5, -1, 1.5);
     // --- legs: IK to the planted feet
     for (let s = 0; s < 2; s++) this.legIK(s, hipsPitch);
+    if (this.pedal) this.pedalPh = ((this.pedalPh || 0) + this.pedal * dt) % (Math.PI * 2);
+    if (sk > 0.001) for (let s = 0; s < 2; s++) {
+      const side = s === 0 ? 'L' : 'R', sd = s === 0 ? 1 : -1;
+      // on a bicycle the legs go round with the pedals
+      const pp = this.pedal !== undefined && this.pedal !== null && this.pedalPh !== undefined ? this.pedalPh + s * Math.PI : null;
+      const th = pp !== null ? -1.05 + 0.38 * Math.sin(pp) : -1.42, kn = pp !== null ? 1.15 + 0.42 * Math.sin(pp + 1.3) : 1.36;
+      _q.setFromEuler(_e.set(th, sd * 0.05, sd * 0.07, 'ZXY')); b['thigh' + side].quaternion.slerp(_q, sk);
+      _q.setFromEuler(_e.set(kn, 0, 0, 'YXZ')); b['shin' + side].quaternion.slerp(_q, sk);
+      _q.setFromEuler(_e.set(0.06, sd * 0.1, 0, 'YXZ')); b['foot' + side].quaternion.slerp(_q, sk);
+      this.thighFwd[s] = lerp(this.thighFwd[s], 1.42, sk);
+    }
     // --- arms: swing with the opposite leg (base pose), then gestures blend over
     for (let s = 0; s < 2; s++) {
       const sd = s === 0 ? 1 : -1, side = s === 0 ? 'L' : 'R';
       const otherFwd = (this.feet[1 - s].z - this.feet[s].z) / Math.max(0.05, 2 * half);
-      let swing = st.swing * (0.26 + 0.24 * Math.min(1.6, this.spd)) * W;
+      let swing = st.swing * (0.26 + 0.24 * Math.min(1.6, this.spd)) * W * (1 + 0.4 * jk);
       const hold = side === 'L' ? this.holdL : null;
       if (hold === 'case') swing *= 0.5;
       const fw = otherFwd * swing;
       const abd = st.spread + (hold === 'case' ? 0.1 : 0) + breath * 0.008 + (P.belly ? P.belly * 2 : 0) - sh * sd * 0.03;
-      const elbow = 0.14 + hunch * 0.5 + Math.max(0, fw) * 0.85 + Math.max(0, -fw) * 0.1 + (hold === 'case' ? -0.1 : 0);
+      const elbow = 0.14 + hunch * 0.5 + Math.max(0, fw) * 0.85 + Math.max(0, -fw) * 0.1 + (hold === 'case' ? -0.1 : 0) + jk * W * 1.15;
       setQ(b['arm' + side], -(fw + 0.03 + hunch * 0.3), sd * -0.1 * (1 - W * 0.5), sd * abd, 'ZXY');
-      b['arm' + side].position.copy(R['arm' + side]); b['arm' + side].position.y += breath * 0.0015 * H;
+      b['arm' + side].position.copy(R['arm' + side]); b['arm' + side].position.y += breath * 0.0015 * H + flinA * 0.03 * H / 1.7;
       setQ(b['fore' + side], -Math.max(0.02, elbow), sd * 0.3, 0);
       setQ(b['hand' + side], 0.08, sd * 0.12, sd * 0.06);
     }
@@ -460,6 +497,14 @@ export class Human {
       if (G.eyes) { this.eyes[0] = lerp(this.eyes[0], G.eyes[0], w); this.eyes[1] = lerp(this.eyes[1], G.eyes[1], w); }
     }
     if (lift) { b.armL.position.y += lift; b.armR.position.y += lift; }
+    if (sk > 0.3) {
+      const k = P.H / 1.72, ky = -(P.waistY - P.hipY) + 0.035 * k, kz = 0.2 * k;
+      let busyL = false, busyR = false;
+      for (const g of this.gestures) if (g.w > 0.3) { if (g.pose.L) busyL = true; if (g.pose.R) busyR = true; }
+      const w = smooth((sk - 0.3) / 0.7);
+      if (!busyL && this.holdL !== 'case') this.armIK('L', LAP(P.shX * 0.55, ky, kz, 1), w);
+      if (!busyR) this.armIK('R', LAP(-P.shX * 0.55, ky, kz, -1), w);
+    }
     if (b.box.scale.x) { b.box.position.set(this.boxPos[0], this.boxPos[1], this.boxPos[2]); b.box.quaternion.identity(); }
     if (b.prop.scale.x) this.placeProp();
     // the camera on the neck strap is the one in the hands while photographing
@@ -624,6 +669,9 @@ export class Human {
   }
 }
 
+const _lap = { t: [0, 0, 0], p: [0, 0, 0], hand: [0, 0, 0] };
+/** A hand resting on the knee (arm IK target in chest space). */
+function LAP(x, y, z, sd) { _lap.t[0] = x; _lap.t[1] = y; _lap.t[2] = z; _lap.p[0] = sd; _lap.p[1] = 0.2; _lap.p[2] = -0.7; _lap.hand[0] = 0.5; _lap.hand[1] = sd * 0.2; _lap.hand[2] = 0; return _lap; }
 function setQ(bone, x, y, z, order = 'YXZ') { bone.quaternion.setFromEuler(_e.set(x, y, z, order)); }
 function addQ(bone, a, w) {
   if (!a[0] && !a[1] && !a[2]) return;
