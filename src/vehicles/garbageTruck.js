@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
-import { shell, slab } from './shell.js';
+import { shell } from './shell.js';
 import { ramp, mix, seamLoop, seal, glassPane, rust, lamp, plate, seeded } from './paint.js';
 import { wheelPatches, wheelGeometry, rods, vehicleMaterials, wiper } from './parts.js';
 import { Pix, FONT_JP } from '../gfx/pix.js';
@@ -79,8 +79,9 @@ function paintSide(S, sx) {
   for (let z = -1.8; z < 1.0; z += 0.55) { S.rect(U(z), 0.86, U(z + 0.05), 0.9, 0xf09a2a); S.px(I(z) + (sx > 0 ? -1 : 1), J(0.9) - 1, 0xffd080); }
   A.ink(ROUGH.paint);
   // the hopper: grey steel, the tail lamps' wrap
-  S.rect(U(-2.5), 0.62, U(BODY.z0), 2.0, mix(WHITE[2], 0x8a8e92, 0.35));
-  S.hline(I(-2.5), I(BODY.z0), J(1.4), WHITE[1]);
+  S.rect(U(-2.52), 0.6, U(BODY.z0 + 0.02), 2.3, mix(WHITE[2], 0x8a8e92, 0.3));
+  for (const y of [0.95, 1.4, 1.85]) { S.hline(I(-2.5), I(BODY.z0), J(y), mix(WHITE[1], 0x8a8e92, 0.35)); S.hline(I(-2.5), I(BODY.z0), J(y) + 1, WHITE[3]); }
+  A.ink(ROUGH.lens); S.rect(U(-2.48), 1.6, U(-2.42), 1.66, 0xf09a2a); A.ink(ROUGH.paint);
   // the cab: door seam, its window, a blue stripe, the step, the side indicator
   S.rect(U(CAB.z0), 1.02, U(CAB.z1), 1.08, BLUE[2]);
   seamLoop(S, P([[1.28, 0.7], [CAB.z1 - 0.08, 0.7], [CAB.z1 - 0.08, 1.2], [zWS(1.3) - 0.06, 1.3], [zWS(1.95) - 0.06, 1.95], [1.28, 1.95]]), WHITE[0], WHITE[4], sx > 0 ? -1 : 1, -1);
@@ -158,14 +159,12 @@ export function garbageTruckParts() {
   });
   // the packer body
   shell(G, { pts: BODY_PROFILE, W: W + 0.01, R: 0.1, K: 2, uv: ext, bandUv: (e) => (BODY_PROFILE[e][2] === 0 ? dark : null) });
-  // the hopper: sides, top and bottom; its back a plate with the loading mouth cut in it, the dark throat behind
-  G.with(ext, 0, () => {
-    G.box(-W, 0.62, -2.5, W, 2.0, BODY.z0 + 0.02, { skip: ['nz'] });
-    G.box(-W - 0.005, 0.27, -2.62, W + 0.005, 0.32, -2.46, { bevel: 0.01 }); // the crew's step
-  });
-  const MOUTH = [[-0.64, 0.8], [0.64, 0.8], [0.64, 1.4], [-0.64, 1.4]];
-  slab(G, [[-W, 0.62], [W, 0.62], [W, 2.0], [-W, 2.0]], [MOUTH], -2.5, -2.46, { axis: 'z', uvOut: ext, uvIn: dark, uvEdge: ext, uvHole: sw(0xc8ccd0, ROUGH.metal) });
-  G.with(dark, 0, () => G.box(-0.64, 0.8, -2.46, 0.64, 1.4, -1.95, { inward: true, skip: ['nz'] }));
+  // the hopper: a sloped steel box behind the body with the loading mouth in its back, the dark throat behind it
+  const HOP = [[-2.5, 0.62, 0], [-1.98, 0.62, 0], [-1.98, 2.22, 1], [-2.22, 2.14, 1], [-2.5, 1.86, 1]];
+  shell(G, { pts: HOP, W, R: 0.06, K: 2, uv: ext, bandHoles: [{ e: 4, u0: (1.86 - 1.4) / 1.24, u1: (1.86 - 0.8) / 1.24, hx: 0.64, glass: false, wall: sw(0xc8ccd0, ROUGH.metal) }], bandUv: (e) => (HOP[e][2] === 0 ? dark : null) });
+  G.with(dark, 0, () => G.box(-0.64, 0.8, -2.47, 0.64, 1.4, -1.95, { inward: true, skip: ['nz'] }));
+  G.with(ext, 0, () => G.box(-W - 0.005, 0.27, -2.62, W + 0.005, 0.32, -2.46, { bevel: 0.01 })); // the crew's step
+  G.with(sw(0x6a6e72, ROUGH.metal), 0, () => { for (const s of [-1, 1]) G.box(s * 0.7 - 0.03, 0.32, -2.52, s * 0.7 + 0.03, 0.62, -2.46); });
   G.with(sw(CHROME[1], ROUGH.chrome), 0, () => {
     for (const s of [-1, 1]) rods(G, [[s * 0.8, 0.5, -2.52], [s * 0.8, 1.9, -2.52]], 0.018, 6);
     rods(G, [[-0.6, 1.62, -2.52], [0.6, 1.62, -2.52]], 0.016, 6);

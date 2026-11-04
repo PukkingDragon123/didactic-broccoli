@@ -102,13 +102,14 @@ export class Atlas {
     t.anisotropy = 4;
     return (this.tex = t);
   }
+  /** The roughness map, at half the colour map's resolution (it only changes from part to part). */
   roughTexture() {
     if (this.rtex) return this.rtex;
-    const d = new Uint8ClampedArray(this.w * this.h * 4);
-    for (let i = 0; i < this.r.length; i++) { const v = this.r[i]; d[i * 4] = v; d[i * 4 + 1] = v; d[i * 4 + 2] = v; d[i * 4 + 3] = 255; }
+    const w = this.w >> 1, h = this.h >> 1, d = new Uint8ClampedArray(w * h * 4);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const v = this.r[(y * 2) * this.w + x * 2], i = (y * w + x) * 4; d[i] = v; d[i + 1] = v; d[i + 2] = v; d[i + 3] = 255; }
     const c = document.createElement('canvas');
-    c.width = this.w; c.height = this.h;
-    c.getContext('2d').putImageData(new ImageData(d, this.w, this.h), 0, 0);
+    c.width = w; c.height = h;
+    c.getContext('2d').putImageData(new ImageData(d, w, h), 0, 0);
     const t = new THREE.CanvasTexture(c);
     t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestMipmapLinearFilter;
     return (this.rtex = t);

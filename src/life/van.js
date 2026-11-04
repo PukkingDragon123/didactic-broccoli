@@ -548,6 +548,8 @@ function exterior(G, V, A) {
     const d = [0.985, 0.17 * up[1], 0.17 * up[2]], l = Math.hypot(...d);
     wiper(G, piv, d.map((v) => v / l), 0.44, 0.38, out, sw(0x161618));
   }
+  // the radio aerial up the left A-pillar
+  G.with(sw(0x8a8e92, ROUGH.chrome), 0, () => { G.strut([W - 0.02, 1.04, 1.6], [W + 0.03, 1.98, 1.24], 0.004, { round: 4 }); G.box(W - 0.03, 1.02, 1.58, W, 1.06, 1.62, { bevel: 0.006 }); });
   // the left door mirror, and the little under-mirror on the left front corner
   doorMirror(G, [W + 0.004, 1.12, 1.5], [W + 0.115, 1.2, 1.47], { uvBody: sw(0x1e1f21), uvGlass: sw(0x9ab0bc, ROUGH.glass) });
   G.with(sw(0x1e1f21), 0, () => {

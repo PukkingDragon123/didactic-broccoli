@@ -150,16 +150,19 @@ export function lamp(V, i0, j0, i1, j1, kind = 'head', o = {}) {
   A.ink(ROUGH.lens);
   for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) {
     const x = i - i0, y = j - j0;
-    let c = L[2];
+    let c;
     if (kind === 'head') {
-      // reflector bowl: darker rim, bright centre, vertical lens flutes
-      const dx = (x + 0.5) / w - 0.5, dy = (y + 0.5) / h - 0.5, d = Math.hypot(dx * 1.2, dy * 1.6);
-      c = d > 0.45 ? L[1] : d > 0.3 ? L[2] : d > 0.14 ? L[3] : L[4];
-      if (x % 3 === 2 && d > 0.14) c = mix(c, L[0], 0.35);
-      if (y === h - 1 || (y === h - 2 && x < w / 2)) c = L[4];
+      // a reflector bowl behind ribbed glass: rings round the bulb, a bright centre, the lens's horizontal ribs
+      const dx = (x + 0.5 - w / 2) / (w / 2), dy = (y + 0.5 - h / 2) / (h / 2), d = Math.hypot(dx * 1.0, dy * 1.15);
+      c = d > 0.92 ? L[0] : d > 0.7 ? L[1] : d > 0.4 ? L[2] : d > 0.2 ? L[3] : L[4];
+      if (d > 0.4 && Math.floor(d * 7) % 2 === 0) c = mix(c, L[1], 0.5);
+      if (y % 3 === 1 && d > 0.2) c = mix(c, L[0], 0.25);
+      if (x <= 1 || x >= w - 2 || y === 0 || y === h - 1) c = L[1];
+      if ((x === 2 || x === 3) && y === h - 3) c = L[4];
     } else {
-      c = y >= h - 1 ? L[3] : (x + y) % 3 === 0 ? L[1] : L[2];
-      if (x === 1 && y > 0 && y < h - 1) c = L[3];
+      // a fluted lens: darker ribs every third column, a lit top row, a shaded bottom row
+      c = y === h - 1 ? L[3] : y === 0 ? L[1] : x % 3 === 2 ? L[1] : L[2];
+      if (x === 1 && y === h - 2) c = L[4];
     }
     V.px(i, j, c);
   }
