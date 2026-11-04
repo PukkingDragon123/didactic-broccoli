@@ -119,6 +119,7 @@ function paintAtlas() {
   V.litTail = A.patch('lit:tail', 13, 18); lampLit(V.litTail, 0, 0, 13, 18, 'red');
   V.litAmber = A.patch('lit:amber', 8, 6); lampLit(V.litAmber, 0, 0, 8, 6, 'amber');
   V.photo = A.patch('photo', 12, 16); paintPhoto(V.photo);
+  V.dmirror = A.patch('door-mirror', 10, 14); paintDoorMirror(V.dmirror);
   paintSide(V.L, 1); paintSide(V.R, -1);
   paintFront(V.F); paintRear(V.B); paintRoof(V.T);
   paintInside(V);
@@ -471,6 +472,14 @@ function paintFlap(P) {
   for (let j = 2; j < P.H - 2; j += 3) P.hline(2, P.W - 3, j, 0x2a2a2c);
   P.rect(4, 8, 14, 14, 0xb8bcc0); P.rect(5, 9, 13, 13, 0x1e1e20);
 }
+/** What a door mirror shows: sky, the lane's roofs, the road, the van's own mint flank down one side. */
+function paintDoorMirror(P) {
+  P.A.ink(ROUGH.glass);
+  P.box(0, 0, P.W, P.H, (i, j) => (j > 8 ? (j > 11 ? 0xd4e4ec : 0xb4ccd8) : j > 6 ? 0x8a8070 : 0x6e6e6a));
+  P.box(0, 0, 3, 10, PR[2]); P.vline(3, 0, 9, PR[0]);
+  P.hline(4, 9, 3, 0xd8d4c8);
+  P.frame(0, 0, P.W, P.H, 0x2a2c2e);
+}
 function paintPhoto(P) {
   P.A.ink(ROUGH.matte);
   P.fill(0xf4f0e6); P.rect(1, 3, 11, 15, 0x8aa0b0); P.rect(1, 3, 11, 7, 0x6a8a5a);
@@ -553,7 +562,7 @@ function exterior(G, V, A) {
   // the radio aerial up the left A-pillar
   G.with(sw(0x8a8e92, ROUGH.chrome), 0, () => { G.strut([W - 0.02, 1.04, 1.6], [W + 0.03, 1.98, 1.24], 0.004, { round: 4 }); G.box(W - 0.03, 1.02, 1.58, W, 1.06, 1.62, { bevel: 0.006 }); });
   // the left door mirror, and the little under-mirror on the left front corner
-  doorMirror(G, [W + 0.004, 1.12, 1.5], [W + 0.115, 1.2, 1.47], { uvBody: sw(0x1e1f21), uvGlass: sw(0x9ab0bc, ROUGH.glass) });
+  doorMirror(G, [W + 0.004, 1.12, 1.5], [W + 0.115, 1.2, 1.47], { uvBody: sw(0x1e1f21), uvGlass: mirrorUv(V, W + 0.115, 1.2, true) });
   G.with(sw(0x1e1f21), 0, () => {
     G.strut([0.69, 1.0, 1.63], [0.75, 1.16, 1.72], 0.008, { round: 4 });
     G.box(0.72, 1.14, 1.70, 0.79, 1.2, 1.745, { bevel: 0.012 });
@@ -586,6 +595,12 @@ function exterior(G, V, A) {
     G.box(-0.3, 0.12, 0.25, 0.3, 0.28, 0.75, { bevel: 0.03 });
   });
   G.with(sw(0x5a5048, ROUGH.metal), 0, () => { G.strut([0.32, 0.16, -0.7], [0.4, 0.17, -1.6], 0.022, { round: 6 }); G.strut([0.4, 0.17, -1.6], [0.4, 0.17, -1.69], 0.026, { round: 6 }); });
+}
+
+/** uv over the door-mirror patch for a mirror head centred at (x, y) (the van's flank on the inboard side). */
+function mirrorUv(V, x, y, left) {
+  const w = 0.1, h = 0.14;
+  return (p) => { const s = (p[0] - (x - w / 2)) / w, t = (p[1] - (y - h / 2)) / h; return V.dmirror.st(Math.min(0.99, Math.max(0.01, left ? s : 1 - s)), Math.min(0.99, Math.max(0.01, t))); };
 }
 
 /** The cab and the load space. */
@@ -700,7 +715,7 @@ function buildDoor(V, A) {
   const G = new Geo(1), GL = new Geo(1);
   slab(G, DOOR, [WIN_DOOR], -W, -(W - DOOR_T), { uvOut: ext, uvIn: inn, uvEdge: A.swatch(PR[1], ROUGH.paint), uvHole: A.swatch(RUBBER, ROUGH.rubber) });
   GL.with(ext, 0, () => GL.polyHoles(WIN_DOOR, [], (z, y) => [-(W - 0.014), y, z], [-1, 0, 0]));
-  doorMirror(G, [-W - 0.004, 1.12, 1.5], [-W - 0.115, 1.2, 1.47], { uvBody: A.swatch(0x1e1f21, ROUGH.plastic), uvGlass: A.swatch(0x9ab0bc, ROUGH.glass) });
+  doorMirror(G, [-W - 0.004, 1.12, 1.5], [-W - 0.115, 1.2, 1.47], { uvBody: A.swatch(0x1e1f21, ROUGH.plastic), uvGlass: mirrorUv(V, -W - 0.115, 1.2, false) });
   G.with(A.swatch(0x2a2c2e, ROUGH.plastic), 0, () => G.box(-W - 0.012, 0.968, 0.86, -W, 0.99, 0.97, { bevel: 0.004 }));
   G.with(A.swatch(CHROME[2], ROUGH.chrome), 0, () => G.box(-W - 0.015, 0.975, 0.87, -W - 0.005, 0.983, 0.96));
   doorFittings(G, A, -1);
