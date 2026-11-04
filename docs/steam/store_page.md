@@ -2,13 +2,15 @@
 
 ## Short description (shown next to the capsule, max 300 characters)
 
-Grandpa left you his garage, a key, and a pile of notes. Turn the dusty back-lane garage into the best capsule-toy shop in town: fix up old machines, haggle for second-hand stock, pay the electricity bill, and try not to slap the neighbours. Mostly.
+Grandpa is retiring to the seaside and the garage is yours. Turn it into the best capsule-toy shop in town: fix up old machines, haggle for second-hand stock, pay the electricity bill, and try not to slap the neighbours. Mostly.
 
 ## About this game
 
-It's spring, 1999. You drive Grandpa's rusty kei van into a narrow back lane somewhere in Morio-chō, park it in front of a shutter you haven't seen since you were nine, and find an envelope taped to it. It says KIDDO.
+It's spring, 1999. You drive Grandpa's rusty kei van out of a railway underpass and down a narrow back lane somewhere in Morio-chō, toward a shutter you haven't seen since you were nine. He's out front on his stool, waving you into a spot he has chalked on the road. Then he knocks on the window. "Oi. No parking in this lane."
 
-Inside is the garage, a fuse box that doesn't work, a cash tin with ¥2,500 in it, and a list. Grandpa's lists are how this game talks to you. Flip the breaker. Air the place out. Feed the cat (she's shy). Earn enough walking a neighbour's shiba to buy a used gacha machine off a website that still runs on dial-up.
+His back is done for and he's moving in with his sister in Atami. Today is his last day. He gives you the keys, the one key he never figured out, and an afternoon of instructions at an old man's pace before his taxi comes.
+
+After that it's his notebook and the notes he taped all round the garage. Inside is a fuse box that doesn't work, a cash tin with ¥2,500 in it, and a list. Grandpa's lists are how this game talks to you, and he still phones to check you're eating. Flip the breaker. Air the place out. Feed the cat (she's shy). Earn enough walking a neighbour's shiba to buy a used gacha machine off a website that still runs on dial-up.
 
 **Run a real little shop**
 

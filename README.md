@@ -1,9 +1,10 @@
 # GACHA GARAGE
 
 A first-person **capsule-toy shop sim** in a Shōwa-era Japanese back lane, spring 1999.
-Grandpa left you his garage, a key, a biscuit tin of savings and a stack of handwritten notes. You drive his
-rusty kei van into the lane, roll the shutter up and start from nothing: no machines, ¥1,500 in your pocket,
-the electricity off and a shy cat living behind the junk boxes.
+Grandpa's back has given out and he's off to his sister's in Atami. Today is his last day in the lane. You
+drive his rusty kei van down to the garage, he waves you in, hands you the keys, and spends the afternoon
+showing you the ropes before his taxi comes. Then it's you: no machines, ¥1,500 in your pocket, the electricity
+off and a shy cat living behind the junk boxes.
 
 Voxel and low-poly 3D, pixel-art 2D, a paper UI, 8-bit voices. Models, textures and people are generated in
 code at runtime. Music and sound effects are recorded files (`public/audio`). Posters, flyers, prints and
@@ -39,9 +40,16 @@ On phones there's a virtual stick and buttons: tap to use, tap the inventory to 
 
 ## What's inside
 
-**Opening up.** The intro drives you down the lane in Grandpa's van. After that, his notes tell you what to
-do, in about thirty small, physical steps:
-- read the KIDDO envelope and unlock the shutter;
+**Arriving.** You drive Grandpa's van yourself, out of the dark railway underpass and slowly down the lane
+(W/S, A/D, Space for the handbrake, H for the horn), into the spot he has chalked out for you. He taps on the
+window, you climb out, and the two of you talk: a bow or an awkward hug, the van's clutch, the keys, the shop
+in its heyday.
+
+**Opening up.** On day one Grandpa walks you through it himself: he shuffles over to each job, points,
+thumps the breaker box to show you, and has something dry to say when you get it done (or when you slap him).
+After the rubbish run his taxi comes; he leaves you his notebook, and his notes taped round the garage take you
+through the rest, about thirty small, physical steps in all:
+- read his letter and unlock the shutter;
 - flip the breaker, air the place out, wipe the counter and count the cash tin;
 - find the old OPEN sign in a junk box;
 - feed Mikan (pour the milk yourself; it really pours);
@@ -131,7 +139,8 @@ a time-stopping pocket watch and the Bizarre Pose Club series. These are affecti
   - depth-based ink outlines;
   - post-processing: GTAO on high and ultra, bloom, colour grade and FXAA.
 - **People:** one skinned low-poly mesh and one painted atlas per person, with procedural animation and
-  8-bit voices. Real speech synthesis is optional.
+  8-bit voices (real speech synthesis is optional); crowd steering that keeps left and gives way, glances and
+  greetings, and errands chosen by the hour.
 - **Systems:** sphere physics for capsules, Verlet rope, liquid pour, A* pathfinding, and a generator-based
   cutscene engine.
 - **Extending:** drop-in features live in `src/plugins/*.js` (export `install(game)`). Save data goes through
@@ -151,7 +160,10 @@ src/os        Capsule 98 desktop and its apps and websites (src/pc: the desk and
 src/market    Off-Hobby, Daikoku Toys, delivery van, grading, auctions
 src/money     wallet, physical cash, ATM, piggy bank
 src/build     furniture catalogue, placement, storage boxes, robot vacuum
-src/life      intro, Grandpa's notes, opening steps, jobs, trash
+src/drive     the playable arrival in Grandpa's van
+src/grandpa   Grandpa: the meeting, day one, the goodbye, his calls
+src/vehicles  the vehicle kit: van, FREE CANDY van, garbage truck, taxi, cars
+src/life      Grandpa's notes, opening steps, jobs, trash
 src/needs     energy, food, drinks
 src/places    Mikawa-ya, vending machines, Ramen Yamada, your room, plants, pigeons
 src/staff     the Inspired job site and employees
