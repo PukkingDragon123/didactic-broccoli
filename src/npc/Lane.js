@@ -203,7 +203,7 @@ export class Lane {
   /** A machine someone can play (stocked, working, not in use). */
   machineFor() {
     const g = this.game;
-    const ok = g.machines.filter((m) => !m.data.broken && !m.data.fallen && m.data.stock.length > 0 && !m._user && !(m._queue?.length) && !(g.pedestrians?.list || []).some((p) => p.machine === m && (p.state === 'goIn' || p.state === 'play' || p.state === 'queue')) && !this.list.some((n) => n.machine === m));
+    const ok = g.machines.filter((m) => !m.data.broken && !m.data.fallen && m.data.stock.length > 0 && !(g.pedestrians?.userOf ? g.pedestrians.userOf(m) : m._user) && !(m._queue?.length) && !(g.pedestrians?.list || []).some((p) => p.machine === m && (p.state === 'goIn' || p.state === 'play' || p.state === 'queue')) && !this.list.some((n) => n.machine === m));
     return ok.length ? pick(ok) : null;
   }
 

@@ -69,8 +69,8 @@ export function* tapScene(c, sys) {
   // c. back in the cab, turning to the side window: a face at the glass, knuckles on it
   gp.place(V(2.3, 0, 11.36), 0);
   gp.lookAt = eye.clone();
-  const pov = van ? van.local(-0.12, 1.44, 0.72) : eye.clone().add(V(0.2, 0, 0.3)), win = van ? van.local(-1.0, 1.3, 1.05) : V(2.3, 1.3, 11.3);
-  yield c.cam({ pos: pov, look: win, fov: 50 });
+  const pov = van ? van.local(0.22, 1.4, 0.62) : eye.clone().add(V(0.2, 0, 0.3)), win = van ? van.local(-1.05, 1.47, 1.02) : V(2.3, 1.3, 11.3);
+  yield c.cam({ pos: pov, look: win, fov: 56 });
   gp.act('knock', 1.8);
   audio.play('knockGlass', { pos: V(2.3, 1.3, 11.78), vol: 1, delay: 0.15 });
   yield c.wait(1.2);
