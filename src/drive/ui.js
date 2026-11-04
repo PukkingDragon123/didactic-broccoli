@@ -1,6 +1,6 @@
-// The drive's paper UI: a sticky note taped low on the left with the controls (it fades once you've got going), a
-// receipt-paper ticket for the radio station, a prompt card, and the cutscene layer's hold-to-skip bar (re-used: Space
-// is the handbrake here, so it's hold Enter, or hold the screen's SKIP button on touch).
+// The drive's paper UI: a sticky note taped low on the left with the controls (W go · A/D steer · Space brake · H horn;
+// it fades once you're rolling down the lane), a receipt-paper ticket for the radio station, a prompt card, and the
+// cutscene layer's hold-to-skip bar (re-used: Space brakes here, so it's hold Enter, or the touch SKIP button).
 //   ui.show(on)   ui.noteAway()   ui.ticket(text, jp)   ui.prompt(html | null)   ui.skipBar(k 0..1 | null)
 import './drive.css';
 
@@ -11,10 +11,9 @@ export class DriveUI {
     el.id = 'drive-ui';
     el.innerHTML = `<div class="dn"><div class="h">Grandpa's van</div>
       <div class="r"><span class="k">W</span>go</div>
-      <div class="r"><span class="k">S</span>brake · back</div>
       <div class="r"><span class="k">A / D</span>steer</div>
-      <div class="r"><span class="k">Space</span>handbrake</div>
-      <div class="r"><span class="k">H</span>horn · R radio · L lights</div></div>
+      <div class="r"><span class="k">Space</span>brake</div>
+      <div class="r"><span class="k">H</span>horn</div></div>
       <div class="tk"></div><div class="pr"></div>`;
     document.body.appendChild(el);
     this.el = el;

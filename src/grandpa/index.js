@@ -191,15 +191,16 @@ export class GrandpaSystem {
 
   /** Passers-by and the lane's people step out of shot while his scenes play (on: true hides, false brings back). */
   hideCrowd(on) {
+    if (on) { this.hidden ||= new Set(); this.sweepCrowd(); }
+    else if (this.hidden) { for (const r of this.hidden) r.visible = true; this.hidden = null; }
+  }
+  /** (every frame while hidden: people who wander in later are kept out of shot too) */
+  sweepCrowd() {
     const g = this.game;
-    if (on) {
-      if (this.hidden) return;
-      this.hidden = [];
-      for (const p of [...(g.pedestrians?.list || []), ...(g.lane?.list || [])]) {
-        const r = p.h?.root;
-        if (r && r.visible && Math.hypot(r.position.x - 1.5, r.position.z - 8) < 14) { r.visible = false; this.hidden.push(r); }
-      }
-    } else if (this.hidden) { for (const r of this.hidden) r.visible = true; this.hidden = null; }
+    for (const p of [...(g.pedestrians?.list || []), ...(g.lane?.list || [])]) {
+      const r = p.h?.root;
+      if (r && r.visible && Math.hypot(r.position.x - 1.5, r.position.z - 8) < 15) { r.visible = false; this.hidden.add(r); }
+    }
   }
 
   /** A cinematic chat with him (src/talk/Talk.js), waiting for anything else on screen to finish first. */
@@ -291,6 +292,7 @@ export class GrandpaSystem {
   update(dt) {
     for (let i = this.waiters.length - 1; i >= 0; i--) { const w = this.waiters[i]; if (w.fn(dt)) { this.waiters.splice(i, 1); w.res(true); } }
     this.phone?.update(dt);
+    if (this.hidden) this.sweepCrowd();
     if (this.stool && this.game.story.done && !this.game.cutscene.active) this.removeStool();
     if (!this.gp || this.mode === 'gone') return;
     if (this.mode === 'marshal') this.updateMarshal(dt);

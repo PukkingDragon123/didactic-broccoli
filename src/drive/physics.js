@@ -1,11 +1,12 @@
 // Arcade physics for Grandpa's kei van: a kinematic bicycle model pivoting on the rear axle, a little 4-speed
 // gearbox that shifts by itself (the revs drive the engine sound), brakes, reverse, a handbrake, steering that gets
-// lighter with speed, and the body on springs (pitch from braking / accelerating, roll from cornering, bumps).
-//   const p = new VanPhysics();  p.reset(x, z, heading);  p.step(dt, { throttle, brake, steer, hand });
+// lighter with speed, an old governor (p.vmax: a gentle top speed for a narrow lane) and the body on springs (pitch
+// from braking / accelerating, roll from cornering, bumps), softly damped so it settles with a little weight.
+//   const p = new VanPhysics({ vmax });  p.reset(x, z, heading);  p.step(dt, { throttle, brake, steer, hand });
 //   p.x / p.z / p.h (heading: forward = (sin h, cos h)) / p.v (m/s along the heading, < 0 reversing) / p.delta (wheel
 //   angle, > 0 left) / p.rpm / p.gear (0 = reverse) / p.pitch / p.roll / p.bounce / p.ax / p.alat
 export const WHEELBASE = 2.16;
-export const VMAX = 15.4; // ~55 km/h, a gentle old kei van
+export const VMAX = 6.6; // ~24 km/h: the lane is narrow, people walk in it
 const GEARS = [null, 857, 480, 309, 216]; // rpm per m/s in each gear
 const PULL = [null, 2.5, 1.65, 1.08, 0.72]; // m/s² at full throttle and peak torque
 const IDLE = 850, REDLINE = 6200;
@@ -15,7 +16,8 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const torque = (rpm) => clamp(0.62 + 0.38 * Math.sin(clamp((rpm - 900) / 5200, 0, 1) * Math.PI * 0.95), 0.55, 1);
 
 export class VanPhysics {
-  constructor() {
+  constructor({ vmax = VMAX } = {}) {
+    this.vmax = vmax;
     this.reset(0, 0, 0);
   }
 
@@ -69,15 +71,15 @@ export class VanPhysics {
       // automatic shifting (with a short gap in the pull)
       const rpmG = Math.max(0, this.v) * GEARS[this.gear];
       if (this.shiftT <= 0) {
-        if (this.gear < 4 && rpmG > 5200 && thr > 0.2) { this.gear++; this.shiftT = 0.28; this.shifted = 1; }
-        else if (this.gear > 1 && rpmG < 1900) { this.gear--; this.shiftT = 0.18; this.shifted = -1; }
+        if (this.gear < 4 && rpmG > 4300 && thr > 0.2) { this.gear++; this.shiftT = 0.3; this.shifted = 1; }
+        else if (this.gear > 1 && rpmG < 1500) { this.gear--; this.shiftT = 0.2; this.shifted = -1; }
       } else this.shiftT -= dt;
       const engaged = this.shiftT <= 0;
       const rpmT = Math.max(IDLE + thr * 1600 * (this.v < 2 ? 1 : 0), Math.max(0, this.v) * GEARS[this.gear]);
       this.rpm += (Math.min(REDLINE, rpmT) - this.rpm) * Math.min(1, dt * (engaged ? 9 : 4));
       if (engaged && thr > 0) {
         let pull = thr * PULL[this.gear] * torque(this.rpm);
-        if (this.v > VMAX) pull *= clamp(1 - (this.v - VMAX) / 1.5, 0, 1); // the old governor
+        if (this.v > this.vmax - 0.8) pull *= clamp(1 - (this.v - this.vmax + 0.8) / 1.2, 0, 1); // ease off before the top
         a += pull;
       }
       if (engaged && thr < 0.05 && this.v > 1) a -= 0.35 * (5 - this.gear) / 4; // engine braking
@@ -112,8 +114,8 @@ export class VanPhysics {
   /** The body on its springs. */
   suspension(dt) {
     const h = Math.min(dt, 1 / 30);
-    const k = 70, c = 9;
-    const tp = clamp(-this.ax * 0.0075, -0.035, 0.05), tr = clamp(this.alat * 0.0085, -0.06, 0.06);
+    const k = 55, c = 8.5;
+    const tp = clamp(-this.ax * 0.009, -0.035, 0.045), tr = clamp(this.alat * 0.014, -0.05, 0.05);
     this.pitchV += ((tp - this.pitch) * k - this.pitchV * c) * h; this.pitch += this.pitchV * h;
     this.rollV += ((tr - this.roll) * k * 0.8 - this.rollV * c * 0.8) * h; this.roll += this.rollV * h;
     this.bounceV += ((0 - this.bounce) * 160 - this.bounceV * 11) * h; this.bounce += this.bounceV * h;
