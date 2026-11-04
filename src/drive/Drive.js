@@ -617,6 +617,7 @@ export class Drive {
     if (E) {
       E.t = Math.min(END_DUR, E.t + dt);
       this.placeEndCamera(dt);
+      this.syncCab(); // the end camera sits inside the cab: switch to the cab glass now, not a frame late
       if (E.t >= END_DUR && this.resolve) this.resolveNow(); // settled: Grandpa's scene can take it from here
     }
     if (this.opts?.exitPrompt && this.seatT > END_DUR + 0.6) {
