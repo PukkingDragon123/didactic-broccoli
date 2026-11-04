@@ -65,7 +65,10 @@ export class Awareness {
   }
 
   /** A shared budget for ambient lines (greetings, gasps, chatter): never a wall of floating text. */
+  /** No street chatter while a cutscene or a chat has the screen, or while you sit in the van after the drive. */
+  quiet() { const g = this.game; return !!(g.cutscene?.active || g.talk?.active || g.drive?.seated); }
   speakOk(max = 3) {
+    if (this.quiet()) return false;
     const t = this.t;
     if (this.lines.length) this.lines = this.lines.filter((e) => e > t);
     return this.lines.length < max && t - this.lastLine > 0.55;
@@ -97,7 +100,7 @@ export class Awareness {
       }
       if ((rec.chkT -= dt) > 0) continue;
       rec.chkT = rnd(0.28, 0.42);
-      if (rec.busy?.()) continue;
+      if (rec.busy?.() || rec.h?.root?.visible === false) continue;
       this.check(rec);
     }
     void g;
@@ -128,7 +131,7 @@ export class Awareness {
       this.stats.glances++;
     }
     // a greeting (once per encounter: passers-by once, the people you know again after a while)
-    if (inView && d < 3.6 && this.t - rec.greeted > (rec.npc ? 300 : 1e9) && off < 1.4) {
+    if (inView && d < 3.6 && !this.quiet() && this.t - rec.greeted > (rec.npc ? 300 : 1e9) && off < 1.4) {
       rec.greeted = this.t;
       const met = !!rec.met?.();
       if (Math.random() < (rec.greetChance ?? (met ? 0.85 : rec.local ? 0.55 : 0.3))) {
@@ -136,13 +139,13 @@ export class Awareness {
         const line = rec.greet ? rec.greet(w, this.playerName(), met) : (Math.random() < 0.5 ? w : null);
         rec.h?.nod?.(rec.polite ? 0.95 : 0.55);
         this.look(rec, null, rnd(1.2, 2), 1, true);
-        if (line && d < 5 && this.speakOk()) { rec.say?.(line, 'say'); this.spoke(2); this.stats.greetLines++; this.stats.byWord[w] = (this.stats.byWord[w] || 0) + 1; }
+        if (line && d < 5 && rec.h?.root?.visible !== false && this.speakOk()) { rec.say?.(line, 'say'); this.spoke(2); this.stats.greetLines++; this.stats.byWord[w] = (this.stats.byWord[w] || 0) + 1; }
         this.stats.greetings++;
         rec.cool = Math.max(rec.cool, rnd(6, 12));
       }
     }
     // neighbours nod to each other in passing
-    if (rec.local) for (const o of this.recs) {
+    if (rec.local && !this.quiet()) for (const o of this.recs) {
       if (o === rec || !o.local || o.busy?.()) continue;
       const ox = o.pos.x - rec.pos.x, oz = o.pos.z - rec.pos.z, od = Math.hypot(ox, oz);
       if (od > 2.4 || od < 0.3) continue;

@@ -40,6 +40,8 @@ export function residentsLife(game) {
   const gateIn = (H) => { const o = outward(H), gx = H.gate ? H.gate[0] : H.bell[0] + 0.35, gz = H.gate ? H.gate[1] : H.bell[1]; return V(gx, gz - o * 0.3); };
   const gateOut = (H) => { const o = outward(H), gx = H.gate ? H.gate[0] : H.bell[0] + 0.35, gz = H.gate ? H.gate[1] : H.bell[1]; return V(gx + 0.15, gz + o * 0.55); };
   const laneZ = (H) => (outward(H) > 0 ? LANE_N : LANE_F);
+  const quiet = () => !!(game.cutscene?.active || game.talk?.active || game.drive?.seated);
+  const say = (n, text, o = {}) => { if (!quiet() && n.h.root.visible) n.say(text, o); };
 
   /** Build the resident (once) with a click target for a chat on the lane. */
   function who(id) {
@@ -98,7 +100,7 @@ export function residentsLife(game) {
   const ACTS = {
     *commute(n, H, dir) {
       yield* goOut(n, H);
-      n.say(pick(['Ittekimasu.', 'Off to work...', 'Haa... Monday again.']), {});
+      say(n, pick(['Ittekimasu.', 'Off to work...', 'Haa... Monday again.']), {});
       yield L.goTo(n, V(dir * EAST, dir > 0 ? LANE_N : LANE_F), { speed: 1.45 });
       n.setPresent(false);
       S.away[n.id] = true;
@@ -109,7 +111,7 @@ export function residentsLife(game) {
       n.place(V(dir * (EAST + 2), dir > 0 ? LANE_F : LANE_N), dir > 0 ? -Math.PI / 2 : Math.PI / 2);
       n.setPresent(true);
       yield L.goTo(n, V(gateOut(H).x + dir * 1, laneZ(H)), { speed: 1.2 });
-      if (n.playerDist < 10) n.say(pick(['Tadaima...', 'What a day.', 'Haa... home.']), {});
+      if (n.playerDist < 10) say(n, pick(['Tadaima...', 'What a day.', 'Haa... home.']), {});
       yield* goIn(n, H);
     },
     *shop(n, H) {
@@ -125,7 +127,7 @@ export function residentsLife(game) {
       n.clearGesture();
       // (the left end of the counter: the passers-by pay at the right end)
       n.walk([V(-12.75, 16.72)], { face: 0 }); yield () => !n.walking;
-      n.say(pick(['This, please.', 'And some tofu.', 'Ah, Mikawa-san. Just these.']), {});
+      say(n, pick(['This, please.', 'And some tofu.', 'Ah, Mikawa-san. Just these.']), {});
       yield L.wait(1.5);
       sfx('coinDrop', { pos: V(-12.75, 16.72).setY(0.95), vol: 0.3 });
       n.h.nod?.(0.8);
@@ -140,7 +142,7 @@ export function residentsLife(game) {
       n.walk([V(at.x + 0.7, at.z - o * 0.05)], { face: o > 0 ? Math.PI : 0 }); yield () => !n.walking;
       n.props = [holdIn(n.h, wateringCan(), 'R', [0, -0.05, 0.02])];
       n.gesture('water');
-      if (n.playerDist < 12) n.say(pick(['There you go, little ones.', 'Thirsty today, aren\'t you.', 'Grow, grow...']), { style: 'think' });
+      if (n.playerDist < 12) say(n, pick(['There you go, little ones.', 'Thirsty today, aren\'t you.', 'Grow, grow...']), { style: 'think' });
       yield L.wait(rnd(25, 45));
       n.clearGesture(); dropProps(n);
       yield* goIn(n, H);
@@ -157,7 +159,7 @@ export function residentsLife(game) {
         sfx('sweep', { pos: n.pos.clone().setY(0.3), vol: 0.3 });
         yield L.wait(rnd(8, 14));
       }
-      if (n.playerDist < 12) n.say(pick(['Hmph. Leaves everywhere.', 'Somebody has to keep this lane decent.']), { style: 'think' });
+      if (n.playerDist < 12) say(n, pick(['Hmph. Leaves everywhere.', 'Somebody has to keep this lane decent.']), { style: 'think' });
       n.clearGesture(); dropProps(n);
       yield* goIn(n, H);
     },
@@ -166,7 +168,7 @@ export function residentsLife(game) {
       yield L.goTo(n, V(0.4 + rnd(-1, 1), 7.2));
       n.faceTo(V(0.4, 4));
       n.gesture('arms_crossed');
-      if (n.playerDist < 14) n.say(pick(['Hmph. Still standing.', 'Keep it tidy. It\'s MY garage.', 'Not bad... not bad.']), {});
+      if (n.playerDist < 14) say(n, pick(['Hmph. Still standing.', 'Keep it tidy. It\'s MY garage.', 'Not bad... not bad.']), {});
       yield L.wait(rnd(6, 10));
       n.clearGesture();
       yield* goIn(n, H);
@@ -174,7 +176,7 @@ export function residentsLife(game) {
     *exercise(n, H) {
       yield* goOut(n, H);
       n.faceYaw = outward(H) > 0 ? 0 : Math.PI;
-      if (n.playerDist < 14) n.say('Radio taiso... ichi, ni, san, shi!', {});
+      if (n.playerDist < 14) say(n, 'Radio taiso... ichi, ni, san, shi!', {});
       for (let k = 0; k < 6; k++) { n.gesture(k % 2 ? 'stretch' : 'yawn'); yield L.wait(2.8); }
       n.clearGesture();
       yield* goIn(n, H);
@@ -191,7 +193,7 @@ export function residentsLife(game) {
       const G = L.npc('gonta');
       n.faceYaw = outward(H) > 0 ? 0 : Math.PI;
       for (let k = 0; k < 2; k++) {
-        n.say(k ? 'GONTA! I\'m not calling a THIRD time!' : 'GONTAAA! DINNER!', { style: 'shout' });
+        say(n, k ? 'GONTA! I\'m not calling a THIRD time!' : 'GONTAAA! DINNER!', { style: 'shout' });
         yield L.wait(3.5);
       }
       if (G?.present && !G.busy) { G.today = { override: 'home', until: L.time + 600 }; G.say?.('Coming, Mum!', { style: 'shout' }); }
@@ -202,6 +204,7 @@ export function residentsLife(game) {
 
   function update(dt) {
     S.t += dt;
+    if (game.grandpa?.hidden || game.drive?.seated) return; // (his scenes keep the lane clear: no outings start)
     if ((S.chk = (S.chk || 0) - dt) > 0) return;
     S.chk = 1.5;
     if (game.cutscene?.active || !game.story?.done && !game.state.story?.complete) return;

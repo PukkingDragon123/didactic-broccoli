@@ -615,7 +615,7 @@ export const ERRANDS = {
     yield P.wait(1.6);
     sfx('coinDrop', { pos: poi.counter.clone().setY(0.95), vol: 0.35 });
     yield P.wait(0.8);
-    if (keeper && !(mk?.napping?.())) { P.bubbles.say(keeper, pick(SAY.keeper), { dur: 2.2, onChar: P.voiceOf?.(keeper) }); keeper.nod?.(0.6); }
+    if (keeper && !(mk?.napping?.()) && !P.quiet()) { P.bubbles.say(keeper, pick(SAY.keeper), { dur: 2.2, onChar: P.voiceOf?.(keeper) }); keeper.nod?.(0.6); }
     p.h.nod(0.8);
     yield P.wait(0.8);
     const bag = holdIn(p.h, bagMesh(), 'L', [0.0, -0.12, 0.0]);

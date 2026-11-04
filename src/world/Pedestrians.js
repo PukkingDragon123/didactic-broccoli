@@ -341,6 +341,7 @@ export class Pedestrians {
   /** A line only when you're near enough to hear it (no floating text for people far down the lane), and only while
    *  the lane isn't already full of floating text (force: the next line of a conversation that has started). */
   sayNear(p, text, style = 'say', dur, force = false) {
+    if (!p.h.root.visible || this.quiet()) return false; // hidden for a scene, or a cutscene / chat has the screen
     const r = p.h.root.position, pl = this.game.player.pos;
     const d = Math.hypot(r.x - pl.x, r.z - pl.z);
     if (d > 13) return false;
@@ -351,6 +352,10 @@ export class Pedestrians {
     return true;
   }
   voiceOf(h) { return talk(h); }
+  /** Cutscenes (except your first customer's own), chats and sitting in the van after the drive: no street chatter. */
+  quiet() { const g = this.game; return !!((g.cutscene?.active && !this.firstScene) || g.talk?.active || g.drive?.seated); }
+  /** Grandpa's scenes keep the lane clear (src/grandpa: hideCrowd), and so does the drive's seated moment: nobody new walks in. */
+  get hold() { const g = this.game; return !!(g.grandpa?.hidden || g.drive?.seated); }
 
   /** A complaint you can see: a cross face, a stomp, an anger mark, a line, and an entry in the guestbook. */
   complain(p, text, { count = true } = {}) {
@@ -576,6 +581,7 @@ export class Pedestrians {
   /** The very first customer gets a little cutscene: watch them walk in and try their luck. */
   *firstCustomerScene(c, p) {
     const r = p.h.root;
+    this.firstScene = true;
     const head = () => r.position.clone().add(new THREE.Vector3(0, 1.3, 0));
     yield c.cam({ pos: new THREE.Vector3(1.9, 1.55, 1.6), look: head(), dur: 1.1 });
     c.say('Your very first customer!', 1.6);
@@ -584,6 +590,7 @@ export class Pedestrians {
     c.hideSay();
     yield c.wait(4.2);
     yield c.toPlayer(0.9);
+    this.firstScene = false;
   }
 
   routeOut(p) {
@@ -901,7 +908,7 @@ export class Pedestrians {
     this.time += dt;
     this.updateKeeper(dt);
     this.spawnT -= dt;
-    if (this.spawnT <= 0 && !g.cutscene?.active) {
+    if (this.spawnT <= 0 && !g.cutscene?.active && !this.hold) {
       // (if the next person isn't finished in the background yet, they get up to two seconds more)
       const want = this.list.filter((p) => !p.ambient).length < this.maxPeople();
       const wait = want && !this.unitReady() && (this.spawnWait = (this.spawnWait || 0) + dt) < 2;
@@ -913,7 +920,7 @@ export class Pedestrians {
     }
     // the commute and the other rush hours bring more people on top of the shop's own trade
     this.ambT -= dt;
-    if (this.ambT <= 0 && !g.cutscene?.active) {
+    if (this.ambT <= 0 && !g.cutscene?.active && !this.hold) {
       this.ambT = rnd(3.5, 7);
       const want = Math.round(this.director.ambientTarget() * Math.min(1, this.crowd));
       if (this.list.filter((p) => p.ambient && !p.leader).length < want) {
@@ -926,7 +933,7 @@ export class Pedestrians {
     const it = g.held.item, top = it?.kind === 'tool' && it.data.id === 'flyers' ? it.obj.userData.flyerTop : null;
     if (top && top.userData.flyer !== this.nextFlyer()) { top.userData.flyer = this.nextFlyer(); top.material.map = flyerTexture(top.userData.flyer); top.material.needsUpdate = true; }
     this.askT -= dt;
-    this.director.tick(this, dt);
+    if (!this.hold) this.director.tick(this, dt);
     for (const p of [...this.list]) {
       if (!this.list.includes(p)) continue;
       this.updatePerson(p, dt, pl);
@@ -1071,12 +1078,12 @@ export class Pedestrians {
     if (p.arch === 'tipsy') {
       if ((p.humT -= dt) <= 0) {
         p.humT = rnd(5, 10);
-        if (near) { this.sayNear(p, pick(SAY.tipsy)); try { this.game.effects.mark({ sprite: 'note', pos: p.h.headTop(new THREE.Vector3()), color: 0xf2e6c8, life: 1.8, size: 0.035 }); } catch { /* */ } }
+        if (near && p.h.root.visible && this.sayNear(p, pick(SAY.tipsy))) { try { this.game.effects.mark({ sprite: 'note', pos: p.h.headTop(new THREE.Vector3()), color: 0xf2e6c8, life: 1.8, size: 0.035 }); } catch { /* */ } }
         if (Math.random() < 0.3 && Math.hypot(pl.x - r.x, pl.z - r.z) < 4) this.sayNear(p, pick(SAY.tipsyPlayer));
       }
       if ((p.hicT -= dt) <= 0) { p.hicT = rnd(7, 14); p.h.flinch(0.45); if (near) { sfx('hiccup', { pos: r.clone().setY(1.5), vol: 0.35 }); this.sayNear(p, '*hic*', 'say', 1.2); } }
     }
-    if (p.arch === 'jogger' && near && Math.random() < dt / 5) { this.sayNear(p, pick(SAY.jog)); try { this.game.effects.mark({ sprite: 'drop', pos: p.h.headTop(new THREE.Vector3()), color: 0x9ad0f0, life: 0.9, size: 0.03 }); } catch { /* */ } }
+    if (p.arch === 'jogger' && near && Math.random() < dt / 5 && this.sayNear(p, pick(SAY.jog))) { try { this.game.effects.mark({ sprite: 'drop', pos: p.h.headTop(new THREE.Vector3()), color: 0x9ad0f0, life: 0.9, size: 0.03 }); } catch { /* */ } }
   }
 
   /** A follower walks beside their companion, and stands with them when they stop. */
@@ -1131,6 +1138,9 @@ export class Pedestrians {
   /** The things they carry or walk with. */
   updateProps(p, dt, pd) {
     const g = this.game, h = p.h, r = h.root;
+    // what they walk with is hidden with them (Grandpa's scenes step people out of shot)
+    if (p.dog) { p.dog.root.visible = r.visible; p.lead.mesh.visible = r.visible && pd < 30; }
+    if (p.cart) p.cart.root.visible = r.visible;
     if (p.cart && !p.cartParked) { h.b.handR.getWorldPosition(_hand); p.cart.update(_hand); }
     if (p.dog) this.updateDog(p, dt, pd);
     if (p.bike) {
