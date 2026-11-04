@@ -27,19 +27,19 @@ import { mask5, textW5 } from '../gfx/font5x7.js';
 import { Atlas, ROUGH } from '../vehicles/atlas.js';
 import { Geo, triplanar, boxMap } from '../vehicles/geom.js';
 import { shell, slab } from '../vehicles/shell.js';
-import { ramp, mix, seam, seamLoop, seal, glassPane, rust, dent, lamp, lampLit, plate, dith, grow, seeded } from '../vehicles/paint.js';
+import { ramp, mix, seamLoop, seal, glassPane, rust, dent, lamp, lampLit, plate, grow, seeded } from '../vehicles/paint.js';
 import { wheelPatches, wheelGeometry, doorMirror, wiper, rods, vehicleMaterials } from '../vehicles/parts.js';
 
 export const PARK = { x: 3.4, z: 12.5, heading: -Math.PI / 2 }; // across the lane from the shutter, nose pointing west
 
 // ------------------------------------------------------------------ dimensions (van-local metres, +z forward, -x driver)
-const W = 0.7375, RND = 0.06; // half width, edge rounding
+const W = 0.7375, RND = 0.05; // half width, edge rounding
 const YB = 0.265, WR = 0.265, AX = 1.08, ARCH = 0.335; // sill, wheel radius, axles at +-AX, arch radius
 const ZF = 1.665, ZR = -1.665, ROOF = 1.875;
 const BELT = 1.06, WTOP = 1.74;
 const WS0 = [1.635, 1.035], WS1 = [1.43, 1.79]; // the windscreen's base and top (z, y)
 const zWS = (y) => WS0[0] + (y - WS0[1]) * (WS1[0] - WS0[0]) / (WS1[1] - WS0[1]);
-const zDoor = (y) => zWS(y) - 0.072, zWin = (y) => zDoor(y) - 0.03;
+const zDoor = (y) => zWS(y) - 0.062, zWin = (y) => zDoor(y) - 0.026; // a slim A-pillar: the door 6 cm behind the glass
 const TRACK = 0.645; // wheel centres at x = +-TRACK
 const T_IN = 0.03; // inner shell offset
 const DOOR_T = 0.065; // door thickness
@@ -65,7 +65,7 @@ const PROFILE = [
 const E_WS = PROFILE.findIndex((p) => p[0] === WS0[0] && p[1] === WS0[1]);
 const E_REAR = PROFILE.length - 1;
 const REAR_WIN = { y0: 1.07, y1: 1.74, hx: 0.56 };
-const WS_HOLE = { u0: 0.025, u1: 0.975, hx: W - RND - 0.007 };
+const WS_HOLE = { u0: 0.025, u1: 0.975, hx: W - RND - 0.006 };
 const wsY = (u) => WS0[1] + (WS1[1] - WS0[1]) * u;
 
 // the driver's door (vehicle right = -x) and the windows
@@ -173,6 +173,8 @@ function paintSide(S, sx) {
     seamLoop(S, P(FL), PR[0], PR[3], -1, -1);
     S.px(I(-0.49), J(0.79), PR[1]); S.px(I(-0.49), J(0.8), PR[0]);
   }
+  // red reflectors low on the rear corners
+  A.ink(ROUGH.lens); S.rect(U(-1.58), 0.47, U(-1.52), 0.5, 0xc82a28); S.px(I(-1.55), J(0.5) - 1, 0xff8a70); A.ink(ROUGH.paint);
   // the side indicator on the front corner, and the door handles' finger pockets
   A.ink(ROUGH.lens);
   S.rect(U(1.52), 0.52, U(1.6), 0.55, 0xf09a2a); S.hline(I(1.52), I(1.6) - (sx > 0 ? -1 : 1), J(0.55) - 1, 0xffc060);
@@ -225,6 +227,8 @@ function paintFront(F) {
   const A = F.A, J = (y) => F.j(y), I = (x) => F.i(x);
   A.ink(ROUGH.paint);
   F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y > 0.975 ? PR[3] : y < 0.46 ? PR[1] : PR[2]; });
+  // a pressed crease across the nose, the bonnet-less front's only line
+  F.hline(0, F.W, J(0.865), PR[1]); F.hline(0, F.W, J(0.875), PR[4]);
   // the cowl: black plastic with intake slots
   A.ink(ROUGH.plastic);
   F.rect(-0.76, 1.0, 0.76, 1.04, TRIM);
@@ -313,7 +317,7 @@ function paintRoof(T) {
 function paintInside(V) {
   const { IR, IL, IF, IH, IB, IFr } = V;
   const A = IR.A;
-  for (const [S, sx] of [[IR, -1], [IL, 1]]) {
+  for (const S of [IR, IL]) {
     const J = (y) => S.j(y), I = (z) => S.i(z);
     A.ink(ROUGH.plastic);
     // the load space: painted metal with pressed ribs and lightening holes, darker low down
@@ -331,7 +335,6 @@ function paintInside(V) {
     S.rect(0.62, 1.77, 1.72, 1.9, IN.head);
     // the door window's inner seal
     seal(S, WIN_DOOR, 0x141516, 1);
-    void sx;
   }
   // headliner: vinyl, seams, the dome light; the bare roof over the load
   {
@@ -480,10 +483,10 @@ function buildGeos() {
   const ext = triplanar({ px: V.L, nx: V.R, py: V.T, pz: V.F, nz: V.B }, A.swatch(0x18191a, ROUGH.matte));
   const inn = triplanar({ px: V.IR, nx: V.IL, py: V.IF, ny: V.IH, pz: V.IB, nz: V.IFr });
   const sw = (c, r) => A.swatch(c, r);
-  const under = sw(0x16171a, ROUGH.matte), rubber = sw(RUBBER, ROUGH.rubber), jamb = sw(PR[1], ROUGH.paint), chrome = sw(CHROME[1], ROUGH.chrome);
+  const under = sw(0x16171a, ROUGH.matte), rubber = sw(RUBBER, ROUGH.rubber), jamb = sw(PR[1], ROUGH.paint);
   const G = new Geo(1), GL = new Geo(1);
   // ---- the shell, inside and out, with its windows
-  const sh = shell(G, {
+  shell(G, {
     pts: PROFILE, W, R: RND, K: 2, uv: ext,
     sideHoles: {
       pos: [{ pts: WIN_DOOR, glass: true, wall: rubber }, { pts: WIN_SLIDE, glass: true, wall: rubber }, { pts: WIN_QTR, glass: true, wall: rubber }],
@@ -494,10 +497,9 @@ function buildGeos() {
       { e: E_REAR, u0: (1.79 - REAR_WIN.y1) / (1.79 - YB), u1: (1.79 - REAR_WIN.y0) / (1.79 - YB), hx: REAR_WIN.hx },
     ],
     bandUv: (e) => (PROFILE[e][2] === 0 ? under : null),
-    wallUv: rubber, glassSlot: 0, glassUv: ext, glassGeo: GL,
+    wallUv: rubber, glassUv: ext, glassGeo: GL,
     inner: { t: T_IN, uv: inn },
   });
-  void sh;
   exterior(G, V, A);
   interior(G, V, A);
   return { A, V, G, GL };
@@ -538,7 +540,7 @@ function exterior(G, V, A) {
   G.with(sw(PR[1], ROUGH.paint), 0, () => {
     for (const s of [-1, 1]) {
       G.box(s * W - 0.006, 1.822, -1.6, s * W + 0.006, 1.836, 1.36);
-      G.strut([s * (W + 0.0), 1.83, 1.36], [s * (W + 0.0), WS0[1] + 0.03, zWS(WS0[1] + 0.03) - 0.07], 0.006);
+      G.strut([s * (W - 0.002), 1.83, 1.375], [s * (W - 0.002), WS0[1] + 0.03, zWS(WS0[1] + 0.03) - 0.052], 0.005);
     }
   });
   // the wipers, parked along the bottom of the windscreen
@@ -595,7 +597,7 @@ function interior(G, V, A) {
   G.with(inn, 0, () => {
     G.box(-W + T_IN, 0.4, 1.0, W - T_IN, 0.42, 1.635, { skip: ['ny'] });
     G.box(-W + T_IN, 0.42, 0.6, W - T_IN, 0.58, 1.0, { skip: ['ny'] });
-    G.box(-W + T_IN, 0.3, -1.635, W - T_IN, 0.6, 0.6, { skip: ['ny'] });
+    G.box(-W + T_IN, 0.3, -1.635, W - T_IN, 0.64, 0.6, { skip: ['ny'] });
   });
   // the dash: a deep shelf under the glass, the binnacle hump in front of the driver, the steering column
   G.with(dash, 0, () => {
@@ -664,7 +666,7 @@ function interior(G, V, A) {
   G.pop();
   // a pipe guard behind the seats, the moving boxes in the back
   G.with(sw(0x2a2c30, ROUGH.metal), 0, () => rods(G, [[-0.65, 0.62, 0.6], [-0.65, 1.3, 0.6], [0.65, 1.3, 0.6], [0.65, 0.62, 0.6]], 0.014, 6));
-  const boxes = [[-0.6, 0.6, -1.6, -0.06, 1.02, -1.05, 0.1], [0.02, 0.6, -1.6, 0.58, 0.95, -1.1, -0.06], [-0.5, 1.02, -1.55, -0.12, 1.3, -1.12, 0.12], [-0.62, 0.6, -0.9, -0.08, 0.86, -0.3, -0.05], [0.06, 0.6, -0.95, 0.6, 1.1, -0.35, 0.04]];
+  const boxes = [[-0.6, 0.64, -1.6, -0.06, 1.06, -1.05, 0.1], [0.02, 0.64, -1.6, 0.58, 0.99, -1.1, -0.06], [-0.5, 1.06, -1.55, -0.12, 1.34, -1.12, 0.12], [-0.62, 0.64, -0.9, -0.08, 0.9, -0.3, -0.05], [0.06, 0.64, -0.95, 0.6, 1.14, -0.35, 0.04]];
   for (const [x0, y0, z0, x1, y1, z1, ry] of boxes) {
     const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
     G.push(new THREE.Matrix4().makeRotationY(ry).setPosition(cx, 0, cz));

@@ -32,6 +32,7 @@ export class Lighting {
     this.sunDir = GOLDEN.clone();
     this.moonDir = new THREE.Vector3(0.5, 0.6, -0.6).normalize();
     this.twinkle = 0;
+    this.shaftK = 1; // god rays: 1 under the open sky, 0 in the van or an interior (update)
     createSim(game);
   }
 
@@ -82,7 +83,7 @@ export class Lighting {
     const r = g.renderer;
     if (r.outline) {
       r.outline.uniforms.uShaftCol.value.copy(L.sun).lerp(_c.setRGB(1, 0.72, 0.42), 0.5);
-      r.outline.uniforms.uShaft.value = 0.75 * Math.min(1, S.sunI / 2.6) * (S.sunI >= S.moonI * 4 ? 1 : 0);
+      this.shaftBase = 0.75 * Math.min(1, S.sunI / 2.6) * (S.sunI >= S.moonI * 4 ? 1 : 0); // (faded per frame in update)
     }
     if (r.grade) r.grade.uniforms.uWarm.value = L.warm;
     // garage window shafts and the warm pool under the shutter only exist while the low sun shines in
@@ -148,6 +149,11 @@ export class Lighting {
     }
     const room = g.places?.current?.();
     if (room) this.roomLight(room, sun, L.hemi, sunI);
+    // god rays only under the open sky: they fade out while you sit in the van (src/drive) or stand in an interior, where
+    // the window glass and frames have nothing to do with the sky behind them
+    const open = g.drive?.active || g.drive?.seated || g.places?.where ? 0 : 1;
+    this.shaftK += (open - this.shaftK) * Math.min(1, dt * 3);
+    if (g.renderer.outline) g.renderer.outline.uniforms.uShaft.value = (this.shaftBase ?? 0.75) * this.shaftK;
     // glow-in-the-dark finish responds to darkness
     const darkness = Math.max(this.dimLevel, lightsK ? 0 : 0.45 + 0.25 * (S.night || 0));
     this.glowBoost = Math.max(0, this.glowBoost - dt * 0.3);

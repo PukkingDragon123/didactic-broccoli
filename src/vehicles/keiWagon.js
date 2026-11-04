@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell } from './shell.js';
-import { ramp, mix, seamLoop, seal, glassPane, lamp, plate, dent } from './paint.js';
+import { ramp, seamLoop, seal, glassPane, lamp, plate, dent } from './paint.js';
 import { wheelPatches, wheelGeometry, doorMirror, wiper, vehicleMaterials } from './parts.js';
 
 const W = 0.735, RND = 0.07, YB = 0.3, WR = 0.27, ARCH = 0.325, AXF = 1.12, AXR = -1.22;

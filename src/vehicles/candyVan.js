@@ -10,7 +10,7 @@ import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell, slab } from './shell.js';
 import { ramp, mix, seamLoop, seal, glassPane, rust, dent, lamp, plate, grow, seeded } from './paint.js';
-import { wheelPatches, wheelGeometry, doorMirror, wiper, rods, vehicleMaterials } from './parts.js';
+import { wheelPatches, wheelGeometry, wiper, rods, vehicleMaterials } from './parts.js';
 import { mask5, textW5 } from '../gfx/font5x7.js';
 
 // dimensions (metres, +z forward, -x the driver's side)
@@ -20,7 +20,7 @@ const WS0 = [1.76, 1.02], WS1 = [1.55, 1.76];
 const zWS = (y) => WS0[0] + (y - WS0[1]) * (WS1[0] - WS0[0]) / (WS1[1] - WS0[1]);
 const zDoor = (y) => zWS(y) - 0.085, zWin = (y) => zDoor(y) - 0.035;
 const T_IN = 0.03, DOOR_T = 0.06;
-export const CANDY = { W, ZF, ZR, WR, AXF, AXR, TRACK: 0.68, HINGE_Z: 1.66, DOOR_Z0: 0.86, HATCH_TOP: 1.79, HATCH_BOT: 0.42, HATCH_X: 0.64, YB };
+export const CANDY = { W, ZF, ZR, WR, AXF, AXR, TRACK: 0.68, HINGE_Z: 1.66, DOOR_Z0: 0.86, HATCH_TOP: 1.79, HATCH_BOT: 0.42, HATCH_X: 0.64, YB, FLOOR: 0.7 };
 
 function arch(zc, n = 9) {
   const out = [];
@@ -296,7 +296,7 @@ export function candyVanParts() {
   G.with(sw(0x5a5048, ROUGH.metal), 0, () => G.strut([-0.45, 0.18, -0.9], [-0.45, 0.18, -1.86], 0.025, { round: 6 }));
   // the cab: a vinyl bench, the dash with a jar of candy on it, the wheel, the floors
   G.with(inn, 0, () => {
-    G.box(-W + T_IN, 0.33, -1.77, W - T_IN, 0.36, 0.7, { skip: ['ny'] });
+    G.box(-W + T_IN, 0.33, -1.77, W - T_IN, 0.7, 0.7, { skip: ['ny'] }); // the load floor, over the rear axle
     G.box(-W + T_IN, 0.45, 0.7, W - T_IN, 0.66, 1.1, { skip: ['ny'] });
     G.box(-W + T_IN, 0.43, 1.1, W - T_IN, 0.45, 1.77, { skip: ['ny'] });
     G.box(-W + T_IN, 0.76, 1.48, W - T_IN, 1.02, 1.74, { bevel: 0.012 });

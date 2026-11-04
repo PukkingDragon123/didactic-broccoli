@@ -376,6 +376,10 @@ export class Renderer {
     this.bloom = null;
     if (q.bloom) {
       this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.24, 0.2, 1.15);
+      // a sun glint on glass or chrome is many times brighter than a lit sign: capped before the blur, it can't bloom into
+      // a white glowy halo (owner rule); lanterns, signs and the tubes (about 1.2 to 2.2) bloom as before
+      const hp = this.bloom.materialHighPassFilter, MIX = 'gl_FragColor = mix( outputColor, texel, alpha );';
+      if (hp.fragmentShader.includes(MIX)) { hp.fragmentShader = hp.fragmentShader.replace(MIX, `texel.rgb *= min( 1.0, 2.2 / max( v, 1e-4 ) );\n${MIX}`); hp.needsUpdate = true; }
       composer.addPass(this.bloom);
     }
     this.grade = new ShaderPass(GradeShader);

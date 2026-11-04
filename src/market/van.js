@@ -48,7 +48,7 @@ export function buildVan() {
   root.add(hatch);
   // the cargo: the boxes for this stop sit in the back, visible when the hatch is up
   const cargo = new THREE.Group();
-  cargo.position.set(C.ZR + 0.28, 0.36, 0);
+  cargo.position.set(C.ZR + 0.28, C.FLOOR, 0);
   root.add(cargo);
   const api = {
     root, wheels, door, hatch, cargo, length: 3.72, width: C.W * 2,
