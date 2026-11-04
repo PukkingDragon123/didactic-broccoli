@@ -1295,11 +1295,12 @@ export class Town {
   /** Alpha-cut town decal material (pixel stains, cracks, lids...). */
   decal(key, w, h, rough = 0.95) { return this.T(key, w, h, { alpha: true, decal: true, rough }); }
 
-  /** Rain puddle on the ground: a mirror-smooth alpha-cut decal (reflects the probe; faint sky tint baked in). */
+  /** Rain puddle on the ground: a wet alpha-cut decal (reflects the probe; faint sky tint baked in). Satin, not a mirror:
+   *  at roughness 0.1 the low sun's highlight, seen from a low eye, bloomed into a smooth pale blob (no glows). */
   puddle(x, z, w, d, ry = 0) {
     if (!this._puddleM) {
       const map = townPix('puddle', 32, 32).texture();
-      const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.1, metalness: 0.0, alphaTest: 0.5, vertexColors: true, envMapIntensity: 0.3 });
+      const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.45, metalness: 0.0, alphaTest: 0.5, vertexColors: true, envMapIntensity: 0.3 });
       mat.polygonOffset = true; mat.polygonOffsetFactor = -3; mat.polygonOffsetUnits = -6;
       // a cheap sky reflection: dusky zenith blue seen from above, the warm horizon glow at grazing angles (Fresnel)
       mat.onBeforeCompile = (sh) => {
