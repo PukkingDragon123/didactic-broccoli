@@ -1,13 +1,14 @@
-// Grandpa's things, as chunky voxel models: his walking cane (a crook handle, a rubber foot), the round paper fan he
-// fans himself with (a goldfish on it), the beige desk telephone his calls ring on, and the taxi that takes him to
-// the station (a boxy late-Shōwa sedan, two-tone green and cream, fender mirrors, the roof lamp and the red VACANT
-// plate behind the windscreen, a rear door that swings open by itself).
+// Grandpa's things: his walking cane (a crook handle, a rubber foot), the round paper fan he fans himself with (a
+// goldfish on it), the beige desk telephone his calls ring on (chunky voxel models), and the taxi that takes him to the
+// station (a late-90s yellow-and-green taxi sedan from the vehicle kit, src/vehicles/taxi.js: fender mirrors, the lit
+// roof lamp, the red 空車 sign, lace on the seats, a driver in his cap, a rear door that swings open by itself).
 //   caneMesh() (origin = the grip, the shaft runs down -y)   fanMesh() (origin = the bottom of the handle)
 //   phoneMesh() (origin = bottom centre)   new Taxi(game): root, setPose(x, z, heading), roll(d), setDoor(k), setLights(on)
 import * as THREE from 'three';
-import { VoxelModel, gloss, metal, glass, glow } from '../voxel/VoxelModel.js';
+import { VoxelModel, gloss, metal, glow } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
+import { taxiParts, TAXI } from '../vehicles/taxi.js';
 
 const hash = (x, y, z, s = 0) => {
   let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(z | 0, 1274126177) ^ Math.imul(s + 1013, 1442695041);
@@ -97,137 +98,56 @@ function buildPhone() {
 }
 export const phoneMesh = () => mesh('phone', buildPhone, { voxelSize: 0.01 });
 
-// ------------------------------------------------------------------ the taxi
-const TVS = 0.05;
-const THW = 17, TZF = 45, TZR = -45, TWR = 6, TWZ = 28;
-// side profile: hood, cabin, boot (y of the top surface by z)
-const topAt = (z) => (z > 22 ? 16 - Math.max(0, z - 38) * 0.4 : z > 13 ? 16 + (22 - z) * 1.4 : z > -16 ? 29 : z > -24 ? 29 - (-16 - z) * 1.5 : 17);
-const halfAt = (y) => (y <= 17 ? THW : THW - Math.round((y - 17) * 0.25));
-const inTaxi = (x, y, z) => {
-  if (y < 4 || z > TZF || z < TZR) return false;
-  if (y > topAt(z)) return false;
-  if (Math.abs(x) > halfAt(y)) return false;
-  if (y >= topAt(z) && Math.abs(x) > halfAt(y) - 1) return false; // rounded roof edges
-  for (const wz of [TWZ, -TWZ]) if (Math.abs(x) > 11 && (y - TWR) ** 2 + (z - wz) ** 2 < 8.6 * 8.6) return false;
-  return true;
-};
-const onTaxi = (x, y, z) => inTaxi(x, y, z) && (!inTaxi(x + 1, y, z) || !inTaxi(x - 1, y, z) || !inTaxi(x, y + 1, z) || !inTaxi(x, y - 1, z) || !inTaxi(x, y, z + 1) || !inTaxi(x, y, z - 1));
-const REAR_DOOR = { z0: -19, z1: -1, y0: 6, y1: 27 };
-const isRearDoor = (x, y, z) => x > THW - 1.5 && z >= REAR_DOOR.z0 && z <= REAR_DOOR.z1 && y >= REAR_DOOR.y0 && y <= REAR_DOOR.y1;
-const taxiWindow = (x, y, z) => {
-  if (y >= 18 && y <= 27 && z <= 12 && z >= -15 && Math.abs(x) >= halfAt(y) - 0.5 && !(z >= -1 && z <= 1)) return true; // side windows (a pillar between)
-  if (z > 13 && z < 22 && y > 17 && Math.abs(x) <= halfAt(y) - 2) return true; // windscreen
-  if (z < -16 && z > -24 && y > 17 && Math.abs(x) <= halfAt(y) - 2) return true; // rear window
-  return false;
-};
-function taxiPaint(x, y, z) {
-  let c = y >= 15 ? 0xeee4cc : 0x2a6a46; // cream upper, deep green lower
-  if (y === 14) c = 0xe08a2a; // the orange pinstripe
-  if (y >= 28) c = 0xeee4cc;
-  c = shade(c, 0.94 + hash(x >> 1, y >> 1, z >> 1, 5) * 0.08);
-  if (y < 7) c = shade(c, 0.75);
-  // door seams
-  const side = Math.abs(x) >= THW - 0.5;
-  if (side && (z === 13 || z === 0 || z === -19) && y >= 6 && y <= 27) c = 0x3a3a34;
-  return c;
-}
-function buildTaxiBody() {
-  const v = new VoxelModel();
-  v.jitter = 0.02;
-  v.shape(-THW, 4, TZR, THW, 30, TZF, (x, y, z) => onTaxi(x, y, z) && !isRearDoor(x, y, z), (x, y, z) => (taxiWindow(x, y, z) ? glass(0x3a4652) : gloss(taxiPaint(x, y, z))));
-  v.box(-THW + 1, 5, TZR + 1, THW - 1, 5, TZF - 1, 0x3a3a38);
-  // bumpers, grille, lamps, plates
-  v.box(-THW, 5, TZF + 1, THW, 8, TZF + 2, metal(0xb8bcc2));
-  v.box(-THW, 5, TZR - 2, THW, 8, TZR - 1, metal(0xb8bcc2));
-  for (let y = 10; y <= 13; y++) for (let x = -8; x <= 8; x++) v.set(x, y, TZF, metal(y % 2 ? 0x8a8e92 : 0x5a5e62));
-  for (const s of [-1, 1]) { v.box(s * 10, 9, TZF, s * 15, 13, TZF, gloss(0xf4f0e0)); v.box(s * 13, 9, TZR, s * 16, 14, TZR, gloss(0xc81e1e)); }
-  v.box(-4, 9, TZF + 2, 4, 11, TZF + 2, gloss(0xf2f2ea));
-  v.box(-4, 9, TZR - 2, 4, 11, TZR - 2, gloss(0xf2f2ea));
-  // fender mirrors on stalks, out on the front wings (the Japanese taxi look)
-  for (const s of [-1, 1]) { v.box(s * 14, 17, 34, s * 14, 18, 34, 0x1e1e1e); v.box(s * 13, 19, 33, s * 15, 20, 35, 0x1e1e1e); }
-  // the roof lamp (andon): a glowing box with a dark band and the company's red dot
-  v.box(-6, 30, -5, 6, 32, 3, glow(0xf6d860));
-  v.box(-7, 30, -6, 7, 30, 4, 0x2a2a2a);
-  v.box(-6, 33, -4, 6, 33, 2, 0x2a2a2a);
-  for (const z of [-6, 4]) { v.box(-4, 31, z, 4, 31, z, 0x2a3a2a); v.set(0, 31, z, glow(0xd8282a)); }
-  // the red VACANT plate behind the windscreen, a dash, two seats, a lace seat cover
-  v.box(4, 17, 19, 10, 19, 19, glow(0xd8282a));
-  v.box(-15, 14, 14, 15, 16, 20, 0x2a2a2c);
-  for (const z0 of [0, -16]) for (const [x0, x1] of [[-15, -2], [2, 15]]) { v.box(x0, 8, z0, x1, 10, z0 + 10, 0x6a3a3a); v.box(x0, 11, z0, x1, 22, z0 + 1, 0x6a3a3a); v.box(x0 + 2, 20, z0 + 2, x1 - 2, 22, z0 + 2, 0xf4f0e6); }
-  // the company's mark on the front doors: a yellow diamond with a green heart
-  for (const s of [-1, 1]) for (let dy = -3; dy <= 3; dy++) for (let dz = -3; dz <= 3; dz++) {
-    const a = Math.abs(dy) + Math.abs(dz);
-    if (a <= 3) v.set(s * (THW + 1), 11 + dy, 7 + dz, a <= 1 ? 0x2a6a46 : 0xf2d23a);
-  }
-  return v;
-}
-function buildTaxiDoor() {
-  const v = new VoxelModel();
-  v.jitter = 0.02;
-  v.shape(THW - 1, REAR_DOOR.y0, REAR_DOOR.z0, THW, REAR_DOOR.y1, REAR_DOOR.z1, (x, y, z) => onTaxi(x, y, z) && isRearDoor(x, y, z), (x, y, z) => (taxiWindow(x, y, z) ? glass(0x3a4652) : gloss(taxiPaint(x, y, z))));
-  v.box(THW - 2, 8, REAR_DOOR.z0 + 1, THW - 2, 16, REAR_DOOR.z1 - 1, 0x5a4a44);
-  v.pivot = { x: THW, y: 0, z: REAR_DOOR.z1 + 1 };
-  return v;
-}
-function buildTaxiWheel() {
-  const v = new VoxelModel();
-  v.jitter = 0.03;
-  v.cylinder(0, 0, 0, TWR, 4, (x, y, z) => (y * y + z * z > 12 ? 0x1e1e1e : metal(0xc8ccd2)), 'x');
-  return v;
-}
-
+// ------------------------------------------------------------------ the taxi (src/vehicles/taxi.js)
+const SEAT = [0.4, -0.45], DOOR_SPOT = [1.45, -0.5]; // van-local (x, z): the rear seat, where a passenger waits
 export class Taxi {
   constructor(game) {
     this.game = game;
-    const mats = voxelMaterials('normal');
-    if (!geoCache.taxi) {
-      geoCache.taxi = meshVoxels(buildTaxiBody(), { voxelSize: TVS, origin: 'none' });
-      geoCache.taxiDoor = meshVoxels(buildTaxiDoor(), { voxelSize: TVS });
-      geoCache.taxiWheel = meshVoxels(buildTaxiWheel(), { voxelSize: TVS, origin: 'center' });
-    }
+    const P = taxiParts(), M = P.mats, T = TAXI;
     const root = this.root = new THREE.Group();
     root.name = 'taxi';
     this.body = new THREE.Group();
     root.add(this.body);
-    const b = new THREE.Mesh(geoCache.taxi, mats);
+    const b = new THREE.Mesh(P.body, M.body);
     b.castShadow = b.receiveShadow = true;
     this.body.add(b);
+    const gl = new THREE.Mesh(P.glass, M.glass);
+    gl.renderOrder = 2; gl.raycast = () => {};
+    this.body.add(gl);
+    // the automatic rear door, hinged at its front edge
     this.doorPivot = new THREE.Group();
-    this.doorPivot.position.set(THW * TVS, 0, (REAR_DOOR.z1 + 1) * TVS);
-    const d = new THREE.Mesh(geoCache.taxiDoor, mats);
+    this.doorPivot.position.set(T.HINGE.x, 0, T.HINGE.z);
+    const d = new THREE.Mesh(P.door, M.body);
     d.castShadow = true;
-    this.doorPivot.add(d);
+    const dg = new THREE.Mesh(P.doorGlass, M.glass);
+    dg.renderOrder = 2; dg.raycast = () => {};
+    this.doorPivot.add(d, dg);
     this.body.add(this.doorPivot);
     this.wheels = [];
-    for (const [x, z] of [[-14.5, TWZ], [14.5, TWZ], [-14.5, -TWZ], [14.5, -TWZ]]) {
-      const w = new THREE.Mesh(geoCache.taxiWheel, mats);
-      w.position.set(x * TVS + TVS * 0.5, TWR * TVS + TVS * 0.5, (z + 0.5) * TVS);
+    for (const [x, z] of [[-T.TRACK, T.AX], [T.TRACK, T.AX], [-T.TRACK, -T.AX], [T.TRACK, -T.AX]]) {
+      const w = new THREE.Mesh(x > 0 ? P.wheelL : P.wheelR, M.body);
+      w.position.set(x, T.WR, z);
       w.castShadow = true;
       root.add(w);
       this.wheels.push(w);
     }
-    const lamp = (col) => new THREE.MeshBasicMaterial({ color: col });
-    this.heads = []; this.brakes = [];
-    for (const s of [-1, 1]) {
-      const h = new THREE.Mesh(new THREE.BoxGeometry(5 * TVS, 3 * TVS, 0.02), lamp(0xfff2c8));
-      h.position.set(s * 12.5 * TVS + TVS * 0.5, 11.5 * TVS, (TZF + 1) * TVS);
-      this.body.add(h); this.heads.push(h);
-      const r = new THREE.Mesh(new THREE.BoxGeometry(3 * TVS, 5 * TVS, 0.02), lamp(0xff3020));
-      r.position.set(s * 14.5 * TVS + TVS * 0.5, 12 * TVS, TZR * TVS - 0.02);
-      this.body.add(r); this.brakes.push(r);
-    }
+    // lamps: headlights, tail lamps (as brakes), and the roof lamp / 空車 / meter, always lit
+    const lit = (g) => { const m = new THREE.Mesh(g, M.lit); m.raycast = () => {}; this.body.add(m); return m; };
+    this.heads = [lit(P.lit.heads)]; this.brakes = [lit(P.lit.brakes)];
+    lit(P.lit.signs);
     this.setLights(true); this.setBrake(false);
     this.dist = 0;
     this.door = 0;
   }
   setPose(x, z, heading) { this.root.position.set(x, 0, z); this.root.rotation.y = heading; this.root.updateMatrixWorld(true); }
-  roll(d) { this.dist += d; for (const w of this.wheels) w.rotation.x = this.dist / (TWR * TVS); }
-  setDoor(k) { this.door = k; this.doorPivot.rotation.y = k * 1.05; }
+  roll(d) { this.dist += d; for (const w of this.wheels) w.rotation.x = this.dist / TAXI.WR; }
+  /** The rear left door, 0 shut .. 1 open (it swings out on its front hinge). */
+  setDoor(k) { this.door = k; this.doorPivot.rotation.y = -k * 1.3; }
   setLights(on) { for (const h of this.heads) h.visible = on; }
   setBrake(on) { for (const b of this.brakes) b.visible = on; }
   local(x, y, z, out = new THREE.Vector3()) { return this.root.localToWorld(out.set(x, y, z)); }
   /** Where a passenger stands to get in at the rear left door, and the seat behind it (world). */
-  doorSpot(out = new THREE.Vector3()) { return this.local(THW * TVS + 0.6, 0, -10 * TVS, out); }
-  seat(out = new THREE.Vector3()) { return this.local(8 * TVS, 0, -9 * TVS, out); }
+  doorSpot(out = new THREE.Vector3()) { return this.local(DOOR_SPOT[0], 0, DOOR_SPOT[1], out); }
+  seat(out = new THREE.Vector3()) { return this.local(SEAT[0], 0, SEAT[1], out); }
   dispose() { this.root.removeFromParent(); }
 }

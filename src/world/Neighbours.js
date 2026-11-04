@@ -17,6 +17,7 @@ import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { NAME_INDEX } from '../gfx/textures.js';
 import { ROOM } from './interiors.js';
+import { keiWagonMesh } from '../vehicles/keiWagon.js';
 
 const ZB = 5.3, ZF = 14.9;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -194,7 +195,15 @@ function nearSide(t) {
   B.box(m.metal, 3.2, 0.06, 3.5, 6.05, 2.36, 3.5, { rx: -0.05, tint: 0x9aa8b0 });
   B.box(m.metal, 3.2, 0.12, 0.08, 6.05, 2.28, 5.25, { tint: 0x8a9096 });
   for (let x = 4.75; x < 7.4; x += 0.45) B.box(m.metal, 0.03, 0.04, 3.4, x, 2.3, 3.5, { tint: 0x7a8288 });
-  t.prop('kei_car', 6.05, 0, 3.15, 0, { block: true });
+  // the Suzukis' kei wagon in the carport: pastel blue under a white roof, an older (pre-1998, 3.3 m) one than Mr.
+  // Tanaka's, so a touch smaller (src/vehicles/keiWagon.js); it blocks the footprint the voxel prop did
+  {
+    const car = keiWagonMesh({ paint: 0x8fb4d4, roof: 0xf2f0e8, dent: false, static: true });
+    car.scale.setScalar(0.936);
+    car.position.set(6.05, 0, 3.15);
+    t.group.add(car);
+    t.game.player.addObstacle(6.05 - 0.799, 6.05 + 0.799, 3.15 - 1.635, 3.15 + 1.635);
+  }
   t.prop('bicycle', 5.0, 0, 1.9, Math.PI / 2 + 0.2, { scale: 0.62 });
   pillar(t, 7.45, ZB - 0.15, { h: 1.35, mat: m.prefab, tint: 0xd8d0bc, w: 0.3 });
   pillarKit(t, 7.45, s, { name: N('鈴木'), y: 0.92, z: ZB + 0.005 });

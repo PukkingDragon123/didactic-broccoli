@@ -31,7 +31,7 @@ export function boxMap(view, box, { flip = false } = {}) {
   return (p, n) => {
     const ax = Math.abs(n[0]), ay = Math.abs(n[1]), az = Math.abs(n[2]);
     let s, t;
-    if (ax >= ay && ax >= az) { s = (p[2] - z0) / (z1 - z0 || 1); t = (p[1] - y0) / (y1 - y0 || 1); if (n[0] < 0) s = 1 - s; }
+    if (ax >= ay && ax >= az) { s = (p[2] - z0) / (z1 - z0 || 1); t = (p[1] - y0) / (y1 - y0 || 1); if (n[0] > 0) s = 1 - s; } // read from outside: -z is to the right from +x
     else if (ay >= az) { s = (p[0] - x0) / (x1 - x0 || 1); t = (p[2] - z0) / (z1 - z0 || 1); }
     else { s = (p[0] - x0) / (x1 - x0 || 1); t = (p[1] - y0) / (y1 - y0 || 1); if (n[2] < 0) s = 1 - s; }
     if (flip) s = 1 - s;
