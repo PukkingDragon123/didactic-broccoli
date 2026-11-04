@@ -161,7 +161,8 @@ export class Npc {
       // front gardens and passages off the lane: their own way home (no crowd there to steer round)
       const P0 = r.position, mk = P0.x < -9.4 && P0.x > -15.5 && P0.z > 14.8;
       const yard = !inside && !mk && (P0.z < 5.5 || P0.z > 14.75) && Math.abs(P0.x) < 26;
-      const free = !!this.script || !!g.cutscene?.active || !!this.ghost || yard;
+      // a cutscene or a ghost / ninja on the staff: straight through; a garden gate, a bush: through things only
+      const free = this.script || g.cutscene?.active || this.staff && this.ghost ? true : this.ghost || yard || this.inBush ? 'things' : false;
       const res = C.step(a, dt, { target: tgt, final: this.path.length === 1, speed: this.walkSpeed || this.speed, ghost: free, tight: inside, arrive: 0.12, corner: inside ? 0.35 : 0.5 });
       if (res.corner || res.arrived) {
         this.path.shift();

@@ -1188,15 +1188,19 @@ export class Pedestrians {
         const cx = Math.max(o.minX, Math.min(D.pos.x, o.maxX)), cz = Math.max(o.minZ, Math.min(D.pos.z, o.maxZ));
         const ahead = (cx - r.position.x) * fx + (cz - r.position.z) * fz;
         const dd = Math.hypot(cx - D.pos.x, cz - D.pos.z);
-        if (ahead > 0.3 && dd < bd) { bd = dd; best = [cx, cz]; }
+        // (stand just off it, nose to it)
+        if (ahead > 0.3 && dd < bd && dd > 0.05) { bd = dd; best = [cx + (D.pos.x - cx) / dd * 0.3, cz + (D.pos.z - cz) / dd * 0.3, cx, cz]; }
       }
       D.nextSniff = best ? 999 : 3;
-      if (best) { D.sniffAt = V(best[0], best[1]); D.goSniff = true; }
+      if (best) { D.sniffAt = V(best[0], best[1]); D.sniffOn = V(best[2], best[3]); D.goSniff = true; D.goT = 0; }
     }
     let tx, tz;
     if (D.goSniff) {
       tx = D.sniffAt.x; tz = D.sniffAt.z;
-      if (Math.hypot(tx - D.pos.x, tz - D.pos.z) < 0.4) { D.goSniff = false; D.sniffT = rnd(3, 6); this.director.count('sniff'); }
+      D.goT += dt;
+      // too far from the owner, or it takes too long: never mind
+      if (D.goT > 5 || Math.hypot(tx - r.position.x, tz - r.position.z) > 2.2) { D.goSniff = false; D.nextSniff = rnd(6, 12); }
+      else if (Math.hypot(tx - D.pos.x, tz - D.pos.z) < 0.35) { D.goSniff = false; D.sniffT = rnd(3, 6); this.director.count('sniff'); }
     } else if (D.sniffT <= 0) {
       const lead = walking ? 0.75 : 0.45;
       tx = r.position.x + fx * lead + rx * 0.35; tz = r.position.z + fz * lead + rz * 0.35;
@@ -1208,11 +1212,11 @@ export class Pedestrians {
     // keep within the lead
     const far = Math.hypot(D.pos.x - r.position.x, D.pos.z - r.position.z);
     if (dd > 0.08 && D.sniffT <= 0) {
-      const res = this.steer.step(D.a, dt, { target: tgt, final: true, speed: Math.min(1.9, Math.max(0.6, p.a.speed * (far > 1.4 ? 1.4 : 1.1) + dd * 0.4)), tight: true, arrive: 0.08 });
+      const res = this.steer.step(D.a, dt, { target: tgt, final: true, speed: Math.min(1.9, Math.max(0.6, p.a.speed * (far > 1.4 ? 1.4 : 1.1) + dd * 0.4)), tight: true, arrive: 0.08, patient: true });
       D.speed = res.speed;
     } else { this.steer.idle(D.a, dt); D.speed = D.a.speed; }
     if (D.speed > 0.1) D.heading = Math.atan2(D.a.vel.x, D.a.vel.z);
-    else if (D.sniffT > 0 && D.sniffAt) D.heading = Math.atan2(D.sniffAt.x - D.pos.x, D.sniffAt.z - D.pos.z);
+    else if (D.sniffT > 0 && D.sniffOn) D.heading = Math.atan2(D.sniffOn.x - D.pos.x, D.sniffOn.z - D.pos.z);
     if (far > 2.1) { D.pos.x = r.position.x + (D.pos.x - r.position.x) * 2.1 / far; D.pos.z = r.position.z + (D.pos.z - r.position.z) * 2.1 / far; }
     if (pd < 30) {
       D.update(dt);

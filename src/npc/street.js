@@ -49,6 +49,9 @@ export const POIS = {
   ashtray: [{ x: -13.7, slots: [[-14.2, 13.95], [-13.25, 13.92]], face: 0.0, look: V3(-13.7, 0.85, 14.5), tray: V3(-13.7, 0.9, 14.5) }],
   post: [{ x: 1.5, slots: [[1.5, 13.62]], face: 0, look: V3(1.5, 1.0, 14.3) }],
   bench: [{ x: 2.75, seats: [{ x: 2.53, z: 5.6, y: 0.46 }, { x: 2.98, z: 5.6, y: 0.42 }], face: 0, open: true }],
+  // the park behind the near side, through the A2 passage (town.paths.park): two benches (not Rohan's)
+  park: [{ x: 10.55, seats: [{ x: 12.2, z: -12.35, y: 0.42, face: Math.PI / 2, stand: [12.75, -12.35] }, { x: 12.2, z: -13.05, y: 0.42, face: Math.PI / 2, stand: [12.75, -13.05] },
+    { x: 15.55, z: -16.77, y: 0.42, face: 0, stand: [15.55, -16.2] }, { x: 16.25, z: -16.77, y: 0.42, face: 0, stand: [16.25, -16.2] }] }],
   mikawaya: [{ x: -12.42, out: V(-12.42, 13.55), door: V(-12.42, 15.45), counter: V(-12.2, 16.72),
     browse: [[-13.2, 16.6, -Math.PI / 2], [-10.8, 16.15, Math.PI], [-10.5, 16.55, Math.PI / 2]] }],
 };
@@ -62,10 +65,10 @@ export const POI_OF = { smoke: 'ashtray' };
 export const ARCH = {
   commuter: { presets: { salaryman: 3, office_lady: 2.2 }, speed: [1.32, 1.6], dir: 1, shop: false, n: [0, 1], errands: { pass: 7, phone: 1, vending: 0.8, smoke: 0.4 } },
   returning: { presets: { salaryman: 3, office_lady: 2.5 }, speed: [1.1, 1.35], dir: -1, shop: true, pair: 0.15, n: [0, 2], errands: { pass: 4, vending: 1, smoke: 0.9, gacha: 0.6, mikawaya: 0.6, phone: 0.7, post: 0.3 } },
-  student: { presets: { schoolgirl: 1, schoolboy: 1 }, speed: [1.05, 1.3], shop: true, pair: 0.7, n: [0, 2], errands: { pass: 3, gacha: 1.8, vending: 1.2, mikawaya: 0.9, poster: 0.5, phone: 0.3, bench: 0.3 } },
-  local: { presets: { grandma: 2.2, grandpa: 2, mom: 1.4 }, speed: [0.62, 0.92], shop: true, n: [1, 2], errands: { pass: 2, board: 1.3, bench: 1.1, mikawaya: 1.5, post: 0.7, poster: 0.4, vending: 0.3 } },
+  student: { presets: { schoolgirl: 1, schoolboy: 1 }, speed: [1.05, 1.3], shop: true, pair: 0.7, n: [0, 2], errands: { pass: 3, gacha: 1.8, vending: 1.2, mikawaya: 0.9, poster: 0.5, phone: 0.3, bench: 0.3, park: 0.4 } },
+  local: { presets: { grandma: 2.2, grandpa: 2, mom: 1.4 }, speed: [0.62, 0.92], shop: true, n: [1, 2], errands: { pass: 2, board: 1.3, bench: 1.1, mikawaya: 1.5, post: 0.7, poster: 0.4, vending: 0.3, park: 0.6 } },
   worker: { presets: { delivery: 1.2, construction: 1 }, speed: [1.25, 1.5], shop: true, n: [0, 1], errands: { pass: 4, vending: 1.6, smoke: 1.3, phone: 0.4 } },
-  visitor: { presets: { tourist: 1.4, otaku: 1.2, gyaru: 1 }, speed: [0.95, 1.2], shop: true, pair: 0.3, n: [1, 2], errands: { pass: 2, gacha: 2, poster: 1, vending: 0.8, phone: 1, bench: 0.4, board: 0.3 } },
+  visitor: { presets: { tourist: 1.4, otaku: 1.2, gyaru: 1 }, speed: [0.95, 1.2], shop: true, pair: 0.3, n: [1, 2], errands: { pass: 2, gacha: 2, poster: 1, vending: 0.8, phone: 1, bench: 0.4, board: 0.3, park: 0.4 } },
   office: { presets: { office_lady: 2, salaryman: 2 }, speed: [1.1, 1.35], shop: true, pair: 0.3, n: [0, 2], errands: { pass: 3, vending: 1, phone: 0.8, mikawaya: 0.6, smoke: 0.5, post: 0.5, gacha: 0.4 } },
   jogger: { presets: { salaryman: 1 }, speed: [2.5, 2.9], dir: 1, shop: false, jog: true, n: [0, 0], errands: { pass: 1 } },
   tipsy: { presets: { salaryman: 1 }, speed: [0.6, 0.8], shop: false, tipsy: true, n: [0, 1], errands: { pass: 3, vending: 0.8, smoke: 0.5, bench: 0.4 } },
@@ -172,6 +175,7 @@ export class StreetDirector {
     this.claims = new Map(); // poi -> [person per slot]
     this.meetT = 3;
     this.counts = { spawned: 0, pairs: 0, ambient: 0 };
+    this.archs = {}; // who was cast (units prepared), by archetype
   }
   get hour() { return this.game.clock?.hours ?? 15; }
   get date() { try { return this.game.calendar?.dateOf(this.game.clock?.day ?? 1); } catch { return null; } }
@@ -209,6 +213,7 @@ export class StreetDirector {
     if (this.recent.slice(-4).includes('arch:tipsy')) w.tipsy = (w.tipsy || 0) * 0.15;
     const arch = force && ARCH[force] ? force : wpick(w);
     this.recent.push('arch:' + arch); if (this.recent.length > 16) this.recent.shift();
+    this.archs[arch] = (this.archs[arch] || 0) + 1;
     const A = ARCH[arch];
     const pair = A.pair && Math.random() < A.pair;
     const p0 = wpick(A.presets);
@@ -237,6 +242,7 @@ export class StreetDirector {
         w[k] *= Math.pow(0.45, lately);
       }
       if (h < 7 || h >= 21.5) { w.mikawaya = 0; w.board *= 0.3; w.bench *= 0.4; w.gacha *= 0.4; w.post = 0; }
+      if (h < 8 || h >= 18.5 || !g.garage?.town?.paths?.park) w.park = 0;
       if (h >= 22.9 || h < 6.5) w.mikawaya = 0;
       if (h >= 17.5 || h < 9) w.smoke = (w.smoke || 0) * 1.4;
       if (g.places?.mikawaya?.cashier?.active) w.mikawaya = 0;
@@ -524,6 +530,35 @@ export const ERRANDS = {
     yield P.slide(p, V(s.x, s.z + 0.55), 0.6);
     p.sit = null; p.a.mobile = true; p.face = null;
     D.release(poi, p);
+  },
+
+  /** Down the A2 passage to the park for a sit on a bench, then back to the lane and on their way. */
+  *park(P, p, poi) {
+    const D = P.director, path = P.game.garage?.town?.paths?.park;
+    if (!path) return;
+    const free = poi.seats.map((s, i) => i).filter((i) => !(D.claims.get(poi) || [])[i] && !P.steer.occupied(poi.seats[i].x, poi.seats[i].z, 0.42, p.a));
+    if (!free.length) return;
+    const i = free[Math.floor(Math.random() * free.length)];
+    (D.claims.get(poi) || (D.claims.set(poi, Array(poi.seats.length).fill(null)), D.claims.get(poi)))[i] = p;
+    (p.claims ||= []).push(poi);
+    D.count('park');
+    const s = poi.seats[i];
+    yield P.go(p, [...path, V(s.stand[0], s.stand[1])]);
+    p.face = s.face;
+    yield P.wait(1.1);
+    p.sit = s; p.h.sit(s.y);
+    yield P.slide(p, V(s.x + Math.sin(s.face) * 0.08, s.z + Math.cos(s.face) * 0.08), 0.6);
+    const T = rnd(20, 45);
+    for (let t = 0; t < T; t += 6) {
+      if (p.carry === 'can') p.h.gesture('drink'); else if (Math.random() < 0.35) p.h.gesture('phone_idle'); else p.h.clearGesture();
+      yield P.wait(6);
+    }
+    p.h.clearGesture(); if (p.carry === 'can') p.h.gesture('hold_can');
+    p.h.sit(0);
+    yield P.slide(p, V(s.stand[0], s.stand[1]), 0.6);
+    p.sit = null; p.face = null;
+    D.release(poi, p);
+    yield P.go(p, [...path].reverse());
   },
 
   /** Post a letter. */

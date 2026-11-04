@@ -12,7 +12,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { LightPool } from '../gfx/lightPool.js';
-import '../gfx/sunMask.js'; // no direct sun inside Mikawa-ya (patches the light chunk at import)
+import '../gfx/sunMask.js'; // shared light patch at import: no sun inside Mikawa-ya, lilac shadows, the soft toon ramp
 
 // The look: a bright picture-book afternoon. Gentle pastel saturation, a soft contrast curve in log space (it never
 // clips the darks), and the darkest tones lifted toward a cool lilac so nothing goes pure black.
@@ -365,7 +365,7 @@ export class Renderer {
         gtao.output = GTAOPass.OUTPUT.Off;
         this.outline.uniforms.uDepthAlpha.value = 1;
       } else gtao.output = GTAOPass.OUTPUT.Default;
-      gtao.blendIntensity = 0.85;
+      gtao.blendIntensity = 0.7; // (soft: the cartoon look keeps contact shadows light, and high stays close to low, which has none)
       gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
       // (the denoise radius is in AO pixels: the same footprint on screen at any scale)
       gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6 * k, rings: 2, samples: 12 });

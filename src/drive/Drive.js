@@ -200,13 +200,12 @@ export class Drive {
     const town = g.garage.town;
     let dome = null;
     town?.group.traverse((o) => { if (!dome && o.isMesh && o.material === town.skyMat) dome = o; });
-    this.env = { near: cam.near, far: cam.far, dome, domePos: dome?.position.clone(), radioPos: radio.pos, room: audio.room };
+    this.env = { near: cam.near, far: cam.far, dome, domePos: dome?.position.clone(), radioPos: radio.pos };
   }
   enterCountryEnv() {
     const cam = this.game.camera;
     cam.near = 0.06; cam.far = 560; cam.updateProjectionMatrix();
     this.outside = true;
-    if (audio.ready) audio.setRoom('outside');
   }
   exitCountryEnv() {
     const g = this.game, cam = g.camera, E = this.env;
@@ -215,7 +214,6 @@ export class Drive {
     cam.near = E.near; cam.far = E.far; cam.updateProjectionMatrix();
     if (E.dome) { E.dome.position.copy(E.domePos); E.dome.updateMatrix(); }
     g.lighting?.refresh?.(); // the fog goes back to the town's
-    if (audio.ready && E.room) audio.setRoom(E.room);
   }
   /** Each frame out of town: the far fog of the open country, the sky dome round the camera. */
   countryEnv() {

@@ -115,6 +115,12 @@ export class Lane {
     if (Ha && Ha !== Hb) pts.push(...this.gatePts(Ha));
     else if (inGarage(a) && !inGarage(b)) pts.push(V(0.4, GARAGE.maxZ - 0.6), V(0.4, GARAGE.maxZ + 1.2));
     else if (!inGarage(a) && !onLane(a)) pts.push(toLane(a));
+    // a long walk along the lane: out into it and along the keep-left line (not hugging the house fronts)
+    const A = pts.length ? pts[pts.length - 1] : a, B = Hb && Hb !== Ha ? this.gatePts(Hb)[1] : b;
+    if (!inGarage(a) && !inGarage(b) && Math.abs(B.x - A.x) > 6 && onLane(B) && (onLane(A) || pts.length)) {
+      const sg = Math.sign(B.x - A.x), lz = sg > 0 ? 7.4 + Math.random() * 0.5 : 10.9 + Math.random() * 0.6;
+      pts.push(V(A.x + sg * 1.2, lz), V(B.x - sg * 1.2, lz));
+    }
     if (Hb && Hb !== Ha) pts.push(...this.gatePts(Hb).reverse());
     else if (inGarage(b) && !inGarage(a)) pts.push(V(0.4, GARAGE.maxZ + 1.2), V(0.4, GARAGE.maxZ - 0.6));
     else if (!inGarage(b) && !onLane(b)) pts.push(toLane(b));

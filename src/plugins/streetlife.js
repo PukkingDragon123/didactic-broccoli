@@ -113,11 +113,11 @@ function debugCrowd(g, C, A, D, cat) {
   return {
     S, C, A, D,
     track(on = true) { S.on = on; return on; },
-    reset() { S.on = true; S.minPair = Infinity; S.minWho = null; S.overlaps = []; S.frames = 0; S.overlapFrames = 0; S.samples = 0; C.stats.minDist = Infinity; C.stats.ghosts = 0; for (const k of Object.keys(D.hist)) delete D.hist[k]; for (const k of Object.keys(A.stats)) A.stats[k] = typeof A.stats[k] === 'object' ? {} : 0; return true; },
+    reset() { S.on = true; S.minPair = Infinity; S.minWho = null; S.overlaps = []; S.frames = 0; S.overlapFrames = 0; S.samples = 0; C.stats.minDist = Infinity; C.stats.ghosts = 0; for (const k of Object.keys(D.hist)) delete D.hist[k]; for (const k of Object.keys(D.archs)) delete D.archs[k]; for (const k of Object.keys(A.stats)) A.stats[k] = typeof A.stats[k] === 'object' ? {} : 0; return true; },
     stats() {
       return {
         people: P().list.length, agents: C.agents.filter((a) => a.active && !a.hidden).length, minPair: +S.minPair.toFixed(3), minWho: S.minWho, overlapFrames: S.overlapFrames, overlaps: S.overlaps, frames: S.frames,
-        ghosts: C.stats.ghosts, hist: { ...D.hist }, counts: { ...D.counts }, aware: JSON.parse(JSON.stringify(A.stats)), residents: g.residents ? { ...g.residents.stats } : null, cat: { ...cat.stats },
+        ghosts: C.stats.ghosts, hist: { ...D.hist }, counts: { ...D.counts }, cast: { ...D.archs }, aware: JSON.parse(JSON.stringify(A.stats)), residents: g.residents ? { ...g.residents.stats } : null, cat: { ...cat.stats },
       };
     },
     fill(n = 6) { const out = []; for (let i = 0; i < n; i++) { const p = P().spawn('ambient'); const x = -20 + Math.random() * 40; for (const q of [p, p.mate].filter(Boolean)) { q.h.root.position.x = x + (q === p ? 0 : -p.dir * 0.4); } out.push(p.arch); } return out; },

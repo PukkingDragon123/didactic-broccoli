@@ -24,6 +24,7 @@ const NEAR = 4.2; // metres: people farther than this are ignored by the avoidan
 // the lane between the two building lines (people are kept off the house fronts while walking along it)
 const LANE = { z0: 5.62, z1: 14.62, x: 30 };
 const GAR = { x0: -3.75, x1: 3.75, z0: -4.75, z1: 4.92 };
+const NONE = [];
 
 export function crowdOf(game) { return game.crowd || (game.crowd = new Crowd(game)); }
 
@@ -111,7 +112,8 @@ export class Crowd {
 
   // ------------------------------------------------------------------ one walking frame
   /**
-   * o: { target: Vector3, final (last waypoint: slow down and stop), speed (preferred m/s), ghost (no avoidance),
+   * o: { target: Vector3, final (last waypoint: slow down and stop), speed (preferred m/s), ghost (true: scripted, no
+   *      avoidance at all; 'things': through props and walls (gardens, gates) but still clear of people),
    *      arrive (stop radius), corner (waypoint switch radius) }
    */
   step(a, dt, o) {
@@ -129,11 +131,12 @@ export class Crowd {
     let want = vPref;
     if (o.final) want = vPref * clamp(dist / 0.9, 0.22, 1);
     a.ghostT = Math.max(0, a.ghostT - dt);
-    a.ghosting = !!o.ghost;
-    const ghost = o.ghost || a.ghostT > 0;
+    a.ghosting = o.ghost === true;
+    a.thingGhost = o.ghost === 'things' || a.ghostT > 0;
+    const ghost = a.ghosting || a.thingGhost;
     // avoidance (staggered, ~12 Hz)
     a.avT -= dt;
-    if (a.avT <= 0) { a.avT = AVOID_DT; if (ghost) { a.av.x = a.av.z = 0; a.av.brake = 0; a.av.by = null; } else this.avoid(a, fx, fz, vPref, dist, o); }
+    if (a.avT <= 0) { a.avT = AVOID_DT; if (a.ghosting) { a.av.x = a.av.z = 0; a.av.brake = 0; a.av.by = null; } else this.avoid(a, fx, fz, vPref, dist, o); }
     const av = a.av;
     let vx = fx * want * (1 - av.brake) + av.x, vz = fz * want * (1 - av.brake) + av.z;
     // keep to the lane while walking along it (not into the house fronts)
@@ -240,7 +243,7 @@ export class Crowd {
     for (const f of this.foreign) consider(f, 0, 0, 0.26, false, null);
     // small obstacles: walk round them (probe along the heading)
     const L = 0.55 + vPref * 0.7;
-    const boxes = this.near(p.x + fx, p.z + fz, this._boxes || (this._boxes = []));
+    const boxes = a.thingGhost ? NONE : this.near(p.x + fx, p.z + fz, this._boxes || (this._boxes = []));
     const pad = a.r + 0.08;
     for (const b of boxes) {
       const s = rayBox(p.x, p.z, fx, fz, b.minX - pad, b.maxX + pad, b.minZ - pad, b.maxZ + pad);
@@ -253,7 +256,7 @@ export class Crowd {
       if (s < 0.25) brake = Math.max(brake, 0.4);
     }
     // vehicles: off the road, out of their way (a moving one's box reaches ahead of it)
-    for (const v of this.vehicles) {
+    for (const v of a.thingGhost ? NONE : this.vehicles) {
       const pad2 = a.r + 0.45;
       let x0 = v.minX - pad2, x1 = v.maxX + pad2, z0 = v.minZ - pad2, z1 = v.maxZ + pad2;
       const lead = 2.2;
@@ -299,7 +302,7 @@ export class Crowd {
         if (dx > 1 || dx < -1 || dz > 1 || dz < -1) continue;
         const d = Math.hypot(dx, dz), R = a.r + b.r;
         if (d < minD) minD = d;
-        if (d >= R || a.ghostT > 0 || b.ghostT > 0 || a.ghosting || b.ghosting) continue;
+        if (d >= R || a.ghosting || b.ghosting) continue;
         const am = a.mobile && !a.noPush ? 1 : 0, bm = b.mobile && !b.noPush ? 1 : 0;
         if (!am && !bm) continue;
         const over = R - d, nx = d > 1e-5 ? dx / d : 1, nz = d > 1e-5 ? dz / d : 0;
@@ -308,13 +311,13 @@ export class Crowd {
         b.pos.x += nx * over * kb; b.pos.z += nz * over * kb;
       }
       // the player walks into them: they give way (gently) unless they're anchored (seated, queueing, at a machine, in a chat)
-      if (!a.anchor && !a.noPush && !a.ghosting && a.ghostT <= 0) {
+      if (!a.anchor && !a.noPush && !a.ghosting) {
         const dx = a.pos.x - P.pos.x, dz = a.pos.z - P.pos.z;
         const d = Math.hypot(dx, dz), R = a.r + P.r;
         if (d < R && d > 1e-5) { const k = Math.min(R - d, 2.5 * dt); a.pos.x += dx / d * k; a.pos.z += dz / d * k; a.pushed += dt; }
       }
       // props and parked things
-      if (a.mobile && !a.noPush && !a.ghosting && a.ghostT <= 0 && !a.noStatics) {
+      if (a.mobile && !a.noPush && !a.ghosting && !a.thingGhost && !a.noStatics) {
         const boxes = this.near(a.pos.x, a.pos.z, this._boxes2 || (this._boxes2 = []));
         for (const o of boxes) pushOut(a.pos, a.r, o.minX, o.maxX, o.minZ, o.maxZ);
         for (const v of this.vehicles) pushOut(a.pos, a.r + 0.05, v.minX, v.maxX, v.minZ, v.maxZ);
