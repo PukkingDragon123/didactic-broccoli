@@ -206,7 +206,7 @@ export class Arrival {
   // ------------------------------------------------------------------ 1. the pylon, the wires: a crane down
   shotPylon(c) {
     const g = this.game, town = g.garage.town;
-    const A = { pos: V(7.8, 6.7, 12.0), look: V(24.4, 14.8, 4.3), fov: 52 };
+    const A = { pos: V(7.8, 6.7, 12.0), look: V(24.4, 15.8, 4.3), fov: 52 };
     const B = { pos: V(13.0, 1.8, 9.4), look: V(30, 3.4, 9.8), fov: 46 };
     return {
       tick: (t) => {
@@ -277,7 +277,7 @@ export class Arrival {
         if (flame) {
           const on = t > 1.12 && t < 2.35;
           flame.position.copy(tip()).add(_v.set(0.01, -0.035, -0.02));
-          flame.intensity = on ? 0.6 + Math.sin(t * 37) * 0.1 + Math.sin(t * 23) * 0.08 : 0;
+          flame.intensity = on ? 0.26 + Math.sin(t * 37) * 0.05 + Math.sin(t * 23) * 0.04 : 0; // (a warm touch on his hands and face: never a bloom)
           if (t > 2.4) { flame.removeFromParent(); this.flame = flame = null; }
         }
       },
@@ -286,7 +286,7 @@ export class Arrival {
         [1.05, () => {
           this.sfx('lighter', { pos: tip(), vol: 1.2 });
           g.effects.sparks({ pos: tip(), count: 6, colors: [0xffd070, 0xff9a3a], speed: 0.4, size: 0.012, star: 0.7, life: 0.35, gravity: 2 });
-          flame = this.flame = new THREE.PointLight(0xffa04a, 0, 1.3, 2);
+          flame = this.flame = new THREE.PointLight(0xffa04a, 0, 0.9, 2);
           g.scene.add(flame);
         }],
         [1.2, () => g.effects.emit({ sprite: 'spark', pos: tip().add(_v.set(0, -0.02, -0.01)), color: 0xffb040, life: 1.1, size: 0.028, anim: 'loop', fps: 9, fade: 0.25 })],
@@ -340,8 +340,8 @@ export class Arrival {
     this.fanAt = null;
     if (van && fan) {
       const hub = van.local(-0.72, 0.265, 1.08);
-      A.pos = hub.clone().add(V(-0.62, 0.16, -1.5));
-      A.look = aimFor(A.pos, hub, THREE.MathUtils.clamp(fan.x, -0.6, 0.6), THREE.MathUtils.clamp(fan.y, -0.5, 0.5), A.fov, g.camera.aspect);
+      A.pos = hub.clone().add(V(-1.05, 0.2, -2.6)); // (far enough back that the hub is about the fan's size)
+      A.look = aimFor(A.pos, hub, THREE.MathUtils.clamp(fan.x, -0.8, 0.8), THREE.MathUtils.clamp(fan.y, -0.75, 0.75), A.fov, g.camera.aspect);
     }
     const dust = (x, z, n) => g.effects.puff({ pos: van.local(x, 0.12, z), count: n, colors: [0xb8a890, 0x9a8a78, 0xd0c4b0], size: 0.11, speed: 0.22, up: 0.06, gravity: 0.03, drag: 1.0, life: 5.0, radius: 0.5 });
     let exhaust = 0;
@@ -365,8 +365,9 @@ export class Arrival {
     const van = this.van, arms = this.arms;
     if (!van?.cab) return { cues: [] };
     const cab = van.cab, B0 = (x, y, z) => van.local(x, y, z, new THREE.Vector3());
-    const A = { pos: B0(-0.33, 1.43, 0.99), look: B0(-0.39, 1.04, 1.37), fov: 46 };
-    const B = { pos: B0(-0.345, 1.415, 1.02), look: B0(-0.4, 1.03, 1.37), fov: 44 };
+    // (your eyes, leaning a little to the right to see past the wheel's spoke)
+    const A = { pos: B0(-0.4, 1.43, 0.99), look: B0(-0.43, 1.03, 1.37), fov: 46 };
+    const B = { pos: B0(-0.415, 1.415, 1.02), look: B0(-0.44, 1.02, 1.37), fov: 44 };
     const head = () => cab.key.position.clone().add(_v.set(-0.048, 0, 0)); // the fist round the key's head (body space)
     const ELBOW = V(-0.25, 0.15, -1); // reaching under the wheel: the elbow back and a little out
     let turn = null, out = null, carry = false;
