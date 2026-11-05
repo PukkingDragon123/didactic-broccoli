@@ -45,12 +45,14 @@ spilling out, lanterns, Mikan asleep on the bench, pigeons on the roof ledge. Th
 hanging on two wires, and the menu is a string of manila price tags under it. Pick Continue or New Game and you
 crank the ¥100 machine beside you; the capsule pops and the camera dives into the game.
 
-**The dressing room.** Wardrobe on the menu (or the mirror in your room) opens a little night theatre: red
-curtains, a starry pixel sky, you on a turning capsule-half stage with a magic circle under your feet. Every
-change is a pixel-sprite spell (smoke, stars spiralling up, a pop and a chime; rarer pieces get bigger bursts).
-Pieces you don't own yet show as silhouettes with a hanko padlock and a slip saying how to get them (an
-achievement, a side quest, the web shop, a shop level, a capsule bonus), with progress where it can be measured.
-You can try them on, but they get a NOT YOURS YET stamp.
+**The dressing room.** Wardrobe on the menu (or the mirror in your room) opens a small walk-in closet on a
+spring afternoon: floorboards, an open wardrobe, a clothes rack, a cheval mirror, sun through the window. You
+stand on a rag rug; drag to turn, zoom to your face or feet. About 150 pieces: yukata, kogal uniforms, tengu and
+fox masks, a chonmage wig, toilet slippers. Pieces you don't own yet show as silhouettes with a hanko padlock
+and a slip saying how to get them (an achievement, a side quest, the web shop, a shop level, a capsule bonus, a
+thrift find), with progress where it can be measured; you can try them on, but they get a NOT YOURS YET stamp.
+Follow the game on itch.io (the tag on the title screen) and you get the Duck Head for free; the link lives in
+`src/data/links.js`.
 
 **Arriving.** The game opens like a film: letterboxed, to music, a crane down from the steel pylon to the
 railway bridge as a train thunders over, pigeons bursting up off the lane, Mikawa-san lighting a cigar in his

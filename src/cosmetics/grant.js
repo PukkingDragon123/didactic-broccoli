@@ -1,7 +1,7 @@
 // Getting cosmetics outside the shop (achievement and quest rewards, capsule bonuses, web orders) and the paper "unlock
 // card" that announces them: a taped-up card with the piece's picture, its name, a rarity stamp and where it came from.
 //   game.cosmetics.grant(id, { from, kind, quiet }) -> true the first time (owned; saved; 'cosmetic' event)
-//   game.cosmetics.owns(id), .wear(id), .card(id, from)       (kind: 'ach' | 'quest' | 'capsule' | 'web' | 'gift')
+//   game.cosmetics.owns(id), .wear(id), .card(id, from)       (kind: 'ach' | 'quest' | 'capsule' | 'web' | 'gift' | 'itch')
 import './unlock.css';
 import { COSMETIC_BY_ID } from '../people/cosmetics.js';
 import { normalizeAvatar } from '../people/avatar.js';
@@ -57,7 +57,7 @@ export function installGrants(game) {
     const c = COSMETIC_BY_ID[it.id], R = rarityOf(c);
     let pic = '';
     try { pic = await cosmeticThumbAsync(g, it.id, { size: 80 }); } catch { /* no thumbnail */ }
-    const how = { ach: 'Achievement', quest: 'Side quest', capsule: 'Found in a capsule', web: 'Delivered', gift: 'Gift' }[it.kind] || '';
+    const how = { ach: 'Achievement', quest: 'Side quest', capsule: 'Found in a capsule', web: 'Delivered', gift: 'Gift', itch: 'Follow reward' }[it.kind] || '';
     el.innerHTML = `<div class="cxu-card" style="--rc:${R.color}">
       <div class="cxu-pic">${pic ? `<img src="${pic}" alt="" width="160" height="160" draggable="false">` : ''}</div>
       <div class="cxu-txt"><small>New in your closet</small><b>${esc(c.name)}</b>

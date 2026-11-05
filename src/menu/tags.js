@@ -146,3 +146,37 @@ export function paintTag(o) {
   }
   return a;
 }
+
+// ------------------------------------------------------------------ the itch.io sticker tag
+// A small pink tag hung off the Wardrobe tag: a pixel duck and two lines in the 5x7 font, "FOLLOW ON ITCH.IO" in ink and
+// "FREE DUCK HEAD" in red pen. Same texel scale as the strand, half its height (it's an aside, not a menu item).
+const DUCK = [
+  '...yyy....',
+  '..yYYYy...',
+  '..YYKYYoo.',
+  '..YYYYYoOo',
+  '...YYYYo..',
+  '.yYYYYYy..',
+  'yYYYYYYYy.',
+  '.yYYYYYy..',
+  '..yyyyy...',
+];
+const DUCKPAL = { Y: [248, 214, 74], y: [216, 168, 44], o: [245, 154, 44], O: [200, 110, 30], K: [36, 26, 30] };
+export function paintItchTag({ hot = false, seed = 99 } = {}) {
+  const l1 = mask5('FOLLOW ON ITCH.IO'), l2 = mask5('FREE DUCK HEAD');
+  const w = 6 + 12 + Math.max(l1.w, l2.w) + 6, h = 22, st = STOCK.pink, cut = 5;
+  const a = art(w, h);
+  const inside = (x, y) => x >= 0 && y >= 0 && x < w && y < h && x >= cut - y && x >= cut - (h - 1 - y);
+  grain(a, 0, 0, w, h, st.base, seed, inside);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!inside(x, y)) continue;
+    if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) a.px(x, y, st.edge);
+  }
+  // the punched hole the thread goes through
+  for (let y = -2; y <= 2; y++) for (let x = -2; x <= 2; x++) { const d = Math.hypot(x, y); if (d <= 1.1) a.clear(4 + x, 3 + y); else if (d <= 2) a.px(4 + x, 3 + y, st.ring); }
+  DUCK.forEach((row, y) => [...row].forEach((ch, x) => { if (DUCKPAL[ch]) a.px(6 + x, 7 + y, DUCKPAL[ch]); }));
+  a.mask(l1, 18, 3, INKC);
+  a.mask(l2, 18, 12, RED);
+  if (hot) for (let x = 17; x < 18 + l2.w + 1; x++) a.px(x, 20, GRAPHITE, x % 5 ? 220 : 120);
+  return a;
+}

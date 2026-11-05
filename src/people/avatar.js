@@ -23,17 +23,23 @@ export const LOOK = {
     { id: 'messy', name: 'Messy' }, { id: 'short', name: 'Short' }, { id: 'sidepart', name: 'Side part' }, { id: 'buzz', name: 'Buzz' },
     { id: 'mushroom', name: 'Mushroom' }, { id: 'bob', name: 'Bob' }, { id: 'ponytail', name: 'Ponytail' }, { id: 'long', name: 'Long' },
     { id: 'twintails', name: 'Twin tails' }, { id: 'bun', name: 'Bun' },
+    // (1999's other heads)
+    { id: 'perm', name: 'Perm' }, { id: 'spiky', name: 'Spiky' },
   ],
   hairCol: [
     { id: 'black', col: 0x2a2428 }, { id: 'brown', col: 0x5a3626 }, { id: 'chestnut', col: 0x8a5632 }, { id: 'blonde', col: 0xd8b878 },
     { id: 'ginger', col: 0xb05a2a }, { id: 'silver', col: 0xc4c0ba }, { id: 'pink', col: 0xe88aaa }, { id: 'blue', col: 0x3a5cb0 },
+    { id: 'chapatsu', col: 0xa0663a }, { id: 'bleach', col: 0xe6cc8c }, { id: 'lilac', col: 0x9a8cc0 },
   ],
   top: [{ id: 'tee', name: 'T-shirt' }, { id: 'knit', name: 'Sweater' }, { id: 'flannel', name: 'Flannel' }, { id: 'aloha', name: 'Aloha' }],
   topCol: [
     { id: 'tomato', col: 0xd8553a }, { id: 'mustard', col: 0xe0a830 }, { id: 'mint', col: 0x7cc8a4 }, { id: 'sky', col: 0x6aa6dc },
     { id: 'navy', col: 0x2a3658 }, { id: 'plum', col: 0x7a4a82 }, { id: 'white', col: 0xf2f0ea }, { id: 'charcoal', col: 0x3a3a3e },
   ],
-  bottom: [{ id: 'jeans', name: 'Jeans' }, { id: 'cargo', name: 'Cargo' }, { id: 'shorts', name: 'Shorts' }, { id: 'slacks', name: 'Black pants' }, { id: 'skirt', name: 'Skirt' }],
+  bottom: [
+    { id: 'jeans', name: 'Jeans' }, { id: 'cargo', name: 'Cargo' }, { id: 'shorts', name: 'Shorts' }, { id: 'slacks', name: 'Black pants' }, { id: 'skirt', name: 'Skirt' },
+    { id: 'tobi', name: 'Tobi pants' }, { id: 'longskirt', name: 'Long skirt' }, { id: 'plaidskirt', name: 'Plaid skirt' },
+  ],
   // bottoms colour: 'auto' keeps each cut's own cloth (denim jeans, khaki cargo...)
   botCol: [
     { id: 'auto', name: 'As made', col: null }, { id: 'denim', col: 0x3a4c70 }, { id: 'khaki', col: 0x8a8466 }, { id: 'olive', col: 0x55603a },
@@ -112,11 +118,14 @@ export function avatarSpec(a) {
     shorts: { kind: 'shorts', col: hex(0x6a6a58) },
     slacks: { kind: 'slacks', col: hex(0x24242a), noCrease: true },
     skirt: { kind: 'skirt', cut: 'pleated', col: hex(0x2c3048) },
+    tobi: { kind: 'tobi', col: hex(0x5a5c50) },
+    longskirt: { kind: 'skirt', cut: 'long', col: hex(0x6a5a48) },
+    plaidskirt: { kind: 'skirt', cut: 'pleated', col: hex(0x3a4a6a), plaid: hex(0x9a3a3a) },
   };
   spec.bottom = { ...(bots[a.bottom] || bots.jeans) };
   const bc = col(LOOK.botCol, a.botCol);
   if (bc != null) spec.bottom.col = hex(bc);
-  if (a.bottom === 'skirt' || a.bottom === 'shorts') { spec.legs = 'socks'; spec.socks = { col: [246, 246, 244] }; }
+  if (['skirt', 'shorts', 'longskirt', 'plaidskirt'].includes(a.bottom)) { spec.legs = 'socks'; spec.socks = { col: [246, 246, 244] }; }
   spec.shoes = { kind: 'sneaker', col: [242, 240, 234], col2: hex(0xd03a30) };
   return applyCosmeticSpec(spec, a);
 }

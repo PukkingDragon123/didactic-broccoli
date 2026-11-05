@@ -41,6 +41,9 @@ function band(v, y0, y1, col, grow = 0.4) {
   return v;
 }
 
+/** The shape helpers, for the newer models (src/cosmetics/voxels99.js). */
+export const SHAPES = { blob, cap, band };
+
 export const VX = {
   // ================================================================== hats on the hair (crown group)
   strawhat() {

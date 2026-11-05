@@ -1,63 +1,61 @@
-// The dressing room's 8-bit chimes, registered into the game's synth (src/core/audio.js SOUNDS): NES-style pulse
-// arpeggios and triangle tinkles. Play them with audio.play('kiraChime') like any other sound.
-//   kiraChime      a piece goes on: a quick rising arpeggio and a sparkle on top
-//   kiraRare       a rare / ultra piece: two octaves up, a bell, a shimmer of high blips
-//   kiraSecret     a super secret one: a little fanfare
-//   kiraHover      trying something on by hovering: a soft two-note blip
-//   kiraDenied     not yours yet: two falling notes and a stamp thump
-//   kiraCurtain    the curtains part: a cloth swish and a rising run
-//   kiraBuy        paid at the counter: coins and a cheerful ding
+// The dressing room's sounds, registered into the game's synth (src/core/audio.js SOUNDS) and played with
+// audio.play('drRustle') like any other: cloth and paper, a wire hanger, a wardrobe door, with a soft 8-bit note on top
+// only where something deserves it (a rare piece, paying at the counter).
+//   drRustle     a piece goes on: a cloth rustle (two filtered-noise swishes) and the hanger's tick
+//   drRare       a rare / ultra piece: the rustle and two soft pulse notes
+//   drSecret     a super secret one: the rustle and a short four-note run
+//   drHover      trying something on by pointing at it: a quiet brush of cloth
+//   drDenied     not yours yet: a soft paper thup and two low notes
+//   drOpen       into the room: a wardrobe door on its hinge and a floorboard
+//   drBuy        paid at the counter: coins on the tray and a little till ding
 import { SOUNDS } from '../core/audio.js';
 
 const NOTE = (n) => 440 * Math.pow(2, (n - 69) / 12);
 const rand = (a, b) => a + Math.random() * (b - a);
 
-function arp(a, o, t, notes, { step = 0.055, dur = 0.09, vol = 0.045, duty = 0.25 } = {}) {
-  notes.forEach((n, i) => a.tone(o, t + i * step, { wave: a.pulse(duty), f: NOTE(n), dur, vol, curve: 'lin' }));
+function swish(a, o, t, { dur = 0.12, vol = 0.09, f = 2200, f2 = 3600, q = 0.9 } = {}) {
+  a.burst(o, t, { dur, vol, type: 'bandpass', f: f * rand(0.9, 1.1), f2: f2 * rand(0.9, 1.1), q, buf: a.pink, attack: 0.012 });
 }
-function tinkle(a, o, t, n, vol = 0.02) {
-  for (let i = 0; i < n; i++) a.tone(o, t + i * 0.045 + rand(0, 0.02), { type: 'triangle', f: rand(2400, 4200), dur: 0.07, vol });
+function tick(a, o, t, vol = 0.05) {
+  a.tone(o, t, { type: 'triangle', f: rand(2300, 2700), dur: 0.025, vol });
+  a.tone(o, t + 0.018, { type: 'triangle', f: rand(1500, 1800), dur: 0.02, vol: vol * 0.6 });
 }
 
 const DRESS = {
-  kiraChime(a, t, o) {
-    arp(a, o, t, [76, 79, 84, 88, 91]);
-    a.tone(o, t + 0.27, { wave: a.pulse(0.125), f: NOTE(96), dur: 0.22, vol: 0.035, curve: 'exp' });
-    tinkle(a, o, t + 0.2, 4);
+  drRustle(a, t, o) {
+    swish(a, o, t, { dur: 0.13, vol: 0.1 });
+    swish(a, o, t + 0.11, { dur: 0.16, vol: 0.08, f: 1600, f2: 2800 });
+    tick(a, o, t + 0.04);
   },
-  kiraRare(a, t, o) {
-    arp(a, o, t, [72, 76, 79, 84, 88, 91, 96, 100], { step: 0.05 });
-    a.bell(o, t + 0.42, NOTE(96), { dur: 1.0, vol: 0.07 });
-    a.burst(o, t + 0.4, { dur: 0.6, vol: 0.03, type: 'highpass', f: 6000 });
-    tinkle(a, o, t + 0.45, 9, 0.022);
+  drRare(a, t, o) {
+    DRESS.drRustle(a, t, o);
+    a.tone(o, t + 0.2, { wave: a.pulse(0.25), f: NOTE(88), dur: 0.1, vol: 0.025, curve: 'lin' });
+    a.tone(o, t + 0.3, { wave: a.pulse(0.25), f: NOTE(95), dur: 0.18, vol: 0.022, curve: 'exp' });
   },
-  kiraSecret(a, t, o) {
-    [[72, 0], [76, 0.1], [79, 0.2], [84, 0.3], [79, 0.42], [84, 0.5], [88, 0.62], [91, 0.74]].forEach(([n, d]) => {
-      a.tone(o, t + d, { wave: a.pulse(0.25), f: NOTE(n), dur: 0.11, vol: 0.045, curve: 'lin' });
-      a.tone(o, t + d, { wave: a.pulse(0.5), f: NOTE(n - 12), dur: 0.11, vol: 0.025, curve: 'lin' });
-    });
-    [84, 88, 91, 96].forEach((n) => a.bell(o, t + 0.9, NOTE(n), { dur: 1.6, vol: 0.05 }));
-    tinkle(a, o, t + 0.9, 14, 0.02);
+  drSecret(a, t, o) {
+    DRESS.drRustle(a, t, o);
+    [84, 88, 91, 96].forEach((n, i) => a.tone(o, t + 0.2 + i * 0.075, { wave: a.pulse(0.25), f: NOTE(n), dur: 0.1, vol: 0.026, curve: 'lin' }));
+    a.bell(o, t + 0.52, NOTE(96), { dur: 0.6, vol: 0.03 });
   },
-  kiraHover(a, t, o) {
-    a.tone(o, t, { wave: a.pulse(0.125), f: NOTE(91), dur: 0.04, vol: 0.016, curve: 'lin' });
-    a.tone(o, t + 0.04, { wave: a.pulse(0.125), f: NOTE(96), dur: 0.05, vol: 0.014, curve: 'lin' });
+  drHover(a, t, o) {
+    swish(a, o, t, { dur: 0.07, vol: 0.035, f: 2600, f2: 3400 });
   },
-  kiraDenied(a, t, o) {
-    a.tone(o, t, { wave: a.pulse(0.5), f: NOTE(67), dur: 0.1, vol: 0.035, curve: 'lin' });
-    a.tone(o, t + 0.11, { wave: a.pulse(0.5), f: NOTE(63), dur: 0.16, vol: 0.035, curve: 'lin' });
-    a.burst(o, t + 0.3, { dur: 0.08, vol: 0.22, type: 'lowpass', f: 500, buf: a.pink });
-    a.tone(o, t + 0.3, { f: 140, f2: 60, dur: 0.1, vol: 0.25 });
+  drDenied(a, t, o) {
+    a.burst(o, t, { dur: 0.06, vol: 0.16, type: 'lowpass', f: 700, buf: a.pink });
+    a.tone(o, t + 0.02, { wave: a.pulse(0.5), f: NOTE(64), dur: 0.08, vol: 0.022, curve: 'lin' });
+    a.tone(o, t + 0.11, { wave: a.pulse(0.5), f: NOTE(60), dur: 0.12, vol: 0.022, curve: 'lin' });
   },
-  kiraCurtain(a, t, o) {
-    a.burst(o, t, { dur: 0.55, vol: 0.07, type: 'bandpass', f: 900, f2: 2600, q: 0.8, buf: a.pink });
-    arp(a, o, t + 0.3, [67, 71, 74, 79, 83, 86], { step: 0.045, vol: 0.03 });
-    tinkle(a, o, t + 0.55, 5, 0.018);
+  drOpen(a, t, o) {
+    // the wardrobe door: a short creak (a gliding square note, very quiet), the latch, a floorboard
+    a.tone(o, t, { wave: a.pulse(0.125), f: 310, f2: 420, dur: 0.22, vol: 0.012, curve: 'lin' });
+    a.burst(o, t + 0.18, { dur: 0.04, vol: 0.12, type: 'bandpass', f: 1800, q: 2 });
+    a.tone(o, t + 0.32, { f: 120, f2: 90, dur: 0.08, vol: 0.08 });
+    swish(a, o, t + 0.05, { dur: 0.2, vol: 0.04, f: 1200, f2: 2000 });
   },
-  kiraBuy(a, t, o) {
-    a.burst(o, t, { dur: 0.06, vol: 0.18, f: 3200, q: 1 });
-    arp(a, o, t + 0.05, [84, 88, 91, 96], { step: 0.06, vol: 0.04 });
-    a.bell(o, t + 0.3, NOTE(100), { dur: 0.7, vol: 0.05 });
+  drBuy(a, t, o) {
+    for (let i = 0; i < 3; i++) a.tone(o, t + i * 0.05, { type: 'triangle', f: rand(3000, 3600), dur: 0.05, vol: 0.04 });
+    a.tone(o, t + 0.2, { wave: a.pulse(0.25), f: NOTE(91), dur: 0.06, vol: 0.03, curve: 'lin' });
+    a.bell(o, t + 0.26, NOTE(96), { dur: 0.5, vol: 0.04 });
   },
 };
 

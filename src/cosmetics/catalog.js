@@ -7,6 +7,8 @@
 //   quest: 'id'         a lane side quest's reward (src/cosmetics/rewards.js)
 //   capsule: 'series'   a rare bonus inside that gacha series' capsules (src/cosmetics/capsules.js)
 //   level: n            (with shop) the closet only stocks it from shop level n (game.progress.level)
+//   secondhand: true    only ever found second-hand at Off-Hobby, the junk market (src/market)
+//   itch: true          free for following the game on itch.io (src/cosmetics/itch.js)
 // rarity: common | uncommon | rare | ultra | secret (the gacha's tiers and colours, src/data/rarity.js).
 // Painted pieces use spec(spec, look) (hats, glasses, tops, bags, shoes the low-poly body already has); voxel pieces use
 // dress(ctx) + preview(add, group, lift) with the models in src/cosmetics/voxels.js. Photo prints: src/cosmetics/prints.js.
@@ -15,6 +17,7 @@ import { hex } from '../people/paintlib.js';
 import { defineIcon } from '../gfx/icons.js';
 import { VX } from './voxels.js';
 import { registerPrint, printOf } from './prints.js';
+import { moreCosmetics } from './more.js';
 
 // ------------------------------------------------------------------ placement helpers (head units, see voxels.js)
 const onCrown = (key, build, pos = [0, 0, 0], rot = [0, 0, 0]) => ({
@@ -261,6 +264,9 @@ export const EXTRA = [
   { id: 'cx_goldkicks', slot: 'shoes', name: 'Golden Sneakers', price: 8000, rarity: 'secret', ach: 'style_closet', desc: 'A walk-in closet earns a walk in these.', ...shoe('sneaker', 0xe8b830, 0xfff4c0) },
 ];
 
+// the 1999 closet (src/cosmetics/more.js): 46 more pieces built with the helpers above
+export const MORE = moreCosmetics({ onCrown, onHead, onEyes, sideMask, both, bag, shoe, pHat, pGlasses, top, onesie, animalHood, voxBag });
+
 // rarity and where the old items come from (they keep looking exactly the same)
 const OLD = {
   dino: 'rare', banana: 'uncommon', happi: 'uncommon', box: 'common', chicken: 'rare', shark: 'rare', frog: 'uncommon', bear: 'uncommon',
@@ -270,9 +276,9 @@ for (const c of COSMETICS) if (OLD[c.id]) { c.rarity ||= OLD[c.id]; c.shop = tru
 // the closet's fancier stock comes in as the shop grows (shop level; pieces you already own stay yours)
 const LEVEL = { dino: 5, shark: 6, cx_suit: 3, cx_randoseru: 4, cx_shiba: 8 };
 
-for (const c of EXTRA) {
+for (const c of [...EXTRA, ...MORE]) {
   if (COSMETIC_BY_ID[c.id]) continue;
-  c.exclusive = !!(c.ach || c.quest || c.capsule);
+  c.exclusive = !!(c.ach || c.quest || c.capsule || c.itch);
   if (c.print) registerPrint(c.id, c.print);
   COSMETICS.push(c);
   COSMETIC_BY_ID[c.id] = c;
@@ -282,7 +288,8 @@ for (const [id, lv] of Object.entries(LEVEL)) if (COSMETIC_BY_ID[id]) COSMETIC_B
 /** How you get a cosmetic, for the closet / shop cards. */
 export function sourceOf(c) {
   if (!c) return null;
-  if (c.thrift) return { kind: 'thrift', text: 'Thrift find on Off-Hobby' };
+  if (c.itch) return { kind: 'itch', text: 'Follow us on itch.io' };
+  if (c.thrift || c.secondhand) return { kind: 'thrift', text: 'Thrift find on Off-Hobby' };
   if (c.ach) return { kind: 'ach', text: 'Achievement reward', id: c.ach };
   if (c.quest) return { kind: 'quest', text: 'Side quest reward', id: c.quest };
   if (c.capsule) return { kind: 'capsule', text: 'Rare bonus in capsules', id: c.capsule };

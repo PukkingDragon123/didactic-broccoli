@@ -1,4 +1,4 @@
-/* The Dressing Room (src/dressing/DressingRoom.js): the stage canvas fills the screen; over it, a paper mail-order
+/* The Dressing Room (src/dressing/DressingRoom.js): the room's canvas fills the screen; over it, a paper mail-order
    catalogue (index tabs, a cream page torn from a spiral pad, receipt-stock cards, paint chips, a slip taped in at the
    bottom). Paper textures come from src/ui/paper.js (--pp-*). Pixel rules: hard pixel shadows, no glows, no gradients
    (hard stops only), pixel pictures at whole-number scales. Hover = a 1px lift and a pencil underline. */
@@ -7,7 +7,7 @@
   --hard: drop-shadow(3px 4px 0 rgba(26, 18, 22, .45));
   position: fixed; inset: 0; z-index: 44; overflow: clip;
   font-family: 'Alagard', 'DotGothic16', sans-serif; font-size: 16px; line-height: 20px; color: var(--ink);
-  background: #110c24; user-select: none; -webkit-user-select: none;
+  background: #e8d6b6; user-select: none; -webkit-user-select: none;
 }
 .dr.hidden { display: none; }
 .dr *, .dr *::before, .dr *::after { box-sizing: border-box; }
@@ -30,9 +30,13 @@ body.dressing-on #crosshair, body.dressing-on #hint { visibility: hidden; }
 }
 .dr-back:hover { transform: translateY(-1px); }
 .dr-back:hover .dr-back-t { background: var(--pp-pencil) repeat-x 0 100% / 64px 6px; }
-.dr-title { display: flex; align-items: baseline; gap: 10px; color: var(--cream); text-shadow: 0 2px 0 #1e0610, 2px 0 0 #1e0610; pointer-events: none; }
-.dr-title b { font-weight: normal; font-size: 32px; line-height: 32px; }
-.dr-title i { font-style: normal; font-family: 'DotGothic16', sans-serif; font-size: 16px; color: #f4cc64; }
+.dr-title {
+  display: flex; align-items: baseline; gap: 10px; pointer-events: none; color: var(--ink); padding: 0 8px; height: 48px; align-items: center;
+  border: 12px solid transparent; border-image: var(--pp-edge-manila) 6 / 12px round; background: var(--pp-grain-manila) 0 0 / 64px padding-box;
+  filter: var(--hard); image-rendering: pixelated; rotate: -1deg;
+}
+.dr-title b { font-weight: normal; font-size: 32px; line-height: 24px; }
+.dr-title i { font-style: normal; font-family: 'DotGothic16', sans-serif; font-size: 16px; color: var(--red); }
 
 /* ------------------------------------------------------------------ the zoom tags + hint under the stage */
 .dr-zoom { position: absolute; left: 0; width: var(--stage-w, 60vw); bottom: max(14px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
@@ -43,7 +47,7 @@ body.dressing-on #crosshair, body.dressing-on #hint { visibility: hidden; }
 }
 .dr-zchips button:hover { transform: translateY(-1px); color: var(--ink); }
 .dr-zchips button.on { color: var(--ink); background: linear-gradient(transparent 16px, var(--red) 16px, var(--red) 18px, transparent 18px) padding-box, var(--pp-grain-receipt) 0 0 / 96px padding-box; }
-.dr-hint { color: var(--cream); text-shadow: 0 2px 0 #140c22, 2px 0 0 #140c22; transition: opacity .4s steps(3); }
+.dr-hint { color: var(--ink); text-shadow: 0 2px 0 #fff4dc, 2px 0 0 #fff4dc, -2px 0 0 #fff4dc, 0 -2px 0 #fff4dc; transition: opacity .4s steps(3); }
 .dr-hint.done { opacity: 0; }
 
 /* ------------------------------------------------------------------ speech bubble + the NOT YOURS YET stamp */
@@ -201,12 +205,15 @@ button.dr-act:hover span { background: var(--pp-pencil) repeat-x 0 100% / 64px 6
 .dr-act.is { color: var(--red); }
 .dr-act.is::before { content: ''; width: 24px; height: 24px; background: var(--pp-tick) 0 0 / 24px; image-rendering: pixelated; }
 .dr-act.no::before { content: ''; width: 32px; height: 32px; background: var(--pp-hanko-mi) 0 0 / 32px; image-rendering: pixelated; }
+.dr-act.itch { color: var(--red); border-image-source: var(--pp-edge-pink); background: var(--pp-grain-pink) 0 0 / 64px padding-box; }
+.dr-how-slip.itch .dr-how-t { color: var(--red); }
 .dr-act.shake { animation: dr-shake .3s steps(6); }
 @keyframes dr-shake { 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
 .dr-keys { flex: none; padding: 6px 8px 0; color: var(--ink2); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ------------------------------------------------------------------ phones / tall screens: the catalogue is a sheet below */
 @media (max-aspect-ratio: 4/5), (max-width: 760px) and (orientation: portrait) {
+  .dr-title { height: 44px; }
   .dr-title b { font-size: 16px; line-height: 20px; }
   .dr-title i { display: none; }
   .dr-back { height: 44px; }

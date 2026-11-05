@@ -1,5 +1,6 @@
 // Cosmetics you earn instead of buy:
-//  - achievements with reward.cosmetic (game.os.achievements, src/style/achievements.js): granted on 'achievement'
+//  - achievements with reward.cosmetic (game.os.achievements, src/style/achievements.js), and catalogue entries that
+//    name an achievement (ach: 'id'): granted on 'achievement'
 //  - the lane's side quests: catalogue entries with quest: 'id' are that quest's reward (its banner says so)
 //  - capsule bonuses: some gacha series hide a rare piece of clothing in their capsules (catalogue capsule: 'series');
 //    when you open one there's a small chance it's tucked in with the figure
@@ -13,12 +14,15 @@ export const CAPSULE_ODDS = 1 / 28; // per capsule opened from a series that has
 export function installRewards(game) {
   const g = game;
   const C = () => g.cosmetics;
-  const byQuest = new Map(COSMETICS.filter((c) => c.quest).map((c) => [c.quest, c]));
+  // (a quest or an achievement can hand over more than one piece)
+  const group = (key) => { const m = new Map(); for (const c of COSMETICS) if (c[key]) { if (!m.has(c[key])) m.set(c[key], []); m.get(c[key]).push(c); } return m; };
+  const byQuest = group('quest'), byAch = group('ach');
 
   // ---- achievements
   const fromAch = (id, name, reward) => {
     const cid = reward?.cosmetic;
     if (cid && COSMETIC_BY_ID[cid]) C()?.grant(cid, { from: name || id, kind: 'ach' });
+    for (const c of byAch.get(id) || []) if (c.id !== cid) C()?.grant(c.id, { from: name || id, kind: 'ach' }); // catalogue entries that name it
   };
   g.events.on('achievement', ({ id, name, reward }) => fromAch(id, name, reward));
 
@@ -26,26 +30,29 @@ export function installRewards(game) {
   const tagQuests = () => {
     const SQ = g.sideQuests;
     if (!SQ) return;
-    for (const [qid, c] of byQuest) {
+    for (const [qid, list] of byQuest) {
       const d = SQ.get(qid);
       if (!d || d._cx) continue;
       d._cx = true;
       d.reward = { ...(d.reward || {}) };
-      d.reward.text = [d.reward.text, `New in your closet: ${c.name}`].filter(Boolean).join('  ·  ');
+      d.reward.text = [d.reward.text, `New in your closet: ${list.map((c) => c.name).join(', ')}`].filter(Boolean).join('  ·  ');
     }
   };
   tagQuests();
   g.events.on('sideQuest', ({ id, state }) => {
     if (state !== 'done') return;
-    const c = byQuest.get(id);
-    if (c) C()?.grant(c.id, { from: g.sideQuests?.get(id)?.title || id, kind: 'quest' });
+    for (const c of byQuest.get(id) || []) C()?.grant(c.id, { from: g.sideQuests?.get(id)?.title || id, kind: 'quest' });
   });
 
   // ---- catch-up for saves that earned things before these rewards existed
   const catchUp = () => {
     const got = [];
-    for (const [qid, c] of byQuest) if (g.sideQuests?.isDone?.(qid) && C()?.grant(c.id, { kind: 'quest', quiet: true })) got.push(c.name);
-    for (const a of g.os?.achievements?.list?.() || []) if (a.got != null && a.reward?.cosmetic && C()?.grant(a.reward.cosmetic, { kind: 'ach', quiet: true })) got.push(COSMETIC_BY_ID[a.reward.cosmetic].name);
+    for (const [qid, list] of byQuest) if (g.sideQuests?.isDone?.(qid)) for (const c of list) if (C()?.grant(c.id, { kind: 'quest', quiet: true })) got.push(c.name);
+    for (const a of g.os?.achievements?.list?.() || []) {
+      if (a.got == null) continue;
+      if (a.reward?.cosmetic && C()?.grant(a.reward.cosmetic, { kind: 'ach', quiet: true })) got.push(COSMETIC_BY_ID[a.reward.cosmetic].name);
+      for (const c of byAch.get(a.id) || []) if (C()?.grant(c.id, { kind: 'ach', quiet: true })) got.push(c.name);
+    }
     if (got.length) g.news?.('Your closet has something new', got.slice(0, 3).join(', ') + (got.length > 3 ? ` and ${got.length - 3} more` : ''), 6500);
   };
   let t = 3, rounds = 0;

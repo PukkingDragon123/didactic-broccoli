@@ -442,6 +442,9 @@ const H = {
   },
 };
 
+/** The built-in models (the kitsune mask, the hoods...), for catalogue entries that reuse or recolour one. */
+VOX.MODELS = H;
+
 // ------------------------------------------------------------------ per-human body pieces (metric voxels)
 function spike(size) {
   const v = vm(0.03);

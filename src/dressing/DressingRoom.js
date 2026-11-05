@@ -1,12 +1,14 @@
-// The Dressing Room: your character on a floating capsule dais in a little night theatre (src/dressing/stage.js), and a
-// paper mail-order catalogue beside it: index tabs for every category, cards with crisp pixel pictures, rarity stamps,
-// prices and "how to get it" slips, paint chips for colours, and a slip at the bottom for whatever you're looking at.
+// The Dressing Room: your character on a rag rug in a small walk-in closet on a spring afternoon (src/dressing/stage.js,
+// room.js), and a paper mail-order catalogue beside it: index tabs for every category, cards with crisp pixel pictures,
+// rarity stamps, prices and "how to get it" slips, paint chips for colours, and a slip at the bottom for whatever you're
+// looking at.
 //
-// Hover a card (or move to it with the keys / a pad) and it's tried on with a little twinkle; click it and it's yours to
-// wear: saved at once (state.avatar, game.events 'avatar'), with a burst of pixel magic, a squash-and-stretch pop and an
-// 8-bit chime (rarer pieces, bigger bursts). Pieces you don't own yet are ink silhouettes under a hanko padlock; you can
-// still try them on ("not yours yet") and the slip says how to get them, with progress where it can be counted. Shop
-// pieces are bought right here with yen. New arrivals wear a NEW sticker until you've looked at them (save: 'dressing').
+// Hover a card (or move to it with the keys / a pad) and it's tried on; click it and it's yours to wear: saved at once
+// (state.avatar, game.events 'avatar'), with a little puff of cloth dust, a hop and a rustle (a rare piece adds a few
+// sparkles and a soft note). Pieces you don't own yet are ink silhouettes under a hanko padlock; you can still try them on
+// ("not yours yet") and the slip says how to get them, with progress where it can be counted. Shop pieces are bought
+// right here with yen; the Duck Head's slip has a "Follow on itch.io" button (src/cosmetics/itch.js). New arrivals wear a
+// NEW sticker until you've looked at them (save: 'dressing').
 //   const room = new DressingRoom(game);  room.open({ from: 'menu' | 'mirror' }) -> Promise (resolves on close)
 import './dressing.css';
 import { audio } from '../core/audio.js';
@@ -17,11 +19,12 @@ import { RARITIES } from '../data/rarity.js';
 import { hasPrint, printOf, loadPrint } from '../cosmetics/prints.js';
 import { ensureState } from '../game/stateExt.js';
 import { talk } from '../people/voice.js';
-import { Stage } from './stage.js';
+import { Stage, REST_YAW } from './stage.js';
 import { TABS, TAB_BY_ID, TAB_OF, AT_KEY, sections, itemsOf, status, howTo, counts } from './catalog.js';
 import { thumbFor, silhouette, THUMB } from './thumbs.js';
 import { pixText } from './pixtext.js';
-import { idle, equipBurst, glint, denied, curtainUp } from './magic.js';
+import { idle, equipPoof, denied } from './fx.js';
+import { claimItch, DUCK_ID } from '../cosmetics/itch.js';
 import { installDressSounds } from './sounds.js';
 import { installDressIcons } from './icons.js';
 
@@ -34,9 +37,11 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const LOOK_KEYS = ['body', 'skin', 'hair', 'hairCol', 'top', 'topCol', 'bottom', 'botCol', 'eyes', 'brows', 'cheeks', 'eyeCol', ...SLOTS.map((s) => s.id)];
 const lookOf = (a) => Object.fromEntries(LOOK_KEYS.map((k) => [k, a[k] ?? null]));
 const sameLook = (a, b) => LOOK_KEYS.every((k) => (a[k] ?? null) === (b[k] ?? null));
-const LINES = ['Ooh!', 'Kawaii!', 'Fashion!', 'Looking good.', 'Is this too much?', 'Nailed it.', 'Grandpa would laugh.', 'Kira-kira!', 'Very 1999.', 'Spin me again!'];
-const ITEM_LINES = { dino: 'Rawr!', chicken: 'Bawk!', frog: 'Ribbit.', shark: 'Chomp chomp.', banana: 'I am bananas.', cone: 'Road work ahead.', box: 'Beep boop.', groucho: 'Nobody will know.', happi: 'Wasshoi!', bear: 'Grr. Cute grr.', nigiri: 'Fresh!', kitsune: 'Festival time!', stars: 'Superstar!', cx_crown: 'Bow, lane!', cx_pigeon: 'Poppo.', cx_cow: 'Moo.', cx_shiba: 'Wan!', cx_calico: 'Nya.', cx_pompadour: 'Nobody touch it.', cx_goldkicks: 'Shiny!', cx_paperbag: "Don't look at me.", cx_ranger: 'Henshin!', cx_astro: 'One small step...' };
+const LINES = ['Ooh!', 'Hmm, nice.', 'Fits!', 'Looking good.', 'Is this too much?', 'Not bad at all.', 'Grandpa would laugh.', 'Snug.', 'Very 1999.', "I'll keep it."];
+const ITEM_LINES = { dino: 'Rawr!', chicken: 'Bawk!', frog: 'Ribbit.', shark: 'Chomp chomp.', banana: 'I am bananas.', cone: 'Road work ahead.', box: 'Beep boop.', groucho: 'Nobody will know.', happi: 'Wasshoi!', bear: 'Grr. Cute grr.', nigiri: 'Fresh!', kitsune: 'Festival time!', stars: 'Superstar!', cx_crown: 'Bow, lane!', cx_pigeon: 'Poppo.', cx_cow: 'Moo.', cx_shiba: 'Wan!', cx_calico: 'Nya.', cx_pompadour: 'Nobody touch it.', cx_goldkicks: 'Shiny!', cx_paperbag: "Don't look at me.", cx_ranger: 'Henshin!', cx_astro: 'One small step...',
+  cx_duck: 'Quack.', cx_tengu: 'My nose!', cx_daruma: 'Wish granted.', cx_kabuto: 'Banzai!', cx_hachimaki: 'Hisshō!', cx_tanuki: 'Pon-poko!', cx_tanukitail: 'Pon-poko!', cx_chonmage: 'Gozaru.', cx_kagami: 'Akemashite!', cx_santa: 'Cake! Cake for sale!', cx_kogal: 'Cho-kawaii!', cx_overtime: 'One more beer.', cx_toilet: 'Un ga tsuku.', cx_capsulehat: 'Gacha gacha!', cx_kaiser: 'Hmm. Quite.', cx_jersey: 'Gym class.', cx_furoshiki: 'Not a thief. Promise.' };
 const KEY_HELP = 'Arrows · Enter wear · Q/E tabs · Z/X zoom · Esc';
+const HOW_ICON = { ach: 'os_trophy', quest: 'star', capsule: 'capsule', web: 'cart', level: 'upgrade', itch: 'heart' };
 
 export class DressingRoom {
   constructor(game) {
@@ -100,11 +105,11 @@ export class DressingRoom {
     document.body.classList.add('dressing-on');
     this.layout();
     const st = this.stage;
-    // from the menu the curtains part; through the mirror the glass dissolves on a stage that's already open
-    st.curtain = from === 'mirror' ? 1 : 0; st.curtainGoal = st.curtain; st.paintCurtains(true); st.fade = from === 'mirror' ? 1 : 0;
+    // from the menu the room fades up in steps; through the mirror the glass dissolves on the room
+    st.fade = from === 'mirror' ? 1 : 0;
     st.mirror = from === 'mirror' ? 1 : 0;
     this.root.querySelector('.dr-back-t').textContent = from === 'mirror' ? 'Step away' : 'Back';
-    st.yaw = 0.35; st.yawVel = 0; st.poseYaw = null;
+    st.yaw = REST_YAW; st.yawVel = 0; st.poseYaw = null; st.idleT = 0;
     st.setLook(this.shown);
     this.lastLook = lookOf(this.shown);
     st.zoomTo('full', true);
@@ -130,8 +135,7 @@ export class DressingRoom {
   close() {
     if (!this.isOpen || this.closing) return;
     this.closing = true;
-    this.sfx('kiraCurtain', 0.35);
-    this.stage.curtainGoal = 0;
+    this.sfx('drHover', 0.5);
     this.root.classList.add('closing');
     this.bubble(null);
     this.stampShow(false);
@@ -170,7 +174,7 @@ export class DressingRoom {
       <div class="dr-ui">
         <div class="dr-top">
           <button class="dr-back pp-tag" data-act="close">${ic('back', 2)}<span class="dr-back-t">Back</span></button>
-          <div class="dr-title"><b>Dressing Room</b><i lang="ja">着せ替え</i></div>
+          <div class="dr-title"><b>Dressing Room</b><i lang="ja">衣装部屋</i></div>
         </div>
         <div class="dr-bubble" aria-live="polite"></div>
         <div class="dr-stamp" aria-hidden="true"><span class="dr-stamp-in">${pixText('NOT YOURS YET', { s: 3, col: '#2f5a9a' })}</span></div>
@@ -178,7 +182,7 @@ export class DressingRoom {
           <div class="dr-zchips" role="group" aria-label="Zoom">
             <button data-zoom="face">Face</button><button data-zoom="full">Full</button><button data-zoom="feet">Feet</button>
           </div>
-          <div class="dr-hint">Drag to spin · Scroll to zoom</div>
+          <div class="dr-hint">Drag to turn · Scroll to zoom</div>
         </div>
         <aside class="dr-book" aria-label="Catalogue">
           <nav class="dr-tabs" role="tablist" aria-label="Categories"></nav>
@@ -265,8 +269,8 @@ export class DressingRoom {
     if (it.kind === 'cos' && st === 'shop') foot = `<span class="dr-price">${esc(yen(c.price))}</span>`;
     else if (st === 'locked') {
       const h = howTo(this.game, c);
-      const short = { ach: 'Trophy', quest: 'Quest', capsule: 'Capsule', web: 'Web shop', level: `Level ${h.prog?.max}`, thrift: 'Thrift' }[h.kind] || h.label;
-      foot = `<span class="dr-how">${ic(h.kind === 'ach' ? 'os_trophy' : h.kind === 'quest' ? 'star' : h.kind === 'capsule' ? 'capsule' : h.kind === 'web' ? 'cart' : h.kind === 'level' ? 'upgrade' : 'lock', 1)}<span>${esc(short)}</span></span>${h.prog ? `<i class="dr-bar sm"><i style="width:${Math.round((h.prog.n / h.prog.max) * 10) * 10}%"></i></i>` : ''}`;
+      const short = { ach: 'Trophy', quest: 'Quest', capsule: 'Capsule', web: 'Web shop', level: `Level ${h.prog?.max}`, thrift: 'Thrift', itch: 'Free!' }[h.kind] || h.label;
+      foot = `<span class="dr-how">${ic(HOW_ICON[h.kind] || 'lock', 1)}<span>${esc(short)}</span></span>${h.prog ? `<i class="dr-bar sm"><i style="width:${Math.round((h.prog.n / h.prog.max) * 10) * 10}%"></i></i>` : ''}`;
     } else if (worn) foot = '<span class="dr-worn">Wearing</span>';
     else if (it.kind === 'cos') foot = '<span class="dr-own">Yours</span>';
     const pic = it.kind === 'none'
@@ -312,6 +316,9 @@ export class DressingRoom {
         const short = this.game.state.money < c.price;
         how = `<div class="dr-how-slip shop"><b>${pixText('IN THE CLOSET', { s: 1, col: '#c8322c' })}</b><span class="dr-how-t">${esc(yen(c.price))}</span><small>${short ? `You need ${esc(yen(c.price - this.game.state.money))} more.` : 'Pay at the counter and put it on.'}</small></div>`;
         act = `<button class="dr-act buy${short ? ' off' : ''}" data-act="buy">${ic('cart', 2)}<span>Buy ${esc(yen(c.price))}</span></button>`;
+      } else if (h.kind === 'itch') {
+        how = `<div class="dr-how-slip itch"><b>${pixText(h.label.toUpperCase(), { s: 1, col: '#c8322c' })}</b><span class="dr-how-t">${esc(h.text)}</span><small>${esc(h.sub)}</small></div>`;
+        act = `<button class="dr-act itch" data-act="itch">${ic('heart', 2)}<span>Follow on itch.io</span></button>`;
       } else {
         how = `<div class="dr-how-slip"><b>${pixText(h.label.toUpperCase(), { s: 1, col: '#c8322c' })}</b><span class="dr-how-t">${esc(h.text)}</span>${h.sub ? `<small>${esc(h.sub)}</small>` : ''}${bar}</div>`;
         act = '<span class="dr-act no">Not yours yet</span>';
@@ -329,7 +336,7 @@ export class DressingRoom {
   }
 
   // ------------------------------------------------------------------------------------------ actions
-  /** Put a piece on for real (or keep a base option): saved, the 'avatar' event, magic. */
+  /** Put a piece on for real (or keep a base option): saved, the 'avatar' event, a puff of cloth dust and a hop. */
   commit(change, { at = 0.5, rarity = 'common', item = null, sound = true } = {}) {
     const g = this.game;
     const A = g.state.avatar = normalizeAvatar({ ...this.saved, ...change });
@@ -340,8 +347,8 @@ export class DressingRoom {
     g.events.emit('avatar', A);
     if (item?.c && hasPrint(item.value) && !printOf(item.value)) loadPrint(item.value).then(() => { g.events.emit('avatar', g.state.avatar); this.refreshModel(); });
     this.refreshModel('equip', { at, rarity });
-    if (sound) this.sfx(rarity === 'secret' ? 'kiraSecret' : rarity === 'rare' || rarity === 'ultra' ? 'kiraRare' : 'kiraChime', 0.7);
-    if (Math.random() < 0.4 || rarity === 'ultra' || rarity === 'secret') this.say(ITEM_LINES[item?.value] || pick(LINES));
+    if (sound) this.sfx(rarity === 'secret' ? 'drSecret' : rarity === 'rare' || rarity === 'ultra' ? 'drRare' : 'drRustle', 0.8);
+    if (Math.random() < 0.3 || ITEM_LINES[item?.value]) this.say(ITEM_LINES[item?.value] || pick(LINES));
     this.render();
   }
 
@@ -353,7 +360,7 @@ export class DressingRoom {
     const at = AT_KEY[it.key] ?? 0.5;
     if (it.kind === 'cos') this.markSeen(it.value);
     if (it.kind === 'base' || it.kind === 'swatch') {
-      if ((look[it.key] ?? null) === it.value && !this.sticky[it.key]) { this.stage.react('pose'); this.sfx('kiraHover', 0.6); this.renderSlip(); return; }
+      if ((look[it.key] ?? null) === it.value && !this.sticky[it.key]) { this.stage.react('pose'); this.sfx('drHover', 0.6); this.renderSlip(); return; }
       const change = { [it.key]: it.value };
       // an outfit hides the everyday top (and some hide the bottoms): picking one takes the outfit off
       if ((it.key === 'top' || it.key === 'topCol') && look.outfit) change.outfit = null;
@@ -368,7 +375,7 @@ export class DressingRoom {
     }
     const c = it.c;
     if (st === 'owned') {
-      if (look[it.key] === it.value && !this.sticky[it.key]) { this.stage.react('pose'); this.sfx('kiraHover', 0.6); this.renderSlip(); this.markCards(); return; }
+      if (look[it.key] === it.value && !this.sticky[it.key]) { this.stage.react('pose'); this.sfx('drHover', 0.6); this.renderSlip(); this.markCards(); return; }
       this.commit({ [it.key]: it.value }, { at, rarity: c.rarity, item: it });
       return;
     }
@@ -376,7 +383,7 @@ export class DressingRoom {
     this.sticky[it.key] = it.value;
     delete this.hover[it.key];
     this.refreshModel(st === 'locked' ? 'denied' : 'try', { at });
-    if (st === 'locked') { this.sfx('kiraDenied', 0.6); this.stampShow(true); } else this.sfx('kiraHover', 0.7);
+    if (st === 'locked') { this.sfx('drDenied', 0.6); this.stampShow(true); } else this.sfx('drHover', 0.7);
     if (this.tryPose(it)) { /* turned to show it */ }
     this.renderSlip();
     this.markCards();
@@ -394,10 +401,21 @@ export class DressingRoom {
       return;
     }
     if (!g.spend(c.price, `Closet: ${c.name}`)) { this.sfx('error', 0.45); return; }
-    this.sfx('kiraBuy', 0.7);
+    this.sfx('drBuy', 0.7);
     this.markSeen(c.id);
     this.commit({ owned: [...new Set([...this.saved.owned, c.id])], [c.slot]: c.id }, { at: AT_KEY[c.slot], rarity: c.rarity, item: it });
     this.stampShow(false);
+  }
+
+  /** The Duck Head's slip: the itch.io page opens in a new tab and the duck is yours (we can't check: honour system). */
+  followItch() {
+    const got = claimItch(this.game);
+    if (!got) return;
+    this.S.seen = this.S.seen.filter((x) => x !== DUCK_ID); // it arrives with its NEW sticker, like any new piece
+    this.sfx('drRustle', 0.6);
+    this.refreshModel('try', { at: 1 });
+    this.render();
+    setTimeout(() => { if (this.isOpen) this.say('Quack! Thank you!'); }, 400);
   }
 
   /** Would these bottoms be hidden by the outfit you're wearing? */
@@ -449,15 +467,14 @@ export class DressingRoom {
       const id = SLOTS.map((s) => look[s.id]).find((x) => x && hasPrint(x) && !printOf(x));
       if (id) loadPrint(id).then(() => { if (this.isOpen) { this.lastLook = null; this.refreshModel(); } });
       st.setLook(look, { pop: kind === 'equip' ? (rarity === 'ultra' || rarity === 'secret' ? 'big' : true) : false });
-      if (kind === 'hover' || kind === 'try') st.squash(0.4);
     }
     if (kind === 'equip') {
-      if (!changed) st.squash(rarity === 'ultra' || rarity === 'secret' ? 1.25 : 1);
-      equipBurst(st, at, rarity);
-      st.react(rarity === 'ultra' || rarity === 'secret' ? 'spin' : 'pose');
+      if (!changed) st.squash(0.55);
+      st.hop(at < 0.15 ? 0.6 : 1);
+      equipPoof(st, at, rarity);
+      if (Math.random() < 0.45) st.react(rarity === 'ultra' || rarity === 'secret' ? 'pose' : 'look');
     }
-    else if (kind === 'hover' && changed) { glint(st, at); if (audio.canPlay('dr-hover', 0.09)) this.sfx('kiraHover', 0.5); }
-    else if (kind === 'try') glint(st, at);
+    else if (kind === 'hover' && changed) { if (audio.canPlay('dr-hover', 0.12)) this.sfx('drHover', 0.45); }
     else if (kind === 'denied') denied(st, at);
     // the "not yours yet" stamp shows while anything you don't own is on
     const own = this.owned;
@@ -533,14 +550,13 @@ export class DressingRoom {
     const st = this.stage;
     this.frames = (this.frames || 0) + 1;
     this.openT += dt;
-    // opening: fade in (stepped), the curtains part, stars burst off the dais
+    // opening: the room fades up in steps (from the menu), or the mirror's glass dissolves away in eight dithered steps
     if (!this.closing) {
       if (this.from === 'mirror') {
-        // stepping through the mirror: the glass dissolves away in eight dithered steps, then the curtains part
         st.mirror = Math.max(0, 1 - Math.floor(Math.max(0, this.openT - 0.25) * 10) / 8);
         st.fade = 1;
       } else st.fade = Math.min(1, Math.floor(this.openT * 8) / 2.4);
-      if (this.openT > (this.from === 'mirror' ? 0.9 : 0.3) && !this.introDone) { this.introDone = true; st.curtainGoal = 1; this.sfx('kiraCurtain', 0.45); curtainUp(st); setTimeout(() => { if (this.isOpen && !this.closing) { st.react('wave'); this.say(this.from === 'mirror' ? 'Mirror, mirror...' : pick(['Showtime!', 'Ta-da!', 'Kira-kira!'])); } }, 650); }
+      if (this.openT > (this.from === 'mirror' ? 0.6 : 0.2) && !this.introDone) { this.introDone = true; this.sfx('drOpen', 0.6); setTimeout(() => { if (this.isOpen && !this.closing) { st.react('wave'); this.say(this.from === 'mirror' ? 'What to wear...' : pick(['What to wear...', 'Hmm, today...', 'Right then.'])); } }, 500); }
       if (st.fade >= 1) this.covering = true;
     } else {
       st.fade = Math.max(0, st.fade - dt * 3);
@@ -588,6 +604,7 @@ export class DressingRoom {
         const act = a.dataset.act;
         if (act === 'close') { this.sfx('uiClick', 0.6); this.close(); }
         else if (act === 'buy') this.buy();
+        else if (act === 'itch') this.followItch();
         else if (act === 'wear') { const it = this.items.get(this.sel); if (it) { this.sticky = {}; this.choose(it); } }
         else if (act === 'off') { const it = this.items.get(this.sel); if (it) this.commit({ [it.key]: null }, { at: AT_KEY[it.key], item: it }); }
         return;
@@ -641,8 +658,8 @@ export class DressingRoom {
       if (ptrs.size < 2) pinch = null;
       if (!drag) return;
       st.dragging = false;
-      if (drag.moved < 8 && st.pick(e.clientX, e.clientY)) { st.react(Math.random() < 0.3 ? 'spin' : 'pose'); this.sfx('kiraHover', 0.6); this.say(pick(LINES)); }
-      else st.fling(performance.now() - drag.t < 120 ? drag.v : st.autoSpin);
+      if (drag.moved < 8 && st.pick(e.clientX, e.clientY)) { st.react('pose'); this.sfx('drHover', 0.6); this.say(pick(LINES)); }
+      else st.fling(performance.now() - drag.t < 120 ? drag.v : 0);
       drag = null;
     };
     cv.addEventListener('pointerup', up);

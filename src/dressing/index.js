@@ -3,10 +3,10 @@
 //   game.dressing.open({ from: 'menu' | 'mirror' }) -> Promise<avatar> (resolves when it closes)
 //   game.dressing.close(), game.dressing.isOpen
 // While it covers the screen the game's own frame isn't drawn (its canvas is hidden under the room anyway).
-// Test helpers: window.dbg.dressing (open, tab, hover, choose, equip, unlockAll, zoom, spin, burst, state).
+// Test helpers: window.dbg.dressing (open, tab, hover, choose, equip, unlockAll, zoom, spin, poof, itch, state).
 import { DressingRoom } from './DressingRoom.js';
 import { TABS } from './catalog.js';
-import { equipBurst } from './magic.js';
+import { equipPoof } from './fx.js';
 import { COSMETIC_BY_ID } from '../people/cosmetics.js';
 
 export function installDressing(game) {
@@ -42,7 +42,13 @@ export function installDressing(game) {
     zoomNow: (name) => { get().stage?.zoomTo(name, true); return true; },
     spin: (rad = 1) => { get().stage?.spinBy(rad); return true; },
     fling: (v = 6) => { get().stage?.fling(v); return true; },
-    burst: (rarity = 'rare', at = 0.6) => { const st = get().stage; if (st) equipBurst(st, at, rarity); return true; },
+    /** Lock someone out of a piece again (for screenshots of a locked slip). */
+    lose: (id) => { const A = g.state.avatar; A.owned = A.owned.filter((x) => x !== id); for (const s of ['hat', 'outfit', 'face', 'bag', 'shoes']) if (A[s] === id) A[s] = null; if (g.state.itch && id === 'cx_duck') g.state.itch.followed = false; const r = get(); if (r.isOpen) { r.lastLook = null; r.render(); r.refreshModel(); } return true; },
+    poof: (rarity = 'common', at = 0.6) => { const st = get().stage; if (st) { equipPoof(st, at, rarity); st.hop(); } return true; },
+    /** Press the Duck Head slip's "Follow on itch.io" button (opens the itch page, grants the duck once). */
+    itch: () => { const r = get(); r.setTab('hats'); r.choose(item(r, 'cos:cx_duck')); r.slipEl?.querySelector('[data-act="itch"]')?.click(); return g.state.avatar.owned.includes('cx_duck'); },
+    /** Turn to a yaw (0 = facing you) and stop there. */
+    face: (yaw = 0) => { const st = get().stage; if (st) { st.yaw = yaw; st.yawVel = 0; st.poseYaw = null; st.idleT = 0; } return true; },
     focus: (uid) => { const r = get(); const el = r.scroll?.querySelector(`[data-uid="${CSS.escape(uid)}"]`); el?.focus({ preventScroll: true }); if (el) r.reveal(el); return !!el; },
     key: (key) => { dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true })); return true; },
     /** Mark a cosmetic as newly arrived (owned, not seen yet). */

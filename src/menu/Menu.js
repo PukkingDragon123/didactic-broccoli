@@ -19,6 +19,7 @@ import { MenuLife } from './life.js';
 import { MenuShot } from './shot.js';
 import { MenuUI, confirmSlip } from './ui.js';
 import { openCredits } from './credits.js';
+import { claimItch, itchClaimed } from '../cosmetics/itch.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const sfx = (n, o = {}) => { try { audio.init(); audio.play(n, o); } catch { /* audio not ready */ } };
@@ -55,13 +56,15 @@ export class TitleMenu {
       onHover: (id) => { this.cast.hover = id === 'wardrobe'; },
     });
     this.ui.setItems(this.items());
+    // a little tag off the Wardrobe tag: follow the game on itch.io for a free Duck Head (until it's claimed)
+    this.ui.setItch(!g.visiting && !itchClaimed(g), () => this.itch());
     // the pointer over the scene: you (hover = you look up and wave, the Wardrobe tag swings; click = the wardrobe)
     const canvas = g.renderer.renderer.domElement;
     this.canvas = canvas;
     const ndc = (e) => [(e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1];
     this.onMove = (e) => {
       if (this.busy || !this.idle()) { canvas.style.cursor = ''; return; }
-      if (e.target?.closest?.('.tm-tag, .panel, .tm-modal, .tm-credits')) return;
+      if (e.target?.closest?.('.tm-tag, .tm-itch, .panel, .tm-modal, .tm-credits')) return;
       const over = this.cast.pick(g.camera, ...ndc(e));
       if (over !== this.overMe) {
         this.overMe = over;
@@ -87,6 +90,7 @@ export class TitleMenu {
     // a nudge for new players: you tell them they can click you
     this.hintT = g.state.flags?.closetSeen ? Infinity : 9;
     this.offAvatar = g.events?.on?.('avatar', (look) => { if (!this.closetOpen && !this.dressingOpen && !this.leaving) this.cast.build(look); });
+    this.offItch = g.events?.on?.('itch', () => this.ui.setItch(false));
   }
 
   /** What's on the strand, from the save: Continue only once there's a shop to go back to. */
@@ -135,6 +139,14 @@ export class TitleMenu {
       this.ui.show(true);
       this.ui.focus('credits');
     }
+  }
+
+  /** The itch tag: open the itch.io page in a new tab, the Duck Head goes into your wardrobe (with its unlock card). */
+  itch() {
+    if (this.leaving || this.busy) return;
+    const got = claimItch(this.game);
+    this.ui.setItch(false);
+    if (got) this.cast.say('Quack! A duck head, for me?', 3);
   }
 
   /** Into the game: lock the pointer now (inside the click), stamp the tag, crank, the capsule, the camera move, fade. */
@@ -193,7 +205,7 @@ export class TitleMenu {
     sfx('paper', { vol: 0.4 });
     const p = this.cast.me.root.position;
     if (g.dressing?.open) {
-      // turn to you and close in (the dressing room opens its own curtain over this)
+      // turn to you and close in (the dressing room fades up over this)
       await this.shot.move([{ pos: V(p.x + 1.15, 1.25, p.z + 2.0), look: V(p.x, 1.05, p.z), fov: 34, at: 1 }], 0.75);
       // (it draws on a canvas of its own and stops the game's frame while it covers the screen)
       this.dressingOpen = true;
@@ -280,6 +292,7 @@ export class TitleMenu {
     removeEventListener('pointerup', this.onUp);
     removeEventListener('keydown', this.onKey);
     this.offAvatar?.();
+    this.offItch?.();
     if (this.onCloset) removeEventListener('resize', this.onCloset);
     if (this.hidPeds) for (const q of this.game.pedestrians?.list || []) if (q.h?.root) q.h.root.visible = true;
     this.closet?.dispose?.();

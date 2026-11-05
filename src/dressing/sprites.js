@@ -1,9 +1,10 @@
-// The dressing room's magic, all hand-pixelled 2D sprites in an atlas of their own (same rules as src/gfx/pixfx.js:
-// frame strips, nearest filtering, stepped animation, no soft blobs, fades are ordered-dither dissolves). The stage
-// renders at art-pixel resolution, so a sprite pixel is one stage pixel (or two, three... up close: whole multiples).
-//   const fx = new Sparkles(scene);  fx.emit({ sprite: 'kira', pos, vel, life, px, color, ... });  fx.update(dt)
-// Sprites: kira (four-point twinkle), diamond, star5 (tumbling star), twinkle, mote, puff (smoke), rays (rare burst),
-// confetti, heart, note. Letters: '.' empty; a-e a grey ramp the particle colour tints; Y a cream core, K ink (fixed).
+// The dressing room's little effects, all hand-pixelled 2D sprites in an atlas of their own (same rules as
+// src/gfx/pixfx.js: frame strips, nearest filtering, stepped animation, no soft blobs, fades are ordered-dither
+// dissolves). The stage renders at art-pixel resolution, so a sprite pixel is one stage pixel (or two up close).
+//   const fx = new Sparkles(scene);  fx.emit({ sprite: 'puff', pos, vel, life, px, color, ... });  fx.update(dt)
+// Sprites: puff (cloth dust), dust (a smaller puff), lint (a curl of thread), mote (sun dust), kira (a four-point
+// sparkle) and twinkle (a small one) for rare pieces. Letters: '.' empty; a-e a grey ramp the particle colour tints;
+// Y a cream core, K ink (fixed).
 import * as THREE from 'three';
 
 const AW = 256, AH = 256;
@@ -56,30 +57,11 @@ art('kira', [
   ['.b.', 'bab', '.b.'],
   ['b'],
 ]);
-// ---- diamond: a hollow rhombus glint that pulses
-art('diamond', [
-  ['a'],
-  ['.a.', 'aYa', '.a.'],
-  ['..a..', '.bYb.', 'aY.Ya', '.bYb.', '..a..'],
-  ['...a...', '..b.b..', '.b...b.', 'a..Y..a', '.b...b.', '..b.b..', '...a...'],
-  ['..a..', '.b.b.', 'a...a', '.b.b.', '..a..'],
-  ['.b.', 'b.b', '.b.'],
-]);
-// ---- twinkle: a small plus that flickers on and off (idle motes, trails)
+// ---- twinkle: a small plus that flickers on and off (a rare piece's few sparkles)
 art('twinkle', [['a'], ['.b.', 'bYb', '.b.'], ['.a.', 'aYa', '.a.'], ['a'], ['b'], ['.b.', 'bab', '.b.'], ['a']]);
-art('mote', [['a'], ['b'], ['a'], ['c']]);
-// ---- star5: a chubby five-point star, tumbling (cream top-left light, a darker rim bottom-right, ink outline)
-code('star5', 6, 11, 11, (k, set) => {
-  const c = 5, R = 5.2, r = 2.3, rot = (k / 6) * (Math.PI * 2 / 5) - Math.PI / 2;
-  const pts = Array.from({ length: 10 }, (_, i) => { const a = rot + (i * Math.PI) / 5, rr = i % 2 ? r : R; return [c + Math.cos(a) * rr, c + Math.sin(a) * rr]; });
-  const inside = (x, y) => { let n = false; for (let i = 0, j = 9; i < 10; j = i++) { const [xi, yi] = pts[i], [xj, yj] = pts[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) n = !n; } return n; };
-  const In = (x, y) => x >= 0 && y >= 0 && x < 11 && y < 11 && inside(x + 0.5, y + 0.5);
-  for (let y = 0; y < 11; y++) for (let x = 0; x < 11; x++) {
-    if (In(x, y)) set(x, y, !In(x + 1, y) || !In(x, y + 1) ? 'c' : (!In(x - 1, y) || !In(x, y - 1)) && x + y < 11 ? 'Y' : 'a');
-    else if (In(x - 1, y) || In(x + 1, y) || In(x, y - 1) || In(x, y + 1)) set(x, y, 'e');
-  }
-});
-// ---- puff: a lumpy smoke cloud lit from the top left that swells, breaks up and scatters
+// ---- mote: a speck of dust turning in the sun (one pixel that catches the light now and then)
+art('mote', [['a'], ['b'], ['a'], ['a'], ['b'], ['a']]);
+// ---- puff: a lumpy little cloud of cloth dust, lit from the top left, that swells, breaks up and scatters
 code('puff', 6, 14, 14, (k, set) => {
   const lumps = [[6, 7, 3.6], [8.6, 6, 2.8], [4.2, 5.6, 2.5], [7.4, 9.2, 2.6], [9.6, 8.6, 2.2]];
   const sc = [0.45, 0.75, 1, 1.12, 1.2, 1.26][k];
@@ -92,39 +74,14 @@ code('puff', 6, 14, 14, (k, set) => {
     set(x, y, v < 0.7 ? (y > 7 ? 'd' : 'c') : lit < -0.35 ? 'a' : lit < 0.2 ? 'b' : 'c');
   }
 });
-// ---- rays: the rare burst behind you, rays round a star turning in stepped frames (long and short rays alternate)
-code('rays', 6, 61, 61, (k, set) => {
-  const c = 30, n = 16;
-  for (let i = 0; i < n; i++) {
-    const a = (i / n) * Math.PI * 2 + (k / 6) * (Math.PI * 4 / n), L = i % 2 ? 19 : 29;
-    for (let s = 5; s <= L; s += 0.5) {
-      if (s > L - 5 && Math.round(s * 2) % 3 === 0) continue; // ragged tips
-      set(c + Math.cos(a) * s, c + Math.sin(a) * s, i % 2 ? (s < 12 ? 'b' : 'c') : s < 12 ? 'a' : s < 21 ? 'b' : 'c');
-      if (s < 11 && i % 2 === 0) set(c + Math.cos(a) * s + Math.sin(a) * 0.9, c + Math.sin(a) * s - Math.cos(a) * 0.9, 'a');
-    }
-  }
-  for (const [x, y] of [[0, -4], [0, 4], [-4, 0], [4, 0], [3, 3], [-3, -3], [3, -3], [-3, 3]]) set(c + x, c + y, 'b');
-});
-// ---- confetti: a paper square tumbling
-art('confetti', [['aab', 'abb'], ['ab.', 'bc.'], ['a', 'c'], ['.ab', 'abc'], ['abb'], ['b', 'b', 'c']]);
-// ---- heart: pops in, holds, its glint goes out
-art('heart', [
-  ['a.a', 'aaa', '.a.'],
-  ['.aa.aa.', 'aYaaaab', 'aYaaaab', 'aaaaaab', '.aaaab.', '..aab..', '...b...'],
-  ['.aa.aa.', 'aaaaaab', 'aYaaaab', 'aaaaaab', '.aaaab.', '..aab..', '...b...'],
+// ---- dust: a smaller puff (a cloth rustle): three frames, swell, break, gone
+art('dust', [
+  ['.bb.', 'baab', '.bc.'],
+  ['..bb..', '.baab.', 'baaabc', '.bccb.', '..c...'],
+  ['.b..b.', 'b.a..c', '..b.c.', 'c....b', '.c.b..'],
 ]);
-// ---- shooting star: a cream head with a tail that stretches out behind it (down-left) and breaks up as it fades
-code('shoot', 6, 24, 12, (k, set) => {
-  const L = [4, 9, 14, 18, 20, 20][k], hx = 21, hy = 2;
-  for (let i = 0; i <= L; i++) {
-    const x = hx - i, y = hy + Math.round(i * 0.45);
-    if (k >= 4 && i > 4 && (i + k) % (k === 4 ? 3 : 2) === 0) continue;
-    set(x, y, i === 0 ? 'Y' : i < 3 ? 'a' : i < L * 0.5 ? 'b' : i < L * 0.8 ? 'c' : 'd');
-  }
-  if (k < 4) { set(hx + 1, hy, 'b'); set(hx, hy - 1, 'b'); set(hx, hy + 1, 'c'); }
-});
-// ---- note: a little quaver for the chime
-art('note', [['..aa', '..ab', '..a.', 'aaa.', 'aab.']]);
+// ---- lint: a little curl of thread drifting down
+art('lint', [['ab.', '..b', '.c.'], ['.a.', 'b.b', '.c.'], ['.ba', 'b..', '.c.'], ['.a.', 'b.b', '.c.']]);
 
 const tex = new THREE.DataTexture(atlas, AW, AH, THREE.RGBAFormat, THREE.UnsignedByteType);
 tex.magFilter = tex.minFilter = THREE.NearestFilter;
