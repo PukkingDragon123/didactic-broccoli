@@ -1,12 +1,17 @@
 // game.grandpa: Grandpa in person on your first day. A fresh game: he's out front of the shutter on his stool with
-// Mikan, waves your van into its spot (on 'drive:lane'), taps on the window once you're parked, and meets you in a
-// cinematic chat (src/grandpa/scenes.js); then he walks you through the opening jobs himself (src/grandpa/director.js)
-// until the place is clean, says goodbye at a taxi and leaves you his notebook. Afterwards he phones now and then and
-// sends a postcard (src/grandpa/phone.js). Save data: game.state.grandpa (ensureState).
+// Mikan, dozing in the sun while the opening plays (src/arrival/: 'arrival:start'); the engine dies across the lane, he
+// wakes and shuffles over ('arrival:wake'), taps on the window and meets you in a cinematic chat
+// (src/grandpa/scenes.js); then he walks you through the opening jobs himself (src/grandpa/director.js) until the
+// place is clean, says goodbye at a taxi and leaves you his notebook. Afterwards he phones now and then and sends a
+// postcard (src/grandpa/phone.js). Save data: game.state.grandpa (ensureState).
 //
 //   grandpa.present            he's in the lane today (met, not gone)
-//   grandpa.meet() -> Promise  the meeting, from the cab to the stool (Story.newGame awaits it)
-//   grandpa.onLane()           put him out front waving the van in (on 'drive:lane'; the fallback arrival emits it too)
+//   grandpa.meet({ opening }) -> Promise   the meeting, from the cab to the stool (Story.newGame awaits it); opening:
+//                              a cutscene script played first, in the same cutscene (the arrival), so the cut into his
+//                              window tap is seamless
+//   grandpa.doze() / wake()    asleep on his stool (fan going slack, Mikan asleep at his feet) / awake and off to the van
+//                              (on 'arrival:start' / 'arrival:wake')
+//   grandpa.hideCrowd(on, r)   passers-by within r metres of the van step out of shot (and stay out) until off
 //   grandpa.cardLine(stepId)   his short line for the objective card (null when he isn't here)
 //   grandpa.goalOverride()     the objective while he wants you for something (the goodbye)
 //   grandpa.gp                 the character (src/grandpa/Grandpa.js)   grandpa.nav (src/grandpa/nav.js)
@@ -28,8 +33,6 @@ const DEFAULTS = { v: 1, met: false, left: false, legacy: false, calls: {}, chec
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 /** His stool out front, right of the shutter (where the bench goes once the shop reopens), and where he sits on it. */
 export const STOOL = { x: 2.75, z: 5.78, rotY: -0.45 };
-/** Where he stands to wave your van in. */
-export const MARSHAL = { x: 2.2, z: 6.7 };
 
 export class GrandpaSystem {
   constructor(game) {
@@ -37,7 +40,7 @@ export class GrandpaSystem {
     this.s = ensureState(game, 'grandpa', DEFAULTS);
     this.waiters = [];
     this.nav = new Nav(game);
-    this.mode = 'off'; // 'wait' (on his stool, before you arrive) | 'marshal' | 'scene' | 'guide' | 'gone'
+    this.mode = 'off'; // 'wait' (on his stool, before you arrive) | 'scene' | 'guide' | 'gone'
     this.gp = null;
     this.stool = null;
   }
@@ -69,7 +72,8 @@ export class GrandpaSystem {
       const H = g.held, i = H.find('key');
       if (i >= 0 && !st.shutter) H.consume(i);
       this.waitOnStool();
-      g.events.on('drive:lane', () => this.onLane());
+      g.events.on('arrival:start', () => this.doze());
+      g.events.on('arrival:wake', () => this.wake());
     } else {
       // a save from the middle of day one: he's still about
       this.mode = 'guide';
@@ -145,40 +149,35 @@ export class GrandpaSystem {
     if (cat && cat.wild) { cat.pos.set(STOOL.x + 0.55, 0, STOOL.z + 0.35); cat.heading = 2.6; g.street.setCatState('sit', 1e9); }
   }
 
-  /** The van is in the lane: on his feet, waving it in. */
-  onLane() {
-    const g = this.game;
-    if (!this.gp || this.s.met || this.mode === 'marshal') return;
-    this.mode = 'marshal';
-    const gp = this.gp;
-    gp.standUp().then(() => gp.goTo(V(MARSHAL.x, 0, MARSHAL.z), { speed: 0.7 }));
-    this.marshalT = 0;
-    this.marshalSaid = 0;
-    void g;
+  /** The opening (src/arrival/): nodding off on his stool in the sun, the fan going slack, Mikan asleep at his feet. */
+  doze() {
+    const g = this.game, gp = this.gp;
+    if (!gp || this.s.met) return;
+    if (!gp.sitting) this.seatAt();
+    gp.lookAt = null;
+    gp.act('doze', Infinity);
+    gp.expr('sleepy', 1e6);
+    const cat = g.street?.cat;
+    if (cat && cat.wild) { cat.pos.set(STOOL.x + 0.5, 0, STOOL.z + 0.42); cat.heading = 2.3; g.street.setCatState('sleep', 1e9); }
   }
 
-  /** Per frame while he's waving the van in: beckon while it's coming, palm up when it's there. */
-  updateMarshal(dt) {
-    const g = this.game, gp = this.gp, van = g.life?.van;
-    if (!van) return;
-    const p = van.root.position, d = Math.hypot(p.x - 3.4, p.z - 12.5);
-    gp.lookAt = V(p.x, 1.2, p.z);
-    this.marshalT += dt;
-    if (gp.walking || gp.sitting) return;
-    gp.faceTo(p);
-    const want = d > 6 ? 'wave' : d > 0.6 ? 'beckon' : 'stop';
-    if (gp.po.act !== want && (this.marshalT > 0.6 || want === 'stop')) { gp.act(want, Infinity); this.marshalT = 0; }
-    const lines = [[30, 'Here! Over here!'], [8, 'Bit more... bit more...'], [1.2, 'Stop! STOP! ...Good.']];
-    for (let i = this.marshalSaid; i < lines.length; i++) if (d < lines[i][0]) { gp.say(lines[i][1], { style: i === 2 ? 'shout' : 'say', dur: 2.6 }); this.marshalSaid = i + 1; break; }
+  /** The van's engine dies across the lane: he jolts awake, gets up and shuffles over to its window (scenes.VAN_SIDE). */
+  wake() {
+    const gp = this.gp;
+    if (!gp || this.s.met) return;
+    gp.act(null);
+    gp.expr('surprised', 1.4);
+    gp.lookAt = this.game.life?.van ? this.game.life.van.local(-0.3, 1.3, 0.8) : null;
+    gp.goTo(V(scenes.VAN_SIDE.x, 0, scenes.VAN_SIDE.z), { speed: 0.8, direct: true, face: 0 });
   }
 
   // ------------------------------------------------------------------ the meeting (Story.newGame awaits this)
-  async meet() {
-    const g = this.game;
+  async meet({ opening = null } = {}) {
+    const g = this.game, sys = this;
     if (!this.gp) return;
     this.mode = 'scene';
-    this.hideCrowd(true);
-    await g.cutscene.play((c) => scenes.tapScene(c, this), { skippable: true });
+    this.hideCrowd(true, opening ? 80 : 15); // (the opening's wide shots take in the whole lane)
+    await g.cutscene.play(function* (c) { if (opening) yield* opening(c); yield* scenes.tapScene(c, sys); }, { skippable: true });
     await this.talk(scenes.meetScript(this), { leave: false });
     await g.cutscene.play((c) => scenes.storyScene(c, this), { skippable: true });
     this.hideCrowd(false);
@@ -189,17 +188,18 @@ export class GrandpaSystem {
     g.save();
   }
 
-  /** Passers-by and the lane's people step out of shot while his scenes play (on: true hides, false brings back). */
-  hideCrowd(on) {
-    if (on) { this.hidden ||= new Set(); this.sweepCrowd(); }
-    else if (this.hidden) { for (const r of this.hidden) r.visible = true; this.hidden = null; }
+  /** Passers-by and the lane's people step out of shot while his scenes play (on: true hides everyone within r metres
+   *  of the van and the shutter, false brings them all back). */
+  hideCrowd(on, r = 15) {
+    if (on) { this.hidden ||= new Set(); this.hideR = r; this.sweepCrowd(); }
+    else if (this.hidden) { for (const o of this.hidden) o.visible = true; this.hidden = null; }
   }
   /** (every frame while hidden: people who wander in later are kept out of shot too) */
   sweepCrowd() {
     const g = this.game, quiet = (this.quietT = (this.quietT || 0) + 1) % 15 === 0;
     for (const p of [...(g.pedestrians?.list || []), ...(g.lane?.list || [])]) {
       const r = p.h?.root;
-      if (r && r.visible && Math.hypot(r.position.x - 1.5, r.position.z - 8) < 15) { r.visible = false; this.hidden.add(r); }
+      if (r && r.visible && Math.hypot(r.position.x - 1.5, r.position.z - 8) < (this.hideR || 15)) { r.visible = false; this.hidden.add(r); }
       if (quiet && r && this.hidden.has(r)) g.bubbles?.clear(p.h); // (and what they were saying)
     }
   }
@@ -296,7 +296,6 @@ export class GrandpaSystem {
     if (this.hidden) this.sweepCrowd();
     if (this.stool && this.game.story.done && !this.game.cutscene.active) this.removeStool();
     if (!this.gp || this.mode === 'gone') return;
-    if (this.mode === 'marshal') this.updateMarshal(dt);
     if (this.mode === 'guide') this.director.update(dt);
     // the van door, the shop sign: his stool goes when the shop opens
     this.gp.update(dt);

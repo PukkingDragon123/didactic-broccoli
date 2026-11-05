@@ -352,10 +352,10 @@ export class Pedestrians {
     return true;
   }
   voiceOf(h) { return talk(h); }
-  /** Cutscenes (except your first customer's own), chats and sitting in the van after the drive: no street chatter. */
-  quiet() { const g = this.game; return !!((g.cutscene?.active && !this.firstScene) || g.talk?.active || g.drive?.seated); }
-  /** Grandpa's scenes keep the lane clear (src/grandpa: hideCrowd), and so does the drive's seated moment: nobody new walks in. */
-  get hold() { const g = this.game; return !!(g.grandpa?.hidden || g.drive?.seated); }
+  /** Cutscenes (except your first customer's own) and chats: no street chatter. */
+  quiet() { const g = this.game; return !!((g.cutscene?.active && !this.firstScene) || g.talk?.active); }
+  /** Grandpa's scenes and the opening keep the lane clear (src/grandpa: hideCrowd): nobody new walks in. */
+  get hold() { const g = this.game; return !!g.grandpa?.hidden; }
 
   /** A complaint you can see: a cross face, a stomp, an anger mark, a line, and an entry in the guestbook. */
   complain(p, text, { count = true } = {}) {

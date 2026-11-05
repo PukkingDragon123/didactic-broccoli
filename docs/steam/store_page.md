@@ -6,7 +6,7 @@ Grandpa is retiring to the seaside and the garage is yours. Turn it into the bes
 
 ## About this game
 
-It's spring, 1999. You drive Grandpa's rusty kei van out of a railway underpass and down a narrow back lane somewhere in Morio-chō, toward a shutter you haven't seen since you were nine. He's out front on his stool, waving you into a spot he has chalked on the road. Then he knocks on the window. "Oi. No parking in this lane."
+It's spring, 1999. You've just pulled up in Grandpa's rusty kei van in a narrow back lane somewhere in Morio-chō, across from a shutter you haven't seen since you were nine. He's out front, asleep on his stool with the cat at his feet. The engine dies, he wakes, and he knocks on the window. "Oi. No parking in this lane."
 
 His back is done for and he's moving in with his sister in Atami. Today is his last day. He gives you the keys, the one key he never figured out, and an afternoon of instructions at an old man's pace before his taxi comes.
 

@@ -63,7 +63,7 @@ export function installGrants(game) {
       <div class="cxu-txt"><small>New in your closet</small><b>${esc(c.name)}</b>
         <span class="cxu-rar">${esc(R.name)}</span>
         ${how || it.from ? `<em>${esc(how)}${how && it.from ? ': ' : ''}${esc(it.from)}</em>` : ''}
-        <i>Wear it from the closet: the mirror in your room, or click yourself on the title screen.</i></div></div>`;
+        <i>Wear it in the Dressing Room: the mirror in your room, or click yourself on the title screen.</i></div></div>`;
     el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
     try { audio.play(c.rarity === 'secret' || c.rarity === 'ultra' ? 'complete' : 'newItem', { vol: 0.6 }); } catch { /* audio not ready */ }
     setTimeout(() => { el.classList.remove('show'); setTimeout(next, 450); }, api.cardMs);

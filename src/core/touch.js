@@ -79,38 +79,3 @@ export function installTouch(input, { onPause } = {}) {
     show(on) { root.classList.toggle('hidden', !on); if (!on) setStick(0, 0); },
   };
 }
-
-/**
- * Driving layout (src/drive/): steer ◀ ▶ bottom left, GO / STOP bottom right, the handbrake and the horn above them,
- * a SKIP button (hold) top right and, once parked, GET OUT. The buttons press the keyboard's driving keys on the
- * input (KeyA / KeyD / KeyW / KeyS / Space / KeyH, Enter for skip), so the drive reads one set of controls; dragging
- * on the view still looks around (installTouch). Shown with body.driving.touchmode (src/drive/drive.css).
- *   const dt = installDriveTouch(input, { onOut })   dt.seated(on)   dt.dispose()
- */
-export function installDriveTouch(input, { onOut } = {}) {
-  const root = document.createElement('div');
-  root.id = 'drive-touch';
-  root.innerHTML = '<button class="tb dt-l" data-k="KeyA">&#9664;</button><button class="tb dt-r" data-k="KeyD">&#9654;</button>'
-    + '<button class="tb dt-gas" data-k="KeyW">GO</button><button class="tb dt-brk" data-k="KeyS">STOP</button>'
-    + '<button class="tb dt-hb" data-k="Space">HAND</button><button class="tb dt-horn" data-k="KeyH">HORN</button>'
-    + '<button class="tb dt-skip" data-k="Enter">SKIP</button><button class="tb dt-out">GET OUT</button>';
-  document.body.appendChild(root);
-  const held = new Map(); // touch id -> key
-  for (const b of root.querySelectorAll('[data-k]')) {
-    const k = b.dataset.k;
-    b.addEventListener('touchstart', (e) => { for (const t of e.changedTouches) held.set(t.identifier, k); input.keys.add(k); input.pressed.add(k); b.classList.add('on'); e.preventDefault(); }, { passive: false });
-    const up = (e) => {
-      for (const t of e.changedTouches) held.delete(t.identifier);
-      if (![...held.values()].includes(k)) { input.keys.delete(k); b.classList.remove('on'); }
-      e.preventDefault();
-    };
-    b.addEventListener('touchend', up, { passive: false });
-    b.addEventListener('touchcancel', up, { passive: false });
-  }
-  const out = root.querySelector('.dt-out');
-  out.addEventListener('touchstart', (e) => { onOut?.(); e.preventDefault(); }, { passive: false });
-  return {
-    seated(on) { root.classList.toggle('seated', !!on); },
-    dispose() { for (const k of new Set(held.values())) input.keys.delete(k); root.remove(); },
-  };
-}

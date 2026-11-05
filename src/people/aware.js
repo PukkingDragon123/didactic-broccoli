@@ -65,8 +65,8 @@ export class Awareness {
   }
 
   /** A shared budget for ambient lines (greetings, gasps, chatter): never a wall of floating text. */
-  /** No street chatter while a cutscene or a chat has the screen, or while you sit in the van after the drive. */
-  quiet() { const g = this.game; return !!(g.cutscene?.active || g.talk?.active || g.drive?.seated); }
+  /** No street chatter while a cutscene or a chat has the screen. */
+  quiet() { const g = this.game; return !!(g.cutscene?.active || g.talk?.active); }
   speakOk(max = 3) {
     if (this.quiet()) return false;
     const t = this.t;

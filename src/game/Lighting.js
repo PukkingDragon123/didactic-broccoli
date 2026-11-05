@@ -149,9 +149,9 @@ export class Lighting {
     }
     const room = g.places?.current?.();
     if (room) this.roomLight(room, sun, L.hemi, sunI);
-    // god rays only under the open sky: they fade out while you sit in the van (src/drive) or stand in an interior, where
-    // the window glass and frames have nothing to do with the sky behind them
-    const open = g.drive?.active || g.drive?.seated || g.places?.where ? 0 : 1;
+    // god rays only under the open sky: they fade out while the camera sits in the van's cab (src/life/van.js inCab) or
+    // you stand in an interior, where the window glass and frames have nothing to do with the sky behind them
+    const open = g.life?.van?.inCab || g.places?.where ? 0 : 1;
     this.shaftK += (open - this.shaftK) * Math.min(1, dt * 3);
     if (g.renderer.outline) g.renderer.outline.uniforms.uShaft.value = (this.shaftBase ?? 0.75) * this.shaftK;
     // glow-in-the-dark finish responds to darkness

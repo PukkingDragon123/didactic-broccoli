@@ -13,10 +13,7 @@ import { installFP } from './game/FPBody.js';
 import { installDebug } from './debug.js';
 import { autoQuality } from './core/autoQuality.js';
 import { isTouchDevice, installTouch } from './core/touch.js';
-import { MenuSigns } from './world/menuSigns.js';
-import { MenuGear } from './world/menuGear.js';
-import { MenuCrew } from './world/MenuCrew.js';
-import { MenuStyler } from './ui/MenuStyler.js';
+import { TitleMenu } from './menu/Menu.js';
 import { installStaticIcons, setLabel } from './ui/staticIcons.js';
 import { encodeShop, decodeShop } from './game/shareCode.js';
 import { prepareNet } from './net/boot.js';
@@ -65,92 +62,86 @@ async function boot() {
 
   $('loading').classList.add('hidden');
   let started = false;
-  let titleT = 0;
-  let fly = null; // camera flight from the street into the garage
   const sfx = (n, v = 0.5) => { try { audio.init(); audio.play(n, { vol: v }); } catch { /* audio not ready */ } };
 
   let intro = false; // the new-game intro cutscene is playing
+  let menu = null; // the title screen (src/menu/), until it hands over to the game
   // menu music: browsers only allow audio after a gesture, so it starts on the first click / tap / key
-  const menuMusic = () => { if (started || fly || intro) return; try { audio.init(); if (!bgm.current) bgm.play('menu', { fade: 2.5 }); } catch { /* no audio */ } };
+  const menuMusic = () => { if (started || intro || menu?.leaving) return; try { audio.init(); if (!bgm.current) bgm.play('menu', { fade: 2.5 }); } catch { /* no audio */ } };
   window.addEventListener('pointerdown', menuMusic, { once: true });
   window.addEventListener('keydown', menuMusic, { once: true });
+  /** A brand-new game: the drive into the lane and meeting Grandpa (src/game/Story.js newGame) instead of the way in. */
+  const isNewGame = () => { const st = game.state.story; return !game.story.done && !st.intro && !game.visiting; };
+  // what used to happen the moment the pointer locked: the title goes, the HUD comes
+  const showGame = () => {
+    started = true;
+    $('title').classList.add('fade');
+    setTimeout(() => $('title').classList.add('hidden'), 600);
+    $('pause').classList.add('hidden');
+    $('hud').classList.remove('hidden');
+    touch?.show(true);
+    if (game.visiting) setTimeout(() => game.news(`${game.state.__owner || "A friend"}'s shop`, game.mp?.isGuest ? `Playing together · room ${game.mp.s.code} · T to chat` : 'Visiting - nothing is saved', 6000), 1200);
+    else if (!game.state.flags.welcomed && game.story.done) {
+      game.state.flags.welcomed = true;
+      setTimeout(() => game.news('Welcome back!', '', 6000), 1400);
+    }
+  };
+  /** The title screen's way out has played (the screen is dark): hand the scene back and go. */
+  const enter = (kind) => {
+    const fade = document.getElementById('tm-fade');
+    menu?.dispose(); menu = null; game.titleMenu = null;
+    if (kind === 'new') {
+      intro = true;
+      showGame();
+      game.story.newGame().then(() => { intro = false; started = true; game.held.anchor.visible = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); bgm.play('garage', { fade: 3 }); });
+    } else {
+      game.held.anchor.visible = true;
+      showGame();
+      if (!game.input.locked && !params.has('autotest')) { touch?.show(false); openSettings(); }
+    }
+    if (fade) { fade.className = 'off'; setTimeout(() => fade.remove(), 700); }
+  };
   const start = () => {
     audio.init();
     game.startAudio();
-    dropGear();
-    styler?.dispose(); styler = null;
-    if (crew?.busy) crew.closet.close();
-    const st = game.state.story;
-    if (!started && !fly && !intro && !game.story.done && !st.intro && !game.visiting) {
-      // a brand-new game: the drive into the lane and meeting Grandpa (src/game/Story.js newGame) instead of the fly-in
-      intro = true;
-      signs.dispose();
-      crew?.dispose(); crew = null;
-      $('title').classList.add('fade');
-      setTimeout(() => $('title').classList.add('hidden'), 600);
-      game.story.newGame().then(() => { intro = false; started = true; game.held.anchor.visible = true; $('hud').classList.remove('hidden'); touch?.show(true); game.save(); bgm.play('garage', { fade: 3 }); });
-    } else if (!started && !fly && !intro) { fly = { t: 0, from: game.camera.position.clone(), q: game.camera.quaternion.clone() }; bgm.play('garage', { fade: 3 }); crew?.leave(); }
-    game.input.lock();
+    if (started || intro) { game.input.lock(); return; }
+    if ($('share') && !$('share').classList.contains('hidden')) { game.mp?.ui?.closeMenu?.(); $('share').classList.add('hidden'); }
+    const kind = isNewGame() ? 'new' : 'continue';
+    if (kind === 'continue') bgm.play('garage', { fade: 3 });
+    if (menu) menu.play(kind);
+    else { game.input.lock(); enter(kind); }
   };
-  // the 3D signpost in the street
-  const signs = new MenuSigns(game.scene);
-  signs.enabled = true;
-  if (params.has('autotest')) signs.dispose();
-  // the spinning 3D settings gear in the corner of the menu
-  let gear = params.has('autotest') ? null : new MenuGear(game.camera);
-  if (gear) document.body.classList.add('has-3d-gear');
-  const dropGear = () => { gear?.dispose(); gear = null; document.body.classList.remove('has-3d-gear'); };
-  // you and your friends goofing around in the lane; click yourself for the closet
-  let crew = params.has('autotest') ? null : new MenuCrew(game);
-  game.menuCrew = crew;
-  // arrows beside you to restyle hair / top / bottoms (and colours) right on the menu
-  let styler = crew ? new MenuStyler(game, crew) : null;
+  // the title screen: dusk in the lane, the sign and the menu tags (autotest boots straight into the game)
+  if (!params.has('autotest')) {
+    menu = new TitleMenu(game, {
+      lockInput: () => { audio.init(); game.startAudio(); game.input.lock(); },
+      onEnter: (kind) => enter(kind),
+      openSettings: () => { sfx('uiClick', 0.6); openSettings(); },
+      openShare: (mode) => openShare(mode),
+    });
+    game.titleMenu = menu;
+  }
   // whatever's in your hands hangs off the camera: keep it out of the menu shot
   game.held.anchor.visible = params.has('autotest');
-  const canvas = game.renderer.renderer.domElement;
-  const ndc = (e) => [(e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1];
-  const menuOpen = () => !started && !fly && !crew?.busy && $('share').classList.contains('hidden') && $('pause').classList.contains('hidden');
-  // pointer events cover mouse, pen and touch alike; listen on the window so overlays never swallow them
-  window.addEventListener('pointermove', (e) => {
-    if (!menuOpen()) { if (gear) gear.hover = false; signs.hoverId = null; if (crew) crew.hover = false; return; }
-    const overGear = !!gear?.pick(game.camera, ...ndc(e));
-    if (overGear && !gear.hover) sfx('uiHover', 0.35);
-    if (gear) gear.hover = overGear;
-    const id = overGear ? null : signs.pick(game.camera, ...ndc(e));
-    if (id !== signs.hoverId && id) sfx('uiHover', 0.35);
-    signs.hoverId = id;
-    const overMe = !id && !overGear && !!crew?.pick(game.camera, ...ndc(e));
-    if (crew) crew.hover = overMe && e.pointerType !== 'touch';
-    canvas.style.cursor = id || overGear || overMe ? 'pointer' : '';
-  });
-  let downAt = null;
-  window.addEventListener('pointerdown', (e) => { if (menuOpen()) { downAt = { x: e.clientX, y: e.clientY, id: signs.pick(game.camera, ...ndc(e)), gear: !!gear?.pick(game.camera, ...ndc(e)), me: !!crew?.pick(game.camera, ...ndc(e)) }; signs.hoverId = downAt.id; } });
-  window.addEventListener('pointerup', (e) => {
-    if (!menuOpen() || !downAt) return;
-    if (downAt.gear && gear?.pick(game.camera, ...ndc(e))) { downAt = null; sfx('uiClick', 0.6); openSettings(); return; }
-    const id = signs.pick(game.camera, ...ndc(e)) || (Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 30 ? downAt.id : null);
-    const me = !id && downAt.me && (crew?.pick(game.camera, ...ndc(e)) || Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 30);
-    downAt = null;
-    if (me) { sfx('uiClick', 0.6); crew.openCloset(); return; }
-    if (!id) return;
-    sfx('uiClick', 0.7);
-    if (id === 'play') start();
-    else openShare(id);
+  // Esc on the title closes an open panel
+  window.addEventListener('keydown', (e) => {
+    if (started || e.key !== 'Escape') return;
+    for (const id of ['share', 'pause']) { const el = $(id); if (!el.classList.contains('hidden')) { el.querySelector('[data-close]')?.click(); e.preventDefault(); return; } }
   });
 
-  // settings: gear on the menu, Esc / pause button in game
+  // settings: the Settings tag on the menu, Esc / pause button in game
   const openSettings = () => {
     $('pause').classList.remove('hidden'); $('resume-btn').classList.toggle('hidden', !started);
     const mpOn = !!game.mp?.active;
     $('leave-btn').classList.toggle('hidden', !game.visiting && !mpOn);
     if (mpOn) setLabel('leave-btn', game.mp.isHost ? 'Close the room' : 'Leave the room', 'home');
   };
-  $('m-gear').addEventListener('click', () => { sfx('uiClick', 0.6); openSettings(); });
   for (const b of document.querySelectorAll('[data-close]')) b.addEventListener('click', (e) => {
     e.stopPropagation();
     b.closest('.overlay').classList.add('hidden');
     if (b.closest('#pause') && started) start();
   });
+  $('resume-btn').addEventListener('click', (e) => { e.stopPropagation(); $('pause').classList.add('hidden'); if (started) start(); });
   $('leave-btn').addEventListener('click', () => {
     if (game.mp?.active) { const host = game.mp.isHost; game.mp.leave(); if (host) $('leave-btn').classList.add('hidden'); return; }
     try { sessionStorage.removeItem(VISIT_KEY); } catch { /* ignore */ }
@@ -210,17 +201,8 @@ async function boot() {
   game.input.onLockChange = (locked) => {
     if (locked) {
       if (game.input.free && !freeTold && !game.input.touch) { freeTold = true; setTimeout(() => game.news('Free-look mode', 'Move the mouse to look around; rest it at the screen edge to keep turning. Esc pauses.', 8000), 2500); }
-      started = true;
-      $('title').classList.add('fade');
-      setTimeout(() => $('title').classList.add('hidden'), 600);
-      $('pause').classList.add('hidden');
-      $('hud').classList.remove('hidden');
-      touch?.show(true);
-      if (game.visiting) setTimeout(() => game.news(`${game.state.__owner || "A friend"}'s shop`, game.mp?.isGuest ? `Playing together · room ${game.mp.s.code} · T to chat` : 'Visiting - nothing is saved', 6000), 1200);
-      else if (!game.state.flags.welcomed && game.story.done) {
-        game.state.flags.welcomed = true;
-        setTimeout(() => game.news('Welcome back!', '', 6000), 1400);
-      }
+      if (menu) return; // the title screen is still playing its way out: it calls enter() when it's done
+      showGame();
     } else if (started && !params.has('autotest') && !game.uiOpen) {
       touch?.show(false);
       openSettings();
@@ -255,53 +237,14 @@ async function boot() {
 
   // ---------------- loop
   const clock = new THREE.Clock();
-  const titleCam = { a: 0 };
   function frame() {
     requestAnimationFrame(frame);
     const dt = Math.min(clock.getDelta(), 0.05);
     if (intro) { game.update(dt); game.render(dt); return; }
-    if (!started && !params.has('autotest')) {
-      // the menu: a slow crane shot of your shop from the street at dusk
-      titleT += dt;
-      const cam = game.camera;
-      const a = titleT * 0.06;
-      cam.position.set(1.9 + Math.sin(a) * 0.3, 1.55 + Math.sin(titleT * 0.17) * 0.04, 10.6 + Math.cos(a * 0.7) * 0.2);
-      cam.lookAt(-0.5 + Math.sin(a) * 0.12, 1.9, 5.2);
-      crew?.update(dt); // may take the camera over (closet close-up)
-      styler?.update(dt, titleT > 0.8 && menuOpen());
-      if (gear) gear.root.visible = !crew?.busy;
-      game.time += dt;
-      for (const m of game.machines) m.update(dt, game.time);
-      game.garage.update(dt, game.time);
-      game.street.update(dt, game.time);
-      game.pedestrians?.update(dt);
-      game.effects.update(dt, game.time);
-      game.lighting.update(dt, game.time);
-      game.tweens.update(dt);
-      signs.update(dt, game.time);
-      gear?.update(dt);
+    if (menu) {
+      // the title screen ticks the world it shows and drives the camera (no player, clock or customers)
+      menu.update(dt);
       game.render(dt);
-      return;
-    }
-    if (fly) {
-      // fly from the street, under the half-open shutter, to the player's eyes
-      game.update(dt);
-      fly.t += dt / 2.2;
-      const k = Math.min(1, fly.t);
-      const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-      const cam = game.camera;
-      const end = cam.position.clone(), endQ = cam.quaternion.clone();
-      // under the half-open shutter into the garage, or (shutter still locked) a straight glide down the lane
-      const inside = game.player.pos.z < 5;
-      const p0 = fly.from, p1 = inside ? new THREE.Vector3(0.3, 1.05, 7.4) : p0.clone().lerp(end, 0.33), p2 = inside ? new THREE.Vector3(0.4, 1.2, 4.4) : p0.clone().lerp(end, 0.66);
-      const u = 1 - e;
-      const bez = p0.clone().multiplyScalar(u * u * u).add(p1.clone().multiplyScalar(3 * u * u * e)).add(p2.clone().multiplyScalar(3 * u * e * e)).add(end.clone().multiplyScalar(e * e * e));
-      cam.position.copy(bez);
-      cam.quaternion.copy(fly.q).slerp(endQ, Math.min(1, e * 1.15));
-      cam.updateMatrixWorld();
-      crew?.update(dt);
-      game.render(dt);
-      if (k >= 1) { fly = null; signs.dispose(); crew?.dispose(); crew = null; game.held.anchor.visible = true; }
       return;
     }
     game.update(dt);

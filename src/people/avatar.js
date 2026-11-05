@@ -34,13 +34,38 @@ export const LOOK = {
     { id: 'navy', col: 0x2a3658 }, { id: 'plum', col: 0x7a4a82 }, { id: 'white', col: 0xf2f0ea }, { id: 'charcoal', col: 0x3a3a3e },
   ],
   bottom: [{ id: 'jeans', name: 'Jeans' }, { id: 'cargo', name: 'Cargo' }, { id: 'shorts', name: 'Shorts' }, { id: 'slacks', name: 'Black pants' }, { id: 'skirt', name: 'Skirt' }],
+  // bottoms colour: 'auto' keeps each cut's own cloth (denim jeans, khaki cargo...)
+  botCol: [
+    { id: 'auto', name: 'As made', col: null }, { id: 'denim', col: 0x3a4c70 }, { id: 'khaki', col: 0x8a8466 }, { id: 'olive', col: 0x55603a },
+    { id: 'black', col: 0x24242a }, { id: 'navy', col: 0x2c3048 }, { id: 'brick', col: 0x8a3a30 }, { id: 'cream', col: 0xd6caa8 }, { id: 'grey', col: 0x6a6a70 },
+  ],
+  // the face (spec.face in src/people/face.js): eye shape, brows, cheeks, eye colour
+  eyes: [
+    { id: 'classic', name: 'Classic', f: {} }, { id: 'round', name: 'Round', f: { eyeW: 1.06, eyeH: 1.28, tilt: 0.15 } },
+    { id: 'almond', name: 'Almond', f: { eyeW: 1.1, eyeH: 0.86, tilt: 1.05 } }, { id: 'sleepy', name: 'Sleepy', f: { eyeH: 0.68, tilt: -0.25, lid: 'mono' } },
+    { id: 'sharp', name: 'Sharp', f: { eyeW: 1.04, eyeH: 0.74, tilt: 1.45, lid: 'mono' } }, { id: 'sparkly', name: 'Sparkly', f: { eyeW: 1.14, eyeH: 1.4, tilt: 0.35 } },
+  ],
+  brows: [
+    { id: 'soft', name: 'Soft', f: {} }, { id: 'thick', name: 'Thick', f: { browW: 1.65 } }, { id: 'thin', name: 'Thin', f: { browW: 0.6 } },
+    { id: 'arched', name: 'Arched', f: { browArch: 2.5 } }, { id: 'straight', name: 'Straight', f: { browArch: 0.2, browW: 1.2 } },
+  ],
+  cheeks: [
+    { id: 'none', name: 'Plain', f: {} }, { id: 'blush', name: 'Rosy', f: { blush: 0.95 } }, { id: 'freckles', name: 'Freckles', f: { freckles: 1 } },
+    { id: 'both', name: 'Rosy freckles', f: { blush: 0.85, freckles: 0.9 } },
+  ],
+  eyeCol: [
+    { id: 'brown', col: 0x482c1e }, { id: 'dark', col: 0x281c18 }, { id: 'hazel', col: 0x6e5028 }, { id: 'grey', col: 0x646e78 },
+    { id: 'green', col: 0x3c6e46 }, { id: 'blue', col: 0x3c5a96 }, { id: 'violet', col: 0x6a4a8a },
+  ],
 };
 const col = (list, id) => (list.find((o) => o.id === id) || list[0]).col;
+const opt = (list, id) => list.find((o) => o.id === id) || list[0];
 
 /** A brand-new save's character: Grandpa's grandkid in a tee and jeans. hat / outfit / face / bag / shoes: equipped cosmetic ids. */
 export const AVATAR_DEFAULT = {
   v: 1, seed: 7,
   body: 'm', skin: 'light', hair: 'messy', hairCol: 'black', top: 'tee', topCol: 'tomato', bottom: 'jeans',
+  botCol: 'auto', eyes: 'classic', brows: 'soft', cheeks: 'none', eyeCol: 'brown',
   hat: null, outfit: null, face: null, bag: null, shoes: null,
   owned: [],
 };
@@ -70,6 +95,10 @@ export function avatarSpec(a) {
   spec.hair = { style: a.hair, col: hc, part: 1, volume: 1 };
   spec.hair.hi = hc[0] < 80 ? mixc(hc, [176, 180, 214], 0.75) : mixc(hc, [255, 244, 222], 0.55);
   spec.face = { ...spec.face, stubble: 0, wrinkles: 0, spots: 0, mustache: false, makeup: f ? { liner: 0.25, lash: 0.6, blush: [236, 140, 140] } : null, lipstick: null, blush: f ? 0.4 : 0.28, browW: f ? 1 : 1.1, lid: 'double', tilt: 0.5 };
+  // face features (eye shape, brows, cheeks multiply / replace the defaults above), eye colour
+  const br = opt(LOOK.brows, a.brows).f;
+  Object.assign(spec.face, opt(LOOK.eyes, a.eyes).f, opt(LOOK.cheeks, a.cheeks).f, br.browW ? { ...br, browW: br.browW * spec.face.browW } : br);
+  spec.face.iris = hex(col(LOOK.eyeCol, a.eyeCol));
   const tops = {
     tee: { kind: 'tee', col: tc, print: 'none', col2: [244, 242, 236], sleeve: 'short' },
     knit: { kind: 'knit', col: tc, sleeve: 'long' },
@@ -84,7 +113,9 @@ export function avatarSpec(a) {
     slacks: { kind: 'slacks', col: hex(0x24242a), noCrease: true },
     skirt: { kind: 'skirt', cut: 'pleated', col: hex(0x2c3048) },
   };
-  spec.bottom = bots[a.bottom] || bots.jeans;
+  spec.bottom = { ...(bots[a.bottom] || bots.jeans) };
+  const bc = col(LOOK.botCol, a.botCol);
+  if (bc != null) spec.bottom.col = hex(bc);
   if (a.bottom === 'skirt' || a.bottom === 'shorts') { spec.legs = 'socks'; spec.socks = { col: [246, 246, 244] }; }
   spec.shoes = { kind: 'sneaker', col: [242, 240, 234], col2: hex(0xd03a30) };
   return applyCosmeticSpec(spec, a);

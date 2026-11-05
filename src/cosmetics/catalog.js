@@ -6,6 +6,7 @@
 //   ach: 'id'           an achievement's reward (src/style/achievements.js)
 //   quest: 'id'         a lane side quest's reward (src/cosmetics/rewards.js)
 //   capsule: 'series'   a rare bonus inside that gacha series' capsules (src/cosmetics/capsules.js)
+//   level: n            (with shop) the closet only stocks it from shop level n (game.progress.level)
 // rarity: common | uncommon | rare | ultra | secret (the gacha's tiers and colours, src/data/rarity.js).
 // Painted pieces use spec(spec, look) (hats, glasses, tops, bags, shoes the low-poly body already has); voxel pieces use
 // dress(ctx) + preview(add, group, lift) with the models in src/cosmetics/voxels.js. Photo prints: src/cosmetics/prints.js.
@@ -266,6 +267,8 @@ const OLD = {
   cone: 'common', party: 'common', bow: 'common', nigiri: 'uncommon', shades: 'common', stars: 'uncommon', groucho: 'common', kitsune: 'rare',
 };
 for (const c of COSMETICS) if (OLD[c.id]) { c.rarity ||= OLD[c.id]; c.shop = true; }
+// the closet's fancier stock comes in as the shop grows (shop level; pieces you already own stay yours)
+const LEVEL = { dino: 5, shark: 6, cx_suit: 3, cx_randoseru: 4, cx_shiba: 8 };
 
 for (const c of EXTRA) {
   if (COSMETIC_BY_ID[c.id]) continue;
@@ -274,6 +277,7 @@ for (const c of EXTRA) {
   COSMETICS.push(c);
   COSMETIC_BY_ID[c.id] = c;
 }
+for (const [id, lv] of Object.entries(LEVEL)) if (COSMETIC_BY_ID[id]) COSMETIC_BY_ID[id].level = lv;
 
 /** How you get a cosmetic, for the closet / shop cards. */
 export function sourceOf(c) {
@@ -283,11 +287,84 @@ export function sourceOf(c) {
   if (c.quest) return { kind: 'quest', text: 'Side quest reward', id: c.quest };
   if (c.capsule) return { kind: 'capsule', text: 'Rare bonus in capsules', id: c.capsule };
   if (c.web) return { kind: 'web', text: 'kirakira-closet.jp' };
-  return { kind: 'shop', text: 'Closet' };
+  return { kind: 'shop', text: 'Closet', level: c.level || 0 };
 }
 export const RARITY_RANK = { common: 0, uncommon: 1, rare: 2, ultra: 3, secret: 4 };
 
-// ------------------------------------------------------------------ closet tab icons for the new slots
+// ------------------------------------------------------------------ wardrobe icons: the slots (hats, outfits, glasses,
+// bags, shoes) and the hanger (the dressing room's tabs, the style achievements)
+defineIcon('cos_hat', { rows: [
+  '................',
+  '.......YY.......',
+  '......YZZy......',
+  '.......yy.......',
+  '.....RRRRRR.....',
+  '....RQQRRRRr....',
+  '...RQRRRRRRRr...',
+  '...RRRRRRRRRr...',
+  '..RRRRRRRRRRRr..',
+  '..RRRRRRRRRRRr..',
+  '..wWWWWWWWWWWu..',
+  '..wWuWuWuWuWuu..',
+  '..wuuuuuuuuuuu..',
+  '................',
+  '................',
+  '................',
+] });
+defineIcon('cos_shirt', { rows: [
+  '................',
+  '................',
+  '....EEe..eEE....',
+  '..EEFEeeeeEEEe..',
+  '.EFFEEEEEEEEEEe.',
+  '.EFEEEEEEEEEEEe.',
+  '.eEEEEEEEEEEEee.',
+  '..eeEEEEEEEEee..',
+  '....EEEEEEEEe...',
+  '....EYYEEEEEe...',
+  '....EEEEEEEEe...',
+  '....EEEEEEEEe...',
+  '....EEEEEEEEe...',
+  '....eeeeeeeee...',
+  '................',
+  '................',
+] });
+defineIcon('cos_glasses', { rows: [
+  '................',
+  '................',
+  '................',
+  '................',
+  '................',
+  '.KKKKKKKKKKKKKK.',
+  '.KDDDDDKKDDDDDK.',
+  '.KDCDDDKKDCDDDK.',
+  '.KDDDDDK.KDDDDK.',
+  '..KDDDK...KDDK..',
+  '...KKK.....KK...',
+  '................',
+  '................',
+  '................',
+  '................',
+  '................',
+] });
+defineIcon('cos_hanger', { rows: [
+  '................',
+  '.......gg.......',
+  '......g..g......',
+  '.........g......',
+  '........g.......',
+  '.......gg.......',
+  '......glLg......',
+  '.....gL..lg.....',
+  '....gL....lg....',
+  '...gL......lg...',
+  '..gL........lg..',
+  '.gLllllllllllgg.',
+  '.gGGGGGGGGGGGGG.',
+  '................',
+  '................',
+  '................',
+] });
 defineIcon('cos_bag', { rows: [
   '................',
   '.....kkkkkk.....',

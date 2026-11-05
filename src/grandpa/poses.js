@@ -5,7 +5,8 @@
 //   'gp_sit'    sitting on his stool (a full-body pose: hips down, feet forward; opts.k 0..1 eases him down and up)
 // opts: { k, act, at, prev, pt, from, target: Vector3 (point / look), walking, cane: 'hand' | 'free', fan }
 //   act (the right arm; blended from the previous act over 0.3 s): wave, beckon, stop, point, thumbs, thump, knock,
-//   give, pat, back, shake, cap, scratch, fan, nod, no, laugh, bow, hug, handset (a phone at the ear), shrug
+//   give, pat, back, shake, cap, scratch, fan, nod, no, laugh, bow, hug, handset (a phone at the ear), shrug, doze
+//   (nodding off on his stool: the chin sinking, a jerk back up, the fan drifting at his cheek)
 import * as THREE from 'three';
 import { GESTURES, EXTRA_POSES } from '../people/gestures.js';
 
@@ -95,6 +96,12 @@ function rightArm(act, t, h, g, o, F, sitting) {
       const f = Math.sin(t * 11);
       g.head[2] -= 0.04;
       return arm(-m(0.13), eye - m(0.2), zf + m(0.2), -1, -1, -0.3, 0.1, 0.45 + f * 0.45, -0.25);
+    }
+    case 'doze': { // nodding off: the chin sinks for a few seconds, jerks back up; the fan barely moving
+      const u = (t % 5.2) / 5.2, sink = u < 0.9 ? smooth(u / 0.9) : 1 - smooth((u - 0.9) / 0.1);
+      g.head[0] += 0.22 + sink * 0.42; g.neck[0] += 0.1 + sink * 0.12; g.head[2] += 0.06 + 0.1 * sink; g.chest[0] += 0.06;
+      const f = Math.sin(t * 2.4) * (1 - sink * 0.8);
+      return arm(-m(0.12), eye - m(0.3 + sink * 0.08), zf + m(0.22), -1, -1, -0.3, 0.1, 0.3 + f * 0.25, -0.25);
     }
     case 'handset': // a phone at the right ear
       g.head[2] -= 0.12;

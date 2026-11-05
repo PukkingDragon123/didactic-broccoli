@@ -1,5 +1,5 @@
-// The new-game story. You drive Grandpa's old van into the lane at dusk (src/drive/, or the arrival cutscene here when
-// it's missing); he's out front of his shut-up capsule-toy garage, waves you in and meets you (src/grandpa/), then walks
+// The new-game story. You've just pulled up in Grandpa's old van across the lane from his shut-up capsule-toy garage
+// (the opening, src/arrival/); he's dozing out front, wakes, taps on the window and meets you (src/grandpa/), then walks
 // you through the first jobs himself before he leaves; his notes, taped up all round the garage (src/life/notes.js),
 // tick off as you go and carry on the guidance after he's gone, one small physical job at a time: his letter on the
 // shutter, unlock the shutter, flip the main breaker, lights, air the place out,
@@ -10,9 +10,8 @@
 //   story.done   story.isDone(taskId)   story.goal() -> { id, icon, text, sub, at } for the objective card
 //   story.todo() -> [{ text, done }]   story.task(text) (a ticked-off chore: jingle, toast, save)
 //   story.step() -> the current to-do id (the first one not done; 'shop' while Mikawa-ya has something you need)
-//   story.newGame() -> Promise (the drive in, then meeting Grandpa; resolves once you have control)
-// Events: 'story:step' { id, prev } (the current to-do changed), 'story:task' { text } (a chore was ticked off),
-//         'drive:lane' / 'drive:parked' (the arrival cutscene's van, when src/drive isn't there to send them).
+//   story.newGame() -> Promise (the opening, then meeting Grandpa; resolves once you have control)
+// Events: 'story:step' { id, prev } (the current to-do changed), 'story:task' { text } (a chore was ticked off).
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { radio } from '../core/music.js';
@@ -212,7 +211,7 @@ export class Story {
   }
 
   goal() {
-    if (this.newGameRunning) return null; // the drive and the meeting: no card yet
+    if (this.newGameRunning) return null; // the opening and the meeting: no card yet
     const gp = this.game.grandpa;
     const over = gp?.goalOverride?.();
     if (over) return over;
@@ -772,22 +771,19 @@ export class Story {
 
   // ------------------------------------------------------------------ a new game
   /**
-   * The new-game flow: the drive into the lane (src/drive/, game.drive.start(); the arrival cutscene below when it's
-   * not there), then meeting Grandpa (src/grandpa/; the old memory-and-letter ending when he's not there). Resolves
-   * once you're on your feet with control.
+   * The new-game flow: the opening (src/arrival/: the lane at golden hour, the neighbours, Grandpa asleep on his stool,
+   * the van just pulled up and you in it) cut straight into meeting Grandpa (src/grandpa/), in one cutscene; without
+   * him, the opening and then the old memory-and-letter ending. Resolves once you're on your feet with control.
    */
   async newGame() {
-    const g = this.game;
+    const g = this.game, A = g.arrival;
     this.newGameRunning = true;
     try {
-      if (g.drive?.start) {
-        try { await g.drive.start({ exitPrompt: !g.grandpa?.gp }); } catch (e) { console.error('drive', e); }
-        // whatever happened, the van ends up parked in its spot
-        const van = this.life?.van;
-        if (van && Math.hypot(van.root.position.x - PARK.x, van.root.position.z - PARK.z) > 0.5) { van.setPose(PARK.x, PARK.z, PARK.heading); g.events.emit('drive:parked', {}); }
-      } else await g.cutscene.play((c) => this.arrivalScene(c), { skippable: true });
-      if (g.grandpa?.meet && g.grandpa.gp) await g.grandpa.meet();
-      else await g.cutscene.play((c) => this.letterScene(c), { skippable: true });
+      if (g.grandpa?.meet && g.grandpa.gp) await g.grandpa.meet({ opening: A ? (c) => A.scene(c) : null });
+      else {
+        if (A) await A.play();
+        await g.cutscene.play((c) => this.letterScene(c), { skippable: true });
+      }
     } finally {
       this.newGameRunning = false;
       this.flags.intro = true;
@@ -796,99 +792,13 @@ export class Story {
     }
   }
 
-  /**
-   * Arrival (when the playable drive isn't there): Grandpa's van comes out of the dark east underpass under a passing
-   * train, rolls down the lane at dusk (a shot from the driver's seat as the garage slides by; Grandpa out front waving
-   * you in), pulls up across from the shutter, the engine dies and ticks as it cools. Ends in the cab.
-   * Sends 'drive:lane' as the van comes into the lane and 'drive:parked' once it's stopped, as the drive does.
-   */
-  *arrivalScene(c, { legacy = false } = {}) {
-    const g = this.game, z = GARAGE.maxZ, town = g.garage.town, van = this.life?.van;
-    c.setFade(1);
-    bgm.play('intro', { loop: false, fade: 1.2 });
-    // the van and its drive (positions per frame, from the script's targets)
-    const D = this.arrive = { x: 34, v: 0, to: 34, brake: false, cab: false, engine: null };
-    if (van) {
-      van.setPose(D.x, PARK.z, PARK.heading); van.setLights(true); van.setBrake(false); van.setDoor(0);
-      try { D.engine = audio.loop('vanEngine', {}); D.engine?.set(0.22, 1.0); } catch { D.engine = null; }
-      c.every((dt) => {
-        if (!van) return;
-        const left = D.x - D.to;
-        // cruise toward the target, braking over the last few metres
-        const want = left <= 0.001 ? 0 : D.brake ? Math.min(D.v, Math.max(0.35, left * 1.1)) : D.speed || 0;
-        D.v += (want - D.v) * Math.min(1, dt * (D.brake ? 3 : 1.5));
-        const step = Math.min(left, D.v * dt);
-        D.x -= step;
-        van.setPose(D.x, PARK.z, PARK.heading);
-        van.roll(step);
-        van.suspend((D.brake && D.v > 0.2 ? 0.02 : 0) + Math.sin(D.x * 3.1) * 0.003 * Math.min(1, D.v), Math.abs(Math.sin(D.x * 2.3)) * 0.006 * Math.min(1, D.v));
-        if (D.engine?.osc) D.engine.osc.frequency.value = 34 + D.v * 6;
-        if (D.cab) { van.eye(c.pos); c.pos.y -= 0.1; van.ahead(9, c.look); c.look.y -= 1.9; }
-      });
-    }
-    if (!legacy) g.events.emit('drive:lane', { x: D.x });
-    // 1. the east underpass at dusk: a train thunders over, headlights come out of the dark
-    const tr = town?.trains?.find((t) => t.s > 0);
-    if (tr) {
-      town.runTrain(1, -1);
-      const len = new THREE.Box3().setFromObject(tr.g).getSize(V(0, 0, 0)).z;
-      tr.z = 9.6 + len / 2 + 10;
-      tr.played = false;
-    }
-    yield c.cam({ pos: V(17.5, 0.75, 11.9), look: V(30, 1.3, 10.6), fov: 52 });
-    D.to = 21; D.speed = 3.2;
-    yield c.all(c.fade(0, 2.0), c.wait(3.6), c.say('Grandpa\'s lane. The trains still rattle the windows.', 1.0));
-    yield c.cam({ pos: V(15.5, 0.85, 11.3), look: V(D.x - 2, 1.0, PARK.z), dur: 1.4 });
-    // 2. from the driver's seat: the lane rolls by, the old garage on the left
-    yield c.fade(1, 0.3);
-    c.hideSay();
-    D.cab = true; D.to = 6.5; D.speed = 2.6;
-    if (van) { van.eye(c.pos); c.pos.y -= 0.1; van.ahead(9, c.look); c.look.y -= 1.9; }
-    c.fov = 70;
-    yield c.fade(0, 0.3);
-    yield c.all(c.wait(3.0), c.say(legacy ? 'There it is. Gacha Garage.' : "There it is. Gacha Garage. ...And there's Grandpa.", 1.6));
-    // 3. outside, low by the shutter: it pulls up across the lane, brake lights, a little nose dip
-    yield c.fade(1, 0.25);
-    c.hideSay();
-    D.cab = false; D.to = PARK.x; D.brake = true;
-    van?.setBrake(true);
-    yield c.cam({ pos: V(1.2, 0.55, z + 1.15), look: V(4.2, 0.9, PARK.z), fov: 46 });
-    yield c.fade(0, 0.25);
-    yield c.until(() => D.x - PARK.x < 0.01 || !van || c.skipping);
-    if (van) { D.x = PARK.x; van.setPose(PARK.x, PARK.z, PARK.heading); }
-    van?.suspend(0.03, 0);
-    yield c.wait(0.25);
-    van?.suspend(0, 0);
-    // engine off: a cough, the lights die, the hot block ticks
-    audio.play('engineOff', { vol: 0.9 });
-    D.engine?.stopAll(); D.engine = null;
-    van?.setLights(false); van?.setBrake(false);
-    g.effects.puff({ pos: van ? van.local(0.4, 0.25, -1.75) : V(5, 0.3, PARK.z), count: 5, color: 0x9a948a, size: 0.06, speed: 0.2, up: 0.15, life: 1.6 });
-    if (!legacy) g.events.emit('drive:parked', {});
-    yield c.cam({ pos: V(PARK.x - 1.9, 0.75, PARK.z - 1.35), look: V(PARK.x - 1.4, 0.55, PARK.z - 0.4), dur: 0.01, fov: 40 });
-    for (let i = 0; i < 4; i++) { audio.play('engineTick', { pos: V(PARK.x - 1.5, 0.6, PARK.z), vol: 1 }); yield c.wait(0.35 + i * 0.12); }
-    yield c.say('Made it. The old thing still runs.', 0.8);
-    c.hideSay();
-    // back in the driver's seat
-    if (van) { van.eye(c.pos); c.look.copy(van.local(-1.2, 1.2, 0.9)); }
-    c.fov = 64;
-  }
-
-  /** The old intro (no Grandpa in the game): the arrival, getting out, his day in a memory, the letter on the shutter. */
-  *introScene(c) {
-    yield* this.arrivalScene(c, { legacy: true });
-    yield* this.letterScene(c, { inCab: true });
-  }
-
-  /** Out of the van, a memory of the shop in his day, then his envelope on the shutter (the old intro's ending). */
-  *letterScene(c, { inCab = false } = {}) {
+  /** Without Grandpa: out of the van, a memory of the shop in his day, then his envelope on the shutter. */
+  *letterScene(c) {
     const g = this.game, z = GARAGE.maxZ, van = this.life?.van;
     const actors = [];
-    const D = this.arrive || { x: PARK.x, engine: null };
-    if (!inCab && van) { van.eye(c.pos); c.look.copy(van.local(-1.2, 1.2, 0.9)); c.fov = 64; c.camOn = true; }
-    // 4. getting out: from the seat, the door swings open, out onto the road, the shutter across the lane
+    // 1. getting out: from the seat, the door swings open, out onto the road, the shutter across the lane
     c.hideSay();
-    if (van) { van.eye(c.pos); c.look.copy(van.local(-1.2, 1.2, 0.9)); }
+    if (van) { van.eye(c.pos); c.look.copy(van.local(-1.2, 1.2, 0.9)); c.camOn = true; }
     c.fov = 64;
     yield c.wait(0.4);
     audio.play('carDoor', { pos: c.pos, vol: 1 });
@@ -899,7 +809,7 @@ export class Story {
     yield c.cam({ pos: out, look: V(0.3, 1.5, z), dur: 1.6, fov: 64, path: [c.pos.clone().lerp(out, 0.5).setY(1.25)] });
     this.bobOn = false;
     yield c.all(c.cam({ pos: out.clone().lerp(V(0.4, 1.58, z + 3.6), 0.35), look: V(0, 1.75, z), dur: 3.2 }), c.say("Grandpa's capsule toy shop. Shut for years.", 0.8));
-    // 5. a memory: the shutter up, the lanterns lit, kids crowding his machines
+    // 2. a memory: the shutter up, the lanterns lit, kids crowding his machines
     yield c.flash(() => {
       c.memory(true);
       c.hideSay();
@@ -920,7 +830,7 @@ export class Story {
     k4.h.gesture('wave');
     g.pedestrians?.say(gp.h, 'One coin, one turn. Good luck!', 3.2);
     yield c.cam({ pos: V(1.6, 1.55, z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.4 });
-    // 6. back to now: a locked shutter, and a letter taped to it
+    // 3. back to now: a locked shutter, and a letter taped to it
     yield c.flash(() => {
       c.memory(false);
       c.hideSay();
@@ -932,8 +842,7 @@ export class Story {
     yield c.all(c.cam({ pos: V(1.1, 1.38, z + 0.75), look: V(0.85, 1.32, z), dur: 2.4, fov: 44 }), c.say('...an envelope. KIDDO. His handwriting.', 0.9));
     c.hideSay();
     // your own eyes, by the van, the shutter across the lane
-    if (van) { D.x = PARK.x; van.setPose(PARK.x, PARK.z, PARK.heading); van.setDoor(1); van.setLights(false); van.setBrake(false); van.suspend(0, 0); }
-    D.engine?.stopAll(); D.engine = null;
+    if (van) { van.setPose(PARK.x, PARK.z, PARK.heading); van.setDoor(1); van.setLights(false); van.setBrake(false); van.suspend(0, 0); }
     const st = out.clone().setY(0);
     g.player.pos.set(st.x, 0, st.z);
     g.player.yaw = Math.atan2(-(0.85 - st.x), -(GARAGE.maxZ - st.z)); // facing the envelope on the shutter

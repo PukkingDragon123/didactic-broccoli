@@ -2,8 +2,8 @@
 
 A first-person **capsule-toy shop sim** in a Shōwa-era Japanese back lane, spring 1999.
 Grandpa's back has given out and he's off to his sister's in Atami. Today is his last day in the lane. You
-drive his rusty kei van down to the garage, he waves you in, hands you the keys, and spends the afternoon
-showing you the ropes before his taxi comes. Then it's you: no machines, ¥1,500 in your pocket, the electricity
+pull up in his rusty kei van across from the garage, he wakes up on his stool, hands you the keys, and spends
+the afternoon showing you the ropes before his taxi comes. Then it's you: no machines, ¥1,500 in your pocket, the electricity
 off and a shy cat living behind the junk boxes.
 
 Voxel and low-poly 3D, pixel-art 2D, a paper UI, 8-bit voices. Models, textures and people are generated in
@@ -40,8 +40,10 @@ On phones there's a virtual stick and buttons: tap to use, tap the inventory to 
 
 ## What's inside
 
-**Arriving.** You drive Grandpa's van yourself, out of the dark railway underpass and slowly down the lane
-(W/S, A/D, Space for the handbrake, H for the horn), into the spot he has chalked out for you. He taps on the
+**Arriving.** The game opens like a film: letterboxed, to music, a crane down from the steel pylon to the
+railway bridge as a train thunders over, pigeons bursting up off the lane, Mikawa-san lighting a cigar in his
+doorway, Mikan and Grandpa asleep in the sun, and then the van you've just pulled up in: your hand takes the
+key out, the omamori swings to a stop, and in the door mirror Grandpa wakes and shuffles over. He taps on the
 window, you climb out, and the two of you talk: a bow or an awkward hug, the van's clutch, the keys, the shop
 in its heyday.
 
@@ -160,7 +162,7 @@ src/os        Capsule 98 desktop and its apps and websites (src/pc: the desk and
 src/market    Off-Hobby, Daikoku Toys, delivery van, grading, auctions
 src/money     wallet, physical cash, ATM, piggy bank
 src/build     furniture catalogue, placement, storage boxes, robot vacuum
-src/drive     the playable arrival in Grandpa's van
+src/arrival   the opening: the lane, the van, the hand-off to Grandpa
 src/grandpa   Grandpa: the meeting, day one, the goodbye, his calls
 src/vehicles  the vehicle kit: van, FREE CANDY van, garbage truck, taxi, cars
 src/life      Grandpa's notes, opening steps, jobs, trash

@@ -7,18 +7,19 @@
 // Windows are real glass (you see the cab and the boxes in the back through them). The body (exterior and interior)
 // is one mesh, the glass another; the four wheels, the driver's door, the steering wheel, the dial, its needle and the
 // omamori move on their own; lamps that are switched on are two unlit meshes shown and hidden.
-// It drives in during the intro (you drive it yourself: src/drive/) and then stays parked across the lane from the garage.
+// It stands parked across the lane from the garage from the start (the opening finds it there: src/arrival/).
 //   van.root (Group, faces +z locally)   van.setPose(x, z, heading)   van.roll(dist)   van.setDoor(k 0..1)
 //   van.setLights(on)  van.setBrake(on)   van.eye(out) driver's eye (world)   van.doorStep(out) where you stand once out
 //   van.park() (obstacle + physics + door click)
-// The cab, for driving it from the inside: a thin two-spoke wheel on a steep cab-over column (indicator and wiper
-// stalks, the key on its ring), the binnacle (speedometer with its needle, fuel and temperature gauges, warning lamps,
+// The cab, seen from the inside: a thin two-spoke wheel on a steep cab-over column (indicator and wiper stalks, the
+// key on its ring in the ignition), the binnacle (speedometer with its needle, fuel and temperature gauges, warning lamps,
 // the odometer), vents, the radio-cassette, heater sliders, the ashtray and the glovebox; wooden-bead seat covers and
 // lace on the headrests, sun visors, door cards with window cranks, the rear-view mirror with Grandpa's 交通安全
 // omamori swinging on its cord, a daruma and his photo on the dash.
 //   van.place(x, y, z, heading, slope)   van.lean(pitch, roll, bounce)   van.steer(wheelAngle, steeringWheelTurn)
 //   van.gauge(kmh)   van.lamps({ hand, beam, radio })   van.swing(dt, ax, az) (the charm, from the cab's acceleration)
-//   van.cabGlass(clear) (near-clear windows while you sit inside)   van.cab = { wheel, spin, needle, charm, ... }
+//   van.cabGlass(clear) (near-clear windows while you sit inside; van.inCab says which)   van.cab = { wheel, spin,
+//   needle, charm, key, keyTurn, ... }   van.keyAt(turn, out) (the key in the ignition: turned, drawn out along the slot)
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
@@ -625,7 +626,7 @@ function interior(G, V, A) {
     for (const x of [-0.535, -0.165]) G.box(x, 1.035, 1.43, x + 0.02, 1.205, 1.52, { bevel: 0.004 });
     G.box(-0.535, 1.035, 1.43, -0.145, 1.06, 1.52, { bevel: 0.004 });
   });
-  // the steering column, in the wheel's own tilted frame: tube, shroud, the stalks, the key on its ring
+  // the steering column, in the wheel's own tilted frame: tube, shroud, the stalks (the key is its own part: buildKey)
   {
     const m = new THREE.Matrix4().compose(CAB.wheel, new THREE.Quaternion().setFromEuler(new THREE.Euler(CAB.wheelTilt, 0, 0)), new THREE.Vector3(1, 1, 1));
     G.push(m);
@@ -635,8 +636,7 @@ function interior(G, V, A) {
       G.strut([-0.05, 0.01, 0.1], [-0.17, 0.035, 0.07], 0.007, { round: 4 }); // indicators (right)
       G.strut([0.05, 0.01, 0.1], [0.16, 0.03, 0.07], 0.007, { round: 4 }); // wipers (left)
     });
-    G.with(sw(CHROME[2], ROUGH.chrome), 0, () => { G.box(-0.07, -0.03, 0.125, -0.055, -0.02, 0.145); G.box(-0.078, -0.07, 0.13, -0.072, -0.03, 0.14); });
-    G.with(sw(0xd83a2a), 0, () => G.box(-0.082, -0.1, 0.128, -0.068, -0.07, 0.142));
+    G.with(sw(0x0e0e10), 0, () => G.box(-0.057, -0.036, 0.124, -0.055, -0.014, 0.146)); // the ignition's bezel
     G.pop();
   }
   // gear stick out of the floor, a handbrake lever by the seat
@@ -736,6 +736,23 @@ function buildSteeringWheel(A) {
   return G.build();
 }
 
+/**
+ * The ignition key on its ring, around the slot (origin; +x runs into the lock, the column's x): the blade (hidden in
+ * the lock until it's drawn out), a black rubber head, a split ring and Grandpa's red leather tag.
+ */
+function buildKey(A) {
+  const G = new Geo(1), sw = (c, r = ROUGH.plastic) => A.swatch(c, r);
+  G.with(sw(CHROME[2], ROUGH.chrome), 0, () => {
+    G.box(0.0, -0.0045, -0.003, 0.042, 0.0045, 0.003); // the blade
+    G.box(-0.025, -0.038, -0.002, -0.02, -0.016, 0.002); // the ring, hanging off the head
+    G.box(-0.031, -0.043, -0.002, -0.013, -0.038, 0.002);
+  });
+  G.with(sw(0x1a1a1c), 0, () => G.box(-0.03, -0.016, -0.0055, 0.0, 0.016, 0.0055, { bevel: 0.004 })); // the head
+  G.with(sw(0xc8322c, ROUGH.fabric), 0, () => G.box(-0.035, -0.088, -0.0025, -0.009, -0.043, 0.0025, { bevel: 0.003 })); // the tag
+  G.with(sw(0xf0d890, ROUGH.paint), 0, () => G.box(-0.028, -0.077, -0.003, -0.016, -0.064, 0.003)); // its gold stamp
+  return G.build();
+}
+
 /** Grandpa's 交通安全 omamori: a red brocade bag on a cord, gold knot, hanging from the pivot at the top (y = 0 down). */
 function buildCharm(V, A) {
   const G = new Geo(1);
@@ -759,13 +776,14 @@ function buildLit(V) {
   return { heads: H.build(), brakes: B.build() };
 }
 
-// ------------------------------------------------------------------ the cab parts (contract with src/drive)
+// ------------------------------------------------------------------ the cab parts (src/arrival works them)
 // where the cab parts sit (van body-space metres)
 export const CAB = {
   wheel: new THREE.Vector3(-0.34, 1.15, 1.30), wheelTilt: 0.86, wheelR: 0.18, // centre, tilt back from vertical, rim radius
   dial: { x: -0.34, y: 1.128, z: 1.475, w: 0.3, h: 0.12 },
   mirror: { x: 0.0, y: 1.6975, z: 1.3965, w: 0.18, h: 0.05 },
   charm: new THREE.Vector3(0.0, 1.664, 1.414),
+  key: new THREE.Vector3(-0.056, -0.025, 0.135), // the ignition slot, in the column's tilted frame (its right side)
 };
 const DIAL_W = 160, DIAL_H = 64, DIAL_C = [54, 31]; // the dial texture and the speedometer's pivot (px)
 const SWEEP0 = (210 / 180) * Math.PI, SWEEP = (240 / 180) * Math.PI; // 0 km/h at 7 o'clock, 120 at 5
@@ -837,7 +855,7 @@ function shared() {
   for (const g of [dg, dgl]) { g.translate(W, 0, -HINGE_Z); g.computeBoundingSphere(); }
   const mats = vehicleMaterials(A);
   mats.lit.color.setScalar(1.0);
-  SHARED = { A, V, body: G.build(), glass: GL.build(), door: dg, doorGlass: dgl, wheelL, wheelR, steer: buildSteeringWheel(A), charm: buildCharm(V, A), lit, mats };
+  SHARED = { A, V, body: G.build(), glass: GL.build(), door: dg, doorGlass: dgl, wheelL, wheelR, steer: buildSteeringWheel(A), charm: buildCharm(V, A), key: buildKey(A), lit, mats };
   return SHARED;
 }
 
@@ -942,6 +960,15 @@ export class Van {
     cab.charm.position.copy(CAB.charm);
     cab.charm.add(new THREE.Mesh(S.charm, M.body));
     this.body.add(cab.charm);
+    // the key in the ignition: tilted with the column; keyTurn turns it about the slot and draws it out along it
+    const tilt = new THREE.Quaternion().setFromEuler(new THREE.Euler(CAB.wheelTilt, 0, 0));
+    cab.key = new THREE.Group();
+    cab.key.position.copy(CAB.key).applyQuaternion(tilt).add(CAB.wheel);
+    cab.key.quaternion.copy(tilt);
+    cab.keyTurn = new THREE.Group();
+    cab.keyTurn.add(new THREE.Mesh(S.key, M.body));
+    cab.key.add(cab.keyTurn);
+    this.body.add(cab.key);
     this.gauge(0);
   }
 
@@ -996,11 +1023,20 @@ export class Van {
     cab.charm.rotation.set(A[0], 0, A[1]);
   }
 
+  /** The key in the ignition: turned by `turn` (rad about the slot; ~0.9 is ON), drawn `out` metres out of the lock. */
+  keyAt(turn = 0, out = 0) {
+    const k = this.cab?.keyTurn;
+    if (!k) return;
+    k.rotation.set(-turn, 0, 0);
+    k.position.set(-out, 0, 0);
+  }
+
   /** While you sit inside: near-clear windows, and the cab in the roof's shade (direct sun cut to a third). */
   cabGlass(clear) {
     const S = shared(), M = S.mats;
-    const parts = [this.bodyMesh, this.doorMesh, this.cab?.spin.children[0], this.cab?.charm.children[0]].filter(Boolean);
+    const parts = [this.bodyMesh, this.doorMesh, this.cab?.spin.children[0], this.cab?.charm.children[0], this.cab?.keyTurn.children[0]].filter(Boolean);
     const glass = [this.glassMesh, this.doorGlassMesh];
+    this.inCab = !!clear;
     if (!clear) { for (const m of parts) m.material = M.body; for (const m of glass) m.material = M.glass; return; }
     if (!Van.clearMats) {
       // no sharp speculars in the cab (they bloom): one even roughness, no env sheen; the glass all but clear

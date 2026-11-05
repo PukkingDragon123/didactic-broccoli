@@ -204,7 +204,7 @@ export class Grandpa {
     o.at += dt;
     if (this.actLeft !== Infinity) { this.actLeft -= dt; if (this.actLeft <= 0 && o.act) { o.prev = o.act; o.pt = o.at; o.at = 0; o.act = null; } }
     // the fan's out while he fans himself (an act, or idling on his stool)
-    this.fan.visible = o.act === 'fan' || (o.fan && this.sitT > 0.5 && !o.act) || (o.prev === 'fan' && o.at < 0.3);
+    this.fan.visible = o.act === 'fan' || o.act === 'doze' || (o.fan && this.sitT > 0.5 && !o.act) || (o.prev === 'fan' && o.at < 0.3);
     // sitting: ease down / up; standing back up switches to the standing pose once he's up
     this.sitT = THREE.MathUtils.clamp(this.sitT + (this.sitting ? dt : -dt) / 1.1, 0, 1);
     o.k = this.sitT;

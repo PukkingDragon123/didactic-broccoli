@@ -1,0 +1,43 @@
+/* The opening's title card (src/arrival/title.js): a torn scrap of cream paper taped over the picture, pixel art at 2x
+   (textures from src/ui/paper.js), ink text, a hard pixel shadow. It steps in and out: no smooth fades, no glows.
+   Alagard and the 5x7 line are only ever drawn at whole multiples of their pixel size. */
+#arrival-title {
+  position: absolute; left: 50%; top: calc(11vh + 3.5vh); translate: -50% 0; pointer-events: none;
+  opacity: 0; transform: translateY(-12px); transition: opacity .4s steps(4), transform .4s steps(3);
+}
+#arrival-title.on { opacity: 1; transform: none; }
+#arrival-title.out { opacity: 0; transform: translateY(8px); transition: opacity .8s steps(5), transform .8s steps(4); }
+#arrival-title .card {
+  position: relative; padding: 2px 46px 12px 34px; text-align: center; color: #241a1e; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
+  background-color: #eee4ca; background-image: var(--pp-grain-cream); background-size: 96px; background-clip: padding-box;
+  filter: drop-shadow(6px 8px 0 rgba(0, 0, 0, .5));
+}
+#arrival-title .t {
+  display: inline-block; font: 48px/44px 'Alagard', monospace; letter-spacing: 3px; padding: 6px 4px 8px; white-space: nowrap;
+  background-image: var(--pp-pencil-red); background-position: 0 100%; background-size: 64px 6px; background-repeat: repeat-x;
+}
+#arrival-title .s { width: calc(var(--w) * 2); height: calc(var(--h) * 2); margin: 8px auto 0; background-size: 100% 100%; image-rendering: pixelated; }
+#arrival-title .seal { position: absolute; right: 6px; bottom: 6px; width: 20px; height: 36px; background-size: 100% 100%; image-rendering: pixelated; }
+#arrival-title .tape { position: absolute; top: -16px; width: 80px; height: 24px; background-image: var(--pp-tape); background-size: 80px 24px; image-rendering: pixelated; }
+#arrival-title .tape.l { left: -22px; transform: rotate(-8deg); }
+#arrival-title .tape.r { right: -22px; transform: rotate(6deg); }
+@media (min-width: 1280px) {
+  #arrival-title .card { padding: 4px 70px 16px 44px; }
+  #arrival-title .t { font-size: 64px; line-height: 58px; letter-spacing: 4px; padding: 6px 4px 10px; }
+  #arrival-title .s { width: calc(var(--w) * 3); height: calc(var(--h) * 3); margin-top: 12px; }
+  #arrival-title .seal { width: 40px; height: 72px; right: 10px; bottom: 10px; }
+}
+@media (min-width: 1800px) {
+  #arrival-title .t { font-size: 96px; line-height: 86px; letter-spacing: 6px; }
+  #arrival-title .card { padding-right: 90px; }
+  #arrival-title .s { width: calc(var(--w) * 4); height: calc(var(--h) * 4); }
+  #arrival-title .seal { width: 60px; height: 108px; }
+}
+@media (max-width: 760px) {
+  #arrival-title .t { font-size: 32px; line-height: 30px; letter-spacing: 2px; }
+  #arrival-title .card { padding: 2px 30px 10px 22px; }
+  #arrival-title .s { width: var(--w); height: var(--h); margin-top: 4px; }
+  #arrival-title .seal { right: 4px; bottom: 6px; }
+  #arrival-title .tape { top: -8px; width: 40px; height: 12px; background-size: 40px 12px; }
+}

@@ -1,4 +1,4 @@
-// Grandpa in person (src/grandpa/): he meets you when you drive in, walks you through the opening jobs himself, says
+// Grandpa in person (src/grandpa/): he meets you when you arrive, walks you through the opening jobs himself, says
 // goodbye at a taxi, then phones now and then. Installed last (after the life and people plugins it builds on).
 // Debug (with ?debug / ?autotest): dbg.grandpa.* jumps to each scene (see below).
 import * as THREE from 'three';
@@ -7,6 +7,7 @@ import { GrandpaSystem, STOOL } from '../grandpa/index.js';
 import * as scenes from '../grandpa/scenes.js';
 import { Story } from '../game/Story.js';
 import { postcardArt } from '../grandpa/phone.js';
+import { PARK } from '../life/van.js';
 
 export function install(game) {
   // after every other plugin (game.life, game.talk, game.os must exist)
@@ -26,10 +27,10 @@ function debugGrandpa(g, sys) {
     sys,
     get gp() { return sys.gp; },
     state() { const gp = sys.gp; return { mode: sys.mode, step: g.story.step?.(), s: sys.s, pos: gp ? [+gp.pos.x.toFixed(2), +gp.pos.z.toFixed(2)] : null, sitting: gp?.sitting, act: gp?.po.act, walking: gp?.walking, bye: sys.director?.byeWaiting, talk: !!g.talk?.active, cine: g.cutscene.active }; },
-    /** The van parked, him at the marshal spot (the moment before the window tap). */
-    parked() { const v = g.life.van; v.setPose(3.4, 12.5, -Math.PI / 2); v.setDoor(0); sys.onLane(); return true; },
-    /** Waving the van in: the van part-way down the lane. */
-    marshal(x = 9) { const v = g.life.van; v.setPose(x, 12.5, -Math.PI / 2); sys.onLane(); return true; },
+    /** The van parked, him up off his stool and on his way over (the moment before the window tap). */
+    parked() { const v = g.life.van; v.setPose(PARK.x, PARK.z, PARK.heading); v.setDoor(0); sys.wake(); return true; },
+    /** Asleep on his stool in the sun, Mikan at his feet (the opening's shot of him). */
+    doze() { sys.doze(); return true; },
     /** The whole meeting (window tap, chat, story); choices are picked automatically when auto is true. */
     meet(auto = true) { this.parked(); sys.meet(); if (auto) this.autoPick(true); return true; },
     tap() { this.parked(); g.cutscene.play((c) => scenes.tapScene(c, sys)); return true; },

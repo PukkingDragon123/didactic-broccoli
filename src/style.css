@@ -118,31 +118,8 @@ body.free-look #app canvas { cursor: crosshair; }
 .overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 10; }
 
 /* ------------------------------------------------------------- main menu */
-.menu { pointer-events: none; background: linear-gradient(180deg, rgba(14, 10, 18, .55) 0%, rgba(14, 10, 18, 0) 32%), linear-gradient(90deg, rgba(14, 10, 18, .35) 0%, rgba(14, 10, 18, 0) 40%), radial-gradient(ellipse at 60% 110%, rgba(0, 0, 0, 0) 45%, rgba(10, 6, 12, .45) 100%); justify-content: flex-start; align-items: stretch; }
-.menu-logo { position: absolute; left: max(28px, 4vw); top: max(20px, 4vh); display: flex; align-items: flex-start; gap: 16px; animation: logo-drop .9s cubic-bezier(.2, 1.4, .4, 1) both; }
-.menu-logo .logo-icon { margin-top: 14px; animation: logo-bob 2.4s steps(6) infinite; }
-.menu-logo .logo-main {
-  font-family: var(--font-display); font-size: 112px; line-height: 92px; letter-spacing: 2px; color: #fff4e0; white-space: nowrap;
-  text-shadow:
-    4px 0 0 var(--ink), -4px 0 0 var(--ink), 0 4px 0 var(--ink), 0 -4px 0 var(--ink), 4px 4px 0 var(--ink), -4px 4px 0 var(--ink), 4px -4px 0 var(--ink), -4px -4px 0 var(--ink),
-    0 8px 0 var(--red), 4px 8px 0 var(--red), -4px 8px 0 var(--red),
-    0 12px 0 #8a1a22, 4px 12px 0 #8a1a22, -4px 12px 0 #8a1a22,
-    0 16px 0 var(--ink), 4px 16px 0 var(--ink), -4px 16px 0 var(--ink),
-    0 26px 0 rgba(0, 0, 0, .35);
-}
-.menu-logo .logo-sub { margin: 18px 0 0 8px; font-family: var(--font-key); font-size: 16px; letter-spacing: 6px; color: var(--gold); text-shadow: 2px 2px 0 var(--ink), 0 2px 0 var(--ink); }
-@keyframes logo-drop { from { transform: translateY(-60px); opacity: 0; } }
-@keyframes logo-bob { 50% { transform: translateY(-6px) rotate(-6deg); } }
-
-.gear {
-  pointer-events: auto; position: absolute; top: max(18px, env(safe-area-inset-top)); right: max(18px, env(safe-area-inset-right));
-  display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; padding: 0; border: 0; cursor: pointer; color: var(--cream);
-  background: var(--tex-dark, none) 0 0 / 64px, rgba(26, 18, 22, .8); image-rendering: pixelated;
-  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .35), 0 -4px 0 var(--cream), 0 4px 0 var(--cream), -4px 0 0 var(--cream), 4px 0 0 var(--cream), 6px 8px 0 rgba(0, 0, 0, .35);
-}
-.gear::before { transition: transform .4s steps(4); }
-.gear:hover::before { transform: rotate(90deg); }
-body.has-3d-gear #m-gear { display: none; }
+.menu { pointer-events: none; justify-content: flex-start; align-items: stretch; }
+/* the title screen itself (sign, tags, slips, receipt) is src/menu/menu.css */
 
 .menu .loading { position: absolute; left: 50%; bottom: max(28px, 6vh); width: min(320px, 70vw); margin-left: max(-160px, -35vw); font-size: 16px; color: var(--cream); text-shadow: 0 2px 0 var(--ink); }
 .menu .loading .load-label { margin-bottom: 8px; text-align: center; letter-spacing: 1px; }
@@ -243,15 +220,7 @@ body.touchmode #money-delta.show { transform: translate(-50%, 4px); }
 body.touchmode #news { top: max(72px, calc(env(safe-area-inset-top) + 60px)); }
 
 /* ------------------------------------------------------------- small screens */
-@media (max-width: 900px) {
-  .menu-logo .logo-main { font-size: 80px; line-height: 70px; }
-  .menu-logo .logo-sub { margin-top: 16px; }
-}
 @media (max-width: 640px), (max-height: 480px) {
-  .menu-logo { gap: 10px; }
-  .menu-logo .logo-icon { margin-top: 4px; transform: scale(.5); transform-origin: 0 0; }
-  .menu-logo .logo-main { font-size: 48px; line-height: 48px; text-shadow: 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 2px 0 var(--ink), 0 -2px 0 var(--ink), 2px 2px 0 var(--ink), -2px 2px 0 var(--ink), 2px -2px 0 var(--ink), -2px -2px 0 var(--ink), 0 4px 0 var(--red), 0 6px 0 #8a1a22, 0 8px 0 var(--ink), 0 14px 0 rgba(0, 0, 0, .35); }
-  .menu-logo .logo-sub { margin-top: 14px; letter-spacing: 3px; }
   #caption .name { font-size: 48px; line-height: 42px; }
   #caption .meta { font-size: 16px; line-height: 20px; }
   #news { max-width: 70vw; }

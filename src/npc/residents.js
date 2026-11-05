@@ -40,7 +40,7 @@ export function residentsLife(game) {
   const gateIn = (H) => { const o = outward(H), gx = H.gate ? H.gate[0] : H.bell[0] + 0.35, gz = H.gate ? H.gate[1] : H.bell[1]; return V(gx, gz - o * 0.3); };
   const gateOut = (H) => { const o = outward(H), gx = H.gate ? H.gate[0] : H.bell[0] + 0.35, gz = H.gate ? H.gate[1] : H.bell[1]; return V(gx + 0.15, gz + o * 0.55); };
   const laneZ = (H) => (outward(H) > 0 ? LANE_N : LANE_F);
-  const quiet = () => !!(game.cutscene?.active || game.talk?.active || game.drive?.seated);
+  const quiet = () => !!(game.cutscene?.active || game.talk?.active);
   const say = (n, text, o = {}) => { if (!quiet() && n.h.root.visible) n.say(text, o); };
 
   /** Build the resident (once) with a click target for a chat on the lane. */
@@ -204,7 +204,7 @@ export function residentsLife(game) {
 
   function update(dt) {
     S.t += dt;
-    if (game.grandpa?.hidden || game.drive?.seated) return; // (his scenes keep the lane clear: no outings start)
+    if (game.grandpa?.hidden) return; // (his scenes and the opening keep the lane clear: no outings start)
     if ((S.chk = (S.chk || 0) - dt) > 0) return;
     S.chk = 1.5;
     if (game.cutscene?.active || !game.story?.done && !game.state.story?.complete) return;

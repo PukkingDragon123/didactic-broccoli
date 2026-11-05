@@ -1,5 +1,6 @@
 // Grandpa's cinematic scenes: cutscene scripts (src/game/Cutscene.js) and cinematic chats (src/talk/Talk.js).
-//   tapScene     parked: he shuffles across the lane and knocks on the van window; you climb out
+//   tapScene     parked: he shuffles across the lane and knocks on the van window; you climb out (it picks up from
+//                the opening's last shot, src/arrival/: the camera in the driver's seat, him on his way over)
 //   meetScript   the meeting (a chat): you got tall / short, a bow or an awkward hug, the van's clutch, why he's
 //                leaving, and the key ring into your hands
 //   storyScene   across the lane together; he pats the shutter, the shop in its heyday (the flashback), then his
@@ -17,6 +18,8 @@ import { talk as blipVoice } from '../people/voice.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const Z = GARAGE.maxZ;
+/** Where he stops by the van's window (the driver's side), coming over from his stool. */
+export const VAN_SIDE = { x: 2.25, z: 11.32 };
 
 /** A line over his head in a cutscene (big, with his name), and a waiter for it to be read. */
 function line(c, sys, text, hold = 1.0, opts = {}) {
@@ -55,11 +58,11 @@ export function* tapScene(c, sys) {
   gp.lookAt = null;
   if (gp.sitting) { gp.sitting = false; gp.sitT = 0; gp.setPose('gp_stand'); }
   gp.act(null);
+  if (gp.h.expr === 'sleepy') gp.h.setExpression('neutral'); // (dozing in the opening: awake now)
   const eye = van ? van.eye(V(0, 0, 0)) : V(2.4, 1.42, 12.16);
   van?.setDoor(0);
-  // he's already on his way over from where he waved you in
-  if (gp.distTo(V(MARSH.x, 0, MARSH.z)) > 1.5) gp.place(V(MARSH.x, 0, MARSH.z), 0.2);
-  gp.goTo(V(2.25, 0, 11.32), { speed: 0.8, direct: true, face: 0 });
+  // he's already on his way over from his stool (the opening woke him: grandpa.wake()); straight off it otherwise
+  if (!gp.walking) gp.goTo(V(VAN_SIDE.x, 0, VAN_SIDE.z), { speed: 0.8, direct: true, face: 0 });
   // a. from the driver's seat: the hot engine ticks, an old man comes across the lane
   yield c.cam({ pos: eye, look: V(1.7, 1.0, 8.6), fov: 56 });
   for (let i = 0; i < 2; i++) audio.play('engineTick', { pos: eye, vol: 1, delay: i * 0.5 });
@@ -95,7 +98,6 @@ export function* tapScene(c, sys) {
   g.bubbles?.clear(gp.h);
   yield c.toPlayer(0.5);
 }
-const MARSH = { x: 2.2, z: 6.7 };
 
 // ------------------------------------------------------------------ 2. the meeting (a cinematic chat)
 export function meetScript(sys) {
