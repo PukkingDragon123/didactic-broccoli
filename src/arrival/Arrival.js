@@ -160,7 +160,7 @@ export class Arrival {
       van.setDoor(0); van.setLights(false); van.setBrake(true); van.suspend(0, 0); van.gauge(0);
       van.lamps({ hand: false, beam: false, radio: false });
       van.keyAt(0.9, 0);
-      if (van.cab?.key) van.cab.key.visible = true;
+      if (van.cab?.key) { van.cab.key.visible = true; if (this.keyHome) van.cab.key.position.copy(this.keyHome); }
       this.engineOn = true;
       // (a low idle across the lane until the cut to the van brings it up)
       try { this.engine = audio.loop('vanEngine', { pos: van.local(0, 0.6, 1.2), ref: 2.2, rolloff: 1.3 }); this.engine?.set(0.12, 0.4); } catch { this.engine = null; }
@@ -362,37 +362,56 @@ export class Arrival {
 
   // ------------------------------------------------------------------ 8. the key: the engine dies, the key comes out
   shotKey(c) {
-    const van = this.van, arms = this.arms;
+    const g = this.game, van = this.van, arms = this.arms;
     if (!van?.cab) return { cues: [] };
-    const cab = van.cab, B0 = (x, y, z) => van.local(x, y, z, new THREE.Vector3());
-    // (your eyes, leaning a little to the right to see past the wheel's spoke)
-    const A = { pos: B0(-0.4, 1.43, 0.99), look: B0(-0.43, 1.03, 1.37), fov: 46 };
-    const B = { pos: B0(-0.415, 1.415, 1.02), look: B0(-0.44, 1.02, 1.37), fov: 44 };
-    const head = () => cab.key.position.clone().add(_v.set(-0.048, 0, 0)); // the fist round the key's head (body space)
-    const ELBOW = V(-0.25, 0.15, -1); // reaching under the wheel: the elbow back and a little out
-    let turn = null, out = null, carry = false;
+    const cab = van.cab, L = (x, y, z) => van.local(x, y, z, new THREE.Vector3());
+    // your eyes, leaning a little to the right to see the ignition past the wheel's spoke; they follow the keys up
+    const A = { pos: L(-0.4, 1.43, 0.99), look: L(-0.43, 1.03, 1.37), fov: 44 };
+    const B = { pos: L(-0.41, 1.42, 1.0), look: L(-0.43, 1.03, 1.37), fov: 44 };
+    const ELBOW = V(-0.3, 0.1, -1); // reaching under the wheel: the elbow back and a little out
+    const home = cab.key.position.clone(), SHOW = V(-0.34, 1.21, 1.26); // (in front of your eyes, body space)
+    this.keyHome ||= home.clone();
+    // a little warm light on the dash and your hands (the cab sits in the roof's shade)
+    const fill = this.fill = new THREE.PointLight(0xffd6a6, 0, 1.4, 2);
+    fill.position.copy(L(-0.22, 1.62, 1.1));
+    g.scene.add(fill);
+    const lookUp = L(-0.37, 1.18, 1.3);
+    let turn = null, out = null, lift = null;
     return {
       tick: (t, dt) => {
-        c.hand = 0.0012;
+        c.hand = 0.001;
         move(c, A, B, smooth(t / 4));
-        if (turn) { turn.t += dt; van.keyAt(0.9 * (1 - smooth(turn.t / 0.22)), 0); if (turn.t > 0.22) turn = null; }
-        if (out) { out.t += dt; van.keyAt(0, 0.042 * smooth(out.t / 0.3)); if (out.t > 0.3) out = null; }
-        if (carry && arms) { van.keyAt(0, 0); cab.key.position.copy(arms.fist('right', _v)).add(_w.set(0.015, -0.004, 0)); }
+        fill.intensity = 0.55 * smooth(t / 0.3);
+        if (turn) { turn.t += dt; van.keyAt(0.9 * (1 - smooth(turn.t / 0.3)), 0); if (turn.t > 0.3) turn = null; }
+        if (out) { out.t += dt; van.keyAt(0, 0.048 * smooth(out.t / 0.35)); if (out.t > 0.35) out = null; }
+        if (lift) {
+          // out of the lock and up in front of your eyes, the red tag swinging; your eyes go with it
+          lift.t += dt;
+          const k = smooth(lift.t / 1.0);
+          van.keyAt(0, 0);
+          cab.key.position.lerpVectors(home, SHOW, k);
+          cab.keyTurn.rotation.set(Math.sin(lift.t * 7) * 0.1 * Math.exp(-lift.t * 1.2), 0, Math.sin(lift.t * 5 + 1) * 0.06 * Math.exp(-lift.t * 1.2));
+          c.look.lerp(lookUp, smooth(lift.t / 1.1));
+        }
       },
       cues: [
-        [0.25, () => arms?.reach('right', head(), 0.6, ELBOW)],
-        [1.0, () => { turn = { t: 0 }; this.sfx('arrIgnition', { vol: 1 }); }],
-        [1.12, () => this.engineOff()],
-        [1.75, () => { out = { t: 0 }; this.sfx('arrKeys', { vol: 0.9 }); }],
-        [2.1, () => {
-          // the hand comes away with the keys, down into your lap
-          this.keyHome ||= cab.key.position.clone();
-          carry = true;
-          arms?.reach('right', V(-0.46, 0.84, 1.13), 0.8, ELBOW);
-        }],
-        [3.3, () => { carry = false; cab.key.visible = false; arms?.reach('right', null, 0.6); }],
+        // an insert: your fingers already on the key's head (thumb and index finger) as it starts
+        [0, () => { arms?.reach('right', arms.wrist(cab.keyTurn, _v), 0.01, ELBOW); arms?.pinch(cab.keyTurn); }],
+        [0.6, () => { turn = { t: 0 }; this.sfx('arrIgnition', { vol: 1 }); }],
+        [0.75, () => this.engineOff()],
+        [1.45, () => { out = { t: 0 }; this.sfx('arrKeys', { vol: 0.9 }); }],
+        [1.85, () => { lift = { t: 0 }; arms?.pinch(cab.keyTurn, V(-0.6, -1, -0.1)); }], // (the elbow drops as the hand comes up)
       ],
     };
+  }
+
+  /** The keys go in your pocket: off the column, out of your fingers, your hand back on the wheel (between shots). */
+  pocketKey() {
+    const van = this.van, cab = van?.cab;
+    this.arms?.pinch(null);
+    this.arms?.reach('right', null, 0.01);
+    if (cab?.key) { van.keyAt(0, 0); cab.keyTurn.rotation.set(0, 0, 0); if (this.keyHome) cab.key.position.copy(this.keyHome); cab.key.visible = false; }
+    this.fill?.removeFromParent(); this.fill = null;
   }
 
   /** The key's turned back: the engine coughs and dies, the van settles on its springs, the dash goes dark. */
@@ -414,6 +433,7 @@ export class Arrival {
   // ------------------------------------------------------------------ 9. the omamori swinging to a stop
   shotCharm(c) {
     const van = this.van;
+    this.pocketKey();
     if (!van) return { cues: [] };
     const A = { pos: van.local(0.075, 1.5, 1.13), look: van.local(0.0, 1.6, 1.414), fov: 27 };
     const B = { pos: van.local(0.068, 1.505, 1.16), look: van.local(0.0, 1.605, 1.414), fov: 27 };
@@ -482,8 +502,7 @@ export class Arrival {
     if (van) {
       van.lean(0, 0, 0); van.setBrake(false); van.lamps({});
       if (this.charm) { van.cab?.charm.rotation.set(0, 0, 0); this.charm = null; }
-      if (van.cab?.key) { van.keyAt(0, 0); if (this.keyHome) van.cab.key.position.copy(this.keyHome); van.cab.key.visible = false; } // (in your pocket)
-      this.arms?.reach('right', null, 0.01);
+      if (van.cab?.key) this.pocketKey(); // (in your pocket)
     }
     if (mk?.oldman && mk.home) { mk.oldman.h.root.position.copy(mk.home.pos); mk.oldman.h.root.rotation.y = mk.home.rotY; mk.oldman.h.hasPrev = false; mk.keeper.look = null; }
     this.flame?.removeFromParent(); this.flame = null;

@@ -748,8 +748,8 @@ function buildKey(A) {
     G.box(-0.031, -0.043, -0.002, -0.013, -0.038, 0.002);
   });
   G.with(sw(0x1a1a1c), 0, () => G.box(-0.03, -0.016, -0.0055, 0.0, 0.016, 0.0055, { bevel: 0.004 })); // the head
-  G.with(sw(0xc8322c, ROUGH.fabric), 0, () => G.box(-0.035, -0.088, -0.0025, -0.009, -0.043, 0.0025, { bevel: 0.003 })); // the tag
-  G.with(sw(0xf0d890, ROUGH.paint), 0, () => G.box(-0.028, -0.077, -0.003, -0.016, -0.064, 0.003)); // its gold stamp
+  G.with(sw(0xc8322c, ROUGH.fabric), 0, () => G.box(-0.036, -0.09, -0.004, -0.008, -0.043, 0.004, { bevel: 0.0015 })); // the tag
+  G.with(sw(0xf0d890, ROUGH.paint), 0, () => G.box(-0.028, -0.078, -0.0047, -0.016, -0.064, 0.0047)); // its gold stamp
   return G.build();
 }
 
@@ -853,9 +853,11 @@ function shared() {
   // the door hangs on its hinge: its geometry moved so the hinge line is the origin
   const dg = door.G.build(), dgl = door.GL.build();
   for (const g of [dg, dgl]) { g.translate(W, 0, -HINGE_Z); g.computeBoundingSphere(); }
+  // (every swatch is painted before the materials take their snapshot of the atlas)
+  const steer = buildSteeringWheel(A), charm = buildCharm(V, A), key = buildKey(A);
   const mats = vehicleMaterials(A);
   mats.lit.color.setScalar(1.0);
-  SHARED = { A, V, body: G.build(), glass: GL.build(), door: dg, doorGlass: dgl, wheelL, wheelR, steer: buildSteeringWheel(A), charm: buildCharm(V, A), key: buildKey(A), lit, mats };
+  SHARED = { A, V, body: G.build(), glass: GL.build(), door: dg, doorGlass: dgl, wheelL, wheelR, steer, charm, key, lit, mats };
   return SHARED;
 }
 
@@ -1039,9 +1041,12 @@ export class Van {
     this.inCab = !!clear;
     if (!clear) { for (const m of parts) m.material = M.body; for (const m of glass) m.material = M.glass; return; }
     if (!Van.clearMats) {
-      // no sharp speculars in the cab (they bloom): one even roughness, no env sheen; the glass all but clear
+      // no sharp speculars in the cab (they bloom): one even roughness, no env sheen. The glass, seen from inside, is
+      // clear: the painted outside look (the tint, the sky band and its stepped streaks) is left off, just a faint
+      // cool tint and the barest hint of the sky in it
       const b = cabShade(M.body.clone()); b.roughnessMap = null; b.roughness = 0.78; b.envMapIntensity = 0.35;
-      const gl = M.glass.clone(); gl.opacity = 0.2; gl.roughnessMap = null; gl.roughness = 0.9; gl.envMapIntensity = 0.2; gl.metalness = 0;
+      const gl = M.glass.clone(); gl.map = null; gl.roughnessMap = null; gl.color.setHex(0x9fb4bc); gl.opacity = 0.07;
+      gl.roughness = 0.35; gl.envMapIntensity = 0.5; gl.metalness = 0;
       Van.clearMats = { body: b, glass: gl };
     }
     for (const m of parts) m.material = Van.clearMats.body;
