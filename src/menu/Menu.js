@@ -146,7 +146,8 @@ export class TitleMenu {
     const g = this.game;
     this.opts.lockInput?.();
     g.bubbles?.clear(this.cast.me);
-    await this.ui.stamp(kind);
+    this.ui.stamp(kind);
+    await this.sleep(0.28);
     this.ui.leave();
     const M = this.machine;
     // 1. push in on the machine and you while you crank it: from its front left, you in profile at the handle

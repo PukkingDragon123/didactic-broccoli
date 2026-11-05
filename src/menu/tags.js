@@ -74,10 +74,10 @@ function iconPixels(name) {
 }
 
 /** Uniform tag size for a set of items (so the strand reads as one set). */
-export function tagMetrics(items) {
+export function tagMetrics(items, bare = false) {
   let lw = 0, nw = 0;
   for (const it of items) { lw = Math.max(lw, textMask(it.label).w); nw = Math.max(nw, it.note ? mask5(it.note).w : 0); }
-  return { w: 33 + lw + 13 + nw + 7, h: 22, lw, nw };
+  return { w: (bare ? 16 : 33) + lw + 13 + nw + 7, h: 22, lw, nw };
 }
 
 export function paintTag(o) {
@@ -120,7 +120,7 @@ export function paintTag(o) {
   }
   // the label, in ink
   const m = textMask(o.label);
-  const lx = 35, ly = Math.round((h - m.base) / 2) - 1 + (m.h - m.base > 2 ? 0 : 1);
+  const lx = ic ? 35 : 17, ly = Math.round((h - m.base) / 2) - 1 + (m.h - m.base > 2 ? 0 : 1);
   a.mask(m, lx, ly, INKC);
   // the note, pencilled in red pen on the right like a price (a red loop round it on the first tag)
   if (o.note) {

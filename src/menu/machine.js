@@ -107,11 +107,12 @@ export class MenuMachine {
     try {
       // paper confetti and a few stars out of the capsule (pixel sprites, sized to read from the camera a few metres off)
       const up = new THREE.Vector3();
-      for (let i = 0; i < 34; i++) {
+      fx?.emit({ sprite: 'ring', pos: p.clone().add(new THREE.Vector3(0, 0.03, 0)), size: 0.24, life: 0.38, color: 0xfff0c0, fade: 0.3 });
+      for (let i = 0; i < 40; i++) {
         up.set((Math.random() - 0.5) * 1.2, 1.4 + Math.random() * 1.1, (Math.random() - 0.5) * 1.2);
-        fx?.emit({ sprite: 'confetti', pos: p.clone().add(new THREE.Vector3(0, 0.04, 0)), vel: up, color: COLORS[i % COLORS.length], life: 2.4 + Math.random(), size: 0.022, gravity: 3, drag: 2.2, flutter: 3.5, floor: true, anim: 'loop', fps: 10 + Math.random() * 6, frame: i % 4, landFrame: 4, fade: 0.2, flip: true });
+        fx?.emit({ sprite: 'confetti', pos: p.clone().add(new THREE.Vector3(0, 0.04, 0)), vel: up, color: COLORS[i % COLORS.length], life: 2.4 + Math.random(), size: 0.03, gravity: 3, drag: 2.2, flutter: 3.5, floor: true, anim: 'loop', fps: 10 + Math.random() * 6, frame: i % 4, landFrame: 4, fade: 0.2, flip: true });
       }
-      fx?.sparks?.({ pos: p.clone().add(new THREE.Vector3(0, 0.06, 0)), count: 10, colors: [0xffd23f, 0xfff0c0, 0xff6f91], speed: 1.1, up: 0.6, size: 0.026, star: 1, life: 0.7 });
+      fx?.sparks?.({ pos: p.clone().add(new THREE.Vector3(0, 0.06, 0)), count: 12, colors: [0xffd23f, 0xfff0c0, 0xff6f91], speed: 1.2, up: 0.7, size: 0.034, star: 1, life: 0.8 });
     } catch { /* effects not ready */ }
     sfx('pop', { pos: p, vol: 0.9 });
     sfx('confetti', { pos: p, vol: 0.5 });

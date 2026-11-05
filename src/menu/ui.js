@@ -38,6 +38,7 @@ export class MenuUI {
   setItems(items) {
     this.items = items;
     this.nav.innerHTML = '';
+    for (const tw of this.twines || []) tw.remove();
     this.tags = items.map((it, i) => {
       const b = document.createElement('button');
       b.className = 'tm-tag';
@@ -85,21 +86,23 @@ export class MenuUI {
     const colH = (k) => k * (tagH + gap) - gap;
     const cols = colH(n) > H - top0 - pad && n > 3 && !portrait ? 2 : 1;
     const per = Math.ceil(n / cols);
-    let M2 = M;
+    // too wide for the screen: drop the pencilled notes, then (two strands on a phone held sideways) the icons too
+    let M2 = M, bare = false;
     const compact = cols === 2 ? 2 * M.w * tagS > W * 0.62 : M.w * tagS > W * 0.75;
     if (compact) M2 = tagMetrics(this.items.map((it) => ({ ...it, note: '' })));
+    if (compact && cols === 2 && 2 * M2.w * tagS > W * 0.5) { bare = true; M2 = tagMetrics(this.items.map((it) => ({ ...it, note: '', icon: null })), true); }
     const tagW = M2.w * tagS;
     // portrait: the tags hang low, under the shop, so the sign and the shot stay clear in the middle
     if (portrait) top0 = Math.max(top0, H - pad - colH(per) - Math.round(H * 0.02));
     this.cols = cols;
     // repaint the tags at this scale (only when it changed)
     for (const t of this.tags) {
-      const note = compact ? '' : t.it.note;
-      if (t.s !== tagS || t.w !== M2.w || t.note !== note) {
-        t.s = tagS; t.w = M2.w; t.note = note;
+      const note = compact ? '' : t.it.note, icon = bare ? null : t.it.icon;
+      if (t.s !== tagS || t.w !== M2.w || t.note !== note || t.icon !== icon) {
+        t.s = tagS; t.w = M2.w; t.note = note; t.icon = icon;
         const P = t.b.querySelector('.tm-paper');
         P.innerHTML = '';
-        const opts = { label: t.it.label, note, icon: t.it.icon, w: M2.w, h: M2.h, seed: 31 + t.i * 17, ring: !!t.it.primary, stock: t.it.stock || 'manila', dog: t.i % 3 === 1 };
+        const opts = { label: t.it.label, note, icon, w: M2.w, h: M2.h, seed: 31 + t.i * 17, ring: !!t.it.primary, stock: t.it.stock || 'manila', dog: t.i % 3 === 1 };
         P.appendChild(paintTag(opts).canvas(tagS)).className = 'a';
         P.appendChild(paintTag({ ...opts, hot: true }).canvas(tagS)).className = 'b';
       }
@@ -108,7 +111,9 @@ export class MenuUI {
     for (const tw of this.twines) tw.remove();
     this.twines = [];
     const holeY = Math.floor(M2.h / 2) * tagS + tagS / 2;
-    const x0 = left + Math.round(L.board.w * (portrait ? 0.3 : 0.2)) * logoS + Math.floor(logoS / 2);
+    // the strand ties on under the sign's left; in portrait the tags hang centred under it
+    const x0 = portrait ? Math.max(left + logoS * 6, Math.round((W - tagW) / 2) + Math.round((HOLE.x + 0.5) * tagS))
+      : left + Math.round(L.board.w * 0.2) * logoS + Math.floor(logoS / 2);
     for (let c = 0; c < cols; c++) {
       const x = x0 + c * (tagW + tagS * 4);
       const list = this.tags.slice(c * per, (c + 1) * per);
