@@ -77,7 +77,6 @@ export class MenuUI {
     const left = portrait ? Math.round((W - signW) / 2) : pad + Math.round(W * 0.01);
     L.art.canvas(logoS, this.signCanvas || (this.signCanvas = this.signEl.appendChild(document.createElement('canvas'))));
     this.signEl.style.left = `${left}px`;
-    this.signEl.style.setProperty('--px', `${logoS}px`);
     this.signEl.style.transformOrigin = `${L.pivot[0] * logoS}px 0`;
     // one strand from an eyelet under the left of the sign, or two side by side when one won't fit the height (the
     // second hangs from above the picture); small screens drop the pencilled notes to keep the tags narrow
@@ -135,7 +134,6 @@ export class MenuUI {
     }
     this.el.style.setProperty('--tag-s', `${tagS}px`);
     this.el.classList.toggle('portrait', portrait);
-    this.box = { left, signW, signH, right: Math.max(left + signW, ...this.tags.map((t) => parseFloat(t.b.style.left) + tagW)), top: top0, bottom: top0 + colH(per) };
   }
 
   setHot(i, sound = false) {

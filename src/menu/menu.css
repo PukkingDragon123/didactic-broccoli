@@ -143,7 +143,6 @@
 }
 .tm-credits .tm-x::after { content: ''; position: absolute; inset: 12px; background: var(--pp-x) center / 24px 24px no-repeat; image-rendering: pixelated; }
 .tm-credits .tm-x:hover, .tm-credits .tm-x:focus-visible { outline: none; translate: -1px -1px; rotate: 6deg; }
-.tm-credits .tm-help { position: absolute; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); translate: -50% 0; pointer-events: none; }
 
 /* ---------------------------------------------------------------- settings, host / join from the title: a notebook page taped on */
 #pause .panel::after, #share .panel::after {
