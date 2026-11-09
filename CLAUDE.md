@@ -1,6 +1,7 @@
 # Gacha Garage: project rules
 
-First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, voxel / low-poly 3D, pixel-art 2D.
+First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, low-poly cel-shaded 3D, pixel-art 2D.
+The art rules in full: docs/ART.md.
 
 ## Look and feel (the owner's explicit rules)
 - **Never use a white hover highlight / rim / outline glow** on interactables or anything else. Hover feedback is the
@@ -11,7 +12,12 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   sparkles filler. Fonts: Alagard (UI), the 5x7 bitmap font for tiny text, DotGothic16 for kana.
 - UI is paper, in detailed pixel art: notes, tickets, receipts, tags, notebook pages (src/ui/paper.js + paper.css: grain,
   torn / zig-zag edges, masking tape, hanko stamps), ink-coloured text, hard pixel shadows. New UI uses this kit.
-- 3D art is chunky voxel / low-poly with pixel textures. First-person arms are blocky but connected and flexible.
+  Speech, subtitles and chat choices are plain floating text (hard ink outline, no paper box).
+- 3D art is low-poly, high-resolution and cel-shaded, like the characters and vehicles: no voxels, no chunky pixel
+  textures; real-world proportions from reference; clean cartoon textures (docs/ART.md). First-person arms are
+  blocky but connected and flexible.
+- Product labels, posters and gacha display cards are detailed pixel art with mascots and full label art. All
+  designs, names and brands are original (real ones are genre reference only).
 - Real photos used for 2D backgrounds come from Google Open Images (CC BY), credited in CREDITS.md.
 - People talk in 8-bit voices (src/people/voice.js).
 
@@ -22,5 +28,6 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   old saves must load).
 - Cross-system talk through `game.events` (emit / on).
 - Test headless: `node tools/run.mjs "index.html?autotest&q=low" steps.json`, `tools/shoot.mjs`, `window.dbg`
-  (src/debug.js). Chromium is preinstalled; never run `playwright install`.
+  (src/debug.js). Chromium is preinstalled; never run `playwright install`. On a shared machine wrap heavy runs in
+  `tools/slot.sh <command>` so only a few headless browsers run at once.
 - `npx vite build` must pass and the game must boot without console errors before committing.
