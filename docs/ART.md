@@ -50,6 +50,16 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
 - **Shapes are authored by hand**: each object gets its own profiles and sections from reference, not a generic
   generator with random parameters.
 
+## Update: toys are stylised low-poly (the owner's latest direction, toys and figures only)
+- Gacha figures are **crisp, stylised low-poly**: deliberate flat facets and hard planes like a polished
+  low-poly sculpt, few segments on curves, flat-shaded faces, clean silhouettes. **No round blobs**: no figure
+  part may read as a sphere, a tube or a smooth bean; heads, bodies and props are faceted and shaped.
+- Polished, hand-designed, not AI-looking: strong shape language, readable character, painted details in clean
+  flat colours.
+- Anime figures are **chibi**, built on the game's human base model (src/people): big head, small body, anime face
+  paint, hair and outfits from the human kit, dynamic poses on display bases.
+- The world (town, buildings, interiors, props) keeps the detailed direction above.
+
 ## 2D
 - Printed things are **detailed pixel art** with nearest filtering: product labels with a mascot, a logo, flavour
   art, small print and a barcode; posters; gacha display cards laid out like real capsule-toy flyers (logo, price
