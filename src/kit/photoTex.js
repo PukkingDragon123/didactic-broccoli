@@ -85,7 +85,7 @@ const SourceClass = THREE.TextureSource || THREE.Source;
 function flat(hex, size = 4) {
   if (typeof document === 'undefined') return null;
   const c = document.createElement('canvas'); c.width = c.height = size;
-  const g = c.getContext('2d'); g.fillStyle = hexStr(hex); g.fillRect(0, 0, 4, 4);
+  const g = c.getContext('2d'); g.fillStyle = hexStr(hex); g.fillRect(0, 0, size, size); // the whole placeholder, or it reads as transparent black until the photo loads
   return c;
 }
 const mul = (a, b) => { const A = new THREE.Color(a).multiply(new THREE.Color(b)); return A.getHex(); };

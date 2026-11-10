@@ -1,5 +1,5 @@
 // Your room: #102 at SAKURA HEIGHTS, the middle door on the ground floor (through the yard gate). A six-mat room with a
-// kitchen strip (src/room/build.js builds it, off the map; it only exists while you're in it). The futon by the wall:
+// kitchen strip (src/places/room/roomBuild.js builds it, off the map; it only exists while you're in it). The futon by the wall:
 // slept in every morning, made with a little tug (hold LMB: a small energy bonus, "tidy" for the morning), slept in at
 // night (the day's summary over the dark room, then the morning in bed), or a nap in the daytime. A sofa to rest on, a
 // mini fridge for food you bring home, the window onto the lane (it gets dark with the evening), the ceiling lamp on
@@ -9,13 +9,14 @@
 import * as THREE from 'three';
 import { audio } from '../../core/audio.js';
 import { ensureState } from '../../game/stateExt.js';
-import { buildRoom, ROOM } from '../../room/build.js';
+import { buildRoomDetailed, ROOM } from './roomBuild.js';
 import { makeItemMesh } from '../../game/collectibles.js';
 import { makeToolMesh } from '../../game/Held.js';
 import { FURNITURE } from '../../build/catalogue.js';
 import { FOODS } from '../../needs/foods.js';
 import { summaryHTML, WAKE_HOUR } from '../../sim/summary.js';
 import { prop, hitBox } from '../util.js';
+import { convertAll } from '../ikit.js';
 import { yen } from '../money.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -34,7 +35,7 @@ export class Room {
     group.name = 'room102';
     group.position.copy(ORIGIN);
     g.scene.add(group);
-    this.R = buildRoom(g, group);
+    this.R = buildRoomDetailed(g, group, places);
     group.updateMatrixWorld(true);
     this.interiorMats();
     this.buildBed();
@@ -58,26 +59,18 @@ export class Room {
   w(x, y, z, yaw) { const p = { x: x + ORIGIN.x, y, z: z + ORIGIN.z }; if (yaw !== undefined) p.yaw = yaw; return p; }
   wv(x, y, z) { return V(x + ORIGIN.x, y, z + ORIGIN.z); }
 
-  /** No sunlight in here: every material gets the interior variant (lit by the ceiling lamp). */
+  /** No sunlight in here: the builder gives every material its interior variant (lit by the ceiling lamp); the washi
+   *  pendant's paper is self-lit while the lamp is on. */
   interiorMats() {
-    const P = this.places;
-    this.group.traverse((o) => {
-      if (!o.isMesh || !o.material) return;
-      if (o.material === this.R.lamp?.mesh?.material) return;
-      o.material = P.mat(o.material);
-    });
-    const vox = P.voxel();
-    const off = vox.slice();
-    off[3] = new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(0.32, 0.31, 0.3) });
-    this.lampMats = { on: vox, off };
-    if (this.R.lamp) this.R.lamp.mesh.material = vox;
+    const L = this.R.lamp;
+    this.lampMats = { on: L?.on, off: L?.off };
   }
 
   // ------------------------------------------------------------------ the futon
   buildBed() {
-    const f = this.R.futonAt, mats = this.places.voxel();
-    this.bed = { base: prop('bed_base', mats, f.x, 0, f.z), made: prop('bed_duvet_made', mats, f.x, 0, f.z), messy: prop('bed_duvet_messy', mats, f.x, 0, f.z) };
-    for (const m of Object.values(this.bed)) this.group.add(m);
+    const f = this.R.futonAt, P = this.places, conv = P._ikConv ||= (m) => P.mat(m);
+    this.bed = { base: prop('bed_base', null, f.x, 0, f.z), made: prop('bed_duvet_made', null, f.x, 0, f.z), messy: prop('bed_duvet_messy', null, f.x, 0, f.z) };
+    for (const m of Object.values(this.bed)) this.group.add(convertAll(m, conv));
     this.showBed();
     const hb = hitBox(1.0, 0.3, 2.0, f.x, 0.15, f.z);
     this.group.add(hb);

@@ -6,6 +6,8 @@
 //     (0 on the lower floor, -FH on the upper one)
 import * as THREE from 'three';
 import { GAPS, FH, CH, FLAT, RUN, PATH, STEP, SPEED, stepY, pathZ } from './layout.js';
+import { bright } from '../kit.js';
+import { IKit, imats } from '../../places/ikit.js';
 
 const _m = new THREE.Matrix4(), _s = new THREE.Vector3(1, 1, 1), _p = new THREE.Vector3(), _Y = new THREE.Vector3(0, 1, 0);
 let stepGeo = null;
@@ -52,20 +54,25 @@ export function buildEscalators(zone, gap, yo, { open = () => true } = {}) {
   const metal = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.6 }));
   const paint = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }));
   const glass = Z.mat(new THREE.MeshStandardMaterial({ color: 0xcfe8ee, roughness: 0.1, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide }));
-  const rubber = Z.mat(new THREE.MeshStandardMaterial({ color: 0x18181c, roughness: 0.5 }));
   const ys = (u) => yo + stepY(u);
   const lanes = [G.up, G.down];
   const xs = [G.up - 0.52, (G.up + G.down) / 2, G.down + 0.52];
   const add = (geo, mat) => { const m = new THREE.Mesh(geo, mat); m.position.copy(Z.o); Z.group.add(m); return m; };
+  const RK = new IKit(imats(bright)), RF = RK.at(Z.o.x, 0, Z.o.z, 0), BK = new IKit(imats(bright)), BF = BK.at(Z.o.x, 0, Z.o.z, 0);
   // balustrades: glass between the skirting and the handrail, a black handrail on top, steel skirting at the steps
   for (const x of xs) {
     add(sideStrip(G, x, yo, 0.14, 0.88), glass);
-    add(sideStrip(G, x + 0.03, yo, 0.88, 0.97), rubber);
-    add(sideStrip(G, x - 0.03, yo, 0.88, 0.97), rubber);
     add(sideStrip(G, x + 0.06, yo, -0.02, 0.14), metal);
     add(sideStrip(G, x - 0.06, yo, -0.02, 0.14), metal);
-    // the newel ends: the handrail curls down at both landings
-    for (const u of [0.05, PATH - 0.05]) B.box(rubber, 0.08, 0.95, 0.12, x, ys(u), pathZ(G, u), {});
+    // the moving handrail: a round black band along the top, curling down round the newel at both landings, on the
+    // stainless deck that caps the glass
+    const pts = [], R = 0.17, top = (u) => ys(u) + 0.93, su = Math.sign(pathZ(G, 1) - pathZ(G, 0)) || 1;
+    for (let k = 8; k >= 1; k--) { const t = (k / 8) * Math.PI; pts.push([x, top(0.3) - R + R * Math.cos(t), pathZ(G, 0.3) - su * R * Math.sin(t)]); }
+    for (const u of [0.3, FLAT, FLAT + RUN, PATH - 0.3]) pts.push([x, top(u), pathZ(G, u)]);
+    for (let k = 1; k <= 8; k++) { const t = (k / 8) * Math.PI; pts.push([x, top(PATH - 0.3) - R + R * Math.cos(t), pathZ(G, PATH - 0.3) + su * R * Math.sin(t)]); }
+    RF.pipe('rubber', pts, 0.034, { tint: 0x1c1c20, sides: 12 });
+    const deck = [[x, top(0.3) - 0.05, pathZ(G, 0.3)], [x, top(FLAT) - 0.05, pathZ(G, FLAT)], [x, top(FLAT + RUN) - 0.05, pathZ(G, FLAT + RUN)], [x, top(PATH - 0.3) - 0.05, pathZ(G, PATH - 0.3)]];
+    for (let i = 0; i + 1 < deck.length; i++) RF.beam('chrome', deck[i], deck[i + 1], 0.07, 0.03);
   }
   // the truss: cladding under the incline (seen from the floor below) and on the outer sides
   const pos = [];
@@ -110,12 +117,17 @@ export function buildEscalators(zone, gap, yo, { open = () => true } = {}) {
     });
   };
   place();
+  RK.done(Z.group, 'esc:rails');
   // a chain barrier at the bottom of the UP lane while the floor above isn't open yet
   const barrier = new THREE.Group();
   const bz = pathZ(G, 0.25);
-  for (const dx of [-0.42, 0.42]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.9, 6), paint); p.position.set(Z.o.x + G.up + dx, yo + 0.45, Z.o.z + bz); barrier.add(p); }
-  const chain = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.04, 0.02), Z.mat(new THREE.MeshStandardMaterial({ color: 0xf2c230, roughness: 0.5 })));
-  chain.position.set(Z.o.x + G.up, yo + 0.75, Z.o.z + bz); barrier.add(chain);
+  // two weighted stanchions and a sagging plastic chain, yellow and black links
+  for (const dx of [-0.42, 0.42]) BF.lathe('gloss', G.up + dx, yo, bz, [[0, 0], [0.13, 0], [0.13, 0.03], [0.05, 0.06], [0.022, 0.08], [0.022, 0.86], [0.03, 0.88], [0.03, 0.9], [0, 0.91]], 16, { tint: 0xf2c230 });
+  for (let i = 0; i < 12; i++) {
+    const a = -0.4 + (0.8 * i) / 12, b = -0.4 + (0.8 * (i + 1)) / 12, sag = (t) => 0.86 - 0.12 * (1 - (t / 0.4) ** 2);
+    BF.rod('gloss', [G.up + a, yo + sag(a), bz], [G.up + b, yo + sag(b), bz], 0.012, { tint: i % 2 ? 0x26262a : 0xf2c230, sides: 8 });
+  }
+  BK.done(barrier, 'esc:barrier');
   Z.group.add(barrier);
   return {
     gap, G, steps, barrier,

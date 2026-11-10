@@ -487,9 +487,9 @@ export class Kit {
     return geo;
   }
   finish() {
-    const body = this.G, all = new Geo(5);
-    all.add(body);
-    for (const p of this.parts) all.add(p.G);
+    const body = this.G;
+    let all = body;
+    if (this.parts.length) { all = new Geo(5); all.add(body); for (const p of this.parts) all.add(p.G); }
     const geo = this.bake(all);
     if (this.parts.length) {
       // kept for propRig(): the body without its moving parts, each part about its own pivot
@@ -499,6 +499,7 @@ export class Kit {
         parts: parts.map((p) => { const g = self.bake(p.G); g.translate(-p.pivot[0], -p.pivot[1], -p.pivot[2]); return { name: p.name, pivot: p.pivot, axis: p.axis, geometry: g }; }),
       });
     }
+    for (const f of this.onFinish || []) f(geo); // e.g. leaf cards on their own materials (./foliage.js)
     this.A.props++;
     this.A.touch();
     return geo;

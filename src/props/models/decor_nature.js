@@ -4,6 +4,7 @@
 import { paint, enamel, plastic, metal, chrome, matte, stone, wood, flat, rubber, fabric, ceramic, lighten, darken, mix } from '../kit/kit.js';
 import { blob, bush, tones, leafy, leaf, leafRing, blade, flower, pot, planter, plank, dirtBox, TERRA } from '../kit/shapes.js';
 import { kana, smallPrint, framed, mascot } from '../kit/prints.js';
+import { leaves } from '../kit/foliage.js';
 
 const BARK = 0x4a3830, VERM = 0xc8402a, BAMBOO = 0x7aa850, SOIL = 0x4a3828;
 const rock = (K, c = 0x8a8c88) => tones(K, c, { light: lighten(c, 0.2), dark: darken(c, 0.28), hi: 0.4, lo: 0.0, rough: 0.95 });
@@ -53,8 +54,9 @@ export default {
       const w = 0x5a3a28;
       plank(K, w, B.x0, 0.1, B.z0 + 0.02, B.x1, 0.13, B.z1 - 0.02, { bevel: 0.004 }); for (const [x, z] of [[B.x0 + 0.03, B.z0 + 0.04], [B.x1 - 0.06, B.z0 + 0.04], [B.x0 + 0.03, B.z1 - 0.07], [B.x1 - 0.06, B.z1 - 0.07]]) K.box(wood(darken(w, 0.1)), x, 0, z, x + 0.03, 0.1, z + 0.03);
       planter(K, ceramic(0x4a5a52), -0.2, 0.13, -0.1, 0.2, 0.2, 0.1, { t: 0.012, soil: 0x5a7a44, drop: 0.012 });
-      const g = [leafy(K, 0x3a7a40), leafy(K, 0x4a8a48)];
-      tree(K, { trunk: [[-0.02, 0.19, 0], [0.02, 0.32, 0.01], [-0.05, 0.44, 0], [0.0, 0.56, -0.01]], tr: [0.035, 0.028, 0.02, 0.012], limbs: [[[[0.02, 0.32, 0.01], [0.14, 0.38, 0.02]], 0.014], [[[-0.05, 0.44, 0], [-0.17, 0.46, 0.01]], 0.012]], tones: g, pads: [[0.17, 0.42, 0.02, 0.1, 0.04, 0.09], [-0.19, 0.5, 0.0, 0.1, 0.04, 0.08], [0.0, 0.62, 0.0, 0.13, 0.05, 0.11], [0.06, 0.7, -0.01, 0.09, 0.045, 0.08], [-0.06, 0.34, 0.06, 0.06, 0.03, 0.05]], flat: -0.5, jit: 0.1 });
+      // the trunk and limbs; the needle pads are the town's pine sprig crowns, flat underneath like clipped pads
+      tree(K, { trunk: [[-0.02, 0.19, 0], [0.02, 0.32, 0.01], [-0.05, 0.44, 0], [0.0, 0.56, -0.01]], tr: [0.035, 0.028, 0.02, 0.012], limbs: [[[[0.02, 0.32, 0.01], [0.14, 0.38, 0.02]], 0.014], [[[-0.05, 0.44, 0], [-0.17, 0.46, 0.01]], 0.012], [[[0.0, 0.5, 0], [0.05, 0.66, -0.01]], 0.01]], tones: [], pads: [] });
+      leaves(K, (t, F) => { [[0.17, 0.42, 0.02, 0.1, 0.04, 0.09], [-0.19, 0.5, 0.0, 0.1, 0.04, 0.08], [0.0, 0.62, 0.0, 0.13, 0.05, 0.11], [0.06, 0.7, -0.01, 0.09, 0.045, 0.08], [-0.06, 0.34, 0.06, 0.06, 0.03, 0.05]].forEach(([x, y, z, rx, ry, rz], i) => F.crown(t, x, y + 0.012, z, rx * 1.05, ry * 1.1, rz * 1.05, { kind: 'pine', flat: -0.15, card: 0.085, density: 3.2, tilt: 0.35, seed: 7 + i * 5 })); });
       blob(K, rock(K), 0.12, 0.2, 0.04, 0.035, 0.025, 0.03, { seed: 2 }); void B;
     },
     // ------------------------------------------------------------- bamboo in a planter (1.155 x 2.625 x 0.84)

@@ -10,9 +10,10 @@
 import * as THREE from 'three';
 import { audio } from '../../core/audio.js';
 import { bgm } from '../../core/bgm.js';
-import { pixMat } from '../../gfx/geo.js';
 import { propMesh } from '../../world/props.js';
 import { Zone, Batch, V, pick, rnd, canvasMat, pixText, grain, sfx } from '../kit.js';
+import { IKit, imats, photoNorm } from '../../places/ikit.js';
+import { photoTex, PHOTO_TEX } from '../../kit/photoTex.js';
 import { MachineSpots } from '../machines.js';
 import { Crowd, NavGrid } from '../crowd.js';
 import { ORIGINS, ANNEX_SLOTS } from '../data.js';
@@ -96,16 +97,17 @@ export class Annex {
 
   mats() {
     const Z = this.zone, M = (m) => Z.mat(m);
-    const tm = (k, o) => { const m = pixMat(k, o).clone(); m.vertexColors = true; return M(m); };
+    // the old shop's real surfaces (src/kit/photoTex.js via src/places/ikit.js photoNorm: a tint is the colour it comes out as)
     this.M = {
-      conc: tm('concrete', { roughness: 0.95, bump: 0.6 }), plaster: tm('plaster', { roughness: 0.95, bump: 0.5 }), wood: tm('woodDark', { roughness: 0.7 }), woodL: tm('woodLight', { roughness: 0.7 }),
-      tile: tm('tile', { roughness: 0.5 }), ceil: tm('plaster', { roughness: 0.9, bump: 0.2 }),
-      paint: M(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7 })), metal: M(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.6 })),
+      conc: M(photoNorm('concrete_stained', { rough: 0.93 })), plaster: M(photoNorm('plaster_cream', { rough: 0.95 })), wood: M(photoNorm('timber_dark', { rough: 0.75 })),
+      woodL: M(photoNorm('wood_planks', { rough: 0.7 })), tile: M(photoNorm('tile_white', { rough: 0.4 })), ceil: M(photoNorm('plywood', { rough: 0.86 })),
+      paint: M(photoNorm('steel_painted', { rough: 0.66 })), metal: M(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.6 })),
       glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
     };
-    // wall strips: grimy and freshly painted
-    this.dirty = M(new THREE.MeshStandardMaterial({ map: pixMat('plaster', {}).map, color: 0x8e8068, roughness: 0.95 }));
-    this.clean = M(new THREE.MeshStandardMaterial({ map: pixMat('plaster', {}).map, color: 0xfff6e2, roughness: 0.9 }));
+    // wall strips (uvs in half metres): thirty years of smoke on stained plaster, then a fresh coat of cream emulsion
+    const inv = (n) => { const a = new THREE.Color(PHOTO_TEX[n].avg); return new THREE.Color(1 / a.r, 1 / a.g, 1 / a.b); };
+    this.dirty = M(new THREE.MeshStandardMaterial({ map: photoTex('plaster_cream'), color: new THREE.Color(0x8a7c62).multiply(inv('plaster_cream')), roughness: 0.95 }));
+    this.clean = M(new THREE.MeshStandardMaterial({ map: photoTex('concrete', { repeat: [0.8, 0.8] }), color: new THREE.Color(0xf6eedc).multiply(inv('concrete')), roughness: 0.9 }));
     this.tubeOn = new THREE.MeshBasicMaterial({ color: 0xf4faff });
     this.tubeOff = M(new THREE.MeshStandardMaterial({ color: 0x6a6e72, roughness: 0.4 }));
   }
@@ -170,7 +172,18 @@ export class Annex {
     // leave by the door
     Z.hit(o1 - o0, 2.1, 0.3, (o0 + o1) / 2, 1.05, Z1 + 0.2, { reach: 2.6, hint: () => ({ key: 'LMB', text: 'Go outside', sub: 'Back to the lane' }), use: () => { this.game.places.exit({ sound: 'slideDoor' }); return false; } });
     // lamps: two twin-tube fixtures (their tubes are in tubes())
-    for (const [x, z] of TUBES) { B.box(M.metal, 1.3, 0.06, 0.26, x, H - 0.07, z, { tint: 0xd8dcd8 }); }
+    const K = new IKit(imats(this.game.places._ikConv ||= (m) => this.game.places.mat(m))), F = K.at(Z.o.x, 0, Z.o.z, 0);
+    for (const [x, z] of TUBES) {
+      F.box('paint', x - 0.66, H - 0.06, z - 0.13, x + 0.66, H, z + 0.13, { tint: 0xd8d6cc, bevel: 0.014 });
+      F.box('satin', x - 0.62, H - 0.062, z - 0.11, x + 0.62, H - 0.058, z + 0.11, { tint: 0xe8e8e2 });
+      for (const sx of [-1, 1]) for (const dz of [-0.07, 0.07]) F.box('gloss', x + sx * 0.615 - 0.014, H - 0.115, z + dz - 0.016, x + sx * 0.615 + 0.014, H - 0.06, z + dz + 0.016, { tint: 0xf0eee6, bevel: 0.004 });
+      F.rod('flat', [x + 0.66, H - 0.03, z], [x + 1.4, H - 0.02, z + 0.4], 0.006, { tint: 0x2a2a2c, sides: 6 });
+    }
+    // the ceiling's old switch and a conduit down the left wall, the breaker box by the back door
+    F.box('satin', -2.44, 0, 2.2, -2.42, H, 2.24, { tint: 0x9a9890 });
+    F.box('paint', -2.45, 1.1, 2.12, -2.4, 1.28, 2.32, { tint: 0xe2ded2, bevel: 0.01 });
+    F.box('paint', 0.62, 1.55, -2.9, 1.0, 1.95, -2.82, { tint: 0xc8c4b8, bevel: 0.012 });
+    K.done(Z.group, 'annex:fittings');
   }
   drawView(x, w, h) {
     const R = (c, a, b, ww, hh) => { x.fillStyle = c; x.fillRect(a, b, ww, hh); };

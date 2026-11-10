@@ -113,6 +113,12 @@ export function propMesh(id, opts = {}) {
   mesh.castShadow = opts.castShadow ?? true;
   mesh.receiveShadow = opts.receiveShadow ?? true;
   mesh.userData.propId = id;
+  // parts on their own shared materials (leaf cards: src/props/kit/foliage.js) hang under the prop's mesh
+  for (const x of geo?.userData.extras || []) {
+    const c = new THREE.Mesh(x.geometry, x.material);
+    c.castShadow = mesh.castShadow; c.receiveShadow = mesh.receiveShadow; c.userData.propId = id;
+    mesh.add(c);
+  }
   return mesh;
 }
 /** A mesh of the old voxel model (dev: comparisons). */

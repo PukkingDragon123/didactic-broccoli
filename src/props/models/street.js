@@ -4,6 +4,7 @@
 import { paint, enamel, plastic, metal, matte, stone, wood, flat, rubber, lighten, darken, mix } from '../kit/kit.js';
 import { blob, bush, tones, leafy, leaf, leafRing, blade, flower, pot, planter, dirtBox, dirtRing, plank, post, clamps, TERRA } from '../kit/shapes.js';
 import { kana, smallPrint, hazard, framed } from '../kit/prints.js';
+import { leaves } from '../kit/foliage.js';
 
 const GALV = metal(0xa6acae, 0.3), CONC = 0xb2aea4;
 const LEAF = 0x4f8f45, LEAF2 = 0x6aa84f, SOIL = 0x4a3828;
@@ -172,17 +173,9 @@ export default {
       K.box(stone(0xa6a298), -1.0, 0, -0.3, 1.0, 0.09, 0.3, { bevel: 0.012 });
       dirtBox(K, 0xa6a298, -1, -0.3, 1, 0.3, 0, 0.04);
       K.box(flat(SOIL, 0.98), -0.96, 0.088, -0.26, 0.96, 0.1, 0.26);
-      // the clipped mass: a squared block of leaf, its faces broken by low clumps where the shears left it uneven
-      const g = leafy(K, 0x3d7c3c), g2 = leafy(K, 0x4a8a40);
-      K.use(g, (G) => G.box(-0.95, 0.18, -0.25, 0.95, 0.95, 0.25, { bevel: 0.07 }));
-      for (let k = 0; k < 7; k++) for (let r = 0; r < 2; r++) for (const s of [1, -1]) blob(K, (k + r + (s > 0 ? 0 : 1)) % 2 ? g2 : g, -0.8 + k * 0.265 + (r ? 0.1 : 0), 0.4 + r * 0.32, s * 0.25, 0.17, 0.17, 0.045, { seed: k * 7 + r * 3 + s + 9, fine: true, jit: 0.1 });
-      for (let k = 0; k < 7; k++) blob(K, k % 2 ? g : g2, -0.8 + k * 0.265, 0.95, (k % 2 ? 0.07 : -0.07), 0.17, 0.04, 0.2, { seed: k + 3, fine: true, jit: 0.1 });
-      for (const s of [-1, 1]) blob(K, g2, s * 0.95, 0.56, 0, 0.045, 0.3, 0.2, { seed: 5 + s, fine: true, jit: 0.1 });
-      for (const z of [-0.2, 0.2]) for (let k = 0; k < 6; k++) K.rod(flat(0x5a4632, 0.9), [-0.8 + k * 0.32, 0.09, z * 0.6], [-0.8 + k * 0.32 + 0.02, 0.2, z * 0.5], 0.012, 4);
-      // azalea flowers scattered over the face and the top
-      const pink = flat(0xf08aa8, 0.8), pk2 = flat(0xf6b4c8, 0.8);
-      for (let k = 0; k < 16; k++) { const x = -0.9 + ((k * 0.377) % 1) * 1.8, y = 0.3 + ((k * 0.618) % 1) * 0.55; flower(K, k % 3 ? pink : pk2, [x, y, 0.292], 0.028, { dir: [0, 0.2, 1], eye: flat(0xf6e08a) }); }
-      for (let k = 0; k < 7; k++) flower(K, k % 2 ? pink : pk2, [-0.85 + k * 0.28, 0.985, -0.1 + (k % 3) * 0.1], 0.028, { dir: [0, 1, 0.2], eye: flat(0xf6e08a) });
+      // the clipped mass: the town's hedge of sprig cards (a clipped azalea in flower among the box), the bare stems at its foot
+      leaves(K, (t, F) => F.hedge(t, 0, 0, 0, 0, 1, { seed: 3, mix: ['azalea', 0.3] }));
+      for (const z of [-0.2, 0.2]) for (let k = 0; k < 6; k++) K.rod(wood(0x5a4632), [-0.8 + k * 0.32, 0.09, z * 0.6], [-0.8 + k * 0.32 + 0.02, 0.24, z * 0.5], 0.012, 5);
       void B;
     },
 
@@ -241,18 +234,19 @@ export default {
     // ------------------------------------------------------------- a cluster of pots, one knocked over (0.936 x 0.432 x 0.3)
     pot_cluster: (K) => {
       let ys = pot(K, -0.32, 0, -0.02, 0.12, 0.17, { saucer: true });
-      bush(K, 0x3f8a40, -0.45, ys, -0.14, -0.19, ys + 0.24, 0.1, { n: 1, seed: 5 });
+      const y1 = ys;
+      leaves(K, (t, F) => F.shrub(t, -0.32, y1 - 0.01, -0.02, 0.13, 'small', { seed: 5 }));
       ys = pot(K, -0.06, 0, 0.03, 0.08, 0.12, { c: matte(0x2f5fa8, 0.25) });
       for (let k = 0; k < 6; k++) { const a = k * 1.05; blade(K, flat(k % 2 ? 0x6aa07a : 0x86b48a, 0.85), [-0.06 + Math.cos(a) * 0.02, ys, 0.03 + Math.sin(a) * 0.02], [-0.06 + Math.cos(a) * 0.07, ys + 0.2 - (k % 3) * 0.03, 0.03 + Math.sin(a) * 0.07], 0.035); }
       ys = pot(K, 0.13, 0, -0.04, 0.065, 0.09, { c: matte(0xe6e2d6, 0.2) });
-      bush(K, 0x4f9a48, 0.07, ys, -0.1, 0.19, ys + 0.07, 0.02, { n: 1, seed: 9 });
-      for (const [dx, dz] of [[-0.03, 0.02], [0.03, 0.01], [0, -0.03]]) flower(K, flat(0xe8443a, 0.8), [0.13 + dx, ys + 0.085, -0.04 + dz], 0.026, { dir: [dx * 6, 1, dz * 6 + 0.2], eye: flat(0xf6d04a) });
+      const y2 = ys;
+      leaves(K, (t, F) => F.crown(t, 0.13, y2 + 0.05, -0.04, 0.075, 0.055, 0.075, { kind: 'azalea', flat: -0.4, card: 0.12, density: 2.4, seed: 9 }));
       ys = pot(K, 0.25, 0, 0.07, 0.06, 0.08, { c: matte(TERRA, 0.2) });
       K.rod(flat(0x7a5a3a, 0.9), [0.25, ys, 0.07], [0.26, ys + 0.2, 0.065], 0.006, 4);
       leaf(K, flat(LEAF, 0.9), [0.26, ys + 0.12, 0.065], [0.31, ys + 0.16, 0.08], 0.04); leaf(K, flat(LEAF2, 0.9), [0.26, ys + 0.17, 0.065], [0.21, ys + 0.21, 0.05], 0.04);
       // the one the cat knocked over: on its side, soil spilt
       K.at([0.38, 0.062, 0.0], () => pot(K, 0, 0, 0, 0.062, 0.1, { soil: false }), { rz: -Math.PI / 2 + 0.06, ry: 0.3 });
-      blob(K, flat(SOIL, 0.98), 0.435, 0.008, 0.04, 0.045, 0.012, 0.035, { seed: 4, flatY: -0.4 });
+      K.ball(stone(SOIL, 0.1), 0.435, 0.0, 0.04, 0.05, 0.016, 0.038, 8, 3, { y0: 0 });
     },
 
     // ------------------------------------------------------------- styrofoam fish boxes as vegetable planters (0.924 x 0.994 x 0.322)
@@ -269,15 +263,17 @@ export default {
       for (let k = 0; k < 3; k++) {
         const x = -0.38 + k * 0.13;
         K.rod(flat(0x4f8a46, 0.8), [x, ys, 0], [x, 0.99, 0], 0.007, 4);
-        for (let j = 0; j < 5; j++) { const y = ys + 0.1 + j * 0.13, s = (j + k) % 2 ? 1 : -1; leaf(K, flat(j % 2 ? LEAF : LEAF2, 0.9), [x, y, 0], [x + s * 0.07, y + 0.03, 0.03 * s], 0.05); }
-        for (const [y, c] of [[0.42, 0xd8382a], [0.6, 0xe8842a], [0.75, 0x7aa83a]]) blob(K, flat(c, 0.5), x + 0.02, y + k * 0.03, 0.03, 0.022, 0.02, 0.022, { seed: k * 3 + y * 10, jit: 0.05 });
+        const y0 = ys;
+        leaves(K, (t, F) => F.vine(t, x, y0 + 0.06, 0.94, 0.0, 11 + k * 5, { kind: 'leaf', card: 0.15 }));
+        for (const [y, c] of [[0.42, 0xd8382a], [0.6, 0xe8842a], [0.75, 0x7aa83a]]) { const yy = y + k * 0.03; K.ball(plastic(c, 0.35), x + 0.02, yy, 0.035, 0.024, 0.021, 0.024, 8, 4); for (let s = 0; s < 5; s++) { const a = s * 1.2566; K.tri(flat(0x3a6a2e, 0.8), [x + 0.02, yy + 0.022, 0.035], [x + 0.02 + Math.cos(a - 0.25) * 0.004, yy + 0.021, 0.035 + Math.sin(a - 0.25) * 0.004], [x + 0.02 + Math.cos(a) * 0.014, yy + 0.017, 0.035 + Math.sin(a) * 0.014], [0, 1, 0]); } }
       }
       ys = box(0.03, 0.46);
       // a bamboo lattice with a bitter melon vine
       const cane = flat(0xc8b878, 0.8);
       for (let k = 0; k < 4; k++) K.rod(cane, [0.08 + k * 0.11, ys, -0.06], [0.08 + k * 0.11, 0.9, -0.06], 0.006, 4);
       for (let k = 0; k < 5; k++) K.rod(cane, [0.06, ys + 0.1 + k * 0.14, -0.06], [0.43, ys + 0.1 + k * 0.14, -0.06], 0.005, 4);
-      for (let k = 0; k < 14; k++) { const x = 0.09 + ((k * 0.37) % 1) * 0.32, y = ys + 0.08 + ((k * 0.61) % 1) * 0.6; leaf(K, flat(k % 2 ? LEAF : LEAF2, 0.9), [x, y, -0.055], [x + (k % 2 ? 0.05 : -0.05), y + 0.04, -0.03], 0.055); }
+      const yl = ys;
+      leaves(K, (t, F) => { for (let k = 0; k < 4; k++) F.vine(t, 0.08 + k * 0.11, yl + 0.04, 0.62 + (k % 2) * 0.16, -0.06, 21 + k * 3, { card: 0.13 }); });
       K.tube(flat(0x5a9a4a, 0.7), [[0.3, 0.62, -0.04], [0.3, 0.56, -0.03], [0.3, 0.5, -0.04]], 0.014, 5, { radii: [0.006, 0.016, 0.005] });
     },
 

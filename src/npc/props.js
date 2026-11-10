@@ -7,8 +7,13 @@ import * as THREE from 'three';
 import { VoxelModel, gloss, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { draw5, textW5 } from '../gfx/font5x7.js';
 import { audio } from '../core/audio.js';
+import { Kit, fabric, enamel, chrome, plastic, wood, matte, ceramic, stone, flat, metal as kmetal } from '../props/kit/kit.js';
+import { flower } from '../props/kit/shapes.js';
+import { leaves } from '../props/kit/foliage.js';
+import { pageFor } from '../props/kit/page.js';
+import { Batch } from '../town/batch.js';
+import { crown } from '../town/foliage.js';
 
 const _geo = new Map();
 const hash = (x, y, z, s = 0) => { let h = (x * 374761393 + y * 668265263 + z * 2147483647 + s * 1013904223) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
@@ -105,62 +110,93 @@ export const MODELS = {
 /** The bush guy's camp: a big leafy shrub with a hollow, a rolled sleeping bag, a thermos and a cardboard sign. */
 export function bushCamp() {
   const g = new THREE.Group();
-  const bush = vmesh('bush', () => {
-    const v = vm(0.06), G = [0x3f7a2e, 0x4e8a34, 0x2e5e24, 0x5a9a3a, 0x356a28];
-    for (let x = -16; x <= 16; x++) for (let y = 0; y <= 24; y++) for (let z = -13; z <= 13; z++) {
-      const n = hash(x >> 1, y >> 1, z >> 1, 9) * 0.22;
-      const d = (x / 15.5) ** 2 + ((y - 9) / 13.5) ** 2 + (z / 12.5) ** 2;
-      if (d > 1 - n) continue;
-      if (d < 0.55) continue; // hollow inside
-      if (y > 17 && Math.abs(x) < 4 && Math.abs(z) < 4) continue; // a gap on top to look out of
-      v.set(x, y, z, G[Math.floor(hash(x, y, z, 2) * G.length)]);
-    }
-    return v;
-  }, 0.045, [0, 0, 0]);
-  bush.position.y = 0.02;
-  g.add(bush);
-  const bag = vmesh('sleepbag', () => { const v = vm(0.03); for (let x = -9; x <= 9; x++) for (let y = 0; y <= 4; y++) for (let z = -4; z <= 4; z++) if (y * y / 16 + z * z / 16 <= 1) v.set(x, y, z, Math.abs(x) > 7 ? 0x1e3a6a : (x + 20) % 4 ? 0x2a5aa8 : 0x24508e); return v; }, 0.035);
-  bag.position.set(0.95, 0.0, 0.15); bag.rotation.y = 0.4;
-  g.add(bag);
-  const flask = vmesh('thermos', () => { const v = vm(0.02); for (let y = 0; y <= 9; y++) for (let x = -1; x <= 1; x++) for (let z = -1; z <= 1; z++) v.set(x, y, z, y > 7 ? metal(0xc8ccd4) : 0xb02a30); return v; }, 0.025);
-  flask.position.set(0.72, 0, 0.55);
-  g.add(flask);
-  // a cardboard sign on a stick: NOT A BUSH (the 5x7 pixel font)
-  const cv = document.createElement('canvas'); cv.width = 64; cv.height = 22;
-  const x = cv.getContext('2d');
-  x.fillStyle = '#c8a670'; x.fillRect(0, 0, 64, 22);
-  x.fillStyle = '#a8864e'; for (let i = 0; i < 18; i++) x.fillRect((i * 23) % 64, (i * 7) % 22, 3, 1);
-  draw5(x, 'NOT A', 32 - textW5('NOT A', 1) / 2, 2, { s: 1, col: '#2a1e18' });
-  draw5(x, 'BUSH', 32 - textW5('BUSH', 1) / 2, 12, { s: 1, col: '#b8322e' });
-  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
-  const sign = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.14, 0.012), [new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.95 }), new THREE.MeshStandardMaterial({ color: 0xa8864e })]);
-  sign.position.set(-0.85, 0.55, 0.45); sign.rotation.set(-0.05, 0.25, 0.04);
-  const stick = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.5, 0.02), new THREE.MeshStandardMaterial({ color: 0x6a4a2a }));
-  stick.position.set(-0.85, 0.25, 0.44);
-  for (const m of [sign, stick]) { m.castShadow = true; m.raycast = () => {}; }
-  g.add(sign, stick);
+  // the shrub: a ring of leaf masses round a hollow (the town's sprig-card crowns, src/town/foliage.js), open on top
+  // where he looks out; two taller masses behind so the gap reads as part of the bush
+  const B = new Batch(), t = { B };
+  for (let k = 0; k < 6; k++) {
+    const a = (k / 6) * Math.PI * 2 + 0.3;
+    crown(t, Math.cos(a) * 0.4, 0.42, Math.sin(a) * 0.33, 0.36, 0.44, 0.34, { kind: 'box', mix: ['small', 0.35], flat: -0.75, coreK: 0.55, density: 2.8, seed: 40 + k * 7 });
+  }
+  for (const sx of [-1, 1]) crown(t, sx * 0.24, 0.74, -0.26, 0.26, 0.24, 0.22, { kind: 'small', mix: ['box', 0.4], flat: -0.6, coreK: 0.5, density: 2.8, seed: 90 + sx });
+  for (const m of B.build(g, { cast: true, receive: true, name: 'bush' })) m.raycast = () => {};
+  g.add(campKit());
   return g;
 }
+let _campGeo = null;
+/** The sleeping bag, the thermos and the NOT A BUSH sign, modelled with the prop kit on its own page. */
+function campKit() {
+  const page = pageFor('npc');
+  if (!_campGeo) {
+    const K = new Kit(page, 'bushCamp', { w: 2, h: 0.7, d: 1.2 }, 1);
+    // the rolled sleeping bag: quilted nylon, two straps, the spiral of the roll at each end
+    K.at([0.95, 0.13, 0.15], () => {
+      const bag = fabric(0x2a5aa8), end = K.patch('bagEnd', 32, 32, (V) => { V.fill(0x2a5aa8); for (let r = 3; r < 16; r += 3.2) V.ring(16, 16, r, r + 1.2, 0x1e3a6a); V.disc(16, 16, 2, 0x24508e); }, { rough: 0.95 });
+      K.lathe(bag, [-0.31, 0, 0], [[0.115, 0], [0.13, 0.02], [0.128, 0.16], [0.134, 0.31], [0.128, 0.46], [0.13, 0.6], [0.115, 0.62]], 14, { axis: 'x' });
+      for (const s of [-1, 1]) { for (let k = 0; k < 14; k++) { const a0 = (k / 14) * Math.PI * 2, a1 = ((k + 1) / 14) * Math.PI * 2, P = (a) => [s * 0.31, Math.sin(a) * 0.115, Math.cos(a) * 0.115 * s], T = (a) => [0.5 + Math.cos(a) * 0.48, 0.5 + Math.sin(a) * 0.48]; K.triUV(end, [s * 0.31, 0, 0], P(a0), P(a1), [[0.5, 0.5], T(a0), T(a1)], [s, 0, 0]); } K.torus(fabric(0x1e2a3a), s * 0.17, 0, 0, 0.133, 0.008, 14, 4, { axis: 'x' }); K.box(kmetal(0x9aa0a4), s * 0.17 - 0.012, 0.125, -0.02, s * 0.17 + 0.012, 0.142, 0.02); }
+    }, { ry: 0.4 });
+    // the thermos: red enamel body, a steel shoulder and the cup on top
+    K.lathe(enamel(0xb02a30), [0.72, 0, 0.55], [[0, 0], [0.038, 0], [0.042, 0.01], [0.042, 0.18], [0.036, 0.2]], 12);
+    K.lathe(chrome(0xc8ccd4), [0.72, 0.2, 0.55], [[0.036, 0], [0.03, 0.02], [0.03, 0.03], [0.04, 0.032], [0.04, 0.075], [0, 0.078]], 12);
+    K.tube(plastic(0x26221e), [[0.762, 0.06, 0.55], [0.79, 0.09, 0.55], [0.79, 0.15, 0.55], [0.762, 0.17, 0.55]], 0.007, 5);
+    // the sign on its stick: corrugated card, NOT A / BUSH in marker
+    K.cyl(wood(0x6a4a2a), -0.85, 0, 0.44, 0.012, 0.56, 6);
+    K.at([-0.85, 0.55, 0.45], () => {
+      const card = K.patch('notabush', 64, 22, (V) => {
+        V.fill(0xc8a670); V.hline(0, 63, 21, 0xb0905a); V.hline(0, 63, 0, 0xa8864e); V.line(3, 17, 9, 21, 0xb0905a); V.line(55, 0, 63, 6, 0xb0905a);
+        V.text5('NOT A', 32, 18, 0x2a1e18, { align: 'center' }); V.text5('BUSH', 32, 9, 0xb8322e, { align: 'center', s: 1 });
+      }, { rough: 0.95 });
+      K.box(matte(0xa8864e, 0), -0.2, -0.07, -0.006, 0.2, 0.07, 0.005);
+      K.face(card, '+z', -0.2, -0.07, 0.2, 0.07, 0.0056);
+      K.box(matte(0xc8b48a, 0), -0.012, -0.04, -0.012, 0.012, 0.04, -0.006);
+    }, { rx: -0.05, ry: 0.25, rz: 0.04 });
+    _campGeo = K.finish();
+  }
+  const m = new THREE.Mesh(_campGeo, page.mats());
+  m.castShadow = true; m.receiveShadow = true; m.raycast = () => {};
+  return m;
+}
 
-/** A potted plant for the biologist's survey: kind 'asagao' (morning glory on a trellis), 'bonsai', 'tomato'. */
+/** A potted plant for the biologist's survey: kind 'asagao' (morning glory on a trellis), 'bonsai', 'tomato'. Modelled
+ *  with the prop kit; the leaves are the town's sprig cards (src/props/kit/foliage.js). Bottom-centre origin. */
+const _plant = new Map();
 export function planter(kind) {
-  return vmesh('plant:' + kind, () => {
-    const v = vm(0.04);
-    const pot = kind === 'bonsai' ? [0x5a4a6a, 0x463858] : kind === 'tomato' ? [0xe8e8e4, 0xd0d0cc] : [0x3a6ab0, 0x2a5090];
-    const W = kind === 'tomato' ? 6 : 4;
-    box(v, -W, W, 0, 5, -4, 4, (x, y, z) => (y === 5 ? 0x4a3424 : (Math.abs(x) === W || Math.abs(z) === 4 || y === 0) ? (y === 4 ? pot[1] : pot[0]) : null));
+  const page = pageFor('npc');
+  let geo = _plant.get(kind);
+  if (!geo) {
+    const K = new Kit(page, 'planter:' + kind, { w: 0.4, h: 0.8, d: 0.3 }, 1);
+    const pc = kind === 'bonsai' ? 0x5a4a6a : kind === 'tomato' ? 0xe8e8e4 : 0x3a6ab0, W = kind === 'tomato' ? 0.19 : 0.13, D = 0.13, H = 0.17;
+    // a square glazed pot (tapered, a rolled rim), dark soil
+    K.lathe(ceramic(pc), [0, 0, 0], [[0, 0], [W * 0.82, 0], [W, H - 0.02], [W + 0.012, H - 0.015], [W + 0.012, H], [W - 0.008, H], [W - 0.008, H - 0.02]], 4, { a0: Math.PI / 4, sx: 1.414, sz: (D / W) * 1.414 });
+    K.box(matte(0x4a3424, 0.06), -W + 0.01, H - 0.03, -D + 0.01, W - 0.01, H - 0.022, D - 0.01, { bevel: 0 });
     if (kind === 'asagao') {
-      for (const sx of [-3, 3]) box(v, sx, sx, 6, 26, 0, 0, 0xc8b070);
-      box(v, -3, 3, 26, 26, 0, 0, 0xc8b070);
-      for (let y = 6; y <= 25; y++) { const x = Math.round(Math.sin(y * 0.6) * 3); v.set(x, y, 0, 0x3a8a34); if (y % 3 === 0) v.set(x + 1, y, 1, 0x4e9a3a); if (y % 5 === 2) { v.set(x, y, 1, 0x6a5ad8); v.set(x + 1, y + 1, 1, 0x8a7ae8); v.set(x, y + 1, 1, 0xf4f0ff); } }
+      // two bamboo canes and a crosspiece, the vine wound up them, a few flowers open
+      const cane = wood(0xc8b070);
+      for (const sx of [-0.09, 0.09]) K.cyl(cane, sx, H - 0.03, 0, 0.006, 0.66, 6);
+      K.rod(cane, [-0.1, H + 0.6, 0], [0.1, H + 0.6, 0], 0.005, 4);
+      leaves(K, (t, F) => { F.vine(t, -0.09, H, H + 0.6, 0.0, 3, { card: 0.12 }); F.vine(t, 0.09, H + 0.05, H + 0.55, 0.0, 9, { card: 0.12 }); });
+      for (const [x, y, c] of [[-0.12, 0.42, 0x6a5ad8], [0.06, 0.55, 0x8a7ae8], [0.12, 0.33, 0x6a5ad8], [-0.05, 0.7, 0xd86aa8]]) flower(K, flat(c, 0.7), [x, y, 0.05], 0.032, { dir: [0, 0.2, 1], cup: 0.5, eye: flat(0xf4f0ff) });
     } else if (kind === 'bonsai') {
-      box(v, 0, 0, 6, 10, 0, 0, 0x5a3a24); box(v, 1, 3, 10, 11, 0, 0, 0x5a3a24);
-      ell(v, [-1, 13, 0], [4, 2.2, 3], (x, y, z) => (hash(x, y, z) > 0.15 ? 0x2e6a3a : null)); ell(v, [3, 12, 0], [2.6, 1.6, 2.4], 0x3a7a44);
+      // a twisting little pine: trunk, two limbs, flat needle pads
+      const bark = stone(0x5a3a24, 0.12);
+      K.tube(bark, [[0, H - 0.03, 0], [0.02, H + 0.08, 0], [-0.03, H + 0.16, 0.01], [0.01, H + 0.24, 0]], 0.02, 6, { radii: [0.024, 0.018, 0.013, 0.008] });
+      K.tube(bark, [[0.02, H + 0.08, 0], [0.11, H + 0.12, 0.01]], 0.009, 5, { r1: 0.005 });
+      leaves(K, (t, F) => { for (const [x, y, r] of [[0.12, H + 0.14, 0.07], [-0.07, H + 0.2, 0.08], [0.01, H + 0.27, 0.09]]) F.crown(t, x, y, 0, r, r * 0.45, r * 0.85, { kind: 'pine', flat: -0.2, card: 0.08, density: 3, seed: Math.round(x * 100) }); });
     } else {
-      for (const sx of [-3, 3]) { for (let y = 6; y <= 16; y++) v.set(sx, y, 0, 0x4a8a34); ell(v, [sx, 13, 0], [2.2, 3, 2], (x, y, z) => (hash(x, y, z, 4) > 0.45 ? 0x3e7a2e : null)); v.set(sx + 1, 10, 1, 0xd83a2a); v.set(sx - 1, 12, 1, 0xd83a2a); v.set(sx, 9, -1, 0x8ac04a); }
+      // tomatoes: two stems on canes, leaves, fruit from green to red
+      for (const sx of [-0.08, 0.08]) {
+        K.cyl(wood(0xc8b070), sx - 0.02, H - 0.03, -0.02, 0.005, 0.38, 6);
+        K.tube(matte(0x4a8a34), [[sx, H - 0.03, 0], [sx + 0.01, H + 0.15, 0.01], [sx, H + 0.32, 0]], 0.006, 5);
+        leaves(K, (t, F) => F.vine(t, sx, H + 0.02, H + 0.34, 0.0, sx > 0 ? 5 : 2, { kind: 'leaf', card: 0.11 }));
+        for (const [dy, c] of [[0.1, 0xd83a2a], [0.17, 0xd85a2a], [0.24, 0x8ac04a]]) K.ball(plastic(c, 0.35), sx + 0.03, H + dy, 0.04, 0.02, 0.018, 0.02, 8, 4);
+      }
     }
-    return v;
-  }, 0.03);
+    geo = K.finish();
+    _plant.set(kind, geo);
+  }
+  const m = new THREE.Mesh(geo, page.mats());
+  m.castShadow = true; m.receiveShadow = true; m.raycast = () => {};
+  for (const x of geo.userData.extras || []) { const c = new THREE.Mesh(x.geometry, x.material); c.castShadow = true; c.raycast = () => {}; m.add(c); }
+  return m;
 }
 
 /** The customer guestbook: a little wooden lectern with an open notebook and a pen on a string. */

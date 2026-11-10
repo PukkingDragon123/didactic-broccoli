@@ -22,6 +22,7 @@ import { kanji } from '../vending/canArt.js';
 import { whenPhotosReady } from '../../products/photos.js';
 import { ticketsArt, plaqueArt, menuCardArt, signArt, norenArt, boardArt, flagArt, beerPosterArt } from '../../products/ramenArt.js';
 import { PanelMode } from '../vending/panel.js';
+import { IKit, imats, surf, convertAll } from '../ikit.js';
 import { pixCanvas, hitBox, prop, sitDown, standUp, paperFill } from '../util.js';
 import { payCash, earnCash, yen } from '../money.js';
 
@@ -39,6 +40,8 @@ const SEATS = [-2.05, -1.38, -0.71, -0.04, 0.63, 1.28];
 const SEAT_Z = 0.3, TOP_Y = 1.0, SERVE_Z = -0.3;
 const FRIENDS = { josuke: { name: 'Josuke', order: 'rm_shoyu', yum: ['Not bad, not bad at all. Great!', 'Yo, this broth is crazy good.', 'Hey, don\'t look at my hair while I eat.'] }, okuyasu: { name: 'Okuyasu', order: 'rm_tonkotsu', yum: ['WHOA! My tongue is having a festival!', 'Mmmh! I could cry! Am I crying?!', 'This is... this is the best ramen of my LIFE. Again.'] }, rohan: { name: 'Rohan', order: 'rm_shio', yum: ['Hm. Acceptable. The yuzu is a nice detail.', 'Do not slurp at me.', 'I am sketching the steam. Be quiet.'] } };
 const WASH = 10;
+/** A prop with its own materials, in the room's lamp light. */
+const iprop = (places, id, ...a) => convertAll(prop(id, null, ...a), places._ikConv ||= (m) => places.mat(m));
 
 export class Ramen {
   constructor(game, places) {
@@ -157,55 +160,146 @@ export class Ramen {
 
   // ------------------------------------------------------------------ the room (off the map)
   buildRoom() {
-    const g = this.game, t = this.town, m = t.m, P = this.places;
-    const B = new t.B.constructor();
-    const M = (mat) => P.mat(mat);
-    const floor = M(m.tile), plaster = M(m.shikkui), koshi = M(m.koshi), ceil = M(m.ceil), wood = M(m.wood), woodL = M(m.woodL), paint = M(t.P(0.6)), steel = M(t.P(0.35, 0.6));
-    B.push(O.x, 0, O.z);
-    B.plane(floor, 6, 5, 0, 0, 0, { tint: 0x8a7a6a });
-    B.box(ceil, 6, 0.05, 5, 0, 2.6, 0, { tint: 0xf0e4d0 });
-    // walls: wood wainscot to 0.9, plaster above
-    const wall = (w, x, z, ry) => { B.box(koshi, w, 0.9, 0.06, x, 0, z, { ry, tint: 0x9a7048 }); B.box(plaster, w, 1.7, 0.06, x, 0.9, z, { ry, tint: 0xf0e6d0 }); B.box(wood, w, 0.06, 0.08, x, 0.88, z, { ry, tint: 0x5a3a22 }); };
-    wall(6, 0, -2.5, 0); wall(5, -3, 0, Math.PI / 2); wall(5, 3, 0, Math.PI / 2);
-    // the front wall, with the door gap at x 1.45..2.35
-    wall(4.45, -0.775, 2.5, 0); wall(0.65, 2.675, 2.5, 0);
-    B.box(plaster, 0.9, 0.55, 0.06, 1.9, 2.05, 2.5);
-    B.box(wood, 1.0, 0.08, 0.1, 1.9, 2.0, 2.48, { tint: 0x5a3a22 });
-    // the counter: wood front, a thick light top, the raised serving ledge
-    B.box(wood, 4.0, 0.95, 0.5, -0.55, 0, -0.5, { tint: 0x6a4428 });
-    B.box(woodL, 4.1, 0.05, 0.62, -0.55, 0.95, -0.44, { tint: 0xd8b07a });
-    B.box(woodL, 4.0, 0.12, 0.14, -0.55, 1.0, -0.72, { tint: 0xc8a06a });
-    B.box(paint, 4.0, 0.06, 0.04, -0.55, 0.1, -0.24, { tint: 0x3a2418 }); // footrail
-    // the back counter / prep shelf, the shelves of bowls over it
-    B.box(steel, 5.9, 0.86, 0.6, 0, 0, -2.18, { tint: 0xb8bcc2 });
-    for (const y of [1.55, 1.95]) B.box(wood, 4.4, 0.03, 0.26, 0.2, y, -2.35, { tint: 0x8a6040 });
-    // the stove box for the stock pots, the griddle
-    B.box(steel, 1.1, 0.7, 0.62, -1.55, 0, -1.55, { tint: 0x8a9096 });
-    B.box(paint, 0.7, 0.75, 0.55, 1.45, 0, -1.6, { tint: 0x3a3a3e });
-    B.box(steel, 0.66, 0.03, 0.5, 1.45, 0.75, -1.6, { tint: 0x2a2a2e });
-    // the exhaust hood over the kitchen
-    B.box(steel, 3.4, 0.4, 0.7, -0.4, 2.2, -1.7, { tint: 0xc8ccd2 });
-    // a side table for the dirty bowls by the sink
-    B.box(steel, 0.5, 0.82, 0.42, -2.62, 0, -0.95, { tint: 0xa8acb2 });
-    // condiment caddies along the counter: soy sauce, vinegar, chilli oil, pepper, a box of chopsticks
+    const g = this.game, P = this.places;
+    const conv = P._ikConv ||= (mm) => P.mat(mm);
+    const K = new IKit(imats(conv)), F = K.at(O.x, 0, O.z, 0);
+    const H = 2.6, TIL = 0xe4e0d2, WAIN = 0x6e4a2e, PLA = 0xe0d3b6, OAK = 0x5a3822;
+    // ---- floor: red quarry tiles out front, wet concrete behind the counter; a drain channel by the sink
+    F.box('ftile', -3, -0.04, -0.25, 3, 0, 2.5, { tint: 0x94584a });
+    F.box('stain', -3, -0.04, -2.5, 3, -0.002, -0.25, { tint: 0x7c766c });
+    F.box('zinc', -2.95, -0.003, -1.86, 2.95, 0.001, -1.76, { tint: 0x8a8e90 });
+    for (let x = -2.9; x < 2.9; x += 0.05) F.box('flat', x, 0.0005, -1.85, x + 0.012, 0.0015, -1.77, { tint: 0x2e2c2a });
+    // ---- walls: a board wainscot with its rail out front, white tiles round the kitchen, aged plaster above
+    const wall = (Fr, a, b, hole = null) => {
+      if (hole) { Fr.box('plaster', a, 0, -0.12, b, hole[0], 0, { tint: PLA }); Fr.box('plaster', a, hole[1], -0.12, b, H, 0, { tint: PLA }); } else Fr.box('plaster', a, 0, -0.12, b, H, 0, { tint: PLA });
+      Fr.box('wood', a, 0, 0, b, 0.9, 0.018, { tint: WAIN, grain: 'y' });
+      for (let x = a + 0.15; x < b - 0.05; x += 0.15) Fr.box('wood', x - 0.004, 0.08, 0.017, x + 0.004, 0.9, 0.021, { tint: 0x4e3220 });
+      Fr.box('timber', a, 0.88, 0, b, 0.94, 0.04, { tint: 0x4a2e1c, grain: 'x', bevel: 0.006 });
+      Fr.box('timber', a, 0, 0, b, 0.08, 0.026, { tint: 0x3a2416, grain: 'x', bevel: 0.004 });
+      Fr.box('timber', a, H - 0.07, 0, b, H, 0.028, { tint: 0x4a2e1c, grain: 'x', bevel: 0.004 });
+    };
+    const tiles = (Fr, a, b) => {
+      Fr.box('plaster', a, 0, -0.12, b, H, 0, { tint: PLA });
+      Fr.box('tile', a, 0, 0, b, 1.86, 0.012, { tint: TIL });
+      Fr.box('tile', a, 1.86, 0, b, 1.9, 0.02, { tint: 0xd8d2c2, bevel: 0.006 });
+      Fr.box('timber', a, H - 0.07, 0, b, H, 0.028, { tint: 0x4a2e1c, grain: 'x', bevel: 0.004 });
+    };
+    const FB = K.at(O.x, 0, O.z - 2.5, 0), FL = K.at(O.x - 3, 0, O.z, Math.PI / 2), FR = K.at(O.x + 3, 0, O.z, -Math.PI / 2), FFr = K.at(O.x, 0, O.z + 2.5, Math.PI);
+    tiles(FB, -3, 3);                         // back wall (local x = x)
+    tiles(FL, 0.25, 2.5); wall(FL, -2.5, 0.25);  // west wall: local x = -z
+    tiles(FR, -2.5, -0.25); wall(FR, -0.25, 2.5); // east wall: local x = z
+    // front wall (local x = -x): either side of the door x 1.45..2.35, the window at x -0.8..1.2
+    wall(FFr, -1.45, -1.2); wall(FFr, -1.2, 0.8, [1.05, 1.9]); wall(FFr, 0.8, 3); wall(FFr, -3, -2.35);
+    FFr.box('plaster', -2.35, 2.05, -0.12, -1.45, H, 0, { tint: PLA });
+    // ---- a frosted window in the front wall, left of the door, glowing with the lane outside
+    const wx0 = -0.8, wx1 = 1.2, wy0 = 1.05, wy1 = 1.9; // world-x range (local -x)
+    this.daylight = new THREE.MeshBasicMaterial({ map: surf('frosted_glass'), color: 0xf4ead8 });
+    const pane = FFr.glass(wx1 - wx0, wy1 - wy0, -(wx0 + wx1) / 2, (wy0 + wy1) / 2, -0.03, { mat: this.daylight }); pane.renderOrder = 0;
+    FFr.sash(-wx1, -wx0, wy0, wy1, 0.02, { depth: 0.06, noGlass: true, tint: 0xb8bcc0 });
+    for (let i = 1; i < 8; i++) { const x = -wx1 + (wx1 - wx0) * i / 8; FFr.box('wood', x - 0.008, wy0, 0.022, x + 0.008, wy1, 0.04, { tint: 0x5a3a22, grain: 'y' }); }
+    FFr.box('wood', -wx1 - 0.08, wy0 - 0.05, 0, -wx0 + 0.08, wy0 - 0.02, 0.12, { tint: 0x6a4428, grain: 'x', bevel: 0.006 });
+    // ---- the shop door from inside: a wooden sliding door, glass over a lattice, a board below, the lane behind
+    const dX = 1.9, dw = 0.9;
+    const lane = new THREE.MeshBasicMaterial({ map: surf('frosted_glass'), color: 0xe8e0d0 });
+    this.laneMat = lane;
+    FFr.glass(dw - 0.12, 1.25, -dX, 1.32, -0.02, { mat: lane }).renderOrder = 0;
+    for (const sx of [-1, 1]) FFr.box('wood', -dX + sx * dw / 2 - 0.04, 0, -0.06, -dX + sx * dw / 2 + 0.04, 2.08, 0.06, { tint: 0x4e301c, grain: 'y', bevel: 0.006 });
+    FFr.box('wood', -dX - dw / 2 - 0.04, 2.0, -0.06, -dX + dw / 2 + 0.04, 2.08, 0.06, { tint: 0x4e301c, grain: 'x', bevel: 0.006 });
+    const lx0 = -dX - dw / 2 + 0.02, lx1 = -dX + dw / 2 - 0.02;
+    FFr.box('wood', lx0, 0.01, 0.0, lx0 + 0.05, 1.99, 0.04, { tint: 0x6a4428, grain: 'y', bevel: 0.004 });
+    FFr.box('wood', lx1 - 0.05, 0.01, 0.0, lx1, 1.99, 0.04, { tint: 0x6a4428, grain: 'y', bevel: 0.004 });
+    for (const [y0, y1] of [[0.01, 0.08], [0.66, 0.72], [1.93, 1.99]]) FFr.box('wood', lx0 + 0.05, y0, 0.0, lx1 - 0.05, y1, 0.04, { tint: 0x6a4428, grain: 'x', bevel: 0.004 });
+    FFr.box('wood', lx0 + 0.05, 0.08, 0.008, lx1 - 0.05, 0.66, 0.026, { tint: 0x5a3a22, grain: 'y' });
+    for (let i = 1; i < 6; i++) { const x = lx0 + 0.05 + (lx1 - lx0 - 0.1) * i / 6; FFr.box('wood', x - 0.007, 0.72, 0.012, x + 0.007, 1.93, 0.03, { tint: 0x6a4428, grain: 'y' }); }
+    FFr.box('chrome', lx0 + 0.06, 0.95, 0.04, lx0 + 0.08, 1.12, 0.05, { bevel: 0.004 });
+    // ---- ceiling: boards and battens, browned over the kitchen; a duct from the hood
+    F.box('ply', -3, H, -2.5, 3, H + 0.02, 2.5, { tint: 0xcdb894 });
+    for (let x = -2.4; x < 3; x += 0.6) F.box('wood', x - 0.018, H - 0.03, -2.5, x + 0.018, H, 2.5, { tint: 0x8a6440, grain: 'z' });
+    F.box('ply', -2.2, H - 0.003, -2.5, 1.4, H, -1.2, { tint: 0xa88e6a });
+    // ---- the counter: board front, thick light top with a rounded nose, the raised ledge, the chrome foot rail
+    const cx0 = -2.55, cx1 = 1.45;
+    F.box('timber', cx0, 0.06, -0.76, cx1, 0.95, -0.27, { tint: OAK, grain: 'y', bevel: 0.006 });
+    F.box('timber', cx0 + 0.01, 0, -0.74, cx1 - 0.01, 0.06, -0.31, { tint: 0x2a1c14 });
+    for (let x = cx0 + 0.12; x < cx1 - 0.05; x += 0.12) F.box('timber', x - 0.004, 0.08, -0.268, x + 0.004, 0.93, -0.262, { tint: 0x3e2618 });
+    F.box('wood', cx0 - 0.05, 0.95, -0.78, cx1 + 0.05, TOP_Y, -0.13, { tint: 0xd6ae78, grain: 'x', bevel: 0.016 });
+    F.box('wood', cx0, TOP_Y, -0.8, cx1, 1.13, -0.64, { tint: 0xc89c66, grain: 'x', bevel: 0.01 });
+    F.box('timber', cx0, 0.95, -0.82, cx1, 1.15, -0.79, { tint: OAK, grain: 'x', bevel: 0.004 });
+    F.rod('chrome', [cx0 + 0.05, 0.16, -0.17], [cx1 - 0.05, 0.16, -0.17], 0.017, { sides: 14 });
+    for (let x = cx0 + 0.2; x < cx1; x += 0.95) { F.rod('chrome', [x, 0.16, -0.17], [x, 0.16, -0.27], 0.012, { sides: 10 }); F.rod('chrome', [x, 0.16, -0.17], [x, 0.0, -0.17], 0.012, { sides: 10 }); }
+    // condiment trays: soy cruet, vinegar, chilli oil, pepper, the chopstick box, a napkin holder
     for (const x of [-1.72, -0.38, 0.95]) {
-      B.box(wood, 0.2, 0.02, 0.1, x, 1.0, -0.63, { tint: 0x5a3a22 });
-      [[0x2a1408, 0.11], [0xc89a3a, 0.1], [0xc8302a, 0.08], [0xf4f0e8, 0.07]].forEach(([c, h], i) => B.box(paint, 0.03, h, 0.03, x - 0.07 + i * 0.045, 1.02, -0.63, { tint: c }));
-      B.box(wood, 0.06, 0.1, 0.14, x + 0.15, 1.0, -0.6, { tint: 0xc8a06a });
-      B.box(paint, 0.05, 0.08, 0.02, x - 0.17, 1.0, -0.58, { tint: 0xf4f4f0 }); // napkins
+      F.box('wood', x - 0.11, TOP_Y, -0.68, x + 0.11, TOP_Y + 0.018, -0.58, { tint: 0x4a2e1c, bevel: 0.004 });
+      const y = TOP_Y + 0.018;
+      F.lathe('glass2', x - 0.075, y, -0.63, [[0, 0], [0.022, 0], [0.024, 0.04], [0.016, 0.07], [0.008, 0.085], [0.008, 0.1], [0, 0.1]], 14, { tint: 0x3a2010 });
+      F.lathe('gloss', x - 0.075, y + 0.1, -0.63, [[0.0, 0], [0.011, 0], [0.011, 0.014], [0, 0.016]], 10, { tint: 0xc8302a });
+      F.lathe('glass2', x - 0.03, y, -0.63, [[0, 0], [0.02, 0], [0.022, 0.05], [0.012, 0.075], [0.008, 0.09], [0, 0.09]], 14, { tint: 0xd8c08a });
+      F.lathe('gloss', x - 0.03, y + 0.09, -0.63, [[0.0, 0], [0.01, 0], [0.01, 0.012], [0, 0.014]], 10, { tint: 0x2a2a2e });
+      F.lathe('glass2', x + 0.015, y, -0.63, [[0, 0], [0.024, 0], [0.025, 0.05], [0.024, 0.055], [0, 0.055]], 14, { tint: 0xb8302a });
+      F.lathe('chrome', x + 0.015, y + 0.055, -0.63, [[0.0, 0], [0.026, 0], [0.026, 0.012], [0, 0.016]], 14);
+      F.lathe('gloss', x + 0.06, y, -0.63, [[0, 0], [0.016, 0], [0.017, 0.05], [0.015, 0.06], [0, 0.062]], 12, { tint: 0xf2eee6 });
+      F.box('wood', x + 0.12, TOP_Y, -0.67, x + 0.19, TOP_Y + 0.11, -0.53, { tint: 0xc8a06a, bevel: 0.006 });
+      for (let k = 0; k < 5; k++) F.box('wood', x + 0.13 + k * 0.011, TOP_Y + 0.11, -0.64, x + 0.136 + k * 0.011, TOP_Y + 0.15, -0.56, { tint: 0xe2c89a });
+      F.box('satin', x - 0.2, TOP_Y, -0.6, x - 0.14, TOP_Y + 0.085, -0.56, { tint: 0xd8dcdc, bevel: 0.004 });
+      F.box('paper', x - 0.195, TOP_Y + 0.02, -0.598, x - 0.145, TOP_Y + 0.1, -0.562, { tint: 0xf4f2ec });
     }
-    B.box(wood, 0.48, 0.04, 0.52, -2.74, 1.94, 1.9, { tint: 0x5a3a22 }); // the TV shelf
-    // a shelf over the door to the back (sake bottles), the back room's noren
-    B.box(wood, 1.2, 0.03, 0.22, 2.2, 1.95, -2.38, { tint: 0x6a4428 });
-    for (let i = 0; i < 6; i++) B.box(paint, 0.07, 0.28 + (i % 2) * 0.05, 0.07, 1.75 + i * 0.18, 1.98, -2.38, { tint: [0x2a5a2a, 0xe8e0c8, 0x6a3a10, 0x1e3a6a][i % 4] });
-    // the stools are props; the pendant lamps' cords + shades
-    for (const x of [-1.6, 0, 1.4]) { B.box(paint, 0.01, 0.5, 0.01, x, 2.1, 0.2, { tint: 0x1e1e1e }); B.box(M(t.P(0.5)), 0.3, 0.16, 0.3, x, 1.94, 0.2, { tint: 0xd8402a }); }
-    B.pop();
-    B.build(this.group);
-    // lit bulbs under the shades
-    for (const x of [-1.6, 0, 1.4]) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.03, 0.12), new THREE.MeshBasicMaterial({ color: 0xfff0c8 })); b.position.copy(L(x, 1.93, 0.2)); this.group.add(b); }
+    // ---- the kitchen: stainless back counter with its doors, bowl shelves, the low range for the stock pots, the griddle
+    F.box('zinc', -2.95, 0.12, -2.48, 2.95, 0.84, -1.9, { tint: 0xc4c8ca, bevel: 0.008 });
+    F.box('zinc', -2.97, 0.84, -2.5, 2.97, 0.87, -1.88, { tint: 0xd4d8da, bevel: 0.006 });
+    F.box('zinc', -2.95, 0.87, -2.5, 2.95, 0.95, -2.48, { tint: 0xd0d4d6 });
+    for (let x = -2.9; x < 2.9; x += 0.6) {
+      F.box('zinc', x + 0.02, 0.16, -1.905, x + 0.56, 0.8, -1.895, { tint: 0xd2d6d8, bevel: 0.004 });
+      F.box('chrome', x + 0.42, 0.6, -1.895, x + 0.52, 0.615, -1.875, { bevel: 0.004 });
+    }
+    for (const x of [-2.9, 0, 2.9]) F.bx('zinc', 0.04, 0.12, 0.04, x, 0, -1.94, { tint: 0x9a9ea0 });
+    for (const y of [1.55, 1.95]) {
+      F.box('wood', -2.0, y, -2.485, 2.4, y + 0.03, -2.22, { tint: 0x7a5232, grain: 'x', bevel: 0.004 });
+      for (const x of [-1.9, 0.2, 2.3]) F.box('satin', x - 0.012, y - 0.12, -2.485, x + 0.012, y, -2.25, { tint: 0x6a6a6e });
+    }
+    F.box('zinc', -2.1, 0.08, -1.86, -1.0, 0.66, -1.24, { tint: 0x9aa0a4, bevel: 0.01 });
+    F.box('flat', -2.1, 0, -1.84, -1.0, 0.08, -1.26, { tint: 0x2e2e30 });
+    for (const x of [-1.8, -1.3]) {
+      F.lathe('flat', x, 0.66, -1.55, [[0.0, 0], [0.2, 0], [0.2, 0.012], [0.0, 0.012]], 20, { tint: 0x2a2a2c });
+      F.lathe('flat', x, 0.672, -1.55, [[0.08, 0], [0.09, 0.02], [0.1, 0.02], [0.11, 0]], 16, { tint: 0x3a3a3c });
+      for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + 0.4; F.box('flat', x + Math.cos(a) * 0.1 - 0.012, 0.672, -1.55 + Math.sin(a) * 0.1 - 0.012, x + Math.cos(a) * 0.17 + 0.012, 0.7, -1.55 + Math.sin(a) * 0.17 + 0.012, { tint: 0x1e1e20 }); }
+      F.lathe('chrome', x, 0.42, -1.235, [[0, 0], [0.02, 0], [0.022, 0.02], [0.016, 0.03], [0, 0.03]], 12, { axis: 'z' });
+    }
+    F.pipe('satin', [[-2.95, 0.3, -1.3], [-2.2, 0.3, -1.3], [-2.1, 0.3, -1.3]], 0.012, { tint: 0xc8a048 });
+    F.box('flat', 1.1, 0.06, -1.88, 1.8, 0.75, -1.33, { tint: 0x323234, bevel: 0.01 });
+    F.box('flat', 1.1, 0, -1.86, 1.8, 0.06, -1.35, { tint: 0x1e1e20 });
+    F.box('satin', 1.11, 0.75, -1.87, 1.79, 0.78, -1.34, { tint: 0x2a2a2e, bevel: 0.006 });
+    F.box('satin', 1.1, 0.78, -1.88, 1.8, 0.84, -1.86, { tint: 0x3a3a3e });
+    for (const x of [1.25, 1.45, 1.65]) F.lathe('chrome', x, 0.45, -1.33, [[0, 0], [0.016, 0], [0.018, 0.018], [0, 0.022]], 10, { axis: 'z' });
+    // the hood over the range: a stainless canopy with a lip, filters, the duct
+    F.box('zinc', -2.1, 2.3, -2.06, 1.3, 2.36, -1.32, { tint: 0xc8ccce, bevel: 0.01 });
+    F.box('zinc', -2.1, 2.12, -1.36, 1.3, 2.3, -1.3, { tint: 0xd0d4d6, bevel: 0.008 });
+    F.box('zinc', -2.1, 2.12, -2.06, 1.3, 2.3, -2.0, { tint: 0xc0c4c6, bevel: 0.008 });
+    for (const x of [-2.1, 1.24]) F.box('zinc', x, 2.12, -2.0, x + 0.06, 2.3, -1.36, { tint: 0xc0c4c6 });
+    for (let x = -1.95; x < 1.2; x += 0.5) F.box('satin', x, 2.29, -1.98, x + 0.46, 2.3, -1.4, { tint: 0x9aa0a2 });
+    F.box('zinc', -0.6, 2.36, -1.9, -0.2, H, -1.5, { tint: 0xb8bcbe, bevel: 0.01 });
+    for (const x of [-1.9, 1.1]) F.rod('satin', [x, 2.36, -1.7], [x, H, -1.7], 0.008, { tint: 0x8a8e90, sides: 8 });
+    // the side table for the dirty bowls, the TV shelf, the sake shelf over the back counter
+    F.box('zinc', -2.87, 0.1, -1.16, -2.37, 0.79, -0.74, { tint: 0xb4b8ba, bevel: 0.008 });
+    F.box('zinc', -2.89, 0.79, -1.18, -2.35, 0.82, -0.72, { tint: 0xc8ccce, bevel: 0.005 });
+    for (const [x, z] of [[-2.84, -1.13], [-2.4, -1.13], [-2.84, -0.77], [-2.4, -0.77]]) F.bx('zinc', 0.03, 0.1, 0.03, x, 0, z, { tint: 0x9a9ea0 });
+    F.box('wood', -2.98, 1.94, 1.64, -2.5, 1.98, 2.16, { tint: 0x4a2e1c, bevel: 0.006 });
+    for (const z of [1.7, 2.1]) F.box('timber', -2.98, 1.8, z - 0.015, -2.9, 1.94, z + 0.015, { tint: 0x3a2416 });
+    F.box('wood', 1.6, 1.95, -2.49, 2.8, 1.98, -2.27, { tint: 0x6a4428, grain: 'x', bevel: 0.004 });
+    for (let i = 0; i < 6; i++) {
+      const x = 1.75 + i * 0.18, tall = 0.26 + (i % 2) * 0.05, c = [0x2a5a2a, 0xe8e0c8, 0x6a3a10, 0x1e3a6a][i % 4];
+      F.lathe('glass2', x, 1.98, -2.38, [[0, 0], [0.035, 0], [0.036, tall * 0.62], [0.016, tall * 0.8], [0.012, tall], [0, tall]], 14, { tint: c });
+      F.lathe('gloss', x, 1.98 + tall, -2.38, [[0, 0], [0.013, 0], [0.013, 0.02], [0, 0.02]], 10, { tint: 0xd8b048 });
+      F.sticker('paper', [0, 0, 1, 1], '+z', x, 1.98 + tall * 0.35, -2.343, 0.05, 0.08, { tint: [0xf2ead2, 0xd23a2a, 0xf2ead2, 0xe8d088][i % 4] });
+    }
+    // ---- pendant lamps: red enamel shades over the counter
+    for (const x of [-1.6, 0, 1.4]) {
+      F.rod('flat', [x, H, 0.2], [x, 2.12, 0.2], 0.004, { tint: 0x1e1e1e, sides: 6 });
+      F.lathe('gloss', x, 1.94, 0.2, [[0.17, 0], [0.165, 0.008], [0.12, 0.05], [0.06, 0.13], [0.03, 0.17], [0.022, 0.19], [0, 0.19]], 24, { tint: 0xc8402e });
+      F.lathe('gloss', x, 1.945, 0.2, [[0.02, 0.17], [0.056, 0.125], [0.115, 0.05], [0.158, 0.008]], 24, { tint: 0xf2eee4, flip: true });
+      F.lathe('glow', x, 1.93, 0.2, [[0, 0], [0.03, 0.01], [0.04, 0.04], [0.032, 0.07], [0.016, 0.09], [0, 0.09]], 14, { tint: 0xfff0c8 });
+    }
+    K.done(this.group, 'ramen');
     // stools
-    this.stools = SEATS.map((x) => { const s = prop('rm_stool', P.voxel(), O.x + x, 0, O.z + SEAT_Z); this.group.add(s); return s; });
+    this.stools = SEATS.map((x) => { const s = prop('rm_stool', null, O.x + x, 0, O.z + SEAT_Z); this.group.add(convertAll(s, conv)); return s; });
     // walls and the counter block you
     const pl = g.player, ob = (a, b, c, d) => pl.addObstacle(O.x + a, O.x + b, O.z + c, O.z + d);
     ob(-3.4, -2.95, -3, 3); ob(2.95, 3.4, -3, 3); ob(-3.4, 3.4, -2.95, -2.45); ob(-3.4, 1.45, 2.45, 2.95); ob(2.35, 3.4, 2.45, 2.95);
@@ -223,8 +317,8 @@ export class Ramen {
   }
 
   buildKitchen() {
-    const P = this.places, vox = P.voxel(), grp = this.group;
-    const add = (id, x, y, z, ry = 0, s = 1) => { const m = prop(id, vox, O.x + x, y, O.z + z, ry, s); grp.add(m); return m; };
+    const P = this.places, grp = this.group;
+    const add = (id, x, y, z, ry = 0, s = 1) => { const m = iprop(this.places, id, O.x + x, y, O.z + z, ry, s); grp.add(m); return m; };
     this.pots = [add('rm_pot', -1.8, 0.7, -1.55), add('rm_pot', -1.3, 0.7, -1.55, 0.6, 0.85)];
     this.boiler = add('rm_boiler', 0.2, 0, -1.5);
     for (let i = 0; i < 6; i++) add('rm_bowl_clean', -1.6 + i * 0.12, 1.585 + (i % 3) * 0.075, -2.36, i, 0.85);
@@ -319,11 +413,24 @@ export class Ramen {
     root.rotation.y = -Math.PI / 2;
     this.group.add(root);
     root.updateMatrixWorld(true);
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1.55, 0.45).translate(0, 0.775, 0), P.mat(t.P(0.4, 0.2)));
-    body.material = P.mat(new THREE.MeshStandardMaterial({ color: 0xd8dce0, roughness: 0.4, metalness: 0.2 }));
-    root.add(body);
-    const slot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.04), P.mat(new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.5 })));
-    slot.position.set(0, 0.55, 0.23); root.add(slot);
+    void t;
+    // the cabinet: a pressed steel case on a plinth, the panel under a hood, the coin and note slots, the return lever,
+    // the ticket chute with its tray, the change cup
+    const K = new IKit(imats(P._ikConv ||= (mm) => P.mat(mm))), F = K.root;
+    F.box('paint', -0.31, 0.06, -0.225, 0.31, 1.5, 0.2, { tint: 0xd6dade, bevel: 0.018 });
+    F.box('flat', -0.29, 0, -0.2, 0.29, 0.06, 0.17, { tint: 0x2e3034 });
+    F.box('paint', -0.32, 1.5, -0.235, 0.32, 1.62, 0.235, { tint: 0xc8302a, bevel: 0.02 });
+    F.box('satin', -0.29, 0.84, 0.2, 0.29, 1.56, 0.226, { tint: 0x9aa0a6, bevel: 0.006 });
+    F.box('satin', -0.3, 1.55, 0.2, 0.3, 1.58, 0.27, { tint: 0xb8bcc0, bevel: 0.006 });
+    F.box('satin', -0.27, 0.46, 0.2, 0.27, 0.8, 0.222, { tint: 0xb4b8bc, bevel: 0.006 });
+    F.box('flat', 0.08, 0.66, 0.222, 0.24, 0.7, 0.226, { tint: 0x1e1e22 });
+    F.box('flat', -0.24, 0.7, 0.222, -0.04, 0.73, 0.226, { tint: 0x1e1e22 });
+    F.box('chrome', 0.13, 0.56, 0.222, 0.2, 0.6, 0.25, { bevel: 0.006 });
+    F.box('flat', -0.15, 0.53, 0.222, 0.15, 0.59, 0.234, { tint: 0x2a2a2e, bevel: 0.006 });
+    F.box('satin', -0.17, 0.2, 0.2, 0.17, 0.4, 0.26, { tint: 0xa8acb0, bevel: 0.01 });
+    F.box('flat', -0.12, 0.24, 0.255, 0.12, 0.34, 0.262, { tint: 0x26262a });
+    F.box('satin', -0.28, 0.08, 0.2, 0.28, 0.12, 0.22, { tint: 0x9aa0a6 });
+    K.done(root, 'ramen:tickets');
     this.tm = { root, canvas: pixCanvas(300, 372), sel: 0 };
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.67), new THREE.MeshBasicMaterial({ map: this.tm.canvas.tex, color: 0xdedede }));
     panel.position.set(0, 1.2, 0.228); panel.raycast = () => {};
@@ -414,7 +521,7 @@ export class Ramen {
   // ------------------------------------------------------------------ the pink phone: call a friend
   buildPhone() {
     const g = this.game, P = this.places;
-    const ph = prop('pink_phone', P.voxel(), ...L(2.7, 0, 0.25).toArray(), -Math.PI / 2, 1);
+    const ph = iprop(this.places, 'pink_phone', ...L(2.7, 0, 0.25).toArray(), -Math.PI / 2, 1);
     this.group.add(ph);
     this.phone = ph;
     g.interaction.add(ph, {
@@ -536,7 +643,7 @@ export class Ramen {
     const kind = id === 'rm_gyoza' ? 1 : (f.how === 'drink' ? -1 : id === 'rm_rice' || id === 'rm_chashu' ? 1.6 : 0);
     if (id === 'rm_kaedama') { const b = this.served.find((s) => s.ramen && !s.friend); if (b) { b.left = Math.min(1, b.left + 0.6); b.kaedama = true; this.shout('Kaedama!'); audio.play('splash', { vol: 0.4 }); return; } }
     const pos = L(SEATS[seat] + kind * 0.2, TOP_Y, SERVE_Z + (kind ? 0.02 : 0));
-    const mesh = prop(PROP[id], this.places.voxel(), pos.x, pos.y, pos.z, Math.random() * 0.4);
+    const mesh = iprop(this.places, PROP[id], pos.x, pos.y, pos.z, Math.random() * 0.4);
     this.group.add(mesh);
     const s = { id, f, mesh, seat, left: 1, done: false, friend: q.friend, ramen: id.startsWith('rm_') && PROP[id].startsWith('rm_bowl'), pos };
     this.served.push(s);
@@ -583,7 +690,7 @@ export class Ramen {
     s.done = true;
     g.interaction.remove(s.mesh);
     const empty = s.ramen ? 'rm_bowl_empty' : null;
-    if (empty) { const p = s.mesh.position.clone(), r = s.mesh.rotation.y; s.mesh.parent?.remove(s.mesh); s.mesh = prop(empty, this.places.voxel(), p.x, p.y, p.z, r); this.group.add(s.mesh); }
+    if (empty) { const p = s.mesh.position.clone(), r = s.mesh.rotation.y; s.mesh.parent?.remove(s.mesh); s.mesh = iprop(this.places, empty, p.x, p.y, p.z, r); this.group.add(s.mesh); }
     else s.mesh.scale.multiplyScalar(0.9);
     g.needs?.consume(s.id);
     if (s.kaedama) g.needs?.consume('rm_kaedama', { quiet: true });
@@ -603,8 +710,14 @@ export class Ramen {
   }
 
   // ------------------------------------------------------------------ entering / leaving
+  /** The frosted window and the door glass glow with the lane outside: daylight, dusk, the lamps at night. */
+  lightWindows() {
+    const day = this.game.clock?.daylight?.() ?? 1, c = new THREE.Color(0x6a5c50).lerp(new THREE.Color(0xf4ead8), day);
+    this.daylight?.color.copy(c); this.laneMat?.color.copy(c).multiplyScalar(0.94);
+  }
   onEnter() {
     const g = this.game;
+    this.lightWindows();
     this.s.visits++;
     g.tweens.wait(0.6, () => this.shout('Irasshai!!'));
     g.tweens.wait(1.6, () => g.tip?.('ramen', 'Buy a ticket at the machine by the door', 'Then sit at the counter. Hold LMB on the bowl to eat.'));
@@ -650,7 +763,7 @@ export class Ramen {
       if (b && !b.done) {
         if (!f.eating) { f.eating = true; f.n.gesture?.('eat'); f.n.say(pick(FRIENDS[f.id].yum)); }
         b.left -= dt / 14;
-        if (b.left <= 0) { b.done = true; f.n.clearGesture?.(); const p = b.mesh.position.clone(); b.mesh.parent?.remove(b.mesh); b.mesh = prop('rm_bowl_empty', this.places.voxel(), p.x, p.y, p.z); this.group.add(b.mesh); f.n.say(pick(['Gochisousama!', 'Haaah. Perfect.', 'I\'m so full.'])); }
+        if (b.left <= 0) { b.done = true; f.n.clearGesture?.(); const p = b.mesh.position.clone(); b.mesh.parent?.remove(b.mesh); b.mesh = iprop(this.places, 'rm_bowl_empty', p.x, p.y, p.z); this.group.add(b.mesh); f.n.say(pick(['Gochisousama!', 'Haaah. Perfect.', 'I\'m so full.'])); }
       }
     }
     this.washTick?.(dt);
@@ -678,9 +791,9 @@ export class Ramen {
   }
   buildSink() {
     const g = this.game, P = this.places;
-    this.sink = prop('rm_sink', P.voxel(), ...L(-2.6, 0, -1.6).toArray(), Math.PI / 2);
+    this.sink = iprop(this.places, 'rm_sink', ...L(-2.6, 0, -1.6).toArray(), Math.PI / 2);
     this.group.add(this.sink);
-    this.sponge = prop('rm_sponge', P.voxel(), ...L(-2.42, 0.86, -1.95).toArray(), 0.3);
+    this.sponge = iprop(this.places, 'rm_sponge', ...L(-2.42, 0.86, -1.95).toArray(), 0.3);
     this.group.add(this.sponge);
     const W = { spot: L(-2.0, 0, -1.6), bowlAt: L(-2.6, 0.64, -1.6), tap: L(-2.62, 1.0, -1.45) };
     this.W = W;
@@ -722,7 +835,7 @@ export class Ramen {
   washTake() {
     if (!this.washing || this.wb) return;
     const W = this.W;
-    const m = prop('rm_bowl_dirty', this.places.voxel(), W.bowlAt.x, W.bowlAt.y, W.bowlAt.z, Math.random() * 3);
+    const m = iprop(this.places, 'rm_bowl_dirty', W.bowlAt.x, W.bowlAt.y, W.bowlAt.z, Math.random() * 3);
     this.group.add(m);
     this.wb = { mesh: m, grime: 1, rinsed: false };
     const top = this.dirtyStack.filter((b) => b.visible).pop();
@@ -748,7 +861,7 @@ export class Ramen {
       wb.grime = 0;
       const p = wb.mesh.position.clone(), r = wb.mesh.rotation.y;
       wb.mesh.parent?.remove(wb.mesh);
-      wb.mesh = prop('rm_bowl_clean', this.places.voxel(), p.x, p.y, p.z, r);
+      wb.mesh = iprop(this.places, 'rm_bowl_clean', p.x, p.y, p.z, r);
       this.group.add(wb.mesh);
       audio.play('dishClink', { vol: 0.7 });
       g.effects.sparks({ pos: p.clone().add(V(0, 0.1, 0)), count: 8, colors: [0xffffff, 0xe0f0ff], speed: 0.4, size: 0.012, star: 0.6, life: 0.7 });

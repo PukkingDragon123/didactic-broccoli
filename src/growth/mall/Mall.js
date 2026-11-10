@@ -16,6 +16,7 @@ import { propGeometry } from '../../world/props.js';
 import { capsuleCost } from '../../game/economy.js';
 import { SERIES_BY_ID } from '../../data/series/index.js';
 import { Zone, V, canvasMat, pixText, grain, goTo, sfx, brightVoxel, bright } from '../kit.js';
+import { IKit, imats, photoNorm } from '../../places/ikit.js';
 import { MachineSpots } from '../machines.js';
 import { Crowd, NavGrid } from '../crowd.js';
 import { slip } from '../paper.js';
@@ -26,19 +27,6 @@ import { Elevator } from './Elevator.js';
 
 const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
 const RIDE_SPEED = SPEED; // the same speed as the steps (layout.js)
-
-/** A repeating floor-tile texture (two colours, a grout line), 0.5 m tiles. */
-function tileTex(a, b, grout, kind = 'checker') {
-  const c = document.createElement('canvas'); c.width = c.height = 32;
-  const x = c.getContext('2d');
-  for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) { x.fillStyle = kind === 'checker' ? ((i + j) % 2 ? b : a) : a; x.fillRect(i * 16, j * 16, 16, 16); }
-  grain(x, 0, 0, 32, 32, [grout + '22', '#ffffff18'], 0.05, 7);
-  x.fillStyle = grout; for (let i = 0; i < 32; i += 16) { x.fillRect(i, 0, 1, 32); x.fillRect(0, i, 32, 1); }
-  const t = new THREE.CanvasTexture(c);
-  t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
-  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
 
 // the far version of a route-machine module: a box, its front painted like the voxel model (1 texel = 1 voxel)
 const STACK_COLS = { red: [0xd8322c, 0xf4f0e6], blue: [0x2f6ad8, 0xf2c230], yellow: [0xf2c230, 0xd8322c], pink: [0xe86aa8, 0xf4f0e6], green: [0x3a9a5a, 0xf4f0e6], black: [0x26262c, 0xd4a83a] };
@@ -133,27 +121,35 @@ export class Mall {
       onEnter: () => this.onEnter(n), onExit: () => this.onExit(n), update: (dt) => this.tick(n, dt),
     });
     const B = Z.B;
-    const paint = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }));
-    const metal = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.6 }));
+    // surfaces from the photo library: vinyl cloth walls, 30 cm vinyl checker tiles in the floor's colour, 60 cm acoustic
+    // ceiling tiles, brushed steel; the light fittings, the walls' skirting and band are modelled (src/places/ikit.js)
+    const paint = Z.mat(photoNorm('canvas_cloth', { rough: 0.86 }));
+    const metal = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.32, metalness: 0.65 }));
     const glow = new THREE.MeshBasicMaterial({ vertexColors: true });
-    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout), vertexColors: true, roughness: 0.32, metalness: 0.05 }));
-    const ceil = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex('#f4f4f2', '#f4f4f2', '#d8d8d4', 'grid'), vertexColors: true, roughness: 0.8 }));
+    const floor = Z.mat(photoNorm('tile_checker_floor', { rough: 0.48 }));
+    const ceil = Z.mat(photoNorm('tile_white', { rough: 0.86, metres: 2.4 }));
     this.mats = { paint, metal, glow };
+    const K = new IKit(imats(bright)), F = K.at(Z.o.x, 0, Z.o.z, 0), FT = new THREE.Color(T.a).lerp(new THREE.Color(T.b), 0.55);
     const below = n > 1 ? GAPS[n - 1].well : null, above = n < FLOORS ? GAPS[n].well : null;
     // floor (with the well of the escalators from below), ceiling (with the well to the floor above)
-    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, below ? [below] : [])) B.plane(floor, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, 0, (r.z0 + r.z1) / 2);
-    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, above ? [above] : [])) B.plane(ceil, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, CH, (r.z0 + r.z1) / 2, { down: true });
+    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, below ? [below] : [])) B.plane(floor, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, 0, (r.z0 + r.z1) / 2, { tint: FT });
+    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, above ? [above] : [])) B.plane(ceil, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, CH, (r.z0 + r.z1) / 2, { down: true, tint: 0xf0f0ec });
     // ceiling lights: long glowing strips in a grid (not over the well)
     for (let x = -11; x <= 11; x += 3.6) for (const z of [-6, -1.5, 3, 7]) {
       if (above && x > above.x0 - 0.8 && x < above.x1 + 0.8 && z > above.z0 - 1.6 && z < above.z1 + 1.6) continue;
-      B.box(glow, 0.22, 0.03, 2.4, x, CH - 0.04, z, { tint: 0xfffaf0 });
-      B.box(paint, 0.34, 0.05, 2.5, x, CH - 0.02, z, { tint: 0xe8e8e4 });
+      // a recessed troffer: white frame, the diffuser, a louvre of cross blades
+      F.box('satin', x - 0.19, CH - 0.022, z - 1.27, x + 0.19, CH + 0.01, z + 1.27, { tint: 0xeeeeea, bevel: 0.012 });
+      F.box('glow', x - 0.14, CH - 0.03, z - 1.22, x + 0.14, CH - 0.022, z + 1.22, { tint: 0xfffaf0 });
+      for (let k = -4; k <= 4; k++) F.box('satin', x - 0.14, CH - 0.05, z + k * 0.27 - 0.005, x + 0.14, CH - 0.022, z + k * 0.27 + 0.005, { tint: 0xe4e4e0 });
+      for (const sx of [-1, 1]) F.box('satin', x + sx * 0.145 - 0.006, CH - 0.06, z - 1.22, x + sx * 0.145 + 0.006, CH - 0.022, z + 1.22, { tint: 0xe4e4e0 });
     }
-    // walls: painted, a coloured band, a skirting
+    // walls: vinyl cloth, a coloured band with a steel trim, a skirting
     const wall = (w, x, z, ry) => {
-      B.box(paint, w, CH, 0.2, x, 0, z, { ry, tint: T.wall });
-      B.box(paint, w, 0.12, 0.22, x, 0, z, { ry, tint: 0x3a3a40 });
-      B.box(paint, w, 0.14, 0.22, x, 2.25, z, { ry, tint: T.band });
+      const hx = ry ? 0.1 : w / 2, hz = ry ? w / 2 : 0.1;
+      F.box('wallpaper', x - hx, 0, z - hz, x + hx, CH, z + hz, { tint: T.wall });
+      F.box('gloss', x - hx - 0.012, 0, z - hz - 0.012, x + hx + 0.012, 0.12, z + hz + 0.012, { tint: 0x3a3a40, bevel: 0.008 });
+      F.box('gloss', x - hx - 0.012, 2.25, z - hz - 0.012, x + hx + 0.012, 2.39, z + hz + 0.012, { tint: T.band, bevel: 0.01 });
+      F.box('chrome', x - hx - 0.016, 2.39, z - hz - 0.016, x + hx + 0.016, 2.41, z + hz + 0.016, { bevel: 0.004 });
     };
     wall(X1 - X0 + 0.4, 0, Z0 - 0.1, 0);
     wall(Z1 - Z0, X1 + 0.1, 0, Math.PI / 2);
@@ -180,6 +176,7 @@ export class Mall {
     this.stacks(Z, n);
     this.signs(Z, n);
     if (n === 1) this.groundFloor(Z, paint, metal, glow);
+    K.done(Z.group, 'mall' + n);
     Z.flush();
     // machine spots, the walk grid, the customers
     this.spots[n] = new MachineSpots(this.game, Z, { key: 'mall' + n, slots: MALL_SLOTS, first: n * 100 + 1, label: `${n}F machine spot`, active: () => this.floorsOpen >= n });
@@ -278,10 +275,10 @@ export class Mall {
    *  machines painted at its edges. */
   stub(Z, n, m, y, well, gapBelow = null) {
     const T = THEMES[m], B = Z.B;
-    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout), vertexColors: true, roughness: 0.32 }));
+    const floor = Z.mat(photoNorm('tile_checker_floor', { rough: 0.48 }));
     const G = gapBelow || GAPS[n];
     const r = { x0: well.x0 - 3.5, x1: well.x1 + 3.5, z0: Math.min(well.z0, G.z0, G.z1) - 2.5, z1: Math.max(well.z1, G.z0, G.z1) + 2.5 };
-    for (const q of minusHoles(r, y > 0 ? [well] : [])) B.plane(floor, q.x1 - q.x0, q.z1 - q.z0, (q.x0 + q.x1) / 2, y, (q.z0 + q.z1) / 2);
+    for (const q of minusHoles(r, y > 0 ? [well] : [])) B.plane(floor, q.x1 - q.x0, q.z1 - q.z0, (q.x0 + q.x1) / 2, y, (q.z0 + q.z1) / 2, { tint: new THREE.Color(T.a).lerp(new THREE.Color(T.b), 0.55) });
     const paint = this.mats.paint, glow = this.mats.glow;
     if (y > 0) {
       B.plane(paint, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, y + CH, (r.z0 + r.z1) / 2, { down: true, tint: 0xf4f4f2 });

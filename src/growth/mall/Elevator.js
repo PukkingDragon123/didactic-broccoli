@@ -9,6 +9,8 @@ import { audio } from '../../core/audio.js';
 import { playSong } from '../../room/sfx.js';
 import { LIFT, CH, FLOORS } from './layout.js';
 import { canvasMat, pixText, sfx } from '../kit.js';
+import { photoNorm } from '../../places/ikit.js';
+import { photoTex } from '../../kit/photoTex.js';
 
 const MOVE = 1.9, DOOR_T = 0.9, HOLD = 5;
 
@@ -28,8 +30,9 @@ export class Elevator {
   // ------------------------------------------------------------------ geometry (per floor zone)
   build(zone, n) {
     const Z = zone, B = Z.B, L = LIFT;
-    const steel = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.7 }));
-    const paint = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }));
+    // hairline stainless (the brushed photo), vinyl cloth on the lobby walls
+    const steel = Z.mat(photoNorm('steel_galvanised', { rough: 0.34, metal: 0.65, metres: 0.8 }));
+    const paint = Z.mat(photoNorm('canvas_cloth', { rough: 0.86 }));
     const glow = new THREE.MeshBasicMaterial({ vertexColors: true });
     const dw = L.dw, wx = L.door;
     // the lobby wall with the doorway, the shaft above
@@ -52,7 +55,7 @@ export class Elevator {
     B.box(steel, 0.08, L.ch, L.z1 - dw - 0.01, L.x1 + 0.12, 0, -(dw + L.z1) / 2, { tint: 0xb8bcc2 });
     B.box(steel, 0.08, L.ch, L.z1 - dw - 0.01, L.x1 + 0.12, 0, (dw + L.z1) / 2, { tint: 0xb8bcc2 });
     // the doors (two leaves sliding apart)
-    const leafM = Z.mat(new THREE.MeshStandardMaterial({ color: 0x8a9098, roughness: 0.45, metalness: 0.5, envMapIntensity: 0.35 }));
+    const leafM = Z.mat(new THREE.MeshStandardMaterial({ map: photoTex('steel_galvanised', { repeat: [0.6, 2.6] }), color: 0xa2a8ae, roughness: 0.38, metalness: 0.55, envMapIntensity: 0.4 }));
     const leaves = [-1, 1].map((s) => {
       const m = new THREE.Mesh(new THREE.BoxGeometry(0.04, 2.1, dw), leafM);
       m.position.copy(Z.L(wx - 0.02, 1.05, s * dw / 2));

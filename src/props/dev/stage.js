@@ -55,9 +55,9 @@ function frame(obj, o) {
 }
 
 function cap(id, o = {}) {
-  if (cur) { scene.remove(cur); cur = null; }
   let m;
-  try { m = o.voxel ? P.voxelPropMesh(id) : P.propMesh(id); } catch (e) { return { err: String(e?.stack || e) }; }
+  try { m = o.obj || (o.voxel ? P.voxelPropMesh(id) : P.propMesh(id)); } catch (e) { return { err: String(e?.stack || e) }; }
+  if (cur) { scene.remove(cur); cur = null; }
   if (!m) return { err: 'no mesh' };
   if (o.compat && m.geometry?.userData.lowPoly) m.material = voxelMaterials('normal'); // how code that has not switched to propMaterials() draws it
   m.traverse((x) => { if (x.isMesh) { x.castShadow = true; x.receiveShadow = true; } });

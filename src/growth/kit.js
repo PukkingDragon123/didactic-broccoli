@@ -19,6 +19,7 @@ import { worldBox } from '../gfx/geo.js';
 import { propMesh } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { audio } from '../core/audio.js';
+import { converted } from '../places/ikit.js';
 
 export const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 export const pick = (a) => a[Math.floor(Math.random() * a.length)];
@@ -207,7 +208,7 @@ export class Zone {
     if (!m) return m;
     if (Array.isArray(m)) return m.map((x) => this.mat(x));
     if (this.light === 'bright') return bright(m);
-    if (LAMPED.has(m)) return m; // already an interior variant (converting twice would patch the shader twice)
+    if (LAMPED.has(m) || converted(m)) return m; // already an interior variant (converting twice would patch the shader twice)
     const c = this.places.mat(m);
     LAMPED.add(c);
     return c;
@@ -255,8 +256,7 @@ export class Zone {
   }
   prop(id, x, y, z, ry = 0, s = 1, parent = this.group) {
     const m = propMesh(id, { castShadow: false });
-    if (Array.isArray(m.material)) m.material = this.vox();
-    else m.material = this.mat(m.material);
+    this.convert(m); // (the prop keeps its own materials: its atlas page, or the voxel set)
     m.position.copy(this.L(x, y, z));
     m.rotation.y = ry;
     if (s !== 1) m.scale.setScalar(s);

@@ -18,12 +18,11 @@ export async function runStudio(params) {
   // ?studio=all: every sheet in one go (window.__sheets: name -> canvas), for the shot scripts
   if (params.get('studio') === 'all') {
     const out = {}, stats = {}, R = makeStage(params);
-    for (const id of ['machikado', 'menzoo', 'hakoiri']) {
+    for (const id of (params.get('series') || 'machikado,menzoo,hakoiri').split(',')) {
       out[`${id}_views`] = sheet(R, id, params, 'views'); stats[id] = window.__stats;
-      out[`${id}_gimmicks`] = sheet(R, id, params, 'gimmick');
+      if (!params.get('nogim')) out[`${id}_gimmicks`] = sheet(R, id, params, 'gimmick');
     }
-    const q = new URLSearchParams(params); q.set('items', params.get('finishItem') || 'seal');
-    out.finishes = sheet(R, 'machikado', q, 'finishes');
+    if (!params.get('series')) { const q = new URLSearchParams(params); q.set('items', params.get('finishItem') || 'seal'); out.finishes = sheet(R, 'machikado', q, 'finishes'); }
     R.host.remove();
     window.__sheets = out; window.__stats = stats;
     return;

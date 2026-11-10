@@ -133,8 +133,10 @@ export function photoInto(K, V, name, tint = null, after = null) {
     let tex = null;
     try { tex = m.photoTex(name, {}); } catch { return; }
     const go = () => {
+      // wait for the photo itself: until it arrives the texture holds a stand-in canvas (src/kit/photoTex.js), and
+      // copying that would paint the board black for good
       const img = tex?.image;
-      if (!img || !(img.width > 8) || !(img.height > 8)) return false;
+      if (!img || !(img.naturalWidth > 8) || !(img.naturalHeight > 8) || img.complete === false) return false;
       const c = document.createElement('canvas'); c.width = V.W; c.height = V.H;
       const g = c.getContext('2d', { willReadFrequently: true }), sh = Math.min(img.height, Math.max(8, Math.round((img.width * V.H) / V.W)));
       try { g.drawImage(img, 0, Math.floor((img.height - sh) / 2), img.width, sh, 0, 0, V.W, V.H); } catch { return true; }
