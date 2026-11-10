@@ -28,6 +28,17 @@ import { Elevator } from './Elevator.js';
 const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
 const RIDE_SPEED = SPEED; // the same speed as the steps (layout.js)
 
+/** The floor: 50 cm vinyl composition tiles in the floor's two colours, laid in a checker on a grid shared by every
+ *  floor (the speckle is the photo's), clipped to the rectangle r. */
+function vct(B, mat, r, y, T) {
+  const S = 0.5, A = new THREE.Color(T.a), Bc = new THREE.Color(T.b);
+  for (let i = Math.floor(r.x0 / S); i * S < r.x1 - 1e-4; i++) for (let j = Math.floor(r.z0 / S); j * S < r.z1 - 1e-4; j++) {
+    const x0 = Math.max(r.x0, i * S), x1 = Math.min(r.x1, (i + 1) * S), z0 = Math.max(r.z0, j * S), z1 = Math.min(r.z1, (j + 1) * S);
+    if (x1 - x0 < 1e-4 || z1 - z0 < 1e-4) continue;
+    B.plane(mat, x1 - x0, z1 - z0, (x0 + x1) / 2, y, (z0 + z1) / 2, { tint: (i + j) & 1 ? Bc : A, uv: [x0, -z1] });
+  }
+}
+
 // the far version of a route-machine module: a box, its front painted like the voxel model (1 texel = 1 voxel)
 const STACK_COLS = { red: [0xd8322c, 0xf4f0e6], blue: [0x2f6ad8, 0xf2c230], yellow: [0xf2c230, 0xd8322c], pink: [0xe86aa8, 0xf4f0e6], green: [0x3a9a5a, 0xf4f0e6], black: [0x26262c, 0xd4a83a] };
 let farGeoC = null;
@@ -126,13 +137,13 @@ export class Mall {
     const paint = Z.mat(photoNorm('canvas_cloth', { rough: 0.86 }));
     const metal = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.32, metalness: 0.65 }));
     const glow = new THREE.MeshBasicMaterial({ vertexColors: true });
-    const floor = Z.mat(photoNorm('tile_checker_floor', { rough: 0.48 }));
+    const floor = Z.mat(photoNorm('concrete', { rough: 0.5 }));
     const ceil = Z.mat(photoNorm('tile_white', { rough: 0.86, metres: 2.4 }));
     this.mats = { paint, metal, glow };
-    const K = new IKit(imats(bright)), F = K.at(Z.o.x, 0, Z.o.z, 0), FT = new THREE.Color(T.a).lerp(new THREE.Color(T.b), 0.55);
+    const K = new IKit(imats(bright)), F = K.at(Z.o.x, 0, Z.o.z, 0);
     const below = n > 1 ? GAPS[n - 1].well : null, above = n < FLOORS ? GAPS[n].well : null;
     // floor (with the well of the escalators from below), ceiling (with the well to the floor above)
-    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, below ? [below] : [])) B.plane(floor, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, 0, (r.z0 + r.z1) / 2, { tint: FT });
+    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, below ? [below] : [])) vct(B, floor, r, 0, T);
     for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, above ? [above] : [])) B.plane(ceil, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, CH, (r.z0 + r.z1) / 2, { down: true, tint: 0xf0f0ec });
     // ceiling lights: long glowing strips in a grid (not over the well)
     for (let x = -11; x <= 11; x += 3.6) for (const z of [-6, -1.5, 3, 7]) {
@@ -275,10 +286,10 @@ export class Mall {
    *  machines painted at its edges. */
   stub(Z, n, m, y, well, gapBelow = null) {
     const T = THEMES[m], B = Z.B;
-    const floor = Z.mat(photoNorm('tile_checker_floor', { rough: 0.48 }));
+    const floor = Z.mat(photoNorm('concrete', { rough: 0.5 }));
     const G = gapBelow || GAPS[n];
     const r = { x0: well.x0 - 3.5, x1: well.x1 + 3.5, z0: Math.min(well.z0, G.z0, G.z1) - 2.5, z1: Math.max(well.z1, G.z0, G.z1) + 2.5 };
-    for (const q of minusHoles(r, y > 0 ? [well] : [])) B.plane(floor, q.x1 - q.x0, q.z1 - q.z0, (q.x0 + q.x1) / 2, y, (q.z0 + q.z1) / 2, { tint: new THREE.Color(T.a).lerp(new THREE.Color(T.b), 0.55) });
+    for (const q of minusHoles(r, y > 0 ? [well] : [])) vct(B, floor, q, y, T);
     const paint = this.mats.paint, glow = this.mats.glow;
     if (y > 0) {
       B.plane(paint, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, y + CH, (r.z0 + r.z1) / 2, { down: true, tint: 0xf4f4f2 });

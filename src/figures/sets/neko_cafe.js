@@ -86,7 +86,7 @@ export function catHead(S, o = {}) {
     fill(C), ...hm, vol(blobs(blob([-2.3, -3.4, 7.8], [3.6, 3, 3.2]), blob([2.3, -3.4, 7.8], [3.6, 3, 3.2])), L),
     ...face({ at: [0, 0.8], gap: 9.2, r: o.eyeR ?? 1.6, eye: o.eye || 'dot', mouth: null, blush: o.blush === undefined ? 0xf09a9a : o.blush, col: o.eyeCol }),
     ...(o.face || []),
-    proj('front', pair(or(seg(6.6, -2.2, 10.2, -1.4, 0.34), seg(6.6, -3.3, 10.4, -3.7, 0.34))), o.whisker ?? tone(L, 0.45), { facing: 0.05 }),
+    o.whisker === false ? null : proj('front', pair(or(seg(6.6, -2.2, 10.2, -1.4, 0.34), seg(6.6, -3.3, 10.4, -3.7, 0.34))), o.whisker ?? tone(L, 0.45), { facing: 0.05 }),
     under(0.14), crown(0.06),
   );
   form(S, [0, 0, 0], HEAD, { pow: 2.3 });
@@ -97,7 +97,7 @@ export function catHead(S, o = {}) {
   S.ball([0, -1.95, 9.55], [1, 0.72, 0.6], { segs: 8, rings: 5 });
   for (const s of [1, -1]) {
     S.paint(fill(o.ear?.[s > 0 ? 0 : 1] ?? C), proj('front', ellipse(0, 3, 1.9, 2.8), PINK), under(0.15));
-    S.at([s * 5.4, 6.4, -0.6], [0.05, 0, -s * 0.4], () => blade(S, 7.6, 8, 2.2, { shape: 'ear', cup: 0.9 }));
+    S.at([s * (o.earX ?? 5.4), 6.4, -0.6], [0.05, 0, -s * (o.earTilt ?? 0.4)], () => blade(S, ...(o.earSize ?? [7.6, 8, 2.2]), { shape: o.earShape || 'ear', cup: 0.9 }));
   }
   o.onHead?.(S);
 }

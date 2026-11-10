@@ -101,10 +101,10 @@ export class Batch {
     g.translate(x, y + h / 2, z);
     return this.add(mat, g, o.tint, o.k);
   }
-  /** Upward plane at y (world UVs unless o.unit); o.down faces down (ceilings). */
+  /** Upward plane at y (world UVs unless o.unit, o.uv an offset); o.down faces down (ceilings). */
   plane(mat, w, d, x, y, z, o = {}) {
     const g = new THREE.PlaneGeometry(w, d);
-    if (!o.unit) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w * (o.s || 1), uv.getY(i) * d * (o.s || 1)); }
+    if (!o.unit) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w * (o.s || 1) + (o.uv?.[0] || 0), uv.getY(i) * d * (o.s || 1) + (o.uv?.[1] || 0)); }
     g.rotateX(-Math.PI / 2);
     if (o.down) g.rotateX(Math.PI);
     if (o.ry) g.rotateY(o.ry);

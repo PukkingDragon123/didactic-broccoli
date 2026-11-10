@@ -13,7 +13,7 @@ export default {
   themes: ['spooky', 'weird'],
   card: { bg: '#26203a', accent: '#b6f05a', text: '#f4eee0', accent2: '#ff6a8a', pattern: 'dots' },
   capsule: { colors: [0x6a3fa0, 0xb6f05a, 0xf5efe0, 0x2a2430, 0xff8a3a] },
-  atlas: [2048, 2560],
+  atlas: [2048, 2048],
   items: [
     {
       id: 'bikkuri', name: 'Pop-Up Kasa-obake', jp: 'びっくり唐傘', rarity: 'common',

@@ -165,7 +165,7 @@ export class Ramen {
     const K = new IKit(imats(conv)), F = K.at(O.x, 0, O.z, 0);
     const H = 2.6, TIL = 0xe4e0d2, WAIN = 0x6e4a2e, PLA = 0xe0d3b6, OAK = 0x5a3822;
     // ---- floor: red quarry tiles out front, wet concrete behind the counter; a drain channel by the sink
-    F.box('ftile', -3, -0.04, -0.25, 3, 0, 2.5, { tint: 0x94584a });
+    F.box('ftile', -3, -0.04, -0.25, 3, 0, 2.5, { tint: 0x8a6c60 });
     F.box('stain', -3, -0.04, -2.5, 3, -0.002, -0.25, { tint: 0x7c766c });
     F.box('zinc', -2.95, -0.003, -1.86, 2.95, 0.001, -1.76, { tint: 0x8a8e90 });
     for (let x = -2.9; x < 2.9; x += 0.05) F.box('flat', x, 0.0005, -1.85, x + 0.012, 0.0015, -1.77, { tint: 0x2e2c2a });

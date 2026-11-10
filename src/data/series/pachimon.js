@@ -13,7 +13,7 @@ export default {
   themes: ['cute', 'weird'],
   card: { bg: '#fff4f8', accent: '#8a5bd6', text: '#3a2440', accent2: '#ffd23f', pattern: 'stars' },
   capsule: { colors: [0xffffff, 0xffc2d4, 0xc7b3f0, 0xfff2b3], style: 'opaque' },
-  atlas: [2048, 2048],
+  atlas: [2048, 1536],
   items: [
     {
       id: 'chibikuma', name: 'Teary Chibikuma', jp: 'なきむしちびくま', rarity: 'common',

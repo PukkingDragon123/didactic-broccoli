@@ -13,7 +13,7 @@ export default {
   themes: ['nature', 'cute'],
   card: { bg: '#e2f3ef', accent: '#e0553a', text: '#25403b', accent2: '#f2b33d', pattern: 'waves' },
   capsule: { colors: [0x8fd8e6, 0xb07a4c, 0xffd21f, 0xffffff, 0xf08a6a] },
-  atlas: [2048, 2560],
+  atlas: [2048, 1536],
   items: [
     {
       id: 'yuzucapy', name: 'Yuzu-yu Capybara', jp: 'ゆず湯カピバラ', rarity: 'common',

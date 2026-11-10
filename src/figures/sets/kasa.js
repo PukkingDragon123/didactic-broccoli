@@ -236,7 +236,7 @@ export function amefuri(S) {
   S.clear(false);
   S.joint('hop', { slide: [0, 5, 0], min: 0, max: 1, rest: 0, g: [0, 1], idle: 0.04 }, () => {
     S.at([0, TOP + 0.4, 0], null, () => kid(S, {
-      cloth: COAT, shoes: 'boots', shoeCol: BOOT, hair: 'short', hairCol: 0x6a4a3a, eye: 'closed', mouth: 'smile',
+      cloth: COAT, shoes: 'boots', shoeCol: BOOT, hair: 'bald', eye: 'closed', mouth: 'smile',
       body: [[3.2, 0.05, 0.05, 0], [3.4, 7.4, 6.6, 0], [4.6, 7.8, 7, 0], [8.6, 7, 6, 0.2], [13.4, 6.4, 5.4, 0.4], [18.2, 6.1, 5, 0.3], [21.2, 5.4, 4.4, 0.2], [23.2, 3.4, 3, 0], [24, 0.05, 0.05, 0]],
       outfit: [proj('front', or(...[8, 12, 16, 20].map((y) => circle(1.4, y, 0.7))), 0xf6f2ea), proj('front', seg(0, 4, 0, 22.4, 0.4), tone(COAT, 0.2)), proj('front', or(rbox(-4, 9.6, 2, 0.4, 0), rbox(4.6, 9.6, 2, 0.4, 0)), tone(COAT, 0.25))],
       sleeve: COAT, hand: 0xf8d8c2, arms: [[7, 24, 3], [-8.4, 15.4, 5]], legCol: BOOT,
