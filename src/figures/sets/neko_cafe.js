@@ -1,7 +1,7 @@
 // Neko Kissaten Hidamari (ねこ喫茶ひだまり): chibi cats running a Shōwa coffee shop. Sculpt programs, in millimetres
 // (src/figures/sculpt.js); the series data is src/data/series/neko_cafe.js. The family look: every cat is the same
 // chibi sculpt (cat() below, also used by the other sets), each stands on the shop's wooden coaster.
-import { spline, ring } from '../sculpt.js';
+import { spline, ring, QUAL } from '../sculpt.js';
 import { loaf, paw, blade, eggShape } from '../anatomy.js';
 import {
   fill, proj, wrap, vol, shade, under, crown, face, stamp, tone, tint, EYE,
@@ -35,6 +35,8 @@ export function form(S, c, rows, o = {}) {
 const HEAD = [[-8.8, 0.05, 0.05, 0.8], [-8.3, 4.2, 3.6, 0.8], [-6.8, 7.8, 6.6, 0.7], [-4.4, 10.2, 8.4, 0.5], [-1.4, 11, 8.9, 0.3], [1.6, 10.8, 8.8, 0], [4.6, 9.7, 8.1, -0.2], [7, 7.6, 6.7, -0.3], [8.6, 4.6, 4.3, -0.3], [9.3, 0.05, 0.05, -0.3]];
 const BODY = [[7.4, 0.05, 0.05, 0], [7.7, 4.6, 4, 0], [9.2, 6.9, 6, 0.2], [11.8, 7.6, 6.6, 0.6], [15, 7.3, 6.4, 1], [18.2, 6.4, 5.6, 0.8], [21, 5, 4.4, 0.4], [23, 3.4, 3.1, 0.2], [23.9, 0.05, 0.05, 0]];
 const SEAT = [[0.6, 0.05, 0.05, -0.8], [0.9, 5.4, 5, -0.8], [2.6, 8.2, 7.2, -0.6], [6, 8.6, 7.6, -0.2], [10.6, 7.8, 6.8, 0.4], [14.6, 6.6, 5.8, 0.4], [18.4, 4.8, 4.2, 0.2], [20.6, 3, 2.8, 0], [21.4, 0.05, 0.05, 0]];
+/** Build something small (a figure at a fraction of its size) with fewer segments in the hand: fn() at QUAL x k. */
+export function fine(k, fn) { const q = QUAL.k; QUAL.k = Math.max(1, q * k); try { fn(); } finally { QUAL.k = q; } }
 export const dense = (prof, step = 2.5) => prof.flatMap((p, i) => { if (!i) return [p]; const q = prof[i - 1], n = Math.max(1, Math.ceil(Math.hypot(p[0] - q[0], p[1] - q[1]) / step)); return Array.from({ length: n }, (_, k) => [q[0] + (p[0] - q[0]) * (k + 1) / n, q[1] + (p[1] - q[1]) * (k + 1) / n]); });
 const PINK = 0xf0a2a6, CREAM = 0xf4ead2, GREEN = 0x3f8f6a, WOOD = 0x9b6b47, BROWN = 0x6a4430, COFFEE = 0x5a3424;
 
@@ -406,7 +408,7 @@ export function store(S) {
   S.box(-23.6, 8.4, -2.6, 5.6, 9.4, 1.4, { bevel: 0.3 });
   S.paint(fill(0xc89a6a));
   S.box(-22.4, 9.4, -9.4, 4, 10.6, -4.4);
-  S.at([-14, 10.6, -7.2], [0, 0.4, 0], () => cat(S, { coat: 0xeda45c, pose: 'sit', eye: 'closed', headJoint: { idle: 0.04 }, headMarks: [proj('front', or(seg(-1.7, 7.4, -1.3, 4.8, 0.75), seg(0, 8, 0, 5.2, 0.75), seg(1.7, 7.4, 1.3, 4.8, 0.75)), 0xc8743a)] }), 0.5);
+  fine(0.6, () => S.at([-14, 10.6, -7.2], [0, 0.4, 0], () => cat(S, { coat: 0xeda45c, pose: 'sit', eye: 'closed', headJoint: { idle: 0.04 }, headMarks: [proj('front', or(seg(-1.7, 7.4, -1.3, 4.8, 0.75), seg(0, 8, 0, 5.2, 0.75), seg(1.7, 7.4, 1.3, 4.8, 0.75)), 0xc8743a)] }), 0.5));
   S.clear(true);
   S.paint(fill(0xdcefe8));
   S.box(-21.6, 10.6, -1.9, 3.6, 30, -1.5);

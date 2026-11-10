@@ -7,7 +7,7 @@ import {
   fill, proj, wrap, vol, shade, under, crown, face, stamp, tone, tint, EYE,
   circle, ellipse, rbox, seg, arc, poly, star, or, and, cut, stroke, pair, repeatU, repeatV, label, kana, below, above, band, blob, blobs,
 } from '../paint.js';
-import { form, dense } from './neko_cafe.js';
+import { form, dense, fine } from './neko_cafe.js';
 import { kid } from './yokai.js';
 
 const MAKER = 'OMATSURI';
@@ -304,11 +304,11 @@ export function gyakuten(S) {
         S.cyl([0, -0.2, 0], 5.2, 0.2, { segs: 20, bevel: 0 });
       });
       // the prize: one very surprised child, sitting in the scoop
-      S.at([-17, 23, 4.6], [0.2, 0.3, 0.3], () => kid(S, {
+      fine(0.5, () => S.at([-17, 23, 4.6], [0.2, 0.3, 0.3], () => kid(S, {
         pose: 'kneel', cloth: KID, hair: 'short', eye: 'stare', mouth: 'o', eyeR: 1.6,
         outfit: [proj('front', or(seg(-3, 19, 1, 12.6, 1), seg(3, 19, -0.4, 14.6, 1)), WHITE), vol(band(10.4, 12.6), 0xf2c83a)],
         arms: [[7.6, 24, 3], [-7.6, 24, 3]], headJoint: false,
-      }, ), 0.34);
+      }), 0.34));
     });
   });
 }

@@ -12,7 +12,7 @@ export default {
   tagline: 'Open until the owner gets sleepy',
   taglineJp: 'いらっしゃい。',
   price: 500,
-  themes: ['town', 'retro', 'cute'],
+  themes: ['city', 'retro', 'cute'],
   card: { bg: '#f2e8da', accent: '#c8402e', text: '#3a2a20', accent2: '#3f6fb8', pattern: 'stripes' },
   capsule: { colors: [0xd9483a, 0x3f6fb8, 0x6fae7a, 0xf2e2c8, 0xc9ced4], style: 'tab' },
   atlas: [2048, 2048],

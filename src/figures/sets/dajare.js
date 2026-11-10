@@ -7,7 +7,7 @@ import {
   fill, proj, wrap, vol, shade, under, crown, face, stamp, tone, tint, EYE,
   circle, ellipse, rbox, seg, arc, poly, star, or, and, cut, stroke, pair, repeatU, repeatV, label, kana, below, above, band, blob, blobs,
 } from '../paint.js';
-import { cat, catHead, form, dense } from './neko_cafe.js';
+import { cat, catHead, form, dense, fine } from './neko_cafe.js';
 import { kid } from './yokai.js';
 
 const MAKER = 'DAJARE-YA';
@@ -19,7 +19,7 @@ const TOP = 4;
 function stage(S, r, pun, o = {}) {
   const h = o.kh ?? 2.1;
   S.paint(
-    fill(YEL, { rough: 0.45 }), vol(below(0.8), ORANGE), vol(band(3.4, 4), ORANGE), wrap(r, rbox(0, 2.1, pun.length * h * 0.56 + 2.4, 1.3, 0.4), CREAM), wrap(r, kana(pun, 0, 2.1, h), INK),
+    fill(YEL, { rough: 0.45 }), vol(below(0.8), ORANGE), vol(band(3.4, 3.9), ORANGE), wrap(r, rbox(0, 2.1, pun.length * h * 0.56 + 2.4, 1.3, 0.4), CREAM), wrap(r, kana(pun, 0, 2.1, h), INK),
     wrap(r, or(star(-pun.length * h * 0.56 - 4.6, 2.1, 1.1, 5, 0.45), star(pun.length * h * 0.56 + 4.6, 2.1, 1.1, 5, 0.45)), ORANGE),
     proj('top', or(...(o.dots ?? [[-0.6, 0.55], [0.5, -0.6], [0.65, 0.3]]).map(([x, z]) => circle(x * r, z * r, 0.9))), tint(YEL, 0.35)),
     under(0.2), ...stamp(MAKER, { c: 0x8a6a2a, px: 0.3 }),
@@ -161,7 +161,8 @@ export function ika(S) {
     S.at([2, TOP + 4.4, 1], [0, -0.3, 0], () => {
       S.paint(fill(SQUID, { rough: 0.35 }), ...fface(0, 6, { gap: 6, r: 1.4, eye: 'sleepy', mouth: null }), proj('back', or(circle(-2, 14, 0.9), circle(2, 18, 0.7), circle(0, 22, 0.8)), tone(SQUID, 0.2)), under(0.12), crown(0.06));
       form(S, [0, 0, 0], [[2.4, 0.05, 0.05, 0], [2.8, 4.8, 4.4, 0], [6, 5.8, 5.2, 0], [12, 5.4, 4.8, -0.4], [18, 4, 3.6, -0.8], [23, 2.2, 2, -1.2], [25.2, 0.05, 0.05, -1.4]], { n: 16 });
-      for (const s of [1, -1]) S.at([s * 3, 19, -1], [0, 0, -s * 1.1], () => blade(S, 7, 7, 0.8, { shape: 'round', cup: 0.4 }));
+      S.paint(fill(SQUID, { rough: 0.35 }), under(0.12));
+      for (const s of [1, -1]) S.at([s * 2.6, 21, -1], [0, 0, -s * 1.25], () => blade(S, 6.4, 6.6, 0.8, { shape: 'leaf', cup: 0.4 }));
       S.paint(fill(SQUID, { rough: 0.35 }), vol(below(0.8), tint(SQUID, 0.3)));
       for (let k = 0; k < 8; k++) { const a = (k / 8) * Math.PI * 2; S.tube(spline([[Math.sin(a) * 3, 2.6, Math.cos(a) * 3], [Math.sin(a) * 5.6, 0.6, Math.cos(a) * 5.6], [Math.sin(a + 0.4) * 8, 0.6, Math.cos(a + 0.4) * 8]], 2), (t) => lerp(1, 0.35, t), { sides: 5 }); }
       for (const s of [1, -1]) S.tube(spline([[s * 2, 2.4, 3], [s * 6, 1, 7.6], [s * 9, 1.2, 10]], 2), (t) => lerp(0.8, 0.5, t), { sides: 5 });
@@ -227,20 +228,20 @@ export function futon(S) {
   S.joint('futon', { pivot: [6, TOP + 34, -7.6], axis: 'x', min: -0.4, max: 0.4, rest: 0, g: [0, -0.3], idle: 0.08 }, () => {
     const dots = (x, y, z) => { const i = Math.round(x / 3.2), j = Math.round(z / 3.2); return Math.hypot(x - i * 3.2, z - j * 3.2) < 0.9 ? PATTERN : FUTON; };
     S.paint(fill(dots, { rough: 0.85 }), under(0.12));
-    S.at([4, TOP + 38, -14], [-0.9, -0.3, 0.25], () => drape(S, -12, -8, 12, 8, 0, { nx: 10, nz: 8, th: 3, fold: (u, v) => 3.6 * Math.sin(u * Math.PI * 1.4 + v * 2) + 2 * Math.sin(v * Math.PI) }));
+    S.at([8, TOP + 39, -12.6], [-1.05, -0.2, 0.3], () => drape(S, -12, -8, 12, 8, 0, { nx: 10, nz: 8, th: 3, fold: (u, v) => 3.6 * Math.sin(u * Math.PI * 1.4 + v * 2) + 2 * Math.sin(v * Math.PI) }));
     S.paint(fill(0x5fae5a, { rough: 0.4 }));
     S.box(5.4, TOP + 32.4, -9, 6.6, TOP + 36, -6.2, { bevel: 0.3 });
   });
   // the kid with the futon beater, too late
-  S.at([-6, TOP, 6], [0, 0.3, 0], () => kid(S, {
+  S.at([-9, TOP, 7], [0, 0.45, 0], () => kid(S, {
     cloth: 0x5a8ad8, shoes: 'shoes', shoeCol: 0xf6f2ea, hair: 'short', eye: 'stare', mouth: 'o', legCol: 0xf8d8c2,
     body: [[5.4, 0.05, 0.05, 0], [5.6, 5.6, 4.8, 0], [7, 6, 5.2, 0], [10, 5.8, 5, 0.2], [14, 5.8, 5, 0.4], [18.2, 6, 5, 0.3], [21.2, 5.4, 4.4, 0.2], [23.2, 3.4, 3, 0], [24, 0.05, 0.05, 0]],
     outfit: [vol(below(10.4), 0x3a3a52), proj('front', star(0, 17, 2, 5, 0.45), 0xf6d03a)],
     sleeve: 0x5a8ad8, arms: [[8, 28, 2], [-7.4, 14, 4]],
   }));
   S.paint(fill(0xd8b478, { rough: 0.5 }));
-  S.tube([[2.2, TOP + 27.6, 5.6], [5.4, TOP + 40, 3.6]], 0.5, { sides: 6 });
-  S.at([6, TOP + 42.6, 3.2], [0.3, 0.3, -0.25], () => { S.torus([0, 0, 0], 2.6, 0.45, { segs: 14, sides: 5 }); S.at([0, 0, 0], [0, 0, 0], () => S.tube(spline([[-2.6, 0, 0], [-1, 0, 1.4], [1, 0, -1.4], [2.6, 0, 0]], 2), 0.35, { sides: 4 })); });
+  S.tube([[-0.9, TOP + 27.6, 5.3], [2.4, TOP + 40, 3.6]], 0.5, { sides: 6 });
+  S.at([3, TOP + 42.6, 3.2], [0.3, 0.3, -0.25], () => { S.torus([0, 0, 0], 2.6, 0.45, { segs: 14, sides: 5 }); S.at([0, 0, 0], [0, 0, 0], () => S.tube(spline([[-2.6, 0, 0], [-1, 0, 1.4], [1, 0, -1.4], [2.6, 0, 0]], 2), 0.35, { sides: 4 })); });
 }
 
 // ------------------------------------------------------------------ 8. Samui Oyaji (secret)
@@ -273,7 +274,7 @@ export function samui(S) {
   });
   // the audience: frozen solid, in a block of ice
   S.at([11, TOP, 2], [0, -0.4, 0], () => {
-    for (const [x, c, a] of [[-3.4, 0x5fae5a, 0.1], [3.4, 0xf2a0b8, -0.1]]) S.at([x, 0.4, 0], [0, a, 0], () => kid(S, { cloth: c, shoes: 'shoes', hair: x < 0 ? 'short' : 'okappa', eye: 'stare', mouth: 'o', headJoint: false, arms: [[6, 22, 4], [-6, 22, 4]] }), 0.42);
+    fine(0.5, () => { for (const [x, c, a] of [[-3.4, 0x5fae5a, 0.1], [3.4, 0xf2a0b8, -0.1]]) S.at([x, 0.4, 0], [0, a, 0], () => kid(S, { cloth: c, shoes: 'shoes', hair: x < 0 ? 'short' : 'okappa', eye: 'stare', mouth: 'o', headJoint: false, arms: [[6, 22, 4], [-6, 22, 4]] }), 0.42); });
     S.clear(true);
     S.paint(fill(ICE));
     S.box(-8, 0, -5, 8, 22, 5, { bevel: 1.6 });

@@ -11,7 +11,7 @@ export default {
   tagline: 'Everything in the pencil case has a pulse',
   taglineJp: 'つくえの中は、どうぶつえん。',
   price: 300,
-  themes: ['school', 'cute', 'retro'],
+  themes: ['home', 'retro', 'cute'],
   card: { bg: '#f4efe0', accent: '#3f6fb8', text: '#2c3442', accent2: '#f2c23a', pattern: 'grid' },
   capsule: { colors: [0x3f6fb8, 0xf2c23a, 0x6cc0b0, 0xf2a0a8, 0xf6f4ee], style: 'tab' },
   atlas: [2048, 1536],

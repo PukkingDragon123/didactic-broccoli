@@ -114,6 +114,7 @@ function buildGeometry(type, spec, L, st, A) {
   V.LF = A.view('LF', { u: (p) => p[0], v: (p) => p[1], u0: -hw - 0.008, u1: hw + 0.008, v0: -0.03, v1: capH + 0.09, ppm: PPM });
   V.GL = A.patch('GL', 160, 150); V.COIN = A.patch('COIN', 96, 124); V.INSTR = A.patch('INSTR', 184, 112); V.CLOSED = A.patch('CLOSED', 120, 84);
   V.SIGN = A.patch('SIGN', 220, 64); V.WOOD = A.patch('WOOD', 128, 64); V.PRICE = A.patch('PRICE', 64, 64); V.CHOKE = A.patch('CHOKE', 84, 60); V.FLAP = A.patch('FLAP', 72, 60); V.HOOD = A.patch('HOOD', 72, 56); V.MAKER = A.patch('MAKER', 188, 46);
+  V.CHECK = A.patch('CHECK', 64, 64); V.COINS = A.patch('COINS', 112, 64); V.NEWS = A.patch('NEWS', 96, 96);
   V.FAIL = A.patch('FAIL', 204, 42); V.AGE = A.patch('AGE', 140, 22); V.SLOT = A.patch('SLOT', 104, 22); V.RET = A.patch('RET', 56, 22); V.OUT = A.patch('OUT', 90, 22); V.SAMPLE = A.patch('SAMPLE', 60, 22);
   paintAll(type, spec, L, st, A, V, { B, PN, TR, AC, worn, rnd });
 
@@ -199,6 +200,25 @@ function buildGeometry(type, spec, L, st, A) {
   if (type === 'retro') label(G, V.PRICE, HN.x + R * 0.2, HN.y + R + 0.03, 0.044, hd + 0.0012);
   labelSide(G, V.MAKER, 1, 0.02, yL - 0.06, 0.09, hw + 0.0012);
   labelSide(G, V.SIGN, -1, 0, y0 + lowH * 0.56, Math.min(0.2, d - 0.08), -hw - 0.0012);
+  // ---- the side panels: moulded stiffening ribs down the front and back edges, a hand-hold lip, louvres over the vents
+  //      (pressed beads on the old steel one), and the stickers a machine collects: the inspection seal, the coin
+  //      notice, the "new series in" burst
+  {
+    const ribUV = st.dark ? trimD : type === 'retro' ? sw(B[1], ROUGH.paint) : sw(B[3]), lipUV = st.dark ? sw(mix(st.body, 0x000000, 0.25)) : sw(B[2]);
+    for (const sx of [1, -1]) {
+      const x0 = sx * hw, x1 = sx * (hw + (type === 'retro' ? 0.0025 : 0.0045));
+      G.with(ribUV, 0, () => {
+        for (const zc of [hd - 0.03, -hd + 0.03]) G.box(Math.min(x0, x1), y0 + 0.032, zc - 0.005, Math.max(x0, x1), yL - 0.034, zc + 0.005, { bevel: 0.0018 });
+      });
+      G.with(lipUV, 0, () => {
+        G.box(Math.min(x0, x1), yL - 0.072, -0.05, Math.max(x0, x1), yL - 0.067, 0.05, { bevel: 0.0016 });
+        for (let k = 0; k < 5; k++) { const yy = y0 + 0.05 + k * 0.014 + 0.0034; G.box(Math.min(x0, sx * (hw + 0.003)), yy, -0.062, Math.max(x0, sx * (hw + 0.003)), yy + 0.0024, 0.062, { bevel: 0.0008 }); }
+      });
+    }
+    labelSide(G, V.CHECK, 1, -hd * 0.55, y0 + 0.17, 0.04, hw + 0.0012);
+    labelSide(G, V.COINS, 1, hd * 0.52, y0 + 0.165, 0.064, hw + 0.0012);
+    labelSide(G, V.NEWS, -1, hd * 0.5, yL - 0.075, 0.058, -hw - 0.0012);
+  }
   // ---- the tray under the chute: a floor, two cheeks, a lip
   const trayUV = st.dark ? sw(0x38363a, ROUGH.metal) : steel;
   G.with(trayUV, 0, () => {
@@ -626,6 +646,38 @@ function paintAll(type, spec, L, st, A, V, K) {
     P.text5('TEL 0120-55-0199', P.W - 4, P.H - 6, 0x6a5a20, { align: 'right' });
   }
   { const P = V.AGE; paper(P, 0xfff2b0, 0xb89020); kana(P, '対象年齢15才以上', P.W / 2, P.H - 3, 0x2a2428, { align: 'center' }); }
+  {
+    // the inspection seal: a round silver sticker, 点検済 over a date, a red ring stamped across it
+    const P = V.CHECK, c = P.W / 2;
+    P.box(0, 0, P.W, P.H, 0, 0);
+    P.disc(c, c, c - 0.5, CHROME[1]); P.disc(c, c, c - 3, CHROME[2]); P.ring(c, c, c - 6, c - 5, CHROME[0]);
+    kana(P, '点検済', c, c + 14, 0x2a2c30, { align: 'center' });
+    P.text5('99. 4. 7', c, c - 4, 0x2a2c30, { align: 'center' });
+    P.text5('KOTOBUKI', c, c - 14, 0x4a4e56, { align: 'center' });
+    P.ring(c + 9, c - 6, 9, 11, 0xc8402e); P.text5('OK', c + 9, c - 3, 0xc8402e, { align: 'center' });
+    if (worn) for (let k = 0; k < 6; k++) P.px(8 + k * 9, 50 - (k * 13) % 30, CHROME[3]);
+  }
+  {
+    // the coin notice: a coin, and what it takes
+    const P = V.COINS;
+    paper(P, white, 0x8a8a84);
+    P.box(1, P.H - 18, P.W - 1, P.H - 1, red);
+    kana(P, `${spec.price >= 1000 ? 100 : spec.price >= 500 ? 500 : 100}円玉専用`, P.W / 2, P.H - 3, white, { align: 'center' });
+    P.disc(22, 21, 15, 0xc9a24a); P.ring(22, 21, 12, 13, 0xa07a2a); P.text5(spec.price >= 500 && spec.price < 1000 ? '500' : '100', 22, 24, 0x6a4a1a, { align: 'center' });
+    P.text5(spec.price >= 1000 ? 'x10' : spec.price >= 500 ? 'x1' : `x${spec.price / 100}`, 74, 30, 0x2a2428, { align: 'center', s: 2 });
+    P.text5('COINS ONLY', 74, 12, 0x6a6a66, { align: 'center' });
+  }
+  {
+    // the "new series in!" burst: yellow, a red outline, slapped on a little crooked
+    const P = V.NEWS, c = P.W / 2;
+    P.box(0, 0, P.W, P.H, 0, 0);
+    for (let j = 0; j < P.H; j++) for (let i = 0; i < P.W; i++) {
+      const x = i - c + 0.5, y = j - c + 0.5, a = Math.atan2(y, x) + 0.2, r = Math.hypot(x, y), R2 = (c - 2) * (0.82 + 0.18 * Math.cos(a * 12));
+      if (r <= R2) P.px(i, j, r > R2 - 2.5 ? red : r > R2 - 4.5 ? 0xffffff : 0xffd23f);
+    }
+    kana(P, '新', c, c + 24, red, { align: 'center' }); kana(P, '入荷', c, c + 6, red, { align: 'center' });
+    P.text5('NEW!', c, c - 18, 0x2a2428, { align: 'center', s: 2 });
+  }
   {
     const P = V.CHOKE;
     paper(P, white, red);

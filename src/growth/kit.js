@@ -9,7 +9,7 @@
 //     zone.convert(obj)                swap every material under obj for its interior variant
 //     zone.block(x0, x1, z0, z1)       a player obstacle (zone-local rectangle)
 //     zone.hit(w, h, d, x, y, z, handler) / zone.target(obj, handler)    clickables, live only while you're inside
-//     zone.prop(id, x, y, z, ry, s)    a voxel prop (interior materials)
+//     zone.prop(id, x, y, z, ry, s)    a prop from propMesh, its own materials in their interior variants
 //   bright(m)  fluorescent-lit material: flat bright shop lighting from above, no sun, no sky tint (the Kaikan)
 //   Batch      the static batcher (vertex-coloured boxes merged into one mesh per material)
 //   pixTex(w, h, draw) / canvasMat(w, h, draw, opts)   pixel-art canvas textures (nearest filtering)

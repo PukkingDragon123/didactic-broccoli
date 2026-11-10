@@ -75,7 +75,7 @@ export function installRitual(g) {
   const finish = (it, cap, i) => {
     const s = cap.steps[i];
     it.data.seal = i + 1;
-    R.beat = 0.16; R.hold = 0; R.clicked = false; R.peelTick = -1; R.got = 0; R.notch = 0; R.lastNotch = -9; R.wrong = 0; R.snag = 0;
+    R.beat = 0.16; R.hold = 0; R.clicked = false; R.peelTick = -1; R.got = 0; R.notch = 0; R.lastNotch = -9; R.wrong = 0; R.snag = 0; R.slips = 0; R.slipBack = false;
     lookLock(false);
     if (s.kind === 'peel') {
       const band = cap.bands[cap.steps.slice(0, i).filter((x) => x.kind === 'peel').length];
@@ -147,12 +147,14 @@ export function installRitual(g) {
         if (l > RAD) { R.fx *= RAD / l; R.fy *= RAD / l; }
         const a = Math.atan2(R.fy, R.fx), da = wrapA(a - R.fa) * Math.min(1, l / (RAD * 0.55));
         R.fa = a;
-        let gain = dt * speed * 0.28 / s.dur; // (holding still: slowly)
+        let gain = dt * speed * 0.4 / s.dur; // (holding still: slowly)
+        R.snagCool = Math.max(0, (R.snagCool || 0) - dt);
         if (R.snag > 0) { R.snag -= dt; gain = 0; }
         else if (-da > 0.002) {
-          const w = -da / Math.max(dt, 1e-3);
-          if (w > K[0] * open) { R.snag = 0.32; R.kick = 0.35; say('Gently: the strip snagged'); audio.play('tapePeel', { vol: 0.5, pitch: 0.6 }); }
-          else gain += (-da / (Math.PI * 2)) * Math.min(1.5, speed);
+          const w = -da / Math.max(dt, 1e-3), turn = (-da / (Math.PI * 2)) * Math.min(1.5, speed);
+          // too quick on a rare capsule: the strip snags for a moment (and comes away grudgingly while you keep rushing)
+          if (w > K[0] * open) { if (R.snagCool <= 0) { R.snag = 0.3; R.snagCool = 1.2; R.kick = 0.35; say('Gently: the strip snagged'); audio.play('tapePeel', { vol: 0.5, pitch: 0.6 }); } else gain += turn * 0.35; }
+          else gain += turn;
           R.wrong = Math.max(0, R.wrong - dt * 2);
         } else if (da > 0.002) {
           R.wrong += da;
@@ -188,13 +190,13 @@ export function installRitual(g) {
       if (p < 0.55) {
         const auto = down && !press && R.hold > Math.max(0.5, gap * 1.8) && since > Math.max(0.5, gap * 1.8);
         if (press || auto) {
-          if (press && since < gap) {
-            R.slip = 0.35; R.kick = 0.3; R.lastNotch = g.time;
-            if (K[4] && R.notch > 0) R.notch--;
+          if (press && since < gap && (R.slips || 0) < 3) {
+            R.slip = 0.35; R.kick = 0.3; R.lastNotch = g.time; R.slips = (R.slips || 0) + 1;
+            if (K[4] && R.notch > 0 && !R.slipBack) { R.notch--; R.slipBack = true; } // (once a step: a lesson, not a trap)
             say('Too quick: your fingers slipped', 0.9);
             audio.play('twist', { dur: 0.12, vol: 0.45 });
           } else {
-            R.notch = Math.min(N, R.notch + 1); R.lastNotch = g.time; R.hold = auto ? 0.04 : R.hold;
+            R.notch = Math.min(N, R.notch + 1); R.lastNotch = g.time; R.hold = auto ? 0.04 : R.hold; R.slips = 0;
             audio.play('lugClick', { vol: R.notch >= N ? 1 : 0.7, pitch: 0.9 + R.notch * 0.06 }); R.kick = R.notch >= N ? 0.8 : 0.35;
             if (R.notch >= N) try { g.effects.sparks({ pos: at(cap, 0.7, 0, 0.7), count: 3, colors: [0xffffff], speed: 0.3, size: 0.007, life: 0.3 }); } catch { /* */ }
           }

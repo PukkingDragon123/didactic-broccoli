@@ -11,7 +11,7 @@ export default {
   tagline: 'Washed, wrung out, pegged up',
   taglineJp: 'きょうは、よく乾く。',
   price: 200,
-  themes: ['home', 'cute', 'funny'],
+  themes: ['home', 'cute', 'weird'],
   card: { bg: '#e4f0f6', accent: '#4f8fc0', text: '#2a3442', accent2: '#f2a7b0', pattern: 'stripes' },
   capsule: { colors: [0x8fbcd2, 0xf2a7b0, 0x9fd6c2, 0xf6d77a], style: 'clear' },
   atlas: [2048, 1536],

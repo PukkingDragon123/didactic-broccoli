@@ -11,8 +11,8 @@ export default {
   tagline: 'Simmered since this morning',
   taglineJp: 'あさから、ぐつぐつ。',
   price: 400,
-  themes: ['food', 'cute', 'funny'],
-  card: { bg: '#f6ecd6', accent: '#b8783e', text: '#3a2a20', accent2: '#3a4f8a', pattern: 'checks' },
+  themes: ['food', 'cute', 'weird'],
+  card: { bg: '#f6ecd6', accent: '#b8783e', text: '#3a2a20', accent2: '#3a4f8a', pattern: 'checker' },
   capsule: { colors: [0xf6f3ea, 0xd9a24a, 0x3a4f8a, 0xc89a4a], style: 'paper' },
   atlas: [2048, 1536],
   flyer: {

@@ -8,7 +8,7 @@ import {
   fill, proj, vol, shade, under, crown, face, stamp, tone, tint, EYE,
   circle, ellipse, rbox, seg, arc, poly, star, or, and, stroke, pair, repeatU, repeatV, label, kana, below, above, band, blob, blobs,
 } from '../paint.js';
-import { cat, catHead, form, dense } from './neko_cafe.js';
+import { cat, catHead, form, dense, fine } from './neko_cafe.js';
 
 const MAKER = 'KISHA-DO';
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -323,7 +323,7 @@ export function mujineki(S) {
   S.box(-23, 15.2, 3.6, -9, 16.2, 8.4, { bevel: 0.3 });
   S.box(-23, 16.2, 3.4, -9, 20.6, 4.2, { bevel: 0.3 });
   for (const x of [-22, -10]) S.box(x - 0.6, 11, 4.4, x + 0.6, 15.2, 7.6);
-  S.at([-14, 16.2, 6.2], [0, 0.2, 0], () => cat(S, { coat: 0xb8b4bc, pose: 'sit', eye: 'sleepy', headMarks: [proj('front', or(seg(-1.7, 7.4, -1.3, 4.8, 0.75), seg(0, 8, 0, 5.2, 0.75), seg(1.7, 7.4, 1.3, 4.8, 0.75)), 0x8a8692)], headJoint: { axis: 'x', pivot: [0, 19, 0.4], min: -0.4, max: 0.2, g: [0, -0.3], idle: 0.03 } }), 0.42);
+  fine(0.6, () => S.at([-14, 16.2, 6.2], [0, 0.2, 0], () => cat(S, { coat: 0xb8b4bc, pose: 'sit', eye: 'sleepy', headMarks: [proj('front', or(seg(-1.7, 7.4, -1.3, 4.8, 0.75), seg(0, 8, 0, 5.2, 0.75), seg(1.7, 7.4, 1.3, 4.8, 0.75)), 0x8a8692)], headJoint: { axis: 'x', pivot: [0, 19, 0.4], min: -0.4, max: 0.2, g: [0, -0.3], idle: 0.03 } }), 0.42));
   // the name board: this station in big kana, the neighbours small
   S.paint(fill(0xf6f2ea), proj('front', kana('いなか', 0, 25.6, 3.4), 0x2e2a30), proj('front', rbox(0, 22.4, 7.4, 0.6, 0), 0x2f5fb8), proj('front', label('<  YAMA', -4.4, 20.6, 0.2), 0x2e2a30, { hard: true }), proj('front', label('UMI  >', 4.6, 20.6, 0.2), 0x2e2a30, { hard: true }), under(0.2));
   S.box(-0.4 - 7.6, 19.4, 9.6, 7.6 - 0.4, 28.4, 10.4, { bevel: 0.3 });
