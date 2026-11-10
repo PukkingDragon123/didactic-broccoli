@@ -18,11 +18,14 @@ export function pole(t, x, z, o = {}) {
   B.cyl(m.metal, 0.11, 0.1, 0.06, 0, POLE.top, 0, { tint: STEEL, sides: 8 });
   // step bolts, alternating, from above head height
   for (let y = 1.85, i = 0; y < POLE.top - 0.9; y += 0.45, i++) { const sx = i % 2 ? 1 : -1; B.rod(m.metal, [sx * (rad(y) - 0.02), y, 0], [sx * (rad(y) + 0.14), y, 0], 0.009, { tint: 0x7a7e80, sides: 4 }); }
+  // steel bands where the fittings clamp on, each with its bolt lugs
+  const band = (y, h = 0.05) => { const r = rad(y) + 0.007; B.lathe(m.metal, [[r, 0], [r + 0.003, 0.008], [r + 0.003, h - 0.008], [r, h]], 0, y, 0, { tint: STEEL, sides: 10 }); for (const sx of [-1, 1]) B.box(m.metal, 0.03, h * 0.7, 0.05, sx * (r + 0.012), y + h * 0.15, 0, { tint: 0x777f83, bevel: 0.006 }); };
+  for (const y of [POLE.hv - 0.24, POLE.hv - 0.72, POLE.lv[0] - 0.04, POLE.lv[2] - 0.04, POLE.tel - 0.05, 2.9]) band(y);
   // the high-voltage crossarm, its braces and three pin insulators
   const ya = POLE.hv - 0.2;
   B.box(m.metal, 0.07, 0.07, POLE.arm, 0, ya, -0.1, { tint: STEEL });
   for (const sz of [-1, 1]) B.beam(m.metal, [0, ya - 0.5, 0], [0, ya, sz * 0.55 - 0.1], 0.03, { tint: STEEL });
-  for (const dz of [-0.8, -0.4, 0.8]) B.lathe(m.gloss, [[0.02, 0], [0.02, 0.07], [0.055, 0.08], [0.06, 0.12], [0.03, 0.14], [0.05, 0.17], [0.025, 0.2]], 0, ya + 0.07, dz, { tint: PORC, sides: 7, caps: 't' });
+  for (const dz of [-0.8, -0.4, 0.8]) { B.lathe(m.metal, [[0.012, 0], [0.012, 0.09]], 0, ya + 0.07, dz - 0.1, { tint: STEEL, sides: 5 }); B.lathe(m.gloss, [[0.03, 0], [0.058, 0.012], [0.064, 0.03], [0.058, 0.05], [0.032, 0.058], [0.034, 0.075], [0.052, 0.085], [0.054, 0.1], [0.036, 0.112], [0.03, 0.135], [0.012, 0.14]], 0, ya + 0.14, dz - 0.1, { tint: PORC, sides: 8, caps: 't' }); }
   B.rod(m.metal, [0, POLE.top + 0.06, 0], [0, POLE.top + 0.3, 0], 0.012, { tint: STEEL, sides: 4 });
   // the low-voltage rack: three spools stacked on the far side
   for (const y of POLE.lv) { B.box(m.metal, 0.04, 0.03, 0.12, 0, y - 0.015, rad(y) + 0.05, { tint: STEEL }); B.cyl(m.gloss, 0.03, 0.03, 0.06, 0, y - 0.03, rad(y) + 0.13, { tint: PORC, sides: 6 }); }

@@ -437,7 +437,6 @@ KITS.forEach(([name, c0, c1], i) => {
 ['みかん', 'ラムネ', 'こわれもの', ''].forEach((t, i) => {
   N['card' + i] = () => {
     const p = new Px(128, 80); p.fill(0xc49a62);
-    for (let y = 0; y < 80; y += 4) p.rect(0, y, 128, 1, 0xb88e58);
     p.rect(0, 34, 128, 12, 0xd9c58e); p.rect(0, 34, 128, 1, 0xc0aa72); p.rect(0, 45, 128, 1, 0xc0aa72);
     const c = i === 1 ? 0x2a5aa8 : 0x8a2a1a;
     if (t) { putc(p, x2(bold(mk(t, 16))).w < 120 ? x2(bold(mk(t, 16))) : KB(t), 64, t.length > 3 ? 6 : 2, c); if (i === 0) atc(p, A_('citrus', 0xb86a2a, 0xc49a62), 20, 78); if (i === 2) { p.rect(96, 50, 2, 22, c); p.poly([[97, 46], [90, 56], [104, 56]], c); p.rect(108, 50, 2, 22, c); p.poly([[109, 46], [102, 56], [116, 56]], c); } }

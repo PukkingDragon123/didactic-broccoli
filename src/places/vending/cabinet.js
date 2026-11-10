@@ -100,8 +100,8 @@ function paintFront(L) {
   // vent slots at the foot, right
   for (let k = 0; k < 7; k++) box(0.22, 0.085 + k * 0.022, 0.45, 0.095 + k * 0.022, dk(L.body, 0.45));
   // wear, by rule: scuffs along the kick band, a run of grime under each corner of the window frame
-  for (let x = 6; x < W - 6; x += 7) if ((x * 37) % 11 < 4) p.rect(x, H - 12 - ((x * 13) % 9), 3, 1, dk(L.body, 0.3));
-  for (const gx of [X(w.x0 - 0.012), X(w.x1 + 0.008)]) for (let k = 0; k < 22; k++) if (k % 3 !== 2) p.set(gx + (k > 12 ? 1 : 0), Y(w.y0 - 0.016) + k, dk(L.door, 0.16));
+  for (const [sx, sy, sw2] of [[38, 14, 26], [120, 9, 14], [214, 17, 34], [300, 11, 18], [388, 15, 22]]) p.rect(sx, H - sy, sw2, 1, dk(L.body, 0.3)); // scuffs where feet kick it
+  for (const gx of [X(w.x0 - 0.012), X(w.x1 + 0.008)]) { p.rect(gx, Y(w.y0 - 0.016), 1, 16, dk(L.door, 0.16)); p.rect(gx + 1, Y(w.y0 - 0.016) + 9, 1, 12, dk(L.door, 0.12)); } // a run of grime under each corner of the frame
   return p;
 }
 function paintSide(L) {
@@ -123,14 +123,14 @@ function paintSide(L) {
   for (let k = 0; k < 9; k++) { p.rect(18, Y(0.26) + k * 9, 70, 4, dk(L.body, 0.5)); p.rect(18, Y(0.26) + k * 9 + 4, 70, 1, lt(L.body, 0.2)); }
   for (let y = 22; y < H - 10; y += 62) { p.rect(9, y, 2, 2, lt(L.body, 0.35)); p.rect(W - 11, y, 2, 2, lt(L.body, 0.35)); }
   // rain marks down from the top edge, rust starting at the foot
-  for (let x = 14; x < W - 10; x += 23) for (let k = 0; k < 18 + (x * 7) % 26; k++) if (k % 4 !== 3) p.set(x + ((k > 20) ? 1 : 0), 8 + k, dk(L.body, 0.2));
-  for (let x = 10; x < W - 10; x += 5) { const h = (x * 53) % 7; if (h > 3) p.rect(x, H - 6 - h, 3, h, 0x8a4a26); }
+  // three rain marks down from the roof edge, a patch of rust at the back foot: placed, not scattered
+  for (const [x, len] of [[40, 34], [150, 22], [262, 46]]) { p.rect(x, 8, 1, len, dk(L.body, 0.2)); p.rect(x + 1, 8 + Math.round(len * 0.4), 1, Math.round(len * 0.5), dk(L.body, 0.14)); }
+  p.rect(12, H - 12, 22, 6, 0x8a4a26); p.rect(16, H - 15, 10, 3, 0x8a4a26); p.rect(20, H - 17, 4, 2, 0xa8602e); p.rect(13, H - 9, 6, 2, 0x5e2e14);
   return p;
 }
 function paintTop(L) {
   const p = new Px(250, 180); p.fill(dk(L.body, 0.1));
   p.frame(6, 6, 238, 168, dk(L.body, 0.3)); for (let k = 0; k < 6; k++) p.rect(40 + k * 30, 30, 18, 60, dk(L.body, 0.4));
-  for (let i = 0; i < 60; i++) p.set((i * 67) % 250, (i * 41) % 180, lt(L.body, 0.25));
   return p;
 }
 function paintInner(L) {

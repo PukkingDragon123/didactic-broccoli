@@ -3,7 +3,6 @@
 // things), and the small print real labels are made of (rules, barcodes, warning marks, little mascots).
 // Every design here is original.
 import { mix } from '../../vehicles/paint.js';
-import { seeded } from '../../vehicles/paint.js';
 import { lighten, darken } from './kit.js';
 
 // ------------------------------------------------------------------ kana / kanji
@@ -45,21 +44,24 @@ export function kana(K, V, text, i, j, col, o = {}) {
 }
 
 // ------------------------------------------------------------------ small print
-/** Lines of "small print": broken rules of ink, w wide, starting at the top-left (i, j). */
+const WORDS = [4, 2, 5, 3, 6, 2, 4, 3, 5, 2, 3, 6, 4, 2, 5, 3, 3, 4, 2, 6, 5, 3, 4, 2];
+const LAST = [0.7, 0.5, 0.82, 0.6, 0.45, 0.75];
+/** Lines of "small print" (greeked text, the way pixel labels set it): a hand-set rhythm of word lengths, w wide, from the top-left (i, j). */
 export function smallPrint(V, i, j, w, lines, col, o = {}) {
-  const r = seeded(o.seed ?? (i * 31 + j * 7 + w));
+  let k = (o.seed ?? 0) * 5;
   for (let l = 0; l < lines; l++) {
     let x = i;
-    const end = i + (l === lines - 1 ? Math.round(w * (0.45 + r() * 0.4)) : w);
-    while (x < end) { const n = 2 + Math.floor(r() * 5); V.hline(x, Math.min(end, x + n) - 1, j - l * (o.lh ?? 3), col); x += n + 1 + (r() < 0.3 ? 1 : 0); }
+    const end = i + (l === lines - 1 ? Math.round(w * LAST[((o.seed ?? 0) + lines) % LAST.length]) : w);
+    while (x < end) { const n = WORDS[k++ % WORDS.length]; V.hline(x, Math.min(end, x + n) - 1, j - l * (o.lh ?? 3), col); x += n + 2; }
   }
 }
+const BARS = [1, 1, 2, 1, 3, 1, 1, 2, 2, 1, 1, 3, 1, 2, 1, 1, 2, 3, 1, 1, 2, 1, 1, 2];
 /** A barcode w x h px with its number line; (i, j) bottom-left. */
-export function barcode(V, i, j, w, h, ink = 0x1a1a1a, bg = 0xffffff, seed = 5) {
-  const r = seeded(seed);
+export function barcode(V, i, j, w, h, ink = 0x1a1a1a, bg = 0xffffff, seed = 0) {
   V.box(i, j, i + w, j + h, bg);
-  for (let x = i + 1; x < i + w - 1;) { const n = r() < 0.3 ? 2 : 1; if (r() < 0.62) V.box(x, j + 2, Math.min(i + w - 1, x + n), j + h - 1, ink); x += n; }
-  for (let x = i + 1; x < i + w - 1; x += 2) V.px(x, j + 1, ink);
+  let x = i + 1;
+  for (let k = seed; x < i + w - 1; k++) { const n = BARS[k % BARS.length]; if (k % 2 === 0) V.box(x, j + 2, Math.min(i + w - 1, x + n), j + h - 1, ink); x += n; }
+  for (let xx = i + 1; xx < i + w - 1; xx += 2) V.px(xx, j + 1, ink);
 }
 /** A warning triangle (yellow, black edge, an exclamation mark): centre-bottom at (ci, j), `s` px tall. */
 export function warnTri(V, ci, j, s = 11, col = 0xf5c518, ink = 0x1e1e1e) {
@@ -113,43 +115,63 @@ export function hazard(V, i0, j0, i1, j1, a = 0xf5c518, b = 0x24221e, w = 6) {
 }
 
 // ------------------------------------------------------------------ shared painted textures
-/** A board's grain (160 x 20 px, the grain along the width): lit top edge, shaded bottom, broken grain lines, a knot, nails. */
+// ------------------------------------------------------------------ surfaces from the photo texture library
+// Wood and the like are real photographs cleaned into cartoon textures (src/kit/photoTex.js, shared by the whole
+// game). The prop atlases copy a strip of the photo into their own page, tinted to the prop's colour, so a board
+// still draws with the page's one material. Until the library has the picture (or where it is missing) the
+// region is a flat, hand-toned colour: nothing here is generated.
+let PHOTO = {};
+try { PHOTO = import.meta.glob('../../kit/photoTex.js'); } catch { PHOTO = {}; }
+let photoWait = null;
+const photoLib = () => { const f = Object.values(PHOTO)[0]; return f ? (photoWait ||= f().catch(() => null)) : null; };
+/** Copy a strip of photo `name` into region V, its tones carried onto colour `tint` (the photo's own colours if null). */
+export function photoInto(K, V, name, tint = null, after = null) {
+  const lib = photoLib(), A = K.A;
+  if (!lib || typeof document === 'undefined') return;
+  lib.then((m) => {
+    if (!m?.photoTex) return;
+    let tex = null;
+    try { tex = m.photoTex(name, {}); } catch { return; }
+    const go = () => {
+      const img = tex?.image;
+      if (!img || !(img.width > 8) || !(img.height > 8)) return false;
+      const c = document.createElement('canvas'); c.width = V.W; c.height = V.H;
+      const g = c.getContext('2d', { willReadFrequently: true }), sh = Math.min(img.height, Math.max(8, Math.round((img.width * V.H) / V.W)));
+      try { g.drawImage(img, 0, Math.floor((img.height - sh) / 2), img.width, sh, 0, 0, V.W, V.H); } catch { return true; }
+      const d = g.getImageData(0, 0, V.W, V.H).data;
+      let mean = 0;
+      for (let k = 0; k < d.length; k += 4) mean += d[k] + d[k + 1] + d[k + 2];
+      mean = mean / (d.length / 4) / 3 || 128;
+      const tr = tint === null ? 0 : (tint >> 16) & 255, tg = tint === null ? 0 : (tint >> 8) & 255, tb = tint === null ? 0 : tint & 255, cl = (v) => Math.max(0, Math.min(255, Math.round(v)));
+      for (let y = 0; y < V.H; y++) for (let x = 0; x < V.W; x++) {
+        const k = (y * V.W + x) * 4, l = (d[k] + d[k + 1] + d[k + 2]) / 3 / mean;
+        V.px(x, V.H - 1 - y, tint === null ? (d[k] << 16) | (d[k + 1] << 8) | d[k + 2] : (cl(tr * l) << 16) | (cl(tg * l) << 8) | cl(tb * l));
+      }
+      if (after) after(V);
+      A.touch();
+      return true;
+    };
+    if (!go()) { let n = 0; const t = setInterval(() => { if (go() || ++n > 60) clearInterval(t); }, 500); }
+  });
+}
+/** A board (160 x 20 px, the grain along the width): the wood photo tinted to the board's colour; a lit top edge, a shaded bottom, cut ends and two nail heads drawn by hand. */
 export function plankTex(K, c, v = 0) {
   return K.patch(`plank:${c}:${v}`, 160, 20, (V) => {
-    const W = V.W, H = V.H, r = seeded(c + v * 977 + 3), dk = darken(c, 0.22), dk2 = darken(c, 0.42), lt = lighten(c, 0.22);
-    V.fill(c);
-    V.box(0, H - 2, W, H, lt); V.box(0, 0, W, 2, dk);
-    for (const j0 of [5, 9, 13, 16]) {
-      let j = j0 + Math.floor(r() * 2), i = Math.floor(r() * 12);
-      while (i < W) {
-        const n = 10 + Math.floor(r() * 30);
-        V.hline(i, Math.min(W - 1, i + n), j, dk);
-        i += n + 2 + Math.floor(r() * 9);
-        if (r() < 0.5) j += r() < 0.5 ? 1 : -1;
-        j = Math.max(3, Math.min(H - 4, j));
-      }
-    }
-    // a knot the grain flows round
-    const kx0 = Math.round(W * (0.2 + r() * 0.6)), ky = 6 + Math.floor(r() * 8);
-    V.ring(kx0, ky, 1.2, 2.6, dk2); V.px(kx0, ky, dk); V.hline(kx0 - 7, kx0 - 4, ky + 3, dk); V.hline(kx0 + 3, kx0 + 7, ky - 3, dk);
-    // the ends: a dark cut edge, a nail head each side
-    V.box(0, 0, 2, H, dk); V.box(W - 2, 0, W, H, dk);
-    for (const i of [7, W - 8]) { V.box(i, 9, i + 2, 11, dk2); V.px(i, 11, lt); }
+    const W = V.W, H = V.H, dk = darken(c, 0.22), dk2 = darken(c, 0.42), lt = lighten(c, 0.2);
+    const trim = (V) => { V.box(0, H - 2, W, H, lt); V.box(0, 0, W, 2, dk); V.box(0, 0, 2, H, dk); V.box(W - 2, 0, W, H, dk); for (const i of [7, W - 8]) { V.box(i, 9, i + 2, 11, dk2); V.px(i, 11, lt); } };
+    V.fill(c); trim(V);
+    photoInto(K, V, v % 2 ? 'wood_weathered' : 'wood_planks', c, trim);
   }, { shared: true, rough: 0.8 });
 }
-/** The dirt line at the foot of a thing (64 x 16): the surface colour above, a ragged splash of dirt below. */
-export function dirtTex(K, base, dirt = 0x5c5446, v = 0) {
-  return K.patch(`dirt:${base}:${dirt}:${v}`, 64, 16, (V) => {
-    const W = V.W, H = V.H, r = seeded(base + dirt + v * 31), a = mix(base, dirt, 0.38), b = mix(base, dirt, 0.68);
+// the dirt line's top edge, set by hand (pixels of height along its 64 columns): a few low splashes and one tall run
+const DIRT = [5, 5, 6, 6, 7, 8, 8, 7, 6, 6, 5, 5, 5, 6, 7, 9, 10, 11, 11, 10, 8, 7, 6, 5, 5, 5, 5, 6, 6, 7, 7, 6, 6, 5, 5, 6, 8, 9, 9, 8, 7, 6, 5, 5, 5, 5, 6, 7, 8, 10, 12, 12, 11, 9, 7, 6, 6, 5, 5, 5, 6, 6, 5, 5];
+/** The dirt line at the foot of a thing (64 x 16): the surface colour above, splashed dirt below (a hand-set edge). */
+export function dirtTex(K, base, dirt = 0x5c5446) {
+  return K.patch(`dirt:${base}:${dirt}`, 64, 16, (V) => {
+    const a = mix(base, dirt, 0.38), b = mix(base, dirt, 0.68);
     V.fill(base);
-    const bumps = Array.from({ length: 6 }, (_, k) => ({ c: (k + 0.2 + r() * 0.6) * (W / 6), s: 4 + r() * 6, h: 3 + r() * 6 }));
-    for (let i = 0; i < W; i++) {
-      let top = 5;
-      for (const m of [...bumps, { ...bumps[0], c: bumps[0].c + W }, { ...bumps[5], c: bumps[5].c - W }]) top = Math.max(top, 5 + m.h * Math.max(0, 1 - ((i - m.c) / m.s) ** 2));
-      top = Math.round(top);
-      for (let j = 0; j < top; j++) V.px(i, j, j < Math.max(2, top - 5) ? b : a);
-    }
-    for (let k = 0; k < 7; k++) { const i = Math.floor(r() * W), j = 11 + Math.floor(r() * 4); V.px(i, j, a); if (r() < 0.4) V.px(i + 1, j, a); }
+    for (let i = 0; i < 64; i++) for (let j = 0; j < DIRT[i]; j++) V.px(i, j, j < Math.max(2, DIRT[i] - 5) ? b : a);
+    for (const [i, j] of [[9, 12], [22, 11], [23, 11], [40, 13], [57, 12]]) V.px(i, j, a);
   }, { shared: true, rough: 0.95 });
 }
 /** Wire mesh as a cut-out (glass slot): w x h px, a wire every `cell` px on a see-through ground. Shared per page. */
@@ -176,17 +198,15 @@ export function louvres(V, i0, j0, i1, j1, c, step = 4) {
   for (let j = j0; j < j1; j += step) { V.box(i0, j, i1, j + 1, lt); V.box(i0, j + 1, i1, j + Math.max(2, step - 1), dk); }
   V.frame(i0 - 1, j0 - 1, i1 + 1, j1 + 1, darken(c, 0.25));
 }
-/** Rust creeping up from an edge at row j0 between columns i0..i1 (a few blisters, seeded). */
-export function rustEdge(V, i0, i1, j0, h, seed = 1, base = 0x8a4a26) {
-  const r = seeded(seed), n = Math.max(1, Math.round((i1 - i0) / 26));
-  for (let k = 0; k < n; k++) {
-    const c = i0 + (i1 - i0) * ((k + 0.2 + r() * 0.6) / n), w = 6 + r() * 12, hh = h * (0.4 + r() * 0.6);
-    for (let i = Math.round(c - w); i <= Math.round(c + w); i++) {
-      if (i < i0 || i >= i1) continue;
-      const top = Math.round(hh * Math.max(0, 1 - ((i - c) / w) ** 2));
-      for (let j = 0; j < top; j++) V.px(i, j0 + j, j === top - 1 ? mix(base, 0xd08850, 0.4) : (i + j * 3 + seed) % 5 === 0 ? mix(base, 0x2a160c, 0.5) : base);
-    }
-  }
+const RUST = [
+  ['....a.....', '...aba....', '..abbba..a', '.abbcbbaab', 'abbcbbbbba', 'bbbbcbbcbb'],
+  ['..a.......', '.aba...a..', 'abbba.aba.', 'bbcbbabbba', 'bcbbbbbcbb'],
+  ['...a....', '..aba...', '.abbbaa.', 'abbcbbba', 'bbbbbcbb'],
+];
+/** Rust creeping up from an edge at row j0 between columns i0..i1: hand-drawn blisters set at even steps (h picks the size). */
+export function rustEdge(V, i0, i1, j0, h, seed = 0, base = 0x8a4a26) {
+  const L = { a: mix(base, 0xd08850, 0.4), b: base, c: mix(base, 0x2a160c, 0.5) }, step = h > 9 ? 34 : 46;
+  for (let x = i0 + 8 + (seed % 3) * 6, k = seed; x < i1 - 12; x += step, k++) { const S = RUST[k % RUST.length]; V.sprite(S, L, x, j0 + S.length - 1); }
 }
 /** A sticker: a framed label with one line of 5x7 text. */
 export function sticker(V, i, j, w, h, bg, ink, text, o = {}) {

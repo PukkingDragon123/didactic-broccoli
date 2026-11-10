@@ -28,6 +28,24 @@ export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = tr
   const B = t.B, m = t.m, th = 0.15, zc = z - side * th / 2, wm = mat || m.block, oya = wm === m.oya;
   h = Math.round(h / 0.2) * 0.2 + (oya ? 0.1 : 0);
   B.push(0, 0, zc, side > 0 ? 0 : Math.PI); // local +z = toward the lane
+  // every block stands a few millimetres proud of its joints, its arrises chamfered (the paint's joints lie between)
+  const relief = (xa, xb, y0, y1) => {
+    const bw = oya ? 0.9 : 0.4, bh = oya ? 0.3 : 0.2, zf = th / 2, g = 0.007, d = 0.006, P = [], T = [];
+    const q = (pts) => { for (const i of [0, 1, 2, 0, 2, 3]) { P.push(pts[i][0], pts[i][1], pts[i][2]); T.push(pts[i][0], pts[i][1]); } };
+    for (let r = Math.round(y0 / bh); r * bh < y1 - 0.02; r++) {
+      const off = r % 2 === 0 ? bw / 2 : 0, yb = r * bh, yt = Math.min(y1, yb + bh);
+      for (let k = Math.floor((xa - off) / bw); k * bw + off < xb; k++) {
+        const x0 = Math.max(xa, k * bw + off), x1 = Math.min(xb, (k + 1) * bw + off);
+        if (x1 - x0 < 0.07) continue;
+        const ax = x0 + g, ay = yb + g, cx = x1 - g, cy = yt - g, ix = ax + d, iy = ay + d, jx = cx - d, jy = cy - d, zo = zf + d;
+        q([[ix, iy, zo], [jx, iy, zo], [jx, jy, zo], [ix, jy, zo]]);
+        q([[ax, ay, zf], [cx, ay, zf], [jx, iy, zo], [ix, iy, zo]]); q([[ix, jy, zo], [jx, jy, zo], [cx, cy, zf], [ax, cy, zf]]);
+        q([[ax, ay, zf], [ix, iy, zo], [ix, jy, zo], [ax, cy, zf]]); q([[cx, ay, zf], [cx, cy, zf], [jx, jy, zo], [jx, iy, zo]]);
+      }
+    }
+    B.tris(wm, P, T, { tint });
+  };
+  const cope = (xa, xb, y, w = th) => B.extrude(m.concrete, [[-w / 2 - 0.03, 0], [w / 2 + 0.03, 0], [w / 2 + 0.03, 0.022], [w / 2 - 0.012, 0.062], [-w / 2 + 0.012, 0.062], [-w / 2 - 0.03, 0.022]], xa - 0.02, xb + 0.02, { along: 'x', oy: y, tint: cap });
   const X = (x) => (side > 0 ? x : -x), cap = oya ? 0xa9ab98 : 0xb6b2a8;
   let x = x0;
   for (const [a, b] of [...gaps, [x1, x1]]) {
@@ -49,8 +67,9 @@ export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = tr
           run = bx + 0.4;
         }
         if (xb - run > 0.01) B.box(wm, xb - run, 0.2, th, (run + xb) / 2, dy, 0, { uv: [run, dy], tint, skip: 'ny py' });
-      } else B.box(wm, len, h, th, cx, 0, 0, { uv: [xa, 0], tint, ao: 0.16, skip: 'ny' });
-      B.box(m.concrete, len + 0.04, 0.06, th + 0.07, cx, h, 0, { tint: cap, bevel: 0.012 }); // 笠木
+        relief(xa, xb, 0, dy); relief(xa, xb, dy + 0.2, h);
+      } else { B.box(wm, len, h, th, cx, 0, 0, { uv: [xa, 0], tint, ao: 0.16, skip: 'ny' }); relief(xa, xb, 0, h); }
+      cope(xa, xb, h); // 笠木
       // streaks under the coping, splash-back and moss at the foot (not where a poster must stay clean)
       const mark = (p, q) => {
         for (const [c0, c1] of clean) { const k0 = Math.min(X(c0), X(c1)), k1 = Math.max(X(c0), X(c1)); if (k1 > p && k0 < q) { mark(p, k0); mark(k1, q); return; } }
@@ -63,7 +82,7 @@ export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = tr
     }
     if (b > a && pillars) for (const px of [a - 0.12, b + 0.12]) {
       B.box(wm, 0.3, h + 0.2, 0.3, X(px), 0, 0, { uv: [px, 0], tint, ao: 0.16, skip: 'ny' });
-      B.box(m.concrete, 0.36, 0.07, 0.36, X(px), h + 0.2, 0, { tint: cap, bevel: 0.015 });
+      B.box(m.concrete, 0.37, 0.05, 0.37, X(px), h + 0.2, 0, { tint: cap, bevel: 0.012 }); B.lathe(m.concrete, [[0.24, 0], [0.2, 0.03], [0.04, 0.075]], X(px), h + 0.25, 0, { tint: cap, sides: 4, exact: true, a0: Math.PI / 4 });
     }
     x = b;
   }
@@ -110,7 +129,7 @@ export function gate(t, a, b, z, side, open = 0.35) {
 export function pillar(t, x, z, { h = 1.45, mat = null, tint = 0xffffff, w = 0.32 } = {}) {
   const B = t.B, m = t.m;
   B.box(mat || m.block, w, h, w, x, 0, z, { uv: [x, 0], ao: 0.15, tint, skip: 'ny' });
-  B.box(m.concrete, w + 0.06, 0.07, w + 0.06, x, h, z, { tint: 0xb6b2a8, bevel: 0.015 });
+  B.box(m.concrete, w + 0.07, 0.05, w + 0.07, x, h, z, { tint: 0xb6b2a8, bevel: 0.012 }); B.lathe(m.concrete, [[(w + 0.04) * 0.707, 0], [(w - 0.02) * 0.707, 0.03], [0.04, 0.075]], x, h + 0.05, z, { tint: 0xb6b2a8, sides: 4, exact: true, a0: Math.PI / 4 });
   t.game.player.addObstacle(x - w / 2, x + w / 2, z - w / 2, z + w / 2);
 }
 

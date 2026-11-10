@@ -2,11 +2,12 @@
 // A head has a skull, a brow line, cheeks and a muzzle; a body has shoulders, a belly and haunches; a paw has a heel
 // and toes; ears, wings and flippers are cupped blades; cloth is a sheet with folds. Everything is built in the frame
 // you are in (millimetres), inside the same radii a plain ball would have had, so paint laid out for a part still fits.
-import { ring, spline } from './sculpt.js';
+import { ring, spline, QUAL } from './sculpt.js';
 
 /** A cross-section round c in the xy plane (facing z): its top half ry0 tall, its bottom half ry1, the lower half
  *  fuller by `cheek` (jowls), n points, superellipse power pow. */
 function faceRing(c, rx, ry0, ry1, n, pow, cheek = 0) {
+  n = Math.max(4, Math.round(n * QUAL.k));
   const out = [], e = 2 / pow, off = Math.PI / 2 - Math.PI / n;
   for (let i = 0; i < n; i++) {
     const a = off + (i / n) * Math.PI * 2, cs = Math.cos(a), sn = Math.sin(a);
@@ -25,8 +26,8 @@ export function head(S, c, r, o = {}) {
   const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, n = o.n ?? 12, pow = o.pow ?? 2.3, brow = o.brow ?? 0.4, cheek = o.cheek ?? 0.12, mz = o.muzzle ?? 0.35, chin = o.chin ?? 0.3, cr = o.crown ?? 1;
   // stations back to front: [z, half width, height above, height below, y shift] as fractions of the radii
   const st = [
-    [-0.98, 0.34, 0.36, 0.34, 0.1], [-0.72, 0.8, 0.8 * cr, 0.72, 0.06], [-0.2, 1, 1 * cr, 0.94, 0.02], [0.3, 0.98, 0.94 * cr, 1, -0.02],
-    [0.62, 0.86 - 0.1 * brow, 0.78 - 0.16 * brow, 0.92, -0.06], [0.84, 0.6 + 0.12 * mz, 0.44 + 0.1 * mz - 0.1 * brow, 0.8 - 0.2 * chin, -0.1 - 0.06 * mz], [0.985, 0.3 + 0.16 * mz, 0.2 + 0.1 * mz, 0.42 - 0.14 * chin, -0.16 - 0.08 * mz],
+    [-1, 0.05, 0.05, 0.05, 0.1], [-0.96, 0.36, 0.38, 0.36, 0.1], [-0.72, 0.8, 0.8 * cr, 0.72, 0.06], [-0.2, 1, 1 * cr, 0.94, 0.02], [0.3, 0.98, 0.94 * cr, 1, -0.02],
+    [0.62, 0.86 - 0.1 * brow, 0.78 - 0.16 * brow, 0.92, -0.06], [0.84, 0.6 + 0.12 * mz, 0.44 + 0.1 * mz - 0.1 * brow, 0.8 - 0.2 * chin, -0.1 - 0.06 * mz], [0.97, 0.3 + 0.16 * mz, 0.2 + 0.1 * mz, 0.42 - 0.14 * chin, -0.16 - 0.08 * mz], [1, 0.05, 0.04, 0.06, -0.17 - 0.08 * mz],
   ];
   const rings = spline(st, 2).map(([z, w, h0, h1, dy]) => faceRing([c[0], c[1] + dy * ry, c[2] + z * rz], Math.max(0.05, w) * rx, Math.max(0.05, h0) * ry, Math.max(0.05, h1) * ry, n, pow, z > -0.3 ? cheek : 0));
   return S.loft(rings);
@@ -39,7 +40,7 @@ export function head(S, c, r, o = {}) {
  */
 export function torso(S, c, r, o = {}) {
   const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, n = o.n ?? 12, belly = o.belly ?? 0.16, hips = o.hips ?? 1, sit = o.sit ?? 0.34, lean = o.lean ?? 0;
-  const st = [[-1, 0.42 * hips, 0.4, -0.04], [-1 + sit * 0.5, 0.9 * hips, 0.86, 0], [-1 + sit * 2, 1 * hips, 1, belly * 0.6], [0.05, 0.92, 0.94, belly], [0.5, 0.74, 0.76, belly * 0.5], [0.82, 0.54, 0.56, 0.02], [1, 0.26, 0.28, 0]];
+  const st = [[-1, 0.05, 0.05, -0.04], [-0.97, 0.46 * hips, 0.44, -0.04], [-1 + sit * 0.5, 0.9 * hips, 0.86, 0], [-1 + sit * 2, 1 * hips, 1, belly * 0.6], [0.05, 0.92, 0.94, belly], [0.5, 0.74, 0.76, belly * 0.5], [0.82, 0.54, 0.56, 0.02], [0.97, 0.28, 0.3, 0], [1, 0.05, 0.05, 0]];
   const rings = spline(st, 2).map(([y, w, d, f]) => ring([c[0], c[1] + y * ry, c[2] + f * rz + lean * (y + 1) / 2], Math.max(0.05, w) * rx, Math.max(0.05, d) * rz * (1 - belly * 0.3), n, { pow: o.pow ?? 2.2 }));
   return S.loft(rings);
 }
@@ -47,7 +48,7 @@ export function torso(S, c, r, o = {}) {
 /** A lying loaf of a body along z (a seal, a fox curled up, a lion at rest): shoulders at +z, haunches at -z. */
 export function loaf(S, c, r, o = {}) {
   const [rx, ry, rz] = r, n = o.n ?? 12;
-  const st = [[-1, 0.3, 0.34, -0.3], [-0.72, 0.86, 0.8, -0.1], [-0.25, 1, 1, 0], [0.3, 0.9, 0.9, -0.04], [0.74, 0.74, 0.78, -0.08], [1, 0.34, 0.4, -0.2]];
+  const st = [[-1, 0.05, 0.05, -0.3], [-0.96, 0.34, 0.38, -0.3], [-0.72, 0.86, 0.8, -0.1], [-0.25, 1, 1, 0], [0.3, 0.9, 0.9, -0.04], [0.74, 0.74, 0.78, -0.08], [0.96, 0.36, 0.42, -0.2], [1, 0.05, 0.05, -0.22]];
   const rings = spline(st, 2).map(([z, w, h, dy]) => faceRing([c[0], c[1] + dy * ry, c[2] + z * rz], Math.max(0.05, w) * rx, Math.max(0.05, h) * ry, Math.max(0.05, h) * ry * (o.flat ?? 0.8), n, o.pow ?? 2.3, 0.1));
   return S.loft(rings);
 }
@@ -55,10 +56,10 @@ export function loaf(S, c, r, o = {}) {
 /** A paw or a foot resting on y = at[1], toes towards +z: a heel, a pad that spreads, `toes` toes. w, l, h in mm. */
 export function paw(S, at, w, l, h, o = {}) {
   const toes = o.toes ?? 3, [x, y, z] = at;
-  S.loft(spline([[-0.5, 0.5, 0.7, 0.55], [-0.15, 0.82, 1, 0.5], [0.22, 1, 0.74, 0.4], [0.42, 0.9, 0.5, 0.3]], 2).map(([t, ww, hh, cy]) => faceRing([x, y + cy * h, z + t * l], ww * w / 2, hh * h * 0.55, cy * h, 8, 2.6)));
+  S.loft(spline([[-0.52, 0.06, 0.1, 0.55], [-0.48, 0.5, 0.7, 0.55], [-0.15, 0.82, 1, 0.5], [0.22, 1, 0.74, 0.4], [0.42, 0.9, 0.5, 0.3]], 2).map(([t, ww, hh, cy]) => faceRing([x, y + cy * h, z + t * l], ww * w / 2, hh * h * 0.55, cy * h, 8, 2.6)));
   for (let k = 0; k < toes; k++) {
     const tx = x + ((k + 0.5) / toes - 0.5) * w * 0.92, tw = w / toes * 0.56;
-    S.loft([[0.3, 1, 1], [0.5, 1.05, 0.9], [0.62, 0.7, 0.6]].map(([t, ww, hh]) => faceRing([tx, y + h * 0.26 * hh, z + t * l], tw * ww, h * 0.3 * hh, h * 0.26 * hh, 6, 2.2)));
+    S.loft(spline([[0.3, 1, 1], [0.5, 1.05, 0.9], [0.62, 0.7, 0.6], [0.66, 0.1, 0.1]], 1).map(([t, ww, hh]) => faceRing([tx, y + h * 0.26 * hh, z + t * l], tw * ww, h * 0.3 * hh, h * 0.26 * hh, 6, 2.2)));
   }
   return S;
 }
@@ -69,7 +70,7 @@ export function paw(S, at, w, l, h, o = {}) {
  * towards +z, mm), n.
  */
 export function blade(S, len, w, th, o = {}) {
-  const P = { ear: [[0, 0.62], [0.3, 1], [0.7, 0.66], [1, 0.1]], round: [[0, 0.5], [0.3, 0.94], [0.68, 1], [1, 0.42]], wing: [[0, 0.5], [0.35, 0.86], [0.75, 1], [1, 0.3]], leaf: [[0, 0.3], [0.4, 1], [0.8, 0.6], [1, 0.08]] }[o.shape || 'ear'];
+  const P = { ear: [[0, 0.62], [0.3, 1], [0.7, 0.66], [0.97, 0.14], [1, 0.03]], round: [[0, 0.5], [0.3, 0.94], [0.68, 1], [0.94, 0.5], [1, 0.05]], wing: [[0, 0.5], [0.35, 0.86], [0.75, 1], [0.95, 0.4], [1, 0.05]], leaf: [[0, 0.3], [0.4, 1], [0.8, 0.6], [0.97, 0.12], [1, 0.03]] }[o.shape || 'ear'];
   const cup = o.cup ?? 0;
   return S.loft(spline(P, 2).map(([t, k]) => ring([0, t * len, cup * Math.sin(t * Math.PI)], Math.max(0.06, k) * w / 2, th / 2 * (0.5 + 0.5 * Math.max(0.1, k)), o.n ?? 6, { pow: 2.6 })));
 }
@@ -79,7 +80,7 @@ export function blade(S, len, w, th, o = {}) {
  * edge turned down. nx, nz: how finely it is cut (folds need a few facets each).
  */
 export function drape(S, x0, z0, x1, z1, y, o = {}) {
-  const nx = o.nx ?? 6, nz = o.nz ?? 6, th = o.th ?? 1, fold = o.fold || (() => 0), P = [];
+  const nx = Math.round((o.nx ?? 6) * QUAL.k), nz = Math.round((o.nz ?? 6) * QUAL.k), th = o.th ?? 1, fold = o.fold || (() => 0), P = [];
   for (let j = 0; j <= nz; j++) { const row = []; for (let i = 0; i <= nx; i++) { const u = i / nx, v = j / nz; row.push([x0 + (x1 - x0) * u, y + fold(u, v), z0 + (z1 - z0) * v]); } P.push(row); }
   const polys = [], dn = (p) => [p[0], p[1] - th, p[2]];
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {

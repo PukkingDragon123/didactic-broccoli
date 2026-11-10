@@ -11,7 +11,7 @@ import { PAT, burst, ribbon, pill, seal, infoBox, barcode, recycle, wrapJP } fro
 import { BRANDS, janOf } from './brands.js';
 import { spr, big } from './labels.js';
 import { ART } from './art.js';
-import { framed } from './photos.js';
+import { framed, photo } from './photos.js';
 
 const MM = 0.001, INK = 0x2e1f28, W0 = 0xfffaf0, RED = 0xc8302a;
 const K = (s, z = 16) => mk(s, z), KB = (s) => bold(mk(s, 16)), K2 = (s) => x2(bold(mk(s, 16))), K4 = (s) => x2(x2(bold(mk(s, 16))));
@@ -119,8 +119,9 @@ const P = {
     const p = new Px(384, 168), b = BRANDS.omusubi, NORI = 0x26342a, col = F[1];
     for (const x0 of [0, 192]) {
       p.rect(x0, 0, 192, 168, 0xfaf8f2);
-      for (let i = 0; i < 120; i++) { const x = x0 + (i * 53) % 192, y = (i * 37) % 80; p.rect(x, y, 2, 1, 0xe6e2d8); }
-      p.rect(x0, 78, 192, 90, NORI); for (let i = 0; i < 60; i++) p.rect(x0 + (i * 47) % 192, 80 + (i * 29) % 86, 3, 1, 0x34463a);
+      // a few grains of rice showing, a few creases in the seaweed: each put where it is
+      for (const [x, y] of [[30, 12], [58, 30], [120, 18], [150, 44], [84, 52], [166, 14], [22, 58], [136, 62]]) p.rect(x0 + x, y, 3, 1, 0xe6e2d8);
+      p.rect(x0, 78, 192, 90, NORI); for (const [x, y, w] of [[14, 96, 22], [60, 150, 30], [128, 104, 18], [150, 140, 26], [34, 128, 14]]) p.rect(x0 + x, y, w, 1, 0x34463a);
       // the film's shine: two hard streaks
       for (let k = 0; k < 168; k++) { const x = x0 + 36 + Math.round(k * 0.45); if (k % 2 === 0) { p.set(x, k, lt(p.get(x, k), 0.55)); p.set(x + 1, k, lt(p.get(x + 1, k), 0.55)); } }
     }
@@ -146,7 +147,7 @@ const P = {
     p.fill(side);
     p.ell(c, c, 98, 98, side); p.ell(c, c, 84, 84, top); p.crescent(c, c, 84, 84, -14, -14, dk(top, 0.14));
     if (melon) p.shape(16, 16, 168, 168, (x, y) => (x - c) ** 2 + (y - c) ** 2 < 82 * 82 && (Math.round(x + y) % 22 < 2 || Math.round(x - y + 400) % 22 < 2), dk(top, 0.22));
-    else { p.ell(c - 26, c - 30, 26, 14, lt(top, 0.3)); for (let i = 0; i < 26; i++) { const a = i * 2.4, r = 8 + (i * 7) % 20; p.rect(Math.round(c + Math.cos(a) * r), Math.round(c + Math.sin(a) * r), 3, 2, 0xf4ead2); } }
+    else { p.ell(c - 26, c - 30, 26, 14, lt(top, 0.3)); for (const [x, y] of [[-8, -6], [2, -12], [10, -2], [-2, 4], [12, 10], [-12, 8], [4, 14], [-6, -16], [16, -10], [-16, -2], [0, -2]]) p.rect(c + x, c + y, 3, 2, 0xf4ead2); }
     // the printed film over it: a band and a round sticker with the turtle
     p.rect(0, 132, 200, 30, b.accent); p.rect(0, 130, 200, 2, W0); p.rect(0, 162, 200, 2, W0);
     put(p, KB(melon ? 'メロンパン' : 'あんぱん'), c, 139, W0, 0x2a5a2a);
@@ -194,7 +195,7 @@ const P = {
     p.blit(q, 94, 10);
     return p;
   },
-  candy() { const p = new Px(96, 48); p.fill(PAT.stripes(RED, W0, 8, 'd')); p.rect(0, 16, 96, 16, W0); put(p, K('フルーツあめ', 10), 48, 19, RED); return p; },
+  candy() { const p = new Px(96, 48); p.fill(PAT.raw.stripes(RED, W0, 8, 'd')); p.rect(0, 16, 96, 16, W0); put(p, K('フルーツあめ', 10), 48, 19, RED); return p; },
   // ---- ビリビリ電池: the card front | back (168 x 248 each), a cell's wrap (88 x 100)
   battery() {
     const b = BRANDS.hotaru, p = new Px(336, 248), Y = 0xfbe25c, R = 0xe0302c;
@@ -238,9 +239,9 @@ const P = {
   tubeEnd() { const p = new Px(80, 80); p.fill(0xf2ead0); p.frame(0, 0, 80, 80, 0xc8b88a); p.ell(40, 40, 26, 26, 0x2a5ab0); p.ell(40, 40, 22, 22, 0xf0f4f8); put(p, m5('FL40'), 40, 30, 0x2a5ab0); put(p, m3('40W'), 40, 44, INK); p.rect(0, 36, 80, 8, 0xe8dcb8); return p; },
   // ---- the bamboo broom: its head (twigs, bindings), the handle's cane, the paper tag
   broomHead() {
+    // (the twigs are a photograph of ripe straw, toned down; the bindings are drawn)
     const p = new Px(160, 320); p.fill(0x8e6e40);
-    for (let x = 0; x < 160; x += 2) { const c = [0x6e5030, 0x8e6e40, 0xb08e56, 0x7a5c36][(x * 7 + ((x * x) % 5)) % 4]; p.rect(x, 0, 2, 320, c); if ((x * 13) % 7 < 2) p.rect(x, 0, 1, 320, 0x5a4026); }
-    for (let i = 0; i < 70; i++) { const x = (i * 37) % 158, y = 250 + (i * 53) % 70; p.rect(x, y, 2, 320 - y, 0x5a4026); }
+    const tw = photo('wheat', 160, 320, { n: 7, sat: 0.7, con: 0.9 }); if (tw) { p.blit(tw, 0, 0); p.map(0, 0, 160, 320, (c) => dk(c, 0.28)); }
     for (const y of [56, 60, 120, 124]) p.rect(0, y, 160, 3, 0x2e3a2c);
     for (let x = 4; x < 160; x += 8) { p.rect(x, 54, 2, 12, 0x3e4e3a); p.rect(x, 118, 2, 12, 0x3e4e3a); }
     return p;

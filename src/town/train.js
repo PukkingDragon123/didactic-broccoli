@@ -36,7 +36,7 @@ function paint(lit) {
 function makeTrain(t) {
   const g = new THREE.Group();
   const M = (t._trainM ||= (() => { const m = new THREE.MeshStandardMaterial({ map: paint(false), emissive: 0xffffff, emissiveMap: paint(true), emissiveIntensity: 0.4, roughness: 0.4, metalness: 0.2, vertexColors: true }); m.name = 'train'; t.trainMats = [m]; return m; })());
-  const B = new Batch(), pv = t.P(0.6, 0.3), dk = t.P(0.85), U = (a, b) => [a / 1280, 1 - SH / 256, b / 1280, 1];
+  const B = new Batch(), pv = t.P(0.6, 0.3), dk = t.P(0.85), U = (a, b) => [a / 1280, 1 - SH / 256, b / 1280, 1], axles = [];
   for (let i = 0; i < N; i++) {
     B.push(0, 0, (i - (N - 1) / 2) * (CAR + GAP));
     for (const sx of [-1, 1]) B.quadUV(M, CAR, H, sx * W / 2, Y0, 0, U(0, SW), { ry: sx * Math.PI / 2 });
@@ -51,7 +51,8 @@ function makeTrain(t) {
     B.box(dk, W - 0.3, 0.45, CAR - 3.4, 0, Y0 - 0.45, 0, { tint: 0x2e3032 });
     for (const z of [-CAR / 2 + 2.1, CAR / 2 - 2.1]) {
       B.box(dk, 2.2, 0.5, 2.6, 0, 0.16, z, { tint: 0x26282a, bevel: 0.04 });
-      for (const wz of [-0.95, 0.95]) for (const wx of [-0.72, 0.72]) B.cyl(dk, 0.42, 0.42, 0.12, wx - 0.06, 0.42, z + wz, { rz: -Math.PI / 2, tint: 0x45484a, sides: 10 });
+      for (const wz of [-0.95, 0.95]) axles.push((i - (N - 1) / 2) * (CAR + GAP) + z + wz);
+      for (const sx of [-1, 1]) { B.box(dk, 0.1, 0.16, 2.3, sx * 0.98, 0.34, z, { tint: 0x34373a, bevel: 0.03 }); for (const wz of [-0.95, 0.95]) B.box(dk, 0.16, 0.2, 0.26, sx * 0.98, 0.32, z + wz, { tint: 0x4a4e52, bevel: 0.03 }); B.lathe(dk, [[0.1, 0], [0.11, 0.05], [0.1, 0.1], [0.11, 0.15], [0.1, 0.2]], sx * 0.98, 0.5, z, { tint: 0x5a5e62, sides: 6 }); }
     }
     if (i === 1) { // pantograph
       B.box(pv, 1.0, 0.1, 1.2, 0, Y0 + H + 0.38, 0, { tint: 0x5a5e62 });
@@ -62,7 +63,29 @@ function makeTrain(t) {
     B.pop();
   }
   B.build(g, { receive: false, name: 'train' });
+  // the wheelsets: an axle and two flanged wheels, one instanced mesh that turns as the train runs
+  if (!t._wheelGeo) {
+    const Wb = new Batch(), tmp = new THREE.Group();
+    Wb.lathe(dk, [[0.06, -0.9], [0.06, 0.9]], 0, 0, 0, { rz: -Math.PI / 2, tint: 0x3a3d40, sides: 6, caps: 'tb' });
+    for (const s of [-1, 1]) Wb.lathe(dk, [[0.1, 0], [0.46, 0], [0.47, 0.025], [0.43, 0.04], [0.42, 0.13], [0.3, 0.14], [0.26, 0.1], [0.12, 0.1], [0.1, 0.16]], s * 0.72 - (s > 0 ? 0 : 0), 0, 0, { rz: s > 0 ? Math.PI / 2 : -Math.PI / 2, tint: 0x55595d, sides: 12, caps: 'b' });
+    t._wheelGeo = Wb.build(tmp)[0].geometry;
+  }
+  const im = new THREE.InstancedMesh(t._wheelGeo, dk, axles.length);
+  im.frustumCulled = false; im.name = 'train:wheels';
+  g.add(im);
+  g.userData.wheels = { im, z: axles };
+  spin(g, 0);
   return g;
+}
+const _wm = new THREE.Matrix4(), _wq = new THREE.Quaternion(), _wp = new THREE.Vector3(), _ws = new THREE.Vector3(1, 1, 1), _wx = new THREE.Vector3(1, 0, 0);
+/** Turn the wheels to where the train has rolled (z metres along the track). */
+function spin(g, z) {
+  const W2 = g.userData.wheels;
+  if (!W2) return;
+  _wq.setFromAxisAngle(_wx, z / 0.42);
+  W2.z.forEach((az, i) => W2.im.setMatrixAt(i, _wm.compose(_wp.set(0, 0.42, az), _wq, _ws)));
+  W2.im.instanceMatrix.needsUpdate = true;
+  void 0;
 }
 
 export function buildTrains(t) {
@@ -93,6 +116,7 @@ export function updateTrains(t, dt, audio) {
     if (!tr.g.visible) { tr.wait -= dt; if (tr.wait <= 0) runTrain(t, tr.s); continue; }
     tr.z += tr.dir * tr.speed * dt;
     tr.g.position.z = tr.z;
+    spin(tr.g, tr.z * tr.dir);
     const head = tr.z + tr.dir * LEN / 2;
     if (!tr.played && (9.6 - head) * tr.dir < 45) {
       tr.played = true;

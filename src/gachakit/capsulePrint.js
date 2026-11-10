@@ -88,7 +88,7 @@ function drawSeries(sheet) {
   {
     const [X, Y, W, H] = SHEET.cover;
     p.rect(X, Y, W, H, paper);
-    for (let j = 0; j < H; j += 12) for (let i = (j / 12) % 2 ? 6 : 0; i < W; i += 12) p.rect(X + i, Y + j, 3, 3, bgd); // dot screen
+    p.rect(X + 4, Y + 28, W - 8, H - 46, bgd); p.rect(X + 7, Y + 31, W - 14, H - 52, paper); // a printed border
     p.rect(X, Y, W, 24, ac); p.rect(X, Y + 24, W, 2, mixc(ac, 0x000000, 0.3));
     gg(p, X + 13, Y + 12, white, ac);
     p.text('ガチャガレージ', X + 28, Y + 3, { size: 16, color: white });
@@ -101,7 +101,7 @@ function drawSeries(sheet) {
     const hero = items.find((i) => i.rarity === 'ultra') || items.find((i) => i.rarity === 'rare') || items[0];
     const hx = X + 14, hy = y1, hs = 92;
     roundRect(p, hx - 3, hy - 3, hs + 6, hs + 6, ink, 5); roundRect(p, hx - 1, hy - 1, hs + 2, hs + 2, white, 4);
-    for (let j = 0; j < hs; j++) for (let i = 0; i < hs; i++) { const a = Math.atan2(j - hs / 2, i - hs / 2); p.px(hx + i, hy + j, Math.floor((a / Math.PI + 1) * 8) % 2 ? mixc(ac2, white, 0.55) : mixc(ac2, white, 0.25)); }
+    p.rect(hx, hy, hs, hs, mixc(ac2, white, 0.45)); p.rect(hx, hy + hs - 22, hs, 22, mixc(ac2, white, 0.2)); // a plain backdrop with a floor
     const hc = hero && thumbOf(hero.key);
     if (hc) drawThumb(p, hc, hx + 2, hy + 2, hs - 4);
     else { complete = false; p.text('？', hx + hs / 2, hy + hs / 2 - 20, { size: 32, color: ink, outline: white, align: 'center' }); }

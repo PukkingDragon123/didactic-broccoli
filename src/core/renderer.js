@@ -21,7 +21,7 @@ if (/[?&](debug|autotest)\b/.test(location.search)) window.__THREE = THREE; // l
 // The look: a bright picture-book afternoon. Gentle pastel saturation, a soft contrast curve in log space (it never
 // clips the darks), and the darkest tones lifted toward a cool lilac so nothing goes pure black. The same pass then
 // tone-maps (Khronos PBR Neutral) and encodes to sRGB, so the anti-aliasing after it works on the displayed picture.
-// No grain and no chromatic aberration: the picture is a clean cel. (uGrain / uAberration are still accepted, unused.)
+// No grain, no dither, no chromatic aberration: nothing generated is added. (uGrain / uAberration are accepted, unused.)
 const GradeShader = {
   uniforms: {
     tDiffuse: { value: null },
@@ -52,7 +52,6 @@ const GradeShader = {
     uniform float uTired, uLid, uDouble, uWobble;
     uniform vec3 uFlash, uLift;
     varying vec2 vUv;
-    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
     void main() {
       vec2 uv = vUv;
       if (uWobble > 0.001) uv += vec2(sin(vUv.y * 7.0 + uTime * 1.3), cos(vUv.x * 5.0 + uTime * 0.9)) * 0.005 * uWobble;
@@ -79,11 +78,8 @@ const GradeShader = {
       if (uLid > 0.001) col *= 1.0 - smoothstep(1.02 - uLid * 1.04, 1.1 - uLid * 1.04, abs(vUv.y - 0.5) * 2.0);
       // flash (reveals)
       col += uFlash;
-      // to the display: tone map, sRGB, and one 8-bit step of triangular noise (invisible; it keeps the sky's and the
-      // fog's smooth gradients from banding)
-      col = sRGBTransferOETF(vec4(NeutralToneMapping(col), 1.0)).rgb;
-      float d = hash(gl_FragCoord.xy) + hash(gl_FragCoord.xy + 0.37) - 1.0;
-      gl_FragColor = vec4(col + d / 255.0, 1.0);
+      // to the display: tone map, sRGB (no grain, no dither: nothing generated is added to the picture)
+      gl_FragColor = vec4(sRGBTransferOETF(vec4(NeutralToneMapping(col), 1.0)).rgb, 1.0);
     }`,
 };
 
@@ -172,14 +168,14 @@ const OutlineShader = {
       outc = mix(outc, inked(col.rgb), own * uStrength * step(0.5, col.a));
       // crepuscular rays: march from this pixel toward the sun, collecting open sky (wires, poles and roofs cut it)
       if (uSunOn > 0.001) {
-        vec2 dv = (uSun - vUv) / 26.0;
-        // (interleaved gradient noise on the start: it hides the steps without grain)
-        vec2 uv = vUv + dv * fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+        // (no jitter on the march: 40 even steps, nothing noisy in the picture)
+        vec2 dv = (uSun - vUv) / 40.0;
+        vec2 uv = vUv + dv * 0.5;
         float acc = 0.0, w = 1.0, wsum = 0.0;
-        for (int i = 0; i < 26; i++) {
+        for (int i = 0; i < 40; i++) {
           uv += dv;
           float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
-          acc += sky(uv) * w * inside; wsum += w; w *= 0.955;
+          acc += sky(uv) * w * inside; wsum += w; w *= 0.97;
         }
         float dist = length((uSun - vUv) * vec2(uAspect, 1.0));
         float k = (acc / wsum) * exp(-dist * 2.4) * uShaft * uSunOn;

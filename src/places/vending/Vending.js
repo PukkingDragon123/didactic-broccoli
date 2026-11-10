@@ -191,7 +191,6 @@ export class Vending {
         const x = (i % COLS) * CELL, y = Math.floor(i / COLS) * BCH, d = DRINKS[f.id] || {}, b = BRANDS[d.brand] || { main: 0x8a8a8a, accent: 0xffd23f, ink: 0x241a1e, paper: 0xfffaf0 };
         const base = closed ? 0x5a5e66 : mixc(b.main, 0xffffff, 0.72), band = closed ? 0x4a4e56 : b.main;
         ctx.fillStyle = css(base); ctx.fillRect(x + 2, y + 2, CELL - 4, 86);
-        ctx.fillStyle = css(mixc(base, 0xffffff, 0.35)); for (let k = -90; k < CELL; k += 12) for (let j = 0; j < 86; j++) { const xx = x + 2 + k + j; if (xx >= x + 2 && xx < x + CELL - 3) ctx.fillRect(xx, y + 2 + j, 3, 1); }
         ctx.fillStyle = css(band); ctx.fillRect(x + 2, y + 2, CELL - 4, 15);
         if (closed) return;
         // the name, in the maker's hand, over two lines if it is long
@@ -313,7 +312,7 @@ export class Vending {
       }
       // where the drink stands: a printed spot, a ledge
       const sx = 57, sy = 96;
-      ctx.fillStyle = '#e6d4ac'; for (let y = -78; y <= 78; y += 3) for (let x = -48; x <= 48; x += 3) if (x * x / 2304 + y * y / 6084 <= 1 && ((x + y) / 3) % 2 === 0) ctx.fillRect(sx + x, sy + y, 2, 2);
+      void sx; void sy;
       ctx.fillStyle = '#c8b48a'; ctx.fillRect(10, 176, 96, 2); ctx.fillStyle = '#a8946a'; ctx.fillRect(10, 178, 96, 1);
       draw5(ctx, 'TURN IT: MOUSE', 58, 185, { s: 1, col: '#8a7a5a', align: 'center' });
       // the facts

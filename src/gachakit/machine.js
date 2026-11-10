@@ -16,7 +16,7 @@
 import * as THREE from 'three';
 import { Atlas, ROUGH } from '../vehicles/atlas.js';
 import { Geo, triplanar, boxMap } from '../vehicles/geom.js';
-import { ramp, mix, rust } from '../vehicles/paint.js';
+import { ramp, mix } from '../vehicles/paint.js';
 import { GeoS, roundBox } from './geo.js';
 import { glyphMask, clearGlyphs } from './capsuleShell.js';
 
@@ -489,10 +489,8 @@ function paintAll(type, spec, L, st, A, V, K) {
       // wear by rule: capsules scuff the panel under the chute's lip, hands polish a patch left of the dial; on the old
       // machine the enamel has chipped at the lower corners, rust creeps up from the bottom edge and from the screws,
       // a price sticker has been peeled off above the coin plate
-      for (let k = 0; k < 5; k++) F.hline(I(O.x0) + 4 + k * 9, I(O.x0) + 10 + k * 9, J(O.y0) - 9 - (k % 2) * 3, PN[3]);
+      for (const [di, dj, len] of [[6, -8, 9], [22, -11, 6], [40, -9, 12], [61, -12, 5]]) F.hline(I(O.x0) + di, I(O.x0) + di + len, J(O.y0) + dj, PN[3]);
       if (worn) {
-        for (const x of [-hw + 0.03, -hw * 0.3, hw * 0.2, hw - 0.05]) rust(F, I(x), 0, 16 + Math.round(rnd() * 14), 5 + Math.round(rnd() * 7), 3 + Math.round(rnd() * 20));
-        rust(F, px0 + 9, py0 + 2, 9, 4, 5, { freckles: 1 }); rust(F, px1 - 10, py0 + 2, 11, 5, 9, { freckles: 2 });
         for (const [ci, cj] of [[px0 + 3, py1 - 5], [px1 - 6, py0 + 22]]) { F.box(ci, cj, ci + 5, cj + 3, 0x6a6a66); F.box(ci + 1, cj + 1, ci + 6, cj + 5, 0x8a8a84); F.px(ci + 2, cj + 2, 0x4a3020); }
         const rx = I(S.x) - 26, ry = J(S.y + 0.085);
         F.box(rx, ry, rx + 40, ry + 22, mix(st.panel, 0xfff8e0, 0.5)); F.box(rx + 3, ry + 3, rx + 14, ry + 9, mix(st.panel, 0x8a7a5a, 0.3)); F.box(rx + 22, ry + 12, rx + 36, ry + 18, mix(st.panel, 0x8a7a5a, 0.25));
@@ -512,7 +510,7 @@ function paintAll(type, spec, L, st, A, V, K) {
     SV.box(I(-0.045), J(yL - 0.1), I(0.045), J(yL - 0.075), mix(st.body, 0x10121c, 0.5)); SV.hline(I(-0.045), I(0.045) - 1, J(yL - 0.1) - 1, B[3]);
     A.ink(ROUGH.chrome);
     for (const [zz, yy] of [[-hd + 0.035, y0 + 0.035], [hd - 0.035, y0 + 0.035], [-hd + 0.035, yL - 0.045], [hd - 0.035, yL - 0.045]]) screw(SV, I(zz), J(yy), CHROME);
-    if (worn) { A.ink(ROUGH.matte); rust(SV, I(-hd + 0.05 * sgn + 0.06), 0, 22, 9, 31 + sgn); rust(SV, I(hd - 0.07), 0, 14, 6, 17 - sgn); SV.box(I(0.02), J(y0 + 0.2), I(0.1), J(y0 + 0.24), mix(st.body, 0xfff4d8, 0.4)); }
+    if (worn) { A.ink(ROUGH.matte); SV.box(I(0.02), J(y0 + 0.2), I(0.1), J(y0 + 0.24), mix(st.body, 0xfff4d8, 0.4)); }
   }
   // ---- the lid's front: the header band with CAPSULE TOYS and the sign
   {
@@ -524,15 +522,15 @@ function paintAll(type, spec, L, st, A, V, K) {
     const tc = st.dark ? st.accent : type === 'retro' ? st.ink : white, cj = Math.round((j0 + j1) / 2);
     F.text5('CAPSULE TOYS', F.i(-hw + 0.02), cj + (capH > 0.045 ? 7 : 3), tc, { s: capH > 0.045 ? 2 : 1 });
     if (capH > 0.045) kana(F, st.sign, F.i(0.02), cj + 8, tc);
-    if (worn) { A.ink(ROUGH.matte); rust(F, F.i(-hw + 0.05), 0, 20, 4, 4); }
   }
   // ---- the case's back wall: a printed card (stripes and stars; the pile hides most of it)
   {
     const Wv = V.W, c0 = st.inner, c1 = mix(st.inner, st.trim, st.dark ? 0.22 : 0.16);
     A.ink(ROUGH.matte);
-    Wv.box(0, 0, Wv.W, Wv.H, (i, j) => (Math.floor((i + j) / 14) % 2 ? c0 : c1));
-    for (let j = 16; j < Wv.H; j += 34) for (let i = (Math.floor(j / 34) % 2) * 20 + 12; i < Wv.W; i += 40) { Wv.px(i, j, st.accent); Wv.hline(i - 2, i + 2, j, st.accent); Wv.vline(i, j - 2, j + 2, st.accent); }
-    Wv.box(0, 0, Wv.W, 8, mix(c0, 0x000000, 0.2));
+    // a plain card: one colour, a darker band where it meets the floor, a border line, the maker's mark in a corner
+    Wv.fill(c0);
+    Wv.box(0, 0, Wv.W, 10, mix(c0, 0x000000, 0.18)); Wv.frame(6, 14, Wv.W - 6, Wv.H - 6, c1);
+    Wv.ring(26, Wv.H - 26, 10, 12, c1); Wv.text5('GG', 26, Wv.H - 22, c1, { align: 'center' });
   }
   // ---- stands
   paintStand(type, spec, L, st, A, V, K);
@@ -561,7 +559,7 @@ function paintAll(type, spec, L, st, A, V, K) {
     P.disc(c, c, c, KF[2]); P.ring(c, c, c - 4, c, (i, j) => (j - i > 0 ? KF[3] : KF[1]));
     P.ring(c, c, c * 0.62, c * 0.62 + 2, KF[1]); P.ring(c, c, c * 0.62 + 2, c * 0.62 + 3, KF[3]);
     for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6 + 0.26; P.disc(c + Math.cos(a) * c * 0.82, c + Math.sin(a) * c * 0.82, 3, KF[1]); P.px(Math.round(c + Math.cos(a) * c * 0.82), Math.round(c + Math.sin(a) * c * 0.82) - 2, KF[4]); }
-    if (st.wear > 0.5) for (let k = 0; k < 4; k++) P.line(Math.round(c - 30 + k * 16), Math.round(c + 34), Math.round(c - 22 + k * 16), Math.round(c + 44), KF[0]);
+    if (st.wear > 0.5) for (const [x0, y0, x1, y1] of [[-28, 36, -19, 45], [6, 30, 17, 37], [30, -38, 36, -27]]) P.line(Math.round(c + x0), Math.round(c + y0), Math.round(c + x1), Math.round(c + y1), KF[0]);
   }
   // ---- clear plastic: the case (edges, two hard streaks on the front pane), the hood, the flap
   {
@@ -577,7 +575,7 @@ function paintAll(type, spec, L, st, A, V, K) {
     Hh.box(0, 0, Hh.W, Hh.H, tint, 24); Hh.frame(0, 0, Hh.W, Hh.H, 0xffffff, 0); Hh.box(0, Hh.H - 2, Hh.W, Hh.H, 0xffffff, 150); Hh.box(0, 0, 2, Hh.H, 0xffffff, 110); Hh.box(Hh.W - 2, 0, Hh.W, Hh.H, mix(tint, 0x304058, 0.5), 120);
     for (let j = 5; j < Hh.H - 5; j++) for (let q = 0; q < 4; q++) Hh.px(10 + Math.round(j * 0.4) + q, j, 0xffffff, 90);
     const Fl = V.FLAP;
-    if (st.flap === 'steel') { A.ink(ROUGH.chrome); chromeFill(Fl, 0, 0, Fl.W, Fl.H); Fl.frame(0, 0, Fl.W, Fl.H, CHROME[0]); Fl.text5('PUSH', Fl.W / 2, Fl.H / 2 + 4, CHROME[0], { align: 'center' }); if (worn) rust(Fl, 14, 0, 12, 5, 8); }
+    if (st.flap === 'steel') { A.ink(ROUGH.chrome); chromeFill(Fl, 0, 0, Fl.W, Fl.H); Fl.frame(0, 0, Fl.W, Fl.H, CHROME[0]); Fl.text5('PUSH', Fl.W / 2, Fl.H / 2 + 4, CHROME[0], { align: 'center' }); }
     else { Fl.box(0, 0, Fl.W, Fl.H, 0x2c3440, 190); Fl.box(0, Fl.H - 3, Fl.W, Fl.H, 0x8a98a8, 230); for (let j = 4; j < Fl.H - 6; j++) for (let q = 0; q < 5; q++) Fl.px(12 + Math.round(j * 0.5) + q, j, 0x9fb0c4, 200); Fl.text5('PUSH', Fl.W / 2, 16, 0xc8d4e0, { align: 'center' }); }
   }
   // ---- print: stickers and labels (2.5 px to the millimetre)
@@ -640,7 +638,7 @@ function paintAll(type, spec, L, st, A, V, K) {
     P.text5(type === 'retro' ? '1 PLAY' : type === 'standard' ? 'GACHA STATION' : type === 'deluxe' ? 'DELUXE 500' : 'ROYAL KIRAKIRA', 118, P.H - 18, fg);
     P.text5(`¥${spec.price}`, 118, P.H - 34, type === 'retro' ? 0x2a2428 : st.dark ? white : AC[2] === bg ? white : st.accent, { s: 2 });
     if (type === 'royal') for (let i = 8; i < P.W - 6; i += 12) { P.disc(i, P.H - 6.5, 2.2, 0xfff2b0); P.disc(i, 6.5, 2.2, 0xfff2b0); } // marquee bulbs, painted
-    if (worn) { A.ink(ROUGH.matte); rust(P, 30, 0, 26, 6, 12); rust(P, 170, 0, 18, 5, 3); P.box(60, 20, 96, 26, mix(bg, 0xffffff, 0.35)); }
+    if (worn) { A.ink(ROUGH.matte); P.box(60, 20, 96, 26, mix(bg, 0xffffff, 0.35)); P.box(150, 8, 158, 11, mix(bg, 0x6a6a66, 0.6)); }
     A.ink(ROUGH.matte);
   }
   {
@@ -664,14 +662,13 @@ function paintAll(type, spec, L, st, A, V, K) {
     P.ring(Math.round(P.W * 0.25), Math.round(P.H * 0.32), 13, 15, C4[0]);
     P.text5('REJECT', Math.round(P.W * 0.25), Math.round(P.H * 0.32) - 20, C4[0], { align: 'center' });
     for (const [i, j] of [[5, 5], [P.W - 6, 5], [5, P.H - 6], [P.W - 6, P.H - 6]]) screw(P, i, j, C4);
-    if (worn) { A.ink(ROUGH.matte); rust(P, 12, 0, 12, 5, 6); rust(P, 70, 0, 16, 4, 2); }
   }
   {
     const P = V.WOOD, W0 = 0xb98f5c, R = ramp(W0, 0.8);
     A.ink(ROUGH.matte);
     P.fill(R[2]);
-    for (let j = 0; j < P.H; j += 7) P.hline(0, P.W, j + ((j * 5) % 3), (j / 7) % 3 === 0 ? R[1] : R[3]);
-    for (const [i, j] of [[30, 20], [96, 44]]) { P.ring(i, j, 3, 5, R[1]); P.disc(i, j, 2.5, R[0]); }
+    P.hline(8, 70, 22, R[1]); P.hline(52, 120, 41, R[1]); P.hline(14, 44, 50, R[3]); // three long grain lines, drawn by hand
+    P.ring(96, 24, 2, 4, R[1]); P.disc(96, 24, 1.6, R[0]); // one knot
     P.box(0, 0, P.W, 2, R[0]); P.box(0, P.H - 2, P.W, P.H, R[3]);
     for (const i of [4, P.W - 6]) for (const j of [8, P.H - 10]) { P.disc(i + 0.5, j + 0.5, 1.6, 0x4a4a4e); P.px(i, j + 1, 0x9a9aa0); P.vline(i, j - 4, j - 2, mix(W0, 0x6a3a1a, 0.5)); }
   }
@@ -689,7 +686,7 @@ function paintStand(type, spec, L, st, A, V, K) {
     F.frame(I(-hw * 0.5), J(0.14), I(hw * 0.5), J(y0 - 0.1), P2[1]); F.hline(I(-hw * 0.5) + 1, I(hw * 0.5) - 2, J(0.14) + 1, P2[3]);
     F.ring(I(0), J(y0 * 0.55), 20, 23, TR[2]); F.text5('GG', I(0), J(y0 * 0.55) + 4, TR[2], { align: 'center' });
     A.ink(ROUGH.matte);
-    for (let k = 0; k < 6; k++) F.hline(I(-hw + 0.02) + k * 22, I(-hw + 0.02) + k * 22 + 12, J(0.03) + (k % 3) * 3, P2[0]);
+    for (const [di, dj, len] of [[4, 0, 14], [38, 5, 9], [90, 2, 18], [150, 6, 7]]) F.hline(I(-hw + 0.02) + di, I(-hw + 0.02) + di + len, J(0.03) + dj, P2[0]);
     return;
   }
   if (st.stand === 'twotier') {

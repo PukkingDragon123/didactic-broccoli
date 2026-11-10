@@ -22,6 +22,9 @@ const art = (name, ...a) => { const k = 'art' + name + JSON.stringify(a); if (!m
 
 /** A real photo of the thing in a round (or square) window, or the drawing if the photo is not there. */
 const pic = (name, w, h, alt, o = {}) => framed(name, w, h, { shape: o.rect ? 'rect' : 'circle', ...o }) || alt();
+/** Bubbles rising through a fizzy drink: each one placed by hand (x, y, radius) for a 208 x 220 can; flip mirrors them. */
+const FIZZ = [[18, 196, 4], [34, 150, 2], [12, 96, 3], [30, 44, 2], [58, 208, 2], [96, 182, 3], [150, 204, 2], [188, 168, 4], [198, 96, 2], [176, 40, 3], [120, 20, 2], [70, 14, 3], [196, 14, 2], [8, 20, 2]];
+function fizz(p, c, flip = false, sx = 1, sy = 1) { for (const [x, y, r] of FIZZ) { const bx = Math.round((flip ? 208 - x : x) * sx), by = Math.round(y * sy); p.ring(bx, by, r, r, 1, c); p.set(bx - 1, by - 1, 0xfffaf0); } }
 const K = (s, z = 16) => mk(s, z), KB = (s) => bold(mk(s, 16)), K2 = (s) => x2(bold(mk(s, 16))), K4 = (s) => x2(x2(bold(mk(s, 16))));
 const put = (p, m, cx, y, c, out, sh, ow) => label(p, m, cx, y, { c, out, sh, ow, align: 'c' });
 /** A sprite with its bottom-centre at (cx, by). */
@@ -163,7 +166,7 @@ F.vd_milktea = (p, c) => {
 function popBrand(p, c, y = 6) { const b = c.b; put(p, shear(KB(b.jp), 0.25), c.cx, y, 0xffd23f, 0x14285a, null, 1); }
 F.vd_melon = (p, c) => {
   const { W, H, cx, d } = c, G = 0x3ac850, DG = 0x0a5a1e;
-  p.fill(PAT.fizz(G, 0x7ae088, 3));
+  p.fill(G); fizz(p, 0x8aec98);
   popBrand(p, c);
   put(p, shear(K4('メロン'), 0.12), cx, 28, W0, DG, [4, 4, DG], 2);
   put(p, shear(K2('ソーダ'), 0.2), cx + 36, 96, 0xff6f91, W0, [2, 2, DG], 2);
@@ -187,7 +190,7 @@ F.vd_kora = (p, c) => {
 };
 F.vd_grape = (p, c) => {
   const { W, H, cx, d } = c, PU = 0x6a2a9a, Y = 0xf4d030;
-  p.fill(PAT.fizz(PU, 0x8a4aba, 5));
+  p.fill(PU); fizz(p, 0x9a5aca, true);
   p.rect(0, 100, W, 30, Y); p.rect(0, 98, W, 2, 0x58c06c); p.rect(0, 130, W, 2, 0x58c06c);
   popBrand(p, c);
   put(p, shear(K2('ファント'), 0.2), cx - 20, 26, Y, 0x2a0a4a, [3, 3, 0x2a0a4a], 2);
@@ -226,7 +229,7 @@ F.vd_ramunecan = (p, c) => {
 F.vd_cider = (p, c) => {
   const { W, H, cx } = c, SV = 0xf4f8f8, G = 0x2a8a4a, B = 0x1a5ad0;
   p.fill(SV);
-  p.rect(0, 0, W, H, PAT.fizz(SV, 0xc8e4f0, 9));
+  fizz(p, 0xb8dcec, false, 168 / 208, 242 / 220);
   p.rect(0, 0, W, 8, G); p.rect(0, 10, W, 2, B); p.rect(0, H - 34, W, 2, B);
   put(p, shear(KB('プクポップ'), 0.25), cx, 18, B, null);
   put(p, K2('ミッツ'), cx, 44, G, W0, [3, 3, 0x0a3a1a], 2);
@@ -240,7 +243,7 @@ F.vd_cider = (p, c) => {
 // ============================================================ モーベル牧場
 F.vd_karupiko = (p, c) => {
   const { W, H, cx, b } = c, B = 0x2a5ad8;
-  p.fill(PAT.dots(0xf8f8f4, 0x9ac8f8, 16, 4));
+  p.fill(PAT.raw.dots(0xf8f8f4, 0x9ac8f8, 16, 4));
   p.rect(0, 0, W, 5, B);
   put(p, K2('カルピコ'), cx - 26, 12, B, W0, [2, 2, 0x9ac8f8], 2);
   put(p, KB('ウォーター'), cx - 26, 50, B, W0, null, 1);
@@ -382,7 +385,7 @@ F.vd_strong = (p, c) => {
 };
 F.vd_highball = (p, c) => {
   const { W, H, cx, b, d } = c, AM = 0xe8a040, BK = 0x1e1418, CR = 0xf4ead2;
-  p.fill(PAT.fizz(AM, 0xf4c070, 11));
+  p.fill(AM); fizz(p, 0xf6c878, true);
   p.rect(0, 0, W, 26, BK); p.rect(0, 26, W, 2, CR);
   put(p, K(b.jp, 12), cx, 7, CR);
   put(p, K2('ハイボール'), cx, 38, BK, CR, [3, 3, 0x8a4a10], 2);
@@ -469,7 +472,6 @@ F.vd_oden = (p, c) => {
 F.vd_natto = (p, c) => {
   const { W, H, cx, b } = c, T = 0xb08a3a, BK = 0x1e1a14, CR = 0xf4ead2;
   p.fill(T);
-  for (let y = 0; y < H; y += 9) for (let x = (y / 9) % 2 ? 4 : 0; x < W; x += 9) p.rect(x, y, 5, 4, 0xba9446);
   p.rect(0, 92, W, 40, BK);
   brandTag(p, b, cx, 6, { c: CR, text: BK, ink: BK });
   put(p, K4('納豆'), cx, 24, CR, null, [3, 3, BK]);

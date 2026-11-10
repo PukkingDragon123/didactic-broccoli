@@ -32,6 +32,17 @@ export function buildGround(t) {
   };
   gutter(ZG0, ZG1, [[-3.4, 3.4], [4.6, 7.6], [9.8, 11.3], [-20.6, -19.4]]);
   gutter(ZR1, ZG3, [[-9.5, -7.4], [10.1, 12.6], [-1.6, -0.9]]);
+  // kerbstones along both strips (a rounded nose, worn and chipped by rule), dropped at driveways and doorways
+  const kerbs = (z, far, gaps) => {
+    const prof = far ? [[0, 0], [0.13, 0], [0.13, 0.048], [0.03, 0.048], [0.012, 0.042], [0, 0.03]] : [[-0.13, 0], [0, 0], [0, 0.03], [-0.012, 0.042], [-0.03, 0.048], [-0.13, 0.048]];
+    let x = -XT + 0.4;
+    for (const [a, b] of [...gaps.sort((p, q) => p[0] - q[0]), [XT - 0.4, XT]]) {
+      for (let s = x; s < a - 0.2;) { const k = hash2(Math.round(s * 9), far ? 3 : 5), e = Math.min(a, s + 0.9 + (k < 0.2 ? 0.3 : 0)); B.extrude(m.concrete, prof, s + 0.004, e - 0.004, { along: 'x', oz: z, tint: k < 0.25 ? 0xaeaaa0 : k > 0.8 ? 0xc6c2b8 : 0xbab6ac, uv: [s, 0] }); s = e; }
+      x = b;
+    }
+  };
+  kerbs(ZG0, false, [[-25.9, -25.0], [-20.7, -19.3], [-16.7, -15.4], [-7.6, -5.6], [-4.45, 4.45], [4.45, 7.7], [9.7, 11.4], [18.5, 20.3]]);
+  kerbs(ZG3, true, [[-13.5, -11.3], [-9.6, -7.3], [-1.7, -0.8], [10.0, 12.7]]);
   // white edge lines (worn through in places, dashed across the alley mouths), narrowing into the underpasses
   const line = (x0, x1, z, w = 0.15, c = WHITE) => B.box(m.paint, x1 - x0, 0.006, w, (x0 + x1) / 2, 0, z, { tint: c, skip: 'ny' });
   const worn = (x0, x1, z, gaps = []) => {
@@ -135,7 +146,7 @@ export function buildDetails(t) {
   B.face(m.reed, [25.92, 0, 2.1], [25.92, 0, 1.1], [25.66, 1.85, 1.1], [25.66, 1.85, 2.1], { tint: 0xe4d8b0, both: true });
   B.rod(m.pv, [25.66, 1.85, 1.05], [25.66, 1.85, 2.15], 0.05, { tint: 0xc8b47c, sides: 6 });
   // stepping stones from the gate to the door in the garden of NW4
-  for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.cyl(m.concrete, 0.22, 0.24, 0.05, x, 0, z, { ry: r, tint: 0xb8b4ac, sides: 7, caps: 't' });
+  for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.blob(m.concrete, x, 0.012, z, 0.26, 0.035, 0.2, { ry: r, tint: 0xb8b4ac, seed: Math.round(z * 10), lo: 0.9, hi: 1.04 });
   // 飛び出し注意 boy at the mouth of alley A2 (a painted cut-out board on a foot)
   t.decalQ('tobidashi', 11.48, 0.03, 5.47, { w: 0.5, cut: true });
   B.box(m.concrete, 0.3, 0.04, 0.2, 11.48, 0, 5.47, { tint: 0xa8a49a });

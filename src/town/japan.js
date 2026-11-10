@@ -3,6 +3,7 @@
 // of water set out against cats, koinobori on a tall pole for the baby's first May, wind chimes, a roadside hokora
 // with offerings, a closed barber's faded sign and pole, beer crates outside the old sake and tobacco shop.
 //   buildJapan(t)   windChime(t, x, y, z)   petBottles(t, x0, x1, z, n)   koinobori(t, x, z, h)
+import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { ZB, ZF } from './layout.js';
 
@@ -26,18 +27,22 @@ export function petBottles(t, x0, x1, z, n, seed = 1) {
   }
 }
 
-/** こいのぼり: a pole with a spinning wheel, the streamer and three carp flying toward +x. */
+/** こいのぼり: a pole with its spinning wheel, the streamer and three carp, each a tapering windsock that fills and
+ *  swings round the pole with the wind (Town.swing). */
 export function koinobori(t, x, z, h = 7.2) {
-  const B = t.B, m = t.m;
-  B.lathe(m.metal, [[0.035, 0], [0.022, h]], x, 0, z, { tint: 0xc8ccd0, sides: 6, caps: 't' });
-  B.blob(m.metal, x, h + 0.09, z, 0.07, 0.07, 0.07, { tint: 0xe8c040, jitter: 0, lo: 0.8 });
-  for (let k = 0; k < 6; k++) { const a = (k / 6) * Math.PI * 2; B.box(m.metal, 0.02, 0.2, 0.05, x + 0.04, h - 0.12 + Math.sin(a) * 0.12, z + Math.cos(a) * 0.12, { rx: a, tint: k % 2 ? 0xe8c040 : 0xc8282a }); }
-  [['fuki', 0.55, 1.25], ['koi0', 1.25, 1.5], ['koi1', 1.9, 1.25], ['koi2', 2.45, 1.0]].forEach(([key, dy, w], i) => {
-    B.push(x + 0.05, h - dy, z, 0);
-    B.push(0, 0, 0, 0.08 * (i % 2 ? 1 : -1));
-    t.decalQ(key, w / 2, -0.16 - w * 0.06, 0, { w, cut: true, rz: -0.12 - i * 0.03 });
-    B.pop(); B.pop();
+  const B = t.B, m = t.m, K = t.batch(), A = t.atlas.decal;
+  B.lathe(m.metal, [[0.036, 0], [0.034, 1.2], [0.022, h]], x, 0, z, { tint: 0xc8ccd0, sides: 6, caps: 't' });
+  B.lathe(m.metal, [[0.012, 0], [0.05, 0.03], [0.062, 0.07], [0.05, 0.11], [0.012, 0.13]], x, h, z, { tint: 0xe8c040, sides: 8 });
+  for (let k = 0; k < 8; k++) { const a = (k / 8) * Math.PI * 2; B.extrude(m.metal, [[0, 0], [0.2, -0.035], [0.22, 0], [0.2, 0.035]], -0.004, 0.004, { m: new THREE.Matrix4().makeRotationX(a).setPosition(x + 0.05, h - 0.14, z), tint: k % 2 ? 0xe8c040 : 0xc8483a }); }
+  B.lathe(m.metal, [[0.02, 0], [0.02, 0.1]], x, h - 0.14, z, { rz: -Math.PI / 2, tint: 0x8a8e90, sides: 5 });
+  [['fuki', 0.6, 1.25, 0.1], ['koi0', 1.3, 1.5, 0.17], ['koi1', 1.95, 1.25, 0.14], ['koi2', 2.5, 1.0, 0.11]].forEach(([key, dy, len, r], i) => {
+    const [u0, v0, u1, v1] = A.uv(key), n = 7, sides = 10, P = [], T = [], y0 = -dy, sag = 0.1 + i * 0.02;
+    const ring = (k) => { const tt = k / n, rr = r * (1 - 0.55 * tt) * (key === 'fuki' ? 1 - 0.3 * tt : 1), cx = 0.06 + tt * len, cy = y0 - sag * tt * tt * len; return Array.from({ length: sides + 1 }, (_, s2) => { const an = (s2 / sides) * Math.PI * 2; return [cx, cy + Math.cos(an) * rr, Math.sin(an) * rr, u0 + (u1 - u0) * tt, v0 + (v1 - v0) * (0.5 + 0.42 * Math.cos(an))]; }); };
+    for (let k = 0; k < n; k++) { const R0 = ring(k), R1 = ring(k + 1); for (let s2 = 0; s2 < sides; s2++) for (const q of [R0[s2], R1[s2], R1[s2 + 1], R0[s2], R1[s2 + 1], R0[s2 + 1]]) { P.push(q[0], q[1], q[2]); T.push(q[3], q[4]); } }
+    K.tris(t.cut, P, T, {});
+    K.tube(t.cut, [[0, y0 + 0.02, 0], [0.06, y0 + r, 0]], 0.004, { sides: 3 }); K.tube(t.cut, [[0, y0 - 0.02, 0], [0.06, y0 - r, 0]], 0.004, { sides: 3 });
   });
+  t.swing(K, new THREE.Matrix4().multiplyMatrices(B.top, new THREE.Matrix4().makeTranslation(x + 0.03, h, z)), { axis: 'y', ph: x, amp: 1 });
   t.game.player.addObstacle(x - 0.08, x + 0.08, z - 0.08, z + 0.08);
 }
 

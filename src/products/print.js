@@ -35,6 +35,13 @@ export const PAT = {
   fizz: (bg, fg, seed = 1) => { const B = []; let s = seed * 7919; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647); for (let i = 0; i < 40; i++) B.push([r() * 256, r() * 256, 1.5 + r() * 3.5]); return (x, y) => { for (const [bx, by, br] of B) { const d = Math.hypot(((x % 256) + 0.5) - bx, ((y % 256) + 0.5) - by); if (d <= br && d > br - 1.15) return fg; } return bg; }; },
 };
 
+// Nothing on a pack may look generated (docs/ART.md): grounds are flat inks, and what decorates them is drawn or
+// photographed and placed by hand. The repeating fills above are kept for the two things that are themselves the
+// design (a striped sweet wrapper, the polka dots the milky drink is known for: PAT.raw); everywhere else they give
+// the plain ground colour. Sunbursts (rays) and two-ink dither fades (skies) stay: they are drawn pictures.
+PAT.raw = { stripes: PAT.stripes, dots: PAT.dots };
+for (const k of ['stripes', 'checks', 'waves', 'seigaiha', 'diamonds', 'halftone', 'fizz', 'dots']) PAT[k] = (a) => () => a;
+
 // ------------------------------------------------------------------ badges
 /** Lines of lettering centred on (cx, cy). lines: [{ m (mask), c }] or masks. */
 function stackText(p, cx, cy, lines, c, gap = 2) {

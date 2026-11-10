@@ -64,7 +64,7 @@ function buildCarton(series, A) {
   };
   A.ink(ROUGH.fabric);
   /** Kraft board: the liner with the fluting just showing through as faint lines. */
-  const board = (P, vertical = false) => { P.fill(K[2]); const n = vertical ? P.W : P.H; for (let k = 3; k < n; k += 7) (vertical ? P.vline(k, 0, P.H - 1, K[3]) : P.hline(0, P.W - 1, k, K[3])); };
+  const board = (P) => { P.fill(K[2]); };
   // ---- a long side
   {
     const P = V.L;
@@ -113,7 +113,7 @@ function buildCarton(series, A) {
     kana(P, '開封口', P.W / 2, 34, INK, { align: 'center' }); P.text5('OPEN HERE', P.W / 2, 44, INK, { align: 'center' });
     for (let i = 20; i < P.W - 20; i += 16) P.hline(i, i + 8, 10, INK); // the cut line
     kana(P, '取扱注意', 12, 92, INK); P.text5('HANDLE WITH CARE', P.W - 10, 86, INK, { align: 'right' });
-    board(V.TS, true);
+    board(V.TS);
   }
   // ---- tape: brown paper tape with the maker's mark repeating
   {
@@ -121,7 +121,6 @@ function buildCarton(series, A) {
     A.ink(ROUGH.tarp);
     P.fill(TP[2]); P.box(0, P.H - 3, P.W, P.H, TP[3]); P.box(0, 0, P.W, 2, TP[1]);
     for (let i = 14; i < P.W; i += 70) { P.ring(i + 8, 25, 8, 10, TP[0]); P.text5('GG', i + 8, 29, TP[0], { align: 'center' }); P.text5('GACHA', i + 24, 29, TP[0]); }
-    for (let i = 4; i < P.W; i += 37) P.vline(i, 6, 12 + (i % 5), TP[3]); // wrinkles
     A.ink(ROUGH.fabric);
   }
   { const P = V.FLUTE; P.fill(K[1]); for (let i = 0; i < P.W; i += 4) { P.box(i, 2, i + 2, 6, K[0]); } P.hline(0, P.W - 1, 7, K[3]); P.hline(0, P.W - 1, 0, K[3]); }

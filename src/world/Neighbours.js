@@ -186,7 +186,7 @@ function nearSide(t) {
       [0, 2.0, 1.2, 1.0, 'kitchen', { face: 'l' }], [1, 3.5, 1.0, 0.9, 'lit4', { face: 'l' }], [1, 2.2, 0.8, 0.9, 'dark', { face: 'r' }]],
     door: { x: 0.3, kind: 'genkan', w: 1.3, name: N('太田'), porch: 'stone', milk: false }, ac: [[1, 0.12]] });
   t.yard(11.3, 16.6, 3.9, ZB - 0.15, m.dirt);
-  for (const [x, z, r] of [[14.15, 4.95, 0.1], [14.3, 4.45, -0.2]]) B.cyl(m.concrete, 0.24, 0.26, 0.05, x, 0, z, { ry: r, tint: 0xb8b4ac, sides: 7, caps: 't' });
+  for (const [x, z, r] of [[14.15, 4.95, 0.1], [14.3, 4.45, -0.2]]) B.blob(m.concrete, x, 0.012, z, 0.27, 0.035, 0.2, { ry: r, tint: 0xb8b4ac, seed: Math.round(z * 10), lo: 0.9, hi: 1.04 });
   bonsaiShelf(t, 12.4, 4.55, 1.5);
   t.prop('stone_lantern', 15.2, 0, 4.35, -0.3, { scale: 0.65 });
   t.blockWall(11.3, 16.6, ZB, s, { gaps: [[13.6, 14.6]], mat: m.oya, h: 1.35 });

@@ -40,7 +40,7 @@ function pxTexture(paint) {
   whenFontsReady().then(() => { const g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height); paint().draw(g, 0, 0, 1); t.needsUpdate = true; });
   return t;
 }
-const patOf = (card, bg, a2) => ({ stars: PAT.dots(bg, lt(a2, 0.5), 14, 2.4), checker: PAT.checks(bg, lt(a2, 0.72), 10), stripes: PAT.stripes(bg, lt(a2, 0.72), 8, 'd'), grid: PAT.checks(bg, lt(a2, 0.8), 6) }[card?.pattern] || PAT.dots(bg, lt(a2, 0.6), 12, 2));
+const patOf = (card, bg) => bg; // (a flat ground: nothing generated on the card)
 function star(p, cx, cy, r, c) { p.burst(cx, cy, r + 1, r * 0.45 + 1, 5, INK, -Math.PI / 2); p.burst(cx, cy, r, r * 0.45, 5, c, -Math.PI / 2); }
 function wrapEN(str, n) { const out = ['']; for (const w of String(str).toUpperCase().split(' ')) { if ((out[out.length - 1] + ' ' + w).trim().length > n) out.push(w); else out[out.length - 1] = (out[out.length - 1] + ' ' + w).trim(); } return out; }
 const janFor = (key) => { let h = 7; for (const ch of String(key)) h = (h * 31 + ch.charCodeAt(0)) % 100000; return '4955301' + String(h).padStart(5, '0'); };

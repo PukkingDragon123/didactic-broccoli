@@ -128,14 +128,7 @@ export function shellSkin(kind = 'plastic', repaint = false) {
   for (let q = 0; q < 4; q++) dimple(B, 127 + q * 254, J(80), 13);
   fill(B, 0, J(119), BW, J(118), P.sh1); fill(B, 0, J(120), BW, J(119), kind === 'secret' ? P.line : P.lite);
   text(B, 'A-3', 500, J(96), 1);
-  if (kind === 'secret') {
-    // seigaiha (wave scales) in gilt line, between the lettering and the mould line
-    for (let row = 0; row < 3; row++) for (let u = (row % 2) * 16; u < BW; u += 32) {
-      const cj = J(64 + row * 18) - 16;
-      if (row === 1 && [127, 381, 635, 889].some((d) => Math.abs(u + 16 - d) < 34)) continue; // keep the dimples clear
-      for (const rr of [15, 10, 5]) for (let a = 0; a <= 180; a += 2) put(B, Math.round(u + 16 + Math.cos(a * D2R) * rr), Math.round(cj + Math.sin(a * D2R) * rr), rr === 15 ? P.lite : P.line);
-    }
-  }
+  if (kind === 'secret') { fill(B, 0, J(58), BW, J(56), P.lite); fill(B, 0, J(61), BW, J(60), P.line); fill(B, 0, J(104), BW, J(103), P.line); } // gilt bands round the cup
 
   // ---- caps (polar: the pole in the middle)
   const c = CP / 2;
