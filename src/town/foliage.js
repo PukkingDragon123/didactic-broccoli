@@ -86,7 +86,7 @@ function cards(t, kind, n, sample, o) {
     const base = add(s.p, s.nrm, -sz * (s.sink ?? 0.18));
     const q = [[-hu, -hu * 0.1], [hu, -hu * 0.1], [hu, hu * 1.9], [-hu, hu * 1.9]].map(([a, b]) => [base[0] + u0[0] * a + v[0] * b, base[1] + u0[1] * a + v[1] * b, base[2] + u0[2] * a + v[2] * b]);
     const nq = q.map((p) => (s.normalAt && s.normalAt(p)) || s.nrm);
-    const k0 = o.kmin ?? 0.62, kk = k0 + (1.08 - k0) * s.h;
+    const k0 = o.kmin ?? 0.62, kk = k0 + ((o.kmax ?? 1.08) - k0) * s.h;
     const [P, T, N, K] = (L[k] ||= [[], [], [], []]);
     for (const j of [0, 1, 2, 0, 2, 3]) { P.push(...q[j]); T.push(...uvq[j]); N.push(...nq[j]); K.push(kk * (j < 2 ? 0.86 : 1.05)); }
   }
@@ -224,7 +224,12 @@ export function sakura(t, x, z, s = 1, seed = 1, o = {}) {
   const dome = [x, 3.0 * s, z, 3.0 * s * hs, 0.55];
   const clumps = [];
   def.limbs.forEach((L, li) => {
-    const pts = L.map(W), lead = li === 3;
+    let pts = L.map(W);
+    const lead = li === 3, e = L[L.length - 1], eh = Math.hypot(e[0], e[2]) || 1;
+    if (dir != null && bias > 0.3 && ((e[0] * cR - e[2] * sR) * Math.cos(dir) + (e[0] * sR + e[2] * cR) * Math.sin(dir)) / eh < -0.45) {
+      limb(t, [pts[0], lerp3(pts[0], pts[1], 0.55), lerp3(pts[1], pts[2], 0.2)], [0.11 * s, 0.085 * s, 0.075 * s], { bark: 'cherry', tint, cap: true });
+      return;
+    }
     limb(t, pts, [0.12 * s, 0.095 * s, 0.065 * s, 0.04 * s, 0.018 * s].slice(-pts.length), { bark: 'cherry', tint, gnarl: 0.18, gseed: seed * 5 + li, seg: 2, cap: true });
     clumps.push([pts[pts.length - 1], 0.55]);
     // secondaries: alternate sides along the limb, outward and a little up, drooping at the tips
@@ -243,7 +248,7 @@ export function sakura(t, x, z, s = 1, seed = 1, o = {}) {
     }
   });
   // the blossom: clumps of sprig cards at the twig ends and along the limbs, shaded as one dome
-  clumps.forEach(([p, r], i) => crown(t, p[0], p[1] + 0.12 * s, p[2], r * 1.25 * s * Math.max(0.6, hs), r * 0.8 * s, r * 1.25 * s * Math.max(0.6, hs), { kind: 'blossom', mix: ['blossom2', 0.45], density: 2.2, tilt: 0.8, core: false, seed: seed * 97 + i * 13, dome, min: 8, kmin: 0.78 }));
+  clumps.forEach(([p, r], i) => crown(t, p[0], p[1] + 0.12 * s, p[2], r * 1.25 * s * Math.max(0.6, hs), r * 0.8 * s, r * 1.25 * s * Math.max(0.6, hs), { kind: 'blossom', mix: ['blossom2', 0.45], density: 2.2, tilt: 0.8, core: false, seed: seed * 97 + i * 13, dome, min: 8, kmin: 0.86, kmax: 1.2 }));
   // fallen petals on the ground under the crown
   if (o.petals !== false) {
     const S = mats(), P = [], T = [], N = [];
@@ -280,13 +285,13 @@ export function niwaki(t, x, z, s = 1, seed = 1, o = {}) {
       const k1 = W(tx + (px - tx) * 0.35, ty + 0.05, sideZ * 0.35), k2 = W(tx + (px - tx) * 0.7, Math.min(ty, py) - 0.08, sideZ * 0.7);
       limb(t, [from, k1, k2, end], [0.05 * s, 0.025 * s], { bark: 'pine', tint, seg: 2 });
     }
-    pad(t, ...W(px, py, sideZ), pr * s, seed * 31 + i * 7);
+    pad(t, ...W(px, py, sideZ), pr * 1.2 * s, seed * 31 + i * 7);
   });
 }
 /** A needle pad: a domed cloud of tufts seen from above, two rows of tufts on edge round its rim (candles standing up
  *  out of the top row), a dark mass inside so it never looks hollow. */
 function pad(t, x, y, z, r, seed) {
-  const S = mats(), th = r * 0.48, rz = r * 0.86, lob = (a) => 0.86 + 0.14 * Math.cos(3 * a + seed) * Math.cos(2 * a - seed * 0.7);
+  const S = mats(), th = r * 0.4, rz = r * 0.86, lob = (a) => 0.86 + 0.14 * Math.cos(3 * a + seed) * Math.cos(2 * a - seed * 0.7);
   t.B.blob(S.core, x, y - th * 0.05, z, r * 0.76, th * 0.66, rz * 0.76, { tint: 0x2e4a34, jitter: 0.18, lo: 0.66, hi: 1.0, seed });
   const dome = (d) => th * (0.6 - 0.55 * d * d);
   const normalAt = (q) => norm3([(q[0] - x) / (r * r), (q[1] - y + th * 0.4) / (th * th * 1.6), (q[2] - z) / (rz * rz)]);
@@ -301,7 +306,7 @@ function pad(t, x, y, z, r, seed) {
     const nR = Math.max(6, Math.round(r * (row ? 18 : 26)));
     cards(t, 'pine', nR, (i) => {
       const a = (i / nR) * Math.PI * 2 + seed + row * 0.4, L = lob(a), p = [x + Math.cos(a) * r * out * L, y + th * yy + (i % 2) * th * 0.12, z + Math.sin(a) * rz * out * L];
-      return { p, nrm: norm3([Math.cos(a), up, Math.sin(a)]), h: row ? 0.35 : 0.65, normalAt, ang: (i % 3 - 1) * 0.3, lean: row ? -0.2 : 0.3, sink: 0.35, size: sz * (row ? 1.0 : 1.15) };
+      return { p, nrm: norm3([Math.cos(a), up, Math.sin(a)]), h: row ? 0.35 : 0.65, normalAt, ang: (i % 3 - 1) * 0.3, lean: row ? 0.6 : 0.85, sink: 0.4, size: sz * (row ? 0.8 : 0.9) };
     }, { seed: seed + 3 + row, mix: share ? ['candle', share] : null });
   }
 }

@@ -6,7 +6,8 @@ import { blob, bush, tones, leafy, leaf, leafRing, blade, flower, pot, planter, 
 import { kana, smallPrint, hazard, framed, meshTex, meshPanel, louvres, rustEdge, sticker, warnTri, mascot, barcode } from '../kit/prints.js';
 import { tomareTex } from './street.js';
 import { leaves } from '../kit/foliage.js';
-import { catHead, catTail, CALICO, FUR, pigeon, crow } from '../kit/animals.js';
+import { catHead, catTail, CALICO, FUR, pigeon } from '../kit/animals.js';
+import { jungleCrow } from '../things/crow.js';
 
 const GALV = metal(0xa6acae, 0.3), LEAF = 0x4f8f45, LEAF2 = 0x6aa84f, SOIL = 0x4a3828;
 
@@ -506,7 +507,7 @@ export function station(K, B, net) {
   }, { rough: 0.7 });
   K.box(paint(0x2f7a4a, 0.2), bx - 0.36, 0.92, bz + 0.02, bx + 0.36, 1.56, bz + 0.04, { bevel: 0.004 });
   K.face(V, '+z', bx - 0.345, 0.935, bx + 0.345, 1.545, bz + 0.0412);
-  K.at([bx + 0.2, 1.56, bz + 0.03], () => crow(K, 0, 0, 0, 1.0), { ry: -0.9 });
+  K.at([bx + 0.2, 1.56, bz + 0.03], () => jungleCrow(K, 0, 0, 0, 1.0), { ry: -0.9 });
   if (net) {
     // the green crow net, rolled up along the kerb with its weights
     K.cyl(flat(0x2f8a4a, 0.9), B.x0 + 0.5, 0.1, B.z0 + 0.28, 0.06, 0.98, 7, { axis: 'x' });

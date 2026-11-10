@@ -75,7 +75,7 @@ function dressKind(h, kind) {
     water.position.set(0, 17.9, 2.0); water.scale.y = 0.6; water.raycast = () => {};
     hg.add(water);
     rig.water = water;
-    const beak = vmesh('kappa:beak', MODELS.beak);
+    const beak = vmesh('kappa:beak', MODELS.beak); beak.scale.setScalar(1.3);
     beak.position.set(0, 0.4, 10.2);
     hg.add(beak);
     const V = P.H / 120;

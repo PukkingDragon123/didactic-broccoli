@@ -122,14 +122,14 @@ export const FACE = {
       g.fillStyle = '#f8e4d0'; g.fillRect(w * 0.36, 3, w * 0.28, h - 6);
       g.fillStyle = 'rgba(160,96,64,0.45)'; for (let x = 8; x < w; x += 10) for (let y = 7; y < h; y += 9) if (x < w * 0.34 || x > w * 0.66) g.fillRect(x, y, 2, 2);
     }, { rough: 0.7 });
-    const strip = smooth([[-3.6, -0.8], [3.6, -0.8], [3.9, 0], [3.6, 0.8], [-3.6, 0.8], [-3.9, 0]], 2, true);
-    const cheek = (x, y) => frontZ(x, y + EYE, -0.2) + 0.2;
-    for (const [cx, cy, a] of [[-4.2, -4.2, 0.7], [-4.2, -4.2, -0.7]]) {
+    const strip = smooth([[-2.9, -0.7], [2.9, -0.7], [3.15, 0], [2.9, 0.7], [-2.9, 0.7], [-3.15, 0]], 2, true);
+    const cheek = (x, y) => frontZ(x, y + EYE, -0.2) + 0.12 - Math.max(0, Math.abs(x) - 3.4) * 0.9;
+    for (const [cx, cy, a] of [[-3.2, -3.9, 0.7], [-3.2, -3.9, -0.7]]) {
       const c = Math.cos(a), s = Math.sin(a);
       const pts = strip.map(([x, y]) => [cx + x * c - y * s, cy + x * s + y * c]);
-      K.plate(pts, (x, y) => cheek(x, y) + (a > 0 ? 0.12 : 0), 0.12, { mat: pad, col: 0xffffff, rings: 4, c: [cx, cy], uvMap: (x, y) => { const dx = x - cx, dy = y - cy; return [(dx * c + dy * s + 3.9) / 7.8, (-dx * s + dy * c + 0.8) / 1.6]; } });
+      K.plate(pts, (x, y) => cheek(x, y) + (a > 0 ? 0.12 : 0), 0.12, { mat: pad, col: 0xffffff, rings: 4, c: [cx, cy], uvMap: (x, y) => { const dx = x - cx, dy = y - cy; return [(dx * c + dy * s + 3.15) / 6.3, (-dx * s + dy * c + 0.7) / 1.4]; } });
     }
-    K.plate(strip.map(([x, y]) => [x * 0.9, y - 2.6]), (x, y) => cheek(x, y) + 0.05, 0.12, { mat: pad, col: 0xffffff, rings: 4, c: [0, -2.6], uvMap: (x, y) => [(x / 0.9 + 3.9) / 7.8, (y + 2.6 + 0.8) / 1.6] });
+    K.plate(strip.map(([x, y]) => [x * 0.85, y - 2.4]), (x, y) => cheek(x, y) + 0.05, 0.12, { mat: pad, col: 0xffffff, rings: 4, c: [0, -2.4], uvMap: (x, y) => [(x / 0.85 + 3.15) / 6.3, (y + 2.4 + 0.7) / 1.4] });
     return K.build();
   },
   gariben() {

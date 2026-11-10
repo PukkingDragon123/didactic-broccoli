@@ -1,6 +1,6 @@
 // Wearable cosmetics for the humans: detailed hats, hoods, glasses and costume parts (modelled in src/peoplekit) that ride on
 // the skeleton (head / chest / spine / hips / hand bones), plus the spec tweaks an outfit needs (onesie colours,
-// a hood trims the hair). Head pieces are modelled once in 'head units' (1 voxel = 1/20 of the head height, head
+// a hood trims the hair). Head pieces are modelled once in 'head units' (1 unit = 1/20 of the head height, head
 // bone at the origin, +z = the face, +x = the wearer's left) and scaled per human; body pieces are sized from the
 // human's proportions (the models: src/peoplekit/base.js). Cheap secondary motion: dino tail, chicken comb / head / wings, pompoms, bear ears.
 //   applyCosmeticSpec(spec, look)      before building the Human (outfit colours, hair under hoods)
