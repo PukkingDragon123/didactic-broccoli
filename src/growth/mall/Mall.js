@@ -218,19 +218,19 @@ export class Mall {
     vq.position.copy(Z.L(0, 3.0, Z1 + 4)); vq.rotation.y = Math.PI;
     Z.group.add(vq);
     const glass = Z.mat(new THREE.MeshStandardMaterial({ color: 0xd8eef4, roughness: 0.05, transparent: true, opacity: 0.18, depthWrite: false }));
-    const pane = (x0, x1, y0, y1) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - y0), glass); m.position.copy(Z.L((x0 + x1) / 2, (y0 + y1) / 2, Z1 - 0.02)); m.rotation.y = Math.PI; Z.group.add(m); };
+    const pane = (x0, x1, y0, y1, z = Z1 - 0.02) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - y0), glass); m.position.copy(Z.L((x0 + x1) / 2, (y0 + y1) / 2, z)); m.rotation.y = Math.PI; Z.group.add(m); };
     if (n === 1) {
       // entrance x -2..2 (two pairs of automatic doors), display windows on both sides
       for (const [x0, x1] of [[X0, -10.5], [-2.6, -2.0], [2.0, 2.6], [10.5, X1]]) B.box(paint, x1 - x0, CH, 0.2, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: T.wall });
       for (const [x0, x1] of [[-10.5, -2.6], [2.6, 10.5]]) {
         B.box(paint, x1 - x0, 0.5, 0.2, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: 0x3a3a40 });
         B.box(paint, x1 - x0, CH - 3.0, 0.2, (x0 + x1) / 2, 3.0, Z1 + 0.1, { tint: T.wall });
-        pane(x0, x1, 0.5, 3.0);
+        pane(x0, x1, 0.5, 3.0, Z1 + 0.08);
       }
       // the storefront's frames, cill and kick plate, the column casings, the doors' header (./facade.js)
-      storefront(B, paint, metal, [[-10.5, -2.6], [2.6, 10.5]], { y0: 0.5, y1: 3.0, n: 3, transom: 2.45 });
+      // (the frames sit out in the wall's depth: the door leaves slide open across the inner bays' ends)
+      storefront(B, paint, metal, [[-10.5, -2.6], [2.6, 10.5]], { y0: 0.5, y1: 3.0, n: 3, transom: 2.45, zg: Z1 + 0.08 });
       for (const x of [-11.0, 11.0]) pilaster(B, paint, metal, x, 0.9, T.wall);
-      for (const x of [-2.3, 2.3]) pilaster(B, paint, metal, x, 0.62, T.wall);
       B.box(paint, 4.0, CH - 2.6, 0.2, 0, 2.6, Z1 + 0.1, { tint: T.wall });
       doorHeader(B, paint, metal, -2.0, 2.0, 2.56);
       this.doors = [];
@@ -255,11 +255,11 @@ export class Mall {
         B.box(paint, x1 - x0, 0.12, 0.22, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: 0x3a3a40 });
         B.box(paint, x1 - x0, CH - 3.1, 0.2, (x0 + x1) / 2, 3.1, Z1 + 0.1, { tint: T.wall });
         pane(x0, x1, 1.0, 3.1);
-        B.box(paint, x1 - x0 + 0.5, 0.13, 0.17, (x0 + x1) / 2, 3.1, Z1 - 0.085, { tint: T.wall, k: 1.03, bevel: 0.01 }); // the pelmet
+        B.box(paint, x1 - x0 + 0.1, 0.13, 0.17, (x0 + x1) / 2, 3.1, Z1 - 0.085, { tint: T.wall, k: 1.03, bevel: 0.01 }); // the pelmet
       }
       storefront(B, paint, metal, [[-11.5, -2.5], [2.5, 11.5]], { y0: 1.0, y1: 3.1, n: 4, transom: 2.5, vents: true, cill: 'board' });
       for (const x of [-12.0, 12.0]) pilaster(B, paint, metal, x, 0.8, T.wall);
-      for (const x of [-2.85, 2.85]) pilaster(B, paint, metal, x, 0.6, T.wall);
+      for (const x of [-2.15, 2.15]) pilaster(B, paint, metal, x, 0.6, T.wall);
       Z.block(X0, X1, Z1, Z1 + 1);
       this.windows ||= {};
       this.windows[n] = true;

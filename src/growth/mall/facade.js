@@ -12,11 +12,11 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { Z1, CH } from './layout.js';
 
-const AL = 0xc8ccd2, CAP = 0xb4bac2, GASKET = 0x26282c, ZG = Z1 - 0.02; // the glass line (just inside the wall face)
+const AL = 0xc8ccd2, CAP = 0xb4bac2, GASKET = 0x26282c;
 
 /** A mullion (vertical) or a transom (o.h: horizontal), its core across the glass line, a snap cap on the room side. */
 function bar(B, metal, paint, a, b, at, o = {}) {
-  const d = 0.13, zc = ZG + 0.035, horiz = !!o.h, len = b - a, mid = (a + b) / 2;
+  const ZG = o.zg, d = 0.13, zc = ZG + 0.035, horiz = !!o.h, len = b - a, mid = (a + b) / 2;
   if (horiz) {
     B.box(metal, len, 0.05, d, mid, at - 0.025, zc, { tint: AL, bevel: 0.005 });
     B.box(metal, len, 0.066, 0.022, mid, at - 0.033, zc - d / 2 - 0.01, { tint: CAP, bevel: 0.008 });
@@ -30,14 +30,14 @@ function bar(B, metal, paint, a, b, at, o = {}) {
 
 /** Glazed bays in the front wall, each [x0, x1] from y0 to y1, split into n lights by mullions. */
 export function storefront(B, paint, metal, bays, o) {
-  const { y0, y1, n = 3, transom = null, vents = false, cill = 'stone' } = o;
+  const { y0, y1, n = 3, transom = null, vents = false, cill = 'stone' } = o, ZG = o.zg ?? Z1 - 0.02, H = { h: true, zg: ZG }, V = { zg: ZG };
   for (const [x0, x1] of bays) {
     // the perimeter frame: jambs, head and sill as the same sections, butted
-    bar(B, metal, paint, y0, y1, x0 + 0.025); bar(B, metal, paint, y0, y1, x1 - 0.025);
-    bar(B, metal, paint, x0, x1, y1 - 0.025, { h: true }); bar(B, metal, paint, x0, x1, y0 + 0.025, { h: true });
-    for (let k = 1; k < n; k++) bar(B, metal, paint, y0 + 0.05, y1 - 0.05, x0 + ((x1 - x0) * k) / n);
+    bar(B, metal, paint, y0, y1, x0 + 0.025, V); bar(B, metal, paint, y0, y1, x1 - 0.025, V);
+    bar(B, metal, paint, x0, x1, y1 - 0.025, H); bar(B, metal, paint, x0, x1, y0 + 0.025, H);
+    for (let k = 1; k < n; k++) bar(B, metal, paint, y0 + 0.05, y1 - 0.05, x0 + ((x1 - x0) * k) / n, V);
     if (transom) {
-      bar(B, metal, paint, x0 + 0.05, x1 - 0.05, transom, { h: true });
+      bar(B, metal, paint, x0 + 0.05, x1 - 0.05, transom, H);
       if (vents) for (let k = 0; k < n; k++) { // a top-hung vent in every other light: its sash and a cam handle
         if (k % 2) continue;
         const a = x0 + ((x1 - x0) * k) / n + 0.05, b = x0 + ((x1 - x0) * (k + 1)) / n - 0.05, mid = (a + b) / 2;
@@ -47,8 +47,8 @@ export function storefront(B, paint, metal, bays, o) {
         B.box(metal, 0.016, 0.075, 0.016, mid + 0.012, transom + 0.0, ZG - 0.06, { tint: 0x9aa0a8, bevel: 0.005, rz: 0.25 });
       }
     }
-    if (cill === 'stone') { // a granite-look cill on the stallriser, its rounded nose into the room; the kick plate
-      const pts = [[ZG - 0.11, -0.03], [Z1 + 0.02, -0.03], [Z1 + 0.02, 0], [ZG - 0.11, 0], [ZG - 0.122, -0.006], [ZG - 0.126, -0.015], [ZG - 0.122, -0.024]];
+    if (cill === 'stone') { // a granite-look cill on the stallriser, a shallow rounded nose (the doors slide past); the kick plate
+      const zn = Z1 - 0.02, pts = [[zn, -0.03], [Z1 + 0.1, -0.03], [Z1 + 0.1, 0], [zn, 0], [zn - 0.006, -0.006], [zn - 0.008, -0.015], [zn - 0.006, -0.024]];
       B.extrude(paint, pts.map(([z, y]) => [z, y + y0]), x0 - 0.04, x1 + 0.04, { along: 'x', tint: 0x6a6660 });
       B.box(metal, x1 - x0, 0.14, 0.006, (x0 + x1) / 2, 0.0, Z1 - 0.003, { tint: 0xd4d8dc });
       for (const x of [x0 + 0.05, (x0 + x1) / 2, x1 - 0.05]) for (const y of [0.035, 0.105]) B.lathe(metal, [[0.005, 0], [0.004, 0.002], [0, 0.003]], x, y, Z1 - 0.006, { rx: -Math.PI / 2, tint: 0xa8acb0, sides: 6 });
