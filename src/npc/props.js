@@ -154,87 +154,8 @@ export function guestbookStand() {
   return g;
 }
 
-// ------------------------------------------------------------------ pigeons
-const PIGEON = () => {
-  const v = vm(0.02), G = 0x8a8e98, L = 0xa8acb6, D = 0x5a5e68, N1 = 0x4a8a6a, N2 = 0x7a4a8a, K = 0x2a2a2e, E = 0xe87a2a, F = 0xd87a7a;
-  ell(v, [0, 4, 0], [3, 2.6, 5], (x, y, z) => (y < 3 ? L : z < -3 ? D : G));
-  for (let z = -9; z <= -5; z++) box(v, -1, 1, 4, 4, z, z, D);
-  ell(v, [0, 7, 4], [1.8, 2, 1.8], (x, y, z) => (y < 7 ? (hash(x, y, z) > 0.5 ? N1 : N2) : D));
-  v.set(0, 7, 6, K).set(0, 6, 6, 0xd8c8b8);
-  v.set(1, 8, 5, E).set(-1, 8, 5, E);
-  box(v, -1, -1, 0, 1, 0, 0, F); box(v, 1, 1, 0, 1, 0, 0, F);
-  return v;
-};
-const WING = () => { const v = vm(0.02); box(v, 0, 0, 0, 1, -4, 3, (x, y, z) => (z < -2 ? 0x4a4e58 : z === 0 ? 0x3a3e48 : 0x7a7e88)); return v; };
-
-/** A small flock that pecks around a point, scatters when you rush at it, and lands again. */
-export class Flock {
-  constructor(game, n = 5, center = new THREE.Vector3()) {
-    this.game = game;
-    this.center = center.clone();
-    this.group = new THREE.Group();
-    this.group.name = 'pigeons';
-    game.scene.add(this.group);
-    this.birds = [];
-    for (let i = 0; i < n; i++) {
-      const b = new THREE.Group();
-      const body = vmesh('pigeon', PIGEON, 0.022, [0, 0, 0]);
-      b.add(body);
-      const wings = [-1, 1].map((s) => { const w = vmesh('pigeonWing', WING, 0.022); w.position.set(s * 0.06, 0.1, 0); b.add(w); return w; });
-      b.position.set(center.x + (Math.random() - 0.5) * 2, 0, center.z + (Math.random() - 0.5) * 1.6);
-      b.rotation.y = Math.random() * 6.28;
-      this.group.add(b);
-      this.birds.push({ b, body, wings, t: Math.random() * 5, peck: 0, hop: 0, fly: 0, vy: 0, target: null, wait: Math.random() * 2 });
-    }
-    this.visible = true;
-  }
-  setVisible(on) { this.group.visible = on; this.visible = on; }
-  /** Throw crumbs: they all come running to point p. */
-  feed(p) { for (const B of this.birds) { B.target = p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.9, 0, (Math.random() - 0.5) * 0.9)); B.wait = Math.random() * 0.4; } }
-  scatter() {
-    let any = false;
-    for (const B of this.birds) if (!B.fly) { B.fly = 1; B.vy = 2.4 + Math.random(); B.dir = Math.random() * 6.28; any = true; }
-    if (any) { try { audio.play('flutter', { pos: this.birds[0].b.position, vol: 0.7 }); } catch { /* audio not ready */ } }
-    return any;
-  }
-  update(dt) {
-    if (!this.visible) return;
-    const pl = this.game.player, cam = this.game.camera;
-    const d = Math.hypot(pl.pos.x - this.center.x, pl.pos.z - this.center.z);
-    if (d > 40) return;
-    const fast = Math.hypot(pl.vel.x, pl.vel.z) > 3;
-    for (const B of this.birds) {
-      const b = B.b;
-      B.t += dt;
-      if (B.fly) {
-        B.fly += dt;
-        b.position.y += B.vy * dt; B.vy -= dt * 0.6;
-        b.position.x += Math.sin(B.dir) * 2.2 * dt; b.position.z += Math.cos(B.dir) * 2.2 * dt;
-        b.rotation.y = B.dir;
-        const f = Math.sin(B.t * 34) * 0.9;
-        B.wings[0].rotation.z = f; B.wings[1].rotation.z = -f;
-        if (B.fly > 6) { B.fly = 0; b.position.set(this.center.x + (Math.random() - 0.5) * 2, 0, this.center.z + (Math.random() - 0.5) * 1.6); B.wings[0].rotation.z = B.wings[1].rotation.z = 0; }
-        continue;
-      }
-      if (fast && Math.hypot(pl.pos.x - b.position.x, pl.pos.z - b.position.z) < 1.4) { this.scatter(); break; }
-      // peck, hop toward crumbs, little turns
-      B.wait -= dt;
-      if (B.target) {
-        const dx = B.target.x - b.position.x, dz = B.target.z - b.position.z, dd = Math.hypot(dx, dz);
-        if (dd < 0.08) B.target = null;
-        else if (B.wait <= 0) { b.rotation.y = Math.atan2(dx, dz); const s = Math.min(dd, 0.9 * dt); b.position.x += dx / dd * s; b.position.z += dz / dd * s; B.hop += dt * 14; }
-      } else if (B.wait <= 0) {
-        B.wait = 0.6 + Math.random() * 2.2;
-        if (Math.random() < 0.5) B.peck = 1; else b.rotation.y += (Math.random() - 0.5) * 1.6;
-      }
-      B.peck = Math.max(0, B.peck - dt * 3);
-      b.position.y = Math.abs(Math.sin(B.hop)) * 0.02;
-      B.body.rotation.x = Math.sin(B.peck * Math.PI) * 0.6;
-      void cam;
-    }
-  }
-  dispose() { this.group.removeFromParent(); }
-}
+// ------------------------------------------------------------------ pigeons: the animal kit's ground flock (src/animals/pigeon.js), same API
+export { GroundFlock as Flock } from '../animals/pigeon.js';
 
 // ------------------------------------------------------------------ yokai
 // Yokai are faintly self-lit after dark (flat, from their own colours: readable in an unlit lane, never a halo). The
