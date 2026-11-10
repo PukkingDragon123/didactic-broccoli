@@ -1,31 +1,62 @@
 /* Floating text (src/people/Bubbles.js): a fixed overlay; every line is positioned with transforms only.
-   Crisp Alagard on a small dark strip: no outlines, glows, gradients or rounded bubbles. */
+   Speech is plain floating text: crisp Alagard in a light tone with a hard pixel ink outline (unblurred text-shadow
+   copies: a 2 px rim and a one-step drop under it), so a line reads over a sunlit wall and a dark lane alike.
+   No paper, no strips, no boxes, no glows. The same ink is shared with the chat choices (src/talk/talk.css), the
+   cutscene subtitles (src/ui/paper.css) and anything else that speaks:
+     --ft-ink, --ft-cream, --ft-dim, --ft-gold, --ft-red, --ft-blue    the tones
+     --ft-rim     the outline for 16 px text (1 px strokes: every offset out to 2 px, corners rounded off)
+     --ft-rim-2x  the outline for 32 px text (2 px strokes) */
+:root {
+  --ft-ink: #1a1216;
+  --ft-cream: #fff4e0;
+  --ft-dim: #d6cab2;
+  --ft-gold: #ffd23f;
+  --ft-red: #f0554a;
+  --ft-blue: #bfe8ff;
+  --ft-rim:
+    1px 0 0 var(--ft-ink), -1px 0 0 var(--ft-ink), 0 1px 0 var(--ft-ink), 0 -1px 0 var(--ft-ink),
+    1px 1px 0 var(--ft-ink), -1px 1px 0 var(--ft-ink), 1px -1px 0 var(--ft-ink), -1px -1px 0 var(--ft-ink),
+    2px 0 0 var(--ft-ink), -2px 0 0 var(--ft-ink), 0 2px 0 var(--ft-ink), 0 -2px 0 var(--ft-ink),
+    2px 1px 0 var(--ft-ink), -2px 1px 0 var(--ft-ink), 2px -1px 0 var(--ft-ink), -2px -1px 0 var(--ft-ink),
+    1px 2px 0 var(--ft-ink), -1px 2px 0 var(--ft-ink), 1px -2px 0 var(--ft-ink), -1px -2px 0 var(--ft-ink),
+    0 3px 0 var(--ft-ink), 1px 3px 0 var(--ft-ink), -1px 3px 0 var(--ft-ink);
+  --ft-rim-2x:
+    2px 0 0 var(--ft-ink), -2px 0 0 var(--ft-ink), 0 2px 0 var(--ft-ink), 0 -2px 0 var(--ft-ink),
+    2px 2px 0 var(--ft-ink), -2px 2px 0 var(--ft-ink), 2px -2px 0 var(--ft-ink), -2px -2px 0 var(--ft-ink),
+    4px 0 0 var(--ft-ink), -4px 0 0 var(--ft-ink), 0 4px 0 var(--ft-ink), 0 -4px 0 var(--ft-ink),
+    4px 2px 0 var(--ft-ink), -4px 2px 0 var(--ft-ink), 4px -2px 0 var(--ft-ink), -4px -2px 0 var(--ft-ink),
+    2px 4px 0 var(--ft-ink), -2px 4px 0 var(--ft-ink), 2px -4px 0 var(--ft-ink), -2px -4px 0 var(--ft-ink),
+    0 6px 0 var(--ft-ink), 2px 6px 0 var(--ft-ink), -2px 6px 0 var(--ft-ink);
+}
 .ft-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; contain: strict; }
 .ft { position: absolute; left: 0; top: 0; will-change: transform, opacity; opacity: 0; }
 .ft-in {
-  position: relative; display: block; width: max-content; max-width: 240px; padding: 1px 6px 3px;
-  background: rgba(18, 12, 16, 0.66); color: #fff4e0; text-align: center;
-  font-family: 'Alagard', 'DotGothic16', monospace; font-size: 16px; line-height: 18px; letter-spacing: 0;
+  position: relative; display: block; width: max-content; max-width: 240px; padding: 2px 4px 4px;
+  color: var(--ft-cream); text-align: center; text-shadow: var(--ft-rim);
+  font-family: 'Alagard', 'DotGothic16', monospace; font-size: 16px; line-height: 20px; letter-spacing: 0;
   white-space: normal; overflow-wrap: break-word;
 }
 .ft-w { display: inline-block; white-space: nowrap; }
 .ft-c { visibility: hidden; }
 .ft-c.on { visibility: visible; }
-.ft-think .ft-in { color: #c8bce0; background: rgba(18, 12, 16, 0.5); }
-.ft-shout .ft-in { color: #ffd23f; }
-.ft-me .ft-in { color: #bfe8ff; }
-.ft-big .ft-in { max-width: min(380px, 42vw); text-align: left; padding: 3px 8px 5px; background: rgba(18, 12, 16, 0.74); }
-.ft-name { font-size: 16px; line-height: 18px; color: #ffd23f; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; }
-/* off-screen speakers: a little pixel arrow at the strip's outer side, pointing where they are */
-.ft-arrow { display: none; position: absolute; top: 50%; width: 8px; height: 12px; margin-top: -6px; background: #ffd23f; }
-.ft[data-edge='r'] .ft-arrow { display: block; right: -10px; clip-path: polygon(0 0, 2px 0, 2px 2px, 4px 2px, 4px 4px, 6px 4px, 6px 5px, 8px 5px, 8px 7px, 6px 7px, 6px 8px, 4px 8px, 4px 10px, 2px 10px, 2px 12px, 0 12px); }
-.ft[data-edge='l'] .ft-arrow { display: block; left: -10px; clip-path: polygon(8px 0, 6px 0, 6px 2px, 4px 2px, 4px 4px, 2px 4px, 2px 5px, 0 5px, 0 7px, 2px 7px, 2px 8px, 4px 8px, 4px 10px, 6px 10px, 6px 12px, 8px 12px); }
-@media (min-height: 900px) {
-  .ft-big .ft-in, .ft-big .ft-name { font-size: 32px; line-height: 34px; }
-  .ft-big .ft-in { max-width: min(560px, 40vw); }
+.ft-think .ft-in { color: #cfc4ee; }
+.ft-shout .ft-in { color: var(--ft-gold); }
+.ft-me .ft-in { color: var(--ft-blue); }
+/* cinematic lines (a chat, a cutscene): beside the head, the speaker's name over them in the speaker's own colour */
+.ft-big .ft-in { max-width: min(380px, 42vw); text-align: left; }
+.ft-name { font-size: 16px; line-height: 18px; color: var(--ft-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; text-shadow: var(--ft-rim); }
+/* off-screen speakers: a little pixel arrow at the line's outer side, pointing where they are (ink-rimmed like the text) */
+.ft-arrow {
+  display: none; position: absolute; top: 50%; width: 8px; height: 12px; margin-top: -6px;
+  filter: drop-shadow(2px 0 0 var(--ft-ink)) drop-shadow(-2px 0 0 var(--ft-ink)) drop-shadow(0 2px 0 var(--ft-ink)) drop-shadow(0 -2px 0 var(--ft-ink));
 }
-
-/* ---- on paper (the strips themselves are in src/ui/paper.css): the speaker's name in red pen with a dashed rule
-   under it, the off-screen arrow in red ink. */
-body.paper-ui .ft-name { padding-bottom: 1px; margin-bottom: 2px; box-shadow: 0 2px 0 rgba(200, 50, 44, .25); }
-body.paper-ui .ft-arrow { background: var(--pp-red, #c8322c); }
+.ft-arrow::before { content: ''; position: absolute; inset: 0; background: var(--ft-gold); }
+.ft[data-edge='r'] .ft-arrow { display: block; right: -8px; }
+.ft[data-edge='l'] .ft-arrow { display: block; left: -8px; }
+.ft[data-edge='r'] .ft-arrow::before { clip-path: polygon(0 0, 2px 0, 2px 2px, 4px 2px, 4px 4px, 6px 4px, 6px 5px, 8px 5px, 8px 7px, 6px 7px, 6px 8px, 4px 8px, 4px 10px, 2px 10px, 2px 12px, 0 12px); }
+.ft[data-edge='l'] .ft-arrow::before { clip-path: polygon(8px 0, 6px 0, 6px 2px, 4px 2px, 4px 4px, 2px 4px, 2px 5px, 0 5px, 0 7px, 2px 7px, 2px 8px, 4px 8px, 4px 10px, 6px 10px, 6px 12px, 8px 12px); }
+/* a roomy window: cinematic lines at twice the size (the name stays small above them) */
+@media (min-height: 660px) and (min-width: 1100px) {
+  .ft-big .ft-in { font-size: 32px; line-height: 36px; max-width: min(600px, 44vw); text-shadow: var(--ft-rim-2x); padding: 4px 6px 8px; }
+  .ft-big .ft-name { margin-bottom: 4px; }
+}

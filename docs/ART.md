@@ -42,3 +42,47 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
 ## Originality
 Real products and characters are reference for the genre only. Every design, name, mascot and logo in the game
 is original; nothing is copied from a real toy line, drink or brand.
+
+## Renderer contract
+What the renderer does to your models by itself, and the few switches you have (src/gfx/sunMask.js patches the
+lighting of every built-in lit material; src/core/renderer.js draws the ink and the grade).
+
+- **What gets cel shading:** `MeshStandardMaterial`, `MeshPhysicalMaterial`, `MeshLambertMaterial` and
+  `MeshPhongMaterial`, including the kit's atlas materials and anything that extends them with `onBeforeCompile`.
+  `MeshBasicMaterial` and custom `ShaderMaterial`s are drawn as they are (use them only for things that give light:
+  a lit sign face, a tube, the sky). No setup is needed: don't write a toon shader, don't add gradient maps.
+- **Light bands:** the sun / moon shade every face in three flat tones (shade / half / full, a narrow soft edge on
+  each step); lamps (point and spot lights) in two. Cast shadows have a crisp edge and are lilac, never black. Model
+  with flat faces (non-indexed geometry, the kit's `Geo`): each face takes one clean tone. Smooth normals are fine on
+  round things (a capsule, a head): they show a band line.
+- **Roughness decides the highlight.** There is no smooth specular lobe any more:
+  - `roughness >= 0.5`: matte, no highlight. Use this for almost everything: 0.8 to 0.95 for wood, concrete, plaster,
+    cloth, paper, rust; 0.6 to 0.7 for painted metal, enamel, old plastic, vinyl.
+  - `roughness <= 0.3`: glossy: one hard-edged toon highlight per light, smaller the lower the value. 0.18 to 0.25
+    for capsule plastic, glazed ceramic and lacquer; 0.05 to 0.15 for glass and lenses; 0.18 with `metalness: 1` for
+    chrome (it also gets a cartoon sky / horizon / ground reflection in place of the environment map).
+  - 0.3 to 0.46 fades between the two; avoid it unless you want a faint highlight (car paint at 0.42).
+  - With an atlas, write it per pixel: `A.ink(ROUGH.chrome)` and so on (src/vehicles/atlas.js `ROUGH`); the roughness
+    map is what the highlight reads.
+  - Keep `metalness` at 0 except for chrome and bare polished steel (a metal has no diffuse colour, so it only shows
+    its reflection). Never use `emissive` to brighten a surface: only for things that are lit from inside.
+- **Ink outlines** come from the depth buffer, for every opaque mesh that writes depth:
+  - silhouettes (where something stands in front of something else by more than about 0.5% of its distance: 1.5 cm at
+    3 m, so a poster or a decal lying on a wall is not outlined);
+  - creases sharper than about 55 degrees. So a hard 90-degree edge is inked, and a 45-degree chamfer is not: chamfer
+    the edges that should catch light softly, leave the ones that should read as drawn lines sharp. Cylinders with 12
+    or more sides read as round (no lines between facets); 8 sides or fewer show their edges.
+  - Lines keep the same weight on screen at any resolution, thin things (wires, railings) never swell, creases fade
+    out beyond 30 m and silhouettes beyond 75 m.
+  - **To opt out:** `import { noInk } from '../gfx/sunMask.js'` and wrap the material: `noInk(material)` (it sets the
+    `NO_INK` define; opaque built-in materials only). Use it for foliage and grass cards, chain-link and other fine
+    cut-outs that would turn into a tangle of lines. Transparent materials with `depthWrite: false` (glass) are never
+    outlined; give a pane `depthWrite: true` if you want its edge drawn.
+  - Don't paint black outlines round shapes in textures: the renderer draws them. Panel lines and seams inside a
+    surface are yours to paint (in a darker tone of the surface colour).
+- **Textures:** new textures default to anisotropy 4. Anisotropy only works with a linear magnification filter
+  (three.js skips it for `NearestFilter`), so big tiling surfaces must be linear-filtered with mipmaps.
+- **Post:** full device resolution on every preset (never upscaled), FXAA after the ink, no grain, no chromatic
+  aberration, no sharpen pass. Bloom is only for lit things (lanterns, tubes, signs above about 1.15 linear); a toon
+  highlight stays under that.
+- **Hard rules still stand:** no white rim or hover highlight, no glow blobs, pastel and a little desaturated.

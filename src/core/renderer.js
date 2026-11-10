@@ -1,5 +1,6 @@
-// Renderer + post-processing stack with quality presets: ink outlines + screen-space god rays from the low sun,
-// GTAO, bloom, colour grade, neutral tone mapping, FXAA, then a light sharpen and dither (no banding).
+// Renderer + post-processing stack with quality presets: the cel look. Ink outlines + screen-space god rays from the
+// low sun, GTAO, bloom, then one pass for the colour grade, neutral tone mapping and sRGB, and FXAA on the result.
+// Everything runs at the canvas's full resolution (QUALITY.pr: the device pixel ratio, capped per preset).
 // Viewmodel: whatever hangs off the camera (hands + held items, see vmRoots) is drawn in its own pass on top of the
 // scene so it never pokes into walls.
 import * as THREE from 'three';
@@ -9,27 +10,33 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { LightPool } from '../gfx/lightPool.js';
-import '../gfx/sunMask.js'; // shared light patch at import: no sun inside Mikawa-ya, lilac shadows, the soft toon ramp
+import '../gfx/sunMask.js'; // the shared cel patch at import: the band ramp, tinted shadows, toon highlights, no sun inside Mikawa-ya
+
+// tiling world textures are seen at grazing angles all day (the road, walls, roofs): a sensible default
+THREE.Texture.DEFAULT_ANISOTROPY = 4;
+if (/[?&](debug|autotest)\b/.test(location.search)) window.__THREE = THREE; // look-dev boards in headless tests
 
 // The look: a bright picture-book afternoon. Gentle pastel saturation, a soft contrast curve in log space (it never
-// clips the darks), and the darkest tones lifted toward a cool lilac so nothing goes pure black.
+// clips the darks), and the darkest tones lifted toward a cool lilac so nothing goes pure black. The same pass then
+// tone-maps (Khronos PBR Neutral) and encodes to sRGB, so the anti-aliasing after it works on the displayed picture.
+// No grain and no chromatic aberration: the picture is a clean cel. (uGrain / uAberration are still accepted, unused.)
 const GradeShader = {
   uniforms: {
     tDiffuse: { value: null },
     uTime: { value: 0 },
-    uVignette: { value: 0.12 },
-    uGrain: { value: 0.02 },
+    uVignette: { value: 0.1 },
+    uGrain: { value: 0 },
     uSaturation: { value: 0.86 },
     uContrast: { value: 0.9 },
     uWarm: { value: 0.004 },
     // the floor the shadows are lifted to (linear, added to the darkest tones and fading out by the mid-tones)
     uLift: { value: new THREE.Color(0.016, 0.015, 0.028) },
     uFlash: { value: new THREE.Color(0, 0, 0) },
-    uAberration: { value: 0.0006 },
+    uAberration: { value: 0 },
     uExposure: { value: 1.0 },
+    toneMappingExposure: { value: 1.2 },
     // body state (src/needs/Needs.js through renderer.fx): tired (a darker, duller edge), lid (eyelids closing from top and
     // bottom), double (drunk double vision: a second, offset copy), wobble (drunk: the picture sways)
     uTired: { value: 0 }, uLid: { value: 0 }, uDouble: { value: 0 }, uWobble: { value: 0 },
@@ -38,8 +45,10 @@ const GradeShader = {
     varying vec2 vUv;
     void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
+    #include <common>
+    #include <tonemapping_pars_fragment>
     uniform sampler2D tDiffuse;
-    uniform float uTime, uVignette, uGrain, uSaturation, uContrast, uWarm, uAberration, uExposure;
+    uniform float uTime, uVignette, uSaturation, uContrast, uWarm, uExposure;
     uniform float uTired, uLid, uDouble, uWobble;
     uniform vec3 uFlash, uLift;
     varying vec2 vUv;
@@ -49,11 +58,7 @@ const GradeShader = {
       if (uWobble > 0.001) uv += vec2(sin(vUv.y * 7.0 + uTime * 1.3), cos(vUv.x * 5.0 + uTime * 0.9)) * 0.005 * uWobble;
       vec2 c = uv - 0.5;
       float r2 = dot(c, c);
-      vec2 off = c * r2 * uAberration * 8.0;
-      vec3 col;
-      col.r = texture2D(tDiffuse, uv + off).r;
-      col.g = texture2D(tDiffuse, uv).g;
-      col.b = texture2D(tDiffuse, uv - off).b;
+      vec3 col = texture2D(tDiffuse, uv).rgb;
       if (uDouble > 0.001) {
         vec2 d2 = vec2(sin(uTime * 0.7), cos(uTime * 0.53) * 0.35) * 0.018 * uDouble;
         col = mix(col, texture2D(tDiffuse, uv + d2).rgb, 0.42 * min(1.0, uDouble * 1.6));
@@ -74,26 +79,43 @@ const GradeShader = {
       if (uLid > 0.001) col *= 1.0 - smoothstep(1.02 - uLid * 1.04, 1.1 - uLid * 1.04, abs(vUv.y - 0.5) * 2.0);
       // flash (reveals)
       col += uFlash;
-      // film grain
-      float g = hash(vUv * vec2(1920.0, 1080.0) + fract(uTime * 7.13) * 100.0) - 0.5;
-      col += g * uGrain * (0.35 + l * 0.5);
-      gl_FragColor = vec4(col, 1.0);
+      // to the display: tone map, sRGB, and one 8-bit step of triangular noise (invisible; it keeps the sky's and the
+      // fog's smooth gradients from banding)
+      col = sRGBTransferOETF(vec4(NeutralToneMapping(col), 1.0)).rgb;
+      float d = hash(gl_FragCoord.xy) + hash(gl_FragCoord.xy + 0.37) - 1.0;
+      gl_FragColor = vec4(col + d / 255.0, 1.0);
     }`,
 };
 
-// Anime-style ink outlines: edges where depth jumps (silhouettes and creases), drawn on the lit image.
+// Ink outlines, drawn on the lit image from the depth buffer at full resolution.
+// 1 / distance (w) is an exact straight line across any flat face on screen, whatever its angle, so along each screen
+// axis the taps w(-2) .. w(2) say exactly what happens at a pixel:
+//   * silhouette: the neighbour is farther (or nearer) than both faces beside the gap allow. The ink goes on the
+//     occluder's edge pixel at full strength and on the pixel just outside it at uFarSide (outer contours read a
+//     little heavier than inner lines); a one-pixel wire or railing only inks itself, so thin things never swell.
+//   * crease: the face on the left and the face on the right meet at this pixel and turn by more than uCrease
+//     (radians, measured along the scan line): one pixel wide, centred. Chamfers (45 degrees a step) stay clean, hard
+//     90-degree edges are inked, and a chamfer too small to see turns into one inked corner by itself.
+// The line is uStep pixels per tap (1 up to about 1400 px of height, then 2), so its weight on screen stays the same at
+// every pixel ratio. Small steps need a depth gap over uGap of the distance (a card on a wall isn't outlined; at
+// 30 m neither is a door handle), creases fade out by uFade.xy metres and silhouettes by uFade.zw, so distant detail
+// and the skyline stay calm. The ink itself is the occluder's own colour pushed through plum (uInkK, uInk): dark on
+// dark things, a deeper shade of the colour on bright ones. A surface that wrote alpha 0 (noInk(), src/gfx/sunMask.js)
+// gets none. The same pass adds the low sun's screen-space rays.
 const OutlineShader = {
   uniforms: {
     tDiffuse: { value: null },
     tDepth: { value: null },
     uRes: { value: new THREE.Vector2(1, 1) },
-    uNear: { value: 0.05 },
-    uFar: { value: 120 },
-    uWidth: { value: 1.0 },
-    uStrength: { value: 0.85 },
+    uW: { value: new THREE.Vector2(20, 20) }, // w = uW.x - depth * uW.y
+    uStep: { value: 1 },
+    uPix: { value: 0.001 }, // the angle one tap spans (radians)
+    uStrength: { value: 0.88 },
+    uFarSide: { value: 0.8 },
+    uGap: { value: new THREE.Vector2(0.004, 0.008) },
+    uCrease: { value: new THREE.Vector2(0.9, 1.15) },
+    uFade: { value: new THREE.Vector4(12, 30, 32, 75) },
     uInk: { value: new THREE.Color(0x1c1016) },
-    // the line is the surface's own colour darkened through a plum ink (cartoon ink: dark on dark things, a deeper shade
-    // of the colour on bright ones, never a heavy black stroke across a sunny wall)
     uInkK: { value: new THREE.Color(0.24, 0.2, 0.28) },
     // god rays: sky pixels (no depth written) marched toward the sun's screen position
     uSun: { value: new THREE.Vector2(0.5, 0.5) },
@@ -106,28 +128,53 @@ const OutlineShader = {
   vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
     uniform sampler2D tDiffuse, tDepth;
-    uniform vec2 uRes; uniform float uNear, uFar, uWidth, uStrength; uniform vec3 uInk, uInkK;
+    uniform vec2 uRes, uW, uGap, uCrease; uniform vec4 uFade; uniform float uStep, uPix, uStrength, uFarSide; uniform vec3 uInk, uInkK;
     uniform vec2 uSun; uniform float uSunOn, uAspect, uShaft, uDepthAlpha; uniform vec3 uShaftCol;
     varying vec2 vUv;
-    float lin(vec2 uv) { float z = texture2D(tDepth, uv).x * 2.0 - 1.0; return (2.0 * uNear * uFar) / (uFar + uNear - z * (uFar - uNear)); }
+    float W(vec2 uv) { return uW.x - texture2D(tDepth, uv).x * uW.y; }
     float sky(vec2 uv) { return step(0.99999, texture2D(tDepth, uv).x); }
-    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    // silhouette along one direction: wm (behind), w0 (here), w1, w2 (ahead). x: this pixel is the occluder's edge,
+    // y: the neighbour is (and is at least two taps thick)
+    vec2 sil(float wm, float w0, float w1, float w2) {
+      float a = w0 - wm, b = w2 - w1, j = w1 - w0;
+      return vec2(smoothstep(uGap.x, uGap.y, (min(a, b) - j) / w0),
+        smoothstep(uGap.x, uGap.y, (j - max(a, b)) / w1) * step(abs(b), 0.04 * w1));
+    }
+    // crease on one axis: the faces through (w-2, w-1) and (w1, w2) meet here and turn
+    float crease(float wa, float wb, float w0, float wc, float wd) {
+      float gl = wb - wa, gr = wd - wc, lim = 0.6 * abs(gr - gl) + 2e-5 * w0;
+      float meet = step(abs(2.0 * wb - wa - w0), lim) * step(abs(2.0 * wc - wd - w0), lim);
+      float tl = gl / (w0 * uPix), tr = gr / (w0 * uPix);
+      return meet * smoothstep(uCrease.x, uCrease.y, atan(abs(tl - tr), 1.0 + tl * tr));
+    }
+    vec3 inked(vec3 c) { return c * uInkK + uInk * 0.4; }
     void main() {
       vec4 col = texture2D(tDiffuse, vUv);
-      vec2 o = uWidth / uRes;
-      float d = lin(vUv);
-      float dl = lin(vUv - vec2(o.x, 0.0)), dr = lin(vUv + vec2(o.x, 0.0));
-      float du = lin(vUv + vec2(0.0, o.y)), dd = lin(vUv - vec2(0.0, o.y));
-      // second derivative catches creases, first derivative catches silhouettes; both relative to distance
-      float lap = abs(dl + dr + du + dd - 4.0 * d) / d;
-      float jump = max(max(abs(dl - d), abs(dr - d)), max(abs(du - d), abs(dd - d))) / d;
-      float e = max(smoothstep(0.05, 0.12, lap), smoothstep(0.08, 0.16, jump));
-      e *= 1.0 - smoothstep(25.0, 60.0, d); // fade far away so the skyline stays soft
-      vec3 outc = mix(col.rgb, col.rgb * uInkK + uInk * 0.4, e * uStrength);
+      vec2 o = uStep / uRes;
+      float w0 = W(vUv);
+      float l1 = W(vUv - vec2(o.x, 0.0)), l2 = W(vUv - vec2(2.0 * o.x, 0.0)), r1 = W(vUv + vec2(o.x, 0.0)), r2 = W(vUv + vec2(2.0 * o.x, 0.0));
+      float d1 = W(vUv - vec2(0.0, o.y)), d2 = W(vUv - vec2(0.0, 2.0 * o.y)), u1 = W(vUv + vec2(0.0, o.y)), u2 = W(vUv + vec2(0.0, 2.0 * o.y));
+      vec2 sr = sil(l1, w0, r1, r2), sl = sil(r1, w0, l1, l2), su = sil(d1, w0, u1, u2), sd = sil(u1, w0, d1, d2);
+      // this pixel's own ink: an occluder's edge, or a crease
+      float own = max(max(sr.x, sl.x), max(su.x, sd.x));
+      float cr = max(crease(l2, l1, w0, r1, r2), crease(d2, d1, w0, u1, u2));
+      own = max(own * smoothstep(1.0 / uFade.w, 1.0 / uFade.z, w0), cr * (1.0 - own) * smoothstep(1.0 / uFade.y, 1.0 / uFade.x, w0));
+      // the occluder next door: its colour makes the outer half of the line
+      vec2 nb = vec2(o.x, 0.0); float far = sr.y, wn = r1;
+      if (sl.y > far) { far = sl.y; nb = vec2(-o.x, 0.0); wn = l1; }
+      if (su.y > far) { far = su.y; nb = vec2(0.0, o.y); wn = u1; }
+      if (sd.y > far) { far = sd.y; nb = vec2(0.0, -o.y); wn = d1; }
+      vec3 outc = col.rgb;
+      if (far > 0.0) {
+        vec4 cn = texture2D(tDiffuse, vUv + nb);
+        outc = mix(outc, inked(cn.rgb), far * uFarSide * uStrength * step(0.5, cn.a) * smoothstep(1.0 / uFade.w, 1.0 / uFade.z, wn));
+      }
+      outc = mix(outc, inked(col.rgb), own * uStrength * step(0.5, col.a));
       // crepuscular rays: march from this pixel toward the sun, collecting open sky (wires, poles and roofs cut it)
       if (uSunOn > 0.001) {
         vec2 dv = (uSun - vUv) / 26.0;
-        vec2 uv = vUv + dv * hash(vUv * uRes) ; // jittered start hides the steps
+        // (interleaved gradient noise on the start: it hides the steps without grain)
+        vec2 uv = vUv + dv * fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
         float acc = 0.0, w = 1.0, wsum = 0.0;
         for (int i = 0; i < 26; i++) {
           uv += dv;
@@ -138,7 +185,7 @@ const OutlineShader = {
         float k = (acc / wsum) * exp(-dist * 2.4) * uShaft * uSunOn;
         outc += uShaftCol * k * (1.0 - 0.6 * sky(vUv));
       }
-      gl_FragColor = vec4(outc, uDepthAlpha > 0.5 ? d : col.a);
+      gl_FragColor = vec4(outc, uDepthAlpha > 0.5 ? 1.0 / w0 : col.a);
     }`,
 };
 
@@ -148,8 +195,12 @@ class OutlinePass extends ShaderPass {
   render(renderer, writeBuffer, readBuffer, dt, mask) {
     const u = this.uniforms, cam = this.camera;
     u.tDepth.value = readBuffer.depthTexture;
-    u.uNear.value = cam.near; u.uFar.value = cam.far;
+    u.uW.value.set(1 / cam.near, 1 / cam.near - 1 / cam.far);
     u.uRes.value.set(readBuffer.width, readBuffer.height);
+    // one tap per ~1000 px of height (a whole number of pixels: depth is read texel by texel)
+    const step = Math.max(1, Math.round(readBuffer.height / 1000));
+    u.uStep.value = step;
+    u.uPix.value = 2 * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) / Math.max(1, readBuffer.height) * step;
     u.uAspect.value = readBuffer.width / Math.max(1, readBuffer.height);
     // the sun's screen position; the rays fade out when you look away from it
     let on = 0;
@@ -168,30 +219,6 @@ class OutlinePass extends ShaderPass {
     super.render(renderer, writeBuffer, readBuffer, dt, mask);
   }
 }
-
-// Last pass, in display space: a light contrast-adaptive sharpen (FXAA softens the pixel-art textures) and a
-// triangular dither so the sky gradients and dim interiors never band.
-const FinishShader = {
-  uniforms: { tDiffuse: { value: null }, uRes: { value: new THREE.Vector2(1, 1) }, uSharp: { value: 0.28 } },
-  vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-  fragmentShader: /* glsl */`
-    uniform sampler2D tDiffuse; uniform vec2 uRes; uniform float uSharp;
-    varying vec2 vUv;
-    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
-    void main() {
-      vec2 o = 1.0 / uRes;
-      vec3 c = texture2D(tDiffuse, vUv).rgb;
-      vec3 n = texture2D(tDiffuse, vUv + vec2(0.0, o.y)).rgb, s = texture2D(tDiffuse, vUv - vec2(0.0, o.y)).rgb;
-      vec3 e = texture2D(tDiffuse, vUv + vec2(o.x, 0.0)).rgb, w = texture2D(tDiffuse, vUv - vec2(o.x, 0.0)).rgb;
-      vec3 mn = min(c, min(min(n, s), min(e, w))), mx = max(c, max(max(n, s), max(e, w)));
-      // adaptive amount: less where the local contrast is already high (no halos on the ink lines)
-      vec3 amt = clamp(min(mn, 1.0 - mx) / max(mx, vec3(1e-3)), 0.0, 1.0);
-      vec3 k = -sqrt(amt) * uSharp * 0.2;
-      vec3 col = clamp((c + (n + s + e + w) * k) / (1.0 + 4.0 * k), 0.0, 1.0);
-      float d = hash(vUv * uRes) + hash(vUv * uRes + 0.37) - 1.0;
-      gl_FragColor = vec4(col + d / 255.0, 1.0);
-    }`,
-};
 
 // Performance: ambient occlusion at a reduced resolution (QUALITY.aoScale), brought back up by a depth-aware upsample:
 // each pixel blends the four nearest AO texels like a bilinear lookup, but weighted by how close each texel's depth is to
@@ -280,11 +307,13 @@ function casterState(o) {
 // shadowMinR: casters smaller than this (bounding radius, m) don't trigger a redraw by moving.
 // view: draw distance of small props (src/world/propCull.js). crowd: how many passers-by the lane holds (Pedestrians).
 // aoScale: the resolution ambient occlusion is computed at (AOUpsampleShader brings it back up).
+// pr: the canvas pixel ratio as [share of the device pixel ratio, at least, at most]: native wherever it can be afforded,
+// never under 1 (no upscaled, soft picture on any preset); ultra supersamples a 1x display.
 export const QUALITY = {
-  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6 },
-  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8 },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1 },
-  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1 },
+  low: { pr: [0.75, 1, 1.5], shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, lights: 4, view: 0.65, crowd: 0.6 },
+  medium: { pr: [1, 1, 2], shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, lights: 5, view: 0.8, crowd: 0.8 },
+  high: { pr: [1, 1, 2], shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, lights: 6, view: 1, crowd: 1 },
+  ultra: { pr: [1.5, 1.5, 2], shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, lights: 8, view: 1.2, crowd: 1 },
 };
 
 export class Renderer {
@@ -325,7 +354,8 @@ export class Renderer {
   buildComposer() {
     const r = this.renderer;
     const q = this.quality;
-    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2) * q.pixelRatio);
+    const dpr = window.devicePixelRatio || 1;
+    r.setPixelRatio(q.pr ? Math.min(Math.max(dpr * q.pr[0], q.pr[1]), q.pr[2]) : Math.min(dpr, 2) * (q.pixelRatio ?? 1));
     if (this.composer) this.composer.dispose?.();
     const size = new THREE.Vector2(window.innerWidth, window.innerHeight);
     const rt = new THREE.WebGLRenderTarget(size.x * r.getPixelRatio(), size.y * r.getPixelRatio(), { type: THREE.HalfFloatType, samples: 0 });
@@ -336,7 +366,6 @@ export class Renderer {
     this.vmPass = new ViewmodelPass(this.scene, this.camera);
     composer.addPass(this.vmPass);
     this.outline = new OutlinePass(this.camera);
-    this.outline.uniforms.uWidth.value = Math.max(1, r.getPixelRatio());
     this.outline.rays = q.rays ?? 1;
     composer.addPass(this.outline);
     this.gtao = null;
@@ -382,15 +411,12 @@ export class Renderer {
       if (hp.fragmentShader.includes(MIX)) { hp.fragmentShader = hp.fragmentShader.replace(MIX, `texel.rgb *= min( 1.0, 2.2 / max( v, 1e-4 ) );\n${MIX}`); hp.needsUpdate = true; }
       composer.addPass(this.bloom);
     }
+    // grade + tone mapping + sRGB in one pass, then anti-aliasing on the displayed picture (the ink lines included)
     this.grade = new ShaderPass(GradeShader);
+    this.grade.material.toneMapped = false;
+    this.grade.uniforms.toneMappingExposure.value = r.toneMappingExposure;
     composer.addPass(this.grade);
-    composer.addPass(new OutputPass());
     if (q.aa) composer.addPass(new FXAAPass());
-    this.finish = null;
-    if (q.sharp) {
-      this.finish = new ShaderPass(FinishShader);
-      composer.addPass(this.finish);
-    }
     r.shadowMap.type = q.shadowType || THREE.PCFShadowMap;
     if (this.lightPool.size !== (q.lights || 6)) this.lightPool.setSize(q.lights || 6);
     this.composer = composer;
@@ -425,7 +451,6 @@ export class Renderer {
     this.renderer.setSize(w, h);
     if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); }
     if (this.composer) this.composer.setSize(w, h);
-    if (this.finish) { const pr = this.renderer.getPixelRatio(); this.finish.uniforms.uRes.value.set(w * pr, h * pr); }
   }
 
   /** One walk over the scene per frame: point lights for the light pool, shadow casters for the shadow policy. */

@@ -27,7 +27,7 @@ const furnPool = (g, cats) => (BUILD ? BUILD.CATALOGUE.filter((f) => cats.includ
 // ------------------------------------------------------------------ categories
 export const CATS = [
   { id: 'machines', name: 'Gacha Machines', icon: 'machine', gate: null, blurb: 'Retired machines from closed shops, basements and one very confused grandma.' },
-  { id: 'capsules', name: 'Capsule Stock', icon: 'capsule', gate: null, blurb: 'Surplus capsule cartons. Count them when they arrive.' },
+  { id: 'capsules', name: 'Capsule Stock', icon: 'box', gate: null, blurb: 'Surplus capsule cartons. Count them when they arrive.' },
   { id: 'figures', name: 'Figures & Sets', icon: 'figure', gate: 'market:buy', blurb: 'Loose figures and whole sets, from every series ever made.' },
   { id: 'charms', name: 'Luck & Charms', icon: 'charm', gate: 'market:charms', blurb: 'Maneki-neko, daruma, omamori, kumade, tanuki... real luck, slightly used.' },
   { id: 'display', name: 'Display & Shelves', icon: 'shelf', gate: 'market:display', blurb: 'Shelves, stands and cases. Some assembly required.' },

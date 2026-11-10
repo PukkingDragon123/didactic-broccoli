@@ -21,7 +21,7 @@ export const STYLE_ACHIEVEMENTS = [
   { id: 'life_yokai', name: 'Yokai Spotter', desc: 'Spot three different yokai in the neighbourhood.', icon: 'ach_yokai', max: 3, reward: { cosmetic: 'cx_kasa' } },
   { id: 'style_new', name: 'New Look', desc: 'Put on something from your closet.', icon: 'cos_shirt' },
   { id: 'style_closet', name: 'Walk-in Closet', desc: 'Own 25 pieces of clothing and accessories.', icon: 'cos_hanger', max: 25, reward: { cosmetic: 'cx_goldkicks' } },
-  { id: 'style_capsule', name: 'Surprise Inside', desc: 'Find a piece of clothing inside a gacha capsule.', icon: 'capsule', hidden: true, reward: { cosmetic: 'cx_capsulepack' } },
+  { id: 'style_capsule', name: 'Surprise Inside', desc: 'Find a piece of clothing inside a gacha capsule.', icon: 'box', hidden: true, reward: { cosmetic: 'cx_capsulepack' } },
   { id: 'style_full', name: 'Dressed to the Nines', desc: 'Wear a hat, a face piece, an outfit, a bag and shoes all at once.', icon: 'cos_hat' },
 ];
 // rewards added to achievements other systems define

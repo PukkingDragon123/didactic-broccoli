@@ -6,7 +6,7 @@ import { getItem } from '../data/series/index.js';
 export const ACHIEVEMENTS = [
   { id: 'sim_first_machine', name: 'Back in Business', desc: 'Buy your first gacha machine', icon: 'machine' },
   { id: 'sim_first_customer', name: 'Irasshaimase!', desc: 'Your first customer plays a machine', icon: 'people' },
-  { id: 'sim_first_open', name: 'First Turn', desc: 'Open your first capsule', icon: 'capsule' },
+  { id: 'sim_first_open', name: 'First Turn', desc: 'Open your first capsule', icon: 'star' },
   { id: 'sim_first_rare', name: 'Ooh, Shiny', desc: 'Pull a Rare figure', icon: 'star' },
   { id: 'sim_first_ultra', name: 'Ultra!', desc: 'Pull an Ultra Rare figure', icon: 'sparkle' },
   { id: 'sim_first_secret', name: 'Super Secret', desc: 'Pull a Super Secret figure (1 in 500)', icon: 'crown' },

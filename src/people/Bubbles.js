@@ -1,5 +1,6 @@
-// Floating pixel text near a speaker's head (no bubble shapes, no tails, no glows): a line of crisp Alagard text on a
-// small dark backing strip, typed out letter by letter (onChar drives the 8-bit voice), fading in and out in steps.
+// Floating pixel text near a speaker's head: plain text, nothing behind it (no bubble shapes, no tails, no paper, no
+// strips, no glows). A line of crisp Alagard in a light tone with a hard pixel ink outline (bubbles.css), typed out
+// letter by letter (onChar drives the 8-bit voice), fading in and out in steps.
 // Several lines from one speaker stack upward (the older one drifts up and leaves sooner); lines from different
 // speakers are kept apart (the nearer speaker keeps its place, the others slide up or aside). Speakers just off
 // screen but close by keep talking at the screen edge with a little arrow. Positioned with transforms only (one

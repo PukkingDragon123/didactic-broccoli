@@ -1,88 +1,43 @@
 // The menu's paper tags: manila price tags cut with a stepped point, a punched hole with its reinforcement ring (the twine
-// runs through it), a pixel icon, the label in Alagard (ink), and a price-style note pencilled in red on the right.
+// runs through it), the label in Alagard ink and a price-style note pencilled in red on the right. No icons: the type
+// carries it. Three weights, so the strand reads at a glance:
+//   primary    (Continue; New Game on a fresh save) a tall cream ticket, the label at twice the size, a line of small
+//              print under it (the note ringed in red pen, then a few words); as wide as its words need
+//   secondary  the manila tags
+//   tertiary   (Settings, Credits) short kraft tags
 // Painted texel by texel (src/menu/pixel.js) in two states: plain, and "picked" (a red-pen tick after the label and a
 // wobbly graphite underline). Hover feedback is never a glow: the tag swings, lifts a texel, gets the pencil marks.
-//   paintTag({ label, note, icon, w, h, stock, seed, hot, ring }) -> art     tagMetrics(items) -> { w, h }
-import { iconCanvas } from '../gfx/icons.js';
+//   tagSpec(item, { compact }) -> { w, h, k }     paintTag({ label, note, sub, k, w, h, stock, seed, hot, ring, dog }) -> art
 import { art, textMask, mask5, grain, rng, hex, shade } from './pixel.js';
 
 export const STOCK = {
   manila: { base: [226, 200, 140], edge: [92, 64, 38], ring: [242, 224, 178] },
   note: { base: [246, 226, 132], edge: [96, 74, 30], ring: [252, 240, 186] },
-  cream: { base: [238, 228, 202], edge: [80, 64, 52], ring: [250, 244, 226] },
+  cream: { base: [240, 231, 206], edge: [80, 64, 52], ring: [252, 247, 232] },
   pink: { base: [240, 212, 208], edge: [120, 60, 58], ring: [250, 232, 228] },
+  kraft: { base: [203, 166, 112], edge: [74, 50, 30], ring: [228, 202, 156] },
 };
-const RED = hex(0xc8322c), INKC = hex(0x241a1e), GRAPHITE = [86, 84, 92];
+const RED = hex(0xc8322c), INKC = hex(0x241a1e), INK2 = hex(0x5e5046), GRAPHITE = [86, 84, 92];
 export const HOLE = { x: 6, r: 2 }; // the punched hole's centre column (texels) and radius
+const LEFT = 17, RIGHT = 9; // where the label starts, the margin after it
 
-// a few icons of our own (the game's set has no capsule this small, nor a shirt): '#' ink, letters from PAL
-const PAL = { p: 0xff6f91, P: 0xc8406a, g: 0xcfeef4, G: 0x9cc8d4, Y: 0xd89a1c, r: 0xe5383b, R: 0xa8242a, w: 0xfffcf4, c: 0xf6eedc, C: 0xcabba0, b: 0x3f74c8, B: 0x27508e, s: 0xf2f0ea, y: 0xffd23f };
-const OWN = {
-  capsule: [
-    '......#####......',
-    '....##ggggw##....',
-    '...#ggggggwwg#...',
-    '..#ggggggggggw#..',
-    '.#gggggggggggwg#.',
-    '#GGGGGGGGGGGGGGG#',
-    '#################',
-    '#ppppppppppppppp#',
-    '#pppppppppppppPP#',
-    '.#pppppppppppPP#.',
-    '.#ppppppppppPPP#.',
-    '..##pppppppPP##..',
-    '....###PPP###....',
-    '.......###.......',
-  ],
-  shirt: [
-    '...###..###...',
-    '.##bbb##bbb##.',
-    '#bbbbbbbbbbbb#',
-    '#bbbbbbbbbbbb#',
-    '#bbbbbbbbbbbb#',
-    '.###bbbbbb###.',
-    '...#ssssss#...',
-    '...#bbbbbb#...',
-    '...#bbbbbb#...',
-    '...#bbbbbb#...',
-    '...#BBBBBB#...',
-    '...########...',
-  ],
-};
-const iconCache = new Map();
-function iconPixels(name) {
-  if (iconCache.has(name)) return iconCache.get(name);
-  let px = null;
-  if (OWN[name]) {
-    const rows = OWN[name], w = rows[0].length, h = rows.length, d = new Uint8ClampedArray(w * h * 4);
-    rows.forEach((row, y) => [...row].forEach((ch, x) => {
-      if (ch === '.') return;
-      const c = ch === '#' ? 0x241a1e : PAL[ch], i = (y * w + x) * 4;
-      d[i] = (c >> 16) & 255; d[i + 1] = (c >> 8) & 255; d[i + 2] = c & 255; d[i + 3] = 255;
-    }));
-    px = { w, h, d };
-    iconCache.set(name, px);
-    return px;
-  }
-  try {
-    const c = iconCanvas(name, 1);
-    const g = c.getContext('2d', { willReadFrequently: true });
-    px = { w: c.width, h: c.height, d: g.getImageData(0, 0, c.width, c.height).data };
-  } catch { px = null; }
-  iconCache.set(name, px);
-  return px;
-}
+/** A mask shown at k texels per font pixel (the primary tag's big label). */
+function scaled(m, k) { return k === 1 ? m : { w: m.w * k, h: m.h * k, base: m.base * k, at: (x, y) => x >= 0 && y >= 0 && m.at(Math.floor(x / k), Math.floor(y / k)) }; }
+/** The primary tag's small print: its note, then a few words. */
+const small = (it) => [it.note, it.sub].filter(Boolean).join('  ');
 
-/** Uniform tag size for a set of items (so the strand reads as one set). */
-export function tagMetrics(items, bare = false) {
-  let lw = 0, nw = 0;
-  for (const it of items) { lw = Math.max(lw, textMask(it.label).w); nw = Math.max(nw, it.note ? mask5(it.note).w : 0); }
-  return { w: (bare ? 16 : 33) + lw + 13 + nw + 7, h: 22, lw, nw };
+/** A tag's own size for an item: { w, h (texels), k (label scale) }. compact: no notes, no big ticket (small screens). */
+export function tagSpec(it, { compact = false } = {}) {
+  const k = it.primary && !compact ? 2 : 1;
+  const lw = textMask(it.label).w * k;
+  if (k === 2) return { w: LEFT + Math.max(lw + 12, mask5(small(it)).w + 4) + RIGHT, h: 44, k };
+  const nw = !compact && it.note ? mask5(it.note).w + 12 : 0;
+  return { w: LEFT + lw + nw + RIGHT, h: 20, k };
 }
 
 export function paintTag(o) {
   const st = STOCK[o.stock || 'manila'];
-  const w = o.w, h = o.h || 22, cut = 6;
+  const w = o.w, h = o.h || 22, k = o.k || 1, cut = h > 30 ? 9 : 6;
   const a = art(w, h);
   const r = rng(o.seed || 7);
   const inside = (x, y) => x >= 0 && y >= 0 && x < w && y < h && x >= cut - y && x >= cut - (h - 1 - y) && !((x === w - 1) && (y === 0 || y === h - 1));
@@ -112,59 +67,48 @@ export function paintTag(o) {
     else if (d <= 2.4) a.px(hx + x, hy + y, x + y > 0 ? shade(st.edge, 1.3) : st.edge);
     else if (d <= 3.7) a.px(hx + x, hy + y, d > 3.2 && x + y > 1 ? shade(st.ring, 0.9) : st.ring);
   }
-  // the icon (the game's own pixel icons), sitting on the paper
-  const ic = o.icon && iconPixels(o.icon);
-  if (ic) {
-    const ix = 15 + Math.floor((16 - ic.w) / 2), iy = Math.floor((h - ic.h) / 2);
-    for (let y = 0; y < ic.h; y++) for (let x = 0; x < ic.w; x++) { const i = (y * ic.w + x) * 4; if (ic.d[i + 3] > 128) a.px(ix + x, iy + y, [ic.d[i], ic.d[i + 1], ic.d[i + 2]]); }
-  }
-  // the label, in ink
-  const m = textMask(o.label);
-  const lx = ic ? 35 : 17, ly = Math.round((h - m.base) / 2) - 1 + (m.h - m.base > 2 ? 0 : 1);
+  // the label, in ink (the big ticket's sits high, over its line of small print)
+  const m = scaled(textMask(o.label), k);
+  const lx = LEFT;
+  const ly = k === 2 ? 4 : Math.round((h - m.base) / 2) - 1 + (m.h - m.base > 2 ? 0 : 1);
   a.mask(m, lx, ly, INKC);
-  // the note, pencilled in red pen on the right like a price (a red loop round it on the first tag)
-  if (o.note) {
+  if (k === 2) {
+    // the small print under it: the note in red pen (ringed), the rest in soft ink
+    const y0 = h - 11, n = o.note ? mask5(o.note) : null;
+    let x = lx + (n ? 2 : 0);
+    if (n) {
+      a.mask(n, x, y0, RED);
+      for (let i = x - 2; i <= x + n.w + 1; i++) { if (r() < 0.92) a.px(i, y0 - 2, RED); if (r() < 0.92) a.px(i, y0 + 8, RED); }
+      for (let j = y0 - 1; j <= y0 + 7; j++) { a.px(x - 3, j, RED); a.px(x + n.w + 2, j, RED); }
+      x += n.w + 7;
+    }
+    if (o.sub) a.mask(mask5(o.sub), x, y0, INK2);
+  } else if (o.note) {
+    // the note, pencilled in red pen on the right like a price
     const n = mask5(o.note), nx = w - 6 - n.w, ny = Math.floor((h - 7) / 2);
     a.mask(n, nx, ny, RED);
-    if (o.ring) {
-      for (let x = nx - 2; x <= nx + n.w + 1; x++) { if (r() < 0.92) a.px(x, ny - 3, RED); if (r() < 0.92) a.px(x, ny + 9, RED); }
-      for (let y = ny - 2; y <= ny + 8; y++) { a.px(nx - 3, y, RED); if (y > ny - 2) a.px(nx + n.w + 2, y, RED); }
-      a.px(nx + n.w + 2, ny - 3, RED); a.px(nx + n.w + 3, ny - 4, RED); // the pen overshoots where it closed the loop
-    }
   }
   // picked: a red-pen tick after the label and a graphite underline that wobbles
   if (o.hot) {
-    const tx = lx + m.w + 4, ty = ly + m.base - 7;
+    const tx = lx + m.w + 2 + 2 * k, ty = ly + m.base - 7 * k;
     const tick = [[0, 3], [1, 4], [1, 3], [2, 5], [2, 4], [3, 4], [3, 3], [4, 2], [4, 1], [5, 0], [5, 1], [6, -1], [6, 0], [7, -2]];
-    for (const [x, y] of tick) a.px(tx + x, ty + y + 2, RED);
+    for (const [x, y] of tick) a.rect(tx + x * k, ty + (y + 2) * k, k, k, RED);
     let y = ly + m.base + 2;
     for (let x = lx - 1; x <= lx + m.w + 1; x++) {
       if (x > lx + 2 && r() < 0.16) y += r() < 0.5 && y > ly + m.base + 1 ? -1 : y < ly + m.base + 3 ? 1 : 0;
       if (r() < 0.07) continue;
-      a.px(x, Math.min(h - 2, y), GRAPHITE, r() < 0.3 ? 150 : 220);
+      for (let j = 0; j < k; j++) a.px(x, Math.min(h - 2, y + j), GRAPHITE, r() < 0.3 ? 150 : 220);
     }
   }
   return a;
 }
 
-// ------------------------------------------------------------------ the itch.io sticker tag
-// A small pink tag hung off the Wardrobe tag: a pixel duck and two lines in the 5x7 font, "FOLLOW ON ITCH.IO" in ink and
-// "FREE DUCK HEAD" in red pen. Same texel scale as the strand, half its height (it's an aside, not a menu item).
-const DUCK = [
-  '...yyy....',
-  '..yYYYy...',
-  '..YYKYYoo.',
-  '..YYYYYoOo',
-  '...YYYYo..',
-  '.yYYYYYy..',
-  'yYYYYYYYy.',
-  '.yYYYYYy..',
-  '..yyyyy...',
-];
-const DUCKPAL = { Y: [248, 214, 74], y: [216, 168, 44], o: [245, 154, 44], O: [200, 110, 30], K: [36, 26, 30] };
+// ------------------------------------------------------------------ the itch.io tag
+// A small pink tag hung off the Wardrobe tag: two lines in the 5x7 font, "FOLLOW ON ITCH.IO" in ink and "FREE DUCK HEAD"
+// in red pen. Words only. Same texel scale as the strand (it's an aside, not a menu item).
 export function paintItchTag({ hot = false, seed = 99 } = {}) {
   const l1 = mask5('FOLLOW ON ITCH.IO'), l2 = mask5('FREE DUCK HEAD');
-  const w = 6 + 12 + Math.max(l1.w, l2.w) + 6, h = 22, st = STOCK.pink, cut = 5;
+  const w = 11 + Math.max(l1.w, l2.w) + 6, h = 22, st = STOCK.pink, cut = 5;
   const a = art(w, h);
   const inside = (x, y) => x >= 0 && y >= 0 && x < w && y < h && x >= cut - y && x >= cut - (h - 1 - y);
   grain(a, 0, 0, w, h, st.base, seed, inside);
@@ -174,9 +118,8 @@ export function paintItchTag({ hot = false, seed = 99 } = {}) {
   }
   // the punched hole the thread goes through
   for (let y = -2; y <= 2; y++) for (let x = -2; x <= 2; x++) { const d = Math.hypot(x, y); if (d <= 1.1) a.clear(4 + x, 3 + y); else if (d <= 2) a.px(4 + x, 3 + y, st.ring); }
-  DUCK.forEach((row, y) => [...row].forEach((ch, x) => { if (DUCKPAL[ch]) a.px(6 + x, 7 + y, DUCKPAL[ch]); }));
-  a.mask(l1, 18, 3, INKC);
-  a.mask(l2, 18, 12, RED);
-  if (hot) for (let x = 17; x < 18 + l2.w + 1; x++) a.px(x, 20, GRAPHITE, x % 5 ? 220 : 120);
+  a.mask(l1, 11, 3, INKC);
+  a.mask(l2, 11, 12, RED);
+  if (hot) for (let x = 10; x < 11 + l2.w + 1; x++) a.px(x, 20, GRAPHITE, x % 5 ? 220 : 120);
   return a;
 }

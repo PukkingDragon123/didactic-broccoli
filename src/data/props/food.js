@@ -6,6 +6,7 @@ import { shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, fill } from './garage.js';
 import { FOODS, DRINK_IDS } from '../../needs/foods.js';
+import { drinkMesh } from '../../products/containers.js';
 
 const R = Math.round;
 const P = {};
@@ -105,9 +106,10 @@ function drinkProp(f) {
     },
   };
 }
-for (const id of DRINK_IDS) P['vd_' + id.slice(3)] = drinkProp(FOODS[id]);
+// (the voxel shape stays as the sized stand-in for propSize / instancing; what you see is the real container)
+for (const id of DRINK_IDS) P['vd_' + id.slice(3)] = { ...drinkProp(FOODS[id]), mesh: (o) => drinkMesh(id, o) };
 // the "out of order" blank sample can (used for empty slots)
-P.vd_blank = drinkProp({ name: 'Can', art: { body: 0xd8dce0, band: 0xb8bcc0, band2: 0x9aa0a6 } });
+P.vd_blank = { ...drinkProp({ name: 'Can', art: { body: 0xd8dce0, band: 0xb8bcc0, band2: 0x9aa0a6 } }), mesh: (o) => drinkMesh('vd_blank', o) };
 
 // ------------------------------------------------------------------ plants (pot + stage), the tools for them
 const POT = 0xb8643a, POT_D = 0x8a4628, SOIL = 0x3a2614;

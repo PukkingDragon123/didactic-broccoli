@@ -5,6 +5,7 @@
 //  * Restocking is physical, in small steps: with a capsule carton in your hands, unlock and lift the lid, cut the
 //    carton's tape, fold its flaps open, then put the capsules in one by one (hold to pour the rest once you're
 //    going); a new series swaps the display card. Close and lock the lid when you're done.
+//  * The models are src/world/machineModels.js (low-poly, one painted atlas per type); capsules are src/game/Capsule.js.
 //  * The owner's test play: the fake coin on a rope, the ratchet crank, capsule pile physics behind the window,
 //    dispensing through the flap into the tray.
 // Events: machinePlay { machine, price, series, customer }, coinsCollected { machine, amount }, machinePrice
@@ -16,18 +17,16 @@ import { Physics } from '../core/physics.js';
 import { Rope } from './Rope.js';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
-import { capsuleColor, capsuleRadius, capsuleSize, capsuleStyle, pileGeometries, makeCapsule } from './Capsule.js';
+import { capsuleColor, capsuleRadius, capsuleSize, capsuleStyle, capsuleShape, pileGeometries, pileTopColor, makeCapsule } from './Capsule.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capacityFor, crankTime, rollCapsule, MACHINE_TYPES } from './economy.js';
 import { bannerTexture } from '../gfx/banner.js';
 import { makeItemMesh, itemGeometry, hasItemGeometry } from './collectibles.js';
 import { mergeByMaterial, partsBox } from '../voxel/merge.js';
-import { FONT_EN } from '../gfx/pix.js';
+import { Pix } from '../gfx/pix.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { pocketCash } from './cash.js';
 import { capBoxOf, openBoxStep } from './capsuleBox.js';
-import { VoxelModel, metal } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
 import './gachaSfx.js';
 
 const _m = new THREE.Matrix4();
@@ -39,19 +38,9 @@ const PRICE_MIN = 100, PRICE_MAX = 3000;
 const MAX_COINS_SHOWN = 40;
 const HAND_PLACED_BEFORE_POUR = 3;
 
-/** A little machine key (lid and coin box locks). */
-let keyGeo = null;
-function keyMesh() {
-  if (!keyGeo) {
-    const v = new VoxelModel();
-    v.jitter = 0;
-    const b = metal(0xd8b850), s = metal(0xd8dde4);
-    v.ring(0, 3, 0, b, 'z');
-    v.box(0, -6, 0, 0, 0, 0, s);
-    v.set(1, -5, 0, s); v.set(1, -3, 0, s);
-    keyGeo = meshVoxels(v, { voxelSize: 0.0028, origin: 'center' });
-  }
-  const m = new THREE.Mesh(keyGeo, voxelMaterials('normal'));
+/** A little machine key (lid and coin box locks): a brass bow and blade, from the machine's own parts. */
+function keyMesh(parts) {
+  const m = new THREE.Mesh(parts.keyGeo, parts.mats.body);
   m.userData.noRim = true;
   return m;
 }
@@ -205,16 +194,16 @@ export class GachaMachine {
   local(x, y, z) { return this.root.localToWorld(new THREE.Vector3(x, y, z)); }
 
   buildSoldOut() {
-    const c = document.createElement('canvas');
-    c.width = 64; c.height = 28;
-    const ctx = c.getContext('2d');
-    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter;
-    ctx.fillStyle = '#d8282a'; ctx.fillRect(0, 0, 64, 28);
-    ctx.fillStyle = '#fbf2e0'; ctx.fillRect(2, 2, 60, 1); ctx.fillRect(2, 25, 60, 1); ctx.fillRect(2, 2, 1, 24); ctx.fillRect(61, 2, 1, 24);
-    ctx.font = `16px ${FONT_EN}`; ctx.textBaseline = 'top';
-    const t = 'SOLD OUT';
-    ctx.fillText(t, Math.round(32 - ctx.measureText(t).width / 2), 6);
-    tex.needsUpdate = true;
+    // an enamel flag: 売切 over SOLD OUT (drawn again once the kana font is in)
+    const px = new Pix(100, 44, 3), tex = px.texture();
+    const paint = () => {
+      px.fill(0xc8262c); px.frame(0, 0, 100, 44, 0x7a1418); px.frame(3, 3, 94, 38, 0xfbf2e0);
+      px.text('売切', 50, 6, { size: 16, color: 0xfbf2e0, align: 'center' });
+      px.tinyText('SOLD OUT', 50, 28, { color: 0xffe9a0, align: 'center' });
+      px.flush(); tex.needsUpdate = true;
+    };
+    paint();
+    try { document.fonts?.load('16px "DotGothic16"', '売切').then(paint, () => {}); } catch { /* no font loading */ }
     // the flag drops down over the coin slot
     const S = this.L.slot;
     const pivot = new THREE.Group();
@@ -234,7 +223,7 @@ export class GachaMachine {
     this.cardSeries = series;
     const tex = bannerTexture(series, this.game.thumbs, { faded: this.data.type === 'retro' });
     const m = this.bannerMesh.material;
-    m.map = tex; m.emissiveMap = tex; m.color.set(0xffffff); m.emissiveIntensity = 0.1; m.needsUpdate = true;
+    m.map = tex; m.emissiveMap = tex; m.color.set(0xffffff); m.emissiveIntensity = 0.05; m.needsUpdate = true;
     const A = this.domeAnchor;
     A.clear();
     this.disposeFigures();
@@ -351,16 +340,20 @@ export class GachaMachine {
 
   pileSet(series) {
     const size = capsuleSize(series), kind = capsuleStyle(series);
-    const key = kind === 'paper' ? `${kind}|${size}|${series}` : `${kind}|${size}`;
+    const key = `${kind}|${size}|${capsuleShape(series)}`;
     let set = this.pileSets.get(key);
     if (!set) {
       const pg = pileGeometries(size, kind, series);
       const N = this.maxVisible + 6;
       const bot = new THREE.InstancedMesh(pg.bottom, pg.bottomMat, N), top = new THREE.InstancedMesh(pg.top, pg.topMat, N);
-      for (const im of [bot, top]) { im.count = 0; im.frustumCulled = false; im.userData.noRim = true; im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); this.root.add(im); }
-      bot.castShadow = true;
-      top.renderOrder = 2;
-      set = { bot, top, paper: kind === 'paper' };
+      // the domes' clear coat (reflections only) rides on the same matrices
+      const coat = pg.coat ? new THREE.InstancedMesh(pg.coat, pg.coatMat, N) : null;
+      if (coat) coat.instanceMatrix = top.instanceMatrix;
+      for (const im of [bot, top, coat]) { if (!im) continue; im.count = 0; im.frustumCulled = false; im.userData.noRim = true; im.raycast = () => {}; im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); this.root.add(im); }
+      bot.castShadow = !pg.bottomMat.transparent;
+      top.renderOrder = 2; if (pg.bottomMat.transparent) bot.renderOrder = 2;
+      if (coat) coat.renderOrder = 2.5;
+      set = { bot, top, coat, kind, tintTop: pg.tintTop };
       this.pileSets.set(key, set);
     }
     return set;
@@ -393,11 +386,12 @@ export class GachaMachine {
       const set = b.userData.set, i = set.n++;
       set.bot.setMatrixAt(i, _m);
       set.top.setMatrixAt(i, _m);
-      if (!set.paper) set.bot.setColorAt(i, col.set(b.userData.color));
-      if (!set.paper && set.top.material === set.bot.material) set.top.setColorAt(i, col.set(b.userData.color));
+      set.bot.setColorAt(i, col.set(b.userData.color & 0xffffff));
+      if (set.tintTop) set.top.setColorAt(i, col.set(pileTopColor(b.userData.color, set.kind)));
     }
     for (const set of this.pileSets.values()) {
       set.bot.count = set.top.count = set.n;
+      if (set.coat) set.coat.count = set.n;
       set.bot.instanceMatrix.needsUpdate = true;
       set.top.instanceMatrix.needsUpdate = true;
       if (set.bot.instanceColor) set.bot.instanceColor.needsUpdate = true;
@@ -648,8 +642,8 @@ export class GachaMachine {
     const g = this.game, L = this.L;
     if (this.state !== 'idle') return;
     this.lid.busy = true;
-    const key = keyMesh();
-    key.position.set(L.lid.lockX - VS * 0.5, L.lid.h / 2, this.spec.d / 2 + VS * 2.5);
+    const key = keyMesh(this.parts);
+    key.position.set(L.lid.lockX, L.lid.h / 2, this.spec.d / 2 + 0.021);
     key.rotation.x = Math.PI / 2;
     this.parts.lid.add(key);
     this.lid.key = key;
@@ -696,9 +690,9 @@ export class GachaMachine {
       if (this.cash <= 0) { audio.play('error', { pos: p, vol: 0.4 }); return; }
       // the key goes in, turns, the drawer slides out
       D.busy = true;
-      const key = keyMesh();
+      const key = keyMesh(this.parts);
       const CB = this.L.coinBox, dw = CB.x1 - CB.x0;
-      key.position.set(dw * 0.7 + VS * 0.5, (CB.y1 - CB.y0) * 0.62 + VS * 0.5, VS * 3.5);
+      key.position.set(dw * 0.7, (CB.y1 - CB.y0) * 0.62, 0.0165);
       key.rotation.x = Math.PI / 2;
       this.parts.drawer.add(key);
       D.key = key;
@@ -731,7 +725,7 @@ export class GachaMachine {
     this.price = before + dir * 100;
     audio.play(this.price === before ? 'error' : 'btnClick', { pos: btn.getWorldPosition(_v), vol: 0.7 });
     const z0 = this.L.front;
-    btn.position.z = z0 - VS * 1.2;
+    btn.position.z = z0 - 0.004;
     this.game.tweens.wait(0.12, () => { btn.position.z = z0; });
     this.game.save();
   }

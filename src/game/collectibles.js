@@ -2,7 +2,10 @@
 // Every figure is modelled on a coarse voxel grid (src/data/series/*.js) and then up-resolved 2x with a 3D EPX
 // smoother (src/voxel/upres.js) before greedy meshing: finer, rounder silhouettes with the same crisp colour regions.
 // Per item, `upres: false` keeps the original voxels, or `upres: { carve, fill, recolor }` tunes the smoother.
+// Items with `figure` (a Sculpt program) are the new sculpted low-poly figures (src/figures): the same functions hand
+// back the same kind of mesh and geometry for them, so no caller needs to know which kind it has.
 import * as THREE from 'three';
+import { isFigure, figureData, figureGeometry, makeFigureMesh, hasFigure } from '../figures/index.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -19,6 +22,13 @@ export function setItemUpres(on, opts = null) { UPRES = !!on; if (opts) UPRES_OP
 
 export function buildItemModel(item) {
   const v = new VoxelModel();
+  if (isFigure(item)) {
+    // a sculpted figure has no voxels: a block of its size (in design voxels) stands in for bounds()
+    const s = figureData(item).size, n = (m) => Math.max(1, Math.round(m / ITEM_VOXEL));
+    const w = n(s.x), d = n(s.z);
+    v.box(-Math.floor(w / 2), 0, -Math.floor(d / 2), Math.ceil(w / 2) - 1, n(s.y) - 1, Math.ceil(d / 2) - 1, 0x9a9498);
+    return v;
+  }
   item.build(v);
   return v;
 }
@@ -37,6 +47,7 @@ export function itemGeometry(key, opts = {}) {
   if (g) return g;
   const item = getItem(key);
   if (!item) throw new Error('Unknown item ' + key);
+  if (isFigure(item)) return figureGeometry(item); // (one level of detail; cached in src/figures)
   const { model, scale } = itemModel(item, opts);
   const b = model.bounds();
   const maxDim = (Math.max(b.w, b.h, b.d) / scale) * ITEM_VOXEL;
@@ -48,10 +59,12 @@ export function itemGeometry(key, opts = {}) {
 }
 
 /** Is this item's up-res geometry already built (cheap to show)? */
-export function hasItemGeometry(key) { return geoCache.has(key); }
+export function hasItemGeometry(key) { return geoCache.has(key) || hasFigure(key); }
 
 /** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
+  const fig = getItem(key);
+  if (isFigure(fig)) return makeFigureMesh(fig, finish);
   let geo;
   const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));
   if (lod) geo = geoCache.get(key) || itemGeometry(key, { lowres: true });

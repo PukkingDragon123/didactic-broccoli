@@ -42,7 +42,9 @@ On phones there's a virtual stick and buttons: tap to use, tap the inventory to 
 
 **The title screen.** The shop just after sunset, held like a poster: the shutter half rolled with warm light
 spilling out, lanterns, Mikan asleep on the bench, pigeons on the roof ledge. The logo is a red enamel shop sign
-hanging on two wires, and the menu is a string of manila price tags under it. Pick Continue or New Game and you
+hanging on two wires, and the menu is a string of paper tags under it, words only: a tall cream ticket for
+Continue (or New Game on a fresh save), manila tags, two short kraft ones for the housekeeping; hover lifts a
+tag and pencils a mark on it. Pick Continue or New Game and you
 crank the ¥100 machine beside you; the capsule pops and the camera dives into the game.
 
 **The dressing room.** Wardrobe on the menu (or the mirror in your room) opens a small walk-in closet on a
@@ -54,18 +56,21 @@ thrift find), with progress where it can be measured; you can try them on, but t
 Follow the game on itch.io (the tag on the title screen) and you get the Duck Head for free; the link lives in
 `src/data/links.js`.
 
-**Arriving.** The game opens like a film: letterboxed, to music, a crane down from the steel pylon to the
-railway bridge as a train thunders over, pigeons bursting up off the lane, Mikawa-san lighting a cigar in his
-doorway, Mikan and Grandpa asleep in the sun, and then the van you've just pulled up in: your hand takes the
-key out, the omamori swings to a stop, and in the door mirror Grandpa wakes and shuffles over. He taps on the
-window, you climb out, and the two of you talk: a bow or an awkward hug, the van's clutch, the keys, the shop
-in its heyday.
+**Arriving.** The game opens with you driving in, and nothing else: a short film (letterboxed, to music, about
+eighteen seconds, hold to skip) of Grandpa's old van coming out of the dark railway underpass into the late sun,
+rolling down the lane past the houses with you at the wheel, and pulling up across from the garage, brake
+lights on. The engine dies, Grandpa wakes on his stool and shuffles over. He taps on the window, you climb out,
+and the two of you talk: a bow or an awkward hug, the van's clutch, the keys, the shop in its heyday. People
+speak in plain floating text (no boxes), and you answer with numbered lines.
+
+**Loading.** While the game builds, the same van drives down a pixel-art lane at dusk (baked from the real
+model by `tools/bake-loading.mjs`); a station-style board, an odometer and a paper tag show how far along it is.
 
 **Opening up.** On day one Grandpa walks you through it himself: he shuffles over to each job, points,
 thumps the breaker box to show you, and has something dry to say when you get it done (or when you slap him).
 After the rubbish run his taxi comes; he leaves you his notebook, and his notes taped round the garage take you
 through the rest, about thirty small, physical steps in all:
-- read his letter and unlock the shutter;
+- unlock the shutter with the key he has just handed you;
 - flip the breaker, air the place out, wipe the counter and count the cash tin;
 - find the old OPEN sign in a junk box;
 - feed Mikan (pour the milk yourself; it really pours);
@@ -176,7 +181,7 @@ src/os        Capsule 98 desktop and its apps and websites (src/pc: the desk and
 src/market    Off-Hobby, Daikoku Toys, delivery van, grading, auctions
 src/money     wallet, physical cash, ATM, piggy bank
 src/build     furniture catalogue, placement, storage boxes, robot vacuum
-src/arrival   the opening: the lane, the van, the hand-off to Grandpa
+src/arrival   the opening: the van driving in, the hand-off to Grandpa
 src/grandpa   Grandpa: the meeting, day one, the goodbye, his calls
 src/vehicles  the vehicle kit: van, FREE CANDY van, garbage truck, taxi, cars
 src/life      Grandpa's notes, opening steps, jobs, trash

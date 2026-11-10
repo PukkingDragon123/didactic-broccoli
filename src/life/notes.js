@@ -1,6 +1,6 @@
-// Grandpa's notes: paper notes taped around the garage (and an envelope on the shutter), written before you arrived
-// (he walks you through the first ones in person, src/grandpa/, and they carry on after he's gone; the last one is a
-// page of the notebook he gives you at the taxi, kept on the computer desk). Click one and you pick it up
+// Grandpa's notes: paper notes taped around the garage, written before you arrived (he walks you through the first
+// ones in person, src/grandpa/, and they carry on after he's gone; the last one is a page of the notebook he gives you
+// at the taxi, kept on the computer desk). Click one and you pick it up
 // and read it in first person, a sheet of his handwriting held up in both hands (pixel art, src/life/art.js). Every
 // note is a little to-do list: its boxes tick themselves (in red pen) as you do the jobs, and the objective card quotes
 // him (src/game/Guide.js). Notes you've read stay where they are, so you can read them again.
@@ -9,24 +9,10 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
-import { paintNote, envelopePix } from './art.js';
+import { paintNote } from './art.js';
 
 /** The notes. rows: see paintNote (src/life/art.js); task ids are the story's to-do ids (game.story.isDone). */
 export const NOTES = {
-  letter: {
-    paper: 'letter', w: 144, h: 196, seed: 11, where: 'on the shutter',
-    rows: [
-      { big: 'KIDDO,' },
-      "IF I'M ASLEEP ON MY STOOL WHEN YOU GET HERE, LET ME SLEEP. THE GARAGE IS YOURS NOW.",
-      "IT'S BEEN SHUT A WHILE. IT NEEDS A HAND.",
-      "I LEFT NOTES WHERE YOU'LL NEED THEM. ONE THING AT A TIME.",
-      { gap: 2 },
-      { task: 'shutter', text: "OPEN THE SHUTTER. MY KEY'S ON YOUR RING." },
-      { task: 'read_power', text: 'MY NOTE ON THE COUNTER.' },
-      { doodle: 'shop', scale: 2, x: 24 },
-      { sign: '- GRAMPS' },
-    ],
-  },
   power: {
     paper: 'memo', w: 128, h: 176, seed: 12, where: 'on the counter',
     rows: [
@@ -132,6 +118,9 @@ export const NOTES = {
   },
 };
 
+/** Notes that used to exist (his letter on the shutter: he's there in person now). They count as read, so old saves
+ *  and anything that still asks about them carry on. */
+const RETIRED = new Set(['letter']);
 const PAPER_H = 0.26; // the sheet's height in your hands (m)
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion();
 
@@ -162,7 +151,7 @@ export class Notes {
     this.ui = ui;
   }
 
-  isRead(id) { return this.s.notes.includes(id); }
+  isRead(id) { return RETIRED.has(id) || this.s.notes.includes(id); }
 
   /** The note's texture (painted on first use, repainted by refresh()). */
   tex(id) {
@@ -192,18 +181,12 @@ export class Notes {
   refreshAll() { for (const id of this.pix.keys()) this.dirty.add(id); }
 
   /** A note taped somewhere: pos (centre), rotY (its face looks along +z turned by rotY), flat (lying on a surface), size (height, m). */
-  place(id, { pos, rotY = 0, flat = false, size = 0.17, tilt = 0, envelope = false, parent = null }) {
+  place(id, { pos, rotY = 0, flat = false, size = 0.17, tilt = 0, parent = null }) {
     const g = this.game, def = NOTES[id];
     this.remove(id);
-    let mat, w, h;
-    if (envelope) {
-      const t = envelopePix().texture();
-      mat = new THREE.MeshStandardMaterial({ map: t, roughness: 0.9 });
-      h = 0.11; w = 0.176;
-    } else {
-      mat = new THREE.MeshStandardMaterial({ map: this.tex(id), roughness: 0.92, alphaTest: 0.5 });
-      h = size; w = size * (def.w / def.h);
-    }
+    if (!def) return null;
+    const mat = new THREE.MeshStandardMaterial({ map: this.tex(id), roughness: 0.92, alphaTest: 0.5 });
+    const h = size, w = size * (def.w / def.h);
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
     m.position.copy(pos);
     if (flat) m.rotation.set(-Math.PI / 2, 0, rotY);
@@ -213,7 +196,7 @@ export class Notes {
     (parent || g.scene).add(m);
     g.interaction.add(m, {
       reach: 2.4,
-      hint: () => (g.held.busy ? null : { key: 'LMB', text: this.isRead(id) ? "Read Grandpa's note again" : envelope ? "Take Grandpa's letter" : "Read Grandpa's note", sub: envelope ? 'Taped to the shutter' : '' }),
+      hint: () => (g.held.busy ? null : { key: 'LMB', text: this.isRead(id) ? "Read Grandpa's note again" : "Read Grandpa's note", sub: '' }),
       use: () => { this.open(id); return false; },
     });
     this.world.set(id, m);
@@ -255,7 +238,7 @@ export class Notes {
     g.player.lookLocked = true;
     document.body.classList.add('reading');
     this.ui.classList.add('on');
-    audio.play(id === 'letter' ? 'tape' : 'paper', { vol: 0.8 });
+    audio.play('paper', { vol: 0.8 });
     const first = !this.isRead(id);
     if (first) this.s.notes.push(id);
     g.events.emit('noteRead', { id, first });

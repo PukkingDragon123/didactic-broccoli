@@ -1,14 +1,15 @@
 // The title screen's paper UI: the enamel sign hanging from the top of the picture on two wires, and a strand of twine
-// tied under it with the menu's manila price tags threaded on it. Hover (or keyboard focus): the tag swings on the twine,
-// lifts a texel, gets a red-pen tick and a pencil underline, and blips an 8-bit note. Pick: a 済 hanko stamps it.
-// Layout picks whole-number pixel scales for the viewport; when the strand would run off the bottom it splits into two
-// strands (landscape phones); in portrait the sign hangs in the middle.
-//   const ui = new MenuUI(root, { onPick(id), onHover(id) });  ui.setItems([{ id, label, note, icon }]);
+// tied under it with the menu's paper tags threaded on it (src/menu/tags.js: a tall cream ticket for the way in, manila
+// tags, short kraft ones; words only, no icons). Hover (or keyboard focus): the tag swings on the twine, lifts a texel,
+// gets a red-pen tick and a pencil underline, and blips an 8-bit note. Pick: a 済 hanko stamps it.
+// Layout picks whole-number pixel scales for the viewport; when the strand would run off the bottom it goes compact
+// (no notes, no tall ticket), then splits into two strands (landscape phones); in portrait the sign hangs in the middle.
+//   const ui = new MenuUI(root, { onPick(id), onHover(id) });  ui.setItems([{ id, label, note, sub, primary, tier }]);
 //   ui.show(on)  ui.stamp(id) -> Promise  ui.leave()  ui.focus(id)  ui.dispose()
 //   confirmSlip({ title, body, yes, no }) -> Promise<boolean>
 import { audio } from '../core/audio.js';
 import { paintLogo } from './logo.js';
-import { paintTag, tagMetrics, HOLE, paintItchTag } from './tags.js';
+import { paintTag, tagSpec, HOLE, paintItchTag } from './tags.js';
 
 const NOTES = [72, 74, 76, 79, 81, 84, 86, 88]; // a pentatonic run: each tag has its own blip
 const midi = (n) => 440 * Math.pow(2, (n - 69) / 12);
@@ -65,10 +66,9 @@ export class MenuUI {
   /** Whole-number pixel scales and positions for the viewport (tags and sign are redrawn at the new scale). */
   layout() {
     const W = innerWidth, H = innerHeight, portrait = H > W * 1.15;
-    const L = this.logo;
+    const L = this.logo, items = this.items, n = this.tags.length;
     const tagS = W >= 1800 && H >= 1000 ? 3 : 2;
-    const M = tagMetrics(this.items);
-    const tagH = M.h * tagS, gap = Math.round(tagS * 4.5);
+    const gap = Math.round(tagS * 3.5), group = tagS * 3; // between tags, and a little more between the three weights
     // the sign: as big as fits a third of the height (portrait: most of the width)
     let logoS = Math.max(2, Math.min(6, Math.floor(portrait ? (W * 0.8) / L.w : Math.min((H * 0.42) / (L.board.y + L.board.h), (W * 0.36) / L.w))));
     if (!portrait && H < 560) logoS = Math.max(2, Math.min(logoS, Math.floor((H * 0.3) / (L.board.y + L.board.h))));
@@ -79,59 +79,70 @@ export class MenuUI {
     this.signEl.style.left = `${left}px`;
     this.signBox = { x: left, w: signW, h: signH };
     this.signEl.style.transformOrigin = `${L.pivot[0] * logoS}px 0`;
-    // one strand from an eyelet under the left of the sign, or two side by side when one won't fit the height (the
-    // second hangs from above the picture); small screens drop the pencilled notes to keep the tags narrow
+    // the tags' sizes: the manila tags share one width, the kraft ones a shorter one, the ticket is as wide as its words.
+    // When the strand won't fit under the sign: the compact set (no notes, no tall ticket), then two strands side by
+    // side (a phone held sideways; the second hangs from above the picture)
     let top0 = signH + Math.round(logoS * 3) + gap;
-    const n = this.tags.length;
-    const colH = (k) => k * (tagH + gap) - gap;
-    const cols = colH(n) > H - top0 - pad && n > 3 && !portrait ? 2 : 1;
+    const tier = (it) => (it.primary ? 1 : it.tier || 2);
+    const sizes = (compact) => {
+      const sp = items.map((it) => tagSpec(it, { compact }));
+      const of = (n) => Math.max(0, ...sp.map((q, i) => (tier(items[i]) === n ? q.w : 0)));
+      const wide = of(2), short = of(3);
+      sp.forEach((q, i) => { const n = tier(items[i]); q.w = n === 3 ? short : n === 2 ? wide : Math.max(q.w, wide); q.compact = compact; });
+      return sp;
+    };
+    const step = (i, a) => (i > a ? gap + (tier(items[i]) !== tier(items[i - 1]) ? group : 0) : 0);
+    const colH = (sp, a, b) => { let y = 0; for (let i = a; i < b; i++) y += step(i, a) + sp[i].h * tagS; return y; };
+    const room = H - top0 - pad;
+    let sp = sizes(false);
+    if (colH(sp, 0, n) > room || Math.max(...sp.map((q) => q.w)) * tagS > W * (portrait ? 0.92 : 0.6)) sp = sizes(true);
+    const cols = !portrait && n > 3 && colH(sp, 0, n) > room ? 2 : 1;
     const per = Math.ceil(n / cols);
-    // too wide for the screen: drop the pencilled notes, then (two strands on a phone held sideways) the icons too
-    let M2 = M, bare = false;
-    const compact = cols === 2 ? 2 * M.w * tagS > W * 0.62 : M.w * tagS > W * 0.75;
-    if (compact) M2 = tagMetrics(this.items.map((it) => ({ ...it, note: '' })));
-    if (compact && cols === 2 && 2 * M2.w * tagS > W * 0.5) { bare = true; M2 = tagMetrics(this.items.map((it) => ({ ...it, note: '', icon: null })), true); }
-    const tagW = M2.w * tagS;
+    const colW = Math.max(...sp.map((q) => q.w)) * tagS;
     // portrait: the tags hang low, under the shop, so the sign and the shot stay clear in the middle
-    if (portrait) top0 = Math.max(top0, H - pad - colH(per) - Math.round(H * 0.02));
+    if (portrait) top0 = Math.max(top0, H - pad - colH(sp, 0, n) - Math.round(H * 0.02));
     this.cols = cols;
-    // repaint the tags at this scale (only when it changed)
-    for (const t of this.tags) {
-      const note = compact ? '' : t.it.note, icon = bare ? null : t.it.icon;
-      if (t.s !== tagS || t.w !== M2.w || t.note !== note || t.icon !== icon) {
-        t.s = tagS; t.w = M2.w; t.note = note; t.icon = icon;
-        const P = t.b.querySelector('.tm-paper');
-        P.innerHTML = '';
-        const opts = { label: t.it.label, note, icon, w: M2.w, h: M2.h, seed: 31 + t.i * 17, ring: !!t.it.primary, stock: t.it.stock || 'manila', dog: t.i % 3 === 1 };
-        P.appendChild(paintTag(opts).canvas(tagS)).className = 'a';
-        P.appendChild(paintTag({ ...opts, hot: true }).canvas(tagS)).className = 'b';
-      }
-    }
+    // repaint the tags at this scale (only when something changed)
+    this.tags.forEach((t, i) => {
+      const q = sp[i], note = q.compact ? '' : t.it.note || '';
+      const key = `${tagS}|${q.w}|${q.h}|${q.k}|${note}`;
+      if (t.key === key) return;
+      t.key = key;
+      const P = t.b.querySelector('.tm-paper');
+      P.innerHTML = '';
+      const opts = { label: t.it.label, note, sub: t.it.sub || '', k: q.k, w: q.w, h: q.h, seed: 31 + t.i * 17, stock: t.it.stock || (t.it.primary ? 'cream' : tier(t.it) === 3 ? 'kraft' : 'manila'), dog: t.i % 3 === 1 };
+      P.appendChild(paintTag(opts).canvas(tagS)).className = 'a';
+      P.appendChild(paintTag({ ...opts, hot: true }).canvas(tagS)).className = 'b';
+    });
     // twines (DOM strips through the holes) and tag positions
     for (const tw of this.twines) tw.remove();
     this.twines = [];
-    const holeY = Math.floor(M2.h / 2) * tagS + tagS / 2;
+    const holeX = Math.round((HOLE.x + 0.5) * tagS), holeY = (q) => Math.floor(q.h / 2) * tagS + tagS / 2;
     // the strand ties on under the sign's left; in portrait the tags hang centred under it
-    const x0 = portrait ? Math.max(left + logoS * 6, Math.round((W - tagW) / 2) + Math.round((HOLE.x + 0.5) * tagS))
+    const x0 = portrait ? Math.min(Math.max(left + logoS * 6, Math.round((W - colW) / 2) + holeX), W - 8 - colW + holeX)
       : left + Math.round(L.board.w * 0.2) * logoS + Math.floor(logoS / 2);
     for (let c = 0; c < cols; c++) {
-      const x = x0 + c * (tagW + tagS * 4);
-      const list = this.tags.slice(c * per, (c + 1) * per);
+      const x = x0 + c * (colW + tagS * 4), a = c * per, b = Math.min(n, a + per);
+      if (b <= a) continue;
+      let y = top0;
+      for (let i = a; i < b; i++) {
+        const t = this.tags[i], q = sp[i];
+        y += step(i, a);
+        t.b.style.left = `${x - holeX}px`; t.b.style.top = `${y}px`;
+        t.b.style.width = `${q.w * tagS}px`; t.b.style.height = `${q.h * tagS}px`;
+        t.b.style.setProperty('--ox', `${holeX}px`);
+        t.b.style.setProperty('--oy', `${holeY(q)}px`);
+        t.b.style.setProperty('--s', `${tagS}px`);
+        t.b.classList.toggle('big', q.k === 2);
+        y += q.h * tagS;
+      }
       const tw = document.createElement('i');
       tw.className = 'tm-twine';
-      const yEnd = top0 + (list.length - 1) * (tagH + gap) + holeY + tagS * 9;
+      const yEnd = y - sp[b - 1].h * tagS + holeY(sp[b - 1]) + tagS * 9;
       const yTop = x < left + signW - logoS * 4 ? signH - logoS : 0;
       tw.style.cssText = `left:${x - tagS}px;top:${yTop}px;height:${yEnd - yTop}px;width:${tagS * 2}px`;
       this.el.insertBefore(tw, this.nav);
       this.twines.push(tw);
-      list.forEach((t, k) => {
-        const tx = x - Math.round((HOLE.x + 0.5) * tagS), ty = top0 + k * (tagH + gap);
-        t.b.style.left = `${tx}px`; t.b.style.top = `${ty}px`;
-        t.b.style.width = `${tagW}px`; t.b.style.height = `${tagH}px`;
-        t.b.style.setProperty('--ox', `${Math.round((HOLE.x + 0.5) * tagS)}px`);
-        t.b.style.setProperty('--oy', `${holeY}px`);
-        t.b.style.setProperty('--s', `${tagS}px`);
-      });
     }
     this.el.style.setProperty('--tag-s', `${tagS}px`);
     this.el.classList.toggle('portrait', portrait);
@@ -175,7 +186,7 @@ export class MenuUI {
     // tied to the right end of the Wardrobe tag by a short thread; where there's no room for it there (a phone held
     // upright), it hangs on a thread from under the sign instead
     const tl = parseFloat(t.b.style.left), tt = parseFloat(t.b.style.top), tw = parseFloat(t.b.style.width), th = parseFloat(t.b.style.height);
-    const iw = b.querySelector('canvas')?.offsetWidth || 120 * tagS;
+    const iw = b.querySelector('canvas')?.offsetWidth || 119 * tagS;
     let x = tl + tw + 7 * tagS, y = tt + th / 2 - 3 * tagS - tagS / 2, below = false;
     if (x + iw > innerWidth - 8 && this.signBox) {
       const S = this.signBox;

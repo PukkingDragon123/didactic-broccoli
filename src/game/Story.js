@@ -1,8 +1,8 @@
-// The new-game story. You've just pulled up in Grandpa's old van across the lane from his shut-up capsule-toy garage
+// The new-game story. You drive Grandpa's old van into the lane and pull up across from his shut-up capsule-toy garage
 // (the opening, src/arrival/); he's dozing out front, wakes, taps on the window and meets you (src/grandpa/), then walks
 // you through the first jobs himself before he leaves; his notes, taped up all round the garage (src/life/notes.js),
-// tick off as you go and carry on the guidance after he's gone, one small physical job at a time: his letter on the
-// shutter, unlock the shutter, flip the main breaker, lights, air the place out,
+// tick off as you go and carry on the guidance after he's gone, one small physical job at a time: unlock the shutter
+// (the first job: he's handed you the key), flip the main breaker, lights, air the place out,
 // wipe the counter, the cash tin and the change float, his junk boxes (one hides the old OPEN sign), milk for Mikan,
 // a broom and a new tube from Mikawa-ya, sweep, bag the rubbish and take it all out to the garbage station; then odd
 // jobs for the neighbours until you can afford a used machine, its delivery crate to unbox, plug in, stock and price,
@@ -88,7 +88,6 @@ export class Story {
     if (this.done) return;
     // Grandpa's notes, where you'll need them
     const N = life.notes, T = G.table, D = G.pcDesk;
-    if (!f.shutter) N.place('letter', { pos: V(0.85, 1.32, GARAGE.maxZ + 0.095), envelope: true, tilt: -0.06 });
     N.place('power', { pos: V(T.x, T.h + 0.008, T.z + 0.32), flat: true, rotY: 0.08, size: 0.17 });
     N.place('clean', { pos: V(SINK.x - 0.1, 0.715, SINK.z + 0.226), size: 0.15, tilt: 0.04 });
     N.place('tin', { pos: V(-1.18, 1.43, -4.452), size: 0.13, tilt: -0.05 });
@@ -149,7 +148,6 @@ export class Story {
     const g = this.game, f = this.flags, L = this.life, N = L?.notes;
     const m = this.machine();
     switch (id) {
-      case 'letter': return !!N?.isRead('letter') || f.shutter;
       case 'shutter': return !!f.shutter;
       case 'read_power': return !!N?.isRead('power');
       case 'breaker': return !!L?.power;
@@ -184,8 +182,9 @@ export class Story {
     }
   }
 
-  /** The order the objective card walks you through (some of them come from notes you haven't read yet). */
-  static ORDER = ['letter', 'shutter', 'read_power', 'breaker', 'lights', 'window', 'read_clean', 'wipe', 'read_tin', 'tin', 'tray', 'read_junk', 'junk', 'read_cat', 'shop', 'feed', 'tube', 'sweep', 'bag', 'trashout', 'read_pc', 'job', 'buymachine', 'delivery', 'read_machine', 'unbox', 'plug', 'restock', 'price', 'read_sign', 'hang', 'open'];
+  /** The order the objective card walks you through (some of them come from notes you haven't read yet). The shutter is
+   *  the first job (saves from when a letter on the shutter came first just carry on from wherever they are). */
+  static ORDER = ['shutter', 'read_power', 'breaker', 'lights', 'window', 'read_clean', 'wipe', 'read_tin', 'tin', 'tray', 'read_junk', 'junk', 'read_cat', 'shop', 'feed', 'tube', 'sweep', 'bag', 'trashout', 'read_pc', 'job', 'buymachine', 'delivery', 'read_machine', 'unbox', 'plug', 'restock', 'price', 'read_sign', 'hang', 'open'];
 
   todo() {
     return Story.ORDER.filter((id) => id !== 'shop').map((id) => ({ id, done: this.isDone(id) }));
@@ -244,7 +243,6 @@ export class Story {
     const pc = () => V(G.pcDesk.x, G.pcDesk.h + 0.55, G.pcDesk.z);
     const near = (list, at) => { const p = g.player.pos; let best = null, bd = Infinity; for (const o of list) { const q = at(o); const d = (q.x - p.x) ** 2 + (q.z - p.z) ** 2; if (d < bd) { bd = d; best = q; } } return best; };
     switch (id) {
-      case 'letter': return { id, icon: 'note', text: "Read Grandpa's letter", sub: 'An envelope taped to the shutter', at: note('letter') };
       case 'shutter': return { id, icon: 'key', text: 'Unlock the shutter', sub: H.holding('key') ? `${c[0].toUpperCase() + c.slice(1)} the shutter` : `${gp("My key's on your ring.")} Hold it${pick('key')}`, at: () => V(0, 1.15, GARAGE.maxZ + 0.05) };
       case 'read_power': return read('power', 'on the counter');
       case 'breaker': return { id, icon: 'breaker', text: 'Flip the main breaker', sub: gp('Grey box by the back door. Flip it up.'), at: () => V(BREAKER.x, 2.0, BREAKER.z) };
@@ -309,7 +307,7 @@ export class Story {
         if (H.item?.kind === 'box' && H.item.data?.type === 'refill') return { id: 'restock:fill', icon: 'box', text: 'Fill your machine', sub: m.lidOpen ? `Put the capsules in one by one (${c}), then lock the lid` : `${c[0].toUpperCase() + c.slice(1)} the machine: unlock the lid`, at: mTop };
         if (box) return { id: 'restock:box', icon: 'box', text: 'Your capsules arrived', sub: 'Pick up the carton by the shutter', at: () => box.obj.position.clone().setY(0.7) };
         if (m.lidOpen) return { id: 'restock:lid', icon: 'machine', text: 'Close and lock the lid', sub: `${c[0].toUpperCase() + c.slice(1)} the machine`, at: mTop };
-        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'mochi') * 10, 'capsules') || { id: 'restock:order', icon: 'capsule', text: 'Order a box of capsules', sub: `On the computer: Daikoku Toys, Capsules. ${gp('Fill it up.')}`, at: pc };
+        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'mochi') * 10, 'capsules') || { id: 'restock:order', icon: 'box', text: 'Order a box of capsules', sub: `On the computer: Daikoku Toys, Capsules. ${gp('Fill it up.')}`, at: pc };
         return { id: 'restock:wait', icon: 'box', text: 'Wait for the capsules', sub: 'The box comes to the shutter', at: () => V(0, 0.8, GARAGE.maxZ - 0.6) };
       }
       case 'price': return { id, icon: 'yen', text: 'Set the price', sub: `The plate on the machine: - and +. ${gp('Kids pay 100.')}`, at: () => m.local(0, m.L.slot.y - 0.1, m.L.front + 0.05) };
@@ -368,21 +366,19 @@ export class Story {
   // ------------------------------------------------------------------ shutter (until the reopening; then src/life/routine.js)
   shutterHint() {
     if (this.flags.shutter) return null;
-    if (!this.life?.notes.isRead('letter')) return { key: '', text: 'Locked', sub: "There's a letter taped to it" };
     if (this.game.held.holding('key')) return { key: 'LMB', text: 'Unlock the shutter' };
     const i = this.game.held.find('key');
     return { key: '', text: 'Locked', sub: i >= 0 ? `Select Grandpa's key (${i + 1}) and click` : 'It needs a key' };
   }
 
   useShutter() {
-    if (this.flags.shutter || !this.game.held.holding('key') || !this.life?.notes.isRead('letter')) return false;
+    if (this.flags.shutter || !this.game.held.holding('key')) return false;
     this.game.cutscene.play((c) => this.openShutterScene(c));
     return false;
   }
 
   *openShutterScene(c) {
     const g = this.game, G = g.garage, z = GARAGE.maxZ;
-    this.life?.notes.remove('letter');
     // the key in the old padlock
     yield c.cam({ pos: V(0.9, 1.45, z + 1.1), look: V(0.2, 0.7, z), dur: 0.7, fov: 50 });
     audio.play('keyTurn', { pos: V(0, 0.6, z), vol: 1 });
@@ -756,24 +752,11 @@ export class Story {
     } else if (!on && this.memMachines) { for (const m of this.memMachines) m.parent?.remove(m); this.memMachines = null; }
   }
 
-  /** Footsteps for a walking camera: a little bob on the cutscene's camera offset, a step sound per stride. */
-  walkBob(c, amp = 0.035) {
-    let t = 0;
-    this.bobOn = true;
-    c.every((dt) => {
-      const prev = Math.sin(t * Math.PI * 1.9);
-      t += dt;
-      const s = Math.sin(t * Math.PI * 1.9);
-      c.offset.y = this.bobOn ? Math.abs(s) * amp : c.offset.y * Math.max(0, 1 - dt * 6);
-      if (this.bobOn && prev * s < 0) audio.play('footstep', { vol: 0.35 });
-    });
-  }
-
   // ------------------------------------------------------------------ a new game
   /**
-   * The new-game flow: the opening (src/arrival/: the lane at golden hour, the neighbours, Grandpa asleep on his stool,
-   * the van just pulled up and you in it) cut straight into meeting Grandpa (src/grandpa/), in one cutscene; without
-   * him, the opening and then the old memory-and-letter ending. Resolves once you're on your feet with control.
+   * The new-game flow: the opening (src/arrival/: Grandpa's van driving into the lane and pulling up across from the
+   * garage) cut straight into meeting Grandpa (src/grandpa/), in one cutscene; without him (he can't be built), the
+   * opening and then you simply climb out. Resolves once you're on your feet with control.
    */
   async newGame() {
     const g = this.game, A = g.arrival;
@@ -782,7 +765,7 @@ export class Story {
       if (g.grandpa?.meet && g.grandpa.gp) await g.grandpa.meet({ opening: A ? (c) => A.scene(c) : null });
       else {
         if (A) await A.play();
-        await g.cutscene.play((c) => this.letterScene(c), { skippable: true });
+        await g.cutscene.play((c) => this.aloneScene(c), { skippable: true });
       }
     } finally {
       this.newGameRunning = false;
@@ -792,65 +775,26 @@ export class Story {
     }
   }
 
-  /** Without Grandpa: out of the van, a memory of the shop in his day, then his envelope on the shutter. */
-  *letterScene(c) {
+  /** Without Grandpa: the door swings open, out onto the road, the shut-up garage across the lane; his key's on your ring. */
+  *aloneScene(c) {
     const g = this.game, z = GARAGE.maxZ, van = this.life?.van;
-    const actors = [];
-    // 1. getting out: from the seat, the door swings open, out onto the road, the shutter across the lane
     c.hideSay();
-    if (van) { van.eye(c.pos); c.look.copy(van.local(-1.2, 1.2, 0.9)); c.camOn = true; }
+    if (van) { van.setPose(PARK.x, PARK.z, PARK.heading); van.eye(c.pos); c.look.copy(van.local(-1.2, 1.2, 0.9)); c.camOn = true; }
     c.fov = 64;
     yield c.wait(0.4);
     audio.play('carDoor', { pos: c.pos, vol: 1 });
     let k = 0;
     yield c.until((dt) => { k = Math.min(1, k + dt / 0.6); van?.setDoor(ease.outCubic(k)); return k >= 1; });
     const out = van ? van.doorStep(V(0, 0, 0)).setY(1.58) : V(PARK.x, 1.58, PARK.z - 1.3);
-    this.walkBob(c, 0.03);
     yield c.cam({ pos: out, look: V(0.3, 1.5, z), dur: 1.6, fov: 64, path: [c.pos.clone().lerp(out, 0.5).setY(1.25)] });
-    this.bobOn = false;
-    yield c.all(c.cam({ pos: out.clone().lerp(V(0.4, 1.58, z + 3.6), 0.35), look: V(0, 1.75, z), dur: 3.2 }), c.say("Grandpa's capsule toy shop. Shut for years.", 0.8));
-    // 2. a memory: the shutter up, the lanterns lit, kids crowding his machines
-    yield c.flash(() => {
-      c.memory(true);
-      c.hideSay();
-      this.memorySet(true);
-      actors.push(
-        this.actor(c, 'grandpa', 41, 0.9, 3.7, 0.15),
-        this.actor(c, 'kid', 12, -2.35, 0.35, -Math.PI / 2),
-        this.actor(c, 'schoolgirl', 7, -2.1, 1.45, -Math.PI / 2 - 0.35),
-        this.actor(c, 'schoolboy', 3, -1.55, -0.55, -Math.PI / 2 + 0.4),
-        this.actor(c, 'kid', 29, 2.1, z + 1.2, -2.6));
-      c.pos.set(2.6, 1.55, z + 5.6); c.look.set(-1.0, 1.0, 1.6);
-    });
-    const [gp, k1, k2, k3, k4] = actors;
-    k1.h.gesture('browse'); k3.h.gesture('point');
-    yield c.all(c.cam({ pos: V(1.9, 1.5, z + 3.3), look: V(-0.4, 1.15, 1.8), dur: 4.0 }), c.say('After school, kids lined up around the block for his machines.', 0.8),
-      c.call(() => { k2.h.gesture('cheer'); audio.play('gachan', { pos: V(-3.2, 0.5, 0.8), vol: 0.8 }); }));
-    gp.look = c.pos; gp.h.gesture('wave');
-    k4.h.gesture('wave');
-    g.pedestrians?.say(gp.h, 'One coin, one turn. Good luck!', 3.2);
-    yield c.cam({ pos: V(1.6, 1.55, z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.4 });
-    // 3. back to now: a locked shutter, and a letter taped to it
-    yield c.flash(() => {
-      c.memory(false);
-      c.hideSay();
-      this.dropActors(actors);
-      this.memorySet(false);
-      c.pos.set(1.4, 1.35, z + 1.5); c.look.set(0.85, 1.3, z);
-    });
-    audio.play('meow', { pos: V(-0.3, 0.3, z - 0.6), vol: 0.6, pitch: 1.15 });
-    yield c.all(c.cam({ pos: V(1.1, 1.38, z + 0.75), look: V(0.85, 1.32, z), dur: 2.4, fov: 44 }), c.say('...an envelope. KIDDO. His handwriting.', 0.9));
+    yield c.all(c.cam({ pos: out.clone().lerp(V(0.4, 1.58, z + 3.6), 0.35), look: V(0, 1.75, z), dur: 3.2 }), c.say("Grandpa's capsule toy shop. Shut for years. His key's on my ring.", 1.2));
     c.hideSay();
-    // your own eyes, by the van, the shutter across the lane
-    if (van) { van.setPose(PARK.x, PARK.z, PARK.heading); van.setDoor(1); van.setLights(false); van.setBrake(false); van.suspend(0, 0); }
+    if (g.held.find('key') < 0) g.held.giveTool('key');
     const st = out.clone().setY(0);
     g.player.pos.set(st.x, 0, st.z);
-    g.player.yaw = Math.atan2(-(0.85 - st.x), -(GARAGE.maxZ - st.z)); // facing the envelope on the shutter
+    g.player.yaw = Math.atan2(-(0 - st.x), -(z - st.z)); // facing the shutter
     g.player.pitch = -0.02;
-    yield c.tbc(3.0);
     bgm.play('garage', { fade: 4 });
     yield c.toPlayer(0.8);
-    this.flags.intro = true;
-    g.guide?.pulse();
   }
 }

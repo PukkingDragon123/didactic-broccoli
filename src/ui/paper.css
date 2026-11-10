@@ -139,30 +139,8 @@ body.paper-ui #news .item::before, body.paper-ui #daysum .ds-card::before {
 }
 body.paper-ui #news .item { position: relative; }
 
-/* ---------------------------------------------------------------- floating speech: little paper strips */
-body.paper-ui .ft-in {
-  color: var(--pp-ink); image-rendering: pixelated;
-  background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45), 2px 0 0 rgba(26, 18, 22, .2);
-}
-body.paper-ui .ft-big .ft-in { background: var(--pp-grain-receipt) 0 0 / 96px; }
-body.paper-ui .ft-think .ft-in { color: #5a5070; background: var(--pp-grain-cream) 0 0 / 96px; }
-body.paper-ui .ft-shout .ft-in { color: var(--pp-red); background: var(--pp-grain-note) 0 0 / 96px; }
-body.paper-ui .ft-me .ft-in { color: var(--pp-blue); }
-body.paper-ui .ft-name { color: var(--pp-red); }
-
-/* ---------------------------------------------------------------- chat choices: paper slips */
-body.paper-ui .tk-opt { color: var(--pp-ink); background: var(--pp-grain-cream) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45); image-rendering: pixelated; }
-body.paper-ui .tk-opt .n { color: var(--pp-ink2); }
-body.paper-ui .tk-opt.sel { background: var(--pp-grain-note) 0 0 / 96px; color: var(--pp-ink); box-shadow: inset 4px 0 0 var(--pp-red), 0 2px 0 rgba(26, 18, 22, .45); }
-body.paper-ui .tk-opt.sel .n { color: var(--pp-red); }
-body.paper-ui .tk-opt.picked { background: var(--pp-grain-note) 0 0 / 96px; color: var(--pp-red); }
-body.paper-ui .tk-choices.quick .tk-opt { background: var(--pp-grain-cream) 0 0 / 96px; }
-body.paper-ui .tk-choices .tk-prompt { color: var(--pp-red); background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45); }
-body.paper-ui .tk-timer { background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: 0 2px 0 rgba(26, 18, 22, .45); }
-body.paper-ui .tk-timer i { background: rgba(36, 26, 30, .15); }
-body.paper-ui .tk-timer i.on { background: var(--pp-ink); }
-body.paper-ui .tk-timer.low i.on { background: var(--pp-red); }
-body.paper-ui #tk-self span { color: var(--pp-blue); background: var(--pp-grain-receipt) 0 0 / 96px; }
+/* (speech isn't paper: spoken lines, names, chat choices, the timer and self-talk are plain floating text with a hard
+   ink outline, src/people/bubbles.css and src/talk/talk.css; the cutscene subtitle and "hold to skip" are further down) */
 
 /* ---------------------------------------------------------------- panels (settings, share...): notebook pages */
 body.paper-ui .panel {
@@ -318,22 +296,33 @@ body.paper-ui #reader-ui { color: var(--pp-ink); text-shadow: none; }
 body.paper-ui #reader-ui button { font-family: var(--font-ui); padding: 4px 12px 6px; }
 body.paper-ui #reader-ui .pg { padding: 0 8px 2px; color: var(--pp-ink); background: var(--pp-grain-manila) 0 0 / 96px; box-shadow: inset 0 0 0 2px rgba(58, 42, 32, .55), var(--pp-hard); image-rendering: pixelated; }
 
-/* ---------------------------------------------------------------- cutscene subtitles: a torn strip of note paper */
+/* ---------------------------------------------------------------- cutscene subtitles: plain floating text */
+/* (src/game/Cutscene.js; the old boxed look in hud.css is switched off here.) Centred over the foot of the picture, big
+   Alagard in a light tone with the hard ink outline from src/people/bubbles.css; the speaker's name small above it in the
+   speaker's own colour. No paper, no box, no glow. */
 body.paper-ui #cutscene .sub {
-  color: var(--pp-ink); outline: 0; padding: 4px 16px 6px; image-rendering: pixelated;
-  border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 34px, rgba(47, 90, 154, .14) 34px 36px) 0 4px padding-box,
-    var(--pp-grain-cream) 0 0 / 96px padding-box;
-  box-shadow: none; filter: drop-shadow(4px 5px 0 rgba(0, 0, 0, .5));
+  left: 50%; width: max-content; max-width: min(900px, 92vw); padding: 0 8px 8px; text-align: center;
+  font: 32px/38px 'Alagard', 'DotGothic16', monospace; color: var(--ft-cream); text-shadow: var(--ft-rim-2x);
+  background: none; border: 0; outline: 0; box-shadow: none; filter: none;
 }
-body.paper-ui #cutscene .sub::before { content: ''; position: absolute; left: 28px; top: -20px; width: 60px; height: 18px; background: var(--pp-tape) 0 0 / 60px 18px; image-rendering: pixelated; }
-body.paper-ui #cutscene .sub .who { display: table; color: var(--pp-red); padding-bottom: 4px; background: var(--pp-pencil-red) 0 100% / 64px 6px repeat-x; image-rendering: pixelated; }
-body.paper-ui #cutscene .sub .txt::after { background: var(--pp-ink); }
-/* hold to skip: a receipt strip that fills with red pencil */
-body.paper-ui #cutscene .skip { border: 0; border-radius: 0; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--pp-ink), var(--pp-hard); image-rendering: pixelated; }
-body.paper-ui #cutscene .skip .fill { background: repeating-linear-gradient(90deg, rgba(200, 50, 44, .55) 0 2px, rgba(200, 50, 44, .3) 2px 4px); transition: transform .1s steps(2); }
-body.paper-ui #cutscene .skip .lbl { color: var(--pp-ink); text-shadow: none; }
+body.paper-ui #cutscene .sub .who {
+  display: block; margin-bottom: 6px; font: 16px/18px 'Alagard', monospace; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ft-gold); text-shadow: var(--ft-rim); background: none; padding: 0;
+}
+body.paper-ui #cutscene .sub .txt::after { content: none; }
+@media (max-width: 760px), (max-height: 520px) {
+  body.paper-ui #cutscene .sub { font-size: 16px; line-height: 22px; text-shadow: var(--ft-rim); padding: 0 6px 6px; }
+  body.paper-ui #cutscene .sub .who { margin-bottom: 2px; }
+}
+/* hold to skip: floating text over a thin ink line that fills up in steps */
+body.paper-ui #cutscene .skip {
+  right: max(24px, env(safe-area-inset-right)); bottom: max(6px, calc(5.5vh - 15px)); /* (in the bottom bar, clear of the subtitle) */
+  width: 132px; height: auto; padding: 0 0 10px; border: 0; border-radius: 0; overflow: visible; background: none; box-shadow: none;
+  transition: opacity .2s steps(3);
+}
+body.paper-ui #cutscene .skip::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--ft-ink); }
+body.paper-ui #cutscene .skip .fill { inset: auto 2px 2px 2px; height: 2px; background: var(--ft-cream); transition: transform .1s steps(2); }
+body.paper-ui #cutscene .skip .lbl { font: 16px/20px 'Alagard', monospace; color: var(--ft-cream); text-shadow: var(--ft-rim); }
 /* the day's title card: a page of the tear-off calendar (日めくり) */
 body.paper-ui #cutscene .titlecard {
   left: 50%; right: auto; width: max-content; max-width: 92vw; translate: -50% 0; padding: 4px 34px 12px; color: var(--pp-ink); image-rendering: pixelated;

@@ -2,7 +2,7 @@
 // and the camera eases in to its face (Player.lookOverride, a slow damped blend), you stand still, the mouse or the
 // arrow keys move a lit selection over its buttons, LMB acts, RMB steps back (and back out). Hints use the crosshair
 // line only; the machine's own pixel panel shows everything else.
-//   const pm = new PanelMode(game, { onMove(dx, dy) | cols/rows, onAct(), onBack() -> true to leave, hint() })
+//   const pm = new PanelMode(game, { onMove(dx, dy) | cols/rows, onMouse(dx, dy), onAct(), onBack() -> true to leave, hint() })
 //   pm.enter(view) / pm.view(v) (ease to another camera spot) / pm.exit()     view = { pos, look, fov }
 import * as THREE from 'three';
 import { Game } from '../../game/Game.js';
@@ -64,6 +64,7 @@ export class PanelMode {
     if (!inp.locked || g.cutscene.active || g.pc?.active) return;
     // the mouse nudges the selection (a cell every ~70 px of travel); keys move it a cell
     this.acc.x += inp.mouse.dx; this.acc.y += inp.mouse.dy;
+    if (o.onMouse && (inp.mouse.dx || inp.mouse.dy)) o.onMouse(inp.mouse.dx, inp.mouse.dy); // raw travel (turning a thing you look at)
     const step = 70;
     let mx = 0, my = 0;
     if (Math.abs(this.acc.x) > step) { mx = Math.sign(this.acc.x); this.acc.x = 0; }

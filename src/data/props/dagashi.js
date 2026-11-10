@@ -7,6 +7,7 @@
 import { shade } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, grime, rod } from './garage.js';
+import { drinkMesh } from '../../products/containers.js';
 
 const R = Math.round;
 const pick = (list, n) => list[Math.min(list.length - 1, Math.floor(n * list.length))];
@@ -353,6 +354,7 @@ export default {
   // ============================================================ the snacks you can buy (carried as tools)
   ramune_bottle: {
     name: 'Ramune', jp: 'ラムネ', voxel: 0.006,
+    mesh: (o) => drinkMesh('ramune', o), // the real bottle with its paper label (src/products); the voxels below only size it
     build(v) {
       v.jitter = 0.01;
       const g = gloss(0x9ee0d8), gs = gloss(0x7cc8c0);

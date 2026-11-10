@@ -105,6 +105,7 @@ export class Human {
     this.face = new FacePainter(spec, this.P, m.block, this.pix);
     this.E = exprParams('neutral');
     this.tex = this.pix.texture();
+    this.tex.magFilter = THREE.LinearFilter; // smooth cartoon paint up close (the atlas islands are padded for it)
     if (opts.lazy === false) {
       paintAtlas(spec, this.P, m.faces, this.pix); this.face.paint(this.E); this.pix.flush();
       this.painted();

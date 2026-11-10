@@ -10,7 +10,7 @@ import { audio } from '../core/audio.js';
 import { STEPS, REACT, ANECDOTES, BACK, pick } from './data.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
-const OUTSIDE = new Set(['letter', 'shutter', 'shop', 'trashout']);
+const OUTSIDE = new Set(['shutter', 'shop', 'trashout']);
 const BYE_AT = Story.ORDER.indexOf('read_pc');
 
 export class Director {

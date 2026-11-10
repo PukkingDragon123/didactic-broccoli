@@ -2,6 +2,8 @@
 // foreground, them facing you; no letterbox, the HUD steps aside). Their lines float beside their head, you answer
 // with 2-4 choices floating in the world next to you (keys 1-4, W/S + E/Space, the mouse, or a tap), some of them
 // timed ("hurry and answer!"). Every choice you make is spoken by your character and remembered by theirs.
+// Lines and choices are plain floating text with a hard ink outline (src/people/bubbles.css, talk.css): numbered
+// lines, the one you're on underlined in red pencil, the timer a thin ink line. No paper behind any of it.
 //
 //   const result = await game.talk.start(npc, script, opts)       one conversation (resolves when it ends)
 //   game.talk.active / game.talk.with                            is a chat running, and with whom
@@ -81,6 +83,28 @@ export function speaker(who, opts = {}) {
 }
 
 // ------------------------------------------------------------------ floating choices
+/**
+ * The pencil stroke under the choice you're on (CSS --tk-mark): a wobbly red line with an ink rim so it shows on any
+ * background, 32 x 4 texels, tiling sideways, shown at 2x (4x with the big text). Painted once.
+ */
+let markDone = false;
+function paintMark() {
+  if (markDone) return;
+  markDone = true;
+  const W = 32, H = 4, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d'), img = g.createImageData(W, H);
+  let s = 5;
+  const r = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const ys = [];
+  for (let x = 0, y = 1; x < W; x++) { if (x > 2 && r() < 0.2) y = 3 - y; if (x > W - 4) y = 1; ys.push(y); } // (ends where it starts: it tiles)
+  const put = (x, y, c3) => { if (y < 0 || y >= H) return; const i = (y * W + ((x + W) % W)) * 4; img.data[i] = c3[0]; img.data[i + 1] = c3[1]; img.data[i + 2] = c3[2]; img.data[i + 3] = 255; };
+  for (let x = 0; x < W; x++) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) put(x + dx, ys[x] + dy, [26, 18, 22]);
+  for (let x = 0; x < W; x++) put(x, ys[x], r() < 0.25 ? [214, 62, 54] : [240, 85, 74]); // the pencil pressing harder here and there
+  g.putImageData(img, 0, 0);
+  document.documentElement.style.setProperty('--tk-mark', `url(${c.toDataURL()})`);
+}
+
 /** A stack of numbered options floating at a screen point (projected from the world each frame). */
 class ChoiceList {
   constructor(talk, options, { time = 0, at, prompt = '', quick = false, beside = false } = {}) {
@@ -93,14 +117,15 @@ class ChoiceList {
     this.result = null;
     this.quick = quick;
     this.acc = 0;
+    paintMark();
     const el = this.el = document.createElement('div');
     el.className = `tk-choices${quick ? ' quick' : ''}${time ? ' timed' : ''}`;
     if (prompt) el.appendChild(Object.assign(document.createElement('div'), { className: 'tk-prompt', textContent: prompt }));
     this.btns = options.map((o, i) => {
       const b = document.createElement('button');
       b.className = 'tk-opt';
-      b.innerHTML = `<span class="n">${i + 1}</span><span class="t"></span>`;
-      b.querySelector('.t').textContent = o;
+      b.innerHTML = `<span class="n">${i + 1}</span><span class="t"><span class="u"></span></span>`;
+      b.querySelector('.u').textContent = o;
       b.addEventListener('pointerenter', () => { this.sel = i; this.paint(); });
       b.addEventListener('pointerdown', (e) => {
         e.preventDefault(); e.stopPropagation();

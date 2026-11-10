@@ -5,7 +5,9 @@
 import * as THREE from 'three';
 import { BONE_INDEX } from './body.js';
 
-export const ATLAS = 256;
+// (384: about 380 px per metre on the body, close to the face block's 430, so no texel reads as a pixel at talking
+// distance; the painters work in metres, so the designs are the same at any size)
+export const ATLAS = 384;
 const FACE_DENS = 430; // px per metre on the face block
 const PAD = 1;
 

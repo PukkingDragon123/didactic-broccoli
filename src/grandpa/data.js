@@ -23,13 +23,6 @@ export { pick };
 // on the objective card, nudge: when you dawdle, done: when it's finished, act: what his arm does while he explains
 // ('point' at `face`, 'thump', ...), demo: walk up and show you first.
 export const STEPS = {
-  letter: {
-    sit: true, face: [0.85, 1.32, 5.1], act: 'point',
-    say: ["That envelope on the shutter's from me.", 'Wrote it in case I fell asleep before you got here.', 'Read it anyway. Took me all morning.'],
-    card: 'My letter on the shutter. Took me all morning.',
-    nudge: ['The letter, kiddo. On the shutter.', "It's the one that says KIDDO. That's you.", 'My handwriting won\'t bite.'],
-    done: ['Good handwriting, eh? Your grandmother made me practise. Forty years, she never stopped correcting it.'],
-  },
   shutter: {
     sit: true, face: [0.2, 0.6, 5.1], act: 'point',
     say: ["Key's on your ring. Padlock's stiff.", 'Like me.'],

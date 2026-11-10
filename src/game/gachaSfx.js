@@ -9,6 +9,48 @@ Object.assign(SOUNDS, {
     a.burst(o, t, { dur: 0.32, vol: 0.22, type: 'bandpass', f: 1400, f2: 3800, q: 0.9 });
     for (let i = 0; i < 6; i++) a.burst(o, t + i * 0.045 + rand(0, 0.01), { dur: 0.03, vol: 0.12, f: 2600 + i * 200, q: 4 });
   },
+  /** A shrink band peeling off a capsule: one crackle of film letting go (played in a run as it comes off). */
+  tapePeel(a, t, o, p) {
+    const k = p.pitch || 1;
+    a.burst(o, t, { dur: 0.05, vol: 0.14, type: 'bandpass', f: 2600 * k, f2: 4200 * k, q: 1.4 });
+    a.burst(o, t + 0.018, { dur: 0.02, vol: 0.1, type: 'highpass', f: 5200 });
+  },
+  /** The band's last corner letting go. */
+  tapeSnap(a, t, o) {
+    a.burst(o, t, { dur: 0.035, vol: 0.3, type: 'highpass', f: 3400 });
+    a.tone(o, t, { f: 1900, f2: 700, dur: 0.05, vol: 0.07, type: 'triangle' });
+  },
+  /** A tamper sticker splitting on the seam: a dry paper snap. */
+  sealCrack(a, t, o, p) {
+    const k = p.pitch || 1;
+    a.burst(o, t, { dur: 0.03, vol: 0.4, type: 'highpass', f: 2400 * k });
+    a.burst(o, t + 0.012, { dur: 0.07, vol: 0.2, type: 'bandpass', f: 1500 * k, f2: 600, q: 1.2 });
+    a.tone(o, t, { f: 520 * k, f2: 260, dur: 0.05, vol: 0.1, type: 'square' });
+  },
+  /** A wax seal breaking: a short brittle crack and crumbs. */
+  waxCrack(a, t, o, p) {
+    const k = p.pitch || 1;
+    a.burst(o, t, { dur: 0.025, vol: 0.45, type: 'bandpass', f: 1800 * k, q: 3 });
+    a.tone(o, t, { f: 340 * k, f2: 180, dur: 0.07, vol: 0.16, type: 'triangle' });
+    for (let i = 0; i < 4; i++) a.burst(o, t + 0.04 + i * 0.03 + rand(0, 0.015), { dur: 0.015, vol: 0.12, f: rand(2200, 3600), q: 6 });
+  },
+  /** The locking lugs letting go: one hard plastic click, the top running free after it. */
+  lugClick(a, t, o) {
+    a.burst(o, t, { dur: 0.018, vol: 0.5, type: 'highpass', f: 2800 });
+    a.tone(o, t, { f: 1250, f2: 820, dur: 0.045, vol: 0.14, type: 'square' });
+    a.burst(o, t + 0.05, { dur: 0.16, vol: 0.1, type: 'bandpass', f: 900, f2: 1700, q: 1.5 });
+  },
+  /** The halves coming apart before the foil: a soft suck and pop. */
+  capPull(a, t, o) {
+    a.tone(o, t, { f: 240, f2: 520, dur: 0.07, vol: 0.2, type: 'sine' });
+    a.burst(o, t + 0.06, { dur: 0.03, vol: 0.32, type: 'lowpass', f: 1400 });
+  },
+  /** Foil tearing: a bright crinkle. */
+  foilTear(a, t, o, p) {
+    const k = p.pitch || 1;
+    for (let i = 0; i < 5; i++) a.burst(o, t + i * 0.022 + rand(0, 0.01), { dur: 0.02, vol: 0.16, type: 'highpass', f: rand(4200, 7000) * k });
+    a.burst(o, t, { dur: 0.1, vol: 0.1, type: 'bandpass', f: 3000 * k, f2: 5200, q: 0.8 });
+  },
   /** Cardboard flaps folded open. */
   flapFold(a, t, o) {
     a.burst(o, t, { dur: 0.12, vol: 0.18, type: 'lowpass', f: 900, buf: a.pink });

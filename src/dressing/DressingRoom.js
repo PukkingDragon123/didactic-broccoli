@@ -41,7 +41,7 @@ const LINES = ['Ooh!', 'Hmm, nice.', 'Fits!', 'Looking good.', 'Is this too much
 const ITEM_LINES = { dino: 'Rawr!', chicken: 'Bawk!', frog: 'Ribbit.', shark: 'Chomp chomp.', banana: 'I am bananas.', cone: 'Road work ahead.', box: 'Beep boop.', groucho: 'Nobody will know.', happi: 'Wasshoi!', bear: 'Grr. Cute grr.', nigiri: 'Fresh!', kitsune: 'Festival time!', stars: 'Superstar!', cx_crown: 'Bow, lane!', cx_pigeon: 'Poppo.', cx_cow: 'Moo.', cx_shiba: 'Wan!', cx_calico: 'Nya.', cx_pompadour: 'Nobody touch it.', cx_goldkicks: 'Shiny!', cx_paperbag: "Don't look at me.", cx_ranger: 'Henshin!', cx_astro: 'One small step...',
   cx_duck: 'Quack.', cx_tengu: 'My nose!', cx_daruma: 'Wish granted.', cx_kabuto: 'Banzai!', cx_hachimaki: 'Hisshō!', cx_tanuki: 'Pon-poko!', cx_tanukitail: 'Pon-poko!', cx_chonmage: 'Gozaru.', cx_kagami: 'Akemashite!', cx_santa: 'Cake! Cake for sale!', cx_kogal: 'Cho-kawaii!', cx_overtime: 'One more beer.', cx_toilet: 'Un ga tsuku.', cx_capsulehat: 'Gacha gacha!', cx_kaiser: 'Hmm. Quite.', cx_jersey: 'Gym class.', cx_furoshiki: 'Not a thief. Promise.' };
 const KEY_HELP = 'Arrows · Enter wear · Q/E tabs · Z/X zoom · Esc';
-const HOW_ICON = { ach: 'os_trophy', quest: 'star', capsule: 'capsule', web: 'cart', level: 'upgrade', itch: 'heart' };
+const HOW_ICON = { ach: 'os_trophy', quest: 'star', capsule: 'machine', web: 'cart', level: 'upgrade', itch: 'heart' };
 
 export class DressingRoom {
   constructor(game) {

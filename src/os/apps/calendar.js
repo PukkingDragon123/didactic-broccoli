@@ -3,7 +3,7 @@
 import { h, esc, ic, btn } from './ui.js';
 import { now, dateOfDay, dayOfDate, MONTHS, WEEKDAYS, SPECIAL_DAYS } from '../time.js';
 
-const KIND_ICON = { holiday: 'flag', festival: 'sparkle', event: 'heart', school: 'book', shop: 'capsule', bill: 'os_bill', note: 'os_note' };
+const KIND_ICON = { holiday: 'flag', festival: 'sparkle', event: 'heart', school: 'book', shop: 'shop', bill: 'os_bill', note: 'os_note' };
 
 export function installCalendar(game, os) {
   const st = os.st.cal ||= { notes: {} };
