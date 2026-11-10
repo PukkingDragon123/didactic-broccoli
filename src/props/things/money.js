@@ -6,7 +6,7 @@
 //   coinBagMesh(): centred on its bounding box (as the old voxel bag), drawn with its atlas page.
 import { thingGeometry, thingMesh } from './make.js';
 import { sweep, glyphs } from './form.js';
-import { metal, fabric, matte, flat, mix, darken, lighten } from '../kit/kit.js';
+import { metal, matte, darken, lighten } from '../kit/kit.js';
 import { photoInto } from '../kit/prints.js';
 
 const R = 0.0113, HT = 0.00095;

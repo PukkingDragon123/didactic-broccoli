@@ -6,10 +6,9 @@
 //   bubbleGeometry(w, h, d) a blister bubble: a rounded tray w x h, d deep, its open back at z = 0, with a flange
 import * as THREE from 'three';
 import { thingMesh } from './make.js';
-import { sweep, rrect } from './form.js';
-import { paint, plastic, metal, chrome, matte, rubber, flat, darken, lighten } from '../kit/kit.js';
+import { rrect } from './form.js';
+import { paint, plastic, matte, rubber, flat } from '../kit/kit.js';
 import { kana, smallPrint, framed } from '../kit/prints.js';
-import { stack } from '../kit/shapes.js';
 
 // ------------------------------------------------------------------ the acrylic stand (0.072 x 0.0315 x 0.072)
 function stand(K, B) {
@@ -84,7 +83,6 @@ function station(K, B) {
   K.face(sticker, '+z', bx - 0.017, 0.012, bx + 0.017, 0.026, bz + 0.0162);
   // a roll of tape and a pencil, used
   K.ring(matte(0xd8c69a, 0.1), 0.115, 0, 0.012 + 0.04, 0.019, 0.012, 0.016, 16, { inside: flat(0xb89a6a) });
-  void stack; void chrome; void metal; void lighten; void darken;
 }
 export function stationMesh() {
   const m = thingMesh('pack', 'station', [-0.145, 0, -0.08, 0.145, 0.14, 0.08], station);
@@ -127,4 +125,3 @@ export function bubbleGeometry(w, h, d) {
   bubbles.set(key, g);
   return g;
 }
-void sweep;
