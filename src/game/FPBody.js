@@ -236,7 +236,16 @@ export class FPBody {
     g.scene.add(h.root);
     // head + arms only in shadow maps
     const sk = h.mesh.skeleton;
-    h.mesh.onBeforeRender = () => { sk.update(); const m = sk.boneMatrices; for (const i of HIDE) m.fill(0, i * 16, i * 16 + 16); };
+    // (the skeleton only flags its bone texture when a bone moved since the last update: after a shadow pass has put the
+    // head and arms back, a still pose would leave them in the texture, and the inside of your own hair and sleeves was
+    // drawn over the view as dark slabs. Whenever the hide changes the matrices, the texture is re-sent.)
+    h.mesh.onBeforeRender = () => {
+      sk.update();
+      const m = sk.boneMatrices;
+      let dirty = false;
+      for (const i of HIDE) for (let k = i * 16; k < i * 16 + 16; k++) if (m[k] !== 0) { m[k] = 0; dirty = true; }
+      if (dirty && sk.boneTexture) sk.boneTexture.needsUpdate = true;
+    };
     h.mesh.onBeforeShadow = () => sk.update();
     // extra meshes riding on hidden bones (hats, hair pieces from cosmetics) would sit in front of the camera
     for (const i of HIDE) h.bones[i].traverse((o) => { if (o.isMesh && o !== h.mesh) o.visible = false; });

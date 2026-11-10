@@ -14,6 +14,7 @@ import { hash2 } from '../core/util.js';
 import { interiorQuad, ROOM } from './interiors.js';
 import { balcony } from '../town/house.js';
 import { pole } from '../town/poles.js';
+import { sakura, hedge, creeper } from '../town/foliage.js';
 
 export const PARK = {
   ax0: 9.8, ax1: 11.3, wx: 11.45, x0: 11.6, x1: 25.6, zN: -5.8, zP: -3.5, xP: 16.6, zS: -17.6,
@@ -33,22 +34,6 @@ function pane(t, kind, x, y, z, w, h, ry = 0, frame = 0xb4babf) {
   for (const yy of [-0.04, h]) B.box(t.m.metal, w, 0.04, 0.05, 0, yy, 0.06, { tint: frame });
   B.pop();
 }
-/** 桜: a cherry tree in bloom (inside the park only): a leaning trunk, three boughs, faceted clouds of blossom. */
-function sakura(t, x, z, s = 1, seed = 1) {
-  const B = t.B, m = t.m, bark = 0x6a5248;
-  B.lathe(m.pv, [[0.22 * s, 0], [0.16 * s, 0.9 * s], [0.13 * s, 2.0 * s]], x, 0, z, { tint: bark, sides: 7, rz: 0.06 });
-  const top = [x - 0.12 * s, 2.0 * s, z];
-  [[1.5, 1.5, 0.3], [-1.3, 1.7, 0.8], [0.2, 1.9, -1.4], [-0.4, 2.4, 0.1]].forEach(([dx, dy, dz], i) => {
-    const e = [top[0] + dx * s, top[1] + dy * s, top[2] + dz * s];
-    B.rod(m.pv, top, e, 0.09 * s, { r1: 0.04 * s, tint: bark, sides: 5 });
-    B.blob(m.pv, e[0], e[1] + 0.25 * s, e[2], 1.25 * s, 0.8 * s, 1.2 * s, { tint: i % 2 ? 0xf4c8d4 : 0xf8d6de, seed: seed * 7 + i, lo: 0.82, hi: 1.08 });
-    B.blob(m.pv, e[0] + dx * 0.35 * s, e[1] - 0.2 * s, e[2] + dz * 0.35 * s, 0.85 * s, 0.6 * s, 0.9 * s, { tint: 0xf0bccb, seed: seed * 11 + i, lo: 0.82, hi: 1.08 });
-  });
-  B.blob(m.pv, top[0], top[1] + 2.1 * s, top[2], 1.4 * s, 0.9 * s, 1.4 * s, { tint: 0xf8d6de, seed: seed * 13, lo: 0.82, hi: 1.08 });
-  // fallen petals round the foot
-  for (let i = 0; i < 26; i++) { const a = hash2(i, seed) * 6.28, r = (0.4 + hash2(i, seed + 5) * 2.2) * s; B.plane(m.paint, 0.07, 0.05, x + Math.cos(a) * r, 0.006, z + Math.sin(a) * r, { ry: a, tint: 0xf8d0da }); }
-}
-
 export function buildPark(t) {
   const P = PARK, m = t.m, pl = t.game.player;
   const ob = (a, b, c, d) => pl.addObstacle(a, b, c, d);
@@ -201,7 +186,7 @@ function warehouse(t, mats) {
   B.box(m.metal, 0.34, 0.3, 2.1, P.wx + 0.17, 2.6, -18.85, { tint: 0x7a7e7a });
   B.box(m.pv, 0.05, 0.42, 0.3, P.wx + 0.03, 1.3, -17.2, { tint: 0xc8c8c0 });
   // ivy creeping up the wall by the plaza and at the far end
-  const ivy = (z, w, h) => { for (let i = 0; i < 9; i++) { const k = hash2(i, z * 3), kk = hash2(z, i); B.blob(m.pv, P.wx + 0.05, Math.min(h, 0.2 + kk * h), z + (k - 0.5) * w, 0.07, 0.3 + kk * 0.25, 0.3 + k * 0.3, { tint: [0x4a7a3a, 0x5a8a40, 0x6a9a48][i % 3], seed: i }); } };
+  const ivy = (z, w, h) => creeper(t, P.wx, z, Math.PI / 2, w, h, Math.round(z));
   ivy(-7.2, 1.6, 2.6); ivy(-16.0, 1.2, 3.4); ivy(-21.6, 1.8, 2.2);
 }
 
@@ -341,9 +326,9 @@ function furniture(t, mats) {
   t.game.player.addObstacle(24.8, 25.6, -15.85, -15.35);
   sakura(t, 24.6, -10.9, 0.7, 3);
   t.game.player.addObstacle(24.42, 24.78, -11.08, -10.72);
-  for (const x of [17.7, 19.8]) t.prop('hedge', x, 0, -6.25, 0, { scale: 0.85 });
+  for (const x of [17.7, 19.8]) hedge(t, x, 0, -6.25, 0, 0.85);
   t.game.player.addObstacle(16.6, 20.7, -6.6, -5.8);
-  for (const [x, z] of [[25.3, -10.0], [25.3, -12.2]]) t.prop('hedge', x, 0, z, Math.PI / 2, { scale: 0.6 });
+  for (const [x, z] of [[25.3, -10.0], [25.3, -12.2]]) hedge(t, x, 0, z, Math.PI / 2, 0.6);
   // small finds: a kid's bicycle by the sandbox, a lost glove on a fence post, an umbrella hooked on the rail
   t.prop('bicycle', 13.2, 0, -11.3, 0.25, { scale: 0.62, block: true });
   B.box(m.pv, 0.08, 0.12, 0.04, 14.8, 1.25, PARK.zS - 0.02, { tint: 0xe86a7a });
@@ -529,8 +514,8 @@ function villa(t, mats) {
     B.box(m.pv, 0.52, 0.5, 0.52, x, 0.48, -21.35, { tint: c });
     B.box(m.pv, 0.36, 0.35, 0.36, x, 0.95, -21.35, { tint: c, k: 1.1 });
   }
-  t.prop('hedge', 13.6, 0, -20.45, 0, { scale: 0.62 });
-  t.prop('hedge', 19.0, 0, -20.45, 0, { scale: 0.48 });
+  hedge(t, 13.6, 0, -20.45, 0, 0.62, { mix: ['azalea', 0.45] });
+  hedge(t, 19.0, 0, -20.45, 0, 0.48, { mix: ['azalea', 0.45] });
   for (const [x, c] of [[13.0, 0xe5383b], [13.5, 0xff8fb2], [14.1, 0xfbf8f0], [18.7, 0xe5383b], [19.3, 0xff8fb2]]) B.box(m.pv, 0.1, 0.08, 0.1, x, 0.6, -20.35 - hash2(x, 4) * 0.15, { tint: c });
   sakura(t, 12.95, -21.4, 0.5, 4);
   B.box(m.pv, 0.08, 0.9, 0.08, 18.9, 0, -21.6, { tint: ink });

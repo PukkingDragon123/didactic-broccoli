@@ -386,6 +386,43 @@ export default {
     stray_cat: (K) => cat(K, 'stand'),
     stray_cat_sit: (K) => cat(K, 'sit'),
     stray_cat_held: (K) => cat(K, 'held'),
+
+    // ------------------------------------------------------------- 防火用水: three red fire buckets on a steel stand (0.6 x 0.85 x 0.27)
+    fire_buckets: (K) => {
+      const steel = paint(0x5c6a60, 0.25), red = enamel(0xc8302a), sq = 0.022;
+      for (const x of [-0.275, 0.275]) for (const z of [-0.1, 0.1]) K.bx(steel, x, 0, z, sq, 0.43, sq, { bevel: 0.003 });
+      for (const z of [-0.1, 0.1]) { K.bx(steel, 0, 0.405, z, 0.6, 0.025, 0.022, { bevel: 0.003 }); K.bx(steel, 0, 0.1, z, 0.6, 0.02, 0.018, { bevel: 0.003 }); }
+      for (const x of [-0.275, 0.275]) { K.bx(steel, x, 0.405, 0, 0.022, 0.025, 0.24, { bevel: 0.003 }); K.bx(steel, x, 0.1, 0, 0.018, 0.02, 0.24, { bevel: 0.003 }); }
+      K.bx(steel, 0, 0.428, 0, 0.6, 0.008, 0.25);
+      for (const x of [-0.275, 0.275]) for (const z of [-0.1, 0.1]) K.bx(rubber(0x2a2a2a), x, 0, z, 0.034, 0.012, 0.034);
+      // the label: 消火用 in white on the bucket's red
+      const lab = K.patch('fireBucketLabel', 64, 24, (V) => { V.fill(0xc8302a); kana(K, V, '消火用', 32, 20, 0xfbf8f0, { size: 16, align: 'center' }); }, { shared: true, rough: 0.6 });
+      const r = 0.128, h = 0.21, rb = r * 0.76, lr = (y) => rb + (r - rb) * (y / h);
+      for (const x of [-0.148, 0.148]) {
+        bucket(K, x, 0.436, 0, r, h, { c: red, n: 12, taper: 0.76, handle: 'down', water: flat(0x6a8a94, 0.2) });
+        K.wrap(lab, x, 0.436 + 0.06, 0.436 + 0.15, 0, lr(0.06), { r1: lr(0.15), n: 12, arc: 1.5, lift: 0.002 });
+      }
+      // the third bucket upside down across the other two, its bail hanging
+      K.at([0, 0.436 + h + 0.004 + h, 0], () => bucket(K, 0, 0, 0, r, h, { c: red, n: 12, taper: 0.76, handle: 'down' }), { rx: Math.PI });
+      K.wrap(lab, 0, 0.436 + h + 0.06, 0.436 + h + 0.15, 0, lr(h - 0.06), { r1: lr(h - 0.15), n: 12, arc: 1.5, lift: 0.002, sub: [1, 1, 0, 0] });
+    },
+
+    // ------------------------------------------------------------- 灰皿スタンド: the tobacco shop's standing ashtray (0.27 x 0.67)
+    mk_stand_ashtray: { box: [-0.135, 0, -0.135, 0.135, 0.675, 0.135], build: (K) => {
+      const red = enamel(0xc0302c), steel = metal(0xc8ccd0, 0.3), dark = metal(0x5a5e62, 0.2);
+      K.lathe(dark, [0, 0, 0], [[0, 0.004], [0.128, 0.004], [0.135, 0.012], [0.13, 0.026], [0.09, 0.034]], 12);
+      K.lathe(red, [0, 0, 0], [[0.09, 0.034], [0.092, 0.05], [0.092, 0.58], [0.09, 0.6]], 12);
+      for (const y of [0.16, 0.42]) K.lathe(steel, [0, 0, 0], [[0.093, y], [0.096, y + 0.006], [0.096, y + 0.02], [0.093, y + 0.026]], 12);
+      // the bowl: a pressed steel dish with a rolled rim, sand in it and a few butts
+      K.lathe(steel, [0, 0, 0], [[0.09, 0.6], [0.11, 0.62], [0.124, 0.655], [0.128, 0.665], [0.122, 0.668], [0.11, 0.66], [0.06, 0.648], [0, 0.646]], 12);
+      K.lathe(flat(0x8a8274, 0.98), [0, 0, 0], [[0, 0.652], [0.105, 0.652]], 12, { flip: true });
+      for (const [x, z, a, c] of [[0.03, 0.02, 0.4, 0xf4f0e4], [-0.04, 0.03, 2.1, 0xd8a868], [0.01, -0.05, 4.0, 0xf4f0e4], [-0.05, -0.02, 5.2, 0xf4f0e4]]) {
+        K.rod(flat(c, 0.9), [x, 0.656, z], [x + Math.cos(a) * 0.035, 0.66, z + Math.sin(a) * 0.035], 0.0045, 6);
+      }
+      // a sticker on the column: no smoking while walking (an original design)
+      const st = K.patch('ashSticker', 40, 24, (V) => { V.fill(0xfbf8f0); kana(K, V, '吸殻入', 20, 20, 0x2a2a2a, { size: 12, align: 'center' }); V.box(0, 0, 40, 3, 0xc0302c); }, { shared: true, rough: 0.5 });
+      K.wrap(st, 0, 0.44, 0.54, 0, 0.092, { n: 12, arc: 1.3, lift: 0.002 });
+    } },
   },
 };
 

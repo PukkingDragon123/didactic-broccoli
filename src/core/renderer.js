@@ -1,5 +1,6 @@
-// Renderer + post-processing stack with quality presets: realistic lighting with a light cel touch. Ink outlines + screen-space god rays from the
-// low sun, GTAO, bloom, then one pass for the colour grade, neutral tone mapping and sRGB, and FXAA on the result.
+// Renderer + post-processing stack with quality presets: realistic lighting with a light cel touch. Ink outlines, GTAO
+// (high / ultra), then one pass for the colour grade, neutral tone mapping and sRGB, and FXAA on the result. No bloom and
+// no screen-space god rays: both drew soft round glows (round the lanterns, round the sun), which the look forbids.
 // Everything runs at the canvas's full resolution (QUALITY.pr: the device pixel ratio, capped per preset).
 // Viewmodel: whatever hangs off the camera (hands + held items, see vmRoots) is drawn in its own pass on top of the
 // scene so it never pokes into walls.
@@ -8,7 +9,6 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { Pass } from 'three/addons/postprocessing/Pass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { LightPool } from '../gfx/lightPool.js';
@@ -97,7 +97,8 @@ const GradeShader = {
 // 30 m neither is a door handle), creases fade out by uFade.xy metres and silhouettes by uFade.zw, so distant detail
 // and the skyline stay calm. The ink itself is the occluder's own colour pushed through plum (uInkK, uInk): dark on
 // dark things, a deeper shade of the colour on bright ones. A surface that wrote alpha 0 (noInk(), src/gfx/sunMask.js)
-// gets none. The same pass adds the low sun's screen-space rays.
+// gets none. Creases are drawn lighter than silhouettes (uCreaseK) and where the depth is busy all round a pixel (a grille,
+// a shelf of stock, a tangle of wires) they drop out, so dense detail reads as texture rather than a scribble.
 const OutlineShader = {
   uniforms: {
     tDiffuse: { value: null },
@@ -106,29 +107,25 @@ const OutlineShader = {
     uW: { value: new THREE.Vector2(20, 20) }, // w = uW.x - depth * uW.y
     uStep: { value: 1 },
     uPix: { value: 0.001 }, // the angle one tap spans (radians)
-    uStrength: { value: 0.88 },
-    uFarSide: { value: 0.8 },
+    uStrength: { value: 0.78 },
+    uFarSide: { value: 0.7 },
+    uCreaseK: { value: 0.7 },
     uGap: { value: new THREE.Vector2(0.004, 0.008) },
     uCrease: { value: new THREE.Vector2(0.9, 1.15) },
-    uFade: { value: new THREE.Vector4(9, 24, 32, 75) },
+    uFade: { value: new THREE.Vector4(7, 18, 28, 65) },
     uInk: { value: new THREE.Color(0x1c1016) },
-    uInkK: { value: new THREE.Color(0.24, 0.2, 0.28) },
-    // god rays: sky pixels (no depth written) marched toward the sun's screen position
-    uSun: { value: new THREE.Vector2(0.5, 0.5) },
-    uSunOn: { value: 0 },
+    uInkK: { value: new THREE.Color(0.3, 0.26, 0.33) },
     uDepthAlpha: { value: 0 }, // 1: write the linear depth (m) to alpha, for the AO upsample after it (AOUpsampleShader)
-    uAspect: { value: 1 },
-    uShaft: { value: 0.75 },
+    // (kept so old callers can still write them: the god rays are gone)
+    uShaft: { value: 0 },
     uShaftCol: { value: new THREE.Color(1.0, 0.72, 0.42) },
   },
   vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
     uniform sampler2D tDiffuse, tDepth;
-    uniform vec2 uRes, uW, uGap, uCrease; uniform vec4 uFade; uniform float uStep, uPix, uStrength, uFarSide; uniform vec3 uInk, uInkK;
-    uniform vec2 uSun; uniform float uSunOn, uAspect, uShaft, uDepthAlpha; uniform vec3 uShaftCol;
+    uniform vec2 uRes, uW, uGap, uCrease; uniform vec4 uFade; uniform float uStep, uPix, uStrength, uFarSide, uCreaseK, uDepthAlpha; uniform vec3 uInk, uInkK;
     varying vec2 vUv;
     float W(vec2 uv) { return uW.x - texture2D(tDepth, uv).x * uW.y; }
-    float sky(vec2 uv) { return step(0.99999, texture2D(tDepth, uv).x); }
     // silhouette along one direction: wm (behind), w0 (here), w1, w2 (ahead). x: this pixel is the occluder's edge,
     // y: the neighbour is (and is at least two taps thick)
     vec2 sil(float wm, float w0, float w1, float w2) {
@@ -154,6 +151,9 @@ const OutlineShader = {
       // this pixel's own ink: an occluder's edge, or a crease
       float own = max(max(sr.x, sl.x), max(su.x, sd.x));
       float cr = max(crease(l2, l1, w0, r1, r2), crease(d2, d1, w0, u1, u2));
+      // busy depth: the far taps on both axes step away from this pixel's face (fine, dense detail): no crease ink there
+      float busy = smoothstep(0.02, 0.06, min(abs(l2 + r2 - 2.0 * w0), abs(u2 + d2 - 2.0 * w0)) / w0);
+      cr *= uCreaseK * (1.0 - busy);
       own = max(own * smoothstep(1.0 / uFade.w, 1.0 / uFade.z, w0), cr * (1.0 - own) * smoothstep(1.0 / uFade.y, 1.0 / uFade.x, w0));
       // the occluder next door: its colour makes the outer half of the line
       vec2 nb = vec2(o.x, 0.0); float far = sr.y, wn = r1;
@@ -166,28 +166,12 @@ const OutlineShader = {
         outc = mix(outc, inked(cn.rgb), far * uFarSide * uStrength * step(0.5, cn.a) * smoothstep(1.0 / uFade.w, 1.0 / uFade.z, wn));
       }
       outc = mix(outc, inked(col.rgb), own * uStrength * step(0.5, col.a));
-      // crepuscular rays: march from this pixel toward the sun, collecting open sky (wires, poles and roofs cut it)
-      if (uSunOn > 0.001) {
-        // (no jitter on the march: 40 even steps, nothing noisy in the picture)
-        vec2 dv = (uSun - vUv) / 40.0;
-        vec2 uv = vUv + dv * 0.5;
-        float acc = 0.0, w = 1.0, wsum = 0.0;
-        for (int i = 0; i < 40; i++) {
-          uv += dv;
-          float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
-          acc += sky(uv) * w * inside; wsum += w; w *= 0.97;
-        }
-        float dist = length((uSun - vUv) * vec2(uAspect, 1.0));
-        float k = (acc / wsum) * exp(-dist * 2.4) * uShaft * uSunOn;
-        outc += uShaftCol * k * (1.0 - 0.6 * sky(vUv));
-      }
       gl_FragColor = vec4(outc, uDepthAlpha > 0.5 ? 1.0 / w0 : col.a);
     }`,
 };
 
-const _sunDir = new THREE.Vector3(), _sunP = new THREE.Vector3(), _camDir = new THREE.Vector3();
 class OutlinePass extends ShaderPass {
-  constructor(camera) { super(OutlineShader); this.camera = camera; this.sun = null; }
+  constructor(camera) { super(OutlineShader); this.camera = camera; }
   render(renderer, writeBuffer, readBuffer, dt, mask) {
     const u = this.uniforms, cam = this.camera;
     u.tDepth.value = readBuffer.depthTexture;
@@ -197,21 +181,6 @@ class OutlinePass extends ShaderPass {
     const step = Math.max(1, Math.round(readBuffer.height / 1000));
     u.uStep.value = step;
     u.uPix.value = 2 * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) / Math.max(1, readBuffer.height) * step;
-    u.uAspect.value = readBuffer.width / Math.max(1, readBuffer.height);
-    // the sun's screen position; the rays fade out when you look away from it
-    let on = 0;
-    const s = this.sun;
-    if (s && s.visible !== false && s.intensity > 0.05) {
-      _sunDir.subVectors(s.position, s.target.position).normalize();
-      cam.getWorldDirection(_camDir);
-      const facing = _camDir.dot(_sunDir);
-      if (facing > 0) {
-        _sunP.copy(cam.position).addScaledVector(_sunDir, 500).project(cam);
-        u.uSun.value.set(_sunP.x * 0.5 + 0.5, _sunP.y * 0.5 + 0.5);
-        on = THREE.MathUtils.smoothstep(facing, 0.1, 0.55) * Math.min(1, s.intensity / 1.5) * (this.rays ?? 1);
-      }
-    }
-    u.uSunOn.value = on;
     super.render(renderer, writeBuffer, readBuffer, dt, mask);
   }
 }
@@ -306,10 +275,10 @@ function casterState(o) {
 // pr: the canvas pixel ratio as [share of the device pixel ratio, at least, at most]: native wherever it can be afforded,
 // never under 1 (no upscaled, soft picture on any preset); ultra supersamples a 1x display.
 export const QUALITY = {
-  low: { pr: [0.75, 1, 1.5], shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, lights: 4, view: 0.65, crowd: 0.6 },
-  medium: { pr: [1, 1, 2], shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, lights: 5, view: 0.8, crowd: 0.8 },
-  high: { pr: [1, 1, 2], shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, lights: 6, view: 1, crowd: 1 },
-  ultra: { pr: [1.5, 1.5, 2], shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, lights: 8, view: 1.2, crowd: 1 },
+  low: { pr: [0.75, 1, 1.5], shadows: 1024, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, lights: 4, view: 0.65, crowd: 0.6 },
+  medium: { pr: [1, 1, 2], shadows: 2048, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, lights: 5, view: 0.8, crowd: 0.8 },
+  high: { pr: [1, 1, 2], shadows: 2048, ao: true, aoScale: 0.5, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, lights: 6, view: 1, crowd: 1 },
+  ultra: { pr: [1.5, 1.5, 2], shadows: 4096, ao: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, lights: 8, view: 1.2, crowd: 1 },
 };
 
 export class Renderer {
@@ -362,7 +331,6 @@ export class Renderer {
     this.vmPass = new ViewmodelPass(this.scene, this.camera);
     composer.addPass(this.vmPass);
     this.outline = new OutlinePass(this.camera);
-    this.outline.rays = q.rays ?? 1;
     composer.addPass(this.outline);
     this.gtao = null;
     if (q.ao) {
@@ -391,22 +359,18 @@ export class Renderer {
         gtao.output = GTAOPass.OUTPUT.Off;
         this.outline.uniforms.uDepthAlpha.value = 1;
       } else gtao.output = GTAOPass.OUTPUT.Default;
-      gtao.blendIntensity = 0.7; // (soft: the cartoon look keeps contact shadows light, and high stays close to low, which has none)
-      gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
+      gtao.blendIntensity = 0.65; // (contact shadows in the corners and under things; high stays close to low, which has none)
+      // thickness: only a surface within this depth of the sample counts as an occluder, so something standing well in front
+      // of a wall never darkens a ring of wall round its outline (the "AO halo")
+      gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 0.3, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
       // (the denoise radius is in AO pixels: the same footprint on screen at any scale)
       gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6 * k, rings: 2, samples: 12 });
       composer.addPass(gtao);
       this.gtao = gtao;
     }
+    // no bloom on any preset: its blur turned every lantern, tube and lit sign into a soft round glow (owner rule: no glow
+    // blobs). Lit things read by their own colour against the dark; this.bloom stays null for code that checks it.
     this.bloom = null;
-    if (q.bloom) {
-      this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.24, 0.2, 1.15);
-      // a sun glint on glass or chrome is many times brighter than a lit sign: capped before the blur, it can't bloom into
-      // a white glowy halo (owner rule); lanterns, signs and the tubes (about 1.2 to 2.2) bloom as before
-      const hp = this.bloom.materialHighPassFilter, MIX = 'gl_FragColor = mix( outputColor, texel, alpha );';
-      if (hp.fragmentShader.includes(MIX)) { hp.fragmentShader = hp.fragmentShader.replace(MIX, `texel.rgb *= min( 1.0, 2.2 / max( v, 1e-4 ) );\n${MIX}`); hp.needsUpdate = true; }
-      composer.addPass(this.bloom);
-    }
     // grade + tone mapping + sRGB in one pass, then anti-aliasing on the displayed picture (the ink lines included)
     this.grade = new ShaderPass(GradeShader);
     this.grade.material.toneMapped = false;
@@ -560,8 +524,6 @@ export class Renderer {
     const gu = this.grade.uniforms, fx = this.fx;
     gu.uTime.value = time;
     gu.uTired.value = fx.tired; gu.uLid.value = fx.lid; gu.uDouble.value = fx.double; gu.uWobble.value = fx.wobble;
-    // the sun for the god rays: the scene's shadow-casting directional light
-    if (!this.outline.sun && this.frameN % 30 === 1) this.scene.traverse((o) => { if (!this.outline.sun && o.isDirectionalLight && o.castShadow) this.outline.sun = o; });
     // lights must light both passes; new ones are picked up within a few frames
     if (this.frameN % 8 === 1) this.scene.traverse(lightToVM);
     if (this.gtao) { this.aoCam.copy(this.camera, false); this.aoCam.layers.enable(VM_LAYER); }

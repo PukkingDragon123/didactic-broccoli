@@ -13,11 +13,12 @@ const rad = (y) => 0.165 - (0.165 - 0.095) * (y / POLE.top);
 export function pole(t, x, z, o = {}) {
   const B = t.B, m = t.m, s = o.side ?? -1; // the lane side
   B.push(x, 0, z, s < 0 ? 0 : Math.PI);    // local -z = toward the lane
-  B.lathe(m.concrete, [[0.165, 0], [0.095, POLE.top]], 0, 0, 0, { sides: 10, tint: CONC, caps: 't' });
-  B.lathe(m.hazard, [[rad(0.55) + 0.004, 0.55], [rad(1.45) + 0.004, 1.45]], 0, 0, 0, { sides: 10 });
+  B.lathe(m.concrete, [[0.165, 0], [0.095, POLE.top]], 0, 0, 0, { sides: 18, tint: CONC, caps: 't' });
+  B.lathe(m.concrete, [[0.172, 0], [0.169, 0.08], [0.165, 0.1]], 0, 0, 0, { sides: 18, tint: 0x9e9a90, caps: '' }); // the wet, dirty foot
+  B.lathe(m.hazard, [[rad(0.55) + 0.004, 0.55], [rad(1.45) + 0.004, 1.45]], 0, 0, 0, { sides: 18 });
   B.cyl(m.metal, 0.11, 0.1, 0.06, 0, POLE.top, 0, { tint: STEEL, sides: 8 });
   // step bolts, alternating, from above head height
-  for (let y = 1.85, i = 0; y < POLE.top - 0.9; y += 0.45, i++) { const sx = i % 2 ? 1 : -1; B.rod(m.metal, [sx * (rad(y) - 0.02), y, 0], [sx * (rad(y) + 0.14), y, 0], 0.009, { tint: 0x7a7e80, sides: 4 }); }
+  for (let y = 1.85, i = 0; y < POLE.top - 0.9; y += 0.45, i++) { const sx = i % 2 ? 1 : -1; const r0 = rad(y); B.rod(m.metal, [sx * (r0 - 0.02), y, 0], [sx * (r0 + 0.15), y, 0], 0.0095, { tint: 0x7a7e80, sides: 8 }); B.rod(m.metal, [sx * (r0 + 0.15), y - 0.004, 0], [sx * (r0 + 0.15), y + 0.04, 0], 0.0095, { tint: 0x7a7e80, sides: 8 }); B.cyl(m.metal, 0.016, 0.016, 0.014, sx * (r0 + 0.006), y, 0, { rz: -sx * Math.PI / 2, tint: 0x6a6e70, sides: 6 }); }
   // steel bands where the fittings clamp on, each with its bolt lugs
   const band = (y, h = 0.05) => { const r = rad(y) + 0.007; B.lathe(m.metal, [[r, 0], [r + 0.003, 0.008], [r + 0.003, h - 0.008], [r, h]], 0, y, 0, { tint: STEEL, sides: 10 }); for (const sx of [-1, 1]) B.box(m.metal, 0.03, h * 0.7, 0.05, sx * (r + 0.012), y + h * 0.15, 0, { tint: 0x777f83, bevel: 0.006 }); };
   for (const y of [POLE.hv - 0.24, POLE.hv - 0.72, POLE.lv[0] - 0.04, POLE.lv[2] - 0.04, POLE.tel - 0.05, 2.9]) band(y);
@@ -25,22 +26,23 @@ export function pole(t, x, z, o = {}) {
   const ya = POLE.hv - 0.2;
   B.box(m.metal, 0.07, 0.07, POLE.arm, 0, ya, -0.1, { tint: STEEL });
   for (const sz of [-1, 1]) B.beam(m.metal, [0, ya - 0.5, 0], [0, ya, sz * 0.55 - 0.1], 0.03, { tint: STEEL });
-  for (const dz of [-0.8, -0.4, 0.8]) { B.lathe(m.metal, [[0.012, 0], [0.012, 0.09]], 0, ya + 0.07, dz - 0.1, { tint: STEEL, sides: 5 }); B.lathe(m.gloss, [[0.03, 0], [0.058, 0.012], [0.064, 0.03], [0.058, 0.05], [0.032, 0.058], [0.034, 0.075], [0.052, 0.085], [0.054, 0.1], [0.036, 0.112], [0.03, 0.135], [0.012, 0.14]], 0, ya + 0.14, dz - 0.1, { tint: PORC, sides: 8, caps: 't' }); }
+  for (const dz of [-0.8, -0.4, 0.8]) { B.lathe(m.metal, [[0.012, 0], [0.012, 0.09]], 0, ya + 0.07, dz - 0.1, { tint: STEEL, sides: 5 }); B.lathe(m.gloss, [[0.03, 0], [0.058, 0.012], [0.064, 0.03], [0.058, 0.05], [0.032, 0.058], [0.034, 0.075], [0.052, 0.085], [0.054, 0.1], [0.036, 0.112], [0.03, 0.135], [0.012, 0.14]], 0, ya + 0.14, dz - 0.1, { tint: PORC, sides: 14, caps: 't' }); }
   B.rod(m.metal, [0, POLE.top + 0.06, 0], [0, POLE.top + 0.3, 0], 0.012, { tint: STEEL, sides: 4 });
   // the low-voltage rack: three spools stacked on the far side
-  for (const y of POLE.lv) { B.box(m.metal, 0.04, 0.03, 0.12, 0, y - 0.015, rad(y) + 0.05, { tint: STEEL }); B.cyl(m.gloss, 0.03, 0.03, 0.06, 0, y - 0.03, rad(y) + 0.13, { tint: PORC, sides: 6 }); }
+  for (const y of POLE.lv) { B.box(m.metal, 0.04, 0.03, 0.12, 0, y - 0.015, rad(y) + 0.05, { tint: STEEL }); B.lathe(m.gloss, [[0.026, 0], [0.034, 0.008], [0.026, 0.02], [0.026, 0.04], [0.034, 0.052], [0.026, 0.06]], 0, y - 0.03, rad(y) + 0.13, { tint: PORC, sides: 12, caps: 'tb' }); }
   if (o.transformer) {
     const yt = POLE.tr, zt = -(rad(yt) + 0.3);
     B.box(m.metal, 0.5, 0.05, 0.08, 0, yt + 0.5, -rad(yt) - 0.03, { tint: STEEL }); B.box(m.metal, 0.5, 0.05, 0.08, 0, yt + 0.1, -rad(yt) - 0.03, { tint: STEEL });
-    B.lathe(m.pv, [[0.2, 0], [0.24, 0.04], [0.24, 0.6], [0.2, 0.66], [0.1, 0.68]], 0, yt, zt, { tint: 0x99a1a3, sides: 10, caps: 'tb' });
-    for (let k = 0; k < 6; k++) { const a = Math.PI * (0.2 + k * 0.32); B.box(m.pv, 0.03, 0.44, 0.07, Math.sin(a) * 0.27, yt + 0.1, zt - Math.cos(a) * 0.27 * 0.9, { ry: a, tint: 0x8b9395 }); }
-    for (const dx of [-0.1, 0.1]) B.lathe(m.gloss, [[0.03, 0], [0.05, 0.04], [0.03, 0.08], [0.05, 0.12], [0.02, 0.18]], dx, yt + 0.66, zt, { tint: 0x9a6a4a, sides: 6, caps: 't' });
+    B.lathe(m.pv, [[0.2, 0], [0.235, 0.02], [0.24, 0.04], [0.24, 0.6], [0.236, 0.62], [0.2, 0.66], [0.1, 0.68]], 0, yt, zt, { tint: 0x99a1a3, sides: 20, caps: 'tb' });
+    B.lathe(m.pv, [[0.25, 0.585], [0.256, 0.59], [0.256, 0.61], [0.25, 0.615]], 0, yt, zt, { tint: 0x8b9395, sides: 20, caps: '' }); // the lid's flange
+    for (let k = 0; k < 9; k++) { const a = Math.PI * (0.16 + k * 0.21); B.box(m.pv, 0.012, 0.44, 0.06, Math.sin(a) * 0.268, yt + 0.1, zt - Math.cos(a) * 0.268, { ry: a, tint: 0x8b9395, bevel: 0.004 }); }
+    for (const dx of [-0.1, 0.1]) B.lathe(m.gloss, [[0.03, 0], [0.05, 0.03], [0.03, 0.06], [0.05, 0.09], [0.03, 0.12], [0.048, 0.15], [0.02, 0.19]], dx, yt + 0.66, zt, { tint: 0x9a6a4a, sides: 12, caps: 't' });
     B.box(m.pv, 0.16, 0.1, 0.02, 0, yt + 0.28, zt - 0.245, { tint: 0xe8e4d8 });
     // cut-outs on a little arm, the leads from the line down through them to the bushings
     const yc = POLE.hv - 0.95;
     B.box(m.metal, 0.6, 0.05, 0.05, 0, yc, -rad(yc) - 0.03, { tint: STEEL });
     for (const dx of [-0.22, 0.22]) {
-      B.lathe(m.gloss, [[0.04, 0], [0.05, 0.03], [0.05, 0.2], [0.03, 0.24]], dx, yc - 0.22, -rad(yc) - 0.1, { tint: PORC, sides: 6, caps: 'tb' });
+      B.lathe(m.gloss, [[0.04, 0], [0.05, 0.03], [0.05, 0.2], [0.03, 0.24]], dx, yc - 0.22, -rad(yc) - 0.1, { tint: PORC, sides: 12, caps: 'tb' });
       B.tube(m.pv, [[0, POLE.hv, dx < 0 ? -0.8 : -0.4], [dx, yc + 0.2, -0.35], [dx, yc + 0.02, -rad(yc) - 0.1]], 0.008, { tint: WIRE, sides: 3 });
       B.tube(m.pv, [[dx, yc - 0.22, -rad(yc) - 0.1], [dx * 0.8, yt + 1.0, zt + 0.05], [dx * 0.45, yt + 0.84, zt]], 0.008, { tint: WIRE, sides: 3 });
     }

@@ -11,7 +11,7 @@
 // Hooks: GARAGE, MACHINE_SLOTS, SHELF_SLOTS, ATTACH; garage.group / add() / prop(); floor, table, tableTop, pcDesk,
 // window, deliverySpot, sellBox, storageBox, radio; shutterMesh, setShutter(k), shutterOpen, shutterOb; door
 // ({ pivot, door, sign, open, wantOpen }), doorObstacle; lightSwitch, lightToggle, setLights(on), lightsOn;
-// lights ({ sun, hemi, tubes: [{ light, mat, base, fix, dead }], desk, bounce }); shaftMat (the window's light shafts);
+// lights ({ sun, hemi, tubes: [{ light, mat, base, fix, dead }], desk, bounce });
 // windowGlass; town (built here, after the envelope); ownsFront (the town leaves the street front to this file).
 import * as THREE from 'three';
 import { posterTexture } from '../gfx/textures.js';
@@ -584,32 +584,7 @@ export class Garage {
     scene.add(bounce);
     this.lights.bounce = bounce;
 
-    // the window's light shafts at golden hour: flat cel beams (two tones, clean edges), not a soft glow
-    const shaftMat = new THREE.ShaderMaterial({
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
-      uniforms: { uColor: { value: new THREE.Color(0xffdcb0) }, uTime: { value: 0 }, uStrength: { value: 0.13 } },
-      vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-      fragmentShader: `uniform vec3 uColor; uniform float uTime, uStrength; varying vec2 vUv;
-        void main(){ float x = abs(vUv.x - 0.5) * 2.0;
-          float beam = 0.55 * (1.0 - smoothstep(0.86, 0.9, x)) + 0.45 * (1.0 - smoothstep(0.4, 0.44, x));
-          float along = (1.0 - smoothstep(0.86, 0.9, vUv.y)) * (0.5 + 0.5 * (1.0 - smoothstep(0.5, 0.54, vUv.y)));
-          gl_FragColor = vec4(uColor * beam * along * uStrength * (0.94 + 0.06 * sin(uTime * 0.7)), 1.0); }`,
-    });
-    this.shaftMat = shaftMat;
-    const w = this.window;
-    const dir = sun.position.clone().sub(sun.target.position).normalize().negate();
-    for (let i = 0; i < 2; i++) {
-      const len = 4.2;
-      const geo = new THREE.PlaneGeometry(0.72, len);
-      geo.translate(0, -len / 2, 0);
-      const uv = geo.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setY(k, 1 - uv.getY(k));
-      const shaft = new THREE.Mesh(geo, shaftMat);
-      shaft.position.set(G.minX + 0.02, (w.y0 + w.y1) / 2, w.z0 + 0.4 + i * 0.8);
-      shaft.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir);
-      shaft.rotateY(Math.PI / 2 + i * 0.3);
-      shaft.name = 'garage:shaft';
-      this.add(shaft);
-    }
+    // (no light-shaft quads: the low sun through the window lights the floor and the wall with its own shadow map)
   }
 
   buildDust() {
@@ -654,7 +629,6 @@ export class Garage {
   update(dt, t) {
     this.town?.update(dt, t);
     this.detail?.update(dt, t);
-    if (this.shaftMat) this.shaftMat.uniforms.uTime.value = t;
     // door animation
     const d = this.door;
     const target = d.wantOpen ? 1 : 0;

@@ -21,6 +21,7 @@ import { keiWagonMesh } from '../vehicles/keiWagon.js';
 import { pot, acUnit, futon, shutter } from '../town/house.js';
 import { pillar } from '../town/walls.js';
 import { windChime } from '../town/japan.js';
+import { hedge, niwaki, crown, shrub } from '../town/foliage.js';
 
 const ZB = 5.3, ZF = 14.9;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -74,7 +75,7 @@ function morningGlory(t, x0, x1, y1, z, seed = 1) {
     B.box(m.pv, 0.006, y1 - 0.22, 0.006, x, 0.22, z + 0.22, { tint: 0x9aaa7a });
     for (let y = 0.4; y < top; y += 0.34) {
       const k = hash2(i * 13 + Math.round(y * 10), seed);
-      B.blob(m.pv, x + (k - 0.5) * 0.1, y, z + 0.23, 0.17, 0.2, 0.07, { tint: k < 0.5 ? 0x4a8a3c : 0x5c9a44, seed: i * 7 + Math.round(y * 9) });
+      crown(t, x + (k - 0.5) * 0.1, y, z + 0.23, 0.18, 0.2, 0.06, { kind: 'small', card: 0.2, density: 2.6, core: false, seed: i * 7 + Math.round(y * 9) });
       if (k > 0.55) B.cyl(m.pv, 0.045, 0.02, 0.03, x + 0.05, y + 0.02, z + 0.31, { rx: Math.PI / 2, tint: k > 0.8 ? 0x7a6ae0 : 0x5a8af0, sides: 6 });
     }
   }
@@ -109,8 +110,8 @@ function bonsaiShelf(t, x, z, len = 1.6) {
     const tier = i % 2, px = x - len / 2 + 0.2 + i * (len - 0.4) / 4, py = tier ? 0.66 : 0.4, pz = z + (tier ? -0.08 : 0.1), k = hash2(i, 31);
     B.box(m.gloss, 0.2, 0.06, 0.13, px, py, pz, { tint: [0x5a4a6a, 0x9a4a3a, 0x3a5a6a][i % 3], bevel: 0.012 });
     B.rod(m.pv, [px, py + 0.06, pz], [px + (k - 0.5) * 0.1, py + 0.2 + k * 0.06, pz], 0.014, { tint: 0x6a5040, sides: 4 });
-    B.blob(m.pv, px + (k - 0.5) * 0.12, py + 0.26 + k * 0.06, pz, 0.12, 0.05, 0.08, { tint: k < 0.5 ? 0x3e6a2e : 0x4a7a34, seed: i });
-    B.blob(m.pv, px - (k - 0.5) * 0.06, py + 0.33 + k * 0.06, pz, 0.07, 0.04, 0.05, { tint: 0x4f8a3a, seed: i + 5 });
+    crown(t, px + (k - 0.5) * 0.12, py + 0.26 + k * 0.06, pz, 0.13, 0.05, 0.09, { kind: 'pine', card: 0.13, flat: -0.4, density: 3, seed: i });
+    crown(t, px - (k - 0.5) * 0.06, py + 0.33 + k * 0.06, pz, 0.08, 0.04, 0.06, { kind: 'pine', card: 0.1, flat: -0.4, density: 3, seed: i + 5 });
   }
 }
 
@@ -228,7 +229,7 @@ function nearSide(t) {
   for (let i = 0; i < 8; i++) B.rod(m.pv, [23.0 + i * 0.07, 0.1, ZB - 0.3 - i * 0.05], [23.0 + i * 0.07, 1.05, ZB - 0.3 - i * 0.05], 0.014, { tint: 0xc8b070, sides: 4 });
   for (const y of [0.3, 0.85]) B.rod(m.pv, [23.0, y, ZB - 0.3], [23.5, y, ZB - 0.65], 0.016, { tint: 0xa88a50, sides: 4 });
   pillarKit(t, 22.7, s, { name: N('日下'), y: 0.75, z: ZB + 0.005 });
-  t.prop('pine_tree', 25.1, 0, 3.9, 0.6, { scale: 0.75 });
+  niwaki(t, 25.1, 3.9, 0.75, 2);
   t.prop('stone_lantern', 24.95, 0, 4.75, -0.4, { scale: 0.7 });
   addDoor(t, 'kusaka', 'NE4', 'Kusaka', [23.35, 2.95], [23.2, ZB], [22.7, ZB + 0.08, 0.75], s);
 
@@ -252,7 +253,7 @@ function nearSide(t) {
     extra: (Bq, f) => { windChime(t, 2.1, f.top - 0.34, 0.6); pot(t, -0.85, 0, 0.45, 0.8, 0x4f8a3a, 0xe5484b); pot(t, 0.95, 0, 0.42, 0.7, 0x3e7a34); } });
   t.yard(-15.2, -9.9, 3.7, ZB - 0.15, m.dirt);
   t.blockWall(-15.2, -9.9, ZB, s, { h: 0.6, gaps: [[-10.95, -10.1]] });
-  for (const x of [-14.15, -12.15]) t.prop('hedge', x, 0.5, ZB - 0.32, 0);
+  for (const x of [-14.15, -12.15]) hedge(t, x, 0.5, ZB - 0.32, 0);
   pillar(t, -11.12, ZB - 0.15, { h: 1.3 });
   pillarKit(t, -11.12, s, { name: N('田中'), y: 0.85, z: ZB + 0.012 });
   t.prop('stray_cat_sit', -13.4, 1.1, ZB - 0.25, 0.3);
@@ -295,7 +296,7 @@ function nearSide(t) {
   t.blockWall(-25.7, -20.85, ZB, s, { gaps: [[-22.6, -21.8]], clean: [[-24.9, -22.8]] });
   t.gate(-22.6, -21.8, ZB, s, 0.2);
   pillarKit(t, -22.72, s, { name: N('鳩田'), y: 0.95, mail: 0x9aa0a4 });
-  t.prop('pine_tree', -24.7, 0, 3.6, 0.2);
+  niwaki(t, -24.7, 3.6, 1, 1);
   t.prop('laundry_pole', -23.4, 0, 3.75, 0, { scale: 0.85 });
   addDoor(t, 'hatoda', 'NW4', 'Hatoda', [-21.95, 2.3], [-22.2, ZB], [-22.72, ZB + 0.08, 0.95], s);
 
@@ -388,7 +389,7 @@ function farSide(t) {
   t.yard(-25.7, -20.85, ZF + 0.15, 16.3, m.dirt);
   t.woodFence(-25.7, -20.85, ZF, s, { gaps: [[-22.15, -21.3]] });
   t.gate(-22.15, -21.3, ZF, s, 0.5);
-  t.prop('hedge', -24.5, 0.9, ZF + 0.25, Math.PI + 0.3, { scale: 1.2 });
+  hedge(t, -24.5, 0.9, ZF + 0.25, Math.PI + 0.3, 1.2);
   pillarKit(t, -21.18, s, { name: N('矢吹'), y: 1.0, z: ZF - 0.04 });
   B.push(-22.05, 0, ZF - 0.07, Math.PI); t.sign('kairan', 0, 1.35, 0, {}); B.pop();
   addDoor(t, 'yabuki', 'FW1', 'Yabuki', [-22.15, 16.0], [-21.72, ZF], [-21.18, ZF - 0.1, 1.0], s);
@@ -449,7 +450,7 @@ function farSide(t) {
     } });
   t.yard(4.55, 9.95, ZF + 0.15, 16.0, m.dirt);
   t.blockWall(4.55, 9.95, ZF, s, { h: 0.6, gaps: [[6.9, 7.8]] });
-  for (const x of [5.6, 8.85]) t.prop('hedge', x, 0.55, ZF + 0.3, Math.PI, { scale: 1.1 });
+  for (const x of [5.6, 8.85]) hedge(t, x, 0.55, ZF + 0.3, Math.PI, 1.1);
   t.gate(6.9, 7.8, ZF, s, 0.08);
   pillar(t, 7.92, ZF + 0.15, { h: 1.25 });
   pillarKit(t, 7.92, s, { name: N('虹村'), y: 0.85, z: ZF - 0.012 });

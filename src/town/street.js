@@ -44,9 +44,11 @@ export function buildGround(t) {
   // kerbstones along both strips (a rounded nose, worn and chipped by rule), dropped at driveways and doorways
   const kerbs = (z, far, gaps) => {
     const prof = far ? [[0, 0], [0.13, 0], [0.13, 0.048], [0.03, 0.048], [0.012, 0.042], [0, 0.03]] : [[-0.13, 0], [0, 0], [0, 0.03], [-0.012, 0.042], [-0.03, 0.048], [-0.13, 0.048]];
+    // a unit whose nose has been knocked off by tyres: the arris broken back to a raw slope
+    const chip = far ? [[0, 0], [0.13, 0], [0.13, 0.048], [0.05, 0.048], [0.008, 0.016], [0, 0.012]] : [[-0.13, 0], [0, 0], [0, 0.012], [-0.008, 0.016], [-0.05, 0.048], [-0.13, 0.048]];
     let x = -XT + 0.4;
     for (const [a, b] of [...gaps.sort((p, q) => p[0] - q[0]), [XT - 0.4, XT]]) {
-      for (let s = x; s < a - 0.2;) { const k = hash2(Math.round(s * 9), far ? 3 : 5), e = Math.min(a, s + 0.9 + (k < 0.2 ? 0.3 : 0)); B.extrude(m.concrete, prof, s + 0.004, e - 0.004, { along: 'x', oz: z, tint: k < 0.25 ? 0xaeaaa0 : k > 0.8 ? 0xc6c2b8 : 0xbab6ac, uv: [s, 0] }); s = e; }
+      for (let s = x; s < a - 0.2;) { const k = hash2(Math.round(s * 9), far ? 3 : 5), e = Math.min(a, s + 0.9 + (k < 0.2 ? 0.3 : 0)); const ch = hash2(Math.round(s * 13), far ? 7 : 9) < 0.18; B.extrude(m.concrete, ch ? chip : prof, s + 0.004, e - 0.004, { along: 'x', oz: z, tint: ch ? 0xa6a298 : k < 0.25 ? 0xaeaaa0 : k > 0.8 ? 0xc6c2b8 : 0xbab6ac, uv: [s, 0] }); s = e; }
       x = b;
     }
   };
@@ -116,8 +118,8 @@ export function buildDressing(t) {
 export function buildDetails(t) {
   const B = t.B, m = t.m, P = t.game.player;
   // ---- the road: patch repairs and a utility trench (newer, darker asphalt with tar joints), cracks, lids, puddles
-  if (!m.patch) { m.patch = m.patchA.clone(); m.patch.polygonOffset = true; m.patch.polygonOffsetFactor = -2; m.patch.polygonOffsetUnits = -4; m.patch.name = 'patch'; }
-  const patchAt = (x, z, w, d, ry = 0, k = 0.8) => { B.plane(m.patch, w, d, x, 0.002, z, { ry, uv: [x * 0.37, z * 0.21], k, tint: 0x7c7a79 }); B.plane(m.paint, w + 0.05, d + 0.05, x, 0.0012, z, { ry, tint: 0x4a4848 }); };
+  if (!m.patch) { m.patch = m.asphalt.clone(); m.patch.polygonOffset = true; m.patch.polygonOffsetFactor = -2; m.patch.polygonOffsetUnits = -4; m.patch.name = 'patch'; }
+  const patchAt = (x, z, w, d, ry = 0, k = 0.8) => { B.plane(m.patch, w, d, x, 0.002, z, { ry, uv: [x * 0.37 + 0.5, z * 0.21 + 0.3], k: k * 0.97, tint: 0x76767a }); B.plane(m.paint, w + 0.05, d + 0.05, x, 0.0012, z, { ry, tint: 0x4a4848 }); };
   patchAt(5.3, 9.73, 0.55, 7.2, 0, 0.84);
   patchAt(-10.2, 8.25, 9.4, 0.5, 0, 0.78);
   patchAt(3.6, 9.4, 1.5, 1.5, 0.12);

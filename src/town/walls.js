@@ -46,7 +46,13 @@ export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = tr
     }
     B.tris(wm, P, T, { tint: bt });
   };
-  const cope = (xa, xb, y, w = th) => B.extrude(m.concrete, [[-w / 2 - 0.03, 0], [w / 2 + 0.03, 0], [w / 2 + 0.03, 0.022], [w / 2 - 0.012, 0.062], [-w / 2 + 0.012, 0.062], [-w / 2 - 0.03, 0.022]], xa - 0.02, xb + 0.02, { along: 'x', oy: y, tint: cap });
+  // 笠木: precast coping units 0.6 m long with mortar joints, a drip groove under each overhang, weathered by rule
+  const cope = (xa, xb, y, w = th) => {
+    const prof = [[-w / 2 - 0.03, 0.006], [-w / 2 - 0.022, 0], [-w / 2 - 0.012, 0], [-w / 2 - 0.012, 0.006], [w / 2 + 0.012, 0.006], [w / 2 + 0.012, 0], [w / 2 + 0.022, 0], [w / 2 + 0.03, 0.006], [w / 2 + 0.03, 0.022], [w / 2 - 0.012, 0.062], [-w / 2 + 0.012, 0.062], [-w / 2 - 0.03, 0.022]];
+    const a0 = xa - 0.02, a1 = xb + 0.02, n = Math.max(1, Math.round((a1 - a0) / 0.6));
+    for (let i = 0; i < n; i++) { const s0 = a0 + (a1 - a0) * i / n, s1 = a0 + (a1 - a0) * (i + 1) / n, k = hash2(Math.round(s0 * 7), Math.round(z * 3 + y * 5)); B.extrude(m.concrete, prof, s0 + (i ? 0.004 : 0), s1 - (i < n - 1 ? 0.004 : 0), { along: 'x', oy: y, tint: k < 0.3 ? 0xa8a49a : k > 0.75 ? 0xc0bcb2 : cap, uv: [s0, 0] }); }
+    B.box(m.pv, a1 - a0 - 0.01, 0.006, w - 0.01, (a0 + a1) / 2, y, 0, { tint: 0x8a867e });
+  };
   const X = (x) => (side > 0 ? x : -x), cap = oya ? 0xa9ab98 : 0xb6b2a8;
   let x = x0;
   for (const [a, b] of [...gaps, [x1, x1]]) {

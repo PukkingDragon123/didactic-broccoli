@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { interiorQuad, ROOM } from '../world/interiors.js';
 import { NAMES } from './atlas.js';
+import { shrub, crown } from './foliage.js';
 
 // window kinds: [room, lit, curtain]
 const ROOMS = {
@@ -67,8 +68,8 @@ export function house(t, o) {
     gutter(t, -W / 2 - (R.side ?? 0.3), W / 2 + (R.side ?? 0.3), ye + 0.02, e + 0.05, gt, !lite);
     if (!lite) {
       B.box(m.pv, 0.13, 0.13, 0.13, dpx, ye - 0.12, e + 0.045, { tint: gt, bevel: 0.015 });
-      B.tube(m.pv, [[dpx, ye - 0.1, e + 0.05], [dpx, ye - 0.2, e + 0.05], [dpx, ye - 0.28, e + 0.02], [dpx, top - 0.5, 0.11], [dpx, top - 0.6, 0.078], [dpx, top - 0.72, 0.075], [dpx, 0.24, 0.075], [dpx, 0.15, 0.09], [dpx, 0.08, 0.18], [dpx, 0.06, 0.24]], 0.032, { tint: gt, sides: 6 });
-      for (let y = 0.8; y < top - 0.8; y += 1.1) { B.lathe(m.metal, [[0.038, 0], [0.038, 0.03]], dpx, y, 0.075, { tint: dark(gt, 0.75), sides: 6 }); B.box(m.metal, 0.02, 0.02, 0.07, dpx, y + 0.005, 0.035, { tint: dark(gt, 0.75) }); }
+      B.tube(m.pv, [[dpx, ye - 0.1, e + 0.05], [dpx, ye - 0.2, e + 0.05], [dpx, ye - 0.28, e + 0.02], [dpx, top - 0.5, 0.11], [dpx, top - 0.6, 0.078], [dpx, top - 0.72, 0.075], [dpx, 0.24, 0.075], [dpx, 0.15, 0.09], [dpx, 0.08, 0.18], [dpx, 0.06, 0.24]], 0.032, { tint: gt, sides: 12 });
+      for (let y = 0.8; y < top - 0.8; y += 1.1) { B.lathe(m.metal, [[0.036, 0], [0.039, 0.004], [0.039, 0.026], [0.036, 0.03]], dpx, y, 0.075, { tint: dark(gt, 0.75), sides: 12 }); B.box(m.metal, 0.02, 0.02, 0.07, dpx, y + 0.005, 0.035, { tint: dark(gt, 0.75) }); }
       if (!o.y0) B.box(m.concrete, 0.26, 0.05, 0.32, dpx, 0, 0.34, { tint: 0xb4b0a6, bevel: 0.012 });
     } else B.tube(m.pv, [[dpx, ye, e], [dpx, top - 0.5, 0.08], [dpx, 0.1, 0.08]], 0.034, { tint: gt, sides: 4 });
   }
@@ -342,7 +343,7 @@ function window(t, W, D, spec, fy, lite) {
     if (opt.flowers) { // a window box
       B.box(m.wood, w * 0.9, 0.15, 0.2, 0, -0.26, 0.18, { tint: 0x9a7458, bevel: 0.012 });
       const n = Math.max(3, Math.round(w * 4)), cols = [0xe5484b, 0xff8fb2, 0xffd23f, 0xfbf8f0, 0x9a6ad8];
-      for (let i = 0; i < n; i++) { const fx = -w * 0.4 + (i + 0.5) * (w * 0.8 / n); B.blob(m.pv, fx, -0.06, 0.18, 0.1, 0.08, 0.09, { tint: i % 2 ? 0x4f8a3a : 0x5c9a44, seed: i }); B.blob(m.pv, fx + 0.02, 0.03, 0.2, 0.04, 0.035, 0.04, { tint: cols[Math.floor(hash2(i + wp.z, 5) * cols.length)], seed: i + 9, lo: 0.9 }); }
+      void cols; crown(t, 0, -0.04, 0.18, w * 0.44, 0.12, 0.11, { kind: 'azalea', mix: ['small', 0.4], card: 0.18, flat: -0.3, density: 2.6, seed: n + Math.round(wp.x * 5) });
     }
   }
   B.pop();
@@ -474,8 +475,7 @@ export function pot(t, x, y, z, s = 1, leaf = 0x4f8a3a, flower = null, col = 0xb
   const B = t.B, m = t.m;
   B.lathe(m.pv, [[0.085 * s, 0], [0.12 * s, 0.19 * s], [0.135 * s, 0.19 * s], [0.135 * s, 0.22 * s]], x, y, z, { tint: col, sides: 7, caps: 'b' });
   B.cyl(m.pv, 0.12 * s, 0.12 * s, 0.01, x, y + 0.2 * s, z, { tint: 0x4a3a2c, sides: 7, caps: 't' });
-  B.blob(m.pv, x, y + 0.38 * s, z, 0.19 * s, 0.2 * s, 0.19 * s, { tint: leaf, seed: Math.round(x * 13 + z * 7) });
-  if (flower) for (const [dx, dy, dz] of [[-0.1, 0.5, 0.06], [0.09, 0.54, -0.05], [0.03, 0.58, 0.1]]) B.blob(m.pv, x + dx * s, y + dy * s, z + dz * s, 0.045 * s, 0.04 * s, 0.045 * s, { tint: flower, lo: 0.9, jitter: 0.1 });
+  void leaf; shrub(t, x, y + 0.17 * s, z, 0.2 * s, flower ? 'azalea' : (Math.round(x * 7 + z * 3) % 2 ? 'small' : 'leaf'), { seed: Math.round(x * 13 + z * 7) });
 }
 
 /** A split air conditioner's outdoor unit (0.78 x 0.54 x 0.27), its back to the wall at local z = 0, bottom at y:

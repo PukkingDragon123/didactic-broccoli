@@ -32,7 +32,6 @@ export class Lighting {
     this.sunDir = GOLDEN.clone();
     this.moonDir = new THREE.Vector3(0.5, 0.6, -0.6).normalize();
     this.twinkle = 0;
-    this.shaftK = 1; // god rays: 1 under the open sky, 0 in the van or an interior (update)
     createSim(game);
   }
 
@@ -76,20 +75,12 @@ export class Lighting {
     const fog = g.scene.fog;
     if (fog) { fog.color.copy(L.fog); fog.near = 25 - 7 * L.night; fog.far = 110 - 20 * L.night; }
     if (g.scene.background?.isColor) g.scene.background.copy(L.fog);
-    // god rays from the sun only, in its colour
-    const r = g.renderer;
-    if (r.outline) {
-      r.outline.uniforms.uShaftCol.value.copy(L.sun).lerp(_c.setRGB(1, 0.72, 0.42), 0.5);
-      this.shaftBase = 0.75 * Math.min(1, S.sunI / 2.6) * (S.sunI >= S.moonI * 4 ? 1 : 0); // (faded per frame in update)
-    }
+    // (no god rays, no light-shaft quads, no light-pool decal: the sun's own light and shadows do that work)
+    const r = g.renderer, G = g.garage;
     if (r.grade) r.grade.uniforms.uWarm.value = L.warm;
-    // garage window shafts and the warm pool under the shutter only exist while the low sun shines in
-    const G = g.garage;
-    if (G.shaftMat) G.shaftMat.uniforms.uStrength.value = 0.13 * S.golden;
     // the frosted window: warm daylight behind it by day, a faint moonlit blue at night
     const W = this.winGlass;
     if (W) { W.m.emissiveIntensity = W.k * (0.12 + 0.62 * S.day); W.m.emissive.copy(W.col).lerp(_c.setHex(0x51608a), S.night); }
-    if (G.pool) G.pool.material.uniforms.uColor.value.setHex(0xffcf98).multiplyScalar(Math.max(0, G.shutterOpen) * Math.min(1, S.sunIn * 1.3 + 0.15 * S.day));
   }
 
   update(dt, t) {
@@ -146,11 +137,6 @@ export class Lighting {
     }
     const room = g.places?.current?.();
     if (room) this.roomLight(room, sun, L.hemi, sunI);
-    // god rays only under the open sky: they fade out while the camera sits in the van's cab (src/life/van.js inCab) or
-    // you stand in an interior, where the window glass and frames have nothing to do with the sky behind them
-    const open = g.life?.van?.inCab || g.places?.where ? 0 : 1;
-    this.shaftK += (open - this.shaftK) * Math.min(1, dt * 3);
-    if (g.renderer.outline) g.renderer.outline.uniforms.uShaft.value = (this.shaftBase ?? 0.75) * this.shaftK;
     // glow-in-the-dark finish responds to darkness
     const darkness = Math.max(this.dimLevel, lightsK ? 0 : 0.45 + 0.25 * (S.night || 0));
     this.glowBoost = Math.max(0, this.glowBoost - dt * 0.3);

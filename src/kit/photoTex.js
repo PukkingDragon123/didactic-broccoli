@@ -19,47 +19,47 @@ import * as THREE from 'three';
 // name -> { file, metres, avg }. One tile covers `metres` x `metres` of the real surface.
 export const PHOTO_TEX = {
   // wood
-  wood_planks:      { file: 'wood_planks.jpg',      metres: 1.2, avg: 0xb39a7c }, // sawn boards, joints run along V
-  wood_weathered:   { file: 'wood_weathered.jpg',   metres: 1.2, avg: 0x9a9388 }, // grey, sun-bleached boards
+  wood_planks:      { file: 'wood_planks.jpg',      metres: 1.2, avg: 0xb99c79 }, // sawn boards, joints run along V
+  wood_weathered:   { file: 'wood_weathered.jpg',   metres: 1.2, avg: 0x9b948a }, // grey, sun-bleached boards
   plywood:          { file: 'plywood.jpg',          metres: 1.2, avg: 0xc9ae86 },
-  timber_dark:      { file: 'timber_dark.jpg',      metres: 1.0, avg: 0x5f4a3c }, // stained / charred posts and beams
+  timber_dark:      { file: 'timber_dark.jpg',      metres: 1.0, avg: 0x604b3e }, // stained / charred posts and beams
   // walls
-  plaster_cream:    { file: 'plaster_cream.jpg',    metres: 2.0, avg: 0xd9cfb8 },
+  plaster_cream:    { file: 'plaster_cream.jpg',    metres: 2.0, avg: 0xd9d0b9 },
   mortar_grey:      { file: 'mortar_grey.jpg',      metres: 2.0, avg: 0xa9a59c },
-  block_wall:       { file: 'block_wall.jpg',       metres: 1.6, avg: 0xa7a59f }, // concrete blocks, whole courses per tile
-  brick_red:        { file: 'brick_red.jpg',        metres: 1.0, avg: 0xa8685a },
+  block_wall:       { file: 'block_wall.jpg',       metres: 1.6, avg: 0xa9a6a1 }, // concrete blocks, whole courses per tile
+  brick_red:        { file: 'brick_red.jpg',        metres: 1.0, avg: 0xa8695b },
   // metal
-  tin_corrugated:   { file: 'tin_corrugated.jpg',   metres: 1.0, avg: 0xa9b0b0 }, // ribs run along V
-  tin_rusty:        { file: 'tin_rusty.jpg',        metres: 1.0, avg: 0x94705a }, // ribs run along V
+  tin_corrugated:   { file: 'tin_corrugated.jpg',   metres: 1.0, avg: 0xaab1b2 }, // ribs run along V
+  tin_rusty:        { file: 'tin_rusty.jpg',        metres: 1.0, avg: 0x93725d }, // ribs run along V
   steel_painted:    { file: 'steel_painted.jpg',    metres: 1.5, avg: 0xc4c6c2 }, // light, neutral: made to be tinted
   steel_galvanised: { file: 'steel_galvanised.jpg', metres: 1.5, avg: 0xa9aeb0 },
-  rust:             { file: 'rust.jpg',             metres: 1.0, avg: 0x8c5a40 },
+  rust:             { file: 'rust.jpg',             metres: 1.0, avg: 0x8d5d43 },
   // concrete and road
-  concrete:         { file: 'concrete.jpg',         metres: 2.5, avg: 0xb3b0a8 },
-  concrete_stained: { file: 'concrete_stained.jpg', metres: 2.5, avg: 0x9c9990 },
-  asphalt:          { file: 'asphalt.jpg',          metres: 2.0, avg: 0x6c6c70 },
-  asphalt_patched:  { file: 'asphalt_patched.jpg',  metres: 3.0, avg: 0x66666a },
+  concrete:         { file: 'concrete.jpg',         metres: 2.5, avg: 0xb3b0a9 },
+  concrete_stained: { file: 'concrete_stained.jpg', metres: 2.5, avg: 0x9d9a91 },
+  asphalt:          { file: 'asphalt.jpg',          metres: 2.0, avg: 0x75757a },
+  asphalt_patched:  { file: 'asphalt_patched.jpg',  metres: 3.0, avg: 0x67676b },
   // roofs
-  roof_kawara:      { file: 'roof_kawara.jpg',      metres: 1.2, avg: 0x62666c }, // tile courses step down V
-  roof_tin:         { file: 'roof_tin.jpg',         metres: 1.0, avg: 0x7e8c94 }, // seams run along V
+  roof_kawara:      { file: 'roof_kawara.jpg',      metres: 1.2, avg: 0x63676d }, // tile courses step down V
+  roof_tin:         { file: 'roof_tin.jpg',         metres: 1.0, avg: 0x7f8d95 }, // seams run along V
   // indoor
-  tatami:           { file: 'tatami.jpg',           metres: 0.6, avg: 0xb9b07c }, // rush runs along U
+  tatami:           { file: 'tatami.jpg',           metres: 0.3, avg: 0xbab17d }, // rush runs along U
   shoji_paper:      { file: 'shoji_paper.jpg',      metres: 0.5, avg: 0xe6e0d0 },
-  cardboard:        { file: 'cardboard.jpg',        metres: 0.6, avg: 0xb99870 },
+  cardboard:        { file: 'cardboard.jpg',        metres: 0.6, avg: 0xba9971 },
   canvas_cloth:     { file: 'canvas_cloth.jpg',     metres: 0.4, avg: 0xcfc6b0 },
-  indigo_cloth:     { file: 'indigo_cloth.jpg',     metres: 0.4, avg: 0x44587c },
-  paper_old:        { file: 'paper_old.jpg',        metres: 0.5, avg: 0xd8cba8 },
+  indigo_cloth:     { file: 'indigo_cloth.jpg',     metres: 0.4, avg: 0x45597d },
+  paper_old:        { file: 'paper_old.jpg',        metres: 0.5, avg: 0xd9cba8 },
   // tiles
-  tile_white:         { file: 'tile_white.jpg',         metres: 0.6, avg: 0xdcdcd4 },
-  tile_checker_floor: { file: 'tile_checker_floor.jpg', metres: 0.9, avg: 0x9a9a94 },
+  tile_white:         { file: 'tile_white.jpg',         metres: 0.6, avg: 0xddddd5 }, // 4 x 4 tiles of 15 cm
+  tile_checker_floor: { file: 'tile_checker_floor.jpg', metres: 0.6, avg: 0xa3a49e }, // 2 x 2 squares of 30 cm
   // ground
-  gravel:           { file: 'gravel.jpg',           metres: 1.0, avg: 0x9c988e },
-  soil:             { file: 'soil.jpg',             metres: 1.5, avg: 0x7c6650 },
-  grass:            { file: 'grass.jpg',            metres: 1.5, avg: 0x7c9a5c },
-  moss:             { file: 'moss.jpg',             metres: 1.0, avg: 0x6c8650 },
+  gravel:           { file: 'gravel.jpg',           metres: 1.0, avg: 0x9e9a8f },
+  soil:             { file: 'soil.jpg',             metres: 1.5, avg: 0x7d6752 },
+  grass:            { file: 'grass.jpg',            metres: 1.5, avg: 0x7d9a5e },
+  moss:             { file: 'moss.jpg',             metres: 1.0, avg: 0x6c8750 },
   // other
-  rubber:           { file: 'rubber.jpg',           metres: 0.5, avg: 0x3c3c40 },
-  frosted_glass:    { file: 'frosted_glass.jpg',    metres: 0.5, avg: 0xd0dcdc },
+  rubber:           { file: 'rubber.jpg',           metres: 0.5, avg: 0x3d3c40 },
+  frosted_glass:    { file: 'frosted_glass.jpg',    metres: 0.5, avg: 0xd0dddc },
 };
 
 const DIR = 'img/tex/';
@@ -78,10 +78,13 @@ function entry(name) {
   return e || null;
 }
 
-/** A small flat canvas (the stand-in until the photo arrives, and the whole texture for an unknown name). */
-function flat(hex) {
+const TILE = 512;   // every tile's size: the stand-in matches it, so swapping the photo in needs no new GPU storage
+const SourceClass = THREE.TextureSource || THREE.Source;
+
+/** A flat canvas (the stand-in until the photo arrives, at the tile's size; 4 px for an unknown name). */
+function flat(hex, size = 4) {
   if (typeof document === 'undefined') return null;
-  const c = document.createElement('canvas'); c.width = c.height = 4;
+  const c = document.createElement('canvas'); c.width = c.height = size;
   const g = c.getContext('2d'); g.fillStyle = hexStr(hex); g.fillRect(0, 0, 4, 4);
   return c;
 }
@@ -107,7 +110,7 @@ function sourceFor(name, tintHex) {
   if (s) return s;
   const e = entry(name);
   const base = e ? e.avg : GREY;
-  s = { source: new THREE.Source(flat(tintHex == null ? base : mul(base, tintHex))), textures: new Set(), loaded: !e };
+  s = { source: new SourceClass(flat(tintHex == null ? base : mul(base, tintHex), e ? TILE : 4)), textures: new Set(), loaded: !e };
   sources.set(key, s);
   if (!e || typeof document === 'undefined') return s;
   const job = new Promise((res) => {
@@ -115,7 +118,8 @@ function sourceFor(name, tintHex) {
     img.onload = () => {
       let data = img;
       try { if (tintHex != null) data = tinted(img, tintHex); } catch (err) { /* keep the plain tile */ }
-      for (const t of s.textures) t.dispose();   // the size changes: drop the stand-in's storage before swapping
+      // a tile of another size needs new storage: drop the stand-in's first (a clone made elsewhere keeps the old size)
+      if ((data.naturalWidth || data.width) !== TILE || (data.naturalHeight || data.height) !== TILE) for (const t of s.textures) t.dispose();
       s.source.data = data; s.loaded = true;
       for (const t of s.textures) t.needsUpdate = true;
       res();
