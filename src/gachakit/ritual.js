@@ -190,7 +190,7 @@ export function installRitual(g) {
       if (p < 0.55) {
         const auto = down && !press && R.hold > Math.max(0.5, gap * 1.8) && since > Math.max(0.5, gap * 1.8);
         if (press || auto) {
-          if (press && since < gap && (R.slips || 0) < 3) {
+          if (press && since < gap && (R.slips || 0) < 5) {
             R.slip = 0.35; R.kick = 0.3; R.lastNotch = g.time; R.slips = (R.slips || 0) + 1;
             if (K[4] && R.notch > 0 && !R.slipBack) { R.notch--; R.slipBack = true; } // (once a step: a lesson, not a trap)
             say('Too quick: your fingers slipped', 0.9);

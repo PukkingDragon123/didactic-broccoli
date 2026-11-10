@@ -259,7 +259,9 @@ export class FigureAtlas {
           for (let i = 0; i < nu; i++) { if (!col[i]) continue; let g = 0; while (g < nu && !col[(i + 1 + g) % nu]) g++; if (g > bestGap) { bestGap = g; bestStart = (i + 1 + g) % nu; } }
           i0 = bestStart; ni = nu - bestGap;
         }
-        const SH = offY[j1 - j0], W = ni * cw + PAD * 2, H = SH + PAD * 2, r = this.alloc(W, H);
+        const SH = offY[j1 - j0], W = ni * cw + PAD * 2, H = SH + PAD * 2;
+        if (W > 1400) console.warn(`figure atlas: a smooth patch ${W} px wide (${ni} cells of ${cw}): space its ring points evenly (ring(..., { even: true }))`);
+        const r = this.alloc(W, H);
         for (let y = 0, jr = 0; y < H; y++) {
           const yy = Math.max(0, Math.min(SH - 1, y - PAD));
           while (jr < j1 - j0 - 1 && yy >= offY[jr + 1]) jr++;

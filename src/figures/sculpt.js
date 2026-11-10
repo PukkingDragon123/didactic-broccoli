@@ -62,15 +62,25 @@ export function spline(pts, n = 4, closed = false) {
 
 /**
  * A cross-section round c: a superellipse (pow 2 = ellipse, 4+ = rounded box) of n points. axis 'y' (default): in the
- * xz plane, radii (rx, rz); 'z': in the xy plane, radii (rx, ry); 'x': in the zy plane, radii (rz, ry).
+ * xz plane, radii (rx, rz); 'z': in the xy plane, radii (rx, ry); 'x': in the zy plane, radii (rz, ry). even: space the
+ * points by arc length (use it for pow 4 and up: by angle they bunch at the corners and the atlas patch gets very wide).
  */
-export function ring(c, ra, rb, n = 12, { pow = 2, a0 = null, axis = 'y', exact = false } = {}) {
+export function ring(c, ra, rb, n = 12, { pow = 2, a0 = null, axis = 'y', exact = false, even = false } = {}) {
   if (!exact) n = QN(n);
   const out = [], e = 2 / pow, off = a0 ?? (Math.PI / 2 - Math.PI / n);
-  for (let i = 0; i < n; i++) {
-    const a = off + (i / n) * Math.PI * 2, cs = Math.cos(a), sn = Math.sin(a);
-    const p = Math.sign(cs) * Math.abs(cs) ** e * ra, q = Math.sign(sn) * Math.abs(sn) ** e * rb;
-    out.push(add(axis === 'y' ? [p, 0, q] : axis === 'z' ? [p, q, 0] : [0, q, p], c));
+  const at = (a) => { const cs = Math.cos(a), sn = Math.sin(a); return [Math.sign(cs) * Math.abs(cs) ** e * ra, Math.sign(sn) * Math.abs(sn) ** e * rb]; };
+  const put = ([p, q]) => out.push(add(axis === 'y' ? [p, 0, q] : axis === 'z' ? [p, q, 0] : [0, q, p], c));
+  if (!even) { for (let i = 0; i < n; i++) put(at(off + (i / n) * Math.PI * 2)); return out; }
+  // even: points spaced by arc length, not by angle (a squarish section with a high pow keeps equal cells, so its
+  // atlas patch stays narrow)
+  const M = n * 8, D = [], acc = [0];
+  for (let i = 0; i <= M; i++) D.push(at(off + (i / M) * Math.PI * 2));
+  for (let i = 1; i <= M; i++) acc.push(acc[i - 1] + Math.hypot(D[i][0] - D[i - 1][0], D[i][1] - D[i - 1][1]));
+  for (let i = 0, k = 0; i < n; i++) {
+    const L = (i / n) * acc[M];
+    while (k < M - 1 && acc[k + 1] < L) k++;
+    const f = (L - acc[k]) / ((acc[k + 1] - acc[k]) || 1);
+    put([D[k][0] + (D[k + 1][0] - D[k][0]) * f, D[k][1] + (D[k + 1][1] - D[k][1]) * f]);
   }
   return out;
 }
@@ -136,10 +146,12 @@ export class Sculpt {
    *   hinge:  { pivot: [x, y, z], axis: 'x' | 'y' | 'z' | [x, y, z], min, max, rest, g: [at t = 0, at t = 1], idle }
    *   slide:  { slide: [dx, dy, dz] (the travel at value 1), min, max, rest, g, idle }
    *   custom: { move: (t) => Matrix4, rest }   (driven by the gimmick's t alone)
+   * Pivots, axes and slides are in figure space; add `local: true` to give them in the at() frame you are in instead.
    * min / max: the limits it can be posed to (radians, or 0..1 of the slide); rest: where it sits; g: where the
    * figure's gimmick takes it; idle: how far it sways by itself while you turn the figure over in your hand.
    */
   part(name, def, fn) {
+    if (def.local) def = this.toFigure(def);
     this.parts[name] = { rest: 0, ...def, parent: this.partName };
     const prev = this.partName;
     this.partName = name;
@@ -147,6 +159,15 @@ export class Sculpt {
     return this;
   }
   joint(name, def, fn) { return this.part(name, def, fn); }
+  /** A joint def given in the current at() frame (pivot, axis, slide) turned into figure space: `local: true` on a def. */
+  toFigure(def) {
+    const d = { ...def }, m = this.m, v = new THREE.Vector3();
+    delete d.local;
+    if (d.pivot) { v.set(d.pivot[0], d.pivot[1], d.pivot[2]).applyMatrix4(m); d.pivot = [v.x, v.y, v.z]; }
+    if (d.axis) { const a = typeof d.axis === 'string' ? AX[d.axis] : v.set(d.axis[0], d.axis[1], d.axis[2]); v.copy(a).transformDirection(m); d.axis = [v.x, v.y, v.z]; }
+    if (d.slide) { v.set(d.slide[0], d.slide[1], d.slide[2]); const L = new THREE.Matrix4().extractRotation(m), k = new THREE.Vector3().setFromMatrixScale(m); v.multiply(k).applyMatrix4(L); d.slide = [v.x, v.y, v.z]; }
+    return d;
+  }
   /** The matrix of a joint (figure space, mm) for a pose: { t (gimmick, 0..1), values: { joint: value }, add: { joint: offset } }. */
   jointMatrix(name, pose = {}) {
     const d = this.parts[name], t = pose.t ?? this.restT;

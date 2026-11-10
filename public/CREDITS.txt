@@ -422,7 +422,7 @@ size, colour-graded, posterized and ordered-dithered, and composited with render
 - Source: https://www.flickr.com/photos/oatsy40/7094086679 (Open Images ID caabe4a766133e6a)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "A Large Cumulus Cloud" by oatsy40, licensed under CC BY 2.0
-- Shipped as: `img/photos/cumulus.jpg` (background of the flyer "New Manager")
+- Shipped as: `img/photos/cumulus.jpg` (background of the flyer "New Manager"; also the sky behind the Line-Dried Animals display card)
 
 ### M101 - Largest ever Hubble galaxy portrait
 
@@ -446,7 +446,7 @@ size, colour-graded, posterized and ordered-dithered, and composited with render
 - Source: https://www.flickr.com/photos/alisdair/3865157 (Open Images ID ec26d4c08dd8a179)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Rusted Shutters" by alisdair, licensed under CC BY 2.0
-- Shipped as: `img/photos/shutters.jpg` (background of the flyer "Galaxy Collector")
+- Shipped as: `img/photos/shutters.jpg` (background of the flyer "Galaxy Collector"; also the Animal Shopping Street display card)
 
 ### Beautiful Tokyo at Night
 
@@ -507,7 +507,7 @@ each print is cropped, shrunk to pixel-art size, colour-graded and ordered-dithe
 - Source: https://www.flickr.com/photos/29237715@N05/6977837068 (Open Images ID 2ecac85f7dca3ed6)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Bamboo Forest Kyoto" by Noel Reynolds, licensed under CC BY 2.0
-- Shipped as: `img/photos/prints/bamboo_forest.jpg` (a wall print)
+- Shipped as: `img/photos/prints/bamboo_forest.jpg` (a wall print; also the Haniwa Pets display card)
 
 #### Shibuya by night
 
@@ -795,7 +795,7 @@ each print is cropped, shrunk to pixel-art size, colour-graded and ordered-dithe
 - Source: https://www.flickr.com/photos/10110263@N03/4607483765 (Open Images ID d7a6cc325ae04b7c)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Kawai Kanjiro's House, Kyoto" by np&djjewell, licensed under CC BY 2.0
-- Shipped as: `img/photos/prints/kawai_house.jpg` (a wall print)
+- Shipped as: `img/photos/prints/kawai_house.jpg` (a wall print; also the backdrop of a gacha display card)
 
 #### Bonfire on the beach
 
@@ -1265,7 +1265,7 @@ brands, wordmarks and mascots round them are original drawings.
 - Source: https://www.flickr.com/photos/naotakem/14093756269 (Open Images ID 91ba2deb2230aeda)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Oden - stewed fish cakes, etc. おでん" by Naotake Murayama, licensed under CC BY 2.0
-- Shipped as: `img/photos/products/oden.jpg` (Oden Can)
+- Shipped as: `img/photos/products/oden.jpg` (Oden Can; also the Oden Friends display card)
 
 #### Pink grapefruit close up
 
