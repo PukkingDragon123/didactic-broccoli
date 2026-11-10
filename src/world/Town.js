@@ -198,10 +198,10 @@ export class Town {
   /** 傘立て: a little stand by the door with two or three umbrellas (local frame of the current batch). */
   umbrellaStand(x, y, z, seed = 0) {
     const B = this.B, m = this.m, cols = [0x3a4a7a, 0xe8808a, 0xf4f0e6, 0x4a7a4a, 0x2a2a2c, 0xffdc6a];
-    B.cyl(m.metal, 0.1, 0.11, 0.36, x, y, z, { tint: 0x8a8e90, sides: 8, caps: 'b' });
+    B.lathe(m.metal, [[0.1, 0], [0.104, 0.01], [0.11, 0.33], [0.116, 0.34], [0.116, 0.36], [0.108, 0.36]], x, y, z, { tint: 0x8a8e90, sides: 16, caps: 'b' });
     for (let i = 0; i < 3; i++) {
       const c = cols[Math.floor(hash2(seed + i, 11) * cols.length)], dx = (i - 1) * 0.045, lean = (i - 1) * 0.12;
-      B.lathe(m.pv, [[0.012, 0], [0.035, 0.12], [0.03, 0.62], [0.008, 0.66]], x + dx, y + 0.08, z + (hash2(i, seed) - 0.5) * 0.05, { rz: -lean, tint: c, sides: 6 });
+      B.lathe(m.pv, [[0.012, 0], [0.035, 0.12], [0.03, 0.62], [0.008, 0.66]], x + dx, y + 0.08, z + (hash2(i, seed) - 0.5) * 0.05, { rz: -lean, tint: c, sides: 10 });
       B.tube(m.pv, [[x + dx + lean * 0.66, y + 0.73, z], [x + dx + lean * 0.8, y + 0.86, z], [x + dx + lean * 0.8 + 0.04, y + 0.88, z], [x + dx + lean * 0.8 + 0.06, y + 0.83, z]], 0.01, { tint: 0x4a3a2a, sides: 4 });
     }
   }

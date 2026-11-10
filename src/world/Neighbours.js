@@ -21,7 +21,7 @@ import { keiWagonMesh } from '../vehicles/keiWagon.js';
 import { pot, acUnit, futon, shutter } from '../town/house.js';
 import { pillar } from '../town/walls.js';
 import { windChime } from '../town/japan.js';
-import { hedge, niwaki, crown, shrub } from '../town/foliage.js';
+import { hedge, niwaki, crown, vine } from '../town/foliage.js';
 
 const ZB = 5.3, ZF = 14.9;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -73,10 +73,10 @@ function morningGlory(t, x0, x1, y1, z, seed = 1) {
   for (let i = 0; i <= n; i++) {
     const x = x0 + i * (x1 - x0) / n, top = 0.8 + hash2(i, seed) * (y1 - 0.9);
     B.box(m.pv, 0.006, y1 - 0.22, 0.006, x, 0.22, z + 0.22, { tint: 0x9aaa7a });
-    for (let y = 0.4; y < top; y += 0.34) {
+    vine(t, x, 0.3, top + 0.15, z + 0.2, seed * 31 + i);
+    for (let y = 0.5; y < top; y += 0.3) { // the trumpets, open in the morning
       const k = hash2(i * 13 + Math.round(y * 10), seed);
-      crown(t, x + (k - 0.5) * 0.1, y, z + 0.23, 0.18, 0.2, 0.06, { kind: 'small', card: 0.2, density: 2.6, core: false, seed: i * 7 + Math.round(y * 9) });
-      if (k > 0.55) B.cyl(m.pv, 0.045, 0.02, 0.03, x + 0.05, y + 0.02, z + 0.31, { rx: Math.PI / 2, tint: k > 0.8 ? 0x7a6ae0 : 0x5a8af0, sides: 6 });
+      if (k > 0.45) B.lathe(m.pv, [[0.006, 0], [0.012, 0.03], [0.03, 0.05], [0.048, 0.058], [0.05, 0.062]], x + (k - 0.7) * 0.2, y + 0.02, z + 0.27, { rx: Math.PI / 2 - 0.3, tint: k > 0.8 ? 0x7a6ae0 : 0x5a8af0, sides: 10, caps: 'tb' });
     }
   }
 }

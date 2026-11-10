@@ -12,9 +12,10 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
   foundation, a sill, a frame; a roof has a ridge, eaves, gutters and downpipes; a pole has steps, a transformer,
   insulators and guy wires. Look at reference before modelling (the town is a Shōwa-era back lane in a provincial
   Japanese city, spring 1999).
-- **Cel shading is global.** The renderer patches every lit material with a banded light ramp, lilac shadows and
-  ink outlines (src/core/renderer.js, src/gfx/sunMask.js). Use `MeshStandardMaterial` (or the kit's materials) with
-  high roughness; don't write your own toon shader, don't use emissive blobs, never a white rim or hover highlight.
+- **The light is global.** The renderer patches every lit material with realistic light and a light cel accent on the
+  sun, cool readable shadows and ink outlines (src/core/renderer.js, src/gfx/sunMask.js; see the renderer contract
+  below). Use `MeshStandardMaterial` (or the kit's materials) with a roughness that fits the material; don't write your
+  own toon shader, don't use emissive blobs, never a white rim or hover highlight.
 - **Textures are high-resolution cartoon paint**: flat colour fields, details drawn in a darker tone of the
   surface colour (not black), two or three hand-placed tones of shading, weathering placed by rule (rust under
   bolts, stains under sills, moss at the foot of walls), never random noise. Texels must never read as pixels:
@@ -71,12 +72,20 @@ lighting with a light cel touch**: it is not a hard toon shader.
   `MeshPhongMaterial`, including the kit's atlas materials and anything that extends them with `onBeforeCompile`.
   `MeshBasicMaterial` and custom `ShaderMaterial`s are drawn as they are (use them only for things that give light:
   a lit sign face, a tube, the sky). No setup is needed: don't write a toon shader, don't add gradient maps.
-- **The key light is softly banded, nothing else.** The sun / moon's shading is pulled half way toward three wide,
-  soft-edged steps, so a round form shows a gentle band and a flat face keeps its natural tone. Cast shadows are
-  lilac, never black, with the shadow map's soft edge. **Local lights (lamps, tubes, lanterns, the light pool) are
-  plain smooth Lambert with their natural falloff: no steps**, so they never draw rings or discs on a wall, a floor or
-  a ceiling. Don't fake light with additive halo quads or light-pool decals either.
-- **Speculars are physical (GGX), so roughness is how a material reads as itself.** Give materials real variety:
+- **Only the key light has a cel accent, and a light one.** The sun / moon's N.L is mixed 30% with a soft two-step
+  ramp (shade / lit, the step spread over N.L 0 to 0.3), which firms up the terminator on a round form; a flat face
+  keeps its natural tone. Cast shadows let a fifth of the sun back in, a little cool (`SHADOW_TINT`): readable, a touch
+  lilac, never black, with the shadow map's soft edge. The sky fill (hemisphere) and the environment probe give the
+  soft bounce.
+- **Local lights are plain physical light: no steps, no rings, no discs.** Lamps, tubes, lanterns, the light pool and
+  spots are smooth Lambert. Their falloff is softened near the source as if the lamp had a size (`SOFT_R`, 0.45 m: no
+  hot spot on the ceiling or wall a lamp hangs by), and every spot cone fades out over at least 80% of its angle,
+  whatever its penumbra, so a desk lamp or a headlight never draws a hard ellipse. Don't fake light with additive halo
+  quads, light-shaft quads or light-pool decals: the lights and the shadow maps do that.
+- **Speculars are physical (GGX), so roughness is how a material reads as itself.** A highlight from a light is never a
+  pin-point: direct light is reflected at a roughness of at least 0.3 (`SPEC_MIN`; Phong shininess is capped at 40),
+  while reflections of the environment keep the true roughness, so glass and chrome still mirror the sky. Give
+  materials real variety:
   - 0.85 to 0.95: concrete, mortar, plaster, raw timber, cloth, paper, rust, rubber;
   - 0.6 to 0.75: painted metal, enamel, zinc sheet, old plastic, vinyl floor, varnished wood;
   - 0.3 to 0.45: glazed tile, lacquer, capsule plastic, clean car paint (a soft highlight);
@@ -88,14 +97,17 @@ lighting with a light cel touch**: it is not a hard toon shader.
 - **Normals:** smooth where the real thing is smooth (pipes, lathes, bowls, corrugated sheet), hard where it has an
   edge. The garage's kit smooths automatically below 40 degrees (src/garage/kit.js `autoSmooth`); a 45-degree chamfer
   stays crisp.
-- **Ink outlines** come from the depth buffer, for every opaque mesh that writes depth:
+- **Ink outlines** are thin and a soft plum shade of the surface's own colour, from the depth buffer, for every opaque
+  mesh that writes depth:
   - silhouettes (where something stands in front of something else by more than about 0.5% of its distance: 1.5 cm at
     3 m, so a poster, a decal or a bolt head lying on a surface is not outlined, and fine detail drops its ink with
     distance by itself);
-  - creases sharper than about 55 degrees: a hard 90-degree edge is inked, a chamfer and a smooth curve are not.
-    Round things need enough segments to read as round: 12 or more sides (30 degrees a step or less).
+  - creases sharper than about 55 degrees, drawn lighter than silhouettes: a hard 90-degree edge is inked, a chamfer
+    and a smooth curve are not. Round things need enough segments to read as round: 12 or more sides (30 degrees a
+    step or less). Where the depth is busy all round a pixel (a grille, a shelf of stock, a bundle of wires) creases
+    are left out, so dense detail never turns into a scribble.
   - Lines keep the same weight on screen at any resolution, thin things (wires, railings) never swell, creases fade
-    out beyond 24 m and silhouettes beyond 75 m.
+    out between 7 and 18 m and silhouettes between 28 and 65 m.
   - **To opt out:** `import { noInk } from '../gfx/sunMask.js'` and wrap the material: `noInk(material)` (it sets the
     `NO_INK` define; opaque built-in materials only). Use it for foliage and grass cards, chain-link, dense grilles
     and other fine cut-outs that would turn into a tangle of lines. Transparent materials with `depthWrite: false`
@@ -104,6 +116,9 @@ lighting with a light cel touch**: it is not a hard toon shader.
     surface are yours to paint (in a darker tone of the surface colour).
 - **Textures:** new textures default to anisotropy 4. Anisotropy only works with a linear magnification filter
   (three.js skips it for `NearestFilter`), so big tiling surfaces must be linear-filtered with mipmaps.
-- **Post:** full device resolution on every preset (never upscaled), FXAA after the ink, no grain, no chromatic
-  aberration, no sharpen pass. Bloom is only for lit things (lanterns, tubes, signs above about 1.15 linear).
+- **Post:** full device resolution on every preset (never upscaled), the ink, ambient occlusion on high / ultra (light,
+  and only from surfaces within 30 cm in depth, so nothing standing in front of a wall leaves a dark ring on it), the
+  pastel grade with neutral tone mapping, then FXAA. **No bloom and no screen-space god rays** on any preset (both drew
+  soft round glows: round the lanterns, round the sun). No grain, no chromatic aberration, no sharpen pass. A lit thing
+  (a lantern, a tube, a sign) reads by its own bright colour, not by a glow.
 - **Hard rules still stand:** no white rim or hover highlight, no glow blobs, pastel and a little desaturated.

@@ -140,6 +140,8 @@ const OutlineShader = {
       float tl = gl / (w0 * uPix), tr = gr / (w0 * uPix);
       return meet * smoothstep(uCrease.x, uCrease.y, atan(abs(tl - tr), 1.0 + tl * tr));
     }
+    // how sharply the depth turns at b (between a and c), in the crease's units: about 1 for a right-angled edge
+    float kink(float a, float b, float c) { return smoothstep(0.4, 0.9, abs(a + c - 2.0 * b) / (b * uPix)); }
     vec3 inked(vec3 c) { return c * uInkK + uInk * 0.4; }
     void main() {
       vec4 col = texture2D(tDiffuse, vUv);
@@ -151,8 +153,9 @@ const OutlineShader = {
       // this pixel's own ink: an occluder's edge, or a crease
       float own = max(max(sr.x, sl.x), max(su.x, sd.x));
       float cr = max(crease(l2, l1, w0, r1, r2), crease(d2, d1, w0, u1, u2));
-      // busy depth: the far taps on both axes step away from this pixel's face (fine, dense detail): no crease ink there
-      float busy = smoothstep(0.02, 0.06, min(abs(l2 + r2 - 2.0 * w0), abs(u2 + d2 - 2.0 * w0)) / w0);
+      // busy depth: the neighbours one tap away are kinks themselves (ribs, grilles, stock on a shelf, the far side of a
+      // thin rail): a lone crease has none beside it, so a crease with two or more kinked neighbours is left uninked
+      float busy = smoothstep(1.2, 2.2, kink(l2, l1, w0) + kink(w0, r1, r2) + kink(d2, d1, w0) + kink(w0, u1, u2));
       cr *= uCreaseK * (1.0 - busy);
       own = max(own * smoothstep(1.0 / uFade.w, 1.0 / uFade.z, w0), cr * (1.0 - own) * smoothstep(1.0 / uFade.y, 1.0 / uFade.x, w0));
       // the occluder next door: its colour makes the outer half of the line

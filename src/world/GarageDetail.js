@@ -268,9 +268,9 @@ export class GarageDetail {
     this.pr('dento', '+z', sw.x, sw.y + 0.105, bz + 0.003, 0.085);
     // knob-and-tube wiring: twin black cable on white porcelain knobs, along the back wall and out along the battens
     const knob = (x, y, z) => K.box('gloss', x - 0.011, y - 0.011, z - 0.011, x + 0.011, y + 0.011, z + 0.011, { tint: T.white, bevel: 0.004 });
-    const cable = (a, b) => { K.rod('flat', a, b, 0.0045, { tint: T.black, sides: 4 }); const n = Math.max(1, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) / 0.6)); for (let i = 0; i <= n; i++) knob(a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n + 0.012, a[2] + (b[2] - a[2]) * i / n); };
+    const cable = (a, b) => { K.rod('flat', a, b, 0.0045, { tint: T.black, sides: 6 }); const n = Math.max(1, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) / 0.6)); for (let i = 0; i <= n; i++) knob(a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n + 0.012, a[2] + (b[2] - a[2]) * i / n); };
     cable([-2.46, H - 0.06, bz + 0.03], [2.46, H - 0.06, bz + 0.03]);
-    for (const [x, zEnd] of [[-2.4, 0.8], [0, 3.6], [2.4, 0.8]]) { cable([x + 0.056, H - 0.03, bz + 0.03], [x + 0.056, H - 0.03, zEnd - 0.5]); K.rod('flat', [x + 0.056, H - 0.03, zEnd - 0.5], [x + 0.05, H - 0.17, zEnd - 0.55], 0.004, { tint: T.black, sides: 4 }); }
+    for (const [x, zEnd] of [[-2.4, 0.8], [0, 3.6], [2.4, 0.8]]) { cable([x + 0.056, H - 0.03, bz + 0.03], [x + 0.056, H - 0.03, zEnd - 0.5]); K.rod('flat', [x + 0.056, H - 0.03, zEnd - 0.5], [x + 0.05, H - 0.17, zEnd - 0.55], 0.004, { tint: T.black, sides: 6 }); }
     // left wall: a conduit along the blocks with an outlet behind each machine slot and the machine's fat cable
     const wx = G.minX + 0.02;
     pvc([[wx, 0.42, -4.4], [wx, 0.42, 2.25]], 0.012);
@@ -476,7 +476,9 @@ export class GarageDetail {
       bulbs.push([x, 4.36, zo + 0.42]);
     }
     this.bulbs = new THREE.Mesh(new THREE.BufferGeometry(), g0.mats.bulb);
-    { const parts = bulbs.map(([x, y, z]) => { const s = new THREE.SphereGeometry(0.03, 16, 10); s.translate(x, y, z); return s; }); this.bulbs.geometry = mergeGeometries(parts, false); }
+    // pear-shaped bulbs hanging neck-up in the shades: the screw collar, the neck and the globe
+    { const P = [[0, -0.046], [0.012, -0.044], [0.022, -0.036], [0.029, -0.024], [0.031, -0.01], [0.029, 0.004], [0.022, 0.016], [0.014, 0.026], [0.012, 0.034], [0.013, 0.036], [0.013, 0.044], [0, 0.044]].map(([r, y]) => new THREE.Vector2(r, y));
+      const parts = bulbs.map(([x, y, z]) => { const s = new THREE.LatheGeometry(P, 18); s.translate(x, y, z); return s; }); this.bulbs.geometry = mergeGeometries(parts, false); }
     this.bulbs.name = 'garage:signBulbs';
     g0.add(this.bulbs);
     // the louvred vent in the false front

@@ -19,7 +19,7 @@ import { surface, surfaceAvg, shutterInk, marks, prints, SHUTTER } from '../gfx/
 import { propMesh } from './props.js';
 import { hash2 } from '../core/util.js';
 import { Town } from './Town.js';
-import { Kit } from '../garage/kit.js';
+import { Kit, TGeo } from '../garage/kit.js';
 import { GarageDetail, PropBatch } from './GarageDetail.js';
 
 export const GARAGE = { minX: -4, maxX: 4, minZ: -5, maxZ: 5, height: 3.2, shutterY: 2.25, doorHalf: 0.6, doorH: 2.1 };
@@ -495,8 +495,8 @@ export class Garage {
     // the storage bin: translucent plastic, a blue lid with clips, a few capsules showing through
     const x = 3.55, z = -2.78, w = 0.5, h = 0.38, d = 0.5, g0 = new THREE.Group();
     g0.position.set(x, 0, z);
-    const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshPhysicalMaterial({ color: 0xe8f0f4, transparent: true, opacity: 0.5, roughness: 0.22 }));
-    body.position.y = h / 2;
+    const body = new THREE.Mesh(tubGeometry(w, h, d), new THREE.MeshPhysicalMaterial({ color: 0xe8f0f4, transparent: true, opacity: 0.5, roughness: 0.3, side: THREE.DoubleSide, depthWrite: false }));
+    body.name = 'garage:bin';
     g0.add(body);
     const lid = K.mesh('paint', (g) => { g.tint(0x6a9ad8); g.box(-w / 2 - 0.015, 0, -d / 2 - 0.015, w / 2 + 0.015, 0.04, d / 2 + 0.015, { bevel: 0.012 }); g.tint(0x4d7fc0); for (const s of [-1, 1]) g.box(s * (w / 2 + 0.012) - 0.01, -0.04, -0.05, s * (w / 2 + 0.012) + 0.01, 0.03, 0.05, { bevel: 0.004 }); });
     lid.position.y = h;
@@ -666,6 +666,38 @@ export function fixtureBody(g, len = 1.3) {
   g.rgb = k(0.8); g.box(0.077, -0.56, h - 0.188, 0.093, -0.52, h - 0.172, { bevel: 0.005 });
   g.rgb = col;
 }
+/** A moulded plastic storage tub (w x d at the rim, h tall, standing on y = 0, open at the top): walls drafted in toward
+ *  the base, rounded corners, a rolled rim lip and a stacking step a third of the way down, as one thin shell. */
+export function tubGeometry(w, h, d) {
+  const g = new TGeo();
+  // rounded-rectangle rings (corner radius r), 6 steps a corner, counter-clockwise from above
+  const ring = (hw, hd, r, y) => {
+    const out = [];
+    for (const [sx, sz, a0] of [[1, 1, 0], [-1, 1, Math.PI / 2], [-1, -1, Math.PI], [1, -1, 1.5 * Math.PI]]) {
+      for (let k = 0; k <= 6; k++) { const a = a0 + (k / 6) * (Math.PI / 2); out.push([sx * (hw - r) + Math.cos(a) * r, y, sz * (hd - r) + Math.sin(a) * r]); }
+    }
+    return out;
+  };
+  // the profile up the wall: [inset from the rim (m), height, corner radius]
+  const prof = [[0.03, 0.008, 0.035], [0.024, 0.02, 0.04], [0.016, h * 0.36, 0.045], [0.011, h * 0.36 + 0.01, 0.048], [0.004, h - 0.03, 0.052], [-0.008, h - 0.022, 0.058], [-0.012, h - 0.006, 0.06], [-0.004, h, 0.056], [0.008, h - 0.004, 0.05]];
+  const rings = prof.map(([i, y, r]) => ring(w / 2 - i, d / 2 - i, r, y));
+  for (let j = 0; j + 1 < rings.length; j++) {
+    const A = rings[j], B = rings[j + 1];
+    for (let k = 0; k < A.length; k++) {
+      const k1 = (k + 1) % A.length, n = [A[k][0] + A[k1][0], 0, A[k][2] + A[k1][2]];
+      // (out of the rim's turn-over the shell faces in)
+      g.quad(A[k], A[k1], B[k1], B[k], j >= 7 ? [-n[0], 0.3, -n[2]] : n);
+    }
+  }
+  // the floor, with its foot ring
+  const f0 = rings[0];
+  g.fan(f0, [0, -1, 0]);
+  const foot = ring(w / 2 - 0.03, d / 2 - 0.03, 0.035, 0);
+  for (let k = 0; k < foot.length; k++) { const k1 = (k + 1) % foot.length; g.quad(foot[k], foot[k1], f0[k1], f0[k], [foot[k][0], 0, foot[k][2]]); }
+  g.fan(foot, [0, -1, 0]);
+  return g.build();
+}
+
 /** The tubes of fittings at [[x, z]] (y = 0 at the fitting's top), as one unlit geometry. */
 export function tubeGeometry(at, len = 1.3) {
   const parts = [];

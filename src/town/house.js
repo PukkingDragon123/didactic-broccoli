@@ -473,8 +473,8 @@ export function shutter(t, x, y, z, w, h, tint = 0xc8c2b4) {
 /** A potted plant: a terracotta pot, a faceted clump of leaves, maybe flowers. */
 export function pot(t, x, y, z, s = 1, leaf = 0x4f8a3a, flower = null, col = 0xb86a48) {
   const B = t.B, m = t.m;
-  B.lathe(m.pv, [[0.085 * s, 0], [0.12 * s, 0.19 * s], [0.135 * s, 0.19 * s], [0.135 * s, 0.22 * s]], x, y, z, { tint: col, sides: 7, caps: 'b' });
-  B.cyl(m.pv, 0.12 * s, 0.12 * s, 0.01, x, y + 0.2 * s, z, { tint: 0x4a3a2c, sides: 7, caps: 't' });
+  B.lathe(m.pv, [[0.08 * s, 0], [0.086 * s, 0.012 * s], [0.12 * s, 0.185 * s], [0.136 * s, 0.19 * s], [0.14 * s, 0.205 * s], [0.136 * s, 0.222 * s], [0.124 * s, 0.222 * s]], x, y, z, { tint: col, sides: 16, caps: 'b' });
+  B.cyl(m.dirt, 0.122 * s, 0.122 * s, 0.01, x, y + 0.2 * s, z, { tint: 0x5a4632, sides: 16, caps: 't' });
   void leaf; shrub(t, x, y + 0.17 * s, z, 0.2 * s, flower ? 'azalea' : (Math.round(x * 7 + z * 3) % 2 ? 'small' : 'leaf'), { seed: Math.round(x * 13 + z * 7) });
 }
 

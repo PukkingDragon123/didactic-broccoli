@@ -284,6 +284,15 @@ export function creeper(t, x, z, ry, w, h, seed = 1) {
   B.pop();
 }
 
+/** A climber trained up a string from (x, y0) to (x, y1) at depth z (local frame, the wall behind it at lower z):
+ *  leaves on short stalks either side of the string, facing out. */
+export function vine(t, x, y0, y1, z, seed = 1, o = {}) {
+  const pts = [];
+  for (let y = y0, i = 0; y < y1; y += 0.075, i++) { const sd = i % 2 ? 1 : -1, w = 0.06 + 0.05 * hash2(i, seed); pts.push([x + sd * w, y, z + 0.02 + 0.03 * hash2(seed, i)]); }
+  const normalAt = (q) => norm3([(q[0] - x) * 3, 0.15, 1]);
+  cards(t, o.kind || 'small', pts.length, (i) => ({ p: pts[i], nrm: [0, 0, 1], h: 0.45 + 0.55 * ((pts[i][1] - y0) / (y1 - y0)), normalAt }), { card: o.card ?? 0.2, tilt: 0.5, seed, tint: o.tint });
+}
+
 /** A small rounded plant (a pot's, a window box's): r its radius, kind its sprig. */
 export function shrub(t, x, y, z, r, kind = 'small', o = {}) {
   crown(t, x, y + r * 0.7, z, r, r * 0.85, r, { kind, flat: -0.5, card: Math.max(0.12, Math.min(CELLS[kind][2], r * 0.9)), density: 2.2, ...o });

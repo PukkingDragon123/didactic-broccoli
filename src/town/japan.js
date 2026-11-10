@@ -74,6 +74,23 @@ export function buildJapan(t) {
   // ---- behind the garbage station: the collection days and the crow notice on the wall, bottles against cats
   t.sign('gomi', -6.75, 0.62, ZB + 0.006, {});
   t.sign('crowNote', -6.12, 0.82, ZB + 0.006, { rz: -0.03 });
+  // the green crow net (カラスよけネット), rolled up and hung on two hooks on the wall behind the pad until the bags come out
+  {
+    if (!t._crowNet) { const nm = t.fence.clone(), mp = t.fence.map.clone(); mp.repeat.set(30, 30); mp.needsUpdate = true; nm.map = mp; nm.name = 'crowNet'; t._crowNet = nm; }
+    const NM = t._crowNet, y = 1.02, x0 = -7.32, x1 = -5.98, xc = (x0 + x1) / 2, z = ZB + 0.085, G = 0x2c7050;
+    for (const x of [x0 + 0.12, x1 - 0.12]) B.tube(m.metal, [[x, y + 0.07, ZB + 0.004], [x, y + 0.07, ZB + 0.07], [x, y + 0.12, ZB + 0.085]], 0.007, { tint: 0x6a6e70, sides: 6 });
+    const roll = [[x0, y + 0.05, z], [x0 + 0.12, y + 0.06, z], [xc, y - 0.03, z + 0.008], [x1 - 0.12, y + 0.06, z], [x1, y + 0.05, z]];
+    B.tube(m.pv, roll, 0.05, { tint: 0x1f4a36, sides: 12 });
+    B.tube(NM, roll.map(([a, b, c]) => [a, b, c]), 0.058, { tint: G, sides: 12 });
+    // a fold of net hanging loose below the roll, its hem weighted with a chain
+    const hem = (u) => y - 0.32 - 0.05 * Math.sin(u * 7.0);
+    for (let k = 0; k < 6; k++) {
+      const u0 = k / 6, u1 = (k + 1) / 6, xa = x0 + 0.2 + (x1 - x0 - 0.4) * u0, xb = x0 + 0.2 + (x1 - x0 - 0.4) * u1;
+      B.face(NM, [xa, hem(u0), z - 0.01], [xb, hem(u1), z - 0.01], [xb, y, z - 0.02], [xa, y, z - 0.02], { both: true, tint: G, uvs: [[xa, hem(u0)], [xb, hem(u1)], [xb, y], [xa, y]] });
+    }
+    const ch = []; for (let k = 0; k <= 12; k++) { const u = k / 12; ch.push([x0 + 0.2 + (x1 - x0 - 0.4) * u, hem(u) - 0.004, z - 0.008]); }
+    B.tube(m.metal, ch, 0.008, { tint: 0x5a5e60, sides: 6 });
+  }
   petBottles(t, 7.65, 8.3, ZB + 0.07, 4, 2);
   petBottles(t, -9.68, -8.78, ZB + 0.07, 6, 3);
   petBottles(t, 4.75, 6.4, ZF - 0.07, 8, 5);
@@ -84,16 +101,11 @@ export function buildJapan(t) {
   // ---- a roadside hokora at the foot of the embankment: a stone base, a tiny shrine, a jizō in his red bib, offerings
   {
     const x = -25.42, z = 5.58;
-    B.box(m.stone, 0.56, 0.42, 0.4, x, 0, z, { tint: 0xd8d4c8, bevel: 0.02 });
-    B.box(m.wood, 0.44, 0.44, 0.3, x, 0.42, z - 0.02, { tint: 0x8a6a4a, skip: 'pz' });
-    B.box(m.pv, 0.4, 0.4, 0.02, x, 0.44, z - 0.15, { tint: 0x3a2a20 });
-    for (const s of [-1, 1]) B.face(m.kawara, [x - 0.3 * 1, 0.86, z + s * 0.24], [x + 0.3, 0.86, z + s * 0.24], [x + 0.3, 1.0, z - 0.02], [x - 0.3, 1.0, z - 0.02], { tint: 0x7e848e, both: true });
-    B.rod(m.ridge, [x - 0.32, 1.01, z - 0.02], [x + 0.32, 1.01, z - 0.02], 0.03, { tint: 0x5e646e, sides: 5 });
-    B.lathe(m.pv, [[0.07, 0], [0.075, 0.14], [0.05, 0.19], [0.062, 0.24], [0.045, 0.3], [0.01, 0.32]], x, 0.43, z - 0.02, { tint: 0xa9a59c, sides: 7 });
-    B.box(m.pv, 0.12, 0.07, 0.02, x, 0.54, z + 0.055, { tint: 0xc8282a });
-    B.cyl(m.gloss, 0.025, 0.03, 0.06, x - 0.14, 0.42, z + 0.12, { tint: 0xe8f0f0, sides: 6 });
-    B.blob(m.pv, x + 0.13, 0.455, z + 0.13, 0.035, 0.03, 0.035, { tint: 0xf0902a, jitter: 0.05, lo: 0.85 });
-    B.cyl(m.pv, 0.02, 0.02, 0.1, x + 0.2, 0.42, z + 0.05, { tint: 0x5a7a5a, sides: 5 }); B.blob(m.pv, x + 0.2, 0.57, z + 0.05, 0.05, 0.05, 0.05, { tint: 0xf4e04a, lo: 0.85 });
+    // the shrine itself is the prop library's (a tiled gable on posts, two Jizō in red bibs), on a stone step with offerings
+    B.box(m.stone, 0.74, 0.12, 0.5, x, 0, z - 0.02, { tint: 0xc8c4b8, bevel: 0.02 });
+    t.prop('jizo_shrine', x, 0.12, z - 0.03, 0, { scale: 0.6 });
+    B.lathe(m.gloss, [[0.022, 0], [0.026, 0.004], [0.03, 0.05], [0.027, 0.052]], x - 0.2, 0.234, z + 0.15, { tint: 0xe8f0f0, sides: 14, caps: 'b' });
+    B.lathe(m.pv, [[0.001, 0], [0.026, 0.006], [0.036, 0.024], [0.032, 0.04], [0.012, 0.05], [0.001, 0.05]], x + 0.2, 0.234, z + 0.15, { tint: 0xf0902a, sides: 14, caps: '' });
     P.addObstacle(x - 0.3, x + 0.3, z - 0.22, z + 0.22);
   }
   // ---- the empty house was a barber's: a faded board over the door, the pole (stopped) beside it
