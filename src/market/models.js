@@ -12,6 +12,7 @@ import { voxelMaterials } from '../voxel/materials.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { Pix } from '../gfx/pix.js';
+import { textW5 } from '../gfx/font5x7.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { COSMETIC_BY_ID, cosmeticPreview } from '../people/cosmetics.js';
 import { CHARM_DEFS, TIPJAR_DEFS, itemTitle, BUILD } from './catalog.js';
@@ -51,9 +52,24 @@ function slabLabel(d) {
   p.rect(0, 0, 64, 6, 0xc8302a);
   p.tinyText('KGS', 3, 0, { color: 0xffffff });
   p.tinyText(d.cert || '', 61, 0, { color: 0xffe0d8, align: 'right' });
-  const words = (getItem(d.key)?.name || '').toUpperCase().split(' '), lines = [''];
-  for (const w of words) { if ((lines[lines.length - 1] + ' ' + w).trim().length > 7) lines.push(w.slice(0, 7)); else lines[lines.length - 1] = (lines[lines.length - 1] + ' ' + w).trim(); }
-  lines.filter(Boolean).slice(0, 2).forEach((l, i) => p.tinyText(l, 3, 8 + i * 7, { color: 0x2a2220 }));
+  // the name in two lines of 5x7 text, wrapped by measured width (39 px, clear of the score box) at spaces and
+  // hyphens; a name that still doesn't fit ends in '.'
+  const MAXW = 39, parts = (getItem(d.key)?.name || '').toUpperCase().match(/[^ -]+-?/g) || [], lines = [];
+  let cur = '';
+  for (const w of parts) {
+    const next = cur ? (cur.endsWith('-') ? cur + w : cur + ' ' + w) : w;
+    if (textW5(next) <= MAXW) { cur = next; continue; }
+    if (cur) lines.push(cur);
+    cur = w;
+  }
+  if (cur) lines.push(cur);
+  const shown = lines.slice(0, 2).map((l, i, a) => {
+    let t = l;
+    const more = i === a.length - 1 && lines.length > 2;
+    while (t.length > 1 && textW5(t + (more ? '.' : '')) > MAXW) t = t.slice(0, -1);
+    return t + (more || t !== l ? '.' : '');
+  });
+  shown.forEach((l, i) => p.tinyText(l, 3, 7 + i * 8, { color: 0x2a2220 }));
   p.rect(44, 7, 18, 15, d.score >= 9.5 ? 0xf2c14e : 0xe8e0d0);
   p.tinyText(String(d.score), 53, 8, { color: 0x2a2220, align: 'center' });
   p.tinyText(d.error ? 'ERROR' : gradeWord(d.score).split(' ')[0].slice(0, 5), 53, 15, { color: 0x6a3a2a, align: 'center' });
