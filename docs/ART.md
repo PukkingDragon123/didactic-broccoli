@@ -60,6 +60,18 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
   paint, hair and outfits from the human kit, dynamic poses on display bases.
 - The world (town, buildings, interiors, props) keeps the detailed direction above.
 
+## Update: high-resolution pixel-art textures, normal humans (the owner's latest direction)
+- **Surfaces are high-resolution pixel art** (wins over "texels must never read as pixels" above): each texture is
+  realistic in content (from the real photos in src/kit/photoTex.js, or painted from reference) and finished as
+  hand-pixelled art: a limited palette per material (about 12 to 32 tones), clean pixel clusters, deliberate
+  highlights and shadow tones, no noise, no blur, no smooth gradients. Pixels are crisp up close (nearest
+  magnification) and never shimmer far away (mipmapped minification). Density: about 64 to 128 texels a metre for
+  walls, roofs and roads, more for things you hold or stand in front of, so the pixels are small but readable.
+- **People look like normal humans**: real adult proportions (about 7 to 7.5 heads), modelled faces (brow, eye
+  sockets, nose, lips, ears, jaw), hands with fingers, hair as modelled locks, clothes with seams and folds; lightly
+  cel-shaded like the rest of the world. Characterful and hand-designed, never generic or "AI-looking".
+- Every model keeps getting more detailed: modelled small parts everywhere a person would look.
+
 ## 2D
 - Printed things are **detailed pixel art** with nearest filtering: product labels with a mascot, a logo, flavour
   art, small print and a barcode; posters; gacha display cards laid out like real capsule-toy flyers (logo, price

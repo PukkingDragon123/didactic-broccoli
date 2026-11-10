@@ -15,7 +15,7 @@ The art rules in full: docs/ART.md.
   Speech, subtitles and chat choices are plain floating text (hard ink outline, no paper box).
 - 3D art is detailed, polished and lightly cel-shaded (not low-poly, no voxels, no chunky pixel textures, no
   stuck-together primitive shapes): real-world proportions from reference, smooth curves, modelled small parts,
-  clean cartoon textures, realistic lighting with a soft cel touch and no ring artefacts (docs/ART.md). First-person arms are
+  high-resolution pixel-art textures (realistic content, crisp pixels: docs/ART.md), realistic lighting with a soft cel touch and no ring artefacts (docs/ART.md). First-person arms are
   blocky but connected and flexible.
 - Product labels, posters and gacha display cards are detailed pixel art with mascots and full label art. All
   designs, names and brands are original (real ones are genre reference only).
