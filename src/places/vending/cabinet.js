@@ -157,13 +157,18 @@ export function makeCabinet(liveryId) {
   const uvT = (p) => vT.st((p[0] - C.x0) / (C.x1 - C.x0), (p[2] - C.zb) / (C.zf - C.zb));
   const G = new Geo(2);
   const dark = sw(DARK, R_PLASTIC), sil = sw(SIL, R_METAL), silD = sw(SIL_D, R_METAL), bodyD = sw(dk(L.body, 0.25));
-  // plinth
-  G.with(sw(0x3a3c42, 0.8), 0, (g) => g.box(C.x0 + 0.02, 0, C.zb + 0.02, C.x1 - 0.02, 0.05, C.zf - 0.01));
+  // plinth on four screw feet
+  G.with(sw(0x3a3c42, 0.8), 0, (g) => g.box(C.x0 + 0.02, 0.014, C.zb + 0.02, C.x1 - 0.02, 0.05, C.zf - 0.01, { bevel: 0.004 }));
+  G.with(silD, 0, (g) => { for (const fx of [C.x0 + 0.07, C.x1 - 0.07]) for (const fz of [C.zb + 0.07, C.zf - 0.06]) { g.cyl('y', [fx, 0, fz], 0.026, 0.006, 16); g.cyl('y', [fx, 0.006, fz], 0.01, 0.01, 10); } });
   // the body: sides and top painted, back plain
-  G.with(triplanar({ px: uvS, nx: uvS, py: uvT, nz: sw(dk(L.body, 0.12)), ny: bodyD }, bodyD), 0, (g) => g.box(C.x0, 0.05, C.zb, C.x1, C.h, C.zf, { bevel: 0.012, skip: ['pz'] }));
+  G.with(triplanar({ px: uvS, nx: uvS, py: uvT, nz: sw(dk(L.body, 0.12)), ny: bodyD }, bodyD), 0, (g) => g.box(C.x0, 0.05, C.zb, C.x1, C.h, C.zf, { bevel: 0.016, skip: ['pz'] }));
+  // the sides are pressed panels: a raised field inside a rolled border, carrying the same paint
+  G.with(triplanar({ px: uvS, nx: uvS }, bodyD), 0, (g) => { for (const sx of [-1, 1]) for (const [ya, yb] of [[0.36, 1.0], [1.04, 1.74]]) { const xa = sx > 0 ? C.x1 : C.x0 - 0.007, xb = sx > 0 ? C.x1 + 0.007 : C.x0; g.box(xa, ya, C.zb + 0.05, xb, yb, C.zf - 0.04, { bevel: 0.006, skip: [sx > 0 ? 'nx' : 'px'] }); } });
+  // a hood over the window, a T-handle on the lock
+  G.with(sil, 0, (g) => { g.box(C.win.x0 - 0.02, C.win.y1 + 0.006, C.zd, C.win.x1 + 0.02, C.win.y1 + 0.02, C.zd + 0.024, { bevel: 0.005, skip: ['nz'] }); g.box(0.36, 0.812, C.zd + 0.008, 0.41, 0.828, C.zd + 0.02, { bevel: 0.004 }); });
   // a fan housing on the roof, hinges down the left edge
   G.with(sw(dk(L.body, 0.3)), 0, (g) => { g.box(-0.36, C.h, -0.3, 0.36, C.h + 0.028, -0.02, { bevel: 0.008, skip: ['ny'] }); });
-  G.with(silD, 0, (g) => { for (const y of [0.3, 0.95, 1.6]) g.cyl('y', [C.x0 - 0.004, y, C.zf + 0.022], 0.011, 0.1, 6); });
+  G.with(silD, 0, (g) => { for (const y of [0.3, 0.95, 1.6]) g.cyl('y', [C.x0 - 0.004, y, C.zf + 0.022], 0.011, 0.1, 12); });
   // the body's face behind the door (seen through the holes' edges), then the door: a slab with two holes
   const w = C.win, q = C.port;
   const rect = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
@@ -180,9 +185,26 @@ export function makeCabinet(liveryId) {
   G.with(sw(0xf4f6f4, 0.6), 1, (g) => { for (const y of C.ledge) g.box(w.x0, y - 0.012, w.zb, w.x1, y, 0.334, { skip: ['nx', 'px', 'nz'] }); });
   // the strip bars under each row (their faces are the machine's own lit strip, added by Vending.js)
   G.with(silD, 0, (g) => { for (const y of C.ledge) g.box(w.x0, y - C.stripH, 0.334, w.x1, y, 0.351, { skip: ['pz', 'nz'] }); });
+  // the window's frame: four chrome bars standing proud of the door; a bezel round every button, one round the coin slot
+  G.with(sil, 0, (g) => {
+    const f = 0.012, z0 = C.zd, z1 = C.zd + 0.009;
+    g.box(w.x0 - f, w.y1, z0, w.x1 + f, w.y1 + f * 0.6, z1, { bevel: 0.003, skip: ['nz'] }); g.box(w.x0 - f, w.y0 - f, z0, w.x1 + f, w.y0, z1, { bevel: 0.003, skip: ['nz'] });
+    g.box(w.x0 - f, w.y0, z0, w.x0, w.y1, z1, { bevel: 0.003, skip: ['nz'] }); g.box(w.x1, w.y0, z0, w.x1 + f, w.y1, z1, { bevel: 0.003, skip: ['nz'] });
+    const cw = (w.x1 - w.x0) / 4, bz0 = 0.351, bz1 = 0.3555;
+    for (const y of C.ledge) for (let c = 0; c < 4; c++) {
+      const bx0 = w.x0 + c * cw + cw * (47.5 / 72), bx1 = w.x0 + c * cw + cw * (69.5 / 72), by1 = y - C.stripH * (12.5 / 28), by0 = y - C.stripH * (27.5 / 28), t = 0.0022;
+      g.box(bx0 - t, by1, bz0, bx1 + t, by1 + t, bz1, { skip: ['nz'] }); g.box(bx0 - t, by0 - t, bz0, bx1 + t, by0, bz1, { skip: ['nz'] }); g.box(bx0 - t, by0, bz0, bx0, by1, bz1, { skip: ['nz'] }); g.box(bx1, by0, bz0, bx1 + t, by1, bz1, { skip: ['nz'] });
+    }
+    const sz0 = C.zd + 0.006, sz1 = C.zd + 0.011;
+    g.box(0.3755, 1.164, sz0, 0.3795, 1.256, sz1, { bevel: 0.001, skip: ['nz'] }); g.box(0.3905, 1.164, sz0, 0.3945, 1.256, sz1, { bevel: 0.001, skip: ['nz'] }); g.box(0.3755, 1.252, sz0, 0.3945, 1.256, sz1, { skip: ['nz'] }); g.box(0.3755, 1.164, sz0, 0.3945, 1.168, sz1, { skip: ['nz'] });
+  });
   // the port: a dark throat
   G.with(sw(0x16161a, 0.9), 0, (g) => g.box(q.x0, q.y0, q.zb, q.x1, q.y1, C.zd, { inward: true, skip: ['pz'] }));
-  G.with(silD, 0, (g) => g.quad([q.x0, q.y0 + 0.003, C.zd], [q.x1, q.y0 + 0.003, C.zd], [q.x1, q.y0 + 0.02, q.zb], [q.x0, q.y0 + 0.02, q.zb], [0, 1, 0.2]));
+  G.with(sw(0x4a4e56, 0.6), 0, (g) => g.quad([q.x0, q.y0 + 0.003, C.zd], [q.x1, q.y0 + 0.003, C.zd], [q.x1, q.y0 + 0.02, q.zb], [q.x0, q.y0 + 0.02, q.zb], [0, 1, 0.2]));
+  // the port's flap: smoked plastic hanging from a pivot rod in two lugs, pushed in a little
+  G.with(sw(0x33373e, 0.25), 0, (g) => { const ya = q.y1 - 0.008, yb = q.y0 + 0.075, za = C.zd - 0.006, zb2 = C.zd - 0.05; g.quad([q.x0 + 0.006, yb, zb2], [q.x1 - 0.006, yb, zb2], [q.x1 - 0.006, ya, za], [q.x0 + 0.006, ya, za], [0, 0.3, 1]); g.quad([q.x0 + 0.006, yb, zb2 - 0.003], [q.x1 - 0.006, yb, zb2 - 0.003], [q.x1 - 0.006, ya, za - 0.003], [q.x0 + 0.006, ya, za - 0.003], [0, -0.3, -1]); g.quad([q.x0 + 0.006, yb, zb2], [q.x1 - 0.006, yb, zb2], [q.x1 - 0.006, yb, zb2 - 0.003], [q.x0 + 0.006, yb, zb2 - 0.003], [0, -1, 0]); });
+  G.with(sw(0x5a6068, 0.25), 0, (g) => g.quad([q.x0 + 0.02, q.y0 + 0.1, C.zd - 0.0375], [q.x0 + 0.07, q.y0 + 0.1, C.zd - 0.0375], [q.x0 + 0.1, q.y1 - 0.03, C.zd - 0.0115], [q.x0 + 0.05, q.y1 - 0.03, C.zd - 0.0115], [0, 0.3, 1]));
+  G.with(sil, 0, (g) => { g.cyl('x', [q.x0 + 0.002, q.y1 - 0.007, C.zd - 0.004], 0.005, q.x1 - q.x0 - 0.004, 10); for (const lx of [q.x0 + 0.004, q.x1 - 0.016]) g.box(lx, q.y1 - 0.016, C.zd - 0.012, lx + 0.012, q.y1 + 0.002, C.zd + 0.004, { bevel: 0.002 }); });
   // the coin column's hardware, each face taking the front view's paint
   const hw = triplanar({ pz: uvF }, sil);
   G.with(hw, 0, (g) => {
@@ -192,7 +214,7 @@ export function makeCabinet(liveryId) {
     g.box(0.33, 0.93, C.zd, 0.44, 1.0, C.zd + 0.012, { bevel: 0.003, skip: ['nz'] });
   });
   G.with(dark, 0, (g) => { g.box(0.368, 1.052, C.zd, 0.402, 1.088, C.zd + 0.022, { bevel: 0.004, skip: ['nz'] }); });
-  G.with(sil, 0, (g) => { g.cyl('z', [0.385, 0.82, C.zd], 0.018, 0.008, 8); });
+  G.with(sil, 0, (g) => { g.cyl('z', [0.385, 0.82, C.zd], 0.018, 0.008, 20); g.cyl('z', [0.385, 0.82, C.zd + 0.008], 0.011, 0.003, 14); });
   // the poster's frame
   const P = C.poster;
   G.with(triplanar({ pz: uvF }, silD), 0, (g) => g.box(P.x0 - 0.008, P.y0 - 0.008, C.zd, P.x1 + 0.008, P.y1 + 0.008, C.zd + 0.006, { bevel: 0.002, skip: ['nz'] }));

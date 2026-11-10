@@ -13,9 +13,10 @@ export default {
   themes: ['food', 'weird', 'cute'],
   card: { bg: '#fbefc8', accent: '#d9482e', text: '#3a2a22', accent2: '#f2b23a', pattern: 'waves' },
   capsule: { colors: [0xf2d27c, 0xd94a30, 0x86c462, 0x2e426a, 0xf7f3e8] },
-  atlas: [2048, 2048], // (noodles are painted all over: more patches than a plain-coloured set)
+  atlas: [2048, 1536], // (noodles are painted all over: more patches than a plain-coloured set)
   flyer: {
     maker: 'manpuku', scene: 'counter', hero: 'ramen', side: ['kitsune', 'hiyashi'],
+    title: [['めんの動物園', 2, 'b'], ['めんズー', 4, 'a']],
     catch: 'めんでできた、どうぶつたち。', sub: 'のびるまえにあつめよう', gimmick: 'おはしで持ちあげギミック！',
   },
   items: [

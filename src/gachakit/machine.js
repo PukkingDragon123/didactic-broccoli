@@ -17,7 +17,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from '../vehicles/atlas.js';
 import { Geo, triplanar, boxMap } from '../vehicles/geom.js';
 import { ramp, mix, rust } from '../vehicles/paint.js';
-import { GeoS } from './geo.js';
+import { GeoS, roundBox } from './geo.js';
 import { glyphMask, clearGlyphs } from './capsuleShell.js';
 
 const KANA = 'あそびかたコインを入れるハンドル右にまわすカプセルとる投入口返却とりだし対象年齢才以上誤飲注意小さな部品故障の際は係員までお知らせください製造元ことぶき商会東京都寿町ガチャ回円準備中売切見本カプセルトイ';
@@ -26,10 +26,10 @@ void hx;
 
 // ----------------------------------------------------------------------------- styles
 export const STYLES = {
-  retro: { body: 0xc4483c, panel: 0xeadfc6, trim: 0xd8dcdc, accent: 0xf2c84a, ink: 0x7a1f18, dial: 0xd8dcdc, grip: 0xc4483c, knobFace: 0xe4e6e6, inner: 0xe9dcbc, bevel: 0.006, wear: 1, stand: 'crate', header: 'slant', glass: 0xf4ecd0, flap: 'steel', sign: 'ガチャ', model: 'GS-70' },
-  standard: { body: 0xf1efe8, panel: 0xf8f7f2, trim: 0x3f78c8, accent: 0xffd23f, ink: 0x1f3f78, dial: 0x3f78c8, grip: 0x3f78c8, knobFace: 0xf6f4ee, inner: 0xdfe8f4, bevel: 0.022, wear: 0.25, stand: 'pedestal', header: 'band', glass: 0xeef6ff, flap: 'smoke', sign: 'カプセルトイ', model: 'GS-90' },
-  deluxe: { body: 0x2c2b30, panel: 0x38363c, trim: 0xd8b04a, accent: 0xd8b04a, ink: 0xf0d890, dial: 0x1e1d21, grip: 0xd8b04a, knobFace: 0x2a282c, inner: 0x34323a, bevel: 0.012, wear: 0, stand: 'twotier', header: 'board', glass: 0xf2f6ff, flap: 'smoke', sign: 'ガチャ', model: 'GS-500W', dark: true },
-  royal: { body: 0xf6eef3, panel: 0xfffaf6, trim: 0xd24fa8, accent: 0xe2bc58, ink: 0x8a2a70, dial: 0xd24fa8, grip: 0xd24fa8, knobFace: 0xfaf4f0, inner: 0xfbe6f2, bevel: 0.02, wear: 0, stand: 'cabinet', header: 'arch', glass: 0xfff6fc, flap: 'smoke', sign: 'ガチャ', model: 'GS-1000R', crown: true },
+  retro: { body: 0xc4483c, panel: 0xeadfc6, trim: 0xd8dcdc, accent: 0xf2c84a, ink: 0x7a1f18, dial: 0xd8dcdc, grip: 0xc4483c, knobFace: 0xe4e6e6, inner: 0xe9dcbc, bevel: 0.006, round: 0.006, wear: 1, stand: 'crate', header: 'slant', glass: 0xf4ecd0, flap: 'steel', sign: 'ガチャ', model: 'GS-70' },
+  standard: { body: 0xf1efe8, panel: 0xf8f7f2, trim: 0x3f78c8, accent: 0xffd23f, ink: 0x1f3f78, dial: 0x3f78c8, grip: 0x3f78c8, knobFace: 0xf6f4ee, inner: 0xdfe8f4, bevel: 0.022, round: 0.034, wear: 0.25, stand: 'pedestal', header: 'band', glass: 0xeef6ff, flap: 'smoke', sign: 'カプセルトイ', model: 'GS-90' },
+  deluxe: { body: 0x2c2b30, panel: 0x38363c, trim: 0xd8b04a, accent: 0xd8b04a, ink: 0xf0d890, dial: 0x1e1d21, grip: 0xd8b04a, knobFace: 0x2a282c, inner: 0x34323a, bevel: 0.012, round: 0.014, wear: 0, stand: 'twotier', header: 'board', glass: 0xf2f6ff, flap: 'smoke', sign: 'ガチャ', model: 'GS-500W', dark: true },
+  royal: { body: 0xf6eef3, panel: 0xfffaf6, trim: 0xd24fa8, accent: 0xe2bc58, ink: 0x8a2a70, dial: 0xd24fa8, grip: 0xd24fa8, knobFace: 0xfaf4f0, inner: 0xfbe6f2, bevel: 0.02, round: 0.03, wear: 0, stand: 'cabinet', header: 'arch', glass: 0xfff6fc, flap: 'smoke', sign: 'ガチャ', model: 'GS-1000R', crown: true },
 };
 const STEEL = 0xb9bfc4, DARK = 0x1c1b20, RUBBER = 0x26262a;
 const CHROME = [0x596068, 0x9aa3ab, 0xd3dade, 0xf6fafa]; // painted chrome: shade, mid, light, glint
@@ -64,9 +64,12 @@ export function machineParts(type, spec, L) {
   const st = STYLES[type];
   const out = { st, mats: null, geo: null, A: null };
   const make = () => {
-    const A = new Atlas(1024, 1024);
-    const G = buildGeometry(type, spec, L, st, A);
-    return { A, G };
+    // (the shelves fit 1024 x 1024 for the four machines; a taller sheet is the fallback if a spec ever outgrows it)
+    for (const h of [1024, 2048]) {
+      const A = new Atlas(1024, h);
+      try { return { A, G: buildGeometry(type, spec, L, st, A) }; } catch (e) { if (h === 2048 || !/atlas full/.test(e.message)) throw e; }
+    }
+    return null;
   };
   const { A, G } = make();
   const map = A.texture(), roughnessMap = A.roughTexture();
@@ -93,23 +96,24 @@ function buildGeometry(type, spec, L, st, A) {
   const b = st.bevel;
   const PPM = 900;
   // ------------------------------------------------------------------ views
-  const V = {
-    F: A.view('F', { u: (p) => p[0], v: (p) => p[1], u0: -hw, u1: hw, v0: y0, v1: yL, ppm: PPM }),
-    SR: A.view('SR', { u: (p) => -p[2], v: (p) => p[1], u0: -hd, u1: hd, v0: y0, v1: yL, ppm: 560 }),
-    SL: A.view('SL', { u: (p) => p[2], v: (p) => p[1], u0: -hd, u1: hd, v0: y0, v1: yL, ppm: 560 }),
-    LF: A.view('LF', { u: (p) => p[0], v: (p) => p[1], u0: -hw - 0.008, u1: hw + 0.008, v0: -0.03, v1: capH + 0.09, ppm: PPM }),
-    W: A.view('W', { u: (p) => p[0], v: (p) => p[1], u0: -hw, u1: hw, v0: yL, v1: yC, ppm: 420 }),
-    SF: A.view('SF', { u: (p) => p[0], v: (p) => p[1], u0: -hw - 0.06, u1: hw + 0.06, v0: 0, v1: y0, ppm: 520 }),
-    SS: A.view('SS', { u: (p) => p[2], v: (p) => p[1], u0: -hd - 0.06, u1: hd + 0.06, v0: 0, v1: y0, ppm: 400 }),
-    DIAL: A.patch('DIAL', 232, 232), KNOB: A.patch('KNOB', 150, 150),
-    GL: A.patch('GL', 160, 150), HOOD: A.patch('HOOD', 72, 56), FLAP: A.patch('FLAP', 72, 60),
-    INSTR: A.patch('INSTR', 184, 112), FAIL: A.patch('FAIL', 204, 42), AGE: A.patch('AGE', 140, 22), CHOKE: A.patch('CHOKE', 84, 60), MAKER: A.patch('MAKER', 188, 46),
-    SLOT: A.patch('SLOT', 104, 22), RET: A.patch('RET', 56, 22), OUT: A.patch('OUT', 90, 22), PRICE: A.patch('PRICE', 64, 64), SIGN: A.patch('SIGN', 220, 64), CLOSED: A.patch('CLOSED', 120, 84), COIN: A.patch('COIN', 96, 124), WOOD: A.patch('WOOD', 128, 64),
-  };
+  // (allocated tallest first: the atlas packs in shelves)
+  const V = {};
+  V.F = A.view('F', { u: (p) => p[0], v: (p) => p[1], u0: -hw, u1: hw, v0: y0, v1: yL, ppm: PPM });
+  V.SF = A.view('SF', { u: (p) => p[0], v: (p) => p[1], u0: -hw - 0.06, u1: hw + 0.06, v0: 0, v1: y0, ppm: 520 });
+  V.DIAL = A.patch('DIAL', 232, 232);
+  V.SR = A.view('SR', { u: (p) => -p[2], v: (p) => p[1], u0: -hd, u1: hd, v0: y0, v1: yL, ppm: 560 });
+  V.SL = A.view('SL', { u: (p) => p[2], v: (p) => p[1], u0: -hd, u1: hd, v0: y0, v1: yL, ppm: 560 });
+  V.SS = A.view('SS', { u: (p) => p[2], v: (p) => p[1], u0: -hd - 0.06, u1: hd + 0.06, v0: 0, v1: y0, ppm: 400 });
+  V.W = A.view('W', { u: (p) => p[0], v: (p) => p[1], u0: -hw, u1: hw, v0: yL, v1: yC, ppm: 420 });
+  V.KNOB = A.patch('KNOB', 150, 150);
+  V.LF = A.view('LF', { u: (p) => p[0], v: (p) => p[1], u0: -hw - 0.008, u1: hw + 0.008, v0: -0.03, v1: capH + 0.09, ppm: PPM });
+  V.GL = A.patch('GL', 160, 150); V.COIN = A.patch('COIN', 96, 124); V.INSTR = A.patch('INSTR', 184, 112); V.CLOSED = A.patch('CLOSED', 120, 84);
+  V.SIGN = A.patch('SIGN', 220, 64); V.WOOD = A.patch('WOOD', 128, 64); V.PRICE = A.patch('PRICE', 64, 64); V.CHOKE = A.patch('CHOKE', 84, 60); V.FLAP = A.patch('FLAP', 72, 60); V.HOOD = A.patch('HOOD', 72, 56); V.MAKER = A.patch('MAKER', 188, 46);
+  V.FAIL = A.patch('FAIL', 204, 42); V.AGE = A.patch('AGE', 140, 22); V.SLOT = A.patch('SLOT', 104, 22); V.RET = A.patch('RET', 56, 22); V.OUT = A.patch('OUT', 90, 22);
   paintAll(type, spec, L, st, A, V, { B, PN, TR, AC, worn, rnd });
 
   // ------------------------------------------------------------------ geometry
-  const G = new Geo(1), GL = new GeoS(1);
+  const G = new GeoS(1), GL = new GeoS(1);
   const body2 = sw(B[1]), steel = sw(STEEL, ROUGH.metal), dark = sw(DARK, ROUGH.matte), rubber = sw(RUBBER, ROUGH.rubber);
   const chromeUV = (lvl = 2) => sw(CHROME[lvl], ROUGH.chrome), trimUV = sw(TR[2]), trimD = sw(TR[1]), panelUV = sw(PN[2]), accUV = sw(AC[2]);
   const ext = triplanar({ pz: V.F, px: V.SR, nx: V.SL, py: sw(B[3]), ny: dark, nz: body2 });
@@ -134,9 +138,9 @@ function buildGeometry(type, spec, L, st, A) {
   // ---- the lower unit: a chamfered shell, its front cut for the chute and the coin box bay
   G.with(ext, 0, () => {
     // (the bevel stops short of the coin box bay, which runs close to the corner)
-    const bl = Math.min(b, 0.012);
-    G.box(-hw, y0, -hd, hw, yL, hd, { bevel: bl, skip: ['pz'] });
-    G.polyHoles([[-hw + bl, y0 + bl], [hw - bl, y0 + bl], [hw - bl, yL - bl], [-hw + bl, yL - bl]], [rectH(O), rectH(CB)], (a, c) => [a, c, hd], [0, 0, 1]);
+    const bl = Math.min(st.round, 0.016), ch = 0.005;
+    roundBox(G, -hw, y0, -hd, hw, yL, hd, bl, ext, { open: true, ch });
+    G.polyHoles([[-hw + bl, y0 + ch], [hw - bl, y0 + ch], [hw - bl, yL - ch], [-hw + bl, yL - ch]], [rectH(O), rectH(CB)], (a, c) => [a, c, hd], [0, 0, 1]);
   });
   G.with(dark, 0, () => {
     G.box(O.x0, O.y0, hd - 0.15, O.x1, O.y1, hd, { inward: true, skip: ['pz'] });
@@ -146,16 +150,26 @@ function buildGeometry(type, spec, L, st, A) {
   frame(G, O, 0.009, hd - 0.002, hd + 0.007, type === 'deluxe' || type === 'royal' ? accUV : chromeUV(2));
   frame(G, CB, 0.004, hd - 0.002, hd + 0.003, sw(mix(st.body, DARK, 0.45)), 0.0015);
   // the trim band round the top of the unit (the case sits in it)
-  G.with(triplanar({ pz: trimUV, px: trimUV, nx: trimUV, nz: trimD, py: sw(TR[3]), ny: trimD }), 0, () => G.box(-hw - 0.006, yL - 0.022, -hd - 0.006, hw + 0.006, yL + 0.006, hd + 0.006, { bevel: 0.006 }));
+  roundBox(G, -hw - 0.006, yL - 0.022, -hd - 0.006, hw + 0.006, yL + 0.006, hd + 0.006, Math.min(st.round, 0.016) + 0.006, triplanar({ pz: trimUV, px: trimUV, nx: trimUV, nz: trimD, py: sw(TR[3]), ny: trimD }), { ch: 0.005 });
+  /** A screw you can see the head of: a domed head with its slot, standing off a +z face. */
+  const screw3 = (Gx, x, y, z, rr = 0.0042, turn = 0.6) => {
+    turned(Gx, x, y, z, [[rr, 0], [rr, 0.0005], [rr * 0.72, 0.0015], [0, 0.0019]], 12, chromeUV(2));
+    Gx.push(new THREE.Matrix4().makeTranslation(x, y, z).multiply(new THREE.Matrix4().makeRotationZ(turn)));
+    Gx.with(sw(CHROME[0], ROUGH.chrome), 0, () => { Gx.box(-rr * 0.7, -rr * 0.13, 0.0017, rr * 0.7, rr * 0.13, 0.002); Gx.box(-rr * 0.13, -rr * 0.7, 0.0017, rr * 0.13, rr * 0.7, 0.002); });
+    Gx.pop();
+  };
+  for (const [sx, sy, tn] of [[-hw + 0.024, y0 + 0.022, 0.3], [hw - 0.025, y0 + 0.022, 1.1], [-hw + 0.024, yL - 0.045, 0.8], [hw - 0.025, yL - 0.045, 0.1]]) screw3(G, sx, sy, hd, 0.0045, tn);
   // ---- the dial: a bezel and the printed ratchet ring the crank sits in
   const kn = spec.dial.knob, R = spec.dial.ring;
-  turned(G, HN.x, HN.y, hd, [[R + 0.006, 0], [R + 0.006, 0.004], [R, 0.008], [kn + 0.007, 0.008], [kn + 0.004, 0.003], [kn + 0.004, 0]], 24, null, V.DIAL, R + 0.006);
+  turned(G, HN.x, HN.y, hd, [[R + 0.02, 0], [R + 0.01, 0.0035], [R + 0.006, 0.0052], [R + 0.003, 0.0072], [R, 0.008], [kn + 0.009, 0.008], [kn + 0.007, 0.0072], [kn + 0.004, 0.003], [kn + 0.004, 0]], 56, null, V.DIAL, R + 0.006);
   // ---- the coin mechanism: its plate (slot, reject button), the return cup under the price plate
   const cm = { x0: S.x - 0.058, x1: S.x + 0.03, y0: S.y - 0.047, y1: S.y + 0.05 };
   G.with(boxMap(V.COIN, [cm.x0, cm.y0, hd, cm.x1, cm.y1, hd + 0.008]), 0, () => G.box(cm.x0, cm.y0, hd - 0.002, cm.x1, cm.y1, hd + 0.008, { bevel: 0.004, skip: ['nz'] }));
   G.with(chromeUV(3), 0, () => G.box(S.x - 0.006, S.y - 0.022, hd + 0.008, S.x + 0.006, S.y + 0.022, hd + 0.0115, { bevel: 0.002, skip: ['nz'] })); // the slot's raised lips
   G.with(dark, 0, () => G.box(S.x - 0.0022, S.y - 0.017, hd + 0.0116, S.x + 0.0022, S.y + 0.017, hd + 0.0118));
-  turned(G, S.x - 0.036, S.y - 0.016, hd + 0.008, [[0.0125, 0], [0.0125, 0.003], [0.0095, 0.0045], [0.0095, 0.009], [0.008, 0.0105], [0, 0.0105]], 10, sw(0xc8352e)); // the reject button
+  turned(G, S.x - 0.036, S.y - 0.016, hd + 0.008, [[0.0125, 0], [0.0125, 0.003], [0.0095, 0.0045], [0.0095, 0.009], [0.0088, 0.0101], [0.007, 0.0108], [0, 0.0111]], 24, sw(0xc8352e)); // the reject button
+  turned(G, S.x - 0.036, S.y - 0.016, hd + 0.008, [[0.0155, 0], [0.0155, 0.002], [0.0135, 0.0032], [0.0125, 0.0032]], 24, chromeUV(3)); // its collar
+  for (const [sx, sy, tn] of [[cm.x0 + 0.006, cm.y0 + 0.006, 0.2], [cm.x1 - 0.006, cm.y0 + 0.006, 1.3], [cm.x0 + 0.006, cm.y1 - 0.006, 0.7], [cm.x1 - 0.006, cm.y1 - 0.006, 0]]) screw3(G, sx, sy, hd + 0.008, 0.003, tn);
   // price plate bezel, the buttons' plate
   const PL = L.plate;
   frame(G, { x0: PL.x - PL.w / 2, x1: PL.x + PL.w / 2, y0: PL.y - PL.h / 2, y1: PL.y + PL.h / 2 }, 0.004, hd - 0.002, hd + 0.006, sw(st.dark ? 0x0e0d10 : 0x2a2a30), 0.002);
@@ -187,7 +201,15 @@ function buildGeometry(type, spec, L, st, A) {
     G.box(T.x0 - 0.006, T.y, hd - 0.002, T.x0, T.y + T.wall, T.z1 + 0.004, { bevel: 0.002 }); G.box(T.x1, T.y, hd - 0.002, T.x1 + 0.006, T.y + T.wall, T.z1 + 0.004, { bevel: 0.002 });
     G.box(T.x0 - 0.006, T.y, T.z1 - 0.002, T.x1 + 0.006, T.y + T.wall * 0.78, T.z1 + 0.004, { bevel: 0.002 });
   });
+  G.with(trayUV, 0, () => {
+    // rolled rims along the lip and the cheeks, a flared edge in front
+    G.cyl('x', [T.x0 - 0.006, T.y + T.wall * 0.78, T.z1 + 0.002], 0.004, T.x1 - T.x0 + 0.012, 10);
+    for (const xx of [T.x0 - 0.003, T.x1 + 0.003]) G.cyl('z', [xx, T.y + T.wall, hd - 0.002], 0.0036, T.z1 - hd + 0.006, 10);
+    G.quad([T.x0 - 0.006, T.y + T.wall * 0.5, T.z1 + 0.004], [T.x1 + 0.006, T.y + T.wall * 0.5, T.z1 + 0.004], [T.x1 + 0.006, T.y + T.wall * 0.78, T.z1 + 0.0095], [T.x0 - 0.006, T.y + T.wall * 0.78, T.z1 + 0.0095], [0, 0.4, 1]);
+  });
   G.with(rubber, 0, () => G.quad([T.x0, T.y + 0.0008, hd], [T.x1, T.y + 0.0008, hd], [T.x1, T.y + 0.0008, T.z1 - 0.002], [T.x0, T.y + 0.0008, T.z1 - 0.002], [0, 1, 0]));
+  // the drawer's runners in its bay
+  G.with(steel, 0, () => { for (const xx of [CB.x0 + 0.002, CB.x1 - 0.005]) G.box(xx, CB.y0 + 0.001, hd - CB.depth, xx + 0.003, CB.y0 + 0.006, hd - 0.004); });
 
   // ---- the case: floor, back wall with its print, back posts, the display-card holder, the top rail
   G.with(V.W.map3, 0, () => G.quad([-hw + 0.006, yL, -hd + 0.012], [hw - 0.006, yL, -hd + 0.012], [hw - 0.006, yC, -hd + 0.012], [-hw + 0.006, yC, -hd + 0.012], [0, 0, 1]));
@@ -230,18 +252,26 @@ function buildGeometry(type, spec, L, st, A) {
   buildStand(type, spec, L, st, A, V, G, { sw, steel, dark, rubber, chromeUV, trimUV, accUV, body2, B, TR, AC, label, frame, turned });
 
   // ------------------------------------------------------------------ the lid (lid space: y = 0 its underside)
-  const LG = new Geo(1), HG = new GeoS(1);
+  const LG = new GeoS(1), HG = new GeoS(1);
   {
     const lidUV = triplanar({ pz: V.LF, px: sw(B[2]), nx: sw(B[2]), nz: body2, py: sw(B[3]), ny: body2 });
-    LG.with(lidUV, 0, () => LG.box(-hw - 0.008, 0, -hd - 0.008, hw + 0.008, capH, hd + 0.008, { bevel: Math.min(0.012, b + 0.004) }));
+    roundBox(LG, -hw - 0.008, 0, -hd - 0.008, hw + 0.008, capH, hd + 0.008, Math.max(0.008, st.round), lidUV, { ch: Math.min(0.008, st.round) });
     // the lock: a chrome barrel with its keyhole; hinge knuckles at the back
     const lk = L.lid.lockX;
     const g2 = new GeoS(1);
     g2.push(new THREE.Matrix4().makeTranslation(lk, capH / 2, hd + 0.008).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
-    g2.revolve([[0.011, 0, 1], [0.011, 0.004, 1], [0.008, 0.006, 1], [0, 0.006, 1]], 10, { uv: sw(st.dark || type === 'royal' ? AC[2] : CHROME[2], ROUGH.chrome) });
+    g2.revolve([[0.012, 0, 1], [0.012, 0.003, 1], [0.0105, 0.0045, 1], [0.0085, 0.0045, 1], [0.008, 0.006, 1], [0, 0.006, 1]], 24, { uv: sw(st.dark || type === 'royal' ? AC[2] : CHROME[2], ROUGH.chrome) });
     LG.add(g2);
     LG.with(dark, 0, () => LG.box(lk - 0.0012, capH / 2 - 0.0045, hd + 0.0141, lk + 0.0012, capH / 2 + 0.0045, hd + 0.0144));
-    LG.with(sw(CHROME[1], ROUGH.chrome), 0, () => { for (const s of [-1, 1]) LG.cyl('x', [s * (hw * 0.62) - 0.02, capH * 0.3, -hd - 0.009], 0.006, 0.04, 6); });
+    // the hinges: a barrel in three knuckles on its pin, a leaf screwed to the lid
+    LG.with(sw(CHROME[1], ROUGH.chrome), 0, () => {
+      for (const s of [-1, 1]) {
+        const x = s * (hw * 0.62);
+        for (const k of [-1, 0, 1]) LG.cyl('x', [x - 0.006 + k * 0.014, capH * 0.3, -hd - 0.0095], 0.0055, 0.012, 14);
+        LG.cyl('x', [x - 0.024, capH * 0.3, -hd - 0.0095], 0.002, 0.048, 8);
+        LG.box(x - 0.02, capH * 0.3, -hd - 0.0092, x + 0.02, capH * 0.86, -hd - 0.0078);
+      }
+    });
     // the header
     if (st.header === 'slant') {
       // a sign board leaning back on top of the lid
@@ -257,7 +287,7 @@ function buildGeometry(type, spec, L, st, A) {
     }
     // the sample topper: a plinth, corner posts, a top frame (the clear hood is the lid's own glass)
     const dw = D.w / 2 + 0.006, dd = D.d / 2 + 0.006, ty = capH, th = D.h + 0.014;
-    LG.with(triplanar({ pz: trimUV, px: trimUV, nx: trimUV, nz: trimUV, py: sw(B[3]), ny: body2 }), 0, () => LG.box(-dw, ty, D.z - dd, dw, ty + 0.012, D.z + dd, { bevel: 0.004 }));
+    roundBox(LG, -dw, ty, D.z - dd, dw, ty + 0.012, D.z + dd, 0.012, triplanar({ pz: trimUV, px: trimUV, nx: trimUV, nz: trimUV, py: sw(B[3]), ny: body2 }), { ch: 0.003 });
     LG.with(sw(B[1]), 0, () => {
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) LG.box(sx * dw - (sx > 0 ? 0.005 : 0), ty + 0.012, D.z + sz * dd - (sz > 0 ? 0.005 : 0), sx * dw + (sx > 0 ? 0 : 0.005), ty + th, D.z + sz * dd + (sz > 0 ? 0 : 0.005));
       LG.box(-dw, ty + th, D.z - dd, dw, ty + th + 0.005, D.z + dd, { bevel: 0.002 });
@@ -267,7 +297,7 @@ function buildGeometry(type, spec, L, st, A) {
       const cy = ty + th + 0.005;
       const c2 = new GeoS(1);
       c2.push(new THREE.Matrix4().makeTranslation(0, cy, D.z));
-      c2.revolve([[0.034, 0, 1], [0.036, 0.006, 1], [0.03, 0.01, 1], [0.03, 0.026, 1], [0.024, 0.026, 1], [0.024, 0.008, 1]], 10, { uv: sw(AC[2], ROUGH.chrome) });
+      c2.revolve([[0.034, 0, 1], [0.036, 0.006, 1], [0.03, 0.01, 1], [0.03, 0.026, 1], [0.024, 0.026, 1], [0.024, 0.008, 1]], 24, { uv: sw(AC[2], ROUGH.chrome) });
       LG.add(c2);
       LG.with(sw(AC[3], ROUGH.chrome), 0, () => { for (let k = 0; k < 5; k++) { const a = (k / 5) * Math.PI * 2; LG.box(Math.cos(a) * 0.03 - 0.005, cy + 0.026, D.z + Math.sin(a) * 0.03 - 0.005, Math.cos(a) * 0.03 + 0.005, cy + 0.04, D.z + Math.sin(a) * 0.03 + 0.005, { bevel: 0.004 }); } });
       LG.with(sw(st.trim, ROUGH.lens), 0, () => LG.box(-0.009, cy + 0.008, D.z - 0.009, 0.009, cy + 0.03, D.z + 0.009, { bevel: 0.006 }));
@@ -279,7 +309,7 @@ function buildGeometry(type, spec, L, st, A) {
   }
 
   // ------------------------------------------------------------------ the coin box drawer (drawer space: x, y from its corner, z = 0 the front)
-  const DG = new Geo(1);
+  const DG = new GeoS(1);
   {
     const dw = CB.x1 - CB.x0, dh = CB.y1 - CB.y0, dep = CB.depth;
     DG.with(triplanar({ pz: sw(mix(st.body, st.dark ? 0xffffff : 0x000000, 0.1)), px: body2, nx: body2, py: body2, ny: body2, nz: body2 }), 0, () => DG.box(0.0015, 0.0015, -0.004, dw - 0.0015, dh - 0.0015, 0.005, { bevel: 0.002 }));
@@ -290,38 +320,49 @@ function buildGeometry(type, spec, L, st, A) {
     // the lock and a finger pull
     const g2 = new GeoS(1);
     g2.push(new THREE.Matrix4().makeTranslation(dw * 0.7, dh * 0.62, 0.005).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
-    g2.revolve([[0.008, 0, 1], [0.008, 0.003, 1], [0.006, 0.0045, 1], [0, 0.0045, 1]], 8, { uv: sw(st.dark || type === 'royal' ? AC[2] : CHROME[2], ROUGH.chrome) });
+    g2.revolve([[0.008, 0, 1], [0.008, 0.003, 1], [0.006, 0.0045, 1], [0, 0.0045, 1]], 20, { uv: sw(st.dark || type === 'royal' ? AC[2] : CHROME[2], ROUGH.chrome) });
     DG.add(g2);
     DG.with(dark, 0, () => DG.box(dw * 0.7 - 0.001, dh * 0.62 - 0.0035, 0.0096, dw * 0.7 + 0.001, dh * 0.62 + 0.0035, 0.0098));
     DG.with(sw(CHROME[2], ROUGH.chrome), 0, () => DG.box(dw * 0.12, dh * 0.2, 0.005, dw * 0.5, dh * 0.3, 0.011, { bevel: 0.003 }));
   }
 
   // ------------------------------------------------------------------ the crank (its axis is +z through the origin)
-  const HGm = new Geo(1);
+  const HGm = new GeoS(1);
   {
-    turned(HGm, 0, 0, 0, [[kn, 0], [kn, 0.007], [kn - 0.004, 0.011], [kn * 0.42, 0.011]], 20, null, V.KNOB, kn);
-    turned(HGm, 0, 0, 0, [[kn * 0.42, 0.011], [0, 0.011]], 20, null, V.KNOB, kn);
+    turned(HGm, 0, 0, 0, [[kn, 0], [kn, 0.007], [kn - 0.0015, 0.0095], [kn - 0.004, 0.011], [kn * 0.66, 0.011], [kn * 0.62, 0.0098], [kn * 0.58, 0.011], [0, 0.011]], 48, null, V.KNOB, kn);
+    // the ratchet: twelve teeth round the rim, one for each click (the pawl rides them: see the machine's pawl)
+    HGm.with(sw(CHROME[1], ROUGH.chrome), 0, () => {
+      for (let k = 0; k < 12; k++) {
+        const a0 = k * Math.PI / 6, a1 = a0 + 0.05, a2 = a0 + Math.PI / 6 - 0.04, P = (a, r, z) => [Math.cos(a) * r, Math.sin(a) * r, z];
+        const A0 = P(a0, kn - 0.001, 0.0012), B0 = P(a1, kn + 0.0042, 0.0012), C0 = P(a2, kn - 0.001, 0.0012), A1 = P(a0, kn - 0.001, 0.006), B1 = P(a1, kn + 0.0042, 0.006), C1 = P(a2, kn - 0.001, 0.006);
+        HGm.tri(A1, B1, C1, [0, 0, 1]); HGm.quad(A0, B0, B1, A1, [Math.sin(a0), -Math.cos(a0), 0]); HGm.quad(B0, C0, C1, B1, [Math.cos(a1 + 0.9), Math.sin(a1 + 0.9), 0]);
+      }
+    });
     const gripUV = sw(st.grip, type === 'retro' ? ROUGH.paint : ROUGH.plastic), gw = Math.max(0.011, kn * 0.24);
     if (type === 'retro') {
       // a butterfly knob: two wings on a chrome hub
       HGm.with(gripUV, 0, () => { for (const s of [-1, 1]) HGm.box(-gw * 0.8, s > 0 ? 0.004 : -kn * 0.9, 0.011, gw * 0.8, s > 0 ? kn * 0.9 : -0.004, 0.036, { bevel: 0.006 }); });
-      turned(HGm, 0, 0, 0.011, [[gw * 1.25, 0], [gw * 1.25, 0.022], [gw, 0.03], [0, 0.03]], 10, sw(CHROME[2], ROUGH.chrome));
+      turned(HGm, 0, 0, 0.011, [[gw * 1.25, 0], [gw * 1.25, 0.02], [gw * 1.15, 0.026], [gw * 0.8, 0.03], [0, 0.031]], 24, sw(CHROME[2], ROUGH.chrome));
     } else {
       HGm.with(gripUV, 0, () => HGm.box(-gw, -kn * 0.88, 0.011, gw, kn * 0.88, 0.04, { bevel: 0.007 }));
       HGm.with(sw(mix(st.grip, 0x000000, 0.25)), 0, () => { for (let k = -2; k <= 2; k++) if (k) HGm.box(-gw - 0.0012, k * kn * 0.2 - 0.003, 0.018, gw + 0.0012, k * kn * 0.2 + 0.003, 0.034); }); // finger ribs
-      turned(HGm, 0, 0, 0.04, [[gw * 0.62, 0], [gw * 0.5, 0.003], [0, 0.003]], 8, sw(type === 'standard' ? CHROME[2] : AC[2], ROUGH.chrome));
+      turned(HGm, 0, 0, 0.04, [[gw * 0.62, 0], [gw * 0.56, 0.002], [gw * 0.4, 0.003], [0, 0.0034]], 20, sw(type === 'standard' ? CHROME[2] : AC[2], ROUGH.chrome));
     }
     // the arrow at the top end of the bar
     HGm.with(sw(0xffd23f), 0, () => HGm.tri([-0.006, kn * 0.6, 0.0403], [0.006, kn * 0.6, 0.0403], [0, kn * 0.78, 0.0403], [0, 0, 1]));
   }
   // ------------------------------------------------------------------ the flap (hinged on its top edge at the origin)
-  const FG = new Geo(1);
+  const FG = new GeoS(1);
   {
     const fw = O.x1 - O.x0 - 0.004, fh = O.y1 - O.y0 - 0.006;
     const uvs = [V.FLAP.st(0.01, 0.01), V.FLAP.st(0.99, 0.01), V.FLAP.st(0.99, 0.99), V.FLAP.st(0.01, 0.99)];
     FG.quad([-fw / 2, -fh, 0.001], [fw / 2, -fh, 0.001], [fw / 2, 0, 0.001], [-fw / 2, 0, 0.001], [0, 0, 1], uvs);
     FG.quad([-fw / 2, -fh, 0], [fw / 2, -fh, 0], [fw / 2, 0, 0], [-fw / 2, 0, 0], [0, 0, -1], uvs);
-    FG.with(sw(CHROME[1], ROUGH.chrome), 0, () => FG.cyl('x', [-fw / 2, 0, 0.001], 0.003, fw, 5));
+    FG.with(sw(CHROME[1], ROUGH.chrome), 0, () => {
+      FG.cyl('x', [-fw / 2, 0, 0.001], 0.003, fw, 12);
+      // the return spring coiled round the pin's end
+      for (let k = 0; k < 6; k++) { FG.push(new THREE.Matrix4().makeTranslation(fw / 2 - 0.006 - k * 0.0021, 0, 0.001).multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2 + 0.12))); FG.torus(0.0042, 0.0008, 12, 4); FG.pop(); }
+    });
   }
   // ------------------------------------------------------------------ the price buttons, the key
   const btn = (col, plus) => {
@@ -330,10 +371,18 @@ function buildGeometry(type, spec, L, st, A) {
     g.with(sw(0xfbf8f2), 0, () => { g.box(-0.005, -0.0012, 0.007, 0.005, 0.0012, 0.0078); if (plus) g.box(-0.0012, -0.005, 0.007, 0.0012, 0.005, 0.0078); });
     return g.build();
   };
+  // the pawl that rides the crank's ratchet (pivot at the origin, its nose towards -x)
+  const PG = new Geo(1);
+  PG.with(sw(CHROME[2], ROUGH.chrome), 0, () => {
+    PG.fan([[0.003, -0.003, 0], [0.003, 0.003, 0], [-0.004, 0.0028, 0], [-0.0115, 0.0002, 0], [-0.0115, -0.001, 0], [-0.004, -0.003, 0]].map(([x, y]) => [x, y, 0.004]), [0, 0, 1]);
+    const pts = [[0.003, -0.003], [0.003, 0.003], [-0.004, 0.0028], [-0.0115, 0.0002], [-0.0115, -0.001], [-0.004, -0.003]];
+    pts.forEach((p, k) => { const q = pts[(k + 1) % pts.length]; PG.quad([p[0], p[1], 0], [q[0], q[1], 0], [q[0], q[1], 0.004], [p[0], p[1], 0.004], [-(q[1] - p[1]), q[0] - p[0], 0]); });
+    PG.cyl('z', [0, 0, 0], 0.0018, 0.0052, 8);
+  });
   const KG = new Geo(1);
   KG.with(sw(0xd8b850, ROUGH.chrome), 0, () => { KG.torus(0.0065, 0.0016, 8, 4); KG.box(-0.0012, -0.021, -0.0008, 0.0012, -0.006, 0.0008); KG.box(0.0012, -0.019, -0.0008, 0.0036, -0.016, 0.0008); KG.box(0.0012, -0.014, -0.0008, 0.003, -0.012, 0.0008); });
   const fin = (g) => { const o = g.build(); o.clearGroups(); return o; };
-  return { body: fin(G), glass: fin(GL), lid: fin(LG), hood: fin(HG), drawer: fin(DG), handle: fin(HGm), flap: fin(FG), btnMinus: btn(0xe04a44, false), btnPlus: btn(0x3fae60, true), key: fin(KG), flapClear: st.flap !== 'steel' };
+  return { body: fin(G), glass: fin(GL), lid: fin(LG), hood: fin(HG), drawer: fin(DG), handle: fin(HGm), flap: fin(FG), btnMinus: btn(0xe04a44, false), btnPlus: btn(0x3fae60, true), key: fin(KG), pawl: fin(PG), knob: kn, flapClear: st.flap !== 'steel' };
 }
 
 // ----------------------------------------------------------------------------- stands
@@ -358,24 +407,22 @@ function buildStand(type, spec, L, st, A, V, G, K) {
     G.with(dark, 0, () => G.box(-cw + 0.002, 0.004, -cd + 0.002, cw - 0.002, y0 - 0.02, cd - 0.002, { skip: ['py', 'ny'] }));
     // the stencil on the middle slat, and the machine's rubber feet on the boards
     label(G, V.CLOSED, 0, hs * 1.5, 0.2, cd + 0.0128, 2 * hs - 0.05 > 0.1 ? 0.1 : hs - 0.03);
-    G.with(rubber, 0, () => { for (const sx of [-1, 1]) for (const sz of [-1, 1]) G.cyl('y', [sx * (hw - 0.04), y0 - 0.001, sz * (hd - 0.04)], 0.016, 0.004, 8); });
+    G.with(rubber, 0, () => { for (const sx of [-1, 1]) for (const sz of [-1, 1]) G.cyl('y', [sx * (hw - 0.04), y0 - 0.001, sz * (hd - 0.04)], 0.016, 0.004, 16); });
     return;
   }
   if (st.stand === 'pedestal') {
     // a moulded pedestal: a wide foot, a waisted column, a head the unit bolts to
-    G.with(SFs, 0, () => {
-      G.box(-hw - 0.04, 0.012, -hd - 0.04, hw + 0.04, 0.085, hd + 0.04, { bevel: 0.022 });
-      G.box(-hw * 0.74, 0.085, -hd * 0.74, hw * 0.74, y0 - 0.05, hd * 0.74, { bevel: 0.03 });
-      G.box(-hw - 0.004, y0 - 0.055, -hd - 0.004, hw + 0.004, y0, hd + 0.004, { bevel: 0.016 });
-    });
+    roundBox(G, -hw - 0.04, 0.012, -hd - 0.04, hw + 0.04, 0.085, hd + 0.04, 0.06, SFs, { ch: 0.014 });
+    roundBox(G, -hw * 0.74, 0.085, -hd * 0.74, hw * 0.74, y0 - 0.05, hd * 0.74, 0.05, SFs, { ch: 0.006, noTop: true, noBottom: true });
+    roundBox(G, -hw - 0.004, y0 - 0.055, -hd - 0.004, hw + 0.004, y0, hd + 0.004, 0.036, SFs, { ch: 0.01 });
     G.with(sw(mix(st.trim, 0x000000, 0.1)), 0, () => G.box(-hw * 0.745, 0.085, -hd * 0.745, hw * 0.745, 0.1, hd * 0.745, { bevel: 0.004 }));
-    G.with(rubber, 0, () => { for (const sx of [-1, 1]) for (const sz of [-1, 1]) G.cyl('y', [sx * (hw + 0.012), 0, sz * (hd + 0.012)], 0.02, 0.012, 8); });
+    G.with(rubber, 0, () => { for (const sx of [-1, 1]) for (const sz of [-1, 1]) G.cyl('y', [sx * (hw + 0.005), 0, sz * (hd + 0.005)], 0.02, 0.012, 16); });
     return;
   }
   if (st.stand === 'twotier') {
     // the sister unit below (shuttered: 準備中), in a steel rack with levelling feet
     const fy = 0.05, ty = y0 - 0.012, uh = ty - fy, lh = uh * 0.52;
-    G.with(SFs, 0, () => G.box(-hw, fy, -hd, hw, fy + lh, hd, { bevel: st.bevel }));
+    roundBox(G, -hw, fy, -hd, hw, fy + lh, hd, st.round, SFs, { ch: 0.005 });
     G.with(triplanar({ pz: V.SF, px: sw(B[2]), nx: sw(B[2]), nz: sw(B[1]), py: sw(B[1]), ny: dark }), 0, () => { G.box(-hw, fy + lh, -hd, hw, ty, -hd + 0.012); for (const s of [-1, 1]) G.box(s > 0 ? hw - 0.014 : -hw, fy + lh, -hd, s > 0 ? hw : -hw + 0.014, ty, hd, { bevel: 0.003 }); G.box(-hw, ty - 0.02, -hd, hw, ty, hd, { bevel: 0.004 }); });
     // its window: a blind and the notice
     G.with(sw(mix(st.inner, 0xffffff, 0.06)), 0, () => G.quad([-hw + 0.014, fy + lh, hd - 0.004], [hw - 0.014, fy + lh, hd - 0.004], [hw - 0.014, ty - 0.02, hd - 0.004], [-hw + 0.014, ty - 0.02, hd - 0.004], [0, 0, 1]));
@@ -393,19 +440,19 @@ function buildStand(type, spec, L, st, A, V, G, K) {
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) G.box(sx * (hw + 0.012) - 0.009, 0.02, sz * (hd + 0.012) - 0.009, sx * (hw + 0.012) + 0.009, y0, sz * (hd + 0.012) + 0.009, { bevel: 0.002 });
       for (const yy of [fy - 0.02, ty]) { G.box(-hw - 0.02, yy, -hd - 0.02, hw + 0.02, yy + 0.012, hd + 0.02, { bevel: 0.002 }); }
     });
-    G.with(rubber, 0, () => { for (const sx of [-1, 1]) for (const sz of [-1, 1]) G.cyl('y', [sx * (hw + 0.012), 0, sz * (hd + 0.012)], 0.016, 0.02, 8); });
+    G.with(rubber, 0, () => { for (const sx of [-1, 1]) for (const sz of [-1, 1]) G.cyl('y', [sx * (hw + 0.012), 0, sz * (hd + 0.012)], 0.016, 0.02, 16); });
     void steel; void chromeUV;
     return;
   }
   // the cabinet: a plinth, a panelled door, a gold kick strip, ball feet
-  G.with(SFs, 0, () => G.box(-hw - 0.01, 0.04, -hd - 0.01, hw + 0.01, y0, hd + 0.01, { bevel: 0.018 }));
+  roundBox(G, -hw - 0.01, 0.04, -hd - 0.01, hw + 0.01, y0, hd + 0.01, 0.03, SFs, { ch: 0.008 });
   G.with(sw(mix(st.body, 0x000000, 0.5)), 0, () => G.box(-hw + 0.004, 0.012, -hd + 0.004, hw - 0.004, 0.04, hd - 0.004));
   G.with(accUV, 0, () => { G.box(-hw - 0.013, 0.04, -hd - 0.013, hw + 0.013, 0.062, hd + 0.013, { bevel: 0.006 }); G.box(-hw - 0.013, y0 - 0.02, -hd - 0.013, hw + 0.013, y0 - 0.004, hd + 0.013, { bevel: 0.005 }); });
   G.with(sw(mix(st.panel, st.trim, 0.06)), 0, () => G.box(-hw + 0.04, 0.1, hd + 0.008, hw - 0.04, y0 - 0.06, hd + 0.014, { bevel: 0.006, skip: ['nz'] }));
   label(G, V.CLOSED, 0, 0.1 + (y0 - 0.16) / 2, 0.16, hd + 0.0148);
   {
     const g2 = new GeoS(1);
-    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { g2.push(new THREE.Matrix4().makeTranslation(sx * (hw - 0.03), 0, sz * (hd - 0.03))); g2.revolve([[0, 0, 1], [0.016, 0.002, 0], [0.024, 0.012, 0], [0.016, 0.02, 1]], 8, { uv: sw(st.accent, ROUGH.chrome) }); g2.pop(); }
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { g2.push(new THREE.Matrix4().makeTranslation(sx * (hw - 0.03), 0, sz * (hd - 0.03))); g2.revolve([[0, 0, 1], [0.012, 0.001, 0], [0.02, 0.005, 0], [0.024, 0.012, 0], [0.021, 0.018, 0], [0.014, 0.021, 1]], 20, { uv: sw(st.accent, ROUGH.chrome) }); g2.pop(); }
     G.add(g2);
   }
   void rubber;

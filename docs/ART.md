@@ -30,6 +30,25 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
   per object, no geometry nobody can see. The perf passes halved the draw calls; don't give that back.
 - **Palette**: pastel and a little desaturated, as the grade is now; the reds of lanterns and signs stay readable.
 
+## Update: detailed, not low-poly (the owner's later direction)
+- Models are **detailed and polished, not low-poly**: curved surfaces are smooth (enough segments, smooth normals
+  where the real thing is smooth, hard edges where it has them), small parts are modelled, not painted on.
+  No object may read as stuck-together primitives (bare spheres, cylinders, boxes): give everything its real
+  profile. Moving parts get proper pivots / rigs.
+- The shading is **realistic with a light cel touch**: only the key light is softly banded; local lights fall off
+  smoothly (no rings or discs on walls and floors); speculars are soft. Ink outlines and the pastel grade stay.
+- Keep the frame rate: merge statics, instance repeats, give far or tiny things a simpler level of detail.
+
+## Update: no procedural-looking art (the owner's later direction)
+- **Nothing may look generated.** No noise functions, random speckle, generated grain, repeated stamp patterns or
+  formula shapes in textures or models.
+- **Surfaces come from real photographs**, cleaned into cartoon textures (flattened, a few tones, the real grain
+  and wear kept). Use the shared library: `photoTex(name, { repeat, tint })` and `photoMat(name, { repeat, tint,
+  roughness })` from `src/kit/photoTex.js` (names in that file; photos are CC BY from Google Open Images, credited
+  in CREDITS.md). Small painted details on top are drawn by hand, placed deliberately.
+- **Shapes are authored by hand**: each object gets its own profiles and sections from reference, not a generic
+  generator with random parameters.
+
 ## 2D
 - Printed things are **detailed pixel art** with nearest filtering: product labels with a mascot, a logo, flavour
   art, small print and a barcode; posters; gacha display cards laid out like real capsule-toy flyers (logo, price
@@ -45,44 +64,46 @@ is original; nothing is copied from a real toy line, drink or brand.
 
 ## Renderer contract
 What the renderer does to your models by itself, and the few switches you have (src/gfx/sunMask.js patches the
-lighting of every built-in lit material; src/core/renderer.js draws the ink and the grade).
+lighting of every built-in lit material; src/core/renderer.js draws the ink and the grade). The look is **realistic
+lighting with a light cel touch**: it is not a hard toon shader.
 
-- **What gets cel shading:** `MeshStandardMaterial`, `MeshPhysicalMaterial`, `MeshLambertMaterial` and
+- **What it applies to:** `MeshStandardMaterial`, `MeshPhysicalMaterial`, `MeshLambertMaterial` and
   `MeshPhongMaterial`, including the kit's atlas materials and anything that extends them with `onBeforeCompile`.
   `MeshBasicMaterial` and custom `ShaderMaterial`s are drawn as they are (use them only for things that give light:
   a lit sign face, a tube, the sky). No setup is needed: don't write a toon shader, don't add gradient maps.
-- **Light bands:** the sun / moon shade every face in three flat tones (shade / half / full, a narrow soft edge on
-  each step); lamps (point and spot lights) in two. Cast shadows have a crisp edge and are lilac, never black. Model
-  with flat faces (non-indexed geometry, the kit's `Geo`): each face takes one clean tone. Smooth normals are fine on
-  round things (a capsule, a head): they show a band line.
-- **Roughness decides the highlight.** There is no smooth specular lobe any more:
-  - `roughness >= 0.5`: matte, no highlight. Use this for almost everything: 0.8 to 0.95 for wood, concrete, plaster,
-    cloth, paper, rust; 0.6 to 0.7 for painted metal, enamel, old plastic, vinyl.
-  - `roughness <= 0.3`: glossy: one hard-edged toon highlight per light, smaller the lower the value. 0.18 to 0.25
-    for capsule plastic, glazed ceramic and lacquer; 0.05 to 0.15 for glass and lenses; 0.18 with `metalness: 1` for
-    chrome (it also gets a cartoon sky / horizon / ground reflection in place of the environment map).
-  - 0.3 to 0.46 fades between the two; avoid it unless you want a faint highlight (car paint at 0.42).
-  - With an atlas, write it per pixel: `A.ink(ROUGH.chrome)` and so on (src/vehicles/atlas.js `ROUGH`); the roughness
-    map is what the highlight reads.
-  - Keep `metalness` at 0 except for chrome and bare polished steel (a metal has no diffuse colour, so it only shows
-    its reflection). Never use `emissive` to brighten a surface: only for things that are lit from inside.
+- **The key light is softly banded, nothing else.** The sun / moon's shading is pulled half way toward three wide,
+  soft-edged steps, so a round form shows a gentle band and a flat face keeps its natural tone. Cast shadows are
+  lilac, never black, with the shadow map's soft edge. **Local lights (lamps, tubes, lanterns, the light pool) are
+  plain smooth Lambert with their natural falloff: no steps**, so they never draw rings or discs on a wall, a floor or
+  a ceiling. Don't fake light with additive halo quads or light-pool decals either.
+- **Speculars are physical (GGX), so roughness is how a material reads as itself.** Give materials real variety:
+  - 0.85 to 0.95: concrete, mortar, plaster, raw timber, cloth, paper, rust, rubber;
+  - 0.6 to 0.75: painted metal, enamel, zinc sheet, old plastic, vinyl floor, varnished wood;
+  - 0.3 to 0.45: glazed tile, lacquer, capsule plastic, clean car paint (a soft highlight);
+  - 0.05 to 0.25: glass, lenses, polished chrome (with `metalness: 1`).
+  Keep big flat surfaces (floors, walls, counters) at 0.5 or rougher: a glossy floor under a lamp shows a round hot
+  spot, which is exactly the "circle" the owner doesn't want. With an atlas, write roughness per pixel:
+  `A.ink(ROUGH.chrome)` and so on (src/vehicles/atlas.js `ROUGH`). Keep `metalness` at 0 except for bare polished
+  metal. Never use `emissive` to brighten a surface: only for things that are lit from inside.
+- **Normals:** smooth where the real thing is smooth (pipes, lathes, bowls, corrugated sheet), hard where it has an
+  edge. The garage's kit smooths automatically below 40 degrees (src/garage/kit.js `autoSmooth`); a 45-degree chamfer
+  stays crisp.
 - **Ink outlines** come from the depth buffer, for every opaque mesh that writes depth:
   - silhouettes (where something stands in front of something else by more than about 0.5% of its distance: 1.5 cm at
-    3 m, so a poster or a decal lying on a wall is not outlined);
-  - creases sharper than about 55 degrees. So a hard 90-degree edge is inked, and a 45-degree chamfer is not: chamfer
-    the edges that should catch light softly, leave the ones that should read as drawn lines sharp. Cylinders with 12
-    or more sides read as round (no lines between facets); 8 sides or fewer show their edges.
+    3 m, so a poster, a decal or a bolt head lying on a surface is not outlined, and fine detail drops its ink with
+    distance by itself);
+  - creases sharper than about 55 degrees: a hard 90-degree edge is inked, a chamfer and a smooth curve are not.
+    Round things need enough segments to read as round: 12 or more sides (30 degrees a step or less).
   - Lines keep the same weight on screen at any resolution, thin things (wires, railings) never swell, creases fade
-    out beyond 30 m and silhouettes beyond 75 m.
+    out beyond 24 m and silhouettes beyond 75 m.
   - **To opt out:** `import { noInk } from '../gfx/sunMask.js'` and wrap the material: `noInk(material)` (it sets the
-    `NO_INK` define; opaque built-in materials only). Use it for foliage and grass cards, chain-link and other fine
-    cut-outs that would turn into a tangle of lines. Transparent materials with `depthWrite: false` (glass) are never
-    outlined; give a pane `depthWrite: true` if you want its edge drawn.
+    `NO_INK` define; opaque built-in materials only). Use it for foliage and grass cards, chain-link, dense grilles
+    and other fine cut-outs that would turn into a tangle of lines. Transparent materials with `depthWrite: false`
+    (glass) are never outlined; give a pane `depthWrite: true` if you want its edge drawn.
   - Don't paint black outlines round shapes in textures: the renderer draws them. Panel lines and seams inside a
     surface are yours to paint (in a darker tone of the surface colour).
 - **Textures:** new textures default to anisotropy 4. Anisotropy only works with a linear magnification filter
   (three.js skips it for `NearestFilter`), so big tiling surfaces must be linear-filtered with mipmaps.
 - **Post:** full device resolution on every preset (never upscaled), FXAA after the ink, no grain, no chromatic
-  aberration, no sharpen pass. Bloom is only for lit things (lanterns, tubes, signs above about 1.15 linear); a toon
-  highlight stays under that.
+  aberration, no sharpen pass. Bloom is only for lit things (lanterns, tubes, signs above about 1.15 linear).
 - **Hard rules still stand:** no white rim or hover highlight, no glow blobs, pastel and a little desaturated.

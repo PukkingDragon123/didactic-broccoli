@@ -49,7 +49,7 @@ def('vd_warmmilk', 'moobell', 'can190', '乳飲料', '生乳、はちみつ、�
 // ナミノリ
 def('vd_ponkari', 'naminori', 'pet500', '清涼飲料水', '砂糖、果汁、食塩、酸味料、香料、塩化K、乳酸Ca', '500ml', 'pet');
 def('vd_aquaria', 'naminori', 'pet500', '清涼飲料水', '果糖ぶどう糖液糖、グレープフルーツ果汁、食塩、香料', '500ml', 'pet', { juice: 1 });
-def('vd_water', 'naminori', 'pet500', 'ナチュラルミネラルウォーター', '水（鉱泉水）', '500ml', 'pet');
+def('vd_water', 'naminori', 'pet500', 'ミネラルウォーター', '水（鉱泉水）', '500ml', 'pet');
 // ゲンキン製薬
 def('vd_realbold', 'genkin', 'bottle', '炭酸飲料', '砂糖、はちみつ、ローヤルゼリー、カフェイン、ビタミンB群', '120ml', 'glass');
 def('vd_lipovita', 'genkin', 'bottle', '清涼飲料水', 'タウリン、砂糖、ビタミンB群、カフェイン、香料', '100ml', 'glass');

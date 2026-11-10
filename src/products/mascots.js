@@ -491,7 +491,7 @@ export const MASCOTS = {
     return done(p);
   },
   /** Omusubi-kun: a rice ball with a nori belt and a face. */
-  omusubi(o = {}) {
+  omusubi(pose, o = {}) {
     const p = new Px(34, 32);
     p.poly([[17, 2], [29, 22], [26, 28], [8, 28], [5, 22]], WHITE);
     p.ell(17, 6, 4, 4, WHITE); p.ell(8, 24, 4, 4, WHITE); p.ell(26, 24, 4, 4, WHITE);

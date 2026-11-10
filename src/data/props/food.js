@@ -7,6 +7,7 @@ import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, fill } from './garage.js';
 import { FOODS, DRINK_IDS } from '../../needs/foods.js';
 import { drinkMesh } from '../../products/containers.js';
+import { goodsMesh, GOODS } from '../../products/goods.js';
 
 const R = Math.round;
 const P = {};
@@ -362,5 +363,8 @@ P.rm_ticket = {
   name: 'Meal Ticket', jp: '食券', voxel: 0.003,
   build(v) { fill(v, -9, 0, 0, 9, 13, 0, (x, y) => (y > 9 ? 0x2a6ad8 : (x + y) % 9 === 0 ? 0x8a8a8a : 0xf4f0e4)); },
 };
+
+// the packs src/products models (the voxel shapes above stay as sized stand-ins)
+for (const id of GOODS) if (P[id]) P[id].mesh = (o) => goodsMesh(id, o);
 
 export default P;

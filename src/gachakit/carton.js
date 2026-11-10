@@ -71,9 +71,9 @@ function buildCarton(series, A) {
     board(P);
     P.box(0, 0, P.W, 3, K[1]); P.box(0, P.H - 2, P.W, P.H, K[3]); // the bottom's wear line, the top fold catching light
     // the series panel, in its colour
-    P.box(10, 46, 126, 138, ac); P.frame(10, 46, 126, 138, mix(ac, 0x000000, 0.35)); P.frame(13, 49, 123, 135, mix(ac, 0xffffff, 0.5));
+    P.box(10, 46, 126, 136, ac); P.frame(10, 46, 126, 136, mix(ac, 0x000000, 0.35)); P.frame(13, 49, 123, 133, mix(ac, 0xffffff, 0.5));
     const jp = [...(S.jp || 'カプセルトイ')], lines = jp.length > 6 ? [jp.slice(0, Math.ceil(jp.length / 2)).join(''), jp.slice(Math.ceil(jp.length / 2)).join('')] : [jp.join('')];
-    lines.slice(0, 2).forEach((l, k) => kana(P, [...l].slice(0, 6).join(''), 68, 130 - k * 19, white, { align: 'center' }));
+    lines.slice(0, 2).forEach((l, k) => kana(P, [...l].slice(0, 6).join(''), 68, 129 - k * 19, white, { align: 'center' }));
     P.box(16, 68, 120, 86, white); kana(P, 'カプセルトイ', 68, 85, INK, { align: 'center' });
     P.text5(`${String(S.price || 100)} YEN CLASS`, 68, 62, white, { align: 'center' });
     // the shipping label: lot, quantity class, barcode
@@ -88,8 +88,9 @@ function buildCarton(series, A) {
     mark(142, ['..#......#..', '.###....###.', '#####..#####', '..#......#..', '..#......#..', '..#......#..', '..#......#..', '............', '############']);
     mark(178, ['.########.', '.#......#.', '.#..##..#.', '..#.##.#..', '...####...', '....##....', '....##....', '....##....', '..######..']);
     mark(214, ['....##....', '..######..', '.########.', '##########', '....##....', '....##....', '....##....', '.#..##....', '..###.....']);
-    P.text5('MADE IN JAPAN', 256, 10 + 7, INK, { align: 'right' });
-    kana(P, '発売元 ガチャガレージ', 10, 40, INK); P.text5('KOTOBUKI-CHO 3-8  TEL 0120-55-0199', 10, 18, INK);
+    P.text5('MADE IN JAPAN', 10, 148, INK);
+    kana(P, '発売元', 10, 41, INK); P.text5('GACHA GARAGE', 62, 38, INK); P.text5('CO., LTD.', 62, 29, INK);
+    P.text5('KOTOBUKI-CHO 3-8', 10, 20, INK); P.text5('TEL 0120-55-0199', 10, 11, INK);
     // scuffed corners
     for (const [i, j] of [[2, 6], [P.W - 9, 5], [3, P.H - 12]]) { P.box(i, j, i + 6, j + 4, K[3]); P.px(i + 1, j + 1, K[4]); }
   }

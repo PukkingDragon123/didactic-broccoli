@@ -6,10 +6,11 @@
 // Gimmicks: parts built inside S.part(name, { rest, move }) are baked into the resting pose. playGimmick(mesh, t) splits
 // them off as child meshes and poses them (t = 0..1); stopGimmick(mesh) puts the resting geometry back.
 import * as THREE from 'three';
-import { Sculpt } from './sculpt.js';
+import { Sculpt, QUAL } from './sculpt.js';
 import { FigureAtlas } from './bake.js';
 import { figureMaterials } from './materials.js';
-import { SERIES_BY_ID } from '../data/series/index.js';
+import { SERIES_BY_ID, ITEMS_BY_KEY } from '../data/series/index.js';
+import { idleJob } from '../core/idle.js';
 
 export const FIGURE_MAX = 0.088; // largest dimension in metres (a shelf slot)
 const atlases = new Map(); // series id -> FigureAtlas
@@ -17,6 +18,7 @@ const built = new Map(); // item key -> { full, body, parts, size, defs, C, Ci, 
 
 export const isFigure = (item) => typeof item?.figure === 'function';
 export const hasFigure = (key) => built.has(key);
+export const hasFigureLod = (key) => built.has(key + '|lo');
 /** The painted atlas of a series (series.atlas: [w, h] for a set that needs more than the default 2048 x 1024). */
 export function figureAtlas(seriesId) {
   let a = atlases.get(seriesId);
@@ -53,44 +55,73 @@ function geometry(list, C, nm) {
   return g;
 }
 
-/** Build (once) and return everything about a figure item. */
-export function figureData(item) {
-  let F = built.get(item.key);
+export const HI = 2.5; // how much finer the figure in your hand is cut than the one on a shelf (see QUAL in sculpt.js)
+
+/**
+ * Build (once) and return everything about a figure item. lod: the light level of detail (the counts the sculpt asks
+ * for, half the texel density) for shelves, machines and small thumbnails; otherwise the full one (x HI: smooth in the hand).
+ */
+export function figureData(item, lod = false) {
+  const ck = lod ? item.key + '|lo' : item.key;
+  const F = built.get(ck);
   if (F) return F;
-  const S = new Sculpt();
-  item.figure(S);
+  const job = pending.get(ck);
+  if (job) { job.finish(); return built.get(ck); } // (it was being baked in idle time: finish it now)
+  const g = build(item, lod);
+  let r;
+  while (!(r = g.next()).done);
+  return r.value;
+}
+const pending = new Map();
+/** Bake a figure in idle time (src/core/idle.js), so its first appearance costs no frame. Returns the job (or null). */
+export function prebakeFigure(item, lod = false) {
+  const ck = lod ? item.key + '|lo' : item.key;
+  if (built.has(ck) || pending.has(ck)) return pending.get(ck) || null;
+  const job = idleJob(build(item, lod), { onDone: () => pending.delete(ck) });
+  pending.set(ck, job);
+  return job;
+}
+function* build(item, lod) {
+  const ck = lod ? item.key + '|lo' : item.key;
+  const S = new Sculpt(), k0 = QUAL.k;
+  QUAL.k = lod ? 1 : HI;
+  S.texel = lod ? 0.5 : 1;
+  try { item.figure(S); } finally { QUAL.k = k0; }
+  yield;
   const atlas = figureAtlas(item.series);
-  const { buckets, tris } = atlas.bake(S);
+  const { buckets, tris } = yield* atlas.bakeGen(S);
   const bb = S.bounds(), sz = bb.getSize(new THREE.Vector3());
   const k = 0.001 * Math.min(1, FIGURE_MAX / (Math.max(sz.x, sz.y, sz.z) * 0.001));
   // millimetres -> the mesh's metres: bottom-centred on the resting pose
   const C = new THREE.Matrix4().makeScale(k, k, k).multiply(new THREE.Matrix4().makeTranslation(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2));
   const nm = new THREE.Matrix3().getNormalMatrix(C), all = [...buckets.values()];
   const rest = {};
-  for (const [name, d] of Object.entries(S.parts)) rest[name] = d.move ? d.move(d.rest) : null;
+  for (const name of Object.keys(S.parts)) rest[name] = S.jointMatrix(name);
   const size = sz.clone().multiplyScalar(k);
   const tag = (g) => { g.userData.size = size; g.userData.figure = item.key; return g; };
+  yield;
   const full = tag(geometry(all.map((b) => ({ ...b, m: b.part ? rest[b.part] : null })), C, nm));
-  F = { key: item.key, atlas, full, size, tris, defs: S.parts, C, Ci: C.clone().invert(), buckets, body: null, parts: null, tag, nm };
-  built.set(item.key, F);
+  const F = { key: item.key, lod, atlas, full, size, tris, sculpt: S, defs: S.parts, C, Ci: C.clone().invert(), buckets, body: null, parts: null, tag, nm };
+  built.set(ck, F);
+  pending.delete(ck);
   return F;
 }
 
-/** The resting-pose geometry of a figure item. */
-export const figureGeometry = (item) => figureData(item).full;
+/** The resting-pose geometry of a figure item (o.lowres: the light level of detail). */
+export const figureGeometry = (item, o = {}) => figureData(item, !!o.lowres).full;
 
-/** A mesh of a figure item in a finish. */
-export function makeFigureMesh(item, finish = 'normal') {
-  const F = figureData(item);
+/** A mesh of a figure item in a finish. o.lowres: the light level of detail. */
+export function makeFigureMesh(item, finish = 'normal', o = {}) {
+  const F = figureData(item, !!o.lowres);
   const mesh = new THREE.Mesh(F.full, figureMaterials(F.atlas, finish));
   mesh.castShadow = true; mesh.receiveShadow = true;
   mesh.userData.itemKey = item.key;
   mesh.userData.finish = finish;
-  if (Object.keys(F.defs).length) mesh.userData.gimmick = item.gimmick || { text: 'Move it' };
+  if (item.gimmick) mesh.userData.gimmick = item.gimmick;
   return mesh;
 }
 
-// ------------------------------------------------------------------ gimmicks
+// ------------------------------------------------------------------ the rig, live
 function split(F) {
   if (F.body) return;
   const all = [...F.buckets.values()];
@@ -99,46 +130,51 @@ function split(F) {
   for (const name of Object.keys(F.defs)) F.parts[name] = geometry(all.filter((b) => b.part === name).map((b) => ({ ...b, m: null })), F.C, F.nm);
 }
 const _m = new THREE.Matrix4();
-/** Pose a figure mesh's moving parts at t (0..1). The first call splits them off as children of the mesh. */
-export function playGimmick(mesh, t) {
-  const F = built.get(mesh?.userData?.itemKey);
-  if (!F || !mesh.userData.gimmick) return false;
+/** The joints of a figure: { name: { min, max, rest, parent, idle } } (for posing tools and the dev studio). */
+export function figureJoints(item) { return figureData(item).defs; }
+/**
+ * Pose a figure mesh: t = the gimmick (0..1), add = { joint: offset } on top (clamped to each joint's limits), values =
+ * { joint: value } to set joints outright. The first call swaps in the full-detail figure with its joints split off
+ * as child meshes; stopGimmick puts the single resting mesh back.
+ */
+export function playGimmick(mesh, t, add = null, values = null) {
+  const item = ITEMS_BY_KEY[mesh?.userData?.itemKey];
+  if (!item || !isFigure(item)) return false;
+  const F = figureData(item);
+  if (!Object.keys(F.defs).length) return false;
   let G = mesh.userData.gimmickLive;
   if (!G) {
     split(F);
-    G = mesh.userData.gimmickLive = { nodes: [], t: -1 };
+    G = mesh.userData.gimmickLive = { nodes: [], was: mesh.geometry };
     mesh.geometry = F.body;
-    for (const [name, def] of Object.entries(F.defs)) {
+    for (const name of Object.keys(F.defs)) {
       const c = new THREE.Mesh(F.parts[name], mesh.material);
       c.matrixAutoUpdate = false;
       c.castShadow = mesh.castShadow; c.receiveShadow = true;
       c.userData.noDecal = true; c.userData.gimmickPart = name;
       c.layers.mask = mesh.layers.mask;
       mesh.add(c);
-      G.nodes.push({ c, def });
+      G.nodes.push({ c, name });
     }
   }
-  if (t === G.t) return true;
-  G.t = t;
-  for (const { c, def } of G.nodes) {
+  const pose = { t: t ?? F.sculpt.restT, add, values };
+  for (const { c, name } of G.nodes) {
     c.material = mesh.material;
-    if (def.move) c.matrix.copy(F.C).multiply(_m.copy(def.move(t))).multiply(F.Ci); else c.matrix.identity();
+    c.matrix.copy(F.C).multiply(_m.copy(F.sculpt.jointMatrix(name, pose))).multiply(F.Ci);
     c.matrixWorldNeedsUpdate = true;
   }
   return true;
 }
 /** Back to the single resting-pose mesh. */
 export function stopGimmick(mesh) {
-  const G = mesh?.userData?.gimmickLive, F = built.get(mesh?.userData?.itemKey);
-  if (!G || !F) return;
+  const G = mesh?.userData?.gimmickLive;
+  if (!G) return;
   for (const { c } of G.nodes) mesh.remove(c);
-  mesh.geometry = F.full;
+  mesh.geometry = G.was;
   delete mesh.userData.gimmickLive;
 }
-/** The resting t of a figure's gimmick (what the single mesh shows). */
+/** The gimmick's t in the resting pose (what the single mesh shows). */
 export function gimmickRest(mesh) {
-  const F = built.get(mesh?.userData?.itemKey);
-  if (!F) return 0;
-  const d = Object.values(F.defs)[0];
-  return d ? d.rest : 0;
+  const item = ITEMS_BY_KEY[mesh?.userData?.itemKey];
+  return item && isFigure(item) ? figureData(item).sculpt.restT : 0;
 }

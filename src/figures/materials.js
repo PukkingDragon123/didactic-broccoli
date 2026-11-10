@@ -1,9 +1,9 @@
 // Materials for sculpted figures: one pair per series atlas and finish, [0] the painted plastic, [1] clear parts.
-// They are ordinary standard / physical materials, so the renderer's cel ramp, lilac shadows and ink outlines apply.
-// The special finishes are cel materials too: instead of a smooth environment reflection, the surface colour is
-// replaced by a few hard bands read from the view-space reflection (chrome and gold: ground, horizon line, sky, hot
-// white), from the angle to the eye (clear plastic thickens towards its edges; aurora steps through four pearl
-// colours) or from the facet itself (diamond: cut faces that flash).
+// They are ordinary standard / physical materials, so the renderer's light bands, lilac shadows, toon highlights and
+// ink outlines apply (docs/ART.md, renderer contract): roughness decides the highlight, nothing is brightened with
+// emissive except glow-in-the-dark. The finishes: chrome and gold are metals; clear plastic thickens towards its
+// edges; glow is phosphor green and lit from inside; aurora steps through four pearl colours with the angle to the
+// eye; diamond is cut faces that flash.
 import * as THREE from 'three';
 import { glowUniform, timeUniform } from '../voxel/materials.js';
 
@@ -26,25 +26,23 @@ function bands(name, list) {
 const f3 = (a) => a.map((v) => v.toFixed(3));
 
 const FINISH = {
+  // chrome and gold are real metals for the renderer (metalness 1, roughness 0.18: it gives them its cartoon sky /
+  // horizon / ground reflection); the painted detail survives as lighter and darker metal
   metallic: {
-    params: { roughness: 0.34, metalness: 0.0 },
-    color: `${bands('fB', [[0, f3([0.34, 0.36, 0.46])], [0.3, f3([0.62, 0.64, 0.72])], [0.455, f3([0.16, 0.17, 0.26])], [0.5, f3([0.66, 0.76, 0.92])], [0.72, f3([0.97, 0.99, 1.0])]])}
-  diffuseColor.rgb = fB * mix( vec3( 1.0 ), diffuseColor.rgb / max( fLum, 0.08 ), 0.16 ) * ( 0.42 + 0.58 * fDet );`,
-    emissive: 'totalEmissiveRadiance += diffuseColor.rgb * 0.1;',
+    params: { roughness: 0.18, metalness: 1.0 },
+    color: 'diffuseColor.rgb = mix( vec3( 0.5, 0.53, 0.6 ), vec3( 0.96, 0.97, 1.0 ), fDet ) * mix( vec3( 1.0 ), diffuseColor.rgb / max( fLum, 0.08 ), 0.14 );',
   },
   gold: {
-    params: { roughness: 0.36, metalness: 0.0 },
-    color: `${bands('fB', [[0, f3([0.62, 0.36, 0.08])], [0.3, f3([0.9, 0.64, 0.18])], [0.455, f3([0.42, 0.22, 0.04])], [0.5, f3([1.0, 0.8, 0.3])], [0.72, f3([1.0, 0.95, 0.7])]])}
-  diffuseColor.rgb = fB * ( 0.45 + 0.55 * fDet );`,
-    emissive: 'totalEmissiveRadiance += diffuseColor.rgb * vec3( 0.14, 0.1, 0.04 );',
+    params: { roughness: 0.18, metalness: 1.0 },
+    color: 'diffuseColor.rgb = mix( vec3( 0.62, 0.36, 0.08 ), vec3( 1.0, 0.8, 0.34 ), fDet );',
   },
   glow: {
     params: { roughness: 0.6, metalness: 0.0 },
     color: `float fG = pow( clamp( fLum * 1.4, 0.0, 1.0 ), 0.6 );
   gcol = mix( vec3( 0.05, 0.35, 0.12 ), vec3( 0.45, 1.0, 0.55 ), fG );
-  diffuseColor.rgb = mix( vec3( 0.36, 0.5, 0.36 ), vec3( 0.84, 1.0, 0.78 ), fG );
+  diffuseColor.rgb = mix( vec3( 0.26, 0.42, 0.28 ), vec3( 0.7, 0.92, 0.66 ), fG );
   diffuseColor.rgb = mix( diffuseColor.rgb, diffuseColor.rgb * vec3( 0.8, 0.95, 0.82 ), 1.0 - fstep( 0.4, fNV ) );`,
-    emissive: 'totalEmissiveRadiance += gcol * uGlow;',
+    emissive: 'totalEmissiveRadiance += gcol * uGlow * 0.4;',
   },
   clear: {
     physical: true,
@@ -63,20 +61,18 @@ const FINISH = {
   fP = mix( fP, vec3( 0.72, 0.86, 1.0 ), fstep( 2.0, fH ) );
   fP = mix( fP, vec3( 0.88, 0.78, 1.0 ), fstep( 3.0, fH ) );
   fP = mix( fP, vec3( 1.0, 0.74, 0.88 ), fstep( 3.97, fH ) );
-  diffuseColor.rgb = mix( fP, vec3( 1.0 ), 0.25 * fstep( 0.8, fUp ) ) * ( 0.5 + 0.5 * fDet );`,
-    emissive: 'totalEmissiveRadiance += diffuseColor.rgb * 0.12;',
+  diffuseColor.rgb = mix( fP, vec3( 1.0 ), 0.25 * fstep( 0.8, fUp ) ) * ( 0.42 + 0.5 * fDet );`,
   },
   diamond: {
     physical: true, flat: true,
     params: { roughness: 0.05, metalness: 0.0, transparent: true, opacity: 1, clearcoat: 1, clearcoatRoughness: 0.02 },
     color: `float fS = fract( dot( fN, vec3( 3.1, 5.3, 2.7 ) ) + fV.x * 1.7 + fV.y * 1.3 + uTime * 0.06 );
-  vec3 fI = mix( vec3( 0.58, 0.78, 0.98 ), vec3( 0.86, 0.95, 1.0 ), fstep( 0.3, fS ) );
+  vec3 fI = mix( vec3( 0.4, 0.62, 0.9 ), vec3( 0.7, 0.86, 1.0 ), fstep( 0.3, fS ) );
   fI = mix( fI, vec3( 1.0 ), fstep( 0.72, fS ) );
   vec3 fR = 0.5 + 0.5 * cos( 6.2831 * ( floor( fS * 6.0 ) / 6.0 + vec3( 0.0, 0.33, 0.67 ) ) );
   fI = mix( fI, mix( fI, fR, 0.5 ), fstep( 0.9, fS ) );
-  diffuseColor.rgb = fI * ( 0.62 + 0.38 * fDet );
-  diffuseColor.a = 0.7 + 0.3 * fstep( 0.72, fS );`,
-    emissive: 'totalEmissiveRadiance += diffuseColor.rgb * ( 0.1 + 0.3 * fstep( 0.72, fS ) );',
+  diffuseColor.rgb = fI * ( 0.55 + 0.45 * fDet );
+  diffuseColor.a = 0.74 + 0.26 * fstep( 0.72, fS );`,
   },
 };
 

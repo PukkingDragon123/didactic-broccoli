@@ -75,7 +75,7 @@ export function foilGeo(r) {
 }
 
 // ----------------------------------------------------------------------------- the shrink band
-export const BAND_N = 36, BAND_VERTS = 24, BAND_TAB = 6, RIBBON_N = 16, BAND_A0 = 62 * D2R;
+export const BAND_N = 48, BAND_VERTS = 24, BAND_TAB = 6, RIBBON_N = 22, BAND_A0 = 62 * D2R;
 /**
  * The band round the seam and the strip peeled off it. ring: the pull tab first, then BAND_N segments of BAND_VERTS
  * vertices from the tab round (peeled = draw range from BAND_TAB + k * BAND_VERTS); ribbon: RIBBON_N quads curling
@@ -102,7 +102,7 @@ export function bandGeo(shape, r, which = 'band', grow = 0) {
     R.push(scaleM(r));
     const col = [];
     let x = 0, z = 0;
-    for (let m = 0; m <= RIBBON_N; m++) { const phi = (18 + m * 13) * D2R; col.push({ x, z, n: [Math.cos(phi), 0, Math.sin(phi)] }); x += Math.sin(phi) * len; z -= Math.cos(phi) * len; }
+    for (let m = 0; m <= RIBBON_N; m++) { const phi = (18 + m * 9.5) * D2R; col.push({ x, z, n: [Math.cos(phi), 0, Math.sin(phi)] }); x += Math.sin(phi) * len; z -= Math.cos(phi) * len; }
     for (let m = 0; m < RIBBON_N; m++) {
       const a = col[m], b = col[m + 1], uA = 1 - (m % per) / per, uB = 1 - ((m % per) + 1) / per, y0 = ys[4], y1 = ys[0], tw = 0.02 * m; // the strip twists a little as it goes
       R.quadN([a.x, y0 + tw, a.z], [b.x, y0 + tw + 0.02, b.z], [b.x, y1 + tw + 0.02, b.z], [a.x, y1 + tw, a.z], a.n, b.n, b.n, a.n, inRect(rc, uA, 0), inRect(rc, uB, 0), inRect(rc, uB, 1), inRect(rc, uA, 1));
@@ -114,9 +114,9 @@ export function bandGeo(shape, r, which = 'band', grow = 0) {
 // ----------------------------------------------------------------------------- seals over the seam
 const SEAL_A = 90 * D2R; // facing +z
 /** A patch lying on a half of the capsule: aC centre azimuth, half (deg) its half width, ys rows (units of r), vs their v. */
-function wrapPatch(G, shape, part, aC, half, ys, vs, rc, off, RsOverride = null) {
+function wrapPatch(G, shape, part, aC, half, ys, vs, rc, off, RsOverride = null, cols = 6) {
   const rows = ys.length - 1;
-  G.patch(3, rows, (s, t) => {
+  G.patch(cols, rows, (s, t) => {
     const k = Math.min(rows - 1, Math.floor(t * rows + 1e-6)), f = t * rows - k, y = ys[k] + (ys[Math.min(rows, k + 1)] - ys[k]) * f;
     const a = aC + (0.5 - s) * 2 * half * D2R;
     const R = RsOverride ? RsOverride[k] + (RsOverride[Math.min(rows, k + 1)] - RsOverride[k]) * f : profileAt(shape, part, y) + off;
@@ -131,7 +131,7 @@ export function stickerGeo(shape, r, rect, half = 12) {
     wrapPatch(T, shape, 'top', SEAL_A, half, [0.001, 0.12, 0.25, 0.37], [0.5, 0.66, 0.84, 1], rc, 0.007);
     const B = new GeoS(1); B.push(scaleM(r));
     const yb = [-0.001, -0.118, -0.15, -0.25, -0.34];
-    wrapPatch(B, shape, 'bottom', SEAL_A, half, yb, [0.5, 0.34, 0.3, 0.14, 0], rc, 0.007, [lip * 1.047, lip * 1.047, profileAt(shape, 'bottom', -0.15) + 0.007, profileAt(shape, 'bottom', -0.25) + 0.007, profileAt(shape, 'bottom', -0.34) + 0.007]);
+    wrapPatch(B, shape, 'bottom', SEAL_A, half, yb, [0.5, 0.34, 0.3, 0.14, 0], rc, 0.007, [lip * 1.06, lip * 1.06, profileAt(shape, 'bottom', -0.15) + 0.007, profileAt(shape, 'bottom', -0.25) + 0.007, profileAt(shape, 'bottom', -0.34) + 0.007]);
     return { top: done(T), bottom: done(B) };
   });
 }
@@ -143,11 +143,33 @@ export function dotStickerGeo(shape, r, rect) {
     return done(G);
   });
 }
+/** Print on the front of a half (the daruma's face, the 福 on its belly): rows ys (units of r), half its half width in degrees. */
+export function faceGeo(shape, r, part, rect, half, ys) {
+  return memo(`face|${shape}|${r}|${part}|${rect.join()}`, () => {
+    const G = new GeoS(1); G.push(scaleM(r));
+    const lo = ys[0], hi = ys[ys.length - 1];
+    wrapPatch(G, shape, part, SEAL_A, half, ys, ys.map((y) => (y - lo) / (hi - lo)), uvRect(rect), 0.006, null, 6);
+    return done(G);
+  });
+}
+/** A label wrapped all the way round a half between y0 and y1 (the can's), the art repeated `reps` times. */
+export function labelBandGeo(shape, r, part, rect, y0, y1, reps = 2) {
+  return memo(`lband|${shape}|${r}|${part}|${rect.join()}`, () => {
+    const G = new GeoS(1), rc = uvRect(rect), N = 14 * reps, R0 = profileAt(shape, part, y0) + 0.006, R1 = profileAt(shape, part, y1) + 0.006;
+    G.push(scaleM(r));
+    for (let k = 0; k < N; k++) {
+      const aA = SEAL_A + Math.PI / reps - (k / N) * Math.PI * 2, aB = SEAL_A + Math.PI / reps - ((k + 1) / N) * Math.PI * 2, per = N / reps, uA = (k % per) / per, uB = ((k % per) + 1) / per;
+      const P = (a, y, R) => [Math.cos(a) * R, y, Math.sin(a) * R], Nn = (a) => [Math.cos(a), 0, Math.sin(a)];
+      G.quadN(P(aA, y0, R0), P(aB, y0, R0), P(aB, y1, R1), P(aA, y1, R1), Nn(aA), Nn(aB), Nn(aB), Nn(aA), inRect(rc, uA, 0), inRect(rc, uB, 0), inRect(rc, uB, 1), inRect(rc, uA, 1));
+    }
+    return done(G);
+  });
+}
 /** A wax seal pressed over the seam: { top, bottom } half-discs with the stamp's art from above. */
 export function waxGeo(shape, r, rect) {
   return memo(`wax|${shape}|${r}|${rect.join()}`, () => {
-    const rc = uvRect(rect), R0 = shapeLip(shape) * 1.046, rad = 0.24, yc = -0.035;
-    const rings = [[0, 0.06], [0.5, 0.056], [0.82, 0.04], [1, 0.006]];
+    const rc = uvRect(rect), R0 = shapeLip(shape) * 1.058, rad = 0.24, yc = -0.035;
+    const rings = [[0, 0.06], [0.3, 0.059], [0.55, 0.054], [0.75, 0.044], [0.9, 0.028], [1, 0.004]];
     const vtx = (rho, h, psi) => {
       const x = Math.cos(psi) * rho * rad, y = yc + Math.sin(psi) * rho * rad, a = SEAL_A - x / R0;
       // above the lip the dome is set back: the wax fills the step
@@ -158,7 +180,7 @@ export function waxGeo(shape, r, rect) {
     };
     const half = (psi0) => {
       const G = new GeoS(1); G.push(scaleM(r));
-      const S = 7;
+      const S = 16;
       for (let s = 0; s < S; s++) for (let k = 0; k + 1 < rings.length; k++) {
         const pA = psi0 + (s / S) * Math.PI, pB = psi0 + ((s + 1) / S) * Math.PI;
         const a = vtx(rings[k][0], rings[k][1], pA), b = vtx(rings[k + 1][0], rings[k + 1][1], pA), c = vtx(rings[k + 1][0], rings[k + 1][1], pB), d = vtx(rings[k][0], rings[k][1], pB);

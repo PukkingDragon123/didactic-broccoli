@@ -113,6 +113,45 @@ export class GeoS extends Geo {
   }
 }
 
+/**
+ * A moulded box: a rounded rectangle in plan (corner radius r, `seg` steps a corner, smooth round the corners) with
+ * its top and bottom edges eased by `ch`. uv(p, n) as the base class. o.open: leave the flat part of the +z wall out
+ * (the caller cuts its own openings there); o.noTop / o.noBottom: leave a cap out.
+ */
+export function roundBox(G, x0, y0, z0, x1, y1, z1, r, uv, o = {}) {
+  const seg = o.seg ?? 6, ch = Math.min(o.ch ?? 0.004, (y1 - y0) / 2.2);
+  r = Math.max(0.0005, Math.min(r, (x1 - x0) / 2.01, (z1 - z0) / 2.01));
+  const C = [[x1 - r, z1 - r], [x0 + r, z1 - r], [x0 + r, z0 + r], [x1 - r, z0 + r]];
+  const ring = (inset) => { const out = []; C.forEach(([cx, cz], k) => { for (let i = 0; i <= seg; i++) { const a = (k + i / seg) * Math.PI / 2, rr = Math.max(0, r - inset); out.push({ x: cx + Math.cos(a) * rr, z: cz + Math.sin(a) * rr, nx: Math.cos(a), nz: Math.sin(a) }); } }); return out; };
+  const W = ring(0), I = ring(ch), n = W.length;
+  const quad = (a, b, c, d, na, nb, nc, nd) => {
+    // wound to face its normals
+    const e1 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], e2 = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+    const f = (e1[1] * e2[2] - e1[2] * e2[1]) * na[0] + (e1[2] * e2[0] - e1[0] * e2[2]) * na[1] + (e1[0] * e2[1] - e1[1] * e2[0]) * na[2];
+    if (f >= 0) G.quadN(a, b, c, d, na, nb, nc, nd, uv(a, na), uv(b, nb), uv(c, nc), uv(d, nd));
+    else G.quadN(a, d, c, b, na, nd, nc, nb, uv(a, na), uv(d, nd), uv(c, nc), uv(b, nb));
+  };
+  const s = Math.SQRT1_2;
+  for (let k = 0; k < n; k++) {
+    const p = W[k], q = W[(k + 1) % n], pi = I[k], qi = I[(k + 1) % n];
+    const flatFront = p.nz > 0.999 && q.nz > 0.999;
+    const np = [p.nx, 0, p.nz], nq = [q.nx, 0, q.nz];
+    if (!(o.open && flatFront)) quad([p.x, y0 + ch, p.z], [q.x, y0 + ch, q.z], [q.x, y1 - ch, q.z], [p.x, y1 - ch, p.z], np, nq, nq, np);
+    if (ch > 0) {
+      const tp = [p.nx * s, s, p.nz * s], tq = [q.nx * s, s, q.nz * s], bp = [p.nx * s, -s, p.nz * s], bq = [q.nx * s, -s, q.nz * s];
+      if (!o.noTop) quad([p.x, y1 - ch, p.z], [q.x, y1 - ch, q.z], [qi.x, y1, qi.z], [pi.x, y1, pi.z], tp, tq, tq, tp);
+      if (!o.noBottom) quad([p.x, y0 + ch, p.z], [q.x, y0 + ch, q.z], [qi.x, y0, qi.z], [pi.x, y0, pi.z], bp, bq, bq, bp);
+    }
+  }
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+  for (const [y, ny, skip] of [[y1, 1, o.noTop], [y0, -1, o.noBottom]]) {
+    if (skip) continue;
+    const N = [0, ny, 0], c = [cx, y, cz];
+    for (let k = 0; k < n; k++) { const a = [I[k].x, y, I[k].z], b = [I[(k + 1) % n].x, y, I[(k + 1) % n].z]; if (ny > 0) G.triN(c, b, a, N, N, N, uv(c, N), uv(b, N), uv(a, N)); else G.triN(c, a, b, N, N, N, uv(c, N), uv(a, N), uv(b, N)); }
+  }
+  return G;
+}
+
 /** A geometry sharing another one's buffers but drawing only [start, start + count) vertices. */
 export function subRange(geo, start, count) {
   const g = new THREE.BufferGeometry();

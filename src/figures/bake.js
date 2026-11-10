@@ -22,6 +22,33 @@ function newell(pts) {
   return norm([x, y, z]);
 }
 
+/** The paint of one facet or grid cell: which layers can touch it (ctx), and their colour at a local point. */
+function evaluator(layers, ctx) {
+  let act = [];
+  for (const L of layers) {
+    const e = L.prep(ctx);
+    if (e === null || e === undefined || e === false) continue;
+    if (e === true && typeof L.color === 'number' && L.alpha >= 1) act = [];
+    act.push({ L, sdf: e === true ? null : e, fn: typeof L.color === 'function' });
+  }
+  const px = ctx.px, E = { flat: act.every((x) => !x.sdf && !x.fn), col: BASE, rough: 158 };
+  E.at = (x, y, z) => {
+    let col = BASE, rough = 0.62;
+    for (let q = 0; q < act.length; q++) {
+      const { L, sdf, fn } = act[q];
+      let cov = 1;
+      if (sdf) { cov = 0.5 - sdf(x, y, z) / px; if (cov <= 0) continue; if (cov > 1 || L.hard) cov = 1; }
+      cov *= L.alpha;
+      const c2 = L.tone ? L.tone(col, x, y, z) : fn ? L.color(x, y, z) : L.color;
+      if (c2 === null || c2 === undefined) continue;
+      col = cov >= 1 ? c2 : mix(col, c2, cov);
+      if (L.rough !== undefined && cov > 0.5) rough = L.rough;
+    }
+    E.col = col; E.rough = Math.round(rough * 255);
+  };
+  return E;
+}
+
 export class FigureAtlas {
   constructor(w = 2048, h = 1024, ppmm = PPMM) {
     this.w = w; this.h = h; this.ppmm = ppmm;
@@ -31,6 +58,7 @@ export class FigureAtlas {
     this.r = new Uint8Array(this.rw * this.rh * 4).fill(160);
     this.sky = [{ x: 0, w, y: 0 }]; this.top = 0;
     this.sw = new Map(); this.swArea = null;
+    this.scratch = { C: new Uint32Array(4096), R: new Uint8Array(4096) };
     this.tex = null; this.rtex = null;
     this.stats = { charts: 0, swatches: 0, texels: 0 };
   }
@@ -105,12 +133,16 @@ export class FigureAtlas {
    * Paint a sculpt's facets into the atlas. Returns the triangles, bucketed by moving part and draw slot:
    *   { buckets: Map('part|slot' -> { part, slot, pos[], nrm[], uv[] }), tris }   (positions in the sculpt's millimetres)
    */
-  bake(sculpt) {
+  bake(sculpt) { const g = this.bakeGen(sculpt); let r; while (!(r = g.next()).done); return r.value; }
+  /** The same as a generator that yields every few milliseconds (for src/core/idle.js: no frame pays for a bake). */
+  * bakeGen(sculpt) {
+    let tY = performance.now();
     const charts = [], out = new Map();
     const bucket = (f) => { const k = `${f.part || ''}|${f.slot}`; let b = out.get(k); if (!b) out.set(k, b = { part: f.part || null, slot: f.slot, pos: [], nrm: [], uv: [] }); return b; };
     let tris = 0;
     for (const f of sculpt.facets) {
-      const N = f.p.length, D = this.ppmm * (f.dens || 1);
+      if (performance.now() - tY > 3) { yield; tY = performance.now(); }
+      const N = f.p.length, D = this.ppmm * (f.dens || 1) * (sculpt.texel || 1);
       const n = newell(f.p);
       const U = Math.abs(n[1]) < 0.95 ? norm(cross([0, 1, 0], n)) : norm(cross(n, [0, 0, 1])), Vv = cross(n, U);
       const o = f.p[0], A = [], B = [];
@@ -126,50 +158,32 @@ export class FigureAtlas {
       for (const p of f.lp) for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], p[k]); mx[k] = Math.max(mx[k], p[k]); }
       const px = Math.hypot(LA[0], LA[1], LA[2]) / D;
       const ctx = { n: f.ln, pts: f.lp, min: mn, max: mx, px };
-      let act = [];
-      for (const L of f.layers) {
-        const e = L.prep(ctx);
-        if (e === null || e === undefined || e === false) continue;
-        if (e === true && typeof L.color === 'number' && L.alpha >= 1) act = [];
-        act.push({ L, sdf: e === true ? null : e, fn: typeof L.color === 'function' });
-      }
-      const flat = act.every((x) => !x.sdf && !x.fn);
-      let col = BASE, rough = 0.62;
-      const evalAt = (x, y, z) => {
-        col = BASE; rough = 0.62;
-        for (let q = 0; q < act.length; q++) {
-          const { L, sdf, fn } = act[q];
-          let cov = 1;
-          if (sdf) { cov = 0.5 - sdf(x, y, z) / px; if (cov <= 0) continue; if (cov > 1 || L.hard) cov = 1; }
-          cov *= L.alpha;
-          const c2 = L.tone ? L.tone(col, x, y, z) : fn ? L.color(x, y, z) : L.color;
-          if (c2 === null || c2 === undefined) continue;
-          col = cov >= 1 ? c2 : mix(col, c2, cov);
-          if (L.rough !== undefined && cov > 0.5) rough = L.rough;
-        }
-      };
+      const E = evaluator(f.layers, ctx);
+      const flat = E.flat, evalAt = E.at;
       let uvs = null;
       if (flat) {
         const cc = [0, 0, 0];
         for (const q of f.lp) { cc[0] += q[0] / N; cc[1] += q[1] / N; cc[2] += q[2] / N; }
         evalAt(cc[0], cc[1], cc[2]);
-        const t = this.swatch(col, Math.round(rough * 255));
+        const t = this.swatch(E.col, E.rough);
         uvs = f.p.map(() => t);
       } else {
         const w = Math.max(1, Math.ceil((a1 - a0) * D)) + MARGIN * 2, h = Math.max(1, Math.ceil((b1 - b0) * D)) + MARGIN * 2;
-        const C = new Uint32Array(w * h), R = new Uint8Array(w * h);
+        if (w * h > this.scratch.C.length) this.scratch = { C: new Uint32Array(w * h * 2), R: new Uint8Array(w * h * 2) };
+        let C = this.scratch.C, R = this.scratch.R; // (reused: most patches turn out plain and are dropped again)
         let uni = true, c00 = -1, r00 = -1;
         for (let j = 0; j < h; j++) {
           const b = b0 + (j - MARGIN + 0.5) / D;
           for (let i = 0; i < w; i++) {
             const a = a0 + (i - MARGIN + 0.5) / D;
             evalAt(L0[0] + LA[0] * a + LB[0] * b, L0[1] + LA[1] * a + LB[1] * b, L0[2] + LA[2] * a + LB[2] * b);
-            const c = col, r = Math.round(rough * 255);
+            const c = E.col, r = E.rough;
             C[j * w + i] = c; R[j * w + i] = r;
             if (c00 < 0) { c00 = c; r00 = r; } else if (c !== c00 || r !== r00) uni = false;
           }
         }
         if (uni) { const t = this.swatch(c00, r00); uvs = f.p.map(() => t); } else {
+          C = C.slice(0, w * h); R = R.slice(0, w * h);
           const ch = { w, h, C, R, uv: f.p.map((_, k) => [MARGIN + (A[k] - a0) * D, MARGIN + (B[k] - b0) * D]) };
           charts.push(ch);
           uvs = ch.uv; // patch pixels for now; atlas uvs once it is placed
@@ -186,6 +200,89 @@ export class FigureAtlas {
       const bk = bucket(f);
       for (const k of idx) { bk.pos.push(f.p[k]); bk.nrm.push(f.vn[k]); bk.uv.push(uvs[k]); }
       tris += idx.length / 3;
+    }
+    // ---- smooth surfaces: a grid of cells shares one patch (or a few strips of it: only the rows that carry paint)
+    for (const G of sculpt.patches) {
+      const { nu, nv, cells } = G, D = this.ppmm * (G.dens || 1) * (sculpt.texel || 1);
+      const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+      let wmax = 0, hmax = 0;
+      for (const c of cells) { if (c.dead) continue; wmax = Math.max(wmax, dist(c.p[0], c.p[1]), dist(c.p[3], c.p[2])); hmax = Math.max(hmax, dist(c.p[0], c.p[3]), dist(c.p[1], c.p[2])); }
+      const cw = Math.max(2, Math.min(64, Math.round(wmax * D))), ch = Math.max(2, Math.min(64, Math.round(hmax * D)));
+      // each cell: plain (one colour) or painted (cw x ch texels)
+      const tex = new Array(cells.length).fill(null), flatC = new Int32Array(cells.length), flatR = new Uint8Array(cells.length);
+      for (let k = 0; k < cells.length; k++) {
+        if ((k & 15) === 0 && performance.now() - tY > 3) { yield; tY = performance.now(); }
+        const c = cells[k];
+        if (c.dead) { flatC[k] = -1; continue; }
+        const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+        for (const q of c.lp) for (let d = 0; d < 3; d++) { mn[d] = Math.min(mn[d], q[d]); mx[d] = Math.max(mx[d], q[d]); }
+        const px = Math.max(dist(c.lp[0], c.lp[1]) / cw, dist(c.lp[0], c.lp[3]) / ch, 1e-4);
+        const E = evaluator(G.layers, { n: c.ln, pts: c.lp, min: mn, max: mx, px });
+        const [A, B, Cc, Dd] = c.lp;
+        if (E.flat) { E.at((A[0] + B[0] + Cc[0] + Dd[0]) / 4, (A[1] + B[1] + Cc[1] + Dd[1]) / 4, (A[2] + B[2] + Cc[2] + Dd[2]) / 4); flatC[k] = E.col; flatR[k] = E.rough; continue; }
+        const T = new Uint32Array(cw * ch), R = new Uint8Array(cw * ch);
+        let uni = true;
+        for (let y = 0; y < ch; y++) {
+          const t = (y + 0.5) / ch;
+          for (let x = 0; x < cw; x++) {
+            const u = (x + 0.5) / cw, w0 = (1 - u) * (1 - t), w1 = u * (1 - t), w2 = u * t, w3 = (1 - u) * t;
+            E.at(A[0] * w0 + B[0] * w1 + Cc[0] * w2 + Dd[0] * w3, A[1] * w0 + B[1] * w1 + Cc[1] * w2 + Dd[1] * w3, A[2] * w0 + B[2] * w1 + Cc[2] * w2 + Dd[2] * w3);
+            T[y * cw + x] = E.col; R[y * cw + x] = E.rough;
+            if (E.col !== T[0] || E.rough !== R[0]) uni = false;
+          }
+        }
+        if (uni) { flatC[k] = T[0]; flatR[k] = R[0]; } else tex[k] = { T, R };
+      }
+      // strips: runs of rows with painted cells; across, from the first painted column to the last (the long way
+      // round is skipped on a closed grid: the strip starts after the widest plain gap)
+      const uvOf = new Array(cells.length).fill(null);
+      for (let j0 = 0; j0 < nv;) {
+        const rowHas = (j) => { for (let i = 0; i < nu; i++) if (tex[j * nu + i]) return true; return false; };
+        if (!rowHas(j0)) { j0++; continue; }
+        let j1 = j0 + 1;
+        while (j1 < nv && rowHas(j1)) j1++;
+        const col = new Uint8Array(nu);
+        for (let j = j0; j < j1; j++) for (let i = 0; i < nu; i++) if (tex[j * nu + i]) col[i] = 1;
+        let i0 = col.indexOf(1), ni = col.lastIndexOf(1) - i0 + 1;
+        if (G.closed) {
+          let bestGap = -1, bestStart = 0;
+          for (let i = 0; i < nu; i++) { if (!col[i]) continue; let g = 0; while (g < nu && !col[(i + 1 + g) % nu]) g++; if (g > bestGap) { bestGap = g; bestStart = (i + 1 + g) % nu; } }
+          i0 = bestStart; ni = nu - bestGap;
+        }
+        const W = ni * cw + PAD * 2, H = (j1 - j0) * ch + PAD * 2, r = this.alloc(W, H);
+        for (let y = 0; y < H; y++) {
+          const yy = Math.max(0, Math.min((j1 - j0) * ch - 1, y - PAD)), j = j0 + Math.floor(yy / ch), ty = yy % ch;
+          for (let x = 0; x < W; x++) {
+            const xx = Math.max(0, Math.min(ni * cw - 1, x - PAD)), k = j * nu + (i0 + Math.floor(xx / cw)) % nu, t = tex[k];
+            if (t) this.put(r.x + x, r.y + y, t.T[ty * cw + (xx % cw)], t.R[ty * cw + (xx % cw)]);
+            else this.put(r.x + x, r.y + y, flatC[k] < 0 ? BASE : flatC[k], flatR[k]);
+          }
+        }
+        for (let j = j0; j < j1; j++) for (let ii = 0; ii < ni; ii++) {
+          const x0 = r.x + PAD + ii * cw, y0 = r.y + PAD + (j - j0) * ch;
+          uvOf[j * nu + (i0 + ii) % nu] = [[x0 / this.w, y0 / this.h], [(x0 + cw) / this.w, y0 / this.h], [(x0 + cw) / this.w, (y0 + ch) / this.h], [x0 / this.w, (y0 + ch) / this.h]];
+        }
+        this.stats.charts++; this.stats.texels += W * H;
+        j0 = j1;
+      }
+      // triangles
+      const bk = bucket(G);
+      for (let k = 0; k < cells.length; k++) {
+        const c = cells[k];
+        if (c.dead) continue;
+        let uv = uvOf[k];
+        if (!uv) { const t = this.swatch(flatC[k], flatR[k]); uv = [t, t, t, t]; }
+        const wn = newell(c.p);
+        for (const tri of [[0, 1, 2], [0, 2, 3]]) {
+          const [a, b, d] = tri, e1 = sub(c.p[b], c.p[a]), e2 = sub(c.p[d], c.p[a]), tn = cross(e1, e2);
+          if (tn[0] * tn[0] + tn[1] * tn[1] + tn[2] * tn[2] < 1e-14) continue;
+          // wind it to face the way the cell's normals point
+          const out = dot(tn, c.vn[a]) + dot(tn, c.vn[b]) + dot(tn, c.vn[d]) >= 0 ? [a, b, d] : [a, d, b];
+          for (const q of out) { bk.pos.push(c.p[q]); bk.nrm.push(c.vn[q]); bk.uv.push(uv[q]); }
+          tris++;
+        }
+        void wn;
+      }
     }
     // place the patches (tallest first on the shelves) and copy them in, with their edges repeated into the padding
     charts.sort((p, q) => q.h - p.h || q.w - p.w);

@@ -40,12 +40,9 @@ export class Lighting {
     const L = this.game.garage.lights;
     this.base = { sun: L.sun.intensity, hemi: L.hemi.intensity, desk: L.desk.intensity, bounce: 2.0 };
     this.target0 = L.sun.target.position.clone();
-    // the garage's frosted side window glows with the sun behind it: find its (shared, baked) material once
-    this.winGlass = null;
-    this.game.garage.group.traverse((o) => {
-      const m = o.material;
-      if (!this.winGlass && m && !Array.isArray(m) && m.emissiveMap && m.emissive?.getHex() === 0xffc890) this.winGlass = { m, k: m.emissiveIntensity, col: m.emissive.clone() };
-    });
+    // the garage's frosted side window glows with the sun behind it (garage.windowGlass: the pane's material)
+    const wg = this.game.garage.windowGlass;
+    this.winGlass = wg ? { m: wg, k: wg.emissiveIntensity, col: wg.emissive.clone() } : null;
   }
 
   flicker(dur = 0.6) { this.flickerT = Math.max(this.flickerT, dur); }

@@ -16,6 +16,7 @@ export default {
   capsule: { colors: [0xea5b3c, 0xf2c230, 0x9fa5ae, 0xf0b142, 0xf3efe4] },
   flyer: {
     maker: 'mogura', scene: 'lane', hero: 'seal', side: ['cone', 'mirror'],
+    title: [['まちかど', 4, 'a'], ['擬態図鑑', 2, 'b']],
     catch: 'まちのどこかに、いる。', sub: 'よく見ると動物でした', gimmick: 'ひょっこりギミックつき！',
   },
   items: [

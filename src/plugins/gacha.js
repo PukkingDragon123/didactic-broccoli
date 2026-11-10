@@ -126,6 +126,7 @@ function debugHelpers(g) {
         const [series, look, size] = e.split(':');
         const cap = opts.shell ? makeShell(series, packLook(capsuleColor(series, () => 0.1), look)) : makeCapsule(series, packLook(capsuleColor(series, () => 0.1), look, look === 'metal'), size ? { size } : {});
         if (opts.stage && cap.steps.length) cap.setStage(Math.min(opts.stage[0], cap.steps.length - 1), opts.stage[1] || 0);
+        if (opts.open) { cap.setStage(cap.steps.length - 1, 1); cap.top.position.set(-1.25 * cap.r, 0.5 * cap.r, 0.3 * cap.r); cap.top.rotation.set(0.3, 0.4, 1.9); if (cap.foil) cap.foil.visible = !!opts.foil; }
         cap.group.position.set(x + ((n % cols) - (cols - 1) / 2) * gap, y - Math.floor(n / cols) * gap, z);
         cap.group.rotation.set(opts.rx ?? 0.25, opts.ry ?? -0.35, 0);
         g.scene.add(cap.group);

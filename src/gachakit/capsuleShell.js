@@ -20,8 +20,8 @@ const D2R = Math.PI / 180;
 // [colour, alpha] per tone: base, lite (raised / catching light), hi (the brightest edge), sh1, sh2 (shade), deep (holes)
 const PAL = {
   plastic: { base: [0xe2e2e4, 255], lite: [0xf1f1f2, 255], hi: [0xffffff, 255], sh1: [0xc6c6d0, 255], sh2: [0xa4a4b4, 255], deep: [0x666674, 255], inner: [0xbcbcc8, 255] },
-  clear: { base: [0xf2f7ff, 26], lite: [0xffffff, 92], hi: [0xffffff, 185], sh1: [0x9fb0c6, 104], sh2: [0x7d8fa8, 150], deep: [0x44536a, 210], inner: [0xeaf2ff, 40] },
-  tint: { base: [0xffffff, 104], lite: [0xffffff, 150], hi: [0xffffff, 215], sh1: [0xc4c4d2, 150], sh2: [0x9a9ab0, 185], deep: [0x55556a, 225], inner: [0xf4f4fa, 120] },
+  clear: { base: [0xdfe8f4, 13], lite: [0xf2f6fc, 84], hi: [0xffffff, 170], sh1: [0x9fb0c6, 104], sh2: [0x7d8fa8, 150], deep: [0x44536a, 210], inner: [0xdfe8f4, 9] },
+  tint: { base: [0xf0f0f4, 96], lite: [0xffffff, 150], hi: [0xffffff, 215], sh1: [0xc4c4d2, 150], sh2: [0x9a9ab0, 185], deep: [0x55556a, 225], inner: [0xe6e6ee, 84] },
   frost: { base: [0xf0f0f3, 214], lite: [0xfafafb, 232], hi: [0xffffff, 250], sh1: [0xcacad6, 234], sh2: [0xaaaaba, 244], deep: [0x70707e, 255], inner: [0xdcdce6, 226] },
   secret: { base: [0x1f1a1e, 255], lite: [0xd9ac3c, 255], hi: [0xfbe9a0, 255], sh1: [0x141014, 255], sh2: [0x0b090b, 255], deep: [0x000000, 255], inner: [0x2c2429, 255], line: [0x8a6a22, 255], gloss: [0x3a3138, 255] },
 };
@@ -47,8 +47,8 @@ export function glyphMask(str, size = 32, font = '"DotGothic16", monospace') {
 
 const skins = new Map();
 /** The painted skin of a kind: { A (Atlas), tex, V: { TB, BB, TC, BC, IN }, sw: { lite, base, sh1, sh2 } } */
-export function shellSkin(kind = 'plastic') {
-  if (skins.has(kind)) return skins.get(kind);
+export function shellSkin(kind = 'plastic', repaint = false) {
+  if (skins.has(kind) && !repaint) return skins.get(kind);
   const P = PAL[kind], A = new Atlas(1024, 512);
   const V = { TB: A.patch('TB', BW, BH), BB: A.patch('BB', BW, BH), TC: A.patch('TC', CP, CP), BC: A.patch('BC', CP, CP), IN: A.patch('IN', 32, 32), SW: A.patch('SW', 64, 16) };
   const put = (v, i, j, t) => v.px(i, j, t[0], t[1]);
@@ -61,6 +61,9 @@ export function shellSkin(kind = 'plastic') {
   };
   const scaled = (mask, s) => { const out = []; for (const [x, y] of mask) for (let a = 0; a < s; a++) for (let b = 0; b < s; b++) out.push([x * s + a, y * s + b]); return out; };
   const text = (v, str, i, j, s = 2, align = 'left') => { const w = textW5(str, s); emboss(v, scaled(mask5(str), s), align === 'center' ? i - Math.round(w / 2) : i, j); return w; };
+  const isKana = (str) => /[^\x00-\x7f]/.test(str);
+  const wordW = (str) => (isKana(str) ? glyphMask(str, 16).w : textW5(str, 2));
+  const word = (v, str, i, j) => { if (!isKana(str)) return text(v, str, i, j, 2); const m = glyphMask(str, 16); emboss(v, m, i, j + 1); return m.w; };
   const diamond = (r) => { const m = []; for (let y = -r; y <= r; y++) for (let x = -r; x <= r; x++) if (Math.abs(x) + Math.abs(y) <= r) m.push([x + r, y + r]); return m; };
   /** A pressed-in dimple: shade inside its upper left, light on its lower right lip. */
   const dimple = (v, ci, cj, r) => {
@@ -118,10 +121,10 @@ export function shellSkin(kind = 'plastic') {
   fill(B, 0, J(22), BW, J(18), P.sh2); // the step under the lip, in its shadow
   fill(B, 0, J(24), BW, J(22), P.sh1);
   // lettering round the rim: the words spread evenly, a diamond between each
-  const WORDS = kind === 'secret' ? ['GACHA GARAGE', 'SUPER SECRET', 'DO NOT PEEK', 'GACHA GARAGE', 'SUPER SECRET', 'NO REFUNDS'] : ['GACHA GARAGE', 'CAPSULE TOY', 'TWIST TO OPEN', 'MADE IN JAPAN', 'PP 5', 'AGES 6 AND UP'];
-  const sum = WORDS.reduce((a, w) => a + textW5(w, 2), 0), gap = (BW - sum) / WORDS.length;
+  const WORDS = kind === 'secret' ? ['GACHA GARAGE', 'SUPER SECRET', 'DO NOT PEEK', 'GACHA GARAGE', 'SUPER SECRET', 'NO REFUNDS'] : ['GACHA GARAGE', '誤飲注意', 'TWIST TO OPEN', '対象年齢15才以上', 'PP 5', 'MADE IN JAPAN'];
+  const sum = WORDS.reduce((a, w) => a + wordW(w), 0), gap = (BW - sum) / WORDS.length;
   let x = Math.round(gap / 2);
-  for (const w of WORDS) { x += text(B, w, x, J(31), 2); emboss(B, diamond(3), Math.round(x + gap / 2) - 3, J(34)); x = Math.round(x + gap); }
+  for (const w of WORDS) { x += word(B, w, x, J(31)); emboss(B, diamond(3), Math.round(x + gap / 2) - 3, J(34)); x = Math.round(x + gap); }
   for (let q = 0; q < 4; q++) dimple(B, 127 + q * 254, J(80), 13);
   fill(B, 0, J(119), BW, J(118), P.sh1); fill(B, 0, J(120), BW, J(119), kind === 'secret' ? P.line : P.lite);
   text(B, 'A-3', 500, J(96), 1);
@@ -166,7 +169,13 @@ export function shellSkin(kind = 'plastic') {
   tex.anisotropy = 8;
   const mid = (k) => V.SW.st((k * 16 + 8) / 64, 0.5);
   const skin = { A, tex, V, sw: { lite: () => mid(0), base: () => mid(1), sh1: () => mid(2), sh2: () => mid(3), inner: () => V.IN.st(0.5, 0.5) } };
+  if (repaint) return skin;
   skins.set(kind, skin);
+  // the lettering has kana in it: painted again once the kana font has loaded
+  try {
+    const K = '秘誤飲注意対象年齢才以上15';
+    if (!document.fonts?.check?.('16px "DotGothic16"', K)) document.fonts.load('16px "DotGothic16"', K).then(() => { glyphCache.clear(); tex.image = shellSkin(kind, true).A.canvas(); tex.needsUpdate = true; }, () => {});
+  } catch { /* no font loading */ }
   return skin;
 }
 
@@ -176,10 +185,11 @@ export function shellSkin(kind = 'plastic') {
 // pole, the bottom from the pole out and up to the seam.
 const cs = (deg) => [Math.cos(deg * D2R), Math.sin(deg * D2R)];
 function ballTop(hi, R = 1, sy = 1) {
-  const p = [[0.985 * R, 0, 1, 0], [R, 0.014, 1, 0.012]];
-  for (const d of hi ? [4, 15, 27, 40, 54, 65, 74] : [5, 30, 54, 70]) { const [c, s] = cs(d); p.push([c * R, s * sy, 0, d / 90]); }
-  const [c, s] = cs(80);
-  p.push([c * R, s * sy, 1, 0.889], [c * R * 0.7, s * sy - 0.014, 1, 0.93], [0, s * sy - 0.014, 0, 1]);
+  // the rim bead, the dome, then the flattened pole: a raised boss ring round the gate's dimple
+  const p = [[0.985 * R, 0, 1, 0], [1.006 * R, 0.01, 0, 0.008], [1.006 * R, 0.03, 0, 0.02], [0.998 * R, 0.045, 1, 0.03]];
+  for (const d of hi ? [4, 9, 15, 21, 27, 33, 39, 45, 50, 54, 59, 64, 69, 73] : [6, 18, 30, 42, 54, 66]) { const [c, s] = cs(d); p.push([c * R, s * sy, 0, d / 90]); }
+  const [c, s] = cs(76.5);
+  p.push([c * R, s * sy, 1, 0.86], [c * R * 0.92, s * sy + 0.012, 0, 0.875], [c * R * 0.8, s * sy + 0.014, 1, 0.889], [c * R * 0.62, s * sy + 0.004, 1, 0.91], [c * R * 0.5, s * sy - 0.012, 1, 0.93], [0, s * sy - 0.012, 0, 1]);
   return p;
 }
 function ballBottom(hi, R = 1, sy = 1, flat = 0.9) {
@@ -188,8 +198,9 @@ function ballBottom(hi, R = 1, sy = 1, flat = 0.9) {
   const p = [[0, -flat * sy, 0, 1], [0.4 * R * Math.cos(lat0 * D2R) / 0.436, -flat * sy, 1, 0.8]];
   const [c0, s0] = cs(lat0 - 2.5);
   p.push([c0 * R, -s0 * sy, 1, 0.69]);
-  for (const d of hi ? [54, 42, 30, 18, 8] : [54, 30, 8]) { const [c, s] = cs(d); p.push([c * R, -s * sy, d === 8 ? 1 : 0, d / 90]); }
-  p.push([1.04 * R, -0.115, 1, 0.075], [1.04 * R, -0.018, 1, 0.02], [1.025 * R, 0, 1, 0], [0.945 * R, 0, 1, 0]);
+  for (const d of hi ? [58, 54, 49, 44, 39, 34, 29, 24, 19, 14, 8] : [54, 42, 30, 18, 8]) { const [c, s] = cs(d); p.push([c * R, -s * sy, d === 8 ? 1 : 0, d / 90]); }
+  // the seam ring, stepped: a wall, a bead round its middle, the chamfer the dome sits in
+  p.push([1.04 * R, -0.115, 1, 0.075], [1.04 * R, -0.086, 1, 0.058], [1.054 * R, -0.076, 0, 0.052], [1.054 * R, -0.05, 0, 0.038], [1.04 * R, -0.04, 1, 0.032], [1.04 * R, -0.018, 1, 0.02], [1.025 * R, 0, 1, 0], [0.945 * R, 0, 1, 0]);
   return p;
 }
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -242,7 +253,7 @@ const geos = new Map();
 export function shellGeo(shape = 'ball', r = 0.0325, part = 'top', detail = 'hi', extras = null) {
   const key = `${shape}|${r}|${part}|${detail}|${extras ? extras.key : ''}`;
   if (geos.has(key)) return geos.get(key);
-  const S = SHAPES[shape] || SHAPES.ball, hi = detail === 'hi', segs = hi ? 28 : 14, top = part === 'top';
+  const S = SHAPES[shape] || SHAPES.ball, hi = detail === 'hi', segs = hi ? 56 : 20, top = part === 'top';
   const skin = shellSkin('plastic'), V = skin.V; // every skin has the same layout
   const prof = top ? S.top(hi) : S.bottom(hi);
   const G = new GeoS(1);
@@ -257,7 +268,7 @@ export function shellGeo(shape = 'ball', r = 0.0325, part = 'top', detail = 'hi'
   // ---- inside first (far wall of a clear half draws before its near outside)
   if (hi) {
     const inner = prof.filter((p) => p[3] > 0.05 || top).map((p) => { const l = Math.hypot(p[0], p[1]) || 1, k = Math.max(0, 1 - 0.055 / l); return [p[0] * k, p[1] * k, 0]; });
-    if (!top) { inner.length = Math.max(0, inner.length - 1); inner.push([prof[prof.length - 1][0], -0.03, 1], [prof[prof.length - 1][0], 0, 1]); }
+    if (!top) { inner.length = Math.max(0, inner.length - 3); inner.push([prof[prof.length - 1][0], -0.03, 1], [prof[prof.length - 1][0], 0, 1]); }
     else inner[0] = [prof[0][0] - 0.04, 0, 1];
     if (!top) inner[0][1] += 0.045; // the floor is thicker
     if (!top && inner[1]) inner[1][1] = inner[0][1];
@@ -266,8 +277,8 @@ export function shellGeo(shape = 'ball', r = 0.0325, part = 'top', detail = 'hi'
   }
   // lo-detail bottoms carry a stand-in for what is inside (a lump and a folded paper), seen through the dome
   if (!hi && !top && !extras?.empty) {
-    G.with(skin.sw.sh1, 0, () => { G.box(-0.42, -0.62, -0.3, 0.3, 0.1, 0.34, { bevel: 0.16 }); });
-    G.with(skin.sw.lite, 0, () => { G.push(new THREE.Matrix4().makeRotationY(0.5)); G.box(-0.5, -0.5, 0.36, 0.5, 0.42, 0.44); G.pop(); });
+    G.with(skin.sw.sh2, 0, () => { G.box(-0.34, -0.66, -0.2, 0.2, -0.12, 0.3, { bevel: 0.14 }); });
+    G.with(skin.sw.lite, 0, () => { G.push(new THREE.Matrix4().makeRotationY(0.5)); G.box(-0.4, -0.5, -0.5, 0.4, 0.5, -0.44); G.pop(); });
   }
   const start = G.S[0].p.length / 3;
   G.revolve(prof, segs, { uv });
@@ -278,6 +289,35 @@ export function shellGeo(shape = 'ball', r = 0.0325, part = 'top', detail = 'hi'
     if (top) G.with(skin.sw.lite, 0, () => G.box(lipR * 0.985, 0.004, -0.085, lipR * 1.03, 0.066, 0.085, { bevel: 0.012, skip: ['nx'] }));
     else G.with(skin.sw.lite, 0, () => { for (const s of [-1, 1]) G.box(lipR * 1.03, -0.112, s * 0.15 - 0.045, lipR * 1.062, -0.004, s * 0.15 + 0.045, { bevel: 0.01, skip: ['nx'] }); });
     G.pop();
+  }
+  if (hi) {
+    const P = (a, lat, R) => [Math.cos(a) * Math.cos(lat) * R, Math.sin(lat) * R * (shape === 'ball' ? 1 : 0.94), Math.sin(a) * Math.cos(lat) * R];
+    if (!top && shape !== 'can') {
+      // moulded grip ribs down the cup: twelve raised strips, each with its two flanks
+      const k0 = shape === 'ball' ? 1 : lipR * 0.985;
+      for (let q = 0; q < 12; q++) {
+        const a0 = (q * 30 + 15) * D2R, w0 = 1.5 * D2R, w1 = 2.8 * D2R, N = (a, lat) => [Math.cos(a) * Math.cos(lat), Math.sin(lat), Math.sin(a) * Math.cos(lat)];
+        for (let j = 0; j < 5; j++) {
+          const lA = -(25 + j * 5.4) * D2R, lB = -(25 + (j + 1) * 5.4) * D2R, hA = j === 0 ? 1.004 : 1.02, hB = j === 4 ? 1.004 : 1.02;
+          for (const [u0, u1, r0, r1] of [[-w1, -w0, 1.0, 1], [-w0, w0, 1, 1], [w0, w1, 1, 1.0]]) {
+            const ra0 = (r0 === 1 ? hA : 1.0) * k0, ra1 = (r1 === 1 ? hA : 1.0) * k0, rb0 = (r0 === 1 ? hB : 1.0) * k0, rb1 = (r1 === 1 ? hB : 1.0) * k0;
+            const na = N(a0 + (u0 + u1) / 2 + (u0 < -w0 ? -0.5 : u1 > w0 ? 0.5 : 0), (lA + lB) / 2);
+            G.quadN(P(a0 + u0, lB, rb0), P(a0 + u1, lB, rb1), P(a0 + u1, lA, ra1), P(a0 + u0, lA, ra0), na, na, na, na, skin.sw.lite(), skin.sw.lite(), skin.sw.lite(), skin.sw.lite());
+          }
+        }
+      }
+    }
+    if (top) {
+      // the thumb tab on the dome's rim, at the back: where you push the lid up
+      G.push(new THREE.Matrix4().makeRotationY(-270 * D2R));
+      G.with(skin.sw.lite, 0, () => { G.box(lipR * 0.97, 0.002, -0.12, lipR * 1.1, 0.03, 0.12, { bevel: 0.012, skip: ['nx'] }); for (const z of [-0.07, 0, 0.07]) G.box(lipR * 1.03, 0.03, z - 0.012, lipR * 1.09, 0.038, z + 0.012, { bevel: 0.004 }); });
+      G.pop();
+    } else {
+      // and the notch in the seam ring under it
+      G.push(new THREE.Matrix4().makeRotationY(-270 * D2R));
+      G.with(skin.sw.sh2, 0, () => G.box(lipR * 1.03, -0.03, -0.1, lipR * 1.058, 0.0005, 0.1, { bevel: 0.006, skip: ['nx'] }));
+      G.pop();
+    }
   }
   G.pop();
   const geo = G.build();

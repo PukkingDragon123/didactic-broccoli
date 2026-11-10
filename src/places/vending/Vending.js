@@ -20,6 +20,7 @@ import { makeCabinet, CAB } from './cabinet.js';
 import { drinkGeometry, drinkMesh, drinksSheet } from '../../products/containers.js';
 import { BRANDS, DRINKS } from '../../products/brands.js';
 import { CONT } from '../../products/spec.js';
+import { installProductsDebug } from '../../products/debug.js';
 import { pixCanvas, hitBox, paperFill, tapeStrip } from '../util.js';
 import { payCash, yen } from '../money.js';
 
@@ -40,16 +41,17 @@ const COLS = 4, ROWS = 3;
 const SW = 288, SH = 84, CELL = 72, ROW = 28; // the strip canvas: three bars of four cells
 const BW = 288, BH = 336, BCH = 112; // the cards behind the samples: four by three cells of 72 x 112
 const OUTLET = V(...CAB.outlet);
-const CARD = { w: 0.46, h: 0.31, cw: 460, ch: 310 }; // the POP card behind the drink you are looking at
+const CARD = { w: 0.6, h: 0.4, cw: 300, ch: 200 }; // the POP card behind the drink you are looking at
 const hash = (i, k) => { const s = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return s - Math.floor(s); };
 
 /** Several geometries (position / normal / uv), each with a matrix, as one. */
 function merged(parts) {
   let n = 0;
-  for (const [g] of parts) n += g.attributes.position.count;
+  for (const [g] of parts) n += g.index ? g.index.count : g.attributes.position.count;
   const P = new Float32Array(n * 3), N = new Float32Array(n * 3), T = new Float32Array(n * 2), v = new THREE.Vector3(), nm = new THREE.Matrix3();
   let o = 0;
-  for (const [g, m] of parts) {
+  for (const [g0, m] of parts) {
+    const g = g0.index ? g0.toNonIndexed() : g0;
     const p = g.attributes.position, nn = g.attributes.normal, t = g.attributes.uv;
     nm.getNormalMatrix(m);
     for (let i = 0; i < p.count; i++, o++) {
@@ -85,6 +87,7 @@ export class Vending {
     this.buildStage();
     loadLabelFonts(Object.values(FOODS)).then(() => { for (const m of this.list) { this.draw(m); this.drawBack(m); } });
     this.machines = this.list;
+    setTimeout(() => installProductsDebug(game), 0);
   }
 
   /** The voxel machines Town.js queued as instanced props stand where ours do: take them out of the scene. */
@@ -277,12 +280,13 @@ export class Vending {
       this.shown = f.id;
       this.pivot.clear();
       const d = drinkMesh(f.id, { castShadow: false });
-      d.material = drinksSheet().lit(); d.raycast = () => {};
-      const s = Math.min(1.7, 0.2 / (c.h / 1000));
+      d.material = (this.stageMat ||= (() => { const k = drinksSheet().material().clone(); k.emissive = new THREE.Color(0xffffff); k.emissiveMap = k.map; k.emissiveIntensity = 0.2; return k; })());
+      d.raycast = () => {};
+      const s = Math.min(2.3, 0.27 / (c.h / 1000));
       d.scale.setScalar(s); d.position.y = -(c.h / 1000) * s / 2;
       this.pivot.add(d);
-      this.pivot.position.set(-CARD.w / 2 + 0.105, 0.012, 0.075);
-      this.turn.yaw = 0.35; this.turn.pitch = 0.1; this.turn.idle = 1;
+      this.pivot.position.set(-CARD.w / 2 + 0.115, 0.012, 0.11);
+      this.turn.yaw = -0.3; this.turn.pitch = 0.08; this.turn.idle = -1.8;
     }
     st.visible = true;
     this.drawCard(m);
@@ -297,53 +301,52 @@ export class Vending {
     const cash = this.game.wallet ? this.game.wallet.cash : 0;
     this.card.redraw((ctx, W, H) => {
       paperFill(ctx, 0, 0, W, H, { base: '#f4ecd6', seed: this.sel * 7 + 3, border: '#b8a888' });
-      tapeStrip(ctx, 60, -2, 44, 10); tapeStrip(ctx, W - 110, -2, 44, 10);
+      tapeStrip(ctx, 40, -2, 36, 8); tapeStrip(ctx, W - 80, -2, 36, 8);
       if (mode === 'age') {
-        ctx.fillStyle = '#c8302a'; ctx.fillRect(40, 50, W - 80, 44);
-        kanji(ctx, '年齢確認', W / 2, 56, 32, 0xffffff, { align: 'center' });
-        kanji(ctx, 'お酒は20歳になってから', W / 2, 112, 16, 0x241a1e, { align: 'center' });
-        draw5(ctx, 'AGE CHECK: ARE YOU 20 OR OVER?', W / 2, 142, { s: 2, col: '#241a1e', align: 'center', max: W - 40 });
-        for (const x of [70, 250]) { ctx.fillStyle = '#2a8a3a'; ctx.fillRect(x, 176, 140, 46); ctx.fillStyle = '#1a5a26'; ctx.fillRect(x, 218, 140, 4); kanji(ctx, 'はい', x + 70, 182, 32, 0xffffff, { align: 'center' }); }
-        draw5(ctx, 'PRESS EITHER BUTTON', W / 2, 250, { s: 1, col: '#6a5a4a', align: 'center' });
+        ctx.fillStyle = '#c8302a'; ctx.fillRect(30, 26, W - 60, 40);
+        kanji(ctx, '年齢確認', W / 2, 30, 32, 0xffffff, { align: 'center' });
+        kanji(ctx, 'お酒は20歳になってから', W / 2, 76, 16, 0x241a1e, { align: 'center' });
+        draw5(ctx, 'AGE CHECK: ARE YOU 20 OR OVER?', W / 2, 100, { s: 1, col: '#241a1e', align: 'center' });
+        for (const x of [44, 166]) { ctx.fillStyle = '#2a8a3a'; ctx.fillRect(x, 120, 90, 40); ctx.fillStyle = '#1a5a26'; ctx.fillRect(x, 157, 90, 3); kanji(ctx, 'はい', x + 45, 124, 32, 0xffffff, { align: 'center' }); }
+        draw5(ctx, 'PRESS EITHER BUTTON', W / 2, 176, { s: 1, col: '#6a5a4a', align: 'center' });
         return;
       }
       // where the drink stands: a printed spot, a ledge
-      const sx = 105, sy = 150;
-      ctx.fillStyle = '#ead9b4'; for (let y = -96; y <= 96; y += 4) for (let x = -84; x <= 84; x += 4) if (x * x / 7056 + y * y / 9216 <= 1 && ((x + y) / 4) % 2 === 0) ctx.fillRect(sx + x, sy + y, 2, 2);
-      ctx.fillStyle = '#c8b48a'; ctx.fillRect(30, 262, 150, 3); ctx.fillStyle = '#a8946a'; ctx.fillRect(30, 265, 150, 1);
-      draw5(ctx, 'MOVE THE MOUSE TO TURN IT', 105, 274, { s: 1, col: '#8a7a5a', align: 'center' });
+      const sx = 57, sy = 96;
+      ctx.fillStyle = '#e6d4ac'; for (let y = -78; y <= 78; y += 3) for (let x = -48; x <= 48; x += 3) if (x * x / 2304 + y * y / 6084 <= 1 && ((x + y) / 3) % 2 === 0) ctx.fillRect(sx + x, sy + y, 2, 2);
+      ctx.fillStyle = '#c8b48a'; ctx.fillRect(10, 176, 96, 2); ctx.fillStyle = '#a8946a'; ctx.fillRect(10, 178, 96, 1);
+      draw5(ctx, 'TURN IT: MOUSE', 58, 185, { s: 1, col: '#8a7a5a', align: 'center' });
       // the facts
-      const x = 208;
-      let y = 22;
-      kanji(ctx, f.jp, x, y, 16, 0x241a1e); y += 22;
-      draw5(ctx, f.name, x, y, { s: 2, col: '#241a1e', max: W - x - 14 }); y += 20;
-      if (b.jp) { kanji(ctx, b.jp, x, y, 12, 0x6a5a4a); draw5(ctx, b.en || '', x + [...b.jp].length * 12 + 6, y + 3, { s: 1, col: '#6a5a4a' }); y += 18; }
-      ctx.fillStyle = f.hot ? '#d8362a' : '#2a6ad8'; ctx.fillRect(x, y, 86, 16);
-      kanji(ctx, f.hot ? 'あったか〜い' : 'つめた〜い', x + 43, y + 2, 12, 0xffffff, { align: 'center' });
-      draw5(ctx, yen(f.price), W - 44, y - 2, { s: 3, col: '#c8302a', align: 'right' });
-      kanji(ctx, '税別', W - 40, y + 6, 12, 0x241a1e);
-      y += 28;
+      const x = 122, cw = W - x - 10;
+      let y = 12;
+      kanji(ctx, f.jp, x, y, [...f.jp].length * 16 > cw ? 12 : 16, 0x241a1e); y += 19;
+      draw5(ctx, f.name, x, y, { s: 1, col: '#241a1e' }); y += 11;
+      if (b.jp) { kanji(ctx, b.jp, x, y, 10, 0x6a5a4a); y += 14; }
+      ctx.fillStyle = f.hot ? '#d8362a' : '#2a6ad8'; ctx.fillRect(x, y, 72, 14);
+      kanji(ctx, f.hot ? 'あったか〜い' : 'つめた〜い', x + 36, y + 1, 12, 0xffffff, { align: 'center' });
+      draw5(ctx, yen(f.price), W - 36, y, { s: 2, col: '#c8302a', align: 'right' });
+      kanji(ctx, '税別', W - 34, y + 2, 12, 0x241a1e);
+      y += 21;
       const wrap = (t, col, sign) => {
         const words = String(t || '').toUpperCase().split(' ');
         let cur = '', first = true;
-        const put = () => { if (first) draw5(ctx, sign, x, y, { s: 1, col }); draw5(ctx, cur, x + 10, y, { s: 1, col }); y += 11; first = false; };
-        for (const wd of words) { if ((cur + ' ' + wd).trim().length > 36) { put(); cur = wd; } else cur = (cur + ' ' + wd).trim(); }
+        const put = () => { if (first) draw5(ctx, sign, x, y, { s: 1, col }); draw5(ctx, cur, x + 8, y, { s: 1, col }); y += 10; first = false; };
+        for (const wd of words) { if ((cur + ' ' + wd).trim().length > 26) { put(); cur = wd; } else cur = (cur + ' ' + wd).trim(); }
         if (cur) put();
-        y += 3;
+        y += 2;
       };
       wrap(f.pros, '#2f7a40', '+'); wrap(f.cons, '#b8281e', '-');
       const st = [];
       if (f.energy) st.push(`ENERGY ${f.energy > 0 ? '+' : ''}${f.energy}`);
       if (f.full) st.push(`FILLING +${f.full}`);
       if (f.drunk > 0) st.push(`ALCOHOL ${Math.round(f.drunk * 100)}`);
-      if (d.vol) st.push(String(d.vol).toUpperCase().replace(/[^0-9A-Z]/g, '') || '');
-      draw5(ctx, st.filter(Boolean).join('  ·  '), x, y, { s: 1, col: '#4a3e36' });
+      if (y < H - 52) draw5(ctx, st.join('  '), x, y, { s: 1, col: '#4a3e36' });
       // the bottom: what the button will do
       const ok = cash >= f.price;
-      ctx.fillStyle = ok ? '#2a8a3a' : '#8a8a84'; ctx.fillRect(x, H - 62, W - x - 14, 30);
-      ctx.fillStyle = ok ? '#1a5a26' : '#6a6a64'; ctx.fillRect(x, H - 35, W - x - 14, 3);
-      draw5(ctx, ok ? `INSERT ${yen(f.price)}` : 'NOT ENOUGH CASH', x + (W - x - 14) / 2, H - 54, { s: 2, col: '#ffffff', align: 'center' });
-      draw5(ctx, `WALLET ${yen(cash)}`, x + (W - x - 14) / 2, H - 24, { s: 1, col: '#6a5a4a', align: 'center' });
+      ctx.fillStyle = ok ? '#2a8a3a' : '#8a8a84'; ctx.fillRect(x, H - 42, cw, 22);
+      ctx.fillStyle = ok ? '#1a5a26' : '#6a6a64'; ctx.fillRect(x, H - 22, cw, 2);
+      draw5(ctx, ok ? `INSERT ${yen(f.price)}` : 'NOT ENOUGH CASH', x + cw / 2, H - 38, { s: ok ? 2 : 1, col: '#ffffff', align: 'center' });
+      draw5(ctx, `WALLET ${yen(cash)}`, x + cw / 2, H - 14, { s: 1, col: '#6a5a4a', align: 'center' });
     });
   }
 
@@ -358,7 +361,7 @@ export class Vending {
     audio.play('vendBeep', { vol: 0.4, f: 1320 });
   }
   gridView(m) { return { pos: this.local(m, -0.08, 1.36, 1.72), look: this.local(m, -0.08, 1.33, 0.3), fov: 22 }; }
-  detailView(m) { return { pos: this.local(m, -0.08, 1.37, 1.2), look: this.local(m, -0.08, 1.36, 0.56), fov: 30 }; }
+  detailView(m) { return { pos: this.local(m, -0.08, 1.37, 1.36), look: this.local(m, -0.08, 1.36, 0.56), fov: 30 }; }
 
   move(dx, dy) {
     const m = this.cur;
@@ -405,7 +408,7 @@ export class Vending {
       this.dropCan(m, f);
       this.s.bought++;
       this.mode = 'tray';
-      this.pm.view({ pos: this.local(m, -0.12, 0.85, 0.78), look: this.local(m, -0.1, 0.16, 0.28), fov: 18 });
+      this.pm.view({ pos: this.local(m, -0.1, 0.62, 0.74), look: this.local(m, -0.1, 0.14, 0.27), fov: 26 });
       m.busy = false;
       this.draw(m);
       g.events.emit('bought', { at: 'vending', id: f.id, price: f.price });
@@ -479,7 +482,7 @@ export class Vending {
     if (this.stage?.visible) {
       const t = this.turn;
       t.idle += dt;
-      if (t.idle > 1.2) t.yaw += dt * 0.7;
+      if (t.idle > 1.2) t.yaw += dt * 0.5;
       this.pivot.rotation.set(t.pitch, t.yaw, 0, 'XYZ');
     }
     this.lightT = (this.lightT || 0) - dt;

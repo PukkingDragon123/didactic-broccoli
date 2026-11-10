@@ -6,12 +6,15 @@ import * as THREE from 'three';
 import { Pix, FONT_EN } from './pix.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { drawPattern } from '../game/cards.js';
+import { drawFlyer, FLYER_W, FLYER_H } from '../figures/flyer.js';
 
 // scene painters live in src/gfx/bannerScenes*.js (one file per batch of series); merged here
 const sceneMods = Object.values(import.meta.glob('./bannerScenes*.js', { eager: true }));
 export const SCENES = Object.assign({}, ...sceneMods.map((m) => m.SCENES || {}));
 export const BANNER_TEXT = Object.assign({}, ...sceneMods.map((m) => m.BANNER_TEXT || {}));
 export const SCENE_TEXT = sceneMods.map((m) => m.SCENE_TEXT || '').join('');
+// backgrounds of the flyer-style cards (series with a `flyer` spec, see src/figures/flyer.js)
+export const FLYER_SCENES = Object.assign({}, ...sceneMods.map((m) => m.FLYER_SCENES || {}));
 
 export const BANNER_W = 320;
 export const BANNER_H = 280;
@@ -55,10 +58,11 @@ export function bannerText(id) {
 
 /** Every character a banner may draw (for font preloading). */
 export function bannerGlyphs() {
-  let s = '全種円回シークレットありもあるよ対象年齢才以上カプセルトイひみつ';
+  let s = '全種円回シークレットありもあるよ対象年齢才以上カプセルトイひみつ注意';
   for (const id of Object.keys(SERIES_BY_ID)) {
     const se = SERIES_BY_ID[id];
     s += se.jp + bannerText(id).join('') + se.items.map((i) => i.jp).join('');
+    if (se.flyer) s += [se.flyer.catch, se.flyer.sub, se.flyer.gimmick, ...(se.flyer.title || []).map((t) => t[0])].filter(Boolean).join('');
   }
   return s + SCENE_TEXT;
 }
@@ -204,6 +208,8 @@ function qr(p, x, y, seed) {
   }
 }
 
+const FLYER_KIT = { hex, shadeC, mixC, textMask, dilate, rrect, shadowEllipse, twinkle, burst, alphaBounds };
+
 // ------------------------------------------------------------------------------------ banner
 const cache = new Map();
 
@@ -215,6 +221,15 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   const key = seriesId + (opts.faded ? ':f' : '');
   if (cache.has(key)) return cache.get(key);
   const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.mochi;
+  if (s.flyer) {
+    // the flyer layout (the same 8:7 sheet at twice the pixels: room for real small print)
+    const fp = new Pix(FLYER_W, FLYER_H, 7);
+    drawFlyer(fp, s, thumbs, FLYER_KIT, FLYER_SCENES);
+    if (opts.faded) fade(fp, 22);
+    fp.flush();
+    cache.set(key, fp.canvas);
+    return fp.canvas;
+  }
   const W = BANNER_W, H = BANNER_H;
   const p = new Pix(W, H, 7);
   const bg = hex(s.card.bg), ac = hex(s.card.accent), tx = hex(s.card.text), ac2 = hex(s.card.accent2 || s.card.accent);
@@ -259,12 +274,12 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   p.text('円', 44, s.price >= 1000 ? 9 : 12, { size: 8, color: 0xffffff, align: 'center' });
   rrect(p, 9, 28, 38, 13, 4, 0xffffff);
   p.text(`全${s.items.length}種`, 28, 28, { size: 10, color: 0xe5383b, align: 'center' });
-  // maker mark (top-right): little capsule logo
+  // maker mark (top-right): a little red seal
   rrect(p, W - 36, 5, 31, 24, 5, 0xffffff);
-  p.circle(W - 21, 14, 7, 0xff5a5a); p.rect(W - 28, 14, 15, 1, 0x2a2a2a);
-  for (let y = 15; y <= 21; y++) for (let x = -7; x <= 7; x++) if (x * x + (y - 14) * (y - 14) <= 50) p.px(W - 21 + x, y, 0xf4f4f4);
   p.frame(W - 36, 5, 31, 24, 0xd0d0d0);
-  p.text('GG', W - 21, 21, { size: 8, color: 0x2a2a2a, align: 'center', font: FONT_EN });
+  rrect(p, W - 32, 8, 23, 18, 4, 0xe5383b);
+  rrect(p, W - 31, 9, 21, 16, 3, 0xffffff); rrect(p, W - 30, 10, 19, 14, 3, 0xe5383b);
+  p.text('GG', W - 20, 13, { size: 8, color: 0xffffff, align: 'center', font: FONT_EN });
   // catchphrase in a ribbon
   const cw = Math.min(W - 104, Math.round(p.measure(catchTxt, 12)) + 14);
   const cx0 = Math.round(W / 2 - cw / 2) + 4;
@@ -326,7 +341,10 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   p.rect(0, fy, W, H - fy, 0xffffff);
   p.rect(0, fy, W, 1, dark);
   p.text('対象年齢15才以上', 5, fy + 3, { size: 10, color: 0xd8382a });
-  for (let k = 0; k < 3; k++) for (let i = 0; i < 96; i += 3) if ((i * 7 + k * 13) % 11 > 2) p.rect(100 + i, fy + 4 + k * 4, 2, 1, 0xa8a8a8);
+  // the warning box: a red 注意 tab and its small print
+  p.rect(97, fy + 2, 104, 14, 0xd8382a); p.rect(98, fy + 3, 102, 12, 0xffffff); p.rect(97, fy + 2, 26, 14, 0xd8382a);
+  p.text('注意', 110, fy + 3, { size: 10, color: 0xffffff, align: 'center' });
+  for (let k = 0; k < 3; k++) for (let i = 0; i < 72; i += 3) if ((i * 7 + k * 13) % 11 > 2) p.rect(126 + i, fy + 5 + k * 3, 2, 1, 0x8a8a8a);
   p.text('©CAPSULE TOY CO.', 250, fy + 3, { size: 10, color: 0x4a4a4a, align: 'center', font: FONT_EN });
   qr(p, W - 22, fy - 1 + 0, s.order || 3);
 

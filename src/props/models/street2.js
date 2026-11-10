@@ -177,7 +177,7 @@ export default {
     // ------------------------------------------------------------- a 50cc scooter on its stand (0.615 x 1.29 x 1.695), nose to +z
     scooter: (K) => {
       const red = paint(0xc8302c, 0.3), blk = plastic(0x2a2a2c, 0.15), FZ = 0.6, RZ = -0.56, WR = 0.2;
-      discWheel(K, 0, WR, FZ, WR, 0.09); discWheel(K, 0, WR, RZ, WR, 0.1);
+      K.part('wheel_front', [0, WR, FZ], 'x', () => discWheel(K, 0, WR, FZ, WR, 0.09)); K.part('wheel_rear', [0, WR, RZ], 'x', () => discWheel(K, 0, WR, RZ, WR, 0.1));
       // front: forks, the mudguard, the leg shield rising to the handlebar cowl
       K.sym((s) => K.rod(chrome(), [s * 0.065, WR, FZ], [s * 0.05, 0.62, FZ - 0.14], 0.016, 6));
       K.prism(red, K.arc([0, WR, FZ], WR + 0.045, 0.2, 2.6, 6, 'zy').map((p) => [p[2], p[1]]).concat(K.arc([0, WR, FZ], WR + 0.02, 2.6, 0.2, 6, 'zy').map((p) => [p[2], p[1]])), { plane: 'zy', a: -0.07, b: 0.07 });
@@ -213,59 +213,7 @@ export default {
     },
 
     // ------------------------------------------------------------- the mamachari (0.612 x 1.188 x 1.836), nose to +z; the rider's saddle at 1.03
-    mamachari: (K) => {
-      const fr = paint(0x9cc8dc, 0.3), ch = chrome(0xd0d6dc), stl = metal(0xa8aeb4), cream = paint(0xeee8d6, 0.15), RZ = -0.552, FZ = 0.564, WY = 0.331, WR = 0.331;
-      spokeWheel(K, 0, WY, RZ, WR, 0.017, { spokes: 10 }); spokeWheel(K, 0, WY, FZ, WR, 0.017, { spokes: 10, turn: 0.5 });
-      const fender = (cz, a0, a1) => K.tube(cream, K.arc([0, WY, cz], WR + 0.022, a0, a1, 8, 'zy'), 0.01, 4, { flat: [0.008, 0.06], up: [1, 0, 0] });
-      fender(FZ, 0.15, 2.5); fender(RZ, 0.7, 3.75);
-      K.box(flat(0xd8322a, 0.4), -0.014, 0.22, RZ - 0.368, 0.014, 0.26, RZ - 0.358);
-      // the frame: a swooping step-through tube, the seat tube, stays, the fork
-      const BB = [0, 0.276, -0.072], HT0 = [0, 0.768, 0.468], HT1 = [0, 0.924, 0.432];
-      const bez = (a, b, c, n = 7) => Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return [0, 1, 2].map((k) => u * u * a[k] + 2 * u * t * b[k] + t * t * c[k]); });
-      K.tube(fr, [HT0, HT1], 0.022, 6);
-      K.tube(fr, bez([0, 0.792, 0.444], [0, 0.264, 0.336], BB), 0.02, 6);
-      K.tube(fr, bez([0, 0.72, 0.432], [0, 0.36, 0.264], [0, 0.312, -0.024]), 0.013, 5);
-      K.tube(fr, [BB, [0, 0.864, -0.204]], 0.017, 6);
-      K.sym((s) => {
-        K.rod(fr, [s * 0.036, 0.276, -0.072], [s * 0.045, WY, RZ], 0.011, 5); K.rod(fr, [s * 0.024, 0.816, -0.192], [s * 0.045, WY, RZ], 0.01, 5);
-        K.tube(fr, bez([s * 0.03, 0.768, 0.468], [s * 0.04, 0.528, 0.552], [s * 0.045, WY, FZ]), 0.012, 5);
-      });
-      K.box(flat(0xf2eee0, 0.5), -0.019, 0.5, -0.135, 0.019, 0.56, -0.118); K.box(flat(0xf2c21c, 0.5), -0.0195, 0.52, -0.136, 0.0195, 0.535, -0.117); // the registration sticker
-      // seat post and the sprung saddle
-      K.rod(ch, [0, 0.864, -0.204], [0, 0.965, -0.228], 0.012, 6);
-      K.prism(matte(0x6a4430, 0.15), [[-0.095, -0.36], [0.095, -0.36], [0.09, -0.27], [0.03, -0.12], [-0.03, -0.12], [-0.09, -0.27]], { plane: 'xz', a: 0.975, b: 1.03, side: flat(0x54362a, 0.9) });
-      K.sym((s) => K.cyl(ch, s * 0.048, 0.925, -0.312, 0.014, 0.05, 6));
-      // the chain case (right side), cranks and pedals
-      K.prism(paint(0x7aa8bc, 0.2), [[-0.072 + 0.1, 0.276 + 0.04], [RZ, WY + 0.06], [RZ - 0.06, WY], [RZ, WY - 0.06], [-0.072 + 0.1, 0.276 - 0.1], [-0.072 + 0.14, 0.276]], { plane: 'zy', a: -0.078, b: -0.05 });
-      K.cyl(ch, -0.09, 0.276, -0.072, 0.03, 0.18, 8, { axis: 'x' });
-      K.rod(stl, [-0.096, 0.276, -0.072], [-0.096, 0.18, 0.0], 0.01, 4); K.box(rubber(), -0.16, 0.168, -0.03, -0.1, 0.19, 0.04); K.box(flat(0xf29a2a, 0.5), -0.158, 0.172, 0.04, -0.102, 0.186, 0.043);
-      K.rod(stl, [0.09, 0.276, -0.072], [0.09, 0.372, -0.144], 0.01, 4); K.box(rubber(), 0.094, 0.36, -0.18, 0.154, 0.382, -0.11); K.box(flat(0xf29a2a, 0.5), 0.096, 0.364, -0.183, 0.152, 0.378, -0.18);
-      // stem, the swept-back bars, grips, bell, brake levers
-      K.rod(ch, HT1, [0, 1.02, 0.42], 0.012, 6);
-      K.sym((s) => {
-        K.tube(ch, [[0, 1.02, 0.42], [s * 0.108, 1.02, 0.42], [s * 0.192, 1.032, 0.372], [s * 0.252, 1.032, 0.3]], 0.011, 5);
-        K.rod(matte(0x6a4430, 0.15), [s * 0.252, 1.032, 0.3], [s * 0.288, 1.032, 0.24], 0.016, 6);
-        K.rod(stl, [s * 0.18, 1.03, 0.36], [s * 0.255, 1.008, 0.385], 0.005, 4);
-      });
-      blob(K, ch, 0.18, 1.058, 0.36, 0.02, 0.016, 0.02, { fine: true, jit: 0 });
-      // the wire basket with a shopping bag and a leek, its struts, the dynamo lamp
-      const BX = 0.156, BY0 = 0.804, BY1 = 0.996, BZ0 = 0.504, BZ1 = 0.744, mesh = meshTex(K, 0x34343a, 8, { n: 4 }), rim = flat(0x3a3a40, 0.5);
-      meshPanel(K, mesh, '+z', -BX, BY0, BX, BY1, BZ1, 0.1); meshPanel(K, mesh, '+z', -BX, BY0, BX, BY1, BZ0, 0.1);
-      meshPanel(K, mesh, '+x', BZ0, BY0, BZ1, BY1, BX, 0.1); meshPanel(K, mesh, '+x', BZ0, BY0, BZ1, BY1, -BX, 0.1); meshPanel(K, mesh, '+y', -BX, BZ0, BX, BZ1, BY0, 0.1);
-      K.tube(rim, [[-BX, BY1, BZ0], [BX, BY1, BZ0], [BX, BY1, BZ1], [-BX, BY1, BZ1]], 0.007, 4, { closed: true });
-      K.sym((s) => K.rod(stl, [s * 0.096, BY0, BZ1 - 0.024], [s * 0.04, WY, FZ], 0.005, 4));
-      K.box(fabric(0xf4b0c4), -0.11, BY0 + 0.01, BZ0 + 0.04, 0.05, BY0 + 0.14, BZ0 + 0.19, { bevel: 0.02, edge: null });
-      K.rod(flat(0xf2f2e6, 0.8), [0.08, BY0 + 0.03, 0.6], [0.105, 1.1, 0.565], 0.011, 5); K.rod(flat(0x4f9a40, 0.8), [0.105, 1.07, 0.565], [0.13, 1.18, 0.54], 0.012, 4); K.rod(flat(0x5aaa48, 0.8), [0.105, 1.08, 0.565], [0.07, 1.17, 0.58], 0.01, 4);
-      K.box(ch, -0.03, 0.69, 0.57, 0.03, 0.75, 0.615, { bevel: 0.012 }); K.glow(() => K.cyl(flat(0xf6f0d8), 0, 0.72, 0.612, 0.022, 0.008, 8, { axis: 'z' }));
-      // rear carrier, the ring lock, the two-leg stand, the rear reflector
-      const car = [-0.072, -0.024, 0.024, 0.072];
-      for (const x of car) K.rod(ch, [x, 0.744, -0.312], [x, 0.744, -0.72], 0.006, 4);
-      for (const z of [-0.312, -0.516, -0.72]) K.rod(ch, [-0.072, 0.744, z], [0.072, 0.744, z], 0.006, 4);
-      K.sym((s) => { K.rod(ch, [s * 0.072, 0.744, -0.7], [s * 0.048, WY, RZ], 0.006, 4); K.rod(ch, [s * 0.072, 0.744, -0.32], [s * 0.03, 0.8, -0.2], 0.006, 4); K.rod(stl, [s * 0.048, WY, RZ], [s * 0.075, 0.012, RZ - 0.06], 0.01, 4); });
-      K.rod(stl, [-0.08, 0.012, RZ - 0.06], [0.08, 0.012, RZ - 0.06], 0.01, 4);
-      K.box(stl, -0.05, 0.444, -0.5, 0.05, 0.49, -0.455, { bevel: 0.008 });
-      K.box(flat(0xd8322a, 0.4), -0.016, 0.65, RZ - 0.305, 0.016, 0.68, RZ - 0.295);
-    },
+    mamachari: (K) => mamachari(K),
 
     // ------------------------------------------------------------- the garbage station: pad, crow net, the rules board (1.54 x 1.74 x 1.12)
     garbage_station: (K, B) => station(K, B, true),
@@ -440,6 +388,65 @@ export default {
     stray_cat_held: (K) => cat(K, 'held'),
   },
 };
+
+/** A mamachari, nose to +z, wheels on y = 0. o: { frame, case: chain case colour, bag: false to leave the shopping out } */
+export function mamachari(K, o = {}) {
+      const fr = paint(o.frame ?? 0x9cc8dc, 0.3), ch = chrome(0xd0d6dc), stl = metal(0xa8aeb4), cream = paint(0xeee8d6, 0.15), RZ = -0.552, FZ = 0.564, WY = 0.331, WR = 0.331;
+      K.part('wheel_rear', [0, WY, RZ], 'x', () => spokeWheel(K, 0, WY, RZ, WR, 0.017, { spokes: 12 })); K.part('wheel_front', [0, WY, FZ], 'x', () => spokeWheel(K, 0, WY, FZ, WR, 0.017, { spokes: 12, turn: 0.5 }));
+      const fender = (cz, a0, a1) => K.tube(cream, K.arc([0, WY, cz], WR + 0.022, a0, a1, 8, 'zy'), 0.01, 4, { flat: [0.06, 0.008], up: [1, 0, 0] });
+      fender(FZ, 0.15, 2.5); fender(RZ, 0.7, 3.75);
+      K.box(flat(0xd8322a, 0.4), -0.014, 0.22, RZ - 0.368, 0.014, 0.26, RZ - 0.358);
+      // the frame: a swooping step-through tube, the seat tube, stays, the fork
+      const BB = [0, 0.276, -0.072], HT0 = [0, 0.768, 0.468], HT1 = [0, 0.924, 0.432];
+      const bez = (a, b, c, n = 7) => Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return [0, 1, 2].map((k) => u * u * a[k] + 2 * u * t * b[k] + t * t * c[k]); });
+      K.tube(fr, [HT0, HT1], 0.022, 6);
+      K.tube(fr, bez([0, 0.792, 0.444], [0, 0.264, 0.336], BB), 0.02, 6);
+      K.tube(fr, bez([0, 0.72, 0.432], [0, 0.36, 0.264], [0, 0.312, -0.024]), 0.013, 5);
+      K.tube(fr, [BB, [0, 0.864, -0.204]], 0.017, 6);
+      K.sym((s) => {
+        K.rod(fr, [s * 0.036, 0.276, -0.072], [s * 0.045, WY, RZ], 0.011, 5); K.rod(fr, [s * 0.024, 0.816, -0.192], [s * 0.045, WY, RZ], 0.01, 5);
+        K.tube(fr, bez([s * 0.03, 0.768, 0.468], [s * 0.04, 0.528, 0.552], [s * 0.045, WY, FZ]), 0.012, 5);
+      });
+      K.box(flat(0xf2eee0, 0.5), -0.019, 0.5, -0.135, 0.019, 0.56, -0.118); K.box(flat(0xf2c21c, 0.5), -0.0195, 0.52, -0.136, 0.0195, 0.535, -0.117); // the registration sticker
+      // seat post and the sprung saddle
+      K.rod(ch, [0, 0.864, -0.204], [0, 0.965, -0.228], 0.012, 6);
+      K.prism(matte(0x6a4430, 0.15), [[-0.095, -0.36], [0.095, -0.36], [0.09, -0.27], [0.03, -0.12], [-0.03, -0.12], [-0.09, -0.27]], { plane: 'xz', a: 0.975, b: 1.03, side: flat(0x54362a, 0.9) });
+      K.sym((s) => K.cyl(ch, s * 0.048, 0.925, -0.312, 0.014, 0.05, 6));
+      // the chain case (right side), cranks and pedals
+      K.prism(paint(o.case ?? 0x7aa8bc, 0.2), [[-0.072 + 0.1, 0.276 + 0.04], [RZ, WY + 0.06], [RZ - 0.06, WY], [RZ, WY - 0.06], [-0.072 + 0.1, 0.276 - 0.1], [-0.072 + 0.14, 0.276]], { plane: 'zy', a: -0.078, b: -0.05 });
+      K.part('crank', [0, 0.276, -0.072], 'x', () => {
+      K.cyl(ch, -0.09, 0.276, -0.072, 0.03, 0.18, 8, { axis: 'x' });
+      K.rod(stl, [-0.096, 0.276, -0.072], [-0.096, 0.18, 0.0], 0.01, 4); K.box(rubber(), -0.16, 0.168, -0.03, -0.1, 0.19, 0.04); K.box(flat(0xf29a2a, 0.5), -0.158, 0.172, 0.04, -0.102, 0.186, 0.043);
+      K.rod(stl, [0.09, 0.276, -0.072], [0.09, 0.372, -0.144], 0.01, 4); K.box(rubber(), 0.094, 0.36, -0.18, 0.154, 0.382, -0.11); K.box(flat(0xf29a2a, 0.5), 0.096, 0.364, -0.183, 0.152, 0.378, -0.18);
+      });
+      // stem, the swept-back bars, grips, bell, brake levers
+      K.rod(ch, HT1, [0, 1.02, 0.42], 0.012, 6);
+      K.sym((s) => {
+        K.tube(ch, [[0, 1.02, 0.42], [s * 0.108, 1.02, 0.42], [s * 0.192, 1.032, 0.372], [s * 0.252, 1.032, 0.3]], 0.011, 5);
+        K.rod(matte(0x6a4430, 0.15), [s * 0.252, 1.032, 0.3], [s * 0.288, 1.032, 0.24], 0.016, 6);
+        K.rod(stl, [s * 0.18, 1.03, 0.36], [s * 0.255, 1.008, 0.385], 0.005, 4);
+      });
+      blob(K, ch, 0.18, 1.058, 0.36, 0.02, 0.016, 0.02, { fine: true, jit: 0 });
+      // the wire basket with a shopping bag and a leek, its struts, the dynamo lamp
+      const BX = 0.156, BY0 = 0.804, BY1 = 0.996, BZ0 = 0.504, BZ1 = 0.744, mesh = meshTex(K, 0x34343a, 8, { n: 4 }), rim = flat(0x3a3a40, 0.5);
+      meshPanel(K, mesh, '+z', -BX, BY0, BX, BY1, BZ1, 0.1); meshPanel(K, mesh, '+z', -BX, BY0, BX, BY1, BZ0, 0.1);
+      meshPanel(K, mesh, '+x', BZ0, BY0, BZ1, BY1, BX, 0.1); meshPanel(K, mesh, '+x', BZ0, BY0, BZ1, BY1, -BX, 0.1); meshPanel(K, mesh, '+y', -BX, BZ0, BX, BZ1, BY0, 0.1);
+      K.tube(rim, [[-BX, BY1, BZ0], [BX, BY1, BZ0], [BX, BY1, BZ1], [-BX, BY1, BZ1]], 0.007, 4, { closed: true });
+      K.sym((s) => K.rod(stl, [s * 0.096, BY0, BZ1 - 0.024], [s * 0.04, WY, FZ], 0.005, 4));
+      if (o.bag !== false) {
+        K.box(fabric(0xf4b0c4), -0.11, BY0 + 0.01, BZ0 + 0.04, 0.05, BY0 + 0.14, BZ0 + 0.19, { bevel: 0.02, edge: null });
+        K.rod(flat(0xf2f2e6, 0.8), [0.08, BY0 + 0.03, 0.6], [0.105, 1.1, 0.565], 0.011, 5); K.rod(flat(0x4f9a40, 0.8), [0.105, 1.07, 0.565], [0.13, 1.18, 0.54], 0.012, 4); K.rod(flat(0x5aaa48, 0.8), [0.105, 1.08, 0.565], [0.07, 1.17, 0.58], 0.01, 4);
+      }
+      K.box(ch, -0.03, 0.69, 0.57, 0.03, 0.75, 0.615, { bevel: 0.012 }); K.glow(() => K.cyl(flat(0xf6f0d8), 0, 0.72, 0.612, 0.022, 0.008, 8, { axis: 'z' }));
+      // rear carrier, the ring lock, the two-leg stand, the rear reflector
+      const car = [-0.072, -0.024, 0.024, 0.072];
+      for (const x of car) K.rod(ch, [x, 0.744, -0.312], [x, 0.744, -0.72], 0.006, 4);
+      for (const z of [-0.312, -0.516, -0.72]) K.rod(ch, [-0.072, 0.744, z], [0.072, 0.744, z], 0.006, 4);
+      K.sym((s) => { K.rod(ch, [s * 0.072, 0.744, -0.7], [s * 0.048, WY, RZ], 0.006, 4); K.rod(ch, [s * 0.072, 0.744, -0.32], [s * 0.03, 0.8, -0.2], 0.006, 4); K.rod(stl, [s * 0.048, WY, RZ], [s * 0.075, 0.012, RZ - 0.06], 0.01, 4); });
+      K.rod(stl, [-0.08, 0.012, RZ - 0.06], [0.08, 0.012, RZ - 0.06], 0.01, 4);
+      K.box(stl, -0.05, 0.444, -0.5, 0.05, 0.49, -0.455, { bevel: 0.008 });
+      K.box(flat(0xd8322a, 0.4), -0.016, 0.65, RZ - 0.305, 0.016, 0.68, RZ - 0.295);
+    }
 
 /** The neighbourhood garbage station. bags: the crow net lies rolled along the back (the bags themselves are drawn by src/life/trash.js). */
 export function station(K, B, net) {

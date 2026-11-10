@@ -8,7 +8,7 @@ import { draw5, textW5 } from '../gfx/font5x7.js';
 import './arrival.css';
 
 const INK2 = '#5e5046', RED = [200, 50, 44];
-const KANA = 'ガチャ・ガレージ', PLACE = '杜王町　平成十一年　春'; // (Heisei 11 = 1999)
+const KANA = 'ガチャ・ガレージ', PLACE = '平成十一年・春'; // (Heisei 11 = 1999)
 
 /** "MORIO-CHŌ · SPRING 1999" in the 5x7 font as a data URL (1 texel = 1 px; shown at 3x). */
 function placeLine() {

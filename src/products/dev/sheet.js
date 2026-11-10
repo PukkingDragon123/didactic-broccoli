@@ -7,6 +7,7 @@ import { MASCOTS } from '../mascots.js';
 import { BRANDS, DRINKS } from '../brands.js';
 import { paintWrap, spr } from '../labels.js';
 import { FOODS } from '../../needs/foods.js';
+import { whenPhotosReady } from '../photos.js';
 
 const q = new URLSearchParams(location.search), which = (q.get('s') || 'mascots').split(',');
 const sheets = (window.__sheets = {});
@@ -120,8 +121,38 @@ async function cab3d() {
   show('cab', r.domElement);
   if (q.get('atlas')) show('cabatlas', sheets[1].A.tex.image);
 }
-const RUN = { fonts, mascots, three: three3d, cab: cab3d };
+/** Mikawa-ya's goods in 3D, front and back rows. */
+async function goods3d() {
+  const THREE = await import('three');
+  const { goodsMesh, goodsSheet, GOODS } = await import('../goods.js');
+  const ids = (q.get('ids') || GOODS.filter((k) => k !== 'broom' && k !== 'tube_box').join(',')).split(',');
+  const W = 1400, H = 760, r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  r.setSize(W, H); r.setClearColor(0xd8cdb8);
+  const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(+(q.get('fov') || 24), W / H, 0.01, 20);
+  sc.add(new THREE.HemisphereLight(0xffffff, 0x8a7a6a, 1.6));
+  const sun = new THREE.DirectionalLight(0xfff4e0, 2.0); sun.position.set(-1, 2, 2); sc.add(sun);
+  sc.add(new THREE.Mesh(new THREE.PlaneGeometry(6, 6).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xcbbfa6, roughness: 1 })));
+  const n = ids.length, gap = +(q.get('gap') || 0.125);
+  ids.forEach((id, i) => { for (const [dz, ry] of [[0, +(q.get('yaw') || 0.25)], [-0.24, Math.PI + 0.3]]) { const m = goodsMesh(id); m.position.set((i - (n - 1) / 2) * gap + (dz ? gap / 2 : 0), 0, dz); m.rotation.y = ry; sc.add(m); } });
+  const tilt = +(q.get('tilt') || 0.32), dist = +(q.get('dist') || 2.0);
+  cam.position.set(0, 0.06 + Math.sin(tilt) * dist, Math.cos(tilt) * dist); cam.lookAt(0, +(q.get('ty') || 0.05), -0.1);
+  await goodsSheet().ready;
+  r.render(sc, cam);
+  show('goods', r.domElement);
+  if (q.get('atlas')) show('goodsatlas', goodsSheet().A.tex.image);
+}
+/** Mikawa-ya's shelf atlas, and Ramen Yamada's printed matter. */
+async function mkatlas() { const { mikawayaAtlas } = await import('../../world/mikawayaArt.js'); const A = mikawayaAtlas(); await whenFontsReady(); A.repaint(); show('mkatlas', A.tex.image); }
+async function ramen() {
+  const R = await import('../ramenArt.js'), { FOODS } = await import('../../needs/foods.js');
+  const MENU = ['rm_shoyu', 'rm_miso', 'rm_tonkotsu', 'rm_shio', 'rm_tantan', 'rm_gyoza', 'rm_rice', 'rm_chashu', 'rm_beer', 'rm_sake', 'rm_oolong', 'rm_kaedama'];
+  const p = new Px(1060, 400, 0xd8cdb8);
+  p.blit(R.ticketsArt(MENU, FOODS, 1, true), 8, 8); p.blit(R.menuCardArt(MENU, FOODS, 2), 316, 8); p.blit(R.signArt(), 316, 216); p.blit(R.norenArt(), 316, 288);
+  p.blit(R.boardArt(FOODS), 676, 8); p.blit(R.flagArt(), 780, 8); p.blit(R.beerPosterArt(), 820, 8); MENU.forEach((id, i) => p.blit(R.plaqueArt(FOODS[id]), 676 + i * 31, 160));
+  show('ramen', p.canvas(1));
+}
+const RUN = { fonts, mascots, three: three3d, cab: cab3d, goods: goods3d, mkatlas, ramen };
 for (const bid of (q.get('b') || '').split(',').filter(Boolean)) RUN['b:' + bid] = () => brand(bid, +(q.get('z') || 1));
 if (q.get('b')) which.length = 0, which.push(...Object.keys(RUN).filter((k) => k.startsWith('b:')));
 const run = async () => { document.getElementById('out').innerHTML = ''; for (const k of which) await RUN[k]?.(); };
-run().then(() => whenFontsReady()).then(() => run()).then(() => { window.__ready = true; });
+Promise.all([whenFontsReady('あ'), whenPhotosReady()]).then(() => run()).then(() => whenFontsReady()).then(() => run()).then(() => { window.__ready = true; });

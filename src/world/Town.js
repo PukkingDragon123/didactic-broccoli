@@ -1,191 +1,66 @@
-// The town outside the garage: a narrow Shōwa back lane in late golden hour running between two railway
-// underpasses (ガード下), the garage's plain old front (eave, blocky lanterns, noren), the neighbours' houses
-// (src/world/Neighbours.js: each one its own build, with rooms behind the windows, src/world/interiors.js), side
-// alleys, the enterable MIKAWA-YA corner store, utility poles and wires, commuter trains, sky and skyline; behind the
-// near side the park, the back street and the mangaka's villa (src/world/Park.js), the steel tower on the hill beyond
-// the tracks (src/world/Pylon.js), and photo posters all over (src/world/LanePosters.js).
+// The town outside the garage: a Shōwa back lane in a provincial city (spring 1999) running between two railway
+// underpasses, modelled low-poly from real construction and painted in cartoon textures: the neighbours' houses
+// (src/world/Neighbours.js on src/town/house.js, rooms behind the windows from src/world/interiors.js), block walls
+// and gates (src/town/walls.js), the road with its gutters, lids and paint (src/town/street.js), concrete utility
+// poles and the wire tangle (src/town/poles.js), the girder bridges and embankments (src/town/bridge.js), the
+// commuter train (src/town/train.js), the corner shop MIKAWA-YA (src/world/CornerShop.js), the park, back street and
+// villa (src/world/Park.js), the sky and the roofscape skyline (src/town/sky.js), the steel pylon on its hill
+// (src/world/Pylon.js), the neighbourhood's signs and seasonal things (src/town/japan.js), posters (LanePosters.js).
 //
-// Layout (metres): the garage is x∈[-4,4], z∈[-5,5]; the lane runs along x in front of it. Near building
-// line z=5.3, road z≈6.1..13.35, far building line z=14.9. Underpass mouths at x=±26 (opening z∈[6.6,12.6],
+// Layout (metres, src/town/layout.js): the garage is x∈[-4,4], z∈[-5,5]; the lane runs along x in front of it. Near
+// building line z=5.3, road z≈6.1..13.35, far building line z=14.9. Underpass mouths at x=±26 (opening z∈[6.6,12.6],
 // clearance 3.4 m); the walkable lane ends 2.5 m inside each (x=±28.5); the underpasses run to x=±36.
 // Alley A1 (x∈[-9.4,-7.45], beside Mikawa-ya) is the ghost alley (src/world/GhostAlley.js); alley A2 (x∈[9.8,11.3],
-// between NE1 and NE2) is the passage to the park (it turns east behind NE2 at z≈-4.2; the museum lot stays west).
+// between NE1 and NE2) is the passage to the park.
 //
 // Contracts:
-//   town.setShopOpen(open)  open = noren + OPEN flag/plate, bench and twin gacha out front (and the lanterns on);
-//                           closed = weeds and a taped notice (abandoned). Default open; cheap toggle.
-//   town.setLanterns(on)    the blocky lanterns under the eave on/off (they glow with the time of day while on);
-//                           writing town.shopOpen = bool also sets them (src/life/sign.js does).
-//   town.openPlate          the painted OPEN plate Mesh on the right pier (in the open group; hide it to hang your own).
-//   town.tunnels = [{ x, z, dir, mouth }]  x = walkable end inside each underpass, z = road centre, dir = ±1 outward,
-//                           mouth = x of the portal.
-//   town.cornerShop = { counter: Object3D (click target), keeper: { pos: Vector3, rotY } (stands behind the
-//                       counter; rotY for a model that faces +z at 0 → faces the door), inside: { minX, maxX, minZ, maxZ } }
-//   town.lanes = [{ z, x0, x1 }]  straight pedestrian walking lines (one per side of the road), tunnel to tunnel.
-//   town.spawnPoints = [Vector3]  deep inside each underpass (dark, out of sight) at the ends of the lanes.
-//   town.garbageStation         Object3D of the neighbourhood garbage station (x≈-6.6, z≈5.8): a bare pad, the rolled-up
-//                               crow net and the rules board; no bags (src/life/trash.js draws those).
-//   town.doors = [{ id, house, family, pos, gate, bell, rotY, side, unit?, atDoor?, knockOnly? }]  every front door:
-//                pos = on the step outside the door (y = floor height for upstairs flats), gate = where you pass the
-//                building line / wall, bell = the intercom you ring (y = its height), rotY = facing out of the door,
-//                side = +1 house faces +z (near side, the villa) / -1 faces -z. ids: suzuki ota heights (=101)
-//                heights102..heights203 kusaka kimura tanaka tobacco hatoda yabuki mori watanabe josuke okuyasu
-//                yamada forrent garage6 rohan (the villa). src/npc/doors.js reads it.
-//   town.spots = { name: { pos: Vector3, rotY, seat?, note } }  the park, the villa and the A2 passage: a2Mouth, passage,
-//                rohan_sketch, rohan_gate, villaGate, villaDoor, josuke_hang, okuyasu_hang, park_bench, park_swings,
-//                park_entrance, park_sandbox, park_slide.
-//   town.paths = { park: [Vector3...], villa: [Vector3...] }  waypoints from the lane (mouth of A2) into the park and on
-//                round to the villa's gate (Lane.route only knows the lane: walk these instead).
+//   town.setShopOpen(open)  open = the OPEN plate, bench and twin gacha out front; closed = weeds and a taped notice.
+//   town.setLanterns(on)    the lanterns under the eave on / off; writing town.shopOpen = bool also sets them
+//                           (town.shopOpen / town.lanternsOn are what the garage's own front reads).
+//   town.shop = { openG, closedG, lanternM, glow, obs }   town.openPlate (the painted OPEN plate on the right pier)
+//   town.tunnels = [{ x, z, dir, mouth }]   town.lanes = [{ z, x0, x1 }]   town.spawnPoints = [Vector3]
+//   town.cornerShop = { counter, keeper, inside, door, seat, stock, tv, ... }   (src/world/CornerShop.js)
+//   town.garbageStation     Object3D of the neighbourhood garbage station (x≈-6.6, z≈5.8; src/life/trash.js swaps it)
+//   town.doors = [{ id, house, family, pos, gate, bell, rotY, side, unit?, atDoor?, knockOnly? }]  (Neighbours.js)
+//   town.spots = { name: { pos, rotY, seat?, note } }   town.paths = { park: [Vector3...], villa: [...] }
 //   town.park = { spots, route, bounds, entrance, gate }   town.pylon = { group, main: { x, z, base } }
-//   town.update(dt, t)          trains (+ sound) and small animations; called from Garage.update.
-//   town.runTrain(side?, dir?)  force a train over the west (-1) or east (+1) underpass (debug/screenshots).
-//   town.batch() / town.signInto(batch, key, ...)  a fresh static batcher and the shared sign atlas, for add-ons.
+//   town.update(dt, t)      trains (+ sound), the window rooms, zones and instanced-prop culling (from Garage.update)
+//   town.runTrain(side?, dir?)   town.trains   town.applySky(look)
+//   town.B / town.batch() (a static batcher, src/town/batch.js), town.m (materials by name), town.P(rough, metal),
+//   town.indoor(mat), town.indoorVoxel(), town.sign(key, x, y, z, o) / signInto(batch, ...) (the trim atlas),
+//   town.quadUV(mat, w, h, x, y, z, uvRect, o), town.puddle(x, z, w, d, ry), town.pool(x, z, r, colour, k).
 import * as THREE from 'three';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { worldBox, pixMat } from '../gfx/geo.js';
-import { townPix, posterTexture, Pix, NAME_COUNT } from '../gfx/textures.js';
-import { propGeometry, propMesh, hasProp, propSize } from './props.js';
-import { voxelMaterials } from '../voxel/materials.js';
+import { propMesh, hasProp, propSize } from './props.js';
 import { hash2 } from '../core/util.js';
 import { audio } from '../core/audio.js';
-import { GARAGE } from './Garage.js';
 import { installTunnelDarkness } from './tunnelDark.js';
 import { buildCornerShop } from './CornerShop.js';
-import { interiorMaterial, interiorQuad, setInteriorSky, ROOM } from './interiors.js';
+import { interiorMaterial, setInteriorSky } from './interiors.js';
 import { buildNeighbours } from './Neighbours.js';
 import { buildPark } from './Park.js';
 import { buildPylon } from './Pylon.js';
 import { buildLanePosters } from './LanePosters.js';
 import { InstanceCuller } from './propCull.js';
-
-// ------------------------------------------------------------------ layout
-const ZB = 5.3, ZG0 = 5.75, ZG1 = 6.1, ZR1 = 13.35, ZG3 = 13.7, ZF = 14.9;
-const XT = 26, XE = 36, XW = 28.5; // underpass mouth, far end, end of the walkable lane
-const TZ0 = 6.6, TZ1 = 12.6, TH = 3.4, WALK = 11.65; // opening, clearance, walkway kerb
-const YE = 4.25, YR = 4.72; // embankment top, rail top
-const TRACKS = [30, 33];
-const LANE_Z = [7.3, 11.2];
-const TRAIN_CAR = 13.6, TRAIN_GAP = 0.5, TRAIN_N = 3;
-const TRAIN_LEN = TRAIN_N * TRAIN_CAR + (TRAIN_N - 1) * TRAIN_GAP;
+import { Batch } from '../town/batch.js';
+import { XT, XE, XW, TZ0, TZ1, YE, LANE_Z, shadeAt } from '../town/layout.js';
+import { makeMats } from '../town/mats.js';
+import { house } from '../town/house.js';
+import { blockWall, woodFence, gate, yard } from '../town/walls.js';
+import { buildGround, buildDressing, buildDetails, buildBounds } from '../town/street.js';
+import { buildPoles } from '../town/poles.js';
+import { buildUnderpasses } from '../town/bridge.js';
+import { buildTrains, updateTrains, runTrain } from '../town/train.js';
+import { buildSky, buildBackdrop, applySkyLook, midrise } from '../town/sky.js';
+import { buildFront } from '../town/front.js';
+import { buildJapan } from '../town/japan.js';
 
 // pitch-black underpasses: everything inside fades to black a few metres past the portal (see tunnelDark.js);
 // installed at import time so it is in place before any material is compiled
 installTunnelDarkness({ x0: XT + 0.1, x1: XE + 1.5, z0: TZ0 - 0.35, z1: TZ1 + 0.35, y1: YE - 0.2, k: 1.0, d0: 3.2, d1: 6.0, fog: 0.3 });
 
-let INDOOR_CHUNK = null, SAFE_BUMP = null;
-/** Shader patch for town materials: NaN-safe bump mapping (degenerate derivatives on far/thin faces would
- *  otherwise poison bloom into a black frame) and, for indoor materials, no low-sun contribution. */
-function townShader(m, indoor = false) {
-  if (!SAFE_BUMP) {
-    SAFE_BUMP = THREE.ShaderChunk.bumpmap_pars_fragment
-      .replace(/normalize\( dFdx\( surf_pos\.xyz \) \)/, 'normalize( dFdx( surf_pos.xyz ) + vec3( 1e-7 ) )')
-      .replace(/normalize\( dFdy\( surf_pos\.xyz \) \)/, 'normalize( dFdy( surf_pos.xyz ) + vec3( 1e-7 ) )')
-      .replace('return normalize( abs( fDet ) * surf_norm - vGrad );', 'vec3 bn = abs( fDet ) * surf_norm - vGrad; return dot( bn, bn ) > 1e-14 ? normalize( bn ) : surf_norm;');
-    INDOOR_CHUNK = THREE.ShaderChunk.lights_fragment_begin.replace('#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )', '#if 0');
-  }
-  m.onBeforeCompile = (sh) => {
-    sh.fragmentShader = sh.fragmentShader.replace('#include <bumpmap_pars_fragment>', SAFE_BUMP);
-    if (indoor) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', INDOOR_CHUNK);
-  };
-  m.customProgramCacheKey = () => (indoor ? 'town-in' : 'town');
-  return m;
-}
-// window kinds that look into a room (interiors.js): [room, lit, curtain]
-const ROOMS = {
-  lit: [ROOM.living, 1, 1], lit2: [ROOM.kid, 1, 3], lit3: [ROOM.washitsu, 1, 2], lit4: [ROOM.living, 1, 2], lace: [ROOM.living, 0.9, 2],
-  tv: [ROOM.tv, 0.5, 1], dark: [ROOM.living, 0, 1], kitchen: [ROOM.kitchen, 1, 0], stair: [ROOM.stair, 0.6, 0], empty: [ROOM.empty, 0, 0],
-};
-// props that stay drawn even when built inside a zone (they show over the roofs)
-const ZONE_ALWAYS = new Set(['keyaki_tree', 'utility_pole', 'street_light']);
-const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-
-/** Baked shade under the bridge decks (the real darkness inside is per-pixel, see tunnelDark.js). */
-function shadeAt(x, y, z) {
-  const u = Math.abs(x);
-  if (u < XT - 0.4 || u > XE + 0.3 || y > YE + 0.05 || z < TZ0 - 1.1 || z > TZ1 + 1.1) return 1;
-  return 1 - 0.45 * sstep(XT - 0.4, XT + 1.4, u);
-}
-
-const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _c = new THREE.Color(), _c2 = new THREE.Color(), _up = new THREE.Vector3(0, 1, 0);
-
-/**
- * Static geometry batcher: boxes/planes are transformed, given baked vertex colours (tint × underpass
- * darkness × optional ground AO) and merged into one mesh per material.
- */
-class Batch {
-  constructor(shade = () => 1) { this.lists = new Map(); this.stack = [new THREE.Matrix4()]; this.shade = shade; }
-  get top() { return this.stack[this.stack.length - 1]; }
-  push(x, y, z, ry = 0, mirror = false) {
-    const m = new THREE.Matrix4().makeRotationY(ry).setPosition(x, y, z);
-    if (mirror) m.multiply(new THREE.Matrix4().makeScale(-1, 1, 1));
-    this.stack.push(this.top.clone().multiply(m));
-    return this;
-  }
-  pop() { this.stack.pop(); return this; }
-  /** Local → world point under the current transform. */
-  world(x, y, z) { return new THREE.Vector3(x, y, z).applyMatrix4(this.top); }
-  yaw(ry = 0) { const e = this.top.elements; return Math.atan2(e[8], e[0]) + ry; }
-  geo(mat, g, { tint = 0xffffff, k = 1, ao = 0, y0 = null } = {}) {
-    const flip = this.top.determinant() < 0;
-    g.applyMatrix4(this.top);
-    if (flip && g.index) { const a = g.index.array; for (let i = 0; i < a.length; i += 3) { const t = a[i + 1]; a[i + 1] = a[i + 2]; a[i + 2] = t; } }
-    const pos = g.attributes.position, n = pos.count, col = new Float32Array(n * 3);
-    _c.set(tint);
-    const r = _c.r * k, gg = _c.g * k, b = _c.b * k;
-    const base = y0 ?? 0;
-    for (let i = 0; i < n; i++) {
-      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-      let f = this.shade(x, y, z);
-      if (ao) f *= 1 - ao * (1 - sstep(base, base + 1.1, y));
-      col[i * 3] = r * f; col[i * 3 + 1] = gg * f; col[i * 3 + 2] = b * f;
-    }
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    if (!this.lists.has(mat)) this.lists.set(mat, []);
-    this.lists.get(mat).push(g);
-    return g;
-  }
-  /** Box with its bottom at y (before rotation). o: unit (0..1 UVs per face), uv [du,dv] offset, rx/ry/rz, tint, k, ao. */
-  box(mat, w, h, d, x, y, z, o = {}) {
-    const g = o.unit ? new THREE.BoxGeometry(w, h, d) : worldBox(w, h, d);
-    if (o.uv && !o.unit) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) + o.uv[0], uv.getY(i) + o.uv[1]); }
-    if (o.rx) g.rotateX(o.rx);
-    if (o.rz) g.rotateZ(o.rz);
-    if (o.ry) g.rotateY(o.ry);
-    g.translate(x, y + h / 2, z);
-    if (o.ao && o.y0 === undefined) o = { ...o, y0: this.top.elements[13] + y };
-    return this.geo(mat, g, o);
-  }
-  /** Upward-facing plane (world UVs in metres unless o.unit). */
-  plane(mat, w, d, x, y, z, o = {}) {
-    const g = new THREE.PlaneGeometry(w, d, o.sx || 1, o.sz || 1);
-    if (!o.unit) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w + (o.uv?.[0] || 0), uv.getY(i) * d + (o.uv?.[1] || 0)); }
-    g.rotateX(-Math.PI / 2);
-    if (o.ry) g.rotateY(o.ry);
-    g.translate(x, y, z);
-    return this.geo(mat, g, o);
-  }
-  /** Vertical plane facing +z (rotate with o.ry). */
-  quad(mat, w, h, x, y, z, o = {}) {
-    const g = new THREE.PlaneGeometry(w, h);
-    if (o.flipU) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i)); }
-    if (o.ry) g.rotateY(o.ry);
-    g.translate(x, y + h / 2, z);
-    return this.geo(mat, g, o);
-  }
-  build(parent, { cast = false, receive = true } = {}) {
-    for (const [mat, list] of this.lists) {
-      const g = mergeGeometries(list, false);
-      for (const x of list) x.dispose();
-      if (!g) continue;
-      g.computeBoundingSphere();
-      const m = new THREE.Mesh(g, mat);
-      m.castShadow = cast; m.receiveShadow = receive;
-      m.matrixAutoUpdate = false;
-      parent.add(m);
-    }
-    this.lists.clear();
-  }
-}
+// props that stay drawn even when built inside a zone
+const ZONE_ALWAYS = new Set(['street_light']);
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
 
 export class Town {
   constructor(game, garage) {
@@ -203,132 +78,8 @@ export class Town {
 
   add(obj, parent = this.group) { parent.add(obj); return obj; }
 
-  // ---------------------------------------------------------------- materials
-  /** Pixel-art recipe material with vertex colours (cached). */
-  M(key, opts = {}) {
-    const ck = 'p:' + key + JSON.stringify(opts);
-    if (!this.mats.has(ck)) {
-      const m = townShader(pixMat(key, opts).clone());
-      m.vertexColors = true;
-      if (opts.decal) { m.polygonOffset = true; m.polygonOffsetFactor = -2; m.polygonOffsetUnits = -4; }
-      this.mats.set(ck, m);
-    }
-    return this.mats.get(ck);
-  }
-  /** Flat paint (tint per box via vertex colour). */
-  P(rough = 0.75, metal = 0, extra = {}) {
-    const ck = 'c:' + rough + ':' + metal + JSON.stringify(extra);
-    if (!this.mats.has(ck)) this.mats.set(ck, new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough, metalness: metal, ...extra }));
-    return this.mats.get(ck);
-  }
-  /** Self-lit paint (lamps, LEDs). */
-  get G() {
-    if (!this.mats.has('glow')) { const m = new THREE.MeshBasicMaterial({ vertexColors: true }); m.color.setScalar(1.5); this.mats.set('glow', m); }
-    return this.mats.get('glow');
-  }
-  /** Unit-mapped town texture (windows, doors, signs). */
-  T(key, w, h, { glow = 0, rough = 0.5, alpha = false, decal = false, metal = 0 } = {}) {
-    const ck = 't:' + key + w + 'x' + h + glow + alpha + decal;
-    if (!this.mats.has(ck)) {
-      const map = townPix(key, w, h).texture();
-      const m = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, metalness: metal });
-      if (glow) { m.emissive = new THREE.Color(0xffffff); m.emissiveMap = map; m.emissiveIntensity = glow; }
-      if (alpha) { m.alphaTest = 0.5; m.transparent = false; }
-      if (decal) { m.polygonOffset = true; m.polygonOffsetFactor = -2; m.polygonOffsetUnits = -4; }
-      this.mats.set(ck, m);
-    }
-    return this.mats.get(ck);
-  }
-
-  /** Clone of a lit material that ignores the low sun (interiors and the underpasses have no shadow coverage). */
-  indoor(mat) {
-    if (!this._indoor) this._indoor = new Map();
-    if (!this._indoor.has(mat)) {
-      this._indoor.set(mat, townShader(mat.clone(), true));
-    }
-    return this._indoor.get(mat);
-  }
-  indoorVoxel() {
-    if (!this._inVox) { const n = voxelMaterials('normal'); this._inVox = [this.indoor(n[0]), this.indoor(n[1]), this.indoor(n[2]), n[3], this.indoor(n[4])]; }
-    return this._inVox;
-  }
-
-  initMats() {
-    const M = (k, o) => this.M(k, o);
-    this.m = {
-      road: M('asphaltHD', { roughness: 0.95, bump: 0.5, ppm: 40 }),
-      paint: M('roadPaint', { roughness: 0.8, bump: 0, ppm: 64, decal: true }),
-      strip: M('concrete', { roughness: 0.95, color: 0xb8b0a2, ppm: 40 }),
-      paving: M('paving', { roughness: 0.92, ppm: 40 }),
-      lid: M('gutterLid', { roughness: 0.92, ppm: 40 }),
-      grate: M('grate', { roughness: 0.5, metalness: 0.5, ppm: 64, bump: 0 }),
-      ground: M('gravel', { roughness: 1, color: 0x8a8070, ppm: 32 }),
-      block: M('blockHD', { roughness: 0.92, bump: 1, ppm: 64 }),
-      found: M('concrete', { roughness: 0.95, color: 0x9a948a, ppm: 48 }),
-      conc: M('concreteHD', { roughness: 0.92, bump: 0.8, ppm: 64 }),
-      wallCream: M('houseWall', { roughness: 0.9, color: 0xf0e2c4 }),
-      wallBeige: M('houseWall', { roughness: 0.9, color: 0xe0cfb0 }),
-      wallGrey: M('houseWall', { roughness: 0.9, color: 0xc8c8c0 }),
-      wallBlue: M('houseWall', { roughness: 0.9, color: 0xb8c4cc }),
-      mortar: M('mortar', { roughness: 0.95 }),
-      mortarG: M('mortar', { roughness: 0.95, color: 0xd0d4bc }),
-      mortarP: M('mortar', { roughness: 0.95, color: 0xe8dcc4 }),
-      siding: M('siding', { roughness: 0.85, ppm: 64 }),
-      tin: M('corrugatedHD', { roughness: 0.55, metalness: 0.35, bump: 1.2, ppm: 64, color: 0xa8b4b0 }),
-      tinRed: M('corrugatedHD', { roughness: 0.6, metalness: 0.3, bump: 1.2, ppm: 64, color: 0xb87060 }),
-      tinTeal: M('corrugatedHD', { roughness: 0.55, metalness: 0.35, bump: 1.2, ppm: 64, color: 0x7aa6a0 }),
-      roofGrey: M('roofTile', { roughness: 0.55, metalness: 0.15 }),
-      roofBlue: M('roofTile', { roughness: 0.5, metalness: 0.15, color: 0x9ab4dc }),
-      roofBrown: M('roofTile', { roughness: 0.6, metalness: 0.1, color: 0xd09a80 }),
-      roofGreen: M('roofTile', { roughness: 0.6, metalness: 0.1, color: 0xa8c0a0 }),
-      brick: M('brickHD', { roughness: 0.92, bump: 1, ppm: 64 }),
-      board: M('boardWall', { roughness: 0.9, bump: 0.8 }),
-      boardL: M('boardWall', { roughness: 0.9, bump: 0.8, color: 0xc8b8a0 }),
-      prefab: M('prefabPanel', { roughness: 0.6, bump: 0.6 }),
-      prefabB: M('prefabPanel', { roughness: 0.6, bump: 0.6, color: 0xc8a888 }),
-      skirt: M('tileSkirt', { roughness: 0.5, bump: 0.5, ppm: 64 }),
-      oya: M('oyaStone', { roughness: 0.95, bump: 1 }),
-      roofMetal: M('metalRoof', { roughness: 0.55, metalness: 0.3, bump: 0.6 }),
-      roofMetalB: M('metalRoof', { roughness: 0.55, metalness: 0.3, bump: 0.6, color: 0x7a9ab8 }),
-      roofSlate: M('slateRoof', { roughness: 0.6, metalness: 0.1, bump: 0.6 }),
-      roofIbushi: M('roofTile', { roughness: 0.45, metalness: 0.25, color: 0x8a909a }),
-      kenchi: M('kenchi', { roughness: 0.95, bump: 1.2, ppm: 64 }),
-      tunnel: M('tunnelWall', { roughness: 0.95, bump: 0.8, ppm: 64 }),
-      girder: M('girder', { roughness: 0.6, metalness: 0.3, ppm: 64, color: 0x9a8a80 }),
-      ballast: M('ballast', { roughness: 1, ppm: 40 }),
-      grass: M('grassFloor', { roughness: 1, color: 0x7a8a5a, ppm: 32 }),
-      hazard: M('hazard', { roughness: 0.6, ppm: 64, bump: 0 }),
-      tile: M('shopTile', { roughness: 0.4, ppm: 64 }),
-      koshi: M('koshiita', { roughness: 0.6, ppm: 64 }),
-      shikkui: M('shikkui', { roughness: 0.92, ppm: 64, color: 0xeee6d8 }),
-      ceil: M('shopCeiling', { roughness: 0.85, ppm: 64 }),
-      wood: M('woodDark', { roughness: 0.7 }),
-      woodL: M('woodLight', { roughness: 0.7 }),
-      shutterM: M('shutter', { roughness: 0.6, metalness: 0.4, bump: 1.5, color: 0xb8b0a0 }),
-      pv: this.P(0.75),
-      metal: this.P(0.4, 0.55),
-      gloss: this.P(0.3),
-      ridge: this.P(0.5, 0.2),
-    };
-    const W = (k, glow = 0) => this.T(k, 32, 24, { glow, rough: 0.25 });
-    this.win = {
-      lit: W('winLit', 0.75), lit2: W('winLit2', 0.75), lit3: W('winLit3', 0.75), lit4: W('winLit4', 0.75),
-      dark: W('winDark'), frost: W('winFrost', 0.35), shoji: W('winShoji', 0.7), tv: W('winTV', 0.6), lace: W('winLace', 0.7),
-    };
-    this.doorMats = {
-      genkan: this.T('doorGenkan', 32, 40, { glow: 0.55, rough: 0.4 }), apt: this.T('doorApt', 18, 40, { rough: 0.5, metal: 0.2 }),
-      wood: this.T('doorWood', 32, 40, { glow: 0.5, rough: 0.6 }), west: this.T('doorWest', 18, 40, { glow: 0.3, rough: 0.5 }),
-    };
-    this.win.amado = this.T('amado', 32, 24, { rough: 0.55, metal: 0.25 });
-    // lit windows and doorway glass glow softly by day and properly after dark: [material, day, night] (see applySky)
-    const wl = this.win;
-    this.nightGlow = [[wl.lit, 0.3, 1.35], [wl.lit2, 0.3, 1.3], [wl.lit3, 0.3, 1.35], [wl.lit4, 0.3, 1.3], [wl.frost, 0.12, 0.6], [wl.shoji, 0.28, 1.2], [wl.tv, 0.3, 1.05], [wl.lace, 0.28, 1.15], [this.doorMats.genkan, 0.18, 0.95], [this.doorMats.wood, 0.15, 0.9], [this.doorMats.west, 0.1, 0.6]];
-    this.interiorM = interiorMaterial();
-    this.glass = new THREE.MeshPhysicalMaterial({ color: 0xeaf2f0, transparent: true, opacity: 0.18, roughness: 0.05, clearcoat: 1, depthWrite: false });
-  }
-
-  // ---------------------------------------------------------------- voxel props
-  /** Queue an instanced prop (static). o: block (player collision), dim (softer glow), scale. */
+  // ---------------------------------------------------------------- props (the prop library, instanced)
+  /** Queue an instanced prop (static). o: block (player collision), dim (softer glow), scale, zone. */
   prop(id, x, y, z, ry = 0, o = {}) {
     if (!hasProp(id)) return null;
     const zone = o.zone ?? (this._zone && !ZONE_ALWAYS.has(id) ? this._zone : null);
@@ -355,78 +106,222 @@ export class Town {
     const ex = hx * c + hz * sn + pad, ez = hx * sn + hz * c + pad;
     this.game.player.addObstacle(x - ex, x + ex, z - ez, z + ez);
   }
+  /** One InstancedMesh per prop part (whatever the library builds a prop from), culled per instance. */
   flushProps() {
     for (const { id, dim, indoor, zone, list } of this.inst.values()) {
-      const geo = propGeometry(id);
-      if (!geo) continue;
-      const im = new THREE.InstancedMesh(geo, indoor ? this.indoorVoxel() : dim ? this.dimVoxel() : voxelMaterials('normal'), list.length);
-      list.forEach((it, i) => {
-        _q.setFromAxisAngle(_up, it.ry);
-        im.setMatrixAt(i, _m4.compose(_p.set(it.x, it.y, it.z), _q, _s.setScalar(it.s)));
-      });
-      im.castShadow = false; im.receiveShadow = true;
-      im.computeBoundingSphere();
-      im.name = 'props:' + id;
-      im.matrixAutoUpdate = false;
-      (zone ? this.zoneGroup(zone) : this.group).add(im);
-      (this.cull ||= new InstanceCuller()).add(im); // only the instances in view are drawn (src/world/propCull.js)
+      let src;
+      try { src = propMesh(id, { castShadow: false }); } catch (e) { console.warn('Town: prop failed', id, e); continue; }
+      src.updateMatrixWorld(true);
+      const parts = [];
+      src.traverse((o) => { if (o.isMesh && o.geometry) parts.push(o); });
+      for (const part of parts) {
+        let mat = part.material;
+        const voxel = Array.isArray(mat) && mat.length === 5;
+        if (voxel && indoor) mat = this.indoorVoxel(); else if (voxel && dim) mat = this.dimVoxel();
+        else if (indoor) mat = Array.isArray(mat) ? mat.map((k) => this.indoor(k)) : this.indoor(mat);
+        const im = new THREE.InstancedMesh(part.geometry, mat, list.length);
+        list.forEach((it, i) => {
+          _q.setFromAxisAngle(_up, it.ry);
+          im.setMatrixAt(i, _m4.compose(_p.set(it.x, it.y, it.z), _q, _s.setScalar(it.s)).multiply(part.matrixWorld));
+        });
+        im.castShadow = false; im.receiveShadow = true;
+        im.computeBoundingSphere();
+        im.name = 'props:' + id;
+        im.matrixAutoUpdate = false;
+        (zone ? this.zoneGroup(zone) : this.group).add(im);
+        (this.cull ||= new InstanceCuller()).add(im); // only the instances in view are drawn (src/world/propCull.js)
+      }
     }
     this.inst.clear();
   }
-  /** A group of props that is only drawn near where it can be seen (zones: 'park', behind the near-side houses). */
+  /** A group that is only drawn near where it can be seen (the park behind the near-side houses). */
   zoneGroup(name) {
     if (!this.zones) this.zones = {};
     if (!this.zones[name]) { const g = new THREE.Group(); g.name = 'zone:' + name; this.group.add(g); this.zones[name] = g; }
     return this.zones[name];
   }
-  /** The park's props are hidden by the houses everywhere except in the A2 passage, the park and the lane at its mouth. */
+  /** The park is hidden by the houses everywhere except in the A2 passage, the yards behind the near side and the lane
+   *  at the passage's mouth. */
   updateZones() {
     const z = this.zones?.park;
     if (!z) return;
     const p = this.game.camera.position;
-    z.visible = (p.z < 5.6 && p.x > 9.4) || (p.x > 7 && p.x < 14.5 && p.z < 10.5) || this.forceZones === true;
+    z.visible = (p.z < 6.2 && p.x > 9.4) || (p.x > 7 && p.x < 14.5 && p.z < 10.5) || this.forceZones === true;
   }
 
-  /** Voxel material set with a gentler glow (vending machines, lit signs up close). */
-  dimVoxel() {
-    if (!this._dim) {
-      const n = voxelMaterials('normal');
-      const g = n[3].clone(); g.color.setScalar(0.95);
-      this._dim = [n[0], n[1], n[2], g, n[4]];
-    }
-    return this._dim;
+  // ---------------------------------------------------------------- drawing helpers (in the batch's current frame)
+  /** A fresh static batcher (merge per material, baked vertex colours); build(parent) when done. */
+  batch(shade) { return new Batch(shade); }
+  /** Vertical quad showing trim-atlas entry `key`, its bottom centre at (x, y, z). o: w / h (metres; default the
+   *  entry's own size), ry, rz, tint, sub. */
+  sign(key, x, y, z, o = {}) { return this.signInto(this.B, key, x, y, z, o); }
+  signInto(B, key, x, y, z, o = {}) {
+    const A = this.atlas.trim;
+    let [w, h] = A.size(key);
+    if (o.w) { h = o.h ?? (h * o.w) / w; w = o.w; } else if (o.h) { w = (w * o.h) / h; h = o.h; }
+    return B.quadUV(this.tm, w, h, x, y, z, A.uv(key, o.sub), o);
   }
+  /** Vertical decal (stains, cracks): bottom centre at (x, y, z). o: w, h, flip, tint, ry, cut (alpha-cut board). */
+  decalQ(key, x, y, z, o = {}) {
+    const A = this.atlas.decal, [u0, v0, u1, v1] = A.uv(key);
+    let [w, h] = A.size(key);
+    if (o.w) { h = o.h ?? (h * o.w) / w; w = o.w; }
+    return this.B.quadUV(o.cut ? this.cut : this.dm, w, h, x, y, z, o.flip ? [u1, v0, u0, v1] : [u0, v0, u1, v1], o);
+  }
+  /** Decal lying on the ground (road paint, lids, cracks), centred on (x, z). o: w, d, ry, tint, y. */
+  decalG(key, x, z, o = {}) {
+    const A = this.atlas.decal;
+    let [w, d] = A.size(key);
+    if (o.w) { d = o.d ?? (d * o.w) / w; w = o.w; }
+    return this.B.plane(this.dm, w, d, x, o.y ?? 0.004, z, { ...o, rect: A.uv(key) });
+  }
+  /** A row of ~1.2 m decals along local x at height y on a wall plane z. */
+  decalRow(key, x0, x1, y, h, z, k = 1) {
+    const n = Math.max(1, Math.round((x1 - x0) / 1.2)), w = (x1 - x0) / n;
+    for (let i = 0; i < n; i++) { const c = x0 + (i + 0.5) * w; this.decalQ(key, c, y, z, { w, h, k, flip: hash2(Math.round(c * 7), Math.round(z * 3 + y * 5)) < 0.5 }); }
+  }
+  /** Vertical quad showing the uv rectangle [u0, v0, u1, v1] of any material's texture (LanePosters.js). */
+  quadUV(mat, w, h, x, y, z, uv, o = {}, B = this.B) { return B.quadUV(mat, w, h, x, y, z, uv, o); }
+  /** Square-section bar between two world points (guy wires, braces). */
+  beam(mat, a, b, t, o = {}) { return this.B.beam(mat, [a.x, a.y, a.z], [b.x, b.y, b.z], t, o); }
+  /** Standalone mesh whose geometry gets a white colour attribute (so vertex-colour materials work). */
+  vmesh(geo, mat) {
+    const n = geo.attributes.position.count;
+    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3).fill(1), 3));
+    return new THREE.Mesh(geo, mat);
+  }
+  glassPane(w, h, x, y, z) {
+    const g = new THREE.Mesh(new THREE.PlaneGeometry(w, h), this.glass);
+    g.position.set(x, y, z); g.userData.noRim = true;
+    return g;
+  }
+  /** 傘立て: a little stand by the door with two or three umbrellas (local frame of the current batch). */
+  umbrellaStand(x, y, z, seed = 0) {
+    const B = this.B, m = this.m, cols = [0x3a4a7a, 0xe8808a, 0xf4f0e6, 0x4a7a4a, 0x2a2a2c, 0xffdc6a];
+    B.cyl(m.metal, 0.1, 0.11, 0.36, x, y, z, { tint: 0x8a8e90, sides: 8, caps: 'b' });
+    for (let i = 0; i < 3; i++) {
+      const c = cols[Math.floor(hash2(seed + i, 11) * cols.length)], dx = (i - 1) * 0.045, lean = (i - 1) * 0.12;
+      B.lathe(m.pv, [[0.012, 0], [0.035, 0.12], [0.03, 0.62], [0.008, 0.66]], x + dx, y + 0.08, z + (hash2(i, seed) - 0.5) * 0.05, { rz: -lean, tint: c, sides: 6 });
+      B.tube(m.pv, [[x + dx + lean * 0.66, y + 0.73, z], [x + dx + lean * 0.8, y + 0.86, z], [x + dx + lean * 0.8 + 0.04, y + 0.88, z], [x + dx + lean * 0.8 + 0.06, y + 0.83, z]], 0.01, { tint: 0x4a3a2a, sides: 4 });
+    }
+  }
+  /** Hang a small batch on a pivot so it sways in the wind: M = the pivot's world matrix (its x axis is the hinge
+   *  unless o.axis = 'y'), o.ph (phase), o.amp. Laundry on its pole, carp streamers on theirs. */
+  swing(C, M, o = {}) {
+    const piv = new THREE.Group(), sw = new THREE.Group();
+    piv.matrixAutoUpdate = false; piv.matrix.copy(M); piv.name = 'town:swing';
+    piv.add(sw);
+    if (!C.build(sw, { name: 'swing' }).length) return null;
+    (this.B === this.Bpark ? this.zoneGroup('park') : this.group).add(piv);
+    (this.swings ||= []).push({ o: sw, ph: (o.ph || 0) * 1.7, amp: o.amp ?? 1, axis: o.axis || 'x' });
+    return sw;
+  }
+  /** Rain puddle on the ground: a wet satin patch that picks up the sky. */
+  puddle(x, z, w, d, ry = 0) {
+    if (!this._puddleM) {
+      const mat = new THREE.MeshStandardMaterial({ map: this.atlas.decal.tex, roughness: 0.4, metalness: 0, alphaTest: 0.5, vertexColors: true, envMapIntensity: 0.3 });
+      mat.polygonOffset = true; mat.polygonOffsetFactor = -3; mat.polygonOffsetUnits = -6;
+      mat.onBeforeCompile = (sh) => {
+        sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+          float pFr = pow( 1.0 - clamp( dot( normalize( vViewPosition ), normal ), 0.0, 1.0 ), 5.0 );
+          totalEmissiveRadiance += mix( vec3( 0.006, 0.007, 0.009 ), vec3( 0.085, 0.08, 0.07 ), pFr );`);
+      };
+      mat.customProgramCacheKey = () => 'puddle';
+      mat.name = 'puddle';
+      this._puddleM = mat;
+    }
+    this.B.plane(this._puddleM, w, d, x, 0.006, z, { rect: this.atlas.decal.uv('puddle'), ry });
+  }
+  /** A pool of lamplight on the ground (a smooth falloff, stronger after dark). */
+  pool(x, z, r, col, k) {
+    if (!this._pools) this._pools = [];
+    const g = new THREE.PlaneGeometry(r * 2, r * 2);
+    g.rotateX(-Math.PI / 2); g.translate(x, 0.012, z);
+    const c = new THREE.Color(col).multiplyScalar(k), n = g.attributes.position.count, a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(a, 3));
+    this._pools.push(g);
+  }
+  flushPools() {
+    if (!this._pools?.length) return;
+    this.poolK = this.poolK || { value: 1 };
+    const mat = new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true,
+      uniforms: { uK: this.poolK },
+      vertexShader: 'varying vec3 vC; varying vec2 vUv; void main(){ vUv = uv; vC = color; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'uniform float uK; varying vec3 vC; varying vec2 vUv; void main(){ float d = length(vUv - 0.5) * 2.0; float a = smoothstep(1.0, 0.0, d); gl_FragColor = vec4(vC * a * a * 0.2 * uK, 1.0); }',
+    });
+    const P = [], C = [], U = [];
+    for (const g of this._pools) { const ng = g.toNonIndexed(); P.push(...ng.attributes.position.array); C.push(...ng.attributes.color.array); U.push(...ng.attributes.uv.array); g.dispose(); ng.dispose(); }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(C, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2));
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.renderOrder = 2; mesh.name = 'town:pools';
+    this.add(mesh);
+    this._pools = [];
+  }
+
+  // ---------------------------------------------------------------- buildings and walls (src/town)
+  /**
+   * A house in its own frame (front wall at local z=0, body toward -z), turned to face the lane.
+   * o: { x, z, w, d, side(+1 near/-1 far), y0, floors, h1, h2, base, wallA, wallB ([material name, tint]),
+   *      roof('gable'|'hip'|'shed'|'flat'), roofM ([name, tint]), pitch, eave, verge, pent, pentM,
+   *      balcony:{x0,x1,d,futon,laundry,panel,dish,pots}, win:[[floor, u, w, h, kind, { face('f'|'l'|'r'), sill, grille,
+   *      tobukuro, hood, sudare, flowers, amado, room, curtain, cc, lit, depth, screen }]],
+   *      door:{ x, kind('genkan'|'wood'|'west'|'apt'), w, mail, lamp(±1), name, porch('tile'|'stone'), umbrella, milk,
+   *      noCanopy, noStep }, antenna, gutterTint, trim, skirt:{h, mat, tint}, corner, rafters, vents, ac:[[floor, u]],
+   *      solar, lite, extra(B, { W, D, base, fy, top, ridge }) }
+   */
+  house(o) { return house(this, o); }
+  blockWall(x0, x1, z, side, o) { return blockWall(this, x0, x1, z, side, o); }
+  woodFence(x0, x1, z, side, o) { return woodFence(this, x0, x1, z, side, o); }
+  gate(a, b, z, side, open) { return gate(this, a, b, z, side, open); }
+  yard(x0, x1, z0, z1, mat, tint) { return yard(this, x0, x1, z0, z1, mat, tint); }
+  /** Cheap second-row house (walls, a real roof, two windows). */
+  backHouse(x, z, w, d, h, side) {
+    const k = Math.floor(hash2(x, z) * 4), two = h > 6.5;
+    const walls = [['plaster', 0xe4d8be], ['plaster', 0xcfcabf], ['clap', 0x8a7a68], ['plaster', 0xd8ceb6]], roofs = [['kawara', 0x8a9098], ['kawara', 0x7f98be], ['kawara', 0xa88670], ['tinroof', 0x8f9aa0]];
+    return this.house({ x, z, w, d, side, lite: true, floors: two ? 2 : 1, h1: two ? 2.7 : 3.0, h2: two ? Math.min(2.7, h - 3.6) : 0, wallA: walls[k], roofM: roofs[(k + 1) % 4], pitch: roofs[(k + 1) % 4][0] === 'tinroof' ? 0.28 : 0.45, antenna: hash2(x, 5) < 0.5 ? (hash2(x, 6) - 0.5) * w * 0.5 : undefined,
+      win: [[0, -w / 4, 1.3, 1.0, hash2(x, 1) < 0.5 ? 'lit' : 'dark'], [two ? 1 : 0, w / 4, 1.2, 1.0, hash2(x, 2) < 0.6 ? 'lit3' : 'dark']] });
+  }
+  midrise(x, z, w, h) { return midrise(this, x, z, w, h); }
 
   // ---------------------------------------------------------------- build
   build() {
-    this.initMats();
-    this.B = new Batch(shadeAt);
-    this.buildSky();
-    this.buildGround();
-    this.buildShopFront();
-    this.buildNeighbours();
+    makeMats(this);
+    this.interiorM = interiorMaterial();
+    const lane = this.B = new Batch(shadeAt);
+    this.Bpark = new Batch(shadeAt);
+    buildSky(this);
+    buildGround(this);
+    buildFront(this);
+    buildNeighbours(this);
     // behind the near side: alley A2 opens into the passage, the park, the back street and the mangaka's villa
+    // (the passage is drawn with the lane; the park itself only where it can be seen: see Park.js / updateZones)
     this._zone = 'park';
     try { this.park = buildPark(this); } catch (e) { console.error('Town: park failed', e); this.park = null; }
     this._zone = null;
-    this.buildCornerShop();
-    this.buildUnderpasses();
-    this.buildPoles();
-    this.buildDressing();
+    this.B = lane;
+    buildCornerShop(this);
+    buildUnderpasses(this);
+    buildPoles(this);
+    buildDressing(this);
     // small-scale dressing only: never let a decoration bug stop the lane from loading
-    try { this.buildDetails(); } catch (e) { console.error('Town.buildDetails failed', e); }
-    this.buildBackdrop();
-    this.buildBounds();
+    try { buildDetails(this); } catch (e) { console.error('Town.buildDetails failed', e); }
+    try { buildJapan(this); } catch (e) { console.error('Town: neighbourhood details failed', e); }
+    this.flushPools();
+    try { buildBackdrop(this); } catch (e) { console.error('Town: backdrop failed', e); }
+    buildBounds(this);
     try { buildLanePosters(this); } catch (e) { console.error('Town: lane posters failed', e); }
-    this.B.build(this.group);
+    this.B.build(this.group, { name: 'town' });
+    this.Bpark.build(this.zoneGroup('park'), { name: 'park' });
     this.flushProps();
-    this.buildTrains();
+    buildTrains(this);
     try { this.pylon = buildPylon(this); } catch (e) { console.error('Town: pylon failed', e); }
     this.setShopOpen(true);
     this.buildSpots();
     // contracts for pedestrians
     this.lanes = LANE_Z.map((z) => ({ z, x0: -XE + 1, x1: XE - 1 }));
-    // x = the walkable end inside each underpass, mouth = its portal, dir = outward
     this.tunnels = [-1, 1].map((s) => ({ x: s * XW, z: (TZ0 + TZ1) / 2, dir: s, mouth: s * XT }));
     this.spawnPoints = [];
     for (const s of [-1, 1]) for (const z of LANE_Z) this.spawnPoints.push(new THREE.Vector3(s * (XE - 1), 0, z));
@@ -447,173 +342,20 @@ export class Town {
       this.spots.villaDoor = spot(16.5, -21.55, 0, { note: 'the villa front door (inside the garden)' });
       this.doors.push({ id: 'rohan', house: 'villa', family: 'Kishibe', side: 1, rotY: 0, pos: V3(16.5, -21.55), gate: V3(g.x, g.z), bell: new THREE.Vector3(17.2, 0.85, g.z + 0.23) });
     }
-    // walking paths (Vector3 waypoints) for anyone going from the lane into the park and on to the villa
     const inPark = [V3(10.55, 7.0), V3(10.55, 4.6), V3(10.5, -4.2), V3(12.6, -4.5), V3(13.8, -6.6), V3(17.6, -8.6)];
     this.paths = { park: inPark, villa: [...inPark, V3(18.3, -15.6), V3(18.3, -18.85), V3(16.5, -19.5)] };
   }
 
-  // ---------------------------------------------------------------- ground & road
-  buildGround() {
-    const B = this.B, m = this.m;
-    // a catch-all ground under everything (no void between lots)
-    B.plane(m.ground, 110, 90, 0, -0.02, 8, { k: 0.8 });
-    // the asphalt runs through both underpasses to the junctions beyond
-    B.plane(m.road, 2 * XT, ZR1 - ZG1, 0, 0, (ZG1 + ZR1) / 2);
-    // near strip (aprons, house fronts) and the far paved strip
-    for (const sx of [-1, 1]) B.plane(m.strip, XT - 4.3, ZG0 - 5.2, sx * (XT + 4.3) / 2, 0, (5.2 + ZG0) / 2, { uv: [sx * 0.3, 0] });
-    for (const [a, b] of [[-XT, -9.5], [-7.4, XT]]) B.plane(m.paving, b - a, ZF - ZG3, (a + b) / 2, 0, (ZG3 + ZF) / 2);
-    // side ditches: concrete lids with steel gratings at driveways and the shop front
-    const gutter = (z0, z1, grates) => {
-      let x = -XT;
-      for (const [a, b] of [...grates.sort((p, q) => p[0] - q[0]), [XT, XT]]) {
-        if (a > x) B.box(m.lid, a - x, 0.05, z1 - z0, (x + a) / 2, -0.05, (z0 + z1) / 2, { uv: [x, 0] });
-        if (b > a) B.box(m.grate, b - a, 0.05, z1 - z0, (a + b) / 2, -0.048, (z0 + z1) / 2);
-        x = b;
-      }
-    };
-    gutter(ZG0, ZG1, [[-3.4, 3.4], [4.6, 7.6], [9.8, 11.3], [-20.6, -19.4]]);
-    gutter(ZR1, ZG3, [[-9.5, -7.4], [10.1, 12.6], [-1.6, -0.9]]);
-    // white edge lines (break at the alley mouths), narrowing into the underpasses
-    const line = (x0, x1, z, w = 0.15) => B.box(m.paint, x1 - x0, 0.006, w, (x0 + x1) / 2, 0, z);
-    const diag = (x0, z0, x1, z1) => { const len = Math.hypot(x1 - x0, z1 - z0); B.box(m.paint, len, 0.006, 0.15, (x0 + x1) / 2, 0, (z0 + z1) / 2, { ry: -Math.atan2(z1 - z0, x1 - x0) }); };
-    line(-24, -3.6, 6.45); line(3.6, 9.6, 6.45); line(11.5, 24, 6.45);
-    line(-24, -9.7, 13.0); line(-7.2, 24, 13.0);
-    for (const s of [-1, 1]) {
-      diag(s * 24, 6.45, s * XT, 6.95); diag(s * 24, 13.0, s * XT, 11.4);
-      const pin = this.indoor(m.paint);
-      B.box(pin, XE - XT + 3, 0.006, 0.15, s * (XT + XE + 3) / 2, 0, 6.95);
-      B.box(pin, XE - XT, 0.006, 0.15, s * (XT + XE) / 2, 0, 11.4);
-      // hatched narrowing (導流帯) before the far-side kerb
-      for (let i = 0; i < 4; i++) diag(s * (24.3 + i * 0.45), 13.0, s * (24.3 + i * 0.45 + 0.5), 13.0 - 0.45 - i * 0.28);
-    }
-    // painted speed limit, the alley's stop line + 止まれ
-    B.plane(this.T('speed30', 40, 24, { alpha: true, decal: true, rough: 0.8 }), 1.1, 1.8, 15.5, 0.004, 8.4, { unit: true, ry: -Math.PI / 2 });
-    B.plane(this.T('speed30', 40, 24, { alpha: true, decal: true, rough: 0.8 }), 1.1, 1.8, -17.5, 0.004, 11.2, { unit: true, ry: Math.PI / 2 });
-    B.plane(m.road, 2.1, 22.4 - ZG3, -8.45, 0, (ZG3 + 22.4) / 2, { uv: [7, 2] });
-    line(-9.4, -7.5, 15.15, 0.3);
-    B.plane(this.T('tomare', 48, 20, { alpha: true, decal: true, rough: 0.8 }), 1.5, 1.4, -8.45, 0.004, 16.1, { unit: true });
-  }
-
-  // ---------------------------------------------------------------- the shop front
-  buildShopFront() {
-    const G = GARAGE, H = G.height, B = this.B, m = this.m;
-    // apron in front of the shutter
-    B.plane(this.M('floorHD', { roughness: 0.85, ppm: 64 }), 8.6, ZG0 - 5.2, 0, 0, (5.2 + ZG0) / 2, { uv: [0, 0.4] });
-    // corrugated cladding on the two piers
-    for (const sx of [-1, 1]) B.box(m.tinTeal, 1.3, H + 0.05, 0.05, sx * 3.65, 0, 5.235, { uv: [sx, 0], ao: 0.15 });
-    // a plain low false front above the shutter: corrugated cladding with returns, pilasters and coping
-    const PH = 1.15;
-    B.box(m.tinTeal, 8.7, PH, 0.26, 0, H, 5.08, { uv: [0.4, 0.3] });
-    for (const sx of [-1, 1]) {
-      B.box(m.tinTeal, 0.22, PH, 1.6, sx * 4.24, H, 4.3, { uv: [0.2, 0.3] });
-      B.box(m.pv, 0.3, PH + 0.02, 0.34, sx * 4.25, H, 5.12, { tint: 0x5a5a52 });
-    }
-    B.box(m.pv, 9.0, 0.12, 0.46, 0, H + PH, 5.1, { tint: 0x5a5650 });
-    B.box(m.pv, 8.8, 0.08, 0.36, 0, H + PH + 0.12, 5.08, { tint: 0x4a4640 });
-    // a few bolted-on bits: conduit, an old enamel lamp bracket, a meter box
-    B.box(m.pv, 6.8, 0.05, 0.05, 0, H + 0.95, 5.24, { tint: 0x3a3a38 });
-    for (const x of [-2.2, 2.2]) { B.box(m.metal, 0.05, 0.05, 0.4, x, H + 0.82, 5.42, { tint: 0x2a2c2e }); B.box(m.metal, 0.24, 0.1, 0.24, x, H + 0.7, 5.62, { tint: 0x2a3a2e }); }
-    B.box(m.pv, 0.32, 0.4, 0.12, -3.62, 2.2, 5.3, { tint: 0x8a8e88 });
-    // the garage roof behind the parapet + an exterior skin on the exposed east wall
-    B.box(m.tin, 8.7, 0.12, 10.6, 0, H + 0.14, -0.1, { k: 0.8 });
-    B.box(m.tin, 0.06, H + 0.25, 10.4, 4.24, 0, -0.05, { uv: [0, 0.2], ao: 0.2, k: 0.9 });
-    // fascia band + tin eave (庇) over the shutter
-    B.box(m.wood, 8.4, 0.24, 0.08, 0, H - 0.02, 5.25);
-    B.box(m.tinRed, 8.2, 0.07, 0.95, 0, H + 0.05, 5.7, { rx: 0.07 });
-    B.box(m.tinRed, 8.0, 0.06, 0.5, 0, H + 0.11, 5.48, { rx: 0.07 });
-    B.box(m.pv, 8.26, 0.14, 0.05, 0, H - 0.06, 6.16, { tint: 0x3a3430 });
-    for (const sx of [-1, 1]) B.box(m.metal, 0.04, 0.5, 0.04, sx * 3.95, H - 0.4, 5.85, { rx: -0.9, tint: 0x5a5a58 });
-    this.shop = { openG: new THREE.Group(), closedG: new THREE.Group() };
-    this.add(this.shop.openG); this.add(this.shop.closedG);
-    this.buildLanterns(H);
-    this.noren(H, this.shop.openG);
-    // the two lamp shades over the front only light up while the shop is open
-    const bulbs = [-2.2, 2.2].map((x) => { const g = new THREE.BoxGeometry(0.16, 0.03, 0.16); g.translate(x, H + 0.685, 5.62); return g; });
-    this.shop.openG.add(this.vmesh(mergeGeometries(bulbs), this.G));
-    // out front: dagashiya-style things (open) — weeds and a taped notice (closed)
-    const O = this.shop.openG, C = this.shop.closedG;
-    this.single('gacha_twin', -2.55, 0, 5.62, 0, {}, O);
-    this.single('shop_bench', 2.75, 0, 5.52, 0, {}, O);
-    this.shop.obs = [this.game.player.addObstacle(-3.02, -2.08, 5.4, 5.84), this.game.player.addObstacle(2.27, 3.23, 5.34, 5.7)];
-    this.single('kakigori_flag', 3.95, 0, 5.48, -0.25, {}, O);
-    this.single('sign_stand', -3.55, 0, 5.62, 0.35, {}, O);
-    this.prop('tanuki_statue', -4.05, 0, 5.5, 0.3);
-    this.nobori(4.55, 5.5, O);
-    // OPEN plate hanging on the right pier
-    const plate = this.vmesh(new THREE.BoxGeometry(0.42, 0.18, 0.02), this.T('openPlate', 32, 14, { glow: 0.25 }));
-    plate.position.set(3.62, 1.95, 5.28); O.add(plate);
-    plate.name = 'openPlate';
-    this.openPlate = plate; // the painted OPEN plate on the right pier (hide it if something else hangs there)
-    const cord = this.vmesh(new THREE.BoxGeometry(0.3, 0.01, 0.01), this.P(0.8)); cord.position.set(3.62, 2.12, 5.28); O.add(cord);
-    for (const [x, z] of [[-4.2, 5.45], [4.25, 5.4], [-1.2, 5.32]]) this.single('weeds', x, 0, z, hash2(x, z) * 3, { scale: 0.9 }, C);
-    const notice = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshStandardMaterial({ map: posterTexture('museumSign', 48, 64), roughness: 0.95, color: 0xc8c0b0 }));
-    notice.position.set(-3.5, 1.45, 5.27); notice.rotation.z = 0.04; C.add(notice);
-  }
-
-  /** 暖簾 over the doorway: three indigo panels with a white capsule mark (shown while open). */
-  noren(H, parent) {
-    const mat = this.T('noren', 24, 40, { rough: 0.95 });
-    const g = new THREE.Group();
-    for (let i = -1; i <= 1; i++) {
-      const panel = this.vmesh(new THREE.BoxGeometry(0.66, 0.72, 0.015), mat);
-      panel.position.set(i * 0.69, H - 0.48, 6.06);
-      panel.rotation.x = 0.03;
-      g.add(panel);
-    }
-    const rod = this.vmesh(new THREE.BoxGeometry(2.3, 0.03, 0.03), this.P(0.6));
-    rod.position.set(0, H - 0.1, 6.06);
-    g.add(rod);
-    parent.add(g);
-  }
-
-  /** Row of blocky paper lanterns under the eave. */
-  buildLanterns(H) {
-    const S = this.shop, B = this.B;
-    const tex = townPix('lantern', 16, 24).texture();
-    S.lanternM = new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 1.3, roughness: 0.8 });
-    const geos = [];
-    for (const x of [-3.2, -1.6, 1.6, 3.2]) {
-      const y = H - 0.55, z = 6.02;
-      const g = new THREE.BoxGeometry(0.28, 0.36, 0.28); g.translate(x, y, z); geos.push(g);
-      // tapered paper ends + black caps + hanging cord
-      B.box(this.m.pv, 0.22, 0.04, 0.22, x, y + 0.18, z, { tint: 0xb0281e });
-      B.box(this.m.pv, 0.22, 0.04, 0.22, x, y - 0.22, z, { tint: 0xb0281e });
-      B.box(this.m.pv, 0.16, 0.05, 0.16, x, y + 0.22, z, { tint: 0x1a1414 });
-      B.box(this.m.pv, 0.16, 0.05, 0.16, x, y - 0.27, z, { tint: 0x1a1414 });
-      B.box(this.m.pv, 0.012, 0.2, 0.012, x, y + 0.27, z, { tint: 0x1a1414 });
-      B.box(this.m.pv, 0.06, 0.06, 0.02, x, y - 0.33, z, { tint: 0xe8c040 });
-    }
-    S.lanterns = new THREE.Mesh(mergeGeometries(geos), S.lanternM);
-    this.add(S.lanterns);
-    S.glow = new THREE.PointLight(0xff9a60, 2.4, 6.5, 1.6);
-    S.glow.position.set(0, H - 0.5, 6.4);
-    this.add(S.glow);
-  }
-
-  /** のぼり: a tall OPEN flag on a pole with a weighted base. */
-  nobori(x, z, parent) {
-    const g = new THREE.Group();
-    g.position.set(x, 0, z);
-    const pole = this.P(0.4, 0.5);
-    const mk = (geo, mat, px, py, pz) => { const m = this.vmesh(geo, mat); m.position.set(px, py, pz); g.add(m); return m; };
-    mk(new THREE.BoxGeometry(0.03, 2.1, 0.03), pole, 0, 1.05, 0);
-    mk(new THREE.BoxGeometry(0.42, 0.025, 0.025), pole, 0.21, 2.0, 0);
-    mk(new THREE.BoxGeometry(0.3, 0.12, 0.3), new THREE.MeshStandardMaterial({ color: 0x2a6a3a, roughness: 0.6 }), 0, 0.06, 0);
-    const flag = mk(new THREE.BoxGeometry(0.4, 1.5, 0.01), this.T('nobori', 20, 80, { rough: 0.9 }), 0.22, 1.25, 0);
-    flag.rotation.y = 0.15;
-    g.rotation.y = -0.25;
-    parent.add(g);
-  }
-
+  // ---------------------------------------------------------------- the shop front's switches
   setShopOpen(open) {
     const S = this.shop;
     if (!S) return;
     this.shopOpen = open;
     S.openG.visible = open;
     S.closedG.visible = !open;
+    S.open = open;
     for (const o of S.obs || []) o.enabled = open;
   }
-
   /** The lanterns under the eave (lit with the time of day while on); setting shopOpen also sets them. */
   setLanterns(on) {
     const S = this.shop;
@@ -627,1148 +369,20 @@ export class Town {
   get shopOpen() { return !!this._shopOpen; }
   set shopOpen(v) { this._shopOpen = !!v; this.setLanterns(v); }
 
-  // ---------------------------------------------------------------- houses
-  /**
-   * A house with real depth in its own frame (front wall at local z=0, body toward -z), turned to face the lane.
-   * o: { x, z, w, d, side(+1 near/-1 far), y0, floors, h1, h2, wallA, wallB, roof('gable'|'hip'|'shed'|'flat'), roofM,
-   *      eave, verge, step, rise, pent, balcony:{x0,x1,d,futon,laundry,panel,dish,pots},
-   *      win:[[floor, u, w, h, kind, { face('f'|'l'|'r'), sill, grille, tobukuro, hood, sudare, flowers, amado,
-   *            room, curtain, cc, lit, depth }]],
-   *      door:{ x, kind('genkan'|'wood'|'west'|'apt'), w, mail, lamp(±1 side), name (表札 index), porch('tile'|'stone'),
-   *             umbrella, milk, canopy:false },
-   *      antenna, gutterTint, trim, skirt:{h, mat}, corner (tint of corner boards), tiles (eave tile row, default on
-   *      kawara roofs), rafters, vents (foundation vents, default on), ac:[[floor, u]], solar, lite, extra(B, info) }
-   * Windows whose kind names a room (lit, lit2..4, lace, tv, dark, kitchen, stair, empty) look into a real room
-   * (src/world/interiors.js) unless the house is lite; frost / shoji / amado stay flat.
-   * extra(B, { W, D, base, fy, top }) is called with the house frame still pushed (local coordinates).
-   */
-  house(o) {
-    const B = this.B, m = this.m;
-    const W = o.w, D = o.d, side = o.side ?? 1, seed = Math.floor(Math.abs(o.x * 3.7 + o.z * 1.3));
-    this._lite = !!o.lite;
-    this._depth = D;
-    B.push(o.x, o.y0 || 0, o.z, side > 0 ? 0 : Math.PI);
-    const base = o.y0 ? 0 : (o.base ?? 0.4);
-    if (base) B.box(m.found, W + 0.08, base, D + 0.08, 0, 0, -D / 2, { uv: [seed, 0] });
-    const h1 = o.h1 ?? 2.65, h2 = (o.floors ?? 2) > 1 ? (o.h2 ?? 2.55) : 0;
-    const fy = [base, base + h1];
-    const wallA = o.wallA || m.wallCream, wallB = o.wallB || wallA;
-    B.box(wallA, W, h1, D, 0, base, -D / 2, { uv: [seed % 3, 0], ao: o.y0 ? 0 : 0.22 });
-    let top = base + h1;
-    if (h2) {
-      B.box(m.pv, W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, { tint: o.trim ?? 0x6a5a4a });
-      B.box(wallB, W, h2, D, 0, top, -D / 2, { uv: [seed % 5, 0.4] });
-      top += h2;
-    }
-    this.roof(W, D, top, o, wallB);
-    // pent roof (下屋) over the ground floor, skipping the balcony, with its own eave tiles
-    if (o.pent && h2) {
-      const spans = o.balcony ? [[-W / 2 - 0.12, o.balcony.x0 - 0.05], [o.balcony.x1 + 0.05, W / 2 + 0.12]] : [[-W / 2 - 0.12, W / 2 + 0.12]];
-      const pm = o.pentM || o.roofM || m.roofGrey;
-      for (const [a, b] of spans) if (b - a > 0.3) {
-        for (let j = 0; j < 3; j++) B.box(pm, b - a, 0.11, 0.78 - j * 0.24, (a + b) / 2, fy[1] - 0.34 + j * 0.11, (0.78 - j * 0.24) / 2, { uv: [j * 0.3, 0], k: 1 - j * 0.04 });
-        if (this.isKawara(pm) && o.tiles !== false) this.eaveTiles(a, b, fy[1] - 0.36, 0.78, pm === m.roofBlue ? 0x5a7aa8 : 0x5a5e66);
-        B.box(m.pv, b - a, 0.06, 0.04, (a + b) / 2, fy[1] - 0.4, 0.8, { tint: 0x4a4a48 });
-      }
-    }
-    // the lane face: tile skirt (腰壁), corner boards, foundation vents (床下換気口)
-    if (o.skirt) B.box(o.skirt.mat || m.skirt, W + 0.02, o.skirt.h ?? 0.9, 0.03, 0, base, 0.012, { uv: [seed, 0] });
-    if (o.corner !== undefined) for (const sx of [-1, 1]) B.box(m.pv, 0.07, top - base, 0.07, sx * (W / 2 - 0.02), base, 0.02, { tint: o.corner });
-    if (base && o.vents !== false && !o.lite) for (const vx of [-W * 0.3, W * 0.3]) {
-      if (o.door && Math.abs(vx - o.door.x) < (o.door.w ?? 1.4) / 2 + 0.4) continue;
-      B.box(m.pv, 0.4, 0.15, 0.03, vx, 0.12, 0.04, { tint: 0x3a3a38 });
-      for (let i = 0; i < 4; i++) B.box(m.metal, 0.02, 0.13, 0.02, vx - 0.15 + i * 0.1, 0.13, 0.055, { tint: 0x8a8a84 });
-    }
-    if (o.balcony) this.balcony(o.balcony, fy[1], seed);
-    for (const w of o.win || []) this.window(W, w, fy);
-    if (o.door) this.door(o.door, base, o.win, fy);
-    // rain gutters + downpipes (offset from the gutter, wall brackets, a shoe over a splash block)
-    const gt = o.gutterTint ?? 0x9a9690, e = o.eave ?? 0.45, dpx = (W / 2 + 0.06) * (seed % 2 ? 1 : -1);
-    if (o.roof !== 'flat') {
-      B.box(m.pv, W + 0.6, 0.1, 0.1, 0, top - 0.08, e + 0.03, { tint: gt });
-      B.box(m.pv, 0.08, top - 0.12, 0.08, dpx, 0.08, 0.12, { tint: gt });
-      B.box(m.pv, 0.07, 0.07, e - 0.04, dpx, top - 0.2, (e + 0.15) / 2 + 0.02, { tint: gt });
-      B.box(m.pv, 0.13, 0.12, 0.13, dpx, top - 0.16, e + 0.03, { tint: gt });
-      for (let y = 0.9; y < top - 0.5; y += 1.15) B.box(m.metal, 0.12, 0.03, 0.05, dpx, y, 0.1, { tint: 0x7a7a78 });
-      B.box(m.pv, 0.08, 0.07, 0.16, dpx, 0.06, 0.2, { tint: gt });
-      if (!o.y0) B.box(m.found, 0.24, 0.04, 0.3, dpx, 0, 0.36, { k: 0.9 });
-    }
-    B.box(m.pv, 0.08, top, 0.08, (W / 2 + 0.06) * (seed % 2 ? -1 : 1), 0, -D + 0.15, { tint: gt });
-    if (!o.lite) this.weather(W, D, base, fy, top, seed, !!h2, o);
-    // side-wall services: an electric meter and the gas meter with its pipe
-    const sx = seed % 2 ? 1 : -1;
-    if (!o.lite) {
-      B.box(m.pv, 0.06, 0.4, 0.3, sx * (W / 2 + 0.03), base + 1.1, -1.2, { tint: 0xc8c4bc });
-      B.box(m.gloss, 0.02, 0.12, 0.16, sx * (W / 2 + 0.065), base + 1.3, -1.2, { tint: 0x2a2c2e });
-      B.box(m.pv, 0.08, 0.3, 0.24, sx * (W / 2 + 0.04), base + 0.65, -2.1, { tint: 0xb8bcb0 });
-      this.sign('gasMeter', 0.18, 0.12, sx * (W / 2 + 0.081), base + 0.8, -2.1, { ry: sx * Math.PI / 2 });
-      B.box(m.metal, 0.04, base + 0.65, 0.04, sx * (W / 2 + 0.05), 0, -2.3, { tint: 0xc8b848 });
-    }
-    if (o.antenna !== undefined) {
-      const ax = o.antenna, ay = this._ridgeY, az = -D / 2;
-      B.box(m.metal, 0.04, 1.6, 0.04, ax, ay, az, { tint: 0xb8bcc0 });
-      B.box(m.metal, 0.03, 0.03, 1.4, ax, ay + 1.45, az, { tint: 0xb8bcc0 });
-      for (let i = 0; i < 6; i++) B.box(m.metal, 0.5 - i * 0.05, 0.02, 0.02, ax, ay + 1.47, az - 0.6 + i * 0.24, { tint: 0xc8ccd0 });
-      for (const sz of [-1, 1]) this.beam(m.metal, B.world(ax, ay + 1.1, az), B.world(ax + 0.9, ay - 0.15, az + sz * 0.9), 0.012, { tint: 0x8a8a88 });
-    }
-    // wire anchor at the front eave corner for service drops
-    const anchor = B.world((W / 2 - 0.3) * (seed % 2 ? 1 : -1), top - 0.3, 0.3);
-    (side > 0 ? this.anchors.near : this.anchors.far).push(anchor);
-    const info = { W, D, base, fy, top, seed, ridge: this._ridgeY };
-    if (o.extra) o.extra(B, info);
-    B.pop();
-    return { top, anchor, ridge: this._ridgeY };
-  }
-
-  /** Is this one of the kawara (clay tile) roof materials? */
-  isKawara(mat) { const m = this.m; return mat === m.roofGrey || mat === m.roofBlue || mat === m.roofBrown || mat === m.roofGreen || mat === m.roofIbushi; }
-
-  /** A row of round eave-tile ends (軒瓦) along local x at height y, the front lip at z. */
-  eaveTiles(x0, x1, y, z, tint = 0x5a5e66) {
-    const B = this.B, n = Math.max(2, Math.round((x1 - x0) / 0.26)), s = (x1 - x0) / n;
-    for (let i = 0; i < n; i++) {
-      const x = x0 + (i + 0.5) * s, k = 0.9 + hash2(Math.round(x * 13), Math.round(y * 7)) * 0.2;
-      B.box(this.m.ridge, s - 0.03, 0.11, 0.06, x, y - 0.015, z + 0.03, { tint, k });
-      B.box(this.m.ridge, s * 0.45, 0.05, 0.02, x, y + 0.015, z + 0.065, { tint, k: k * 1.12 });
-    }
-  }
-
-  /** Weathering and services on a house's lane face (in the house's frame): splash-back dirt, soot under the eaves,
-   *  rain streaks, an address plate, wall-mounted AC units on brackets (o.ac = [[floor, u], ...]). */
-  weather(W, D, base, fy, top, seed, two, o) {
-    const B = this.B, m = this.m, drip = this.decal('stainDrip', 16, 48), sb = this.decal('stainBase', 32, 16);
-    if (base) this.stainRow(sb, -W / 2 - 0.035, W / 2 + 0.035, 0, base, 0.052, 0, 0xb0aca4);
-    if (!o.y0) this.stainRow(sb, -W / 2, W / 2, base, 0.4, o.skirt ? 0.03 : 0.011, 0, 0xd0ccc4);
-    if (!o.y0) for (const sx of [-1, 1]) this.stainRow(sb, -D, 0, base, 0.55, sx * (W / 2 + 0.011), sx * Math.PI / 2, 0xc0bcb4, 'z');
-    if (o.roof !== 'flat') this.stainRow(drip, -W / 2, W / 2, top - 0.6, 0.6, 0.011, 0, 0xb8b4ac);
-    for (let i = 0; i < 2; i++) {
-      const k = hash2(seed, i + 3), u = (k - 0.5) * (W - 0.8);
-      B.quad(drip, 0.35 + k * 0.4, 0.8 + k * 0.9, u, (two ? fy[1] : top) - 0.86 - k * 0.9, 0.012, { tint: 0xc8c4bc, flipU: i % 2 === 1 });
-    }
-    // 住居表示 address plate on the corner away from the downpipe
-    const ax = (W / 2 - 0.25) * (seed % 2 ? -1 : 1);
-    B.box(m.pv, 0.28, 0.12, 0.012, ax, base + 1.68, 0.006, { tint: 0x2a3a6a });
-    this.addrPlate(seed % 3, 0.26, 0.1, ax, base + 1.69, 0.014);
-    for (const [fl, u] of o.ac || []) {
-      const ay = fy[fl] + (fl ? 0.3 : 0);
-      if (fl) for (const dx of [-0.28, 0.28]) {
-        B.box(m.metal, 0.04, 0.04, 0.38, u + dx, ay - 0.04, 0.19, { tint: 0x8a8e90 });
-        B.box(m.metal, 0.04, 0.42, 0.04, u + dx, ay - 0.42, 0.02, { tint: 0x8a8e90 });
-        B.box(m.metal, 0.03, 0.03, 0.5, u + dx, ay - 0.27, 0.17, { rx: 0.85, tint: 0x8a8e90 });
-      }
-      // the outdoor unit (low-poly: casing + pixel fan grille), its pipe duct running into the wall
-      B.box(m.pv, 0.78, 0.54, 0.27, u, ay, 0.17, { tint: 0xe4e2d8 });
-      this.sign('acFront', 0.76, 0.52, u, ay + 0.01, 0.306);
-      B.box(m.pv, 0.06, 0.06, 0.24, u - 0.26, ay - 0.06, 0.17, { tint: 0x3a3a3a });
-      B.box(m.pv, 0.06, 0.06, 0.24, u + 0.26, ay - 0.06, 0.17, { tint: 0x3a3a3a });
-      B.box(m.pv, 0.09, 0.62, 0.07, u + 0.45, ay + 0.1, 0.04, { tint: 0xe0d8c4 });
-      B.box(m.pv, 0.1, 0.1, 0.16, u + 0.45, ay + 0.1, 0.12, { tint: 0xd8d0bc });
-      // the condensate drain dribbling down the wall
-      B.box(m.pv, 0.025, 0.4, 0.025, u - 0.3, ay - 0.4, 0.12, { tint: 0x8a8a84 });
-    }
-  }
-
-  /** A row of ~1 m stain decals along local x (or z) at height y on a wall plane. */
-  stainRow(mat, x0, x1, y, h, z, ry = 0, tint = 0xc0bcb4, axis = 'x') {
-    const n = Math.max(1, Math.round((x1 - x0) / 1.1)), w = (x1 - x0) / n;
-    for (let i = 0; i < n; i++) {
-      const c = x0 + (i + 0.5) * w, flipU = hash2(Math.round(c * 7), Math.round(z * 3 + y * 5)) < 0.5;
-      if (axis === 'x') this.B.quad(mat, w, h, c, y, z, { ry, tint, flipU });
-      else this.B.quad(mat, w, h, z, y, c, { ry, tint, flipU });
-    }
-  }
-
-  /** Stepped (blocky) roof: gable with ridge along x, a hip roof, a shed, or a flat roof with parapet. */
-  roof(W, D, yb, o, attic) {
-    const B = this.B, m = this.m;
-    const rm = o.roofM || m.roofGrey, kind = o.roof || 'gable';
-    const e = o.eave ?? 0.45, es = o.verge ?? 0.3, s = o.step ?? 0.3, r = o.rise ?? 0.13;
-    const barge = o.barge ?? 0x4a3a2e, RW = W + 2 * es;
-    const kawara = this.isKawara(rm) && o.tiles !== false && !o.lite;
-    const tileTint = rm === m.roofBlue ? 0x5a7aa8 : rm === m.roofBrown ? 0x8a5a48 : rm === m.roofGreen ? 0x6a7a5a : 0x5a5e66;
-    if (kind === 'flat') {
-      B.box(m.conc, W + 0.1, 0.5, D + 0.1, 0, yb, -D / 2, { k: 0.9 });
-      B.box(m.pv, W + 0.16, 0.08, D + 0.16, 0, yb + 0.5, -D / 2, { tint: 0x8a8680 });
-      this._ridgeY = yb + 0.58;
-      return;
-    }
-    // soffits under the eaves (with rafter ends 垂木 on old houses)
-    B.box(m.pv, RW, 0.04, e, 0, yb - 0.04, e / 2, { tint: o.soffit ?? 0xd0c8b8 });
-    if (kind !== 'shed') B.box(m.pv, RW, 0.04, e, 0, yb - 0.04, -D - e / 2, { tint: o.soffit ?? 0xd0c8b8 });
-    if (o.rafters) for (let x = -RW / 2 + 0.15; x < RW / 2 - 0.1; x += 0.45) B.box(m.wood, 0.07, 0.08, e - 0.02, x, yb - 0.12, e / 2, { tint: 0x5a4434 });
-    // fascia board (鼻隠し) along the front eave: a strong dark line under the tiles
-    if (!o.lite) B.box(m.pv, RW, 0.15, 0.04, 0, yb - 0.1, e - 0.01, { tint: o.fascia ?? (o.rafters ? 0x3a2c22 : 0x6a6258) });
-    if (kind === 'hip') {
-      // courses shrinking on all four sides, a short ridge on top
-      let w = RW, d = D + 2 * e, y = yb;
-      for (let i = 0; i < 40; i++) {
-        B.box(rm, w, r, d, 0, y, -D / 2, { uv: [i * 0.13, i * 0.07], k: 0.96 + hash2(i, 7) * 0.08 });
-        if (i === 0 && kawara) this.eaveTiles(-w / 2, w / 2, y + 0.02, e, tileTint);
-        if (w - 2 * s < 0.5 || d - 2 * s < 0.5) break;
-        w -= 2 * s; d -= 2 * s; y += r;
-      }
-      const rl = Math.max(0.3, w - d + 0.3);
-      B.box(m.ridge, rl, 0.14, 0.3, 0, y + r, -D / 2, { tint: 0x4a5058 });
-      this._ridgeY = y + r + 0.14;
-      return;
-    }
-    const mid = kind === 'gable' ? -D / 2 : -D - e;
-    for (let i = 0; ; i++) {
-      const y = yb + i * r, zo = e - i * s, zi = zo - s, k = 0.95 + hash2(i, Math.round(yb * 10)) * 0.08;
-      if (zi <= mid + 0.001) {
-        if (kind === 'gable') {
-          const len = 2 * (zo - mid);
-          B.box(rm, RW, r, len, 0, y, mid, { uv: [i * 0.1, 0] });
-          // ridge: stacked noshi tiles over a white mortar line, round cap, onigawara at the ends
-          B.box(m.ridge, RW + 0.08, 0.14, 0.34, 0, y + r, mid, { tint: 0x5a6068 });
-          if (kawara) B.box(m.pv, RW + 0.02, 0.05, 0.4, 0, y + r - 0.02, mid, { tint: 0xe8e4da });
-          B.box(m.ridge, RW + 0.12, 0.09, 0.2, 0, y + r + 0.14, mid, { tint: 0x4a5058 });
-          for (const sx of [-1, 1]) {
-            B.box(m.ridge, 0.14, 0.36, 0.42, sx * (RW / 2 + 0.06), y + r - 0.02, mid, { tint: 0x4a5058 });
-            if (kawara) B.box(m.ridge, 0.1, 0.16, 0.26, sx * (RW / 2 + 0.1), y + r + 0.3, mid, { tint: 0x3a4048 });
-          }
-          for (const sx of [-1, 1]) B.box(m.pv, 0.05, r + 0.02, len, sx * (RW / 2 + 0.025), y - 0.01, mid, { tint: barge });
-          this._ridgeY = y + r + 0.23;
-        } else {
-          B.box(rm, RW, r, zo - mid, 0, y, (zo + mid) / 2);
-          B.box(m.pv, RW, r + 0.06, 0.06, 0, y - 0.03, mid - 0.03, { tint: barge });
-          this._ridgeY = y + r;
-        }
-        break;
-      }
-      B.box(rm, RW, r, s, 0, y, zi + s / 2, { uv: [i * 0.13, 0], k });
-      if (kind === 'gable') B.box(rm, RW, r, s, 0, y, -D - zi - s / 2, { uv: [i * 0.13, 0.5], k });
-      if (i === 0 && kawara) this.eaveTiles(-RW / 2, RW / 2, y + 0.02, e, tileTint);
-      // moss and lichen in the lower courses of old tile roofs
-      if (kawara && i < 4 && !o.lite) for (let j = 0; j < 3; j++) {
-        const h = hash2(i * 7 + j, Math.round(yb * 13 + W)), mx = (h - 0.5) * (RW - 0.6);
-        if (h < 0.55) B.box(m.pv, 0.18 + h * 0.4, 0.02, s * 0.7, mx, y + r, zi + s / 2, { tint: h < 0.25 ? 0x5a6a3a : 0x7a8058 });
-      }
-      const a0 = kind === 'gable' ? Math.max(-D, -D - zi) : -D, a1 = Math.min(0, zi);
-      if (a1 - a0 > 0.01) B.box(attic, W, r, a1 - a0, 0, y, (a0 + a1) / 2);
-      for (const sx of [-1, 1]) {
-        B.box(m.pv, 0.05, r + 0.02, s, sx * (RW / 2 + 0.025), y - 0.01, zi + s / 2, { tint: barge });
-        if (kind === 'gable') B.box(m.pv, 0.05, r + 0.02, s, sx * (RW / 2 + 0.025), y - 0.01, -D - zi - s / 2, { tint: barge });
-      }
-    }
-    // a Shōwa solar water heater (太陽熱温水器) on the front slope: collector panel + hot-water tank on legs
-    if (o.solar !== undefined && kind === 'gable') {
-      const ang = Math.atan2(r, s), slopeY = (z) => yb + (e - z) * r / s + r;
-      const zc = e - 1.1, x = o.solar;
-      B.box(m.metal, 1.7, 0.07, 1.3, x, slopeY(zc) + 0.08, zc, { rx: ang, tint: 0x8a9096 });
-      B.box(m.gloss, 1.6, 0.04, 1.2, x, slopeY(zc) + 0.13, zc, { rx: ang, tint: 0x24324a });
-      for (let i = 0; i < 7; i++) B.box(m.metal, 0.02, 0.05, 1.2, x - 0.72 + i * 0.24, slopeY(zc) + 0.13, zc, { rx: ang, tint: 0x9aa4ac });
-      const zt = zc - 0.82, yt = slopeY(zt) + 0.22;
-      for (const dx of [-0.7, 0.7]) B.box(m.metal, 0.05, 0.3, 0.05, x + dx, slopeY(zt) - 0.02, zt, { tint: 0x7a8088 });
-      B.box(m.pv, 1.85, 0.38, 0.38, x, yt, zt, { tint: 0xe4e0d6 });
-      for (const dx of [-0.93, 0.93]) B.box(m.pv, 0.04, 0.34, 0.34, x + dx, yt + 0.02, zt, { tint: 0xb8b4aa });
-      B.box(m.pv, 0.04, 0.04, zt - zc + 0.6, x + 0.6, slopeY(zc) + 0.25, (zt + zc) / 2, { rx: ang, tint: 0x2a2a2a });
-    }
-  }
-
-  /**
-   * Window: a room behind the glass (interiors.js) or a flat pane, with an aluminium casing standing proud of the wall,
-   * sill flashing, and options: grille (面格子), tobukuro (戸袋, ±1 side), amado (closed rain shutters), hood, sudare,
-   * flowers. Spec: [floor, u, w, h, kind, opts].
-   */
-  window(W, spec, fy) {
-    const B = this.B, m = this.m;
-    const [fl, u, w, h, kind, opt = {}] = spec;
-    const face = opt.face || 'f';
-    let x, z, ry;
-    if (face === 'f') { x = u; z = 0; ry = 0; } else if (face === 'l') { x = -W / 2; z = -u; ry = -Math.PI / 2; } else { x = W / 2; z = -u; ry = Math.PI / 2; }
-    const nx = Math.sin(ry), nz = Math.cos(ry), tx = Math.cos(ry), tz = -Math.sin(ry);
-    const sill = opt.sill ?? (fl ? 0.85 : 0.9), y = fy[fl] + sill;
-    const room = !this._lite && !opt.amado && ROOMS[kind];
-    const wp = B.world(x, y, z);
-    if (opt.amado) B.box(this.win.amado, w, h, 0.1, x, y, z, { unit: true, ry });
-    else if (room) {
-      const k = Math.floor(hash2(Math.round(wp.x * 3.1), Math.round(wp.z * 2.7 + y * 5)) * 997);
-      interiorQuad(B, this.interiorM, x + nx * 0.004, y, z + nz * 0.004, ry, {
-        w, h, sill, depth: Math.max(1.6, Math.min(3.4, (opt.depth ?? (face === 'f' ? this._depth : W)) - 0.5)),
-        kind: opt.room ?? room[0], lit: opt.lit ?? room[1], curtain: opt.curtain ?? room[2], cc: opt.cc ?? (k % 8), seed: k,
-      });
-    } else B.box(this.win[kind] || this.win.dark, w, h, 0.1, x, y, z, { unit: true, ry });
-    // casing (jambs + head) standing proud of the wall, sill flashing below
-    const ft = opt.frame ?? 0xb8bcc0;
-    for (const s of [-1, 1]) B.box(m.metal, 0.05, h + 0.04, 0.08, x + tx * s * (w / 2 + 0.02) + nx * 0.035, y - 0.02, z + tz * s * (w / 2 + 0.02) + nz * 0.035, { ry, tint: ft });
-    B.box(m.metal, w + 0.1, 0.05, 0.12, x + nx * 0.05, y - 0.06, z + nz * 0.05, { ry, tint: ft });
-    B.box(m.metal, w + 0.06, 0.05, 0.09, x + nx * 0.035, y + h, z + nz * 0.035, { ry, tint: 0x9aa0a6 });
-    if (opt.grille) {
-      const n = Math.round(w / 0.11);
-      for (let i = 0; i <= n; i++) { const t = -w / 2 + i * (w / n); B.box(m.metal, 0.022, h + 0.08, 0.022, x + tx * t + nx * 0.11, y - 0.04, z + tz * t + nz * 0.11, { ry, tint: 0xc8ccd0 }); }
-      for (const yy of [y - 0.04, y + h + 0.02]) B.box(m.metal, w + 0.04, 0.03, 0.03, x + nx * 0.11, yy, z + nz * 0.11, { ry, tint: 0xb8bcc0 });
-    }
-    if (opt.tobukuro) {
-      const t = (w / 2 + 0.22) * opt.tobukuro;
-      B.box(m.pv, 0.42, h + 0.12, 0.12, x + tx * t + nx * 0.06, y - 0.06, z + tz * t + nz * 0.06, { ry, tint: opt.tbTint ?? 0x8a7a62 });
-      B.box(m.pv, 0.44, 0.04, 0.14, x + tx * t + nx * 0.06, y + h + 0.06, z + tz * t + nz * 0.06, { ry, tint: 0x5a5a58 });
-    }
-    if (opt.hood) B.box(m.pv, w + 0.3, 0.05, 0.36, x + nx * 0.18, y + h + 0.12, z + nz * 0.18, { ry, tint: 0x6a6a68 });
-    // rain streaks under the sill
-    const hk = hash2(Math.round(wp.x * 7 + wp.z * 3), Math.round(y * 5));
-    if (hk < 0.6 && !opt.clean && !this._lite) { const dh = 0.3 + hk * 0.6; B.quad(this.decal('stainDrip', 16, 48), w * 0.8, dh, x + nx * 0.012, y - 0.08 - dh, z + nz * 0.012, { ry, tint: 0xd8d4cc, flipU: hk < 0.3 }); }
-    // summer bamboo blind (すだれ) hung over the window
-    if (opt.sudare) {
-      B.quad(this.T('sudare', 32, 48, { alpha: true, rough: 0.9 }), w + 0.16, h * opt.sudare + 0.08, x + nx * 0.17, y + h * (1 - opt.sudare) + 0.02, z + nz * 0.17, { ry });
-      B.box(m.metal, w + 0.3, 0.025, 0.025, x + nx * 0.17, y + h + 0.1, z + nz * 0.17, { ry, tint: 0x6a6a68 });
-    }
-    // a window box of flowers on the sill
-    if (opt.flowers) {
-      B.box(m.pv, w * 0.9, 0.15, 0.2, x + nx * 0.16, y - 0.2, z + nz * 0.16, { ry, tint: 0x5a4030 });
-      const n = Math.max(3, Math.round(w * 5)), cols = [0xe5383b, 0xff8fb2, 0xffd23f, 0xfbf8f0, 0x9a6ad8];
-      for (let i = 0; i < n; i++) {
-        const t = -w * 0.4 + (i + 0.5) * (w * 0.8 / n), fx = x + tx * t + nx * 0.16, fz = z + tz * t + nz * 0.16;
-        B.box(m.pv, 0.13, 0.1, 0.14, fx, y - 0.06, fz, { ry, tint: hash2(i, wp.x) < 0.5 ? 0x3f7a32 : 0x4f8a3a });
-        B.box(m.pv, 0.06, 0.05, 0.06, fx + tx * 0.02, y + 0.03 + hash2(i, 3) * 0.04, fz + tz * 0.02, { ry, tint: cols[Math.floor(hash2(i + wp.z, 5) * cols.length)] });
-      }
-    }
-  }
-
-  /** Front door: sliding genkan doors (glass lattice), old wooden ones, a Western door or a steel apartment door, with
-   *  casing, a tiled or stone step, canopy, lamp, 表札 name plate, intercom, mailbox, milk box and an umbrella stand. */
-  door(d, base, win = [], fy = [base, base + 2.65]) {
-    const B = this.B, m = this.m;
-    const kind = d.kind || 'genkan', w = d.w ?? (kind === 'apt' || kind === 'west' ? 0.9 : 1.5), x = d.x, y = base + (d.y ?? 0);
-    B.box(this.doorMats[kind], w, 2.0, 0.1, x, y, 0, { unit: true });
-    const ct = kind === 'wood' ? 0x3a2a1c : kind === 'west' ? 0xe8e4dc : 0x8a8478;
-    for (const s of [-1, 1]) B.box(m.pv, 0.07, 2.08, 0.1, x + s * (w / 2 + 0.035), y, 0.03, { tint: ct });
-    B.box(m.metal, w + 0.16, 0.07, 0.12, x, y + 2.0, 0.03, { tint: ct });
-    if (!d.noStep) {
-      const pm = d.porch === 'stone' ? m.found : d.porch === 'tile' ? m.tile : m.found;
-      B.box(pm, w + 0.5, Math.max(0.1, base - 0.02), 0.6, x, 0, 0.3, { uv: [x, 0], tint: d.porch === 'tile' ? 0xc8a890 : 0xffffff });
-      if (base > 0.25) B.box(m.found, w + 0.3, base / 2, 0.3, x, 0, 0.75, { uv: [x, 0.5], k: 0.95 });
-    }
-    if (!d.noCanopy) { B.box(m.pv, w + 0.6, 0.06, 0.75, x, y + 2.28, 0.37, { tint: 0x5a5a58 }); B.box(m.pv, w + 0.6, 0.12, 0.04, x, y + 2.22, 0.74, { tint: 0x4a4a48 }); for (const s of [-1, 1]) B.box(m.metal, 0.03, 0.03, 0.75, x + s * (w / 2 + 0.2), y + 2.08, 0.37, { rx: -0.25, tint: 0x6a6a68 }); }
-    const lx = x + (w / 2 + 0.25) * (d.lamp ?? 1);
-    if (!this._lite) { const lp = B.world(x, 0, 0.75); this.pool(lp.x, lp.z, 1.25, 0xffc880, 0.42); }
-    B.box(m.pv, 0.16, 0.22, 0.08, lx, y + 1.95, 0.04, { tint: 0x2a2a2a });
-    B.box(this.G, 0.11, 0.15, 0.04, lx, y + 1.98, 0.09, { tint: 0xffd890 });
-    // 表札 name plate on a little wooden backing, the door chime button below it
-    const dp = B.world(x, 0, 0), nk = d.name ?? Math.floor(hash2(Math.round(dp.x * 5), Math.round(dp.z * 5)) * NAME_COUNT);
-    B.box(m.pv, 0.13, 0.25, 0.03, lx, y + 1.42, 0.015, { tint: 0x5a4030 });
-    this.sign('namesL', 0.1, 0.2, lx, y + 1.445, 0.031, {}, [nk * 12, 0, 12, 24]);
-    B.box(m.pv, 0.08, 0.12, 0.04, lx, y + 1.22, 0.03, { tint: 0xd8d4cc });
-    B.box(this.G, 0.02, 0.02, 0.01, lx, y + 1.3, 0.052, { tint: 0xff6040 });
-    if (d.mail) { B.box(m.pv, 0.32, 0.36, 0.14, lx, y + 0.8, 0.08, { tint: d.mail }); B.box(m.pv, 0.22, 0.03, 0.01, lx, y + 1.06, 0.155, { tint: 0x1a1a1a }); }
-    // an old wooden milk box (牛乳箱) on the other side, or an umbrella stand by the step
-    const mx = x - (w / 2 + 0.28) * (d.lamp ?? 1);
-    const clear = !win.some(([fl, u, ww, , , op = {}]) => fl === 0 && (op.face || 'f') === 'f' && Math.abs(u - mx) < ww / 2 + 0.14 && fy[0] + (op.sill ?? 0.9) < y + 1.3);
-    if (d.milk !== false && clear && hash2(nk, Math.round(dp.x)) < 0.6) {
-      B.box(m.woodL, 0.2, 0.24, 0.15, mx, y + 1.0, 0.075, { k: 0.85 });
-      B.box(m.wood, 0.22, 0.03, 0.17, mx, y + 1.24, 0.08);
-      this.sign('signMilk', 0.15, 0.09, mx, y + 1.1, 0.152);
-    }
-    if (d.umbrella !== false && kind !== 'apt') this.umbrellaStand(x - (w / 2 + 0.2) * (d.lamp ?? 1), 0.0, 0.3, nk);
-  }
-
-  /** 傘立て: a little stand by the door with two or three umbrellas (local frame of the current batch). */
-  umbrellaStand(x, y, z, seed = 0) {
-    const B = this.B, m = this.m, cols = [0x2a3a6a, 0xe86a7a, 0xf4f0e6, 0x3a6a3a, 0x1a1a1a, 0xffd23f];
-    B.box(m.metal, 0.2, 0.34, 0.2, x, y, z, { tint: 0x8a8e90 });
-    B.box(m.metal, 0.22, 0.03, 0.22, x, y + 0.34, z, { tint: 0x6a6e70 });
-    for (let i = 0; i < 3; i++) {
-      const c = cols[Math.floor(hash2(seed + i, 11) * cols.length)], dx = (i - 1) * 0.05, lean = (i - 1) * 0.12;
-      B.box(m.pv, 0.07, 0.62, 0.07, x + dx, y + 0.2, z + (hash2(i, seed) - 0.5) * 0.06, { rz: lean, tint: c });
-      B.box(m.pv, 0.02, 0.14, 0.02, x + dx + lean * 0.4, y + 0.8, z, { rz: lean, tint: 0x3a2a1a });
-    }
-  }
-
-  /** 2F balcony: slab, aluminium railing (or a panel), laundry pole with washing, maybe a futon airing over the rail
-   *  (with clips), a pinch hanger of socks, a BS dish (b.dish) and potted plants (b.pots). */
-  balcony(b, fy1, seed) {
-    const B = this.B, m = this.m;
-    const w = b.x1 - b.x0, cx = (b.x0 + b.x1) / 2, d = b.d ?? 0.95;
-    B.box(m.conc, w + 0.1, 0.16, d, cx, fy1 - 0.16, d / 2, { k: 0.95, uv: [seed, 0] });
-    B.box(m.pv, w + 0.12, 0.04, d + 0.02, cx, fy1 - 0.2, d / 2, { tint: 0x8a8680 });
-    const rt = b.tint ?? 0xc8ccd0;
-    if (b.panel) {
-      B.box(m.pv, w + 0.1, 1.0, 0.05, cx, fy1, d - 0.03, { tint: b.panel });
-      for (const sx of [-1, 1]) B.box(m.pv, 0.05, 1.0, d, cx + sx * (w / 2 + 0.02), fy1, d / 2, { tint: b.panel });
-      B.box(m.metal, w + 0.14, 0.05, 0.08, cx, fy1 + 1.0, d - 0.03, { tint: 0x9aa0a6 });
-    } else {
-      B.box(m.metal, w + 0.1, 0.05, 0.06, cx, fy1 + 1.0, d - 0.03, { tint: rt });
-      B.box(m.metal, w + 0.1, 0.04, 0.05, cx, fy1 + 0.1, d - 0.03, { tint: rt });
-      const n = Math.round(w / 0.12);
-      for (let i = 0; i <= n; i++) B.box(m.metal, 0.025, 0.9, 0.025, b.x0 + i * (w / n), fy1 + 0.1, d - 0.03, { tint: rt });
-      for (const sx of [-1, 1]) { B.box(m.metal, 0.05, 0.05, d, cx + sx * (w / 2 + 0.03), fy1 + 1.0, d / 2, { tint: rt }); for (let k = 1; k < 4; k++) B.box(m.metal, 0.025, 0.9, 0.025, cx + sx * (w / 2 + 0.03), fy1 + 0.1, k * d / 4, { tint: rt }); }
-    }
-    if (b.laundry !== false) {
-      const py = fy1 + 1.85;
-      B.box(m.metal, w - 0.2, 0.03, 0.03, cx, py, d * 0.55, { tint: 0x7ab0d8 });
-      for (const sx of [-1, 1]) B.box(m.metal, 0.03, 0.4, 0.03, cx + sx * (w / 2 - 0.15), py - 0.2, d * 0.55, { tint: 0x9aa0a6 });
-      const cols = b.colors || [0xfbf8f0, 0x6a9ad8, 0xe86a7a, 0xffd23f, 0x5aa86a, 0xf4f0e8, 0x2a3a6a, 0xe8c8a0];
-      let x = b.x0 + 0.2;
-      for (let i = 0; x < b.x1 - 0.35; i++) {
-        const small = b.small ? 0.5 : 1;
-        const cw = (0.24 + hash2(seed + i, 3) * 0.3) * small, ch = (0.35 + hash2(seed + i, 4) * 0.45) * small;
-        if (hash2(seed + i, 5) < 0.8) {
-          const c = cols[Math.floor(hash2(seed + i, 6) * cols.length)], r = (hash2(i, seed) - 0.5) * 0.3;
-          B.box(m.pv, cw, ch, 0.03, x + cw / 2, py - ch, d * 0.55, { tint: c, ry: r });
-          // a coat hanger hook on the pole
-          B.box(m.metal, 0.012, 0.08, 0.012, x + cw / 2, py - 0.06, d * 0.55, { tint: 0x8a8a88 });
-          // shirts get sleeves
-          if (ch > 0.55 && !b.small) for (const s of [-1, 1]) B.box(m.pv, 0.1, 0.18, 0.03, x + cw / 2 + s * (cw / 2 + 0.04), py - 0.24, d * 0.55, { tint: c, rz: s * 0.5, ry: r });
-        }
-        x += cw + 0.1;
-      }
-      // a pinch hanger (ピンチハンガー) of socks and small things at one end
-      const hx = b.x0 + 0.35, hz = d * 0.55;
-      B.box(m.metal, 0.4, 0.02, 0.26, hx, py - 0.28, hz, { tint: 0x7ab0d8 });
-      for (let i = 0; i < 6; i++) B.box(m.pv, 0.05, 0.12 + (i % 3) * 0.03, 0.012, hx - 0.15 + (i % 3) * 0.15, py - 0.42 - (i % 3) * 0.03, hz + (i < 3 ? -0.12 : 0.12), { tint: [0xfbf8f0, 0x2a3a6a, 0xe86a7a, 0x5aa86a][(i + seed) % 4] });
-    }
-    if (b.futon) {
-      const fw = Math.min(1.5, w - 0.3), fx = cx + (b.futonX ?? 0);
-      B.box(m.pv, fw, 0.06, 0.18, fx, fy1 + 1.0, d - 0.03, { tint: b.futon });
-      B.box(m.pv, fw, 0.6, 0.07, fx, fy1 + 0.45, d + 0.04, { tint: b.futon, k: 0.95 });
-      B.box(m.pv, fw, 0.45, 0.06, fx, fy1 + 0.6, d - 0.1, { tint: b.futon, k: 0.85 });
-      for (const s of [-1, 1]) B.box(m.pv, 0.06, 0.14, 0.22, fx + s * fw * 0.35, fy1 + 0.98, d - 0.03, { tint: 0x2a8ae8 });
-    }
-    if (b.dish) { B.box(m.metal, 0.03, 0.4, 0.03, b.x1 - 0.15, fy1 + 1.0, d - 0.03, { tint: 0x8a8a88 }); B.box(m.pv, 0.42, 0.42, 0.05, b.x1 - 0.15, fy1 + 1.3, d + 0.05, { rx: -0.3, tint: 0xe8e8e0 }); B.box(m.metal, 0.03, 0.03, 0.3, b.x1 - 0.15, fy1 + 1.5, d + 0.2, { tint: 0x5a5a58 }); }
-    if (b.pots) for (let i = 0; i < b.pots; i++) {
-      const px = b.x1 - 0.25 - i * 0.32;
-      B.box(m.pv, 0.22, 0.2, 0.22, px, fy1, d - 0.2, { tint: 0xb4603a });
-      B.box(m.pv, 0.28, 0.25 + hash2(i, seed) * 0.2, 0.28, px, fy1 + 0.2, d - 0.2, { tint: hash2(seed, i) < 0.5 ? 0x4a8a3a : 0x3e7a34 });
-    }
-  }
-
-  /** Block wall along a building line with gaps; z is the wall's lane-side face. Options: mat (e.g. Ōya stone), deco
-   *  (a top course of perforated decorative blocks, 透かしブロック), tint. */
-  blockWall(x0, x1, z, side, { h = 1.3, gaps = [], pillars = true, clean = [], mat = null, deco = false, tint = 0xffffff } = {}) {
-    const B = this.B, m = this.m, t = 0.15, zc = z - side * t / 2, wm = mat || m.block;
-    const drip = this.decal('stainDrip', 16, 48), sb = this.decal('stainBase', 32, 16), ry = side > 0 ? 0 : Math.PI, zf = z + side * 0.011;
-    // weathering on the lane face, split around spots that must stay clean (posters)
-    const stain = (a, b) => {
-      for (const [c0, c1] of clean) if (c1 > a && c0 < b) { stain(a, c0); stain(c1, b); return; }
-      if (b - a < 0.3) return;
-      this.stainRow(sb, a, b, 0, Math.min(0.5, h * 0.45), zf, ry, 0xc4c0b8);
-      for (let u = a + 0.2; u < b - 0.5; u += 0.9 + hash2(u * 3, z) * 1.2) {
-        const k = hash2(u, z * 2), w = Math.min(b - u, 0.4 + k * 0.6);
-        if (k < 0.55) B.quad(drip, w, h * (0.3 + k * 0.5), u + w / 2, h - h * (0.3 + k * 0.5), zf, { ry, tint: 0xd0ccc4, flipU: k < 0.3 });
-      }
-    };
-    let x = x0;
-    for (const [a, b] of [...gaps, [x1, x1]]) {
-      if (a - x > 0.05) {
-        const pa = x + (pillars && x > x0 ? 0.27 : 0), pb = a - (pillars && a < x1 ? 0.27 : 0);
-        if (deco && pb - pa > 1.2 && h > 0.9) {
-          // solid courses, then a band of perforated blocks between short solid ends
-          B.box(wm, a - x, h - 0.2, t, (x + a) / 2, 0, zc, { uv: [x * 0.7, 0], ao: 0.15, tint });
-          const d0 = pa + 0.4, d1 = pb - 0.4, len = d1 - d0;
-          this.quadUV(this.decoBlockM(), len, 0.2, (d0 + d1) / 2, h - 0.2, zc, [0, 0, len / 0.8, 1], { tint: 0xd8d4ca });
-          for (const [e0, e1] of [[x, d0], [d1, a]]) if (e1 - e0 > 0.01) B.box(wm, e1 - e0, 0.2, t, (e0 + e1) / 2, h - 0.2, zc, { uv: [e0 * 0.7, 0.5], tint });
-        } else B.box(wm, a - x, h, t, (x + a) / 2, 0, zc, { uv: [x * 0.7, 0], ao: 0.15, tint });
-        B.box(m.found, a - x + 0.04, 0.07, t + 0.06, (x + a) / 2, h, zc, { uv: [x, 0] });
-        stain(pa, pb);
-      }
-      if (b > a && pillars) for (const px of [a - 0.12, b + 0.12]) {
-        B.box(wm, 0.3, h + 0.25, 0.3, px, 0, zc, { uv: [px, 0.3], ao: 0.15, tint });
-        B.box(m.found, 0.36, 0.08, 0.36, px, h + 0.25, zc);
-      }
-      x = b;
-    }
-  }
-
-  /** Charred-cedar board fence (焼杉板塀) on a low block base, with posts and a cap rail; z is the lane-side face. */
-  woodFence(x0, x1, z, side, { h = 1.6, gaps = [] } = {}) {
-    const B = this.B, m = this.m, zc = z - side * 0.06;
-    let x = x0;
-    for (const [a, b] of [...gaps, [x1, x1]]) {
-      if (a - x > 0.05) {
-        B.box(m.block, a - x, 0.4, 0.15, (x + a) / 2, 0, z - side * 0.075, { uv: [x * 0.7, 0], ao: 0.15 });
-        B.box(m.found, a - x + 0.02, 0.05, 0.17, (x + a) / 2, 0.4, z - side * 0.075);
-        for (let u = x + 0.06; u < a - 0.04; u += 0.15) {
-          const k = hash2(Math.round(u * 40), 5), bw = Math.min(0.14, a - 0.02 - u);
-          B.box(m.wood, bw, h - 0.45 - k * 0.02, 0.025, u + bw / 2, 0.45, zc + side * 0.02, { tint: k < 0.2 ? 0x8a8070 : 0x5a5450, uv: [u * 3, k] });
-        }
-        for (const y of [0.7, h - 0.25]) B.box(m.wood, a - x, 0.06, 0.04, (x + a) / 2, y, zc - side * 0.01, { tint: 0x4a4440 });
-        B.box(m.wood, a - x + 0.04, 0.05, 0.12, (x + a) / 2, h, zc, { tint: 0x3a3430 });
-        for (let u = x + 0.05; u <= a; u += Math.max(0.5, (a - x) / Math.ceil((a - x) / 1.8))) B.box(m.wood, 0.09, h + 0.05, 0.09, Math.min(u, a - 0.05), 0, zc - side * 0.02, { tint: 0x3a3430 });
-      }
-      x = b;
-    }
-    // 冠木 gate posts with a little roof over the gap
-    for (const [a, b] of gaps) {
-      for (const px of [a - 0.06, b + 0.06]) B.box(m.wood, 0.14, 2.1, 0.14, px, 0, zc, { tint: 0x3a3430 });
-      B.box(m.wood, b - a + 0.4, 0.1, 0.16, (a + b) / 2, 1.95, zc, { tint: 0x3a3430 });
-      B.box(m.roofGrey, b - a + 0.6, 0.06, 0.5, (a + b) / 2, 2.12, zc, {});
-    }
-  }
-
-  /** Sliding aluminium gate in a wall gap. */
-  gate(a, b, z, side, open = 0.35) {
-    const B = this.B, m = this.m, w = b - a - 0.06, zc = z - side * 0.25;
-    const x = a + 0.03 + w / 2 - w * open;
-    B.box(m.metal, w, 0.05, 0.05, x, 1.05, zc, { tint: 0x8a7a62 });
-    B.box(m.metal, w, 0.05, 0.05, x, 0.08, zc, { tint: 0x8a7a62 });
-    for (let i = 0; i <= Math.round(w / 0.1); i++) B.box(m.metal, 0.025, 0.97, 0.025, x - w / 2 + i * (w / Math.round(w / 0.1)), 0.08, zc, { tint: 0x9a8a72 });
-  }
-
-  /** Yard surface between a house front and the building line. */
-  yard(x0, x1, z0, z1, mat) { this.B.plane(mat || this.m.strip, x1 - x0, z1 - z0, (x0 + x1) / 2, 0.002, (z0 + z1) / 2, { uv: [x0, z0], k: 0.92 }); }
-
-  /** Both sides of the lane: the neighbours' houses, their gates and the town.doors list (src/world/Neighbours.js). */
-  buildNeighbours() { buildNeighbours(this); }
-
-  /** Cheap second-row house (body + stepped roof + a couple of windows). */
-  backHouse(x, z, w, d, h, side) {
-    const m = this.m, roofs = [m.roofGrey, m.roofBlue, m.roofBrown, m.roofGreen], walls = [m.wallCream, m.mortar, m.wallGrey, m.wallBeige];
-    const k = Math.floor(hash2(x, z) * 4);
-    this.house({ x, z, w, d, side, lite: true, floors: h > 6.5 ? 2 : 1, h1: h > 6.5 ? 2.7 : 3.2, h2: h - 3.4, wallA: walls[k], roofM: roofs[(k + 1) % 4], step: 0.45, rise: 0.2,
-      win: [[0, -w / 4, 1.3, 1.0, hash2(x, 1) < 0.5 ? 'lit' : 'dark'], [h > 6.5 ? 1 : 0, w / 4, 1.2, 1.0, hash2(x, 2) < 0.6 ? 'lit3' : 'dark']] });
-  }
-
-  /** Four/five-storey マンション with a window grid and lit windows (background). */
-  midrise(x, z, w, h) {
-    const B = this.B, m = this.m;
-    B.box(m.conc, w, h, 8, x, 0, z + 4, { k: 0.85, uv: [x, 0] });
-    B.box(m.pv, w + 0.3, 0.4, 8.3, x, h, z + 4, { tint: 0x7a7672 });
-    const floors = Math.floor(h / 3);
-    for (let f = 0; f < floors; f++) {
-      B.box(m.pv, w + 0.2, 0.12, 1.0, x, 0.9 + f * 3, z - 0.5, { tint: 0xb8b4ac });
-      B.box(m.pv, w + 0.2, 0.9, 0.06, x, 1.02 + f * 3, z - 0.98, { tint: 0xc8c4bc });
-      for (let i = 0; i < Math.floor(w / 3); i++) {
-        const k = hash2(x + i, f);
-        const kind = k < 0.35 ? 'lit' : k < 0.5 ? 'lit3' : k < 0.6 ? 'tv' : 'dark';
-        B.box(this.win[kind], 1.8, 1.6, 0.1, x - w / 2 + 1.5 + i * 3, 1.1 + f * 3, z - 0.05, { unit: true, ry: Math.PI });
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------- the corner store
-  buildCornerShop() { buildCornerShop(this); } // src/world/CornerShop.js
-
-  /** Standalone mesh whose geometry gets a white colour attribute (so vertex-colour materials work). */
-  vmesh(geo, mat) {
-    const n = geo.attributes.position.count;
-    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3).fill(1), 3));
-    return new THREE.Mesh(geo, mat);
-  }
-  glassPane(w, h, x, y, z) {
-    const g = new THREE.Mesh(new THREE.PlaneGeometry(w, h), this.glass);
-    g.position.set(x, y, z); g.userData.noRim = true;
-    return g;
-  }
-  /** Poster texture material (from the shared poster painters). */
-  T2(key) {
-    const ck = 'poster:' + key;
-    if (!this.mats.has(ck)) this.mats.set(ck, new THREE.MeshStandardMaterial({ map: posterTexture(key, 64, 96), roughness: 0.9, vertexColors: true }));
-    return this.mats.get(ck);
-  }
-  awningMat() {
-    if (!this.mats.has('awning')) {
-      const c = document.createElement('canvas'); c.width = 16; c.height = 4;
-      const x = c.getContext('2d');
-      for (let i = 0; i < 16; i++) { x.fillStyle = Math.floor(i / 2) % 2 ? '#f2f0ea' : '#2f8a4a'; x.fillRect(i, 0, 1, 4); }
-      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 1);
-      this.mats.set('awning', new THREE.MeshStandardMaterial({ map: t, roughness: 0.85, vertexColors: true }));
-    }
-    return this.mats.get('awning');
-  }
-
-  // ---------------------------------------------------------------- the two railway underpasses
-  buildUnderpasses() {
-    const B = this.B, m = this.m;
-    for (const s of [-1, 1]) {
-      B.push(0, 0, 0, 0, s < 0); // mirrored for the west end: everything below is written for x > 0
-      // retaining walls (間知石) either side of the portal, with coping
-      for (const [za, zb] of [[-48, TZ0 - 1.4], [TZ1 + 1.4, 68]]) {
-        B.box(m.kenchi, 1.0, YE - 0.25, zb - za, XT + 0.5, 0, (za + zb) / 2, { uv: [za * 0.37, 0], ao: 0.15 });
-        B.box(m.found, 1.1, 0.25, zb - za, XT + 0.5, YE - 0.25, (za + zb) / 2, { uv: [za, 0] });
-      }
-      // brick abutments framing the opening, stone plinth and cap blocks
-      for (const [za, zb] of [[TZ0 - 1.45, TZ0], [TZ1, TZ1 + 1.45]]) {
-        B.box(m.brick, 0.45, TH + 0.6, zb - za, XT - 0.15, 0, (za + zb) / 2, { uv: [za, 0], ao: 0.2 });
-        B.box(m.found, 0.55, 0.35, zb - za + 0.1, XT - 0.15, 0, (za + zb) / 2, { tint: 0xc8c0b0 });
-        B.box(m.found, 0.6, 0.22, zb - za + 0.12, XT - 0.15, TH + 0.6, (za + zb) / 2, { tint: 0xd0c8b8 });
-        B.box(m.brick, 0.5, YE - TH - 0.8, zb - za, XT - 0.12, TH + 0.82, (za + zb) / 2, { uv: [za, 0.4] });
-        // hazard guards on the inner corners
-        B.box(m.hazard, 0.05, 1.5, 0.36, XT - 0.4, 0.3, za < TZ0 ? zb - 0.18 : za + 0.18);
-        B.box(m.hazard, 0.36, 1.5, 0.05, XT - 0.2, 0.3, za < TZ0 ? zb + 0.025 : za - 0.025);
-      }
-      // underpass side walls (brick, stained), segmented so the darkness can deepen; lit only by its lamps
-      const I = (k) => this.indoor(k);
-      B.plane(I(m.road), XE - XT, TZ1 - TZ0 + 0.4, (XT + XE) / 2, 0, (TZ0 + TZ1) / 2, { sx: 20, sz: 2, uv: [1.3, 0.2] });
-      for (let x = XT + 0.05; x < XE - 0.01; x += 1) {
-        const w = Math.min(1, XE - x);
-        B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ0 - 0.3, { uv: [x, 0], ao: 0.25 });
-        B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ1 + 0.3, { uv: [x + 0.3, 0], ao: 0.25 });
-        B.box(I(m.tunnel), w, 1.1, 0.02, x + w / 2, 0.2, TZ0 + 0.005, { uv: [x, 0], k: 0.9 });
-        B.box(I(m.found), w, 0.2, TZ1 - WALK, x + w / 2, 0, (WALK + TZ1) / 2, { uv: [x, 0] });
-        B.box(I(m.pv), w, 0.21, 0.08, x + w / 2, 0, WALK + 0.04, { tint: 0xc8c4b8 });
-        B.box(I(m.grate), w, 0.012, 0.26, x + w / 2, 0, TZ0 + 0.13);
-      }
-      // the girder bridge: riveted plate girders spanning the opening (outer face toward the lane), deck above
-      const span0 = TZ0 - 1.45, span1 = TZ1 + 1.45;
-      for (const gx of [XT - 0.05, XE + 0.15]) {
-        const out = gx < XE ? -1 : 1;
-        B.box(m.girder, 0.12, YE - TH - 0.06, span1 - span0, gx, TH + 0.06, (span0 + span1) / 2, { uv: [0, 0] });
-        B.box(m.girder, 0.42, 0.08, span1 - span0, gx, TH - 0.02, (span0 + span1) / 2);
-        B.box(m.girder, 0.38, 0.07, span1 - span0, gx, YE - 0.02, (span0 + span1) / 2);
-        for (let z = span0 + 0.35; z < span1 - 0.2; z += 0.62) B.box(m.girder, 0.07, YE - TH - 0.08, 0.09, gx + out * 0.09, TH + 0.06, z);
-        B.box(m.hazard, 0.02, 0.08, TZ1 - TZ0, gx + out * 0.22, TH - 0.02, (TZ0 + TZ1) / 2);
-      }
-      for (const gx of [27.6, 29.3, 31.6, 33.7, 35.2]) {
-        B.box(I(m.girder), 0.07, 0.82, TZ1 - TZ0 + 1.2, gx, TH + 0.08, (TZ0 + TZ1) / 2, { k: 0.9 });
-        B.box(I(m.girder), 0.34, 0.06, TZ1 - TZ0 + 1.2, gx, TH + 0.04, (TZ0 + TZ1) / 2, { k: 0.9 });
-      }
-      for (let x = XT + 0.1; x < XE; x += 1) {
-        const w = Math.min(1, XE - x);
-        B.box(I(m.girder), w, 0.08, TZ1 - TZ0 + 1.2, x + w / 2, TH + 0.9, (TZ0 + TZ1) / 2, { k: 0.6 });
-        for (const z of [TZ0 + 1.2, (TZ0 + TZ1) / 2, TZ1 - 1.2]) B.box(I(m.girder), w, 0.18, 0.08, x + w / 2, TH + 0.45, z, { k: 0.9 });
-      }
-      // cable runs on the wall (no lamps: the underpass is pitch black a few metres in)
-      B.box(I(m.pv), XE - XT - 0.4, 0.06, 0.06, (XT + XE) / 2, 2.95, TZ0 + 0.05, { tint: 0x2a2a2a });
-      B.box(I(m.pv), XE - XT - 0.4, 0.04, 0.04, (XT + XE) / 2, 2.85, TZ0 + 0.04, { tint: 0x3a3a3a });
-      for (let x = XT + 0.5; x < XE; x += 1.2) B.box(I(m.metal), 0.04, 0.2, 0.08, x, 2.8, TZ0 + 0.04, { tint: 0x4a4a48 });
-      // a transverse drain grating across the dip at the mouth + a dark wet patch
-      B.box(m.grate, 0.3, 0.012, TZ1 - TZ0, XT + 0.75, 0, (TZ0 + TZ1) / 2, { k: 0.85 });
-      B.box(m.pv, 0.42, 0.02, TZ1 - TZ0, XT + 0.75, -0.01, (TZ0 + TZ1) / 2, { tint: 0x5a5856 });
-      // walkway guard rail
-      for (let x = XT + 0.6; x < XE - 0.2; x += 1.5) B.box(I(m.metal), 0.06, 0.95, 0.06, x, 0.2, WALK + 0.06, { tint: 0xe8e8e0 });
-      for (const y of [0.62, 1.12]) B.box(I(m.metal), XE - XT - 0.7, 0.05, 0.05, (XT + 0.6 + XE - 0.1) / 2, y, WALK + 0.06, { tint: 0xe8e8e0 });
-      // the embankment on top: grassy shoulders, ballast, sleepers, rails, fence, catenary
-      const zA = -48, zB = 68, L = zB - zA, zc = (zA + zB) / 2;
-      B.box(m.grass, XE - XT + 0.6, 0.3, L, (XT + XE) / 2 + 0.3, YE - 0.3, zc, { uv: [0, 0] });
-      B.box(m.ballast, 7.2, 0.18, L, 31.5, YE, zc);
-      B.box(m.ballast, 6.4, 0.12, L, 31.5, YE + 0.18, zc, { uv: [0.5, 0.5] });
-      for (const tx of TRACKS) {
-        for (let z = zA + 0.3; z < zB; z += 0.62) B.box(m.pv, 2.1, 0.12, 0.22, tx, YE + 0.24, z, { tint: 0x9a968e });
-        for (const rx of [-0.535, 0.535]) {
-          B.box(m.metal, 0.08, 0.14, L, tx + rx, YE + 0.36, zc, { tint: 0x6a4a3a });
-          B.box(m.metal, 0.07, 0.03, L, tx + rx, YR - 0.03, zc, { tint: 0xd8dce0 });
-        }
-      }
-      for (let z = zA; z < zB; z += 2.4) B.box(m.pv, 0.1, 1.25, 0.1, XT + 0.2, YE, z, { tint: 0x8a9a8a });
-      for (const y of [0.45, 0.85, 1.2]) B.box(m.metal, 0.04, 0.04, L, XT + 0.2, YE + y, zc, { tint: 0x5a6a5a });
-      for (const z of [-26, 4, 34, 64]) {
-        B.box(m.metal, 0.26, 5.6, 0.26, XT + 0.75, YE, z, { tint: 0x8a9096 });
-        B.box(m.metal, 7.2, 0.18, 0.16, XT + 0.75 + 3.6, YE + 5.0, z, { tint: 0x8a9096 });
-        B.box(m.metal, 0.1, 0.1, 3.0, XT + 0.75 + 1.4, YE + 3.9, z, { rx: 0, rz: 0.75, tint: 0x8a9096 });
-        for (const tx of TRACKS) { B.box(m.metal, 0.05, 0.7, 0.05, tx, YE + 4.3, z, { tint: 0x6a7076 }); B.box(m.pv, 0.12, 0.25, 0.12, tx, YE + 4.75, z, { tint: 0x7a5a3a }); }
-      }
-      for (const tx of TRACKS) {
-        B.box(m.pv, 0.025, 0.025, L, tx, YR + 4.55, zc, { tint: 0x2a2624 });
-        B.box(m.pv, 0.02, 0.02, L, tx, YR + 5.1, zc, { tint: 0x2a2624 });
-      }
-      // the far end is closed off in the dark (nothing bright shows through); the houses beyond only peek over the
-      // embankment as a skyline
-      B.box(I(m.pv), 0.1, YE - 0.2, TZ1 - TZ0 + 1.4, XE - 0.4, 0, (TZ0 + TZ1) / 2, { tint: 0x050505 });
-      for (const [za, zb, h] of [[1.5, 9.1, 6.4], [9.1, 17.5, 5.8]]) {
-        B.box(m.mortar, 6, h, zb - za, XE + 7.4, 0, (za + zb) / 2, { k: 0.8 });
-        B.box(m.roofGrey, 6.6, 0.4, zb - za + 0.6, XE + 7.4, h, (za + zb) / 2, { k: 0.7 });
-      }
-      B.pop();
-      // signs on the girder face (built unmirrored so their text reads correctly)
-      const gx = s * (XT - 0.2), ry = s > 0 ? -Math.PI / 2 : Math.PI / 2;
-      B.quad(this.T('clearance', 32, 32, { alpha: true, rough: 0.4 }), 0.62, 0.62, gx, TH + 0.15, 9.0, { ry });
-      B.quad(this.T('clearancePlate', 64, 20, { rough: 0.4 }), 0.9, 0.28, gx, TH + 0.04, 10.2, { ry });
-      B.quad(this.T('underpassName', 64, 20, { rough: 0.4 }), 0.62, 0.2, s * (XT - 0.39), 2.1, TZ1 + 0.72, { ry });
-      this.tunnelMouth(s);
-    }
-  }
-
-  /** Lane-side dressing of an underpass mouth (built unmirrored): grime under the girder, notices, conduit, a puddle. */
-  tunnelMouth(s) {
-    const B = this.B, m = this.m, ry = s > 0 ? -Math.PI / 2 : Math.PI / 2;
-    const fx = s * (XT - 0.39), drip = this.decal('stainDrip', 16, 48), base = this.decal('stainBase', 32, 16);
-    for (const [za, zb] of [[TZ0 - 1.45, TZ0], [TZ1, TZ1 + 1.45]]) {
-      const zc = (za + zb) / 2, w = zb - za - 0.1;
-      // splash-back dirt above the plinth
-      B.quad(base, w, 0.45, fx, 0.3, zc, { ry, tint: 0xa8a49c });
-    }
-    // grime streaks down the girder web from the deck
-    B.quad(drip, TZ1 - TZ0 + 2.6, 0.8, s * (XT - 0.12), TH + 0.1, (TZ0 + TZ1) / 2, { ry, tint: 0x7a7470 });
-    // ひったくり注意 board on the other pier, a cable conduit and junction box beside the name plate
-    this.sign('signSnatch', 0.4, 0.55, fx, 1.55, TZ0 - 0.72, { ry });
-    B.push(0, 0, 0, 0, s < 0);
-    B.box(m.pv, 0.06, TH + 0.2, 0.06, XT - 0.42, 0.4, TZ1 + 1.22, { tint: 0x6a6e70 });
-    B.box(m.pv, 0.14, 0.42, 0.32, XT - 0.45, 1.05, TZ1 + 1.15, { tint: 0x8a9290 });
-    B.box(m.pv, 0.02, 0.06, 0.2, XT - 0.53, 1.36, TZ1 + 1.15, { tint: 0xf2c41a });
-    B.pop();
-    // a crushed can in the corner just inside, puddles where the road dips under the bridge
-    this.prop('drink_cans', s * (XT + 0.45), 0, TZ0 + 0.45, s * 0.6);
-    this.puddle(s * (XT - 0.5), 8.1, 1.9, 1.15, 0.15 * s);
-    this.puddle(s * (XT + 0.9), 11.0, 1.4, 1.0, -0.3 * s);
-  }
-
-  /** Alpha-cut town decal material (pixel stains, cracks, lids...). */
-  decal(key, w, h, rough = 0.95) { return this.T(key, w, h, { alpha: true, decal: true, rough }); }
-
-  /** Rain puddle on the ground: a wet alpha-cut decal (reflects the probe; faint sky tint baked in). Satin, not a mirror:
-   *  at roughness 0.1 the low sun's highlight, seen from a low eye, bloomed into a smooth pale blob (no glows). */
-  puddle(x, z, w, d, ry = 0) {
-    if (!this._puddleM) {
-      const map = townPix('puddle', 32, 32).texture();
-      const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.45, metalness: 0.0, alphaTest: 0.5, vertexColors: true, envMapIntensity: 0.3 });
-      mat.polygonOffset = true; mat.polygonOffsetFactor = -3; mat.polygonOffsetUnits = -6;
-      // a cheap sky reflection: dusky zenith blue seen from above, the warm horizon glow at grazing angles (Fresnel)
-      mat.onBeforeCompile = (sh) => {
-        sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-          float pFr = pow( 1.0 - clamp( dot( normalize( vViewPosition ), normal ), 0.0, 1.0 ), 5.0 );
-          totalEmissiveRadiance += mix( vec3( 0.006, 0.007, 0.009 ), vec3( 0.085, 0.08, 0.07 ), pFr ) * step( diffuseColor.r, diffuseColor.b );`);
-      };
-      mat.customProgramCacheKey = () => 'puddle';
-      this._puddleM = mat;
-    }
-    this.B.plane(this._puddleM, w, d, x, 0.006, z, { unit: true, ry });
-  }
-
-  /** Fake light pool (additive glow decal on the ground). */
-  pool(x, z, r, col, k) {
-    if (!this._pools) this._pools = [];
-    const g = new THREE.PlaneGeometry(r * 2, r * 2);
-    g.rotateX(-Math.PI / 2); g.translate(x, 0.012, z);
-    const c = new THREE.Color(col).multiplyScalar(k), n = g.attributes.position.count, a = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; }
-    g.setAttribute('color', new THREE.BufferAttribute(a, 3));
-    this._pools.push(g);
-  }
-  flushPools() {
-    if (!this._pools?.length) return;
-    this.poolK = this.poolK || { value: 1 }; // light pools grow stronger after dark (applySky)
-    const mat = new THREE.ShaderMaterial({
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true,
-      uniforms: { uK: this.poolK },
-      vertexShader: 'varying vec3 vC; varying vec2 vUv; void main(){ vUv = uv; vC = color; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-      fragmentShader: 'uniform float uK; varying vec3 vC; varying vec2 vUv; void main(){ vec2 q = floor((vUv - 0.5) * 24.0) / 24.0; float d = length(q) * 2.0; float a = pow(max(0.0, 1.0 - d), 1.8); gl_FragColor = vec4(vC * a * 0.35 * uK, 1.0); }',
-    });
-    const mesh = new THREE.Mesh(mergeGeometries(this._pools), mat);
-    mesh.renderOrder = 2;
-    this.add(mesh);
-    this._pools = [];
-  }
-
-  // ---------------------------------------------------------------- utility poles, wires, lamps
-  buildPoles() {
-    const zP = 14.32, xs = [-22.4, -16.3, -6.3, 2.6, 10.0, 17.6, 24.6];
-    for (const x of xs) {
-      this.prop('utility_pole', x, 0, zP, Math.PI / 2);
-      this.game.player.addObstacle(x - 0.2, x + 0.2, zP - 0.2, zP + 0.2);
-    }
-    const B = this.B, wm = this.P(0.9);
-    const wire = (a, b, sag, r = 0.012) => {
-      const pts = [];
-      for (let k = 0; k <= 14; k++) { const t = k / 14; const p = a.clone().lerp(b, t); p.y -= Math.sin(t * Math.PI) * sag; pts.push(p); }
-      B.geo(wm, new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, r, 4), { tint: 0x1c1818 });
-    };
-    const V = (x, y, z) => new THREE.Vector3(x, y, z);
-    for (let i = 0; i < xs.length - 1; i++) {
-      const a = xs[i], b = xs[i + 1];
-      for (const [dz, y, sag] of [[-0.8, 7.62, 0.45], [-0.4, 7.62, 0.5], [0.8, 7.62, 0.42], [-0.64, 7.0, 0.55], [0.64, 7.0, 0.5]]) wire(V(a, y, zP + dz), V(b, y, zP + dz), sag);
-      wire(V(a, 5.0, zP + 0.16), V(b, 5.0, zP + 0.16), 0.35, 0.03);
-      // the steel messenger above the telecom cable, with spiral lashing hangers every half metre
-      wire(V(a, 5.2, zP + 0.16), V(b, 5.2, zP + 0.16), 0.35, 0.008);
-      for (let x = a + 0.5; x < b - 0.4; x += 0.5) { const t = (x - a) / (b - a), y = 5.0 - Math.sin(t * Math.PI) * 0.35; B.box(wm, 0.012, 0.18, 0.012, x, y + 0.02, zP + 0.16, { tint: 0x2a2826 }); }
-      wire(V(a, 4.7, zP + 0.18), V(b, 4.7, zP + 0.18), 0.3, 0.022);
-    }
-    // service drops to the houses on both sides
-    for (const p of [...this.anchors.near, ...this.anchors.far]) {
-      let best = xs[0];
-      for (const x of xs) if (Math.abs(x - p.x) < Math.abs(best - p.x)) best = x;
-      wire(V(best, 5.3, zP - 0.1), p, 0.35, 0.01);
-    }
-    wire(V(2.6, 5.3, zP - 0.1), V(3.9, 4.45, 5.15), 0.5, 0.01);
-    wire(V(-6.3, 5.3, zP - 0.1), V(-4.2, 4.45, 5.15), 0.5, 0.01);
-    // street lights (heads glow; one real light by the vending machines)
-    for (const [x, z, ry] of [[-2.4, 14.42, Math.PI / 2], [13.6, 14.42, Math.PI / 2], [-19.0, 5.48, -Math.PI / 2], [21.8, 5.5, -Math.PI / 2]]) {
-      this.prop('street_light', x, 0, z, ry, { block: true });
-      this.pool(x, z + (z > 10 ? -0.9 : 0.9), 3.2, 0xffc880, 0.6);
-    }
-    const lamp = new THREE.PointLight(0xffc880, 4, 9, 1.5);
-    lamp.position.set(-2.4, 3.9, 13.7);
-    this.add(lamp);
-    this.streetLamp = lamp; // switched by the time of day (applySky), never removed: no shader rebuilds
-  }
-
-  // ---------------------------------------------------------------- street dressing
-  buildDressing() {
-    // vending machines + post box by the lamp (softened glow, one light for the pair)
-    this.prop('vending', -0.62, 0, 14.43, Math.PI, { dim: true, block: true });
-    this.prop('vending', 0.4, 0, 14.43, Math.PI, { dim: true, block: true });
-    const vl = new THREE.PointLight(0xdff0ff, 2.2, 5, 1.6);
-    vl.position.set(-0.1, 1.2, 13.4);
-    this.add(vl);
-    this.vendingLight = vl;
-    this.pool(-0.1, 13.4, 1.6, 0xcfe8ff, 0.45);
-    this.pool(-16.5, 13.5, 1.5, 0xcfe8ff, 0.4);
-    this.pool(-16.05, 6.3, 1.2, 0xcfe8ff, 0.35);
-    this.pool(0, 6.6, 3.2, 0xff9a60, 0.35);
-    this.pool(-12.45, 14.0, 2.2, 0xfff0c8, 0.5);
-    this.prop('post_box', 1.5, 0, 14.3, Math.PI, { block: true });
-    this.prop('drink_cans', -1.5, 0, 13.95, 0.3);
-    // the garbage station by the shop (contract)
-    this.garbageStation = this.single('garbage_station', -6.6, 0, 5.82, 0, { block: true });
-    this.prop('weeds', -5.4, 0, 5.42, 0);
-    // manholes, a power box, weeds along the walls and under the embankment
-    for (const [x, z] of [[3.6, 9.4], [-14.8, 10.1]]) this.prop('manhole', x, 0.001, z, hash2(x, z) * 6);
-    this.prop('power_box', 16.7, 0, 5.62, 0, { block: true });
-    for (const [x, z] of [[-25.4, 5.45], [25.3, 5.45], [-25.2, 14.75], [25.3, 14.8], [-11.6, 5.45], [12.6, 5.4], [-3.0, 14.75], [9.2, 14.8], [21.2, 14.78], [-24.0, 14.78]]) this.prop('weeds', x, 0, z, hash2(x, z) * 6, { scale: 0.8 + hash2(z, x) * 0.4 });
-    for (const s of [-1, 1]) for (const z of [5.7, 13.95]) this.prop('weeds', s * 25.6, 0, z, s, { scale: 1.1 });
-    this.flushPools();
-  }
-
-  // ---------------------------------------------------------------- small-scale detail: road wear, lids, clutter
-  /** Repeating (world-mapped) alpha-cut decal material from a town painter. */
-  RT(key, w, h, ppm = 32, rough = 0.95) {
-    const ck = 'rt:' + key + w + 'x' + h + ':' + ppm;
-    if (!this.mats.has(ck)) {
-      const map = townPix(key, w, h).texture();
-      map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(ppm / w, ppm / h);
-      const mt = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, alphaTest: 0.5 });
-      mt.polygonOffset = true; mt.polygonOffsetFactor = -2; mt.polygonOffsetUnits = -4;
-      this.mats.set(ck, mt);
-    }
-    return this.mats.get(ck);
-  }
-
-  /** Vertical quad (like Batch.quad) showing the sub-rectangle uv = [u0, v0, u1, v1] of its texture (atlases). */
-  quadUV(mat, w, h, x, y, z, [u0, v0, u1, v1], o = {}, B = this.B) {
-    const g = new THREE.PlaneGeometry(w, h), uv = g.attributes.uv;
-    for (let i = 0; i < uv.count; i++) uv.setXY(i, u0 + uv.getX(i) * (u1 - u0), v0 + uv.getY(i) * (v1 - v0));
-    if (o.rz) g.rotateZ(o.rz);
-    if (o.ry) g.rotateY(o.ry);
-    g.translate(x, y + h / 2, z);
-    return B.geo(mat, g, o);
-  }
-  /** One of the three blue 住居表示 address plates from the atlas. */
-  addrPlate(k, w, h, x, y, z, o = {}) { return this.sign('addrs', w, h, x, y, z, o, [0, k * 16, 40, 16]); }
-
-  /** The small opaque lane signs (enamel ads, notices, plates, the AC grille...) packed into one texture, so they
-   *  all merge into a single draw call. layout: painter key -> [x, y, w, h] in atlas pixels. */
-  signs() {
-    if (this._signs) return this._signs;
-    const W = 256, H = 192;
-    const layout = {
-      enamelSoap: [0, 0, 24, 64], enamelRamune: [24, 0, 24, 64], enamelUniform: [48, 0, 24, 64], signSnatch: [72, 0, 32, 44], addrs: [104, 0, 40, 48],
-      parkRules: [144, 0, 40, 60], forSale: [184, 0, 32, 40], danger: [216, 0, 24, 32],
-      noticeBoard: [0, 64, 48, 32], signGarage: [48, 64, 48, 32], forRent: [96, 64, 32, 32], otaFudosan: [128, 64, 48, 26], aptRecruit: [176, 64, 40, 26], closedNotice: [216, 64, 32, 32],
-      acFront: [0, 96, 36, 25], signPiano: [36, 96, 40, 14], signDog: [76, 96, 24, 16], signMilk: [100, 96, 16, 10], babySign: [116, 96, 24, 24], patrolNote: [140, 96, 28, 24],
-      heaterFace: [168, 96, 24, 20], gasMeter: [192, 96, 12, 10], aptNos: [204, 96, 48, 16],
-      namesL: [0, 128, 12 * NAME_COUNT, 24], kishibe: [204, 128, 24, 12], villaNo: [228, 128, 20, 10],
-      parkName: [0, 152, 72, 18], parkArrow: [72, 152, 48, 16], wcSign: [120, 152, 48, 16], pylonPlate: [168, 152, 48, 14], closedSign: [216, 152, 40, 16],
-      pigeonBoard: [0, 176, 40, 12],
-    };
-    const atlas = new Pix(W, H, 1);
-    atlas.flush();
-    for (const [k, [x, y, w, h]] of Object.entries(layout)) {
-      try { atlas.ctx.drawImage(townPix(k, w, h).flush().canvas, x, y); } catch (e) { console.warn('town sign atlas: no painter for', k, e); }
-    }
-    atlas.pull();
-    const mat = new THREE.MeshStandardMaterial({ map: atlas.texture(), vertexColors: true, roughness: 0.55 });
-    return (this._signs = { W, H, layout, mat });
-  }
-  /** Vertical sign quad showing atlas entry `key` (or the sub-rectangle sub = [x, y, w, h] px inside it). */
-  sign(key, w, h, x, y, z, o = {}, sub = null) { return this.signInto(this.B, key, w, h, x, y, z, o, sub); }
-  /** sign() into another batch (see batch()). */
-  signInto(B, key, w, h, x, y, z, o = {}, sub = null) {
-    const S = this.signs(), [rx, ry, rw, rh] = S.layout[key], [sx, sy, sw, sh] = sub || [0, 0, rw, rh];
-    return this.quadUV(S.mat, w, h, x, y, z, [(rx + sx) / S.W, 1 - (ry + sy + sh) / S.H, (rx + sx + sw) / S.W, 1 - (ry + sy) / S.H], o, B);
-  }
-  /** A fresh static batcher (merge per material, baked vertex colours); build(parent) when done. */
-  batch(shade) { return new Batch(shade); }
-  /** Green PVC-coated wire mesh (alpha-cut, double-sided, repeating). */
-  fenceMeshM() {
-    if (!this.mats.has('fenceMesh')) {
-      const map = townPix('fenceMesh', 16, 16).texture();
-      map.wrapS = map.wrapT = THREE.RepeatWrapping;
-      this.mats.set('fenceMesh', new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.35, side: THREE.DoubleSide }));
-    }
-    return this.mats.get('fenceMesh');
-  }
-  /** 透かしブロック: the perforated decorative block course (alpha-cut, double-sided, 0.2 m motifs). */
-  decoBlockM() {
-    if (!this.mats.has('decoBlock')) {
-      const map = townPix('blockDeco', 48, 12).texture();
-      map.wrapS = THREE.RepeatWrapping;
-      this.mats.set('decoBlock', new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.92, alphaTest: 0.5, side: THREE.DoubleSide }));
-    }
-    return this.mats.get('decoBlock');
-  }
-
-  /** Square-section bar between two world points (guy wires, braces). */
-  beam(mat, a, b, t, o = {}) {
-    const d = new THREE.Vector3().subVectors(b, a), len = d.length();
-    const g = new THREE.BoxGeometry(t, t, len);
-    g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), d.normalize()));
-    g.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
-    return this.B.geo(mat, g, o);
-  }
-
-  buildDetails() {
-    const B = this.B, m = this.m, P = this.game.player, V = (x, y, z) => new THREE.Vector3(x, y, z);
-    // ---- the road: patch repairs and a utility trench, cracks, lids, puddles, grit along the kerbs
-    const patch = this.M('asphaltHD', { roughness: 0.9, bump: 0.4, ppm: 40, color: 0xd4d2ce, decal: true });
-    const patchAt = (x, z, w, d, ry = 0) => B.plane(patch, w, d, x, 0.002, z, { ry, uv: [x * 0.37, z * 0.21] });
-    patchAt(5.3, 9.73, 0.55, 7.2);
-    patchAt(-10.2, 8.25, 9.4, 0.5);
-    patchAt(3.6, 9.4, 1.5, 1.5, 0.12);
-    patchAt(-20.6, 11.9, 2.2, 1.3, 0.05);
-    patchAt(12.6, 7.3, 1.7, 1.1, -0.08);
-    patchAt(-2.9, 12.3, 1.2, 0.9);
-    patchAt(19.4, 10.6, 0.9, 2.6, 0.3);
-    const crack = this.decal('roadCrack', 32, 32);
-    for (const [x, z, sz, r] of [[-22.5, 9.0, 1.4, 0.4], [-16.8, 12.3, 1.1, 2.0], [-6.8, 10.9, 1.5, 1.1], [-1.2, 7.4, 1.0, 2.8], [8.6, 11.6, 1.6, 0.2], [14.3, 9.3, 1.3, 1.9], [22.6, 8.0, 1.5, 0.9], [-12.8, 6.9, 1.0, 1.5], [10.8, 12.9, 0.9, 3.1], [17.6, 7.0, 1.2, 2.4]]) B.plane(crack, sz, sz, x, 0.004, z, { unit: true, ry: r, tint: 0xa8a4a0 });
-    // lids: fire hydrant (yellow ring), water valves, square utility covers, one more decorated manhole
-    const lidH = this.decal('lidHydrant', 32, 32, 0.6), lidV = this.decal('lidValve', 12, 12, 0.6), lidS = this.decal('lidSquare', 24, 24, 0.6);
-    for (const [x, z] of [[-10.6, 12.55], [17.2, 6.85]]) B.plane(lidH, 0.62, 0.62, x, 0.005, z, { unit: true, ry: hash2(x, z) * 6 });
-    for (const [x, z] of [[-3.9, 12.95], [7.8, 12.9], [-17.9, 6.6], [21.4, 6.72], [11.2, 6.62], [-24.0, 6.7]]) B.plane(lidV, 0.24, 0.24, x, 0.005, z, { unit: true, ry: hash2(z, x) * 6 });
-    for (const [x, z] of [[-24.2, 12.75], [14.6, 12.92], [-8.0, 6.72], [9.6, 6.62]]) B.plane(lidS, 0.55, 0.55, x, 0.005, z, { unit: true, ry: Math.round(hash2(x, 1) * 4) * Math.PI / 2 });
-    // rain puddles where the camber dips toward the gutters
-    for (const [x, z, w, d, r] of [[-12.0, 12.8, 1.7, 0.9, 0.1], [7.3, 6.75, 1.3, 0.8, -0.2], [19.6, 12.75, 1.9, 0.95, 0.05], [-20.4, 6.8, 1.2, 0.7, 0.3], [1.3, 12.95, 1.0, 0.55, -0.1], [-4.9, 6.75, 0.9, 0.5, 0.2]]) this.puddle(x, z, w, d, r);
-    // grit, leaves and fag ends along both kerbs and at the foot of the walls
-    const grit = this.RT('gutterGrit', 64, 8, 24);
-    B.plane(grit, 2 * XT, 0.34, 0, 0.004, ZG1 + 0.17, { tint: 0xc0bcb4 });
-    B.plane(grit, 2 * XT, 0.34, 0, 0.004, ZR1 - 0.17, { ry: Math.PI, tint: 0xc0bcb4 });
-    B.plane(grit, XT - 4.4, 0.3, -(XT + 4.4) / 2, 0.005, ZB + 0.15, { tint: 0xb8b4ac });
-    B.plane(grit, XT - 4.4, 0.3, (XT + 4.4) / 2, 0.005, ZB + 0.15, { tint: 0xb8b4ac });
-    for (const [a, b] of [[-XT, -15.45], [-7.4, XT]]) B.plane(grit, b - a, 0.3, (a + b) / 2, 0.005, ZF - 0.15, { ry: Math.PI, tint: 0xb8b4ac });
-
-    // ---- utility poles: address plates, a guy wire with its yellow guard at each end of the line, cable closures
-    const zP = 14.32, poles = [-22.4, -16.3, -6.3, 2.6, 10.0, 17.6, 24.6];
-    poles.forEach((x, i) => {
-      if (x === -6.3) return; // the promo posters are on the wall right behind this one
-      B.box(m.pv, 0.2, 0.32, 0.015, x, 2.3, zP - 0.175, { tint: 0x2a3a6a });
-      this.addrPlate(i % 3, 0.18, 0.08, x, 2.5, zP - 0.184, { ry: Math.PI });
-      this.addrPlate((i + 1) % 3, 0.18, 0.08, x, 2.34, zP - 0.184, { ry: Math.PI });
-    });
-    const guy = this.P(0.5, 0.6);
-    for (const [px, ax] of [[-22.4, -24.0], [24.6, 25.75]]) {
-      const top = V(px, 6.3, zP), foot = V(ax, 0.05, 14.62);
-      this.beam(guy, top, foot, 0.025, { tint: 0x4a4c4e });
-      const k = 1.9 / 6.25, g0 = foot.clone(), g1 = foot.clone().lerp(top, k);
-      this.beam(m.hazard, g0, g1, 0.1);
-      B.box(m.found, 0.3, 0.06, 0.3, ax, 0, 14.62);
-      P.addObstacle(ax - 0.2, ax + 0.2, 14.42, 14.82);
-    }
-    for (let i = 0; i < poles.length - 1; i += 2) {
-      const t = 0.32, x = poles[i] + (poles[i + 1] - poles[i]) * t, y = 5.0 - Math.sin(t * Math.PI) * 0.35;
-      B.box(m.pv, 0.6, 0.15, 0.15, x, y - 0.075, zP + 0.16, { tint: 0x2a2a2c });
-      for (const dx of [-0.32, 0.32]) B.box(m.pv, 0.05, 0.1, 0.1, x + dx, y - 0.05, zP + 0.16, { tint: 0x4a4a4c });
-    }
-
-    // ---- house-front clutter: pots, planters, fire buckets, bicycles, an extinguisher box, a reed screen
-    this.prop('pot_cluster', 12.45, 0, 5.5, 0, { block: true, scale: 0.8 });
-    this.prop('fire_ext_box', 15.7, 0, 5.5, 0, { block: true });
-    this.prop('styro_planter', 15.85, 0, 4.6, 0);
-    this.prop('pot_cluster', -19.75, 0, 14.65, Math.PI, { block: true, scale: 0.85 });
-    this.prop('fire_buckets', 15.8, 0, 14.62, Math.PI, { block: true });
-    this.prop('styro_planter', -24.9, 0, 14.6, Math.PI, { block: true, scale: 0.85 });
-    this.prop('fire_ext_box', -20.75, 0, 14.72, Math.PI, { block: true });
-    this.prop('mamachari', 22.35, 0, 14.5, -Math.PI / 2 + 0.05, { block: true });
-    this.prop('mamachari', -14.55, 0, 5.62, Math.PI / 2 - 0.06, { block: true });
-    // a reed screen (よしず) leaning against the side of the garden house, rolled at the top
-    {
-      const g = new THREE.PlaneGeometry(0.95, 1.9); g.rotateX(-0.27); g.rotateY(Math.PI / 2); g.translate(25.65 + 0.27, 0.93, 1.6);
-      B.geo(this.T('yoshizu', 30, 60, { alpha: true, rough: 0.9 }), g, {});
-      B.box(m.pv, 0.12, 0.12, 1.0, 25.71, 1.76, 1.6, { tint: 0xb89a5a });
-    }
-    this.prop('pot_cluster', -21.2, 0, 2.45, 0, { scale: 0.7 });
-    // stepping stones from the gate to the door in the garden of NW4
-    for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.box(m.found, 0.46, 0.05, 0.38, x, 0, z, { ry: r, tint: 0xb8b4ac, k: 0.95 });
-    // 飛び出し注意 boy at the mouth of alley A2 (front art, plain grey back)
-    const boy = this.T('tobidashi', 28, 48, { alpha: true, rough: 0.6 });
-    B.quad(boy, 0.5, 0.86, 11.48, 0.02, 5.47, {});
-    B.quad(boy, 0.5, 0.86, 11.48, 0.02, 5.465, { ry: Math.PI, flipU: true, tint: 0x8a8a88 });
-    P.addObstacle(11.3, 11.66, 5.38, 5.56);
-    // Shōwa enamel signs on the alley walls and the old tobacco shop, a beware-of-dog sticker on a gate pillar
-    // (alley A1 beside Mikawa-ya is reserved for the ghost-alley feature: nothing is added inside it)
-    this.sign('enamelSoap', 0.26, 0.7, -15.3, 0.95, ZF - 0.012, { ry: Math.PI });
-    this.sign('enamelRamune', 0.25, 0.68, -20.43, 0.85, ZB + 0.02, {});
-    this.sign('enamelUniform', 0.25, 0.68, -20.155, 0.85, ZB + 0.02, {});
-    this.sign('signDog', 0.2, 0.13, -22.21, 0.95, ZF - 0.1, { ry: Math.PI });
-    // the rental garages' vacancy board (the gate pillars' intercoms, name plates and mailboxes: Neighbours.js)
-    this.sign('signGarage', 0.6, 0.4, 24.55, 1.25, 15.14, { ry: Math.PI });
-    // a pinch hanger of socks and a towel drying under the edge of NE1's carport roof
-    {
-      const hx = 7.05, hz = 5.0, hy = 1.92;
-      B.box(m.metal, 0.012, 0.36, 0.012, hx, hy + 0.04, hz, { tint: 0xd8dce0 });
-      for (const [dx, dz, w, d] of [[0, -0.14, 0.44, 0.02], [0, 0.14, 0.44, 0.02], [-0.21, 0, 0.02, 0.3], [0.21, 0, 0.02, 0.3]]) B.box(m.pv, w, 0.02, d, hx + dx, hy, hz + dz, { tint: 0x7ab0d8 });
-      const cols = [0xfbf8f0, 0x2a3a6a, 0xe86a7a, 0xfbf8f0, 0x5aa86a, 0xffd23f];
-      cols.forEach((c, i) => B.box(m.pv, 0.06, 0.16 + (i % 3) * 0.03, 0.012, hx - 0.18 + (i % 4) * 0.12, hy - 0.19 - (i % 3) * 0.03, hz + (i < 4 ? -0.14 : 0.14), { tint: c }));
-      B.box(m.pv, 0.3, 0.26, 0.012, hx + 0.02, hy - 0.26, hz + 0.14, { tint: 0xf2a0b8, ry: 0.05 });
-    }
-    // the neighbourhood notice board by SAKURA HEIGHTS, a piano-class board on the FE3 wall
-    for (const dx of [-0.42, 0.42]) B.box(m.wood, 0.07, 1.75, 0.07, 17.45 + dx, 0, 5.52, { tint: 0x5a4030 });
-    B.box(m.wood, 0.98, 0.66, 0.05, 17.45, 0.98, 5.5, { tint: 0x5a4030 });
-    this.sign('noticeBoard', 0.92, 0.6, 17.45, 1.01, 5.527);
-    B.box(m.tinTeal, 1.12, 0.04, 0.3, 17.45, 1.72, 5.56, { rx: -0.25 });
-    P.addObstacle(16.95, 17.95, 5.42, 5.62);
-    this.sign('signPiano', 0.5, 0.18, -2.6, 0.85, ZF - 0.022, { ry: Math.PI });
-    // a few birds perched on the thick cable between the poles
-    for (const [i, t] of [[0, 0.4], [0, 0.47], [3, 0.55], [4, 0.3], [4, 0.36], [5, 0.62]]) {
-      const a = poles[i], b = poles[i + 1], x = a + (b - a) * t, y = 5.0 - Math.sin(t * Math.PI) * 0.35;
-      this.prop('pigeon', x, y + 0.02, zP + 0.16, hash2(i, t * 10) < 0.5 ? 0.15 : Math.PI - 0.2, { scale: 0.9 });
-    }
-    // a sprinkle of weeds and grass where the paving meets the walls
-    const weedsAt = [];
-    for (let x = -25; x < 25; x += 1.35) {
-      const k = hash2(Math.round(x * 10), 7);
-      if (k < 0.45) weedsAt.push([x + k, ZF - 0.12, Math.PI]);
-      if (hash2(Math.round(x * 10), 8) < 0.35 && Math.abs(x) > 4.6) weedsAt.push([x + 0.5, ZB + 0.12, 0]);
-    }
-    for (const [x, z, r] of weedsAt) {
-      if (z > 10 && x > -6.6 && x < -4.4) continue; // keep the posters clear
-      if (z > 10 && x > -15.6 && x < -7.2) continue; // Mikawa-ya's front and the mouth of alley A1
-      if (z > 10 && x > 10.1 && x < 15.4) continue; // the open driveway
-      if (z < 10 && x > -7.6 && x < -5.6) continue; // garbage station
-      this.prop('weeds', x, 0, z, r + hash2(z, x) * 2, { scale: 0.55 + hash2(x, 3) * 0.4 });
-    }
-  }
-
-  // ---------------------------------------------------------------- sky & skyline
-  buildSky() {
-    // the sky dome: zenith-to-horizon bands, a glow band toward the sun, pixel clouds, pixel stars and moon at night.
-    // Every colour is a uniform driven by the time of day (applySky); the defaults are the late golden hour.
-    const cl = new SkyClouds().texture;
-    const mat = new THREE.ShaderMaterial({
-      side: THREE.BackSide, depthWrite: false, fog: false,
-      uniforms: {
-        uSun: { value: new THREE.Vector3(-6, 3.2, 14).normalize() },
-        uZen: { value: new THREE.Color(0x3f6fae) }, uUp: { value: new THREE.Color(0x6f9acb) },
-        uMid: { value: new THREE.Color(0xa9c4dd) }, uHor: { value: new THREE.Color(0xe9dcc4) },
-        uGlow: { value: new THREE.Color(0xf6d9a8) },
-        uSunCol: { value: new THREE.Color(1.0, 0.86, 0.62) }, uSunK: { value: 1 },
-        uCloud: { value: new THREE.Vector3(1, 1, 1) },
-        uMoon: { value: new THREE.Vector3(0.5, 0.6, -0.6).normalize() }, uMoonK: { value: 0 },
-        uNight: { value: 0 }, uTwinkle: { value: 0 },
-        uClouds: { value: cl },
-      },
-      vertexShader: 'varying vec3 vD; void main(){ vD = position; vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }',
-      fragmentShader: `uniform vec3 uSun, uZen, uUp, uMid, uHor, uGlow, uSunCol, uCloud, uMoon; uniform float uSunK, uMoonK, uNight, uTwinkle;
-        uniform sampler2D uClouds; varying vec3 vD;
-        float bayer(vec2 p){ vec2 q = mod(floor(p), 4.0); int i = int(q.x) + int(q.y) * 4;
-          float b[16]; b[0]=0.;b[1]=8.;b[2]=2.;b[3]=10.;b[4]=12.;b[5]=4.;b[6]=14.;b[7]=6.;b[8]=3.;b[9]=11.;b[10]=1.;b[11]=9.;b[12]=15.;b[13]=7.;b[14]=13.;b[15]=5.;
-          for (int k = 0; k < 16; k++) if (k == i) return b[k] / 16.0; return 0.0; }
-        float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
-        void main(){
-          vec3 d = normalize(vD);
-          float h = d.y, hl = max(length(d.xz), 1e-4);
-          float az = atan(d.z, d.x + 1e-5);
-          vec2 cell = vec2(floor(az * 200.0), floor(h * 300.0));
-          float sunK = max(0.0, dot(d.xz / hl, normalize(uSun.xz)));
-          float hq = h + (bayer(cell) - 0.5) / 70.0;
-          vec3 col = mix(uHor, uMid, smoothstep(0.0, 0.14, hq));
-          col = mix(col, uUp, smoothstep(0.12, 0.4, hq));
-          col = mix(col, uZen, smoothstep(0.35, 0.95, hq));
-          // warm glow band hugging the horizon toward the sun, and a soft halo around it
-          col = mix(col, uGlow, pow(sunK, 4.0) * (1.0 - smoothstep(0.0, 0.3, h)) * 0.9);
-          float sd = max(0.0, dot(d, uSun));
-          col += uSunCol * (pow(sd, 24.0) * 0.35 + pow(sd, 400.0) * 1.6) * uSunK;
-          // night: one-cell pixel stars that twinkle in steps, fading out toward the hazy horizon
-          if (uNight > 0.01 && h > 0.05) {
-            float r = hash(cell);
-            if (r > 0.9955) {
-              float tw = step(0.45, fract(r * 91.7 + uTwinkle * 0.37));
-              col += vec3(0.78, 0.82, 0.96) * uNight * (0.35 + 0.45 * tw) * smoothstep(0.05, 0.25, h) * (r > 0.9993 ? 1.6 : 1.0);
-            }
-          }
-          col = floor(col * 64.0 + bayer(cell + 5.0)) / 64.0;
-          // a few soft clouds: off-white tops, warm lit edges, blue-grey undersides (tinted by the time of day)
-          vec2 uv = vec2(cell.x / 200.0 / 6.2832 + 0.5, (h - 0.02) * 2.2);
-          if (uv.y > 0.0 && uv.y < 1.0) {
-            vec4 c = texture2D(uClouds, uv);
-            vec3 cc = mix(c.rgb, c.rgb * vec3(1.05, 0.96, 0.86), pow(sunK, 2.0) * 0.7) * uCloud;
-            col = mix(col, cc, c.a * smoothstep(0.02, 0.09, h) * 0.92);
-          }
-          // the moon: a chunky pixel disc with a few darker maria
-          float md = dot(d, uMoon);
-          if (uMoonK > 0.01 && md > 0.99) {
-            vec3 mx = normalize(cross(vec3(0.0, 1.0, 0.0), uMoon)), my = cross(uMoon, mx);
-            vec2 mp = vec2(dot(d, mx), dot(d, my)) / 0.024;
-            vec2 mc = floor(mp * 7.0);
-            vec2 mq = (mc + 0.5) / 7.0;
-            float r2 = dot(mq, mq);
-            if (r2 < 1.0) {
-              float n = hash(mc + 3.0);
-              vec3 moon = mix(vec3(0.95, 0.93, 0.84), vec3(0.74, 0.74, 0.72), step(0.72, n) * step(r2, 0.62));
-              moon *= 1.0 - 0.16 * step(0.7, r2);
-              col = mix(col, moon * 1.1, uMoonK);
-            }
-          }
-          if (h < 0.0) col = mix(uHor, uHor * 0.85, smoothstep(0.0, -0.2, h));
-          gl_FragColor = vec4(col, 1.0);
-        }`,
-    });
-    this.skyMat = mat;
-    const dome = new THREE.Mesh(new THREE.SphereGeometry(80, 32, 16), mat);
-    dome.renderOrder = -10;
-    dome.frustumCulled = false;
-    this.add(dome);
-  }
-
-  /** Distant city all around: flat dusk silhouettes with lit windows (unfogged, merged). */
-  buildBackdrop() {
-    const p = townPix('skyline', 64, 128), pe = townPix('skylineE', 64, 128);
-    void pe;
-    const t = p.texture(); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / 8, 1 / 16);
-    const mat = new THREE.MeshBasicMaterial({ map: t, fog: true, vertexColors: true });
-    // after dark the skyline sinks into blue and its windows light up one by one (a per-window switch-on time in alpha)
-    const W = 64, H = 128, win = new Uint8Array(W * H * 4);
-    const warm = [[255, 214, 150], [255, 228, 176], [250, 196, 128], [226, 236, 255], [255, 236, 200]];
-    for (let y = 5; y < H - 2; y += 5) for (let x = 3; x < W - 2; x += 4) {
-      const k = hash2(x * 5 + 11, y * 3 + 7);
-      if (k > 0.36) continue;
-      const c = warm[Math.floor(hash2(x, y + 99) * warm.length)], on = Math.floor((k / 0.36) * 230) + 10;
-      for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) {
-        const o = (((H - 1 - (y + dy)) * W) + x + dx) * 4; // canvas rows run top-down, texture rows bottom-up
-        win[o] = c[0]; win[o + 1] = c[1]; win[o + 2] = c[2]; win[o + 3] = on;
-      }
-    }
-    const wt = new THREE.DataTexture(win, W, H, THREE.RGBAFormat);
-    wt.magFilter = wt.minFilter = THREE.NearestFilter; wt.wrapS = wt.wrapT = THREE.RepeatWrapping; wt.colorSpace = THREE.SRGBColorSpace;
-    wt.needsUpdate = true;
-    this.skyline = { dim: { value: new THREE.Color(1, 1, 1) }, win: { value: 0 } };
-    mat.onBeforeCompile = (sh) => {
-      sh.uniforms.uDim = this.skyline.dim; sh.uniforms.uWin = this.skyline.win; sh.uniforms.uWinMap = { value: wt };
-      sh.fragmentShader = 'uniform vec3 uDim; uniform float uWin; uniform sampler2D uWinMap;\n' + sh.fragmentShader.replace('#include <opaque_fragment>',
-        'vec4 wN = texture2D( uWinMap, vMapUv ); outgoingLight = outgoingLight * uDim + wN.rgb * step( wN.a, uWin ) * 1.25;\n#include <opaque_fragment>');
-    };
-    mat.customProgramCacheKey = () => 'skyline-night';
-    const B = new Batch();
-    for (let i = 0; i < 54; i++) {
-      const a = (i / 54) * Math.PI * 2 + hash2(i, 1) * 0.06;
-      const r = 64 + hash2(i, 2) * 10;
-      if (Math.abs(Math.cos(a)) > 0.82) continue;
-      const x = Math.cos(a) * r, z = 9.6 + Math.sin(a) * r * 0.92;
-      const w = 5 + hash2(i, 3) * 9, h = 6 + hash2(i, 4) * 10 + (hash2(i, 6) < 0.18 ? 10 : 0);
-      const k = 0.8 + hash2(i, 5) * 0.3;
-      B.push(x, 0, z, -a + Math.PI / 2);
-      B.box(mat, w, h, 6, 0, 0, 0, { tint: new THREE.Color(0xffffff).multiplyScalar(k).getHex(), uv: [hash2(i, 7) * 8, 0] });
-      if (hash2(i, 8) < 0.35) B.box(mat, 0.3, 3, 0.3, w * 0.3, h, 0, { tint: 0x8a96a6 });
-      B.pop();
-    }
-    B.build(this.group, { receive: false });
-  }
-
   // ---------------------------------------------------------------- time of day
   /**
    * Day / night for the town's own materials, called a few times a second by src/game/Lighting.js with the sky look
-   * (src/sim/sky.js) plus { sunDir, moonDir, sunK, moonK, twinkle, power }. Only uniforms and intensities change:
-   * nothing is added, removed or hidden, so no shader is ever rebuilt.
+   * (src/sim/sky.js) plus { sunDir, moonDir, sunK, moonK, twinkle, power }. Only uniforms and intensities change.
    */
   applySky(L) {
-    const u = this.skyMat?.uniforms;
     const night = L.night;
-    if (u) {
-      u.uZen.value.copy(L.zen); u.uUp.value.copy(L.up); u.uMid.value.copy(L.mid); u.uHor.value.copy(L.hor); u.uGlow.value.copy(L.glow);
-      u.uSun.value.copy(L.sunDir);
-      u.uSunCol.value.copy(L.sun).lerp(_c.setRGB(1, 0.86, 0.62), 0.5);
-      u.uSunK.value = L.sunK;
-      u.uCloud.value.set(L.cloud[0], L.cloud[1], L.cloud[2]);
-      u.uMoon.value.copy(L.moonDir); u.uMoonK.value = L.moonK;
-      u.uNight.value = night; u.uTwinkle.value = L.twinkle || 0;
-    }
-    if (this.skyline) {
-      // silhouettes: daylight grey-blue -> deep dusk blue; windows switch on as it gets dark
-      this.skyline.dim.value.setRGB(1, 1, 1).lerp(_c.setRGB(0.2, 0.24, 0.38), night * 0.92).multiply(_c2.setRGB(L.fog.r * 0.4 + 0.6, L.fog.g * 0.4 + 0.6, L.fog.b * 0.4 + 0.6));
-      this.skyline.win.value = Math.min(1, Math.max(0, (night - 0.15) / 0.75)) * 0.98;
-    }
-    for (const [m, d, n] of this.nightGlow || []) m.emissiveIntensity = d + (n - d) * night;
-    if (this.poolK) this.poolK.value = 0.55 + 1.6 * night;
+    applySkyLook(this, L);
+    if (this.poolK) this.poolK.value = 0.4 + 1.1 * night;
     if (this.streetLamp) this.streetLamp.intensity = night > 0.3 ? 5.2 * Math.min(1, (night - 0.3) / 0.25) : 0;
     if (this.vendingLight) this.vendingLight.intensity = 1.6 + 1.2 * night;
-    setInteriorSky({ night, sky: _c.copy(L.hor).lerp(L.up, 0.45).multiplyScalar(1 - 0.5 * night) });
+    if (this.G) this.G.color.setScalar(1.05 + 0.55 * night);
+    for (const m of this.trainMats || []) m.emissiveIntensity = 0.25 + 1.0 * night;
+    setInteriorSky({ night, sky: new THREE.Color().copy(L.hor).lerp(L.up, 0.45).multiplyScalar(1 - 0.5 * night) });
     this._lastSky = L;
     const S = this.shop;
     if (S?.lanternM) {
@@ -1778,144 +392,20 @@ export class Town {
     }
   }
 
-  // ---------------------------------------------------------------- bounds
-  buildBounds() {
-    const P = this.game.player, G = GARAGE;
-    // lane ends inside the underpasses
-    P.addObstacle(-90, -XW, -60, 60); P.addObstacle(XW, 90, -60, 60);
-    for (const s of [-1, 1]) {
-      const a = s > 0 ? XT - 0.4 : -XW - 1, b = s > 0 ? XW + 1 : -XT + 0.4;
-      P.addObstacle(a, b, -60, TZ0); P.addObstacle(a, b, TZ1, 60);
-      // guard rail along the walkway (open at the mouth so you can step up)
-      const ra = s > 0 ? XT + 0.55 : -XW - 1, rb = s > 0 ? XW + 1 : -XT - 0.55;
-      P.addObstacle(ra, rb, WALK, WALK + 0.12);
-    }
-    // near building line (walls, yards) except the garage opening and the A2 alley
-    // (x > 11.3 is fenced by the park's own bounds and Sakura Heights' walkable yard: src/world/Park.js, Neighbours.js)
-    for (const [a, b] of [[-XT, -4.3], [4.3, 9.8]]) P.addObstacle(a, b, -60, ZB);
-    P.addObstacle(9.65, 9.85, -60, ZB);
-    if (!this.park) { P.addObstacle(11.3, XT, -60, ZB); P.addObstacle(9.6, 11.5, -60, -3.1); }
-    // far building line except the corner shop door and the A1 alley
-    for (const [a, b] of [[-XT, -15.45], [-7.45, XT]]) P.addObstacle(a, b, ZF, 60);
-    P.addObstacle(-9.55, -9.3, ZF, 60); P.addObstacle(-7.5, -7.25, ZF, 60); P.addObstacle(-9.6, -7.2, 22.3, 60);
-    P.addObstacle(-15.45, -9.4, 19.95, 60);
-    // thrown things stay on the street
-    const ph = this.game.physics;
-    for (const [cx, cz, hx, hz] of [[-15.15, ZB - 0.3, 10.85, 0.3], [15.15, ZB - 0.3, 10.85, 0.3], [0, ZF + 6, 26, 0.3], [-XW - 0.3, 9.6, 0.3, 4], [XW + 0.3, 9.6, 0.3, 4]]) {
-      ph.addBox({ center: new THREE.Vector3(cx, 1.5, cz), half: new THREE.Vector3(hx, 1.5, hz), material: 'concrete' });
-    }
-    ph.addBox({ center: new THREE.Vector3(0, -0.5, G.maxZ + 7), half: new THREE.Vector3(45, 0.5, 16), material: 'concrete' });
-  }
-
-  // ---------------------------------------------------------------- trains
-  makeTrain() {
-    const g = new THREE.Group();
-    const side = townPix('trainSide', 448, 104).texture(), sideE = townPix('trainSideE', 448, 104).texture();
-    const front = townPix('trainFront', 90, 104).texture(), frontE = townPix('trainFrontE', 90, 104).texture();
-    const sideM = new THREE.MeshStandardMaterial({ map: side, emissive: 0xffffff, emissiveMap: sideE, emissiveIntensity: 1.1, roughness: 0.35, metalness: 0.45, vertexColors: true });
-    const frontM = new THREE.MeshStandardMaterial({ map: front, emissive: 0xffffff, emissiveMap: frontE, emissiveIntensity: 1.2, roughness: 0.35, metalness: 0.4, vertexColors: true });
-    const B = new Batch(), pv = this.P(0.6, 0.3), dark = this.P(0.8);
-    const W = 2.8, H = 3.25, y0 = 0.95;
-    for (let i = 0; i < TRAIN_N; i++) {
-      const cz = (i - (TRAIN_N - 1) / 2) * (TRAIN_CAR + TRAIN_GAP);
-      B.push(0, 0, cz);
-      for (const sx of [-1, 1]) B.quad(sideM, TRAIN_CAR, H, sx * W / 2, y0, 0, { ry: sx * Math.PI / 2 });
-      for (const sz of [-1, 1]) {
-        const cab = (i === 0 && sz < 0) || (i === TRAIN_N - 1 && sz > 0);
-        B.quad(cab ? frontM : pv, W, H, 0, y0, sz * TRAIN_CAR / 2, { ry: sz > 0 ? 0 : Math.PI, tint: cab ? 0xffffff : 0x9aa0a6 });
-        if (cab) for (const hx of [-0.95, 0.95]) B.box(this.G, 0.3, 0.14, 0.04, hx, y0 + 0.82, sz * (TRAIN_CAR / 2 + 0.02), { tint: 0xfff4d0 });
-      }
-      B.box(pv, W - 0.1, 0.12, TRAIN_CAR - 0.1, 0, y0 + H, 0, { tint: 0x9aa0a6 });
-      B.box(pv, W - 0.6, 0.1, TRAIN_CAR - 0.6, 0, y0 + H + 0.12, 0, { tint: 0x8a9096 });
-      for (const z of [-3.5, 3.5]) B.box(pv, 1.6, 0.35, 2.4, 0, y0 + H + 0.12, z, { tint: 0xb8bcc0 });
-      B.box(dark, W - 0.3, 0.45, TRAIN_CAR - 3.2, 0, y0 - 0.45, 0, { tint: 0x2a2c2e });
-      for (const z of [-TRAIN_CAR / 2 + 2.1, TRAIN_CAR / 2 - 2.1]) {
-        B.box(dark, 2.3, 0.55, 2.6, 0, 0.12, z, { tint: 0x222426 });
-        for (const wz of [-0.95, 0.95]) for (const wx of [-0.75, 0.75]) B.box(dark, 0.14, 0.62, 0.62, wx, 0.0, z + wz, { tint: 0x3a3a3a });
-      }
-      if (i === 1) {
-        B.box(pv, 0.9, 0.2, 0.9, 0, y0 + H + 0.12, 0, { tint: 0x5a5e62 });
-        B.box(pv, 0.06, 0.06, 1.3, 0, y0 + H + 0.62, 0.2, { rx: 0.7, tint: 0x3a3a3a });
-        B.box(pv, 0.06, 0.06, 1.3, 0, y0 + H + 0.62, -0.2, { rx: -0.7, tint: 0x3a3a3a });
-        B.box(pv, 1.5, 0.05, 0.12, 0, y0 + H + 1.0, 0, { tint: 0x2a2a2a });
-      }
-      if (i < TRAIN_N - 1) B.box(dark, 1.4, 2.4, TRAIN_GAP + 0.1, 0, y0 + 0.2, TRAIN_CAR / 2 + TRAIN_GAP / 2, { tint: 0x2a2a2a });
-      B.pop();
-    }
-    B.build(g, { receive: false });
-    return g;
-  }
-
-  buildTrains() {
-    this.trains = [];
-    for (const s of [-1, 1]) {
-      const g = this.makeTrain();
-      g.visible = false;
-      this.add(g);
-      this.trains.push({ g, s, wait: 10 + Math.random() * 25 + (s > 0 ? 14 : 0), z: 0, dir: 1, speed: 12.5, played: false });
-    }
-  }
-
-  runTrain(side = null, dir = null) {
-    const tr = side ? this.trains.find((t) => t.s === side) : this.trains[Math.floor(Math.random() * 2)];
-    if (!tr) return;
-    tr.dir = dir || (Math.random() < 0.5 ? 1 : -1);
-    const track = TRACKS[Math.random() < 0.5 ? 0 : 1];
-    tr.g.position.set(tr.s * track, YR, 0);
-    tr.z = tr.dir > 0 ? -100 : 120;
-    tr.g.rotation.y = tr.dir > 0 ? 0 : Math.PI;
-    tr.g.visible = true;
-    tr.played = false;
-  }
-
+  // ---------------------------------------------------------------- trains, per frame
+  runTrain(side = null, dir = null) { return runTrain(this, side, dir); }
   update(dt, t) {
     void t;
     if (this.interiorM) this.interiorM.uniforms.uTime.value += dt;
     this.updateZones();
     this.cull?.update(this.game.camera, this.game.renderer?.quality?.view ?? 1);
-    if (!this.trains) return;
-    for (const tr of this.trains) {
-      if (!tr.g.visible) { tr.wait -= dt; if (tr.wait <= 0) this.runTrain(tr.s); continue; }
-      tr.z += tr.dir * tr.speed * dt;
-      tr.g.position.z = tr.z;
-      const head = tr.z + tr.dir * TRAIN_LEN / 2;
-      if (!tr.played && (9.6 - head) * tr.dir < 45) {
-        tr.played = true;
-        audio.play('train', { pos: new THREE.Vector3(tr.s * 31.5, 5.2, 9.6), dur: (TRAIN_LEN + 70) / tr.speed, vol: 1.0, ref: 7, bus: audio.amb });
-      }
-      if ((tr.dir > 0 && tr.z > 130) || (tr.dir < 0 && tr.z < -110)) { tr.g.visible = false; tr.wait = 30 + Math.random() * 50; }
+    // the wind in the washing and the streamers
+    this._wind = (this._wind || 0) + dt;
+    for (const w of this.swings || []) {
+      const tt = this._wind, g = Math.sin(tt * 0.31 + w.ph * 0.2) * 0.5 + 0.5;
+      if (w.axis === 'y') { w.o.rotation.y = (Math.sin(tt * 0.6 + w.ph) * 0.22 + Math.sin(tt * 1.7 + w.ph) * 0.06) * w.amp; w.o.rotation.z = (Math.sin(tt * 2.3 + w.ph) * 0.05 - 0.1 * (1 - g)) * w.amp; }
+      else w.o.rotation.x = (Math.sin(tt * 1.15 + w.ph) * 0.04 + Math.sin(tt * 0.43 + w.ph * 1.3) * 0.05) * (0.4 + g) * w.amp;
     }
-  }
-}
-
-/** Pixel cumulus band for the sky dome (u = azimuth, v = height above the horizon, alpha = coverage). */
-class SkyClouds {
-  constructor() {
-    const w = 512, h = 64;
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d');
-    const img = x.createImageData(w, h), d = img.data;
-    const put = (px, py, rgb, a) => { px = ((px % w) + w) % w; if (py < 0 || py >= h) return; const o = (py * w + px) * 4; if (d[o + 3] >= a) return; d[o] = rgb[0]; d[o + 1] = rgb[1]; d[o + 2] = rgb[2]; d[o + 3] = a; };
-    const TOP = [244, 239, 230], WARM = [255, 226, 184], UNDER = [141, 152, 168], MIDC = [214, 214, 210];
-    for (let i = 0; i < 13; i++) {
-      const cx = Math.floor(hash2(i, 1) * w), base = 54 - Math.floor(hash2(i, 2) * 34), W = 26 + Math.floor(hash2(i, 3) * 60), H = 4 + Math.floor(hash2(i, 4) * 8);
-      for (let k = 0; k < W; k++) {
-        const t = k / W;
-        const env = Math.sin(t * Math.PI) ** 0.6;
-        const bumps = 0.6 + 0.4 * Math.abs(Math.sin(t * 7.3 + i)) * Math.abs(Math.sin(t * 3.1 + i * 2));
-        const hh = Math.max(1, Math.round(H * env * bumps));
-        for (let j = 0; j < hh; j++) {
-          const py = base - j;
-          let col = j < 2 ? UNDER : j < 3 ? MIDC : TOP;
-          if (j >= hh - 1 && t < 0.6) col = WARM;
-          const edge = k < 2 || k > W - 3 || j === hh - 1;
-          put(cx + k, py, col, edge ? 150 : 225);
-        }
-      }
-    }
-    x.putImageData(img, 0, 0);
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.wrapS = THREE.RepeatWrapping;
-    this.texture = t;
+    updateTrains(this, dt, audio);
   }
 }

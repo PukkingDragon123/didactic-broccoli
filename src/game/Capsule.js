@@ -17,7 +17,7 @@ import { shellGeo, shellSkin } from '../gachakit/capsuleShell.js';
 import { subRange } from '../gachakit/geo.js';
 import { glossPlastic, clearPlastic, coatMaterial, platedMetal, pearlPlastic } from '../gachakit/celenv.js';
 import { seriesSheet, sealSheet, bandMaterial, SEALS } from '../gachakit/capsulePrint.js';
-import { leafletGeo, partsGeo, bagGeo, foilGeo, bandGeo, stickerGeo, dotStickerGeo, waxGeo, glitterGeo, BAND_N, BAND_VERTS, BAND_TAB, RIBBON_N, BAND_A0 } from '../gachakit/capsuleParts.js';
+import { leafletGeo, partsGeo, bagGeo, foilGeo, bandGeo, stickerGeo, dotStickerGeo, waxGeo, glitterGeo, faceGeo, labelBandGeo, BAND_N, BAND_VERTS, BAND_TAB, RIBBON_N, BAND_A0 } from '../gachakit/capsuleParts.js';
 
 /** Capsule radii (m): Ø48, Ø65 and Ø75 mm. */
 export const CAPSULE_R = { S: 0.024, M: 0.0325, L: 0.0375 };
@@ -79,7 +79,8 @@ const SEAL_OF = { plain: 'sticker', glitter: 'sticker', pearl: 'foil', metal: 'f
 const hexOf = (s, d) => parseInt(String(s || d).replace('#', ''), 16);
 const lerpHex = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t).getHex();
 // the skins' base tone is a light grey (room for brighter embossed edges): the tint is lifted to land on the colour
-const lift = (hex, k = 1.3) => new THREE.Color(hex).multiplyScalar(k);
+// (never past full brightness in any channel: a pale colour stays a little under itself rather than blooming)
+const lift = (hex, k = 1.3) => { const c = new THREE.Color(hex).multiplyScalar(k), m = Math.max(c.r, c.g, c.b); return m > 0.94 ? c.multiplyScalar(0.94 / m) : c; };
 const matCache = new Map();
 function mat(kind, color = 0xffffff) {
   const k = kind + ':' + color;
@@ -90,7 +91,7 @@ function mat(kind, color = 0xffffff) {
   else if (kind === 'tint') m = clearPlastic(shellSkin('tint').tex, lift(color, 1.1));
   else if (kind === 'frost') m = clearPlastic(shellSkin('frost').tex, lift(color, 1.2));
   else if (kind === 'pearl') m = pearlPlastic(shellSkin('plastic').tex, lift(color, 1.25));
-  else if (kind === 'metal') m = platedMetal(shellSkin('plastic').tex, lift(color, 1.25));
+  else if (kind === 'metal') m = platedMetal(shellSkin('plastic').tex, lift(color, 1.15));
   else if (kind === 'secret') m = glossPlastic(shellSkin('secret').tex, 0xffffff, { env: 1.3 });
   else if (kind === 'foil') m = platedMetal(shellSkin('plastic').tex, lift(color, 1.2), { roughness: 0.12 });
   else if (kind === 'glitter') {
@@ -187,7 +188,7 @@ export function makeCapsule(seriesId, color, opts = {}) {
       if (shape === 'can') { cap.parts.scale.setScalar(0.8); cap.bag.scale.setScalar(0.8); }
     }
     if (look === 'gold' || look === 'secret') {
-      cap.foil = add(foilGeo(r), mat('foil', look === 'secret' ? 0xe0b040 : 0xdfe6f0), bottom);
+      cap.foil = add(foilGeo(r), mat('foil', look === 'secret' ? 0xd8a838 : 0xaeb8c6), bottom);
       cap.foil.visible = false; // shown once the halves part (nothing sees it before)
     }
   }
@@ -196,6 +197,12 @@ export function makeCapsule(seriesId, color, opts = {}) {
     add(glitterGeo(r, 'top'), gm, top).onBeforeRender = twinkle;
     add(glitterGeo(r, 'bottom'), gm, bottom);
   }
+  // ---- shaped capsules: the daruma's face and its 福, the can's label
+  if (hi && shape === 'daruma') {
+    add(faceGeo(shape, r, 'top', SEALS.daruma, 44, [0.4, 0.52, 0.64, 0.76, 0.88, 0.98]), sealSheet().mat, top);
+    add(faceGeo(shape, r, 'bottom', SEALS.fuku, 17, [-0.76, -0.66, -0.56, -0.46, -0.38]), sealSheet().mat, bottom);
+  }
+  if (hi && shape === 'can') add(labelBandGeo(shape, r, 'bottom', SEALS.can, -0.64, -0.2), sealSheet().mat, bottom);
   // ---- outside: the seal over the seam (its two pieces part with the halves), the band(s) round it
   const sealed = hi && opts.seals !== false;
   if (sealed) {
@@ -284,11 +291,11 @@ export function makeShell(seriesId, color, opts = {}) {
 const pileMats = {};
 function pileMat(kind) {
   if (pileMats[kind]) return pileMats[kind];
-  const lifted = new THREE.Color(1.3, 1.3, 1.3);
+  const lifted = new THREE.Color(1.12, 1.12, 1.12);
   let m;
   if (kind === 'gloss') m = glossPlastic(shellSkin('plastic').tex, lifted);
-  else if (kind === 'tint') m = clearPlastic(shellSkin('tint').tex, new THREE.Color(1.1, 1.1, 1.1));
-  else m = clearPlastic(shellSkin('frost').tex, new THREE.Color(1.2, 1.2, 1.2));
+  else if (kind === 'tint') m = clearPlastic(shellSkin('tint').tex, new THREE.Color(1, 1, 1));
+  else m = clearPlastic(shellSkin('frost').tex, new THREE.Color(1.05, 1.05, 1.05));
   return (pileMats[kind] = m);
 }
 /**

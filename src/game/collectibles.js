@@ -47,7 +47,7 @@ export function itemGeometry(key, opts = {}) {
   if (g) return g;
   const item = getItem(key);
   if (!item) throw new Error('Unknown item ' + key);
-  if (isFigure(item)) return figureGeometry(item); // (one level of detail; cached in src/figures)
+  if (isFigure(item)) return figureGeometry(item, opts); // (opts.lowres: the light level of detail; cached in src/figures)
   const { model, scale } = itemModel(item, opts);
   const b = model.bounds();
   const maxDim = (Math.max(b.w, b.h, b.d) / scale) * ITEM_VOXEL;
@@ -60,11 +60,18 @@ export function itemGeometry(key, opts = {}) {
 
 /** Is this item's up-res geometry already built (cheap to show)? */
 export function hasItemGeometry(key) { return geoCache.has(key) || hasFigure(key); }
+const hasHi = (key) => geoCache.has(key) || hasFigure(key);
 
 /** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
   const fig = getItem(key);
-  if (isFigure(fig)) return makeFigureMesh(fig, finish);
+  if (isFigure(fig)) {
+    // sculpted figures: the light level of detail far away and in small thumbnails, the full one near and in the hand
+    const far = opts.lowres || (LOD.on && !opts.hires && !hasFigure(key));
+    const mesh = makeFigureMesh(fig, finish, { lowres: far });
+    if (LOD.on && !opts.lowres && !opts.hires) { mesh.userData.lod = { key, hi: !far, orphan: 0 }; LOD.live.add(mesh); }
+    return mesh;
+  }
   let geo;
   const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));
   if (lod) geo = geoCache.get(key) || itemGeometry(key, { lowres: true });
@@ -102,10 +109,11 @@ export function updateItemLod(camPos, budget = 2) {
     m.getWorldPosition(_p);
     const d2 = _p.distanceToSquared(camPos);
     if (!L.hi && d2 < n2) {
-      if (!geoCache.has(L.key)) { if (built >= budget) continue; built++; }
+      if (m.userData.gimmickLive) continue; // (posed in the hand: its joints are live)
+      if (!hasHi(L.key)) { if (built >= budget) continue; built++; }
       m.geometry = itemGeometry(L.key);
       L.hi = true;
-    } else if (L.hi && d2 > f2) {
+    } else if (L.hi && d2 > f2 && !m.userData.gimmickLive) {
       m.geometry = itemGeometry(L.key, { lowres: true });
       L.hi = false;
     }

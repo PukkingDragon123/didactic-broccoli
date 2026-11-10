@@ -59,6 +59,7 @@ export function poly(pts) {
   for (const [u, v] of pts) { u0 = Math.min(u0, u); v0 = Math.min(v0, v); u1 = Math.max(u1, u); v1 = Math.max(v1, v); }
   return {
     d: (u, v) => {
+      if (u < u0 - 1.5 || u > u1 + 1.5 || v < v0 - 1.5 || v > v1 + 1.5) return Math.max(u0 - u, u - u1, v0 - v, v - v1);
       let d = Infinity, inside = false;
       for (let i = 0, j = n - 1; i < n; j = i++) {
         const [xi, yi] = pts[i], [xj, yj] = pts[j], ex = xj - xi, ey = yj - yi, wx = u - xi, wy = v - yi;
@@ -71,11 +72,22 @@ export function poly(pts) {
     b: [u0, v0, u1, v1],
   };
 }
-/** A regular star / burst: n points, outer radius r, inner radius r * k. */
+/** A regular star / burst: n points, outer radius r, inner radius r * k (one edge, folded round: cheap at any n). */
 export function star(cx, cy, r, n = 5, k = 0.45, rot = Math.PI / 2) {
-  const pts = [];
-  for (let i = 0; i < n * 2; i++) { const a = rot + (i / (n * 2)) * Math.PI * 2, rr = i % 2 ? r * k : r; pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]); }
-  return poly(pts);
+  const an = Math.PI / n, bx = r * k * Math.cos(an), by = r * k * Math.sin(an), ex = bx - r, ey = by, el = ex * ex + ey * ey;
+  return {
+    d: (u, v) => {
+      const x0 = u - cx, y0 = v - cy, rr = Math.hypot(x0, y0);
+      if (rr > r + 2) return rr - r;
+      let a = Math.atan2(y0, x0) - rot;
+      a = ((a % (2 * an)) + 2 * an) % (2 * an);
+      if (a > an) a = 2 * an - a;
+      const x = rr * Math.cos(a), y = rr * Math.sin(a), t = Math.max(0, Math.min(1, ((x - r) * ex + y * ey) / el));
+      const d = Math.hypot(x - r - ex * t, y - ey * t);
+      return ex * y - ey * (x - r) > 0 ? -d : d;
+    },
+    b: [cx - r, cy - r, cx + r, cy + r],
+  };
 }
 const bb = (a, b, f) => (a && b ? f(a, b) : null);
 export const or = (...S) => ({ d: (u, v) => { let m = Infinity; for (const s of S) m = Math.min(m, s.d(u, v)); return m; }, b: S.reduce((a, s) => (a === undefined ? s.b : bb(a, s.b, (p, q) => [Math.min(p[0], q[0]), Math.min(p[1], q[1]), Math.max(p[2], q[2]), Math.max(p[3], q[3])])), undefined) });

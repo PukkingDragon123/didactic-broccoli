@@ -27,31 +27,31 @@ export { mix };
 // ---- materials: { c: colour, r: roughness, e: worn-edge colour (chamfers) }
 export const mat = (c, r = ROUGH.matte, e = null) => ({ c, r, e });
 /** Gloss paint on steel: the chamfers catch the light. */
-export const paint = (c, k = 0.3) => mat(c, 0.55, lighten(c, k));
-export const enamel = (c) => mat(c, 0.45, lighten(c, 0.35));
+export const paint = (c, k = 0.3) => mat(c, 0.62, lighten(c, k));
+export const enamel = (c) => mat(c, 0.6, lighten(c, 0.35));
 export const plastic = (c, k = 0.2) => mat(c, 0.68, lighten(c, k));
-export const metal = (c, k = 0.4) => mat(c, 0.45, lighten(c, k));
-export const chrome = (c = 0xc8ced2) => mat(c, 0.3, lighten(c, 0.55));
+export const metal = (c, k = 0.4) => mat(c, 0.6, lighten(c, k));
+export const chrome = (c = 0xc8ced2) => mat(c, 0.25, lighten(c, 0.55));
 export const matte = (c, k = 0.14) => mat(c, 0.9, k ? lighten(c, k) : null);
 export const rubber = (c = 0x2a2a2c) => mat(c, 0.95, lighten(c, 0.12));
 export const wood = (c, k = 0.18) => mat(c, 0.8, lighten(c, k));
 export const stone = (c, k = 0.16) => mat(c, 0.95, lighten(c, k));
 export const fabric = (c) => mat(c, 0.97, null);
-export const ceramic = (c) => mat(c, 0.4, lighten(c, 0.3));
+export const ceramic = (c) => mat(c, 0.24, lighten(c, 0.3));
 export const flat = (c, r = ROUGH.matte) => mat(c, r, null);
 
 /** Keep paint off pure white: under the afternoon sun anything brighter than this burns out (lamps are unlit, they stay). */
 export function lim(c) {
   const r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255, m = Math.max(r, g, b);
-  if (m <= 222) return c;
-  const k = (222 + (m - 222) * 0.36) / m;
+  if (m <= 208) return c;
+  const k = (208 + (m - 208) * 0.34) / m;
   return (Math.round(r * k) << 16) | (Math.round(g * k) << 8) | Math.round(b * k);
 }
 function limRegion(A, r) {
   const d = A.d, W = A.w;
   for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) {
     const i = (y * W + x) * 4, m = Math.max(d[i], d[i + 1], d[i + 2]);
-    if (m > 222) { const k = (222 + (m - 222) * 0.36) / m; d[i] = Math.round(d[i] * k); d[i + 1] = Math.round(d[i + 1] * k); d[i + 2] = Math.round(d[i + 2] * k); }
+    if (m > 208) { const k = (208 + (m - 208) * 0.34) / m; d[i] = Math.round(d[i] * k); d[i + 1] = Math.round(d[i + 1] * k); d[i + 2] = Math.round(d[i + 2] * k); }
   }
 }
 const SRGB = new Float32Array(256);
@@ -60,10 +60,29 @@ const FACE = { '+z': 0, '-z': 1, '+x': 2, '-x': 3, '+y': 4, '-y': 5 };
 
 export class Kit {
   /** page: the atlas page; B: the prop's box in metres { x0, y0, z0, x1, y1, z1, w, h, d } (its old voxel bounds). */
-  constructor(page, id, B) {
+  constructor(page, id, B, detail = 1) {
     this.A = page; this.id = id; this.B = B;
     this.G = new Geo(5);
     this.rough = ROUGH.matte;
+    this.detail = detail; // 1: the full model (round things doubled in segments, every edge eased); 0: the far level of detail
+    this.parts = []; // moving parts: { name, pivot, axis, G }
+  }
+  /** Segment count at this level of detail (anything meant to be round, i.e. 5 sides or more, is doubled). */
+  seg(n) { return this.detail && n >= 5 ? n * 2 : n; }
+  /**
+   * A moving part (a lid, a door, a wheel, a crank): everything fn builds belongs to it. pivot: the point it turns
+   * about; axis: 'x' | 'y' | 'z' (a hint for whoever animates it). The plain prop mesh has every part merged in its
+   * rest pose; propRig(id) (src/world/props.js) gives them as separate meshes hung on their pivots.
+   */
+  part(name, pivot, axis, fn) {
+    const main = this.G, G = new Geo(5);
+    G.uv = main.uv; G.g = main.g; G.m = main.m; G.neg = main.neg; G.stack = main.stack;
+    this.G = G;
+    try { fn(this); } finally { this.G = main; }
+    let ax = axis === 'x' ? [1, 0, 0] : axis === 'y' ? [0, 1, 0] : axis === 'z' ? [0, 0, 1] : axis;
+    if (main.m) { pivot = new THREE.Vector3(...pivot).applyMatrix4(main.m).toArray(); ax = new THREE.Vector3(...ax).transformDirection(main.m).toArray(); }
+    this.parts.push({ name, pivot, axis: ax, G });
+    return this;
   }
 
   // ------------------------------------------------------------------ colours
@@ -107,6 +126,11 @@ export class Kit {
 
   // ------------------------------------------------------------------ boxes
   box(c, x0, y0, z0, x1, y1, z1, o = {}) {
+    if (o.bevel === undefined && this.detail && !o.inward) {
+      // no bare boxes: every edge is eased a little (the smoothing pass turns the chamfer into a rounded edge)
+      const m = Math.min(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0));
+      if (m >= 0.014) o = { ...o, bevel: Math.min(0.0025 + m * 0.03, m * 0.22, 0.012) };
+    }
     const G = this.G, uv = this.uv(c), e = o.bevel ? (o.edge !== undefined ? (o.edge === null ? null : this.uv(o.edge)) : this.edge(c)) : null;
     const prev = G.uv;
     G.uv = e ? (p, n) => (Math.max(Math.abs(n[0]), Math.abs(n[1]), Math.abs(n[2])) > 0.985 ? uv(p, n) : e(p, n)) : uv;
@@ -136,6 +160,7 @@ export class Kit {
   lathe(c, at, prof, n = 10, o = {}) {
     const G = this.G, uv = this.uv(c), prev = G.uv;
     G.uv = uv;
+    n = this.seg(n);
     const axis = o.axis || 'y', arc = o.arc ?? Math.PI * 2, full = arc >= Math.PI * 2 - 1e-6;
     const a0 = o.a0 ?? (full ? Math.PI / n + Math.PI / 2 : 0), sx = o.sx ?? 1, sz = o.sz ?? 1;
     const P = (r, t, a) => {
@@ -166,11 +191,13 @@ export class Kit {
   }
   /** Cylinder (or cone frustum with o.r1) standing on (cx, y0, cz); o.axis lays it along x or z (from that point). */
   cyl(c, cx, y0, cz, r, h, n = 10, o = {}) {
-    const r1 = o.r1 ?? r, b = Math.min(o.bevel || 0, r * 0.45, r1 * 0.45, h * 0.45), e = b ? this.edge(c) : null;
     const cap0 = o.cap0 ?? o.caps ?? true, cap1 = o.cap1 ?? o.caps ?? true;
+    let bv = o.bevel;
+    if (bv === undefined && this.detail && (cap0 || cap1) && r >= 0.008 && h >= 0.008) bv = Math.min(0.003, r * 0.14, h * 0.2); // a rolled edge instead of a bare cylinder
+    const r1 = o.r1 ?? r, b = Math.min(bv || 0, r * 0.45, r1 * 0.45, h * 0.45), e = b && o.bevel ? this.edge(c) : null;
     const prof = [];
     if (cap0) prof.push([0, 0]);
-    if (b) prof.push([r - b, 0], [r, b], [r1, h - b], [r1 - b, h]); else prof.push([r, 0], [r1, h]);
+    if (b) prof.push([r - (cap0 ? b : 0), 0], [r, cap0 ? b : 0], [r1, h - (cap1 ? b : 0)], [r1 - (cap1 ? b : 0), h]); else prof.push([r, 0], [r1, h]);
     if (cap1) prof.push([0, h]);
     if (!e) return this.lathe(c, [cx, y0, cz], prof, n, o);
     // chamfered rims in the worn-edge colour
@@ -189,6 +216,7 @@ export class Kit {
   /** Ellipsoid centred on (x, y, z), radii rx / ry / rz, n round, m rings. o: { y0, y1: cut it between these fractions (-1..1) } */
   ball(c, x, y, z, rx, ry = rx, rz = rx, n = 8, m = 5, o = {}) {
     const prof = [], t0 = o.y0 ?? -1, t1 = o.y1 ?? 1;
+    if (this.detail && m >= 3) m *= 2;
     const b0 = Math.asin(Math.max(-1, Math.min(1, t0))), b1 = Math.asin(Math.max(-1, Math.min(1, t1)));
     if (t0 > -1 && o.cap !== false) prof.push([0, Math.sin(b0) * ry]);
     for (let k = 0; k <= m; k++) { const b = b0 + (b1 - b0) * (k / m); prof.push([Math.cos(b), Math.sin(b) * ry]); }
@@ -198,6 +226,7 @@ export class Kit {
   /** Torus about an axis through (x, y, z): ring radius R, tube r. */
   torus(c, x, y, z, R, r, n = 12, m = 5, o = {}) {
     const prof = [];
+    if (this.detail && m >= 4) m *= 2;
     // the section runs from the inside under the bottom, up the outside and back over the top (the lathe's outward rule)
     for (let k = 0; k <= m; k++) { const b = Math.PI + (k / m) * Math.PI * 2; prof.push([R + Math.cos(b) * r, Math.sin(b) * r]); }
     return this.lathe(c, [x, y, z], prof, n, o);
@@ -213,6 +242,7 @@ export class Kit {
   tube(c, pts, r, n = 5, o = {}) {
     const G = this.G, prev = G.uv;
     G.uv = this.uv(c);
+    if (!o.flat) n = this.seg(n);
     const N = pts.length, closed = !!o.closed, V = (p) => new THREE.Vector3(p[0], p[1], p[2]);
     const P = pts.map(V), T = [];
     for (let i = 0; i < N; i++) {
@@ -331,21 +361,23 @@ export class Kit {
       bleed(this.A, V.r);
       return V;
     };
-    return o.shared ? this.A.shared('patch:' + key, make) : make();
+    return this.A.shared(o.shared ? 'patch:' + key : `patch:${this.id}:${key}`, make);
   }
   /**
    * A blueprint view: a region painted in metres that faces take their colours from by projection (o.u / o.v map a
    * model point [x, y, z] to the view's metres; u0..u1, v0..v1 its extent; ppm pixels per metre). paint(V, K).
    */
   view(key, o, paint) {
-    const V = this.A.view(`${this.id}:${key}`, o), prev = this.A.cur, was = this._region;
-    this.A.ink(o.rough ?? ROUGH.matte);
-    this._region = V;
-    try { paint(V, this); } finally { this._region = was; }
-    this.A.cur = prev;
-    if (!o.bright) limRegion(this.A, V.r);
-    bleed(this.A, V.r);
-    return V;
+    return this.A.shared(`view:${this.id}:${key}`, () => {
+      const V = this.A.view(`${this.id}:${key}`, o), prev = this.A.cur, was = this._region;
+      this.A.ink(o.rough ?? ROUGH.matte);
+      this._region = V;
+      try { paint(V, this); } finally { this._region = was; }
+      this.A.cur = prev;
+      if (!o.bright) limRegion(this.A, V.r);
+      bleed(this.A, V.r);
+      return V;
+    });
   }
   /** A painted region on a triangle: st = [[s, t] x 3] in the region (0..1). */
   triUV(V, a, b, c, st, hint = null) { this.G.tri(a, b, c, hint, st.map(([s, t]) => V.st(s, t))); return this; }
@@ -391,7 +423,7 @@ export class Kit {
    * from y0 to y1; r / r1: the cylinder's radius at y0 / y1; o.n must be the cylinder's side count.
    */
   wrap(V, cx, y0, y1, cz, r, o = {}) {
-    const n = o.n ?? 10, arc = o.arc ?? Math.PI * 2, turn = o.turn ?? 0, lift = o.lift ?? 0.0012, r1 = (o.r1 ?? r) + lift, r0 = r + lift;
+    const n = this.seg(o.n ?? 10), arc = o.arc ?? Math.PI * 2, turn = o.turn ?? 0, lift = o.lift ?? 0.0012, r1 = (o.r1 ?? r) + lift, r0 = r + lift;
     const [s0, t0, s1, t1] = o.sub || [0, 0, 1, 1], step = (Math.PI * 2) / n, ph = Math.PI / n, A0 = turn - arc / 2, A1 = turn + arc / 2;
     const br = [A0];
     for (let k = Math.ceil((A0 - ph) / step + 1e-6); ph + k * step < A1 - 1e-6; k++) br.push(ph + k * step);
@@ -405,6 +437,12 @@ export class Kit {
       if (k === br.length - 2) u1 -= Math.sign(s1 - s0) * e;
       this.G.quad(P(a, y0, r0), P(b, y0, r0), P(b, y1, r1), P(a, y1, r1), [Math.sin(am), 0, Math.cos(am)], [V.st(u0, t0 + ev), V.st(u1, t0 + ev), V.st(u1, t1 - ev), V.st(u0, t1 - ev)]);
     }
+    return this;
+  }
+  /** The same over several bands of a lathe profile: prof = [[r, y], ...] from the bottom of the region to its top. */
+  wrapProfile(V, cx, cz, prof, o = {}) {
+    const y0 = prof[0][1], y1 = prof[prof.length - 1][1], [s0, t0, s1, t1] = o.sub || [0, 0, 1, 1];
+    for (let k = 0; k + 1 < prof.length; k++) this.wrap(V, cx, prof[k][1], prof[k + 1][1], cz, prof[k][0], { ...o, r1: prof[k + 1][0], sub: [s0, t0 + (t1 - t0) * ((prof[k][1] - y0) / (y1 - y0)), s1, t0 + (t1 - t0) * ((prof[k + 1][1] - y0) / (y1 - y0))] });
     return this;
   }
   /** uv function stretching a region over a box's faces along one axis (the grain of a board runs along `axis`). */
@@ -422,8 +460,10 @@ export class Kit {
 
   // ------------------------------------------------------------------ the result
   get tris() { return this.G.tris; }
-  finish() {
-    const geo = this.G.build(), n = geo.attributes.position.count;
+  /** One Geo -> BufferGeometry: smoothed normals, the baked vertex colours, a plain index. */
+  bake(G) {
+    const geo = G.build(), n = geo.attributes.position.count;
+    smooth(geo, this.crease ?? 50);
     // colours for the old vertex-coloured materials: the atlas colour under each corner, pulled a little towards
     // the middle of its triangle (so a corner on a painted line does not smear across the face)
     const uv = geo.attributes.uv.array, col = new Float32Array(n * 3), A = this.A, d = A.d, W = A.w, H = A.h;
@@ -444,10 +484,56 @@ export class Kit {
     geo.userData.lowPoly = true;
     geo.userData.page = A;
     geo.userData.tris = n / 3;
+    return geo;
+  }
+  finish() {
+    const body = this.G, all = new Geo(5);
+    all.add(body);
+    for (const p of this.parts) all.add(p.G);
+    const geo = this.bake(all);
+    if (this.parts.length) {
+      // kept for propRig(): the body without its moving parts, each part about its own pivot
+      const parts = this.parts, self = this;
+      geo.userData.rig = () => (geo.userData._rig ||= {
+        body: self.bake(body),
+        parts: parts.map((p) => { const g = self.bake(p.G); g.translate(-p.pivot[0], -p.pivot[1], -p.pivot[2]); return { name: p.name, pivot: p.pivot, axis: p.axis, geometry: g }; }),
+      });
+    }
     this.A.props++;
     this.A.touch();
     return geo;
   }
+}
+
+/**
+ * Smooth normals where the surface is smooth: corners at the same place whose faces meet at less than `crease`
+ * degrees share a normal (round things shade round, a chamfer reads as a rounded edge), sharper edges stay hard.
+ */
+export function smooth(geo, crease = 50) {
+  const P = geo.attributes.position.array, N = geo.attributes.normal.array, n = P.length / 3, cs = Math.cos((crease * Math.PI) / 180);
+  const out = new Float32Array(N.length), map = new Map(), area = new Float32Array(n);
+  for (let t = 0; t < n; t += 3) {
+    const ax = P[t * 3 + 3] - P[t * 3], ay = P[t * 3 + 4] - P[t * 3 + 1], az = P[t * 3 + 5] - P[t * 3 + 2], bx = P[t * 3 + 6] - P[t * 3], by = P[t * 3 + 7] - P[t * 3 + 1], bz = P[t * 3 + 8] - P[t * 3 + 2];
+    const a = Math.hypot(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx) + 1e-12;
+    area[t] = area[t + 1] = area[t + 2] = a;
+  }
+  for (let i = 0; i < n; i++) {
+    const k = Math.round(P[i * 3] * 20000) + ':' + Math.round(P[i * 3 + 1] * 20000) + ':' + Math.round(P[i * 3 + 2] * 20000);
+    let l = map.get(k);
+    if (!l) map.set(k, l = []);
+    l.push(i);
+  }
+  for (const l of map.values()) {
+    for (const i of l) {
+      const nx = N[i * 3], ny = N[i * 3 + 1], nz = N[i * 3 + 2];
+      let sx = 0, sy = 0, sz = 0;
+      for (const j of l) { const d = nx * N[j * 3] + ny * N[j * 3 + 1] + nz * N[j * 3 + 2]; if (d >= cs) { const w = area[j]; sx += N[j * 3] * w; sy += N[j * 3 + 1] * w; sz += N[j * 3 + 2] * w; } }
+      const m = Math.hypot(sx, sy, sz) || 1;
+      out[i * 3] = sx / m; out[i * 3 + 1] = sy / m; out[i * 3 + 2] = sz / m;
+    }
+  }
+  geo.attributes.normal.array.set(out);
+  return geo;
 }
 
 /** Copy a region's edge pixels into its padding, so minified sampling never pulls in the neighbour (or black). */

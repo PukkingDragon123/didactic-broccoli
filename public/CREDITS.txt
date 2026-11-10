@@ -1036,6 +1036,278 @@ ordered dither and lettered with the pixel fonts.
 - Attribution: "ガクアジサイ(額紫陽花) /  Japanese Hydrangea" by Toshihiro Gamo, licensed under CC BY 2.0
 - Shipped as: `img/photos/lane/hydrangea.jpg` (a travel poster)
 
+### Product label photos (the label studio, `src/products/photos.js`)
+
+The pictures of what is inside a pack (fruit, coffee, tea fields, a bowl of ramen, the cat on the cat food) on the drink
+labels, Mikawa-ya's packs and price cards and Ramen Yamada's ticket machine are real photographs from Open Images, cropped
+to 256 px or less, and in the game shrunk to label size, reduced to a dozen inks and ordered-dithered into pixel art. The
+brands, wordmarks and mascots round them are original drawings.
+
+#### melons
+
+- Author: kinwart
+- Source: https://www.flickr.com/photos/lindatrawnik/4957657525 (Open Images ID b8ceb9cc7a7080a3)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "melons" by kinwart, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/melon.jpg` (Melon Soda can, melon sweets)
+
+#### Grapes :) #food #instagram #iphoneography
+
+- Author: Wapster
+- Source: https://www.flickr.com/photos/wapster/8296911256 (Open Images ID 3da0117c3a40b5c5)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Grapes :) #food #instagram #iphoneography" by Wapster, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/grapes.jpg` (Fanto Grape can, grape sweets)
+
+#### Lemon
+
+- Author: Chika Watanabe
+- Source: https://www.flickr.com/photos/chikawatanabe/498694519 (Open Images ID b3bd76d50711d872)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Lemon" by Chika Watanabe, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/lemon.jpg` (CC Lemonade bottle, Strong Nought can)
+
+#### oranges
+
+- Author: rare hero
+- Source: https://www.flickr.com/photos/rarehero/5477908912 (Open Images ID 43e1ac17fcbd97bf)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "oranges" by rare hero, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/orange.jpg` (mikan sweets and tins on the shop shelves)
+
+#### Studio Oranges #4
+
+- Author: Christopher Paquette
+- Source: https://www.flickr.com/photos/chpaquette/416515222 (Open Images ID 8c9ac64aa721f7b9)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Studio Oranges #4" by Christopher Paquette, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/mikan.jpg` (the mikan carton)
+
+#### Coffee Beans
+
+- Author: Pen Waggener
+- Source: https://www.flickr.com/photos/epw/2876377014 (Open Images ID 4457f8e171d138e6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Coffee Beans" by Pen Waggener, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/beans.jpg` (Bancho Black can)
+
+#### Day 304: Cappuccino Dragon
+
+- Author: CaptMikey9
+- Source: https://www.flickr.com/photos/mjsciald/10665043044 (Open Images ID b0409c7efbbaeee7)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Day 304: Cappuccino Dragon" by CaptMikey9, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/coffee.jpg` (Morning Shot and Cafe au Lait cans)
+
+#### Tea plantation_31
+
+- Author: ajari
+- Source: https://www.flickr.com/photos/ajari/4582188398 (Open Images ID 2c6b472a3ddd5dd7)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tea plantation_31" by ajari, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/teafield.jpg` (Hai! Ocha label)
+
+#### China - Chengdu 22 - green tea
+
+- Author: McKay Savage
+- Source: https://www.flickr.com/photos/mckaysavage/140902695 (Open Images ID 642e0fa2ad99d843)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "China - Chengdu 22 - green tea" by McKay Savage, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/teacup.jpg` (Jasmine Tea label)
+
+#### Cows
+
+- Author: Matt
+- Source: https://www.flickr.com/photos/corndog_au/4947490718 (Open Images ID 6b792f8539a62e67)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Cows" by Matt, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/cows.jpg` (the milk carton)
+
+#### Sweetest Corn ~
+
+- Author: DoremiGirl
+- Source: https://www.flickr.com/photos/doremigirl/6070960210 (Open Images ID 8ca078420101d034)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Sweetest Corn ~" by DoremiGirl, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/corn.jpg` (Corn Potage can, corn tins)
+
+#### Corn Soup at Loving Hut
+
+- Author: Max Kiesler
+- Source: https://www.flickr.com/photos/maxkiesler/3261808283 (Open Images ID dc77f4e27dbb3e52)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Corn Soup at Loving Hut" by Max Kiesler, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/cornsoup.jpg` (Corn Potage can)
+
+#### Plum Blossom
+
+- Author: Hayato Hashimoto (橋本隼人)
+- Source: https://www.flickr.com/photos/insanityaf/5479192196 (Open Images ID 6d31cfc15b4efd11)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Plum Blossom" by Hayato Hashimoto (橋本隼人), licensed under CC BY 2.0
+- Shipped as: `img/photos/products/plum.jpg` (Umeshu Soda can)
+
+#### Whisky
+
+- Author: Jonas Birmé
+- Source: https://www.flickr.com/photos/birme/15860502471 (Open Images ID 1358dd639dfd66e8)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Whisky" by Jonas Birmé, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/whisky.jpg` (Highball can)
+
+#### hand made glass sake set blue 01
+
+- Author: Ken
+- Source: https://www.flickr.com/photos/29819592@N04/3410579980 (Open Images ID 239d60ab92280542)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "hand made glass sake set blue 01" by Ken, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/sake.jpg` (One Kappu label)
+
+#### Shoyu ramen
+
+- Author: Geoff Stearns
+- Source: https://www.flickr.com/photos/tensafefrogs/6273420209 (Open Images ID 9fa51eaa79d90484)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Shoyu ramen" by Geoff Stearns, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/ramen_shoyu.jpg` (cup noodles, ramen ticket machine and menu)
+
+#### Ramen
+
+- Author: Jeremy Keith
+- Source: https://www.flickr.com/photos/adactio/8751065213 (Open Images ID a4a906d627f914b3)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Ramen" by Jeremy Keith, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/ramen_tonkotsu.jpg` (ramen ticket machine and menu)
+
+#### Raijin Ramen at Raijin Kitchen
+
+- Author: Gary Stevens
+- Source: https://www.flickr.com/photos/garysoup/8699860873 (Open Images ID 4fb0c5a320b5d2fc)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Raijin Ramen at Raijin Kitchen" by Gary Stevens, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/ramen_miso.jpg` (ramen ticket machine and menu)
+
+#### onigiri
+
+- Author: Juliana Phang
+- Source: https://www.flickr.com/photos/ju-x/2263898920 (Open Images ID 2d66a2282db22f20)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "onigiri" by Juliana Phang, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/onigiri.jpg` (the rice-ball price card)
+
+#### Flan
+
+- Author: dolbex
+- Source: https://www.flickr.com/photos/dolbex/16259230360 (Open Images ID 1fe4512a8e11f226)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Flan" by dolbex, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/pudding.jpg` (the pudding lid)
+
+#### Portrait of a Cat (1)
+
+- Author: zeevveez
+- Source: https://www.flickr.com/photos/zeevveez/6052599988 (Open Images ID bb32d4035b4776ad)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Portrait of a Cat (1)" by zeevveez, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/cat.jpg` (cat-food box and tin on the shop shelves)
+
+#### Mt. Fuji From Izu Peninsula
+
+- Author: Kirt Cathey
+- Source: https://www.flickr.com/photos/kirtcathey/15627387724/ (Open Images ID 78539e8d9556eb55)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Mt. Fuji From Izu Peninsula" by Kirt Cathey, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/fuji.jpg` (Tennen Water label, the match box)
+
+#### Waves crashing onto the rocks
+
+- Author: Christian Haugen
+- Source: https://www.flickr.com/photos/christianhaugen/3603286373 (Open Images ID 15fb215666bb5782)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Waves crashing onto the rocks" by Christian Haugen, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/wave.jpg` (Ponkari Sweat label)
+
+#### Yummy chocolates
+
+- Author: Juhan Sonin
+- Source: https://www.flickr.com/photos/juhansonin/8272587158 (Open Images ID a532a5538cff244f)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Yummy chocolates" by Juhan Sonin, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/choco.jpg` (chocolate sweets on the shop shelves)
+
+#### wheat field
+
+- Author: francois schnell
+- Source: https://www.flickr.com/photos/frenchy/28777815 (Open Images ID af16577a78b2ad25)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "wheat field" by francois schnell, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/wheat.jpg` (Mugicha label, Morio Draft can)
+
+#### bbq pork buns
+
+- Author: okayryan
+- Source: https://www.flickr.com/photos/24219366@N06/6204808941 (Open Images ID 13e53dd24ea72bea)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "bbq pork buns" by okayryan, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/buns.jpg` (biscuit / bread packs on the shop shelves)
+
+#### Ocean Blue Morning Glory (Ipomoea indica var. acuminata)
+
+- Author: Bob Peterson
+- Source: https://www.flickr.com/photos/pondapple/8320413721 (Open Images ID d9010cd519a5f329)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Ocean Blue Morning Glory (Ipomoea indica var. acuminata)" by Bob Peterson, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/asagao.jpg` (the morning-glory seed packet)
+
+#### Oden - stewed fish cakes, etc. おでん
+
+- Author: Naotake Murayama
+- Source: https://www.flickr.com/photos/naotakem/14093756269 (Open Images ID 91ba2deb2230aeda)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Oden - stewed fish cakes, etc. おでん" by Naotake Murayama, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/oden.jpg` (Oden Can)
+
+#### Pink grapefruit close up
+
+- Author: Helena Jacoba
+- Source: https://www.flickr.com/photos/69302634@N02/7710621710 (Open Images ID 023f85a9892a798a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Pink grapefruit close up" by Helena Jacoba, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/grapefruit.jpg` (Aquaria label)
+
+#### Gyoza
+
+- Author: slgckgc
+- Source: https://www.flickr.com/photos/slgc/4160880655 (Open Images ID 5b1c17cb6d748fa0)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Gyoza" by slgckgc, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/gyoza.jpg` (ramen ticket machine and menu)
+
+#### Strawberries.
+
+- Author: ADRIIGUMMYLITZ
+- Source: https://www.flickr.com/photos/adriigummylitz/7613087934/ (Open Images ID 8a9d7da8e50cf3df)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Strawberries." by ADRIIGUMMYLITZ, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/strawberry.jpg` (sweets on the shop shelves)
+
+#### summer sardines
+
+- Author: Gustavo Veríssimo
+- Source: https://www.flickr.com/photos/gustty/42769111 (Open Images ID 308ced763b5f08bb)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "summer sardines" by Gustavo Veríssimo, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/sardines.jpg` (the fish tin on the shop shelves)
+
+#### Imperial Navy curry and rice
+
+- Author: Masayuki (Yuki) Kawagishi
+- Source: https://www.flickr.com/photos/_yuki_k_/4468357856/ (Open Images ID 94b560a540fe777a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Imperial Navy curry and rice" by Masayuki (Yuki) Kawagishi, licensed under CC BY 2.0
+- Shipped as: `img/photos/products/curry.jpg` (curry tin and snack on the shop shelves)
+
+
 ## Licences
 
 - CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/ (no attribution required; credited anyway)

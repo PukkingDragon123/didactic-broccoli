@@ -1,6 +1,6 @@
 # Gacha Garage: project rules
 
-First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, low-poly cel-shaded 3D, pixel-art 2D.
+First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, detailed cel-shaded 3D, pixel-art 2D.
 The art rules in full: docs/ART.md.
 
 ## Look and feel (the owner's explicit rules)
@@ -13,8 +13,9 @@ The art rules in full: docs/ART.md.
 - UI is paper, in detailed pixel art: notes, tickets, receipts, tags, notebook pages (src/ui/paper.js + paper.css: grain,
   torn / zig-zag edges, masking tape, hanko stamps), ink-coloured text, hard pixel shadows. New UI uses this kit.
   Speech, subtitles and chat choices are plain floating text (hard ink outline, no paper box).
-- 3D art is low-poly, high-resolution and cel-shaded, like the characters and vehicles: no voxels, no chunky pixel
-  textures; real-world proportions from reference; clean cartoon textures (docs/ART.md). First-person arms are
+- 3D art is detailed, polished and lightly cel-shaded (not low-poly, no voxels, no chunky pixel textures, no
+  stuck-together primitive shapes): real-world proportions from reference, smooth curves, modelled small parts,
+  clean cartoon textures, realistic lighting with a soft cel touch and no ring artefacts (docs/ART.md). First-person arms are
   blocky but connected and flexible.
 - Product labels, posters and gacha display cards are detailed pixel art with mascots and full label art. All
   designs, names and brands are original (real ones are genre reference only).

@@ -34,8 +34,17 @@ function polyNormal(pts) {
 }
 const centroid = (pts) => { const c = [0, 0, 0]; for (const p of pts) { c[0] += p[0]; c[1] += p[1]; c[2] += p[2]; } return mul(c, 1 / pts.length); };
 
-/** Catmull-Rom through control points (any dimension), n steps per span: a smooth profile or path from a few points. */
+/**
+ * How finely round things are cut. The counts a figure asks for (segs, rings, sides, spline steps) are its light level
+ * of detail (shelves, thumbnails); in the hand they are multiplied by QUAL.k, so surfaces come out smooth.
+ */
+export const QUAL = { k: 1 };
+const N = (n, min = 3) => Math.max(min, Math.round(n * QUAL.k));
+const N2 = (n, k) => Math.max(3, Math.round(n * k));
+
+/** Catmull-Rom through control points (any dimension), n steps per span (x QUAL.k): a smooth profile or path from a few points. */
 export function spline(pts, n = 4, closed = false) {
+  n = N(n, 1);
   const out = [], N = pts.length, D = pts[0].length;
   const P = (i) => (closed ? pts[((i % N) + N) % N] : pts[Math.max(0, Math.min(N - 1, i))]);
   const spans = closed ? N : N - 1;
@@ -55,7 +64,8 @@ export function spline(pts, n = 4, closed = false) {
  * A cross-section round c: a superellipse (pow 2 = ellipse, 4+ = rounded box) of n points. axis 'y' (default): in the
  * xz plane, radii (rx, rz); 'z': in the xy plane, radii (rx, ry); 'x': in the zy plane, radii (rz, ry).
  */
-export function ring(c, ra, rb, n = 12, { pow = 2, a0 = null, axis = 'y' } = {}) {
+export function ring(c, ra, rb, n = 12, { pow = 2, a0 = null, axis = 'y', exact = false } = {}) {
+  if (!exact) n = N(n);
   const out = [], e = 2 / pow, off = a0 ?? (Math.PI / 2 - Math.PI / n);
   for (let i = 0; i < n; i++) {
     const a = off + (i / n) * Math.PI * 2, cs = Math.cos(a), sn = Math.sin(a);
@@ -93,8 +103,9 @@ export class Sculpt {
     this.slot = 0;
     this.partName = null;
     this.parts = {}; // name -> { rest, move(t) -> Matrix4, label }
-    this.crease = 62; // degrees: neighbouring facets flatter than this share softened normals
-    this.soft = 0.5; // 0 = flat-shaded facets, 1 = fully smooth
+    this.crease = 50; // degrees: neighbouring facets flatter than this share smooth normals; sharper edges stay hard
+    this.soft = 1; // 0 = flat-shaded facets, 1 = fully smooth
+    this.patches = []; // smooth surfaces as grids (lathes, lofts, tubes): one atlas patch each, see grid()
     this.dens = 1; // texel density multiplier for the facets that follow
     this.maxFacet = 11; // mm: quads longer than this are cut into coplanar pieces (0 = never)
   }
@@ -120,17 +131,41 @@ export class Sculpt {
     try { fn(-1); } finally { this.pop(); }
     return this;
   }
-  /** Facets built in fn belong to a moving part. def: { rest (t of the resting pose, 0..1), move(t) -> Matrix4 }. */
+  /**
+   * A joint of the figure's rig: everything built in fn moves with it (and with the joint it is nested in).
+   *   hinge:  { pivot: [x, y, z], axis: 'x' | 'y' | 'z' | [x, y, z], min, max, rest, g: [at t = 0, at t = 1], idle }
+   *   slide:  { slide: [dx, dy, dz] (the travel at value 1), min, max, rest, g, idle }
+   *   custom: { move: (t) => Matrix4, rest }   (driven by the gimmick's t alone)
+   * min / max: the limits it can be posed to (radians, or 0..1 of the slide); rest: where it sits; g: where the
+   * figure's gimmick takes it; idle: how far it sways by itself while you turn the figure over in your hand.
+   */
   part(name, def, fn) {
-    this.parts[name] = { rest: 0, ...def };
+    this.parts[name] = { rest: 0, ...def, parent: this.partName };
     const prev = this.partName;
     this.partName = name;
     try { fn(this); } finally { this.partName = prev; }
     return this;
   }
+  joint(name, def, fn) { return this.part(name, def, fn); }
+  /** The matrix of a joint (figure space, mm) for a pose: { t (gimmick, 0..1), values: { joint: value }, add: { joint: offset } }. */
+  jointMatrix(name, pose = {}) {
+    const d = this.parts[name], t = pose.t ?? this.restT;
+    let m;
+    if (d.move) m = d.move(t);
+    else {
+      let v = pose.values?.[name] ?? (d.g ? lerp(d.g[0], d.g[1], t) : d.rest);
+      v += pose.add?.[name] || 0;
+      if (d.min !== undefined) v = Math.max(d.min, v);
+      if (d.max !== undefined) v = Math.min(d.max, v);
+      m = d.slide ? slide(d.slide[0] * v, d.slide[1] * v, d.slide[2] * v) : hinge(d.pivot || [0, 0, 0], d.axis || 'y', v);
+    }
+    return d.parent ? this.jointMatrix(d.parent, pose).clone().multiply(m) : m;
+  }
+  /** The gimmick's t in the resting pose (S.rest = t, or the first custom part's own rest). */
+  get restT() { if (this.rest !== undefined) return this.rest; const c = Object.values(this.parts).find((d) => d.move); return c ? c.rest : 0; }
   /** Run fn with these settings ({ soft, crease, dens, slot }), then restore. */
   with(o, fn) {
-    const keep = { soft: this.soft, crease: this.crease, dens: this.dens, slot: this.slot, layers: this.layers, maxFacet: this.maxFacet };
+    const keep = { soft: this.soft, crease: this.crease, dens: this.dens, slot: this.slot, layers: this.layers, maxFacet: this.maxFacet, partName: this.partName };
     Object.assign(this, o);
     try { fn(this); } finally { Object.assign(this, keep); }
     return this;
@@ -220,6 +255,40 @@ export class Sculpt {
     return this;
   }
 
+  /**
+   * A smooth surface as a grid of points: rows[j][i] (local mm), nv + 1 rows of nu + 1 points (nu when closedU: the
+   * rows wrap round). The whole grid shares one patch of the atlas (src/figures/bake.js), so paint runs across it
+   * without seams and filtering stays clean; normals are smooth except across creases. o.hint: an outward direction
+   * (or (cell points) -> direction) to orient it.
+   */
+  grid(rows, o = {}) {
+    const closed = !!o.closedU, nv = rows.length - 1, nu = closed ? rows[0].length : rows[0].length - 1;
+    if (nv < 1 || nu < 1) return this;
+    const at = (j, i) => rows[j][closed ? i % nu : i], cells = [];
+    let flip = o.flip ?? null;
+    for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) {
+      const q = [at(j, i), at(j, i + 1), at(j + 1, i + 1), at(j + 1, i)], n = polyNormal(q), a = len(n) / 2, c = { i, j, lp: q, ln: norm(n), area: a, dead: a < 1e-7 };
+      if (flip === null && !c.dead && o.hint) flip = dot(c.ln, typeof o.hint === 'function' ? o.hint(q) : o.hint) < 0;
+      cells.push(c);
+    }
+    if (flip) for (const c of cells) c.ln = mul(c.ln, -1);
+    const cosC = Math.cos(this.crease * Math.PI / 180), soft = this.soft, by = new Map();
+    const key = (p) => `${Math.round(p[0] * 200)},${Math.round(p[1] * 200)},${Math.round(p[2] * 200)}`;
+    if (soft > 0) for (const c of cells) if (!c.dead) for (const p of c.lp) { const k = key(p); let a = by.get(k); if (!a) by.set(k, a = new Set()); a.add(c); }
+    const nm = new THREE.Matrix3().getNormalMatrix(this.m), v = new THREE.Vector3();
+    for (const c of cells) {
+      c.p = c.lp.map((q) => { v.set(q[0], q[1], q[2]).applyMatrix4(this.m); return [v.x, v.y, v.z]; });
+      c.vn = c.lp.map((p) => {
+        let s = c.ln;
+        if (soft > 0 && !c.dead) { s = [0, 0, 0]; for (const g of by.get(key(p))) if (dot(g.ln, c.ln) >= cosC) s = add(s, mul(g.ln, g.area)); s = norm(s); if (soft < 1) s = norm([lerp(c.ln[0], s[0], soft), lerp(c.ln[1], s[1], soft), lerp(c.ln[2], s[2], soft)]); }
+        v.set(s[0], s[1], s[2]).applyMatrix3(nm).normalize();
+        return [v.x, v.y, v.z];
+      });
+    }
+    this.patches.push({ nu, nv, closed, cells, layers: this.layers, slot: this.slot, part: this.partName, dens: this.dens });
+    return this;
+  }
+
   // ---- primitives
   /**
    * A solid of revolution about the y axis. prof: [[r, y], ...] running up the outside (and back down the inside of an
@@ -228,23 +297,29 @@ export class Sculpt {
    * axis stands; no frame of its own, so paint coordinates stay those of the frame you are in).
    */
   lathe(prof, o = {}) {
-    const segs = o.segs ?? 12, sx = o.sx ?? 1, sz = o.sz ?? 1;
+    const segs = N(o.segs ?? 12), sx = o.sx ?? 1, sz = o.sz ?? 1;
     const arc = o.arc || null, a0 = arc ? arc[0] : o.a0 ?? (Math.PI / 2 - Math.PI / segs), span = arc ? arc[1] - arc[0] : Math.PI * 2;
     const c = o.at || [0, 0, 0];
     const P = (r, y, a) => [c[0] + Math.cos(a) * r * sx, c[1] + y, c[2] + Math.sin(a) * r * sz];
-    const polys = [];
-    for (let k = 0; k + 1 < prof.length; k++) {
-      const [r0, y0] = prof[k], [r1, y1] = prof[k + 1];
-      if (r0 < 1e-6 && r1 < 1e-6) continue;
-      for (let s = 0; s < segs; s++) {
-        const aA = a0 + (s / segs) * span, aB = a0 + ((s + 1) / segs) * span;
-        // travelling up the profile with the surface on the right: around the axis the winding is A(low) -> A(high)... flipped for ccw-from-outside
-        polys.push([P(r0, y0, aB), P(r0, y0, aA), P(r1, y1, aA), P(r1, y1, aB)]);
+    // a row of the profile at every height where the paint changes (band / below / above): two-tone lines are real edges
+    const ys = [...new Set(this.layers.flatMap((l) => l.cutsY || []))].map((y) => y - c[1]);
+    if (ys.length) {
+      const cut = [prof[0]];
+      for (let k = 0; k + 1 < prof.length; k++) {
+        const [r0, y0] = prof[k], [r1, y1] = prof[k + 1];
+        const inside = ys.filter((y) => (y - y0) * (y - y1) < -1e-6).sort((a, b) => (y1 > y0 ? a - b : b - a));
+        for (const y of inside) cut.push([r0 + (r1 - r0) * (y - y0) / (y1 - y0), y]);
+        cut.push(prof[k + 1]);
       }
+      prof = cut;
     }
+    const rows = prof.map(([r, y]) => { const row = []; for (let s2 = 0; s2 < (arc ? segs + 1 : segs); s2++) row.push(P(r, y, a0 + (s2 / segs) * span)); return row; });
+    // travelling up the profile with the surface on the right: outward is (dy, -dr) swept round
+    let hint = null;
+    for (let k = 0; k + 1 < prof.length && !hint; k++) { const dr = prof[k + 1][0] - prof[k][0], dy = prof[k + 1][1] - prof[k][1]; if (Math.hypot(dr, dy) > 1e-6 && Math.max(prof[k][0], prof[k + 1][0]) > 1e-6) { const am = a0 + (0.5 / segs) * span; hint = [Math.cos(am) * dy * sz, -dr * sx * sz, Math.sin(am) * dy * sx]; } }
+    this.grid(rows, { closedU: !arc, hint });
     const cap = o.cap ?? true, first = prof[0], last = prof[prof.length - 1];
-    const ringAt = (r, y) => Array.from({ length: segs }, (_, s) => P(r, y, a0 + (s / segs) * span));
-    this.emit(polys);
+    const ringAt = (r, y) => Array.from({ length: segs }, (_, s2) => P(r, y, a0 + (s2 / segs) * span));
     if (!arc) {
       if (first[0] > 1e-6 && (cap === true || cap === 'bottom')) this.emit([ringAt(first[0], first[1])], [0, -1, 0]);
       if (last[0] > 1e-6 && (cap === true || cap === 'top')) this.emit([ringAt(last[0], last[1])], [0, 1, 0]);
@@ -254,24 +329,17 @@ export class Sculpt {
 
   /** An ellipsoid: centre c, radii r (number or [rx, ry, rz]). o: segs, rings, v0 / v1 (cut: 0 = south pole, 1 = north), cap. */
   ball(c, r, o = {}) {
-    const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, rings = o.rings ?? 7, v0 = o.v0 ?? 0, v1 = o.v1 ?? 1;
+    const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, rings = N(o.rings ?? 7), v0 = o.v0 ?? 0, v1 = o.v1 ?? 1;
     const prof = [];
     for (let i = 0; i <= rings; i++) { const ph = (v0 + (v1 - v0) * (i / rings)) * Math.PI; prof.push([Math.max(0, Math.sin(ph)), -Math.cos(ph) * ry]); }
-    return this.lathe(prof, { segs: o.segs ?? 12, sx: rx, sz: rz, cap: o.cap ?? true, a0: o.a0, at: c });
+    const k = QUAL.k; QUAL.k = 1; try { return this.lathe(prof, { segs: N2(o.segs ?? 12, k), sx: rx, sz: rz, cap: o.cap ?? true, a0: o.a0, at: c }); } finally { QUAL.k = k; }
   }
 
   /** Skin through rings of equal point counts (see ring()). o.caps: 'both' | 'start' | 'end' | 'none'. */
   loft(rings, o = {}) {
-    const polys = [], n = rings[0].length, caps = o.caps ?? 'both';
+    const caps = o.caps ?? 'both';
     const cs = rings.map(centroid);
-    for (let k = 0; k + 1 < rings.length; k++) {
-      const A = rings[k], B = rings[k + 1], mid = mul(add(cs[k], cs[k + 1]), 0.5);
-      for (let i = 0; i < n; i++) {
-        const j = (i + 1) % n, q = [A[i], A[j], B[j], B[i]];
-        polys.push({ pts: q, hint: sub(centroid(q), mid) });
-      }
-    }
-    this.emit(polys);
+    this.grid(rings, { closedU: true, hint: (q) => sub(centroid(q), mul(add(cs[0], cs[1]), 0.5)) });
     if (caps === 'both' || caps === 'start') this.emit([rings[0]], sub(cs[0], cs[1]));
     if (caps === 'both' || caps === 'end') this.emit([rings[rings.length - 1]], sub(cs[cs.length - 1], cs[cs.length - 2]));
     return this;
@@ -282,7 +350,7 @@ export class Sculpt {
    * o: sides, caps, flat ([wide, thin] scale of the section: ribbons, noodles), roll (radians).
    */
   tube(path, r, o = {}) {
-    const sides = o.sides ?? 6, n = path.length, fl = o.flat || [1, 1];
+    const sides = N(o.sides ?? 6), n = path.length, fl = o.flat || [1, 1];
     const R = (i) => (typeof r === 'function' ? r(i / (n - 1)) : Array.isArray(r) ? r[i] : r);
     const tan = (i) => norm(sub(path[Math.min(n - 1, i + 1)], path[Math.max(0, i - 1)]));
     // parallel-transport frame
@@ -302,12 +370,7 @@ export class Sculpt {
       for (let k = 0; k < sides; k++) { const a = (k / sides) * Math.PI * 2 + Math.PI / sides; ringP.push(add(path[i], add(mul(u, Math.cos(a) * rr * fl[0]), mul(w, Math.sin(a) * rr * fl[1])))); }
       rings.push(ringP);
     }
-    const polys = [];
-    for (let i = 0; i + 1 < n; i++) {
-      const mid = mul(add(path[i], path[i + 1]), 0.5);
-      for (let k = 0; k < sides; k++) { const j = (k + 1) % sides, q = [rings[i][k], rings[i][j], rings[i + 1][j], rings[i + 1][k]]; polys.push({ pts: q, hint: sub(centroid(q), mid) }); }
-    }
-    this.emit(polys);
+    this.grid(rings, { closedU: true, hint: (q) => sub(centroid(q), mul(add(path[0], path[1]), 0.5)) });
     if (o.caps !== false) {
       if (R(0) > 1e-6) this.emit([rings[0]], mul(tan(0), -1));
       if (R(n - 1) > 1e-6) this.emit([rings[n - 1]], tan(n - 1));
@@ -341,7 +404,7 @@ export class Sculpt {
 
   /** A cylinder / cone frustum along y from (c) up by h. r: radius or [bottom, top]. o: segs, bevel (chamfered rims), cap. */
   cyl(c, r, h, o = {}) {
-    const [rb, rt] = Array.isArray(r) ? r : [r, r], b = Math.min(o.bevel || 0, h / 2.01, Math.min(rb, rt) * 0.9);
+    const [rb, rt] = Array.isArray(r) ? r : [r, r], b = Math.min(o.bevel ?? Math.min(0.5, h * 0.2), h / 2.01, Math.min(rb, rt) * 0.9);
     const prof = b > 0 ? [[rb - b, 0], [rb, b], [rt, h - b], [rt - b, h]] : [[rb, 0], [rt, h]];
     if (o.hollow) return this.lathe([[rb, 0], [rt, h], [rt - o.hollow, h], [rb - o.hollow, 0], [rb, 0]], { segs: o.segs ?? 12, cap: false, sx: o.sx, sz: o.sz, at: c });
     return this.lathe(prof, { segs: o.segs ?? 12, cap: o.cap ?? true, sx: o.sx, sz: o.sz, a0: o.a0, at: c });
@@ -379,28 +442,25 @@ export class Sculpt {
 
   /** A torus in the xz plane (lying flat): ring radius R, tube radius r. o: segs, sides, arc ([a0, a1]). */
   torus(c, R, r, o = {}) {
-    const segs = o.segs ?? 12, sides = o.sides ?? 6, arc = o.arc || [0, Math.PI * 2], closed = !o.arc, path = [];
+    const segs = N(o.segs ?? 12), sides = N(o.sides ?? 6), arc = o.arc || [0, Math.PI * 2], closed = !o.arc, path = [];
     const n = closed ? segs : segs + 1;
     for (let i = 0; i < n; i++) { const a = arc[0] + (i / segs) * (arc[1] - arc[0]); path.push([c[0] + Math.cos(a) * R, c[1], c[2] + Math.sin(a) * R]); }
-    if (!closed) return this.tube(path, r, { sides, caps: o.caps });
+    if (!closed) { const k = QUAL.k; QUAL.k = 1; try { return this.tube(path, r, { sides, caps: o.caps }); } finally { QUAL.k = k; } }
     const rings = path.map((p, i) => {
       const a = arc[0] + (i / segs) * (arc[1] - arc[0]), out = [Math.cos(a), 0, Math.sin(a)], ringP = [];
       for (let k = 0; k < sides; k++) { const b = (k / sides) * Math.PI * 2 + Math.PI / sides; ringP.push(add(p, add(mul(out, Math.cos(b) * r), [0, Math.sin(b) * r * (o.sy ?? 1), 0]))); }
       return ringP;
     });
-    const polys = [];
-    for (let i = 0; i < n; i++) {
-      const A = rings[i], B = rings[(i + 1) % n], mid = mul(add(path[i], path[(i + 1) % n]), 0.5);
-      for (let k = 0; k < sides; k++) { const j = (k + 1) % sides, q = [A[k], A[j], B[j], B[k]]; polys.push({ pts: q, hint: sub(centroid(q), mid) }); }
-    }
-    return this.emit(polys);
+    return this.grid([...rings, rings[0]], { closedU: true, hint: (q) => sub(centroid(q), path[0]) });
   }
 
   /** Bounds of the figure in its resting pose (mm). */
   bounds() {
     const b = new THREE.Box3(), v = new THREE.Vector3(), rest = {};
-    for (const [k, d] of Object.entries(this.parts)) rest[k] = d.move ? d.move(d.rest) : null;
-    for (const f of this.facets) for (const p of f.p) { v.set(p[0], p[1], p[2]); if (f.part && rest[f.part]) v.applyMatrix4(rest[f.part]); b.expandByPoint(v); }
+    for (const k of Object.keys(this.parts)) rest[k] = this.jointMatrix(k);
+    const eat = (pts, part) => { for (const p of pts) { v.set(p[0], p[1], p[2]); if (part) v.applyMatrix4(rest[part]); b.expandByPoint(v); } };
+    for (const f of this.facets) eat(f.p, f.part);
+    for (const g of this.patches) for (const c of g.cells) eat(c.p, g.part);
     return b;
   }
 }

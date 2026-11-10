@@ -2,6 +2,7 @@
 // (metres, relative to the prop's origin): [x0, y0, z0, x1, y1, z1]. The low-poly models are built to fill the same
 // box, and propSize() keeps reporting exactly these sizes, so collision, placement and stacking are unchanged.
 export const BOUNDS = {
+  open_sign_prop: [-0.22, 0, -0.02, 0.22, 0.296, 0.02],
   atm_kiosk: [-0.38, 0, -0.28, 0.38, 1.56, 0.38],
   piggy_bank: [-0.068, 0, -0.096, 0.068, 0.144, 0.096],
   tip_jar: [-0.056, 0, -0.056, 0.064, 0.136, 0.064],

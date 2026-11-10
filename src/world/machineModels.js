@@ -194,6 +194,13 @@ export function buildMachineModel(type, opts = {}) {
   hpiv.add(handle);
   handleGroup.add(hpiv);
   group.add(handleGroup);
+  // the ratchet's pawl on the dial ring: it rides up each tooth of the crank and drops behind it (GachaMachine.update)
+  const pawl = mesh(Gm.pawl, M.body, false);
+  const pa = 0.9, pr = Gm.knob + 0.0128;
+  pawl.position.set(L.handle.x + Math.cos(pa) * pr, L.handle.y + Math.sin(pa) * pr, L.handle.z + 0.0012);
+  pawl.rotation.z = pa + 0.22;
+  pawl.userData.rest = pa + 0.22;
+  group.add(pawl);
   // the flap over the chute
   const O = L.outlet;
   const flapPivot = new THREE.Group();
@@ -214,7 +221,7 @@ export function buildMachineModel(type, opts = {}) {
   group.add(minus, plus);
   return {
     group, L, body, stand: body, bannerMesh, bannerHolder, domeAnchor, lid, lidPivot, drawer, coinAnchor, flapPivot, handleGroup, handlePivot: hpiv,
-    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [glass, hood], tray: body, keyGeo: Gm.key, mats: M,
+    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [glass, hood], tray: body, keyGeo: Gm.key, mats: M, pawl,
   };
 }
 

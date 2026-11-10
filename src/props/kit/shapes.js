@@ -29,13 +29,13 @@ function subdivide(v, f) {
   for (const [a, b, c] of f) { const ab = m(a, b), bc = m(b, c), ca = m(c, a); nf.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]); }
   return { v: nv, f: nf };
 }
-const ICO2 = subdivide(ICO.v, ICO.f);
+const ICO2 = subdivide(ICO.v, ICO.f), ICO3 = subdivide(ICO2.v, ICO2.f);
 /**
  * A faceted lump centred on (x, y, z) with radii rx / ry / rz: 20 faces (o.fine: 80), each corner pushed in or out a
  * little (o.jit, seeded) so no two look alike. o.flatY: nothing below this fraction (-1..1) of the height (sits flat).
  */
 export function blob(K, c, x, y, z, rx, ry = rx, rz = rx, o = {}) {
-  const S = o.fine ? ICO2 : ICO, r = seeded(o.seed ?? Math.round((x * 31 + y * 17 + z * 13 + rx * 7) * 1000)), j = o.jit ?? 0.14;
+  const S = (o.fine ?? !!K.detail) ? (K.detail && o.fine === 2 ? ICO3 : ICO2) : ICO, r = seeded(o.seed ?? Math.round((x * 31 + y * 17 + z * 13 + rx * 7) * 1000)), j = o.jit ?? 0.14;
   const rot = o.turn ?? r() * 6.283, cs = Math.cos(rot), sn = Math.sin(rot);
   const P = S.v.map((p) => {
     const k = 1 + (r() - 0.5) * 2 * j;

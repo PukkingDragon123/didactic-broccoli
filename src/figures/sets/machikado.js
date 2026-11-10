@@ -131,10 +131,12 @@ export function pole(S) {
 // ------------------------------------------------------------------ 4. Manhole Seal
 export function seal(S) {
   const SKIN = 0xece9e2, SOIL = 0x80604a, UP = 23;
-  const pebbles = (x, y) => (((Math.round(x * 0.9 + y * 2.2) * 7 + Math.round(y * 1.3 - x * 0.4) * 13) % 9 + 9) % 9 < 2 ? 0xa8a39a : 0x8c877f);
+  // the roadbed: a course of crushed stone, the stones set out by rule along each face
+  const stones = [];
+  for (let i = 0; i < 9; i++) { const u = -21 + i * 5.2 + (i % 2) * 0.8, y = 17.2 + (i % 3) * 0.9, r = [1.5 + (i % 2) * 0.5, 0.9 + (i % 3) * 0.2, 2]; stones.push(blob([u, y, 24], r), blob([-u, y + 0.5, -24], r), blob([24, y, u], [2, r[1], r[0]]), blob([-24, y + 0.4, -u], [2, r[1], r[0]])); }
   // a block of the lane, cut through: asphalt, roadbed, soil, an old pipe
   S.paint(
-    fill(ASPHALT), vol(band(15.6, 20.6), pebbles), vol(band(4.4, 15.6), SOIL), vol(below(4.4), tone(SOIL, 0.22)),
+    fill(ASPHALT), vol(band(15.6, 20.6), 0x8f8a82), vol(blobs(...stones), 0xb1aca2), vol(band(4.4, 15.6), SOIL), vol(below(4.4), tone(SOIL, 0.22)),
     shade(vol(band(20.6, 21.1)), 0.3), shade(vol(band(15.2, 15.6)), 0.18),
     vol(blobs(blob([10, 11, 24], [3.4, 2.2, 2]), blob([-24, 8, 6], [2, 2.6, 3.6]), blob([24, 12, -9], [2, 1.8, 2.8]), blob([-6, 7, -24], [3, 2, 2])), 0xa59a8c),
     proj('front', circle(-11, 9.5, 5.2), 0xb0694a), proj('front', circle(-11, 9.5, 3.6), 0x2b2028), proj('front', and(circle(-11, 9.5, 5.2), halfAbove(12.4)), tint(0xb0694a, 0.25)),
@@ -151,23 +153,23 @@ export function seal(S) {
   S.part('seal', { rest: 0.86, move: rise }, () => {
     S.paint(
       fill(SKIN), under(0.14),
-      shade(vol(blobs(blob([-6, 41, -8], [3.2, 2.4, 3.2]), blob([5, 38, -11], [2.6, 3, 2.6]), blob([9.5, 43, -3], [2.4, 2, 2.4]), blob([-10.5, 35, -6], [2.2, 2.8, 2.6]), blob([0.5, 46, -3], [2.6, 1.6, 2.4]), blob([-2, 33, -12.5], [3, 2.6, 2]), blob([11, 33, -7], [2, 2.4, 2.4]))), 0.24),
+      shade(vol(blobs(blob([-6, 41, -8], [3.2, 2.4, 3.2]), blob([5, 38, -11], [2.6, 3, 2.6]), blob([9.5, 43, -3], [2.4, 2, 2.4]), blob([-10.5, 35, -6], [2.2, 2.8, 2.6]), blob([-2, 33, -12.5], [3, 2.6, 2]), blob([11, 33, -7], [2, 2.4, 2.4]))), 0.24),
       ...face({ at: [0, 39.4], gap: 11.6, r: 2.05, eye: 'bead', mouth: 'w', my: 4.9, mw: 3.6, blush: 0xf3c2c0 }),
       proj('front', ellipse(0, 36.2, 1.6, 1.05), 0x3a3038, { rough: 0.2 }),
       proj('front', pair(or(circle(4, 34.8, 0.36), circle(5.4, 35.6, 0.36), circle(5.2, 34, 0.36))), 0x8a848c),
       proj('front', pair(ellipse(5.4, 43.2, 0.9, 0.5, 0.3)), 0xb9b4b0),
     );
-    S.lathe(spline([[13, 24], [14.6, 30], [14, 37.5], [11.8, 43], [7.6, 46.2], [0, 47.4]], 2), { segs: 12, sz: 0.92, cap: false });
+    S.lathe(spline([[13, 24], [14.6, 30], [14, 37.5], [12, 42.6], [8.6, 45.2], [0, 46]], 2), { segs: 12, sz: 0.92, cap: false });
     S.paint(fill(SKIN), under(0.16), proj('top', or(seg(-2, -1.5, -4, -2.4, 0.45), seg(0, -1.8, 0, -3, 0.45), seg(2, -1.5, 4, -2.4, 0.45)), 0xb9b2aa));
     for (const s of [1, -1]) S.at([s * 13.4, 26.6, 6.4], [0, -s * 0.6, s * 0.08], () => S.ball([0, 0.9, 0], [5.6, 1.9, 3.6], { segs: 8, rings: 4 }));
   });
-  S.part('lid', { rest: 0.86, move: (t) => chain(rise(t), hinge([0, 46.6, 0], 'x', 0.2 * (1 - t))) }, () => {
+  S.part('lid', { rest: 0.86, move: (t) => chain(slide(0, -20.6 * (1 - t), 0), hinge([0, 44.2, 0], 'x', 0.22 * (1 - t))) }, () => {
     const bars = [];
     for (let k = 0; k < 16; k++) { const a = (k / 16) * Math.PI * 2 + 0.2; bars.push(seg(Math.cos(a) * 9.6, Math.sin(a) * 9.6, Math.cos(a) * 12.4, Math.sin(a) * 12.4, 1)); }
     const hi = tint(IRON, 0.26);
     S.paint(fill(IRON), under(0.25), proj('top', stroke(circle(0, 0, 13.6), 0.9), hi), proj('top', or(...bars), hi), proj('top', stroke(circle(0, 0, 8.4), 0.9), hi),
       proj('top', kana('げすい', 0, 0.2, 3.4), hi), proj('top', or(circle(-5.6, 5, 0.7), circle(5.6, -5, 0.7)), 0x2a242c), shade(proj('top', and(circle(0, 0, 15), halfBelow(-9)), 0), 0.1));
-    S.at([0, 46.6, -0.5], [-0.2, 0, 0], () => S.cyl([0, 0, 0], 15.6, 2.4, { segs: 16, bevel: 0.6 }));
+    S.at([0, 44.2, -0.8], [-0.22, 0, 0], () => S.cyl([0, 0, 0], 15.6, 2.4, { segs: 16, bevel: 0.6 }));
   });
 }
 

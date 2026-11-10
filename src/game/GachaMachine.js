@@ -868,6 +868,9 @@ export class GachaMachine {
     const target = -this.angle;
     this.handleMesh.rotation.z += (target - this.handleMesh.rotation.z) * Math.min(1, dt * 25);
     if (this.state === 'idle' && !this.spin && this.angle === 0 && Math.abs(this.handleMesh.rotation.z) > 0.01) this.handleMesh.rotation.z = 0;
+    // the pawl rides up each ratchet tooth and drops behind it, twelve times a turn
+    const pw = this.parts.pawl;
+    if (pw) { const ph = ((-this.handleMesh.rotation.z) / (Math.PI / 6)) % 1; pw.rotation.z = pw.userData.rest + 0.32 * (ph > 0 ? ph : 0); }
     if (this.motorCrank) this.crank(dt);
     // flap
     const f = this.flap;

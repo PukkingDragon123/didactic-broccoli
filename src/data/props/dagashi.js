@@ -8,6 +8,7 @@ import { shade } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, grime, rod } from './garage.js';
 import { drinkMesh } from '../../products/containers.js';
+import { goodsMesh } from '../../products/goods.js';
 
 const R = Math.round;
 const pick = (list, n) => list[Math.min(list.length - 1, Math.floor(n * list.length))];
@@ -371,7 +372,8 @@ export default {
     },
   },
   puff_stick: {
-    name: 'Puff Stick', jp: 'うまい棒', voxel: 0.005,
+    name: 'Puff Stick', jp: 'サクサク棒', voxel: 0.005,
+    mesh: (o) => goodsMesh('puff_stick', o),
     build(v) {
       v.jitter = 0.01;
       // a corn puff in its printed bag, crimped ends
@@ -386,6 +388,7 @@ export default {
   },
   candy_piece: {
     name: 'Fruit Candy', jp: '飴', voxel: 0.004,
+    mesh: (o) => goodsMesh('candy_piece', o),
     build(v) {
       v.jitter = 0.01;
       v.ellipsoid(0, 3, 0, 4, 3, 3, (x) => gloss(Math.abs(x) % 3 === 0 ? 0xfbf8f0 : 0xe5383b));

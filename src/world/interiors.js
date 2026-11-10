@@ -12,7 +12,7 @@
 //   setInteriorSky({ night, sky, time })   called from Town.applySky (uniforms only)
 import * as THREE from 'three';
 
-export const ROOM = { living: 0, kitchen: 1, kid: 2, washitsu: 3, stair: 4, tv: 5, studio: 6, empty: 7 };
+export const ROOM = { living: 0, kitchen: 1, kid: 2, washitsu: 3, stair: 4, tv: 5, studio: 6, empty: 7, frost: 8, shoji: 9 };
 
 const U = { uNight: { value: 0 }, uSky: { value: new THREE.Color(0x9ab4cc) }, uTime: { value: 0 } };
 let MAT = null;
@@ -56,7 +56,7 @@ vec3 pal( float k ) { // curtain / fabric colours
 }
 void main() {
   float W = vRoom.x, H = vRoom.y, SILL = vRoom.z, DEP = vRoom.w;
-  float kind = vMeta.x, lit = vMeta.y, cur = vMeta.z, seed = floor( vMeta.w ), cc = fract( vMeta.w ) * 8.0;
+  float kind = vMeta.x, lit = vMeta.y, cur = mod( vMeta.z, 10.0 ), scr = step( 9.5, vMeta.z ), seed = floor( vMeta.w ), cc = fract( vMeta.w ) * 8.0;
   vec3 d = normalize( vWorld - cameraPosition );
   vec3 N = normalize( vN ), T = normalize( vec3( N.z, 0.0, -N.x ) );
   vec3 r = vec3( dot( d, T ), d.y, -dot( d, N ) );
@@ -69,7 +69,7 @@ void main() {
   float t = min( min( tF.x, tF.y ), tF.z );
   vec3 q = p + r * t;
   int face = tF.z <= t + 1e-4 ? 0 : ( tF.y <= t + 1e-4 ? ( r.y > 0.0 ? 2 : 1 ) : 3 ); // 0 back, 1 floor, 2 ceiling, 3 side
-  vec3 g = floor( q * 32.0 ) / 32.0; // pixel grid
+  vec3 g = q;
   float roomX = g.x + MX, fy = g.y + SILL; // x from the left wall, height above the floor
   float sd = h1( seed * 1.7 + 3.0 );
   vec3 wallC = mix( vec3( 0.86, 0.80, 0.68 ), vec3( 0.78, 0.82, 0.74 ), step( 0.6, sd ) );
@@ -153,8 +153,25 @@ void main() {
     vec2 dl = vec2( pl.x - ( W * 0.5 ), pl.z - DEP * 0.5 );
     if ( max( abs( dl.x ), abs( dl.y ) ) < 0.24 ) col = ( kind > 0.5 && kind < 1.5 ? vec3( 0.95, 0.97, 1.0 ) : vec3( 1.0, 0.86, 0.6 ) ) * ( 0.45 + lit * 1.05 * uNight + 0.1 * lit );
   }
-  // curtains / blinds just behind the glass
   float u = vUv.x, v = vUv.y;
+  if ( kind > 7.5 ) {
+    float glowF = 0.5 * ( 1.0 - uNight ) + lit * ( 0.1 + 0.95 * uNight );
+    if ( kind < 8.5 ) { // frosted pattern glass: pale, a few things standing on the sill as soft shapes
+      col = vec3( 0.80, 0.86, 0.86 ) * ( 0.55 + 0.45 * glowF );
+      col = mix( col, col * vec3( 1.25, 1.1, 0.8 ), lit * uNight );
+      float bx = floor( u * 9.0 ), bh = 0.10 + 0.22 * h1( bx + seed );
+      if ( h1( bx * 3.1 + seed ) > 0.55 && v < bh && fract( u * 9.0 ) > 0.2 && fract( u * 9.0 ) < 0.8 ) col *= 0.78;
+      if ( fract( ( u - v ) * 3.0 + seed * 0.3 ) < 0.12 ) col *= 1.08;
+    } else { // shoji: paper in a wooden lattice
+      col = vec3( 0.93, 0.90, 0.80 ) * ( 0.5 + 0.5 * glowF );
+      col = mix( col, col * vec3( 1.2, 1.0, 0.72 ), lit * uNight );
+      vec2 cell = vec2( W / max( 2.0, floor( W / 0.24 + 0.5 ) ), H / max( 2.0, floor( H / 0.3 + 0.5 ) ) );
+      vec2 f = abs( fract( vec2( u, v ) / cell + 0.5 ) - 0.5 ) * cell;
+      if ( f.x < 0.008 || f.y < 0.008 ) col = vec3( 0.42, 0.30, 0.20 ) * ( 0.6 + 0.4 * ( 1.0 - uNight ) );
+    }
+    cur = 0.0;
+  }
+  // curtains / blinds just behind the glass
   vec3 fab = pal( cc );
   float glow = 0.24 * ( 1.0 - uNight ) + lit * ( 0.06 + 0.8 * uNight );
   if ( cur > 0.5 && cur < 1.5 ) { // side curtains with folds
@@ -162,7 +179,7 @@ void main() {
     if ( u < cw || u > W - cw ) col = fab * ( 0.82 + 0.18 * step( 0.5, fract( u * 14.0 ) ) ) * glow;
     if ( v > H - 0.1 ) col = fab * 0.8 * glow;
   } else if ( cur > 1.5 && cur < 2.5 ) { // lace over everything
-    float lace = step( 0.5, fract( ( floor( u * 32.0 ) + floor( v * 32.0 ) * 2.0 ) / 5.0 ) );
+    float lace = step( 0.5, fract( ( floor( u * 48.0 ) + floor( v * 48.0 ) * 2.0 ) / 5.0 ) );
     col = mix( col, vec3( 0.95, 0.93, 0.88 ) * glow, 0.45 + 0.2 * lace );
   } else if ( cur > 2.5 && cur < 3.5 ) { // venetian blind, half down
     float bl = H * ( 0.4 + 0.35 * sd );
@@ -177,13 +194,8 @@ void main() {
   float gl = fract( ( u + v * 0.8 ) * 1.6 + seed * 0.37 );
   refl += ( gl < 0.08 ? 0.12 : 0.0 ) * ( 1.0 - uNight );
   col = mix( col, uSky, clamp( refl, 0.0, 0.85 ) );
-  // the aluminium sash: outer frame and the overlap bar of a two-pane sliding window
-  float fw = 0.035;
-  bool frame = u < fw || u > W - fw || v < fw || v > H - fw || ( W > 0.75 && abs( u - W * 0.5 ) < 0.025 );
-  if ( frame ) col = vec3( 0.66, 0.68, 0.70 ) * ( 0.55 + 0.45 * ( 1.0 - uNight ) ) * ( u < fw || v > H - fw ? 0.85 : 1.0 );
-  // posterize with an ordered dither (pixel-art steps)
-  float bd = bayer4( gl_FragCoord.xy ) - 0.5;
-  col = floor( col * 20.0 + 0.5 + bd * 0.9 ) / 20.0;
+  // the insect screen over the left leaf: a grey veil with a fine mesh
+  if ( scr > 0.5 && u < W * 0.5 ) col = mix( col, vec3( 0.42, 0.45, 0.44 ) * ( 0.75 - 0.4 * uNight ), 0.34 + 0.1 * step( 0.5, fract( u * 90.0 ) ) * step( 0.5, fract( v * 90.0 ) ) );
   gl_FragColor = vec4( max( col, 0.0 ), 1.0 );
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
@@ -218,7 +230,7 @@ export function interiorQuad(B, mat, x, y, z, ry, o) {
   const seed = Math.floor(o.seed ?? 1) + Math.min(0.99, ((o.cc ?? 0) % 8) / 8 + 0.01);
   for (let i = 0; i < n; i++) {
     room.set([w, h, o.sill ?? 0.9, o.depth ?? 3.2], i * 4);
-    meta.set([o.kind ?? 0, o.lit ?? 1, o.curtain ?? 1, seed], i * 4);
+    meta.set([o.kind ?? 0, o.lit ?? 1, (o.curtain ?? 1) + (o.screen ? 10 : 0), seed], i * 4);
   }
   g.setAttribute('aRoom', new THREE.BufferAttribute(room, 4));
   g.setAttribute('aMeta', new THREE.BufferAttribute(meta, 4));

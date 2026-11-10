@@ -13,11 +13,12 @@
 //     { id: supply id, prop, units: [{ p: Vector3, q: Quaternion, s }], restock: seconds, jar?: true (an endless
 //       source: units are the jars themselves), label }
 import * as THREE from 'three';
-import { propGeometry } from './props.js';
+import { propMesh } from './props.js';
 import { mikawayaAtlas, tatamiTexture, tvScreen } from './mikawayaArt.js';
+import { interiorQuad, ROOM } from './interiors.js';
 
 const ZF = 14.9; // the far building line (Town.js)
-const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _m = new THREE.Matrix4(), _v = new THREE.Vector3(), _s = new THREE.Vector3();
+const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _m = new THREE.Matrix4(), _mm = new THREE.Matrix4(), _v = new THREE.Vector3(), _s = new THREE.Vector3();
 const rng = (seed) => { let x = seed >>> 0 || 1; return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296; }; };
 
 // interior frame
@@ -30,56 +31,55 @@ export const MK = {
 };
 
 /**
- * Merge static voxel props into one mesh (one geometry group per voxel material).
- * items: [{ id, x, y, z, ry, rx, rz, s, k (brightness) }]
+ * Merge static props from the prop library into one mesh per material (whatever the library builds a prop from).
+ * items: [{ id, x, y, z, ry, rx, rz, s, k (brightness) }]; the shop's variants of the materials never see the low sun.
  */
-function mergeVoxelProps(items, mats) {
-  const B = Array.from({ length: 5 }, () => ({ pos: [], nrm: [], col: [], idx: [], n: 0 }));
-  const nm = new THREE.Matrix3();
+function mergeProps(items, t) {
+  const buckets = new Map(), nm = new THREE.Matrix3(), vox = t.indoorVoxel();
+  const group = new THREE.Group();
+  let tris = 0;
   for (const it of items) {
-    const g = propGeometry(it.id);
-    if (!g) continue;
+    let src;
+    try { src = propMesh(it.id, { castShadow: false }); } catch (e) { continue; }
+    src.updateMatrixWorld(true);
     _q.setFromEuler(_e.set(it.rx || 0, it.ry || 0, it.rz || 0, 'YXZ'));
     _m.compose(_v.set(it.x, it.y, it.z), _q, _s.setScalar(it.s || 1));
-    nm.getNormalMatrix(_m);
-    const P = g.attributes.position.array, N = g.attributes.normal.array, C = g.attributes.color.array, I = g.index.array, k = it.k ?? 1;
-    for (const grp of g.groups) {
-      const b = B[grp.materialIndex];
-      if (!b) continue;
-      let lo = Infinity, hi = -1;
-      for (let i = grp.start; i < grp.start + grp.count; i++) { const q = I[i]; if (q < lo) lo = q; if (q > hi) hi = q; }
-      if (hi < 0) continue;
-      const base = b.n;
-      for (let q = lo; q <= hi; q++) {
-        _v.set(P[q * 3], P[q * 3 + 1], P[q * 3 + 2]).applyMatrix4(_m); b.pos.push(_v.x, _v.y, _v.z);
-        _v.set(N[q * 3], N[q * 3 + 1], N[q * 3 + 2]).applyMatrix3(nm).normalize(); b.nrm.push(_v.x, _v.y, _v.z);
-        b.col.push(C[q * 3] * k, C[q * 3 + 1] * k, C[q * 3 + 2] * k);
+    const k = it.k ?? 1;
+    src.traverse((o) => {
+      if (!o.isMesh || !o.geometry?.attributes?.position) return;
+      const g = o.geometry, mats = Array.isArray(o.material) ? o.material : [o.material], voxel = mats.length === 5;
+      const P = g.attributes.position, N = g.attributes.normal, C = g.attributes.color, U = g.attributes.uv, I = g.index;
+      const groups = g.groups.length ? g.groups : [{ start: 0, count: I ? I.count : P.count, materialIndex: 0 }];
+      _mm.multiplyMatrices(_m, o.matrixWorld); nm.getNormalMatrix(_mm);
+      for (const grp of groups) {
+        const base = mats[grp.materialIndex] ?? mats[0];
+        const mat = voxel ? vox[grp.materialIndex] : base.isMeshBasicMaterial ? base : t.indoor(base);
+        let b = buckets.get(mat);
+        if (!b) { b = { p: [], n: [], c: [], u: [] }; buckets.set(mat, b); }
+        for (let i = grp.start; i < grp.start + grp.count; i++) {
+          const q = I ? I.getX(i) : i;
+          _v.fromBufferAttribute(P, q).applyMatrix4(_mm); b.p.push(_v.x, _v.y, _v.z);
+          if (N) { _v.fromBufferAttribute(N, q).applyMatrix3(nm).normalize(); b.n.push(_v.x, _v.y, _v.z); } else b.n.push(0, 1, 0);
+          if (C) b.c.push(C.getX(q) * k, C.getY(q) * k, C.getZ(q) * k); else b.c.push(k, k, k);
+          if (U) b.u.push(U.getX(q), U.getY(q)); else b.u.push(0, 0);
+        }
+        tris += grp.count / 3;
       }
-      for (let i = grp.start; i < grp.start + grp.count; i++) b.idx.push(I[i] - lo + base);
-      b.n += hi - lo + 1;
-    }
+    });
   }
-  const nV = B.reduce((a, b) => a + b.n, 0), nI = B.reduce((a, b) => a + b.idx.length, 0);
-  const pos = new Float32Array(nV * 3), nrm = new Float32Array(nV * 3), col = new Float32Array(nV * 3), idx = new Uint32Array(nI);
-  const geo = new THREE.BufferGeometry();
-  let vo = 0, io = 0;
-  B.forEach((b, mi) => {
-    if (!b.idx.length) return;
-    pos.set(b.pos, vo * 3); nrm.set(b.nrm, vo * 3); col.set(b.col, vo * 3);
-    for (let i = 0; i < b.idx.length; i++) idx[io + i] = b.idx[i] + vo;
-    geo.addGroup(io, b.idx.length, mi);
-    vo += b.n; io += b.idx.length;
-  });
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
-  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  geo.setIndex(new THREE.BufferAttribute(idx, 1));
-  geo.computeBoundingSphere();
-  const mesh = new THREE.Mesh(geo, mats);
-  mesh.matrixAutoUpdate = false;
-  mesh.receiveShadow = true;
-  mesh.userData.tris = nI / 3;
-  return mesh;
+  for (const [mat, b] of buckets) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(b.p, 3));
+    geo.setAttribute('normal', new THREE.Float32BufferAttribute(b.n, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(b.c, 3));
+    geo.setAttribute('uv', new THREE.Float32BufferAttribute(b.u, 2));
+    geo.computeBoundingSphere();
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.matrixAutoUpdate = false; mesh.receiveShadow = true;
+    group.add(mesh);
+  }
+  group.userData.tris = tris;
+  return group;
 }
 
 export function buildCornerShop(t) {
@@ -174,7 +174,7 @@ export function buildCornerShop(t) {
   };
 
   // ---- floor: concrete doma, a door mat
-  box(I(m.conc), x1 - x0 - 0.5, 0.06, MK.ZP - MK.ZI0 + 0.1, cx, -0.052, (MK.ZI0 + MK.ZP) / 2, { k: 0.85 });
+  box(I(m.concrete), x1 - x0 - 0.5, 0.06, MK.ZP - MK.ZI0 + 0.1, cx, -0.052, (MK.ZI0 + MK.ZP) / 2, { k: 0.85 });
   box(pv, 1.2, 0.012, 0.55, (dx0 + dx1) / 2, 0, MK.ZI0 + 0.32, { tint: 0x6a4a3a });
 
   // ---- the back room: agari-kamachi edge, tatami, kamoi beam, fusuma, the old man's things
@@ -369,8 +369,7 @@ export function buildCornerShop(t) {
 
   // ---- assemble: batch + two merged voxel meshes + the TV screen
   Bi.build(shop);
-  const vm = t.indoorVoxel();
-  const fixtures = mergeVoxelProps(big, vm), detail = mergeVoxelProps(small, vm);
+  const fixtures = mergeProps(big, t), detail = mergeProps(small, t);
   fixtures.name = 'mikawaya:fixtures'; detail.name = 'mikawaya:detail';
   shop.add(fixtures, detail);
   const tv = tvScreen();
@@ -427,61 +426,67 @@ export function buildCornerShop(t) {
   ph.addBox({ center: new THREE.Vector3(XI0 + 0.24, 1.2, 16.68), half: new THREE.Vector3(0.24, 1.2, 1.4), material: 'wood' });
 }
 
-/** The building: walls, shopfront, signboard, awning, the dwelling upstairs, the alley side (merged with the town). */
+/** The building: a two-storey shop-house. Plastered piers and side walls, a shopfront of sliding glass doors between
+ *  tiled kick panels, the long painted board, a striped canvas awning on arms, the dwelling upstairs under kawara. */
 function buildShell(t, B, m, I, cx) {
-  const { x0, x1, z0, z1, H1, dx0, dx1 } = MK;
-  // threshold
+  const { x0, x1, z0, z1, H1, dx0, dx1 } = MK, wall = 0xe4dac4;
   B.box(m.metal, dx1 - dx0 + 0.2, 0.025, 0.12, (dx0 + dx1) / 2, 0, z0 + 0.02, { tint: 0xb8bcc0 });
-  // shell: side walls (both floors), back wall, ceiling / 2F floor
-  for (const [xa, xb] of [[x0, x0 + 0.25], [x1 - 0.25, x1]]) {
-    B.box(m.mortar, 0.25, H1 + 0.1, z1 - z0, (xa + xb) / 2, 0, (z0 + z1) / 2, { uv: [0, 0], ao: 0.15 });
-  }
-  B.box(m.mortar, x1 - x0, H1 + 0.1, 0.25, cx, 0, z1 - 0.125, { ao: 0.15 });
-  // interior finishes: wainscot + plaster on the inner faces
+  // shell: side walls, back wall, the floor over the shop
+  for (const [xa, xb] of [[x0, x0 + 0.25], [x1 - 0.25, x1]]) B.box(m.plaster, 0.25, H1 + 0.1, z1 - z0, (xa + xb) / 2, 0, (z0 + z1) / 2, { uv: [0, 0], ao: 0.15, tint: wall });
+  B.box(m.plaster, x1 - x0, H1 + 0.1, 0.25, cx, 0, z1 - 0.125, { ao: 0.15, tint: wall });
+  // interior finishes: wainscot and plaster on the inner faces, a board ceiling on exposed joists
   for (const sx of [-1, 1]) {
     const wx = sx < 0 ? x0 + 0.26 : x1 - 0.26;
-    B.box(I(m.koshi), 0.02, 0.9, z1 - z0 - 0.3, wx, 0, (z0 + z1) / 2, { k: 0.9 });
-    B.box(I(m.shikkui), 0.02, H1 - 0.9, z1 - z0 - 0.3, wx, 0.9, (z0 + z1) / 2, { k: 0.9 });
+    B.box(I(m.koshi), 0.02, 0.9, z1 - z0 - 0.3, wx, 0, (z0 + z1) / 2, { k: 0.95 });
+    B.box(I(m.shikkui), 0.02, H1 - 0.9, z1 - z0 - 0.3, wx, 0.9, (z0 + z1) / 2, { k: 0.95 });
   }
-  B.box(I(m.shikkui), x1 - x0 - 0.5, H1, 0.02, cx, 0, z1 - 0.26, { k: 0.85 });
-  B.box(I(m.ceil), x1 - x0 - 0.5, 0.06, z1 - z0 - 0.3, cx, H1 - 0.06, (z0 + z1) / 2 + 0.02, { k: 0.9 });
-  for (const z of [16.0, 17.2, 18.4, 19.4]) B.box(I(m.wood), x1 - x0 - 0.5, 0.08, 0.1, cx, H1 - 0.14, z, { k: 0.75 }); // exposed joists
-  B.box(I(m.wood), x1 - x0 - 0.6, 0.02, 0.2, cx, 2.3, z0 + 0.21, { k: 0.8 });
-  B.box(m.wood, x1 - x0 - 0.5, 0.22, z1 - z0, cx, H1, (z0 + z1) / 2, { k: 0.8 });
-  // shopfront: piers, kick panels, display windows, transom, door frame, open sliding doors
-  for (const [a, b] of [[x0, x0 + 0.3], [x1 - 0.3, x1]]) B.box(m.mortar, b - a, H1 + 0.1, 0.28, (a + b) / 2, 0, z0 + 0.14, { ao: 0.2 });
+  B.box(I(m.shikkui), x1 - x0 - 0.5, H1, 0.02, cx, 0, z1 - 0.26, { k: 0.9 });
+  B.box(I(m.ceil), x1 - x0 - 0.5, 0.06, z1 - z0 - 0.3, cx, H1 - 0.06, (z0 + z1) / 2 + 0.02, { k: 0.95 });
+  for (const z of [16.0, 17.2, 18.4, 19.4]) B.box(I(m.wood), x1 - x0 - 0.5, 0.08, 0.1, cx, H1 - 0.14, z, { tint: 0xb89a78 });
+  B.box(I(m.wood), x1 - x0 - 0.6, 0.02, 0.2, cx, 2.3, z0 + 0.21, { tint: 0xb89a78 });
+  B.box(m.wood, x1 - x0 - 0.5, 0.22, z1 - z0, cx, H1, (z0 + z1) / 2, { tint: 0x9a7a5a });
+  // shopfront: piers, tiled kick panels, aluminium frames, the transom, the door frame, the two leaves slid open
+  for (const [a, b] of [[x0, x0 + 0.3], [x1 - 0.3, x1]]) B.box(m.plaster, b - a, H1 + 0.1, 0.28, (a + b) / 2, 0, z0 + 0.14, { ao: 0.2, tint: wall });
   for (const [a, b] of [[x0 + 0.3, dx0], [dx1, x1 - 0.3]]) {
-    B.box(m.pv, b - a, 0.6, 0.2, (a + b) / 2, 0, z0 + 0.1, { tint: 0x8a6a4a });
+    B.box(m.skirt, b - a, 0.6, 0.2, (a + b) / 2, 0, z0 + 0.1, { tint: 0xc8b49a, uv: [a, 0] });
     B.box(m.metal, b - a, 0.05, 0.24, (a + b) / 2, 0.6, z0 + 0.1, { tint: 0xb8bcc0 });
     B.box(m.metal, 0.05, 1.6, 0.06, (a + b) / 2, 0.65, z0 + 0.1, { tint: 0xb8bcc0 });
     for (const sx of [a + 0.025, b - 0.025]) B.box(m.metal, 0.05, 1.6, 0.08, sx, 0.65, z0 + 0.1, { tint: 0xb8bcc0 });
     t.add(t.glassPane(b - a, 1.6, (a + b) / 2, 0.65 + 0.8, z0 + 0.1));
   }
   B.box(m.metal, x1 - x0 - 0.6, 0.06, 0.24, cx, 2.25, z0 + 0.1, { tint: 0xb8bcc0 });
-  B.box(m.wood, x1 - x0 - 0.6, 0.6, 0.2, cx, 2.31, z0 + 0.1);
+  B.box(m.wood, x1 - x0 - 0.6, 0.6, 0.2, cx, 2.31, z0 + 0.1, { tint: 0x8a6a4a });
   for (const sx of [dx0, dx1]) B.box(m.metal, 0.06, 2.25, 0.12, sx, 0, z0 + 0.06, { tint: 0xa8acb0 });
-  // the two door leaves, slid open in front of the windows
   for (const [a, b] of [[dx0 - 0.85, dx0 - 0.02], [dx1 + 0.02, dx1 + 0.85]]) {
-    for (const sx of [a, b]) B.box(m.pv, 0.05, 2.18, 0.05, sx, 0.03, z0 - 0.04, { tint: 0xa8acb0 });
-    for (const y of [0.03, 2.16]) B.box(m.pv, b - a, 0.05, 0.05, (a + b) / 2, y, z0 - 0.04, { tint: 0xa8acb0 });
-    B.box(m.pv, b - a, 0.04, 0.05, (a + b) / 2, 0.95, z0 - 0.04, { tint: 0xa8acb0 });
+    for (const sx of [a, b]) B.box(m.metal, 0.05, 2.18, 0.05, sx, 0.03, z0 - 0.04, { tint: 0xa8acb0 });
+    for (const y of [0.03, 2.16, 0.95]) B.box(m.metal, b - a, 0.05, 0.05, (a + b) / 2, y, z0 - 0.04, { tint: 0xa8acb0 });
     t.add(t.glassPane(b - a - 0.05, 2.1, (a + b) / 2, 1.08, z0 - 0.04));
   }
-  // posters in the windows
-  const poster = (key, w, h, x, y) => B.quad(t.T2(key), w, h, x, y, z0 + 0.13, { ry: Math.PI });
-  poster('matsuri', 0.42, 0.64, -14.6, 1.0); poster('idol', 0.42, 0.64, -10.4, 1.0);
-  // signboard, awning and the dwelling upstairs
-  const sign = t.vmesh(new THREE.BoxGeometry(x1 - x0 + 0.1, 0.78, 0.12), [t.P(0.5), t.P(0.5), t.P(0.5), t.P(0.5), t.T('mikawaya', 240, 36, { glow: 0.55, rough: 0.4 }), t.P(0.5)]);
-  sign.position.set(cx, H1 + 0.6, z0 - 0.16); sign.rotation.y = Math.PI;
-  t.add(sign);
-  B.box(m.metal, x1 - x0 + 0.2, 0.06, 0.16, cx, H1 + 0.98, z0 - 0.16, { tint: 0x3a3c40 });
-  const aw = t.awningMat();
-  for (let j = 0; j < 3; j++) B.box(aw, x1 - x0 - 0.3, 0.07, 0.9 - j * 0.28, cx, 2.3 + j * 0.07, z0 - (0.9 - j * 0.28) / 2, { uv: [0.2, 0] });
-  B.box(aw, x1 - x0 - 0.3, 0.22, 0.03, cx, 2.1, z0 - 0.9, { uv: [0.2, 0] });
-  t.house({ x: cx, z: z0, w: x1 - x0, d: z1 - z0, side: -1, y0: H1 + 0.22, floors: 1, h1: 2.5, wallA: m.wallCream, roofM: m.roofGrey, antenna: 1.6,
+  // the board over the front on its frame, three little lamps trained on it
+  B.box(m.wood, x1 - x0 + 0.14, 0.86, 0.1, cx, H1 + 0.2, z0 - 0.17, { tint: 0x6a4a34 });
+  B.push(cx, 0, z0 - 0.226, Math.PI); t.sign('mikawaya', 0, H1 + 0.245, 0, { w: x1 - x0 + 0.04 }); B.pop();
+  B.box(m.metal, x1 - x0 + 0.2, 0.05, 0.16, cx, H1 + 1.06, z0 - 0.17, { tint: 0x4a4c50 });
+  for (const dx of [-2, 0, 2]) { B.tube(m.metal, [[cx + dx, H1 + 1.08, z0 - 0.2], [cx + dx, H1 + 1.2, z0 - 0.4], [cx + dx, H1 + 1.12, z0 - 0.55]], 0.012, { tint: 0x3a3c40, sides: 4 }); B.lathe(m.pv, [[0.02, 0.06], [0.07, 0]], cx + dx, H1 + 1.06, z0 - 0.56, { rx: -0.5, tint: 0x3a5a4a, sides: 7 }); B.box(t.G, 0.04, 0.04, 0.04, cx + dx, H1 + 1.07, z0 - 0.55, { tint: 0xfff0c8 }); }
+  // the awning: striped canvas over a pipe frame on two arms, a scalloped valance
+  {
+    const a0 = x0 + 0.15, a1 = x1 - 0.15, n = 5, w = (a1 - a0) / n, yT = 2.52, yF = 2.2, zF = z0 - 0.95, U = t.atlas.trim.uv('awning');
+    for (let i = 0; i < n; i++) {
+      const xa = a0 + i * w, xb = xa + w;
+      B.face(t.tm, [xb, yF, zF], [xa, yF, zF], [xa, yT, z0 - 0.02], [xb, yT, z0 - 0.02], { rect: U, both: true });
+      B.face(t.tm, [xb, yF - 0.2, zF - 0.01], [xa, yF - 0.2, zF - 0.01], [xa, yF, zF], [xb, yF, zF], { rect: [U[0], U[1], U[2], U[1] + (U[3] - U[1]) * 0.5], both: true, k: 0.92 });
+    }
+    B.rod(m.metal, [a0, yF, zF], [a1, yF, zF], 0.016, { tint: 0x8a8e90, sides: 5 });
+    for (const x of [a0 + 0.05, a1 - 0.05]) { B.rod(m.metal, [x, yF, zF], [x, yT, z0 - 0.02], 0.014, { tint: 0x8a8e90, sides: 4 }); B.rod(m.metal, [x, yF, zF], [x, 1.9, z0 + 0.02], 0.012, { tint: 0x8a8e90, sides: 4 }); }
+  }
+  // the dwelling upstairs
+  t.house({ x: cx, z: z0, w: x1 - x0, d: z1 - z0, side: -1, y0: H1 + 0.22, floors: 1, h1: 2.5, wallA: ['plaster', wall], roofM: ['kawara', 0x8e929a], antenna: 1.6,
     win: [[0, -1.4, 1.6, 1.1, 'lit', { tobukuro: -1, sill: 0.8 }], [0, 1.5, 1.4, 1.0, 'lit2', { sill: 0.8 }], [0, 2.5, 1.2, 1.0, 'lit3', { face: 'l', sill: 0.8, clean: true }], [0, 2.5, 1.0, 1.0, 'dark', { face: 'r', sill: 0.8 }]] });
-  // side (alley) wall details: a frosted window, an AC unit, the back door lamp
-  B.box(t.win.frost, 0.8, 0.6, 0.1, x1, 1.6, 18.4, { unit: true, ry: Math.PI / 2 });
+  // the alley side: a frosted window in its frame, the gas cylinders
+  B.push(x1 + 0.004, 1.6, 18.4, Math.PI / 2);
+  interiorQuad(B, t.interiorM, 0, 0, 0, 0, { w: 0.8, h: 0.6, sill: 1.6, depth: 2, kind: ROOM.frost, lit: 0.6, curtain: 0, seed: 7 });
+  for (const sx of [-1, 1]) B.box(m.metal, 0.04, 0.68, 0.06, sx * 0.42, -0.04, 0.02, { tint: 0xb4babf });
+  for (const y of [-0.04, 0.6]) B.box(m.metal, 0.8, 0.04, 0.06, 0, y, 0.02, { tint: 0xb4babf });
+  B.pop();
   t.prop('propane', x1 + 0.22, 0, 17.4, Math.PI / 2);
   t.prop('beercrate', -9.95, 0, 14.4, 0.15);
   t.prop('beercrate', -9.95, 0.28, 14.4, -0.1);

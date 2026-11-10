@@ -1,4 +1,4 @@
-// Renderer + post-processing stack with quality presets: the cel look. Ink outlines + screen-space god rays from the
+// Renderer + post-processing stack with quality presets: realistic lighting with a light cel touch. Ink outlines + screen-space god rays from the
 // low sun, GTAO, bloom, then one pass for the colour grade, neutral tone mapping and sRGB, and FXAA on the result.
 // Everything runs at the canvas's full resolution (QUALITY.pr: the device pixel ratio, capped per preset).
 // Viewmodel: whatever hangs off the camera (hands + held items, see vmRoots) is drawn in its own pass on top of the
@@ -12,7 +12,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { LightPool } from '../gfx/lightPool.js';
-import '../gfx/sunMask.js'; // the shared cel patch at import: the band ramp, tinted shadows, toon highlights, no sun inside Mikawa-ya
+import '../gfx/sunMask.js'; // the shared light patch at import: the key light's soft cel ramp, tinted shadows, no sun inside Mikawa-ya
 
 // tiling world textures are seen at grazing angles all day (the road, walls, roofs): a sensible default
 THREE.Texture.DEFAULT_ANISOTROPY = 4;
@@ -114,7 +114,7 @@ const OutlineShader = {
     uFarSide: { value: 0.8 },
     uGap: { value: new THREE.Vector2(0.004, 0.008) },
     uCrease: { value: new THREE.Vector2(0.9, 1.15) },
-    uFade: { value: new THREE.Vector4(12, 30, 32, 75) },
+    uFade: { value: new THREE.Vector4(9, 24, 32, 75) },
     uInk: { value: new THREE.Color(0x1c1016) },
     uInkK: { value: new THREE.Color(0.24, 0.2, 0.28) },
     // god rays: sky pixels (no depth written) marched toward the sun's screen position

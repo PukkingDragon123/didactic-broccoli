@@ -36,7 +36,7 @@ export function installRitual(g) {
   const dropRibbon = (cap, band) => {
     band.dropped = true;
     const m = band.ribbon;
-    m.geometry.setDrawRange(0, 16 * 6);
+    m.geometry.setDrawRange(0, 22 * 6);
     H.anchor.attach(m);
     m.traverse((o) => o.layers.mask = cap.group.children[0].layers.mask);
     const p0 = m.position.clone(), r0 = m.rotation.clone();
@@ -66,7 +66,13 @@ export function installRitual(g) {
 
   const drive = (it, cap, dt) => {
     const inp = g.input;
-    if (cap._ritual !== it) { cap._ritual = it; cap.setStage(Math.min(it.data.seal || 0, cap.steps.length - 1), 0); R.spin = 0; R.beat = 0; }
+    if (cap._ritual !== it) {
+      // a capsule new to the hands: pose it as far open as it was left (peeled bands stay peeled)
+      cap._ritual = it;
+      const at0 = Math.min(it.data.seal || 0, cap.steps.length - 1);
+      cap.setStage(at0, 0);
+      R.spin = cap.steps.slice(0, at0).filter((x) => x.kind === 'peel').length * Math.PI * 2; R.beat = 0;
+    }
     const i = cap.stage.i, s = cap.steps[i];
     const free = !g.interaction.hover;
     const down = inp.button(0) && free, press = inp.buttonDown(0) && free;

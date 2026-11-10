@@ -31,7 +31,7 @@ export function lowPolyGeometry(id) {
     for (let attempt = 0; attempt < 2 && !geo; attempt++) {
       const page = pageFor(M.family, { fresh: attempt > 0 }), mark = page.mark();
       try {
-        const K = new Kit(page, id, B);
+        const K = new Kit(page, id, B, 1);
         M.fn(K, B);
         geo = K.finish();
       } catch (e) {
@@ -41,5 +41,19 @@ export function lowPolyGeometry(id) {
     }
   }
   cache.set(id, geo);
+  return geo;
+}
+
+const lodCache = new Map();
+/** The far level of detail of a remade prop: the same model built coarse (fewer segments, plain edges), on the same atlas page. */
+export function lodGeometry(id) {
+  if (lodCache.has(id)) return lodCache.get(id);
+  const near = lowPolyGeometry(id);
+  let geo = near;
+  if (near) {
+    const page = near.userData.page, mark = page.mark();
+    try { const K = new Kit(page, id, boxOf(id), 0); MODELS[id].fn(K, K.B); geo = K.finish(); page.props--; } catch (e) { page.rollback(mark); geo = near; }
+  }
+  lodCache.set(id, geo);
   return geo;
 }

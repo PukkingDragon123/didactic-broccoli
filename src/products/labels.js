@@ -11,6 +11,7 @@ import { PAT, burst, roundel, ribbon, pill, seal, infoBox, barcode, recycle, bin
 import { BRANDS, DRINKS, janOf } from './brands.js';
 import { CONT, panelSize } from './spec.js';
 import { FOODS } from '../needs/foods.js';
+import { framed } from './photos.js';
 
 const INK = 0x2e1f28, W0 = 0xfffaf0, RED = 0xc8302a, GOLD = 0xe8c040;
 const memo = new Map();
@@ -19,6 +20,8 @@ export function spr(name, pose, o) { const k = name + '|' + pose + '|' + JSON.st
 export function big(name, pose, o) { const k = '2x' + name + '|' + pose + '|' + JSON.stringify(o || 0); if (!memo.has(k)) memo.set(k, spr(name, pose, o).x2()); return memo.get(k); }
 const art = (name, ...a) => { const k = 'art' + name + JSON.stringify(a); if (!memo.has(k)) memo.set(k, ART[name](...a)); return memo.get(k); };
 
+/** A real photo of the thing in a round (or square) window, or the drawing if the photo is not there. */
+const pic = (name, w, h, alt, o = {}) => framed(name, w, h, { shape: o.rect ? 'rect' : 'circle', ...o }) || alt();
 const K = (s, z = 16) => mk(s, z), KB = (s) => bold(mk(s, 16)), K2 = (s) => x2(bold(mk(s, 16))), K4 = (s) => x2(x2(bold(mk(s, 16))));
 const put = (p, m, cx, y, c, out, sh, ow) => label(p, m, cx, y, { c, out, sh, ow, align: 'c' });
 /** A sprite with its bottom-centre at (cx, by). */
@@ -45,7 +48,8 @@ F.vd_bancho = (p, c) => {
   ribbon(p, cx - 42, 104, 84, 20, KB('ブラック'), { c: RED, text: CREAM, ink: 0x0c0a0e });
   at(p, spr('bancho', 'cross'), cx, 174);
   seal(p, 10, 132, '無糖', { c: RED, paper: CREAM, size: 12 });
-  burst(p, W - 28, 148, 20, [K('深煎', 12)], { c: GOLD, text: BK, ink: BK });
+  at(p, pic('beans', 44, 44, () => art('beans'), { ink: 0x0c0a0e, line: GOLD }), W - 30, 172);
+  pill(p, W - 30, 112, K('深煎', 12), { c: GOLD, text: BK, ink: BK, align: 'c', pad: 6, padY: 2 });
   foot(p, c, H - 12, 12, GOLD, 'BANCHO BLACK', BK, '190G');
 };
 F.vd_morning = (p, c) => {
@@ -82,7 +86,7 @@ F.vd_aulait = (p, c) => {
   brandTag(p, b, cx, 6);
   put(p, K2('カフェオレ'), cx, 28, BR, W0, [2, 2, 0xe8b070], 2);
   put(p, m5('CAFE AU LAIT'), cx, 68, BR);
-  at(p, art('cup', 0xc8946a, RED, { steam: W0, milk: true }), 48, 150);
+  at(p, pic('coffee', 62, 62, () => art('cup', 0xc8946a, RED, { steam: W0, milk: true })), 46, 164);
   at(p, spr('bancho', 'cup'), cx + 40, 168);
   pill(p, 10, 76, K('ミルクたっぷり', 12), { c: 0x3a8ae0, text: W0, ink: BR });
   foot(p, c, H - 12, 12, BR, 'HOT OR COLD', CR, '190G');
@@ -119,7 +123,7 @@ F.vd_ocha = (p, c) => {
   // "はい！" in a balloon
   p.rrect(x0 + 8, 8, 62, 26, 8, 0x14361a); p.rrect(x0 + 10, 10, 58, 22, 7, W0); p.poly([[x0 + 54, 30], [x0 + 64, 44], [x0 + 62, 30]], W0); p.line(x0 + 54, 32, x0 + 64, 44, 0x14361a, 1); p.line(x0 + 64, 44, x0 + 63, 32, 0x14361a, 1);
   label(p, KB('はい！'), x0 + 39, 13, { c: RED, align: 'c' });
-  at(p, art('leaves'), x0 + 28, H - 18);
+  at(p, pic('teafield', 54, 38, () => art('leaves'), { rect: true, fy: 0.7 }), x0 + 32, H - 18);
   seal(p, W - 24, 8, '無糖', { c: RED, paper: W0, size: 12 });
   foot(p, c, H - 14, 14, b.paper, 'HAI! OCHA', 0x14361a, '500ML');
 };
@@ -127,7 +131,7 @@ F.vd_mugi = (p, c) => {
   const { W, H, b } = c, T = 0xb8742a;
   const x0 = teaLabel(p, c, { bg: T, pat: PAT.stripes(T, 0xc4803a, 6, 'd'), v: '麦茶', ink: 0x3a2008, slip: 0xf4e4b0 });
   const mx = x0 + (W - x0) / 2;
-  at(p, art('barley'), x0 + 30, H - 18);
+  at(p, pic('wheat', 50, 44, () => art('barley'), { rect: true }), x0 + 32, H - 18);
   at(p, spr('chako', 'leaf'), mx + 22, H - 16);
   pill(p, mx, 8, K('ノンカフェイン', 12), { c: 0xf4e4b0, text: 0x3a2008, ink: 0x3a2008, align: 'c' });
   foot(p, c, H - 14, 14, 0xf4e4b0, 'MUGICHA', 0x3a2008, '500ML');
@@ -137,7 +141,7 @@ F.vd_jasmine = (p, c) => {
   p.fill(Y); p.rect(0, 0, W, 6, G); p.rect(0, 8, W, 1, G);
   put(p, K2('ジャスミン茶'), cx, 14, G, W0, [2, 2, 0xb8c890], 2);
   put(p, m5('JASMINE TEA'), cx, 54, 0x2a4a2a);
-  at(p, art('jasmine'), 46, H - 16);
+  at(p, pic('teacup', 50, 50, () => art('jasmine')), 46, H - 16);
   at(p, spr('chako', 'sip'), cx + 30, H - 15);
   seal(p, W - 26, 66, '茉莉花', { c: RED, paper: W0, size: 12, cols: 1 });
   brandTag(p, b, 40, 66, { c: W0 });
@@ -163,7 +167,7 @@ F.vd_melon = (p, c) => {
   popBrand(p, c);
   put(p, shear(K4('メロン'), 0.12), cx, 28, W0, DG, [4, 4, DG], 2);
   put(p, shear(K2('ソーダ'), 0.2), cx + 36, 96, 0xff6f91, W0, [2, 2, DG], 2);
-  at(p, art('melon'), 52, H - 22);
+  at(p, pic('melon', 84, 84, () => art('melon')), 52, H - 20);
   at(p, big('puku', 'float', { col: 0x58c06c, fin: 0xff8aa8 }), cx + 46, H - 18);
   burst(p, 38, 112, 24, juice(d.juice), { c: 0xffd23f, text: RED, ink: DG });
   foot(p, c, H - 14, 14, DG, 'MELON SODA', W0, '350ML');
@@ -189,7 +193,7 @@ F.vd_grape = (p, c) => {
   put(p, shear(K2('ファント'), 0.2), cx - 20, 26, Y, 0x2a0a4a, [3, 3, 0x2a0a4a], 2);
   put(p, shear(K2('グレープ'), 0.2), cx + 14, 62, W0, 0x2a0a4a, [3, 3, 0x2a0a4a], 2);
   put(p, m5('FANTO GRAPE', 2), cx, 108, 0x2a0a4a);
-  at(p, art('grapes'), 44, H - 20);
+  at(p, pic('grapes', 78, 78, () => art('grapes')), 46, H - 18);
   at(p, big('puku', 'blow', { col: 0x9a5ad8 }), cx + 44, H - 18);
   burst(p, W - 32, 152, 22, juice(d.juice), { c: W0, text: RED, ink: 0x2a0a4a });
   foot(p, c, H - 14, 14, 0x2a0a4a, 'PUKU POP', Y, '350ML');
@@ -200,7 +204,7 @@ F.vd_cclemon = (p, c) => {
   p.rect(0, 0, W, 5, G); p.rect(0, 7, W, 1, G);
   const t = join(m5('CC', 4), K2('レモネード'), 4);
   put(p, t, cx, 12, G, W0, [2, 2, 0x3a4a08], 2);
-  at(p, art('lemon'), 44, H - 18);
+  at(p, pic('lemon', 58, 58, () => art('lemon')), 40, H - 17);
   at(p, spr('puku', 'float', { col: 0xf0b820, fin: 0x58c06c }), cx + 18, H - 16);
   burst(p, W - 40, 86, 34, [K('レモン', 12), m5('70', 2), K('個分のC', 12)], { c: W0, text: RED, ink: 0x3a4a08, n: 16 });
   foot(p, c, H - 14, 14, G, 'VITAMIN LEMONADE', W0, '500ML');
@@ -215,6 +219,7 @@ F.vd_ramunecan = (p, c) => {
   at(p, art('marble'), 46, H - 20);
   at(p, big('puku', 'blow'), cx + 44, H - 18);
   seal(p, W - 30, 132, '缶', { c: B, paper: W0, size: 16 });
+  burst(p, 30, 140, 22, [K('新発売', 12)], { c: 0xffd23f, text: RED, ink: 0x0a2a6a, n: 14 });
   foot(p, c, H - 14, 14, 0x0a2a6a, 'RAMUNE SODA', W0, '350ML');
   void d;
 };
@@ -279,7 +284,7 @@ F.vd_aquaria = (p, c) => {
   p.rect(0, 0, W, 4, B);
   put(p, arc(K2('アクアリア'), 5), cx, 10, W0, B, [3, 3, 0x0a2a5a], 2);
   put(p, m5('AQUARIA', 2), cx, 54, 0x0a2a5a, W0);
-  at(p, art('citrus'), 40, H - 16);
+  at(p, pic('grapefruit', 50, 50, () => art('citrus')), 40, H - 16);
   at(p, spr('shizuku', 'flex'), cx + 14, H - 15);
   burst(p, W - 32, 96, 26, [K('ハイドロ', 12), K('パワー', 12)], { c: 0xffd23f, text: B, ink: 0x0a2a5a });
   foot(p, c, H - 14, 14, B, 'SPORTS DRINK', W0, '500ML');
@@ -288,13 +293,13 @@ F.vd_aquaria = (p, c) => {
 F.vd_water = (p, c) => {
   const { W, H, cx, b } = c, PB = 0xd8eef8, B = 0x2a6ad8;
   p.fill(PAT.fade(0xbfe2f6, PB, 0, 70));
-  at(p, art('mountain'), cx + 4, 112);
+  at(p, pic('fuji', 96, 44, () => art('mountain'), { rect: true, n: 10 }), cx + 2, 114);
   p.rect(0, 112, W, H - 112, 0xf4fafc); p.rect(0, 112, W, 2, 0x2a7a4a);
   put(p, K4('天然水'), cx, 4, B, W0, [3, 3, 0x9ad0f0], 2);
   label(p, K('奥ノ山の', 12), 6, 76, { c: 0x14306a }); label(p, K('しみず', 12), 6, 90, { c: 0x14306a });
   seal(p, W - 28, 74, '軟水', { c: B, paper: W0, size: 12 });
   at(p, spr('shizuku', 'cheer'), W - 62, H - 15);
-  brandTag(p, b, 34, 112, { c: W0 });
+  brandTag(p, b, 34, 104, { c: W0 });
   foot(p, c, H - 14, 14, B, 'TENNEN WATER', W0, '500ML');
 };
 
@@ -339,7 +344,7 @@ F.vd_morio = (p, c) => {
   p.ell(cx, 50, 30, 30, NV); p.ell(cx, 50, 27, 27, CR); p.ring(cx, 50, 24, 24, 1, GD);
   put(p, K4('生'), cx + 1, 18, NV);
   put(p, K2('杜王ドラフト'), cx, 90, CR, null, [2, 2, 0x0a1038]);
-  at(p, art('hops'), 62, H - 16);
+  at(p, pic('wheat', 58, 58, () => art('hops')), 60, H - 16);
   at(p, big('fukuro', 'mug'), cx + 48, H - 18);
   sakeMark(p, 6, 134, d.alc);
   foot(p, c, H - 14, 14, NV, 'MORIO DRAFT BEER', CR, '350ML');
@@ -369,7 +374,7 @@ F.vd_strong = (p, c) => {
   put(p, K4('零'), 50, 104, BK, null, [3, 3, Y]);
   put(p, m5('9%', 7), cx + 46, 118, RED, W0, [3, 3, BK], 2);
   put(p, K('レモン', 12), cx + 46, 174, BK);
-  at(p, art('lemon'), 56, 250);
+  at(p, pic('lemon', 72, 72, () => art('lemon')), 54, 254);
   at(p, big('fukuro', 'wink'), cx + 46, 282);
   sakeMark(p, 10, 258, undefined);
   foot(p, c, H - 14, 14, BK, 'STRONG NOUGHT CHU-HI', Y, '500ML');
@@ -382,7 +387,7 @@ F.vd_highball = (p, c) => {
   put(p, K(b.jp, 12), cx, 7, CR);
   put(p, K2('ハイボール'), cx, 38, BK, CR, [3, 3, 0x8a4a10], 2);
   put(p, m5('WHISKY & SODA'), cx, 80, BK);
-  at(p, art('tumbler'), 46, H - 22);
+  at(p, pic('whisky', 70, 70, () => art('tumbler')), 46, H - 20);
   at(p, big('fukuro', 'mug'), cx + 44, H - 18);
   sakeMark(p, 8, 96, d.alc);
   foot(p, c, H - 14, 14, BK, 'HIGHBALL', CR, '350ML');
@@ -394,7 +399,7 @@ F.vd_onecup = (p, c) => {
   put(p, m5('ONE KAPPU'), cx + 8, 50, 0x9ac0f8);
   seal(p, 10, 12, '清酒', { c: RED, paper: CR, size: 16 });
   at(p, spr('fukuro', 'doze'), W - 34, H - 8);
-  at(p, art('sake'), 62, H - 10);
+  at(p, pic('sake', 58, 40, () => art('sake'), { rect: true }), 60, H - 9);
   label(p, K(b.jp, 12), cx + 6, 64, { c: CR, align: 'c' });
   label(p, m3('ALC.' + d.alc + '%  180ML'), cx + 6, 82, { c: CR, align: 'c' });
 };
@@ -405,7 +410,7 @@ F.vd_ume = (p, c) => {
   brandTag(p, b, cx, 12, { c: W0, text: BU, ink: BU });
   put(p, K4('梅酒'), cx, 36, BU, null, [3, 3, W0]);
   put(p, K2('ソーダ'), cx, 106, W0, BU, null, 2);
-  at(p, art('plum'), cx - 22, 190);
+  at(p, pic('plum', 66, 66, () => art('plum')), cx - 26, 196);
   at(p, spr('fukuro', 'wink'), cx + 46, 198);
   sakeMark(p, 8, 204, d.alc);
   foot(p, c, H - 14, 14, BU, 'UMESHU SODA', W0, '250ML');
@@ -431,7 +436,7 @@ F.vd_cornsoup = (p, c) => {
   put(p, K(b.jp, 12), cx, 5, W0);
   put(p, K2('コーン'), cx - 24, 30, G, W0, [2, 2, 0x2a3a10], 2);
   put(p, K2('スープ'), cx + 20, 64, RED, W0, [2, 2, 0x2a3a10], 2);
-  at(p, art('corn'), 34, 170);
+  at(p, pic('cornsoup', 58, 58, () => art('corn')), 38, 170);
   at(p, spr('nabe', 'ladle'), cx + 30, 172);
   burst(p, W - 30, 44, 20, [K('つぶ', 12), K('入り', 12)], { c: W0, text: RED, ink: 0x2a3a10 });
   foot(p, c, H - 12, 12, G, 'CORN POTAGE', W0, '190G');
@@ -454,7 +459,7 @@ F.vd_oden = (p, c) => {
   put(p, KB(b.jp), cx, 7, CR);
   put(p, K4('おでん'), cx, 44, RED, W0, [4, 4, 0x3a1408], 3);
   ribbon(p, cx - 50, 122, 100, 20, K('だし自慢', 12), { c: BR, text: CR, ink: 0x3a1408 });
-  at(p, art('oden').x2(), 50, 284);
+  at(p, pic('oden', 92, 92, () => art('oden').x2()), 54, 288);
   at(p, big('nabe', 'steam'), cx + 42, 282);
   burst(p, W - 34, 168, 26, [K('牛すじ', 12), K('入り', 12)], { c: 0xffd23f, text: RED, ink: 0x3a1408 });
   foot(p, c, H - 14, 14, RED, 'ODEN IN A CAN', CR, '280G');

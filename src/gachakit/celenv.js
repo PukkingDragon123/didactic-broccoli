@@ -48,10 +48,10 @@ function paint(fn) {
 // the viewer looks along -z at yaw 0: the big window is up and to the left, the small one low on the right
 const D2R = Math.PI / 180;
 const WIN = [
-  { p: pane(-38 * D2R, 42 * D2R, 36 * D2R, 32 * D2R, 0.12), k: 1, mullion: true },
-  { p: pane(50 * D2R, -24 * D2R, 16 * D2R, 12 * D2R, -0.2), k: 0.4 },
+  { p: pane(-38 * D2R, 42 * D2R, 28 * D2R, 25 * D2R, 0.12), k: 1, mullion: true },
+  { p: pane(50 * D2R, -24 * D2R, 13 * D2R, 10 * D2R, -0.2), k: 0.35 },
   // one more behind the viewer, fainter: something still glints on the far side of a clear dome
-  { p: pane(150 * D2R, 48 * D2R, 30 * D2R, 22 * D2R, 0), k: 0.3 },
+  { p: pane(150 * D2R, 48 * D2R, 20 * D2R, 14 * D2R, 0), k: 0.14 },
 ];
 function windows(d) {
   for (const w of WIN) {
@@ -66,18 +66,21 @@ function windows(d) {
 
 const MAKE = {
   // dielectrics reflect about 4% head on: the panes are painted that much brighter than white
-  gloss: () => paint((d) => { const w = windows(d) * 20; return [0.36 + w, 0.35 + w, 0.39 + w]; }),
-  coat: () => paint((d) => { const w = windows(d) * 22; return [w, w, w * 1.02]; }),
+  // (the panes also light the plastic like a soft key from the upper left; the rest of the room is kept dim so the
+  // whole stays near the garage's own ambient level: nothing may come out brighter than paper, or it would bloom)
+  gloss: () => paint((d) => { const w = windows(d) * 19; return [0.07 + w, 0.07 + w, 0.08 + w]; }),
+  coat: () => paint((d) => { const w = windows(d) * 15; return [w, w, w * 1.02]; }),
   chrome: () => paint((d, el) => {
     const e = el / D2R, w = windows(d);
-    if (w > 0.5) return [1.06, 1.06, 1.06];
-    const v = e > 62 ? 0.8 : e > 24 ? 0.98 : e > 7 ? 0.72 : e > -5 ? 0.2 : e > -32 ? 0.5 : e > -60 ? 0.68 : 0.42;
+    if (w > 0.5) return [0.96, 0.96, 0.96];
+    const v = (e > 62 ? 0.8 : e > 24 ? 0.98 : e > 7 ? 0.72 : e > -5 ? 0.2 : e > -32 ? 0.5 : e > -60 ? 0.68 : 0.42) * 0.8;
     return [v * 0.98, v, v * 1.03];
   }),
   pearl: () => paint((d, el) => {
     const e = el / D2R + Math.sin(Math.atan2(d.z, d.x) * 2) * 9, w = windows(d);
-    if (w > 0.5) return [1.08, 1.08, 1.08];
-    return e > 50 ? [1.0, 0.86, 0.93] : e > 22 ? [1.0, 0.97, 0.86] : e > -4 ? [0.84, 0.98, 0.93] : e > -34 ? [0.84, 0.9, 1.0] : [0.94, 0.86, 1.0];
+    if (w > 0.5) return [0.95, 0.95, 0.95];
+    const c = e > 50 ? [1.0, 0.72, 0.86] : e > 22 ? [1.0, 0.94, 0.7] : e > -4 ? [0.66, 0.98, 0.86] : e > -34 ? [0.66, 0.8, 1.0] : [0.88, 0.7, 1.0];
+    return c.map((v) => v * 0.5);
   }),
 };
 
@@ -108,9 +111,9 @@ export function syncCelEnv(scene, camera) {
 // ----------------------------------------------------------------------------- the materials
 /** Glossy opaque plastic over a painted skin (tinted by `color`). */
 export function glossPlastic(map, color = 0xffffff, o = {}) {
-  const m = new THREE.MeshStandardMaterial({ map, color, roughness: o.roughness ?? 0.02, metalness: 0, ...o.extra });
+  const m = new THREE.MeshStandardMaterial({ map, color, roughness: o.roughness ?? 0.05, metalness: 0, ...o.extra });
   m.name = 'cel-gloss';
-  return useCelEnv(m, 'gloss', o.env ?? 1);
+  return useCelEnv(m, 'gloss', o.env ?? 0.9);
 }
 /** Matte plastic / paper / card: the scene's own ambient, no window reflections. */
 export function mattePlastic(map, color = 0xffffff, o = {}) {

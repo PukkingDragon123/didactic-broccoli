@@ -13,7 +13,9 @@ import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { itemValue } from './economy.js';
 import { DisplaySlots } from './Display.js';
-import { Pix, FONT_EN } from '../gfx/pix.js';
+import { Px, dk, lt, on } from '../products/px.js';
+import { m5, m3, mk, bold, label, whenFontsReady } from '../products/type.js';
+import { PAT, burst, infoBox, barcode } from '../products/print.js';
 import { VoxelModel, gloss, glass, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -25,55 +27,120 @@ export const PACKED_MULT = 1.3;
 export function packagedValue(key, finish = 'normal') { return Math.round((itemValue(key, finish) * PACKED_MULT) / 10) * 10; }
 
 // ------------------------------------------------------------------ meshes
+// The printed card and box are painted with the label studio (src/products): the series' name in kana, its colours and
+// pattern, a rarity flash, the figure's name on a ribbon, and on the back the 品名 box, the small-parts warning and a
+// JAN code, as on a 1999 blister card. Ultra rares and secrets go in a window box instead.
+const INK = 0x2e1f28, PAPER = 0xfffaf0;
+const KB = (t) => bold(mk(t, 16)), K = (t, z = 12) => mk(t, z);
 const cardTex = new Map();
-function cardTexture(key, finish) {
-  const k = key + '|' + finish;
-  if (cardTex.has(k)) return cardTex.get(k);
-  const it = getItem(key), s = SERIES_BY_ID[it?.series] || {};
-  const p = new Pix(64, 90, 4);
-  p.fill(hex(s.card?.bg || '#fff6e8'));
-  p.rect(0, 0, 64, 16, hex(s.card?.accent || '#e5383b'));
-  p.circle(32, 6, 3, 0xf4efe4); p.circle(32, 6, 2, 0x2a2220); // hang hole
-  p.tinyText('COLLECTION', 32, 9, { color: 0xffffff, align: 'center' });
-  const name = (it?.name || '').toUpperCase();
-  const words = name.split(' '), lines = [''];
-  for (const w of words) { if ((lines[lines.length - 1] + ' ' + w).trim().length > 11) lines.push(w); else lines[lines.length - 1] = (lines[lines.length - 1] + ' ' + w).trim(); }
-  lines.slice(0, 2).forEach((l, i) => p.tinyText(l, 32, 70 + i * 8, { color: hex(s.card?.text || '#2a2220'), align: 'center' }));
-  const r = RARITIES[it?.rarity] || RARITIES.common;
-  for (let i = 0; i < r.stars; i++) p.tinyText('*', 32 - (r.stars - 1) * 3 + i * 6, 61, { color: hex(r.color), align: 'center' });
-  if (finish && finish !== 'normal') p.tinyText(finish.toUpperCase(), 32, 86 - 2, { color: 0xb88a20, align: 'center' });
-  const t = p.texture();
-  cardTex.set(k, t);
+/** A texture painted from a Px, repainted once the label fonts are in. */
+function pxTexture(paint) {
+  const p0 = paint(), c = p0.canvas(1), t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4;
+  whenFontsReady().then(() => { const g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height); paint().draw(g, 0, 0, 1); t.needsUpdate = true; });
   return t;
+}
+const patOf = (card, bg, a2) => ({ stars: PAT.dots(bg, lt(a2, 0.5), 14, 2.4), checker: PAT.checks(bg, lt(a2, 0.72), 10), stripes: PAT.stripes(bg, lt(a2, 0.72), 8, 'd'), grid: PAT.checks(bg, lt(a2, 0.8), 6) }[card?.pattern] || PAT.dots(bg, lt(a2, 0.6), 12, 2));
+function star(p, cx, cy, r, c) { p.burst(cx, cy, r + 1, r * 0.45 + 1, 5, INK, -Math.PI / 2); p.burst(cx, cy, r, r * 0.45, 5, c, -Math.PI / 2); }
+function wrapEN(str, n) { const out = ['']; for (const w of String(str).toUpperCase().split(' ')) { if ((out[out.length - 1] + ' ' + w).trim().length > n) out.push(w); else out[out.length - 1] = (out[out.length - 1] + ' ' + w).trim(); } return out; }
+const janFor = (key) => { let h = 7; for (const ch of String(key)) h = (h * 31 + ch.charCodeAt(0)) % 100000; return '4955301' + String(h).padStart(5, '0'); };
+/** The front of the card or box: w x h pixels, a clear patch (hole) where the figure shows. */
+function paintFace(key, finish, w, h, hole) {
+  const it = getItem(key) || {}, s = SERIES_BY_ID[it.series] || {}, card = s.card || {}, r = RARITIES[it.rarity] || RARITIES.common;
+  const bg = hex(card.bg || '#fff6e8'), ac = hex(card.accent || '#e5383b'), a2 = hex(card.accent2 || card.accent || '#2f6fd6'), tx = hex(card.text || '#2a2220');
+  const p = new Px(w, h); p.fill(bg); p.rect(0, 0, w, h, patOf(card, bg, a2));
+  // the header: hang slot, the series in kana, its name small
+  p.rect(0, 0, w, 44, ac); p.rect(0, 44, w, 3, tx); p.rect(0, 47, w, 1, lt(ac, 0.5));
+  p.rrect(w / 2 - 15, 5, 30, 9, 4, dk(ac, 0.55)); p.rrect(w / 2 - 13, 7, 26, 5, 2, 0x1a1418);
+  const jp = s.jp || '', mj = jp ? ([...jp].length * 17 > w - 10 ? K(jp, 12) : KB(jp)) : null;
+  if (mj) label(p, mj, w / 2, 17, { c: on(ac), align: 'c' });
+  label(p, m3((s.name || 'COLLECTION').toUpperCase().slice(0, Math.floor((w - 8) / 4))), w / 2, 36, { c: on(ac), align: 'c' });
+  // where the figure sits: a lighter stage with the series' second colour round it
+  if (hole) { const [x, y, hw, hh] = hole; p.rrect(x - 4, y - 4, hw + 8, hh + 8, 8, a2); p.rrect(x - 2, y - 2, hw + 4, hh + 4, 6, PAPER); p.rect(x, y, hw, hh, PAT.rays(lt(bg, 0.5), lt(a2, 0.78), x + hw / 2, y + hh * 0.7, 14)); p.rect(x, y + hh - 10, hw, 10, lt(a2, 0.55)); }
+  // rarity: stars on a flash at the corner of the stage
+  const fy = hole ? hole[1] + 4 : 60;
+  burst(p, w - 26, fy + 10, 20, [m3(r.name.toUpperCase().split(' ')[0]), m5(String(r.stars))], { c: hex(r.color), text: INK, ink: INK, n: 12 });
+  for (let i = 0; i < r.stars; i++) star(p, 12 + i * 13, fy + 2, 5, 0xffd23f);
+  // the name on a ribbon, the finish as a foil sticker, the small print along the foot
+  const ny = hole ? hole[1] + hole[3] + 10 : h - 50, lines = wrapEN(it.name || '', Math.floor((w - 22) / 6)).slice(0, 2);
+  p.rect(6, ny, w - 12, lines.length * 10 + 8, tx); p.rect(6, ny + lines.length * 10 + 8, w - 12, 2, dk(tx, 0.4));
+  lines.forEach((l, i) => label(p, m5(l), w / 2, ny + 5 + i * 10, { c: bg, align: 'c' }));
+  if (finish && finish !== 'normal') { p.rrect(8, ny - 15, m5(finish.toUpperCase()).w + 10, 12, 3, 0xffd23f); p.frame(8, ny - 15, m5(finish.toUpperCase()).w + 10, 12, 0xb88a20); label(p, m5(finish.toUpperCase()), 13, ny - 12, { c: 0x6a4a08 }); }
+  label(p, K('対象年齢6才以上', 10), 6, h - 14, { c: tx }); label(p, m3('NO.' + janFor(key).slice(7)), w - 6, h - 10, { c: tx, align: 'r' });
+  p.frame(0, 0, w, h, dk(bg, 0.3));
+  return p;
+}
+/** The back: the facts, the warning, the code. */
+function paintBack(key, finish, w, h) {
+  const it = getItem(key) || {}, s = SERIES_BY_ID[it.series] || {}, card = s.card || {};
+  const bg = lt(hex(card.bg || '#fff6e8'), 0.4), ac = hex(card.accent || '#e5383b'), tx = hex(card.text || '#2a2220');
+  const p = new Px(w, h); p.fill(bg);
+  p.rect(0, 0, w, 20, ac); label(p, K(s.jp || 'コレクション', 12), 6, 4, { c: on(ac) });
+  let y = infoBox(p, 5, 26, w - 10, [['品名', 'フィギュア'], ['材質', 'PVC・ABS'], ['対象年齢', '6才以上'], ['発売元', 'ガレージ玩具 汐見市横丁1']], { ink: tx, paper: PAPER, size: 10, lh: 12 });
+  p.rect(5, y, w - 10, 40, 0xfff0a0); p.frame(5, y, w - 10, 40, 0xc8302a);
+  label(p, K('ちゅうい', 10), 9, y + 2, { c: 0xc8302a });
+  ['小さな部品があります。', '口に入れないでください。'].forEach((l, i) => label(p, K(l, 10), 9, y + 14 + i * 12, { c: tx }));
+  barcode(p, Math.round((w - 113) / 2), h - 36, janFor(key), { h: 16 });
+  p.frame(0, 0, w, h, dk(bg, 0.3));
+  return p;
+}
+function cardTexture(key, finish, back = false) {
+  const k = key + '|' + finish + (back ? '|b' : '');
+  if (!cardTex.has(k)) cardTex.set(k, pxTexture(() => (back ? paintBack(key, finish, 144, 204) : paintFace(key, finish, 144, 204, [10, 54, 124, 96]))));
+  return cardTex.get(k);
 }
 
 const bubbleMat = new THREE.MeshPhysicalMaterial({ color: 0xf4fbff, transparent: true, opacity: 0.22, roughness: 0.05, clearcoat: 1, depthWrite: false, side: THREE.DoubleSide });
-/** A figure sealed in a blister card (standing, the card's bottom edge at y = 0, facing +z). */
+const edgeMat = new THREE.MeshStandardMaterial({ color: 0xe8e0d0, roughness: 0.9 });
+/** A window box (ultra rares and secrets): printed all round, the figure behind a film window. */
+function makeBoxed(key, finish) {
+  const g = new THREE.Group(), W = 0.066, H = 0.096, D = 0.04, t = 0.0012;
+  const it = getItem(key) || {}, s = SERIES_BY_ID[it.series] || {}, card = s.card || {};
+  const face = pxTexture(() => paintFace(key, finish, 132, 192, [16, 52, 100, 92])), back = pxTexture(() => paintBack(key, finish, 132, 192));
+  const side = new THREE.MeshStandardMaterial({ color: hex(card.accent || '#e5383b'), roughness: 0.8 });
+  const fm = new THREE.MeshStandardMaterial({ map: face, roughness: 0.7 }), bm = new THREE.MeshStandardMaterial({ map: back, roughness: 0.8 });
+  // the front is a frame round the window (four strips taking their part of the print)
+  const wx0 = -W / 2 + (16 / 132) * W, wx1 = -W / 2 + (116 / 132) * W, wy1 = H - (52 / 192) * H, wy0 = H - (144 / 192) * H;
+  const strip = (x0, y0, x1, y1) => { const geo = new THREE.PlaneGeometry(x1 - x0, y1 - y0), uv = geo.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, (x0 + uv.getX(i) * (x1 - x0) + W / 2) / W, (y0 + uv.getY(i) * (y1 - y0)) / H); geo.translate((x0 + x1) / 2, (y0 + y1) / 2, D / 2); const m = new THREE.Mesh(geo, fm); m.castShadow = true; g.add(m); };
+  strip(-W / 2, 0, W / 2, wy0); strip(-W / 2, wy1, W / 2, H); strip(-W / 2, wy0, wx0, wy1); strip(wx1, wy0, W / 2, wy1);
+  const shell = new THREE.Mesh(new THREE.BoxGeometry(W, H, D), [side, side, side, side, new THREE.MeshBasicMaterial({ visible: false }), bm]);
+  shell.position.y = H / 2; shell.castShadow = true; g.add(shell);
+  const inner = new THREE.Mesh(new THREE.PlaneGeometry(W - t, H - t), new THREE.MeshStandardMaterial({ color: lt(hex(card.bg || '#fff6e8'), 0.3), roughness: 0.9 }));
+  inner.position.set(0, H / 2, -D / 2 + t); g.add(inner);
+  const film = new THREE.Mesh(new THREE.PlaneGeometry(wx1 - wx0, wy1 - wy0), bubbleMat);
+  film.position.set((wx0 + wx1) / 2, (wy0 + wy1) / 2, D / 2 - 0.0004); film.renderOrder = 3; film.userData.noRim = true; g.add(film);
+  const fig = makeItemMesh(key, finish), sz = fig.geometry.userData.size, sc = Math.min(1, 0.04 / sz.y, 0.044 / Math.max(sz.x, sz.z * 1.4));
+  fig.scale.setScalar(sc); fig.position.set(0, wy0 + 0.002, 0); fig.castShadow = false; g.add(fig);
+  g.userData.packaged = { key, finish };
+  return g;
+}
+/** A figure sealed in a blister card (standing, the card's bottom edge at y = 0, facing +z); the rarest come boxed. */
 export function makePackagedMesh(key, finish = 'normal') {
+  if ((RARITIES[getItem(key)?.rarity]?.stars || 1) >= 4) return makeBoxed(key, finish);
   const g = new THREE.Group();
   const W = 0.072, H = 0.102, D = 0.003;
   const card = new THREE.Mesh(new THREE.BoxGeometry(W, H, D), [
-    ...Array(4).fill(new THREE.MeshStandardMaterial({ color: 0xe8e0d0, roughness: 0.9 })),
+    edgeMat, edgeMat, edgeMat, edgeMat,
     new THREE.MeshStandardMaterial({ map: cardTexture(key, finish), roughness: 0.75 }),
-    new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9 }),
+    new THREE.MeshStandardMaterial({ map: cardTexture(key, finish, true), roughness: 0.9 }),
   ]);
   card.position.y = H / 2;
   card.castShadow = true;
   g.add(card);
   const fig = makeItemMesh(key, finish);
   const sz = fig.geometry.userData.size;
-  const sc = Math.min(1, 0.046 / sz.y, 0.056 / Math.max(sz.x, sz.z * 2));
+  const sc = Math.min(1, 0.042 / sz.y, 0.054 / Math.max(sz.x, sz.z * 2));
   fig.scale.setScalar(sc);
   fig.position.set(0, 0.03, D / 2 + sz.z * sc / 2 + 0.002);
   fig.castShadow = false;
   g.add(fig);
-  const bub = new THREE.Mesh(new THREE.BoxGeometry(0.062, 0.054, Math.max(0.018, sz.z * sc + 0.008)), bubbleMat);
-  bub.position.set(0, 0.03 + 0.027 - 0.004, D / 2 + bub.geometry.parameters.depth / 2);
+  const bub = new THREE.Mesh(new THREE.BoxGeometry(0.062, 0.05, Math.max(0.018, sz.z * sc + 0.008)), bubbleMat);
+  bub.position.set(0, 0.03 + 0.025 - 0.002, D / 2 + bub.geometry.parameters.depth / 2);
   bub.renderOrder = 3;
   bub.userData.noRim = true;
   g.add(bub);
   // a little foot so it stands
-  const foot = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.003, 0.03), new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9 }));
+  const foot = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.003, 0.03), edgeMat);
   foot.position.set(0, 0.0015, -0.012);
   g.add(foot);
   g.rotation.x = 0;

@@ -15,11 +15,30 @@ import { playGimmick, figureData, figureAtlas } from './index.js';
 const ANGLES = { front: [0, 0.12], q: [-0.62, 0.3], back: [Math.PI, 0.16], side: [-Math.PI / 2, 0.12], top: [0, 1.25], under: [0.5, -1.0], q2: [0.7, 0.34] };
 
 export async function runStudio(params) {
-  const S = SERIES_BY_ID[params.get('studio')];
-  if (!S) throw new Error('No series ' + params.get('studio'));
-  const only = params.get('items')?.split(',');
-  const items = S.items.filter((it) => !only || only.includes(it.id));
-  const cell = +(params.get('cell') || 480);
+  // ?studio=all: every sheet in one go (window.__sheets: name -> canvas), for the shot scripts
+  if (params.get('studio') === 'all') {
+    const out = {}, stats = {}, R = makeStage(params);
+    for (const id of ['machikado', 'menzoo', 'hakoiri']) {
+      out[`${id}_views`] = sheet(R, id, params, 'views'); stats[id] = window.__stats;
+      out[`${id}_gimmicks`] = sheet(R, id, params, 'gimmick');
+    }
+    const q = new URLSearchParams(params); q.set('items', params.get('finishItem') || 'seal');
+    out.finishes = sheet(R, 'machikado', q, 'finishes');
+    R.host.remove();
+    window.__sheets = out; window.__stats = stats;
+    return;
+  }
+  const R = makeStage(params);
+  const c = sheet(R, params.get('studio'), params, params.get('finishes') ? 'finishes' : params.get('gimmick') ? 'gimmick' : 'views');
+  R.host.remove();
+  c.style.cssText = 'display:block;max-width:none';
+  document.body.prepend(c);
+  window.__sheet = c;
+  const A = figureAtlas(params.get('studio'));
+  if (params.get('atlas')) { const k = document.createElement('canvas'); k.width = A.w; k.height = A.h; k.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(A.d), A.w, A.h), 0, 0); window.__sheet = k; }
+}
+
+function makeStage(params) {
   const host = document.createElement('div');
   host.style.cssText = 'position:fixed;left:0;top:0;opacity:0;pointer-events:none';
   document.body.appendChild(host);
@@ -41,15 +60,24 @@ export async function runStudio(params) {
   R.setup(scene, cam);
   R.registerShadowLight(sun, 1);
   if (R.grade) R.grade.uniforms.uVignette.value = 0;
+  return { R, host, scene, sun, floor, cam, time: 0 };
+}
 
-  // the cells: [{ item, finish, angle, t }]
+/** One sheet of a series: mode 'views' (rows: angles), 'finishes' (columns: finishes of the first item) or 'gimmick' (rows: t). */
+function sheet(St, seriesId, params, mode) {
+  const { R, scene, sun, floor, cam } = St;
+  const S = SERIES_BY_ID[seriesId];
+  if (!S) throw new Error('No series ' + seriesId);
+  const only = params.get('items')?.split(',');
+  const items = S.items.filter((it) => !only || only.includes(it.id));
+  const cell = +(params.get('cell') || 480);
   const rows = [];
-  if (params.get('finishes')) {
+  if (mode === 'finishes') {
     const fl = ['normal', ...Object.keys(FINISHES).filter((f) => f !== 'normal')];
-    for (const a of (params.get('angles') || 'q').split(',')) rows.push(fl.map((f) => ({ item: items[0], finish: f, angle: a, label: FINISHES[f].name })));
-  } else if (params.get('gimmick')) {
+    for (const a of (params.get('fangles') || 'q').split(',')) rows.push(fl.map((f) => ({ item: items[0], finish: f, angle: a, label: FINISHES[f].name })));
+  } else if (mode === 'gimmick') {
     const g = items.filter((it) => Object.keys(figureData(it).defs).length);
-    for (const t of [0, 0.5, 1]) rows.push(g.map((it) => ({ item: it, finish: 'normal', angle: params.get('angles') || 'q', t, label: `${it.name}  t=${t}` })));
+    for (const t of [0, 0.5, 1]) rows.push(g.map((it) => ({ item: it, finish: 'normal', angle: 'q', t, label: `${it.name}  t=${t}` })));
   } else {
     for (const a of (params.get('angles') || 'front,q,back').split(',')) rows.push(items.map((it) => ({ item: it, finish: params.get('finish') || 'normal', angle: a, label: it.name })));
   }
@@ -59,7 +87,6 @@ export async function runStudio(params) {
   const ctx = sheet.getContext('2d');
   ctx.fillStyle = '#d9d2c4'; ctx.fillRect(0, 0, sheet.width, sheet.height);
   const stats = {};
-  let time = 0;
   for (let r = 0; r < rows.length; r++) for (let c = 0; c < rows[r].length; c++) {
     const q = rows[r][c];
     const mesh = makeItemMesh(q.item.key, q.finish);
@@ -74,18 +101,15 @@ export async function runStudio(params) {
     sun.position.copy(centre).add(new THREE.Vector3(-0.5, 0.9, 0.6).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw).multiplyScalar(0.6));
     sun.target.position.copy(centre);
     floor.visible = pitch > -0.2;
-    for (let k = 0; k < 3; k++) { time += 0.016; R.render(0.016, time); }
+    for (let k = 0; k < 3; k++) { St.time += 0.016; R.render(0.016, St.time); }
     ctx.drawImage(R.renderer.domElement, c * cell, r * cell, cell, cell);
     ctx.fillStyle = '#3a3038'; ctx.font = '13px monospace'; ctx.textAlign = 'center';
-    ctx.fillText(`${q.label}${r === 0 && !q.t ? ` · ${figureData(q.item).tris} tris` : ''}`, c * cell + cell / 2, r * cell + cell - 8);
+    ctx.fillText(`${q.label}${r === 0 && q.t === undefined && mode === 'views' ? ` · ${figureData(q.item).tris} tris` : ''}`, c * cell + cell / 2, r * cell + cell - 8);
     stats[q.item.id] = { tris: figureData(q.item).tris, size: [sz.x, sz.y, sz.z].map((v) => +(v * 1000).toFixed(1)) };
     scene.remove(mesh);
   }
   const A = figureAtlas(S.id);
   stats.atlas = { fill: +A.fill.toFixed(3), ...A.stats };
-  host.remove();
-  sheet.style.cssText = 'display:block;max-width:none';
-  document.body.prepend(sheet);
-  window.__sheet = sheet; window.__stats = stats;
-  if (params.get('atlas')) { const c = document.createElement('canvas'); c.width = A.w; c.height = A.h; const id = new ImageData(new Uint8ClampedArray(A.d), A.w, A.h); c.getContext('2d').putImageData(id, 0, 0); window.__sheet = c; }
+  window.__stats = stats;
+  return sheet;
 }

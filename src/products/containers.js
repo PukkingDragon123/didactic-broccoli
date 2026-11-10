@@ -12,6 +12,7 @@ import { DRINKS, BRANDS } from './brands.js';
 import { paintWrap } from './labels.js';
 import { paintTop, topKey, paintBase } from './tops.js';
 import { whenFontsReady } from './type.js';
+import { whenPhotosReady } from './photos.js';
 import { NONE, dk, lt } from './px.js';
 import { FOODS } from '../needs/foods.js';
 
@@ -77,7 +78,7 @@ export class Sheet {
     if (this.running) return;
     this.running = true;
     const run = async () => {
-      await whenFontsReady(this.preload || '');
+      await Promise.all([whenFontsReady(this.preload || ''), whenPhotosReady()]);
       const paintSome = (list) => new Promise((res) => {
         let i = 0;
         const step = () => {
@@ -122,19 +123,21 @@ class Build {
    * A solid of revolution about y. prof: [[r, y], ...] going up the outside (metres); skins[k](pts, u0, u1) -> four uvs
    * for the band between prof[k] and prof[k + 1] (bottom u0, bottom u1, top u1, top u0); u = 0.25 faces +z.
    */
-  lathe(prof, segs, skins) {
-    const at = (u, r, y) => { const a = (u - 0.25) * Math.PI * 2; return [Math.sin(a) * r, y, Math.cos(a) * r]; };
+  lathe(prof, segs, skins, mod = null) {
+    // mod(i, u): a factor on the radius of profile point i at angle u (knurled caps, petaloid feet, pinched necks)
+    const at = (u, r, y, i) => { const a = (u - 0.25) * Math.PI * 2, q = mod ? r * mod(i, u) : r; return [Math.sin(a) * q, y, Math.cos(a) * q]; };
+    const segN = (k) => { if (k < 0 || k + 1 >= prof.length) return null; const dr = prof[k + 1][0] - prof[k][0], dy = prof[k + 1][1] - prof[k][1], l = Math.hypot(dr, dy); return l < 1e-9 ? null : [dy / l, -dr / l]; };
+    const ptN = (i, own) => { const a = segN(i - 1), b = segN(i); if (!a || !b || a[0] * b[0] + a[1] * b[1] < 0.72) return own; const l = Math.hypot(a[0] + b[0], a[1] + b[1]) || 1; return [(a[0] + b[0]) / l, (a[1] + b[1]) / l]; };
     for (let k = 0; k + 1 < prof.length; k++) {
-      const [r0, y0] = prof[k], [r1, y1] = prof[k + 1], skin = skins[k];
-      if (!skin || (r0 < 1e-7 && r1 < 1e-7)) continue;
-      const dr = r1 - r0, dy = y1 - y0, l = Math.hypot(dr, dy) || 1, nr = dy / l, ny = -dr / l;
+      const [r0, y0] = prof[k], [r1, y1] = prof[k + 1], skin = skins[k], own = segN(k);
+      if (!skin || !own || (r0 < 1e-7 && r1 < 1e-7)) continue;
+      const n0 = ptN(k, own), n1 = ptN(k + 1, own);
       for (let s = 0; s < segs; s++) {
         const u0 = s / segs, u1 = (s + 1) / segs;
-        const N = (u) => { const a = (u - 0.25) * Math.PI * 2; return [Math.sin(a) * nr, ny, Math.cos(a) * nr]; };
-        const P = [at(u0, r0, y0), at(u1, r0, y0), at(u1, r1, y1), at(u0, r1, y1)];
+        const N = (u, n) => { const a = (u - 0.25) * Math.PI * 2; return [Math.sin(a) * n[0], n[1], Math.cos(a) * n[0]]; };
+        const P = [at(u0, r0, y0, k), at(u1, r0, y0, k), at(u1, r1, y1, k + 1), at(u0, r1, y1, k + 1)];
         const T = skin(P, u0, u1);
-        const um = (u0 + u1) / 2, flat = Math.abs(nr) < 0.2; // near-flat rings (lids, bases) are shaded as one plane
-        this.quad({ p: P[0], n: flat ? N(um) : N(u0), t: T[0] }, { p: P[1], n: flat ? N(um) : N(u1), t: T[1] }, { p: P[2], n: flat ? N(um) : N(u1), t: T[2] }, { p: P[3], n: flat ? N(um) : N(u0), t: T[3] });
+        this.quad({ p: P[0], n: N(u0, n0), t: T[0] }, { p: P[1], n: N(u1, n0), t: T[1] }, { p: P[2], n: N(u1, n1), t: T[2] }, { p: P[3], n: N(u0, n1), t: T[3] });
       }
     }
     return this;
@@ -195,22 +198,30 @@ export function drinksSheet() {
 }
 
 // ------------------------------------------------------------------ the shapes
-const SEGS = 16;
+const SEGS = 32; // round things are round: thirty-two sides up close (the samples in a machine's window take twelve)
 function canShape(B, S, V, c, o = {}) {
-  const R = c.d / 2 * MM, h = c.h * MM, y0 = c.y0 * MM, y1 = (c.y0 + c.lh) * MM, steel = c.d < 60;
-  const sil = skin.sw(S.swatch(o.gold ? 0xd8b860 : 0xc9ced4, R_METAL)), silD = skin.sw(S.swatch(0x9aa0a8, R_METAL)), silL = skin.sw(S.swatch(0xe6eaee, R_METAL));
-  const lidY = h - 2.2 * MM, base = V.base ? skin.under(V.base, R) : sil, top = V.top ? skin.top(V.top, R) : sil;
-  // up the outside: stand ring, chamfer, wall, shoulder, the rolled seam, then down into the lid
+  const R = c.d / 2 * MM, h = c.h * MM, y0 = c.y0 * MM, y1 = (c.y0 + c.lh) * MM, steel = c.d < 60, m = MM;
+  const metal = o.gold ? 0xd8b860 : 0xc9ced4;
+  const sil = skin.sw(S.swatch(metal, R_METAL)), silD = skin.sw(S.swatch(0x9aa0a8, R_METAL)), silL = skin.sw(S.swatch(0xe6eaee, R_METAL));
+  const lidY = h - 2.4 * m, base = V.base ? skin.under(V.base, R) : sil, top = V.top ? skin.top(V.top, R) : sil;
+  const nk = steel ? 0.975 : 0.9, sm = steel ? 1.0 : 0.925; // steel coffee cans barely neck in; aluminium ones step in twice
+  // up the outside: the dome under the base, the stand ring, the chamfer, the wall, the neck, the double seam, then
+  // down its inner wall into the countersink groove and out onto the lid's panel
   const prof = [
-    [0, 2.4 * MM], [R * 0.7, 2.4 * MM], [R * 0.8, 0], [R * 0.88, 0], [R, steel ? 2.5 * MM : y0], [R, y0], [R, y1],
-    [R * (steel ? 0.985 : 0.9), h - 3.2 * MM], [R * (steel ? 1.0 : 0.92), h - 2.6 * MM], [R * (steel ? 1.0 : 0.92), h], [R * (steel ? 0.94 : 0.86), h], [R * (steel ? 0.92 : 0.84), lidY], [0, lidY],
+    [0, 5 * m], [R * 0.46, 4.2 * m], [R * 0.7, 2.2 * m], [R * 0.78, 0], [R * 0.87, 0], [R * 0.95, 1.6 * m], [R, steel ? 3 * m : y0], [R, y0], [R, y1],
+    [R * (steel ? 0.995 : 0.985), y1 + (steel ? 0.3 : 0.9) * m], [R * (steel ? 0.985 : 0.95), y1 + (steel ? 0.7 : 2.3) * m], [R * (nk + (steel ? 0.004 : 0.012)), h - (steel ? 3.9 : 4.3) * m], [R * nk, h - 3.6 * m], [R * nk, h - 3.0 * m], [R * sm, h - 2.5 * m], [R * sm, h - 0.3 * m], [R * (sm - 0.02), h], [R * (sm - 0.05), h],
+    [R * (sm - 0.07), lidY - 0.7 * m], [R * (sm - 0.11), lidY - 0.7 * m], [R * (sm - 0.14), lidY], [0, lidY],
   ];
-  const skins = [base, base, silD, sil, steel ? skin.wrap(V.wrap, 0.002, 0.004) : sil, skin.wrap(V.wrap, 0, 1), steel ? skin.wrap(V.wrap, 0.996, 0.998) : sil, silL, silL, silD, top, top];
-  if (o.sample) { skins[0] = null; skins[1] = null; }
+  const lo = skin.wrap(V.wrap, 0.002, 0.004), hi = skin.wrap(V.wrap, 0.996, 0.998);
+  const skins = [base, base, base, silD, sil, sil, steel ? lo : sil, skin.wrap(V.wrap, 0, 1), steel ? hi : sil, steel ? hi : sil, sil, sil, silD, silL, silL, silL, silD, silD, top, top, top];
+  if (o.sample) { skins[0] = null; skins[1] = null; skins[2] = null; }
   B.lathe(prof, o.segs ?? SEGS, skins);
-  // the tab stands a little proud of the lid
-  const tw = R * 0.18, t0 = -R * 0.5, t1 = R * 0.2;
-  if (!o.sample) B.box(-tw, lidY, t0, tw, lidY + 0.9 * MM, t1, () => S.swatch(0x9aa0a8, R_METAL)(), (p) => V.top.st(0.5 + p[0] / (2 * R), 0.5 - p[2] / (2 * R)));
+  if (o.sample) return;
+  // the stay-on tab: a plate riveted to the lid, its finger end lifted clear
+  const tw = R * 0.18, t0 = -R * 0.52, t1 = R * 0.2, side = () => S.swatch(0x9aa0a8, R_METAL)(), art = (p) => V.top.st(0.5 + p[0] / (2 * R), 0.5 - p[2] / (2 * R));
+  B.box(-tw, lidY, t0 + 3 * m, tw, lidY + 0.8 * m, t1, side, art);
+  B.box(-tw, lidY + 0.5 * m, t0, tw, lidY + 1.5 * m, t0 + 3.4 * m, side, art);
+  B.lathe([[2.2 * m, lidY + 0.8 * m], [2.2 * m, lidY + 1.5 * m], [1.2 * m, lidY + 1.9 * m], [0, lidY + 1.9 * m]], 12, [silD, silL, silL]);
 }
 function petShape(B, S, V, c, id, o = {}) {
   const R = c.d / 2 * MM, h = c.h * MM, y0 = c.y0 * MM, y1 = (c.y0 + c.lh) * MM, m = MM;
@@ -222,15 +233,18 @@ function petShape(B, S, V, c, id, o = {}) {
   const top = V.top ? skin.top(V.top, 15 * m) : cap;
   const skins = [body, body, body, body, body, body, body, body, body, body, skin.wrap(V.wrap, 0, 1), body, body, body, body, body, clear, clear, clear, clear, capD, cap, cap, top];
   if (o.sample) { skins[0] = null; skins[1] = null; }
-  B.lathe(prof, o.segs ?? SEGS, skins);
+  // five feet moulded into the base, ribs round the cap
+  const n = o.segs ?? 30;
+  B.lathe(prof, n, skins, (i, u) => (i >= 1 && i <= 3 ? 1 - 0.07 * (0.5 + 0.5 * Math.cos(u * Math.PI * 10)) * (i === 2 ? 1.6 : 1) : i === 21 || i === 22 ? 1 + 0.03 * (Math.round(u * n) % 2 ? 1 : -1) : 1));
 }
 function bottleShape(B, S, V, c, o = {}) {
   const R = c.d / 2 * MM, h = c.h * MM, y0 = c.y0 * MM, y1 = (c.y0 + c.lh) * MM, m = MM;
   const body = skin.band(V.body), gold = skin.sw(S.swatch(0xe2bc50, R_METAL)), goldD = skin.sw(S.swatch(0xb08a30, R_METAL));
-  const prof = [[0, 2 * m], [R * 0.7, 2 * m], [R * 0.86, 0], [R, 3 * m], [R, y0], [R, y1], [R, y1 + 8 * m], [R * 0.92, y1 + 14 * m], [R * 0.6, y1 + 24 * m], [9.5 * m, y1 + 30 * m], [9.5 * m, h - 13 * m], [11 * m, h - 12.5 * m], [11 * m, h - 11 * m], [10.2 * m, h - 10.6 * m], [10.6 * m, h - 10 * m], [10.6 * m, h - 1 * m], [9.8 * m, h], [0, h]];
+  const prof = [[0, 5 * m], [R * 0.62, 3.4 * m], [R * 0.84, 0], [R, 3 * m], [R, y0], [R, y1], [R, y1 + 8 * m], [R * 0.92, y1 + 14 * m], [R * 0.6, y1 + 24 * m], [9.5 * m, y1 + 30 * m], [9.5 * m, h - 13 * m], [11 * m, h - 12.5 * m], [11 * m, h - 11 * m], [10.2 * m, h - 10.6 * m], [10.6 * m, h - 10 * m], [10.6 * m, h - 1 * m], [9.8 * m, h], [0, h]];
   const skins = [body, body, body, body, skin.wrap(V.wrap, 0, 1), body, body, body, body, body, goldD, gold, goldD, goldD, gold, gold, skin.top(V.top, 10.6 * m)];
   if (o.sample) { skins[0] = null; skins[1] = null; }
-  B.lathe(prof, o.segs ?? 12, skins);
+  const n = o.segs ?? 24;
+  B.lathe(prof, n, skins, (i, u) => (i === 14 || i === 15 ? 1 + 0.035 * (Math.round(u * n) % 2 ? 1 : -1) : 1));
 }
 function cupShape(B, S, V, c, o = {}) {
   const R = c.d / 2 * MM, h = c.h * MM, y0 = c.y0 * MM, y1 = (c.y0 + c.lh) * MM, m = MM;
@@ -243,10 +257,10 @@ function cupShape(B, S, V, c, o = {}) {
 function ramuneShape(B, S, V, c, o = {}) {
   const R = c.d / 2 * MM, h = c.h * MM, y0 = c.y0 * MM, y1 = (c.y0 + c.lh) * MM, m = MM;
   const body = skin.band(V.body), blue = skin.sw(S.swatch(0x2a7ae0, R_PLASTIC)), blueD = skin.sw(S.swatch(0x1e5ab0, R_PLASTIC));
-  const prof = [[0, 3 * m], [R * 0.7, 3 * m], [R * 0.86, 0], [R, 4 * m], [R, y0], [R, y1], [R, 108 * m], [R * 0.9, 120 * m], [R * 0.6, 134 * m], [R * 0.5, 140 * m], [R * 0.62, 148 * m], [R * 0.62, 156 * m], [R * 0.46, 163 * m], [R * 0.5, 170 * m], [R * 0.56, 171 * m], [R * 0.56, 176 * m], [R * 0.5, 177 * m], [R * 0.5, h - 1 * m], [R * 0.44, h], [0, h]];
+  const prof = [[0, 7 * m], [R * 0.6, 5 * m], [R * 0.86, 0], [R, 4 * m], [R, y0], [R, y1], [R, 108 * m], [R * 0.9, 120 * m], [R * 0.6, 134 * m], [R * 0.5, 140 * m], [R * 0.62, 148 * m], [R * 0.62, 156 * m], [R * 0.46, 163 * m], [R * 0.5, 170 * m], [R * 0.56, 171 * m], [R * 0.56, 176 * m], [R * 0.5, 177 * m], [R * 0.5, h - 1 * m], [R * 0.44, h], [0, h]];
   const skins = [body, body, body, body, skin.wrap(V.wrap, 0, 1), body, body, body, body, body, body, body, body, blueD, blue, blueD, blue, blue, skin.top(V.top, R * 0.5)];
   if (o.sample) { skins[0] = null; skins[1] = null; }
-  B.lathe(prof, o.segs ?? 12, skins);
+  B.lathe(prof, o.segs ?? 24, skins, (i, u) => (i === 11 || i === 12 ? 1 - 0.3 * Math.cos((u - 0.25) * Math.PI * 2) ** 2 : i === 9 ? 1 - 0.12 * Math.cos((u - 0.25) * Math.PI * 2) ** 2 : 1));
 }
 
 const geoCache = new Map();
@@ -258,7 +272,7 @@ export function drinkGeometry(id, o = {}) {
   const B = new Build();
   if (!d) canShape(B, S, { wrap: S.blank }, CONT.can350, o);
   else {
-    const c = CONT[d.cont], V = S.v[id], oo = { ...o, segs: o.sample ? 10 : undefined, gold: d.brand === 'hoho' && d.alc > 0 && id !== 'vd_dryy' };
+    const c = CONT[d.cont], V = S.v[id], oo = { ...o, segs: o.sample ? 12 : undefined, gold: d.brand === 'hoho' && d.alc > 0 && id !== 'vd_dryy' };
     if (c.kind === 'can') canShape(B, S, V, c, oo);
     else if (c.kind === 'pet') petShape(B, S, V, c, id, oo);
     else if (c.kind === 'bottle') bottleShape(B, S, V, c, oo);

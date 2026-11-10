@@ -16,11 +16,12 @@ export default {
   capsule: { colors: [0x3f7fc6, 0xf6f3ea, 0xbfe4d6, 0xa9572f, 0xf2c23a] },
   flyer: {
     maker: 'nejimaki', scene: 'shelf', hero: 'kanpen', side: ['milk', 'tissue'],
+    title: [['箱入り', 4, 'a'], ['どうぶつ', 2, 'b']],
     catch: 'あけたら、いた。', sub: 'ぜんぶ開閉ギミックつき', gimmick: 'フタがひらく！ひきだせる！',
   },
   items: [
     {
-      id: 'match', name: 'Matchbox Firefly', jp: 'マッチ箱ホタル', rarity: 'common',
+      id: 'match', name: 'Matchbox Firefly', jp: 'マッチ箱ホタル', jpLines: ['マッチ箱', 'ホタル'], rarity: 'common',
       desc: 'Sleeps with the light on. The light is itself.',
       figure: F.match, gimmick: { text: 'Slide the tray' },
     },
@@ -30,12 +31,12 @@ export default {
       figure: F.milk, gimmick: { text: 'Tuck the head in' },
     },
     {
-      id: 'tissue', name: 'Tissue-Box Sheep', jp: 'ティッシュ箱ひつじ', rarity: 'uncommon',
+      id: 'tissue', name: 'Tissue-Box Sheep', jp: 'ティッシュ箱ひつじ', jpLines: ['ティッシュ箱', 'ひつじ'], rarity: 'uncommon',
       desc: 'Two hundred sheets, two-ply. Would rather you used a sleeve.',
       figure: F.tissue, gimmick: { text: 'Pull a tissue' },
     },
     {
-      id: 'egg', name: 'Egg-Pack Chicks', jp: 'たまごパックぴよ', rarity: 'rare',
+      id: 'egg', name: 'Egg-Pack Chicks', jp: 'たまごパックぴよ', jpLines: ['たまごパック', 'ぴよ'], rarity: 'rare',
       desc: 'Six to a pack. Three have hatched an opinion about it.',
       figure: F.egg, gimmick: { text: 'Open the lid' },
     },

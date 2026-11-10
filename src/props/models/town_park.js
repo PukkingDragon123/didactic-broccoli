@@ -52,7 +52,8 @@ export default {
     // ------------------------------------------------------------- the milk and drinks fridge (0.86 x 1.86 x 0.7), its glass door to +z
     milk_fridge: (K, B) => {
       const body = paint(0x2c2e32, 0.2), w = 0.42, zf = B.z1 - 0.03, zb = B.z0;
-      K.box(body, -w, 0, zb, w, 1.84, zf - 0.04, { bevel: 0.012 });
+      K.box(body, -w, 0, zb, w, 1.84, zf - 0.04, { bevel: 0.012, skip: ['pz'] });
+      K.box(body, -w + 0.012, 1.6, zf - 0.06, w - 0.012, 1.828, zf - 0.04); K.box(body, -w + 0.012, 0.012, zf - 0.06, w - 0.012, 0.24, zf - 0.04);
       K.box(flat(0x1c1e20, 0.8), -w + 0.02, 0.02, zf - 0.04, w - 0.02, 0.22, zf - 0.03); // kick plate with a grille
       for (let k = 0; k < 6; k++) K.box(flat(0x3a3c40, 0.7), -w + 0.06, 0.05 + k * 0.026, zf - 0.03, w - 0.06, 0.062 + k * 0.026, zf - 0.027);
       // the lit header
@@ -62,16 +63,18 @@ export default {
       K.use(flat(0xdfe3e2, 0.5), (G) => G.box(-w + 0.04, 0.24, zb + 0.06, w - 0.04, 1.6, zf - 0.05, { inward: true, skip: ['pz'] }));
       K.glow(() => K.box(flat(0xf4f8f0), -w + 0.06, 1.575, zb + 0.2, w - 0.06, 1.59, zf - 0.12));
       ['milk', 'bottle', 'milk', 'tin'].forEach((kind, k) => { const y = 0.27 + (3 - k) * 0.33; K.box(metal(0xc8ccd0), -w + 0.04, y - 0.012, zb + 0.06, w - 0.04, y, zf - 0.06); goodsRow(K, kind, -w + 0.06, w - 0.06, y, zf - 0.13, k * 3 + 2); K.box(flat(0xc8ccc8, 0.9), -w + 0.07, y, zb + 0.08, w - 0.07, y + 0.14, zf - 0.2); });
-      K.glass(() => K.box(K.tint(0xcfe4ea, 70), -w + 0.05, 0.25, zf - 0.05, w - 0.05, 1.59, zf - 0.035));
-      for (const [a, b, c, d] of [[-w + 0.02, 0.23, w - 0.02, 0.27], [-w + 0.02, 1.57, w - 0.02, 1.61], [-w + 0.02, 0.23, -w + 0.06, 1.61], [w - 0.06, 0.23, w - 0.02, 1.61]]) K.box(metal(0x8a9094, 0.3), a, b, zf - 0.05, c, d, zf - 0.02, { bevel: 0.005 });
-      K.box(chrome(), w - 0.11, 0.7, zf - 0.02, w - 0.085, 1.15, zf, { bevel: 0.006 });
+      K.part('door', [-w + 0.03, 0.9, zf - 0.035], 'y', () => {
+        K.glass(() => K.box(K.tint(0xcfe4ea, 70), -w + 0.05, 0.25, zf - 0.05, w - 0.05, 1.59, zf - 0.035));
+        for (const [a, b, c, d] of [[-w + 0.02, 0.23, w - 0.02, 0.27], [-w + 0.02, 1.57, w - 0.02, 1.61], [-w + 0.02, 0.23, -w + 0.06, 1.61], [w - 0.06, 0.23, w - 0.02, 1.61]]) K.box(metal(0x8a9094, 0.3), a, b, zf - 0.05, c, d, zf - 0.02, { bevel: 0.005 });
+        K.box(chrome(), w - 0.11, 0.7, zf - 0.02, w - 0.085, 1.15, zf, { bevel: 0.006 });
+      });
       K.box(flat(0xf2c21c, 0.6), -w + 0.075, 0.78, zf - 0.034, -w + 0.15, 0.86, zf - 0.0335);
     },
 
     // ------------------------------------------------------------- the counter bell (7.5 cm)
     call_bell: (K) => {
       K.cyl(plastic(0x26221e, 0.15), 0, 0, 0, 0.0375, 0.008, 10, { bevel: 0.002 });
-      K.lathe(chrome(0xc8ccd0), [0, 0.008, 0], [[0.034, 0], [0.033, 0.012], [0.026, 0.026], [0.014, 0.035], [0, 0.038]], 10);
+      K.lathe(chrome(0xb4babf), [0, 0.008, 0], [[0.034, 0], [0.033, 0.012], [0.026, 0.026], [0.014, 0.035], [0, 0.038]], 10);
       K.cyl(metal(0x8a9094), 0, 0.045, 0, 0.004, 0.012, 6); K.cyl(plastic(0x26221e), 0, 0.056, 0, 0.011, 0.009, 8, { bevel: 0.002 });
     },
 
@@ -109,7 +112,7 @@ export default {
       dirtBox(K, c, x0, z0, x1, z1, 0.04, 0.05, { sides: ['+x', '-x', '-z'] });
       for (const [x, z] of [[x0 + 0.06, z0 + 0.05], [x1 - 0.06, z0 + 0.05], [x0 + 0.06, z1 - 0.05], [x1 - 0.06, z1 - 0.05]]) K.cyl(rubber(), x, 0, z, 0.025, 0.045, 6);
       // the two lids (wash tub wide, spinner narrow), the control ledge behind
-      K.box(plastic(0x6aa8d0, 0.2), x0 + 0.015, 0.8, z0 + 0.1, x0 + 0.46, 0.83, z1 - 0.01, { bevel: 0.01 }); K.box(plastic(0x6aa8d0, 0.2), x0 + 0.48, 0.8, z0 + 0.1, x1 - 0.015, 0.83, z1 - 0.01, { bevel: 0.01 });
+      K.part('lid_wash', [x0 + 0.24, 0.8, z0 + 0.1], 'x', () => K.box(plastic(0x6aa8d0, 0.2), x0 + 0.015, 0.8, z0 + 0.1, x0 + 0.46, 0.83, z1 - 0.01, { bevel: 0.01 })); K.part('lid_spin', [x0 + 0.63, 0.8, z0 + 0.1], 'x', () => K.box(plastic(0x6aa8d0, 0.2), x0 + 0.48, 0.8, z0 + 0.1, x1 - 0.015, 0.83, z1 - 0.01, { bevel: 0.01 }));
       K.box(body, x0, 0.8, z0, x1, 0.9, z0 + 0.09, { bevel: 0.012 });
       for (const x of [0.12, 0.36, 0.6]) K.cyl(plastic(0xeeeadc), x0 + x, 0.9, z0 + 0.045, 0.028, 0.02, 8);
       // the drain hose looped over the side
@@ -303,7 +306,7 @@ export default {
       for (const L of limbs) K.tube(bark, L, 0.2, 6, { radii: [0.22, 0.15, 0.08] });
       // the crown: big clumps, a ring of them round the middle and a cap on top
       const C = [[1.7, 5.4, 0.6, 1.6, 1.2, 1.5, g], [-1.6, 5.5, -0.6, 1.7, 1.3, 1.5, g2], [0.2, 5.8, -1.5, 1.6, 1.2, 1.4, g3], [-0.5, 5.4, 1.6, 1.6, 1.2, 1.3, g2], [0.1, 6.6, 0.1, 2.1, 1.6, 1.9, g], [2.3, 4.8, -0.7, 1.1, 0.9, 1.1, g3], [-2.4, 4.9, 0.6, 1.0, 0.9, 1.1, g], [1.0, 4.9, 1.8, 1.1, 0.85, 1.0, g3], [-1.2, 4.9, -1.8, 1.2, 0.9, 1.0, g2], [0.9, 7.3, -0.5, 1.3, 1.0, 1.2, g2], [-0.9, 7.2, 0.5, 1.3, 1.05, 1.2, g3]];
-      C.forEach(([x, y, z, rx, ry, rz, c], i) => blob(K, c, x, y, z, rx, ry, rz, { fine: true, jit: 0.16, seed: i * 17 + 5 }));
+      C.forEach(([x, y, z, rx, ry, rz, c], i) => blob(K, c, x, y, z, rx, ry, rz, { fine: 2, jit: 0.16, seed: i * 17 + 5 }));
       void B;
     },
   },

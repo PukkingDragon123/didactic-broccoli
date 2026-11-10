@@ -13,7 +13,7 @@ import { SERIES_BY_ID } from '../data/series/index.js';
 
 const hex = (s, d) => parseInt(String(s || d).replace('#', ''), 16);
 const mixc = (a, b, t) => { const f = (s) => Math.round(((a >> s) & 255) + (((b >> s) & 255) - ((a >> s) & 255)) * t); return (f(16) << 16) | (f(8) << 8) | f(0); };
-export const PRINT_GLYPHS = 'ガチャガレージ全種回円対象年齢才以上ラインナップひみつ誤飲注意小さな部品があります発売元未開封はがすシークレットあり当封秘故障の際は係員までお知らせください返却コイン投入口とりだし見本';
+export const PRINT_GLYPHS = '福サイダーガチャガレージ全種回円対象年齢才以上ラインナップひみつ誤飲注意小さな部品があります発売元未開封はがすシークレットあり当封秘故障の際は係員までお知らせください返却コイン投入口とりだし見本';
 
 let THUMBS = null;
 export function setPrintThumbs(t) { THUMBS = t; }
@@ -170,12 +170,15 @@ function drawSeries(sheet) {
   p.flush();
   sheet.complete = complete;
   sheet.tex.needsUpdate = true;
+  // product shots still missing: ask for them (rendered a few a frame; refreshPrints() redraws the sheet after)
+  if (!complete && THUMBS?.prewarm && !sheet.asked) { sheet.asked = true; try { THUMBS.prewarm(shown.map((i) => i.key), [48]); } catch { /* thumbnails are optional */ } }
 }
 
 // ----------------------------------------------------------------------------- the shared seal sheet
 export const SEALS = {
   band: [0, 0, 256, 32], foil: [0, 40, 64, 96], wax: [72, 40, 64, 64], waxCracked: [144, 40, 64, 64], hanko: [216, 40, 64, 64], hankoCracked: [288, 40, 64, 64],
   atari: [72, 112, 32, 32], glitter: [112, 112, 32, 32], band2: [256, 0, 256, 32], washi: [360, 40, 64, 160],
+  daruma: [0, 150, 120, 88], fuku: [128, 150, 48, 48], can: [184, 150, 168, 56],
 };
 let seal = null;
 export function sealSheet() {
@@ -271,6 +274,31 @@ function drawSeals() {
     p.text('秘', X + w / 2, Y + 14, { size: 32, color: ink, align: 'center' });
     p.text('封', X + w / 2, Y + 110, { size: 32, color: ink, align: 'center' });
     p.rect(X + 18, Y + 62, 28, 28, red); p.rect(X + 21, Y + 65, 22, 22, 0xf4ead2); p.text('印', X + w / 2, Y + 68, { size: 16, color: red, align: 'center' });
+  }
+  // the daruma capsule's face (one eye still to be painted in: the wish is yours) and the 福 on its belly
+  {
+    const [X, Y, w, h] = SEALS.daruma, cx = w / 2, cy = h / 2, gold = 0xe2b84a, face = 0xfff2e0;
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const d = ((i - cx) / 56) ** 2 + ((j - cy) / 41) ** 2; if (d <= 1) p.px(X + i, Y + j, d > 0.88 ? gold : d > 0.82 ? 0x8a1a18 : face); }
+    for (const [ex, pupil] of [[cx - 24, false], [cx + 24, true]]) {
+      p.circle(X + ex, Y + cy - 2, 14, ink); p.circle(X + ex, Y + cy - 2, 12, W);
+      if (pupil) { p.circle(X + ex + 1, Y + cy - 1, 7, ink); p.rect(X + ex - 3, Y + cy - 6, 3, 3, W); }
+      // brows like cranes' wings
+      for (let k = -15; k <= 15; k++) { const yy = Y + cy - 21 - Math.round((1 - (k / 15) ** 2) * 6) + Math.round(Math.abs(k) * 0.2); p.rect(X + ex + k, yy, 1, 4 - Math.round(Math.abs(k) / 6), ink); }
+    }
+    p.rect(X + cx - 2, Y + cy + 4, 4, 7, gold); p.rect(X + cx - 4, Y + cy + 10, 8, 3, gold);
+    for (let k = 3; k <= 30; k++) for (const sgn of [-1, 1]) p.rect(X + cx + sgn * k - (sgn < 0 ? 1 : 0), Y + cy + 18 + Math.round(Math.sin(k / 30 * Math.PI) * -5 + k * 0.25), 2, Math.max(1, 5 - Math.round(k / 8)), ink); // the turtle moustache
+    p.rect(X + cx - 5, Y + cy + 26, 10, 3, red);
+    const [FX, FY] = SEALS.fuku;
+    p.circle(FX + 24, FY + 24, 23, gold); p.circle(FX + 24, FY + 24, 20, 0x9a1c1a); p.text('福', FX + 24, FY + 7, { size: 32, color: gold, align: 'center' });
+  }
+  // the can capsule's label: a made-up cider
+  {
+    const [X, Y, w, h] = SEALS.can, blue = 0x2f6fd0;
+    p.rect(X, Y, w, h, 0xfdfaf2); p.rect(X, Y, w, 5, blue); p.rect(X, Y + h - 5, w, 5, blue); p.rect(X, Y + 6, w, 1, red); p.rect(X, Y + h - 7, w, 1, red);
+    p.text('ガチャ', X + 4, Y + 10, { size: 32, color: red, shadow: blue });
+    p.text('サイダー', X + 100, Y + 9, { size: 16, color: blue });
+    p.tinyText('GACHA CIDER', X + 102, Y + 28, { color: red }); p.tinyText('350ML  5%', X + 102, Y + 38, { color: ink });
+    for (const [bx, by] of [[86, 12], [92, 30], [84, 40]]) { p.circle(X + bx, Y + by, 3, 0xbfe0f8); p.px(X + bx - 1, Y + by - 1, W); } // bubbles
   }
   p.flush();
   seal.tex.needsUpdate = true;

@@ -1,0 +1,71 @@
+// The town's materials: a handful of tiling cartoon textures (tinted per building by vertex colour), flat paints, the
+// two atlases, glass, lamps. Cel shading and ink lines are applied to all of them by the renderer.
+//   makeMats(town) fills town.m (by name), town.P(rough, metal) flat paint, town.G self-lit paint, town.tm / dm / cut
+//   (trim atlas, blended decals, alpha-cut boards), town.indoor(mat) (a variant the low sun does not reach).
+import * as THREE from 'three';
+import { tile } from './tex.js';
+import { townAtlas } from './atlas.js';
+import { voxelMaterials } from '../voxel/materials.js';
+
+let INDOOR_CHUNK = null;
+/** Indoor materials drop the directional lights (interiors and the underpasses have no shadow coverage). */
+function indoorPatch(m) {
+  if (!INDOOR_CHUNK) INDOOR_CHUNK = THREE.ShaderChunk.lights_fragment_begin.replace('#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )', '#if 0');
+  const prev = m.onBeforeCompile;
+  m.onBeforeCompile = (sh, r) => { prev?.(sh, r); sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', INDOOR_CHUNK); };
+  const key = m.customProgramCacheKey?.() || '';
+  m.customProgramCacheKey = () => key + ':town-in';
+  return m;
+}
+
+// name: [texture, roughness, metalness]
+const TILED = {
+  plaster: ['plaster', 0.95, 0], totan: ['totan', 0.62, 0.15], clap: ['clap', 0.9, 0], kawara: ['kawara', 0.6, 0.08], tinroof: ['tinroof', 0.55, 0.2],
+  asphalt: ['asphalt', 0.95, 0], concrete: ['concrete', 0.95, 0], paving: ['paving', 0.95, 0], lid: ['lid', 0.92, 0], grate: ['grate', 0.5, 0.4],
+  block: ['block', 0.95, 0], brick: ['brick', 0.92, 0], stone: ['stone', 0.95, 0], oya: ['oya', 0.95, 0], dirt: ['dirt', 1, 0], grass: ['grass', 1, 0],
+  ballast: ['ballast', 1, 0], wood: ['wood', 0.8, 0], woodL: ['woodL', 0.75, 0], timber: ['timber', 0.85, 0], tile: ['tile', 0.45, 0], koshi: ['koshi', 0.7, 0],
+  shikkui: ['shikkui', 0.95, 0], ceil: ['ceil', 0.85, 0], shutter: ['shutter', 0.6, 0.3], hazard: ['hazard', 0.6, 0], skirt: ['skirt', 0.35, 0], reed: ['reed', 0.95, 0],
+};
+// the old names other modules still ask for
+const ALIAS = {
+  road: 'asphalt', strip: 'concrete', ground: 'dirt', found: 'concrete', conc: 'concrete', tunnel: 'concrete', kenchi: 'stone', board: 'clap', boardL: 'clap', siding: 'clap',
+  tin: 'totan', tinRed: 'totan', tinTeal: 'totan', prefab: 'totan', prefabB: 'totan', roofGrey: 'kawara', roofBlue: 'kawara', roofBrown: 'kawara', roofGreen: 'kawara',
+  roofIbushi: 'kawara', roofMetal: 'tinroof', roofMetalB: 'tinroof', roofSlate: 'tinroof', shutterM: 'shutter', mortar: 'plaster', mortarG: 'plaster', mortarP: 'plaster',
+  wallCream: 'plaster', wallBeige: 'plaster', wallGrey: 'plaster', wallBlue: 'plaster',
+};
+
+export function makeMats(t) {
+  const mats = t.mats;
+  t.P = (rough = 0.75, metal = 0, extra = {}) => {
+    const ck = 'c:' + rough + ':' + metal + JSON.stringify(extra);
+    if (!mats.has(ck)) { const m = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough, metalness: metal, ...extra }); m.name = 'paint'; mats.set(ck, m); }
+    return mats.get(ck);
+  };
+  const m = {};
+  for (const [k, [tex, rough, metal]] of Object.entries(TILED)) { m[k] = new THREE.MeshStandardMaterial({ map: tile(tex), vertexColors: true, roughness: rough, metalness: metal }); m[k].name = k; }
+  for (const [k, v] of Object.entries(ALIAS)) m[k] = m[v];
+  m.pv = t.P(0.82); m.metal = t.P(0.45, 0.45); m.gloss = t.P(0.3); m.ridge = t.P(0.6, 0.1); m.girder = t.P(0.7, 0.25);
+  m.paint = t.P(0.85, 0, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+  t.m = m;
+  // self-lit paint (lamps, LEDs)
+  const glow = new THREE.MeshBasicMaterial({ vertexColors: true }); glow.color.setScalar(1.4); glow.name = 'glow';
+  t.G = glow;
+  // the atlases
+  const A = townAtlas();
+  t.atlas = A;
+  t.tm = new THREE.MeshStandardMaterial({ map: A.trim.tex, vertexColors: true, roughness: 0.6 }); t.tm.name = 'trim';
+  t.dm = new THREE.MeshStandardMaterial({ map: A.decal.tex, vertexColors: true, roughness: 0.95, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }); t.dm.name = 'decal';
+  t.cut = new THREE.MeshStandardMaterial({ map: A.decal.tex, vertexColors: true, roughness: 0.85, alphaTest: 0.5, side: THREE.DoubleSide }); t.cut.name = 'cutout';
+  // chain-link mesh (alpha-cut, repeating 0.25 m)
+  const fc = document.createElement('canvas'); fc.width = fc.height = 64;
+  const fx = fc.getContext('2d'); fx.strokeStyle = '#e8ece6'; fx.lineWidth = 5; fx.beginPath(); fx.moveTo(0, 32); fx.lineTo(32, 0); fx.lineTo(64, 32); fx.lineTo(32, 64); fx.closePath(); fx.stroke();
+  const ft = new THREE.CanvasTexture(fc); ft.wrapS = ft.wrapT = THREE.RepeatWrapping; ft.colorSpace = THREE.SRGBColorSpace; ft.anisotropy = 4; ft.repeat.set(4, 4);
+  t.fence = new THREE.MeshStandardMaterial({ map: ft, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.4, side: THREE.DoubleSide }); t.fence.name = 'fence';
+  t.glass = new THREE.MeshPhysicalMaterial({ color: 0xeaf2f0, transparent: true, opacity: 0.18, roughness: 0.05, clearcoat: 1, depthWrite: false });
+  // indoor variants
+  const indoor = new Map();
+  t.indoor = (mat) => { if (!indoor.has(mat)) indoor.set(mat, indoorPatch(mat.clone())); return indoor.get(mat); };
+  let inVox = null, dimVox = null;
+  t.indoorVoxel = () => { if (!inVox) { const n = voxelMaterials('normal'); inVox = [t.indoor(n[0]), t.indoor(n[1]), t.indoor(n[2]), n[3], t.indoor(n[4])]; } return inVox; };
+  t.dimVoxel = () => { if (!dimVox) { const n = voxelMaterials('normal'), g = n[3].clone(); g.color.setScalar(0.95); dimVox = [n[0], n[1], n[2], g, n[4]]; } return dimVox; };
+}
