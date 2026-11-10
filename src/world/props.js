@@ -38,6 +38,10 @@ export function propGeometry(id) {
  * opts: { castShadow, receiveShadow, fallbackSize:[w,h,d], fallbackColor }
  */
 export function propMesh(id, opts = {}) {
+  // a prop may bring its own finished model (src/products sets PROPS[id].mesh for the things it owns): a Mesh or a
+  // Group, bottom-centre origin, its own materials. def.build(v) stays as the sized stand-in for propGeometry / propSize.
+  const def = PROPS[id];
+  if (def?.mesh) { const m = def.mesh(opts); m.userData.propId = id; return m; }
   const geo = propGeometry(id);
   let mesh;
   if (geo) {
