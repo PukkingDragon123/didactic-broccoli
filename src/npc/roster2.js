@@ -99,7 +99,7 @@ export function lostPigeon(L) {
   const spots = [[2.6, 5.75], [-16.4, 14.2], [10.4, 1.0], [-8.4, 18.6], [16.0, 6.0]];
   const s = q.data('poppo').spot ?? Math.floor(Math.random() * spots.length);
   q.data('poppo').spot = s;
-  const f = new Flock(g, 1, V(spots[s][0], spots[s][1]));
+  const f = new Flock(g, 1, V(spots[s][0], spots[s][1]), { tints: [1.3] }); // paler: the one with a white feather
   const hit = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.45, 0.5), new THREE.MeshBasicMaterial({ visible: false }));
   hit.position.copy(f.birds[0].b.position).setY(0.2);
   g.scene.add(hit);
