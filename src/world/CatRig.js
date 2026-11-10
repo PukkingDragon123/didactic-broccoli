@@ -44,7 +44,7 @@ const LEGS = [['legFL', 'armFL', 'pawFL', 0, 1], ['legFR', 'armFR', 'pawFR', 0, 
 
 export class CatRig {
   constructor(opts = {}) {
-    const A = catAssets(opts.coat || 'calico');
+    const A = catAssets(opts.coat || 'calico', opts.lod || 0);
     this.root = new THREE.Group();
     this.root.name = 'cat';
     this.mat = new THREE.MeshStandardMaterial({ map: A.map, alphaTest: 0.5, roughness: 0.9, metalness: 0 });
@@ -215,7 +215,7 @@ export class CatRig {
       }
       case 'held':
         // hanging under her front legs: back straight up, hind legs and tail dangling
-        return Object.assign(p, { pitch: -1.3, cp: -0.1, y: -0.02, stab: 1, fl: 0.5, fr: 0.5, bl: -0.1, br: -0.1, tailUp: -1.1, tailCurl: 0.05, swish: 0.3, swishF: 0.7, dangle: 1 });
+        return Object.assign(p, { pitch: -1.25, cp: 0.22, y: -0.02, stab: 1, fl: 0.6, fr: 0.6, bl: 0.55, br: 0.45, tailUp: -0.9, tailWrap: 0.15, tailCurl: 0.05, swish: 0.3, swishF: 0.7, dangle: 1 });
     }
     return p;
   }
@@ -463,8 +463,9 @@ export class CatRig {
     }
   }
 
-  /** World points for the first-person hands: either side of her chest (sd +1 her left), and her back for strokes. */
-  chestSide(sd, out) { return this.b.chest.localToWorld(out.set(sd * 0.056, -0.012, 0.045)); }
+  /** World points for the first-person hands: either side of her chest (sd +1 her left; heldFlip -1 while she faces
+   *  the one holding her, so each hand keeps its own side), and her back for strokes. */
+  chestSide(sd, out) { return this.b.chest.localToWorld(out.set(sd * (this.heldFlip || 1) * 0.056, -0.012, 0.045)); }
   headTop(out) { return this.b.head.localToWorld(out.set(0, 0.056, 0.024)); }
   backTop(u, out) { return this.b.body.localToWorld(out.set(0, 0.066, lerp(0.16, -0.11, u))); }
 }

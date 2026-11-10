@@ -183,7 +183,8 @@ export class Street {
     holder.position.copy(c.g.getWorldPosition(new THREE.Vector3()));
     this.group.remove(c.g);
     c.g.position.set(0, -0.12, 0);
-    c.g.rotation.set(0, 0, 0);
+    c.g.rotation.set(0, Math.PI, 0); // she faces you, held up under her front legs
+    c.rig.heldFlip = -1;
     holder.add(c.g);
     game.scene.add(holder);
     c.rig.setPose('held');
@@ -260,6 +261,7 @@ export class Street {
   releaseCat(at) {
     const c = this.cat;
     c.held = false;
+    c.rig.heldFlip = 1;
     c.g.parent?.remove(c.g);
     c.pos.copy(at).setY(0);
     c.g.position.copy(c.pos);

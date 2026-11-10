@@ -428,28 +428,30 @@ export function setFrame(uvAttr, patches, [x, y], w, h) {
 }
 
 const CACHE = {};
-/** Shared skinned geometry + painted atlas for a coat ('calico' Mikan, 'tabby' the stray). */
-export function catAssets(coat = 'calico') {
-  if (CACHE[coat]) return CACHE[coat];
+/** Shared skinned geometry + painted atlas for a coat ('calico' Mikan, 'tabby' the stray); lod 1: about a third of the triangles. */
+export function catAssets(coat = 'calico', lod = 0) {
+  const key = coat + (lod ? ':lo' : '');
+  if (CACHE[key]) return CACHE[key];
+  const q = lod ? 0.55 : 1, Q = (n) => Math.max(6, Math.round(n * q)); // (a lighter build for baked props)
   const C = COATS[coat] || CALICO;
   const B = new Builder(ATLAS_W, ATLAS_H, 4);
   const b = (n) => BI[n];
   // torso: rump -> body, chest, neck -> head
-  B.part(torsoLoft(), { rect: [0, 0, 760, 512], cols: 48, rows: 38, paint: painter(C, 'body'), skin: polySkin([[0, 0.18, -0.26], J.chest, [0, 0.215, 0.16], J.head, [0, 0.27, 0.23]], [b('body'), b('chest'), b('chest'), b('head')], 0.035) });
+  B.part(torsoLoft(), { rect: [0, 0, 760, 512], cols: Q(48), rows: Q(38), paint: painter(C, 'body'), skin: polySkin([[0, 0.18, -0.26], J.chest, [0, 0.215, 0.16], J.head, [0, 0.27, 0.23]], [b('body'), b('chest'), b('chest'), b('head')], 0.035) });
   const head = headLoft();
-  B.part(head, { rect: [768, 0, 256, 320], cols: 44, rows: 32, paint: painter(C, 'head'), skin: () => [[b('head'), 1]] });
-  B.part(noseLoft(), { rect: [976, 458, 48, 48], cols: 16, rows: 8, paint: (P, N) => (N.y > 0.55 ? shade(C.nose, 0.1) : P.y < 0.2586 && P.z > 0.264 && Math.abs(Math.abs(P.x) - 0.0036) < 0.0014 ? C.noseD : C.nose), skin: () => [[b('head'), 1]] });
-  for (const [n, s, x] of [['earL', 1, 768], ['earR', -1, 872]]) B.part(earLoft(s), { rect: [x, 328, 96, 120], cols: 20, rows: 12, paint: painter(C, n), skin: () => [[b(n), 1]] });
+  B.part(head, { rect: [768, 0, 256, 320], cols: Q(44), rows: Q(32), paint: painter(C, 'head'), skin: () => [[b('head'), 1]] });
+  B.part(noseLoft(), { rect: [976, 458, 48, 48], cols: Q(16), rows: Q(8), paint: (P, N) => (N.y > 0.55 ? shade(C.nose, 0.1) : P.y < 0.2586 && P.z > 0.264 && Math.abs(Math.abs(P.x) - 0.0036) < 0.0014 ? C.noseD : C.nose), skin: () => [[b('head'), 1]] });
+  for (const [n, s, x] of [['earL', 1, 768], ['earR', -1, 872]]) B.part(earLoft(s), { rect: [x, 328, 96, 120], cols: Q(20), rows: Q(12), paint: painter(C, n), skin: () => [[b(n), 1]] });
   const legs = [['FL', 1, 0], ['FR', -1, 128], ['BL', 1, 256], ['BR', -1, 384]];
   for (const [k, s, x] of legs) {
     const front = k[0] === 'F', top = front ? 'chest' : 'body', j1 = J[(front ? 'leg' : 'leg') + k], j2 = J[(front ? 'arm' : 'shin') + k], j3 = J['paw' + k];
     const toe = front ? [s * 0.03, 0.01, 0.148] : [s * 0.037, 0.01, -0.127];
     B.part(front ? foreLoft(s) : hindLoft(s), {
-      rect: [x, 520, 120, 376], cols: 20, rows: 26, paint: painter(C, 'leg' + k),
+      rect: [x, 520, 120, 376], cols: Q(20), rows: Q(26), paint: painter(C, 'leg' + k),
       skin: polySkin([[j1[0] * 0.6, j1[1] + 0.05, j1[2]], j1, j2, j3, toe], [b(top), b('leg' + k), b((front ? 'arm' : 'shin') + k), b('paw' + k)], front ? [0.022, 0.016, 0.012] : [0.034, 0.018, 0.012]),
     });
   }
-  B.part(tailLoft(), { rect: [512, 520, 120, 496], cols: 14, rows: 34, paint: painter(C, 'tail'), skin: polySkin([[0, 0.2, -0.17], J.tail0, J.tail1, J.tail2, J.tail3, J.tail4, [0, 0.2, -0.5]], [b('body'), b('tail0'), b('tail1'), b('tail2'), b('tail3'), b('tail4')], 0.022) });
+  B.part(tailLoft(), { rect: [512, 520, 120, 496], cols: Q(14), rows: Q(34), paint: painter(C, 'tail'), skin: polySkin([[0, 0.2, -0.17], J.tail0, J.tail1, J.tail2, J.tail3, J.tail4, [0, 0.2, -0.5]], [b('body'), b('tail0'), b('tail1'), b('tail2'), b('tail3'), b('tail4')], 0.022) });
   // whiskers (pale, a gentle droop) and the brow whiskers above the eyes: they sample a white texel of the bib
   const WH = [(694 + 0.5) / ATLAS_W, (604 + 0.5) / ATLAS_H];
   for (const s of [1, -1]) {
@@ -468,6 +470,6 @@ export function catAssets(coat = 'calico') {
   // a lower roughness for the nose leather and the wet eyes would need a second map: the fur's 0.9 reads right at
   // play distance, and the painted catchlights carry the eyes
   const geometry = B.geometry();
-  CACHE[coat] = { geometry, map, eyes: D.eyes, mouth: D.mouth };
-  return CACHE[coat];
+  CACHE[key] = { geometry, map, eyes: D.eyes, mouth: D.mouth };
+  return CACHE[key];
 }

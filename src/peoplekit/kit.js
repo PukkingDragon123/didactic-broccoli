@@ -604,7 +604,7 @@ export class Kit {
     const P = v3.norm(o.pole || [0, 1, -0.25]);
     const E1 = v3.norm(Math.abs(P[0]) < 0.9 ? v3.cross([1, 0, 0], P) : v3.cross([0, 0, 1], P)), E2 = v3.cross(P, E1);
     const dir = (s, b) => v3.add(v3.mul(P, Math.cos(s)), v3.mul(v3.add(v3.mul(E1, Math.cos(b)), v3.mul(E2, Math.sin(b))), Math.sin(s)));
-    const ptAt = (s, b, g) => headPt(dir(s, b), g, C);
+    const ptAt = (s, b, g) => { const d = dir(s, b); return headPt(d, g + (o.bulge ? o.bulge(v3.norm(d)) : 0), C); };
     const mid = grow + th / 2;
     const smax = [];
     for (let i = 0; i < seg; i++) {
@@ -668,7 +668,22 @@ export class Kit {
     const nx = Math.ceil((x1 - x0) / cell) + 1, ny = Math.ceil((y1 - y0) / cell) + 1, nz = Math.ceil((z1 - z0) / cell) + 1;
     const F = new Float32Array(nx * ny * nz);
     const id = (i, j, k) => (k * ny + j) * nx + i;
-    for (let k = 0; k < nz; k++) for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) F[id(i, j, k)] = f([x0 + i * cell, y0 + j * cell, z0 + k * cell]);
+    // narrow band: a coarse grid (4 cells a step) first; only coarse cells the surface can pass through are refined
+    const S = 4, C = cell * S, cx = Math.ceil((nx - 1) / S) + 1, cy = Math.ceil((ny - 1) / S) + 1, cz = Math.ceil((nz - 1) / S) + 1;
+    const G = new Float32Array(cx * cy * cz), gid = (i, j, k) => (k * cy + j) * cx + i;
+    for (let k = 0; k < cz; k++) for (let j = 0; j < cy; j++) for (let i = 0; i < cx; i++) G[gid(i, j, k)] = f([x0 + i * C, y0 + j * C, z0 + k * C]);
+    const done = new Uint8Array(nx * ny * nz);
+    for (let K2 = 0; K2 < cz - 1; K2++) for (let J = 0; J < cy - 1; J++) for (let I = 0; I < cx - 1; I++) {
+      let mn = Infinity, sg = 0;
+      for (let c = 0; c < 8; c++) { const v = G[gid(I + (c & 1), J + ((c >> 1) & 1), K2 + (c >> 2))]; mn = Math.min(mn, Math.abs(v)); sg += v; }
+      const near = mn < C * 0.9;
+      for (let k = K2 * S; k <= Math.min(nz - 1, K2 * S + S); k++) for (let j = J * S; j <= Math.min(ny - 1, J * S + S); j++) for (let i = I * S; i <= Math.min(nx - 1, I * S + S); i++) {
+        const q = id(i, j, k);
+        if (done[q] === 2) continue;
+        if (near) { F[q] = f([x0 + i * cell, y0 + j * cell, z0 + k * cell]); done[q] = 2; }
+        else if (!done[q]) { F[q] = sg < 0 ? -C : C; done[q] = 1; }
+      }
+    }
     const grad = (p) => {
       const e = cell * 0.35;
       return v3.norm([f([p[0] + e, p[1], p[2]]) - f([p[0] - e, p[1], p[2]]), f([p[0], p[1] + e, p[2]]) - f([p[0], p[1] - e, p[2]]), f([p[0], p[1], p[2] + e]) - f([p[0], p[1], p[2] - e])]);
@@ -687,7 +702,8 @@ export class Kit {
       }
       if (!cnt) continue;
       let p = [x0 + (i + sx / cnt) * cell, y0 + (j + sy / cnt) * cell, z0 + (k + sz / cnt) * cell];
-      for (let it = 0; it < 3; it++) { const d = f(p), g = grad(p); p = v3.sub(p, v3.mul(g, d)); }
+      const g0 = grad(p);
+      p = v3.sub(p, v3.mul(g0, f(p)));
       vid[cid(i, j, k)] = pos.length;
       pos.push(p); nor.push(grad(p));
     }

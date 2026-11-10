@@ -1,6 +1,7 @@
 // Bakes the hand-pixelled foliage sheet (src/town/leafSheet.js) and its coverage-preserving mip chain into one PNG,
-// public/img/foliage.png: level 0 (2048 x 1024) on the left, the smaller levels stacked down a 1024 px column on its
-// right (level k at x = 2048, y = 1024 - 2048 / 2^(k - 1)... see MIP_AT in leafSheet.js). Run after editing the art:
+// public/img/foliage.png: level 0 (2048 x 1024) on the left, the smaller levels stacked down a 1024 px wide column on
+// its right (MIP_AT in leafSheet.js). The game loads that file; drawing the art at run time would cost a second at boot.
+// Run after editing the art:
 //   node tools/bake-foliage.mjs [--preview shots/trees/leafsheet.png]
 import { writeFileSync } from 'fs';
 import { deflateSync } from 'zlib';

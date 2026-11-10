@@ -286,7 +286,7 @@ export function niwaki(t, x, z, s = 1, seed = 1, o = {}) {
 /** A needle pad: a domed cloud of tufts seen from above, two rows of tufts on edge round its rim (candles standing up
  *  out of the top row), a dark mass inside so it never looks hollow. */
 function pad(t, x, y, z, r, seed) {
-  const S = mats(), th = r * 0.58, rz = r * 0.86, lob = (a) => 0.86 + 0.14 * Math.cos(3 * a + seed) * Math.cos(2 * a - seed * 0.7);
+  const S = mats(), th = r * 0.48, rz = r * 0.86, lob = (a) => 0.86 + 0.14 * Math.cos(3 * a + seed) * Math.cos(2 * a - seed * 0.7);
   t.B.blob(S.core, x, y - th * 0.05, z, r * 0.76, th * 0.66, rz * 0.76, { tint: 0x2e4a34, jitter: 0.18, lo: 0.66, hi: 1.0, seed });
   const dome = (d) => th * (0.6 - 0.55 * d * d);
   const normalAt = (q) => norm3([(q[0] - x) / (r * r), (q[1] - y + th * 0.4) / (th * th * 1.6), (q[2] - z) / (rz * rz)]);

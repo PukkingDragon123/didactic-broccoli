@@ -16,7 +16,7 @@ export const NPC = {
   /** Rohan's headband: a green band round the hair with zig-zag gold edges and a dark centre line (head units). */
   headband() {
     const K = new Kit();
-    const N = 26, seg = N * 8, R = (a) => headPt([Math.sin(a), 0, Math.cos(a)], 0.55, [0, 11.4, HEAD.C[2]]);
+    const N = 26, seg = N * 4, R = (a) => headPt([Math.sin(a), 0, Math.cos(a)], 0.55, [0, 11.4, HEAD.C[2]]);
     const tri = (a) => { const u = (a / TAU) * N; return Math.abs(u - Math.floor(u) - 0.5) * 2; };
     const top = (a) => 12.3 + tri(a) * 1.1, bot = (a) => 10.5 - (1 - tri(a)) * 0.9;
     const col = (p, a) => { const y = p[1]; return y > top(a) - 0.5 || y < bot(a) + 0.5 ? 0xd8b45a : Math.abs(y - 11.4) < 0.28 ? 0x1d3a30 : 0x2f6a58; };
@@ -138,7 +138,7 @@ export const NPC = {
       let d = sd.ell(p, [0, 0, 0], [0.058, 0.047, 0.047]);
       d = sd.u(d, sd.ell(p, [0.02, 0.012, 0.01], [0.04, 0.038, 0.04]), 0.02);
       return d;
-    }, [-0.07, -0.06, -0.06, 0.07, 0.06, 0.06], 0.0042, { mat: MAT.soft, col: (p, n) => (n[1] > 0.5 ? 0xa0522d : n[1] < -0.4 ? 0x7a3a1c : 0x8a4424) });
+    }, [-0.07, -0.06, -0.06, 0.07, 0.06, 0.06], 0.0052, { mat: MAT.soft, col: (p, n) => (n[1] > 0.5 ? 0xa0522d : n[1] < -0.4 ? 0x7a3a1c : 0x8a4424) });
     for (const sx of [-1, 1]) {
       K.tube([[sx * 0.05, 0, 0], [sx * 0.098, 0.004, 0]], 0.0105, { sides: 10, mat: MAT.soft, col: 0xf4eee0 });
       K.sculpt((p) => sd.u(sd.sphere(p, [sx * 0.106, 0.014, 0], 0.013), sd.sphere(p, [sx * 0.106, -0.008, 0], 0.013), 0.006), [sx * 0.106 - 0.02, -0.025, -0.016, sx * 0.106 + 0.02, 0.03, 0.016], 0.0026, { mat: MAT.soft, col: 0xf4eee0 });
@@ -163,7 +163,7 @@ export const STAFF = {
       const up = sd.ell(p, [0, 0.3, 1.4], [2.9, 1.25, 2.6]);
       const lo = sd.ell(p, [0, -1.1, 1.0], [2.4, 0.9, 2.1]);
       return Math.max(sd.u(sd.cut(up, sd.ell(p, [0, -0.4, 3.2], [3.2, 0.25, 1.6]), 0.15), lo, 0.2), -p[2] - 0.2);
-    }, [-3.5, -2.6, -0.6, 3.5, 2, 4.6], 0.17, { mat: MAT.gloss, col: (p) => (p[1] < -0.4 ? 0xb8862a : 0xe8b830) });
+    }, [-3.5, -2.6, -0.6, 3.5, 2, 4.6], 0.22, { mat: MAT.gloss, col: (p) => (p[1] < -0.4 ? 0xb8862a : 0xe8b830) });
     for (const sx of [-1, 1]) K.blob([sx * 0.7, 0.9, 3.7], [0.22, 0.14, 0.12], { mat: MAT.matte, col: 0x6a4a1a, seg: 6 });
     return K.build();
   },
@@ -176,7 +176,7 @@ export const STAFF = {
       const hex = (cx, cy, r) => { g.beginPath(); for (let k = 0; k < 6; k++) { const a = (k / 6) * TAU + Math.PI / 6; g.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); } g.closePath(); g.fill(); g.stroke(); };
       for (const [x, y] of [[64, 64], [64, 26], [64, 102], [31, 45], [97, 45], [31, 83], [97, 83]]) hex(x, y, 18);
     }, { rough: 0.5 });
-    K.sculpt((p) => Math.max(sd.ell(p, [0, 0, 0.3], [10.4, 12.4, 5.6]), p[2] - 0.2), [-11, -13, -6, 11, 13, 0.6], 0.42, { mat: plates, col: 0xffffff, uvMap: (p) => [(p[0] + 10.4) / 20.8, (p[1] + 12.4) / 24.8] });
+    K.sculpt((p) => Math.max(sd.ell(p, [0, 0, 0.3], [10.4, 12.4, 5.6]), p[2] - 0.2), [-11, -13, -6, 11, 13, 0.6], 0.55, { mat: plates, col: 0xffffff, uvMap: (p) => [(p[0] + 10.4) / 20.8, (p[1] + 12.4) / 24.8] });
     K.tube(oval(10.4, 12.4, 64).map(([x, y]) => [x, y, -0.25]), 0.9, { closed: true, sides: 8, ry: 0.7, up: [0, 0, 1], mat: MAT.plastic, col: 0xb8a868 });
     return K.build();
   },
@@ -245,7 +245,7 @@ export const OLDMAN = {
         d = sd.u(d, sd.cone(p, [sx * 7.0, 6.6, 4.4], [sx * 6.0, -4.6, 6.6], 1.4, 1.9), 1.6);
       }
       return d;
-    }, [-9.5, -12, 1.5, 9.5, 8.6, 13.6], 0.4, { mat: MAT.fur, col: (p, n) => (n[1] < -0.5 ? 0xd8d4cc : 0xeeece6) });
+    }, [-9.5, -12, 1.5, 9.5, 8.6, 13.6], 0.5, { mat: MAT.fur, col: (p, n) => (n[1] < -0.5 ? 0xd8d4cc : 0xeeece6) });
     for (const sx of [-1, 1]) K.sculpt((p) => { const q = [p[0] * sx, p[1], p[2]]; return sd.u(sd.cone(q, [1.6, 8.3, 10.8], [5.6, 8.9, 9.8], 0.75, 0.6), sd.ell(q, [5.0, 8.5, 10.0], [1.0, 0.8, 0.7]), 0.4); }, [sx > 0 ? 0.5 : -7, 6.8, 8, sx > 0 ? 7 : -0.5, 10.2, 12.4], 0.2, { mat: MAT.fur, col: 0xf2f0ea });
     return K.build();
   },

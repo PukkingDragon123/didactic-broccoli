@@ -185,9 +185,9 @@ export const BASE = {
     const sec = oval(1, 0.13, 20, 6);
     for (const sx of [-1, 1]) {
       const loop = smooth([[sx * 0.9, 0.2, 0.7], [sx * 4.8, 1.6, 1.5], [sx * 9.4, 2.4, 0.9], [sx * 10.6, 1.2, 0], [sx * 9.4, 0.4, -0.9], [sx * 4.8, 0.6, -1.4], [sx * 0.9, 0.2, -0.6]], 5, true);
-      K.sweep(loop, sec, { closed: true, up: [0, 1, 0], mat: dots, col: 0xffffff, scale: (t) => 1.5 + 2.6 * Math.sin(Math.PI * t) ** 0.8, uv: (i, j, d) => [i / 20, d[1] / 4.5], rawUV: true });
+      K.sweep(loop, sec, { closed: true, up: [0, 1, 0], mat: dots, col: 0xffffff, scale: (t) => 1.5 + 2.6 * Math.sin(Math.PI * t) ** 0.8, uv: (i, j, d) => [(i / 20) * 4, d[1] / 2.6], rawUV: true });
       // tails hanging from the knot
-      K.sweep(smooth([[sx * 0.7, -0.6, 0.5], [sx * 2.6, -3.4, 0.9], [sx * 3.8, -6.6, 0.4]], 3), sec, { up: [0, 0, 1], mat: dots, col: 0xffffff, scale: (t) => 1.1 + t * 0.5, uv: (i, j, d) => [i / 20, d[1] / 4.5], rawUV: true });
+      K.sweep(smooth([[sx * 0.7, -0.6, 0.5], [sx * 2.6, -3.4, 0.9], [sx * 3.8, -6.6, 0.4]], 3), sec, { up: [0, 0, 1], mat: dots, col: 0xffffff, scale: (t) => 1.1 + t * 0.5, uv: (i, j, d) => [(i / 20) * 2.5, d[1] / 2.6], rawUV: true });
     }
     K.sculpt((p) => sd.box(p, [0, 0.4, 0.1], [1.3, 1.9, 1.5], 1.0), [-2.6, -2, -2, 2.6, 2.8, 2.2], 0.24, { mat: MAT.cloth, col: R2 });
     void R;

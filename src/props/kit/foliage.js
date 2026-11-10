@@ -3,8 +3,10 @@
 // prop's atlas page, so they ride along as extra meshes: K.finish() puts them in geo.userData.extras
 // ([{ geometry, material }]) and propMesh() hangs them under the prop's mesh.
 //   leaves(K, (t, F) => { F.shrub(t, x, y, z, r, 'small'); F.crown(t, x, y, z, rx, ry, rz, { kind: 'pine' }); })
-// Positions are in the prop's frame (the current K.at() frame applies). Anything else the town helpers draw (a
-// hedge's kerb, its stems) is dropped: the prop models those itself.
+// Positions are in the prop's frame (the current K.at() frame applies). The foliage kit's own materials ride along (the
+// sheet's cards, the dark crown cores, photo bark on trunks and limbs, stems, pots and soil of F.potted); the town's
+// materials (a hedge's concrete kerb) are dropped: the prop models those itself. F.limb, F.sakura, F.niwaki, F.maple,
+// F.bamboo, F.bonsaiPine, F.potPlant, F.tuft and F.card build whole plants.
 import * as THREE from 'three';
 import { Batch } from '../../town/batch.js';
 import * as F from '../../town/foliage.js';

@@ -131,18 +131,19 @@ function paint(part) {
 }
 
 /** Build every part of a pose into one Builder (same order and sizes in every pose: the morph targets line up). */
-function build(state, painted) {
-  const B = new Builder(512, 256, 3), Q = parts(state), pnt = (k) => (painted ? paint(k) : undefined), one = () => [[0, 1]];
-  B.part(Q.body, { rect: [0, 0, 200, 120], cols: 26, rows: 18, paint: pnt('body'), skin: one });
-  B.part(Q.neck, { rect: [208, 0, 96, 80], cols: 16, rows: 10, paint: pnt('neck'), skin: one });
-  B.part(Q.head, { rect: [312, 0, 96, 80], cols: 16, rows: 10, paint: pnt('head'), skin: one });
-  B.part(Q.beak, { rect: [416, 0, 32, 24], cols: 8, rows: 4, paint: pnt('beak'), skin: one });
-  B.part(Q.cere, { rect: [456, 0, 24, 16], cols: 8, rows: 4, paint: pnt('cere'), skin: one });
-  B.part(Q.tail, { rect: [0, 128, 120, 64], cols: 14, rows: 8, paint: pnt('tail'), skin: one });
-  Q.wings.forEach((w, i) => B.part(w, { rect: [128 + i * 128, 128, 120, 120], cols: 14, rows: 12, paint: pnt('wing'), skin: one }));
+function build(state, painted, k = 1) {
+  const B = new Builder(512, 256, 3), Q = parts(state), pnt = (q) => (painted ? paint(q) : undefined), one = () => [[0, 1]];
+  const R = (n) => Math.max(3, Math.round(n * k));
+  B.part(Q.body, { rect: [0, 0, 200, 120], cols: R(26), rows: R(18), paint: pnt('body'), skin: one });
+  B.part(Q.neck, { rect: [208, 0, 96, 80], cols: R(16), rows: R(10), paint: pnt('neck'), skin: one });
+  B.part(Q.head, { rect: [312, 0, 96, 80], cols: R(16), rows: R(10), paint: pnt('head'), skin: one });
+  B.part(Q.beak, { rect: [416, 0, 32, 24], cols: R(8), rows: R(4), paint: pnt('beak'), skin: one });
+  B.part(Q.cere, { rect: [456, 0, 24, 16], cols: R(8), rows: R(4), paint: pnt('cere'), skin: one });
+  B.part(Q.tail, { rect: [0, 128, 120, 64], cols: R(14), rows: R(8), paint: pnt('tail'), skin: one });
+  Q.wings.forEach((w, i) => B.part(w, { rect: [128 + i * 128, 128, 120, 120], cols: R(14), rows: R(12), paint: pnt('wing'), skin: one }));
   Q.legs.forEach((L, i) => {
-    B.part(L.leg, { rect: [416 + i * 40, 32, 32, 40], cols: 6, rows: 6, paint: pnt('leg'), skin: one });
-    L.toes.forEach((t, k) => B.part(t, { rect: [384 + k * 30, 200 + i * 28, 24, 24], cols: 5, rows: 4, paint: pnt('toe'), skin: one }));
+    B.part(L.leg, { rect: [416 + i * 40, 32, 32, 40], cols: R(6), rows: R(6), paint: pnt('leg'), skin: one });
+    L.toes.forEach((t, j) => B.part(t, { rect: [384 + j * 30, 200 + i * 28, 24, 24], cols: R(5), rows: R(4), paint: pnt('toe'), skin: one }));
   });
   return B;
 }
@@ -159,13 +160,15 @@ function assets() {
   geo.computeBoundingSphere(); geo.boundingSphere.radius += 0.3; // (spread wings)
   const map = B.texture();
   const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.8, metalness: 0 });
-  // static versions for the town's perched birds (no morphs) and a gliding one
+  // static versions for the town's perched birds (no morphs, a lighter build on the same atlas) and a gliding one
+  const LO = 0.55, lo = build({ wing: 'fold' }, false, LO), loUp = build({ wing: 'up' }, false, LO), loDn = build({ wing: 'down' }, false, LO);
   const still = (k) => {
     const g = new THREE.BufferGeometry();
-    for (const a of ['normal', 'uv']) g.setAttribute(a, geo.attributes[a]);
-    if (k === null) g.setAttribute('position', geo.attributes.position);
-    else { const A = targets[2].pos, D = targets[3].pos, p = new Float32Array(A.length); for (let i = 0; i < p.length; i++) p[i] = (A[i] + D[i]) / 2; g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); }
-    g.setIndex(geo.index); g.computeBoundingBox(); g.computeBoundingSphere();
+    const pos = k === null ? lo.pos : loUp.pos.map((v, i) => (v + loDn.pos[i]) / 2), nrm = k === null ? lo.nrm : loUp.nrm;
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(lo.uv, 2));
+    g.setIndex(lo.idx); g.computeBoundingBox(); g.computeBoundingSphere();
     g.userData.size = new THREE.Vector3(k === null ? 0.11 : 0.62, 0.2, 0.3);
     return g;
   };

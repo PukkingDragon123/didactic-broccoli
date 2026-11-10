@@ -315,7 +315,7 @@ export const HATS = {
         for (const [a, b, c] of [[0.55, 0.5, 0.2], [-0.5, 0.35, 0.45], [0.1, -0.2, 0.7]]) d = sd.u(d, v3.len([q[0] - a * r, q[1] - b * r, q[2] - c * r]) - r * 0.5, 0.5);
       }
       return d;
-    }, [-13, -1.5, -14, 13, 25, 12], 0.62, { mat: leaves, col: 0xffffff });
+    }, [-13, -1.5, -14, 13, 25, 12], 0.7, { mat: leaves, col: 0xffffff });
     K.tube(smooth([[1.2, 22, 0.6], [2.2, 24.6, 0.9], [3.4, 26.6, 0.4]], 3), (t) => 0.32 - t * 0.18, { sides: 6, caps: 'round', mat: MAT.wood, col: 0x6a4a2a });
     for (let i = 0; i < 5; i++) { const a = (i / 5) * TAU; K.blob([-5.9 + Math.cos(a) * 0.75, 17.6 + Math.sin(a) * 0.75, 9.1], [0.7, 0.7, 0.25], { mat: MAT.soft, col: 0xffffff, seg: 8 }); }
     K.blob([-5.9, 17.6, 9.35], 0.38, { mat: MAT.soft, col: 0xffd23f, seg: 8 });
@@ -356,9 +356,9 @@ export const HATS = {
       s = sd.u(s, sd.ell(p, [0, 18.2, 16.6], [6.3, 4.8, 4.8]), 2.4);
       s = sd.u(s, sd.ell(p, [0, 16.6, 20.6], [4.6, 3.2, 2.6]), 1.6);
       s = sd.cut(s, sd.ell(p, [0, 12.2, 17.4], [6.2, 2.8, 4.8]), 1.2); // swept up underneath
-      for (const gx of grooves) s = sd.cut(s, sd.cone(p, [gx * 0.85, 24.6, 3], [gx * 0.6, 19.6, 23.6], 0.42, 0.3), 0.3);
+      for (const gx of grooves) s = sd.cut(s, sd.cone(p, [gx * 0.85, 24.6, 3], [gx * 0.6, 19.6, 23.6], 0.55, 0.4), 0.35);
       return s;
-    }, [-9, 10.5, -1, 9, 25.5, 24], 0.46, { mat: MAT.gloss, col: (p, n) => (n[1] > 0.55 && p[2] > 6 && Math.abs(p[0]) < 4.5 ? hi : col) });
+    }, [-9, 10.5, -1, 9, 25.5, 24], 0.48, { mat: MAT.fur, col: (p, n) => (n[1] > 0.55 && p[2] > 6 && Math.abs(p[0]) < 4.5 ? hi : col) });
     return K.build();
   },
   yurei() {
@@ -528,12 +528,26 @@ export const HATS = {
       g.fillStyle = '#c8302a'; g.fillRect(14, 30, 120, 26); g.fillStyle = '#eae4d2'; for (let k = 0; k < 5; k++) g.fillRect(22 + k * 22, 36, 14, 14);
       g.fillStyle = '#7a7680'; g.fillRect(150, 90, 80, 56); g.fillStyle = '#b8b4bc'; g.fillRect(156, 96, 68, 22);
     }, { rough: 0.92 });
-    const T = 0.25;
-    const tri = smooth([[-11.6, 0], [11.6, 0], [0.4, 14], [-0.4, 14]], 1, true);
-    for (const [z0, tilt, ry] of [[11.0, -0.36, 0], [-6.2, 0.3, Math.PI]]) K.with([0, 13, z0], [tilt, ry, 0], 1, () => K.slab(tri, T, { mat: MAT.paper, col: 0xeae4d2, b: 0.1, faceMat: news, faceCol: 0xffffff, uvMap: (x, y) => [(x + 11.6) / 23.2, y / 14] }));
-    // the folded cuff and the horn flaps
-    K.with([0, 13.1, 11.4], [-0.45, 0, 0], 1, () => K.slab(smooth([[-12, 0], [12, 0], [10.4, 2.4], [-10.4, 2.4]], 1, true), T * 1.6, { mat: MAT.paper, col: 0xd8d2c0, b: 0.12, faceMat: news, faceCol: 0xffffff, uvMap: (x, y) => [(x + 12) / 24 * 0.5, y / 14] }));
-    for (const sx of [-1, 1]) K.with([sx * 5.6, 14.6, 11.6], [-0.3, -sx * 0.35, sx * 0.42], 1, () => K.slab(smooth([[-3.2, 0], [3.2, 0], [0.5, 8.2], [-0.5, 8.2]], 1, true), T, { mat: MAT.paper, col: 0xeae4d2, b: 0.1, faceMat: news, faceCol: 0xffffff, uvMap: (x, y) => [(x + 3.2) / 6.4 * 0.3 + 0.6, y / 8.2 * 0.4] }));
+    // a folded tent: front and back faces printed, narrow gussets at the sides, all meeting at the peak
+    const A = [0, 26.2, 2.6], FL = [-11.6, 13, 10.8], FR = [11.6, 13, 10.8], BL = [-10.6, 13, -6.2], BR = [10.6, 13, -6.2];
+    const face = (P, Q, mat, uv, inCol = 0xd8d2c0) => {
+      const n = v3.norm(v3.cross(v3.sub(Q, P), v3.sub(A, P)));
+      const out = v3.dot(n, v3.sub(P, [0, 18, 2.4])) > 0 ? n : v3.mul(n, -1);
+      const G = (i, j) => v3.lerp(v3.lerp(P, Q, i / 8), A, j / 6);
+      K.grid(8, 6, G, { mat, col: 0xffffff, out: () => out, uv: uv ? (i, j) => [i / 8, j / 6] : undefined, rawUV: !!uv });
+      K.grid(8, 6, (i, j) => v3.sub(G(i, j), v3.mul(out, 0.2)), { mat: MAT.paper, col: inCol, out: () => v3.mul(out, -1) });
+    };
+    face(FL, FR, news, true); face(BR, BL, news, true); face(BL, FL, MAT.paper, false); face(FR, BR, MAT.paper, false);
+    // the folded cuff along the front and the two horn flaps standing up out of it
+    const cuff = (i, j) => { const t = i / 10, x = lerp(-11.8, 11.8, t); return [x, 12.8 + j * 1.2, 11.1 + j * 0.45 + 0.2 * Math.sin(Math.PI * t)]; };
+    K.grid(10, 2, cuff, { mat: news, col: 0xffffff, out: () => [0, 0, 1], uv: (i, j) => [0.6 + i / 40, j / 20], rawUV: true });
+    K.grid(10, 2, (i, j) => v3.sub(cuff(i, j), [0, 0, 0.2]), { mat: MAT.paper, col: 0xd8d2c0, out: () => [0, 0, -1] });
+    for (const sx of [-1, 1]) {
+      const b0 = [sx * 2.6, 14.8, 11.9], b1 = [sx * 8.8, 14.8, 11.9], tip = [sx * 7.6, 22.4, 10.2];
+      const H = (i, j) => v3.lerp(v3.lerp(b0, b1, i / 6), tip, j / 6);
+      K.grid(6, 6, H, { mat: news, col: 0xffffff, out: () => [0, 0, 1], uv: (i, j) => [0.1 + i / 30, 0.5 + j / 20], rawUV: true });
+      K.grid(6, 6, (i, j) => v3.sub(H(i, j), [0, 0, 0.2]), { mat: MAT.paper, col: 0xd8d2c0, out: () => [0, 0, -1] });
+    }
     return K.build();
   },
   sakuraClip() {
@@ -581,13 +595,14 @@ export const HATS = {
   chonmage(skin = 0xecc8aa) {
     const HAIR = 0x24202a;
     const K = new Kit();
-    const pate = (p) => Math.abs(p[0]) < 6.0 && p[2] > -3.2 && p[1] > 13.2;
-    K.shell({ grow: 0.1, th: 1.0, open: (p) => !pate(p), pole: [0, 1, 0.35], mat: MAT.soft, col: skin, inner: false, hem: 0.1 });
-    K.shell({ grow: 0.15, th: 1.7, open: (p) => pate(p) || (p[2] > 8.4 && p[1] < 13.6) || p[1] < (p[2] > 0 ? 6.4 : 2), pole: [0, 0.2, -1], mat: MAT.fur, col: HAIR, hem: 0.3 });
+    const pate = (p) => Math.abs(p[0]) < 5.2 && p[2] > -3.0 && p[1] > 14.0;
+    const dome = (d) => 3.2 * Math.max(0, d[1]) ** 4;
+    K.shell({ grow: 0.1, th: 1.0, open: (p) => !pate(p), pole: [0, 1, 0.35], mat: MAT.soft, col: skin, inner: false, hem: 0.1, bulge: dome });
+    K.shell({ grow: 0.15, th: 1.7, open: (p) => pate(p) || (p[2] > 8.4 && p[1] < 13.6) || p[1] < (p[2] > 0 ? 6.4 : 2), pole: [0, 0.2, -1], mat: MAT.fur, col: HAIR, hem: 0.3, bulge: dome });
     // the topknot: oiled, folded forward along the crown, tied with white cord
-    const top = smooth([[0, 18.0, -6.6], [0, 19.6, -4.4], [0, 20.4, -1], [0, 20.7, 2.8], [0, 20.2, 5.6]], 4);
+    const top = smooth([[0, 18.6, -6.6], [0, 20.4, -4.4], [0, 21.3, -1], [0, 21.6, 2.8], [0, 21.1, 5.6]], 4);
     K.tube(top, (t) => 1.25 - t * 0.35, { sides: 12, ry: 0.8, caps: 'round', mat: MAT.gloss, col: HAIR });
-    K.tube(smooth([[0, 20.2, -1.9], [0, 20.25, -1.1]], 1), 1.42, { sides: 12, ry: 0.8, mat: MAT.cloth, col: 0xfaf4e6 });
+    K.tube(smooth([[0, 21.05, -1.9], [0, 21.1, -1.1]], 1), 1.42, { sides: 12, ry: 0.8, mat: MAT.cloth, col: 0xfaf4e6 });
     return K.build();
   },
 };

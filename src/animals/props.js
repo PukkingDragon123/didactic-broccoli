@@ -15,7 +15,7 @@ const baked = new Map();
 export function bakeCat(pose, coat = 'tabby', sec = 2.5) {
   const key = pose + ':' + coat;
   if (baked.has(key)) return baked.get(key);
-  const r = new CatRig({ coat });
+  const r = new CatRig({ coat, lod: 1 });
   r.setPose(pose === 'stand' ? 'walk' : pose);
   r.glanceT = 99; r.glance = [0, 0]; r.blinkT = 99;
   for (let t = 0; t < sec; t += 1 / 30) r.update(1 / 30, 0);

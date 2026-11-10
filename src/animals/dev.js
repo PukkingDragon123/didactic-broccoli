@@ -12,9 +12,11 @@ function run(rig, sec, speed = 0, extra) {
 }
 
 export async function viewerEntries(params) {
-  const set = params.get('set') || 'cat', cell = +(params.get('cell') || 320);
+  const set0 = params.get('set') || 'cat', cell = +(params.get('cell') || 320);
+  const sets = set0 === 'final' ? ['hero', 'face', 'cat', 'dogs', 'pigeons'] : set0 === 'final1' ? ['hero', 'face'] : set0 === 'final2' ? ['cat', 'dogs', 'pigeons'] : [set0];
   const shots = [];
   // a shot: { obj, at: [x, y, z] look target, dist, yaw, pitch, fov, label }
+  for (const set of sets) {
   if (set === 'cat' || set === 'all' || set === 'face' || set === 'gait' || set === 'hero') {
     const { CatRig } = await import('../world/CatRig.js');
     const make = (pose, sec, o = {}) => {
@@ -74,6 +76,7 @@ export async function viewerEntries(params) {
     }
     for (const id of ['pigeon_fly', 'stray_cat_sit', 'stray_cat']) shots.push({ obj: propMesh(id), yaw: 0.7, pitch: 0.3, label: 'prop ' + id });
   }
+  }
   // ---- render
   const cols = +(params.get('cols') || Math.min(4, shots.length)), rows = Math.ceil(shots.length / cols);
   const host = document.createElement('div');
@@ -119,7 +122,7 @@ export async function viewerEntries(params) {
     cam.lookAt(centre);
     sun.position.copy(centre).add(new THREE.Vector3(-0.6, 1.2, 0.8).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw).multiplyScalar(1.2));
     sun.target.position.copy(centre);
-    for (let k = 0; k < 3; k++) { time += 0.016; R.render(0.016, time); }
+    for (let k = 0; k < 2; k++) { time += 0.016; R.render(0.016, time); }
     ctx.drawImage(R.renderer.domElement, (i % cols) * cell, Math.floor(i / cols) * cell, cell, cell);
     ctx.fillStyle = '#2a2428'; ctx.font = '13px monospace'; ctx.textAlign = 'center';
     ctx.fillText(s.label, (i % cols) * cell + cell / 2, Math.floor(i / cols) * cell + cell - 8);
