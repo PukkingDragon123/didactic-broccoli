@@ -55,7 +55,7 @@ function geometry(list, C, nm) {
   return g;
 }
 
-export const HI = 2.5; // how much finer the figure in your hand is cut than the one on a shelf (see QUAL in sculpt.js)
+export const HI = 1.4; // how much finer the figure in your hand is cut than the one on a shelf (see QUAL in sculpt.js)
 
 /**
  * Build (once) and return everything about a figure item. lod: the light level of detail (the counts the sculpt asks

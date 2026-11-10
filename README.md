@@ -89,7 +89,7 @@ through the rest, about thirty small, physical steps in all:
 - **Shells:** they drop their empty capsule shells in the bin. You empty it into the dumpster, and the
   garbage truck comes on collection days.
 - **Your own pulls:** you get to keep the shell in your hand. Drop it, sweep it up, or keep it in a box.
-- **Figures:** 22 series and 176 figures. Secrets are 1 in 500. Rare finishes include clear, metallic,
+- **Figures:** crisp low-poly sculpts with flat facets, in 28 series of 212 figures. Secrets are 1 in 500. Rare finishes include clear, metallic,
   glow, gold, aurora and diamond.
 - **Selling figures:** show rare ones on stands, pack them in a blister and sell them with your own price tag.
 - **Toys:** some toys are playable, such as a foam-dart pistol, a squishy, a wind-up robot and a kendama.

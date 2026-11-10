@@ -114,7 +114,7 @@ export class Sculpt {
     this.partName = null;
     this.parts = {}; // name -> { rest, move(t) -> Matrix4, label }
     this.crease = 50; // degrees: neighbouring facets flatter than this share smooth normals; sharper edges stay hard
-    this.soft = 1; // 0 = flat-shaded facets, 1 = fully smooth
+    this.soft = 0; // 0 = flat-shaded facets (the toys are crisp low-poly: docs/ART.md), 1 = fully smooth
     this.patches = []; // smooth surfaces as grids (lathes, lofts, tubes): one atlas patch each, see grid()
     this.dens = 1; // texel density multiplier for the facets that follow
     this.maxFacet = 11; // mm: quads longer than this are cut into coplanar pieces (0 = never)
@@ -350,10 +350,10 @@ export class Sculpt {
 
   /** An ellipsoid: centre c, radii r (number or [rx, ry, rz]). o: segs, rings, v0 / v1 (cut: 0 = south pole, 1 = north), cap. */
   ball(c, r, o = {}) {
-    const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, rings = QN(o.rings ?? 7), v0 = o.v0 ?? 0, v1 = o.v1 ?? 1;
+    const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, rings = QN(o.rings ?? 5), v0 = o.v0 ?? 0, v1 = o.v1 ?? 1;
     const prof = [];
     for (let i = 0; i <= rings; i++) { const ph = (v0 + (v1 - v0) * (i / rings)) * Math.PI; prof.push([Math.max(0, Math.sin(ph)), -Math.cos(ph) * ry]); }
-    const k = QUAL.k; QUAL.k = 1; try { return this.lathe(prof, { segs: N2(o.segs ?? 12, k), sx: rx, sz: rz, cap: o.cap ?? true, a0: o.a0, at: c }); } finally { QUAL.k = k; }
+    const k = QUAL.k; QUAL.k = 1; try { return this.lathe(prof, { segs: N2(o.segs ?? 8, k), sx: rx, sz: rz, cap: o.cap ?? true, a0: o.a0, at: c }); } finally { QUAL.k = k; }
   }
 
   /** Skin through rings of equal point counts (see ring()). o.caps: 'both' | 'start' | 'end' | 'none'. */

@@ -23,7 +23,7 @@ function faceRing(c, rx, ry0, ry1, n, pow, cheek = 0) {
  * out to the front radius), chin (how far the lower face drops back, 0..1), crown (a taller skull, x ry).
  */
 export function head(S, c, r, o = {}) {
-  const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, n = o.n ?? 12, pow = o.pow ?? 2.3, brow = o.brow ?? 0.4, cheek = o.cheek ?? 0.12, mz = o.muzzle ?? 0.35, chin = o.chin ?? 0.3, cr = o.crown ?? 1;
+  const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, n = o.n ?? 8, pow = o.pow ?? 3.2, brow = o.brow ?? 0.4, cheek = o.cheek ?? 0.12, mz = o.muzzle ?? 0.35, chin = o.chin ?? 0.3, cr = o.crown ?? 1;
   // stations back to front: [z, half width, height above, height below, y shift] as fractions of the radii
   const st = [
     [-1, 0.05, 0.05, 0.05, 0.1], [-0.96, 0.36, 0.38, 0.36, 0.1], [-0.72, 0.8, 0.8 * cr, 0.72, 0.06], [-0.2, 1, 1 * cr, 0.94, 0.02], [0.3, 0.98, 0.94 * cr, 1, -0.02],
@@ -39,17 +39,17 @@ export function head(S, c, r, o = {}) {
  * 0.2..0.5 of the height), lean (shoulders forward, mm).
  */
 export function torso(S, c, r, o = {}) {
-  const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, n = o.n ?? 12, belly = o.belly ?? 0.16, hips = o.hips ?? 1, sit = o.sit ?? 0.34, lean = o.lean ?? 0;
+  const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, n = o.n ?? 8, belly = o.belly ?? 0.16, hips = o.hips ?? 1, sit = o.sit ?? 0.34, lean = o.lean ?? 0;
   const st = [[-1, 0.05, 0.05, -0.04], [-0.97, 0.46 * hips, 0.44, -0.04], [-1 + sit * 0.5, 0.9 * hips, 0.86, 0], [-1 + sit * 2, 1 * hips, 1, belly * 0.6], [0.05, 0.92, 0.94, belly], [0.5, 0.74, 0.76, belly * 0.5], [0.82, 0.54, 0.56, 0.02], [0.97, 0.28, 0.3, 0], [1, 0.05, 0.05, 0]];
-  const rings = spline(st, 2).map(([y, w, d, f]) => ring([c[0], c[1] + y * ry, c[2] + f * rz + lean * (y + 1) / 2], Math.max(0.05, w) * rx, Math.max(0.05, d) * rz * (1 - belly * 0.3), n, { pow: o.pow ?? 2.2 }));
+  const rings = spline(st, 2).map(([y, w, d, f]) => ring([c[0], c[1] + y * ry, c[2] + f * rz + lean * (y + 1) / 2], Math.max(0.05, w) * rx, Math.max(0.05, d) * rz * (1 - belly * 0.3), n, { pow: o.pow ?? 2.8 }));
   return S.loft(rings);
 }
 
 /** A lying loaf of a body along z (a seal, a fox curled up, a lion at rest): shoulders at +z, haunches at -z. */
 export function loaf(S, c, r, o = {}) {
-  const [rx, ry, rz] = r, n = o.n ?? 12;
+  const [rx, ry, rz] = r, n = o.n ?? 8;
   const st = [[-1, 0.05, 0.05, -0.3], [-0.96, 0.34, 0.38, -0.3], [-0.72, 0.86, 0.8, -0.1], [-0.25, 1, 1, 0], [0.3, 0.9, 0.9, -0.04], [0.74, 0.74, 0.78, -0.08], [0.96, 0.36, 0.42, -0.2], [1, 0.05, 0.05, -0.22]];
-  const rings = spline(st, 2).map(([z, w, h, dy]) => faceRing([c[0], c[1] + dy * ry, c[2] + z * rz], Math.max(0.05, w) * rx, Math.max(0.05, h) * ry, Math.max(0.05, h) * ry * (o.flat ?? 0.8), n, o.pow ?? 2.3, 0.1));
+  const rings = spline(st, 2).map(([z, w, h, dy]) => faceRing([c[0], c[1] + dy * ry, c[2] + z * rz], Math.max(0.05, w) * rx, Math.max(0.05, h) * ry, Math.max(0.05, h) * ry * (o.flat ?? 0.8), n, o.pow ?? 2.8, 0.1));
   return S.loft(rings);
 }
 
@@ -96,5 +96,5 @@ export function drape(S, x0, z0, x1, z1, y, o = {}) {
 export function eggShape(S, c, r, h, o = {}) {
   const prof = spline([[0, 0], [0.62, 0.05], [0.96, 0.26], [1, 0.42], [0.86, 0.66], [0.56, 0.88], [0, 1]], 2).map(([k, t]) => [k * r, t * h]);
   const v0 = o.v0 ?? 0, v1 = o.v1 ?? 1, cut = prof.filter(([, y]) => y >= v0 * h - 1e-6 && y <= v1 * h + 1e-6);
-  return S.lathe(cut, { segs: o.segs ?? 10, at: c, cap: true });
+  return S.lathe(cut, { segs: o.segs ?? 8, at: c, cap: true });
 }
