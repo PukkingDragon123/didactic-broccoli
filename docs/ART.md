@@ -72,6 +72,22 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
   cel-shaded like the rest of the world. Characterful and hand-designed, never generic or "AI-looking".
 - Every model keeps getting more detailed: modelled small parts everywhere a person would look.
 
+## Update: real assets from free libraries, never procedural art (the owner's latest direction)
+- **Use real assets, adapted to the style.** The owner finds most code-built models and code-drawn 2D art ugly.
+  Start every asset from real, freely licensed material and modify it to fit:
+  - 3D models: Poly Haven (CC0, api.polyhaven.com; realistic scanned props, furniture, street and building parts);
+  - textures: ambientCG (CC0) and Poly Haven textures; photos: Google Open Images (CC BY);
+  - 2D art: real photos (Open Images), public-domain artwork, CC0 pixel art (OpenGameArt, filtered to CC0).
+  Every one is credited in CREDITS.md (and public/CREDITS.txt) with source, author and licence.
+- **Adapt, don't paste.** Imported models go through tools/import-asset.mjs (decimate to a sensible budget, real-world
+  scale, textures re-made as high-resolution pixel art, light cel through the renderer) and load with
+  src/kit/assets.js. 2D art is reduced to high-resolution pixel art the same way.
+- **Code-built only when nothing suitable exists** (Japanese-specific things like the gacha machines, the vending
+  machines, kei vans): then model it from photographs of the real thing, with its real parts, never from bare
+  primitives, and texture it with real photo material.
+- Product labels, posters and cards keep original names and mascots (no real brands), but their art is made from real
+  images, not drawn by formula.
+
 ## 2D
 - Printed things are **detailed pixel art** with nearest filtering: product labels with a mascot, a logo, flavour
   art, small print and a barcode; posters; gacha display cards laid out like real capsule-toy flyers (logo, price

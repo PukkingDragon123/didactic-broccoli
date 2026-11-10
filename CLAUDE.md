@@ -19,7 +19,10 @@ The art rules in full: docs/ART.md.
   blocky but connected and flexible.
 - Product labels, posters and gacha display cards are detailed pixel art with mascots and full label art. All
   designs, names and brands are original (real ones are genre reference only).
-- Real photos used for 2D backgrounds come from Google Open Images (CC BY), credited in CREDITS.md.
+- Assets start from real, freely licensed material, adapted to the style (docs/ART.md): Poly Haven CC0 models and
+  textures (tools/import-asset.mjs, src/kit/assets.js), ambientCG CC0 textures, Google Open Images CC BY photos,
+  public-domain art, CC0 pixel art. Never procedural art; code-built models only when nothing suitable exists.
+  Everything is credited in CREDITS.md.
 - People talk in 8-bit voices (src/people/voice.js).
 
 ## Code
