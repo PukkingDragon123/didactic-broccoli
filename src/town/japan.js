@@ -74,21 +74,24 @@ export function buildJapan(t) {
   // ---- behind the garbage station: the collection days and the crow notice on the wall, bottles against cats
   t.sign('gomi', -6.75, 0.62, ZB + 0.006, {});
   t.sign('crowNote', -6.12, 0.82, ZB + 0.006, { rz: -0.03 });
-  // the green crow net (カラスよけネット), rolled up and hung on two hooks on the wall behind the pad until the bags come out
+  // the green crow net (カラスよけネット), bundled up and thrown over the wall top behind the pad until the bags come out,
+  // a fold of it hanging down the lane face with its weighted hem
   {
     if (!t._crowNet) { const nm = t.fence.clone(), mp = t.fence.map.clone(); mp.repeat.set(30, 30); mp.needsUpdate = true; nm.map = mp; nm.name = 'crowNet'; t._crowNet = nm; }
-    const NM = t._crowNet, y = 1.02, x0 = -7.32, x1 = -5.98, xc = (x0 + x1) / 2, z = ZB + 0.085, G = 0x2c7050;
-    for (const x of [x0 + 0.12, x1 - 0.12]) B.tube(m.metal, [[x, y + 0.07, ZB + 0.004], [x, y + 0.07, ZB + 0.07], [x, y + 0.12, ZB + 0.085]], 0.007, { tint: 0x6a6e70, sides: 6 });
-    const roll = [[x0, y + 0.05, z], [x0 + 0.12, y + 0.06, z], [xc, y - 0.03, z + 0.008], [x1 - 0.12, y + 0.06, z], [x1, y + 0.05, z]];
-    B.tube(m.pv, roll, 0.05, { tint: 0x1f4a36, sides: 12 });
-    B.tube(NM, roll.map(([a, b, c]) => [a, b, c]), 0.058, { tint: G, sides: 12 });
-    // a fold of net hanging loose below the roll, its hem weighted with a chain
-    const hem = (u) => y - 0.32 - 0.05 * Math.sin(u * 7.0);
+    const NM = t._crowNet, yt = 1.462, x0 = -7.15, x1 = -6.0, zw = ZB - 0.075, G = 0x2c7050;
+    // the bundle: lumpy, thicker where it was gathered, lying along the coping
+    const roll = [], n = 9;
+    for (let k = 0; k <= n; k++) { const u = k / n, x = x0 + (x1 - x0) * u; roll.push([x, yt + 0.06 + 0.02 * Math.sin(u * 9.4), zw + 0.025 * Math.sin(u * 6.1 + 1)]); }
+    B.tube(m.pv, roll, 0.055, { tint: 0x1f4a36, sides: 10 });
+    B.tube(NM, roll, 0.068, { tint: G, sides: 10 });
+    for (const [u, r] of [[0.22, 0.085], [0.61, 0.08]]) { const p = roll[Math.round(u * n)]; B.blob(NM, p[0], p[1], p[2], 0.12, r, 0.09, { tint: G, jitter: 0.3, seed: Math.round(u * 50) }); B.blob(m.pv, p[0], p[1], p[2], 0.1, r * 0.8, 0.075, { tint: 0x1f4a36, jitter: 0.3, seed: Math.round(u * 50) }); }
+    // the fold down the lane face (out past the coping's nose), its hem in a chain
+    const zf = ZB + 0.04, hem = (u) => yt - 0.24 - 0.06 * Math.sin(u * 7.0 + 0.6);
     for (let k = 0; k < 6; k++) {
-      const u0 = k / 6, u1 = (k + 1) / 6, xa = x0 + 0.2 + (x1 - x0 - 0.4) * u0, xb = x0 + 0.2 + (x1 - x0 - 0.4) * u1;
-      B.face(NM, [xa, hem(u0), z - 0.01], [xb, hem(u1), z - 0.01], [xb, y, z - 0.02], [xa, y, z - 0.02], { both: true, tint: G, uvs: [[xa, hem(u0)], [xb, hem(u1)], [xb, y], [xa, y]] });
+      const u0 = k / 6, u1 = (k + 1) / 6, xa = x0 + 0.1 + (x1 - x0 - 0.2) * u0, xb = x0 + 0.1 + (x1 - x0 - 0.2) * u1;
+      B.face(NM, [xa, hem(u0), zf], [xb, hem(u1), zf], [xb, yt + 0.02, zf - 0.005], [xa, yt + 0.02, zf - 0.005], { both: true, tint: G, uvs: [[xa, hem(u0)], [xb, hem(u1)], [xb, yt], [xa, yt]] });
     }
-    const ch = []; for (let k = 0; k <= 12; k++) { const u = k / 12; ch.push([x0 + 0.2 + (x1 - x0 - 0.4) * u, hem(u) - 0.004, z - 0.008]); }
+    const ch = []; for (let k = 0; k <= 12; k++) { const u = k / 12; ch.push([x0 + 0.1 + (x1 - x0 - 0.2) * u, hem(u) - 0.004, zf + 0.004]); }
     B.tube(m.metal, ch, 0.008, { tint: 0x5a5e60, sides: 6 });
   }
   petBottles(t, 7.65, 8.3, ZB + 0.07, 4, 2);
