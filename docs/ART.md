@@ -17,9 +17,10 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
   high roughness; don't write your own toon shader, don't use emissive blobs, never a white rim or hover highlight.
 - **Textures are high-resolution cartoon paint**: flat colour fields, details drawn in a darker tone of the
   surface colour (not black), two or three hand-placed tones of shading, weathering placed by rule (rust under
-  bolts, stains under sills, moss at the foot of walls), never random noise. Linear filtering with mipmaps and
-  anisotropy for world surfaces. Texel density: 256 px/m or more for things you hold or stand in front of
-  (machines, capsules, figures, products, the PC), 96 to 128 px/m for buildings and the road.
+  bolts, stains under sills, moss at the foot of walls), never random noise. Texels must never read as pixels:
+  the kit's atlases (nearest magnification) are painted at 256 px/m or more for things you hold or stand in front
+  of (machines, capsules, figures, products, the PC); big tiling surfaces (walls, roofs, the road) use
+  canvas-painted tiling textures with linear filtering, mipmaps and anisotropy, at 128 px/m or more.
 - **Modelling kit** (code, no external files): `src/vehicles/geom.js` (flat-shaded triangle builder: chamfered
   boxes, rods, cylinders, rings, polygons with holes, per-face UVs), `src/vehicles/atlas.js` (one painted atlas
   per object or set, with a roughness map), `src/vehicles/paint.js` (painting helpers), `src/vehicles/shell.js`
