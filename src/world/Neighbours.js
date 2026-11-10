@@ -21,7 +21,7 @@ import { keiWagonMesh } from '../vehicles/keiWagon.js';
 import { pot, acUnit, futon, shutter } from '../town/house.js';
 import { pillar } from '../town/walls.js';
 import { windChime } from '../town/japan.js';
-import { hedge, niwaki, crown, vine } from '../town/foliage.js';
+import { hedge, niwaki, crown, vine, potted, limb, tuft } from '../town/foliage.js';
 
 const ZB = 5.3, ZF = 14.9;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -67,17 +67,15 @@ function pillarKit(t, x, s, { name, y = 0.95, plate = null, lamp = false, mail =
 /** 朝顔のグリーンカーテン: morning glory on strings from a planter up to the eave (local frame, on the wall plane z). */
 function morningGlory(t, x0, x1, y1, z, seed = 1) {
   const B = t.B, m = t.m;
-  B.box(m.pv, x1 - x0, 0.22, 0.22, (x0 + x1) / 2, 0, z + 0.2, { tint: 0x6a96b8, bevel: 0.02 });
+  // a long plastic planter (rim, ribs), the soil in it
+  potted(t, (x0 + x1) / 2, 0, z + 0.2, { pot: 'planter', r: (x1 - x0) / 2, d: 0.11, h: 0.2, col: 0x6a8a4a, plant: 'sprout', size: 0.12, seed });
   B.rod(m.metal, [x0 - 0.05, y1, z + 0.24], [x1 + 0.05, y1, z + 0.24], 0.012, { tint: 0x7a7a78, sides: 4 });
   const n = Math.round((x1 - x0) / 0.3);
   for (let i = 0; i <= n; i++) {
     const x = x0 + i * (x1 - x0) / n, top = 0.8 + hash2(i, seed) * (y1 - 0.9);
     B.box(m.pv, 0.006, y1 - 0.22, 0.006, x, 0.22, z + 0.22, { tint: 0x9aaa7a });
-    vine(t, x, 0.3, top + 0.15, z + 0.2, seed * 31 + i);
-    for (let y = 0.5; y < top; y += 0.3) { // the trumpets, open in the morning
-      const k = hash2(i * 13 + Math.round(y * 10), seed);
-      if (k > 0.45) B.lathe(m.pv, [[0.006, 0], [0.012, 0.03], [0.03, 0.05], [0.048, 0.058], [0.05, 0.062]], x + (k - 0.7) * 0.2, y + 0.02, z + 0.27, { rx: Math.PI / 2 - 0.3, tint: k > 0.8 ? 0x7a6ae0 : 0x5a8af0, sides: 10, caps: 'tb' });
-    }
+    // the vine up its string: heart leaves and the blue trumpets (open in the morning) are the sheet's asagao sprigs
+    vine(t, x, 0.25, top + 0.15, z + 0.2, seed * 31 + i, { kind: 'asagao', card: 0.26 });
   }
 }
 
@@ -101,17 +99,15 @@ function stroller(t, x, z, ry = 0) {
   B.pop();
 }
 
-/** 盆栽棚: a two-tier bonsai bench with little trees (local frame). */
+/** 盆栽棚: a two-tier bonsai bench with little trees in their trays (local frame): black pines, a maple, an azalea. */
 function bonsaiShelf(t, x, z, len = 1.6) {
   const B = t.B, m = t.m;
   for (const dx of [-len / 2 + 0.06, len / 2 - 0.06]) for (const dz of [-0.15, 0.15]) B.box(m.wood, 0.06, 0.62, 0.06, x + dx, 0, z + dz, { tint: 0x9a7a5a });
   for (const [y, dz] of [[0.36, 0.1], [0.62, -0.08]]) B.box(m.woodL, len, 0.04, 0.24, x, y, z + dz, { tint: 0xc8b090 });
+  const kinds = [['pine', 0x5a4a6a], ['maple', 0x3a5a6a], ['pine', 0x9a4a3a], ['azalea', 0x6a5a4a], ['pine', 0x4a5a52]];
   for (let i = 0; i < 5; i++) {
-    const tier = i % 2, px = x - len / 2 + 0.2 + i * (len - 0.4) / 4, py = tier ? 0.66 : 0.4, pz = z + (tier ? -0.08 : 0.1), k = hash2(i, 31);
-    B.box(m.gloss, 0.2, 0.06, 0.13, px, py, pz, { tint: [0x5a4a6a, 0x9a4a3a, 0x3a5a6a][i % 3], bevel: 0.012 });
-    B.rod(m.pv, [px, py + 0.06, pz], [px + (k - 0.5) * 0.1, py + 0.2 + k * 0.06, pz], 0.014, { tint: 0x6a5040, sides: 4 });
-    crown(t, px + (k - 0.5) * 0.12, py + 0.26 + k * 0.06, pz, 0.13, 0.05, 0.09, { kind: 'pine', card: 0.13, flat: -0.4, density: 3, seed: i });
-    crown(t, px - (k - 0.5) * 0.06, py + 0.33 + k * 0.06, pz, 0.08, 0.04, 0.06, { kind: 'pine', card: 0.1, flat: -0.4, density: 3, seed: i + 5 });
+    const tier = i % 2, px = x - len / 2 + 0.2 + i * (len - 0.4) / 4, py = tier ? 0.66 : 0.4, pz = z + (tier ? -0.08 : 0.1), [plant, col] = kinds[i];
+    potted(t, px, py, pz, { pot: 'bonsai', r: 0.1, d: 0.065, h: 0.06, col, plant, size: plant === 'azalea' ? 0.26 : 0.3, seed: i * 7 + 3 });
   }
 }
 
@@ -213,12 +209,17 @@ function nearSide(t) {
       // specimen jars and seedling trays on the engawa, pots along the front, a loofah trellis down the west side
       for (let i = 0; i < 4; i++) { Bq.cyl(m.gloss, 0.05, 0.05, 0.16, 0.05 + i * 0.16, f.base, 0.25, { tint: [0xb8d8c8, 0xc8d8b0, 0xd8e8e0, 0xa8c8b8][i], sides: 7 }); Bq.cyl(m.pv, 0.055, 0.055, 0.03, 0.05 + i * 0.16, f.base + 0.16, 0.25, { tint: 0x9a7a58, sides: 7 }); }
       Bq.box(m.pv, 0.5, 0.06, 0.32, 1.0, f.base, 0.3, { tint: 0x3a3a3a });
-      for (let i = 0; i < 6; i++) Bq.blob(m.pv, 0.82 + (i % 3) * 0.17, f.base + 0.09, 0.22 + Math.floor(i / 3) * 0.15, 0.04, 0.04, 0.04, { tint: 0x6ab85a, seed: i });
-      pot(t, -0.3, 0, 0.9, 1.1, 0x3e7a34);
-      pot(t, 1.25, 0, 1.15, 0.8, 0x4f8a3a, 0xffd23f);
+      for (let i = 0; i < 6; i++) tuft(t, 0.82 + (i % 3) * 0.17, f.base + 0.06, 0.22 + Math.floor(i / 3) * 0.15, 0.09, 'sprout', i + 5);
+      potted(t, -0.3, 0, 0.9, { pot: 'styro', r: 0.3, d: 0.2, h: 0.24, plant: 'tomato', size: 0.75, fruit: 0x7ab04a, seed: 2 });
+      potted(t, 1.25, 0, 1.15, { pot: 'terra', r: 0.12, h: 0.19, plant: 'aloe', size: 0.32, seed: 4 });
+      potted(t, 0.75, 0, 1.2, { pot: 'terra', r: 0.11, h: 0.17, plant: 'pelargonium', size: 0.36, seed: 6 });
       for (const dz of [0.2, 1.5]) Bq.box(m.wood, 0.05, 2.0, 0.05, -1.75, 0, dz, { tint: 0xa89070 });
       Bq.box(m.wood, 0.05, 0.05, 1.4, -1.75, 2.0, 0.85, { tint: 0xa89070 });
-      for (let i = 0; i < 5; i++) { const k = hash2(i, 77); Bq.blob(m.pv, -1.75, 1.2 + k * 0.7, 0.3 + i * 0.27, 0.07, 0.24, 0.2, { tint: k < 0.5 ? 0x4a8a3c : 0x5c9a44, seed: i }); if (k > 0.5) Bq.lathe(m.pv, [[0.02, 0], [0.045, 0.1], [0.04, 0.3], [0.015, 0.36]], -1.72, 1.1 + k * 0.3, 0.3 + i * 0.27, { tint: 0x8ab85a, sides: 6 }); }
+      // 糸瓜: the loofah vines climb the poles from a styrofoam box and spread over the bar, gourds hanging under them
+      potted(t, -1.75, 0, 0.85, { pot: 'styro', r: 0.28, d: 0.18, h: 0.22, plant: 'sprout', size: 0.1, seed: 9 });
+      for (const dz of [0.2, 1.5]) vine(t, -1.75, 0.22, 2.0, dz, 40 + Math.round(dz * 10), { kind: 'ivy', card: 0.3 });
+      crown(t, -1.75, 2.0, 0.85, 0.22, 0.12, 0.85, { kind: 'ivy', mix: ['tomato', 0.15], card: 0.3, flat: -0.6, density: 2.2, core: false, seed: 77 });
+      for (let i = 0; i < 4; i++) { const k = hash2(i, 77), gz = 0.4 + i * 0.3, gy = 1.95 - 0.35 - k * 0.35; limb(t, [[-1.75, 2.0, gz], [-1.74, gy + 0.36, gz]], [0.004, 0.003], { mat: undefined, bark: 'cherry', sides: 4, seg: 1, tint: 0x7a9a4a }); Bq.lathe(m.pv, [[0, 0], [0.025, 0.02], [0.04, 0.1], [0.042, 0.24], [0.034, 0.32], [0.012, 0.36], [0, 0.365]], -1.74, gy, gz, { tint: k < 0.5 ? 0x7aa24a : 0x8ab25a, sides: 12 }); }
       windChime(t, 0.65, f.top - 0.32, 0.5, 0xb8e0d0);
     } });
   t.yard(22.75, 25.7, 2.6, ZB - 0.15, m.dirt);

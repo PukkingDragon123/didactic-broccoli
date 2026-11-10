@@ -16,9 +16,7 @@ import { DisplaySlots } from './Display.js';
 import { Px, dk, lt, on } from '../products/px.js';
 import { m5, m3, mk, bold, label, whenFontsReady } from '../products/type.js';
 import { PAT, burst, infoBox, barcode } from '../products/print.js';
-import { VoxelModel, gloss, glass, metal } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
-import { voxelMaterials } from '../voxel/materials.js';
+import { standMesh, stationMesh, bubbleGeometry, STAND_TOP } from '../props/things/packing.js';
 import { formatYen } from '../core/util.js';
 import './gachaSfx.js';
 
@@ -134,8 +132,8 @@ export function makePackagedMesh(key, finish = 'normal') {
   fig.position.set(0, 0.03, D / 2 + sz.z * sc / 2 + 0.002);
   fig.castShadow = false;
   g.add(fig);
-  const bub = new THREE.Mesh(new THREE.BoxGeometry(0.062, 0.05, Math.max(0.018, sz.z * sc + 0.008)), bubbleMat);
-  bub.position.set(0, 0.03 + 0.025 - 0.002, D / 2 + bub.geometry.parameters.depth / 2);
+  const bub = new THREE.Mesh(bubbleGeometry(0.062, 0.05, Math.max(0.018, sz.z * sc + 0.008)), bubbleMat);
+  bub.position.set(0, 0.03 - 0.002, D / 2 + 0.0002);
   bub.renderOrder = 3;
   bub.userData.noRim = true;
   g.add(bub);
@@ -148,46 +146,7 @@ export function makePackagedMesh(key, finish = 'normal') {
   return g;
 }
 
-let standGeo = null;
-/** Acrylic display stand: a clear stepped riser on a base with a printed plate (figure slot on top). */
-function standMesh() {
-  if (!standGeo) {
-    const v = new VoxelModel();
-    v.jitter = 0;
-    const a = glass(0xe8f4fa);
-    v.box(-8, 0, -7, 7, 1, 6, a);
-    v.box(-6, 2, -5, 5, 6, 4, a);
-    v.box(-8, 0, 7, 7, 3, 7, gloss(0x2a2a2e)); // plate edge
-    v.box(-7, 1, 8, 6, 2, 8, metal(0xd8b850));
-    standGeo = meshVoxels(v, { voxelSize: 0.0045, origin: 'bottom' });
-  }
-  const m = new THREE.Mesh(standGeo, voxelMaterials('normal'));
-  m.castShadow = true;
-  return m;
-}
-const STAND_TOP = 0.0045 * 7;
-
-let stationGeo = null;
-function stationMesh() {
-  if (!stationGeo) {
-    const v = new VoxelModel();
-    v.jitter = 0.02;
-    // a stack of blister cards (cream backing, red headers)
-    for (let i = 0; i < 6; i++) { v.box(-16, i, -8, -4, i, 6, i === 5 ? 0xe8dcc4 : 0xd8ccb0); v.paint(() => v.box(-16, i, 3, -4, i, 6, 0xc8352a)); }
-    // the heat sealer: dark grey body, a matte steel plate, red lever
-    v.box(0, 0, -7, 12, 6, 6, gloss(0x4a5058));
-    v.box(1, 7, -6, 11, 7, 5, 0x8a9098);
-    v.box(2, 8, 2, 10, 9, 3, gloss(0xc8352a));
-    v.box(9, 1, 7, 10, 2, 7, gloss(0x3cae5a)); // pilot light
-    // a little box of acrylic stands
-    v.hollowBox(-14, 7, -7, -6, 13, 1, glass(0xd8e8f0), 1, ['top']);
-    v.box(-13, 8, -6, -7, 9, 0, glass(0xc8dce8));
-    stationGeo = meshVoxels(v, { voxelSize: 0.01, origin: 'bottom' });
-  }
-  const m = new THREE.Mesh(stationGeo, voxelMaterials('normal'));
-  m.castShadow = true; m.receiveShadow = true;
-  return m;
-}
+// the stand and the station are modelled in src/props/things/packing.js
 
 // ------------------------------------------------------------------ packing
 /** Seal the held figure into a blister card (uses one pack). Returns the packaged data or null. */

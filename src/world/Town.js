@@ -99,7 +99,7 @@ export class Town {
   single(id, x, y, z, ry = 0, o = {}, parent = this.group) {
     if (!hasProp(id)) return null;
     const m = propMesh(id, { castShadow: !!o.cast, receiveShadow: true });
-    if (o.indoor && Array.isArray(m.material)) m.material = this.indoorVoxel();
+    if (o.indoor && Array.isArray(m.material)) m.material = m.geometry.userData.lowPoly ? m.material.map(this.indoorVoxel().convert) : this.indoorVoxel();
     m.position.set(x, y, z); m.rotation.y = ry;
     if (o.scale) m.scale.setScalar(o.scale);
     parent.add(m);
@@ -122,7 +122,7 @@ export class Town {
       src.traverse((o) => { if (o.isMesh && o.geometry) parts.push(o); });
       for (const part of parts) {
         let mat = part.material;
-        const voxel = Array.isArray(mat) && mat.length === 5;
+        const voxel = Array.isArray(mat) && mat.length === 5 && !part.geometry.userData.lowPoly; // low-poly props keep their atlas
         if (voxel && indoor) mat = this.indoorVoxel(); else if (voxel && dim) mat = this.dimVoxel();
         else if (indoor) mat = Array.isArray(mat) ? mat.map((k) => this.indoor(k)) : this.indoor(mat);
         const im = new THREE.InstancedMesh(part.geometry, mat, list.length);

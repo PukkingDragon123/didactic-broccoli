@@ -47,7 +47,7 @@ function mergeProps(items, t) {
     const k = it.k ?? 1;
     src.traverse((o) => {
       if (!o.isMesh || !o.geometry?.attributes?.position) return;
-      const g = o.geometry, mats = Array.isArray(o.material) ? o.material : [o.material], voxel = mats.length === 5;
+      const g = o.geometry, mats = Array.isArray(o.material) ? o.material : [o.material], voxel = mats.length === 5 && !g.userData.lowPoly; // low-poly props keep their atlas (indoor variants)
       const P = g.attributes.position, N = g.attributes.normal, C = g.attributes.color, U = g.attributes.uv, I = g.index;
       const groups = g.groups.length ? g.groups : [{ start: 0, count: I ? I.count : P.count, materialIndex: 0 }];
       _mm.multiplyMatrices(_m, o.matrixWorld); nm.getNormalMatrix(_mm);

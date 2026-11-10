@@ -1,15 +1,12 @@
-// The garage PC: the beige desk hardware (voxel CRT, keyboard, mouse, tower, speakers), and sitting down at it.
+// The garage PC: the beige desk hardware (a modelled CRT, keyboard, mouse, tower, speaker: src/props/things/pc.js), and sitting down at it.
 // Click it and you pull up to the desk: the first-person camera lowers onto the chair and eases in until the
 // monitor fills most of the view. No pop-up: the Capsule 98 desktop (src/os/OS.js) is a DOM layer warped onto the
 // 3D screen quad every frame (a projective matrix3d while the camera moves, a pixel-exact 2D scale once settled,
 // so pixel fonts stay crisp). Esc or the taskbar's power button stands you up again.
 // While you're away the screen shows a small canvas (src/pc/idle.js) and the DOM layer is hidden (costs nothing).
 import * as THREE from 'three';
-import { VoxelModel, metal } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
-import { voxelMaterials } from '../voxel/materials.js';
+import { pcDeskMesh, pcMouseMesh } from '../props/things/pc.js';
 import { audio } from '../core/audio.js';
-import { hash2 } from '../core/util.js';
 import { Game } from '../game/Game.js';
 import { ShopUI } from '../ui/ShopUI.js';
 import { placeOpenerTool, placeCharms } from '../game/shop.js';
@@ -17,82 +14,11 @@ import { CapsuleOS } from '../os/OS.js';
 import { installApps } from '../os/apps/index.js';
 import { IdleScreen, IW, IH } from './idle.js';
 
-const BEIGE = 0xe6dcc4, BEIGE_D = 0xcfc3a6, BEIGE_Y = 0xd9c99c, DARK = 0x4a453c;
 const SW = 0.32, SH = 0.24; // screen (4:3), metres
 const SCREEN_Y = 0.22, SCREEN_Z = 0.1705; // in the monitor's frame
 const SEAT_FOV = 50;
 
-// ------------------------------------------------------------------ hardware models (voxel size 0.01, origin none)
-function monitorModel() {
-  const v = new VoxelModel();
-  v.jitter = 0.02;
-  v.box(-11, 0, -9, 10, 1, 8, BEIGE_D); // foot
-  v.box(-5, 2, -5, 4, 4, 3, BEIGE_D); // swivel
-  v.box(-20, 5, 6, 19, 37, 17, BEIGE); // front shell: 40 x 33 cm
-  v.box(-17, 8, -5, 16, 35, 5, BEIGE_D); // tube housing, tapering back
-  v.box(-13, 12, -13, 12, 31, -6, BEIGE_D);
-  v.box(-9, 16, -18, 8, 27, -14, BEIGE_D);
-  v.paint(() => { for (let y = 15; y < 32; y += 3) v.box(-10, y, -13, 9, y, -13, 0x9a8f78); }); // vents
-  v.box(-17, 9, 17, 16, 34, 17, DARK); // inner bezel ring
-  v.box(-16, 10, 17, 15, 33, 17, null); // the screen opening (32 x 24)
-  v.paint(() => { for (let x = -20; x <= 19; x++) for (let y = 5; y <= 37; y++) if (hash2(x, y) < 0.05) v.set(x, y, 17, BEIGE_Y); });
-  v.box(-20, 5, 18, 19, 5, 18, BEIGE_D); // chin lip
-  // badge: the four-colour capsule logo + a dark name plate
-  v.set(-16, 7, 18, 0xe5383b); v.set(-15, 7, 18, 0xffd23f); v.set(-14, 7, 18, 0x58c06c); v.set(-13, 7, 18, 0x3f86e8);
-  v.box(-12, 7, 18, -7, 7, 18, 0x8a8070);
-  // knobs + power button
-  v.box(4, 6, 18, 5, 7, 18, 0xbfb398); v.box(7, 6, 18, 8, 7, 18, 0xbfb398);
-  v.box(13, 6, 18, 16, 8, 18, BEIGE_D);
-  // sticky notes on the bezel + a capsule toy sitting on top
-  v.box(16, 27, 18, 19, 31, 18, 0xffe866); v.box(-20, 31, 18, -17, 35, 18, 0xff9fd0);
-  v.ellipsoid(10, 40, 10, 2.2, 2.2, 2.2, 0xfbf6ea); v.box(8, 37, 8, 12, 39, 12, 0xff6f91); v.box(8, 38, 8, 12, 38, 12, 0x9a9aa8);
-  return v;
-}
-
-function keyboardModel() {
-  const v = new VoxelModel();
-  v.jitter = 0.03;
-  v.box(-36, 0, -11, 35, 2, 10, BEIGE);
-  v.box(-36, 3, -11, 35, 3, -9, BEIGE_D);
-  for (let r = 0; r < 5; r++) {
-    for (let c = 0; c < 15; c++) {
-      const x0 = -34 + c * 4 + (r % 2), z0 = -8 + r * 4;
-      if (r === 4 && c > 3 && c < 11) continue;
-      v.box(x0, 3, z0, x0 + 2, 3, z0 + 2, (c + r) % 7 === 0 ? 0xbfb398 : 0xf2ead6);
-    }
-  }
-  v.box(-18, 3, 8, 13, 3, 10, 0xf2ead6);
-  v.box(26, 3, -8, 33, 3, 10, 0xd8ccb0);
-  return v;
-}
-
-function towerModel() {
-  const v = new VoxelModel();
-  v.jitter = 0.02;
-  v.box(-9, 0, -20, 9, 40, 20, BEIGE);
-  v.box(-7, 30, 21, 7, 32, 21, 0x3a3630);
-  v.box(-7, 25, 21, 7, 27, 21, 0x5a5448);
-  v.box(-2, 12, 21, 1, 15, 21, BEIGE_D);
-  v.project(['KKKK', 'K..K', 'KKKK'], { K: 0x9a8f78 }, -6, 6);
-  v.paint(() => { for (let y = 2; y < 8; y += 2) v.box(-7, y, 20, 7, y, 20, 0xbfb398); });
-  return v;
-}
-
-function mouseModel() {
-  const v = new VoxelModel();
-  v.ellipsoid(0, 2, 0, 4, 2.5, 6, BEIGE);
-  v.box(-4, -1, -6, 4, -1, 6, null);
-  v.box(0, 3, -6, 0, 4, -1, 0x9a8f78);
-  return v;
-}
-
-function speakerModel() {
-  const v = new VoxelModel();
-  v.box(-6, 0, -6, 5, 18, 5, 0x3a3630);
-  v.cylinder(0, 6, 6, 4, 1, 0x1a1816, 'z');
-  v.cylinder(0, 14, 6, 2, 1, metal(0x888888), 'z');
-  return v;
-}
+// ------------------------------------------------------------------ hardware: src/props/things/pc.js models the desk set
 
 const crtShader = (map) => new THREE.ShaderMaterial({
   uniforms: { map: { value: map }, uTime: { value: 0 }, uOn: { value: 1 } },
@@ -145,30 +71,12 @@ export async function installPC(game) {
   root.position.set(D.x + 0.08, D.h, D.z + 0.05);
   root.rotation.y = -Math.PI / 2;
   game.scene.add(root);
-  const mats = voxelMaterials('normal');
-  const mk = (model, vs, x, y, z, ry = 0) => {
-    const m = new THREE.Mesh(meshVoxels(model, { voxelSize: vs, origin: vs === 0.01 ? 'none' : undefined }), mats);
-    m.position.set(x, y, z); m.rotation.y = ry;
-    m.castShadow = true; m.receiveShadow = true;
-    root.add(m);
-    return m;
-  };
-  const monitor = mk(monitorModel(), 0.01, 0, 0, -0.06);
-  mk(keyboardModel(), 0.006, 0, 0, 0.3);
-  const mouse = mk(mouseModel(), 0.006, 0.3, 0, 0.32, 0.2);
+  // the CRT, keyboard, tower, speaker, mat, mug and floppy: one mesh; the mouse moves with your hand
+  root.add(pcDeskMesh('shop'));
+  const mouse = pcMouseMesh('shop');
+  mouse.position.set(0.3, 0, 0.32); mouse.rotation.y = 0.2;
+  root.add(mouse);
   const mouseHome = mouse.position.clone();
-  mk(towerModel(), 0.01, -0.56, 0, -0.08);
-  mk(speakerModel(), 0.01, 0.36, 0, 0.0, -0.2);
-  const pad = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.004, 0.17), new THREE.MeshStandardMaterial({ color: 0x2f6fd6, roughness: 0.9 }));
-  pad.position.set(0.3, 0.002, 0.32);
-  root.add(pad);
-  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.036, 0.09, 12), new THREE.MeshStandardMaterial({ color: 0xf2ead6, roughness: 0.5 }));
-  mug.position.set(-0.3, 0.045, 0.3);
-  mug.castShadow = true;
-  root.add(mug);
-  const disk = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.004, 0.094), new THREE.MeshStandardMaterial({ color: 0x2a3a78, roughness: 0.6 }));
-  disk.position.set(-0.2, 0.002, 0.42); disk.rotation.y = 0.3;
-  root.add(disk);
   // power LED: green when on, amber on standby
   const led = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.008, 0.004), new THREE.MeshBasicMaterial({ color: 0xffa040 }));
   led.position.set(0.105, 0.075, -0.06 + 0.19);

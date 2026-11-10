@@ -14,6 +14,8 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { VX } from '../cosmetics/voxels.js';
+import { kitMesh } from '../peoplekit/kit.js';
+const centred = (g, s) => { g.computeBoundingBox(); const b = g.boundingBox; g.translate(-(b.min.x + b.max.x) / 2, -(b.min.y + b.max.y) / 2, -(b.min.z + b.max.z) / 2); g.scale(s, s, s); return g; };
 import * as T from './roomTex.js';
 import { propMesh } from '../world/props.js';
 import { photoTex, photoTint } from '../kit/photoTex.js';
@@ -293,7 +295,7 @@ export function buildRoom() {
   cyl(hs, 0.04, 0.03, 0.05, 8, trimM, 0, 1.72, 0);
   for (let i = 0; i < 3; i++) { const a = i * Math.PI * 2 / 3; const f = box(hs, 0.03, 0.03, 0.3, trimM, Math.sin(a) * 0.13, 0, Math.cos(a) * 0.13); f.rotation.y = a; }
   for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + 0.4; const pg = box(hs, 0.016, 0.016, 0.16, trimM, Math.sin(a) * 0.07, 1.56, Math.cos(a) * 0.07, { cast: false }); pg.rotation.set(-0.5 * Math.cos(a), a, 0, 'YXZ'); }
-  const hat = voxMesh(VX.strawhat(), 0.0118, 'center'); hat.position.set(0.02, 1.76, 0.02); hat.rotation.set(0.25, 0.4, -0.2); hs.add(hat);
+  const hat = kitMesh(centred(VX.strawhat(), 0.0118)); hat.position.set(0.02, 1.76, 0.02); hat.rotation.set(0.25, 0.4, -0.2); hs.add(hat);
   const scarf = clothMat(0xd85a5a, 'knit');
   box(hs, 0.07, 0.62, 0.02, scarf, -0.09, 1.0, 0.07, { rz: 0.06 });
   box(hs, 0.07, 0.5, 0.02, scarf, -0.02, 1.08, 0.1, { rz: -0.04 });

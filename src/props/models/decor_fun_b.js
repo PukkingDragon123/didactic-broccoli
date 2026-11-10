@@ -250,7 +250,7 @@ export default {
       // on top: a pothos in a pot trailing over the edge, and a little clock
       const yt = top + 0.03;
       K.lathe(ceramic(0xe8e2d6), [X - 0.17, yt, 0], [[0, 0], [0.06, 0], [0.075, 0.1], [0.07, 0.1], [0, 0.095]], 10);
-      leaves(K, (t2, F) => { F.shrub(t2, X - 0.17, yt + 0.06, 0, 0.09, 'small', { seed: 12, card: 0.11 }); F.vine(t2, X - 0.06, yt - 0.42, yt + 0.06, Z - 0.02, 7, { card: 0.1 }); });
+      leaves(K, (t2, F) => { F.shrub(t2, X - 0.17, yt + 0.06, 0, 0.09, 'pothos', { seed: 12, card: 0.12 }); F.vine(t2, X - 0.06, yt - 0.42, yt + 0.06, Z - 0.02, 7, { kind: 'pothos', card: 0.11 }); });
       K.lathe(paint(0xc8402a), [-X + 0.2, yt, 0], [[0, 0], [0.06, 0], [0.06, 0.1], [0, 0.1]], 12);
       disc(K, flat(0xf2efe6, 0.5), -X + 0.2, yt + 0.06, 0.05, 0.035, 12);
     },

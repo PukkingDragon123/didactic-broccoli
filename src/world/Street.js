@@ -3,10 +3,12 @@
 // garage until you feed her, then a friend who wanders the shop and the lane, can be picked up and carried, and
 // sometimes stalks a pigeon (crouch, creep, a wiggle, the pounce: the whole flock bursts away).
 import * as THREE from 'three';
-import { propMesh, hasProp } from './props.js';
+import { hasProp } from './props.js';
 import { audio } from '../core/audio.js';
 import { GARAGE } from './Garage.js';
 import { CatRig } from './CatRig.js';
+import { PigeonFlock } from '../animals/pigeon.js';
+import '../animals/props.js'; // the prop library's pigeons and strays drawn with the real models
 
 const BOUNDS = { x0: -18, x1: 18, z0: GARAGE.maxZ + 0.6, z1: GARAGE.maxZ + 8.6 };
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -14,13 +16,7 @@ const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _c = new THREE.Vector3
 // where the shy stray hides inside the garage before she trusts you
 const HIDE = [new THREE.Vector3(0.35, 0, 0.1), new THREE.Vector3(0.7, 0, -4.25), new THREE.Vector3(-2.3, 0, -1.6)];
 
-function swapMesh(group, id, fallback) {
-  group.clear();
-  const m = propMesh(id, { fallbackSize: fallback, castShadow: false });
-  m.castShadow = true;
-  group.add(m);
-  return m;
-}
+const _m4 = new THREE.Matrix4(), _q4 = new THREE.Quaternion(), _e4 = new THREE.Euler();
 
 export class Street {
   constructor(game) {
@@ -28,6 +24,10 @@ export class Street {
     this.group = new THREE.Group();
     game.scene.add(this.group);
     this.pigeons = [];
+    // the whole flock is one instanced, morphing mesh (src/animals/pigeon.js); each bird keeps an empty group (p.g) as
+    // its transform and visibility, which other systems move and hide
+    this.flock = new PigeonFlock(16);
+    this.group.add(this.flock.mesh);
     for (let i = 0; i < 7; i++) this.addPigeon(true);
     this.buildCat();
     this.coo = 4;
@@ -35,13 +35,13 @@ export class Street {
 
   addPigeon(initial) {
     const g = new THREE.Group();
-    swapMesh(g, 'pigeon', [0.25, 0.2, 0.3]);
     const p = {
       g, state: initial ? 'walk' : 'land', t: rnd(0, 3), heading: rnd(0, 6.28), speed: 0,
       pos: initial ? new THREE.Vector3(rnd(-4, 5), 0, rnd(BOUNDS.z0 + 1.5, BOUNDS.z1 - 1)) : new THREE.Vector3(rnd(-8, 8), 5, BOUNDS.z1 + 2),
       vel: new THREE.Vector3(), target: null, peck: 0,
+      anim: { peck: 0, bob: 0, fly: 0, flap: 0 }, tint: Math.random() < 0.3 ? rnd(0.62, 0.8) : rnd(0.9, 1),
     };
-    if (!initial) { p.target = new THREE.Vector3(rnd(-5, 5), 0, rnd(BOUNDS.z0 + 2, BOUNDS.z1 - 1)); swapMesh(g, 'pigeon_fly', [0.5, 0.15, 0.3]); p.flying = true; }
+    if (!initial) { p.target = new THREE.Vector3(rnd(-5, 5), 0, rnd(BOUNDS.z0 + 2, BOUNDS.z1 - 1)); p.flying = true; }
     g.position.copy(p.pos);
     g.scale.setScalar(rnd(0.9, 1.1));
     this.group.add(g);
@@ -54,9 +54,11 @@ export class Street {
       p.t += dt;
       if (p.state === 'walk') {
         // bob-walk, stop to peck, turn now and then
-        if (p.peck > 0) { p.peck -= dt; p.g.children[0].rotation.x = Math.max(0, Math.sin(p.peck * 18)) * 0.5; }
+        const A = p.anim;
+        A.fly = Math.max(0, A.fly - dt * 4);
+        if (p.peck > 0) { p.peck -= dt; A.peck = Math.max(0, Math.sin(p.peck * 14)); A.bob = 0; p.g.position.y = 0; }
         else {
-          p.g.children[0].rotation.x = 0;
+          A.peck = 0; A.bob = 0.5 + 0.5 * Math.sin(p.t * 18);
           p.heading += Math.sin(p.t * 0.7 + p.pos.x) * dt * 1.5;
           const sp = 0.35;
           p.pos.x += Math.sin(p.heading) * sp * dt; p.pos.z += Math.cos(p.heading) * sp * dt;
@@ -72,7 +74,7 @@ export class Street {
       } else if (p.state === 'fly') {
         p.vel.y += dt * 1.5;
         p.pos.addScaledVector(p.vel, dt);
-        p.g.children[0].scale.y = 0.7 + Math.abs(Math.sin(p.t * 22)) * 0.6;
+        p.anim.fly = 1; p.anim.flap = p.t * 24;
         if (p.pos.y > 9) { p.state = 'gone'; p.g.visible = false; p.wait = rnd(8, 20); }
       } else if (p.state === 'gone') {
         p.wait -= dt;
@@ -85,15 +87,16 @@ export class Street {
       } else if (p.state === 'land') {
         const d = p.target.clone().sub(p.pos);
         const len = d.length();
-        p.g.children[0].scale.y = 0.7 + Math.abs(Math.sin(p.t * 16)) * 0.5;
+        p.anim.fly = 1; p.anim.flap = p.t * (len < 0.6 ? 26 : 13); // gliding in, a flurry to land
         if (!p.dropped && p.pos.y > 2 && Math.random() < dt * 0.12) { p.dropped = true; this.game.places?.pigeons?.drop(p.pos.x, p.pos.y - 0.1, p.pos.z); }
-        if (len < 0.05) { p.state = 'walk'; p.pos.y = 0; p.dropped = false; swapMesh(p.g, 'pigeon', [0.25, 0.2, 0.3]); p.heading = rnd(0, 6.28); }
+        if (len < 0.05) { p.state = 'walk'; p.pos.y = 0; p.dropped = false; p.heading = rnd(0, 6.28); }
         else { p.pos.addScaledVector(d.normalize(), Math.min(len, dt * 3)); p.g.rotation.y = Math.atan2(d.x, d.z); }
       }
       p.scare = false; p.scareFrom = null;
       p.g.position.x = p.pos.x; p.g.position.z = p.pos.z;
       if (p.state !== 'walk') p.g.position.y = p.pos.y;
     }
+    this.drawPigeons();
     // ambient cooing when you're outside
     this.coo -= dt;
     if (this.coo <= 0) {
@@ -103,11 +106,22 @@ export class Street {
     }
   }
 
+  /** Write the flock's instances: each bird's group transform (pitched into its climb when flying) and its pose. */
+  drawPigeons() {
+    let n = 0;
+    for (const p of this.pigeons) {
+      if (!p.g.visible) continue;
+      const g = p.g, fly = p.state === 'fly' || p.state === 'land';
+      _q4.setFromEuler(_e4.set(fly ? (p.state === 'fly' ? -0.35 : -0.15) : g.rotation.x, g.rotation.y, g.rotation.z, 'YXZ'));
+      this.flock.set(n++, _m4.compose(g.position, _q4, g.scale), p.anim, p.tint);
+    }
+    this.flock.commit(n);
+  }
+
   /** Up and away from `from` (default: you). */
   flyOff(p, from = null) {
     if (p.state !== 'walk') return;
     p.state = 'fly';
-    swapMesh(p.g, 'pigeon_fly', [0.5, 0.15, 0.3]);
     const away = p.pos.clone().sub(from || this.game.player.pos).setY(0).normalize();
     p.vel.set(away.x * 2.5 + rnd(-0.6, 0.6), 1.6, away.z * 2.5 + 1);
     p.g.rotation.y = Math.atan2(p.vel.x, p.vel.z);

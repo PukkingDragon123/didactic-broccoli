@@ -4,6 +4,7 @@
 import { paint, enamel, plastic, metal, chrome, matte, stone, wood, flat, rubber, fabric, lighten, darken, mix } from '../kit/kit.js';
 import { blob, bush, tones, leafy, leaf, blade, flower, dirtBox, dirtRing, plank, post, can, bucket } from '../kit/shapes.js';
 import { kana, smallPrint, hazard, framed, meshTex, meshPanel, louvres, rustEdge, clockFace, mascot } from '../kit/prints.js';
+import { leaves } from '../kit/foliage.js';
 import { canLabel } from './street2.js';
 
 const GALV = metal(0xa6acae, 0.3);
@@ -121,9 +122,8 @@ export default {
 
     // ------------------------------------------------------------- roadside weeds (0.75 x 0.33 x 0.21)
     weeds: (K, B) => {
-      const g = [0x5c8f45, 0x77a554, 0x4a7a3c];
-      for (let k = 0; k < 13; k++) { const t = k / 12, x = B.x0 + 0.04 + t * (B.w - 0.08), h = 0.12 + ((k * 0.618) % 1) * 0.2, lean = ((k * 0.37) % 1 - 0.5) * 0.16; blade(K, flat(g[k % 3], 0.9), [x, 0, ((k * 0.29) % 1 - 0.5) * 0.1], [x + lean, h, ((k * 0.71) % 1 - 0.5) * 0.16], 0.028); }
-      flower(K, flat(0xf2efe6, 0.8), [-0.2, 0.2, 0.03], 0.022, { dir: [0, 1, 0.4], eye: flat(0xf2c21c) }); flower(K, flat(0xf2c21c, 0.8), [0.16, 0.15, -0.02], 0.02, { dir: [0.2, 1, 0.3], eye: flat(0xe8842a) });
+      // a strip of weeds: grass tufts, dandelions, clover and a fern, on the sheet's hand-pixelled sprigs
+      leaves(K, (t, F) => { const n = Math.max(2, Math.round(B.w / 0.16)); for (let k = 0; k < n; k++) { const x = B.x0 + 0.06 + (k + 0.5) / n * (B.w - 0.12); F.tuft(t, x, 0, ((k * 0.29) % 1 - 0.5) * 0.1, 0.22 + ((k * 0.618) % 1) * 0.16, ['grass', 'weeds', 'grass', 'fern'][k % 4], k + 3); } });
     },
 
     // ------------------------------------------------------------- park bench (1.59 x 0.93 x 0.66): seat towards +z
@@ -298,16 +298,19 @@ export default {
 
     // ------------------------------------------------------------- the big zelkova (6.93 x 8.36 x 5.83)
     keyaki_tree: (K, B) => {
-      const bark = stone(0x6a5646, 0.14), g = leafy(K, 0x3f8040, { k: 0.32 }), g2 = leafy(K, 0x4f9046, { k: 0.32 }), g3 = leafy(K, 0x356f3c, { k: 0.3 });
-      // the trunk: a flared foot, a twist, the fork into three limbs (zelkovas open like a broom)
-      K.tube(bark, [[0, 0, 0], [0.03, 0.5, 0], [0.0, 1.6, 0.04], [0.05, 2.9, 0.0]], 0.3, 8, { radii: [0.48, 0.34, 0.29, 0.26] });
-      for (let k = 0; k < 5; k++) { const a = k * 1.2566 + 0.3; K.tube(bark, [[Math.cos(a) * 0.36, 0.26, Math.sin(a) * 0.36], [Math.cos(a) * 0.62, 0.03, Math.sin(a) * 0.62]], 0.13, 5, { r1: 0.05 }); }
-      const limbs = [[[0.05, 2.8, 0], [0.8, 4.0, 0.3], [1.7, 5.0, 0.5]], [[0.05, 2.8, 0], [-0.7, 4.1, -0.2], [-1.6, 5.2, -0.5]], [[0.05, 2.8, 0], [0.1, 4.2, -0.6], [0.2, 5.4, -1.3]], [[0.05, 2.8, 0], [-0.2, 4.0, 0.7], [-0.5, 5.0, 1.5]]];
-      for (const L of limbs) K.tube(bark, L, 0.2, 6, { radii: [0.22, 0.15, 0.08] });
-      // the crown: big clumps, a ring of them round the middle and a cap on top
-      const C = [[1.7, 5.4, 0.6, 1.6, 1.2, 1.5, g], [-1.6, 5.5, -0.6, 1.7, 1.3, 1.5, g2], [0.2, 5.8, -1.5, 1.6, 1.2, 1.4, g3], [-0.5, 5.4, 1.6, 1.6, 1.2, 1.3, g2], [0.1, 6.6, 0.1, 2.1, 1.6, 1.9, g], [2.3, 4.8, -0.7, 1.1, 0.9, 1.1, g3], [-2.4, 4.9, 0.6, 1.0, 0.9, 1.1, g], [1.0, 4.9, 1.8, 1.1, 0.85, 1.0, g3], [-1.2, 4.9, -1.8, 1.2, 0.9, 1.0, g2], [0.9, 7.3, -0.5, 1.3, 1.0, 1.2, g2], [-0.9, 7.2, 0.5, 1.3, 1.05, 1.2, g3]];
-      C.forEach(([x, y, z, rx, ry, rz, c], i) => blob(K, c, x, y, z, rx, ry, rz, { fine: 2, jit: 0.16, seed: i * 17 + 5 }));
+      // 欅: a flared, buttressed trunk forking at 2.8 m into limbs that open like a broom, fine twigs, and the crown in
+      // clumps of the sheet's small toothed keyaki sprigs along and at the ends of the limbs, shaded as one dome
+      leaves(K, (t, F) => {
+        F.limb(t, [[0, 0, 0], [0.03, 0.9, 0], [0.0, 1.9, 0.04], [0.05, 2.9, 0.0]], [0.36, 0.3, 0.27, 0.24], { bark: 'cherry', flare: 0.5, lobes: 5, tint: 0xb0a49a, gnarl: 0.05 });
+        const limbs = [[[0.05, 2.7, 0], [0.8, 4.0, 0.3], [1.7, 5.0, 0.5], [2.4, 5.6, 0.7]], [[0.05, 2.7, 0], [-0.7, 4.1, -0.2], [-1.6, 5.2, -0.5], [-2.3, 5.8, -0.6]], [[0.05, 2.7, 0], [0.1, 4.2, -0.6], [0.2, 5.4, -1.3], [0.3, 6.0, -2.0]], [[0.05, 2.7, 0], [-0.2, 4.0, 0.7], [-0.5, 5.0, 1.5], [-0.7, 5.7, 2.2]], [[0.05, 2.8, 0], [0.1, 4.6, 0.1], [0.0, 6.4, 0.2], [0.1, 7.6, 0.1]]];
+        const dome = [0, 5.6, 0, 2.8, 0.6];
+        limbs.forEach((L, i) => {
+          F.limb(t, L, [0.2, 0.14, 0.08, 0.04], { bark: 'cherry', tint: 0xb0a49a, gnarl: 0.12, gseed: i });
+          for (const f of [0.45, 0.7, 1]) { const n = L.length - 1, q = Math.min(n - 1e-6, f * n), a = Math.floor(q), p = L[a].map((v, c) => v + (L[a + 1][c] - v) * (q - a)); F.crown(t, p[0], p[1] + 0.3, p[2], 1.0 + f * 0.4, 0.75, 1.0 + f * 0.4, { kind: 'keyaki', density: 2.0, tilt: 0.7, core: false, seed: i * 11 + Math.round(f * 10), dome }); }
+        });
+      });
       void B;
     },
+
   },
 };

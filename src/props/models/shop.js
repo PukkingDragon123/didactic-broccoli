@@ -5,6 +5,7 @@
 import { paint, enamel, plastic, metal, chrome, matte, stone, wood, flat, rubber, fabric, ceramic, lighten, darken, mix } from '../kit/kit.js';
 import { blob, tones, leafy, leaf, flower, pot, plank, jar, bottle, dirtBox, dirtRing, TERRA } from '../kit/shapes.js';
 import { kana, smallPrint, framed, mascot, clockFace, rustEdge, plankTex } from '../kit/prints.js';
+import { leaves } from '../kit/foliage.js';
 import { luckyCat, capsule } from './garage.js';
 
 const WD = 0x7a4e30, WL = 0xb8905a;
@@ -220,14 +221,12 @@ export default {
 
     // ------------------------------------------------------------- morning glories trained up a lantern frame (0.4 x 0.81 x 0.31)
     asagao_pot: (K, B) => {
-      const x = -0.04, ys = pot(K, x, 0, 0, 0.12, 0.16, { c: ceramic(0x2f5a8a), n: 10, saucer: true }), cane = flat(0x4f8a46, 0.8);
-      for (let k = 0; k < 3; k++) { const a = k * 2.094 + 0.5; K.rod(cane, [x + Math.cos(a) * 0.085, ys, Math.sin(a) * 0.085], [x + Math.cos(a) * 0.085, B.y1 - 0.02, Math.sin(a) * 0.085], 0.005, 4); }
-      for (const y of [0.36, 0.56, 0.76]) K.torus(cane, x, y, 0, 0.088, 0.004, 10, 3);
-      for (let k = 0; k < 22; k++) { const t = k / 22, a = t * 16, y = ys + 0.04 + t * 0.56, r = 0.09; leaf(K, flat(k % 2 ? 0x4f8f45 : 0x6aa84f, 0.9), [x + Math.cos(a) * r * 0.8, y, Math.sin(a) * r * 0.8], [x + Math.cos(a) * (r + 0.055), y + 0.02, Math.sin(a) * (r + 0.055)], 0.06); }
-      for (let k = 0; k < 7; k++) { const a = k * 0.9 + 0.3, y = ys + 0.14 + (k % 4) * 0.13; flower(K, flat([0x5a6ad8, 0xe86aa8, 0x8a5ad8, 0x4a9ae8][k % 4], 0.8), [x + Math.cos(a) * 0.13, y, Math.sin(a) * 0.13], 0.04, { dir: [Math.cos(a), 0.35, Math.sin(a)], eye: flat(0xffffff) }); }
+      const x = -0.04, ys = pot(K, x, 0, 0, 0.12, 0.16, { c: ceramic(0x2f5a8a), n: 14, saucer: true });
+      // あんどん仕立て: canes and hoops, the vine spiralling up them, its blue trumpets open
+      leaves(K, (t, F) => F.potPlant(t, x, ys, 0, 'asagao', B.y1 - ys - 0.02, 4, { r: 0.11 }));
       // a seedling in a small pot beside it
       const y2 = pot(K, B.x1 - 0.06, 0, B.z1 - 0.07, 0.05, 0.07);
-      leaf(K, flat(0x6aa84f, 0.9), [B.x1 - 0.06, y2, B.z1 - 0.07], [B.x1 - 0.02, y2 + 0.05, B.z1 - 0.06], 0.035); leaf(K, flat(0x4f8f45, 0.9), [B.x1 - 0.06, y2, B.z1 - 0.07], [B.x1 - 0.1, y2 + 0.045, B.z1 - 0.08], 0.035);
+      leaves(K, (t, F) => F.tuft(t, B.x1 - 0.06, y2 - 0.005, B.z1 - 0.07, 0.07, 'sprout', 2));
     },
 
     // ------------------------------------------------------------- twin retro gacha machines on a stand (0.925 x 1.0 x 0.425)

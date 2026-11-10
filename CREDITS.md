@@ -1568,6 +1568,14 @@ the real grain and wear kept, then recoloured to the game's palette. The result 
 - Attribution: "Spring in Botanic Garden Cluj-Napoca" by Cristian Bortes, licensed under CC BY 2.0
 - Shipped as: `img/tex/moss.jpg` (the moss surface texture)
 
+#### När fåglarna vägrar din holk, kan du fixa kvitter på annat sätt :-)
+
+- Author: Kristofer Björkman
+- Source: https://www.flickr.com/photos/kristoferbjorkman/5823702981 (Open Images ID 79e18eab310e6e5f)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "När fåglarna vägrar din holk, kan du fixa kvitter på annat sätt :-)" by Kristofer Björkman, licensed under CC BY 2.0
+- Shipped as: `img/tex/bark_pine.jpg` and `img/tex/bark_cherry.jpg` (the pine and cherry bark surface textures)
+
 #### Yin / Yang
 
 - Author: Peter Kaminski

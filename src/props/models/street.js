@@ -237,13 +237,12 @@ export default {
       const y1 = ys;
       leaves(K, (t, F) => F.shrub(t, -0.32, y1 - 0.01, -0.02, 0.13, 'small', { seed: 5 }));
       ys = pot(K, -0.06, 0, 0.03, 0.08, 0.12, { c: matte(0x2f5fa8, 0.25) });
-      for (let k = 0; k < 6; k++) { const a = k * 1.05; blade(K, flat(k % 2 ? 0x6aa07a : 0x86b48a, 0.85), [-0.06 + Math.cos(a) * 0.02, ys, 0.03 + Math.sin(a) * 0.02], [-0.06 + Math.cos(a) * 0.07, ys + 0.2 - (k % 3) * 0.03, 0.03 + Math.sin(a) * 0.07], 0.035); }
+      { const y3 = ys; leaves(K, (t, F) => F.tuft(t, -0.06, y3 - 0.01, 0.03, 0.2, 'aloe', 4)); }
       ys = pot(K, 0.13, 0, -0.04, 0.065, 0.09, { c: matte(0xe6e2d6, 0.2) });
       const y2 = ys;
       leaves(K, (t, F) => F.crown(t, 0.13, y2 + 0.05, -0.04, 0.075, 0.055, 0.075, { kind: 'azalea', flat: -0.4, card: 0.12, density: 2.4, seed: 9 }));
       ys = pot(K, 0.25, 0, 0.07, 0.06, 0.08, { c: matte(TERRA, 0.2) });
-      K.rod(flat(0x7a5a3a, 0.9), [0.25, ys, 0.07], [0.26, ys + 0.2, 0.065], 0.006, 4);
-      leaf(K, flat(LEAF, 0.9), [0.26, ys + 0.12, 0.065], [0.31, ys + 0.16, 0.08], 0.04); leaf(K, flat(LEAF2, 0.9), [0.26, ys + 0.17, 0.065], [0.21, ys + 0.21, 0.05], 0.04);
+      { const y4 = ys; leaves(K, (t, F) => F.potPlant(t, 0.25, y4, 0.07, 'pelargonium', 0.2, 6)); }
       // the one the cat knocked over: on its side, soil spilt
       K.at([0.38, 0.062, 0.0], () => pot(K, 0, 0, 0, 0.062, 0.1, { soil: false }), { rz: -Math.PI / 2 + 0.06, ry: 0.3 });
       K.ball(stone(SOIL, 0.1), 0.435, 0.0, 0.04, 0.05, 0.016, 0.038, 8, 3, { y0: 0 });
@@ -264,7 +263,7 @@ export default {
         const x = -0.38 + k * 0.13;
         K.rod(flat(0x4f8a46, 0.8), [x, ys, 0], [x, 0.99, 0], 0.007, 4);
         const y0 = ys;
-        leaves(K, (t, F) => F.vine(t, x, y0 + 0.06, 0.94, 0.0, 11 + k * 5, { kind: 'leaf', card: 0.15 }));
+        leaves(K, (t, F) => F.vine(t, x, y0 + 0.06, 0.94, 0.0, 11 + k * 5, { kind: 'tomato', card: 0.17 }));
         for (const [y, c] of [[0.42, 0xd8382a], [0.6, 0xe8842a], [0.75, 0x7aa83a]]) { const yy = y + k * 0.03; K.ball(plastic(c, 0.35), x + 0.02, yy, 0.035, 0.024, 0.021, 0.024, 8, 4); for (let s = 0; s < 5; s++) { const a = s * 1.2566; K.tri(flat(0x3a6a2e, 0.8), [x + 0.02, yy + 0.022, 0.035], [x + 0.02 + Math.cos(a - 0.25) * 0.004, yy + 0.021, 0.035 + Math.sin(a - 0.25) * 0.004], [x + 0.02 + Math.cos(a) * 0.014, yy + 0.017, 0.035 + Math.sin(a) * 0.014], [0, 1, 0]); } }
       }
       ys = box(0.03, 0.46);
@@ -273,7 +272,7 @@ export default {
       for (let k = 0; k < 4; k++) K.rod(cane, [0.08 + k * 0.11, ys, -0.06], [0.08 + k * 0.11, 0.9, -0.06], 0.006, 4);
       for (let k = 0; k < 5; k++) K.rod(cane, [0.06, ys + 0.1 + k * 0.14, -0.06], [0.43, ys + 0.1 + k * 0.14, -0.06], 0.005, 4);
       const yl = ys;
-      leaves(K, (t, F) => { for (let k = 0; k < 4; k++) F.vine(t, 0.08 + k * 0.11, yl + 0.04, 0.62 + (k % 2) * 0.16, -0.06, 21 + k * 3, { card: 0.13 }); });
+      leaves(K, (t, F) => { for (let k = 0; k < 4; k++) F.vine(t, 0.08 + k * 0.11, yl + 0.04, 0.62 + (k % 2) * 0.16, -0.06, 21 + k * 3, { kind: 'ivy', card: 0.14 }); });
       K.tube(flat(0x5a9a4a, 0.7), [[0.3, 0.62, -0.04], [0.3, 0.56, -0.03], [0.3, 0.5, -0.04]], 0.014, 5, { radii: [0.006, 0.016, 0.005] });
     },
 

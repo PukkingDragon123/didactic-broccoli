@@ -18,9 +18,7 @@ import { draw5 } from '../gfx/font5x7.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { rollCapsule } from '../game/economy.js';
 import { formatYen, hash2 } from '../core/util.js';
-import { Kit, mat, matte, enamel, metal } from '../props/kit/kit.js';
-import { pageFor } from '../props/kit/page.js';
-import { leaf } from '../props/kit/shapes.js';
+import { Dog } from '../animals/dog.js';
 
 const X0 = -9.3, X1 = -7.5, MOUTH = 14.9, SHRINE = 20.15, BACK = 22.3; // the walkable alley; reaching SHRINE starts the walk out
 const HOME = new THREE.Vector3(-8.5, 0, 16.4), END = new THREE.Vector3(-8.75, 0, 20.6);
@@ -101,77 +99,34 @@ function ghostify(root, op = 0.55) {
 }
 
 // ------------------------------------------------------------------ the ghost dog
-// A white mutt with floppy grey ears and a red collar, modelled with the prop kit (src/props/kit): a barrel body, a
-// curled tail, a round skull with a tapering muzzle, legs with a hock behind. Each moving part is its own geometry
-// about its pivot (vertex-coloured: ghostify() tints and fades the dog's own material).
-const DOG_W = 0xf4f0e8, DOG_G = 0xb8b4ac, DOG_E = 0x8e8a84, DOG_D = 0x2a2a2a;
-let _dogGeo = null;
-function dogGeometry() {
-  if (_dogGeo) return _dogGeo;
-  const page = pageFor('npc'), fur = matte(DOG_W, 0.08), grey = matte(DOG_G, 0.1), ear = matte(DOG_E, 0.12), dark = mat(DOG_D, 0.35);
-  const build = (fn) => { const K = new Kit(page, 'ghostDog', { w: 0.5, h: 0.5, d: 0.5 }, 1); fn(K); return K.finish(); };
-  _dogGeo = {
-    // pivot (0, 0.46, 0): the torso (deep chest, tucked belly, round rump) and the neck up to the head
-    body: build((K) => {
-      K.lathe(fur, [0, -0.1, -0.27], [[0, 0], [0.06, 0.006], [0.095, 0.035], [0.112, 0.1], [0.104, 0.2], [0.11, 0.3], [0.12, 0.4], [0.115, 0.47], [0.085, 0.53], [0.035, 0.553], [0, 0.556]], 12, { axis: 'z', sz: 1.02 });
-      K.tube(fur, [[0, -0.05, 0.2], [0, 0.04, 0.27], [0, 0.11, 0.31]], 0.07, 8, { radii: [0.085, 0.07, 0.06] });
-      K.ball(fur, 0, -0.14, 0.22, 0.08, 0.07, 0.07, 10, 5); // the chest ruff
-    }),
-    // pivot (0, 0.62, 0.3): skull, cheeks, muzzle, nose, eyes, floppy ears, the collar
-    head: build((K) => {
-      K.ball(fur, 0, -0.03, 0.03, 0.095, 0.088, 0.1, 12, 6);
-      K.ball(fur, 0, -0.075, 0.07, 0.085, 0.058, 0.075, 12, 5);
-      K.lathe(fur, [0, -0.07, 0.085], [[0.054, 0], [0.051, 0.04], [0.043, 0.08], [0.03, 0.1], [0.012, 0.108], [0, 0.11]], 12, { axis: 'z', sz: 0.8 });
-      K.ball(dark, 0, -0.054, 0.19, 0.022, 0.016, 0.014, 8, 4);
-      K.rod(grey, [0, -0.1, 0.17], [0, -0.103, 0.11], 0.004, 4); // the line of the mouth
-      K.sym((s) => {
-        K.ball(dark, s * 0.044, -0.004, 0.106, 0.014, 0.015, 0.01, 8, 4);
-        // a floppy ear: a thick flap folded down from the top of the skull
-        K.ball(ear, s * 0.068, 0.045, -0.005, 0.03, 0.022, 0.035, 8, 4);
-        leaf(K, ear, [s * 0.07, 0.06, 0.0], [s * 0.118, -0.085, 0.03], 0.09, { fold: 0.12 });
-        leaf(K, ear, [s * 0.066, 0.058, -0.008], [s * 0.112, -0.082, 0.02], 0.085, { fold: 0.12 });
-      });
-      K.at([0, -0.115, -0.005], () => { K.torus(enamel(0xc84a3a), 0, 0, 0, 0.066, 0.011, 14, 4); K.ball(metal(0xd8b44a, 0.3), 0, -0.012, 0.074, 0.014, 0.016, 0.005, 8, 3); }, { rx: 0.75 });
-    }),
-    // pivot (0, 0.5, -0.26): a thick curl over the back
-    tail: build((K) => K.tube(fur, [[0, -0.01, 0.03], [0, 0.04, -0.03], [0, 0.11, -0.05], [0, 0.16, -0.01], [0, 0.15, 0.04], [0, 0.11, 0.05]], 0.03, 8, { radii: [0.034, 0.034, 0.03, 0.025, 0.018, 0.008] })),
-    // pivot (sx, 0.38, z): a straight foreleg / a hind leg with its thigh and hock; grey socks
-    fore: build((K) => { K.ball(fur, 0, -0.02, 0.005, 0.05, 0.075, 0.06, 10, 5); K.tube(fur, [[0, 0.03, 0], [0, -0.15, 0.005], [0, -0.3, 0.012]], 0.035, 8, { radii: [0.045, 0.033, 0.028] }); K.tube(grey, [[0, -0.3, 0.012], [0, -0.34, 0.016]], 0.028, 8, { radii: [0.028, 0.03] }); K.ball(grey, 0, -0.357, 0.03, 0.033, 0.022, 0.045, 10, 4, { y0: -0.6 }); }),
-    hind: build((K) => { K.ball(fur, 0, -0.03, 0, 0.05, 0.09, 0.075, 10, 5); K.tube(fur, [[0, -0.06, 0.01], [0, -0.17, -0.04], [0, -0.3, -0.02]], 0.035, 8, { radii: [0.042, 0.03, 0.027] }); K.tube(grey, [[0, -0.3, -0.02], [0, -0.34, -0.012]], 0.027, 8, { radii: [0.027, 0.029] }); K.ball(grey, 0, -0.357, 0.005, 0.032, 0.022, 0.044, 10, 4, { y0: -0.6 }); }),
-  };
-  return _dogGeo;
-}
-
+// A white mutt with floppy grey ears, grey socks and a red collar (src/animals/dog.js: one skinned mesh on a rigged
+// skeleton); ghostify() tints and fades its material. A depth-only copy drawn first keeps the far legs and the inside of
+// the body from showing through, so he reads as one pale shape.
 export class GhostDog {
   constructor() {
-    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 });
-    const G = dogGeometry();
-    const part = (geo, x, y, z) => { const m = new THREE.Mesh(geo, mat); const p = new THREE.Group(); p.position.set(x, y, z); p.add(m); return p; };
-    this.root = new THREE.Group();
-    this.body = part(G.body, 0, 0.46, 0);
-    this.head = part(G.head, 0, 0.62, 0.3);
-    this.tail = part(G.tail, 0, 0.5, -0.26);
-    this.legs = [[-0.08, 0.17], [0.08, 0.17], [-0.08, -0.17], [0.08, -0.17]].map(([x, z]) => part(z > 0 ? G.fore : G.hind, x, 0.38, z));
-    this.root.add(this.body, this.head, this.tail, ...this.legs);
+    this.dog = new Dog('ghost', { cast: false });
+    this.root = this.dog.root;
     this.t = 0;
   }
   update(dt, speed, sit, lookAt) {
+    const d = this.dog;
     this.t += dt;
-    const swing = Math.min(1, speed * 1.8) * Math.sin(this.t * 11) * 0.5;
-    this.legs.forEach((l, i) => { l.rotation.x = (i === 0 || i === 3 ? swing : -swing); });
-    this.tail.rotation.y = Math.sin(this.t * (speed > 0.05 ? 9 : 5)) * 0.5;
-    this.tail.rotation.x = -0.2;
-    const s = sit ? 1 : 0;
-    this.body.rotation.x = -0.35 * s; this.body.position.y = 0.46 - 0.08 * s;
-    this.legs[2].position.y = this.legs[3].position.y = 0.38 - 0.12 * s;
-    this.head.position.y = 0.62 + 0.04 * s + Math.sin(this.t * 2) * 0.005;
-    if (lookAt) {
-      _v.copy(lookAt); this.root.worldToLocal(_v);
-      this.head.rotation.y = Math.max(-0.8, Math.min(0.8, Math.atan2(_v.x, _v.z - 0.3)));
-    } else this.head.rotation.y *= 0.9;
+    if (!this.pre) {
+      const m = d.mesh;
+      const pre = this.pre = new THREE.SkinnedMesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2 }));
+      pre.bind(m.skeleton, m.bindMatrix);
+      pre.renderOrder = 1; pre.frustumCulled = false; pre.raycast = () => {};
+      m.add(pre);
+    }
+    d.speed = speed; d.pose = sit ? 'sit' : 'stand'; d.wag = speed > 0.05 ? 0.7 : 0.35;
+    d.lookAt = lookAt || null;
+    // a ghost's slow float: the whole dog breathes a hair off the ground
+    d.root.children[0].position.y = 0.006 + Math.sin(this.t * 2) * 0.004;
+    d.update(dt);
   }
   /** A two-yip 8-bit bark from p. */
   bark(p) {
+    this.dog.barkT = 0.35;
     try {
       const a = audio, out = a.out({ pos: p, vol: 0.5 }), t = a.ctx.currentTime;
       for (let i = 0; i < 2; i++) a.tone(out, t + i * 0.16, { wave: a.pulse(0.25), f: 620, f2: 340, dur: 0.1, vol: 0.28 });

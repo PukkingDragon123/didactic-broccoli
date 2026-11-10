@@ -14,7 +14,7 @@ import { hash2 } from '../core/util.js';
 import { interiorQuad, ROOM } from './interiors.js';
 import { balcony } from '../town/house.js';
 import { pole } from '../town/poles.js';
-import { sakura, hedge, creeper } from '../town/foliage.js';
+import { sakura, hedge, creeper, potted, tuft } from '../town/foliage.js';
 
 export const PARK = {
   ax0: 9.8, ax1: 11.3, wx: 11.45, x0: 11.6, x1: 25.6, zN: -5.8, zP: -3.5, xP: 16.6, zS: -17.6,
@@ -53,6 +53,15 @@ export function buildPark(t) {
   B.plane(mats.dirt, P.x1 + 0.4 - P.x0, P.zN - P.zS, (P.x0 + P.x1 + 0.4) / 2, 0.003, (P.zN + P.zS) / 2, { uv: [0.3, 0.7], tint: 0xf0e6d0 });
   B.plane(mats.dirt, 26 - P.xP, -3.2 - P.zN, (26 + P.xP) / 2, 0.002, (-3.2 + P.zN) / 2, { k: 0.85 }); // back gardens behind the fence
   for (const [x0, x1, z0, z1] of [[16.6, 20.75, -6.75, -5.8], [24.9, 25.95, -17.6, -8.7], [11.6, 13.0, -17.6, -14.3]]) B.plane(m.grass, x1 - x0, z1 - z0, (x0 + x1) / 2, 0.01, (z0 + z1) / 2, { uv: [x0, z0], k: 0.95 });
+  // the planting strips' ragged edges: grass and weed tufts along them, thicker by the fence than out on the path side
+  for (const [x0, x1, z0, z1] of [[16.6, 20.75, -6.75, -5.8], [24.9, 25.95, -17.6, -8.7], [11.6, 13.0, -17.6, -14.3]]) {
+    const along = x1 - x0 > z1 - z0, L = along ? x1 - x0 : z1 - z0, n = Math.round(L / 0.55);
+    for (let i = 0; i < n; i++) for (const e of [0.12, 0.88]) {
+      const f = (i + 0.5 + (hash2(i, e * 10) - 0.5) * 0.6) / n, x = along ? x0 + f * (x1 - x0) : x0 + e * (x1 - x0), z = along ? z0 + e * (z1 - z0) : z0 + f * (z1 - z0);
+      if (hash2(i * 3, e * 7) < 0.35) continue;
+      tuft(t, x, 0.008, z, 0.22 + hash2(i, 9) * 0.16, hash2(i, e * 3) < 0.3 ? 'weeds' : 'grass', i * 7 + Math.round(e * 10));
+    }
+  }
   // worn paths: entrance → swings, entrance → exit (darker, compacted)
   for (const [x, z, w, d, r] of [[14.2, -6.9, 1.1, 3.6, 0.9], [17.3, -9.6, 1.0, 5.2, 0.45], [18.3, -15.6, 1.1, 3.8, 0.05]]) B.plane(mats.worn, w, d, x, 0.004, z, { ry: r, tint: 0xd8c8a8 });
   t.decalG('chalk', 18.9, -7.75, { w: 2.2, ry: 0.15 });
@@ -320,11 +329,12 @@ function furniture(t, mats) {
   B.box(m.pv, 0.4, 0.05, 0.4, 13.3, 0.7, -3.75, { tint: 0x1a4aa8 });
   t.game.player.addObstacle(13.05, 13.55, -4.0, -3.5);
   // trees: the big zelkova shading the SW corner, a smaller one by the slide, hedges along the north fence
-  sakura(t, 12.75, -15.9, 1.15, 1);
+  // (the cherries by the walls lean away from them, their crowns cut back on the wall side)
+  sakura(t, 12.75, -15.9, 1.15, 1, { dir: Math.PI / 4, bias: 0.6 });
   t.game.player.addObstacle(12.4, 13.1, -16.25, -15.55);
-  sakura(t, 25.05, -15.6, 0.85, 2);
+  sakura(t, 25.05, -15.6, 0.85, 2, { dir: Math.PI * 0.8, bias: 0.55 });
   t.game.player.addObstacle(24.8, 25.6, -15.85, -15.35);
-  sakura(t, 24.6, -10.9, 0.7, 3);
+  sakura(t, 24.6, -10.9, 0.7, 3, { dir: Math.PI, bias: 0.5 });
   t.game.player.addObstacle(24.42, 24.78, -11.08, -10.72);
   for (const x of [17.7, 19.8]) hedge(t, x, 0, -6.25, 0, 0.85);
   t.game.player.addObstacle(16.6, 20.7, -6.6, -5.8);
@@ -489,10 +499,8 @@ function villa(t, mats) {
     B.box(m.pv, 0.06, 2.12, 0.06, 15.85 + u + (u < 0 ? -0.34 : 0.34), by + 0.02, ZF + 0.04, { tint: ink });
   }
   B.box(m.pv, 1.5, 0.08, 0.08, 15.85, by + 2.12, ZF + 0.04, { tint: ink });
-  for (const [x, c] of [[bx0 + 0.3, 0x4a8a3a], [bx1 - 0.3, 0x5a9a42], [bx0 + 1.0, 0xd84a6a]]) {
-    B.box(m.pv, 0.32, 0.3, 0.32, x, by, ZF + bd - 0.32, { tint: 0xb85a3a });
-    B.box(m.pv, 0.4, 0.42, 0.4, x, by + 0.3, ZF + bd - 0.32, { tint: c });
-  }
+  // pots on the balcony: a clipped box shrub, a camellia, scarlet pelargoniums
+  for (const [x, o] of [[bx0 + 0.3, { pot: 'terra', r: 0.15, h: 0.26, plant: 'small', size: 0.55 }], [bx1 - 0.3, { pot: 'glazed', r: 0.16, h: 0.3, plant: 'camellia', size: 0.7 }], [bx0 + 1.0, { pot: 'terra', r: 0.12, h: 0.2, plant: 'pelargonium', size: 0.42 }]]) potted(t, x, by, ZF + bd - 0.3, o);
   // a little round bistro table and a chair on the balcony
   B.box(m.metal, 0.04, 0.7, 0.04, 17.0, by, ZF + 0.4, { tint: 0x1e2024 });
   B.box(m.pv, 0.5, 0.04, 0.5, 17.0, by + 0.7, ZF + 0.4, { tint: 0xf4f2ec });
@@ -508,16 +516,14 @@ function villa(t, mats) {
   // ---- the front garden: lawn, stepping stones, pots, a rose hedge, a small tree, a garden lamp
   B.plane(m.grass, X1 + 0.6 - X0, P.sz1 - 0.15 - ZF, (X0 + X1 + 0.6) / 2, 0.01, (ZF + P.sz1 - 0.15) / 2, { k: 1.05, uv: [1, 1] });
   for (const [z, r] of [[-20.55, 0.1], [-21.05, -0.2]]) B.box(m.found, 0.55, 0.05, 0.4, dx + (hash2(z * 9, 1) - 0.5) * 0.1, 0, z, { ry: r, tint: 0xc8c4bc });
-  for (const [x, c] of [[15.25, 0x4a8a3a], [17.75, 0x3e7a34]]) {
-    B.box(m.pv, 0.42, 0.42, 0.42, x, 0, -21.35, { tint: 0xb4603a });
-    B.box(m.pv, 0.5, 0.06, 0.5, x, 0.42, -21.35, { tint: 0xa4502e });
-    B.box(m.pv, 0.52, 0.5, 0.52, x, 0.48, -21.35, { tint: c });
-    B.box(m.pv, 0.36, 0.35, 0.36, x, 0.95, -21.35, { tint: c, k: 1.1 });
-  }
+  // two big pots by the door: a clipped azalea in a glazed pot, a camellia in terracotta
+  potted(t, 15.25, 0, -21.35, { pot: 'glazed', r: 0.24, h: 0.42, col: 0x3a5a6e, plant: 'azalea', size: 0.85, seed: 3 });
+  potted(t, 17.75, 0, -21.35, { pot: 'terra', r: 0.24, h: 0.4, plant: 'camellia', size: 0.95, seed: 5 });
   hedge(t, 13.6, 0, -20.45, 0, 0.62, { mix: ['azalea', 0.45] });
   hedge(t, 19.0, 0, -20.45, 0, 0.48, { mix: ['azalea', 0.45] });
-  for (const [x, c] of [[13.0, 0xe5383b], [13.5, 0xff8fb2], [14.1, 0xfbf8f0], [18.7, 0xe5383b], [19.3, 0xff8fb2]]) B.box(m.pv, 0.1, 0.08, 0.1, x, 0.6, -20.35 - hash2(x, 4) * 0.15, { tint: c });
-  sakura(t, 12.95, -21.4, 0.5, 4);
+  // the lawn's edge: tufts where the mower doesn't reach
+  for (const [x, z] of [[12.3, -20.2], [14.6, -20.35], [18.2, -20.3], [19.9, -20.25], [12.2, -22.6], [19.8, -22.4]]) tuft(t, x, 0, z, 0.3, hash2(x, z) > 0.5 ? 'weeds' : 'grass', Math.round(x * 7));
+  sakura(t, 12.95, -21.4, 0.5, 4, { dir: 0, bias: 0.4 });
   B.box(m.pv, 0.08, 0.9, 0.08, 18.9, 0, -21.6, { tint: ink });
   B.box(t.G, 0.16, 0.2, 0.16, 18.9, 0.9, -21.6, { tint: 0xffe0a0 });
   // ---- the low front wall: white render, dark coping, iron railing on top, gate pillars with lamps, iron gate
@@ -607,8 +613,7 @@ function studio(t, mats, x0, x1, z0, z1, y0, y1) {
   B.box(F, 0.05, 0.45, 0.05, dx1 + 0.4, y0, (dz0 + dz1) / 2, k(0x8a8e92));
   B.box(F, 0.09, 0.08, 0.09, dx1 + 0.9, y0, z1 - 0.3, k(0xfbf8f0));
   // a tall plant in the window corner and a floor lamp's warm shade
-  B.box(F, 0.3, 0.3, 0.3, x1 - 0.25, y0, z1 - 0.3, k(0xb4603a));
-  B.box(F, 0.5, 0.7, 0.5, x1 - 0.25, y0 + 0.3, z1 - 0.3, k(0x3e7a34));
+  potted(t, x1 - 0.25, y0, z1 - 0.3, { pot: 'glazed', r: 0.17, h: 0.32, col: 0xe8e2d4, plant: 'broad', size: 0.9, seed: 2 });
   B.box(F, 0.04, 1.5, 0.04, x1 - 0.3, y0, z0 + 0.6, k(0x2a2a2a));
   B.box(t.G, 0.34, 0.3, 0.34, x1 - 0.3, y0 + 1.5, z0 + 0.6, { tint: 0xffd8a0 });
 }

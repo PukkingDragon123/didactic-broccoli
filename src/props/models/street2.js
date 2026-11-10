@@ -352,14 +352,13 @@ export default {
       for (const x of [x0 + 0.04, x0 + 0.3]) K.rod(flat(0x4f8a46, 0.7), [x, ys, 0], [x, B.y1 - 0.01, 0], 0.007, 4);
       for (let k = 0; k < 5; k++) K.rod(flat(0x4f8a46, 0.7), [x0 + 0.04, ys + 0.14 + k * 0.19, 0], [x0 + 0.3, ys + 0.14 + k * 0.19, 0], 0.004, 3);
       const yv = ys;
-      leaves(K, (t, F) => { for (let k = 0; k < 3; k++) F.vine(t, x0 + 0.07 + k * 0.1, yv + 0.04, B.y1 - 0.06 - (k % 2) * 0.12, 0, 31 + k * 7, { card: 0.12 }); });
-      for (let k = 0; k < 6; k++) flower(K, flat([0x5a6ad8, 0xe86aa8, 0x8a5ad8][k % 3], 0.8), [x0 + 0.08 + ((k * 0.43) % 1) * 0.2, ys + 0.2 + ((k * 0.29) % 1) * 0.7, 0.04], 0.034, { dir: [0, 0.3, 1], eye: flat(0xffffff) });
+      leaves(K, (t, F) => { for (let k = 0; k < 3; k++) F.vine(t, x0 + 0.07 + k * 0.1, yv + 0.04, B.y1 - 0.06 - (k % 2) * 0.12, 0, 31 + k * 7, { kind: 'asagao', card: 0.15 }); });
       // then pots of every sort: a tall sansevieria, geraniums, a trough of pansies, a jade plant, a herb pot, a green watering can
       let x = x0 + 0.46;
       ys = pot(K, x, 0, 0, 0.075, 0.13, { c: matte(0xe6e2d6, 0.15) });
       for (let k = 0; k < 6; k++) { const a = k * 1.05; blade(K, flat(k % 2 ? 0x4f8a5a : 0x7aa86a, 0.85), [x + Math.cos(a) * 0.02, ys, Math.sin(a) * 0.02], [x + Math.cos(a) * 0.05, ys + 0.3 - (k % 3) * 0.05, Math.sin(a) * 0.05], 0.036); }
       x += 0.2; ys = pot(K, x, 0, 0.01, 0.09, 0.15, { saucer: true });
-      { const cx = x, cy = ys; leaves(K, (t, F) => F.crown(t, cx, cy + 0.07, 0.01, 0.11, 0.08, 0.1, { kind: 'leaf', flat: -0.45, card: 0.13, density: 2.6, seed: 4 })); }
+      { const cx = x, cy = ys; leaves(K, (t, F) => F.crown(t, cx, cy + 0.07, 0.01, 0.11, 0.08, 0.1, { kind: 'pelargonium', flat: -0.45, card: 0.15, density: 2.6, seed: 4 })); }
       for (const [dx, dz] of [[-0.05, 0.05], [0.04, 0.07], [0, -0.02], [0.07, 0.0]]) { for (let p = 0; p < 4; p++) { const a = p * 1.571 + dx * 9; K.rod(flat(0x4a7a34, 0.8), [x + dx * 0.6, ys + 0.1, dz * 0.6], [x + dx + Math.cos(a) * 0.012, ys + 0.17, dz + 0.01 + Math.sin(a) * 0.012], 0.0025, 3); flower(K, flat(p % 2 ? 0xe8443a : 0xd8382e, 0.8), [x + dx + Math.cos(a) * 0.014, ys + 0.172 + (p % 2) * 0.006, dz + 0.01 + Math.sin(a) * 0.014], 0.017, { dir: [Math.cos(a), 1.4, Math.sin(a) + 0.3], eye: flat(0xf6d04a) }); } }
       x += 0.16; ys = planter(K, plastic(0xe8e4d8, 0.1), x, 0, -0.08, x + 0.36, 0.13, 0.1, { t: 0.012 });
       for (let k = 0; k < 5; k++) { const px = x + 0.05 + k * 0.065; leafRing(K, flat(LEAF2, 0.9), px, ys, 0.01, 4, 0.035, 0.03, { seed: k, rise: 0.5 }); flower(K, flat([0xf2c21c, 0x8a5ad8, 0xf2efe6, 0xe8842a, 0x8a5ad8][k], 0.8), [px, ys + 0.045, 0.02], 0.03, { dir: [0, 1, 0.5], eye: flat(0x3a2a4a) }); }

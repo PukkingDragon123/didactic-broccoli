@@ -44,8 +44,8 @@ export async function viewerEntries(params) {
       // frame the face: bounds cut down to the head
       r.hitBody.removeFromParent(); r.hitHead.removeFromParent();
       r.root.updateMatrixWorld(true);
-      const c = r.b.head.localToWorld(new THREE.Vector3(0, 0.05, 0.08)).applyMatrix4(r.mesh.matrixWorld.clone().invert());
-      r.mesh.boundingBox = new THREE.Box3().setFromCenterAndSize(c, new THREE.Vector3(0.16, 0.16, 0.16));
+      const c = r.b.head.localToWorld(new THREE.Vector3(0, 0.022, 0.04)).applyMatrix4(r.mesh.matrixWorld.clone().invert());
+      r.mesh.boundingBox = new THREE.Box3().setFromCenterAndSize(c, new THREE.Vector3(0.12, 0.12, 0.12));
     }
   } else if (set === 'gait') {
     const speed = +(params.get('speed') || 0.42);

@@ -10,9 +10,10 @@
 //   secondhand: true    only ever found second-hand at Off-Hobby, the junk market (src/market)
 //   itch: true          free for following the game on itch.io (src/cosmetics/itch.js)
 // rarity: common | uncommon | rare | ultra | secret (the gacha's tiers and colours, src/data/rarity.js).
-// Painted pieces use spec(spec, look) (hats, glasses, tops, bags, shoes the low-poly body already has); voxel pieces use
-// dress(ctx) + preview(add, group, lift) with the models in src/cosmetics/voxels.js. Photo prints: src/cosmetics/prints.js.
-import { COSMETICS, COSMETIC_BY_ID, VOX as VXH } from '../people/cosmetics.js';
+// Painted pieces use spec(spec, look) (hats, glasses, tops, bags, shoes the low-poly body already has); modelled pieces use
+// dress(ctx) + preview(add, group, lift) with the models in src/cosmetics/voxels.js (src/peoplekit). Photo prints: src/cosmetics/prints.js.
+import { COSMETICS, COSMETIC_BY_ID, MODELS } from '../people/cosmetics.js';
+import { kigurumi, rainHood as rainHoodGeo } from '../peoplekit/bags.js';
 import { hex } from '../people/paintlib.js';
 import { defineIcon } from '../gfx/icons.js';
 import { VX } from './voxels.js';
@@ -40,11 +41,7 @@ const sideMask = (key, build) => ({
 });
 function maskCord() {
   // a thin red cord around the head (the kitsune mask's), shared by the festival masks
-  const v = VX.oniBand();
-  const out = new v.constructor();
-  out.jitter = 0.01;
-  v.forEach((x, y, z) => { if (y === 12) out.set(x, 11, z, 0xd8302a); });
-  return out;
+  return MODELS.cord();
 }
 const both = (...parts) => ({ dress: (c) => parts.forEach((p) => p.dress(c)), preview: (add, g, lift) => parts.forEach((p) => p.preview(add, g, lift)) });
 
@@ -72,29 +69,16 @@ const onesie = (col, col2, spots, spotOpts = {}) => ({
     s.acc = s.acc.filter((a) => a.kind === 'camera' || BAG_KINDS.includes(a.kind));
   },
 });
-/** A kigurumi hood in the onesie's colours with ears (head units). */
+/** A kigurumi hood in the onesie's colours with ears and the animal's face (head units; src/peoplekit/bags.js). */
 function animalHood(key, o) {
   return {
-    dress: (c) => { if (c.hoodOn) { c.add(c.head, key, () => kigu(o)); } },
-    preview: (add) => add(key, () => kigu(o)),
+    dress: (c) => { if (c.hoodOn) { c.add(c.head, key, () => kigurumi(key, o)); } },
+    preview: (add) => add(key, () => kigurumi(key, o)),
   };
-}
-function kigu(o) {
-  const { hood, vm, front, hash, gloss, INK } = VXH;
-  const m = hood(vm(0.03), { col: o.col, rim: o.rim ?? o.col, paint: o.paint });
-  const ear = (sx, shape) => {
-    for (let y = 0; y < 6; y++) {
-      const w = shape === 'round' ? Math.sqrt(Math.max(0, 9 - (y - 2.5) ** 2)) : 3.2 * (1 - y / 6.5);
-      for (let x = Math.round(-w); x <= Math.round(w); x++) for (let z = 0; z <= 1; z++) m.set(sx * 5.4 + x, 17 + y, 2 + z, z === 1 && Math.abs(x) < w - 1.1 && y < 4 && o.earIn ? o.earIn : o.ear ?? o.col);
-    }
-  };
-  for (const sx of [-1, 1]) ear(sx, o.ears || 'round');
-  if (o.face) o.face(m, { front, hash, gloss, INK });
-  return m;
 }
 
-// ------------------------------------------------------------------ voxel pieces that need per-human fitting
-/** A voxel backpack on the chest bone, sized in metric voxels (V = H / 140). */
+// ------------------------------------------------------------------ pieces that need per-human fitting
+/** A backpack on the chest bone, sized in metric units (V = H / 140). */
 const voxBag = (key, build, k = 1) => ({
   dress: (c) => {
     const V = c.P.H / 140 * k;
@@ -144,19 +128,11 @@ const ramenChef = {
   ...top({ kind: 'shirt', col: 0xf4f2ec, sleeve: 'short' }, { kind: 'slacks', col: 0x2a2a30, noCrease: true }, (s) => { s.acc = s.acc.filter((a) => a.kind !== 'apron'); s.acc.push({ kind: 'apron', col: hex(0x24304a), col2: [236, 232, 220] }); }),
   dress: (c) => { if (!c.hat) c.add(c.head, 'cx_towelBand', towelBand); },
 };
-function towelBand() {
-  const v = VX.oniBand(), out = new v.constructor();
-  out.jitter = 0.03;
-  v.forEach((x, y, z) => out.set(x, y, z, (x + y + z) % 3 ? 0xfcfaf4 : 0xe6e2da));
-  return out;
-}
+const towelBand = () => VX.towelBand();
 const rainHood = {
   dress: (c) => { if (c.hoodOn) c.add(c.head, 'cx_rainhood', rainHoodModel); },
 };
-function rainHoodModel() {
-  const { hood, vm } = VXH;
-  return hood(vm(0.02), { col: 0xf4c430, rim: 0xe0a820, hole: [6.6, 8.4, 3.6], thick: 1.4, paint: (x, y, z, col) => (col === 0xf4c430 && y > 15 && Math.abs(x) <= 0 ? 0xe0a820 : col) });
-}
+const rainHoodModel = () => rainHoodGeo();
 
 // ------------------------------------------------------------------ the catalogue
 const P = (photo, o = {}) => ({ photo, ...o });

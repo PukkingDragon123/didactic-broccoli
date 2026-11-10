@@ -386,7 +386,7 @@ export class Cashier {
     audio.play('place', { vol: 0.5 });
     c.items.forEach((it, i) => {
       const m = propMesh(it.prop, { castShadow: false });
-      if (Array.isArray(m.material)) m.material = town.indoorVoxel();
+      if (Array.isArray(m.material)) m.material = m.geometry?.userData.lowPoly ? m.material.map(town.indoorVoxel().convert) : town.indoorVoxel();
       m.position.copy(BASKET).add(V(-0.11 + (i % 3) * 0.11, 0.012, (i < 3 ? -0.04 : 0.06)));
       m.rotation.y = rnd(-0.4, 0.4) + Math.PI;
       if (it.prop === 'room_cupnoodle') m.scale.setScalar(0.8);

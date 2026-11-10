@@ -8,6 +8,7 @@ import { VoxelModel, gloss, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { audio } from '../core/audio.js';
+import { lecternMesh } from '../props/things/street.js';
 import { Kit, fabric, enamel, chrome, plastic, wood, matte, ceramic, stone, flat, metal as kmetal } from '../props/kit/kit.js';
 import { flower } from '../props/kit/shapes.js';
 import { leaves } from '../props/kit/foliage.js';
@@ -173,20 +174,16 @@ export function planter(kind) {
       const cane = wood(0xc8b070);
       for (const sx of [-0.09, 0.09]) K.cyl(cane, sx, H - 0.03, 0, 0.006, 0.66, 6);
       K.rod(cane, [-0.1, H + 0.6, 0], [0.1, H + 0.6, 0], 0.005, 4);
-      leaves(K, (t, F) => { F.vine(t, -0.09, H, H + 0.6, 0.0, 3, { card: 0.12 }); F.vine(t, 0.09, H + 0.05, H + 0.55, 0.0, 9, { card: 0.12 }); });
-      for (const [x, y, c] of [[-0.12, 0.42, 0x6a5ad8], [0.06, 0.55, 0x8a7ae8], [0.12, 0.33, 0x6a5ad8], [-0.05, 0.7, 0xd86aa8]]) flower(K, flat(c, 0.7), [x, y, 0.05], 0.032, { dir: [0, 0.2, 1], cup: 0.5, eye: flat(0xf4f0ff) });
+      leaves(K, (t, F) => { F.vine(t, -0.09, H, H + 0.6, 0.0, 3, { kind: 'asagao', card: 0.14 }); F.vine(t, 0.09, H + 0.05, H + 0.55, 0.0, 9, { kind: 'asagao', card: 0.14 }); });
     } else if (kind === 'bonsai') {
-      // a twisting little pine: trunk, two limbs, flat needle pads
-      const bark = stone(0x5a3a24, 0.12);
-      K.tube(bark, [[0, H - 0.03, 0], [0.02, H + 0.08, 0], [-0.03, H + 0.16, 0.01], [0.01, H + 0.24, 0]], 0.02, 6, { radii: [0.024, 0.018, 0.013, 0.008] });
-      K.tube(bark, [[0.02, H + 0.08, 0], [0.11, H + 0.12, 0.01]], 0.009, 5, { r1: 0.005 });
-      leaves(K, (t, F) => { for (const [x, y, r] of [[0.12, H + 0.14, 0.07], [-0.07, H + 0.2, 0.08], [0.01, H + 0.27, 0.09]]) F.crown(t, x, y, 0, r, r * 0.45, r * 0.85, { kind: 'pine', flat: -0.2, card: 0.08, density: 3, seed: Math.round(x * 100) }); });
+      // a bonsai black pine: gnarled plated trunk, kinked limbs, domed needle pads (the town's foliage)
+      leaves(K, (t, F) => F.bonsaiPine(t, 0, H - 0.03, 0, 0.3, 5));
     } else {
       // tomatoes: two stems on canes, leaves, fruit from green to red
       for (const sx of [-0.08, 0.08]) {
         K.cyl(wood(0xc8b070), sx - 0.02, H - 0.03, -0.02, 0.005, 0.38, 6);
         K.tube(matte(0x4a8a34), [[sx, H - 0.03, 0], [sx + 0.01, H + 0.15, 0.01], [sx, H + 0.32, 0]], 0.006, 5);
-        leaves(K, (t, F) => F.vine(t, sx, H + 0.02, H + 0.34, 0.0, sx > 0 ? 5 : 2, { kind: 'leaf', card: 0.11 }));
+        leaves(K, (t, F) => F.vine(t, sx, H + 0.02, H + 0.34, 0.0, sx > 0 ? 5 : 2, { kind: 'tomato', card: 0.13 }));
         for (const [dy, c] of [[0.1, 0xd83a2a], [0.17, 0xd85a2a], [0.24, 0x8ac04a]]) K.ball(plastic(c, 0.35), sx + 0.03, H + dy, 0.04, 0.02, 0.018, 0.02, 8, 4);
       }
     }
@@ -202,14 +199,9 @@ export function planter(kind) {
 /** The customer guestbook: a little wooden lectern with an open notebook and a pen on a string. */
 export function guestbookStand() {
   const g = new THREE.Group();
-  g.add(vmesh('gbStand', () => {
-    const v = vm(0.03), W = 0x8a6038, D = 0x6a4428;
-    box(v, -1, 1, 0, 30, -1, 1, W);
-    box(v, -6, 6, 0, 1, -5, 5, D);
-    for (let y = 30; y <= 33; y++) box(v, -9, 9, y, y, -6 + (y - 30) * 2, 4 + (y - 30) * 2, (x) => (Math.abs(x) === 9 ? D : W));
-    return v;
-  }, 0.03));
-  // the open book: two page planes on a slanted cover (pages are drawn by the guestbook module)
+  // the lectern is modelled in src/props/things/street.js; the open book on its slanted top is drawn by the guestbook module
+  const m = lecternMesh(); m.raycast = () => {};
+  g.add(m);
   return g;
 }
 

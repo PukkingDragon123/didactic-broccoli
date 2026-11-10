@@ -4,8 +4,6 @@
 //   deluxe    a two-tier station (the lower unit shuttered)          royal     the premium machine on its cabinet
 // All dimensions in metres, machine-local: front = +z, origin = floor centre.
 import * as THREE from 'three';
-import { VoxelModel, metal } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
 import { machineParts, STYLES } from '../gachakit/machine.js';
@@ -257,19 +255,5 @@ export function makeCoin() {
   return m;
 }
 
-/** A ¥100 coin as a little disc (lying flat, centred). Shared geometry for coin piles (drawn with voxelMaterials). */
-let yenGeo = null;
-export function yenCoinGeometry() {
-  if (!yenGeo) {
-    const v = new VoxelModel();
-    v.jitter = 0;
-    for (let x = -4; x < 4; x++) for (let z = -4; z < 4; z++) {
-      const d = Math.hypot(x + 0.5, z + 0.5);
-      if (d > 4.1) continue;
-      v.set(x, 0, z, metal(d > 3.2 ? 0xd4d6da : 0xe8eaee));
-      if (d < 2.4 && ((x + z) & 1)) v.set(x, 0, z, metal(0xc8cace)); // the stamped "100"
-    }
-    yenGeo = meshVoxels(v, { voxelSize: 0.0029, origin: 'center' });
-  }
-  return yenGeo;
-}
+/** A ¥100 coin (lying flat, centred): the modelled coin from src/props/things/money.js (drawn with voxelMaterials: slot 2, polished metal). */
+export { yenCoinGeometry } from '../props/things/money.js';

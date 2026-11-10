@@ -79,6 +79,7 @@ export function makeMats(t) {
   const indoor = new Map();
   t.indoor = (mat) => { if (!indoor.has(mat)) indoor.set(mat, indoorPatch(mat.clone())); return indoor.get(mat); };
   let inVox = null, dimVox = null;
-  t.indoorVoxel = () => { if (!inVox) { const n = voxelMaterials('normal'); inVox = [t.indoor(n[0]), t.indoor(n[1]), t.indoor(n[2]), n[3], t.indoor(n[4])]; } return inVox; };
+  // .convert: the same treatment for a low-poly prop's own atlas materials (they keep their paint)
+  t.indoorVoxel = () => { if (!inVox) { const n = voxelMaterials('normal'); inVox = [t.indoor(n[0]), t.indoor(n[1]), t.indoor(n[2]), n[3], t.indoor(n[4])]; inVox.convert = (k) => (k.isMeshBasicMaterial ? k : t.indoor(k)); } return inVox; };
   t.dimVoxel = () => { if (!dimVox) { const n = voxelMaterials('normal'), g = n[3].clone(); g.color.setScalar(0.95); dimVox = [n[0], n[1], n[2], g, n[4]]; } return dimVox; };
 }

@@ -57,6 +57,8 @@ export const PHOTO_TEX = {
   soil:             { file: 'soil.jpg',             metres: 1.5, avg: 0x7d6752 },
   grass:            { file: 'grass.jpg',            metres: 1.5, avg: 0x7d9a5e },
   moss:             { file: 'moss.jpg',             metres: 1.0, avg: 0x6c8750 },
+  bark_pine:        { file: 'bark_pine.jpg',        metres: 0.6, avg: 0x51433b }, // plated, fissures run along V
+  bark_cherry:      { file: 'bark_cherry.jpg',      metres: 0.6, avg: 0x65514d }, // lenticel bands run across V
   // other
   rubber:           { file: 'rubber.jpg',           metres: 0.5, avg: 0x3d3c40 },
   frosted_glass:    { file: 'frosted_glass.jpg',    metres: 0.5, avg: 0xd0dddc },

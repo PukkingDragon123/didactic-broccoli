@@ -396,6 +396,9 @@ def SOURCES():
     tex('soil', '565c97448adafced', 'test', crop=(0.02, 0.02, 0.96, 0.96), col=0x7c6650, k=6, contrast=0.05)
     tex('grass', '4282d75fe80ad4ff', 'train', crop=(0.02, 0.02, 0.96, 0.96), col=0x7c9a5c, k=6, contrast=0.06)
     tex('moss', '4805738a8d43a057', 'validation', crop=(0.02, 0.02, 0.96, 0.96), col=0x6c8650, k=6, contrast=0.035, flat_sigma=0.1)
+    # bark (trees: src/town/foliage.js)
+    tex('bark_pine', '79e18eab310e6e5f', 'validation', turn=1, crop=(0.36, 0.01, 0.62, 0.35), col=0x4e4038, k=6, contrast=0.08)
+    tex('bark_cherry', '79e18eab310e6e5f', 'validation', crop=(0.64, 0.36, 0.35, 0.62), col=0x64504c, k=6, contrast=0.05, chroma=0.8)
     # other
     tex('rubber', '888b62110874f139', 'test', crop=(0.02, 0.02, 0.44, 0.96), col=0x3c3c40, k=4, contrast=0.03)
     tex('frosted_glass', 'c0009d86fc844520', 'test', crop=(0.02, 0.02, 0.96, 0.96), col=0xd0dcdc, k=4, contrast=0.04)

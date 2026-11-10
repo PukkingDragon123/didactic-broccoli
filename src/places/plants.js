@@ -82,14 +82,16 @@ export class Plants {
     pot.key = key;
     pot.mesh?.parent?.remove(pot.mesh);
     const m = propMesh(d.empty ? 'plant_asagao_0' : `plant_${d.species}_${d.dead ? Math.min(st, 2) : st}`, { castShadow: false });
-    const indoor = !pot.sp.world;
-    let mats = indoor && this.places ? this.places.voxel() : m.material;
-    // wilting: a drier, yellower, then brown cast (a tinted copy of the materials), drooping
+    // (an old voxel model takes the room's indoor voxel materials; the modelled ones keep their own)
+    const indoor = !pot.sp.world, voxel = Array.isArray(m.material);
+    if (indoor && voxel && this.places) m.material = this.places.voxel();
+    // wilting: the leaves go a drier, yellower, then brown cast and droop
     if (d.dead || d.health < 0.5) {
-      mats = mats.map((x) => { if (!x.isMeshStandardMaterial) return x; const c = x.clone(); c.color = new THREE.Color(d.dead ? 0x7a5a3a : 0xb8a868); if (x.onBeforeCompile) { c.onBeforeCompile = x.onBeforeCompile; c.customProgramCacheKey = x.customProgramCacheKey; } return c; });
+      const tint = new THREE.Color(d.dead ? 0x7a5a3a : 0xb8a868), dry = (x) => { if (!x?.isMeshStandardMaterial) return x; const c = x.clone(); c.color = tint.clone(); if (x.onBeforeCompile) { c.onBeforeCompile = x.onBeforeCompile; c.customProgramCacheKey = x.customProgramCacheKey; } return c; };
+      if (voxel) m.material = m.material.map(dry);
+      else m.traverse((o) => { if (o !== m && o.isMesh && /foliage/.test(o.material?.name || '')) o.material = dry(o.material); });
       m.rotation.z = d.dead ? 0.12 : 0.06;
     }
-    m.material = mats;
     pot.holder.add(m);
     pot.mesh = m;
   }
