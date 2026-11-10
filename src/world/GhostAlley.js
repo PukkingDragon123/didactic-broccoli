@@ -206,34 +206,12 @@ export class GhostAlley {
 
   say(text, dur = 3.4) { this.game.pedestrians?.bubbles.say(this.h, text, { dur, onChar: this.voice }); }
 
-  // ---------------------------------------------------------------- scenery: post box, the lamp, the shrine's offerings, clutter
+  // ---------------------------------------------------------------- scenery: the lamp's bulb and light, the plaque (the rest: src/town/alley.js)
   buildScenery() {
-    const G = this.group, geos = [];
-    // 丸型ポスト: the old red round post box at the mouth (a 12-sided drum, domed cap, slot, white plate)
-    const drum = new THREE.CylinderGeometry(0.21, 0.21, 1.05, 12); drum.translate(POST.x, 0.62, POST.z);
-    const paint = (g, col) => { const c = new THREE.Color(col), n = g.attributes.position.count, a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); if (g.index) return g.toNonIndexed(); return g; };
-    const cap = new THREE.CylinderGeometry(0.17, 0.23, 0.12, 12); cap.translate(POST.x, 1.2, POST.z);
-    const dome = new THREE.CylinderGeometry(0.06, 0.17, 0.08, 12); dome.translate(POST.x, 1.3, POST.z);
-    const foot = new THREE.CylinderGeometry(0.24, 0.24, 0.1, 12); foot.translate(POST.x, 0.05, POST.z);
-    geos.push(paint(drum, 0xc8281e), paint(cap, 0xb82018), paint(dome, 0xb82018), paint(foot, 0x2a2a2a));
-    for (const g of [cbox(0.2, 0.03, 0.04, POST.x - 0.2, 0.98, POST.z, 0x1a1a1a, { ry: Math.PI / 2 }), cbox(0.02, 0.18, 0.13, POST.x - 0.205, 0.62, POST.z, 0xf4f0e6), cbox(0.02, 0.06, 0.13, POST.x - 0.21, 0.52, POST.z, 0xc8281e)]) geos.push(g.toNonIndexed());
-    // the lamp: a weathered wooden pole by the east wall, an enamel shade on an arm over the alley
-    for (const g of [cbox(0.12, 3.05, 0.12, LAMP.x, 0, LAMP.z, 0x5a4a3a), cbox(0.62, 0.05, 0.05, LAMP.x - 0.3, 2.8, LAMP.z, 0x3a3a38), cbox(0.03, 0.18, 0.03, LAMP.x - 0.56, 2.64, LAMP.z, 0x2a2a28),
-      cbox(0.3, 0.06, 0.3, LAMP.x - 0.56, 2.56, LAMP.z, 0x2e5a3e), cbox(0.2, 0.05, 0.2, LAMP.x - 0.56, 2.61, LAMP.z, 0x2e5a3e), cbox(0.1, 0.08, 0.04, LAMP.x + 0.06, 1.6, LAMP.z, 0xe8e4d8)]) geos.push(g.toNonIndexed());
-    // the shrine: offerings (a cup of water, sake, flowers, a little pile of coins), a red bib, two small stone lanterns
-    for (const g of [cbox(0.08, 0.08, 0.08, -8.62, 0.42, 21.05, 0xe8e4dc), cbox(0.06, 0.13, 0.06, -8.24, 0.42, 21.05, 0xf4f0e6), cbox(0.05, 0.05, 0.05, -8.42, 0.42, 20.98, 0xc8a840),
-      cbox(0.04, 0.2, 0.04, -8.78, 0.42, 21.1, 0x3e7a34), cbox(0.08, 0.06, 0.08, -8.78, 0.6, 21.1, 0xf8f0a0), cbox(0.04, 0.2, 0.04, -8.06, 0.42, 21.1, 0x3e7a34), cbox(0.08, 0.06, 0.08, -8.06, 0.6, 21.1, 0xf0a0c0),
-      cbox(0.18, 0.5, 0.18, -9.05, 0, 21.0, 0x8a8880), cbox(0.26, 0.06, 0.26, -9.05, 0.5, 21.0, 0x7a7870), cbox(0.14, 0.12, 0.14, -9.05, 0.56, 21.0, 0xe8c070), cbox(0.26, 0.08, 0.26, -9.05, 0.68, 21.0, 0x7a7870),
-      cbox(0.18, 0.5, 0.18, -7.8, 0, 21.0, 0x8a8880), cbox(0.26, 0.06, 0.26, -7.8, 0.5, 21.0, 0x7a7870), cbox(0.14, 0.12, 0.14, -7.8, 0.56, 21.0, 0xe8c070), cbox(0.26, 0.08, 0.26, -7.8, 0.68, 21.0, 0x7a7870)]) geos.push(g.toNonIndexed());
-    // clutter down the alley: a covered drain on the east side, weeds, an old umbrella, broken pots, a cobwebbed meter on Mikawa-ya's wall
-    for (let z = 15.6; z < 21.5; z += 0.6) geos.push(cbox(0.28, 0.03, 0.58, -7.68, 0, z, hash2(z * 10, 3) < 0.2 ? 0x6a6a64 : 0x8a8a84).toNonIndexed());
-    for (let i = 0; i < 14; i++) { const z = 15.4 + hash2(i, 5) * 6.2, x = hash2(i, 6) < 0.5 ? -9.3 : -7.55, k = hash2(i, 7); geos.push(cbox(0.12 + k * 0.1, 0.1 + k * 0.25, 0.12, x + (x < -8 ? 0.06 : -0.06), 0, z, k < 0.5 ? 0x4a6a32 : 0x5a7a3a, { ry: k * 3 }).toNonIndexed()); }
-    for (const g of [cbox(0.04, 0.9, 0.04, -9.25, 0, 17.6, 0x2a2a2a, { rz: 0.5 }), cbox(0.36, 0.06, 0.36, -9.05, 0.75, 17.6, 0x3a3a5a, { rz: 0.5 }),
-      cbox(0.22, 0.18, 0.22, -9.2, 0, 19.2, 0xa8583a), cbox(0.18, 0.1, 0.12, -9.0, 0, 19.45, 0x98482a, { ry: 0.6 }),
-      cbox(0.06, 0.32, 0.26, -9.37, 1.35, 18.2, 0xc8c4bc), cbox(0.02, 0.1, 0.14, -9.34, 1.45, 18.2, 0x2a2c2e)]) geos.push(g.toNonIndexed());
-    const mesh = new THREE.Mesh(mergeGeometries(geos.map((g) => { if (!g.attributes.normal) g.computeVertexNormals(); if (g.attributes.uv) g.deleteAttribute('uv'); return g; })), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 }));
-    mesh.receiveShadow = true;
-    G.add(mesh);
+    // the alley's dressing (the post box, the lamp pole and its shade, drain lids, weeds, the umbrella and pots, the meter,
+    // the shrine's lanterns and offerings) is modelled with the lane: src/town/alley.js. Here: the colliders, the bulb
+    // and its light, the plaque, the hands.
+    const G = this.group;
     this.game.player.addObstacle(POST.x - 0.24, POST.x + 0.24, POST.z - 0.24, POST.z + 0.24);
     this.game.player.addObstacle(LAMP.x - 0.08, LAMP.x + 0.08, LAMP.z - 0.08, LAMP.z + 0.08);
     // the bulb (flickers) and its real light: a warm lamp whose light falls off naturally over the ground and the walls

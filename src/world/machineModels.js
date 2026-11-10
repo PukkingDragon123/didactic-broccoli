@@ -149,7 +149,7 @@ export function buildMachineModel(type, opts = {}) {
   const glass = clear(Gm.glass);
   group.add(glass);
   // the display card in its holder (GachaMachine sets the series' card; it slides up out of the open top to swap)
-  const bannerMat = new THREE.MeshStandardMaterial({ map: opts.banner || null, color: opts.banner ? 0xffffff : 0xdddddd, roughness: 0.6, emissive: 0xffffff, emissiveMap: opts.banner || null, emissiveIntensity: opts.banner ? 0.05 : 0 });
+  const bannerMat = new THREE.MeshStandardMaterial({ map: opts.banner || null, color: opts.banner ? 0xffffff : 0xdddddd, roughness: 0.6 });
   const bannerHolder = new THREE.Group();
   bannerHolder.position.set(L.banner.x, L.banner.y, L.banner.z + 0.0005);
   const bannerMesh = plane(L.banner.w, L.banner.h, bannerMat);

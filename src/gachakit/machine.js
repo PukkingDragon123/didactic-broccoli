@@ -299,14 +299,24 @@ function buildGeometry(type, spec, L, st, A) {
       LG.box(-dw, ty + th, D.z - dd, dw, ty + th + 0.005, D.z + dd, { bevel: 0.002 });
     });
     if (st.crown) {
-      // a little crown on the hood
-      const cy = ty + th + 0.005;
-      const c2 = new GeoS(1);
-      c2.push(new THREE.Matrix4().makeTranslation(0, cy, D.z));
-      c2.revolve([[0.034, 0, 1], [0.036, 0.006, 1], [0.03, 0.01, 1], [0.03, 0.026, 1], [0.024, 0.026, 1], [0.024, 0.008, 1]], 24, { uv: sw(AC[2], ROUGH.chrome) });
+      // a little crown on the hood: a rolled band round a velvet cushion, five tines leaning out with a pearl on each
+      // tip, a cut stone set in the front of the band
+      const cy = ty + th + 0.005, gold = sw(AC[2], ROUGH.chrome), c2 = new GeoS(1), at = (x, y, z) => new THREE.Matrix4().makeTranslation(x, y, z);
+      c2.push(at(0, cy, D.z));
+      c2.revolve([[0, 0, 1], [0.035, 0, 1], [0.037, 0.003], [0.035, 0.006, 1], [0.031, 0.008, 1], [0.032, 0.02], [0.0335, 0.023], [0.032, 0.0255, 1], [0.029, 0.0255, 1], [0.029, 0.012, 1], [0, 0.012, 1]], 48, { uv: gold });
+      c2.revolve([[0, 0.012, 1], [0.028, 0.012], [0.027, 0.019], [0.02, 0.027], [0.01, 0.031], [0, 0.032]], 32, { uv: sw(mix(st.trim, 0x000000, 0.25), ROUGH.fabric) });
+      for (let k = 0; k < 5; k++) {
+        const a = (k / 5) * Math.PI * 2 + Math.PI / 2, x = Math.cos(a) * 0.0305, z = Math.sin(a) * 0.0305;
+        c2.push(at(x, 0.022, z).multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-Math.sin(a), 0, Math.cos(a)), -0.16)));
+        c2.revolve([[0.0062, 0, 1], [0.0058, 0.004], [0.0042, 0.011], [0.0024, 0.017], [0.0011, 0.021], [0, 0.0215]], 16, { uv: gold });
+        c2.push(at(0, 0.0235, 0));
+        c2.revolve([[0, -0.0034], [0.0022, -0.0026], [0.0032, -0.0008], [0.0032, 0.0008], [0.0022, 0.0026], [0, 0.0034]], 14, { uv: sw(0xfff4ee, ROUGH.lens) });
+        c2.pop(); c2.pop();
+      }
+      c2.push(at(0, 0.017, 0.0335).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
+      c2.revolve([[0, -0.0015, 1], [0.0048, -0.0012, 1], [0.0056, 0.0005, 1], [0.0042, 0.0026, 1], [0, 0.0034, 1]], 8, { uv: sw(st.trim, ROUGH.lens) });
+      c2.pop();
       LG.add(c2);
-      LG.with(sw(AC[3], ROUGH.chrome), 0, () => { for (let k = 0; k < 5; k++) { const a = (k / 5) * Math.PI * 2; LG.box(Math.cos(a) * 0.03 - 0.005, cy + 0.026, D.z + Math.sin(a) * 0.03 - 0.005, Math.cos(a) * 0.03 + 0.005, cy + 0.04, D.z + Math.sin(a) * 0.03 + 0.005, { bevel: 0.004 }); } });
-      LG.with(sw(st.trim, ROUGH.lens), 0, () => LG.box(-0.009, cy + 0.008, D.z - 0.009, 0.009, cy + 0.03, D.z + 0.009, { bevel: 0.006 }));
     }
     // the display step the samples stand on: high enough that the header in front of it hides none of them
     const rh = RISER[st.header] || 0;

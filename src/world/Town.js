@@ -53,6 +53,7 @@ import { buildTrains, updateTrains, runTrain } from '../town/train.js';
 import { buildSky, buildBackdrop, applySkyLook, midrise } from '../town/sky.js';
 import { buildFront } from '../town/front.js';
 import { buildJapan } from '../town/japan.js';
+import { buildAlley } from '../town/alley.js';
 
 // town materials that never cast into the sun's shadow map (ground and things lying flat on it)
 const NO_CAST = new Set(['asphalt', 'patchA', 'dirt', 'gravel', 'grass', 'grate', 'fence', 'reed']);
@@ -312,6 +313,7 @@ export class Town {
     // small-scale dressing only: never let a decoration bug stop the lane from loading
     try { buildDetails(this); } catch (e) { console.error('Town.buildDetails failed', e); }
     try { buildJapan(this); } catch (e) { console.error('Town: neighbourhood details failed', e); }
+    try { buildAlley(this); } catch (e) { console.error('Town: alley A1 failed', e); }
     this.flushPools();
     try { buildBackdrop(this); } catch (e) { console.error('Town: backdrop failed', e); }
     buildBounds(this);

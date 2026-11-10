@@ -224,7 +224,7 @@ export class GachaMachine {
     this.cardSeries = series;
     const tex = bannerTexture(series, this.game.thumbs, { faded: this.data.type === 'retro' });
     const m = this.bannerMesh.material;
-    m.map = tex; m.emissiveMap = tex; m.color.set(0xffffff); m.emissiveIntensity = 0.05; m.needsUpdate = true;
+    m.map = tex; m.color.set(0xffffff); m.needsUpdate = true; // (lit by the room through the case: no emissive)
     const A = this.domeAnchor;
     A.clear();
     this.disposeFigures();
@@ -244,7 +244,8 @@ export class GachaMachine {
     const figs = keys.map((k, i) => {
       const fig = makeItemMesh(k, 'normal');
       const sz = fig.geometry.userData.size;
-      const sc = Math.min(1, (D.h - rise - 0.008) / sz.y, (cell - 0.01) / Math.max(sz.x, sz.z));
+      // (a small figure is shown a little larger than life, so the topper reads from across the room)
+      const sc = Math.min(1.5, (D.h - rise - 0.012) / sz.y, (cell - 0.008) / Math.max(sz.x, sz.z * 0.8));
       fig.scale.setScalar(sc);
       fig.position.set(-D.w / 2 + 0.01 + cell * (i + 0.5), rise, (i % 2 ? -0.02 : 0.015));
       fig.rotation.y = -(i - (n - 1) / 2) * 0.28;

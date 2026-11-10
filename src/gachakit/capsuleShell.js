@@ -289,7 +289,7 @@ export function shellGeo(shape = 'ball', r = 0.0325, part = 'top', detail = 'hi'
   for (let q = 0; q < 4; q++) {
     G.push(new THREE.Matrix4().makeRotationY(-(q * 90 + 45) * D2R));
     if (top) G.with(skin.sw.lite, 0, () => G.box(lipR * 0.985, 0.004, -0.085, lipR * 1.03, 0.066, 0.085, { bevel: 0.012, skip: ['nx'] }));
-    else G.with(skin.sw.lite, 0, () => { for (const s of [-1, 1]) G.box(lipR * 1.03, -0.112, s * 0.15 - 0.045, lipR * 1.062, -0.004, s * 0.15 + 0.045, { bevel: 0.01, skip: ['nx'] }); });
+    else G.with(skin.sw.lite, 0, () => { for (const s of [-1, 1]) { G.push(new THREE.Matrix4().makeRotationY(-s * Math.asin(0.15 / (lipR * 1.04)))); G.box(lipR * 1.03, -0.112, -0.045, lipR * 1.062, -0.004, 0.045, { bevel: 0.01, skip: ['nx'] }); G.pop(); } }); // (each squared to its own radius: under the band, not through it)
     G.pop();
   }
   if (hi) {
