@@ -30,15 +30,16 @@ export function bagGeometry() {
   return thingGeometry('street', 'bag', [-0.09, -0.28, -0.05, 0.09, 0, 0.05], (K) => {
     const print = K.patch('print', 48, 40, (V) => {
       V.fill(0xeeece6);
-      V.disc(24, 26, 9, 0xd84a3a); V.disc(24, 26, 7, 0xeeece6); kana(K, V, '三', 24, 19, 0xd84a3a, { size: 8, align: 'center' });
-      kana(K, V, '三河屋', 24, 4, 0xd84a3a, { size: 8, align: 'center' });
+      V.box(0, 30, 48, 34, 0xd84a3a);
+      kana(K, V, '三河屋', 24, 26, 0xd84a3a, { size: 16, align: 'center' });
+      kana(K, V, 'よろず', 24, 8, 0xd84a3a, { size: 8, align: 'center' });
     }, { rough: 0.55 });
     // the body: a soft box with the shopping pushing out the sides, gathered under the handles
     const prof = [[0, -0.28], [0.075, -0.28], [0.088, -0.27], [0.09, -0.22], [0.088, -0.14], [0.08, -0.1], [0.06, -0.085], [0.035, -0.08]];
     const sq = (r, a, k) => r / Math.pow(Math.abs(Math.sin(a)) ** 3 + Math.abs(Math.cos(a)) ** 3 * 1.0, 1 / 3) * (1 + (k > 1 && k < 6 ? 0.05 * Math.sin(a * 3 + k) : 0));
     sweep(K, matte(0xe8e6e0, 0.05), [0, 0, 0], prof, 16, { mod: sq, sz: 0.55 });
-    K.face(print, '+z', -0.055, -0.235, 0.055, -0.145, 0.0485);
-    K.face(print, '-z', -0.055, -0.235, 0.055, -0.145, -0.0485);
+    K.face(print, '+z', -0.042, -0.225, 0.042, -0.155, 0.0528);
+    K.face(print, '-z', -0.042, -0.225, 0.042, -0.155, -0.0528);
     // goods showing through: a milk carton corner, a packet
     K.box(flat(0xd8dce8, 0.7), -0.06, -0.275, -0.035, -0.005, -0.12, 0.03);
     // the handles: two loops gathered into the hand
@@ -85,10 +86,10 @@ export function cartGeometry() {
     K.box(al, -0.1, 0.02, -0.06, 0.1, 0.028, 0.08);
     // the bag: a soft tartan bag strapped to the frame, a drawstring top and a flap
     const prof = [[0, 0.03], [0.075, 0.03], [0.085, 0.05], [0.088, 0.4], [0.086, 0.62], [0.08, 0.66], [0.07, 0.68]];
-    sweep(K, tart, [0, 0, 0.005], prof, 16, { mod: (r, a) => r / Math.pow(Math.abs(Math.sin(a)) ** 4 + Math.abs(Math.cos(a)) ** 4, 0.25), sz: 0.72 });
-    K.lathe(fabric(0x1e2a4a), [0, 0.66, 0.005], [[0.08, 0], [0.07, 0.03], [0.05, 0.045], [0, 0.05]], 14, { sz: 0.72 });
-    K.at([0, 0.68, -0.055], () => K.box(fabric(0x1e2a4a), -0.088, -0.004, 0, 0.088, 0.004, 0.12), { rx: 0.35 });
-    for (const y of [0.25, 0.55]) K.box(fabric(0x26262a), -0.09, y, -0.068, 0.09, y + 0.025, -0.06);
+    sweep(K, tart, [0, 0, 0.02], prof.map(([r, y]) => [r * 1.3, y]), 16, { mod: (r, a) => r / Math.pow(Math.abs(Math.sin(a)) ** 4 + Math.abs(Math.cos(a)) ** 4, 0.25), sz: 0.62 });
+    K.lathe(fabric(0x1e2a4a), [0, 0.66, 0.02], [[0.104, 0], [0.09, 0.03], [0.06, 0.045], [0, 0.05]], 14, { sz: 0.62 });
+    K.at([0, 0.68, -0.05], () => K.box(fabric(0x1e2a4a), -0.11, -0.004, 0, 0.11, 0.004, 0.13), { rx: 0.35 });
+    for (const y of [0.25, 0.55]) K.box(fabric(0x26262a), -0.115, y, -0.068, 0.115, y + 0.025, -0.06);
   });
 }
 

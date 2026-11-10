@@ -1,9 +1,9 @@
 // The ramen shop's things (ids from src/data/props/food.js): the bowls in every state (five ramen, empty, dirty, clean),
 // gyoza, rice, a chashu don, beer with its glass, sake, oolong tea, the red lantern, the stools, the stock pot, the
 // noodle boiler with its tebo baskets, the sink, the dish rack and the sponge. Boxes are the old voxel bounds.
-import { paint, enamel, plastic, metal, chrome, matte, wood, flat, rubber, fabric, ceramic, lighten, darken, mix } from '../kit/kit.js';
+import { paint, plastic, metal, chrome, matte, wood, flat, rubber, ceramic, lighten } from '../kit/kit.js';
 import { blob, plank, bottle } from '../kit/shapes.js';
-import { kana, framed, mascot, smallPrint } from '../kit/prints.js';
+import { kana, framed, mascot } from '../kit/prints.js';
 import { sweep } from '../things/form.js';
 
 const BOUNDS = {
@@ -110,7 +110,7 @@ const models = {
         sweep(K, matte(0xf2e4c4, 0.08), [0, 0, 0], [[0, 0], [0.032, 0], [0.034, 0.004], [0.026, 0.014], [0.012, 0.02], [0, 0.021]], 10, { sx: 0.42, mod: (r, a) => r * (1 - 0.35 * Math.max(0, Math.cos(a)) ** 4) });
         K.lathe(matte(0xa8622a, 0.1), [0, 0, 0], [[0.0335, 0.0005], [0.0345, 0.0035], [0, 0.0036]].map(([r, y]) => [r, y]), 10, { sx: 0.43 });
         for (let p = 0; p < 4; p++) K.at([0, 0.016, -0.018 + p * 0.012], () => K.box(matte(0xe8d8b0, 0.06), -0.004, 0, -0.002, 0.004, 0.006, 0.002), { rz: 0.4 * (p % 2 ? 1 : -1) });
-      }, { ry: Math.PI / 2 + (k % 2 ? 0.08 : -0.06) });
+      }, { ry: k % 2 ? 0.08 : -0.06 });
     }
   },
   // a rice bowl, a heap of rice (grains painted), a blue rim line
@@ -119,8 +119,8 @@ const models = {
     K.lathe(ceramic(0xf4f0e8), [0, 0, 0], [[0, 0.004], [0.022, 0.004], [0.024, 0], [0.028, 0.006], [0.04, 0.012]], 14);
     K.wrapProfile(rim, 0, 0, [[0.04, 0.012], [0.054, 0.035], [0.0575, 0.05]], { n: 14, lift: 0.0003 });
     K.lathe(ceramic(0xf4f0e8), [0, 0, 0], [[0.04, 0.012], [0.054, 0.035], [0.0575, 0.05], [0.0555, 0.052], [0.051, 0.035], [0.02, 0.01], [0, 0.009]], 14);
-    const grain = K.patch('grain', 24, 24, (V) => { V.fill(0xf6f4ee); for (let j = 1; j < 24; j += 3) for (let i = (j % 2) * 2; i < 24; i += 4) { V.box(i, j, i + 2, j + 1, 0xffffff); V.px(i + 1, j - 1, 0xe2ded4); } }, { rough: 0.6, shared: true });
-    K.ball({ map3: null, ...{} } && grain, 0, 0.044, 0, 0.052, 0.026, 0.052, 14, 4, { y0: 0, y1: 1 });
+    const grain = K.view('grain', { u: (p) => p[0], v: (p) => p[2], u0: -0.056, u1: 0.056, v0: -0.056, v1: 0.056, ppm: 900, rough: 0.6 }, (V) => { V.fill(0xeeebe2); for (let j = 1; j < V.H; j += 3) for (let i = (j % 2) * 2; i < V.W; i += 4) { V.box(i, j, i + 2, j + 1, 0xfaf8f2); V.px(i + 1, j - 1, 0xd8d4c8); } });
+    K.ball(grain, 0, 0.044, 0, 0.052, 0.026, 0.052, 14, 4, { y0: 0, y1: 1 });
   },
   // a chashu don in a black-and-red lacquer bowl
   rm_chashu: (K) => {
@@ -162,21 +162,22 @@ const models = {
   // oolong tea in a tumbler, two ice cubes
   rm_oolong: (K) => {
     K.glass(() => K.lathe(K.tint(0xf0f4f2, 70, 0.04), [0, 0, 0], [[0, 0], [0.024, 0], [0.0272, 0.118], [0.0254, 0.118], [0.0226, 0.006], [0, 0.006]], 14));
-    K.glass(() => K.lathe(K.tint(0x9a5a1e, 200, 0.1), [0, 0, 0], [[0, 0.006], [0.0226, 0.006], [0.026, 0.096], [0, 0.096]], 14));
-    for (const [x, z, a] of [[-0.006, 0.004, 0.3], [0.007, -0.006, 1.1]]) K.glass(() => K.at([x, 0.094, z], () => K.box(K.tint(0xf0f8fa, 160, 0.08), -0.009, -0.006, -0.009, 0.009, 0.008, 0.009, { bevel: 0.002 }), { ry: a, rz: 0.2 }));
+    K.lathe(flat(0x5a2a0e, 0.12), [0, 0, 0], [[0, 0.006], [0.0224, 0.006], [0.0258, 0.096], [0, 0.096]], 14);
+    K.lathe(flat(0x8a4a1a, 0.05), [0, 0, 0], [[0.0259, 0.0905], [0.0259, 0.0955]], 14);
+    for (const [x, z, a] of [[-0.006, 0.004, 0.3], [0.007, -0.006, 1.1]]) K.at([x, 0.094, z], () => K.box(flat(0xc8d8d8, 0.1), -0.009, -0.006, -0.009, 0.009, 0.008, 0.009, { bevel: 0.002 }), { ry: a, rz: 0.2 });
   },
   // the red lantern: ribbed washi glowing from inside, black lacquer ends, らーめん down the front
   rm_lantern: (K) => {
-    const txt = K.patch('chochin', 64, 48, (V) => {
+    const txt = K.patch('chochin', 32, 80, (V) => {
       V.fill(0xe8402a);
-      for (let j = 0; j < 48; j += 6) V.box(0, j, 64, j + 1, 0xb82a1e);
-      kana(K, V, 'らーめん', 32, 4, 0x1e1210, { size: 16, align: 'center', vert: true });
+      for (let j = 0; j < 80; j += 8) V.box(0, j, 32, j + 1, 0xb82a1e);
+      [...'らーめん'].forEach((ch, k) => (ch === 'ー' ? V.box(15, 52 - k * 18 - 12, 17, 52 - k * 18 + 2, 0x1e1210) : kana(K, V, ch, 16, 60 - k * 18, 0x1e1210, { size: 16, align: 'center' })));
     }, { rough: 0.9, bright: true });
     const prof = [];
     for (let k = 0; k <= 10; k++) { const t = k / 10; prof.push([0.165 + Math.sin(t * Math.PI) * 0.08, 0.06 + t * 0.6]); }
     K.glow(() => {
       sweep(K, 0xe8402a, [0, 0, 0], prof, 16, { mod: (r, a, k) => r * (1 + 0.012 * Math.cos(a * 16)) });
-      K.wrapProfile(txt, 0, 0, prof.slice(2, 9), { n: 16, arc: Math.PI * 0.75, turn: 0, lift: 0.002 });
+      K.wrapProfile(txt, 0, 0, prof.slice(1, 10), { n: 16, arc: Math.PI * 0.42, turn: 0, lift: 0.002 });
     });
     for (const y of [0.0, 0.66]) K.cyl(paint(0x1a1414, 0.25), 0, y, 0, 0.175, 0.06, 18);
     K.cyl(paint(0x1a1414, 0.2), 0, 0.72, 0, 0.012, 0.03, 8);
@@ -264,4 +265,3 @@ export default {
   family: 'ramen',
   models: Object.fromEntries(Object.entries(models).map(([id, fn]) => [id, { build: fn, box: BOUNDS[id] || BOWL_BOX }])),
 };
-export { enamel, fabric, mix, darken, smallPrint };

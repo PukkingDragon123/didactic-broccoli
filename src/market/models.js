@@ -9,8 +9,7 @@ import { buildMachineModel, MACHINE_SPECS, layout } from '../world/machineModels
 import { makeCapsuleBox } from '../game/capsuleBox.js';
 import { propMesh } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { VoxelModel } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
+import { parcelShellGeometry, parcelFlapGeometry } from '../props/things/parcel.js';
 import { Pix } from '../gfx/pix.js';
 import { textW5 } from '../gfx/font5x7.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
@@ -193,21 +192,7 @@ export function decorateMachine(group, L, v) {
 // ------------------------------------------------------------------ sealed parcels (opened in steps)
 const PVS = 0.01;
 const PSIZES = { S: [22, 12, 16], M: [32, 18, 24], L: [44, 26, 32] };
-const pgeo = new Map();
-const pg = (key, build) => { if (!pgeo.has(key)) pgeo.set(key, meshVoxels(build(), { voxelSize: PVS, origin: 'none' })); return pgeo.get(key); };
-const CB = 0xc89a5f, CB2 = 0xb68850, CB3 = 0xd8b07a;
-function pShell(W, H, D) {
-  const v = new VoxelModel(); v.jitter = 0.03;
-  v.hollowBox(-W / 2, 0, -D / 2, W / 2 - 1, H - 1, D / 2 - 1, CB, 1, ['top']);
-  v.recolor((x, y, z) => ((x === -W / 2 || x === W / 2 - 1) && (z === -D / 2 || z === D / 2 - 1) ? CB2 : undefined));
-  return v;
-}
-function pFlap(W, D, long) {
-  const v = new VoxelModel(); v.jitter = 0.03;
-  if (long) v.box(-W / 2, 0, 0, W / 2 - 1, 0, Math.floor(D / 2) - 1, CB3);
-  else v.box(0, 0, -D / 2, Math.floor(W / 2) - 1, 0, D / 2 - 1, CB);
-  return v;
-}
+// the carton and its flaps are modelled in src/props/things/parcel.js
 const labelTexes = new Map();
 function parcelLabel(from, to, kind) {
   const k = `${from}|${to}|${kind}`;
@@ -234,9 +219,9 @@ const tapeM = new THREE.MeshStandardMaterial({ color: 0xc8a878, roughness: 0.35,
 export function makeParcelMesh(game, data) {
   data.stage ??= 0;
   const [W, H, D] = PSIZES[data.size] || PSIZES.M;
-  const mats = voxelMaterials('normal');
   const group = new THREE.Group();
-  const shell = new THREE.Mesh(pg(`sh${data.size}`, () => pShell(W, H, D)), mats);
+  const shellGeo = parcelShellGeometry(W * PVS, H * PVS, D * PVS), mats = shellGeo.userData.page.mats();
+  const shell = new THREE.Mesh(shellGeo, mats);
   shell.castShadow = shell.receiveShadow = true;
   group.add(shell);
   const lm = new THREE.MeshStandardMaterial({ map: parcelLabel(data.from || 'Off-Hobby', data.label || '', data.out ? 'out' : 'in'), roughness: 0.85 });
@@ -248,7 +233,7 @@ export function makeParcelMesh(game, data) {
   const flaps = [];
   const mk = (long, sign) => {
     const piv = new THREE.Group();
-    const m = new THREE.Mesh(pg(`f${data.size}${long ? 'L' : 'S'}`, () => pFlap(W, D, long)), mats);
+    const fg = parcelFlapGeometry(W * PVS, D * PVS, long), m = new THREE.Mesh(fg, fg.userData.page.mats());
     m.castShadow = true;
     if (long) { piv.position.set(0, H * PVS, sign * (D / 2) * PVS); m.position.y = PVS; } else piv.position.set(sign * (W / 2) * PVS, H * PVS, 0);
     if (sign > 0) m.rotation.y = Math.PI;

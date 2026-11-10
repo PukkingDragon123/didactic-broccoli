@@ -145,7 +145,8 @@ const models = {
     // the feather duster
     K.rod(wood(0x9a7a4a), [-0.06, 0.02, -0.045], [-0.09, 0.78, -0.075], 0.008, 6);
     const fth = [0x2a2a2a, 0x6a4a3a, 0x8a6a4a, 0x3a2a24];
-    for (let k = 0; k < 22; k++) { const a = k * 2.4, t = (k % 5) / 5, r = 0.05 * (1 - t * 0.7); K.at([-0.09 + Math.cos(a) * r * 0.6, 0.83 + t * 0.09, -0.075 + Math.sin(a) * r * 0.6], () => blob(K, matte(fth[k % 4], 0.08), 0, 0, 0, 0.022, 0.06, 0.016, { seed: k, jit: 0.3 }), { rz: Math.cos(a) * 0.7 * (1 - t), rx: -Math.sin(a) * 0.7 * (1 - t) }); }
+    blob(K, matte(0x2a2420, 0.05), -0.092, 0.86, -0.077, 0.045, 0.085, 0.045, { seed: 2, jit: 0.15, fine: true });
+    for (let k = 0; k < 26; k++) { const a = k * 2.4, t = (k % 6) / 6, r = 0.04; K.at([-0.092 + Math.cos(a) * r * (1 - t * 0.6), 0.79 + t * 0.15, -0.077 + Math.sin(a) * r * (1 - t * 0.6)], () => blob(K, matte(fth[k % 4], 0.08), 0, 0.035, 0, 0.024, 0.055, 0.012, { seed: k, jit: 0.3 }), { rz: Math.cos(a) * (1.1 - t), rx: -Math.sin(a) * (1.1 - t) }); }
     // two bamboo hand brushes (hōki), the straw bound in red
     for (const [x, z, h2, tilt] of [[0.06, 0.06, 0.52, 0.12], [0.03, -0.075, 0.46, -0.1]]) {
       K.at([x, 0.02, z], () => {
