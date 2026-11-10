@@ -11,6 +11,7 @@ import { hash2 } from '../core/util.js';
 import { interiorQuad, ROOM } from '../world/interiors.js';
 import { NAMES } from './atlas.js';
 import { shrub, crown } from './foliage.js';
+import { fanGuard, doorDetail } from './detail.js';
 
 // window kinds: [room, lit, curtain]
 const ROOMS = {
@@ -362,7 +363,11 @@ function door(t, d, base, win = [], fy = [base, base + 2.65], lite = false) {
     B.box(m.metal, w, 0.36, 0.02, 0, 0, 0.03, { tint: 0xb0b6b8 });
     B.box(m.metal, 0.04, H, 0.03, -0.02, 0, 0.03, { tint: 0x858c90 }); B.box(m.metal, 0.04, H, 0.03, 0.02, 0, 0.055, { tint: fc });
     for (const s of [-1, 1]) B.box(m.pv, 0.02, 0.14, 0.012, s * 0.08, 0.95, s > 0 ? 0.075 : 0.05, { tint: 0x3a3a38 });
-  } else t.sign(kind === 'wood' ? 'doorWood' : kind === 'west' ? 'doorWest' : 'doorApt', 0, 0, 0.03, { w, h: H, tint: d.tint ?? (kind === 'wood' ? 0xa88a6a : kind === 'west' ? [0xf0ece2, 0xb8a078, 0x8aa08e][nk % 3] : 0xffffff) });
+  } else {
+    const dt = d.tint ?? (kind === 'wood' ? 0xa88a6a : kind === 'west' ? [0xf0ece2, 0xb8a078, 0x8aa08e][nk % 3] : 0xffffff);
+    t.sign(kind === 'wood' ? 'doorWood' : kind === 'west' ? 'doorWest' : 'doorApt', 0, 0, 0.03, { w, h: H, tint: dt });
+    if (!lite) doorDetail(t, kind, w, H, dt);
+  }
   if (kind !== 'genkan') { // a knob on its rose, a keyhole plate, three hinges on the other edge; a closer on the steel door
     const kx = w / 2 - 0.09, hs = kind === 'wood' ? 0x3a3a38 : 0xc8b070;
     B.lathe(m.gloss, [[0.03, 0], [0.032, 0.006], [0.012, 0.012], [0.012, 0.035], [0.026, 0.045], [0.03, 0.06], [0.022, 0.074], [0.004, 0.078]], kx, 0.98, 0.034, { rx: Math.PI / 2, tint: hs, sides: 8 });
@@ -487,7 +492,15 @@ export function acUnit(t, x, y, z, o = {}) {
   else for (const dx of [-0.26, 0.26]) B.box(m.pv, 0.1, 0.08, 0.3, dx, -0.08, 0.2, { tint: 0x4a4a4c });
   B.box(m.pv, 0.78, 0.54, 0.27, 0, 0, 0.2, { tint: 0xe4e1d6, bevel: 0.02 });
   t.sign('acFront', 0, 0.01, 0.337, { w: 0.74, h: 0.52 });
-  for (let i = 0; i < 5; i++) B.box(m.pv, 0.012, 0.03, 0.2, 0.392, 0.1 + i * 0.08, 0.2, { tint: 0x9a968a });
+  fanGuard(t, -0.098, 0.27, 0.337, 0.205);
+  // the top panel's lip, the base pan on its feet, the louvres and the service-valve cover on the right side, the
+  // heat-exchanger guard on the left (a dark fin block behind horizontal wires)
+  B.box(m.pv, 0.8, 0.018, 0.29, 0, 0.53, 0.2, { tint: 0xeceae2, bevel: 0.006 });
+  B.box(m.pv, 0.76, 0.03, 0.25, 0, -0.012, 0.2, { tint: 0xb8b4a8, bevel: 0.006 });
+  for (let i = 0; i < 5; i++) B.box(m.pv, 0.012, 0.03, 0.2, 0.392, 0.1 + i * 0.08, 0.2, { tint: 0x9a968a, rz: 0.5 });
+  B.box(m.pv, 0.022, 0.15, 0.13, 0.395, 0.02, 0.13, { tint: 0xd8d4c8, bevel: 0.006 });
+  B.box(m.pv, 0.004, 0.42, 0.2, -0.392, 0.06, 0.2, { tint: 0x4a5050 });
+  for (let i = 0; i < 9; i++) B.box(m.metal, 0.006, 0.006, 0.21, -0.396, 0.08 + i * 0.048, 0.2, { tint: 0xc8c6bc });
   B.box(m.pv, 0.07, o.duct ?? 0.7, 0.06, 0.43, 0.3, 0.03, { tint: 0xe6dfcc });
   B.tube(m.pv, [[0.36, 0.34, 0.14], [0.43, 0.34, 0.08], [0.43, 0.36, 0.04]], 0.03, { tint: 0xe6dfcc, sides: 5 });
   B.tube(m.pv, [[0.43, 0.3, 0.07], [0.45, 0.05, 0.08], [0.42, -0.3 - (o.hang ? 0.3 : -0.26), 0.06]], 0.011, { tint: 0x9a9a94, sides: 4 });

@@ -24,6 +24,7 @@ import { ORIGINS, yen } from '../data.js';
 import { X0, X1, Z0, Z1, FH, CH, FLOORS, FLAT, RUN, PATH, GAPS, LIFT, MALL_SLOTS, STACK_WALLS, ISLANDS, THEMES, CENTRE_Z, SPEED, stepY, pathZ, minusHoles } from './layout.js';
 import { buildEscalators, ceilingWell } from './Escalator.js';
 import { Elevator } from './Elevator.js';
+import { storefront, pilaster, doorHeader, doorFrame } from './facade.js';
 
 const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
 const RIDE_SPEED = SPEED; // the same speed as the steps (layout.js)
@@ -225,15 +226,18 @@ export class Mall {
         B.box(paint, x1 - x0, 0.5, 0.2, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: 0x3a3a40 });
         B.box(paint, x1 - x0, CH - 3.0, 0.2, (x0 + x1) / 2, 3.0, Z1 + 0.1, { tint: T.wall });
         pane(x0, x1, 0.5, 3.0);
-        for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 3) B.box(metal, 0.06, 2.5, 0.08, x, 0.5, Z1, { tint: 0xc8ccd2 });
       }
+      // the storefront's frames, cill and kick plate, the column casings, the doors' header (./facade.js)
+      storefront(B, paint, metal, [[-10.5, -2.6], [2.6, 10.5]], { y0: 0.5, y1: 3.0, n: 3, transom: 2.45 });
+      for (const x of [-11.0, 11.0]) pilaster(B, paint, metal, x, 0.9, T.wall);
+      for (const x of [-2.3, 2.3]) pilaster(B, paint, metal, x, 0.62, T.wall);
       B.box(paint, 4.0, CH - 2.6, 0.2, 0, 2.6, Z1 + 0.1, { tint: T.wall });
-      B.box(metal, 4.1, 0.1, 0.12, 0, 2.55, Z1, { tint: 0xc8ccd2 });
+      doorHeader(B, paint, metal, -2.0, 2.0, 2.56);
       this.doors = [];
+      const frameGeo = doorFrame(1.0, 2.5), frameMat = Z.mat(new THREE.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 0.6, roughness: 0.3 }));
       for (const s of [-1, 1]) for (const k of [0, 1]) {
         const d = new THREE.Mesh(new THREE.BoxGeometry(1.0, 2.5, 0.04), glass);
-        const fr = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.06, 0.06), Z.mat(new THREE.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 0.6, roughness: 0.3 })));
-        fr.position.y = -1.22; d.add(fr);
+        d.add(new THREE.Mesh(frameGeo, frameMat));
         const x0 = s * (0.5 + k * 1.0);
         d.position.copy(Z.L(x0, 1.28, Z1 - 0.05));
         Z.group.add(d);
@@ -250,10 +254,12 @@ export class Mall {
         B.box(paint, x1 - x0, 1.0, 0.2, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: T.wall });
         B.box(paint, x1 - x0, 0.12, 0.22, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: 0x3a3a40 });
         B.box(paint, x1 - x0, CH - 3.1, 0.2, (x0 + x1) / 2, 3.1, Z1 + 0.1, { tint: T.wall });
-        B.box(metal, x1 - x0, 0.05, 0.3, (x0 + x1) / 2, 0.98, Z1 - 0.05, { tint: 0xd8dce2 });
         pane(x0, x1, 1.0, 3.1);
-        for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 4) B.box(metal, 0.06, 2.1, 0.08, x, 1.0, Z1 - 0.02, { tint: 0xc8ccd2 });
+        B.box(paint, x1 - x0 + 0.5, 0.13, 0.17, (x0 + x1) / 2, 3.1, Z1 - 0.085, { tint: T.wall, k: 1.03, bevel: 0.01 }); // the pelmet
       }
+      storefront(B, paint, metal, [[-11.5, -2.5], [2.5, 11.5]], { y0: 1.0, y1: 3.1, n: 4, transom: 2.5, vents: true, cill: 'board' });
+      for (const x of [-12.0, 12.0]) pilaster(B, paint, metal, x, 0.8, T.wall);
+      for (const x of [-2.85, 2.85]) pilaster(B, paint, metal, x, 0.6, T.wall);
       Z.block(X0, X1, Z1, Z1 + 1);
       this.windows ||= {};
       this.windows[n] = true;

@@ -19,6 +19,7 @@ import { NAME_INDEX } from '../town/atlas.js';
 import { ROOM } from './interiors.js';
 import { keiWagonMesh } from '../vehicles/keiWagon.js';
 import { pot, acUnit, futon, shutter } from '../town/house.js';
+import { carport } from '../town/detail.js';
 import { pillar } from '../town/walls.js';
 import { windChime } from '../town/japan.js';
 import { hedge, niwaki, crown, vine, potted, limb, tuft } from '../town/foliage.js';
@@ -156,11 +157,8 @@ function nearSide(t) {
       pot(t, 0.4, 0, 0.35, 0.9, 0x4f8a3a, 0xff8fb2);
     } });
   t.yard(4.35, 9.75, 1.4, ZB - 0.15, m.concrete);
-  // the carport: four posts, a ribbed polycarbonate roof on a frame
-  for (const [x, z] of [[4.6, 5.0], [7.5, 5.0], [4.6, 2.0], [7.5, 2.0]]) B.box(m.metal, 0.07, 2.35, 0.07, x, 0, z, { tint: 0xb0b4b6 });
-  B.face(m.totan, [4.45, 2.3, 5.3], [7.65, 2.3, 5.3], [7.65, 2.48, 1.75], [4.45, 2.48, 1.75], { tint: 0xa8c4cc, both: true });
-  B.box(m.metal, 3.2, 0.1, 0.06, 6.05, 2.2, 5.28, { tint: 0x9aa0a4 });
-  for (const x of [4.6, 7.5]) B.beam(m.metal, [x, 2.26, 5.25], [x, 2.44, 1.8], 0.06, { tint: 0x9aa0a4 });
+  // the carport: four aluminium posts, a gutter beam, a corrugated polycarbonate roof on rafters (src/town/detail.js)
+  carport(t, { x0: 4.45, x1: 7.65, zf: 5.3, zb: 1.75, yf: 2.3, yb: 2.48, posts: [[4.6, 5.0], [7.5, 5.0], [4.6, 2.0], [7.5, 2.0]], beamsX: [4.6, 7.5], pipe: [7.5, 5.0] });
   // the Suzukis' kei wagon in the carport (src/vehicles/keiWagon.js); it blocks the footprint
   {
     const car = keiWagonMesh({ paint: 0x8fb4d4, roof: 0xf2f0e8, dent: false, static: true });
