@@ -14,7 +14,6 @@ export default {
   themes: ['retro', 'home', 'weird'],
   card: { bg: '#eef0e2', accent: '#4f8a6a', text: '#2c3430', accent2: '#e0584a', pattern: 'dots' },
   capsule: { colors: [0x8fb8a8, 0xe0584a, 0x6fa8d8, 0xf6f0e2, 0x9a6a46], style: 'opaque' },
-  atlas: [2048, 1536],
   flyer: {
     maker: 'dondoko', scene: 'room', hero: 'terebi', side: ['toaster', 'suihanki'],
     title: [['こんちゅう', 2, 'b'], ['家電', 4, 'a']],

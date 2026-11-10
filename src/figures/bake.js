@@ -205,15 +205,23 @@ export class FigureAtlas {
     for (const G of sculpt.patches) {
       const { nu, nv, cells } = G, D = this.ppmm * (G.dens || 1) * (sculpt.texel || 1);
       const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-      let wmax = 0, hmax = 0;
-      for (const c of cells) { if (c.dead) continue; wmax = Math.max(wmax, dist(c.p[0], c.p[1]), dist(c.p[3], c.p[2])); hmax = Math.max(hmax, dist(c.p[0], c.p[3]), dist(c.p[1], c.p[2])); }
-      const cw = Math.max(2, Math.min(64, Math.round(wmax * D))), ch = Math.max(2, Math.min(64, Math.round(hmax * D)));
+      // cell sizes per row (a head's rings near the crown are a fraction of its widest): rows of similar width share one
+      // cell width (so a strip of them stays a rectangle), each row has its own cell height
+      const wRow = new Float32Array(nv), hRow = new Float32Array(nv);
+      for (const c of cells) { if (c.dead) continue; wRow[c.j] = Math.max(wRow[c.j], dist(c.p[0], c.p[1]), dist(c.p[3], c.p[2])); hRow[c.j] = Math.max(hRow[c.j], dist(c.p[0], c.p[3]), dist(c.p[1], c.p[2])); }
+      const T2 = (mm) => Math.max(2, Math.min(64, Math.round(mm * D))), gid = new Int32Array(nv), gW = [];
+      for (let j = 0, gw = -1; j < nv; j++) {
+        if (gw < 0 || wRow[j] > gw * 1.5 || wRow[j] < gw / 1.5) { gW.push(wRow[j]); gw = wRow[j]; } else gW[gW.length - 1] = Math.max(gW[gW.length - 1], wRow[j]);
+        gid[j] = gW.length - 1;
+      }
+      const cwRow = Array.from({ length: nv }, (_, j) => T2(gW[gid[j]])), chRow = Array.from({ length: nv }, (_, j) => T2(hRow[j]));
       // each cell: plain (one colour) or painted (cw x ch texels)
       const tex = new Array(cells.length).fill(null), flatC = new Int32Array(cells.length), flatR = new Uint8Array(cells.length);
       for (let k = 0; k < cells.length; k++) {
         if ((k & 15) === 0 && performance.now() - tY > 3) { yield; tY = performance.now(); }
         const c = cells[k];
         if (c.dead) { flatC[k] = -1; continue; }
+        const cw = cwRow[c.j], ch = chRow[c.j];
         const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
         for (const q of c.lp) for (let d = 0; d < 3; d++) { mn[d] = Math.min(mn[d], q[d]); mx[d] = Math.max(mx[d], q[d]); }
         const px = Math.max(dist(c.lp[0], c.lp[1]) / cw, dist(c.lp[0], c.lp[3]) / ch, 1e-4);
@@ -240,7 +248,9 @@ export class FigureAtlas {
         const rowHas = (j) => { for (let i = 0; i < nu; i++) if (tex[j * nu + i]) return true; return false; };
         if (!rowHas(j0)) { j0++; continue; }
         let j1 = j0 + 1;
-        while (j1 < nv && rowHas(j1)) j1++;
+        while (j1 < nv && rowHas(j1) && gid[j1] === gid[j0]) j1++;
+        const cw = cwRow[j0], offY = [0];
+        for (let j = j0; j < j1; j++) offY.push(offY[offY.length - 1] + chRow[j]);
         const col = new Uint8Array(nu);
         for (let j = j0; j < j1; j++) for (let i = 0; i < nu; i++) if (tex[j * nu + i]) col[i] = 1;
         let i0 = col.indexOf(1), ni = col.lastIndexOf(1) - i0 + 1;
@@ -249,9 +259,12 @@ export class FigureAtlas {
           for (let i = 0; i < nu; i++) { if (!col[i]) continue; let g = 0; while (g < nu && !col[(i + 1 + g) % nu]) g++; if (g > bestGap) { bestGap = g; bestStart = (i + 1 + g) % nu; } }
           i0 = bestStart; ni = nu - bestGap;
         }
-        const W = ni * cw + PAD * 2, H = (j1 - j0) * ch + PAD * 2, r = this.alloc(W, H);
-        for (let y = 0; y < H; y++) {
-          const yy = Math.max(0, Math.min((j1 - j0) * ch - 1, y - PAD)), j = j0 + Math.floor(yy / ch), ty = yy % ch;
+        const SH = offY[j1 - j0], W = ni * cw + PAD * 2, H = SH + PAD * 2, r = this.alloc(W, H);
+        for (let y = 0, jr = 0; y < H; y++) {
+          const yy = Math.max(0, Math.min(SH - 1, y - PAD));
+          while (jr < j1 - j0 - 1 && yy >= offY[jr + 1]) jr++;
+          while (jr > 0 && yy < offY[jr]) jr--;
+          const j = j0 + jr, ty = yy - offY[jr];
           for (let x = 0; x < W; x++) {
             const xx = Math.max(0, Math.min(ni * cw - 1, x - PAD)), k = j * nu + (i0 + Math.floor(xx / cw)) % nu, t = tex[k];
             if (t) this.put(r.x + x, r.y + y, t.T[ty * cw + (xx % cw)], t.R[ty * cw + (xx % cw)]);
@@ -259,7 +272,7 @@ export class FigureAtlas {
           }
         }
         for (let j = j0; j < j1; j++) for (let ii = 0; ii < ni; ii++) {
-          const x0 = r.x + PAD + ii * cw, y0 = r.y + PAD + (j - j0) * ch;
+          const ch = chRow[j], x0 = r.x + PAD + ii * cw, y0 = r.y + PAD + offY[j - j0];
           uvOf[j * nu + (i0 + ii) % nu] = [[x0 / this.w, y0 / this.h], [(x0 + cw) / this.w, y0 / this.h], [(x0 + cw) / this.w, (y0 + ch) / this.h], [x0 / this.w, (y0 + ch) / this.h]];
         }
         this.stats.charts++; this.stats.texels += W * H;

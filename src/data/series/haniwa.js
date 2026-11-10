@@ -15,7 +15,6 @@ export default {
   themes: ['retro', 'weird', 'shrine'],
   card: { bg: '#f2e6d6', accent: '#b8603a', text: '#3a2a20', accent2: '#4f8a6a', pattern: 'dots' },
   capsule: { colors: [0xcf8f62, 0x5a3a2a, 0xf2e6d6, 0x8a9a6a], style: 'opaque' },
-  atlas: [2048, 1536],
   flyer: {
     maker: 'mogura', scene: 'bamboo', hero: 'uma', side: ['buta', 'inu'],
     title: [['はにわん', 4, 'a']],

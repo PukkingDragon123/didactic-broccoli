@@ -14,7 +14,6 @@ export default {
   themes: ['home', 'retro', 'cute'],
   card: { bg: '#f4efe0', accent: '#3f6fb8', text: '#2c3442', accent2: '#f2c23a', pattern: 'grid' },
   capsule: { colors: [0x3f6fb8, 0xf2c23a, 0x6cc0b0, 0xf2a0a8, 0xf6f4ee], style: 'tab' },
-  atlas: [2048, 1536],
   flyer: {
     maker: 'hoshimaru', scene: 'desk', hero: 'compass', side: ['sharpener', 'tape'],
     title: [['ぶんぐ', 4, 'b'], ['どうぶつ', 2, 'a']],

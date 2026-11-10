@@ -103,7 +103,7 @@ export function dango(S) {
     kaijuBody(S, C);
     S.paint(fill(C.body, { rough: 0.5 }), under(0.14));
     arm(S, [-8.4, 20.4, 3], [-11.6, 16.6, 5.4], [-9.4, 13.6, 9.2], 0.6);
-    S.joint('arm', L(S, { pivot: [8.4, 20.4, 3], axis: 'z', min: -0.2, max: 0.9, rest: 0, g: [0, 0.62] }), () => {
+    S.joint('arm', L(S, { pivot: [8.4, 20.4, 3], axis: 'z', min: -0.2, max: 0.9, rest: 0, g: [0, 0.4] }), () => {
       S.paint(fill(C.body, { rough: 0.5 }), under(0.14));
       arm(S, [8.4, 20.4, 3], [12.6, 23.6, 5.6], [12.6, 29.4, 8], -1.4);
       // the skewer: green, white, pink from the bottom (pink is the leader)

@@ -4,7 +4,7 @@
 import { FLYER_TEXT } from '../figures/flyer.js';
 
 // text the sculpted figures print on themselves (src/figures/sets) and the flyers draw: preloaded with the banner glyphs
-export const SCENE_TEXT = `${FLYER_TEXT}3+5=89-4=5安全第一げすい注意一九六四三分ほたる印牛乳まきばあけぐちふわふわたまごながいぬビスケットめん`;
+export const SCENE_TEXT = `${FLYER_TEXT}3+5=89-4=5289いおかきくけさしじたでなはふやゆわんスセチムロー休保円喫宝当日本業温炊祭茶飯円玉専用点検済新入荷いぬにわとりねこいのししかざり馬形埴輪遮光器土偶安全第一げすい注意一九六四三分ほたる印牛乳まきばあけぐちふわふわたまごながいぬビスケットめん`;
 
 const W = 640;
 // the photographs behind the hero shots (CC BY, Google Open Images: see CREDITS.md), loaded as the module loads

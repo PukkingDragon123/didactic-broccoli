@@ -1,16 +1,17 @@
 // Dev studio for sculpted figures (viewer.html?studio=<series>): each figure photographed through the game's own
 // renderer (cel ramp, ink outlines, grade) from a hand-held distance, laid out on one sheet (window.__sheet, a canvas).
 //   ?studio=machikado                 every figure of the series; rows: front, three-quarter, back
+//   ?studio=all[&series=a,b][&nogim=1] every sculpted series (or those), views and gimmick sheets, into window.__sheets
 //   &items=cone,post                  only these          &angles=front,q,back,top,under
 //   &finishes=1                       columns: the finishes (first item)      &gimmick=1   rows: t = 0, 0.5, 1
 //   &cell=480                         cell size in px (the page's viewport should be the same size)
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Renderer } from '../core/renderer.js';
-import { SERIES_BY_ID } from '../data/series/index.js';
+import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { makeItemMesh } from '../game/collectibles.js';
 import { FINISHES } from '../data/finishes.js';
-import { playGimmick, figureData, figureAtlas } from './index.js';
+import { playGimmick, figureData, figureAtlas, isFigure } from './index.js';
 
 const ANGLES = { front: [0, 0.12], q: [-0.62, 0.3], back: [Math.PI, 0.16], side: [-Math.PI / 2, 0.12], top: [0, 1.25], under: [0.5, -1.0], q2: [0.7, 0.34] };
 
@@ -18,7 +19,9 @@ export async function runStudio(params) {
   // ?studio=all: every sheet in one go (window.__sheets: name -> canvas), for the shot scripts
   if (params.get('studio') === 'all') {
     const out = {}, stats = {}, R = makeStage(params);
-    for (const id of (params.get('series') || 'machikado,menzoo,hakoiri').split(',')) {
+    // (&series=a,b: only those; otherwise every series with sculpted figures)
+    const ids = params.get('series') ? params.get('series').split(',') : SERIES.filter((x) => !x.hidden && x.items.some(isFigure)).map((x) => x.id);
+    for (const id of ids) {
       out[`${id}_views`] = sheet(R, id, params, 'views'); stats[id] = window.__stats;
       if (!params.get('nogim')) out[`${id}_gimmicks`] = sheet(R, id, params, 'gimmick');
     }

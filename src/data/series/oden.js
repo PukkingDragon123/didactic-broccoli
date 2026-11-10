@@ -14,7 +14,6 @@ export default {
   themes: ['food', 'cute', 'weird'],
   card: { bg: '#f6ecd6', accent: '#b8783e', text: '#3a2a20', accent2: '#3a4f8a', pattern: 'checker' },
   capsule: { colors: [0xf6f3ea, 0xd9a24a, 0x3a4f8a, 0xc89a4a], style: 'paper' },
-  atlas: [2048, 1536],
   flyer: {
     maker: 'manpuku', scene: 'oden', hero: 'kinchaku', side: ['konnyaku', 'chikuwa'],
     title: [['おでん', 4, 'a'], ['ぶつ', 4, 'b']],

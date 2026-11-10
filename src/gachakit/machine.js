@@ -22,7 +22,7 @@ import { glyphMask, clearGlyphs } from './capsuleShell.js';
 
 // the shared photo library, when it is there (the crate's boards are a photograph of sawn planks)
 const kit = Object.values(import.meta.glob('../kit/photoTex.js', { eager: true }))[0] || {};
-const KANA = 'あそびかたコインを入れるハンドル右にまわすカプセルとる投入口返却とりだし対象年齢才以上誤飲注意小さな部品故障の際は係員までお知らせください製造元ことぶき商会東京都寿町ガチャ回円準備中売切見本カプセルトイ';
+const KANA = 'あそびかたコインを入れるハンドル右にまわすカプセルとる投入口返却とりだし対象年齢才以上誤飲注意小さな部品故障の際は係員までお知らせください製造元ことぶき商会東京都寿町ガチャ回円準備中売切見本カプセルトイ新入荷点検済玉専用';
 const hx = (r, g, b) => (r << 16) | (g << 8) | b;
 void hx;
 
