@@ -20,6 +20,7 @@ import { propMesh } from './props.js';
 import { hash2 } from '../core/util.js';
 import { Town } from './Town.js';
 import { Kit, TGeo } from '../garage/kit.js';
+import { shadowProxy } from '../gfx/shadowProxy.js';
 import { GarageDetail, PropBatch } from './GarageDetail.js';
 
 export const GARAGE = { minX: -4, maxX: 4, minZ: -5, maxZ: 5, height: 3.2, shutterY: 2.25, doorHalf: 0.6, doorH: 2.1 };
@@ -194,6 +195,8 @@ export class Garage {
     this.detail = new GarageDetail(this, G);
     K.build(this.group, 'garage');
     this.PB.build(this.group);
+    // the static shell's shadows come from a few merged, shadow-only chunks (src/gfx/shadowProxy.js)
+    shadowProxy(this.group.children.filter((o) => o.isMesh), this.game.renderer, this.game.scene, { name: 'garage', cell: 16 });
   }
 
   // ---------------------------------------------------------------------------------------------- walls

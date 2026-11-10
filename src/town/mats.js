@@ -4,7 +4,7 @@
 //   (trim atlas, blended decals, alpha-cut boards), town.indoor(mat) (a variant the low sun does not reach).
 import * as THREE from 'three';
 import { hazardTexture } from './tex.js';
-import { photoTex, PHOTO_TEX, whenPhotoTexReady } from '../kit/photoTex.js';
+import { photoTex, PHOTO_TEX } from '../kit/photoTex.js';
 import { townAtlas } from './atlas.js';
 import { voxelMaterials } from '../voxel/materials.js';
 
@@ -45,18 +45,16 @@ export function makeMats(t) {
     if (!mats.has(ck)) { const m = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough, metalness: metal, ...extra }); m.name = 'paint'; mats.set(ck, m); }
     return mats.get(ck);
   };
-  const m = {}, turned = [];
+  const m = {};
   for (const [k, [photo, rough, metal = 0, turn]] of Object.entries(PHOTO)) {
     const e = PHOTO_TEX[photo], r = 1 / (e?.metres || 1);
-    let map = photoTex(photo, { repeat: [r, r] });
-    if (turn) { map = map.clone(); map.rotation = Math.PI / 2; turned.push(map); }
+    const map = photoTex(photo, { repeat: [r, r], turn: !!turn });
     m[k] = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, metalness: metal });
     m[k].name = k;
     // a tint given to the batcher means "this surface is that colour": it is divided by the photo's own mean (Batch)
     const c = new THREE.Color(e?.avg ?? 0x808080);
     m[k].userData.norm = [c.r, c.g, c.b];
   }
-  if (turned.length) whenPhotoTexReady().then(() => { for (const x of turned) x.needsUpdate = true; });
   m.hazard = new THREE.MeshStandardMaterial({ map: hazardTexture(), vertexColors: true, roughness: 0.65 }); m.hazard.name = 'hazard';
   for (const [k, v] of Object.entries(ALIAS)) m[k] = m[v];
   m.pv = t.P(0.82); m.metal = t.P(0.45, 0.45); m.gloss = t.P(0.3); m.ridge = t.P(0.6, 0.1); m.girder = t.P(0.7, 0.25);

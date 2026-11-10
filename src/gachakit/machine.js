@@ -34,7 +34,7 @@ export const STYLES = {
   royal: { body: 0xf6eef3, panel: 0xfffaf6, trim: 0xd24fa8, accent: 0xe2bc58, ink: 0x8a2a70, dial: 0xd24fa8, grip: 0xd24fa8, knobFace: 0xfaf4f0, inner: 0xfbe6f2, bevel: 0.02, round: 0.03, wear: 0, stand: 'cabinet', header: 'arch', glass: 0xfff6fc, flap: 'smoke', sign: 'ガチャ', model: 'GS-1000R', crown: true },
 };
 /** How high the sample topper's display step stands, per header (the samples must clear the header in front). */
-export const RISER = { slant: 0.03, board: 0.046, arch: 0.064 };
+export const RISER = { slant: 0.03, board: 0.056, arch: 0.08 };
 const STEEL = 0xb9bfc4, DARK = 0x1c1b20, RUBBER = 0x26262a;
 const CHROME = [0x596068, 0x9aa3ab, 0xd3dade, 0xf6fafa]; // painted chrome: shade, mid, light, glint
 

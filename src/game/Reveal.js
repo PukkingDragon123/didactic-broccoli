@@ -185,8 +185,8 @@ export class Reveal {
         mesh.rotation.y = 0;
         mesh.position.y = 0;
         held.busy = false;
-        held.startTrans('toy', 0.45);
-        held.attachTag({ key: data.key, finish: data.finish }, isNew);
+        // (only if the figure is still the thing in your hand)
+        if (held.item?.obj === holder) { held.startTrans('toy', 0.45); held.attachTag({ key: data.key, finish: data.finish }, isNew); }
         g.lighting.dim(false, 2.5);
         g.save();
       },

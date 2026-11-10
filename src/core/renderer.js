@@ -261,6 +261,7 @@ const lightToVM = (o) => { if (o.isLight && !o.userData.pooled) o.layers.enable(
 
 // Shadow casters' last-seen state, for the shadow update policy (Renderer.updateShadows)
 const _sph = new THREE.Sphere(), _lp = new THREE.Vector3(), _lt = new THREE.Vector3(), _cp = new THREE.Vector3(), _vpm = new THREE.Matrix4();
+const SMALL_R = 0.3, SMALL_FAR = 9; // m: casters smaller than SMALL_R farther than SMALL_FAR don't draw into shadow maps
 const FAR_MOVER = 10; // m: casters moving farther than this from the camera refresh the shadow map at a third of the rate
 // (kept in WeakMaps, not userData: Object3D.clone() copies userData through JSON)
 const CASTER = new WeakMap(), SHADOW = new WeakMap();
@@ -310,7 +311,29 @@ export class Renderer {
     this.lightPool = new LightPool(VM_LAYER);
     this.casters = []; this.prevCasters = new Set(); this.moved = []; // shadow casters seen by this frame's walk
     this.shadowStats = { casters: 0, moved: 0, updates: 0, movers: [] };
+    // shadow-only stand-ins (src/gfx/shadowProxy.js) are shown only while the shadow maps are drawn, and small casters far
+    // from you (a pigeon, a can) sit those draws out: their shadows are a few pixels (performance)
+    this.shadowOnly = []; this._offCast = [];
+    const sm = r.shadowMap, smRender = sm.render.bind(sm);
+    sm.render = (lights, scene, camera) => {
+      if (!sm.enabled || (!sm.autoUpdate && !sm.needsUpdate)) return smRender(lights, scene, camera);
+      const on = this.shadowOnly, off = this._offCast;
+      for (const o of on) o.visible = true;
+      _cp.setFromMatrixPosition(camera.matrixWorld);
+      for (const o of this.casters) {
+        const st = CASTER.get(o);
+        if (st && o.castShadow && st.sphere.radius < SMALL_R && st.sphere.center.distanceToSquared(_cp) > SMALL_FAR * SMALL_FAR) { o.castShadow = false; off.push(o); }
+      }
+      try { smRender(lights, scene, camera); } finally {
+        for (const o of on) o.visible = false;
+        for (const o of off) o.castShadow = true;
+        off.length = 0;
+      }
+    };
   }
+
+  /** A shadow-only mesh: drawn into the shadow maps, never in the colour passes (src/gfx/shadowProxy.js). */
+  addShadowProxy(mesh) { mesh.visible = false; this.shadowOnly.push(mesh); }
 
   setup(scene, camera) {
     this.scene = scene;

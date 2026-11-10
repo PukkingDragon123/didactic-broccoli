@@ -118,9 +118,13 @@ function sourceFor(name, tintHex) {
     img.onload = () => {
       let data = img;
       try { if (tintHex != null) data = tinted(img, tintHex); } catch (err) { /* keep the plain tile */ }
-      // a tile of another size needs new storage: drop the stand-in's first (a clone made elsewhere keeps the old size)
-      if ((data.naturalWidth || data.width) !== TILE || (data.naturalHeight || data.height) !== TILE) for (const t of s.textures) t.dispose();
-      s.source.data = data; s.loaded = true;
+      // a tile of another size needs new GPU storage: it gets a new Source (the stand-in's storage is the stand-in's
+      // size, and writing a bigger image into it fails: "texSubImage2D: offset overflows texture dimensions")
+      if ((data.naturalWidth || data.width) !== TILE || (data.naturalHeight || data.height) !== TILE) {
+        s.source = new SourceClass(data);
+        for (const t of s.textures) t.source = s.source;
+      } else s.source.data = data;
+      s.loaded = true;
       for (const t of s.textures) t.needsUpdate = true;
       res();
     };
@@ -134,13 +138,14 @@ function sourceFor(name, tintHex) {
 /**
  * A tiling photo texture. Returns at once (the tile's flat mean colour) and fills in when the image has loaded.
  * @param {string} name a key of PHOTO_TEX
- * @param {{ repeat?: [number, number] | number, tint?: THREE.ColorRepresentation }} [o] tint multiplies the tile
+ * @param {{ repeat?: [number, number] | number, tint?: THREE.ColorRepresentation, turn?: boolean }} [o] tint multiplies the
+ *   tile; turn gives it a quarter turn (don't clone() a photo texture: a clone misses the swap when the photo arrives)
  * @returns {THREE.Texture}
  */
-export function photoTex(name, { repeat = [1, 1], tint } = {}) {
+export function photoTex(name, { repeat = [1, 1], tint, turn = false } = {}) {
   const [ru, rv] = Array.isArray(repeat) ? repeat : [repeat, repeat];
   const tintHex = hexOf(tint) === 0xffffff ? null : hexOf(tint);
-  const key = `${name}|${tintHex ?? ''}|${+ru.toFixed(4)},${+rv.toFixed(4)}`;
+  const key = `${name}|${tintHex ?? ''}|${+ru.toFixed(4)},${+rv.toFixed(4)}${turn ? '|turn' : ''}`;
   let tex = textures.get(key);
   if (tex) return tex;
   const s = sourceFor(name, tintHex);
@@ -152,6 +157,7 @@ export function photoTex(name, { repeat = [1, 1], tint } = {}) {
   tex.magFilter = THREE.LinearFilter; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.generateMipmaps = true;
   tex.anisotropy = 8;
   tex.repeat.set(ru, rv);
+  if (turn) tex.rotation = Math.PI / 2; // (a quarter turn: boards lying along a wall)
   tex.needsUpdate = true;
   s.textures.add(tex);
   textures.set(key, tex);

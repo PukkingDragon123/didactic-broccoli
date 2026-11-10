@@ -55,6 +55,8 @@ import { buildFront } from '../town/front.js';
 import { buildJapan } from '../town/japan.js';
 import { buildAlley } from '../town/alley.js';
 
+import { shadowProxy } from '../gfx/shadowProxy.js';
+
 // town materials that never cast into the sun's shadow map (ground and things lying flat on it)
 const NO_CAST = new Set(['asphalt', 'patchA', 'dirt', 'gravel', 'grass', 'grate', 'fence', 'reed']);
 
@@ -321,7 +323,10 @@ export class Town {
     // houses, walls, poles and roofs cast into the sun's shadow map (it follows the player: src/game/Lighting.js); the
     // ground, road paint, decals, glass, lamps and chain-link don't
     const casts = (m) => { const M = m.material; m.castShadow = !M.transparent && !M.isMeshBasicMaterial && !M.isShaderMaterial && !M.polygonOffset && !NO_CAST.has(M.name); };
-    this.B.build(this.group, { name: 'town' }).forEach(casts);
+    const laneMeshes = this.B.build(this.group, { name: 'town' });
+    laneMeshes.forEach(casts);
+    // (their shadows are drawn by a few merged, shadow-only chunks: src/gfx/shadowProxy.js)
+    shadowProxy(laneMeshes, this.game.renderer, this.game.scene, { name: 'town', cell: 24 });
     this.Bpark.build(this.zoneGroup('park'), { name: 'park' }).forEach(casts);
     this.flushProps();
     buildTrains(this);
