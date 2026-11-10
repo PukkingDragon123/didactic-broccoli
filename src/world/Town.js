@@ -54,6 +54,9 @@ import { buildSky, buildBackdrop, applySkyLook, midrise } from '../town/sky.js';
 import { buildFront } from '../town/front.js';
 import { buildJapan } from '../town/japan.js';
 
+// town materials that never cast into the sun's shadow map (ground and things lying flat on it)
+const NO_CAST = new Set(['asphalt', 'patchA', 'dirt', 'gravel', 'grass', 'grate', 'fence', 'reed']);
+
 // pitch-black underpasses: everything inside fades to black a few metres past the portal (see tunnelDark.js);
 // installed at import time so it is in place before any material is compiled
 installTunnelDarkness({ x0: XT + 0.1, x1: XE + 1.5, z0: TZ0 - 0.35, z1: TZ1 + 0.35, y1: YE - 0.2, k: 1.0, d0: 3.2, d1: 6.0, fog: 0.3 });
@@ -313,8 +316,11 @@ export class Town {
     try { buildBackdrop(this); } catch (e) { console.error('Town: backdrop failed', e); }
     buildBounds(this);
     try { buildLanePosters(this); } catch (e) { console.error('Town: lane posters failed', e); }
-    this.B.build(this.group, { name: 'town' });
-    this.Bpark.build(this.zoneGroup('park'), { name: 'park' });
+    // houses, walls, poles and roofs cast into the sun's shadow map (it follows the player: src/game/Lighting.js); the
+    // ground, road paint, decals, glass, lamps and chain-link don't
+    const casts = (m) => { const M = m.material; m.castShadow = !M.transparent && !M.isMeshBasicMaterial && !M.isShaderMaterial && !M.polygonOffset && !NO_CAST.has(M.name); };
+    this.B.build(this.group, { name: 'town' }).forEach(casts);
+    this.Bpark.build(this.zoneGroup('park'), { name: 'park' }).forEach(casts);
     this.flushProps();
     buildTrains(this);
     try { this.pylon = buildPylon(this); } catch (e) { console.error('Town: pylon failed', e); }

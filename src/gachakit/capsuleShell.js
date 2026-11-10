@@ -270,8 +270,17 @@ export function shellGeo(shape = 'ball', r = 0.0325, part = 'top', detail = 'hi'
   }
   // lo-detail bottoms carry a stand-in for what is inside (a lump and a folded paper), seen through the dome
   if (!hi && !top && !extras?.empty) {
-    G.with(skin.sw.sh2, 0, () => { G.box(-0.34, -0.66, -0.2, 0.2, -0.12, 0.3, { bevel: 0.14 }); });
-    G.with(skin.sw.lite, 0, () => { G.push(new THREE.Matrix4().makeRotationY(0.5)); G.box(-0.4, -0.5, -0.5, 0.4, 0.5, -0.44); G.pop(); });
+    // the bagged toy: a rounded lump with a pinched waist, lying tipped over in the cup
+    G.push(new THREE.Matrix4().makeTranslation(-0.08, -0.4, 0.06).multiply(new THREE.Matrix4().makeRotationZ(1.2)).multiply(new THREE.Matrix4().makeScale(1, 1, 0.8)));
+    G.revolve([[0, -0.3, 1], [0.16, -0.29], [0.25, -0.2], [0.27, -0.06], [0.2, 0.05], [0.21, 0.14], [0.17, 0.25], [0.08, 0.31], [0, 0.32]], 10, { uv: skin.sw.sh2 });
+    G.pop();
+    // the mini-book, folded once, leaning against the back wall
+    G.with(skin.sw.lite, 0, () => {
+      G.push(new THREE.Matrix4().makeRotationY(0.5));
+      G.quad([-0.4, -0.55, -0.5], [0, -0.55, -0.43], [0, 0.48, -0.43], [-0.4, 0.48, -0.5], [0, 0, 1]);
+      G.quad([0, -0.55, -0.43], [0.4, -0.55, -0.5], [0.4, 0.48, -0.5], [0, 0.48, -0.43], [0, 0, 1]);
+      G.pop();
+    });
   }
   const start = G.S[0].p.length / 3;
   G.revolve(prof, segs, { uv });

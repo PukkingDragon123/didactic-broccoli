@@ -1,6 +1,6 @@
 // What is on and in a capsule besides its two shells (src/gachakit/capsuleShell.js), as shared low-poly geometry:
-//  * the folded mini-book (cover out, line-up in), the bag of parts (faceted film, the parts cast in the series'
-//    colours, a heat-seal strip), the foil inner wrap of the top tiers;
+//  * the folded mini-book (cover out, line-up in), the bag of parts (frosted film with a crimped seal, the parts
+//    moulded in the series' colours), the scrunched foil inner wrap of the top tiers;
 //  * the shrink band round the seam, built segment by segment from its pull tab so it can be peeled (a draw range),
 //    and the curled strip that comes off it;
 //  * the tamper seals over the seam, each in an upper and a lower piece that part with the halves: a printed sticker,
@@ -42,34 +42,75 @@ const WHITE_UV = () => [(384 + 12) / 512, 1 - 30 / 256];
 /** The bagged parts: three chunky pieces in the series' colours and the bag's heat-seal strip (variant 0..3). */
 export function partsGeo(r, variant = 0) {
   return memo(`parts${r}|${variant}`, () => {
-    const G = new Geo(1), rnd = seeded(77 + variant * 13), c = [1, 2, 0, 3].map((k) => swUV((k + variant) % 4));
+    // what a capsule toy comes in: the figure's body, its round head, the stand it clips onto and a fold of stickers,
+    // each a moulding in one of the series' colours with its own profile (smooth, the way injection moulding is)
+    const G = new GeoS(1), c = [1, 2, 0, 3].map((k) => swUV((k + variant) % 4));
     G.push(scaleM(r));
-    const piece = (pos, rot, fn, uv) => { G.push(new THREE.Matrix4().compose(new THREE.Vector3(...pos), new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)), new THREE.Vector3(1, 1, 1))); G.with(uv, 0, fn); G.pop(); };
-    piece([-0.14, -0.5, 0.16], [0.3 + rnd(), rnd() * 2, 0.4], () => G.box(-0.2, -0.17, -0.15, 0.2, 0.17, 0.15, { bevel: 0.06 }), c[0]);
-    piece([0.2, -0.46, 0.22], [rnd(), 0.6, rnd() * 2], () => G.lathe([[0, -0.13], [0.16, -0.13], [0.2, -0.06], [0.2, 0.06], [0.16, 0.13], [0, 0.13]], 8), c[1]);
-    piece([0.02, -0.72, 0.1], [0.1, rnd(), 1.5 + rnd() * 0.2], () => G.lathe([[0, -0.045], [0.27, -0.045], [0.3, 0], [0.27, 0.045], [0, 0.045]], 10), c[2]);
-    piece([0.1, -0.3, -0.02], [rnd(), rnd(), 0.9], () => G.box(-0.22, -0.045, -0.045, 0.22, 0.045, 0.045, { bevel: 0.02 }), c[3]);
-    // the heat seal along the top of the bag, with its row of pressed ticks
-    G.with(WHITE_UV, 0, () => G.box(-0.36, -0.12, 0.12, 0.36, -0.03, 0.135));
+    const piece = (pos, rot, s, fn, uv) => { G.push(new THREE.Matrix4().compose(new THREE.Vector3(...pos), new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)), new THREE.Vector3(s, s, s))); G.with(uv, 0, fn); G.pop(); };
+    // the body: a pear of a torso with a flared hem and a neck peg
+    piece([-0.13, -0.6, 0.12], [0.45, 0.3, 0.95], 1, () => G.revolve([[0, -0.2, 1], [0.15, -0.2, 1], [0.17, -0.18], [0.16, -0.12], [0.13, -0.02], [0.11, 0.06], [0.1, 0.1, 1], [0.045, 0.11, 1], [0.045, 0.17, 1], [0.035, 0.18], [0, 0.18, 1]], 20, { uv: c[0] }), c[0]);
+    // the head: a rounded bun, wider than tall, with the socket underneath
+    piece([0.2, -0.47, 0.2], [0.3, 0.8, -0.5], 1, () => G.revolve([[0, -0.07, 1], [0.045, -0.07, 1], [0.045, -0.105, 1], [0.1, -0.11, 1], [0.15, -0.09], [0.18, -0.03], [0.175, 0.04], [0.14, 0.1], [0.08, 0.135], [0, 0.145]], 20, { uv: c[1] }), c[1]);
+    // the stand: a disc with a bevelled rim, a raised foot-plate and its peg hole
+    piece([0.03, -0.73, 0.06], [0.12, 0.4, 1.45], 1, () => G.revolve([[0, -0.042, 1], [0.27, -0.042], [0.29, -0.03, 1], [0.29, 0.004, 1], [0.27, 0.016, 1], [0.13, 0.016, 1], [0.12, 0.026, 1], [0.04, 0.026, 1], [0.04, 0.006, 1], [0, 0.006, 1]], 28, { uv: c[2] }), c[2]);
+    // a fold of stickers on its backing card
+    piece([0.11, -0.28, -0.02], [0.2, -0.5, 0.85], 1, () => { G.box(-0.2, -0.13, -0.006, 0, 0.13, 0.006, { bevel: 0.004 }); G.push(new THREE.Matrix4().makeRotationY(0.5)); G.box(0, -0.13, -0.006, 0.2, 0.13, 0.006, { bevel: 0.004 }); G.pop(); }, c[3]);
     return done(G);
   });
 }
-/** The parts bag: a faceted pillow of film (drawn with the clear coat: only its facets' reflections show). */
+/**
+ * The parts bag: a pillow of frosted film, bulging front and back, with the crimped heat seal along its top edge (the
+ * film is frosted: the parts show through it as soft shapes, the way a real bag hides the toy until it is opened).
+ */
 export function bagGeo(r) {
   return memo('bag' + r, () => {
-    const G = new Geo(1), rnd = seeded(5);
-    G.push(new THREE.Matrix4().compose(new THREE.Vector3(0.02 * r, -0.5 * r, 0.14 * r), new THREE.Quaternion(), new THREE.Vector3(r, r * 0.82, r * 0.8)));
-    G.lathe([[0, -0.5], [0.3 + rnd() * 0.06, -0.4], [0.42, -0.12], [0.4 + rnd() * 0.05, 0.16], [0.3, 0.4], [0, 0.48]], 7, { a0: 0.3 });
+    const G = new GeoS(1), a = 0.43, b = 0.44, cz = 0.3, uv = () => [(384 + 12) / 512, 1 - 30 / 256];
+    G.push(new THREE.Matrix4().compose(new THREE.Vector3(0.02 * r, -0.5 * r, 0.14 * r), new THREE.Quaternion().setFromEuler(new THREE.Euler(0.08, 0.15, -0.06)), new THREE.Vector3(r, r * 0.82, r * 0.8)));
+    // the bulge falls off towards the welded rim (a softened superellipse), the film creasing a little at the corners
+    const bulge = (x, y) => cz * Math.sqrt(Math.max(0, 1 - Math.abs(x / a) ** 3.2)) * Math.sqrt(Math.max(0, 1 - Math.abs(y / b) ** 2.6)) * (1 - 0.06 * Math.cos(x * 9));
+    for (const side of [1, -1]) {
+      const at = (s, t) => {
+        const x = (2 * s - 1) * a, y = (2 * t - 1) * b, e = 1e-3, z = side * bulge(x, y);
+        const dx = side * (bulge(x + e, y) - bulge(x - e, y)) / (2 * e), dy = side * (bulge(x, y + e) - bulge(x, y - e)) / (2 * e);
+        return { p: [x, y, z], n: nrm([-dx * side, -dy * side, side]) };
+      };
+      G.patch(18, 14, at, uv);
+    }
+    // the heat seal: a flat welded strip along the top, pressed into fine pleats
+    const N = 22, y0 = b, y1 = b + 0.1;
+    for (let i = 0; i < N; i++) {
+      const xa = -a + (2 * a * i) / N, xb = -a + (2 * a * (i + 1)) / N, za = (i % 2 ? 1 : -1) * 0.006, zb = -za;
+      G.quadN([xa, y0, za], [xb, y0, zb], [xb, y1, zb], [xa, y1, za], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], uv(), uv(), uv(), uv());
+    }
     return done(G);
   });
 }
-/** The foil inner wrap: a crumpled ball sitting in the lower half. */
+/** The foil inner wrap: a ball of foil scrunched round the toy, its creases laid by hand, faceted the way foil folds. */
 export function foilGeo(r) {
   return memo('foil' + r, () => {
-    const G = new Geo(1), rnd = seeded(31), uv = shellSkin('plastic').sw.lite;
+    const G = new Geo(1), uv = shellSkin('plastic').sw.lite;
     G.push(new THREE.Matrix4().compose(new THREE.Vector3(0, -0.2 * r, 0), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, Math.PI / 2)), new THREE.Vector3(r, r, r)));
-    const j = () => 0.9 + rnd() * 0.2;
-    G.with(uv, 0, () => G.lathe([[0, -0.62], [0.36 * j(), -0.5], [0.58 * j(), -0.22], [0.62 * j(), 0.1], [0.5 * j(), 0.4], [0.24 * j(), 0.58], [0, 0.6]], 9, { a0: 0.2 }));
+    // creases: [axis, depth, width] each a fold running round the ball (a groove where the foil was pressed together)
+    const CR = [[[0.3, 1, 0.2], 0.07, 0.18], [[1, 0.2, -0.4], 0.06, 0.14], [[-0.5, 0.3, 1], 0.08, 0.2], [[0.7, -0.6, 0.4], 0.05, 0.12], [[-0.2, -0.9, -0.6], 0.06, 0.16], [[0.9, 0.5, 0.9], 0.04, 0.1]].map(([n, d, w]) => [nrm(n), d, w]);
+    const rad = (d) => {
+      // an egg of foil, the wrap gathered and twisted at one end (+y), pinched by the creases
+      const base = 0.6 * (1 - 0.12 * Math.max(0, d[1]) ** 3);
+      let k = 1;
+      for (const [n, dep, w] of CR) { const q = Math.abs(d[0] * n[0] + d[1] * n[1] + d[2] * n[2]) / w; if (q < 1) k -= dep * (1 - q) * (1 - q); }
+      return base * k;
+    };
+    const R = 14, S = 26, P = [];
+    for (let j = 0; j <= R; j++) {
+      P.push([]);
+      const lat = -Math.PI / 2 + (Math.PI * j) / R;
+      for (let i = 0; i < S; i++) { const lon = (Math.PI * 2 * i) / S + (j % 2) * Math.PI / S, d = [Math.cos(lat) * Math.cos(lon), Math.sin(lat), Math.cos(lat) * Math.sin(lon)], k = rad(d); P[j].push([d[0] * k, d[1] * k * 1.02, d[2] * k]); }
+    }
+    G.with(uv, 0, () => {
+      for (let j = 0; j < R; j++) for (let i = 0; i < S; i++) {
+        const a = P[j][i], b = P[j][(i + 1) % S], c2 = P[j + 1][(i + 1) % S], d = P[j + 1][i], out = nrm([(a[0] + c2[0]) / 2, (a[1] + c2[1]) / 2, (a[2] + c2[2]) / 2]);
+        G.tri(a, b, c2, out); G.tri(a, c2, d, out);
+      }
+    });
     return done(G);
   });
 }

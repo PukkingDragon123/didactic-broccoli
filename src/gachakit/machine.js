@@ -17,7 +17,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from '../vehicles/atlas.js';
 import { Geo, triplanar, boxMap } from '../vehicles/geom.js';
 import { ramp, mix } from '../vehicles/paint.js';
-import { GeoS, roundBox } from './geo.js';
+import { GeoS, roundBox, lobe } from './geo.js';
 import { glyphMask, clearGlyphs } from './capsuleShell.js';
 
 // the shared photo library, when it is there (the crate's boards are a photograph of sawn planks)
@@ -33,6 +33,8 @@ export const STYLES = {
   deluxe: { body: 0x2c2b30, panel: 0x38363c, trim: 0xd8b04a, accent: 0xd8b04a, ink: 0xf0d890, dial: 0x1e1d21, grip: 0xd8b04a, knobFace: 0x2a282c, inner: 0x34323a, bevel: 0.012, round: 0.014, wear: 0, stand: 'twotier', header: 'board', glass: 0xf2f6ff, flap: 'smoke', sign: 'ガチャ', model: 'GS-500W', dark: true },
   royal: { body: 0xf6eef3, panel: 0xfffaf6, trim: 0xd24fa8, accent: 0xe2bc58, ink: 0x8a2a70, dial: 0xd24fa8, grip: 0xd24fa8, knobFace: 0xfaf4f0, inner: 0xfbe6f2, bevel: 0.02, round: 0.03, wear: 0, stand: 'cabinet', header: 'arch', glass: 0xfff6fc, flap: 'smoke', sign: 'ガチャ', model: 'GS-1000R', crown: true },
 };
+/** How high the sample topper's display step stands, per header (the samples must clear the header in front). */
+export const RISER = { slant: 0.03, board: 0.046, arch: 0.064 };
 const STEEL = 0xb9bfc4, DARK = 0x1c1b20, RUBBER = 0x26262a;
 const CHROME = [0x596068, 0x9aa3ab, 0xd3dade, 0xf6fafa]; // painted chrome: shade, mid, light, glint
 
@@ -112,7 +114,7 @@ function buildGeometry(type, spec, L, st, A) {
   V.LF = A.view('LF', { u: (p) => p[0], v: (p) => p[1], u0: -hw - 0.008, u1: hw + 0.008, v0: -0.03, v1: capH + 0.09, ppm: PPM });
   V.GL = A.patch('GL', 160, 150); V.COIN = A.patch('COIN', 96, 124); V.INSTR = A.patch('INSTR', 184, 112); V.CLOSED = A.patch('CLOSED', 120, 84);
   V.SIGN = A.patch('SIGN', 220, 64); V.WOOD = A.patch('WOOD', 128, 64); V.PRICE = A.patch('PRICE', 64, 64); V.CHOKE = A.patch('CHOKE', 84, 60); V.FLAP = A.patch('FLAP', 72, 60); V.HOOD = A.patch('HOOD', 72, 56); V.MAKER = A.patch('MAKER', 188, 46);
-  V.FAIL = A.patch('FAIL', 204, 42); V.AGE = A.patch('AGE', 140, 22); V.SLOT = A.patch('SLOT', 104, 22); V.RET = A.patch('RET', 56, 22); V.OUT = A.patch('OUT', 90, 22);
+  V.FAIL = A.patch('FAIL', 204, 42); V.AGE = A.patch('AGE', 140, 22); V.SLOT = A.patch('SLOT', 104, 22); V.RET = A.patch('RET', 56, 22); V.OUT = A.patch('OUT', 90, 22); V.SAMPLE = A.patch('SAMPLE', 60, 22);
   paintAll(type, spec, L, st, A, V, { B, PN, TR, AC, worn, rnd });
 
   // ------------------------------------------------------------------ geometry
@@ -306,6 +308,15 @@ function buildGeometry(type, spec, L, st, A) {
       LG.with(sw(AC[3], ROUGH.chrome), 0, () => { for (let k = 0; k < 5; k++) { const a = (k / 5) * Math.PI * 2; LG.box(Math.cos(a) * 0.03 - 0.005, cy + 0.026, D.z + Math.sin(a) * 0.03 - 0.005, Math.cos(a) * 0.03 + 0.005, cy + 0.04, D.z + Math.sin(a) * 0.03 + 0.005, { bevel: 0.004 }); } });
       LG.with(sw(st.trim, ROUGH.lens), 0, () => LG.box(-0.009, cy + 0.008, D.z - 0.009, 0.009, cy + 0.03, D.z + 0.009, { bevel: 0.006 }));
     }
+    // the display step the samples stand on: high enough that the header in front of it hides none of them
+    const rh = RISER[st.header] || 0;
+    if (rh) {
+      const rx = D.w / 2 - 0.012, rz0 = D.z - D.d / 2 + 0.014, rz1 = D.z + D.d / 2 - 0.016, ry = ty + 0.012;
+      const rUV = triplanar({ pz: sw(PN[2]), px: sw(PN[1]), nx: sw(PN[1]), nz: sw(PN[1]), py: sw(PN[3]), ny: body2 });
+      roundBox(LG, -rx, ry, rz0, rx, ry + rh - 0.004, rz1, 0.006, rUV, { ch: 0.002 });
+      roundBox(LG, -rx - 0.002, ry + rh - 0.004, rz0 - 0.002, rx + 0.002, ry + rh, rz1 + 0.002, 0.007, triplanar({ pz: accUV, px: accUV, nx: accUV, nz: accUV, py: sw(PN[3]), ny: accUV }), { ch: 0.0015 });
+      label(LG, V.SAMPLE, rx - 0.03, ry + (rh - 0.004) / 2, 0.04, rz1 + 0.0004);
+    }
     // the hood's four panes
     const x0 = -D.w / 2, x1 = D.w / 2, z0 = D.z - D.d / 2, z1 = D.z + D.d / 2, yy0 = ty + 0.012, yy1 = ty + th;
     const pane = (a, c, n) => HG.quadN([a[0], yy0, a[1]], [c[0], yy0, c[1]], [c[0], yy1, c[1]], [a[0], yy1, a[1]], n, n, n, n, V.HOOD.st(0.01, 0.01), V.HOOD.st(0.99, 0.01), V.HOOD.st(0.99, 0.99), V.HOOD.st(0.01, 0.99));
@@ -344,16 +355,16 @@ function buildGeometry(type, spec, L, st, A) {
     });
     const gripUV = sw(st.grip, type === 'retro' ? ROUGH.paint : ROUGH.plastic), gw = Math.max(0.011, kn * 0.24);
     if (type === 'retro') {
-      // a butterfly knob: two wings on a chrome hub
-      HGm.with(gripUV, 0, () => { for (const s of [-1, 1]) HGm.box(-gw * 0.8, s > 0 ? 0.004 : -kn * 0.9, 0.011, gw * 0.8, s > 0 ? kn * 0.9 : -0.004, 0.036, { bevel: 0.006 }); });
-      turned(HGm, 0, 0, 0.011, [[gw * 1.25, 0], [gw * 1.25, 0.02], [gw * 1.15, 0.026], [gw * 0.8, 0.03], [0, 0.031]], 24, sw(CHROME[2], ROUGH.chrome));
+      // a butterfly knob: one moulding pinched in the middle into two wings, on a chrome hub
+      lobe(HGm, { len: kn * 0.9, wid: gw * 1.05, waist: 0.55, z0: 0.011, z1: 0.036, fillet: 0.0045, uv: gripUV });
+      turned(HGm, 0, 0, 0.011, [[gw * 0.95, 0], [gw * 0.95, 0.024], [gw * 0.88, 0.0275], [gw * 0.6, 0.0295], [0, 0.03]], 32, sw(CHROME[2], ROUGH.chrome));
     } else {
-      HGm.with(gripUV, 0, () => HGm.box(-gw, -kn * 0.88, 0.011, gw, kn * 0.88, 0.04, { bevel: 0.007 }));
-      HGm.with(sw(mix(st.grip, 0x000000, 0.25)), 0, () => { for (let k = -2; k <= 2; k++) if (k) HGm.box(-gw - 0.0012, k * kn * 0.2 - 0.003, 0.018, gw + 0.0012, k * kn * 0.2 + 0.003, 0.034); }); // finger ribs
-      turned(HGm, 0, 0, 0.04, [[gw * 0.62, 0], [gw * 0.56, 0.002], [gw * 0.4, 0.003], [0, 0.0034]], 20, sw(type === 'standard' ? CHROME[2] : AC[2], ROUGH.chrome));
+      // a moulded grip bar: eased all round, a soft waist, finger ribs moulded down both long sides
+      lobe(HGm, { len: kn * 0.88, wid: gw, waist: 0.1, ribs: [7, 0.035], z0: 0.011, z1: 0.04, fillet: 0.0065, uv: gripUV });
+      turned(HGm, 0, 0, 0.04, [[gw * 0.62, 0], [gw * 0.56, 0.0015], [gw * 0.4, 0.0024], [0, 0.0027]], 32, sw(type === 'standard' ? CHROME[2] : AC[2], ROUGH.chrome));
     }
     // the arrow at the top end of the bar
-    HGm.with(sw(0xffd23f), 0, () => HGm.tri([-0.006, kn * 0.6, 0.0403], [0.006, kn * 0.6, 0.0403], [0, kn * 0.78, 0.0403], [0, 0, 1]));
+    { const az = type === 'retro' ? 0.0363 : 0.0403; HGm.with(sw(0xffd23f), 0, () => HGm.tri([-0.0055, kn * 0.56, az], [0.0055, kn * 0.56, az], [0, kn * 0.72, az], [0, 0, 1])); }
   }
   // ------------------------------------------------------------------ the flap (hinged on its top edge at the origin)
   const FG = new GeoS(1);
@@ -625,6 +636,7 @@ function paintAll(type, spec, L, st, A, V, K) {
   }
   { const P = V.SLOT; paper(P, st.dark ? 0x1a191d : st.trim === 0xd8dcdc ? red : st.trim, st.dark ? st.accent : white); kana(P, 'コイン投入口', P.W / 2, P.H - 3, st.dark ? st.accent : white, { align: 'center' }); }
   { const P = V.RET; paper(P, white, 0x8a8a84); kana(P, '返却口', P.W / 2, P.H - 3, 0x2a2428, { align: 'center' }); }
+  { const P = V.SAMPLE; paper(P, white, red); P.box(1, 1, 16, P.H - 1, red); P.text5('GG', 3, P.H / 2 + 3, white); kana(P, '見本', 38, P.H - 3, red, { align: 'center' }); }
   { const P = V.OUT; paper(P, st.dark ? 0x1a191d : white, st.dark ? st.accent : 0x8a8a84); kana(P, 'とりだし口', P.W / 2, P.H - 3, st.dark ? st.accent : 0x2a2428, { align: 'center' }); }
   {
     // the old machine's price roundel

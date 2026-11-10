@@ -21,6 +21,7 @@ import { capsuleColor, capsuleRadius, capsuleSize, capsuleStyle, capsuleShape, p
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capacityFor, crankTime, rollCapsule, MACHINE_TYPES } from './economy.js';
 import { bannerTexture } from '../gfx/banner.js';
+import { RISER } from '../gachakit/machine.js';
 import { makeItemMesh, itemGeometry, hasItemGeometry } from './collectibles.js';
 import { mergeByMaterial, partsBox } from '../voxel/merge.js';
 import { Pix } from '../gfx/pix.js';
@@ -236,16 +237,16 @@ export class GachaMachine {
     A.add(turn);
     this.turntable = this.spec.style.crown ? turn : null;
     const n = keys.length;
-    const cell = (D.w - 0.02) / n;
+    const cell = (D.w - 0.02) / n, rise = RISER[this.spec.style.header] || 0; // (they stand on the topper's display step)
     // performance: the sample figures are drawn as one merged mesh (one draw call per material, not per figure and
     // material). Each figure keeps its own level of detail as in src/game/collectibles.js (coarse voxels, the up-res
     // ones within 1.7 m of the camera, back beyond 2.1 m): the merged geometry is the matching mix (see updateFigures).
     const figs = keys.map((k, i) => {
       const fig = makeItemMesh(k, 'normal');
       const sz = fig.geometry.userData.size;
-      const sc = Math.min(1, (D.h - 0.02) / sz.y, (cell - 0.01) / Math.max(sz.x, sz.z));
+      const sc = Math.min(1, (D.h - rise - 0.008) / sz.y, (cell - 0.01) / Math.max(sz.x, sz.z));
       fig.scale.setScalar(sc);
-      fig.position.set(-D.w / 2 + 0.01 + cell * (i + 0.5), 0, (i % 2 ? -0.02 : 0.015));
+      fig.position.set(-D.w / 2 + 0.01 + cell * (i + 0.5), rise, (i % 2 ? -0.02 : 0.015));
       fig.rotation.y = -(i - (n - 1) / 2) * 0.28;
       fig.updateMatrix();
       const lod = fig.userData.lod; // (unset: one detail level only)

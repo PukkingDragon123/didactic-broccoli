@@ -152,6 +152,60 @@ export function roundBox(G, x0, y0, z0, x1, y1, z1, r, uv, o = {}) {
   return G;
 }
 
+/**
+ * A moulded grip or knob bar (a crank's handle, a wing knob): a stadium in plan, half-length `len` along y and half-width
+ * `wid` along x, rising from z0 with a little draft to a filleted top at z1 (the fillet `fillet`, the top crowned by
+ * `dome`). waist: how much narrower the middle of the long sides is than the ends (0.5: a butterfly / wing knob);
+ * ribs: [count, depth] finger ribs moulded into the long sides. Smooth normals from the surface itself; the open bottom
+ * sits on whatever it is fixed to. uv: a swatch (a function returning [u, v]).
+ */
+export function lobe(G, o) {
+  const { len, wid, z0, z1, waist = 0, ribs = null, uv, cols = 112, rows = 16, dome = 0 } = o;
+  const f = o.fillet ?? Math.min(wid * 0.6, (z1 - z0) * 0.45), h = Math.max(0, len - wid), draft = o.draft ?? 0.05 * (z1 - z0);
+  const per = 4 * h + 2 * Math.PI * wid, sA = (2 * h) / per, sB = (Math.PI * wid) / per;
+  const W = (y) => {
+    const q = h > 0 ? Math.max(-1, Math.min(1, y / h)) : 0;
+    let w = wid * (1 - waist * (1 - q * q));
+    if (ribs) w *= 1 + ribs[1] * Math.cos(q * Math.PI * ribs[0]) * (1 - q * q) * (1 - q * q);
+    return w;
+  };
+  const ring = (s, d) => {
+    s = ((s % 1) + 1) % 1;
+    if (s < sA) { const y = -h + 2 * h * (s / sA); return [W(y) - d, y]; }
+    s -= sA;
+    if (s < sB) { const a = Math.PI * (s / sB), r = wid - d; return [Math.cos(a) * r, h + Math.sin(a) * r]; }
+    s -= sB;
+    if (s < sA) { const y = h - 2 * h * (s / sA); return [-(W(y) - d), y]; }
+    s -= sA;
+    const a = Math.PI + Math.PI * (s / sB), r = wid - d;
+    return [Math.cos(a) * r, -h + Math.sin(a) * r];
+  };
+  const ta = 0.42, tb = 0.8;
+  const at = (s, t) => {
+    let d, z, u = 0;
+    if (t <= ta) { const k = t / ta; d = draft * k; z = z0 + (z1 - f - z0) * k; } else if (t <= tb) {
+      const ph = ((t - ta) / (tb - ta)) * Math.PI / 2;
+      d = draft + f * (1 - Math.cos(ph)); z = z1 - f + f * Math.sin(ph);
+    } else { u = (t - tb) / (1 - tb); d = draft + f; z = z1 + dome * (1 - (1 - u) * (1 - u)); }
+    let [x, y] = ring(s, d);
+    if (u) { const cy = Math.max(-h, Math.min(h, y)); x *= 1 - u; y += (cy - y) * u; }
+    return [x, y, z];
+  };
+  const e = 1e-4, zm = (z0 + z1) / 2;
+  const nrm = (s, t) => {
+    const a = at(s + e, t), b = at(s - e, t), c = at(s, Math.min(1, t + e)), d = at(s, Math.max(0, t - e));
+    const ds = [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dt = [c[0] - d[0], c[1] - d[1], c[2] - d[2]];
+    let n = [ds[1] * dt[2] - ds[2] * dt[1], ds[2] * dt[0] - ds[0] * dt[2], ds[0] * dt[1] - ds[1] * dt[0]];
+    const l = Math.hypot(n[0], n[1], n[2]);
+    if (l < 1e-14 || t > 0.995) return [0, 0, 1];
+    n = [n[0] / l, n[1] / l, n[2] / l];
+    const p = at(s, t), ref = [p[0], p[1] - Math.max(-h, Math.min(h, p[1])), p[2] - zm + (t > tb ? 1 : 0)];
+    return n[0] * ref[0] + n[1] * ref[1] + n[2] * ref[2] < 0 ? [-n[0], -n[1], -n[2]] : n;
+  };
+  G.patch(cols, rows, (s, t) => ({ p: at(s, t), n: nrm(s, t) }), () => uv());
+  return G;
+}
+
 /** A geometry sharing another one's buffers but drawing only [start, start + count) vertices. */
 export function subRange(geo, start, count) {
   const g = new THREE.BufferGeometry();

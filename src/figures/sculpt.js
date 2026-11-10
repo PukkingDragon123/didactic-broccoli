@@ -351,7 +351,9 @@ export class Sculpt {
    */
   tube(path, r, o = {}) {
     const sides = QN(o.sides ?? 6), n = path.length, fl = o.flat || [1, 1];
-    const R = (i) => (typeof r === 'function' ? r(i / (n - 1)) : Array.isArray(r) ? r[i] : r);
+    // (an array of radii runs along the whole path, however finely the path is cut: sampled, not indexed)
+    const arr = (i) => { const f = (n > 1 ? i / (n - 1) : 0) * (r.length - 1), j = Math.min(r.length - 2, Math.floor(f)); return r.length < 2 ? r[0] : r[j] + (r[j + 1] - r[j]) * (f - j); };
+    const R = (i) => (typeof r === 'function' ? r(i / (n - 1)) : Array.isArray(r) ? arr(i) : r);
     const tan = (i) => norm(sub(path[Math.min(n - 1, i + 1)], path[Math.max(0, i - 1)]));
     // parallel-transport frame
     let t = tan(0), u = norm(cross(Math.abs(t[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0], t)), w = cross(t, u);

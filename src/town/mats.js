@@ -38,6 +38,9 @@ const ALIAS = {
 export function makeMats(t) {
   const mats = t.mats;
   t.P = (rough = 0.75, metal = 0, extra = {}) => {
+    // every distinct paint is a draw call per batch (and per pass): plain paints snap to four shared finishes
+    // (matte 0.85, satin painted metal 0.65 / 0.2, bare metal 0.45 / 0.45, gloss 0.3)
+    if (!Object.keys(extra).length) { if (rough >= 0.78) { rough = 0.85; metal = 0; } else if (rough >= 0.55) { rough = 0.65; metal = 0.2; } }
     const ck = 'c:' + rough + ':' + metal + JSON.stringify(extra);
     if (!mats.has(ck)) { const m = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough, metalness: metal, ...extra }); m.name = 'paint'; mats.set(ck, m); }
     return mats.get(ck);

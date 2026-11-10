@@ -134,6 +134,12 @@ function halfMesh(shape, r, part, res, M, parent, extras = null) {
   return m;
 }
 
+/** The parts bag's film: frosted polyethylene, milky and soft-sheened (the parts read through it as shapes). */
+let FILM = null;
+function filmMaterial() {
+  return FILM || (FILM = new THREE.MeshStandardMaterial({ color: 0xf1f3f4, roughness: 0.42, metalness: 0, transparent: true, opacity: 0.52, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 0.7 }));
+}
+
 // glitter twinkles in steps: every fleck material's sheet moves down a frame
 const TW = { t: -1 };
 function twinkle() {
@@ -184,7 +190,7 @@ export function makeCapsule(seriesId, color, opts = {}) {
     if (seeThrough(look, style)) {
       const variant = ((S?.order || 1) + (rgb & 3)) % 4;
       cap.parts = add(partsGeo(r, variant), sheet.mat, bottom);
-      cap.bag = add(bagGeo(r), coatMaterial(0.3), bottom, { order: 1.5 });
+      cap.bag = add(bagGeo(r), filmMaterial(), bottom, { order: 1.5 });
       if (shape === 'can') { cap.parts.scale.setScalar(0.8); cap.bag.scale.setScalar(0.8); }
     }
     if (look === 'gold' || look === 'secret') {

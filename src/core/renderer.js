@@ -261,7 +261,7 @@ const lightToVM = (o) => { if (o.isLight && !o.userData.pooled) o.layers.enable(
 
 // Shadow casters' last-seen state, for the shadow update policy (Renderer.updateShadows)
 const _sph = new THREE.Sphere(), _lp = new THREE.Vector3(), _lt = new THREE.Vector3(), _cp = new THREE.Vector3(), _vpm = new THREE.Matrix4();
-const FAR_MOVER = 15; // m: casters moving farther than this from the camera refresh the shadow map at a third of the rate
+const FAR_MOVER = 10; // m: casters moving farther than this from the camera refresh the shadow map at a third of the rate
 // (kept in WeakMaps, not userData: Object3D.clone() copies userData through JSON)
 const CASTER = new WeakMap(), SHADOW = new WeakMap();
 function casterState(o) {
@@ -273,15 +273,16 @@ function casterState(o) {
 // lights: point lights evaluated per pixel (src/gfx/lightPool.js picks the most relevant ones in view).
 // shadowEvery: the fastest a shadow map is redrawn while something in it moves (frames); a still scene redraws none.
 // shadowMinR: casters smaller than this (bounding radius, m) don't trigger a redraw by moving.
+// sunShadow: half the side of the sun's shadow map (m); it follows you (src/game/Lighting.js followShadow).
 // view: draw distance of small props (src/world/propCull.js). crowd: how many passers-by the lane holds (Pedestrians).
 // aoScale: the resolution ambient occlusion is computed at (AOUpsampleShader brings it back up).
 // pr: the canvas pixel ratio as [share of the device pixel ratio, at least, at most]: native wherever it can be afforded,
 // never under 1 (no upscaled, soft picture on any preset); ultra supersamples a 1x display.
 export const QUALITY = {
-  low: { pr: [0.75, 1, 1.5], shadows: 1024, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, lights: 4, view: 0.65, crowd: 0.6 },
-  medium: { pr: [1, 1, 2], shadows: 2048, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, lights: 5, view: 0.8, crowd: 0.8 },
-  high: { pr: [1, 1, 2], shadows: 2048, ao: true, aoScale: 0.5, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, lights: 6, view: 1, crowd: 1 },
-  ultra: { pr: [1.5, 1.5, 2], shadows: 4096, ao: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, lights: 8, view: 1.2, crowd: 1 },
+  low: { pr: [0.75, 1, 1.5], shadows: 1024, sunShadow: 12, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, lights: 4, view: 0.65, crowd: 0.6 },
+  medium: { pr: [1, 1, 2], shadows: 2048, sunShadow: 15, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, lights: 5, view: 0.8, crowd: 0.8 },
+  high: { pr: [1, 1, 2], shadows: 2048, sunShadow: 18, ao: true, aoScale: 0.5, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, lights: 6, view: 1, crowd: 1 },
+  ultra: { pr: [1.5, 1.5, 2], shadows: 4096, sunShadow: 24, ao: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, lights: 8, view: 1.2, crowd: 1 },
 };
 
 export class Renderer {
@@ -447,8 +448,9 @@ export class Renderer {
       const iv = o.instanceMatrix ? o.instanceMatrix.version + (o.count || 0) * 1e6 : 0, pv = o.geometry?.attributes?.position?.version ?? 0;
       let ch = iv !== st.v || pv !== st.pv || !this.prevCasters.has(o);
       if (!ch) for (let i = 0; i < 16; i++) if (e[i] !== m[i]) { ch = true; break; }
-      // a person standing still still breathes and fidgets: their shadow is refreshed every 6th frame
-      if (!ch && st.skinned && ++st.skinT >= 6) ch = true;
+      // a person standing still still breathes and fidgets: their shadow is refreshed every 10th frame (the sun's map holds
+      // the whole lane round you, so a redraw is not free)
+      if (!ch && st.skinned && ++st.skinT >= 10) ch = true;
       if (!ch) continue;
       st.skinT = 0;
       m.set(e); st.v = iv; st.pv = pv;

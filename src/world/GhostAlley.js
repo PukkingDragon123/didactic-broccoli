@@ -80,21 +80,6 @@ function plaque() {
   return new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.22), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 }));
 }
 
-/** Pixel-dithered warm disc for the lamp's pool of light (alpha-cut, no soft blob). */
-function poolTexture() {
-  const N = 32, c = document.createElement('canvas'); c.width = c.height = N;
-  const g = c.getContext('2d'), im = g.createImageData(N, N);
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-    const d = Math.hypot(x - N / 2 + 0.5, y - N / 2 + 0.5) / (N / 2), k = 1 - d;
-    const on = k > 0 && k * 1.4 > BAYER[(y & 3) * 4 + (x & 3)] / 16, o = (y * N + x) * 4;
-    im.data[o] = 255; im.data[o + 1] = 200; im.data[o + 2] = 120; im.data[o + 3] = on ? 255 : 0;
-  }
-  g.putImageData(im, 0, 0);
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace; t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
-  return t;
-}
-
 /** Ghostly look for every mesh under root: see-through, pale blue, faintly glowing, no shadows. */
 function ghostify(root, op = 0.55) {
   const mats = [];
@@ -251,15 +236,16 @@ export class GhostAlley {
     G.add(mesh);
     this.game.player.addObstacle(POST.x - 0.24, POST.x + 0.24, POST.z - 0.24, POST.z + 0.24);
     this.game.player.addObstacle(LAMP.x - 0.08, LAMP.x + 0.08, LAMP.z - 0.08, LAMP.z + 0.08);
-    // the bulb (flickers), its dithered pool on the ground
+    // the bulb (flickers) and its real light: a warm lamp whose light falls off naturally over the ground and the walls
+    // (no painted pool or disc: src/gfx/sunMask.js softens a lamp's falloff near the source)
     this.bulbM = new THREE.MeshBasicMaterial({ color: 0xffd890 });
-    const bulb = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.12), this.bulbM);
-    bulb.position.set(LAMP.x - 0.56, 2.52, LAMP.z);
+    const bulbP = [[0, -0.05], [0.014, -0.047], [0.026, -0.036], [0.032, -0.02], [0.031, -0.004], [0.022, 0.012], [0.014, 0.022], [0.013, 0.04], [0, 0.04]].map(([r, y]) => new THREE.Vector2(r, y));
+    const bulb = new THREE.Mesh(new THREE.LatheGeometry(bulbP, 16), this.bulbM);
+    bulb.position.set(LAMP.x - 0.56, 2.5, LAMP.z);
     G.add(bulb);
-    this.poolM = new THREE.MeshBasicMaterial({ map: poolTexture(), alphaTest: 0.5, transparent: true, opacity: 0.32, depthWrite: false, color: 0xffc880 });
-    const pool = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), this.poolM);
-    pool.rotation.x = -Math.PI / 2; pool.position.set(LAMP.x - 0.65, 0.014, LAMP.z); pool.renderOrder = 2;
-    G.add(pool);
+    this.lampL = new THREE.PointLight(0xffc880, 0, 7, 2);
+    this.lampL.position.set(LAMP.x - 0.56, 2.42, LAMP.z);
+    G.add(this.lampL);
     this.flick = 1; this.flickT = 0;
     // the plaque on the block wall at the mouth
     const pl = plaque();
@@ -344,7 +330,7 @@ export class GhostAlley {
     }
     const night = Math.max(0.35, g.lighting?.state?.night ?? 0.6);
     this.bulbM.color.setRGB(1, 0.85, 0.56).multiplyScalar(0.2 + this.flick * 1.3);
-    this.poolM.opacity = 0.55 * this.flick * Math.max(0.5, night);
+    this.lampL.intensity = 1.8 * this.flick * Math.max(0.5, night);
     const dPl = P.pos.distanceTo(h.root.position), near = dPl < 7;
     const show = this.present && dPl < 30;
     h.root.visible = this.dog.root.visible = show;
