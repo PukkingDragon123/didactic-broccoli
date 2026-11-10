@@ -8,6 +8,7 @@ import { Talk } from '../talk/Talk.js';
 import { Speech } from '../talk/speech.js';
 import { Monologue } from '../talk/monologue.js';
 import { Guestbook } from '../talk/guestbook.js';
+import { prebuildYokai } from '../npc/yokaiBuild.js';
 import { Lane, ACTS } from '../npc/Lane.js';
 import { Doors, DOOR_QUESTS } from '../npc/doors.js';
 import { ROSTER } from '../npc/roster.js';
@@ -38,6 +39,8 @@ export function install(game) {
   const book = g.guestbook = new Guestbook(g);
   const self = g.monologue = new Monologue(g, speech);
   setTimeout(() => lostPigeon(lane), 3000);
+  // the night's yokai are sculpted in a background worker now, so the first nightfall doesn't stop to build them
+  setTimeout(() => prebuildYokai(), 4000);
   codex(g);
   messenger(g, mem);
   settingsUI(g, speech);

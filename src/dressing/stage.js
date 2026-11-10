@@ -3,8 +3,8 @@
 // window behind the camera. Drag to turn you; let go and you slow to a stop, and after a while settle back to face the
 // mirror (three-quarters on). The camera frames your face, your whole body or your feet.
 //
-// Crisp pixels: the scene is drawn at art resolution (every art pixel is a whole number of screen pixels, scaled up with
-// nearest filtering) in two passes, the room and you, each with its depth. An output pass puts them together the way the
+// The scene is drawn at full device resolution like the game's world (docs/ART.md: never upscaled), in two passes, the
+// room and you, each with its depth. An output pass puts them together the way the
 // game draws its world: the room gets the game's plum creases where depth jumps, you get a one-pixel ink outline and a
 // darker crease where an arm passes in front of the body. Then the game's grade: a neutral tone curve, a little less
 // saturation and contrast, darks lifted toward lilac (no black). The pixel sprites (src/dressing/sprites.js) are drawn
@@ -128,7 +128,7 @@ export class Stage {
     r.setPixelRatio(1);
     r.autoClear = false;
     r.shadowMap.enabled = true;
-    r.shadowMap.type = THREE.BasicShadowMap; // hard pixel shadows
+    r.shadowMap.type = THREE.PCFShadowMap; // soft-edged shadows, like the game's
     r.shadowMap.autoUpdate = false; // two passes a frame: the shadows are drawn once, before the first
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(30, 1, 0.05, 30);
@@ -180,8 +180,6 @@ export class Stage {
     const h = createAvatarHuman(normalizeAvatar(look), { lazy: false });
     h.shiftTarget = 0.6; h.shiftT = 1e9;
     h.root.traverse((o) => { o.layers.set(LAYER.me); if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; } });
-    // crisp texels when the painted atlas is drawn small (the game smooths them; the stage is pixel art)
-    if (h.tex) { h.tex.minFilter = THREE.NearestMipmapNearestFilter; h.tex.needsUpdate = true; }
     this.pivot.add(h.root);
     if (old) {
       // carry the idle animation's phase over so a rebuild doesn't hitch
@@ -215,8 +213,7 @@ export class Stage {
   /** The stage area (the part of the screen the panel leaves free), in CSS px. */
   layout(rect) {
     const dpr = window.devicePixelRatio || 1;
-    const big = Math.min(innerWidth, innerHeight) > 520;
-    const S = Math.max(2, Math.round((big ? 2 : 1.5) * dpr)); // device px per art px
+    const S = 1; // device px per stage px: full resolution, like the game (the stage used to be drawn at 1/2 and upscaled)
     const W = Math.ceil((innerWidth * dpr) / S), H = Math.ceil((innerHeight * dpr) / S);
     const cv = this.canvas;
     this.renderer.setSize(W, H, false);

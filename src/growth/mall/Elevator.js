@@ -39,17 +39,21 @@ export class Elevator {
     B.box(paint, 0.12, CH, 1.2 - dw, wx + 0.02, 0, -(1.2 + dw) / 2, { tint: 0xd8d4cc });
     B.box(paint, 0.12, CH, 1.2 - dw, wx + 0.02, 0, (1.2 + dw) / 2, { tint: 0xd8d4cc });
     B.box(paint, 0.12, CH - 2.15, dw * 2, wx + 0.02, 2.15, 0, { tint: 0xd8d4cc });
-    B.box(steel, 0.06, 2.2, 0.08, wx + 0.09, 0, -dw - 0.04, { tint: 0xc8ccd2 });
-    B.box(steel, 0.06, 2.2, 0.08, wx + 0.09, 0, dw + 0.04, { tint: 0xc8ccd2 });
-    B.box(steel, 0.06, 0.08, dw * 2 + 0.16, wx + 0.09, 2.12, 0, { tint: 0xc8ccd2 });
+    Z.prop('kk_lift_frame', wx + 0.11, 0, 0, Math.PI / 2); // the stainless architrave and sill (src/props/models/fixtures.js)
     for (const z of [-1.2, 1.2]) B.box(paint, L.door - (-13), CH, 0.12, (-13 + L.door) / 2, 0, z, { tint: 0xd8d4cc });
     // the car: steel walls, the mirror at the back, a handrail, a glowing ceiling, a rubber floor
     B.plane(paint, L.x1 - L.x0, L.z1 - L.z0, (L.x0 + L.x1) / 2, 0.005, 0, { tint: 0x3a3a40 });
     B.box(steel, 0.02, L.ch, L.z1 - L.z0, L.x0, 0, 0, { tint: 0xb8bcc2 });
     for (const z of [L.z0, L.z1]) B.box(steel, L.x1 - L.x0, L.ch, 0.02, (L.x0 + L.x1) / 2, 0, z, { tint: 0xc0c4ca });
     B.box(steel, 0.01, 1.1, 1.6, L.x0 + 0.015, 0.95, 0, { tint: 0xe8f0f6 }); // mirror
-    B.box(steel, 0.04, 0.04, 1.8, L.x0 + 0.06, 0.9, 0, { tint: 0xd8dce2 });
-    for (const z of [L.z0 + 0.05, L.z1 - 0.05]) B.box(steel, 1.7, 0.04, 0.04, (L.x0 + L.x1) / 2, 0.9, z, { tint: 0xd8dce2 });
+    // round handrails on standoff brackets
+    const rail = (ax, az, bx, bz, ox, oz) => {
+      const len = Math.hypot(bx - ax, bz - az), g = new THREE.CylinderGeometry(0.019, 0.019, len, 12);
+      g.rotateX(Math.PI / 2); g.rotateY(Math.atan2(bx - ax, bz - az)); g.translate((ax + bx) / 2, 0.92, (az + bz) / 2); B.add(steel, g, 0xd8dce2);
+      for (const t of [0.15, 0.85]) { const x = ax + (bx - ax) * t, z = az + (bz - az) * t, b = new THREE.CylinderGeometry(0.008, 0.008, 0.05, 8); b.rotateX(Math.PI / 2); b.rotateY(Math.atan2(ox, oz)); b.translate(x - ox * 0.025, 0.92, z - oz * 0.025); B.add(steel, b, 0xc8ccd2); }
+    };
+    rail(L.x0 + 0.06, -0.9, L.x0 + 0.06, 0.9, -1, 0);
+    for (const [z, s] of [[L.z0 + 0.05, -1], [L.z1 - 0.05, 1]]) rail(L.x0 + 0.15, z, L.x1 - 0.15, z, 0, s);
     B.box(glow, L.x1 - L.x0 - 0.2, 0.02, L.z1 - L.z0 - 0.2, (L.x0 + L.x1) / 2, L.ch - 0.04, 0, { tint: 0xfff8e8 });
     B.box(paint, L.x1 - L.x0 + 0.1, 0.06, L.z1 - L.z0 + 0.1, (L.x0 + L.x1) / 2, L.ch, 0, { tint: 0x8a8e94 });
     B.box(steel, 0.08, L.ch, L.z1 - dw - 0.01, L.x1 + 0.12, 0, -(dw + L.z1) / 2, { tint: 0xb8bcc2 });
@@ -64,10 +68,12 @@ export class Elevator {
     });
     // the indicator over the doors, the call button beside them, the floor buttons inside
     const ind = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.18), this.out);
-    ind.position.copy(Z.L(wx + 0.09, 2.42, 0)); ind.rotation.y = Math.PI / 2; Z.group.add(ind);
+    ind.position.copy(Z.L(wx + 0.105, 2.42, 0)); ind.rotation.y = Math.PI / 2; Z.group.add(ind);
+    Z.prop('kk_lift_ind', wx + 0.09, 2.42, 0, Math.PI / 2);
     const callMat = canvasMat(12, 20, (x) => this.drawCall(x, n), { glow: true });
     const call = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.2), callMat);
-    call.position.copy(Z.L(wx + 0.09, 1.15, 0.82)); call.rotation.y = Math.PI / 2; Z.group.add(call);
+    call.position.copy(Z.L(wx + 0.1, 1.15, 0.82)); call.rotation.y = Math.PI / 2; Z.group.add(call);
+    Z.prop('kk_lift_call', wx + 0.088, 1.15, 0.82, Math.PI / 2);
     const pan = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.46), this.inside);
     pan.position.copy(Z.L(L.x1 + 0.07, 1.25, -0.78)); pan.rotation.y = -Math.PI / 2; Z.group.add(pan);
     const sticker = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.1), canvasMat(20, 14, (x) => { x.fillStyle = '#f4f0e4'; x.fillRect(0, 0, 20, 14); x.fillStyle = '#2f5a9a'; x.fillRect(0, 0, 20, 4); pixText(x, '検査済', 10, 4, { size: 8, align: 'center', color: '#241a1e' }); }));

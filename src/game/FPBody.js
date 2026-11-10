@@ -404,10 +404,11 @@ export class FPBody {
   /** The hands' colour (sRGB bytes): median of the avatar's painted hand texels. */
   handColor(h) {
     const src = h.mesh.geometry, si = src.attributes.skinIndex, uv = src.attributes.uv, idx = src.index.array, d = h.pix.d;
-    const hl = BONE_INDEX.handL, hr = BONE_INDEX.handR, cols = [];
+    const hl = BONE_INDEX.handL, hr = BONE_INDEX.handR, cols = [], ga = src.attributes.gear;
     for (let i = 0; i < idx.length; i += 3) {
       const b = si.getX(idx[i]);
       if (b !== hl && b !== hr) continue;
+      if (ga && ga.getX(idx[i]) > 0) continue; // modelled gear (src/people/gear.js), not skin
       const u = (uv.getX(idx[i]) + uv.getX(idx[i + 1]) + uv.getX(idx[i + 2])) / 3, v = (uv.getY(idx[i]) + uv.getY(idx[i + 1]) + uv.getY(idx[i + 2])) / 3;
       const o = (clamp(Math.floor((1 - v) * ATLAS), 0, ATLAS - 1) * ATLAS + clamp(Math.floor(u * ATLAS), 0, ATLAS - 1)) * 4;
       cols.push([d[o], d[o + 1], d[o + 2]]);

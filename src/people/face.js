@@ -373,12 +373,9 @@ export class FacePainter {
     const r = g.kind === 'round' ? Math.sqrt(dx * dx + dy * dy) : Math.pow(Math.pow(Math.abs(dx), 4) + Math.pow(Math.abs(dy), 4), 0.25);
     const th = (g.thick || 1) / Math.min(hwG, hhG), fc = g.col;
     const put = (col, t) => { c[0] += (col[0] - c[0]) * t; c[1] += (col[1] - c[1]) * t; c[2] += (col[2] - c[2]) * t; c[3] = c[3] + (1 - c[3]) * t; };
-    if (r < 1 - th) {
-      if (g.kind === 'sun') { put([26, 24, 30], 0.86); put([120, 110, 140], 0.25 * clamp01(1 - (y - gy + hhG) / (hhG * 1.2))); }
-      else { put([190, 215, 230], 0.08); if (Math.abs((x - gx) + (y - gy) * 0.9 + hwG * 0.3) < 0.7 && dy < 0.2) put([255, 255, 255], 0.22); }
-    } else if (r < 1 + th * 0.4) put(fc, 0.95);
-    if (Math.abs(y - (gy - hhG * 0.45)) < 0.6 && Math.abs(x - L.cx) < L.eyeX - hwG + 0.5) put(fc, 0.9);
-    if (Math.abs(y - (gy - hhG * 0.55)) < 0.6 && Math.abs(x - L.cx) > L.eyeX + hwG - 0.3) put(fc, 0.9);
+    // frames, bridge, temples and dark lenses are modelled (src/people/gear.js); a clear lens leaves a faint tint and a glint
+    if (g.kind !== 'sun' && r < 1) { put([190, 215, 230], 0.07); if (Math.abs((x - gx) + (y - gy) * 0.9 + hwG * 0.3) < 0.7 && dy < 0.2) put([255, 255, 255], 0.16); }
+    void th; void fc;
     return c[3];
   }
 

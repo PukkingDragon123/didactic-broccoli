@@ -4,6 +4,7 @@
 // Painters receive, per texel, the rest-pose surface point, so patterns run continuously across faces.
 import * as THREE from 'three';
 import { BONE_INDEX } from './body.js';
+import { buildGear } from './gear.js';
 
 // (384: about 380 px per metre on the body, close to the face block's 430, so no texel reads as a pixel at talking
 // distance; the painters work in metres, so the designs are the same at any size)
@@ -106,7 +107,7 @@ function pack(rects) {
  * Build the skinned geometry. Returns { geometry, faces, block } where faces carry their atlas rect and
  * basis so painters can walk texels, and block describes the face image ({ x, y, w, h, x0, y1, dens }).
  */
-export function buildMesh(plan) {
+export function buildMesh(plan, { gear = true } = {}) {
   const { P } = plan;
   const faces = [];
   for (const s of plan.segs) for (const f of segFaces(s)) faces.push(f);
@@ -156,7 +157,20 @@ export function buildMesh(plan) {
     }
   };
   for (const f of faces) { emit(f, false); if (f.seg.mirror) emit(f, true); }
+  // the modelled hats, glasses, bags and shoes (src/people/gear.js): vertex-coloured, rigidly skinned like the body
+  const nBody = pos.length / 3, G = gear ? (plan.gear !== undefined ? plan.gear : buildGear(plan)) : null;
+  const nAll = nBody + (G ? G.pos.length / 3 : 0);
+  const col = new Float32Array(nAll * 3).fill(1, 0, nBody * 3), gr = new Float32Array(nAll * 3);
+  if (G) {
+    for (let i = 0; i < G.pos.length; i++) { pos.push(G.pos[i]); nrm.push(G.nrm[i]); }
+    for (let i = 0; i < G.uv.length; i++) uv.push(G.uv[i]);
+    col.set(G.col, nBody * 3); gr.set(G.gear, nBody * 3);
+    for (const b of G.bone) { si.push(b, 0, 0, 0); sw.push(1, 0, 0, 0); }
+    for (const i of G.idx) idx.push(i + nBody);
+  }
   const g = new THREE.BufferGeometry();
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  g.setAttribute('gear', new THREE.BufferAttribute(gr, 3));
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));

@@ -9,6 +9,7 @@ import { Pix } from '../gfx/pix.js';
 import { FacePainter, exprParams, EXPRESSIONS } from './face.js';
 import { paintAtlas, paintAtlasJob, paintAtlasFlat } from './paint.js';
 import { GESTURES, FIDGETS, gesturePose } from './gestures.js';
+import { HumanMaterial } from './gear.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -120,7 +121,7 @@ export class Human {
       this.job = this.paintJob(m.faces);
       JOBS.add(this);
     }
-    this.mat = new THREE.MeshStandardMaterial({ map: this.tex, roughness: 0.85, metalness: 0, alphaTest: 0.5 });
+    this.mat = new HumanMaterial({ map: this.tex, roughness: 0.85, metalness: 0, alphaTest: 0.5 });
     // skeleton (rest pose = the modelled pose; all bones axis-aligned)
     this.bones = [];
     for (const [name, parent] of BONES) {

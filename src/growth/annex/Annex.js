@@ -156,8 +156,7 @@ export class Annex {
     B.box(M.paint, 0.7, 0.03, 0.1, 1.1, 0.8, Z1 - 0.02, { tint: 0x9a9a92 });
     B.quad(M.paint, 0.66, 1.0, 1.1, 0.83, Z1 + 0.02, { ry: Math.PI, tint: 0xb8d0d8, k: 0.8 });
     // the back door to Mr. Sugimoto's old rooms (locked storage)
-    B.box(M.wood, 0.85, 1.95, 0.05, 1.6, 0, Z0 + 0.03, { tint: 0x6a4a30 });
-    B.box(M.metal, 0.05, 0.05, 0.06, 1.3, 0.95, Z0 + 0.07, { tint: 0xc8b048 });
+    Z.prop('ax_door', 1.6, 0, Z0 + 0.03, 0);
     Z.hit(0.85, 1.95, 0.1, 1.6, 0.98, Z0 + 0.06, { reach: 2.2, hint: () => ({ key: '', text: 'Back rooms', sub: 'Mr. Sugimoto\'s old living rooms. Locked: his family\'s things are still in there' }), use: () => false });
     // the painted view out of the open shutter (the lane, the houses across it)
     this.view = canvasMat(128, 64, (x, w, h) => this.drawView(x, w, h), { glow: true });
@@ -201,14 +200,11 @@ export class Annex {
   counter() {
     const Z = this.zone, B = Z.B, M = this.M, z1 = this.dims.Z1;
     // the old tobacco counter under the window, tiled front, and the cigarette shelves on the right wall
-    B.box(M.tile, 1.4, 0.85, 0.6, 1.75, 0, z1 - 0.4, { tint: 0xc84a3a });
-    B.box(M.woodL, 1.5, 0.05, 0.66, 1.75, 0.85, z1 - 0.4, { tint: 0xc8a070 });
+    Z.prop('ax_counter', 1.75, 0, z1 - 0.4, Math.PI); // (src/props/models/fixtures.js)
     Z.prop('cash_register', 2.1, 0.9, z1 - 0.45, Math.PI + 0.3, 0.9);
     Z.block(1.05, 2.45, z1 - 0.72, z1);
     // an open shelf unit: back board, two sides, five shelves
-    B.box(M.wood, 0.03, 2.0, 2.6, 2.43, 0, 0.1, { tint: 0x7a5230 });
-    for (const z of [-1.2, 1.4]) B.box(M.wood, 0.32, 2.0, 0.04, 2.29, 0, z, { tint: 0x6a4428 });
-    for (let i = 0; i < 5; i++) B.box(M.woodL, 0.3, 0.025, 2.56, 2.28, 0.35 + i * 0.38, 0.1, { tint: 0xb89068 });
+    Z.prop('ax_shelf', 2.275, 0, 0.1, -Math.PI / 2);
     Z.block(2.12, 2.45, -1.2, 1.4);
     // after the renovation: figures on the counter and the shelves (the old stock's place)
     const disp = this.display = new THREE.Group();

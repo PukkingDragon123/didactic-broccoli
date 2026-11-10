@@ -4,6 +4,7 @@
 // gives the boxes volume.
 import { clamp01, sstep, mixc, G, h2, vnoise, shadeInto, over, hairPx, scaleO } from './paintlib.js';
 import { ATLAS } from './mesh.js';
+import { CLOSED_SHOES } from './gear.js';
 
 const WHITE = [244, 242, 236], INK = [28, 22, 22], GOLD = [214, 170, 70], SILVER = [190, 190, 196];
 const C_255_255_255 = [255, 255, 255];
@@ -546,6 +547,9 @@ function makePainters(spec, P) {
   }
   function shoePx(c, o) {
     const S = spec.shoes, k = S.kind, toe = c.part === 'toe';
+    // the shoes themselves are modelled (src/people/gear.js): what shows of the foot is the ankle / the foot in a sandal
+    if (CLOSED_SHOES.has(k) || k === 'pumps') { legwearPx({ ...c, part: 'shin' }, o); return; }
+    if (k === 'sandal') { shadeInto(o, spec.socks?.col || skin, bodyK(c) * (c.i % 2 ? 0.94 : 1)); return; }
     const sole = k === 'platform' ? 0.032 * H : k === 'sneaker' || k === 'comfort' || k === 'boots' || k === 'tabi' ? 0.014 * H : k === 'sandal' ? 0.012 * H : 0.007 * H;
     const soleCol = k === 'sneaker' || k === 'platform' ? [238, 236, 230] : k === 'tabi' ? [40, 40, 44] : k === 'comfort' ? [210, 200, 186] : k === 'sandal' ? S.col : [40, 30, 26];
     if (c.kind === 'bot') { shadeInto(o, mixc(soleCol, INK, 0.4), 0.7); return; }

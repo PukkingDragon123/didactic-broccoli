@@ -332,8 +332,15 @@ export class Mall {
       const len = Math.hypot(bx - ax, bz - az), cx = (ax + bx) / 2, cz = (az + bz) / 2, ry = ax === bx ? Math.PI / 2 : 0;
       const p = new THREE.Mesh(new THREE.PlaneGeometry(len, 0.9), glass);
       p.position.copy(Z.L(cx, y + 0.5, cz)); p.rotation.y = ry; Z.group.add(p);
-      B.box(metal, len + 0.06, 0.05, 0.06, cx, y + 0.95, cz, { ry, tint: 0xd8dce2 });
-      B.box(metal, len + 0.06, 0.05, 0.08, cx, y + 0.02, cz, { ry, tint: 0xb8bcc2 });
+      const ux = (bx - ax) / len, uz = (bz - az) / len, rod = (r, x, y0, z, h, tint, n = 12) => { const g = new THREE.CylinderGeometry(r, r, h, n); g.translate(x, y0 + h / 2, z); B.add(metal, g, tint); };
+      { const g = new THREE.CylinderGeometry(0.026, 0.026, len + 0.06, 14); g.rotateZ(Math.PI / 2); if (ry) g.rotateY(ry); g.translate(cx, y + 0.975, cz); B.add(metal, g, 0xd8dce2); }
+      B.box(metal, len + 0.06, 0.06, 0.07, cx, y, cz, { ry, tint: 0xa8acb2 });
+      const n = Math.max(1, Math.round(len / 1.2));
+      for (let k = 0; k <= n; k++) {
+        const t = k / n, px = ax + (bx - ax) * t - ux * (k === 0 ? -0.03 : k === n ? 0.03 : 0), pz = az + (bz - az) * t - uz * (k === 0 ? -0.03 : k === n ? 0.03 : 0);
+        rod(0.02, px, y + 0.06, pz, 0.89, 0xc8ccd2);
+        for (const yy of [0.25, 0.8]) B.box(metal, 0.05, 0.05, 0.03, px, y + yy, pz, { ry, tint: 0xd8dce2 });
+      }
     }
   }
   /** The well in this floor's floor (the escalators from below): the slab edge, the railing. */
@@ -498,24 +505,30 @@ export class Mall {
 
   signs(Z, n) {
     const T = THEMES[n];
-    const neon = (w, h, pw, ph, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), canvasMat(pw, ph, draw, { glow: true, alpha: true })); m.position.copy(Z.L(x, y, z)); m.rotation.y = ry; Z.group.add(m); return m; };
+    // a printed sign face; frame: the lightbox / rails it sits in (src/props/models/fixtures.js), the face just in front of it
+    const neon = (w, h, pw, ph, draw, x, y, z, ry, frame = null) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), canvasMat(pw, ph, draw, { glow: true, alpha: true }));
+      const f = frame && frame !== 'kk_banner' ? 0.014 : 0;
+      m.position.copy(Z.L(x + Math.sin(ry) * f, y, z + Math.cos(ry) * f)); m.rotation.y = ry; Z.group.add(m);
+      if (frame) Z.prop(frame, x, y, z, ry);
+      return m;
+    };
     const tube = (x, txt, size, col, cx, cy) => { pixText(x, txt, cx + 1, cy + 1, { size, align: 'center', color: '#00000066', font: /[ぁ-んァ-ン一-龯]/.test(txt) ? 'DotGothic16' : 'Alagard' }); pixText(x, txt, cx, cy, { size, align: 'center', color: col, font: /[ぁ-んァ-ン一-龯]/.test(txt) ? 'DotGothic16' : 'Alagard' }); };
     // over the back wall: the floor's name in neon
-    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = T.accent; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, `${n}F ${T.jp}`, 12, T.accent, 60, 2); }, 2.0, 2.95, Z0 + 0.13, 0);
-    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = '#ffd23f'; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, 'GACHA KAIKAN', 12, '#ffd23f', 60, 2); }, X1 - 0.13, 2.95, 4.0, -Math.PI / 2);
-    neon(5, 0.9, 100, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 100, 18); tube(x, 'ガチャガチャ', 12, '#ff6fa8', 50, 2); }, X0 + 0.13, 2.95, 5.0, Math.PI / 2);
+    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = T.accent; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, `${n}F ${T.jp}`, 12, T.accent, 60, 2); }, 2.0, 2.95, Z0 + 0.13, 0, 'kk_sign_6');
+    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = '#ffd23f'; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, 'GACHA KAIKAN', 12, '#ffd23f', 60, 2); }, X1 - 0.13, 2.95, 4.0, -Math.PI / 2, 'kk_sign_6');
+    neon(5, 0.9, 100, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 100, 18); tube(x, 'ガチャガチャ', 12, '#ff6fa8', 50, 2); }, X0 + 0.13, 2.95, 5.0, Math.PI / 2, 'kk_sign_5');
     // the floor directory by the lift
     neon(1.0, 1.3, 32, 44, (x) => {
       x.fillStyle = '#f4f0e6'; x.fillRect(0, 0, 32, 44); x.fillStyle = '#241a1e'; x.fillRect(0, 0, 32, 8);
       pixText(x, 'FLOOR', 16, 0, { size: 8, align: 'center', color: '#f4f0e6', font: 'Alagard' });
       for (let k = FLOORS; k >= 1; k--) { const y = 10 + (FLOORS - k) * 8; x.fillStyle = k === n ? THEMES[k].accent : '#5e5046'; x.fillRect(2, y, 8, 7); pixText(x, `${k}F`, 6, y - 1, { size: 8, align: 'center', color: '#fbf8f0', font: 'DotGothic16' }); pixText(x, THEMES[k].jp.slice(0, 4), 12, y - 1, { size: 8, color: '#241a1e' }); }
-    }, LIFT.door + 0.1, 1.6, -1.9, Math.PI / 2);
+    }, LIFT.door + 0.1, 1.6, -1.9, Math.PI / 2, 'kk_sign_dir');
     // over the escalators: where they go
-    if (n < FLOORS) { const G = GAPS[n]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▲ ${n + 1}F`, 24, 0, { size: 8, align: 'center', color: '#7aff9a', font: 'DotGothic16' }); }, G.x, 2.7, pathZ(G, 0) - G.dir * 0.3, G.dir > 0 ? 0 : Math.PI); }
-    if (n > 1) { const G = GAPS[n - 1]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▼ ${n - 1}F`, 24, 0, { size: 8, align: 'center', color: '#ffb05a', font: 'DotGothic16' }); }, G.x, 2.4, pathZ(G, PATH) + G.dir * 0.3, G.dir > 0 ? Math.PI : 0); }
+    if (n < FLOORS) { const G = GAPS[n]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▲ ${n + 1}F`, 24, 0, { size: 8, align: 'center', color: '#7aff9a', font: 'DotGothic16' }); }, G.x, 2.7, pathZ(G, 0) - G.dir * 0.3, G.dir > 0 ? 0 : Math.PI, 'kk_sign_esc'); }
+    if (n > 1) { const G = GAPS[n - 1]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▼ ${n - 1}F`, 24, 0, { size: 8, align: 'center', color: '#ffb05a', font: 'DotGothic16' }); }, G.x, 2.4, pathZ(G, PATH) + G.dir * 0.3, G.dir > 0 ? Math.PI : 0, 'kk_sign_esc'); }
     // the floor's centrepiece on a round plinth, and two sale banners hanging over the promenade
-    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.05, 0.35, 16), Z.mat(new THREE.MeshStandardMaterial({ color: new THREE.Color(T.band), roughness: 0.4 })));
-    plinth.position.copy(Z.L(0, 0.175, CENTRE_Z)); Z.group.add(plinth);
+    Z.prop(`kk_plinth_${n}`, 0, 0, CENTRE_Z, 0);
     Z.prop(T.centre[0], -0.25, 0.35, CENTRE_Z, 0.4, 1.2);
     Z.prop(T.centre[1], 0.55, 0.35, CENTRE_Z + 0.3, -0.6, 0.9);
     Z.block(-1.05, 1.05, CENTRE_Z - 1.05, CENTRE_Z + 1.05);
@@ -524,9 +537,8 @@ export class Mall {
         x.fillStyle = ['#ffd23f', '#ffffff'][i]; x.fillRect(0, 0, 40, 20);
         x.fillStyle = T.accent; x.fillRect(0, 0, 40, 3); x.fillRect(0, 17, 40, 3);
         pixText(x, i ? '新作入荷' : 'ガチャ祭', 20, 4, { size: 10, align: 'center', color: i ? T.accent : '#c8322c' });
-      }, 0, 2.55, z, 0);
+      }, 0, 2.55, z, 0, 'kk_banner');
       b.material.side = THREE.DoubleSide;
-      const str = new THREE.Mesh(new THREE.BoxGeometry(0.01, CH - 2.95, 0.01), this.mats.metal); str.position.copy(Z.L(0, 2.95 + (CH - 2.95) / 2, z)); Z.group.add(str);
     }
     // capsule-toy posters on the front wall, pixel art only
     for (const [x, i] of [[-12.2, 0], [12.2, 1]]) neon(0.9, 1.25, 30, 42, (c) => this.drawPoster(c, i + n), x, 1.6, Z1 - 0.12, Math.PI);
@@ -545,9 +557,8 @@ export class Mall {
   groundFloor(Z, paint, metal, glow) {
     const B = Z.B;
     // the info counter by the door: today's numbers
-    B.box(paint, 3.0, 1.0, 0.7, 7.5, 0, 6.9, { tint: 0xf04a8a });
-    B.box(paint, 3.1, 0.06, 0.8, 7.5, 1.0, 6.9, { tint: 0xf4f0e8 });
-    B.box(glow, 2.6, 0.08, 0.02, 7.5, 0.8, 6.54, { tint: 0xffd8e8 });
+    Z.prop('kk_counter', 7.5, 0, 6.9, Math.PI);
+    void glow;
     Z.prop('cash_register', 7.0, 1.06, 6.95, Math.PI, 0.9);
     Z.prop('call_bell', 8.2, 1.06, 6.7, 0, 1);
     Z.block(5.9, 9.1, 6.45, 7.35);
@@ -559,10 +570,8 @@ export class Mall {
     Z.prop('capsule_return', 1.6, 0, 7.8, Math.PI, 1);
     Z.block(1.3, 1.9, 7.5, 8.1);
     // the stock room door (west wall): capsule cartons for the Kaikan's machines
-    B.box(paint, 0.06, 2.1, 1.1, X0 + 0.04, 0, -6.0, { tint: 0x7a8088 });
-    B.box(metal, 0.04, 0.06, 0.2, X0 + 0.09, 1.0, -5.65, { tint: 0xc8ccd2 });
-    const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.16), Z.mat(canvasMat(40, 12, (x) => { x.fillStyle = '#2a2a30'; x.fillRect(0, 0, 40, 12); pixText(x, 'STOCK 倉庫', 20, 1, { size: 8, align: 'center', color: '#f4f0e6' }); })));
-    pl.position.copy(Z.L(X0 + 0.08, 2.25, -6.0)); pl.rotation.y = Math.PI / 2; Z.group.add(pl);
+    Z.prop('kk_door', X0 + 0.04, 0, -6.0, Math.PI / 2);
+    void paint; void metal;
     Z.hit(0.2, 2.1, 1.1, X0 + 0.1, 1.05, -6.0, { reach: 2.4, hint: () => ({ key: 'LMB', text: 'Stock room', sub: 'Capsule cartons for the Kaikan\'s machines (paid from the bank)' }), use: () => { this.stockRoom(); return false; } });
   }
   infoHint() {

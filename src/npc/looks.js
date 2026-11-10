@@ -29,7 +29,7 @@ const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1
  */
 export function retouch(h, fn) {
   h.finishPaint?.();
-  const m = buildMesh(buildPlan(h.spec));
+  const m = buildMesh(buildPlan(h.spec), { gear: false });
   m.geometry.dispose();
   if (m.block.x !== h.face.B.x || m.block.y !== h.face.B.y) { console.warn('retouch: atlas layout mismatch'); return; }
   const d = h.pix.d, o = new Float32Array(4);

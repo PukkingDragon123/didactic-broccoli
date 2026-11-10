@@ -15,7 +15,7 @@ import { pageFor } from '../props/kit/page.js';
 import { Batch } from '../town/batch.js';
 import { crown } from '../town/foliage.js';
 import { kitMesh, selfLit } from '../peoplekit/kit.js';
-import { YOKAI } from '../peoplekit/yokai.js';
+import { yokaiGeometry } from './yokaiBuild.js';
 
 const _geo = new Map();
 const hash = (x, y, z, s = 0) => { let h = (x * 374761393 + y * 668265263 + z * 2147483647 + s * 1013904223) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
@@ -161,8 +161,8 @@ export { GroundFlock as Flock } from '../animals/pigeon.js';
 // Yokai are faintly self-lit after dark (flat, from their own colours: readable in an unlit lane, never a halo). The
 // creatures are modelled in src/peoplekit/yokai.js and drawn with the people kit's self-lit materials.
 export const yokaiSelfLit = selfLit;
-const _ygeo = new Map();
-const ygeo = (k) => { let g = _ygeo.get(k); if (!g) { g = YOKAI[k](); _ygeo.set(k, g); } return g; };
+// (their models are sculpted in a background worker after boot: src/npc/yokaiBuild.js)
+const ygeo = yokaiGeometry;
 
 /** An animated yokai with the Human-like API the lane uses. kind: kappa | kitsune | tanuki | kasa. */
 export class Creature {
