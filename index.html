@@ -10,64 +10,43 @@
   <link rel="preload" as="image" href="/img/ui/loading-lane.png" />
   <link rel="preload" as="image" href="/img/ui/loading-van.png" />
   <!-- The loading screen (#loading), styled here so it is on screen from the first frame, before any script or 3D:
-       Grandpa's van driving down the lane at dusk in pixel art. Two small sheets baked by tools/bake-loading.mjs: the
-       van (8 frames from the real model, and its exhaust puff) and the lane (tiling rows: skyline, houses, the wall
-       with the poles and wires, the road; plus the signs). Everything is whole texels at a whole-number scale (--s)
-       and moves in steps; only transforms animate, so it keeps going while the game builds. Progress is the van's
-       trip: its marker along the line on the station-style board, the odometer, and the paper tag's percentage
-       (window.__loading.set(0..1), below). Places in the lane sheet: skyline 0+96, houses 96+176, wall 272+212,
-       road 484+40, signs from 524. -->
+       just Grandpa's van driving along in pixel art, a puff of exhaust behind it, and a small "loading" line with the
+       percentage under it. The van (8 frames from the real model, and its exhaust puff) is baked by
+       tools/bake-loading.mjs into loading-van.png; the 5x7 digits come from loading-lane.png. Everything is whole
+       texels at a whole-number scale (--s) and moves in steps; only transforms animate, so it keeps going while the
+       game builds (window.__loading.set(0..1), below). -->
   <style>
-    #loading { position: fixed; inset: 0; z-index: 50; overflow: hidden; contain: strict; background: #232140; --s: 2; --ry: 70vh; --pm: 0; --u: calc(1px * var(--s)); }
+    #loading { position: fixed; inset: 0; z-index: 50; overflow: hidden; contain: strict; background: #1d1b2c; --s: 2; --ry: 50vh; --u: calc(1px * var(--s)); }
     #loading, #loading * { image-rendering: pixelated; }
     #loading.out { opacity: 0; transition: opacity .4s steps(4); pointer-events: none; }
     #loading.gone { display: none; }
-    @media (min-height: 1000px) and (min-width: 1200px) { #loading { --s: 3; } }
-    @media (min-height: 1400px) and (min-width: 1800px) { #loading { --s: 4; } }
-    @media (max-height: 480px) { #loading { --ry: 60vh; } }
-    @media (orientation: portrait) { #loading { --ry: 62vh; } }
-    /* the sky: flat bands, warm at the horizon */
-    .ld-sky { position: absolute; left: 0; right: 0; top: 0; height: var(--ry); background: linear-gradient(to top,
-      #f6c07a 0 calc(24 * var(--u)), #ee9a70 calc(24 * var(--u)) calc(60 * var(--u)), #cf7480 calc(60 * var(--u)) calc(104 * var(--u)),
-      #9a5c8a calc(104 * var(--u)) calc(156 * var(--u)), #6a4c88 calc(156 * var(--u)) calc(220 * var(--u)), #4a3f7c calc(220 * var(--u)) calc(300 * var(--u)),
-      #33316a calc(300 * var(--u)) calc(400 * var(--u)), #272a57 calc(400 * var(--u))); }
-    /* the lane's rows, scrolling at their own speeds (a texel a step) */
-    .ld-l { position: absolute; left: 0; width: calc(100% + 480 * var(--u)); background: url(/img/ui/loading-lane.png) repeat-x;
-      background-size: calc(480 * var(--u)) calc(588 * var(--u)); will-change: transform; animation: ld-x 12s steps(480) infinite; }
-    @keyframes ld-x { to { transform: translate3d(calc(-480 * var(--u)), 0, 0); } }
-    .ld-a { top: calc(var(--ry) - 192 * var(--u)); height: calc(96 * var(--u)); background-position: 0 0; animation-duration: 60s; }
-    .ld-b { top: calc(var(--ry) - 190 * var(--u)); height: calc(176 * var(--u)); background-position: 0 calc(-96 * var(--u)); animation-duration: 15s; }
-    .ld-c { top: calc(var(--ry) - 212 * var(--u)); height: calc(212 * var(--u)); background-position: 0 calc(-272 * var(--u)); animation-duration: 8s; }
-    .ld-d { top: var(--ry); height: calc(40 * var(--u)); background-position: 0 calc(-484 * var(--u)); animation-duration: 5s; box-shadow: 0 calc(2 * var(--u)) 0 #3a3862; }
-    /* the van (96 x 60 a frame, its wheels on the road) and the puff from its exhaust */
-    .ld-van, .ld-puff { position: absolute; left: 24vw; top: calc(var(--ry) - 33 * var(--u)); width: calc(96 * var(--u)); height: calc(60 * var(--u)); overflow: hidden; }
+    @media (min-height: 640px) and (min-width: 900px) { #loading { --s: 3; } }
+    @media (min-height: 1000px) and (min-width: 1500px) { #loading { --s: 4; } }
+    @media (min-height: 1400px) and (min-width: 2100px) { #loading { --s: 5; } }
+    /* the van (96 x 60 a frame) and the puff from its exhaust; a dashed line slides under the wheels */
+    .ld-van, .ld-puff { position: absolute; left: calc(50% - 48 * var(--u)); top: calc(var(--ry) - 33 * var(--u)); width: calc(96 * var(--u)); height: calc(60 * var(--u)); overflow: hidden; }
     .ld-van i, .ld-puff i { display: block; height: 100%; will-change: transform; background: url(/img/ui/loading-van.png) 0 0 / calc(768 * var(--u)) calc(76 * var(--u)); }
     .ld-van i { width: calc(768 * var(--u)); animation: ld-v .56s steps(8) infinite; }
     @keyframes ld-v { to { transform: translate3d(calc(-768 * var(--u)), 0, 0); } }
-    .ld-puff { left: calc(24vw - 7 * var(--u)); top: calc(var(--ry) + 7 * var(--u)); width: calc(16 * var(--u)); height: calc(16 * var(--u)); }
+    .ld-puff { left: calc(50% - 55 * var(--u)); top: calc(var(--ry) + 7 * var(--u)); width: calc(16 * var(--u)); height: calc(16 * var(--u)); }
     .ld-puff i { width: calc(96 * var(--u)); background-position: 0 calc(-60 * var(--u)); animation: ld-p .72s steps(6) infinite; }
+    /* a trail: older puffs drift back and up, and thin out */
+    .ld-p2 { left: calc(50% - 69 * var(--u)); top: calc(var(--ry) + 4 * var(--u)); opacity: .7; } .ld-p2 i { animation-delay: -.24s; }
+    .ld-p3 { left: calc(50% - 84 * var(--u)); top: calc(var(--ry) + 1 * var(--u)); opacity: .45; } .ld-p3 i { animation-delay: -.48s; }
+    .ld-p4 { left: calc(50% - 99 * var(--u)); top: calc(var(--ry) - 3 * var(--u)); opacity: .25; } .ld-p4 i { animation-delay: -.12s; }
     @keyframes ld-p { to { transform: translate3d(calc(-96 * var(--u)), 0, 0); } }
-    /* the station-style board, hung on two wires; the van's marker rides its line */
-    .ld-sign { position: absolute; left: calc(50% - 84 * var(--u)); top: calc(9 * var(--u)); width: calc(168 * var(--u)); height: calc(60 * var(--u));
-      background: url(/img/ui/loading-lane.png) 0 calc(-524 * var(--u)) / calc(480 * var(--u)) calc(588 * var(--u)); filter: drop-shadow(calc(2 * var(--u)) calc(2 * var(--u)) 0 rgba(20, 16, 32, .45)); }
-    .ld-sign::before, .ld-sign::after { content: ''; position: absolute; bottom: 100%; height: calc(10 * var(--u)); width: var(--u); left: calc(30 * var(--u)); background: #1a1420; }
-    .ld-sign::after { left: calc(137 * var(--u)); }
-    .ld-mk { position: absolute; left: calc((16 + var(--pm)) * var(--u)); top: calc(31 * var(--u)); width: calc(13 * var(--u)); height: calc(9 * var(--u));
-      background: url(/img/ui/loading-lane.png) calc(-260 * var(--u)) calc(-554 * var(--u)) / calc(480 * var(--u)) calc(588 * var(--u)); }
-    /* the odometer and the paper tag, under the road */
-    .ld-hud { position: absolute; left: 0; right: 0; bottom: max(10px, 5vh); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: calc(5 * var(--u)) calc(12 * var(--u)); }
-    .ld-odo, .ld-tag { position: relative; flex: none; background: url(/img/ui/loading-lane.png) calc(-316 * var(--u)) calc(-524 * var(--u)) / calc(480 * var(--u)) calc(588 * var(--u)); }
-    .ld-odo { width: calc(62 * var(--u)); height: calc(17 * var(--u)); }
-    .ld-tag { width: calc(140 * var(--u)); height: calc(26 * var(--u)); background-position: calc(-172 * var(--u)) calc(-524 * var(--u)); rotate: -1.5deg; filter: drop-shadow(calc(2 * var(--u)) calc(2 * var(--u)) 0 rgba(20, 16, 32, .5)); }
-    .ld-odo i, .ld-tag i { position: absolute; top: calc(5 * var(--u)); width: calc(5 * var(--u)); height: calc(7 * var(--u)); --d: 0;
-      background: url(/img/ui/loading-lane.png) calc((-172 - var(--d) * 6) * var(--u)) calc(-554 * var(--u)) / calc(480 * var(--u)) calc(588 * var(--u)); }
-    .ld-odo i:nth-child(1) { left: calc(5 * var(--u)); } .ld-odo i:nth-child(2) { left: calc(14 * var(--u)); } .ld-odo i:nth-child(3) { left: calc(23 * var(--u)); }
-    .ld-odo i:nth-child(4) { left: calc(32 * var(--u)); } .ld-odo i:nth-child(5) { left: calc(41 * var(--u)); background-position-y: calc(-564 * var(--u)); }
-    .ld-tag i { top: calc(10 * var(--u)); background-position-y: calc(-574 * var(--u)); }
-    .ld-tag i:nth-child(1) { left: calc(110 * var(--u)); } .ld-tag i:nth-child(2) { left: calc(116 * var(--u)); } .ld-tag i:nth-child(3) { left: calc(122 * var(--u)); }
-    .ld-tag i:nth-child(4) { left: calc(129 * var(--u)); --d: 11; }
-    .ld-msg { position: absolute; left: 0; right: 0; bottom: calc(max(10px, 5vh) + 34 * var(--u)); text-align: center; font: 16px/20px 'Alagard', monospace; color: #fff4e0;
-      text-shadow: 2px 0 0 #1a1216, -2px 0 0 #1a1216, 0 2px 0 #1a1216, 0 -2px 0 #1a1216, 2px 2px 0 #1a1216, -2px 2px 0 #1a1216, 2px -2px 0 #1a1216, -2px -2px 0 #1a1216; }
+    .ld-road { position: absolute; left: calc(50% - 120 * var(--u)); width: calc(240 * var(--u)); top: calc(var(--ry) + 20 * var(--u)); height: var(--u); overflow: hidden; }
+    .ld-road i { display: block; width: calc(264 * var(--u)); height: 100%; will-change: transform; animation: ld-r .4s steps(12) infinite;
+      background: repeating-linear-gradient(to right, #4a4664 0 calc(14 * var(--u)), transparent calc(14 * var(--u)) calc(24 * var(--u))); }
+    @keyframes ld-r { to { transform: translate3d(calc(-24 * var(--u)), 0, 0); } }
+    /* "loading" and the percentage, in the 5x7 digits */
+    .ld-txt { position: absolute; left: 0; right: 0; top: calc(var(--ry) + 44 * var(--u)); display: flex; justify-content: center; align-items: center; gap: calc(6 * var(--u));
+      font: calc(8 * var(--u))/1 'Alagard', monospace; letter-spacing: var(--u); color: #d9d2e8; }
+    .ld-pc { position: relative; width: calc(24 * var(--u)); height: calc(7 * var(--u)); }
+    .ld-pc i { position: absolute; top: 0; width: calc(5 * var(--u)); height: calc(7 * var(--u)); --d: 0; filter: brightness(0) invert(.86);
+      background: url(/img/ui/loading-lane.png) calc((-172 - var(--d) * 6) * var(--u)) calc(-574 * var(--u)) / calc(480 * var(--u)) calc(588 * var(--u)); }
+    .ld-pc i:nth-child(2) { left: calc(6 * var(--u)); } .ld-pc i:nth-child(3) { left: calc(12 * var(--u)); } .ld-pc i:nth-child(4) { left: calc(19 * var(--u)); --d: 11; }
+    .ld-msg { position: absolute; left: 0; right: 0; top: calc(var(--ry) + 60 * var(--u)); text-align: center; font: 16px/20px 'Alagard', monospace; color: #b8b0cc; }
     .ld-msg:empty { display: none; }
   </style>
 </head>
@@ -85,25 +64,21 @@
   <div id="title" class="overlay menu"></div>
 
   <div id="loading" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-    <div class="ld-sky"></div>
-    <div class="ld-l ld-a"></div><div class="ld-l ld-b"></div><div class="ld-l ld-c"></div><div class="ld-l ld-d"></div>
+    <div class="ld-road"><i></i></div>
+    <div class="ld-puff ld-p4"><i></i></div><div class="ld-puff ld-p3"><i></i></div><div class="ld-puff ld-p2"><i></i></div>
     <div class="ld-puff"><i></i></div>
     <div class="ld-van"><i></i></div>
-    <div class="ld-sign"><div class="ld-mk"></div></div>
-    <div class="ld-hud"><div class="ld-odo"><i></i><i></i><i></i><i></i><i></i></div><div class="ld-tag"><i></i><i></i><i></i><i></i></div></div>
+    <div class="ld-txt"><span>Loading</span><div class="ld-pc"><i></i><i></i><i></i><i></i></div></div>
     <div class="ld-msg" id="load-msg"></div>
   </div>
   <script>
-    // the loading screen's progress: the trip so far on the odometer (km, tenths in red), the percentage on the tag, the
-    // van's marker along the board's line; msg(text) puts a line under them; done() fades it out for the menu
+    // the loading screen's progress: the percentage under the van; msg(text) puts a line under it; done() fades it out
     (function () {
-      var L = document.getElementById('loading'), O = L.querySelectorAll('.ld-odo i'), T = L.querySelectorAll('.ld-tag i'), M = document.getElementById('load-msg'), KM = 318.4;
+      var L = document.getElementById('loading'), T = L.querySelectorAll('.ld-pc i'), M = document.getElementById('load-msg');
       function set(p) {
         p = Math.max(0, Math.min(1, +p || 0));
-        var km = ('0000' + Math.round(p * KM * 10)).slice(-5), pc = ('  ' + Math.round(p * 100)).slice(-3), i;
-        for (i = 0; i < 5; i++) O[i].style.setProperty('--d', km[i]);
+        var pc = ('  ' + Math.round(p * 100)).slice(-3), i;
         for (i = 0; i < 3; i++) T[i].style.setProperty('--d', pc[i] === ' ' ? 10 : pc[i]);
-        L.style.setProperty('--pm', Math.round(p * 126));
         L.setAttribute('aria-valuenow', Math.round(p * 100));
       }
       window.__loading = {

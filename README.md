@@ -63,8 +63,8 @@ lights on. The engine dies, Grandpa wakes on his stool and shuffles over. He tap
 and the two of you talk: a bow or an awkward hug, the van's clutch, the keys, the shop in its heyday. People
 speak in plain floating text (no boxes), and you answer with numbered lines.
 
-**Loading.** While the game builds, the same van drives down a pixel-art lane at dusk (baked from the real
-model by `tools/bake-loading.mjs`); a station-style board, an odometer and a paper tag show how far along it is.
+**Loading.** While the game builds, the van drives along in pixel art on a plain dark screen, puffing exhaust, with a
+simple "Loading 42%" under it (the van is baked from the real model by `tools/bake-loading.mjs`).
 
 **Opening up.** On day one Grandpa walks you through it himself: he shuffles over to each job, points,
 thumps the breaker box to show you, and has something dry to say when you get it done (or when you slap him).
