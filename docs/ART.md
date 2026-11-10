@@ -81,7 +81,9 @@ lighting with a light cel touch**: it is not a hard toon shader.
   low, 15 medium, 18 high, 24 ultra: `QUALITY.sunShadow`), snapped to whole texels in the light's frame so shadows never
   crawl, and redrawn only when you cross a grid line, the sun steps or a caster moves. Anything that stands up casts
   (`castShadow`: walls, roofs, poles, people, furniture); things lying flat on the ground (road, paint, decals, grates,
-  chain-link) don't.
+  chain-link) don't. The town's and the garage's static opaque casters are drawn into the map by a few merged,
+  shadow-only chunks (`src/gfx/shadowProxy.js`, shown only during the shadow pass); small casters (under 0.3 m) more
+  than 9 m away skip it.
 - **Local lights are plain physical light: no steps, no rings, no discs.** Lamps, tubes, lanterns, the light pool and
   spots are smooth Lambert. Their falloff is softened near the source as if the lamp had a size (`SOFT_R`, 0.45 m: no
   hot spot on the ceiling or wall a lamp hangs by), and every spot cone fades out over at least 80% of its angle,
