@@ -1,4 +1,4 @@
-// The sky and the skyline. The dome: zenith-to-horizon bands, a glow toward the sun, flat cartoon cumulus, stars and a
+// The sky and the skyline. The dome: zenith-to-horizon bands, a warm band toward the sun on the horizon, a small plain sun disc (no halo), flat cartoon cumulus, stars and a
 // moon at night (every colour is a uniform driven by the time of day). The skyline has no trees at all: a ring of
 // roofs painted as flat cartoon shapes (hips, gables, flat roofs with water tanks on stands, TV antennas, danchi slabs
 // with stair towers, a bath-house chimney, pylons and their wires), a hazier ring of low terraced hills behind it, and
@@ -59,10 +59,11 @@ export function buildSky(t) {
         vec3 col = mix(uHor, uMid, smoothstep(0.0, 0.14, h));
         col = mix(col, uUp, smoothstep(0.12, 0.4, h));
         col = mix(col, uZen, smoothstep(0.35, 0.95, h));
-        // warm glow hugging the horizon toward the sun, the sun's disc and a halo
+        // warm glow hugging the horizon toward the sun; the sun itself is a small plain disc with a soft edge, no halo,
+        // painted over the sky (never brighter than white, so the bloom cannot grow a glow round it)
         col = mix(col, uGlow, pow(sunK, 4.0) * (1.0 - smoothstep(0.0, 0.3, h)) * 0.9);
         float sd = max(0.0, dot(d, uSun));
-        col += uSunCol * (pow(sd, 24.0) * 0.3 + smoothstep(0.9992, 0.9995, sd) * 1.5) * uSunK;
+        col = mix(col, mix(vec3(1.0, 0.97, 0.9), uSunCol, 0.35), smoothstep(0.99955, 0.9998, sd) * min(1.0, uSunK));
         // stars: small hard points that twinkle in steps, fading toward the hazy horizon
         if (uNight > 0.01 && h > 0.05) {
           vec2 cell = vec2(floor(az * 220.0), floor(h * 320.0));
