@@ -20,7 +20,7 @@ export function buildUnderpasses(t) {
     // brick abutments framing the opening: a stone plinth, quoins up the corner, a bed block under the girder
     for (const [za, zb] of [[TZ0 - 1.45, TZ0], [TZ1, TZ1 + 1.45]]) {
       const zc = (za + zb) / 2, inner = za < TZ0 ? zb : za, sgn = za < TZ0 ? -1 : 1;
-      B.box(m.brick, 0.5, YE - 0.3, zb - za, XT - 0.15, 0.3, zc, { uv: [za, 0.3], ao: 0.2, tint: 0xe8ddd4, skip: 'ny' });
+      B.box(m.brick, 0.5, YE - 0.3, zb - za, XT - 0.15, 0.3, zc, { uv: [za, 0.3], ao: 0.2, skip: 'ny' });
       B.box(m.concrete, 0.6, 0.34, zb - za + 0.1, XT - 0.15, 0, zc, { tint: 0xbfb8aa, bevel: 0.02 });
       for (let y = 0.34, k = 0; y < TH - 0.1; y += 0.3, k++) B.box(m.concrete, 0.54, 0.28, k % 2 ? 0.3 : 0.48, XT - 0.15, y, inner + sgn * (k % 2 ? 0.15 : 0.24), { tint: k % 3 ? 0xc6bfb0 : 0xb4ad9f, bevel: 0.012 });
       B.box(m.concrete, 0.66, 0.26, zb - za + 0.14, XT - 0.15, TH + 0.2, zc, { tint: 0xc4bdae, bevel: 0.02 });
@@ -29,11 +29,11 @@ export function buildUnderpasses(t) {
       B.box(m.hazard, 0.36, 1.5, 0.05, XT - 0.22, 0.34, inner - sgn * 0.025, { skip: 'ny py' });
     }
     // inside: brick side walls with a rendered dado, the walkway's kerb and rail, a gutter grate
-    B.plane(I(m.asphalt), XE - XT, TZ1 - TZ0 + 0.4, (XT + XE) / 2, 0, (TZ0 + TZ1) / 2, { sx: 10, sz: 2, uv: [1.3, 0.2] });
+    B.plane(I(m.asphalt), XE - XT, TZ1 - TZ0 + 0.4, (XT + XE) / 2, 0, (TZ0 + TZ1) / 2, { sx: 10, sz: 2, uv: [1.3, 0.2], tint: 0x868482 });
     for (let x = XT + 0.05; x < XE - 0.01; x += 2) {
       const w = Math.min(2, XE - x);
-      B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ0 - 0.3, { uv: [x, 0], ao: 0.25, tint: 0xe8ddd4, skip: 'ny py nz' });
-      B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ1 + 0.3, { uv: [x + 0.3, 0], ao: 0.25, tint: 0xe8ddd4, skip: 'ny py pz' });
+      B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ0 - 0.3, { uv: [x, 0], ao: 0.25, skip: 'ny py nz' });
+      B.box(I(m.brick), w, TH, 0.6, x + w / 2, 0, TZ1 + 0.3, { uv: [x + 0.3, 0], ao: 0.25, skip: 'ny py pz' });
       B.box(I(m.concrete), w, 1.1, 0.02, x + w / 2, 0.2, TZ0 + 0.005, { uv: [x, 0], tint: 0xa9a59b, skip: 'ny nz' });
       B.box(I(m.concrete), w, 0.2, TZ1 - WALK, x + w / 2, 0, (WALK + TZ1) / 2, { uv: [x, 0], skip: 'ny' });
       B.box(I(m.grate), w, 0.012, 0.26, x + w / 2, 0, TZ0 + 0.13, { uv: [x, 0], skip: 'ny' });
@@ -66,9 +66,9 @@ export function buildUnderpasses(t) {
     B.box(m.pv, 0.42, 0.02, TZ1 - TZ0, XT + 0.75, -0.012, (TZ0 + TZ1) / 2, { tint: 0x5a5856, skip: 'ny' });
     // the embankment on top: grass shoulders, ballast, sleepers, rails, a fence, catenary
     const zA = -48, zB = 68, LL = zB - zA, zc = (zA + zB) / 2;
-    B.box(m.grass, XE - XT + 0.6, 0.3, LL, (XT + XE) / 2 + 0.3, YE - 0.3, zc, { skip: 'ny', tint: 0xd8e0c0 });
+    B.box(m.grass, XE - XT + 0.6, 0.3, LL, (XT + XE) / 2 + 0.3, YE - 0.3, zc, { skip: 'ny' });
     B.box(m.ballast, 7.2, 0.18, LL, 31.5, YE, zc, { skip: 'ny' });
-    B.box(m.ballast, 6.4, 0.12, LL, 31.5, YE + 0.18, zc, { uv: [0.5, 0.5], skip: 'ny', tint: 0xf0ece4 });
+    B.box(m.ballast, 6.4, 0.12, LL, 31.5, YE + 0.18, zc, { uv: [0.5, 0.5], skip: 'ny' });
     for (const tx of TRACKS) {
       for (let z = -14.2; z < 34; z += 0.62) B.box(m.concrete, 2.1, 0.12, 0.22, tx, YE + 0.24, z, { tint: 0xa9a59c, skip: 'ny' });
       for (const rx of [-0.535, 0.535]) {

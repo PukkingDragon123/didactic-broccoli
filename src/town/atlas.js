@@ -32,10 +32,10 @@ const r = (g, x, y, w, h, c) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
 const fr = (g, x, y, w, h, c, t = 1) => { g.fillStyle = c; g.fillRect(x, y, w, t); g.fillRect(x, y + h - t, w, t); g.fillRect(x, y, t, h); g.fillRect(x + w - t, y, t, h); };
 const disc = (g, cx, cy, rad, c) => { g.fillStyle = c; for (let j = -rad; j <= rad; j++) { const w = Math.floor(Math.sqrt(rad * rad - j * j)); g.fillRect(cx - w, cy + j, w * 2 + 1, 1); } };
 const t5 = (g, str, x, y, col, s = 1, a = 'l') => draw5(g, str, a === 'c' ? x - textW5(str, s) / 2 : a === 'r' ? x - textW5(str, s) : x, y, { col, s });
-/** Old enamel: chipped corners and rust blooming from the screw holes. */
-function chips(g, w, h, seed = 1) {
-  for (const [x, y] of [[3, 3], [w - 4, 3], [3, h - 4], [w - 4, h - 4]]) { r(g, x - 1, y - 1, 3, 3, '#8a4e2c'); r(g, x, y, 1, 1, '#2a2420'); r(g, x - 1, y + 2, 1, 2 + (seed + x) % 4, '#a8683e'); }
-  for (let i = 0; i < 5; i++) { const x = (seed * 37 + i * 53) % (w - 6) + 2, y = (seed * 17 + i * 71) % (h - 6) + 2; r(g, x, y, 2 + i % 2, 1 + (i + seed) % 2, i % 2 ? '#8a4e2c' : '#5a3a28'); }
+/** Old enamel: rust round the four screw holes and three chips, each drawn where it is. */
+function chips(g, w, h, flip = 0) {
+  for (const [x, y, l] of [[3, 3, 3], [w - 4, 3, 2], [3, h - 4, 1], [w - 4, h - 4, 4]]) { r(g, x - 1, y - 1, 3, 3, '#8a4e2c'); r(g, x, y, 1, 1, '#2a2420'); r(g, x - 1, y + 2, 1, l, '#a8683e'); }
+  for (const [fx, fy, cw, ch, c] of [[0.18, 0.31, 3, 2, '#8a4e2c'], [0.74, 0.58, 2, 1, '#5a3a28'], [0.4, 0.86, 3, 1, '#8a4e2c']]) r(g, Math.round((flip ? 1 - fx : fx) * w), Math.round(fy * h), cw, ch, c);
 }
 
 class Atlas {
@@ -105,7 +105,7 @@ function buildTrim(A) {
   const enamel = (name, bg, band, fg, main, sub, mark, seed) => A.pix(name, 52, 140, 3, 0.26, (g, w, h) => {
     r(g, 0, 0, w, h, bg); fr(g, 1, 1, w - 2, h - 2, fg); r(g, 2, h - 26, w - 4, 24, band);
     mark(g); tx(g, main, 26, 36, { v: true, c: fg, sp: 0 }); tx(g, sub, 26, h - 22, { s: 16, c: bg === '#f4f0e4' ? '#f4f0e4' : bg, a: 'c' });
-    chips(g, w, h, seed);
+    chips(g, w, h, seed % 2);
   });
   enamel('enSoap', '#1f4a9a', '#f4f0e4', '#f4f0e4', 'ほしぞら', '石けん', (g) => { g.fillStyle = '#ffd23f'; for (const [x, y, s] of [[26, 8, 7], [12, 22, 3], [41, 20, 4]]) { r(g, x - s, y - 1, s * 2 + 1, 3, '#ffd23f'); r(g, x - 1, y - s, 3, s * 2 + 1, '#ffd23f'); r(g, x - s / 2 | 0, y - s / 2 | 0, s + 1, s + 1, '#ffd23f'); } }, 3);
   enamel('enRamune', '#c8282a', '#f4f0e4', '#f4f0e4', 'ミカワの', 'ラムネ', (g) => { r(g, 22, 6, 9, 22, '#9ad8d0'); r(g, 24, 3, 5, 4, '#9ad8d0'); r(g, 23, 12, 7, 2, '#f4f0e4'); r(g, 24, 16, 2, 9, '#d8f4f0'); disc(g, 26, 10, 2, '#3a8aa8'); }, 5);
@@ -133,10 +133,10 @@ function buildTrim(A) {
     r(g, 0, 0, w, h, '#d8cfb8'); fr(g, 0, 0, w, h, '#6a5a48', 2);
     tx(g, '酒', 30, 6, { s: 32, c: '#7a5a52', a: 'c' }); tx(g, 'たばこ', 86, 14, { c: '#a86a5e' });
     tx(g, 'さかえや', 215, 6, { s: 32, c: '#5a5048', a: 'c' }); tx(g, '塩', 292, 14, { c: '#8a8278', a: 'c' });
-    for (let i = 0; i < 26; i++) r(g, (i * 47) % w, (i * 13) % h, 3 + i % 4, 1, '#c8bfa8');
-    for (let i = 0; i < 9; i++) r(g, 20 + i * 33, h - 4 - (i % 3) * 3, 2, 4 + (i % 3) * 3, '#a8845e');
+    for (const [x, y, l] of [[22, 9, 5], [38, 30, 4], [96, 20, 6], [150, 34, 4], [204, 12, 6], [236, 28, 5], [270, 19, 4]]) r(g, x, y, l, 1, '#d8cfb8');
+    for (const [x, l] of [[46, 9], [128, 6], [262, 11]]) r(g, x, h - l, 2, l, '#a8845e');
   });
-  A.pix('barber', 96, 30, 3, 0.9, (g, w, h) => { r(g, 0, 0, w, h, '#e4e0d4'); fr(g, 0, 0, w, h, '#8a8a88'); for (let i = 0; i < 3; i++) r(g, 4, 5 + i * 7, 10, 5, ['#c85a5a', '#e4e0d4', '#5a7ab8'][i]); tx(g, '理容イトウ', 55, 7, { c: '#6a6a78', a: 'c' }); for (let i = 0; i < 12; i++) r(g, (i * 29) % w, (i * 11) % h, 2, 1, '#f4f0e4'); });
+  A.pix('barber', 96, 30, 3, 0.9, (g, w, h) => { r(g, 0, 0, w, h, '#e4e0d4'); fr(g, 0, 0, w, h, '#8a8a88'); for (let i = 0; i < 3; i++) r(g, 4, 5 + i * 7, 10, 5, ['#c85a5a', '#e4e0d4', '#5a7ab8'][i]); tx(g, '理容イトウ', 55, 7, { c: '#6a6a78', a: 'c' }); for (const [x, y] of [[30, 6], [47, 20], [66, 9], [81, 22]]) r(g, x, y, 3, 1, '#e4e0d4'); });
   A.pix('barberPole', 16, 32, 4, 0.5, (g, w, h) => { r(g, 0, 0, w, h, '#f0ece2'); for (let y = -16; y < 48; y += 16) for (let x = 0; x < w; x++) { r(g, x, y + x, 1, 5, '#c84a48'); r(g, x, y + x + 8, 1, 5, '#4a6ab0'); } });
   A.pix('tobacco', 40, 40, 3, 0.42, (g, w, h) => { r(g, 0, 0, w, h, '#c8282a'); fr(g, 1, 1, w - 2, h - 2, '#f4f0e4'); tx(g, 'たば', 20, 4, { c: '#f4f0e4', a: 'c' }); tx(g, 'こ', 20, 20, { c: '#f4f0e4', a: 'c' }); });
   A.pix('tobaccoWin', 56, 84, 3, 0.7, (g, w, h) => {
@@ -147,7 +147,7 @@ function buildTrim(A) {
   });
   // 町内会 掲示板 and the neighbourhood map board
   A.pix('notice', 184, 120, 2, 0.92, (g, w, h) => {
-    r(g, 0, 0, w, h, '#3f6a4a'); for (let i = 0; i < 60; i++) r(g, (i * 37) % w, 16 + (i * 53) % (h - 16), 1, 1, '#4f7a58');
+    r(g, 0, 0, w, h, '#3f6a4a'); r(g, 0, 16, w, 2, '#356040');
     r(g, 0, 0, w, 15, '#e9e4d6'); tx(g, '上山町内会 掲示板', 92, -1, { c: '#222', a: 'c' });
     const paper = (x, y, pw, ph, bg, tilt, fn) => { g.save(); g.translate(x + pw / 2, y + ph / 2); g.rotate(tilt); g.translate(-pw / 2, -ph / 2); r(g, 1, 1, pw, ph, '#00000040'); r(g, 0, 0, pw, ph, bg); fn(pw, ph); r(g, pw / 2 - 1, 1, 2, 2, '#c8282a'); g.restore(); };
     paper(4, 20, 42, 52, '#f4f0e4', 0.02, (pw) => { r(g, 0, 0, pw, 12, '#1f4a9a'); tx(g, '回覧', pw / 2, -2, { s: 12, c: '#fff', a: 'c' }); for (let i = 0; i < 6; i++) r(g, 4, 17 + i * 5, pw - 8 - (i % 3) * 6, 1, '#555'); r(g, 26, 44, 10, 5, '#c8282a'); });
@@ -207,7 +207,7 @@ function buildTrim(A) {
   A.pix('parkArrow', 60, 20, 3, 0.48, (g, w, h) => { r(g, 0, 0, w, h, '#f4f0e4'); fr(g, 0, 0, w, h, '#2f6a4a'); tx(g, '児童公園', 26, 3, { s: 12, c: '#2f6a4a', a: 'c' }); for (let i = 0; i < 5; i++) r(g, 50 + i, 10 - (4 - i), 1, (4 - i) * 2 + 1, '#c8282a'); r(g, 46, 9, 5, 3, '#c8282a'); });
   A.pix('wc', 56, 17, 3, 0.56, (g, w, h) => { for (const [x0, c, s] of [[0, '#1f4a9a', '男'], [28, '#c8282a', '女']]) { r(g, x0, 0, 28, h, '#f4f0e4'); fr(g, x0, 0, 28, h, c); tx(g, s, x0 + 8, 2, { s: 12, c }); disc(g, x0 + 20, 4, 2, c); r(g, x0 + 18, 7, 5, 6, c); if (s === '女') { r(g, x0 + 17, 10, 7, 3, c); } } });
   A.pix('closed', 60, 25, 3, 0.6, (g, w, h) => { r(g, 0, 0, w, h, '#f4f0e4'); fr(g, 0, 0, w, h, '#c8282a', 2); tx(g, '通行止', 30, 4, { c: '#c8282a', a: 'c' }); });
-  A.pix('warehouse', 184, 54, 2, 4.6, (g, w, h) => { r(g, 0, 0, w, h, '#cfc8b8'); tx(g, '上山倉庫', 92, 3, { s: 48, c: '#8a8072', a: 'c' }); for (let i = 0; i < 46; i++) r(g, (i * 31) % w, (i * 17) % h, 1, 3 + (i % 5) * 3, '#cfc8b8'); });
+  A.pix('warehouse', 184, 54, 2, 4.6, (g, w, h) => { r(g, 0, 0, w, h, '#cfc8b8'); tx(g, '上山倉庫', 92, 3, { s: 48, c: '#8a8072', a: 'c' }); for (const [x, y, l] of [[24, 8, 12], [52, 30, 9], [77, 14, 14], [101, 26, 8], [126, 10, 12], [149, 32, 10], [171, 18, 9]]) r(g, x, y, 1, l, '#cfc8b8'); });
   // the pylon, the villa, the loft, the bus stop
   A.pix('danger', 38, 50, 3, 0.5, (g, w, h) => { r(g, 0, 0, w, h, '#ffd23f'); fr(g, 0, 0, w, h, '#1a1a1a', 2); tx(g, '危険', 19, 2, { c: '#c8282a', a: 'c' }); for (let i = 0; i < 9; i++) r(g, 20 - i + (i > 4 ? 5 : 0), 20 + i, 4, 1, '#1a1a1a'); tx(g, '高電圧', 19, 30, { s: 12, c: '#1a1a1a', a: 'c' }); tx(g, 'のぼるな', 19, 41, { s: 8, c: '#c8282a', a: 'c' }); });
   A.pix('pylonPlate', 60, 18, 3, 0.9, (g, w, h) => { r(g, 0, 0, w, h, '#f4f0e4'); fr(g, 0, 0, w, h, '#1a1a1a'); tx(g, '上山線', 20, 2, { s: 12, c: '#1a1a1a', a: 'c' }); t5(g, 'No.17', 44, 6, '#1a1a1a', 1, 'c'); });
@@ -262,19 +262,26 @@ function buildTrim(A) {
 
 // ------------------------------------------------------------------ the alpha atlas: weathering, road paint, cut-outs
 function buildDecal(A) {
-  const rn = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
-  const streaks = (X, w, h, col, seed, n) => { const R = rn(seed); for (let i = 0; i < n; i++) { const x = 6 + R() * (w - 12), l = h * (0.25 + R() * 0.7), sw = 3 + R() * 9; X.fillStyle = col; X.beginPath(); X.moveTo(x - sw, 0); X.lineTo(x + sw, 0); X.lineTo(x + sw * 0.35, l * 0.7); X.lineTo(x, l); X.lineTo(x - sw * 0.35, l * 0.6); X.fill(); } };
-  // rain streaks from above (dark, translucent), three variants
-  for (let i = 0; i < 3; i++) A.vec('drip' + i, 128, 256, 0.6, (X, w, h) => { streaks(X, w, h, 'rgba(58,52,62,0.20)', 11 + i * 7, 5 + i); streaks(X, w, h, 'rgba(58,52,62,0.16)', 31 + i * 5, 3); });
-  A.vec('rust', 96, 256, 0.4, (X, w, h) => { streaks(X, w, h, 'rgba(158,92,48,0.55)', 77, 4); streaks(X, w, h, 'rgba(112,60,34,0.5)', 78, 2); });
+  // one streak: a wedge from the top edge, x / length / half width in pixels
+  const streak = (X, x, l, sw, col) => { X.fillStyle = col; X.beginPath(); X.moveTo(x - sw, 0); X.lineTo(x + sw, 0); X.lineTo(x + sw * 0.35, l * 0.7); X.lineTo(x, l); X.lineTo(x - sw * 0.35, l * 0.6); X.fill(); };
+  const DRIP = [[[20, 150, 9], [52, 212, 6], [78, 96, 11], [104, 180, 7]], [[14, 120, 7], [40, 236, 10], [66, 70, 6], [90, 170, 8], [112, 110, 5]], [[28, 200, 12], [60, 130, 6], [96, 240, 8]]];
+  // rain streaks from above (dark, translucent), three drawings
+  DRIP.forEach((list, i) => A.vec('drip' + i, 128, 256, 0.6, (X) => { for (const [x, l, sw] of list) { streak(X, x, l, sw, 'rgba(58,52,62,0.20)'); streak(X, x + 3, l * 0.55, sw * 0.5, 'rgba(58,52,62,0.16)'); } }));
+  A.vec('rust', 96, 256, 0.4, (X) => { for (const [x, l, sw] of [[18, 232, 10], [46, 140, 7], [72, 204, 9]]) { streak(X, x, l, sw, 'rgba(158,92,48,0.55)'); streak(X, x - 2, l * 0.5, sw * 0.45, 'rgba(112,60,34,0.5)'); } });
   // splash-back dirt along the foot of a wall, moss along it
-  A.vec('base', 256, 96, 1.2, (X, w, h) => { const R = rn(5); X.fillStyle = 'rgba(70,62,58,0.22)'; X.beginPath(); X.moveTo(0, h); for (let x = 0; x <= w; x += 16) X.lineTo(x, h * (0.25 + 0.3 * Math.abs(Math.sin(x * 0.049)) + R() * 0.12)); X.lineTo(w, h); X.fill(); X.fillStyle = 'rgba(70,62,58,0.2)'; X.fillRect(0, h * 0.72, w, h * 0.28); });
-  A.vec('moss', 256, 64, 1.2, (X, w, h) => { const R = rn(9); for (let i = 0; i < 26; i++) { const x = R() * w, rr = 5 + R() * 13; X.fillStyle = i % 3 ? 'rgba(98,122,68,0.8)' : 'rgba(128,146,84,0.8)'; X.beginPath(); X.ellipse(x, h - rr * 0.35, rr, rr * 0.6, 0, 0, 7); X.fill(); } X.fillStyle = 'rgba(98,122,68,0.85)'; X.fillRect(0, h - 5, w, 5); });
-  A.vec('crack', 160, 160, 0.7, (X, w, h) => { const R = rn(13); X.strokeStyle = 'rgba(52,46,52,0.55)'; X.lineWidth = 2; let x = 8, y = 8; X.beginPath(); X.moveTo(x, y); for (let i = 0; i < 9; i++) { x += 8 + R() * 14; y += 6 + R() * 18; X.lineTo(x, y); if (i === 4) { X.moveTo(x, y); X.lineTo(x + 26, y - 6); X.lineTo(x + 44, y + 3); X.moveTo(x, y); } } X.stroke(); });
-  A.vec('roadCrack', 192, 192, 1.4, (X, w, h) => { const R = rn(17); X.strokeStyle = 'rgba(40,38,40,0.6)'; X.lineWidth = 2.5; for (let k = 0; k < 3; k++) { let x = w / 2, y = h / 2, a = k * 2.1 + 0.4; X.beginPath(); X.moveTo(x, y); for (let i = 0; i < 6; i++) { a += (R() - 0.5) * 1.1; x += Math.cos(a) * 15; y += Math.sin(a) * 15; X.lineTo(x, y); } X.stroke(); } });
-  A.vec('oil', 128, 128, 0.8, (X, w, h) => { X.fillStyle = 'rgba(40,36,44,0.3)'; X.beginPath(); X.ellipse(64, 64, 52, 34, 0.3, 0, 7); X.fill(); X.fillStyle = 'rgba(40,36,44,0.28)'; X.beginPath(); X.ellipse(56, 60, 26, 18, 0.2, 0, 7); X.fill(); });
-  // grit, leaves and fag ends that collect along a kerb
-  A.vec('grit', 512, 64, 3, (X, w, h) => { const R = rn(23); for (let i = 0; i < 120; i++) { X.fillStyle = ['rgba(92,84,70,0.7)', 'rgba(140,120,80,0.8)', 'rgba(70,66,62,0.6)'][i % 3]; X.fillRect(R() * w, h - 4 - R() * R() * (h - 8), 2 + R() * 4, 1.5 + R() * 2); } for (let i = 0; i < 9; i++) { const x = R() * w, y = h - 8 - R() * 30; X.fillStyle = i % 2 ? '#b08a48' : '#8a6a3a'; X.beginPath(); X.ellipse(x, y, 7, 3.5, R() * 3, 0, 7); X.fill(); } for (let i = 0; i < 5; i++) { const x = R() * w, y = h - 6 - R() * 20; X.fillStyle = '#ece6d6'; X.fillRect(x, y, 9, 3); X.fillStyle = '#c88a48'; X.fillRect(x + 6, y, 3, 3); } X.fillStyle = 'rgba(70,62,58,0.25)'; X.fillRect(0, h - 5, w, 5); });
+  A.vec('base', 256, 96, 1.2, (X, w, h) => { const top = [0.62, 0.5, 0.56, 0.44, 0.5, 0.4, 0.52, 0.46, 0.58, 0.42, 0.5, 0.6, 0.48, 0.54, 0.44, 0.5, 0.62]; X.fillStyle = 'rgba(70,62,58,0.22)'; X.beginPath(); X.moveTo(0, h); top.forEach((t2, k) => X.lineTo(k * 16, h * (1 - t2))); X.lineTo(w, h); X.fill(); X.fillStyle = 'rgba(70,62,58,0.2)'; X.fillRect(0, h * 0.72, w, h * 0.28); });
+  A.vec('moss', 256, 64, 1.2, (X, w, h) => { [[10, 12], [34, 7], [52, 14], [80, 9], [104, 6], [128, 13], [150, 8], [176, 11], [200, 7], [226, 12], [246, 9]].forEach(([x, rr], i) => { X.fillStyle = i % 3 ? 'rgba(98,122,68,0.8)' : 'rgba(128,146,84,0.8)'; X.beginPath(); X.ellipse(x, h - rr * 0.35, rr, rr * 0.6, 0, 0, 7); X.fill(); }); X.fillStyle = 'rgba(98,122,68,0.85)'; X.fillRect(0, h - 5, w, 5); });
+  const line = (X, pts) => { X.beginPath(); pts.forEach(([x, y], k) => X[k ? 'lineTo' : 'moveTo'](x, y)); X.stroke(); };
+  A.vec('crack', 160, 160, 0.7, (X) => { X.strokeStyle = 'rgba(52,46,52,0.55)'; X.lineWidth = 2; line(X, [[8, 8], [22, 30], [30, 52], [48, 66], [56, 92], [72, 104], [80, 128], [98, 140], [104, 152]]); line(X, [[56, 92], [82, 86], [100, 95]]); });
+  A.vec('roadCrack', 192, 192, 1.4, (X) => { X.strokeStyle = 'rgba(40,38,40,0.6)'; X.lineWidth = 2.5; line(X, [[96, 96], [110, 84], [118, 66], [134, 58], [140, 40], [156, 30]]); line(X, [[96, 96], [84, 108], [66, 110], [52, 124], [34, 126]]); line(X, [[96, 96], [104, 114], [100, 132], [112, 150], [108, 168]]); });
+  A.vec('oil', 128, 128, 0.8, (X) => { X.fillStyle = 'rgba(40,36,44,0.3)'; X.beginPath(); X.ellipse(64, 64, 52, 34, 0.3, 0, 7); X.fill(); X.fillStyle = 'rgba(40,36,44,0.28)'; X.beginPath(); X.ellipse(56, 60, 26, 18, 0.2, 0, 7); X.fill(); });
+  // what collects along a kerb: grit, four leaves, three fag ends
+  A.vec('grit', 512, 64, 3, (X, w, h) => {
+    [[14, 6], [40, 3], [58, 9], [96, 4], [120, 7], [151, 3], [170, 10], [204, 5], [236, 8], [262, 3], [290, 6], [318, 11], [345, 4], [372, 7], [398, 3], [424, 9], [452, 5], [480, 7], [502, 4]].forEach(([x, up], i) => { X.fillStyle = ['rgba(92,84,70,0.7)', 'rgba(140,120,80,0.8)', 'rgba(70,66,62,0.6)'][i % 3]; X.fillRect(x, h - 4 - up, 4 + (i % 3), 2.5); X.fillRect(x + 9, h - 5, 3, 2); });
+    [[66, 22, 0.4], [188, 30, 2.2], [333, 18, 1.1], [470, 26, 2.8]].forEach(([x, up, a], i) => { X.fillStyle = i % 2 ? '#b08a48' : '#8a6a3a'; X.beginPath(); X.ellipse(x, h - up, 7, 3.5, a, 0, 7); X.fill(); });
+    for (const [x, up] of [[108, 12], [276, 20], [416, 9]]) { X.fillStyle = '#ece6d6'; X.fillRect(x, h - up, 9, 3); X.fillStyle = '#c88a48'; X.fillRect(x + 6, h - up, 3, 3); }
+    X.fillStyle = 'rgba(70,62,58,0.25)'; X.fillRect(0, h - 5, w, 5);
+  });
   // lids
   const iron = (X, cx, cy, rr, n) => { X.fillStyle = '#4a4648'; X.beginPath(); X.arc(cx, cy, rr, 0, 7); X.fill(); X.fillStyle = '#6a6466'; X.beginPath(); X.arc(cx, cy, rr * 0.92, 0, 7); X.fill(); X.fillStyle = '#58545a'; for (let k = 0; k < n; k++) { const a = (k / n) * 6.2832; X.beginPath(); X.arc(cx + Math.cos(a) * rr * 0.68, cy + Math.sin(a) * rr * 0.68, rr * 0.11, 0, 7); X.fill(); } X.strokeStyle = '#4e4a50'; X.lineWidth = rr * 0.07; X.beginPath(); X.arc(cx, cy, rr * 0.45, 0, 7); X.stroke(); X.beginPath(); X.moveTo(cx - rr * 0.45, cy); X.lineTo(cx + rr * 0.45, cy); X.moveTo(cx, cy - rr * 0.45); X.lineTo(cx, cy + rr * 0.45); X.stroke(); X.fillStyle = '#8a868a'; X.fillRect(cx - rr * 0.2, cy - rr * 0.86, rr * 0.4, rr * 0.05); };
   A.vec('manhole', 192, 192, 0.66, (X, w) => iron(X, w / 2, w / 2, w / 2 - 3, 12));
@@ -282,10 +289,11 @@ function buildDecal(A) {
   A.vec('lidValve', 64, 64, 0.2, (X, w) => { iron(X, 32, 32, 30, 4); });
   A.vec('lidSquare', 128, 128, 0.5, (X, w) => { X.fillStyle = '#5a5658'; X.fillRect(0, 0, w, w); X.fillStyle = '#74707a'; X.fillRect(6, 6, w - 12, w - 12); X.fillStyle = '#625e66'; for (let j = 0; j < 5; j++) for (let i = 0; i < 5; i++) if ((i + j) % 2) X.fillRect(14 + i * 20, 14 + j * 20, 18, 18); X.fillStyle = '#3a3638'; X.fillRect(w / 2 - 8, 10, 16, 5); });
   // road paint (worn: the letters are scuffed by rule)
-  const worn = (X, w, h, seed) => { const R = rn(seed); X.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 46; i++) { X.fillStyle = `rgba(0,0,0,${0.35 + R() * 0.5})`; X.fillRect(R() * w, R() * h, 6 + R() * 26, 2 + R() * 4); } X.globalCompositeOperation = 'source-over'; };
-  A.pix('tomare', 54, 62, 5, 1.5, (g, w, h) => { const c = document.createElement('canvas'); c.width = 54; c.height = 20; const k = c.getContext('2d'); tx(k, '止まれ', 27, 1, { c: '#ecebe4', a: 'c' }); g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, 54, 20, 0, 0, 54, 62); worn(g, w, h, 3); });
-  A.pix('speed30', 26, 44, 5, 1.1, (g, w, h) => { t5(g, '30', 13, 2, '#e8b838', 2, 'c'); const c = document.createElement('canvas'); c.width = 26; c.height = 18; c.getContext('2d').drawImage(g.canvas, 0, 0, 26, 18, 0, 0, 26, 18); g.clearRect(0, 0, w, h); g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, 26, 18, 0, 0, 26, 44); worn(g, w, h, 5); });
-  A.pix('schoolPaint', 112, 46, 4, 3.4, (g, w, h) => { const c = document.createElement('canvas'); c.width = 112; c.height = 20; const k = c.getContext('2d'); tx(k, 'スクールゾーン', 56, 1, { c: '#e8b838', a: 'c' }); g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, 112, 20, 0, 0, 112, 46); worn(g, w, h, 7); });
+  // tyre wear: scuffs rubbed through the paint where the wheels cross it
+  const worn = (X, w, h, flip) => { X.globalCompositeOperation = 'destination-out'; for (const [fx, fy, fw, fh, al] of [[0.08, 0.2, 0.3, 0.05, 0.7], [0.5, 0.12, 0.22, 0.04, 0.5], [0.2, 0.45, 0.4, 0.06, 0.6], [0.66, 0.5, 0.25, 0.04, 0.8], [0.05, 0.72, 0.2, 0.05, 0.5], [0.4, 0.8, 0.36, 0.06, 0.7], [0.74, 0.86, 0.2, 0.04, 0.6], [0.3, 0.3, 0.12, 0.03, 0.8]]) { X.fillStyle = `rgba(0,0,0,${al})`; X.fillRect((flip ? 1 - fx - fw : fx) * w, fy * h, fw * w, fh * h); } X.globalCompositeOperation = 'source-over'; };
+  A.pix('tomare', 54, 62, 5, 1.5, (g, w, h) => { const c = document.createElement('canvas'); c.width = 54; c.height = 20; const k = c.getContext('2d'); tx(k, '止まれ', 27, 1, { c: '#ecebe4', a: 'c' }); g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, 54, 20, 0, 0, 54, 62); worn(g, w, h, 0); });
+  A.pix('speed30', 26, 44, 5, 1.1, (g, w, h) => { t5(g, '30', 13, 2, '#e8b838', 2, 'c'); const c = document.createElement('canvas'); c.width = 26; c.height = 18; c.getContext('2d').drawImage(g.canvas, 0, 0, 26, 18, 0, 0, 26, 18); g.clearRect(0, 0, w, h); g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, 26, 18, 0, 0, 26, 44); worn(g, w, h, 1); });
+  A.pix('schoolPaint', 112, 46, 4, 3.4, (g, w, h) => { const c = document.createElement('canvas'); c.width = 112; c.height = 20; const k = c.getContext('2d'); tx(k, 'スクールゾーン', 56, 1, { c: '#e8b838', a: 'c' }); g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, 112, 20, 0, 0, 112, 46); worn(g, w, h, 0); });
   A.vec('chalk', 192, 192, 2.2, (X) => { X.strokeStyle = 'rgba(240,238,228,0.75)'; X.lineWidth = 4; for (const [x, y] of [[96, 170], [96, 136], [70, 102], [122, 102], [96, 68], [70, 34], [122, 34]]) { X.beginPath(); X.arc(x, y, 17, 0, 7); X.stroke(); } });
   // cut-outs: the 飛び出し注意 boy, the carp streamers
   A.pix('tobidashi', 56, 96, 3, 0.5, (g, w, h) => {

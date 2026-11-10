@@ -18,7 +18,7 @@ import { hash2 } from '../core/util.js';
 import { NAME_INDEX } from '../town/atlas.js';
 import { ROOM } from './interiors.js';
 import { keiWagonMesh } from '../vehicles/keiWagon.js';
-import { pot, acUnit, futon } from '../town/house.js';
+import { pot, acUnit, futon, shutter } from '../town/house.js';
 import { pillar } from '../town/walls.js';
 import { windChime } from '../town/japan.js';
 
@@ -266,7 +266,7 @@ function nearSide(t) {
       Bq.rod(m.metal, [1.3, f.fy[1] + 1.2, 0.0], [1.3, f.fy[1] + 1.2, 1.3], 0.016, { tint: 0x7ab0d8, sides: 5 });
       Bq.box(m.pv, 0.4, 0.5, 0.02, 1.3, f.fy[1] + 0.72, 0.95, { tint: 0xf4f0e6, ry: 0.1 });
     } });
-  B.box(m.shutter, 2.53, 2.1, 0.06, -18.715, 0.4, ZB + 0.01, { uv: [0, 0.3], tint: 0xc8c2b4, skip: 'nz' });
+  shutter(t, -18.715, 0.4, ZB + 0.015, 2.53, 2.1);
   for (let i = 0; i < 4; i++) { B.push(-19.6 + i * 0.6, 0, ZB + 0.042, 0); t.decalQ('rust', 0, 0.42 + (i % 2) * 0.7, 0, { w: 0.5, h: 0.9, flip: i % 2 }); B.pop(); }
   B.box(m.metal, 2.75, 0.3, 0.32, -18.715, 2.5, ZB + 0.1, { tint: 0x8a8e8a, bevel: 0.02 });
   B.box(m.wood, 3.98, 0.63, 0.06, -18.2, 2.83, ZB + 0.04, { tint: 0x7a6a58 });
@@ -489,7 +489,7 @@ function farSide(t) {
   B.box(m.concrete, 4.7, 0.12, 5.2, 0, 0, -2.6, { tint: 0xb9b5ac });
   B.box(m.totan, 4.6, 2.7, 5.0, 0, 0.1, -2.6, { uv: [0, 0], ao: 0.2, tint: 0xb4bcb8, skip: 'ny py' });
   for (const dx of [-1.15, 1.15]) {
-    B.box(m.shutter, 2.0, 2.2, 0.05, dx, 0.1, 0.02, { tint: 0xc8c2b4, skip: 'nz' });
+    shutter(t, dx, 0.1, 0.02, 2.0, 2.2, 0xbfc4c0);
     B.box(m.metal, 2.2, 0.26, 0.3, dx, 2.3, 0.12, { tint: 0x8a8e8a, bevel: 0.02 });
     B.box(m.pv, 0.3, 0.12, 0.02, dx + 0.6, 1.9, 0.06, { tint: 0xf4f0e6 });
     t.decalQ('rust', dx - 0.3, 0.3, 0.05, { w: 0.6, h: 1.6, flip: dx > 0 }); t.decalQ('rust', dx + 0.5, 1.0, 0.05, { w: 0.5, h: 1.2 });

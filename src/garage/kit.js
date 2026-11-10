@@ -3,7 +3,8 @@
 // boxes, lathes) with two additions: a tint per face (vertex colour, so one pale tiling texture serves teal paint,
 // rust-proof red and bare zinc) and uvs in world metres, so the tiling textures (src/gfx/garageArt.js) keep their
 // real size on every wall, post and beam.
-//   const K = new Kit(mats)                       mats: { key: Material (vertexColors: true) }
+//   const K = new Kit(mats)                       mats: { key: Material (vertexColors: true; userData.avg = its photo's
+//                                                 mean colour, userData.grainV = the photo's grain runs along V) }
 //   K.box('wood', x0, y0, z0, x1, y1, z1, { tint, grain: 'y', bevel, cast, skip })
 //   K.beam('wood', a, b, w, h, { tint })          a member of section w x h from a to b (grain along it)
 //   K.rod('flat', a, b, r, { tint, sides })       K.sticker('print', rect, face, x, y, z, w, h, { rot, tint })
@@ -21,6 +22,9 @@ const METRES = {
   y: (p, n) => { const ax = Math.abs(n[0]), ay = Math.abs(n[1]), az = Math.abs(n[2]); return ax >= ay && ax >= az ? [p[1], p[2]] : ay >= az ? [p[0], p[2]] : [p[1], p[0]]; },
   z: (p, n) => { const ax = Math.abs(n[0]), ay = Math.abs(n[1]), az = Math.abs(n[2]); return ax >= ay && ax >= az ? [p[2], p[1]] : ay >= az ? [p[2], p[0]] : [p[0], p[1]]; },
 };
+
+/** The same with u and v exchanged, for photos whose grain runs along V. */
+const SWAP = Object.fromEntries(Object.entries(METRES).map(([k, f]) => [k, (p, n) => { const t = f(p, n); return [t[1], t[0]]; }]));
 
 /** Geo with a colour per face. */
 export class TGeo extends Geo {
@@ -68,8 +72,16 @@ export function autoSmooth(geo, deg = 40) {
 
 export class Kit {
   constructor(mats) { this.mats = mats; this.B = new Map(); }
-  /** A tint (sRGB hex) as the linear vertex colour. */
-  rgb(c = 0xffffff, k = 1) { _c.setHex(c); return [_c.r * k, _c.g * k, _c.b * k]; }
+  /** A colour (sRGB hex) as the linear vertex colour. On a photo material (userData.avg = the photo's mean colour) it
+   *  is the colour the surface should come out as, so the vertex colour is that over the mean; no colour = the photo. */
+  rgb(c, k = 1, key = null) {
+    if (c === undefined || c === null) return [k, k, k];
+    _c.setHex(c);
+    const r = _c.r * k, g = _c.g * k, b = _c.b * k, avg = key ? this.mats[key]?.userData.avg : null;
+    if (avg === undefined || avg === null) return [r, g, b];
+    _c.setHex(avg);
+    return [r / Math.max(_c.r, 0.02), g / Math.max(_c.g, 0.02), b / Math.max(_c.b, 0.02)];
+  }
   /** The bucket of a material (cast: the parts drawn into the shadow maps). */
   geo(key, cast = false) {
     const k = key + (cast ? '|c' : '');
@@ -78,7 +90,12 @@ export class Kit {
     g.uv = METRES.wall;
     return g;
   }
-  use(key, o = {}) { const g = this.geo(key, !!o.cast); g.rgb = this.rgb(o.tint, o.k ?? 1); g.uv = o.uv || METRES[o.grain || 'wall']; return g; }
+  use(key, o = {}) {
+    const g = this.geo(key, !!o.cast);
+    g.rgb = this.rgb(o.tint, o.k ?? 1, key);
+    g.uv = o.uv || (this.mats[key].userData.grainV && o.grain ? SWAP[o.grain] : METRES[o.grain || 'wall']);
+    return g;
+  }
   box(key, x0, y0, z0, x1, y1, z1, o = {}) { this.use(key, o).box(x0, y0, z0, x1, y1, z1, o); return this; }
   /** A member from a to b, w wide (horizontal) and h deep, its grain along its length. */
   beam(key, a, b, w, h, o = {}) {
@@ -99,7 +116,7 @@ export class Kit {
    * edge; n the way it faces.
    */
   wave(key, c0, c1, pt, n, o = {}) {
-    const g = this.use(key, o), P = o.pitch || 0.8 / 12, q = P / 4, amp = o.amp ?? 0.006, off = (c) => amp * Math.cos(2 * Math.PI * (c / P - 0.25));
+    const g = this.use(key, o), P = o.pitch || 0.076, q = P / 6, amp = o.amp ?? 0.009, off = (c) => amp * Math.cos(2 * Math.PI * (c / P - 0.25));
     let c = c0;
     while (c < c1 - 1e-5) {
       const e = Math.min(c1, (Math.floor(c / q + 1e-4) + 1) * q);
@@ -144,10 +161,10 @@ export class Kit {
   }
   /** A separate mesh from one material (for the parts that move or are clicked). */
   mesh(key, fn, o = {}) {
-    const g = new TGeo();
-    g.rgb = this.rgb(o.tint);
-    g.tint = (c, k = 1) => { g.rgb = this.rgb(c, k); return g; };
-    g.grain = (a) => { g.uv = METRES[a || 'wall']; return g; };
+    const g = new TGeo(), V = this.mats[key].userData.grainV;
+    g.rgb = this.rgb(o.tint, 1, key);
+    g.tint = (c, k = 1) => { g.rgb = this.rgb(c, k, key); return g; };
+    g.grain = (a) => { g.uv = V && a ? SWAP[a] : METRES[a || 'wall']; return g; };
     fn(g);
     const m = new THREE.Mesh(g.build(), this.mats[key]);
     m.castShadow = o.cast ?? true; m.receiveShadow = true;

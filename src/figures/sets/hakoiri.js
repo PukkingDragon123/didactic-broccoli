@@ -1,6 +1,7 @@
 // Boxed-In Animals (箱入りどうぶつ): animals that live in, or simply are, the boxes around the house; every box opens.
 // Sculpt programs, in millimetres (src/figures/sculpt.js); the series data is src/data/series/hakoiri.js.
 import { spline, ring, hinge, slide, swell, chain } from '../sculpt.js';
+import { head, torso, loaf, paw, blade, drape, eggShape } from '../anatomy.js';
 import {
   fill, proj, wrap, vol, shade, under, crown, face, stamp, tone, tint, mix, EYE,
   circle, ellipse, rbox, seg, arc, poly, star, or, and, cut, stroke, pair, all, halfBelow, halfAbove, repeatU, repeatV, label, kana,
@@ -13,7 +14,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 // ------------------------------------------------------------------ 1. Matchbox Firefly
 export function match(S) {
   const CARD = 0xdccba2, LABEL = 0xf3e7c4, RED = 0xd4402e, INK = 0x2e3a52, STRIKE = 0x6c4a38, BUG = 0x302c34;
-  const grit = (x, y, z) => ((Math.round(y * 2.3) * 5 + Math.round(z * 2.3) * 3) % 7 === 0 ? tint(STRIKE, 0.2) : STRIKE);
+  const grit = STRIKE; // the striker: plain, with the scratches of a few matches (below)
   const moon = cut(circle(-6.5, 10, 4.4), circle(-4.6, 11.2, 3.9));
   const reeds = or(seg(5, -3, 6.5, 10, 0.5), seg(8, -3, 8.4, 13, 0.5), seg(10.6, -3, 12, 7, 0.5), ellipse(6.6, 11.2, 0.9, 2.2, -0.12), ellipse(8.5, 14.4, 0.9, 2.4), ellipse(12.2, 8.2, 0.9, 2.1, -0.15));
   const K = 1.3, d2 = (b, d) => (d - b < 2 ? 6.6 : 8.4); // (the tray's end walls are lower than its sides, so you can see in)
@@ -24,10 +25,11 @@ export function match(S) {
       proj('top', moon, 0xf2c64a), proj('top', reeds, 0x4a6a4a), proj('top', circle(-1.5, 4, 2.6), 0xf6f0a8, { alpha: 0.6 }), proj('top', circle(-1.5, 4, 1.1), 0xbfdc3a),
       proj('top', or(circle(3, 14.5, 0.5), circle(-9.5, 2, 0.5), circle(-3.5, 15.6, 0.4)), 0xbfdc3a),
       proj('top', kana('ほたる印', 0, -7.6, 4.6), INK), proj('top', label('SAFETY MATCHES', 0, -13, 0.42), RED, { hard: true }), proj('top', label('45 STICKS', 0, -16.6, 0.36), INK, { hard: true }),
-      proj('right', all, grit), proj('left', all, grit), proj('bottom', all, CARD), ...stamp(MAKER, { c: 0x8a7a5c }),
+      proj('right', all, grit), proj('left', all, grit), proj('right', or(seg(-12, 9.6, -3, 5.4, 0.5), seg(2, 10.4, 9, 6.2, 0.45), seg(-4, 4.4, 4, 3.2, 0.4)), tint(STRIKE, 0.24)), proj('left', or(seg(-10, 8.6, -2, 5, 0.5), seg(4, 9.8, 12, 6.6, 0.45)), tint(STRIKE, 0.24)), proj('bottom', all, CARD), ...stamp(MAKER, { c: 0x8a7a5c }),
     );
     S.box(-15, 13, -22, 15, 14, 22); S.box(-15, 0, -22, 15, 1, 22); S.box(-15, 1, -22, -14, 13, 22); S.box(14, 1, -22, 15, 13, 22);
-    S.part('drawer', { rest: 0.62, move: (t) => slide(0, 0, 25 * K * t) }, () => {
+    S.rest = 0.62;
+    S.joint('drawer', { slide: [0, 0, 25 * K], min: 0, max: 1, rest: 0, g: [0, 1] }, () => {
       S.paint(fill(CARD), proj('top', all, tint(CARD, 0.2)), under(0.2));
       S.box(-13.7, 1.2, -21, 13.7, 2, 21);
       for (const [a, b, c, d] of [[-13.7, -21, -12.9, 21], [12.9, -21, 13.7, 21], [-12.9, -21, 12.9, -20.2], [-12.9, 20.2, 12.9, 21]]) S.box(a, 2, b, c, d2(b, d), d);
@@ -42,17 +44,17 @@ export function match(S) {
       S.paint(fill(0xf5f2ea), under(0.15));
       S.ball([-3.2, 3.4, 15.6], [5.2, 1.8, 3.4], { segs: 8, rings: 4 });
       S.paint(fill(BUG), proj('top', seg(-3.2, 8, -3.2, -7, 0.4), tint(BUG, 0.22)), under(0.2));
-      S.ball([-3.2, 5.6, 1.5], [4.9, 3.7, 10.5], { segs: 10, rings: 7 });
+      loaf(S, [-3.2, 5.6, 1.5], [4.9, 3.7, 10.5], { flat: 0.9 });
       S.paint(fill(0xd9f070, { rough: 0.3 }), vol(band(4.7, 5.3), 0xb9d44a), crown(0.2));
       S.ball([-3.2, 5.4, -9.6], [4.3, 3.4, 3.6], { segs: 8, rings: 6 });
       S.paint(fill(0xe8706c), proj('top', rbox(-3.2, -12.4, 0.8, 2.2, 0.6), BUG), under(0.18));
       S.ball([-3.2, 6.2, 12], [4.5, 3.5, 3.2], { segs: 8, rings: 5 });
       S.paint(fill(BUG), ...face({ at: [-3.2, 7.2], gap: 3, r: 0.75, eye: 'sleepy', mouth: null, col: 0xf2ece0 }), under(0.2));
-      S.ball([-3.2, 6.6, 15.4], [3, 2.6, 2.5], { segs: 8, rings: 5 });
+      head(S, [-3.2, 6.6, 15.2], [3.1, 2.7, 2.8], { muzzle: 0.1, brow: 0.2, cheek: 0.1 });
       for (const s of [1, -1]) S.tube(spline([[-3.2 + s * 1.2, 8.6, 16.6], [-3.2 + s * 3.4, 10.4, 18.4], [-3.2 + s * 5.4, 9.6, 20.4]], 3), 0.32, { sides: 4 });
       const gingham = (x, y, z) => { const a = Math.floor((x + 40) / 2.2) % 2, b = Math.floor((z + 40) / 2.2) % 2; return a && b ? 0xd9544a : a || b ? 0xeea49a : 0xf8f0e6; };
       S.paint(fill(gingham), under(0.18));
-      S.at([-3.2, 8.6, 0.5], [0, 0, 0.05], () => S.box(-6.4, -0.9, -7, 6.4, 1.1, 7, { bevel: 0.8 }));
+      S.at([-3.2, 8.3, 0.5], [0, 0, 0.05], () => drape(S, -6.6, -7, 6.6, 7, 0, { nx: 7, nz: 6, th: 1.3, fold: (u, v) => 1.5 * Math.sin(u * Math.PI) ** 0.7 + 0.35 * Math.sin(v * 3.4 + 0.6) * Math.sin(u * Math.PI) - 2.6 * (Math.abs(u - 0.5) > 0.4 ? (Math.abs(u - 0.5) - 0.4) / 0.1 : 0) }));
     });
   }, K);
 }
@@ -80,19 +82,22 @@ export function milk(S) {
   S.paint(fill(HIDE), vol(below(1.7), SPOT));
   for (const [x, z] of [[-7.6, 7.6], [7.6, 7.6], [-7.6, -7.6], [7.6, -7.6]]) S.cyl([x, 0, z], 2.7, 4, { segs: 8, bevel: 0.5 });
   S.paint(fill(HIDE), under(0.14));
-  S.tube(spline([[0, 20, -12.6], [0, 17, -17.4], [1.6, 11, -18.6]], 3), 0.8, { sides: 5 });
-  S.paint(fill(SPOT));
-  S.ball([1.8, 9.6, -18.6], [1.4, 2.2, 1.4], { segs: 6, rings: 4 });
-  S.part('head', { rest: 1, move: (t) => slide(0, 0, -13.5 * (1 - t)) }, () => {
+  S.joint('tail', { pivot: [0, 20, -12.6], axis: 'z', min: -0.6, max: 0.6, rest: 0, idle: 0.25 }, () => {
+    S.tube(spline([[0, 20, -12.6], [0, 17, -17.4], [1.6, 11, -18.6]], 3), 0.8, { sides: 6 });
+    S.paint(fill(SPOT));
+    S.loft(spline([[11.4, 0.6], [10, 1.5], [8.4, 1.4], [7.2, 0.2]], 2).map(([y, r]) => ring([1.8, y, -18.6], r, r, 6)));
+  });
+  S.rest = 1;
+  S.joint('head', { slide: [0, 0, -13.5], min: 0, max: 1, rest: 0, g: [1, 0] }, () => {
     S.paint(fill(HIDE), vol(blobs(blob([-6.4, 35.6, 16.6], [4.4, 5, 5]), blob([7.4, 28.6, 14.6], [3.4, 3.6, 4])), SPOT), ...face({ at: [0, 33.6], gap: 8.4, r: 1.2, eye: 'dot', mouth: null }), under(0.14), crown(0.06));
-    S.ball([0, 32, 15.4], [8.6, 7.6, 7], { segs: 12, rings: 7 });
+    head(S, [0, 32, 15.4], [8.6, 7.6, 7], { muzzle: 0.1, brow: 0.35, cheek: 0.16, chin: 0.35 });
     S.paint(fill(PINK), proj('front', pair(ellipse(2, 29.6, 0.8, 1.15, 0.3)), 0xb9706e), proj('front', arc(0, 28.6, 2.4, Math.PI * 1.2, Math.PI * 1.8, 0.5), 0xb9706e), under(0.16));
-    S.ball([0, 28.8, 20.4], [5.5, 3.8, 3.4], { segs: 10, rings: 5 });
+    head(S, [0, 28.9, 19.4], [5.6, 3.9, 4.6], { muzzle: 0.85, brow: 0, cheek: 0.12, chin: 0, pow: 2.6 });
     for (const s of [1, -1]) {
-      S.paint(fill(s > 0 ? HIDE : SPOT), proj('front', ellipse(0, 0, 2.2, 1), PINK));
-      S.at([s * 9.8, 35.8, 14.4], [0, 0, s * 0.35], () => S.ball([0, 0, 0], [3.6, 2, 1.4], { segs: 8, rings: 4 }));
+      S.paint(fill(s > 0 ? HIDE : SPOT), proj('front', ellipse(0, 3.2, 1.1, 2.2), PINK));
+      S.at([s * 7.6, 35.6, 14.4], [0, 0, -s * 1.3], () => blade(S, 6.8, 4.6, 1.6, { shape: 'leaf', cup: 0.7 }));
       S.paint(fill(0xe9dcc0), under(0.2));
-      S.at([s * 4.6, 38.4, 14.6], [0, 0, -s * 0.3], () => S.cone([0, 0, 0], 1.5, 3.6, { segs: 6 }));
+      S.tube(spline([[s * 4.4, 38.2, 14.6], [s * 5.6, 40.2, 14.4], [s * 5.2, 42.2, 14.6]], 3), (t) => 1.4 - 1.2 * t, { sides: 6 });
     }
     S.paint(fill(HIDE));
     S.ball([0, 39.6, 15.6], [2.4, 1.8, 2], { segs: 6, rings: 4 });
@@ -126,10 +131,10 @@ export function tissue(S) {
     S.ball([1, 42.4, -0.4], [6.2, 5.2, 5.2], { segs: 10, rings: 6 });
     S.ball([-5, 39.6, -1], [4.6, 4.2, 4.4], { segs: 8, rings: 5 });
     S.paint(fill(FACE), ...face({ at: [0, 34.2], gap: 5.6, r: 1.1, eye: 'sleepy', mouth: null, col: 0xf6f2ea }), proj('front', or(seg(0, 32.2, 0, 31.4, 0.5), arc(-0.8, 31.2, 0.8, Math.PI, Math.PI * 2, 0.45), arc(0.8, 31.2, 0.8, Math.PI, Math.PI * 2, 0.45)), 0xe89aa4), under(0.16));
-    S.ball([0, 33.4, 6.2], [5.6, 5.2, 3.4], { segs: 10, rings: 6 });
+    head(S, [0, 33.4, 5.6], [5.6, 5.2, 4.4], { muzzle: 0.45, brow: 0.25, cheek: 0.18, chin: 0.1 });
     for (const s of [1, -1]) {
-      S.paint(fill(FACE), proj('front', ellipse(0, 0, 2.2, 0.8), 0xe8a4ac));
-      S.at([s * 7.4, 35, 6], [0, 0, -s * 0.5], () => S.ball([0, 0, 0], [3.4, 1.5, 1.6], { segs: 8, rings: 4 }));
+      S.paint(fill(FACE), proj('front', ellipse(0, 2.6, 0.9, 1.9), 0xe8a4ac));
+      S.at([s * 4.8, 35.8, 6], [0, 0, -s * 1.85], () => blade(S, 5.8, 3.6, 1.5, { shape: 'leaf', cup: 0.5 }));
     }
   });
 }
@@ -141,7 +146,7 @@ export function egg(S) {
   S.paint(fill(PULP), under(0.18), crown(0.08), shade(vol(below(1.2)), 0.12), ...stamp(MAKER, { c: 0x8a8272 }));
   S.box(-21, 0, -14.4, 21, 5, 14.4, { bevel: 1.6 });
   for (const [x, z] of cups) S.lathe([[6.2, 4], [6.7, 11], [5.7, 11], [4.9, 6.4]], { segs: 10, at: [x, 0, z] });
-  const eggAt = (x, z, c, extra = []) => { S.paint(fill(c), ...extra, under(0.12), crown(0.1)); S.ball([x, 13.6, z], [5, 6.6, 5], { segs: 10, rings: 7 }); };
+  const eggAt = (x, z, c, extra = []) => { S.paint(fill(c, { rough: 0.45 }), ...extra, under(0.12), crown(0.1)); eggShape(S, [x, 7, z], 5, 13.4); };
   // back row: a brown one, one with a face drawn on in marker, a white one
   eggAt(-13.2, -6.6, BROWN, [vol(blobs(blob([-15, 16, -2.4], 0.5), blob([-11.4, 13, -2], 0.4), blob([-13.6, 11.4, -1.8], 0.45)), tone(BROWN, 0.25))]);
   eggAt(0, -6.6, SHELL, [...face({ at: [0, 15], gap: 3.6, r: 0.6, eye: 'dot', mouth: null, col: 0x3a4a8a }), proj('front', poly([[-0.9, 13.4], [0.9, 13.4], [0, 12.2]]), 0x3a4a8a)]);
@@ -149,24 +154,25 @@ export function egg(S) {
   // front row: one keeping quiet, one on its way out, one that is out and regrets it
   eggAt(-13.2, 6.6, SHELL, [proj('front', or(seg(-15.4, 15.4, -14, 14.2, 0.35), seg(-14, 14.2, -13, 15.6, 0.35), seg(-13, 15.6, -11.8, 14.6, 0.35)), 0xb9ae9c)]);
   S.paint(fill(SHELL), vol(band(13.4, 14.1), 0xd9cfbc), under(0.12));
-  S.ball([0, 13.6, 6.6], [5, 6.6, 5], { segs: 10, rings: 7, v1: 0.52 });
+  eggShape(S, [0, 7, 6.6], 5, 13.4, { v1: 0.5 });
   S.paint(fill(CHICK), ...face({ at: [0, 17.6], gap: 4, r: 0.8, eye: 'dot', mouth: null }), under(0.14));
-  S.ball([0, 17, 6.6], [4.4, 4.2, 4.2], { segs: 10, rings: 6 });
+  head(S, [0, 17, 6.4], [4.4, 4.2, 4.2], { muzzle: 0.1, brow: 0.25, cheek: 0.3, chin: 0.2 });
   S.paint(fill(BEAK), under(0.2));
   S.at([0, 16.2, 10.4], [Math.PI / 2, 0, 0], () => S.cone([0, 0, 0], 1.1, 1.9, { segs: 5 }));
   S.paint(fill(SHELL), under(0.14));
-  S.at([0.6, 20.2, 6.2], [-0.25, 0, -0.3], () => S.ball([0, -4.4, 0], [5, 6.6, 5], { segs: 10, rings: 7, v0: 0.72 }));
+  S.joint('cap', { pivot: [-2.6, 19.4, 6.2], axis: 'z', min: -0.5, max: 0.3, rest: 0, idle: 0.1 }, () => S.at([0.6, 13.2, 6.2], [-0.25, 0, -0.3], () => eggShape(S, [0, -6.4, 0], 5, 13.4, { v0: 0.74 })));
   S.paint(fill(CHICK), ...face({ at: [13.2, 15.4], gap: 4.4, r: 0.85, eye: 'line', mouth: null }), proj('front', pair_(13.2, seg(1.2, 17.6, 3.4, 16.9, 0.45)), EYE), under(0.14), crown(0.08));
-  S.ball([13.2, 14.4, 6.6], [4.9, 5, 4.8], { segs: 10, rings: 7 });
+  torso(S, [13.2, 14.4, 6.6], [4.9, 5, 4.8], { belly: 0.14, hips: 1.04, sit: 0.4 });
   S.paint(fill(BEAK), under(0.2));
   S.at([13.2, 13.9, 11], [Math.PI / 2, 0, 0], () => S.cone([0, 0, 0], 1.2, 2, { segs: 5 }));
   S.paint(fill(tone(CHICK, 0.1)));
-  for (const s of [1, -1]) S.at([13.2 + s * 4.9, 13.6, 6.8], [0, 0, s * 0.3], () => S.ball([0, 0, 0], [1.1, 2.3, 2], { segs: 6, rings: 4 }));
+  for (const s of [1, -1]) S.at([13.2 + s * 4.6, 15.6, 6.8], [0, 0, Math.PI + s * 0.3], () => S.at([0, 0, 0], [0, Math.PI / 2, 0], () => blade(S, 4.4, 3.8, 1.2, { shape: 'wing' })));
   for (const a of [-0.4, 0.3]) S.tube([[13.2, 19.2, 6.4], [13.2 + a * 3, 21.4, 6.2]], 0.3, { sides: 4 });
   S.paint(fill(SHELL));
   for (const [x, z, r] of [[9.6, 10.6, 0.3], [16.6, 10.2, -0.4], [15.4, 2.6, 0.9]]) S.at([x, 11.4, z], [0.3, r, 0.5], () => S.box(-1.2, 0, -0.9, 1.2, 0.5, 0.9));
   // the lid: clear, with the shop's label on it
-  S.part('lid', { rest: 0.56, move: (t) => hinge([0, 11, -14.4], 'x', -1.95 * t) }, () => {
+  S.rest = 0.56;
+  S.joint('lid', { pivot: [0, 11, -14.4], axis: 'x', min: -2, max: 0, rest: 0, g: [0, -1.95] }, () => {
     S.clear(true);
     S.paint(fill(0xe4f1f2));
     S.loft([[11, 21, 14.4], [18, 20.6, 14], [22.6, 18.6, 11.8], [24.6, 14.5, 8]].map(([y, rx, rz]) => ring([0, y, 0], rx, rz, 12, { pow: 5 })), { caps: 'end' });
@@ -211,22 +217,23 @@ export function kanpen(S) {
   S.clear(false);
   // the dog at either end of it
   S.paint(fill(DOG), under(0.18));
-  for (const [x, z] of [[-21, 6], [21, 6], [-21, -6], [21, -6]]) { S.cyl([x, 1.6, z], [2.3, 2.7], 4.6, { segs: 8 }); S.ball([x + 0.6, 1.6, z + 0.9], [2.9, 1.7, 3.4], { segs: 8, rings: 4 }); }
-  S.tube(spline([[-30, 10.4, 0], [-35.4, 12.4, 0], [-38.6, 17.4, 0.4], [-38, 22, 0.8]], 3), (t) => lerp(1.5, 0.5, t), { sides: 6 });
+  for (const [x, z] of [[-21, 6], [21, 6], [-21, -6], [21, -6]]) { S.lathe(spline([[2.3, 1.6], [2.2, 3], [2.6, 4.8], [3, 6.2]], 2), { segs: 8, at: [x, 0, z], cap: false }); paw(S, [x, 0, z + 1.4], 5.6, 7.2, 3.2, { toes: 3 }); }
+  S.joint('tail', { pivot: [-30, 10.4, 0], axis: 'y', min: -0.7, max: 0.7, rest: 0, idle: 0.4 }, () => S.tube(spline([[-30, 10.4, 0], [-35.4, 12.4, 0], [-38.6, 17.4, 0.4], [-38, 22, 0.8]], 3), (t) => lerp(1.5, 0.5, t), { sides: 6 }));
   S.paint(fill(0x3f6fb8), proj('right', circle(0, 9.4, 1.2), 0xe6c04a), under(0.16));
   S.at([30.6, 11, 0.4], [0, 0, Math.PI / 2 - 0.25], () => S.torus([0, 0, 0], 4.6, 1.1, { segs: 10, sides: 5 }));
-  S.at([34.5, 14.4, 1.4], [0, 0.95, 0], () => {
+  S.joint('head', { pivot: [31, 12, 0.5], axis: 'y', min: -0.7, max: 0.5, rest: 0, idle: 0.07 }, () => S.at([34.5, 14.4, 1.4], [0, 0.95, 0], () => {
     S.paint(fill(DOG), vol(blob([0, -3.4, 6], [3.4, 2.6, 4]), tint(DOG, 0.34)), ...face({ at: [0, 1.5], gap: 6.2, r: 1.15, eye: 'bead', mouth: null }), proj('front', pair(ellipse(3.1, 3.9, 0.9, 0.6, 0.3)), tint(DOG, 0.4)), under(0.16), crown(0.06));
-    S.ball([0, 0, 0], [5.9, 5.6, 6], { segs: 12, rings: 7 });
+    head(S, [0, 0, 0], [5.9, 5.6, 6], { muzzle: 0.15, brow: 0.55, cheek: 0.1, chin: 0.3 });
     S.paint(fill(tint(DOG, 0.14)), proj('front', or(seg(0, -1.6, 0, -2.8, 0.45), arc(-1.3, -2.6, 1.3, Math.PI * 1.1, Math.PI * 2, 0.45), arc(1.3, -2.6, 1.3, Math.PI, Math.PI * 1.9, 0.45)), DARK), under(0.18));
-    S.ball([0, -1.5, 6.4], [3.3, 3, 4.6], { segs: 10, rings: 6 });
+    head(S, [0, -1.5, 6], [3.3, 3, 5.2], { muzzle: 0.9, brow: 0, cheek: 0.05, chin: 0.1 });
     S.paint(fill(0x3a3034, { rough: 0.2 }));
     S.ball([0, -0.7, 10.7], [1.4, 1.15, 1], { segs: 6, rings: 4 });
     S.paint(fill(DARK), under(0.2));
-    for (const s of [1, -1]) S.at([s * 5.6, 0.6, -0.8], [0.1, 0, s * 0.16], () => S.ball([s * 0.6, -4.2, 0], [1.5, 6, 3.4], { segs: 8, rings: 6 }));
-  });
+    for (const s of [1, -1]) S.at([s * 5.5, 3, -0.8], [0.1, 0, Math.PI + s * 0.12], () => S.at([0, 0, 0], [0, Math.PI / 2, 0], () => blade(S, 11, 7, 1.9, { shape: 'round', cup: 0.9 })));
+  }));
   // the lid: racing stripes outside, last term's timetable inside
-  S.part('lid', { rest: 0.4, move: (t) => hinge([0, 12, -10], 'x', -2.05 * t) }, () => {
+  S.rest = 0.4;
+  S.joint('lid', { pivot: [0, 12, -10], axis: 'x', min: -2.1, max: 0, rest: 0, g: [0, -2.05] }, () => {
     const grid = and(rbox(0, 0, 26, 7, 0), or(repeatU(rbox(0, 0, 0.18, 8, 0), 7.4), repeatV(rbox(0, 0, 30, 0.18, 0), 2.8)));
     S.paint(
       fill(DOG), proj('top', rbox(0, 0, 30.5, 2.2, 0), CREAM), proj('top', rbox(0, 3.4, 30.5, 0.5, 0), TEAL), proj('top', rbox(0, -3.4, 30.5, 0.5, 0), RED),
@@ -268,24 +275,26 @@ export function kan(S) {
   S.paint(fill(0xf2d04a), proj('right', repeatV(rbox(0, 0, 0.5, 0.12, 0), 1.1), 0x3a3438), proj('top', repeatU(rbox(0, 0, 0.12, 0.6, 0), 1.1), 0x3a3438), under(0.14));
   S.tube(spline([[4, 2.6, 13.6], [12, 6, 12.6], [20.6, 16.3, 8.6], [23.4, 12, 7.4], [23.2, 2, 6.6]], 4), 1, { sides: 4, flat: [1.6, 0.3] });
   // the tailor
-  S.part('mouse', { rest: 0.45, move: (t) => slide(0, -8.6 * (1 - t), 0) }, () => {
+  S.joint('mouse', { slide: [0, 8.6, 0], min: -1, max: 0, rest: 0, g: [-1, 0] }, () => {
     S.paint(fill(MOUSE), vol(blob([-2, 9.6, 6.4], [3.4, 4, 2.6]), tint(MOUSE, 0.4)), under(0.16));
-    S.ball([-2, 10.6, 2], [5.2, 5.6, 4.8], { segs: 10, rings: 7 });
-    S.at([-2, 19.6, 3], null, () => {
+    torso(S, [-2, 10.6, 2], [5.2, 5.6, 4.8], { belly: 0.2, hips: 1.06, sit: 0.36 });
+    S.joint('head', { pivot: [-2, 16, 2.4], axis: 'z', min: -0.3, max: 0.3, rest: 0, idle: 0.08 }, () => S.at([-2, 19.6, 3], null, () => {
       S.paint(fill(MOUSE), ...face({ at: [0, 0.8], gap: 5, r: 1.05, eye: 'bead', mouth: null }), proj('front', pair(or(seg(2.2, -1.7, 5.6, -1.2, 0.3), seg(2.2, -2.4, 5.4, -3, 0.3))), 0x7a747c), under(0.14), crown(0.08));
-      S.ball([0, 0, 0], [5, 4.5, 4.5], { segs: 10, rings: 7 });
+      head(S, [0, 0, 0], [5, 4.5, 4.9], { muzzle: 0.8, brow: 0.2, cheek: 0.1, chin: 0.1, pow: 2.1 });
       S.paint(fill(PINK, { rough: 0.3 }));
-      S.ball([0, -1.5, 4.5], [0.95, 0.8, 0.8], { segs: 6, rings: 4 });
+      S.ball([0, -1.4, 4.9], [0.95, 0.8, 0.8], { segs: 6, rings: 4 });
       for (const s of [1, -1]) {
-        S.paint(fill(MOUSE), proj('front', circle(s * 4.6, 4.2, 2.3), PINK));
-        S.ball([s * 4.6, 4.2, -0.4], [3.5, 3.5, 0.9], { segs: 10, rings: 5 });
+        S.paint(fill(MOUSE), proj('front', ellipse(0, 3.4, 2.2, 2.5), PINK));
+        S.at([s * 3.2, 2.2, -0.6], [0, 0, -s * 0.55], () => blade(S, 6.4, 7, 1, { shape: 'round', cup: 0.9 }));
       }
-    });
+    }));
     S.paint(fill(MOUSE), under(0.16));
-    S.tube(spline([[-6, 12.6, 3.4], [-8.6, 15, 5.4], [-9.4, 18.4, 6]], 2), 1.1, { sides: 5 });
-    S.tube(spline([[2, 12.6, 3.4], [4, 13.4, 6], [3, 14.6, 7.6]], 2), 1.1, { sides: 5 });
-    S.paint(fill(0xcfd4da, { rough: 0.25 }), vol(above(25.6), 0xcfd4da));
-    S.tube([[-9.6, 16.6, 6.2], [-9.2, 27.4, 6.4]], [0.42, 0.12], { sides: 4 });
+    S.tube(spline([[2, 12.6, 3.4], [4, 13.4, 6], [3, 14.6, 7.6]], 2), 1.1, { sides: 6 });
+    S.joint('arm', { pivot: [-6, 12.6, 3.4], axis: 'x', min: -0.5, max: 0.4, rest: 0, idle: 0.14 }, () => {
+      S.tube(spline([[-6, 12.6, 3.4], [-8.6, 15, 5.4], [-9.4, 18.4, 6]], 2), 1.1, { sides: 6 });
+      S.paint(fill(0xcfd4da, { rough: 0.2 }));
+      S.tube([[-9.6, 16.6, 6.2], [-9.2, 27.4, 6.4]], [0.42, 0.12], { sides: 6 });
+    });
     S.paint(fill(0xd9482e));
     S.tube(spline([[-9.5, 19.6, 6.3], [-6.4, 16.6, 7.6], [-1, 14.4, 8.2], [3, 14.6, 7.8]], 3), 0.28, { sides: 4, caps: false });
     S.paint(fill(PINK));
@@ -305,4 +314,4 @@ export function kan(S) {
   });
 }
 
-void wrap; void shade; void mix; void above; void halfBelow; void cut;
+void wrap; void shade; void mix; void above; void halfBelow; void cut; void hinge; void slide; void loaf; void paw;

@@ -29,6 +29,7 @@ const metric = (du = 0, dv = 0) => (p, n) => {
 };
 
 // unit icosahedra (80 or 320 faces) for clumps of leaves, stones, bags
+const LOBES = [[0, 1, 0, 1.0], [0.8, 0.5, 0.2, 0.9], [-0.7, 0.6, 0.3, 0.8], [0.1, 0.5, -0.85, 0.9], [-0.3, 0.4, 0.86, 0.85], [0.95, -0.1, -0.3, 0.7], [-0.9, 0, -0.4, 0.75], [0.4, -0.2, 0.9, 0.7], [-0.5, -0.6, 0.6, 0.5], [0.5, -0.7, -0.5, 0.5], [0.6, 0.75, -0.3, 0.6]];
 const ICO = {};
 function ico(detail = 1) {
   if (ICO[detail]) return ICO[detail];
@@ -67,7 +68,8 @@ export class Batch {
     const L = this.list(mat), M = o.m ? _mm.multiplyMatrices(this.top, o.m) : this.top, e = M.elements;
     const flip = M.determinant() < 0, shade = this.shade, K = o.K || null;
     if (o.tint && o.tint.isColor) _c.copy(o.tint); else _c.set(o.tint ?? 0xffffff);
-    const k = o.k ?? 1, r = _c.r * k, g = _c.g * k, b = _c.b * k;
+    const k = o.k ?? 1, nm = o.tint != null && o.tint !== 0xffffff && mat.userData ? mat.userData.norm : null;
+    const r = Math.min(1.7, nm ? _c.r / Math.max(nm[0], 0.02) : _c.r) * k, g = Math.min(1.7, nm ? _c.g / Math.max(nm[1], 0.02) : _c.g) * k, b = Math.min(1.7, nm ? _c.b / Math.max(nm[2], 0.02) : _c.b) * k;
     const ao = o.ao || 0, base = o.y0 ?? this.top.elements[13];
     const lp = L.p, ln = L.n, lt = L.t, lc = L.c, nv = P.length / 3;
     const X = [0, 0, 0], Y = [0, 0, 0], Z = [0, 0, 0];
@@ -333,9 +335,11 @@ export class Batch {
    *  lobes by rule; lighter on top, darker underneath. Centre at (x, y, z). */
   blob(mat, x, y, z, sx, sy, sz, o = {}) {
     const big = Math.max(sx, sy, sz) > 0.3, A = ico(big ? 2 : 1), P = new Array(A.length), N = new Array(A.length), K = new Array(A.length / 3), seed = o.seed ?? Math.round(x * 31 + z * 17 + y * 7), j = o.jitter ?? 0.2;
-    const bump = (ax, ay, az) => { const f = big ? 2.6 : 1.7; return Math.sin(ax * f * 2.1 + seed) * Math.cos(ay * f * 1.7 + seed * 1.3) * Math.sin(az * f * 2.3 + seed * 0.7); };
+    // the clump's lobes: a hand-set of bulges (direction, size), turned per clump so no two sit alike
+    const ca = Math.cos(seed * 1.3), sa = Math.sin(seed * 1.3);
+    const bump = (ax, ay, az) => { let v = -0.35; for (const [lx, ly, lz, w] of LOBES) { const d = ax * (lx * ca - lz * sa) + ay * ly + az * (lx * sa + lz * ca); if (d > 0) v += w * d * d * d * d; } return v; };
     for (let i = 0; i < A.length; i += 3) {
-      const s = 1 + j * bump(A[i], A[i + 1], A[i + 2]) + (big ? j * 0.5 * bump(A[i] * 2.3 + 1, A[i + 1] * 2.3, A[i + 2] * 2.3 + 2) : 0);
+      const s = 1 + j * bump(A[i], A[i + 1], A[i + 2]);
       P[i] = A[i] * sx * s; P[i + 1] = A[i + 1] * sy * s; P[i + 2] = A[i + 2] * sz * s;
       const nx = A[i] / sx, ny = A[i + 1] / sy, nz = A[i + 2] / sz, l = Math.hypot(nx, ny, nz) || 1;
       N[i] = nx / l; N[i + 1] = ny / l; N[i + 2] = nz / l;

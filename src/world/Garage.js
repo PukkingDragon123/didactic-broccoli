@@ -15,7 +15,7 @@
 // windowGlass; town (built here, after the envelope); ownsFront (the town leaves the street front to this file).
 import * as THREE from 'three';
 import { posterTexture } from '../gfx/textures.js';
-import { surface, shutterTexture, marks, prints, SHUTTER } from '../gfx/garageArt.js';
+import { surface, surfaceAvg, shutterInk, marks, prints, SHUTTER } from '../gfx/garageArt.js';
 import { propMesh } from './props.js';
 import { hash2 } from '../core/util.js';
 import { Town } from './Town.js';
@@ -86,14 +86,15 @@ export const BUILD = {
   awning: { y: 3.3, z1: 6.15, drop: 0.26 }, // the lean-to over the shutter: height at the wall, its front edge, its fall
   win: { z0: 1.05, z1: 2.65, y0: 1.75, y1: 2.6 },
 };
-// paint and material tints (sRGB): pastel, a little desaturated
+// the colour each part comes out as (sRGB): pastel, a little desaturated
 export const TINT = {
-  teal: 0x74ada0, tealDark: 0x5b9287, roof: 0xbd775a, zinc: 0xcdd4d3, zincOld: 0xc3c8c2, zincIn: 0xbcc5c6,
-  post: 0xd8b98f, beam: 0xc29d70, purlin: 0xcdac80, brown: 0x86634e, ply: 0xf0e2c6,
-  mortar: 0xe4ded2, block: 0xdcd8ce, slab: 0xe0dbd0, apron: 0xd2cdc2,
+  teal: 0x6ba396, tealDark: 0x578c80, roof: 0xab6a50, zinc: 0xb4bcbc, zincOld: 0xadb3ad, zincIn: 0xaab3b4,
+  post: 0xc4a27a, beam: 0xae8a62, purlin: 0xbd9a70, brown: 0x7a5c4a, ply: 0xd0b084,
+  mortar: 0xd6cebc, block: 0xb9b5ab, slab: 0xb9b5ab, apron: 0xaaa69c,
   steel: 0x98a2a6, steelDark: 0x6c767c, galv: 0xbcc6c8, door: 0xa9c0b2, frame: 0x62756b,
-  ivory: 0xf2ecd8, white: 0xf6f3ea, black: 0x3a343e, rubber: 0x34303a, red: 0xcf4a3e, brass: 0xd8b25a, bamboo: 0xcdb46c,
+  ivory: 0xf2ecd8, white: 0xf2efe6, black: 0x3a343e, rubber: 0x34303a, red: 0xcf4a3e, brass: 0xd8b25a, bamboo: 0xcdb46c,
 };
+
 
 export class Garage {
   constructor(game) {
@@ -134,20 +135,24 @@ export class Garage {
   materials() {
     const P = prints(), M = marks();
     const std = (o) => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.86, ...o });
+    // a photographed surface from the shared library, at its real size (a part's tint is the colour it comes out as)
+    const ph = (name, o = {}, grainV = false) => { const mat = std({ map: surface(name), ...o }); mat.userData.avg = surfaceAvg(name); mat.userData.grainV = grainV; return mat; };
     const lit = (k) => std({ map: P.tex, alphaTest: 0.5, emissive: 0xffffff, emissiveMap: P.tex, emissiveIntensity: k, roughness: 0.9 });
     const m = {
-      totan: std({ map: surface('totan'), roughness: 0.66 }), wood: std({ map: surface('wood'), roughness: 0.9 }),
-      ply: std({ map: surface('ply'), roughness: 0.84 }), concrete: std({ map: surface('concrete'), roughness: 0.92 }),
-      block: std({ map: surface('block'), roughness: 0.94 }), mortar: std({ map: surface('mortar'), roughness: 0.92 }),
-      tile: std({ map: surface('tile'), roughness: 0.38 }), terrazzo: std({ map: surface('terrazzo'), roughness: 0.6 }),
-      ptile: std({ map: surface('ptile'), roughness: 0.56 }), grate: std({ map: surface('grate'), roughness: 0.6 }),
-      flat: std({ roughness: 0.84 }), paint: std({ roughness: 0.64 }), gloss: std({ roughness: 0.3 }), chrome: std({ roughness: 0.24, metalness: 1 }),
+      totan: ph('steel_galvanised', { roughness: 0.6 }), wood: ph('wood_planks', { roughness: 0.9 }, true), trim: ph('timber_dark', { roughness: 0.82 }, true),
+      ply: ph('plywood', { roughness: 0.84 }), concrete: ph('concrete', { roughness: 0.93 }), stained: ph('concrete_stained', { roughness: 0.93 }),
+      block: ph('block_wall', { roughness: 0.95 }), mortar: ph('plaster_cream', { roughness: 0.92 }), tile: ph('tile_white', { roughness: 0.42 }),
+      terrazzo: ph('concrete_stained', { roughness: 0.62 }), ptile: ph('tile_checker_floor', { roughness: 0.58 }),
+      paint: ph('steel_painted', { roughness: 0.64 }), flat: ph('steel_painted', { roughness: 0.86 }), rubber: ph('rubber', { roughness: 0.95 }),
+      card: ph('cardboard', { roughness: 0.95 }), canvas: ph('canvas_cloth', { roughness: 0.97 }), indigo: ph('indigo_cloth', { roughness: 0.97, side: THREE.DoubleSide }),
+      gloss: std({ roughness: 0.3 }), chrome: std({ roughness: 0.24, metalness: 1 }),
       cloth: std({ map: P.tex, alphaTest: 0.5, roughness: 0.96, side: THREE.DoubleSide }),
       print: std({ map: P.tex, alphaTest: 0.5, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }),
       marks: std({ map: M.tex, transparent: true, depthWrite: false, roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }),
-      shutter: std({ map: shutterTexture(), roughness: 0.6 }),
-      glass: new THREE.MeshStandardMaterial({ map: surface('glass'), roughness: 0.4, color: 0xfff4e4, emissive: 0xffc890, emissiveMap: surface('glass'), emissiveIntensity: 0.95, side: THREE.DoubleSide }),
-      lantern: lit(1.2), lanternIn: lit(0.9), signGlow: lit(0.28),
+      shutter: ph('steel_painted', { roughness: 0.56 }),
+      shutterInk: std({ map: shutterInk(), transparent: true, depthWrite: false, roughness: 0.7, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }),
+      glass: new THREE.MeshStandardMaterial({ map: surface('frosted_glass'), roughness: 0.4, color: 0xfff4e4, emissive: 0xffc890, emissiveMap: surface('frosted_glass'), emissiveIntensity: 0.95, side: THREE.DoubleSide }),
+      lantern: lit(0.6), lanternIn: lit(0.55), signGlow: lit(0.28),
       bulb: new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffe2b0).multiplyScalar(1.7) }),
     };
     m.marks.userData.order = 1;
@@ -170,7 +175,7 @@ export class Garage {
     this.add(floor);
     this.floor = floor;
     this.game.physics.addBox({ center: new THREE.Vector3(0, -0.1, 0), half: new THREE.Vector3(4.2, 0.1, 5.2), material: 'concrete' });
-    K.box('concrete', -4.3, -0.2, 5.2, 4.3, 0, 5.75, { tint: T.apron, skip: ['ny'] });
+    K.box('stained', -4.3, -0.2, 5.2, 4.3, 0, 5.75, { tint: T.apron, skip: ['ny'] });
     // the steel sill the bottom bar lands on, and the staple the padlock goes through
     K.box('paint', -3.0, 0, 4.99, 3.0, 0.004, 5.11, { tint: T.steel });
     K.box('paint', 0.17, 0, 5.1, 0.23, 0.03, 5.13, { tint: T.steelDark });
@@ -290,14 +295,14 @@ export class Garage {
       for (const y of [0.9, 1.7, 2.5]) K.box('wood', s > 0 ? 3.12 : -4.0, y - 0.03, zo - 0.03, s > 0 ? 4.0 : -3.12, y + 0.03, zo, { grain: 'x', tint: T.purlin });
       this.tin(K, 'z', zo, s > 0 ? 3.09 : -4.25, s > 0 ? 4.25 : -3.09, 0.12, H, T.zincIn, T.teal, 1);
       // outside: the door post's casing and the corner board, painted brown
-      K.box('wood', s > 0 ? 2.99 : -3.1, 0, zo, s > 0 ? 3.1 : -2.99, B.box.y0 + 0.04, zo + 0.035, { grain: 'y', tint: T.brown });
-      K.box('wood', s > 0 ? 4.17 : -4.27, 0.12, zo - 0.08, s > 0 ? 4.27 : -4.17, B.parapet, zo + 0.03, { grain: 'y', tint: T.brown });
+      K.box('trim', s > 0 ? 2.99 : -3.1, 0, zo, s > 0 ? 3.1 : -2.99, B.box.y0 + 0.04, zo + 0.035, { grain: 'y', tint: T.brown });
+      K.box('trim', s > 0 ? 4.17 : -4.27, 0.12, zo - 0.08, s > 0 ? 4.27 : -4.17, B.parapet, zo + 0.03, { grain: 'y', tint: T.brown });
     }
     this.game.player.addObstacle(-4.3, -3.0, G.maxZ - 0.1, G.maxZ + 0.35); this.game.player.addObstacle(3.0, 4.3, G.maxZ - 0.1, G.maxZ + 0.35);
     // the header over the opening, the front wall plate; outside, the board that hides the shutter box
     K.box('wood', -4.1, B.box.y1, zi, 4.1, H, zi + 0.12, { grain: 'x', tint: T.beam, cast: true });
     K.box('wood', -4.105, H, zi - 0.015, 4.105, top, zi + 0.105, { grain: 'x', tint: T.beam });
-    K.box('wood', -2.99, B.box.y0, zo - 0.045, 2.99, H + 0.02, zo + 0.02, { grain: 'x', tint: T.brown, cast: true });
+    K.box('trim', -2.99, B.box.y0, zo - 0.045, 2.99, H + 0.02, zo + 0.02, { grain: 'x', tint: T.brown, cast: true });
     // the false front: zinc on studs up to the coping; inside you see its back up to the roof
     this.tin(K, 'z', zo, -4.25, 4.25, H, B.parapet, T.zincIn, T.teal, 1);
     for (const s of [-1, 1]) K.quad('totan', [s * 4.25, H, zi], [s * 4.25, H, zo], [s * 4.25, B.parapet, zo], [s * 4.25, B.parapet, zi], [s, 0, 0], { tint: T.tealDark });
@@ -366,14 +371,23 @@ export class Garage {
     this.slatVerts = (SLAT.length - 1) * 6;
     // the curtain from the bottom bar up: each slat is a face and its rolled lower lip. Its length above the box's
     // mouth is simply not drawn (setShutter moves the mesh and the draw range).
-    const uvF = (p) => [(p[0] + hw) / (2 * hw) * (2 * hw / SHUTTER.w), p[1] / SHUTTER.h];
+    const uvF = (p) => [(p[0] + hw) / SHUTTER.w, p[1] / SHUTTER.h];
+    const base = 0xb3bdbc, rusty = 0xb89a84; // slats 20 to 25 sat rolled against the damp box for years
     const m = K.mesh('shutter', (g) => {
-      g.uv = uvF;
       for (let k = 0; k < N; k++) {
         const y0 = bar + k * P;
+        g.tint(k >= 20 && k <= 25 ? rusty : base, k === 22 || k === 23 ? 0.86 : k % 7 === 3 ? 0.95 : 1);
         for (let i = 0; i + 1 < SLAT.length; i++) g.quad([-hw, y0 + SLAT[i][0], SLAT[i][1]], [hw, y0 + SLAT[i][0], SLAT[i][1]], [hw, y0 + SLAT[i + 1][0], SLAT[i + 1][1]], [-hw, y0 + SLAT[i + 1][0], SLAT[i + 1][1]], [0, 0, 1]);
       }
     });
+    const ink = K.mesh('shutterInk', (g) => {
+      g.uv = uvF;
+      for (let k = 0; k < N; k++) {
+        const y0 = bar + k * P;
+        for (let i = 0; i + 1 < SLAT.length; i++) g.quad([-hw, y0 + SLAT[i][0], SLAT[i][1] + 0.0006], [hw, y0 + SLAT[i][0], SLAT[i][1] + 0.0006], [hw, y0 + SLAT[i + 1][0], SLAT[i + 1][1] + 0.0006], [-hw, y0 + SLAT[i + 1][0], SLAT[i + 1][1] + 0.0006], [0, 0, 1]);
+      }
+    }, { cast: false });
+    ink.raycast = () => {}; ink.renderOrder = 1;
     const back = K.mesh('paint', (g) => {
       for (let k = 0; k < N; k++) {
         const y0 = bar + k * P;
@@ -394,11 +408,12 @@ export class Garage {
       g.tint(T.brass); g.box(0.172, -0.012 + 0.02, 0.062, 0.228, 0.03 + 0.02, 0.086, { bevel: 0.006 });
       g.tint(T.steel); g.strut([0.184, 0.05, 0.074], [0.184, 0.075, 0.074], 0.005, { round: 5 }); g.strut([0.216, 0.05, 0.074], [0.216, 0.075, 0.074], 0.005, { round: 5 }); g.strut([0.184, 0.075, 0.074], [0.216, 0.075, 0.074], 0.005, { round: 5 });
     });
-    for (const o of [m, back, fit]) { o.frustumCulled = false; }
+    for (const o of [m, back, fit, ink]) { o.frustumCulled = false; }
     m.position.set(0, 0, G.maxZ + 0.05);
     m.name = 'shutter';
     back.raycast = () => {}; fit.name = 'shutter-bar';
-    m.add(back, fit);
+    m.add(back, fit, ink);
+    this.shutterInkMesh = ink;
     this.add(m);
     this.shutterMesh = m;
     this.shutterBack = back;
@@ -458,7 +473,7 @@ export class Garage {
       const g0 = new THREE.Group();
       g0.position.set(x, 0, z);
       const cb = 0xd2a878;
-      g0.add(K.mesh('flat', (g) => {
+      g0.add(K.mesh('card', (g) => {
         g.tint(cb); const t = 0.012;
         g.box(-w / 2, 0, -d / 2, w / 2, t, d / 2); g.box(-w / 2, 0, -d / 2, -w / 2 + t, h, d / 2); g.box(w / 2 - t, 0, -d / 2, w / 2, h, d / 2); g.box(-w / 2, 0, -d / 2, w / 2, h, -d / 2 + t); g.box(-w / 2, 0, d / 2 - t, w / 2, h, d / 2);
         // the flaps folded out, the tape down the middle
@@ -618,6 +633,7 @@ export class Garage {
     const n = Math.max(0, Math.min(this.shutterSlats, Math.ceil((BUILD.box.y0 + 0.03 - bottom - 0.07) / SHUTTER.pitch)));
     m.geometry.setDrawRange(0, n * this.slatVerts);
     this.shutterBack.geometry.setDrawRange(0, n * this.slatVerts);
+    this.shutterInkMesh.geometry.setDrawRange(0, n * this.slatVerts);
     this.shutterOb.enabled = k < 0.85;
     // daylight only pours in once it's up
     if (this.lights.bounce) this.lights.bounce.intensity = 2.0 * k;

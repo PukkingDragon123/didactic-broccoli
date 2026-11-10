@@ -123,8 +123,8 @@ function parkMats(t) {
   // unlit, vertex-coloured paint for the lamp-lit studio seen through the villa's window
   const flat = new THREE.MeshBasicMaterial({ vertexColors: true });
   const flatBack = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide });
-  const worn = t.m.dirt.clone(); worn.polygonOffset = true; worn.polygonOffsetFactor = -2; worn.polygonOffsetUnits = -4; worn.name = 'dirtWorn';
-  return (t._parkMats = { fence: t.fence, flat, flatBack, worn, dirt: t.m.dirt, sand: t.m.dirt, stucco: t.m.plaster, slate: t.m.tinroof, tile: t.m.skirt, floor: t.m.woodL });
+  const worn = t.m.gravel.clone(); worn.polygonOffset = true; worn.polygonOffsetFactor = -2; worn.polygonOffsetUnits = -4; worn.name = 'dirtWorn';
+  return (t._parkMats = { fence: t.fence, flat, flatBack, worn, dirt: t.m.gravel, sand: t.m.gravel, stucco: t.m.plaster, slate: t.m.tinroof, tile: t.m.skirt, floor: t.m.woodL });
 }
 
 /** Fence mesh panel between two points on the ground (h tall, from y0). */
@@ -387,7 +387,7 @@ function backsOfHouses(t) {
 // ------------------------------------------------------------------ the back street (and the closed footpath under the tracks)
 function backStreet(t, mats) {
   const B = t.B, m = t.m, P = PARK, x0 = P.wx, x1 = 26.0, zc = (P.sz0 + P.sz1) / 2;
-  B.plane(m.road, x1 - x0, P.sz0 - P.sz1, (x0 + x1) / 2, 0.002, zc, { uv: [3, 7] });
+  B.plane(m.road, x1 - x0, P.sz0 - P.sz1, (x0 + x1) / 2, 0.002, zc, { uv: [3, 7], tint: 0x868482 });
   B.plane(m.strip, x1 - x0, 0.15, (x0 + x1) / 2, 0.003, P.zS - 0.075, {});
   B.box(m.lid, x1 - x0, 0.012, 0.28, (x0 + x1) / 2, 0, P.sz1 + 0.14, { uv: [1, 0] });
   B.box(m.paint, x1 - x0 - 1.4, 0.006, 0.12, (x0 + x1) / 2 + 0.3, 0, P.sz1 + 0.42, { tint: 0xe6e4dc });
@@ -448,7 +448,7 @@ function villa(t, mats) {
     B.poly(mats.slate, [Pp[1], Pp[2], r1], { tint: rc }); B.poly(mats.slate, [Pp[3], Pp[0], r0], { tint: rc });
     for (const [c, rr] of [[Pp[0], r0], [Pp[1], r1], [Pp[2], r1], [Pp[3], r0]]) B.beam(m.ridge, [c[0], c[1] + 0.03, c[2]], [rr[0], rr[1] + 0.03, rr[2]], 0.1, { tint: 0x4a4e58, w: 0.16 });
     B.beam(m.ridge, [r0[0], yr + 0.04, zc], [r1[0], yr + 0.04, zc], 0.12, { tint: 0x4a4e58, w: 0.2 });
-    B.box(m.brick, 0.6, 3.1, 0.6, 18.3, y2 + 0.4, -26.2, { tint: 0xe8d8cc });
+    B.box(m.brick, 0.6, 3.1, 0.6, 18.3, y2 + 0.4, -26.2, {});
     B.box(m.pv, 0.72, 0.1, 0.72, 18.3, y2 + 3.5, -26.2, { tint: 0x3a3a3a });
   }
   // ---- the studio window: black steel frame with a grid, glass, the room behind

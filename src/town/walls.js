@@ -25,7 +25,8 @@ function sukashi(t, x, y, zc, th, k, tint) {
 /** Block wall along a building line with gaps; z is its lane-side face. o: h, gaps [[a, b]], pillars, mat (name:
  *  'block' | 'oya' | ...), deco (pierced blocks), tint, clean [[a, b]] spans kept free of streaks (posters). */
 export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = true, clean = [], mat = null, deco = false, tint = 0xffffff } = {}) {
-  const B = t.B, m = t.m, th = 0.15, zc = z - side * th / 2, wm = mat || m.block, oya = wm === m.oya;
+  const B = t.B, m = t.m, th = 0.15, zc = z - side * th / 2, oya = mat === m.oya, wm = oya ? m.oya : m.concrete;
+  const jt = oya ? 0x8d8f7c : 0x97938b, bt = tint !== 0xffffff ? tint : oya ? 0xb6b8a4 : 0xbcb8af; // joints, block faces
   h = Math.round(h / 0.2) * 0.2 + (oya ? 0.1 : 0);
   B.push(0, 0, zc, side > 0 ? 0 : Math.PI); // local +z = toward the lane
   // every block stands a few millimetres proud of its joints, its arrises chamfered (the paint's joints lie between)
@@ -43,7 +44,7 @@ export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = tr
         q([[ax, ay, zf], [ix, iy, zo], [ix, jy, zo], [ax, cy, zf]]); q([[cx, ay, zf], [cx, cy, zf], [jx, jy, zo], [jx, iy, zo]]);
       }
     }
-    B.tris(wm, P, T, { tint });
+    B.tris(wm, P, T, { tint: bt });
   };
   const cope = (xa, xb, y, w = th) => B.extrude(m.concrete, [[-w / 2 - 0.03, 0], [w / 2 + 0.03, 0], [w / 2 + 0.03, 0.022], [w / 2 - 0.012, 0.062], [-w / 2 + 0.012, 0.062], [-w / 2 - 0.03, 0.022]], xa - 0.02, xb + 0.02, { along: 'x', oy: y, tint: cap });
   const X = (x) => (side > 0 ? x : -x), cap = oya ? 0xa9ab98 : 0xb6b2a8;
@@ -54,21 +55,21 @@ export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = tr
       const dy = deco && !oya && len > 1.6 && h > 0.95 ? h - 0.4 : -1;
       if (dy > 0) {
         // solid courses, then a course where every third block is pierced, then the top course
-        B.box(wm, len, dy, th, cx, 0, 0, { uv: [xa, 0], tint, ao: 0.16, skip: 'ny py' });
-        B.box(wm, len, 0.2, th, cx, dy + 0.2, 0, { uv: [xa, dy + 0.2], tint, skip: 'ny' });
+        B.box(wm, len, dy, th, cx, 0, 0, { uv: [xa, 0], tint: jt, ao: 0.16, skip: 'ny py' });
+        B.box(wm, len, 0.2, th, cx, dy + 0.2, 0, { uv: [xa, dy + 0.2], tint: jt, skip: 'ny' });
         const n = Math.floor(len / 0.4), off = (len - n * 0.4) / 2;
         let run = xa;
         for (let i = 0; i < n; i++) {
           const bx = xa + off + i * 0.4;
           if (i % 3 !== 1 || i === 0 || i === n - 1) continue;
-          if (bx - run > 0.01) B.box(wm, bx - run, 0.2, th, (run + bx) / 2, dy, 0, { uv: [run, dy], tint, skip: 'ny py' });
-          sukashi(t, bx + 0.005, dy + 0.005, 0, th, Math.floor(hash2(Math.round(x0 * 7), Math.round(z)) * 3 + i / 3) % 3, 0xbdb9b0);
+          if (bx - run > 0.01) { B.box(wm, bx - run, 0.2, th, (run + bx) / 2, dy, 0, { uv: [run, dy], tint: jt, skip: 'ny py' }); relief(run, bx, dy, dy + 0.2); }
+          sukashi(t, bx + 0.005, dy + 0.005, 0, th, Math.floor(hash2(Math.round(x0 * 7), Math.round(z)) * 3 + i / 3) % 3, bt);
           t.decalQ('drip' + (i % 3), bx + 0.2, dy - 0.5, th / 2 + 0.006, { w: 0.34, h: 0.5 });
           run = bx + 0.4;
         }
-        if (xb - run > 0.01) B.box(wm, xb - run, 0.2, th, (run + xb) / 2, dy, 0, { uv: [run, dy], tint, skip: 'ny py' });
+        if (xb - run > 0.01) { B.box(wm, xb - run, 0.2, th, (run + xb) / 2, dy, 0, { uv: [run, dy], tint: jt, skip: 'ny py' }); relief(run, xb, dy, dy + 0.2); }
         relief(xa, xb, 0, dy); relief(xa, xb, dy + 0.2, h);
-      } else { B.box(wm, len, h, th, cx, 0, 0, { uv: [xa, 0], tint, ao: 0.16, skip: 'ny' }); relief(xa, xb, 0, h); }
+      } else { B.box(wm, len, h, th, cx, 0, 0, { uv: [xa, 0], tint: jt, ao: 0.16, skip: 'ny' }); relief(xa, xb, 0, h); }
       cope(xa, xb, h); // 笠木
       // streaks under the coping, splash-back and moss at the foot (not where a poster must stay clean)
       const mark = (p, q) => {
@@ -81,7 +82,7 @@ export function blockWall(t, x0, x1, z, side, { h = 1.3, gaps = [], pillars = tr
       mark(xa, xb);
     }
     if (b > a && pillars) for (const px of [a - 0.12, b + 0.12]) {
-      B.box(wm, 0.3, h + 0.2, 0.3, X(px), 0, 0, { uv: [px, 0], tint, ao: 0.16, skip: 'ny' });
+      B.box(wm, 0.3, h + 0.2, 0.3, X(px), 0, 0, { uv: [px, 0], tint: bt, ao: 0.16, skip: 'ny' });
       B.box(m.concrete, 0.37, 0.05, 0.37, X(px), h + 0.2, 0, { tint: cap, bevel: 0.012 }); B.lathe(m.concrete, [[0.24, 0], [0.2, 0.03], [0.04, 0.075]], X(px), h + 0.25, 0, { tint: cap, sides: 4, exact: true, a0: Math.PI / 4 });
     }
     x = b;
@@ -97,7 +98,7 @@ export function woodFence(t, x0, x1, z, side, { h = 1.6, gaps = [] } = {}) {
     if (a - x > 0.05) {
       B.box(m.block, a - x, 0.4, 0.15, (x + a) / 2, 0, z - side * 0.075, { uv: [x, 0], ao: 0.15, skip: 'ny' });
       B.box(m.concrete, a - x + 0.02, 0.05, 0.19, (x + a) / 2, 0.4, z - side * 0.075, { tint: 0xb6b2a8 });
-      B.box(m.clap, a - x, h - 0.5, 0.03, (x + a) / 2, 0.45, zc + side * 0.02, { tint: 0x5e5650, uv: [x, 0], skip: 'ny' });
+      B.box(m.wood, a - x, h - 0.5, 0.03, (x + a) / 2, 0.45, zc + side * 0.02, { tint: 0x5e5650, uv: [x, 0], skip: 'ny' });
       for (let u = x + 0.15; u < a - 0.04; u += 0.3) B.box(m.pv, 0.012, h - 0.5, 0.012, u, 0.45, zc + side * 0.04, { tint: 0x38322e });
       for (const y of [0.7, h - 0.25]) B.box(m.wood, a - x, 0.06, 0.04, (x + a) / 2, y, zc - side * 0.015, { tint: 0x6a5e56 });
       B.box(m.wood, a - x + 0.04, 0.05, 0.13, (x + a) / 2, h - 0.05, zc, { tint: 0x5a4e46 });

@@ -105,7 +105,7 @@ function sheet(St, seriesId, params, mode) {
     ctx.drawImage(R.renderer.domElement, c * cell, r * cell, cell, cell);
     ctx.fillStyle = '#3a3038'; ctx.font = '13px monospace'; ctx.textAlign = 'center';
     ctx.fillText(`${q.label}${r === 0 && q.t === undefined && mode === 'views' ? ` · ${figureData(q.item).tris} tris` : ''}`, c * cell + cell / 2, r * cell + cell - 8);
-    stats[q.item.id] = { tris: figureData(q.item).tris, size: [sz.x, sz.y, sz.z].map((v) => +(v * 1000).toFixed(1)) };
+    stats[q.item.id] = { tris: figureData(q.item).tris, lod: mode === 'views' ? figureData(q.item, true).tris : undefined, joints: Object.keys(figureData(q.item).defs).join(' ') };
     scene.remove(mesh);
   }
   const A = figureAtlas(S.id);

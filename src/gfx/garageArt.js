@@ -1,15 +1,17 @@
-// The garage's painted surfaces (src/world/Garage.js, GarageDetail.js), in the two kinds the art bible asks for:
-//   * tiling cartoon paint for the big surfaces: canvases drawn as flat colour fields with details in a darker tone of
-//     the surface, two or three hand-placed tones and wear placed by rule (rust under the nails, stains at the laps),
-//     linear filtering with mipmaps and anisotropy. Uvs are metres; each texture repeats over its real size.
-//       surface(key) -> THREE.Texture      SURF[key] = [canvas w, h, metres w, h, painter]
-//   * the shutter curtain (one big painted view, lettering and rust included) and a sheet of floor / wall marks
-//     (cracks, oil, tyre tracks, stains, flat contact shadows) with alpha:  shutterTexture()   marks() -> { tex, rect }
-//   * printed matter as detailed pixel art (nearest filtering): the sign board, the noren, the lanterns, the stickers
-//     and plates of a real Japanese garage (火の用心, 消火器, 分電盤, 点検済, 安全第一 ...):  prints() -> { tex, rect, px }
+// The garage's surfaces and hand-made art (src/world/Garage.js, GarageDetail.js). Nothing here is generated:
+//   * every real material is a photograph from the shared library (src/kit/photoTex.js: wood, plywood, zinc, concrete,
+//     blocks, plaster, tiles, cloth ...), mapped at its real size (uvs are metres):  surface(name) -> THREE.Texture
+//   * what is painted or stuck on top is drawn by hand and placed deliberately:
+//       shutterInk()   the lettering stencilled across the roll shutter (出入口につき 駐車禁止), with alpha
+//       marks()        floor and wall marks, each one an authored shape: cracks, the oil where the engine sat, tyre
+//                      tracks, water and rust runs, scuffs, painted lines, a soft contact shadow  -> { tex, rect }
+//       prints()       printed matter as detailed pixel art (nearest filtering): the sign board, the noren's crest and
+//                      kana, the lanterns, the stickers and plates of a real Japanese garage (火の用心, 消火器, 分電盤,
+//                      点検済, 安全第一 ...)  -> { tex, rect, px }
 // Every name, mark and maker here is made up.
 import * as THREE from 'three';
 import { Pix } from './pix.js';
+import { photoTex, PHOTO_TEX } from '../kit/photoTex.js';
 
 const hx = (c) => '#' + c.toString(16).padStart(6, '0');
 /** A tone of colour c: k < 1 darker (toward a cool plum shadow), k > 1 lighter (toward warm white). */
@@ -18,216 +20,43 @@ export function tone(c, k) {
   const m = k <= 1 ? [r * k + 24 * (1 - k), g * k + 18 * (1 - k), b * k + 36 * (1 - k)] : [r + (255 - r) * (k - 1) * 2, g + (250 - g) * (k - 1) * 2, b + (234 - b) * (k - 1) * 2];
   return (Math.max(0, Math.min(255, Math.round(m[0]))) << 16) | (Math.max(0, Math.min(255, Math.round(m[1]))) << 8) | Math.max(0, Math.min(255, Math.round(m[2])));
 }
-const T = (c, k) => hx(tone(c, k));
-/** A small seeded random, for placement decisions only (never per-pixel noise). */
-const rnd = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
 function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
-/** Draw fn at the tile and its eight neighbours so shapes wrap seamlessly. */
-function wrap(x, W, H, fn) { for (const dx of [-W, 0, W]) for (const dy of [-H, 0, H]) { x.save(); x.translate(dx, dy); fn(); x.restore(); } }
-/** A flat blot with a hand-cut edge (n corners). */
-function blot(x, cx, cy, rx, ry, R, n = 10) {
-  x.beginPath();
-  for (let k = 0; k < n; k++) { const a = (k / n) * 6.2832, s = 0.72 + R() * 0.5; x[k ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * rx * s, cy + Math.sin(a) * ry * s); }
-  x.closePath(); x.fill();
-}
 
-// ---------------------------------------------------------------------------------------------- tiling surfaces
-export const SURF = {
-  // totan: small-wave zinc sheets 0.8 m wide, pale so each wall tints it (teal paint, rust-proof red, bare zinc).
-  // Twelve waves a sheet in three flat tones, the side lap, a row of umbrella nails every 0.8 m with rust under them.
-  totan: [512, 1024, 0.8, 1.6, (x, W, H) => {
-    const c = 0xe2e5e3, P = W / 12;
-    x.fillStyle = hx(c); x.fillRect(0, 0, W, H);
-    for (let i = 0; i < 12; i++) {
-      x.fillStyle = T(c, 1.07); x.fillRect(i * P + P * 0.12, 0, P * 0.26, H); // the crest catching the light
-      x.fillStyle = T(c, 0.86); x.fillRect(i * P + P * 0.62, 0, P * 0.3, H); // the valley
-      x.fillStyle = T(c, 0.74); x.fillRect(i * P + P * 0.86, 0, 3, H);
-    }
-    // the side lap (one sheet over the next) and the end lap half way up
-    x.fillStyle = T(c, 0.62); x.fillRect(0, 0, 4, H); x.fillStyle = T(c, 1.1); x.fillRect(4, 0, 3, H);
-    x.fillStyle = T(c, 0.66); x.fillRect(0, H - 6, W, 6); x.fillStyle = T(c, 1.1); x.fillRect(0, H - 10, W, 3);
-    // nails on every third crest, in rows: a washer, its shadow, and rust running down from some of them
-    const rust = 0xb46a3c;
-    [0.16, 0.5, 0.84].forEach((v, row) => {
-      for (let i = 0; i < 12; i += 3) {
-        const cx = (i + (row % 2 ? 1.5 : 0)) % 12 * P + P * 0.25, cy = v * H, k = (i + row * 5) % 4;
-        if (k < 3) { const L = [150, 64, 230][k]; x.fillStyle = hx(tone(rust, 1.12)); x.globalAlpha = 0.55; x.beginPath(); x.moveTo(cx - 5, cy); x.lineTo(cx + 5, cy); x.lineTo(cx + 2, cy + L); x.lineTo(cx - 2, cy + L * 0.8); x.fill(); x.globalAlpha = 1; }
-        x.fillStyle = T(c, 0.5); x.beginPath(); x.arc(cx + 1, cy + 2, 7, 0, 7); x.fill();
-        x.fillStyle = hx(k === 1 ? tone(rust, 0.9) : tone(c, 0.82)); x.beginPath(); x.arc(cx, cy, 6, 0, 7); x.fill();
-        x.fillStyle = T(c, 1.12); x.beginPath(); x.arc(cx - 1.5, cy - 1.5, 2.2, 0, 7); x.fill();
-      }
-    });
-    // rust creeping up from the end lap
-    x.fillStyle = hx(rust); x.globalAlpha = 0.5;
-    for (const [i, h] of [[1, 34], [2, 22], [6, 44], [7, 26], [10, 30]]) x.fillRect(i * P + P * 0.58, H - 6 - h, P * 0.34, h);
-    x.globalAlpha = 1;
-  }],
-  // sawn timber, the grain along u: long streaks in two darker tones, a knot, a split; pale so members tint it
-  wood: [512, 128, 1, 0.25, (x, W, H, R) => {
-    const c = 0xdcc29c;
-    x.fillStyle = hx(c); x.fillRect(0, 0, W, H);
-    for (let i = 0; i < 16; i++) {
-      const y = (i + 0.5) / 16 * H + (R() - 0.5) * 3, len = W * (0.35 + R() * 0.6), x0 = R() * W;
-      x.fillStyle = T(c, i % 3 ? 0.9 : 0.8); wrap(x, W, H, () => x.fillRect(x0, y, len, i % 4 ? 1.5 : 2.5));
-    }
-    x.fillStyle = T(c, 1.06); for (let i = 0; i < 6; i++) { const y = R() * H, x0 = R() * W; wrap(x, W, H, () => x.fillRect(x0, y, W * 0.4, 3)); }
-    for (const [kx, ky, r] of [[120, 40, 9], [380, 92, 6]]) {
-      x.fillStyle = T(c, 0.78); x.beginPath(); x.ellipse(kx, ky, r * 2.2, r, 0, 0, 7); x.fill();
-      x.fillStyle = T(c, 0.58); x.beginPath(); x.ellipse(kx, ky, r, r * 0.6, 0, 0, 7); x.fill();
-    }
-  }],
-  // plywood lining: 0.91 x 1.82 sheets, cathedral grain in two tones, the joint and its nails every 15 cm
-  ply: [512, 1024, 0.91, 1.82, (x, W, H) => {
-    const c = 0xdcbf94;
-    x.fillStyle = hx(c); x.fillRect(0, 0, W, H);
-    x.lineWidth = 3;
-    for (const [cx, w0] of [[130, 70], [330, 95], [470, 50]]) for (let k = 0; k < 7; k++) {
-      x.strokeStyle = T(c, k % 2 ? 0.9 : 0.84); x.beginPath();
-      const w = w0 * (0.25 + k * 0.16), top = 120 + k * 60 + (cx % 90);
-      x.moveTo(cx - w, H); x.quadraticCurveTo(cx - w * 0.8, top + 200, cx, top); x.quadraticCurveTo(cx + w * 0.8, top + 200, cx + w, H); x.stroke();
-      x.beginPath(); x.moveTo(cx - w, 0); x.lineTo(cx - w, 40); x.moveTo(cx + w, 0); x.lineTo(cx + w, 40); x.stroke();
-    }
-    x.fillStyle = T(c, 0.6); x.fillRect(0, 0, 3, H); x.fillRect(0, 0, W, 3);
-    x.fillStyle = T(c, 1.08); x.fillRect(3, 0, 2, H); x.fillRect(0, 3, W, 2);
-    x.fillStyle = T(c, 0.55);
-    for (let y = 40; y < H; y += 84) { x.fillRect(12, y, 5, 5); x.fillRect(W - 16, y, 5, 5); }
-    for (let i = 60; i < W; i += 98) x.fillRect(i, 14, 5, 5);
-  }],
-  // the slab: trowelled concrete in 2 m bays, lighter and darker sweeps, the saw-cut joint, a few pits
-  concrete: [512, 512, 2, 2, (x, W, H, R) => {
-    const c = 0xc2bdb2;
-    x.fillStyle = hx(c); x.fillRect(0, 0, W, H);
-    for (let i = 0; i < 12; i++) { const cx = R() * W, cy = R() * H, rx = 50 + R() * 80, ry = 22 + R() * 34; x.fillStyle = T(c, i % 3 ? 0.955 : 1.035); const RR = rnd(i + 3); wrap(x, W, H, () => blot(x, cx, cy, rx, ry, RR, 9)); }
-    x.fillStyle = T(c, 0.84); for (let i = 0; i < 46; i++) x.fillRect(Math.floor(R() * W), Math.floor(R() * H), 2 + (i % 3), 2);
-    x.fillStyle = T(c, 0.62); x.fillRect(0, 0, W, 4); x.fillRect(0, 0, 4, H);
-    x.fillStyle = T(c, 1.08); x.fillRect(0, 4, W, 2); x.fillRect(4, 0, 2, H);
-  }],
-  // concrete blocks (390 x 190) in running bond: three block tones by rule, raked joints, damp at the bed joints
-  block: [512, 512, 0.8, 0.8, (x, W, H) => {
-    const c = 0xbfbab0, bw = W / 2, bh = H / 4, j = 7;
-    x.fillStyle = T(c, 0.66); x.fillRect(0, 0, W, H);
-    for (let r = 0; r < 4; r++) for (let i = -1; i < 2; i++) {
-      const x0 = i * bw + (r % 2 ? bw / 2 : 0), y0 = r * bh, k = (i * 3 + r * 5 + 8) % 5;
-      x.fillStyle = T(c, [1, 0.95, 1.04, 0.97, 0.91][k]); x.fillRect(x0 + j / 2, y0 + j / 2, bw - j, bh - j);
-      x.fillStyle = T(c, 1.09); x.fillRect(x0 + j / 2, y0 + j / 2, bw - j, 3);
-      x.fillStyle = T(c, 0.84); x.fillRect(x0 + j / 2, y0 + bh - j / 2 - 4, bw - j, 4);
-      if (k === 1) { x.fillStyle = T(c, 0.8); x.fillRect(x0 + 40, y0 + 30, 26, 5); x.fillRect(x0 + 150, y0 + 70, 14, 5); }
-    }
-  }],
-  // the back wall: steel-trowelled mortar, big soft sweeps and one settled hairline
-  mortar: [512, 512, 2.4, 2.4, (x, W, H, R) => {
-    const c = 0xd2ccc0;
-    x.fillStyle = hx(c); x.fillRect(0, 0, W, H);
-    for (let i = 0; i < 9; i++) { const cx = R() * W, cy = R() * H, rx = 70 + R() * 90, ry = 34 + R() * 40; x.fillStyle = T(c, i % 2 ? 0.965 : 1.03); const RR = rnd(i + 11); wrap(x, W, H, () => blot(x, cx, cy, rx, ry, RR, 10)); }
-    x.strokeStyle = T(c, 0.8); x.lineWidth = 2; x.beginPath(); x.moveTo(60, 0); x.lineTo(74, 120); x.lineTo(58, 230); x.lineTo(80, 330); x.lineTo(66, 512); x.stroke();
-  }],
-  // white 100 mm wall tiles behind the sink, grey grout, one cracked
-  tile: [256, 256, 0.4, 0.4, (x, W, H) => {
-    const c = 0xf0eee6, s = W / 4;
-    x.fillStyle = T(c, 0.7); x.fillRect(0, 0, W, H);
-    for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) {
-      x.fillStyle = T(c, (i + j * 3) % 5 === 0 ? 0.95 : 1); x.fillRect(i * s + 3, j * s + 3, s - 6, s - 6);
-      x.fillStyle = T(c, 1.1); x.fillRect(i * s + 3, j * s + 3, s - 6, 3);
-    }
-    x.strokeStyle = T(c, 0.72); x.lineWidth = 2; x.beginPath(); x.moveTo(s + 8, s * 2 + 6); x.lineTo(s * 2 - 10, s * 3 - 8); x.stroke();
-  }],
-  // terrazzo (人研ぎ) of the old sink: stone chips in three tones on a jittered grid
-  terrazzo: [256, 256, 0.4, 0.4, (x, W, H, R) => {
-    const c = 0xbcc0b6;
-    x.fillStyle = hx(c); x.fillRect(0, 0, W, H);
-    for (let j = 0; j < 9; j++) for (let i = 0; i < 9; i++) {
-      const cx = (i + 0.2 + R() * 0.6) * W / 9, cy = (j + 0.2 + R() * 0.6) * H / 9, r = 3 + R() * 5, RR = rnd(i * 9 + j);
-      x.fillStyle = [T(c, 1.1), T(c, 0.8), hx(0xa09a8c), T(c, 1.14)][(i + j * 2) % 4]; wrap(x, W, H, () => blot(x, cx, cy, r, r * 0.8, RR, 5));
-    }
-  }],
-  // frosted wired glass (網入りガラス): a pale pane, the diamond wire in a darker tone
-  glass: [256, 256, 0.3, 0.3, (x, W, H) => {
-    const c = 0xe9efe9;
-    x.fillStyle = hx(c); x.fillRect(0, 0, W, H);
-    x.strokeStyle = T(c, 0.78); x.lineWidth = 2.5; x.beginPath();
-    for (let k = -4; k <= 8; k++) { x.moveTo(k * 64, 0); x.lineTo(k * 64 + 256, 256); x.moveTo(k * 64, 0); x.lineTo(k * 64 - 256, 256); }
-    x.stroke();
-    x.fillStyle = T(c, 1.06); x.fillRect(0, 0, W, 10);
-  }],
-  // worn P-tile for the gacha corner: 30 cm vinyl tiles, cream and sea green in check, scuffed
-  ptile: [512, 512, 0.6, 0.6, (x, W, H) => {
-    const a = 0xe6dfcb, b = 0x9fc0ae, s = W / 2;
-    for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) {
-      const c = (i + j) % 2 ? a : b;
-      x.fillStyle = hx(c); x.fillRect(i * s, j * s, s, s);
-      x.fillStyle = T(c, 0.9); x.fillRect(i * s + 40 + j * 60, j * s + 70 + i * 50, 90, 6); x.fillRect(i * s + 150, j * s + 180 - i * 40, 46, 5);
-      x.fillStyle = T(c, 1.06); x.fillRect(i * s + 20, j * s + 30, 70, 5);
-      x.fillStyle = T(c, 0.68); x.fillRect(i * s, j * s, s, 2); x.fillRect(i * s, j * s, 2, s);
-    }
-  }],
-  // the trench drain's grating: flat bars across a dark channel
-  grate: [64, 64, 0.1, 0.16, (x, W, H) => {
-    x.fillStyle = '#2b2a30'; x.fillRect(0, 0, W, H);
-    x.fillStyle = '#8f9496'; x.fillRect(0, 0, W, 7); x.fillRect(0, H - 7, W, 7);
-    for (let i = 0; i < 4; i++) { x.fillStyle = '#9da2a3'; x.fillRect(i * 16 + 3, 7, 8, H - 14); x.fillStyle = '#c3c7c6'; x.fillRect(i * 16 + 3, 7, 2, H - 14); }
-  }],
-};
-const surfCache = new Map();
-/** A tiling surface texture (uvs in metres). */
-export function surface(key) {
-  if (surfCache.has(key)) return surfCache.get(key);
-  const [w, h, mw, mh, paint] = SURF[key], c = canvas(w, h);
-  paint(c.getContext('2d'), w, h, rnd(key.length * 977 + w));
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / mw, 1 / mh); t.anisotropy = 8;
-  t.name = 'garage:' + key;
-  surfCache.set(key, t);
-  return t;
-}
+/** A photo surface from the shared library at its real size (for uvs in metres); avg(name) = its mean colour. */
+export function surface(name) { const m = PHOTO_TEX[name]?.metres || 1; return photoTex(name, { repeat: [1 / m, 1 / m] }); }
+export const surfaceAvg = (name) => PHOTO_TEX[name]?.avg ?? 0x808080;
 
-// ---------------------------------------------------------------------------------------------- the shutter curtain
+// ---------------------------------------------------------------------------------------------- the shutter's lettering
 export const SHUTTER = { w: 6.08, h: 2.7, pitch: 0.075 };
-let shutterTex = null;
-/** The whole curtain as one painted view (u across the 6.08 m, v up the 2.7 m): slats, rust, the lettering. */
-export function shutterTexture() {
-  if (shutterTex) return shutterTex;
-  const W = 2048, H = 1024, c = canvas(W, H), x = c.getContext('2d'), base = 0xb3bdbc, rust = 0xa85e34;
-  const sy = H / SHUTTER.h, sx = W / SHUTTER.w, P = SHUTTER.pitch * sy, n = Math.ceil(H / P);
-  x.fillStyle = hx(base); x.fillRect(0, 0, W, H);
-  // the band that sat rolled against the damp box for years, and the foot that stood in the splash
-  const band = (y0, y1, k) => { x.fillStyle = hx(rust); x.globalAlpha = k; x.fillRect(0, H - y1 * sy, W, (y1 - y0) * sy); x.globalAlpha = 1; };
-  band(1.5, 1.95, 0.5); band(1.62, 1.82, 0.5); band(0, 0.16, 0.45);
-  const R = rnd(71);
-  x.fillStyle = hx(tone(rust, 0.8));
-  for (let i = 0; i < 26; i++) { const rx = R() * W, ry = H - (1.5 + R() * 0.45) * sy; blot(x, rx, ry, 30 + R() * 60, 8 + R() * 10, rnd(i + 5), 8); }
-  // lettering, as on every garage door in Japan: 出入口につき / 駐車禁止 (stencilled, worn at the slat edges)
+let inkTex = null;
+/** What is stencilled across the curtain (u across its 6.08 m, v up its 2.7 m), as on every garage door in Japan:
+ *  出入口につき / 駐車禁止, the red gone thin where the slats rub. */
+export function shutterInk() {
+  if (inkTex) return inkTex;
+  const W = 2048, H = 1024, c = canvas(W, H), x = c.getContext('2d'), sy = H / SHUTTER.h;
   x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.fillStyle = '#c23a30'; x.globalAlpha = 0.82;
-  x.font = '288px "DotGothic16", monospace'; x.fillText('駐車禁止', W / 2, H - 0.86 * sy);
-  x.font = '112px "DotGothic16", monospace'; x.fillStyle = '#3d4a5c'; x.fillText('出入口につき', W / 2, H - 1.33 * sy);
-  x.globalAlpha = 1;
-  // the slats: a lit upper lip, the face, the shaded roll at the bottom and the dark joint
-  for (let k = 0; k <= n; k++) {
-    const y = H - k * P;
-    x.fillStyle = 'rgba(255,252,240,0.34)'; x.fillRect(0, y - P, W, P * 0.16);
-    x.fillStyle = 'rgba(40,34,60,0.2)'; x.fillRect(0, y - P * 0.34, W, P * 0.22);
-    x.fillStyle = 'rgba(36,28,52,0.62)'; x.fillRect(0, y - P * 0.12, W, P * 0.12);
-  }
-  // rust running down from slat ends by the rails, dents, an old paint run
-  for (const [u, v, len] of [[0.05, 2.3, 0.5], [0.12, 1.5, 0.34], [5.96, 2.1, 0.62], [6.0, 1.2, 0.3], [2.3, 1.55, 0.26], [3.9, 1.6, 0.4], [4.6, 1.52, 0.22]]) {
-    x.fillStyle = hx(tone(rust, 0.92)); x.globalAlpha = 0.6; x.fillRect(u * sx - 5, H - v * sy, 10, len * sy); x.globalAlpha = 1;
-  }
-  for (const [u, v] of [[1.2, 0.7], [4.9, 1.1], [3.3, 0.35]]) {
-    x.fillStyle = 'rgba(255,252,240,0.3)'; x.beginPath(); x.ellipse(u * sx - 4, H - v * sy - 4, 40, 18, 0.3, 0, 7); x.fill();
-    x.fillStyle = 'rgba(40,34,60,0.22)'; x.beginPath(); x.ellipse(u * sx + 5, H - v * sy + 5, 34, 14, 0.3, 0, 7); x.fill();
-  }
+  x.fillStyle = 'rgba(190,58,48,0.86)'; x.font = '288px "DotGothic16", monospace'; x.fillText('駐車禁止', W / 2, H - 0.86 * sy);
+  x.fillStyle = 'rgba(58,72,92,0.86)'; x.font = '112px "DotGothic16", monospace'; x.fillText('出入口につき', W / 2, H - 1.33 * sy);
+  // worn through along three slat edges and where the pole's hook has scraped for thirty years
+  x.globalCompositeOperation = 'destination-out';
+  for (const v of [0.74, 0.965, 1.34]) x.fillRect(0, H - v * sy - 3, W, 6);
+  x.lineWidth = 9; x.lineCap = 'round'; x.strokeStyle = '#000';
+  for (const [u0, v0, u1, v1] of [[1.9, 0.66, 2.05, 1.02], [2.02, 0.7, 2.12, 0.98], [4.1, 0.72, 4.02, 1.0]]) { x.beginPath(); x.moveTo(u0 / SHUTTER.w * W, H - v0 * sy); x.lineTo(u1 / SHUTTER.w * W, H - v1 * sy); x.stroke(); }
+  x.globalCompositeOperation = 'source-over';
   const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.name = 'garage:shutter';
-  return (shutterTex = t);
+  t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.name = 'garage:shutter-ink';
+  return (inkTex = t);
 }
 
 // ---------------------------------------------------------------------------------------------- floor and wall marks
 let marksOut = null;
-/** Marks with alpha, drawn flat on the floor and the walls: { tex, rect(name) -> [u0, v0, u1, v1] }. */
+/** Marks with alpha, drawn flat on the floor and the walls: { tex, rect(name) -> [u0, v0, u1, v1] }. Every shape is
+ *  authored point by point. */
 export function marks() {
   if (marksOut) return marksOut;
   const W = 1024, H = 1024, c = canvas(W, H), x = c.getContext('2d'), rects = {};
   const at = (name, x0, y0, w, h, fn) => { rects[name] = [x0 / W, 1 - (y0 + h) / H, (x0 + w) / W, 1 - y0 / H]; x.save(); x.beginPath(); x.rect(x0, y0, w, h); x.clip(); x.translate(x0, y0); fn(w, h); x.restore(); };
+  const poly = (w, h, pts) => { x.beginPath(); pts.forEach(([u, v], i) => x[i ? 'lineTo' : 'moveTo'](u * w, v * h)); x.closePath(); x.fill(); };
   const ink = 'rgb(58,50,64)';
   // cracks: a dark line with a light lip, branching (three of them)
   const crack = (pts, br) => (w, h) => {
@@ -240,50 +69,48 @@ export function marks() {
   at('crackA', 0, 0, 400, 200, crack([[0.02, 0.2], [0.16, 0.32], [0.3, 0.26], [0.46, 0.5], [0.62, 0.46], [0.8, 0.7], [0.98, 0.78]], [[[0.3, 0.26], [0.36, 0.08], [0.44, 0.04]], [[0.62, 0.46], [0.7, 0.3]]]));
   at('crackB', 400, 0, 300, 200, crack([[0.04, 0.9], [0.2, 0.62], [0.34, 0.66], [0.5, 0.36], [0.72, 0.3], [0.96, 0.06]], [[[0.5, 0.36], [0.56, 0.6], [0.66, 0.74]]]));
   at('crackC', 700, 0, 320, 200, crack([[0.02, 0.5], [0.22, 0.42], [0.4, 0.58], [0.6, 0.5], [0.98, 0.56]], [[[0.4, 0.58], [0.44, 0.84]]]));
-  // oil where the car stood: a flat stain, a darker heart, a few drips beside it
-  const oil = (seed) => (w, h) => {
-    const R = rnd(seed);
-    x.fillStyle = 'rgba(64,56,62,0.42)'; blot(x, w / 2, h / 2, w * 0.44, h * 0.42, R, 13);
-    x.fillStyle = 'rgba(44,38,50,0.5)'; blot(x, w * 0.46, h * 0.52, w * 0.24, h * 0.22, R, 10);
-    x.fillStyle = 'rgba(52,46,56,0.5)'; for (let i = 0; i < 5; i++) blot(x, w * (0.1 + R() * 0.8), h * (0.08 + R() * 0.84), 7 + R() * 6, 6 + R() * 5, R, 6);
-  };
-  at('oilA', 0, 200, 300, 230, oil(5)); at('oilB', 300, 200, 200, 160, oil(9));
-  // tyre tracks: two faint bands with the tread's chevrons
+  // oil where the engine sat: the stain's outline, its darker heart, three drips toward the drain
+  at('oilA', 0, 200, 300, 230, (w, h) => {
+    x.fillStyle = 'rgba(64,56,62,0.4)'; poly(w, h, [[0.1, 0.42], [0.2, 0.2], [0.42, 0.1], [0.62, 0.16], [0.84, 0.12], [0.93, 0.36], [0.86, 0.6], [0.92, 0.8], [0.7, 0.9], [0.5, 0.82], [0.3, 0.9], [0.12, 0.74]]);
+    x.fillStyle = 'rgba(44,38,50,0.46)'; poly(w, h, [[0.3, 0.44], [0.44, 0.3], [0.62, 0.36], [0.7, 0.52], [0.6, 0.68], [0.4, 0.66]]);
+    x.fillStyle = 'rgba(52,46,56,0.46)'; poly(w, h, [[0.04, 0.9], [0.09, 0.86], [0.12, 0.93], [0.07, 0.97]]); poly(w, h, [[0.9, 0.9], [0.95, 0.88], [0.97, 0.95], [0.92, 0.97]]); poly(w, h, [[0.52, 0.93], [0.57, 0.92], [0.58, 0.98], [0.53, 0.99]]);
+  });
+  at('oilB', 300, 200, 200, 160, (w, h) => {
+    x.fillStyle = 'rgba(64,56,62,0.38)'; poly(w, h, [[0.12, 0.5], [0.26, 0.2], [0.5, 0.14], [0.78, 0.24], [0.9, 0.5], [0.8, 0.78], [0.54, 0.88], [0.28, 0.8]]);
+    x.fillStyle = 'rgba(44,38,50,0.44)'; poly(w, h, [[0.38, 0.44], [0.54, 0.34], [0.68, 0.48], [0.58, 0.64], [0.42, 0.6]]);
+  });
+  // tyre tracks: a faint band, three ribs, gone where the floor has been swept
   at('tyre', 500, 200, 60, 500, (w, h) => {
     x.fillStyle = 'rgba(60,54,66,0.13)'; x.fillRect(8, 0, w - 16, h);
     x.fillStyle = 'rgba(52,46,60,0.14)'; for (const u of [14, 27, 40]) x.fillRect(u, 0, 5, h);
     for (const [y, hh] of [[40, 30], [150, 60], [300, 24], [380, 50], [470, 30]]) x.clearRect(0, y, w, hh);
   });
-  // water down a wall from a leak, rust from a bolt, damp at a wall's foot, a scuff
+  // water down a wall from a leak, rust from a bolt, a scuff
   at('water', 580, 200, 150, 300, (w, h) => {
-    x.fillStyle = 'rgba(70,74,88,0.2)'; x.beginPath(); x.moveTo(w * 0.3, 0); x.lineTo(w * 0.7, 0); x.lineTo(w * 0.84, h * 0.5); x.lineTo(w * 0.66, h); x.lineTo(w * 0.5, h * 0.82); x.lineTo(w * 0.34, h * 0.94); x.lineTo(w * 0.16, h * 0.46); x.fill();
-    x.fillStyle = 'rgba(70,74,88,0.2)'; x.beginPath(); x.moveTo(w * 0.42, 0); x.lineTo(w * 0.58, 0); x.lineTo(w * 0.62, h * 0.7); x.lineTo(w * 0.46, h * 0.76); x.fill();
+    x.fillStyle = 'rgba(70,74,88,0.2)'; poly(w, h, [[0.3, 0], [0.7, 0], [0.84, 0.5], [0.66, 1], [0.5, 0.82], [0.34, 0.94], [0.16, 0.46]]);
+    poly(w, h, [[0.42, 0], [0.58, 0], [0.62, 0.7], [0.46, 0.76]]);
   });
   at('rust', 740, 200, 60, 300, (w, h) => {
-    x.fillStyle = 'rgba(168,94,52,0.6)'; x.beginPath(); x.moveTo(w * 0.2, 0); x.lineTo(w * 0.8, 0); x.lineTo(w * 0.6, h * 0.55); x.lineTo(w * 0.52, h); x.lineTo(w * 0.42, h * 0.62); x.fill();
+    x.fillStyle = 'rgba(168,94,52,0.6)'; poly(w, h, [[0.2, 0], [0.8, 0], [0.6, 0.55], [0.52, 1], [0.42, 0.62]]);
     x.fillStyle = 'rgba(128,66,38,0.7)'; x.fillRect(w * 0.36, 0, w * 0.28, h * 0.2);
-  });
-  at('damp', 0, 440, 480, 150, (w, h) => {
-    const R = rnd(3); x.fillStyle = 'rgba(66,70,82,0.2)'; x.beginPath(); x.moveTo(0, h);
-    for (let i = 0; i <= 12; i++) x.lineTo(i / 12 * w, h * (0.25 + 0.5 * R() * (i % 2 ? 1 : 0.5)));
-    x.lineTo(w, h); x.fill();
-    x.fillStyle = 'rgba(92,116,82,0.3)'; for (let i = 0; i < 9; i++) blot(x, (i + 0.5) / 9 * w, h - 10 - R() * 10, 24 + R() * 14, 9, R, 7);
   });
   at('scuff', 0, 600, 300, 120, (w, h) => {
     x.strokeStyle = 'rgba(54,48,60,0.34)'; x.lineWidth = 5; x.lineCap = 'round';
     for (const [a, b, cc, d] of [[0.06, 0.3, 0.5, 0.2], [0.2, 0.55, 0.9, 0.42], [0.1, 0.8, 0.62, 0.7], [0.55, 0.86, 0.94, 0.8]]) { x.beginPath(); x.moveTo(a * w, b * h); x.lineTo(cc * w, d * h); x.stroke(); }
   });
-  // a painted line (bay markings, the keep-clear box): solid, chipped along its edges and worn through in places
+  // a painted line (bay markings, the keep-clear box): solid, chipped where feet and wheels cross it
   at('line', 0, 730, 512, 40, (w, h) => {
-    const R = rnd(21); x.fillStyle = '#fff'; x.fillRect(0, 4, w, h - 8);
-    for (let i = 0; i < 22; i++) { const u = R() * w, top = i % 2; x.clearRect(u, top ? 4 : h - 4 - (3 + R() * 6), 8 + R() * 22, 3 + R() * 6); }
-    for (const [u, v, ww, hh] of [[96, 10, 30, 9], [300, 20, 44, 10], [404, 8, 18, 14]]) x.clearRect(u, v, ww, hh);
+    x.fillStyle = '#fff'; x.fillRect(0, 4, w, h - 8);
+    for (const [u, top, ww, hh] of [[22, 1, 30, 6], [80, 0, 18, 8], [96, 1, 30, 9], [150, 0, 40, 5], [214, 1, 14, 9], [262, 0, 26, 7], [300, 1, 44, 10], [352, 0, 20, 6], [404, 1, 18, 14], [446, 0, 34, 6], [478, 1, 22, 8]]) x.clearRect(u, top ? 4 : h - 4 - hh, ww, hh);
   });
   // the soft contact shadow under furniture (it stands in for ambient occlusion on the presets without it)
   at('shade', 320, 600, 200, 120, (w, h) => { x.shadowColor = 'rgba(52,44,70,0.34)'; x.shadowBlur = 22; x.shadowOffsetX = 1000; x.fillStyle = '#000'; x.fillRect(34 - 1000, 30, w - 68, h - 60); x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetX = 0; });
-  // a round stain (a paint tin stood here) and spilt paint
-  at('ring', 540, 720, 110, 110, (w, h) => { x.strokeStyle = 'rgba(120,78,50,0.5)'; x.lineWidth = 7; x.beginPath(); x.arc(w / 2, h / 2, w * 0.38, 0.3, 6.0); x.stroke(); });
-  at('spill', 660, 520, 180, 180, (w, h) => { const R = rnd(8); x.fillStyle = 'rgba(88,128,178,0.85)'; blot(x, w / 2, h / 2, w * 0.36, h * 0.3, R, 11); for (let i = 0; i < 6; i++) blot(x, w * (0.12 + R() * 0.76), h * (0.12 + R() * 0.76), 6 + R() * 7, 5 + R() * 6, R, 6); x.fillStyle = 'rgba(150,184,220,0.9)'; blot(x, w * 0.44, h * 0.44, w * 0.14, h * 0.1, R, 7); });
+  // spilt paint: the pool, the splash's three drops, the skin's lighter middle
+  at('spill', 660, 520, 180, 180, (w, h) => {
+    x.fillStyle = 'rgba(88,128,178,0.85)'; poly(w, h, [[0.2, 0.46], [0.3, 0.26], [0.52, 0.2], [0.74, 0.3], [0.82, 0.52], [0.68, 0.74], [0.44, 0.8], [0.26, 0.66]]);
+    poly(w, h, [[0.08, 0.2], [0.14, 0.16], [0.17, 0.24], [0.1, 0.27]]); poly(w, h, [[0.86, 0.14], [0.92, 0.12], [0.93, 0.2], [0.87, 0.21]]); poly(w, h, [[0.78, 0.86], [0.85, 0.84], [0.87, 0.92], [0.8, 0.93]]);
+    x.fillStyle = 'rgba(150,184,220,0.9)'; poly(w, h, [[0.36, 0.42], [0.5, 0.34], [0.6, 0.44], [0.5, 0.54], [0.4, 0.52]]);
+  });
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; tex.name = 'garage:marks';
   return (marksOut = { tex, rect: (n) => rects[n] });
@@ -292,14 +119,15 @@ export function marks() {
 // ---------------------------------------------------------------------------------------------- printed matter
 const RED = 0xc8322c, INK = 0x2a2230, CREAM = 0xf4ecd6, INDIGO = 0x25355c, WHITE = 0xf8f6ee;
 /** The shop's crest (丸に割り菱カプセル): a ring, a capsule split by its seam, a small lozenge in the upper half. */
-function crest(p, cx, cy, r, fg, bg) {
-  p.circle(cx, cy, r, fg); p.circle(cx, cy, Math.round(r * 0.84), bg); p.circle(cx, cy, Math.round(r * 0.66), fg);
-  const t = Math.max(2, Math.round(r * 0.09));
-  p.rect(cx - r + t, cy - t, 2 * (r - t), 2 * t, bg);
-  const d = Math.round(r * 0.26), my = cy - Math.round(r * 0.36);
-  for (let j = -d; j <= d; j++) { const w = Math.round((d - Math.abs(j)) * 1.5); p.rect(cx - w, my + j, 2 * w + 1, 1, bg); }
-  const d2 = Math.round(d * 0.45);
-  for (let j = -d2; j <= d2; j++) { const w = Math.round((d2 - Math.abs(j)) * 1.5); p.rect(cx - w, my + j, 2 * w + 1, 1, fg); }
+function crest(p, cx, cy, r, fg, bg = null) {
+  const r1 = Math.round(r * 0.84), r2 = Math.round(r * 0.66), t = Math.max(2, Math.round(r * 0.09)), d = Math.round(r * 0.26), my = -Math.round(r * 0.36), d2 = Math.round(d * 0.45);
+  for (let j = -r; j <= r; j++) for (let i = -r; i <= r; i++) {
+    const q = i * i + j * j;
+    if (q > r * r + r * 0.6) continue;
+    let on = q > r1 * r1 + r1 * 0.6; // the ring
+    if (!on && q <= r2 * r2 + r2 * 0.6) { on = Math.abs(j) > t; const a = Math.abs(i) / 1.5 + Math.abs(j - my); if (a <= d) on = a <= d2; } // the capsule, its seam, the lozenge
+    if (on) p.px(cx + i, cy + j, fg); else if (bg !== null) p.px(cx + i, cy + j, bg);
+  }
 }
 /** Kana / kanji set upright one under the other (the long vowel mark turned upright, as in vertical writing). */
 function vtext(p, str, cx, y, size, color, gap = 0) {
@@ -327,9 +155,9 @@ const PRINTS = {
     for (const [i, j] of [[26, 26], [w - 30, 26], [26, h - 30], [w - 30, h - 30], [w / 2, 22], [w / 2, h - 28]]) { p.circle(x + i, y + j, 9, 0x9a5a36); p.circle(x + i, y + j, 5, 0x5a3a2a); p.rect(x + i - 2, y + j + 8, 4, 22, 0xb07848, 150); }
     for (const [i, ww] of [[330, 40], [640, 26], [870, 54]]) { p.rect(x + i, y + h - 12, ww, 12, 0x9a5a36); p.rect(x + i + 4, y + h - 16, ww - 12, 5, 0xb07848); }
   }],
-  // noren: three indigo panels, resist-dyed white (256 px/m, 0.66 x 0.72 m each)
+  // noren: what is resist-dyed white on the three indigo panels (256 px/m, 0.66 x 0.72 m each)
   norenL: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); vtext(p, 'ガチャ', x + w / 2, y + 22, 48, WHITE, 2); }],
-  norenC: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); crest(p, x + (w >> 1), y + 98, 60, WHITE, INDIGO); }],
+  norenC: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); crest(p, x + (w >> 1), y + 98, 60, WHITE); }],
   norenR: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); vtext(p, 'ガレージ', x + w / 2, y + 26, 32, WHITE, 6); }],
   // a paper lantern's skin, wrapped round (u) the body: red paper, bamboo ribs, the shop's kana front and back
   lantern: [256, 128, (p, x, y, w, h) => {
@@ -415,12 +243,8 @@ const PRINTS = {
   // the fluorescent fitting's rating label and the pull-cord tag
   tag: [28, 44, (p, x, y, w, h) => { p.rect(x, y, w, h, 0xf2e8c8); p.frame(x, y, w, h, 0x9a8a60); p.circle(x + (w >> 1), y + 6, 3, 0x5a5040); vtext(p, '点灯', x + (w >> 1), y + 12, 16, INK, 0); }],
 };
-function noren(p, x, y, w, h) {
-  p.rect(x, y, w, h, INDIGO);
-  for (let j = 3; j < h; j += 6) p.rect(x, y + j, w, 1, tone(INDIGO, 1.08));
-  p.rect(x, y, w, 12, tone(INDIGO, 0.8)); for (let i = 10; i < w; i += 40) p.rect(x + i, y, 14, 12, tone(INDIGO, 1.16));
-  p.rect(x, y, 2, h, tone(INDIGO, 0.75)); p.rect(x + w - 2, y, 2, h, tone(INDIGO, 0.75)); p.rect(x, y + h - 3, w, 3, tone(INDIGO, 0.75));
-}
+/** A noren panel's dye-resist marks only (the indigo cloth itself is a photo): the pale band of its hanging loops. */
+function noren(p, x, y, w, h) { for (let i = 10; i < w; i += 40) p.rect(x + i, y, 14, 10, 0x8a9cc0); void h; }
 
 let printsOut = null;
 /** The print sheet: { tex, rect(name) -> [u0, v0, u1, v1], px(name) -> [w, h] } (pixel art, nearest). */

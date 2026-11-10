@@ -33,7 +33,7 @@ export default {
     {
       id: 'pole', name: 'Pole Koala', jp: '電柱コアラ', rarity: 'uncommon',
       desc: 'Mistook 6,600 volts for eucalyptus. Too comfortable to check.',
-      figure: F.pole,
+      figure: F.pole, gimmick: { text: 'Wake it (it will not)' },
     },
     {
       id: 'mirror', name: 'Mirror Giraffe', jp: 'カーブミラーきりん', rarity: 'rare',

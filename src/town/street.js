@@ -16,17 +16,26 @@ export function buildGround(t) {
   // the asphalt: brighter where the wheels run, darker along the gutters and the crown
   const mid = (ZG1 + ZR1) / 2, wz = ZR1 - ZG1;
   const wear = (x, z) => { const d = Math.abs(z), g = Math.min(1, (wz / 2 - d) / 0.9); return (0.9 + 0.1 * g) * (1 + 0.05 * Math.exp(-((d - 1.05) ** 2) / 0.12) - 0.04 * Math.exp(-(d * d) / 0.1)) * (0.985 + 0.03 * hash2(Math.round(x * 3), Math.round(z * 5))); };
-  B.plane(m.asphalt, 2 * XT, wz, 0, 0, mid, { sx: 26, sz: 16, kf: wear });
+  B.plane(m.asphalt, 2 * XT, wz, 0, 0, mid, { sx: 26, sz: 16, kf: wear, tint: 0x868482 });
   // near strip (aprons, house fronts; the garage lays its own) and the far paved strip
   for (const sx of [-1, 1]) B.plane(m.concrete, XT - 4.3, ZG0 - 5.2, sx * (XT + 4.3) / 2, 0, (5.2 + ZG0) / 2, { uv: [sx * 0.3, 0], tint: 0xc9c5bb });
   if (!t.garage?.ownsFront) B.plane(m.concrete, 8.6, ZG0 - 5.2, 0, 0, (5.2 + ZG0) / 2, { uv: [0, 0.4], tint: 0xbdb9b0 });
   for (const [a, b] of [[-XT, -9.5], [-7.4, XT]]) B.plane(m.paving, b - a, ZF - ZG3, (a + b) / 2, 0, (ZG3 + ZF) / 2, { uv: [a, 0] });
   // side ditches: concrete lids, steel gratings at driveways and the shop front
+  // side ditches: a dark channel, concrete lids one by one (0.6 m, a hand notch at each end), steel gratings at the
+  // driveways and the shop front (bearing bars across, a frame every metre)
+  const LIDT = [0xb9b5ac, 0xc2beb4, 0xb0aca2, 0xbdb9af, 0xb5b1a8], rot = new THREE.Matrix4().makeRotationX(-Math.PI / 2);
   const gutter = (z0, z1, grates) => {
-    let x = -XT;
+    const w = z1 - z0;
+    B.box(m.pv, 2 * XT, 0.02, w, 0, -0.09, (z0 + z1) / 2, { tint: 0x2c2c2e, skip: 'ny' });
+    const lidShape = (L) => { const p = [[0, 0], [L, 0]], r = 0.032, c = w / 2; for (let k = 0; k <= 5; k++) { const an = -Math.PI / 2 + (k / 5) * Math.PI; p.push([L - Math.cos(an) * r, c + Math.sin(an) * r]); } p.push([L, w], [0, w]); for (let k = 0; k <= 5; k++) { const an = Math.PI / 2 - (k / 5) * Math.PI; p.push([Math.cos(an) * r, c + Math.sin(an) * r]); } return p; };
+    let x = -XT, n = 0;
     for (const [a, b] of [...grates.sort((p, q) => p[0] - q[0]), [XT, XT]]) {
-      if (a > x) B.box(m.lid, a - x, 0.05, z1 - z0, (x + a) / 2, -0.05, (z0 + z1) / 2, { uv: [x, 0], skip: 'ny' });
-      if (b > a) B.box(m.grate, b - a, 0.05, z1 - z0, (a + b) / 2, -0.048, (z0 + z1) / 2, { uv: [a, 0], skip: 'ny' });
+      for (let s = x; s < a - 0.01; n++) { const e = Math.min(a, s + 0.6), L = e - s - 0.008; B.extrude(m.concrete, lidShape(L), 0, 0.05, { m: new THREE.Matrix4().makeTranslation(s + 0.004, -0.05, z1 - 0.003).multiply(rot), tint: LIDT[(n * 3 + (z0 > 10 ? 2 : 0)) % 5] }); s = e; }
+      if (b > a) {
+        for (let s = a; s < b - 0.01; s += 1) { const e = Math.min(b, s + 1); for (const [fx, fw] of [[s + 0.012, 0.024], [e - 0.012, 0.024]]) B.box(m.grate, fw, 0.035, w - 0.01, fx, -0.035, (z0 + z1) / 2, { tint: 0x8d9296 }); for (const fz of [z0 + 0.012, z1 - 0.012]) B.box(m.grate, e - s, 0.035, 0.024, (s + e) / 2, -0.035, fz, { tint: 0x8d9296 }); B.box(m.grate, e - s - 0.04, 0.012, 0.012, (s + e) / 2, -0.02, (z0 + z1) / 2, { tint: 0x7d8286 }); }
+        for (let s = a + 0.045; s < b - 0.03; s += 0.036) B.box(m.grate, 0.006, 0.028, w - 0.05, s, -0.032, (z0 + z1) / 2, { tint: 0x9aa0a4, skip: 'ny' });
+      }
       x = b;
     }
   };
@@ -62,7 +71,7 @@ export function buildGround(t) {
     B.box(pin, XE - XT, 0.006, 0.15, s * (XT + XE) / 2, 0, 11.4, { tint: WHITE, skip: 'ny' });
   }
   // the alley's own asphalt, its stop line and 止まれ; the yellow 30s; the school-zone legend
-  B.plane(m.asphalt, 2.1, 22.4 - ZG3, -8.45, 0, (ZG3 + 22.4) / 2, { uv: [7, 2], k: 0.96 });
+  B.plane(m.asphalt, 2.1, 22.4 - ZG3, -8.45, 0, (ZG3 + 22.4) / 2, { uv: [7, 2], k: 0.96, tint: 0x868482 });
   line(-9.4, -7.5, 15.15, 0.3);
   t.decalG('tomare', -8.45, 16.25, { w: 1.5, d: 1.7 });
   t.decalG('speed30', 15.5, 8.6, { w: 1.1, d: 1.9, ry: -Math.PI / 2 });
@@ -107,8 +116,8 @@ export function buildDressing(t) {
 export function buildDetails(t) {
   const B = t.B, m = t.m, P = t.game.player;
   // ---- the road: patch repairs and a utility trench (newer, darker asphalt with tar joints), cracks, lids, puddles
-  if (!m.patch) { m.patch = m.asphalt.clone(); m.patch.polygonOffset = true; m.patch.polygonOffsetFactor = -2; m.patch.polygonOffsetUnits = -4; m.patch.name = 'patch'; }
-  const patchAt = (x, z, w, d, ry = 0, k = 0.8) => { B.plane(m.patch, w, d, x, 0.002, z, { ry, uv: [x * 0.37, z * 0.21], k }); B.plane(m.paint, w + 0.05, d + 0.05, x, 0.0012, z, { ry, tint: 0x4a4848 }); };
+  if (!m.patch) { m.patch = m.patchA.clone(); m.patch.polygonOffset = true; m.patch.polygonOffsetFactor = -2; m.patch.polygonOffsetUnits = -4; m.patch.name = 'patch'; }
+  const patchAt = (x, z, w, d, ry = 0, k = 0.8) => { B.plane(m.patch, w, d, x, 0.002, z, { ry, uv: [x * 0.37, z * 0.21], k, tint: 0x7c7a79 }); B.plane(m.paint, w + 0.05, d + 0.05, x, 0.0012, z, { ry, tint: 0x4a4848 }); };
   patchAt(5.3, 9.73, 0.55, 7.2, 0, 0.84);
   patchAt(-10.2, 8.25, 9.4, 0.5, 0, 0.78);
   patchAt(3.6, 9.4, 1.5, 1.5, 0.12);

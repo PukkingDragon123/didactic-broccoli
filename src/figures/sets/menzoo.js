@@ -1,6 +1,7 @@
 // Men-Zoo (めんズー): animals made of noodles. Sculpt programs, in millimetres (src/figures/sculpt.js); the series data
 // is src/data/series/menzoo.js.
 import { spline, ring, hinge } from '../sculpt.js';
+import { head, torso, loaf, paw, blade, drape } from '../anatomy.js';
 import {
   fill, proj, wrap, vol, shade, under, crown, face, stamp, tone, tint, mix, EYE,
   circle, ellipse, rbox, seg, arc, poly, or, and, stroke, pair, halfBelow, halfAbove, repeatU, repeatV, label, kana,
@@ -9,12 +10,17 @@ import {
 
 const MAKER = 'MANPUKU';
 const lerp = (a, b, t) => a + (b - a) * t;
-const LO = { dens: 0.76 }; // big noodle surfaces are painted all over: a little coarser there keeps the atlas small
-/** Noodles as paint: wavy strands running round the y axis (period p, line width w), in a darker tone. */
-const strands = (base, dark, { p = 2.3, w = 0.5, amp = 0.8, k = 5, f = 0.5 } = {}) => (x, y, z) => {
-  const v = y + amp * Math.sin(Math.atan2(x, z) * k + y * f), m = ((v % p) + p) % p;
-  return mix(base, dark, Math.max(0, Math.min(1, 0.5 - (Math.abs(m - p / 2) - w / 2) / 0.2)));
-};
+/** Noodle surfaces are one plain colour; the strands on them are modelled, each laid by hand with coil(). */
+const strands = (base) => base;
+/**
+ * One noodle lying on a body: an arc round the y axis at c, from angle a0 to a1 (0 = front, + towards +x), on an ellipse
+ * (rx, rz) at height y, rising by `lift` over its length and bowing by `sag`; r thick.
+ */
+function coil(S, c, rx, rz, y, a0, a1, r = 0.8, lift = 0, sag = 0) {
+  const pts = [];
+  for (let i = 0; i <= 6; i++) { const t = i / 6, a = a0 + (a1 - a0) * t; pts.push([c[0] + Math.sin(a) * rx, y + lift * t + sag * Math.sin(t * Math.PI), c[2] + Math.cos(a) * rz]); }
+  return S.tube(spline(pts, 2), (t) => r * (t < 0.08 || t > 0.92 ? 0.6 : 1), { sides: 6 });
+}
 const NARUTO = (cx, cy, r, view = 'top') => [
   proj(view, circle(cx, cy, r), 0xf6f2ea), proj(view, arc(cx, cy, r * 0.55, 0.4, 5.2, r * 0.2), 0xee8a9c), proj(view, arc(cx + r * 0.12, cy, r * 0.22, 2.6, 7.4, r * 0.17), 0xee8a9c),
 ];
@@ -41,29 +47,28 @@ export function kitsune(S) {
   }
   // the fox, asleep in it: a haunch, the tail over the far rim, the chin on the near one
   S.paint(fill(FOX), under(0.16));
-  S.ball([3.5, 18.6, -3.5], [12, 5.2, 9.5], { segs: 12, rings: 6, v0: 0.42 });
+  loaf(S, [3.5, 18.4, -3.5], [12, 5.4, 9.5], { flat: 0.5 });
   S.paint(fill(FOX), vol(blob([-22.5, 23, 4], [5, 4.6, 6.4]), WHITE), under(0.16), crown(0.1));
-  S.tube(spline([[-3, 19, -8.5], [-13, 21.6, -11.5], [-20.6, 24.4, -5], [-22.6, 23.8, 3], [-21.4, 21.6, 8.4]], 3), (t) => (t < 0.7 ? lerp(3, 4.7, t / 0.7) : lerp(4.7, 0.9, (t - 0.7) / 0.3)), { sides: 8 });
-  S.at([9.5, 25.2, 16.2], [0.12, -0.3, 0.1], () => {
+  S.joint('tail', { pivot: [-3, 19, -8.5], axis: 'y', min: -0.25, max: 0.25, rest: 0, idle: 0.08 }, () => S.tube(spline([[-3, 19, -8.5], [-13, 21.6, -11.5], [-20.6, 24.4, -5], [-22.6, 23.8, 3], [-21.4, 21.6, 8.4]], 3), (t) => (t < 0.7 ? lerp(3, 4.7, t / 0.7) : lerp(4.7, 0.9, (t - 0.7) / 0.3)), { sides: 8 }));
+  S.joint('head', { pivot: [8, 22.4, 12], axis: 'z', min: -0.2, max: 0.25, rest: 0, idle: 0.04 }, () => S.at([9.5, 25.2, 16.2], [0.12, -0.3, 0.1], () => {
     S.paint(fill(FOX), vol(blobs(blob([0, -3.4, 3], [5.4, 3, 4.6]), blob([-4.6, -1.6, 2.6], [2.4, 2.6, 3]), blob([4.6, -1.6, 2.6], [2.4, 2.6, 3])), WHITE), under(0.14), crown(0.1),
       ...face({ at: [0, 0.4], gap: 6.4, r: 1.25, eye: 'closed', mouth: null, blush: 0xf2a6a0 }));
-    S.ball([0, 0, 0], [6.4, 5.3, 5.6], { segs: 12, rings: 7 });
+    head(S, [0, 0, 0], [6.4, 5.3, 5.6], { muzzle: 0.2, brow: 0.3, cheek: 0.3, chin: 0.3 });
     S.paint(fill(WHITE), under(0.14));
-    S.at([0, -1.8, 4.6], [Math.PI / 2 - 0.15, 0, 0], () => S.cone([0, 0, 0], 2.7, 4.4, { segs: 8, tip: 0.9, sz: 0.8 }));
+    S.loft(spline([[3.6, 3, 2.3, -1.6], [5.6, 2.5, 1.9, -1.9], [7.6, 1.6, 1.3, -2.1], [8.8, 0.8, 0.7, -2.1]], 2).map(([z, w, h, y]) => ring([0, y, z], w, h, 8, { axis: 'z', pow: 2.3 })));
     S.paint(fill(0x3a3038, { rough: 0.2 }));
     S.ball([0, -2.1, 9], [1.05, 0.85, 0.9], { segs: 6, rings: 4 });
     for (const s of [1, -1]) {
       S.paint(fill(FOX), vol(above(4.6), 0x6a4030), proj('front', poly([[-1.4, 0.6], [1.4, 0.6], [0, 4.2]]), 0xf6dcc8));
-      S.at([s * 4, 3.6, -0.6], [0, 0, -s * 0.36], () => S.cone([0, 0, 0], 2.5, 6, { segs: 6, sz: 0.6 }));
+      S.at([s * 4, 3.4, -0.6], [0, 0, -s * 0.36], () => blade(S, 6.6, 5.2, 1.9, { shape: 'ear', cup: 0.7 }));
     }
-  });
+  }));
   S.paint(fill(WHITE), under(0.16));
-  for (const [x, z, a] of [[3.6, 21.9, 0.1], [15.6, 16.6, -0.75]]) S.at([x, 22.4, z], [0, a, 0], () => S.ball([0, 0.6, 0], [1.9, 1.3, 2.4], { segs: 6, rings: 4 }));
+  for (const [x, z, a] of [[3.6, 21.9, 0.1], [15.6, 16.6, -0.75]]) S.at([x, 22.4, z], [0, a, 0], () => paw(S, [0, 0, -0.8], 4, 4.8, 2.4, { toes: 3 }));
   // the fried tofu it sleeps under
-  S.part('age', { rest: 0, move: (t) => hinge([2, 23.4, -12.5], 'x', -1.05 * t) }, () => {
-    const dots = (x, y, z) => (Math.hypot(((x + (Math.round(z / 2.6) % 2) * 1.6) % 3.2 + 3.2) % 3.2 - 1.6, (z % 2.6 + 2.6) % 2.6 - 1.3) < 0.42 ? tone(AGE, 0.2) : AGE);
-    S.paint(fill(dots), proj('top', stroke(rbox(2, 3, 11.4, 9.4, 2.4), 1.5, 0.9), tone(AGE, 0.22)), under(0.2));
-    S.at([2, 23.6, -3], [0.1, 0, -0.04], () => S.box(-12, -0.4, -10, 12, 1.5, 10, { bevel: 0.9 }));
+  S.joint('age', { pivot: [2, 23.4, -12.5], axis: 'x', min: -1.15, max: 0, rest: 0, g: [0, -1.05] }, () => {
+    S.paint(fill(AGE), proj('top', stroke(rbox(0, 0, 11.4, 9.4, 2.4), 1.5, 0.9), tone(AGE, 0.2)), proj('top', or(ellipse(-4, 2, 3, 1.6, 0.4), ellipse(5, -3, 2.4, 1.4, -0.3), ellipse(1, 5, 2, 1.1, 0.1)), tone(AGE, 0.12)), under(0.2));
+    S.at([2, 23.6, -3], [0.1, 0, -0.04], () => drape(S, -12, -10, 12, 10, 1.6, { nx: 9, nz: 8, th: 2, fold: (u, v) => 1.1 * Math.sin(u * Math.PI) * Math.sin(v * Math.PI) - 1.4 * (u > 0.82 ? (u - 0.82) / 0.18 : 0) ** 2 - 1.2 * (v > 0.85 ? (v - 0.85) / 0.15 : 0) ** 2 }));
   });
 }
 
@@ -76,7 +81,8 @@ export function soba(S) {
   S.box(-22, 0, -18, 22, 7, 18, { bevel: 0.8 });
   // the heap, shreds of nori, a dab of wasabi, the dipping cup
   S.paint(fill(strands(SOBA, DARK, { p: 1.9, w: 0.42, amp: 0.7, k: 7 })), proj('top', or(seg(-6, 3, -2.5, 4.4, 0.7), seg(2, -2.6, 5.5, -1.2, 0.7), seg(-1, -5.5, 1.6, -7.4, 0.7), seg(6.5, 4.6, 9, 3, 0.7), seg(-9.5, -3, -7, -4.6, 0.7)), 0x2e4034));
-  S.with(LO, () => S.ball([0, 7, 0], [15.2, 5.2, 11.2], { segs: 12, rings: 10, v0: 0.5 }));
+  S.ball([0, 7, 0], [15.2, 5.2, 11.2], { segs: 12, rings: 10, v0: 0.5 });
+  coil(S, [0, 0, 0], 13, 9.4, 8.6, -1.2, 1.4, 0.85, 0.6, 0.5); coil(S, [0, 0, 0], 10.4, 7.4, 10.4, 0.6, 3.4, 0.85, 0.3, 0.4); coil(S, [1, 0, 0], 6.4, 4.6, 11.7, -2.6, 0.4, 0.85, 0.2, 0.3); coil(S, [0, 0, 0], 14.2, 10.4, 7.8, 2, 4.4, 0.85, 0.4, 0.4);
   S.paint(fill(0x8fbf62), under(0.2));
   S.ball([-17.6, 7.9, 13.6], [1.9, 1.3, 1.7], { segs: 6, rings: 4 });
   S.paint(fill(0x33507e), vol(band(3.4, 4.4), 0xf1ece0), under(0.15));
@@ -92,10 +98,13 @@ export function soba(S) {
   S.paint(fill(WOOD), vol(slabZcap(), tone(WOOD, 0.3)), under(0.18));
   for (const dz of [-0.9, 1.3]) S.tube([[-21, 60.4, -2.4 + dz], [10.5, 55.8, 0.2 + dz]], (t) => lerp(1.1, 0.6, t), { sides: 6 });
   // the sloth, hanging by its arms
-  S.part('sloth', { rest: 0.5, move: (t) => hinge([0, 57.4, 0.4], 'x', lerp(-0.3, 0.3, t)) }, () => {
+  S.rest = 0.5;
+  S.joint('sloth', { pivot: [0, 57.4, 0.4], axis: 'x', min: -0.4, max: 0.4, rest: 0, g: [-0.3, 0.3], idle: 0.06 }, () => {
     const FUR = strands(SOBA, DARK, { p: 2.1, w: 0.4, amp: 0.6, k: 6 });
     S.paint(fill(FUR), vol(blob([0, 37, 11], [4.6, 6, 3.4]), tint(SOBA, 0.3)), under(0.16));
-    S.with(LO, () => S.ball([0, 37.6, 4.8], [8, 10, 7], { segs: 12, rings: 8 }));
+    torso(S, [0, 37.6, 4.8], [8, 10, 7], { belly: 0.2, hips: 1.08, sit: 0.3 });
+    S.paint(fill(DARK));
+    coil(S, [0, 0, 4.8], 7.9, 6.9, 33.4, -1.3, 1.2, 0.6, 0.8, -0.5); coil(S, [0, 0, 4.8], 7.4, 6.6, 40.6, -1.1, 1.3, 0.6, -0.6, 0.4);
     S.paint(fill(SOBA), under(0.18));
     for (const s of [1, -1]) {
       S.tube(spline([[s * 6, 43.6, 4.4], [s * 8, 50.5, 3.6], [s * 6, 57, 2.2], [s * 5.4, 59.2, 0], [s * 5.2, 57.6, -1.6]], 3), (t) => lerp(2.2, 1.5, t), { sides: 7 });
@@ -103,11 +112,11 @@ export function soba(S) {
     }
     S.paint(fill(0xe9dfc8));
     for (const s of [1, -1]) for (const d of [-0.9, 0.9]) { S.tube([[s * 5.3 + d, 57.8, -1.4], [s * 5.3 + d, 55.6, -2]], (t) => lerp(0.55, 0.2, t), { sides: 4 }); S.tube([[s * 5.4 + d, 19.8, 5.4], [s * 5.4 + d, 17.6, 6.2]], (t) => lerp(0.55, 0.2, t), { sides: 4 }); }
-    S.at([0, 47, 7.8], [0.1, 0, 0.14], () => {
+    S.joint('head', { pivot: [0, 43, 6], axis: 'z', min: -0.3, max: 0.3, rest: 0, idle: 0.08 }, () => S.at([0, 47, 7.8], [0.1, 0, 0.14], () => {
       S.paint(fill(FUR), proj('front', ellipse(0, -0.2, 5, 4.3), MASK), proj('front', pair(ellipse(3.3, 0.2, 2.5, 1.2, -0.5)), 0x5c4838),
         ...face({ at: [0, 0.5], gap: 5.8, r: 0.95, eye: 'sleepy', mouth: 'smile', my: 3.1, mw: 2.6, col: 0x2e2420 }), proj('front', ellipse(0, -0.9, 1.15, 0.8), 0x3a2e2a, { rough: 0.2 }), under(0.14));
-      S.ball([0, 0, 0], [6.5, 5.7, 5.6], { segs: 12, rings: 7 });
-    });
+      head(S, [0, 0, 0], [6.5, 5.7, 5.6], { muzzle: 0.35, brow: 0.35, cheek: 0.16, chin: 0.2 });
+    }));
   });
 }
 // (the lacquered tips of the chopsticks: everything towards their thin end)
@@ -127,20 +136,21 @@ export function ramen(S) {
   // the mammoth: a shaggy dome of noodles on four stumps
   const SHAG = strands(NOODLE, ND, { p: 2.5, w: 0.5, amp: 1, k: 6 });
   S.paint(fill(SHAG), proj('front', or(arc(-2.3, 0.3, 1.1, 0.3, 2.84, 0.5), arc(0, 0.3, 1.1, 0.3, 2.84, 0.5), arc(2.3, 0.3, 1.1, 0.3, 2.84, 0.5)), 0xf9efcc), under(0.16));
-  S.with(LO, () => { for (const [x, z] of [[-8, 7], [8, 7], [-8.5, -10], [8.5, -10]]) S.at([x, 7.4, z], null, () => S.cyl([0, 0, 0], [4.8, 4.4], 11, { segs: 8 })); });
+  for (const [x, z] of [[-8, 7], [8, 7], [-8.5, -10], [8.5, -10]]) S.at([x, 7.4, z], null, () => S.lathe(spline([[5, 0], [5.3, 1.4], [4.5, 5], [4.6, 8], [5, 11]], 2), { segs: 10, cap: false }));
   S.paint(fill(SHAG), negi([[-5, 8, 1], [6, 11, 0.9], [2, 3.4, 1], [-8, -1, 0.9], [7.5, -4, 1]]), under(0.18), crown(0.08));
-  S.with(LO, () => S.ball([0, 26.5, -3], [14.6, 13.4, 15.4], { segs: 14, rings: 9 }));
+  loaf(S, [0, 27.5, -3], [14.6, 13.4, 15.4], { flat: 0.95, pow: 2.2 });
+  S.paint(fill(ND));
+  coil(S, [0, 0, -3], 14.3, 15, 22, -2.2, 2.2, 0.8, 0.8, -1.2); coil(S, [0, 0, -3], 14.6, 15.2, 27.4, -2.6, -0.4, 0.8, 1.4, 0.8); coil(S, [0, 0, -3], 14.6, 15.2, 28.6, 0.5, 2.7, 0.8, -1.2, 0.9); coil(S, [0, 0, -3], 12.4, 13.2, 34.2, -1.9, 1.7, 0.8, 0.6, 1); coil(S, [0, 0, -3], 8.6, 9.4, 38.6, 0.4, 3.6, 0.8, 0.3, 0.5);
   S.paint(fill(NORI), proj('back', or(seg(-5, 3, -1, 5, 0.4), seg(2, -2, 6, -0.5, 0.4), seg(-3, -4.5, 0, -3.6, 0.4)), tint(NORI, 0.2)), proj('front', or(seg(-5, 3, -1, 5, 0.4), seg(2, -2, 6, -0.5, 0.4)), tint(NORI, 0.2)));
   S.at([0, 36.4, -14.6], [-0.42, 0, 0], () => S.box(-8.4, -7.4, -0.45, 8.4, 8.6, 0.45));
   S.paint(fill(0xc9a070), under(0.2));
   S.tube(spline([[0, 24, -18], [0, 19, -20.6], [1.4, 15, -19.6]], 3), [1.3, 1.1, 1, 0.9, 0.8, 0.7, 0.5], { sides: 5, flat: [1.5, 0.6] });
   // head: tired eyes, slices of pork for ears, bean sprouts for tusks, half an egg worn as a cap
   S.paint(fill(SHAG), ...face({ at: [0, 35.4], gap: 10.6, r: 1.35, eye: 'tired', mouth: null }), under(0.16), crown(0.08));
-  S.ball([0, 32.5, 12.5], [10.2, 10.6, 9.4], { segs: 12, rings: 8 });
-  S.ball([0, 41.6, 10], [6.8, 5.4, 6.2], { segs: 10, rings: 6 });
+  head(S, [0, 34.4, 12.5], [10.2, 12.6, 9.4], { crown: 1.12, muzzle: 0.3, brow: 0.55, cheek: 0.14, chin: 0.1, pow: 2.2 });
   for (const s of [1, -1]) {
     S.paint(fill(0xc98c6c), proj('top', circle(0, 0, 6.2), 0xd9a184), proj('top', or(arc(0.6, 0, 3.8, 0.6, 4.6, 1.3), arc(-0.4, 0.4, 1.4, 3, 8, 1)), 0xf2d8c0), proj('top', stroke(circle(0, 0, 6.3), 0.9, 0.5), 0xa9684c));
-    S.at([s * 12.6, 33.4, 9.4], [Math.PI / 2, s * 0.62, 0], () => S.cyl([0, -0.7, 0], 6.4, 1.4, { segs: 10, bevel: 0.4 }));
+    S.joint(`ear${s}`, { pivot: [s * 9.6, 33.4, 7.4], axis: 'y', min: -0.6, max: 0.6, rest: 0, idle: 0.14 }, () => S.at([s * 12.6, 33.4, 9.4], [Math.PI / 2, s * 0.62, 0], () => S.cyl([0, -0.7, 0], 6.4, 1.4, { segs: 12, bevel: 0.5 })));
     S.paint(fill(0xf7f3e4), under(0.14));
     S.tube(spline([[s * 5.4, 27, 19.6], [s * 9.4, 21.8, 22.6], [s * 10.6, 22.6, 25], [s * 9.6, 26.4, 26]], 3), (t) => lerp(1.25, 0.6, t), { sides: 6 });
     S.paint(fill(0xf2d568));
@@ -149,8 +159,9 @@ export function ramen(S) {
   S.paint(fill(0xf8f4ea), proj('top', circle(0, 0, 2.7), 0xf2a23a, { rough: 0.2 }), proj('top', circle(-0.7, 0.7, 0.8), 0xf9c66a));
   S.at([0, 46.6, 10.4], [0.75, 0, 0], () => S.ball([0, 0, 0], [4.5, 2.8, 5.6], { segs: 10, rings: 8, v1: 0.5 }));
   // the trunk, with a slice of naruto it has no plans for
-  S.part('trunk', { rest: 0.12, move: (t) => hinge([0, 30.5, 19.5], 'x', -1.15 * t) }, () => {
-    S.paint(fill(strands(NOODLE, ND, { p: 2.2, w: 0.5, amp: 0.3, k: 2 })), under(0.16));
+  S.rest = 0.12;
+  S.joint('trunk', { pivot: [0, 30.5, 19.5], axis: 'x', min: -1.25, max: 0.1, rest: 0, g: [0, -1.15], idle: 0.05 }, () => {
+    S.paint(fill(NOODLE), shade(vol(blobs(blob([0, 27, 23], [4, 0.45, 4]), blob([0, 23.4, 24.6], [4, 0.45, 4]), blob([0, 19.8, 24.4], [4, 0.45, 4]), blob([0, 16.6, 22.4], [4, 0.45, 4]))), 0.16), under(0.16));
     S.tube(spline([[0, 31, 19.6], [0, 25, 23.4], [0, 19, 23.8], [0, 15.4, 21], [0, 16.6, 18.2]], 4), (t) => lerp(3.4, 2.1, t), { sides: 8 });
     S.paint(fill(0xf6f2ea), ...NARUTO(0, 0, 3.4), under(0.14));
     S.at([0, 14.6, 16.6], [0.5, 0, 0], () => S.cyl([0, -0.5, 0], 3.5, 1, { segs: 10 }));
@@ -164,18 +175,20 @@ export function hiyashi(S) {
   S.lathe([[10.5, 0], [11.5, 1.2], [21, 2.4], [24, 4.4], [23.2, 5], [19.5, 3.6], [0, 3.2]], { segs: 16 });
   const N = strands(NOODLE, ND, { p: 2, w: 0.45, amp: 0.7, k: 6 });
   S.paint(fill(N), under(0.16));
-  S.with(LO, () => {
-    S.ball([0, 3.6, 2], [12, 9.4, 10.6], { segs: 12, rings: 10, v0: 0.5 });
-    S.tube(spline([[0, 9.5, 6], [0, 17.5, 11.4], [0, 24.5, 9.6], [0, 29.6, 10.8]], 4), (t) => lerp(3.3, 2.3, t), { sides: 8 });
-  });
+  S.ball([0, 3.6, 2], [12, 9.4, 10.6], { segs: 12, rings: 10, v0: 0.5 });
+  S.tube(spline([[0, 9.5, 6], [0, 17.5, 11.4], [0, 24.5, 9.6], [0, 29.6, 10.8]], 4), (t) => lerp(3.3, 2.3, t), { sides: 8 });
+  S.paint(fill(ND));
+  coil(S, [0, 0, 2], 11.4, 10, 6.4, -1.6, 1.3, 0.8, 0.5, 0.6); coil(S, [0, 0, 2], 9.4, 8.2, 9.2, -0.4, 2.6, 0.8, -0.4, 0.5); coil(S, [0, 0, 2], 6.4, 5.6, 11.4, -2.4, 0.2, 0.8, 0.3, 0.3); coil(S, [0, 0, 2], 11.8, 10.4, 5, 1.8, 4.2, 0.8, 0.4, 0.5);
+  S.joint('head', { pivot: [0, 29, 10.5], axis: 'x', min: -0.3, max: 0.35, rest: 0, idle: 0.07 }, () => {
   S.paint(fill(N), ...face({ at: [0, 32.6], gap: 4.4, r: 0.85, eye: 'smug', mouth: null }), under(0.14));
-  S.ball([0, 32, 11.4], [3.8, 3.6, 4.2], { segs: 10, rings: 6 });
+  head(S, [0, 32, 11.4], [3.8, 3.6, 4.2], { muzzle: 0.15, brow: 0.3, cheek: 0.1 });
   S.paint(fill(0xf2903a), under(0.2));
   S.at([0, 31.4, 15], [Math.PI / 2 + 0.15, 0, 0], () => S.cone([0, 0, 0], 1.5, 3.6, { segs: 6 }));
   S.paint(fill(0xf4f2e6));
   for (const [x, a] of [[-1.6, 0.35], [0, 0], [1.6, -0.35]]) { S.tube([[x, 34.8, 10.6], [x - a * 4, 39.6, 10.2]], 0.35, { sides: 4 }); }
   S.paint(fill(0x6fb650));
-  for (const [x, a] of [[-1.6, 0.35], [0, 0], [1.6, -0.35]]) S.ball([x - a * 4, 40.2, 10.2], [1.3, 0.9, 0.5], { segs: 6, rings: 4 });
+  for (const [x, a] of [[-1.6, 0.35], [0, 0], [1.6, -0.35]]) S.at([x - a * 4, 39.4, 10.2], [0, 0, a], () => blade(S, 2, 2.6, 0.6, { shape: 'round' }));
+  });
   // sliced egg for wings
   for (const s of [1, -1]) {
     S.paint(fill(0xf8f5ec), proj('top', circle(0, 0, 2.5), 0xf2b23e), proj('top', circle(-0.6, 0.7, 0.7), 0xf8cf6c));
@@ -213,41 +226,44 @@ export function yakisoba(S) {
   const N = strands(SOBA, SD, { p: 2.2, w: 0.5, amp: 0.9, k: 6 });
   // the loaf of a body: cabbage, flecks of green laver, a fried egg on its back
   S.paint(fill(N), vol(blobs(blob([-9, 12, -8], [3, 2.4, 3]), blob([9.5, 9, -2], [2.6, 2.6, 3.2]), blob([4, 17, -12], [3, 2, 2.6])), 0xcfe0a0), proj('top', or(circle(-4, 9, 0.5), circle(6, 4, 0.5), circle(-8, 0, 0.5), circle(3, 12, 0.5), circle(8, 9.5, 0.5), circle(-6, 12.5, 0.5)), 0x4f8a48), under(0.18));
-  S.with(LO, () => S.ball([0, 11.4, -3.5], [11.4, 7.6, 12], { segs: 12, rings: 8 }));
+  loaf(S, [0, 11.8, -3.5], [11.4, 7.6, 12], { flat: 0.7 });
+  S.paint(fill(SD));
+  coil(S, [0, 0, -3.5], 11.2, 11.8, 9.4, -2.6, -0.5, 0.9, 1, 0.6); coil(S, [0, 0, -3.5], 11.2, 11.8, 10.4, 0.6, 2.9, 0.9, -0.6, 0.8); coil(S, [0, 0, -3.5], 9.4, 10, 15.2, -2.2, 1.9, 0.9, 0.4, 0.7); coil(S, [0, 0, -3.5], 10.6, 11.2, 13, 1.4, 4, 0.9, 0.5, -0.4);
   S.paint(fill(0xf8f5ec), proj('top', stroke(ellipse(0, 0, 6.4, 5.4), 0.8, 0.3), 0xe8d9b4), under(0.14));
   S.at([0.5, 18.6, -6], [0.12, 0.3, 0], () => S.ball([0, 0, 0], [7, 1.1, 6], { segs: 10, rings: 4 }));
   S.paint(fill(0xf2a030, { rough: 0.15 }), proj('top', circle(-0.5, 6.3, 0.8), 0xf8d070));
   S.ball([0.2, 19.6, -5.6], [2.9, 1.7, 2.9], { segs: 8, rings: 5 });
   S.paint(fill(TAN), under(0.18), proj('top', or(seg(-1.1, -3.6, -1.1, -2.2, 0.4), seg(1.1, -3.6, 1.1, -2.2, 0.4)), tone(TAN, 0.3)));
-  for (const s of [1, -1]) S.at([s * 5.4, 5.6, 9.6], null, () => S.ball([0, 1.6, 0], [3, 2.1, 4], { segs: 8, rings: 4 }));
-  S.paint(fill(SOBA), under(0.18));
-  S.tube(spline([[0, 9, -14.6], [8, 6.6, -17], [15.4, 7, -12.4], [16.4, 8.6, -8.6]], 3), 0.9, { sides: 5 });
-  S.paint(fill(N));
-  S.ball([16.6, 9.2, -7.8], [2.4, 2.2, 2.4], { segs: 6, rings: 4 });
+  for (const s of [1, -1]) paw(S, [s * 5.4, 5.5, 8.8], 6.2, 8.4, 4.2, { toes: 3 });
+  S.joint('tail', { pivot: [0, 9, -14.6], axis: 'y', min: -0.6, max: 0.5, rest: 0, idle: 0.22 }, () => {
+    S.paint(fill(SOBA), under(0.18));
+    S.tube(spline([[0, 9, -14.6], [8, 6.6, -17], [15.4, 7, -12.4], [16.4, 8.6, -8.6]], 3), 0.9, { sides: 6 });
+    S.paint(fill(SD));
+    for (const [a, b] of [[0.2, 1.4], [1.6, 0.6], [-1, 1], [2.6, 1.2]]) S.tube(spline([[16.4, 8.6, -8.6], [16.4 + Math.cos(a) * 1.6, 9.6 + b, -7.6 + Math.sin(a) * 1.6], [16.4 + Math.cos(a) * 2.6, 9 + b * 0.4, -6.6 + Math.sin(a) * 2.6]], 2), 0.8, { sides: 6 });
+  });
   // a turner leaning on the board
   S.paint(fill(0xc9ced4, { rough: 0.3 }), under(0.2));
   S.at([20, 3.6, 12.6], [0.18, 0.5, 0], () => S.box(-3, 0, -3.4, 3, 0.5, 3.4));
   S.paint(fill(0x8a5a38));
   S.tube([[20.8, 4.4, 10.2], [24, 7.4, 3.6]], 0.9, { sides: 5 });
   // the head: a smug face in a mane of fried noodles, pickled ginger for a crown
-  S.part('head', { rest: 0.5, move: (t) => hinge([0, 10, 8], 'z', lerp(-0.34, 0.34, t)) }, () => {
+  S.rest = 0.5;
+  S.joint('head', { pivot: [0, 10, 8], axis: 'z', min: -0.42, max: 0.42, rest: 0, g: [-0.34, 0.34], idle: 0.05 }, () => {
     S.paint(fill(N), under(0.18));
-    S.dens = LO.dens;
     S.ball([0, 18.4, 6.6], [11, 10.6, 5], { segs: 14, rings: 7 });
     for (let k = 0; k < 13; k++) {
       const a = (k / 13) * Math.PI * 2 + 0.24, c = Math.cos(a), s = Math.sin(a), tw = k % 2 ? 0.5 : -0.5;
       const P = (r, da, z) => [Math.cos(a + da) * r, 18.4 + Math.sin(a + da) * r, z];
       void c; void s;
-      S.tube(spline([P(7, 0, 8.4), P(10.4, tw * 0.3, 9.6), P(12.8, tw * 0.7, 8), P(12, tw * 1.1, 5.6)], 3), 2, { sides: 6 });
+      S.tube(spline([P(7, 0, 8.4), P(10.4, tw * 0.3, 9.6), P(12.8, tw * 0.7, 8), P(12, tw * 1.1, 5.6)], 2), (t) => 2.1 - 0.5 * t, { sides: 5 });
     }
-    S.dens = 1;
     S.paint(fill(TAN), vol(blob([0, 15.2, 13.6], [4.4, 3.2, 3.6]), tint(TAN, 0.5)), ...face({ at: [0, 19.6], gap: 6.4, r: 1.3, eye: 'smug', mouth: 'w', my: 4.5, mw: 3 }), under(0.14));
-    S.ball([0, 18, 10.4], [7, 6.4, 5.6], { segs: 12, rings: 7 });
+    head(S, [0, 18, 10.4], [7, 6.4, 5.6], { muzzle: 0.5, brow: 0.45, cheek: 0.28, chin: 0.15, pow: 2.4 });
     S.paint(fill(0x4a3028, { rough: 0.2 }));
     S.ball([0, 17.1, 15.9], [1.5, 1.05, 0.9], { segs: 6, rings: 4 });
     for (const s of [1, -1]) {
-      S.paint(fill(TAN), proj('front', circle(s * 5.6, 26.2, 1.3), 0x9a5a3a));
-      S.ball([s * 5.6, 26, 9.6], [2.4, 2.4, 1.6], { segs: 8, rings: 5 });
+      S.paint(fill(TAN), proj('front', ellipse(0, 2.3, 1.2, 1.4), 0x9a5a3a));
+      S.at([s * 5.4, 23.6, 9.6], [0, 0, -s * 0.3], () => blade(S, 4.6, 4.8, 1.6, { shape: 'round', cup: 0.5 }));
     }
     S.paint(fill(GINGER), under(0.2));
     for (const [x, a, z] of [[-2.4, 0.5, 9], [0, -0.2, 10], [2.2, -0.7, 8.6], [-0.6, 1.2, 8], [1.2, 0.3, 11]]) S.tube([[x - Math.cos(a) * 2.6, 29.4, z - Math.sin(a) * 1.2], [x, 30.8, z], [x + Math.cos(a) * 2.6, 29.6, z + Math.sin(a) * 1.2]], 0.6, { sides: 4 });
@@ -266,13 +282,13 @@ export function nobi(S) {
   const N = strands(NOODLE, ND, { p: 3, w: 0.6, amp: 1.1, k: 5 });
   S.paint(fill(N), ...face({ at: [0, 40.6], gap: 13, r: 1.8, eye: 'tired', mouth: 'wavy', my: 5.6, mw: 4.4 }), proj('front', poly([[10.5, 44.6], [12, 41.4], [9, 41.4]]), 0xbfe0ee), proj('front', circle(10.5, 41.6, 1.5), 0xbfe0ee),
     proj('top', or(circle(-8, -6, 1), circle(6, 9, 0.9), circle(-3, 10, 0.8)), 0xf2c84a), proj('top', or(circle(9, -4, 0.9), circle(-11, 3, 0.8), circle(2, -10, 0.9)), 0x79b85c), under(0.14), crown(0.06));
-  S.ball([0, 37.5, 0], [18.6, 11.4, 17.6], { segs: 14, rings: 9 });
+  torso(S, [0, 37.5, 0], [18.6, 11.4, 17.6], { belly: 0.1, hips: 1.04, sit: 0.42, pow: 2.2, n: 14 });
+  S.paint(fill(ND));
+  coil(S, [0, 0, 0], 18.2, 17.2, 34.6, -2.6, -0.9, 1.1, 1.2, 0.8); coil(S, [0, 0, 0], 18.2, 17.2, 34, 1, 2.8, 1.1, -0.8, 1); coil(S, [0, 0, 0], 14.6, 13.8, 44.4, -1.4, 1.6, 1.1, 0.4, 0.6); coil(S, [0, 0, 0], 9, 8.6, 47.8, 1.2, 4.4, 1.1, 0.2, 0.3);
   S.paint(fill(N), under(0.16));
-  S.with(LO, () => {
-    S.ball([-9.5, 29.4, 13], [9, 7, 6.6], { segs: 10, rings: 6 });
-    S.ball([12.5, 29, 9.4], [7.4, 6, 6], { segs: 10, rings: 6 });
-    S.ball([-13, 30, -9], [7, 5.6, 7], { segs: 10, rings: 6 });
-  });
+  torso(S, [-9.5, 28.4, 13], [9, 8, 6.6], { belly: 0.3, hips: 1, sit: 0.5 });
+  torso(S, [12.5, 28, 9.4], [7.4, 7, 6], { belly: 0.3, hips: 1, sit: 0.5 });
+  torso(S, [-13, 29, -9], [7, 6.6, 7], { belly: 0, hips: 1, sit: 0.5 });
   S.paint(fill(NOODLE), under(0.16));
   for (const [a, y1, r] of [[-0.75, 16, 1.3], [-0.42, 20.5, 1.1], [0.62, 18, 1.2], [1.05, 22, 1]]) {
     const R = 17.6, c = Math.sin(a), s = Math.cos(a);
@@ -281,9 +297,13 @@ export function nobi(S) {
   // a fork someone gave up on, and the lid
   S.clear(true);
   S.paint(fill(0xf4f6f4));
-  S.at([8.5, 45.4, -4], [0.35, 0.3, -0.55], () => { S.box(-1.7, 0, -0.5, 1.7, 15, 0.5, { bevel: 0.3 }); S.box(-2.3, 15, -0.5, 2.3, 18, 0.5, { bevel: 0.3 }); });
+  S.joint('fork', { pivot: [8.5, 45.4, -4], axis: 'z', min: -0.3, max: 0.3, rest: 0, idle: 0.05 }, () => S.at([8.5, 45.4, -4], [0.35, 0.3, -0.55], () => {
+    S.loft(spline([[0, 1.3, 0.5], [9, 1.7, 0.5], [13, 2.4, 0.45], [15, 2.6, 0.4]], 2).map(([y, w, t]) => ring([0, y, 0], w, t, 8, { pow: 4 })));
+    for (const x of [-1.8, -0.6, 0.6, 1.8]) S.loft(spline([[15, 0.42], [17.6, 0.36], [19.4, 0.12]], 2).map(([y, w]) => ring([x, y, 0], w, 0.34, 6)));
+  }));
   S.clear(false);
-  S.part('lid', { rest: 0.35, move: (t) => hinge([0, 30.4, -16.4], 'x', lerp(0.3, -0.75, t)) }, () => {
+  S.rest = 0.35;
+  S.joint('lid', { pivot: [0, 30.4, -16.4], axis: 'x', min: -0.8, max: 0.35, rest: 0, g: [0.3, -0.75] }, () => {
     const half = [];
     for (let i = 0; i <= 12; i++) { const a = (i / 12) * Math.PI; half.push([Math.cos(a) * 17.6, Math.sin(a) * 17.6]); }
     S.paint(fill(0xd9dbe2, { rough: 0.25 }), proj('back', circle(0, 0, 19), RED), proj('back', stroke(circle(0, 0, 14.6), 0.8), 0xf2c23a), proj('back', kana('三分', 0, 7.4, 5), CUP),
@@ -292,4 +312,4 @@ export function nobi(S) {
   });
 }
 
-void wrap; void band; void halfAbove; void label; void repeatU;
+void wrap; void band; void halfAbove; void label; void repeatU; void hinge; void shade; void paw;

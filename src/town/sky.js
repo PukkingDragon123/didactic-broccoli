@@ -10,16 +10,23 @@ import { interiorQuad, ROOM } from '../world/interiors.js';
 
 const _c = new THREE.Color(), _c2 = new THREE.Color();
 
+// six cumulus clouds, each drawn puff by puff: [x (0..1024 round the horizon), base y, [dx, radius]...]
+const CLOUDS = [
+  [70, 96, [[-34, 12], [-14, 20], [10, 26], [34, 17], [52, 10]]],
+  [250, 70, [[-22, 9], [-6, 15], [14, 12], [28, 7]]],
+  [420, 104, [[-46, 13], [-24, 22], [2, 30], [30, 24], [54, 15], [70, 8]]],
+  [600, 60, [[-16, 8], [0, 13], [18, 9]]],
+  [760, 90, [[-30, 11], [-10, 19], [12, 23], [36, 14]]],
+  [930, 76, [[-20, 10], [-2, 16], [18, 13], [34, 8]]],
+];
 function cloudTexture() {
   const w = 1024, h = 128, c = document.createElement('canvas'); c.width = w; c.height = h;
   const x = c.getContext('2d');
-  for (let i = 0; i < 9; i++) {
-    const cx = hash2(i, 1) * w, base = 96 - hash2(i, 2) * 64, W = 36 + hash2(i, 3) * 64, n = 3 + Math.floor(hash2(i, 4) * 3);
-    for (const dx of [-w, 0, w]) for (const [col, dy, k] of [['rgba(150,162,180,0.9)', 5, 1], ['rgba(246,242,234,0.96)', 0, 1], ['rgba(255,236,204,0.96)', -4, 0.55]]) {
-      x.fillStyle = col; x.beginPath();
-      for (let j = 0; j < n; j++) { const px = cx + dx + (j / (n - 1) - 0.5) * W, r = (W / n) * (0.55 + hash2(i * 7 + j, 5) * 0.5) * k; x.moveTo(px + r, base + dy - r * 0.35); x.ellipse(px, base + dy - r * 0.35 * (k < 1 ? 1.7 : 1), r, r * 0.62, 0, 0, 7); }
-      x.fill(); if (k === 1) x.fillRect(cx + dx - W / 2, base + dy - 6, W, 8);
-    }
+  for (const [cx, base, puffs] of CLOUDS) for (const dx of [-w, 0, w]) for (const [col, dy, k] of [['rgba(150,162,180,0.9)', 5, 1], ['rgba(246,242,234,0.96)', 0, 1], ['rgba(255,236,204,0.96)', -3, 0.6]]) {
+    x.fillStyle = col; x.beginPath();
+    for (const [px, r] of puffs) { x.moveTo(cx + dx + px + r * k, base + dy - r * 0.4); x.ellipse(cx + dx + px, base + dy - r * (k < 1 ? 0.75 : 0.4), r * k, r * 0.66 * k, 0, 0, 7); }
+    x.fill();
+    if (k === 1) x.fillRect(cx + dx + puffs[0][0], base + dy - 5, puffs[puffs.length - 1][0] - puffs[0][0], 7);
   }
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.minFilter = THREE.LinearFilter; t.generateMipmaps = false;
@@ -98,53 +105,62 @@ export function buildSky(t) {
   t.add(dome);
 }
 
-/** The painted skyline strip: roofs, tanks, antennas, slabs (colour) and its windows (a second canvas: rgb = the lit
- *  colour, alpha = when that window switches on). */
+// The skyline strip, building by building: [kind, width, height (px of 256), extras]. g gable, h hip, f flat roof,
+// d danchi slab; extras: a yagi antenna, t water tank on legs, s stair tower, c the bath-house chimney.
+const ROW = [
+  ['g', 62, 44, 'a'], ['f', 54, 52, 't'], ['h', 70, 40, ''], ['d', 168, 150, 'st'], ['g', 58, 50, 'a'], ['g', 74, 38, ''], ['f', 66, 62, 'ta'], ['h', 80, 46, 'a'],
+  ['g', 52, 54, ''], ['d', 132, 118, 's'], ['f', 60, 44, 'c'], ['g', 78, 48, 'a'], ['h', 64, 42, ''], ['f', 84, 70, 't'], ['g', 56, 46, 'a'], ['d', 190, 172, 'st'],
+  ['h', 72, 44, ''], ['g', 66, 52, 'a'], ['f', 58, 40, ''], ['g', 82, 46, 'a'], ['f', 70, 58, 't'], ['h', 60, 50, ''], ['d', 150, 134, 's'], ['g', 64, 42, 'a'], ['f', 56, 48, 'ta'], ['g', 62, 40, ''],
+];
+// which windows are lit, row by row (read across each building, repeating): hand-set so no two blocks blink alike
+const LIT = ['1001011000101', '0100100110010', '0010010001101', '1010001100100', '0001100101010'];
+/** The painted skyline (colour) and its windows (rgb = the lit colour, alpha = when that window switches on). */
 function skylineTextures() {
   const W = 2048, H = 256, c = document.createElement('canvas'), wc = document.createElement('canvas');
   c.width = wc.width = W; c.height = wc.height = H;
   const x = c.getContext('2d'), w = wc.getContext('2d');
-  const tones = ['#8d9bb0', '#9aa7ba', '#a7b3c3', '#7f8ea6'], roofs = ['#74839b', '#6b7a94', '#8291a8'];
-  const warm = ['255,214,150', '255,228,176', '250,196,128', '226,236,255'];
-  const win = (px, py, pw, ph, i) => { const k = hash2(Math.round(px), Math.round(py) + i); if (k > 0.5) return; w.fillStyle = `rgba(${warm[Math.floor(k * 8) % 4]},${(0.04 + (k / 0.5) * 0.9).toFixed(3)})`; w.fillRect(px, py, pw, ph); };
+  const tones = ['#8d9bb0', '#9aa7ba', '#a7b3c3', '#7f8ea6'], roofs = ['#74839b', '#6b7a94', '#8291a8'], warm = ['255,214,150', '255,228,176', '250,196,128', '226,236,255'];
   const R = (a, b, ww, hh, col) => { x.fillStyle = col; x.fillRect(a, b, ww, hh); };
   let px = 0;
-  for (let i = 0; px < W; i++) {
-    const k = hash2(i, 3), kind = k < 0.16 ? 'slab' : k < 0.5 ? 'gable' : k < 0.72 ? 'hip' : 'flat';
-    const bw = kind === 'slab' ? 120 + hash2(i, 4) * 110 : 46 + hash2(i, 4) * 60, bh = kind === 'slab' ? 96 + hash2(i, 5) * 86 : 34 + hash2(i, 5) * 44;
+  ROW.forEach(([kind, bw, bh, ex], i) => {
     const col = tones[i % 4], rc = roofs[i % 3], y0 = H - bh;
-    if (px + bw > W) { R(px, H - 40, W - px, 40, col); break; }
+    let nw = 0;
+    const win = (ax, ay, aw, ah, row) => { R(ax, ay, aw, ah, 'rgba(60,70,95,0.42)'); const p = LIT[(i + row) % 5]; if (p[nw++ % p.length] === '1') { w.fillStyle = `rgba(${warm[(i + nw) % 4]},${(0.08 + ((i * 5 + nw * 3) % 11) / 11 * 0.86).toFixed(3)})`; w.fillRect(ax, ay, aw, ah); } };
     R(px, y0, bw, bh, col); R(px + bw - 5, y0, 5, bh, 'rgba(60,70,95,0.25)');
-    if (kind === 'slab') { // a danchi block: a stair tower, balcony bands, a rooftop tank on legs
-      R(px, y0 - 5, bw, 5, rc); R(px + bw * 0.42, y0 - 20, 22, 20, col); R(px + bw * 0.42, y0 - 23, 22, 3, rc);
-      R(px + 12, y0 - 20, 20, 12, '#b9c2cd'); R(px + 14, y0 - 8, 2, 8, rc); R(px + 28, y0 - 8, 2, 8, rc);
-      for (let yy = y0 + 10; yy < H - 8; yy += 14) { R(px + 4, yy + 9, bw - 8, 2, 'rgba(60,70,95,0.3)'); for (let xx = px + 8; xx < px + bw - 10; xx += 12) { R(xx, yy, 7, 8, 'rgba(60,70,95,0.42)'); win(xx, yy, 7, 8, i); } }
+    if (kind === 'd') {
+      R(px, y0 - 5, bw, 5, rc);
+      if (ex.includes('s')) { R(px + bw * 0.42, y0 - 20, 22, 20, col); R(px + bw * 0.42, y0 - 23, 22, 3, rc); }
+      if (ex.includes('t')) { R(px + 12, y0 - 20, 20, 12, '#b9c2cd'); R(px + 14, y0 - 8, 2, 8, rc); R(px + 28, y0 - 8, 2, 8, rc); }
+      for (let yy = y0 + 10, row = 0; yy < H - 8; yy += 14, row++) { R(px + 4, yy + 9, bw - 8, 2, 'rgba(60,70,95,0.3)'); for (let xx = px + 8; xx < px + bw - 10; xx += 12) win(xx, yy, 7, 8, row); }
     } else {
       x.fillStyle = rc; x.beginPath();
-      if (kind === 'gable') { x.moveTo(px - 4, y0); x.lineTo(px + bw / 2, y0 - bw * 0.2); x.lineTo(px + bw + 4, y0); }
-      else if (kind === 'hip') { x.moveTo(px - 4, y0); x.lineTo(px + bw * 0.25, y0 - 14); x.lineTo(px + bw * 0.75, y0 - 14); x.lineTo(px + bw + 4, y0); }
-      else { x.rect(px - 2, y0 - 4, bw + 4, 4); if (hash2(i, 9) < 0.6) { x.rect(px + bw * 0.55, y0 - 18, 16, 10); x.rect(px + bw * 0.55 + 2, y0 - 8, 2, 5); x.rect(px + bw * 0.55 + 12, y0 - 8, 2, 5); } }
+      if (kind === 'g') { x.moveTo(px - 4, y0); x.lineTo(px + bw / 2, y0 - bw * 0.2); x.lineTo(px + bw + 4, y0); }
+      else if (kind === 'h') { x.moveTo(px - 4, y0); x.lineTo(px + bw * 0.25, y0 - 14); x.lineTo(px + bw * 0.75, y0 - 14); x.lineTo(px + bw + 4, y0); }
+      else x.rect(px - 2, y0 - 4, bw + 4, 4);
       x.fill();
-      for (let yy = y0 + 8; yy < H - 10; yy += 16) for (let xx = px + 7; xx < px + bw - 12; xx += 16) if (hash2(xx, yy + i) < 0.7) { R(xx, yy, 9, 7, 'rgba(60,70,95,0.4)'); win(xx, yy, 9, 7, i); }
+      if (ex.includes('t')) { R(px + bw * 0.55, y0 - 18, 16, 10, '#b9c2cd'); R(px + bw * 0.55 + 2, y0 - 8, 2, 5, rc); R(px + bw * 0.55 + 12, y0 - 8, 2, 5, rc); }
+      for (let yy = y0 + 8, row = 0; yy < H - 10; yy += 16, row++) for (let xx = px + 7; xx < px + bw - 12; xx += 16) win(xx, yy, 9, 7, row);
+      if (ex.includes('a')) { const ax = px + bw * 0.34, ay = y0 - (kind === 'g' ? bw * 0.12 : 10); R(ax, ay - 24, 1.5, 24, '#5d6c86'); for (let e = 0; e < 5; e++) R(ax - 8 + e, ay - 24 + e * 2.4, 16 - e * 2, 1.2, '#5d6c86'); }
+      if (ex.includes('c')) { R(px + bw * 0.5, y0 - 100, 8, 100, '#8b93a3'); R(px + bw * 0.5 - 1, y0 - 100, 10, 4, '#6b7a94'); R(px + bw * 0.5, y0 - 80, 8, 6, '#c7848a'); }
     }
-    if (hash2(i, 7) < 0.5 && kind !== 'slab') { // a yagi on a mast
-      const ax = px + bw * (0.25 + hash2(i, 8) * 0.5), ay = y0 - (kind === 'gable' ? bw * 0.12 : 10);
-      R(ax, ay - 24, 1.5, 24, '#5d6c86'); for (let e = 0; e < 5; e++) R(ax - 8 + e, ay - 24 + e * 2.4, 16 - e * 2, 1.2, '#5d6c86');
-    }
-    if (i % 23 === 11) { R(px + bw * 0.5, y0 - 100, 8, 100, '#8b93a3'); R(px + bw * 0.5 - 1, y0 - 100, 10, 4, '#6b7a94'); R(px + bw * 0.5, y0 - 80, 8, 6, '#c7848a'); } // the bath-house chimney
-    px += bw + (hash2(i, 6) < 0.3 ? 6 : 0);
-  }
-  const mk = (cv, srgb) => { const tx = new THREE.CanvasTexture(cv); if (srgb) tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = THREE.RepeatWrapping; tx.anisotropy = 4; return tx; };
-  return [mk(c, true), mk(wc, true)];
+    px += bw;
+  });
+  R(px, H - 40, W - px, 40, tones[1]);
+  const mk = (cv) => { const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = THREE.RepeatWrapping; tx.anisotropy = 4; return tx; };
+  return [mk(c), mk(wc)];
 }
 
-/** The low hills behind the roofs: two flat ridgelines terraced with tiny houses. */
+// the two ridgelines of the low hills (heights in px every 128 px round the horizon), and the terraces of roofs on the nearer one
+const RIDGE_FAR = [150, 166, 158, 140, 132, 146, 168, 172, 156, 138, 130, 142, 160, 170, 162, 148, 150];
+const RIDGE_NEAR = [96, 88, 100, 112, 104, 90, 84, 98, 110, 106, 92, 86, 94, 108, 102, 92, 96];
+const TERRACE = [[40, 60], [120, 52], [210, 70], [300, 58], [380, 48], [470, 66], [560, 54], [650, 74], [730, 60], [820, 50], [900, 68], [990, 56], [1080, 46], [1160, 64], [1250, 72], [1340, 54], [1420, 62], [1510, 48], [1600, 70], [1690, 58], [1780, 50], [1860, 66], [1950, 56]];
+/** The low hills behind the roofs: two flat ridgelines, the nearer one terraced with tiny houses. */
 function hillTexture() {
   const W = 2048, H = 256, c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d');
-  const ridge = (base, amp, col, seed) => { x.fillStyle = col; x.beginPath(); x.moveTo(0, H); for (let px = 0; px <= W; px += 16) { const a = (px / W) * Math.PI * 2; x.lineTo(px, H - base - amp * (0.5 + 0.5 * Math.sin(a * 3 + seed) * Math.cos(a * 2 + seed * 2) + 0.25 * Math.sin(a * 7 + seed))); } x.lineTo(W, H); x.fill(); };
-  ridge(110, 60, '#a9b7c9', 1.3); ridge(60, 50, '#97a7bc', 4.1);
-  for (let i = 0; i < 260; i++) { const px = hash2(i, 21) * W, a = (px / W) * Math.PI * 2, top = H - 60 - 50 * (0.5 + 0.5 * Math.sin(a * 3 + 4.1) * Math.cos(a * 2 + 8.2) + 0.25 * Math.sin(a * 7 + 4.1)), py = top + 6 + hash2(i, 22) * (H - top - 30); x.fillStyle = i % 3 ? '#b7c2d0' : '#8494ab'; x.fillRect(px, py, 9 + hash2(i, 23) * 8, 5); x.fillStyle = '#7b8aa2'; x.fillRect(px - 1, py - 2, 11 + hash2(i, 23) * 8, 2); }
+  const ridge = (pts, col) => { x.fillStyle = col; x.beginPath(); x.moveTo(0, H); pts.forEach((hh, k) => { if (!k) x.lineTo(0, H - hh); else x.quadraticCurveTo((k - 0.5) * 128, H - (pts[k - 1] + hh) / 2 - 6, k * 128, H - hh); }); x.lineTo(W, H); x.fill(); };
+  ridge(RIDGE_FAR, '#a9b7c9'); ridge(RIDGE_NEAR, '#97a7bc');
+  TERRACE.forEach(([px, up], i) => { for (const [dx, dy] of [[0, 0], [16, -9], [-12, 10]]) { x.fillStyle = (i + dx) % 3 ? '#b7c2d0' : '#8494ab'; x.fillRect(px + dx, H - up + dy, 11, 5); x.fillStyle = '#7b8aa2'; x.fillRect(px + dx - 1, H - up + dy - 2, 13, 2); } });
   const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = THREE.RepeatWrapping; tx.anisotropy = 4;
   return tx;
 }

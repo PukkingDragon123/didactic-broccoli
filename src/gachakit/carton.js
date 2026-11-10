@@ -10,6 +10,10 @@ import { ramp, mix } from '../vehicles/paint.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { glyphMask, clearGlyphs } from './capsuleShell.js';
 
+// the shared photo library, when it is there: the board itself is a photograph of cardboard, the print lies on it
+const kit = Object.values(import.meta.glob('../kit/photoTex.js', { eager: true }))[0] || {};
+const PH = !!kit.photoMat;
+
 export const CARTON = [0.27, 0.15, 0.2]; // w, h, d
 const T = 0.004; // board thickness
 const KANA = 'カプセルトイ個入発売元ガチャガレージ寿町天地無用開封口取扱注意こわれもの';
@@ -42,9 +46,11 @@ export function cartonParts(series) {
   const { A, geo } = build();
   const map = A.texture();
   map.anisotropy = 8;
-  const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.92, metalness: 0, envMapIntensity: 0.5 });
+  const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.92, metalness: 0, envMapIntensity: 0.5, alphaTest: 0.5, polygonOffset: PH, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
   mat.name = 'carton';
-  const out = { mat, geo };
+  // board: the photographed cardboard (one tile to its real size; uvs are in metres); mat: the print
+  const board = PH ? kit.photoMat('cardboard', { repeat: kit.photoRepeat('cardboard', 1, 1), roughness: 0.95 }) : mat;
+  const out = { mat, board, geo };
   made.set(series, out);
   try {
     const need = KANA + (SERIES_BY_ID[series]?.jp || '');
@@ -64,12 +70,11 @@ function buildCarton(series, A) {
   };
   A.ink(ROUGH.fabric);
   /** Kraft board: the liner with the fluting just showing through as faint lines. */
-  const board = (P) => { P.fill(K[2]); };
+  const board = (P) => { if (!PH) P.fill(K[2]); };
   // ---- a long side
   {
     const P = V.L;
     board(P);
-    P.box(0, 0, P.W, 3, K[1]); P.box(0, P.H - 2, P.W, P.H, K[3]); // the bottom's wear line, the top fold catching light
     // the series panel, in its colour
     P.box(10, 46, 126, 136, ac); P.frame(10, 46, 126, 136, mix(ac, 0x000000, 0.35)); P.frame(13, 49, 123, 133, mix(ac, 0xffffff, 0.5));
     const jp = [...(S.jp || 'カプセルトイ')], lines = jp.length > 6 ? [jp.slice(0, Math.ceil(jp.length / 2)).join(''), jp.slice(Math.ceil(jp.length / 2)).join('')] : [jp.join('')];
@@ -91,14 +96,11 @@ function buildCarton(series, A) {
     P.text5('MADE IN JAPAN', 10, 148, INK);
     kana(P, '発売元', 10, 41, INK); P.text5('GACHA GARAGE', 62, 38, INK); P.text5('CO., LTD.', 62, 29, INK);
     P.text5('KOTOBUKI-CHO 3-8', 10, 20, INK); P.text5('TEL 0120-55-0199', 10, 11, INK);
-    // scuffed corners
-    for (const [i, j] of [[2, 6], [P.W - 9, 5], [3, P.H - 12]]) { P.box(i, j, i + 6, j + 4, K[3]); P.px(i + 1, j + 1, K[4]); }
   }
   // ---- a short side: this side up, the mark
   {
     const P = V.S;
     board(P);
-    P.box(0, 0, P.W, 3, K[1]);
     P.box(0, 96, P.W, 112, ac); P.hline(0, P.W - 1, 95, mix(ac, 0x000000, 0.35));
     for (const x of [44, 132]) P.sprite(['....##....', '...####...', '..######..', '.########.', '##########', '...####...', '...####...', '...####...', '...####...', '...####...'], { '#': INK }, x, 84, 2);
     kana(P, '天地無用', P.W / 2, 56, INK, { align: 'center' });
@@ -128,21 +130,35 @@ function buildCarton(series, A) {
 
   // ---- geometry
   const inner = () => V.IN.st(0.5, 0.5), flute = (p, n) => V.FLUTE.st(((Math.abs(n[0]) > 0.5 ? p[2] : p[0]) * 20) % 1 * 0.9 + 0.05, 0.5);
+  // the board in metres (the photograph tiles to its real size), turned so the liner's grain runs round the box
+  const m3 = (p, n) => (Math.abs(n[0]) > 0.5 ? [p[2], p[1]] : Math.abs(n[1]) > 0.5 ? [p[0], p[2] + 0.31] : [p[0] + 0.17, p[1]]);
   const sideUV = (box) => { const lg = boxMap(V.L, box), sh = boxMap(V.S, box); return (p, n) => (Math.abs(n[2]) > 0.5 ? lg(p, n) : Math.abs(n[0]) > 0.5 ? sh(p, n) : inner()); };
-  const G = new Geo(1), bx = [-hw, 0, -hd, hw, h, hd];
-  G.with(sideUV(bx), 0, () => G.box(...bx, { skip: ['py'] }));
-  G.with(inner, 0, () => G.box(-hw + T, T, -hd + T, hw - T, h, hd - T, { inward: true, skip: ['py'] }));
-  G.with(flute, 0, () => {
+  const G = new Geo(1), bx = [-hw, 0, -hd, hw, h, hd], e = 0.0006;
+  G.with(PH ? m3 : sideUV(bx), 0, () => G.box(...bx, { skip: ['py'] }));
+  G.with(PH ? m3 : inner, 0, () => G.box(-hw + T, T, -hd + T, hw - T, h, hd - T, { inward: true, skip: ['py'] }));
+  G.with(PH ? m3 : flute, 0, () => {
     G.quad([-hw, h, hd - T], [hw, h, hd - T], [hw, h, hd], [-hw, h, hd], [0, 1, 0]); G.quad([-hw, h, -hd], [hw, h, -hd], [hw, h, -hd + T], [-hw, h, -hd + T], [0, 1, 0]);
     G.quad([-hw, h, -hd], [-hw + T, h, -hd], [-hw + T, h, hd], [-hw, h, hd], [0, 1, 0]); G.quad([hw - T, h, -hd], [hw, h, -hd], [hw, h, hd], [hw - T, h, hd], [0, 1, 0]);
   });
+  // the print on the four sides (its own mesh over the photographed board)
+  const PR = new Geo(1), st4 = (Vw) => [Vw.st(0.001, 0.001), Vw.st(0.999, 0.001), Vw.st(0.999, 0.999), Vw.st(0.001, 0.999)];
+  if (PH) {
+    PR.quad([-hw, 0, hd + e], [hw, 0, hd + e], [hw, h, hd + e], [-hw, h, hd + e], [0, 0, 1], st4(V.L)); PR.quad([hw, 0, -hd - e], [-hw, 0, -hd - e], [-hw, h, -hd - e], [hw, h, -hd - e], [0, 0, -1], st4(V.L));
+    PR.quad([hw + e, 0, hd], [hw + e, 0, -hd], [hw + e, h, -hd], [hw + e, h, hd], [1, 0, 0], st4(V.S)); PR.quad([-hw - e, 0, -hd], [-hw - e, 0, hd], [-hw - e, h, hd], [-hw - e, h, -hd], [-1, 0, 0], st4(V.S));
+  }
   // flaps, hinged at the origin: the long ones reach +z, the short ones +x
   const flap = (long) => {
     const F = new Geo(1), b2 = long ? [-hw, 0, 0, hw, T, hd - 0.0005] : [0, 0, -hd + T, hw - 0.0005, T, hd - T];
     const top = boxMap(long ? V.TL : V.TS, b2);
     // the long flap's print reads from its free edge: v runs from the seam (z = hd) back to the hinge
-    F.with((p, n) => (n[1] > 0.5 ? (long ? V.TL.st(Math.min(0.999, Math.max(0.001, (p[0] + hw) / w)), Math.min(0.999, Math.max(0.001, 1 - p[2] / hd))) : top(p, n)) : n[1] < -0.5 ? inner() : flute(p, n)), 0, () => F.box(...b2));
-    const g = F.build(); g.clearGroups(); return g;
+    const tl = (p) => V.TL.st(Math.min(0.999, Math.max(0.001, (p[0] + hw) / w)), Math.min(0.999, Math.max(0.001, 1 - p[2] / hd)));
+    F.with(PH ? m3 : (p, n) => (n[1] > 0.5 ? (long ? tl(p) : top(p, n)) : n[1] < -0.5 ? inner() : flute(p, n)), 0, () => F.box(...b2));
+    const g = F.build(); g.clearGroups();
+    if (!PH || !long) return [g, null];
+    const D2 = new Geo(1);
+    D2.quad([-hw, T + e, 0], [-hw, T + e, hd - 0.0005], [hw, T + e, hd - 0.0005], [hw, T + e, 0], [0, 1, 0], [[-hw, 0], [-hw, hd - 0.0005], [hw, hd - 0.0005], [hw, 0]].map(([x, z]) => tl([x, 0, z])));
+    const d = D2.build(); d.clearGroups();
+    return [g, d];
   };
   // tape over the seam and down both ends
   const TG = new Geo(1), ty = h + 2 * T + 0.0006;
@@ -153,5 +169,6 @@ function buildCarton(series, A) {
     TG.quad([s * hw, ty, 0.025], [s * (hw + 0.001), ty, 0.025], [s * (hw + 0.001), ty, -0.025], [s * hw, ty, -0.025], [0, 1, 0], tuv(0.5, 0.51));
   }
   const fin = (g) => { const o = g.build(); o.clearGroups(); return o; };
-  return { body: fin(G), flapL: flap(true), flapS: flap(false), tape: fin(TG) };
+  const [flapL, flapLPrint] = flap(true), [flapS] = flap(false);
+  return { body: fin(G), print: PH ? fin(PR) : null, flapL, flapLPrint, flapS, tape: fin(TG) };
 }

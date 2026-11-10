@@ -180,14 +180,10 @@ function buildHill(group, town) {
   B.face(HM, [-3.3, 3.1, 2.9], [3.3, 3.1, 2.9], [3.3, 4.5, 0], [-3.3, 4.5, 0], { tint: 0x8a94a4 }); B.face(HM, [3.3, 3.1, -2.9], [-3.3, 3.1, -2.9], [-3.3, 4.5, 0], [3.3, 4.5, 0], { tint: 0x7a8494 });
   for (const s of [-1, 1]) B.poly(HM, s > 0 ? [[3, 3.2, 2.5], [3, 3.2, -2.5], [3, 4.5, 0]] : [[-3, 3.2, -2.5], [-3, 3.2, 2.5], [-3, 4.5, 0]], { tint: 0xd8d0c0 });
   B.box(HM, 6.4, 1.6, 0.3, 0, -1.6, 3.4, { tint: 0xb4b0a6 }); // its retaining wall
-  const tmp = new THREE.Group(), hg = B.build(tmp)[0].geometry, spots = [];
-  for (let i = 0; i < 500 && spots.length < 64; i++) {
-    const x = 40 + hash2(i, 41) * 66, z = -72 + hash2(i, 43) * 84, y = hillHeight(x, z);
-    if (Math.hypot(x - PYLON.x, z - PYLON.z) < 15 || (x < 49 && z > -4 && z < 21) || y < 1.2 || y > 11.2) continue;
-    if (Math.abs((x - PYLON.x) * 0.55 + (z - PYLON.z) * 0.84) < 4 && z > PYLON.z) continue;
-    if (spots.some(([sx, sz]) => Math.hypot(sx - x, sz - z) < 8.5)) continue;
-    spots.push([x, z, y]);
-  }
+  // three terraces of houses facing the town, set by hand along the slope
+  const tmp = new THREE.Group(), hg = B.build(tmp)[0].geometry;
+  const spots = [[45, -8], [46, -17], [44.5, -26], [46, -35], [45, -44], [47, -53], [53, -6], [54, -15], [52.5, -24], [54, -33], [53, -42], [55, -51], [56, -60],
+    [61, -4], [62, -13], [61, -45], [63, -54], [64, -63], [72, -66], [81, -64], [90, -58], [97, -49], [101, -38], [102, -26], [99, -14], [93, -4], [84, 2], [74, 4]].map(([x, z]) => [x, z, hillHeight(x, z)]);
   const im = new THREE.InstancedMesh(hg, HM, spots.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3();
   const tints = [0xffffff, 0xf0e4d4, 0xdce4ec, 0xf4ecd8, 0xe0dcd0];
   spots.forEach(([x, z, y], i) => { q.setFromAxisAngle(V(0, 1, 0), Math.atan2(x - HILL.x, z - HILL.z) + (hash2(i, 7) - 0.5) * 0.5); const k = 0.85 + hash2(i, 9) * 0.4; im.setMatrixAt(i, m4.compose(V(x, y + 0.6, z), q, s.set(k, 0.9 + hash2(i, 11) * 0.5, k))); im.setColorAt(i, new THREE.Color(tints[i % 5])); });

@@ -14,6 +14,7 @@ export default {
   themes: ['home', 'cute', 'retro'],
   card: { bg: '#e9f1e6', accent: '#3f7fc6', text: '#2c3442', accent2: '#f2a4b4', pattern: 'grid' },
   capsule: { colors: [0x3f7fc6, 0xf6f3ea, 0xbfe4d6, 0xa9572f, 0xf2c23a] },
+  atlas: [2048, 1536],
   flyer: {
     maker: 'nejimaki', scene: 'shelf', hero: 'kanpen', side: ['milk', 'tissue'],
     title: [['箱入り', 4, 'a'], ['どうぶつ', 2, 'b']],

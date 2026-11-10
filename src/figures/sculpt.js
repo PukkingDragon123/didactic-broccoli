@@ -39,12 +39,12 @@ const centroid = (pts) => { const c = [0, 0, 0]; for (const p of pts) { c[0] += 
  * of detail (shelves, thumbnails); in the hand they are multiplied by QUAL.k, so surfaces come out smooth.
  */
 export const QUAL = { k: 1 };
-const N = (n, min = 3) => Math.max(min, Math.round(n * QUAL.k));
+const QN = (n, min = 3) => Math.max(min, Math.round(n * QUAL.k));
 const N2 = (n, k) => Math.max(3, Math.round(n * k));
 
 /** Catmull-Rom through control points (any dimension), n steps per span (x QUAL.k): a smooth profile or path from a few points. */
 export function spline(pts, n = 4, closed = false) {
-  n = N(n, 1);
+  n = QN(n, 1);
   const out = [], N = pts.length, D = pts[0].length;
   const P = (i) => (closed ? pts[((i % N) + N) % N] : pts[Math.max(0, Math.min(N - 1, i))]);
   const spans = closed ? N : N - 1;
@@ -65,7 +65,7 @@ export function spline(pts, n = 4, closed = false) {
  * xz plane, radii (rx, rz); 'z': in the xy plane, radii (rx, ry); 'x': in the zy plane, radii (rz, ry).
  */
 export function ring(c, ra, rb, n = 12, { pow = 2, a0 = null, axis = 'y', exact = false } = {}) {
-  if (!exact) n = N(n);
+  if (!exact) n = QN(n);
   const out = [], e = 2 / pow, off = a0 ?? (Math.PI / 2 - Math.PI / n);
   for (let i = 0; i < n; i++) {
     const a = off + (i / n) * Math.PI * 2, cs = Math.cos(a), sn = Math.sin(a);
@@ -297,7 +297,7 @@ export class Sculpt {
    * axis stands; no frame of its own, so paint coordinates stay those of the frame you are in).
    */
   lathe(prof, o = {}) {
-    const segs = N(o.segs ?? 12), sx = o.sx ?? 1, sz = o.sz ?? 1;
+    const segs = QN(o.segs ?? 12), sx = o.sx ?? 1, sz = o.sz ?? 1;
     const arc = o.arc || null, a0 = arc ? arc[0] : o.a0 ?? (Math.PI / 2 - Math.PI / segs), span = arc ? arc[1] - arc[0] : Math.PI * 2;
     const c = o.at || [0, 0, 0];
     const P = (r, y, a) => [c[0] + Math.cos(a) * r * sx, c[1] + y, c[2] + Math.sin(a) * r * sz];
@@ -329,7 +329,7 @@ export class Sculpt {
 
   /** An ellipsoid: centre c, radii r (number or [rx, ry, rz]). o: segs, rings, v0 / v1 (cut: 0 = south pole, 1 = north), cap. */
   ball(c, r, o = {}) {
-    const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, rings = N(o.rings ?? 7), v0 = o.v0 ?? 0, v1 = o.v1 ?? 1;
+    const [rx, ry, rz] = typeof r === 'number' ? [r, r, r] : r, rings = QN(o.rings ?? 7), v0 = o.v0 ?? 0, v1 = o.v1 ?? 1;
     const prof = [];
     for (let i = 0; i <= rings; i++) { const ph = (v0 + (v1 - v0) * (i / rings)) * Math.PI; prof.push([Math.max(0, Math.sin(ph)), -Math.cos(ph) * ry]); }
     const k = QUAL.k; QUAL.k = 1; try { return this.lathe(prof, { segs: N2(o.segs ?? 12, k), sx: rx, sz: rz, cap: o.cap ?? true, a0: o.a0, at: c }); } finally { QUAL.k = k; }
@@ -350,7 +350,7 @@ export class Sculpt {
    * o: sides, caps, flat ([wide, thin] scale of the section: ribbons, noodles), roll (radians).
    */
   tube(path, r, o = {}) {
-    const sides = N(o.sides ?? 6), n = path.length, fl = o.flat || [1, 1];
+    const sides = QN(o.sides ?? 6), n = path.length, fl = o.flat || [1, 1];
     const R = (i) => (typeof r === 'function' ? r(i / (n - 1)) : Array.isArray(r) ? r[i] : r);
     const tan = (i) => norm(sub(path[Math.min(n - 1, i + 1)], path[Math.max(0, i - 1)]));
     // parallel-transport frame
@@ -442,7 +442,7 @@ export class Sculpt {
 
   /** A torus in the xz plane (lying flat): ring radius R, tube radius r. o: segs, sides, arc ([a0, a1]). */
   torus(c, R, r, o = {}) {
-    const segs = N(o.segs ?? 12), sides = N(o.sides ?? 6), arc = o.arc || [0, Math.PI * 2], closed = !o.arc, path = [];
+    const segs = QN(o.segs ?? 12), sides = QN(o.sides ?? 6), arc = o.arc || [0, Math.PI * 2], closed = !o.arc, path = [];
     const n = closed ? segs : segs + 1;
     for (let i = 0; i < n; i++) { const a = arc[0] + (i / segs) * (arc[1] - arc[0]); path.push([c[0] + Math.cos(a) * R, c[1], c[2] + Math.sin(a) * R]); }
     if (!closed) { const k = QUAL.k; QUAL.k = 1; try { return this.tube(path, r, { sides, caps: o.caps }); } finally { QUAL.k = k; } }

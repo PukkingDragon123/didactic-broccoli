@@ -20,6 +20,8 @@ import { ramp, mix } from '../vehicles/paint.js';
 import { GeoS, roundBox } from './geo.js';
 import { glyphMask, clearGlyphs } from './capsuleShell.js';
 
+// the shared photo library, when it is there (the crate's boards are a photograph of sawn planks)
+const kit = Object.values(import.meta.glob('../kit/photoTex.js', { eager: true }))[0] || {};
 const KANA = 'あそびかたコインを入れるハンドル右にまわすカプセルとる投入口返却とりだし対象年齢才以上誤飲注意小さな部品故障の際は係員までお知らせください製造元ことぶき商会東京都寿町ガチャ回円準備中売切見本カプセルトイ';
 const hx = (r, g, b) => (r << 16) | (g << 8) | b;
 void hx;
@@ -78,7 +80,8 @@ export function machineParts(type, spec, L) {
   body.name = 'machine-body';
   const glass = new THREE.MeshStandardMaterial({ map, roughness: 0.3, metalness: 0, transparent: true, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 0.8 });
   glass.name = 'machine-glass';
-  out.A = A; out.mats = { body, glass }; out.geo = G;
+  const wood = G.crate ? kit.photoMat('wood_planks', { repeat: kit.photoRepeat('wood_planks', 1, 1), roughness: 0.9 }) : null;
+  out.A = A; out.mats = { body, glass, wood }; out.geo = G;
   built.set(type, out);
   // the print needs the kana font: painted again once it has loaded (the layout is the same, only pixels change)
   try {
@@ -249,7 +252,8 @@ function buildGeometry(type, spec, L, st, A) {
   }
 
   // ---- stands
-  buildStand(type, spec, L, st, A, V, G, { sw, steel, dark, rubber, chromeUV, trimUV, accUV, body2, B, TR, AC, label, frame, turned });
+  const crateG = kit.photoMat && st.stand === 'crate' ? new Geo(1) : null;
+  buildStand(type, spec, L, st, A, V, G, { crate: crateG, sw, steel, dark, rubber, chromeUV, trimUV, accUV, body2, B, TR, AC, label, frame, turned });
 
   // ------------------------------------------------------------------ the lid (lid space: y = 0 its underside)
   const LG = new GeoS(1), HG = new GeoS(1);
@@ -382,7 +386,7 @@ function buildGeometry(type, spec, L, st, A) {
   const KG = new Geo(1);
   KG.with(sw(0xd8b850, ROUGH.chrome), 0, () => { KG.torus(0.0065, 0.0016, 8, 4); KG.box(-0.0012, -0.021, -0.0008, 0.0012, -0.006, 0.0008); KG.box(0.0012, -0.019, -0.0008, 0.0036, -0.016, 0.0008); KG.box(0.0012, -0.014, -0.0008, 0.003, -0.012, 0.0008); });
   const fin = (g) => { const o = g.build(); o.clearGroups(); return o; };
-  return { body: fin(G), glass: fin(GL), lid: fin(LG), hood: fin(HG), drawer: fin(DG), handle: fin(HGm), flap: fin(FG), btnMinus: btn(0xe04a44, false), btnPlus: btn(0x3fae60, true), key: fin(KG), pawl: fin(PG), knob: kn, flapClear: st.flap !== 'steel' };
+  return { body: fin(G), glass: fin(GL), lid: fin(LG), hood: fin(HG), drawer: fin(DG), handle: fin(HGm), flap: fin(FG), btnMinus: btn(0xe04a44, false), btnPlus: btn(0x3fae60, true), key: fin(KG), pawl: fin(PG), knob: kn, crate: crateG ? fin(crateG) : null, flapClear: st.flap !== 'steel' };
 }
 
 // ----------------------------------------------------------------------------- stands
@@ -394,7 +398,9 @@ function buildStand(type, spec, L, st, A, V, G, K) {
   if (st.stand === 'crate') {
     // a slatted fruit crate: corner posts, three slats a side, a boarded top
     const cw = hw + 0.1, cd = hd + 0.06, wood = boxMap(V.WOOD, [0, 0, 0, 1, 1, 1]);
-    const plank = (x0, yy0, z0, x1, yy1, z1) => G.with(boxMap(V.WOOD, [x0, yy0, z0, x1, yy1, z1]), 0, () => G.box(x0, yy0, z0, x1, yy1, z1, { bevel: 0.004 }));
+    // (with the photo library the boards are their own mesh, uvs in metres with the grain along each board)
+    const CG = K.crate, wuv = (x0, yy0, z0, x1, yy1, z1) => { const lx = x1 - x0, ly = yy1 - yy0, lz = z1 - z0, k = x0 * 3.1 + z0 * 1.7 + yy0 * 2.3; return (p, n) => (ly >= lx && ly >= lz ? [(Math.abs(n[0]) > 0.5 ? p[2] : p[0]) + k, p[1]] : lx >= lz ? [(Math.abs(n[1]) > 0.5 ? p[2] : p[1]) + k, p[0]] : [(Math.abs(n[1]) > 0.5 ? p[0] : p[1]) + k, p[2]]); };
+    const plank = (x0, yy0, z0, x1, yy1, z1) => (CG ? CG.with(wuv(x0, yy0, z0, x1, yy1, z1), 0, () => CG.box(x0, yy0, z0, x1, yy1, z1, { bevel: 0.004 })) : G.with(boxMap(V.WOOD, [x0, yy0, z0, x1, yy1, z1]), 0, () => G.box(x0, yy0, z0, x1, yy1, z1, { bevel: 0.004 })));
     void wood;
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) plank(sx * cw - (sx > 0 ? 0.03 : 0), 0, sz * cd - (sz > 0 ? 0.03 : 0), sx * cw + (sx > 0 ? 0 : 0.03), y0 - 0.016, sz * cd + (sz > 0 ? 0 : 0.03));
     const hs = (y0 - 0.016) / 3;

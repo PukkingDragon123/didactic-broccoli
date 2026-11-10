@@ -126,7 +126,7 @@ export class GarageDetail {
     for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
       const lx = t.x + sx * (t.w / 2 - 0.1), lz = t.z + sz * (t.d / 2 - 0.09);
       K.box('wood', lx - 0.045, 0, lz - 0.045, lx + 0.045, h - 0.06, lz + 0.045, { grain: 'y', tint: T.beam, cast: true });
-      K.box('flat', lx - 0.03, 0, lz - 0.03, lx + 0.03, 0.006, lz + 0.03, { tint: T.rubber });
+      K.box('rubber', lx - 0.03, 0, lz - 0.03, lx + 0.03, 0.006, lz + 0.03, { tint: T.rubber });
     }
     for (const sz of [-1, 1]) {
       const z = t.z + sz * (t.d / 2 - 0.09);
@@ -214,7 +214,7 @@ export class GarageDetail {
 
   // ---------------------------------------------------------------------------------------------- the sink
   sink() {
-    const K = this.K, T = TINT, G = this.G, x = 2.62, bz = G.minZ, top = 0.82, x0 = x - 0.36, x1 = x + 0.36, z1 = bz + 0.5, tz = 0xe9ece4;
+    const K = this.K, T = TINT, G = this.G, x = 2.62, bz = G.minZ, top = 0.82, x0 = x - 0.36, x1 = x + 0.36, z1 = bz + 0.5, tz = 0xc6c9c0;
     // white tiles on the wall behind, a 節水 sticker, one tile gone
     K.box('tile', 2.1, 0.8, bz, 3.14, 1.4, bz + 0.012, { tint: T.white, skip: ['nz'] });
     K.box('mortar', 2.9, 1.2, bz + 0.012, 3.0, 1.3, bz + 0.0135, { tint: tintK(TINT.mortar, 0.8) });
@@ -251,7 +251,7 @@ export class GarageDetail {
     const saddle = (x, y, z, axis = 'x') => K.box('paint', x - (axis === 'x' ? 0.022 : 0.004), y - 0.006, z - (axis === 'x' ? 0.004 : 0.022), x + (axis === 'x' ? 0.022 : 0.004), y + 0.006, z + (axis === 'x' ? 0.02 : 0.022), { tint: T.steel });
     // the distribution board by the back door: a painted backboard, the enamelled box, its face with the knife switch's
     // slot (the lever is src/life/chores.js), the contract sticker, three conduits up to the wall plate
-    K.box('wood', bx - 0.21, 1.7, bz, bx + 0.21, 2.3, bz + 0.02, { grain: 'y', tint: T.brown });
+    K.box('trim', bx - 0.21, 1.7, bz, bx + 0.21, 2.3, bz + 0.02, { grain: 'y', tint: T.brown });
     K.box('paint', bx - 0.15, 1.8, bz + 0.02, bx + 0.15, 2.22, bz + 0.1, { tint: 0xc9c6b8, bevel: 0.01 });
     this.pr('breaker', '+z', bx, 2.01, bz + 0.1015, 0.292);
     const fz = bz + 0.1015, px = 0.292 / 154; // the face print's scale: the parts below sit on what it draws
@@ -296,7 +296,7 @@ export class GarageDetail {
     const K = this.K, T = TINT, G = this.G, x = G.minX;
     // vinyl tiles laid over the slab along the machine row, an aluminium strip at their edge
     const t = { x0: x + 0.005, x1: -2.2, z0: -3.78, z1: 2.42 };
-    K.box('ptile', t.x0, 0, t.z0, t.x1, 0.006, t.z1, { tint: T.white, skip: ['ny'] });
+    K.box('ptile', t.x0, 0, t.z0, t.x1, 0.006, t.z1, { skip: ['ny'] });
     K.box('paint', t.x1, 0, t.z0 - 0.03, t.x1 + 0.03, 0.008, t.z1 + 0.03, { tint: T.galv });
     for (const z of [t.z0 - 0.03, t.z1]) K.box('paint', t.x0, 0, z, t.x1, 0.008, z + 0.03, { tint: T.galv });
     // the lit sign box on the studs, hung from the girt on two straps
@@ -362,10 +362,11 @@ export class GarageDetail {
     for (const sz of [-3.35, -1.25, 0.85]) F('scuff', -2.7, sz, 0.56, 0.22, { rot: Math.PI / 2 + sz * 0.1, lift: 0.0072 });
     // the trench drain along the shutter's threshold: a steel frame, the grating's flat bars
     const dz = G.maxZ - 0.32;
-    K.quad('grate', [-2.9, 0.003, dz + 0.08], [2.9, 0.003, dz + 0.08], [2.9, 0.003, dz - 0.08], [-2.9, 0.003, dz - 0.08], [0, 1, 0], { rect: [0, 0, 5.8, 0.16] });
-    for (const s of [-1, 1]) K.box('paint', -2.92, 0, dz + s * 0.09 - 0.012, 2.92, 0.005, dz + s * 0.09 + 0.012, { tint: TINT.steelDark });
-    // damp and moss at the foot of the back wall, water down it from the old roof leak, rust under the tin's laps
-    this.mark('damp', '+z', -2.4, 0.2, G.minZ + 0.022, 2.6, 0.4); this.mark('damp', '+z', 2.6, 0.17, G.minZ + 0.022, 2.2, 0.34);
+    K.box('rubber', -2.9, 0, dz - 0.08, 2.9, 0.0015, dz + 0.08, { tint: 0x2e2a32, skip: ['ny'] }); // the dark channel under it
+    for (const s of [-1, 1]) K.box('paint', -2.92, 0, dz + s * 0.09 - 0.012, 2.92, 0.006, dz + s * 0.09 + 0.012, { tint: TINT.steelDark });
+    for (let x = -2.885; x < 2.9; x += 0.03) K.box('paint', x - 0.006, 0.0015, dz - 0.08, x + 0.006, 0.006, dz + 0.08, { tint: TINT.steel, skip: ['ny'] });
+    for (const z of [dz - 0.027, dz + 0.027]) K.box('paint', -2.9, 0.0015, z - 0.003, 2.9, 0.0055, z + 0.003, { tint: TINT.steelDark, skip: ['ny'] });
+    // water down the back wall from the old roof leak, rust runs under the zinc's laps
     this.mark('water', '+z', -3.5, 2.5, G.minZ + 0.002, 0.7, 1.4); this.mark('water', '+z', 3.5, 2.6, G.minZ + 0.002, 0.55, 1.1);
     for (const [z, y, h] of [[-4.2, 2.6, 0.7], [-2.0, 2.7, 0.5], [0.5, 2.75, 0.45], [3.8, 2.6, 0.7]]) this.mark('rust', '+x', G.minX - 0.103, y, z, 0.07, h);
     for (const [z, y, h] of [[-1.5, 2.95, 0.4], [1.2, 2.9, 0.5], [3.9, 2.95, 0.4]]) this.mark('rust', '-x', G.maxX + 0.103, y, z, 0.07, h);
@@ -400,7 +401,7 @@ export class GarageDetail {
     // the window: a curtain wire and a faded cafe curtain bunched at one end
     const cz = (W.z0 + W.z1) / 2;
     K.rod('paint', [G.minX + 0.07, W.y1 + 0.03, W.z0 - 0.1], [G.minX + 0.07, W.y1 + 0.03, W.z1 + 0.1], 0.005, { tint: T.galv, sides: 5 });
-    for (let i = 0; i < 6; i++) K.box('flat', G.minX + 0.058 + (i % 2) * 0.012, W.y0 + 0.04, W.z1 - 0.04 - i * 0.034, G.minX + 0.078 + (i % 2) * 0.012, W.y1 + 0.03, W.z1 - 0.008 - i * 0.034, { tint: i % 2 ? 0xe2d2a8 : 0xefe4c2 });
+    for (let i = 0; i < 6; i++) K.box('canvas', G.minX + 0.058 + (i % 2) * 0.012, W.y0 + 0.04, W.z1 - 0.04 - i * 0.034, G.minX + 0.078 + (i % 2) * 0.012, W.y1 + 0.03, W.z1 - 0.008 - i * 0.034, { tint: i % 2 ? 0xe2d2a8 : 0xefe4c2 });
     K.rod('flat', [G.minX + 0.2, W.y1 + 0.02, cz + 0.2], [G.minX + 0.2, W.y1 - 0.03, cz + 0.2], 0.002, { tint: T.ivory, sides: 4 });
     void H;
   }
@@ -434,21 +435,26 @@ export class GarageDetail {
     // the awning: zinc sheets (rust-proof red) on two battens over five outriggers, knee braces at the piers, a fascia
     for (const [dy, tint, n] of [[0, T.zincIn, -1], [0.014, T.roof, 1]]) K.wave('totan', -4.12, 4.12, (c, w, up) => (up ? [c, ay(zo) + dy + w, zo] : [c, ay(A.z1) + dy + w, A.z1]), [0, n, n * 0.2], { tint, cast: n > 0, uv: (p) => [p[0], Math.hypot(p[2] - zo, A.y - p[1])] });
     K.box('paint', -4.12, A.y + 0.012, zo, 4.12, A.y + 0.05, zo + 0.05, { tint: T.galv });
-    for (const x of [-3.95, -1.98, 0, 1.98, 3.95]) K.beam('wood', [x, ay(zo) - 0.06, zo - 0.01], [x, ay(A.z1 - 0.03) - 0.06, A.z1 - 0.03], 0.05, 0.07, { tint: T.brown, cast: true });
-    for (const z of [5.5, 5.95]) K.box('wood', -4.1, ay(z) - 0.024, z - 0.02, 4.1, ay(z) - 0.002, z + 0.02, { grain: 'x', tint: T.brown });
-    K.box('wood', -4.14, ay(A.z1) - 0.1, A.z1 - 0.012, 4.14, ay(A.z1) + 0.012, A.z1 + 0.012, { grain: 'x', tint: T.brown, cast: true });
-    for (const x of [-3.95, -3.06, 3.06, 3.95]) K.beam('wood', [x, 2.72, zo + 0.03], [x, ay(5.8) - 0.09, 5.8], 0.045, 0.045, { tint: T.brown });
+    for (const x of [-3.95, -1.98, 0, 1.98, 3.95]) K.beam('trim', [x, ay(zo) - 0.06, zo - 0.01], [x, ay(A.z1 - 0.03) - 0.06, A.z1 - 0.03], 0.05, 0.07, { tint: T.brown, cast: true });
+    for (const z of [5.5, 5.95]) K.box('trim', -4.1, ay(z) - 0.024, z - 0.02, 4.1, ay(z) - 0.002, z + 0.02, { grain: 'x', tint: T.brown });
+    K.box('trim', -4.14, ay(A.z1) - 0.1, A.z1 - 0.012, 4.14, ay(A.z1) + 0.012, A.z1 + 0.012, { grain: 'x', tint: T.brown, cast: true });
+    for (const x of [-3.95, -3.06, 3.06, 3.95]) K.beam('trim', [x, 2.72, zo + 0.03], [x, ay(5.8) - 0.09, 5.8], 0.045, 0.045, { tint: T.brown });
     // four paper lanterns under its edge; the noren on a bamboo pole (hung out while the shop is open)
     for (const [i, x] of [-3.2, -1.6, 1.6, 3.2].entries()) { this.lantern('lantern', x, 2.64, 6.02, 1, i * 1.3); K.rod('flat', [x, 2.83, 6.02], [x, ay(6.02) - 0.03, 6.02], 0.004, { tint: T.black, sides: 4 }); }
     const noren = new THREE.Group();
     noren.name = 'garage:noren';
     const ny = 2.99, nz = 6.06;
+    // three panels of indigo cotton, a little apart, each hanging with its own slight sway; the crest and the kana are
+    // dyed through, so they show (mirrored) on the back too
+    const hang = [[0.02, -0.01], [0.035, 0.012], [0.015, 0.02]];
+    const panel = (g, i, dz, uvs) => {
+      const x = (i - 1) * 0.69, [b, sk] = hang[i];
+      g.quad([x - 0.33 + sk, ny - 0.735, nz + b + dz], [x + 0.33 + sk, ny - 0.735, nz + b + dz], [x + 0.33, ny - 0.015, nz + dz], [x - 0.33, ny - 0.015, nz + dz], [0, 0, 1], uvs);
+    };
+    noren.add(K.mesh('indigo', (g) => { g.tint(0x2f4470); for (let i = 0; i < 3; i++) panel(g, i, 0, null); }));
     noren.add(K.mesh('cloth', (g) => {
-      ['norenL', 'norenC', 'norenR'].forEach((n, i) => {
-        const r = this.P.rect(n), x = (i - 1) * 0.69;
-        g.quad([x - 0.33, ny - 0.735, nz + 0.02], [x + 0.33, ny - 0.735, nz + 0.02], [x + 0.33, ny - 0.015, nz], [x - 0.33, ny - 0.015, nz], [0, 0, 1], [[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]]);
-      });
-    }));
+      ['norenL', 'norenC', 'norenR'].forEach((n, i) => { const r = this.P.rect(n), uv = [[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]]; panel(g, i, 0.0015, uv); panel(g, i, -0.0015, uv); });
+    }, { cast: false }));
     noren.add(K.mesh('paint', (g) => {
       g.tint(T.bamboo); g.strut([-1.16, ny, nz], [1.16, ny, nz], 0.014, { round: 12 });
       g.tint(tintK(T.bamboo, 0.7)); for (const x of [-0.6, 0.1, 0.75]) g.box(x - 0.004, ny - 0.016, nz - 0.016, x + 0.004, ny + 0.016, nz + 0.016);
@@ -458,8 +464,8 @@ export class GarageDetail {
     this.noren = noren;
     // the sign board on two battens, its frame, and the gooseneck lamps over it (lit while the shop is open)
     const sy = 3.9, sz = zo + 0.05;
-    for (const y of [sy - 0.3, sy + 0.3]) K.box('wood', -2.0, y - 0.025, zo, 2.0, y + 0.025, sz - 0.014, { grain: 'x', tint: T.brown });
-    K.box('paint', -2.03, sy - 0.43, sz - 0.014, 2.03, sy + 0.43, sz, { tint: T.brown, cast: true });
+    for (const y of [sy - 0.3, sy + 0.3]) K.box('trim', -2.0, y - 0.025, zo, 2.0, y + 0.025, sz - 0.014, { grain: 'x', tint: T.brown });
+    K.box('trim', -2.03, sy - 0.43, sz - 0.014, 2.03, sy + 0.43, sz, { tint: T.brown, cast: true });
     this.pr('signBoard', '+z', 0, sy, sz + 0.002, 4.0);
     const bulbs = [];
     for (const x of [-1.25, 1.25]) {
@@ -486,7 +492,7 @@ export class GarageDetail {
     K.pipe('flat', [[3.9, 4.46, zo + 0.1], [4.06, 4.3, zo + 0.02], [4.08, 2.78, zo + 0.02], [mx, 2.64, zo + 0.03]], 0.008, { tint: T.black, sides: 5 });
     for (const y of [3.0, 3.6, 4.1]) K.box('paint', 4.062, y, zo, 4.098, y + 0.012, zo + 0.032, { tint: T.steel });
     // the watt-hour meter on its board: base, rim and face, the terminal cover with its seal, the inspection stickers
-    K.box('wood', mx - 0.15, 2.18, zo, mx + 0.15, 2.64, zo + 0.02, { grain: 'y', tint: T.brown });
+    K.box('trim', mx - 0.15, 2.18, zo, mx + 0.15, 2.64, zo + 0.02, { grain: 'y', tint: T.brown });
     turnZ(K.use('paint', { tint: 0x8d9698, cast: true }), mx, 2.47, zo + 0.02, [[0.1, 0], [0.1, 0.046], [0.098, 0.056], [0.094, 0.062], [0, 0.062]], 28);
     turnZ(K.use('gloss', { tint: 0xdfe8ea }), mx, 2.47, zo + 0.082, [[0.094, 0], [0.093, 0.02], [0.089, 0.031], [0.083, 0.036], [0.08, 0.034], [0.08, 0.004]], 28);
     this.pr('meter', '+z', mx, 2.47, zo + 0.088, 0.166);
@@ -513,13 +519,13 @@ export class GarageDetail {
     // the lanterns out front glow with the town's switch and the time of day (the town drives its own lantern
     // material and the warm point light under the awning: this copies it); the sign's lamps burn while it's open
     const k = S?.lanternM ? S.lanternM.emissiveIntensity : (town?.lanternsOn ? 1.2 : 0);
-    M.lantern.emissiveIntensity = k * 0.7;
+    M.lantern.emissiveIntensity = Math.min(0.62, k * 0.45); // (the paper stays red and ribbed, never a white disc)
     M.lantern.color.setScalar(k > 0.01 ? 1 : 0.5);
     const lit = open && k > 0.01;
     if (this.bulbs.visible !== lit) this.bulbs.visible = lit;
     // inside, the sign box and the string of lanterns only need the mains
     const power = this.game.bills?.powerOn !== false ? 1 : 0;
-    M.lanternIn.emissiveIntensity = 0.9 * power; M.lanternIn.color.setScalar(power ? 1 : 0.5);
+    M.lanternIn.emissiveIntensity = 0.55 * power; M.lanternIn.color.setScalar(power ? 1 : 0.5);
     M.signGlow.emissiveIntensity = 0.28 * power;
     this.signLight.intensity = 1.6 * power;
   }

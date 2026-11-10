@@ -15,6 +15,7 @@ export const BANNER_TEXT = Object.assign({}, ...sceneMods.map((m) => m.BANNER_TE
 export const SCENE_TEXT = sceneMods.map((m) => m.SCENE_TEXT || '').join('');
 // backgrounds of the flyer-style cards (series with a `flyer` spec, see src/figures/flyer.js)
 export const FLYER_SCENES = Object.assign({}, ...sceneMods.map((m) => m.FLYER_SCENES || {}));
+const FLYER_PHOTOS = sceneMods.filter((m) => m.flyerPhotos).map((m) => ({ when: m.flyerPhotos, ready: m.flyerPhotosReady }));
 
 export const BANNER_W = 320;
 export const BANNER_H = 280;
@@ -224,9 +225,11 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   if (s.flyer) {
     // the flyer layout (the same 8:7 sheet at twice the pixels: room for real small print)
     const fp = new Pix(FLYER_W, FLYER_H, 7);
-    drawFlyer(fp, s, thumbs, FLYER_KIT, FLYER_SCENES);
-    if (opts.faded) fade(fp, 22);
-    fp.flush();
+    const draw = () => { drawFlyer(fp, s, thumbs, FLYER_KIT, FLYER_SCENES); if (opts.faded) fade(fp, 22); fp.flush(); };
+    const ready = FLYER_PHOTOS.every((f) => f.ready());
+    draw();
+    // (drawn before its photograph arrived: drawn again, on the same canvas, when it has)
+    if (!ready) Promise.all(FLYER_PHOTOS.map((f) => f.when())).then(() => { draw(); const t = texCache.get(key); if (t) t.needsUpdate = true; });
     cache.set(key, fp.canvas);
     return fp.canvas;
   }

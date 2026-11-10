@@ -145,6 +145,7 @@ export function buildMachineModel(type, opts = {}) {
   // everything that never moves: the stand, the lower unit, the case's frame, the tray
   const body = mesh(Gm.body);
   group.add(body);
+  if (Gm.crate) group.add(mesh(Gm.crate, M.wood)); // the fruit crate's boards (photographed planks)
   const glass = clear(Gm.glass);
   group.add(glass);
   // the display card in its holder (GachaMachine sets the series' card; it slides up out of the open top to swap)

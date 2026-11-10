@@ -1,9 +1,10 @@
-// The town's materials: a handful of tiling cartoon textures (tinted per building by vertex colour), flat paints, the
-// two atlases, glass, lamps. Cel shading and ink lines are applied to all of them by the renderer.
+// The town's materials: real surfaces from the shared photo texture library (src/kit/photoTex.js), tinted per
+// building by vertex colour, flat paints for small parts, the two hand-drawn atlases (signs, stains), glass, lamps. Cel shading and ink lines are applied to all of them by the renderer.
 //   makeMats(town) fills town.m (by name), town.P(rough, metal) flat paint, town.G self-lit paint, town.tm / dm / cut
 //   (trim atlas, blended decals, alpha-cut boards), town.indoor(mat) (a variant the low sun does not reach).
 import * as THREE from 'three';
-import { tile } from './tex.js';
+import { hazardTexture } from './tex.js';
+import { photoTex, PHOTO_TEX, whenPhotoTexReady } from '../kit/photoTex.js';
 import { townAtlas } from './atlas.js';
 import { voxelMaterials } from '../voxel/materials.js';
 
@@ -18,20 +19,20 @@ function indoorPatch(m) {
   return m;
 }
 
-// name: [texture, roughness, metalness]
-const TILED = {
-  plaster: ['plaster', 0.95, 0], totan: ['totan', 0.62, 0.15], clap: ['clap', 0.9, 0], kawara: ['kawara', 0.6, 0.08], tinroof: ['tinroof', 0.55, 0.2],
-  asphalt: ['asphalt', 0.95, 0], concrete: ['concrete', 0.95, 0], paving: ['paving', 0.95, 0], lid: ['lid', 0.92, 0], grate: ['grate', 0.5, 0.4],
-  block: ['block', 0.95, 0], brick: ['brick', 0.92, 0], stone: ['stone', 0.95, 0], oya: ['oya', 0.95, 0], dirt: ['dirt', 1, 0], grass: ['grass', 1, 0],
-  ballast: ['ballast', 1, 0], wood: ['wood', 0.8, 0], woodL: ['woodL', 0.75, 0], timber: ['timber', 0.85, 0], tile: ['tile', 0.45, 0], koshi: ['koshi', 0.7, 0],
-  shikkui: ['shikkui', 0.95, 0], ceil: ['ceil', 0.85, 0], shutter: ['shutter', 0.6, 0.3], hazard: ['hazard', 0.6, 0], skirt: ['skirt', 0.35, 0], reed: ['reed', 0.95, 0],
+// name: [photo texture, roughness, metalness, turned a quarter (boards lying along the wall)]
+const PHOTO = {
+  plaster: ['plaster_cream', 0.95], totan: ['tin_corrugated', 0.62, 0.1], clap: ['wood_weathered', 0.9, 0, true], kawara: ['roof_kawara', 0.6], tileBody: ['steel_painted', 0.55],
+  tinroof: ['roof_tin', 0.6, 0.1], asphalt: ['asphalt', 0.95], patchA: ['asphalt_patched', 0.95], concrete: ['concrete', 0.95], grate: ['steel_galvanised', 0.5, 0.3], block: ['block_wall', 0.95],
+  brick: ['brick_red', 0.92], stone: ['concrete_stained', 0.95], oya: ['mortar_grey', 0.95], dirt: ['soil', 1], gravel: ['gravel', 1], grass: ['grass', 1], wood: ['wood_planks', 0.85],
+  woodL: ['plywood', 0.8], tile: ['tile_white', 0.45], shutter: ['steel_painted', 0.62, 0.15], reed: ['tatami', 0.95],
 };
 // the old names other modules still ask for
 const ALIAS = {
   road: 'asphalt', strip: 'concrete', ground: 'dirt', found: 'concrete', conc: 'concrete', tunnel: 'concrete', kenchi: 'stone', board: 'clap', boardL: 'clap', siding: 'clap',
   tin: 'totan', tinRed: 'totan', tinTeal: 'totan', prefab: 'totan', prefabB: 'totan', roofGrey: 'kawara', roofBlue: 'kawara', roofBrown: 'kawara', roofGreen: 'kawara',
   roofIbushi: 'kawara', roofMetal: 'tinroof', roofMetalB: 'tinroof', roofSlate: 'tinroof', shutterM: 'shutter', mortar: 'plaster', mortarG: 'plaster', mortarP: 'plaster',
-  wallCream: 'plaster', wallBeige: 'plaster', wallGrey: 'plaster', wallBlue: 'plaster',
+  wallCream: 'plaster', wallBeige: 'plaster', wallGrey: 'plaster', wallBlue: 'plaster', paving: 'concrete', lid: 'concrete', ballast: 'gravel', timber: 'wood', koshi: 'wood',
+  shikkui: 'plaster', ceil: 'woodL', skirt: 'tile',
 };
 
 export function makeMats(t) {
@@ -41,8 +42,19 @@ export function makeMats(t) {
     if (!mats.has(ck)) { const m = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough, metalness: metal, ...extra }); m.name = 'paint'; mats.set(ck, m); }
     return mats.get(ck);
   };
-  const m = {};
-  for (const [k, [tex, rough, metal]] of Object.entries(TILED)) { m[k] = new THREE.MeshStandardMaterial({ map: tile(tex), vertexColors: true, roughness: rough, metalness: metal }); m[k].name = k; }
+  const m = {}, turned = [];
+  for (const [k, [photo, rough, metal = 0, turn]] of Object.entries(PHOTO)) {
+    const e = PHOTO_TEX[photo], r = 1 / (e?.metres || 1);
+    let map = photoTex(photo, { repeat: [r, r] });
+    if (turn) { map = map.clone(); map.rotation = Math.PI / 2; turned.push(map); }
+    m[k] = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, metalness: metal });
+    m[k].name = k;
+    // a tint given to the batcher means "this surface is that colour": it is divided by the photo's own mean (Batch)
+    const c = new THREE.Color(e?.avg ?? 0x808080);
+    m[k].userData.norm = [c.r, c.g, c.b];
+  }
+  if (turned.length) whenPhotoTexReady().then(() => { for (const x of turned) x.needsUpdate = true; });
+  m.hazard = new THREE.MeshStandardMaterial({ map: hazardTexture(), vertexColors: true, roughness: 0.65 }); m.hazard.name = 'hazard';
   for (const [k, v] of Object.entries(ALIAS)) m[k] = m[v];
   m.pv = t.P(0.82); m.metal = t.P(0.45, 0.45); m.gloss = t.P(0.3); m.ridge = t.P(0.6, 0.1); m.girder = t.P(0.7, 0.25);
   m.paint = t.P(0.85, 0, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });

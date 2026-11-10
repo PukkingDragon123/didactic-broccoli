@@ -144,7 +144,7 @@ function slope(t, rm, tint, a, b, c, d, ridged, caps = true, fine = false) {
       for (let q = 0; q < 6; q++) N.push(...dn);
     }
   }
-  B.tris(rm, P, T, { tint }, N);
+  B.tris(fine ? t.m.tileBody : rm, P, T, { tint }, N);
   if (caps) for (let i = 0; i < n; i++) { // 万十: the round boss on the end of every eave tile's roll
     const p = pt((i + 0.83) * cw, 0, 0.02 + lip), dz = Math.sign(a[2] - d[2]) || 1, pts = [];
     for (let k = 0; k < 10; k++) { const an = (k / 10) * Math.PI * 2; pts.push([p[0] + Math.cos(an) * 0.052 * dz, p[1] + Math.sin(an) * 0.052, p[2] + dz * 0.014]); }
@@ -458,6 +458,15 @@ export function balcony(t, b, fy1, seed) {
   if (b.futon) futon(t, cx + (b.futonX ?? 0), fy1 + 1.03, d - 0.03, Math.min(1.5, w - 0.3), b.futon);
   if (b.dish) { B.box(m.metal, 0.03, 0.4, 0.03, b.x1 - 0.15, fy1 + 1.0, d - 0.03, { tint: 0x8a8a88 }); B.lathe(m.pv, [[0.02, 0], [0.16, 0.04], [0.22, 0.1]], b.x1 - 0.15, fy1 + 1.32, d + 0.02, { rx: 1.1, tint: 0xe8e8e0, sides: 10, caps: 'b' }); B.rod(m.metal, [b.x1 - 0.15, fy1 + 1.36, d + 0.06], [b.x1 - 0.15, fy1 + 1.5, d + 0.26], 0.012, { tint: 0x5a5a58, sides: 4 }); }
   for (let i = 0; i < (b.pots || 0); i++) pot(t, b.x1 - 0.25 - i * 0.32, fy1, d - 0.22, 0.85, hash2(seed, i) < 0.5 ? 0x4f8a3a : 0x5c9a44, i % 2 ? 0xe5484b : null);
+}
+
+/** A steel roller shutter (w x h, its face at local z): curved slats 75 mm apart, a bottom bar with two hand pulls. */
+export function shutter(t, x, y, z, w, h, tint = 0xc8c2b4) {
+  const B = t.B, m = t.m, prof = [[-0.006, 0], [0, 0], [0.011, 0.012], [0.016, 0.038], [0.011, 0.064], [0, 0.075], [-0.006, 0.075]];
+  for (let k = 0; k * 0.075 < h - 0.1; k++) B.extrude(m.shutter, prof, x - w / 2, x + w / 2, { along: 'x', oy: y + 0.1 + k * 0.075, oz: z, tint, k: k % 7 === 3 ? 0.94 : 1 });
+  B.box(m.shutter, w, 0.1, 0.03, x, y, z + 0.006, { tint: dark(tint, 0.85), bevel: 0.006 });
+  for (const s of [-1, 1]) B.box(m.metal, 0.12, 0.02, 0.02, x + s * w * 0.28, y + 0.06, z + 0.03, { tint: 0x6a6e70, bevel: 0.006 });
+  for (const s of [-1, 1]) B.box(m.metal, 0.05, h, 0.05, x + s * (w / 2 + 0.025), y, z, { tint: 0x8a8e8a });
 }
 
 /** A potted plant: a terracotta pot, a faceted clump of leaves, maybe flowers. */

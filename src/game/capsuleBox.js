@@ -19,15 +19,18 @@ export function makeCapsuleBox(data) {
   data.stage = data.stage ?? 0;
   const P = cartonParts(data.series);
   const group = new THREE.Group();
-  const shell = new THREE.Mesh(P.geo.body, P.mat);
+  const shell = new THREE.Mesh(P.geo.body, P.board);
   shell.castShadow = shell.receiveShadow = true;
   group.add(shell);
+  const decal = (geo, parent) => { const m = new THREE.Mesh(geo, P.mat); m.receiveShadow = true; m.userData.noRim = true; m.raycast = () => {}; parent.add(m); return m; };
+  if (P.geo.print) decal(P.geo.print, shell); // the print lies on the photographed board
   // flaps: long ones front / back (they lie on top of the short ones), short ones left / right
   const flaps = [];
   const mk = (long, sign) => {
     const piv = new THREE.Group();
-    const m = new THREE.Mesh(long ? P.geo.flapL : P.geo.flapS, P.mat);
+    const m = new THREE.Mesh(long ? P.geo.flapL : P.geo.flapS, P.board);
     m.castShadow = true; m.receiveShadow = true;
+    if (long && P.geo.flapLPrint) decal(P.geo.flapLPrint, m);
     if (long) { piv.position.set(0, SIZE[1], sign * SIZE[2] / 2); m.position.y = T; } else piv.position.set(sign * SIZE[0] / 2, SIZE[1], 0);
     if (sign > 0) m.rotation.y = Math.PI;
     piv.add(m);
