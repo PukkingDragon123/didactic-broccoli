@@ -1,7 +1,6 @@
-// The toy-figure kit: gacha figures built the way the people are (src/people/mesh.js): a handful of chamfered
-// box segments per figure (heads, bodies, limbs, props), every face mapped 1:1 into a painted texture atlas at
-// high resolution (crisp pixels, mipmapped). One atlas per series, so all of a series' figures share their
-// materials (one set per finish) and the gacha machines can merge their sample figures into one draw.
+// The toy-figure kit: a small modelling language for gacha figures (chamfered blocks, octagonal cylinders, blocky
+// balls, posed sub-frames, painted with src/figures/paint.js), voxelized into a dense voxel figure
+// (voxelizeFig) that goes through the same voxel pipeline as every other collectible (src/game/collectibles.js).
 //
 // Authoring (src/data/series/*.js): an item has `fig(k)` instead of the old voxel `build(v)`. Units are
 // millimetres, y up, the figure faces +z and stands on y = 0. k is a Fig:
@@ -14,13 +13,10 @@
 //   k.mirror(fn)                        fn() twice, the second time mirrored in x (shares texture space)
 // Paints are src/figures/paint.js specs (a colour or { c, t, d: [decals], top, bot, m, ... }).
 import * as THREE from 'three';
-import { voxelMaterials } from '../voxel/materials.js';
-import { compilePaint, paintCtx, FONT_WAIT } from './paint.js';
+import { VoxelModel, enc, MAT } from '../voxel/VoxelModel.js';
+import { compilePaint, paintCtx } from './paint.js';
 
 export const FIG_UNIT = 0.001; // metres per authoring unit (mm)
-const PAD = 2;
-const ATLAS_W = 1024, ATLAS_MAXH = 1024;
-export const FIG_DENS = 3.0; // target texels per mm (shrinks when a series doesn't fit)
 
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _s = new THREE.Vector3(), _p = new THREE.Vector3();
 const local = (pos, rot, scl) => {
@@ -156,223 +152,74 @@ function primFaces(p) {
   return out;
 }
 
-// ------------------------------------------------------------------ packing
-function pack(rects, W, H) {
-  const sky = new Int32Array(W);
-  const order = [...rects].sort((a, b) => b.h - a.h || b.w - a.w);
-  let top = 0;
-  for (const r of order) {
-    if (r.w > W) return -1;
-    let bx = -1, by = 1e9;
-    for (let x = 0; x + r.w <= W; x++) {
-      const left = x === 0 || sky[x] !== sky[x - 1];
-      const right = x + r.w === W || sky[x + r.w] !== sky[x + r.w - 1];
-      if (!left && !right) continue;
-      let y = 0;
-      for (let i = x; i < x + r.w; i++) if (sky[i] > y) { y = sky[i]; if (y >= by) break; }
-      if (y < by) { by = y; bx = x; }
-    }
-    if (by + r.h > H) return -1;
-    r.x = bx; r.y = by;
-    for (let i = bx; i < bx + r.w; i++) sky[i] = by + r.h;
-    top = Math.max(top, by + r.h);
-  }
-  return top;
+// ------------------------------------------------------------------ voxelizing
+const MATS = { matte: MAT.MATTE, gloss: MAT.GLOSS, metal: MAT.METAL, glow: MAT.GLOW, glass: MAT.GLASS };
+const _v = new THREE.Vector3();
+
+/** Is local point (x, y, z) inside the prism's rings (tol mm of slack for thin parts)? Returns the ring section or null. */
+function inside(rings, x, y, z, tol) {
+  if (y < rings[0][0] - tol || y > rings[rings.length - 1][0] + tol) return null;
+  let k = 0;
+  while (k + 2 < rings.length && y > rings[k + 1][0]) k++;
+  const A = rings[k], B = rings[k + 1] || A, t = B[0] === A[0] ? 0 : Math.min(1, Math.max(0, (y - A[0]) / (B[0] - A[0])));
+  const L = (i, d) => (A[i] ?? d) + ((B[i] ?? d) - (A[i] ?? d)) * t;
+  const hx = L(1, 0) + tol, hz = L(2, 0) + tol, cx = L(3, 0), cz = L(4, 0), c = L(5, 0) * Math.min(hx, hz);
+  const ax = Math.abs(x - cx), az = Math.abs(z - cz);
+  if (ax > hx || az > hz) return null;
+  if (c > 0 && (ax - (hx - c)) + (az - (hz - c)) > c) return null;
+  return { hx, hz, cx, cz, ax, az, t, k };
 }
 
-// ------------------------------------------------------------------ series atlases
-const ATL = new Map();
-
-function buildFig(item) {
-  const k = new Fig();
-  item.fig(k);
-  const faces = [];
-  void 0;
-  for (const p of k.prims) { p.fn = compilePaint(p.paint); for (const f of primFaces(p)) faces.push(f); }
-  return { k, faces, item };
-}
-
-/** The atlas of a series (layout of every fig item; painted lazily item by item). */
-export function seriesAtlas(series) {
-  let A = ATL.get(series.id);
-  if (A) return A;
-  const figs = new Map();
-  for (const it of series.items) if (it.fig) figs.set(it.key, buildFig(it));
-  const all = [...figs.values()].flatMap((f) => f.faces);
-  let dens = FIG_DENS, H = 0;
-  const sizeAt = (f, s) => {
-    f.dens = s * (f.p.o.dens || 1) * (f.kind === 'bot' ? 0.5 : 1);
-    f.rect = { w: Math.max(1, Math.ceil((f.s1 - f.s0) * f.dens - 0.01)) + PAD * 2, h: Math.max(1, Math.ceil((f.r1 - f.r0) * f.dens - 0.01)) + PAD * 2 };
-  };
-  for (let tries = 0; tries < 80; tries++) {
-    for (const f of all) sizeAt(f, dens);
-    H = pack(all.map((f) => f.rect), ATLAS_W, ATLAS_MAXH);
-    if (H > 0) break;
-    dens *= 0.96;
-  }
-  H = Math.max(64, Math.ceil(H / 64) * 64);
-  const data = new Uint8Array(ATLAS_W * H * 4);
-  const tex = new THREE.DataTexture(data, ATLAS_W, H, THREE.RGBAFormat);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.magFilter = THREE.NearestFilter;
-  tex.minFilter = THREE.LinearMipmapLinearFilter;
-  tex.generateMipmaps = true;
-  tex.anisotropy = 4;
-  tex.needsUpdate = true;
-  A = { id: series.id, W: ATLAS_W, H, dens, data, tex, figs, painted: new Set(), geos: new Map(), mats: new Map() };
-  ATL.set(series.id, A);
-  return A;
-}
-
-function paintFig(A, key) {
-  if (A.painted.has(key)) return;
-  A.painted.add(key);
-  const F = A.figs.get(key);
-  FONT_WAIT.pending = null;
-  const c = paintCtx(), o = new Float32Array(4), d = A.data, W = A.W;
-  for (const f of F.faces) {
-    const R = f.rect, fn = f.p.fn, bb = f.p.bb, m = f.p.m.elements;
-    c.p = f.p; c.bb = bb; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.kind = f.kind;
-    const PR = f.p.R;
-    if (PR) { const [a, b, e] = f.N; c.nx = PR[0] * a + PR[3] * b + PR[6] * e; c.ny = PR[1] * a + PR[4] * b + PR[7] * e; c.nz = PR[2] * a + PR[5] * b + PR[8] * e; }
-    // world-space normal (for light-ish effects): rotate by the prim matrix
-    c.wny = m[1] * f.N[0] + m[5] * f.N[1] + m[9] * f.N[2];
-    const P2 = f.p2, n2 = P2.length;
-    for (let j = 0; j < R.h; j++) {
-      const r = f.r1 - (j - PAD + 0.5) / f.dens;
-      for (let i = 0; i < R.w; i++) {
-        const s = f.s0 + (i - PAD + 0.5) / f.dens;
-        const x = f.o[0] + f.U[0] * s + f.V[0] * r, y = f.o[1] + f.U[1] * s + f.V[1] * r, z = f.o[2] + f.U[2] * s + f.V[2] * r;
-        c.x = x; c.y = y; c.z = z;
-        if (PR) { c.x = PR[0] * x + PR[3] * y + PR[6] * z; c.y = PR[1] * x + PR[4] * y + PR[7] * z; c.z = PR[2] * x + PR[5] * y + PR[8] * z; }
-        c.X = m[0] * x + m[4] * y + m[8] * z + m[12]; c.Y = m[1] * x + m[5] * y + m[9] * z + m[13]; c.Z = m[2] * x + m[6] * y + m[10] * z + m[14];
-        // distance to the face outline (mm) for bevel shading
-        let ed = 1e9;
-        for (let q = 0; q < n2; q++) {
-          const a = P2[q], b = P2[(q + 1) % n2], ex = b[0] - a[0], ey = b[1] - a[1], L = ex * ex + ey * ey || 1;
-          let t = ((s - a[0]) * ex + (r - a[1]) * ey) / L; t = t < 0 ? 0 : t > 1 ? 1 : t;
-          const dx = s - a[0] - ex * t, dy = r - a[1] - ey * t, dd = dx * dx + dy * dy;
-          if (dd < ed) ed = dd;
-        }
-        c.ti = R.x + i; c.tj = R.y + j;
-        c.ed = Math.sqrt(ed); c.fv = (r - f.r0) / ((f.r1 - f.r0) || 1); c.px = 1 / f.dens;
-        o[0] = 255; o[1] = 0; o[2] = 255; o[3] = 255;
-        fn(c, o);
-        const k = ((R.y + j) * W + R.x + i) * 4;
-        d[k] = o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0]; d[k + 1] = o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1]; d[k + 2] = o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2]; d[k + 3] = 255;
-      }
-    }
-  }
-  A.tex.needsUpdate = true;
-  // a text decal met an unloaded web font: repaint this figure once the font is in (fresh decal closures)
-  if (FONT_WAIT.pending) {
-    const wait = FONT_WAIT.pending; FONT_WAIT.pending = null;
-    wait.then(() => { const it = F.item; const nf = buildFig(it); for (let i = 0; i < nf.faces.length && i < F.faces.length; i++) F.faces[i].p.fn = nf.faces[i].p.fn; A.painted.delete(key); paintFig(A, key); }).catch(() => {});
-  }
-}
-
-/** Geometry of a fig item (bottom-centred, metres, groups by material index). */
-export function figGeometry(item, series) {
-  const A = seriesAtlas(series);
-  let g = A.geos.get(item.key);
-  if (g) { paintFig(A, item.key); return g; }
-  const F = A.figs.get(item.key);
-  paintFig(A, item.key);
-  const byMat = new Map();
-  const pos = [], nrm = [], uv = [];
-  const v = new THREE.Vector3(), n = new THREE.Vector3(), nm = new THREE.Matrix3();
-  const MIR = new THREE.Matrix4().makeScale(-1, 1, 1);
-  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z0 = 1e9, z1 = -1e9;
-  const emit = (f, mirror) => {
-    const M = mirror ? f.p.mm.clone().multiply(f.p.m) : f.p.m;
-    nm.getNormalMatrix(M);
-    const base = pos.length / 3, R = f.rect;
-    for (let q = 0; q < f.pts.length; q++) {
-      const P = f.pts[q], [s, r] = f.p2[q];
-      v.set(P[0], P[1], P[2]).applyMatrix4(M);
-      pos.push(v.x, v.y, v.z);
-      x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); z0 = Math.min(z0, v.z); z1 = Math.max(z1, v.z);
-      n.set(f.N[0], f.N[1], f.N[2]).applyMatrix3(nm).normalize();
-      nrm.push(n.x, n.y, n.z);
-      uv.push((R.x + PAD + (s - f.s0) * f.dens) / A.W, (R.y + PAD + (f.r1 - r) * f.dens) / A.H);
-    }
-    const mi = f.p.o.mat ?? compiledMat(f.p);
-    if (!byMat.has(mi)) byMat.set(mi, []);
-    const list = byMat.get(mi), flip = mirror !== (M.determinant() < 0 && !mirror ? true : false);
-    for (let q = 1; q + 1 < f.pts.length; q++) {
-      if (mirror) list.push(base, base + q + 1, base + q); else list.push(base, base + q, base + q + 1);
-    }
-    void flip;
-  };
-  for (const f of F.faces) { emit(f, false); if (f.p.mirror) emit(f, true); }
-  // bottom-centre: x / z centred on the bounds, feet on y = 0; then fit the shelf slot
-  let cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
-  const maxDim = Math.max(x1 - x0, y1 - y0, z1 - z0) * FIG_UNIT;
-  let sc = FIG_UNIT * (maxDim > ITEM_MAX ? ITEM_MAX / maxDim : 1) * (item.figScale || 1);
-  if (item.frame) { ({ cx, cz, sc } = item.frame); y0 = item.frame.cy; } // moving parts share their figure's frame
-  for (let i = 0; i < pos.length; i += 3) { pos[i] = (pos[i] - cx) * sc; pos[i + 1] = (pos[i + 1] - y0) * sc; pos[i + 2] = (pos[i + 2] - cz) * sc; }
-  const idx = [];
-  g = new THREE.BufferGeometry();
-  for (const mi of [...byMat.keys()].sort((a, b) => a - b)) { const st = idx.length; idx.push(...byMat.get(mi)); g.addGroup(st, idx.length - st, mi); }
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
-  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
-  g.setIndex(idx);
-  g.computeBoundingBox(); g.computeBoundingSphere();
-  // frame: authoring mm -> mesh metres (toys.js uses it for moving parts)
-  g.userData.fig = { cx, cy: y0, cz, sc, anchors: F.k.anchors };
-  A.geos.set(item.key, g);
-  return g;
-}
-const ITEM_MAX = 0.088;
-
-function compiledMat(p) { const pa = p.paint; return (pa && typeof pa === 'object' && pa.m != null) ? MATS[pa.m] ?? pa.m : 0; }
-const MATS = { matte: 0, gloss: 1, metal: 2, glow: 3, glass: 4 };
-
-/** Material array for a series' atlas in a finish (clones of the voxel finish materials with the atlas as map). */
-export function figMaterials(series, finish = 'normal') {
-  const A = seriesAtlas(series);
-  let mats = A.mats.get(finish);
-  if (mats) return mats;
-  mats = voxelMaterials(finish).map((b) => {
-    const m = b.clone();
-    m.vertexColors = false;
-    m.map = A.tex;
-    m.onBeforeCompile = b.onBeforeCompile;
-    if (b.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey) m.customProgramCacheKey = b.customProgramCacheKey;
-    return m;
-  });
-  A.mats.set(finish, mats);
-  return mats;
-}
-
-/** Stats for dev pages: { series: { W, H, dens, painted } }. */
-export function figStats() {
-  const o = {};
-  for (const [id, A] of ATL) o[id] = { W: A.W, H: A.H, dens: +A.dens.toFixed(2), painted: A.painted.size, figs: A.figs.size };
-  return o;
-}
-
-// ------------------------------------------------------------------ moving parts (toys)
-const PARTS = new Map();
 /**
- * A mesh for a toy's moving part: item.figParts[name] is a fig function authored in the figure's own mm frame
- * (o.own: around its own origin instead). All parts of an item share one small atlas.
+ * Voxelize a kit figure (item.fig) into a VoxelModel at vox mm per voxel. Every prim fills the voxels whose centres lie
+ * inside it (later prims overwrite earlier ones) with its paint, sampled at the voxel as if on the nearest face, so
+ * faces, decals, materials and the ramp-dithered shading all land in the voxel colours.
  */
-export function figPartMesh(item, series, name, o = {}) {
-  const main = figGeometry(item, series).userData.fig;
-  let ps = PARTS.get(item.key);
-  if (!ps) {
-    ps = { id: item.key + ':parts', items: Object.entries(item.figParts || {}).map(([n, fn]) => ({ key: item.key + ':' + n, fig: fn, frame: n.startsWith('own') || (item.ownParts || []).includes(n) ? { cx: 0, cy: 0, cz: 0, sc: main.sc } : main })) };
-    PARTS.set(item.key, ps);
+export function voxelizeFig(figFn, vox = 1.1) {
+  const k = new Fig();
+  figFn(k);
+  const model = new VoxelModel();
+  model.jitter = 0;
+  const c = paintCtx(), o = new Float32Array(4), inv = new THREE.Matrix4(), P = new THREE.Vector3();
+  const list = [];
+  for (const p of k.prims) { p.fn = compilePaint(p.paint); list.push([p, p.m]); if (p.mirror) list.push([p, p.mm.clone().multiply(p.m)]); }
+  for (const [p, M] of list) {
+    inv.copy(M).invert();
+    // local bounds of the rings -> figure-space voxel range
+    let lx = 1e9, ly = 1e9, lz = 1e9, hx = -1e9, hy = -1e9, hz = -1e9;
+    const R = p.rings;
+    for (const r of R) for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      _v.set((r[3] || 0) + sx * r[1], r[0], (r[4] || 0) + sz * r[2]).applyMatrix4(M);
+      lx = Math.min(lx, _v.x); ly = Math.min(ly, _v.y); lz = Math.min(lz, _v.z); hx = Math.max(hx, _v.x); hy = Math.max(hy, _v.y); hz = Math.max(hz, _v.z);
+    }
+    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z0 = 1e9, z1 = -1e9;
+    for (const r of R) { x0 = Math.min(x0, (r[3] || 0) - r[1]); x1 = Math.max(x1, (r[3] || 0) + r[1]); y0 = Math.min(y0, r[0]); y1 = Math.max(y1, r[0]); z0 = Math.min(z0, (r[4] || 0) - r[2]); z1 = Math.max(z1, (r[4] || 0) + r[2]); }
+    p.bb = { x0, x1, y0, y1, z0, z1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, cz: (z0 + z1) / 2, hx: (x1 - x0) / 2, hy: (y1 - y0) / 2, hz: (z1 - z0) / 2 };
+    const tol = Math.min(p.bb.hx, p.bb.hz, p.bb.hy) < vox * 0.7 ? vox * 0.5 : 0;
+    const PR = p.R, mat = MATS[p.paint?.m] ?? p.o.mat ?? MAT.MATTE;
+    for (let gx = Math.floor(lx / vox); gx <= Math.ceil(hx / vox); gx++) for (let gy = Math.floor(ly / vox); gy <= Math.ceil(hy / vox); gy++) for (let gz = Math.floor(lz / vox); gz <= Math.ceil(hz / vox); gz++) {
+      P.set((gx + 0.5) * vox, (gy + 0.5) * vox, (gz + 0.5) * vox).applyMatrix4(inv);
+      const s = inside(R, P.x, P.y, P.z, tol);
+      if (!s) continue;
+      // nearest face: whichever of side x / side z / top / bottom is closest; its normal drives the paint
+      const dx = s.hx - s.ax, dz = s.hz - s.az, dt = R[R.length - 1][0] - P.y, db = P.y - R[0][0];
+      const m = Math.min(dx, dz, dt, db);
+      let nx = 0, ny = 0, nz = 0, kind = 'side';
+      if (m === dt) { ny = 1; kind = 'top'; } else if (m === db) { ny = -1; kind = 'bot'; } else if (m === dx) nx = Math.sign(P.x - s.cx) || 1; else nz = Math.sign(P.z - s.cz) || 1;
+      if (Math.abs(s.ax - s.hx) < vox && Math.abs(s.az - s.hz) < vox) { const l = Math.SQRT1_2; nx = (Math.sign(P.x - s.cx) || 1) * l; nz = (Math.sign(P.z - s.cz) || 1) * l; ny = 0; kind = 'side'; }
+      c.x = P.x; c.y = P.y; c.z = P.z; c.nx = nx; c.ny = ny; c.nz = nz; c.kind = kind;
+      if (PR) { const a = c.x, b = c.y, e = c.z; c.x = PR[0] * a + PR[3] * b + PR[6] * e; c.y = PR[1] * a + PR[4] * b + PR[7] * e; c.z = PR[2] * a + PR[5] * b + PR[8] * e; c.nx = PR[0] * nx + PR[3] * ny + PR[6] * nz; c.ny = PR[1] * nx + PR[4] * ny + PR[7] * nz; c.nz = PR[2] * nx + PR[5] * ny + PR[8] * nz; }
+      const me = M.elements; c.wny = me[1] * nx + me[5] * ny + me[9] * nz;
+      c.X = (gx + 0.5) * vox; c.Y = (gy + 0.5) * vox; c.Z = (gz + 0.5) * vox;
+      c.p = p; c.bb = p.bb; c.ed = m < vox * 1.2 && Math.min(dx, dz, dt, db, 9) === m && [dx, dz, dt, db].filter((v) => v < vox * 1.2).length > 1 ? 0.2 : 2;
+      c.fv = (P.y - R[0][0]) / ((R[R.length - 1][0] - R[0][0]) || 1); c.px = vox;
+      c.ti = gx + gz * 3; c.tj = -gy;
+      o[0] = 255; o[1] = 0; o[2] = 255; o[3] = 255;
+      p.fn(c, o);
+      const col = ((o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0] | 0) << 16) | ((o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1] | 0) << 8) | (o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2] | 0);
+      model.set(gx, gy, gz, enc(col, mat));
+    }
   }
-  const it = ps.items.find((x) => x.key === item.key + ':' + name);
-  const m = new THREE.Mesh(figGeometry(it, ps), figMaterials(ps, o.finish || 'normal'));
-  m.castShadow = true;
-  return m;
-}
-/** A named point of a fig item (item.pts[name], mm) in its mesh's local space. */
-export function figPoint(item, series, name, out = new THREE.Vector3()) {
-  const f = figGeometry(item, series).userData.fig, p = item.pts?.[name] || [0, 0, 0];
-  return out.set((p[0] - f.cx) * f.sc, (p[1] - f.cy) * f.sc, (p[2] - f.cz) * f.sc);
+  model.anchors = k.anchors;
+  return model;
 }

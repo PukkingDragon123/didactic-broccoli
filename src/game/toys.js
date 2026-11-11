@@ -8,8 +8,7 @@
 // game.toys.use(item) / hint(item) are wired into game.held here (instance wrappers, Held.js is untouched).
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
-import { getItem, SERIES_BY_ID } from '../data/series/index.js';
-import { figPartMesh, figPoint } from '../figures/kit.js';
+import { getItem } from '../data/series/index.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -38,14 +37,8 @@ export function toyKind(key) { return getItem(key)?.toy || null; }
 const partCache = new Map();
 /** Mesh frame of an item: the full figure mesh is bottom-centred on its design-voxel bounds. */
 function frameOf(item) {
-  if (item.fig) return { b: null, vs: ITEM_VOXEL, off: new THREE.Vector3() }; // kit figures: parts share the figure's frame
   const b = buildItemModel(item).bounds();
   return { b, vs: ITEM_VOXEL, off: new THREE.Vector3(-(b.minX + b.w / 2) * ITEM_VOXEL, -b.minY * ITEM_VOXEL, -(b.minZ + b.d / 2) * ITEM_VOXEL) };
-}
-/** A named gimmick point (kit figures: item.pts, mm) or the old design-voxel coordinates. */
-function pt(item, name, vox, out = new THREE.Vector3()) {
-  if (item.fig) return figPoint(item, SERIES_BY_ID[item.series], name, out);
-  return toMesh(item, ...vox, out);
 }
 /** Design voxel coordinates -> the item mesh's local space. */
 function toMesh(item, x, y, z, out = new THREE.Vector3()) {
@@ -54,7 +47,6 @@ function toMesh(item, x, y, z, out = new THREE.Vector3()) {
 }
 /** A moving part (item.parts[name]) as a mesh in the same frame as the figure (up-resolved like it). */
 function partMesh(item, name) {
-  if (item.fig) return figPartMesh(item, SERIES_BY_ID[item.series], name);
   const k = item.key + ':' + name;
   if (!partCache.has(k)) {
     const v = new VoxelModel();
@@ -236,9 +228,9 @@ export class Toys {
     this.winding = true;
     audio.play('windup');
     let key = null;
-    if (inner && (item.parts?.key || item.figParts?.key)) {
+    if (inner && item.parts?.key) {
       key = partMesh(item, 'key');
-      key.position.copy(pt(item, 'key', [0, 10, -6.5]));
+      key.position.copy(toMesh(item, 0, 10, -6.5));
       inner.add(key);
     }
     g.tweens.add({ dur: 0.6, update: (k) => { if (key) key.rotation.z = k * Math.PI * 4; inner && (inner.rotation.z = Math.sin(k * 30) * 0.03); }, done: () => {
@@ -328,7 +320,7 @@ export class Toys {
   // ---------------------------------------------------------------- kendama
   flipKendama(it) {
     const inner = this.inner(it), item = getItem(it.data.key);
-    if (!inner || !(item.parts || item.figParts)) return;
+    if (!inner || !item.parts) return;
     const ken = partMesh(item, 'ken'), ball = partMesh(item, 'tama');
     ken.position.copy(frameOf(item).off);
     inner.parent.add(ken);
@@ -338,7 +330,7 @@ export class Toys {
     const r = Math.random();
     const target = r < 0.38 ? 'big' : r < 0.68 ? 'small' : r < 0.86 ? 'spike' : 'miss';
     const at = { big: [-8.5, 15, 0], small: [6.5, 14.5, 0], spike: [0, 27, 0], miss: [3, 4, 2] }[target];
-    const from = pt(item, 'from', [0, 27, 0]), to = pt(item, target, at);
+    const from = toMesh(item, 0, 27, 0), to = toMesh(item, ...at);
     this.kendama = { it, inner, ken, ball, from, to, t: 0, target, item };
     audio.play('whoosh', { vol: 0.4, v: 0.1 });
   }
@@ -371,7 +363,7 @@ export class Toys {
   fireDart(it) {
     const g = this.game, inner = this.inner(it), item = getItem(it.data.key);
     if (!inner) return;
-    const muzzle = inner.localToWorld(pt(item, 'muzzle', [0, 11, 18]));
+    const muzzle = inner.localToWorld(toMesh(item, 0, 11, 18));
     const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(g.camera.getWorldQuaternion(_q));
     // from the muzzle, but aimed where the crosshair points
     const start = muzzle.lerp(g.camera.getWorldPosition(_v2).addScaledVector(dir, 0.3), 0.5);
@@ -447,9 +439,7 @@ export class Toys {
     if (!L && create && item?.screen) {
       L = new LcdGame();
       const s = item.screen;
-      let a, b;
-      if (s.mm) { const [x0, y0, x1, y1, z] = s.mm; item.pts = { ...item.pts, scrA: [x0, y1, z], scrB: [x1, y0, z] }; a = pt(item, 'scrA'); b = pt(item, 'scrB'); }
-      else { a = toMesh(item, s.x0, s.y1 + 1, s.z + 1); b = toMesh(item, s.x1 + 1, s.y0, s.z + 1); }
+      const a = toMesh(item, s.x0, s.y1 + 1, s.z + 1), b = toMesh(item, s.x1 + 1, s.y0, s.z + 1);
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(b.x - a.x, a.y - b.y), new THREE.MeshBasicMaterial({ map: L.tex }));
       plane.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, a.z + 0.0004);
       plane.userData.noRim = true;
@@ -485,7 +475,7 @@ export class Toys {
     if (k === 'squishy') audio.play('squeak', { pos: mesh.getWorldPosition(_v) });
     if (k === 'dartgun') {
       // a real dart, fired the way it faces
-      const muzzle = mesh.localToWorld(pt(item, 'muzzle', [0, 11, 18]));
+      const muzzle = mesh.localToWorld(toMesh(item, 0, 11, 18));
       const dir = new THREE.Vector3(0, 0, 1).applyQuaternion(mesh.getWorldQuaternion(_q)).add(new THREE.Vector3(0, 0.15, 0)).normalize();
       const dart = partMesh(item, 'dart'), holder = new THREE.Group();
       holder.add(dart); holder.scale.setScalar(1.3); holder.position.copy(muzzle); g.scene.add(holder);
