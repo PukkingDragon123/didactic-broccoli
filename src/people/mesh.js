@@ -11,7 +11,7 @@ import { BONE_INDEX } from './body.js';
 import { buildGear } from './gear.js';
 import { baseBody, fitter } from './base.js';
 import { SRC_JOINTS } from './base/data.js';
-import { dressBody, garmentIslands, skirtPiece, collarPiece } from './garments.js';
+import { dressBody, garmentIslands, skirtPiece, collarPiece, garmentLines } from './garments.js';
 import { buildHair, SWATCH, Mesh } from './hairMesh.js';
 
 // 512: the body square gets 416 px (about 260 texels a metre on an adult: high-resolution pixel art, crisp up close);
@@ -179,6 +179,7 @@ function fittedBody(plan, lod, block, swatch) {
   // clothes: hems, cuffs, collars and folds shaped on the surface (may add vertices / triangles)
   dressBody(body, plan, lod);
   skirtPiece(body, plan, lod, plan.islands?.skirt, plan.islands?.coat);
+  if (P.skirtHem !== undefined && spec.bottom.kind === 'skirt') hideUnderSkirt(body, P, OUTER.has(spec.top?.kind) ? garmentLines(spec, P).topHem : Infinity);
   if (lod === 'near') P.armClear = armClearance(body, P);
   body.nTris = body.idx.length / 3; // the painted triangles (the hair after them samples the swatch / vertex colours)
   const collar = collarPiece(body, plan, lod, Mesh);
@@ -190,6 +191,32 @@ function fittedBody(plan, lod, block, swatch) {
   body.nrm = nrm;
   return body;
 }
+
+/**
+ * Drop the seat and the legs a skirt covers (never seen, and the thighs' front would poke through the cloth): every
+ * body triangle wholly between a little under the waistband and a hand's breadth above the hem. The legs keep their
+ * part just above the hem, so a stride never opens a gap under it.
+ */
+function hideUnderSkirt(B, P, topHem) {
+  const lo = P.skirtHem + 0.012 * P.H, hiLeg = P.skirtTop - 0.035 * P.H, hiTorso = Math.min(hiLeg, topHem - 0.012 * P.H), keep = [];
+  const hidden = (i) => {
+    if (B.vpart?.[i]) return false; // garment pieces (the skirt itself)
+    const b = B.bi[i * 4], y = B.pos[i * 3 + 1];
+    if (LEGS.has(b)) return y > lo && y < hiLeg;
+    if (b === BONE_INDEX.hips || b === BONE_INDEX.spine) return y > lo && y < hiTorso;
+    return false;
+  };
+  const tl = B.tlay ? [] : null;
+  for (let t = 0; t < B.idx.length; t += 3) {
+    if (hidden(B.idx[t]) && hidden(B.idx[t + 1]) && hidden(B.idx[t + 2])) continue;
+    keep.push(B.idx[t], B.idx[t + 1], B.idx[t + 2]);
+    if (tl) tl.push(B.tlay[t / 3]);
+  }
+  B.idx = keep; if (tl) B.tlay = tl;
+}
+// tops worn over the skirt (anything else is tucked into its waistband)
+const OUTER = new Set(['suit', 'blazer', 'cardigan', 'jacket', 'workjacket', 'gakuran', 'happi', 'knit']);
+const LEGS = new Set([BONE_INDEX.thighL, BONE_INDEX.thighR, BONE_INDEX.shinL, BONE_INDEX.shinR]);
 
 /** How far the arms must hang out (rad) for the hands to clear the hips / skirt at their side. */
 function armClearance(B, P) {
@@ -302,9 +329,10 @@ function bodyJobs(B, block, P) {
     if ((B.flags[a] & 3) && (B.flags[b] & 3) && (B.flags[c] & 3)) continue;
     const pa = vp[a], pb = vp[b], pc = vp[c];
     const p = pb[0] === pc[0] && pb[0] !== pa[0] ? pb : pa;
-    const key = p[0] + '|' + p[1] + '|' + (p[2] || 0);
+    const layer = B.tlay?.[t / 3] || ''; // which garment layer the triangle is on (garments.js), so paint and cloth agree
+    const key = p[0] + '|' + p[1] + '|' + (p[2] || 0) + '|' + layer;
     let g = groups.get(key);
-    if (!g) { g = { seg: pseg(p[0], p[1], p[2] || 0), kind: 'tris', N: [0, 0, 1], uv: [], p: [], n: [], dens: BODY_PX / 1.6 }; groups.set(key, g); }
+    if (!g) { g = { seg: pseg(p[0], p[1], p[2] || 0), layer, kind: 'tris', N: [0, 0, 1], uv: [], p: [], n: [], dens: BODY_PX / 1.6 }; groups.set(key, g); }
     for (const i of [a, b, c]) {
       g.uv.push(B.apx[i * 2], B.apx[i * 2 + 1]);
       g.p.push(B.pos[i * 3], B.pos[i * 3 + 1], B.pos[i * 3 + 2]);

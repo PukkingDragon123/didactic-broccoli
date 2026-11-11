@@ -12,6 +12,7 @@ import { BRANDS, DRINKS, janOf } from './brands.js';
 import { CONT, panelSize } from './spec.js';
 import { FOODS } from '../needs/foods.js';
 import { framed } from './photos.js';
+import { drinkWrap, drinkFront } from './drinkArt.js';
 
 const INK = 0x2e1f28, W0 = 0xfffaf0, RED = 0xc8302a, GOLD = 0xe8c040;
 const memo = new Map();
@@ -573,6 +574,8 @@ export function paintBack(id) {
 
 /** The front half of a drink's wrap. */
 export function paintFront(id) {
+  const baked = drinkFront(id);
+  if (baked) return baked;
   const d = DRINKS[id], b = BRANDS[d.brand], [W, H] = panelSize(d.cont);
   const p = new Px(W, H);
   p.fill(b.paper);
@@ -583,6 +586,8 @@ export function paintFront(id) {
 }
 /** The whole wrap: front | back, the printer's overlap seam where they meet at the side. */
 export function paintWrap(id) {
+  const baked = drinkWrap(id); // the photographic label (tools/bake-drinks.py), when it's on the sheet
+  if (baked) return baked;
   const d = DRINKS[id], [W, H] = panelSize(d.cont);
   const p = new Px(W * 2, H);
   p.blit(paintFront(id), 0, 0); p.blit(paintBack(id), W, 0);

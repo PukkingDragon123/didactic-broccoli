@@ -24,7 +24,7 @@ export function exprParams(name, out = {}) {
 }
 
 const LIGHT = (() => { const l = [0.12, 0.6, 0.79]; const n = Math.hypot(...l); return l.map((v) => v / n); })();
-const INK = [26, 18, 18];
+const INK = [26, 18, 18], LASH = [44, 30, 28];
 // the face is modelled now (src/people/base.js): the painted relief only adds a touch of shading on top
 const RELIEF = 0.14;
 
@@ -55,7 +55,7 @@ export class FacePainter {
     L.lipL = s * (kid ? 2.2 : f ? 2.8 : 2.4) * (F.lipFull || 1);
     this.skin = spec.skin;
     this.lip = F.lipstick || mixc(mixc(spec.skin, [188, 86, 86], f ? 0.5 : 0.36), [120, 60, 60], 0.12);
-    this.brow = F.browCol || mixc(mixc(spec.hair.col, [30, 22, 20], spec.hair.grey ? 0 : 0.25), spec.skin, spec.hair.grey ? 0.25 : kid ? 0.3 : 0.08);
+    this.brow = F.browCol || mixc(mixc(spec.hair.col, spec.hair.grey ? [74, 68, 64] : [30, 22, 20], spec.hair.grey ? 0.4 : 0.25), spec.skin, spec.hair.grey ? 0.1 : kid ? 0.3 : 0.08); // grey brows keep some dark hairs
     this.iris = F.iris || [72, 44, 30];
     this.age = spec.age === 'elder' ? 1 : spec.age === 'adult' ? 0.25 : 0;
     this.hair = spec.hair;
@@ -160,16 +160,16 @@ export class FacePainter {
       // tints as one affine map: start from 'identity' (A = 1, B = 0) and fold each over() into it
       let A = 1; const Bc = [0, 0, 0];
       const tint = (col, t) => { if (t <= 0.001) return; t = Math.min(1, t); A *= 1 - t; for (let m = 0; m < 3; m++) Bc[m] = Bc[m] * (1 - t) + col[m] * t; };
-      tint([214, 104, 98], (F.blush ?? 0.25) * 0.22 * G(ax - L.hw * 0.56, y - (L.eyeY + 7 * s), 5 * s, 4 * s) + 0.07 * G(dx, y - L.noseY + 2 * s, 3 * s, 2.5 * s));
+      tint([204, 110, 100], (F.blush ?? 0.25) * 0.1 * G(ax - L.hw * 0.56, y - (L.eyeY + 7 * s), 5 * s, 4 * s) + 0.07 * G(dx, y - L.noseY + 2 * s, 3 * s, 2.5 * s));
       tint([96, 66, 80], 0.1 * G(ax - L.eyeX + 1.2 * s, y - L.eyeY + 0.5 * s, 6 * s, 3.6 * s) * (0.7 + this.age));
       if (F.stubble) {
         const z = G(dx, y - (L.mouthY + 2 * s), L.mouthW * 1.5, 7 * s) * sstep(L.noseY + 0.5 * s, L.noseY + 2.2 * s, y) + 0.8 * sstep(L.hw * 0.62, L.hw * 0.86, ax) * sstep(L.noseY, L.mouthY, y);
         if (z > 0.05) tint([70, 72, 84], F.stubble * clamp01(z) * (0.18 + h2(i, j, 77) * 0.22));
       }
-      if (F.spots && this.age > 0.5 && h2(i, j, 91) > 0.988 && (y < L.browY - 2 * s || ax > L.hw * 0.5)) tint([150, 100, 72], 0.28);
+      if (F.spots && this.age > 0.5 && h2(i, j, 91) > 0.994 && (y < L.browY - 2 * s || ax > L.hw * 0.5)) tint([150, 104, 80], 0.14);
       if (F.freckles && y > L.eyeY + 2 * s && y < L.noseY + 2 * s && ax < L.hw * 0.7 && h2(i, j, 92) > 0.93) tint([168, 102, 70], 0.4 * F.freckles);
       const mk = F.makeup;
-      if (mk?.blush) tint(mk.blush, 0.22 * G(ax - L.hw * 0.55, y - (L.eyeY + 6 * s), 5 * s, 3.5 * s));
+      if (mk?.blush) tint(mk.blush, 0.09 * G(ax - L.hw * 0.55, y - (L.eyeY + 6 * s), 5 * s, 3.5 * s));
       if (mk?.highlight) tint([255, 246, 236], mk.highlight * (0.5 * G(dx, y - (L.eyeY + 1 * s), 1.2 * s, 5 * s) + 0.6 * G(ax - L.eyeX, y - (L.eyeY + L.eh + 2.2 * s), L.ew * 0.7, 1 * s)));
       this.tA[q] = A; this.tB[q * 3] = Bc[0]; this.tB[q * 3 + 1] = Bc[1]; this.tB[q * 3 + 2] = Bc[2];
       // hair + glasses layer (premultiplied by painting over transparent black, alpha tracked separately)
@@ -260,7 +260,7 @@ export class FacePainter {
     let a = sstep(th / 2 + 0.7, th / 2 - 0.3, dist) * sstep(-0.08, 0.14, t) * sstep(1.08, 0.86, t);
     if (a <= 0) return;
     // pixel art: a solid brow in two tones (no per-texel speckle), soft only at the inner start
-    a = a > 0.45 ? 1 : a > 0.15 ? 0.55 : 0;
+    a = (a > 0.45 ? 0.8 : a > 0.15 ? 0.42 : 0) * (1 - 0.35 * tc);
     if (tc < 0.12) a *= 0.6;
     const k = dist < th * 0.25 ? 0.82 : 1;
     const c = this.brow, bc = this.bc || (this.bc = [0, 0, 0]);
@@ -306,13 +306,13 @@ export class FacePainter {
     }
     // upper lash line (thicker at the outer half), closed-lid line
     const lw = (open < 0.08 ? 1.1 : 0.9 + 0.7 * sstep(-0.3, 0.8, t)) * s + liner;
-    if (t > -1.02 && t < 1.04 && y <= top + 0.45 && y > top - lw) over(o, INK, t < -0.75 ? 0.6 : 0.95);
+    if (t > -1.02 && t < 1.04 && y <= top + 0.45 && y > top - lw) over(o, LASH, t < -0.75 ? 0.5 : 0.85);
     // winged liner / lashes beyond the outer corner
-    if ((lash > 0 || liner > 0) && t >= 0.85 && t < 1.15 + lash * 0.35) {
-      const yw = yC - L.eh * 0.1 - (t - 0.85) * (1.2 + lash) * s;
-      if (Math.abs(y - yw) < 0.55 + liner * 0.3) over(o, INK, 0.9);
+    if (liner > 0.5 * s && t >= 0.85 && t < 1.05 + liner * 0.08) {
+      const yw = yC - L.eh * 0.1 - (t - 0.85) * 1.2 * s;
+      if (Math.abs(y - yw) < 0.5) over(o, LASH, 0.8);
     }
-    if (lash > 0 && t > 0.1 && t < 0.95 && y < top - lw + 0.2 && y > top - lw - 1.0 * s && h2(Math.floor(x), Math.floor(y), 55) < lash * 0.6) over(o, INK, 0.8);
+    if (lash > 0 && t > -0.2 && t < 1 && y < top - lw + 0.2 && y > top - lw - 0.6 * s) over(o, LASH, 0.25 * lash);
     // lower lid: soft lash line + light rim below
     if (t > -0.85 && t < 1 && open > 0.08) {
       if (y > bot && y < bot + 1) over(o, mk.lower ? INK : [96, 58, 54], mk.lower ? 0.85 : 0.22 + 0.18 * sstep(0, 1, t));

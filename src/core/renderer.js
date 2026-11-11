@@ -26,13 +26,13 @@ const GradeShader = {
   uniforms: {
     tDiffuse: { value: null },
     uTime: { value: 0 },
-    uVignette: { value: 0.1 },
+    uVignette: { value: 0.14 },
     uGrain: { value: 0 },
-    uSaturation: { value: 0.86 },
-    uContrast: { value: 0.9 },
+    uSaturation: { value: 1.0 },
+    uContrast: { value: 1.08 },
     uWarm: { value: 0.004 },
     // the floor the shadows are lifted to (linear, added to the darkest tones and fading out by the mid-tones)
-    uLift: { value: new THREE.Color(0.016, 0.015, 0.028) },
+    uLift: { value: new THREE.Color(0.004, 0.004, 0.006) },
     uFlash: { value: new THREE.Color(0, 0, 0) },
     uAberration: { value: 0 },
     uExposure: { value: 1.0 },
@@ -107,14 +107,14 @@ const OutlineShader = {
     uW: { value: new THREE.Vector2(20, 20) }, // w = uW.x - depth * uW.y
     uStep: { value: 1 },
     uPix: { value: 0.001 }, // the angle one tap spans (radians)
-    uStrength: { value: 0.78 },
-    uFarSide: { value: 0.7 },
-    uCreaseK: { value: 0.7 },
+    uStrength: { value: 0.42 },
+    uFarSide: { value: 0.35 },
+    uCreaseK: { value: 0.4 },
     uGap: { value: new THREE.Vector2(0.004, 0.008) },
-    uCrease: { value: new THREE.Vector2(0.9, 1.15) },
-    uFade: { value: new THREE.Vector4(7, 18, 28, 65) },
-    uInk: { value: new THREE.Color(0x1c1016) },
-    uInkK: { value: new THREE.Color(0.3, 0.26, 0.33) },
+    uCrease: { value: new THREE.Vector2(1.2, 1.42) },
+    uFade: { value: new THREE.Vector4(5, 12, 22, 50) },
+    uInk: { value: new THREE.Color(0x15110f) },
+    uInkK: { value: new THREE.Color(0.5, 0.48, 0.5) },
     uDepthAlpha: { value: 0 }, // 1: write the linear depth (m) to alpha, for the AO upsample after it (AOUpsampleShader)
     // (kept so old callers can still write them: the god rays are gone)
     uShaft: { value: 0 },
@@ -281,7 +281,7 @@ function casterState(o) {
 // never under 1 (no upscaled, soft picture on any preset); ultra supersamples a 1x display.
 export const QUALITY = {
   low: { pr: [0.75, 1, 1.5], shadows: 1024, sunShadow: 12, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, lights: 4, view: 0.65, crowd: 0.6 },
-  medium: { pr: [1, 1, 2], shadows: 2048, sunShadow: 15, ao: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, lights: 5, view: 0.8, crowd: 0.8 },
+  medium: { pr: [1, 1, 2], shadows: 2048, sunShadow: 15, ao: true, aoScale: 0.5, aoSamples: 8, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, lights: 5, view: 0.8, crowd: 0.8 },
   high: { pr: [1, 1, 2], shadows: 2048, sunShadow: 18, ao: true, aoScale: 0.5, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, lights: 6, view: 1, crowd: 1 },
   ultra: { pr: [1.5, 1.5, 2], shadows: 4096, sunShadow: 24, ao: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, lights: 8, view: 1.2, crowd: 1 },
 };
@@ -389,9 +389,9 @@ export class Renderer {
       gtao.blendIntensity = 0.65; // (contact shadows in the corners and under things; high stays close to low, which has none)
       // thickness: only a surface within this depth of the sample counts as an occluder, so something standing well in front
       // of a wall never darkens a ring of wall round its outline (the "AO halo")
-      gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 0.3, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
+      gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 0.3, scale: 1.0, samples: q.aoSamples || 12, distanceFallOff: 1.0 });
       // (the denoise radius is in AO pixels: the same footprint on screen at any scale)
-      gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6 * k, rings: 2, samples: 12 });
+      gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6 * k, rings: 2, samples: q.aoSamples || 12 });
       composer.addPass(gtao);
       this.gtao = gtao;
     }

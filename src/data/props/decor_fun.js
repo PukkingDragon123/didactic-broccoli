@@ -1282,6 +1282,7 @@ export default {
   },
 
   armchair: {
+    asset: { id: 'ArmChair_01' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Cozy Armchair', jp: 'ひとりがけソファ', voxel: 0.025, footprint: [1, 1],
     themes: ['home'], beauty: 6,
     build(v) {
@@ -1402,6 +1403,7 @@ export default {
   },
 
   bookcase: {
+    asset: { id: 'wooden_bookshelf_worn' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Collector Bookcase', jp: '本棚', voxel: 0.025, footprint: [1, 0.5],
     themes: ['home', 'retro'], beauty: 7,
     build(v) {

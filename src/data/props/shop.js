@@ -454,6 +454,7 @@ const shop = {
 
   // ------------------------------------------------------------- enamel pendant lamp
   shop_lamp: {
+    asset: { id: 'hanging_industrial_lamp' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Enamel Pendant Lamp', jp: 'ホーローランプ', voxel: 0.01, light: 0xffd49a,
     build(v) {
       const rOut = (y) => 14.6 - y * 1.12;

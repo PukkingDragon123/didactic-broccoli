@@ -331,24 +331,28 @@ function cutAndOffset(body, L, clsOf, smoothIt) {
     const w = weld[i] * 3;
     pos[i * 3] = base[i * 3] + acc[w] * o; pos[i * 3 + 1] = base[i * 3 + 1] + acc[w + 1] * o; pos[i * 3 + 2] = base[i * 3 + 2] + acc[w + 2] * o;
   }
+  const tlay = Array.from(lay, (li) => (li < 0 ? '' : L[li].name)); // the layer of every triangle, for the painters
   for (const [a, b, c, d, tt] of ledge) {
     const t3 = tt * 3, cxp = (apx[nidx[t3] * 2] + apx[nidx[t3 + 1] * 2] + apx[nidx[t3 + 2] * 2]) / 3, cyp = (apx[nidx[t3] * 2 + 1] + apx[nidx[t3 + 1] * 2 + 1] + apx[nidx[t3 + 2] * 2 + 1]) / 3;
-    const q = [a, b, c, d].map((i) => {
+    // the step samples the cloth just inside the thick side's edge: all four corners take the thick edge's atlas px
+    // (the thin side's copies can sit in another UV island across a seam: a quad spanning two islands would smear
+    // a long streak across the atlas and paint over other parts)
+    const q = [[a, a], [b, a], [c, d], [d, d]].map(([i, u]) => {
       const j = copyVert(i);
       weld[j] = nWeld++;
-      // sample the cloth just inside its edge
-      const dx = cxp - apx[i * 2], dy = cyp - apx[i * 2 + 1], l = Math.hypot(dx, dy) || 1;
-      apx[j * 2] += (dx / l) * 1.2; apx[j * 2 + 1] += (dy / l) * 1.2;
+      const dx = cxp - apx[u * 2], dy = cyp - apx[u * 2 + 1], l = Math.hypot(dx, dy) || 1;
+      apx[j * 2] = apx[u * 2] + (dx / l) * 1.2; apx[j * 2 + 1] = apx[u * 2 + 1] + (dy / l) * 1.2;
       return j;
     });
     nidx.push(q[0], q[1], q[2], q[0], q[2], q[3]);
+    tlay.push(tlay[tt], tlay[tt]);
   }
   // ---- write back
   const N = pos.length / 3;
   body.pos = Float32Array.from(pos); body.apx = Float32Array.from(apx);
   body.bi = Uint8Array.from(bi); body.bw = Float32Array.from(bw);
   body.flags = Uint8Array.from(flags); body.src = Uint8Array.from(src); body.weld = Uint16Array.from(weld); body.nWeld = nWeld;
-  body.idx = nidx; body.n = N; body.n0 = N;
+  body.idx = nidx; body.n = N; body.n0 = N; body.tlay = tlay;
 }
 
 // ------------------------------------------------------------------ skirts: a lofted, pleated tube from the waist
@@ -386,7 +390,7 @@ function drape(body, plan, lod, rect, o) {
   const { P } = plan, H = P.H, { top, hem } = o;
   const far = lod === 'far', NC = far ? 16 : 48, NRo = far ? 4 : 10;
   // the body's radius by angle at a few heights (torso + upper thighs), for the skirt to sit on
-  const NA = 48, levels = [top, Math.min(top - 0.005, P.waistY - 0.01 * H), P.hipY + 0.02 * H, P.hipY - 0.02 * H, P.crotchY];
+  const NA = 48, mid = (P.hipY - 0.02 * H + hem) / 2, levels = [top, Math.min(top - 0.005, P.waistY - 0.01 * H), P.hipY + 0.02 * H, P.hipY - 0.02 * H, P.crotchY, mid, hem + 0.02 * H];
   const R = levels.map(() => new Float32Array(NA));
   for (let i = 0; i < body.n; i++) {
     const b = body.bi[i * 4]; if (!(TORSO.has(b) || LEGB.has(b))) continue;
@@ -400,7 +404,13 @@ function drape(body, plan, lod, rect, o) {
     let r;
     if (y > ly1) r = lerp(rAt(1, th), rAt(0, th), clamp01((y - ly1) / Math.max(0.01, top - ly1)));
     else if (y > P.hipY - 0.02 * H) r = lerp(rAt(hipK, th), rAt(1, th), clamp01((y - (P.hipY - 0.02 * H)) / Math.max(0.01, ly1 - P.hipY + 0.02 * H)));
-    else { const t = clamp01((P.hipY - 0.02 * H - y) / (P.hipY - 0.02 * H - hem)); r = Math.max(rAt(hipK, th), rAt(2, th)) * (1 + flare * t ** 0.85); }
+    else {
+      const t = clamp01((P.hipY - 0.02 * H - y) / (P.hipY - 0.02 * H - hem));
+      r = Math.max(rAt(hipK, th), rAt(2, th)) * (1 + flare * t ** 0.85);
+      // and always clear of the thighs under it (legs apart, a stride): the body's own radius at mid-skirt and the hem
+      const yc = y > mid ? lerp(rAt(3, th), rAt(5, th), clamp01((P.hipY - 0.02 * H - y) / Math.max(0.01, P.hipY - 0.02 * H - mid))) : lerp(rAt(5, th), rAt(6, th), clamp01((mid - y) / Math.max(0.01, mid - hem)));
+      r = Math.max(r, yc * 1.03 + 0.006);
+    }
     return r + o.ease;
   };
   const vpos = [], vapx = [], vb = [], rows = [];

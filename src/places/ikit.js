@@ -18,7 +18,7 @@
 // frost (photos) and flat satin gloss chrome (plain paint), glow (self-lit), art (the painted fusuma motifs, see ART).
 import * as THREE from 'three';
 import { Kit } from '../garage/kit.js';
-import { photoTex, PHOTO_TEX } from '../kit/photoTex.js';
+import { photoTex, PHOTO_TEX, withPhotoNormal } from '../kit/photoTex.js';
 
 /** A photo tile at its real size for uvs in metres. */
 export function surf(name) { const m = PHOTO_TEX[name]?.metres || 1; return photoTex(name, { repeat: [1 / m, 1 / m] }); }
@@ -48,7 +48,7 @@ export function imats(conv) {
   const std = (o) => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, ...o });
   const M = {};
   for (const [k, [photo, roughness, metalness = 0, grainV = false]] of Object.entries(SURF)) {
-    const m = std({ map: surf(photo), roughness, metalness });
+    const m = withPhotoNormal(std({ map: surf(photo), roughness, metalness }));
     m.userData.avg = PHOTO_TEX[photo].avg; m.userData.grainV = grainV;
     M[k] = m;
   }
@@ -76,7 +76,7 @@ export function photoNorm(name, { rough = 0.85, metal = 0, metres } = {}) {
   if (norms.has(key)) return norms.get(key);
   const e = PHOTO_TEX[name], m = metres || e.metres, a = new THREE.Color(e.avg);
   const mat = new THREE.MeshStandardMaterial({ map: photoTex(name, { repeat: [1 / m, 1 / m] }), vertexColors: true, roughness: rough, metalness: metal });
-  mat.color.setRGB(1 / a.r, 1 / a.g, 1 / a.b); mat.userData.avg = e.avg; mat.name = 'norm:' + name;
+  mat.color.setRGB(1 / a.r, 1 / a.g, 1 / a.b); mat.userData.avg = e.avg; mat.name = 'norm:' + name; withPhotoNormal(mat);
   norms.set(key, mat);
   return mat;
 }

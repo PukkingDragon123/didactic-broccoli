@@ -8,6 +8,7 @@ import { STYLE_IDS } from '../display/models.js';
 import { POP_DISPLAY } from '../game/economy.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { MACHINE_SLOTS } from '../world/Garage.js';
+import { makeItemMesh } from '../game/collectibles.js';
 
 export function install(game) {
   let P;
@@ -46,6 +47,15 @@ export function install(game) {
   // ---- debug helpers
   const dbg = {
     styles: STYLE_IDS,
+    /** Order a display top from Daikoku Toys (pays like the order desk) and have it land by the shutter now. */
+    buy(style = 'cube', fund = true) {
+      let r = game.daikoku?.poptop?.(style);
+      if (r && !r.ok && fund) { game.sim?.receiveDigital?.(5000, 'debug', { income: false }); r = game.daikoku.poptop(style); }
+      if (!r?.ok) return r;
+      const q = game.delivery.queue.findLast((e) => e.data.type === 'poptop');
+      if (q) { game.delivery.remove(q); game.delivery.arrive(q.data); }
+      return r;
+    },
     /** A display top's box in your hands. */
     give(style = 'cube') {
       const data = topBox(style), mesh = game.delivery.meshFor(data);
@@ -69,6 +79,17 @@ export function install(game) {
       const max = Math.min(n, L.rec.items.length);
       for (let k = 0; k < max; k++) { L.rec.items[k] = { k: items[k % items.length].key, f: k === 1 ? 'gold' : k === 3 ? 'metallic' : 'normal' }; P.showFig(L, k); }
       return max;
+    },
+    /** A figure of the machine's series in your hands, then clicked into machine i's display (the player's path). */
+    put(i = 0, key = null, finish = 'normal') {
+      const m = game.machines[i];
+      key ||= SERIES_BY_ID[P.seriesOf(m)].items[0].key;
+      const holder = new THREE.Group();
+      holder.add(makeItemMesh(key, finish));
+      holder.position.copy(game.camera.getWorldPosition(new THREE.Vector3()));
+      game.scene.add(holder);
+      game.held.take('toy', { key, finish }, holder);
+      return P.machineUse(m, game.held.item);
     },
     empty(i = 0) { const L = P.live.get(game.machines[i]); if (!L) return 0; L.rec.items.fill(null); L.rec.items.forEach((_, k) => P.showFig(L, k)); return L.rec.items.length; },
     remove(i = 0) { const m = game.machines[i]; delete P.s.fitted[P.idOf(m)]; P.detach(m); return true; },

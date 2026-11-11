@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""pixelart.py: the game's HD pixel-art reduction, shared by every tool that turns a real image into a texture
-(tools/make-tex.py for the surface library, tools/make-views.py for the window views, the asset importer for model
-textures). It is what docs/ART.md calls "high-resolution pixel art": realistic content, finished the way a pixel
+"""pixelart.py: the game's texture finishing, shared by every tool that turns a real image into a texture.
+
+  polish(rgb, w, h, **opts) -> rgb8: THE texture finish since phase 11 (realistic, cleaned, graded, no palette), used by
+    tools/make-tex.py (the surface library) and tools/import-asset.mjs (model textures, through `--polish` below), so
+    the town and the imported models match. polish_normal() resizes / turns a normal map with it.
+  reduce(): the older palette reduction (HD pixel art), still used by tools/make-views.py for the window views.
+ It is what docs/ART.md calls "high-resolution pixel art": realistic content, finished the way a pixel
 artist would: a limited palette per material, clean clusters, deliberate highlights and shadows, no noise, no blur.
 
   reduce(rgb, w, h, **opts) -> (rgb8 h x w x 3 uint8, labels h x w, palette n x 3 uint8)
@@ -20,7 +24,8 @@ artist would: a limited palette per material, clean clusters, deliberate highlig
     streak (sy, sx, keep), bevel (k; negative = pale joints), min_cluster, keep_dl, rounds, maxdrop / maxlift.
 
 CLI (for tools in other languages):
-  python3 -I tools/pixelart.py in.(png|jpg) out.png W H ['{"col": 12345, "steps": 10}']
+  python3 -I tools/pixelart.py --polish in out.(jpg|png) W H ['{"ao": "ao.png", "col": 12345}']   (polish)
+  python3 -I tools/pixelart.py in.(png|jpg) out.png W H ['{"col": 12345, "steps": 10}']             (reduce)
     keeps an alpha channel if the input has one (cut at 50%, colour reduced under it); writes a palette PNG.
 Needs Pillow and numpy.
 """
@@ -364,6 +369,61 @@ def reduce(rgb, w, h, wrap=True, **t):
     return rgb8[labels], labels, rgb8
 
 
+def polish(rgb, w, h, wrap=True, ao=None, **t):
+    """The game's texture finish (docs/ART.md, phase 11): realistic content kept, cleaned and graded, no palette.
+    rgb: H x W x 3 floats (sRGB 0..1), any size -> rgb8 h x w x 3 uint8. Shared by tools/make-tex.py (the surface
+    library) and tools/import-asset.mjs (model textures, through the CLI's --polish mode), so the town and imported
+    models look the same.
+      1. an area downscale to 2x the target in linear light (periodic when wrap: a seamless scan stays seamless);
+      2. a light edge-keeping (bilateral) pass in Oklab that only takes out sensor / JPEG speckle (`smooth`, small);
+      3. down to the target (box), a touch of unsharp on lightness (`sharp`): crisp, clean texels;
+      4. optional ambient occlusion (`ao`, h x w in 0..1, multiplied in at `ao_k`);
+      5. a gentle regrade: the mean moves to `col` (hex; None keeps the image's own), lightness detail is scaled
+         toward `contrast` (Oklab L std) but never by more than kmin..kmax (the photo's own structure stays), chroma
+         variation kept at `chroma`. No posterising, no dithering, no hue tricks: realistic, never banded.
+    """
+    lin = srgb2lin(np.clip(rgb, 0, 1).astype(np.float64)).astype(np.float32)
+    lin2 = np.clip(resize(lin, 2 * w, 2 * h, wrap=wrap, how=Image.LANCZOS), 0, 1)
+    lab = rgb2lab(lin2srgb(lin2).astype(np.float64)).astype(np.float32)
+    sm = t.get('smooth', 0.012)
+    if sm:
+        lab = bilateral(lab, 2, 1.2, sm, 1)
+    lab = resize(lab, w, h, wrap=wrap, how=Image.BOX)
+    sh = t.get('sharp', 0.35)
+    if sh:
+        lab[:, :, 0] += sh * (lab[:, :, 0] - gblur(lab[:, :, 0], 0.8, wrap=wrap))
+    if ao is not None:
+        a = np.clip(ao, 0, 1).astype(np.float32)
+        k = t.get('ao_k', 0.5)
+        lab[:, :, 0] *= np.cbrt(1 - k + k * a)
+    m = lab.reshape(-1, 3).mean(0)
+    d = lab - m
+    sd = float(d[:, :, 0].std()) + 1e-6
+    c = t.get('contrast')
+    kL = min(t.get('kmax', 1.25), max(t.get('kmin', 0.75), c / sd)) if c else 1.0
+    tgt = rgb2lab(hex2rgb(t['col'])) if t.get('col') is not None else m
+    out = np.empty_like(lab)
+    out[:, :, 0] = tgt[0] + d[:, :, 0] * kL
+    out[:, :, 1:] = tgt[1:] + d[:, :, 1:] * t.get('chroma', 0.9)
+    rgb8 = (np.clip(lab2rgb(out.reshape(-1, 3).astype(np.float64)), 0, 1).reshape(h, w, 3) * 255 + 0.5).astype(np.uint8)
+    return rgb8
+
+
+def polish_normal(nrm, w, h, turn=0, strength=1.0, wrap=True):
+    """A tangent-space normal map (OpenGL convention, H x W x 3 floats 0..1) -> rgb8 h x w x 3: resized as vectors,
+    turned `turn` quarter turns anticlockwise with the vectors turned too (so it matches a turned colour tile),
+    `strength` scales the slopes, renormalised."""
+    v = nrm.astype(np.float32) * 2 - 1
+    for _ in range(turn % 4):
+        v = np.rot90(v, 1, axes=(0, 1))
+        v = np.stack([-v[:, :, 1], v[:, :, 0], v[:, :, 2]], -1)
+    v = resize(np.ascontiguousarray(v), w, h, wrap=wrap, how=Image.LANCZOS)
+    v[:, :, :2] *= strength
+    v[:, :, 2] = np.maximum(v[:, :, 2], 0.05)
+    v /= np.linalg.norm(v, axis=-1, keepdims=True)
+    return (np.clip(v * 0.5 + 0.5, 0, 1) * 255 + 0.5).astype(np.uint8)
+
+
 def save_png(path, labels, pal8, alpha=None):
     """A palette PNG (a handful of tones, lossless); alpha (H x W bool) is written as a fully transparent index."""
     if alpha is not None:
@@ -382,6 +442,8 @@ def save_png(path, labels, pal8, alpha=None):
 
 def main():
     a = sys.argv[1:]
+    if a and a[0] == '--polish':
+        return main_polish(a[1:])
     if len(a) < 4:
         print(__doc__)
         return 1
@@ -397,6 +459,27 @@ def main():
         alpha = al
     rgb8, labels, pal = reduce(rgba[:, :, :3], w, h, **opts)
     save_png(a[1], labels, pal, alpha)
+    return 0
+
+
+def main_polish(a):
+    """--polish in out W H [opts JSON]: polish() for any image (alpha kept as it is, resized); opts may name an `ao`
+    image (its red channel); the result is a JPEG (quality 92, no chroma subsampling) unless `out` ends in .png."""
+    im = Image.open(a[0])
+    opts = json.loads(a[4]) if len(a) > 4 else {}
+    w, h = int(a[2]), int(a[3])
+    rgba = np.asarray(im.convert('RGBA'), dtype=np.float32) / 255
+    if opts.get('ao'):
+        opts['ao'] = np.asarray(Image.open(opts['ao']).convert('RGB').resize((w, h), Image.BILINEAR), dtype=np.float32)[:, :, 0] / 255
+    rgb8 = polish(rgba[:, :, :3], w, h, wrap=opts.pop('wrap', False), **opts)
+    has_a = im.mode in ('RGBA', 'LA') or (im.mode == 'P' and 'transparency' in im.info)
+    if has_a or a[1].endswith('.png'):
+        out = Image.fromarray(rgb8)
+        if has_a:
+            out.putalpha(Image.fromarray((rgba[:, :, 3] * 255).astype(np.uint8)).resize((w, h), Image.LANCZOS))
+        out.save(a[1], optimize=True)
+    else:
+        Image.fromarray(rgb8).save(a[1], quality=92, subsampling=0)
     return 0
 
 

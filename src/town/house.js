@@ -12,6 +12,7 @@ import { interiorQuad, ROOM } from '../world/interiors.js';
 import { NAMES } from './atlas.js';
 import { shrub, crown } from './foliage.js';
 import { fanGuard, doorDetail } from './detail.js';
+import { assetMerged } from '../kit/assets.js';
 
 // window kinds: [room, lit, curtain]
 const ROOMS = {
@@ -483,11 +484,42 @@ export function pot(t, x, y, z, s = 1, leaf = 0x4f8a3a, flower = null, col = 0xb
   void leaf; shrub(t, x, y + 0.17 * s, z, 0.2 * s, flower ? 'azalea' : (Math.round(x * 7 + z * 3) % 2 ? 'small' : 'leaf'), { seed: Math.round(x * 13 + z * 7) });
 }
 
+/** A model's parts for the batcher: [{ mat, geo() }] (a fresh geometry per call: B.geo consumes it), h, d. */
+const PARTS = new Map();
+function assetParts(id) {
+  if (PARTS.has(id)) return PARTS.get(id);
+  const A = assetMerged(id, {});
+  let r = null;
+  if (A) {
+    const G = A.geometry, bb = G.boundingBox;
+    r = { h: bb.max.y - bb.min.y, d: bb.max.z - bb.min.z, parts: G.groups.map((gr) => ({ mat: A.materials[gr.materialIndex], geo: () => {
+      const g = new THREE.BufferGeometry();
+      for (const k of ['position', 'normal', 'uv']) if (G.attributes[k]) g.setAttribute(k, G.attributes[k]);
+      g.setIndex(new THREE.BufferAttribute(G.index.array.slice(gr.start, gr.start + gr.count), 1));
+      return g;
+    } })) };
+  }
+  PARTS.set(id, r);
+  return r;
+}
+
 /** A split air conditioner's outdoor unit (0.78 x 0.54 x 0.27), its back to the wall at local z = 0, bottom at y:
  *  casing, fan grille, pipe duct up the wall, a drain hose; on brackets when it hangs (o.hang) or on plastic blocks. */
 export function acUnit(t, x, y, z, o = {}) {
   const B = t.B, m = t.m;
   B.push(x, y, z, o.ry || 0);
+  // the real unit (Poly Haven, CC0: casing, grille, wall brackets and drain hose), its top where the casing's was, its
+  // back on the wall; the pipe cover up the wall stays ours. Falls back to the modelled unit if the model is missing.
+  const A = assetParts('exterior_aircon_unit');
+  if (A) {
+    B.push(0, 0.54 - A.h + (o.hang ? 0 : 0.08), A.d / 2 + 0.005, Math.PI); // (the model's front is its -z)
+    for (const p of A.parts) B.geo(p.mat, p.geo());
+    B.pop();
+    B.box(m.pv, 0.07, o.duct ?? 0.7, 0.06, 0.43, 0.3, 0.03, { tint: 0xe6dfcc });
+    B.tube(m.pv, [[0.36, 0.34, 0.14], [0.43, 0.34, 0.08], [0.43, 0.36, 0.04]], 0.03, { tint: 0xe6dfcc, sides: 5 });
+    B.pop();
+    return;
+  }
   if (o.hang) for (const dx of [-0.28, 0.28]) { B.box(m.metal, 0.035, 0.035, 0.4, dx, -0.04, 0.2, { tint: 0x8a8e90 }); B.box(m.metal, 0.035, 0.42, 0.035, dx, -0.42, 0.02, { tint: 0x8a8e90 }); B.beam(m.metal, [dx, -0.05, 0.38], [dx, -0.4, 0.03], 0.025, { tint: 0x8a8e90 }); }
   else for (const dx of [-0.26, 0.26]) B.box(m.pv, 0.1, 0.08, 0.3, dx, -0.08, 0.2, { tint: 0x4a4a4c });
   B.box(m.pv, 0.78, 0.54, 0.27, 0, 0, 0.2, { tint: 0xe4e1d6, bevel: 0.02 });

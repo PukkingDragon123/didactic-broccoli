@@ -30,11 +30,11 @@ import * as THREE from 'three';
 let installed = false;
 
 // cool light that still reaches into the sun's shadow (fraction of the sun's colour, per channel)
-export const SHADOW_TINT = [0.2, 0.2, 0.29];
+export const SHADOW_TINT = [0.12, 0.13, 0.17];
 // how much of the key light's N.L is the two-step ramp (0 = plain Lambert, 1 = hard cel)
-export const TOON = 0.3;
+export const TOON = 0.12;
 // the ramp's soft step from shade to lit: [N.L where it starts, where it is fully lit]
-export const BANDS = [0.0, 0.3];
+export const BANDS = [0.0, 0.25];
 // the size given to local lights (m): their falloff is 1 / (d^2 + SOFT_R^2)^(decay / 2), not 1 / d^decay
 export const SOFT_R = 0.45;
 // the sharpest a direct-light highlight may be (GGX roughness)

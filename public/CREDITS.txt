@@ -1312,246 +1312,247 @@ brands, wordmarks and mascots round them are original drawings.
 The surface textures of the town, the garage, the interiors and the props (`src/kit/photoTex.js`) are made by
 `tools/make-tex.py` from CC0 scanned materials from Poly Haven (https://polyhaven.com) and ambientCG
 (https://ambientcg.com), and one CC BY 2.0 photo from Google Open Images: each colour map is scaled to the game's
-texel density and turned into high-resolution pixel art by `tools/pixelart.py` (a limited palette of shading ramps,
-clean clusters, regraded to the game's colours). The result is shipped as a palette PNG in `img/tex/`.
+texel density (256 texels a metre for the world, more for things seen up close), cleaned and graded by
+`tools/pixelart.py` (polish), and shipped as a JPEG in `img/tex/`; the scan's own normal map ships beside it as
+`img/tex/<name>_n.jpg` (half the resolution, for the surface's relief).
 
 #### Hinoki Planks
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/hinoki_planks
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/wood_planks.png` (the sawn boards surface texture)
+- Shipped as: `img/tex/wood_planks.jpg` (+ `_n.jpg` normal map where the scan has one) (the sawn boards surface texture)
 
 #### Wood Planks Grey
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/wood_planks_grey
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/wood_weathered.png` (the grey weathered boards surface texture)
+- Shipped as: `img/tex/wood_weathered.jpg` (+ `_n.jpg` normal map where the scan has one) (the grey weathered boards surface texture)
 
 #### Plywood
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/plywood
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/plywood.png` (the plywood surface texture)
+- Shipped as: `img/tex/plywood.jpg` (+ `_n.jpg` normal map where the scan has one) (the plywood surface texture)
 
 #### Dark Wood
 
 - Author: Dario Barresi, Dimitrios Savva, Rico Cilliers (Poly Haven)
 - Source: https://polyhaven.com/a/dark_wood
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/timber_dark.png` (the dark timber surface texture)
+- Shipped as: `img/tex/timber_dark.jpg` (+ `_n.jpg` normal map where the scan has one) (the dark timber surface texture)
 
 #### Plastered Wall
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/plastered_wall
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/plaster_cream.png` (the plaster surface texture)
+- Shipped as: `img/tex/plaster_cream.jpg` (+ `_n.jpg` normal map where the scan has one) (the plaster surface texture)
 
 #### Grey Plaster
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/grey_plaster
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/mortar_grey.png` (the grey mortar surface texture)
+- Shipped as: `img/tex/mortar_grey.jpg` (+ `_n.jpg` normal map where the scan has one) (the grey mortar surface texture)
 
 #### Concrete Block Wall
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/concrete_block_wall
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/block_wall.png` (the concrete block wall surface texture)
+- Shipped as: `img/tex/block_wall.jpg` (+ `_n.jpg` normal map where the scan has one) (the concrete block wall surface texture)
 
 #### Brick Wall 02
 
 - Author: Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/brick_wall_02
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/brick_red.png` (the red brick surface texture)
+- Shipped as: `img/tex/brick_red.jpg` (+ `_n.jpg` normal map where the scan has one) (the red brick surface texture)
 
 #### Corrugated Iron
 
 - Author: Jenelle van Heerden, Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/corrugated_iron
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tin_corrugated.png` (the corrugated zinc surface texture)
+- Shipped as: `img/tex/tin_corrugated.jpg` (+ `_n.jpg` normal map where the scan has one) (the corrugated zinc surface texture)
 
 #### Rusty Corrugated Iron
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/rusty_corrugated_iron
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tin_rusty.png` (the rusty corrugated tin surface texture)
+- Shipped as: `img/tex/tin_rusty.jpg` (+ `_n.jpg` normal map where the scan has one) (the rusty corrugated tin surface texture)
 
 #### Metal032
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Metal032
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/steel_painted.png` (the painted steel surface texture)
+- Shipped as: `img/tex/steel_painted.jpg` (+ `_n.jpg` normal map where the scan has one) (the painted steel surface texture)
 
 #### Metal009
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Metal009
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/steel_galvanised.png` (the galvanised steel surface texture)
+- Shipped as: `img/tex/steel_galvanised.jpg` (+ `_n.jpg` normal map where the scan has one) (the galvanised steel surface texture)
 
 #### Rust Coarse 01
 
 - Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
 - Source: https://polyhaven.com/a/rust_coarse_01
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/rust.png` (the rust surface texture)
+- Shipped as: `img/tex/rust.jpg` (+ `_n.jpg` normal map where the scan has one) (the rust surface texture)
 
 #### Brushed Concrete
 
 - Author: Dario Barresi, Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/brushed_concrete
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/concrete.png` (the concrete surface texture)
+- Shipped as: `img/tex/concrete.jpg` (+ `_n.jpg` normal map where the scan has one) (the concrete surface texture)
 
 #### Concrete Floor Worn 001
 
 - Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
 - Source: https://polyhaven.com/a/concrete_floor_worn_001
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/concrete_stained.png` (the stained concrete surface texture)
+- Shipped as: `img/tex/concrete_stained.jpg` (+ `_n.jpg` normal map where the scan has one) (the stained concrete surface texture)
 
 #### Asphalt 04
 
 - Author: Jenelle van Heerden, Sergej Majboroda (Poly Haven)
 - Source: https://polyhaven.com/a/asphalt_04
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/asphalt.png` (the asphalt surface texture)
+- Shipped as: `img/tex/asphalt.jpg` (+ `_n.jpg` normal map where the scan has one) (the asphalt surface texture)
 
 #### Asphalt 02
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/asphalt_02
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/asphalt_patched.png` (the cracked asphalt surface texture)
+- Shipped as: `img/tex/asphalt_patched.jpg` (+ `_n.jpg` normal map where the scan has one) (the cracked asphalt surface texture)
 
 #### Grey Roof Tiles
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/grey_roof_tiles
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/roof_kawara.png` (the roof tile surface texture)
+- Shipped as: `img/tex/roof_kawara.jpg` (+ `_n.jpg` normal map where the scan has one) (the roof tile surface texture)
 
 #### Box Profile Metal Sheet
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/box_profile_metal_sheet
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/roof_tin.png` (the tin roof surface texture)
+- Shipped as: `img/tex/roof_tin.jpg` (+ `_n.jpg` normal map where the scan has one) (the tin roof surface texture)
 
 #### Tatami001
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Tatami001
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tatami.png` (the tatami surface texture)
+- Shipped as: `img/tex/tatami.jpg` (+ `_n.jpg` normal map where the scan has one) (the tatami surface texture)
 
 #### Paper001
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Paper001
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/shoji_paper.png` (the shoji paper surface texture)
+- Shipped as: `img/tex/shoji_paper.jpg` (+ `_n.jpg` normal map where the scan has one) (the shoji paper surface texture)
 
 #### Cardboard004
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Cardboard004
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/cardboard.png` (the cardboard surface texture)
+- Shipped as: `img/tex/cardboard.jpg` (+ `_n.jpg` normal map where the scan has one) (the cardboard surface texture)
 
 #### Fabric036
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Fabric036
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/canvas_cloth.png` (the canvas cloth surface texture)
+- Shipped as: `img/tex/canvas_cloth.jpg` (+ `_n.jpg` normal map where the scan has one) (the canvas cloth surface texture)
 
 #### Fabric081A
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Fabric081A
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/indigo_cloth.png` (the indigo cloth surface texture)
+- Shipped as: `img/tex/indigo_cloth.jpg` (+ `_n.jpg` normal map where the scan has one) (the indigo cloth surface texture)
 
 #### Paper006
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Paper006
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/paper_old.png` (the old paper surface texture)
+- Shipped as: `img/tex/paper_old.jpg` (+ `_n.jpg` normal map where the scan has one) (the old paper surface texture)
 
 #### Tiles107
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Tiles107
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tile_white.png` (the white wall tile surface texture)
+- Shipped as: `img/tex/tile_white.jpg` (+ `_n.jpg` normal map where the scan has one) (the white wall tile surface texture)
 
 #### Checkered Pavement Tiles
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/checkered_pavement_tiles
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tile_checker_floor.png` (the checkered floor surface texture)
+- Shipped as: `img/tex/tile_checker_floor.jpg` (+ `_n.jpg` normal map where the scan has one) (the checkered floor surface texture)
 
 #### Gravel
 
 - Author: Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/gravel
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/gravel.png` (the gravel surface texture)
+- Shipped as: `img/tex/gravel.jpg` (+ `_n.jpg` normal map where the scan has one) (the gravel surface texture)
 
 #### Farm Soil
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/farm_soil
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/soil.png` (the soil surface texture)
+- Shipped as: `img/tex/soil.jpg` (+ `_n.jpg` normal map where the scan has one) (the soil surface texture)
 
 #### Leafy Grass
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/leafy_grass
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/grass.png` (the grass surface texture)
+- Shipped as: `img/tex/grass.jpg` (+ `_n.jpg` normal map where the scan has one) (the grass surface texture)
 
 #### Moss002
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Moss002
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/moss.png` (the moss surface texture)
+- Shipped as: `img/tex/moss.jpg` (+ `_n.jpg` normal map where the scan has one) (the moss surface texture)
 
 #### Pine Bark
 
 - Author: Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/pine_bark
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/bark_pine.png` (the pine bark surface texture)
+- Shipped as: `img/tex/bark_pine.jpg` (+ `_n.jpg` normal map where the scan has one) (the pine bark surface texture)
 
 #### Sakura Bark
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/sakura_bark
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/bark_cherry.png` (the cherry bark surface texture)
+- Shipped as: `img/tex/bark_cherry.jpg` (+ `_n.jpg` normal map where the scan has one) (the cherry bark surface texture)
 
 #### Rubber004
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Rubber004
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/rubber.png` (the rubber surface texture)
+- Shipped as: `img/tex/rubber.jpg` (+ `_n.jpg` normal map where the scan has one) (the rubber surface texture)
 
 #### Free ice texture
 
@@ -1559,7 +1560,7 @@ clean clusters, regraded to the game's colours). The result is shipped as a pale
 - Source: https://www.flickr.com/photos/colinsite/4259084669 (Open Images ID c0009d86fc844520)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Free ice texture" by monkeywing, licensed under CC BY 2.0
-- Shipped as: `img/tex/frosted_glass.png` (the frosted glass surface texture)
+- Shipped as: `img/tex/frosted_glass.jpg` (+ `_n.jpg` normal map where the scan has one) (the frosted glass surface texture)
 
 ### Window views (the views out of the annex shutter and the Kaikan windows)
 
@@ -1613,3 +1614,15 @@ by `tools/pixelart.py`.
 
 3D models: the people's base body (CC0 1.0, reposed, re-rigged, decimated and painted as pixel art)
 - Universal Base Characters (Standard: Superhero Male / Female) by Quaternius: https://quaternius.com/packs/universalbasecharacters.html (src/people/base/data.js)
+- Exterior Aircon Unit by Monsta3D: https://polyhaven.com/a/exterior_aircon_unit (models/exterior_aircon_unit.glb)
+- Korean Fire Extinguisher 01 by UM JOORIN: https://polyhaven.com/a/korean_fire_extinguisher_01 (models/korean_fire_extinguisher_01.glb)
+- Utility Box 01 by James Ray Cock: https://polyhaven.com/a/utility_box_01 (models/utility_box_01.glb)
+- Painted Wooden Bench by Kirill Sannikov: https://polyhaven.com/a/painted_wooden_bench (models/painted_wooden_bench.glb)
+- Hanging Industrial Lamp by Kuutti Siitonen: https://polyhaven.com/a/hanging_industrial_lamp (models/hanging_industrial_lamp.glb)
+- Desk Lamp Arm 01 by Yann Kervran, Kuutti Siitonen: https://polyhaven.com/a/desk_lamp_arm_01 (models/desk_lamp_arm_01.glb)
+- Metal Toolbox by Mateusz Sadek: https://polyhaven.com/a/metal_toolbox (models/metal_toolbox.glb)
+- Wooden Stool 01 by Kuutti Siitonen: https://polyhaven.com/a/wooden_stool_01 (models/wooden_stool_01.glb)
+- Arm Chair 01 by Kirill Sannikov: https://polyhaven.com/a/ArmChair_01 (models/ArmChair_01.glb)
+- Wooden Bookshelf Worn by Ulan Cabanilla: https://polyhaven.com/a/wooden_bookshelf_worn (models/wooden_bookshelf_worn.glb)
+- Metal Office Desk by Ulan Cabanilla: https://polyhaven.com/a/metal_office_desk (models/metal_office_desk.glb)
+- Wooden Table 01 by Ethan Place: https://polyhaven.com/a/WoodenTable_01 (models/WoodenTable_01.glb)

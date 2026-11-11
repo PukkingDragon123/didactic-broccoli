@@ -94,6 +94,7 @@ export function installSupplier(g, mk) {
       return express(CHARMS[id].price, CHARMS[id].name, { type: 'install', what: 'charm', id, name: CHARMS[id].name });
     },
   };
+  g.daikoku = ACTIONS; // (the order desk's actions, for scripts and dbg helpers: g.daikoku.poptop("cube"))
 
   const row = (cells, act, label, why = null) => `<tr>${cells.map((c) => `<td>${c}</td>`).join('')}<td>${why ? `<span class="dk-lock">${ic('os_lock', 1)} ${esc(why)}</span>` : `<button class="c98-btn small" data-act="${esc(act)}">${esc(label)}</button>`}</td></tr>`;
   const head = (path) => `<div class="dk-head">${portrait({ bg: 0xffd23f, hair: 'bald', glasses: 0x2a2220, mouth: 'grin', shirt: 0x2a5aa8 }, 2)}<div><b>Daikoku Toy Wholesale</b><small>Capsule toys by the box since 1971 - Asakusabashi, Tokyo</small></div></div>

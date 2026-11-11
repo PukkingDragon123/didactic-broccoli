@@ -20,6 +20,7 @@ import { makeToolMesh } from '../../game/Held.js';
 import { FOODS } from '../../needs/foods.js';
 import { kanji } from '../vending/canArt.js';
 import { whenPhotosReady } from '../../products/photos.js';
+import { whenPrintReady } from '../../products/printArt.js';
 import { ticketsArt, plaqueArt, menuCardArt, signArt, norenArt, boardArt, flagArt, beerPosterArt } from '../../products/ramenArt.js';
 import { PanelMode } from '../vending/panel.js';
 import { IKit, imats, surf, convertAll } from '../ikit.js';
@@ -74,7 +75,8 @@ export class Ramen {
       onEnter: () => this.onEnter(), onExit: () => this.onExit(), update: (dt) => this.tick(dt),
     });
     this.fontsReady = document.fonts?.load ? document.fonts.load('16px "DotGothic16"', 'らーめん山田営業中醤油味噌豚骨塩担々麺餃子ライスチャーシュー丼瓶ビール熱燗烏龍茶替え玉食券お品書き') : Promise.resolve();
-    Promise.all([this.fontsReady, whenPhotosReady()]).then(() => this.redrawArt());
+    Promise.all([this.fontsReady, whenPhotosReady(), whenPrintReady()]).then(() => this.redrawArt());
+    whenPrintReady().then(() => this.redrawArt()); // the photographic panels need no fonts
   }
 
   // ------------------------------------------------------------------ the shopfront on the lane (FE4)

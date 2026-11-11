@@ -127,7 +127,7 @@ export function install(game) {
       const d = document.createElement('div');
       d.id = 'logo-dbg-sheet';
       d.style.cssText = 'position:fixed;inset:0;z-index:60;background:#3a3238;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center';
-      for (const cv of [seriesSheet(series).pix.canvas, sealSheet().pix.canvas]) { const c = cv.cloneNode(); c.getContext('2d').drawImage(cv, 0, 0); c.style.cssText = 'width:1024px;height:512px;image-rendering:pixelated;background:#8a8a8a'; d.appendChild(c); }
+      for (const cv of [seriesSheet(series).pix.canvas, sealSheet().pix.canvas]) { const c = cv.cloneNode(); c.getContext('2d').drawImage(cv, 0, 0); const k = Math.min((innerWidth - 32) / cv.width, (innerHeight - 44) / 2 / cv.height); c.style.cssText = `width:${Math.floor(cv.width * k)}px;height:${Math.floor(cv.height * k)}px;image-rendering:pixelated;background:#8a8a8a`; d.appendChild(c); }
       document.body.appendChild(d);
       return true;
     },

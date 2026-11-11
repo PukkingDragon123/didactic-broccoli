@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
-"""make-tex.py: real surface scans and photos -> the game's seamless HD pixel-art surface tiles (public/img/tex/*.png).
+"""make-tex.py: real surface scans and photos -> the game's seamless surface tiles (public/img/tex/*.jpg + *_n.jpg).
 
 The texture library (src/kit/photoTex.js) is made from real material: CC0 scanned surfaces from Poly Haven
 (polyhaven.com) and ambientCG (ambientcg.com), which already tile, and one CC BY 2.0 photo from Google Open Images
 (cropped and made seamless here). Every source is credited in CREDITS.md. Each tile is
 
   1. the source's colour map (a photo: cropped, evened out and made seamless with a minimum-error seam first);
-  2. scaled to the tile's real size at the game's density (128 texels a metre for walls, roofs, roads and ground,
-     more for things seen up close), a multiple of 16 so its mips halve cleanly;
-  3. reduced to high-resolution pixel art by tools/pixelart.py (shading ramps per hue family, a base tone that
-     holds the surface, deliberate highlights and shadows, clean clusters, nothing added);
-  4. regraded to the surface's colour in the game's pastel, slightly desaturated range (warm highlights, cool
-     shadows), and written as a palette PNG. The game builds the mip chain in linear light when it loads them.
+  2. finished by tools/pixelart.py polish() at the tile's real size and the game's density (256 texels a metre for
+     walls, roofs, roads and ground, up to 1024 px and never above the scan's own resolution; more for things seen up
+     close), a multiple of 16 so its mips halve cleanly: realistic, cleaned, graded to the surface's colour, no palette;
+  3. written as a JPEG (quality 92, no chroma subsampling), with the scan's own normal map (OpenGL convention) beside
+     it at half the size as <name>_n.jpg, turned with the tile. The game builds the mips on the GPU.
 
 Usage:
   python3 -I tools/make-tex.py <source dir> [--fetch] [--sheet out.png] [--meta out.json] [name ...]
     <source dir>  where the downloads are (ph_<id>.jpg, acg_<id>.jpg, <Open Images id>.jpg); --fetch gets the
                   missing ones (Poly Haven 1k diffuse, ambientCG 1K-JPG colour map, the Open Images original)
     --sheet       also write a contact sheet (a 2 x 2 repeat and a magnified crop of each tile)
-    --meta        write name -> { avg, bytes, px } as JSON (avg and px go into src/kit/photoTex.js)
+    --meta        write name -> { avg, bytes, px } as JSON (avg goes into src/kit/photoTex.js)
+  Sources: <id>.jpg (colour) and <id>_nor_gl.jpg (normal, optional). Old pixel-art options in the table (fam, bins,
+  bevel, streak...) are ignored; polish() reads col, contrast, chroma, smooth, sharp, kmin, kmax.
 Needs Pillow and numpy.
 """
 import json
@@ -64,6 +65,7 @@ def fetch(t, dst):
     kind, _, i = t['id'].partition(':')
     if kind == 'ph':
         os.system(f"curl -sS -f -o '{dst}' '{PH.format(i)}'")
+        os.system(f"curl -sS -f -o '{dst[:-4]}_nor_gl.jpg' '{PH.format(i).replace('_diff_', '_nor_gl_')}'")
     elif kind == 'acg':
         z = dst + '.zip'
         os.system(f"curl -sS -f -L -o '{z}' '{ACG.format(i)}'")
@@ -71,6 +73,9 @@ def fetch(t, dst):
         with zipfile.ZipFile(z) as Z:
             n = [x for x in Z.namelist() if x.endswith('_Color.jpg')][0]
             open(dst, 'wb').write(Z.read(n))
+            for x in Z.namelist():
+                if x.endswith('_NormalGL.jpg'):
+                    open(dst[:-4] + '_nor_gl.jpg', 'wb').write(Z.read(x))
         os.remove(z)
     else:
         os.system(f"curl -sS -f -o '{dst}' '{S3 % (t['subset'], t['id'])}'")
@@ -82,16 +87,17 @@ def fetch(t, dst):
 
 # ---------------------------------------------------------------------------------------------------- the reduction
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pixelart import srgb2lin, lin2srgb, rgb2lab, lab2rgb, hex2rgb, gblur, resize, reduce  # noqa: E402
+from pixelart import srgb2lin, lin2srgb, gblur, resize, polish, polish_normal  # noqa: E402
 
-DENS = 128          # texels a metre for the world's surfaces (walls, roofs, roads, ground); `dens` per tile overrides
+DENS = 256          # texels a metre for the world's surfaces (walls, roofs, roads, ground); `dens` per tile overrides
+MAXPX = 1024        # the largest tile
 
 
 def tile_px(t):
     """The tile's size in texels: its real size times the density, a multiple of 16 (so the mips halve cleanly)."""
     if t.get('px'):
         return t['px']
-    return max(32, int(round(t['m'] * t.get('dens', DENS) / 16.0)) * 16)
+    return min(MAXPX, max(32, int(round(t['m'] * t.get('dens', DENS) / 16.0)) * 16))
 
 
 # ---------------------------------------------------------------------------------------------------- tiling
@@ -161,6 +167,7 @@ def process(name, t, src):
     N = tile_px(t)
     if ':' in t['id']:
         B = np.asarray(im, dtype=np.float32) / 255   # a scan: already seamless
+        N = min(N, (min(B.shape[:2]) // 16) * 16)       # (never above the scan's own resolution)
         if t.get('flat'):   # (a scan with a slow wash of light across it: take it out, periodically)
             low = gblur(B, t.get('flat_sigma', 0.12) * min(B.shape[:2]))
             B = np.clip(B - t['flat'] * (low - B.reshape(-1, 3).mean(0)), 0, 1)
@@ -169,10 +176,17 @@ def process(name, t, src):
     if t.get('raw'):
         lin = srgb2lin(B.astype(np.float64)).astype(np.float32)
         return (lin2srgb(resize(lin, N, N, wrap=True, how=Image.BOX)) * 255 + 0.5).astype(np.uint8), None, log
-    opts = {k: v for k, v in t.items() if k not in ('id', 'subset', 'crop', 'quad', 'rot', 'turn', 'm', 'dens', 'px', 'work', 'flat', 'flat_sigma', 'ox', 'oy', 'feather', 'tiled', 'aspect', 'raw')}
-    px, labels, pal = reduce(B, N, N, **opts)
-    log.append(f'{N}px {len(np.unique(labels))} tones')
-    return px, (labels, pal), log
+    opts = {k: t[k] for k in ('col', 'contrast', 'chroma', 'smooth', 'sharp', 'kmin', 'kmax') if k in t}
+    px = polish(B, N, N, **opts)
+    log.append(f'{N}px')
+    # the scan's own normal map, when there is one: half the colour's resolution, turned with it
+    nf = os.path.join(src, src_file(t)[:-4] + '_nor_gl.jpg')
+    if ':' in t['id'] and os.path.exists(nf) and not t.get('no_normal'):
+        nrm = np.asarray(Image.open(nf).convert('RGB'), dtype=np.float32) / 255
+        nn = polish_normal(nrm, N // 2, N // 2, turn=t.get('turn', 0), strength=t.get('nstr', 1.0))
+        Image.fromarray(nn).save(os.path.join(OUT, name + '_n.jpg'), quality=90, subsampling=0)
+        log.append(f'normal {N // 2}px')
+    return px, None, log
 
 
 def photo_tile(im, t, log):
@@ -199,17 +213,11 @@ def photo_tile(im, t, log):
     return make_tileable(A, t.get('ox', (0.08, 0.22)), t.get('oy', (0.08, 0.22)), t.get('feather', (6, 6)), log)
 
 
-def save(name, px, indexed):
-    """A palette PNG (the tile is pixel art: a handful of tones, no compression noise)."""
+def save(name, px, indexed=None):
+    """A JPEG (quality 92, no chroma subsampling: clean, no blocky colour)."""
     os.makedirs(OUT, exist_ok=True)
-    p = os.path.join(OUT, name + '.png')
-    if indexed is not None:
-        labels, pal = indexed
-        im = Image.fromarray(labels.astype(np.uint8), 'P')
-        im.putpalette(pal.reshape(-1).tolist() + [0] * (768 - pal.size))
-    else:
-        im = Image.fromarray(px)
-    im.save(p, optimize=True)
+    p = os.path.join(OUT, name + '.jpg')
+    Image.fromarray(px).save(p, quality=92, subsampling=0)
     return os.path.getsize(p)
 
 
@@ -222,7 +230,7 @@ def sheet(names, path, cell=256, crop=64):
     S = Image.new('RGB', (cols * (cell + pad) + pad, rows * (ch + pad) + pad), (40, 40, 44))
     d = ImageDraw.Draw(S)
     for i, n in enumerate(names):
-        p = os.path.join(OUT, n + '.png')
+        p = os.path.join(OUT, n + '.jpg')
         if not os.path.exists(p):
             continue
         im = Image.open(p).convert('RGB')
@@ -302,25 +310,25 @@ def SOURCES():
     scan('roof_kawara', 'ph:grey_roof_tiles', m=3.0, col=0x62666c, contrast=0.08, chroma=0.35, bins='even')
     scan('roof_tin', 'ph:box_profile_metal_sheet', m=2.0, col=0x7e8c94, contrast=0.05, bins='even', streak=(4, 0.3, 0.3))
     # indoor (seen up close: denser)
-    scan('tatami', 'acg:Tatami001', m=1.0, dens=192, flat=1.0, flat_sigma=0.04, fam=1, col=0xb9b07c, contrast=0.05, streak=(0.3, 2.5, 0.4))
-    scan('shoji_paper', 'acg:Paper001', m=0.5, dens=256, col=0xe6e0d0, contrast=0.025)
-    scan('cardboard', 'acg:Cardboard004', m=0.6, dens=256, col=0xb99870, contrast=0.035)
-    scan('canvas_cloth', 'acg:Fabric036', m=0.4, dens=256, col=0xcfc6b0, contrast=0.04, smooth=0.008, dead=0.5)
-    scan('indigo_cloth', 'acg:Fabric081A', m=0.4, dens=256, col=0x44587c, contrast=0.04, smooth=0.008, dead=0.5)
-    scan('paper_old', 'acg:Paper006', m=0.5, dens=256, col=0xd8cba8, contrast=0.035)
-    scan('tile_white', 'acg:Tiles107', m=1.0, dens=256, col=0xdcdcd4, contrast=0.05, dead=1.4, bevel=1.2, fam=1)
-    scan('tile_checker_floor', 'ph:checkered_pavement_tiles', m=2.0, dens=192, col=0x9a9a94, contrast=0.15, chroma=0.1, maxdrop=0.3, maxlift=0.2, steps=8, fam=2, fam_L=1.0, dead=1.6, smooth=0.06, passes=2)
+    scan('tatami', 'acg:Tatami001', m=1.0, dens=384, flat=1.0, flat_sigma=0.04, fam=1, col=0xb9b07c, contrast=0.05, streak=(0.3, 2.5, 0.4))
+    scan('shoji_paper', 'acg:Paper001', m=0.5, dens=512, col=0xe6e0d0, contrast=0.025)
+    scan('cardboard', 'acg:Cardboard004', m=0.6, dens=512, col=0xb99870, contrast=0.035)
+    scan('canvas_cloth', 'acg:Fabric036', m=0.4, dens=512, col=0xcfc6b0, contrast=0.04, smooth=0.008, dead=0.5)
+    scan('indigo_cloth', 'acg:Fabric081A', m=0.4, dens=512, col=0x44587c, contrast=0.04, smooth=0.008, dead=0.5)
+    scan('paper_old', 'acg:Paper006', m=0.5, dens=512, col=0xd8cba8, contrast=0.035)
+    scan('tile_white', 'acg:Tiles107', m=1.0, dens=512, col=0xdcdcd4, contrast=0.05, dead=1.4, bevel=1.2, fam=1)
+    scan('tile_checker_floor', 'ph:checkered_pavement_tiles', m=2.0, dens=384, col=0x9a9a94, contrast=0.15, chroma=0.1, maxdrop=0.3, maxlift=0.2, steps=8, fam=2, fam_L=1.0, dead=1.6, smooth=0.06, passes=2)
     # ground
     scan('gravel', 'ph:gravel', m=2.0, col=0x9c988e, contrast=0.07, bins='even')
     scan('soil', 'ph:farm_soil', m=2.0, col=0x7c6650, contrast=0.05)
     scan('grass', 'ph:leafy_grass', m=2.0, col=0x7c9a5c, contrast=0.06, fam=2)
     scan('moss', 'acg:Moss002', m=1.0, col=0x6c8650, contrast=0.04, fam=2)
     # bark (trees: src/town/foliage.js)
-    scan('bark_pine', 'ph:pine_bark', m=2.0, dens=192, col=0x4e4038, contrast=0.08, bins='even', streak=(2, 0.5, 0.5))
-    scan('bark_cherry', 'ph:sakura_bark', m=1.6, dens=192, col=0x64504c, contrast=0.05, chroma=0.8, bins='even', streak=(0.5, 2, 0.5))
+    scan('bark_pine', 'ph:pine_bark', m=2.0, dens=384, col=0x4e4038, contrast=0.08, bins='even', streak=(2, 0.5, 0.5))
+    scan('bark_cherry', 'ph:sakura_bark', m=1.6, dens=384, col=0x64504c, contrast=0.05, chroma=0.8, bins='even', streak=(0.5, 2, 0.5))
     # other
-    scan('rubber', 'acg:Rubber004', m=0.75, dens=256, col=0x3c3c40, contrast=0.03)
-    tex('frosted_glass', 'c0009d86fc844520', 'test', m=0.5, dens=256, crop=(0.02, 0.02, 0.96, 0.96), col=0xd0dcdc, contrast=0.04)
+    scan('rubber', 'acg:Rubber004', m=0.75, dens=512, col=0x3c3c40, contrast=0.03)
+    tex('frosted_glass', 'c0009d86fc844520', 'test', m=0.5, dens=512, crop=(0.02, 0.02, 0.96, 0.96), col=0xd0dcdc, contrast=0.04)
 
 
 SOURCES()

@@ -21,7 +21,8 @@ export const HUMAN_PRESETS = [
 // how often each preset shows up on the street (randomHuman)
 export const STREET_WEIGHTS = { salaryman: 3, office_lady: 2.5, schoolgirl: 2, schoolboy: 2, grandma: 2, grandpa: 2, kid: 1.6, tourist: 1.4, otaku: 1.2, gyaru: 1, mom: 1.6, delivery: 0.9, construction: 0.7, shopkeeper: 0 };
 
-const SKIN = { fair: 0xf3d6c0, light: 0xecc8aa, medium: 0xe0b48e, warm: 0xd6a37a, tan: 0xc08a60, deep: 0xa06a46, pale: 0xf6dccc, brown: 0x8c5a3c, dark: 0x5e3a28 };
+// skin albedos (sRGB) from photo reference: lit by the sun they read as skin, not as a white mask
+const SKIN = { fair: 0xeac6aa, light: 0xe2b996, medium: 0xd6a882, warm: 0xcb9a72, tan: 0xbb855c, deep: 0xa06a46, pale: 0xeecfbd, brown: 0x8c5a3c, dark: 0x5e3a28 };
 const HAIR = { black: 0x2a2428, soft: 0x352a26, dbrown: 0x4a3226, brown: 0x6a4228, chestnut: 0x8a5632, caramel: 0xa8743e, blonde: 0xd8b878, ash: 0xb8aa94, grey: 0x9a9690, silver: 0xc4c0ba, white: 0xe2ded6, ginger: 0xa85a2c, lavgrey: 0xb0a8b6 };
 const IRIS = { brown: 0x4a2c1c, dbrown: 0x2e1c14, hazel: 0x6a5230, blue: 0x4a6c94, green: 0x55704a, grey: 0x6a7480 };
 

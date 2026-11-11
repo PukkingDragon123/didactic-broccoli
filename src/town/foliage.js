@@ -22,7 +22,7 @@
 import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { noInk } from '../gfx/sunMask.js';
-import { photoTex, PHOTO_TEX } from '../kit/photoTex.js';
+import { photoTex, PHOTO_TEX, withPhotoNormal } from '../kit/photoTex.js';
 import { CELLS, ALIAS, cellUV, leafTexture } from './leafSheet.js';
 
 export const SAKURA_SPOTS = [];
@@ -40,6 +40,7 @@ function mats() {
     const c = new THREE.Color(e?.avg ?? 0x808080);
     m.userData.norm = [c.r, c.g, c.b];
     m.name = label;
+    withPhotoNormal(m, 1);
     return m;
   };
   const paint = (rough, label) => { const m = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough }); m.name = label; return m; };

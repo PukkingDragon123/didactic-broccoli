@@ -115,18 +115,22 @@ is original; nothing is copied from a real toy line, drink or brand.
 
 ## Renderer contract
 What the renderer does to your models by itself, and the few switches you have (src/gfx/sunMask.js patches the
-lighting of every built-in lit material; src/core/renderer.js draws the ink and the grade). The look is **realistic
-lighting with a light cel touch**: it is not a hard toon shader.
+lighting of every built-in lit material; src/core/renderer.js draws the ink and the grade; src/sim/sky.js and
+src/game/Lighting.js set the light by the time of day). The look is **realistic lighting, a realistic grade and only a
+faint cel touch** (phase 11: "more realistic, less anime"): it is not a toon shader and not a pastel cartoon.
 
 - **What it applies to:** `MeshStandardMaterial`, `MeshPhysicalMaterial`, `MeshLambertMaterial` and
   `MeshPhongMaterial`, including the kit's atlas materials and anything that extends them with `onBeforeCompile`.
   `MeshBasicMaterial` and custom `ShaderMaterial`s are drawn as they are (use them only for things that give light:
   a lit sign face, a tube, the sky). No setup is needed: don't write a toon shader, don't add gradient maps.
-- **Only the key light has a cel accent, and a light one.** The sun / moon's N.L is mixed 30% with a soft two-step
-  ramp (shade / lit, the step spread over N.L 0 to 0.3), which firms up the terminator on a round form; a flat face
-  keeps its natural tone. Cast shadows let a fifth of the sun back in, a little cool (`SHADOW_TINT`): readable, a touch
-  lilac, never black, with the shadow map's soft edge. The sky fill (hemisphere) and the environment probe give the
-  soft bounce.
+- **Only the key light has a cel accent, and a faint one.** The sun / moon's N.L is mixed 12% with a soft two-step
+  ramp (shade / lit, the step spread over N.L 0 to 0.25), which just firms up the terminator on a round form; a flat
+  face keeps its natural tone. Cast shadows let about an eighth of the sun back in, slightly cool (`SHADOW_TINT`): the light a
+  real shadow gets back from the bright street round it. The rest of the shade is the sky fill (hemisphere, cool blue)
+  and the environment probe.
+- **Light levels are photographic.** By day the sun is about three times the sky fill, so sunlit and shaded sides read
+  like a photograph (not the flat, bright cartoon light we had); golden hour is an amber sun against blue shade with the
+  exposure opened a little; night is dark blue, lit mostly by the lamps (src/sim/sky.js keys: si, hi, env, exp).
 - **The sun's shadows follow you.** Its shadow map is a square centred a little ahead of the player (12 m half-size on
   low, 15 medium, 18 high, 24 ultra: `QUALITY.sunShadow`), snapped to whole texels in the light's frame so shadows never
   crawl, and redrawn only when you cross a grid line, the sun steps or a caster moves. Anything that stands up casts
@@ -154,28 +158,33 @@ lighting with a light cel touch**: it is not a hard toon shader.
 - **Normals:** smooth where the real thing is smooth (pipes, lathes, bowls, corrugated sheet), hard where it has an
   edge. The garage's kit smooths automatically below 40 degrees (src/garage/kit.js `autoSmooth`); a 45-degree chamfer
   stays crisp.
-- **Ink outlines** are thin and a soft plum shade of the surface's own colour, from the depth buffer, for every opaque
-  mesh that writes depth:
+- **Ink outlines** are thin and light: a half-value shade of the surface's own colour mixed in at about 40%, from the
+  depth buffer, for every opaque mesh that writes depth (they define a form, they never read as drawn lines):
   - silhouettes (where something stands in front of something else by more than about 0.5% of its distance: 1.5 cm at
     3 m, so a poster, a decal or a bolt head lying on a surface is not outlined, and fine detail drops its ink with
     distance by itself);
-  - creases sharper than about 55 degrees, drawn lighter than silhouettes: a hard 90-degree edge is inked, a chamfer
-    and a smooth curve are not. Round things need enough segments to read as round: 12 or more sides (30 degrees a
+  - creases sharper than about 70 degrees, drawn much lighter than silhouettes: a hard 90-degree edge gets a faint
+    line, a chamfer and a smooth curve get none. Round things need enough segments to read as round: 12 or more sides (30 degrees a
     step or less). Where the depth is busy all round a pixel (a grille, a shelf of stock, a bundle of wires) creases
     are left out, so dense detail never turns into a scribble.
   - Lines keep the same weight on screen at any resolution, thin things (wires, railings) never swell, creases fade
-    out between 7 and 18 m and silhouettes between 28 and 65 m.
+    out between 5 and 12 m and silhouettes between 22 and 50 m.
   - **To opt out:** `import { noInk } from '../gfx/sunMask.js'` and wrap the material: `noInk(material)` (it sets the
     `NO_INK` define; opaque built-in materials only). Use it for foliage and grass cards, chain-link, dense grilles
     and other fine cut-outs that would turn into a tangle of lines. Transparent materials with `depthWrite: false`
     (glass) are never outlined; give a pane `depthWrite: true` if you want its edge drawn.
   - Don't paint black outlines round shapes in textures: the renderer draws them. Panel lines and seams inside a
     surface are yours to paint (in a darker tone of the surface colour).
-- **Textures:** new textures default to anisotropy 4. Anisotropy only works with a linear magnification filter
-  (three.js skips it for `NearestFilter`), so big tiling surfaces must be linear-filtered with mipmaps.
-- **Post:** full device resolution on every preset (never upscaled), the ink, ambient occlusion on high / ultra (light,
-  and only from surfaces within 30 cm in depth, so nothing standing in front of a wall leaves a dark ring on it), the
-  pastel grade with neutral tone mapping, then FXAA. **No bloom and no screen-space god rays** on any preset (both drew
+- **Textures:** real surfaces come from the library (src/kit/photoTex.js): polished photo-scan tiles at 256 texels a
+  metre (more for things seen up close), crisp up close (nearest magnification, a texel too small to read as a block),
+  mipmapped and anisotropic far away, with the scan's own normal map for relief (`withPhotoNormal(material)`;
+  `photoMat` does it for you). Imported models get the same finish (tools/import-asset.mjs through tools/pixelart.py
+  polish()). No palette reduction, no posterising. Other new textures default to anisotropy 4.
+- **Post:** full device resolution on every preset (never upscaled), the ink, light ambient occlusion on medium, high
+  and ultra (contact shadow in corners and under things, only from surfaces within 30 cm in depth, so nothing standing
+  in front of a wall leaves a dark ring on it), the grade (natural saturation, a gentle contrast curve, no lifted pastel
+  blacks, a faint vignette) with neutral tone mapping, then FXAA. **No bloom and no screen-space god rays** on any preset (both drew
   soft round glows: round the lanterns, round the sun). No grain, no chromatic aberration, no sharpen pass. A lit thing
   (a lantern, a tube, a sign) reads by its own bright colour, not by a glow.
-- **Hard rules still stand:** no white rim or hover highlight, no glow blobs, pastel and a little desaturated.
+- **Hard rules still stand:** no white rim or hover highlight, no glow blobs, no rings or discs. Colour is natural
+  (the old "pastel and a little desaturated" is gone); the reds of lanterns and signs stay readable.

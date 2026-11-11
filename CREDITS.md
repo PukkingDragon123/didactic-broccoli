@@ -337,6 +337,15 @@ Background music, menu, intro and party themes by Kevin MacLeod.
   speech bubbles, subtitles, PC store and in-world labels. Tiny labels and the flyers use a hand-made 5 x 7
   bitmap font (`src/gfx/font5x7.js`) drawn for this game.
 
+### Fonts used at bake time (printed matter)
+
+The printed things baked from photographs (`tools/printkit.py`) are set in typefaces from the Google Fonts repository,
+all under the SIL Open Font License 1.1 (https://openfontlicense.org): Dela Gothic One (artakana), Zen Antique, Zen Kaku
+Gothic New, Zen Maru Gothic (Yoshimichi Ohira), Shippori Mincho B1 (FONTDASU), Kaisei Tokumin (Font-Kai), RocknRoll One
+(Fontworks), M PLUS 1p (M+ Fonts Project), Yuji Syuku (Kinuta Font Factory), BIZ UDPGothic (Morisawa), Anton (Vernon
+Adams), Archivo Black (Omnibus-Type), Barlow Condensed (Jeremy Tribby), Oswald (Vernon Adams), Playfair Display (Claus
+Eggers Sørensen). The fonts are only used by the bake tools; the game ships the baked images, not the fonts.
+
 ## Photos (CC BY 2.0, attribution required)
 
 The pixel-art shop flyers and promo posters (`src/gfx/flyers.js`) are made from real stock photos from Google's Open Images
@@ -1313,251 +1322,949 @@ brands, wordmarks and mascots round them are original drawings.
 - Attribution: "Imperial Navy curry and rice" by Masayuki (Yuki) Kawagishi, licensed under CC BY 2.0
 - Shipped as: `img/photos/products/curry.jpg` (curry tin and snack on the shop shelves)
 
+### Display-card backdrops (the photo or print behind the figures on every gacha display card)
+
+Baked by `tools/bake-art.py` into `img/art/cards/<series>.webp`: the photograph or print cropped and graded like print,
+with a real surface photo (ambientCG, CC0, see "Surface textures") along the bottom. Photos and prints already credited
+elsewhere in this file (local files) are not listed again.
+
+#### 南禪寺
+
+- Author: othree
+- Source: https://www.flickr.com/photos/othree/8655538602 (Open Images ID 05992b1991659e33)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "南禪寺" by othree, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/mochi.webp`
+
+#### Plastic Food in Japan
+
+- Author: Steve Nagata
+- Source: https://www.flickr.com/photos/stevenagata/4205296768 (Open Images ID 41a0268c320af00e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Plastic Food in Japan" by Steve Nagata, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/shokudo.webp`
+
+#### 学習机
+
+- Author: nubobo
+- Source: https://www.flickr.com/photos/nubobo/17114728806 (Open Images ID 669c4c7bbe75cb0b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "学習机" by nubobo, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/bungu.webp`
+
+#### Tokyo Shop
+
+- Author: Eric Bréchemier
+- Source: https://www.flickr.com/photos/eric_brechemier/3108754140 (Open Images ID 93cc30e919f2ed47)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tokyo Shop" by Eric Bréchemier, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/konbini.webp`
+
+#### 川越_27
+
+- Author: nakimusi
+- Source: https://www.flickr.com/photos/nakisuke/3084165011 (Open Images ID ca2191dfa313b006)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "川越_27" by nakimusi, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/omocha.webp`
+
+#### 引越し01。部屋のお掃除完了。次はモノを運びこめる状態へ
+
+- Author: Kenta Hayashi
+- Source: https://www.flickr.com/photos/gabuken/5444613861 (Open Images ID aee63c54b2a4e0a6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "引越し01。部屋のお掃除完了。次はモノを運びこめる状態へ" by Kenta Hayashi, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/heya.webp`
+
+#### 中古パソコン市場! 特別大特価 車椅子
+
+- Author: Ryo FUKAsawa
+- Source: https://www.flickr.com/photos/fukapon/4137740141 (Open Images ID a442e976af3e94e5)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "中古パソコン市場! 特別大特価 車椅子" by Ryo FUKAsawa, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/kaden.webp`
+
+#### New Year's Eve Foxfires at the Changing Tree, Ōji
+
+- Artist: Utagawa Hiroshige
+- Source: https://www.metmuseum.org/art/collection/search/55553
+- Licence: public domain (CC0, The Metropolitan Museum of Art Open Access)
+- Shipped as: `img/art/cards/yokai.webp`
+
+#### Evening Snow at Kanbara, from the series "Fifty-three Stations of the Tōkaidō"
+
+- Artist: Utagawa Hiroshige
+- Source: https://www.metmuseum.org/art/collection/search/56915
+- Licence: public domain (CC0, The Metropolitan Museum of Art Open Access)
+- Shipped as: `img/art/cards/onsen.webp`
+
+#### grand lake theater organ
+
+- Author: Archie
+- Source: https://www.flickr.com/photos/archier/21929793115 (Open Images ID 3454f5c299102bea)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "grand lake theater organ" by Archie, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/dajare.webp`
+
+#### R0010299
+
+- Author: yy
+- Source: https://www.flickr.com/photos/dishhh/5064055137 (Open Images ID 0fada83d41fbde5d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "R0010299" by yy, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/omamori.webp`
+
+#### harmony-house-cafe-2
+
+- Author: hoskeebo
+- Source: https://www.flickr.com/photos/hoskeebo/3792990794 (Open Images ID 041b3597d605f38a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "harmony-house-cafe-2" by hoskeebo, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/neko_cafe.webp`
+
+#### A View of Late Spring at Masaki
+
+- Artist: Utagawa Hiroshige
+- Source: https://www.metmuseum.org/art/collection/search/45299
+- Licence: public domain (CC0, The Metropolitan Museum of Art Open Access)
+- Shipped as: `img/art/cards/wagashi.webp`
+
+#### Fireworks at Ryōgoku Bridge, from the series One Hundred Famous Views of Edo
+
+- Artist: Utagawa Hiroshige
+- Source: https://www.metmuseum.org/art/collection/search/37093
+- Licence: public domain (CC0, The Metropolitan Museum of Art Open Access)
+- Shipped as: `img/art/cards/matsuri.webp`
+
+#### Marble quarry
+
+- Author: NH53
+- Source: https://www.flickr.com/photos/nh53/3674565447 (Open Images ID 34e438905666f290)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Marble quarry" by NH53, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/sentai.webp`
+
+#### Ghosts of the Taira at Daimotsu Bay
+
+- Artist: Utagawa Kuniyoshi
+- Source: https://www.metmuseum.org/art/collection/search/55743
+- Licence: public domain (CC0, The Metropolitan Museum of Art Open Access)
+- Shipped as: `img/art/cards/obake_yashiki.webp`
+
+#### 夜なのに人大杉
+
+- Author: HIBIKIFL
+- Source: https://www.flickr.com/photos/hibiki_fl/7830642312 (Open Images ID 8a8d05961ec690a1)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "夜なのに人大杉" by HIBIKIFL, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/bizarre.webp`
+
+#### 大鳥居と夕日。ほんと美しい！
+
+- Author: Junpei Abe
+- Source: https://www.flickr.com/photos/26958633@N02/10204794734 (Open Images ID 672bfcfa436a0a63)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "大鳥居と夕日。ほんと美しい！" by Junpei Abe, licensed under CC BY 2.0
+- Shipped as: `img/art/cards/chibitto.webp`
+
+### Printed matter from real photographs (drink labels, packs, shop posters, menus)
+
+The drink labels and the vending machines' posters (`tools/bake-drinks.py`), Mikawa-ya's packs, tins, model-kit boxes,
+posters and calendar, the corner shop's goods, Ramen Yamada's dish pictures, signboard and beer poster (`tools/bake-print.py`)
+are laid out round real photographs from Open Images, cropped and graded like offset print (no ink reduction), with
+the game's own names and makers set in OFL typefaces (see "Fonts used at bake time"). Photos already credited above
+(product label photos, lane posters) are reused without being listed again.
+
+#### Its in the 80s out! Costco berry sunday #problem #solved
+
+- Author: dan lundmark
+- Source: https://www.flickr.com/photos/danboarder/8556436604 (Open Images ID 00290e34951731ac)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Its in the 80s out! Costco berry sunday #problem #solved" by dan lundmark, licensed under CC BY 2.0
+- Used for: icecream
+
+#### wheat farm
+
+- Author: hazel spray
+- Source: https://www.flickr.com/photos/hazelspray/3694014992 (Open Images ID 002a46e8cbba77fe)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "wheat farm" by hazel spray, licensed under CC BY 2.0
+- Used for: wheat
+
+#### Organic Corn
+
+- Author: Rob Bertholf
+- Source: https://www.flickr.com/photos/robbertholf/20344272223 (Open Images ID 0039d1a14d295dee)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Organic Corn" by Rob Bertholf, licensed under CC BY 2.0
+- Used for: corn
+
+#### Nice
+
+- Author: Michael Gwyther-Jones
+- Source: https://www.flickr.com/photos/12587661@N06/2317445954 (Open Images ID 0079ae4be5f70d5b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Nice" by Michael Gwyther-Jones, licensed under CC BY 2.0
+- Used for: mikan
+
+#### 아직은 청춘이던 시절... 2009년 네팔 여행의 기록... 룸비니로 가는 길 #Travel #Memories #2009 #Waling #Nepal 번다로 멈춰선 마을에서의 그 몇 시간... 그 시간 동안의 점심 식사 #Lunch. #Local #Food #Rice #Dal #Bhat #दालभात
+
+- Author: Jude Lee
+- Source: https://www.flickr.com/photos/ichstyle/18240064153 (Open Images ID 00ae02779702fe2a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "아직은 청춘이던 시절... 2009년 네팔 여행의 기록... 룸비니로 가는 길 #Travel #Memories #2009 #Waling #Nepal 번다로 멈춰선 마을에서의 그 몇 시간... 그 시간 동안의 점심 식사 #Lunch. #Local #Food #Rice #Dal #Bhat #दालभात" by Jude Lee, licensed under CC BY 2.0
+- Used for: rice
+
+#### Turkey Stock - Simple, Salted
+
+- Author: TheDeliciousLife
+- Source: https://www.flickr.com/photos/thedelicious/4165101137 (Open Images ID 00d03e88b1d2f7a3)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Turkey Stock - Simple, Salted" by TheDeliciousLife, licensed under CC BY 2.0
+- Used for: greentea
+
+#### 阿嘉島
+
+- Author: Nao Iizuka
+- Source: https://www.flickr.com/photos/iizukanao/11603200203 (Open Images ID 011d1dcbfb65a15f)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "阿嘉島" by Nao Iizuka, licensed under CC BY 2.0
+- Used for: sea
+
+#### 74/365 ~ Lemons
+
+- Author: Ray Bouknight
+- Source: https://www.flickr.com/photos/raybouk/8107577740 (Open Images ID 015af6da5e40d1d8)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "74/365 ~ Lemons" by Ray Bouknight, licensed under CC BY 2.0
+- Used for: lemons
+
+#### HerlongAirport_7-6-13-2472
+
+- Author: Rob Bixby
+- Source: https://www.flickr.com/photos/scubabix/9227265924 (Open Images ID 015c3c4a93dbf669)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "HerlongAirport_7-6-13-2472" by Rob Bixby, licensed under CC BY 2.0
+- Used for: plane
+
+#### IMG_6057
+
+- Author: dave.see
+- Source: https://www.flickr.com/photos/dave_see/6162719164 (Open Images ID 01dde2016d147b23)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "IMG_6057" by dave.see, licensed under CC BY 2.0
+- Used for: ramen_tonkotsu
+
+#### ant with 3 biscuits
+
+- Author: Manish Chauhan
+- Source: https://www.flickr.com/photos/manish_chauhan/1436370037 (Open Images ID 01f92a05010cabe0)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "ant with 3 biscuits" by Manish Chauhan, licensed under CC BY 2.0
+- Used for: crackers
+
+#### Popcorn
+
+- Author: Wildcat Dunny
+- Source: https://www.flickr.com/photos/wildcat_dunny/3646133776 (Open Images ID 0209d8ca4058580d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Popcorn" by Wildcat Dunny, licensed under CC BY 2.0
+- Used for: popcorn
+
+#### British Centurion Mk 5 AVRE 165 Tank
+
+- Author: Chad Kainz
+- Source: https://www.flickr.com/photos/smaedli/4958640963 (Open Images ID 021d9739adae9f9c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "British Centurion Mk 5 AVRE 165 Tank" by Chad Kainz, licensed under CC BY 2.0
+- Used for: tank
+
+#### トンコツラーメン
+
+- Author: Yuichi Kosio
+- Source: https://www.flickr.com/photos/kossy/6827083265 (Open Images ID 027eed09ac62674b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "トンコツラーメン" by Yuichi Kosio, licensed under CC BY 2.0
+- Used for: kaedama
+
+#### Tokyo Ramen at Ichi-Ban Boshi, Sydney CBD
+
+- Author: Katherine Lim
+- Source: https://www.flickr.com/photos/ultrakml/8924104462 (Open Images ID 02866b5332267a21)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tokyo Ramen at Ichi-Ban Boshi, Sydney CBD" by Katherine Lim, licensed under CC BY 2.0
+- Used for: ramen_shoyu
+
+#### IMG_4713.jpg
+
+- Author: Jeff Wilcox
+- Source: https://www.flickr.com/photos/jeffwilcox/15300288825 (Open Images ID 02d301de1b793797)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "IMG_4713.jpg" by Jeff Wilcox, licensed under CC BY 2.0
+- Used for: milktea_cup
+
+#### Tsujita Ramen
+
+- Author: T.Tseng
+- Source: https://www.flickr.com/photos/68147320@N02/9118698648 (Open Images ID 036577fa0421c5c6)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tsujita Ramen" by T.Tseng, licensed under CC BY 2.0
+- Used for: ramen_miso
+
+#### Westcoast
+
+- Author: Per Åström
+- Source: https://www.flickr.com/photos/perkovich/2810600937/ (Open Images ID 0381e5e25585560d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Westcoast" by Per Åström, licensed under CC BY 2.0
+- Used for: shrimp
+
+#### Latte with a dsign
+
+- Author: Joanna Bourne
+- Source: https://www.flickr.com/photos/66992990@N00/8381412852 (Open Images ID 03e20f16eafbf89a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Latte with a dsign" by Joanna Bourne, licensed under CC BY 2.0
+- Used for: heart
+
+#### 2008-08-20 434 (ORANGE,FR84)
+
+- Author: jean-louis Zimmermann
+- Source: https://www.flickr.com/photos/jeanlouis_zimmermann/2788603275 (Open Images ID 03e2cc8f5547bcbe)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "2008-08-20 434 (ORANGE,FR84)" by jean-louis Zimmermann, licensed under CC BY 2.0
+- Used for: grape
+
+#### Shio Ramen
+
+- Author: John Ong
+- Source: https://www.flickr.com/photos/puck777/16023117428 (Open Images ID 0423752f180ef665)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Shio Ramen" by John Ong, licensed under CC BY 2.0
+- Used for: ramen4
+
+#### Mt. Fuji 富士山
+
+- Author: Yusuke Kawasaki
+- Source: https://www.flickr.com/photos/u-suke/7716397942 (Open Images ID 04da2550440dd624)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Mt. Fuji 富士山" by Yusuke Kawasaki, licensed under CC BY 2.0
+- Used for: fuji
+
+#### The Morning
+
+- Author: whoohoo120
+- Source: https://www.flickr.com/photos/11375837@N05/2706444339 (Open Images ID 04dcd9b74778a51b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "The Morning" by whoohoo120, licensed under CC BY 2.0
+- Used for: cereal
+
+#### New Year's Eve
+
+- Author: Michelle Bradley
+- Source: https://www.flickr.com/photos/mishbradley/3155845187 (Open Images ID 065546d583608b96)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "New Year's Eve" by Michelle Bradley, licensed under CC BY 2.0
+- Used for: lemonslice
+
+#### JMSDF
+
+- Author: sheilapic76
+- Source: https://www.flickr.com/photos/53344659@N05/4978444751 (Open Images ID 068d0ed1c82328ab)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "JMSDF" by sheilapic76, licensed under CC BY 2.0
+- Used for: ship
+
+#### Homemade Hamburger Buns
+
+- Author: Michele Frazier
+- Source: https://www.flickr.com/photos/michelecolettefrazier/10497618285 (Open Images ID 071cf4dfd81e444e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Homemade Hamburger Buns" by Michele Frazier, licensed under CC BY 2.0
+- Used for: melonpan
+
+#### 0000_IM_2189
+
+- Author: WarOnTomato
+- Source: https://www.flickr.com/photos/27606531@N02/2878571337 (Open Images ID 086e20b26cefa816)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "0000_IM_2189" by WarOnTomato, licensed under CC BY 2.0
+- Used for: bubbles
+
+#### sakura
+
+- Author: saotin
+- Source: https://www.flickr.com/photos/saotin/3394361737 (Open Images ID 09598149cb9a5f78)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "sakura" by saotin, licensed under CC BY 2.0
+- Used for: sakura
+
+#### Dinosaur  Adventure
+
+- Author: Dave Catchpole
+- Source: https://www.flickr.com/photos/yaketyyakyak/7001659896 (Open Images ID 098164e17499945c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Dinosaur  Adventure" by Dave Catchpole, licensed under CC BY 2.0
+- Used for: dino
+
+#### DSC_0237
+
+- Author: steve lodefink
+- Source: https://www.flickr.com/photos/lodefink/7324225246 (Open Images ID 098d3d6d0e2a1f19)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "DSC_0237" by steve lodefink, licensed under CC BY 2.0
+- Used for: robot
+
+#### Galia melon in half
+
+- Author: Richard North
+- Source: https://www.flickr.com/photos/richardnorth/7704639422 (Open Images ID 0aebb420d22f3e6e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Galia melon in half" by Richard North, licensed under CC BY 2.0
+- Used for: melon
+
+#### Flat white coffee at Axil Coffee in Hawthorn
+
+- Author: Katherine Lim
+- Source: https://www.flickr.com/photos/ultrakml/17350959312 (Open Images ID 0aec86633421382f)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Flat white coffee at Axil Coffee in Hawthorn" by Katherine Lim, licensed under CC BY 2.0
+- Used for: aulait
+
+#### Heaven in a Cup
+
+- Author: Wenjie, Zhang  | A Certain Slant of Light
+- Source: https://www.flickr.com/photos/z_wenjie/5542423258 (Open Images ID 0af12cae5301c91d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Heaven in a Cup" by Wenjie, Zhang  | A Certain Slant of Light, licensed under CC BY 2.0
+- Used for: cocoa
+
+#### Milky way over house, Norway
+
+- Author: Sindre Skrede
+- Source: https://www.flickr.com/photos/sinwin/15224419249 (Open Images ID 0b4f76675243c81d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Milky way over house, Norway" by Sindre Skrede, licensed under CC BY 2.0
+- Used for: milkyway
+
+#### Latte art
+
+- Author: Ruth Hartnup
+- Source: https://www.flickr.com/photos/ruthanddave/3637879981 (Open Images ID 0b6008127f1034f7)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Latte art" by Ruth Hartnup, licensed under CC BY 2.0
+- Used for: latte
+
+#### LngBlk
+
+- Author: jason dooley
+- Source: https://www.flickr.com/photos/wreckeddesign/8288503217 (Open Images ID 0b6927daf4ec8091)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "LngBlk" by jason dooley, licensed under CC BY 2.0
+- Used for: coffee_black
+
+#### Peanut Butter Cookies
+
+- Author: Jenn Durfey
+- Source: https://www.flickr.com/photos/dottiemae/5244797098 (Open Images ID 0b8024808dcd7382)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Peanut Butter Cookies" by Jenn Durfey, licensed under CC BY 2.0
+- Used for: biscuit
+
+#### Octopuses
+
+- Author: 16:9clue
+- Source: https://www.flickr.com/photos/53255320@N07/6817012973 (Open Images ID 0bf5980ee7b42dd0)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Octopuses" by 16:9clue, licensed under CC BY 2.0
+- Used for: octopus
+
+#### Lollipops / Walmart Expedition
+
+- Author: Rusty Clark - On the Air M-F 8am-noon
+- Source: https://www.flickr.com/photos/rusty_clark/8882920070 (Open Images ID 0c97ce20e62e4106)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Lollipops / Walmart Expedition" by Rusty Clark - On the Air M-F 8am-noon, licensed under CC BY 2.0
+- Used for: lollipop
+
+#### Mixed
+
+- Author: Nurul Balqis
+- Source: https://www.flickr.com/photos/nbelle/5403304105 (Open Images ID 0cb64ff535dd698a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Mixed" by Nurul Balqis, licensed under CC BY 2.0
+- Used for: cornchips
+
+#### choklad
+
+- Author: Camy West
+- Source: https://www.flickr.com/photos/camy/444666796 (Open Images ID 0cd76710f90bf31e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "choklad" by Camy West, licensed under CC BY 2.0
+- Used for: chocolate
+
+#### 4 - January 28, 2014 - Movie Night
+
+- Author: Dustin O&#x27;Donnell
+- Source: https://www.flickr.com/photos/101018579@N06/12200420434 (Open Images ID 0ec1189ce664eb0c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "4 - January 28, 2014 - Movie Night" by Dustin O&#x27;Donnell, licensed under CC BY 2.0
+- Used for: caramelcorn
+
+#### Tooheys New
+
+- Author: Raelene Gutierrez
+- Source: https://www.flickr.com/photos/raes_antics/2467940670 (Open Images ID 0f79f3c11a3acce9)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tooheys New" by Raelene Gutierrez, licensed under CC BY 2.0
+- Used for: beer2
+
+#### IMG_6009
+
+- Author: David
+- Source: https://www.flickr.com/photos/bootbearwdc/229658280 (Open Images ID 0fc5e500a2beaf26)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "IMG_6009" by David, licensed under CC BY 2.0
+- Used for: jelly
+
+#### IMG_1695
+
+- Author: Pat Loika
+- Source: https://www.flickr.com/photos/patloika/3982305299 (Open Images ID 10895bc3d7562b66)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "IMG_1695" by Pat Loika, licensed under CC BY 2.0
+- Used for: wrestling
+
+#### Lamejoralubia.com
+
+- Author: Mover el Bigote
+- Source: https://www.flickr.com/photos/moverelbigote/8473046517 (Open Images ID 11959778576e331e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Lamejoralubia.com" by Mover el Bigote, licensed under CC BY 2.0
+- Used for: azuki
+
+#### Ceviche UK
+
+- Author: Javi Vte Rejas
+- Source: https://www.flickr.com/photos/mediaflema/7986063670 (Open Images ID 11c41a8d4373f4cf)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Ceviche UK" by Javi Vte Rejas, licensed under CC BY 2.0
+- Used for: white
+
+#### Jasmine_flowers_190605_kpjas
+
+- Author: Kpjas
+- Source: https://www.flickr.com/photos/kpjas/21703713 (Open Images ID 129df409588b04f4)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Jasmine_flowers_190605_kpjas" by Kpjas, licensed under CC BY 2.0
+- Used for: jasmine
+
+#### 乾坤一 #sake
+
+- Author: Ippei Suzuki
+- Source: https://www.flickr.com/photos/is_kyoto_jp/8336785237 (Open Images ID 15a388b862890689)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "乾坤一 #sake" by Ippei Suzuki, licensed under CC BY 2.0
+- Used for: milkcoffee
+
+#### Breakfast date with @according2kelly this morning. Had the best caramel hot cocoa at iHop.
+
+- Author: AngryJulieMonday
+- Source: https://www.flickr.com/photos/angryjuliemonday/8253591358 (Open Images ID 15b5a9e9d05e00ac)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Breakfast date with @according2kelly this morning. Had the best caramel hot cocoa at iHop." by AngryJulieMonday, licensed under CC BY 2.0
+- Used for: cocoa2
+
+#### The Milk
+
+- Author: James Thompson
+- Source: https://www.flickr.com/photos/jwthompson2/160835043 (Open Images ID 1636d912cb396b1b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "The Milk" by James Thompson, licensed under CC BY 2.0
+- Used for: milk
+
+#### IMG_6099
+
+- Author: Nicetoenv
+- Source: https://www.flickr.com/photos/88493584@N05/8253560427 (Open Images ID 16f8a879d09ef4cb)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "IMG_6099" by Nicetoenv, licensed under CC BY 2.0
+- Used for: barley
+
+#### Premium Gin Tonic
+
+- Author: Steffen Voß
+- Source: https://www.flickr.com/photos/kaffeeringe/17340081358 (Open Images ID 17b3ba937734b010)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Premium Gin Tonic" by Steffen Voß, licensed under CC BY 2.0
+- Used for: soda
+
+#### Guinness Blonde
+
+- Author: Fado Irish Pub
+- Source: https://www.flickr.com/photos/fadomarketing/15941543153 (Open Images ID 18eedb7aeb04344a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Guinness Blonde" by Fado Irish Pub, licensed under CC BY 2.0
+- Used for: beer
+
+#### Photo
+
+- Author: Les Orchard
+- Source: https://www.flickr.com/35034355597@N01/12212934144/ (Open Images ID 1a9d5f7cc9a88a1d)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Photo" by Les Orchard, licensed under CC BY 2.0
+- Used for: cola2
+
+#### Flan de huevo
+
+- Author: demi
+- Source: https://www.flickr.com/photos/vaionnoth/8387690878 (Open Images ID 1e1283c785486215)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Flan de huevo" by demi, licensed under CC BY 2.0
+- Used for: flan
+
+#### Untitled
+
+- Author: punctuated
+- Source: https://www.flickr.com/photos/lainetrees/5550959064 (Open Images ID 20aec071a8260aac)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Untitled" by punctuated, licensed under CC BY 2.0
+- Used for: lemonade
+
+#### Ciruelas
+
+- Author: instinctify
+- Source: https://www.flickr.com/photos/instinctify/3993349044 (Open Images ID 261b8dd5057c1470)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Ciruelas" by instinctify, licensed under CC BY 2.0
+- Used for: plum
+
+#### A pint of Guinness
+
+- Author: Ruth Hartnup
+- Source: https://www.flickr.com/photos/ruthanddave/150310470/ (Open Images ID 27bc7351ff155958)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "A pint of Guinness" by Ruth Hartnup, licensed under CC BY 2.0
+- Used for: cola
+
+#### Chifles
+
+- Author: Jorge Gobbi
+- Source: https://www.flickr.com/photos/morrissey/5421745396 (Open Images ID 2bac4cbaa3859a6b)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Chifles" by Jorge Gobbi, licensed under CC BY 2.0
+- Used for: chips
+
+#### The Danes have a tradition for decorating their machboxes :-)
+
+- Author: storebukkebruse
+- Source: https://www.flickr.com/photos/tusnelda/3475688384 (Open Images ID 2e402ae4b2addb7e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "The Danes have a tradition for decorating their machboxes :-)" by storebukkebruse, licensed under CC BY 2.0
+- Used for: matchbox
+
+#### OKINAWA-3937.jpg
+
+- Author: doctorho
+- Source: https://www.flickr.com/photos/doctorho/15180866664 (Open Images ID 2ede3d43e9a4c9e5)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "OKINAWA-3937.jpg" by doctorho, licensed under CC BY 2.0
+- Used for: tuna
+
+#### South Indian style of tea : Dust No.1 with a lot of milk. Chai.
+
+- Author: Miran  Rijavec
+- Source: https://www.flickr.com/photos/miran/5399611578 (Open Images ID 2ffda31f40f1d21e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "South Indian style of tea : Dust No.1 with a lot of milk. Chai." by Miran  Rijavec, licensed under CC BY 2.0
+- Used for: milktea_glass
+
+#### uma chuva de balas para Elisa
+
+- Author: Mauren Veras
+- Source: https://www.flickr.com/photos/mauren/2429240906 (Open Images ID 436ed2d6e9cd8ca4)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "uma chuva de balas para Elisa" by Mauren Veras, licensed under CC BY 2.0
+- Used for: gumdrop
+
+#### cafe vert
+
+- Author: jenny downing
+- Source: https://www.flickr.com/photos/jenny-pics/2383133012 (Open Images ID 569e6a1f8b1c9984)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "cafe vert" by jenny downing, licensed under CC BY 2.0
+- Used for: matcha
+
+#### Costa Rica 2010
+
+- Author: Nathaniel F
+- Source: https://www.flickr.com/photos/redcti/4296875406 (Open Images ID 59bc07aff213dead)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Costa Rica 2010" by Nathaniel F, licensed under CC BY 2.0
+- Used for: beans
+
+#### Ice cream
+
+- Author: Ludovic Tristan
+- Source: https://www.flickr.com/photos/kama17/8320087666 (Open Images ID 6aa2cf5b69830d9c)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Ice cream" by Ludovic Tristan, licensed under CC BY 2.0
+- Used for: konpeito
+
+#### More Sticky Buns
+
+- Author: Annie Mole
+- Source: https://www.flickr.com/photos/anniemole/5945555243 (Open Images ID edce30188dc01bef)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "More Sticky Buns" by Annie Mole, licensed under CC BY 2.0
+- Used for: anpan
+
 ### Surface textures (the texture library)
 
 The surface textures of the town, the garage, the interiors and the props (`src/kit/photoTex.js`) are made by
 `tools/make-tex.py` from CC0 scanned materials from Poly Haven (https://polyhaven.com) and ambientCG
 (https://ambientcg.com), and one CC BY 2.0 photo from Google Open Images: each colour map is scaled to the game's
-texel density and turned into high-resolution pixel art by `tools/pixelart.py` (a limited palette of shading ramps,
-clean clusters, regraded to the game's colours). The result is shipped as a palette PNG in `img/tex/`.
+texel density (256 texels a metre for the world, more for things seen up close), cleaned and graded by
+`tools/pixelart.py` (polish), and shipped as a JPEG in `img/tex/`; the scan's own normal map ships beside it as
+`img/tex/<name>_n.jpg` (half the resolution, for the surface's relief).
 
 #### Hinoki Planks
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/hinoki_planks
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/wood_planks.png` (the sawn boards surface texture)
+- Shipped as: `img/tex/wood_planks.jpg` (+ `_n.jpg` normal map where the scan has one) (the sawn boards surface texture)
 
 #### Wood Planks Grey
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/wood_planks_grey
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/wood_weathered.png` (the grey weathered boards surface texture)
+- Shipped as: `img/tex/wood_weathered.jpg` (+ `_n.jpg` normal map where the scan has one) (the grey weathered boards surface texture)
 
 #### Plywood
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/plywood
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/plywood.png` (the plywood surface texture)
+- Shipped as: `img/tex/plywood.jpg` (+ `_n.jpg` normal map where the scan has one) (the plywood surface texture)
 
 #### Dark Wood
 
 - Author: Dario Barresi, Dimitrios Savva, Rico Cilliers (Poly Haven)
 - Source: https://polyhaven.com/a/dark_wood
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/timber_dark.png` (the dark timber surface texture)
+- Shipped as: `img/tex/timber_dark.jpg` (+ `_n.jpg` normal map where the scan has one) (the dark timber surface texture)
 
 #### Plastered Wall
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/plastered_wall
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/plaster_cream.png` (the plaster surface texture)
+- Shipped as: `img/tex/plaster_cream.jpg` (+ `_n.jpg` normal map where the scan has one) (the plaster surface texture)
 
 #### Grey Plaster
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/grey_plaster
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/mortar_grey.png` (the grey mortar surface texture)
+- Shipped as: `img/tex/mortar_grey.jpg` (+ `_n.jpg` normal map where the scan has one) (the grey mortar surface texture)
 
 #### Concrete Block Wall
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/concrete_block_wall
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/block_wall.png` (the concrete block wall surface texture)
+- Shipped as: `img/tex/block_wall.jpg` (+ `_n.jpg` normal map where the scan has one) (the concrete block wall surface texture)
 
 #### Brick Wall 02
 
 - Author: Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/brick_wall_02
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/brick_red.png` (the red brick surface texture)
+- Shipped as: `img/tex/brick_red.jpg` (+ `_n.jpg` normal map where the scan has one) (the red brick surface texture)
 
 #### Corrugated Iron
 
 - Author: Jenelle van Heerden, Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/corrugated_iron
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tin_corrugated.png` (the corrugated zinc surface texture)
+- Shipped as: `img/tex/tin_corrugated.jpg` (+ `_n.jpg` normal map where the scan has one) (the corrugated zinc surface texture)
 
 #### Rusty Corrugated Iron
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/rusty_corrugated_iron
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tin_rusty.png` (the rusty corrugated tin surface texture)
+- Shipped as: `img/tex/tin_rusty.jpg` (+ `_n.jpg` normal map where the scan has one) (the rusty corrugated tin surface texture)
 
 #### Metal032
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Metal032
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/steel_painted.png` (the painted steel surface texture)
+- Shipped as: `img/tex/steel_painted.jpg` (+ `_n.jpg` normal map where the scan has one) (the painted steel surface texture)
 
 #### Metal009
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Metal009
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/steel_galvanised.png` (the galvanised steel surface texture)
+- Shipped as: `img/tex/steel_galvanised.jpg` (+ `_n.jpg` normal map where the scan has one) (the galvanised steel surface texture)
 
 #### Rust Coarse 01
 
 - Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
 - Source: https://polyhaven.com/a/rust_coarse_01
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/rust.png` (the rust surface texture)
+- Shipped as: `img/tex/rust.jpg` (+ `_n.jpg` normal map where the scan has one) (the rust surface texture)
 
 #### Brushed Concrete
 
 - Author: Dario Barresi, Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/brushed_concrete
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/concrete.png` (the concrete surface texture)
+- Shipped as: `img/tex/concrete.jpg` (+ `_n.jpg` normal map where the scan has one) (the concrete surface texture)
 
 #### Concrete Floor Worn 001
 
 - Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
 - Source: https://polyhaven.com/a/concrete_floor_worn_001
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/concrete_stained.png` (the stained concrete surface texture)
+- Shipped as: `img/tex/concrete_stained.jpg` (+ `_n.jpg` normal map where the scan has one) (the stained concrete surface texture)
 
 #### Asphalt 04
 
 - Author: Jenelle van Heerden, Sergej Majboroda (Poly Haven)
 - Source: https://polyhaven.com/a/asphalt_04
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/asphalt.png` (the asphalt surface texture)
+- Shipped as: `img/tex/asphalt.jpg` (+ `_n.jpg` normal map where the scan has one) (the asphalt surface texture)
 
 #### Asphalt 02
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/asphalt_02
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/asphalt_patched.png` (the cracked asphalt surface texture)
+- Shipped as: `img/tex/asphalt_patched.jpg` (+ `_n.jpg` normal map where the scan has one) (the cracked asphalt surface texture)
 
 #### Grey Roof Tiles
 
 - Author: Rob Tuytel (Poly Haven)
 - Source: https://polyhaven.com/a/grey_roof_tiles
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/roof_kawara.png` (the roof tile surface texture)
+- Shipped as: `img/tex/roof_kawara.jpg` (+ `_n.jpg` normal map where the scan has one) (the roof tile surface texture)
 
 #### Box Profile Metal Sheet
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/box_profile_metal_sheet
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/roof_tin.png` (the tin roof surface texture)
+- Shipped as: `img/tex/roof_tin.jpg` (+ `_n.jpg` normal map where the scan has one) (the tin roof surface texture)
 
 #### Tatami001
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Tatami001
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tatami.png` (the tatami surface texture)
+- Shipped as: `img/tex/tatami.jpg` (+ `_n.jpg` normal map where the scan has one) (the tatami surface texture)
 
 #### Paper001
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Paper001
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/shoji_paper.png` (the shoji paper surface texture)
+- Shipped as: `img/tex/shoji_paper.jpg` (+ `_n.jpg` normal map where the scan has one) (the shoji paper surface texture)
 
 #### Cardboard004
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Cardboard004
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/cardboard.png` (the cardboard surface texture)
+- Shipped as: `img/tex/cardboard.jpg` (+ `_n.jpg` normal map where the scan has one) (the cardboard surface texture)
 
 #### Fabric036
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Fabric036
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/canvas_cloth.png` (the canvas cloth surface texture)
+- Shipped as: `img/tex/canvas_cloth.jpg` (+ `_n.jpg` normal map where the scan has one) (the canvas cloth surface texture)
 
 #### Fabric081A
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Fabric081A
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/indigo_cloth.png` (the indigo cloth surface texture)
+- Shipped as: `img/tex/indigo_cloth.jpg` (+ `_n.jpg` normal map where the scan has one) (the indigo cloth surface texture)
 
 #### Paper006
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Paper006
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/paper_old.png` (the old paper surface texture)
+- Shipped as: `img/tex/paper_old.jpg` (+ `_n.jpg` normal map where the scan has one) (the old paper surface texture)
 
 #### Tiles107
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Tiles107
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tile_white.png` (the white wall tile surface texture)
+- Shipped as: `img/tex/tile_white.jpg` (+ `_n.jpg` normal map where the scan has one) (the white wall tile surface texture)
 
 #### Checkered Pavement Tiles
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/checkered_pavement_tiles
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/tile_checker_floor.png` (the checkered floor surface texture)
+- Shipped as: `img/tex/tile_checker_floor.jpg` (+ `_n.jpg` normal map where the scan has one) (the checkered floor surface texture)
 
 #### Gravel
 
 - Author: Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/gravel
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/gravel.png` (the gravel surface texture)
+- Shipped as: `img/tex/gravel.jpg` (+ `_n.jpg` normal map where the scan has one) (the gravel surface texture)
 
 #### Farm Soil
 
 - Author: Amal Kumar (Poly Haven)
 - Source: https://polyhaven.com/a/farm_soil
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/soil.png` (the soil surface texture)
+- Shipped as: `img/tex/soil.jpg` (+ `_n.jpg` normal map where the scan has one) (the soil surface texture)
 
 #### Leafy Grass
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/leafy_grass
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/grass.png` (the grass surface texture)
+- Shipped as: `img/tex/grass.jpg` (+ `_n.jpg` normal map where the scan has one) (the grass surface texture)
 
 #### Moss002
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Moss002
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/moss.png` (the moss surface texture)
+- Shipped as: `img/tex/moss.jpg` (+ `_n.jpg` normal map where the scan has one) (the moss surface texture)
 
 #### Pine Bark
 
 - Author: Dimitrios Savva (Poly Haven)
 - Source: https://polyhaven.com/a/pine_bark
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/bark_pine.png` (the pine bark surface texture)
+- Shipped as: `img/tex/bark_pine.jpg` (+ `_n.jpg` normal map where the scan has one) (the pine bark surface texture)
 
 #### Sakura Bark
 
 - Author: Charlotte Baglioni (Poly Haven)
 - Source: https://polyhaven.com/a/sakura_bark
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/bark_cherry.png` (the cherry bark surface texture)
+- Shipped as: `img/tex/bark_cherry.jpg` (+ `_n.jpg` normal map where the scan has one) (the cherry bark surface texture)
 
 #### Rubber004
 
 - Author: ambientCG (Lennart Demes)
 - Source: https://ambientcg.com/a/Rubber004
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- Shipped as: `img/tex/rubber.png` (the rubber surface texture)
+- Shipped as: `img/tex/rubber.jpg` (+ `_n.jpg` normal map where the scan has one) (the rubber surface texture)
 
 #### Free ice texture
 
@@ -1565,7 +2272,7 @@ clean clusters, regraded to the game's colours). The result is shipped as a pale
 - Source: https://www.flickr.com/photos/colinsite/4259084669 (Open Images ID c0009d86fc844520)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Free ice texture" by monkeywing, licensed under CC BY 2.0
-- Shipped as: `img/tex/frosted_glass.png` (the frosted glass surface texture)
+- Shipped as: `img/tex/frosted_glass.jpg` (+ `_n.jpg` normal map where the scan has one) (the frosted glass surface texture)
 
 ### Window views (the views out of the annex shutter and the Kaikan windows)
 
@@ -1628,3 +2335,15 @@ Models from Poly Haven (polyhaven.com), CC0 1.0 (https://creativecommons.org/pub
 - Source: https://quaternius.com/packs/universalbasecharacters.html (itch.io: https://quaternius.itch.io/universal-base-characters)
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
 - Used: Superhero_Male_FullBody and Superhero_Female_FullBody (glTF). Reposed to the game's rest pose, re-rigged to its skeleton, softened, decimated and fitted to every person by tools/people-base.mjs and src/people/base.js; shipped as `src/people/base/data.js`. Their textures are not used (the people are painted as pixel art in code).
+- Exterior Aircon Unit by Monsta3D (https://polyhaven.com/a/exterior_aircon_unit), CC0 1.0. Shipped as `models/exterior_aircon_unit.glb`
+- Korean Fire Extinguisher 01 by UM JOORIN (https://polyhaven.com/a/korean_fire_extinguisher_01), CC0 1.0. Shipped as `models/korean_fire_extinguisher_01.glb`
+- Utility Box 01 by James Ray Cock (https://polyhaven.com/a/utility_box_01), CC0 1.0. Shipped as `models/utility_box_01.glb`
+- Painted Wooden Bench by Kirill Sannikov (https://polyhaven.com/a/painted_wooden_bench), CC0 1.0. Shipped as `models/painted_wooden_bench.glb`
+- Hanging Industrial Lamp by Kuutti Siitonen (https://polyhaven.com/a/hanging_industrial_lamp), CC0 1.0. Shipped as `models/hanging_industrial_lamp.glb`
+- Desk Lamp Arm 01 by Yann Kervran, Kuutti Siitonen (https://polyhaven.com/a/desk_lamp_arm_01), CC0 1.0. Shipped as `models/desk_lamp_arm_01.glb`
+- Metal Toolbox by Mateusz Sadek (https://polyhaven.com/a/metal_toolbox), CC0 1.0. Shipped as `models/metal_toolbox.glb`
+- Wooden Stool 01 by Kuutti Siitonen (https://polyhaven.com/a/wooden_stool_01), CC0 1.0. Shipped as `models/wooden_stool_01.glb`
+- Arm Chair 01 by Kirill Sannikov (https://polyhaven.com/a/ArmChair_01), CC0 1.0. Shipped as `models/ArmChair_01.glb`
+- Wooden Bookshelf Worn by Ulan Cabanilla (https://polyhaven.com/a/wooden_bookshelf_worn), CC0 1.0. Shipped as `models/wooden_bookshelf_worn.glb`
+- Metal Office Desk by Ulan Cabanilla (https://polyhaven.com/a/metal_office_desk), CC0 1.0. Shipped as `models/metal_office_desk.glb`
+- Wooden Table 01 by Ethan Place (https://polyhaven.com/a/WoodenTable_01), CC0 1.0. Shipped as `models/WoodenTable_01.glb`

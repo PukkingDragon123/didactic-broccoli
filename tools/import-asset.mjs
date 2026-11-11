@@ -2,15 +2,16 @@
 //   --tris N      triangle budget (default 3000): welded, then simplified (meshoptimizer) until it fits
 //   --size M      scale so the largest dimension is M metres (default: keep the model's own real-world scale)
 //   --tex 512     base-colour texture size in px (512 default; 1024 for things held in the hand)
-//   --colours 32  palette size per material (the pixel-art reduction; 12..64)
+//   --colours     (ignored: textures are no longer palette-reduced; kept so old command lines still work)
 //   --normal      keep the normal map (at half the texture size); dropped by default
 //   --origin keep keep the model's own origin (default: bottom centre, the props' convention)
 //   --res 1k|2k   source resolution to download (default: 1k for --tex <= 512, else 2k)
 //   --as name     save as public/models/<name>.glb (default: the Poly Haven id)
+//   --keep RE / --drop RE  keep only the nodes whose name matches RE / leave out those that match (one item from a set)
 // Steps: fetch api.polyhaven.com/info + /files (glTF on dl.polyhaven.org, cached in node_modules/.cache/import-asset),
-// bake node transforms, re-origin, weld, simplify, join per material, dedup, prune; the base colour is re-made as
-// high-resolution pixel art (ambient occlusion multiplied in, a light median to clean speckle, a per-material palette
-// without dithering, nearest-friendly); roughness / metalness become per-material factors unless the metal mask
+// bake node transforms, re-origin, weld, simplify, join per material, dedup, prune; the base colour gets the shared
+// texture polish (tools/pixelart.py polish(), the same as the town's surfaces: ambient occlusion multiplied in, cleaned,
+// no palette, a JPEG unless it has alpha); roughness / metalness become per-material factors unless the metal mask
 // varies (then the ORM map is kept small); quantized + meshopt-compressed GLB (src/kit/assets.js decodes it).
 // Writes public/models/<name>.glb, updates public/models/manifest.json, appends the credit to CREDITS.md and
 // public/CREDITS.txt. Needs curl (it goes through the agent proxy).
@@ -59,6 +60,9 @@ await MeshoptSimplifier.ready; await MeshoptEncoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
 const doc = await io.read(gltfPath);
 const scene = doc.getRoot().getDefaultScene() || doc.getRoot().listScenes()[0];
+{ const keep = opt('keep', null), drop = opt('drop', null);
+  for (const n of doc.getRoot().listNodes()) if (n.getMesh() && ((keep && !new RegExp(keep).test(n.getName())) || (drop && new RegExp(drop).test(n.getName())))) n.dispose();
+  if (keep || drop) await doc.transform(prune()); }
 await doc.transform(flatten());
 for (const n of doc.getRoot().listNodes()) if (n.getMesh()) clearNodeTransform(n);
 const tris = () => doc.getRoot().listMeshes().reduce((s, m) => s + m.listPrimitives().reduce((a, p) => a + (p.getIndices() ? p.getIndices().getCount() : p.getAttribute('POSITION').getCount()) / 3, 0), 0);
@@ -79,18 +83,20 @@ for (let err = 0.001, ratio = Math.min(1, TRIS / Math.max(1, tris())); tris() > 
 }
 await doc.transform(join({ keepMeshes: false, keepNamed: false }), dedup(), prune());
 
-// ------------------------------------------------------------------ textures: high-resolution pixel art
+// ------------------------------------------------------------------ textures: the shared polish (tools/pixelart.py)
+// The same finish as the town's surface library (tools/make-tex.py): realistic content kept, area-downscaled in linear
+// light, speckle cleaned, a touch of sharpening, ambient occlusion multiplied in at half strength; no palette, no
+// posterising. Shown crisp up close (nearest magnification) and mipmapped far away by src/kit/assets.js.
 const texInfo = [];
-async function pixelArt(buf, size, ao) {
-  let img = sharp(buf).removeAlpha().resize(size, size, { kernel: 'lanczos3', fit: 'fill' });
-  if (ao) {
-    // ambient occlusion into the colour (half strength): crevices read in the paint, as hand-placed shadow tones
-    const a = await sharp(ao).extractChannel(0).resize(size, size, { fit: 'fill' }).linear(0.5, 127.5).toColourspace('b-w').raw().toBuffer();
-    const { data, info: inf } = await img.raw().toBuffer({ resolveWithObject: true });
-    for (let i = 0, j = 0; i < data.length; i += inf.channels, j++) for (let c = 0; c < 3; c++) data[i + c] = Math.round((data[i + c] * a[j]) / 255);
-    img = sharp(data, { raw: { width: inf.width, height: inf.height, channels: inf.channels } });
-  }
-  return img.median(3).png({ palette: true, colours: COLOURS, dither: 0, effort: 10, compressionLevel: 9 }).toBuffer();
+const PIXELART = resolve(ROOT, 'tools/pixelart.py');
+let texN = 0;
+async function polishTex(buf, size, ao, alpha) {
+  const n = texN++, inp = resolve(CACHE, `polish_in_${n}.png`), out = resolve(CACHE, `polish_out_${n}.${alpha ? 'png' : 'jpg'}`);
+  await sharp(buf).png().toFile(inp);
+  const opts = {};
+  if (ao) { const a = resolve(CACHE, `polish_ao_${n}.png`); await sharp(ao).png().toFile(a); opts.ao = a; }
+  execFileSync('python3', ['-I', PIXELART, '--polish', inp, out, String(size), String(size), JSON.stringify(opts)], { stdio: ['ignore', 'ignore', 'inherit'] });
+  return readFileSync(out);
 }
 async function stats(buf) {
   const { data, info: inf } = await sharp(buf).resize(64, 64, { fit: 'fill' }).raw().toBuffer({ resolveWithObject: true });
@@ -104,11 +110,9 @@ for (const mat of doc.getRoot().listMaterials()) {
   const ormImg = orm?.getImage() || occ?.getImage() || null;
   if (base) {
     const hasAlpha = mat.getAlphaMode() !== 'OPAQUE';
-    let out;
-    if (hasAlpha) out = await sharp(base.getImage()).resize(TEX, TEX, { kernel: 'lanczos3', fit: 'fill' }).median(3).png({ palette: true, colours: COLOURS, dither: 0, effort: 10 }).toBuffer();
-    else out = await pixelArt(base.getImage(), TEX, occ ? occ.getImage() : null);
-    base.setImage(out).setMimeType('image/png').setURI(`${NAME}_${mat.getName() || 'mat'}_base.png`);
-    texInfo.push(`${mat.getName()}: ${TEX}px ${COLOURS} colours ${(out.length / 1024).toFixed(0)} KB`);
+    const out = await polishTex(base.getImage(), TEX, hasAlpha ? null : occ ? occ.getImage() : null, hasAlpha);
+    base.setImage(out).setMimeType(hasAlpha ? 'image/png' : 'image/jpeg').setURI(`${NAME}_${mat.getName() || 'mat'}_base.${hasAlpha ? 'png' : 'jpg'}`);
+    texInfo.push(`${mat.getName()}: ${TEX}px polished ${(out.length / 1024).toFixed(0)} KB`);
   }
   if (orm) {
     const s = await stats(orm.getImage());

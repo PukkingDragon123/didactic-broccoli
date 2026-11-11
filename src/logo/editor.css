@@ -7,7 +7,7 @@
 }
 #logo-ed .le-dim { position: absolute; inset: 0; background: rgba(26, 18, 22, .55); }
 #logo-ed .le-book {
-  position: relative; width: 920px; height: 600px; flex: none; transform: scale(var(--k, 1)) translateY(-40px); opacity: 0;
+  position: relative; width: 920px; height: 626px; flex: none; transform: scale(var(--k, 1)) translateY(-40px); opacity: 0;
   transition: transform .3s steps(4), opacity .3s steps(4);
 }
 #logo-ed.on .le-book { transform: scale(var(--k, 1)); opacity: 1; }
@@ -39,7 +39,7 @@
 #logo-ed button { font: inherit; color: var(--le-ink); cursor: pointer; border: 0; border-radius: 0; background: none; padding: 0; image-rendering: pixelated; }
 #logo-ed .le-x { width: 28px; height: 28px; flex: none; align-self: center; background: var(--pp-x) center / 24px 24px no-repeat; }
 #logo-ed .le-x:hover { transform: rotate(8deg); }
-#logo-ed .le-body { display: grid; grid-template-columns: 112px 320px 1fr; gap: 16px; height: 352px; }
+#logo-ed .le-body { display: grid; grid-template-columns: 112px 320px 1fr; gap: 16px; height: 376px; }
 /* tools: kraft tags with an ink icon; the one in use is pressed flat and ringed in red pencil */
 #logo-ed .le-tools { display: grid; grid-template-columns: 52px 52px; grid-auto-rows: 52px; gap: 6px 8px; align-content: start; }
 #logo-ed .le-tool {
@@ -90,8 +90,8 @@
 /* the bottom of the page: how it will look out front, and the buttons */
 #logo-ed footer { display: flex; align-items: flex-end; gap: 12px; margin-top: 10px; padding-top: 8px; border-top: 2px dashed rgba(36, 26, 30, .35); height: 104px; }
 #logo-ed .le-prev { display: flex; align-items: flex-end; gap: 10px; flex: 1; min-width: 0; }
-#logo-ed .le-sign { width: 510px; height: auto; box-shadow: 2px 3px 0 rgba(26, 18, 22, .4); }
-#logo-ed .le-noren { width: 173px; height: auto; box-shadow: 2px 3px 0 rgba(26, 18, 22, .4); }
+#logo-ed .le-sign { width: 468px; height: auto; box-shadow: 2px 3px 0 rgba(26, 18, 22, .4); }
+#logo-ed .le-noren { width: 158px; height: auto; box-shadow: 2px 3px 0 rgba(26, 18, 22, .4); }
 #logo-ed .le-mini { width: 64px; height: 64px; background: #f6efdc; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .35); }
 #logo-ed .le-btns { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
 #logo-ed .le-btns kbd { margin-left: 8px; font: inherit; color: var(--le-ink2); }

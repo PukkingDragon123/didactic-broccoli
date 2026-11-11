@@ -13,6 +13,7 @@ import { paintWrap } from './labels.js';
 import { paintTop, topKey, paintBase } from './tops.js';
 import { whenFontsReady } from './type.js';
 import { whenPhotosReady } from './photos.js';
+import { whenPrintReady, printPx } from './printArt.js';
 import { NONE, dk, lt } from './px.js';
 import { FOODS } from '../needs/foods.js';
 
@@ -46,7 +47,8 @@ export class Sheet {
   write(job) {
     const { v, rough, bg } = job, A = this.A;
     let px;
-    try { px = job.paint(); } catch (e) { console.warn('label paint failed', job.key, e); return; }
+    // a panel baked from real photographs (src/products/printArt.js, key '<sheet>:<region>') wins over the drawing
+    try { px = printPx(this.name + ':' + job.key) || job.paint(); } catch (e) { console.warn('label paint failed', job.key, e); return; }
     A.ink(rough);
     const w = Math.min(v.W, px.w), h = Math.min(v.H, px.h), X = v.r.x, Y = v.r.y;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const c = px.d[y * px.w + x]; A.set(X + x, Y + y, c === NONE ? bg : c); }
@@ -78,6 +80,11 @@ export class Sheet {
     if (this.running) return;
     this.running = true;
     const run = async () => {
+      // panels baked from photographs need no fonts: lay them in first, then paint the rest once the fonts are in
+      await whenPrintReady();
+      const baked = this.jobs.filter((j) => !j.baked && printPx(this.name + ':' + j.key));
+      for (const j of baked) { j.baked = true; this.write(j); }
+      if (baked.length) this.refresh();
       await Promise.all([whenFontsReady(this.preload || ''), whenPhotosReady()]);
       const paintSome = (list) => new Promise((res) => {
         let i = 0;

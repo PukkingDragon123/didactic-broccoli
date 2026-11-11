@@ -43,7 +43,7 @@ export function* paintAtlasJob(spec, P, faces, pix) {
   let run = 0; // texels since the last yield: big faces (a coat's back) are split over several steps too
   for (const f of faces) {
     const fn = ctx[f.seg.mat] || ctx.body;
-    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind;
+    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.layer = f.layer || '';
     if (f.kind === 'tris') {
       const U = f.uv, Pp = f.p, Nn = f.n;
       c.px = 1 / f.dens;
@@ -105,7 +105,7 @@ export function* paintAtlasJob(spec, P, faces, pix) {
 }
 export function paintAtlas(spec, P, faces, pix) { const it = paintAtlasJob(spec, P, faces, pix); while (!it.next().done); }
 
-const newCtx = () => ({ x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 });
+const newCtx = () => ({ x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', layer: '', e: 0, rb: 0, rt: 0, rh: 0 });
 
 /**
  * Re-walk every atlas texel of a person's jobs (exactly like paintAtlasJob) and let fn(c, o) repaint it: o holds the
@@ -120,7 +120,7 @@ export function walkAtlas(faces, P, pix, fn) {
     if (fn(c, o)) { d[p] = Math.max(0, Math.min(255, o[0])); d[p + 1] = Math.max(0, Math.min(255, o[1])); d[p + 2] = Math.max(0, Math.min(255, o[2])); }
   };
   for (const f of faces) {
-    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.px = 1 / f.dens;
+    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.layer = f.layer || ''; c.px = 1 / f.dens;
     if (f.kind === 'tris') {
       rasterTris(f, (w0, w1, w2, t, i, j) => {
         const Pp = f.p, Nn = f.n, p3 = t * 3;
@@ -226,7 +226,7 @@ export function paintAtlasFlat(spec, P, faces, pix) {
   const c = newCtx();
   for (const f of faces) {
     const fn = ctx[f.seg.mat] || ctx.body;
-    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.px = 1 / f.dens;
+    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.layer = f.layer || ''; c.px = 1 / f.dens;
     if (f.kind === 'tris') {
       // one colour per batch, from its first triangle's centre
       const Pp = f.p, Nn = f.n;
@@ -398,7 +398,7 @@ function makePainters(spec, P) {
     let kk = bodyK(c) * fabricK(c, fab);
     // folds: elbow crease, waist bunching, armpit drape
     if (arm) {
-      if (fr) kk *= fold(c, 0.16, 300, 1.3, c.y) * (Math.abs(c.y - P.elbowY) < 0.035 * H ? 1 : 1.0);
+      if (fr) kk *= fold(c, 0.13 * Math.exp(-(((c.y - P.elbowY) / (0.035 * H)) ** 2)), 300, 1.3, c.y + c.x * 0.6); // creases in the crook of the elbow only
       if (fr && Math.abs(c.y - P.elbowY) < 0.03 * H) kk *= 0.94 + 0.06 * Math.sin(c.y * 900 + c.x * 300);
       if (sleeve === 'long' && c.y < P.wristY + 0.03 * H) kk *= 0.96 + 0.04 * Math.sin(c.y * 1200);
     } else {
@@ -433,9 +433,10 @@ function makePainters(spec, P) {
       const vb = k === 'suit' ? yB - 0.055 * H : k === 'blazer' ? yB - 0.07 * H : yB - 0.03 * H;
       const vw = k === 'cardigan' ? 0.04 * H : 0.045 * H;
       const vx = c.y > vb ? (c.y - vb) / (yN - vb) * vw + 0.004 : -1;
-      if (fr && ax < vx) { innerPx(c, o, k === 'polo' ? { kind: 'polo', col: T.col } : { kind: k === 'suit' ? 'shirt' : 'blouse', col: T.shirt || WHITE, tie: k === 'suit' ? T.tie : null }); return; }
+      const inV = c.layer === 'shirt' || c.layer === 'tie' ? fr : c.layer === 'top' || c.layer === 'lapel' ? false : fr && ax < vx;
+      if (inV) { innerPx(c, o, k === 'polo' ? { kind: 'polo', col: T.col } : { kind: k === 'suit' ? 'shirt' : 'blouse', col: T.shirt || WHITE, tie: k === 'suit' ? T.tie : null }); return; }
       if (k === 'polo') { shadeInto(o, T.vest, bodyK(c) * fabricK(c, 'knit')); if (Math.abs(c.y - topHem - 0.02 * H) < 0.02 * H) shadeInto(o, T.vest, bodyK(c) * (c.i % 2 ? 0.88 : 1)); }
-      if (fr && ax < vx + c.px * 1.2) over(o, INK, 0.55);
+      if (fr && ax < vx + c.px * 1.2 && c.layer !== 'lapel') over(o, INK, 0.4);
       // lapels (suits)
       if ((k === 'suit' || k === 'blazer') && fr && c.y > vb && ax < vx + 0.03 * H) {
         const lx = ax - vx;
@@ -593,7 +594,7 @@ function makePainters(spec, P) {
       if (ax < tw) {
         let tc = L.tie;
         if (T.tieKind === 'stripe' && Math.floor((c.y - c.x) / 0.012) % 2) tc = mixc(tc, [230, 220, 200], 0.35);
-        if (T.tieKind === 'dots' && (Math.round(c.y / 0.01) + Math.round(c.x / 0.01)) % 2 === 0 && h2(c.i, c.j, 3) > 0.3) tc = mixc(tc, [230, 220, 200], 0.3);
+        if (T.tieKind === 'dots') { const gx = c.x / 0.009 + 0.5, gy = c.y / 0.009 + (Math.floor(gx) % 2 ? 0.5 : 0); if (Math.hypot(gx - Math.floor(gx) - 0.5, gy - Math.floor(gy) - 0.5) < 0.2) tc = mixc(tc, [230, 220, 200], 0.4); } // a neat foulard grid
         shadeInto(o, tc, bodyK(c) * (1 - ax / tw * 0.12));
         if (Math.abs(ax - tw) < c.px * 0.8) over(o, INK, 0.4);
         if (c.y > P.neckBase - 0.012 * H) shadeInto(o, L.tie, 0.85); // knot
@@ -748,17 +749,20 @@ function makePainters(spec, P) {
   function bodyPx(c, o) {
     const p = c.part, y = c.y;
     if (p === 'uarm' || p === 'farm') {
-      if (y > cuffY) topPx(c, o); else skinPx(c, o);
+      if (c.layer === 'shirt' && y <= cuffY) { // the shirt's cuff showing under a jacket sleeve
+        shadeInto(o, T.shirt || WHITE, bodyK(c) * fabricK(c, 'cotton'));
+        if (y < P.wristY + 0.007 * H) over(o, INK, 0.12);
+      } else if (y > cuffY || c.layer === 'top') topPx(c, o); else skinPx(c, o);
       straps(c, o);
       return;
     }
     if (p === 'thigh' || p === 'calf' || p === 'shin') {
-      if (!skirt && y >= botHem && !(Bt.kind === 'tobi' && false)) bottomPx(c, o); else legwearPx(c, o);
+      if (c.layer === 'bottom' || (!skirt && y >= botHem && c.layer !== 'socks')) bottomPx(c, o); else legwearPx(c, o);
       if (apron && y > P.kneeY + 0.02 * H) apronLeg(c, o);
       return;
     }
     // torso
-    if (y > topHem || (!tuck && TORSO[p] && p !== 'hipsLo' && p !== 'hipsUp' && y > topHem)) topPx(c, o);
+    if (c.layer === 'top' || c.layer === 'shirt' || c.layer === 'lapel' || c.layer === 'tie' || (c.layer !== 'bottom' && y > topHem)) topPx(c, o);
     else bottomPx(c, o);
     if (apron) apronBib(c, o);
     straps(c, o);
@@ -780,7 +784,7 @@ function makePainters(spec, P) {
     const ax = Math.abs(c.x);
     if (bagStrap) {
       const sd = bagStrap.side || 1;
-      if (Math.sign(c.x) === sd && (c.part === 'traps' || c.part === 'chestHi' || c.part === 'chestLo') && Math.abs(c.ny) < 0.95) {
+      if (Math.sign(c.x) === sd && (c.part === 'traps' || c.part === 'chestHi' || c.part === 'chestLo' || c.part === 'spine' || c.part === 'hipsUp') && c.y > P.pelvisY && Math.abs(c.ny) < 0.95) { // down to the bag at the hip
         const sx = P.chestTopX * 0.75;
         if (Math.abs(ax - sx) < 0.011 * H && (c.kind === 'top' || Math.abs(c.nz) > 0.4)) { shadeInto(o, mixc(bagStrap.col, INK, 0.15), bodyK(c) * 0.95); if (Math.abs(Math.abs(ax - sx) - 0.011 * H) < c.px * 0.7) over(o, INK, 0.4); }
       }

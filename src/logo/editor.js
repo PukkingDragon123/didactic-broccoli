@@ -111,7 +111,7 @@ class Editor {
     this.$('.le-jp').value = this.jp === DEFAULT_NAME.jp ? '' : this.jp;
     this.$('.le-en').value = this.en === DEFAULT_NAME.en ? '' : this.en;
     // fit the book to the window: whole steps when there's room (pixel art stays crisp), shrunk on small screens
-    this.fit = () => { const k = Math.min(innerWidth / 948, innerHeight / 628); el.style.setProperty('--k', k >= 1 ? Math.floor(k * 2) / 2 : k); };
+    this.fit = () => { const k = Math.min(innerWidth / 948, innerHeight / 656); el.style.setProperty('--k', k >= 1 ? Math.floor(k * 2) / 2 : k); };
     this.fit();
     addEventListener('resize', this.fit);
     // clicks
@@ -417,7 +417,7 @@ class Editor {
     this.$('.le-cur').style.background = inkCol;
     this.$('.le-inkname').textContent = INK_NAMES[this.ink];
     this.cv.dataset.tool = this.tool;
-    const tip = { pencil: 'Pencil (B): click and drag. Right button erases.', eraser: 'Eraser (E): rub out to the paper.', fill: 'Fill (G): pour ink into a shape.', line: this.anchor ? 'Line: Space again to finish it.' : 'Line (L): drag from end to end.', rect: this.anchor ? 'Box: Space again for the other corner.' : 'Box (R): drag corner to corner.', pick: 'Pick ink (I): click a colour in the drawing.', text: 'Stamp (T): click to print the lettering.' }[this.tool] || '';
+    const tip = { pencil: 'Pencil (B): drag. Right button rubs out.', eraser: 'Eraser (E): rub out to the paper.', fill: 'Fill (G): pour ink into a shape.', line: this.anchor ? 'Line: Space again to finish it.' : 'Line (L): drag from end to end.', rect: this.anchor ? 'Box: Space again for the other corner.' : 'Box (R): drag corner to corner.', pick: 'Pick ink (I): click a colour in the drawing.', text: 'Stamp (T): click to print the lettering.' }[this.tool] || '';
     this.$('.le-status').textContent = `${tip}${this.mirror ? '  Mirror on.' : ''}`;
   }
 

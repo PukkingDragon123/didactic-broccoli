@@ -40,6 +40,8 @@ export class PopDisplays {
   idOf(m) { if (!m.data.id) m.data.id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); return m.data.id; }
   of(m) { return this.s.fitted[this.idOf(m)] || null; }
   seriesOf(m) { return m.data.series || m.cardSeries || 'mochi'; }
+  /** The sum of every display's draw (sim footfall: src/sim/sim.js). */
+  totalDraw() { let t = 0; for (const L of this.live.values()) t += this.draw(L.m); return t; }
   /** How well the display sells this machine: the share of its spots holding figures of the machine's series. */
   draw(m) { const r = this.of(m); return r ? displayDraw(r.items, this.seriesOf(m)) : 0; }
 
@@ -49,7 +51,7 @@ export class PopDisplays {
     this.detach(m);
     const rec = this.of(m);
     if (!rec || !STYLES[rec.style]) return;
-    const D = m.L.dome, series = this.seriesOf(m);
+    const D = this.sizeOf(m), series = this.seriesOf(m);
     let built;
     try { built = buildDisplay(rec.style, series, { w: D.w, d: D.d }, this.game.thumbs); } catch (e) { console.warn('pop display', e); return; }
     const g = built.group, lift = RISER[m.spec.style?.header] || 0;
@@ -77,6 +79,12 @@ export class PopDisplays {
     L.built.dispose();
     this.live.delete(m);
   }
+  /** The display's footprint on a machine: wider than the old sample hood (nearly the lid's width, as real tops are)
+   *  and deeper toward the back, so the front stays clear of the machine's own header. */
+  sizeOf(m) {
+    const D = m.L.dome, w = Math.min(m.spec.w - 0.03, D.w + 0.08), d = Math.min(m.spec.d - 0.07, D.d + 0.05);
+    return { w, d, z: D.z - (d - D.d) / 2 };
+  }
   /** The machine's series changed: a new back card and header. */
   refresh(m) { const L = this.live.get(m); if (L && L.series !== this.seriesOf(m)) this.attach(m); }
 
@@ -87,7 +95,7 @@ export class PopDisplays {
     if (!it || !s) return null;
     const fig = makeItemMesh(it.k, it.f || 'normal');
     const sz = fig.geometry?.userData?.size || new THREE.Box3().setFromObject(fig).getSize(new THREE.Vector3());
-    const sc = Math.min(1.8, s.maxH / Math.max(0.005, sz.y), (s.cell - 0.006) / Math.max(0.005, sz.x, sz.z * 0.8), (s.depth - 0.004) / Math.max(0.005, sz.z));
+    const sc = Math.min(2.2, s.maxH / Math.max(0.005, sz.y), (s.cell - 0.006) / Math.max(0.005, sz.x, sz.z * 0.8), (s.depth - 0.004) / Math.max(0.005, sz.z));
     fig.scale.setScalar(sc);
     fig.position.set(s.x, s.y, s.z);
     fig.rotation.y = s.rot || 0;

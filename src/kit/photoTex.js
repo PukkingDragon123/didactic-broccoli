@@ -1,81 +1,84 @@
 // The shared surface texture library: real materials (wood, plaster, tin, asphalt, tatami...) from CC0 scans (Poly
-// Haven, ambientCG) and one CC BY photo (Google Open Images), all credited in CREDITS.md, turned into seamless
-// high-resolution pixel art by tools/make-tex.py (tools/pixelart.py: shading ramps, a base tone, clean clusters,
-// regraded to the game's palette). Each tile is a palette PNG in public/img/tex/ at the game's density: 128 texels a
-// metre for walls, roofs, roads and ground, 192 to 256 for things seen up close (tatami, paper, cloth, tiles, bark).
+// Haven, ambientCG) and one CC BY photo (Google Open Images), all credited in CREDITS.md, made into seamless tiles by
+// tools/make-tex.py (tools/pixelart.py polish(): realistic content kept, area-downscaled in linear light, speckle
+// cleaned, a touch of sharpening, graded to the surface's colour; no palette, no posterising). Each tile is a JPEG in
+// public/img/tex/ at 256 texels a metre for walls, roofs, roads and ground (up to 1024 px), 384 to 512 for things seen
+// up close (tatami, paper, cloth, tiles, bark), with the scan's own normal map beside it (<name>_n.jpg, half size).
 // Use these in place of generated patterns for anything that is a real material.
 //
 //   photoTex(name, { repeat = [1, 1], tint, turn })               -> THREE.Texture (fills in when the image arrives)
-//   photoMat(name, { repeat, tint, roughness = 0.9, metalness = 0 }) -> a shared MeshStandardMaterial
+//   photoNormal(name, { repeat, turn })                           -> its normal map, same repeat / turn (linear data)
+//   withPhotoNormal(material, strength = 0.8)                     -> gives a photoTex-mapped material its normal map
+//   photoMat(name, { repeat, tint, roughness = 0.9, metalness = 0 }) -> a shared MeshStandardMaterial (with relief)
 //   photoRepeat(name, widthM, heightM)                            -> [u, v] for a face of that size in metres
-//   PHOTO_TEX[name] = { file, metres, avg }    metres: the real size one tile covers; avg: its mean colour (hex)
+//   PHOTO_TEX[name] = { file, normal, metres, avg }  metres: the real size one tile covers; avg: its mean colour (hex)
 //   photoTint(name, colour)                    the tint that makes the tile's mean colour come out as `colour`
-//   pixelFilter(texture)                       the pixel-art filtering below, for any other texture
+//   pixelFilter(texture)                       the filtering below, for any other texture
 //   pixelCanvas(texture, { alphaTest })        the same plus a linear-light mip chain, for a canvas painted once
 //   linearMips(imageData, { alphaTest })       that mip chain (premultiplied, coverage-keeping with alphaTest)
 //   whenPhotoTexReady()                        resolves when everything requested so far has loaded
 //   photoTexStats()                            { textures, bytes } of the tiles uploaded so far (with their mips)
 //
-// Filtering (docs/ART.md): the texels are crisp up close (nearest magnification) and never shimmer far away: the mip
-// chain is built here, each level the average of the one above in linear light (sRGB-correct), sampled trilinear and
-// anisotropic (x8), so a road or a wall at a grazing angle stays clean. `tint` multiplies the tile, exactly like
-// material.color (photoMat uses material.color, so tints share one texture; photoTex bakes it into the pixels).
-// Textures are sRGB, repeat-wrapped, cached per name + options, and every repeat of one tile shares a single upload.
-// Until its image arrives a texture is the tile's flat mean colour, so nothing flashes black.
+// Filtering (docs/ART.md): the texels are crisp up close (nearest magnification: at 256 a metre a texel is small, a
+// subtle pixel finish, never chunky) and never shimmer far away (GPU mip chain, trilinear, anisotropic x8). Normal maps
+// are smooth (linear magnification). `tint` multiplies the tile, exactly like material.color (photoMat uses
+// material.color, so tints share one texture; photoTex bakes it into the pixels). Textures are sRGB, repeat-wrapped,
+// cached per name + options, and every repeat of one tile shares a single upload. Until its image arrives a texture is
+// the tile's flat mean colour (a normal map is flat), so nothing flashes black.
 import * as THREE from 'three';
 
 // name -> { file, metres, avg }. One tile covers `metres` x `metres` of the real surface (the scan's own size).
 export const PHOTO_TEX = {
   // wood
-  wood_planks:      { file: 'wood_planks.png',      metres: 1.88, avg: 0xb99c78 }, // hinoki boards, joints run along V
-  wood_weathered:   { file: 'wood_weathered.png',   metres: 1.5,  avg: 0x9c9489 }, // grey, sun-bleached boards along V
-  plywood:          { file: 'plywood.png',          metres: 0.98, avg: 0xcaaf86 },
-  timber_dark:      { file: 'timber_dark.png',      metres: 2.0,  avg: 0x614b3c }, // stained posts and beams, grain along V
+  wood_planks:      { file: 'wood_planks.jpg', normal: true,      metres: 1.88, avg: 0xb99c79 }, // hinoki boards, joints run along V
+  wood_weathered:   { file: 'wood_weathered.jpg', normal: true,   metres: 1.5,  avg: 0x9c958a }, // grey, sun-bleached boards along V
+  plywood:          { file: 'plywood.jpg', normal: true,          metres: 0.98, avg: 0xc9ae87 },
+  timber_dark:      { file: 'timber_dark.jpg', normal: true,      metres: 2.0,  avg: 0x614b3d }, // stained posts and beams, grain along V
   // walls
-  plaster_cream:    { file: 'plaster_cream.png',    metres: 2.0,  avg: 0xd9cfb8 },
-  mortar_grey:      { file: 'mortar_grey.png',      metres: 1.0,  avg: 0xa9a59c },
-  block_wall:       { file: 'block_wall.png',       metres: 2.0,  avg: 0xa8a59f }, // concrete blocks, whole courses per tile
-  brick_red:        { file: 'brick_red.png',        metres: 2.0,  avg: 0xa96a5b },
+  plaster_cream:    { file: 'plaster_cream.jpg', normal: true,    metres: 2.0,  avg: 0xd9cfb8 },
+  mortar_grey:      { file: 'mortar_grey.jpg', normal: true,      metres: 1.0,  avg: 0xa9a59d },
+  block_wall:       { file: 'block_wall.jpg', normal: true,       metres: 2.0,  avg: 0xa8a6a0 }, // concrete blocks, whole courses per tile
+  brick_red:        { file: 'brick_red.jpg', normal: true,        metres: 2.0,  avg: 0xab6e60 },
   // metal
-  tin_corrugated:   { file: 'tin_corrugated.png',   metres: 1.12, avg: 0xaab1b0 }, // ribs run along V
-  tin_rusty:        { file: 'tin_rusty.png',        metres: 2.0,  avg: 0x936f58 }, // ribs run along V
-  steel_painted:    { file: 'steel_painted.png',    metres: 1.5,  avg: 0xc4c6c2 }, // light, neutral: made to be tinted
-  steel_galvanised: { file: 'steel_galvanised.png', metres: 1.5,  avg: 0xa9aeb0 }, // brushed along U
-  rust:             { file: 'rust.png',             metres: 2.19, avg: 0x8e5b40 },
+  tin_corrugated:   { file: 'tin_corrugated.jpg', normal: true,   metres: 1.12, avg: 0xa9b0b0 }, // ribs run along V
+  tin_rusty:        { file: 'tin_rusty.jpg', normal: true,        metres: 2.0,  avg: 0x96725c }, // ribs run along V
+  steel_painted:    { file: 'steel_painted.jpg', normal: true,    metres: 1.5,  avg: 0xc4c6c2 }, // light, neutral: made to be tinted
+  steel_galvanised: { file: 'steel_galvanised.jpg', normal: true, metres: 1.5,  avg: 0xa9aeb0 }, // brushed along U
+  rust:             { file: 'rust.jpg', normal: true,             metres: 2.19, avg: 0x8e5c41 },
   // concrete and road
-  concrete:         { file: 'concrete.png',         metres: 2.5,  avg: 0xb4b1a8 },
-  concrete_stained: { file: 'concrete_stained.png', metres: 3.0,  avg: 0x9d9990 },
-  asphalt:          { file: 'asphalt.png',          metres: 4.0, avg: 0x75767a },
-  asphalt_patched:  { file: 'asphalt_patched.png',  metres: 3.0,  avg: 0x67676a }, // cracked
+  concrete:         { file: 'concrete.jpg', normal: true,         metres: 2.5,  avg: 0xb4b0a8 },
+  concrete_stained: { file: 'concrete_stained.jpg', normal: true, metres: 3.0,  avg: 0x9c9990 },
+  asphalt:          { file: 'asphalt.jpg', normal: true,          metres: 4.0, avg: 0x75767b },
+  asphalt_patched:  { file: 'asphalt_patched.jpg', normal: true,  metres: 3.0,  avg: 0x68686c }, // cracked
   // roofs
-  roof_kawara:      { file: 'roof_kawara.png',      metres: 3.0,  avg: 0x65696e }, // tile courses step down V
-  roof_tin:         { file: 'roof_tin.png',         metres: 2.0,  avg: 0x7f8d94 }, // seams run along V
+  roof_kawara:      { file: 'roof_kawara.jpg', normal: true,      metres: 3.0,  avg: 0x65696f }, // tile courses step down V
+  roof_tin:         { file: 'roof_tin.jpg', normal: true,         metres: 2.0,  avg: 0x7e8c94 }, // seams run along V
   // indoor
-  tatami:           { file: 'tatami.png',           metres: 1.0,  avg: 0xb9b07c }, // rush runs along U
-  shoji_paper:      { file: 'shoji_paper.png',      metres: 0.5,  avg: 0xe6e0d0 },
-  cardboard:        { file: 'cardboard.png',        metres: 0.6,  avg: 0xb99970 },
-  canvas_cloth:     { file: 'canvas_cloth.png',     metres: 0.4,  avg: 0xd0c6b0 },
-  indigo_cloth:     { file: 'indigo_cloth.png',     metres: 0.4,  avg: 0x44587c },
-  paper_old:        { file: 'paper_old.png',        metres: 0.5,  avg: 0xd8cba8 },
+  tatami:           { file: 'tatami.jpg', normal: true,           metres: 1.0,  avg: 0xb9b07d }, // rush runs along U
+  shoji_paper:      { file: 'shoji_paper.jpg', normal: true,      metres: 0.5,  avg: 0xe6e0d0 },
+  cardboard:        { file: 'cardboard.jpg', normal: true,        metres: 0.6,  avg: 0xb99870 },
+  canvas_cloth:     { file: 'canvas_cloth.jpg', normal: true,     metres: 0.4,  avg: 0xcfc6b0 },
+  indigo_cloth:     { file: 'indigo_cloth.jpg', normal: true,     metres: 0.4,  avg: 0x44587c },
+  paper_old:        { file: 'paper_old.jpg', normal: true,        metres: 0.5,  avg: 0xd8cba8 },
   // tiles
-  tile_white:         { file: 'tile_white.png',         metres: 1.0, avg: 0xdcdcd4 }, // 8 x 8 tiles of 12.5 cm
-  tile_checker_floor: { file: 'tile_checker_floor.png', metres: 2.0, avg: 0xa6a399 }, // 8 x 8 squares of 25 cm
+  tile_white:         { file: 'tile_white.jpg', normal: true,         metres: 1.0, avg: 0xddddd6 }, // 8 x 8 tiles of 12.5 cm
+  tile_checker_floor: { file: 'tile_checker_floor.jpg', normal: true, metres: 2.0, avg: 0x9e9e98 }, // 8 x 8 squares of 25 cm
   // ground
-  gravel:           { file: 'gravel.png',           metres: 2.0,  avg: 0x9c988d },
-  soil:             { file: 'soil.png',             metres: 2.0,  avg: 0x7d6750 },
-  grass:            { file: 'grass.png',            metres: 2.0,  avg: 0x7d9b5c },
-  moss:             { file: 'moss.png',             metres: 1.0,  avg: 0x6d8750 },
-  bark_pine:        { file: 'bark_pine.png',        metres: 2.0,  avg: 0x514238 }, // plated, fissures run along V
-  bark_cherry:      { file: 'bark_cherry.png',      metres: 1.6,  avg: 0x66514c }, // lenticel bands run across V
+  gravel:           { file: 'gravel.jpg', normal: true,           metres: 2.0,  avg: 0x9e9a90 },
+  soil:             { file: 'soil.jpg', normal: true,             metres: 2.0,  avg: 0x7d6751 },
+  grass:            { file: 'grass.jpg', normal: true,            metres: 2.0,  avg: 0x7e9c5e },
+  moss:             { file: 'moss.jpg', normal: true,             metres: 1.0,  avg: 0x6d8750 },
+  bark_pine:        { file: 'bark_pine.jpg', normal: true,        metres: 2.0,  avg: 0x51423a }, // plated, fissures run along V
+  bark_cherry:      { file: 'bark_cherry.jpg', normal: true,      metres: 1.6,  avg: 0x66524d }, // lenticel bands run across V
   // other
-  rubber:           { file: 'rubber.png',           metres: 0.75, avg: 0x3d3c40 },
-  frosted_glass:    { file: 'frosted_glass.png',    metres: 0.5,  avg: 0xd1dcdc },
+  rubber:           { file: 'rubber.jpg', normal: true,           metres: 0.75, avg: 0x3d3d41 },
+  frosted_glass:    { file: 'frosted_glass.jpg',    metres: 0.5,  avg: 0xd1dddd },
 };
 
 const DIR = 'img/tex/';
 const GREY = 0x808080;
 const ANISO = 8;
-const sources = new Map();   // name | name@tint -> { source, mips, textures: Set, loaded }
+const sources = new Map();   // name | name@tint | name#n -> { source, textures: Set, loaded, bytes }
 const textures = new Map();  // name | tint | repeat -> Texture
 const materials = new Map();
 const warned = new Set();
@@ -88,7 +91,7 @@ const SourceClass = THREE.TextureSource || THREE.Source;
 // GL NEAREST and passes that check.
 const NEAREST_ANISO = String(THREE.NearestFilter);
 
-/** Pixel-art filtering for any texture: crisp texels up close, trilinear + anisotropic mips far away. */
+/** Crisp texels up close, trilinear + anisotropic mips far away. */
 export function pixelFilter(tex, aniso = ANISO) {
   tex.magFilter = NEAREST_ANISO;
   tex.minFilter = THREE.LinearMipmapLinearFilter;
@@ -211,34 +214,61 @@ function pixels(img, tintHex) {
   return id;
 }
 
-/** One upload per tile (+ baked tint), shared by every repeat of it. */
+/** One upload per tile (+ baked tint), shared by every repeat of it. The mip chain is made by the GPU (a photo
+ *  tile has no hard pixel edges for a linear-light chain to keep); a tinted tile is tinted on a canvas first. */
 function sourceFor(name, tintHex) {
   const key = tintHex == null ? name : name + '@' + tintHex;
   let s = sources.get(key);
   if (s) return s;
   const e = entry(name);
   const base = e ? e.avg : GREY;
-  s = { source: new SourceClass(flat(tintHex == null ? base : mul(base, tintHex))), mips: [], textures: new Set(), loaded: !e, bytes: 0 };
+  s = { source: new SourceClass(flat(tintHex == null ? base : mul(base, tintHex))), textures: new Set(), loaded: !e, bytes: 0, ready: false };
   sources.set(key, s);
   if (!e || typeof document === 'undefined') return s;
+  load(DIR + e.file, (img) => {
+    let src = img;
+    if (tintHex != null) {
+      const id = pixels(img, tintHex), c = document.createElement('canvas');
+      c.width = id.width; c.height = id.height; c.getContext('2d').putImageData(id, 0, 0);
+      src = c;
+    }
+    adopt(s, src);
+  }, key);
+  return s;
+}
+
+/** Load an image (counted by whenPhotoTexReady). */
+function load(url, done, key) {
   const job = new Promise((res) => {
     const img = new Image();
-    img.onload = () => {
-      try {
-        const mips = linearMips(pixels(img, tintHex));
-        // a new Source: its GPU storage is allocated at the tile's size with the whole chain
-        s.source = new SourceClass(mips[0]);
-        s.mips = mips;
-        s.bytes = mips.reduce((a, m) => a + m.width * m.height * 4, 0);
-        for (const t of s.textures) { t.source = s.source; t.mipmaps = mips; t.generateMipmaps = false; t.needsUpdate = true; }
-      } catch (err) { console.warn(`photoTex: could not read ${DIR}${e.file}`, err); }
-      s.loaded = true;
-      res();
-    };
-    img.onerror = () => { if (!warned.has(key)) { warned.add(key); console.warn(`photoTex: could not load ${DIR}${e.file}`); } res(); };
-    img.src = new URL(DIR + e.file, document.baseURI).href;
+    img.decoding = 'async';
+    img.onload = () => { try { done(img); } catch (err) { console.warn(`photoTex: could not read ${url}`, err); } res(); };
+    img.onerror = () => { if (!warned.has(key)) { warned.add(key); console.warn(`photoTex: could not load ${url}`); } res(); };
+    img.src = new URL(url, document.baseURI).href;
   });
   pending.add(job); job.then(() => pending.delete(job));
+}
+
+/** Swap a loaded image into a shared source and every texture that uses it. */
+function adopt(s, img) {
+  s.source = new SourceClass(img);
+  const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  s.bytes = Math.round(w * h * 4 * 4 / 3);
+  s.ready = true; s.loaded = true;
+  // (dispose first: the stand-in's GPU storage is immutable at 4 x 4, so the tile needs a fresh GL texture)
+  for (const t of s.textures) { t.dispose(); t.source = s.source; t.mipmaps = []; t.generateMipmaps = true; t.needsUpdate = true; }
+}
+
+/** The tile's normal map (one upload per name): flat until it arrives. */
+function normalSourceFor(name) {
+  const key = name + '#n';
+  let s = sources.get(key);
+  if (s) return s;
+  const e = entry(name);
+  s = { source: new SourceClass(flat(0x8080ff)), textures: new Set(), loaded: !e?.normal, bytes: 0, ready: false };
+  sources.set(key, s);
+  if (!e?.normal || typeof document === 'undefined') return s;
+  load(DIR + e.file.replace(/\.\w+$/, '_n.jpg'), (img) => adopt(s, img), key);
   return s;
 }
 
@@ -258,8 +288,8 @@ export function photoTex(name, { repeat = [1, 1], tint, turn = false } = {}) {
   const s = sourceFor(name, tintHex);
   tex = new THREE.Texture();
   tex.source = s.source;
-  if (s.mips.length) { tex.mipmaps = s.mips; tex.generateMipmaps = false; }
   tex.name = 'photo:' + key;
+  tex.userData.photo = { name, repeat: [ru, rv], turn };
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   pixelFilter(tex);
@@ -270,6 +300,49 @@ export function photoTex(name, { repeat = [1, 1], tint, turn = false } = {}) {
   textures.set(key, tex);
   return tex;
 }
+
+/**
+ * The tile's own normal map (from the same scan), with the same repeat and turn as photoTex(name, o): linear data,
+ * smooth (linear) magnification, mipmapped. A tile without one gets a flat normal.
+ * @returns {THREE.Texture}
+ */
+export function photoNormal(name, { repeat = [1, 1], turn = false } = {}) {
+  const [ru, rv] = Array.isArray(repeat) ? repeat : [repeat, repeat];
+  const key = `${name}#n|${+ru.toFixed(4)},${+rv.toFixed(4)}${turn ? '|turn' : ''}`;
+  let tex = textures.get(key);
+  if (tex) return tex;
+  const s = normalSourceFor(name);
+  tex = new THREE.Texture();
+  tex.source = s.source;
+  tex.name = 'photoN:' + key;
+  tex.colorSpace = THREE.NoColorSpace;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.anisotropy = ANISO;
+  tex.repeat.set(ru, rv);
+  if (turn) tex.rotation = Math.PI / 2;
+  tex.needsUpdate = true;
+  s.textures.add(tex);
+  textures.set(key, tex);
+  return tex;
+}
+
+/**
+ * Give a material wearing a library texture (material.map from photoTex) that tile's normal map, so the surface has
+ * its real relief (boards, blocks, ribs, grit) under the light. `strength` scales it (1 = the scan's own). Returns the
+ * material. Does nothing for other maps or when PHOTO_RELIEF is off (the low preset can switch it off before load).
+ */
+export function withPhotoNormal(material, strength = 0.8) {
+  const p = material?.map?.userData?.photo;
+  if (!p || !PHOTO_RELIEF.on || !PHOTO_TEX[p.name]?.normal || material.normalMap) return material;
+  material.normalMap = photoNormal(p.name, p);
+  material.normalScale = new THREE.Vector2(strength, strength);
+  material.needsUpdate = true;
+  return material;
+}
+/** Whether withPhotoNormal() adds relief (set before the world is built). */
+export const PHOTO_RELIEF = { on: true };
 
 /**
  * A shared lit material wearing a library texture (the renderer's cel shading and ink apply to it as to any standard
@@ -287,6 +360,7 @@ export function photoMat(name, { repeat = [1, 1], tint, roughness = 0.9, metalne
   if (m) return m;
   m = new THREE.MeshStandardMaterial({ map: photoTex(name, { repeat: [ru, rv] }), color: tintHex, roughness, metalness });
   m.name = 'photo:' + name;
+  withPhotoNormal(m);
   materials.set(key, m);
   return m;
 }

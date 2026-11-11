@@ -4,7 +4,7 @@
 //   (trim atlas, blended decals, alpha-cut boards), town.indoor(mat) (a variant the low sun does not reach).
 import * as THREE from 'three';
 import { hazardTexture } from './tex.js';
-import { photoTex, PHOTO_TEX, pixelCanvas } from '../kit/photoTex.js';
+import { photoTex, PHOTO_TEX, pixelCanvas, withPhotoNormal } from '../kit/photoTex.js';
 import { townAtlas } from './atlas.js';
 import { voxelMaterials } from '../voxel/materials.js';
 
@@ -51,6 +51,7 @@ export function makeMats(t) {
     const map = photoTex(photo, { repeat: [r, r], turn: !!turn });
     m[k] = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, metalness: metal });
     m[k].name = k;
+    withPhotoNormal(m[k]); // the scan's own relief (src/kit/photoTex.js)
     // a tint given to the batcher means "this surface is that colour": it is divided by the photo's own mean (Batch)
     const c = new THREE.Color(e?.avg ?? 0x808080);
     m[k].userData.norm = [c.r, c.g, c.b];

@@ -24,6 +24,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 OUT = os.path.join(ROOT, 'public', 'img', 'art')
 CACHE = os.environ.get('ART_CACHE', os.path.join(ROOT, 'shots', '.art-cache'))
 UA = {'User-Agent': 'Mozilla/5.0 (pixel-art bake)'}
+PHOTO = '--posterize' not in sys.argv  # default: photographic (graded, not reduced to a few inks); --posterize: the old inks
 
 
 # ------------------------------------------------------------------------------------------------ sources
@@ -186,6 +187,7 @@ def grade(lab, wash=0.2, paper=0xfff6e4, sat=0.85, con=1.0, lift=0.0, tint=None,
 
 def pixelate(img, w, h, k=28, wash=0.2, sat=0.9, con=1.08, lift=0.0, dither=0.012, smooth=0.09, passes=3, tint=None, tint_k=0.0, rounds=3, sharp=0.9):
     """A cropped photo or print -> (rgb uint8 h x w x 3) high-resolution pixel art."""
+    if PHOTO: passes, sharp = 0, min(sharp, 0.5)  # a photograph keeps its texture: no edge-keeping flattening
     big = area(img, w * 2, h * 2)
     lab = bilateral(to_lab(big), sr=smooth, passes=passes) if passes else to_lab(big)
     small = to_lab(area(to_rgb(lab), w, h))
@@ -193,6 +195,8 @@ def pixelate(img, w, h, k=28, wash=0.2, sat=0.9, con=1.08, lift=0.0, dither=0.01
         Lb = blur(small[..., 0])
         small[..., 0] += (small[..., 0] - Lb) * sharp
     small = grade(small, wash, sat=sat, con=con, lift=lift, tint=tint, tint_k=tint_k)
+    if PHOTO:  # the owner's newest direction: keep the photograph (no ink reduction), just graded like print
+        return (to_rgb(small) * 255 + 0.5).astype(np.uint8)
     C = kmeans(small.reshape(-1, 3), k)
     L = cleanup(assign(small, C, dither), rounds)
     return (to_rgb(C[L]) * 255 + 0.5).astype(np.uint8)
@@ -270,6 +274,10 @@ def bake_card(sid):
     top = crop(img, box, CW / CH)
     px = pixelate(top, CW, CH, k=o.get('k', 28), **{k: v for k, v in o.items() if k != 'k'})
     px[CH - FLOOR:] = floor_strip(floor)
+    if PHOTO:  # a photograph: WebP (quality 92), a quarter of the PNG's size
+        path = os.path.join(OUT, 'cards', sid + '.webp'); os.makedirs(os.path.dirname(path), exist_ok=True)
+        Image.fromarray(px).save(path, quality=92, method=6)
+        return os.path.getsize(path), px
     return save(px, os.path.join(OUT, 'cards', sid + '.png')), px
 
 

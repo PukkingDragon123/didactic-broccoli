@@ -1,4 +1,19 @@
 {
+ "ArmChair_01": {
+  "id": "ArmChair_01",
+  "name": "Arm Chair 01",
+  "authors": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/ArmChair_01",
+  "tris": 4899,
+  "bytes": 229812,
+  "size": [
+   0.848,
+   1.065,
+   0.766
+  ],
+  "tex": 512
+ },
  "CashRegister_01": {
   "id": "CashRegister_01",
   "name": "Cash Register 01",
@@ -26,6 +41,21 @@
    0.6,
    0.457,
    0.471
+  ],
+  "tex": 512
+ },
+ "WoodenTable_01": {
+  "id": "WoodenTable_01",
+  "name": "Wooden Table 01",
+  "authors": "Ethan Place",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/WoodenTable_01",
+  "tris": 952,
+  "bytes": 99072,
+  "size": [
+   1.8,
+   0.549,
+   0.657
   ],
   "tex": 512
  },
@@ -59,6 +89,51 @@
   ],
   "tex": 512
  },
+ "desk_lamp_arm_01": {
+  "id": "desk_lamp_arm_01",
+  "name": "Desk Lamp Arm 01",
+  "authors": "Yann Kervran, Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/desk_lamp_arm_01",
+  "tris": 2937,
+  "bytes": 210452,
+  "size": [
+   0.199,
+   0.892,
+   0.613
+  ],
+  "tex": 512
+ },
+ "exterior_aircon_unit": {
+  "id": "exterior_aircon_unit",
+  "name": "Exterior Aircon Unit",
+  "authors": "Monsta3D",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/exterior_aircon_unit",
+  "tris": 2921,
+  "bytes": 242620,
+  "size": [
+   0.797,
+   0.928,
+   0.374
+  ],
+  "tex": 512
+ },
+ "hanging_industrial_lamp": {
+  "id": "hanging_industrial_lamp",
+  "name": "Hanging Industrial Lamp",
+  "authors": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/hanging_industrial_lamp",
+  "tris": 2451,
+  "bytes": 300596,
+  "size": [
+   0.55,
+   1.355,
+   0.55
+  ],
+  "tex": 512
+ },
  "industrial_pastic_container": {
   "id": "industrial_pastic_container",
   "name": "Industrial Plastic Container",
@@ -71,6 +146,21 @@
    0.457,
    0.419,
    0.631
+  ],
+  "tex": 512
+ },
+ "korean_fire_extinguisher_01": {
+  "id": "korean_fire_extinguisher_01",
+  "name": "Korean Fire Extinguisher 01",
+  "authors": "UM JOORIN",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/korean_fire_extinguisher_01",
+  "tris": 3000,
+  "bytes": 470864,
+  "size": [
+   0.279,
+   0.658,
+   0.367
   ],
   "tex": 512
  },
@@ -89,6 +179,51 @@
   ],
   "tex": 512
  },
+ "metal_office_desk": {
+  "id": "metal_office_desk",
+  "name": "Metal Office Desk",
+  "authors": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/metal_office_desk",
+  "tris": 3938,
+  "bytes": 138904,
+  "size": [
+   2,
+   0.787,
+   0.947
+  ],
+  "tex": 512
+ },
+ "metal_toolbox": {
+  "id": "metal_toolbox",
+  "name": "Metal Toolbox",
+  "authors": "Mateusz Sadek",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/metal_toolbox",
+  "tris": 2939,
+  "bytes": 243264,
+  "size": [
+   0.4,
+   0.305,
+   0.27
+  ],
+  "tex": 512
+ },
+ "painted_wooden_bench": {
+  "id": "painted_wooden_bench",
+  "name": "Painted Wooden Bench",
+  "authors": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/painted_wooden_bench",
+  "tris": 630,
+  "bytes": 137596,
+  "size": [
+   1.165,
+   0.889,
+   0.496
+  ],
+  "tex": 512
+ },
  "plastic_jerrycan": {
   "id": "plastic_jerrycan",
   "name": "Plastic Jerrycan",
@@ -101,6 +236,21 @@
    0.268,
    0.318,
    0.34
+  ],
+  "tex": 512
+ },
+ "utility_box_01": {
+  "id": "utility_box_01",
+  "name": "Utility Box 01",
+  "authors": "James Ray Cock",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/utility_box_01",
+  "tris": 1960,
+  "bytes": 201884,
+  "size": [
+   0.52,
+   1.119,
+   0.432
   ],
   "tex": 512
  },
@@ -149,6 +299,21 @@
   ],
   "tex": 512
  },
+ "wooden_bookshelf_worn": {
+  "id": "wooden_bookshelf_worn",
+  "name": "Wooden Bookshelf Worn",
+  "authors": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/wooden_bookshelf_worn",
+  "tris": 2940,
+  "bytes": 226492,
+  "size": [
+   1.374,
+   2.063,
+   0.581
+  ],
+  "tex": 512
+ },
  "wooden_broom": {
   "id": "wooden_broom",
   "name": "Wooden Broom",
@@ -161,6 +326,21 @@
    0.49,
    1.444,
    0.113
+  ],
+  "tex": 512
+ },
+ "wooden_stool_01": {
+  "id": "wooden_stool_01",
+  "name": "Wooden Stool 01",
+  "authors": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/wooden_stool_01",
+  "tris": 2450,
+  "bytes": 221840,
+  "size": [
+   0.425,
+   0.437,
+   0.441
   ],
   "tex": 512
  }

@@ -16,6 +16,7 @@ import { PAT, burst, pill, seal } from '../products/print.js';
 import { spr } from '../products/labels.js';
 import { ART } from '../products/art.js';
 import { framed, whenPhotosReady } from '../products/photos.js';
+import { drawPrint, whenPrintReady } from '../products/printArt.js';
 
 const Z = 4; // the enlargement
 const AW = 512 * Z, AH = 256 * Z;
@@ -522,6 +523,7 @@ export function mikawayaAtlas() {
     for (const [k, w0, h0] of CELLS) {
       const [rx, ry, w, h] = rects[k];
       try {
+        if (drawPrint(ctx, 'mk:' + k, rx, ry, w, h)) continue; // printed from real photographs (tools/bake-print.py)
         if (N[k]) { N[k](w, h).draw(ctx, rx, ry, 1); continue; }
         // an older painter at its own size, enlarged; its gradients become two-ink dithers
         const p = new Pix(w0, h0, rx * 31 + ry);
@@ -536,7 +538,8 @@ export function mikawayaAtlas() {
     tex.needsUpdate = true;
   };
   paint();
-  Promise.all([whenFontsReady('三河屋平成年日月火水木金土牛乳ほうき工具セット乾電池蛍光ランプチラシ懐中時計おしながき円'), whenPhotosReady()]).then(paint);
+  Promise.all([whenFontsReady('三河屋平成年日月火水木金土牛乳ほうき工具セット乾電池蛍光ランプチラシ懐中時計おしながき円'), whenPhotosReady(), whenPrintReady()]).then(paint);
+  whenPrintReady().then(paint); // the photographic packs need no fonts: don't wait for them
   ATLAS = {
     tex, rects, W: AW, H: AH,
     has: (k) => !!rects[k],

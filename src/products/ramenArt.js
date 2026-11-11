@@ -1,6 +1,7 @@
 // Printed matter for Ramen Yamada, painted with the label studio: the ticket machine's buttons (each a little card
 // with the dish drawn on it, its name in kana, the price), the wall plaques, the laminated menu, the signboard, the
-// noren, the standing board, the nobori flag and the beer poster (the brewery's owl). Each returns a Px; Ramen.js
+// noren, the standing board, the nobori flag and the beer poster. The dish pictures, the signboard and the beer poster are real
+// photographs set in real type when baked (tools/bake-print.py, keys 'rm:...'); the rest is pixel lettering. Each returns a Px; Ramen.js
 // draws them onto its panel canvases.
 import { Px, dk, lt, on } from './px.js';
 import { m5, m3, mk, bold, x2, label } from './type.js';
@@ -8,6 +9,7 @@ import { PAT, burst, pill } from './print.js';
 import { ART } from './art.js';
 import { spr } from './labels.js';
 import { framed, hasPhoto } from './photos.js';
+import { printPx } from './printArt.js';
 
 const INK = 0x2e1f28, W0 = 0xfffaf0, RED = 0xc8302a;
 const K = (t, z = 12) => mk(t, z), KB = (t) => bold(mk(t, 16));
@@ -19,6 +21,8 @@ const BROTH = { rm_shoyu: 0x9a5a22, rm_miso: 0xc8883a, rm_tonkotsu: 0xf0e4c8, rm
 /** A small picture of a dish (about 44 x 34). */
 export function dish(id) {
   if (memo.has(id)) return memo.get(id);
+  const b = printPx('rm:dish:' + id); // a real photograph of the dish (tools/bake-print.py)
+  if (b) { memo.set(id, b); return b; }
   const ph = { rm_shoyu: 'ramen_shoyu', rm_tonkotsu: 'ramen_tonkotsu', rm_miso: 'ramen_miso', rm_gyoza: 'gyoza' }[id];
   if (ph && hasPhoto(ph)) { const f = framed(ph, 40, 36, { shape: 'circle', n: 12 }); memo.set(id, f); return f; }
   if (ph) return drawn(id); // (not kept: the photo may still be on its way)
@@ -95,6 +99,7 @@ export function menuCardArt(MENU, FOODS, sel) {
 }
 /** The signboard over the door (320 x 64). */
 export function signArt() {
+  const b = printPx('rm:sign'); if (b) return b;
   const p = new Px(320, 64); p.fill(0x2a1a12);
   for (let x = 0; x < 320; x += 23) p.rect(x, 0, 1, 64, 0x34221a);
   p.rect(0, 0, 320, 4, 0xc8a060); p.rect(0, 60, 320, 4, 0xc8a060);
@@ -127,6 +132,7 @@ export function flagArt() {
 }
 /** The beer poster on the wall (64 x 96): the brewery's owl with a mug. */
 export function beerPosterArt() {
+  const b = printPx('rm:beer'); if (b) return b;
   const p = new Px(64, 96); p.fill(PAT.rays(0xf4e8c8, 0xf0dca8, 32, 60, 14));
   p.rect(0, 0, 64, 20, 0x1e2a6a); p.rect(0, 20, 64, 2, 0xd8a830);
   putc(p, KB('生ビール'), 32, 2, 0xf4f0e0);

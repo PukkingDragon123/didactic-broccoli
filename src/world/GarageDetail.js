@@ -13,6 +13,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { prints, marks } from '../gfx/garageArt.js';
 import { propGeometry, propMaterials, propSize, hasProp } from './props.js';
+import { assetMerged } from '../kit/assets.js';
 import { BUILD, TINT, RACK_Y, tintK } from './Garage.js';
 
 const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -106,6 +107,15 @@ export class GarageDetail {
   mark(name, face, x, y, z, w, h, o = {}) { this.K.sticker('marks', this.M.rect(name), face, x, y, z, w, h, o); }
   /** The soft contact shadow under a piece of furniture. */
   shade(x, z, w, d) { this.mark('shade', '+y', x, 0.003, z, w, d); }
+  /** A real model (Poly Haven, CC0: src/kit/assets.js) stretched into [x0, y0, z0, x1, y1, z1]; false if it hasn't loaded. */
+  model(id, box, ry = 0, name = id) {
+    const A = assetMerged(id, { box, fit: 'stretch', ry });
+    if (!A) return false;
+    const m = new THREE.Mesh(A.geometry, A.materials);
+    m.castShadow = true; m.receiveShadow = true; m.matrixAutoUpdate = false; m.name = 'garage:' + name;
+    this.garage.add(m);
+    return true;
+  }
 
   // ---------------------------------------------------------------------------------------------- the counter
   counter() {
@@ -122,6 +132,8 @@ export class GarageDetail {
     g0.tableTop = top;
     this.game.physics.addBox({ center: V3(t.x, h - 0.03, t.z), half: V3(t.w / 2, 0.03, t.d / 2), material: 'wood' });
     this.game.player.addObstacle(x0, x1, z0, z1);
+    // under the planks, an old wooden table (Poly Haven); the modelled legs, aprons and shelf if it's missing
+    if (this.model('WoodenTable_01', [x0, 0, z0, x1, h - 0.06, z1], 0, 'counter')) { this.pr('mat', '+y', t.x - 0.25, h + 0.002, t.z + 0.05, 0.8); this.shade(t.x, t.z, t.w + 0.14, t.d + 0.14); return; }
     // square legs, aprons let into them, a low stretcher frame with a slatted shelf, one drawer
     for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
       const lx = t.x + sx * (t.w / 2 - 0.1), lz = t.z + sz * (t.d / 2 - 0.09);
@@ -178,7 +190,9 @@ export class GarageDetail {
   desk() {
     const K = this.K, T = TINT, G = this.G, D = this.garage.pcDesk, x0 = D.x - D.w / 2, x1 = D.x + D.w / 2, z0 = D.z - D.d / 2, z1 = D.z + D.d / 2, h = D.h;
     const grey = 0xb9c2bd, lino = 0xcfdccf;
-    // a grey steel office desk: lino top with a rolled edge, a three-drawer pedestal facing the room, a panel leg
+    // a grey steel office desk (Poly Haven), its drawers to the room; the modelled one if the model is missing
+    const real = this.model('metal_office_desk', [x0, 0, z0, x1, h, z1], -Math.PI / 2, 'desk');
+    if (!real) {
     K.box('paint', x0, h - 0.035, z0, x1, h, z1, { tint: lino, bevel: 0.008, cast: true });
     K.box('paint', x0 + 0.01, h - 0.11, z0 + 0.03, x1 - 0.02, h - 0.035, z1 - 0.03, { tint: grey });
     K.box('paint', x0 + 0.02, 0.05, z1 - 0.48, x1 - 0.02, h - 0.11, z1 - 0.03, { tint: grey, cast: true });
@@ -193,6 +207,7 @@ export class GarageDetail {
     K.box('paint', x0 + 0.02, 0, z0 + 0.03, x1 - 0.02, h - 0.11, z0 + 0.055, { tint: grey, cast: true });
     K.use('chrome', { tint: 0xdfe3e4 }).cyl('x', [x0 + 0.003, 0.585, z1 - 0.1], 0.011, 0.006, 14).cyl('x', [x0 + 0.003, h - 0.07, z1 - 0.56], 0.009, 0.006, 14);
     K.box('paint', x1 - 0.04, 0.3, z0 + 0.055, x1 - 0.02, h - 0.11, z1 - 0.48, { tint: tintK(grey, 0.92) });
+    }
     this.game.physics.addBox({ center: V3(D.x, h - 0.02, D.z), half: V3(D.w / 2, 0.02, D.d / 2), material: 'wood' });
     this.game.player.addObstacle(x0, x1, z0, z1);
     this.shade(D.x, D.z, D.w + 0.1, D.d + 0.1);

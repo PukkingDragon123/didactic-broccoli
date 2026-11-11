@@ -13,6 +13,7 @@ import { m5, m3, mk, bold, x2, shear, label } from '../../products/type.js';
 import { PAT, pill } from '../../products/print.js';
 import { BRANDS } from '../../products/brands.js';
 import { spr } from '../../products/labels.js';
+import { bakedPanel } from '../../products/drinkArt.js';
 
 export const CAB = {
   x0: -0.49, x1: 0.49, h: 1.83, zb: -0.35, zf: 0.3, zd: 0.345,
@@ -37,6 +38,7 @@ const SIL = 0xc4c9cf, SIL_D = 0x8e949c, SIL_L = 0xe4e8ec, DARK = 0x2a2c32;
 const big4 = new Map();
 const mascot4 = (name, pose) => { const k = name + pose; if (!big4.has(k)) big4.set(k, spr(name, pose).x2().x2()); return big4.get(k); };
 
+const liveryOf = (L) => Object.keys(LIVERY).find((k) => LIVERY[k] === L);
 // ------------------------------------------------------------------ painting (pixels: x right, y down)
 function paintFront(L) {
   const W = Math.round((CAB.x1 - CAB.x0) * PPM), H = Math.round(CAB.h * PPM), b = BRANDS[L.brand];
@@ -82,6 +84,9 @@ function paintFront(L) {
   const P = CAB.poster, px0 = X(P.x0), py0 = Y(P.y1), pw = X(P.x1) - px0, ph = Y(P.y0) - py0;
   p.rect(px0 - 4, py0 - 4, pw + 8, ph + 8, SIL_D); p.rect(px0 - 2, py0 - 2, pw + 4, ph + 4, SIL_L);
   p.clip(px0, py0, pw, ph);
+  const ad = bakedPanel('poster:' + liveryOf(L)); // the photographic poster (tools/bake-drinks.py), if baked
+  if (ad) p.blit(ad, px0, py0);
+  else {
   p.rect(px0, py0, pw, ph, L.poster ? L.poster(px0, py0, pw, ph) : PAT.rays(L.body, lt(L.body, 0.14), px0 + pw * 0.72, py0 + ph * 0.6, 16));
   p.rect(px0, py0 + ph - 46, pw, 46, L.trim); p.rect(px0, py0 + ph - 49, pw, 3, on(L.trim) === 0x241a1e ? L.ink : L.door);
   const ms = mascot4(L.mascot[0], L.mascot[1]);
@@ -91,6 +96,7 @@ function paintFront(L) {
   label(p, KB(L.tag), px0 + 12, py0 + ph - 34, { c: on(L.trim) });
   pill(p, px0 + 12, py0 + 168, K('つめた〜い', 12), { c: 0x2a7ae0, text: 0xffffff, ink: L.ink });
   pill(p, px0 + 104, py0 + 168, K('あったか〜い', 12), { c: 0xe0443a, text: 0xffffff, ink: L.ink });
+  }
   p.clip();
   // plexi glare: two hard streaks
   for (let k = 0; k < ph; k++) { const x = px0 + 40 + Math.round((ph - k) * 0.5); if (k % 2 === 0 && x < px0 + pw - 2) { p.set(x, py0 + k, lt(p.get(x, py0 + k), 0.5)); p.set(x + 1, py0 + k, lt(p.get(x + 1, py0 + k), 0.5)); } }
@@ -110,7 +116,10 @@ function paintSide(L) {
   p.fill(L.body);
   p.rect(0, Y(1.765), W, 3, L.trim); p.rect(0, Y(0.3), W, 3, L.trim); p.rect(0, Y(0.3) + 3, W, H, dk(L.body, 0.16));
   p.frame(4, 4, W - 8, H - 8, dk(L.body, 0.22)); p.rect(5, 5, W - 10, 1, lt(L.body, 0.25));
+  const ad = bakedPanel('side:' + liveryOf(L)); // the photographic side ad (tools/bake-drinks.py), if baked
+  if (ad) { p.rect(6, 34, ad.w + 8, ad.h + 8, L.trim); p.blit(ad, 10, 38); }
   // the maker's name down the panel, the mascot under it
+  if (!ad) {
   const v = x2(x2(mk(b.jp.slice(0, 5), 16, { vert: true })));
   const vx = Math.round(W / 2 - v.w / 2);
   p.mask(v, vx + 4, 44, L.ink); p.mask(v, vx, 40, L.trim);
@@ -119,6 +128,7 @@ function paintSide(L) {
   p.ell(W / 2, my + ms.h - 8, ms.w * 0.5, 14, dk(L.body, 0.25));
   p.blit(ms, Math.round(W / 2 - ms.w / 2), my);
   label(p, m5(b.en, 2), W / 2, Y(0.33) + 12, { c: L.trim, align: 'c' });
+  }
   // louvres low down towards the back, rivets along the seams
   for (let k = 0; k < 9; k++) { p.rect(18, Y(0.26) + k * 9, 70, 4, dk(L.body, 0.5)); p.rect(18, Y(0.26) + k * 9 + 4, 70, 1, lt(L.body, 0.2)); }
   for (let y = 22; y < H - 10; y += 62) { p.rect(9, y, 2, 2, lt(L.body, 0.35)); p.rect(W - 11, y, 2, 2, lt(L.body, 0.35)); }
