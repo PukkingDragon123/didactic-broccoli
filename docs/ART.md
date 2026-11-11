@@ -18,6 +18,14 @@ job now is to raise its quality without losing the look.
   detailed texture), not as smooth sculpts.
 - **Hard rules:** no white hover highlight or rim, particles are 2D pixel sprites, no soft glow blobs.
 
+## Update: mix low-poly with voxel (the owner's newest direction)
+- The voxel version's detail and realism is the anchor; low-poly is mixed in where it helps: curved and round things
+  (vehicles, bottles, cans, pipes, wheels, animals, tree limbs, people's softer forms) can use clean low-poly geometry
+  with the same detailed pixel-art textures, next to blocky voxel buildings and props. The low-poly kits and models
+  from the earlier phase are in git history (3648fb0: src/vehicles, src/props/kit, src/animals, src/town/foliage.js,
+  src/kit) and may be ported and restyled to sit with the voxels (same texture style, same lighting).
+- Never a clash: one palette, one texture style, one light; blocky stays the dominant read.
+
 ## 2D
 - UI is paper in detailed pixel art (src/ui/paper.js). Speech is plain floating text.
 - Drinks, products, posters and display cards are detailed art built from real photographs where possible, with
