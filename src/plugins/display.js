@@ -22,8 +22,18 @@ export function install(game) {
     game.save?.();
     return { ok: true, msg: `${st.name}: it will arrive at the garage shutter` };
   };
-  // new machines (bought, or rebuilt by the builder) come bare too
-  game.events.on('machine:added', (m) => P.attach(m));
+  // new machines come bare too; a machine that rebuilt its model (an upgrade) or changed series gets its display back
+  game.events.on('machineBought', (e) => e?.machine && P.attach(e.machine));
+  const known = new WeakMap();
+  let t = 0;
+  game.constructor.updaters.push((g, dt) => {
+    if ((t -= dt) > 0) return;
+    t = 1;
+    for (const m of g.machines || []) {
+      if (known.get(m) !== m.parts) { known.set(m, m.parts); P.attach(m); continue; }
+      P.refresh(m);
+    }
+  });
 
   // ---- customers: a filled display draws people in, and draws them to its machine
   const hook = () => {

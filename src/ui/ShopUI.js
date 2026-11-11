@@ -90,6 +90,7 @@ function makeThumb(game, key) {
   }
   if (kind === 'p') return T.renderObject(propMesh(a), +b, { side: 0.6, up: 0.3 });
   if (kind === 'd') return T.renderObject(game.museum.displayPreview(a), +b, { side: 0.6, up: 0.35 });
+  if (kind === 'x') return T.renderObject(game.popTops.preview(a), +b, { side: 0.5, up: 0.3 });
   return null;
 }
 
@@ -630,6 +631,13 @@ export class ShopUI {
     for (const [id, c] of Object.entries(CHARMS)) {
       const owned = s.charms.includes(id);
       out += row('charm', c.name, c.desc, owned ? this.tag('Blessing you', 'sparkle', 'gold') : this.buy(() => shop.buyCharm(g, id), { price: c.price, text: { ok: `${c.name} is on the shrine shelf. Good luck!`, icon: 'charm' } }), owned ? 'owned' : '');
+    }
+    if (g.popTops) {
+      // machine-top display cases (src/display/): delivered boxed, fitted on a machine, filled with your figures
+      out += `</div><h3 class="sui-h">${ic('display')}Machine-top displays</h3><p class="sui-note">Fit one on top of a machine and fill it with figures of that machine's series: it draws customers.</p><div class="sui-grid cards small">`;
+      for (const [id, d] of Object.entries(g.popTops.styles())) {
+        out += `<article class="sui-card prod">${thumb(`x|${id}|64`, 128, 128)}<h2>${esc(d.name)}</h2><p>${esc(d.desc)}</p>${this.buy(() => g.popTops.buy(id), { price: d.price, label: 'Order', text: { ok: `${d.name}: it will arrive at the garage shutter.`, icon: 'box', fail: 'Not enough money' } })}</article>`;
+      }
     }
     const n = s.shelves.length, max = SHELF_SLOTS.length;
     out += `</div><h3 class="sui-h">${ic('shelf')}Collection shelves</h3><div class="sui-list tight">`;

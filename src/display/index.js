@@ -47,6 +47,19 @@ export class PopDisplays {
   }
 
   styles() { return STYLES; }
+  /** A display model filled with a few sample figures (the shop page's picture). */
+  preview(style) {
+    const b = buildDisplay(style, 'mochi', { w: 0.34, d: 0.31 }, this.game.thumbs);
+    const S = SERIES_BY_ID.mochi;
+    b.slots.forEach((s, i) => {
+      const fig = makeItemMesh(S.items[i % S.items.length].key, 'normal');
+      const sz = fig.geometry?.userData?.size || new THREE.Box3().setFromObject(fig).getSize(new THREE.Vector3());
+      fig.scale.setScalar(Math.min(2.2, s.maxH / Math.max(0.005, sz.y), (s.cell - 0.006) / Math.max(0.005, sz.x)));
+      fig.position.set(s.x, s.y, s.z); fig.rotation.y = s.rot || 0;
+      b.group.add(fig);
+    });
+    return b.group;
+  }
   idOf(m) { if (!m.data.id) m.data.id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); return m.data.id; }
   of(m) { return this.s.fitted[this.idOf(m)] || null; }
   seriesOf(m) { return m.data.series || m.cardSeries || 'mochi'; }

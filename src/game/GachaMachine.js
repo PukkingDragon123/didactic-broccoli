@@ -511,6 +511,8 @@ export class GachaMachine {
     const part = this.partOf(hit);
     const yen = (v) => `¥${v.toLocaleString('en-US')}`;
     if (this.lid.busy || this.drawer.busy) return { key: '', text: '...' };
+    const pop = this.game.popTops?.machineHint?.(this, held); // a display top in its box, or a figure for the display
+    if (pop) return pop;
     // price plate
     if (part === 'priceUp' || part === 'priceDown') {
       const p = this.price, np = Math.max(PRICE_MIN, Math.min(PRICE_MAX, p + (part === 'priceUp' ? 100 : -100)));
@@ -554,6 +556,7 @@ export class GachaMachine {
     const part = this.partOf(hit);
     this.holdMode = null;
     if (this.lid.busy || this.drawer.busy) return false;
+    if (this.game.popTops?.machineUse?.(this, held)) return false;
     if (part === 'priceUp' || part === 'priceDown') { this.pressPrice(part === 'priceUp' ? 1 : -1); return false; }
     if (part === 'plate') return false;
     if (part === 'coinbox') { this.useCoinBox(); return false; }
