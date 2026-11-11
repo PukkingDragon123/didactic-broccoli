@@ -14,7 +14,8 @@ import * as THREE from 'three';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { register, lowPolyGeometry, lodGeometry, hasModel } from '../props/index.js';
+import { register, lowPolyGeometry, lodGeometry, hasModel, boxOf } from '../props/index.js';
+import { preloadAssets, assetMerged } from '../kit/assets.js';
 
 const libs = import.meta.glob('../data/props/*.js', { eager: true });
 export const PROPS = {};
@@ -28,6 +29,30 @@ for (const mod of Object.values(import.meta.glob('../props/models/*.js', { eager
 
 const FORCE_VOXEL = typeof location !== 'undefined' && /[?&]voxelprops\b/.test(location.search);
 const geoCache = new Map(), voxCache = new Map();
+
+// Props drawn with a real model (def.asset = { id, fit, ry, centerY }: Poly Haven, CC0, public/models/<id>.glb via
+// src/kit/assets.js), fitted into the prop's own box, so sizes, collisions and placements stay. The models load before
+// the world is built (top-level await), so the batchers get them synchronously; one that fails falls back to the
+// prop's modelled version.
+const ASSET_IDS = [...new Set(Object.values(PROPS).map((d) => d.asset?.id).filter(Boolean))];
+if (ASSET_IDS.length && typeof document !== 'undefined' && !FORCE_VOXEL) await preloadAssets(ASSET_IDS);
+const assetCache = new Map();
+function assetProp(id) {
+  if (assetCache.has(id)) return assetCache.get(id);
+  const def = PROPS[id], A = def?.asset;
+  let r = null;
+  if (A && !FORCE_VOXEL) {
+    const b = boxOf(id);
+    let box = b && [b.x0, b.y0, b.z0, b.x1, b.y1, b.z1];
+    if (!box) { const v = voxelPropGeometry(id)?.userData.size; if (v) box = [-v.x / 2, 0, -v.z / 2, v.x / 2, v.y, v.z / 2]; }
+    if (box) r = assetMerged(A.id, { box, fit: A.fit || 'contain', ry: A.ry || 0, centerY: !!A.centerY });
+    if (r) { r.geometry.userData.lowPoly = true; r.geometry.userData.size = new THREE.Vector3(box[3] - box[0], box[4] - box[1], box[5] - box[2]); }
+  }
+  assetCache.set(id, r);
+  return r;
+}
+/** The real model a prop is drawn with (its id), or null. */
+export const propAsset = (id) => (assetProp(id) ? PROPS[id].asset.id : null);
 
 /** The old voxel model of a prop (the fallback; also the "before" in comparisons). */
 export function voxelPropGeometry(id) {
@@ -50,8 +75,8 @@ export function voxelPropGeometry(id) {
 
 export function propGeometry(id) {
   if (geoCache.has(id)) return geoCache.get(id);
-  let geo = null;
-  if (!FORCE_VOXEL && hasModel(id)) geo = lowPolyGeometry(id);
+  let geo = assetProp(id)?.geometry || null;
+  if (!geo && !FORCE_VOXEL && hasModel(id)) geo = lowPolyGeometry(id);
   if (!geo) geo = voxelPropGeometry(id);
   geoCache.set(id, geo);
   return geo;
@@ -62,6 +87,8 @@ export function propGeometry(id) {
  * atlas page for a low-poly prop, the shared voxel materials for one that is still voxels.
  */
 export function propMaterials(id) {
+  const A = assetProp(id);
+  if (A) return A.materials;
   const page = propGeometry(id)?.userData.page;
   return page ? page.mats() : voxelMaterials('normal');
 }
@@ -71,6 +98,7 @@ export function propMaterials(id) {
  */
 export function propLodGeometry(id) {
   const g = propGeometry(id);
+  if (assetProp(id)) return g;
   return g?.userData.lowPoly ? lodGeometry(id) || g : g;
 }
 /**
@@ -99,7 +127,7 @@ export function propMesh(id, opts = {}) {
   // a prop may bring its own finished model (src/products sets PROPS[id].mesh for the things it owns): a Mesh or a
   // Group, bottom-centre origin, its own materials. def.build(v) stays as the sized stand-in for propGeometry / propSize.
   const def = PROPS[id];
-  if (def?.mesh) { const m = def.mesh(opts); m.userData.propId = id; return m; }
+  if (def?.mesh && !assetProp(id)) { const m = def.mesh(opts); m.userData.propId = id; return m; }
   const geo = propGeometry(id);
   let mesh;
   if (geo) {

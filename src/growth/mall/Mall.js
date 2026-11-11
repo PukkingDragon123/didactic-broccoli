@@ -15,9 +15,10 @@ import { playSong } from '../../room/sfx.js';
 import { propGeometry } from '../../world/props.js';
 import { capsuleCost } from '../../game/economy.js';
 import { SERIES_BY_ID } from '../../data/series/index.js';
-import { Zone, V, canvasMat, pixText, grain, goTo, sfx, brightVoxel, bright } from '../kit.js';
+import { Zone, V, canvasMat, pixText, goTo, sfx, brightVoxel, bright } from '../kit.js';
 import { IKit, imats, photoNorm } from '../../places/ikit.js';
 import { MachineSpots } from '../machines.js';
+import { viewMat } from '../views.js';
 import { Crowd, NavGrid } from '../crowd.js';
 import { slip } from '../paper.js';
 import { ORIGINS, yen } from '../data.js';
@@ -166,7 +167,7 @@ export class Mall {
     wall(X1 - X0 + 0.4, 0, Z0 - 0.1, 0);
     wall(Z1 - Z0, X1 + 0.1, 0, Math.PI / 2);
     wall(Z1 - Z0, X0 - 0.1, 0, Math.PI / 2);
-    this.front(Z, n, paint, metal, glow, wall);
+    this.front(Z, n, paint, metal, glow, wall, F);
     Z.block(X0 - 1, X1 + 1, Z0 - 1, Z0); Z.block(X1, X1 + 1, Z0, Z1 + 1); Z.block(X0 - 1, X0, Z0, Z1 + 1);
     // escalators: the pair up from here (n < 4), the pair arriving from below (n > 1)
     this.esc[n] = [];
@@ -209,9 +210,9 @@ export class Mall {
   }
 
   /** The front wall: 1F the entrance and the display windows, upstairs big windows over the station. */
-  front(Z, n, paint, metal, glow, wall) {
+  front(Z, n, paint, metal, glow, wall, F) {
     const B = Z.B, T = THEMES[n];
-    const view = canvasMat(160, 64, (x, w, h) => this.drawView(x, w, h, n), { glow: true });
+    const view = viewMat(n === 1 ? 'plaza' : 'tracks'); // the street in front (1F), the tracks below (upstairs): src/growth/views.js
     this.views ||= [];
     this.views.push(view);
     const vq = new THREE.Mesh(new THREE.PlaneGeometry(34, 13.6), view);
@@ -229,10 +230,10 @@ export class Mall {
       }
       // the storefront's frames, cill and kick plate, the column casings, the doors' header (./facade.js)
       // (the frames sit out in the wall's depth: the door leaves slide open across the inner bays' ends)
-      storefront(B, paint, metal, [[-10.5, -2.6], [2.6, 10.5]], { y0: 0.5, y1: 3.0, n: 3, transom: 2.45, zg: Z1 + 0.08 });
-      for (const x of [-11.0, 11.0]) pilaster(B, paint, metal, x, 0.9, T.wall);
+      storefront(F, [[-10.5, -2.6], [2.6, 10.5]], { y0: 0.5, y1: 3.0, n: 3, transom: 2.45, zg: Z1 + 0.08 });
+      for (const x of [-11.0, 11.0]) pilaster(F, x, 0.9, T.wall);
       B.box(paint, 4.0, CH - 2.6, 0.2, 0, 2.6, Z1 + 0.1, { tint: T.wall });
-      doorHeader(B, paint, metal, -2.0, 2.0, 2.56);
+      doorHeader(F, -2.0, 2.0, 2.56);
       this.doors = [];
       const frameGeo = doorFrame(1.0, 2.5), frameMat = Z.mat(new THREE.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 0.6, roughness: 0.3 }));
       for (const s of [-1, 1]) for (const k of [0, 1]) {
@@ -255,11 +256,11 @@ export class Mall {
         B.box(paint, x1 - x0, 0.12, 0.22, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: 0x3a3a40 });
         B.box(paint, x1 - x0, CH - 3.1, 0.2, (x0 + x1) / 2, 3.1, Z1 + 0.1, { tint: T.wall });
         pane(x0, x1, 1.0, 3.1);
-        B.box(paint, x1 - x0 + 0.1, 0.13, 0.17, (x0 + x1) / 2, 3.1, Z1 - 0.085, { tint: T.wall, k: 1.03, bevel: 0.01 }); // the pelmet
+        F.box('wallpaper', x0 - 0.05, 3.1, Z1 - 0.17, x1 + 0.05, 3.23, Z1, { tint: T.wall, k: 1.03, bevel: 0.01 }); // the pelmet
       }
-      storefront(B, paint, metal, [[-11.5, -2.5], [2.5, 11.5]], { y0: 1.0, y1: 3.1, n: 4, transom: 2.5, vents: true, cill: 'board' });
-      for (const x of [-12.0, 12.0]) pilaster(B, paint, metal, x, 0.8, T.wall);
-      for (const x of [-2.15, 2.15]) pilaster(B, paint, metal, x, 0.6, T.wall);
+      storefront(F, [[-11.5, -2.5], [2.5, 11.5]], { y0: 1.0, y1: 3.1, n: 4, transom: 2.5, vents: true, cill: 'board' });
+      for (const x of [-12.0, 12.0]) pilaster(F, x, 0.8, T.wall);
+      for (const x of [-2.15, 2.15]) pilaster(F, x, 0.6, T.wall);
       Z.block(X0, X1, Z1, Z1 + 1);
       this.windows ||= {};
       this.windows[n] = true;
@@ -268,26 +269,6 @@ export class Mall {
       Z.block(-8.2, -5.8, Z1 - 1.0, Z1); Z.block(5.8, 8.2, Z1 - 1.0, Z1);
     }
   }
-  /** The view out of the windows: the station plaza (1F) or roofs and the tracks (upstairs), dusk or day. */
-  drawView(x, w, h, n) {
-    const R = (c, a, b, ww, hh) => { x.fillStyle = c; x.fillRect(a, b, ww, hh); };
-    R('#8ab4d8', 0, 0, w, h); R('#a8c8e0', 0, 16, w, 12); R('#c8d8e8', 0, 26, w, 8);
-    const base = n === 1 ? 44 : 34 + n * 3;
-    for (let i = 0; i < 12; i++) { const bw = 10 + (i * 7) % 9, bh = 10 + (i * 13) % 18; R(['#8a8e9a', '#9aa0aa', '#7a7e8a'][i % 3], i * 14 - 4, base - bh, bw, bh); for (let k = 0; k < 3; k++) R('#e8e0a8', i * 14 - 2 + k * 3, base - bh + 3, 1, 1); }
-    if (n === 1) {
-      R('#6a6e78', 0, 44, w, 20); R('#5a5e66', 0, 50, w, 2);
-      R('#c8c4bc', 40, 30, 80, 14); R('#2a5aa8', 40, 30, 80, 3); pixText(x, '森尾駅', 80, 31, { size: 8, align: 'center', color: '#fbf8f0' }); // the station building
-      for (let i = 0; i < 8; i++) R(['#d8463a', '#3a7ad8', '#f2c230', '#5ab060'][i % 4], 8 + i * 19, 52, 3, 6); // people on the plaza
-      R('#3a3a42', 0, 60, w, 4);
-    } else {
-      R('#4a4e58', 0, base, w, 3); R('#c8c8c0', 0, base + 3, w, 1); // the elevated tracks
-      R('#8a9a5a', 20, base - 6, 56, 6); R('#d8d4c8', 22, base - 5, 52, 3); for (let i = 0; i < 6; i++) R('#9ac8e8', 24 + i * 8, base - 5, 5, 2); // a train
-      R('#6a6a72', 0, base + 4, w, h - base - 4);
-      for (let i = 0; i < 20; i++) R(['#b87a5a', '#8a8e94', '#a89a8a'][i % 3], i * 8, base + 6 + (i % 3) * 2, 7, h);
-    }
-    grain(x, 0, 0, w, h, ['#ffffff10', '#00000010'], 0.04, n);
-  }
-
   /** A slice of the floor above (y = FH) or below (y = -FH) seen through a well: tiles, a railing, a ceiling, walls of
    *  machines painted at its edges. */
   stub(Z, n, m, y, well, gapBelow = null) {

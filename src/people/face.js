@@ -25,6 +25,8 @@ export function exprParams(name, out = {}) {
 
 const LIGHT = (() => { const l = [0.12, 0.6, 0.79]; const n = Math.hypot(...l); return l.map((v) => v / n); })();
 const INK = [26, 18, 18];
+// the face is modelled now (src/people/base.js): the painted relief only adds a touch of shading on top
+const RELIEF = 0.14;
 
 export class FacePainter {
   /** block: { x, y, w, h, x0, y1, dens } (atlas px), pix: the atlas Pix */
@@ -39,6 +41,7 @@ export class FacePainter {
       earTopY: Y(P.earTop), earBotY: Y(P.earBot),
     };
     L.eyeX = L.hw * (kid ? 0.4 : 0.385);
+    if (P.face) L.eyeX = P.face.eyeX * d; // the modelled eye sockets (src/people/base.js)
     L.ew = L.hw * (kid ? 0.225 : 0.185) * (F.eyeW || 1);
     L.eh = s * (kid ? 2.7 : f ? 2.2 : 2.0) * (F.eyeH || 1) * (F.lid === 'mono' && !kid ? 0.9 : 1);
     L.tilt = s * (F.tilt ?? 0.7);
@@ -209,7 +212,7 @@ export class FacePainter {
     for (let j = y0; j < y1; j++) for (let i = x0; i < x1; i++) {
       const x = i + 0.5, y = j + 0.5, q = j * B.w + i;
       const k0 = (j - y0 + 1) * hw + (i - x0 + 1);
-      const gx = (hb[k0 + 1] - hb[k0 - 1]) * 0.5, gy = (hb[k0 + hw] - hb[k0 - hw]) * 0.5;
+      const gx = (hb[k0 + 1] - hb[k0 - 1]) * RELIEF, gy = (hb[k0 + hw] - hb[k0 - hw]) * RELIEF;
       const nl = 1 / Math.sqrt(gx * gx + gy * gy + 1);
       const dif = Math.max(0, (-gx * LIGHT[0] + gy * LIGHT[1] + LIGHT[2]) * nl);
       const cav = (hb[k0 - 1] + hb[k0 + 1] + hb[k0 - hw] + hb[k0 + hw]) * 0.25 - hb[k0];
@@ -234,8 +237,10 @@ export class FacePainter {
   gutter() {
     const B = this.B, d = this.pix.d, W = this.pix.w;
     const cp = (sx, sy, dx, dy) => { const a = ((B.y + sy) * W + B.x + sx) * 4, b = ((B.y + dy) * W + B.x + dx) * 4; d[b] = d[a]; d[b + 1] = d[a + 1]; d[b + 2] = d[a + 2]; d[b + 3] = d[a + 3]; };
-    for (let i = -1; i <= B.w; i++) { const c = Math.max(0, Math.min(B.w - 1, i)); cp(c, 0, i, -1); cp(c, B.h - 1, i, B.h); }
-    for (let j = 0; j < B.h; j++) { cp(0, j, -1, j); cp(B.w - 1, j, B.w, j); }
+    for (let g = 1; g <= 2; g++) {
+      for (let i = -g; i < B.w + g; i++) { const c = Math.max(0, Math.min(B.w - 1, i)); cp(c, 0, i, -g); cp(c, B.h - 1, i, B.h - 1 + g); }
+      for (let j = 0; j < B.h; j++) { cp(0, j, -g, j); cp(B.w - 1, j, B.w - 1 + g, j); }
+    }
   }
 
   brows(o, x, y, i, j, E) {
@@ -254,8 +259,10 @@ export class FacePainter {
     const dist = Math.abs(y - yc + (tc < 0.25 ? (0.25 - tc) * 1.5 * s : 0));
     let a = sstep(th / 2 + 0.7, th / 2 - 0.3, dist) * sstep(-0.08, 0.14, t) * sstep(1.08, 0.86, t);
     if (a <= 0) return;
-    a *= 0.62 + h2(i, j, 41) * 0.5 - (tc < 0.15 ? 0.25 : 0);
-    const k = 0.75 + h2(i, j + 3, 42) * 0.4;
+    // pixel art: a solid brow in two tones (no per-texel speckle), soft only at the inner start
+    a = a > 0.45 ? 1 : a > 0.15 ? 0.55 : 0;
+    if (tc < 0.12) a *= 0.6;
+    const k = dist < th * 0.25 ? 0.82 : 1;
     const c = this.brow, bc = this.bc || (this.bc = [0, 0, 0]);
     bc[0] = c[0] * k; bc[1] = c[1] * k; bc[2] = c[2] * k;
     over(o, bc, Math.min(1, a));

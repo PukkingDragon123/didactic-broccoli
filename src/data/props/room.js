@@ -430,6 +430,7 @@ const room = {
   },
 
   room_clock: {
+    asset: { id: 'wall_clock' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Wall Clock', voxel: 0.005,
     build(v) {
       v.cylinder(0, 0, 0, 28, 4, gloss(0x2a6a5a), 'z');

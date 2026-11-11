@@ -4,7 +4,7 @@
 //   (trim atlas, blended decals, alpha-cut boards), town.indoor(mat) (a variant the low sun does not reach).
 import * as THREE from 'three';
 import { hazardTexture } from './tex.js';
-import { photoTex, PHOTO_TEX } from '../kit/photoTex.js';
+import { photoTex, PHOTO_TEX, pixelCanvas } from '../kit/photoTex.js';
 import { townAtlas } from './atlas.js';
 import { voxelMaterials } from '../voxel/materials.js';
 
@@ -69,10 +69,19 @@ export function makeMats(t) {
   t.tm = new THREE.MeshStandardMaterial({ map: A.trim.tex, vertexColors: true, roughness: 0.6 }); t.tm.name = 'trim';
   t.dm = new THREE.MeshStandardMaterial({ map: A.decal.tex, vertexColors: true, roughness: 0.95, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }); t.dm.name = 'decal';
   t.cut = new THREE.MeshStandardMaterial({ map: A.decal.tex, vertexColors: true, roughness: 0.85, alphaTest: 0.5, side: THREE.DoubleSide }); t.cut.name = 'cutout';
-  // chain-link mesh (alpha-cut, repeating 0.25 m)
+  // chain-link mesh (alpha-cut, repeating 0.25 m), pixelled by hand: one diamond of twisted wire, a lit upper edge and
+  // a shaded lower one on each strand, the knuckles where two strands cross a step darker; its mips keep the wire's
+  // coverage so the mesh does not thin out or shimmer at a distance
   const fc = document.createElement('canvas'); fc.width = fc.height = 64;
-  const fx = fc.getContext('2d'); fx.strokeStyle = '#e8ece6'; fx.lineWidth = 5; fx.beginPath(); fx.moveTo(0, 32); fx.lineTo(32, 0); fx.lineTo(64, 32); fx.lineTo(32, 64); fx.closePath(); fx.stroke();
-  const ft = new THREE.CanvasTexture(fc); ft.wrapS = ft.wrapT = THREE.RepeatWrapping; ft.colorSpace = THREE.SRGBColorSpace; ft.anisotropy = 4; ft.repeat.set(4, 4);
+  const fx = fc.getContext('2d'), WIRE = ['#f2f4ee', '#dfe3dc', '#b8beb6', '#9aa098'];
+  const dot = (px, py, k) => { fx.fillStyle = WIRE[k]; fx.fillRect(((px % 64) + 64) % 64, ((py % 64) + 64) % 64, 1, 1); };
+  for (let i = 0; i < 64; i++) {
+    // the two strands of the diamond, 3 texels thick: highlight, body, shade
+    for (const cy of [32 - i, i - 32]) { dot(i, cy - 1, 0); dot(i, cy, 1); dot(i, cy + 1, 2); }   // x + y = 32 and x - y = 32
+  }
+  for (const [kx, ky] of [[0, 32], [32, 0], [32, 64], [64, 32]]) for (let j = -1; j <= 1; j++) dot(kx, ky + j, 3);   // the knuckles
+  const ft = new THREE.CanvasTexture(fc); ft.wrapS = ft.wrapT = THREE.RepeatWrapping; ft.colorSpace = THREE.SRGBColorSpace; ft.repeat.set(4, 4);
+  pixelCanvas(ft, { alphaTest: 0.4, aniso: 4 });
   t.fence = new THREE.MeshStandardMaterial({ map: ft, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.4, side: THREE.DoubleSide }); t.fence.name = 'fence';
   t.glass = new THREE.MeshPhysicalMaterial({ color: 0xeaf2f0, transparent: true, opacity: 0.18, roughness: 0.05, clearcoat: 1, depthWrite: false });
   // indoor variants

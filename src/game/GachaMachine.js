@@ -21,8 +21,7 @@ import { capsuleColor, capsuleRadius, capsuleSize, capsuleStyle, capsuleShape, p
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capacityFor, crankTime, rollCapsule, MACHINE_TYPES } from './economy.js';
 import { bannerTexture } from '../gfx/banner.js';
-import { RISER } from '../gachakit/machine.js';
-import { makeItemMesh, itemGeometry, hasItemGeometry } from './collectibles.js';
+import { itemGeometry, hasItemGeometry } from './collectibles.js';
 import { mergeByMaterial, partsBox } from '../voxel/merge.js';
 import { Pix } from '../gfx/pix.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -97,6 +96,7 @@ export class GachaMachine {
     this.drawPrice();
     this.updateSoldOut();
     this.registerInteract();
+    this.game.popTops?.attach?.(this);
   }
 
   /** Tear down and rebuild in place. */
@@ -225,40 +225,11 @@ export class GachaMachine {
     const tex = bannerTexture(series, this.game.thumbs, { faded: this.data.type === 'retro' });
     const m = this.bannerMesh.material;
     m.map = tex; m.color.set(0xffffff); m.needsUpdate = true; // (lit by the room through the case: no emissive)
-    const A = this.domeAnchor;
-    A.clear();
+    // (machines come without a sample topper now: the player fits a POP display and fills it, src/display/)
+    this.domeAnchor.clear();
     this.disposeFigures();
-    const S = SERIES_BY_ID[series];
-    const D = this.L.dome;
-    const pick = (r, n = 0) => S.items.filter((i) => i.rarity === r)[n];
-    const wide = D.w >= 0.3;
-    const keys = (wide ? [pick('common', 0), pick('rare'), pick('ultra'), pick('uncommon', 0)] : [pick('common', 0), pick('ultra'), pick('uncommon', 0)]).filter(Boolean).map((i) => i.key);
-    const turn = new THREE.Group();
-    A.add(turn);
-    this.turntable = this.spec.style.crown ? turn : null;
-    const n = keys.length;
-    const cell = (D.w - 0.02) / n, rise = RISER[this.spec.style.header] || 0; // (they stand on the topper's display step)
-    // performance: the sample figures are drawn as one merged mesh (one draw call per material, not per figure and
-    // material). Each figure keeps its own level of detail as in src/game/collectibles.js (coarse voxels, the up-res
-    // ones within 1.7 m of the camera, back beyond 2.1 m): the merged geometry is the matching mix (see updateFigures).
-    const figs = keys.map((k, i) => {
-      const fig = makeItemMesh(k, 'normal');
-      const sz = fig.geometry.userData.size;
-      // (a small figure is shown a little larger than life, so the topper reads from across the room)
-      const sc = Math.min(1.5, (D.h - rise - 0.012) / sz.y, (cell - 0.008) / Math.max(sz.x, sz.z * 0.8));
-      fig.scale.setScalar(sc);
-      fig.position.set(-D.w / 2 + 0.01 + cell * (i + 0.5), rise, (i % 2 ? -0.02 : 0.015));
-      fig.rotation.y = -(i - (n - 1) / 2) * 0.28;
-      fig.updateMatrix();
-      const lod = fig.userData.lod; // (unset: one detail level only)
-      return { key: k, matrix: fig.matrix, pos: fig.position, lod: !!lod, hi: !lod || lod.hi, geo: fig.geometry, mats: fig.material };
-    });
-    if (!figs.length) return;
-    const F = this.figs = { list: figs, turn, t: 0, cache: new Map(), mask: -1, mesh: new THREE.Mesh(undefined, figs[0].mats) };
-    F.mesh.castShadow = false; F.mesh.receiveShadow = true;
-    F.mesh.userData.figures = keys;
-    this.setFigureMask(figs.reduce((m, f, i) => m | (f.hi ? 1 << i : 0), 0));
-    turn.add(F.mesh);
+    this.turntable = null;
+    this.game.popTops?.refresh?.(this);
   }
 
   disposeFigures() { if (this.figs) for (const g of this.figs.cache.values()) g.dispose(); this.figs = null; }
@@ -453,8 +424,6 @@ export class GachaMachine {
     box(O.x1, hw, L.y0, O.y1 + 0.004, -hd, hd);
     box(O.x0, O.x1, L.y0, O.y1, -hd, L.front - 0.14);
     box(-hw - 0.02, hw + 0.02, 0, L.y0, -hd - 0.02, hd + 0.02, 'wood');
-    const D = L.dome;
-    box(-D.w / 2, D.w / 2, L.top, L.domeTop, D.z - D.d / 2, D.z + D.d / 2, 'glass');
     const rampQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.32);
     const rc = this.local(0, O.y0 + 0.015, L.front - 0.07);
     this.colliders.push(ph.addBox({ center: rc, half: new THREE.Vector3((O.x1 - O.x0) / 2, 0.012, 0.08), quat: q.clone().multiply(rampQ), material: 'metal' }));
@@ -520,6 +489,9 @@ export class GachaMachine {
     }
     const box = this.heldBox(held);
     if (box) return this.restockHint(box);
+    // a POP display to fit, or a figure for the one that's on (src/display/)
+    const top = this.game.popTops?.machineHint?.(this, held);
+    if (top) return top;
     if (held) return null;
     if (this.lidOpen) return { key: 'LMB', text: 'Close and lock the lid', sub: `${this.data.stock.length}/${this.capacity} capsules inside` };
     const S = SERIES_BY_ID[this.data.series];
@@ -555,6 +527,7 @@ export class GachaMachine {
     if (part === 'coinbox') { this.useCoinBox(); return false; }
     const box = this.heldBox(held);
     if (box) return this.useRestock(box);
+    if (held && this.game.popTops?.machineUse?.(this, held)) return false;
     if (held) return false;
     if (this.lidOpen) { this.closeLid(); return false; }
     if (this.state === 'idle') {
@@ -917,6 +890,7 @@ export class GachaMachine {
   }
 
   dispose() {
+    this.game.popTops?.detach?.(this);
     this.game.scene.remove(this.root);
     this.disposeFigures();
     this.rope.dispose();

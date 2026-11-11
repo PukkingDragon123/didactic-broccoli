@@ -9,7 +9,7 @@ export function accSegments(spec, P, J) {
   const add = (part, bone, y0, y1, b, t, o) => { const x = seg(part, bone, 'acc', y0, y1, b, t, o); S.push(x); return x; };
   const lx = P.hipX, tw = P.thighX;
   // --- skirts (on the skirt bone, which follows the thighs)
-  const sk = spec.bottom.kind === 'skirt' ? spec.bottom.cut : null;
+  const sk = spec.bottom.kind === 'skirt' && !['pleated', 'pencil', 'long', 'mini'].includes(spec.bottom.cut) ? spec.bottom.cut : null; // (lofted: src/people/garments.js)
   if (sk) {
     const hem = { pleated: P.kneeY + 0.075 * H, pencil: P.kneeY - 0.02 * H, long: P.kneeY - 0.13 * H, mini: P.hipY - 0.085 * H }[sk];
     const flare = { pleated: 1.3, pencil: 0.98, long: 1.3, mini: 1.22 }[sk];

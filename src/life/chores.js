@@ -7,6 +7,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { propMesh } from '../world/props.js';
+import { coinStacksMesh } from '../props/things/money.js';
 import { GARAGE, MACHINE_SLOTS } from '../world/Garage.js';
 import { Pix } from '../gfx/pix.js';
 import { dustPatch, dissolveMat } from './art.js';
@@ -441,16 +442,9 @@ export class Chores {
   // ------------------------------------------------------------------ the cash tray on the counter
   buildTray(done = false) {
     const g = this.game, f = this.f;
-    // stacks of 100-yen coins in the tray: one merged mesh
-    const silver = new THREE.MeshStandardMaterial({ color: 0xd8dbe2, metalness: 0.85, roughness: 0.3 });
-    const stacks = [];
-    for (let i = 0; i < 6; i++) {
-      const h = 0.022 * (0.6 + (i * 0.37 % 1) * 0.6);
-      const c = new THREE.CylinderGeometry(0.0115, 0.0115, h, 8);
-      c.translate(-0.05 + (i % 3) * 0.035, 0.005 + h / 2, -0.02 + Math.floor(i / 3) * 0.035);
-      stacks.push(c);
-    }
-    this.coins = new THREE.Mesh(mergeGeometries(stacks), silver);
+    // stacks of 100-yen coins in the tray: one modelled mesh (src/props/things/money.js)
+    this.coins = coinStacksMesh();
+    this.coins.castShadow = false;
     this.coins.position.set(TRAY.x, TRAY.y, TRAY.z);
     this.coins.rotation.y = 0.25;
     this.coins.visible = done || !!f.tray;

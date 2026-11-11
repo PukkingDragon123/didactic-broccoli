@@ -8,10 +8,13 @@
 //       prints()       printed matter as detailed pixel art (nearest filtering): the sign board, the noren's crest and
 //                      kana, the lanterns, the stickers and plates of a real Japanese garage (火の用心, 消火器, 分電盤,
 //                      点検済, 安全第一 ...)  -> { tex, rect, px }
+//       The sign, the noren and their kana carry the shop's own logo and name (src/logo/logo.js): refreshShopPrints()
+//       repaints them after 'logo:changed'; signPreview(L) / norenPreview(L) paint them for the editor.
 // Every name, mark and maker here is made up.
 import * as THREE from 'three';
-import { Pix } from './pix.js';
+import { Pix, FONT_EN, FONT_JP } from './pix.js';
 import { photoTex, PHOTO_TEX } from '../kit/photoTex.js';
+import { activeLogo, paintLogo } from '../logo/logo.js';
 
 const hx = (c) => '#' + c.toString(16).padStart(6, '0');
 /** A tone of colour c: k < 1 darker (toward a cool plum shadow), k > 1 lighter (toward warm white). */
@@ -143,22 +146,48 @@ const screws = (p, x, y, w, h, c = 0x8a8e90) => { for (const [i, j] of [[4, 4], 
 const PRINTS = {
   // the sign board on the false front: enamelled tin, 4.0 x 0.8 m (256 px/m)
   signBoard: [1020, 205, (p, x, y, w, h) => {
+    const L = logoNow();
     p.rect(x, y, w, h, CREAM); p.rect(x, y, w, 6, tone(CREAM, 1.06)); p.rect(x, y + h - 8, w, 8, tone(CREAM, 0.86));
     p.frame(x + 8, y + 8, w - 16, h - 16, RED); p.frame(x + 9, y + 9, w - 18, h - 18, RED); p.frame(x + 14, y + 14, w - 28, h - 28, tone(RED, 0.7));
-    crest(p, x + 104, y + 100, 70, RED, CREAM);
-    p.text('ガチャガレージ', x + 198 + 3, y + 22 + 3, { size: 112, color: tone(RED, 0.55) });
-    p.text('ガチャガレージ', x + 198, y + 22, { size: 112, color: RED });
-    p.rect(x + 200, y + 146, 780, 3, INK);
-    p.text('カプセルトイ・だがし・おもちゃ', x + 204, y + 156, { size: 32, color: INK });
-    p.text('☎22-5871', x + 716, y + 156, { size: 32, color: INK });
+    if (L.custom) paintLogo(p, x + 40, y + 36, 128, { L }); else crest(p, x + 104, y + 100, 70, RED, CREAM);
+    if (!L.named) {
+      p.text('ガチャガレージ', x + 198 + 3, y + 22 + 3, { size: 112, color: tone(RED, 0.55) });
+      p.text('ガチャガレージ', x + 198, y + 22, { size: 112, color: RED });
+      p.rect(x + 200, y + 146, 780, 3, INK);
+      p.text('カプセルトイ・だがし・おもちゃ', x + 204, y + 156, { size: 32, color: INK });
+      p.text('☎22-5871', x + 716, y + 156, { size: 32, color: INK });
+    } else {
+      // the player's name, as big as fits; the English name, the trade and the number on the line under it
+      let size = 112;
+      while (size > 32 && p.measure(L.jp, size, FONT_JP) > 776) size -= 16;
+      const ty = y + 22 + Math.round((112 - size) * 0.5);
+      p.text(L.jp, x + 198 + 3, ty + 3, { size, color: tone(RED, 0.55) });
+      p.text(L.jp, x + 198, ty, { size, color: RED });
+      p.rect(x + 200, y + 146, 780, 3, INK);
+      const tel = '☎22-5871', telW = p.measure(tel, 32, FONT_JP), ew = p.measure(L.en, 32, FONT_EN);
+      p.text(L.en, x + 204, y + 158, { size: 32, color: RED, font: FONT_EN });
+      const room = 776 - ew - telW - 40;
+      const trade = ['カプセルトイ・だがし', 'カプセルトイ', 'ガチャ'].find((t) => p.measure(t, 32, FONT_JP) <= room);
+      if (trade) p.text(trade, x + 204 + ew + 20, y + 156, { size: 32, color: INK });
+      p.text(tel, x + 980 - telW, y + 156, { size: 32, color: INK });
+    }
     // enamel chipped at the bolts and along the lower edge, rust showing
     for (const [i, j] of [[26, 26], [w - 30, 26], [26, h - 30], [w - 30, h - 30], [w / 2, 22], [w / 2, h - 28]]) { p.circle(x + i, y + j, 9, 0x9a5a36); p.circle(x + i, y + j, 5, 0x5a3a2a); p.rect(x + i - 2, y + j + 8, 4, 22, 0xb07848, 150); }
     for (const [i, ww] of [[330, 40], [640, 26], [870, 54]]) { p.rect(x + i, y + h - 12, ww, 12, 0x9a5a36); p.rect(x + i + 4, y + h - 16, ww - 12, 5, 0xb07848); }
   }],
   // noren: what is resist-dyed white on the three indigo panels (256 px/m, 0.66 x 0.72 m each)
-  norenL: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); vtext(p, 'ガチャ', x + w / 2, y + 22, 48, WHITE, 2); }],
-  norenC: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); crest(p, x + (w >> 1), y + 98, 60, WHITE); }],
-  norenR: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); vtext(p, 'ガレージ', x + w / 2, y + 26, 32, WHITE, 6); }],
+  norenL: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); norenName(p, x, y, w, 0); }],
+  norenC: [169, 184, (p, x, y, w, h) => {
+    noren(p, x, y, w, h);
+    const L = logoNow(), s = L.custom ? (L.size >= 64 ? 128 : 96) : 0;
+    if (!s) { crest(p, x + (w >> 1), y + 98, 60, WHITE); return; }
+    // one ink: resist-dyed white like the crest; several: printed in its own inks on a dyed white patch
+    const x0 = x + ((w - s) >> 1), y0 = y + 98 - (s >> 1), inks = new Set(L.px.filter((v) => v));
+    if (inks.size <= 1) { paintLogo(p, x0, y0, s, { L, mono: WHITE }); return; }
+    for (let j = -6; j < s + 6; j++) for (let i = -6; i < s + 6; i++) { const ex = Math.max(0, -i, i - s + 1), ey = Math.max(0, -j, j - s + 1); if (ex * ex + ey * ey <= 36) p.px(x0 + i, y0 + j, WHITE); }
+    paintLogo(p, x0, y0, s, { L });
+  }],
+  norenR: [169, 184, (p, x, y, w, h) => { noren(p, x, y, w, h); norenName(p, x, y, w, 1); }],
   // a paper lantern's skin, wrapped round (u) the body: red paper, bamboo ribs, the shop's kana front and back
   lantern: [256, 128, (p, x, y, w, h) => {
     p.rect(x, y, w, h, 0xd6382e);
@@ -243,23 +272,60 @@ const PRINTS = {
   // the fluorescent fitting's rating label and the pull-cord tag
   tag: [28, 44, (p, x, y, w, h) => { p.rect(x, y, w, h, 0xf2e8c8); p.frame(x, y, w, h, 0x9a8a60); p.circle(x + (w >> 1), y + 6, 3, 0x5a5040); vtext(p, '点灯', x + (w >> 1), y + 12, 16, INK, 0); }],
 };
+/** Half the shop's name set upright on a side panel of the noren (ガチャ | ガレージ by default). */
+function norenName(p, x, y, w, side) {
+  const L = logoNow();
+  if (!L.named) { if (side) vtext(p, 'ガレージ', x + w / 2, y + 26, 32, WHITE, 6); else vtext(p, 'ガチャ', x + w / 2, y + 22, 48, WHITE, 2); return; }
+  const ch = [...L.jp], k = Math.ceil(ch.length / 2), part = (side ? ch.slice(k) : ch.slice(0, k)).join('');
+  const n = [...part].length;
+  if (!n) return;
+  const size = n <= 3 ? 48 : 32, gap = n <= 3 ? 2 : n <= 4 ? 6 : 0, tall = n * size + (n - 1) * gap;
+  vtext(p, part, x + w / 2, y + 14 + Math.max(0, Math.round((164 - tall) / 2)), size, WHITE, gap);
+}
 /** A noren panel's dye-resist marks only (the indigo cloth itself is a photo): the pale band of its hanging loops. */
 function noren(p, x, y, w, h) { for (let i = 10; i < w; i += 40) p.rect(x + i, y, 14, 10, 0x8a9cc0); void h; }
 
 let printsOut = null;
+let PAINT_L = null; // the logo the painters draw (a preview's); null: the active one
+const logoNow = () => PAINT_L || activeLogo();
 /** The print sheet: { tex, rect(name) -> [u0, v0, u1, v1], px(name) -> [w, h] } (pixel art, nearest). */
 export function prints() {
   if (printsOut) return printsOut;
-  const W = 1024, H = 1024, p = new Pix(W, H, 7), rects = {}, sizes = {};
+  const W = 1024, H = 1024, p = new Pix(W, H, 7), rects = {}, sizes = {}, at = {};
   let sx = 0, sy = 0, sh = 0;
   for (const [name, [w, h, paint]] of Object.entries(PRINTS)) {
     if (sx + w + 4 > W) { sx = 0; sy += sh; sh = 0; }
     paint(p, sx + 2, sy + 2, w, h);
-    rects[name] = [(sx + 2) / W, 1 - (sy + 2 + h) / H, (sx + 2 + w) / W, 1 - (sy + 2) / H]; sizes[name] = [w, h];
+    rects[name] = [(sx + 2) / W, 1 - (sy + 2 + h) / H, (sx + 2 + w) / W, 1 - (sy + 2) / H]; sizes[name] = [w, h]; at[name] = [sx + 2, sy + 2];
     sx += w + 4; sh = Math.max(sh, h + 4);
   }
   if (sy + sh > H) console.warn('garage print sheet is full');
   const tex = p.texture();
   tex.name = 'garage:prints';
-  return (printsOut = { tex, rect: (n) => rects[n], px: (n) => sizes[n] });
+  return (printsOut = { tex, rect: (n) => rects[n], px: (n) => sizes[n], pix: p, at });
 }
+
+const SHOP_PRINTS = ['signBoard', 'norenL', 'norenC', 'norenR'];
+/** Repaint the prints that carry the shop's logo and name (after 'logo:changed'). */
+export function refreshShopPrints() {
+  if (!printsOut) return;
+  const P = printsOut, p = P.pix;
+  p.flush();
+  for (const n of SHOP_PRINTS) { const [x, y] = P.at[n], [w, h] = P.px(n); p.ctx.clearRect(x - 1, y - 1, w + 2, h + 2); }
+  p.pull();
+  for (const n of SHOP_PRINTS) { const [x, y] = P.at[n], [w, h] = P.px(n); PRINTS[n][2](p, x, y, w, h); }
+  p.flush();
+  P.tex.needsUpdate = true;
+}
+/** One shop print painted on its own canvas with logo L (the editor's live preview). */
+function previewOf(names, L, gap = 0, bg = null) {
+  const sz = names.map((n) => PRINTS[n]), W = sz.reduce((a, s) => a + s[0], 0) + gap * (names.length - 1), H = Math.max(...sz.map((s) => s[1]));
+  const p = new Pix(W, H, 7);
+  if (bg !== null) p.fill(bg);
+  PAINT_L = L;
+  try { let x = 0; for (const [w, h, paint] of sz) { paint(p, x, 0, w, h); x += w + gap; } } finally { PAINT_L = null; }
+  p.flush();
+  return p.canvas;
+}
+export const signPreview = (L) => previewOf(['signBoard'], L);
+export const norenPreview = (L) => previewOf(['norenL', 'norenC', 'norenR'], L, 6, INDIGO);

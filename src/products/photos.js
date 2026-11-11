@@ -10,11 +10,41 @@ import { Px, NONE } from './px.js';
 export const PHOTO_NAMES = ['melon', 'grapes', 'lemon', 'orange', 'mikan', 'beans', 'coffee', 'teafield', 'teacup', 'cows', 'corn', 'cornsoup', 'plum', 'whisky', 'sake', 'ramen_shoyu', 'ramen_tonkotsu', 'ramen_miso', 'onigiri', 'pudding', 'cat', 'fuji', 'wave', 'choco', 'wheat', 'buns', 'asagao', 'oden', 'grapefruit', 'gyoza', 'strawberry', 'sardines', 'curry'];
 const data = new Map(), cache = new Map();
 let ready = null;
+// The baked windows: tools/bake-art.py reduces every photo window a label asks for (and, for fruit and cups, a real
+// cut-out of the thing from an Open Images segmentation mask) to pixel art at exactly that size, on one sheet:
+// public/img/art/labels.png + labels.json ({ "name|WxH|shape": [x, y, w, h] }). A window not on the sheet is reduced
+// here as before. PHOTO_REQUESTS lists what was asked for (the bake tool's shopping list, see src/dev/art.js).
+let baked = null;
+export const PHOTO_REQUESTS = new Map();
+const bakedKey = (name, w, h, o) => name + '|' + w + 'x' + h + '|' + (o.shape === 'circle' ? 'circle' : 'rect');
+function loadBaked() {
+  const base = document.baseURI;
+  return fetch(new URL('img/art/labels.json', base).href).then((r) => (r.ok ? r.json() : null)).then((index) => new Promise((res) => {
+    if (!index) return res();
+    const img = new Image();
+    img.onload = () => {
+      try { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0); baked = { index, w: img.width, d: g.getImageData(0, 0, img.width, img.height).data }; } catch (e) { /* reduced at runtime instead */ }
+      res();
+    };
+    img.onerror = () => res();
+    img.src = new URL('img/art/labels.png', base).href;
+  })).catch(() => {});
+}
+function fromBaked(key) {
+  const r = baked?.index[key];
+  if (!r) return null;
+  const [X, Y, w, h] = r, p = new Px(w, h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const k = ((Y + y) * baked.w + X + x) * 4;
+    if (baked.d[k + 3] > 127) p.d[y * w + x] = (baked.d[k] << 16) | (baked.d[k + 1] << 8) | baked.d[k + 2];
+  }
+  return p;
+}
 /** Resolves when every photo has loaded (or failed: those are simply drawn by hand). */
 export function whenPhotosReady() {
   if (ready) return ready;
   if (typeof document === 'undefined') return (ready = Promise.resolve());
-  ready = Promise.all(PHOTO_NAMES.map((n) => new Promise((res) => {
+  ready = Promise.all([loadBaked(), ...PHOTO_NAMES.map((n) => new Promise((res) => {
     const img = new Image();
     img.onload = () => {
       try { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0); data.set(n, { w: img.width, h: img.height, d: g.getImageData(0, 0, img.width, img.height).data }); } catch (e) { /* drawn by hand instead */ }
@@ -22,7 +52,7 @@ export function whenPhotosReady() {
     };
     img.onerror = () => res();
     img.src = new URL('img/photos/products/' + n + '.jpg', document.baseURI).href;
-  }))).then(() => { cache.clear(); });
+  }))]).then(() => { cache.clear(); });
   return ready;
 }
 export const hasPhoto = (name) => data.has(name);
@@ -46,10 +76,14 @@ function inks(px, n) {
  * default the middle), spread: dither strength (36), sat, con }
  */
 export function photo(name, w, h, o = {}) {
-  const src = data.get(name);
-  if (!src) return null;
+  const bk = bakedKey(name, w, h, o);
+  if (!PHOTO_REQUESTS.has(bk)) PHOTO_REQUESTS.set(bk, { name, w, h, shape: o.shape === 'circle' ? 'circle' : 'rect', fx: o.fx, fy: o.fy });
   const key = name + '|' + w + '|' + h + '|' + JSON.stringify(o);
   if (cache.has(key)) return cache.get(key);
+  const b = fromBaked(bk);
+  if (b) { cache.set(key, b); return b; }
+  const src = data.get(name);
+  if (!src) return null;
   const sc = Math.min(src.w / w, src.h / h), cw = w * sc, chh = h * sc, x0 = (src.w - cw) * (o.fx ?? 0.5), y0 = (src.h - chh) * (o.fy ?? 0.5);
   const sat = o.sat ?? 1.25, con = o.con ?? 1.12, px = new Float32Array(w * h * 3);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {

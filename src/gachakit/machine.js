@@ -311,46 +311,28 @@ function buildGeometry(type, spec, L, st, A) {
       LG.with(boxMap(V.SIGN, [-hw + 0.004, capH, hd - 0.012, hw - 0.004, capH + hh, hd]), 0, () => LG.box(-hw + 0.004, capH, hd - 0.012, hw - 0.004, capH + hh, hd, { bevel: 0.004 }));
       LG.with(accUV, 0, () => { LG.box(-hw, capH + hh, hd - 0.015, hw, capH + hh + 0.006, hd + 0.003, { bevel: 0.002 }); if (st.header === 'arch') LG.box(-hw * 0.55, capH + hh + 0.006, hd - 0.013, hw * 0.55, capH + hh + 0.024, hd + 0.001, { bevel: 0.008 }); });
     }
-    // the sample topper: a plinth, corner posts, a top frame (the clear hood is the lid's own glass)
-    const dw = D.w / 2 + 0.006, dd = D.d / 2 + 0.006, ty = capH, th = D.h + 0.014;
-    roundBox(LG, -dw, ty, D.z - dd, dw, ty + 0.012, D.z + dd, 0.012, triplanar({ pz: trimUV, px: trimUV, nx: trimUV, nz: trimUV, py: sw(B[3]), ny: body2 }), { ch: 0.003 });
-    LG.with(sw(B[1]), 0, () => {
-      for (const sx of [-1, 1]) for (const sz of [-1, 1]) LG.box(sx * dw - (sx > 0 ? 0.005 : 0), ty + 0.012, D.z + sz * dd - (sz > 0 ? 0.005 : 0), sx * dw + (sx > 0 ? 0 : 0.005), ty + th, D.z + sz * dd + (sz > 0 ? 0 : 0.005));
-      LG.box(-dw, ty + th, D.z - dd, dw, ty + th + 0.005, D.z + dd, { bevel: 0.002 });
-    });
-    if (st.crown) {
-      // a little crown on the hood: a rolled band round a velvet cushion, five tines leaning out with a pearl on each
-      // tip, a cut stone set in the front of the band
-      const cy = ty + th + 0.005, gold = sw(AC[2], ROUGH.chrome), c2 = new GeoS(1), at = (x, y, z) => new THREE.Matrix4().makeTranslation(x, y, z);
-      c2.push(at(0, cy, D.z));
-      c2.revolve([[0, 0, 1], [0.035, 0, 1], [0.037, 0.003], [0.035, 0.006, 1], [0.031, 0.008, 1], [0.032, 0.02], [0.0335, 0.023], [0.032, 0.0255, 1], [0.029, 0.0255, 1], [0.029, 0.012, 1], [0, 0.012, 1]], 48, { uv: gold });
-      c2.revolve([[0, 0.012, 1], [0.028, 0.012], [0.027, 0.019], [0.02, 0.027], [0.01, 0.031], [0, 0.032]], 32, { uv: sw(mix(st.trim, 0x000000, 0.25), ROUGH.fabric) });
-      for (let k = 0; k < 5; k++) {
-        const a = (k / 5) * Math.PI * 2 + Math.PI / 2, x = Math.cos(a) * 0.0305, z = Math.sin(a) * 0.0305;
-        c2.push(at(x, 0.022, z).multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-Math.sin(a), 0, Math.cos(a)), -0.16)));
-        c2.revolve([[0.0062, 0, 1], [0.0058, 0.004], [0.0042, 0.011], [0.0024, 0.017], [0.0011, 0.021], [0, 0.0215]], 16, { uv: gold });
-        c2.push(at(0, 0.0235, 0));
-        c2.revolve([[0, -0.0034], [0.0022, -0.0026], [0.0032, -0.0008], [0.0032, 0.0008], [0.0022, 0.0026], [0, 0.0034]], 14, { uv: sw(0xfff4ee, ROUGH.lens) });
-        c2.pop(); c2.pop();
+    // the display mount: machines leave the factory without a sample topper (the player fits a POP display:
+    // src/display/). Two slotted chrome rails run front to back on the lid where one sits, each with a pair of
+    // captive thumb screws, and a rubber pad between them.
+    {
+      const mx = D.w / 2 - 0.022, z0 = D.z - D.d / 2 + 0.01, z1 = D.z + D.d / 2 - 0.01, ty = capH;
+      LG.with(sw(CHROME[1], ROUGH.chrome), 0, () => {
+        for (const sx of [-1, 1]) {
+          const x = sx * mx;
+          LG.box(x - 0.007, ty, z0, x + 0.007, ty + 0.004, z1, { bevel: 0.0012 });
+          LG.with(dark, 0, () => LG.box(x - 0.0018, ty + 0.0041, z0 + 0.012, x + 0.0018, ty + 0.0043, z1 - 0.012));
+        }
+      });
+      const g3 = new GeoS(1);
+      for (const sx of [-1, 1]) for (const zz of [z0 + 0.008, z1 - 0.008]) {
+        g3.push(new THREE.Matrix4().makeTranslation(sx * mx, ty + 0.004, zz));
+        g3.revolve([[0.0048, 0, 1], [0.0048, 0.0022, 1], [0.0042, 0.0032, 1], [0.0016, 0.0034, 1], [0, 0.0034, 1]], 16, { uv: sw(CHROME[2], ROUGH.chrome) });
+        g3.pop();
       }
-      c2.push(at(0, 0.017, 0.0335).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
-      c2.revolve([[0, -0.0015, 1], [0.0048, -0.0012, 1], [0.0056, 0.0005, 1], [0.0042, 0.0026, 1], [0, 0.0034, 1]], 8, { uv: sw(st.trim, ROUGH.lens) });
-      c2.pop();
-      LG.add(c2);
+      LG.add(g3);
+      LG.with(sw(RUBBER, ROUGH.rubber), 0, () => LG.box(-mx + 0.016, ty, D.z - D.d / 2 + 0.03, mx - 0.016, ty + 0.0015, D.z + D.d / 2 - 0.03, { bevel: 0.0006 }));
     }
-    // the display step the samples stand on: high enough that the header in front of it hides none of them
-    const rh = RISER[st.header] || 0;
-    if (rh) {
-      const rx = D.w / 2 - 0.012, rz0 = D.z - D.d / 2 + 0.014, rz1 = D.z + D.d / 2 - 0.016, ry = ty + 0.012;
-      const rUV = triplanar({ pz: sw(PN[2]), px: sw(PN[1]), nx: sw(PN[1]), nz: sw(PN[1]), py: sw(PN[3]), ny: body2 });
-      roundBox(LG, -rx, ry, rz0, rx, ry + rh - 0.004, rz1, 0.006, rUV, { ch: 0.002 });
-      roundBox(LG, -rx - 0.002, ry + rh - 0.004, rz0 - 0.002, rx + 0.002, ry + rh, rz1 + 0.002, 0.007, triplanar({ pz: accUV, px: accUV, nx: accUV, nz: accUV, py: sw(PN[3]), ny: accUV }), { ch: 0.0015 });
-      label(LG, V.SAMPLE, rx - 0.03, ry + (rh - 0.004) / 2, 0.04, rz1 + 0.0004);
-    }
-    // the hood's four panes
-    const x0 = -D.w / 2, x1 = D.w / 2, z0 = D.z - D.d / 2, z1 = D.z + D.d / 2, yy0 = ty + 0.012, yy1 = ty + th;
-    const pane = (a, c, n) => HG.quadN([a[0], yy0, a[1]], [c[0], yy0, c[1]], [c[0], yy1, c[1]], [a[0], yy1, a[1]], n, n, n, n, V.HOOD.st(0.01, 0.01), V.HOOD.st(0.99, 0.01), V.HOOD.st(0.99, 0.99), V.HOOD.st(0.01, 0.99));
-    pane([x0, z1], [x1, z1], [0, 0, 1]); pane([x1, z1], [x1, z0], [1, 0, 0]); pane([x1, z0], [x0, z0], [0, 0, -1]); pane([x0, z0], [x0, z1], [-1, 0, 0]);
+    void HG; void RISER;
   }
 
   // ------------------------------------------------------------------ the coin box drawer (drawer space: x, y from its corner, z = 0 the front)

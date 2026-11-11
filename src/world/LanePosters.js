@@ -1,7 +1,7 @@
 // Posters and neighbourhood notices pasted up around the lane, on walls, poles, a shutter, the underpass piers, the
 // community board and the park. Every picture on them is a real photo (Google Open Images, CC BY 2.0: see CREDITS.md;
 // public/img/photos/lane/ and the flyer photos in public/img/photos/), picked at random each time you play, then
-// cover-cropped to a few dozen pixels, colour-graded like old print, posterized with an ordered dither and set with
+// cover-cropped to a few dozen pixels, colour-graded like old print, printed in a few of their own inks (clean clusters, no dither) and set with
 // the pixel fonts: travel campaign posters, a sumo tour, the zoo, kakigori, the summer festival, lost cats and a lost
 // dog with tear-off phone tabs, a flat for rent. Nothing on them is drawn by hand except the lettering.
 //
@@ -11,6 +11,7 @@
 import * as THREE from 'three';
 import { Pix, FONT_JP } from '../gfx/pix.js';
 import { hash2 } from '../core/util.js';
+import { inkPrint } from '../gfx/inkPrint.js';
 
 const ZB = 5.3, ZF = 14.9, XT = 26;
 const LANE = (n) => `img/photos/lane/${n}.jpg`;
@@ -26,7 +27,6 @@ const PH = {
   any: [LANE('fuji_morning'), LANE('sumo'), LANE('baseball'), LANE('kakigori'), LANE('aquarium'), LANE('snow_monkeys'), LANE('hydrangea'), FLY('skyline'), FLY('rainy_lane'), FLY('cumulus'), FLY('milky_way'), FLY('neon_night')],
 };
 const TRAVEL = [['富士山', 'SEE JAPAN'], ['ふるさと', 'BY RAIL'], ['旅に出よう', 'JNR'], ['夏の海', 'SUMMER'], ['湯けむり', 'ONSEN']];
-const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 
 const images = new Map();
 function load(path) {
@@ -34,7 +34,7 @@ function load(path) {
   return images.get(path);
 }
 
-/** Draw a photo cover-cropped into pix at (x, y, w, h), graded and dithered. fade: sun-bleached (reds go first). */
+/** Draw a photo cover-cropped into pix at (x, y, w, h), graded and printed in a few of its own inks (src/gfx/inkPrint.js). fade: sun-bleached (reds go first). */
 function photo(p, img, x, y, w, h, { fade = 0, levels = 5, warm = 0.3 } = {}) {
   if (!img) { p.rect(x, y, w, h, 0x8a8478); return; }
   const c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -42,19 +42,17 @@ function photo(p, img, x, y, w, h, { fade = 0, levels = 5, warm = 0.3 } = {}) {
   const s = Math.max(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * s, dh = img.naturalHeight * s;
   g.imageSmoothingQuality = 'high';
   g.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
-  const im = g.getImageData(0, 0, w, h), d = im.data, step = 255 / (levels - 1);
+  const im = g.getImageData(0, 0, w, h), d = im.data;
   for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
     const o = (j * w + i) * 4;
     let r = d[o], gg = d[o + 1], b = d[o + 2];
     // old-print grade: a little warm, lifted blacks; faded posters lose their reds and yellows to the sun
     r = r * (1 + warm * 0.12) + 10; gg = gg * (1 + warm * 0.04) + 8; b = b * (1 - warm * 0.08) + 12;
     if (fade) { const l = (r + gg + b) / 3; r = r + (l - r) * fade * 0.8 + 18 * fade; gg = gg + (l - gg) * fade * 0.4 + 14 * fade; b = b + 30 * fade; }
-    const t = (BAYER[(j & 3) * 4 + (i & 3)] / 16 - 0.47) * step * 0.7;
-    d[o] = Math.max(0, Math.min(255, Math.round((r + t) / step) * step));
-    d[o + 1] = Math.max(0, Math.min(255, Math.round((gg + t) / step) * step));
-    d[o + 2] = Math.max(0, Math.min(255, Math.round((b + t) / step) * step));
+    d[o] = Math.max(0, Math.min(255, r)); d[o + 1] = Math.max(0, Math.min(255, gg)); d[o + 2] = Math.max(0, Math.min(255, b));
   }
   g.putImageData(im, 0, 0);
+  inkPrint(c, levels * 3);
   p.flush(); p.ctx.drawImage(c, x, y); p.pull();
 }
 

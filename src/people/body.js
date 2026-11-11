@@ -2,6 +2,7 @@
 // body in the rest pose (metres, feet on y = 0, facing +z, +x = the character's LEFT). Limb segments are
 // authored on the left side only; the mesher mirrors them onto the right bones and they share texture space.
 import { hairSegments } from './hair.js';
+import { hairJoints } from './hairMesh.js';
 import { accSegments } from './acc.js';
 import { CLOSED_SHOES, OPEN_SHOES } from './gear.js';
 
@@ -122,6 +123,8 @@ export function bodySegments(s, P) {
 export function buildPlan(spec) {
   const P = proportions(spec);
   const J = joints(P);
-  const segs = [...bodySegments(spec, P), ...hairSegments(spec, P, J), ...accSegments(spec, P, J)];
+  hairJoints(spec, P, J);
+  // (the body itself is the fitted base mesh, src/people/base.js; segments are only the extras: hair, skirts, props)
+  const segs = [...hairSegments(spec, P, J), ...accSegments(spec, P, J)];
   return { P, J, segs, spec };
 }

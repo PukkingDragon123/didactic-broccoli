@@ -6,10 +6,13 @@
 //  * sealSheet(): what every capsule shares: the printed shrink band, the foil sticker, wax and hanko seals (whole
 //    and cracked), the 当 sticker of a special finish, the glitter flecks' frames.
 // Every mark is the game's own (GG / ガチャガレージ). Thumbnails of the figures are used when the game has them
-// cached (setPrintThumbs): sheets drawn before that are redrawn by refreshPrints().
+// cached (setPrintThumbs): sheets drawn before that are redrawn by refreshPrints(). The shop's own logo and name
+// (src/logo/logo.js) go on the cover's maker strip, the tamper sticker and the 発売元 line: refreshLogoPrints()
+// redraws every sheet after 'logo:changed'.
 import * as THREE from 'three';
 import { Pix } from '../gfx/pix.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
+import { activeLogo, paintLogo } from '../logo/logo.js';
 
 const hex = (s, d) => parseInt(String(s || d).replace('#', ''), 16);
 const mixc = (a, b, t) => { const f = (s) => Math.round(((a >> s) & 255) + (((b >> s) & 255) - ((a >> s) & 255)) * t); return (f(16) << 16) | (f(8) << 8) | f(0); };
@@ -42,6 +45,11 @@ export function seriesSheet(id) {
   try { document.fonts?.load('16px "DotGothic16"', PRINT_GLYPHS + (SERIES_BY_ID[id]?.jp || '')).then(() => drawSeries(sheet), () => {}); } catch { /* no font loading */ }
   return sheet;
 }
+/** Redraw every sheet (the shop's logo or name changed). */
+export function refreshLogoPrints() {
+  for (const s of sheets.values()) drawSeries(s);
+  try { document.fonts?.load('16px "DotGothic16"', activeLogo().jp).then(() => { for (const s of sheets.values()) drawSeries(s); }, () => {}); } catch { /* no font loading */ }
+}
 /** Redraw the sheets that were drawn before their thumbnails existed (a few per call). */
 export function refreshPrints() {
   for (const s of sheets.values()) if (!s.complete && SERIES_BY_ID[s.id]?.items.every((i) => i.rarity === 'secret' || thumbOf(i.key))) drawSeries(s);
@@ -60,6 +68,14 @@ function roundRect(p, x, y, w, h, c, r = 3) {
   }
 }
 function gg(p, cx, cy, c, bg) { p.circle(cx, cy, 9, c); p.circle(cx, cy, 7, bg); p.tinyText('GG', cx - 5, cy - 4, { color: c }); }
+/** The shop's mark: the player's logo on a small white tile when they have drawn one, else the GG roundel. */
+function shopMark(p, cx, cy, c, bg, s = 16) {
+  const L = activeLogo();
+  if (!L.custom) { gg(p, cx, cy, c, bg); return; }
+  const h = s >> 1;
+  roundRect(p, cx - h - 2, cy - h - 2, s + 4, s + 4, 0xfffdf6, 3);
+  paintLogo(p, cx - h, cy - h, s, { L });
+}
 function drawThumb(p, cv, x, y, s) {
   p.flush();
   p.ctx.imageSmoothingEnabled = false;
@@ -90,8 +106,8 @@ function drawSeries(sheet) {
     p.rect(X, Y, W, H, paper);
     p.rect(X + 4, Y + 28, W - 8, H - 46, bgd); p.rect(X + 7, Y + 31, W - 14, H - 52, paper); // a printed border
     p.rect(X, Y, W, 24, ac); p.rect(X, Y + 24, W, 2, mixc(ac, 0x000000, 0.3));
-    gg(p, X + 13, Y + 12, white, ac);
-    p.text('ガチャガレージ', X + 28, Y + 3, { size: 16, color: white });
+    shopMark(p, X + 13, Y + 12, white, ac);
+    p.text(activeLogo().jp, X + 28, Y + 3, { size: 16, color: white });
     p.tinyText('No.' + String(S.order || 1).padStart(2, '0'), X + W - 4, Y + 8, { color: ac2, align: 'right' });
     // the logo: big kana, white outline, a drop of the accent
     const lines = wrapJP(S.jp || S.name, 5).slice(0, 2);
@@ -116,7 +132,7 @@ function drawSeries(sheet) {
     p.rect(X + 6, Y + H - 40, W - 12, 22, white); p.frame(X + 6, Y + H - 40, W - 12, 22, ink);
     p.text('対象年齢15才以上', X + W / 2, Y + H - 38, { size: 16, color: ink, align: 'center' });
     p.rect(X, Y + H - 14, W, 14, ink);
-    p.tinyText('(C)GG CAPSULE CO.  1999', X + W / 2, Y + H - 11, { color: white, align: 'center' });
+    p.tinyText(activeLogo().named ? `(C)${activeLogo().en}  1999` : '(C)GG CAPSULE CO.  1999', X + W / 2, Y + H - 11, { color: white, align: 'center' });
   }
   // ---------------- inside: the line-up
   {
@@ -153,13 +169,13 @@ function drawSeries(sheet) {
     p.tinyText('SMALL PARTS.', X + 80, wy + 2, { color: ink }); p.tinyText('NOT FOR UNDER 3', X + 80, wy + 11, { color: ink });
     p.text('小さな部品があります', X + W / 2, wy + 22, { size: 16, color: ink, align: 'center' });
     p.rect(X, Y + H - 20, W, 20, mixc(bg, ac, 0.3));
-    p.text('発売元 ガチャガレージ', X + W / 2, Y + H - 19, { size: 16, color: ink, align: 'center' });
+    { const nm = activeLogo().jp; p.text([...nm].length > 7 ? nm : `発売元 ${nm}`, X + W / 2, Y + H - 19, { size: 16, color: ink, align: 'center' }); }
   }
   // ---------------- the tamper sticker over the seam (its teeth are cut where the halves part)
   {
     const [X, Y, W, H] = SHEET.sticker;
     roundRect(p, X, Y, W, H, ac, 7); roundRect(p, X + 3, Y + 3, W - 6, H - 6, white, 5);
-    gg(p, X + W / 2, Y + 18, ac, white);
+    if (activeLogo().custom) paintLogo(p, X + W / 2 - 14, Y + 4, 28, { L: activeLogo() }); else gg(p, X + W / 2, Y + 18, ac, white);
     p.rect(X + 3, Y + 34, W - 6, 28, ac);
     p.text('未開封', X + W / 2, Y + 40, { size: 16, color: white, align: 'center' });
     for (let i = 6; i < W - 6; i += 6) p.rect(X + i, Y + 68, 3, 3, ac2);

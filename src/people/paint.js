@@ -5,6 +5,7 @@
 import { clamp01, sstep, mixc, G, h2, vnoise, shadeInto, over, hairPx, scaleO } from './paintlib.js';
 import { ATLAS } from './mesh.js';
 import { CLOSED_SHOES } from './gear.js';
+import { scalpHair } from './hairMesh.js';
 
 const WHITE = [244, 242, 236], INK = [28, 22, 22], GOLD = [214, 170, 70], SILVER = [190, 190, 196];
 const C_255_255_255 = [255, 255, 255];
@@ -30,18 +31,55 @@ const C_60_90_160 = [60, 90, 160];
 const C_120_90_60 = [120, 90, 60];
 
 /**
- * Paint every face of the atlas. A generator: yields after each face (and every ~1200 texels inside a big one) so the
- * work can be time-sliced (see Human); run it to completion with paintAtlas().
+ * Paint every job of the atlas: the extras' prism faces (rect walk) and the body's triangle batches (rasterised: every
+ * texel gets the interpolated rest-pose point and normal), then grow every island a few texels so mipmaps and the
+ * nearest-filtered close-ups never sample an unpainted gap. A generator: yields after each job (and every ~1200 texels
+ * inside a big one) so the work can be time-sliced (see Human); run it to completion with paintAtlas().
  */
 export function* paintAtlasJob(spec, P, faces, pix) {
   const ctx = makePainters(spec, P);
-  const d = pix.d, o = new Float32Array(4);
-  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 };
+  const d = pix.d, o = new Float32Array(4), seen = pix.seen || (pix.seen = new Uint8Array(ATLAS * ATLAS));
+  const c = newCtx();
   let run = 0; // texels since the last yield: big faces (a coat's back) are split over several steps too
   for (const f of faces) {
     const fn = ctx[f.seg.mat] || ctx.body;
-    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens;
-    c.kind = f.kind;
+    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind;
+    if (f.kind === 'tris') {
+      const U = f.uv, Pp = f.p, Nn = f.n;
+      c.px = 1 / f.dens;
+      for (let t = 0; t < U.length / 2; t += 3) {
+        const ax = U[t * 2], ay = U[t * 2 + 1], bx = U[t * 2 + 2], by = U[t * 2 + 3], cx = U[t * 2 + 4], cy = U[t * 2 + 5];
+        const den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+        if (Math.abs(den) < 1e-9) continue;
+        const x0 = Math.max(0, Math.floor(Math.min(ax, bx, cx))), x1 = Math.min(ATLAS - 1, Math.ceil(Math.max(ax, bx, cx)));
+        const y0 = Math.max(0, Math.floor(Math.min(ay, by, cy))), y1 = Math.min(ATLAS - 1, Math.ceil(Math.max(ay, by, cy)));
+        if (run >= 1200) { run = 0; yield null; }
+        run += (x1 - x0 + 1) * (y1 - y0 + 1);
+        const p3 = t * 3;
+        for (let j = y0; j <= y1; j++) {
+          for (let i = x0; i <= x1; i++) {
+            const qx = i + 0.5, qy = j + 0.5;
+            const w0 = ((by - cy) * (qx - cx) + (cx - bx) * (qy - cy)) / den, w1 = ((cy - ay) * (qx - cx) + (ax - cx) * (qy - cy)) / den, w2 = 1 - w0 - w1;
+            if (w0 < -1e-4 || w1 < -1e-4 || w2 < -1e-4) continue;
+            const s = j * ATLAS + i;
+            if (seen[s]) continue;
+            seen[s] = 1;
+            c.x = Pp[p3] * w0 + Pp[p3 + 3] * w1 + Pp[p3 + 6] * w2; c.y = Pp[p3 + 1] * w0 + Pp[p3 + 4] * w1 + Pp[p3 + 7] * w2; c.z = Pp[p3 + 2] * w0 + Pp[p3 + 5] * w1 + Pp[p3 + 8] * w2;
+            let nx = Nn[p3] * w0 + Nn[p3 + 3] * w1 + Nn[p3 + 6] * w2, ny = Nn[p3 + 1] * w0 + Nn[p3 + 4] * w1 + Nn[p3 + 7] * w2, nz = Nn[p3 + 2] * w0 + Nn[p3 + 5] * w1 + Nn[p3 + 8] * w2;
+            const l = Math.hypot(nx, ny, nz) || 1; nx /= l; ny /= l; nz /= l;
+            c.nx = nx; c.ny = ny; c.nz = nz; c.i = i; c.j = j;
+            bodyCtx(c, P);
+            o[3] = 255;
+            fn(c, o);
+            const p = s * 4;
+            d[p] = o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0]; d[p + 1] = o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1]; d[p + 2] = o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2]; d[p + 3] = o[3];
+          }
+        }
+      }
+      yield f;
+      continue;
+    }
+    c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens;
     const R = f.rect, sw = f.s1 - f.s0, rh = f.r1 - f.r0;
     for (let j = 0; j < R.h; j++) {
       if (run >= 1200) { run = 0; yield null; }
@@ -56,23 +94,150 @@ export function* paintAtlasJob(spec, P, faces, pix) {
         o[3] = 255;
         fn(c, o);
         const p = (c.j * ATLAS + c.i) * 4;
+        seen[c.j * ATLAS + c.i] = 1;
         d[p] = o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0]; d[p + 1] = o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1]; d[p + 2] = o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2]; d[p + 3] = o[3];
       }
     }
     yield f;
   }
+  yield* dilate(pix, 3);
   pix.dirty = true;
 }
 export function paintAtlas(spec, P, faces, pix) { const it = paintAtlasJob(spec, P, faces, pix); while (!it.next().done); }
 
-/** Instant placeholder: every face filled with the colour its painter gives at the face centre. */
+const newCtx = () => ({ x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 });
+
+/**
+ * Re-walk every atlas texel of a person's jobs (exactly like paintAtlasJob) and let fn(c, o) repaint it: o holds the
+ * current colour, fn returns true when it changed it. For retouching characters (src/npc/looks.js).
+ */
+export function walkAtlas(faces, P, pix, fn) {
+  const d = pix.d, o = new Float32Array(4), c = newCtx(), seen = new Uint8Array(ATLAS * ATLAS);
+  const visit = () => {
+    const s = c.j * ATLAS + c.i, p = s * 4;
+    if (seen[s]) return; seen[s] = 1;
+    o[0] = d[p]; o[1] = d[p + 1]; o[2] = d[p + 2]; o[3] = d[p + 3];
+    if (fn(c, o)) { d[p] = Math.max(0, Math.min(255, o[0])); d[p + 1] = Math.max(0, Math.min(255, o[1])); d[p + 2] = Math.max(0, Math.min(255, o[2])); }
+  };
+  for (const f of faces) {
+    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.px = 1 / f.dens;
+    if (f.kind === 'tris') {
+      rasterTris(f, (w0, w1, w2, t, i, j) => {
+        const Pp = f.p, Nn = f.n, p3 = t * 3;
+        c.x = Pp[p3] * w0 + Pp[p3 + 3] * w1 + Pp[p3 + 6] * w2; c.y = Pp[p3 + 1] * w0 + Pp[p3 + 4] * w1 + Pp[p3 + 7] * w2; c.z = Pp[p3 + 2] * w0 + Pp[p3 + 5] * w1 + Pp[p3 + 8] * w2;
+        let nx = Nn[p3] * w0 + Nn[p3 + 3] * w1 + Nn[p3 + 6] * w2, ny = Nn[p3 + 1] * w0 + Nn[p3 + 4] * w1 + Nn[p3 + 7] * w2, nz = Nn[p3 + 2] * w0 + Nn[p3 + 5] * w1 + Nn[p3 + 8] * w2;
+        const l = Math.hypot(nx, ny, nz) || 1; c.nx = nx / l; c.ny = ny / l; c.nz = nz / l; c.i = i; c.j = j;
+        bodyCtx(c, P);
+        visit();
+      });
+      continue;
+    }
+    c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2];
+    const R = f.rect, sw = f.s1 - f.s0, rh = f.r1 - f.r0;
+    for (let j = 0; j < R.h; j++) {
+      const r = f.r1 - (j - 0.5) / f.dens;
+      for (let i = 0; i < R.w; i++) {
+        const s = f.s0 + (i - 0.5) / f.dens;
+        c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
+        c.i = R.x + i; c.j = R.y + j; c.e = sw > 0 ? ((s - f.s0) / sw) * 2 - 1 : 0; c.rb = r - f.r0; c.rt = f.r1 - r; c.rh = rh;
+        visit();
+      }
+    }
+  }
+  pix.dirty = true;
+}
+
+/** Call fn(w0, w1, w2, triangle, i, j) for every texel centre inside a batch's triangles. */
+function rasterTris(f, fn) {
+  const U = f.uv;
+  for (let t = 0; t < U.length / 2; t += 3) {
+    const ax = U[t * 2], ay = U[t * 2 + 1], bx = U[t * 2 + 2], by = U[t * 2 + 3], cx = U[t * 2 + 4], cy = U[t * 2 + 5];
+    const den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+    if (Math.abs(den) < 1e-9) continue;
+    const x0 = Math.max(0, Math.floor(Math.min(ax, bx, cx))), x1 = Math.min(ATLAS - 1, Math.ceil(Math.max(ax, bx, cx)));
+    const y0 = Math.max(0, Math.floor(Math.min(ay, by, cy))), y1 = Math.min(ATLAS - 1, Math.ceil(Math.max(ay, by, cy)));
+    for (let j = y0; j <= y1; j++) for (let i = x0; i <= x1; i++) {
+      const qx = i + 0.5, qy = j + 0.5;
+      const w0 = ((by - cy) * (qx - cx) + (cx - bx) * (qy - cy)) / den, w1 = ((cy - ay) * (qx - cx) + (ax - cx) * (qy - cy)) / den, w2 = 1 - w0 - w1;
+      if (w0 < -1e-4 || w1 < -1e-4 || w2 < -1e-4) continue;
+      fn(w0, w1, w2, t, i, j);
+    }
+  }
+}
+
+/** Grow the painted islands by n texels (copying the nearest painted neighbour) so filtering never reads a gap. */
+function* dilate(pix, n) {
+  const d = pix.d, seen = pix.seen, W = ATLAS;
+  for (let it = 0; it < n; it++) {
+    const add = [];
+    for (let j = 0; j < W; j++) {
+      for (let i = 0; i < W; i++) {
+        const s = j * W + i;
+        if (seen[s]) continue;
+        const nb = i > 0 && seen[s - 1] ? s - 1 : i < W - 1 && seen[s + 1] ? s + 1 : j > 0 && seen[s - W] ? s - W : j < W - 1 && seen[s + W] ? s + W : -1;
+        if (nb >= 0) add.push(s, nb);
+      }
+      if ((j & 63) === 63) yield null;
+    }
+    for (let k = 0; k < add.length; k += 2) { const s = add[k] * 4, q = add[k + 1] * 4; d[s] = d[q]; d[s + 1] = d[q + 1]; d[s + 2] = d[q + 2]; d[s + 3] = d[q + 3]; seen[add[k]] = 1; }
+  }
+}
+
+/** Body texel context: a quadrant coordinate across (e: -1..1 within each quarter turn about the part's axis, like the
+ *  old box faces), the distance to the part's bottom / top (rb / rt / rh) and the facing (kind). */
+const AX = { uarm: 'arm', farm: 'arm', palm: 'arm', fingers: 'arm', thumb: 'arm', thigh: 'leg', calf: 'leg', shin: 'leg', foot: 'leg', toe: 'leg' };
+function bodyCtx(c, P) {
+  const H = P.H, part = c.part;
+  const a = AX[part];
+  const cx = a === 'arm' ? (c.x > 0 ? P.shX : -P.shX) : a === 'leg' ? (c.x > 0 ? P.hipX : -P.hipX) : 0;
+  const th = Math.atan2(c.x - cx, c.z) / (Math.PI / 2) + 0.5;
+  c.e = (th - Math.floor(th)) * 2 - 1;
+  let y0, y1;
+  switch (part) {
+    case 'hipsLo': y0 = P.crotchY - 0.012 * H; y1 = P.hipY + 0.012 * H; break;
+    case 'hipsUp': y0 = P.hipY + 0.012 * H; y1 = P.pelvisY + 0.012 * H; break;
+    case 'spine': y0 = P.pelvisY - 0.008 * H; y1 = P.waistY + 0.01 * H; break;
+    case 'chestLo': y0 = P.waistY; y1 = P.bustY; break;
+    case 'chestHi': y0 = P.bustY; y1 = P.shoulderY + 0.004 * H; break;
+    case 'traps': y0 = P.shoulderY; y1 = P.neckBase + 0.006 * H; break;
+    case 'neck': y0 = P.neckBase - 0.03 * H; y1 = P.chin + 0.16 * P.hu; break;
+    case 'uarm': y0 = P.elbowY; y1 = P.shoulderY; break;
+    case 'farm': y0 = P.wristY; y1 = P.elbowY; break;
+    case 'palm': case 'thumb': y0 = P.wristY - 0.054 * H; y1 = P.wristY; break;
+    case 'fingers': y0 = P.tipY; y1 = P.wristY - 0.05 * H; break;
+    case 'thigh': y0 = P.kneeY; y1 = P.hipY; break;
+    case 'calf': y0 = P.kneeY - 0.1 * H; y1 = P.kneeY; break;
+    case 'shin': y0 = P.ankleY; y1 = P.kneeY - 0.1 * H; break;
+    case 'foot': y0 = 0; y1 = P.ankleY + 0.012 * H; break;
+    case 'toe': y0 = 0; y1 = 0.026 * H; break;
+    case 'jaw': y0 = P.chin; y1 = P.noseY; break;
+    case 'skirt': y0 = P.skirtHem ?? P.kneeY; y1 = P.hipY - 0.01 * H; break;
+    case 'skirtUp': y0 = P.hipY - 0.01 * H; y1 = P.skirtTop ?? P.pelvisY; break;
+    default: y0 = P.noseY; y1 = P.crown;
+  }
+  c.rb = c.y - y0; c.rt = y1 - c.y; c.rh = y1 - y0;
+  c.kind = c.ny > 0.8 ? 'top' : c.ny < -0.8 ? 'bot' : 'side';
+}
+
+/** Instant placeholder: every face / batch filled with the colour its painter gives at its centre. */
 export function paintAtlasFlat(spec, P, faces, pix) {
   const ctx = makePainters(spec, P);
-  const d = pix.d, o = new Float32Array(4);
-  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 };
+  const d = pix.d, o = new Float32Array(4), seen = pix.seen || (pix.seen = new Uint8Array(ATLAS * ATLAS));
+  const c = newCtx();
   for (const f of faces) {
     const fn = ctx[f.seg.mat] || ctx.body;
-    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens; c.kind = f.kind;
+    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.px = 1 / f.dens;
+    if (f.kind === 'tris') {
+      // one colour per batch, from its first triangle's centre
+      const Pp = f.p, Nn = f.n;
+      c.x = (Pp[0] + Pp[3] + Pp[6]) / 3; c.y = (Pp[1] + Pp[4] + Pp[7]) / 3; c.z = (Pp[2] + Pp[5] + Pp[8]) / 3;
+      c.nx = Nn[0]; c.ny = Nn[1]; c.nz = Nn[2];
+      bodyCtx(c, P);
+      o[3] = 255; fn(c, o);
+      rasterTris(f, (w0, w1, w2, t, i, j) => { const p = (j * ATLAS + i) * 4; d[p] = o[0]; d[p + 1] = o[1]; d[p + 2] = o[2]; d[p + 3] = 255; });
+      continue;
+    }
+    c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2];
     const R = f.rect, s = (f.s0 + f.s1) / 2, r = (f.r0 + f.r1) / 2;
     c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
     c.i = R.x + (R.w >> 1); c.j = R.y + (R.h >> 1); c.e = 0; c.rh = f.r1 - f.r0; c.rb = c.rt = c.rh / 2;
@@ -83,6 +248,7 @@ export function paintAtlasFlat(spec, P, faces, pix) {
       d[p] = o[0]; d[p + 1] = o[1]; d[p + 2] = o[2]; d[p + 3] = 255;
     }
   }
+  pix.seen = null;
   pix.dirty = true;
 }
 
@@ -136,14 +302,13 @@ function makePainters(spec, P) {
     return 1 - amp * Math.max(0, v) ** 3;
   }
   function fabricK(c, kind) {
-    const n = h2(c.i, c.j, 11) - 0.5;
+    // weaves in body space (ribs run down the garment whatever the UV layout), clean clusters, no per-texel speckle
+    const u = Math.floor(around(c) / 0.0042), v = Math.floor(c.y / 0.0042);
     switch (kind) {
-      case 'knit': return (c.i % 2 ? 0.93 : 1.04) * (1 + n * 0.06) * (c.j % 3 === 0 ? 0.98 : 1);
-      case 'wool': return 1 + n * 0.06 + (((c.i + c.j) % 4) === 0 ? 0.025 : 0);
-      case 'denim': return 1 + n * 0.08 + (((c.i + c.j * 2) % 3) === 0 ? -0.06 : 0.02);
-      case 'nylon': return 1 + n * 0.03;
-      case 'leather': return 1 + n * 0.04;
-      default: return 1 + n * 0.05;
+      case 'knit': return (u % 2 ? 0.94 : 1.03) * (v % 3 === 0 ? 0.98 : 1);
+      case 'wool': return ((u + v) % 4) === 0 ? 1.03 : 1;
+      case 'denim': return ((u + v * 2) % 3) === 0 ? 0.95 : 1.02;
+      default: return 1;
     }
   }
   // tartan for flannel / school skirts
@@ -214,18 +379,10 @@ function makePainters(spec, P) {
   }
 
   function handPx(c, o) {
-    skinPx(c, o, 0.94);
-    const sx = Math.sign(c.x) || 1;
-    const palmIn = -sx * c.nx > 0.5; // palms face the thighs
-    if (palmIn) over(o, C_236_170_160, 0.18);
-    if (c.part === 'fingers') {
-      // separations between fingers (along the length, on the front/back/outer faces)
-      if (c.kind === 'side' && Math.abs(c.nx) < 0.5) { const q = (c.e + 1) * 2; if (Math.abs(q - Math.round(q)) < 0.18 && q > 0.5 && q < 3.5) { o[0] *= 0.82; o[1] *= 0.78; o[2] *= 0.78; } }
-      if (c.kind === 'side' && !palmIn && c.rb < c.px * 2.2) over(o, C_246_214_206, 0.45); // nails
-      if (c.kind === 'side' && c.rt < c.px * 1.2) { o[0] *= 0.88; o[1] *= 0.86; o[2] *= 0.86; } // knuckle crease
-    }
-    if (c.part === 'palm' && !palmIn && c.kind === 'side' && c.rb < c.px * 1.5) { o[0] *= 0.92; o[1] *= 0.9; o[2] *= 0.9; }
-    if (c.part === 'thumb' && c.rb < c.px * 1.8 && c.kind === 'side') over(o, C_246_214_206, 0.35);
+    skinPx(c, o, 0.95);
+    const sx = Math.sign(c.x) || 1, out = sx * c.nx;
+    if (out < -0.45) over(o, C_236_170_160, 0.16); // palms (they face the thighs)
+    if (c.seg.tip && c.part !== 'palm' && out > 0.2) { over(o, C_246_214_206, 0.42); if (out < 0.4) over(o, C_210_120_110, 0.12); } // nails
   }
 
   // ---------------------------------------------------------------- tops
@@ -644,23 +801,14 @@ function makePainters(spec, P) {
 
   // ---------------------------------------------------------------- head (sides / back / top / jaw), ears, nose
   const hairStyle = hair.style;
+  const onScalp = scalpHair(P, spec);
   function headHair(c) {
-    // is this point of the scalp covered in painted hair?
-    if (hairStyle === 'none') return false;
-    const y = c.y;
-    if (hairStyle === 'bald') return y > P.earBot && y < P.earTop + 0.12 * hu && c.z < P.zf - 0.25 * hu;
-    if (c.kind === 'top') return true;
-    if (c.nz < -0.4) return y > P.napeY - 0.02 * hu;
-    // sides: above the ear tops, sideburns in front of the ear
-    if (Math.abs(c.nx) > 0.4) {
-      if (y > P.earTop + 0.02 * hu) return c.z < P.zf - 0.14 * hu || y > P.hairY - 0.05 * hu;
-      if (c.z < P.hcz - 0.18 * hu) return y > P.napeY;
-      return y > P.earBot + 0.12 * hu && c.z < P.hcz + 0.05 * hu && spec.sex === 'm';
-    }
-    return y > P.hairY;
+    // is this point of the scalp under the hair (src/people/hairMesh.js: the modelled hair starts at the same line)
+    return onScalp(c.x, c.y, c.z);
   }
   function headPx(c, o) {
-    let k = (c.part === 'scalp' ? 0.86 - 0.08 * Math.abs(c.nx) - 0.08 * Math.max(0, -c.nz) : 0.86) * (c.kind === 'bot' ? 0.62 : 1) * (1 + (h2(c.i, c.j, 21) - 0.5) * 0.035);
+    // (the same tone as the face block's skin, so the seam at the temples doesn't show)
+    let k = (c.part === 'scalp' ? 0.93 - 0.08 * Math.abs(c.nx) - 0.08 * Math.max(0, -c.nz) : 0.93) * (c.kind === 'bot' ? 0.75 : 1);
     if (c.kind === 'side' && Math.abs(c.nx) > 0.4) k *= 0.96 - 0.06 * clamp01((P.zf - c.z) / (2 * P.hd));
     shadeInto(o, skin, k, 0.25);
     if (c.kind === 'bot') { if (spec.face.stubble) over(o, C_70_72_84, spec.face.stubble * 0.3 * h2(c.i, c.j, 77)); return; }
@@ -887,5 +1035,21 @@ function makePainters(spec, P) {
     shadeInto(o, [200, 0, 200], 1);
   }
 
-  return { body: bodyPx, skin: neckPx, hand: handPx, shoe: shoePx, head: headPx, ear: earPx, nose: nosePx, hair: hairShellPx, hat: hatPx, hat2: hat2Px, acc: accPx };
+  /** The modelled hair's strand swatch: strands run down (v: root at the top, tips at the bottom), clumped, with a
+   *  sheen band and lighter ends; a hand-pixelled look (few tones, clean clusters). */
+  function hairSwatchPx(c, o) {
+    const u = c.i, v = clamp01(c.rb / Math.max(1, c.rh)); // c.rb counts down from the top here
+    const t = 1 - v;
+    const strand = h2(u >> 1, 3, 17), clump = 0.5 + 0.5 * Math.sin(u * 0.55 + Math.sin(c.j * 0.09 + u * 0.13) * 1.3);
+    let k = 0.78 + 0.16 * clump + 0.06 * (strand - 0.5) * 2 - 0.12 * sstep(0.75, 1, t);
+    if (strand < 0.18) k -= 0.12; // dark strands between
+    k = Math.round(k * 7) / 7; // a few tones
+    shadeInto(o, hair.col, k, 0.15);
+    // the sheen: a band a third of the way down, broken by the clumps
+    const sheen = G(t - 0.32 - 0.03 * Math.sin(u * 0.3), 0, 0.05, 1) * (clump > 0.55 ? 1 : 0.35);
+    if (sheen > 0.3) over(o, hair.hi, sheen > 0.7 ? 0.55 : 0.3);
+    if (t > 0.88) over(o, hair.hi, 0.12);
+  }
+
+  return { hairSwatch: hairSwatchPx, body: bodyPx, skin: neckPx, hand: handPx, shoe: shoePx, head: headPx, ear: earPx, nose: nosePx, hair: hairShellPx, hat: hatPx, hat2: hat2Px, acc: accPx };
 }

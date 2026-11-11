@@ -278,18 +278,40 @@ function toilet(t, mats) {
   // flat roof slab with an overhang and a parapet; vent louvres high up
   B.box(m.conc, x1 - x0 + 0.6, 0.18, z1 - z0 + 0.6, xc - 0.1, H, zc, { k: 0.9 });
   B.box(m.pv, x1 - x0 + 0.62, 0.06, z1 - z0 + 0.62, xc - 0.1, H + 0.18, zc, { tint: 0x8a8680 });
-  for (const z of [-6.5, -7.95]) for (let i = 0; i < 3; i++) B.box(m.pv, 0.04, 0.03, 0.6, x0 - 0.01, 2.25 + i * 0.1, z, { tint: 0x3a3a3a });
+  // (the vents: pressed-steel louvres in a frame, the blades raked down and out, an insect mesh behind)
+  for (const z of [-6.5, -7.95]) {
+    B.box(m.pv, 0.012, 0.36, 0.62, x0 - 0.004, 2.18, z, { tint: 0x2a2a2a });
+    for (const [dy, hh] of [[0, 0.03], [0.36, 0.03]]) B.box(m.metal, 0.05, hh, 0.68, x0 - 0.025, 2.15 + dy, z, { tint: 0x9a9e9a, bevel: 0.006 });
+    for (const sz of [-1, 1]) B.box(m.metal, 0.05, 0.42, 0.03, x0 - 0.025, 2.15, z + sz * 0.325, { tint: 0x9a9e9a, bevel: 0.006 });
+    for (let i = 0; i < 5; i++) B.box(m.metal, 0.06, 0.012, 0.62, x0 - 0.03, 2.2 + i * 0.065, z, { tint: 0xa8aca8, rz: -0.75 });
+  }
+  // the roof: a rounded drip on the fascia all round, a scupper and a downpipe on brackets down the south-west corner
+  for (const [a, b] of [[[x0 - 0.41, H + 0.012, z1 + 0.31], [x1 + 0.21, H + 0.012, z1 + 0.31]], [[x0 - 0.41, H + 0.012, z0 - 0.31], [x1 + 0.21, H + 0.012, z0 - 0.31]], [[x0 - 0.41, H + 0.012, z0 - 0.31], [x0 - 0.41, H + 0.012, z1 + 0.31]]]) B.rod(m.conc, a, b, 0.022, { k: 0.86, sides: 8 });
+  B.box(m.metal, 0.12, 0.08, 0.12, x0 - 0.36, H + 0.03, z0 - 0.2, { tint: 0x8a8e8a });
+  B.tube(m.pv, [[x0 - 0.36, H + 0.03, z0 - 0.2], [x0 - 0.36, H - 0.15, z0 - 0.2], [x0 - 0.2, H - 0.32, z0 - 0.08], [x0 - 0.08, H - 0.4, z0 - 0.08], [x0 - 0.08, 0.15, z0 - 0.08], [x0 - 0.18, 0.04, z0 - 0.08]], 0.035, { tint: 0x9aa09a, sides: 6 });
+  for (const y of [0.6, 1.4, 2.1]) { B.box(m.metal, 0.09, 0.025, 0.09, x0 - 0.08, y, z0 - 0.08, { tint: 0x7a7e7a, bevel: 0.006 }); B.box(m.metal, 0.06, 0.02, 0.02, x0 - 0.03, y + 0.003, z0 - 0.08, { tint: 0x7a7e7a }); }
   // two doorways on the west face (dark), screen walls, plates, a light
   for (const [z, half] of [[-6.5, 0], [-7.95, 1]]) {
+    // the way in, dark, set back behind a tiled surround (jambs and a lintel 16 cm proud), a pressed-steel door frame
+    // in it with a stop and a hinge leaf, a stainless kick strip on the threshold, a little concrete hood over it
     B.box(t.indoor(m.pv), 0.04, 2.0, 0.78, x0 - 0.005, 0, z, { tint: 0x14120f });
-    B.box(m.pv, 0.06, 2.05, 0.06, x0 - 0.03, 0, z - 0.42, { tint: 0x8a8a84 }); B.box(m.pv, 0.06, 2.05, 0.06, x0 - 0.03, 0, z + 0.42, { tint: 0x8a8a84 });
-    B.box(m.pv, 0.06, 0.06, 0.9, x0 - 0.03, 2.0, z, { tint: 0x8a8a84 });
-    t.sign('wc', x0 - 0.04, 2.1, z, { w: 0.28, h: 0.17, ry: -Math.PI / 2, sub: [half / 2, 0, (half + 1) / 2, 1] });
-    B.box(m.found, 0.4, 0.06, 0.9, x0 - 0.2, 0, z, { k: 0.95 });
+    for (const sz of [-1, 1]) {
+      B.box(mats.tile, 0.16, 2.12, 0.1, x0 - 0.08, 0, z + sz * 0.44, { k: 0.97, uv: [0.3, 0] });
+      B.box(m.pv, 0.05, 2.0, 0.045, x0 - 0.035, 0, z + sz * 0.37, { tint: 0x7a8a80, bevel: 0.006 });
+      B.box(m.pv, 0.012, 2.0, 0.02, x0 - 0.065, 0, z + sz * 0.355, { tint: 0x6a7a70 });
+    }
+    B.box(mats.tile, 0.16, 0.12, 0.98, x0 - 0.08, 2.0, z, { k: 0.95, uv: [0.3, 0.5] });
+    B.box(m.pv, 0.05, 0.045, 0.78, x0 - 0.035, 1.955, z, { tint: 0x7a8a80, bevel: 0.006 });
+    B.box(m.conc, 0.34, 0.07, 1.1, x0 - 0.17, 2.12, z, { k: 0.9, bevel: 0.012 });
+    t.sign('wc', x0 - 0.165, 2.0, z, { w: 0.24, h: 0.11, ry: -Math.PI / 2, sub: [half / 2, 0, (half + 1) / 2, 1] });
+    B.box(m.found, 0.4, 0.06, 0.98, x0 - 0.2, 0, z, { k: 0.95, bevel: 0.01 });
+    B.box(m.metal, 0.06, 0.004, 0.76, x0 - 0.03, 0.06, z, { tint: 0xc8ccd0 });
   }
   B.box(mats.tile, 0.1, 2.0, 0.08, x0 - 0.42, 0, -7.22, { k: 0.95 }); // little screen wall between the doors
-  B.box(m.pv, 0.12, 0.08, 0.3, x0 - 0.06, 2.38, -7.22, { tint: 0x3a3a3a });
-  B.box(t.G, 0.08, 0.06, 0.22, x0 - 0.1, 2.32, -7.22, { tint: 0xfff0d0 });
+  // the bulkhead light between the doors: a cast base, the opal glass in a wire cage
+  B.box(m.pv, 0.05, 0.16, 0.26, x0 - 0.025, 2.28, -7.22, { tint: 0x3a3a3a, bevel: 0.012 });
+  B.lathe(t.G, [[0.075, 0], [0.072, 0.03], [0.05, 0.055], [0, 0.062]], x0 - 0.05, 2.36, -7.22, { rz: Math.PI / 2, tint: 0xfff0d0, sides: 12 });
+  for (let k = 0; k < 4; k++) { const a = (k / 4) * Math.PI * 2 + Math.PI / 4; B.tube(m.metal, [[x0 - 0.05, 2.36 + Math.cos(a) * 0.082, -7.22 + Math.sin(a) * 0.082], [x0 - 0.09, 2.36 + Math.cos(a) * 0.06, -7.22 + Math.sin(a) * 0.06], [x0 - 0.118, 2.36, -7.22]], 0.004, { tint: 0x2a2a2a }); }
   // wash basin on the south face, a mirror, soap net, a "keep it clean" plate
   B.box(m.conc, 0.7, 0.75, 0.42, 24.1, 0, z0 - 0.21, { k: 0.95 });
   B.box(m.metal, 0.5, 0.06, 0.3, 24.1, 0.75, z0 - 0.2, { tint: 0xc8ccd0 });

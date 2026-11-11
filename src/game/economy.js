@@ -95,6 +95,19 @@ export const CHARMS = {
   goldneko: { name: 'Golden Maneki-neko', jp: '金の招き猫', price: 75000, finishLuck: 0.35, rareLuck: 0.25, desc: 'Ridiculously lucky. Glows a bit.' },
 };
 
+/** Machine-top POP displays (src/display/): a display holding figures of the machine's own series draws customers.
+ *  pick: extra weight when a customer chooses between free machines (1 + pick x fill); visit: extra chance a passer-by
+ *  with no mind to come in turns in anyway, per fully filled display (capped at visitMax); bonusChance: a display coupon
+ *  in a capsule you open (at most one a day). */
+export const POP_DISPLAY = { pick: 1.5, visit: 0.06, visitMax: 0.18, bonusChance: 0.03 };
+/** 0..1: the share of a display's spots that hold figures of `series` (items: [{ k, f } | null]). */
+export function displayDraw(items, series) {
+  if (!items?.length) return 0;
+  let n = 0;
+  for (const it of items) if (it && SERIES_BY_ID[series]?.items.some((x) => x.key === it.k)) n++;
+  return n / items.length;
+}
+
 /** Wall shelves: the n-th shelf costs SHELF_PRICES[n] (a fresh shop has none). */
 export const SHELF_PRICES = [800, 2400, 7200];
 export const MUSEUM_PRICE = 30000;

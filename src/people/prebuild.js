@@ -9,7 +9,7 @@
 import { Human } from './Human.js';
 import { makeSpec, streetPreset } from './presets.js';
 import { buildPlan } from './body.js';
-import { buildMesh } from './mesh.js';
+import { buildMeshJob } from './mesh.js';
 import { idleJob } from '../core/idle.js';
 import { buildGear } from './gear.js';
 
@@ -23,7 +23,7 @@ function* build({ preset, seed = 1, height }, renderer) {
   yield;
   plan.gear = buildGear(plan);
   yield;
-  const mesh = buildMesh(plan);
+  const mesh = yield* buildMeshJob(plan);
   yield;
   const h = new Human(spec, { prebuild: true, built: { plan, mesh } });
   yield;

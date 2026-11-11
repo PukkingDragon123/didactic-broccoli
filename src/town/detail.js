@@ -68,7 +68,7 @@ export function carport(t, o) {
   }
   // the front beam: an extruded gutter section (outer face rounded, a channel along the top), end caps
   const zg = zf - 0.02, yg = yf - 0.16;
-  const G = [[-0.045, 0], [0.03, 0], [0.05, 0.018], [0.058, 0.07], [0.054, 0.15], [0.046, 0.17], [0.036, 0.17], [0.036, 0.075], [-0.028, 0.075], [-0.028, 0.18], [-0.045, 0.18]];
+  const G = [[-0.045, 0], [0.03, 0], [0.05, 0.018], [0.058, 0.06], [0.058, 0.084], [0.05, 0.088], [0.05, 0.1], [0.058, 0.104], [0.056, 0.15], [0.046, 0.17], [0.036, 0.17], [0.036, 0.075], [-0.028, 0.075], [-0.028, 0.18], [-0.045, 0.18]];
   B.extrude(m.metal, G.map(([z, y]) => [zg + z, yg + y]), x0 - 0.03, x1 + 0.03, { along: 'x', tint: AL });
   for (const x of [x0 - 0.03, x1 + 0.03]) B.box(m.metal, 0.008, 0.19, 0.115, x, yg - 0.005, zg + 0.006, { tint: ALD, bevel: 0.003 });
   // the back beam: a plain box section the sheet rests on, its end caps

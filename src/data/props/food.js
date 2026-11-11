@@ -164,6 +164,7 @@ for (let st = 0; st <= 4; st++) {
   P['plant_cactus_' + st] = { name: 'Cactus', jp: 'サボテン', voxel: 0.008, build: (v) => { v.jitter = 0.03; cactus(v, st); } };
 }
 P.watering_can = {
+  asset: { id: 'watering_can_metal_01', ry: Math.PI / 2 }, // Poly Haven, CC0 (src/kit/assets.js)
   name: 'Watering Can', jp: 'じょうろ', voxel: 0.008,
   build(v) {
     v.jitter = 0.02;

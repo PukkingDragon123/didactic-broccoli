@@ -19,6 +19,11 @@ function enclose(P, c, m = 0.01 * P.hu, ch = 0.3) {
 }
 
 export function hairSegments(spec, P, J) {
+  // the hair itself is modelled now (src/people/hairMesh.js), hats are gear (src/people/gear.js): only outfit extras
+  return spec.garb && !spec.garb.coat ? garbSegments(spec, P, J) : []; // (a coat's tails are lofted: garments.js)
+}
+// (the old box-shell hair builder below is kept for reference by nothing; see hairMesh.js)
+export function legacyHairSegments(spec, P, J) {
   const S = spec.garb ? garbSegments(spec, P, J) : [], hu = P.hu, st = spec.hair.style, hat = spec.hat?.kind;
   const add = (part, bone, mat, y0, y1, b, t, o) => { const x = seg(part, bone, mat, y0, y1, b, t, o); S.push(x); return x; };
   const vol = spec.hair.volume || 1;

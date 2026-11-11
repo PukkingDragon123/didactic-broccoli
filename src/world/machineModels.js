@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
 import { machineParts, STYLES } from '../gachakit/machine.js';
+import { activeLogo, paintLogo } from '../logo/logo.js';
 
 export const VS = 0.005; // the old models' 5 mm voxel: still the unit of a few offsets in the game logic
 
@@ -92,7 +93,9 @@ export function pricePlate(type) {
     last = [price, rec];
     p.fill(bg);
     p.frame(0, 0, W, H, st.dark ? st.accent : 0x8a8478); p.frame(2, 2, W - 4, H - 4, st.dark ? 0x3a3438 : 0xe0d8c4);
-    p.text('1回', 6, 12, { size: 16, color: sub });
+    // the shop's own logo stamped in the corner once the player has drawn one (src/logo/logo.js)
+    const L = activeLogo();
+    if (L.custom) { paintLogo(p, 6, 4, 16, { L }); p.text('1回', 6, 21, { size: 16, color: sub }); } else p.text('1回', 6, 12, { size: 16, color: sub });
     const s = `¥${price}`, w = p.measure(s, 32, FONT_EN);
     p.text(s, Math.round(W - 8 - w), 2, { size: 32, color: ink, font: FONT_EN });
     p.rect(4, 40, W - 8, 1, st.dark ? 0x3a3438 : 0xd8d0bc);

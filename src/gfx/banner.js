@@ -196,6 +196,8 @@ export function flyerSpec(s) {
     title: lines.map((t, i) => [t, [...t].length <= 4 && lines.length < 3 ? 4 : 2, i === lines.length - 1 ? 'a' : 'b']), catch: c, sub,
     ...own,
   };
+  // every series has a real-art backdrop (bannerScenes5.js); it wins over the older painted scenes
+  if (FLYER_SCENES['art:' + s.id]) F.scene = 'art:' + s.id;
   specs.set(s.id, F);
   return F;
 }
@@ -210,8 +212,8 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
   const s0 = SERIES_BY_ID[seriesId] || SERIES_BY_ID.mochi, s = { ...s0, flyer: flyerSpec(s0) };
   const fp = new Pix(FLYER_W, FLYER_H, 7);
   const draw = () => { drawFlyer(fp, s, thumbs, FLYER_KIT, FLYER_SCENES); if (opts.faded) fade(fp, 22); fp.flush(); };
-  const ready = FLYER_PHOTOS.every((f) => f.ready());
   draw();
+  const ready = FLYER_PHOTOS.every((f) => f.ready());
   // (drawn before its photograph arrived: drawn again, on the same canvas, when it has)
   if (!ready) Promise.all(FLYER_PHOTOS.map((f) => f.when())).then(() => { draw(); const t = texCache.get(key); if (t) t.needsUpdate = true; });
   cache.set(key, fp.canvas);

@@ -79,3 +79,25 @@ export function coinBagMesh() {
   m.userData.noRim = true;
   return m;
 }
+
+// ------------------------------------------------------------------ the change float: six stacks of ¥100 in the tray
+/** Stacks of ¥100 coins as one mesh (the cash tray's float: src/life/chores.js), origin at the tray's floor. */
+export function coinStacksMesh() {
+  return thingMesh('money', 'coinStacks', [-0.065, 0, -0.035, 0.035, 0.032, 0.05], (K) => {
+    const edge = metal(0x9ea3a8, 0.3), seam = metal(0x6e7378, 0.1), face = metal(0xb4b8bc, 0.18), relief = metal(0xcfd2d4, 0.2);
+    for (let i = 0; i < 6; i++) {
+      const h = 0.022 * (0.6 + ((i * 0.37) % 1) * 0.6), n = Math.max(2, Math.round(h / COIN_T)), x = -0.05 + (i % 3) * 0.035, z = -0.02 + Math.floor(i / 3) * 0.035;
+      const y0 = 0.005, lean = (i % 2 ? 1 : -1) * 0.0004; // hand-stacked: each coin a hair off the one below
+      // the stack's side: each coin's rolled edge, a dark seam between coins (a column of coins, not a tube)
+      for (let k = 0; k < n; k++) {
+        const yb = y0 + k * COIN_T, ox = x + lean * k;
+        K.lathe(k % 3 === 2 ? seam : edge, [ox, yb, z], [[R - 0.0007, 0], [R, 0.0005], [R, COIN_T - 0.0005], [R - 0.0007, COIN_T]], 10);
+      }
+      K.lathe(edge, [x, y0, z], [[0, 0.00025], [R - 0.0005, 0.00025]], 12);
+      // the top coin's face: the field inside the raised rim, "100" in relief
+      const top = y0 + n * COIN_T - 0.00025, tx = x + lean * (n - 1);
+      K.lathe(face, [tx, top, z], [[R - 0.0007, 0], [R - 0.0012, 0.0002], [0, 0.0001]], 10);
+      if (i % 2 === 0) K.at([tx, top + 0.0001, z], () => glyphs(K, relief, '100', 0, -0.0006, 0.0074, 0, 0.00018, { gap: 0.7 }), { ry: i * 0.9 });
+    }
+  });
+}

@@ -1,0 +1,167 @@
+{
+ "CashRegister_01": {
+  "id": "CashRegister_01",
+  "name": "Cash Register 01",
+  "authors": "Joe Seabuhr",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/CashRegister_01",
+  "tris": 3920,
+  "bytes": 320240,
+  "size": [
+   0.598,
+   0.62,
+   0.624
+  ],
+  "tex": 512
+ },
+ "Television_01": {
+  "id": "Television_01",
+  "name": "Television 01",
+  "authors": "Gabriel Radi\u0107",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/Television_01",
+  "tris": 1918,
+  "bytes": 172660,
+  "size": [
+   0.6,
+   0.457,
+   0.471
+  ],
+  "tex": 512
+ },
+ "boombox": {
+  "id": "boombox",
+  "name": "Boombox",
+  "authors": "Thomas Paul Mouilleron",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/boombox",
+  "tris": 2999,
+  "bytes": 318892,
+  "size": [
+   0.724,
+   0.47,
+   0.186
+  ],
+  "tex": 512
+ },
+ "cardboard_box_01": {
+  "id": "cardboard_box_01",
+  "name": "Cardboard Box 01",
+  "authors": "Rahul Chaudhary",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/cardboard_box_01",
+  "tris": 1470,
+  "bytes": 146544,
+  "size": [
+   0.386,
+   0.342,
+   0.516
+  ],
+  "tex": 512
+ },
+ "industrial_pastic_container": {
+  "id": "industrial_pastic_container",
+  "name": "Industrial Plastic Container",
+  "authors": "Galo Benivegna",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/industrial_pastic_container",
+  "tris": 4110,
+  "bytes": 125628,
+  "size": [
+   0.457,
+   0.419,
+   0.631
+  ],
+  "tex": 512
+ },
+ "metal_jerrycan": {
+  "id": "metal_jerrycan",
+  "name": "Metal Jerrycan",
+  "authors": "Sean Buckley",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/metal_jerrycan",
+  "tris": 1470,
+  "bytes": 195804,
+  "size": [
+   0.349,
+   0.455,
+   0.172
+  ],
+  "tex": 512
+ },
+ "plastic_jerrycan": {
+  "id": "plastic_jerrycan",
+  "name": "Plastic Jerrycan",
+  "authors": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/plastic_jerrycan",
+  "tris": 1468,
+  "bytes": 165988,
+  "size": [
+   0.268,
+   0.318,
+   0.34
+  ],
+  "tex": 512
+ },
+ "vintage_pocket_watch": {
+  "id": "vintage_pocket_watch",
+  "name": "Vintage Pocket Watch",
+  "authors": "Tal Swicegood",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/vintage_pocket_watch",
+  "tris": 2460,
+  "bytes": 284688,
+  "size": [
+   0.061,
+   0.08,
+   0.014
+  ],
+  "tex": 1024
+ },
+ "wall_clock": {
+  "id": "wall_clock",
+  "name": "Wall Clock",
+  "authors": "PierreB3D",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/wall_clock",
+  "tris": 1495,
+  "bytes": 152312,
+  "size": [
+   0.32,
+   0.32,
+   0.047
+  ],
+  "tex": 512
+ },
+ "watering_can_metal_01": {
+  "id": "watering_can_metal_01",
+  "name": "Watering Can Metal 01",
+  "authors": "Charles Nderitu",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/watering_can_metal_01",
+  "tris": 1960,
+  "bytes": 271224,
+  "size": [
+   0.191,
+   0.196,
+   0.452
+  ],
+  "tex": 512
+ },
+ "wooden_broom": {
+  "id": "wooden_broom",
+  "name": "Wooden Broom",
+  "authors": "Balen",
+  "license": "CC0 1.0",
+  "source": "https://polyhaven.com/a/wooden_broom",
+  "tris": 2433,
+  "bytes": 345328,
+  "size": [
+   0.49,
+   1.444,
+   0.113
+  ],
+  "tex": 512
+ }
+}

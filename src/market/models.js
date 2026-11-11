@@ -10,6 +10,7 @@ import { makeCapsuleBox } from '../game/capsuleBox.js';
 import { propMesh } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { parcelShellGeometry, parcelFlapGeometry } from '../props/things/parcel.js';
+import { sealedBox } from '../props/things/carton.js';
 import { Pix } from '../gfx/pix.js';
 import { textW5 } from '../gfx/font5x7.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
@@ -107,20 +108,8 @@ export function makeSlabMesh(d) {
 
 // ------------------------------------------------------------------ the item a descriptor stands for
 function boxPhoto(label, sub = '') {
-  // "photo is of the box": a closed carton with a hand-written label
-  const p = new Pix(64, 40, label.length);
-  p.fill(0xc89a5f); p.noise(0.05);
-  p.rect(6, 8, 52, 24, 0xf4ead6);
-  p.tinyText(label.toUpperCase().slice(0, 10), 32, 12, { color: 0x2a2220, align: 'center' });
-  if (sub) p.tinyText(sub.toUpperCase().slice(0, 10), 32, 21, { color: 0xc8302a, align: 'center' });
-  const t = p.texture(); t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
-  const card = new THREE.MeshStandardMaterial({ color: 0xc89a5f, roughness: 0.95 }), face = new THREE.MeshStandardMaterial({ map: t, roughness: 0.9 });
-  const m = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.2, 0.24), [card, card, card, card, face, card]);
-  m.position.y = 0.1;
-  const g = new THREE.Group(); g.add(m);
-  const tape = new THREE.Mesh(new THREE.BoxGeometry(0.322, 0.002, 0.05), new THREE.MeshStandardMaterial({ color: 0xc8a878, roughness: 0.35 }));
-  tape.position.y = 0.201; g.add(tape);
-  return g;
+  // "photo is of the box": a real taped carton (src/props/things/carton.js) with the seller's shipping label
+  return sealedBox([0.32, 0.2, 0.24], { title: label, sub, kind: 'used' });
 }
 
 export function itemObject(g, it) {

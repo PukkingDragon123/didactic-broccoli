@@ -202,6 +202,7 @@ const shop = {
   // ============================================================ FIXED INTERIOR
   // ------------------------------------------------------------- cash register
   cash_register: {
+    asset: { id: 'CashRegister_01' },
     name: 'Shōwa Cash Register', jp: '金銭登録機', voxel: 0.01,
     build(v) {
       const cream = (x, y, z) => gloss(shade(0xece2c6, 0.97 + hash(x >> 1, y >> 1, z >> 1, 1) * 0.04));

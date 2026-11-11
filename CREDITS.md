@@ -1313,276 +1313,251 @@ brands, wordmarks and mascots round them are original drawings.
 - Attribution: "Imperial Navy curry and rice" by Masayuki (Yuki) Kawagishi, licensed under CC BY 2.0
 - Shipped as: `img/photos/products/curry.jpg` (curry tin and snack on the shop shelves)
 
-### Surface textures (the photo texture library)
-
-The surface textures of the town, the garage and the props (`src/kit/photoTex.js`) are made from these photos by
-`tools/make-tex.py`: in each one a flat, front-on patch of the real surface is cropped (sometimes turned or
-rectified), its lighting is evened out, it is made to tile seamlessly and repainted into flat cartoon colours with
-the real grain and wear kept, then recoloured to the game's palette. The result is shipped as a 512 x 512 JPEG.
+### Surface textures (the texture library)
 
-#### Free texture wood
+The surface textures of the town, the garage, the interiors and the props (`src/kit/photoTex.js`) are made by
+`tools/make-tex.py` from CC0 scanned materials from Poly Haven (https://polyhaven.com) and ambientCG
+(https://ambientcg.com), and one CC BY 2.0 photo from Google Open Images: each colour map is scaled to the game's
+texel density and turned into high-resolution pixel art by `tools/pixelart.py` (a limited palette of shading ramps,
+clean clusters, regraded to the game's colours). The result is shipped as a palette PNG in `img/tex/`.
 
-- Author: Alexandra Bolotina\ Александра Болотина
-- Source: https://www.flickr.com/photos/misssmile/2812145898 (Open Images ID 6fc8353c532d155b)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Free texture wood" by Alexandra Bolotina\ Александра Болотина, licensed under CC BY 2.0
-- Shipped as: `img/tex/wood_planks.jpg` (the sawn boards surface texture)
+#### Hinoki Planks
 
-#### Weathered Barn Near Saugatuck
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/hinoki_planks
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/wood_planks.png` (the sawn boards surface texture)
 
-- Author: njenney
-- Source: https://www.flickr.com/photos/njenney/20107702018 (Open Images ID 96a78303db2be848)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Weathered Barn Near Saugatuck" by njenney, licensed under CC BY 2.0
-- Shipped as: `img/tex/wood_weathered.jpg` (the grey weathered boards surface texture)
+#### Wood Planks Grey
 
-#### Steel Rule
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/wood_planks_grey
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/wood_weathered.png` (the grey weathered boards surface texture)
 
-- Author: Luke Milburn
-- Source: https://www.flickr.com/photos/129209751@N07/15765166372 (Open Images ID 8f645490bc17fe56)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Steel Rule" by Luke Milburn, licensed under CC BY 2.0
-- Shipped as: `img/tex/plywood.jpg` (the plywood surface texture)
+#### Plywood
 
-#### Wood Texture with Nails
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/plywood
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/plywood.png` (the plywood surface texture)
 
-- Author: Randen Pederson
-- Source: https://www.flickr.com/photos/chefranden/3365872885 (Open Images ID 1fec574bad3f3f62)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Wood Texture with Nails" by Randen Pederson, licensed under CC BY 2.0
-- Shipped as: `img/tex/timber_dark.jpg` (the dark posts and beams surface texture)
+#### Dark Wood
 
-#### kreativ weekend 078
+- Author: Dario Barresi, Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/dark_wood
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/timber_dark.png` (the dark timber surface texture)
 
-- Author: Karin Indrehus
-- Source: https://www.flickr.com/photos/romling/3346597708 (Open Images ID 169a12b14cac3226)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "kreativ weekend 078" by Karin Indrehus, licensed under CC BY 2.0
-- Shipped as: `img/tex/plaster_cream.jpg` (the cream plaster walls surface texture)
+#### Plastered Wall
 
-#### RIMG0098
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/plastered_wall
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/plaster_cream.png` (the plaster surface texture)
 
-- Author: xxJulexx
-- Source: https://www.flickr.com/photos/33149309@N05/3093120942 (Open Images ID 1a7a377aa004b9d2)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "RIMG0098" by xxJulexx, licensed under CC BY 2.0
-- Shipped as: `img/tex/mortar_grey.jpg` (the grey mortar walls surface texture)
+#### Grey Plaster
 
-#### The tube
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/grey_plaster
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/mortar_grey.png` (the grey mortar surface texture)
 
-- Author: Sili[k]
-- Source: https://www.flickr.com/photos/silik/403741954 (Open Images ID 8775d6970e194e4a)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "The tube" by Sili[k], licensed under CC BY 2.0
-- Shipped as: `img/tex/block_wall.jpg` (the concrete block walls surface texture)
+#### Concrete Block Wall
 
-#### Victorian red brick house
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_block_wall
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/block_wall.png` (the concrete block wall surface texture)
 
-- Author: Heather
-- Source: https://www.flickr.com/photos/woolgenie/16840775126 (Open Images ID 1778ac2d0e233f59)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Victorian red brick house" by Heather, licensed under CC BY 2.0
-- Shipped as: `img/tex/brick_red.jpg` (the red brick surface texture)
+#### Brick Wall 02
 
-#### corrugated polyester wall
+- Author: Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/brick_wall_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/brick_red.png` (the red brick surface texture)
 
-- Author: Mr Thinktank
-- Source: https://www.flickr.com/photos/tahini/4048590356 (Open Images ID 5fd02777b8eec9d0)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "corrugated polyester wall" by Mr Thinktank, licensed under CC BY 2.0
-- Shipped as: `img/tex/tin_corrugated.jpg` (the corrugated tin surface texture)
+#### Corrugated Iron
 
-#### Soft age of the formerly hard materials; wood covered window, rusty weathered corregated metal siding, Aberdeen, Gray's Harbor Equipment, Washington, USA
+- Author: Jenelle van Heerden, Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/corrugated_iron
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/tin_corrugated.png` (the corrugated zinc surface texture)
 
-- Author: Wonderlane
-- Source: https://www.flickr.com/photos/wonderlane/7333684502 (Open Images ID a4a862425bc9d098)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Soft age of the formerly hard materials; wood covered window, rusty weathered corregated metal siding, Aberdeen, Gray's Harbor Equipment, Washington, USA" by Wonderlane, licensed under CC BY 2.0
-- Shipped as: `img/tex/tin_rusty.jpg` (the rusty corrugated tin surface texture)
+#### Rusty Corrugated Iron
 
-#### Holocaust Memorial texture
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/rusty_corrugated_iron
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/tin_rusty.png` (the rusty corrugated tin surface texture)
 
-- Author: Dom Pates
-- Source: https://www.flickr.com/photos/globalismpictures/7568790600 (Open Images ID 1b1471963e16b851)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Holocaust Memorial texture" by Dom Pates, licensed under CC BY 2.0
-- Shipped as: `img/tex/steel_painted.jpg` (the painted steel surface texture)
+#### Metal032
 
-#### Blue Gray Grunge Texture
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Metal032
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/steel_painted.png` (the painted steel surface texture)
 
-- Author: Sherrie Thai
-- Source: https://www.flickr.com/photos/shaireproductions/8213752321 (Open Images ID 5f9335501f727e53)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Blue Gray Grunge Texture" by Sherrie Thai, licensed under CC BY 2.0
-- Shipped as: `img/tex/steel_galvanised.jpg` (the galvanised steel surface texture)
+#### Metal009
 
-#### rust belt texture
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Metal009
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/steel_galvanised.png` (the galvanised steel surface texture)
 
-- Author: Virginia (Ginny) Sanderson
-- Source: https://www.flickr.com/photos/vsanderson/4773346724 (Open Images ID 3b33de2554dd9a1d)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "rust belt texture" by Virginia (Ginny) Sanderson, licensed under CC BY 2.0
-- Shipped as: `img/tex/rust.jpg` (the rust surface texture)
+#### Rust Coarse 01
 
-#### Concrete Texture - BOOM BOOM PIXEL 020
+- Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/rust_coarse_01
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/rust.png` (the rust surface texture)
 
-- Author: Craig Leontowicz
-- Source: https://www.flickr.com/photos/craigleontowicz/14618931428 (Open Images ID 450b2aeae4ac7a18)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Concrete Texture - BOOM BOOM PIXEL 020" by Craig Leontowicz, licensed under CC BY 2.0
-- Shipped as: `img/tex/concrete.jpg` (the concrete surface texture)
+#### Brushed Concrete
 
-#### SDC13649
+- Author: Dario Barresi, Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/brushed_concrete
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/concrete.png` (the concrete surface texture)
 
-- Author: Mr Thinktank
-- Source: https://www.flickr.com/photos/tahini/4305676614 (Open Images ID 301758e85ce06904)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "SDC13649" by Mr Thinktank, licensed under CC BY 2.0
-- Shipped as: `img/tex/concrete_stained.jpg` (the stained concrete surface texture)
+#### Concrete Floor Worn 001
 
-#### Road
+- Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_floor_worn_001
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/concrete_stained.png` (the stained concrete surface texture)
 
-- Author: Eric Martin
-- Source: https://www.flickr.com/photos/ericmmartin/3308696452 (Open Images ID f7ecfd1c46a3123e)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Road" by Eric Martin, licensed under CC BY 2.0
-- Shipped as: `img/tex/asphalt.jpg` (the asphalt road surface texture)
+#### Asphalt 04
 
-#### Texture hd free
+- Author: Jenelle van Heerden, Sergej Majboroda (Poly Haven)
+- Source: https://polyhaven.com/a/asphalt_04
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/asphalt.png` (the asphalt surface texture)
 
-- Author: Magikphil
-- Source: https://www.flickr.com/photos/alterphil/14867533949 (Open Images ID dd9ebb6895326599)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Texture hd free" by Magikphil, licensed under CC BY 2.0
-- Shipped as: `img/tex/asphalt_patched.jpg` (the patched asphalt surface texture)
+#### Asphalt 02
 
-#### Roofing tiles / 瓦(かわら)
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/asphalt_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/asphalt_patched.png` (the cracked asphalt surface texture)
 
-- Author: TANAKA Juuyoh (田中十洋)
-- Source: https://www.flickr.com/photos/tanaka_juuyoh/2462494423 (Open Images ID 80b6496844f7ae38)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Roofing tiles / 瓦(かわら)" by TANAKA Juuyoh (田中十洋), licensed under CC BY 2.0
-- Shipped as: `img/tex/roof_kawara.jpg` (the kawara roof tiles surface texture)
+#### Grey Roof Tiles
 
-#### Aluminum siding texture
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/grey_roof_tiles
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/roof_kawara.png` (the roof tile surface texture)
 
-- Author: Jarrod Erbe
-- Source: https://www.flickr.com/photos/jarroderbephotography/4937399021 (Open Images ID 7e6124d65af8c2d2)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Aluminum siding texture" by Jarrod Erbe, licensed under CC BY 2.0
-- Shipped as: `img/tex/roof_tin.jpg` (the tin roofs surface texture)
+#### Box Profile Metal Sheet
 
-#### Tatami
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/box_profile_metal_sheet
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/roof_tin.png` (the tin roof surface texture)
 
-- Author: Edward Dalmulder
-- Source: https://www.flickr.com/photos/edwarddalmulder/3634621393 (Open Images ID 9f280e421809bc1c)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Tatami" by Edward Dalmulder, licensed under CC BY 2.0
-- Shipped as: `img/tex/tatami.jpg` (the tatami surface texture)
+#### Tatami001
 
-#### 365:47 JGTexture_Frosted Silver
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Tatami001
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/tatami.png` (the tatami surface texture)
 
-- Author: Jane Garratt
-- Source: https://www.flickr.com/photos/jane_garratt/5454576371 (Open Images ID da75490bc31287e6)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "365:47 JGTexture_Frosted Silver" by Jane Garratt, licensed under CC BY 2.0
-- Shipped as: `img/tex/shoji_paper.jpg` (the shoji paper surface texture)
-
-#### BB_CardboardTexture_01
-
-- Author: Caleb Kimbrough
-- Source: https://www.flickr.com/photos/calebkimbrough/6426216193 (Open Images ID a3509d80d7b9470d)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "BB_CardboardTexture_01" by Caleb Kimbrough, licensed under CC BY 2.0
-- Shipped as: `img/tex/cardboard.jpg` (the cardboard surface texture)
-
-#### Texture burlap
-
-- Author: Zechariah  Judy
-- Source: https://www.flickr.com/photos/9918311@N02/3992939037 (Open Images ID ba283675b76ce5ac)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Texture burlap" by Zechariah  Judy, licensed under CC BY 2.0
-- Shipped as: `img/tex/canvas_cloth.jpg` (the canvas cloth surface texture)
-
-#### Denim Texture 10
-
-- Author: Jacob Gube
-- Source: https://www.flickr.com/photos/31288116@N02/3320520680 (Open Images ID ceabb4f14c91024a)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Denim Texture 10" by Jacob Gube, licensed under CC BY 2.0
-- Shipped as: `img/tex/indigo_cloth.jpg` (the indigo cloth surface texture)
-
-#### 9a
-
-- Author: Lauren Jordan
-- Source: https://www.flickr.com/photos/laurenjordan/4522166000 (Open Images ID 472d13aac51c1a42)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "9a" by Lauren Jordan, licensed under CC BY 2.0
-- Shipped as: `img/tex/paper_old.jpg` (the old paper surface texture)
-
-#### Kraków
-
-- Author: Travis Goodspeed
-- Source: https://www.flickr.com/photos/travisgoodspeed/5758199848/ (Open Images ID f297fbca3f95ae40)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Kraków" by Travis Goodspeed, licensed under CC BY 2.0
-- Shipped as: `img/tex/tile_white.jpg` (the white wall tiles surface texture)
-
-#### santa casa da misericórdia
-
-- Author: anna carol
-- Source: https://www.flickr.com/photos/annacarol/4441229784 (Open Images ID cb1eff00d58c6902)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "santa casa da misericórdia" by anna carol, licensed under CC BY 2.0
-- Shipped as: `img/tex/tile_checker_floor.jpg` (the checker floor tiles surface texture)
-
-#### Pebbles and Stones - Free Image/Texture
-
-- Author: Humayunn Niaz Ahmed Peerzaada
-- Source: https://www.flickr.com/photos/humayunnapeerzaada/4439588833 (Open Images ID 47cb4f9c5896f9e1)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Pebbles and Stones - Free Image/Texture" by Humayunn Niaz Ahmed Peerzaada, licensed under CC BY 2.0
-- Shipped as: `img/tex/gravel.jpg` (the gravel surface texture)
-
-#### Free Texture - Ground Cover 2
-
-- Author: J. Ott
-- Source: https://www.flickr.com/photos/thousandshipz/3088247128 (Open Images ID 565c97448adafced)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Free Texture - Ground Cover 2" by J. Ott, licensed under CC BY 2.0
-- Shipped as: `img/tex/soil.jpg` (the bare earth surface texture)
-
-#### Lawn - iPhone Background
-
-- Author: Patrick Hoesly
-- Source: https://www.flickr.com/photos/zooboing/5477984092 (Open Images ID 4282d75fe80ad4ff)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Lawn - iPhone Background" by Patrick Hoesly, licensed under CC BY 2.0
-- Shipped as: `img/tex/grass.jpg` (the grass surface texture)
-
-#### Spring in Botanic Garden Cluj-Napoca
-
-- Author: Cristian Bortes
-- Source: https://www.flickr.com/photos/bortescristian/3376219090 (Open Images ID 4805738a8d43a057)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Spring in Botanic Garden Cluj-Napoca" by Cristian Bortes, licensed under CC BY 2.0
-- Shipped as: `img/tex/moss.jpg` (the moss surface texture)
-
-#### När fåglarna vägrar din holk, kan du fixa kvitter på annat sätt :-)
-
-- Author: Kristofer Björkman
-- Source: https://www.flickr.com/photos/kristoferbjorkman/5823702981 (Open Images ID 79e18eab310e6e5f)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "När fåglarna vägrar din holk, kan du fixa kvitter på annat sätt :-)" by Kristofer Björkman, licensed under CC BY 2.0
-- Shipped as: `img/tex/bark_pine.jpg` and `img/tex/bark_cherry.jpg` (the pine and cherry bark surface textures)
-
-#### Yin / Yang
-
-- Author: Peter Kaminski
-- Source: https://www.flickr.com/photos/peterkaminski/265252359 (Open Images ID 888b62110874f139)
-- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
-- Attribution: "Yin / Yang" by Peter Kaminski, licensed under CC BY 2.0
-- Shipped as: `img/tex/rubber.jpg` (the rubber surface texture)
+#### Paper001
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Paper001
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/shoji_paper.png` (the shoji paper surface texture)
+
+#### Cardboard004
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Cardboard004
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/cardboard.png` (the cardboard surface texture)
+
+#### Fabric036
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Fabric036
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/canvas_cloth.png` (the canvas cloth surface texture)
+
+#### Fabric081A
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Fabric081A
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/indigo_cloth.png` (the indigo cloth surface texture)
+
+#### Paper006
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Paper006
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/paper_old.png` (the old paper surface texture)
+
+#### Tiles107
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Tiles107
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/tile_white.png` (the white wall tile surface texture)
+
+#### Checkered Pavement Tiles
+
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/checkered_pavement_tiles
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/tile_checker_floor.png` (the checkered floor surface texture)
+
+#### Gravel
+
+- Author: Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/gravel
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/gravel.png` (the gravel surface texture)
+
+#### Farm Soil
+
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/farm_soil
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/soil.png` (the soil surface texture)
+
+#### Leafy Grass
+
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/leafy_grass
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/grass.png` (the grass surface texture)
+
+#### Moss002
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Moss002
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/moss.png` (the moss surface texture)
+
+#### Pine Bark
+
+- Author: Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/pine_bark
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/bark_pine.png` (the pine bark surface texture)
+
+#### Sakura Bark
+
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/sakura_bark
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/bark_cherry.png` (the cherry bark surface texture)
+
+#### Rubber004
+
+- Author: ambientCG (Lennart Demes)
+- Source: https://ambientcg.com/a/Rubber004
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Shipped as: `img/tex/rubber.png` (the rubber surface texture)
 
 #### Free ice texture
 
@@ -1590,7 +1565,36 @@ the real grain and wear kept, then recoloured to the game's palette. The result 
 - Source: https://www.flickr.com/photos/colinsite/4259084669 (Open Images ID c0009d86fc844520)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Free ice texture" by monkeywing, licensed under CC BY 2.0
-- Shipped as: `img/tex/frosted_glass.jpg` (the frosted glass surface texture)
+- Shipped as: `img/tex/frosted_glass.png` (the frosted glass surface texture)
+
+### Window views (the views out of the annex shutter and the Kaikan windows)
+
+Made by `tools/make-views.py` (`src/growth/views.js`): cropped to the window and turned into high-resolution pixel art
+by `tools/pixelart.py`.
+
+#### Tokyo street green light
+
+- Author: Raphael Desrosiers
+- Source: https://www.flickr.com/photos/120167116@N06/13104875775 (Open Images ID 50d546d006457f9a)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tokyo street green light" by Raphael Desrosiers, licensed under CC BY 2.0
+- Shipped as: `img/views/lane.png` (the lane seen through the annex's open shutter)
+
+#### Osaka Street View
+
+- Author: Azchael
+- Source: https://www.flickr.com/photos/azchael/16480642130 (Open Images ID 1c50a2d9bb44696e)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Osaka Street View" by Azchael, licensed under CC BY 2.0
+- Shipped as: `img/views/plaza.png` (the street outside the Kaikan's ground-floor windows)
+
+#### Tokyo Yamanote Line
+
+- Author: Hikosaemon
+- Source: https://www.flickr.com/photos/hikosaemon/15421896486 (Open Images ID 2ab37fb75e9ecd33)
+- Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+- Attribution: "Tokyo Yamanote Line" by Hikosaemon, licensed under CC BY 2.0
+- Shipped as: `img/views/tracks.png` (the tracks below the Kaikan's upper windows)
 
 
 ## Licences
@@ -1599,3 +1603,28 @@ the real grain and wear kept, then recoloured to the game's palette. The result 
 - CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
 - CC BY 2.0: https://creativecommons.org/licenses/by/2.0/
 - Public domain: pdsounds.org recordings were released into the public domain by their recordists (see http://pdsounds.tuxfamily.org/license.txt).
+
+## 3D models (Poly Haven, CC0)
+
+Models from Poly Haven (polyhaven.com), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Decimated, re-scaled and re-textured as pixel art for the game by tools/import-asset.mjs.
+
+- Cardboard Box 01 by Rahul Chaudhary (https://polyhaven.com/a/cardboard_box_01), CC0 1.0. Shipped as `models/cardboard_box_01.glb`
+- Cash Register 01 by Joe Seabuhr (https://polyhaven.com/a/CashRegister_01), CC0 1.0. Shipped as `models/CashRegister_01.glb`
+- Boombox by Thomas Paul Mouilleron (https://polyhaven.com/a/boombox), CC0 1.0. Shipped as `models/boombox.glb`
+- Television 01 by Gabriel Radić (https://polyhaven.com/a/Television_01), CC0 1.0. Shipped as `models/Television_01.glb`
+- Wooden Broom by Balen (https://polyhaven.com/a/wooden_broom), CC0 1.0. Shipped as `models/wooden_broom.glb`
+- Vintage Pocket Watch by Tal Swicegood (https://polyhaven.com/a/vintage_pocket_watch), CC0 1.0. Shipped as `models/vintage_pocket_watch.glb`
+- Industrial Plastic Container by Galo Benivegna (https://polyhaven.com/a/industrial_pastic_container), CC0 1.0. Shipped as `models/industrial_pastic_container.glb`
+- Watering Can Metal 01 by Charles Nderitu (https://polyhaven.com/a/watering_can_metal_01), CC0 1.0. Shipped as `models/watering_can_metal_01.glb`
+- Wall Clock by PierreB3D (https://polyhaven.com/a/wall_clock), CC0 1.0. Shipped as `models/wall_clock.glb`
+- Metal Jerrycan by Sean Buckley (https://polyhaven.com/a/metal_jerrycan), CC0 1.0. Shipped as `models/metal_jerrycan.glb`
+- Plastic Jerrycan by Ulan Cabanilla (https://polyhaven.com/a/plastic_jerrycan), CC0 1.0. Shipped as `models/plastic_jerrycan.glb`
+
+## 3D models: the people's base body (CC0)
+
+### Universal Base Characters (Standard)
+
+- Author: Quaternius (quaternius.com)
+- Source: https://quaternius.com/packs/universalbasecharacters.html (itch.io: https://quaternius.itch.io/universal-base-characters)
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used: Superhero_Male_FullBody and Superhero_Female_FullBody (glTF). Reposed to the game's rest pose, re-rigged to its skeleton, softened, decimated and fitted to every person by tools/people-base.mjs and src/people/base.js; shipped as `src/people/base/data.js`. Their textures are not used (the people are painted as pixel art in code).

@@ -609,6 +609,7 @@ const garage = {
 
   // ------------------------------------------------------------- radio
   radio: {
+    asset: { id: 'boombox' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Radio-Cassette Boombox', voxel: 0.008,
     build(v) {
       const body = (x, y, z) => gloss(shade(0xb4b8be, 0.95 + hash(x, y, z, 2) * 0.05));
@@ -842,6 +843,7 @@ const garage = {
 
   // ------------------------------------------------------------- broom
   broom: {
+    asset: { id: 'wooden_broom', fit: 'y' },
     name: 'Bamboo Broom', voxel: 0.014,
     build(v) {
       const twig = (x, y, z) => {
@@ -991,6 +993,7 @@ const garage = {
 
   // ------------------------------------------------------------- polytank
   polytank: {
+    asset: { id: 'plastic_jerrycan', ry: Math.PI / 2 }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Kerosene Polytank & Pump', voxel: 0.008,
     build(v) {
       const red = (x, y, z) => gloss(shade(0xd8332a, 0.94 + hash(x, y, z, 1) * 0.06 + (y % 10 === 0 ? -0.12 : 0)));
@@ -1015,6 +1018,7 @@ const garage = {
 
   // ------------------------------------------------------------- CRT TV
   crt_tv: {
+    asset: { id: 'Television_01' },
     name: 'Old CRT Television', voxel: 0.01,
     build(v) {
       const wood = woodFn(0x8a5a32, 'x', 4);
@@ -1402,6 +1406,7 @@ const garage = {
 
   // ------------------------------------------------------------- watering can
   watering_can: {
+    asset: { id: 'watering_can_metal_01', ry: Math.PI / 2 },
     name: 'Tin Watering Can', voxel: 0.007,
     build(v) {
       const pnt = (x, y, z) => gloss(shade(0x5a8a6a, 0.88 + vnoise(x, y, z, 3, 2) * 0.16));

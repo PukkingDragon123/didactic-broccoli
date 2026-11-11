@@ -251,9 +251,15 @@ export class Ramen {
       F.box('chrome', x + 0.42, 0.6, -1.895, x + 0.52, 0.615, -1.875, { bevel: 0.004 });
     }
     for (const x of [-2.9, 0, 2.9]) F.bx('zinc', 0.04, 0.12, 0.04, x, 0, -1.94, { tint: 0x9a9ea0 });
-    for (const y of [1.55, 1.95]) {
+    for (const y of [1.55, 1.95]) { // shelf boards on pressed-steel L brackets: the wall leg, the arm, the gusset, two screws
       F.box('wood', -2.0, y, -2.485, 2.4, y + 0.03, -2.22, { tint: 0x7a5232, grain: 'x', bevel: 0.004 });
-      for (const x of [-1.9, 0.2, 2.3]) F.box('satin', x - 0.012, y - 0.12, -2.485, x + 0.012, y, -2.25, { tint: 0x6a6a6e });
+      F.rod('wood', [-2.0, y + 0.015, -2.22], [2.4, y + 0.015, -2.22], 0.015, { tint: 0x7a5232 });
+      for (const x of [-1.9, 0.2, 2.3]) {
+        F.box('satin', x - 0.012, y - 0.16, -2.49, x + 0.012, y, -2.478, { tint: 0x6a6a6e, bevel: 0.002 });
+        F.box('satin', x - 0.012, y - 0.012, -2.478, x + 0.012, y, -2.25, { tint: 0x6a6a6e, bevel: 0.002 });
+        F.beam('satin', [x, y - 0.14, -2.475], [x, y - 0.012, -2.3], 0.02, 0.01, { tint: 0x6a6a6e });
+        for (const yy of [y - 0.13, y - 0.06]) F.lathe('chrome', x, yy, -2.478, [[0.007, 0], [0.006, 0.003], [0, 0.004]], 8, { axis: 'z' });
+      }
     }
     F.box('zinc', -2.1, 0.08, -1.86, -1.0, 0.66, -1.24, { tint: 0x9aa0a4, bevel: 0.01 });
     F.box('flat', -2.1, 0, -1.84, -1.0, 0.08, -1.26, { tint: 0x2e2e30 });
@@ -270,13 +276,29 @@ export class Ramen {
     F.box('satin', 1.1, 0.78, -1.88, 1.8, 0.84, -1.86, { tint: 0x3a3a3e });
     for (const x of [1.25, 1.45, 1.65]) F.lathe('chrome', x, 0.45, -1.33, [[0, 0], [0.016, 0], [0.018, 0.018], [0, 0.022]], 10, { axis: 'z' });
     // the hood over the range: a stainless canopy with a lip, filters, the duct
+    // (the skirt's rolled bead and the grease gutter inside it, standing seams, baffle filters in their frames over a
+    // drip tray, a grease cup at the low corner, the duct on its flange with a damper lever, threaded hangers)
     F.box('zinc', -2.1, 2.3, -2.06, 1.3, 2.36, -1.32, { tint: 0xc8ccce, bevel: 0.01 });
     F.box('zinc', -2.1, 2.12, -1.36, 1.3, 2.3, -1.3, { tint: 0xd0d4d6, bevel: 0.008 });
     F.box('zinc', -2.1, 2.12, -2.06, 1.3, 2.3, -2.0, { tint: 0xc0c4c6, bevel: 0.008 });
     for (const x of [-2.1, 1.24]) F.box('zinc', x, 2.12, -2.0, x + 0.06, 2.3, -1.36, { tint: 0xc0c4c6 });
-    for (let x = -1.95; x < 1.2; x += 0.5) F.box('satin', x, 2.29, -1.98, x + 0.46, 2.3, -1.4, { tint: 0x9aa0a2 });
-    F.box('zinc', -0.6, 2.36, -1.9, -0.2, H, -1.5, { tint: 0xb8bcbe, bevel: 0.01 });
-    for (const x of [-1.9, 1.1]) F.rod('satin', [x, 2.36, -1.7], [x, H, -1.7], 0.008, { tint: 0x8a8e90, sides: 8 });
+    F.rod('zinc', [-2.11, 2.12, -1.3], [1.31, 2.12, -1.3], 0.014, { tint: 0xd8dcde });
+    F.box('zinc', -2.04, 2.12, -1.4, 1.24, 2.15, -1.36, { tint: 0xb0b4b6 });
+    for (let x = -1.25; x < 1.2; x += 0.85) F.box('zinc', x - 0.006, 2.13, -1.302, x + 0.006, 2.3, -1.295, { tint: 0xc0c4c6 });
+    for (let x = -1.95; x < 1.2; x += 0.5) {
+      F.box('satin', x, 2.27, -1.98, x + 0.46, 2.3, -1.42, { tint: 0x8a9092, bevel: 0.004 });
+      for (let k = 1; k < 10; k++) F.box('satin', x + k * 0.046 - 0.004, 2.24, -1.96, x + k * 0.046 + 0.004, 2.27, -1.44, { tint: k % 2 ? 0x9aa0a2 : 0x7e8486 });
+      F.box('chrome', x + 0.2, 2.235, -1.46, x + 0.26, 2.245, -1.43, {});
+    }
+    F.lathe('zinc', 1.15, 2.07, -1.36, [[0, 0], [0.03, 0], [0.034, 0.05], [0.036, 0.055], [0, 0.055]], 12, { tint: 0xb8bcbe });
+    F.box('zinc', -0.66, 2.36, -1.96, -0.14, 2.39, -1.44, { tint: 0xb0b4b6, bevel: 0.006 });
+    F.box('zinc', -0.6, 2.39, -1.9, -0.2, H, -1.5, { tint: 0xb8bcbe, bevel: 0.01 });
+    F.box('zinc', -0.62, 2.62, -1.92, -0.18, 2.66, -1.48, { tint: 0xa8acae, bevel: 0.006 });
+    F.beam('satin', [-0.2, 2.5, -1.7], [-0.1, 2.5, -1.7], 0.02, 0.012, { tint: 0x6a6e70 });
+    for (const x of [-1.9, 1.1]) {
+      F.rod('satin', [x, 2.36, -1.7], [x, H, -1.7], 0.008, { tint: 0x8a8e90, sides: 8 });
+      for (const y of [2.37, H - 0.01]) F.lathe('satin', x, y - 0.004, -1.7, [[0.016, 0], [0.016, 0.01], [0, 0.01]], 6);
+    }
     // the side table for the dirty bowls, the TV shelf, the sake shelf over the back counter
     F.box('zinc', -2.87, 0.1, -1.16, -2.37, 0.79, -0.74, { tint: 0xb4b8ba, bevel: 0.008 });
     F.box('zinc', -2.89, 0.79, -1.18, -2.35, 0.82, -0.72, { tint: 0xc8ccce, bevel: 0.005 });

@@ -8,6 +8,7 @@
 //   const A = townAtlas();  A.trim.uv('gomi') -> [u0, v0, u1, v1]   A.trim.tex   A.size('gomi') -> [w, h] metres
 import * as THREE from 'three';
 import { draw5, textW5 } from '../gfx/font5x7.js';
+import { pixelFilter } from '../kit/photoTex.js';
 
 export const NAMES = ['鈴木', '太田', '日下', '木村', '田中', '鳩田', '矢吹', '森', '渡辺', '東方', '虹村', '山田', '佐藤', '小林', '山本', '伊藤', '加藤'];
 export const NAME_INDEX = Object.fromEntries(NAMES.map((n, i) => [n, i]));
@@ -45,7 +46,7 @@ class Atlas {
     this.x = this.c.getContext('2d');
     this.R = new Map(); this.packed = false;
     const t = new THREE.CanvasTexture(this.c);
-    t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 8;
+    t.colorSpace = THREE.SRGBColorSpace; pixelFilter(t); // pixel art: crisp texels up close, trilinear + anisotropic far away
     this.tex = t;
   }
   alloc(name, w, h, m) { const e = { x: 0, y: 0, w, h, m }; this.R.set(name, e); return e; }
