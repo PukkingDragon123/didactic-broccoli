@@ -139,9 +139,9 @@ export async function writeGLB(path, parts, png) {
     const m = doc.createMesh(P.name).addPrimitive(prim), n = doc.createNode(P.name).setMesh(m);
     node.addChild(n);
   }
-  await doc.transform(dedup(), prune(), reorder({ encoder: MeshoptEncoder }), quantize());
+  await doc.transform(dedup(), weld(), prune(), reorder({ encoder: MeshoptEncoder }), quantize());
   doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
   await io.write(path, doc);
 }
-void weld; void simplify;
+void simplify;
