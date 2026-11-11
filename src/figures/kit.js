@@ -14,7 +14,7 @@
 // Paints are src/figures/paint.js specs (a colour or { c, t, d: [decals], top, bot, m, ... }).
 import * as THREE from 'three';
 import { VoxelModel, enc, MAT } from '../voxel/VoxelModel.js';
-import { compilePaint, paintCtx } from './paint.js';
+import { compilePaint, paintCtx, FONT_WAIT } from './paint.js';
 
 export const FIG_UNIT = 0.001; // metres per authoring unit (mm)
 
@@ -85,73 +85,6 @@ export class Fig {
   }
 }
 
-// ------------------------------------------------------------------ faces of a prism
-function ringPts(R) {
-  const [y, hx, hz, cx = 0, cz = 0, ch = 0] = R;
-  const c = ch * Math.min(hx, hz);
-  return [[cx + hx, y, cz + hz - c], [cx + hx - c, y, cz + hz], [cx - hx + c, y, cz + hz], [cx - hx, y, cz + hz - c],
-    [cx - hx, y, cz - hz + c], [cx - hx + c, y, cz - hz], [cx + hx - c, y, cz - hz], [cx + hx, y, cz - hz + c]];
-}
-const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
-const same = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]) < 1e-6;
-
-function newell(P) {
-  const n = [0, 0, 0];
-  for (let i = 0; i < P.length; i++) {
-    const a = P[i], b = P[(i + 1) % P.length];
-    n[0] += (a[1] - b[1]) * (a[2] + b[2]); n[1] += (a[2] - b[2]) * (a[0] + b[0]); n[2] += (a[0] - b[0]) * (a[1] + b[1]);
-  }
-  return n;
-}
-
-function primFaces(p) {
-  const R = p.rings.map(ringPts);
-  const out = [];
-  // bbox of the prism (local)
-  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z0 = 1e9, z1 = -1e9;
-  const RR = p.R ? R.map((r) => r.map((q) => [p.R[0] * q[0] + p.R[3] * q[1] + p.R[6] * q[2], p.R[1] * q[0] + p.R[4] * q[1] + p.R[7] * q[2], p.R[2] * q[0] + p.R[5] * q[1] + p.R[8] * q[2]])) : R;
-  for (const r of RR) for (const q of r) { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); z0 = Math.min(z0, q[2]); z1 = Math.max(z1, q[2]); }
-  p.bb = { x0, x1, y0, y1, z0, z1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, cz: (z0 + z1) / 2, hx: (x1 - x0) / 2, hy: (y1 - y0) / 2, hz: (z1 - z0) / 2 };
-  for (let k = 0; k + 1 < R.length; k++) {
-    const A = R[k], B = R[k + 1];
-    const axisC = [(p.bb.cx), (A[0][1] + B[0][1]) / 2, p.bb.cz];
-    for (let i = 0; i < 8; i++) {
-      const a = A[i], b = A[(i + 1) % 8], tb = B[(i + 1) % 8], ta = B[i];
-      let pts = [a, b, tb, ta].filter((q, j, arr) => !same(q, arr[(j + 1) % arr.length]));
-      if (pts.length < 3) continue;
-      let N = newell(pts);
-      if (Math.hypot(...N) < 1e-9) continue;
-      N = norm(N);
-      const mid = pts.reduce((s, q) => [s[0] + q[0] / pts.length, s[1] + q[1] / pts.length, s[2] + q[2] / pts.length], [0, 0, 0]);
-      const rel = sub(mid, axisC); rel[1] = 0;
-      if (dot(N, rel) < 0) { pts = pts.reverse(); N = [-N[0], -N[1], -N[2]]; }
-      out.push({ p, kind: 'side', pts, N });
-    }
-  }
-  const cap = (P, top) => {
-    let pts = P.filter((q, j, arr) => !same(q, arr[(j + 1) % arr.length]));
-    if (pts.length < 3) return;
-    let N = norm(newell(pts));
-    if ((N[1] > 0) !== top) { pts = pts.reverse(); N = [-N[0], -N[1], -N[2]]; }
-    out.push({ p, kind: top ? 'top' : 'bot', pts, N });
-  };
-  if (p.caps === 'both' || p.caps === 'top') cap(R[R.length - 1], true);
-  if (p.caps === 'both' || p.caps === 'bot') cap(R[0], false);
-  for (const f of out) {
-    let V;
-    if (f.kind === 'side') { V = [0, 1, 0]; const k = dot(V, f.N); V = [V[0] - f.N[0] * k, V[1] - f.N[1] * k, V[2] - f.N[2] * k]; if (Math.hypot(...V) < 1e-3) V = [0, 0, -1]; V = norm(V); }
-    else { V = f.kind === 'top' ? [0, 0, -1] : [0, 0, 1]; const k = dot(V, f.N); V = norm([V[0] - f.N[0] * k, V[1] - f.N[1] * k, V[2] - f.N[2] * k]); }
-    f.V = V; f.U = norm(cross(V, f.N)); f.o = f.pts[0];
-    let s0 = Infinity, s1 = -Infinity, r0 = Infinity, r1 = -Infinity;
-    f.p2 = f.pts.map((q) => { const d = sub(q, f.o); const u = dot(d, f.U), v = dot(d, f.V); s0 = Math.min(s0, u); s1 = Math.max(s1, u); r0 = Math.min(r0, v); r1 = Math.max(r1, v); return [u, v]; });
-    f.s0 = s0; f.s1 = s1; f.r0 = r0; f.r1 = r1;
-  }
-  return out;
-}
-
 // ------------------------------------------------------------------ voxelizing
 const MATS = { matte: MAT.MATTE, gloss: MAT.GLOSS, metal: MAT.METAL, glow: MAT.GLOW, glass: MAT.GLASS };
 const _v = new THREE.Vector3();
@@ -178,6 +111,7 @@ function inside(rings, x, y, z, tol) {
 export function voxelizeFig(figFn, vox = 1.1) {
   const k = new Fig();
   figFn(k);
+  FONT_WAIT.pending = null;
   const model = new VoxelModel();
   model.jitter = 0;
   const c = paintCtx(), o = new Float32Array(4), inv = new THREE.Matrix4(), P = new THREE.Vector3();
@@ -221,5 +155,7 @@ export function voxelizeFig(figFn, vox = 1.1) {
     }
   }
   model.anchors = k.anchors;
+  // a text decal met a web font that has not loaded yet: tell the caller so it can rebuild once it has
+  model.fontPending = FONT_WAIT.pending; FONT_WAIT.pending = null;
   return model;
 }

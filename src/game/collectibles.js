@@ -49,6 +49,7 @@ export function itemGeometry(key, opts = {}) {
   const maxDim = (Math.max(b.w, b.h, b.d) / scale) * ITEM_VOXEL;
   const vs = (maxDim > ITEM_MAX ? ITEM_VOXEL * (ITEM_MAX / maxDim) : ITEM_VOXEL) / scale;
   g = meshVoxels(model, { voxelSize: vs });
+  if (model.fontPending) model.fontPending.then(() => { if (geoCache.get(ck) === g) geoCache.delete(ck); }).catch(() => {});
   g.userData.upres = scale;
   geoCache.set(ck, g);
   return g;
