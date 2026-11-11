@@ -26,13 +26,16 @@ function norenPanels(game) {
   openG.traverse((o) => { if (o.isMesh && o.material === mat) panels.push(o); });
   if (panels.length !== 3) return null;
   panels.sort((a, b) => a.position.x - b.position.x);
-  const out = panels.map((m, i) => {
-    const part = 'LCR'[i], pix = new Pix(NOREN.w, NOREN.h, 5 + i), tex = pix.texture();
-    const mm = mat.clone(); mm.map = tex; m.material = mm;
-    return { part, pix, tex };
-  });
+  let out = null;
   return {
-    paint(L) { for (const o of out) { paintNoren(o.pix, o.part, L).flush(); o.tex.needsUpdate = true; } },
+    paint(L) {
+      out ||= panels.map((m, i) => {
+        const part = 'LCR'[i], pix = new Pix(NOREN.w, NOREN.h, 5 + i), tex = pix.texture();
+        const mm = mat.clone(); mm.map = tex; m.material = mm;
+        return { part, pix, tex };
+      });
+      for (const o of out) { paintNoren(o.pix, o.part, L).flush(); o.tex.needsUpdate = true; }
+    },
   };
 }
 
@@ -67,7 +70,8 @@ export function install(game) {
   try { sign = projectingSign(game); } catch (e) { console.warn('logo: sign', e); }
   const refresh = () => {
     const L = setActiveLogo(readLogo(game));
-    try { noren?.paint(L); sign?.paint(L); } catch (e) { console.warn('logo: paint', e); }
+    // (the noren keeps the town's own diamonds until there is a logo or a name of your own)
+    try { if (noren && (L.custom || L.named || noren.painted)) { noren.paint(L); noren.painted = true; } sign?.paint(L); } catch (e) { console.warn('logo: paint', e); }
     pad?.repaint();
   };
   // the DotGothic16 glyphs of the name must be in before the first paint
