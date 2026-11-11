@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { assetSlot, preloadAssets } from '../../kit/assets.js';
 import { Pix, FONT_JP } from '../../gfx/pix.js';
 import { textW5 } from '../../gfx/font5x7.js';
+import { activeLogo } from '../../logo/logo.js';
 
 preloadAssets(['cardboard_box_01']); // listing photos are taken as soon as a page shows
 
@@ -26,7 +27,8 @@ function fit5(s, w) { let t = s; while (t.length > 1 && textW5(t) > w) t = t.sli
 const labels = new Map();
 /** The shipping label: 128 x 88 px paper. */
 export function shippingLabel({ title = '', sub = '', from = null, kind = 'decor' } = {}) {
-  const key = [title, sub, from, kind].join('|');
+  const shop = activeLogo().en; // (the shop's own name, src/logo/)
+  const key = [title, sub, from, kind, shop].join('|');
   if (labels.has(key)) return labels.get(key);
   const C = COURIERS[kind] || COURIERS.decor, W = 128, H = 88, p = new Pix(W, H, hash(key));
   p.fill(PAPER);
@@ -38,7 +40,7 @@ export function shippingLabel({ title = '', sub = '', from = null, kind = 'decor
   if (18 + textW5(from ? from.toUpperCase() : C.name) + 42 < W) p.text(C.jp, W - 4, 0, { font: FONT_JP, size: 12, color: 0xf4eedc, align: 'right' });
   // to: the shop
   p.text('お届け先', 4, 16, { font: FONT_JP, size: 12, color: INK });
-  p.tinyText('GACHA GARAGE', 52, 19, { color: INK });
+  p.tinyText(fit5(shop, W - 56), 52, 19, { color: INK });
   p.tinyText('3-CHOME BACK LANE', 4, 30, { color: 0x5a5048 });
   p.rect(4, 39, W - 8, 1, PAPER_D);
   // the item, in two lines
