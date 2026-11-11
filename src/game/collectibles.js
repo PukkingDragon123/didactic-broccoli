@@ -7,12 +7,8 @@ import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { upres2x } from '../voxel/upres.js';
-import { getItem } from '../data/series/index.js';
-import { upgradeVoxels } from '../figures/voxpaint.js';
-import { voxelizeFig } from '../figures/kit.js';
-
-/** mm per voxel for kit-built figures (item.fig, voxelized): about the old up-res density, finer than design voxels. */
-const FIG_VOX = 1.1;
+import { getItem, SERIES_BY_ID } from '../data/series/index.js';
+import { figGeometry, figMaterials, figFlatGeometry } from '../figures/kit.js';
 
 export const ITEM_VOXEL = 0.0027; // metres per (design) voxel for collectibles (a 26-voxel figure ≈ 7 cm)
 export const ITEM_MAX = 0.088; // largest allowed dimension in metres (fits a shelf slot)
@@ -30,12 +26,10 @@ export function buildItemModel(item) {
 
 /** The voxel model a figure is meshed from (up-resolved unless the item opts out). Returns { model, scale }. */
 export function itemModel(item, { lowres = false } = {}) {
-  // kit figures (src/figures): voxelized at FIG_VOX mm, already painted voxel by voxel
-  if (item.fig) return { model: voxelizeFig(item.fig, lowres ? FIG_VOX * 2 : FIG_VOX), scale: (ITEM_VOXEL * 1000) / (lowres ? FIG_VOX * 2 : FIG_VOX) };
   const model = buildItemModel(item);
   const opt = item.upres;
-  if (lowres || !UPRES || opt === false || item.mini) return { model: item.mini ? model : upgradeVoxels(model, { scale: 1 }), scale: 1 };
-  return { model: upgradeVoxels(upres2x(model, { ...UPRES_OPTS, ...(typeof opt === 'object' ? opt : {}) }), { scale: 2 }), scale: 2 };
+  if (lowres || !UPRES || opt === false || item.mini) return { model, scale: 1 };
+  return { model: upres2x(model, { ...UPRES_OPTS, ...(typeof opt === 'object' ? opt : {}) }), scale: 2 };
 }
 
 export function itemGeometry(key, opts = {}) {
@@ -44,22 +38,31 @@ export function itemGeometry(key, opts = {}) {
   if (g) return g;
   const item = getItem(key);
   if (!item) throw new Error('Unknown item ' + key);
+  if (item.fig) return opts.lowres ? figFlatGeometry(item) : figGeometry(item, SERIES_BY_ID[item.series]); // kit figures, cached by the kit
   const { model, scale } = itemModel(item, opts);
   const b = model.bounds();
   const maxDim = (Math.max(b.w, b.h, b.d) / scale) * ITEM_VOXEL;
   const vs = (maxDim > ITEM_MAX ? ITEM_VOXEL * (ITEM_MAX / maxDim) : ITEM_VOXEL) / scale;
   g = meshVoxels(model, { voxelSize: vs });
-  if (model.fontPending) model.fontPending.then(() => { if (geoCache.get(ck) === g) geoCache.delete(ck); }).catch(() => {});
   g.userData.upres = scale;
   geoCache.set(ck, g);
   return g;
 }
 
 /** Is this item's up-res geometry already built (cheap to show)? */
-export function hasItemGeometry(key) { return geoCache.has(key); }
+export function hasItemGeometry(key) { return geoCache.has(key) || !!getItem(key)?.fig; }
 
 /** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
+  const it = getItem(key);
+  if (it?.fig) {
+    // small thumbnails (opts.lowres) use the flat-colour blocks: no series atlas until a figure is seen up close
+    const flat = !!opts.lowres;
+    const mesh = new THREE.Mesh(flat ? figFlatGeometry(it) : figGeometry(it, SERIES_BY_ID[it.series]), flat ? voxelMaterials(finish) : figMaterials(SERIES_BY_ID[it.series], finish));
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    mesh.userData.itemKey = key; mesh.userData.finish = finish;
+    return mesh;
+  }
   let geo;
   const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));
   if (lod) geo = geoCache.get(key) || itemGeometry(key, { lowres: true });
@@ -73,7 +76,7 @@ export function makeItemMesh(key, finish = 'normal', opts = {}) {
   return mesh;
 }
 
-function wantsUpres(item) { return !!item && (item.fig || (item.upres !== false && !item.mini)); }
+function wantsUpres(item) { return !!item && !item.fig && item.upres !== false && !item.mini; }
 
 // ------------------------------------------------------------------ level of detail
 // Figures far from the camera (a full shelf across the room) draw their original coarse voxels; the 2x up-res mesh

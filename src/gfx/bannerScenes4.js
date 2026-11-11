@@ -509,6 +509,58 @@ function lanepals(g) {
   g.ell(200, 176, 18, 6, 0x5a5a5e); g.ring(200, 176, 18, 6, 0x4a4a4e);
 }
 
+
+function gecen(g) {
+  // a game-centre floor at night: neon strips, a row of cabinets glowing, a patterned carpet
+  sky(g, 150, [0x14102a, 0x1e1638, 0x281e48]);
+  for (const [y, c] of [[18, 0xf06aa8], [24, 0x3ab8a8]]) for (let x = 0; x < g.w; x++) g.px(x, y, c);
+  for (let i = 0; i < 6; i++) { const x = 6 + i * 52, c = [0xc8302a, 0x2a4aa8, 0x3ab8a8, 0xe8c040, 0xf06aa8, 0x6a5ad8][i]; g.rect(x, 52, 40, 98, dk(c, 0.3)); g.rect(x + 2, 56, 36, 12, lt(c, 0.5)); g.rect(x + 5, 74, 30, 26, 0x0a0a14); for (let k = 0; k < 8; k++) g.px(x + 8 + ((k * 7) % 24), 78 + ((k * 5) % 18), lt(c, 0.6)); g.rect(x + 4, 104, 32, 6, 0x2a2a30); g.rect(x + 10, 106, 3, 3, 0xd8302a); g.rect(x + 18, 106, 3, 3, 0xf2c23a); }
+  for (let y = 150; y < g.h; y++) for (let x = 0; x < g.w; x++) { const u = ((x >> 3) + (y >> 3)) & 3; g.px(x, y, u === 0 ? 0x5a3c8c : u === 2 ? 0x286e78 : 0x3a2a4a); }
+  g.hl(0, g.w - 1, 150, 0x8a7ab8);
+}
+function sumo(g) {
+  // the stable's practice ring: wooden walls, a hanging banner, the clay dohyō with its straw ring
+  for (let y = 0; y < 150; y++) for (let x = 0; x < g.w; x++) g.px(x, y, (x % 26 === 0) ? 0x5a3a24 : tone(x, y, y / 150, [0x9a6a42, 0x8a5c38], 0.5));
+  g.rect(110, 20, 100, 44, 0xf2ecd8); g.text('心技体', 160, 28, { size: 14, color: 0x2a1c1c, align: 'center' });
+  floor(g, 150, [0xc8a070, 0xb89060, 0xa88050], null);
+  g.ell(160, 176, 118, 20, 0xb89060); g.ring(160, 176, 100, 16, 0xd8c890); g.ring(160, 176, 101, 17, 0xc8b878);
+}
+function bukatsu(g) {
+  // the school at golden hour: the building, the clock, the playground, the gym floor in front
+  sky(g, 120, [0x8ac0e8, 0xb8d8f0, 0xf6d8a8]);
+  g.rect(20, 40, 280, 80, 0xe8e2d4); for (let i = 0; i < 12; i++) g.rect(28 + i * 23, 56, 16, 12, 0x6a8aa8); for (let i = 0; i < 12; i++) g.rect(28 + i * 23, 84, 16, 12, 0x6a8aa8);
+  g.ell(160, 30, 10, 10, 0xf6f2ea); g.ring(160, 30, 10, 10, 0x2a2a30); g.line(160, 30, 160, 23, 0x2a2a30); g.line(160, 30, 165, 30, 0x2a2a30);
+  g.rect(0, 120, g.w, 30, 0xc89a6a);
+  floor(g, 150, [0xd8a868, 0xc89858, 0xb88848], 0xa87840, 40);
+  for (let x = 0; x < g.w; x += 2) g.px(x, 172, 0xf4f2ec);
+}
+function hyakki(g) {
+  // a moonlit back road: full moon, wispy cloud, a line of red lanterns, the old paving stones
+  sky(g, 150, [0x0e0c1e, 0x1a1630, 0x282040]);
+  g.ell(250, 46, 22, 22, 0xf6eec8); g.ell(244, 40, 5, 4, 0xe8dcb0);
+  for (let x = 0; x < g.w; x++) g.px(x, 60 + Math.round(Math.sin(x / 40) * 3), 0x3a3050);
+  for (let i = 0; i < 7; i++) { const x = 20 + i * 46, y = 66 + Math.round(Math.sin(x / 40) * 3); g.light(x, y + 10, 18, 16, 0xff8040, 0.3, 0.5); g.ell(x, y + 10, 7, 10, 0xc8302a); for (let k = -8; k < 10; k += 4) g.hl(x - 7, x + 7, y + 10 + k, 0x8a1a18); }
+  for (let y = 150; y < g.h; y++) for (let x = 0; x < g.w; x++) { const u = (x + ((y >> 3) & 1) * 10) % 20, v = y % 8; g.px(x, y, (u === 0 || v === 0) ? 0x26222e : tone(x, y, (y - 150) / 50, [0x4a4654, 0x3c3846])); }
+}
+function sento(g) {
+  // inside the bathhouse: the Mt Fuji mural over the big bath, tiles, the steam
+  sky(g, 110, [0x5aa0e0, 0x7ab8e8, 0xa8d4f2]);
+  g.poly([[60, 110], [160, 30], [260, 110]], 0x3a5aa8); g.poly([[132, 54], [160, 30], [188, 54], [172, 48], [160, 54], [148, 48]], 0xf6f6f2);
+  g.rect(0, 110, g.w, 40, 0x2a6aa8); for (let x = 0; x < g.w; x += 14) g.rect(x, 116 + (x % 3), 8, 2, 0x5a9ad8);
+  for (let y = 150; y < g.h; y++) for (let x = 0; x < g.w; x++) g.px(x, y, ((x >> 3) + (y >> 3)) & 1 ? 0xd8e4ea : 0xc4d4dc);
+  g.hl(0, g.w - 1, 150, 0xf2f8fa);
+  for (const [x, y] of [[50, 90], [270, 80], [150, 100]]) g.ell(x, y, 16, 6, 0xe8f2f8);
+}
+function hataraku(g) {
+  // the shopping street at morning: shop fronts, a post box, a utility pole and wires, the street
+  sky(g, 70, [0xa8d0f0, 0xc8e0f4]);
+  const shops = [[0, 60, 0xd8302a, '魚'], [60, 70, 0x3a8a4a, '八百屋'], [130, 60, 0x2a4aa8, '薬'], [190, 70, 0x8a5a32, '米'], [260, 60, 0xe8a040, 'パン']];
+  for (const [x, w, c, t] of shops) { g.rect(x, 40, w, 110, 0xe8dcc0); g.rect(x, 40, w, 14, 0x3a2a24); g.text(t, x + w / 2, 42, { size: 10, color: 0xfbf0d8, align: 'center' }); for (let i = 0; i < w; i += 8) g.rect(x + i, 54, 4, 10, c); g.rect(x + 6, 80, w - 12, 56, 0xa8c8d0); }
+  g.rect(300, 0, 6, 150, 0x8a8478); for (let x = 0; x < g.w; x++) g.px(x, 18 + Math.round(Math.sin(x / 60) * 4), 0x2a2a30);
+  floor(g, 150, [0x8a8a90, 0x7a7a80, 0x6a6a70], null);
+  for (let x = 0; x < g.w; x += 20) g.rect(x, 176, 10, 2, 0xf2ecd8);
+}
+
 const wrap = (fn, seed) => (p, x, y, w, h, s) => {
   const g = new G(p, x, y, w, h, seed);
   g.rect(0, 0, g.w, g.h, hex(s.card.bg));
@@ -520,9 +572,16 @@ const wrap = (fn, seed) => (p, x, y, w, h, s) => {
 export const SCENES = {
   hoshitate: wrap(hoshitate, 41), bungu: wrap(bungu, 42), kaden: wrap(kaden, 43), oden: wrap(oden, 44),
   shotengai: wrap(shotengai, 45), haniwa: wrap(haniwa, 46), chibitto: wrap(chibitto, 47), lanepals: wrap(lanepals, 48),
+  gecen: wrap(gecen, 49), sumo: wrap(sumo, 50), bukatsu: wrap(bukatsu, 51), hyakki: wrap(hyakki, 52), sento: wrap(sento, 53), hataraku: wrap(hataraku, 54),
 };
 // catchphrases from the series' own flyers
 export const BANNER_TEXT = {
+  gecen: { catch: 'あの頃のゲーセン、ミニチュアで！', sub: '100円玉をにぎりしめて' },
+  sumo: { catch: 'はっけよい、のこった！', sub: 'すもう部屋のいちにち' },
+  bukatsu: { catch: '放課後は、ぶかつ！', sub: '1999年の青春' },
+  hyakki: { catch: '真夜中の行列、のぞいちゃだめ。', sub: 'ひゃっきやこう' },
+  sento: { catch: 'いい湯だね、また明日。', sub: 'まちの銭湯' },
+  hataraku: { catch: 'きょうも、おつかれさま！', sub: 'はたらくまちの人たち' },
   hoshitate: { catch: 'きょうは、よく乾く。', sub: 'せんたくばさみつき' },
   bungu: { catch: 'つくえの中は、どうぶつえん。', sub: 'ほんとに動くギミックつき' },
   kaden: { catch: 'コンセントに、むしがいる。', sub: 'フタ・ハネがひらく' },
@@ -532,4 +591,4 @@ export const BANNER_TEXT = {
   chibitto: { catch: 'ちいさくても、主人公。', sub: '変身・抜刀・出撃！' },
   lanepals: { catch: 'みんな、ちいさくなっちゃった。', sub: 'あの路地のひとたち' },
 };
-export const SCENE_TEXT = 'おでん魚花珈琲湯迷い猫';
+export const SCENE_TEXT = 'おでん魚花珈琲湯迷い猫心技体八百屋薬米パン';

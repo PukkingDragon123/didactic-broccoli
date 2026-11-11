@@ -13,7 +13,7 @@ await document.fonts.load('16px "Pixelify Sans"', 'ABC123');
 const thumbs = new Thumbs(new THREE.WebGLRenderer({ antialias: true }));
 const g = document.getElementById('g');
 for (const s of SERIES) {
-  if (params.get('only') && params.get('only') !== s.id) continue;
+  if (params.get('only') && !params.get('only').split(',').includes(s.id)) continue;
   const src = bannerCanvas(s.id, thumbs, { faded: !!params.get('faded') });
   const c = document.createElement('canvas');
   c.width = src.width * scale; c.height = src.height * scale;

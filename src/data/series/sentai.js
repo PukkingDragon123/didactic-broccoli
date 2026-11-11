@@ -1,112 +1,91 @@
 // Series 16 — Capsule Sentai Kapuranger (カプセル戦隊カプレンジャー)
 // Tiny chibi henshin heroes, one very loyal grunt, a five-colour explosion and the giant combining robot.
-import { C, shade, mix } from '../../voxel/palette.js';
-import { VoxelModel, gloss, glow, glass } from '../../voxel/VoxelModel.js';
+// Capsule Sentai Kapuranger: chibi heroes in the human style (src/figures/chibi.js), helmets and suits painted.
+import { chibi, D, SD, shape } from '../../figures/chibi.js';
 
-const K = C.ink;
-const W = 0xffffff;
-const SUIT = { red: 0xe8343a, blue: 0x2f6fd6, yellow: 0xffc21f, pink: 0xff7ab0, green: 0x3cbf5a };
-const VISOR = 0x1c1e2e;
-const SILVER = 0xdfe3ea;
+const W = 0xfaf8f2, K = 0x1c1a22, GOLD = 0xf2c23a;
+/** A Kapuranger helmet head: suit colour, black visor with a silver rim, white crest stripe. */
+const helmet = (col, visor = 'band', crest = W) => (H, S) => ({ c: col, m: 'gloss', t: 'gloss', d: [
+  visor === 'heart' ? D.heart(0, -1.5, 8.5, K, { ink: 0xd8d8e0, iw: 0.6 }) : visor === 'goggle' ? [D.ell(-6, -1, 4.6, 3.6, 0x30e0f0, { ink: K, iw: 1 }), D.ell(6, -1, 4.6, 3.6, 0x30e0f0, { ink: K, iw: 1 })]
+    : D.poly([[-13, 3], [13, 3], [11, -5], [3, -6], [0, -9], [-3, -6], [-11, -5]], K, { ink: 0xd8d8e0, iw: 0.6 }),
+  visor === 'band' ? D.ell(-6, -1.4, 2.6, 1.2, 0x5a6a8a) : null,
+  D.rect(-2, 4, 2, 14, crest, { dir: 'f' }), D.rect(-2, -14, 2, 14, crest, { dir: 't' }), D.rect(-2, -14, 2, 14, crest, { dir: 'b' }),
+  D.rect(-4, -12, 4, -10, 0xd8d8e0), D.rect(-5, -13.4, 5, -12.4, 0x8a8a96),
+] });
+/** The suit: white chest V, capsule belt buckle, the team mark. */
+const suit = (col, mark) => ({ c: col, t: 'gloss', m: 'gloss', d: [
+  D.poly([[-8.6, 7], [8.6, 7], [0, -1.5]], W, { ink: 0xbdbdc8, iw: 0.3 }), D.poly([[-8.6, 7], [-6, 7], [0, 1], [6, 7], [8.6, 7], [0, -1.5]], GOLD),
+  D.band('y', -7, -4.6, K), D.circ(0, -5.8, 2, W, { ink: 0x8a8a96, iw: 0.3 }), D.ell(0, -5.2, 1.6, 0.8, col),
+  mark ? D.txt(mark, 3.8, 2.2, 3, col, { dir: 'f' }) : null,
+] });
+/** The display base every hero stands on: a bevelled hexagon with the team plate. */
+const plinth = (k, col) => { k.cyl([0, 2.5, 0], 22, 5, { c: 0x2a2a34, t: 'gloss', m: 'gloss', d: [D.band('y', 1.2, 2.5, col)] }, { ch: 0.3 }); k.box([0, 3, 21], [22, 4, 2], { c: 0xd8d8e0, t: 'metal', m: 'metal', d: [D.txt('カプレンジャー', 0, 0, 2.2, 0x2a2a34)] }, { ch: 0.3, rot: [-0.3, 0, 0] }); };
+const hero = (k, col, o) => { if (!o.noBase) plinth(k, col); k.at([0, o.noBase ? 0 : 5, 0], [0, 0, 0], () => chibi(k, { hair: 'bald', headP: helmet(col, o.visor), top: suit(col), sleeve: { c: col, t: 'gloss', m: 'gloss', d: [D.band('y', -5, -3.6, W)] },
+  bottom: { c: col, t: 'gloss', m: 'gloss' }, gloves: { c: W, t: 'gloss' }, shoes: W, sole: 0xc8c8d0, ...o,
+  // layered suit parts: a raised visor and crest fin on the helmet, shoulder pads, the belt with its capsule buckle
+  onHead(k, H) { k.box([0, H.hy - 0.5, H.hd + 0.7], [H.hw * 1.7, 7, 1.6], { c: 0x16161e, m: 'gloss', t: 'glass', d: [D.line(-10, 2, 6, 2, 0.5, 0x6a7a9a)] }, { ch: 0.4, top: [0.92, 1] }); k.box([0, H.hy + H.hh + 1.4, -2], [2.2, 4, H.hd * 1.6], { c: W, t: 'gloss', m: 'gloss' }, { ch: 0.4, top: [0.6, 0.8] }); if (o.onHead) o.onHead(k, H); },
+  onBody(k, T) { k.mirror(() => k.box([T.hw + 1.4, T.hh - 1, 0], [5, 3, T.hd * 2 + 1], { c: W, t: 'gloss', m: 'gloss', d: [D.band('y', -1.5, -0.8, col)] }, { ch: 0.45, rot: [0, 0, -0.25] })); k.box([0, -T.hh + 1.6, T.hd + 0.4], [6, 4, 2], { c: 0xd8d8e0, t: 'metal', m: 'metal', d: [D.circ(0, 0, 1.4, col)] }, { ch: 0.4 }); if (o.onBody) o.onBody(k, T); } })); };
 
-/** Deterministic coordinate hash in [0, 1). */
-function hash(x, y, z, s = 0) {
-  let h = (x * 374761393 + y * 668265263 + z * 1274126177 + s * 2246822519) | 0;
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
-
-const floorClip = (v) => v.box(-40, -12, -40, 40, -1, 40, null);
-
-const VISORS = {
-  red: [-5, 17, ['VVVVVVVVVVV', 'VHVVVVVVVVV', '.VVVV.VVVV.', '..VV...VV..']],
-  blue: [-5, 17, ['V.........V', 'VVVVVVVVVVV', 'VHHVVVVVVVV', '.VVVVVVVVV.']],
-  yellow: [-4, 17, ['.VV...VV.', 'VHVV.VHVV', 'VVVV.VVVV', '.VV...VV.']],
-  pink: [-3, 18, ['.VV.VV.', 'VHVVVVV', 'VVVVVVV', '.VVVVV.', '..VVV..', '...V...']],
-  green: [-4, 18, ['....V....', '..VVVVV..', 'VHVVVVVVV', '..VVVVV..', '....V....']],
+const F = {
+  red(k) { hero(k, 0xe0302a, { armR: [150, 20, 10], armL: [10, 30, 90], legL: [-12, 8], legR: [14, 6], head: [-6, 0, 6] }); },
+  blue(k) {
+    hero(k, 0x2a64d8, { armL: [80, 4, 10], armR: [40, -6, 70], head: [0, 12, 0], holdL(k) {
+      k.box([0, -3, 3], [3.6, 7, 3.6], { c: 0x3a3a44, t: 'gloss' }, { ch: 0.3 });
+      k.box([0, -2, 9], [4.4, 5, 13], { c: 0xe8e8ee, t: 'gloss', d: [D.band('z', 2, 3.4, 0x2a64d8)] }, { ch: 0.3 });
+      k.box([0, -2, 17], [3, 3, 4], { c: 0x8ae0ff, m: 'glow' }, { ch: 0.4 });
+    } });
+  },
+  yellow(k) {
+    hero(k, 0xf2c018, { wide: 1.12, armL: [70, 10, 40], armR: [60, -10, 80], head: [10, 0, 0], holdL(k) {
+      // a plate of curry rice
+      k.cyl([0, -2.5, 4], 7, 1.6, { c: W, t: 'ceramic', top: W, d: [D.circ(0, 0, 5.6, 0xfaf6ea, { dir: 't' }), D.ell(2, 0.5, 3.8, 3.6, 0xb8701a, { dir: 't' })] }, { rot: [-1.2, 0, 0] });
+    }, holdR(k) { k.box([0, -3, 2], [1, 8, 1.4], { c: 0xd0d0d8, m: 'metal' }, { ch: 0.3 }); } });
+  },
+  pink(k) {
+    hero(k, 0xf06aa8, { visor: 'heart', legs: 'skirt', bottom: { c: 0xf06aa8, t: 'gloss', d: [D.band('y', 0, 0.8, W)] }, armR: [160, -10, 0], armL: [20, 25, 0], legL: [0, 6], legR: [24, 0], head: [0, -8, -8],
+      holdR(k) { k.box([0, 4, 0], [1.6, 12, 1.6], { c: W, t: 'gloss' }, { ch: 0.4 }); k.box([0, 12, 0], [7, 6, 2.4], { c: 0xff4a8a, t: 'gloss', d: [D.heart(0, 0, 2.6, 0xffc2da)] }, { ch: 0.5, rot: [0, 0, 0] }); } });
+  },
+  grunt(k) {
+    chibi(k, { hair: 'bald', headP: { c: 0x26222e, t: 'cloth', d: [D.rect(-11, -3, 11, 2, 0xf2c23a, { ink: K }), D.rect(-8, -2, -2, 1, 0xe03030), D.rect(2, -2, 8, 1, 0xe03030), D.txt('イー', 0, -9, 4, 0x8a5ad8)] },
+      top: { c: 0x26222e, t: 'cloth', d: [D.path([[-8, 6], [-3, -6]], 1.2, 0x8a5ad8), D.path([[8, 6], [3, -6]], 1.2, 0x8a5ad8), D.band('y', -7, -5, 0x8a5ad8)] },
+      sleeve: { c: 0x26222e, t: 'cloth' }, bottom: { c: 0x26222e, t: 'cloth' }, gloves: { c: 0x3a3442 }, shoes: 0x1a1820,
+      armL: [100, 30, 40], armR: [100, -30, 40], legL: [0, 14], legR: [0, 14], lean: 8,
+      onHead(k, H) { k.box([0, H.hy + H.hh + 3, 0], [3, 7, 3], { c: 0x8a5ad8 }, { ch: 0.4, top: [0.3, 0.3], rot: [0, 0, 0.3] }); } });
+  },
+  bakuhatsu(k) {
+    // the transformation pose in front of a five-colour quarry explosion
+    k.box([0, 2, -4], [56, 4, 30], { c: 0xb8a888, t: 'stone', top: 0xc8b898 }, { ch: 0.3 });
+    const puff = [[0xe0302a, -16, 30], [0x2a64d8, -6, 42], [0xf2c018, 8, 44], [0xf06aa8, 18, 30], [0x3ab84a, 0, 26]];
+    for (const [c, x, y] of puff) k.soft([x, y, -15], [9, 8, 6], { c, t: 'plush', d: [D.ell(-2, 2, 4, 3, 0xffffff, { alpha: 0.35, dir: 'f' })] }, { ch: 0.55 });
+    k.at([0, 4, 2], [0, 0, 0], () => hero(k, 0xe0302a, { noBase: true, H: 52, armR: [90, -60, 90], armL: [40, 80, 40], legL: [-10, 22], legR: [10, 18] }));
+  },
+  robo(k) {
+    // Gattai Robo Kapu-Oh: a blocky robot of five capsule machines, crest and chest plate, fists
+    const B = 0x2a64d8, Rd = 0xe0302a, Y = 0xf2c018, G = 0xb8bcc8, T = 'gloss';
+    k.box([0, 2, 0], [46, 4, 30], { c: 0x2a2a34, t: 'metal', d: [D.stripes('d', 6, 3, 0xf2c018, { dir: 'f' })] }, { ch: 0.2 });
+    k.mirror(() => { k.box([7, 14, 0], [10, 20, 12], { c: W, t: T, d: [D.rect(-3, -4, 3, 4, B, { r: 1 })] }, { ch: 0.25 }); k.box([7, 6, 2], [12, 8, 16], { c: B, t: T }, { ch: 0.3 }); });
+    k.box([0, 28, 0], [26, 10, 16], { c: 0x3a3a46, t: 'metal' }, { ch: 0.25 });
+    k.box([0, 42, 0], [32, 20, 18], { c: Rd, t: T, d: [D.poly([[-12, 8], [12, 8], [0, -6]], Y, { ink: 0x8a6a10 }), D.circ(0, 3, 4, W, { ink: K }), D.txt('K', 0, 3, 5, Rd), D.rect(-14, -8, 14, -6, G)] }, { ch: 0.25, top: [1.08, 1] });
+    k.mirror(() => { k.at([20, 48, 0], [0, 0, 0.3], () => { k.box([0, 0, 0], [11, 11, 12], { c: B, t: T }, { ch: 0.3 }); k.box([1, -11, 0], [8, 12, 9], { c: G, t: 'metal' }, { ch: 0.25 }); k.box([1, -20, 1], [10, 8, 10], { c: Y, t: T, d: [D.stripes('x', 2.5, 0.6, 0x8a6a10, { dir: 'f' })] }, { ch: 0.35 }); }); });
+    k.box([0, 58, 0], [16, 13, 14], { c: W, t: T, d: [D.rect(-6, -2, 6, 3, 0x30e0f0, { ink: K, iw: 0.6 }), D.rect(-3, -5, 3, -4, K)] }, { ch: 0.3, dens: 1.2 });
+    k.mirror(() => k.box([5, 68, 2], [3, 9, 3], { c: Y, t: T }, { ch: 0.3, rot: [0, 0, -0.5], top: [0.4, 0.6] }));
+    k.box([0, 66, 6], [6, 4, 3], { c: Rd, t: T }, { ch: 0.4 });
+  },
+  break(k) {
+    // the suit actor between takes: suit on, helmet off beside him, towel round the neck, canned coffee, folding chair
+    const M = { c: 0x8a8a92, m: 'metal', t: 'metal' };
+    k.box([0, 15, 0], [24, 2, 20], { c: 0x3a6ac8, t: 'cloth' }, { ch: 0.2 });
+    k.mirror(() => { k.box([10, 7.5, 8], [1.6, 15, 1.6], M, { rot: [0.25, 0, 0] }); k.box([10, 7.5, -8], [1.6, 15, 1.6], M, { rot: [-0.25, 0, 0] }); k.box([10, 25, -9], [1.6, 22, 1.6], M); });
+    k.box([0, 30, -10], [22, 10, 1.6], { c: 0x3a6ac8, t: 'cloth' }, { ch: 0.2 });
+    k.at([0, 14.6, 0], [0, 0, 0], () => chibi(k, { sit: true, top: suit(0xe0302a), sleeve: { c: 0xe0302a, t: 'gloss', m: 'gloss' }, bottom: { c: 0xe0302a, t: 'gloss', m: 'gloss' }, gloves: { c: W }, shoes: W,
+      hair: 'short', hairC: 0x1e1a1a, face: { eye: 'line', mouth: 'wavy', brow: 'sad', blush: false, nose: 'line' }, faceD: [D.circ(9, 3, 0.9, 0x9fd8ff), D.circ(-10, 6, 0.7, 0x9fd8ff)], legL: [80, 6], legR: [80, -6],
+      armR: [70, -4, 70], armL: [0, 12, 0], head: [12, -8, 0],
+      onBody(k, T) { k.box([0, T.hh + 1, 1], [T.hw * 2 + 2, 2.4, T.hd * 2 + 2], { c: W, t: 'cloth', d: [D.stripes('x', 3, 1, 0x7ab8e8)] }, { ch: 0.4 }); k.mirror(() => k.box([5, T.hh - 4, T.hd + 0.6], [3, 9, 1.6], { c: W, t: 'cloth', d: [D.stripes('y', 3, 1, 0x7ab8e8)] }, { ch: 0.4 })); },
+      holdR(k) { k.cyl([0, -2, 2.6], 2.2, 6, { c: 0x6a3a1e, t: 'tin', d: [D.band('y', -1, 1, 0xf2c23a), D.band('y', 2.6, 3, 0xd0d0d8)] }); } }));
+    // the helmet, off and resting on the ground beside the chair
+    k.at([20, 0, 6], [0, -0.6, 0.15], () => { k.box([0, 12, 0], [24, 22, 22], helmet(0xe0302a)(null, 1), { ch: 0.36, top: [0.96, 0.95] }); });
+  },
 };
-
-/**
- * Chibi henshin hero (own model), facing +z, feet on y=0. Head (helmet) centre (0, 16, 0.3).
- * o: { suit, visor, arms: [[from,to],[from,to]], skirt, human (unmasked face), sit }
- */
-function hero(o) {
-  const m = new VoxelModel();
-  const sc = o.suit, suit = gloss(sc), Wg = gloss(W);
-  if (o.sit) {
-    // thighs forward on the seat, shins hanging down, boots on the floor
-    for (const s of [-1, 1]) {
-      m.box(s * 1, 7, 0, s * 3, 8, 5, suit);
-      m.box(s * 1, 2, 4, s * 3, 6, 6, suit);
-      m.box(s * 1, 0, 4, s * 3, 2, 8, Wg);
-      m.paint(() => m.box(s * 1, 2, 4, s * 3, 2, 8, suit));
-    }
-  } else {
-    for (const s of [-1, 1]) {
-      m.box(s * 1, 0, -1, s * 3, 2, 2, Wg);
-      m.paint(() => m.box(s * 1, 2, -1, s * 3, 2, 2, suit));
-      m.box(s * 1, 3, -1, s * 3, 4, 1, suit);
-    }
-  }
-  // torso with white chest V bands and a capsule badge
-  m.ellipsoid(0, 7.6, 0, 4.2, 3.8, 3.1, suit);
-  m.paint(() => m.shape(-5, 6, 1, 5, 11, 6, (x, y) => Math.abs(Math.abs(x) - (11 - y) * 0.85) < 0.75 && y >= 7, Wg));
-  m.project(['.YY.', 'YYYY', 'WWWW', '.WW.'], { Y: gloss(C.yellow), W: Wg }, -2, 10);
-  // back: white shoulder bands + capsule mark between the shoulders
-  m.paint(() => m.shape(-5, 6, -6, 5, 11, -1, (x, y) => Math.abs(Math.abs(x) - (11 - y) * 0.85) < 0.75 && y >= 7, Wg));
-  m.project(['.WW.', 'WYYW', '.WW.'], { Y: gloss(C.yellow), W: Wg }, -2, 10, '-z');
-  // belt + buckle
-  m.paint(() => m.box(-5, 4, -4, 5, 5, 4, gloss(0x24242e)));
-  m.project(['SSS', 'SRS'], { S: gloss(SILVER), R: gloss(C.red) }, -1, 5);
-  if (o.skirt) {
-    m.shape(-6, 3, -5, 6, 4, 5, (x, y, z) => { const r = Math.hypot(x, z * 1.15); return r <= 5.4 - (y - 3) * 0.8 && r > 3; }, suit);
-    m.paint(() => m.shape(-6, 3, -5, 6, 3, 5, () => true, Wg));
-  }
-  // head
-  if (o.human) {
-    const skin = C.skin, hair = 0x2a2226;
-    m.ellipsoid(0, 15.6, 0.3, 5.6, 5.3, 5.2, skin);
-    m.recolor((x, y, z, c) => (c === skin && (y >= 18.5 || z <= -1.5 || (Math.abs(x) >= 5 && y >= 14)) ? hair : undefined));
-    m.project(['KKK...KKK', '.........', '.KK...KK.'], { K }, -4, 17);
-    m.project(['MMMMM', '.M.M.'], { M: hair }, -2, 13);
-    m.project(['.T.'], { T: 0xc85a5a }, -1, 11);
-    m.project(['B.B.B.B'], { B: shade(skin, 0.86) }, -3, 11);
-    m.project(['PP.......PP'], { P: 0xffb0a0 }, -5, 14);
-  } else {
-    m.ellipsoid(0, 16, 0.3, 6, 5.7, 5.5, suit);
-    // silver mouth plate + crest
-    m.paint(() => m.shape(-6, 10, 2, 6, 12, 7, (x, y) => y <= 12 && Math.abs(x) <= 3 - (12 - y) * 0.5 + 1, gloss(SILVER)));
-    m.recolor((x, y, z, c) => (c === sc && Math.abs(x) <= 0 && y >= 19 && z > -4 ? W : undefined));
-    m.recolor((x, y, z, c) => (c === sc && y >= 10 && y <= 11 && z < 0 ? shade(sc, 0.72) : undefined));
-    const [vx, vy, rows] = VISORS[o.visor || 'red'];
-    m.project(rows, { V: gloss(VISOR), H: gloss(0x8fd8ff) }, vx, vy);
-    // side ear-pieces
-    for (const s of [-1, 1]) m.box(s * 6, 14, -1, s * 7, 16, 1, gloss(SILVER));
-  }
-  // arms with white gloves
-  for (const [from, to] of o.arms || [[[-4.5, 9.5, 0], [-6, 6, 1]], [[4.5, 9.5, 0], [6, 6, 1]]]) {
-    m.line(...from, ...to, suit, 1.2);
-    m.sphere(...to, 1.4, Wg);
-  }
-  return m;
-}
-
-/** Rounded box: corners of every edge trimmed. */
-function rbox(v, x0, y0, z0, x1, y1, z1, c) {
-  v.box(x0, y0, z0, x1, y1, z1, c);
-  for (const x of [x0, x1]) for (const z of [z0, z1]) v.box(x, y0, z, x, y1, z, null);
-  for (const x of [x0, x1]) for (const y of [y0, y1]) v.box(x, y, z0, x, y, z1, null);
-  for (const y of [y0, y1]) for (const z of [z0, z1]) v.box(x0, y, z, x1, y, z, null);
-}
-
-/** Smoke puff of the explosion. */
-function puff(v, cx, cy, cz, r, col) {
-  v.sphere(cx, cy, cz, r, col);
-  v.sphere(cx - r * 0.6, cy - r * 0.3, cz + 0.5, r * 0.7, col);
-  v.sphere(cx + r * 0.6, cy - r * 0.2, cz + 0.5, r * 0.7, col);
-  v.paint(() => v.shape(cx - r - 2, cy - r - 2, cz - r - 2, cx + r + 2, cy + r + 2, cz + r + 2, (x, y, z) => y - cy + (x - cx) * 0.3 > r * 0.25, mix(col, W, 0.35)));
-  v.paint(() => v.shape(cx - r - 2, cy - r - 2, cz - r - 2, cx + r + 2, cy + r + 2, cz + r + 2, (x, y) => y - cy < -r * 0.45, shade(col, 0.8)));
-}
 
 export default {
   id: 'sentai',
@@ -123,192 +102,42 @@ export default {
     {
       id: 'red', name: 'Kapu Red', jp: 'カプレッド', rarity: 'common',
       desc: 'The leader. Shouts his own name before every sentence, including "good morning".',
-      build(v) {
-        v.merge(hero({
-          suit: SUIT.red, visor: 'red',
-          arms: [[[-4.5, 9.5, 0], [-5, 6, 3]], [[4.5, 9.5, 0], [7, 15, 1]]],
-        }));
-        v.box(6, 16, 0, 8, 17, 2, gloss(W)); // fist up
-      },
+      fig: F.red,
     },
     {
       id: 'blue', name: 'Kapu Blue', jp: 'カプブルー', rarity: 'common',
       desc: 'Cool, calm, and secretly practises the team pose alone in the mirror.',
-      build(v) {
-        v.merge(hero({
-          suit: SUIT.blue, visor: 'blue',
-          arms: [[[-4.5, 9.5, 0], [-3, 8, 5]], [[4.5, 9.5, 0], [2, 8, 5]]],
-        }));
-        // capsule blaster held forward in both hands
-        rbox(v, -2, 7, 5, 2, 10, 10, gloss(0xe8ecf2));
-        v.box(-1, 8, 11, 1, 9, 12, gloss(0x2f6fd6));
-        v.set(0, 9, 13, glow(0x8fe0ff)).set(0, 8, 13, glow(0x8fe0ff));
-        v.box(-1, 5, 6, 1, 7, 7, gloss(0x3a3a48));
-        v.project(['BBB'], { B: gloss(0x2f6fd6) }, -1, 10);
-      },
+      fig: F.blue,
     },
     {
       id: 'yellow', name: 'Kapu Yellow', jp: 'カプイエロー', rarity: 'common',
       desc: 'Has eaten curry before every single battle since episode one. Undefeated.',
-      build(v) {
-        v.merge(hero({
-          suit: SUIT.yellow, visor: 'yellow',
-          arms: [[[-4.5, 9.5, 0], [-5, 8, 5]], [[4.5, 9.5, 0], [4, 10, 5]]],
-        }));
-        // curry plate in the left hand, spoon in the right
-        v.ellipsoid(-5, 9, 6, 3.6, 0.6, 2.8, gloss(W));
-        v.ellipsoid(-6, 10, 6, 1.8, 0.8, 1.8, 0xfffaf0);
-        v.ellipsoid(-4, 10, 6.5, 1.8, 0.7, 1.6, gloss(0xc8862a));
-        v.set(-4, 11, 6, 0xff8a3a).set(-3, 11, 7, 0x8a4a1a);
-        v.line(4, 10, 6, 2, 14, 7, gloss(SILVER));
-        v.ellipsoid(2, 15, 7, 0.8, 1, 0.6, gloss(SILVER));
-      },
+      fig: F.yellow,
     },
     {
       id: 'pink', name: 'Kapu Pink', jp: 'カプピンク', rarity: 'uncommon',
       desc: 'Heart visor, heart baton, heart of steel. Has suplexed a kaiju. Twice.',
-      build(v) {
-        // star stage
-        v.shape(-9, 0, -9, 9, 1, 9, (x, y, z) => {
-          const a = Math.atan2(z, x), r = Math.hypot(x, z);
-          const R = 6 + 2.6 * Math.cos(5 * (a + Math.PI / 2 - Math.PI / 5));
-          return r <= Math.max(5.6, R);
-        }, gloss(0xffd23f));
-        v.paint(() => v.shape(-9, 1, -9, 9, 1, 9, (x, y, z) => Math.hypot(x, z) < 4, gloss(0xfff0a0)));
-        v.merge(hero({
-          suit: SUIT.pink, visor: 'pink', skirt: true,
-          arms: [[[-4.5, 9.5, 0], [-7, 9, 3]], [[4.5, 9.5, 0], [5, 14, 3]]],
-        }), 0, 2, 0);
-        // peace sign by the visor
-        v.set(5, 17, 3, gloss(W)).set(6, 18, 3, gloss(W)).set(4, 18, 3, gloss(W));
-        // heart baton
-        v.line(-7, 9, 3, -9, 16, 3, gloss(W));
-        v.layer(['.HH.HH.', 'HHHHHHH', '.HHHHH.', '..HHH..', '...H...'], { H: gloss(0xff4f8a) }, { x: -12, y: 21, z: 3 });
-        v.set(-11, 20, 4, gloss(W));
-      },
+      fig: F.pink,
     },
     {
       id: 'grunt', name: 'Combatant Grunt', jp: '戦闘員', rarity: 'uncommon',
       desc: 'Answers everything with "Iii!". Including his job interview. He got the job.',
-      build(v) {
-        const suit = 0x2a2434;
-        v.merge(hero({
-          suit, visor: 'red',
-          arms: [[[-4.5, 9.5, 0], [-7, 15, 1]], [[4.5, 9.5, 0], [7, 15, 1]]],
-        }));
-        // repaint: purple ribs, single goggle eye, gold claw emblem, black gloves
-        v.recolor((x, y, z, c) => (c === W && y < 12 && y > 5 ? 0x8a5bd6 : undefined));
-        v.recolor((x, y, z, c) => (c === SILVER ? 0x4a4458 : c === VISOR || c === 0x8fd8ff ? suit : undefined));
-        v.recolor((x, y, z, c) => (c === W && (y >= 14 || y <= 2) ? 0x3a3446 : undefined));
-        v.project(['..RRRRR..', '.RRYYYRR.', '..RRRRR..'], { R: gloss(0xd8303a), Y: glow(0xffe060) }, -4, 17);
-        v.project(['G.G.G', '.GGG.'], { G: gloss(C.gold) }, -2, 10);
-        v.recolor((x, y, z, c) => (c === C.yellow ? 0x8a5bd6 : undefined));
-        // spiky hood fin
-        for (let i = 0; i < 4; i++) v.box(0, 21 + i, -2 + i, 0, 22 + i, -1 + i, gloss(0x8a5bd6));
-      },
+      fig: F.grunt,
     },
     {
       id: 'bakuhatsu', name: 'Five-Colour Explosion', jp: '変身ポーズ大爆発', rarity: 'rare',
       desc: 'The quarry explodes in five colours behind him. Insurance stopped calling years ago.',
-      build(v) {
-        // rocky quarry slab
-        v.shape(-13, 0, -9, 13, 2, 8, (x, y, z) => y < 2 || hash(x >> 1, 0, z >> 1, 4) < 0.7, (x, y, z) => (hash(x, y, z, 2) < 0.3 ? 0x8a7a6a : hash(x, y, z, 3) < 0.3 ? 0xa8988a : 0x9a8a7a));
-        rbox(v, -4, 2, -2, 4, 4, 4, 0x8a7a6a);
-        v.paint(() => v.box(-4, 4, -2, 4, 4, 4, 0xb0a090));
-        // the five-colour blast arcing behind
-        const pts = [[-10, 7, SUIT.green], [-9.5, 16, SUIT.blue], [0, 27, SUIT.red], [9.5, 16, SUIT.yellow], [10, 7, SUIT.pink]];
-        for (const [x, y, c] of pts) puff(v, x, y, -7, 3.9, c);
-        // fiery cores + flying sparks
-        for (const [x, y] of [[-8, 4], [8, 4], [0, 10]]) v.sphere(x, y, -4, 1.6, glow(0xffb03a));
-        for (const [x, y] of [[-12, 13], [12, 13], [-5, 22], [5, 22], [-6, 12], [6, 12]]) v.set(x, y, -5, glow(0xffe080));
-        // red hero striking a pose on the rock
-        v.merge(hero({
-          suit: SUIT.red, visor: 'red',
-          arms: [[[-4.5, 9.5, 0], [-8, 12, 2]], [[4.5, 9.5, 0], [6, 7, 4]]],
-        }), 0, 5, 1);
-        floorClip(v);
-      },
+      fig: F.bakuhatsu,
     },
     {
       id: 'robo', name: 'Gattai Robo Kapu-Oh', jp: '合体ロボ カプオー', rarity: 'ultra',
       desc: 'Five capsule machines combine into one robot. It takes eight minutes. Kaiju wait politely.',
-      build(v) {
-        // hex display base
-        v.shape(-12, 0, -12, 12, 1, 12, (x, y, z) => Math.max(Math.abs(x) * 0.87 + Math.abs(z) * 0.5, Math.abs(z)) <= 10.5, gloss(0x262a4a));
-        v.paint(() => v.shape(-12, 1, -12, 12, 1, 12, (x, y, z) => Math.max(Math.abs(x) * 0.87 + Math.abs(z) * 0.5, Math.abs(z)) > 9.5, gloss(C.gold)));
-        const red = gloss(SUIT.red), blue = gloss(SUIT.blue), yel = gloss(SUIT.yellow), wht = gloss(0xf4f6fa), gry = gloss(0x8a90a0), dk = gloss(0x3a3e4e);
-        // legs (blue + yellow machines)
-        for (const s of [-1, 1]) {
-          rbox(v, s * 2, 2, -3, s * 6, 4, 5, s < 0 ? blue : yel); // feet
-          rbox(v, s * 2, 5, -2, s * 5, 10, 2, wht);
-          v.paint(() => v.box(s * 2, 7, 2, s * 5, 8, 2, s < 0 ? blue : yel));
-          v.box(s * 2, 11, -1, s * 4, 12, 1, gry);
-        }
-        // waist
-        rbox(v, -5, 12, -2, 5, 14, 2, dk);
-        v.box(-1, 12, 3, 1, 14, 3, gloss(C.gold));
-        // chest (red machine) with the capsule core
-        rbox(v, -6, 15, -3, 6, 22, 3, red);
-        v.cylinder(0, 18, 3, 2.6, 2, gloss(C.yellow), 'z');
-        v.paint(() => v.shape(-3, 15, 3, 3, 18, 5, (x, y) => y < 18, gloss(W)));
-        v.set(0, 19, 5, glow(0xfff2a0)).set(-1, 20, 4, glow(0xfff2a0));
-        v.project(['W.W.W'], { W: wht }, -2, 22);
-        // shoulders
-        for (const s of [-1, 1]) {
-          rbox(v, s * 7, 18, -3, s * 11, 23, 3, s < 0 ? blue : yel);
-          v.paint(() => v.box(s * 7, 21, -3, s * 11, 21, 3, wht));
-          // arms + fists
-          v.box(s * 8, 12, -1, s * 10, 17, 1, gry);
-          rbox(v, s * 7, 8, -2, s * 11, 12, 2, s < 0 ? blue : yel);
-          v.project(['KKK'], { K: dk }, s < 0 ? -10 : 8, 10);
-        }
-        // head with V crest and glowing eyes
-        rbox(v, -4, 23, -3, 4, 29, 3, wht);
-        v.paint(() => v.box(-4, 28, -3, 4, 29, 3, blue));
-        v.box(-3, 24, 3, 3, 25, 3, gloss(SILVER));
-        v.project(['EE.EE'], { E: glow(0x5cf0ff) }, -2, 27);
-        v.set(-3, 26, 4, gloss(VISOR)).set(3, 26, 4, gloss(VISOR));
-        for (let i = 0; i <= 4; i++) v.set(-1 - i, 29 + Math.round(i * 0.6), 3, gloss(C.gold)).set(1 + i, 29 + Math.round(i * 0.6), 3, gloss(C.gold));
-        v.box(0, 28, 3, 0, 30, 4, red);
-        v.box(-5, 25, -1, -5, 27, 1, red).box(5, 25, -1, 5, 27, 1, red);
-      },
+      fig: F.robo,
     },
     {
       id: 'break', name: 'Suit Actor on Break', jp: 'スーツアクターの休憩', rarity: 'secret',
       desc: 'Between takes. Canned coffee, a towel, a sigh. Please do not tell the children.',
-      build(v) {
-        // folding chair
-        const ch = gloss(0x6a7080);
-        for (const s of [-1, 1]) {
-          v.line(s * 5, 0, -3, s * 5, 7, 4, ch);
-          v.line(s * 5, 0, 4, s * 5, 7, -3, ch);
-          v.box(s * 5, 7, -3, s * 5, 16, -3, ch);
-        }
-        v.box(-5, 7, -3, 5, 7, 4, gloss(0x3a5a8a));
-        v.box(-5, 10, -3, 5, 15, -3, gloss(0x3a5a8a));
-        // the actor in his red suit, helmet off
-        v.merge(hero({
-          suit: SUIT.red, human: true, sit: true,
-          arms: [[[-4.5, 9.5, 0], [-5, 8, 4]], [[4.5, 9.5, 0], [3, 11, 5]]],
-        }), 0, 1, -1);
-        // towel round the neck
-        v.paint(() => v.shape(-5, 10, -5, 5, 11, 5, () => true, 0xfff8ea));
-        v.box(-3, 7, 2, -2, 10, 3, 0xfff8ea).box(2, 7, 2, 3, 10, 3, 0xfff8ea);
-        v.paint(() => v.box(-3, 8, 2, 3, 8, 3, 0x6fa8e8));
-        // canned coffee
-        v.cylinder(3, 11, 5, 1, 3, gloss(0x8a5a3a));
-        v.paint(() => v.cylinder(3, 12, 5, 1.1, 1, gloss(W)));
-        // sweat drop
-        v.set(5, 19, 3, glass(0x9fe3ff)).set(5, 18, 3, glass(0x9fe3ff)).set(6, 18, 3, glass(0x9fe3ff));
-        // helmet resting on the floor beside him, visor to the front
-        const hx = -9, hz = 6;
-        v.ellipsoid(hx, 4, hz, 3.8, 3.6, 3.6, gloss(SUIT.red));
-        v.box(hx - 4, -1, hz - 4, hx + 4, 0, hz + 4, null);
-        v.project(['VVVVVVV', 'VHVV.VV', '.VV.VV.'], { V: gloss(VISOR), H: gloss(0x8fd8ff) }, hx - 3, 6);
-        v.project(['SSS'], { S: gloss(SILVER) }, hx - 1, 2);
-        v.recolor((x, y, z, c) => (c === SUIT.red && x === hx && y >= 7 ? W : undefined));
-        floorClip(v);
-      },
+      fig: F.break,
     },
   ],
 };

@@ -215,6 +215,8 @@ export function beast(k, kind, s = {}) {
     const Hd = { hw: rx * 0.95, hh: ry * 0.9, hd: rz * 0.8, hy: ry };
     animalBits(k, { ears: s.ears ?? 'tri', c: s.earC ?? c, inner: s.inner }, { ...Hd, hw: rx * 0.9, hh: ry * 0.86 }, S);
     k.mirror(() => k.box([rx * 0.45, 1.4 * S, rz * 0.62], [5 * S, 3 * S, 4 * S], { c: s.pawC ?? c2, t: tx }, { ch: 0.5 }));
+    // layered face parts: a raised muzzle (s.muzzle colour) and soft cheeks, so the face has relief, not just paint
+    if (s.snout) k.soft([0, ry * 0.95 + (s.face?.my ?? -ry * 0.1), rz * 0.95], [rx * 0.3, ry * 0.2, 2.4 * S], { c: s.snout, t: tx, d: [D.ell(0, ry * 0.12, 1.6 * S, 1.1 * S, 0x33221e, { dir: 'f' }), ...D.face({ eye: 'none', mouth: s.face?.mouth ?? 'cat', my: -ry * 0.06, mw: 2.6 * S, blush: false })] }, { ch: 0.5, bev: 0.4 });
     tail(k, s.tail ?? 'none', [0, ry * 0.6, -rz * 0.95], c, c2, S, tx);
     if (s.onBody) s.onBody(k, { rx, ry, rz });
     return { rx, ry, rz };
