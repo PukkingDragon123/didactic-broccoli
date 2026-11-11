@@ -2028,6 +2028,16 @@ texel density (256 texels a metre for the world, more for things seen up close),
 `tools/pixelart.py` (polish), and shipped as a JPEG in `img/tex/`; the scan's own normal map ships beside it as
 `img/tex/<name>_n.jpg` (half the resolution, for the surface's relief).
 
+The voxel face-detail atlas `img/tex/voxdetail.png` (the painted grain on voxel faces and inside the big pixels of the
+pixel-art town textures: `src/voxel/materials.js`) is made by `tools/bake-voxdetail.py` from fifteen of these same
+CC0 scans (plaster, concrete, plywood, weathered wood, old paper, galvanised steel, canvas, soil, gravel, rust, pine
+bark, cardboard, moss, frosted glass): each reduced to a 128-texel tile, its broad light removed and cut into four
+hard tones with lone pixels cleaned away.
+
+The foliage sheet `img/foliage.png` (leaf, needle, blossom and grass sprigs on the voxel trees and plants,
+`src/voxel/cards.js`) is original hand-pixelled art made for this game (drawn by rule in the earlier
+`src/town/leafSheet.js`, baked by `tools/bake-foliage.mjs`).
+
 #### Hinoki Planks
 
 - Author: Charlotte Baglioni (Poly Haven)

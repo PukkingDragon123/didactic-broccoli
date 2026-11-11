@@ -44,7 +44,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox, pixMat } from '../gfx/geo.js';
 import { townPix, posterTexture, Pix, NAME_COUNT } from '../gfx/textures.js';
-import { propGeometry, propMesh, hasProp, propSize } from './props.js';
+import { propGeometry, propMesh, propOwnMesh, hasProp, propSize } from './props.js';
 import { voxelMaterials, patchTextureDetail } from '../voxel/materials.js';
 import { hash2 } from '../core/util.js';
 import { audio } from '../core/audio.js';
@@ -361,9 +361,10 @@ export class Town {
   }
   flushProps() {
     for (const { id, dim, indoor, zone, list } of this.inst.values()) {
-      const geo = propGeometry(id);
+      const own = propOwnMesh(id, { castShadow: false }); // a prop with its own model (src/animals/props.js: pigeons, strays)
+      const geo = own?.geometry || propGeometry(id);
       if (!geo) continue;
-      const im = new THREE.InstancedMesh(geo, indoor ? this.indoorVoxel() : dim ? this.dimVoxel() : voxelMaterials('normal'), list.length);
+      const im = new THREE.InstancedMesh(geo, own ? own.material : indoor ? this.indoorVoxel() : dim ? this.dimVoxel() : voxelMaterials('normal'), list.length);
       list.forEach((it, i) => {
         _q.setFromAxisAngle(_up, it.ry);
         im.setMatrixAt(i, _m4.compose(_p.set(it.x, it.y, it.z), _q, _s.setScalar(it.s)));
@@ -1571,9 +1572,8 @@ export class Town {
     // stepping stones from the gate to the door in the garden of NW4
     for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.box(m.found, 0.46, 0.05, 0.38, x, 0, z, { ry: r, tint: 0xb8b4ac, k: 0.95 });
     // 飛び出し注意 boy at the mouth of alley A2 (front art, plain grey back)
-    const boy = this.T('tobidashi', 28, 48, { alpha: true, rough: 0.6 });
-    B.quad(boy, 0.5, 0.86, 11.48, 0.02, 5.47, {});
-    B.quad(boy, 0.5, 0.86, 11.48, 0.02, 5.465, { ry: Math.PI, flipU: true, tint: 0x8a8a88 });
+    // (an HD voxel cut-out plywood board on its post: src/data/props/hdItems.js)
+    this.prop('tobidashi_boy', 11.48, 0.0, 5.43, 0, { zone: null });
     P.addObstacle(11.3, 11.66, 5.38, 5.56);
     // Shōwa enamel signs on the alley walls and the old tobacco shop, a beware-of-dog sticker on a gate pillar
     // (alley A1 beside Mikawa-ya is reserved for the ghost-alley feature: nothing is added inside it)

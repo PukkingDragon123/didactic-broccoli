@@ -494,6 +494,7 @@ const leafFn = (c, s = 9) => (x, y, z) => gloss(shade(c, vnoise(x, y, z, 3, s) >
 
 street.pot_cluster = {
   name: 'Cluster of Pots', voxel: 0.012,
+  leaves: { kind: 'kaname', mix: ['pelargonium', 0.35], size: 0.22, density: 2 },
   build(v) {
     v.jitter = 0.02;
     // big terracotta pot with a boxwood ball
@@ -520,6 +521,7 @@ street.pot_cluster = {
 
 street.styro_planter = {
   name: 'Styrofoam Vegetable Planters', voxel: 0.014,
+  leaves: { kind: 'tomato', mix: ['sprout', 0.3], size: 0.24, density: 2 },
   build(v) {
     v.jitter = 0.02;
     const styro = (x, y, z) => shade(0xf2f0e8, vnoise(x, y, z, 6, 3) > 0.6 ? 0.94 : 1);

@@ -146,7 +146,7 @@ export class Reveal {
     const mesh = makeItemMesh(data.key, data.finish);
     const holder = new THREE.Group();
     holder.add(mesh);
-    const size = mesh.geometry.userData.size;
+    const size = mesh.geometry?.userData?.size || new THREE.Box3().setFromObject(mesh).getSize(new THREE.Vector3()); // (a figure built as a group has no geometry size)
     mesh.position.y = -size.y / 2;
     g.scene.add(holder);
     holder.position.copy(capWorld);

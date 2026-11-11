@@ -15,7 +15,7 @@
 // Paints are src/figures/paint.js specs (a colour or { c, t, d: [decals], top, bot, m, ... }).
 import * as THREE from 'three';
 import { voxelMaterials } from '../voxel/materials.js';
-import { compilePaint, paintCtx } from './paint.js';
+import { compilePaint, paintCtx, FONT_WAIT } from './paint.js';
 
 export const FIG_UNIT = 0.001; // metres per authoring unit (mm)
 const PAD = 2;
@@ -187,8 +187,9 @@ function buildFig(item) {
   const k = new Fig();
   item.fig(k);
   const faces = [];
+  void 0;
   for (const p of k.prims) { p.fn = compilePaint(p.paint); for (const f of primFaces(p)) faces.push(f); }
-  return { k, faces };
+  return { k, faces, item };
 }
 
 /** The atlas of a series (layout of every fig item; painted lazily item by item). */
@@ -227,6 +228,7 @@ function paintFig(A, key) {
   if (A.painted.has(key)) return;
   A.painted.add(key);
   const F = A.figs.get(key);
+  FONT_WAIT.pending = null;
   const c = paintCtx(), o = new Float32Array(4), d = A.data, W = A.W;
   for (const f of F.faces) {
     const R = f.rect, fn = f.p.fn, bb = f.p.bb, m = f.p.m.elements;
@@ -261,6 +263,11 @@ function paintFig(A, key) {
     }
   }
   A.tex.needsUpdate = true;
+  // a text decal met an unloaded web font: repaint this figure once the font is in (fresh decal closures)
+  if (FONT_WAIT.pending) {
+    const wait = FONT_WAIT.pending; FONT_WAIT.pending = null;
+    wait.then(() => { const it = F.item; const nf = buildFig(it); for (let i = 0; i < nf.faces.length && i < F.faces.length; i++) F.faces[i].p.fn = nf.faces[i].p.fn; A.painted.delete(key); paintFig(A, key); }).catch(() => {});
+  }
 }
 
 /** Geometry of a fig item (bottom-centred, metres, groups by material index). */
@@ -298,8 +305,10 @@ export function figGeometry(item, series) {
   };
   for (const f of F.faces) { emit(f, false); if (f.p.mirror) emit(f, true); }
   // bottom-centre: x / z centred on the bounds, feet on y = 0; then fit the shelf slot
-  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, maxDim = Math.max(x1 - x0, y1 - y0, z1 - z0) * FIG_UNIT;
-  const sc = FIG_UNIT * (maxDim > ITEM_MAX ? ITEM_MAX / maxDim : 1) * (item.figScale || 1);
+  let cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+  const maxDim = Math.max(x1 - x0, y1 - y0, z1 - z0) * FIG_UNIT;
+  let sc = FIG_UNIT * (maxDim > ITEM_MAX ? ITEM_MAX / maxDim : 1) * (item.figScale || 1);
+  if (item.frame) { ({ cx, cz, sc } = item.frame); y0 = item.frame.cy; } // moving parts share their figure's frame
   for (let i = 0; i < pos.length; i += 3) { pos[i] = (pos[i] - cx) * sc; pos[i + 1] = (pos[i + 1] - y0) * sc; pos[i + 2] = (pos[i + 2] - cz) * sc; }
   const idx = [];
   g = new THREE.BufferGeometry();
@@ -341,4 +350,28 @@ export function figStats() {
   const o = {};
   for (const [id, A] of ATL) o[id] = { W: A.W, H: A.H, dens: +A.dens.toFixed(2), painted: A.painted.size, figs: A.figs.size };
   return o;
+}
+
+// ------------------------------------------------------------------ moving parts (toys)
+const PARTS = new Map();
+/**
+ * A mesh for a toy's moving part: item.figParts[name] is a fig function authored in the figure's own mm frame
+ * (o.own: around its own origin instead). All parts of an item share one small atlas.
+ */
+export function figPartMesh(item, series, name, o = {}) {
+  const main = figGeometry(item, series).userData.fig;
+  let ps = PARTS.get(item.key);
+  if (!ps) {
+    ps = { id: item.key + ':parts', items: Object.entries(item.figParts || {}).map(([n, fn]) => ({ key: item.key + ':' + n, fig: fn, frame: n.startsWith('own') || (item.ownParts || []).includes(n) ? { cx: 0, cy: 0, cz: 0, sc: main.sc } : main })) };
+    PARTS.set(item.key, ps);
+  }
+  const it = ps.items.find((x) => x.key === item.key + ':' + name);
+  const m = new THREE.Mesh(figGeometry(it, ps), figMaterials(ps, o.finish || 'normal'));
+  m.castShadow = true;
+  return m;
+}
+/** A named point of a fig item (item.pts[name], mm) in its mesh's local space. */
+export function figPoint(item, series, name, out = new THREE.Vector3()) {
+  const f = figGeometry(item, series).userData.fig, p = item.pts?.[name] || [0, 0, 0];
+  return out.set((p[0] - f.cx) * f.sc, (p[1] - f.cy) * f.sc, (p[2] - f.cz) * f.sc);
 }

@@ -3,6 +3,7 @@
 import { shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, grime, blotch } from './garage.js';
+import { boyBoardBuild } from './hdItems.js';
 
 // tiny 3×5 latin glyphs for labels
 const ABC = {
@@ -227,6 +228,12 @@ const town = {
   },
 
   // ------------------------------------------------------------- weeds along walls
+  // ------------------------------------------------------------- 飛び出し坊や: the cut-out boy board at alley A2
+  tobidashi_boy: {
+    name: 'Tobidashi Boy', jp: '飛び出し坊や', voxel: 0.005,
+    build: boyBoardBuild, // src/data/props/hdItems.js
+  },
+
   weeds: {
     name: 'Roadside Weeds', voxel: 0.03,
     leaves: { kind: 'weeds', mix: ['grass', 0.5], size: 0.3, density: 4, core: 'remove' },

@@ -3,7 +3,10 @@
 // hand-pixelled emblem) drawn two ways: as a can / bottle sample standing in the machine's window, and as the full
 // label unrolled for the close-up. No gradients, no glows: cylinders are shaded with flat bands.
 //   drawSample(ctx, food, x, y, w, h)     drawLabel(ctx, food, x, y, w, h)     kanji(ctx, text, x, y, size, col)
+// Once the pixel-art wraps from real labels are in (src/drinks/drinks.js), samples and close-ups show those instead:
+// the front half of the wrap on the can's body, the drawing above only while they load (or for a drink without one).
 import { draw5, textW5 } from '../../gfx/font5x7.js';
+import { drinkWrapImage, whenDrinksReady } from '../../drinks/drinks.js';
 
 const css = (n) => '#' + (n >>> 0).toString(16).padStart(6, '0');
 const sh = (n, k) => { const r = Math.min(255, Math.round(((n >> 16) & 255) * k)), g = Math.min(255, Math.round(((n >> 8) & 255) * k)), b = Math.min(255, Math.round((n & 255) * k)); return (r << 16) | (g << 8) | b; };
@@ -84,7 +87,34 @@ export function kanji(ctx, text, x, y, size, col, { vert = false, align = 'left'
 /** Make sure every glyph we draw is loaded (DotGothic16 subsets load lazily). */
 export function loadLabelFonts(foods) {
   const text = foods.map((f) => (f.art?.kanji || '') + (f.jp || '')).join('') + '準備中円売切あたたかいつめたい酒年齢確認はい';
-  return document.fonts?.load ? document.fonts.load('16px "DotGothic16"', text).catch(() => {}) : Promise.resolve();
+  const fonts = document.fonts?.load ? document.fonts.load('16px "DotGothic16"', text).catch(() => {}) : Promise.resolve();
+  return Promise.all([fonts, whenDrinksReady()]);
+}
+
+/** The front half of a drink's pixel wrap drawn into x, y, w, h: whole texels, centred, cut to fit (sample: shrunk). */
+function wrapFront(ctx, f, x, y, w, h, small) {
+  const W = drinkWrapImage(f.id);
+  if (!W) return false;
+  const [sx, sy, sw0, sh] = W.r, sw = sw0 >> 1; // the front half
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  if (small) {
+    // the window sample: the whole front, scaled down to the can (averaged, then it is only a few texels anyway)
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    const k = Math.max(w / sw, h / sh), dw = Math.round(sw * k), dh = Math.round(sh * k);
+    ctx.drawImage(W.img, sx, sy, sw, sh, x + Math.round((w - dw) / 2), y + Math.round((h - dh) / 2), dw, dh);
+  } else {
+    // the close-up: texel for texel (a whole-number scale), the wrap's own edge colour above and below
+    ctx.imageSmoothingEnabled = false;
+    const k = Math.max(1, Math.floor(Math.min(w / sw, h / sh))), dw = sw * k, dh = sh * k;
+    const dx = x + Math.round((w - dw) / 2), dy = y + Math.round((h - dh) / 2);
+    ctx.drawImage(W.img, sx, sy, 1, 1, x, y, w, dy - y + 1); // (its top-left texel's colour as the paper round it)
+    ctx.drawImage(W.img, sx, sy + sh - 1, 1, 1, x, dy + dh - 1, w, y + h - dy - dh + 1);
+    ctx.drawImage(W.img, sx, sy, sw, sh, dx, dy, dw, dh);
+  }
+  ctx.restore();
+  ctx.imageSmoothingEnabled = false;
+  return true;
 }
 
 // ------------------------------------------------------------------ a sample in the window
@@ -116,7 +146,7 @@ export function drawSample(ctx, f, x, y, w, h) {
     top = y + 3;
   }
   const bh = y + h - top - (shape === 'can' || shape === 'tall' ? 2 : 0);
-  labelBody(ctx, f, bx, top, bw, bh, false);
+  if (!wrapFront(ctx, f, bx, top, bw, bh, true)) labelBody(ctx, f, bx, top, bw, bh, false);
   if (shape === 'can' || shape === 'tall') { ctx.fillStyle = '#9aa0a6'; ctx.fillRect(x + 1, y + h - 2, w - 2, 2); }
   if (shape === 'pet' || shape === 'cup') {
     // clear plastic above and below the label shows the drink colour
@@ -178,6 +208,6 @@ function labelBody(ctx, f, x, y, w, h, big) {
 
 /** The whole label unrolled (close-up view), w x h. */
 export function drawLabel(ctx, f, x, y, w, h) {
-  labelBody(ctx, f, x, y, w, h, true);
+  if (!wrapFront(ctx, f, x, y, w, h, false)) labelBody(ctx, f, x, y, w, h, true);
   ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.fillRect(x, y, 2, h); ctx.fillRect(x + w - 2, y, 2, h);
 }

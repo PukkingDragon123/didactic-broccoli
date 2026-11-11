@@ -9,7 +9,6 @@ import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { FOODS } from '../needs/foods.js';
-import { audio } from '../core/audio.js';
 
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _m = new THREE.Matrix4(), _s = new THREE.Vector3();
 const _z = new THREE.Vector3(0, 0, 1);
@@ -120,92 +119,10 @@ export class Cart {
   dispose() { this.root.removeFromParent(); }
 }
 
-// ------------------------------------------------------------------ a street dog (voxel, its own rig)
-const DOGS = {
-  shiro: { fur: 0xf2ece0, furD: 0xd8d0c0, cream: 0xfffaf0, nose: 0x2a2020, collar: 0x2f8a4a, ear: 0xf0c0b0 }, // a white Kishu
-  goma: { fur: 0x8a6a4a, furD: 0x3a2e26, cream: 0xf2e2c8, nose: 0x1a1414, collar: 0xd8a020, ear: 0xd09080 }, // a sesame shiba
-  chibi: { fur: 0xb07a4a, furD: 0x8a5a36, cream: 0xf0dcc0, nose: 0x1a1414, collar: 0x3a6ad8, ear: 0xd09a80, small: true }, // a brown mutt
-};
-export const DOG_KINDS = Object.keys(DOGS);
-const DVS = 0.016;
-function dogGeo(kind) {
-  return once('dog:' + kind, () => {
-    const P = DOGS[kind];
-    const hsh = (x, y, z) => ((x * 73856093) ^ (y * 19349663) ^ (z * 83492791)) & 7;
-    const fur = (x, y, z) => (hsh(x, y, z) === 0 ? P.furD : (kind === 'goma' && y > 22 && hsh(x, y, z) < 3 ? P.furD : P.fur));
-    const mk = (b) => vox(DVS, b, { x: 0, y: 0, z: 0 });
-    return {
-      body: mk((v) => {
-        v.shape(-6, 13, -13, 6, 25, 13, (x, y, z) => ((x / 6.4) ** 2 + ((y - 19) / 6.2) ** 2 <= 1 + (Math.abs(z) > 10 ? -0.25 : 0)), (x, y, z) => (y < 16 || (z > 8 && y < 21 && Math.abs(x) < 4) ? P.cream : fur(x, y, z)));
-        v.shape(-4, 19, 9, 4, 28, 15, (x, y, z) => (x / 4.5) ** 2 + ((y - 23.5) / 5) ** 2 <= 1, (x, y, z) => (z > 12 && y < 24 ? P.cream : fur(x, y, z)));
-        v.torus(0, 24, 12, 4, 0.8, P.collar, 'y');
-      }),
-      head: mk((v) => {
-        v.shape(-5, -2, -3, 5, 8, 6, (x, y, z) => (x / 5.4) ** 2 + ((y - 3) / 5.4) ** 2 + ((z - 1.5) / 5.6) ** 2 <= 1, (x, y, z) => (y < 2 && z > 1 ? P.cream : fur(x, y, z)));
-        v.box(-2, -1, 5, 2, 2, 9, (x, y, z) => (y > 1 && z < 7 ? P.fur : P.cream));
-        v.box(-1, 1, 9, 1, 2, 10, P.nose);
-        for (const s of [-1, 1]) {
-          v.set(s * 3, 4, 5, 0x1a1414); v.set(s * 3, 5, 5, 0x1a1414);
-          for (let i = 0; i < 4; i++) v.box(s * (2 + (i >> 1)), 7 + i, 0, s * (5 - (i >> 1)), 7 + i, 1, i > 1 ? P.furD : P.fur);
-          v.set(s * 4, 8, 1, P.ear);
-        }
-      }),
-      tail: mk((v) => { v.torus(0, 4, 0, 3, 1.4, (x, y) => (y < 3 ? P.cream : P.fur), 'z'); v.box(-1, 0, -1, 1, 2, 1, P.fur); }),
-      leg: mk((v) => { v.box(-1, -12, -1, 1, 0, 1, (x, y, z) => (y < -9 ? P.cream : fur(x, y, z))); v.box(-1, -13, -1, 1, -13, 2, P.cream); }),
-    };
-  });
-}
-export class StreetDog {
-  constructor(game, kind = 'shiro') {
-    this.game = game;
-    const G = dogGeo(kind);
-    this.root = new THREE.Group();
-    const sc = DOGS[kind].small ? 0.85 : 1;
-    this.root.scale.setScalar(sc);
-    this.hips = new THREE.Group(); this.root.add(this.hips);
-    this.hips.add(mesh(G.body));
-    this.headP = new THREE.Group(); this.headP.position.set(0, 25 * DVS, 13 * DVS); this.hips.add(this.headP); this.headP.add(mesh(G.head));
-    this.tailP = new THREE.Group(); this.tailP.position.set(0, 23 * DVS, -12 * DVS); this.tailP.rotation.x = -0.35; this.hips.add(this.tailP); this.tailP.add(mesh(G.tail));
-    this.legs = [];
-    for (const [x, z, hind] of [[-3, 8, 0], [3, 8, 0], [-3, -8, 1], [3, -8, 1]]) {
-      const p = new THREE.Group(); p.position.set(x * DVS, 14 * DVS, z * DVS); p.add(mesh(G.leg)); this.hips.add(p); this.legs.push({ p, hind });
-    }
-    this.pos = this.root.position;
-    this.heading = 0; this.phase = 0; this.speed = 0; this.pose = 'stand'; this.wag = 0.5; this.t = Math.random() * 9; this.barkT = 0;
-    this.vel = { x: 0, z: 0 };
-    game.scene.add(this.root);
-  }
-  collar(out = new THREE.Vector3()) { return this.headP.localToWorld(out.set(0, -1.5 * DVS, -1.5 * DVS)); }
-  nose(out = new THREE.Vector3()) { return this.headP.localToWorld(out.set(0, 2 * DVS, 10 * DVS)); }
-  bark() {
-    this.barkT = 0.35;
-    try { audio.play('bark', { pos: this.nose(_v), vol: 0.7, pitch: 1.15 }); } catch { /* */ }
-  }
-  update(dt) {
-    this.t += dt;
-    const sp = this.speed, k = Math.min(1, sp / 1.4);
-    this.phase += dt * (2 + sp * 8);
-    this.root.rotation.y += Math.atan2(Math.sin(this.heading - this.root.rotation.y), Math.cos(this.heading - this.root.rotation.y)) * Math.min(1, dt * 8);
-    const pose = this.pose;
-    for (const [i, L] of this.legs.entries()) {
-      const off = i === 0 || i === 3 ? 0 : Math.PI;
-      let a = Math.sin(this.phase + off) * 0.6 * k;
-      if (pose === 'sit' && L.hind) a = -1.25;
-      if (pose === 'sit' && !L.hind) a = 0.15;
-      L.p.rotation.x += (a - L.p.rotation.x) * Math.min(1, dt * 14);
-    }
-    const sit = pose === 'sit' ? 1 : 0;
-    this.hips.rotation.x += (-sit * 0.38 - this.hips.rotation.x) * Math.min(1, dt * 8);
-    this.hips.position.y = -sit * 0.05 + Math.abs(Math.sin(this.phase)) * 0.012 * k;
-    this.barkT = Math.max(0, this.barkT - dt);
-    const hx = pose === 'sniff' ? 0.8 + Math.sin(this.t * 9) * 0.06 : this.barkT > 0 ? -0.35 : sp > 0.2 ? 0.06 : Math.sin(this.t * 0.7) * 0.1;
-    const hy = pose === 'sniff' ? Math.sin(this.t * 1.7) * 0.35 : sp > 0.2 ? 0 : Math.sin(this.t * 0.45) * 0.5;
-    this.headP.rotation.x += (hx - this.headP.rotation.x) * Math.min(1, dt * 10);
-    this.headP.rotation.y += (hy - this.headP.rotation.y) * Math.min(1, dt * 4);
-    this.tailP.rotation.z = Math.sin(this.t * (8 + this.wag * 10)) * 0.35 * this.wag;
-  }
-  dispose() { this.root.removeFromParent(); }
-}
+// ------------------------------------------------------------------ a street dog: the animal kit's (src/animals/dog.js), same API
+// (pos, heading, speed, pose, wag, vel, collar(), nose(), bark(), update(dt), dispose()): a white Kishu, a sesame shiba, a
+// brown mutt with folded ears, each one skinned mesh on a rigged skeleton with its legs on IK.
+export { StreetDog, DOG_KINDS } from '../animals/dog.js';
 
 // ------------------------------------------------------------------ a lead: a sagging line of blocks (hand -> collar)
 const NSEG = 8;

@@ -54,3 +54,29 @@ export function cute(o = {}) { return D.face({ eye: 'dot', er: 1.1, eh: 1.35, ga
 export function sign(k, pos, w, h, col, word, ink = INK, o = {}) {
   k.box(pos, [w, h, o.d ?? 1.4], { c: col, t: o.t ?? 'wood', d: [D.txt(word, 0, 0, h * (o.ts ?? 0.6), ink, { vert: o.vert }), o.back !== false ? D.txt(word, 0, 0, h * (o.ts ?? 0.6), ink, { dir: 'b', vert: o.vert }) : null] }, { ch: 0.2, rot: o.rot });
 }
+
+/** An umbrella: an octagonal ribbed canopy (o.open 0..1 flattening), shaft and crook handle. */
+export function umbrella(k, pos, r, h, paint, o = {}) {
+  const rise = o.rise ?? r * 0.42, inside = o.inside ?? false;
+  k.at(pos, o.rot || [0, 0, 0], () => {
+    stick(k, [0, -h * 0.55, 0], [0, rise + 2, 0], o.shaftW ?? 1.2, o.shaft ?? { c: 0xc8c8d0, m: 'metal' });
+    const rings = inside ? [[0, 2, 2, 0, 0, 0.586], [rise * 0.8, r * 0.7, r * 0.7, 0, 0, 0.586], [rise, r, r, 0, 0, 0.586]] : [[0, r, r, 0, 0, 0.586], [rise * 0.45, r * 0.72, r * 0.72, 0, 0, 0.586], [rise, 1.4, 1.4, 0, 0, 0.586]];
+    k.prism(rings, { t: 'paper', ...paint, d: [...(paint.d || []), D.stripes('r', 1, 0.06, o.rib ?? 0x00000000 | 0x3a3a40, { n: 8 })] }, { pos: [0, 0, 0] });
+    k.cyl([0, rise + 1.6, 0], 0.9, 3, { c: o.tipC ?? 0x2a2a30 });
+    if (o.handle !== false) {
+      k.box([0, -h * 0.55 - 3, 0], [o.hw ?? 2.2, 6, o.hw ?? 2.2], o.handleP ?? { c: 0x8a5a2a, t: 'wood' }, { ch: 0.4 });
+      k.box([2.2, -h * 0.55 - 6.2, 0], [5.4, 2.2, 2.2], o.handleP ?? { c: 0x8a5a2a, t: 'wood' }, { ch: 0.4 });
+      k.box([4.6, -h * 0.55 - 4.4, 0], [2.2, 4, 2.2], o.handleP ?? { c: 0x8a5a2a, t: 'wood' }, { ch: 0.4 });
+    }
+  });
+}
+/** A train car body along z: windows band, doors, roof, bogies with wheels. o: { len, w, h, col, band, roof, nose: 'round' | 'flat' | null, face } */
+export function car(k, pos, o = {}) {
+  const L = o.len ?? 40, W = o.w ?? 16, H = o.h ?? 18, col = o.col ?? 0xf2f0e8;
+  k.at(pos, o.rot || [0, 0, 0], () => {
+    const win = [D.stripes('z', 6, 4, 0x2a3a4a, { dir: 'x' }), D.band('y', -H / 2 + 3, -H / 2 + 5, o.band ?? 0x3a8ae8)].map((d) => d);
+    k.box([0, 6 + H / 2, 0], [W, H, L], { c: col, t: 'gloss', m: 'gloss', d: [D.fn('x', (c, out) => { if (c.y > H * 0.05 && c.y < H * 0.36 && ((c.a % 6) + 6) % 6 < 4.2 && Math.abs(c.a) < L / 2 - 3) { out[0] = 52; out[1] = 70; out[2] = 90; if (c.y > H * 0.28) { out[0] = 120; out[1] = 160; out[2] = 190; } } }), win[1], ...(o.d || [])] }, { ch: 0.25 });
+    k.box([0, 6 + H + 1, 0], [W * 0.9, 2, L * 0.96], { c: o.roof ?? 0x9a9aa4, t: 'metal' }, { ch: 0.4 });
+    for (const z of [L * 0.3, -L * 0.3]) { k.box([0, 3.5, z], [W * 0.8, 3, 8], { c: 0x2a2a30, t: 'metal' }, { ch: 0.2 }); k.mirror(() => { k.cyl([W * 0.4, 3, z + 2.4], 2.6, 1.4, { c: 0x4a4a52, m: 'metal', t: 'metal' }, { rot: [0, 0, Math.PI / 2] }); k.cyl([W * 0.4, 3, z - 2.4], 2.6, 1.4, { c: 0x4a4a52, m: 'metal', t: 'metal' }, { rot: [0, 0, Math.PI / 2] }); }); }
+  });
+}

@@ -3,7 +3,7 @@
 // shading; eyes (sclera, iris, pupil, catchlight, lids, lashes), brows, lips, hairline, stubble, wrinkles,
 // make-up and glasses are drawn on top. Expressions move the features and the relief; only the region that
 // changed is repainted (blinks touch the eye band, talking the mouth band).
-import { clamp01, sstep, lerp, mixc, G, h2, shadeInto, over, hairPx } from './paintlib.js';
+import { clamp01, sstep, lerp, mixc, G, h2, shadeInto, over, hairPx, q8 } from './paintlib.js';
 
 /** Expression parameters (all optional, 0 = neutral). Units: face pixels. */
 export const EXPRESSIONS = {
@@ -223,7 +223,7 @@ export class FacePainter {
       const a = lay[q * 4 + 3];
       if (a > 0) { o[0] += (lay[q * 4] - o[0]) * a; o[1] += (lay[q * 4 + 1] - o[1]) * a; o[2] += (lay[q * 4 + 2] - o[2]) * a; }
       const p = ((B.y + j) * W + B.x + i) * 4;
-      d[p] = o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0]; d[p + 1] = o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1]; d[p + 2] = o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2]; d[p + 3] = 255;
+      d[p] = q8(o[0]); d[p + 1] = q8(o[1]); d[p + 2] = q8(o[2]); d[p + 3] = 255;
     }
     // the 1px gutter around the block repeats the edge
     if (!r || x0 === 0 || y0 === 0 || x1 === B.w || y1 === B.h) this.gutter();

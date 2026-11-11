@@ -186,7 +186,7 @@ export function dressSeals(cap, data, stepsDone = data?.seal || 0) {
   flap.material.side = THREE.DoubleSide;
   // the seal on the front, across the seam
   const kind = sealKind(data);
-  const sw = (kind === 'wax' ? 6.6 : 6.2) * vs * 0.55, sh = sw * 34 / 28;
+  const sw = (kind === 'wax' ? 6.6 : 6.2) * vs * 0.68, sh = sw * 34 / 28;
   const seal = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), mat(sealTex(kind, 0)));
   seal.position.set(0, 0, cap.r + (LIFT + 0.12) * vs);
   seal.userData.kind = kind;

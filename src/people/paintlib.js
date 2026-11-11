@@ -66,3 +66,7 @@ export function scaleO(o, k, warm = 0.12) {
 }
 
 export const SKIN_SHADOW = [150, 70, 60];
+
+/** Pixel-art posterize: snap a channel to a few clean tones (smooth shading becomes crisp bands, no gradients). */
+export const POST = 14;
+export const q8 = (v) => { v = Math.round(v / POST) * POST; return v < 0 ? 0 : v > 255 ? 255 : v; };

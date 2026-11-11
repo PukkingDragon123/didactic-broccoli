@@ -96,10 +96,22 @@ function buildProp(def) {
 }
 
 /**
+ * A prop that brings its own finished model instead of its voxels (PROPS[id].mesh(opts), set by src/animals/props.js for
+ * the pigeons and the strays): one Mesh, bottom-centre origin, its own material; null for every other prop. The voxel
+ * build stays the prop's stand-in for propGeometry / propSize.
+ */
+export function propOwnMesh(id, opts = {}) {
+  const def = PROPS[id];
+  return def?.mesh ? def.mesh(opts) : null;
+}
+
+/**
  * Create a mesh for a prop. If the prop is missing, returns a neutral placeholder box of `fallbackSize`.
  * opts: { castShadow, receiveShadow, fallbackSize:[w,h,d], fallbackColor }
  */
 export function propMesh(id, opts = {}) {
+  const own = propOwnMesh(id, opts);
+  if (own) { own.userData.propId = id; return own; }
   const geo = propGeometry(id);
   let mesh;
   if (geo) {

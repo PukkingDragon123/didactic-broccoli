@@ -19,6 +19,7 @@ import { draw5 } from '../gfx/font5x7.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { rollCapsule } from '../game/economy.js';
 import { formatYen, hash2 } from '../core/util.js';
+import { Dog } from '../animals/dog.js';
 
 const X0 = -9.3, X1 = -7.5, MOUTH = 14.9, SHRINE = 20.15, BACK = 22.3; // the walkable alley; reaching SHRINE starts the walk out
 const HOME = new THREE.Vector3(-8.5, 0, 16.4), END = new THREE.Vector3(-8.75, 0, 20.6);
@@ -124,39 +125,35 @@ function cbox(w, h, d, x, y, z, col, { rx = 0, rz = 0, ry = 0, centre = false } 
   return g;
 }
 
-// ------------------------------------------------------------------ the ghost dog (chunky voxel-ish rig)
-class GhostDog {
+// ------------------------------------------------------------------ the ghost dog
+// A white mutt with floppy grey ears, grey socks and a red collar (src/animals/dog.js: one skinned mesh on a rigged
+// skeleton); ghostify() tints and fades its material. A depth-only copy drawn first keeps the far legs and the inside of
+// the body from showing through, so he reads as one pale shape.
+export class GhostDog {
   constructor() {
-    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 });
-    const part = (geos, x, y, z) => { const m = new THREE.Mesh(mergeGeometries(geos), mat); const p = new THREE.Group(); p.position.set(x, y, z); p.add(m); return p; };
-    const W = 0xf4f0e8, G = 0xb8b4ac, D = 0x2a2a2a;
-    this.root = new THREE.Group();
-    this.body = part([cbox(0.24, 0.22, 0.5, 0, -0.11, 0, W), cbox(0.25, 0.12, 0.2, 0, -0.02, -0.08, G), cbox(0.18, 0.16, 0.14, 0, -0.06, 0.27, W)], 0, 0.46, 0);
-    this.head = part([cbox(0.2, 0.2, 0.2, 0, -0.05, 0.05, W), cbox(0.12, 0.1, 0.12, 0, -0.07, 0.19, W), cbox(0.05, 0.04, 0.03, 0, -0.01, 0.255, D),
-      cbox(0.06, 0.1, 0.04, -0.085, 0.07, 0.0, G, { rz: 0.4 }), cbox(0.06, 0.1, 0.04, 0.085, 0.07, 0.0, G, { rz: -0.4 }),
-      cbox(0.025, 0.025, 0.01, -0.05, 0.03, 0.15, D), cbox(0.025, 0.025, 0.01, 0.05, 0.03, 0.15, D), cbox(0.21, 0.04, 0.17, 0, -0.14, 0.04, 0xc84a3a)], 0, 0.62, 0.3);
-    this.tail = part([cbox(0.05, 0.05, 0.22, 0, 0, 0.1, W, { rx: -0.6, centre: true })], 0, 0.5, -0.26);
-    this.legs = [[-0.08, 0.17], [0.08, 0.17], [-0.08, -0.17], [0.08, -0.17]].map(([x, z]) => part([cbox(0.07, 0.36, 0.07, 0, -0.36, 0, W), cbox(0.08, 0.04, 0.1, 0, -0.36, 0.02, G)], x, 0.38, z));
-    this.root.add(this.body, this.head, this.tail, ...this.legs);
+    this.dog = new Dog('ghost', { cast: false });
+    this.root = this.dog.root;
     this.t = 0;
   }
   update(dt, speed, sit, lookAt) {
+    const d = this.dog;
     this.t += dt;
-    const swing = Math.min(1, speed * 1.8) * Math.sin(this.t * 11) * 0.5;
-    this.legs.forEach((l, i) => { l.rotation.x = (i === 0 || i === 3 ? swing : -swing); });
-    this.tail.rotation.y = Math.sin(this.t * (speed > 0.05 ? 9 : 5)) * 0.5;
-    this.tail.rotation.x = -0.2;
-    const s = sit ? 1 : 0;
-    this.body.rotation.x = -0.35 * s; this.body.position.y = 0.46 - 0.08 * s;
-    this.legs[2].position.y = this.legs[3].position.y = 0.38 - 0.12 * s;
-    this.head.position.y = 0.62 + 0.04 * s + Math.sin(this.t * 2) * 0.005;
-    if (lookAt) {
-      _v.copy(lookAt); this.root.worldToLocal(_v);
-      this.head.rotation.y = Math.max(-0.8, Math.min(0.8, Math.atan2(_v.x, _v.z - 0.3)));
-    } else this.head.rotation.y *= 0.9;
+    if (!this.pre) {
+      const m = d.mesh;
+      const pre = this.pre = new THREE.SkinnedMesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2 }));
+      pre.bind(m.skeleton, m.bindMatrix);
+      pre.renderOrder = 1; pre.frustumCulled = false; pre.raycast = () => {};
+      m.add(pre);
+    }
+    d.speed = speed; d.pose = sit ? 'sit' : 'stand'; d.wag = speed > 0.05 ? 0.7 : 0.35;
+    d.lookAt = lookAt || null;
+    // a ghost's slow float: the whole dog breathes a hair off the ground
+    d.root.children[0].position.y = 0.006 + Math.sin(this.t * 2) * 0.004;
+    d.update(dt);
   }
   /** A two-yip 8-bit bark from p. */
   bark(p) {
+    this.dog.barkT = 0.35;
     try {
       const a = audio, out = a.out({ pos: p, vol: 0.5 }), t = a.ctx.currentTime;
       for (let i = 0; i < 2; i++) a.tone(out, t + i * 0.16, { wave: a.pulse(0.25), f: 620, f2: 340, dur: 0.1, vol: 0.28 });

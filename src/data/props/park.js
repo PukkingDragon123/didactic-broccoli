@@ -5,6 +5,7 @@ import { shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, grime, blotch, speckle, rod } from './garage.js';
 import { blob, limb, limbPath, bark, clipFloor } from './decor_nature.js';
+import { sandCastleBuild } from './hdItems.js';
 
 const pick = (arr, k) => arr[Math.floor(k * arr.length) % arr.length];
 /** Painted steel tube colour with chipped paint showing rust. */
@@ -235,19 +236,8 @@ const park = {
 
   // ------------------------------------------------------------- sandbox toys: bucket, spade, a moated sandcastle
   sand_toys: {
-    name: 'Sand Toys', voxel: 0.02,
-    build(v) {
-      const sand = (x, y, z) => shade(0xd8c49a, 0.88 + hash(x, y, z, 4) * 0.14);
-      // castle mound with a moat ring
-      v.shape(-14, 0, -14, 14, 9, 14, (x, y, z) => Math.hypot(x, z) < 9 - y * 0.7, sand);
-      fill(v, -3, 9, -3, 3, 12, 3, sand); v.set(0, 13, 0, sand);
-      v.set(0, 14, 0, 0x5a3a26); fill(v, 1, 13, 0, 3, 14, 0, gloss(0xe5383b));
-      // bucket on its side, spade, a tiny shovel
-      v.cylinder(20, 0, 8, 5, 9, gloss(0xff8c2e), 'x');
-      v.cylinder(21, 0, 8, 4, 8, null, 'x');
-      fill(v, -22, 0, 6, -20, 0, 18, gloss(0x2a7ad8)); fill(v, -24, 0, 18, -18, 0, 23, gloss(0x2a7ad8));
-      fill(v, 10, 0, -18, 16, 0, -16, gloss(0x3cae5a)); fill(v, 8, 0, -18, 9, 0, -14, gloss(0x3cae5a));
-    },
+    name: 'Sand Toys', voxel: 0.006,
+    build: sandCastleBuild, // src/data/props/hdItems.js
   },
 
   // ------------------------------------------------------------- crushed litter for paths and benches

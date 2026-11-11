@@ -5,8 +5,8 @@
 import * as THREE from 'three';
 import { BONE_INDEX } from './body.js';
 
-export const ATLAS = 256;
-const FACE_DENS = 430; // px per metre on the face block
+export const ATLAS = 384; // 1.5x the voxel version: crisper painted faces, hair and clothes (phase 12)
+const FACE_DENS = 645; // px per metre on the face block
 const PAD = 1;
 
 function ring(y, r, ch) {
@@ -119,7 +119,7 @@ export function buildMesh(plan) {
   }
   const blockRect = { w: block.w + PAD * 2, h: block.h + PAD * 2 };
   const sizeAt = (f, scale) => {
-    f.dens = 330 * scale * (f.seg.dens || 1) * (f.seg.mat === 'head' || f.seg.mat === 'ear' ? 1.2 : 1) * (f.kind === 'side' ? 1 : 0.7);
+    f.dens = 495 * scale * (f.seg.dens || 1) * (f.seg.mat === 'head' || f.seg.mat === 'ear' ? 1.2 : 1) * (f.kind === 'side' ? 1 : 0.7);
     f.rect = { w: Math.max(1, Math.ceil((f.s1 - f.s0) * f.dens - 0.01)) + PAD * 2, h: Math.max(1, Math.ceil((f.r1 - f.r0) * f.dens - 0.01)) + PAD * 2 };
   };
   // first guess from the area budget, then shrink until everything packs

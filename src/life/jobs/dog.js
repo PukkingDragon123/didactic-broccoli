@@ -2,106 +2,30 @@
 // (and the poop bags), walk her to the west tunnel and back. On the way she stops to sniff poles and weeds (wait, or
 // click to tug her along), loses her mind at Kuro the black shiba across the lane (hold click to rein her in: she
 // drags you towards him), and does her business: scoop it with a poop bag and bin it. Then tie her back at her gate.
-// Pochi is voxel art with a small rig (head, tail, four legs); the leash is a little verlet rope of blocks.
+// Pochi and Kuro are real shibas (src/animals/dog.js); the leash is a little verlet rope drawn as a smooth tube.
 import * as THREE from 'three';
-import { VoxelModel } from '../../voxel/VoxelModel.js';
-import { meshVoxels } from '../../voxel/mesher.js';
-import { voxelMaterials } from '../../voxel/materials.js';
+import { Dog } from '../../animals/dog.js';
 import { propMesh } from '../../world/props.js';
 import { audio } from '../../core/audio.js';
 
-const VS = 0.016;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const GATE = V(8.78, 0, 5.78);
 const TURN = V(-21.5, 0, 9.4); // the walk's far end, by the west tunnel
 const KURO = V(-18.6, 0, 14.25);
 const SNIFF = [[-6.3, 14.0], [2.6, 14.0], [10.0, 14.0], [-12.0, 6.0], [-24.0, 6.4], [5.4, 5.6], [-16.3, 13.9]];
-const LEASH = 2.3, NSEG = 12;
+const LEASH = 2.3, NSEG = 12, TUBE_R = 0.0055, TUBE_S = 6;
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _m = new THREE.Matrix4(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 0, 1);
 const _hand = new THREE.Vector3(), _col = new THREE.Vector3(), _want = new THREE.Vector3(), _toP = new THREE.Vector3();
 
-// ------------------------------------------------------------------ the shiba model (parts with their own pivots)
-const PAL = {
-  pochi: { fur: 0xe08a3a, furD: 0xc06a2a, cream: 0xfff1df, nose: 0x1e1a1a, collar: 0xd8282a },
-  kuro: { fur: 0x2a2626, furD: 0x1a1818, cream: 0xe8c89a, nose: 0x101010, collar: 0x2f6fd6 },
-};
-const geoCache = {};
-function dogGeos(kind) {
-  if (geoCache[kind]) return geoCache[kind];
-  const P = PAL[kind];
-  const h = (x, y, z) => ((x * 73856093) ^ (y * 19349663) ^ (z * 83492791)) & 7;
-  const fur = (x, y, z) => (h(x, y, z) === 0 ? P.furD : P.fur);
-  const mk = (build, pivot) => { const v = new VoxelModel(); v.jitter = 0.03; build(v); v.pivot = pivot; return meshVoxels(v, { voxelSize: VS }); };
-  const G = {
-    // torso: orange back, cream chest and belly, the collar at the front
-    body: mk((v) => {
-      v.shape(-7, 14, -14, 7, 27, 14, (x, y, z) => ((x / 7.4) ** 2 + ((y - 20.5) / 7) ** 2 <= 1 + (Math.abs(z) > 11 ? -0.25 : 0)), (x, y, z) => (y < 18 || (z > 8 && y < 23 && Math.abs(x) < 5) ? P.cream : fur(x, y, z)));
-      v.shape(-5, 20, 10, 5, 30, 16, (x, y, z) => (x / 5.4) ** 2 + ((y - 25) / 5.5) ** 2 <= 1, (x, y, z) => (z > 13 && y < 26 ? P.cream : fur(x, y, z))); // neck
-      v.torus(0, 26, 13, 4.6, 0.8, P.collar, 'y');
-      v.set(0, 23, 17, 0xf2d23a); // the tag
-    }, { x: 0, y: 0, z: 0 }),
-    head: mk((v) => {
-      v.shape(-6, -2, -4, 6, 9, 7, (x, y, z) => (x / 6.4) ** 2 + ((y - 3.5) / 6) ** 2 + ((z - 1.5) / 6.4) ** 2 <= 1, (x, y, z) => (y < 2 && z > 1 ? P.cream : (Math.abs(x) >= 3 && y < 4 && z > 2 ? P.cream : fur(x, y, z))));
-      v.box(-3, -1, 6, 3, 3, 11, (x, y, z) => (y > 2 && z < 9 ? P.fur : P.cream)); // snout
-      v.box(-1, 2, 11, 1, 3, 12, P.nose);
-      v.box(-1, -1, 10, 1, -1, 11, 0x5a2a2a); // mouth
-      for (const s of [-1, 1]) {
-        v.box(s * 3, 5, 6, s * 3, 6, 6, 0x1a1414); // eyes
-        v.set(s * 3, 6, 6, 0x1a1414);
-        v.set(s * 4, 8, 4, P.cream); // eyebrow dots (shibas have them)
-        for (let i = 0; i < 5; i++) v.box(s * (2 + (i >> 1)), 8 + i, 0, s * (6 - (i >> 1) - (i === 4 ? 1 : 0)), 8 + i, 2, i > 2 ? P.furD : P.fur); // ears
-        v.box(s * 4, 9, 2, s * 4, 11, 2, 0xf0b0a0);
-      }
-    }, { x: 0, y: 0, z: 0 }),
-    tail: mk((v) => {
-      v.torus(0, 5, 0, 3.6, 1.6, (x, y, z) => (y < 4 ? P.cream : P.fur), 'z');
-      v.shape(-2, 0, -2, 2, 2, 2, () => true, P.fur);
-    }, { x: 0, y: 0, z: 0 }),
-    leg: mk((v) => {
-      v.box(-1, -13, -1, 1, 0, 1, (x, y, z) => (y < -10 ? P.cream : fur(x, y, z)));
-      v.box(-1, -14, -1, 1, -14, 2, P.cream);
-    }, { x: 0, y: 0, z: 0 }),
-  };
-  geoCache[kind] = G;
-  return G;
-}
-
-/** A shiba with a little rig: walk cycle, tail wag, sniffing, sitting, squatting, barking. */
-export class Shiba {
+// ------------------------------------------------------------------ the shiba (src/animals/dog.js: one skinned mesh)
+/** A shiba with a rig: walk / trot, tail wag, sniffing, sitting, squatting, barking (the jaw opens). */
+export class Shiba extends Dog {
   constructor(game, kind = 'pochi') {
+    super(kind);
     this.game = game;
-    const G = dogGeos(kind), mats = voxelMaterials('normal');
-    const mesh = (geo) => { const m = new THREE.Mesh(geo, mats); m.castShadow = true; return m; };
-    this.root = new THREE.Group();
-    this.hips = new THREE.Group(); // body pitch / height
-    this.root.add(this.hips);
-    this.body = mesh(G.body);
-    this.hips.add(this.body);
-    this.headP = new THREE.Group(); this.headP.position.set(0, 27 * VS, 14 * VS); this.hips.add(this.headP);
-    this.headP.add(mesh(G.head));
-    this.tailP = new THREE.Group(); this.tailP.position.set(0, 25 * VS, -13 * VS); this.tailP.rotation.x = -0.35; this.hips.add(this.tailP);
-    this.tailP.add(mesh(G.tail));
-    this.legs = [];
-    for (const [x, z, hind] of [[-4, 9, 0], [4, 9, 0], [-4, -9, 1], [4, -9, 1]]) {
-      const p = new THREE.Group(); p.position.set(x * VS, 15 * VS, z * VS);
-      p.add(mesh(G.leg));
-      this.hips.add(p);
-      this.legs.push({ p, hind });
-    }
-    this.pos = this.root.position;
-    this.heading = 0;
-    this.phase = 0;
-    this.speed = 0;
-    this.pose = 'stand'; // stand | sit | sniff | squat | bark
-    this.wag = 0.5;
-    this.t = Math.random() * 10;
-    this.barkT = 0;
+    this.pant = 1;
     game.scene.add(this.root);
   }
-
-  /** World position of the collar (where the leash clips on). */
-  collar(out = new THREE.Vector3()) { return this.headP.localToWorld(out.set(0, -1.5 * VS, -1.5 * VS)); }
-  nose(out = new THREE.Vector3()) { return this.headP.localToWorld(out.set(0, 2.5 * VS, 12 * VS)); }
 
   bark(pitch = 1) {
     this.barkT = 0.35;
@@ -110,44 +34,25 @@ export class Shiba {
   }
 
   update(dt) {
-    this.t += dt;
-    const sp = this.speed, k = Math.min(1, sp / 1.6);
-    this.phase += dt * (3 + sp * 7);
     this.root.rotation.y = this.heading;
-    const pose = this.pose;
-    // legs: a trot when moving; folded when sitting or squatting
-    for (const [i, L] of this.legs.entries()) {
-      const off = i === 0 || i === 3 ? 0 : Math.PI;
-      let a = Math.sin(this.phase + off) * 0.55 * k;
-      if (pose === 'sit' && L.hind) a = -1.25;
-      if (pose === 'squat' && L.hind) a = -0.9;
-      if (pose === 'sit' && !L.hind) a = 0.15;
-      L.p.rotation.x += (a - L.p.rotation.x) * Math.min(1, dt * 14);
-    }
-    const sit = pose === 'sit' ? 1 : pose === 'squat' ? 0.7 : 0;
-    this.hips.rotation.x += (-sit * 0.38 - this.hips.rotation.x) * Math.min(1, dt * 8);
-    this.hips.position.y = -sit * 0.05 + Math.abs(Math.sin(this.phase)) * 0.012 * k;
-    // the head: nose to the ground when sniffing, up and jerking when barking, looking about when idle
-    this.barkT = Math.max(0, this.barkT - dt);
-    const hx = pose === 'sniff' ? 0.75 + Math.sin(this.t * 9) * 0.06 : this.barkT > 0 ? -0.35 : sp > 0.2 ? 0.08 : Math.sin(this.t * 0.7) * 0.1;
-    const hy = pose === 'sniff' ? Math.sin(this.t * 1.7) * 0.35 : sp > 0.2 ? 0 : Math.sin(this.t * 0.45) * 0.5;
-    this.headP.rotation.x += (hx - this.headP.rotation.x) * Math.min(1, dt * 10);
-    this.headP.rotation.y += (hy - this.headP.rotation.y) * Math.min(1, dt * 4);
-    // tail: wags when happy, straight up when squatting
-    this.tailP.rotation.z = Math.sin(this.t * (8 + this.wag * 10)) * 0.35 * this.wag;
-    this.tailP.rotation.x += ((pose === 'squat' ? -1.0 : -0.35) - this.tailP.rotation.x) * Math.min(1, dt * 6);
+    super.update(dt);
   }
-
-  dispose() { this.root.parent?.remove(this.root); }
 }
 
-// ------------------------------------------------------------------ the leash (verlet points drawn as blocks)
+// ------------------------------------------------------------------ the leash (verlet points, drawn as a tube)
 class Leash {
   constructor(game) {
     this.game = game;
     this.p = Array.from({ length: NSEG + 1 }, () => ({ x: 0, y: 0, z: 0, ox: 0, oy: 0, oz: 0 }));
-    this.mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.014, 0.014, 1), new THREE.MeshStandardMaterial({ color: 0xd8282a, roughness: 0.6 }), NSEG);
-    this.mesh.frustumCulled = false;
+    // a round nylon lead: a tube through the rope's points (Catmull-Rom), rebuilt in place each frame
+    const g = new THREE.BufferGeometry(), S = TUBE_S, rings = NSEG * 3 + 1, idx = [];
+    g.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(rings * S * 3), 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(new Float32Array(rings * S * 3), 3));
+    for (let i = 0; i < rings - 1; i++) for (let k = 0; k < S; k++) { const a = i * S + k, b2 = i * S + ((k + 1) % S); idx.push(a, b2, a + S, b2, b2 + S, a + S); }
+    g.setIndex(idx);
+    this.curve = new THREE.CatmullRomCurve3(Array.from({ length: NSEG + 1 }, () => new THREE.Vector3()));
+    this.mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: 0xc8282a, roughness: 0.65 }));
+    this.mesh.frustumCulled = false; this.rings = rings;
     this.mesh.castShadow = true;
     game.scene.add(this.mesh);
     this.init = false;
@@ -176,15 +81,22 @@ class Leash {
       }
       for (let i = 1; i < n - 1; i++) if (P[i].y < 0.012) P[i].y = 0.012;
     }
-    for (let i = 0; i < NSEG; i++) {
-      const q = P[i], r = P[i + 1];
-      _v.set(q.x, q.y, q.z); _v2.set(r.x - q.x, r.y - q.y, r.z - q.z);
-      const len = _v2.length() || 1e-4;
-      _q.setFromUnitVectors(_up, _v2.multiplyScalar(1 / len));
-      _m.compose(_v.set((q.x + r.x) / 2, (q.y + r.y) / 2, (q.z + r.z) / 2), _q, _s.set(1, 1, len));
-      this.mesh.setMatrixAt(i, _m);
+    const C = this.curve, pos = this.mesh.geometry.attributes.position, nrm = this.mesh.geometry.attributes.normal;
+    for (let i = 0; i < n; i++) C.points[i].set(P[i].x, P[i].y, P[i].z);
+    const t0 = new THREE.Vector3(), nx = new THREE.Vector3(), ny = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+    for (let i = 0; i < this.rings; i++) {
+      const u = i / (this.rings - 1);
+      C.getPoint(u, _v); C.getTangent(u, t0);
+      nx.crossVectors(Math.abs(t0.y) > 0.95 ? _up : up, t0).normalize(); ny.crossVectors(t0, nx);
+      for (let k = 0; k < TUBE_S; k++) {
+        const a = (k / TUBE_S) * Math.PI * 2, cx = Math.cos(a), sy = Math.sin(a), j = i * TUBE_S + k;
+        _v2.copy(nx).multiplyScalar(cx).addScaledVector(ny, sy);
+        nrm.setXYZ(j, _v2.x, _v2.y, _v2.z);
+        pos.setXYZ(j, _v.x + _v2.x * TUBE_R, _v.y + _v2.y * TUBE_R, _v.z + _v2.z * TUBE_R);
+      }
     }
-    this.mesh.instanceMatrix.needsUpdate = true;
+    pos.needsUpdate = true; nrm.needsUpdate = true;
+    this.mesh.geometry.computeBoundingSphere();
   }
 
   dispose() { this.mesh.parent?.remove(this.mesh); this.mesh.geometry.dispose(); this.mesh.material.dispose(); }

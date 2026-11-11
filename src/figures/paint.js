@@ -150,9 +150,20 @@ function pix(rows, legend, x, y, s, o = {}) {
 
 // text through a 2D canvas (DotGothic16 for kana, Alagard / the bitmap font for latin), thresholded to crisp pixels
 const txtCache = new Map();
+/** Set when a text decal was painted before its web font had loaded (the kit repaints that figure once it has). */
+export const FONT_WAIT = { pending: null };
 function txtMask(str, font) {
   const k = str + '|' + font;
-  if (txtCache.has(k)) return txtCache.get(k);
+  const hit = txtCache.get(k);
+  if (hit && !hit.pend) return hit;
+  try {
+    if (typeof document !== 'undefined' && document.fonts && !document.fonts.check(`48px ${font}`, str)) {
+      FONT_WAIT.pending = document.fonts.load(`48px ${font}`, str);
+      const ph = { a: null, pend: true };
+      txtCache.set(k, ph);
+      return ph;
+    }
+  } catch { /* no font API: paint with whatever is there */ }
   let m = null;
   try {
     const px = 48, cv = (typeof OffscreenCanvas !== 'undefined') ? new OffscreenCanvas(8, 8) : document.createElement('canvas');
@@ -179,6 +190,7 @@ function txt(str, x, y, h, col, o = {}) {
   return (c, out) => {
     if (!proj(c, dir)) return;
     if (!M) { M = txtMask(str, font); if (!M) return; }
+    if (!M.a) return;
     const sc = M.px / h, w = (M.w / sc);
     const i = Math.floor((c.a - x + w / 2) * sc), j = Math.floor((y - c.b) * sc + M.h / 2);
     if (i < 0 || j < 0 || i >= M.w || j >= M.h) return;

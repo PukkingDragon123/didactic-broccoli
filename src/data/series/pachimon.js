@@ -1,42 +1,66 @@
 // Series — Pachimon Paradise (パチモンパラダイス)
 // Affectionate off-brand bootlegs of pop-culture favourites: tiny round blob friends who cry and yell a lot, and a
 // few blobs having a bizarre adventure. Original designs and names, no logos.
-import { C, shade } from '../../voxel/palette.js';
-import { gloss, metal, glass, glow } from '../../voxel/VoxelModel.js';
+// Pachimon Paradise: bootleg-style blob mascots (original characters, parody poses) as blocky vinyl figures.
+import { beast, chibi, D } from '../../figures/chibi.js';
+import { stick, cute, WHITE } from '../../figures/props.js';
 
-const K = C.ink;
-const W = 0xfbf8f2;
-
-/** Round blob body (bottom on y = 0). */
-function blob(v, color, rx = 7, ry = 6.5, rz = 6.5, cy = null) {
-  v.ellipsoid(0, cy ?? ry, 0, rx, ry, rz, color);
-  v.box(-20, -6, -20, 20, -1, 20, null);
-}
-/** Little stubby arms and feet. */
-function limbs(v, color, { up = false, y = 5, spread = 7 } = {}) {
-  for (const s of [-1, 1]) {
-    if (up) v.ellipsoid(s * (spread + 1), y + 5, 1, 1.4, 2.6, 1.4, color);
-    else v.ellipsoid(s * spread, y, 2, 1.6, 1.4, 1.4, color);
-    v.ellipsoid(s * 3, 0.6, 2, 2, 1, 2, color);
-  }
-}
-/** Dot-eye face with blush; mood: 'cry', 'yell', 'smile', 'stern'. eyeY = eye row. */
-function face(v, eyeY, mood = 'smile', spread = 3) {
-  const L = { K, W, P: 0xffa7b8, M: C.mouth, T: C.tongue, B: 0x7fc8ff };
-  const gap = '.'.repeat(spread * 2 - 1);
-  if (mood === 'stern') v.project([`KK${gap}KK`, `.K${gap}K.`], L, -spread - 1, eyeY);
-  else v.project([`KW${gap}KW`, `KK${gap}KK`], L, -spread - 1, eyeY);
-  if (mood === 'cry') { v.project([`B${'.'.repeat(spread * 2 + 1)}B`, `B${'.'.repeat(spread * 2 + 1)}B`], L, -spread - 1, eyeY - 2); v.project(['.M.', 'M.M'], L, -1, eyeY - 3); }
-  else if (mood === 'yell') v.project(['MMM', 'MTM', 'MMM'], L, -1, eyeY - 2);
-  else if (mood === 'stern') v.project(['MMM'], L, -1, eyeY - 3);
-  else v.project(['M.M', '.M.'], L, -1, eyeY - 2);
-  v.project(['PP', 'PP'], L, -spread - 3, eyeY - 2);
-  v.project(['PP', 'PP'], L, spread + 2, eyeY - 2);
-}
-/** Floating ゴ glyphs (the menacing sound effect), as voxel pixel art on a plane. */
-function menacing(v, x, y, z, color) {
-  v.layer(['.XXXX.X', 'X....X.', '.XXXX..', '...X...', '..X....', '.X.....'], { X: gloss(color) }, { x, y, z, depth: 1 });
-}
+const blob = (k, c, face, extra = [], o = {}) => k.soft([0, o.h ?? 13, 0], [o.w ?? 14, o.h ?? 13, o.d ?? 12], { c, t: o.t ?? 'gloss', m: 'gloss', d: [...D.face({ gap: 5.5, er: 1.8, eh: 2.4, y: 2, blush: true, ...face }), ...extra] }, { flat: true, ch: 0.5, bev: 0.42, bs: 0.7 });
+const gogo = (k, x, y, z, s = 1) => k.box([x, y, z], [7 * s, 7 * s, 0.6], { c: 0x6a3a8a, d: [D.txt('ゴ', 0, 0, 5 * s, 0xd8b8f8), D.txt('ゴ', 0, 0, 5 * s, 0xd8b8f8, { dir: 'b' })] }, { ch: 0, rot: [0, 0, 0.2] });
+const F = {
+  chibikuma(k) {
+    blob(k, 0xb8804a, { eye: 'tear', iris: 0x3a2a1a, mouth: 'wavy' }, [D.ell(0, -5, 6, 4, 0xf2d8b0)]);
+    k.mirror(() => k.cyl([9, 25, -1], 4, 2.6, { c: 0xb8804a, t: 'fur', d: [D.circ(0, 0, 2, 0xf2d8b0, { dir: 'f' })] }, { rot: [Math.PI / 2, 0, 0] }));
+    k.mirror(() => k.box([12, 8, 6], [5, 7, 5], { c: 0xb8804a, t: 'fur' }, { ch: 0.5, rot: [0.6, 0, -0.4] }));
+    for (const [x, z] of [[-18, 6], [16, 10], [-12, -10]]) { k.box([x, 3, z], [1.4, 6, 1.4], { c: 0x4a9a2a }); k.box([x + 1.2, 6, z], [3, 1, 2], { c: 0x5ab83a }, { ch: 0.3 }); }
+    k.box([0, 1, 0], [44, 2, 32], { c: 0x8a6a42, t: 'stone' }, { ch: 0.3 });
+  },
+  wareneko(k) {
+    blob(k, 0x5a9ae8, { eye: 'dot', mouth: 'open' }, [D.fn('*', (c, o) => { if (c.x > 0) { o[0] = 250; o[1] = 250; o[2] = 248; } })]);
+    k.mirror(() => k.prism([[0, 4, 2, 0, 0, 0.3], [7, 0.5, 0.6, 0, 0, 0]], { c: 0x5a9ae8, t: 'gloss', d: [D.fn('*', (c, o) => { if (c.X > 0) { o[0] = 250; o[1] = 250; o[2] = 248; } })] }, { pos: [9, 24, -1], rot: [0, 0, -0.2] }));
+    k.box([0, 30, 4], [1, 4, 1], 0xd8302a, { ch: 0.4 });
+  },
+  wahoousa(k) {
+    blob(k, 0xf6f2ea, { eye: 'star', mouth: 'grin', mw: 5 }, [], { h: 12 });
+    k.mirror(() => k.box([5, 34, -1], [5, 18, 3], { c: 0xf6f2ea, t: 'gloss', d: [D.rect(-1.4, -6, 1.4, 6, 0xf4a8b0, { r: 1, dir: 'f' })] }, { ch: 0.5, rot: [0, 0, -0.25] }));
+    k.mirror(() => k.box([16, 18, 2], [5, 9, 5], { c: 0xf6f2ea, t: 'gloss' }, { ch: 0.5, rot: [0, 0, -2.4] }));
+    k.box([0, 30, 14], [16, 7, 0.8], { c: 0xf2c23a, d: [D.txt('ワフー!', 0, 0, 4, 0xd8302a)] }, { ch: 0.2, rot: [0, 0, 0.1] });
+  },
+  gogomochi(k) {
+    k.at([0, 0, 0], [0, 0.3, 0.2], () => blob(k, 0xfbf6ea, { eye: 'angry', mouth: 'flat', brow: 'angry' }, [D.line(-3, -9, 4, 2, 0.6, 0x6a4a8a, { dir: 'f' })], { t: 'plush' }));
+    k.mirror(() => k.box([14, 22, 2], [5, 12, 5], { c: 0xfbf6ea, t: 'plush' }, { ch: 0.5, rot: [0, 0, -2.0] }));
+    gogo(k, -22, 34, 0); gogo(k, 22, 28, 0, 0.8); gogo(k, -24, 18, 2, 0.7);
+  },
+  standsan(k) {
+    // the muscly spirit behind, the shy blob in front
+    k.at([0, 0, -10], [0, 0, 0], () => chibi(k, { H: 68, skin: 0x8a6ae8, hair: 'spiky', hairC: 0x4a2ab8, face: { eye: 'angry', mouth: 'teeth', brow: 'angry' }, top: { c: 0x8a6ae8, t: 'gloss', m: 'gloss', d: [D.line(0, -6, 0, 6, 0.6, 0x6a4ac8), D.line(-7, 0, 7, 0, 0.6, 0x6a4ac8)] }, sleeve: { c: 0x8a6ae8, t: 'gloss' }, bottom: { c: 0x6a4ac8, t: 'gloss' }, wide: 1.3,
+      armL: [90, 0, 0], armR: [90, -30, 30], gloves: { c: 0x8a6ae8 }, shoes: 0x6a4ac8 }));
+    k.at([0, 0, 12], [0, 0, 0], () => blob(k, 0xf2d8a0, { eye: 'dot', mouth: 'o', blush: true }, [], { w: 9, h: 8, d: 8 }));
+    k.box([24, 50, 0], [14, 7, 0.8], { c: 0xffffff, d: [D.txt('オラ(どうぞ)', 0, 0, 2.4, 0x6a4ac8)] }, { ch: 0.3 });
+  },
+  roadroller(k) {
+    k.box([0, 2, 0], [50, 4, 36], { c: 0x7a7a80, t: 'stone' }, { ch: 0.3 });
+    k.at([0, 4, 0], [0.1, 0, 0.1], () => {
+      k.box([0, 12, 0], [30, 12, 20], { c: 0xf2c018, t: 'gloss', m: 'gloss', d: [D.txt('ROLLER', 0, 0, 4, 0x2a1c1c)] }, { ch: 0.2 });
+      k.cyl([0, 4, 12], 7, 26, { c: 0x5a5a62, t: 'metal', m: 'metal' }, { rot: [0, 0, Math.PI / 2] });
+      k.cyl([0, 4, -10], 5, 26, { c: 0x2a2a30, t: 'gloss' }, { rot: [0, 0, Math.PI / 2] });
+      k.box([0, 22, -4], [18, 8, 10], { c: 0xf2c018, t: 'gloss' }, { ch: 0.2 });
+      k.at([0, 25, 2], [0, 0, 0], () => blob(k, 0xf6e06a, { eye: 'angry', mouth: 'teeth', brow: 'angry' }, [], { w: 8, h: 7, d: 7 }));
+    });
+    k.box([18, 4, 16], [6, 2, 4], { c: 0xffffff, d: [D.txt('むだ', 0, 0, 1.6, 0x2a1c1c)] }, { ch: 0.3 });
+  },
+  kinusa(k) {
+    blob(k, 0xf6f2ea, { eye: 'sparkle', iris: 0x3a8ae8, mouth: 'smile' }, [D.ell(4, -6, 1.8, 1.4, 0xe8302a, { dir: 'f', ink: 0x2a1c1c, iw: 0.3 }), D.circ(4.6, -5.4, 0.4, 0x2a1c1c)]);
+    k.mirror(() => k.box([5, 34, -1], [5, 16, 3], { c: 0xf6f2ea, t: 'gloss' }, { ch: 0.5, rot: [0, 0, -0.2] }));
+    for (const x of [-7, 0, 7]) k.cyl([x, 26.6, 6], 2.6, 3, { c: 0xf2c018, t: 'hair' }, { rot: [Math.PI / 2, 0, 0] });
+    for (let i = 0; i < 6; i++) k.box([Math.cos(i) * 22, 20 + Math.sin(i * 2) * 10, -4], [2, 2, 0.6], { c: 0xffe878, m: 'glow' }, { ch: 0, rot: [0, 0, 0.78] });
+  },
+  tokitome(k) {
+    blob(k, 0xf2c018, { eye: 'dot', mouth: 'smile' }, [D.circ(0, -4, 6, 0xfbfbf2, { ink: 0x8a6a10, iw: 0.6 }), D.line(0, -4, 0, 0.6, 0.6, 0x2a1c1c), D.line(0, -4, 0.2, 0.2, 0.6, 0x2a1c1c), D.dots(4, 0.3, 0x2a1c1c, { dir: 'x' })], { t: 'gloss' });
+    k.cyl([0, 27.4, 0], 2, 2, { c: 0xf2c018, m: 'metal' }); k.cyl([0, 30, 0], 3, 1.4, { c: 0xf2c018, m: 'metal' }, { rot: [Math.PI / 2, 0, 0] });
+    k.box([0, 40, 0], [20, 6, 0.6], { c: 0x2a2a30, d: [D.txt('ザ・ワールド?', 0, 0, 2.6, 0xf2c018), D.txt('ザ・ワールド?', 0, 0, 2.6, 0xf2c018, { dir: 'b' })] }, { ch: 0.2 });
+  },
+};
 
 export default {
   id: 'pachimon',
@@ -53,130 +77,42 @@ export default {
     {
       id: 'chibikuma', name: 'Teary Chibikuma', jp: 'なきむしちびくま', rarity: 'common',
       desc: 'Tiny, round, crying about weeding. You would cry too. It is so much weeding.',
-      build(v) {
-        blob(v, W);
-        v.sphere(-4, 12, 0, 1.6, W); v.sphere(4, 12, 0, 1.6, W);
-        v.paint(() => { v.sphere(-4, 12, 1, 0.8, 0xffd1dc); v.sphere(4, 12, 1, 0.8, 0xffd1dc); });
-        limbs(v, W);
-        face(v, 8, 'cry');
-        // a little weeding sickle
-        v.line(8, 3, 3, 8, 8, 3, C.woodLight, 0); v.box(8, 8, 3, 10, 8, 3, metal(C.silver));
-      },
+      fig: F.chibikuma,
     },
     {
       id: 'wareneko', name: 'Splitface Kitty', jp: 'われわれねこ', rarity: 'common',
       desc: 'Half blue, half white, all heart. Says "it\'ll be fine!" right before it isn\'t.',
-      build(v) {
-        blob(v, W);
-        // split hair: blue cap with a V parting
-        v.paint(() => v.shape(-8, 6, -8, 8, 14, 8, (x, y) => y >= 9 + Math.max(0, 3 - Math.abs(x)) * 0.9 - (Math.abs(x) < 1 ? 3 : 0), 0x3a5a9a));
-        for (const s of [-1, 1]) for (let i = 0; i < 3; i++) v.box(s * (3 + i), 12 + i, -1, s * (3 + i), 12 + i, 1, 0x3a5a9a);
-        limbs(v, W, { up: true });
-        face(v, 7, 'yell');
-      },
+      fig: F.wareneko,
     },
     {
       id: 'wahoousa', name: 'Wahoo Bunny', jp: 'ワッホーうさぎ', rarity: 'common',
       desc: 'Yells WAHOO at everything. Eats your snacks. Somehow everyone\'s favourite.',
-      build(v) {
-        const y = 0xfff0b8;
-        blob(v, y, 6.5, 6, 6);
-        v.ellipsoid(-2.5, 16, 0, 1.4, 5, 1.4, y); v.ellipsoid(2.5, 16, 0, 1.4, 5, 1.4, y);
-        v.paint(() => { v.box(-3, 13, 1, -2, 19, 1, 0xffc2d4); v.box(2, 13, 1, 3, 19, 1, 0xffc2d4); });
-        limbs(v, y, { up: true, spread: 6 });
-        face(v, 8, 'yell', 3);
-        v.project(['.KK.', 'K..K'], { K }, -2, 11); // very excited brows
-      },
+      fig: F.wahoousa,
     },
     {
       id: 'gogomochi', name: 'Menacing Mochi', jp: 'ゴゴゴもち', rarity: 'uncommon',
       desc: 'Strikes a pose so twisted its spine is a rumour. The air around it says ゴゴゴ.',
-      build(v) {
-        const body = 0xf2e6ff;
-        blob(v, body, 6.5, 6.5, 6);
-        // twisted pose: one arm up over the head, the other on the hip, hips cocked
-        v.ellipsoid(-6, 13, 0, 1.4, 4, 1.4, body); v.ellipsoid(-4, 17, 0, 1.6, 1.6, 1.6, body);
-        v.ellipsoid(7, 5, 1, 1.6, 2.4, 1.4, body);
-        v.ellipsoid(-2, 0.6, 2, 2, 1, 2, body); v.ellipsoid(4, 0.6, -1, 2, 1, 2, body);
-        face(v, 9, 'stern');
-        v.project(['KKKKKKK'], { K: 0x6a3aa8 }, -3, 12); // hard shadow under the brow
-        menacing(v, 8, 18, -2, 0x8a3ad6); menacing(v, -14, 10, -3, 0x8a3ad6);
-        v.box(-1, 13, 6, 1, 13, 6, gloss(0xffd23f)); // a heart-ish pin
-      },
+      fig: F.gogomochi,
     },
     {
       id: 'standsan', name: 'Stand-in Spirit', jp: 'スタンドさん', rarity: 'uncommon',
       desc: 'A shy blob and the enormous muscly spirit that does all its talking. ORA. (please)',
-      build(v) {
-        // the spirit: a big translucent bruiser behind, fists out front
-        v.ellipsoid(0, 15, -5, 6, 6, 4, glass(0x9fe0ff));
-        v.ellipsoid(0, 22, -5, 3.5, 3.5, 3, glass(0x9fe0ff));
-        for (const s of [-1, 1]) { v.line(s * 6, 16, -4, s * 5, 13, 4, glass(0x9fe0ff), 1.4); v.sphere(s * 5, 13, 5, 2, glass(0x7fc8f0)); }
-        v.project(['K.K'], { K: glow(0xffe060) }, -1, 23, '+z');
-        // the little blob in front
-        v.ellipsoid(0, 5, 3, 5, 5, 4.5, 0xffe0c8);
-        v.box(-6, -2, -2, 6, -1, 8, null);
-        v.paint(() => v.ellipsoid(0, 9, 3, 5, 2, 4.5, 0x2a2440)); // school cap
-        v.box(-3, 9, 7, 3, 9, 8, 0x2a2440);
-        face(v, 6, 'stern', 2);
-      },
+      fig: F.standsan,
     },
     {
       id: 'roadroller', name: 'It Was Me, Roller!', jp: 'ロードローラーだっ', rarity: 'rare',
       desc: 'A blond blob drops a road roller on its problems. The problems remain. The roller is cute.',
-      build(v) {
-        const yel = gloss(0xf7d046), dark = gloss(0x2a2a2e);
-        // the roller drum at the front, the body and cab
-        v.cylinder(-7, 4, 5, 4, 15, dark, 'x');
-        v.paint(() => { v.cylinder(-7, 4, 5, 4, 1, metal(C.silver), 'x'); v.cylinder(7, 4, 5, 4, 1, metal(C.silver), 'x'); });
-        v.box(-6, 3, -7, 6, 8, 1, yel);
-        v.box(-5, 9, -6, 5, 10, 0, yel);
-        v.cylinder(-6, 3, -5, 2.5, 13, dark, 'x');
-        v.project(['KKKK', 'K..K'], { K: dark }, -2, 7, '-z');
-        v.box(-6, 8, 2, 6, 8, 9, yel); // fender over the drum
-        // the blond blob on top, arms flung wide, yelling
-        v.ellipsoid(0, 15, -3, 4.5, 4.5, 4, 0xffe0c8);
-        v.paint(() => v.ellipsoid(0, 18, -3, 4.8, 2.4, 4.4, 0xf2c94a));
-        for (const s of [-1, 1]) v.box(s * 5, 14, -3, s * 8, 15, -3, 0xffe0c8);
-        v.project(['KK.KK', '.....', '.MMM.', '.MTM.'], { K, M: C.mouth, T: C.tongue }, -2, 16);
-        v.box(-1, 11, -3, 1, 11, 1, gloss(0x3cae5a)); // a green scarf flapping
-      },
+      fig: F.roadroller,
     },
     {
       id: 'kinusa', name: 'Golden Wind Bunny', jp: 'こがねかぜうさぎ', rarity: 'ultra',
       desc: 'Has a dream. Has a ladybug brooch. Has a very specific hairdo. Gleams.',
-      build(v) {
-        const gold = gloss(0xf2c14e);
-        blob(v, gold, 6.5, 6.5, 6);
-        v.ellipsoid(-2.5, 16, -1, 1.3, 4.5, 1.3, gold); v.ellipsoid(2.5, 16, -1, 1.3, 4.5, 1.3, gold);
-        // three braided curls across the forehead
-        for (let i = 0; i < 3; i++) v.torus(-3 + i * 3, 11, 5, 1.2, 0.5, gloss(0xd8a020), 'z');
-        limbs(v, gold, { up: false });
-        face(v, 8, 'stern', 3);
-        // the ladybug brooch
-        v.box(-1, 4, 6, 1, 5, 7, gloss(C.red)); v.set(0, 5, 8, gloss(K)); v.set(0, 4, 8, gloss(K));
-        v.box(-6, 0, -5, 6, -1, 5, null);
-      },
+      fig: F.kinusa,
     },
     {
       id: 'tokitome', name: 'Time-Stop Clock Blob', jp: 'ときとめどけい', rarity: 'secret',
       desc: 'Its belly clock says 12:00. It has always said 12:00. Did you just blink? It didn\'t.',
-      build(v) {
-        const body = 0xfff4d6;
-        blob(v, body, 7, 7, 6.5);
-        // the clock face on the belly with stopped hands
-        v.cylinder(0, 5, 5, 4.5, 2, gloss(W), 'z');
-        v.paint(() => v.tube(0, 5, 6, 4.5, 3.6, 1, gloss(0xd8b04a), 'z'));
-        v.box(0, 5, 7, 0, 8, 7, gloss(K)); v.box(0, 5, 7, 2, 5, 7, gloss(K));
-        for (const [x, y] of [[0, 8], [3, 5], [0, 2], [-3, 5]]) v.set(x, y, 7, gloss(0xd8b04a));
-        // a yellow headband with little heart studs, a cocky face
-        v.paint(() => v.ellipsoid(0, 11, 0, 7.2, 1.2, 6.7, gloss(0xf7d046)));
-        v.set(-3, 11, 7, gloss(C.hotpink)); v.set(3, 11, 7, gloss(C.hotpink));
-        face(v, 10 - 1, 'smile', 3);
-        limbs(v, body, { up: true, spread: 7 });
-        // frozen motion lines in the air
-        v.box(-11, 13, 0, -10, 13, 0, glow(0xffe060)); v.box(10, 9, 0, 11, 9, 0, glow(0xffe060));
-      },
+      fig: F.tokitome,
     },
   ],
 };

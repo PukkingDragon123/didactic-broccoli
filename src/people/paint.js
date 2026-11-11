@@ -2,7 +2,7 @@
 // (x, y, z), face normal and part, so clothing is described in body space: hems, seams, plackets, buttons,
 // collars, pockets, belts, folds and patterns line up across faces. A soft baked occlusion / roundness pass
 // gives the boxes volume.
-import { clamp01, sstep, mixc, G, h2, vnoise, shadeInto, over, hairPx, scaleO } from './paintlib.js';
+import { clamp01, sstep, mixc, G, h2, vnoise, shadeInto, over, hairPx, scaleO, q8 } from './paintlib.js';
 import { ATLAS } from './mesh.js';
 
 const WHITE = [244, 242, 236], INK = [28, 22, 22], GOLD = [214, 170, 70], SILVER = [190, 190, 196];
@@ -55,7 +55,7 @@ export function* paintAtlasJob(spec, P, faces, pix) {
         o[3] = 255;
         fn(c, o);
         const p = (c.j * ATLAS + c.i) * 4;
-        d[p] = o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0]; d[p + 1] = o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1]; d[p + 2] = o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2]; d[p + 3] = o[3];
+        d[p] = q8(o[0]); d[p + 1] = q8(o[1]); d[p + 2] = q8(o[2]); d[p + 3] = o[3];
       }
     }
     yield f;

@@ -245,6 +245,7 @@ const PROPS = {
 
   plant_monstera: {
     name: 'Monstera', jp: 'モンステラ', voxel: 0.02, footprint: [1, 1], themes: ['nature', 'home'], beauty: 6,
+    leaves: { kind: 'monstera', size: 0.4, density: 1.6 },
     build(v) {
       // glazed pot: deep teal with a pale drip glaze at the lip
       v.shape(-10, 0, -10, 10, 17, 10, (x, y, z) => Math.hypot(x, z) <= 6.5 + Math.sin(Math.PI * Math.min(1, y / 17)) * 2.6 + (y >= 16 ? 1 : 0) - (y === 0 ? 1 : 0), (x, y, z) => {

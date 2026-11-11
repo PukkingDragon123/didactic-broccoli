@@ -75,19 +75,19 @@ export function bodySegments(s, P) {
   const add = (...a) => { const x = seg(...a); S.push(x); return x; };
   const h = H;
   // --- pelvis, abdomen, chest (two pieces each for a waist / bust / hip curve)
-  add('hipsLo', 'hips', 'body', P.crotchY - 0.012 * h, P.hipY + 0.012 * h, [0, -0.004 * h, P.hipsX * 0.9, P.hipsZ * 0.92], [0, -0.003 * h, P.hipsX, P.hipsZ], { ch: 0.3 });
+  add('hipsLo', 'hips', 'body', P.crotchY - 0.012 * h, P.hipY + 0.012 * h, [0, -0.004 * h, P.hipsX * 0.9, P.hipsZ * 0.92], [0, -0.003 * h, P.hipsX, P.hipsZ], { ch: 0.36 });
   add('hipsUp', 'hips', 'body', P.hipY + 0.012 * h, P.pelvisY + 0.012 * h, [0, -0.003 * h, P.hipsX, P.hipsZ], [0, -0.001 * h, (P.hipsX + P.waistX) / 2 * 1.01, P.waistZ * 1.03], { ch: 0.32, caps: 'top' });
-  add('spine', 'spine', 'body', P.pelvisY - 0.008 * h, P.waistY + 0.01 * h, [0, 0.003 * h + P.belly / 2, (P.hipsX + P.waistX) / 2, P.waistZ + P.belly / 2], [0, 0.002 * h + P.belly / 3, P.waistX, P.waistZ + P.belly / 3], { ch: 0.38, caps: 'none' });
-  add('chestLo', 'chest', 'body', P.waistY - 0.004 * h, P.bustY, [0, 0.002 * h + P.belly / 3, P.waistX, P.waistZ + P.belly / 3], [0, 0.006 * h + P.bust / 2, P.bustX, P.chestZ + P.bust / 2], { ch: 0.36, caps: 'none' });
-  add('chestHi', 'chest', 'body', P.bustY, P.shoulderY + 0.004 * h, [0, 0.006 * h + P.bust / 2, P.bustX, P.chestZ + P.bust / 2], [0, -0.004 * h, P.chestTopX, P.chestZ * 0.8], { ch: 0.42, caps: 'none' });
+  add('spine', 'spine', 'body', P.pelvisY - 0.008 * h, P.waistY + 0.01 * h, [0, 0.003 * h + P.belly / 2, (P.hipsX + P.waistX) / 2, P.waistZ + P.belly / 2], [0, 0.002 * h + P.belly / 3, P.waistX, P.waistZ + P.belly / 3], { ch: 0.42, caps: 'none' });
+  add('chestLo', 'chest', 'body', P.waistY - 0.004 * h, P.bustY, [0, 0.002 * h + P.belly / 3, P.waistX, P.waistZ + P.belly / 3], [0, 0.006 * h + P.bust / 2, P.bustX, P.chestZ + P.bust / 2], { ch: 0.42, caps: 'none' });
+  add('chestHi', 'chest', 'body', P.bustY, P.shoulderY + 0.004 * h, [0, 0.006 * h + P.bust / 2, P.bustX, P.chestZ + P.bust / 2], [0, -0.004 * h, P.chestTopX, P.chestZ * 0.8], { ch: 0.46, caps: 'none' });
   // trapezius wedge: slopes from the shoulders up to the neck
   add('traps', 'chest', 'body', P.shoulderY - 0.004 * h, P.neckBase + 0.006 * h, [0, -0.004 * h, P.chestTopX * 1.04, P.chestZ * 0.8], [0, -0.009 * h, hu * 0.3, P.chestZ * 0.55], { ch: 0.45, caps: 'top' });
   // --- neck + head (cranium / jaw / nose / ears)
   add('neck', 'neck', 'skin', P.neckBase - 0.03 * h, P.chin + 0.16 * hu, [0, -0.012 * h, hu * (P.f ? 0.2 : 0.225), hu * 0.22], [0, -0.008 * h, hu * (P.f ? 0.19 : 0.215), hu * 0.21], { ch: 0.38, caps: 'none' });
   const sl = 0.06 * hu; // forehead slope
-  add('cranium', 'head', 'head', P.noseY, P.crown, [0, P.hcz, P.hw, P.hd], [0, P.hcz - sl * 0.6, P.hw * 0.9, P.hd - sl * 0.4], { ch: 0.3, block: 'face' });
+  add('cranium', 'head', 'head', P.noseY, P.crown, [0, P.hcz, P.hw, P.hd], [0, P.hcz - sl * 0.6, P.hw * 0.9, P.hd - sl * 0.4], { ch: 0.4, block: 'face' });
   const jawTop = P.hw * (P.f ? 0.92 : 0.95), chinW = hu * (P.kid ? 0.23 : P.f ? 0.165 : 0.2);
-  add('jaw', 'head', 'head', P.chin, P.noseY + 0.02 * hu, [0, P.zf - 0.02 * hu - 0.15 * hu, chinW, 0.15 * hu], [0, P.zf - 0.33 * hu, jawTop, 0.33 * hu], { ch: 0.36, caps: 'bot', block: 'face' });
+  add('jaw', 'head', 'head', P.chin, P.noseY + 0.02 * hu, [0, P.zf - 0.02 * hu - 0.15 * hu, chinW, 0.15 * hu], [0, P.zf - 0.33 * hu, jawTop, 0.33 * hu], { ch: 0.42, caps: 'bot', block: 'face' });
   const nz = P.kid ? 0.72 : P.f ? 0.84 : 1;
   add('nose', 'head', 'nose', P.noseY - 0.012 * hu, P.eyeY - 0.035 * hu, [0, P.zf + 0.042 * hu * nz, 0.062 * hu * nz, 0.046 * hu * nz], [0, P.zf + 0.004 * hu, 0.03 * hu, 0.02 * hu], { ch: 0.45, caps: 'bot', block: 'face' });
   add('ear', 'head', 'ear', P.earBot, P.earTop, [P.hw + 0.012 * hu, P.hcz - 0.1 * hu, 0.04 * hu, 0.07 * hu], [P.hw + 0.02 * hu, P.hcz - 0.12 * hu, 0.045 * hu, 0.08 * hu], { ch: 0.4, mirror: true, dens: 1.3 });

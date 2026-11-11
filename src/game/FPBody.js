@@ -934,8 +934,10 @@ export class FPBody {
       }
       if (!R) return null;
       const palm = N(0.35, 1, 0.3, a);
-      c.addScaledVector(palm, -r * 0.98);
-      this.setGrip(H, W, c, palm, N(-0.6, 0.1, -1, _v2), [0.62, 0.12, 0.55, 0.35, 0, 0.35], { ext: 0.7 });
+      // the palm sits on the shell and the thumb lies along it (opposed, barely curled): a curled thumb poked
+      // through the clear dome when you held the capsule up to look at it
+      c.addScaledVector(palm, -r * 1.04);
+      this.setGrip(H, W, c, palm, N(-0.6, 0.1, -1, _v2), [0.6, 0.12, 0.4, 0.06, 0, 0.35], { ext: 0.7 });
       return 'capsule';
     }
     if (kind === 'toy') {

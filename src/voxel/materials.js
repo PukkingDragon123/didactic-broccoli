@@ -33,7 +33,7 @@ const RAINBOW = `
 // kind); the shader multiplies the face colour by the kind's tile of public/img/tex/voxdetail.png (CC0 scans, high-
 // passed and posterised by tools/bake-voxdetail.py). Nearest up close (crisp texels), mipmapped and faded with distance
 // so nothing shimmers. Kind 0 (people, collectibles, anything without a kind) is untouched.
-const DETAIL_STRENGTH = [0.14, 0.2, 0.22, 0.22, 0.08, 0.12, 0.16, 0.1, 0.24, 0.24, 0.22, 0.26, 0.14, 0.22, 0.06];
+const DETAIL_STRENGTH = [0.18, 0.28, 0.3, 0.3, 0.1, 0.16, 0.2, 0.12, 0.3, 0.3, 0.28, 0.32, 0.18, 0.28, 0.07];
 let detailTex = null;
 export function voxelDetailTexture() {
   if (detailTex) return detailTex;

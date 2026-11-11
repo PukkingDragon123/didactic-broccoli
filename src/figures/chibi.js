@@ -275,3 +275,36 @@ export function keychain(k, at, s = 1) {
     k.box([at[0] + Math.cos(a) * r, cy + Math.sin(a) * r, at[2]], [2.8 * s, 1.1 * s, 1.1 * s], M, { rot: [0, 0, a + Math.PI / 2], ch: 0.4 });
   }
 }
+
+// ------------------------------------------------------------------ people presets -> chibi figures
+import { makeSpec } from '../people/presets.js';
+const toHex = (c) => (Array.isArray(c) ? (Math.round(c[0]) << 16) | (Math.round(c[1]) << 8) | Math.round(c[2]) : c);
+const HAIRMAP = { bald: 'bald', short: 'short', buzz: 'buzz', bob: 'bob', long: 'long', ponytail: 'pony', pigtails: 'twin', bowl: 'short', pompadour: 'pomp', bun: 'bun', spiky: 'spiky', afro: 'afro', perm: 'afro', wavy: 'long', twintails: 'twin' };
+const TOPMAP = { sailor: 'sailor', gakuran: 'gakuran', suit: 'suit', blazer: 'suit', jacket: 'suit', polo: 'shirt', shirt: 'shirt', tee: 'tee', apron: 'apron', hoodie: 'hoodie', workjacket: 'jersey', cardigan: 'shirt', kimono: 'kimono', jersey: 'jersey' };
+/**
+ * A chibi figure of a people preset (src/people/presets.js): the same skin, hair, clothes and colours as the person
+ * walking the lane, at two and a half heads tall. o overrides any chibi() option (pose, props, face...).
+ */
+export function chibiPreset(k, id, o = {}, seed = 1) {
+  const p = makeSpec(id, seed);
+  const top = p.top || {}, bot = p.bottom || {};
+  const topC = toHex(top.col ?? [220, 220, 214]);
+  const kind = TOPMAP[top.kind] || 'tee';
+  const legs = /skirt|dress/.test(bot.kind || '') ? 'skirt' : /shorts/.test(bot.kind || '') ? 'shorts' : 'pants';
+  const face = { eye: p.sex === 'f' || p.age === 'kid' ? 'anime' : 'dot', iris: toHex(p.face?.iris ?? [72, 44, 30]), lash: p.sex === 'f', mouth: 'smile', brow: p.face?.browW > 1.1 ? 'thick' : null, browC: toHex(p.hair?.col ?? 0x2a2220), ...(o.face || {}) };
+  const faceD = [];
+  if (p.glasses) faceD.push(D.ring(-6.4, -2, 3.4, 0.6, toHex(p.glasses.col)), D.ring(6.4, -2, 3.4, 0.6, toHex(p.glasses.col)), D.line(-3, -1.6, 3, -1.6, 0.6, toHex(p.glasses.col)));
+  if (p.face?.mustache) faceD.push(D.rect(-4, -7, 4, -5.8, toHex(p.hair?.col ?? 0xe2ded6), { r: 0.6 }));
+  if (p.face?.stubble > 0.4) faceD.push(D.fn('f', (c, out) => { if (c.y < -6 && ((Math.floor(c.x * 2) + Math.floor(c.y * 2)) & 1)) { out[0] *= 0.86; out[1] *= 0.86; out[2] *= 0.88; } }));
+  const hatKind = p.hat ? ({ flatcap: 'beret', cap: 'cap', schoolhat: 'cap', bucket: 'cap', straw: 'straw', beanie: 'beret' }[p.hat.kind] || 'cap') : null;
+  return chibi(k, {
+    skin: toHex(p.skin), hair: HAIRMAP[p.hair?.style] || 'short', hairC: toHex(p.hair?.col ?? 0x2a2220),
+    top: { c: topC, t: /knit|cardigan/.test(top.kind || '') ? 'knit' : 'cloth' }, sleeve: { c: toHex(top.vest ? topC : topC), t: 'cloth' },
+    outfit: { kind, c2: toHex(top.shirt ?? top.col2 ?? [240, 238, 232]), collar: toHex(top.collar ?? [36, 52, 106]), scarf: toHex(top.scarf ?? [200, 32, 46]), apron: toHex(top.apron ?? [240, 236, 226]) },
+    bottom: { c: toHex(bot.col ?? [60, 70, 100]), t: /jeans|denim/.test(bot.kind || '') ? 'denim' : 'cloth' }, legs,
+    shoes: toHex(p.shoes?.col ?? [90, 70, 60]), socks: p.socks?.col ? toHex(p.socks.col) : null,
+    hat: hatKind ? { kind: hatKind, c: toHex(p.hat.col) } : null, face, faceD, wide: p.build || 1,
+    ...o, face,
+    faceD: [...faceD, ...(o.faceD || [])],
+  });
+}

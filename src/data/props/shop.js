@@ -6,6 +6,7 @@
 import { C, shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, tint, grime, blotch, rod } from './garage.js';
+import { tanukiBuild } from './hdItems.js';
 
 // ------------------------------------------------------------------ helpers
 const R = Math.round;
@@ -848,52 +849,9 @@ const shop = {
 
   // ------------------------------------------------------------- Shigaraki tanuki
   tanuki_statue: {
-    name: 'Shigaraki Tanuki', jp: '信楽焼のたぬき', voxel: 0.01,
+    name: 'Shigaraki Tanuki', jp: '信楽焼のたぬき', voxel: 0.005,
     footprint: [0.5, 0.5], beauty: 4, themes: ['shrine', 'retro', 'cute'],
-    build(v) {
-      const brown = (x, y, z) => gloss(shade(0x6e4a2c, 0.9 + vnoise(x, y, z, 4, 1) * 0.16));
-      const dark = (x, y, z) => gloss(shade(0x3e2818, 0.92 + vnoise(x, y, z, 3, 2) * 0.12));
-      const belly = (x, y, z) => gloss(shade(0xe8d0a0, 0.95 + vnoise(x, y, z, 5, 3) * 0.08));
-      // base slab
-      v.cylinder(0, 0, 0, 15, 2, gloss(0x5a4a3c));
-      // tail, feet, body, belly
-      v.ellipsoid(0, 9, -12, 7, 8, 5, dark);
-      for (const s of [-1, 1]) v.ellipsoid(s * 7, 4, 6, 4, 2.5, 5, dark);
-      v.ellipsoid(0, 20, -1, 14, 16, 12, brown);
-      v.ellipsoid(0, 17, 3, 13.5, 13, 11.5, belly);
-      v.paint(() => v.ellipsoid(0, 22, -3, 15, 18, 11, brown)); // back stays brown
-      v.paint(() => v.ellipsoid(0, 18, 12, 2, 2, 2, gloss(0xc8a878))); // navel
-      // arms holding flask (left, -x) and ledger (right, +x)
-      v.line(-12, 27, 2, -15, 18, 6, dark, 3);
-      v.line(12, 27, 2, 14, 19, 8, dark, 3);
-      // sake flask (tokkuri) hanging from the left hand
-      v.ellipsoid(-16, 9, 6, 4.5, 6, 4.5, gloss(0xe8dcc0));
-      v.cylinder(-16, 14, 6, 2, 3, gloss(0xe8dcc0));
-      v.cylinder(-16, 17, 6, 2.5, 1, gloss(0xd8ccb0));
-      rod(v, -16, 18, 6, -15, 20, 6, 0x8a6a3a);
-      v.project(['.#.#.', '.#.#.', '#...#', '#...#'], { '#': gloss(0x2a1a12) }, -18, 12, '+z');
-      // ledger book (tsūchō) in the right hand
-      v.box(13, 12, 7, 19, 21, 10, gloss(0xf2ead2));
-      v.box(13, 12, 10, 19, 21, 10, gloss(0xe8ddc0));
-      v.box(13, 12, 10, 13, 21, 10, gloss(0x2a1a12));
-      v.project(['#.###', '..#.#', '#.###', '..###', '#.#.#', '.#...', '#.###'], { '#': gloss(0x2a1a12) }, 14, 20, '+z'); // 通
-      // head
-      v.ellipsoid(0, 41, 1, 10.5, 9.5, 9.5, brown);
-      v.ellipsoid(0, 38, 8, 5, 3.5, 3.5, belly); // muzzle
-      v.ellipsoid(0, 39.5, 11.3, 1.6, 1.2, 1.2, gloss(0x1a1210)); // nose
-      for (const s of [-1, 1]) {
-        v.paint(() => v.ellipsoid(s * 5, 42, 8, 3.6, 3, 3, dark)); // eye mask
-        v.ellipsoid(s * 7.5, 49, -1, 2.5, 3, 2, dark); // ears
-      }
-      v.project(['.WWW.......WWW.', 'WWKKW.....WKKWW', 'WKKWW.....WWKKW', '.WWW.......WWW.'], { W: gloss(0xfbf8f2), K: gloss(0x1a1210) }, -7, 44, '+z');
-      v.project(['K.....K', '.KK.KK.'], { K: gloss(0x3a1a12) }, -3, 36, '+z');
-      // straw kasa hat tipped back
-      for (let i = 0; i < 6; i++) {
-        const r = 13 - i * 2.1;
-        v.cylinder(0, 47 + i, -4 + i * 0.4, r, 1, (x, y, z) => gloss(shade(0xd8b468, ((x * x + z * z) % 7 < 2 ? 0.88 : 1) * (1 - i * 0.02))));
-      }
-      v.paint(() => v.cylinder(0, 47, -4, 13, 1, gloss(0xb89048)));
-    },
+    build: tanukiBuild, // src/data/props/hdItems.js
   },
 
   // ------------------------------------------------------------- chalk A-frame sign
