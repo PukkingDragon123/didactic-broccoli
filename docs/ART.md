@@ -88,6 +88,18 @@ matter (labels, posters, display cards, UI) is detailed pixel art.
 - Product labels, posters and cards keep original names and mascots (no real brands), but their art is made from real
   images, not drawn by formula.
 
+## Update: realistic, less anime, downloaded models (the owner's newest direction; wins over everything above)
+- **Use downloaded models, not ours.** Nearly every 3D asset comes from free model sites (Poly Haven CC0 first;
+  Sketchfab CC0 / CC BY downloadable models when the API token works; other CC0 libraries), modified so it looks good
+  in the game: right scale, cleaned up, retextured or recoloured to fit the Shōwa lane, budgeted. Code-built models
+  only for what no free site has, and even then from photo reference with real photo materials.
+- **Realistic, less anime.** Realistic proportions and materials everywhere; the cel touch and ink outlines are
+  subtle; people look like real people; no anime faces outside the toy figures.
+- **Textures: polished.** Realistic texture content from the source models and CC0 libraries, finished with a clean,
+  high-resolution, subtle pixel treatment where it helps; never muddy, noisy or posterised-looking.
+- **Real images for every printed thing** (drinks first): labels, packets, posters and cards are built from real
+  photographs, laid out with original names; never drawn by formula.
+
 ## 2D
 - Printed things are **detailed pixel art** with nearest filtering: product labels with a mascot, a logo, flavour
   art, small print and a barcode; posters; gacha display cards laid out like real capsule-toy flyers (logo, price
