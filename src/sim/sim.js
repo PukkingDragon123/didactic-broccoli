@@ -22,8 +22,6 @@ import { MACHINE_TYPES } from '../game/economy.js';
 import { formatYen } from '../core/util.js';
 import { Loans } from './loans.js';
 import { OPEN_HOUR, CLOSE_HOUR } from './clock.js';
-// machine-top displays (src/display/): +4% footfall per fully filled, matching display, at most +12%
-const POP_FOOTFALL = { per: 0.04, max: 0.12 };
 
 const TYPE_MULT = { retro: 1, standard: 1.1, deluxe: 1.3, royal: 1.6 };
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -96,9 +94,8 @@ export class Sim {
     const g = this.game, c = g.clock, cal = g.calendar;
     if (!c || !g.story?.done) return 1;
     const base = c.traffic() * (cal?.busy() ?? 1) * (1 + this.adBoost() * 0.6);
-    // a well-kept shop draws people in; so do machine-top displays full of their machine's series (src/display/)
-    const pop = Math.min(POP_FOOTFALL.max, (g.popTops?.totalDraw?.() || 0) * POP_FOOTFALL.per);
-    return base * (0.85 + 0.35 * this.shopQuality().score) * (1 + pop);
+    // a well-kept shop draws people in
+    return base * (0.85 + 0.35 * this.shopQuality().score);
   }
 
   // ------------------------------------------------------------------ quality

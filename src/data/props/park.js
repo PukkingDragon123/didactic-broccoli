@@ -13,7 +13,6 @@ const paint = (c, s = 0) => (x, y, z) => (hash(x, y, z, s + 40) < 0.05 ? 0x8a5a3
 const park = {
   // ------------------------------------------------------------- slatted park bench (cast-iron ends)
   park_bench: {
-    asset: { id: 'painted_wooden_bench' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Park Bench', voxel: 0.03,
     build(v) {
       v.jitter = 0.03;

@@ -30,7 +30,7 @@ export function summaryHTML(game, d) {
   const tm = d.tomorrowDate;
   const tomorrow = d.tomorrow?.length ? d.tomorrow.map((s) => s.name).join(', ') : `An ordinary ${tm?.weekdayName || 'day'}`;
   const note = d.tomorrow?.find((s) => s.note)?.note || '';
-  return `<div class="ds-card">${game.logo?.receiptHead?.() || ''}<div class="ds-h"><b>Closing time</b><span>Day ${d.day} - ${esc(cal.format(d.day, true))}</span></div>
+  return `<div class="ds-card"><div class="ds-h"><b>Closing time</b><span>Day ${d.day} - ${esc(cal.format(d.day, true))}</span></div>
     <div class="ds-grid">
       ${row('people', 'Customers', d.customers)}${row('capsule', 'Turns played', d.plays)}
       ${row('coin', 'Coins collected', formatYen(d.coins))}${row('sell', 'Figures sold', d.sold)}

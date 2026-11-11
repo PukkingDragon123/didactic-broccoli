@@ -848,7 +848,6 @@ const quest = {
 
   // ------------------------------------------------------------- the old pocket watch (it stops time, apparently)
   pocket_watch: {
-    asset: { id: 'vintage_pocket_watch' },
     name: 'Old Pocket Watch', voxel: 0.0025,
     build(v) {
       v.jitter = 0.01;

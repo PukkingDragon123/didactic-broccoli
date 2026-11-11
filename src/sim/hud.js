@@ -35,7 +35,7 @@ defineIcon('moon', { rows: [
   '....yyyy....',
 ] });
 
-const KIND_ICON = { machine: 'machine', series: 'box', slots: 'machine', shelf: 'shelf', opener: 'opener', charm: 'charm', goods: 'bag', decor: 'deco', market: 'cart', staff: 'people', museum: 'museum' };
+const KIND_ICON = { machine: 'machine', series: 'capsule', slots: 'machine', shelf: 'shelf', opener: 'opener', charm: 'charm', goods: 'bag', decor: 'deco', market: 'cart', staff: 'people', museum: 'museum' };
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 export class SimHud {

@@ -7,8 +7,6 @@
 import { shade } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, grime, rod } from './garage.js';
-import { drinkMesh } from '../../products/containers.js';
-import { goodsMesh } from '../../products/goods.js';
 
 const R = Math.round;
 const pick = (list, n) => list[Math.min(list.length - 1, Math.floor(n * list.length))];
@@ -355,7 +353,6 @@ export default {
   // ============================================================ the snacks you can buy (carried as tools)
   ramune_bottle: {
     name: 'Ramune', jp: 'ラムネ', voxel: 0.006,
-    mesh: (o) => drinkMesh('ramune', o), // the real bottle with its paper label (src/products); the voxels below only size it
     build(v) {
       v.jitter = 0.01;
       const g = gloss(0x9ee0d8), gs = gloss(0x7cc8c0);
@@ -372,8 +369,7 @@ export default {
     },
   },
   puff_stick: {
-    name: 'Puff Stick', jp: 'サクサク棒', voxel: 0.005,
-    mesh: (o) => goodsMesh('puff_stick', o),
+    name: 'Puff Stick', jp: 'うまい棒', voxel: 0.005,
     build(v) {
       v.jitter = 0.01;
       // a corn puff in its printed bag, crimped ends
@@ -388,7 +384,6 @@ export default {
   },
   candy_piece: {
     name: 'Fruit Candy', jp: '飴', voxel: 0.004,
-    mesh: (o) => goodsMesh('candy_piece', o),
     build(v) {
       v.jitter = 0.01;
       v.ellipsoid(0, 3, 0, 4, 3, 3, (x) => gloss(Math.abs(x) % 3 === 0 ? 0xfbf8f0 : 0xe5383b));

@@ -1,20 +1,19 @@
-// Wearable cosmetics for the humans: detailed hats, hoods, glasses and costume parts (modelled in src/peoplekit) that ride on
+// Wearable cosmetics for the low-poly humans: chunky voxel hats, hoods, glasses and costume parts that ride on
 // the skeleton (head / chest / spine / hips / hand bones), plus the spec tweaks an outfit needs (onesie colours,
-// a hood trims the hair). Head pieces are modelled once in 'head units' (1 unit = 1/20 of the head height, head
+// a hood trims the hair). Head pieces are modelled once in 'head units' (1 voxel = 1/20 of the head height, head
 // bone at the origin, +z = the face, +x = the wearer's left) and scaled per human; body pieces are sized from the
-// human's proportions (the models: src/peoplekit/base.js). Cheap secondary motion: dino tail, chicken comb / head / wings, pompoms, bear ears.
+// human's proportions. Cheap secondary motion: dino tail, chicken comb / head / wings, pompoms, bear ears.
 //   applyCosmeticSpec(spec, look)      before building the Human (outfit colours, hair under hoods)
 //   dressHuman(h, look)                attach the pieces; wraps h.update (animation) and h.dispose
 //   cosmeticPreview(id)                an Object3D for thumbnails (mannequin head + the hat / glasses)
 // look = { hat, outfit, face, bag, shoes } (cosmetic ids or null).
 // More catalogue entries are registered by src/cosmetics/catalog.js: they bring their own spec(spec, look) (painted
-// clothes, hats, glasses, bags, shoes), dress(ctx) (modelled parts, see dressHuman) and preview(add) (thumbnails).
+// clothes, hats, glasses, bags, shoes), dress(ctx) (voxel parts, see dressHuman) and preview(add) (thumbnails).
 import * as THREE from 'three';
+import { VoxelModel, gloss } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { hex } from './paintlib.js';
-import { BASE } from '../peoplekit/base.js';
-import { materialsFor } from '../peoplekit/kit.js';
 
 export const SLOTS = [
   { id: 'hat', name: 'Hats', icon: 'cos_hat' },
@@ -25,8 +24,9 @@ export const SLOTS = [
 ];
 
 // colours shared between the painted suit and its voxel parts
-const DINO = 0x5fb64a, DINO_D = 0x3f8c36, DINO_BELLY = 0xf0dc9c;
-const BANANA = 0xf6d43c, BANANA_SPOT = 0x7a5a26;
+const DINO = 0x5fb64a, DINO_D = 0x3f8c36, DINO_BELLY = 0xf0dc9c, SPIKE = 0xf4ae32, SPIKE_D = 0xd8862a;
+const BANANA = 0xf6d43c, BANANA_D = 0xd8ac22, BANANA_SPOT = 0x7a5a26;
+const MOUTH = 0xd0485a, TOOTH = 0xfffcf2, INK = 0x1c1418;
 
 /**
  * The catalogue. slot: hat | outfit | face. cover: a hat that covers the whole head (hair is trimmed, an outfit's
@@ -55,39 +55,443 @@ export const COSMETICS = [
 ];
 export const COSMETIC_BY_ID = Object.fromEntries(COSMETICS.map((c) => [c.id, c]));
 
-// ------------------------------------------------------------------ the models (src/peoplekit: smooth, detailed)
-// Builders return a BufferGeometry from the people kit (head units unless noted); a VoxelModel is still accepted.
+// ------------------------------------------------------------------ voxel helpers
+const MATS = () => voxelMaterials('normal');
 const _geos = new Map();
-/** Geometry of a model, translated by -pivot (model units), cached per key. */
-function cached(key, build, pivot = [0, 0, 0]) {
-  let g = _geos.get(key);
-  if (!g) {
-    const m = build();
-    if (m?.isBufferGeometry) { g = m; if (pivot[0] || pivot[1] || pivot[2]) g.translate(-pivot[0], -pivot[1], -pivot[2]); g.computeBoundingSphere(); }
-    else { g = meshVoxels(m, { voxelSize: 1, origin: 'none' }); g.translate(-0.5 - pivot[0], -0.5 - pivot[1], -0.5 - pivot[2]); g.computeBoundingSphere(); }
-    _geos.set(key, g);
-  }
+/** Geometry of a voxel model: voxel (x, y, z) centred on (x, y, z) minus the pivot, in model units. */
+function voxGeo(model, pivot = [0, 0, 0]) {
+  const g = meshVoxels(model, { voxelSize: 1, origin: 'none' });
+  g.translate(-0.5 - pivot[0], -0.5 - pivot[1], -0.5 - pivot[2]);
+  g.computeBoundingSphere();
   return g;
 }
-const H = {
-  dinoHood: BASE.dinoHood, bananaHood: BASE.bananaHood, happiBand: BASE.happiBand, sharkHood: BASE.sharkHood,
-  bearHood: BASE.bearHood, bearEar: BASE.bearEar, frogCap: BASE.frogCap, cone: BASE.cone, party: BASE.party,
-  pompom: BASE.pompom, bow: BASE.bow, nigiri: BASE.nigiri, chickenBody: BASE.chickenBody, chickenHead: BASE.chickenHead,
-  chickenComb: BASE.chickenComb, chickenWing: BASE.chickenWing, shades: BASE.shades, stars: BASE.stars,
-  groucho: BASE.groucho, kitsune: () => BASE.kitsune(), cord: BASE.cord,
-};
-/** The built-in models (the kitsune mask, the hoods...), for catalogue entries that reuse one. */
-export const MODELS = H;
-const mannequin = BASE.mannequin;
+function cached(key, build, pivot) {
+  let g = _geos.get(key);
+  if (!g) { g = voxGeo(build(), pivot); _geos.set(key, g); }
+  return g;
+}
+const vm = (jitter = 0.03) => { const v = new VoxelModel(); v.jitter = jitter; return v; };
+const hash = (x, y, z, s = 0) => { let h = (x * 374761393 + y * 668265263 + z * 2147483647 + s * 1013904223) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+/** Signed distance to a rounded box (centre c, half extents a, corner radius r). */
+function rbox(x, y, z, c, a, r) {
+  const qx = Math.abs(x - c[0]) - a[0] + r, qy = Math.abs(y - c[1]) - a[1] + r, qz = Math.abs(z - c[2]) - a[2] + r;
+  return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - r;
+}
+function each(x0, x1, y0, y1, z0, z1, fn) {
+  if (x0 > x1) [x0, x1] = [x1, x0];
+  if (y0 > y1) [y0, y1] = [y1, y0];
+  if (z0 > z1) [z0, z1] = [z1, z0];
+  for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) fn(x, y, z);
+}
+/** Recolour the front-most voxel at (x, y) (seen from +z). */
+function front(v, x, y, c, zmin = -40, zmax = 40) { for (let z = zmax; z >= zmin; z--) if (v.has(x, y, z)) { v.set(x, y, z, c); return z; } return null; }
+function side(v, sx, y, z, c) { for (let x = sx * 20; x !== 0; x -= sx) if (v.has(x, y, z)) { v.set(x, y, z, c); return x; } return null; }
 
-// ------------------------------------------------------------------ per-human body pieces (metric: V = height / 140)
-const spike = (size) => BASE.spike(size);
-const tailSeg = (len, r0, r1, spikeH) => BASE.tailSeg(len, r0, r1, spikeH);
+// ------------------------------------------------------------------ head-unit landmarks (adult; scaled per human)
+// chin -4, nose 1.8, eyes 6, brows 8, hair line 13.2, crown 16; cranium centre z 2.4, face plane z 10.8
+const HOOD_IN = [[0, 6.1, 2.1], [7.7, 11.1, 9.0], 4.2];
+
+/** A kigurumi hood: a shell around the head with a face hole. o: { col, rim, hole: [hx, hy, cy], thick, edge(x,y,z) } */
+function hood(v, o) {
+  const [c, a, r] = HOOD_IN, th = o.thick ?? 1.75;
+  const [hx, hy, hc] = o.hole || [5.9, 7.6, 3.2];
+  each(-12, 12, -8, 21, -11, 14, (x, y, z) => {
+    const d = rbox(x, y, z, c, a, r);
+    if (d < 0 || d > th) return;
+    const e = (x / hx) ** 2 + ((y - hc) / hy) ** 2;
+    if (z > 3 && e < 1) return;
+    if (y < (z > 2 ? -4 : z > -3 ? -5 : -6)) return;
+    let col = o.col;
+    if (o.rim && z > 3 && e < 1.5 && d < th * 0.6) col = o.rim; // inner lining shows around the face
+    if (o.paint) col = o.paint(x, y, z, col, d, e) ?? col;
+    v.set(x, y, z, col);
+  });
+  return v;
+}
+
+function mannequin() {
+  // a plain wooden display head in the same frame (thumbnails)
+  const v = vm(0.02);
+  each(-8, 8, -5, 17, -8, 12, (x, y, z) => {
+    const d = rbox(x, y, z, [0, 6, 2.4], [6.6, 10, 8.3], 3.6);
+    if (d <= 0) v.set(x, y, z, y > 12.5 && z < 9 ? 0xa88a66 : 0xb89a74);
+  });
+  each(-4, 4, -12, -5, -3, 4, (x, y, z) => { if (Math.hypot(x, (z - 0.5) * 1.1) < 4.2) v.set(x, y, z, 0x9c805e); });
+  front(v, -3, 6, 0x5a4634); front(v, 3, 6, 0x5a4634); front(v, 0, 1, 0x8a6e50); // painted eyes + mouth
+  return v;
+}
+
+/** The voxel helpers, for catalogue entries modelled elsewhere (src/cosmetics/voxels.js). */
+export const VOX = { vm, each, rbox, front, side, hash, hood, gloss, cached, HOOD_IN, MOUTH, TOOTH, INK };
+
+// ------------------------------------------------------------------ the models (head units unless noted)
+const H = {
+  dinoHood() {
+    const v = hood(vm(), {
+      col: DINO, rim: MOUTH,
+      paint: (x, y, z, col) => (col === DINO && hash(x >> 1, y >> 1, z >> 1, 3) > 0.84 ? DINO_D : col),
+    });
+    // upper jaw / snout over the forehead
+    each(-7, 7, 9, 14, 9, 16, (x, y, z) => {
+      const d = rbox(x, y, z, [0, 11.6, 12.2], [6.6, 2.6, 3.8], 2.2);
+      if (d > 0) return;
+      v.set(x, y, z, y <= 9 ? MOUTH : hash(x >> 1, y, z >> 1, 5) > 0.86 ? DINO_D : DINO);
+    });
+    // teeth along the snout's front and sides
+    for (let x = -6; x <= 6; x += 2) v.set(x, 8, 15, TOOTH).set(x, 7, 15, x % 4 === 0 ? TOOTH : null);
+    for (const sx of [-1, 1]) for (let z = 10; z <= 14; z += 2) v.set(sx * 6, 8, z, TOOTH);
+    // nostrils + eyes with a heavy brow
+    front(v, -2, 13, INK, 8, 18); front(v, 2, 13, INK, 8, 18);
+    for (const sx of [-1, 1]) {
+      each(sx * 5 - 1, sx * 5 + 1, 14, 16, 9, 11, (x, y, z) => v.set(x, y, z, 0xfffbea));
+      v.set(sx * 5, 15, 11, gloss(INK)).set(sx * 5, 14, 11, gloss(INK)).set(sx * 4, 15, 11, gloss(INK));
+      each(sx * 6 - 1, sx * 6 + 1, 17, 17, 8, 11, (x, y, z) => v.set(x, y, z, DINO_D));
+    }
+    // lower jaw under the chin
+    each(-6, 6, -7, -4, 5, 13, (x, y, z) => {
+      const d = rbox(x, y, z, [0, -5.5, 9.2], [5.8, 1.6, 3.8], 1.6);
+      if (d > 0) return;
+      v.set(x, y, z, y >= -4 ? MOUTH : y <= -7 ? DINO_BELLY : DINO);
+    });
+    for (let x = -5; x <= 5; x += 2) v.set(x, -3, 12, TOOTH);
+    for (const sx of [-1, 1]) for (let z = 7; z <= 11; z += 2) v.set(sx * 5, -3, z, TOOTH);
+    // spikes down the middle of the head
+    [[16, 18.6, 3], [11, 19.6, 4], [5, 19.8, 4], [-1, 19.2, 4], [-6, 17.6, 3]].forEach(([z, y, s]) => {
+      for (let d = 0; d < s; d++) for (let dz = -(s - d) + 1; dz <= s - d - 1; dz++) if (z + dz < 15) v.set(0, Math.round(y + d), z + dz, d === 0 ? SPIKE_D : SPIKE);
+    });
+    return v;
+  },
+  bananaHood() {
+    const v = hood(vm(), {
+      col: BANANA, rim: 0xf8eec6,
+      paint: (x, y, z, col) => (col === BANANA ? (hash(x, y, z, 9) > 0.95 ? BANANA_SPOT : y > 14 && hash(x >> 1, y >> 1, z, 2) > 0.7 ? BANANA_D : col) : col),
+    });
+    // the curved tip and the stem
+    for (let y = 16; y <= 31; y++) {
+      const t = (y - 16) / 15, r = 6.6 * (1 - t) ** 0.85 + 1.4, cz = 2 + Math.pow(y - 16, 1.6) * 0.16;
+      each(-8, 8, y, y, -8, 18, (x, yy, z) => {
+        if (x * x + (z - cz) ** 2 > r * r) return;
+        v.set(x, y, z, y >= 28 ? (y >= 30 ? 0x3a2a18 : 0x6a4a24) : hash(x, y, z, 4) > 0.94 ? BANANA_SPOT : x * x + (z - cz) ** 2 > (r - 1) ** 2 && hash(x, y, z, 7) > 0.6 ? BANANA_D : BANANA);
+      });
+    }
+    return v;
+  },
+  happiBand() {
+    const v = vm(0.02);
+    each(-9, 9, 9, 11, -9, 13, (x, y, z) => {
+      const d = rbox(x, y, z, [0, 6, 2.3], [6.9, 10, 8.6], 3.6);
+      if (d < 0 || d > 1.2) return;
+      v.set(x, y, z, 0xf6f4ee);
+    });
+    for (const [x, y] of [[0, 10], [-1, 10], [1, 10], [0, 11], [0, 9]]) front(v, x, y, 0xd42a2a);
+    each(-1, 1, 9, 11, -10, -8, (x, y, z) => v.set(x, y, z, 0xece8dc)); // knot
+    for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) v.set(sx * (1 + Math.round(i * 0.4)), 8 - i, -9 - Math.round(i * 0.5), 0xf6f4ee);
+    return v;
+  },
+  sharkHood() {
+    const TOP = 0x6f92b4, TOP_D = 0x5a7c9e, WHITE = 0xf2f4f6;
+    const v = hood(vm(), {
+      col: TOP, rim: MOUTH,
+      paint: (x, y, z, col) => (col === TOP ? (y < 4 && Math.abs(x) > 6 ? WHITE : y > 15 && hash(x, y >> 1, z, 1) > 0.8 ? TOP_D : col) : col),
+    });
+    // snout overhang with a row of teeth, and the lower jaw (white)
+    each(-8, 8, 10, 16, 6, 16, (x, y, z) => { if (rbox(x, y, z, [0, 12.6, 11.6], [7.2, 2.6, 3.4], 2.4) <= 0) v.set(x, y, z, y <= 10 ? MOUTH : TOP); });
+    for (let x = -6; x <= 6; x++) if (x % 2 === 0) v.set(x, 9, 14, TOOTH); else v.set(x, 9, 14, null);
+    for (const sx of [-1, 1]) for (let z = 9; z <= 13; z += 2) v.set(sx * 7, 9, z, TOOTH);
+    each(-7, 7, -7, -4, 4, 13, (x, y, z) => { if (rbox(x, y, z, [0, -5.6, 8.6], [6.4, 1.6, 4.2], 1.6) <= 0) v.set(x, y, z, y >= -4 ? MOUTH : WHITE); });
+    for (let x = -5; x <= 5; x += 2) v.set(x, -3, 12, TOOTH);
+    // dorsal fin
+    for (let y = 18; y <= 28; y++) {
+      const t = (y - 18) / 10, zf = 4 - 9.5 * t ** 0.7, zb = -4.5 - 1.5 * t;
+      for (let z = Math.round(zb); z <= Math.round(zf); z++) { v.set(0, y, z, TOP_D); if (y < 21) { v.set(-1, y, z, TOP); v.set(1, y, z, TOP); } }
+    }
+    // eyes + gills
+    for (const sx of [-1, 1]) {
+      side(v, sx, 10, 8, gloss(INK)); side(v, sx, 11, 8, gloss(INK)); side(v, sx, 11, 9, 0xffffff);
+      for (const z of [0, -2, -4]) for (let y = 3; y <= 8; y++) side(v, sx, y, z + (y > 5 ? 0 : 1), TOP_D);
+    }
+    return v;
+  },
+  bearHood() {
+    const B = 0x8c5a38, T = 0xe0bc88;
+    const v = hood(vm(), { col: B, rim: T, paint: (x, y, z, col) => (col === B && hash(x, y, z, 2) > 0.8 ? 0x7a4c2e : col) });
+    // muzzle + nose + eyes above the face hole
+    each(-4, 4, 10, 14, 11, 16, (x, y, z) => { if (((x) / 3.2) ** 2 + ((y - 12) / 1.9) ** 2 + ((z - 13) / 1.9) ** 2 <= 1) v.set(x, y, z, T); });
+    v.set(0, 13, 14, gloss(INK)).set(-1, 13, 14, gloss(INK)).set(1, 13, 14, gloss(INK)).set(0, 12, 15, gloss(INK));
+    for (const sx of [-1, 1]) { front(v, sx * 4, 14, gloss(INK)); front(v, sx * 4, 15, gloss(INK)); front(v, sx * 5, 15, gloss(INK)); }
+    return v;
+  },
+  bearEar(sx) {
+    const v = vm(0.02);
+    each(-4, 4, -1, 7, -2, 2, (x, y, z) => {
+      const r = Math.hypot(x, y - 2.4);
+      if (r > 3.4 || z < -1 || z > 1) return;
+      v.set(sx * x, y, z, r < 2 && z === 1 ? 0xe0bc88 : 0x8c5a38);
+    });
+    return v;
+  },
+  frogCap() {
+    const G1 = 0x7cc84a, G2 = 0x5aa63a;
+    const v = vm();
+    each(-10, 10, 9, 19, -9, 13, (x, y, z) => {
+      const d = rbox(x, y, z, [0, 6.4, 2.2], [7.3, 10.6, 8.7], 4.5);
+      if (d < 0 || d > 1.6 || y < 10) return;
+      v.set(x, y, z, y <= 10 ? G2 : G1);
+    });
+    for (const sx of [-1, 1]) {
+      const cx = sx * 4, cy = 18.6, cz = 5.6;
+      each(cx - 4, cx + 4, cy - 4, cy + 4, cz - 4, cz + 4, (x, y, z) => {
+        const r = Math.hypot(x - cx, y - cy, z - cz);
+        if (r > 3.3) return;
+        v.set(x, y, z, z > cz + 0.5 && y < cy + 1.6 ? 0xfdfdf6 : G1);
+      });
+      v.set(cx - sx, cy, cz + 3, gloss(INK)).set(cx - sx, cy - 1, cz + 3, gloss(INK)).set(cx, cy - 1, cz + 3, gloss(INK)).set(cx, cy, cz + 3, gloss(INK));
+    }
+    // a big smile + rosy cheeks on the front of the cap
+    for (let x = -5; x <= 5; x++) front(v, x, 12 + (Math.abs(x) > 3 ? 1 : 0), 0xe0506a, 6, 20);
+    front(v, -6, 13, 0xff9aa8, 6, 20); front(v, 6, 13, 0xff9aa8, 6, 20);
+    return v;
+  },
+  cone() {
+    const OR = 0xf26a1f, WH = 0xf8f8f2;
+    const v = vm(0.02);
+    for (let y = 10; y <= 32; y++) {
+      const t = (y - 10) / 22, r = 8.8 * (1 - t) + 1.1 * t;
+      each(-10, 10, y, y, -9, 14, (x, yy, z) => {
+        const d = Math.hypot(x, z - 2.4);
+        if (d > r + 0.45 || (d < r - 1.3 && r > 3)) return;
+        const band = (y >= 16 && y <= 18) || (y >= 22 && y <= 23);
+        v.set(x, y, z, gloss(band ? WH : OR));
+      });
+    }
+    // square base around the head (just above the brows)
+    each(-10, 10, 9, 9, -8, 13, (x, y, z) => {
+      if (Math.max(Math.abs(x), Math.abs(z - 2.4)) > 9.6 || Math.abs(x) + Math.abs(z - 2.4) > 16) return;
+      if (Math.abs(x) <= 7 && z >= -6 && z <= 11) return;
+      v.set(x, y, z, 0xd8561a);
+    });
+    return v;
+  },
+  party() {
+    const v = vm(0.02);
+    const C = [0xff5fa0, 0xffd23f, 0x46c2d8];
+    for (let y = 0; y <= 13; y++) {
+      const r = 4.4 * (1 - y / 13);
+      each(-5, 5, y, y, -5, 5, (x, yy, z) => {
+        if (Math.hypot(x, z) > r + 0.4) return;
+        const s = Math.floor((y + (Math.atan2(x, z) / Math.PI + 1) * 3) / 2.5);
+        v.set(x, y, z, C[((s % 3) + 3) % 3]);
+      });
+    }
+    return v;
+  },
+  pompom() {
+    const v = vm(0.05);
+    each(-2, 2, -2, 2, -2, 2, (x, y, z) => { if (Math.hypot(x, y, z) <= 2.2) v.set(x, y, z, hash(x, y, z) > 0.5 ? 0xfff6c8 : 0xffffff); });
+    return v;
+  },
+  bow() {
+    const R = 0xe8384f, R2 = 0xc42a40, DOT = 0xfff4f4;
+    const v = vm(0.02);
+    const dot = (x, y) => ((x + 40) % 3 === 0 && (y + 40) % 3 === 0) || ((x + 41) % 3 === 0 && (y + 41.5) % 3 === 0.5);
+    for (const sx of [-1, 1]) {
+      each(-11, 11, -5, 6, -2, 2, (x, y, z) => {
+        if (Math.sign(x) !== sx) return;
+        const ex = (Math.abs(x) - 5.6) / 5, ey = (y - 0.6 - (Math.abs(x) - 2) * 0.18) / 3.8, q = ex * ex + ey * ey;
+        if (q > 1 || Math.abs(z) > 1.6 - Math.abs(ex) * 0.6) return;
+        if (q < 0.3 && Math.abs(z) < 1) return; // the loop's hole
+        v.set(x, y, z, dot(x, y) && z > 0 ? DOT : R);
+      });
+      for (let i = 0; i <= 6; i++) each(sx * (1 + Math.round(i * 0.45)), sx * (2 + Math.round(i * 0.45)), -1 - i, -1 - i, -1 - Math.round(i * 0.4), -Math.round(i * 0.4), (x, y, z) => v.set(x, y, z, i === 6 && Math.abs(x) % 2 ? null : R2));
+    }
+    each(-1, 1, -1, 2, -1, 1, (x, y, z) => v.set(x, y, z, R2));
+    return v;
+  },
+  nigiri() {
+    const v = vm(0.04);
+    each(-6, 6, 0, 5, -8, 8, (x, y, z) => {
+      if (rbox(x, y, z, [0, 2.3, 0], [5.4, 2.6, 7.2], 2) > 0) return;
+      v.set(x, y, z, hash(x, y, z, 6) > 0.82 ? 0xe8e2d2 : 0xfaf8ee);
+    });
+    // the salmon slice draping over both ends
+    each(-6, 6, 2, 7, -10, 10, (x, y, z) => {
+      const az = Math.abs(z), top = 6 - (az > 7 ? Math.min(3, Math.round((az - 7) * 1.4)) : 0);
+      if (Math.abs(x) > 5.6 - (az > 8 ? 1 : 0) || az > 9.6) return;
+      if (y > top || y < top - 1) return;
+      const s = ((x * 0.7 + z * 0.9) % 3.4 + 3.4) % 3.4;
+      v.set(x, y, z, gloss(s < 0.8 ? 0xffd2bc : y === top ? 0xf47a48 : 0xe86438));
+    });
+    return v;
+  },
+  chickenBody() {
+    const W = 0xfcfaf2, W2 = 0xe8e2d2, OR = 0xf5a524;
+    const v = vm(0.03);
+    each(-7, 7, 15, 26, -9, 9, (x, y, z) => {
+      const q = (x / 6.2) ** 2 + ((y - 20.8) / 4.9) ** 2 + ((z - 0.4) / 7.4) ** 2;
+      if (q <= 1) v.set(x, y, z, y < 18 ? W2 : W);
+    });
+    // tail feathers fanning up at the back
+    for (const [x, hgt] of [[-2, 5], [0, 7], [2, 5]]) for (let i = 0; i < hgt; i++) { v.set(x, 22 + i, -6 - Math.round(i * 0.45), i > hgt - 2 ? W2 : W); v.set(x, 22 + i, -7 - Math.round(i * 0.45), W); }
+    // feet peeking out at the front
+    for (const sx of [-1, 1]) { v.set(sx * 2, 16, 6, OR).set(sx * 2, 16, 7, OR).set(sx * 2 + sx, 16, 7, OR).set(sx * 2 - sx, 16, 7, OR); }
+    return v;
+  },
+  chickenHead() {
+    const W = 0xfcfaf2, OR = 0xf5b02a, RED = 0xe5383b;
+    const v = vm(0.03);
+    each(-4, 4, 22, 30, 3, 11, (x, y, z) => { if (Math.hypot(x, y - 26, (z - 6.6) * 1.05) <= 3.5) v.set(x, y, z, W); });
+    each(-1, 1, 24, 26, 10, 11, (x, y, z) => v.set(x, y, z, gloss(OR)));
+    v.set(0, 25, 12, gloss(OR)).set(0, 24, 12, gloss(0xe0901a));
+    v.set(0, 23, 9, RED).set(0, 22, 9, RED).set(0, 21, 9, RED).set(0, 22, 10, RED);
+    for (const sx of [-1, 1]) v.set(sx * 3, 27, 8, gloss(INK)).set(sx * 3, 26, 8, gloss(INK)).set(sx * 3, 27, 9, 0xffffff);
+    return v;
+  },
+  chickenComb() {
+    const v = vm(0.03);
+    for (const [z, y, r] of [[4.6, 30.4, 1.6], [6.6, 31.2, 1.9], [8.6, 30.4, 1.5]]) each(-1, 1, 28, 34, 2, 11, (x, yy, zz) => { if (Math.hypot(x * 1.6, yy - y, zz - z) <= r) v.set(x, yy, zz, 0xe5383b); });
+    return v;
+  },
+  chickenWing(sx) {
+    const v = vm(0.03);
+    each(-8, 8, 16, 25, -6, 6, (x, y, z) => {
+      if (Math.sign(x) !== sx) return;
+      const q = ((Math.abs(x) - 6.4) / 1.5) ** 2 + ((y - 20.6) / 3.4) ** 2 + ((z + 0.4) / 4.8) ** 2;
+      if (q <= 1) v.set(x, y, z, z < -3 ? 0xe2dccb : 0xfcfaf2);
+    });
+    return v;
+  },
+  shades() {
+    const F = gloss(0x141416), L = gloss(0x22303f);
+    const v = vm(0.01);
+    for (const sx of [-1, 1]) {
+      each(1, 4, -1, 1, 12, 12, (x, y, z) => v.set(sx * x, y, z, (x === 1 || x === 4) && y === 1 ? L : L));
+      each(1, 5, 2, 2, 12, 12, (x, y, z) => v.set(sx * x, y, z, F));
+      each(2, 4, -2, -2, 12, 12, (x, y, z) => v.set(sx * x, y, z, F));
+      v.set(sx * 5, 1, 12, F).set(sx * 5, 0, 12, F).set(sx * 6, 2, 11, F).set(sx * 6, 1, 11, F);
+      for (let z = 3; z <= 11; z++) v.set(sx * 7, z > 8 ? 1 : 1, z, F);
+    }
+    v.set(0, 1, 12, F).set(0, 2, 12, F);
+    // a little highlight on each lens
+    v.set(-3, 1, 12, gloss(0x5a7290)).set(2, 1, 12, gloss(0x5a7290));
+    return v;
+  },
+  stars() {
+    const F = gloss(0xff4f9a), L = gloss(0xffcf3a);
+    const v = vm(0.01);
+    for (const sx of [-1, 1]) {
+      const cx = sx * 3.6, cy = 0.4;
+      each(-8, 8, -4, 5, 12, 12, (x, y, z) => {
+        const dx = x - cx, dy = y - cy, a = Math.atan2(dx, dy), d = Math.hypot(dx, dy);
+        const R = 3.9 * (0.52 + 0.48 * Math.abs(Math.cos(a * 2.5)) ** 1.6);
+        if (d > R + 0.3) return;
+        v.set(x, y, z, d > R - 1 ? F : L);
+      });
+      for (let z = 3; z <= 11; z++) v.set(sx * 8, 1, z, F);
+    }
+    v.set(0, 1, 12, F);
+    return v;
+  },
+  groucho() {
+    const F = gloss(0x141416), BR = 0x2a1a14, NOSE = 0xf0a48c;
+    const v = vm(0.02);
+    for (const sx of [-1, 1]) {
+      each(1, 5, -2, 2, 12, 12, (x, y, z) => { if (x === 1 || x === 5 || y === -2 || y === 2) v.set(sx * x, y, z, F); });
+      for (let z = 3; z <= 11; z++) v.set(sx * 7, 1, z, F);
+      v.set(sx * 6, 1, 12, F);
+      each(1, 5, 3, 4, 12, 12, (x, y, z) => { if (!(y === 4 && (x === 1 || x === 5))) v.set(sx * x, y, z, BR); });
+      // the moustache: thick, with curled-down ends
+      each(0, 5, -7, -5, 12, 13, (x, y, z) => { const top = -5 - (x > 3 ? 1 : 0); if (y <= top && y >= top - 1 - (x > 4 ? 1 : 0) && !(z === 13 && x > 3)) v.set(sx * x, y, z, BR); });
+    }
+    v.set(0, 1, 12, F);
+    each(-2, 2, -5, -1, 12, 15, (x, y, z) => { if ((x / 2.1) ** 2 + ((y + 3) / 2.4) ** 2 + ((z - 12.6) / 2.2) ** 2 <= 1) v.set(x, y, z, NOSE); });
+    v.set(-1, -5, 13, 0x8a4a3a).set(1, -5, 13, 0x8a4a3a);
+    return v;
+  },
+  kitsune() {
+    const W = 0xf8f4ea, W2 = 0xe8e2d4, R = 0xd8302a, GD = 0xe0b040;
+    const v = vm(0.015);
+    // a wide brow tapering to a pointed muzzle
+    for (let y = -7; y <= 4; y++) {
+      const w = y >= 1 ? 5.2 : 1.6 + (y + 7) * 0.45;
+      for (let x = -6; x <= 6; x++) {
+        if (Math.abs(x) > w + 0.3) continue;
+        const zt = Math.round(2.4 - (x / (w + 0.5)) ** 2 * 1.4);
+        for (let z = 0; z <= zt; z++) v.set(x, y, z, z === 0 ? W2 : W);
+      }
+    }
+    each(-2, 2, -7, -1, 1, 6, (x, y, z) => { if ((x / 1.9) ** 2 + ((y + 4) / 3.2) ** 2 + ((z - 2.4) / 2.6) ** 2 <= 1) v.set(x, y, z, W); });
+    // ears splayed outwards, red inside
+    for (const sx of [-1, 1]) for (let y = 4; y <= 9; y++) {
+      const c = sx * (3.3 + (y - 4) * 0.42), w = 2.3 * (1 - (y - 4) / 5.6);
+      for (let x = Math.round(c - w); x <= Math.round(c + w); x++) { v.set(x, y, 0, W2); v.set(x, y, 1, Math.abs(x - c) < w - 0.9 && y < 8 ? R : W); }
+    }
+    for (const sx of [-1, 1]) {
+      // slanted eye slits under flame-like red brows, a red cheek mark
+      front(v, sx * 1, 1, INK); front(v, sx * 2, 1, INK); front(v, sx * 3, 2, INK);
+      front(v, sx * 1, 3, R); front(v, sx * 2, 3, R); front(v, sx * 3, 4, R); front(v, sx * 4, 4, R);
+      front(v, sx * 3, -1, R); front(v, sx * 4, 0, R);
+    }
+    front(v, 0, 4, GD); front(v, 0, 3, GD);
+    front(v, 0, -6, INK); front(v, 0, -7, INK); front(v, -1, -6, R); front(v, 1, -6, R);
+    return v;
+  },
+  cord() {
+    const v = vm(0.01);
+    each(-9, 9, 11, 11, -9, 8, (x, y, z) => { const d = rbox(x, y, z, [0, 6, 2.3], [7.4, 10, 8.9], 3.6); if (d >= 0 && d <= 1) v.set(x, y, z, 0xd8302a); });
+    return v;
+  },
+};
+
+/** The built-in models (the kitsune mask, the hoods...), for catalogue entries that reuse or recolour one. */
+VOX.MODELS = H;
+
+// ------------------------------------------------------------------ per-human body pieces (metric voxels)
+function spike(size) {
+  const v = vm(0.03);
+  for (let d = 0; d < size; d++) {
+    const hl = (size - d) * 0.62;
+    for (let y = -Math.round(hl); y <= Math.round(hl); y++) {
+      v.set(0, y, -d, d === 0 ? SPIKE_D : SPIKE);
+      if (d === 0) { v.set(-1, y, 0, SPIKE_D); v.set(1, y, 0, SPIKE_D); }
+    }
+  }
+  return v;
+}
+function tailSeg(len, r0, r1, spikeH) {
+  const v = vm(0.03);
+  for (let d = 0; d <= len; d++) {
+    const r = r0 + (r1 - r0) * (d / len);
+    each(-6, 6, -6, 6, -d, -d, (x, y, z) => {
+      if (x * x + y * y > r * r + 0.3) return;
+      v.set(x, y, z, y < -r * 0.35 ? DINO_BELLY : hash(x, y >> 1, z, 8) > 0.86 ? DINO_D : DINO);
+    });
+  }
+  if (spikeH) for (let d = 0; d < spikeH; d++) for (let z = -Math.round(len * 0.5) - (spikeH - d) + 1; z <= -Math.round(len * 0.5) + (spikeH - d) - 1; z++) v.set(0, Math.round(r0 * 0.85) + 1 + d, z, SPIKE);
+  return v;
+}
 function boxCostume(P) {
-  const V = P.H / 140;
+  const V = P.H / 140, CB = 0xc89a5e, CB2 = 0xb08048, TAPE = 0xe8d6a6;
   const X = Math.round((P.bustX + 0.024) / V), Zf = Math.round((P.chestZ + P.bust * 0.6 + P.belly * 0.7 + 0.03) / V), Zb = -Math.round((P.chestZ + 0.034) / V);
   const Y0 = Math.round((P.hipY - 0.01 * P.H - P.waistY) / V), Y1 = Math.round((P.shoulderY + 0.012 * P.H - P.waistY) / V);
-  return { v: BASE.box(X, Y0, Y1, Zb, Zf), V };
+  const v = vm(0.035);
+  each(-X, X, Y0, Y1, Zb, Zf, (x, y, z) => { if (Math.abs(x) === X || z === Zb || z === Zf) v.set(x, y, z, hash(x >> 2, y >> 2, z >> 2, 4) > 0.8 ? CB2 : CB); });
+  // flaps folded outwards
+  const flap = (n, fn) => { for (let d = 1; d <= n; d++) fn(d); };
+  flap(6, (d) => { for (let x = -X + 1; x <= X - 1; x++) { v.set(x, Y1 + Math.round(d * 0.7), Zf + Math.round(d * 0.7), CB2); v.set(x, Y1 + Math.round(d * 0.7), Zb - Math.round(d * 0.7), CB2); } });
+  flap(5, (d) => { for (let z = Zb + 1; z <= Zf - 1; z++) for (const sx of [-1, 1]) v.set(sx * (X + Math.round(d * 0.7)), Y1 + Math.round(d * 0.7), z, CB); });
+  // tape + a robot face in black marker + a red button
+  for (let y = Y1 - 5; y <= Y1; y++) for (let x = -1; x <= 1; x++) v.set(x, y, Zf, TAPE);
+  const ey = Y1 - 9;
+  for (const sx of [-1, 1]) each(sx > 0 ? 3 : -7, sx > 0 ? 7 : -3, ey - 2, ey + 1, Zf, Zf, (x, y, z) => v.set(x, y, z, (x === (sx > 0 ? 4 : -6) && y === ey) ? 0xffffff : INK));
+  each(-6, 6, ey - 9, ey - 5, Zf, Zf, (x, y, z) => { if (y === ey - 9 || y === ey - 5 || x === -6 || x === 6 || x % 2 === 0) v.set(x, y, z, INK); });
+  each(X - 5, X - 3, Y0 + 3, Y0 + 5, Zf, Zf, (x, y, z) => v.set(x, y, z, gloss(0xe5383b)));
+  each(-X + 3, -X + 5, Y0 + 3, Y0 + 5, Zf, Zf, (x, y, z) => v.set(x, y, z, gloss(0x3f86e8)));
+  // 'this side up' arrows on the sides
+  for (const sx of [-1, 1]) for (const zc of [Math.round(Zb * 0.5), Math.round(Zf * 0.5)]) {
+    for (let i = 0; i < 6; i++) v.set(sx * X, Y0 + 8 + i, zc, INK);
+    v.set(sx * X, Y0 + 12, zc - 1, INK).set(sx * X, Y0 + 12, zc + 1, INK).set(sx * X, Y0 + 11, zc - 2, INK).set(sx * X, Y0 + 11, zc + 2, INK);
+  }
+  return { v, V };
 }
 
 // ------------------------------------------------------------------ spec tweaks
@@ -124,7 +528,7 @@ function hairLift(spec) {
 }
 
 // ------------------------------------------------------------------ dressing a human
-const mesh = (geo) => { const m = new THREE.Mesh(geo, geo.userData.kit ? materialsFor(geo) : voxelMaterials('normal')); m.castShadow = true; m.receiveShadow = true; m.raycast = () => {}; return m; };
+const mesh = (geo) => { const m = new THREE.Mesh(geo, MATS()); m.castShadow = true; m.receiveShadow = true; m.raycast = () => {}; return m; };
 const pivotGroup = (p, child) => { const g = new THREE.Group(); g.position.set(p[0], p[1], p[2]); if (child) g.add(child); return g; };
 
 /**

@@ -15,30 +15,29 @@ import { playSong } from '../../room/sfx.js';
 import { propGeometry } from '../../world/props.js';
 import { capsuleCost } from '../../game/economy.js';
 import { SERIES_BY_ID } from '../../data/series/index.js';
-import { Zone, V, canvasMat, pixText, goTo, sfx, brightVoxel, bright } from '../kit.js';
-import { IKit, imats, photoNorm } from '../../places/ikit.js';
+import { Zone, V, canvasMat, pixText, grain, goTo, sfx, brightVoxel, bright } from '../kit.js';
 import { MachineSpots } from '../machines.js';
-import { viewMat } from '../views.js';
 import { Crowd, NavGrid } from '../crowd.js';
 import { slip } from '../paper.js';
 import { ORIGINS, yen } from '../data.js';
 import { X0, X1, Z0, Z1, FH, CH, FLOORS, FLAT, RUN, PATH, GAPS, LIFT, MALL_SLOTS, STACK_WALLS, ISLANDS, THEMES, CENTRE_Z, SPEED, stepY, pathZ, minusHoles } from './layout.js';
 import { buildEscalators, ceilingWell } from './Escalator.js';
 import { Elevator } from './Elevator.js';
-import { storefront, pilaster, doorHeader, doorFrame } from './facade.js';
 
 const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
 const RIDE_SPEED = SPEED; // the same speed as the steps (layout.js)
 
-/** The floor: 50 cm vinyl composition tiles in the floor's two colours, laid in a checker on a grid shared by every
- *  floor (the speckle is the photo's), clipped to the rectangle r. */
-function vct(B, mat, r, y, T) {
-  const S = 0.5, A = new THREE.Color(T.a), Bc = new THREE.Color(T.b);
-  for (let i = Math.floor(r.x0 / S); i * S < r.x1 - 1e-4; i++) for (let j = Math.floor(r.z0 / S); j * S < r.z1 - 1e-4; j++) {
-    const x0 = Math.max(r.x0, i * S), x1 = Math.min(r.x1, (i + 1) * S), z0 = Math.max(r.z0, j * S), z1 = Math.min(r.z1, (j + 1) * S);
-    if (x1 - x0 < 1e-4 || z1 - z0 < 1e-4) continue;
-    B.plane(mat, x1 - x0, z1 - z0, (x0 + x1) / 2, y, (z0 + z1) / 2, { tint: (i + j) & 1 ? Bc : A, uv: [x0, -z1] });
-  }
+/** A repeating floor-tile texture (two colours, a grout line), 0.5 m tiles. */
+function tileTex(a, b, grout, kind = 'checker') {
+  const c = document.createElement('canvas'); c.width = c.height = 32;
+  const x = c.getContext('2d');
+  for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) { x.fillStyle = kind === 'checker' ? ((i + j) % 2 ? b : a) : a; x.fillRect(i * 16, j * 16, 16, 16); }
+  grain(x, 0, 0, 32, 32, [grout + '22', '#ffffff18'], 0.05, 7);
+  x.fillStyle = grout; for (let i = 0; i < 32; i += 16) { x.fillRect(i, 0, 1, 32); x.fillRect(0, i, 32, 1); }
+  const t = new THREE.CanvasTexture(c);
+  t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
+  return t;
 }
 
 // the far version of a route-machine module: a box, its front painted like the voxel model (1 texel = 1 voxel)
@@ -134,40 +133,32 @@ export class Mall {
       onEnter: () => this.onEnter(n), onExit: () => this.onExit(n), update: (dt) => this.tick(n, dt),
     });
     const B = Z.B;
-    // surfaces from the photo library: vinyl cloth walls, 30 cm vinyl checker tiles in the floor's colour, 60 cm acoustic
-    // ceiling tiles, brushed steel; the light fittings, the walls' skirting and band are modelled (src/places/ikit.js)
-    const paint = Z.mat(photoNorm('canvas_cloth', { rough: 0.86 }));
-    const metal = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.32, metalness: 0.65 }));
+    const paint = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }));
+    const metal = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.6 }));
     const glow = new THREE.MeshBasicMaterial({ vertexColors: true });
-    const floor = Z.mat(photoNorm('concrete', { rough: 0.5 }));
-    const ceil = Z.mat(photoNorm('tile_white', { rough: 0.86, metres: 2.4 }));
+    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout), vertexColors: true, roughness: 0.32, metalness: 0.05 }));
+    const ceil = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex('#f4f4f2', '#f4f4f2', '#d8d8d4', 'grid'), vertexColors: true, roughness: 0.8 }));
     this.mats = { paint, metal, glow };
-    const K = new IKit(imats(bright)), F = K.at(Z.o.x, 0, Z.o.z, 0);
     const below = n > 1 ? GAPS[n - 1].well : null, above = n < FLOORS ? GAPS[n].well : null;
     // floor (with the well of the escalators from below), ceiling (with the well to the floor above)
-    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, below ? [below] : [])) vct(B, floor, r, 0, T);
-    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, above ? [above] : [])) B.plane(ceil, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, CH, (r.z0 + r.z1) / 2, { down: true, tint: 0xf0f0ec });
+    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, below ? [below] : [])) B.plane(floor, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, 0, (r.z0 + r.z1) / 2);
+    for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, above ? [above] : [])) B.plane(ceil, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, CH, (r.z0 + r.z1) / 2, { down: true });
     // ceiling lights: long glowing strips in a grid (not over the well)
     for (let x = -11; x <= 11; x += 3.6) for (const z of [-6, -1.5, 3, 7]) {
       if (above && x > above.x0 - 0.8 && x < above.x1 + 0.8 && z > above.z0 - 1.6 && z < above.z1 + 1.6) continue;
-      // a recessed troffer: white frame, the diffuser, a louvre of cross blades
-      F.box('satin', x - 0.19, CH - 0.022, z - 1.27, x + 0.19, CH + 0.01, z + 1.27, { tint: 0xeeeeea, bevel: 0.012 });
-      F.box('glow', x - 0.14, CH - 0.03, z - 1.22, x + 0.14, CH - 0.022, z + 1.22, { tint: 0xfffaf0 });
-      for (let k = -4; k <= 4; k++) F.box('satin', x - 0.14, CH - 0.05, z + k * 0.27 - 0.005, x + 0.14, CH - 0.022, z + k * 0.27 + 0.005, { tint: 0xe4e4e0 });
-      for (const sx of [-1, 1]) F.box('satin', x + sx * 0.145 - 0.006, CH - 0.06, z - 1.22, x + sx * 0.145 + 0.006, CH - 0.022, z + 1.22, { tint: 0xe4e4e0 });
+      B.box(glow, 0.22, 0.03, 2.4, x, CH - 0.04, z, { tint: 0xfffaf0 });
+      B.box(paint, 0.34, 0.05, 2.5, x, CH - 0.02, z, { tint: 0xe8e8e4 });
     }
-    // walls: vinyl cloth, a coloured band with a steel trim, a skirting
+    // walls: painted, a coloured band, a skirting
     const wall = (w, x, z, ry) => {
-      const hx = ry ? 0.1 : w / 2, hz = ry ? w / 2 : 0.1;
-      F.box('wallpaper', x - hx, 0, z - hz, x + hx, CH, z + hz, { tint: T.wall });
-      F.box('gloss', x - hx - 0.012, 0, z - hz - 0.012, x + hx + 0.012, 0.12, z + hz + 0.012, { tint: 0x3a3a40, bevel: 0.008 });
-      F.box('gloss', x - hx - 0.012, 2.25, z - hz - 0.012, x + hx + 0.012, 2.39, z + hz + 0.012, { tint: T.band, bevel: 0.01 });
-      F.box('chrome', x - hx - 0.016, 2.39, z - hz - 0.016, x + hx + 0.016, 2.41, z + hz + 0.016, { bevel: 0.004 });
+      B.box(paint, w, CH, 0.2, x, 0, z, { ry, tint: T.wall });
+      B.box(paint, w, 0.12, 0.22, x, 0, z, { ry, tint: 0x3a3a40 });
+      B.box(paint, w, 0.14, 0.22, x, 2.25, z, { ry, tint: T.band });
     };
     wall(X1 - X0 + 0.4, 0, Z0 - 0.1, 0);
     wall(Z1 - Z0, X1 + 0.1, 0, Math.PI / 2);
     wall(Z1 - Z0, X0 - 0.1, 0, Math.PI / 2);
-    this.front(Z, n, paint, metal, glow, wall, F);
+    this.front(Z, n, paint, metal, glow, wall);
     Z.block(X0 - 1, X1 + 1, Z0 - 1, Z0); Z.block(X1, X1 + 1, Z0, Z1 + 1); Z.block(X0 - 1, X0, Z0, Z1 + 1);
     // escalators: the pair up from here (n < 4), the pair arriving from below (n > 1)
     this.esc[n] = [];
@@ -189,7 +180,6 @@ export class Mall {
     this.stacks(Z, n);
     this.signs(Z, n);
     if (n === 1) this.groundFloor(Z, paint, metal, glow);
-    K.done(Z.group, 'mall' + n);
     Z.flush();
     // machine spots, the walk grid, the customers
     this.spots[n] = new MachineSpots(this.game, Z, { key: 'mall' + n, slots: MALL_SLOTS, first: n * 100 + 1, label: `${n}F machine spot`, active: () => this.floorsOpen >= n });
@@ -210,35 +200,32 @@ export class Mall {
   }
 
   /** The front wall: 1F the entrance and the display windows, upstairs big windows over the station. */
-  front(Z, n, paint, metal, glow, wall, F) {
+  front(Z, n, paint, metal, glow, wall) {
     const B = Z.B, T = THEMES[n];
-    const view = viewMat(n === 1 ? 'plaza' : 'tracks'); // the street in front (1F), the tracks below (upstairs): src/growth/views.js
+    const view = canvasMat(160, 64, (x, w, h) => this.drawView(x, w, h, n), { glow: true });
     this.views ||= [];
     this.views.push(view);
     const vq = new THREE.Mesh(new THREE.PlaneGeometry(34, 13.6), view);
     vq.position.copy(Z.L(0, 3.0, Z1 + 4)); vq.rotation.y = Math.PI;
     Z.group.add(vq);
     const glass = Z.mat(new THREE.MeshStandardMaterial({ color: 0xd8eef4, roughness: 0.05, transparent: true, opacity: 0.18, depthWrite: false }));
-    const pane = (x0, x1, y0, y1, z = Z1 - 0.02) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - y0), glass); m.position.copy(Z.L((x0 + x1) / 2, (y0 + y1) / 2, z)); m.rotation.y = Math.PI; Z.group.add(m); };
+    const pane = (x0, x1, y0, y1) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - y0), glass); m.position.copy(Z.L((x0 + x1) / 2, (y0 + y1) / 2, Z1 - 0.02)); m.rotation.y = Math.PI; Z.group.add(m); };
     if (n === 1) {
       // entrance x -2..2 (two pairs of automatic doors), display windows on both sides
       for (const [x0, x1] of [[X0, -10.5], [-2.6, -2.0], [2.0, 2.6], [10.5, X1]]) B.box(paint, x1 - x0, CH, 0.2, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: T.wall });
       for (const [x0, x1] of [[-10.5, -2.6], [2.6, 10.5]]) {
         B.box(paint, x1 - x0, 0.5, 0.2, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: 0x3a3a40 });
         B.box(paint, x1 - x0, CH - 3.0, 0.2, (x0 + x1) / 2, 3.0, Z1 + 0.1, { tint: T.wall });
-        pane(x0, x1, 0.5, 3.0, Z1 + 0.08);
+        pane(x0, x1, 0.5, 3.0);
+        for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 3) B.box(metal, 0.06, 2.5, 0.08, x, 0.5, Z1, { tint: 0xc8ccd2 });
       }
-      // the storefront's frames, cill and kick plate, the column casings, the doors' header (./facade.js)
-      // (the frames sit out in the wall's depth: the door leaves slide open across the inner bays' ends)
-      storefront(F, [[-10.5, -2.6], [2.6, 10.5]], { y0: 0.5, y1: 3.0, n: 3, transom: 2.45, zg: Z1 + 0.08 });
-      for (const x of [-11.0, 11.0]) pilaster(F, x, 0.9, T.wall);
       B.box(paint, 4.0, CH - 2.6, 0.2, 0, 2.6, Z1 + 0.1, { tint: T.wall });
-      doorHeader(F, -2.0, 2.0, 2.56);
+      B.box(metal, 4.1, 0.1, 0.12, 0, 2.55, Z1, { tint: 0xc8ccd2 });
       this.doors = [];
-      const frameGeo = doorFrame(1.0, 2.5), frameMat = Z.mat(new THREE.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 0.6, roughness: 0.3 }));
       for (const s of [-1, 1]) for (const k of [0, 1]) {
         const d = new THREE.Mesh(new THREE.BoxGeometry(1.0, 2.5, 0.04), glass);
-        d.add(new THREE.Mesh(frameGeo, frameMat));
+        const fr = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.06, 0.06), Z.mat(new THREE.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 0.6, roughness: 0.3 })));
+        fr.position.y = -1.22; d.add(fr);
         const x0 = s * (0.5 + k * 1.0);
         d.position.copy(Z.L(x0, 1.28, Z1 - 0.05));
         Z.group.add(d);
@@ -255,12 +242,10 @@ export class Mall {
         B.box(paint, x1 - x0, 1.0, 0.2, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: T.wall });
         B.box(paint, x1 - x0, 0.12, 0.22, (x0 + x1) / 2, 0, Z1 + 0.1, { tint: 0x3a3a40 });
         B.box(paint, x1 - x0, CH - 3.1, 0.2, (x0 + x1) / 2, 3.1, Z1 + 0.1, { tint: T.wall });
+        B.box(metal, x1 - x0, 0.05, 0.3, (x0 + x1) / 2, 0.98, Z1 - 0.05, { tint: 0xd8dce2 });
         pane(x0, x1, 1.0, 3.1);
-        F.box('wallpaper', x0 - 0.05, 3.1, Z1 - 0.17, x1 + 0.05, 3.23, Z1, { tint: T.wall, k: 1.03, bevel: 0.01 }); // the pelmet
+        for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 4) B.box(metal, 0.06, 2.1, 0.08, x, 1.0, Z1 - 0.02, { tint: 0xc8ccd2 });
       }
-      storefront(F, [[-11.5, -2.5], [2.5, 11.5]], { y0: 1.0, y1: 3.1, n: 4, transom: 2.5, vents: true, cill: 'board' });
-      for (const x of [-12.0, 12.0]) pilaster(F, x, 0.8, T.wall);
-      for (const x of [-2.15, 2.15]) pilaster(F, x, 0.6, T.wall);
       Z.block(X0, X1, Z1, Z1 + 1);
       this.windows ||= {};
       this.windows[n] = true;
@@ -269,14 +254,34 @@ export class Mall {
       Z.block(-8.2, -5.8, Z1 - 1.0, Z1); Z.block(5.8, 8.2, Z1 - 1.0, Z1);
     }
   }
+  /** The view out of the windows: the station plaza (1F) or roofs and the tracks (upstairs), dusk or day. */
+  drawView(x, w, h, n) {
+    const R = (c, a, b, ww, hh) => { x.fillStyle = c; x.fillRect(a, b, ww, hh); };
+    R('#8ab4d8', 0, 0, w, h); R('#a8c8e0', 0, 16, w, 12); R('#c8d8e8', 0, 26, w, 8);
+    const base = n === 1 ? 44 : 34 + n * 3;
+    for (let i = 0; i < 12; i++) { const bw = 10 + (i * 7) % 9, bh = 10 + (i * 13) % 18; R(['#8a8e9a', '#9aa0aa', '#7a7e8a'][i % 3], i * 14 - 4, base - bh, bw, bh); for (let k = 0; k < 3; k++) R('#e8e0a8', i * 14 - 2 + k * 3, base - bh + 3, 1, 1); }
+    if (n === 1) {
+      R('#6a6e78', 0, 44, w, 20); R('#5a5e66', 0, 50, w, 2);
+      R('#c8c4bc', 40, 30, 80, 14); R('#2a5aa8', 40, 30, 80, 3); pixText(x, '森尾駅', 80, 31, { size: 8, align: 'center', color: '#fbf8f0' }); // the station building
+      for (let i = 0; i < 8; i++) R(['#d8463a', '#3a7ad8', '#f2c230', '#5ab060'][i % 4], 8 + i * 19, 52, 3, 6); // people on the plaza
+      R('#3a3a42', 0, 60, w, 4);
+    } else {
+      R('#4a4e58', 0, base, w, 3); R('#c8c8c0', 0, base + 3, w, 1); // the elevated tracks
+      R('#8a9a5a', 20, base - 6, 56, 6); R('#d8d4c8', 22, base - 5, 52, 3); for (let i = 0; i < 6; i++) R('#9ac8e8', 24 + i * 8, base - 5, 5, 2); // a train
+      R('#6a6a72', 0, base + 4, w, h - base - 4);
+      for (let i = 0; i < 20; i++) R(['#b87a5a', '#8a8e94', '#a89a8a'][i % 3], i * 8, base + 6 + (i % 3) * 2, 7, h);
+    }
+    grain(x, 0, 0, w, h, ['#ffffff10', '#00000010'], 0.04, n);
+  }
+
   /** A slice of the floor above (y = FH) or below (y = -FH) seen through a well: tiles, a railing, a ceiling, walls of
    *  machines painted at its edges. */
   stub(Z, n, m, y, well, gapBelow = null) {
     const T = THEMES[m], B = Z.B;
-    const floor = Z.mat(photoNorm('concrete', { rough: 0.5 }));
+    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout), vertexColors: true, roughness: 0.32 }));
     const G = gapBelow || GAPS[n];
     const r = { x0: well.x0 - 3.5, x1: well.x1 + 3.5, z0: Math.min(well.z0, G.z0, G.z1) - 2.5, z1: Math.max(well.z1, G.z0, G.z1) + 2.5 };
-    for (const q of minusHoles(r, y > 0 ? [well] : [])) vct(B, floor, q, y, T);
+    for (const q of minusHoles(r, y > 0 ? [well] : [])) B.plane(floor, q.x1 - q.x0, q.z1 - q.z0, (q.x0 + q.x1) / 2, y, (q.z0 + q.z1) / 2);
     const paint = this.mats.paint, glow = this.mats.glow;
     if (y > 0) {
       B.plane(paint, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, y + CH, (r.z0 + r.z1) / 2, { down: true, tint: 0xf4f4f2 });
@@ -319,15 +324,8 @@ export class Mall {
       const len = Math.hypot(bx - ax, bz - az), cx = (ax + bx) / 2, cz = (az + bz) / 2, ry = ax === bx ? Math.PI / 2 : 0;
       const p = new THREE.Mesh(new THREE.PlaneGeometry(len, 0.9), glass);
       p.position.copy(Z.L(cx, y + 0.5, cz)); p.rotation.y = ry; Z.group.add(p);
-      const ux = (bx - ax) / len, uz = (bz - az) / len, rod = (r, x, y0, z, h, tint, n = 12) => { const g = new THREE.CylinderGeometry(r, r, h, n); g.translate(x, y0 + h / 2, z); B.add(metal, g, tint); };
-      { const g = new THREE.CylinderGeometry(0.026, 0.026, len + 0.06, 14); g.rotateZ(Math.PI / 2); if (ry) g.rotateY(ry); g.translate(cx, y + 0.975, cz); B.add(metal, g, 0xd8dce2); }
-      B.box(metal, len + 0.06, 0.06, 0.07, cx, y, cz, { ry, tint: 0xa8acb2 });
-      const n = Math.max(1, Math.round(len / 1.2));
-      for (let k = 0; k <= n; k++) {
-        const t = k / n, px = ax + (bx - ax) * t - ux * (k === 0 ? -0.03 : k === n ? 0.03 : 0), pz = az + (bz - az) * t - uz * (k === 0 ? -0.03 : k === n ? 0.03 : 0);
-        rod(0.02, px, y + 0.06, pz, 0.89, 0xc8ccd2);
-        for (const yy of [0.25, 0.8]) B.box(metal, 0.05, 0.05, 0.03, px, y + yy, pz, { ry, tint: 0xd8dce2 });
-      }
+      B.box(metal, len + 0.06, 0.05, 0.06, cx, y + 0.95, cz, { ry, tint: 0xd8dce2 });
+      B.box(metal, len + 0.06, 0.05, 0.08, cx, y + 0.02, cz, { ry, tint: 0xb8bcc2 });
     }
   }
   /** The well in this floor's floor (the escalators from below): the slab edge, the railing. */
@@ -492,30 +490,24 @@ export class Mall {
 
   signs(Z, n) {
     const T = THEMES[n];
-    // a printed sign face; frame: the lightbox / rails it sits in (src/props/models/fixtures.js), the face just in front of it
-    const neon = (w, h, pw, ph, draw, x, y, z, ry, frame = null) => {
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), canvasMat(pw, ph, draw, { glow: true, alpha: true }));
-      const f = frame && frame !== 'kk_banner' ? 0.014 : 0;
-      m.position.copy(Z.L(x + Math.sin(ry) * f, y, z + Math.cos(ry) * f)); m.rotation.y = ry; Z.group.add(m);
-      if (frame) Z.prop(frame, x, y, z, ry);
-      return m;
-    };
+    const neon = (w, h, pw, ph, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), canvasMat(pw, ph, draw, { glow: true, alpha: true })); m.position.copy(Z.L(x, y, z)); m.rotation.y = ry; Z.group.add(m); return m; };
     const tube = (x, txt, size, col, cx, cy) => { pixText(x, txt, cx + 1, cy + 1, { size, align: 'center', color: '#00000066', font: /[ぁ-んァ-ン一-龯]/.test(txt) ? 'DotGothic16' : 'Alagard' }); pixText(x, txt, cx, cy, { size, align: 'center', color: col, font: /[ぁ-んァ-ン一-龯]/.test(txt) ? 'DotGothic16' : 'Alagard' }); };
     // over the back wall: the floor's name in neon
-    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = T.accent; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, `${n}F ${T.jp}`, 12, T.accent, 60, 2); }, 2.0, 2.95, Z0 + 0.13, 0, 'kk_sign_6');
-    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = '#ffd23f'; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, 'GACHA KAIKAN', 12, '#ffd23f', 60, 2); }, X1 - 0.13, 2.95, 4.0, -Math.PI / 2, 'kk_sign_6');
-    neon(5, 0.9, 100, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 100, 18); tube(x, 'ガチャガチャ', 12, '#ff6fa8', 50, 2); }, X0 + 0.13, 2.95, 5.0, Math.PI / 2, 'kk_sign_5');
+    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = T.accent; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, `${n}F ${T.jp}`, 12, T.accent, 60, 2); }, 2.0, 2.95, Z0 + 0.13, 0);
+    neon(6, 0.9, 120, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 120, 18); x.fillStyle = '#ffd23f'; x.fillRect(0, 0, 120, 1); x.fillRect(0, 17, 120, 1); tube(x, 'GACHA KAIKAN', 12, '#ffd23f', 60, 2); }, X1 - 0.13, 2.95, 4.0, -Math.PI / 2);
+    neon(5, 0.9, 100, 18, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 100, 18); tube(x, 'ガチャガチャ', 12, '#ff6fa8', 50, 2); }, X0 + 0.13, 2.95, 5.0, Math.PI / 2);
     // the floor directory by the lift
     neon(1.0, 1.3, 32, 44, (x) => {
       x.fillStyle = '#f4f0e6'; x.fillRect(0, 0, 32, 44); x.fillStyle = '#241a1e'; x.fillRect(0, 0, 32, 8);
       pixText(x, 'FLOOR', 16, 0, { size: 8, align: 'center', color: '#f4f0e6', font: 'Alagard' });
       for (let k = FLOORS; k >= 1; k--) { const y = 10 + (FLOORS - k) * 8; x.fillStyle = k === n ? THEMES[k].accent : '#5e5046'; x.fillRect(2, y, 8, 7); pixText(x, `${k}F`, 6, y - 1, { size: 8, align: 'center', color: '#fbf8f0', font: 'DotGothic16' }); pixText(x, THEMES[k].jp.slice(0, 4), 12, y - 1, { size: 8, color: '#241a1e' }); }
-    }, LIFT.door + 0.1, 1.6, -1.9, Math.PI / 2, 'kk_sign_dir');
+    }, LIFT.door + 0.1, 1.6, -1.9, Math.PI / 2);
     // over the escalators: where they go
-    if (n < FLOORS) { const G = GAPS[n]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▲ ${n + 1}F`, 24, 0, { size: 8, align: 'center', color: '#7aff9a', font: 'DotGothic16' }); }, G.x, 2.7, pathZ(G, 0) - G.dir * 0.3, G.dir > 0 ? 0 : Math.PI, 'kk_sign_esc'); }
-    if (n > 1) { const G = GAPS[n - 1]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▼ ${n - 1}F`, 24, 0, { size: 8, align: 'center', color: '#ffb05a', font: 'DotGothic16' }); }, G.x, 2.4, pathZ(G, PATH) + G.dir * 0.3, G.dir > 0 ? Math.PI : 0, 'kk_sign_esc'); }
+    if (n < FLOORS) { const G = GAPS[n]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▲ ${n + 1}F`, 24, 0, { size: 8, align: 'center', color: '#7aff9a', font: 'DotGothic16' }); }, G.x, 2.7, pathZ(G, 0) - G.dir * 0.3, G.dir > 0 ? 0 : Math.PI); }
+    if (n > 1) { const G = GAPS[n - 1]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▼ ${n - 1}F`, 24, 0, { size: 8, align: 'center', color: '#ffb05a', font: 'DotGothic16' }); }, G.x, 2.4, pathZ(G, PATH) + G.dir * 0.3, G.dir > 0 ? Math.PI : 0); }
     // the floor's centrepiece on a round plinth, and two sale banners hanging over the promenade
-    Z.prop(`kk_plinth_${n}`, 0, 0, CENTRE_Z, 0);
+    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.05, 0.35, 16), Z.mat(new THREE.MeshStandardMaterial({ color: new THREE.Color(T.band), roughness: 0.4 })));
+    plinth.position.copy(Z.L(0, 0.175, CENTRE_Z)); Z.group.add(plinth);
     Z.prop(T.centre[0], -0.25, 0.35, CENTRE_Z, 0.4, 1.2);
     Z.prop(T.centre[1], 0.55, 0.35, CENTRE_Z + 0.3, -0.6, 0.9);
     Z.block(-1.05, 1.05, CENTRE_Z - 1.05, CENTRE_Z + 1.05);
@@ -524,8 +516,9 @@ export class Mall {
         x.fillStyle = ['#ffd23f', '#ffffff'][i]; x.fillRect(0, 0, 40, 20);
         x.fillStyle = T.accent; x.fillRect(0, 0, 40, 3); x.fillRect(0, 17, 40, 3);
         pixText(x, i ? '新作入荷' : 'ガチャ祭', 20, 4, { size: 10, align: 'center', color: i ? T.accent : '#c8322c' });
-      }, 0, 2.55, z, 0, 'kk_banner');
+      }, 0, 2.55, z, 0);
       b.material.side = THREE.DoubleSide;
+      const str = new THREE.Mesh(new THREE.BoxGeometry(0.01, CH - 2.95, 0.01), this.mats.metal); str.position.copy(Z.L(0, 2.95 + (CH - 2.95) / 2, z)); Z.group.add(str);
     }
     // capsule-toy posters on the front wall, pixel art only
     for (const [x, i] of [[-12.2, 0], [12.2, 1]]) neon(0.9, 1.25, 30, 42, (c) => this.drawPoster(c, i + n), x, 1.6, Z1 - 0.12, Math.PI);
@@ -544,8 +537,9 @@ export class Mall {
   groundFloor(Z, paint, metal, glow) {
     const B = Z.B;
     // the info counter by the door: today's numbers
-    Z.prop('kk_counter', 7.5, 0, 6.9, Math.PI);
-    void glow;
+    B.box(paint, 3.0, 1.0, 0.7, 7.5, 0, 6.9, { tint: 0xf04a8a });
+    B.box(paint, 3.1, 0.06, 0.8, 7.5, 1.0, 6.9, { tint: 0xf4f0e8 });
+    B.box(glow, 2.6, 0.08, 0.02, 7.5, 0.8, 6.54, { tint: 0xffd8e8 });
     Z.prop('cash_register', 7.0, 1.06, 6.95, Math.PI, 0.9);
     Z.prop('call_bell', 8.2, 1.06, 6.7, 0, 1);
     Z.block(5.9, 9.1, 6.45, 7.35);
@@ -557,8 +551,10 @@ export class Mall {
     Z.prop('capsule_return', 1.6, 0, 7.8, Math.PI, 1);
     Z.block(1.3, 1.9, 7.5, 8.1);
     // the stock room door (west wall): capsule cartons for the Kaikan's machines
-    Z.prop('kk_door', X0 + 0.04, 0, -6.0, Math.PI / 2);
-    void paint; void metal;
+    B.box(paint, 0.06, 2.1, 1.1, X0 + 0.04, 0, -6.0, { tint: 0x7a8088 });
+    B.box(metal, 0.04, 0.06, 0.2, X0 + 0.09, 1.0, -5.65, { tint: 0xc8ccd2 });
+    const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.16), Z.mat(canvasMat(40, 12, (x) => { x.fillStyle = '#2a2a30'; x.fillRect(0, 0, 40, 12); pixText(x, 'STOCK 倉庫', 20, 1, { size: 8, align: 'center', color: '#f4f0e6' }); })));
+    pl.position.copy(Z.L(X0 + 0.08, 2.25, -6.0)); pl.rotation.y = Math.PI / 2; Z.group.add(pl);
     Z.hit(0.2, 2.1, 1.1, X0 + 0.1, 1.05, -6.0, { reach: 2.4, hint: () => ({ key: 'LMB', text: 'Stock room', sub: 'Capsule cartons for the Kaikan\'s machines (paid from the bank)' }), use: () => { this.stockRoom(); return false; } });
   }
   infoHint() {

@@ -202,7 +202,6 @@ const shop = {
   // ============================================================ FIXED INTERIOR
   // ------------------------------------------------------------- cash register
   cash_register: {
-    asset: { id: 'CashRegister_01' },
     name: 'Shōwa Cash Register', jp: '金銭登録機', voxel: 0.01,
     build(v) {
       const cream = (x, y, z) => gloss(shade(0xece2c6, 0.97 + hash(x >> 1, y >> 1, z >> 1, 1) * 0.04));
@@ -454,7 +453,6 @@ const shop = {
 
   // ------------------------------------------------------------- enamel pendant lamp
   shop_lamp: {
-    asset: { id: 'hanging_industrial_lamp' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Enamel Pendant Lamp', jp: 'ホーローランプ', voxel: 0.01, light: 0xffd49a,
     build(v) {
       const rOut = (y) => 14.6 - y * 1.12;

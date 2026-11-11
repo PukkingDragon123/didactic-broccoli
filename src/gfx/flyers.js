@@ -24,7 +24,6 @@ import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
 import { draw5, textW5 } from './font5x7.js';
-import { inkPrint } from './inkPrint.js';
 import { partsBox } from '../voxel/merge.js';
 
 export const FLYER_W = 150, FLYER_H = 212; // pixels (A-series proportions)
@@ -208,7 +207,7 @@ function loadPhoto(name) {
 /**
  * Fill a box with a photo shrunk to pixel size (cover-fit), graded, then posterized + dithered. o:
  *   fx, fy  focal point 0..1, zoom (>1 crops in), sat (saturation kept 0..1), dark 0..1, tint [colour, alpha, blend],
- *   wash [colour, alpha]; then printed in a few inks picked from the picture (src/gfx/inkPrint.js: inks, or levels x 3)
+ *   wash [colour, alpha], levels (per channel, default 5), dither 0..1
  */
 function photoBg(g, name, x, y, w, h, o = {}) {
   const img = photos.get(name)?.img;
@@ -225,7 +224,7 @@ function photoBg(g, name, x, y, w, h, o = {}) {
   if (o.dark) { k.globalCompositeOperation = 'multiply'; const v = Math.round(255 * (1 - o.dark)); k.fillStyle = `rgb(${v},${v},${v})`; k.fillRect(0, 0, w, h); }
   k.globalCompositeOperation = 'source-over';
   if (o.wash) { k.globalAlpha = o.wash[1]; k.fillStyle = o.wash[0]; k.fillRect(0, 0, w, h); k.globalAlpha = 1; }
-  inkPrint(c, o.inks || (o.levels || 5) * 3);
+  posterize(c, o.levels || 5, o.dither ?? 0.6);
   put(g, c, x, y);
 }
 

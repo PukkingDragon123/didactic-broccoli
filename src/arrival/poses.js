@@ -1,20 +1,19 @@
 // Body language for the opening (src/arrival/), registered into the shared gesture library like src/grandpa/poses.js:
-//   'arr_drive'  at the wheel of the van: both hands up on the rim of a steep cab-over wheel (ten to two), the back a
-//                little off the seat, eyes on the road; opts.steer (a function -> front wheel angle) feeds the wheel
-//                round a little under the hands
+//   'arr_light'  lighting a cigar: both hands cupped in front of the mouth round a lighter, the chin tucked in, eyes
+//                down on the flame (Mikawa-san in his doorway)
 import { GESTURES, EXTRA_POSES } from '../people/gestures.js';
 
-Object.assign(GESTURES, { arr_drive: { dur: Infinity } });
+Object.assign(GESTURES, { arr_light: { dur: 3.6 } });
 
 const arm = (x, y, z, px, py, pz, hx = 0, hy = 0, hz = 0) => ({ t: [x, y, z], p: [px, py, pz], hand: [hx, hy, hz] });
 
 Object.assign(EXTRA_POSES, {
-  arr_drive(t, h, g, opts) {
-    const k = h.P.H / 1.72, m = (v) => v * k;
-    const s = Math.max(-0.5, Math.min(0.5, (opts?.steer?.() || 0) * 3)); // the rim turning under the hands
-    g.L = arm(m(0.15), m(0.3 + s * 0.05), m(0.34 - Math.abs(s) * 0.02), 1, -0.9, -0.3);
-    g.R = arm(-m(0.15), m(0.3 - s * 0.05), m(0.34 - Math.abs(s) * 0.02), -1, -0.9, -0.3);
-    g.spine[0] = 0.07; g.head[0] = -0.05;
-    g.eyes = [0, 0];
+  arr_light(t, h, g) {
+    const P = h.P, k = P.H / 1.72, chinY = P.chin - P.waistY, zf = P.zf;
+    const flick = t > 1.0 && t < 1.15 ? 0.012 * k : 0; // the thumb rolls the wheel: a little jolt of the hand
+    g.R = arm(-0.012 * k, chinY + 0.005 * k - flick, zf + 0.15 * k, -1, -1.1, -0.2, -0.5, -0.3, 0.5);
+    g.L = arm(0.035 * k, chinY + 0.02 * k, zf + 0.13 * k, 1, -1.1, -0.2, -0.5, 0.6, -0.4);
+    g.head[0] = 0.16; g.neck[0] = 0.05;
+    g.eyes = [0, 1.5];
   },
 });

@@ -2,24 +2,18 @@
 // warm plaster wall with a wooden skirting and picture rail; an old wardrobe (yōfuku-dansu) with one door open on the
 // clothes inside; a cheval mirror; a window onto the neighbours' roof and a cherry branch, with a lace curtain tied
 // back; a shoe shelf under it with a paper lamp and a pothos; a hat stand; a pipe clothes rack with a row of hangers in
-// the foreground; a braided rag rug where you stand. The floor, walls, ceiling and woodwork are real surfaces from the
-// photo library (src/kit/photoTex.js), the shoes and the pothos are the game's props, the folded jumpers and the hat box
-// are modelled (src/places/ikit.js); the printed and woven things (the view, the lace, the rug, the calendar, the cloth
-// patterns) stay pixel art (src/dressing/roomTex.js). The sun comes in through a window you can't see (behind you, on the left):
+// the foreground; a braided rag rug where you stand. Low poly with pixel textures (src/dressing/roomTex.js) and a few
+// voxel props in the cosmetics' own style. The sun comes in through a window you can't see (behind you, on the left):
 // a frame that only the sun's shadow camera sees (layer 2) casts a window-shaped patch of light, mullions and all.
 //   const R = buildRoom();  scene.add(R.group);  R.sun (DirectionalLight, shadows), R.hemi, R.fill, R.occ (the sun's window
 //   frame), R.rug, R.beam (where the sunbeam is, for the dust motes)
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { VoxelModel, gloss } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { VX } from '../cosmetics/voxels.js';
-import { kitMesh } from '../peoplekit/kit.js';
-const centred = (g, s) => { g.computeBoundingBox(); const b = g.boundingBox; g.translate(-(b.min.x + b.max.x) / 2, -(b.min.y + b.max.y) / 2, -(b.min.z + b.max.z) / 2); g.scale(s, s, s); return g; };
 import * as T from './roomTex.js';
-import { propMesh } from '../world/props.js';
-import { photoTex, photoTint } from '../kit/photoTex.js';
-import { IKit, imats, surf } from '../places/ikit.js';
 
 export const WALL = -1.95; // the back wall's plane (z)
 export const WIN = { x0: 0.22, x1: 1.32, y0: 0.94, y1: 1.94 }; // the window in it
@@ -27,26 +21,6 @@ export const LAYER = { room: 0, me: 1, sunOnly: 2 };
 
 const lam = (o) => new THREE.MeshLambertMaterial(o);
 const texMat = (p, tile = 1, o = {}) => lam({ map: T.tex(p, { tile }), ...o });
-// real surfaces from the shared photo library (uvs here are in metres): a tint is the colour the surface comes out as
-const photoLam = (name, tint, o = {}) => lam({ map: surf(name), color: photoTint(name, tint), ...o });
-const woodM = (tint) => photoLam('plywood', tint);
-/** A few folded jumpers, stacked a little askew (soft-edged slabs of cloth). */
-function foldedPile(cols) {
-  const K = new IKit(imats(null)), F = K.root, g = new THREE.Group();
-  let y = 0;
-  cols.forEach((c, i) => { const h = 0.05, dx = (i % 2 ? 0.012 : -0.01); F.box('cloth', -0.13 + dx, y, -0.11, 0.13 + dx, y + h, 0.11, { tint: c, bevel: 0.02 }); F.box('cloth', -0.128 + dx, y + h * 0.45, 0.108, 0.128 + dx, y + h * 0.55, 0.112, { tint: c, k: 0.82 }); y += h; });
-  K.done(g, 'dressing:pile');
-  return g;
-}
-/** A round hat box with its lid and a ribbon. */
-function hatBox() {
-  const K = new IKit(imats(null)), F = K.root, g = new THREE.Group();
-  F.lathe('card', 0, 0, 0, [[0, 0], [0.14, 0], [0.145, 0.004], [0.145, 0.15], [0, 0.15]], 28, { tint: 0xe8c4b0 });
-  F.lathe('card', 0, 0.13, 0, [[0, 0.05], [0.152, 0.05], [0.154, 0.045], [0.154, 0.002], [0.15, 0], [0, 0.0]], 28, { tint: 0xd89aa8 });
-  F.lathe('cloth', 0, 0.08, 0, [[0.147, 0], [0.147, 0.018]], 28, { tint: 0x8a3a52 });
-  K.done(g, 'dressing:hatbox');
-  return g;
-}
 
 /** Box with world-scaled UVs (metres), bottom at y. */
 function boxGeo(w, h, d) {
@@ -93,7 +67,56 @@ function voxMesh(model, s, pivot = 'bottom') {
   m.castShadow = true; m.receiveShadow = true;
   return m;
 }
+const vm = (j = 0.03) => { const v = new VoxelModel(); v.jitter = j; return v; };
+function each(x0, x1, y0, y1, z0, z1, fn) { for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) fn(x, y, z); }
 
+// ------------------------------------------------------------------ small voxel props
+/** One shoe (toe toward +z): kind 'sneaker' | 'loafer' | 'boot' | 'geta'. */
+function shoeModel(kind, col, col2 = 0xf4ecdc) {
+  const v = vm(0.03);
+  if (kind === 'geta') {
+    each(-2, 2, 2, 2, -5, 5, (x, y, z) => v.set(x, y, z, (x + z) % 3 ? 0xc89a64 : 0xb88a56));
+    each(-2, 2, 0, 1, -4, -3, (x, y, z) => v.set(x, y, z, 0x9a7048)); each(-2, 2, 0, 1, 2, 3, (x, y, z) => v.set(x, y, z, 0x9a7048));
+    v.set(0, 3, 3, col).set(0, 4, 2, col).set(-1, 3, 0, col).set(1, 3, 0, col).set(-2, 3, -1, col).set(2, 3, -1, col).set(-1, 4, 1, col).set(1, 4, 1, col);
+    return v;
+  }
+  const tall = kind === 'boot' ? 9 : 3;
+  each(-2, 2, 0, tall + 1, -5, 6, (x, y, z) => {
+    const toe = z > 2 ? z - 2 : 0;
+    if (y > 1 + Math.max(0, 3 - toe) && z > 1) return; // the toe slopes down
+    if (kind === 'boot' && y > 4 && z > 0) return;
+    if (kind !== 'boot' && y > 3) return;
+    if (Math.abs(x) === 2 && z > 4) return;
+    const sole = y === 0;
+    if (y >= 2 && Math.abs(x) <= 1 && z >= -3 && z <= 1 && y >= (kind === 'boot' ? tall : 3)) return; // the opening
+    let c = sole ? (kind === 'loafer' ? 0x5a3a28 : col2) : col;
+    if (kind === 'sneaker' && y === 1) c = col2;
+    if (kind === 'sneaker' && !sole && Math.abs(x) <= 1 && y === 3 && z >= 1 && z <= 3) c = 0xf6f0e4; // laces
+    v.set(x, y, z, kind === 'boot' && !sole ? gloss(c) : c);
+  });
+  return v;
+}
+function plantModel() {
+  const v = vm(0.05);
+  each(-3, 3, 0, 5, -3, 3, (x, y, z) => { const r = Math.hypot(x, z); if (r <= 3.2 - (y < 2 ? 0.6 : 0) && (r > 2.2 || y < 1)) v.set(x, y, z, y === 5 ? 0xd8885a : 0xc8784a); });
+  each(-2, 2, 4, 4, -2, 2, (x, y, z) => v.set(x, y, z, 0x6a4a30));
+  // trailing pothos leaves, spilling over the rim
+  const leaves = [[0, 7, 0], [-2, 6, 2], [2, 6, -1], [3, 5, 2], [-3, 4, -2], [4, 3, 3], [-4, 2, 1], [5, 1, 3], [1, 8, -2], [-1, 6, -3], [4, 0, 4], [-5, 0, 2]];
+  leaves.forEach(([x, y, z], i) => {
+    each(x - 1, x + 1, y, y + 1, z - 1, z + 1, (a, b, c) => { if (Math.abs(a - x) + Math.abs(c - z) + (b - y) <= 2) v.set(a, b, c, (a + b + i) % 3 === 0 ? 0x8ac85a : i % 2 ? 0x5ea844 : 0x4a9a3a); });
+  });
+  return v;
+}
+function hatBoxModel() {
+  const v = vm(0.02);
+  each(-7, 7, 0, 7, -7, 7, (x, y, z) => { const r = Math.hypot(x, z); if (r > 7.2) return; v.set(x, y, z, y >= 6 ? (r > 6.4 ? 0xd85a6a : 0xf2e2cc) : Math.floor((Math.atan2(x, z) + 4) * 3) % 2 ? 0xf2e2cc : 0xe8a0a8); });
+  return v;
+}
+function foldedStack(cols) {
+  const v = vm(0.03);
+  cols.forEach((c, i) => each(-6, 6, i * 2, i * 2 + 1, -4, 4, (x, y, z) => { if (Math.abs(x) === 6 && y % 2 === 1) return; v.set(x, y, z, y % 2 === 1 && Math.abs(z) === 4 ? T.shade(c, 0.9) : c); }));
+  return v;
+}
 
 // ------------------------------------------------------------------ clothes on hangers
 const CLOTH = new Map();
@@ -138,10 +161,10 @@ function garment(kind, mat, o = {}) {
 export function buildRoom() {
   const group = new THREE.Group();
   group.name = 'dressing-room';
-  const floorM = photoLam('wood_planks', 0xc0905c);
-  const wallM = photoLam('concrete', 0xe8d9bc);
-  const trimM = woodM(0xc8986a);
-  const ceilM = photoLam('plywood', 0xe2cfaa);
+  const floorM = texMat(T.floorboards(), 2);
+  const wallM = texMat(T.plaster(), 1);
+  const trimM = texMat(T.wood(0xc8986a, 3), 1);
+  const ceilM = texMat(T.ceiling(), 1);
 
   // ---- floor, walls, ceiling
   const fl = new THREE.Mesh(new THREE.PlaneGeometry(9, 8), floorM);
@@ -207,16 +230,19 @@ export function buildRoom() {
   box(group, 0.22, 0.03, 0.06, lam({ color: 0xe0788a }), W.x1 - cw / 2 + 0.12, W.y0 + 0.36, WALL + 0.1, { cast: false });
 
   // ---- the shoe shelf under the window, a paper lamp and a pothos on top
-  const shelfM = woodM(0xc49060);
+  const shelfM = texMat(T.wood(0xc49060, 5), 1);
   const sx0 = 0.12, sw = 1.3, sd = 0.3, sz = WALL + sd / 2 + 0.01;
   for (const y of [0.02, 0.22, 0.42]) box(group, sw, 0.022, sd, shelfM, sx0 + sw / 2, y, sz);
   for (const x of [sx0 + 0.012, sx0 + sw - 0.012]) box(group, 0.024, 0.44, sd, shelfM, x, 0, sz);
   const shoes = [['sneaker', 0xd8443a, 0xf4ecdc, 0.38, 0.044], ['loafer', 0x6a4430, 0x5a3a28, 0.86, 0.044], ['geta', 0xc8302a, 0, 1.18, 0.044], ['sneaker', 0x3a6ab8, 0xf4ecdc, 0.52, 0.244], ['sneaker', 0xf2ece0, 0xc8302a, 1.02, 0.244]];
-  // pairs of shoes on the shelves and a pair of sandals kicked off by the wall (the game's own props)
-  for (const [kind, , , x, y] of shoes) { const m = propMesh(kind === 'geta' ? 'sandals' : 'room_shoes'); m.position.set(x, y + 0.022, sz + 0.01); m.rotation.y = Math.PI / 2 + (x * 7 % 1 - 0.5) * 0.2; m.scale.setScalar(0.9); group.add(m); }
-  { const m = propMesh('sandals'); m.position.set(1.62, 0, WALL + 0.26); m.rotation.y = 0.5; group.add(m); }
+  for (const [kind, col, col2, x, y] of shoes) for (const s of [-1, 1]) {
+    const m = voxMesh(shoeModel(kind, col, col2), 0.021);
+    m.position.set(x + s * 0.065, y, sz + 0.01); m.rotation.y = s * 0.06;
+    group.add(m);
+  }
+  for (const s of [-1, 1]) { const m = voxMesh(shoeModel('boot', 0xf2c430, 0x3a3a40), 0.022); m.position.set(1.58 + s * 0.07, 0, WALL + 0.24); m.rotation.y = 0.5 + s * 0.08; group.add(m); }
   // the paper lamp (an Akari-style washi shade on a wooden stand), lit
-  const lampM = new THREE.MeshBasicMaterial({ map: photoTex('shoji_paper', { repeat: [1.5, 1] }), color: 0xfff0d8 });
+  const lampM = new THREE.MeshBasicMaterial({ map: T.tex(T.washi(), { wrap: false }) });
   const lamp = new THREE.Group();
   cyl(lamp, 0.08, 0.09, 0.03, 8, trimM, 0, 0, 0);
   cyl(lamp, 0.01, 0.01, 0.08, 6, trimM, 0, 0.03, 0);
@@ -225,12 +251,12 @@ export function buildRoom() {
   cyl(lamp, 0.03, 0.03, 0.02, 8, trimM, 0, 0.47, 0, { cast: false });
   lamp.position.set(sx0 + sw - 0.2, 0.442, sz);
   group.add(lamp);
-  const plant = propMesh('plant_pothos');
-  plant.position.set(sx0 + 0.2, 0.442, sz); plant.scale.setScalar(0.7);
+  const plant = voxMesh(plantModel(), 0.022);
+  plant.position.set(sx0 + 0.2, 0.442, sz);
   group.add(plant);
 
   // ---- the wardrobe (left): walnut veneer, a cornice, two drawers, the right-hand door open on the clothes inside
-  const wdM = woodM(0x9a6440), wdD = woodM(0x7a4c32), inM = lam({ color: 0x8a6448 });
+  const wdM = texMat(T.wood(0x9a6440, 2), 1), wdD = texMat(T.wood(0x7a4c32, 4), 1), inM = lam({ color: 0x8a6448 });
   const brass = lam({ color: 0xd8b04a });
   const wd = new THREE.Group();
   const WW = 1.16, WH = 1.94, WD = 0.56;
@@ -266,14 +292,14 @@ export function buildRoom() {
   // inside: clothes on the rail, folded jumpers on the shelf, a hat box on top
   const inner = [['coat', clothMat(0x8a5a3a, 'plain'), { collar: 0x6a4028 }], ['shirt', clothMat(0xf0e4d0, 'stripe', 0x8aa8d8)], ['dress', clothMat(0xe89aa8, 'flower', 0xfff2e4)], ['shirt', clothMat(0x4a6a9a, 'denim')], ['happi', clothMat(0x2a3f78, 'plain'), { band: 0xc8302a }]];
   inner.forEach(([k, m, o], i) => { const gg = garment(k, m, o); gg.position.set(WW / 2 - 0.1 - i * 0.075, 1.5, 0.02 - i * 0.012); gg.rotation.y = -1.25 + i * 0.05; wd.add(gg); });
-  const st = foldedPile([0xc8604a, 0xe8c87a, 0x7aa0c8, 0xf0e6d4]); st.position.set(WW / 4, 1.622, 0.02); wd.add(st);
-  const st2 = foldedPile([0x9ab888, 0xd8a8c0]); st2.position.set(-WW / 4, 1.622, 0.02); wd.add(st2);
-  const hb = hatBox(); hb.position.set(-0.22, WH + 0.02, 0); wd.add(hb);
+  const st = voxMesh(foldedStack([0xc8604a, 0xe8c87a, 0x7aa0c8, 0xf0e6d4]), 0.022); st.position.set(WW / 4, 1.622, 0.02); wd.add(st);
+  const st2 = voxMesh(foldedStack([0x9ab888, 0xd8a8c0]), 0.022); st2.position.set(-WW / 4, 1.622, 0.02); wd.add(st2);
+  const hb = voxMesh(hatBoxModel(), 0.022); hb.position.set(-0.22, WH + 0.02, 0); wd.add(hb);
   wd.position.set(-1.72, 0, WALL + WD / 2 + 0.01);
   group.add(wd);
 
   // ---- the cheval mirror, angled toward you
-  const mfM = woodM(0xb67e4c);
+  const mfM = texMat(T.wood(0xb67e4c, 7), 1);
   const mir = new THREE.Group();
   for (const s of [-1, 1]) { box(mir, 0.04, 1.62, 0.04, mfM, s * 0.29, 0.05, 0); box(mir, 0.06, 0.04, 0.4, mfM, s * 0.29, 0, 0); }
   const plate = new THREE.Group();
@@ -295,7 +321,7 @@ export function buildRoom() {
   cyl(hs, 0.04, 0.03, 0.05, 8, trimM, 0, 1.72, 0);
   for (let i = 0; i < 3; i++) { const a = i * Math.PI * 2 / 3; const f = box(hs, 0.03, 0.03, 0.3, trimM, Math.sin(a) * 0.13, 0, Math.cos(a) * 0.13); f.rotation.y = a; }
   for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + 0.4; const pg = box(hs, 0.016, 0.016, 0.16, trimM, Math.sin(a) * 0.07, 1.56, Math.cos(a) * 0.07, { cast: false }); pg.rotation.set(-0.5 * Math.cos(a), a, 0, 'YXZ'); }
-  const hat = kitMesh(centred(VX.strawhat(), 0.0118)); hat.position.set(0.02, 1.76, 0.02); hat.rotation.set(0.25, 0.4, -0.2); hs.add(hat);
+  const hat = voxMesh(VX.strawhat(), 0.0118, 'center'); hat.position.set(0.02, 1.76, 0.02); hat.rotation.set(0.25, 0.4, -0.2); hs.add(hat);
   const scarf = clothMat(0xd85a5a, 'knit');
   box(hs, 0.07, 0.62, 0.02, scarf, -0.09, 1.0, 0.07, { rz: 0.06 });
   box(hs, 0.07, 0.5, 0.02, scarf, -0.02, 1.08, 0.1, { rz: -0.04 });

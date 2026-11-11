@@ -4,7 +4,6 @@
 //   ?item=mochi/shiba&finishes=1   one item in every finish
 //   ?props=garage            all props from src/data/props/<name>.js (default export: { id: {name, build(v), voxel} })
 //   &angle=back              view from behind;  &cols=4  grid columns
-//   ?studio=machikado        sculpted figures through the game's renderer, on one sheet (src/figures/studio.js)
 import '@fontsource/dotgothic16/400.css';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -20,12 +19,6 @@ const errBox = document.getElementById('err');
 window.addEventListener('error', (e) => { errBox.textContent += (e.message || e) + '\n'; });
 
 const params = new URLSearchParams(location.search);
-if (params.get('studio')) {
-  // the studio brings its own renderer (the game's); nothing below runs
-  try { await document.fonts.load('16px "DotGothic16"', 'あ'); const { runStudio } = await import('./figures/studio.js'); await runStudio(params); } catch (e) { errBox.textContent += String(e.stack || e); }
-  window.__ready = true;
-  await new Promise(() => {});
-}
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(1);
 renderer.setSize(innerWidth, innerHeight);

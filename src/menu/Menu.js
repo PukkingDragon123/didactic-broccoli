@@ -1,8 +1,7 @@
 // The title screen. Dusk in the back lane: the garage lit up behind its half-rolled shutter, lanterns and noren, pigeons
 // on the wire, a moth at the lamp, a train now and then over the west bridge; you idling by a Shōwa gacha machine with
-// your phone, Mikan asleep on the bench. Over it hangs the shop's enamel sign, and under the sign a strand of paper
-// tags: the menu (words only, no icons: a tall ticket for the way in, manila tags, two short kraft ones for the
-// housekeeping). Picking Continue / New Game plays the machine (you crank it, a capsule drops and pops open),
+// your phone, Mikan asleep on the bench. Over it hangs the shop's enamel sign, and under the sign a strand of manila
+// price tags: the menu. Picking Continue / New Game plays the machine (you crank it, a capsule drops and pops open),
 // then the camera moves into the scene and the screen fades into the game. Wardrobe (or clicking yourself) turns the
 // camera to you and opens the dressing room (src/dressing, or the old closet while that isn't there).
 //
@@ -101,14 +100,13 @@ export class TitleMenu {
     const visiting = !!g.visiting;
     this.progress = progress;
     const it = [];
-    // (no icons: the type carries it. primary = the tall ticket; tier 3 = the short kraft tags)
-    if (progress || visiting) it.push({ id: 'continue', label: visiting ? 'Visit Shop' : 'Continue', note: visiting ? '' : `DAY ${g.clock?.day ?? 1}`, sub: visiting ? "A FRIEND'S SHOP" : 'BACK TO THE GARAGE', primary: true });
-    if (!visiting) it.push({ id: 'new', label: 'New Game', note: '¥100', sub: 'ONE COIN, ONE TURN', primary: !progress });
-    it.push({ id: 'host', label: 'Host Shop' });
-    it.push({ id: 'join', label: 'Join Friend' });
-    if (!visiting) it.push({ id: 'wardrobe', label: 'Wardrobe' });
-    it.push({ id: 'settings', label: 'Settings', tier: 3 });
-    it.push({ id: 'credits', label: 'Credits', tier: 3 });
+    if (progress || visiting) it.push({ id: 'continue', label: visiting ? 'Visit Shop' : 'Continue', note: visiting ? '' : `DAY ${g.clock?.day ?? 1}`, icon: 'play', primary: true });
+    if (!visiting) it.push({ id: 'new', label: 'New Game', note: '¥100', icon: 'capsule', primary: !progress });
+    it.push({ id: 'host', label: 'Host Shop', icon: 'host' });
+    it.push({ id: 'join', label: 'Join Friend', icon: 'join' });
+    if (!visiting) it.push({ id: 'wardrobe', label: 'Wardrobe', icon: 'shirt' });
+    it.push({ id: 'settings', label: 'Settings', icon: 'gear' });
+    it.push({ id: 'credits', label: 'Credits', icon: 'heart' });
     return it;
   }
 

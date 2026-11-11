@@ -10,14 +10,18 @@
 //   | 'install' { what, ... } (machines, shelves... installed on arrival by src/market/orders.js)
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
+import { pixMat } from '../gfx/geo.js';
+import { Pix, FONT_EN, FONT_DISPLAY } from '../gfx/pix.js';
 import { SERIES_BY_ID, getItem } from '../data/series/index.js';
+import { drawPattern } from './cards.js';
 import { ease } from '../core/util.js';
+import { wrapText, fitText } from './labels.js';
 import { DISPLAYS } from '../museum/catalog.js';
-import { PROPS, propMesh } from '../world/props.js';
+import { PROPS } from '../world/props.js';
 import { makeCapsuleBox } from './capsuleBox.js';
 import { makeParcelMesh } from '../market/models.js';
-import { sealedBox } from '../props/things/carton.js';
 
+const hex = (s) => parseInt(String(s).replace('#', ''), 16);
 let nextId = 1;
 
 /** English label for a held / delivered box (old saves may carry a Japanese `label`). */
@@ -33,21 +37,77 @@ export function boxLabel(d) {
   return d.name || d.label || '';
 }
 
+// box labels: 192x128 px, Grandstander at 16 px and GG Display at 28 / 56 px (their crisp sizes)
+function labelTex(kind, info) {
+  const W = 192, H = 128;
+  const p = new Pix(W, H, 4);
+  const centre = (str, y, o) => p.text(str, W / 2, y, { align: 'center', font: FONT_EN, size: 16, ...o });
+  if (kind === 'refill') {
+    const s = SERIES_BY_ID[info.series];
+    drawPattern(p, 0, 0, W, H, s.card.pattern, hex(s.card.bg), hex(s.card.accent));
+    p.rect(0, 0, W, 28, hex(s.card.accent));
+    p.rect(0, 28, W, 2, 0x000000, 50);
+    centre('CAPSULE REFILL', 6, { color: 0xffffff });
+    p.rect(10, 36, W - 20, 48, 0xffffff, 215);
+    wrapText(p, s.name.toUpperCase(), W - 28, 16).forEach((l, i, a) => centre(l, (a.length > 1 ? 39 : 50) + i * 20, { color: hex(s.card.text) }));
+    p.text(`x${info.count}`, W / 2, 76, { size: 56, color: 0xe5383b, outline: 0xffffff, align: 'center', font: FONT_DISPLAY });
+  } else if (kind === 'single') {
+    p.fill(0xf2d070);
+    for (let y = 0; y < H; y += 8) for (let x = (y / 8) % 2 ? 4 : 0; x < W; x += 8) p.circle(x, y, 1, 0xf8e0a0);
+    p.rect(20, 26, W - 40, 76, 0xffffff);
+    p.frame(20, 26, W - 40, 76, 0xd8c070);
+    centre('USED FIGURE', 34, { color: 0x555555 });
+    const name = getItem(info.key)?.name || '';
+    wrapText(p, name, W - 56, 16).forEach((l, i, a) => centre(l, (a.length > 1 ? 58 : 68) + i * 20, { color: 0xe5383b }));
+  } else {
+    p.fill(0xc89a5f); p.noise(0.05);
+    p.rect(12, 12, W - 24, H - 24, 0xf7f0de);
+    centre('DELIVERY', 18, { color: 0x8a7a6a });
+    const name = info.name || boxLabel({ type: 'decor', ...info }) || '';
+    wrapText(p, name.toUpperCase(), W - 44, 16).forEach((l, i, a) => centre(l, (a.length > 1 ? 44 : 54) + i * 20, { color: 0x333333 }));
+    p.rect(30, 86, W - 60, 22, 0xffd23f);
+    p.rect(30, 106, W - 60, 2, 0xc8960c);
+    centre(fitText(p, 'FRAGILE', W - 64, 16), 88, { color: 0xd8282a });
+  }
+  return p.texture();
+}
+
 export function makeBoxMesh(kind, info, size = [0.36, 0.24, 0.28]) {
-  // a real cardboard box (Poly Haven, CC0) at this size, with a printed shipping label (src/props/things/carton.js)
-  const single = kind === 'single';
-  const title = single ? getItem(info.key)?.name || 'Figure' : info.name || boxLabel({ type: 'decor', ...info }) || 'Delivery';
-  const group = sealedBox(size, { title, sub: single ? (info.finish && info.finish !== 'normal' ? info.finish : 'figure') : 'fragile', kind: single ? 'single' : 'decor' });
-  group.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+  const [w, h, d] = size;
+  const group = new THREE.Group();
+  const card = pixMat('cardboard', { roughness: 0.95 });
+  const geo = new THREE.BoxGeometry(w, h, d);
+  geo.translate(0, h / 2, 0);
+  const label = new THREE.MeshStandardMaterial({ map: labelTex(kind, info), roughness: 0.85 });
+  const mats = kind === 'single'
+    ? [label, label, label, label, label, label]
+    : [card, card, card, card, label, label];
+  const box = new THREE.Mesh(geo, mats);
+  box.castShadow = true; box.receiveShadow = true;
+  group.add(box);
+  if (kind !== 'single') {
+    const tape = new THREE.Mesh(new THREE.BoxGeometry(w + 0.002, 0.002, 0.05), new THREE.MeshStandardMaterial({ color: 0xc8a878, roughness: 0.35, transparent: true, opacity: 0.9 }));
+    tape.position.y = h + 0.001;
+    group.add(tape);
+  }
   group.userData.size = size;
   return group;
 }
 
 /** Paint roller (museum remodel tool). */
 export function makeRoller() {
-  // the modelled paint roller (src/props/models/growth.js gr_roller)
   const g = new THREE.Group();
-  g.add(propMesh('gr_roller', { fallbackSize: [0.2, 0.36, 0.08] }));
+  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.3, 10), new THREE.MeshStandardMaterial({ color: 0xffd23f, roughness: 0.4 }));
+  handle.position.set(0, 0.15, 0);
+  g.add(handle);
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.008, 0.12), new THREE.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 0.9, roughness: 0.3 }));
+  arm.position.set(0, 0.3, 0.06);
+  g.add(arm);
+  const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.2, 16), new THREE.MeshStandardMaterial({ color: 0xf6f0e8, roughness: 0.95 }));
+  roll.rotation.z = Math.PI / 2;
+  roll.position.set(0, 0.3, 0.12);
+  g.add(roll);
+  g.traverse((m) => { if (m.isMesh) m.castShadow = true; });
   return g;
 }
 

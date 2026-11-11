@@ -10,12 +10,10 @@
 import * as THREE from 'three';
 import { audio } from '../../core/audio.js';
 import { bgm } from '../../core/bgm.js';
+import { pixMat } from '../../gfx/geo.js';
 import { propMesh } from '../../world/props.js';
 import { Zone, Batch, V, pick, rnd, canvasMat, pixText, grain, sfx } from '../kit.js';
-import { IKit, imats, photoNorm } from '../../places/ikit.js';
-import { photoTex, PHOTO_TEX } from '../../kit/photoTex.js';
 import { MachineSpots } from '../machines.js';
-import { viewMat } from '../views.js';
 import { Crowd, NavGrid } from '../crowd.js';
 import { ORIGINS, ANNEX_SLOTS } from '../data.js';
 
@@ -98,17 +96,16 @@ export class Annex {
 
   mats() {
     const Z = this.zone, M = (m) => Z.mat(m);
-    // the old shop's real surfaces (src/kit/photoTex.js via src/places/ikit.js photoNorm: a tint is the colour it comes out as)
+    const tm = (k, o) => { const m = pixMat(k, o).clone(); m.vertexColors = true; return M(m); };
     this.M = {
-      conc: M(photoNorm('concrete_stained', { rough: 0.93 })), plaster: M(photoNorm('plaster_cream', { rough: 0.95 })), wood: M(photoNorm('timber_dark', { rough: 0.75 })),
-      woodL: M(photoNorm('wood_planks', { rough: 0.7 })), tile: M(photoNorm('tile_white', { rough: 0.4 })), ceil: M(photoNorm('plywood', { rough: 0.86 })),
-      paint: M(photoNorm('steel_painted', { rough: 0.66 })), metal: M(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.6 })),
+      conc: tm('concrete', { roughness: 0.95, bump: 0.6 }), plaster: tm('plaster', { roughness: 0.95, bump: 0.5 }), wood: tm('woodDark', { roughness: 0.7 }), woodL: tm('woodLight', { roughness: 0.7 }),
+      tile: tm('tile', { roughness: 0.5 }), ceil: tm('plaster', { roughness: 0.9, bump: 0.2 }),
+      paint: M(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7 })), metal: M(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.6 })),
       glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
     };
-    // wall strips (uvs in half metres): thirty years of smoke on stained plaster, then a fresh coat of cream emulsion
-    const inv = (n) => { const a = new THREE.Color(PHOTO_TEX[n].avg); return new THREE.Color(1 / a.r, 1 / a.g, 1 / a.b); };
-    this.dirty = M(new THREE.MeshStandardMaterial({ map: photoTex('plaster_cream'), color: new THREE.Color(0x8a7c62).multiply(inv('plaster_cream')), roughness: 0.95 }));
-    this.clean = M(new THREE.MeshStandardMaterial({ map: photoTex('concrete', { repeat: [0.8, 0.8] }), color: new THREE.Color(0xf6eedc).multiply(inv('concrete')), roughness: 0.9 }));
+    // wall strips: grimy and freshly painted
+    this.dirty = M(new THREE.MeshStandardMaterial({ map: pixMat('plaster', {}).map, color: 0x8e8068, roughness: 0.95 }));
+    this.clean = M(new THREE.MeshStandardMaterial({ map: pixMat('plaster', {}).map, color: 0xfff6e2, roughness: 0.9 }));
     this.tubeOn = new THREE.MeshBasicMaterial({ color: 0xf4faff });
     this.tubeOff = M(new THREE.MeshStandardMaterial({ color: 0x6a6e72, roughness: 0.4 }));
   }
@@ -117,7 +114,6 @@ export class Annex {
   shell() {
     const Z = this.zone, B = Z.B, M = this.M, X0 = -2.45, X1 = 2.45, Z0 = -2.9, Z1 = 2.9, t = 0.15;
     this.dims = { X0, X1, Z0, Z1 };
-    const K = new IKit(imats(this.game.places._ikConv ||= (m) => this.game.places.mat(m))), F = K.at(Z.o.x, 0, Z.o.z, 0);
     B.plane(M.conc, X1 - X0, Z1 - Z0, 0, 0, 0, { tint: 0xa8a090 });
     B.plane(M.ceil, X1 - X0, Z1 - Z0, 0, H, 0, { down: true, tint: 0xe8e0cc });
     for (let z = Z0 + 0.6; z < Z1; z += 0.9) B.box(M.wood, X1 - X0, 0.04, 0.05, 0, H - 0.04, z, { tint: 0x8a6a48 }); // ceiling battens
@@ -137,15 +133,9 @@ export class Annex {
       }
     });
     // skirting and the wall shells behind
-    // (moulded timber: the habaki skirting with its rounded top and a quirk, the mawaribuchi cornice with its bead)
     for (const [id, cx, cz, ry, len] of WALLS) {
-      const W = K.at(Z.o.x + cx, 0, Z.o.z + cz, ry), a = -len / 2, b = len / 2;
-      W.box('timber', a, 0, 0, b, 0.125, 0.024, { tint: 0x4a3020, bevel: 0.003 });
-      W.rod('timber', [a, 0.127, 0.012], [b, 0.127, 0.012], 0.012, { tint: 0x4a3020 });
-      W.box('timber', a, 0.006, 0.024, b, 0.016, 0.03, { tint: 0x3a2618 });
-      W.box('timber', a, H - 0.13, 0, b, H, 0.03, { tint: 0x6a4a30, bevel: 0.004 });
-      W.rod('timber', [a, H - 0.13, 0.026], [b, H - 0.13, 0.026], 0.011, { tint: 0x6a4a30 });
-      W.box('timber', a, H - 0.04, 0.03, b, H, 0.042, { tint: 0x5e4028, bevel: 0.003 });
+      B.box(M.wood, len, 0.15, 0.03, cx + Math.sin(ry) * 0.015, 0, cz + Math.cos(ry) * 0.015, { ry, tint: 0x4a3020 });
+      B.box(M.wood, len, 0.15, 0.03, cx + Math.sin(ry) * 0.015, H - 0.15, cz + Math.cos(ry) * 0.015, { ry, tint: 0x6a4a30 });
       B.box(M.plaster, len + 0.3, H, t, cx - Math.sin(ry) * t / 2, 0, cz - Math.cos(ry) * t / 2, { ry, tint: 0x6a5a48 });
       void id;
     }
@@ -157,32 +147,18 @@ export class Annex {
     B.box(M.plaster, 0.2, H - 0.8, t, 0.65, 0.8, Z1 + t / 2, { tint: 0x8a7a64 });
     B.box(M.plaster, 0.7, H - 1.85, t, 1.1, 1.85, Z1 + t / 2, { tint: 0x8a7a64 });
     B.box(M.plaster, o1 - o0, H - 2.1, t, (o0 + o1) / 2, 2.1, Z1 + t / 2, { tint: 0x8a7a64 });
-    // the shutter from inside: its guide rails (pressed steel channels on the jambs, bolted), the coil's hood box under
-    // the ceiling with its end plates and bolts, the rolled shutter's bottom bar with its lift handles and lock bolt
-    const SC = 0x7a7e7a;
-    for (const [x, sx] of [[o0, 1], [o1, -1]]) {
-      F.box('paint', x - 0.035, 0, Z1 - 0.012, x + 0.035, 2.12, Z1, { tint: SC });
-      for (const dx of [-0.035, 0.023]) F.box('paint', x + dx, 0, Z1 - 0.06, x + dx + 0.012, 2.12, Z1 - 0.012, { tint: SC, k: 0.92, bevel: 0.002 });
-      for (const y of [0.3, 1.0, 1.7]) F.lathe('satin', x - sx * 0.0, y, Z1 - 0.012, [[0.009, 0], [0.009, -0.004], [0.004, -0.007], [0, -0.008]], 8, { axis: 'z', tint: 0x9a9e9a });
-    }
-    F.box('paint', o0 - 0.1, H - 0.5, Z1 - 0.36, o1 + 0.1, H - 0.04, Z1, { tint: 0x8a8e88, bevel: 0.01 });
-    F.box('paint', o0 - 0.09, H - 0.36, Z1 - 0.365, o1 + 0.09, H - 0.34, Z1, { tint: 0x6e726c });
-    for (const [x, sx] of [[o0 - 0.1, -1], [o1 + 0.1, 1]]) {
-      F.box('paint', x - 0.005, H - 0.51, Z1 - 0.37, x + 0.005, H - 0.03, Z1, { tint: 0x6e726c, bevel: 0.003 });
-      for (const [y, z] of [[H - 0.42, Z1 - 0.08], [H - 0.42, Z1 - 0.28], [H - 0.14, Z1 - 0.18]]) F.lathe('satin', x + sx * 0.005, y, z, [[0.012, 0], [0.012, sx * 0.006], [0, sx * 0.009]], 6, { axis: 'x', tint: 0x5a5e5a });
-    }
-    F.box('paint', o0 + 0.03, 2.1, Z1 - 0.055, o1 - 0.03, 2.17, Z1 - 0.005, { tint: 0x8a8e88, bevel: 0.008 });
-    for (const x of [o0 + 0.5, o1 - 0.5]) F.pipe('satin', [[x - 0.06, 2.12, Z1 - 0.055], [x - 0.06, 2.07, Z1 - 0.08], [x + 0.06, 2.07, Z1 - 0.08], [x + 0.06, 2.12, Z1 - 0.055]], 0.008, { tint: 0x5a5e5a });
-    F.box('satin', o1 - 0.26, 2.12, Z1 - 0.085, o1 - 0.14, 2.15, Z1 - 0.055, { tint: 0x6a6e6a, bevel: 0.006 });
-    // the tobacco window from inside: the red plate over a real two-leaf aluminium sash, on a timber stool
-    F.box('paint', 0.71, 1.85, Z1 - 0.06, 1.49, 1.93, Z1 + 0.02, { tint: 0x8a3a2a, bevel: 0.008 });
-    F.box('timber', 0.7, 0.775, Z1 - 0.07, 1.5, 0.8, Z1 + 0.01, { tint: 0x6a4a30, bevel: 0.004 });
-    F.rod('timber', [0.7, 0.7875, Z1 - 0.07], [1.5, 0.7875, Z1 - 0.07], 0.0125, { tint: 0x6a4a30 });
+    B.box(M.metal, o1 - o0 + 0.1, 0.06, 0.1, (o0 + o1) / 2, 2.08, Z1, { tint: 0x7a7e7a }); // shutter rail
+    for (const x of [o0, o1]) B.box(M.metal, 0.06, 2.1, 0.1, x, 0, Z1, { tint: 0x7a7e7a });
+    // the tobacco window from inside: sliding glass with the red plate above
+    B.box(M.paint, 0.7, 0.08, 0.08, 1.1, 1.85, Z1 - 0.02, { tint: 0x8a3a2a });
+    B.box(M.paint, 0.7, 0.03, 0.1, 1.1, 0.8, Z1 - 0.02, { tint: 0x9a9a92 });
+    B.quad(M.paint, 0.66, 1.0, 1.1, 0.83, Z1 + 0.02, { ry: Math.PI, tint: 0xb8d0d8, k: 0.8 });
     // the back door to Mr. Sugimoto's old rooms (locked storage)
-    Z.prop('ax_door', 1.6, 0, Z0 + 0.03, 0);
+    B.box(M.wood, 0.85, 1.95, 0.05, 1.6, 0, Z0 + 0.03, { tint: 0x6a4a30 });
+    B.box(M.metal, 0.05, 0.05, 0.06, 1.3, 0.95, Z0 + 0.07, { tint: 0xc8b048 });
     Z.hit(0.85, 1.95, 0.1, 1.6, 0.98, Z0 + 0.06, { reach: 2.2, hint: () => ({ key: '', text: 'Back rooms', sub: 'Mr. Sugimoto\'s old living rooms. Locked: his family\'s things are still in there' }), use: () => false });
-    // the view out of the open shutter (the lane, the houses across it): a real photo as pixel art (src/growth/views.js)
-    this.view = viewMat('lane');
+    // the painted view out of the open shutter (the lane, the houses across it)
+    this.view = canvasMat(128, 64, (x, w, h) => this.drawView(x, w, h), { glow: true });
     const vq = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), this.view);
     vq.position.copy(Z.L(-0.7, 2.1, Z1 + 2.6)); vq.rotation.y = Math.PI;
     Z.group.add(vq);
@@ -194,43 +170,32 @@ export class Annex {
     // leave by the door
     Z.hit(o1 - o0, 2.1, 0.3, (o0 + o1) / 2, 1.05, Z1 + 0.2, { reach: 2.6, hint: () => ({ key: 'LMB', text: 'Go outside', sub: 'Back to the lane' }), use: () => { this.game.places.exit({ sound: 'slideDoor' }); return false; } });
     // lamps: two twin-tube fixtures (their tubes are in tubes())
-    for (const [x, z] of TUBES) {
-      F.box('paint', x - 0.66, H - 0.06, z - 0.13, x + 0.66, H, z + 0.13, { tint: 0xd8d6cc, bevel: 0.014 });
-      F.box('satin', x - 0.62, H - 0.062, z - 0.11, x + 0.62, H - 0.058, z + 0.11, { tint: 0xe8e8e2 });
-      for (const sx of [-1, 1]) for (const dz of [-0.07, 0.07]) F.box('gloss', x + sx * 0.615 - 0.014, H - 0.115, z + dz - 0.016, x + sx * 0.615 + 0.014, H - 0.06, z + dz + 0.016, { tint: 0xf0eee6, bevel: 0.004 });
-      F.rod('flat', [x + 0.66, H - 0.03, z], [x + 1.4, H - 0.02, z + 0.4], 0.006, { tint: 0x2a2a2c, sides: 6 });
-    }
-    // the tobacco window's sash (built in a frame turned to face the room: local +z = the room side of the front wall)
-    K.at(Z.o.x, 0, Z.o.z, Math.PI).sash(-1.45, -0.75, 0.8, 1.85, -Z1, { tint: 0xb4b8b6, depth: 0.09 });
-    // the old switch on its bakelite block by the door, its conduit up the left wall on saddles to the ceiling
-    const FL = K.at(Z.o.x - 2.45, 0, Z.o.z + 2.22, Math.PI / 2);
-    FL.box('gloss', -0.06, 1.1, 0, 0.06, 1.3, 0.022, { tint: 0x4a3428, bevel: 0.006 });
-    FL.switchPlate(0, 1.2, 0.022, { tint: 0xe8e2d2 });
-    FL.rod('satin', [0, 1.3, 0.012], [0, H - 0.17, 0.012], 0.009, { tint: 0x9a9890 });
-    FL.pipe('satin', [[0, H - 0.17, 0.012], [0, H - 0.12, 0.03], [0, H - 0.1, 0.12]], 0.009, { tint: 0x9a9890 });
-    for (let y = 1.5; y < H - 0.25; y += 0.4) { FL.box('satin', -0.016, y, 0.0, 0.016, y + 0.016, 0.024, { tint: 0x8a8880, bevel: 0.003 }); for (const s2 of [-1, 1]) FL.box('satin', s2 * 0.024 - 0.005, y + 0.003, 0.0, s2 * 0.024 + 0.005, y + 0.013, 0.004, { tint: 0x8a8880 }); }
-    // the breaker box by the back door: a pressed-steel cabinet, its door in a rebate with two hinge knuckles and a
-    // turn latch, the vent louvres, the meter-card frame, the conduits into its top
-    const BX = 0.81, BY = 1.55, BZ = Z0;
-    F.box('paint', BX - 0.19, BY, BZ, BX + 0.19, BY + 0.4, BZ + 0.075, { tint: 0xc8c4b8, bevel: 0.01 });
-    F.box('paint', BX - 0.175, BY + 0.015, BZ + 0.075, BX + 0.175, BY + 0.385, BZ + 0.083, { tint: 0xd2cec2, bevel: 0.006 });
-    for (const y of [BY + 0.06, BY + 0.32]) F.lathe('satin', BX - 0.185, y, BZ + 0.079, [[0.007, 0], [0.007, 0.045], [0, 0.047]], 8);
-    F.lathe('chrome', BX + 0.14, BY + 0.2, BZ + 0.083, [[0.014, 0], [0.014, 0.006], [0.01, 0.01], [0, 0.011]], 10, { axis: 'z' });
-    F.box('chrome', BX + 0.134, BY + 0.19, BZ + 0.093, BX + 0.146, BY + 0.21, BZ + 0.098, {});
-    for (let i = 0; i < 4; i++) F.box('paint', BX - 0.12, BY + 0.05 + i * 0.022, BZ + 0.083, BX - 0.02, BY + 0.062 + i * 0.022, BZ + 0.088, { tint: 0x9a968c, bevel: 0.002 });
-    F.box('satin', BX - 0.06, BY + 0.24, BZ + 0.083, BX + 0.06, BY + 0.31, BZ + 0.087, { tint: 0xb8b4a8, bevel: 0.002 });
-    F.box('flat', BX - 0.052, BY + 0.248, BZ + 0.087, BX + 0.052, BY + 0.302, BZ + 0.0875, { tint: 0xf0e8d4 });
-    for (const dx of [-0.1, 0.06]) { F.rod('satin', [BX + dx, BY + 0.4, BZ + 0.035], [BX + dx, H, BZ + 0.035], 0.011, { tint: 0x9a9890 }); F.lathe('satin', BX + dx, BY + 0.4, BZ + 0.035, [[0.018, 0], [0.018, 0.02], [0.012, 0.03]], 10); }
-    K.done(Z.group, 'annex:fittings');
+    for (const [x, z] of TUBES) { B.box(M.metal, 1.3, 0.06, 0.26, x, H - 0.07, z, { tint: 0xd8dcd8 }); }
   }
+  drawView(x, w, h) {
+    const R = (c, a, b, ww, hh) => { x.fillStyle = c; x.fillRect(a, b, ww, hh); };
+    R('#9ec4e2', 0, 0, w, 20); R('#b8d4ea', 0, 8, w, 12);
+    // houses across the lane: Mr. Mori's, the Yabukis' overgrown one
+    R('#c8c0b0', 0, 14, 40, 34); R('#8a909a', 0, 10, 42, 5); for (let i = 0; i < 3; i++) R('#3a4a5a', 4 + i * 12, 22, 8, 7);
+    R('#b8a888', 44, 18, 46, 30); R('#6a5a48', 42, 14, 50, 5); R('#f4e8b0', 52, 26, 10, 8); R('#3a4a5a', 70, 26, 10, 8);
+    R('#d8d0c0', 94, 12, 34, 36); R('#5a6a7a', 92, 8, 36, 5); R('#e8e0b8', 100, 20, 8, 10);
+    R('#3a6a3a', 46, 40, 20, 8); R('#4a7a3a', 84, 38, 10, 10);
+    R('#7a6a5a', 30, 4, 2, 44); R('#2a2a2a', 0, 6, w, 1); // a pole, its wire
+    R('#bab4a8', 0, 48, w, 4); R('#4a4a50', 0, 52, w, 12); R('#e8e4d8', 0, 57, w, 1);
+    grain(x, 0, 48, w, 16, ['#55555a', '#3e3e44'], 0.08, 4);
+  }
+
   counter() {
     const Z = this.zone, B = Z.B, M = this.M, z1 = this.dims.Z1;
     // the old tobacco counter under the window, tiled front, and the cigarette shelves on the right wall
-    Z.prop('ax_counter', 1.75, 0, z1 - 0.4, Math.PI); // (src/props/models/fixtures.js)
+    B.box(M.tile, 1.4, 0.85, 0.6, 1.75, 0, z1 - 0.4, { tint: 0xc84a3a });
+    B.box(M.woodL, 1.5, 0.05, 0.66, 1.75, 0.85, z1 - 0.4, { tint: 0xc8a070 });
     Z.prop('cash_register', 2.1, 0.9, z1 - 0.45, Math.PI + 0.3, 0.9);
     Z.block(1.05, 2.45, z1 - 0.72, z1);
     // an open shelf unit: back board, two sides, five shelves
-    Z.prop('ax_shelf', 2.275, 0, 0.1, -Math.PI / 2);
+    B.box(M.wood, 0.03, 2.0, 2.6, 2.43, 0, 0.1, { tint: 0x7a5230 });
+    for (const z of [-1.2, 1.4]) B.box(M.wood, 0.32, 2.0, 0.04, 2.29, 0, z, { tint: 0x6a4428 });
+    for (let i = 0; i < 5; i++) B.box(M.woodL, 0.3, 0.025, 2.56, 2.28, 0.35 + i * 0.38, 0.1, { tint: 0xb89068 });
     Z.block(2.12, 2.45, -1.2, 1.4);
     // after the renovation: figures on the counter and the shelves (the old stock's place)
     const disp = this.display = new THREE.Group();

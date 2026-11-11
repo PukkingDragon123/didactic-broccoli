@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ensureState } from '../game/stateExt.js';
-import { makePigeon } from '../animals/pigeon.js';
+import { propMesh } from '../world/props.js';
 import { GARAGE } from '../world/Garage.js';
 import { pixCanvas, hitBox } from './util.js';
 
@@ -163,7 +163,7 @@ export class Droppings {
   // ------------------------------------------------------------------ a pigeon flying right over you now and then
   flyover() {
     const g = this.game, P = g.player.pos;
-    const m = makePigeon();
+    const m = propMesh('pigeon_fly', { castShadow: true });
     const side = Math.random() < 0.5 ? -1 : 1;
     const from = V(P.x + side * 9, 4.2, P.z + rnd(-1.5, 1.5)), to = V(P.x - side * 9, 4.8, P.z + rnd(-1.5, 1.5));
     m.position.copy(from);
@@ -196,8 +196,7 @@ export class Droppings {
       const k = f.t / f.dur;
       f.m.position.lerpVectors(f.from, f.to, k);
       f.m.position.y += Math.sin(k * Math.PI) * 0.4;
-      f.m.userData.anim({ fly: 1, flap: f.t * 24 });
-      f.m.rotation.x = -0.12;
+      f.m.children[0] && (f.m.scale.y = 0.85 + Math.abs(Math.sin(f.t * 22)) * 0.3);
       if (f.will && !f.dropped && k > 0.47) {
         f.dropped = true;
         // aimed at where you are (the drop takes ~0.9 s; most people keep walking)

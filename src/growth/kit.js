@@ -9,7 +9,7 @@
 //     zone.convert(obj)                swap every material under obj for its interior variant
 //     zone.block(x0, x1, z0, z1)       a player obstacle (zone-local rectangle)
 //     zone.hit(w, h, d, x, y, z, handler) / zone.target(obj, handler)    clickables, live only while you're inside
-//     zone.prop(id, x, y, z, ry, s)    a prop from propMesh, its own materials in their interior variants
+//     zone.prop(id, x, y, z, ry, s)    a voxel prop (interior materials)
 //   bright(m)  fluorescent-lit material: flat bright shop lighting from above, no sun, no sky tint (the Kaikan)
 //   Batch      the static batcher (vertex-coloured boxes merged into one mesh per material)
 //   pixTex(w, h, draw) / canvasMat(w, h, draw, opts)   pixel-art canvas textures (nearest filtering)
@@ -19,7 +19,6 @@ import { worldBox } from '../gfx/geo.js';
 import { propMesh } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { audio } from '../core/audio.js';
-import { converted } from '../places/ikit.js';
 
 export const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 export const pick = (a) => a[Math.floor(Math.random() * a.length)];
@@ -101,10 +100,10 @@ export class Batch {
     g.translate(x, y + h / 2, z);
     return this.add(mat, g, o.tint, o.k);
   }
-  /** Upward plane at y (world UVs unless o.unit, o.uv an offset); o.down faces down (ceilings). */
+  /** Upward plane at y (world UVs unless o.unit); o.down faces down (ceilings). */
   plane(mat, w, d, x, y, z, o = {}) {
     const g = new THREE.PlaneGeometry(w, d);
-    if (!o.unit) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w * (o.s || 1) + (o.uv?.[0] || 0), uv.getY(i) * d * (o.s || 1) + (o.uv?.[1] || 0)); }
+    if (!o.unit) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w * (o.s || 1), uv.getY(i) * d * (o.s || 1)); }
     g.rotateX(-Math.PI / 2);
     if (o.down) g.rotateX(Math.PI);
     if (o.ry) g.rotateY(o.ry);
@@ -208,7 +207,7 @@ export class Zone {
     if (!m) return m;
     if (Array.isArray(m)) return m.map((x) => this.mat(x));
     if (this.light === 'bright') return bright(m);
-    if (LAMPED.has(m) || converted(m)) return m; // already an interior variant (converting twice would patch the shader twice)
+    if (LAMPED.has(m)) return m; // already an interior variant (converting twice would patch the shader twice)
     const c = this.places.mat(m);
     LAMPED.add(c);
     return c;
@@ -256,7 +255,8 @@ export class Zone {
   }
   prop(id, x, y, z, ry = 0, s = 1, parent = this.group) {
     const m = propMesh(id, { castShadow: false });
-    this.convert(m); // (the prop keeps its own materials: its atlas page, or the voxel set)
+    if (Array.isArray(m.material)) m.material = this.vox();
+    else m.material = this.mat(m.material);
     m.position.copy(this.L(x, y, z));
     m.rotation.y = ry;
     if (s !== 1) m.scale.setScalar(s);

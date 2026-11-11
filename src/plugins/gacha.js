@@ -6,10 +6,6 @@ import { MACHINE_SLOTS } from '../world/Garage.js';
 import { capacityFor } from '../game/economy.js';
 import { openBoxStep } from '../game/capsuleBox.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
-import { makeCapsule, makeShell, dressColor, unpackLook, lookFor, packLook, capsuleColor, LOOKS } from '../game/Capsule.js';
-import { installRitual, capOf } from '../gachakit/ritual.js';
-import { syncCelEnv } from '../gachakit/celenv.js';
-import { setPrintThumbs, refreshPrints } from '../gachakit/capsulePrint.js';
 
 let extras = [];
 try { extras = Object.values(import.meta.glob('../game/{shells,toys,packaging}.js', { eager: true })); } catch { /* none yet */ }
@@ -17,40 +13,7 @@ try { extras = Object.values(import.meta.glob('../game/{shells,toys,packaging}.j
 export function install(game) {
   for (const m of extras) m.installInto?.(game);
   cartonHooks(game);
-  capsuleHooks(game);
   game.gachaDebug = debugHelpers(game);
-}
-
-/**
- * Capsules: what a capsule holds shows on its shell (the look rides in its colour: see Capsule.js), opening one is the
- * step-by-step ritual (src/gachakit/ritual.js), the painted highlight rooms follow the camera, and the mini-books get
- * their product shots once the thumbnails exist.
- */
-function capsuleHooks(g) {
-  const dress = (d) => { if (d && d.rarity) d.color = dressColor(d); return d; };
-  const stage = (cap, d) => { if (cap?.steps?.length) cap.setStage(Math.min(d.seal || 0, cap.steps.length - 1), 0); };
-  /** Swap a capsule built before its look was known (an old save) for the right shell, in place. */
-  const redress = (obj, cap, d) => {
-    if (!cap || !d?.rarity || unpackLook(d.color).look === lookFor(d.rarity, d.finish)) return;
-    dress(d);
-    const nc = makeCapsule(d.series, d.color);
-    obj.remove(cap.top, cap.bottom);
-    nc.top.traverse((o) => { o.layers.mask = obj.layers.mask; }); nc.bottom.traverse((o) => { o.layers.mask = obj.layers.mask; });
-    obj.add(nc.top, nc.bottom);
-    Object.assign(cap, nc, { group: obj });
-  };
-  const spawn = g.items.spawnCapsule.bind(g.items);
-  g.items.spawnCapsule = (data, pos, vel, opts) => { dress(data); const ent = spawn(data, pos, vel, opts); stage(ent.cap, data); return ent; };
-  for (const ent of g.items.list) if (ent.kind === 'capsule') { redress(ent.obj, ent.cap, ent.data); stage(ent.cap, ent.data); }
-  for (const it of g.held.slots) if (it?.kind === 'capsule') { const cap = capOf(it); redress(it.obj, cap, it.data); stage(cap, it.data); }
-  installRitual(g);
-  setPrintThumbs(g.thumbs);
-  let t = 2;
-  g.constructor.updaters.push((game, dt) => {
-    if (game !== g) return;
-    syncCelEnv(g.scene, g.camera);
-    if ((t -= dt) <= 0) { t = 4; refreshPrints(); }
-  });
 }
 
 /** A capsule carton in your hands: open it anywhere, one step per click (tape, then flaps). */
@@ -106,37 +69,6 @@ function debugHelpers(g) {
       g.scene.add(mesh);
       return g.held.take('box', data, mesh);
     },
-    /** A capsule of a given look in your hand ('plain' | 'glitter' | 'pearl' | 'metal' | 'gold' | 'secret'). */
-    capsule(series = 'mochi', look = 'plain', seal = 0) {
-      if (g.held.item) g.held.consume();
-      const S = SERIES_BY_ID[series], pick = (r) => S.items.find((i) => i.rarity === r) || S.items[0];
-      const rarity = { plain: 'common', glitter: 'uncommon', pearl: 'rare', metal: 'common', gold: 'ultra', secret: 'secret' }[look] || 'common';
-      const data = { series, key: pick(rarity).key, finish: look === 'metal' ? 'metallic' : 'normal', rarity, seal };
-      const ent = g.items.spawnCapsule(data, g.camera.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, -0.2, -0.3)));
-      g.items.pickUp(ent);
-      return ent.cap;
-    },
-    /** Pose the held capsule at step i, progress p (for screenshots). */
-    stage(i = 0, p = 0) { const it = g.held.item, cap = capOf(it); if (!cap) return null; it.data.seal = i; cap._ritual = it; cap.setStage(i, p); return cap.steps.map((s) => s.kind); },
-    /** Every shell type and look in a row at (x, y, z), facing +z; returns the groups. opts: { stage: [i, p], gap } */
-    showcase(x = 0, y = 1, z = 0, opts = {}) {
-      const list = opts.list || ['mochi:plain', 'showa:plain', 'yokai:plain', 'wagashi:plain', 'mochi:glitter', 'mochi:pearl', 'mochi:metal', 'mochi:gold', 'mochi:secret', 'kaiju:plain', 'omamori:plain', 'konbini:plain'];
-      const out = [], gap = opts.gap || 0.1, cols = opts.cols || list.length;
-      list.forEach((e, n) => {
-        const [series, look, size] = e.split(':');
-        const cap = opts.shell ? makeShell(series, packLook(capsuleColor(series, () => 0.1), look)) : makeCapsule(series, packLook(capsuleColor(series, () => 0.1), look, look === 'metal'), size ? { size } : {});
-        if (opts.stage && cap.steps.length) cap.setStage(Math.min(opts.stage[0], cap.steps.length - 1), opts.stage[1] || 0);
-        if (opts.open) { cap.setStage(cap.steps.length - 1, 1); cap.top.position.set(-1.25 * cap.r, 0.5 * cap.r, 0.3 * cap.r); cap.top.rotation.set(0.3, 0.4, 1.9); if (cap.foil) cap.foil.visible = !!opts.foil; }
-        cap.group.position.set(x + ((n % cols) - (cols - 1) / 2) * gap, y - Math.floor(n / cols) * gap, z);
-        cap.group.rotation.set(opts.rx ?? 0.25, opts.ry ?? -0.35, 0);
-        g.scene.add(cap.group);
-        out.push(cap);
-      });
-      g.gachaDebug.shown = (g.gachaDebug.shown || []).concat(out);
-      return out;
-    },
-    clearShowcase() { for (const c of g.gachaDebug.shown || []) c.group.removeFromParent(); g.gachaDebug.shown = []; },
-    looks: LOOKS,
     /** n customer turns on machine i. */
     customers(i = 0, n = 3) { const m = g.machines[i]; const out = []; for (let k = 0; k < n; k++) { m.state = 'idle'; m.spin = null; out.push(m.customerPlay()); } return out; },
   };

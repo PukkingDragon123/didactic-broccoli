@@ -10,6 +10,7 @@
 // Save flags (game.state.flags): ghostMet, ghostAlley (done, the reward was given), ghostFails (times caught).
 //   new GhostAlley(game)  ->  update(dt) each frame
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createHuman } from '../people/index.js';
 import { talk } from '../people/voice.js';
 import { menace } from '../ui/menacing.js';
@@ -18,7 +19,6 @@ import { draw5 } from '../gfx/font5x7.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { rollCapsule } from '../game/economy.js';
 import { formatYen, hash2 } from '../core/util.js';
-import { Dog } from '../animals/dog.js';
 
 const X0 = -9.3, X1 = -7.5, MOUTH = 14.9, SHRINE = 20.15, BACK = 22.3; // the walkable alley; reaching SHRINE starts the walk out
 const HOME = new THREE.Vector3(-8.5, 0, 16.4), END = new THREE.Vector3(-8.75, 0, 20.6);
@@ -80,6 +80,21 @@ function plaque() {
   return new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.22), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 }));
 }
 
+/** Pixel-dithered warm disc for the lamp's pool of light (alpha-cut, no soft blob). */
+function poolTexture() {
+  const N = 32, c = document.createElement('canvas'); c.width = c.height = N;
+  const g = c.getContext('2d'), im = g.createImageData(N, N);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const d = Math.hypot(x - N / 2 + 0.5, y - N / 2 + 0.5) / (N / 2), k = 1 - d;
+    const on = k > 0 && k * 1.4 > BAYER[(y & 3) * 4 + (x & 3)] / 16, o = (y * N + x) * 4;
+    im.data[o] = 255; im.data[o + 1] = 200; im.data[o + 2] = 120; im.data[o + 3] = on ? 255 : 0;
+  }
+  g.putImageData(im, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace; t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+  return t;
+}
+
 /** Ghostly look for every mesh under root: see-through, pale blue, faintly glowing, no shadows. */
 function ghostify(root, op = 0.55) {
   const mats = [];
@@ -98,35 +113,50 @@ function ghostify(root, op = 0.55) {
   return mats;
 }
 
-// ------------------------------------------------------------------ the ghost dog
-// A white mutt with floppy grey ears, grey socks and a red collar (src/animals/dog.js: one skinned mesh on a rigged
-// skeleton); ghostify() tints and fades its material. A depth-only copy drawn first keeps the far legs and the inside of
-// the body from showing through, so he reads as one pale shape.
-export class GhostDog {
+/** Box geometry with a flat vertex colour (bottom at y unless centred). */
+function cbox(w, h, d, x, y, z, col, { rx = 0, rz = 0, ry = 0, centre = false } = {}) {
+  const g = new THREE.BoxGeometry(w, h, d);
+  if (rx) g.rotateX(rx); if (rz) g.rotateZ(rz); if (ry) g.rotateY(ry);
+  g.translate(x, centre ? y : y + h / 2, z);
+  const c = new THREE.Color(col), n = g.attributes.position.count, a = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; }
+  g.setAttribute('color', new THREE.BufferAttribute(a, 3));
+  return g;
+}
+
+// ------------------------------------------------------------------ the ghost dog (chunky voxel-ish rig)
+class GhostDog {
   constructor() {
-    this.dog = new Dog('ghost', { cast: false });
-    this.root = this.dog.root;
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 });
+    const part = (geos, x, y, z) => { const m = new THREE.Mesh(mergeGeometries(geos), mat); const p = new THREE.Group(); p.position.set(x, y, z); p.add(m); return p; };
+    const W = 0xf4f0e8, G = 0xb8b4ac, D = 0x2a2a2a;
+    this.root = new THREE.Group();
+    this.body = part([cbox(0.24, 0.22, 0.5, 0, -0.11, 0, W), cbox(0.25, 0.12, 0.2, 0, -0.02, -0.08, G), cbox(0.18, 0.16, 0.14, 0, -0.06, 0.27, W)], 0, 0.46, 0);
+    this.head = part([cbox(0.2, 0.2, 0.2, 0, -0.05, 0.05, W), cbox(0.12, 0.1, 0.12, 0, -0.07, 0.19, W), cbox(0.05, 0.04, 0.03, 0, -0.01, 0.255, D),
+      cbox(0.06, 0.1, 0.04, -0.085, 0.07, 0.0, G, { rz: 0.4 }), cbox(0.06, 0.1, 0.04, 0.085, 0.07, 0.0, G, { rz: -0.4 }),
+      cbox(0.025, 0.025, 0.01, -0.05, 0.03, 0.15, D), cbox(0.025, 0.025, 0.01, 0.05, 0.03, 0.15, D), cbox(0.21, 0.04, 0.17, 0, -0.14, 0.04, 0xc84a3a)], 0, 0.62, 0.3);
+    this.tail = part([cbox(0.05, 0.05, 0.22, 0, 0, 0.1, W, { rx: -0.6, centre: true })], 0, 0.5, -0.26);
+    this.legs = [[-0.08, 0.17], [0.08, 0.17], [-0.08, -0.17], [0.08, -0.17]].map(([x, z]) => part([cbox(0.07, 0.36, 0.07, 0, -0.36, 0, W), cbox(0.08, 0.04, 0.1, 0, -0.36, 0.02, G)], x, 0.38, z));
+    this.root.add(this.body, this.head, this.tail, ...this.legs);
     this.t = 0;
   }
   update(dt, speed, sit, lookAt) {
-    const d = this.dog;
     this.t += dt;
-    if (!this.pre) {
-      const m = d.mesh;
-      const pre = this.pre = new THREE.SkinnedMesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2 }));
-      pre.bind(m.skeleton, m.bindMatrix);
-      pre.renderOrder = 1; pre.frustumCulled = false; pre.raycast = () => {};
-      m.add(pre);
-    }
-    d.speed = speed; d.pose = sit ? 'sit' : 'stand'; d.wag = speed > 0.05 ? 0.7 : 0.35;
-    d.lookAt = lookAt || null;
-    // a ghost's slow float: the whole dog breathes a hair off the ground
-    d.root.children[0].position.y = 0.006 + Math.sin(this.t * 2) * 0.004;
-    d.update(dt);
+    const swing = Math.min(1, speed * 1.8) * Math.sin(this.t * 11) * 0.5;
+    this.legs.forEach((l, i) => { l.rotation.x = (i === 0 || i === 3 ? swing : -swing); });
+    this.tail.rotation.y = Math.sin(this.t * (speed > 0.05 ? 9 : 5)) * 0.5;
+    this.tail.rotation.x = -0.2;
+    const s = sit ? 1 : 0;
+    this.body.rotation.x = -0.35 * s; this.body.position.y = 0.46 - 0.08 * s;
+    this.legs[2].position.y = this.legs[3].position.y = 0.38 - 0.12 * s;
+    this.head.position.y = 0.62 + 0.04 * s + Math.sin(this.t * 2) * 0.005;
+    if (lookAt) {
+      _v.copy(lookAt); this.root.worldToLocal(_v);
+      this.head.rotation.y = Math.max(-0.8, Math.min(0.8, Math.atan2(_v.x, _v.z - 0.3)));
+    } else this.head.rotation.y *= 0.9;
   }
   /** A two-yip 8-bit bark from p. */
   bark(p) {
-    this.dog.barkT = 0.35;
     try {
       const a = audio, out = a.out({ pos: p, vol: 0.5 }), t = a.ctx.currentTime;
       for (let i = 0; i < 2; i++) a.tone(out, t + i * 0.16, { wave: a.pulse(0.25), f: 620, f2: 340, dur: 0.1, vol: 0.28 });
@@ -191,24 +221,45 @@ export class GhostAlley {
 
   say(text, dur = 3.4) { this.game.pedestrians?.bubbles.say(this.h, text, { dur, onChar: this.voice }); }
 
-  // ---------------------------------------------------------------- scenery: the lamp's bulb and light, the plaque (the rest: src/town/alley.js)
+  // ---------------------------------------------------------------- scenery: post box, the lamp, the shrine's offerings, clutter
   buildScenery() {
-    // the alley's dressing (the post box, the lamp pole and its shade, drain lids, weeds, the umbrella and pots, the meter,
-    // the shrine's lanterns and offerings) is modelled with the lane: src/town/alley.js. Here: the colliders, the bulb
-    // and its light, the plaque, the hands.
-    const G = this.group;
+    const G = this.group, geos = [];
+    // 丸型ポスト: the old red round post box at the mouth (a 12-sided drum, domed cap, slot, white plate)
+    const drum = new THREE.CylinderGeometry(0.21, 0.21, 1.05, 12); drum.translate(POST.x, 0.62, POST.z);
+    const paint = (g, col) => { const c = new THREE.Color(col), n = g.attributes.position.count, a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); if (g.index) return g.toNonIndexed(); return g; };
+    const cap = new THREE.CylinderGeometry(0.17, 0.23, 0.12, 12); cap.translate(POST.x, 1.2, POST.z);
+    const dome = new THREE.CylinderGeometry(0.06, 0.17, 0.08, 12); dome.translate(POST.x, 1.3, POST.z);
+    const foot = new THREE.CylinderGeometry(0.24, 0.24, 0.1, 12); foot.translate(POST.x, 0.05, POST.z);
+    geos.push(paint(drum, 0xc8281e), paint(cap, 0xb82018), paint(dome, 0xb82018), paint(foot, 0x2a2a2a));
+    for (const g of [cbox(0.2, 0.03, 0.04, POST.x - 0.2, 0.98, POST.z, 0x1a1a1a, { ry: Math.PI / 2 }), cbox(0.02, 0.18, 0.13, POST.x - 0.205, 0.62, POST.z, 0xf4f0e6), cbox(0.02, 0.06, 0.13, POST.x - 0.21, 0.52, POST.z, 0xc8281e)]) geos.push(g.toNonIndexed());
+    // the lamp: a weathered wooden pole by the east wall, an enamel shade on an arm over the alley
+    for (const g of [cbox(0.12, 3.05, 0.12, LAMP.x, 0, LAMP.z, 0x5a4a3a), cbox(0.62, 0.05, 0.05, LAMP.x - 0.3, 2.8, LAMP.z, 0x3a3a38), cbox(0.03, 0.18, 0.03, LAMP.x - 0.56, 2.64, LAMP.z, 0x2a2a28),
+      cbox(0.3, 0.06, 0.3, LAMP.x - 0.56, 2.56, LAMP.z, 0x2e5a3e), cbox(0.2, 0.05, 0.2, LAMP.x - 0.56, 2.61, LAMP.z, 0x2e5a3e), cbox(0.1, 0.08, 0.04, LAMP.x + 0.06, 1.6, LAMP.z, 0xe8e4d8)]) geos.push(g.toNonIndexed());
+    // the shrine: offerings (a cup of water, sake, flowers, a little pile of coins), a red bib, two small stone lanterns
+    for (const g of [cbox(0.08, 0.08, 0.08, -8.62, 0.42, 21.05, 0xe8e4dc), cbox(0.06, 0.13, 0.06, -8.24, 0.42, 21.05, 0xf4f0e6), cbox(0.05, 0.05, 0.05, -8.42, 0.42, 20.98, 0xc8a840),
+      cbox(0.04, 0.2, 0.04, -8.78, 0.42, 21.1, 0x3e7a34), cbox(0.08, 0.06, 0.08, -8.78, 0.6, 21.1, 0xf8f0a0), cbox(0.04, 0.2, 0.04, -8.06, 0.42, 21.1, 0x3e7a34), cbox(0.08, 0.06, 0.08, -8.06, 0.6, 21.1, 0xf0a0c0),
+      cbox(0.18, 0.5, 0.18, -9.05, 0, 21.0, 0x8a8880), cbox(0.26, 0.06, 0.26, -9.05, 0.5, 21.0, 0x7a7870), cbox(0.14, 0.12, 0.14, -9.05, 0.56, 21.0, 0xe8c070), cbox(0.26, 0.08, 0.26, -9.05, 0.68, 21.0, 0x7a7870),
+      cbox(0.18, 0.5, 0.18, -7.8, 0, 21.0, 0x8a8880), cbox(0.26, 0.06, 0.26, -7.8, 0.5, 21.0, 0x7a7870), cbox(0.14, 0.12, 0.14, -7.8, 0.56, 21.0, 0xe8c070), cbox(0.26, 0.08, 0.26, -7.8, 0.68, 21.0, 0x7a7870)]) geos.push(g.toNonIndexed());
+    // clutter down the alley: a covered drain on the east side, weeds, an old umbrella, broken pots, a cobwebbed meter on Mikawa-ya's wall
+    for (let z = 15.6; z < 21.5; z += 0.6) geos.push(cbox(0.28, 0.03, 0.58, -7.68, 0, z, hash2(z * 10, 3) < 0.2 ? 0x6a6a64 : 0x8a8a84).toNonIndexed());
+    for (let i = 0; i < 14; i++) { const z = 15.4 + hash2(i, 5) * 6.2, x = hash2(i, 6) < 0.5 ? -9.3 : -7.55, k = hash2(i, 7); geos.push(cbox(0.12 + k * 0.1, 0.1 + k * 0.25, 0.12, x + (x < -8 ? 0.06 : -0.06), 0, z, k < 0.5 ? 0x4a6a32 : 0x5a7a3a, { ry: k * 3 }).toNonIndexed()); }
+    for (const g of [cbox(0.04, 0.9, 0.04, -9.25, 0, 17.6, 0x2a2a2a, { rz: 0.5 }), cbox(0.36, 0.06, 0.36, -9.05, 0.75, 17.6, 0x3a3a5a, { rz: 0.5 }),
+      cbox(0.22, 0.18, 0.22, -9.2, 0, 19.2, 0xa8583a), cbox(0.18, 0.1, 0.12, -9.0, 0, 19.45, 0x98482a, { ry: 0.6 }),
+      cbox(0.06, 0.32, 0.26, -9.37, 1.35, 18.2, 0xc8c4bc), cbox(0.02, 0.1, 0.14, -9.34, 1.45, 18.2, 0x2a2c2e)]) geos.push(g.toNonIndexed());
+    const mesh = new THREE.Mesh(mergeGeometries(geos.map((g) => { if (!g.attributes.normal) g.computeVertexNormals(); if (g.attributes.uv) g.deleteAttribute('uv'); return g; })), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 }));
+    mesh.receiveShadow = true;
+    G.add(mesh);
     this.game.player.addObstacle(POST.x - 0.24, POST.x + 0.24, POST.z - 0.24, POST.z + 0.24);
     this.game.player.addObstacle(LAMP.x - 0.08, LAMP.x + 0.08, LAMP.z - 0.08, LAMP.z + 0.08);
-    // the bulb (flickers) and its real light: a warm lamp whose light falls off naturally over the ground and the walls
-    // (no painted pool or disc: src/gfx/sunMask.js softens a lamp's falloff near the source)
+    // the bulb (flickers), its dithered pool on the ground
     this.bulbM = new THREE.MeshBasicMaterial({ color: 0xffd890 });
-    const bulbP = [[0, -0.05], [0.014, -0.047], [0.026, -0.036], [0.032, -0.02], [0.031, -0.004], [0.022, 0.012], [0.014, 0.022], [0.013, 0.04], [0, 0.04]].map(([r, y]) => new THREE.Vector2(r, y));
-    const bulb = new THREE.Mesh(new THREE.LatheGeometry(bulbP, 16), this.bulbM);
-    bulb.position.set(LAMP.x - 0.56, 2.5, LAMP.z);
+    const bulb = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.12), this.bulbM);
+    bulb.position.set(LAMP.x - 0.56, 2.52, LAMP.z);
     G.add(bulb);
-    this.lampL = new THREE.PointLight(0xffc880, 0, 7, 2);
-    this.lampL.position.set(LAMP.x - 0.56, 2.42, LAMP.z);
-    G.add(this.lampL);
+    this.poolM = new THREE.MeshBasicMaterial({ map: poolTexture(), alphaTest: 0.5, transparent: true, opacity: 0.32, depthWrite: false, color: 0xffc880 });
+    const pool = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), this.poolM);
+    pool.rotation.x = -Math.PI / 2; pool.position.set(LAMP.x - 0.65, 0.014, LAMP.z); pool.renderOrder = 2;
+    G.add(pool);
     this.flick = 1; this.flickT = 0;
     // the plaque on the block wall at the mouth
     const pl = plaque();
@@ -293,7 +344,7 @@ export class GhostAlley {
     }
     const night = Math.max(0.35, g.lighting?.state?.night ?? 0.6);
     this.bulbM.color.setRGB(1, 0.85, 0.56).multiplyScalar(0.2 + this.flick * 1.3);
-    this.lampL.intensity = 1.8 * this.flick * Math.max(0.5, night);
+    this.poolM.opacity = 0.55 * this.flick * Math.max(0.5, night);
     const dPl = P.pos.distanceTo(h.root.position), near = dPl < 7;
     const show = this.present && dPl < 30;
     h.root.visible = this.dog.root.visible = show;

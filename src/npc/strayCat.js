@@ -21,8 +21,9 @@ export class StrayCat {
     this.t = 0;
   }
   build() {
-    const r = this.rig = new CatRig({ coat: 'tabby' }); // a dark grey mackerel tabby with amber eyes
-    r.root.scale.setScalar(0.94);
+    const r = this.rig = new CatRig();
+    r.mat.color.setHex(0x4a4446); // a dark grey stray (the calico pattern only just shows)
+    r.root.scale.setScalar(0.92);
     r.root.visible = false;
     this.game.scene.add(r.root);
     this.a = crowdOf(this.game).agent(r.root.position, { r: 0.16, kind: 'cat', owner: this });

@@ -1,7 +1,7 @@
 // Posters and neighbourhood notices pasted up around the lane, on walls, poles, a shutter, the underpass piers, the
 // community board and the park. Every picture on them is a real photo (Google Open Images, CC BY 2.0: see CREDITS.md;
 // public/img/photos/lane/ and the flyer photos in public/img/photos/), picked at random each time you play, then
-// cover-cropped to a few dozen pixels, colour-graded like old print, printed in a few of their own inks (clean clusters, no dither) and set with
+// cover-cropped to a few dozen pixels, colour-graded like old print, posterized with an ordered dither and set with
 // the pixel fonts: travel campaign posters, a sumo tour, the zoo, kakigori, the summer festival, lost cats and a lost
 // dog with tear-off phone tabs, a flat for rent. Nothing on them is drawn by hand except the lettering.
 //
@@ -11,8 +11,6 @@
 import * as THREE from 'three';
 import { Pix, FONT_JP } from '../gfx/pix.js';
 import { hash2 } from '../core/util.js';
-import { inkPrint } from '../gfx/inkPrint.js';
-import { whenPrintReady, drawPrint, hasPrint } from '../products/printArt.js';
 
 const ZB = 5.3, ZF = 14.9, XT = 26;
 const LANE = (n) => `img/photos/lane/${n}.jpg`;
@@ -28,6 +26,7 @@ const PH = {
   any: [LANE('fuji_morning'), LANE('sumo'), LANE('baseball'), LANE('kakigori'), LANE('aquarium'), LANE('snow_monkeys'), LANE('hydrangea'), FLY('skyline'), FLY('rainy_lane'), FLY('cumulus'), FLY('milky_way'), FLY('neon_night')],
 };
 const TRAVEL = [['富士山', 'SEE JAPAN'], ['ふるさと', 'BY RAIL'], ['旅に出よう', 'JNR'], ['夏の海', 'SUMMER'], ['湯けむり', 'ONSEN']];
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 
 const images = new Map();
 function load(path) {
@@ -35,7 +34,7 @@ function load(path) {
   return images.get(path);
 }
 
-/** Draw a photo cover-cropped into pix at (x, y, w, h), graded and printed in a few of its own inks (src/gfx/inkPrint.js). fade: sun-bleached (reds go first). */
+/** Draw a photo cover-cropped into pix at (x, y, w, h), graded and dithered. fade: sun-bleached (reds go first). */
 function photo(p, img, x, y, w, h, { fade = 0, levels = 5, warm = 0.3 } = {}) {
   if (!img) { p.rect(x, y, w, h, 0x8a8478); return; }
   const c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -43,17 +42,19 @@ function photo(p, img, x, y, w, h, { fade = 0, levels = 5, warm = 0.3 } = {}) {
   const s = Math.max(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * s, dh = img.naturalHeight * s;
   g.imageSmoothingQuality = 'high';
   g.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
-  const im = g.getImageData(0, 0, w, h), d = im.data;
+  const im = g.getImageData(0, 0, w, h), d = im.data, step = 255 / (levels - 1);
   for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
     const o = (j * w + i) * 4;
     let r = d[o], gg = d[o + 1], b = d[o + 2];
     // old-print grade: a little warm, lifted blacks; faded posters lose their reds and yellows to the sun
     r = r * (1 + warm * 0.12) + 10; gg = gg * (1 + warm * 0.04) + 8; b = b * (1 - warm * 0.08) + 12;
     if (fade) { const l = (r + gg + b) / 3; r = r + (l - r) * fade * 0.8 + 18 * fade; gg = gg + (l - gg) * fade * 0.4 + 14 * fade; b = b + 30 * fade; }
-    d[o] = Math.max(0, Math.min(255, r)); d[o + 1] = Math.max(0, Math.min(255, gg)); d[o + 2] = Math.max(0, Math.min(255, b));
+    const t = (BAYER[(j & 3) * 4 + (i & 3)] / 16 - 0.47) * step * 0.7;
+    d[o] = Math.max(0, Math.min(255, Math.round((r + t) / step) * step));
+    d[o + 1] = Math.max(0, Math.min(255, Math.round((gg + t) / step) * step));
+    d[o + 2] = Math.max(0, Math.min(255, Math.round((b + t) / step) * step));
   }
   g.putImageData(im, 0, 0);
-  inkPrint(c, levels * 3);
   p.flush(); p.ctx.drawImage(c, x, y); p.pull();
 }
 
@@ -181,10 +182,10 @@ function spots() {
     ['rent', null, 40, 58, 0.26, 18.45, 0.72, nF, Math.PI, 0.02],
     ['zoo', 'zoo', 48, 68, 0.36, 19.15, 0.6, nF, Math.PI, -0.02],
     // utility poles (notices tied at eye height, facing the lane)
-    ['lost', 'cats', 40, 58, 0.22, -22.4, 1.25, 14.32 - 0.172, Math.PI, 0.0],
-    ['festival', 'fest', 40, 58, 0.24, 10.0, 1.2, 14.32 - 0.172, Math.PI, 0.0],
-    ['lost', 'cats', 40, 58, 0.22, -16.3, 1.3, 14.32 - 0.172, Math.PI, 0.0],
-    ['rent', null, 40, 58, 0.22, 17.6, 1.25, 14.32 - 0.172, Math.PI, 0.0],
+    ['lost', 'cats', 40, 58, 0.22, -22.4, 1.25, 14.32 - 0.24, Math.PI, 0.0],
+    ['festival', 'fest', 40, 58, 0.24, 10.0, 1.2, 14.32 - 0.24, Math.PI, 0.0],
+    ['lost', 'cats', 40, 58, 0.22, -16.3, 1.3, 14.32 - 0.24, Math.PI, 0.0],
+    ['rent', null, 40, 58, 0.22, 17.6, 1.25, 14.32 - 0.24, Math.PI, 0.0],
     // the underpass piers (guerrilla posters on the brick, facing the lane)
     ['event', 'event', 48, 68, 0.38, -(XT - 0.4), 1.15, 13.25, Math.PI / 2, 0.02],
     ['travel', 'travel', 48, 68, 0.38, XT - 0.4, 1.12, 13.3, -Math.PI / 2, -0.02],
@@ -199,20 +200,8 @@ function spots() {
   ];
 }
 
-// The posters are baked from the photos at four times these sizes, in real typefaces (tools/bake-print.py, keys
-// 'lane:<design>:<n>'); a poster without a baked version is drawn as before and enlarged.
-const Z = 4;
-const BAKED = { travel: 6, event: 2, zoo: 3, kakigori: 1, festival: 2, lost: 6, rent: 2, print: 6 };
-function bakedKey(it) {
-  const n = BAKED[it.design] || 0, k = Math.floor(hash2(it.seed, 77) * 1000);
-  if (it.design === 'lost') return 'lane:lost:' + (it.dog ? 4 + (k % 2) : k % 4);
-  if (it.design === 'event') return 'lane:event:' + ((it.src || '').includes('sumo') ? 0 : 1);
-  if (it.design === 'festival') return 'lane:festival:' + (it.r.w > 170 ? 0 : 1);
-  if (it.design === 'zoo') { const i = ['elephant', 'giraffe', 'aquarium'].findIndex((a) => (it.src || '').includes(a)); return 'lane:zoo:' + (i < 0 ? k % 3 : i); }
-  return 'lane:' + it.design + ':' + (k % Math.max(1, n));
-}
 export function buildLanePosters(t) {
-  const AW = 2048, AH = 1024;
+  const AW = 512, AH = 512;
   const atlas = new Pix(AW, AH, 5);
   atlas.flush();
   const tex = new THREE.CanvasTexture(atlas.canvas);
@@ -223,17 +212,16 @@ export function buildLanePosters(t) {
   let ax = 0, ay = 0, row = 0;
   const list = [];
   const rnd = Math.random;
-  spots().forEach(([design, pool, pw0, ph0, mw, x, y, z, ry, tilt], i) => {
-    const pw = pw0 * Z, ph = ph0 * Z;
+  spots().forEach(([design, pool, pw, ph, mw, x, y, z, ry, tilt], i) => {
     if (ax + pw > AW) { ax = 0; ay += row + 1; row = 0; }
     if (ay + ph > AH) return;
     const r = { x: ax, y: ay, w: pw, h: ph };
     ax += pw + 1; row = Math.max(row, ph);
-    const mh = mw * ph0 / pw0, seed = Math.floor(rnd() * 1000) + i * 17;
+    const mh = mw * ph / pw, seed = Math.floor(rnd() * 1000) + i * 17;
     const age = 0.8 + rnd() * 0.25; // sun and rain: older posters are a little darker and greyer
     t.quadUV(mat, mw, mh, x, y, z, [r.x / AW, 1 - (r.y + r.h) / AH, (r.x + r.w) / AW, 1 - r.y / AH], { ry, rz: tilt, tint: new THREE.Color(age, age, age * 0.97).getHex() });
     const src = pool ? PH[pool][Math.floor(rnd() * PH[pool].length)] : null;
-    list.push({ design, pool, src, r, seed, dog: pool === 'dogs', w0: pw0, h0: ph0 });
+    list.push({ design, pool, src, r, seed, dog: pool === 'dogs' });
     // a paper placeholder until the photo is in
     atlas.rect(r.x, r.y, r.w, r.h, 0xe8e2d2);
   });
@@ -241,22 +229,17 @@ export function buildLanePosters(t) {
   tex.needsUpdate = true;
   // paint everything once the photos and the pixel fonts are ready
   const fonts = document.fonts ? Promise.all([document.fonts.load('16px "DotGothic16"', '迷い猫'), document.fonts.load('16px "Alagard"')]).catch(() => {}) : Promise.resolve();
-  // the baked posters need no fonts or photos: lay them in as soon as the print sheets are in
-  whenPrintReady().then(() => { let n = 0; for (const it of list) { const key = bakedKey(it); if (hasPrint(key)) { atlas.ctx.clearRect(it.r.x, it.r.y, it.r.w, it.r.h); drawPrint(atlas.ctx, key, it.r.x, it.r.y, it.r.w, it.r.h); n++; } } if (n) tex.needsUpdate = true; });
-  Promise.all([fonts, whenPrintReady(), ...list.map((it) => (it.src ? load(it.src) : Promise.resolve(null)))]).then(([, , ...imgs]) => {
+  Promise.all([fonts, ...list.map((it) => (it.src ? load(it.src) : Promise.resolve(null)))]).then(([, ...imgs]) => {
     list.forEach((it, i) => {
-      const key = bakedKey(it);
-      if (hasPrint(key)) { atlas.ctx.clearRect(it.r.x, it.r.y, it.r.w, it.r.h); drawPrint(atlas.ctx, key, it.r.x, it.r.y, it.r.w, it.r.h); return; }
-      const p = new Pix(it.w0, it.h0, it.seed);
+      const p = new Pix(it.r.w, it.r.h, it.seed);
       try {
         if (it.design === 'lost') DESIGNS.lost(p, [imgs[i]], it.seed, it.dog);
         else DESIGNS[it.design](p, [imgs[i]], it.seed, it.src || '');
-        wear(p, it.seed, { tape: it.h0 > 50 });
+        wear(p, it.seed, { tape: it.r.h > 50 });
       } catch (e) { console.warn('lane poster', it.design, e); }
       p.flush();
       atlas.ctx.clearRect(it.r.x, it.r.y, it.r.w, it.r.h);
-      atlas.ctx.imageSmoothingEnabled = false;
-      atlas.ctx.drawImage(p.canvas, it.r.x, it.r.y, it.r.w, it.r.h);
+      atlas.ctx.drawImage(p.canvas, it.r.x, it.r.y);
     });
     tex.needsUpdate = true;
   });

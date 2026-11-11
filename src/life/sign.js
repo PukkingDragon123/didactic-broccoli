@@ -3,9 +3,11 @@
 // come in while it shows OPEN (game.sim.isOpen reads life.signOpen). The town's own painted OPEN plate on that pier is
 // put away (this sign replaces it). The shop lanterns follow the sign once the shop has reopened.
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
-import { propMesh, propSize } from '../world/props.js';
+import { propMesh } from '../world/props.js';
+import { signPix } from './art.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 export const HOOK = { x: 3.62, y: 2.2, z: 5.262 };
@@ -29,12 +31,16 @@ export class OpenSign {
     // the sign on its cord (pivot at the hook)
     const grp = new THREE.Group();
     grp.position.set(HOOK.x, HOOK.y, HOOK.z + 0.015);
-    // the same modelled sign you carry (src/props/models/life.js open_sign_prop: 営業中 on the front, 準備中 on the
-    // back, its cord's apex on the hook), so flipping it shows the other painted face
-    const board = propMesh('open_sign_prop', { fallbackSize: [0.44, 0.3, 0.04] });
-    board.position.y = -propSize('open_sign_prop').y;
+    const wood = new THREE.MeshStandardMaterial({ color: 0x8a5a30, roughness: 0.85 });
+    const face = (open) => new THREE.MeshStandardMaterial({ map: signPix(open).texture(), roughness: 0.8 });
+    this.openMat = face(true); this.closedMat = face(false);
+    const board = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.21, 0.022), [wood, wood, wood, wood, this.openMat, this.closedMat]);
+    board.position.y = -0.27;
     board.castShadow = true; board.receiveShadow = true;
     grp.add(board);
+    const cordM = new THREE.MeshStandardMaterial({ color: 0x8a6a4a, roughness: 0.9 });
+    const cords = [-1, 1].map((s) => { const c = new THREE.BoxGeometry(0.006, 0.23, 0.006); c.rotateZ(s * 0.95); c.translate(s * 0.075, -0.075, 0); return c; });
+    grp.add(new THREE.Mesh(mergeGeometries(cords), cordM));
     g.scene.add(grp);
     this.grp = grp;
     this.board = board;

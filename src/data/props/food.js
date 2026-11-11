@@ -6,8 +6,6 @@ import { shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, fill } from './garage.js';
 import { FOODS, DRINK_IDS } from '../../needs/foods.js';
-import { drinkMesh } from '../../products/containers.js';
-import { goodsMesh, GOODS } from '../../products/goods.js';
 
 const R = Math.round;
 const P = {};
@@ -107,10 +105,9 @@ function drinkProp(f) {
     },
   };
 }
-// (the voxel shape stays as the sized stand-in for propSize / instancing; what you see is the real container)
-for (const id of DRINK_IDS) P['vd_' + id.slice(3)] = { ...drinkProp(FOODS[id]), mesh: (o) => drinkMesh(id, o) };
+for (const id of DRINK_IDS) P['vd_' + id.slice(3)] = drinkProp(FOODS[id]);
 // the "out of order" blank sample can (used for empty slots)
-P.vd_blank = { ...drinkProp({ name: 'Can', art: { body: 0xd8dce0, band: 0xb8bcc0, band2: 0x9aa0a6 } }), mesh: (o) => drinkMesh('vd_blank', o) };
+P.vd_blank = drinkProp({ name: 'Can', art: { body: 0xd8dce0, band: 0xb8bcc0, band2: 0x9aa0a6 } });
 
 // ------------------------------------------------------------------ plants (pot + stage), the tools for them
 const POT = 0xb8643a, POT_D = 0x8a4628, SOIL = 0x3a2614;
@@ -164,7 +161,6 @@ for (let st = 0; st <= 4; st++) {
   P['plant_cactus_' + st] = { name: 'Cactus', jp: 'サボテン', voxel: 0.008, build: (v) => { v.jitter = 0.03; cactus(v, st); } };
 }
 P.watering_can = {
-  asset: { id: 'watering_can_metal_01', ry: Math.PI / 2 }, // Poly Haven, CC0 (src/kit/assets.js)
   name: 'Watering Can', jp: 'じょうろ', voxel: 0.008,
   build(v) {
     v.jitter = 0.02;
@@ -364,8 +360,5 @@ P.rm_ticket = {
   name: 'Meal Ticket', jp: '食券', voxel: 0.003,
   build(v) { fill(v, -9, 0, 0, 9, 13, 0, (x, y) => (y > 9 ? 0x2a6ad8 : (x + y) % 9 === 0 ? 0x8a8a8a : 0xf4f0e4)); },
 };
-
-// the packs src/products models (the voxel shapes above stay as sized stand-ins)
-for (const id of GOODS) if (P[id]) P[id].mesh = (o) => goodsMesh(id, o);
 
 export default P;

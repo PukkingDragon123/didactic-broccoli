@@ -1,6 +1,5 @@
 // Cutscenes: letterbox bars, fades, typewriter subtitles, title cards and scripted camera moves, written as
-// generator scripts that yield "waiters". Subtitles and "hold to skip" are plain floating text with a hard ink outline
-// (no box; styled in src/ui/paper.css with the tones of src/people/bubbles.css):
+// generator scripts that yield "waiters":
 //   game.cutscene.play(function* (c) { yield c.fade(0, 1); yield c.cam({ pos, look, dur: 3 }); c.say('Hello'); yield c.wait(2); });
 // Hold Space / Enter / click to skip: every waiter then finishes at once, so the script's side effects still run.
 import * as THREE from 'three';
@@ -65,7 +64,6 @@ export class Cutscene {
     this.skipping = false;
     this.skipT = 0;
     this.hand = 0.006;
-    this.ends = [];
     this.gen = script(this);
     this.waiter = null;
     this.camOn = false;
@@ -102,9 +100,6 @@ export class Cutscene {
     this.ticks = [];
     this.offset.set(0, 0, 0);
     this.memory(false);
-    // whatever the script asked to be told (atEnd), then whoever is waiting for the scene
-    const ends = this.ends || []; this.ends = [];
-    for (const fn of ends) { try { fn(); } catch (e) { console.error('cutscene end', e); } }
     const r = this.resolve; this.resolve = null;
     r?.();
   }
@@ -149,10 +144,6 @@ export class Cutscene {
 
   /** Run fn(dt) every frame until the cutscene ends (actors, bubbles that must keep moving under any waiter). */
   every(fn) { this.ticks.push(fn); return null; }
-
-  /** Run fn() the moment the cutscene ends, however it ends (played out, skipped, replaced): before anyone waiting
-   *  on play() carries on. For handing borrowed things back. */
-  atEnd(fn) { (this.ends ||= []).push(fn); return null; }
 
   /** Sepia memory look on/off (CSS filter on the canvas + vignette). */
   memory(on) { document.body.classList.toggle('memory', !!on); return null; }
@@ -228,11 +219,9 @@ export class Cutscene {
   /** The player's voice in subtitles (src/people/voice.js). */
   get voice() { return this._voice || (this._voice = talk(null, { base: 245, duty: 0.25, vol: 1.2 })); }
 
-  /** Typewriter subtitle. Yield it to wait until typed + `hold` seconds. who: the speaker's name over the line, in
-   *  `color` (theirs); voice: an onChar chirp (default: yours). */
-  say(text, hold = 2.2, who = '', voice = null, color = '') {
-    this.subEl.innerHTML = (who ? '<span class="who"></span>' : '') + '<span class="txt"></span>';
-    if (who) { const w = this.subEl.firstChild; w.textContent = who; if (color) w.style.color = color; }
+  /** Typewriter subtitle. Yield it to wait until typed + `hold` seconds. voice: an onChar chirp (default: yours). */
+  say(text, hold = 2.2, who = '', voice = null) {
+    this.subEl.innerHTML = (who ? `<span class="who">${who}</span>` : '') + '<span class="txt"></span>';
     this.subEl.classList.add('show');
     this.typing = { text, i: 0, t: 0, el: this.subEl.querySelector('.txt'), voice: voice || this.voice };
     let t = 0;

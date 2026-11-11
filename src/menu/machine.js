@@ -1,4 +1,4 @@
-// The title screen's gacha machine: the 1970s ¥100 countertop unit (red enamel, cream front, on its fruit crate) outside the
+// The title screen's gacha machine: a Shōwa ¥100 unit (cream enamel, red trim, on its fruit crate) standing outside the
 // half-rolled shutter, its window piled with capsules. Picking Continue / New Game plays it: the handle cranks round
 // with its ratchet ticks, GACHAN, the flap kicks open, a capsule rolls into the tray, bounces, and pops open in a burst
 // of pixel confetti (src/gfx/pixfx.js sprites through game.effects).
@@ -60,7 +60,6 @@ export class MenuMachine {
     }
     const n = pts.length;
     const bot = new THREE.InstancedMesh(pg.bottom, pg.bottomMat, n), top = new THREE.InstancedMesh(pg.top, pg.topMat, n);
-    const coat = pg.coat ? new THREE.InstancedMesh(pg.coat, pg.coatMat, n) : null;
     const m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), one = new THREE.Vector3(1, 1, 1), c = new THREE.Color();
     pts.forEach((p, i) => {
       e.set(rnd() * 6.28, rnd() * 6.28, rnd() * 6.28);
@@ -69,13 +68,11 @@ export class MenuMachine {
       bot.setMatrixAt(i, m); top.setMatrixAt(i, m);
       bot.setColorAt(i, c.setHex(COLORS[Math.floor(rnd() * COLORS.length)]));
     });
-    if (coat) { coat.instanceMatrix = top.instanceMatrix; coat.renderOrder = 2.5; }
-    const ims = [bot, top, coat].filter(Boolean);
-    for (const im of ims) { im.frustumCulled = false; im.userData.noRim = true; im.raycast = () => {}; }
+    for (const im of [bot, top]) { im.frustumCulled = false; im.userData.noRim = true; im.raycast = () => {}; }
     bot.castShadow = true;
     top.renderOrder = 2;
     this.pile = new THREE.Group();
-    this.pile.add(...ims);
+    this.pile.add(bot, top);
     this.built.group.add(this.pile);
   }
 
@@ -88,7 +85,7 @@ export class MenuMachine {
   dispense() {
     const L = this.L, r = CAPSULE_R.M;
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const cap = makeCapsule(this.series, color, { size: 'M', style: 'clear', shape: 'ball', look: 'plain', seals: false });
+    const cap = makeCapsule(this.series, color, { size: 'M', style: 'clear' });
     const g = cap.group;
     const from = new THREE.Vector3(0, L.outlet.y0 + r * 1.2, L.front - 0.03);
     const to = new THREE.Vector3(0.012, L.tray.y + r + 0.006, this.trayAt.z + 0.01);
@@ -141,8 +138,6 @@ export class MenuMachine {
       }
     }
     this.built.handlePivot.rotation.z = -this.angle;
-    const pw = this.built.pawl;
-    if (pw) pw.rotation.z = pw.userData.rest + 0.32 * ((this.angle / (Math.PI / 6)) % 1);
     // the pile rattles with each click of the ratchet
     this.shake = Math.max(0, this.shake - dt * 0.02);
     this.pile.position.set((Math.random() - 0.5) * this.shake, Math.random() * this.shake, (Math.random() - 0.5) * this.shake);

@@ -9,8 +9,6 @@ import { audio } from '../../core/audio.js';
 import { playSong } from '../../room/sfx.js';
 import { LIFT, CH, FLOORS } from './layout.js';
 import { canvasMat, pixText, sfx } from '../kit.js';
-import { photoNorm } from '../../places/ikit.js';
-import { photoTex } from '../../kit/photoTex.js';
 
 const MOVE = 1.9, DOOR_T = 0.9, HOLD = 5;
 
@@ -30,36 +28,31 @@ export class Elevator {
   // ------------------------------------------------------------------ geometry (per floor zone)
   build(zone, n) {
     const Z = zone, B = Z.B, L = LIFT;
-    // hairline stainless (the brushed photo), vinyl cloth on the lobby walls
-    const steel = Z.mat(photoNorm('steel_galvanised', { rough: 0.34, metal: 0.65, metres: 0.8 }));
-    const paint = Z.mat(photoNorm('canvas_cloth', { rough: 0.86 }));
+    const steel = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.7 }));
+    const paint = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }));
     const glow = new THREE.MeshBasicMaterial({ vertexColors: true });
     const dw = L.dw, wx = L.door;
     // the lobby wall with the doorway, the shaft above
     B.box(paint, 0.12, CH, 1.2 - dw, wx + 0.02, 0, -(1.2 + dw) / 2, { tint: 0xd8d4cc });
     B.box(paint, 0.12, CH, 1.2 - dw, wx + 0.02, 0, (1.2 + dw) / 2, { tint: 0xd8d4cc });
     B.box(paint, 0.12, CH - 2.15, dw * 2, wx + 0.02, 2.15, 0, { tint: 0xd8d4cc });
-    Z.prop('kk_lift_frame', wx + 0.11, 0, 0, Math.PI / 2); // the stainless architrave and sill (src/props/models/fixtures.js)
+    B.box(steel, 0.06, 2.2, 0.08, wx + 0.09, 0, -dw - 0.04, { tint: 0xc8ccd2 });
+    B.box(steel, 0.06, 2.2, 0.08, wx + 0.09, 0, dw + 0.04, { tint: 0xc8ccd2 });
+    B.box(steel, 0.06, 0.08, dw * 2 + 0.16, wx + 0.09, 2.12, 0, { tint: 0xc8ccd2 });
     for (const z of [-1.2, 1.2]) B.box(paint, L.door - (-13), CH, 0.12, (-13 + L.door) / 2, 0, z, { tint: 0xd8d4cc });
     // the car: steel walls, the mirror at the back, a handrail, a glowing ceiling, a rubber floor
     B.plane(paint, L.x1 - L.x0, L.z1 - L.z0, (L.x0 + L.x1) / 2, 0.005, 0, { tint: 0x3a3a40 });
     B.box(steel, 0.02, L.ch, L.z1 - L.z0, L.x0, 0, 0, { tint: 0xb8bcc2 });
     for (const z of [L.z0, L.z1]) B.box(steel, L.x1 - L.x0, L.ch, 0.02, (L.x0 + L.x1) / 2, 0, z, { tint: 0xc0c4ca });
     B.box(steel, 0.01, 1.1, 1.6, L.x0 + 0.015, 0.95, 0, { tint: 0xe8f0f6 }); // mirror
-    // round handrails on standoff brackets
-    const rail = (ax, az, bx, bz, ox, oz) => {
-      const len = Math.hypot(bx - ax, bz - az), g = new THREE.CylinderGeometry(0.019, 0.019, len, 12);
-      g.rotateX(Math.PI / 2); g.rotateY(Math.atan2(bx - ax, bz - az)); g.translate((ax + bx) / 2, 0.92, (az + bz) / 2); B.add(steel, g, 0xd8dce2);
-      for (const t of [0.15, 0.85]) { const x = ax + (bx - ax) * t, z = az + (bz - az) * t, b = new THREE.CylinderGeometry(0.008, 0.008, 0.05, 8); b.rotateX(Math.PI / 2); b.rotateY(Math.atan2(ox, oz)); b.translate(x - ox * 0.025, 0.92, z - oz * 0.025); B.add(steel, b, 0xc8ccd2); }
-    };
-    rail(L.x0 + 0.06, -0.9, L.x0 + 0.06, 0.9, -1, 0);
-    for (const [z, s] of [[L.z0 + 0.05, -1], [L.z1 - 0.05, 1]]) rail(L.x0 + 0.15, z, L.x1 - 0.15, z, 0, s);
+    B.box(steel, 0.04, 0.04, 1.8, L.x0 + 0.06, 0.9, 0, { tint: 0xd8dce2 });
+    for (const z of [L.z0 + 0.05, L.z1 - 0.05]) B.box(steel, 1.7, 0.04, 0.04, (L.x0 + L.x1) / 2, 0.9, z, { tint: 0xd8dce2 });
     B.box(glow, L.x1 - L.x0 - 0.2, 0.02, L.z1 - L.z0 - 0.2, (L.x0 + L.x1) / 2, L.ch - 0.04, 0, { tint: 0xfff8e8 });
     B.box(paint, L.x1 - L.x0 + 0.1, 0.06, L.z1 - L.z0 + 0.1, (L.x0 + L.x1) / 2, L.ch, 0, { tint: 0x8a8e94 });
     B.box(steel, 0.08, L.ch, L.z1 - dw - 0.01, L.x1 + 0.12, 0, -(dw + L.z1) / 2, { tint: 0xb8bcc2 });
     B.box(steel, 0.08, L.ch, L.z1 - dw - 0.01, L.x1 + 0.12, 0, (dw + L.z1) / 2, { tint: 0xb8bcc2 });
     // the doors (two leaves sliding apart)
-    const leafM = Z.mat(new THREE.MeshStandardMaterial({ map: photoTex('steel_galvanised', { repeat: [0.6, 2.6] }), color: 0xa2a8ae, roughness: 0.38, metalness: 0.55, envMapIntensity: 0.4 }));
+    const leafM = Z.mat(new THREE.MeshStandardMaterial({ color: 0x8a9098, roughness: 0.45, metalness: 0.5, envMapIntensity: 0.35 }));
     const leaves = [-1, 1].map((s) => {
       const m = new THREE.Mesh(new THREE.BoxGeometry(0.04, 2.1, dw), leafM);
       m.position.copy(Z.L(wx - 0.02, 1.05, s * dw / 2));
@@ -68,12 +61,10 @@ export class Elevator {
     });
     // the indicator over the doors, the call button beside them, the floor buttons inside
     const ind = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.18), this.out);
-    ind.position.copy(Z.L(wx + 0.105, 2.42, 0)); ind.rotation.y = Math.PI / 2; Z.group.add(ind);
-    Z.prop('kk_lift_ind', wx + 0.09, 2.42, 0, Math.PI / 2);
+    ind.position.copy(Z.L(wx + 0.09, 2.42, 0)); ind.rotation.y = Math.PI / 2; Z.group.add(ind);
     const callMat = canvasMat(12, 20, (x) => this.drawCall(x, n), { glow: true });
     const call = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.2), callMat);
-    call.position.copy(Z.L(wx + 0.1, 1.15, 0.82)); call.rotation.y = Math.PI / 2; Z.group.add(call);
-    Z.prop('kk_lift_call', wx + 0.088, 1.15, 0.82, Math.PI / 2);
+    call.position.copy(Z.L(wx + 0.09, 1.15, 0.82)); call.rotation.y = Math.PI / 2; Z.group.add(call);
     const pan = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.46), this.inside);
     pan.position.copy(Z.L(L.x1 + 0.07, 1.25, -0.78)); pan.rotation.y = -Math.PI / 2; Z.group.add(pan);
     const sticker = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.1), canvasMat(20, 14, (x) => { x.fillStyle = '#f4f0e4'; x.fillRect(0, 0, 20, 14); x.fillStyle = '#2f5a9a'; x.fillRect(0, 0, 20, 4); pixText(x, '検査済', 10, 4, { size: 8, align: 'center', color: '#241a1e' }); }));

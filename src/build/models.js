@@ -5,11 +5,7 @@
 //   buildPiece(def, st) -> { root, parts, box (local Box3) }
 //   ghostOf(def, st)    -> a dim, solid, slightly transparent stand-in (never white, never glowing)
 import * as THREE from 'three';
-import { propMesh, propSize, propAsset } from '../world/props.js';
-import { thingMesh } from '../props/things/make.js';
-import { rrect } from '../props/things/form.js';
-import { parcelShellGeometry, parcelFlapGeometry } from '../props/things/parcel.js';
-import { mat as mat_, chrome as chrome_, plastic as plastic_, rubber as rubber_ } from '../props/kit/kit.js';
+import { propMesh } from '../world/props.js';
 import { pixMat, boxMesh } from '../gfx/geo.js';
 import { draw5 } from '../gfx/font5x7.js';
 import { GLYPHS } from '../data/props/garage.js';
@@ -26,7 +22,6 @@ export function buildPiece(def, st = {}) {
   root.name = 'piece:' + def.id;
   const parts = {};
   if (M.prop) {
-    // (props with a real model, def.asset in src/data/props, come back drawn with it: src/world/props.js)
     const m = propMesh(M.prop, { fallbackSize: def.box });
     if (M.scale) m.scale.setScalar(M.scale);
     root.add(m);
@@ -113,18 +108,9 @@ function tvScreen(root, parts, s) {
   const g = c.getContext('2d');
   g.fillStyle = '#1e2624'; g.fillRect(0, 0, 40, 32);
   const t = canvasTex(c);
-  let m;
-  if (propAsset('crt_tv') === 'Television_01') {
-    // the picture tube of the real model (0.6 x 0.457 x 0.471 m): measured off a straight-on render
-    const ps = propSize('crt_tv'), k = Math.min(ps.x / 0.6, ps.y / 0.457, ps.z / 0.471) * s;
-    m = new THREE.Mesh(new THREE.PlaneGeometry(0.372, 0.29), new THREE.MeshBasicMaterial({ map: t, color: 0x9aa0a0 }));
-    m.position.set(-0.0615 * k, 0.259 * k, 0.229 * k);
-    m.scale.setScalar(k);
-  } else {
-    m = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.2), new THREE.MeshBasicMaterial({ map: t, color: 0x9aa0a0 }));
-    m.position.set(-0.06 * s, 0.215 * s, 0.224 * s);
-    m.scale.setScalar(s);
-  }
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.2), new THREE.MeshBasicMaterial({ map: t, color: 0x9aa0a0 }));
+  m.position.set(-0.06 * s, 0.215 * s, 0.224 * s);
+  m.scale.setScalar(s);
   m.userData.noRim = true;
   root.add(m);
   parts.screen = m; parts.screenCanvas = c; parts.screenTex = t;
@@ -250,27 +236,15 @@ function neonCanvas(design, lit) {
 }
 function neon(root, parts, design) {
   const w = 0.72, h = 0.3;
-  root.add(thingMesh('decor', 'neonBoard', [-(w + 0.04) / 2, -(h + 0.04) / 2, 0, (w + 0.04) / 2, (h + 0.04) / 2, 0.03], neonBoard));
+  const board = boxMesh(w + 0.04, h + 0.04, 0.03, mat('neonBoard', () => new THREE.MeshStandardMaterial({ color: 0x18141c, roughness: 0.6 })));
+  board.position.z = 0.015;
+  root.add(board);
   const on = canvasTex(neonCanvas(design, true)), off = canvasTex(neonCanvas(design, false));
   const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: off }));
   face.position.z = 0.031;
   face.userData.noRim = true;
   root.add(face);
   parts.neon = { face, on, off };
-}
-
-/** The neon's backing: a black acrylic panel with rounded corners on four chrome stand-offs, its cable and transformer. */
-function neonBoard(K, B) {
-  const acryl = mat_(0x16121a, 0.32, 0x3a3440), chromeC = chrome_();
-  K.prism(acryl, rrect(B.w, B.h, 0.03, 4), { plane: 'xy', a: 0.018, b: 0.028 });
-  for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
-    const x = sx * (B.w / 2 - 0.035), y = sy * (B.h / 2 - 0.035);
-    K.cyl(chromeC, x, y, 0, 0.007, 0.018, 12, { axis: 'z' });
-    K.cyl(chromeC, x, y, 0.028, 0.009, 0.004, 12, { axis: 'z' }); // the cap screwed through the acrylic
-  }
-  // the transformer box behind the bottom right and its cable down to the plug
-  K.box(plastic_(0x2a2a2e), B.x1 - 0.16, B.y0 + 0.03, 0.002, B.x1 - 0.07, B.y0 + 0.09, 0.017, { bevel: 0.003 });
-  K.tube(rubber_(0x1c1c1e), [[B.x1 - 0.1, B.y0 + 0.03, 0.01], [B.x1 - 0.09, B.y0 - 0.02, 0.012], [B.x1 - 0.08, B.y0 - 0.12, 0.012]], 0.0035, 6);
 }
 
 // ------------------------------------------------------------------ rugs
@@ -345,10 +319,11 @@ export function boxLabelCanvas(text) {
 }
 function storageBox(root, parts, st) {
   const { w, h, d } = BOX, t = 0.008;
-  // the photographed corrugated board of the market's cartons (src/props/things/parcel.js), open at the top
-  const shell = new THREE.Mesh(parcelShellGeometry(w, h, d), null);
-  shell.material = shell.geometry.userData.page.mats();
-  root.add(shell);
+  const cb = mat('cardboard', () => pixMat('cardboard', { roughness: 0.95 }));
+  const add = (bw, bh, bd, x, y, z) => { const m = boxMesh(bw, bh, bd, cb); m.position.set(x, y + bh / 2, z); root.add(m); return m; };
+  add(w, t, d, 0, 0, 0);
+  add(t, h, d, -w / 2 + t / 2, 0, 0); add(t, h, d, w / 2 - t / 2, 0, 0);
+  add(w, h, t, 0, 0, -d / 2 + t / 2); add(w, h, t, 0, 0, d / 2 - t / 2);
   // four flaps on hinges along the top edges (open = folded out, closed = flat on top)
   const flaps = [];
   const flap = (len, wid, x, z, ry) => {
@@ -356,8 +331,8 @@ function storageBox(root, parts, st) {
     pv.position.set(x, h, z);
     pv.rotation.order = 'YXZ'; // the hinge turns about the flap's own edge
     pv.rotation.y = ry;
-    const fg = parcelFlapGeometry(len, wid * 2, true), m = new THREE.Mesh(fg, fg.userData.page.mats());
-    m.position.y = 0.004 + t * 0.4;
+    const m = boxMesh(len, t * 0.8, wid, cb);
+    m.position.set(0, 0, wid / 2);
     pv.add(m);
     root.add(pv);
     flaps.push(pv);

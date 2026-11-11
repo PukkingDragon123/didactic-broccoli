@@ -6,33 +6,11 @@
 import * as THREE from 'three';
 import { ensureState } from '../game/stateExt.js';
 import { guestbookStand } from '../npc/props.js';
-import { propMesh } from '../world/props.js';
 import { audio } from '../core/audio.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const LABEL = { complaint: 'Complaint', question: 'Question', praise: 'Thank you', haggle: 'Deal' };
 export const GUESTBOOK_POS = { x: -1.55, z: 5.55, rotY: 0 }; // on the apron, between the twin gacha and the door
-const PW = 128, PH = 80; // the open spread's pixel art
-/** The two pages of the open notebook (its own frame, src/props/models/fixtures.js gb_book): curving up from the outer
- *  edges to the gutter, the spread's left half on the left page. */
-function pageGeometry() {
-  const pos = [], uv = [], idx = [], N = 10;
-  for (const sx of [-1, 1]) {
-    const base = pos.length / 3;
-    for (let k = 0; k <= N; k++) {
-      const t = k / N, x = sx * (0.008 + t * 0.19), y = 0.0045 + 0.012 * Math.sin(Math.PI * 0.5 * (1 - t)) ** 0.6 + 0.004 * (1 - t) - 0.004 * (1 - t) ** 8;
-      const u = 0.5 + sx * (0.03 + t * 0.47);
-      for (const [z, v] of [[-0.127, 1], [0.127, 0]]) { pos.push(x, y + 0.0006, z); uv.push(u, v); }
-    }
-    for (let k = 0; k < N; k++) { const a = base + k * 2; if (sx > 0) idx.push(a, a + 1, a + 3, a, a + 3, a + 2); else idx.push(a, a + 3, a + 1, a, a + 2, a + 3); }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  return g;
-}
 
 export class Guestbook {
   constructor(game) {
@@ -61,23 +39,19 @@ export class Guestbook {
     root.position.set(P.x, 0, P.z);
     root.rotation.y = P.rotY;
     root.add(guestbookStand());
-    // the open notebook on the slanted top (covers, page blocks, spine, ribbon: src/props/models/fixtures.js gb_book), its
-    // two pages curving up to the spine with a pixel-art spread we redraw when entries change, and a ballpoint on it
-    const cv = document.createElement('canvas'); cv.width = PW; cv.height = PH;
+    // the open book on the slanted top: a page texture we redraw when entries change
+    const cv = document.createElement('canvas'); cv.width = 64; cv.height = 40;
     this.pageCv = cv;
     const tex = this.pageTex = new THREE.CanvasTexture(cv);
-    tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.anisotropy = 4;
-    const book = new THREE.Group();
-    book.position.set(0, 1.028, 0.0);
+    tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
+    const book = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.012, 0.26), [0, 0, 1, 0, 0, 0].map((i) => (i ? new THREE.MeshStandardMaterial({ map: tex, roughness: 0.95 }) : new THREE.MeshStandardMaterial({ color: 0x8a2a2a, roughness: 0.8 }))));
+    book.position.set(0, 1.03, 0.0);
     book.rotation.x = 0.36;
-    book.add(propMesh('gb_book'));
-    const pages = new THREE.Mesh(pageGeometry(), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92 }));
-    pages.castShadow = false; pages.receiveShadow = true;
-    book.add(pages);
-    const pen = propMesh('gb_pen');
-    pen.position.set(0.105, 0.0215, 0.02); pen.rotation.set(0, 0.62, 0.035);
-    book.add(pen);
+    book.castShadow = true;
     root.add(book);
+    const pen = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.012, 0.14), new THREE.MeshStandardMaterial({ color: 0x2a2a3a }));
+    pen.position.set(0.17, 1.06, 0.06); pen.rotation.set(0.36, 0.5, 0);
+    root.add(pen);
     const hit = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.5), new THREE.MeshBasicMaterial({ visible: false }));
     hit.position.y = 0.6;
     root.add(hit);
@@ -94,45 +68,18 @@ export class Guestbook {
     });
   }
 
-  /**
-   * The spread you see on the lectern (pixel art, PW x PH: two pages with a gutter): ruled lines, the title and a
-   * date line on the left page, the latest entries in handwriting-like scribble (ink by kind: red complaints, green
-   * thanks, blue questions and deals) with a little mark at the start of each, and a red NEW tab for unread ones.
-   */
+  /** The page you see on the lectern: scribbled lines (more ink as entries pile up) and a red mark for new ones. */
   drawPage() {
-    const x = this.pageCv.getContext('2d'), n = this.s.entries.length, H = PH, half = PW / 2;
-    const px = (i, j, c, w = 1, h = 1) => { x.fillStyle = c; x.fillRect(i, j, w, h); };
-    px(0, 0, '#f4ecd8', PW, H);
-    // paper: warmer towards the edges, the gutter's shadow, the rules and the red margin
-    for (let i = 0; i < 3; i++) { px(i, 0, '#ece2c8', 1, H); px(PW - 1 - i, 0, '#ece2c8', 1, H); }
-    for (let i = -4; i < 4; i++) px(half + i, 0, ['#e6dabe', '#e0d3b4', '#d8c9a8', '#cdbd9a', '#cdbd9a', '#d8c9a8', '#e0d3b4', '#e6dabe'][i + 4], 1, H);
-    for (let j = 14; j < H - 4; j += 7) { px(5, j, '#c8d4e0', half - 10, 1); px(half + 5, j, '#c8d4e0', half - 10, 1); }
-    px(11, 4, '#e8a8a0', 1, H - 8); px(half + 11, 4, '#e8a8a0', 1, H - 8);
-    // the title and the shop's stamp on the left page
-    const ink = '#2a3048';
-    for (const [i, w] of [[14, 6], [22, 4], [28, 7], [37, 5]]) px(i, 7, ink, w, 2);
-    px(half - 14, 3, '#c8322c', 8, 8); px(half - 13, 4, '#f4ecd8', 6, 6); px(half - 12, 5, '#c8322c', 4, 4);
-    // the entries, newest first, down the left page then the right
-    const rows = Math.floor((H - 18) / 7), L = Math.min(rows * 2, n);
-    for (let k = 0; k < L; k++) {
-      const e = this.s.entries[n - 1 - k], page = k < rows ? 0 : 1, row = k % rows;
-      const c = e?.kind === 'complaint' ? '#a8302c' : e?.kind === 'praise' ? '#2a6a34' : '#2a3460';
-      const y = 12 + row * 7 + (page ? 7 : 0) - 1, x0 = page * half + 14, len = String(e?.text || '').length;
-      // a mark: ! for a complaint, a heart for thanks, ? for a question, ¥ for a deal
-      if (e?.kind === 'complaint') { px(x0 - 2, y - 3, c, 1, 3); px(x0 - 2, y + 1, c); }
-      else if (e?.kind === 'praise') { px(x0 - 3, y - 2, c, 1, 1); px(x0 - 1, y - 2, c); px(x0 - 3, y - 1, c, 3, 1); px(x0 - 2, y, c); }
-      else { px(x0 - 3, y - 3, c, 2, 1); px(x0 - 2, y - 2, c); px(x0 - 3, y - 1, c); px(x0 - 3, y + 1, c); }
-      // the words: ragged runs of handwriting with an x-height wobble
-      let i = x0, w = 0, seed = (len * 31 + k * 7) % 97;
-      const end = page * half + half - 6 - ((k * 5) % 9);
-      while (i < end) {
-        w = 2 + (seed % 5); seed = (seed * 13 + 7) % 97;
-        for (let a = 0; a < w && i + a < end; a++) px(i + a, y - ((a + seed) % 3 === 0 ? 1 : 0), c);
-        if (seed % 4 === 0) px(i + 1, y - 2, c);
-        i += w + 2;
-      }
+    const x = this.pageCv.getContext('2d'), n = this.s.entries.length;
+    x.fillStyle = '#f2ead6'; x.fillRect(0, 0, 64, 40);
+    x.fillStyle = '#c8b898'; x.fillRect(31, 0, 2, 40);
+    for (let i = 0; i < Math.min(16, n); i++) {
+      const col = i < 8 ? 3 : 35, row = 4 + (i % 8) * 4.4, w = 12 + ((i * 7) % 14);
+      const e = this.s.entries[n - 1 - i];
+      x.fillStyle = e?.kind === 'complaint' ? '#b8322e' : e?.kind === 'praise' ? '#2a7a3a' : '#2a3460';
+      x.fillRect(col, Math.round(row), w, 1);
     }
-    if (this.unread) { px(PW - 9, 0, '#e5383b', 6, 9); px(PW - 9, 9, '#c02a2e', 2, 1); px(PW - 5, 9, '#c02a2e', 2, 1); px(PW - 8, 3, '#f4ecd8', 4, 1); }
+    if (this.unread) { x.fillStyle = '#e5383b'; x.fillRect(58, 2, 4, 4); }
     this.pageTex.needsUpdate = true;
     this.dirty = false;
   }

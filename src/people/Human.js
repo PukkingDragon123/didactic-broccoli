@@ -9,7 +9,6 @@ import { Pix } from '../gfx/pix.js';
 import { FacePainter, exprParams, EXPRESSIONS } from './face.js';
 import { paintAtlas, paintAtlasJob, paintAtlasFlat } from './paint.js';
 import { GESTURES, FIDGETS, gesturePose } from './gestures.js';
-import { HumanMaterial } from './gear.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -92,13 +91,7 @@ const _e = new THREE.Euler(), _q = new THREE.Quaternion(), _q2 = new THREE.Quate
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3(), _v4 = new THREE.Vector3(), _v5 = new THREE.Vector3();
 const _bx = new THREE.Vector3(), _by = new THREE.Vector3(), _bz = new THREE.Vector3();
 
-// level of detail: the far mesh beyond LOD_OUT metres from Human.viewer, back to the near one inside LOD_IN
-const LOD_OUT = 12, LOD_IN = 10.5;
-
 export class Human {
-  /** The main camera's world position (set each frame by src/plugins/peopleLod.js); null: always the near mesh. */
-  static viewer = null;
-
   constructor(spec, opts = {}) {
     this.spec = spec;
     this.preset = spec.id;
@@ -107,15 +100,11 @@ export class Human {
     const plan = opts.built?.plan || buildPlan(spec);
     this.P = plan.P; this.J = plan.J;
     const m = opts.built?.mesh || buildMesh(plan);
-    this.tris = m.tris; this.trisFar = m.trisFar;
-    // two levels of detail sharing the atlas and the skeleton: the far one when the viewer (Human.viewer) is far away
-    this.geoNear = m.geometry; this.geoFar = m.geometryFar; this.far = false;
+    this.tris = m.tris;
     this.pix = new Pix(ATLAS, ATLAS, spec.seed || 1);
     this.face = new FacePainter(spec, this.P, m.block, this.pix);
     this.E = exprParams('neutral');
     this.tex = this.pix.texture();
-    // high-resolution pixel art: crisp texels up close, mipmapped far away (the atlas islands are grown for it)
-    this.tex.magFilter = THREE.NearestFilter;
     if (opts.lazy === false) {
       paintAtlas(spec, this.P, m.faces, this.pix); this.face.paint(this.E); this.pix.flush();
       this.painted();
@@ -130,7 +119,7 @@ export class Human {
       this.job = this.paintJob(m.faces);
       JOBS.add(this);
     }
-    this.mat = new HumanMaterial({ map: this.tex, roughness: 0.85, metalness: 0, alphaTest: 0.5 });
+    this.mat = new THREE.MeshStandardMaterial({ map: this.tex, roughness: 0.85, metalness: 0, alphaTest: 0.5 });
     // skeleton (rest pose = the modelled pose; all bones axis-aligned)
     this.bones = [];
     for (const [name, parent] of BONES) {
@@ -226,7 +215,7 @@ export class Human {
     for (let y = 0; y < B.h; y += 8) { this.face.paint(this.E, [0, y, B.w, Math.min(B.h, y + 8)]); yield; }
     const pix = this.pix;
     for (let y = 0; y < ATLAS; y += 64) { pix.ctx.putImageData(pix.img, 0, 0, 0, y, ATLAS, 64); yield; }
-    pix.dirty = false; pix.seen = null;
+    pix.dirty = false;
   }
   /** Finish painting the detailed atlas now (e.g. for a close-up right after creation). */
   finishPaint() { while (this.job) this.stepPaint(); return this; }
@@ -234,7 +223,7 @@ export class Human {
   dispose() {
     JOBS.delete(this); this.job = null;
     this.root.removeFromParent();
-    this.geoNear.dispose(); this.geoFar?.dispose(); this.tex.dispose(); this.mat.dispose();
+    this.mesh.geometry.dispose(); this.tex.dispose(); this.mat.dispose();
     this.mesh.skeleton.dispose();
   }
 
@@ -243,7 +232,6 @@ export class Human {
     const P = this.P, sp = this.spec;
     this.style = { ...STYLE.normal, ...(STYLE[sp.walk?.style] || {}) };
     if (sp.walk?.hunch) this.style.hunch += sp.walk.hunch * 0.15;
-    if (P.armClear) this.style.spread = Math.max(this.style.spread, P.armClear); // hands clear the hips / a skirt
     this.t = Math.random() * 100;
     this.phase = 0.05;
     this.spd = 0; this.walkW = 0; this.walkV = 0;
@@ -286,11 +274,6 @@ export class Human {
     if (dt <= 0) return;
     if (JOBS.size) pump();
     this.t += dt;
-    if (this.geoFar && Human.viewer) {
-      const e = this.mesh.matrixWorld.elements, v = Human.viewer, d2 = (e[12] - v.x) ** 2 + (e[14] - v.z) ** 2;
-      const far = this.far ? d2 > LOD_IN * LOD_IN : d2 > LOD_OUT * LOD_OUT;
-      if (far !== this.far) { this.far = far; this.mesh.geometry = far ? this.geoFar : this.geoNear; }
-    }
     const P = this.P, b = this.b, st = this.style, H = P.H, R = this.rest;
     // --- root motion tracking (turn rate, acceleration for the dangly bits)
     const yaw = this.root.rotation.y;
@@ -679,7 +662,7 @@ export class Human {
 
   flushFace(r) {
     const B = this.face.B;
-    const [x, y, w, h] = r || [B.x - 2, B.y - 2, B.w + 4, B.h + 4];
+    const [x, y, w, h] = r || [B.x - 1, B.y - 1, B.w + 2, B.h + 2];
     this.pix.ctx.putImageData(this.pix.img, 0, 0, x, y, w, h);
     this.pix.dirty = false;
     this.tex.needsUpdate = true;

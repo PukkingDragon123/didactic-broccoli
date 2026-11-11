@@ -236,16 +236,7 @@ export class FPBody {
     g.scene.add(h.root);
     // head + arms only in shadow maps
     const sk = h.mesh.skeleton;
-    // (the skeleton only flags its bone texture when a bone moved since the last update: after a shadow pass has put the
-    // head and arms back, a still pose would leave them in the texture, and the inside of your own hair and sleeves was
-    // drawn over the view as dark slabs. Whenever the hide changes the matrices, the texture is re-sent.)
-    h.mesh.onBeforeRender = () => {
-      sk.update();
-      const m = sk.boneMatrices;
-      let dirty = false;
-      for (const i of HIDE) for (let k = i * 16; k < i * 16 + 16; k++) if (m[k] !== 0) { m[k] = 0; dirty = true; }
-      if (dirty && sk.boneTexture) sk.boneTexture.needsUpdate = true;
-    };
+    h.mesh.onBeforeRender = () => { sk.update(); const m = sk.boneMatrices; for (const i of HIDE) m.fill(0, i * 16, i * 16 + 16); };
     h.mesh.onBeforeShadow = () => sk.update();
     // extra meshes riding on hidden bones (hats, hair pieces from cosmetics) would sit in front of the camera
     for (const i of HIDE) h.bones[i].traverse((o) => { if (o.isMesh && o !== h.mesh) o.visible = false; });
@@ -404,11 +395,10 @@ export class FPBody {
   /** The hands' colour (sRGB bytes): median of the avatar's painted hand texels. */
   handColor(h) {
     const src = h.mesh.geometry, si = src.attributes.skinIndex, uv = src.attributes.uv, idx = src.index.array, d = h.pix.d;
-    const hl = BONE_INDEX.handL, hr = BONE_INDEX.handR, cols = [], ga = src.attributes.gear;
+    const hl = BONE_INDEX.handL, hr = BONE_INDEX.handR, cols = [];
     for (let i = 0; i < idx.length; i += 3) {
       const b = si.getX(idx[i]);
       if (b !== hl && b !== hr) continue;
-      if (ga && ga.getX(idx[i]) > 0) continue; // modelled gear (src/people/gear.js), not skin
       const u = (uv.getX(idx[i]) + uv.getX(idx[i + 1]) + uv.getX(idx[i + 2])) / 3, v = (uv.getY(idx[i]) + uv.getY(idx[i + 1]) + uv.getY(idx[i + 2])) / 3;
       const o = (clamp(Math.floor((1 - v) * ATLAS), 0, ATLAS - 1) * ATLAS + clamp(Math.floor(u * ATLAS), 0, ATLAS - 1)) * 4;
       cols.push([d[o], d[o + 1], d[o + 2]]);
@@ -944,10 +934,8 @@ export class FPBody {
       }
       if (!R) return null;
       const palm = N(0.35, 1, 0.3, a);
-      // the palm sits on the shell and the thumb lies along it (opposed, barely curled): a curled thumb poked
-      // through the clear dome when you held the capsule up to look at it
-      c.addScaledVector(palm, -r * 1.04);
-      this.setGrip(H, W, c, palm, N(-0.6, 0.1, -1, _v2), [0.6, 0.12, 0.4, 0.06, 0, 0.35], { ext: 0.7 });
+      c.addScaledVector(palm, -r * 0.98);
+      this.setGrip(H, W, c, palm, N(-0.6, 0.1, -1, _v2), [0.62, 0.12, 0.55, 0.35, 0, 0.35], { ext: 0.7 });
       return 'capsule';
     }
     if (kind === 'toy') {

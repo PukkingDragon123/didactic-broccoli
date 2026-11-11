@@ -79,7 +79,7 @@ export class Guide {
     const pc = D ? () => V(D.x, D.h + 0.55, D.z) : null;
     // a machine sold out: order more capsules
     const empty = g.machines.find((m) => !m.data.stock.length);
-    if (empty && !g.delivery.queue?.length && ![...g.items.list].some((e) => e.kind === 'box' && e.data?.type === 'refill')) return { id: 'restock', icon: 'box', text: 'A machine is sold out', sub: 'Order capsules on the computer: Daikoku Toys or Off-Hobby', at: pc };
+    if (empty && !g.delivery.queue?.length && ![...g.items.list].some((e) => e.kind === 'box' && e.data?.type === 'refill')) return { id: 'restock', icon: 'capsule', text: 'A machine is sold out', sub: 'Order capsules on the computer: Daikoku Toys or Off-Hobby', at: pc };
     const flyers = s.promo?.flyers || 0;
     if (flyers < 3) {
       if (!H.has('flyers')) return { id: 'buyflyers', icon: 'flyer', text: 'Spread the word', sub: 'Buy flyers at Mikawa-ya', at: counter };
@@ -87,7 +87,7 @@ export class Guide {
       return { id: 'flyers', icon: 'flyer', text: `Hand out flyers (${flyers}/3)`, sub: H.holding('flyers') ? `${cap(c)} people walking in the lane` : `Hold the flyers${this.pick('flyers')}, ${c} a passer-by`, at: peds.length ? () => this.nearest(peds, (p) => p.h.root.position.clone().setY(p.h.height + 0.35)) : null };
     }
     const m = g.machines.find((x) => !x.data.broken && x.data.stock.length);
-    if (!(s.stats.opened > 0) && m) return { id: 'pull', icon: 'machine', text: 'Try a machine yourself', sub: `Hold ${this.touch ? 'the use button' : 'left click'} on the handle, then twist the capsule open`, at: () => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, 1.0, 0)) };
+    if (!(s.stats.opened > 0) && m) return { id: 'pull', icon: 'capsule', text: 'Try a machine yourself', sub: `Hold ${this.touch ? 'the use button' : 'left click'} on the handle, then twist the capsule open`, at: () => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, 1.0, 0)) };
     const shelved = s.shelves.some((sh) => sh.items.some(Boolean));
     if (!g.shelves.length && !F.guideShelf) {
       if (s.money >= SHELF_PRICES[0]) return { id: 'buyshelf', icon: 'shelf', text: 'Buy a wall shelf', sub: 'For showing off your figures: Daikoku Toys, Shelves', at: pc };

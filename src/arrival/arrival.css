@@ -17,8 +17,6 @@
   display: inline-block; font: 48px/44px 'Alagard', monospace; letter-spacing: 3px; padding: 6px 4px 8px; white-space: nowrap;
   background-image: var(--pp-pencil-red); background-position: 0 100%; background-size: 64px 6px; background-repeat: repeat-x;
 }
-#arrival-title .k { margin-top: 4px; font: 16px/20px 'DotGothic16', monospace; letter-spacing: 3px; color: #5e5046; white-space: nowrap; }
-#arrival-title .k span { margin-left: 12px; padding-left: 12px; font-size: 16px; letter-spacing: 1px; box-shadow: inset 2px 0 0 rgba(200, 50, 44, .6); }
 #arrival-title .s { width: calc(var(--w) * 2); height: calc(var(--h) * 2); margin: 8px auto 0; background-size: 100% 100%; image-rendering: pixelated; }
 #arrival-title .seal { position: absolute; right: 6px; bottom: 6px; width: 20px; height: 36px; background-size: 100% 100%; image-rendering: pixelated; }
 #arrival-title .tape { position: absolute; top: -16px; width: 80px; height: 24px; background-image: var(--pp-tape); background-size: 80px 24px; image-rendering: pixelated; }
@@ -27,8 +25,6 @@
 @media (min-width: 1280px) {
   #arrival-title .card { padding: 4px 70px 16px 44px; }
   #arrival-title .t { font-size: 64px; line-height: 58px; letter-spacing: 4px; padding: 6px 4px 10px; }
-  #arrival-title .k { font-size: 32px; line-height: 36px; letter-spacing: 5px; margin-top: 6px; }
-  #arrival-title .k span { letter-spacing: 2px; margin-left: 16px; padding-left: 16px; }
   #arrival-title .s { width: calc(var(--w) * 3); height: calc(var(--h) * 3); margin-top: 12px; }
   #arrival-title .seal { width: 40px; height: 72px; right: 10px; bottom: 10px; }
 }
@@ -41,8 +37,6 @@
 @media (max-width: 760px) {
   #arrival-title .t { font-size: 32px; line-height: 30px; letter-spacing: 2px; }
   #arrival-title .card { padding: 2px 30px 10px 22px; }
-  #arrival-title .k { letter-spacing: 1px; margin-top: 2px; }
-  #arrival-title .k span { margin-left: 8px; padding-left: 8px; letter-spacing: 0; }
   #arrival-title .s { width: var(--w); height: var(--h); margin-top: 4px; }
   #arrival-title .seal { right: 4px; bottom: 6px; }
   #arrival-title .tape { top: -8px; width: 40px; height: 12px; background-size: 40px 12px; }

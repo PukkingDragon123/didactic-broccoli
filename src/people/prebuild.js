@@ -9,9 +9,8 @@
 import { Human } from './Human.js';
 import { makeSpec, streetPreset } from './presets.js';
 import { buildPlan } from './body.js';
-import { buildMeshJob } from './mesh.js';
+import { buildMesh } from './mesh.js';
 import { idleJob } from '../core/idle.js';
-import { buildGear } from './gear.js';
 
 const keyOf = ({ preset, seed = 1, height }) => `${preset || ''}|${seed}|${height ?? ''}`;
 const jobs = new Map(); // key -> IdleJob (its value: the Human)
@@ -21,9 +20,7 @@ function* build({ preset, seed = 1, height }, renderer) {
   const spec = makeSpec(preset || streetPreset(seed), seed, height);
   const plan = buildPlan(spec);
   yield;
-  plan.gear = buildGear(plan);
-  yield;
-  const mesh = yield* buildMeshJob(plan);
+  const mesh = buildMesh(plan);
   yield;
   const h = new Human(spec, { prebuild: true, built: { plan, mesh } });
   yield;

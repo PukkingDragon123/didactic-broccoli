@@ -4,7 +4,7 @@ import './hud.css';
 import { iconURL } from '../gfx/icons.js';
 import { TOOLS } from '../data/tools.js';
 import { getItem } from '../data/series/index.js';
-import { bannerCanvas, BANNER_W, BANNER_H } from '../gfx/banner.js';
+import { makeCapsule } from '../game/Capsule.js';
 import { SLOTS } from '../game/Held.js';
 import { boxLabel } from '../game/Delivery.js';
 import { CatRig } from '../world/CatRig.js';
@@ -36,21 +36,10 @@ export class Hotbar {
     if (it.kind === 'tool') return iconURL(TOOLS[it.data.id]?.icon || 'box', 2);
     if (it.kind === 'toy') return g.thumbs.item(it.data.key, { size: 64, finish: it.data.finish }).toDataURL();
     if (it.kind === 'capsule') {
-      // never a picture of the ball itself (owner's rule): the slot shows the series' display card in miniature
-      const k = it.data.series;
+      const k = `${it.data.series}:${it.data.color}`;
       if (!this.capCache.has(k)) {
-        let url = iconURL('box', 2);
-        try {
-          const src = bannerCanvas(k, g.thumbs);
-          const c = document.createElement('canvas');
-          c.width = c.height = 64;
-          const x = c.getContext('2d');
-          x.imageSmoothingEnabled = true;
-          const h = 60, w = Math.round(h * BANNER_W / BANNER_H);
-          x.drawImage(src, (64 - w) / 2, 2, w, h);
-          url = c.toDataURL();
-        } catch { /* the card isn't ready: keep the box icon */ }
-        this.capCache.set(k, url);
+        const cap = makeCapsule(it.data.series, it.data.color);
+        this.capCache.set(k, g.thumbs.renderObject(cap.group, 64, { side: 0.5, up: 0.4 }).toDataURL());
       }
       return this.capCache.get(k);
     }

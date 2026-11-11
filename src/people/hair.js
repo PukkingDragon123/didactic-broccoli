@@ -2,7 +2,6 @@
 // nape which rides on the chest, and pony / twin tails which hang from spring-driven tail bones).
 import { seg } from './body.js';
 import { garbSegments } from './garb.js';
-import { GEAR_HATS } from './gear.js';
 
 /** Cranium cross-section at height y, grown by (ex, ez) and shifted by dz. */
 function cs(P, y, ex = 0, ez = 0, dz = 0) {
@@ -19,11 +18,6 @@ function enclose(P, c, m = 0.01 * P.hu, ch = 0.3) {
 }
 
 export function hairSegments(spec, P, J) {
-  // the hair itself is modelled now (src/people/hairMesh.js), hats are gear (src/people/gear.js): only outfit extras
-  return spec.garb && !spec.garb.coat ? garbSegments(spec, P, J) : []; // (a coat's tails are lofted: garments.js)
-}
-// (the old box-shell hair builder below is kept for reference by nothing; see hairMesh.js)
-export function legacyHairSegments(spec, P, J) {
   const S = spec.garb ? garbSegments(spec, P, J) : [], hu = P.hu, st = spec.hair.style, hat = spec.hat?.kind;
   const add = (part, bone, mat, y0, y1, b, t, o) => { const x = seg(part, bone, mat, y0, y1, b, t, o); S.push(x); return x; };
   const vol = spec.hair.volume || 1;
@@ -148,7 +142,7 @@ export function legacyHairSegments(spec, P, J) {
       back(0.016 * hu, P.napeY, P.earTop + 0.08 * hu);
     }
     const y0 = P.browY + (hat === 'schoolhat' || hat === 'bucket' || hat === 'sunhat' ? 0.15 : 0.2) * hu;
-    if (GEAR_HATS.has(hat)) { /* modelled: src/people/gear.js */ } else if (hat === 'cap') {
+    if (hat === 'cap') {
       add('hatCrown', 'head', 'hat', y0, P.crown + 0.05 * hu, cs(P, y0, th + 0.012 * hu, th + 0.01 * hu), (() => { const c = cs(P, P.crown, th * 0.6, th * 0.6, -0.02 * hu); c[2] *= 0.82; c[3] *= 0.84; return enclose(P, c, 0.01 * hu, 0.42); })(), { ch: 0.42, caps: 'top' });
       add('visor', 'head', 'hat2', y0 - 0.005 * hu, y0 + 0.022 * hu, [0, P.zf + 0.2 * hu, P.hw * 0.78, 0.2 * hu], [0, P.zf + 0.2 * hu, P.hw * 0.78, 0.2 * hu], { ch: 0.5, rot: { p: [0, y0, P.zf], e: [0.18, 0, 0] } });
     } else if (hat === 'flatcap') {

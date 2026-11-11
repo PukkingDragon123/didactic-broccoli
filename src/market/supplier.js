@@ -15,7 +15,6 @@ import { SHELF_SLOTS } from '../world/Garage.js';
 import * as shop from '../game/shop.js';
 import { photo, photoReady, pumpPhotos, machineObject } from './models.js';
 import { marketState, yen, whenText, stamp, bankBalance } from './util.js';
-import { STYLES as POP_STYLES } from '../display/models.js';
 
 const DK = 'http://www.daikoku-toys.co.jp';
 const SUPPLIES = [
@@ -82,23 +81,16 @@ export function installSupplier(g, mk) {
       if (d.museum && !g.museum?.data?.owned) return { ok: false, msg: 'For museums only' };
       return express(d.price, d.name, { type: 'install', what: 'goods', id, name: d.name });
     },
-    // a machine-top POP display (src/display/): comes in its box, you fit it on a machine yourself
-    poptop(style) {
-      const P = POP_STYLES[style];
-      if (!P) return { ok: false, msg: 'Sold out' };
-      return express(P.price, P.name, { type: 'poptop', style, label: P.name, name: P.name });
-    },
     charm(id) {
       if (g.state.charms.includes(id) || pending('charm', id)) return { ok: false, msg: 'Already on your shrine shelf (or on its way)' };
       if (!lv(`charm:${id}`)) return { ok: false, msg: `Reach shop level ${lvl(`charm:${id}`)} first` };
       return express(CHARMS[id].price, CHARMS[id].name, { type: 'install', what: 'charm', id, name: CHARMS[id].name });
     },
   };
-  g.daikoku = ACTIONS; // (the order desk's actions, for scripts and dbg helpers: g.daikoku.poptop("cube"))
 
   const row = (cells, act, label, why = null) => `<tr>${cells.map((c) => `<td>${c}</td>`).join('')}<td>${why ? `<span class="dk-lock">${ic('os_lock', 1)} ${esc(why)}</span>` : `<button class="c98-btn small" data-act="${esc(act)}">${esc(label)}</button>`}</td></tr>`;
   const head = (path) => `<div class="dk-head">${portrait({ bg: 0xffd23f, hair: 'bald', glasses: 0x2a2220, mouth: 'grin', shirt: 0x2a5aa8 }, 2)}<div><b>Daikoku Toy Wholesale</b><small>Capsule toys by the box since 1971 - Asakusabashi, Tokyo</small></div></div>
-    <div class="dk-nav">${[['/', 'Order desk'], ['/machines', 'Machines'], ['/capsules', 'Capsules'], ['/supplies', 'Supplies & tools'], ['/fittings', 'Shelves, displays & charms']].map(([p, t]) => `<a href="${p}" class="${path === p ? 'on' : ''}">${t}</a>`).join('')}<span>${ic('os_bank', 1)} ${yen(bankBalance(g))}</span></div>`;
+    <div class="dk-nav">${[['/', 'Order desk'], ['/machines', 'Machines'], ['/capsules', 'Capsules'], ['/supplies', 'Supplies & tools'], ['/fittings', 'Shelves, goods & charms']].map(([p, t]) => `<a href="${p}" class="${path === p ? 'on' : ''}">${t}</a>`).join('')}<span>${ic('os_bank', 1)} ${yen(bankBalance(g))}</span></div>`;
 
   function pageFor(path) {
     if (path === '/machines') {
@@ -130,13 +122,12 @@ export function installSupplier(g, mk) {
     if (path === '/fittings') {
       const n = g.state.shelves.length + pendingShelves();
       return `<h2>Wall shelves</h2><table class="dk-t2"><tr><th>Item</th><th>Price</th><th></th></tr>${n < SHELF_SLOTS.length ? row([`<b>Wall collection shelf</b> (${g.state.shelves.length} of ${SHELF_SLOTS.length} up)<br><small>48 spots with lights, put up by our courier.</small>`, yen(SHELF_PRICES[n])], 'shelf', 'Order', !lv(`shelf:${n + 1}`) ? `Level ${lvl(`shelf:${n + 1}`)}` : null) : '<tr><td colspan="3">Your wall is full.</td></tr>'}</table>
-        <h2>Machine-top displays</h2><p class="c98-dim">Real shops show the samples on top of the machine. Fit one on a machine's lid and fill it with that series' figures: customers notice.</p><table class="dk-t2"><tr><th>Display</th><th>Price</th><th></th></tr>${Object.entries(POP_STYLES).map(([id, P]) => row([`<b>${esc(P.name)}</b> <small>${esc(P.jp)}</small><br><small>${esc(P.desc)}</small>`, yen(P.price)], `poptop:${id}`, 'Order')).join('')}</table>
         <h2>Shop goods</h2><table class="dk-t2"><tr><th>Item</th><th>Price</th><th></th></tr>${Object.entries(GOODS).map(([id, d]) => row([`<b>${esc(d.name)}</b><br><small>${esc(d.desc)}</small>`, yen(d.price)], `goods:${id}`, 'Order', g.state.goods?.[id] ? 'Installed' : !lv(`goods:${id}`) ? `Level ${lvl(`goods:${id}`)}` : d.museum && !g.museum?.data?.owned ? 'Museum only' : null)).join('')}</table>
         <h2>Shrine charms (new)</h2><p class="c98-dim">For the little shrine shelf in your garage. Second-hand charms of every kind are on <a href="http://www.off-hobby.jp/c/charms">Off-Hobby</a>.</p><table class="dk-t2"><tr><th>Charm</th><th>Price</th><th></th></tr>${Object.entries(CHARMS).map(([id, c]) => row([`<b>${esc(c.name)}</b><br><small>${esc(c.desc)}</small>`, yen(c.price)], `charm:${id}`, 'Order', g.state.charms.includes(id) ? 'On your shelf' : !lv(`charm:${id}`) ? `Level ${lvl(`charm:${id}`)}` : null)).join('')}</table>`;
     }
     return `<p class="dk-note">${ic('os_info', 1)} <b>Express delivery:</b> order before 8pm and our courier Gen-san brings it the same day, usually within the hour. (Yes, his van says FREE CANDY.)</p>
       <p>We supply capsule toy shops all over Kanto: brand-new machines, sealed capsule cartons and everything a shop needs.</p>
-      <ul><li><a href="/machines">Gacha machines</a> - Showa Retro, Gacha Station, Deluxe 500, Royal Kirakira</li><li><a href="/capsules">Capsule cartons and series licences</a></li><li><a href="/supplies">Packing supplies and capsule openers</a></li><li><a href="/fittings">Wall shelves, machine-top displays, shop goods and shrine charms</a></li></ul>
+      <ul><li><a href="/machines">Gacha machines</a> - Showa Retro, Gacha Station, Deluxe 500, Royal Kirakira</li><li><a href="/capsules">Capsule cartons and series licences</a></li><li><a href="/supplies">Packing supplies and capsule openers</a></li><li><a href="/fittings">Wall shelves, shop goods and shrine charms</a></li></ul>
       <p><b>Bulk deals:</b> our sales manager Mr. Daikoku sends weekly offers on Pichat (<a data-act="pichat" href="#">daikoku_toys</a>, tel. 03-3866-1971). Haggle with him. He respects it.</p>
       <p class="c98-dim">Daikoku Toy Wholesale is not responsible for capsules opened by cats.</p>`;
   }

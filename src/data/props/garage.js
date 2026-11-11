@@ -609,7 +609,6 @@ const garage = {
 
   // ------------------------------------------------------------- radio
   radio: {
-    asset: { id: 'boombox' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Radio-Cassette Boombox', voxel: 0.008,
     build(v) {
       const body = (x, y, z) => gloss(shade(0xb4b8be, 0.95 + hash(x, y, z, 2) * 0.05));
@@ -724,7 +723,6 @@ const garage = {
 
   // ------------------------------------------------------------- toolbox
   toolbox: {
-    asset: { id: 'metal_toolbox', tint: 0xd04a3a }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Red Metal Toolbox', voxel: 0.008,
     build(v) {
       const red = (x, y, z) => gloss(shade(0xc2302a, 0.93 + hash(x, y, z, 4) * 0.09));
@@ -844,7 +842,6 @@ const garage = {
 
   // ------------------------------------------------------------- broom
   broom: {
-    asset: { id: 'wooden_broom', fit: 'y' },
     name: 'Bamboo Broom', voxel: 0.014,
     build(v) {
       const twig = (x, y, z) => {
@@ -994,7 +991,6 @@ const garage = {
 
   // ------------------------------------------------------------- polytank
   polytank: {
-    asset: { id: 'plastic_jerrycan', ry: Math.PI / 2 }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Kerosene Polytank & Pump', voxel: 0.008,
     build(v) {
       const red = (x, y, z) => gloss(shade(0xd8332a, 0.94 + hash(x, y, z, 1) * 0.06 + (y % 10 === 0 ? -0.12 : 0)));
@@ -1019,7 +1015,6 @@ const garage = {
 
   // ------------------------------------------------------------- CRT TV
   crt_tv: {
-    asset: { id: 'Television_01' },
     name: 'Old CRT Television', voxel: 0.01,
     build(v) {
       const wood = woodFn(0x8a5a32, 'x', 4);
@@ -1193,7 +1188,6 @@ const garage = {
 
   // ------------------------------------------------------------- desk lamp
   desk_lamp: {
-    asset: { id: 'desk_lamp_arm_01' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Articulated Desk Lamp', voxel: 0.006,
     build(v) {
       const grn = (x, y, z) => gloss(shade(0x2f6a4a, 0.93 + hash(x, y, z, 1) * 0.08));
@@ -1238,7 +1232,6 @@ const garage = {
   },
   // ------------------------------------------------------------- extinguisher
   extinguisher: {
-    asset: { id: 'korean_fire_extinguisher_01', fit: 'y' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Fire Extinguisher', voxel: 0.006,
     build(v) {
       const red = (x, y, z) => gloss(shade(0xd8231f, 0.93 + hash(x, y, z, 1) * 0.06));
@@ -1300,7 +1293,6 @@ const garage = {
 
   // ------------------------------------------------------------- stool
   stool: {
-    asset: { id: 'wooden_stool_01', fit: 'y' }, // Poly Haven, CC0 (src/kit/assets.js)
     name: 'Wooden Stool', voxel: 0.008,
     build(v) {
       const wood = woodFn(0xa8743e, 'x', 7), woodD = woodFn(0x8a5a30, 'y', 8);
@@ -1410,7 +1402,6 @@ const garage = {
 
   // ------------------------------------------------------------- watering can
   watering_can: {
-    asset: { id: 'watering_can_metal_01', ry: Math.PI / 2 },
     name: 'Tin Watering Can', voxel: 0.007,
     build(v) {
       const pnt = (x, y, z) => gloss(shade(0x5a8a6a, 0.88 + vnoise(x, y, z, 3, 2) * 0.16));

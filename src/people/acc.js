@@ -2,14 +2,13 @@
 // Painted by paint.js (mat 'acc' + part name). Props that only appear in gestures sit on their own bones
 // (prop / box) and are hidden by scaling those bones to zero.
 import { seg } from './body.js';
-import { GEAR_BAGS } from './gear.js';
 
 export function accSegments(spec, P, J) {
   const S = [], H = P.H, hu = P.hu;
   const add = (part, bone, y0, y1, b, t, o) => { const x = seg(part, bone, 'acc', y0, y1, b, t, o); S.push(x); return x; };
   const lx = P.hipX, tw = P.thighX;
   // --- skirts (on the skirt bone, which follows the thighs)
-  const sk = spec.bottom.kind === 'skirt' && !['pleated', 'pencil', 'long', 'mini'].includes(spec.bottom.cut) ? spec.bottom.cut : null; // (lofted: src/people/garments.js)
+  const sk = spec.bottom.kind === 'skirt' ? spec.bottom.cut : null;
   if (sk) {
     const hem = { pleated: P.kneeY + 0.075 * H, pencil: P.kneeY - 0.02 * H, long: P.kneeY - 0.13 * H, mini: P.hipY - 0.085 * H }[sk];
     const flare = { pleated: 1.3, pencil: 0.98, long: 1.3, mini: 1.22 }[sk];
@@ -25,12 +24,6 @@ export function accSegments(spec, P, J) {
   if (spec.bottom.wide) add('wideShin', 'shinL', P.ankleY + 0.01 * H, P.kneeY + 0.02 * H, [lx, 0.002 * H, tw * 0.86, tw * 0.9], [lx, 0, tw * 0.74, tw * 0.78], { ch: 0.38, mirror: true, caps: 'bot' });
   for (const a of spec.acc) {
     const k = a.kind;
-    if (GEAR_BAGS.has(k)) {
-      // modelled (src/people/gear.js); the bag bone's pivot still hangs them from the shoulder / round the neck
-      if (k === 'shoulderbag' || k === 'tote') J.bag = [(a.side || 1) * P.chestTopX * 0.75, P.neckBase, 0];
-      else if (k === 'camera') J.bag = [0, P.neckBase + 0.01 * H, 0.02];
-      continue;
-    }
     if (k === 'apron') add('apron', 'skirt', P.kneeY + 0.02 * H, P.pelvisY + 0.004 * H, [0, P.hipsZ + 0.012 * H, P.hipsX * 1.02, 0.004 * H], [0, P.waistZ + 0.012 * H, P.waistX * 1.1, 0.004 * H], { caps: 'bot' });
     else if (k === 'briefcase' || k === 'handbag' || k === 'ecobag') {
       const [w, h, d] = k === 'briefcase' ? [0.21, 0.29, 0.045] : k === 'handbag' ? [0.13, 0.2, 0.05] : [0.17, 0.34, 0.06];
@@ -69,7 +62,8 @@ export function accSegments(spec, P, J) {
   // gesture props: phone / camera in the right hand, a parcel for 'carry'
   const cam = spec.acc.some((a) => a.kind === 'camera');
   const p = J.prop;
-  if (!cam) add('phone', 'prop', p[1] - 0.07, p[1] + 0.07, [p[0], p[2], 0.035, 0.0045], null, { dens: 1.8 });
+  if (cam) add('propCam', 'prop', p[1] - 0.04, p[1] + 0.04, [p[0], p[2], 0.06, 0.033], null, { ch: 0.2, dens: 1.6 });
+  else add('phone', 'prop', p[1] - 0.07, p[1] + 0.07, [p[0], p[2], 0.035, 0.0045], null, { dens: 1.8 });
   const b = J.box;
   add('parcel', 'box', b[1] - 0.11, b[1] + 0.11, [0, b[2], 0.18, 0.14], null, { ch: 0.06, dens: 0.4 });
   return S;

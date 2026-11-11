@@ -41,12 +41,12 @@ async function loadFonts() {
 }
 
 async function boot() {
-  installStaticIcons(); // pixel icons on the static buttons
-  // the loading screen (index.html #loading: the van driving down the lane) is already up; it shows the progress
-  const loading = window.__loading || { set() {}, msg() {}, done() { $('loading')?.remove(); } };
+  installStaticIcons(); // pixel icons on the static buttons (and the loading bar)
   // multiplayer: a guest's tab connects to the host first and loads the host's world (src/net/boot.js)
-  const netBoot = await prepareNet((t) => loading.msg(t));
-  if (netBoot) loading.msg('');
+  const loadLabel = document.querySelector('#loading .load-label');
+  const netBoot = await prepareNet((t) => { if (loadLabel) loadLabel.innerHTML = `${t} <span id="load-pct"></span>`; });
+  if (netBoot && loadLabel) loadLabel.innerHTML = 'Loading <span id="load-pct">0%</span>';
+  const pct = $('load-pct');
   await loadFonts();
   const game = new Game($('app'));
   window.__game = game;
@@ -54,13 +54,13 @@ async function boot() {
   // drop-in features: every src/plugins/*.js that exports install(game); they run once the world, the people and
   // every core system exist (see Game.late)
   for (const m of Object.values(import.meta.glob('./plugins/*.js', { eager: true }))) if (m.install) Game.late.push(m.install);
-  await game.init((p) => loading.set(p));
+  await game.init((p) => { pct.textContent = `${Math.round(p * 100)}%`; });
   if (params.has('debug') || params.has('autotest')) installDebug(game, params);
 
   const touch = isTouchDevice() ? installTouch(game.input, { onPause: () => game.input.unlock() }) : null;
   if (touch && !game.state.settings.quality) game.renderer.setQuality('low');
 
-  loading.done(params.has('autotest')); // a short stepped fade into the title screen (a cut for the test harness)
+  $('loading').classList.add('hidden');
   let started = false;
   const sfx = (n, v = 0.5) => { try { audio.init(); audio.play(n, { vol: v }); } catch { /* audio not ready */ } };
 
@@ -259,6 +259,6 @@ async function boot() {
 
 boot().catch((e) => {
   console.error(e);
-  window.__loading?.msg('Error: ' + e.message);
+  $('loading').textContent = 'Error: ' + e.message;
   window.__ready = true;
 });

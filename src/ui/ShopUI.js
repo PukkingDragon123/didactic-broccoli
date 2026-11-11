@@ -54,7 +54,7 @@ const rarityOf = (it) => RARITIES[it.rarity] || RARITIES.common;
 const PAGES = [
   { id: 'home', label: 'Home', icon: 'home', tip: 'Welcome! Everything you order is delivered to the garage shutter.' },
   { id: 'machines', label: 'Machines', icon: 'machine', tip: 'New machines are installed right away and come half full.' },
-  { id: 'capsules', label: 'Capsules', icon: 'box', tip: 'Carry a refill box to a machine and click to pour the capsules in.' },
+  { id: 'capsules', label: 'Capsules', icon: 'capsule', tip: 'Carry a refill box to a machine and click to pour the capsules in.' },
   { id: 'goods', label: 'Goods & Tools', icon: 'wrench', tip: 'Shop goods, capsule openers, lucky charms and shelves.' },
   { id: 'museum', label: 'Museum', icon: 'museum', tip: 'Turn the empty warehouse behind the garage into a museum.' },
   { id: 'used', label: 'Used Figures', icon: 'figure', tip: 'Missing one figure? Buy it second-hand (premium prices).' },
@@ -379,7 +379,7 @@ export class ShopUI {
     const nav = PAGES.map((p) => `<button class="em-nb" data-go="${p.id}">${ic(p.icon)}<span>${esc(p.label)}</span><i class="em-badge" data-badge="${p.id}"></i></button>`).join('');
     const wallet = `<div class="sui-wallet" title="Your money">${ic('coin')}<span class="v" data-money>${yen(this.game.state.money)}</span></div>`;
     return `<div class="sui-win em" role="dialog" aria-modal="true" aria-label="GACHA-MART web store">
-      <div class="em-title">${ic('shop')}<span class="em-tt">GACHA-MART <em>- Capsule Toy Web Store</em></span>${wallet}
+      <div class="em-title">${ic('capsule')}<span class="em-tt">GACHA-MART <em>- Capsule Toy Web Store</em></span>${wallet}
         <button class="em-x" data-act="close" aria-label="Close" title="Close (Esc)">${ic('close')}</button></div>
       <div class="em-tool">
         <button class="em-tb em-back" data-act="back" aria-label="Back" title="Back (Backspace)">${ic('arrow_left')}<span>Back</span></button>
@@ -388,7 +388,7 @@ export class ShopUI {
         ${wallet}
       </div>
       <div class="em-brand">
-        <div class="em-logo">${ic('shop', 2)}<b>GACHA-MART</b></div>
+        <div class="em-logo">${ic('capsule', 2)}<b>GACHA-MART</b></div>
         <div class="em-slogan">Capsule toys, machines &amp; more.<br>Delivered to your garage!</div>
         <div class="em-marq"><span>${esc(this.marquee())}</span></div>
       </div>
@@ -403,11 +403,11 @@ export class ShopUI {
 
   /** The store as a web page inside the PC's browser (the browser draws the address bar and status line). */
   embedFrame() {
-    const B = this.brand || { name: 'GACHA-MART', slogan: 'Capsule toys, machines &amp; more.<br>Delivered to your garage!', icon: 'shop' };
+    const B = this.brand || { name: 'GACHA-MART', slogan: 'Capsule toys, machines &amp; more.<br>Delivered to your garage!', icon: 'capsule' };
     const nav = this.pages.map((p) => `<button class="em-nb" data-go="${p.id}">${ic(p.icon)}<span>${esc(p.label)}</span><i class="em-badge" data-badge="${p.id}"></i></button>`).join('');
     return `<div class="sui-win em em-embed" aria-label="${esc(B.name)}">
       <div class="em-brand">
-        <div class="em-logo">${ic(B.icon || 'shop', 2)}<b>${esc(B.name)}</b></div>
+        <div class="em-logo">${ic(B.icon || 'capsule', 2)}<b>${esc(B.name)}</b></div>
         <div class="em-slogan">${B.slogan}</div>
         <div class="sui-wallet" title="Your money">${ic('coin')}<span class="v" data-money>${yen(this.game.state.money)}</span></div>
         <div class="em-marq"><span>${esc(this.marquee())}</span></div>

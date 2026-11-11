@@ -37,7 +37,7 @@ function debugGrandpa(g, sys) {
     chat() { sys.talk(scenes.meetScript(sys), { leave: false }); return true; },
     story() { g.cutscene.play((c) => scenes.storyScene(c, sys)); return true; },
     /** Skip the meeting: met, on his stool, guiding from the first job. */
-    skipMeet() { if (!sys.gp) return 'he is gone in this save'; sys.s.met = true; g.life?.van?.setDoor?.(0); /* (the meeting's walk is what shuts the van door the arrival opened) */ sys.mode = 'guide'; sys.seatAt(); if (g.held.find('key') < 0) g.held.giveTool('key'); sys.director.start({ quiet: false }); return true; },
+    skipMeet() { if (!sys.gp) return 'he is gone in this save'; sys.s.met = true; sys.mode = 'guide'; sys.seatAt(); if (g.held.find('key') < 0) g.held.giveTool('key'); sys.director.start({ quiet: false }); return true; },
     /** Force story steps done up to (not including) `id`, e.g. dbg.grandpa.upTo('breaker'). */
     upTo(id) { forceUpTo(g, id); return g.story.step(); },
     /** Straight to the goodbye (everything up to the computer note done, you by the shutter). */

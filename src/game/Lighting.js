@@ -14,8 +14,7 @@ import { createSim } from '../sim/index.js';
 import { GARAGE } from '../world/Garage.js';
 
 const GOLDEN = new THREE.Vector3(-5.5, 5.2, 14).sub(new THREE.Vector3(0.5, 0, 0)).normalize(); // the original low sun
-const _v = new THREE.Vector3(), _r = new THREE.Vector3(), _u = new THREE.Vector3(), _c = new THREE.Color(), _c2 = new THREE.Color();
-const UP = new THREE.Vector3(0, 1, 0);
+const _v = new THREE.Vector3(), _c = new THREE.Color(), _c2 = new THREE.Color();
 const MOON = new THREE.Color(0x8ea8e8);
 const ROOM_KEY = new THREE.Vector3(0.35, 1, 0.5).normalize(); // inside a room: the lamp's light on people and hands
 
@@ -33,6 +32,7 @@ export class Lighting {
     this.sunDir = GOLDEN.clone();
     this.moonDir = new THREE.Vector3(0.5, 0.6, -0.6).normalize();
     this.twinkle = 0;
+    this.shaftK = 1; // god rays: 1 under the open sky, 0 in the van or an interior (update)
     createSim(game);
   }
 
@@ -40,9 +40,12 @@ export class Lighting {
     const L = this.game.garage.lights;
     this.base = { sun: L.sun.intensity, hemi: L.hemi.intensity, desk: L.desk.intensity, bounce: 2.0 };
     this.target0 = L.sun.target.position.clone();
-    // the garage's frosted side window glows with the sun behind it (garage.windowGlass: the pane's material)
-    const wg = this.game.garage.windowGlass;
-    this.winGlass = wg ? { m: wg, k: wg.emissiveIntensity, col: wg.emissive.clone() } : null;
+    // the garage's frosted side window glows with the sun behind it: find its (shared, baked) material once
+    this.winGlass = null;
+    this.game.garage.group.traverse((o) => {
+      const m = o.material;
+      if (!this.winGlass && m && !Array.isArray(m) && m.emissiveMap && m.emissive?.getHex() === 0xffc890) this.winGlass = { m, k: m.emissiveIntensity, col: m.emissive.clone() };
+    });
   }
 
   flicker(dur = 0.6) { this.flickerT = Math.max(this.flickerT, dur); }
@@ -76,12 +79,20 @@ export class Lighting {
     const fog = g.scene.fog;
     if (fog) { fog.color.copy(L.fog); fog.near = 25 - 7 * L.night; fog.far = 110 - 20 * L.night; }
     if (g.scene.background?.isColor) g.scene.background.copy(L.fog);
-    // (no god rays, no light-shaft quads, no light-pool decal: the sun's own light and shadows do that work)
-    const r = g.renderer, G = g.garage;
+    // god rays from the sun only, in its colour
+    const r = g.renderer;
+    if (r.outline) {
+      r.outline.uniforms.uShaftCol.value.copy(L.sun).lerp(_c.setRGB(1, 0.72, 0.42), 0.5);
+      this.shaftBase = 0.75 * Math.min(1, S.sunI / 2.6) * (S.sunI >= S.moonI * 4 ? 1 : 0); // (faded per frame in update)
+    }
     if (r.grade) r.grade.uniforms.uWarm.value = L.warm;
+    // garage window shafts and the warm pool under the shutter only exist while the low sun shines in
+    const G = g.garage;
+    if (G.shaftMat) G.shaftMat.uniforms.uStrength.value = 0.13 * S.golden;
     // the frosted window: warm daylight behind it by day, a faint moonlit blue at night
     const W = this.winGlass;
     if (W) { W.m.emissiveIntensity = W.k * (0.12 + 0.62 * S.day); W.m.emissive.copy(W.col).lerp(_c.setHex(0x51608a), S.night); }
+    if (G.pool) G.pool.material.uniforms.uColor.value.setHex(0xffcf98).multiplyScalar(Math.max(0, G.shutterOpen) * Math.min(1, S.sunIn * 1.3 + 0.15 * S.day));
   }
 
   update(dt, t) {
@@ -108,7 +119,7 @@ export class Lighting {
     // the sun by day, the moon by night (one shadow-casting light, so the renderer's god rays keep finding it)
     const sun = L.sun, useMoon = S.moonI > S.sunI;
     const dir = useMoon ? this.moonDir : this.sunDir;
-    this.followShadow(sun, dir);
+    sun.position.copy(this.target0).addScaledVector(dir, 16);
     if (look) sun.color.copy(useMoon ? MOON : look.sun);
     const sunI = look ? (useMoon ? S.moonI : S.sunI) : this.base.sun;
     sun.intensity = sunI * (1 - this.dimLevel * 0.85) * (1 - (this.museumBlend || 0));
@@ -138,35 +149,16 @@ export class Lighting {
     }
     const room = g.places?.current?.();
     if (room) this.roomLight(room, sun, L.hemi, sunI);
+    // god rays only under the open sky: they fade out while the camera sits in the van's cab (src/life/van.js inCab) or
+    // you stand in an interior, where the window glass and frames have nothing to do with the sky behind them
+    const open = g.life?.van?.inCab || g.places?.where ? 0 : 1;
+    this.shaftK += (open - this.shaftK) * Math.min(1, dt * 3);
+    if (g.renderer.outline) g.renderer.outline.uniforms.uShaft.value = (this.shaftBase ?? 0.75) * this.shaftK;
     // glow-in-the-dark finish responds to darkness
     const darkness = Math.max(this.dimLevel, lightsK ? 0 : 0.45 + 0.25 * (S.night || 0));
     this.glowBoost = Math.max(0, this.glowBoost - dt * 0.3);
     glowUniform.value = 0.6 + darkness * 2.4 + this.glowBoost + Math.sin(t * 2) * 0.05;
     g.museum?.updateLighting?.(this.dimLevel);
-  }
-
-  /** The sun's (moon's) shadow map follows you: a square of QUALITY.sunShadow x 2 metres (src/core/renderer.js), centred a
-   *  little ahead of you, so houses, poles, wires and people cast their shadows wherever you stand in the lane. The centre
-   *  is snapped in the light's own frame to a grid of whole texels (1/16 of the map), so standing still or walking never
-   *  makes the shadows crawl, and the map is only redrawn (the renderer's shadow policy) when you cross a grid line or the
-   *  sun steps. */
-  followShadow(sun, dir) {
-    const g = this.game, sh = sun.shadow, cam = sh.camera, half = g.renderer.quality?.sunShadow || 16, n = sh.mapSize.x || 2048;
-    if (cam.right !== half || cam.far !== 70) {
-      cam.left = -half; cam.right = half; cam.top = half; cam.bottom = -half; cam.near = 0.5; cam.far = 70;
-      cam.updateProjectionMatrix();
-    }
-    sh.normalBias = Math.max(0.02, 1.3 * (2 * half) / n); // (about a texel and a bit: no acne on the long walls)
-    const P = g.player.pos, yaw = g.player.yaw, ahead = half * 0.3;
-    _v.set(P.x - Math.sin(yaw) * ahead, 0, P.z - Math.cos(yaw) * ahead);
-    // the light's frame as three.js builds it (lookAt with +y up)
-    _r.crossVectors(UP, dir);
-    if (_r.lengthSq() < 1e-6) _r.set(1, 0, 0); else _r.normalize();
-    _u.crossVectors(dir, _r);
-    const grid = (2 * half) / 16, q = (x) => Math.round(x / grid) * grid;
-    sun.target.position.copy(_r).multiplyScalar(q(_v.dot(_r))).addScaledVector(_u, q(_v.dot(_u))).addScaledVector(dir, q(_v.dot(dir)));
-    sun.position.copy(sun.target.position).addScaledVector(dir, 30);
-    sun.target.updateMatrixWorld();
   }
 
   /** Inside an off-map room (src/places, src/growth) its own surfaces ignore the sun and are lit by the room's lamp (a
@@ -177,7 +169,7 @@ export class Lighting {
   roomLight(room, sun, hemi, sunI) {
     const lamp = room.lamp, on = lamp ? Math.min(1, Math.max(0, lamp.k ?? 1)) : 1, off = 1 - on, look = this.look;
     const dim = 1 - this.dimLevel * 0.85;
-    sun.position.copy(sun.target.position).addScaledVector(ROOM_KEY, 16);
+    sun.position.copy(this.target0).addScaledVector(ROOM_KEY, 16);
     sun.color.lerp(_c.set(lamp?.color ?? 0xfff2e0), on);
     sun.intensity = (1.5 * on + 0.35 * sunI * off) * dim;
     _c.set(lamp?.color ?? 0xfff2e0).lerp(_c2.setHex(0xe6e2f2), 0.55);

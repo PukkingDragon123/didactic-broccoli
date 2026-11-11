@@ -27,8 +27,7 @@ export function hitBox(w, h, d, x = 0, y = 0, z = 0) {
 /** A voxel prop as a mesh with the given material set (interior / indoor), placed. */
 export function prop(id, mats, x = 0, y = 0, z = 0, ry = 0, s = 1) {
   const m = propMesh(id, { castShadow: false });
-  // a low-poly prop keeps its atlas (through mats.convert, the set's indoor treatment, when it has one)
-  if (mats && Array.isArray(m.material)) m.material = !m.geometry?.userData.lowPoly ? mats : mats.convert ? m.material.map(mats.convert) : m.material;
+  if (mats && Array.isArray(m.material)) m.material = mats;
   m.position.set(x, y, z); m.rotation.y = ry;
   if (s !== 1) m.scale.setScalar(s);
   m.receiveShadow = true;

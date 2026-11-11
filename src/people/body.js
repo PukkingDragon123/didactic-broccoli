@@ -2,9 +2,7 @@
 // body in the rest pose (metres, feet on y = 0, facing +z, +x = the character's LEFT). Limb segments are
 // authored on the left side only; the mesher mirrors them onto the right bones and they share texture space.
 import { hairSegments } from './hair.js';
-import { hairJoints } from './hairMesh.js';
 import { accSegments } from './acc.js';
-import { CLOSED_SHOES, OPEN_SHOES } from './gear.js';
 
 // [bone, parent]. Extra bones: skirt (skirts / aprons / coat tails), tailL/R (ponytails, spring-driven),
 // bag (shoulder bag / camera on a strap, pendulum), prop (phone or camera in the right hand), box (carried box).
@@ -109,13 +107,8 @@ export function bodySegments(s, P) {
   add('calf', 'shinL', 'body', mid, P.kneeY + 0.01 * h, [lx, -0.005 * h, tw * 0.64, tw * 0.7], [lx, 0.001 * h, tw * 0.6, tw * 0.64], { ch: 0.36, mirror: true, caps: 'none' });
   add('shin', 'shinL', 'body', P.ankleY - 0.006 * h, mid, [lx, 0, tw * 0.37, tw * 0.42], [lx, -0.005 * h, tw * 0.64, tw * 0.7], { ch: 0.34, mirror: true, caps: 'none' });
   const fl = P.footL, fx = P.footX, fz0 = -0.24 * fl;
-  if (OPEN_SHOES.has(s.shoes?.kind)) { /* the foot is modelled with the sandal / pump (src/people/gear.js) */ } else if (CLOSED_SHOES.has(s.shoes?.kind)) {
-    // a modelled shoe (src/people/gear.js) encloses the foot: only the ankle stands up out of it (boots cover even that)
-    if (s.shoes.kind !== 'boots' && s.shoes.kind !== 'tabi') add('foot', 'footL', 'shoe', 0.16 * fl, P.ankleY + 0.012 * h, [lx + 0.003 * h, fz0 + 0.26 * fl, fx * 0.58, 0.15 * fl], [lx + 0.002 * h, fz0 + 0.22 * fl, fx * 0.62, 0.15 * fl], { ch: 0.3, mirror: true, caps: 'top' });
-  } else {
-    add('foot', 'footL', 'shoe', 0, P.ankleY + 0.012 * h, [lx + 0.003 * h, fz0 + 0.36 * fl, fx, 0.36 * fl], [lx + 0.002 * h, fz0 + 0.2 * fl, fx * 0.72, 0.18 * fl], { ch: 0.3, mirror: true });
-    add('toe', 'footL', 'shoe', 0, 0.026 * h, [lx + 0.004 * h, fz0 + 0.84 * fl, fx * 1.02, 0.16 * fl], [lx + 0.004 * h, fz0 + 0.8 * fl, fx * 0.92, 0.15 * fl], { ch: 0.45, mirror: true });
-  }
+  add('foot', 'footL', 'shoe', 0, P.ankleY + 0.012 * h, [lx + 0.003 * h, fz0 + 0.36 * fl, fx, 0.36 * fl], [lx + 0.002 * h, fz0 + 0.2 * fl, fx * 0.72, 0.18 * fl], { ch: 0.3, mirror: true });
+  add('toe', 'footL', 'shoe', 0, 0.026 * h, [lx + 0.004 * h, fz0 + 0.84 * fl, fx * 1.02, 0.16 * fl], [lx + 0.004 * h, fz0 + 0.8 * fl, fx * 0.92, 0.15 * fl], { ch: 0.45, mirror: true });
   return S;
 }
 
@@ -123,8 +116,6 @@ export function bodySegments(s, P) {
 export function buildPlan(spec) {
   const P = proportions(spec);
   const J = joints(P);
-  hairJoints(spec, P, J);
-  // (the body itself is the fitted base mesh, src/people/base.js; segments are only the extras: hair, skirts, props)
-  const segs = [...hairSegments(spec, P, J), ...accSegments(spec, P, J)];
-  return { P, J, segs, spec };
+  const segs = [...bodySegments(spec, P), ...hairSegments(spec, P, J), ...accSegments(spec, P, J)];
+  return { P, J, segs };
 }

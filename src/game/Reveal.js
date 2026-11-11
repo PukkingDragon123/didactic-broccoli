@@ -130,24 +130,7 @@ export class Reveal {
       if (cap.paper) this.spawnPaper(cap.paper);
       audio.play('paper', { vol: 0.6, delay: 0.1 });
       if (g.shells) {
-        // the halves part with the pop: the lid jumps up and away to the left, the cup drops to the right, and both
-        // sink out of view into your hands (they come back as the empty shell in a slot)
-        for (const [half, dx, up, rz] of [[cap.top, -0.11, 0.07, 1.3], [cap.bottom, 0.1, -0.02, -0.7]]) {
-          if (!half.parent) continue;
-          anchor.attach(half);
-          const p0 = half.position.clone(), q0 = half.quaternion.clone(), s0 = half.scale.x;
-          const ax = new THREE.Vector3(0.3, 0.2, 1).normalize(), q = new THREE.Quaternion();
-          g.tweens.add({
-            dur: 0.5, ease: ease.linear,
-            update: (k) => {
-              const o = ease.outCubic(Math.min(1, k * 1.6));
-              half.position.set(p0.x + dx * o, p0.y + up * Math.sin(Math.min(1, k * 1.4) * Math.PI) - 0.3 * k * k, p0.z + 0.02 * o);
-              half.quaternion.copy(q0).premultiply(q.setFromAxisAngle(ax, rz * o));
-              half.scale.setScalar(s0 * (1 - 0.35 * k * k));
-            },
-            done: () => half.parent?.remove(half),
-          });
-        }
+        cap.top.parent?.remove(cap.top); cap.bottom.parent?.remove(cap.bottom);
         const sd = { series: data.series, color: data.color };
         g.tweens.wait((DUR[data.rarity] || 1) + 0.2, () => g.shells.give(sd));
       } else {
@@ -185,8 +168,8 @@ export class Reveal {
         mesh.rotation.y = 0;
         mesh.position.y = 0;
         held.busy = false;
-        // (only if the figure is still the thing in your hand)
-        if (held.item?.obj === holder) { held.startTrans('toy', 0.45); held.attachTag({ key: data.key, finish: data.finish }, isNew); }
+        held.startTrans('toy', 0.45);
+        held.attachTag({ key: data.key, finish: data.finish }, isNew);
         g.lighting.dim(false, 2.5);
         g.save();
       },
@@ -212,8 +195,6 @@ export class Reveal {
     const g = this.game;
     const wp = paper.getWorldPosition(new THREE.Vector3());
     g.scene.attach(paper);
-    paper.traverse((o) => o.layers.set(0)); // out of the hands: it is in the room now
-    paper.castShadow = true;
     const body = g.physics.addBody({ radius: 0.01, position: wp, velocity: new THREE.Vector3((Math.random() - 0.5) * 0.6, 0.8, (Math.random() - 0.5) * 0.6), object: null, gravityScale: 0.22, linearDamping: 2.2, roll: false, collideBodies: false, restitution: 0 });
     this.debris.push({ obj: paper, body, t: 16, paper: true, seed: Math.random() * 10 });
   }
@@ -224,8 +205,8 @@ export class Reveal {
       d.t -= dt;
       if (d.paper) {
         d.obj.position.copy(d.body.pos);
-        if (!d.body.contact) d.obj.rotation.set(-0.6 + Math.sin(t * 5 + d.seed) * 0.8, t * 2 + d.seed, Math.cos(t * 4 + d.seed) * 0.6);
-        else { d.obj.rotation.set(-Math.PI / 2, 0, d.seed); d.obj.position.y = d.body.pos.y - 0.008; }
+        if (!d.body.contact) d.obj.rotation.set(Math.sin(t * 5 + d.seed) * 0.8, t * 2 + d.seed, Math.cos(t * 4 + d.seed) * 0.6);
+        else d.obj.rotation.set(0, d.seed, 0);
       }
       if (d.t < 1) d.obj.scale.setScalar(Math.max(0.001, d.t));
       if (d.t <= 0) {

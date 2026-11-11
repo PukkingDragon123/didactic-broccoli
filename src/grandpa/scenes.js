@@ -4,7 +4,7 @@
 //   meetScript   the meeting (a chat): you got tall / short, a bow or an awkward hug, the van's clutch, why he's
 //                leaving, and the key ring into your hands
 //   storyScene   across the lane together; he pats the shutter, the shop in its heyday (the flashback), then his
-//                stool: "Shutter first. I'll supervise."
+//                stool: "Letter first. I'll supervise."
 //   taxiArriveScene / byeScript / taxiLeaveScene   the goodbye: the taxi, his notebook, off down the lane
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
@@ -254,14 +254,14 @@ export function* storyScene(c, sys) {
   });
   const [ya, k1, k2, k3, k4, k5] = actors;
   k1.h.gesture('browse'); k3.h.gesture('point');
-  yield c.all(c.cam({ pos: V(1.9, 1.5, Z + 3.3), look: V(-0.4, 1.15, 1.8), dur: 4.2 }), c.say('After school they came running. Pocket money in their fists.', 1.0, 'Grandpa', sys.gp.voice, sys.gp.color),
+  yield c.all(c.cam({ pos: V(1.9, 1.5, Z + 3.3), look: V(-0.4, 1.15, 1.8), dur: 4.2 }), c.say('After school they came running. Pocket money in their fists.', 1.0, 'Grandpa', sys.gp.voice),
     c.call(() => { k2.h.gesture('cheer'); audio.play('gachan', { pos: V(-3.2, 0.5, 0.8), vol: 0.8 }); }));
   c.hideSay();
   ya.look = c.pos; ya.h.gesture('wave');
   k4.h.gesture('wave'); k5.h.gesture('cheer');
   g.bubbles?.say(ya.h, 'One coin, one turn. Good luck!', { dur: 3.2, onChar: sys.gp.voice });
   yield c.cam({ pos: V(1.6, 1.55, Z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.6 });
-  yield c.all(c.wait(1.4), c.say('Grown-ups pretended they weren\'t excited. They were.', 0.8, 'Grandpa', sys.gp.voice, sys.gp.color));
+  yield c.all(c.wait(1.4), c.say('Grown-ups pretended they weren\'t excited. They were.', 0.8, 'Grandpa', sys.gp.voice));
   c.hideSay();
   // back to now
   yield c.flash(() => {
@@ -282,8 +282,8 @@ export function* storyScene(c, sys) {
   gp.expr('smile', 3);
   if (me) { me.face = Math.atan2(1.75 - 0.95, 6.3 - 6.65); me.look = 'gp'; }
   yield c.cam({ pos: V(1.25, 1.5, 8.55), look: V(1.4, 1.3, 6.4), fov: 50 });
-  yield line(c, sys, "Right. Shutter first. Key's on your ring.", 0.6);
-  gp.act('point', 2.2, V(0.2, 0.7, Z + 0.1)); // (the padlock at the foot of the shutter)
+  yield line(c, sys, 'Right. My letter first. Then the shutter.', 0.6);
+  gp.act('point', 2.2, V(0.85, 1.32, Z + 0.1));
   yield line(c, sys, "I'll supervise. Supervising's good for the back.", 0.8);
   // off to his stool
   sys.sitOnStool();

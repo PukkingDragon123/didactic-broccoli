@@ -18,7 +18,6 @@ import { makeOldMan } from './oldman.js';
 import { Cashier } from './cashier.js';
 import { payCash, yen } from '../money.js';
 import { prop, hitBox } from '../util.js';
-import '../../products/register.js'; // the low-poly packs for the stock (milk, batteries, tubes, brooms, cup noodles)
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const pick = (a) => a[Math.floor(Math.random() * a.length)];

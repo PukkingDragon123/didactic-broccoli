@@ -1,46 +1,35 @@
 /* Cinematic chat (src/talk/Talk.js): floating choices next to you, a stepped timer for "hurry!" answers, the inner
-   monologue line near the bottom of the view. All of it is plain floating text (the tones and the hard pixel ink
-   outline come from src/people/bubbles.css): no slips, no strips, no boxes, no glows. The choice you're on is brighter
-   and underlined with a wobbly red-pencil stroke (--tk-mark, painted in Talk.js); the timer is a thin ink line. */
+   monologue line near the bottom of the view. Pixel style: Alagard, flat dark strips, no glows or gradients. */
 .tk-choices {
-  position: fixed; left: 0; top: 0; z-index: 26; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  position: fixed; left: 0; top: 0; z-index: 26; display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
   opacity: 0; pointer-events: auto; will-change: transform, opacity; max-width: min(420px, 46vw);
 }
-.tk-choices .tk-prompt { font: 16px/20px var(--font-ui); color: var(--ft-gold); text-shadow: var(--ft-rim); padding: 2px 6px 4px; }
+.tk-choices .tk-prompt { font: 16px/18px var(--font-ui); color: #ffd23f; background: rgba(18, 12, 16, .7); padding: 1px 8px 3px; }
 .tk-opt {
   display: flex; gap: 8px; align-items: baseline; border: 0; border-radius: 0; margin: 0; cursor: pointer; text-align: left;
-  font: 16px/20px var(--font-ui); color: var(--ft-dim); background: none; padding: 2px 8px 8px 6px; text-shadow: var(--ft-rim);
+  font: 16px/18px var(--font-ui); color: #fff4e0; background: rgba(18, 12, 16, .7); padding: 2px 10px 4px 6px;
 }
-.tk-opt .n { flex: none; min-width: 12px; color: var(--ft-gold); }
-.tk-opt .u { padding-bottom: 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-.tk-opt.sel { color: #fffaf0; }
-.tk-opt.sel .u, .tk-opt.picked .u { background: var(--tk-mark) 0 100% / 64px 8px repeat-x; image-rendering: pixelated; }
-.tk-opt.picked { color: var(--ft-gold); }
-/* quick replies (no highlight: you answer with the number keys or a tap) read at full strength */
-.tk-choices.quick .tk-opt { color: var(--ft-cream); }
-/* the timer: a thin line of twelve steps, light inside its ink rim; it runs out to bare ink, the last quarter in red */
-.tk-timer { display: flex; margin: 4px 0 0 6px; padding: 2px; background: var(--ft-ink); }
-.tk-timer i { display: block; width: 12px; height: 2px; background: none; }
-.tk-timer i.on { background: var(--ft-cream); }
-.tk-timer.low i.on { background: var(--ft-red); }
-@media (min-height: 660px) and (min-width: 1100px) {
-  .tk-opt, .tk-choices .tk-prompt { font-size: 32px; line-height: 36px; text-shadow: var(--ft-rim-2x); }
-  .tk-opt { gap: 14px; padding: 2px 12px 12px 8px; }
-  .tk-opt .n { min-width: 22px; }
-  .tk-opt .u { padding-bottom: 10px; }
-  .tk-opt.sel .u, .tk-opt.picked .u { background-size: 128px 16px; }
-  .tk-choices { max-width: min(680px, 46vw); gap: 0; }
-  .tk-timer { padding: 4px; margin-left: 8px; }
-  .tk-timer i { width: 20px; height: 4px; }
+.tk-opt .n { flex: none; min-width: 14px; color: #a89a84; }
+.tk-opt.sel { background: #fff0d0; color: #2a1a10; }
+.tk-opt.sel .n { color: #b8322e; }
+.tk-opt.picked { background: #ffd23f; color: #2a1a10; }
+.tk-choices.quick .tk-opt { background: rgba(18, 12, 16, .62); }
+.tk-timer { display: flex; gap: 2px; margin-top: 2px; padding: 3px; background: rgba(18, 12, 16, .7); }
+.tk-timer i { display: block; width: 12px; height: 6px; background: #3a2e30; }
+.tk-timer i.on { background: #ffd23f; }
+.tk-timer.low i.on { background: #e5383b; }
+@media (min-height: 900px) {
+  .tk-opt, .tk-choices .tk-prompt { font-size: 32px; line-height: 34px; }
+  .tk-choices { max-width: min(640px, 44vw); }
 }
-body.touchmode .tk-opt { padding-top: 8px; padding-bottom: 12px; padding-right: 14px; }
+body.touchmode .tk-opt { padding: 8px 14px 10px 10px; }
 
 /* talking to yourself: a murmur line low in the view */
 #tk-self {
   position: fixed; left: 50%; bottom: calc(118px + env(safe-area-inset-bottom)); z-index: 5; transform: translateX(-50%);
-  pointer-events: none; width: max-content; max-width: min(560px, 80vw); text-align: center; opacity: 0;
+  pointer-events: none; max-width: min(560px, 80vw); text-align: center; opacity: 0;
 }
-#tk-self span { display: inline; font: 16px/20px var(--font-ui); color: var(--ft-blue); text-shadow: var(--ft-rim); }
+#tk-self span { display: inline; font: 16px/20px var(--font-ui); color: #bfe8ff; background: rgba(18, 12, 16, .6); padding: 1px 8px 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 body.cine #tk-self { bottom: calc(40px + env(safe-area-inset-bottom)); }
 
 /* the guestbook page */

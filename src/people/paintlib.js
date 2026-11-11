@@ -25,8 +25,6 @@ export function vnoise(x, y, s = 0) {
 
 /** out = colour c * k (with a warm shadow shift so skin / fabric shadows don't go grey). */
 export function shadeInto(o, c, k, warm = 0.12) {
-  // high-resolution pixel art: shading comes in deliberate steps (a limited palette per material), never a smooth ramp
-  k = Math.round(k * 22) / 22;
   const d = 1 - k;
   o[0] = c[0] * k * (1 + d * warm); o[1] = c[1] * k * (1 + d * warm * 0.2); o[2] = c[2] * k * (1 - d * warm * 0.9);
   return o;

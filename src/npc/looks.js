@@ -9,16 +9,17 @@
 //
 // The base painters (paint.js) know nothing about crops, open jackets or coat seams, so after the atlas is painted
 // `retouch` walks every texel again (the mesh layout is deterministic: same spec -> same faces and rects) and lets a
-// character painter repaint the ones it cares about. Their props (src/peoplekit/npc.js) ride on the bones like the closet cosmetics.
+// character painter repaint the ones it cares about. Voxel props ride on the bones like the closet cosmetics.
 import * as THREE from 'three';
 import { createHuman } from '../people/index.js';
 import { buildPlan } from '../people/body.js';
-import { buildMesh } from '../people/mesh.js';
-import { walkAtlas } from '../people/paint.js';
+import { buildMesh, ATLAS } from '../people/mesh.js';
 import { dressHuman } from '../people/cosmetics.js';
 import { shadeInto, over, h2, mixc, G } from '../people/paintlib.js';
-import { kitMesh } from '../peoplekit/kit.js';
-import { NPC } from '../peoplekit/npc.js';
+import { VoxelModel, metal, gloss } from '../voxel/VoxelModel.js';
+import { meshVoxels } from '../voxel/mesher.js';
+import { voxelMaterials } from '../voxel/materials.js';
+import { MODELS as PROPS, vmesh as vmeshP } from './props.js';
 
 const INK = [28, 22, 22], GOLD = [214, 170, 70];
 const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1 };
@@ -30,13 +31,30 @@ const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1
  */
 export function retouch(h, fn) {
   h.finishPaint?.();
-  // the same layout as the person's own build (src/people/mesh.js): the body is rasterised triangles now, so the walk
-  // is src/people/paint.js walkAtlas (every texel once, with its rest-pose point, normal, part)
-  const plan = buildPlan(h.spec);
-  const m = buildMesh(plan, { gear: false, far: false });
+  const m = buildMesh(buildPlan(h.spec));
   m.geometry.dispose();
   if (m.block.x !== h.face.B.x || m.block.y !== h.face.B.y) { console.warn('retouch: atlas layout mismatch'); return; }
-  walkAtlas(m.faces.filter((f) => f.seg.mat !== 'hairSwatch'), plan.P, h.pix, fn);
+  const d = h.pix.d, o = new Float32Array(4);
+  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, part: '', kind: '', nx: 0, ny: 0, nz: 0, px: 0, e: 0, rb: 0, rt: 0, rh: 0, seg: null };
+  for (const f of m.faces) {
+    c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens;
+    const R = f.rect, sw = f.s1 - f.s0, rh = f.r1 - f.r0;
+    for (let j = 0; j < R.h; j++) {
+      const r = f.r1 - (j - 0.5) / f.dens;
+      for (let i = 0; i < R.w; i++) {
+        const s = f.s0 + (i - 0.5) / f.dens;
+        c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
+        c.i = R.x + i; c.j = R.y + j;
+        c.e = sw > 0 ? ((s - f.s0) / sw) * 2 - 1 : 0;
+        c.rb = r - f.r0; c.rt = f.r1 - r; c.rh = rh;
+        const p = (c.j * ATLAS + c.i) * 4;
+        o[0] = d[p]; o[1] = d[p + 1]; o[2] = d[p + 2]; o[3] = d[p + 3];
+        if (!fn(c, o)) continue;
+        d[p] = Math.max(0, Math.min(255, o[0])); d[p + 1] = Math.max(0, Math.min(255, o[1])); d[p + 2] = Math.max(0, Math.min(255, o[2])); d[p + 3] = o[3];
+      }
+    }
+  }
+  h.pix.dirty = true;
   h.pix.flush();
   h.tex.needsUpdate = true;
 }
@@ -233,14 +251,94 @@ function faceScar(h, a, b, jumpEye = false) {
   h.faceExprKey = null;
 }
 
-// ------------------------------------------------------------------ props (src/peoplekit/npc.js)
+// ------------------------------------------------------------------ voxel props
 const _geo = new Map();
-/** A mesh of a cached people-kit geometry. */
-const kmesh = (key, build) => { let g = _geo.get(key); if (!g) { g = build(); _geo.set(key, g); } return kitMesh(g); };
+const vmesh = (key, build, res = 1) => {
+  let g = _geo.get(key);
+  if (!g) {
+    const v = build();
+    g = meshVoxels(v, { voxelSize: 1, origin: 'none' });
+    g.translate(-0.5, -0.5, -0.5);
+    g.scale(1 / res, 1 / res, 1 / res);
+    g.computeBoundingSphere();
+    _geo.set(key, g);
+  }
+  const m = new THREE.Mesh(g, voxelMaterials('normal'));
+  m.castShadow = true; m.receiveShadow = true; m.raycast = () => {};
+  return m;
+};
+const vm = (j = 0.02) => { const v = new VoxelModel(); v.jitter = j; return v; };
+function rbox(x, y, z, c, a, r) {
+  const qx = Math.abs(x - c[0]) - a[0] + r, qy = Math.abs(y - c[1]) - a[1] + r, qz = Math.abs(z - c[2]) - a[2] + r;
+  return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - r;
+}
+
+const MODELS = {
+  /** Rohan's headband in head units (res 2): a band around the hair with zig-zag (sawtooth) edges. */
+  headband() {
+    const v = vm(0.015), R = 2, BAND = 0x2f6a58, EDGE = 0xd8b45a, DARK = 0x1d3a30;
+    for (let i = -11 * R; i <= 11 * R; i++) for (let j = 9 * R; j <= 17 * R; j++) for (let k = -10 * R; k <= 13 * R; k++) {
+      const x = i / R, y = j / R, z = k / R;
+      const d = rbox(x, y, z, [0, 6.4, 2.4], [7.6, 10.4, 9.1], 3.7);
+      if (d < 0.3 || d > 1.0) continue;
+      const a = Math.atan2(x, z - 2.4), u = (a / (Math.PI * 2)) * 26, tri = Math.abs(u - Math.floor(u) - 0.5) * 2;
+      const top = 12.3 + tri * 1.1, bot = 10.5 - (1 - tri) * 0.9;
+      if (y > top || y < bot) continue;
+      const edge = y > top - 0.55 || y < bot + 0.55;
+      v.set(i, j, k, edge ? EDGE : Math.abs(y - 11.4) < 0.3 ? DARK : BAND);
+    }
+    return v;
+  },
+  /** A G-pen nib earring (res 4, head units): a little hoop and the split nib. */
+  nib() {
+    const v = vm(0.01), M = metal(0xd9b25c), D = metal(0x6a5426), R = 4;
+    for (let y = -14; y <= 0; y++) {
+      const w = y > -9 ? 2 : Math.max(0, Math.round((y + 14) * 0.45));
+      for (let x = -w; x <= w; x++) v.set(x, y, 0, x === 0 && y < -5 ? D : M);
+    }
+    v.set(0, -7, 0, D).set(0, -6, 0, D);
+    for (const [x, y] of [[-1, 1], [1, 1], [-1, 2], [1, 2], [0, 3], [-1, 0], [1, 0]]) v.set(x, y, 0, M);
+    void R;
+    return v;
+  },
+  /** Heart pin (metric, res 1 => scaled by the caller). */
+  heart() {
+    const v = vm(0.01), C = metal(0xe8c050), D = metal(0x9a7426);
+    const rows = ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...'];
+    rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch === '#') { v.set(x - 3, 5 - y, 0, C); v.set(x - 3, 5 - y, -1, D); } }));
+    v.set(-2, 4, 1, gloss(0xfff4c0));
+    return v;
+  },
+  /** Peace sign pin. */
+  peace() {
+    const v = vm(0.01), C = metal(0xe8c050), D = metal(0x9a7426);
+    for (let y = -4; y <= 4; y++) for (let x = -4; x <= 4; x++) {
+      const r = Math.hypot(x, y);
+      const ring = r > 3.2 && r < 4.6;
+      const bar = x === 0 && r < 3.6;
+      const legs = y < 0 && Math.abs(Math.abs(x) + y) < 0.6 && r < 3.6;
+      if (ring || bar || legs) { v.set(x, y, 0, C); v.set(x, y, -1, D); }
+    }
+    return v;
+  },
+  /** Dollar / yen glyph pins (Okuyasu). */
+  glyph(kind) {
+    const v = vm(0.01), C = kind === 'yen' ? metal(0xd8dce4) : metal(0xe8c050), D = kind === 'yen' ? metal(0x7a7e88) : metal(0x9a7426);
+    const G = kind === 'yen'
+      ? ['#...#', '.#.#.', '..#..', '#####', '..#..', '#####', '..#..']
+      : ['..#..', '.####', '#.#..', '.###.', '..#.#', '####.', '..#..'];
+    G.forEach((r, y) => [...r].forEach((ch, x) => { if (ch === '#') { v.set(x - 2, 6 - y, 0, C); v.set(x - 2, 6 - y, -1, D); } }));
+    return v;
+  },
+};
 
 /** A sketch on the open page (canvas, pixel style): a scratchy face study, hatching, a signature squiggle. */
-function drawPage(g) {
-  const W = 48, Hh = 60;
+let _pageTex = null;
+function pageTexture() {
+  if (_pageTex) return _pageTex;
+  const W = 48, Hh = 60, cv = document.createElement('canvas');
+  cv.width = W; cv.height = Hh;
+  const g = cv.getContext('2d');
   g.fillStyle = '#f2ead8'; g.fillRect(0, 0, W, Hh);
   g.fillStyle = '#d8ccb4'; g.fillRect(0, 0, 2, Hh);
   const dot = (x, y, c = '#2a2428') => { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), 1, 1); };
@@ -252,13 +350,28 @@ function drawPage(g) {
   for (let i = 0; i < 18; i++) dot(31 + (i % 3), 12 + i, '#6a6268');
   for (let y = 40; y < 52; y += 2) for (let x = 6; x < 40; x += 3) if ((x + y) % 5) dot(x + (y % 4 ? 1 : 0), y, '#8a8288');
   g.fillStyle = '#b8323a'; g.fillRect(34, 53, 9, 1); g.fillRect(36, 54, 6, 1);
+  _pageTex = new THREE.CanvasTexture(cv);
+  _pageTex.colorSpace = THREE.SRGBColorSpace; _pageTex.magFilter = THREE.NearestFilter; _pageTex.minFilter = THREE.NearestFilter; _pageTex.generateMipmaps = false;
+  return _pageTex;
 }
 
-/** Rohan's sketchbook (hand-local, metres): kraft hardcover, wire spiral, the open page facing the palm. */
+/** Rohan's sketchbook (hand-local, metres): spiral-bound kraft cover on one side, the open page on the other. */
 function sketchbook() {
   const g = new THREE.Group();
-  const book = kmesh('rohan:book', () => NPC.sketchbook(drawPage));
+  const W = 0.016, Hb = 0.2, D = 0.155;
+  const cover = new THREE.MeshStandardMaterial({ color: 0x9a7a52, roughness: 0.9 });
+  const page = new THREE.MeshStandardMaterial({ map: pageTexture(), roughness: 0.95 });
+  const edge = new THREE.MeshStandardMaterial({ color: 0xece4d0, roughness: 0.95 });
+  // box faces: +x, -x, +y, -y, +z, -z
+  const book = new THREE.Mesh(new THREE.BoxGeometry(W, Hb, D), [cover, page, edge, edge, edge, edge]); // the page faces the palm
+  book.castShadow = true;
   g.add(book);
+  const ring = new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.4, metalness: 0.6 });
+  for (let k = 0; k < 9; k++) {
+    const r = new THREE.Mesh(new THREE.BoxGeometry(W * 1.25, 0.006, 0.006), ring);
+    r.position.set(0, Hb / 2 - 0.012 - k * 0.022, -D / 2);
+    g.add(r);
+  }
   g.userData.page = book;
   return g;
 }
@@ -266,7 +379,12 @@ function sketchbook() {
 /** The G-pen (hand-local): a slim dark holder with a gold nib. */
 function gpen() {
   const g = new THREE.Group();
-  g.add(kmesh('rohan:gpen', NPC.gpen));
+  const holder = new THREE.Mesh(new THREE.BoxGeometry(0.009, 0.13, 0.009), new THREE.MeshStandardMaterial({ color: 0x3a2a24, roughness: 0.6 }));
+  holder.position.y = 0.035;
+  const nib = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.022, 0.004), new THREE.MeshStandardMaterial({ color: 0xd9b25c, roughness: 0.3, metalness: 0.9 }));
+  nib.position.y = -0.04;
+  g.add(holder, nib);
+  g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.raycast = () => {}; } });
   return g;
 }
 
@@ -278,13 +396,13 @@ function headGroup(h) {
   h.b.head.add(g);
   return g;
 }
-/** A metric pin on a bone at an absolute rest-pose point (x, y, z), facing +z, scaled by k. */
-function pin(h, bone, key, build, p, k, rot = [0, 0, 0]) {
-  const m = kmesh(key, build);
+/** A metric pin on a bone at an absolute rest-pose point (x, y, z), facing +z, `vox` metres per voxel. */
+function pin(h, bone, key, build, p, vox, rot = [0, 0, 0]) {
+  const m = vmesh(key, build);
   const J = h.J[bone];
   m.position.set(p[0] - J[0], p[1] - J[1], p[2] - J[2]);
   m.rotation.set(...rot);
-  m.scale.setScalar(k);
+  m.scale.setScalar(vox);
   h.b[bone].add(m);
   return m;
 }
@@ -292,9 +410,9 @@ function pin(h, bone, key, build, p, k, rot = [0, 0, 0]) {
 const DRESS = {
   rohan(h) {
     const hg = headGroup(h);
-    hg.add(kmesh('rohan:headband', NPC.headband));
+    hg.add(vmesh('rohan:headband', MODELS.headband, 2));
     for (const sx of [1, -1]) {
-      const e = kmesh('rohan:nib', NPC.nib);
+      const e = vmesh('rohan:nib', MODELS.nib, 4);
       e.position.set(sx * 7.5, 1.6, 0.7);
       e.rotation.y = sx * 1.2;
       hg.add(e);
@@ -313,14 +431,14 @@ const DRESS = {
   josuke(h) {
     const P = h.P, H = P.H, hu = P.hu;
     const y = P.neckBase + 0.02 * H, nz = -0.011 * H + hu * 0.205;
-    pin(h, 'neck', 'pin:heart', NPC.heart, [hu * 0.15, y, nz], 1, [0, 0.45, 0]);
-    pin(h, 'neck', 'pin:peace', NPC.peace, [-hu * 0.15, y, nz], 1, [0, -0.45, 0]);
+    pin(h, 'neck', 'pin:heart', MODELS.heart, [hu * 0.15, y, nz], 0.005, [0, 0.45, 0]);
+    pin(h, 'neck', 'pin:peace', MODELS.peace, [-hu * 0.15, y, nz], 0.0044, [0, -0.45, 0]);
   },
   okuyasu(h) {
     const P = h.P, H = P.H, hu = P.hu;
     const y = P.neckBase + 0.018 * H, nz = -0.011 * H + hu * 0.205;
-    pin(h, 'neck', 'pin:dollar', () => NPC.glyph('dollar'), [hu * 0.15, y, nz], 1, [0, 0.45, 0]);
-    pin(h, 'neck', 'pin:yen', () => NPC.glyph('yen'), [-hu * 0.15, y, nz], 1, [0, -0.45, 0]);
+    pin(h, 'neck', 'pin:dollar', () => MODELS.glyph('dollar'), [hu * 0.15, y, nz], 0.0042, [0, 0.45, 0]);
+    pin(h, 'neck', 'pin:yen', () => MODELS.glyph('yen'), [-hu * 0.15, y, nz], 0.0042, [0, -0.45, 0]);
   },
 };
 
@@ -328,9 +446,12 @@ Object.assign(DRESS, {
   // the sorcerer: hood up, an eyepatch, a lacquered chopstick for a wand
   kuromaru(h) {
     const hg = headGroup(h);
-    hg.add(kmesh('kuro:hood', NPC.hood));
-    hg.add(kmesh('kuro:patch', NPC.eyepatch));
-    const wand = kmesh('kuro:wand', NPC.wand);
+    hg.add(vmeshP('kuro:hood', PROPS.hood));
+    const patch = vmeshP('kuro:patch', PROPS.eyepatch);
+    patch.scale.setScalar(0.5);
+    hg.add(patch);
+    const wand = vmeshP('kuro:wand', PROPS.wand);
+    wand.scale.setScalar(0.005);
     wand.position.set(-0.004, -0.075, 0.03);
     wand.rotation.set(1.3, 0, 0);
     h.b.handR.add(wand);
@@ -339,7 +460,8 @@ Object.assign(DRESS, {
   // the bush guy: binoculars at his eyes (shown while he spies)
   yabuki(h) {
     const P = h.P, J = h.J;
-    const bino = kmesh('yab:bino', NPC.binoculars);
+    const bino = vmeshP('yab:bino', PROPS.binoculars);
+    bino.scale.setScalar(0.01);
     bino.position.set(0, P.eyeY - J.head[1], P.zf - J.head[2] + 0.075);
     bino.visible = false;
     h.b.head.add(bino);
@@ -347,7 +469,8 @@ Object.assign(DRESS, {
   },
   // the pirate: a manga steak in the right hand (shown while he eats)
   gomuzo(h) {
-    const meat = kmesh('gomu:meat', NPC.meat);
+    const meat = vmeshP('gomu:meat', PROPS.meat);
+    meat.scale.setScalar(0.012);
     meat.position.set(-0.01, -0.09, 0.05);
     meat.rotation.set(0, 0, 1.2);
     meat.visible = false;

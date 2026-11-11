@@ -6,10 +6,29 @@
 // you sit at the computer. Banknotes (the ATM, the register, the piggy bank) use src/money/cashfx.js cashInHand().
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
+import { VoxelModel, metal } from '../voxel/VoxelModel.js';
+import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { yenCoinGeometry, coinBagMesh } from '../props/things/money.js';
+import { yenCoinGeometry } from '../world/machineModels.js';
 import './gachaSfx.js';
 import '../money/sfx.js';
+
+let bagGeo = null;
+function coinBagGeometry() {
+  if (bagGeo) return bagGeo;
+  const v = new VoxelModel();
+  v.jitter = 0.04;
+  const cloth = 0x8a3a2a, dark = 0x6a2a1e, cord = 0xe8c860;
+  v.ellipsoid(0, 6, 0, 6, 6, 5.5, cloth);
+  v.box(-8, -1, -8, 8, 0, 8, null);
+  v.ellipsoid(0, 13, 0, 3, 2, 3, cloth); // gathered neck
+  v.paint(() => { for (let y = 2; y < 11; y += 3) v.ellipsoid(0, y, 0, 7, 0.6, 7, dark); });
+  v.torus(0, 11, 0, 3.4, 0.8, cord); // drawstring
+  v.set(3, 10, 3, cord); v.set(4, 9, 3, cord);
+  v.project(['.YYY.', 'Y...Y', '.YYY.'], { Y: metal(0xe0c060) }, -2, 8); // a stamped coin mark
+  bagGeo = meshVoxels(v, { voxelSize: 0.006, origin: 'center' });
+  return bagGeo;
+}
 
 const coinMat = () => voxelMaterials('normal');
 
@@ -24,8 +43,7 @@ export function pocketCash(game, amount, from, opts = {}) {
   const n = Math.max(1, Math.min(opts.coins ?? Math.ceil(amount / 100), 24));
   // the bag appears in your left hand (viewmodel, drawn on top of the world)
   const anchor = g.held.anchor;
-  const bag = coinBagMesh();
-  bag.castShadow = false;
+  const bag = new THREE.Mesh(coinBagGeometry(), coinMat());
   bag.position.set(-0.17, -0.19, -0.42);
   bag.rotation.set(0.25, 0.4, 0);
   bag.scale.setScalar(0.01);
