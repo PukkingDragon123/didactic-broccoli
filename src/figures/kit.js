@@ -44,7 +44,9 @@ export class Fig {
   mirror(fn) {
     const start = this.prims.length;
     fn();
-    for (let i = start, n = this.prims.length; i < n; i++) this.prims[i].mirror = true;
+    // the mirror plane is the current frame's x = 0: mm = F * S(-1, 1, 1) * F^-1
+    const mm = this.M.clone().multiply(new THREE.Matrix4().makeScale(-1, 1, 1)).multiply(this.M.clone().invert());
+    for (let i = start, n = this.prims.length; i < n; i++) { const p = this.prims[i]; p.mirror = true; p.mm = p.mm ? mm.clone().multiply(p.mm) : mm; }
     return this;
   }
   /** Remember a point (figure mm) by name, in the current frame: toys and gimmicks attach there. */
@@ -274,7 +276,7 @@ export function figGeometry(item, series) {
   const MIR = new THREE.Matrix4().makeScale(-1, 1, 1);
   let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z0 = 1e9, z1 = -1e9;
   const emit = (f, mirror) => {
-    const M = mirror ? MIR.clone().multiply(f.p.m) : f.p.m;
+    const M = mirror ? f.p.mm.clone().multiply(f.p.m) : f.p.m;
     nm.getNormalMatrix(M);
     const base = pos.length / 3, R = f.rect;
     for (let q = 0; q < f.pts.length; q++) {

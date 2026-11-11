@@ -1,5 +1,5 @@
 // The little paper slip under the hint while you open a capsule (src/game/ritual.js): a hand-pixelled gauge for the
-// step in hand, drawn at 1 texel = 2 CSS px. Peel: the seam as a ring, the way round to go, how far it has come away and
+// step in hand, drawn at 1 texel = 2 CSS px, to the right of the capsule in your hands. Peel: the seam as a ring, the way round to go, how far it has come away and
 // where your finger is. Crack: the rocking marker and the moment to press. Twist: the notches, and whether your fingers
 // are ready for the next one. Pull / foil: how far along. Ink on receipt paper, no glow.
 const W = 76, H = 30;
@@ -9,7 +9,7 @@ export function createGauge() {
   const el = document.createElement('div');
   el.id = 'ritual-gauge';
   el.style.cssText = [
-    'position:absolute', 'left:50%', 'top:calc(50% + 96px)', 'transform:translateX(-50%)', 'pointer-events:none', 'display:none', 'z-index:5',
+    'position:absolute', 'left:calc(50% + 116px)', 'top:calc(50% + 24px)', 'pointer-events:none', 'display:none', 'z-index:5',
     'padding:2px 6px', 'border:12px solid transparent', 'border-image:var(--pp-edge-receipt) 6 / 12px', `background:var(--pp-grain-receipt, ${PAPER}) 0 0 / 96px padding-box`,
     `filter:drop-shadow(3px 3px 0 rgba(26,18,22,.45))`,
   ].join(';');

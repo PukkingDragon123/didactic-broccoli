@@ -71,11 +71,11 @@ const F = {
     const W = { c: 0xa0703a, t: 'wood', ga: 'x' };
     k.box([0, 14, 4], [56, 20, 18], { ...W, d: [D.stripes('x', 7, 0.6, 0x6a4420, { dir: 'f' })] }, { ch: 0.12 });
     k.box([0, 25, 7], [60, 2, 22], { c: 0x7a5230, t: 'wood', ga: 'x' }, { ch: 0.15 });
-    k.mirror(() => { k.cyl([24, 4, 10], 4, 2.4, { c: 0x4a3a2a, t: 'wood', d: [D.stripes('r', 2, 0.5, 0x2a2018)] }, { rot: [0, 0, Math.PI / 2] }); k.box([27, 40, -4], [2, 54, 2], W, { ch: 0.2 }); });
-    k.box([0, 68, -2], [64, 3, 34], { c: 0x3a3a40, t: 'metal', d: [D.stripes('x', 4, 0.6, 0x2a2a30, { dir: 't' })] }, { ch: 0.15, rot: [0.15, 0, 0] });
-    noren(k, [0, 64, 13], 50, 10, 0x2a3a6a, 'おでん');
-    lantern(k, [24, 50, 15], 4.4, 11, 0xe8402a, 'ネコ');
-    k.at([0, 26, -6], [0, 0, 0], () => chibi(k, { H: 44, animal: { c: 0xf2f0ea, ears: 'tri', inner: 0xf4a8b0, whiskers: true, d: [D.ell(-8, 6, 5, 4, 0x3a3230), D.ell(9, 8, 4, 3, 0xe8893a)] },
+    k.mirror(() => { k.cyl([24, 4, 10], 4, 2.4, { c: 0x4a3a2a, t: 'wood', d: [D.stripes('r', 2, 0.5, 0x2a2018)] }, { rot: [0, 0, Math.PI / 2] }); k.box([27, 46, -4], [2, 66, 2], W, { ch: 0.2 }); });
+    k.box([0, 80, -2], [64, 3, 34], { c: 0x3a3a40, t: 'metal', d: [D.stripes('x', 4, 0.6, 0x2a2a30, { dir: 't' })] }, { ch: 0.15, rot: [0.15, 0, 0] });
+    noren(k, [0, 77, 13], 50, 9, 0x2a3a6a, 'おでん');
+    lantern(k, [24, 60, 15], 4.4, 11, 0xe8402a, 'ネコ');
+    k.at([0, 14, -6], [0, 0, 0], () => chibi(k, { H: 50, animal: { c: 0xf2f0ea, ears: 'tri', inner: 0xf4a8b0, whiskers: true, d: [D.ell(-8, 6, 5, 4, 0x3a3230), D.ell(9, 8, 4, 3, 0xe8893a)] },
       face: { eye: 'happy', mouth: 'cat', mw: 2.2 }, top: { c: 0xfaf8f2, t: 'cloth' }, outfit: { kind: 'kimono', collar: 0x2a3a6a, obi: 0x2a3a6a, obiC: 0xfaf8f2 },
       hat: { kind: 'band', c: 0x2a3a6a, p: { c: 0xfaf8f2, t: 'cloth', d: [D.stripes('x', 3, 1, 0x2a3a6a)] } }, armL: [60, 10, 40], armR: [60, -10, 40] }));
     for (let i = 0; i < 3; i++) k.soft([-12 + i * 8, 27.5, 12], [3, 2, 3], { c: [0xf2e0b0, 0x8a6a3a, 0xf6f0e0][i], t: 'plush' }, { ch: 0.5 });

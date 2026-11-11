@@ -21,7 +21,7 @@ import { createGauge } from './ritualGauge.js';
 import { POSES } from './Held.js';
 
 const TEXT = { crack: 'LMB', peel: 'Hold LMB', twist: 'LMB' };
-const SUB = { crack: 'Press as it rocks upright', peel: 'Round once to peel it · holding peels slowly', twist: 'An easy rhythm · too quick and it slips' };
+const SUB = { crack: 'Press as it rocks upright', peel: 'Drag anticlockwise round the seam', twist: 'Press, press, press: an easy rhythm' };
 // per rarity: [peel snag speed (rad/s), crack window (half width, 0..0.5), crack rock period (s), twist gap (s),
 //  slip back a notch, crack hits, twist length]
 const KNACK = {
@@ -274,9 +274,10 @@ export function installRitual(g) {
     if (!cap || H.busy) return hint0();
     if (R.insp) return { key: 'RMB', text: 'Turn it over', sub: 'Drag to turn · wheel to zoom' };
     const rit = prep(it, cap), i = Math.min(rit.i, rit.steps.length - 1), s = rit.steps[i], left = rit.steps.length - i;
-    const text = s.kind === 'crack' ? `${cap.seals?.kind === 'wax' ? 'Break the wax seal' : 'Crack the seal'}: press as it rocks upright`
-      : s.kind === 'peel' ? 'Peel the tape: drag anticlockwise round the seam' : 'Twist it open: press, press, press';
-    const sub = R.msgT > 0 && R.msg ? R.msg : `${SUB[s.kind]} · ${left} step${left > 1 ? 's' : ''} to go · RMB look · Q drop`;
+    // (while your hands are at it the slip beside the capsule shows the knack: the hint keeps out of the way)
+    if (R.acting) return R.msgT > 0 && R.msg ? { key: '', text: R.msg } : null;
+    const text = s.kind === 'crack' ? (cap.seals?.kind === 'wax' ? 'Break the wax seal' : 'Crack the seal') : s.kind === 'peel' ? 'Peel the tape' : 'Twist it open';
+    const sub = R.msgT > 0 && R.msg ? R.msg : `${SUB[s.kind]} · ${left} step${left > 1 ? 's' : ''} to go`;
     return { key: TEXT[s.kind], text, sub };
   };
   return R;
