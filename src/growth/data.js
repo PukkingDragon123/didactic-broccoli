@@ -60,7 +60,7 @@ export const LISTINGS = [
   { id: 'mall2', unlock: 'estate:mall2', kind: 'fitout', need: ['mall'], name: 'Kaikan 2F fit-out', jp: '2階 内装工事', short: 'Anime & character floor', price: 600000, floor: 2,
     blurb: 'Neon, tiles and machine walls for the second floor: the anime and character floor.', terms: ['Fit-out works ¥600,000, paid now'], perks: ['8 more machine spots', 'More crowds'] },
   { id: 'mall3', unlock: 'estate:mall3', kind: 'fitout', need: ['mall2'], name: 'Kaikan 3F fit-out', jp: '3階 内装工事', short: 'Retro & kaiju floor', price: 950000, floor: 3,
-    blurb: 'The third floor: Showa retro machines, kaiju walls and a big tanuki to pose with.', terms: ['Fit-out works ¥950,000, paid now'], perks: ['8 more machine spots', 'More crowds'] },
+    blurb: 'The third floor: Showa retro machines, kaiju walls and a big daruma to pose with.', terms: ['Fit-out works ¥950,000, paid now'], perks: ['8 more machine spots', 'More crowds'] },
   { id: 'mall4', unlock: 'estate:mall4', kind: 'fitout', need: ['mall3'], name: 'Kaikan 4F fit-out', jp: '4階 内装工事', short: 'Premium & event floor', price: 1600000, floor: 4,
     blurb: 'The top floor: premium machines in black and gold, a giant capsule shell, the view over the tracks.', terms: ['Fit-out works ¥1,600,000, paid now'], perks: ['8 premium machine spots', 'The busiest floor'] },
 ];

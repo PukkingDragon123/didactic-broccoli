@@ -6,7 +6,6 @@
 import { C, shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, tint, grime, blotch, rod } from './garage.js';
-import { tanukiBuild } from './hdItems.js';
 
 // ------------------------------------------------------------------ helpers
 const R = Math.round;
@@ -845,13 +844,6 @@ const shop = {
       }
       for (let x = W0 + 2; x <= W1; x += 5) v.set(x, 97, R(Math.sin((x - W0) * 0.32) * 1.3), metal(0xd8dce2)); // rings
     },
-  },
-
-  // ------------------------------------------------------------- Shigaraki tanuki
-  tanuki_statue: {
-    name: 'Shigaraki Tanuki', jp: '信楽焼のたぬき', voxel: 0.005,
-    footprint: [0.5, 0.5], beauty: 4, themes: ['shrine', 'retro', 'cute'],
-    build: tanukiBuild, // src/data/props/hdItems.js
   },
 
   // ------------------------------------------------------------- chalk A-frame sign

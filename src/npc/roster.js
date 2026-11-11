@@ -37,7 +37,6 @@ export const SPOTS = {
   garden: [21.8, 6.3, -0.4],
   kitsune: [10.55, -1.4, 0],
   kappa: [-24.2, 8.6, 1.2],
-  tanuki: [22.05, 5.9, 0],
   kasa: [5.5, 9.6, 0],
   // front doors
   doorRohan: [10.55, -2.6, 0],

@@ -224,11 +224,10 @@ function playground(t, mats) {
   }
   // slide (chute runs north), and the dip at its foot
   t.prop('slide', 24.35, 0, -12.1, 0, { block: true, pad: 0 });
-  // sandbox: concrete kerb round soft sand, toys, a cat on the kerb
+  // sandbox: concrete kerb round soft sand, a cat on the kerb
   const sx0 = 13.6, sx1 = 16.2, sz0 = -10.4, sz1 = -7.9;
   B.plane(mats.sand, sx1 - sx0 - 0.2, sz1 - sz0 - 0.2, (sx0 + sx1) / 2, 0.012, (sz0 + sz1) / 2, { uv: [0, 0] });
   for (const [x0, x1, z0, z1] of [[sx0, sx1, sz0, sz0 + 0.12], [sx0, sx1, sz1 - 0.12, sz1], [sx0, sx0 + 0.12, sz0, sz1], [sx1 - 0.12, sx1, sz0, sz1]]) B.box(m.conc, x1 - x0, 0.22, z1 - z0, (x0 + x1) / 2, 0, (z0 + z1) / 2, { k: 0.95 });
-  t.prop('sand_toys', 14.85, 0.012, -9.0, 0.3);
   t.prop('stray_cat_sit', 16.12, 0.22, -8.3, -2.2);
   // jungle gym: a 3×3×3 cube of painted pipe
   {

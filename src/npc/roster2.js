@@ -635,25 +635,6 @@ const KITSUNE = yokai('kitsune', {
   ], wrong: ['Wrong! Ohohoho! Come back when you\'re cleverer.', { rel: 0 }] }),
 });
 
-const TANUKI = yokai('tanuki', {
-  name: 'Tanuki', stranger: 'the tanuki statue', color: '#8a6a4a', salt: 3, chance: 1, always: true, statueByDay: true, hitH: 1,
-  hours: [[19.5, 5, 'night'], [5, 19.5, 'home']],
-  voice: { base: 120, duty: 0.5 }, tts: { pitch: 0.6, rate: 0.9 },
-  first: 'The tanuki statue... just winked at me.',
-  hint: (L, n) => (n.h.statue ? { key: 'LMB', text: 'A tanuki statue', sub: 'Big belly, straw hat, sake bottle. Its eyes follow you.' } : undefined),
-  chat: (L, n) => (n.h.statue
-    ? { start: [{ say: '...', style: 'think' }, { me: 'Just a statue. ...Right?' }] }
-    : { start: [
-      'Pon! You saw me move? No you didn\'t. Pon.',
-      { choose: [
-        { text: 'You were a statue this afternoon!', then: ['A statue? Me? I\'m a very still tanuki. Very still. Pon.'] },
-        { text: 'Pat the belly.', then: [{ sound: 'thud', say: 'PON! Hohoho! Again!' }, { sound: 'thud', say: 'PON-PON!', rel: 1 }] },
-        { text: 'What\'s in the bottle?', then: ['Sake. For the moon. Want some? ...You\'re too young. Pon.'] },
-        { text: 'Buy his "lucky leaf" (¥300).', then: [{ pay: 300 }, 'Pon-pon! Here, a lucky leaf! It\'s... a leaf. No refunds! Hohoho!', { rel: 1, remember: 'sold you a leaf' }] },
-      ] },
-    ] }),
-});
-
 const KASA = yokai('kasa', {
   name: 'Kasa-obake', stranger: 'the umbrella', color: '#b8323a', salt: 4, chance: 0.5, hitH: 1.2, roam: [0, 0, 18], speed: 0.9,
   voice: { base: 380, duty: 0.5 }, tts: { pitch: 1.7, rate: 1.25 },
@@ -669,4 +650,4 @@ const KASA = yokai('kasa', {
   ] }),
 });
 
-export const MORE = [HATODA, GONTA, KUROMARU, GOMUZO, YABUKI, KUSAKA, KAPPA, KITSUNE, TANUKI, KASA];
+export const MORE = [HATODA, GONTA, KUROMARU, GOMUZO, YABUKI, KUSAKA, KAPPA, KITSUNE, KASA];

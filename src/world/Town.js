@@ -542,7 +542,6 @@ export class Town {
     this.shop.obs = [this.game.player.addObstacle(-3.02, -2.08, 5.4, 5.84), this.game.player.addObstacle(2.27, 3.23, 5.34, 5.7)];
     this.single('kakigori_flag', 3.95, 0, 5.48, -0.25, {}, O);
     this.single('sign_stand', -3.55, 0, 5.62, 0.35, {}, O);
-    this.prop('tanuki_statue', -4.05, 0, 5.5, 0.3);
     this.nobori(4.55, 5.5, O);
     // OPEN plate hanging on the right pier
     const plate = this.vmesh(new THREE.BoxGeometry(0.42, 0.18, 0.02), this.T('openPlate', 32, 14, { glow: 0.25 }));
@@ -1571,9 +1570,6 @@ export class Town {
     this.prop('pot_cluster', -21.2, 0, 2.45, 0, { scale: 0.7 });
     // stepping stones from the gate to the door in the garden of NW4
     for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.box(m.found, 0.46, 0.05, 0.38, x, 0, z, { ry: r, tint: 0xb8b4ac, k: 0.95 });
-    // 飛び出し注意 boy at the mouth of alley A2 (front art, plain grey back)
-    // (an HD voxel cut-out plywood board on its post: src/data/props/hdItems.js)
-    this.prop('tobidashi_boy', 11.48, 0.0, 5.43, 0, { zone: null });
     P.addObstacle(11.3, 11.66, 5.38, 5.56);
     // Shōwa enamel signs on the alley walls and the old tobacco shop, a beware-of-dog sticker on a gate pillar
     // (alley A1 beside Mikawa-ya is reserved for the ghost-alley feature: nothing is added inside it)

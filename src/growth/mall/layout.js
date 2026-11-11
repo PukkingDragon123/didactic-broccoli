@@ -57,7 +57,7 @@ export const CENTRE_Z = 1.2;
 export const THEMES = {
   1: { centre: ['capsule_statue', 'lucky_cat_big'], name: 'Welcome floor', jp: 'ようこそ', a: '#f6e8ec', b: '#e8a8bc', grout: '#c8889c', accent: '#f04a8a', wall: 0xfff4f6, band: 0xf04a8a, stacks: ['red', 'pink', 'yellow', 'blue'] },
   2: { centre: ['rocket', 'astronaut'], name: 'Anime & characters', jp: 'アニメ・キャラ', a: '#eef8f6', b: '#9adcd0', grout: '#6ab8ac', accent: '#2ab8e8', wall: 0xf2fbfd, band: 0x2ab8e8, stacks: ['blue', 'pink', 'green', 'yellow'] },
-  3: { centre: ['tanuki_statue', 'tin_robot'], name: 'Retro & kaiju', jp: 'レトロ・怪獣', a: '#f4e2c4', b: '#c8784a', grout: '#9a5a38', accent: '#f08a2a', wall: 0xfff2dc, band: 0xc84a2a, stacks: ['red', 'green', 'yellow', 'black'] },
+  3: { centre: ['daruma', 'tin_robot'], name: 'Retro & kaiju', jp: 'レトロ・怪獣', a: '#f4e2c4', b: '#c8784a', grout: '#9a5a38', accent: '#f08a2a', wall: 0xfff2dc, band: 0xc84a2a, stacks: ['red', 'green', 'yellow', 'black'] },
   4: { centre: ['shell_giant', 'macaron_tower'], name: 'Premium & events', jp: 'プレミアム', a: '#2a2630', b: '#5a4a2a', grout: '#d4a83a', accent: '#ffd23f', wall: 0xf4f0e8, band: 0x2a2630, stacks: ['black', 'blue', 'pink', 'red'] },
 };
 

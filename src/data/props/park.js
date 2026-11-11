@@ -5,7 +5,6 @@ import { shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, grime, blotch, speckle, rod } from './garage.js';
 import { blob, limb, limbPath, bark, clipFloor } from './decor_nature.js';
-import { sandCastleBuild } from './hdItems.js';
 
 const pick = (arr, k) => arr[Math.floor(k * arr.length) % arr.length];
 /** Painted steel tube colour with chipped paint showing rust. */
@@ -232,12 +231,6 @@ const park = {
       // a crow on top
       fill(v, -2, 88, -2, 2, 90, 0, 0x1a1a1e); fill(v, 2, 90, -1, 3, 91, -1, 0x1a1a1e); v.set(4, 90, -1, 0x3a3a3e); fill(v, -4, 88, -1, -3, 89, -1, 0x1a1a1e);
     },
-  },
-
-  // ------------------------------------------------------------- sandbox toys: bucket, spade, a moated sandcastle
-  sand_toys: {
-    name: 'Sand Toys', voxel: 0.006,
-    build: sandCastleBuild, // src/data/props/hdItems.js
   },
 
   // ------------------------------------------------------------- crushed litter for paths and benches
