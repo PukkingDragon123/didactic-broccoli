@@ -79,7 +79,7 @@ export default {
   card: { bg: '#20183a', accent: '#f06aa8', text: '#f6f0ff', pattern: 'stripes', accent2: '#3ab8a8' },
   capsule: { colors: [0xf06aa8, 0x3ab8a8, 0xf2c23a, 0x6a5ad8] },
   items: [
-    { id: 'street', name: 'Street Fighter Cabinet', jp: '対戦格闘台', rarity: 'common', desc: 'Two players, one stick each, forty years of grudges. Winner stays on.', fig: F.street },
+    { id: 'street', name: 'Versus Fighter Cabinet', jp: '対戦格闘台', rarity: 'common', desc: 'Two players, one stick each, forty years of grudges. Winner stays on.', fig: F.street },
     { id: 'shooter', name: 'Galaxy Shooter Cabinet', jp: 'シューティング台', rarity: 'common', desc: 'One credit lasts forty seconds. The high score has been the same name since 1987.', fig: F.shooter },
     { id: 'crane', name: 'UFO Catcher', jp: 'UFOキャッチャー', rarity: 'common', desc: 'The claw is "just a little loose". Has been since installation.', fig: F.crane },
     { id: 'purikura', name: 'Purikura Booth', jp: 'プリクラ', rarity: 'uncommon', desc: 'Sixteen stickers, eight poses, one very important notebook.', fig: F.purikura },
