@@ -66,6 +66,7 @@ export class PopDisplays {
     let built;
     try { built = buildDisplay(rec.style, series, { w: D.w, d: D.d, trim: m.spec.style?.header ?? m.spec.style?.trim }, this.game.thumbs); } catch (e) { console.warn('pop display', e); return; }
     const g = built.group;
+    g.userData.popTop = true;
     g.position.set(0, m.spec.capH, D.z);
     m.parts.lid.add(g);
     rec.items.length = built.slots.length; // (a style's spot count is fixed; old records are padded or trimmed)
@@ -169,7 +170,7 @@ export class PopDisplays {
     box.position.copy(at);
     g.scene.add(box);
     H.take('box', data, box);
-    sfx('boxPack', { vol: 0.6 });
+    sfx('boxOpen', { vol: 0.6 });
     g.events.emit('popDisplay', { type: 'down', machine: L.m });
     g.save?.();
     return false;
