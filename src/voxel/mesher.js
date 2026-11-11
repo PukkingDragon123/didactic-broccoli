@@ -2,6 +2,10 @@
 // Produces a BufferGeometry with position / normal / color attributes and one group per material id.
 import * as THREE from 'three';
 import { MAT, decColor, decMat, decSurf, SURF } from './VoxelModel.js';
+import { cardQuads } from './cards.js';
+
+/** Material slot of 2D pixel-art cards (leaf sprigs...) in voxel geometry (src/voxel/cards.js). */
+export const CARD_SLOT = 5;
 
 // baked AO: soft steps (no harsh dark creases) and warm (shaded corners drift towards umber, not grey)
 const AO_CURVE = [0.56, 0.72, 0.87, 1.0];
@@ -209,8 +213,12 @@ export function meshVoxels(model, opts = {}) {
     }
   }
 
+  // 2D cards (leaves, blossom...): their own slot, with explicit normals and the sheet's uv in vdet
+  const cq = model.cards?.length && opts.cards !== false ? cardQuads(model.cards, vs, [origin[0] + b.minX - 1, origin[1] + b.minY - 1, origin[2] + b.minZ - 1]) : null;
+  const nCardV = cq ? cq.pos.length / 3 : 0;
+
   // assemble
-  let quadCount = 0;
+  let quadCount = nCardV / 4;
   for (const nr of Nr) quadCount += nr.length / 2;
   const positions = new Float32Array(quadCount * 4 * 3);
   const normals = new Float32Array(quadCount * 4 * 3);
@@ -239,6 +247,16 @@ export function meshVoxels(model, opts = {}) {
       vi += 4;
     }
     geo.addGroup(start, ii - start, mat);
+  }
+  if (cq) {
+    const start = ii;
+    positions.set(cq.pos, vi * 3); normals.set(cq.nrm, vi * 3); colors.set(cq.col, vi * 3); dets.set(cq.uv, vi * 3);
+    for (let q = 0; q < nCardV; q += 4) {
+      indices[ii++] = vi; indices[ii++] = vi + 1; indices[ii++] = vi + 2;
+      indices[ii++] = vi; indices[ii++] = vi + 2; indices[ii++] = vi + 3;
+      vi += 4;
+    }
+    geo.addGroup(start, ii - start, CARD_SLOT);
   }
   geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));

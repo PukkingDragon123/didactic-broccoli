@@ -52,6 +52,8 @@ export class Fig {
   prism(rings, paint, o = {}) {
     const m = this.M.clone().multiply(local(o.pos, o.rot, o.scl));
     const p = { rings, paint, o, m, mirror: false, caps: o.caps || 'both' };
+    // o.pf: paint in the parent frame (decals / textures see the part after its own rotation: lids, wheels, lying cans)
+    if (o.pf && o.rot) p.R = new THREE.Matrix3().setFromMatrix4(local(null, o.rot, null)).elements;
     this.prims.push(p);
     return p;
   }
@@ -70,6 +72,13 @@ export class Fig {
       while (rings.length > 2 && rings[1][0] <= yc) rings.shift();
       if (rings[0][0] < yc) { const a = rings[0], b = rings[1], t = (yc - a[0]) / (b[0] - a[0]); rings[0] = [yc, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, 0, 0, ch]; }
     }
+    return this.prism(rings, paint, { ...o, pos });
+  }
+  /** Soft block: a box with bevelled top and bottom edges (the people's head / body look); o.flat cuts the bottom bevel. */
+  soft(pos, r, paint, o = {}) {
+    const [rx, ry, rz] = r, ch = o.ch ?? 0.4, b = o.bev ?? 0.2, s = o.bs ?? 0.84, t = o.top || [1, 1];
+    const rings = [[-ry, rx * s, rz * s, 0, 0, ch], [-ry * (1 - b), rx, rz, 0, 0, ch], [ry * (1 - b), rx * t[0], rz * (t[1] ?? t[0]), 0, 0, ch], [ry, rx * t[0] * s, rz * (t[1] ?? t[0]) * s, 0, 0, ch]];
+    if (o.flat) rings.shift();
     return this.prism(rings, paint, { ...o, pos });
   }
   cyl(pos, r, h, paint, o = {}) {
@@ -105,7 +114,8 @@ function primFaces(p) {
   const out = [];
   // bbox of the prism (local)
   let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z0 = 1e9, z1 = -1e9;
-  for (const r of R) for (const q of r) { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); z0 = Math.min(z0, q[2]); z1 = Math.max(z1, q[2]); }
+  const RR = p.R ? R.map((r) => r.map((q) => [p.R[0] * q[0] + p.R[3] * q[1] + p.R[6] * q[2], p.R[1] * q[0] + p.R[4] * q[1] + p.R[7] * q[2], p.R[2] * q[0] + p.R[5] * q[1] + p.R[8] * q[2]])) : R;
+  for (const r of RR) for (const q of r) { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); z0 = Math.min(z0, q[2]); z1 = Math.max(z1, q[2]); }
   p.bb = { x0, x1, y0, y1, z0, z1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, cz: (z0 + z1) / 2, hx: (x1 - x0) / 2, hy: (y1 - y0) / 2, hz: (z1 - z0) / 2 };
   for (let k = 0; k + 1 < R.length; k++) {
     const A = R[k], B = R[k + 1];
@@ -219,6 +229,8 @@ function paintFig(A, key) {
   for (const f of F.faces) {
     const R = f.rect, fn = f.p.fn, bb = f.p.bb, m = f.p.m.elements;
     c.p = f.p; c.bb = bb; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.kind = f.kind;
+    const PR = f.p.R;
+    if (PR) { const [a, b, e] = f.N; c.nx = PR[0] * a + PR[3] * b + PR[6] * e; c.ny = PR[1] * a + PR[4] * b + PR[7] * e; c.nz = PR[2] * a + PR[5] * b + PR[8] * e; }
     // world-space normal (for light-ish effects): rotate by the prim matrix
     c.wny = m[1] * f.N[0] + m[5] * f.N[1] + m[9] * f.N[2];
     const P2 = f.p2, n2 = P2.length;
@@ -228,6 +240,7 @@ function paintFig(A, key) {
         const s = f.s0 + (i - PAD + 0.5) / f.dens;
         const x = f.o[0] + f.U[0] * s + f.V[0] * r, y = f.o[1] + f.U[1] * s + f.V[1] * r, z = f.o[2] + f.U[2] * s + f.V[2] * r;
         c.x = x; c.y = y; c.z = z;
+        if (PR) { c.x = PR[0] * x + PR[3] * y + PR[6] * z; c.y = PR[1] * x + PR[4] * y + PR[7] * z; c.z = PR[2] * x + PR[5] * y + PR[8] * z; }
         c.X = m[0] * x + m[4] * y + m[8] * z + m[12]; c.Y = m[1] * x + m[5] * y + m[9] * z + m[13]; c.Z = m[2] * x + m[6] * y + m[10] * z + m[14];
         // distance to the face outline (mm) for bevel shading
         let ed = 1e9;

@@ -14,27 +14,27 @@ from PIL import Image, ImageFilter
 ROOT = Path(__file__).resolve().parent.parent
 TEX = ROOT / 'public/img/tex'
 T = 128  # tile size
-KINDS = ['plaster_cream', 'concrete', 'plywood', 'wood_weathered', 'steel_painted', 'steel_galvanised', 'canvas_cloth',
+KINDS = ['plaster_cream', 'concrete', 'plywood', 'wood_weathered', 'paper_old', 'steel_galvanised', 'canvas_cloth',
          'paper_old', 'soil', 'gravel', 'rust', 'bark_pine', 'cardboard', 'moss', 'frosted_glass']
 LEVELS = 9
 
 def tile(name):
     im = Image.open(TEX / f'{name}.jpg').convert('L')
-    # tile 128 texels at ~5 mm = 0.64 m: take a centred crop of the scan that size (scans span ~1-2 m), keep it tileable
-    # by mirroring the crop's halves into a seamless blend
-    im = im.resize((T * 2, T * 2), Image.LANCZOS)
+    # the scan reduced to the tile (whole scan, so it stays tileable), its broad light removed, then pixelled by rule:
+    # smoothed so single-pixel noise goes, cut into four tones at fixed percentiles (clean clusters), and lone pixels
+    # merged into their neighbours (a 3x3 mode filter), the way a pixel artist cleans a reduced photo
+    im = im.resize((T, T), Image.LANCZOS)
     a = np.asarray(im, dtype=np.float32)
-    # high-pass at two scales (keeps grain, drops lighting and big blotches)
-    bl = np.asarray(im.filter(ImageFilter.GaussianBlur(10)), dtype=np.float32)
-    hp = a - bl
-    # wrap-safe downsample 2x by box filter
-    hp = hp.reshape(T, 2, T, 2).mean(axis=(1, 3))
-    hp /= (hp.std() + 1e-6)
-    hp = np.clip(hp, -2.2, 2.2) / 2.2  # -1..1
-    # posterise to hard levels (crisp pixel steps), mean back to 0
-    q = np.round((hp * 0.5 + 0.5) * (LEVELS - 1)) / (LEVELS - 1)
-    q = q - q.mean() + 0.5
-    return np.clip(q * 255, 0, 255).astype(np.uint8)
+    big = np.asarray(Image.fromarray(a.astype(np.uint8)).filter(ImageFilter.GaussianBlur(14)), dtype=np.float32)
+    hp = a - big
+    hp = np.asarray(Image.fromarray(np.clip(hp + 128, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.7)), dtype=np.float32) - 128
+    cuts = np.percentile(hp, [14, 50, 86])
+    q = np.digitize(hp, cuts)  # 0..3
+    q = np.asarray(Image.fromarray((q * 60).astype(np.uint8)).filter(ImageFilter.ModeFilter(3)), dtype=np.float32) / 60
+    TONES = np.array([0.2, 0.44, 0.58, 0.8])  # dark seam, body, body lit, highlight
+    out = TONES[np.clip(np.round(q).astype(int), 0, 3)]
+    out = out - out.mean() + 0.5
+    return np.clip(out * 255, 0, 255).astype(np.uint8)
 
 def main():
     atlas = np.full((T * 4, T * 4), 128, np.uint8)

@@ -34,7 +34,7 @@ export const MK = {
  * items: [{ id, x, y, z, ry, rx, rz, s, k (brightness) }]
  */
 function mergeVoxelProps(items, mats) {
-  const B = Array.from({ length: 5 }, () => ({ pos: [], nrm: [], col: [], det: [], idx: [], n: 0 }));
+  const B = Array.from({ length: 6 }, () => ({ pos: [], nrm: [], col: [], det: [], idx: [], n: 0 }));
   const nm = new THREE.Matrix3();
   for (const it of items) {
     const g = propGeometry(it.id);

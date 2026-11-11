@@ -59,7 +59,7 @@ export class Places {
     return c;
   }
   voxel() {
-    if (!voxCache) { const n = voxelMaterials('normal'); voxCache = [this.mat(n[0]), this.mat(n[1]), this.mat(n[2]), n[3], this.mat(n[4])]; }
+    if (!voxCache) { const n = voxelMaterials('normal'); voxCache = [this.mat(n[0]), this.mat(n[1]), this.mat(n[2]), n[3], this.mat(n[4]), this.mat(n[5])]; }
     return voxCache;
   }
 

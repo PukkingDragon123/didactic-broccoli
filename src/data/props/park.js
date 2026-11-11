@@ -265,6 +265,7 @@ const park = {
   // ------------------------------------------------------------- big summer zelkova (欅) — broad, layered canopy
   keyaki_tree: {
     name: 'Zelkova Tree', voxel: 0.11,
+    leaves: { kind: 'keyaki', mix: ['broad', 0.25], size: 0.9, density: 2.2 },
     build(v) {
       const BARK = bark([0x6e665a, 0x7e7464, 0x5e564c, 0x8a806e], 1.5);
       // vase-shaped: short trunk splitting into many upward limbs

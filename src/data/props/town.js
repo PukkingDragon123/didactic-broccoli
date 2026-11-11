@@ -229,6 +229,7 @@ const town = {
   // ------------------------------------------------------------- weeds along walls
   weeds: {
     name: 'Roadside Weeds', voxel: 0.03,
+    leaves: { kind: 'weeds', mix: ['grass', 0.5], size: 0.3, density: 4, core: 'remove' },
     build(v) {
       v.jitter = 0.06;
       for (let i = 0; i < 14; i++) {

@@ -5,6 +5,8 @@ import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { upres2x } from '../voxel/upres.js';
 import { mergeByMaterial } from '../voxel/merge.js';
+import { leafCards, CELLS } from '../voxel/cards.js';
+import { shade } from '../voxel/palette.js';
 
 const libs = import.meta.glob('../data/props/*.js', { eager: true });
 export const PROPS = {};
@@ -41,10 +43,28 @@ export function propGeometry(id) {
  *          parts in one geometry: a face, a hand, a label at higher resolution on a coarse body
  * Props are large: jitter in 2-voxel blocks + light colour quantisation so flat areas merge into big quads.
  */
+const greenish = (c) => { const r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255; return g > r * 1.05 && g > b * 1.15 && g > 40; };
+/** 2D leaf cards on the leafy voxels (src/voxel/cards.js), then the voxels under them become the crown's dark core
+ *  (core: true, the default), stay as they are (false) or go (core: 'remove': the cards are the plant). */
+function addLeaves(v, list, vs) {
+  for (const L of Array.isArray(list) ? list : [list]) {
+    const match = L.match || ((c, m, x, y, z) => greenish(c) && (L.minY === undefined || y >= L.minY));
+    leafCards(v, { ...L, match, vs });
+    if (L.core === false) continue;
+    const coreHex = L.coreTone ?? CELLS[L.kind]?.[3] ?? 0x2a4626;
+    const hits = [];
+    v.forEach((x, y, z, val) => { const c = val & 0xffffff, m = val & 0x8000000 ? (val >>> 24) & 7 : 0; if (match(c, m, x, y, z)) hits.push([x, y, z]); });
+    for (const [x, y, z] of hits) {
+      if (L.core === 'remove') v.remove(x, y, z);
+      else v.set(x, y, z, shade(coreHex, 0.85 + ((x * 7 + y * 13 + z * 5) % 5) * 0.06));
+    }
+  }
+}
 function meshPart(d, vs) {
   let v = new VoxelModel();
   d.build(v);
   if (d.upres) { v = upres2x(v, d.upres === true ? {} : d.upres); vs /= 2; }
+  if (d.leaves) addLeaves(v, d.leaves, vs);
   const opts = { voxelSize: vs, jitterBlock: d.upres ? 2 : 2, quantize: 6, surf: d.detail === false ? false : d.detail || 'auto', grain: d.grain };
   if (d.texel) opts.texel = d.texel;
   return { v, vs, opts };

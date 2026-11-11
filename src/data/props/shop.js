@@ -946,6 +946,7 @@ const shop = {
   // ------------------------------------------------------------- morning glory pots
   asagao_pot: {
     name: 'Morning Glory Pots', jp: '朝顔の鉢', voxel: 0.01,
+    leaves: { kind: 'asagao', size: 0.26, density: 2 },
     footprint: [0.5, 0.5], beauty: 4, themes: ['nature', 'retro'],
     build(v) {
       const pot = (cx, cz, r, h, col) => {

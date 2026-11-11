@@ -1,5 +1,6 @@
 // Shared materials for voxel meshes, including the special collectible finishes.
 import * as THREE from 'three';
+import { cardMaterial } from './cards.js';
 
 /** Global uniform driving glow-in-the-dark intensity (animated by the game; boosted when lights dim). */
 export const glowUniform = { value: 1.0 };
@@ -32,21 +33,21 @@ const RAINBOW = `
 // kind); the shader multiplies the face colour by the kind's tile of public/img/tex/voxdetail.png (CC0 scans, high-
 // passed and posterised by tools/bake-voxdetail.py). Nearest up close (crisp texels), mipmapped and faded with distance
 // so nothing shimmers. Kind 0 (people, collectibles, anything without a kind) is untouched.
-const DETAIL_STRENGTH = [0.1, 0.15, 0.2, 0.2, 0.07, 0.1, 0.13, 0.08, 0.2, 0.2, 0.2, 0.24, 0.12, 0.2, 0.05];
+const DETAIL_STRENGTH = [0.14, 0.2, 0.22, 0.22, 0.08, 0.12, 0.16, 0.1, 0.24, 0.24, 0.22, 0.26, 0.14, 0.22, 0.06];
 let detailTex = null;
 export function voxelDetailTexture() {
   if (detailTex) return detailTex;
+  // a grey canvas the atlas's size until it has loaded (same size: the texture storage never has to change)
   const c = document.createElement('canvas');
-  c.width = c.height = 1;
-  const x = c.getContext('2d'); x.fillStyle = '#808080'; x.fillRect(0, 0, 1, 1);
+  c.width = c.height = 512;
+  const x = c.getContext('2d'); x.fillStyle = '#808080'; x.fillRect(0, 0, 512, 512);
   detailTex = new THREE.Texture(c);
   detailTex.magFilter = THREE.NearestFilter;
   detailTex.minFilter = THREE.LinearMipmapLinearFilter;
   detailTex.colorSpace = THREE.NoColorSpace;
-  detailTex.anisotropy = 1;
   detailTex.needsUpdate = true;
   const img = new Image();
-  img.onload = () => { detailTex.image = img; detailTex.needsUpdate = true; };
+  img.onload = () => { x.drawImage(img, 0, 0, 512, 512); detailTex.needsUpdate = true; };
   img.src = `${import.meta.env?.BASE_URL ?? '/'}img/tex/voxdetail.png`;
   return detailTex;
 }
@@ -108,7 +109,7 @@ function makeNormalSet() {
     vertexColors: true, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.42,
     clearcoat: 1, clearcoatRoughness: 0.05, depthWrite: false,
   });
-  return [matte, gloss, metalM, glowM, glassM];
+  return [matte, gloss, metalM, glowM, glassM, cardMaterial()];
 }
 
 function single(m) { return [m, m, m, m, m]; }

@@ -288,6 +288,7 @@ const PROPS = {
 
   bonsai: {
     name: 'Pine Bonsai', jp: '松の盆栽', voxel: 0.0125, footprint: [0.5, 0.5], themes: ['nature', 'shrine'], beauty: 7,
+    leaves: { kind: 'pine', size: 0.14, density: 2 },
     build(v) {
       const ROSE = 0x5a2e1e;
       // low rosewood display stand
@@ -324,6 +325,7 @@ const PROPS = {
 
   bamboo: {
     name: 'Bamboo Planter', jp: '竹の植え込み', voxel: 0.035, footprint: [1, 0.5], themes: ['nature', 'shrine'], beauty: 5,
+    leaves: { kind: 'bamboo', size: 0.55, density: 2 },
     build(v) {
       // slatted cedar planter on feet with white pebbles
       const BOX = 0x8a5a36;
@@ -373,6 +375,7 @@ const PROPS = {
 
   sakura_tree: {
     name: 'Sakura Tree', jp: '桜の木', voxel: 0.04, footprint: [2, 2], themes: ['nature', 'shrine', 'cute'], beauty: 10,
+    leaves: { kind: 'blossom', mix: ['blossom2', 0.5], size: 0.7, density: 2.4, coreTone: 0xb88a96, match: (c) => { const r = c >> 16 & 255, g = c >> 8 & 255, b = c & 255; return r > 170 && r > g + 18 && b > g - 12; } },
     build(v) {
       const BARK = bark([0x4a3a36, 0x5a4842, 0x3e302d, 0x66524a], 2);
       // fallen petals on the ground
@@ -402,6 +405,7 @@ const PROPS = {
 
   momiji_tree: {
     name: 'Japanese Maple', jp: 'もみじ', voxel: 0.035, footprint: [1.5, 1.5], themes: ['nature', 'shrine'], beauty: 9,
+    leaves: [{ kind: 'mapleRed', size: 0.5, density: 2.2, coreTone: 0x5a2a20, match: (c) => { const r = c >> 16 & 255, g = c >> 8 & 255; return r > 110 && r > g * 1.45; } }, { kind: 'maple', size: 0.5, density: 2.2 }],
     build(v) {
       const BARK = bark([0x5e5048, 0x6e5e54, 0x4e423c, 0x7a6a5e], 1.5);
       // fallen leaves
@@ -431,6 +435,7 @@ const PROPS = {
 
   pine_tree: {
     name: 'Black Pine', jp: '黒松', voxel: 0.035, footprint: [1.5, 1.5], themes: ['nature', 'shrine'], beauty: 8,
+    leaves: { kind: 'pine', mix: ['pineTop', 0.3], size: 0.55, density: 2.2 },
     build(v) {
       const BARK = bark([0x5a4a42, 0x6e5a4c, 0x4a3c36, 0x7a6252], 2);
       // mossy mound at the base
@@ -510,6 +515,7 @@ const PROPS = {
 
   flower_bed: {
     name: 'Hydrangea Planter', jp: '紫陽花の花壇', voxel: 0.02, footprint: [1, 0.5], themes: ['nature', 'cute'], beauty: 6,
+    leaves: { kind: 'hydrangea', mix: ['hydrangeaFlower', 0.35], size: 0.36, density: 2 },
     build(v) {
       const PL = 0x9a6a40;
       fill(v, -24, 0, -10, 24, 9, 10, (x, y, z) => (Math.floor(y / 3) % 2 ? woodGrain(PL, 'x')(x, y, z) : woodGrain(shade(PL, 0.9), 'x')(x, y, z)));
@@ -881,6 +887,7 @@ const PROPS = {
 
   grass_tuft: {
     name: 'Wild Grass Tuft', jp: '草むら', voxel: 0.0125, footprint: [0.5, 0.5], themes: ['nature'], beauty: 2,
+    leaves: { kind: 'grass', mix: ['weeds', 0.4], size: 0.32, density: 3, core: 'remove' },
     build(v) {
       blob(v, [[0, 0, 0, 16, 2.5, 13]], (x, y, z) => pick([0x5a4632, 0x4f7a2c, 0x5f8a34, 0x6f9a3c], hash(x, y, z, 1)), { noise: 0.3, minY: 0, seed: 1 });
       const BL = [0x4f8a32, 0x5f9a38, 0x6aa63e, 0x7cb446, 0x8ec04e];

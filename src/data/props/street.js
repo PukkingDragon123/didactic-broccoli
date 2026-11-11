@@ -191,6 +191,7 @@ const street = {
   // ------------------------------------------------------------- hedge
   hedge: {
     name: 'Trimmed Hedge', voxel: 0.025,
+    leaves: { kind: 'kaname', mix: ['azalea', 0.18], size: 0.34, density: 2.2, minY: 6 },
     build(v) {
       fill(v, -40, 0, -12, 39, 3, 11, concrete(0xa8a49c, 1));
       fill(v, -39, 3, -11, 38, 3, 10, (x, y, z) => shade(0x5a4030, 0.9 + hash(x, y, z, 2) * 0.15));
@@ -261,6 +262,7 @@ const street = {
   // ------------------------------------------------------------- potted plants
   potted_row: {
     name: 'Potted Plants & Morning Glories', voxel: 0.015,
+    leaves: { kind: 'pelargonium', mix: ['small', 0.5], size: 0.22, density: 2 },
     build(v) {
       const wd = (x, y, z) => shade(mix(0x8a7258, 0x9a948a, vnoise(x, y, z * 3, 4, 2) * 0.6), 0.92 + hash(x, y, z, 3) * 0.08);
       const tiers = [[6, 13, 8], [-3, 5, 17], [-13, -4, 26]];

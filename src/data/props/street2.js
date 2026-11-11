@@ -1010,6 +1010,7 @@ const street2 = {
   // ------------------------------------------------------------- potted plants row
   plant_pots: {
     name: 'Row of Potted Plants', jp: '軒先の鉢植え', voxel: 0.012,
+    leaves: { kind: 'small', mix: ['pelargonium', 0.4], size: 0.2, density: 2 },
     build(v) {
       const pot = (cx, cz, r0, r1, h, col, saucer = true) => {
         if (saucer) v.cylinder(cx, 0, cz, r1 + 0.6, 1, typeof col === 'function' ? col : gloss(shade(col, 0.85)));

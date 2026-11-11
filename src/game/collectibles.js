@@ -7,7 +7,8 @@ import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { upres2x } from '../voxel/upres.js';
-import { getItem } from '../data/series/index.js';
+import { getItem, SERIES_BY_ID } from '../data/series/index.js';
+import { figGeometry, figMaterials } from '../figures/kit.js';
 
 export const ITEM_VOXEL = 0.0027; // metres per (design) voxel for collectibles (a 26-voxel figure ≈ 7 cm)
 export const ITEM_MAX = 0.088; // largest allowed dimension in metres (fits a shelf slot)
@@ -37,6 +38,7 @@ export function itemGeometry(key, opts = {}) {
   if (g) return g;
   const item = getItem(key);
   if (!item) throw new Error('Unknown item ' + key);
+  if (item.fig) return figGeometry(item, SERIES_BY_ID[item.series]); // kit figures: one detail level, cached by the kit
   const { model, scale } = itemModel(item, opts);
   const b = model.bounds();
   const maxDim = (Math.max(b.w, b.h, b.d) / scale) * ITEM_VOXEL;
@@ -48,10 +50,17 @@ export function itemGeometry(key, opts = {}) {
 }
 
 /** Is this item's up-res geometry already built (cheap to show)? */
-export function hasItemGeometry(key) { return geoCache.has(key); }
+export function hasItemGeometry(key) { return geoCache.has(key) || !!getItem(key)?.fig; }
 
 /** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
+  const it = getItem(key);
+  if (it?.fig) {
+    const mesh = new THREE.Mesh(figGeometry(it, SERIES_BY_ID[it.series]), figMaterials(SERIES_BY_ID[it.series], finish));
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    mesh.userData.itemKey = key; mesh.userData.finish = finish;
+    return mesh;
+  }
   let geo;
   const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));
   if (lod) geo = geoCache.get(key) || itemGeometry(key, { lowres: true });
@@ -65,7 +74,7 @@ export function makeItemMesh(key, finish = 'normal', opts = {}) {
   return mesh;
 }
 
-function wantsUpres(item) { return !!item && item.upres !== false && !item.mini; }
+function wantsUpres(item) { return !!item && !item.fig && item.upres !== false && !item.mini; }
 
 // ------------------------------------------------------------------ level of detail
 // Figures far from the camera (a full shelf across the room) draw their original coarse voxels; the 2x up-res mesh
