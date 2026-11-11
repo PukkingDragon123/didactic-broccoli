@@ -36,8 +36,8 @@ const ell = (P, c, r) => ((P.x - c[0]) / r[0]) ** 2 + ((P.y - c[1]) / r[1]) ** 2
 
 const CALICO = {
   name: 'calico',
-  W: 0xf4efe4, W2: 0xe2d8c8, O: 0xe8913c, O2: 0xd47a3c, K: 0x2f2724, K2: 0x4a3c34,
-  pink: 0xeaa6aa, pinkD: 0xc87482, nose: 0xec9aa2, noseD: 0xb8606e, iris: [0x8fc44c, 0xc8d860, 0x4e8a3a], lid: 0x2a1a16,
+  W: 0xebe4d6, W2: 0xd6ccbb, O: 0xcf8a4c, O2: 0xae6a38, K: 0x2c2522, K2: 0x463a33,
+  pink: 0xd29a96, pinkD: 0xa86e70, nose: 0xc98a86, noseD: 0x8a5056, iris: [0x9aa64a, 0xc6bc5a, 0x56602e], lid: 0x2a1a16,
   base(P, part, th) {
     const { W, O, K } = this;
     const flowB = jag(P.y * 165 + P.x * 140, P.y * 97 - P.x * 121), flowL = jag(P.x * 170 + P.z * 150, P.z * 101 - P.x * 77);
@@ -305,15 +305,22 @@ function paintFace(g, C) {
     g.fillStyle = hex(I0); g.fillRect(-a - 4, -b - 4, a * 2 + 8, b * 2 + 8);
     const px = look * 9, ip = kind === 'half' ? 0 : 0;
     g.fillStyle = hex(I1); g.beginPath(); g.ellipse(px * 0.4, b * 0.38, a * 0.62, b * 0.5, 0, 0, Math.PI * 2); g.fill();
-    g.lineWidth = 5; g.strokeStyle = hex(I2); g.beginPath(); g.ellipse(px * 0.25, ip, a * 0.96, b * 0.98, 0, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = hex(mixc(I1, 0xd8c070, 0.3)); g.beginPath(); g.ellipse(px, 2, a * 0.42, b * 0.62, 0, 0, Math.PI * 2); g.fill();
+    // the iris's fibres: fine radial streaks, darker and lighter, from the pupil out to the rim
+    g.lineWidth = 3.2;
+    for (let k = 0; k < 22; k++) {
+      const an = (k / 22) * Math.PI * 2 + 0.13 * (k % 3), r0 = 0.32, r1 = 0.92;
+      g.strokeStyle = hex(k % 2 ? shade(I0, -0.22) : shade(I1, 0.12));
+      g.beginPath(); g.moveTo(px + Math.cos(an) * a * r0, 2 + Math.sin(an) * b * r0); g.lineTo(px * 0.3 + Math.cos(an) * a * r1, Math.sin(an) * b * r1); g.stroke();
+    }
+    g.lineWidth = 4; g.strokeStyle = hex(I2); g.beginPath(); g.ellipse(px * 0.25, ip, a * 0.96, b * 0.98, 0, 0, Math.PI * 2); g.stroke();
     g.fillStyle = hex(shade(I0, -0.35)); g.beginPath(); g.ellipse(0, -b * 1.02, a * 1.1, b * 0.42, 0, 0, Math.PI * 2); g.fill();
     // pupil
     const pw = kind === 'wide' ? 15 : kind === 'slit' ? 3.2 : kind === 'half' ? 9 : 10.5, ph = kind === 'wide' ? 20 : kind === 'slit' ? 26 : 24;
     g.fillStyle = '#140c0c'; g.beginPath(); g.ellipse(px, 2, pw, ph, 0, 0, Math.PI * 2); g.fill();
     // catchlights: one window above-left, a small bounce below-right (the same light for both eyes)
     g.fillStyle = '#fffdf6';
-    g.beginPath(); g.ellipse(-9, -10, 6.5, 5.2, -0.4, 0, Math.PI * 2); g.fill();
-    g.beginPath(); g.ellipse(9, 12, 2.6, 2.2, 0, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(-8, -11, 4.4, 3.6, -0.4, 0, Math.PI * 2); g.fill();
     // half-closed: the upper lid comes down over the top
     if (kind === 'half') {
       g.fillStyle = hex(fur); g.beginPath(); g.moveTo(-a - 6, -b - 8); g.lineTo(a + 6, -b - 8); g.lineTo(a + 6, -4); g.bezierCurveTo(a * 0.4, 3, -a * 0.4, 3, -a - 6, -1); g.closePath(); g.fill();
@@ -322,15 +329,15 @@ function paintFace(g, C) {
     g.restore();
     // the dark lid rim, heavier on the upper lid, running out at the inner corner
     g.strokeStyle = hex(C.lid); g.lineJoin = 'round'; g.lineCap = 'round';
-    g.lineWidth = 4; shape(); g.stroke();
-    g.lineWidth = 6; g.beginPath(); g.moveTo(-a * inner, -2); g.bezierCurveTo(-a * 0.6 * inner, -b * 1.18, a * 0.5 * inner, -b * 1.1, a * inner, 5); g.stroke();
-    g.lineWidth = 4; g.beginPath(); g.moveTo(a * inner * 0.97, 6); g.lineTo(a * inner * 1.1, 12); g.stroke();
+    g.lineWidth = 3; shape(); g.stroke();
+    g.lineWidth = 4.2; g.beginPath(); g.moveTo(-a * inner, -2); g.bezierCurveTo(-a * 0.6 * inner, -b * 1.18, a * 0.5 * inner, -b * 1.1, a * inner, 5); g.stroke();
+    g.lineWidth = 3; g.beginPath(); g.moveTo(a * inner * 0.97, 6); g.lineTo(a * inner * 1.1, 12); g.stroke();
     g.restore();
   };
   const closed = (x0, y0, kind, inner, sx) => {
     const cx = x0 + 56, cy = y0 + 49, a = 38, fur = furAt(sx);
     g.save(); g.translate(cx, cy); g.rotate(0.1 * inner);
-    g.strokeStyle = hex(lidOn(fur)); g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 5.5;
+    g.strokeStyle = hex(lidOn(fur)); g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 4;
     g.beginPath();
     if (kind === 'content') { g.moveTo(-a, 8); g.bezierCurveTo(-a * 0.5, -16, a * 0.5, -16, a, 6); }
     else if (kind === 'sleepy') { g.moveTo(-a, -2); g.bezierCurveTo(-a * 0.45, 13, a * 0.45, 13, a, -4); }
@@ -340,10 +347,6 @@ function paintFace(g, C) {
     if (kind === 'content' || kind === 'sleepy') {
       // lashes of fur at the outer corner
       g.lineWidth = 3.5; g.beginPath(); g.moveTo(a * -inner * 0.98, kind === 'content' ? 7 : -3); g.lineTo(a * -inner * 1.18, kind === 'content' ? 13 : -9); g.stroke();
-    }
-    if (kind === 'content') {
-      g.fillStyle = 'rgba(232,128,140,0.55)';
-      for (let k = 0; k < 3; k++) { g.beginPath(); g.ellipse(-12 + k * 12, 30, 3.2, 2, 0, 0, Math.PI * 2); g.fill(); }
     }
     g.restore();
   };
@@ -359,10 +362,10 @@ function paintFace(g, C) {
   for (const [name, [x, y]] of Object.entries(MOUTHS)) {
     g.clearRect(x, y, MOUTH_F.w, MOUTH_F.h);
     g.save(); g.translate(x + 48, y + 6); g.scale(1.3, 1.3);
-    g.strokeStyle = lip; g.fillStyle = lip; g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 3.4;
+    g.strokeStyle = lip; g.fillStyle = lip; g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 2.6;
     const smile = (open) => {
       g.beginPath(); g.moveTo(0, 0); g.lineTo(0, 12 + open * 0.3); g.stroke();
-      for (const s of [-1, 1]) { g.beginPath(); g.moveTo(0, 12); g.bezierCurveTo(s * 4, 20 + open, s * 13, 21 + open, s * 18, 13); g.stroke(); }
+      for (const s of [-1, 1]) { g.beginPath(); g.moveTo(0, 12); g.bezierCurveTo(s * 4, 17 + open, s * 11, 18 + open, s * 15, 14); g.stroke(); }
     };
     const openMouth = (w, h, fangs) => {
       g.fillStyle = mouthIn; g.beginPath(); g.moveTo(-w, 13); g.bezierCurveTo(-w * 0.8, 13 + h * 1.2, w * 0.8, 13 + h * 1.2, w, 13); g.bezierCurveTo(w * 0.5, 9, -w * 0.5, 9, -w, 13); g.fill();
@@ -435,14 +438,14 @@ export function catAssets(coat = 'calico', lod = 0) {
   if (CACHE[key]) return CACHE[key];
   const q = lod ? 0.55 : 1, Q = (n) => Math.max(6, Math.round(n * q)); // (a lighter build for baked props)
   const C = COATS[coat] || CALICO;
-  const B = new Builder(ATLAS_W, ATLAS_H, 4, { px: 4, grain: 0.1 });
+  const B = new Builder(ATLAS_W, ATLAS_H, 4, { px: 2, grain: 0.13 });
   const b = (n) => BI[n];
   // torso: rump -> body, chest, neck -> head
   B.part(torsoLoft(), { rect: [0, 0, 760, 512], cols: Q(48), rows: Q(38), paint: painter(C, 'body'), skin: polySkin([[0, 0.18, -0.26], J.chest, [0, 0.215, 0.16], J.head, [0, 0.27, 0.23]], [b('body'), b('chest'), b('chest'), b('head')], 0.035) });
   const head = headLoft();
   B.part(head, { rect: [768, 0, 256, 320], px: 2, cols: Q(44), rows: Q(32), paint: painter(C, 'head'), skin: () => [[b('head'), 1]] });
-  B.part(noseLoft(), { rect: [976, 458, 48, 48], px: 2, grain: 0, cols: Q(16), rows: Q(8), paint: (P, N) => (N.y > 0.55 ? shade(C.nose, 0.1) : P.y < 0.2586 && P.z > 0.264 && Math.abs(Math.abs(P.x) - 0.0036) < 0.0014 ? C.noseD : C.nose), skin: () => [[b('head'), 1]] });
-  for (const [n, s, x] of [['earL', 1, 768], ['earR', -1, 872]]) B.part(earLoft(s), { rect: [x, 328, 96, 120], px: 2, grain: 0, cols: Q(20), rows: Q(12), paint: painter(C, n), skin: () => [[b(n), 1]] });
+  B.part(noseLoft(), { rect: [976, 458, 48, 48], px: 2, grain: 0.1, coat: 'leather', mute: 0.18, cols: Q(16), rows: Q(8), paint: (P, N) => (N.y > 0.55 ? shade(C.nose, 0.1) : P.y < 0.2586 && P.z > 0.264 && Math.abs(Math.abs(P.x) - 0.0036) < 0.0014 ? C.noseD : C.nose), skin: () => [[b('head'), 1]] });
+  for (const [n, s, x] of [['earL', 1, 768], ['earR', -1, 872]]) B.part(earLoft(s), { rect: [x, 328, 96, 120], px: 2, grain: 0.05, cols: Q(20), rows: Q(12), paint: painter(C, n), skin: () => [[b(n), 1]] });
   const legs = [['FL', 1, 0], ['FR', -1, 128], ['BL', 1, 256], ['BR', -1, 384]];
   for (const [k, s, x] of legs) {
     const front = k[0] === 'F', top = front ? 'chest' : 'body', j1 = J[(front ? 'leg' : 'leg') + k], j2 = J[(front ? 'arm' : 'shin') + k], j3 = J['paw' + k];

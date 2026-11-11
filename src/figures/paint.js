@@ -199,7 +199,7 @@ function txt(str, x, y, h, col, o = {}) {
 }
 
 // ------------------------------------------------------------------ faces
-const INK = 0x2a1c1c;
+const INK = 0x33221e; // dark brown paint, never pure black
 /**
  * A toy face on the front of a part. f: { y: eye height, gap: half distance between the eyes, er: eye half width,
  * eh: eye half height, eye: 'dot' | 'bead' | 'anime' | 'happy' | 'closed' | 'line' | 'x' | 'star' | 'sleepy' | 'angry' |
@@ -227,7 +227,7 @@ export function face(f = {}) {
       const bx = x0 + side * (gap + (f.bx ?? er * 0.6)), by = y - eh - (f.by ?? 0.8), rx = f.br ?? er * 1.05;
       out.push(shape(SD.ell(bx, by, rx, rx * 0.55), bc, { dir, alpha: 0.75 }));
       // three little hatch strokes (anime blush)
-      if (f.hatch !== false) for (let k = -1; k <= 1; k++) out.push(shape(SD.seg(bx + k * rx * 0.45 - 0.25, by - 0.35, bx + k * rx * 0.45 + 0.25, by + 0.35, 0.28), 0xffd8d8, { dir, alpha: 0.85 }));
+      if (f.hatch === true) for (let k = -1; k <= 1; k++) out.push(shape(SD.seg(bx + k * rx * 0.45 - 0.25, by - 0.35, bx + k * rx * 0.45 + 0.25, by + 0.35, 0.28), 0xffd8d8, { dir, alpha: 0.85 }));
     }
   }
   if (f.nose) {
@@ -411,7 +411,7 @@ export function compilePaint(spec) {
   const g = p.g ? p.g.map(rgb) : null;
   const tex = TEX[p.t || (p.m === 'gloss' ? 'gloss' : p.m === 'metal' ? 'metal' : 'vinyl')] || TEX.vinyl;
   const decals = (p.d || []).flat(3).filter(Boolean);
-  const E = p.e ?? 1, K = p.k ?? 1;
+  const E = p.e ?? 1, K = p.k ?? 1, G = p.grade ?? 0.22;
   return (c, o) => {
     let C = base;
     if (top && c.ny > 0.55) C = top; else if (bot && c.ny < -0.55) C = bot; else if (side && Math.abs(c.ny) <= 0.55 && !(front && c.nz > 0.5)) C = side;
@@ -421,13 +421,20 @@ export function compilePaint(spec) {
     tex(c, o, p);
     for (let i = 0; i < decals.length; i++) decals[i](c, o);
     if (p.fn) p.fn(c, o);
+    // realistic paint grade: natural, slightly muted colours (real PVC / vinyl paint, not candy fills)
+    if (G) { const l = o[0] * 0.3 + o[1] * 0.59 + o[2] * 0.11; o[0] = 10 + (o[0] + (l - o[0]) * G) * 0.92; o[1] = 9 + (o[1] + (l - o[1]) * G) * 0.91; o[2] = 8 + (o[2] + (l - o[2]) * G) * 0.88; }
     // baked shading: a crisp light line along upward edges, darker under-edges, soft top-lit faces, contact shadow
     let k = K;
     if (E) {
       if (c.ed < 0.42) k *= c.wny > 0.3 ? 1 + 0.13 * E : c.wny < -0.3 ? 1 - 0.14 * E : 1 - 0.06 * E;
       else if (c.ed < 0.85) k *= c.wny > 0.3 ? 1 + 0.04 * E : 1 - 0.035 * E;
     }
-    if (c.kind === 'side') k *= c.fv > 0.66 ? 1.03 : c.fv < 0.2 ? 0.95 : 1;
+    if (c.kind === 'side') k *= c.fv > 0.7 ? 1.04 : c.fv < 0.25 ? 0.92 : 1;
+    // occlusion low on each part, paint rubbed off convex edges in small clusters, the mould's parting line
+    const bb = c.bb, hy = (c.y - bb.y0) / ((bb.y1 - bb.y0) || 1);
+    if (hy < 0.16 && c.kind !== 'top') k *= 0.92;
+    if (E && c.ed < 0.38 && c.wny > -0.3 && h2(Math.floor(c.x * 1.3 + 500), Math.floor(c.y * 1.3 + 500) * 7 + Math.floor(c.z * 1.3 + 500), 31) > 0.72) k *= 1.1;
+    if (E && c.kind === 'side' && Math.abs(c.nx) > 0.6 && Math.abs(c.z - bb.cz) < c.px * 0.55) k *= 0.9;
     else if (c.kind === 'bot') k *= 0.78;
     if (c.Y < 2.4) k *= c.Y < 0.9 ? 0.8 : 0.9;
     if (k !== 1) tone(o, q(k));

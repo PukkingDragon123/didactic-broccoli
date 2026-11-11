@@ -132,18 +132,18 @@ function paint(part) {
 
 /** Build every part of a pose into one Builder (same order and sizes in every pose: the morph targets line up). */
 function build(state, painted, k = 1) {
-  const B = new Builder(512, 256, 3, { px: 2, grain: 0.09 }), Q = parts(state), pnt = (q) => (painted ? paint(q) : undefined), one = () => [[0, 1]];
+  const B = new Builder(512, 256, 3, { px: 2, grain: 0.12, coat: 'feather' }), Q = parts(state), pnt = (q) => (painted ? paint(q) : undefined), one = () => [[0, 1]];
   const R = (n) => Math.max(3, Math.round(n * k));
   B.part(Q.body, { rect: [0, 0, 200, 120], cols: R(26), rows: R(18), paint: pnt('body'), skin: one });
   B.part(Q.neck, { rect: [208, 0, 96, 80], cols: R(16), rows: R(10), paint: pnt('neck'), skin: one });
   B.part(Q.head, { rect: [312, 0, 96, 80], cols: R(16), rows: R(10), paint: pnt('head'), skin: one });
-  B.part(Q.beak, { rect: [416, 0, 32, 24], grain: 0, cols: R(8), rows: R(4), paint: pnt('beak'), skin: one });
-  B.part(Q.cere, { rect: [456, 0, 24, 16], grain: 0, cols: R(8), rows: R(4), paint: pnt('cere'), skin: one });
+  B.part(Q.beak, { rect: [416, 0, 32, 24], grain: 0.06, coat: 'leather', cols: R(8), rows: R(4), paint: pnt('beak'), skin: one });
+  B.part(Q.cere, { rect: [456, 0, 24, 16], grain: 0.08, coat: 'leather', cols: R(8), rows: R(4), paint: pnt('cere'), skin: one });
   B.part(Q.tail, { rect: [0, 128, 120, 64], cols: R(14), rows: R(8), paint: pnt('tail'), skin: one });
   Q.wings.forEach((w, i) => B.part(w, { rect: [128 + i * 128, 128, 120, 120], cols: R(14), rows: R(12), paint: pnt('wing'), skin: one }));
   Q.legs.forEach((L, i) => {
-    B.part(L.leg, { rect: [416 + i * 40, 32, 32, 40], cols: R(6), rows: R(6), paint: pnt('leg'), skin: one });
-    L.toes.forEach((t, j) => B.part(t, { rect: [384 + j * 30, 200 + i * 28, 24, 24], cols: R(5), rows: R(4), paint: pnt('toe'), skin: one }));
+    B.part(L.leg, { rect: [416 + i * 40, 32, 32, 40], cols: R(6), rows: R(6), paint: pnt('leg'), coat: 'leather', skin: one });
+    L.toes.forEach((t, j) => B.part(t, { rect: [384 + j * 30, 200 + i * 28, 24, 24], cols: R(5), rows: R(4), paint: pnt('toe'), coat: 'leather', skin: one }));
   });
   return B;
 }

@@ -57,6 +57,8 @@ const ST_DECL = `uniform sampler2D uVoxDetail;\nconst float VOX_ST[15] = float[1
 const detailTerm = (uv, kind, k) => `
   if (${kind} > 0.5) {
     float vk = floor(${kind} + 0.5) - 1.0;
+    // natural grade: world surfaces a step less saturated than their painted colour (no candy fills)
+    diffuseColor.rgb = mix(vec3(dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722))), diffuseColor.rgb, 0.84);
     vec2 duv = ${uv};
     vec2 tdx = dFdx(duv) * 128.0, tdy = dFdy(duv) * 128.0;
     float vlod = 0.5 * log2(max(max(dot(tdx, tdx), dot(tdy, tdy)), 1e-8));
@@ -82,7 +84,7 @@ export function patchVoxelDetail(shader) {
  * The same detail on a pixel-art texture material (src/gfx/geo.js pixMat): `sub` detail texels per texture pixel, laid
  * on the texture's own pixel grid (so the grain sits inside the big pixels), kind = SURF id, k = strength scale.
  */
-export function patchTextureDetail(shader, { kind, texPx, sub = 4, k = 0.7 }) {
+export function patchTextureDetail(shader, { kind, texPx, sub = 4, k = 0.9 }) {
   voxelDetailUniform.value ||= voxelDetailTexture();
   shader.uniforms.uVoxDetail = voxelDetailUniform;
   shader.uniforms.uDetK = { value: kind };

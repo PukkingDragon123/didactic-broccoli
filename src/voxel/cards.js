@@ -83,7 +83,9 @@ export function patchCard(sh) {
   sh.vertexShader = sh.vertexShader
     .replace('void main() {', 'attribute vec3 vdet;\nvoid main() {')
     .replace('#include <uv_vertex>', '#include <uv_vertex>\n  vMapUv = vdet.xy;');
-  sh.fragmentShader = sh.fragmentShader.replace(/float faceDirection = gl_FrontFacing \? 1\.0 : - 1\.0;/, 'float faceDirection = 1.0;');
+  sh.fragmentShader = sh.fragmentShader.replace(/float faceDirection = gl_FrontFacing \? 1\.0 : - 1\.0;/, 'float faceDirection = 1.0;')
+    // natural grade: the sheet's greens a step muted, like the rest of the world
+    .replace('#include <map_fragment>', '#include <map_fragment>\n  diffuseColor.rgb = mix(vec3(dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722))), diffuseColor.rgb, 0.8);');
 }
 
 // ------------------------------------------------------------------------------------------------ scattering

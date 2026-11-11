@@ -37,15 +37,15 @@ const J = Object.fromEntries(DOG_BONES.map(([n, , p]) => [n, p]));
 // ------------------------------------------------------------------ coats
 const COATS = {
   // red Shiba: fox red with darker tips along the back, cream urajiro, eyebrow dots
-  pochi: { fur: 0xd27e3a, back: 0xbb6a2c, cream: 0xf6e9d4, tan: null, nose: 0x1e1a1a, collar: 0xd8282a, tag: 0xe8c04a, ears: 'prick', iris: 0x3a2216 },
+  pochi: { fur: 0xc47c44, back: 0xa8642e, cream: 0xece1cc, tan: null, nose: 0x1e1a1a, collar: 0xb03a32, tag: 0xc8a650, ears: 'prick', iris: 0x3a2216 },
   // black and tan Shiba
-  kuro: { fur: 0x2a2423, back: 0x1e1a1a, cream: 0xf0e2cc, tan: 0xc88848, nose: 0x141010, collar: 0x2f6fd6, tag: 0xd8d8d0, ears: 'prick', iris: 0x2a1a12 },
+  kuro: { fur: 0x2a2423, back: 0x1e1a1a, cream: 0xe8dcc6, tan: 0xb4804c, nose: 0x141010, collar: 0x3a5e96, tag: 0xc8c8c0, ears: 'prick', iris: 0x2a1a12 },
   // white Kishu
-  shiro: { fur: 0xf0eadc, back: 0xe2dacb, cream: 0xfbf6ec, tan: null, nose: 0x2a2020, collar: 0x2f8a4a, tag: 0xe8c04a, ears: 'prick', iris: 0x3a2418 },
+  shiro: { fur: 0xe6dfd0, back: 0xd8cfbe, cream: 0xf0eadd, tan: null, nose: 0x2a2020, collar: 0x3e7650, tag: 0xe8c04a, ears: 'prick', iris: 0x3a2418 },
   // sesame Shiba: red with black-tipped hair over the back
-  goma: { fur: 0xb47a48, back: 0x4a3426, cream: 0xf2e2c8, tan: null, nose: 0x1a1414, collar: 0xd8a020, tag: 0xe8e0c8, ears: 'prick', iris: 0x2e1c12, sesame: true },
+  goma: { fur: 0xb47a48, back: 0x4a3426, cream: 0xf2e2c8, tan: null, nose: 0x1a1414, collar: 0xb08a34, tag: 0xd8d0b8, ears: 'prick', iris: 0x2e1c12, sesame: true },
   // a brown mutt with folded ears
-  chibi: { fur: 0xa8703e, back: 0x8a5a32, cream: 0xf0dcc0, tan: null, nose: 0x1a1414, collar: 0x3a6ad8, tag: 0xe8c04a, ears: 'fold', iris: 0x3a2214 },
+  chibi: { fur: 0x9e6c40, back: 0x7e5432, cream: 0xe6d4ba, tan: null, nose: 0x1a1414, collar: 0x42609a, tag: 0xe8c04a, ears: 'fold', iris: 0x3a2214 },
   // the ghost girl's white mutt: floppy grey ears, grey socks, a red collar
   ghost: { fur: 0xf4f0e8, back: 0xe8e2d8, cream: 0xfbf8f2, tan: null, nose: 0x2a2a2a, collar: 0xc84a3a, tag: 0xd8b44a, ears: 'flop', iris: 0x2a2a2a, ear: 0x8e8a84, sock: 0xb8b4ac },
 };
@@ -243,22 +243,22 @@ const CACHE = {};
 export function dogAssets(kind = 'pochi') {
   if (CACHE[kind]) return CACHE[kind];
   const C = COATS[kind] || COATS.pochi;
-  const B = new Builder(1024, 1024, 4, { px: 4, grain: 0.1 }), b = (n) => BI[n];
+  const B = new Builder(1024, 1024, 4, { px: 2, grain: 0.13 }), b = (n) => BI[n];
   B.part(torso(), { rect: [0, 0, 760, 440], cols: 40, rows: 34, paint: painter(C, 'body'), skin: polySkin([[0, 0.34, -0.26], J.chest, J.neck, J.head, [0, 0.46, 0.27]], [b('body'), b('chest'), b('neck'), b('head')], [0.05, 0.03, 0.025]) });
   B.part(head(C), { rect: [768, 0, 256, 300], px: 2, cols: 44, rows: 32, paint: painter(C, 'head'), skin: () => [[b('head'), 1]] });
-  B.part(jaw(), { rect: [768, 308, 128, 96], px: 2, grain: 0, cols: 20, rows: 10, paint: painter(C, 'jaw'), skin: () => [[b('jaw'), 1]] });
-  B.part(nose(), { rect: [904, 308, 64, 48], px: 2, grain: 0, cols: 16, rows: 6, paint: painter(C, 'nose'), skin: () => [[b('head'), 1]] });
+  B.part(jaw(), { rect: [768, 308, 128, 96], px: 2, grain: 0.06, coat: 'leather', cols: 20, rows: 10, paint: painter(C, 'jaw'), skin: () => [[b('jaw'), 1]] });
+  B.part(nose(), { rect: [904, 308, 64, 48], px: 2, grain: 0.14, coat: 'leather', cols: 16, rows: 6, paint: painter(C, 'nose'), skin: () => [[b('head'), 1]] });
   for (const [n, s, x] of [['earL', 1, 768], ['earR', -1, 872]]) B.part(ear(C, s), { rect: [x, 412, 96, 100], px: 2, grain: 0.05, cols: 18, rows: 12, paint: painter(C, n), skin: () => [[b(n), 1]] });
   const legs = [['FL', 1, 0], ['FR', -1, 128], ['BL', 1, 256], ['BR', -1, 384]];
   for (const [k, s, x] of legs) {
     const front = k[0] === 'F', top = front ? 'chest' : 'body', j1 = J['leg' + k], j2 = J[(front ? 'arm' : 'shin') + k], j3 = J['paw' + k];
     const toe = front ? [s * 0.048, 0.014, 0.18] : [s * 0.051, 0.014, -0.15];
-    B.part(front ? fore(s) : hindL(s), { rect: [x, 520, 120, 400], px: 3, cols: 18, rows: 26, paint: painter(C, 'leg' + k), skin: polySkin([[j1[0] * 0.6, j1[1] + 0.07, j1[2]], j1, j2, j3, toe], [b(top), b('leg' + k), b((front ? 'arm' : 'shin') + k), b('paw' + k)], front ? [0.035, 0.022, 0.016] : [0.05, 0.024, 0.016]) });
+    B.part(front ? fore(s) : hindL(s), { rect: [x, 520, 120, 400], px: 2, cols: 18, rows: 26, paint: painter(C, 'leg' + k), skin: polySkin([[j1[0] * 0.6, j1[1] + 0.07, j1[2]], j1, j2, j3, toe], [b(top), b('leg' + k), b((front ? 'arm' : 'shin') + k), b('paw' + k)], front ? [0.035, 0.022, 0.016] : [0.05, 0.024, 0.016]) });
   }
-  B.part(tail(), { rect: [512, 520, 120, 400], px: 3, cols: 18, rows: 30, paint: painter(C, 'tail'), skin: polySkin([[0, 0.35, -0.18], J.tail0, J.tail1, J.tail2, J.tail3, [0.03, 0.46, -0.13]], [b('body'), b('tail0'), b('tail1'), b('tail2'), b('tail3')], 0.02) });
+  B.part(tail(), { rect: [512, 520, 120, 400], px: 2, cols: 18, rows: 30, paint: painter(C, 'tail'), skin: polySkin([[0, 0.35, -0.18], J.tail0, J.tail1, J.tail2, J.tail3, [0.03, 0.46, -0.13]], [b('body'), b('tail0'), b('tail1'), b('tail2'), b('tail3')], 0.02) });
   const K = collar();
-  B.part(K.band, { rect: [640, 520, 120, 64], px: 2, grain: 0, cols: 10, rows: 30, paint: painter(C, 'collar'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
-  B.part(K.tag, { rect: [640, 592, 48, 32], px: 2, grain: 0, cols: 12, rows: 6, paint: painter(C, 'tag'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
+  B.part(K.band, { rect: [640, 520, 120, 64], px: 2, grain: 0.06, coat: 'leather', mute: 0.2, cols: 10, rows: 30, paint: painter(C, 'collar'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
+  B.part(K.tag, { rect: [640, 592, 48, 32], px: 2, grain: 0.05, coat: 'leather', cols: 12, rows: 6, paint: painter(C, 'tag'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
   CACHE[kind] = { geometry: B.geometry(), map: B.texture() };
   return CACHE[kind];
 }

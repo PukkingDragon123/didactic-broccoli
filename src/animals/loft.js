@@ -209,9 +209,12 @@ export function chain(bones, joints, blend = 0.08) {
  *              vRange: [v0, v1] (a slice of the loft), flipNormals })
  */
 export class Builder {
-  /** o.px: default texel block (atlas texels per painted pixel); o.grain: default fur-grain strength (0 = none). */
+  /**
+   * o.px: default texel block (atlas texels per painted pixel); o.grain: default texture strength (0 = flat);
+   * o.coat: 'fur' | 'feather' | 'leather' (the texture's kind, also per part); o.mute: how far colours are greyed (0..1).
+   */
   constructor(W, H, gutter = 3, o = {}) {
-    this.W = W; this.H = H; this.g = gutter; this.px = o.px || 1; this.grain = o.grain || 0;
+    this.W = W; this.H = H; this.g = gutter; this.px = o.px || 1; this.grain = o.grain || 0; this.coat = o.coat || 'fur'; this.mute = o.mute ?? 0.12;
     this.pos = []; this.nrm = []; this.uv = []; this.si = []; this.sw = []; this.idx = [];
   }
   /** The atlas canvas, made on first use (a geometry-only build never paints). */
@@ -271,15 +274,7 @@ export class Builder {
         const q = (j * us.length + i) * 3;
         P.set(S.P[q], S.P[q + 1], S.P[q + 2]); N.set(S.N[q] * flip, S.N[q + 1] * flip, S.N[q + 2] * flip);
         let c = o.paint(P, N, us[i], vs[j]);
-        if (gr > 0 && c >= 0) {
-          // a strand: two blocks along the spine (columns staggered), dark in its shadowed lower block and catching the
-          // light in its upper one on fur that faces up; a few loose light hairs
-          const bi = i + b0, bj = j + b0, st = bj + (bi & 1), h = hash2i(((bi % 4096) + 4096) % 4096, st >> 1), top = (st & 1) === 1;
-          // (pale fur takes it more gently: its shadow ticks would read as grey dashes)
-          const lum = (((c >> 16) & 255) * 0.3 + ((c >> 8) & 255) * 0.55 + (c & 255) * 0.15) / 255, g2 = gr * (lum > 0.75 ? 0.55 : 1);
-          if (h < 0.16) c = top && N.y > -0.2 ? shade(c, g2 * 0.55) : shade(c, -g2);
-          else if (h > 0.95) c = shade(c, g2 * 0.5);
-        }
+        if (c >= 0) c = coatTexel(c, P, N, i + b0, j + b0, gr, o.coat || this.coat, o.mute ?? this.mute);
         const cr = (c >> 16) & 255, cg = (c >> 8) & 255, cb = c & 255;
         for (let y = ry + (j + b0) * k, y1 = y + k; y < y1; y++) {
           if (y < ry - g || y >= ry + rh + g || y < 0 || y >= this.H) continue;
@@ -364,6 +359,48 @@ export function pixelate(ctx, x0, y0, w, h, k) {
     }
   }
   ctx.putImageData(im, x0, y0);
+}
+
+const _lum = (c) => (((c >> 16) & 255) * 0.3 + ((c >> 8) & 255) * 0.55 + (c & 255) * 0.15) / 255;
+/** Value noise in 0..1 on a 3D lattice (smoothstepped trilinear): the soft clumping of a coat, before it is stepped. */
+export function vnoise3(x, y, z) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi;
+  const h = (a, b, c) => hash2i((a * 73 + c * 151) & 0xffff, (b * 197 + c * 37) & 0xffff);
+  const sx = xf * xf * (3 - 2 * xf), sy = yf * yf * (3 - 2 * yf), sz = zf * zf * (3 - 2 * zf);
+  const l = (a, b, t) => a + (b - a) * t;
+  return l(l(l(h(xi, yi, zi), h(xi + 1, yi, zi), sx), l(h(xi, yi + 1, zi), h(xi + 1, yi + 1, zi), sx), sy),
+    l(l(h(xi, yi, zi + 1), h(xi + 1, yi, zi + 1), sx), l(h(xi, yi + 1, zi + 1), h(xi + 1, yi + 1, zi + 1), sx), sy), sz);
+}
+
+/**
+ * One painted pixel of a real coat, from the painter's colour c at rest point P (normal N), block (bi, bj) (bj runs
+ * along the spine / limb): colour clumps (the fur parting and lying in tufts, a few % lighter or darker, stepped),
+ * then the kind's texture by rule, then a slight greying to the game's natural palette.
+ *   fur: hairs three pixels long, staggered: a dark root in the undercoat, the hair, a lit tip on fur facing up
+ *   feather: overlapping feathers, a dark edge row and a pale tip row, staggered every other column pair
+ *   leather: the pebbled skin of a nose or a pad
+ */
+export function coatTexel(c, P, N, bi, bj, gr, kind = 'fur', mute = 0.12) {
+  if (gr > 0) {
+    const pale = _lum(c) > 0.75 ? 0.55 : _lum(c) < 0.18 ? 1.5 : 1, g = gr * pale;
+    const n = vnoise3(P.x * 95, P.y * 95, P.z * 95), q = n < 0.36 ? -1 : n > 0.64 ? 1 : 0;
+    if (q) c = shade(c, q * g * 0.45);
+    const bx = ((bi % 4096) + 4096) % 4096;
+    if (kind === 'fur') {
+      const off = Math.floor(hash2i(bx, 977) * 3), st = bj + off, id = Math.floor(st / 3), pos = st - id * 3, h = hash2i(bx, id & 0xffff);
+      if (h < 0.42) c = pos === 0 ? shade(c, -g) : pos === 2 ? (N.y > -0.3 ? shade(c, g * 0.6) : c) : shade(c, -g * 0.3);
+      else if (h > 0.96) c = shade(c, g * 0.45);
+    } else if (kind === 'feather') {
+      const col = bx >> 1, st = bj + (col & 1) * 2, pos = ((st % 4) + 4) % 4, h = hash2i(col, st >> 2 & 0xffff);
+      if (pos === 0 && h < 0.75) c = shade(c, -g * 0.8); else if (pos === 3) c = shade(c, g * 0.35);
+      else if (h > 0.9) c = shade(c, -g * 0.3);
+    } else if (kind === 'leather') {
+      const h = hash2i(bx, ((bj % 4096) + 4096) % 4096);
+      if (h < 0.3) c = shade(c, -g * 0.8); else if (h > 0.86) c = shade(c, g * 0.6);
+    }
+  }
+  if (mute > 0) { const l = Math.round(_lum(c) * 255); c = mixc(c, (l << 16) | (l << 8) | l, mute); }
+  return c;
 }
 
 /** A hash of two integers in 0..1 (placing painted marks by rule). */

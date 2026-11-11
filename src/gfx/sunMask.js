@@ -24,7 +24,7 @@ let installed = false;
 // lilac light that still reaches into the sun's shadow (fraction of the sun's colour, per channel)
 export const SHADOW_TINT = [0.34, 0.33, 0.47];
 // how strongly N.L is pulled toward the steps (0 = smooth Lambert, 1 = hard cel)
-export const TOON = 0.6;
+export const TOON = 0.25; // (natural light: a light touch of the cel steps, not toon)
 const f = (v) => v.toFixed(3);
 
 export function installSunMask() {
