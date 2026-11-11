@@ -75,13 +75,13 @@ export function installRitual(g) {
   const at = (cap, x, y, z) => cap.group.localToWorld(_v.set(x * cap.r, y * cap.r, z * cap.r)).clone();
   const fx = (f) => { try { f(g.effects); } catch { /* effects not ready */ } };
 
-  /** A part comes away: it drops out of your fingers, tumbling, and is gone. */
+  /** A part comes away: it drops out of your fingers into the world, tumbling, and is gone. */
   const drop = (m, dur = 0.6) => {
-    const layers = m.layers.mask;
-    H.anchor.attach(m);
-    m.layers.mask = layers;
-    const p0 = m.position.clone(), r0 = m.rotation.clone();
-    g.tweens.add({ dur, update: (k) => { m.position.set(p0.x + 0.05 * k, p0.y - 0.42 * k * k, p0.z + 0.03 * k); m.rotation.set(r0.x + k * 2.2, r0.y + k * 1.3, r0.z - k * 1.6); }, done: () => m.parent?.remove(m) });
+    g.scene.attach(m);
+    const p0 = m.position.clone(), r0 = m.rotation.clone(), s0 = m.scale.x;
+    const gone = () => { m.parent?.remove(m); };
+    g.tweens.add({ dur, update: (k) => { m.position.set(p0.x, p0.y - 0.5 * k * k, p0.z); m.rotation.set(r0.x + k * 2.2, r0.y + k * 1.3, r0.z - k * 1.6); m.scale.setScalar(s0 * (1 - k * 0.4)); }, done: gone });
+    setTimeout(gone, (dur + 1.5) * 1000); // (whatever happens to the tween, it never lingers)
   };
 
   /** Show the capsule as far as `i` steps and `p` through the next. */

@@ -56,7 +56,10 @@ export function hasItemGeometry(key) { return geoCache.has(key) || !!getItem(key
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
   const it = getItem(key);
   if (it?.fig) {
-    const mesh = new THREE.Mesh(figGeometry(it, SERIES_BY_ID[it.series]), figMaterials(SERIES_BY_ID[it.series], finish));
+    const geo = figGeometry(it, SERIES_BY_ID[it.series]);
+    // (everything that places a figure reads its size: Items.spawnToy, the reveal, shelves, display tops)
+    if (!geo.userData.size) { geo.computeBoundingBox(); geo.userData.size = geo.boundingBox.getSize(new THREE.Vector3()); }
+    const mesh = new THREE.Mesh(geo, figMaterials(SERIES_BY_ID[it.series], finish));
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData.itemKey = key; mesh.userData.finish = finish;
     return mesh;
