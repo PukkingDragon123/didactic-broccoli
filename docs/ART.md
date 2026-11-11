@@ -26,6 +26,12 @@ job now is to raise its quality without losing the look.
   src/kit) and may be ported and restyled to sit with the voxels (same texture style, same lighting).
 - Never a clash: one palette, one texture style, one light; blocky stays the dominant read.
 
+## Update: not cartoony, realistic pixel-art textures (the owner's newest words)
+- "Don't look cartoony; the texture is super realistic and detailed pixel art; toys too." Textures everywhere (world,
+  people, animals, toys) are realistic in colour, material and wear (real photos as the base where possible),
+  rendered as detailed, crisp pixel art: natural, slightly muted colours, real shading and grime, no flat cartoon
+  fills, no thick outlines, no saturated candy colours. Lighting is natural, not toon.
+
 ## 2D
 - UI is paper in detailed pixel art (src/ui/paper.js). Speech is plain floating text.
 - Drinks, products, posters and display cards are detailed art built from real photographs where possible, with
