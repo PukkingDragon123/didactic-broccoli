@@ -15,7 +15,7 @@ const mixInto = (o, C, t) => { o[0] += (C[0] - o[0]) * t; o[1] += (C[1] - o[1]) 
 // pixel art: tones snap to a few clean steps (no smooth noise / gradients)
 const QS = 0.07;
 export const q = (k) => 1 + Math.round((k - 1) / QS) * QS;
-const mul = (o, k) => { k = q(k); o[0] *= k; o[1] *= k; o[2] *= k; };
+const mul = (o, k) => { o[0] *= k; o[1] *= k; o[2] *= k; };
 const qt = (t, n = 4) => Math.round(t * n) / n;
 /** Tone with a warm shadow shift (shadows of toys go warm, not grey). */
 const tone = (o, k) => { const d = 1 - k; o[0] *= k * (1 + d * 0.1); o[1] *= k; o[2] *= k * (1 - d * 0.12); };
@@ -343,17 +343,17 @@ export const D = {
 const N = (x, y, s) => vnoise(x, y, s) - 0.5;
 const cell = (c, k) => h2(Math.floor(c.x * k + 1000), Math.floor(c.y * k + 1000) * 7 + Math.floor(c.z * k + 1000) * 131, 5) - 0.5;
 const TEX = {
-  vinyl: (c, o) => { mul(o, 1 + N(c.X * 0.35, c.Y * 0.35 + c.Z * 0.2, 1) * 0.05 + cell(c, 2.6) * 0.022); },
+  vinyl: (c, o) => { mul(o, 1 + N(c.X * 0.32, c.Y * 0.32 + c.Z * 0.2, 1) * 0.12 + N(c.X * 1.1, c.Y * 1.1 + c.Z * 0.7, 2) * 0.06 + cell(c, 1.3) * 0.02); },
   flat: () => {},
-  gloss: (c, o) => { mul(o, 1 + cell(c, 2.6) * 0.015); if (c.wny > 0.4 && c.ed > 0.5 && c.ed < 1.1) mul(o, 1.07); },
+  gloss: (c, o) => { mul(o, 1 + N(c.X * 0.4, c.Y * 0.4 + c.Z * 0.3, 3) * 0.08 + cell(c, 2.6) * 0.03); if (c.wny > 0.4 && c.ed > 0.5 && c.ed < 1.1) mul(o, 1.12); },
   fur: (c, o, p) => {
     const a = (Math.abs(c.nx) > Math.abs(c.nz) ? c.z : c.x) + (c.ny > 0.6 ? c.z * 0.5 : 0);
-    const s = Math.floor(a * 3.2), n = h2(s, Math.floor(c.y * 0.9 + N(s, 0, 2) * 2), 7);
-    let k = 0.9 + n * 0.16 + N(c.x * 0.5, c.y * 0.5 + c.z * 0.3, 3) * 0.12;
+    const s = Math.floor(a * 1.6), n = h2(s, Math.floor(c.y * 0.6 + N(s, 0, 2) * 2), 7);
+    let k = 0.95 + n * 0.08 + N(c.x * 0.45, c.y * 0.45 + c.z * 0.3, 3) * 0.22;
     if ((Math.floor(c.y * 2.4 + h2(s, 3, 1) * 4) & 3) === 0) k *= 0.93;
     mul(o, k * (p.k || 1));
   },
-  plush: (c, o) => { mul(o, 0.95 + cell(c, 3.2) * 0.12 + N(c.X * 0.6, c.Y * 0.6, 4) * 0.08); },
+  plush: (c, o) => { mul(o, 0.98 + cell(c, 1.6) * 0.04 + N(c.X * 0.5, c.Y * 0.5 + c.Z * 0.3, 4) * 0.16); },
   cloth: (c, o) => { const w = ((Math.floor(c.x * 3) + Math.floor(c.y * 3) + Math.floor(c.z * 3)) & 1) ? 0.975 : 1.025; mul(o, w + N(c.X * 0.4, c.Y * 0.4, 6) * 0.08); },
   knit: (c, o) => { const a = Math.abs(c.nx) > Math.abs(c.nz) ? c.z : c.x; const v = Math.abs(Math.sin(a * 3.4)); const r = (Math.floor(c.y * 2.8) + Math.floor(a * 1.08)) & 1; mul(o, 0.86 + v * 0.16 + (r ? 0.03 : 0)); },
   denim: (c, o) => { const d = ((Math.floor((c.x + c.y + c.z) * 3.5)) & 1) ? 0.92 : 1.05; mul(o, d + N(c.X * 0.3, c.Y * 0.9, 9) * 0.12); },
@@ -394,13 +394,42 @@ const TEX = {
   glass: (c, o) => { const s = Math.sin((c.x - c.y * 0.3) * 1.6); if (s > 0.85) mixInto(o, [255, 255, 255], 0.35); },
   water: (c, o) => { const r = Math.sin(Math.hypot(c.X, c.Z) * 1.4 - N(c.X * 0.2, c.Z * 0.2, 22) * 4); mul(o, 0.95 + r * 0.06); if (r > 0.9) mixInto(o, [255, 255, 255], 0.25); },
   tatami: (c, o) => { const r = (Math.floor(c.x * 2.2) & 1) ? 0.95 : 1.04; mul(o, r * (0.96 + cell(c, 3) * 0.06)); },
-  felt: (c, o) => { mul(o, 0.94 + cell(c, 3.4) * 0.12); },
+  felt: (c, o) => { mul(o, 0.98 + cell(c, 1.7) * 0.05 + N(c.X * 0.6, c.Y * 0.6 + c.Z * 0.4, 25) * 0.12); },
   foam: (c, o) => { if (h2(Math.floor(c.x * 3 + 99), Math.floor(c.y * 3 + 99) * 17 + Math.floor(c.z * 3 + 99), 23) > 0.8) mul(o, 0.86); else mul(o, 1.02); },
   lacquer: (c, o) => { mul(o, 1 + cell(c, 2.6) * 0.012); if (c.wny > 0.35 && c.ed > 0.35 && c.ed < 0.95) mixInto(o, [255, 255, 255], 0.22); },
   scales: (c, o) => { const a = c.x * 1.1, b = c.y * 1.3 + (Math.floor(a) & 1) * 0.5; const fx = a - Math.floor(a) - 0.5, fy = b - Math.floor(b); mul(o, fy < 0.25 + Math.abs(fx) * 0.4 ? 0.84 : 1.02); },
   feather: (c, o) => { const a = Math.abs(c.nx) > Math.abs(c.nz) ? c.z : c.x; const b = c.y * 0.9 + (Math.floor(a * 0.7) & 1) * 0.5; mul(o, (b - Math.floor(b)) < 0.18 ? 0.86 : 1 + N(a, c.y, 24) * 0.06); },
 };
 export const TEXTURES = Object.keys(TEX);
+
+// ------------------------------------------------------------------ ramps and dithering (pixel-art shading)
+const B4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+const RAMPS = new Map();
+/** A 7-step ramp around a colour: shadows hue-shift cool and muted, highlights warm (Limbo Phobia's makeRamp idea). */
+function ramp(r, g, b) {
+  const key = ((r >> 2) << 12) | ((g >> 2) << 6) | (b >> 2);
+  let R = RAMPS.get(key);
+  if (R) return R;
+  R = [];
+  for (let i = 0; i < 7; i++) {
+    const f = (i - 3) / 3; // -1 dark .. +1 light
+    let k = 1 + f * (f < 0 ? 0.42 : 0.3);
+    let rr = r * k, gg = g * k, bb = b * k;
+    if (f < 0) { rr += (-f) * (-10); gg += (-f) * (-6); bb += (-f) * 10; } else { rr += f * 14; gg += f * 8; bb -= f * 6; }
+    R.push([rr < 0 ? 0 : rr > 255 ? 255 : rr, gg < 0 ? 0 : gg > 255 ? 255 : gg, bb < 0 ? 0 : bb > 255 ? 255 : bb]);
+  }
+  RAMPS.set(key, R);
+  return R;
+}
+/** Pick from the ramp of base colour b at tone t (0.5 = the base) with 4x4 ordered dithering between steps. */
+function rampPick(o, b, t, ti, tj) {
+  const R = ramp(b[0], b[1], b[2]);
+  let v = t * 6; if (v < 0) v = 0; else if (v > 6) v = 6;
+  let i = Math.floor(v); const f = v - i;
+  if (i < 6 && (B4[((tj & 3) << 2) | (ti & 3)] + 0.5) / 16 < f) i++;
+  const C = R[i]; o[0] = C[0]; o[1] = C[1]; o[2] = C[2];
+}
+const lum = (o) => o[0] * 0.3 + o[1] * 0.59 + o[2] * 0.11 + 1;
 
 // ------------------------------------------------------------------ compile
 /** Turn a paint spec into a texel painter fn(c, o). */
@@ -418,9 +447,13 @@ export function compilePaint(spec) {
     if (front && c.nz > 0.5) C = front;
     setc(o, C);
     if (g) { const t = qt((c.y - c.bb.y0) / ((c.bb.y1 - c.bb.y0) || 1), p.gn || 4); setc(o, [g[0][0] + (g[1][0] - g[0][0]) * t, g[0][1] + (g[1][1] - g[0][1]) * t, g[0][2] + (g[1][2] - g[0][2]) * t]); }
-    tex(c, o, p);
     for (let i = 0; i < decals.length; i++) decals[i](c, o);
     if (p.fn) p.fn(c, o);
+    const b0 = o[0], b1 = o[1], b2 = o[2], L0 = lum(o);
+    tex(c, o, p);
+    const kt = lum(o) / L0; // the material texture as a tone offset; its hue (crust, glaze) is kept in the base
+    o[0] /= kt; o[1] /= kt; o[2] /= kt;
+    void b0; void b1; void b2;
     // realistic paint grade: natural, slightly muted colours (real PVC / vinyl paint, not candy fills)
     if (G) { const l = o[0] * 0.3 + o[1] * 0.59 + o[2] * 0.11; o[0] = 10 + (o[0] + (l - o[0]) * G) * 0.92; o[1] = 9 + (o[1] + (l - o[1]) * G) * 0.91; o[2] = 8 + (o[2] + (l - o[2]) * G) * 0.88; }
     // baked shading: a crisp light line along upward edges, darker under-edges, soft top-lit faces, contact shadow
@@ -437,6 +470,8 @@ export function compilePaint(spec) {
     if (E && c.kind === 'side' && Math.abs(c.nx) > 0.6 && Math.abs(c.z - bb.cz) < c.px * 0.55) k *= 0.9;
     else if (c.kind === 'bot') k *= 0.78;
     if (c.Y < 2.4) k *= c.Y < 0.9 ? 0.8 : 0.9;
-    if (k !== 1) tone(o, q(k));
+    // final pixel: the base colour's ramp at the tone (texture x shading), ordered-dithered between steps
+    const t = 0.5 + Math.log2(kt * k) * 1.1;
+    rampPick(o, o, t, c.ti | 0, c.tj | 0);
   };
 }

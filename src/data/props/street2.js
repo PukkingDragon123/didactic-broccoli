@@ -304,6 +304,7 @@ const street2 = {
   // ------------------------------------------------------------- utility box
   power_box: {
     name: 'Utility Power Box', jp: '地上機器', voxel: 0.02,
+    asset: { id: 'utility_box_01' }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const grey = (x, y, z) => gloss(shade(0x9ea6a2, vnoise(x, y, z, 7, 1) > 0.6 ? 0.95 : 1));
       // concrete plinth with a cable conduit
@@ -357,6 +358,7 @@ const street2 = {
   // ------------------------------------------------------------- AC outdoor unit
   ac_unit: {
     name: 'AC Outdoor Unit', jp: 'エアコン室外機', voxel: 0.01,
+    asset: { id: 'exterior_aircon_unit', ry: Math.PI }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const shell = (x, y, z) => gloss(shade(0xe8e6dc, vnoise(x, y, z, 8, 1) > 0.64 ? 0.96 : 1));
       // plastic stand blocks

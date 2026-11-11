@@ -254,6 +254,7 @@ function paintFig(A, key) {
           const dx = s - a[0] - ex * t, dy = r - a[1] - ey * t, dd = dx * dx + dy * dy;
           if (dd < ed) ed = dd;
         }
+        c.ti = R.x + i; c.tj = R.y + j;
         c.ed = Math.sqrt(ed); c.fv = (r - f.r0) / ((f.r1 - f.r0) || 1); c.px = 1 / f.dens;
         o[0] = 255; o[1] = 0; o[2] = 255; o[3] = 255;
         fn(c, o);

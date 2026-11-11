@@ -162,6 +162,7 @@ for (let st = 0; st <= 4; st++) {
 }
 P.watering_can = {
   name: 'Watering Can', jp: 'じょうろ', voxel: 0.008,
+  asset: { id: 'watering_can_metal_01', ry: Math.PI / 2 }, // Poly Haven, CC0 (src/kit/assets.js)
   build(v) {
     v.jitter = 0.02;
     const C = gloss(0x3a9ad8), D = gloss(0x2a7ab8);

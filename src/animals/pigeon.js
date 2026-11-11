@@ -7,7 +7,7 @@
 //   const m = makePigeon();  m.userData.anim({ peck, bob, fly, flap })    (one bird: the flyover, the props)
 //   pigeonGeometry(perched | flying) -> a static geometry (the town's perched birds)
 import * as THREE from 'three';
-import { Loft, Builder, egg, fringe, shade, mixc, clamp } from './loft.js';
+import { Loft, Builder, egg, fringe, shade, mixc, clamp, BLOCK } from './loft.js';
 
 const sec = (p, r, up) => ({ p, r, up });
 const C = {
@@ -132,7 +132,11 @@ function paint(part) {
 
 /** Build every part of a pose into one Builder (same order and sizes in every pose: the morph targets line up). */
 function build(state, painted, k = 1) {
-  const B = new Builder(512, 256, 3, { px: 2, grain: 0.12, coat: 'feather' }), Q = parts(state), pnt = (q) => (painted ? paint(q) : undefined), one = () => [[0, 1]];
+  // a bird is plumper than a cat: deeper chamfers round its blocks (an octagon more than a box), so a pigeon seen from
+  // behind is a rounded back between its folded wings, not a box
+  const ch0 = BLOCK.ch; BLOCK.ch = 0.55;
+  let Q; try { Q = parts(state); } finally { BLOCK.ch = ch0; }
+  const B = new Builder(512, 256, 3, { px: 2, grain: 0.12, coat: 'feather' }), pnt = (q) => (painted ? paint(q) : undefined), one = () => [[0, 1]];
   const R = (n) => Math.max(3, Math.round(n * k));
   B.part(Q.body, { rect: [0, 0, 200, 120], cols: R(26), rows: R(18), paint: pnt('body'), skin: one });
   B.part(Q.neck, { rect: [208, 0, 96, 80], cols: R(16), rows: R(10), paint: pnt('neck'), skin: one });

@@ -724,6 +724,7 @@ const garage = {
   // ------------------------------------------------------------- toolbox
   toolbox: {
     name: 'Red Metal Toolbox', voxel: 0.008,
+    asset: { id: 'metal_toolbox', tint: 0xd04a3a }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const red = (x, y, z) => gloss(shade(0xc2302a, 0.93 + hash(x, y, z, 4) * 0.09));
       const chrome = gloss(0xd8dce2);
@@ -992,6 +993,7 @@ const garage = {
   // ------------------------------------------------------------- polytank
   polytank: {
     name: 'Kerosene Polytank & Pump', voxel: 0.008,
+    asset: { id: 'plastic_jerrycan', ry: Math.PI / 2 }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const red = (x, y, z) => gloss(shade(0xd8332a, 0.94 + hash(x, y, z, 1) * 0.06 + (y % 10 === 0 ? -0.12 : 0)));
       v.shape(-19, 0, -13, 19, 43, 13, (x, y, z) => (Math.abs(x) / 18.6) ** 6 + (Math.abs(z) / 12.6) ** 6 + (Math.max(0, y - 37) / 6.5) ** 4 <= 1, red);
@@ -1189,6 +1191,7 @@ const garage = {
   // ------------------------------------------------------------- desk lamp
   desk_lamp: {
     name: 'Articulated Desk Lamp', voxel: 0.006,
+    asset: { id: 'desk_lamp_arm_01' }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const grn = (x, y, z) => gloss(shade(0x2f6a4a, 0.93 + hash(x, y, z, 1) * 0.08));
       const steel = gloss(0xc8ccd2);
@@ -1233,6 +1236,7 @@ const garage = {
   // ------------------------------------------------------------- extinguisher
   extinguisher: {
     name: 'Fire Extinguisher', voxel: 0.006,
+    asset: { id: 'korean_fire_extinguisher_01', fit: 'y' }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const red = (x, y, z) => gloss(shade(0xd8231f, 0.93 + hash(x, y, z, 1) * 0.06));
       const steel = gloss(0xc8ccd2), blk = gloss(0x232122);
@@ -1294,6 +1298,7 @@ const garage = {
   // ------------------------------------------------------------- stool
   stool: {
     name: 'Wooden Stool', voxel: 0.008,
+    asset: { id: 'wooden_stool_01', fit: 'y' }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const wood = woodFn(0xa8743e, 'x', 7), woodD = woodFn(0x8a5a30, 'y', 8);
       const legs = [];
@@ -1403,6 +1408,7 @@ const garage = {
   // ------------------------------------------------------------- watering can
   watering_can: {
     name: 'Tin Watering Can', voxel: 0.007,
+    asset: { id: 'watering_can_metal_01', ry: Math.PI / 2 }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       const pnt = (x, y, z) => gloss(shade(0x5a8a6a, 0.88 + vnoise(x, y, z, 3, 2) * 0.16));
       const tin = gloss(0xb4babe);

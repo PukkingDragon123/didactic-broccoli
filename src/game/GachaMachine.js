@@ -238,6 +238,9 @@ export class GachaMachine {
     const A = this.domeAnchor;
     A.clear();
     this.disposeFigures();
+    // machines come bare: the sample hood on the lid is put away, and a display top (src/display/) is what shows
+    // figures up there now, so no sample figures are built
+    return;
     const S = SERIES_BY_ID[series];
     const D = this.L.dome;
     const pick = (r, n = 0) => S.items.filter((i) => i.rarity === r)[n];

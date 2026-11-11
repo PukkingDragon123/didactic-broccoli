@@ -6,7 +6,7 @@
 //   const d = new Dog('pochi');  scene.add(d.root);  d.speed = 1.2; d.pose = 'stand' | 'sit' | 'sniff' | 'squat'; d.update(dt)
 //   d.collar(out) (where a lead clips on)   d.nose(out)   d.barkT = 0.35 (the jaw snaps open)
 import * as THREE from 'three';
-import { Loft, Builder, egg, fringe, polySkin, shade, mixc, smooth as sm, adist } from './loft.js';
+import { Loft, Builder, egg, fringe, polySkin, shade, mixc, smooth as sm, adist, vnoise3 } from './loft.js';
 import { legChain, solveLeg } from './ik.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -107,7 +107,7 @@ function painter(C, part) {
     } else if (part === 'tail') {
       const toC = (0 - P.x) * N.x + (0.435 - P.y) * N.y + (-0.19 - P.z) * N.z;
       c = toC > 0.004 ? C.cream : C.fur;
-      if (c === C.fur && C.sesame && tri(P.x * 260) < 0.4) c = C.back;
+      if (c === C.fur && C.sesame) c = mixc(C.fur, C.back, vnoise3(P.x * 300, P.y * 300, P.z * 300) > 0.52 ? 0.7 : 0.25);
     } else if (part.startsWith('leg')) {
       const side = part[4] === 'L' ? 1 : -1, hind = part[3] === 'B';
       const inner = (P.x - J['leg' + part.slice(3)][0]) * side < -0.004 + fl * 0.02;
@@ -122,7 +122,7 @@ function painter(C, part) {
       const y = P.y + fl * 0.012;
       if (y < 0.29 - Math.max(0, P.z - 0.04) * 0.25 || (P.z > 0.13 && y < 0.395 - Math.max(0, P.z - 0.13) * 0.0 && ax < 0.052 - (0.395 - y) * 0.05) || (P.z > 0.18 && y < 0.43 && N.y < 0.2)) c = C.cream;
       else if (T && y < 0.32) c = T;
-      else if (P.y > 0.37 && ax < 0.05 + fl * 0.1) c = C.sesame ? (tri(P.x * 230 + Math.sin(P.z * 40) * 0.6) < 0.5 - Math.max(0, ax - 0.03) * 12 ? C.back : mixc(c, C.back, 0.35)) : mixc(c, C.back, 0.55);
+      else if (P.y > 0.37 && ax < 0.05 + fl * 0.1) c = C.sesame ? mixc(c, C.back, vnoise3(P.x * 300, P.y * 300, P.z * 300) > 0.5 - Math.max(0, ax - 0.03) * 4 ? 0.8 : 0.3) : mixc(c, C.back, 0.55);
     }
     if (N.y < -0.5) c = shade(c, -0.1); else if (N.y < -0.15) c = shade(c, -0.05); else if (N.y > 0.85) c = shade(c, 0.05);
     return c;
@@ -229,11 +229,12 @@ function collar() {
   const C = new THREE.Vector3(0, 0.39, 0.205), A = new THREE.Vector3(0, 0.655, 0.756).normalize(), U = new THREE.Vector3(0, 0.756, -0.655), S = new THREE.Vector3(1, 0, 0);
   const n = 28, secs = [];
   for (let k = 0; k <= n; k++) {
-    const f = (k / n) * Math.PI * 2, c = Math.cos(f), r = c > 0 ? 0.058 : 0.058 + 0.02 * -c;
-    const p = C.clone().addScaledVector(S, Math.sin(f) * 0.061).addScaledVector(U, c * r);
+    // round the block neck: a squarish path (superellipse) lying on its faces, sagging at the front where the tag hangs
+    const f = (k / n) * Math.PI * 2, c = Math.cos(f), sn = Math.sin(f), q = 1 / Math.pow(Math.abs(c) ** 4 + Math.abs(sn) ** 4, 0.25), r = c > 0 ? 0.05 : 0.05 + 0.016 * -c;
+    const p = C.clone().addScaledVector(S, sn * q * 0.054).addScaledVector(U, c * q * r);
     secs.push(sec(p.toArray(), egg(0.0032, 0.0085, 0.0085), A.toArray()));
   }
-  const tag = C.clone().addScaledVector(U, -0.084).addScaledVector(A, -0.008);
+  const tag = C.clone().addScaledVector(U, -0.072).addScaledVector(A, -0.008);
   const D = U.clone().negate();
   const tagL = new Loft([sec(tag.clone().addScaledVector(D, -0.002).toArray(), egg(0.0095, 0.0095, 0.0095), A.toArray()), sec(tag.clone().addScaledVector(D, 0.002).toArray(), egg(0.0095, 0.0095, 0.0095), A.toArray())], { cap: [0.001, 0.001], capSteps: 2 });
   return { band: new Loft(secs), tag: tagL };

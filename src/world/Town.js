@@ -253,7 +253,7 @@ export class Town {
     return this._indoor.get(mat);
   }
   indoorVoxel() {
-    if (!this._inVox) { const n = voxelMaterials('normal'); this._inVox = [this.indoor(n[0]), this.indoor(n[1]), this.indoor(n[2]), n[3], this.indoor(n[4]), this.indoor(n[5])]; }
+    if (!this._inVox) { const n = voxelMaterials('normal'); this._inVox = [this.indoor(n[0]), this.indoor(n[1]), this.indoor(n[2]), n[3], this.indoor(n[4]), this.indoor(n[5]), ...n.slice(6).map((m) => this.indoor(m))]; }
     return this._inVox;
   }
 
@@ -397,7 +397,7 @@ export class Town {
     if (!this._dim) {
       const n = voxelMaterials('normal');
       const g = n[3].clone(); g.color.setScalar(0.95);
-      this._dim = [n[0], n[1], n[2], g, n[4], n[5]];
+      this._dim = [n[0], n[1], n[2], g, n[4], n[5], ...n.slice(6)];
     }
     return this._dim;
   }

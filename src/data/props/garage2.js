@@ -392,6 +392,7 @@ const props = {
   // ------------------------------------------------------------- red 20 L fuel can
   fuel_can: {
     name: 'Fuel Can', voxel: 0.01,
+    asset: { id: 'metal_jerrycan' }, // Poly Haven, CC0 (src/kit/assets.js)
     build(v) {
       v.jitter = 0.008;
       const red = paint(0xc8302a, 4, 0.1);

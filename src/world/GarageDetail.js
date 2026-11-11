@@ -155,6 +155,8 @@ export class PropBatch {
     // six regions (left / right half × back / middle / front band) so what's off screen gets frustum-culled
     const key = (cast ? 'c' : 'n') + (x < 0 ? 'L' : 'R') + (z < -1.7 ? 'b' : z < 1.7 ? 'm' : 'f');
     if (!this.sets.has(key)) this.sets.set(key, { cast, lists: [[], [], [], [], [], []] });
+    const lists0 = this.sets.get(key).lists;
+    for (const gr of geo.groups) while (lists0.length <= gr.materialIndex) lists0.push([]);
     const lists = this.sets.get(key).lists;
     const m = new THREE.Matrix4().compose(V3(x, y, z), new THREE.Quaternion().setFromAxisAngle(V3(0, 1, 0), ry), V3(s, s, s));
     for (const gr of geo.groups) {
@@ -163,7 +165,7 @@ export class PropBatch {
       let lo = Infinity, hi = -1;
       for (let i = gr.start; i < gr.start + gr.count; i++) { const v = idx[i]; if (v < lo) lo = v; if (v > hi) hi = v; }
       const sub = new THREE.BufferGeometry();
-      for (const name of ['position', 'normal', 'color', 'vdet']) {
+      for (const name of ['position', 'normal', 'color', 'vdet', 'uv']) {
         const a = geo.attributes[name];
         if (!a) continue;
         sub.setAttribute(name, new THREE.BufferAttribute(a.array.slice(lo * a.itemSize, (hi + 1) * a.itemSize), a.itemSize));

@@ -6,6 +6,7 @@ import { voxelMaterials } from '../voxel/materials.js';
 import { upres2x } from '../voxel/upres.js';
 import { mergeByMaterial } from '../voxel/merge.js';
 import { leafCards, CELLS } from '../voxel/cards.js';
+import { preloadAssets, assetMerged } from '../kit/assets.js';
 import { shade } from '../voxel/palette.js';
 
 const libs = import.meta.glob('../data/props/*.js', { eager: true });
@@ -19,6 +20,57 @@ for (const [path, mod] of Object.entries(libs)) {
 
 const geoCache = new Map();
 
+// ------------------------------------------------------------------ real models (Poly Haven, CC0)
+// A prop def may carry `asset: { id, fit, ry, tint }`: the prop is drawn with that model (public/models/<id>.glb via
+// src/kit/assets.js: decimated, pixel-art textures), fitted into the box of the prop's own voxel build, so sizes,
+// collisions and placements stay. The geometry stays voxel-compatible (position, normal, color, vdet, plus uv), and its
+// materials are appended to the shared voxel material array (slots 6+, see voxelMaterials('normal')), so every place
+// that draws props with that array (instanced, batched, single) draws the model with no changes. `?voxelprops` in the
+// URL draws the voxel builds instead (before / after shots).
+const FORCE_VOXEL = typeof location !== 'undefined' && /[?&]voxelprops\b/.test(location.search);
+const ASSET_IDS = [...new Set(Object.values(PROPS).map((d) => d.asset?.id).filter(Boolean))];
+if (ASSET_IDS.length && typeof document !== 'undefined' && !FORCE_VOXEL) {
+  try { await preloadAssets(ASSET_IDS); } catch (e) { console.warn('props: models failed to load, voxel builds used', e); }
+}
+const slotOf = new Map();
+/** The shared voxel material array's slot for a model material (appended once). */
+function materialSlot(m) {
+  if (!slotOf.has(m)) {
+    const arr = voxelMaterials('normal');
+    slotOf.set(m, arr.length);
+    arr.push(m);
+  }
+  return slotOf.get(m);
+}
+const tintCache = new Map();
+function tintMat(m, tint) {
+  const k = m.uuid + ':' + tint;
+  if (!tintCache.has(k)) { const t = m.clone(); t.color.multiply(new THREE.Color(tint)); tintCache.set(k, t); }
+  return tintCache.get(k);
+}
+// every model material gets its slot now, before anything copies the shared array (Town's indoor / dim sets, Places)
+for (const d of Object.values(PROPS)) {
+  if (!d.asset || FORCE_VOXEL) continue;
+  const r = assetMerged(d.asset.id, {});
+  if (r) for (const m of r.materials) materialSlot(d.asset.tint != null ? tintMat(m, d.asset.tint) : m);
+}
+function assetGeometry(def, voxGeo) {
+  const A = def.asset;
+  if (!A || FORCE_VOXEL || !voxGeo) return null;
+  const v = voxGeo.userData.size;
+  const r = assetMerged(A.id, { box: [-v.x / 2, 0, -v.z / 2, v.x / 2, v.y, v.z / 2], fit: A.fit || 'contain', ry: A.ry || 0 });
+  if (!r) return null;
+  const g = r.geometry.clone();
+  const n = g.attributes.position.count;
+  g.setAttribute('vdet', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  for (const gr of g.groups) { const m = r.materials[gr.materialIndex]; gr.materialIndex = materialSlot(A.tint != null ? tintMat(m, A.tint) : m); }
+  g.userData.size = v.clone();
+  g.userData.asset = A.id;
+  return g;
+}
+/** The model a prop is drawn with (its id), or null. */
+export const propAsset = (id) => propGeometry(id)?.userData.asset || null;
+
 export function propGeometry(id) {
   if (geoCache.has(id)) return geoCache.get(id);
   const def = PROPS[id];
@@ -26,6 +78,7 @@ export function propGeometry(id) {
   if (def) {
     try {
       geo = buildProp(def);
+      if (def.asset) geo = assetGeometry(def, geo) || geo;
     } catch (e) {
       console.warn('prop build failed', id, e);
     }
