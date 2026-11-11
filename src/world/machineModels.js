@@ -1,12 +1,12 @@
 // Gacha machines: the layout the game plays on (sizes, where the slot / crank / chute / drawer are) and the assembly
-// of the low-poly models (src/gachakit/machine.js builds the geometry and paints the atlas per machine type):
+// of the voxel models (src/gachakit/voxmachine.js builds the geometry and the print per machine type):
 //   retro     a 1970s countertop coin machine on a fruit crate      standard  a 1990s single-crank floor machine
 //   deluxe    a two-tier station (the lower unit shuttered)          royal     the premium machine on its cabinet
 // All dimensions in metres, machine-local: front = +z, origin = floor centre.
 import * as THREE from 'three';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
-import { machineParts, STYLES } from '../gachakit/machine.js';
+import { voxelMachineParts, STYLES } from '../gachakit/voxmachine.js';
 import { activeLogo, paintLogo } from '../logo/logo.js';
 import { VoxelModel, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
@@ -135,30 +135,30 @@ export function clearPlastic(tint = 0xf6fbff, opacity = 0.12) {
 /**
  * Build the meshes for a machine type. opts: { no (machine number), banner (Texture) }.
  * Returns { group, L, body, bannerMesh, bannerHolder, domeAnchor, lid, lidPivot, drawer, coinAnchor, flapPivot,
- *   handleGroup, handlePivot, plate: { mesh, draw }, buttons: { minus, plus }, glassParts, keyGeo, mats }
+ *   handleGroup, handlePivot, plate: { mesh, draw }, buttons: { minus, plus }, glassParts, mats }
  * Parts the game tells apart carry userData.part: 'lid', 'coinbox', 'plate', 'priceUp', 'priceDown', 'handle'.
  */
 export function buildMachineModel(type, opts = {}) {
   const spec = MACHINE_SPECS[type], L = layout(spec);
-  const P = machineParts(type, spec, L), M = P.mats, Gm = P.geo;
+  const P = voxelMachineParts(type, spec, L), M = P.mats, Gm = P.geo;
   const group = new THREE.Group();
   const mesh = (geo, mat = M.body, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.castShadow = shadow; m.receiveShadow = true; return m; };
-  const clear = (geo) => { const m = mesh(geo, M.glass, false); m.renderOrder = 3; m.userData.noRim = true; m.raycast = () => {}; return m; };
+  const print = (geo) => { const m = mesh(geo, M.print, false); m.userData.noRim = true; m.raycast = () => {}; return m; };
   const plane = (w, h, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.userData.noRim = true; m.castShadow = false; m.receiveShadow = true; return m; };
-  // everything that never moves: the stand, the lower unit, the case's frame, the tray
+  // everything that never moves: the stand, the lower unit, the window's frame, the tray, the fine chrome parts
   const body = mesh(Gm.body);
-  group.add(body);
-  if (Gm.crate) group.add(mesh(Gm.crate, M.wood)); // the fruit crate's boards (photographed planks)
-  const glass = clear(Gm.glass);
+  group.add(body, print(Gm.bodyPrint));
+  const glass = mesh(Gm.glass, M.glass, false);
+  glass.renderOrder = 3; glass.userData.noRim = true; glass.raycast = () => {};
   group.add(glass);
-  // the display card in its holder (GachaMachine sets the series' card; it slides up out of the open top to swap)
+  // the display card in its rails (GachaMachine sets the series' card; it slides up out of the open top to swap)
   const bannerMat = new THREE.MeshStandardMaterial({ map: opts.banner || null, color: opts.banner ? 0xffffff : 0xdddddd, roughness: 0.6 });
   const bannerHolder = new THREE.Group();
   bannerHolder.position.set(L.banner.x, L.banner.y, L.banner.z + 0.0005);
   const bannerMesh = plane(L.banner.w, L.banner.h, bannerMat);
   bannerHolder.add(bannerMesh);
   group.add(bannerHolder);
-  // the lid on its hinge: the header, the lock, the sample topper under its hood, the number plate
+  // the lid on its hinge: the header sign, the lock, the number plate
   const lidPivot = new THREE.Group();
   lidPivot.position.set(0, L.lid.y, L.lid.z);
   group.add(lidPivot);
@@ -167,11 +167,11 @@ export function buildMachineModel(type, opts = {}) {
   lidPivot.add(lid);
   const lidMesh = mesh(Gm.lid);
   lidMesh.userData.part = 'lid';
-  lid.add(lidMesh);
-  const hood = clear(Gm.hood);
-  lid.add(hood);
-  const num = plane(0.054, 0.018, numberPlate(opts.no || 1));
-  num.position.set(-spec.w / 2 + 0.04 + (spec.capH > 0.045 ? spec.w * 0.56 : spec.w * 0.5), spec.capH / 2, spec.d / 2 + 0.0088);
+  const lidPrint = print(Gm.lidPrint);
+  lidPrint.userData.part = 'lid';
+  lid.add(lidMesh, lidPrint);
+  const num = plane(0.05, 0.017, numberPlate(opts.no || 1));
+  num.position.set((L.lid.lockX + 0.014 + spec.w / 2 - 0.006) / 2, spec.capH / 2, spec.d / 2 + 0.0025 + 0.0008);
   num.userData.part = 'lid';
   lid.add(num);
   const D = L.dome;
@@ -184,7 +184,8 @@ export function buildMachineModel(type, opts = {}) {
   drawer.position.set(CB.x0, CB.y0, CB.z);
   const drawerMesh = mesh(Gm.drawer);
   drawerMesh.userData.part = 'coinbox';
-  drawer.add(drawerMesh);
+  const drawerPrint = print(Gm.drawerPrint);
+  drawer.add(drawerMesh, drawerPrint);
   const coinAnchor = new THREE.Group(); // coins pile up in here
   coinAnchor.position.set(VS * 2, VS, -CB.depth + VS * 2);
   drawer.add(coinAnchor);
@@ -198,18 +199,19 @@ export function buildMachineModel(type, opts = {}) {
   hpiv.add(handle);
   handleGroup.add(hpiv);
   group.add(handleGroup);
-  // the ratchet's pawl on the dial ring: it rides up each tooth of the crank and drops behind it (GachaMachine.update)
+  // the ratchet's pawl on the bezel: it rides each tooth of the crank
   const pawl = mesh(Gm.pawl, M.body, false);
-  const pa = 0.9, pr = Gm.knob + 0.0128;
-  pawl.position.set(L.handle.x + Math.cos(pa) * pr, L.handle.y + Math.sin(pa) * pr, L.handle.z + 0.0012);
-  pawl.rotation.z = pa + 0.22;
-  pawl.userData.rest = pa + 0.22;
+  const pa = 0.9, pr = Gm.knob + 0.008;
+  pawl.position.set(L.handle.x + Math.cos(pa) * pr, L.handle.y + Math.sin(pa) * pr, L.front + 0.005);
+  pawl.rotation.z = pa - Math.PI / 2;
+  pawl.userData.rest = pawl.rotation.z;
   group.add(pawl);
   // the flap over the chute
   const O = L.outlet;
   const flapPivot = new THREE.Group();
   flapPivot.position.set(0, O.y1 - VS, L.front + VS * 0.5);
-  const flap = Gm.flapClear ? clear(Gm.flap) : mesh(Gm.flap, M.body, false);
+  const flap = mesh(Gm.flap, M.body, false);
+  if (Gm.flapClear) flap.renderOrder = 3;
   flapPivot.add(flap);
   group.add(flapPivot);
   // the price plate and its buttons
@@ -225,13 +227,13 @@ export function buildMachineModel(type, opts = {}) {
   group.add(minus, plus);
   return {
     group, L, body, stand: body, bannerMesh, bannerHolder, domeAnchor, lid, lidPivot, drawer, coinAnchor, flapPivot, handleGroup, handlePivot: hpiv,
-    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [glass, hood], tray: body, keyGeo: Gm.key, mats: M, pawl,
+    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [glass], tray: body, mats: M, pawl, standBox: P.stand,
   };
 }
 
 /** Handle (dev viewers): the crank on its own. */
 export function buildHandle(r, type = 'standard') {
-  const spec = MACHINE_SPECS[type], P = machineParts(type, spec, layout(spec));
+  const spec = MACHINE_SPECS[type], P = voxelMachineParts(type, spec, layout(spec));
   const m = new THREE.Mesh(P.geo.handle, P.mats.body);
   m.castShadow = true;
   const g = new THREE.Group();

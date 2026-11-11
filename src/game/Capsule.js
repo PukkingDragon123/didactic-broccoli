@@ -37,40 +37,48 @@ export function capsuleColor(seriesId, rnd = Math.random) {
 }
 
 const hexOf = (s, d) => parseInt(String(s || d).replace('#', ''), 16);
+const sh2 = (c) => (((c >> 16) & 255) * 0.86 << 16) | (((c >> 8) & 255) * 0.86 << 8) | ((c & 255) * 0.86);
 
 // ------------------------------------------------------------------ voxel halves
-// N = voxels across (even). The sphere is centred between voxels; the seam is at y = 0 (top half y >= 0).
+// N = voxels across (even). The sphere is centred between voxels; the seam is at y = 0 (top half y >= 0). The two
+// rows either side of the seam have the same outline, so the seal tape (src/game/capsuleSeals.js) sits flush on both.
 const inSphere = (x, y, z, R) => (x + 0.5) ** 2 + (y + 0.5) ** 2 + (z + 0.5) ** 2 <= (R + 0.15) ** 2;
+/** Voxels across a capsule at each resolution (in hands / on the floor, and in machine windows and cartons). */
+export const RES = { hi: 20, lo: 12 };
 
 /** One half shell. part 'top' | 'bottom'; kind as the style; returns a VoxelModel. */
-function halfModel(N, part, kind) {
+function halfModel(N, part, kind, solid = false) {
   const v = new VoxelModel();
   v.jitter = 0;
-  const R = N / 2, ri = R - 1.15;
+  const R = N / 2, ri = R - 1.2;
   const top = part === 'top';
   const paper = kind === 'paper';
+  // the clear top is solid: one clean outer surface (a hollow clear shell shows its own inside, and sorts badly)
   const clear = top && (kind === 'clear' || kind === 'tab');
-  const W = 0xffffff, rim = 0xd2d2d2, shadeC = 0xe6e6e6;
+  const W = 0xffffff;
   for (let y = top ? 0 : -R; y < (top ? R : 0); y++) for (let x = -R; x < R; x++) for (let z = -R; z < R; z++) {
-    if (!inSphere(x, y, z, R) || inSphere(x, y, z, ri)) continue;
-    if (clear) { v.set(x, y, z, glass(0xeef8ff)); continue; }
+    if (!inSphere(x, y, z, R)) continue;
+    if (!clear && !solid && inSphere(x, y, z, ri)) continue;
+    if (clear) {
+      // clear plastic: the moulded rim at the seam frosted, a faint ring of the mould line, the dome itself clearest
+      const lat = y;
+      v.set(x, y, z, glass(lat === 0 ? 0xf4f8fb : lat === 1 ? 0xdcecf8 : lat >= R - 2 && Math.abs(x + 0.5) < 1.6 && Math.abs(z + 0.5) < 1.6 ? 0xe8f2fa : 0xc8e2f6));
+      continue;
+    }
+    const lat = top ? y : -1 - y; // rows from the seam
     let c = W;
-    const band = top ? y === 0 : y === -1;
-    if (band) c = rim; // the seam ring
-    else if (paper) {
+    if (lat === 0) c = 0xd4d4d4; // the seam band
+    else if (lat === 1 && !top) c = 0xececec; // the shadow under the rim
+    else if (lat === R - 1 && Math.abs(x + 0.5) < 1.6 && Math.abs(z + 0.5) < 1.6) c = 0xdedede; // the mould's gate mark at the pole
+    if (paper) {
       // eco capsule: pulp grain in the white areas (the print is added per series in the contents)
       const h = ((x * 73856093) ^ (y * 19349663) ^ (z * 83492791)) >>> 0;
-      c = h % 7 === 0 ? 0xf0f0ea : W;
-    } else if (!top && y === -R + 1) c = shadeC; // a slightly darker base dimple
+      if (c === W) c = h % 7 === 0 ? 0xf0f0ea : h % 11 === 0 ? 0xf8f6f0 : W;
+    }
     v.set(x, y, z, paper ? c : gloss(c));
   }
-  // the seam lip stands proud of the coloured half
-  if (!top) for (let x = -R - 1; x <= R; x++) for (let z = -R - 1; z <= R; z++) {
-    const d = (x + 0.5) ** 2 + (z + 0.5) ** 2;
-    if (d <= (R + 0.55) ** 2 && d > (R - 0.6) ** 2 && !v.has(x, -1, z)) v.set(x, -1, z, paper ? rim : gloss(rim));
-  }
-  // hinge tab (Takara Tomy / Yujin)
-  if (kind === 'tab' && !top) { v.box(-1, -2, R, 0, -1, R, gloss(rim)); v.set(-1, -3, R - 1, gloss(rim)); v.set(0, -3, R - 1, gloss(rim)); }
+  // hinge tab (Takara Tomy / Yujin): on the back of the coloured half, below the seam (clear of the tape)
+  if (kind === 'tab' && !top) { v.box(-1, -3, -R - 1, 0, -2, -R - 1, gloss(0xd4d4d4)); v.set(-1, -4, -R, gloss(0xd4d4d4)); v.set(0, -4, -R, gloss(0xd4d4d4)); }
   return v;
 }
 
@@ -81,36 +89,39 @@ function contentsModel(N, seriesId) {
   v.jitter = 0;
   const bg = hexOf(s?.card?.bg, '#ffffff'), ac = hexOf(s?.card?.accent, '#e5383b'), ac2 = hexOf(s?.card?.accent2, '#ffd23f');
   const R = N / 2;
-  const w = Math.max(3, Math.round(R * 1.1)), d = Math.max(2, Math.round(R * 0.8));
-  // folded paper on edge, leaning, at the back
-  for (let x = -w; x < w; x++) for (let y = -2; y < Math.round(R * 0.7); y++) {
-    const z = -Math.round(R * 0.35) - (y > 1 ? 1 : 0);
-    if (!inSphere(x, y, z, R - 1.3)) continue;
-    const hdr = y >= Math.round(R * 0.7) - 2;
-    let c = hdr ? ac : bg;
-    if (!hdr && x > -w + 1 && x < w - 2 && y > -1 && y % 2 === 0) c = (x & 1) ? 0x9a9a9a : 0xb8b8b8; // text lines
-    if (!hdr && x >= w - 3 && x < w - 1 && y >= 0 && y <= 1) c = ac2; // a tiny photo of the figure
+  // the folded mini-catalogue standing at the back: a single sheet, its printed face to the front (the series' header
+  // band, a photo of the line-up, a few lines of text), its fold a shade darker
+  const w = Math.max(3, Math.round(R * 0.62)), y0 = -Math.round(R * 0.55), y1 = Math.round(R * 0.5), z = -Math.round(R * 0.5);
+  for (let x = -w; x < w; x++) for (let y = y0; y <= y1; y++) {
+    if (!inSphere(x, y, z, R - 1.4)) continue;
+    let c = bg;
+    if (y >= y1 - 1) c = ac;
+    else if (x >= -w + 1 && x < 0 && y >= y1 - 5 && y <= y1 - 2) c = (x + y) & 1 ? ac2 : sh2(ac2);
+    else if (y < y1 - 6 && y % 2 === 0 && x > -w && x < w - 1 - ((y >> 1) & 1) * 2) c = 0xa8a4a0;
+    if (x === 0) c = sh2(c);
     v.set(x, y, z, c);
   }
-  // the bagged figure: a little blob in the series colour behind a bag of clear film
-  const by = -Math.round(R * 0.25);
-  for (let x = -2; x <= 1; x++) for (let y = by - 2; y <= by + 1; y++) for (let z = -1; z <= Math.round(R * 0.4); z++) {
-    if (!inSphere(x, y, z, R - 1.4)) continue;
-    const core = Math.abs(x + 0.5) < 1.2 && y > by - 2 && y < by + 1 && z < Math.round(R * 0.4);
-    v.set(x, y, z, core ? ac2 : glass(0xf2f6ff));
+  // the bagged figure: a little blob in the series colours inside a pouch of clear film, its crimped seal on top
+  const by = -Math.round(R * 0.3), bw = Math.max(2, Math.round(R * 0.32)), bh = Math.max(3, Math.round(R * 0.5)), bz = Math.round(R * 0.45);
+  for (let x = -bw; x < bw; x++) for (let y = by - bh; y <= by + 1; y++) for (let z = -1; z <= bz; z++) {
+    if (!inSphere(x, y, z, R - 1.5)) continue;
+    const crimp = y === by + 1;
+    const core = Math.abs(x + 0.5) < bw - 0.8 && y > by - bh && y < by && z > -1 && z < bz;
+    if (crimp) v.set(x, y, z, x & 1 ? 0xe8e8ea : 0xfafafc);
+    else if (core) v.set(x, y, z, (x + y) % 3 === 0 ? ac : ac2);
+    else v.set(x, y, z, glass(0xf2f6ff));
   }
-  void d;
   return v;
 }
 
 /** The paper capsule's printed outer design: series accent band + dots, as a thin paint shell over the half. */
-function paperPrint(N, part, seriesId) {
+function paperPrint(N, part, seriesId, solid = false) {
   const s = SERIES_BY_ID[seriesId];
   const ac = hexOf(s?.card?.accent, '#e5383b'), bg = hexOf(s?.card?.bg, '#fff3e0');
-  const half = halfModel(N, part, 'paper');
+  const half = halfModel(N, part, 'paper', solid);
   const R = N / 2;
   half.recolor((x, y, z, c) => {
-    if (c === 0xd2d2d2) return ac; // the seam ring in the accent colour
+    if (c === 0xd4d4d4) return ac; // the seam ring in the accent colour
     const top = part === 'top';
     const lat = top ? y : -1 - y; // 0 at the seam
     if (lat >= R - 2) return bg; // the pole caps
@@ -122,7 +133,6 @@ function paperPrint(N, part, seriesId) {
 }
 
 // ------------------------------------------------------------------ geometry + materials (cached)
-const RES = { hi: 16, lo: 8 };
 const geoCache = new Map();
 function partGeo(key, build, r, N) {
   if (!geoCache.has(key)) geoCache.set(key, meshVoxels(build(), { voxelSize: (2 * r) / N, origin: 'none' }));
@@ -134,7 +144,8 @@ function halfGeo(size, part, kind, res, seriesId = null) {
   const N = RES[res], r = CAPSULE_R[size];
   const key = `${size}|${part}|${kind}|${res}|${kind === 'paper' ? seriesId : ''}`;
   if (geoCache.has(key)) return geoCache.get(key);
-  const model = kind === 'paper' ? paperPrint(N, part, seriesId) : halfModel(N, part, kind);
+  // (the window piles' capsules are never opened: solid, so no inside faces)
+  const model = kind === 'paper' ? paperPrint(N, part, seriesId, res === 'lo') : halfModel(N, part, kind, res === 'lo');
   const vs = (2 * r) / N;
   const g = meshVoxels(model, { voxelSize: vs, origin: 'none' });
   geoCache.set(key, g);
@@ -199,7 +210,7 @@ export function makeCapsule(seriesId, color, opts = {}) {
     bottom.add(paper);
   }
   group.userData.capsule = true;
-  const cap = { group, top, bottom, r, paper, style: kind, size };
+  const cap = { group, top, bottom, r, paper, style: kind, size, N };
   installTwist(cap);
   return cap;
 }

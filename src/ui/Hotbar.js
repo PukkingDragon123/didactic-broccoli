@@ -39,19 +39,18 @@ export class Hotbar {
       // never a picture of the ball itself (owner's rule): the slot shows the series' display card in miniature
       const k = it.data.series;
       if (!this.capCache.has(k)) {
-        let url = iconURL('box', 2);
         try {
           const src = bannerCanvas(k, g.thumbs);
           const c = document.createElement('canvas');
           c.width = c.height = 64;
           const x = c.getContext('2d');
-          x.imageSmoothingEnabled = true;
-          const h = 60, w = Math.round(h * BANNER_W / BANNER_H);
-          x.fillStyle = '#1a1216'; x.fillRect((64 - w) / 2 - 1, 1, w + 2, h + 2); // an ink rim round the card
-          x.drawImage(src, (64 - w) / 2, 2, w, h);
-          url = c.toDataURL();
-        } catch { /* the card isn't ready: keep the box icon */ }
-        this.capCache.set(k, url);
+          x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+          // the whole card inside the slot (it is wider than tall), an ink rim round it, centred
+          const w = 60, h = Math.round(w * BANNER_H / BANNER_W), x0 = 2, y0 = Math.round((64 - h) / 2);
+          x.fillStyle = '#1a1216'; x.fillRect(x0 - 1, y0 - 1, w + 2, h + 2);
+          x.drawImage(src, x0, y0, w, h);
+          this.capCache.set(k, c.toDataURL());
+        } catch { return iconURL('box', 2); } // (the card isn't ready: the box icon for now, the card next time)
       }
       return this.capCache.get(k);
     }

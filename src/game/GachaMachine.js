@@ -478,8 +478,14 @@ export class GachaMachine {
     const H = this.L.hook;
     const anchor = this.local(H.x, H.y, H.z);
     this.rope = new Rope(this.game.scene, anchor, 0.46, 16);
-    const bb = partsBox(this.model).expandByScalar(0.008);
-    this.rope.boxes.push(bb);
+    // the rope keeps out of the machine's own blocks: the unit and its window, the tray, the stand (one box round the
+    // whole model would swallow the hook, and the rope would be flung to its faces)
+    const L = this.L, sp = this.spec, S = this.parts.standBox, T = L.tray;
+    this.root.updateMatrixWorld(true);
+    const mk = (x0, y0, z0, x1, y1, z1) => new THREE.Box3(new THREE.Vector3(x0, y0, z0), new THREE.Vector3(x1, y1, z1)).applyMatrix4(this.root.matrixWorld).expandByScalar(0.005);
+    this.rope.boxes.push(mk(-sp.w / 2, L.y0, -sp.d / 2, sp.w / 2, L.top, sp.d / 2));
+    this.rope.boxes.push(mk(T.x0 - 0.006, T.y - 0.012, T.z0, T.x1 + 0.006, T.y + T.wall, T.z1 + 0.006));
+    if (S) this.rope.boxes.push(mk(S.x0, 0, S.z0, S.x1, L.y0, S.z1));
     for (let i = 0; i < 60; i++) this.rope.update(1 / 60);
   }
 

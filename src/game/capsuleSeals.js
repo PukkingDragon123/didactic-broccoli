@@ -10,13 +10,12 @@ import { mask5, textW5 } from '../gfx/font5x7.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { activeLogo, logoCanvas } from '../logo/logo.js'; // (your own logo and name print on the seal and tape)
 
-const N = 16; // voxels across a hi-res capsule (Capsule.js RES.hi)
-const TAPE_H = 1.5; // voxels tall, centred on the seam
+const TAPE_H = 2; // voxels tall, centred on the seam: exactly the two rows either side of it (they share one outline)
 const LIFT = 0.07; // voxels off the shell
 
 // ------------------------------------------------------------------ the tape's path: the voxel outline at the seam
 const pathCache = new Map();
-function seamEdges() {
+function seamEdges(N) {
   if (pathCache.has(N)) return pathCache.get(N);
   const R = N / 2, rr = (R + 0.15) ** 2;
   const filled = (x, z) => x >= -R && x < R && z >= -R && z < R && (x + 0.5) ** 2 + 0.25 + (z + 0.5) ** 2 <= rr;
@@ -78,10 +77,11 @@ function tapeTex(seriesId, len) {
     g.fillStyle = 'rgba(40,24,20,.35)'; g.fillRect(0, 0, W, 1); g.fillRect(0, H - 1, W, 1); // the cut edges
     const ww = textW5(word) + 9;
     g.fillStyle = '#b8282c';
+    // (the tape's u runs the way it peels, against the reading direction: the print is laid down mirrored)
     for (let x = 3; x + ww < W; x += ww + 6) {
-      for (const [i, j] of mask5(word)) g.fillRect(x + i, 3 + j - 1, 1, 1);
+      for (const [i, j] of mask5(word)) g.fillRect(W - 1 - (x + i), 3 + j - 1, 1, 1);
       // a little diamond between the words
-      const dx = x + ww + 1; g.fillRect(dx + 1, 4, 1, 1); g.fillRect(dx, 5, 3, 1); g.fillRect(dx + 1, 6, 1, 1);
+      const dx = W - 1 - (x + ww + 1); g.fillRect(dx - 1, 4, 1, 1); g.fillRect(dx - 2, 5, 3, 1); g.fillRect(dx - 1, 6, 1, 1);
     }
   });
 }
@@ -143,6 +143,48 @@ function glyph(g, ch, x, y, col) {
   for (let j = 0; j < 18; j++) for (let i = 0; i < 18; i++) if (d[(j * 18 + i) * 4 + 3] > 110) g.fillRect(x + i, y + j, 1, 1);
 }
 
+// ------------------------------------------------------------------ the seal's shape
+/**
+ * A sticker sw x sh (metres) centred on the front of the shell at the seam, following the voxel steps: a flat quad on
+ * each block face it covers, and the risers between them. u runs across, v up, as on the texture.
+ */
+function stickerGeo(N, vs, sw, sh, lift) {
+  const R = N / 2;
+  const front = (i, j) => { for (let z = R - 1; z >= -R; z--) if ((i + 0.5) ** 2 + (j + 0.5) ** 2 + (z + 0.5) ** 2 <= (R + 0.15) ** 2) return (z + 1) * vs + lift; return lift; };
+  const xa = -sw / 2, xb = sw / 2, ya = -sh / 2, yb = sh / 2;
+  const cuts = (a, b) => { const out = [a]; for (let k = Math.ceil(a / vs); k * vs < b; k++) if (k * vs > a) out.push(k * vs); out.push(b); return out; };
+  const X = cuts(xa, xb), Y = cuts(ya, yb);
+  const pos = [], uv = [], nrm = [];
+  const U = (x) => (x - xa) / sw, V = (y) => (y - ya) / sh;
+  const quad = (p, n, t) => { for (const k of [0, 1, 2, 0, 2, 3]) { pos.push(...p[k]); uv.push(...t[k]); nrm.push(...n); } };
+  const Z = [];
+  for (let a = 0; a < X.length - 1; a++) {
+    Z.push([]);
+    for (let b = 0; b < Y.length - 1; b++) {
+      const i = Math.floor((X[a] + X[a + 1]) / 2 / vs), j = Math.floor((Y[b] + Y[b + 1]) / 2 / vs), z = front(i, j);
+      Z[a].push(z);
+      quad([[X[a], Y[b], z], [X[a + 1], Y[b], z], [X[a + 1], Y[b + 1], z], [X[a], Y[b + 1], z]], [0, 0, 1], [[U(X[a]), V(Y[b])], [U(X[a + 1]), V(Y[b])], [U(X[a + 1]), V(Y[b + 1])], [U(X[a]), V(Y[b + 1])]]);
+    }
+  }
+  // risers where the sticker steps down over a block's edge
+  for (let a = 0; a < X.length - 1; a++) for (let b = 0; b < Y.length - 1; b++) {
+    const z = Z[a][b];
+    if (a + 1 < X.length - 1 && Z[a + 1][b] !== z) {
+      const x = X[a + 1], z2 = Z[a + 1][b], u = U(x);
+      quad([[x, Y[b], z], [x, Y[b], z2], [x, Y[b + 1], z2], [x, Y[b + 1], z]], [z > z2 ? 1 : -1, 0, 0], [[u, V(Y[b])], [u, V(Y[b])], [u, V(Y[b + 1])], [u, V(Y[b + 1])]]);
+    }
+    if (b + 1 < Y.length - 1 && Z[a][b + 1] !== z) {
+      const y = Y[b + 1], z2 = Z[a][b + 1], v = V(y);
+      quad([[X[a], y, z], [X[a + 1], y, z], [X[a + 1], y, z2], [X[a], y, z2]], [0, z > z2 ? 1 : -1, 0], [[U(X[a]), v], [U(X[a + 1]), v], [U(X[a + 1]), v], [U(X[a]), v]]);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  return g;
+}
+
 // ------------------------------------------------------------------ the parts
 const mat = (map) => new THREE.MeshStandardMaterial({ map, roughness: 0.85, metalness: 0, alphaTest: 0.5, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
 
@@ -155,8 +197,9 @@ export const sealKind = (data) => (data?.rarity === 'ultra' || data?.rarity === 
  */
 export function dressSeals(cap, data, stepsDone = data?.seal || 0) {
   if (cap.seals || !cap.group || !cap.paper) return cap.seals; // (hi-res capsules with their contents only)
+  const N = cap.N || 20;
   const vs = (2 * cap.r) / N;
-  const edges = seamEdges();
+  const edges = seamEdges(N);
   // the tape: one outward quad an edge, u running along it
   let total = 0;
   const lens = edges.map((e) => { const l = Math.hypot(e[1][0] - e[0][0], e[1][1] - e[0][1]); total += l; return l; });
@@ -185,12 +228,12 @@ export function dressSeals(cap, data, stepsDone = data?.seal || 0) {
   const flapMap = tmap.clone(); flapMap.needsUpdate = true; flapMap.repeat.set(fl / (total * vs), 1);
   const flap = new THREE.Mesh(fgeo, mat(flapMap));
   flap.material.side = THREE.DoubleSide;
-  // the seal on the front, across the seam
+  // the seal on the front, across the seam: stuck down onto the blocks (it steps with the shell, no edge in the air)
   const kind = sealKind(data);
-  const sw = (kind === 'wax' ? 6.6 : 6.2) * vs * 0.68, sh = sw * 34 / 28;
-  const seal = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), mat(sealTex(kind, 0)));
-  seal.position.set(0, 0, cap.r + (LIFT + 0.12) * vs);
+  const sw = (kind === 'wax' ? 0.0152 : 0.0144) * cap.r / 0.0325, sh = sw * 34 / 28;
+  const seal = new THREE.Mesh(stickerGeo(N, vs, sw, sh, (LIFT + 0.12) * vs), mat(sealTex(kind, 0)));
   seal.userData.kind = kind;
+  seal.material.side = THREE.DoubleSide;
   const layers = cap.group.children[0]?.children?.[0]?.layers?.mask ?? cap.top.children[0]?.layers?.mask;
   for (const m of [tape, flap, seal]) { if (layers != null) m.layers.mask = layers; m.userData.noOutline = true; cap.group.add(m); }
   const S = cap.seals = { tape, flap, seal, edges, kind, total, vs, crackStage: 0 };

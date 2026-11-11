@@ -31,6 +31,18 @@ export function createGauge() {
     /** st: { kind, p, ...per kind } */
     draw(st) {
       if (!shown) { el.style.display = 'block'; shown = true; }
+      // keep clear of the hint under the crosshair: beside it when it is up (its width changes with the text)
+      const hint = document.getElementById('hint');
+      const r = hint?.classList.contains('show') && hint.offsetWidth ? hint.getBoundingClientRect() : null;
+      const host = el.offsetParent?.getBoundingClientRect?.() || { left: 0, top: 0 };
+      let left = 'calc(50% + 116px)', top = 'calc(50% + 24px)';
+      if (r) {
+        const x = Math.max(innerWidth / 2 + 116, r.right + 10);
+        if (x + el.offsetWidth <= innerWidth - 8) left = `${Math.round(x - host.left)}px`;
+        else { left = `${Math.round(innerWidth / 2 + 116 - host.left)}px`; top = `${Math.round(r.bottom + 6 - host.top)}px`; } // (no room beside it: under it)
+      }
+      if (el.style.left !== left) el.style.left = left;
+      if (el.style.top !== top) el.style.top = top;
       g.clearRect(0, 0, W, H);
       if (st.kind === 'peel') {
         // the seam, the way round (anticlockwise, from the top), the strip that has come away, your finger

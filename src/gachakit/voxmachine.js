@@ -62,14 +62,15 @@ function hash(x, y, z, s = 0) {
   h = Math.imul(h ^ (h >>> 13), 1274126177);
   return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
 }
-const CHROME = [0x6a7078, 0xa6adb4, 0xd2d8dc, 0xf0f4f4];
+const CHROME = [0x7c848e, 0xb4bcc6, 0xdce3ea, 0xfafcff];
 const GOLD = [0x7a5a1c, 0xb08a34, 0xd8b04a, 0xf2d684];
 const STEEL = 0x9aa2a8, RUBBER = 0x242326, DARK = 0x1d1b1e, HOLE = 0x121013;
 /** Chrome (or gold) with banded highlights by height and a glint every few blocks: polished metal in blocks. */
 const shine = (P, y, x = 0, z = 0) => {
-  const t = ((y % 7) + 7) % 7;
-  const c = t < 1 ? P[0] : t < 3 ? P[1] : t < 5 ? P[2] : P[3];
-  return metal(hash(x, y, z, 9) < 0.04 ? P[3] : c);
+  // polished metal in blocks: the mid tone, a bright streak every few blocks with a darker one beside it (streaks run
+  // up the part, so the blocks of a streak merge into one face)
+  const t = (((x + z) % 9) + 9) % 9;
+  return metal(t === 0 ? P[3] : t === 1 ? P[1] : P[2]);
 };
 
 // ----------------------------------------------------------------------------- voxel helpers
@@ -218,7 +219,7 @@ function printSheet(type, st, spec, L) {
       const [x, y, w, h] = rects.crate;
       p.text('青森りんご', x + 4, y + 1, { size: 16, color: 0x9a3024 });
       p.tinyText('AOMORI  APPLES  10KG', x + 4, y + 21, { color: 0x34405a });
-      p.circle(x + w - 14, y + 15, 10, 0x9a3024); p.circle(x + w - 14, y + 15, 8, 0, 0);
+      p.circle(x + w - 14, y + 15, 10, 0x9a3024); p.circle(x + w - 14, y + 15, 8, 0xb48a58);
       p.text('〒', x + w - 21, y + 6, { size: 12, color: 0x9a3024 });
       // the wear: random pixels knocked out
       for (let i = 0; i < w * h * 0.25; i++) { const xx = x + Math.floor(Math.random() * w), yy = y + Math.floor(Math.random() * h); p.px(xx, yy, 0, 0); }
@@ -311,7 +312,7 @@ function standPedestal(v, spec, st) {
     if (y <= 9) return gloss(st.trim);
     if (n === 'pz' && Math.abs(x + 0.5) <= 1) return gloss(sh(st.trim, 1.05));
     if (n === 'pz' && (x === cX0 + 3 || x === cX1 - 3)) return gloss(st.body2); // the moulding's seams
-    return gloss(hash(x, y, z, 1) < 0.03 ? sh(st.body, 0.95) : st.body);
+    return gloss(st.body);
   }, 2);
   // the badge on the front of the column
   const by = Math.round((7 + top0) / 2);
@@ -400,7 +401,7 @@ function lowerUnit(v, spec, L, st) {
     const h = hash(x, y, z, 1);
     const front = n === 'pz' || (z >= Z1 - 1 && n !== 'px' && n !== 'nx');
     // the top band (the stacking rail) and the foot band
-    if (y > Y1 - bandTop) return st.gold ? shine(GOLD, y, x, z) : gloss(y === Y1 ? sh(st.band, 1.08) : st.band);
+    if (y > Y1 - bandTop) return st.gold ? shine(GOLD, y, x, z) : st.chrome ? shine(CHROME, y, x, z) : gloss(y === Y1 ? sh(st.band, 1.08) : st.band);
     if (y < Y0 + bandBot) return gloss(st.stand === 'crate' ? sh(st.body, 0.7) : st.body2);
     if (front) {
       // the front panel: a moulding inset two blocks from the edge, its seam, screws in the corners
@@ -409,23 +410,29 @@ function lowerUnit(v, spec, L, st) {
       if (edge) return gloss(worn ? st.body : st.body2);
       if (ix === 2 || ix === W - 2 || iy === bandBot) return gloss(sh(st.panel, 0.84)); // the seam
       if ((ix === 4 || ix === W - 4) && (iy === bandBot + 2 || iy === H - bandTop - 2)) return metal(0xb8bec4); // screws
-      let c = h < 0.035 ? st.panel2 : st.panel;
+      let c = h < 0.015 ? st.panel2 : st.panel;
       if (worn) {
-        // decades of hands: grime low and round the chute, chips showing steel, a rust bloom under the coin box
-        if (iy < 10 && h < 0.25) c = mixc(c, 0x8a7a5c, 0.35);
-        if (h > 0.985) c = 0x8a8a84;
-        if (hash(x >> 1, y >> 1, 0, 8) > 0.97) c = mixc(c, 0x7a4426, 0.6);
+        // decades of hands: grime low down and round the chute, a few chips at the moulding, a yellowed patch
+        if (iy < 12 && h < 0.35) c = mixc(c, 0x8a7a5c, 0.2 + (12 - iy) * 0.02);
+        if ((ix <= 4 || ix >= W - 4) && h > 0.93) c = 0x9a948a;
+        if (hash(x >> 3, y >> 3, 0, 8) > 0.8) c = mixc(c, 0xc8b480, 0.18);
       }
       return worn ? enc(c) : gloss(c);
     }
     // sides and back
     let c = st.body;
     if (n === 'py') c = st.gold ? 0x2b2a2f : sh(st.body, 0.95);
-    if (h < 0.04) c = sh(c, 0.94);
+    if (h < 0.015) c = sh(c, 0.96);
     if (worn) {
-      if (h > 0.975) c = 0xd8ccb0; // a chip down to the primer
-      if (hash(x >> 1, y >> 1, z >> 1, 4) > 0.965) c = mixc(c, 0x6a3a22, 0.7); // rust
-      if (y - Y0 < 8 && hash(x, y, z, 5) < 0.3) c = sh(c, 0.85);
+      // wear where hands and knocks land: chips along the corners and the top, rust blooming out of the chips,
+      // grime along the foot
+      const corner = n === 'px' || n === 'nx' ? Math.min(z - Z0, Z1 - z) : n === 'nz' ? Math.min(x - X0, X1 - x) : 9, top = Y1 - bandTop - y;
+      const near = corner <= 2 || top <= 2;
+      if (near && h > 0.9 && hash(x >> 1, y >> 1, z >> 1, 11) > 0.5) c = h > 0.96 ? 0x7a7a74 : 0xd8ccb0; // a chip: primer, or bare steel
+      const bloom = hash(x >> 2, y >> 2, z >> 2, 4);
+      if (bloom > 0.94 && hash(x, y, z, 6) < 0.6) c = mixc(c, 0x6a3a22, 0.4 + 0.4 * hash(x, y, z, 8));
+      if (y - Y0 < 8 && hash(x, y, z, 5) < 0.4) c = mixc(c, 0x4a3a2a, 0.25 + (8 - y + Y0) * 0.03);
+      if (h > 0.6 && h < 0.63) c = sh(c, 1.06); // the odd brighter block: old enamel catching the light
     }
     // carry grips (recessed slots) on the sides, vents on the back
     if ((n === 'px' || n === 'nx') && Math.abs(y - (Y0 + Y1) / 2 - 8) <= 1 && Math.abs(z) <= 8) return enc(HOLE);
@@ -654,10 +661,11 @@ function flapModel(L, st) {
 function buttonModel(color, plus) {
   const v = new VoxelModel();
   v.jitter = 0;
-  for (let z = 0; z <= 1; z++) disc(v, 0, 0, z, 3.2, (x, y, d) => gloss(z === 1 ? (d > 2.4 ? sh(color, 0.85) : color) : sh(color, 0.7)));
-  // the sign
-  v.set(-1, 0, 2, gloss(0xfaf6ec)); v.set(0, 0, 2, gloss(0xfaf6ec)); v.set(-2, 0, 2, gloss(0xfaf6ec)); v.set(1, 0, 2, gloss(0xfaf6ec));
-  if (plus) { v.set(-1, 1, 2, gloss(0xfaf6ec)); v.set(-1, -1, 2, gloss(0xfaf6ec)); v.set(0, 1, 2, gloss(0xfaf6ec)); v.set(0, -1, 2, gloss(0xfaf6ec)); }
+  for (let z = 1; z <= 2; z++) disc(v, 0, 0, z, 3.2, (x, y, d) => gloss(z === 2 ? (d > 2.4 ? sh(color, 0.85) : color) : sh(color, 0.7)));
+  // the sign, pressed into the cap
+  const W = gloss(0xfaf6ec);
+  for (const x of [-2, -1, 0, 1]) v.set(x, 0, 2, W);
+  if (plus) for (const y of [-2, -1, 1]) { v.set(-1, y, 2, W); v.set(0, y, 2, W); }
   return v;
 }
 
@@ -702,6 +710,11 @@ function boxGeo(list) {
 }
 
 // ----------------------------------------------------------------------------- assembly
+/** A voxel model stored shifted down by oy blocks (a VoxelModel holds coordinates within +-511 only). */
+class Shifted extends VoxelModel {
+  constructor(oy) { super(); this.oy = oy; this.jitter = 0; }
+  set(x, y, z, c) { return super.set(x, Math.round(y) - this.oy, z, c); }
+}
 const cache = new Map();
 const mesh = (v, s, texel = 2) => meshVoxels(v, { voxelSize: s, origin: 'none', surf: 'auto', texel });
 /**
@@ -718,11 +731,11 @@ export function voxelMachineParts(type, spec, L) {
   lowerUnit(B, spec, L, st);
   windowFrame(B, spec, L, st);
   // static, 2.5 mm
-  const F = new VoxelModel();
-  F.jitter = 0;
+  const oy = Math.round(spec.y0 / VF), up = new THREE.Matrix4().makeTranslation(0, oy * VF, 0);
+  const F = new Shifted(oy);
   frontFine(F, spec, L, st);
   const T = trayModel(L, st);
-  const body = mergeByMaterial([{ geometry: mesh(B, VB) }, { geometry: mesh(F, VF) }, { geometry: mesh(T, VF) }]);
+  const body = mergeByMaterial([{ geometry: mesh(B, VB) }, { geometry: mesh(F, VF), matrix: up }, { geometry: mesh(T, VF) }]);
   // the window's clear plastic: front, sides and the inner divider are thin panes
   const fz = spec.d / 2, hw = spec.w / 2, gy0 = L.caseY0, gy1 = L.caseY0 + spec.caseH - 2 * VB, t = 0.002, p = 3 * VB;
   const glassGeo = boxGeo([
@@ -737,7 +750,7 @@ export function voxelMachineParts(type, spec, L) {
     { r: 'howto', x: Math.max(-hw + 0.04, O.x0 - 0.045), y: spec.y0 + (O.y0 + O.y1) / 2 - spec.y0 + 0.004, z: fz + eps },
     { r: 'slot', x: L.slot.x, y: L.slot.y + 0.044, z: fz + eps },
     { r: 'chute', x: 0, y: O.y1 + 0.011, z: fz + eps },
-    { r: 'warn', x: -hw - eps, y: spec.y0 + spec.lowH * 0.62, z: 0.02, face: 'nx' },
+    { r: 'warn', x: -hw - eps, y: spec.y0 + spec.lowH * 0.45, z: -0.08, face: 'nx' },
     { r: 'maker', x: -hw - eps, y: spec.y0 + spec.lowH * 0.22, z: -0.04, face: 'nx' },
   ];
   if (st.stand === 'twotier') quads.push({ r: 'junbi', x: 0.04, y: stand.shutterY, z: stand.unitFront + eps });
