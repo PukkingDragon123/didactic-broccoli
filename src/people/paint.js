@@ -434,7 +434,7 @@ function makePainters(spec, P) {
       const vw = k === 'cardigan' ? 0.04 * H : 0.045 * H;
       const vx = c.y > vb ? (c.y - vb) / (yN - vb) * vw + 0.004 : -1;
       const inV = c.layer === 'shirt' || c.layer === 'tie' ? fr : c.layer === 'top' || c.layer === 'lapel' ? false : fr && ax < vx;
-      if (inV) { innerPx(c, o, k === 'polo' ? { kind: 'polo', col: T.col } : { kind: k === 'suit' ? 'shirt' : 'blouse', col: T.shirt || WHITE, tie: k === 'suit' ? T.tie : null }); return; }
+      if (inV) { innerPx(c, o, k === 'polo' ? { kind: 'polo', col: T.col } : { kind: k === 'suit' ? 'shirt' : 'blouse', col: T.shirt || WHITE, tie: k === 'suit' ? T.tie : null }); if (vx > 0 && ax > vx - c.px * 2.2) scaleO(o, 0.62); return; } // the jacket's edge shades the shirt under it
       if (k === 'polo') { shadeInto(o, T.vest, bodyK(c) * fabricK(c, 'knit')); if (Math.abs(c.y - topHem - 0.02 * H) < 0.02 * H) shadeInto(o, T.vest, bodyK(c) * (c.i % 2 ? 0.88 : 1)); }
       if (fr && ax < vx + c.px * 1.2 && c.layer !== 'lapel') over(o, INK, 0.4);
       // lapels (suits)
