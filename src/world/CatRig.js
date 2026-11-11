@@ -47,7 +47,7 @@ export class CatRig {
     const A = catAssets(opts.coat || 'calico', opts.lod || 0);
     this.root = new THREE.Group();
     this.root.name = 'cat';
-    this.mat = new THREE.MeshStandardMaterial({ map: A.map, alphaTest: 0.5, roughness: 0.9, metalness: 0 });
+    this.mat = new THREE.MeshStandardMaterial({ map: A.map, alphaTest: 0.5, roughness: 0.9, metalness: 0, flatShading: true }); // flat block faces, like the people
     // per-cat UVs (the face frames differ per cat); everything else is shared
     this.geo = new THREE.BufferGeometry();
     for (const k of ['position', 'normal', 'skinIndex', 'skinWeight']) this.geo.setAttribute(k, A.geometry.attributes[k]);

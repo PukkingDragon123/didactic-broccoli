@@ -275,7 +275,7 @@ export class Dog {
     this.kind = kind;
     this.root = new THREE.Group();
     this.root.name = 'dog:' + kind;
-    this.mat = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.88, metalness: 0 });
+    this.mat = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.88, metalness: 0, flatShading: true }); // flat block faces, like the people
     this.bones = [];
     for (const [name, parent, p] of DOG_BONES) {
       const bn = new THREE.Bone(); bn.name = name;

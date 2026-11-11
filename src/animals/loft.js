@@ -55,9 +55,27 @@ export function fringe(r, from, to, n, amp) {
   return out;
 }
 
+/** Block mode (the default): every loft is a stack of chamfered block segments, like the people (src/people/mesh.js). */
+export const BLOCK = { on: true, ch: 0.32 };
+
+/** The chamfered box ring in a section's frame: [side, up] points from the bottom centre round to it again (10). */
+function boxRing(r, ch, out = []) {
+  const U = r[0], L = r[K / 4], D = r[K / 2], R = r[(3 * K) / 4];
+  const cb = ch * Math.min(L + R, U + D) * 0.5, cu = Math.min(cb, U * 0.8, L * 0.8, R * 0.8), cd = Math.min(cb, D * 0.8, L * 0.8, R * 0.8);
+  const P = [[0, -D], [-R + cd, -D], [-R, -D + cd], [-R, U - cu], [-R + cu, U], [L - cu, U], [L, U - cu], [L, -D + cd], [L - cd, -D], [0, -D]];
+  for (let k = 0; k < 10; k++) { out[k] ||= [0, 0]; out[k][0] = P[k][0]; out[k][1] = P[k][1]; }
+  return out;
+}
+
 export class Loft {
-  /** sections: [{ p, r (K radii), up? }]; o.cap: [start, end] dome lengths (0 = open end). */
+  /**
+   * sections: [{ p, r (K radii), up? }]; o.cap: [start, end] end lengths (0 = open end). In block mode (o.smooth unset)
+   * a section is a chamfered box (its extents up / down / to each side, chamfer o.ch), joined to the next by flat
+   * tapered faces, and the ends are bevelled flat caps; o.smooth: the Catmull-Rom loft of round rings.
+   */
   constructor(sections, o = {}) {
+    this.block = BLOCK.on && !o.smooth;
+    this.ch = o.ch ?? BLOCK.ch;
     const S = sections.map((s) => ({ p: s.p.slice(), r: Float32Array.from(s.r), up: (s.up || o.up || [0, 1, 0]).slice() }));
     const [c0, c1] = o.cap || [0, 0];
     const dome = (end, len) => {
@@ -65,6 +83,11 @@ export class Loft {
       const a = end ? S[S.length - 1] : S[0], b = end ? S[S.length - 2] : S[1];
       const d = new THREE.Vector3(...a.p).sub(new THREE.Vector3(...b.p)).normalize();
       const out = [], m = o.capSteps || 4;
+      if (this.block) {
+        // a bevel, then the flat end face (its last ring collapses onto the centre at the same depth)
+        for (const [f, s] of [[0.55, 0.84], [1, 0.52], [1, 0]]) out.push({ p: [a.p[0] + d.x * len * f, a.p[1] + d.y * len * f, a.p[2] + d.z * len * f], r: a.r.map((v) => v * s), up: a.up });
+        return end ? out : out.reverse();
+      }
       for (let k = 1; k <= m; k++) {
         const ang = (k / m) * Math.PI / 2, s = Math.cos(ang), off = len * Math.sin(ang);
         out.push({ p: [a.p[0] + d.x * off, a.p[1] + d.y * off, a.p[2] + d.z * off], r: a.r.map((v) => v * (k === m ? 0 : s)), up: a.up });
@@ -73,11 +96,33 @@ export class Loft {
     };
     this.S = [...dome(false, c0), ...S, ...dome(true, c1)];
     this.n = this.S.length;
+    if (this.block) {
+      // fixed u for the ring's corners (by the perimeter of the largest section): every face maps to a straight band of
+      // the atlas, so the painted texels lie exactly on the flat faces
+      let best = null, bl = -1;
+      for (const sc of this.S) {
+        const R = boxRing(sc.r, this.ch);
+        let l = 0; for (let k = 1; k < 10; k++) l += Math.hypot(R[k][0] - R[k - 1][0], R[k][1] - R[k - 1][1]);
+        if (l > bl) { bl = l; best = R; }
+      }
+      const cum = [0];
+      for (let k = 1; k < 10; k++) cum.push(cum[k - 1] + Math.hypot(best[k][0] - best[k - 1][0], best[k][1] - best[k - 1][1]));
+      this.ringU = cum.map((c) => (bl > 0 ? c / bl : 0));
+      this.ringU[9] = 1;
+    }
   }
+  /** Block mode: the u of the ring's vertices and the v of every section (where a part puts its vertices). */
+  grid() { return { us: this.ringU.slice(), vs: this.S.map((_, k) => k / (this.n - 1)) }; }
 
   /** Spine centre, radii (K) and up hint at t (0..n-1). */
   at(t, out) {
     const S = this.S, n = this.n, i = clamp(Math.floor(t), 0, n - 2), f = t - i;
+    if (this.block) {
+      const b = S[i], c = S[i + 1];
+      for (let q = 0; q < 3; q++) { out.p[q] = b.p[q] + (c.p[q] - b.p[q]) * f; out.up[q] = b.up[q] + (c.up[q] - b.up[q]) * f; }
+      for (let k = 0; k < K; k++) out.r[k] = Math.max(0, b.r[k] + (c.r[k] - b.r[k]) * f);
+      return out;
+    }
     const a = S[Math.max(0, i - 1)], b = S[i], c = S[i + 1], d = S[Math.min(n - 1, i + 2)];
     for (let q = 0; q < 3; q++) { out.p[q] = cr(a.p[q], b.p[q], c.p[q], d.p[q], f); out.up[q] = b.up[q] + (c.up[q] - b.up[q]) * f; }
     for (let k = 0; k < K; k++) out.r[k] = Math.max(0, cr(a.r[k], b.r[k], c.r[k], d.r[k], f));
@@ -100,6 +145,20 @@ export class Loft {
       s3.crossVectors(u3, t3).normalize();
       w3.crossVectors(t3, s3).normalize();
       let rmax = 0;
+      if (this.block) {
+        const R = boxRing(A.r, this.ch, this._ring || (this._ring = [])), RU = this.ringU;
+        for (let i = 0; i < nu; i++) {
+          const u = ((us[i] % 1) + 1) % 1 || (us[i] >= 1 ? 1 : 0);
+          let k = 0; while (k < 8 && u > RU[k + 1]) k++;
+          const f = (u - RU[k]) / Math.max(1e-9, RU[k + 1] - RU[k]);
+          const sx = R[k][0] + (R[k + 1][0] - R[k][0]) * f, sy = R[k][1] + (R[k + 1][1] - R[k][1]) * f;
+          rmax = Math.max(rmax, Math.abs(sx), Math.abs(sy));
+          const o = (j * nu + i) * 3;
+          P[o] = A.p[0] + s3.x * sx + w3.x * sy; P[o + 1] = A.p[1] + s3.y * sx + w3.y * sy; P[o + 2] = A.p[2] + s3.z * sx + w3.z * sy;
+        }
+        pole[j] = rmax < 1e-5 ? 1 : 0;
+        continue;
+      }
       for (let i = 0; i < nu; i++) {
         const x = (((us[i] % 1) + 1) % 1) * K, k = Math.floor(x) % K, f = x - Math.floor(x);
         const r = cr(A.r[(k + K - 1) % K], A.r[k], A.r[(k + 1) % K], A.r[(k + 2) % K], f);
@@ -170,14 +229,21 @@ export class Builder {
   }
 
   part(loft, o) {
-    const [rx, ry, rw, rh] = o.rect, cols = o.cols, rows = o.rows, [v0, v1] = o.vRange || [0, 1];
-    const us = [], vs = [];
-    for (let i = 0; i <= cols; i++) us.push(i / cols);
-    for (let j = 0; j < rows; j++) vs.push(v0 + (v1 - v0) * (j / (rows - 1)));
+    const [rx, ry, rw, rh] = o.rect, [v0, v1] = o.vRange || [0, 1];
+    let us = [], vs = [], cols = o.cols, rows = o.rows;
+    if (loft.block) {
+      // block segments: a vertex at each corner of the ring, a ring at each section (flat faces between)
+      const G = loft.grid();
+      us = G.us; vs = G.vs.filter((v) => v >= v0 - 1e-9 && v <= v1 + 1e-9);
+      cols = us.length - 1; rows = vs.length;
+    } else {
+      for (let i = 0; i <= cols; i++) us.push(i / cols);
+      for (let j = 0; j < rows; j++) vs.push(v0 + (v1 - v0) * (j / (rows - 1)));
+    }
     const S = loft.sample(us, vs), base = this.count, flip = o.flipNormals ? -1 : 1;
     for (let j = 0; j < rows; j++) for (let i = 0; i <= cols; i++) {
       const q = (j * (cols + 1) + i) * 3, p = [S.P[q], S.P[q + 1], S.P[q + 2]];
-      this.vert(p, [S.N[q] * flip, S.N[q + 1] * flip, S.N[q + 2] * flip], [(rx + (i / cols) * rw) / this.W, (ry + (j / (rows - 1)) * rh) / this.H], o.skin(vs[j], p, us[i]));
+      this.vert(p, [S.N[q] * flip, S.N[q + 1] * flip, S.N[q + 2] * flip], [(rx + us[i] * rw) / this.W, (ry + ((vs[j] - v0) / (v1 - v0)) * rh) / this.H], o.skin(vs[j], p, us[i]));
     }
     for (let j = 0; j < rows - 1; j++) for (let i = 0; i < cols; i++) {
       const a = base + j * (cols + 1) + i, b = a + 1, c = a + cols + 1, d = c + 1;

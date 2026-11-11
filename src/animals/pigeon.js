@@ -159,7 +159,7 @@ function assets() {
   geo.morphAttributes.normal = targets.map((T) => new THREE.Float32BufferAttribute(T.nrm, 3));
   geo.computeBoundingSphere(); geo.boundingSphere.radius += 0.3; // (spread wings)
   const map = B.texture();
-  const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.8, metalness: 0 });
+  const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.8, metalness: 0, flatShading: true }); // flat block faces
   // static versions for the town's perched birds (no morphs, a lighter build on the same atlas) and a gliding one
   const LO = 0.55, lo = build({ wing: 'fold' }, false, LO), loUp = build({ wing: 'up' }, false, LO), loDn = build({ wing: 'down' }, false, LO);
   const still = (k) => {

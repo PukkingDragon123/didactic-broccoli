@@ -167,12 +167,12 @@ function txtMask(str, font) {
   let m = null;
   try {
     const px = 48, cv = (typeof OffscreenCanvas !== 'undefined') ? new OffscreenCanvas(8, 8) : document.createElement('canvas');
-    let g = cv.getContext('2d');
+    let g = cv.getContext('2d', { willReadFrequently: true });
     g.font = `${px}px ${font}`;
     const vertical = false;
     const w = Math.ceil(g.measureText(str).width) + 4, h = px + 8;
     cv.width = w; cv.height = h;
-    g = cv.getContext('2d');
+    g = cv.getContext('2d', { willReadFrequently: true });
     g.font = `${px}px ${font}`; g.textBaseline = 'middle'; g.fillStyle = '#000';
     g.fillText(str, 2, h / 2 + 1);
     const d = g.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h);
