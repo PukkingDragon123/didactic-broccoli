@@ -58,7 +58,8 @@ export function paintNoren(p, part, L) {
     for (let y = -R; y <= R; y++) for (let x = -R; x <= R; x++) { const d = x * x + y * y; if (d <= R * R + R) p.px(cx + x, cy + y, d > (R - 2) * (R - 2) + R ? WHITE : L.custom ? CREAM : IND); }
     const s = 32;
     paintLogo(p, cx - s / 2, cy - s / 2, s, L.custom ? { L } : { L, mono: WHITE });
-    text5(p, L.en, cx, h - 14, WHITE);
+    const fit = (t) => (textW5(t) <= w - 6 ? t : t.split(' ').reduce((a, wd) => (textW5(a ? a + ' ' + wd : wd) <= w - 6 ? (a ? a + ' ' + wd : wd) : a), '') || t.slice(0, Math.floor((w - 6) / 6)));
+    text5(p, fit(L.en), cx, h - 14, WHITE);
   } else {
     // the name across the outer panels, white, the left half on the left
     const chars = [...L.jp], half = Math.ceil(chars.length / 2), mine = part === 'L' ? chars.slice(0, half) : chars.slice(half);
@@ -89,7 +90,7 @@ export function paintSign(p, L) {
   const chars = [...L.jp], top = ly + s + 7, room = Math.floor((h - top - 14) / 17);
   if (chars.length <= room) glyphs(p, chars.join(''), w / 2, top, INK, { vert: true });
   else { const k = Math.ceil(chars.length / 2); glyphs(p, chars.slice(0, k).join(''), w / 2 + 9, top, INK, { vert: true }); glyphs(p, chars.slice(k).join(''), w / 2 - 9, top, INK, { vert: true }); }
-  const en = L.en.length > 8 ? L.en.split(' ')[0].slice(0, 8) : L.en;
+  const en = textW5(L.en) <= w - 4 ? L.en : L.en.split(' ')[0].slice(0, Math.floor((w - 4) / 6));
   text5(p, en, w / 2, h - 13, RED);
   return p;
 }

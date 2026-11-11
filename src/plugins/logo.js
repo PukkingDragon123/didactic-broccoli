@@ -145,19 +145,20 @@ export function install(game) {
       for (const [x, y, c] of pts) if (x >= 0 && y >= 0 && x < size && y < size) px[y * size + x] = c;
       return writeLogo(game, { size, px, jp, en });
     },
-    /** A ready-made test logo: a red capsule split by its seam over a sunburst; name fields too. */
+    /** A ready-made test logo: a five-pointed star on a shu-red disc in an indigo ring, and a name. */
     demo(jp = 'ほしやガチャ', en = 'HOSHIYA GACHA') {
-      const n = 32, px = new Uint8Array(n * n), set = (x, y, c) => { if (x >= 0 && y >= 0 && x < n && y < n) px[y * n + x] = c; };
+      const n = 32, px = new Uint8Array(n * n), c = 15.5;
+      const star = (x, y) => { // inside a 5-point star of outer radius 11, inner 4.6, point up
+        const a = Math.atan2(x, -y), r = Math.hypot(x, y), k = ((a / (Math.PI * 2 / 5)) % 1 + 1) % 1, t = Math.abs(k - 0.5) * 2;
+        return r <= 4.6 + (11 - 4.6) * Math.max(0, (t - 0.0)) ** 1.6;
+      };
       for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-        const dx = x - 15.5, dy = y - 15.5, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
-        if (d <= 15.5 && d > 13.6) set(x, y, 22);
-        else if (d <= 13.6 && Math.cos(a * 8) > 0.35) set(x, y, 12);
-        else if (d <= 13.6) set(x, y, 5);
-        if (d <= 9.5) set(x, y, dy < 0 ? 6 : 4);
-        if (d <= 9.5 && d > 8.4) set(x, y, 1);
-        if (Math.abs(dy) < 1 && d <= 9.5) set(x, y, 1);
+        const dx = x - c, dy = y - c, d = Math.hypot(dx, dy);
+        let ink = 0;
+        if (d <= 15.5) ink = d > 13.5 ? 22 : d > 12.5 ? 5 : 6;
+        if (d <= 12.5 && star(dx, dy + 0.5)) ink = star(dx * 1.12, dy * 1.12 + 0.5) ? 12 : 13;
+        px[y * n + x] = ink;
       }
-      for (const [x, y] of [[12, 10], [13, 10], [12, 11]]) set(x, y, 4);
       return writeLogo(game, { size: n, px, jp, en });
     },
     reset: () => writeLogo(game, { px: null }),

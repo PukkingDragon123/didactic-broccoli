@@ -8,6 +8,7 @@
 import * as THREE from 'three';
 import { mask5, textW5 } from '../gfx/font5x7.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
+import { activeLogo, logoCanvas } from '../logo/logo.js'; // (your own logo and name print on the seal and tape)
 
 const N = 16; // voxels across a hi-res capsule (Capsule.js RES.hi)
 const TAPE_H = 1.5; // voxels tall, centred on the seam
@@ -68,14 +69,14 @@ const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294
 /** The tape: cream paper tape, the series colour in two rules, SEALED · 封 printed along it in red ink. */
 function tapeTex(seriesId, len) {
   const col = SERIES_BY_ID[seriesId]?.capsule?.colors?.[0] ?? 0xff6f91;
-  const W = Math.max(64, Math.round(len)), H = 12;
-  return canvasTex(`tape|${seriesId}|${W}`, W, H, (g) => {
+  const W = Math.max(64, Math.round(len)), H = 12, L = activeLogo(), word = (L.named ? L.en : 'SEALED').slice(0, 16);
+  return canvasTex(`tape|${seriesId}|${W}|${word}`, W, H, (g) => {
     seed = 11;
     g.fillStyle = '#f1e9d6'; g.fillRect(0, 0, W, H);
     for (let i = 0; i < W * 2; i++) { g.fillStyle = rnd() < 0.5 ? '#e6dcc4' : '#f8f2e4'; g.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * H), 1, 1); } // paper fibre
     g.fillStyle = hex(col); g.fillRect(0, 1, W, 1); g.fillRect(0, H - 2, W, 1);
     g.fillStyle = 'rgba(40,24,20,.35)'; g.fillRect(0, 0, W, 1); g.fillRect(0, H - 1, W, 1); // the cut edges
-    const word = 'SEALED', ww = textW5(word) + 9;
+    const ww = textW5(word) + 9;
     g.fillStyle = '#b8282c';
     for (let x = 3; x + ww < W; x += ww + 6) {
       for (const [i, j] of mask5(word)) g.fillRect(x + i, 3 + j - 1, 1, 1);
@@ -87,8 +88,8 @@ function tapeTex(seriesId, len) {
 
 /** The seal, in 4 stages (0 whole .. 3 split along the seam): a paper sticker or a wax seal. */
 function sealTex(kind, stage) {
-  const W = 28, H = 34;
-  return canvasTex(`seal|${kind}|${stage}`, W, H, (g) => {
+  const W = 28, H = 34, L = activeLogo();
+  return canvasTex(`seal|${kind}|${stage}|${L.custom ? L.rev : 0}`, W, H, (g) => {
     seed = 3;
     const wax = kind === 'wax';
     if (wax) {
@@ -109,8 +110,8 @@ function sealTex(kind, stage) {
       g.fillStyle = '#f4ecd8'; g.fillRect(1, 1, W - 2, H - 2);
       for (let i = 0; i < 70; i++) { g.fillStyle = rnd() < 0.5 ? '#e4d8bc' : '#fbf6ea'; g.fillRect(1 + Math.floor(rnd() * (W - 2)), 1 + Math.floor(rnd() * (H - 2)), 1, 1); }
       g.fillStyle = '#c9b48c'; g.fillRect(2, 2, W - 4, 1); g.fillRect(2, H - 3, W - 4, 1);
-      ring(g, 13.5, 16.5, 10.5, '#c0282c'); ring(g, 13.5, 16.5, 9.5, '#c0282c');
-      glyph(g, '封', 6, 9, '#c0282c');
+      if (L.custom) g.drawImage(logoCanvas(L, 1, 22), 3, 6); // your shop's logo
+      else { ring(g, 13.5, 16.5, 10.5, '#c0282c'); ring(g, 13.5, 16.5, 9.5, '#c0282c'); glyph(g, '封', 6, 9, '#c0282c'); }
     }
     // the cracks across the seam (row 16-17), more each stage
     if (stage > 0) {
