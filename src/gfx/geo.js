@@ -1,6 +1,22 @@
 // Geometry/material helpers for architecture: world-scaled UV boxes with pixel-art materials.
 import * as THREE from 'three';
 import { tex } from './textures.js';
+import { patchTextureDetail } from '../voxel/materials.js';
+import { SURF } from '../voxel/VoxelModel.js';
+
+// fine painted grain inside the big texture pixels (the voxel face-detail atlas), by recipe
+const DETAIL_KIND = [
+  [/^(asphalt|gravel|ballast)/, 'stone'], [/^roadPaint|^hazard|^sky|Floor$|^rope|Wall$|Poster$|^(sakura|candy|neon|ghost|cosmos|sea)/, null],
+  [/^(concrete|garageSlab|floorHD|kenchi|tunnel|block|oya|paving|gutter|brick)/, 'concrete'], [/^(plaster|houseWall|shikkui|mortar|shopCeiling)/, 'plaster'],
+  [/^boardWall/, 'timber'], [/^(wood|plywood|koshi|siding|planks|bamboo)/, 'wood'],
+  [/^(corrugated|shutter|metalRoof|grate)/, 'galv'], [/^(steel|girder|prefab)/, 'paint'],
+  [/^(roofTile|slateRoof|tile|pTile|shopTile|tileSkirt|marble)/, 'glaze'], [/^grass/, 'moss'],
+  [/^cardboard/, 'card'], [/^(tatami|felt|velvet|carpet|pegboard)/, 'cloth'],
+];
+function detailKind(key) {
+  for (const [re, k] of DETAIL_KIND) if (re.test(key)) return k ? SURF[k] : 0;
+  return 0;
+}
 
 /** BoxGeometry whose UVs are in metres (so textures tile at a constant pixel density). */
 export function worldBox(w, h, d) {
@@ -54,6 +70,13 @@ export function pixMat(key, opts = {}) {
     color: opts.color ?? 0xffffff,
     envMapIntensity: opts.env ?? 1,
   });
+  const kind = opts.detail === false ? 0 : detailKind(key);
+  if (kind) {
+    // kept in userData so clones can re-apply it (src/world/Town.js townShader)
+    m.userData.texDetail = { kind, texPx: [t.size[0] * 32, t.size[1] * 32] };
+    m.onBeforeCompile = (sh) => patchTextureDetail(sh, m.userData.texDetail);
+    m.customProgramCacheKey = () => 'texdetail';
+  }
   matCache.set(ck, m);
   return m;
 }

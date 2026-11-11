@@ -1,9 +1,14 @@
 // Greedy voxel mesher with per-vertex ambient occlusion and per-voxel colour jitter.
 // Produces a BufferGeometry with position / normal / color attributes and one group per material id.
 import * as THREE from 'three';
-import { MAT, decColor, decMat } from './VoxelModel.js';
+import { MAT, decColor, decMat, decSurf, SURF } from './VoxelModel.js';
 
-const AO_CURVE = [0.5, 0.68, 0.84, 1.0];
+// baked AO: soft steps (no harsh dark creases) and warm (shaded corners drift towards umber, not grey)
+const AO_CURVE = [0.56, 0.72, 0.87, 1.0];
+const AO_WARM = [1.0, 0.94, 0.88]; // per-channel exponent on the AO factor: red darkens least
+// face detail: one atlas tile (128 texels) spans 128 / texelsPerVoxel voxels; a texel is ~4.5 mm on the voxel grid
+export const DETAIL_TILE = 128;
+const TEXEL_M = 0.0045;
 // finer models (2x up-res collectibles) crease at every half-step: a lighter curve keeps them from looking etched
 export const AO_SOFT = [0.62, 0.77, 0.9, 1.0];
 const linCache = new Map();
@@ -36,6 +41,24 @@ function jitterColor(hex, amt, x, y, z, block = 1, q = 0) {
 
 const ORDER_P = [0, 1, 2, 3], ORDER_N = [0, 3, 2, 1];
 
+/** Surface kind a prop voxel gets when it was not given one: by material, then by colour (hue / saturation / value). */
+export function autoSurf(hex, mat) {
+  if (mat === MAT.GLOW || mat === MAT.GLASS) return 0;
+  if (mat === MAT.METAL) return SURF.galv;
+  if (mat === MAT.GLOSS) return SURF.glaze;
+  const r = ((hex >> 16) & 255) / 255, g = ((hex >> 8) & 255) / 255, b = (hex & 255) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = mx, s = mx ? (mx - mn) / mx : 0;
+  let h = 0;
+  if (mx !== mn) {
+    if (mx === r) h = ((g - b) / (mx - mn) + 6) % 6; else if (mx === g) h = (b - r) / (mx - mn) + 2; else h = (r - g) / (mx - mn) + 4;
+    h *= 60;
+  }
+  if (s < 0.13) return v < 0.18 ? SURF.paint : SURF.concrete; // greys: concrete, stone, cement; near-black: paint
+  if (h >= 12 && h <= 45 && s > 0.28 && v > 0.16 && v < 0.78) return SURF.wood; // browns and tans
+  if (h > 60 && h < 170 && s > 0.2) return SURF.moss; // greens: leaves, moss, grass
+  return SURF.plaster;
+}
+
 /**
  * @param {import('./VoxelModel.js').VoxelModel} model
  * @param {{voxelSize?:number, origin?:'bottom'|'center'|'none'}} opts
@@ -50,12 +73,22 @@ export function meshVoxels(model, opts = {}) {
   const jb = opts.jitterBlock ?? model.jitterBlock ?? 1;
   const jq = opts.quantize ?? model.quantize ?? 0;
   const aoCurve = opts.aoCurve ?? model.aoCurve ?? AO_CURVE;
+  // face detail: opts.surf 'auto' (props / world: kinds picked by autoSurf unless a voxel has one), a SURF name (the
+  // default for voxels without one), or nothing (only voxels given a kind get detail). Off below 2 texels per voxel.
+  const tpv = opts.texel ?? model.texel ?? Math.min(16, Math.round(vs / TEXEL_M));
+  const surfOpt = opts.surf ?? model.surfaceAuto;
+  const detail = tpv >= 2 && opts.surf !== false;
+  const surfDef = typeof surfOpt === 'string' && surfOpt !== 'auto' ? SURF[surfOpt] ?? 0 : 0;
+  const grainY = (opts.grain ?? model.grain) === 'y';
 
   model.forEach((x, y, z, v) => {
     const gx = x - b.minX + 1, gy = y - b.minY + 1, gz = z - b.minZ + 1;
     const mat = decMat(v);
-    const col = mat === MAT.GLOW || mat === MAT.GLASS ? decColor(v) : jitterColor(decColor(v), jit, x, y, z, jb, jq);
-    grid[idx(gx, gy, gz)] = (col + 1) * 8 + mat;
+    const raw = decColor(v);
+    const col = mat === MAT.GLOW || mat === MAT.GLASS ? raw : jitterColor(raw, jit, x, y, z, jb, jq);
+    let k = 0;
+    if (detail && mat !== MAT.GLASS && mat !== MAT.GLOW) k = decSurf(v) || surfDef || (surfOpt === 'auto' ? autoSurf(raw, mat) : 0);
+    grid[idx(gx, gy, gz)] = ((col + 1) * 16 + k) * 8 + mat;
   });
 
   // origin offset (in voxel units, grid space)
@@ -72,6 +105,10 @@ export function meshVoxels(model, opts = {}) {
 
   // per material: flat lists of quads (4 positions, 4 colours, 1 normal axis/dir, 1 flip flag)
   const P = [[], [], [], [], [], [], [], []], Cl = [[], [], [], [], [], [], [], []], Nr = [[], [], [], [], [], [], [], []];
+  const Dt = [[], [], [], [], [], [], [], []]; // face detail: texel u, v (in atlas tiles) and kind, per vertex
+  const tScale = tpv / DETAIL_TILE;
+  // texture axes per face axis: x faces (z, y), y faces (x, z), z faces (x, y); grain 'y' turns the side faces
+  const TU = grainY ? [1, 0, 1] : [2, 0, 0], TV = grainY ? [2, 2, 0] : [1, 2, 1];
   const dims = [W, H, D];
   const stride = [1, W, W * H];
   const origin = [ox, oy, oz];
@@ -138,7 +175,9 @@ export function meshVoxels(model, opts = {}) {
             const aoBits = raw % 256;
             const cell = (raw - aoBits) / 256;
             const mat = cell % 8;
-            const colHex = (cell - mat) / 8 - 1;
+            const rest = (cell - mat) / 8;
+            const kind = rest % 16;
+            const colHex = (rest - kind) / 16 - 1;
             const lc = linear(colHex);
             aos[0] = aoBits & 3; aos[1] = (aoBits >> 2) & 3; aos[2] = (aoBits >> 4) & 3; aos[3] = (aoBits >> 6) & 3;
             pos[d] = dir === 1 ? x[d] + 1 : x[d]; pos[u] = i; pos[v] = j;
@@ -154,7 +193,10 @@ export function meshVoxels(model, opts = {}) {
               const cu = c === 1 || c === 2 ? 1 : 0, cv = c >= 2 ? 1 : 0;
               pl.push(bx + eu[0] * cu + ev[0] * cv, by + eu[1] * cu + ev[1] * cv, bz + eu[2] * cu + ev[2] * cv);
               const f = glowy ? 1 : aoCurve[aos[c]];
-              cl.push(lc[0] * f, lc[1] * f, lc[2] * f);
+              if (f < 1) cl.push(lc[0] * f ** AO_WARM[0], lc[1] * f ** AO_WARM[1], lc[2] * f ** AO_WARM[2]);
+              else cl.push(lc[0], lc[1], lc[2]);
+              const gp = [pos[0] + (u === 0 ? w * cu : v === 0 ? h * cv : 0), pos[1] + (u === 1 ? w * cu : v === 1 ? h * cv : 0), pos[2] + (u === 2 ? w * cu : v === 2 ? h * cv : 0)];
+              Dt[mat].push(gp[TU[d]] * tScale, gp[TV[d]] * tScale, kind);
             }
             const A0 = aos[order[0]], A1 = aos[order[1]], A2 = aos[order[2]], A3 = aos[order[3]];
             Nr[mat].push(d * 2 + (dir === 1 ? 0 : 1), A0 + A2 < A1 + A3 ? 1 : 0);
@@ -173,6 +215,7 @@ export function meshVoxels(model, opts = {}) {
   const positions = new Float32Array(quadCount * 4 * 3);
   const normals = new Float32Array(quadCount * 4 * 3);
   const colors = new Float32Array(quadCount * 4 * 3);
+  const dets = new Float32Array(quadCount * 4 * 3);
   const indices = new (quadCount * 4 > 65535 ? Uint32Array : Uint16Array)(quadCount * 6);
   const geo = new THREE.BufferGeometry();
   let vi = 0, ii = 0;
@@ -182,6 +225,7 @@ export function meshVoxels(model, opts = {}) {
     const start = ii;
     positions.set(P[mat], vi * 3);
     colors.set(Cl[mat], vi * 3);
+    dets.set(Dt[mat], vi * 3);
     for (let q = 0; q < nr.length; q += 2) {
       const ax = nr[q] >> 1, sgn = nr[q] & 1 ? -1 : 1;
       for (let k = 0; k < 4; k++) normals[(vi + k) * 3 + ax] = sgn;
@@ -199,6 +243,7 @@ export function meshVoxels(model, opts = {}) {
   geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geo.setAttribute('vdet', new THREE.BufferAttribute(dets, 3));
   geo.setIndex(new THREE.BufferAttribute(indices, 1));
   geo.computeBoundingBox();
   geo.computeBoundingSphere();

@@ -34,7 +34,7 @@ export const MK = {
  * items: [{ id, x, y, z, ry, rx, rz, s, k (brightness) }]
  */
 function mergeVoxelProps(items, mats) {
-  const B = Array.from({ length: 5 }, () => ({ pos: [], nrm: [], col: [], idx: [], n: 0 }));
+  const B = Array.from({ length: 5 }, () => ({ pos: [], nrm: [], col: [], det: [], idx: [], n: 0 }));
   const nm = new THREE.Matrix3();
   for (const it of items) {
     const g = propGeometry(it.id);
@@ -43,6 +43,7 @@ function mergeVoxelProps(items, mats) {
     _m.compose(_v.set(it.x, it.y, it.z), _q, _s.setScalar(it.s || 1));
     nm.getNormalMatrix(_m);
     const P = g.attributes.position.array, N = g.attributes.normal.array, C = g.attributes.color.array, I = g.index.array, k = it.k ?? 1;
+    const D = g.attributes.vdet?.array;
     for (const grp of g.groups) {
       const b = B[grp.materialIndex];
       if (!b) continue;
@@ -54,18 +55,19 @@ function mergeVoxelProps(items, mats) {
         _v.set(P[q * 3], P[q * 3 + 1], P[q * 3 + 2]).applyMatrix4(_m); b.pos.push(_v.x, _v.y, _v.z);
         _v.set(N[q * 3], N[q * 3 + 1], N[q * 3 + 2]).applyMatrix3(nm).normalize(); b.nrm.push(_v.x, _v.y, _v.z);
         b.col.push(C[q * 3] * k, C[q * 3 + 1] * k, C[q * 3 + 2] * k);
+        if (D) b.det.push(D[q * 3], D[q * 3 + 1], D[q * 3 + 2]); else b.det.push(0, 0, 0);
       }
       for (let i = grp.start; i < grp.start + grp.count; i++) b.idx.push(I[i] - lo + base);
       b.n += hi - lo + 1;
     }
   }
   const nV = B.reduce((a, b) => a + b.n, 0), nI = B.reduce((a, b) => a + b.idx.length, 0);
-  const pos = new Float32Array(nV * 3), nrm = new Float32Array(nV * 3), col = new Float32Array(nV * 3), idx = new Uint32Array(nI);
+  const pos = new Float32Array(nV * 3), nrm = new Float32Array(nV * 3), col = new Float32Array(nV * 3), det = new Float32Array(nV * 3), idx = new Uint32Array(nI);
   const geo = new THREE.BufferGeometry();
   let vo = 0, io = 0;
   B.forEach((b, mi) => {
     if (!b.idx.length) return;
-    pos.set(b.pos, vo * 3); nrm.set(b.nrm, vo * 3); col.set(b.col, vo * 3);
+    pos.set(b.pos, vo * 3); nrm.set(b.nrm, vo * 3); col.set(b.col, vo * 3); det.set(b.det, vo * 3);
     for (let i = 0; i < b.idx.length; i++) idx[io + i] = b.idx[i] + vo;
     geo.addGroup(io, b.idx.length, mi);
     vo += b.n; io += b.idx.length;
@@ -73,6 +75,7 @@ function mergeVoxelProps(items, mats) {
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.setAttribute('vdet', new THREE.BufferAttribute(det, 3));
   geo.setIndex(new THREE.BufferAttribute(idx, 1));
   geo.computeBoundingSphere();
   const mesh = new THREE.Mesh(geo, mats);

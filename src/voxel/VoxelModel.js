@@ -20,7 +20,24 @@ export function enc(c, mat = MAT.MATTE) {
   return (c & 0xffffff) + mat * 0x1000000 + 0x8000000; // bit 27 = "explicit" flag
 }
 export const decColor = (v) => v & 0xffffff;
-export const decMat = (v) => (v >= 0x8000000 ? Math.floor((v - 0x8000000) / 0x1000000) : 0);
+export const decMat = (v) => (v & 0x8000000 ? (v >>> 24) & 7 : 0);
+
+// Surface kinds: the painted detail a voxel face carries (a tile of the face-detail atlas, public/img/tex/voxdetail.png,
+// baked from CC0 scans by tools/bake-voxdetail.py; the mesher lays it on the voxel grid, materials.js applies it).
+// Stored in bits 28..31 of an encoded voxel. 0 = auto (props pick one by material and colour, see mesher.js autoSurf).
+export const SURF = {
+  auto: 0, plaster: 1, concrete: 2, wood: 3, timber: 4, paint: 5, galv: 6, cloth: 7, paper: 8, soil: 9, stone: 10,
+  rust: 11, bark: 12, card: 13, moss: 14, glaze: 15,
+};
+/** Give a colour (plain or encoded) a surface kind: v.box(..., surf('wood', 0x8a6a4a)). Keeps the material. */
+export function surf(kind, c, mat) {
+  if (c === null || c === undefined) return c;
+  if (typeof c === 'function') return (x, y, z) => surf(kind, c(x, y, z), mat);
+  const k = typeof kind === 'string' ? SURF[kind] ?? 0 : kind;
+  const e = enc(c, mat ?? MAT.MATTE) % 0x10000000;
+  return e + k * 0x10000000;
+}
+export const decSurf = (v) => Math.floor(v / 0x10000000) & 15;
 
 // Material helpers: v.box(..., gloss(0xff0000))
 export const matte = (c) => enc(c, MAT.MATTE);
@@ -35,6 +52,7 @@ export class VoxelModel {
     this._paint = false;
     this.jitter = 0.035; // subtle per-voxel colour variation for a hand-painted feel
     this.pivot = null; // optional {x,y,z} override for mesh origin
+    this.surface = 0; // surface kind (SURF name or id) given to every voxel set while it is non-zero
   }
 
   // ---------------------------------------------------------------- basics
@@ -46,7 +64,9 @@ export class VoxelModel {
       return this;
     }
     if (this._paint && !this.map.has(k)) return this;
-    this.map.set(k, enc(c));
+    let e = enc(c);
+    if (this.surface && e < 0x10000000) e += (typeof this.surface === 'string' ? SURF[this.surface] ?? 0 : this.surface) * 0x10000000;
+    this.map.set(k, e);
     return this;
   }
   get(x, y, z) {
@@ -336,7 +356,7 @@ export class VoxelModel {
   recolor(fn) {
     this.forEach((x, y, z, v) => {
       const nv = fn(x, y, z, decColor(v), decMat(v));
-      if (nv !== undefined && nv !== null) this.map.set(key(x, y, z), enc(nv));
+      if (nv !== undefined && nv !== null) { const e = enc(nv); this.map.set(key(x, y, z), e < 0x10000000 ? e + Math.floor(v / 0x10000000) * 0x10000000 : e); }
     });
     return this;
   }

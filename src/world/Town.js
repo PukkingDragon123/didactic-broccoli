@@ -45,7 +45,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox, pixMat } from '../gfx/geo.js';
 import { townPix, posterTexture, Pix, NAME_COUNT } from '../gfx/textures.js';
 import { propGeometry, propMesh, hasProp, propSize } from './props.js';
-import { voxelMaterials } from '../voxel/materials.js';
+import { voxelMaterials, patchTextureDetail } from '../voxel/materials.js';
 import { hash2 } from '../core/util.js';
 import { audio } from '../core/audio.js';
 import { GARAGE } from './Garage.js';
@@ -75,7 +75,7 @@ installTunnelDarkness({ x0: XT + 0.1, x1: XE + 1.5, z0: TZ0 - 0.35, z1: TZ1 + 0.
 let INDOOR_CHUNK = null, SAFE_BUMP = null;
 /** Shader patch for town materials: NaN-safe bump mapping (degenerate derivatives on far/thin faces would
  *  otherwise poison bloom into a black frame) and, for indoor materials, no low-sun contribution. */
-function townShader(m, indoor = false) {
+function townShader(m, indoor = false, src = null) {
   if (!SAFE_BUMP) {
     SAFE_BUMP = THREE.ShaderChunk.bumpmap_pars_fragment
       .replace(/normalize\( dFdx\( surf_pos\.xyz \) \)/, 'normalize( dFdx( surf_pos.xyz ) + vec3( 1e-7 ) )')
@@ -83,11 +83,15 @@ function townShader(m, indoor = false) {
       .replace('return normalize( abs( fDet ) * surf_norm - vGrad );', 'vec3 bn = abs( fDet ) * surf_norm - vGrad; return dot( bn, bn ) > 1e-14 ? normalize( bn ) : surf_norm;');
     INDOOR_CHUNK = THREE.ShaderChunk.lights_fragment_begin.replace('#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )', '#if 0');
   }
-  m.onBeforeCompile = (sh) => {
+  const base = src?.onBeforeCompile;
+  m.onBeforeCompile = (sh, r) => {
+    if (base) base.call(src, sh, r); // e.g. the voxel face detail (src/voxel/materials.js)
+    else if (m.userData.texDetail) patchTextureDetail(sh, m.userData.texDetail); // pixMat grain (src/gfx/geo.js)
     sh.fragmentShader = sh.fragmentShader.replace('#include <bumpmap_pars_fragment>', SAFE_BUMP);
     if (indoor) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', INDOOR_CHUNK);
   };
-  m.customProgramCacheKey = () => (indoor ? 'town-in' : 'town');
+  const bk = src?.customProgramCacheKey?.() || '';
+  m.customProgramCacheKey = () => (indoor ? 'town-in' : 'town') + bk + (m.userData.texDetail && !base ? '-td' : '');
   return m;
 }
 // window kinds that look into a room (interiors.js): [room, lit, curtain]
@@ -244,7 +248,7 @@ export class Town {
   indoor(mat) {
     if (!this._indoor) this._indoor = new Map();
     if (!this._indoor.has(mat)) {
-      this._indoor.set(mat, townShader(mat.clone(), true));
+      this._indoor.set(mat, townShader(mat.clone(), true, mat));
     }
     return this._indoor.get(mat);
   }

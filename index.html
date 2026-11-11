@@ -6,6 +6,48 @@
   <title>Gacha Garage</title>
   <meta name="description" content="A cozy first-person voxel gachapon shop game set in Grandpa's old garage on a quiet back street." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='4' y='2' width='8' height='1' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='4' fill='%23fff'/%3E%3Crect x='2' y='5' width='12' height='2' fill='%23fff'/%3E%3Crect x='2' y='7' width='12' height='1' fill='%23c33'/%3E%3Crect x='2' y='8' width='12' height='3' fill='%23ff6f91'/%3E%3Crect x='3' y='11' width='10' height='2' fill='%23ff6f91'/%3E%3Crect x='4' y='13' width='8' height='1' fill='%23ff6f91'/%3E%3C/svg%3E" />
+  <link rel="preload" as="image" href="/img/ui/loading-lane.png" />
+  <link rel="preload" as="image" href="/img/ui/loading-van.png" />
+  <!-- The loading screen (#loading), styled here so it is on screen from the first frame, before any script or 3D:
+       just Grandpa's van driving along in pixel art, a puff of exhaust behind it, and a small "loading" line with the
+       percentage under it. The van (8 frames from the real model, and its exhaust puff) is baked by
+       tools/bake-loading.mjs into loading-van.png; the 5x7 digits come from loading-lane.png. Everything is whole
+       texels at a whole-number scale (--s) and moves in steps; only transforms animate, so it keeps going while the
+       game builds (window.__loading.set(0..1), below). -->
+  <style>
+    #loading { position: fixed; inset: 0; z-index: 50; overflow: hidden; contain: strict; background: #1d1b2c; --s: 2; --ry: 50vh; --u: calc(1px * var(--s)); }
+    #loading, #loading * { image-rendering: pixelated; }
+    #loading.out { opacity: 0; transition: opacity .4s steps(4); pointer-events: none; }
+    #loading.gone { display: none; }
+    @media (min-height: 640px) and (min-width: 900px) { #loading { --s: 3; } }
+    @media (min-height: 1000px) and (min-width: 1500px) { #loading { --s: 4; } }
+    @media (min-height: 1400px) and (min-width: 2100px) { #loading { --s: 5; } }
+    /* the van (96 x 60 a frame) and the puff from its exhaust; a dashed line slides under the wheels */
+    .ld-van, .ld-puff { position: absolute; left: calc(50% - 48 * var(--u)); top: calc(var(--ry) - 33 * var(--u)); width: calc(96 * var(--u)); height: calc(60 * var(--u)); overflow: hidden; }
+    .ld-van i, .ld-puff i { display: block; height: 100%; will-change: transform; background: url(/img/ui/loading-van.png) 0 0 / calc(768 * var(--u)) calc(76 * var(--u)); }
+    .ld-van i { width: calc(768 * var(--u)); animation: ld-v .56s steps(8) infinite; }
+    @keyframes ld-v { to { transform: translate3d(calc(-768 * var(--u)), 0, 0); } }
+    .ld-puff { left: calc(50% - 55 * var(--u)); top: calc(var(--ry) + 7 * var(--u)); width: calc(16 * var(--u)); height: calc(16 * var(--u)); }
+    .ld-puff i { width: calc(96 * var(--u)); background-position: 0 calc(-60 * var(--u)); animation: ld-p .72s steps(6) infinite; }
+    /* a trail: older puffs drift back and up, and thin out */
+    .ld-p2 { left: calc(50% - 69 * var(--u)); top: calc(var(--ry) + 4 * var(--u)); opacity: .7; } .ld-p2 i { animation-delay: -.24s; }
+    .ld-p3 { left: calc(50% - 84 * var(--u)); top: calc(var(--ry) + 1 * var(--u)); opacity: .45; } .ld-p3 i { animation-delay: -.48s; }
+    .ld-p4 { left: calc(50% - 99 * var(--u)); top: calc(var(--ry) - 3 * var(--u)); opacity: .25; } .ld-p4 i { animation-delay: -.12s; }
+    @keyframes ld-p { to { transform: translate3d(calc(-96 * var(--u)), 0, 0); } }
+    .ld-road { position: absolute; left: calc(50% - 120 * var(--u)); width: calc(240 * var(--u)); top: calc(var(--ry) + 20 * var(--u)); height: var(--u); overflow: hidden; }
+    .ld-road i { display: block; width: calc(264 * var(--u)); height: 100%; will-change: transform; animation: ld-r .4s steps(12) infinite;
+      background: repeating-linear-gradient(to right, #4a4664 0 calc(14 * var(--u)), transparent calc(14 * var(--u)) calc(24 * var(--u))); }
+    @keyframes ld-r { to { transform: translate3d(calc(-24 * var(--u)), 0, 0); } }
+    /* "loading" and the percentage, in the 5x7 digits */
+    .ld-txt { position: absolute; left: 0; right: 0; top: calc(var(--ry) + 44 * var(--u)); display: flex; justify-content: center; align-items: center; gap: calc(6 * var(--u));
+      font: calc(8 * var(--u))/1 'Alagard', monospace; letter-spacing: var(--u); color: #d9d2e8; }
+    .ld-pc { position: relative; width: calc(24 * var(--u)); height: calc(7 * var(--u)); }
+    .ld-pc i { position: absolute; top: 0; width: calc(5 * var(--u)); height: calc(7 * var(--u)); --d: 0; filter: brightness(0) invert(.86);
+      background: url(/img/ui/loading-lane.png) calc((-172 - var(--d) * 6) * var(--u)) calc(-574 * var(--u)) / calc(480 * var(--u)) calc(588 * var(--u)); }
+    .ld-pc i:nth-child(2) { left: calc(6 * var(--u)); } .ld-pc i:nth-child(3) { left: calc(12 * var(--u)); } .ld-pc i:nth-child(4) { left: calc(19 * var(--u)); --d: 11; }
+    .ld-msg { position: absolute; left: 0; right: 0; top: calc(var(--ry) + 60 * var(--u)); text-align: center; font: 16px/20px 'Alagard', monospace; color: #b8b0cc; }
+    .ld-msg:empty { display: none; }
+  </style>
 </head>
 <body>
   <div id="app"></div>
@@ -18,12 +60,34 @@
     <div id="caption"></div>
   </div>
 
-  <div id="title" class="overlay menu">
-    <div class="loading" id="loading">
-      <div class="load-label">Loading <span id="load-pct">0%</span></div>
-      <div class="load-bar"><div class="load-fill"></div></div>
-    </div>
+  <div id="title" class="overlay menu"></div>
+
+  <div id="loading" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div class="ld-road"><i></i></div>
+    <div class="ld-puff ld-p4"><i></i></div><div class="ld-puff ld-p3"><i></i></div><div class="ld-puff ld-p2"><i></i></div>
+    <div class="ld-puff"><i></i></div>
+    <div class="ld-van"><i></i></div>
+    <div class="ld-txt"><span>Loading</span><div class="ld-pc"><i></i><i></i><i></i><i></i></div></div>
+    <div class="ld-msg" id="load-msg"></div>
   </div>
+  <script>
+    // the loading screen's progress: the percentage under the van; msg(text) puts a line under it; done() fades it out
+    (function () {
+      var L = document.getElementById('loading'), T = L.querySelectorAll('.ld-pc i'), M = document.getElementById('load-msg');
+      function set(p) {
+        p = Math.max(0, Math.min(1, +p || 0));
+        var pc = ('  ' + Math.round(p * 100)).slice(-3), i;
+        for (i = 0; i < 3; i++) T[i].style.setProperty('--d', pc[i] === ' ' ? 10 : pc[i]);
+        L.setAttribute('aria-valuenow', Math.round(p * 100));
+      }
+      window.__loading = {
+        set: set,
+        msg: function (t) { M.textContent = t || ''; },
+        done: function (now) { set(1); L.classList.add(now ? 'gone' : 'out'); setTimeout(function () { L.classList.add('gone'); }, 450); },
+      };
+      set(0);
+    })();
+  </script>
 
   <div id="share" class="overlay hidden">
     <div class="panel">

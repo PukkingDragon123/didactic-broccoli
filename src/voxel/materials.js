@@ -27,10 +27,81 @@ const RAINBOW = `
   float fres = 1.0 - abs(dot(normalize(normal), normalize(vViewPosition)));
   vec3 rainbow = 0.5 + 0.5 * cos(6.2831 * (fres * 1.3 + vViewPosition.y * 0.8 + uTime * 0.05 + vec3(0.0, 0.33, 0.67)));`;
 
+// ------------------------------------------------------------------ face detail
+// Painted detail on voxel faces: the mesher writes a per-vertex 'vdet' (u, v in atlas tiles on the voxel grid, surface
+// kind); the shader multiplies the face colour by the kind's tile of public/img/tex/voxdetail.png (CC0 scans, high-
+// passed and posterised by tools/bake-voxdetail.py). Nearest up close (crisp texels), mipmapped and faded with distance
+// so nothing shimmers. Kind 0 (people, collectibles, anything without a kind) is untouched.
+const DETAIL_STRENGTH = [0.1, 0.15, 0.2, 0.2, 0.07, 0.1, 0.13, 0.08, 0.2, 0.2, 0.2, 0.24, 0.12, 0.2, 0.05];
+let detailTex = null;
+export function voxelDetailTexture() {
+  if (detailTex) return detailTex;
+  const c = document.createElement('canvas');
+  c.width = c.height = 1;
+  const x = c.getContext('2d'); x.fillStyle = '#808080'; x.fillRect(0, 0, 1, 1);
+  detailTex = new THREE.Texture(c);
+  detailTex.magFilter = THREE.NearestFilter;
+  detailTex.minFilter = THREE.LinearMipmapLinearFilter;
+  detailTex.colorSpace = THREE.NoColorSpace;
+  detailTex.anisotropy = 1;
+  detailTex.needsUpdate = true;
+  const img = new Image();
+  img.onload = () => { detailTex.image = img; detailTex.needsUpdate = true; };
+  img.src = `${import.meta.env?.BASE_URL ?? '/'}img/tex/voxdetail.png`;
+  return detailTex;
+}
+export const voxelDetailUniform = { value: null };
+const ST_DECL = `uniform sampler2D uVoxDetail;\nconst float VOX_ST[15] = float[15](${DETAIL_STRENGTH.map((v) => v.toFixed(3)).join(', ')});\n`;
+// the detail term: uv in atlas tiles, kind 1..15, k = strength scale
+const detailTerm = (uv, kind, k) => `
+  if (${kind} > 0.5) {
+    float vk = floor(${kind} + 0.5) - 1.0;
+    vec2 duv = ${uv};
+    vec2 tdx = dFdx(duv) * 128.0, tdy = dFdy(duv) * 128.0;
+    float vlod = 0.5 * log2(max(max(dot(tdx, tdx), dot(tdy, tdy)), 1e-8));
+    float vfade = 1.0 - smoothstep(1.2, 3.2, vlod);
+    if (vfade > 0.0) {
+      vec2 vcell = vec2(mod(vk, 4.0), 3.0 - floor(vk / 4.0));
+      vec2 vuv = (vcell + clamp(fract(duv), 0.004, 0.996)) * 0.25;
+      float vd = textureLod(uVoxDetail, vuv, clamp(vlod, 0.0, 3.0)).r;
+      diffuseColor.rgb *= 1.0 + (vd - 0.5) * 2.0 * VOX_ST[int(vk)] * vfade * ${k};
+    }
+  }`;
+/** Add the face-detail term to a voxel material's shader (call from onBeforeCompile; composes with other patches). */
+export function patchVoxelDetail(shader) {
+  voxelDetailUniform.value ||= voxelDetailTexture();
+  shader.uniforms.uVoxDetail = voxelDetailUniform;
+  shader.vertexShader = shader.vertexShader
+    .replace('void main() {', 'attribute vec3 vdet;\nvarying vec3 vVdet;\nvoid main() {\n  vVdet = vdet;');
+  shader.fragmentShader = shader.fragmentShader
+    .replace('void main() {', `${ST_DECL}varying vec3 vVdet;\nvoid main() {`)
+    .replace('#include <color_fragment>', `#include <color_fragment>${detailTerm('vVdet.xy', 'vVdet.z', '1.0')}`);
+}
+/**
+ * The same detail on a pixel-art texture material (src/gfx/geo.js pixMat): `sub` detail texels per texture pixel, laid
+ * on the texture's own pixel grid (so the grain sits inside the big pixels), kind = SURF id, k = strength scale.
+ */
+export function patchTextureDetail(shader, { kind, texPx, sub = 4, k = 0.7 }) {
+  voxelDetailUniform.value ||= voxelDetailTexture();
+  shader.uniforms.uVoxDetail = voxelDetailUniform;
+  shader.uniforms.uDetK = { value: kind };
+  shader.uniforms.uDetS = { value: [texPx[0] * sub / 128, texPx[1] * sub / 128] };
+  shader.uniforms.uDetA = { value: k };
+  shader.fragmentShader = shader.fragmentShader
+    .replace('void main() {', `${ST_DECL}uniform float uDetK;\nuniform vec2 uDetS;\nuniform float uDetA;\nvoid main() {`)
+    .replace('#include <map_fragment>', `#include <map_fragment>${detailTerm('vMapUv * uDetS', 'uDetK', 'uDetA')}`);
+}
+function withDetail(m, key) {
+  m.onBeforeCompile = (sh) => patchVoxelDetail(sh);
+  m.customProgramCacheKey = () => 'voxdetail-' + key;
+  m.userData.voxDetail = true;
+  return m;
+}
+
 function makeNormalSet() {
-  const matte = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.78, metalness: 0.0 });
-  const gloss = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.28, metalness: 0.0, clearcoat: 0.7, clearcoatRoughness: 0.15 });
-  const metalM = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.28, metalness: 1.0 });
+  const matte = withDetail(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.78, metalness: 0.0 }), 'matte');
+  const gloss = withDetail(new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.28, metalness: 0.0, clearcoat: 0.7, clearcoatRoughness: 0.15 }), 'gloss');
+  const metalM = withDetail(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.28, metalness: 1.0 }), 'metal');
   const glowM = new THREE.MeshBasicMaterial({ vertexColors: true });
   glowM.color.setScalar(1.8);
   const glassM = new THREE.MeshPhysicalMaterial({

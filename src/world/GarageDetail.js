@@ -163,8 +163,9 @@ export class PropBatch {
       let lo = Infinity, hi = -1;
       for (let i = gr.start; i < gr.start + gr.count; i++) { const v = idx[i]; if (v < lo) lo = v; if (v > hi) hi = v; }
       const sub = new THREE.BufferGeometry();
-      for (const name of ['position', 'normal', 'color']) {
+      for (const name of ['position', 'normal', 'color', 'vdet']) {
         const a = geo.attributes[name];
+        if (!a) continue;
         sub.setAttribute(name, new THREE.BufferAttribute(a.array.slice(lo * a.itemSize, (hi + 1) * a.itemSize), a.itemSize));
       }
       const ind = new Uint32Array(gr.count);
