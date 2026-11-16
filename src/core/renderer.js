@@ -353,7 +353,7 @@ export class Renderer {
       gtao.setGBuffer(composer.renderTarget2.depthTexture);
       const gtaoRender = gtao.render.bind(gtao);
       const k = q.aoScale && q.aoScale < 1 ? q.aoScale : 1;
-      const up = k < 1 ? new ShaderPass(AOUpsampleShader) : null;
+      const up = this.aoUp = k < 1 ? new ShaderPass(AOUpsampleShader) : null;
       gtao.render = (rr, wb, rb, dt, mask) => {
         const d = this.vmPass.target?.depthTexture;
         if (d && gtao.depthTexture !== d) { gtao.depthTexture = d; gtao.gtaoMaterial.uniforms.tDepth.value = d; gtao.pdMaterial.uniforms.tDepth.value = d; }

@@ -1,0 +1,39 @@
+{
+ "cash_register": {
+  "id": "cash_register",
+  "name": "Cash Register 01",
+  "src": "polyhaven:CashRegister_01",
+  "title": "Cash Register 01",
+  "author": "Joe Seabuhr",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/CashRegister_01",
+  "site": "Poly Haven",
+  "tris": 2996,
+  "tex": 512,
+  "size": [
+   0.596,
+   0.621,
+   0.624
+  ],
+  "bytes": 95300
+ },
+ "post_box": {
+  "id": "post_box",
+  "name": "Old Japanese Post Box",
+  "src": "sketchfab:5e0f504bb5d144809390dac8c66a6dd5",
+  "title": "Old Japanese Post Box",
+  "author": "Rusty-exe",
+  "authorUrl": "https://sketchfab.com/dustyrusty",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-japanese-post-box-5e0f504bb5d144809390dac8c66a6dd5",
+  "site": "Sketchfab",
+  "tris": 1454,
+  "tex": 512,
+  "size": [
+   0.559,
+   1,
+   0.548
+  ],
+  "bytes": 45772
+ }
+}

@@ -26,7 +26,8 @@ const geoCache = new Map();
 // collisions and placements stay. The geometry stays voxel-compatible (position, normal, color, vdet, plus uv), and its
 // materials are appended to the shared voxel material array (slots 6+, see voxelMaterials('normal')), so every place
 // that draws props with that array (instanced, batched, single) draws the model with no changes. `?voxelprops` in the
-// URL draws the voxel builds instead (before / after shots).
+// URL draws the voxel builds instead (before / after shots). A def with an `asset` and no `build` is model-only (the
+// lowpix conversions, src/data/props/lowpix.js): sized by `asset.size` [w, h, d] or `asset.h`, else the model's metres.
 const FORCE_VOXEL = typeof location !== 'undefined' && /[?&]voxelprops\b/.test(location.search);
 const ASSET_IDS = [...new Set(Object.values(PROPS).map((d) => d.asset?.id).filter(Boolean))];
 if (ASSET_IDS.length && typeof document !== 'undefined' && !FORCE_VOXEL) {
@@ -54,10 +55,21 @@ for (const d of Object.values(PROPS)) {
   const r = assetMerged(d.asset.id, {});
   if (r) for (const m of r.materials) materialSlot(d.asset.tint != null ? tintMat(m, d.asset.tint) : m);
 }
+/** The box a model-only prop (an `asset` and no voxel `build`) is fitted into: `asset.size` [w, h, d] (m, after `ry`),
+ *  else the model's own size (lowpix/world models are in real metres) scaled to `asset.h` (m) or by `asset.scale`. */
+function modelBox(A) {
+  if (Array.isArray(A.size)) return new THREE.Vector3(...A.size);
+  const r = assetMerged(A.id, { ry: A.ry || 0 });
+  if (!r) return null;
+  r.geometry.computeBoundingBox();
+  const s = r.geometry.boundingBox.getSize(new THREE.Vector3());
+  return s.multiplyScalar(A.h ? A.h / s.y : A.scale || 1);
+}
 function assetGeometry(def, voxGeo) {
   const A = def.asset;
-  if (!A || FORCE_VOXEL || !voxGeo) return null;
-  const v = voxGeo.userData.size;
+  if (!A || (FORCE_VOXEL && voxGeo)) return null;
+  const v = voxGeo ? voxGeo.userData.size : modelBox(A);
+  if (!v) return null;
   const r = assetMerged(A.id, { box: [-v.x / 2, 0, -v.z / 2, v.x / 2, v.y, v.z / 2], fit: A.fit || 'contain', ry: A.ry || 0 });
   if (!r) return null;
   const g = r.geometry.clone();
@@ -77,7 +89,7 @@ export function propGeometry(id) {
   let geo = null;
   if (def) {
     try {
-      geo = buildProp(def);
+      geo = def.build ? buildProp(def) : null; // model-only props (src/data/props/lowpix.js) have no voxel build
       if (def.asset) geo = assetGeometry(def, geo) || geo;
     } catch (e) {
       console.warn('prop build failed', id, e);

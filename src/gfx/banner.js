@@ -24,7 +24,7 @@ const shadeC = (c, f) => toHex(rgb(c).map((v) => v * f));
 const mixC = (a, b, t) => { const A = rgb(a), B = rgb(b); return toHex(A.map((v, i) => v + (B[i] - v) * t)); };
 
 // long titles break onto two lines where a real designer would break them
-const TITLE_LINES = { uchu: ['宇宙ねこ', 'ステーション'], heya: ['ミニチュアの', 'お部屋'] };
+const TITLE_LINES = { uchu: ['宇宙ねこ', 'ステーション'], heya: ['ミニチュアの', 'お部屋'], gecen: ['ゲーセン', 'コレクション'] };
 const FALLBACK_CATCH = {
   mochi: ['もちっと集合！', 'ふわふわ日和'], shokudo: ['本物そっくり！', '昭和の味'], kasa: ['雨の日が楽しみ♪', '街角コレクション'],
   showa: ['なつかしの名機たち', 'あの頃のおうち'], konbini: ['24時間いつでも！', 'いらっしゃいませ'], heya: ['ちいさな暮らし', '6畳一間の物語'],

@@ -507,7 +507,7 @@ export class Chores {
     const inSlot = (x, z) => Math.abs(z - S.z) < 0.6 && Math.abs(x - S.x) < 0.6;
     for (const st of [...this.junk.values()]) {
       if (!inSlot(st.m.position.x, st.m.position.z)) continue;
-      const nz = 3.7 - st.J.z * 0.4;
+      const nz = 3.85 - st.J.z * 0.55; // (side by side by the left pier, clear of each other)
       st.m.position.set(-1.6, 0, nz);
       g.player.removeObstacle(st.ob);
       st.ob = g.player.addObstacle(-1.81, -1.39, nz - 0.25, nz + 0.25);
@@ -515,7 +515,7 @@ export class Chores {
     }
     for (const e of g.items.list) {
       if (!e.data?.junk || !inSlot(e.obj.position.x, e.obj.position.z)) continue;
-      e.obj.position.x = -1.6; e.obj.position.z = 3.7 - e.obj.position.z * 0.4;
+      e.obj.position.x = -1.6; e.obj.position.z = 3.85 - e.obj.position.z * 0.55;
     }
   }
 
