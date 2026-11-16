@@ -200,17 +200,20 @@ const FinishShader = {
 // from the alpha channel of its input: the outline pass just before it leaves each pixel's linear depth there
 // (OutlineShader uDepthAlpha), because this pass writes into the target that holds the scene's depth buffer.
 const AOUpsampleShader = {
-  uniforms: { tDiffuse: { value: null }, tAO: { value: null }, aoSize: { value: new THREE.Vector2(1, 1) }, intensity: { value: 1 } },
+  uniforms: { tDiffuse: { value: null }, tAO: { value: null }, aoSize: { value: new THREE.Vector2(1, 1) }, intensity: { value: 1 }, uFar: { value: 1e9 } },
   vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
     uniform sampler2D tDiffuse, tAO;
     uniform vec2 aoSize;
-    uniform float intensity;
+    uniform float intensity, uFar;
     varying vec2 vUv;
     float depthAt(vec2 uv) { vec2 s = vec2(textureSize(tDiffuse, 0)); return texelFetch(tDiffuse, ivec2(clamp(floor(uv * s), vec2(0.0), s - 1.0)), 0).a; }
     void main() {
       vec4 col = texture2D(tDiffuse, vUv);
       float z = col.a;
+      // open sky (nothing drawn: the far plane) never takes AO; a wire or a twig's dark AO texel would otherwise print a
+      // dark square on it (the AO pass and this upsample can pick different full-res pixels for a texel's depth)
+      if (z >= uFar * 0.98) { gl_FragColor = vec4(col.rgb, 1.0); return; }
       vec2 p = vUv * aoSize - 0.5, b = floor(p), f = p - b;
       vec3 ao = vec3(0.0);
       float ws = 0.0;
@@ -222,6 +225,8 @@ const AOUpsampleShader = {
         ao += texture2D(tAO, t).rgb * w; ws += w;
       }
       ao /= max(ws, 1e-6);
+      if (any(isnan(ao)) || any(isinf(ao))) ao = vec3(1.0); // (never let a bad AO texel through)
+      ao = clamp(ao, 0.0, 1.0);
       gl_FragColor = vec4(col.rgb * mix(vec3(1.0), ao, intensity), 1.0);
     }`,
 };
@@ -354,7 +359,7 @@ export class Renderer {
         if (d && gtao.depthTexture !== d) { gtao.depthTexture = d; gtao.gtaoMaterial.uniforms.tDepth.value = d; gtao.pdMaterial.uniforms.tDepth.value = d; }
         gtaoRender(rr, wb, rb, dt, mask);
         if (up) {
-          up.uniforms.tAO.value = gtao.pdRenderTarget.texture; up.uniforms.intensity.value = gtao.blendIntensity;
+          up.uniforms.tAO.value = gtao.pdRenderTarget.texture; up.uniforms.intensity.value = gtao.blendIntensity; up.uniforms.uFar.value = this.camera.far;
           up.renderToScreen = gtao.renderToScreen;
           up.render(rr, wb, rb);
         }

@@ -130,9 +130,13 @@ function cbox(w, h, d, x, y, z, col, { rx = 0, rz = 0, ry = 0, centre = false } 
 // skeleton); ghostify() tints and fades its material. A depth-only copy drawn first keeps the far legs and the inside of
 // the body from showing through, so he reads as one pale shape.
 export class GhostDog {
+  static SCALE = 1.35;
   constructor() {
     this.dog = new Dog('ghost', { cast: false });
     this.root = this.dog.root;
+    // the shared dog build is Shiba-sized (about 34 cm at the withers); her mutt is a medium dog, knee-high on you
+    // (about 46 cm at the withers, 75 cm nose to tail), the size of the old voxel ghost dog
+    this.root.scale.setScalar(GhostDog.SCALE);
     this.t = 0;
   }
   update(dt, speed, sit, lookAt) {
@@ -187,7 +191,7 @@ export class GhostAlley {
     // her dog
     const dog = this.dog = new GhostDog();
     this.mats.push(...ghostify(dog.root, 0.5));
-    dog.root.position.set(HOME.x + 0.45, 0, HOME.z + 0.1);
+    dog.root.position.set(HOME.x + 0.5, 0, HOME.z + 0.1);
     dog.root.rotation.y = Math.PI + 0.3;
     this.group.add(dog.root);
     this.dogSpeed = 0;
@@ -370,7 +374,7 @@ export class GhostAlley {
     }
     h.update(dt, { speed: this.speed, lookAt: near ? g.camera.position : null, talking: g.pedestrians?.bubbles.isTalking(h) });
     // the dog trots at her heel
-    const D = this.dog, side = _v.set(0.45, 0, 0.1).applyAxisAngle(THREE.Object3D.DEFAULT_UP, h.root.rotation.y).add(h.root.position).setY(0);
+    const D = this.dog, side = _v.set(0.5, 0, 0.1).applyAxisAngle(THREE.Object3D.DEFAULT_UP, h.root.rotation.y).add(h.root.position).setY(0);
     _d.subVectors(side, D.root.position).setY(0);
     const cd = _d.length(), cs = cd > 0.12 ? Math.min(1.2, cd * 2.2) : 0;
     this.dogSpeed += (cs - this.dogSpeed) * Math.min(1, dt * 5);
@@ -512,7 +516,7 @@ export class GhostAlley {
     this.grab.style.display = 'none';
     // you come to on the street, facing the alley again
     P.pos.set(-8.4, 0, MOUTH - 1.1); P.vel?.set(0, 0, 0); P.yaw = Math.PI; P.pitch = -0.05;
-    this.h.root.position.copy(HOME); this.dog.root.position.set(HOME.x + 0.45, 0, HOME.z + 0.1);
+    this.h.root.position.copy(HOME); this.dog.root.position.set(HOME.x + 0.5, 0, HOME.z + 0.1);
     this.state = 'wait'; this.speed = 0;
     this.flags.ghostFails = (this.flags.ghostFails || 0) + 1;
     yield c.wait(0.5);
@@ -545,7 +549,7 @@ export class GhostAlley {
     if (first) g.news('The ghost alley\'s blessing', `A rare capsule + ${formatYen(REWARD)}`);
     // she fades out, then back at the mouth where she always waits
     yield c.until((dt) => { this.alpha = Math.max(0, this.alpha - dt * 0.8); return this.alpha <= 0; });
-    h.root.position.copy(HOME); this.dog.root.position.set(HOME.x + 0.45, 0, HOME.z + 0.1);
+    h.root.position.copy(HOME); this.dog.root.position.set(HOME.x + 0.5, 0, HOME.z + 0.1);
     this.state = 'wait'; this.speed = 0;
     yield c.toPlayer(0.7);
     this.alpha = 1;

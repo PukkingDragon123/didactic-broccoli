@@ -1,5 +1,5 @@
-// Little voxel things people carry on the lane (src/npc/street.js): a can from the vending machine (in the colours of a
-// real drink from src/needs/foods.js), a cigarette (with pixel smoke puffs, src/gfx/effects.js), a granny's shopping
+// Little things people carry on the lane (src/npc/street.js): a can from the vending machine (the drink's own can or
+// bottle in its pixel wrap, src/drinks/drinks.js), a cigarette (with pixel smoke puffs, src/gfx/effects.js), a granny's shopping
 // cart that trails behind her, a plastic shop bag, a watering can, and a street dog on a lead (voxel, a small rig:
 // walk cycle, sniffing, tail wag). Everything is built once per kind and shared (geometry + the voxel material set).
 //   holdIn(h, mesh, side, at)   attach to a hand bone        free(mesh)   detach
@@ -9,6 +9,7 @@ import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { FOODS } from '../needs/foods.js';
+import { drinkMesh } from '../drinks/drinks.js';
 
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _m = new THREE.Matrix4(), _s = new THREE.Vector3();
 const _z = new THREE.Vector3(0, 0, 1);
@@ -34,20 +35,16 @@ export function pickDrink(hot = false) {
   return A[Math.floor(Math.random() * A.length)] || null;
 }
 export function canMesh(id) {
-  const art = FOODS[id]?.art || { shape: 'can', body: 0xc83030, band: 0xf2f2f2, band2: 0x2a2a2a };
-  const geo = once('can:' + id, () => vox(0.009, (v) => {
-    const pet = art.shape === 'pet', H = pet ? 20 : art.shape === 'mini' ? 10 : 13, R = pet ? 2.6 : 3.1;
-    v.shape(-4, 0, -4, 4, H, 4, (x, y, z) => x * x + z * z <= R * R + 0.5, (x, y, z) => {
-      if (y === H || y === 0) return pet ? 0xd8e8e8 : 0xb8bcc0;
-      const u = y / H;
-      if (u > 0.36 && u < 0.6) return art.band;
-      if (art.band2 && u > 0.6 && u < 0.7) return art.band2;
-      return art.body;
-    });
-    if (pet) v.box(-1, H + 1, -1, 1, H + 2, 1, art.band2 || 0xf2f2f2);
-    else v.box(-1, H + 1, -1, 1, H + 1, 1, 0x9a9ea2);
-  }, { x: 0, y: 6, z: 0 }));
-  return mesh(geo, false);
+  // the same can / bottle as the vending machine's (src/drinks/drinks.js: a lathe in its pixel-art wrap), built once
+  // per drink and shared; centred on the hand like the grip expects (the drink's own origin is its base)
+  const f = FOODS[id] || { id, art: { shape: 'can', body: 0xc83030 } };
+  const src = once('drink:' + id, () => drinkMesh(f));
+  const m = new THREE.Mesh(src.geometry, src.material);
+  m.position.y = -src.geometry.userData.size.y / 2;
+  m.castShadow = false;
+  const g = new THREE.Group();
+  g.add(m);
+  return g;
 }
 
 // ------------------------------------------------------------------ a cigarette (white with a filter and an ember)

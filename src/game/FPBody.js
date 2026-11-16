@@ -236,7 +236,10 @@ export class FPBody {
     g.scene.add(h.root);
     // head + arms only in shadow maps
     const sk = h.mesh.skeleton;
-    h.mesh.onBeforeRender = () => { sk.update(); const m = sk.boneMatrices; for (const i of HIDE) m.fill(0, i * 16, i * 16 + 16); };
+    // (Human's pose-only skinning flags the bone texture only when update() changed a matrix: after a shadow redraw this
+    // frame the matrices are already whole, so the zeroing below must flag the upload itself, or the colour pass draws
+    // the head and arms round the camera: dark slabs across the view)
+    h.mesh.onBeforeRender = () => { sk.update(); const m = sk.boneMatrices; for (const i of HIDE) m.fill(0, i * 16, i * 16 + 16); if (sk.boneTexture) sk.boneTexture.needsUpdate = true; };
     h.mesh.onBeforeShadow = () => sk.update();
     // extra meshes riding on hidden bones (hats, hair pieces from cosmetics) would sit in front of the camera
     for (const i of HIDE) h.bones[i].traverse((o) => { if (o.isMesh && o !== h.mesh) o.visible = false; });

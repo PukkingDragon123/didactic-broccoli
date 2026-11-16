@@ -391,6 +391,7 @@ export class Chores {
     }
     // the sign: lying where it was found, not yet in your hands
     if (f.junkOpen.includes('j1') && !this.life.s.sign.found && !carried.has('sign')) this.spawnSign(V(JUNK[0].x + 0.35, 0, JUNK[0].z));
+    for (const m of g.machines || []) this.shoveJunk(m);
   }
 
   openJunk(st) {
@@ -409,11 +410,12 @@ export class Chores {
     }
     f.junkOpen.push(J.id);
     // the opened box, ready to carry out
-    g.items.spawnTool({ id: 'junk_box', story: true, junk: J.id, bag: J.id }, V(J.x, 0, J.z), Math.PI / 2);
-    g.effects.puff({ pos: V(J.x, 0.45, J.z), count: 8, colors: DUST, size: 0.05, speed: 0.4, life: 1.6, radius: 0.2 });
+    const P = st.m.position; // (where it stands now: shoved aside if a machine came first)
+    g.items.spawnTool({ id: 'junk_box', story: true, junk: J.id, bag: J.id }, V(P.x, 0, P.z), Math.PI / 2);
+    g.effects.puff({ pos: V(P.x, 0.45, P.z), count: 8, colors: DUST, size: 0.05, speed: 0.4, life: 1.6, radius: 0.2 });
     if (J.sign) {
       // something wooden under the springs and capsule halves...
-      this.spawnSign(V(J.x + 0.38, 0, J.z), true);
+      this.spawnSign(V(P.x + 0.38, 0, P.z), true);
       g.story.task("Grandpa's old OPEN sign! Keep that.");
     } else g.story.task('Rusty springs and a bent crank. Junk.');
     g.save();
@@ -486,17 +488,8 @@ export class Chores {
   // ------------------------------------------------------------------ the first machine arrives in a crate
   onMachineBought(m) {
     const g = this.game, f = this.f;
+    this.shoveJunk(m);
     if (g.story.done || f.crate || g.machines.length > 1) return;
-    // whatever junk still stands in the corner gets shoved aside by the delivery men
-    for (const st of [...this.junk.values()]) {
-      const S = MACHINE_SLOTS[m.data.slot];
-      if (Math.abs(st.J.z - S.z) > 0.6) continue;
-      const nz = 3.7 - st.J.z * 0.4;
-      st.m.position.set(-1.6, 0, nz);
-      g.player.removeObstacle(st.ob);
-      st.ob = g.player.addObstacle(-1.81, -1.39, nz - 0.25, nz + 0.25);
-      if (st.J.id === 'j2') this.life.notes.place('junk', { pos: V(-1.58, 0.402, nz), flat: true, rotY: -Math.PI / 2, size: 0.14 });
-    }
     // bought on the computer: the delivery men bring the crate round in a little while; carried in by Gen-san's van
     // (a second-hand one from the market, src/market/orders.js): it's here already, crate and all
     const viaVan = !!(g.courier?.busy || g.courier?.visit);
@@ -504,6 +497,26 @@ export class Chores {
     if (viaVan) { this.buildCrate(m); g.story.task('Your machine is here, still in its crate.'); return; }
     this.hideMachine(m, true);
     g.news('Order confirmed', 'The delivery men bring it round shortly', 6000);
+  }
+
+  /** Whatever junk still stands in a new machine's slot (Grandpa's boxes, shut or opened) gets shoved aside by the
+   *  delivery men, whichever way the opening went: it would bury the machine's crate or pedestal. */
+  shoveJunk(m) {
+    const g = this.game, S = MACHINE_SLOTS[m.data.slot];
+    if (!S) return;
+    const inSlot = (x, z) => Math.abs(z - S.z) < 0.6 && Math.abs(x - S.x) < 0.6;
+    for (const st of [...this.junk.values()]) {
+      if (!inSlot(st.m.position.x, st.m.position.z)) continue;
+      const nz = 3.7 - st.J.z * 0.4;
+      st.m.position.set(-1.6, 0, nz);
+      g.player.removeObstacle(st.ob);
+      st.ob = g.player.addObstacle(-1.81, -1.39, nz - 0.25, nz + 0.25);
+      if (st.J.id === 'j2') { this.life.notes.remove('junk'); this.junkNote = this.life.notes.place('junk', { pos: V(-1.58, 0.402, nz), flat: true, rotY: -Math.PI / 2, size: 0.14 }); }
+    }
+    for (const e of g.items.list) {
+      if (!e.data?.junk || !inSlot(e.obj.position.x, e.obj.position.z)) continue;
+      e.obj.position.x = -1.6; e.obj.position.z = 3.7 - e.obj.position.z * 0.4;
+    }
   }
 
   machine() { const c = this.f.crate; return c ? this.game.machines.find((m) => m.data.id === c.id) : null; }

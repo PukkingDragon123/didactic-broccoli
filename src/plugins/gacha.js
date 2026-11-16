@@ -49,6 +49,7 @@ function debugHelpers(g) {
         data.stock = Array(Math.round(capacityFor({ type }) * fill)).fill(series);
         g.state.machines.push(data);
         g.machines.push(new GachaMachine(g, data));
+        g.life?.chores?.shoveJunk?.(g.machines[g.machines.length - 1]);
       });
       g.garage?.setLights?.(true);
       return g.machines.length;

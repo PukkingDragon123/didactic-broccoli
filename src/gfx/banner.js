@@ -79,14 +79,14 @@ function textMask(str, size = 16, scale = 2, font = '"DotGothic16", monospace') 
   // trim
   let minX = w, maxX = -1, minY = h, maxY = -1;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 110) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
-  if (maxX < 0) return { w: 0, h: 0, on: () => false };
+  if (maxX < 0) return { w: 0, h: 0, top: null, on: () => false };
   const mw = (maxX - minX + 1) * scale, mh = (maxY - minY + 1) * scale;
   const bits = new Uint8Array(mw * mh);
   for (let y = 0; y < mh; y++) for (let x = 0; x < mw; x++) {
     const sx = minX + Math.floor(x / scale), sy = minY + Math.floor(y / scale);
     bits[y * mw + x] = d[(sy * w + sx) * 4 + 3] > 110 ? 1 : 0;
   }
-  return { w: mw, h: mh, bits, on: (x, y) => x >= 0 && y >= 0 && x < mw && y < mh && bits[y * mw + x] === 1 };
+  return { w: mw, h: mh, top: minY, bits, on: (x, y) => x >= 0 && y >= 0 && x < mw && y < mh && bits[y * mw + x] === 1 };
 }
 
 /** Grow a mask by r pixels (square-ish disc). */
@@ -116,9 +116,12 @@ function logo(p, str, cx, y, { scale = 2, fill = 0xff6f91, fill2 = null, outer =
   const f2 = fill2 ?? shadeC(fill, 0.78);
   const hi = mixC(fill, 0xffffff, 0.45);
   const layers = [];
+  // each glyph keeps its place in the line (its trimmed top against a full-height one's): a long-vowel bar ー or a
+  // small kana sits where the font puts it, not dropped onto the baseline (where the next line's outline buried it)
+  const ref = textMask('口', 16, scale);
   masks.forEach((m, i) => {
     const dy = Math.round(Math.sin(i * 1.9 + 0.6) * bounce);
-    layers.push({ m, x, y: y + dy + (16 * scale - m.h) });
+    layers.push({ m, x, y: y + dy + (16 * scale - ref.h) + ((m.top ?? ref.top) - ref.top) * scale });
     x += m.w + gap;
   });
   const put = (mm, ox, oy, colFn) => {
