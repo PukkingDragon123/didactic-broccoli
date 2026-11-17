@@ -1,0 +1,34 @@
+{
+ "id": "haunted_well",
+ "src": "sketchfab:a2b8df0058254881b75a791bc4f9ae4a",
+ "credit": {
+  "title": "Old Stone Well",
+  "author": "Theory.OAD",
+  "authorUrl": "https://sketchfab.com/Theory.OAD",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-stone-well-a2b8df0058254881b75a791bc4f9ae4a",
+  "site": "Sketchfab"
+ },
+ "tris": 2929,
+ "tex": 496,
+ "size": [
+  1.598,
+  1.375,
+  1.598
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#271b19",
+   "#322522",
+   "#3c302b",
+   "#463c35",
+   "#4f4740",
+   "#686159",
+   "#7f7b74",
+   "#959492",
+   "#acacac"
+  ]
+ },
+ "warnings": []
+}

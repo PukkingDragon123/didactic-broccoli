@@ -185,6 +185,25 @@
   ],
   "bytes": 94160
  },
+ "bamboo_fence": {
+  "id": "bamboo_fence",
+  "name": "BFBBR - Bamboo Fence 01",
+  "src": "sketchfab:c7c5f6cc7adb455b908fb352be5051c2",
+  "title": "BFBBR - Bamboo Fence 01",
+  "author": "SMF Features Developed From Cheryl Hill",
+  "authorUrl": "https://sketchfab.com/cherylhill28",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bfbbr-bamboo-fence-01-c7c5f6cc7adb455b908fb352be5051c2",
+  "site": "Sketchfab",
+  "tris": 1442,
+  "tex": 512,
+  "size": [
+   1.456,
+   1.22,
+   0.236
+  ],
+  "bytes": 42088
+ },
  "basket": {
   "id": "basket",
   "name": "Wicker Basket 01",
@@ -1679,6 +1698,25 @@
    0.692
   ],
   "bytes": 66244
+ },
+ "haunted_well": {
+  "id": "haunted_well",
+  "name": "Old Stone Well",
+  "src": "sketchfab:a2b8df0058254881b75a791bc4f9ae4a",
+  "title": "Old Stone Well",
+  "author": "Theory.OAD",
+  "authorUrl": "https://sketchfab.com/Theory.OAD",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-stone-well-a2b8df0058254881b75a791bc4f9ae4a",
+  "site": "Sketchfab",
+  "tris": 2929,
+  "tex": 496,
+  "size": [
+   1.598,
+   1.375,
+   1.598
+  ],
+  "bytes": 148800
  },
  "heater": {
   "id": "heater",
@@ -3679,6 +3717,25 @@
   ],
   "bytes": 79904
  },
+ "slide": {
+  "id": "slide",
+  "name": "Old Playground Slide",
+  "src": "sketchfab:df79bfbdfe06443e8b20ffa35f94a714",
+  "title": "Old Playground Slide",
+  "author": "crow",
+  "authorUrl": "https://sketchfab.com/crow.bite",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-playground-slide-df79bfbdfe06443e8b20ffa35f94a714",
+  "site": "Sketchfab",
+  "tris": 3986,
+  "tex": 512,
+  "size": [
+   0.851,
+   2.12,
+   3.202
+  ],
+  "bytes": 128812
+ },
  "sofa_02": {
   "id": "sofa_02",
   "name": "Sofa 02",
@@ -4139,6 +4196,25 @@
    0.308
   ],
   "bytes": 81920
+ },
+ "torii": {
+  "id": "torii",
+  "name": "Japanese Torii Gate",
+  "src": "sketchfab:2027a248de1b4b70985ff97e708fb50d",
+  "title": "Japanese Torii Gate",
+  "author": "Sahir Virmani",
+  "authorUrl": "https://sketchfab.com/sahirvirmani",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-torii-gate-2027a248de1b4b70985ff97e708fb50d",
+  "site": "Sketchfab",
+  "tris": 1252,
+  "tex": 512,
+  "size": [
+   0.241,
+   2.32,
+   3.197
+  ],
+  "bytes": 37044
  },
  "trash_bag": {
   "id": "trash_bag",

@@ -2,7 +2,45 @@
 with real-material paint. Every function takes the Fig, a part-id prefix and a position, and returns useful
 heights / anchor points.
 """
-from figlib import text_jp, text5, text3
+from figlib import text_jp, text5, text3, BASE_H
+
+# Most figures stand on their own (feet, paws, bowl, body) like real capsule toys. A base only where the toy needs one
+# (a floating subject on a clear rod, a scene that is the point of the toy, a fragile pose), and then one base family
+# per series (CLAUDE.md toy rule): the same shape, material and thickness, quiet paint, the subject filling ~75 %.
+FAMILIES = {
+    # Alley Cat Patrol: a slab of worn lane asphalt with a kerb-stone edge
+    "lane": dict(col="#4a474e", style="stone", tone=2.5, ch=0.8, edge="#77736e"),
+    # Fake Food Window: the black lacquered riser of a sample window
+    "riser": dict(col="#2c2628", style="glaze", tone=2.6, ch=0.6, edge="#7a2a2a"),
+    # Showa Home Appliances: a walnut-veneer sideboard top
+    "shelf": dict(col="#6a4228", style="wood", tone=2.8, ch=0.6, edge=None),
+    # the line's display stand for floating subjects: a clear acrylic plate (a rod goes up from it)
+    "clear": dict(col="#d8e8ee", style="clear", tone=3.6, ch=0.6, edge=None, mat="glass"),
+}
+FILL = 0.75
+
+
+def series_base(F, family, why, fill=FILL, minw=18.0, aspect=0.62, maker="KAPUKAPU", year="1999"):
+    """The series' base under everything placed so far (F.subject, standing at BASE_H), centred on it; `why` says
+    why this toy needs a base at all (audit.py reports it). Returns (w, d)."""
+    fam = FAMILIES[family]
+    F.spec["light"]["ground"] = BASE_H
+    sw, _, sd = F.subject.size
+    cx, _, cz = F.subject.centre
+    w = max(sw / fill, minw)
+    d = max(sd / fill, w * aspect, minw * 0.75)
+    w = max(w, d * aspect)
+    w, d = round(w * 2) / 2, round(d * 2) / 2
+    R = F.c(fam["col"])
+    F.box("base", [w, BASE_H, d], (cx, BASE_H / 2, cz), ch=fam["ch"], col=R, style=fam["style"], tone=fam["tone"], mat=fam.get("mat"))
+    if fam.get("edge"):
+        F.layer("base", id="edge", op="band", axis="y", **{"from": 0.55, "to": 1.0}, ramp=F.c(fam["edge"]), tone=3.2,
+                faces=["sides"], bevel={"shadow": 1, "highlight": 1})
+    maker_mark(F, "base", maker=maker, year=year)
+    F.stamp("base", ["dd", "hd"], {"d": f"{R}:1", "h": f"{R}:4"}, "right", at="center")  # the gate nub
+    F.meta["base"] = {"family": family, "w": w, "d": d}
+    F.meta["stand_why"] = why
+    return w, d
 
 
 def maker_mark(F, pid, face="bottom", maker="KAPUKAPU", year="1999"):
@@ -26,8 +64,6 @@ def slab(F, pid, w, d, h=3.0, col="#5a5e66", style="stone", at=(0, 0, 0), ch=0.7
 
 def asphalt(F, pid, w, d, h=3.0, at=(0, 0, 0), line=None, **kw):
     top = slab(F, pid, w, d, h, col="#4a4c52", style="stone", at=at, **kw)
-    F.layer(pid, id="grit", op="speckle", density=0.05, shift=0.8, faces=["up"])
-    F.layer(pid, id="crack", op="cracks", scale=0.5, width=0.5, threshold=0.75, shift=-1.0, faces=["up"])
     if line:
         F.layer(pid, id="line", op="band", axis="x", **{"from": line[0], "to": line[1]}, ramp="white", tone=4.6, faces=["up"], wobble=0.05)
     return top
@@ -37,7 +73,6 @@ def post_box(F, p, at=(0, 0, 0), r=7.0, h=24.0, col="#b83228"):
     """The round red post box of the Showa street: a cylinder, a domed cap, the slot, the white collection plate."""
     R = F.c(col)
     F.cyl(p + "pb_body", r, h, at, sides=16, col=R, style="tin", tone=3.0, seam="x")
-    F.layer(p + "pb_body", id="rust", op="patches", scale=1.1, threshold=0.8, ramp=F.c("#6a3a24"), tone=2.2, faces=["sides"])
     F.cyl(p + "pb_cap", r * 1.08, 2.0, (at[0], at[1] + h, at[2]), sides=16, col=R, style="tin", tone=3.2, top=0.92)
     F.loft(p + "pb_dome", [((0, 0, 0), [r * 1.9, r * 1.9]), ((0, r * 0.35, 0), [r * 1.6, r * 1.6]), ((0, r * 0.55, 0), [r * 0.9, r * 0.9])],
            (at[0], at[1] + h + 2.0, at[2]), sides=16, rnd=2.0, col=R, style="tin", tone=3.3, up=[0, 0, 1])
@@ -54,9 +89,6 @@ def oil_drum(F, p, at=(0, 0, 0), r=8.0, h=17.0, col="#2e5a48"):
     F.cyl(p + "drum", r, h, at, sides=16, col=R, style="tin", tone=2.8, seam="x")
     F.layer(p + "drum", id="ribs", op="stripes", axis="y", period=h / 3, width=0.08, shift=0.9, faces=["sides"],
             bevel={"shadow": 1, "highlight": 1})
-    F.layer(p + "drum", id="rust", op="patches", scale=0.8, threshold=0.62, ramp=F.c("#7a3e1e"), tone=2.4,
-            bevel={"shadow": 1, "highlight": 0, "shadow_shift": -0.8})
-    F.layer(p + "drum", id="streak", op="stripes", axis="x", period=2.2, width=0.15, wobble=0.6, range=[-1, 1], shift=-0.5, faces=["sides"])
     F.cyl(p + "drum_lid", r * 1.03, 0.9, (at[0], at[1] + h, at[2]), sides=16, col=R, style="tin", tone=3.0)
     F.cyl(p + "drum_bung", 1.3, 0.8, (at[0] + r * 0.5, at[1] + h + 0.9, at[2] - r * 0.3), sides=8, col="#9a9aa0", style="metal")
     return at[1] + h + 0.9
@@ -90,8 +122,7 @@ def cardboard_box(F, p, w, h, d, at=(0, 0, 0), col="#b88a54", label="みかん",
 def bucket(F, p, at=(0, 0, 0), r=8.0, h=10.0, col="#9aa0a6"):
     """A galvanised tin bucket (open, double-sided walls) with a wire handle."""
     R = F.c(col, k=0.3)
-    F.cyl(p + "bk_wall", r * 0.82, h, at, sides=16, top=1.22, col=R, style="metal", tone=3.2, double_sided=True, hide=["front"], seam="x")
-    F.layer(p + "bk_wall", id="spangle", op="patches", scale=1.6, threshold=0.5, shift=0.5)
+    F.cyl(p + "bk_wall", r * 0.82, h, at, sides=16, top=1.22, col=R, style="tin", tone=4.0, double_sided=True, hide=["front"], seam="x")
     F.layer(p + "bk_wall", id="ribs", op="stripes", axis="y", period=h / 4, width=0.1, shift=-0.8, faces=["sides"], bevel={"shadow": 1, "highlight": 1})
     F.cyl(p + "bk_rim", r, 0.8, (at[0], at[1] + h - 0.4, at[2]), sides=16, col=R, style="metal", tone=3.8, hide=["front", "back"], double_sided=True)
     F.loft(p + "bk_handle", [((-r, 0, 0), 0.5), ((-r * 0.7, r * 0.55, 0), 0.5), ((0, r * 0.8, 0), 0.5), ((r * 0.7, r * 0.55, 0), 0.5), ((r, 0, 0), 0.5)],
@@ -105,7 +136,6 @@ def block_wall(F, p, w, h, d, at=(0, 0, 0), col="#a8a49a"):
     F.box(p + "wall", [w, h, d], (at[0], at[1] + h / 2, at[2]), ch=0.4, col=C, style="stone", tone=3.1)
     F.layer(p + "wall", id="blocks", op="scales", along="x", size=[w / 4, h / 4], shape="square", gap=0.35, gradient=0.6, rim=0.6,
             shadow=-1.2, jitter=0.4, faces=["sides", "front", "back"])
-    F.layer(p + "wall", id="stain", op="stripes", axis="x", period=2.6, width=0.12, wobble=0.6, shift=-0.5, faces=["front", "back"])
     F.box(p + "wall_cap", [w + 1.2, 1.6, d + 1.2], (at[0], at[1] + h + 0.8, at[2]), ch=0.4, col=C, style="stone", tone=3.5)
     return at[1] + h + 1.6
 
@@ -165,15 +195,16 @@ def plate(F, pid, r, at=(0, 0, 0), col="#f2efe6", rim=None, h=1.6, sides=20, par
     return at[1] + h
 
 
-def price_card(F, pid, price, name_jp=None, at=(0, 0, 0), yaw=0, col="#f4efe0"):
-    """The folded tent card with the price that stands in front of every food sample."""
+def price_card(F, pid, price, name_jp=None, at=(0, 0, 0), yaw=0, col="#f4efe0", size=1.0):
+    """The folded tent card with the price that stands in front of every food sample (base furniture)."""
     C = F.c(col, k=0.0)
+    w, h = 12.0 * size, 7.0 * size
     for i, a in enumerate((-72, 72)):
-        F.box(f"{pid}{i}", [12.0, 0.4, 7.0], at, ch=0.05, col=C, style="paper", tone=3.8, rot=(a + 180 * (i == 0), yaw, 0), off=[0, 0, 3.5])
+        F.box(f"{pid}{i}", [w, 0.4, h], at, ch=0.05, col=C, style="paper", tone=3.8, rot=(a + 180 * (i == 0), yaw, 0), off=[0, 0, h / 2])
     art = text3(price)
-    F.stamp(f"{pid}1", art, {"#": "ink:1"}, "top", at="center", off=(0, -2 if name_jp else 0))
+    F.stamp(f"{pid}1", art, {"#": "ink:1"}, "top", at="center", off=(0, -3 if name_jp else 0))
     if name_jp:
-        F.stamp(f"{pid}1", text_jp(name_jp, 8), {"#": F.c("#b83a2a") + ":2"}, "top", at="center", off=(0, 5))
+        F.stamp(f"{pid}1", text_jp(name_jp, 8), {"#": F.c("#b83a2a") + ":2"}, "top", at="center", off=(0, 6))
 
 
 def doily(F, pid, r, at=(0, 0, 0)):

@@ -10,30 +10,25 @@
   {
    "name": "glass",
    "src": "sketchfab:a7652a3d813a479ba93cf880e466789c",
-   "height": 28,
-   "at": [
-    0,
-    5.4,
-    -1
+   "height": 34.0,
+   "pos": [
+    0.0,
+    3.0,
+    0.0
    ],
    "yaw": 0,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "matte",
-   "recolor": {
-    "hue": 115,
-    "saturation": 1.1,
-    "linear": [
-     0.75,
-     70
-    ]
-   },
-   "key": "5ab867bda5d8ef"
+   "tris": 5000,
+   "mat": "gloss",
+   "key": "380cff4fe5e59e"
   }
  ],
+ "base": {
+  "family": "riser",
+  "w": 18.0,
+  "d": 18.0
+ },
  "model_clip": {
   "node": "model_glass",
   "kind": "wobble",

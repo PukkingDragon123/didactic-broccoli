@@ -17,6 +17,11 @@ import { Pix, FONT_EN } from '../gfx/pix.js';
 import { VoxelModel, gloss, glass, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
+import { preloadLP, lpReady, lpMaterialSlots } from '../gachakit/lowpix.js';
+
+// the packing station and the acrylic stand are a lowpix model (art/lowpix/machines/_src/packing.py), drawn with the
+// shared voxel material array like before; the voxel builds below are the fallback
+if (typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search)) await preloadLP(['packing']);
 import { formatYen } from '../core/util.js';
 import './gachaSfx.js';
 
@@ -84,6 +89,7 @@ export function makePackagedMesh(key, finish = 'normal') {
 let standGeo = null;
 /** Acrylic display stand: a clear stepped riser on a base with a printed plate (figure slot on top). */
 function standMesh() {
+  if (!standGeo && lpReady('packing')) standGeo = lpMaterialSlots('packing', 'stand', voxelMaterials('normal'));
   if (!standGeo) {
     const v = new VoxelModel();
     v.jitter = 0;
@@ -102,6 +108,7 @@ const STAND_TOP = 0.0045 * 7;
 
 let stationGeo = null;
 function stationMesh() {
+  if (!stationGeo && lpReady('packing')) stationGeo = lpMaterialSlots('packing', 'station', voxelMaterials('normal'));
   if (!stationGeo) {
     const v = new VoxelModel();
     v.jitter = 0.02;

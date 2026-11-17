@@ -148,6 +148,11 @@ export class Kana {
       offset: o.offset || null, px: o.px || 0,
     };
     if (!it.at && !it.screen) it.screen = [it.side > 0 ? 0.8 : 0.12, 0.62];
+    // never a wall of letters: the same lettering at nearly the same spot within a beat is one burst, and at most
+    // six bursts are up at once (the oldest gives way)
+    const twin = this.items.find((o) => o.kind === it.kind && o.t < 0.4 && ((o.screen && it.screen && Math.hypot(o.screen[0] - it.screen[0], o.screen[1] - it.screen[1]) < 0.12) || (o.at && o.at === it.at)));
+    if (twin) return { stop: () => {} };
+    while (this.items.length >= 6) this.items.shift();
     this.items.push(it);
     this.canvas.style.display = 'block';
     if (o.sound !== false) {

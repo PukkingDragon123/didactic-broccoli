@@ -148,7 +148,7 @@
     "spread": 0.75
    },
    "wsiding": {
-    "base": "#aea898",
+    "base": "#43342a",
     "steps": 8,
     "hue_shift": 10,
     "sat_shift": 0.03,
@@ -308,8 +308,15 @@
     "sat_shift": 0.03,
     "spread": 0.7
    },
-   "cb8b0a0": {
-    "base": "#b8b0a0",
+   "c5a4a3a": {
+    "base": "#5a4a3a",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "c3a2c22": {
+    "base": "#3a2c22",
     "steps": 6,
     "hue_shift": 10,
     "sat_shift": 0.03,
@@ -926,27 +933,57 @@
     "dark_shift": -0.8
    },
    "brush": {
-    "flow": "vertical"
+    "flow": "horizontal"
    },
    "layers": [
     {
-     "op": "photo",
-     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/painted_plaster_wall",
-     "scale": 1.4,
-     "amount": 0.55
+     "id": "laps",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.18,
+     "width": 0.2,
+     "shift": -1.5,
+     "space": "world",
+     "bevel": {
+      "highlight": 1,
+      "shadow": 0,
+      "highlight_shift": 0.9
+     }
     },
     {
-     "id": "grain",
-     "op": "noise",
-     "scale": 0.08,
-     "amount": 0.35
+     "id": "butts",
+     "op": "spots",
+     "count": 40,
+     "radius": [
+      0.008,
+      0.012
+     ],
+     "stretch": [
+      0.3,
+      6,
+      0.3
+     ],
+     "shift": -1.0
+    },
+    {
+     "id": "flake",
+     "op": "patches",
+     "scale": 0.2,
+     "threshold": 0.8,
+     "shift": -0.6
     },
     {
      "id": "fade",
      "op": "patches",
      "scale": 0.9,
      "threshold": 0.55,
-     "shift": 0.5
+     "shift": 0.4
+    },
+    {
+     "id": "grain",
+     "op": "noise",
+     "scale": 0.1,
+     "amount": 0.3
     },
     {
      "id": "dirt",
@@ -964,27 +1001,57 @@
     "dark_shift": -0.8
    },
    "brush": {
-    "flow": "vertical"
+    "flow": "horizontal"
    },
    "layers": [
     {
-     "op": "photo",
-     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/painted_plaster_wall",
-     "scale": 1.4,
-     "amount": 0.55
+     "id": "laps",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.18,
+     "width": 0.2,
+     "shift": -1.5,
+     "space": "world",
+     "bevel": {
+      "highlight": 1,
+      "shadow": 0,
+      "highlight_shift": 0.9
+     }
     },
     {
-     "id": "grain",
-     "op": "noise",
-     "scale": 0.08,
-     "amount": 0.35
+     "id": "butts",
+     "op": "spots",
+     "count": 40,
+     "radius": [
+      0.008,
+      0.012
+     ],
+     "stretch": [
+      0.3,
+      6,
+      0.3
+     ],
+     "shift": -1.0
+    },
+    {
+     "id": "flake",
+     "op": "patches",
+     "scale": 0.2,
+     "threshold": 0.8,
+     "shift": -0.6
     },
     {
      "id": "fade",
      "op": "patches",
      "scale": 0.9,
      "threshold": 0.55,
-     "shift": 0.5
+     "shift": 0.4
+    },
+    {
+     "id": "grain",
+     "op": "noise",
+     "scale": 0.1,
+     "amount": 0.3
     },
     {
      "id": "dirt",
@@ -1002,27 +1069,57 @@
     "dark_shift": -0.8
    },
    "brush": {
-    "flow": "vertical"
+    "flow": "horizontal"
    },
    "layers": [
     {
-     "op": "photo",
-     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/painted_plaster_wall",
-     "scale": 1.4,
-     "amount": 0.55
+     "id": "laps",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.18,
+     "width": 0.2,
+     "shift": -1.5,
+     "space": "world",
+     "bevel": {
+      "highlight": 1,
+      "shadow": 0,
+      "highlight_shift": 0.9
+     }
     },
     {
-     "id": "grain",
-     "op": "noise",
-     "scale": 0.08,
-     "amount": 0.35
+     "id": "butts",
+     "op": "spots",
+     "count": 40,
+     "radius": [
+      0.008,
+      0.012
+     ],
+     "stretch": [
+      0.3,
+      6,
+      0.3
+     ],
+     "shift": -1.0
+    },
+    {
+     "id": "flake",
+     "op": "patches",
+     "scale": 0.2,
+     "threshold": 0.8,
+     "shift": -0.6
     },
     {
      "id": "fade",
      "op": "patches",
      "scale": 0.9,
      "threshold": 0.55,
-     "shift": 0.5
+     "shift": 0.4
+    },
+    {
+     "id": "grain",
+     "op": "noise",
+     "scale": 0.1,
+     "amount": 0.3
     },
     {
      "id": "dirt",
@@ -1040,27 +1137,57 @@
     "dark_shift": -0.8
    },
    "brush": {
-    "flow": "vertical"
+    "flow": "horizontal"
    },
    "layers": [
     {
-     "op": "photo",
-     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/painted_plaster_wall",
-     "scale": 1.4,
-     "amount": 0.55
+     "id": "laps",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.18,
+     "width": 0.2,
+     "shift": -1.5,
+     "space": "world",
+     "bevel": {
+      "highlight": 1,
+      "shadow": 0,
+      "highlight_shift": 0.9
+     }
     },
     {
-     "id": "grain",
-     "op": "noise",
-     "scale": 0.08,
-     "amount": 0.35
+     "id": "butts",
+     "op": "spots",
+     "count": 40,
+     "radius": [
+      0.008,
+      0.012
+     ],
+     "stretch": [
+      0.3,
+      6,
+      0.3
+     ],
+     "shift": -1.0
+    },
+    {
+     "id": "flake",
+     "op": "patches",
+     "scale": 0.2,
+     "threshold": 0.8,
+     "shift": -0.6
     },
     {
      "id": "fade",
      "op": "patches",
      "scale": 0.9,
      "threshold": 0.55,
-     "shift": 0.5
+     "shift": 0.4
+    },
+    {
+     "id": "grain",
+     "op": "noise",
+     "scale": 0.1,
+     "amount": 0.3
     },
     {
      "id": "dirt",
@@ -1205,28 +1332,34 @@
      "id": "laps",
      "op": "stripes",
      "axis": "y",
-     "period": 0.1875,
-     "width": 0.17,
-     "shift": -1.3,
+     "period": 0.18,
+     "width": 0.2,
+     "shift": -1.4,
      "space": "world",
      "bevel": {
       "highlight": 1,
-      "shadow": 0
+      "shadow": 0,
+      "highlight_shift": 1.2
      }
     },
     {
-     "id": "joints",
-     "op": "stripes",
-     "axis": "x",
-     "period": 1.82,
-     "width": 0.02,
-     "shift": -0.9
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/weathered_planks",
+     "scale": 1.2,
+     "amount": 0.6
+    },
+    {
+     "id": "grey",
+     "op": "patches",
+     "scale": 0.6,
+     "threshold": 0.62,
+     "shift": 0.6
     },
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 0.4,
-     "amount": 0.35
+     "scale": 0.15,
+     "amount": 0.4
     },
     {
      "id": "dirt",
@@ -2810,13 +2943,13 @@
    "shape": "box",
    "size": [
     2.57,
-    0.16,
+    0.18,
     0.8509
    ],
    "pivot": [
     -1.735,
-    2.8598,
-    0.3727
+    2.8504,
+    0.3693
    ],
    "parent": "hf140_1660",
    "rotation": [
@@ -2833,8 +2966,20 @@
       "faces": [
        "bottom"
       ],
-      "ramp": "cb8b0a0",
-      "tone": 3
+      "ramp": "c5a4a3a",
+      "tone": 2.6
+     },
+     {
+      "id": "rafters",
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.45,
+      "width": 0.15,
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "c3a2c22",
+      "tone": 2.4
      },
      {
       "id": "fascia",
@@ -2860,8 +3005,8 @@
    ],
    "pivot": [
     -1.735,
-    2.69,
-    0.86
+    2.63,
+    0.93
    ],
    "parent": "hf140_1660",
    "rotation": [
@@ -2881,13 +3026,13 @@
    "shape": "box",
    "size": [
     0.37,
-    0.16,
+    0.18,
     0.8509
    ],
    "pivot": [
     2.835,
-    2.8598,
-    0.3727
+    2.8504,
+    0.3693
    ],
    "parent": "hf140_1660",
    "rotation": [
@@ -2904,8 +3049,20 @@
       "faces": [
        "bottom"
       ],
-      "ramp": "cb8b0a0",
-      "tone": 3
+      "ramp": "c5a4a3a",
+      "tone": 2.6
+     },
+     {
+      "id": "rafters",
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.45,
+      "width": 0.15,
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "c3a2c22",
+      "tone": 2.4
      },
      {
       "id": "fascia",
@@ -2931,8 +3088,8 @@
    ],
    "pivot": [
     2.835,
-    2.69,
-    0.86
+    2.63,
+    0.93
    ],
    "parent": "hf140_1660",
    "rotation": [
@@ -5121,13 +5278,13 @@
    "shape": "box",
    "size": [
     5.54,
-    0.16,
+    0.18,
     0.8509
    ],
    "pivot": [
     0.0,
-    2.8598,
-    0.3727
+    2.8504,
+    0.3693
    ],
    "parent": "hf725_1600",
    "rotation": [
@@ -5144,8 +5301,20 @@
       "faces": [
        "bottom"
       ],
-      "ramp": "cb8b0a0",
-      "tone": 3
+      "ramp": "c5a4a3a",
+      "tone": 2.6
+     },
+     {
+      "id": "rafters",
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.45,
+      "width": 0.15,
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "c3a2c22",
+      "tone": 2.4
      },
      {
       "id": "fascia",
@@ -5166,13 +5335,13 @@
    "shape": "box",
    "size": [
     5.54,
-    0.1,
-    0.06
+    0.13,
+    0.07
    ],
    "pivot": [
     0.0,
-    2.74,
-    0.8
+    2.715,
+    0.84
    ],
    "parent": "hf725_1600",
    "style": "noki"
@@ -5187,8 +5356,8 @@
    ],
    "pivot": [
     0.0,
-    2.69,
-    0.86
+    2.63,
+    0.93
    ],
    "parent": "hf725_1600",
    "rotation": [
@@ -9188,13 +9357,13 @@
    "shape": "box",
    "size": [
     0.47,
-    0.16,
+    0.18,
     0.8509
    ],
    "pivot": [
     -2.485,
-    2.8598,
-    0.3727
+    2.8504,
+    0.3693
    ],
    "parent": "hf1820_1600",
    "rotation": [
@@ -9211,8 +9380,20 @@
       "faces": [
        "bottom"
       ],
-      "ramp": "cb8b0a0",
-      "tone": 3
+      "ramp": "c5a4a3a",
+      "tone": 2.6
+     },
+     {
+      "id": "rafters",
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.45,
+      "width": 0.15,
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "c3a2c22",
+      "tone": 2.4
      },
      {
       "id": "fascia",
@@ -9233,13 +9414,13 @@
    "shape": "box",
    "size": [
     0.47,
-    0.1,
-    0.06
+    0.13,
+    0.07
    ],
    "pivot": [
     -2.485,
-    2.74,
-    0.8
+    2.715,
+    0.84
    ],
    "parent": "hf1820_1600",
    "style": "noki"
@@ -9254,8 +9435,8 @@
    ],
    "pivot": [
     -2.485,
-    2.69,
-    0.86
+    2.63,
+    0.93
    ],
    "parent": "hf1820_1600",
    "rotation": [
@@ -9275,13 +9456,13 @@
    "shape": "box",
    "size": [
     2.07,
-    0.16,
+    0.18,
     0.8509
    ],
    "pivot": [
     1.685,
-    2.8598,
-    0.3727
+    2.8504,
+    0.3693
    ],
    "parent": "hf1820_1600",
    "rotation": [
@@ -9298,8 +9479,20 @@
       "faces": [
        "bottom"
       ],
-      "ramp": "cb8b0a0",
-      "tone": 3
+      "ramp": "c5a4a3a",
+      "tone": 2.6
+     },
+     {
+      "id": "rafters",
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.45,
+      "width": 0.15,
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "c3a2c22",
+      "tone": 2.4
      },
      {
       "id": "fascia",
@@ -9320,13 +9513,13 @@
    "shape": "box",
    "size": [
     2.07,
-    0.1,
-    0.06
+    0.13,
+    0.07
    ],
    "pivot": [
     1.685,
-    2.74,
-    0.8
+    2.715,
+    0.84
    ],
    "parent": "hf1820_1600",
    "style": "noki"
@@ -9341,8 +9534,8 @@
    ],
    "pivot": [
     1.685,
-    2.69,
-    0.86
+    2.63,
+    0.93
    ],
    "parent": "hf1820_1600",
    "rotation": [

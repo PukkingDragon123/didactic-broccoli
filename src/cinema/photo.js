@@ -67,7 +67,8 @@ export class PhotoMode {
     P.lookOverride = this.cam;
     g.jojo?.impact.filter(FILTER_LIST[this.fi]);
     this.render();
-    this.hud.classList.remove('hidden');
+    this.hud.classList.remove('hidden', 'mini');
+    this.helpT = 6;
     try { audio.play('whoosh', { vol: 0.2 }); } catch { /* */ }
     return true;
   }
@@ -84,6 +85,7 @@ export class PhotoMode {
     g.jojo?.impact.filter(null);
     this.S?.hide();
     this.hud.classList.add('hidden');
+    this.print.classList.remove('stay');
     // the pointer came loose (Esc): now show the pause menu the game would have shown
     if (!g.input.locked && !g.input.touch && !/autotest/.test(location.search)) g.input.onLockChange?.(false);
   }
@@ -99,7 +101,8 @@ export class PhotoMode {
     const pose = this.pose ? POSE_INFO[this.pose]?.name || this.pose : 'Standing easy';
     this.hud.innerHTML = `<div class="ph-tag"><small>Filter</small><b>${esc(F ? F.name : 'No filter')}</b><span>${this.fi + 1} / ${FILTER_LIST.length}</span></div>`
       + `<div class="ph-note"><b>Photo mode</b><span><kbd>Mouse</kbd> look <kbd>WASD</kbd> move <kbd>Space</kbd>/<kbd>C</kbd> up, down</span><span><kbd>Wheel</kbd> zoom <kbd>Z</kbd>/<kbd>X</kbd> tilt <kbd>F</kbd>/<kbd>G</kbd> filter</span>`
-      + `<span><kbd>1-9</kbd> pose <kbd>0</kbd> stand <kbd>H</kbd> ${this.showMe ? 'hide' : 'show'} yourself</span><span><kbd>Enter</kbd> take it <kbd>P</kbd> back</span><i class="pose">${esc(pose)}</i></div>`;
+      + `<span><kbd>1-9</kbd> pose <kbd>0</kbd> stand <kbd>H</kbd> ${this.showMe ? 'hide' : 'show'} yourself</span><span><kbd>Enter</kbd> take it <kbd>P</kbd> back</span>`
+      + `<span class="short"><kbd>Enter</kbd> take it <kbd>F</kbd> filter <kbd>1-9</kbd> pose <kbd>P</kbd> back</span><i class="pose">${esc(pose)}</i></div>`;
   }
 
   update(dt) {
@@ -110,6 +113,7 @@ export class PhotoMode {
       return;
     }
     this.S?.update(dt, this.cam.pos);
+    if (this.helpT > 0 && (this.helpT -= dt) <= 0) this.hud.classList.add('mini');
     if (inp.keyPressed('KeyP') || inp.keyPressed('Escape') || (!inp.locked && !inp.touch && !/autotest/.test(location.search))) { this.exit(); return; }
     // look
     const m = inp.mouse, sens = 0.0022 * (inp.sensitivity || 1) * (this.fov / 60);
@@ -145,7 +149,7 @@ export class PhotoMode {
   }
 
   /** Take the picture: the shutter blades close and open in steps, the frame becomes a paper print, the PNG saved. */
-  snap() {
+  snap(stay = false) {
     const g = this.game;
     this.hud.classList.add('hidden');
     let url = null;
@@ -159,7 +163,7 @@ export class PhotoMode {
     const d = g.clock ? g.calendar?.dateOf?.(g.clock.day) : null;
     const stamp = d ? `'99 ${String(d.month ?? 4).padStart(2, ' ')} ${String(d.date).padStart(2, ' ')}` : "'99  4 12";
     this.print.innerHTML = `<div class="pp"><img alt="" src="${url}"><span class="date">${esc(stamp)}</span><small>Gacha Garage · photo ${this.n}</small></div>`;
-    this.print.classList.remove('show'); void this.print.offsetWidth; this.print.classList.add('show');
+    this.print.classList.remove('show', 'stay'); void this.print.offsetWidth; this.print.classList.add(stay ? 'stay' : 'show');
     clearTimeout(this._pt); this._pt = setTimeout(() => this.print.classList.remove('show'), 3200);
     if (!/autotest/.test(location.search)) {
       const a = document.createElement('a');

@@ -1,0 +1,576 @@
+{
+ "name": "Shop sign (OPEN / CLOSED)",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 0.9,
+ "budget": {
+  "tris": 1500,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.45,
+  "gradient": 0.15,
+  "ao": 0.3,
+  "ao_height": 60.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "c9a6a3a_hue12": [
+    "#20110b",
+    "#492b1b",
+    "#72492b",
+    "#996a3d",
+    "#bf9766",
+    "#d5c19f",
+    "#ede6d6"
+   ],
+   "cf4ecd8_k0p0": [
+    "#512a0b",
+    "#bc6e1c",
+    "#e7b36b",
+    "#f8ecd6",
+    "#faf3e1",
+    "#fbf8ec",
+    "#fdfcf7"
+   ],
+   "cd8282a_k0p1": [
+    "#2c080f",
+    "#66131e",
+    "#9f2028",
+    "#d33131",
+    "#dd7169",
+    "#e9aaa1",
+    "#f5ddd7"
+   ],
+   "cc8b48a": [
+    "#302014",
+    "#6f5030",
+    "#ac844d",
+    "#c9b38b",
+    "#d6caab",
+    "#e4dfca",
+    "#f3f2e9"
+   ]
+  }
+ },
+ "styles": {
+  "steel": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 120,
+     "amount": 0.8
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.7,
+     "min_light": 0.75
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.5,
+     "max_light": 0.2
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.08,
+     "shift": 1.0,
+     "post": true
+    }
+   ]
+  },
+  "rubber": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 0,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 8,
+     "amount": 0.25
+    },
+    {
+     "id": "dust",
+     "op": "speckle",
+     "density": 0.02,
+     "shift": 0.6
+    }
+   ]
+  },
+  "plank": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "brush": {
+    "flow": "long",
+    "length": 8,
+    "width": 1.5,
+    "rough": 0.55
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/oak_veneer_01",
+     "scale": 220,
+     "amount": 1.3
+    }
+   ]
+  },
+  "paper": {
+   "dither": 0,
+   "light": 0.5,
+   "rim": {
+    "light": 0,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 6,
+     "amount": 0.12
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/rough_linen",
+     "scale": 80,
+     "amount": 0.3
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "board",
+   "shape": "box",
+   "pivot": [
+    0,
+    104,
+    0
+   ],
+   "size": [
+    440,
+    208,
+    16
+   ],
+   "chamfer": 3,
+   "style": "plank",
+   "paint": {
+    "ramp": "c9a6a3a_hue12",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "panel_f",
+   "shape": "box",
+   "pivot": [
+    0,
+    98,
+    8.5
+   ],
+   "size": [
+    370,
+    140,
+    1.5
+   ],
+   "style": "paper",
+   "paint": {
+    "ramp": "cf4ecd8_k0p0",
+    "tone": 4.2,
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       0,
+       -8
+      ],
+      "art": [
+       "...ii.......iii.............ii..............iii.......iii..iii.......iii...........................................",
+       "...ii.......iii.............ii..............iii.......iii..iii.......iii.........................iii...............",
+       "...iiiii....iiiii...........ii.................iii....iii..iii.....iii...........................iii...............",
+       ".....iii.......ii...........ii.................iii....iii..iii.....iii...........................iii...............",
+       ".....iii.......ii...........ii.................iii....iii..iii.....iii...........................iii...............",
+       "........ii.......iii.....iii.....................iii..iii..iii..iii..............................iii...............",
+       "........ii.......iii.....iii.....................iii..iii..iii..iii..............................iii...............",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "iii..............................ii..............iii............iii...............iii............iii............iii",
+       "iii..............................ii..............iii............iii...............iii............iii............iii",
+       "iii..iiiiiiiiiiiiiiiiiiiiiiiii...ii................i...........i..................iii............iii............iii",
+       "iii..iiiiiiiiiiiiiiiiiiiiiiiii...ii.................ii........ii..................iii............iii............iii",
+       "iii..iiiiiiiiiiiiiiiiiiiiiiiii...ii.................ii........ii..................iii............iii............iii",
+       "iii..iii....................ii...ii.......iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii........iii............iii............iii",
+       "iii..iii....................ii...ii.......iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii........iii............iii............iii",
+       "iii..iii....................ii...ii.......iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii........iii............iii............iii",
+       ".....iii....................ii...........................iii......................iii............iii............iii",
+       ".....iii....................ii...........................iii......................iii............iii............iii",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiii.................iiiiiiiiiiiiiiiiiiiiiii............iii............iii............iii",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiii.................iiiiiiiiiiiiiiiiiiiiiii............iii............iii............iii",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiii.................iiiiiiiiiiiiiiiiiiiiiii............iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "............iii..........................................iii......................iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "............iii..........................................iii......................iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "...iiiiiiiiiiiiiiiiiiiiiiiiiiiiii......iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.....iii............iii............iii",
+       "...iiiiiiiiiiiiiiiiiiiiiiiiiiiiii......iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.....iii............iii............iii",
+       "...iiiiiiiiiiiiiiiiiiiiiiiiiiiiii......iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii....................iii...............",
+       "...ii.........................iii...................ii...iii..ii.................................iii...............",
+       "...ii.........................iii...................ii...iii..ii.................................iii...............",
+       "...ii.........................iii..............iiiii.....iii....iiiiii...........................iii...............",
+       "...ii.........................iii..............iiiii.....iii....iiiiii...........................iii..............."
+      ],
+      "key": {
+       "i": "cd8282a_k0p1:3"
+      }
+     },
+     {
+      "face": "front",
+      "at": "bottom",
+      "offset": [
+       0,
+       -8
+      ],
+      "art": [
+       "..iiiiii....iiiiiiii....iiiiiiiiii..ii......ii",
+       "..iiiiii....iiiiiiii....iiiiiiiiii..ii......ii",
+       "ii......ii..ii......ii..ii..........iiii....ii",
+       "ii......ii..ii......ii..ii..........iiii....ii",
+       "ii......ii..ii......ii..ii..........ii..ii..ii",
+       "ii......ii..ii......ii..ii..........ii..ii..ii",
+       "ii......ii..iiiiiiii....iiiiiiii....ii....iiii",
+       "ii......ii..iiiiiiii....iiiiiiii....ii....iiii",
+       "ii......ii..ii..........ii..........ii......ii",
+       "ii......ii..ii..........ii..........ii......ii",
+       "ii......ii..ii..........ii..........ii......ii",
+       "ii......ii..ii..........ii..........ii......ii",
+       "..iiiiii....ii..........iiiiiiiiii..ii......ii",
+       "..iiiiii....ii..........iiiiiiiiii..ii......ii"
+      ],
+      "key": {
+       "i": "ink:2"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "panel_b",
+   "shape": "box",
+   "pivot": [
+    0,
+    98,
+    -8.5
+   ],
+   "size": [
+    370,
+    140,
+    1.5
+   ],
+   "style": "paper",
+   "paint": {
+    "ramp": "cf4ecd8_k0p0",
+    "tone": 4.0,
+    "stamps": [
+     {
+      "face": "back",
+      "at": "center",
+      "offset": [
+       0,
+       -8
+      ],
+      "art": [
+       "...ii..........ii..........iii..................ii..........iii.......iii...........................................",
+       "...ii..........ii..........iii..................ii..........iii.......iii.........................iii...............",
+       "...ii..........ii..........iii..................ii..........iii.......iii.........................iii...............",
+       ".....iii.......ii........ii.....................ii..........iii.......iii.........................iii...............",
+       ".....iii.......ii........ii.....................ii..........iii.......iii.........................iii...............",
+       "iii.........iiiiiiiiiiiiiiiiiiiiiii.............ii.....iiiiiiiiiiiiiiiiiiiiiii....................iii...............",
+       "iii.........iiiiiiiiiiiiiiiiiiiiiii.............ii.....iiiiiiiiiiiiiiiiiiiiiii....................iii...............",
+       "iii.........iiiiiiiiiiiiiiiiiiiiiii.............ii.....iiiiiiiiiiiiiiiiiiiiiii.....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "...ii.....iiiii.......iii....................iii............iii.......iii..........iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "...ii.....iiiii.......iii....................iii............iii.......iii..........iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       "........ii..iiiiiiiiiiiiiiiiiiii.............iii............iii.......iii..........iii............iii............iii",
+       "........ii..iiiiiiiiiiiiiiiiiiii.............iii............iii.......iii..........iii............iii............iii",
+       "........ii..iiiiiiiiiiiiiiiiiiii.............iii............iii.......iii..........iii............iii............iii",
+       "............iii.......iii....................iii.....iiiiiiiiiiiiiiiiiiiiiiiii.....iii............iii............iii",
+       "............iii.......iii....................iii.....iiiiiiiiiiiiiiiiiiiiiiiii.....iii............iii............iii",
+       ".....iii....iiiiiiiiiiiiiiiiiiii...........iiiii.......iii.........................iii............iii............iii",
+       ".....iii....iiiiiiiiiiiiiiiiiiii...........iiiii.......iii.........................iii............iii............iii",
+       ".....iii....iiiiiiiiiiiiiiiiiiii...........iiiii.......iii..iiiiiiiiiiiiiiiiii.....iii............iii............iii",
+       "...ii.......iii.......iii..................iiiii.......iii..iiiiiiiiiiiiiiiiii.....iii............iii............iii",
+       "...ii.......iii.......iii..................iiiii.......iii..iiiiiiiiiiiiiiiiii.....iii............iii............iii",
+       "iii.........iiiiiiiiiiiiiiiiiiiiiii.....iii..iii.......iii..iii....iii.....iii.....iii............iii............iii",
+       "iii.........iiiiiiiiiiiiiiiiiiiiiii.....iii..iii.......iii..iii....iii.....iii.....iii............iii............iii",
+       "iii.........iiiiiiiiiiiiiiiiiiiiiii..........iii.......iii..iiiiiiiiiiiiiiiiii.....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       ".................iii.........................iii.......iii..iiiiiiiiiiiiiiiiii.....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       ".................iii.........................iii.......iii..iiiiiiiiiiiiiiiiii.....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+       ".................iii.........................iii.......iii..iii....iii.....iii.....iii............iii............iii",
+       ".................iii.........................iii.......iii..iii....iii.....iii.....iii............iii............iii",
+       "...iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii........iii.....iiiii..iiiiiiiiiiiiiiiiii....................iii...............",
+       "...iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii........iii.....ii.....iiiiiiiiiiiiiiiiii....................iii...............",
+       "...iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii........iii.....ii.....iiiiiiiiiiiiiiiiii....................iii...............",
+       ".................iii.........................iii.....ii.....iii....iii.....iii....................iii..............."
+      ],
+      "key": {
+       "i": "ink:2"
+      }
+     },
+     {
+      "face": "back",
+      "at": "bottom",
+      "offset": [
+       0,
+       -8
+      ],
+      "art": [
+       "..iiiiii....ii............iiiiii......iiiiiiii..iiiiiiiiii..iiiiiiii..",
+       "..iiiiii....ii............iiiiii......iiiiiiii..iiiiiiiiii..iiiiiiii..",
+       "ii......ii..ii..........ii......ii..ii..........ii..........ii......ii",
+       "ii......ii..ii..........ii......ii..ii..........ii..........ii......ii",
+       "ii..........ii..........ii......ii..ii..........ii..........ii......ii",
+       "ii..........ii..........ii......ii..ii..........ii..........ii......ii",
+       "ii..........ii..........ii......ii....iiiiii....iiiiiiii....ii......ii",
+       "ii..........ii..........ii......ii....iiiiii....iiiiiiii....ii......ii",
+       "ii..........ii..........ii......ii..........ii..ii..........ii......ii",
+       "ii..........ii..........ii......ii..........ii..ii..........ii......ii",
+       "ii......ii..ii..........ii......ii..........ii..ii..........ii......ii",
+       "ii......ii..ii..........ii......ii..........ii..ii..........ii......ii",
+       "..iiiiii....iiiiiiiiii....iiiiii....iiiiiiii....iiiiiiiiii..iiiiiiii..",
+       "..iiiiii....iiiiiiiiii....iiiiii....iiiiiiii....iiiiiiiiii..iiiiiiii.."
+      ],
+      "key": {
+       "i": "cd8282a_k0p1:3"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "eye_l",
+   "shape": "prism",
+   "pivot": [
+    -170,
+    196,
+    0
+   ],
+   "size": [
+    10,
+    10,
+    18
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "eye_r",
+   "shape": "prism",
+   "pivot": [
+    170,
+    196,
+    0
+   ],
+   "size": [
+    10,
+    10,
+    18
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "cord",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -170,
+      200,
+      0
+     ],
+     "size": 3
+    },
+    {
+     "at": [
+      -90,
+      255,
+      0
+     ],
+     "size": 3
+    },
+    {
+     "at": [
+      0,
+      272,
+      0
+     ],
+     "size": 3
+    },
+    {
+     "at": [
+      90,
+      255,
+      0
+     ],
+     "size": 3
+    },
+    {
+     "at": [
+      170,
+      200,
+      0
+     ],
+     "size": 3
+    }
+   ],
+   "profile": {
+    "sides": 5,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "rubber",
+   "paint": {
+    "ramp": "cc8b48a",
+    "tone": 4.0
+   }
+  }
+ ]
+}

@@ -1042,15 +1042,6 @@
    "prop": "furin"
   },
   {
-   "id": "step_stool",
-   "src": "sketchfab:ef7ee67ab0ca4da9b90447282693a14c",
-   "h": 0.39,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Stepladder, Ladder Step Stool, 4 Steps",
-   "prop": "step_stool"
-  },
-  {
    "id": "rag",
    "src": "sketchfab:c5f9e72edf7d4b5eaa2ec9b95c3b099d",
    "h": 0.042,
@@ -1130,15 +1121,6 @@
    "tris": 1500,
    "name": "Sponge",
    "prop": "sponge"
-  },
-  {
-   "id": "squeegee",
-   "src": "sketchfab:eab72e37dbe44135b8bde87de04f1b90",
-   "h": 0.228,
-   "ppm": 240,
-   "tris": 1500,
-   "name": "Floor Squeegee",
-   "prop": "squeegee"
   },
   {
    "id": "spray_bottle",
@@ -1501,15 +1483,6 @@
    "prop": "pendulum_clock"
   },
   {
-   "id": "abacus",
-   "src": "sketchfab:faf7e2cf754544328730f6a43aab002e",
-   "h": 0.02,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Abacus",
-   "prop": "abacus"
-  },
-  {
    "id": "dagashi_rack",
    "src": "sketchfab:b78cd4d26e164ef0ba11b0d11985a1a0",
    "h": 1.215,
@@ -1625,15 +1598,6 @@
    "tris": 3000,
    "name": "Jizo statue in Kyoto - MTSU Animation",
    "prop": "jizo_shrine"
-  },
-  {
-   "id": "plant_pots",
-   "src": "sketchfab:9b598061fd644696a63e059e64f164ea",
-   "h": 1.128,
-   "ppm": 140,
-   "tris": 3000,
-   "name": "Small potted plants",
-   "prop": "plant_pots"
   },
   {
    "id": "goods_shelf",

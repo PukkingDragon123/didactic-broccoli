@@ -4,6 +4,9 @@
 // placement stays. Models: art/lowpix/world/world.json -> tools/lowpix-world.mjs -> public/models/lowpix/world/ (credits
 // in CREDITS.md). A prop def's own `asset` wins over this table.
 export const PROP_MODELS = {
+  fire_buckets: { id: 'lowpix/world/firebuckets' },
+  bus_stop: { id: 'lowpix/world/busstop' },
+  mk_stand_ashtray: { id: 'lowpix/world/ashtray_stand' },
   tomare_sign: { id: 'lowpix/world/tomare' },
   bicycle_parking: { id: 'lowpix/world/tomare' },
   kakigori_flag: { id: 'lowpix/world/kakigori' },
@@ -19,6 +22,7 @@ export const PROP_MODELS = {
   asagao_pot: { id: 'lowpix/world/asagao_pot' },
   astronaut: { id: 'lowpix/world/astronaut' },
   bamboo: { id: 'lowpix/world/bamboo' },
+  bamboo_fence: { id: 'lowpix/world/bamboo_fence' },
   beach_parasol: { id: 'lowpix/world/beach_parasol' },
   beercrate: { id: 'lowpix/world/crate_plastic' },
   bicycle: { id: 'lowpix/world/bicycle_old' },
@@ -52,6 +56,7 @@ export const PROP_MODELS = {
   furin: { id: 'lowpix/world/furin' },
   goods_shelf: { id: 'lowpix/world/goods_shelf' },
   grass_tuft: { id: 'lowpix/world/grass_tuft' },
+  haunted_well: { id: 'lowpix/world/haunted_well' },
   helmet: { id: 'lowpix/world/helmet' },
   jizo_shrine: { id: 'lowpix/world/jizo_shrine' },
   junk_box: { id: 'lowpix/world/junk_box' },
@@ -132,6 +137,7 @@ export const PROP_MODELS = {
   shop_lamp: { id: 'lowpix/world/lamp_hanging' },
   shop_trash_can: { id: 'lowpix/world/bin_metal' },
   sign_stand: { id: 'lowpix/world/chalkboard' },
+  slide: { id: 'lowpix/world/slide' },
   sofa_retro: { id: 'lowpix/world/sofa_retro' },
   softserve: { id: 'lowpix/world/softserve' },
   sponge: { id: 'lowpix/world/sponge' },
@@ -143,6 +149,7 @@ export const PROP_MODELS = {
   street_light: { id: 'lowpix/world/street_light' },
   tires: { id: 'lowpix/world/tires' },
   toolkit_case: { id: 'lowpix/world/toolbox' },
+  torii: { id: 'lowpix/world/torii', ry: Math.PI / 2 },
   trash_bag: { id: 'lowpix/world/trash_bag' },
   trash_bag_b: { id: 'lowpix/world/trash_bag_b' },
   trash_basket: { id: 'lowpix/world/trash_basket' },

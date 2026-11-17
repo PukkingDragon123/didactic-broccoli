@@ -1,26 +1,41 @@
 {
  "mats": {},
- "clips": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
  "pts": {},
  "models": [
   {
-   "name": "machine",
-   "src": "sketchfab:4f6c74f9f904439b8554078d1be14821",
-   "height": 22,
-   "at": [
-    0,
-    4.0,
-    0
+   "name": "clock",
+   "src": "polyhaven:alarm_clock_01",
+   "height": 34.0,
+   "pos": [
+    0.0,
+    3.0,
+    0.0
    ],
-   "yaw": -20,
+   "yaw": -15,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "matte",
-   "key": "041b32b8eadbc2"
+   "tris": 5000,
+   "mat": "gloss",
+   "drop": [
+    "mat:Glass"
+   ],
+   "key": "8af26a0f2561fd"
   }
  ],
+ "base": {
+  "family": "shelf",
+  "w": 37.5,
+  "d": 24.5
+ },
+ "model_clip": {
+  "node": "model_clock",
+  "kind": "wobble",
+  "length": 1.2,
+  "amp": 8,
+  "axis": "y"
+ },
  "key": "denka/sewing"
 }

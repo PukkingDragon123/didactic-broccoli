@@ -6,29 +6,32 @@
  "pts": {},
  "models": [
   {
-   "name": "radio",
-   "src": "sketchfab:c01869269a8b4bd2a8a05b8162fe7a11",
-   "height": 20,
-   "at": [
-    0,
-    4.2,
-    0
+   "name": "rec",
+   "src": "polyhaven:cassette_player",
+   "height": 30.0,
+   "pos": [
+    0.0,
+    3.0,
+    0.0
    ],
-   "yaw": -15,
+   "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "25d01a3b4840d0"
+   "key": "37eaef06f0712d"
   }
  ],
+ "base": {
+  "family": "shelf",
+  "w": 23.5,
+  "d": 15.0
+ },
  "model_clip": {
-  "node": "model_radio",
-  "kind": "wobble",
-  "length": 1.2,
-  "amp": 4,
+  "node": "model_rec",
+  "kind": "hop",
+  "length": 0.8,
+  "amp": 1.0,
   "axis": "y"
  },
  "key": "denka/radio"

@@ -261,6 +261,8 @@ const garage = {
   // ------------------------------------------------------------- vending
   vending: {
     name: 'Drink Vending Machine', voxel: 0.02,
+    // the lowpix model (art/lowpix/machines/_src/vending.py): authored in this build's box, so 'stretch' is 1:1
+    asset: { id: 'lowpix/machines/vending', fit: 'stretch' },
     build(v) {
       const red = 0xc4302b, white = 0xefebe2;
       // plinth
@@ -845,6 +847,7 @@ const garage = {
   // ------------------------------------------------------------- broom
   broom: {
     name: 'Bamboo Broom', voxel: 0.014,
+    asset: { id: 'lowpix/world/broom', fit: 'y' }, // the converted Poly Haven broom (art/lowpix/world), by its height
     build(v) {
       const twig = (x, y, z) => {
         const t = hash(x, 0, z, 7);
@@ -1237,7 +1240,7 @@ const garage = {
   // ------------------------------------------------------------- extinguisher
   extinguisher: {
     name: 'Fire Extinguisher', voxel: 0.006,
-    asset: { id: 'korean_fire_extinguisher_01', fit: 'y' }, // Poly Haven CC0, lowpix pixel-art conversion (art/lowpix/world)
+    asset: { id: 'lowpix/world/extinguisher_jp', fit: 'y' }, // Sketchfab CC BY, lowpix pixel-art conversion (art/lowpix/world)
     build(v) {
       const red = (x, y, z) => gloss(shade(0xd8231f, 0.93 + hash(x, y, z, 1) * 0.06));
       const steel = gloss(0xc8ccd2), blk = gloss(0x232122);

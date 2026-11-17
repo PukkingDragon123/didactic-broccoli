@@ -1599,19 +1599,6 @@ by `tools/pixelart.py`.
 - CC BY 2.0: https://creativecommons.org/licenses/by/2.0/
 - Public domain: pdsounds.org recordings were released into the public domain by their recordists (see http://pdsounds.tuxfamily.org/license.txt).
 
-3D models (Poly Haven, CC0 1.0, decimated and re-textured as pixel art)
-- Cardboard Box 01 by Rahul Chaudhary: https://polyhaven.com/a/cardboard_box_01 (models/cardboard_box_01.glb)
-- Cash Register 01 by Joe Seabuhr: https://polyhaven.com/a/CashRegister_01 (models/CashRegister_01.glb)
-- Boombox by Thomas Paul Mouilleron: https://polyhaven.com/a/boombox (models/boombox.glb)
-- Television 01 by Gabriel Radić: https://polyhaven.com/a/Television_01 (models/Television_01.glb)
-- Wooden Broom by Balen: https://polyhaven.com/a/wooden_broom (models/wooden_broom.glb)
-- Vintage Pocket Watch by Tal Swicegood: https://polyhaven.com/a/vintage_pocket_watch (models/vintage_pocket_watch.glb)
-- Industrial Plastic Container by Galo Benivegna: https://polyhaven.com/a/industrial_pastic_container (models/industrial_pastic_container.glb)
-- Watering Can Metal 01 by Charles Nderitu: https://polyhaven.com/a/watering_can_metal_01 (models/watering_can_metal_01.glb)
-- Wall Clock by PierreB3D: https://polyhaven.com/a/wall_clock (models/wall_clock.glb)
-- Metal Jerrycan by Sean Buckley: https://polyhaven.com/a/metal_jerrycan (models/metal_jerrycan.glb)
-- Plastic Jerrycan by Ulan Cabanilla: https://polyhaven.com/a/plastic_jerrycan (models/plastic_jerrycan.glb)
-
 3D models: the people's base body (CC0 1.0, reposed, re-rigged, decimated and painted as pixel art)
 - Universal Base Characters (Standard: Superhero Male / Female) by Quaternius: https://quaternius.com/packs/universalbasecharacters.html (src/people/base/data.js)
 - Exterior Aircon Unit by Monsta3D: https://polyhaven.com/a/exterior_aircon_unit (models/exterior_aircon_unit.glb)
@@ -1629,11 +1616,11 @@ by `tools/pixelart.py`.
 
 [lowpix-world:begin]
 3D models: world props and furniture (converted to pixel art with lowpix)
-- Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0:  (models/lowpix/world/busstop.glb)
-- Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0:  (models/lowpix/world/firebuckets.glb)
-- Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb), CC0 1.0:  (models/lowpix/world/kakigori.glb)
-- Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb), CC0 1.0:  (models/lowpix/world/ashtray_stand.glb)
-- Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb), CC0 1.0:  (models/lowpix/world/tomare.glb)
+- Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0 (models/lowpix/world/busstop.glb)
+- Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0 (models/lowpix/world/firebuckets.glb)
+- Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb), CC0 1.0 (models/lowpix/world/kakigori.glb)
+- Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb), CC0 1.0 (models/lowpix/world/ashtray_stand.glb)
+- Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb), CC0 1.0 (models/lowpix/world/tomare.glb)
 - Alarm Clock 01 by Yann Kervran, James Ray Cock, CC0 1.0: https://polyhaven.com/a/alarm_clock_01 (models/lowpix/world/clock_alarm.glb)
 - Antique Ceramic Vase 01 by James Ray Cock, CC0 1.0: https://polyhaven.com/a/antique_ceramic_vase_01 (models/lowpix/world/vase_ceramic.glb)
 - Arm Chair 01 by Kirill Sannikov, CC0 1.0: https://polyhaven.com/a/ArmChair_01 (models/lowpix/world/armchair.glb)
@@ -1743,6 +1730,7 @@ by `tools/pixelart.py`.
 - Bamboo with plant pot by Snowism, CC BY 4.0: https://sketchfab.com/3d-models/bamboo-with-plant-pot-19c7ca832f4246638cbbd53be9ff6184 (models/lowpix/world/bamboo.glb)
 - Beach Umbrella by stealth86, CC BY 4.0: https://sketchfab.com/3d-models/beach-umbrella-1014ad7c8a4c4aa8ba5e88fc6151aa4f (models/lowpix/world/beach_parasol.glb)
 - Beverages refrigerator by Palmart Productions, CC BY 4.0: https://sketchfab.com/3d-models/beverages-refrigerator-3557e8c50e84419387e8c26dd03e9837 (models/lowpix/world/milk_fridge.glb)
+- BFBBR - Bamboo Fence 01 by SMF Features Developed From Cheryl Hill, CC BY 4.0: https://sketchfab.com/3d-models/bfbbr-bamboo-fence-01-c7c5f6cc7adb455b908fb352be5051c2 (models/lowpix/world/bamboo_fence.glb)
 - Blind spot traffic mirror by Insane Ninja, CC BY 4.0: https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b (models/lowpix/world/mirror_pole.glb)
 - Brick by Rigsters, CC BY 4.0: https://sketchfab.com/3d-models/brick-504a59ef14a148809cec657d7c99367c (models/lowpix/world/mk_brick.glb)
 - Cactus Concrete Pot by 3DWALKABOUT, CC BY 4.0: https://sketchfab.com/3d-models/cactus-concrete-pot-8bd83c9adb8640628ff4f69689d358ac (models/lowpix/world/cactus_pot.glb)
@@ -1789,6 +1777,7 @@ by `tools/pixelart.py`.
 - Japanese Stone Lantern by Sahir Virmani, CC BY 4.0: https://sketchfab.com/3d-models/japanese-stone-lantern-e0417d1e05984727a50f9ab1451d162d (models/lowpix/world/stone_lantern.glb)
 - Japanese street light by huiminchen0111, CC BY 4.0: https://sketchfab.com/3d-models/japanese-street-light-385a7cef98084a6698cd0a1c93acf21b (models/lowpix/world/street_light.glb)
 - Japanese Study Desk by AFX/CGMotion 3DModel Maker, CC BY 4.0: https://sketchfab.com/3d-models/japanese-study-desk-18da6abd259441aea570168cc86bc0ef (models/lowpix/world/room_desk.glb)
+- Japanese Torii Gate by Sahir Virmani, CC BY 4.0: https://sketchfab.com/3d-models/japanese-torii-gate-2027a248de1b4b70985ff97e708fb50d (models/lowpix/world/torii.glb)
 - Japanese Trash Can by ditovirnantio, CC BY 4.0: https://sketchfab.com/3d-models/japanese-trash-can-477e8292037043508fcfcaed32805ca8 (models/lowpix/world/trash_jp.glb)
 - Japanese Vintage Scooter by ISAACLAB, CC BY 4.0: https://sketchfab.com/3d-models/japanese-vintage-scooter-f307b287177a40a2ba33e1a76ecee7df (models/lowpix/world/scooter.glb)
 - Jizo statue in Kyoto - MTSU Animation by MTSU Animation Virtual Production, CC BY 4.0: https://sketchfab.com/3d-models/jizo-statue-in-kyoto-mtsu-animation-08f07b04c4384f8fa9b75e8203d9f26f (models/lowpix/world/jizo_shrine.glb)
@@ -1818,6 +1807,8 @@ by `tools/pixelart.py`.
 - Old Oil Heater_Gas stove_24_MB by Mehdi Shahsavan, CC BY 4.0: https://sketchfab.com/3d-models/old-oil-heater-gas-stove-24-mb-a4a78d37b6ff4834a7fa6e897f2e592c (models/lowpix/world/heater.glb)
 - Old Paper & Cardboard Boxes by TooManyDemons, CC BY 4.0: https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f (models/lowpix/world/cardboard_bundle.glb)
 - Old Paper & Cardboard Boxes by TooManyDemons, CC BY 4.0: https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f (models/lowpix/world/cardboard_flat.glb)
+- Old Playground Slide by crow, CC BY 4.0: https://sketchfab.com/3d-models/old-playground-slide-df79bfbdfe06443e8b20ffa35f94a714 (models/lowpix/world/slide.glb)
+- Old Stone Well by Theory.OAD, CC BY 4.0: https://sketchfab.com/3d-models/old-stone-well-a2b8df0058254881b75a791bc4f9ae4a (models/lowpix/world/haunted_well.glb)
 - Old Tea Kettle by mickeymoose1204, CC BY 4.0: https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4 (models/lowpix/world/kettle.glb)
 - Old, dirty, stacked tires, PBR textures [free] by ZiemniaQ, CC BY 4.0: https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663 (models/lowpix/world/tires.glb)
 - Paper Stack by heartgrinder, CC BY 4.0: https://sketchfab.com/3d-models/paper-stack-19fd6da20c0f496bafbb4c1bf3456dff (models/lowpix/world/flyer_stack.glb)
@@ -1928,3 +1919,13 @@ by `tools/pixelart.py`.
 - weathered_planks: https://polyhaven.com/a/weathered_planks (CC0 1.0)
 - worn_corrugated_iron: https://polyhaven.com/a/worn_corrugated_iron (CC0 1.0)
 [lowpix-world-arch:end]
+
+[lowpix-machines:begin]
+3D models: gacha machines, capsules, display stands, vending machine, held items, the PC (lowpix specs made for the game, CC0 1.0;
+textures photo-bashed from CC0 Poly Haven textures)
+- Metal Plate by Rob Tuytel (https://polyhaven.com/a/metal_plate), CC0 1.0
+- Wood Table 001 by Dimitrios Savva, Rico Cilliers (https://polyhaven.com/a/wood_table_001), CC0 1.0
+- Oak Veneer 01 by Jenelle van Heerden (https://polyhaven.com/a/oak_veneer_01), CC0 1.0
+- Rough Linen by colormass, Rico Cilliers (https://polyhaven.com/a/rough_linen), CC0 1.0
+- Rusty Metal 02 by Rob Tuytel (https://polyhaven.com/a/rusty_metal_02), CC0 1.0
+[lowpix-machines:end]

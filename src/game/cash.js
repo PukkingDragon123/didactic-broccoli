@@ -10,12 +10,21 @@ import { VoxelModel, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { yenCoinGeometry } from '../world/machineModels.js';
+import { preloadLP, lpReady, lpMaterialSlots } from '../gachakit/lowpix.js';
+
+// the coin bag is a lowpix model (art/lowpix/machines/_src/held.py); the voxel bag below is the fallback
+if (typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search)) await preloadLP(['coin_bag']);
 import './gachaSfx.js';
 import '../money/sfx.js';
 
 let bagGeo = null;
 function coinBagGeometry() {
   if (bagGeo) return bagGeo;
+  if (lpReady('coin_bag')) {
+    bagGeo = lpMaterialSlots('coin_bag', 'bag', voxelMaterials('normal')).clone();
+    bagGeo.scale(0.85, 0.85, 0.85); // (the voxel bag's size: about 8 cm across)
+    return bagGeo;
+  }
   const v = new VoxelModel();
   v.jitter = 0.04;
   const cloth = 0x8a3a2a, dark = 0x6a2a1e, cord = 0xe8c860;

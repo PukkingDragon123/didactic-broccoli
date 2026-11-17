@@ -652,6 +652,15 @@
     "tone": 3.0,
     "layers": [
      {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.05,
+      "ramp": "steel",
+      "tone": 2.0,
+      "post": true
+     },
+     {
       "id": "handle_shade",
       "op": "rect",
       "rect": [
@@ -715,7 +724,18 @@
    "style": "enamel",
    "paint": {
     "ramp": "cefebe2_hue8_k0p04",
-    "tone": 3.0
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.05,
+      "ramp": "steel",
+      "tone": 2.0,
+      "post": true
+     }
+    ]
    }
   },
   {
@@ -739,7 +759,18 @@
    "style": "enamel",
    "paint": {
     "ramp": "cefebe2_hue8_k0p04",
-    "tone": 3.0
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.05,
+      "ramp": "steel",
+      "tone": 2.0,
+      "post": true
+     }
+    ]
    }
   },
   {
@@ -763,7 +794,18 @@
    "style": "enamel",
    "paint": {
     "ramp": "cefebe2_hue8_k0p04",
-    "tone": 3.0
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.05,
+      "ramp": "steel",
+      "tone": 2.0,
+      "post": true
+     }
+    ]
    }
   },
   {
@@ -1134,12 +1176,12 @@
    "shape": "box",
    "pivot": [
     0.0,
-    1779.0,
+    1785.0,
     354.0
    ],
    "size": [
     920.0,
-    34,
+    42,
     8.0
    ],
    "chamfer": 3,
@@ -1152,24 +1194,23 @@
       "face": "front",
       "at": [
        8,
-       3
+       2
       ],
       "offset": [
        0,
        0
       ],
       "art": [
-       "..........................i......................................................i...................",
-       ".............i.....i......i.........i......i..............iiii.....iiiii.........i............iiii...",
-       "...iiiii.....i.....i....iiiiiii.....i......i............ii.i..i........i.......iiiiii.......ii.i..i..",
-       "iii.....ii...i..iiii......i.........i.......i...........i..i...i......i...i.....i...........i..i...i.",
-       ".........i....ii..i.i....i...iiiii..i.......i..........i...i...ii.....i...i.....i......i...i...i...ii",
-       ".........i..iii..i...ii..i..........i.......i.........i....i....i..iii.iiii...iiiiiii..i..i....i....i",
-       ".........i..i.i.i.....i..i..........i........i........i...i.....i.i..i....ii....i.......i.i...i.....i",
-       ".........i..i..ii.....i..i..i.......i....i...i........i...i.....ii..i....i......i.......i.i...i.....i",
-       "......iii...i.iii....i..i...i........i..i..............i.i.....i.i.i.....i......i......i...i.i.....i.",
-       "..iiii......ii......i...i....iiiii....ii................i.....i...i.....i........i....i.....i.....i..",
-       "..................ii........................................ii........ii..........iiii..........ii..."
+       ".......................i...........................................i................",
+       "...........i....i......i...........................................i................",
+       "...iiii....i....i....iiiiii....i.....i..........iiii......iii.....iiiii.......iiii..",
+       "iii....i...iiiiiii....i........i......i.......ii..i.ii......i......i........ii..i.ii",
+       "........i..ii..i..i...i..iiii..i......i.......i..ii..i.....i...i...i....ii..i..ii..i",
+       "........i.i.i.i...i...i........i......i......i...i...i...ii.iiii.iiiiii..i.i...i...i",
+       "........i.i.i.i...i..i.........i...i...i.....i..i....i..i.i....i...i.....i.i..i....i",
+       ".......i..i..i....i..i..i.......i.ii...i.....iii.....i.i..i...i.i..i.....i.iii.....i",
+       "..iiiii....ii....i...i...iiii...ii............ii....i...ii...i.....i....i...ii....i.",
+       "................i.................................ii........i.......iiii........ii.."
       ],
       "key": {
        "i": "cc4302b_k0p12:2"
@@ -1178,8 +1219,8 @@
      {
       "face": "front",
       "at": [
-       224,
-       4
+       222,
+       3
       ],
       "offset": [
        0,
@@ -1546,42 +1587,70 @@
      {
       "face": "front",
       "at": [
-       204,
-       10
+       198,
+       16
       ],
       "offset": [
        0,
        0
       ],
       "art": [
-       "......hhhh......",
-       "......hhhh......",
-       "......hhhh......",
-       "......hhhh......",
-       "....hhhhhhhh....",
-       "....hhhhhhhh....",
-       "..hhbbbbbbbbhh..",
-       "..hhbbbbbbbbhh..",
-       "hhbbwwwwbbbbbbhh",
-       "hhbbwwwwbbbbbbhh",
-       "hhbbwwwwbbbbbbhh",
-       "hhbbwwwwbbbbbbhh",
-       "hhbbbbbbbbbbbbhh",
-       "hhbbbbbbbbbbbbhh",
-       "hhrrrrrrrrrrrrhh",
-       "hhrrrrrrrrrrrrhh",
-       "hhrrwwwwwwwwrrhh",
-       "hhrrwwwwwwwwrrhh",
-       "hhrrrrrrrrrrrrhh",
-       "hhrrrrrrrrrrrrhh",
-       "hhbbbbbbbbbbbbhh",
-       "hhbbbbbbbbbbbbhh",
-       "hhbbbbbbbbbbbbhh",
-       "hhbbbbbbbbbbbbhh",
-       "hhbbbbbbbbbbbbhh",
-       "hhbbbbbbbbbbbbhh",
-       "..hhhhhhhhhhhh..",
-       "..hhhhhhhhhhhh.."
+       "............hhhhhhhh............",
+       "............hhhhhhhh............",
+       "............hhhhhhhh............",
+       "............hhhhhhhh............",
+       "............hhhhhhhh............",
+       "............hhhhhhhh............",
+       "............hhhhhhhh............",
+       "............hhhhhhhh............",
+       "........hhhhhhhhhhhhhhhh........",
+       "........hhhhhhhhhhhhhhhh........",
+       "........hhhhhhhhhhhhhhhh........",
+       "........hhhhhhhhhhhhhhhh........",
+       "....hhhhbbbbbbbbbbbbbbbbhhhh....",
+       "....hhhhbbbbbbbbbbbbbbbbhhhh....",
+       "....hhhhbbbbbbbbbbbbbbbbhhhh....",
+       "....hhhhbbbbbbbbbbbbbbbbhhhh....",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbwwwwwwwwbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhrrrrwwwwwwwwwwwwwwwwrrrrhhhh",
+       "hhhhrrrrwwwwwwwwwwwwwwwwrrrrhhhh",
+       "hhhhrrrrwwwwwwwwwwwwwwwwrrrrhhhh",
+       "hhhhrrrrwwwwwwwwwwwwwwwwrrrrhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhrrrrrrrrrrrrrrrrrrrrrrrrhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "hhhhbbbbbbbbbbbbbbbbbbbbbbbbhhhh",
+       "....hhhhhhhhhhhhhhhhhhhhhhhh....",
+       "....hhhhhhhhhhhhhhhhhhhhhhhh....",
+       "....hhhhhhhhhhhhhhhhhhhhhhhh....",
+       "....hhhhhhhhhhhhhhhhhhhhhhhh...."
       ],
       "key": {
        "h": "c2a62b8_k0p08:1",

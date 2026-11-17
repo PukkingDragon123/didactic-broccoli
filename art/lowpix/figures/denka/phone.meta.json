@@ -8,22 +8,28 @@
   {
    "name": "phone",
    "src": "sketchfab:24c655388db749fe9a679ea4c6edc626",
-   "height": 15,
-   "at": [
-    0,
-    4.2,
-    0
+   "height": 20.233,
+   "pos": [
+    0.0,
+    3.1,
+    0.0
    ],
    "yaw": -15,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "matte",
-   "key": "51b7fd7aed3b92"
+   "tris": 5000,
+   "mat": "gloss",
+   "opts": {
+    "spread": 0.3
+   },
+   "key": "5ca324f6f76a3f"
   }
  ],
+ "base": {
+  "family": "shelf",
+  "w": 37.5,
+  "d": 31.5
+ },
  "model_clip": {
   "node": "model_phone",
   "kind": "hop",

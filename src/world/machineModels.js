@@ -10,13 +10,14 @@ import * as THREE from 'three';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
 import { voxelMachineParts, machineDressing, STYLES } from '../gachakit/voxmachine.js';
-import { preloadLP, lpReady, lpMesh, LP_MANIFEST } from '../gachakit/lowpix.js';
+import { preloadLP, lpReady, lpMesh, lpMaterialSlots, LP_MANIFEST } from '../gachakit/lowpix.js';
+import { voxelMaterials } from '../voxel/materials.js';
 import { activeLogo, paintLogo } from '../logo/logo.js';
 import { VoxelModel, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 
 const FORCE_VOXEL = typeof location !== 'undefined' && /[?&]voxelmachines\b/.test(location.search);
-if (typeof document !== 'undefined' && !FORCE_VOXEL) await preloadLP(['retro', 'standard', 'deluxe', 'royal']);
+if (typeof document !== 'undefined' && !FORCE_VOXEL) await preloadLP(['retro', 'standard', 'deluxe', 'royal', 'coins']);
 const useLowpix = (type) => !FORCE_VOXEL && lpReady(type);
 
 export const VS = 0.005; // the old models' 5 mm voxel: still the unit of a few offsets in the game logic
@@ -278,9 +279,14 @@ export function makeCoin() {
   return m;
 }
 
-/** A ¥100 coin as a little voxel disc (lying flat, centred). Shared geometry for coin piles. */
+/**
+ * A ¥100 coin lying flat, centred (Ø22.6 mm): the lowpix coin (art/lowpix/machines/_src/held.py), its groups pointing
+ * into the shared voxel material array, so every caller keeps drawing it with voxelMaterials('normal'); the old voxel
+ * disc if the model is missing. Shared geometry for coin piles.
+ */
 let yenGeo = null;
 export function yenCoinGeometry() {
+  if (!yenGeo && !FORCE_VOXEL && lpReady('coins')) yenGeo = lpMaterialSlots('coins', 'yen100', voxelMaterials('normal'));
   if (!yenGeo) {
     const v = new VoxelModel();
     v.jitter = 0;

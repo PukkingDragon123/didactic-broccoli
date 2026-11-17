@@ -1,0 +1,67 @@
+{
+ "id": "torii",
+ "src": "sketchfab:2027a248de1b4b70985ff97e708fb50d",
+ "credit": {
+  "title": "Japanese Torii Gate",
+  "author": "Sahir Virmani",
+  "authorUrl": "https://sketchfab.com/sahirvirmani",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-torii-gate-2027a248de1b4b70985ff97e708fb50d",
+  "site": "Sketchfab"
+ },
+ "tris": 1252,
+ "tex": 512,
+ "size": [
+  0.241,
+  2.32,
+  3.197
+ ],
+ "colours": 27,
+ "palette": {
+  "m0": [
+   "#6a0b22",
+   "#881023",
+   "#a61722",
+   "#c2201f",
+   "#d93b2b",
+   "#db654b",
+   "#de896b",
+   "#e2a789",
+   "#e7c2a6"
+  ],
+  "m1": [
+   "#020202",
+   "#020302",
+   "#030403",
+   "#030403",
+   "#040504",
+   "#242a24",
+   "#474d46",
+   "#6b6e6a",
+   "#8e8e8e"
+  ],
+  "m2": [
+   "#55101b",
+   "#6d171d",
+   "#84201f",
+   "#9b3327",
+   "#b04831",
+   "#c66542",
+   "#cc8864",
+   "#d3a684",
+   "#dbc0a2"
+  ],
+  "m3": [
+   "#391c16",
+   "#492a1e",
+   "#593827",
+   "#674831",
+   "#75593b",
+   "#90764e",
+   "#a79265",
+   "#b4a985",
+   "#c4bfa4"
+  ]
+ },
+ "warnings": []
+}

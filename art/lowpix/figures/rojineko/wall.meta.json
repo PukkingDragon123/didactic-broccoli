@@ -8,27 +8,30 @@
   {
    "name": "cat",
    "src": "sketchfab:51cc3bfb49b64128aa54ffa29f36d8c1",
-   "height": 22,
-   "at": [
-    1,
-    17.6,
-    0
+   "height": 23.54,
+   "pos": [
+    0.0,
+    16.6,
+    0.0
    ],
-   "yaw": 90,
+   "yaw": 0,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "20937de99bb956"
+   "key": "a94f1050738410"
   }
  ],
+ "base": {
+  "family": "lane",
+  "w": 49.5,
+  "d": 31.0
+ },
  "model_clip": {
   "node": "model_cat",
   "kind": "slide",
   "length": 2.2,
-  "amp": 4,
+  "amp": 3,
   "axis": "x"
  },
  "key": "rojineko/wall"

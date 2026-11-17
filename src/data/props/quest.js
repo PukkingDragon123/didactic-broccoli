@@ -259,6 +259,7 @@ const quest = {
   // ------------------------------------------------------------- garage key
   garage_key: {
     name: 'Old Garage Key', voxel: 0.0018,
+    asset: { id: 'lowpix/machines/key' }, // the lowpix model (art/lowpix/machines/_src/held.py), fitted into this box
     build(v) {
       v.jitter = 0.015;
       const brass = (x, y, z) => {
@@ -307,6 +308,7 @@ const quest = {
   // ------------------------------------------------------------- milk carton
   milk_carton: {
     name: 'Milk Carton (1L)', voxel: 0.0035,
+    asset: { id: 'lowpix/machines/milk' }, // the lowpix model (art/lowpix/machines/_src/held.py)
     build(v) {
       v.jitter = 0.012;
       const BLUE = 0x2456b0, SKY = 0x8cc6ee, RED = 0xd8342e, WHITE = 0xfbfaf6;

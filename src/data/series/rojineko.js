@@ -14,11 +14,11 @@ export default {
   items: [
     { id: 'postbox', name: 'Post Box Sentry', jp: 'ポストの番ネコ', rarity: 'common', desc: 'A blue-grey shorthair on the red post box, checking every letter that goes in.', gimmick: { text: 'Look round' } },
     { id: 'wall', name: 'Wall Walker', jp: 'ブロック塀のおさんぽ', rarity: 'common', desc: 'Tail up, all the way along the block wall, like it owns it. It does.', gimmick: { text: 'Walk on' } },
-    { id: 'box', name: 'Mikan Box Kuro', jp: 'みかん箱のクロ', rarity: 'common', desc: 'A black cat who found the one good box on the lane. Do not ask for it back.', gimmick: { text: 'Hop' } },
+    { id: 'box', name: 'Mikan Box Kuro', jp: 'みかん箱のクロ', rarity: 'common', desc: 'A big black long-hair who found the one good box on the lane. Do not ask for it back.', gimmick: { text: 'Hop' } },
     { id: 'laundry', name: 'Zabuton Nap', jp: '座布団でおひるね', rarity: 'uncommon', desc: "Grandma's floor cushion, still warm from the sun. Not hers any more." },
-    { id: 'kittens', name: 'Tin Bucket Kittens', jp: 'バケツの子ネコ', rarity: 'uncommon', desc: 'Two kittens and one bucket. The bucket is losing.', gimmick: { text: 'Hop out' } },
+    { id: 'kittens', name: 'Tin Bucket Kitten', jp: 'バケツと子ネコ', rarity: 'uncommon', desc: 'One kitten, one bucket. The bucket is losing.', gimmick: { text: 'Hop' } },
     { id: 'boss', name: 'The Boss of Lane 3', jp: '三丁目のボス', rarity: 'rare', desc: 'Scarred, unhurried and very large. Sits on the oil drum; owns the lane.', gimmick: { text: 'Stare them down' } },
-    { id: 'stalker', name: 'Sparrow Stalker', jp: 'スズメねらい', rarity: 'ultra', desc: 'Low, still, tail twitching. The sparrow has noticed. The sparrow does not care.', gimmick: { text: 'Startle the sparrow' } },
-    { id: 'moon', name: 'Moon-White Stray', jp: '月夜の白ネコ', rarity: 'secret', desc: 'On the roof under a crescent moon, white as rice paper. Nobody has ever seen it come down.', gimmick: { text: 'Look up' } },
+    { id: 'stalker', name: 'Rat Patrol', jp: 'ネズミねらい', rarity: 'ultra', desc: 'Low, still, tail twitching. The rat by the drain has noticed, and is pretending it has not.', gimmick: { text: 'Creep closer' } },
+    { id: 'moon', name: 'Moonlit Siamese', jp: '月夜のシャム', rarity: 'secret', desc: 'Along the roof ridge under a crescent moon, blue eyes and not a sound. Nobody has ever seen it come down.', gimmick: { text: 'Look round' } },
   ],
 };

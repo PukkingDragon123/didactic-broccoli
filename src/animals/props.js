@@ -38,7 +38,7 @@ export function bakeCat(pose, coat = 'tabby', sec = 2.5) {
   for (const gr of src.groups) g.addGroup(gr.start, gr.count, gr.materialIndex);
   g.computeBoundingBox(); g.computeBoundingSphere();
   g.userData.size = g.boundingBox.getSize(new THREE.Vector3());
-  const out = { geo: g, mat: [r.mat, r.matEye] };
+  const out = { geo: g, mat: [r.mat, r.matEye, r.matMouth] };
   baked.set(key, out);
   return out;
 }

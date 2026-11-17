@@ -26,7 +26,6 @@ sys.path.insert(0, os.path.join(HERE, "_lib"))
 LOWPIX = os.environ.get("LOWPIX", "/home/user/pukkingdragon123/symmetrical-goggles")
 BUILD = os.path.join(ROOT, "node_modules", ".cache", "lowpix-figures")
 CONV = os.path.join(ROOT, "node_modules", ".cache", "lowpix-conv")
-CONV_H = 26  # every model is converted at this height (mm); pack.mjs scales it to the figure's
 ENV = dict(os.environ, PYTHONPATH=LOWPIX, LOWPIX_SKETCHFAB_TOKEN=os.environ.get("LOWPIX_SKETCHFAB_TOKEN", "proxy-injected"))
 
 
@@ -45,71 +44,16 @@ def gen(series, only=None):
     return files
 
 
-_dl_lock = __import__("threading").Lock()
-
-
-def ensure_source(src):
-    """Download a Sketchfab model once (shared cache, polite: one at a time, backing off on 429) and return a local path
-    for `lowpix convert` (its own fetch would download again every time)."""
-    if not src.startswith("sketchfab:"):
-        return src
-    import time
-    import urllib.error
-    os.environ.setdefault("LOWPIX_SKETCHFAB_TOKEN", "proxy-injected")
-    sys.path.insert(0, LOWPIX)
-    from lowpix.sketchfab import fetch
-    uid = src.split(":", 1)[1]
-    d = os.path.join(CONV, "src", "sketchfab_" + uid, "sketchfab_" + uid)
-    def found():
-        for base, _, files in os.walk(d):
-            for f in sorted(files):
-                if f.lower().endswith((".gltf", ".glb")):
-                    return os.path.join(base, f)
-        return None
-    if found():
-        return found()
-    with _dl_lock:
-        for attempt in range(12):
-            if found():
-                return found()
-            try:
-                return fetch(uid, d)
-            except urllib.error.HTTPError as e:
-                if e.code != 429:
-                    raise
-                wait = 45 * (attempt + 1)
-                print(f"  sketchfab busy (429), waiting {wait}s for {uid}", flush=True)
-                time.sleep(wait)
-        raise RuntimeError("sketchfab kept refusing " + uid)
-
-
-def drop_nodes(path, names):
-    """A copy of a downloaded glTF without some nodes (the colour-checker cube in a specimen scan), next to the original
-    so its buffers and textures still resolve."""
-    import re
-    if not path.endswith(".gltf"):
-        return path
-    d = json.load(open(path))
-    pat = re.compile("|".join(names))
-    gone = {i for i, n in enumerate(d.get("nodes", [])) if pat.search(n.get("name") or "")}
-    for n in d.get("nodes", []):
-        if "children" in n:
-            n["children"] = [c for c in n["children"] if c not in gone]
-    for i in gone:
-        d["nodes"][i].pop("mesh", None)
-        d["nodes"][i].pop("children", None)
-    for sc in d.get("scenes", []):
-        sc["nodes"] = [c for c in sc.get("nodes", []) if c not in gone]
-    out = path[:-5] + "_drop_" + hashlib.sha1("|".join(names).encode()).hexdigest()[:6] + ".gltf"
-    json.dump(d, open(out, "w"))
-    return out
+from sources import ensure_source, filter_nodes  # noqa: E402
+from figlib import CONVERT  # noqa: E402
+OPT_OK = {"ramps", "smooth", "chart-angle", "spread"}  # what a figure may change (spread: only to keep black lacquer
+# and dark plastics dark); everything else is the line's finish (CONVERT)
 
 
 def conv_key(m):
-    k = {x: m.get(x) for x in ("src", "tris", "style", "atlas", "opts")}
-    k["height"] = float(CONV_H)
-    if m.get("drop"):
-        k["drop"] = m["drop"]
+    k = {x: m.get(x) for x in ("src", "tris", "opts", "drop", "keep")}
+    k["height"] = round(float(m["height"]), 2)
+    k["finish"] = CONVERT
     return hashlib.sha1(json.dumps(k, sort_keys=True).encode()).hexdigest()[:14]
 
 
@@ -120,23 +64,17 @@ def convert(m):
     if done:
         return key, done[0], None
     os.makedirs(out, exist_ok=True)
-    # one shared download per source
-    sid = m["src"].replace(":", "_").replace("/", "_")
-    shared = os.path.join(CONV, "src", sid)
-    os.makedirs(shared, exist_ok=True)
-    link = os.path.join(out, "_source")
-    if not os.path.exists(link):
-        os.symlink(shared, link)
     try:
-        local = ensure_source(m["src"])
-        if m.get("drop"):
-            local = drop_nodes(local, m["drop"])
+        local = filter_nodes(ensure_source(m["src"]), m.get("drop"), m.get("keep"))
     except Exception as e:  # noqa: BLE001
         return key, None, f"download: {e}"
-    cmd = [sys.executable, "-m", "lowpix", "convert", local, "--style", m["style"], "--height", str(CONV_H), "--tris", str(m["tris"]),
-           "--atlas", str(m["atlas"]), "-o", out, "--name", key]
+    cmd = [sys.executable, "-m", "lowpix", "convert", local, "--height", str(m["height"]), "--tris", str(m["tris"]),
+           "-o", out, "--name", key]
+    for k, v in CONVERT.items():
+        cmd += [f"--{k}", str(v)]
     for k, v in (m.get("opts") or {}).items():
-        cmd += [f"--{k}"] if v is True else [f"--{k}", str(v)]
+        assert k in OPT_OK, f"{m['src']}: convert option {k} would change the line's finish"
+        cmd += [f"--{k}", str(v)]
     r = subprocess.run(cmd, env=ENV, capture_output=True, text=True, timeout=1800)
     done = glob.glob(os.path.join(out, "*.glb"))
     if not done:
@@ -155,7 +93,7 @@ def convert_all(spec_files):
         json.dump(meta, open(mp, "w"), indent=1)
     if not todo:
         return
-    jobs = int(os.environ.get("CONV_JOBS", "3"))
+    jobs = int(os.environ.get("CONV_JOBS", "2"))
     with cf.ThreadPoolExecutor(jobs) as ex:
         for key, glb, err in ex.map(convert, todo.values()):
             print("convert", key, "ok" if glb else "FAILED " + str(err))

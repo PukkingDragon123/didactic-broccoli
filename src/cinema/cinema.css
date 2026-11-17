@@ -3,7 +3,8 @@
 :root { --cc-ink: #241a1e; --cc-ink2: #5e5046; --cc-red: #c8322c; }
 
 /* ---------------------------------------------------------------- the title card: a manila tag with a hanko */
-#cine-card { position: fixed; left: 50%; top: 24%; translate: -50% 0; z-index: 31; pointer-events: none; opacity: 0; }
+/* top left, clear of the subject (the shots keep the subject in the middle or on the right third) */
+#cine-card { position: fixed; left: max(16px, 5vw); top: calc(11vh + 26px); z-index: 31; pointer-events: none; opacity: 0; }
 #cine-card.show { opacity: 1; animation: cc-in .36s steps(4) both; }
 #cine-card .cc {
   position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 46px 10px; color: var(--cc-ink); image-rendering: pixelated;
@@ -17,6 +18,7 @@
   position: absolute; right: -22px; top: -18px; width: 52px; height: 52px; box-sizing: border-box; font: 32px/44px 'DotGothic16', monospace; font-style: normal; text-align: center;
   color: var(--cc-red); border: 4px solid var(--cc-red); background: rgba(255, 240, 224, .35); transform: rotate(12deg); animation: cc-stamp .3s steps(3) .3s both;
 }
+#cine-card .cc.long b { font-size: 32px; line-height: 32px; }
 @keyframes cc-in { from { transform: translateY(-30px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes cc-stamp { from { transform: rotate(-6deg) scale(2.2); opacity: 0; } to { transform: rotate(12deg) scale(1); opacity: 1; } }
 @media (max-width: 760px) { #cine-card .cc b { font-size: 32px; line-height: 32px; } #cine-card .cc { padding: 6px 30px 8px; } }
@@ -51,6 +53,11 @@ body.photo-mode #cutscene, body.photo-mode .ft-layer { display: none; }
 #photo-hud .ph-note b { font: 16px/22px 'Alagard', monospace; font-weight: normal; color: var(--cc-red); }
 #photo-hud kbd { display: inline-block; padding: 0 4px; margin: 0 2px; font: 16px/18px 'Alagard', monospace; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--cc-ink); image-rendering: pixelated; }
 #photo-hud .pose { font-style: normal; color: var(--cc-ink2); padding-top: 4px; }
+/* after a few seconds the help folds down to one line */
+#photo-hud.mini .ph-note span { display: none; }
+#photo-hud.mini .ph-note span.short { display: block; }
+#photo-hud .ph-note span.short { display: none; }
+#photo-print.stay { animation: none; transform: rotate(4deg); }
 @media (max-width: 760px) { #photo-hud .ph-note { display: none; } }
 
 /* the print: the shot on a cream card with an orange date stamp, sliding out in steps */

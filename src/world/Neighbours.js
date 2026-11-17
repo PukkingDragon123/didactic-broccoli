@@ -18,6 +18,7 @@ import { hash2 } from '../core/util.js';
 import { NAME_INDEX } from '../gfx/textures.js';
 import { ROOM } from './interiors.js';
 import { keiWagonMesh } from '../vehicles/keiWagon.js';
+import { archPlace } from './archModels.js';
 
 const ZB = 5.3, ZF = 14.9;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -198,10 +199,13 @@ function nearSide(t) {
   // the Suzukis' kei wagon in the carport: pastel blue under a white roof, an older (pre-1998, 3.3 m) one than Mr.
   // Tanaka's, so a touch smaller (src/vehicles/keiWagon.js); it blocks the footprint the voxel prop did
   {
-    const car = keiWagonMesh({ paint: 0x8fb4d4, roof: 0xf2f0e8, dent: false, static: true });
-    car.scale.setScalar(0.936);
-    car.position.set(6.05, 0, 3.15);
-    t.group.add(car);
+    // a converted lowpix kei wagon when there is one (art/lowpix/world_arch/_src/vehicles.py), else the vehicle kit's
+    const car = archPlace('kei_wagon', t.group, { x: 6.05, z: 3.15, cast: false }) || keiWagonMesh({ paint: 0x8fb4d4, roof: 0xf2f0e8, dent: false, static: true });
+    if (!car.parent) {
+      car.scale.setScalar(0.936);
+      car.position.set(6.05, 0, 3.15);
+      t.group.add(car);
+    }
     t.game.player.addObstacle(6.05 - 0.799, 6.05 + 0.799, 3.15 - 1.635, 3.15 + 1.635);
   }
   t.prop('bicycle', 5.0, 0, 1.9, Math.PI / 2 + 0.2, { scale: 0.62 });

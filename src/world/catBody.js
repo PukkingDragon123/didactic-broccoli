@@ -6,9 +6,9 @@
 //   - every vertex skinned by distance to the spine, tail, leg and ear chains (src/animals/fit.js);
 //   - a face that is modelled, not painted: eyeballs (glossy, the iris and pupil a pixel-art frame on the front; the
 //     frame swaps for a slit, narrow, normal or round pupil), upper and lower eyelids that close over them (their edges
-//     tilted, so the opening is an almond), lips cut apart along the mouth with the inside of the mouth and a tongue
-//     behind them, a jaw that opens.
-// catAssets(coat) -> { geometry (skinned attributes, groups: coat 0, eyes 1), map, frames, eyeUV, J, eyes, rows }
+//     tilted, so the opening is an almond), a jaw that opens, and the open mouth: a lens on the muzzle along the lip
+//     line that opens with the jaw onto a painted inside (palate, throat, tongue, fangs), and a tongue that slides out.
+// catAssets(coat) -> { geometry (skinned attributes, groups: coat 0, eyes 1, mouth 2), map, frames, eyeUV, J, eyes, rows }
 // The models load before anything else is built (top-level await): CatRig stays synchronous.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -105,8 +105,9 @@ export function catAssets(coat = 'calico') {
   }
   g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(W.skinIndex, 4));
   g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(W.skinWeight, 4));
-  const [e0, e1] = x.eyeTris;
+  const [e0, e1] = x.eyeTris, [m0, m1] = x.mouthTris || [e1, e1];
   g.addGroup(0, e0 * 3, 0); g.addGroup(e0 * 3, (e1 - e0) * 3, 1);
+  if (m1 > m0) g.addGroup(m0 * 3, (m1 - m0) * 3, 2);           // the open mouth, drawn over the lips
   g.computeBoundingBox(); g.computeBoundingSphere();
   // the eyeballs' uv inside their iris frame (0..1), to re-point them at another pupil frame
   const uv = src.attributes.uv, F = x.frames.normal, eyeUV = [];

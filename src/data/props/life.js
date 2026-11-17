@@ -104,6 +104,7 @@ const life = {
   },
   open_sign_prop: {
     name: 'OPEN Sign', voxel: 0.008,
+    asset: { id: 'lowpix/machines/open_sign' }, // the lowpix model (art/lowpix/machines/_src/held.py): 営業中 / 準備中
     build(v) {
       const wood = (x, y, z) => shade(0xc89a5f, 0.88 + vnoise(x * 3, y, z, 3, 1) * 0.2);
       fill(v, -27, 0, -1, 27, 25, 1, wood);

@@ -6,34 +6,29 @@
  "pts": {},
  "models": [
   {
-   "name": "radio",
-   "src": "sketchfab:7724f81ad4e043079b7bf4b16146c087",
-   "height": 20,
-   "at": [
-    0,
-    4.2,
-    0
+   "name": "proj",
+   "src": "polyhaven:filmstrip_projector_8mm",
+   "height": 18.65,
+   "pos": [
+    0.0,
+    3.0,
+    0.0
    ],
-   "yaw": -15,
+   "yaw": -70,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "metal",
-   "recolor": {
-    "saturation": 0.2,
-    "linear": [
-     0.55,
-     95
-    ],
-    "tint": "#e8b850"
-   },
-   "key": "5d9bff6ded6295"
+   "key": "a16ded42515173"
   }
  ],
+ "base": {
+  "family": "shelf",
+  "w": 47.0,
+  "d": 32.0
+ },
  "model_clip": {
-  "node": "model_radio",
+  "node": "model_proj",
   "kind": "turn",
   "length": 2.4,
   "amp": 20,

@@ -1,86 +1,86 @@
-"""Showa Home Appliances (昭和の家電): the machines of a 1960s-70s Japanese home, real models made small, each in its
-corner of the house: a lace doily, a tatami edge, a veneer shelf. Appliances are real models (Sketchfab CC BY,
-art/lowpix/figures/SOURCES.json); bases and doilies are lowpix specs."""
-from figlib import Fig, GOLD
-from props import slab, tatami, doily
+"""Showa Home Appliances (昭和の家電): the machines of a 1960s-80s Japanese home, real models made small on a walnut
+sideboard top. Every appliance is its own real model (Poly Haven CC0 / Sketchfab CC BY, converted by lowpix in the
+line's finish; credits in art/lowpix/figures/SOURCES.json); the sideboard and the lace doily are lowpix specs."""
+from figlib import Fig, BASE_H
+from props import series_base, doily
 
 S = "denka"
 PHONE = "sketchfab:24c655388db749fe9a679ea4c6edc626"     # Vintage Rotary Telephone
-FAN = "sketchfab:e4dffd0f67204f84a2595dd2d249f451"       # Vintage Electric Fan
-COOKER = "sketchfab:8376d2613cb74acdbfad039e7b5e161c"    # National Rice Cooker
-TRANSISTOR = "sketchfab:c01869269a8b4bd2a8a05b8162fe7a11"  # Vintage Portable Transistor Radio
-TV = "sketchfab:fe9acba84eed4a43b4315200aefbead1"        # Vintage Television
-BOOMBOX = "sketchfab:c13af52fcba1490c98871952e34d4f10"   # Boombox (silver)
-SEWING = "sketchfab:4f6c74f9f904439b8554078d1be14821"    # Vintage sewing machine
-VALVE = "sketchfab:7724f81ad4e043079b7bf4b16146c087"     # Vintage Radio 1940s
+FAN = "sketchfab:e4dffd0f67204f84a2595dd2d249f451"       # Vintage Electric Fan (sky blue)
+THERMOS = "polyhaven:modified_thermos"                   # a green vacuum flask with a cup lid
+CASSETTE = "polyhaven:cassette_player"                   # a portable cassette tape recorder
+TV = "sketchfab:fe9acba84eed4a43b4315200aefbead1"        # Vintage Television (wooden cabinet)
+BOOMBOX = "polyhaven:boombox"                            # a twin-speaker radio-cassette
+CLOCK = "polyhaven:alarm_clock_01"                       # a twin-bell alarm clock
+PROJECTOR = "polyhaven:filmstrip_projector_8mm"          # an 8 mm home-movie projector
 
 
-def shelf(F, w=32, d=24, col="#7a4a2a"):
-    """A veneer sideboard top."""
-    return slab(F, "base", w, d, 4.0, col=col, style="wood", tone=3.0)
+def shelf(F, doily_r=None):
+    w, d = series_base(F, "shelf")
+    if doily_r:
+        c = F.subject.centre
+        doily(F, "base_doily", doily_r, (c[0], BASE_H + 0.05, c[2]))
 
 
 def phone():
-    F = Fig(f"{S}/phone", "Black Rotary Phone", "Heavy as a brick, rings like a fire bell. Dial with one finger and patience.")
-    top = shelf(F)
-    doily(F, "doily", 12, (0, top + 0.1, 0))
-    F.model("phone", PHONE, 15, (0, top + 0.2, 0), yaw=-15)
+    F = Fig(f"{S}/phone", "Black Rotary Phone", "Heavy as a brick, rings like a fire bell. Dial with one finger and a lot of patience.")
+    F.model("phone", PHONE, w=28, d=26, h=22, at=(0, BASE_H + 0.1, 0), yaw=-15, mat="gloss", dark=True)
+    shelf(F, doily_r=14)
     F.model_clip("model_phone", "hop", 1.0, amp=1.2)
     return F
 
 
 def fan():
-    F = Fig(f"{S}/fan", "Mint Electric Fan", "Three speeds, one oscillation, a cage you were told never to poke.")
-    top = tatami(F, "base", 30, 26)
-    F.model("fan", FAN, 34, (0, top, -1), yaw=-20, recolor={"hue": -35, "saturation": 0.7, "brightness": 1.15})
+    F = Fig(f"{S}/fan", "Sky-Blue Electric Fan", "Three speeds, one oscillation, a cage you were told never to poke.")
+    F.model("fan", FAN, h=36, w=28, d=24, at=(0, BASE_H, 0), yaw=-20)
+    shelf(F)
     F.model_clip("model_fan", "turn", 3.0, amp=35)
     return F
 
 
 def cooker():
-    F = Fig(f"{S}/cooker", "Electric Rice Cooker", "Click, steam, the smell of rice. It has never once burned the bottom.")
-    top = shelf(F, col="#8a5a34")
-    F.model("cooker", COOKER, 22, (0, top, 0), yaw=-20)
+    F = Fig(f"{S}/cooker", "Green Vacuum Flask", "Barley tea, still cold at the bottom of the hill. The cup on top is the lid.")
+    F.model("flask", THERMOS, h=34, at=(0, BASE_H, 0), yaw=-30, mat="gloss")
+    shelf(F)
     return F
 
 
 def radio():
-    F = Fig(f"{S}/radio", "Pocket Transistor Radio", "Six transistors, one earphone, the baseball on a summer night.")
-    top = shelf(F, w=26, d=20)
-    doily(F, "doily", 9, (0, top + 0.1, 0))
-    F.model("radio", TRANSISTOR, 20, (0, top + 0.2, 0), yaw=-15)
-    F.model_clip("model_radio", "wobble", 1.2, amp=4)
+    F = Fig(f"{S}/radio", "Cassette Recorder", "Press play and record together, hold it up to the TV speaker, and nobody breathe.")
+    F.model("rec", CASSETTE, h=30, w=26, d=24, at=(0, BASE_H, 0), yaw=-20)
+    shelf(F)
+    F.model_clip("model_rec", "hop", 0.8, amp=1.0)
     return F
 
 
 def tv():
-    F = Fig(f"{S}/tv", "Wooden Cabinet TV", "The whole family in front of it at seven o'clock. Thump the side if it rolls.")
-    top = tatami(F, "base", 34, 28)
-    F.model("tv", TV, 26, (0, top, -1), yaw=-18)
+    F = Fig(f"{S}/tv", "Wooden Cabinet TV", "The whole family in front of it at seven. Thump the side if the picture rolls.")
+    F.model("tv", TV, w=32, h=30, d=28, at=(0, BASE_H, 0), yaw=-20)
+    shelf(F)
     return F
 
 
 def boombox():
-    F = Fig(f"{S}/boombox", "Radio-Cassette Deck", "Twin speakers, chrome everywhere, a tape of the top ten recorded off the air.")
-    top = shelf(F, w=36, d=20, col="#5a3a24")
-    F.model("deck", BOOMBOX, 18, (0, top, 0), yaw=-12)
+    F = Fig(f"{S}/boombox", "Radio-Cassette Deck", "Twin speakers, chrome everywhere, the top ten taped off the air.")
+    F.model("deck", BOOMBOX, w=34, d=26, at=(0, BASE_H, 0), yaw=-15)
+    shelf(F)
     F.model_clip("model_deck", "hop", 0.8, amp=1.0)
     return F
 
 
 def sewing():
-    F = Fig(f"{S}/sewing", "Cream Sewing Machine", "Mother's machine: a cream enamel body, a chrome wheel, a thread of red.")
-    top = shelf(F, w=34, d=24, col="#6a4428")
-    F.model("machine", SEWING, 22, (0, top, 0), yaw=-20)
+    F = Fig(f"{S}/sewing", "Twin-Bell Alarm Clock", "Two bells and a hammer, wound every night, louder than the whole street.")
+    F.model("clock", CLOCK, h=34, at=(0, BASE_H, 0), yaw=-15, mat="gloss", drop=["mat:Glass"])
+    shelf(F)
+    F.model_clip("model_clock", "wobble", 1.2, amp=8)
     return F
 
 
 def valve():
-    F = Fig(f"{S}/valve", "Golden Valve Radio", "Grandfather's valve set, warmed up and glowing. Gold plated, for the shrine of the living room.")
-    top = shelf(F, w=34, d=24, col="#4a2a1a")
-    doily(F, "doily", 13, (0, top + 0.1, 0))
-    F.model("radio", VALVE, 20, (0, top + 0.2, 0), yaw=-15, mat="metal", recolor=GOLD)
-    F.model_clip("model_radio", "turn", 2.4, amp=20)
+    F = Fig(f"{S}/valve", "Sunday Night Projector", "Father's 8 mm projector: the sheet on the wall, the reels turning, the summer at the sea again.")
+    F.model("proj", PROJECTOR, w=36, h=34, d=24, at=(0, BASE_H, 0), yaw=-70, mat="metal")
+    shelf(F)
+    F.model_clip("model_proj", "turn", 2.4, amp=20)
     return F
 
 

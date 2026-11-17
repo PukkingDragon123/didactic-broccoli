@@ -1,0 +1,508 @@
+{
+ "name": "Milk carton (1 L)",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 2.0,
+ "budget": {
+  "tris": 1500,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.4,
+  "gradient": 0.15,
+  "ao": 0.3,
+  "ao_height": 30.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "cf8f6f0_k0p0": [
+    "#56280c",
+    "#c6681e",
+    "#eab47e",
+    "#fcf6ee",
+    "#fdf9f3",
+    "#fdfcf7",
+    "#fefefc"
+   ],
+   "c2456b0_k0p1": [
+    "#080c22",
+    "#142150",
+    "#213a7c",
+    "#2f58a7",
+    "#5788ce",
+    "#96b8de",
+    "#d2e3f1"
+   ],
+   "c8cc6ee_k0p1": [
+    "#0c2040",
+    "#1e5394",
+    "#408ed6",
+    "#95c5e7",
+    "#b2d8ed",
+    "#cfe9f3",
+    "#eaf6fa"
+   ],
+   "cd8342e_k0p1": [
+    "#2d080e",
+    "#67141b",
+    "#a12124",
+    "#d33c35",
+    "#dd796c",
+    "#e9afa3",
+    "#f5dfd8"
+   ],
+   "c58a048": [
+    "#0f200e",
+    "#264b21",
+    "#417435",
+    "#5f9c4a",
+    "#8cbb75",
+    "#b9d3a9",
+    "#e2ecda"
+   ]
+  }
+ },
+ "styles": {
+  "paper": {
+   "dither": 0,
+   "light": 0.5,
+   "rim": {
+    "light": 0,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 6,
+     "amount": 0.12
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/rough_linen",
+     "scale": 80,
+     "amount": 0.3
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "body",
+   "shape": "box",
+   "pivot": [
+    0,
+    80,
+    0
+   ],
+   "size": [
+    70,
+    160,
+    70
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.2,
+   "style": "paper",
+   "paint": {
+    "ramp": "cf8f6f0_k0p0",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "band",
+      "op": "band",
+      "axis": "y",
+      "from": -1.0,
+      "to": -0.55,
+      "ramp": "c2456b0_k0p1",
+      "tone": 3.0
+     },
+     {
+      "id": "sky",
+      "op": "band",
+      "axis": "y",
+      "from": -0.55,
+      "to": -0.45,
+      "ramp": "c8cc6ee_k0p1",
+      "tone": 3.5
+     },
+     {
+      "id": "hill",
+      "op": "band",
+      "axis": "y",
+      "from": -0.45,
+      "to": -0.3,
+      "wobble": 0.12,
+      "wobble_scale": 30,
+      "ramp": "c58a048",
+      "tone": 3.5
+     }
+    ],
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       0,
+       -30
+      ],
+      "art": [
+       ".............................................................iiiiii..iii.............",
+       "...................iii.......................................iiiiii..iii.............",
+       "...................iii.......................................iiiiii..iii.............",
+       "...................iii......................iiiiiiiiiiiiiiiiiiii.....iii.............",
+       "........iii........iii......................iiiiiiiiiiiiiiiiiiii.....iii.............",
+       "........iii........iii......................iiiiiiiiiiiiiiiiiiii.....iii.............",
+       "........iii........iii......................iii.....iii.........iii..iii.............",
+       "........iii........iii......................iii.....iii.........iii..iii.............",
+       "........iii........iii......................iii.....iii.........iii..iii.............",
+       "........iii........iii.........................iii..iii......iii.....iii.............",
+       "........iii........iii.........................iii..iii......iii.....iii.............",
+       "........iii........iii.........................iii..iii......iii.....iii.............",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiii...........iii..iii......iii.....iii.............",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiii...........iii..iii......iii.....iii.............",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiii...........iii..iii...iiiiii.....iii.............",
+       ".....iiii..........iii....................................iii........iii.............",
+       ".....iiii..........iii....................................iii........iii.............",
+       "...iii.............iii.........................iiiiiiiiiiiiiiiiiiii..iii.............",
+       "...iii.............iii.........................iiiiiiiiiiiiiiiiiiii..iii.............",
+       "...iii.............iii.........................iiiiiiiiiiiiiiiiiiii..iii.............",
+       "...................iii.......................................iii.....iii.............",
+       "...................iii.......................................iii.....iii.............",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii..............iiiiiiiii.....iii.............",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii..............iiiiii........iii.............",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii..............iiiiii........iii.............",
+       "...................iii.................................iii...iiiiii..iii.............",
+       "...................iii.................................iii...iiiiii..iii.............",
+       "...................iii.................................iii...iiiiii..iii.............",
+       "...................iii..............................iiiiiiiii........iii.............",
+       "...................iii..............................iiiiiiiii........iii.............",
+       "...................iii..............................iiiiiiiii........iii.............",
+       "...................iii......................iiiiiiiii..iii...........iii..........iii",
+       "...................iii......................iiiiiiiii..iii...........iii..........iii",
+       "...................iii......................iiiiiiiii..iii...........iii..........iii"
+      ],
+      "key": {
+       "i": "c2456b0_k0p1:2"
+      }
+     },
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       0,
+       18
+      ],
+      "art": [
+       "ii......ii..iiiiii..ii......ii....iiiiii....ii......ii....iiiiii..",
+       "ii......ii..iiiiii..ii......ii....iiiiii....ii......ii....iiiiii..",
+       "iiii..iiii....ii....ii....ii....ii......ii..ii......ii..ii......ii",
+       "iiii..iiii....ii....ii....ii....ii......ii..ii......ii..ii......ii",
+       "ii..ii..ii....ii....ii..ii......ii......ii..ii......ii..ii......ii",
+       "ii..ii..ii....ii....ii..ii......ii......ii..ii......ii..ii......ii",
+       "ii..ii..ii....ii....iiii........iiiiiiiiii..ii..ii..ii..iiiiiiiiii",
+       "ii..ii..ii....ii....iiii........iiiiiiiiii..ii..ii..ii..iiiiiiiiii",
+       "ii......ii....ii....ii..ii......ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii....ii....ii..ii......ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii....ii....ii....ii....ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii....ii....ii....ii....ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii..iiiiii..ii......ii..ii......ii....ii..ii....ii......ii",
+       "ii......ii..iiiiii..ii......ii..ii......ii....ii..ii....ii......ii"
+      ],
+      "key": {
+       "i": "cd8342e_k0p1:3"
+      }
+     },
+     {
+      "face": "front",
+      "at": "bottom",
+      "offset": [
+       0,
+       -10
+      ],
+      "art": [
+       "..ii....iiiiii..iiiiii..iiiiii..ii..ii..ii....",
+       "..ii....iiiiii..iiiiii..iiiiii..ii..ii..ii....",
+       "iiii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "iiii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..ii..ii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..ii..ii..ii....",
+       "iiiiii..iiiiii..iiiiii..iiiiii..ii..ii..iiiiii",
+       "iiiiii..iiiiii..iiiiii..iiiiii..ii..ii..iiiiii"
+      ],
+      "key": {
+       "i": "paperw:6"
+      }
+     },
+     {
+      "face": "back",
+      "at": "center",
+      "offset": [
+       0,
+       -30
+      ],
+      "art": [
+       ".............................................................iiiiii..iii.............",
+       "...................iii.......................................iiiiii..iii.............",
+       "...................iii.......................................iiiiii..iii.............",
+       "...................iii......................iiiiiiiiiiiiiiiiiiii.....iii.............",
+       "........iii........iii......................iiiiiiiiiiiiiiiiiiii.....iii.............",
+       "........iii........iii......................iiiiiiiiiiiiiiiiiiii.....iii.............",
+       "........iii........iii......................iii.....iii.........iii..iii.............",
+       "........iii........iii......................iii.....iii.........iii..iii.............",
+       "........iii........iii......................iii.....iii.........iii..iii.............",
+       "........iii........iii.........................iii..iii......iii.....iii.............",
+       "........iii........iii.........................iii..iii......iii.....iii.............",
+       "........iii........iii.........................iii..iii......iii.....iii.............",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiii...........iii..iii......iii.....iii.............",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiii...........iii..iii......iii.....iii.............",
+       ".....iiiiiiiiiiiiiiiiiiiiiiiiiiiiiii...........iii..iii...iiiiii.....iii.............",
+       ".....iiii..........iii....................................iii........iii.............",
+       ".....iiii..........iii....................................iii........iii.............",
+       "...iii.............iii.........................iiiiiiiiiiiiiiiiiiii..iii.............",
+       "...iii.............iii.........................iiiiiiiiiiiiiiiiiiii..iii.............",
+       "...iii.............iii.........................iiiiiiiiiiiiiiiiiiii..iii.............",
+       "...................iii.......................................iii.....iii.............",
+       "...................iii.......................................iii.....iii.............",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii..............iiiiiiiii.....iii.............",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii..............iiiiii........iii.............",
+       "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii..............iiiiii........iii.............",
+       "...................iii.................................iii...iiiiii..iii.............",
+       "...................iii.................................iii...iiiiii..iii.............",
+       "...................iii.................................iii...iiiiii..iii.............",
+       "...................iii..............................iiiiiiiii........iii.............",
+       "...................iii..............................iiiiiiiii........iii.............",
+       "...................iii..............................iiiiiiiii........iii.............",
+       "...................iii......................iiiiiiiii..iii...........iii..........iii",
+       "...................iii......................iiiiiiiii..iii...........iii..........iii",
+       "...................iii......................iiiiiiiii..iii...........iii..........iii"
+      ],
+      "key": {
+       "i": "c2456b0_k0p1:2"
+      }
+     },
+     {
+      "face": "back",
+      "at": "center",
+      "offset": [
+       0,
+       18
+      ],
+      "art": [
+       "ii......ii..iiiiii..ii......ii....iiiiii....ii......ii....iiiiii..",
+       "ii......ii..iiiiii..ii......ii....iiiiii....ii......ii....iiiiii..",
+       "iiii..iiii....ii....ii....ii....ii......ii..ii......ii..ii......ii",
+       "iiii..iiii....ii....ii....ii....ii......ii..ii......ii..ii......ii",
+       "ii..ii..ii....ii....ii..ii......ii......ii..ii......ii..ii......ii",
+       "ii..ii..ii....ii....ii..ii......ii......ii..ii......ii..ii......ii",
+       "ii..ii..ii....ii....iiii........iiiiiiiiii..ii..ii..ii..iiiiiiiiii",
+       "ii..ii..ii....ii....iiii........iiiiiiiiii..ii..ii..ii..iiiiiiiiii",
+       "ii......ii....ii....ii..ii......ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii....ii....ii..ii......ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii....ii....ii....ii....ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii....ii....ii....ii....ii......ii..ii..ii..ii..ii......ii",
+       "ii......ii..iiiiii..ii......ii..ii......ii....ii..ii....ii......ii",
+       "ii......ii..iiiiii..ii......ii..ii......ii....ii..ii....ii......ii"
+      ],
+      "key": {
+       "i": "cd8342e_k0p1:3"
+      }
+     },
+     {
+      "face": "back",
+      "at": "bottom",
+      "offset": [
+       0,
+       -10
+      ],
+      "art": [
+       "..ii....iiiiii..iiiiii..iiiiii..ii..ii..ii....",
+       "..ii....iiiiii..iiiiii..iiiiii..ii..ii..ii....",
+       "iiii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "iiii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..iiiiii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..ii..ii..ii....",
+       "..ii....ii..ii..ii..ii..ii..ii..ii..ii..ii....",
+       "iiiiii..iiiiii..iiiiii..iiiiii..ii..ii..iiiiii",
+       "iiiiii..iiiiii..iiiiii..iiiiii..ii..ii..iiiiii"
+      ],
+      "key": {
+       "i": "paperw:6"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "gable",
+   "shape": "taper",
+   "pivot": [
+    0,
+    178,
+    0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    70,
+    70,
+    36
+   ],
+   "front_scale": [
+    1.0,
+    0.0
+   ],
+   "style": "paper",
+   "paint": {
+    "ramp": "cf8f6f0_k0p0",
+    "tone": 4.8
+   }
+  },
+  {
+   "id": "fin",
+   "shape": "box",
+   "pivot": [
+    0,
+    199,
+    0
+   ],
+   "size": [
+    70,
+    10,
+    3
+   ],
+   "chamfer": 0.5,
+   "style": "paper",
+   "paint": {
+    "ramp": "cf8f6f0_k0p0",
+    "tone": 4.4,
+    "layers": [
+     {
+      "id": "date",
+      "op": "rect",
+      "rect": [
+       0.1,
+       0.3,
+       0.6,
+       0.7
+      ],
+      "ramp": "c2456b0_k0p1",
+      "tone": 2.0,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

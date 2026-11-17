@@ -1,0 +1,9 @@
+{
+ "joints": {},
+ "mats": {
+  "eye_l": "metal",
+  "eye_r": "metal"
+ },
+ "key": "open_sign",
+ "density": 0.9
+}

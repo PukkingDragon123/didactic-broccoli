@@ -16,6 +16,7 @@ import { placeOpenerTool, placeCharms } from '../game/shop.js';
 import { CapsuleOS } from '../os/OS.js';
 import { installApps } from '../os/apps/index.js';
 import { IdleScreen, IW, IH } from './idle.js';
+import { preloadLP, lpReady, lpMesh } from '../gachakit/lowpix.js';
 
 const BEIGE = 0xe6dcc4, BEIGE_D = 0xcfc3a6, BEIGE_Y = 0xd9c99c, DARK = 0x4a453c;
 const SW = 0.32, SH = 0.24; // screen (4:3), metres
@@ -153,22 +154,38 @@ export async function installPC(game) {
     root.add(m);
     return m;
   };
-  const monitor = mk(monitorModel(), 0.01, 0, 0, -0.06);
-  mk(keyboardModel(), 0.006, 0, 0, 0.3);
-  const mouse = mk(mouseModel(), 0.006, 0.3, 0, 0.32, 0.2);
+  // the PC itself: a lowpix model (art/lowpix/machines/_src/pc.py), the voxel build if it fails to load
+  await preloadLP(['pc']);
+  const LP = lpReady('pc') && !/[?&]voxelmachines\b/.test(location.search);
+  const put = (joint, x, y, z, ry = 0) => { const m = lpMesh('pc', joint); m.position.set(x, y, z); m.rotation.y = ry; root.add(m); return m; };
+  let monitor, mouse;
+  if (LP) {
+    monitor = put('monitor', 0, 0, -0.06);
+    put('keyboard', 0, 0, 0.3);
+    mouse = put('mouse', 0.3, 0.004, 0.32, 0.2);
+    put('tower', -0.56, 0, -0.08);
+    put('speaker', 0.36, 0, 0.0, -0.2);
+    put('pad', 0.3, 0, 0.32);
+    put('mug', -0.3, 0, 0.3, 2.4);
+    put('floppy', -0.2, 0, 0.42, 0.3);
+  } else {
+    monitor = mk(monitorModel(), 0.01, 0, 0, -0.06);
+    mk(keyboardModel(), 0.006, 0, 0, 0.3);
+    mouse = mk(mouseModel(), 0.006, 0.3, 0, 0.32, 0.2);
+    mk(towerModel(), 0.01, -0.56, 0, -0.08);
+    mk(speakerModel(), 0.01, 0.36, 0, 0.0, -0.2);
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.004, 0.17), new THREE.MeshStandardMaterial({ color: 0x2f6fd6, roughness: 0.9 }));
+    pad.position.set(0.3, 0.002, 0.32);
+    root.add(pad);
+    const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.036, 0.09, 12), new THREE.MeshStandardMaterial({ color: 0xf2ead6, roughness: 0.5 }));
+    mug.position.set(-0.3, 0.045, 0.3);
+    mug.castShadow = true;
+    root.add(mug);
+    const disk = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.004, 0.094), new THREE.MeshStandardMaterial({ color: 0x2a3a78, roughness: 0.6 }));
+    disk.position.set(-0.2, 0.002, 0.42); disk.rotation.y = 0.3;
+    root.add(disk);
+  }
   const mouseHome = mouse.position.clone();
-  mk(towerModel(), 0.01, -0.56, 0, -0.08);
-  mk(speakerModel(), 0.01, 0.36, 0, 0.0, -0.2);
-  const pad = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.004, 0.17), new THREE.MeshStandardMaterial({ color: 0x2f6fd6, roughness: 0.9 }));
-  pad.position.set(0.3, 0.002, 0.32);
-  root.add(pad);
-  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.036, 0.09, 12), new THREE.MeshStandardMaterial({ color: 0xf2ead6, roughness: 0.5 }));
-  mug.position.set(-0.3, 0.045, 0.3);
-  mug.castShadow = true;
-  root.add(mug);
-  const disk = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.004, 0.094), new THREE.MeshStandardMaterial({ color: 0x2a3a78, roughness: 0.6 }));
-  disk.position.set(-0.2, 0.002, 0.42); disk.rotation.y = 0.3;
-  root.add(disk);
   // power LED: green when on, amber on standby
   const led = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.008, 0.004), new THREE.MeshBasicMaterial({ color: 0xffa040 }));
   led.position.set(0.105, 0.075, -0.06 + 0.19);

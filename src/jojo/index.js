@@ -81,22 +81,39 @@ export class JoJo {
   /** Redraw the old screen-edge lettering (src/ui/menacing.js) as pixel sprites: same moments, one look. The layer is
    *  made on its first use, so watch for it, then turn every glyph it gets into a sprite at the same place and size. */
   adoptMenace() {
-    const handle = (el) => {
-      if (!(el instanceof HTMLElement) || !el.classList.contains('mn') || el.dataset.jj) return;
-      el.dataset.jj = '1';
-      const txt = el.textContent, kind = KIND_OF[txt] || 'go';
-      const fontPx = el.classList.contains('don') ? 128 : el.classList.contains('small') ? 32 : innerWidth <= 560 ? 48 : 64;
-      const x = (parseFloat(el.style.left) || 0) + (fontPx * [...txt].length) / 2, y = (parseFloat(el.style.top) || 0) + fontPx / 2;
-      const delay = parseFloat(el.style.animationDelay) || 0, dur = parseFloat(el.style.getPropertyValue('--d')) || 2.6;
+    // one menace() call appends its glyphs in one go: a column at each screen edge (or one at a point). Rebuild each
+    // column as one rising sprite column, from its lowest glyph, in the direction the column leaned.
+    const take = (els) => {
+      const fresh = els.filter((el) => el instanceof HTMLElement && el.classList.contains('mn') && !el.dataset.jj);
+      if (!fresh.length) return;
+      for (const el of fresh) el.dataset.jj = '1';
+      const cols = [];
+      for (const el of fresh) {
+        const x = parseFloat(el.style.left) || 0, y = parseFloat(el.style.top) || 0;
+        const col = cols.find((c) => c.txt === el.textContent && Math.abs(c.x0 - x) < innerWidth * 0.3);
+        if (col) { col.els.push(el); col.x1 = x; } else cols.push({ txt: el.textContent, els: [el], x0: x, y0: y, x1: x });
+      }
       const dpr = Math.min(2, window.devicePixelRatio || 1);
-      this.kana.spawn({ kind, text: txt, screen: [x / innerWidth, y / innerHeight], px: Math.max(1, Math.round((fontPx * dpr) / 42)), delay, dur, sound: false });
+      for (const c of cols) {
+        const el = c.els[0], txt = c.txt, kind = KIND_OF[txt] || 'go';
+        const fontPx = el.classList.contains('don') ? 128 : el.classList.contains('small') ? 32 : innerWidth <= 560 ? 48 : 64;
+        const dur = parseFloat(el.style.getPropertyValue('--d')) || 2.6;
+        const px = Math.max(1, Math.round((fontPx * dpr) / 42));
+        if (c.els.length > 1 && (kind === 'go' || kind === 'do')) {
+          const side = c.x1 >= c.x0 ? 1 : -1;
+          this.kana.spawn({ kind, n: c.els.length, screen: [(c.x0 + (side > 0 ? 0 : fontPx)) / innerWidth, (c.y0 + fontPx) / innerHeight], side, px, dur, sound: false });
+        } else {
+          const x = c.x0 + (fontPx * [...txt].length) / 2, y = c.y0 + fontPx / 2;
+          this.kana.spawn({ kind, text: txt, screen: [x / innerWidth, y / innerHeight], px, dur, sound: false });
+        }
+      }
     };
     const attach = (L) => {
       if (this.menaceObs) return;
       L.classList.add('jj-adopted');
-      this.menaceObs = new MutationObserver((muts) => { for (const m of muts) for (const el of m.addedNodes) handle(el); });
+      this.menaceObs = new MutationObserver((muts) => take(muts.flatMap((m) => [...m.addedNodes])));
       this.menaceObs.observe(L, { childList: true });
-      for (const el of L.children) handle(el);
+      take([...L.children]);
     };
     const L0 = document.getElementById('menace');
     if (L0) { attach(L0); return; }

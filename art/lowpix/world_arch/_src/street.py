@@ -110,5 +110,59 @@ def utility_pole():
     return S
 
 
+
+
+def underpass_portal():
+    """The lane face of the east railway underpass (the game mirrors it for the west one): brick abutments on stone
+    plinths with dressed cap blocks, the hazard-striped corner guards, and the riveted steel plate girder spanning the
+    opening (web, flanges, stiffeners every 62 cm, a hazard stripe on the bottom flange), in world coordinates."""
+    XT, TZ0, TZ1, TH, YE = 26.0, 6.6, 12.6, 3.4, 4.25
+    S = Spec('underpass_portal', ppm=40, desc='Railway underpass portal: brick abutments and a riveted plate girder')
+    S.ramps(brick=ramp('#8a4c38', 8, hue=12, sat=0.04, spread=0.75), stone=ramp('#b0a898', 7, hue=8, sat=0.02, spread=0.7),
+            girder=ramp('#6e6658', 8, hue=12, sat=0.03, spread=0.75), rust=ramp('#6a3a26', 6, hue=14, sat=0.02, spread=0.75),
+            yellow=ramp('#d8aa2a', 6, hue=14, sat=0.04, spread=0.7), ink=ramp('#2a2826', 5, hue=8, sat=0.02, spread=0.6),
+            moss=ramp('#5d6a3e', 6, hue=12, sat=0.03, spread=0.7))
+    S.d['brush'] = {'length': 0.2, 'width': 0.05, 'rough': 0.4, 'flow': 'horizontal',
+                    'textures': {'brick': 'stone', 'stone': 'stone', 'girder': 'metal', 'rust': 'metal'}}
+    rim = {'light_shift': 0.9, 'dark_shift': -0.9}
+    S.style('brick', ramp='brick', tone=3.8, rim=rim, layers=[
+        {'id': 'courses', 'op': 'stripes', 'axis': 'y', 'period': 0.075, 'width': 0.2, 'shift': -1.5, 'space': 'world'},
+        {'id': 'perp', 'op': 'stripes', 'axis': [0, 0.0, 1.0], 'period': 0.225, 'width': 0.08, 'shift': -1.2, 'space': 'world'},
+        {'id': 'tone', 'op': 'noise', 'scale': 0.1, 'amount': 0.7},
+        {'id': 'soot', 'op': 'patches', 'scale': 0.6, 'threshold': 0.55, 'shift': -0.8},
+        {'id': 'efflor', 'op': 'patches', 'scale': 0.3, 'threshold': 0.75, 'shift': 1.0},
+        {'id': 'moss', 'op': 'band', 'axis': 'y', 'from': -1, 'to': -0.9, 'ramp': 'moss', 'tone': 2.4, 'wobble': 0.05}])
+    S.style('stone', ramp='stone', tone=3.8, rim=rim, layers=[photo('concrete_wall_003', scale=1.0, amount=0.7),
+                                                             {'id': 'chips', 'op': 'wear', 'width': 1, 'density': 0.3, 'shift': -1.2}])
+    S.style('girder', ramp='girder', tone=3.6, rim={'light_shift': 1.1, 'dark_shift': -1.0}, layers=[
+        {'id': 'rivets', 'op': 'rivets', 'spacing': 4, 'inset': 1, 'ramp': 'girder', 'tone': 5.0, 'min_size': 3},
+        {'id': 'rust', 'op': 'spots', 'count': 40, 'radius': [0.02, 0.06], 'stretch': [0.4, 4, 0.4], 'ramp': 'rust', 'tone': 2.8},
+        {'id': 'peel', 'op': 'patches', 'scale': 0.3, 'threshold': 0.7, 'ramp': 'rust', 'tone': 3.4},
+        {'id': 'soot', 'op': 'gradient', 'axis': 'y', 'amount': -0.6}])
+    hazard = {'ramp': 'yellow', 'tone': 3.4, 'brush': {'off': True}, 'layers': [
+        {'id': 'tiger', 'op': 'stripes', 'axis': [0, 1, 1], 'period': 0.2, 'width': 0.5, 'ramp': 'ink', 'tone': 1.6, 'space': 'world'},
+        {'id': 'scuff', 'op': 'noise', 'scale': 0.05, 'amount': 0.5}]}
+    for za, zb in ((TZ0 - 1.45, TZ0), (TZ1, TZ1 + 1.45)):
+        zc, d = (za + zb) / 2, zb - za
+        S.box('abut', 0.45, TH + 0.6, d, XT - 0.15, 0, zc, style='brick', hide=['bottom'])
+        S.box('plinth', 0.55, 0.35, d + 0.1, XT - 0.15, 0, zc, style='stone', hide=['bottom'], chamfer=0.02)
+        S.box('cap', 0.6, 0.22, d + 0.12, XT - 0.15, TH + 0.6, zc, style='stone', chamfer=0.02)
+        S.box('abut_hi', 0.5, YE - TH - 0.8, d, XT - 0.12, TH + 0.82, zc, style='brick')
+        zi = zb - 0.18 if za < TZ0 else za + 0.18
+        S.box('guard', 0.05, 1.5, 0.36, XT - 0.4, 0.3, zi, paint=hazard)
+        S.box('guard2', 0.36, 1.5, 0.05, XT - 0.2, 0.3, zb + 0.025 if za < TZ0 else za - 0.025, paint=hazard)
+    s0, s1 = TZ0 - 1.45, TZ1 + 1.45
+    gx = XT - 0.05
+    S.box('web', 0.12, YE - TH - 0.06, s1 - s0, gx, TH + 0.06, (s0 + s1) / 2, style='girder')
+    S.box('flange_lo', 0.42, 0.08, s1 - s0, gx, TH - 0.02, (s0 + s1) / 2, style='girder', chamfer=0.01)
+    S.box('flange_hi', 0.38, 0.07, s1 - s0, gx, YE - 0.02, (s0 + s1) / 2, style='girder', chamfer=0.01)
+    z = s0 + 0.35
+    while z < s1 - 0.2:
+        S.box('stiff', 0.07, YE - TH - 0.08, 0.09, gx - 0.09, TH + 0.06, z, style='girder')
+        z += 0.62
+    S.box('stripe', 0.02, 0.08, TZ1 - TZ0, gx - 0.22, TH - 0.02, (TZ0 + TZ1) / 2, paint=hazard)
+    return S
+
+
 def specs():
-    return {'utility_pole': utility_pole()}
+    return {'utility_pole': utility_pole(), 'underpass_portal': underpass_portal()}

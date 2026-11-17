@@ -5,9 +5,9 @@
 export const LP_ARCH = {
   garage_shell: { min: [-4.35, 0, -5.43], max: [4.35, 3.45, 5.15], tris: 56, tex: [256, 496] },
   lane_back: { min: [-26.43, 0, -37.72], max: [26.73, 9.616, 32.999], tris: 5004, tex: [1024, 1200] },
-  lane_fe: { min: [-1.85, 0, 15.09], max: [21.23, 9.172, 25.329], tris: 4240, tex: [1024, 1696] },
+  lane_fe: { min: [-1.85, 0, 15.02], max: [21.23, 9.172, 25.329], tris: 4240, tex: [1024, 1696] },
   lane_fw: { min: [-26.08, 0, 14.33], max: [-1.37, 9.172, 24.019], tris: 4580, tex: [1024, 1584] },
-  lane_ne: { min: [4, 0, -5.419], max: [26.08, 9.128, 4.81], tris: 4828, tex: [1024, 1632] },
+  lane_ne: { min: [4, 0, -5.419], max: [26.08, 9.128, 4.88], tris: 4828, tex: [1024, 1632] },
   lane_nw: { min: [-26.08, 0, -4.519], max: [-3.995, 9.172, 5.85], tris: 4564, tex: [1024, 1856] },
   lantern: { min: [-0.15, -0.27, -0.146], max: [0.15, 0.44, 0.146], tris: 244, tex: [128, 240] },
   mikawaya_shell: { min: [-15.55, 0, 13.99], max: [-9.3, 3.89, 19.95], tris: 488, tex: [512, 976] },
@@ -16,6 +16,7 @@ export const LP_ARCH = {
   shutter: { min: [-3, 0, 5.08], max: [3, 2.85, 5.08], tris: 2, tex: [512, 192] },
   utility_pole: { min: [-0.9, 0, -0.241], max: [0.9, 8.06, 0.241], tris: 1056, tex: [256, 432] },
   villa: { min: [11.45, 0, -29.05], max: [20.22, 9.9, -19.79], tris: 2314, tex: [1024, 832] },
+  underpass_portal: { min: [25.55, 0, 5.09], max: [26.16, 4.3, 14.11], tris: 448, tex: [512, 592] },
 };
 export const archAsset = (id) => 'lowpix/world_arch/' + id;
 // the houses each block model draws (art/lowpix/world_arch/_src/houses.py): house id (Town.js houseId) -> { block, ridge }

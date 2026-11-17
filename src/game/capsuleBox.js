@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
+import { preloadLP, lpReady, lpMaterialSlots } from '../gachakit/lowpix.js';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capsuleColor, capsuleSize, capsuleStyle, pileGeometries, CAPSULE_R } from './Capsule.js';
@@ -15,8 +16,15 @@ const VS = 0.01;
 const hex = (s) => parseInt(String(s).replace('#', ''), 16);
 const SIZE = [0.27, 0.15, 0.2]; // w, h, d (a small inner carton)
 
+// the carton's board and flaps are a lowpix model (art/lowpix/machines/_src/carton.py; the voxel build is the fallback),
+// drawn with the shared voxel material array like before (its materials are appended to it)
+if (typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search)) await preloadLP(['carton']);
+const LP_JOINT = { shell: 'shell', flapL: 'flap_l', flapS: 'flap_s' };
 const geoCache = new Map();
-function g(key, build) { if (!geoCache.has(key)) geoCache.set(key, meshVoxels(build(), { voxelSize: VS, origin: 'none' })); return geoCache.get(key); }
+function g(key, build) {
+  if (!geoCache.has(key)) geoCache.set(key, (lpReady('carton') && lpMaterialSlots('carton', LP_JOINT[key], voxelMaterials('normal'))) || meshVoxels(build(), { voxelSize: VS, origin: 'none' }));
+  return geoCache.get(key);
+}
 
 const W = Math.round(SIZE[0] / VS), H = Math.round(SIZE[1] / VS), D = Math.round(SIZE[2] / VS);
 const CB = 0xc89a5f, CB2 = 0xb68850, CB3 = 0xd8b07a;

@@ -1261,8 +1261,19 @@ export class Town {
         B.box(m.kenchi, 1.0, YE - 0.25, zb - za, XT + 0.5, 0, (za + zb) / 2, { uv: [za * 0.37, 0], ao: 0.15 });
         B.box(m.found, 1.1, 0.25, zb - za, XT + 0.5, YE - 0.25, (za + zb) / 2, { uv: [za, 0] });
       }
+      // the portal (abutments, guards, the lane-side plate girder) is a lowpix model (art/lowpix/world_arch/_src/street.py:
+      // underpass_portal), mirrored for the west end; else the old build
+      let portal = null;
+      if (archReady('underpass_portal')) {
+        const g = new THREE.Group();
+        g.scale.x = s;
+        portal = archPlace('underpass_portal', g, { cast: false });
+        g.updateMatrixWorld(true);
+        g.matrixAutoUpdate = false;
+        this.group.add(g);
+      }
       // brick abutments framing the opening, stone plinth and cap blocks
-      for (const [za, zb] of [[TZ0 - 1.45, TZ0], [TZ1, TZ1 + 1.45]]) {
+      if (!portal) for (const [za, zb] of [[TZ0 - 1.45, TZ0], [TZ1, TZ1 + 1.45]]) {
         B.box(m.brick, 0.45, TH + 0.6, zb - za, XT - 0.15, 0, (za + zb) / 2, { uv: [za, 0], ao: 0.2 });
         B.box(m.found, 0.55, 0.35, zb - za + 0.1, XT - 0.15, 0, (za + zb) / 2, { tint: 0xc8c0b0 });
         B.box(m.found, 0.6, 0.22, zb - za + 0.12, XT - 0.15, TH + 0.6, (za + zb) / 2, { tint: 0xd0c8b8 });
@@ -1286,6 +1297,7 @@ export class Town {
       // the girder bridge: riveted plate girders spanning the opening (outer face toward the lane), deck above
       const span0 = TZ0 - 1.45, span1 = TZ1 + 1.45;
       for (const gx of [XT - 0.05, XE + 0.15]) {
+        if (portal && gx < XE) continue; // the lane-side girder is the model's
         const out = gx < XE ? -1 : 1;
         B.box(m.girder, 0.12, YE - TH - 0.06, span1 - span0, gx, TH + 0.06, (span0 + span1) / 2, { uv: [0, 0] });
         B.box(m.girder, 0.42, 0.08, span1 - span0, gx, TH - 0.02, (span0 + span1) / 2);

@@ -56,6 +56,8 @@ def build_all():
     s.boxr("door_l", dx0, 66, DZ0, ox0, oy1, DZ1, ch=3, col=white, style="enamel", hide=["back", "top"])
     s.boxr("door_r", ox1, 66, DZ0, dx1, oy1, DZ1, ch=3, col=white, style="enamel", hide=["back", "top"])
     s.boxr("door_b", ox0, 66, DZ0, ox1, oy0, DZ1, ch=0, col=white, style="enamel", hide=["back", "left", "right"])
+    for k in ("door_top", "door_l", "door_r", "door_b"):
+        s.layer(k, id="wear", op="wear", width=2, density=0.05, ramp="steel", tone=2.0, post=True)
     s.layer("door_top", id="handle_shade", op="rect", rect=[0.955, 0.4, 0.985, 0.62], shift=-1.2, faces=["right"])
     # the takeout bay: a dark well, its chrome lip, the flap (hinged at its top)
     s.boxr("bay", ox0, oy0, DZ1 - 140, ox1, oy1, DZ1 - 1, ch=0, col="cavity", style="cavity", hide=["front"], double_sided=True, tone=2.0)
@@ -81,10 +83,10 @@ def build_all():
         s.boxr("win_" + k, a, b, DZ1, c, d, DZ1 + 12, ch=3, col="chrome", style="chrome")
     s.boxr("win_back", wx0, wy0, DZ1 - 6, wx1, wy1, DZ1 - 2, ch=0, col=s.c("#dfe4ea"), style="glow", tone=4.0)
     # the lit header sign over the window
-    s.boxr("header", dx0 + 10, 1762, DZ1, dx1 - 10, 1796, DZ1 + 8, ch=3, col=s.c("#fff4dc"), style="glow", tone=4.6)
+    s.boxr("header", dx0 + 10, 1764, DZ1, dx1 - 10, 1806, DZ1 + 8, ch=3, col=s.c("#fff4dc"), style="glow", tone=4.6)
     hw_ = int((dx1 - dx0 - 20) * s.dens)
-    s.stamp("header", text_jp("つめたい のみもの", 12, "i"), {"i": f"{red}:2"}, face="front", at=[8, 3])
-    s.stamp("header", text5("COLD DRINKS", "i"), {"i": f"{blue}:2"}, face="front", at=[hw_ - 70, 4])
+    s.stamp("header", text_jp("つめたい のみもの", 10, "i"), {"i": f"{red}:2"}, face="front", at=[8, 2])
+    s.stamp("header", text5("COLD DRINKS", "i"), {"i": f"{blue}:2"}, face="front", at=[hw_ - 72, 3])
     s.layer("header", id="rule", op="band", axis="y", **{"from": -1.0, "to": -0.72}, ramp=red, tone=3.0, faces=["front"])
     # ------------------------------------------------------------------ the payment column
     px0, px1 = vx(15) - 4, vx(23) + 4
@@ -111,8 +113,8 @@ def build_all():
     s.layer("ad", id="bubbles", op="spots", count=26, radius=[3, 8], where={"y": [-0.2, 0.9]}, ramp=sky, tone=5.5, faces=["front"])
     bottle = ["...hh...", "...hh...", "..hhhh..", ".hbbbbh.", "hbwwbbbh", "hbwwbbbh", "hbbbbbbh", "hrrrrrrh", "hrwwwwrh", "hrrrrrrh",
               "hbbbbbbh", "hbbbbbbh", "hbbbbbbh", ".hhhhhh."]
-    big = [r.replace(".", "..").replace("h", "hh").replace("b", "bb").replace("w", "ww").replace("r", "rr") for r in bottle for _ in (0, 1)]
-    s.stamp("ad", big, {"h": f"{blue}:1", "b": f"{sky}:4", "w": "paperw:6", "r": f"{red}:3"}, face="front", at=[int((dx1 - dx0) * s.dens * 0.68), 10])
+    big = ["".join(c * 4 for c in r) for r in bottle for _ in range(4)]
+    s.stamp("ad", big, {"h": f"{blue}:1", "b": f"{sky}:4", "w": "paperw:6", "r": f"{red}:3"}, face="front", at=[int((dx1 - dx0) * s.dens * 0.66), 16])
     s.stamp("ad", text_jp("おいしい水", 16, "i"), {"i": "paperw:6"}, face="front", at=[16, 14])
     s.stamp("ad", text5("FRESH & COLD", "i"), {"i": f"{blue}:1"}, face="front", at=[18, 38])
     # stickers on the door: the operator's number, a recycle-bin note

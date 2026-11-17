@@ -1,0 +1,34 @@
+{
+ "id": "bamboo_fence",
+ "src": "sketchfab:c7c5f6cc7adb455b908fb352be5051c2",
+ "credit": {
+  "title": "BFBBR - Bamboo Fence 01",
+  "author": "SMF Features Developed From Cheryl Hill",
+  "authorUrl": "https://sketchfab.com/cherylhill28",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bfbbr-bamboo-fence-01-c7c5f6cc7adb455b908fb352be5051c2",
+  "site": "Sketchfab"
+ },
+ "tris": 1442,
+ "tex": 512,
+ "size": [
+  1.456,
+  1.22,
+  0.236
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#612111",
+   "#7d3518",
+   "#974c21",
+   "#b1672a",
+   "#c98435",
+   "#ce9f54",
+   "#d3b672",
+   "#d9c98f",
+   "#e0d9ab"
+  ]
+ },
+ "warnings": []
+}

@@ -11,27 +11,26 @@
  "models": [
   {
    "name": "cat",
-   "src": "sketchfab:ee5dcbdd0c2b4c33adf83d4c6708e6ae",
-   "height": 25,
-   "at": [
-    0,
-    20.5,
-    -0.5
+   "src": "sketchfab:6d82596b5db94f7b9093814a4a88caa9",
+   "height": 28.0,
+   "pos": [
+    0.0,
+    18.6,
+    0.4
    ],
-   "yaw": -10,
+   "yaw": -12,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "recolor": {
-    "tint": "#a8784c",
-    "brightness": 0.95
-   },
-   "key": "1384b699e98776"
+   "key": "7380031b84fdec"
   }
  ],
+ "base": {
+  "family": "lane",
+  "w": 27.5,
+  "d": 32.5
+ },
  "model_clip": {
   "node": "model_cat",
   "kind": "turn",

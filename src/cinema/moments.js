@@ -69,7 +69,7 @@ export class Moments {
   // ------------------------------------------------------------------ the paper title card
   card(title, sub = '', stamp = '', hold = 2.6) {
     const el = this.cardEl;
-    el.innerHTML = `<div class="cc"><b>${esc(title)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${stamp ? `<i class="hk">${esc(stamp)}</i>` : ''}</div>`;
+    el.innerHTML = `<div class="cc${String(title).length > 12 ? ' long' : ''}"><b>${esc(title)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${stamp ? `<i class="hk">${esc(stamp)}</i>` : ''}</div>`;
     el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
     let t = 0;
     return { update: (dt) => { t += dt; if (t >= hold || this.game.cutscene.skipping) { el.classList.remove('show'); return true; } return false; } };
@@ -87,7 +87,7 @@ export class Moments {
   firstMachine(m) {
     const g = this.game;
     if (!m?.root) return;
-    const run = () => g.cutscene.play((c) => this.machineScene(c, m), { skippable: true });
+    const run = () => g.cutscene.play((c) => this.machineScene(c, m), { skippable: true }).then(() => { this.lastCine = g.time; });
     if (g.cutscene.active) this.queue.push(run); else run();
   }
 
@@ -116,8 +116,9 @@ export class Moments {
     if (!big) { this.beat('rise'); return; }
     this.queue.push(() => {
       const g = this.game;
-      if (!this.free()) { this.beat('rise'); return; }
-      g.cutscene.play((c) => this.levelScene(c, level), { skippable: true });
+      // right after another big moment (a secret's showcase, the first machine) a second film would be too much
+      if (!this.free() || g.time - (this.lastCine ?? -99) < 20) { this.beat('rise'); return; }
+      g.cutscene.play((c) => this.levelScene(c, level), { skippable: true }).then(() => { this.lastCine = g.time; });
     });
   }
 
@@ -141,10 +142,8 @@ export class Moments {
   }
 
   // ------------------------------------------------------------------ rare pulls
-  secretBuild(item) {
-    const g = this.game;
-    sting('menace', { vol: 0.9 });
-    g.jojo?.kana.spawn({ kind: 'go', at: () => item.obj?.getWorldPosition(_v), n: 3, dur: 2.2, side: -1, sound: false, size: 0.6 });
+  secretBuild() {
+    sting('menace', { vol: 0.9 }); // (the reveal's own ゴゴゴ is redrawn as pixel lettering by src/jojo)
   }
 
   onReveal(holder, data, isNew) {
@@ -154,44 +153,54 @@ export class Moments {
     if (r === 'rare' && isNew) J.kana.spawn({ kind: 'go', at: pos, n: 2, dur: 1.6, size: 0.45, sound: false });
     if (r === 'ultra') {
       sting('reveal', { delay: 0.4 });
-      g.tweens.wait(0.45, () => { J.impact.frame({ at: holder.getWorldPosition(new THREE.Vector3()), palette: ['ice', 'violet'], dur: 0.45, clear: 0.12, freeze: false }); J.kana.spawn({ kind: 'do', at: pos, n: 3, dur: 2.2, size: 0.5, sound: false }); });
+      g.tweens.wait(0.45, () => J.impact.frame({ at: holder.getWorldPosition(new THREE.Vector3()), palette: ['ice', 'violet'], dur: 0.45, clear: 0.12, freeze: false }));
     }
     if (r !== 'secret') return;
     sting('secret');
     const first = !this.C.s.firsts.secret && this.on;
     J.impact.frame({ at: holder.getWorldPosition(new THREE.Vector3()), palette: ['violet', 'blood', 'acid'], dur: first ? 0.95 : 0.8, clear: 0.1 });
-    J.kana.spawn({ kind: 'ban', screen: [0.5, 0.2], dur: 2.0, sound: false });
     if (!first) return;
     this.C.s.firsts.secret = g.clock?.day ?? 1;
-    g.tweens.wait(1.0, () => { if (!g.cutscene.active && !g.talk?.active) g.cutscene.play((c) => this.showcase(c, holder, data), { skippable: true }).then(() => { this._restore?.(); this._restore = null; }); });
+    g.tweens.wait(1.0, () => { if (!g.cutscene.active && !g.talk?.active) g.cutscene.play((c) => this.showcase(c, holder, data), { skippable: true }).then(() => { this._restore?.(); this._restore = null; this.lastCine = g.time; }); });
   }
 
   /** The figure hangs in the air where you held it; the camera circles it. */
   *showcase(c, holder, data) {
     const g = this.game, A = g.held.anchor, cam = g.camera;
     const it = getItem(data.key);
-    // the hands' anchor stays where it is in the world while the camera leaves (it rides a stand-in for the camera)
+    // the hands' anchor stays put in the world while the camera leaves (it rides a stand-in for the camera), so the
+    // reveal's light rays stay round the figure; the figure itself is shown by a copy drawn in the world (the hands'
+    // own layer only draws in front of the lens)
     const proxy = new THREE.Object3D();
     cam.getWorldPosition(proxy.position); cam.getWorldQuaternion(proxy.quaternion);
     g.scene.add(proxy);
     const parent = A.parent;
     proxy.add(A);
     proxy.updateMatrixWorld(true);
-    c.every(() => { A.visible = true; });
-    const restore = this._restore = () => { if (A.parent === proxy) parent.add(A); g.scene.remove(proxy); };
-    {
-      const f = holder.getWorldPosition(new THREE.Vector3());
-      const eye = cam.position.clone();
-      const d0 = Math.max(0.3, Math.hypot(eye.x - f.x, eye.z - f.z));
-      const a0 = Math.atan2(eye.x - f.x, eye.z - f.z);
-      g.jojo.kana.spawn({ kind: 'go', screen: [0.1, 0.78], n: 4, dur: 4.2, side: 1, sound: false });
-      g.jojo.kana.spawn({ kind: 'go', screen: [0.86, 0.66], n: 4, dur: 4.2, side: -1, sound: false, delay: 0.3 });
-      let k = 0;
-      c.every((dt) => { k += dt; if (Math.random() < dt * 6) g.effects.sparks({ pos: f, count: 2, colors: [0xffd23f, 0xffffff], speed: 0.25, size: 0.008, life: 0.8, gravity: -0.1, radius: 0.12, star: 1 }); });
-      yield c.all(orbit(c, { center: f, radius: d0 * 1.15, from: a0, to: a0 + 2.5, height: f.y - 0.06, lift: 0.1, look: f, dur: 3.8, fov: 30 }), rollTo(c, -0.08, 1.2),
-        this.card(it?.name || 'Secret', 'SECRET · 1 in 500', '秘', 3.4));
-      yield c.all(c.toPlayer(0.8), rollTo(c, 0, 0.6));
-    }
+    const copy = holder.clone(true);
+    copy.matrixAutoUpdate = false;
+    copy.traverse((o) => { o.layers.set(0); o.userData.mainPass = true; });
+    g.scene.add(copy);
+    const src = [], dst = [];
+    holder.traverse((o) => src.push(o)); copy.traverse((o) => dst.push(o));
+    const sync = () => {
+      holder.updateWorldMatrix(true, true);
+      copy.matrix.copy(holder.matrixWorld); copy.matrixWorldNeedsUpdate = true;
+      for (let i = 1; i < src.length && i < dst.length; i++) { dst[i].position.copy(src[i].position); dst[i].quaternion.copy(src[i].quaternion); dst[i].scale.copy(src[i].scale); }
+    };
+    sync();
+    c.every(sync);
+    const restore = this._restore = () => { if (A.parent === proxy) parent.add(A); g.scene.remove(proxy); g.scene.remove(copy); };
+    const f = holder.getWorldPosition(new THREE.Vector3());
+    const eye = cam.position.clone();
+    const d0 = Math.max(0.3, Math.hypot(eye.x - f.x, eye.z - f.z));
+    const a0 = Math.atan2(eye.x - f.x, eye.z - f.z);
+    const col = g.jojo.kana.spawn({ kind: 'go', screen: [0.08, 0.86], n: 3, dur: 3.2, side: 1, sound: false, delay: 1.0 });
+    c.every((dt) => { if (Math.random() < dt * 6) g.effects.sparks({ pos: f, count: 2, colors: [0xffd23f, 0xffffff], speed: 0.25, size: 0.008, life: 0.8, gravity: -0.1, radius: 0.12, star: 1 }); });
+    yield c.all(orbit(c, { center: f, radius: d0 * 1.25, from: a0, to: a0 + 2.5, height: f.y - 0.05, lift: 0.08, look: f, dur: 3.8, fov: 34 }), rollTo(c, -0.08, 1.2),
+      this.card(it?.name || 'Secret', 'SECRET · 1 in 500', '秘', 3.4));
+    col.stop();
+    yield c.all(c.toPlayer(0.8), rollTo(c, 0, 0.6));
     restore();
   }
 }

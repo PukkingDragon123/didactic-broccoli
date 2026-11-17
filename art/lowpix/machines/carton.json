@@ -1,0 +1,783 @@
+{
+ "name": "Capsule carton",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 0.9,
+ "budget": {
+  "tris": 1500,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.45,
+  "gradient": 0.2,
+  "ao": 0.35,
+  "ao_height": 60.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "cc89a5f_hue10_k0p05": [
+    "#2e1a0e",
+    "#6a4121",
+    "#a46d35",
+    "#c99a60",
+    "#d6b98c",
+    "#e4d5b6",
+    "#f3eee0"
+   ],
+   "cb68850_hue10_k0p05": [
+    "#27170e",
+    "#593a22",
+    "#8b5f37",
+    "#b78851",
+    "#c9ac81",
+    "#dbccb0",
+    "#efeadd"
+   ],
+   "cd8b88a_hue8_k0p05": [
+    "#38210f",
+    "#815225",
+    "#c58740",
+    "#dab88a",
+    "#e3cdaa",
+    "#ede1ca",
+    "#f7f3e8"
+   ],
+   "c3a2a24_k0p0": [
+    "#0d0706",
+    "#1e110f",
+    "#2e1d18",
+    "#3e2a22",
+    "#845f4b",
+    "#b79a85",
+    "#e0d5cc"
+   ],
+   "cc8382c": [
+    "#28090c",
+    "#5d1519",
+    "#912623",
+    "#c43f32",
+    "#d67866",
+    "#e4ae9f",
+    "#f3dfd6"
+   ]
+  }
+ },
+ "styles": {
+  "card": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "flutes",
+     "op": "stripes",
+     "axis": "x",
+     "period": 4.0,
+     "width": 0.35,
+     "shift": -0.2,
+     "faces": [
+      "sides",
+      "-front",
+      "-back"
+     ]
+    },
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 14,
+     "amount": 0.25
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/rough_linen",
+     "scale": 120,
+     "amount": 0.35
+    },
+    {
+     "id": "scuff",
+     "op": "wear",
+     "width": 2,
+     "density": 0.1,
+     "shift": 0.8,
+     "post": true
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "shell",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "bottom",
+   "shape": "box",
+   "parent": "shell",
+   "pivot": [
+    0.0,
+    1.5,
+    0.0
+   ],
+   "size": [
+    270.0,
+    3.0,
+    200.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "card",
+   "paint": {
+    "ramp": "cb68850_hue10_k0p05",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "in",
+      "op": "fill",
+      "faces": [
+       "top"
+      ],
+      "ramp": "cd8b88a_hue8_k0p05",
+      "tone": 3.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "wall_f",
+   "shape": "box",
+   "parent": "shell",
+   "pivot": [
+    0.0,
+    75.0,
+    98.5
+   ],
+   "size": [
+    270.0,
+    150.0,
+    3.0
+   ],
+   "double_sided": false,
+   "style": "card",
+   "paint": {
+    "ramp": "cc89a5f_hue10_k0p05",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "in",
+      "op": "fill",
+      "faces": [
+       "back"
+      ],
+      "ramp": "cd8b88a_hue8_k0p05",
+      "tone": 3.0
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 2.2,
+      "width": 0.45,
+      "shift": -1.2,
+      "faces": [
+       "top"
+      ]
+     },
+     {
+      "id": "edge",
+      "op": "band",
+      "axis": "y",
+      "from": 0.9,
+      "to": 1.0,
+      "shift": -0.35,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "front",
+      "at": "bottom-right",
+      "offset": [
+       -12,
+       -8
+      ],
+      "art": [
+       "ii..iii...iii.i.i.......i.i.....iii.iii",
+       "i.i.i.i.....i.i.i.......iii.....i...i..",
+       "i.i.i.i...iii.iii.......iii.iii.iii.iii",
+       "i.i.i.i...i.....i.......i.i.....i.i...i",
+       "i.i.iii.i.iii...i.......i.i.....iii.iii"
+      ],
+      "key": {
+       "i": "c3a2a24_k0p0:1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "wall_b",
+   "shape": "box",
+   "parent": "shell",
+   "pivot": [
+    0.0,
+    75.0,
+    -98.5
+   ],
+   "size": [
+    270.0,
+    150.0,
+    3.0
+   ],
+   "double_sided": false,
+   "style": "card",
+   "paint": {
+    "ramp": "cc89a5f_hue10_k0p05",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "in",
+      "op": "fill",
+      "faces": [
+       "front"
+      ],
+      "ramp": "cd8b88a_hue8_k0p05",
+      "tone": 3.0
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 2.2,
+      "width": 0.45,
+      "shift": -1.2,
+      "faces": [
+       "top"
+      ]
+     },
+     {
+      "id": "edge",
+      "op": "band",
+      "axis": "y",
+      "from": 0.9,
+      "to": 1.0,
+      "shift": -0.35,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "back",
+      "at": "bottom-right",
+      "offset": [
+       -12,
+       -8
+      ],
+      "art": [
+       "ii..iii...iii.i.i.......i.i.....iii.iii",
+       "i.i.i.i.....i.i.i.......iii.....i...i..",
+       "i.i.i.i...iii.iii.......iii.iii.iii.iii",
+       "i.i.i.i...i.....i.......i.i.....i.i...i",
+       "i.i.iii.i.iii...i.......i.i.....iii.iii"
+      ],
+      "key": {
+       "i": "c3a2a24_k0p0:1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "wall_l",
+   "shape": "box",
+   "parent": "shell",
+   "pivot": [
+    -133.5,
+    75.0,
+    0.0
+   ],
+   "size": [
+    3.0,
+    150.0,
+    194.0
+   ],
+   "double_sided": false,
+   "style": "card",
+   "paint": {
+    "ramp": "cc89a5f_hue10_k0p05",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "in",
+      "op": "fill",
+      "faces": [
+       "right"
+      ],
+      "ramp": "cd8b88a_hue8_k0p05",
+      "tone": 3.0
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "z",
+      "period": 2.2,
+      "width": 0.45,
+      "shift": -1.2,
+      "faces": [
+       "top"
+      ]
+     },
+     {
+      "id": "edge",
+      "op": "band",
+      "axis": "y",
+      "from": 0.9,
+      "to": 1.0,
+      "shift": -0.35,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "left",
+      "at": "top",
+      "offset": [
+       0,
+       10
+      ],
+      "art": [
+       "....ii....ii....",
+       "....ii....ii....",
+       "..iiiiii..iiiiii",
+       "..iiiiii..iiiiii",
+       "iiiiiiiiiiiiiiii",
+       "iiiiiiiiiiiiiiii",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "iiiiiiiiiiiiiiii",
+       "iiiiiiiiiiiiiiii"
+      ],
+      "key": {
+       "i": "c3a2a24_k0p0:1"
+      }
+     },
+     {
+      "face": "left",
+      "at": "center",
+      "offset": [
+       0,
+       14
+      ],
+      "art": [
+       "................i............i..............ii......................",
+       "................i............i..............ii......................",
+       ".iiiiiiiii...iiii..iiii......i...iii........ii..............iiii....",
+       "................iii....ii.iiii..i...i.....iiiiiii.........ii.i..ii..",
+       "................ii......i....i.i....i.......i............i...i....i.",
+       "................i........i...ii.....i.......i......ii...i....i....i.",
+       "...............ii........i...ii.....i....iiiiiiii...i...i....i.....i",
+       "...............ii........i..ii......i.......i........i.i.....i.....i",
+       ".i............i.i........i..ii.....i........i........i.i....i......i",
+       "i.............i.i........i.i.i.....i........i........i.i....i......i",
+       ".ii.......i..i..i.......i.i..i.....i..i.....i.......i..ii..i......i.",
+       "...iiiiiii...i..i....iii..i..i......iii.....ii.....i.....ii.....ii..",
+       ".............i..i.iiiii......i...............iiiiii..........iii...."
+      ],
+      "key": {
+       "i": "cc8382c:2"
+      }
+     },
+     {
+      "face": "left",
+      "at": "bottom",
+      "offset": [
+       0,
+       -10
+      ],
+      "art": [
+       "iii.iii.iii.iii.i.i.i...iii....iii.iii..",
+       "i...i.i.i.i.i...i.i.i...i......i...i.i..",
+       "i...iii.iii.iii.i.i.i...ii.....i...i.i..",
+       "i...i.i.i.....i.i.i.i...i......i...i.i..",
+       "iii.i.i.i...iii.iii.iii.iii....iii.iii.i"
+      ],
+      "key": {
+       "i": "c3a2a24_k0p0:1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "wall_r",
+   "shape": "box",
+   "parent": "shell",
+   "pivot": [
+    133.5,
+    75.0,
+    0.0
+   ],
+   "size": [
+    3.0,
+    150.0,
+    194.0
+   ],
+   "double_sided": false,
+   "style": "card",
+   "paint": {
+    "ramp": "cc89a5f_hue10_k0p05",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "in",
+      "op": "fill",
+      "faces": [
+       "left"
+      ],
+      "ramp": "cd8b88a_hue8_k0p05",
+      "tone": 3.0
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "z",
+      "period": 2.2,
+      "width": 0.45,
+      "shift": -1.2,
+      "faces": [
+       "top"
+      ]
+     },
+     {
+      "id": "edge",
+      "op": "band",
+      "axis": "y",
+      "from": 0.9,
+      "to": 1.0,
+      "shift": -0.35,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "right",
+      "at": "top",
+      "offset": [
+       0,
+       10
+      ],
+      "art": [
+       "....ii....ii....",
+       "....ii....ii....",
+       "..iiiiii..iiiiii",
+       "..iiiiii..iiiiii",
+       "iiiiiiiiiiiiiiii",
+       "iiiiiiiiiiiiiiii",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "....ii....ii....",
+       "iiiiiiiiiiiiiiii",
+       "iiiiiiiiiiiiiiii"
+      ],
+      "key": {
+       "i": "c3a2a24_k0p0:1"
+      }
+     },
+     {
+      "face": "right",
+      "at": "center",
+      "offset": [
+       0,
+       14
+      ],
+      "art": [
+       "................i............i..............ii......................",
+       "................i............i..............ii......................",
+       ".iiiiiiiii...iiii..iiii......i...iii........ii..............iiii....",
+       "................iii....ii.iiii..i...i.....iiiiiii.........ii.i..ii..",
+       "................ii......i....i.i....i.......i............i...i....i.",
+       "................i........i...ii.....i.......i......ii...i....i....i.",
+       "...............ii........i...ii.....i....iiiiiiii...i...i....i.....i",
+       "...............ii........i..ii......i.......i........i.i.....i.....i",
+       ".i............i.i........i..ii.....i........i........i.i....i......i",
+       "i.............i.i........i.i.i.....i........i........i.i....i......i",
+       ".ii.......i..i..i.......i.i..i.....i..i.....i.......i..ii..i......i.",
+       "...iiiiiii...i..i....iii..i..i......iii.....ii.....i.....ii.....ii..",
+       ".............i..i.iiiii......i...............iiiiii..........iii...."
+      ],
+      "key": {
+       "i": "cc8382c:2"
+      }
+     },
+     {
+      "face": "right",
+      "at": "bottom",
+      "offset": [
+       0,
+       -10
+      ],
+      "art": [
+       "iii.iii.iii.iii.i.i.i...iii....iii.iii..",
+       "i...i.i.i.i.i...i.i.i...i......i...i.i..",
+       "i...iii.iii.iii.i.i.i...ii.....i...i.i..",
+       "i...i.i.i.....i.i.i.i...i......i...i.i..",
+       "iii.i.i.i...iii.iii.iii.iii....iii.iii.i"
+      ],
+      "key": {
+       "i": "c3a2a24_k0p0:1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "flap_l",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "fl_l",
+   "shape": "box",
+   "parent": "flap_l",
+   "pivot": [
+    0.0,
+    1.5,
+    50.0
+   ],
+   "size": [
+    270.0,
+    3.0,
+    100.0
+   ],
+   "style": "card",
+   "paint": {
+    "ramp": "cc89a5f_hue10_k0p05",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "in",
+      "op": "fill",
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "cd8b88a_hue8_k0p05",
+      "tone": 3.0
+     },
+     {
+      "id": "crease",
+      "op": "band",
+      "axis": "z",
+      "from": -1.0,
+      "to": -0.94,
+      "shift": -0.6,
+      "faces": [
+       "top",
+       "bottom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "flap_s",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "fl_s",
+   "shape": "box",
+   "parent": "flap_s",
+   "pivot": [
+    67.5,
+    1.5,
+    0.0
+   ],
+   "size": [
+    135.0,
+    3.0,
+    200.0
+   ],
+   "style": "card",
+   "paint": {
+    "ramp": "cb68850_hue10_k0p05",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "in",
+      "op": "fill",
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "cd8b88a_hue8_k0p05",
+      "tone": 3.0
+     },
+     {
+      "id": "crease",
+      "op": "band",
+      "axis": "x",
+      "from": -1.0,
+      "to": -0.94,
+      "shift": -0.6,
+      "faces": [
+       "top",
+       "bottom"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

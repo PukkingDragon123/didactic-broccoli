@@ -432,7 +432,7 @@ export class GachaMachine {
       const cx = (cell % cols + 0.5) / cols * A.w + (rnd() - 0.5) * 0.008;
       const cz = (Math.floor(cell / cols) + 0.5) / rows * A.d + (rnd() - 0.5) * 0.008;
       _q.setFromEuler(new THREE.Euler((rnd() - 0.5) * 0.4, rnd() * 6, (rnd() - 0.5) * 0.4));
-      _m.compose(_v.set(cx, 0.003 + layer * 0.0032, cz), _q, _s);
+      _m.compose(_v.set(cx, 0.0012 + layer * 0.0019, cz), _q, _s);
       im.setMatrixAt(i, _m);
     }
     im.count = n;

@@ -187,3 +187,49 @@ def mouth_bowl(centre, rx, ry, depth, uv_roof, uv_floor, uv_tongue, tongue_base,
     tri = np.concatenate([tri, np.array(tt)])
     tongue = np.zeros(len(pos), bool); tongue[t0:] = True
     return np.array(pos), np.array(uv), tri, np.array(jw), tongue, base, d
+
+
+def mouth_lens(xs, lip_y, surf_z, uv_rect, rows=5, out=0.03):
+    """The open mouth as a lens lying on the muzzle along the lip line: its rows all coincide while the mouth is shut
+    (zero height, invisible); row v is weighted v to the jaw, so as the jaw drops the lens opens between the upper lip
+    and the chin, the corners pinched shut. Mapped onto a painted open-mouth patch (u across, v top lip -> bottom lip).
+    xs: positions across the mouth; lip_y(x); surf_z(x, y) the skin's depth there. Returns pos, uv, tris, jaw weight."""
+    u0, v0, du, dv = uv_rect
+    w = max(abs(xs[0]), abs(xs[-1]))
+    pos, uv, jw = [], [], []
+    for j in range(rows):
+        v = j / (rows - 1)
+        for i, x in enumerate(xs):
+            y = lip_y(x)
+            pos.append((x, y, surf_z(x, y) + out))
+            corner = 1 - (x / w) ** 2
+            jw.append(v * corner)
+            uv.append((u0 + du * (i / (len(xs) - 1)), v0 + dv * v))
+    n = len(xs); tri = []
+    for j in range(rows - 1):
+        for i in range(n - 1):
+            a = j * n + i; b = a + 1; c = a + n; d = c + 1
+            tri += [(a, c, b), (b, c, d)]
+    return np.array(pos, float), np.array(uv), np.array(tri), np.array(jw)
+
+
+def paint_open_mouth(tex, rect, cols):
+    """The inside of an open cat's mouth as pixel art (w x h): dark lips top and bottom, the roof's ridges, the dark
+    throat, a pink tongue on the floor with its groove, two small fangs hanging from the upper lip."""
+    x0, y0, w, h = rect
+    C = {k: np.array([int(v[i:i + 2], 16) for i in (1, 3, 5)], np.uint8) for k, v in cols.items()}
+    for yy in range(h):
+        for xx in range(w):
+            u, v = (xx + 0.5) / w, (yy + 0.5) / h
+            e = abs(u - 0.5) * 2                                   # 0 centre .. 1 corners
+            col = C['throat'] if (0.3 < v < 0.7 and e < 0.55) else C['inside']
+            if v < 0.3 and (yy % 3 == 0) and e < 0.8: col = C['ridge']
+            # tongue: an ellipse on the floor
+            tg = ((u - 0.5) / 0.24) ** 2 + ((v - 0.95) / 0.26) ** 2 < 1
+            if tg: col = C['tongue']
+            if tg and abs(u - 0.5) < 0.025: col = C['tongueD']
+            # fangs: small white triangles under the upper lip
+            for fx in (0.27, 0.73):
+                if v < 0.36 and abs(u - fx) < 0.05 * (1 - v / 0.36): col = C['tooth']
+            if v < 0.07 or v > 0.95: col = C['lip']
+            tex[y0 + yy, x0 + xx] = col

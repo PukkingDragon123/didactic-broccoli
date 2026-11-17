@@ -36,9 +36,10 @@ LITE_PPM = 12  # the second rows behind (background, seen over the roofs): one a
 
 # ------------------------------------------------------------------ materials -> paint
 WALLS = {  # name: (base colour, kind)
-    'wallCream': ('#c9b690', 'stucco'), 'wallBeige': ('#bca681', 'stucco'), 'wallGrey': ('#a8a28e', 'stucco'),
-    'wallBlue': ('#98a3a6', 'stucco'), 'mortar': ('#b9b3a4', 'mortar'), 'mortarG': ('#aeac90', 'mortar'),
-    'mortarP': ('#c2b294', 'mortar'), 'siding': ('#aea898', 'siding'), 'board': ('#4e3d2e', 'board'),
+    # the town's houseWall is painted lap boarding (下見板張り, painted), its siding a dark weathered clapboard
+    'wallCream': ('#c9b690', 'lap'), 'wallBeige': ('#bca681', 'lap'), 'wallGrey': ('#a8a28e', 'lap'),
+    'wallBlue': ('#98a3a6', 'lap'), 'mortar': ('#b9b3a4', 'mortar'), 'mortarG': ('#aeac90', 'mortar'),
+    'mortarP': ('#c2b294', 'mortar'), 'siding': ('#43342a', 'siding'), 'board': ('#4e3d2e', 'board'),
     'boardL': ('#8a7a62', 'board'), 'prefab': ('#d6cfbb', 'prefab'), 'prefabB': ('#b89a7c', 'prefab'),
     'brick': ('#8a4e36', 'brick'), 'skirt': ('#7a5a44', 'tiles'), 'conc': ('#9a968c', 'mortar'),
     'shikkui': ('#e2dccc', 'stucco'), 'koshi': ('#5a4a3a', 'board'),
@@ -336,12 +337,14 @@ class House:
         for i, (a, c) in enumerate(spans):
             if c - a <= 0.3:
                 continue
-            self.slope(f'pent{i}', a, c, 0.8, fy[1] - 0.26, 0.0, fy[1] + 0.03, 0.16, style=self.roof_paint(pm),
-                       paint={'layers': [{'id': 'soffit', 'op': 'fill', 'faces': ['bottom'], 'ramp': self.col(0xb8b0a0), 'tone': 3},
+            self.slope(f'pent{i}', a, c, 0.8, fy[1] - 0.26, 0.0, fy[1] + 0.03, 0.18, style=self.roof_paint(pm),
+                       paint={'layers': [{'id': 'soffit', 'op': 'fill', 'faces': ['bottom'], 'ramp': self.col(0x5a4a3a), 'tone': 2.6},
+                                         {'id': 'rafters', 'op': 'stripes', 'axis': 'x', 'period': 0.45, 'width': 0.15, 'faces': ['bottom'],
+                                          'ramp': self.col(0x3a2c22), 'tone': 2.4},
                                          {'id': 'fascia', 'op': 'fill', 'faces': ['front', 'left', 'right'], 'ramp': self.col(0x4a4a48), 'tone': 2.6}]})
-            if kawara:
-                self.box(f'pent_noki{i}', c - a, 0.1, 0.06, (a + c) / 2, fy[1] - 0.36, 0.8, style='noki')
-            self.rod(f'pent_gutter{i}', [a, fy[1] - 0.36, 0.86], [c, fy[1] - 0.36, 0.86], 0.05, sides=6, **self.tint(o.get('gutterTint', 0x9a9690), 3.4, style='pipe'))
+            if kawara:  # the row of round eave-tile ends standing proud of the front edge
+                self.box(f'pent_noki{i}', c - a, 0.13, 0.07, (a + c) / 2, fy[1] - 0.4, 0.84, style='noki')
+            self.rod(f'pent_gutter{i}', [a, fy[1] - 0.42, 0.93], [c, fy[1] - 0.42, 0.93], 0.05, sides=6, **self.tint(o.get('gutterTint', 0x9a9690), 3.4, style='pipe'))
 
     def gutters(self, W, D, top, o, seed):
         gt = o.get('gutterTint', 0x9a9690)
@@ -527,11 +530,19 @@ def styles(S):
         elif kind == 'mortar':  # trowelled cement mortar: hairline cracks and patched repairs
             lay = [photo('cracked_concrete_wall', scale=1.6, amount=0.6), {'id': 'patch', 'op': 'patches', 'scale': 0.7, 'threshold': 0.62, 'shift': -0.5},
                    {'id': 'cracks', 'op': 'cracks', 'scale': 0.8, 'width': 1, 'threshold': 0.82, 'shift': -1.4}]
-        elif kind == 'siding':  # lap siding: a shadow line under each board, a lit lip at its foot
-            lay = [{'id': 'laps', 'op': 'stripes', 'axis': 'y', 'period': 0.1875, 'width': 0.17, 'shift': -1.3, 'space': 'world',
-                    'bevel': {'highlight': 1, 'shadow': 0}},
-                   {'id': 'joints', 'op': 'stripes', 'axis': 'x', 'period': 1.82, 'width': 0.02, 'shift': -0.9},
-                   {'id': 'mottle', 'op': 'noise', 'scale': 0.4, 'amount': 0.35}]
+        elif kind == 'lap':  # painted lap boarding: 18 cm boards, a shadow under each lap, a lit top edge, butt joints, flaking paint
+            lay = [{'id': 'laps', 'op': 'stripes', 'axis': 'y', 'period': 0.18, 'width': 0.2, 'shift': -1.5, 'space': 'world',
+                    'bevel': {'highlight': 1, 'shadow': 0, 'highlight_shift': 0.9}},
+                   {'id': 'butts', 'op': 'spots', 'count': 40, 'radius': [0.008, 0.012], 'stretch': [0.3, 6, 0.3], 'shift': -1.0},
+                   {'id': 'flake', 'op': 'patches', 'scale': 0.2, 'threshold': 0.8, 'shift': -0.6},
+                   {'id': 'fade', 'op': 'patches', 'scale': 0.9, 'threshold': 0.55, 'shift': 0.4},
+                   {'id': 'grain', 'op': 'noise', 'scale': 0.1, 'amount': 0.3}]
+        elif kind == 'siding':  # dark weathered clapboard: a shadow line under each board, a lit lip at its foot
+            lay = [{'id': 'laps', 'op': 'stripes', 'axis': 'y', 'period': 0.18, 'width': 0.2, 'shift': -1.4, 'space': 'world',
+                    'bevel': {'highlight': 1, 'shadow': 0, 'highlight_shift': 1.2}},
+                   photo('weathered_planks', scale=1.2, amount=0.6),
+                   {'id': 'grey', 'op': 'patches', 'scale': 0.6, 'threshold': 0.62, 'shift': 0.6},
+                   {'id': 'mottle', 'op': 'noise', 'scale': 0.15, 'amount': 0.4}]
         elif kind == 'board':  # weatherboard (下見板) with battens (押縁) every 90 cm
             lay = [{'id': 'boards', 'op': 'stripes', 'axis': 'y', 'period': 0.1875, 'width': 0.17, 'shift': -1.4, 'space': 'world',
                     'bevel': {'highlight': 1, 'shadow': 0}},
@@ -552,7 +563,7 @@ def styles(S):
                    {'id': 'mottle', 'op': 'noise', 'scale': 0.06, 'amount': 0.8}]
         lay += [{'id': 'dirt', 'op': 'gradient', 'axis': 'y', 'amount': 0.5}]
         S.style('w_' + name, ramp='w' + name, tone=4.2, rim={'light_shift': 0.8, 'dark_shift': -0.8},
-                brush={'flow': 'horizontal' if kind in ('siding', 'board', 'brick') else 'vertical'}, layers=lay)
+                brush={'flow': 'horizontal' if kind in ('lap', 'siding', 'board', 'brick') else 'vertical'}, layers=lay)
     # roofs: the top face is the roofing; the slab's other faces are overridden per part (soffit, fascia)
     for name, (c, kind) in ROOFS.items():
         S.ramps(**{'r' + name: ramp(c, 8, hue=14, sat=0.04, spread=0.8)})

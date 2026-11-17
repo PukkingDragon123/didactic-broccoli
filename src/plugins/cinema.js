@@ -27,7 +27,7 @@ export function install(game) {
       photo(filter = null) { if (!cine.photo.active) cine.photo.enter(); if (filter !== null) { const i = ['', 'gekiga', 'impact', 'pocket', 'sepia', 'pixel', 'neon', 'negative'].indexOf(filter); cine.photo.fi = Math.max(0, i); g.jojo?.impact.filter(filter || null); cine.photo.render(); } return cine.photo.active; },
       photoPose(name) { cine.photo.S?.h.gesture(name, { hold: true }); cine.photo.pose = name; cine.photo.render(); },
       photoCam(x, y, z, yaw, pitch, fov = 50) { const P = cine.photo; P.cam.pos.set(x, y, z); P.yaw = yaw; P.pitch = pitch; P.fov = fov; P.apply(); },
-      snap() { cine.photo.snap(); },
+      snap(stay = false) { cine.photo.snap(stay); },
       exitPhoto() { cine.photo.exit(); },
       sting(kind) { cine.sting(kind); },
     };

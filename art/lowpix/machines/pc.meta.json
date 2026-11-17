@@ -1,0 +1,90 @@
+{
+ "joints": {
+  "monitor": [
+   0,
+   0,
+   0
+  ],
+  "keyboard": [
+   0,
+   0,
+   0
+  ],
+  "mouse": [
+   0,
+   0,
+   0
+  ],
+  "pad": [
+   0,
+   0,
+   0
+  ],
+  "tower": [
+   0,
+   0,
+   0
+  ],
+  "speaker": [
+   0,
+   0,
+   0
+  ],
+  "mug": [
+   0,
+   0,
+   0
+  ],
+  "floppy": [
+   0,
+   0,
+   0
+  ]
+ },
+ "mats": {
+  "m_foot": "gloss",
+  "m_swivel": "gloss",
+  "m_bzt": "gloss",
+  "m_bzb": "gloss",
+  "m_bzl": "gloss",
+  "m_bzr": "gloss",
+  "m_lipt": "gloss",
+  "m_lipb": "gloss",
+  "m_lipl": "gloss",
+  "m_lipr": "gloss",
+  "m_shell": "gloss",
+  "m_back": "gloss",
+  "m_knob40": "gloss",
+  "m_knob70": "gloss",
+  "m_power": "gloss",
+  "m_cap_b": "gloss",
+  "m_cap_t": "glass",
+  "k_case": "gloss",
+  "k_row0": "gloss",
+  "k_num0": "gloss",
+  "k_row1": "gloss",
+  "k_num1": "gloss",
+  "k_row2": "gloss",
+  "k_num2": "gloss",
+  "k_row3": "gloss",
+  "k_num3": "gloss",
+  "k_row4": "gloss",
+  "k_num4": "gloss",
+  "k_space": "gloss",
+  "mo_body": "gloss",
+  "mo_btn": "gloss",
+  "t_case": "gloss",
+  "t_bay1": "gloss",
+  "t_bay2": "gloss",
+  "t_power": "gloss",
+  "sp_box": "gloss",
+  "sp_tweet": "metal",
+  "mug_b": "gloss",
+  "mug_tea": "gloss",
+  "mug_h": "gloss",
+  "fl_b": "gloss",
+  "fl_shut": "metal"
+ },
+ "key": "pc",
+ "density": 0.7
+}

@@ -1,10 +1,15 @@
-// Your own chunky home PC (a putty-grey "CAPSULE-PC 98"): CRT monitor, keyboard, mouse, tower and speakers as
-// voxel meshes, plus the curved CRT screen (canvas texture through a scanline shader) and its glass.
+// Your own chunky home PC (a beige "CAPSULE-PC 98"): CRT monitor, keyboard, mouse, tower and speakers (the lowpix model,
+// voxel meshes as the fallback), plus the curved CRT screen (canvas texture through a scanline shader) and its glass.
 import * as THREE from 'three';
 import { VoxelModel, glow, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { hash2 } from '../core/util.js';
+import { preloadLP, lpReady, lpMesh } from '../gachakit/lowpix.js';
+
+// the PC is the lowpix model the garage desk uses (art/lowpix/machines/_src/pc.py); the voxel build is the fallback
+const LP_ON = typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search);
+if (LP_ON) await preloadLP(['pc']);
 
 const PUTTY = 0xdcd8cc, PUTTY_D = 0xc4bfb0, PUTTY_Y = 0xd8cfae;
 
@@ -121,14 +126,26 @@ export function buildPC() {
     root.add(m);
     return m;
   };
-  const monitor = mk(monitorModel(), 0.01, 0, 0, -0.02);
-  mk(keyboardModel(), 0.006, 0, 0, 0.27);
-  mk(mouseModel(), 0.006, 0.3, 0, 0.29, 0.2);
-  mk(towerModel(), 0.01, -0.42, 0, -0.06);
-  mk(speakerModel(), 0.01, 0.3, 0, -0.02, -0.25);
-  const pad = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.004, 0.17), new THREE.MeshStandardMaterial({ color: 0xe5383b, roughness: 0.9 }));
-  pad.position.set(0.3, 0.002, 0.29);
-  root.add(pad);
+  const LP = LP_ON && lpReady('pc');
+  const put = (joint, x, y, z, ry = 0) => { const m = lpMesh('pc', joint); m.position.set(x, y, z); m.rotation.y = ry; root.add(m); return m; };
+  let monitor;
+  if (LP) {
+    monitor = put('monitor', 0, 0, -0.02);
+    put('keyboard', 0, 0, 0.27);
+    put('mouse', 0.3, 0.004, 0.29, 0.2);
+    put('tower', -0.42, 0, -0.06);
+    put('speaker', 0.3, 0, -0.02, -0.25);
+    put('pad', 0.3, 0, 0.29);
+  } else {
+    monitor = mk(monitorModel(), 0.01, 0, 0, -0.02);
+    mk(keyboardModel(), 0.006, 0, 0, 0.27);
+    mk(mouseModel(), 0.006, 0.3, 0, 0.29, 0.2);
+    mk(towerModel(), 0.01, -0.42, 0, -0.06);
+    mk(speakerModel(), 0.01, 0.3, 0, -0.02, -0.25);
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.004, 0.17), new THREE.MeshStandardMaterial({ color: 0xe5383b, roughness: 0.9 }));
+    pad.position.set(0.3, 0.002, 0.29);
+    root.add(pad);
+  }
 
   const canvas = document.createElement('canvas');
   canvas.width = SCREEN_W; canvas.height = SCREEN_H;
@@ -142,7 +159,8 @@ export function buildPC() {
   sg.computeVertexNormals();
   const mat = crtMaterial(tex);
   const screen = new THREE.Mesh(sg, mat);
-  screen.position.set(0, 0.255, 0.164);
+  if (LP) screen.position.set(0, 0.22, -0.02 + 0.1705); // (the lowpix CRT's opening)
+  else screen.position.set(0, 0.255, 0.164);
   screen.userData.noRim = true;
   root.add(screen);
   const glassM = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.06, roughness: 0.05, clearcoat: 1, depthWrite: false, envMapIntensity: 1.5 });

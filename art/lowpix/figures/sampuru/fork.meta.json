@@ -1,8 +1,6 @@
 {
  "mats": {
-  "base": "gloss",
-  "plate": "gloss",
-  "pasta": "gloss"
+  "base": "gloss"
  },
  "clips": {
   "gimmick": "gimmick"
@@ -12,28 +10,30 @@
   {
    "name": "pasta",
    "src": "sketchfab:6f9efa17eab544eba05518bf29454895",
-   "height": 18,
-   "at": [
-    1,
-    9.2,
-    -1
+   "height": 12.628,
+   "pos": [
+    0.0,
+    3.0,
+    0.0
    ],
    "yaw": 0,
    "pitch": 0,
-   "roll": 50,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "roll": 0,
+   "tris": 5000,
    "mat": "matte",
-   "fit": false,
-   "key": "915b54cee71e62"
+   "key": "62d7da7a89de1e"
   }
  ],
+ "base": {
+  "family": "riser",
+  "w": 38.5,
+  "d": 24.0
+ },
  "model_clip": {
   "node": "model_pasta",
   "kind": "hop",
   "length": 1.8,
-  "amp": 2.5,
+  "amp": 2.0,
   "axis": "y"
  },
  "key": "sampuru/fork"

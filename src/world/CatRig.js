@@ -58,6 +58,7 @@ export class CatRig {
     this.root.name = 'cat';
     this.mat = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.92, metalness: 0 });
     this.matEye = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.14, metalness: 0, envMapIntensity: 1.6 }); // wet: the window's highlight
+    this.matMouth = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.6, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
     // per-cat UVs (the pupil frame differs per cat); everything else is shared
     this.geo = new THREE.BufferGeometry();
     for (const k of ['position', 'normal', 'skinIndex', 'skinWeight']) this.geo.setAttribute(k, A.geometry.attributes[k]);
@@ -87,7 +88,7 @@ export class CatRig {
       const foot = new THREE.Vector3(...CAT_FOOT[(hind ? 'B' : 'F') + (side > 0 ? 'L' : 'R')]);
       return { a, m, p, hind, side, la: A0.distanceTo(M0), lb: M0.distanceTo(P0), d1: M0.clone().sub(A0).normalize(), d2: P0.clone().sub(M0).normalize(), d3: foot.clone().sub(P0).normalize(), off: P0.clone().sub(foot), L: A0.y, lift: 0, prev: new THREE.Vector3() };
     });
-    this.mesh = new THREE.SkinnedMesh(this.geo, [this.mat, this.matEye]);
+    this.mesh = new THREE.SkinnedMesh(this.geo, [this.mat, this.matEye, this.matMouth]);
     this.mesh.add(this.bones[0]);
     this.mesh.updateMatrixWorld(true);
     this.mesh.bind(new THREE.Skeleton(this.bones));

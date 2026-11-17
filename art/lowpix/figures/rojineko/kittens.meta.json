@@ -10,48 +10,29 @@
  "pts": {},
  "models": [
   {
-   "name": "kit1",
+   "name": "kit",
    "src": "sketchfab:4ae3704cd65b423ab994545988d4db1a",
-   "height": 15,
-   "at": [
-    -3,
-    3.6,
-    -0.5
-   ],
-   "yaw": 160,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "matte",
-   "key": "cf85aeb3c57802"
-  },
-  {
-   "name": "kit2",
-   "src": "sketchfab:4ae3704cd65b423ab994545988d4db1a",
-   "height": 13,
-   "at": [
-    8,
+   "height": 17.0,
+   "pos": [
+    6.0,
     3.0,
-    4
+    3.0
    ],
-   "yaw": -40,
+   "yaw": -35,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "recolor": {
-    "brightness": 0.55,
-    "saturation": 0.4
-   },
-   "key": "cf85aeb3c57802"
+   "key": "59dce7fef3044a"
   }
  ],
+ "base": {
+  "family": "lane",
+  "w": 36.5,
+  "d": 30.0
+ },
  "model_clip": {
-  "node": "model_kit2",
+  "node": "model_kit",
   "kind": "hop",
   "length": 1.2,
   "amp": 2,

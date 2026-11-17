@@ -14,7 +14,7 @@ sys.path.insert(0, HERE)
 from glbio import read_glb, write_glb
 from coat import repaint, weld_normals, set_mid
 from ortho import render
-from face import carve_eye, carve_eye2, split_mouth, jaw_weights, mouth_bag, mouth_bowl
+from face import carve_eye, carve_eye2, split_mouth, jaw_weights, mouth_bag, mouth_bowl, mouth_lens, paint_open_mouth
 from eyes import eyeball, lid, lid_texels, closest_uv, paint_iris, frame_basis
 from coat import hexes
 
@@ -235,7 +235,11 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, cut=None, scal
     def zone(C): return (np.abs(C[:, 0]) < 1.55) & (C[:, 2] > 26.2) & (C[:, 1] > 22.6) & (C[:, 1] < 24.6)
     def lower(C): return (C[:, 1] < 23.63) & (C[:, 2] > 23.0) & (np.abs(C[:, 0]) < 2.9) & (C[:, 1] > 21.6)
     if cut: zone, lower = cut['zone'], cut['lower']
-    P2, F2, UV2, low, pairs, ends = split_mouth(Pc, F, UVs, zone, lower, zc=cut.get('zc') if cut else None)
+    if cut and 'lens' in cut:
+        P2, F2, UV2, pairs, ends = Pc, F, UVs, [], []
+        low = lower(P2[F2].mean(1))
+    else:
+        P2, F2, UV2, low, pairs, ends = split_mouth(Pc, F, UVs, zone, lower, zc=cut.get('zc') if cut else None)
     def fall(Q):
         z, y, x = Q[:, 2], Q[:, 1], Q[:, 0]
         return np.clip((z - 23.3) / 2.2, 0, 1) * np.clip((y - 21.4) / 1.0, 0, 1) * np.clip((3.0 - np.abs(x)) / 0.8, 0, 1)
@@ -247,7 +251,24 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, cut=None, scal
     Nfull = np.zeros((len(P2), 3)); Nfull[:len(N)] = N
     for u, l in pairs: Nfull[l] = N[u]
     inward = np.array(cut['inward']) if cut else np.array(J['jaw']) + np.array([0, -0.1, 0.7])
-    if cut and 'bowl' in cut:
+    mouth_parts = None
+    if cut and 'lens' in cut:
+        L = cut['lens']
+        mrect = (700, H0 + 40, 48, 24)
+        paint_open_mouth(tex, mrect, L['cols'])
+        Pz = P2.copy()
+        def surf_z(x, y):
+            return ray_z(x, y) if True else 0
+        xs = np.linspace(-L['w'], L['w'], 13)
+        lp, luv, lt, lj = mouth_lens(xs, L['lip_y'], surf_z, (mrect[0] / W, mrect[1] / H, mrect[2] / W, mrect[3] / H))
+        mouth_parts = (lp, luv, lt, lj)
+        B = cut['bowl']
+        bp, buv, bt, bj, tmask, tbase, tdir = mouth_bowl(B['c'], B['rx'], B['ry'], B['depth'], patch['roof'], patch['dark'], patch['tongue'], B['tongue'], B['tdir'], B['tlen'])
+        keep = tmask.copy()                                        # only the tongue of the bowl: the lens is the mouth
+        idx = np.where(keep)[0]; remapi = -np.ones(len(bp), int); remapi[idx] = np.arange(len(idx))
+        bt = remapi[bt[np.all(keep[bt], axis=1)]]
+        bp, buv, bj, tmask = bp[idx], buv[idx], bj[idx], tmask[idx]
+    elif cut and 'bowl' in cut:
         B = cut['bowl']
         bp, buv, bt, bj, tmask, tbase, tdir = mouth_bowl(B['c'], B['rx'], B['ry'], B['depth'], patch['roof'], patch['dark'], patch['tongue'], B['tongue'], B['tdir'], B['tlen'])
     else:
@@ -261,11 +282,15 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, cut=None, scal
     bn = np.tile([0, 1.0, 0], (len(bp), 1))
     add(bp, bn, buv, bt, 1, bj)
     part[-1][tmask] = 8
-    PART = {'eyeL': 2, 'eyeR': 3, 'lidUL': 4, 'lidDL': 5, 'lidUR': 6, 'lidDR': 7, 'tongue': 8}
+    PART = {'eyeL': 2, 'eyeR': 3, 'lidUL': 4, 'lidDL': 5, 'lidUR': 6, 'lidDR': 7, 'tongue': 8, 'mouth': 9}
     lids = [q for q in parts if q[0].startswith('lid')]; balls = [q for q in parts if q[0].startswith('eye')]
     for name, p, nn, t, tr in lids: add(p, nn, t, tr, PART[name], np.zeros(len(p)))
     eye_start = sum(len(t) for t in tri)
     for name, p, nn, t, tr in balls: add(p, nn, t, tr, PART[name], np.zeros(len(p)))
+    mouth_start = sum(len(t) for t in tri)
+    if mouth_parts is not None:
+        lp, luv, lt, lj = mouth_parts
+        add(lp, np.tile([0, 0, 1.0], (len(lp), 1)), luv, lt, 9, lj)
     pos, nrm, uv, tri = np.concatenate(pos), np.concatenate(nrm), np.concatenate(uv), np.concatenate([np.asarray(t, np.int64).reshape(-1, 3) for t in tri])
     part, jw = np.concatenate(part), np.concatenate(jw)
     shift = np.array(shift)
@@ -275,7 +300,7 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, cut=None, scal
         'eyes': {s: dict(c=M(e['c']), ax=e['ax'].round(4).tolist(), s=e['s'].round(4).tolist(), r=round(eye_r * scale, 5), tilt=e['tilt']) for s, e in eyes.items()},
         'tongue': dict(base=M(tbase), dir=tdir.round(4).tolist()),
         'frames': {k: [round(x, 6) for x in v] for k, v in fuv.items()},
-        'eyeTris': [int(eye_start), int(len(tri))],
+        'eyeTris': [int(eye_start), int(mouth_start)], 'mouthTris': [int(mouth_start), int(len(tri))],
         'parts': PART, 'source': SOURCES[source],
     }
     finish(gid, pos, nrm, tri, uv, tex, scale, tuple(shift), extra={'_PART': (part[:, None], 'SCALAR'), '_JAW': (jw[:, None], 'SCALAR')}, extras=extras)
@@ -406,7 +431,8 @@ def rig_cat2(gid, P, F, UV, N, body, J, iris):
         fall=lambda Q: np.clip((Q[:, 2] - 25.5) / 2.0, 0, 1) * np.clip((Q[:, 1] - 19.2) / 0.8, 0, 1) * np.clip((2.3 - np.abs(Q[:, 0])) / 1.1, 0, 1),
         below=lambda Q: np.clip((np.where(np.abs(Q[:, 0]) < 1.1, 21.98, 21.05) - Q[:, 1]) / 0.45 + 0.35, 0, 1),
         inward=(0, 21.8, 27.2), depth=1.6, tongue=1.7,
-        bowl=dict(c=(0, 21.8, 29.1), rx=1.9, ry=1.0, depth=2.4, tongue=(0, 21.45, 29.1), tdir=(0, 0.05, -1), tlen=1.9)), scale=0.0098, shift=(0, 0, -9.0), source='bsh', head_z=21.5)
+        bowl=dict(c=(0, 21.8, 29.1), rx=1.9, ry=1.0, depth=2.4, tongue=(0, 21.6, 28.9), tdir=(0, 0.05, -1), tlen=1.9),
+        lens=dict(w=1.25, lip_y=lambda x: 21.98 + 0.1 * (x / 1.25) ** 2, cols=dict(lip='#2a1a1a', inside='#5c2226', throat='#2e0f12', ridge='#7a3439', tongue='#c27a7c', tongueD='#9a5658', tooth='#ece6d8'))), scale=0.0098, shift=(0, 0, -9.0), source='bsh', head_z=21.5)
 
 
 if __name__ == '__main__':

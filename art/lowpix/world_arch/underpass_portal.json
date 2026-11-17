@@ -1,0 +1,840 @@
+{
+ "name": "underpass_portal",
+ "description": "Railway underpass portal: brick abutments and a riveted plate girder",
+ "license": "CC0-1.0",
+ "density": 40,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.42,
+  "gradient": 0.25,
+  "ao": 0.55,
+  "ao_height": 1.2
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "brick": {
+    "base": "#8a4c38",
+    "steps": 8,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.75
+   },
+   "stone": {
+    "base": "#b0a898",
+    "steps": 7,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "girder": {
+    "base": "#6e6658",
+    "steps": 8,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.75
+   },
+   "rust": {
+    "base": "#6a3a26",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "yellow": {
+    "base": "#d8aa2a",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "ink": {
+    "base": "#2a2826",
+    "steps": 5,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "moss": {
+    "base": "#5d6a3e",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   }
+  }
+ },
+ "styles": {
+  "brick": {
+   "ramp": "brick",
+   "tone": 3.8,
+   "rim": {
+    "light_shift": 0.9,
+    "dark_shift": -0.9
+   },
+   "layers": [
+    {
+     "id": "courses",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.075,
+     "width": 0.2,
+     "shift": -1.5,
+     "space": "world"
+    },
+    {
+     "id": "perp",
+     "op": "stripes",
+     "axis": [
+      0,
+      0.0,
+      1.0
+     ],
+     "period": 0.225,
+     "width": 0.08,
+     "shift": -1.2,
+     "space": "world"
+    },
+    {
+     "id": "tone",
+     "op": "noise",
+     "scale": 0.1,
+     "amount": 0.7
+    },
+    {
+     "id": "soot",
+     "op": "patches",
+     "scale": 0.6,
+     "threshold": 0.55,
+     "shift": -0.8
+    },
+    {
+     "id": "efflor",
+     "op": "patches",
+     "scale": 0.3,
+     "threshold": 0.75,
+     "shift": 1.0
+    },
+    {
+     "id": "moss",
+     "op": "band",
+     "axis": "y",
+     "from": -1,
+     "to": -0.9,
+     "ramp": "moss",
+     "tone": 2.4,
+     "wobble": 0.05
+    }
+   ]
+  },
+  "stone": {
+   "ramp": "stone",
+   "tone": 3.8,
+   "rim": {
+    "light_shift": 0.9,
+    "dark_shift": -0.9
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/concrete_wall_003",
+     "scale": 1.0,
+     "amount": 0.7
+    },
+    {
+     "id": "chips",
+     "op": "wear",
+     "width": 1,
+     "density": 0.3,
+     "shift": -1.2
+    }
+   ]
+  },
+  "girder": {
+   "ramp": "girder",
+   "tone": 3.6,
+   "rim": {
+    "light_shift": 1.1,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "rivets",
+     "op": "rivets",
+     "spacing": 4,
+     "inset": 1,
+     "ramp": "girder",
+     "tone": 5.0,
+     "min_size": 3
+    },
+    {
+     "id": "rust",
+     "op": "spots",
+     "count": 40,
+     "radius": [
+      0.02,
+      0.06
+     ],
+     "stretch": [
+      0.4,
+      4,
+      0.4
+     ],
+     "ramp": "rust",
+     "tone": 2.8
+    },
+    {
+     "id": "peel",
+     "op": "patches",
+     "scale": 0.3,
+     "threshold": 0.7,
+     "ramp": "rust",
+     "tone": 3.4
+    },
+    {
+     "id": "soot",
+     "op": "gradient",
+     "axis": "y",
+     "amount": -0.6
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "abut",
+   "shape": "box",
+   "size": [
+    0.45,
+    4.0,
+    1.45
+   ],
+   "pivot": [
+    25.85,
+    2.0,
+    5.875
+   ],
+   "style": "brick",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "plinth",
+   "shape": "box",
+   "size": [
+    0.55,
+    0.35,
+    1.55
+   ],
+   "pivot": [
+    25.85,
+    0.175,
+    5.875
+   ],
+   "chamfer": 0.02,
+   "style": "stone",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "cap",
+   "shape": "box",
+   "size": [
+    0.6,
+    0.22,
+    1.57
+   ],
+   "pivot": [
+    25.85,
+    4.11,
+    5.875
+   ],
+   "chamfer": 0.02,
+   "style": "stone"
+  },
+  {
+   "id": "abut_hi",
+   "shape": "box",
+   "size": [
+    0.5,
+    0.05,
+    1.45
+   ],
+   "pivot": [
+    25.88,
+    4.245,
+    5.875
+   ],
+   "style": "brick"
+  },
+  {
+   "id": "guard",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.5,
+    0.36
+   ],
+   "pivot": [
+    25.6,
+    1.05,
+    6.42
+   ],
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.4,
+    "brush": {
+     "off": true
+    },
+    "layers": [
+     {
+      "id": "tiger",
+      "op": "stripes",
+      "axis": [
+       0,
+       1,
+       1
+      ],
+      "period": 0.2,
+      "width": 0.5,
+      "ramp": "ink",
+      "tone": 1.6,
+      "space": "world"
+     },
+     {
+      "id": "scuff",
+      "op": "noise",
+      "scale": 0.05,
+      "amount": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "guard2",
+   "shape": "box",
+   "size": [
+    0.36,
+    1.5,
+    0.05
+   ],
+   "pivot": [
+    25.8,
+    1.05,
+    6.625
+   ],
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.4,
+    "brush": {
+     "off": true
+    },
+    "layers": [
+     {
+      "id": "tiger",
+      "op": "stripes",
+      "axis": [
+       0,
+       1,
+       1
+      ],
+      "period": 0.2,
+      "width": 0.5,
+      "ramp": "ink",
+      "tone": 1.6,
+      "space": "world"
+     },
+     {
+      "id": "scuff",
+      "op": "noise",
+      "scale": 0.05,
+      "amount": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "abut_1",
+   "shape": "box",
+   "size": [
+    0.45,
+    4.0,
+    1.45
+   ],
+   "pivot": [
+    25.85,
+    2.0,
+    13.325
+   ],
+   "style": "brick",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "plinth_1",
+   "shape": "box",
+   "size": [
+    0.55,
+    0.35,
+    1.55
+   ],
+   "pivot": [
+    25.85,
+    0.175,
+    13.325
+   ],
+   "chamfer": 0.02,
+   "style": "stone",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "cap_1",
+   "shape": "box",
+   "size": [
+    0.6,
+    0.22,
+    1.57
+   ],
+   "pivot": [
+    25.85,
+    4.11,
+    13.325
+   ],
+   "chamfer": 0.02,
+   "style": "stone"
+  },
+  {
+   "id": "abut_hi_1",
+   "shape": "box",
+   "size": [
+    0.5,
+    0.05,
+    1.45
+   ],
+   "pivot": [
+    25.88,
+    4.245,
+    13.325
+   ],
+   "style": "brick"
+  },
+  {
+   "id": "guard_1",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.5,
+    0.36
+   ],
+   "pivot": [
+    25.6,
+    1.05,
+    12.78
+   ],
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.4,
+    "brush": {
+     "off": true
+    },
+    "layers": [
+     {
+      "id": "tiger",
+      "op": "stripes",
+      "axis": [
+       0,
+       1,
+       1
+      ],
+      "period": 0.2,
+      "width": 0.5,
+      "ramp": "ink",
+      "tone": 1.6,
+      "space": "world"
+     },
+     {
+      "id": "scuff",
+      "op": "noise",
+      "scale": 0.05,
+      "amount": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "guard2_1",
+   "shape": "box",
+   "size": [
+    0.36,
+    1.5,
+    0.05
+   ],
+   "pivot": [
+    25.8,
+    1.05,
+    12.575
+   ],
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.4,
+    "brush": {
+     "off": true
+    },
+    "layers": [
+     {
+      "id": "tiger",
+      "op": "stripes",
+      "axis": [
+       0,
+       1,
+       1
+      ],
+      "period": 0.2,
+      "width": 0.5,
+      "ramp": "ink",
+      "tone": 1.6,
+      "space": "world"
+     },
+     {
+      "id": "scuff",
+      "op": "noise",
+      "scale": 0.05,
+      "amount": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "web",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.79,
+    8.9
+   ],
+   "pivot": [
+    25.95,
+    3.855,
+    9.6
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "flange_lo",
+   "shape": "box",
+   "size": [
+    0.42,
+    0.08,
+    8.9
+   ],
+   "pivot": [
+    25.95,
+    3.42,
+    9.6
+   ],
+   "chamfer": 0.01,
+   "style": "girder"
+  },
+  {
+   "id": "flange_hi",
+   "shape": "box",
+   "size": [
+    0.38,
+    0.07,
+    8.9
+   ],
+   "pivot": [
+    25.95,
+    4.265,
+    9.6
+   ],
+   "chamfer": 0.01,
+   "style": "girder"
+  },
+  {
+   "id": "stiff",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    5.5
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_1",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    6.12
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_2",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    6.74
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_3",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    7.36
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_4",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    7.98
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_5",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    8.6
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_6",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    9.22
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_7",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    9.84
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_8",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    10.46
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_9",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    11.08
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_10",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    11.7
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_11",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    12.32
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_12",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    12.94
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stiff_13",
+   "shape": "box",
+   "size": [
+    0.07,
+    0.77,
+    0.09
+   ],
+   "pivot": [
+    25.86,
+    3.845,
+    13.56
+   ],
+   "style": "girder"
+  },
+  {
+   "id": "stripe",
+   "shape": "box",
+   "size": [
+    0.02,
+    0.08,
+    6.0
+   ],
+   "pivot": [
+    25.73,
+    3.42,
+    9.6
+   ],
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.4,
+    "brush": {
+     "off": true
+    },
+    "layers": [
+     {
+      "id": "tiger",
+      "op": "stripes",
+      "axis": [
+       0,
+       1,
+       1
+      ],
+      "period": 0.2,
+      "width": 0.5,
+      "ramp": "ink",
+      "tone": 1.6,
+      "space": "world"
+     },
+     {
+      "id": "scuff",
+      "op": "noise",
+      "scale": 0.05,
+      "amount": 0.5
+     }
+    ]
+   }
+  }
+ ],
+ "brush": {
+  "length": 0.2,
+  "width": 0.05,
+  "rough": 0.4,
+  "flow": "horizontal",
+  "textures": {
+   "brick": "stone",
+   "stone": "stone",
+   "girder": "metal",
+   "rust": "metal"
+  }
+ }
+}

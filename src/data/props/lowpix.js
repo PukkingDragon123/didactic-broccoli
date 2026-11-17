@@ -9,7 +9,6 @@ export default {
   // ---------------------------------------------------------------- the lane
   lp_bicycle_old: M('bicycle_old', { h: 1.0 }),
   lp_scooter: M('scooter', { h: 1.05 }),
-  lp_kei_truck: M('kei_truck', { h: 1.78 }),
   lp_gas_cylinder: M('gas_cylinder', { h: 1.2 }),
   lp_trash_jp: M('trash_jp', { h: 0.85 }),
   lp_plant_pot1: M('plant_pot1', { h: 0.7 }),

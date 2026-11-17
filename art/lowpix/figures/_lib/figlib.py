@@ -19,9 +19,10 @@ LOWPIX = os.environ.get("LOWPIX", "/home/user/pukkingdragon123/symmetrical-goggl
 sys.path.insert(0, LOWPIX)
 from lowpix.palette import make_ramp  # noqa: E402
 
-DENS = 4.0
-# the gold-plated secrets: a converted model's atlas lifted and tinted gold (pack.mjs recolor)
-GOLD = {"saturation": 0.2, "linear": [0.55, 95], "tint": "#e8b850"}
+DENS = 6.0  # THE texel density of the whole line (px per mm), for specs and converted models alike
+BASE_H = 3.0  # a base, where a figure needs one (most stand on their own), is this thick
+# lowpix convert settings every real model gets (the finish of the line); a figure may only change tris / ramps / smooth
+CONVERT = {"style": "pixel-hd", "density": DENS, "steps": 7, "light": 1.0, "detail": 0.9, "grain": 0.25, "spread": 0.55}
 PHOTO = "art/lowpix/photos/"
 
 # ------------------------------------------------------------------ colour
@@ -44,7 +45,7 @@ def mute(c, k=0.14, warm=0.02):
     return "#%02x%02x%02x" % (round(r * 255), round(g * 255), round(b * 255))
 
 
-def ramp(c, steps=7, hue=14, sat=0.05, spread=0.8, k=0.14):
+def ramp(c, steps=7, hue=20, sat=0.12, spread=0.55, k=0.1):
     return make_ramp(mute(c, k), steps=steps, hue_shift=hue, sat_shift=sat, spread=spread)
 
 
@@ -58,82 +59,51 @@ def _photo(pid, scale, amount, **kw):
     return d
 
 
-GLOSS = {"id": "gloss", "op": "gloss", "post": True, "dash": True, "length": 3, "density": 0.2, "shift": 1.0}
+GLOSS = {"id": "gloss", "op": "gloss", "post": True, "dash": True, "length": 3, "density": 0.12, "shift": 1.0}
+RIM = {"light": 1, "dark": 1, "outline": "dark"}
+
+
+def _st(*layers, **kw):
+    d = {"dither": 0, "rim": dict(RIM), "layers": list(layers)}
+    d.update(kw)
+    return d
+
+
+def _mottle(scale=3.0, amount=0.1):
+    """Paint-film mottling: soft blotches a few mm across (never per-texel speckle)."""
+    return {"id": "mottle", "op": "noise", "scale": scale, "amount": amount}
+
+
+SHEEN = {"id": "sheen", "op": "fill", "shift": 0.75, "min_light": 0.8}
+REF = {"id": "ref", "op": "fill", "shift": -0.3, "min_light": -0.1, "max_light": 0.22}
+# The line's one finish (CLAUDE.md, the toy rule): hand-painted pixel-art PVC. Every style is the same ramp shading,
+# light and rims, with only structured detail (grain, boards, ribs) and soft mottling on top: no photo noise, no
+# speckle, no random sparkle, so specs sit beside the converted models (lowpix pixel-hd) without a seam.
 STYLES = {
-    # injection-moulded PVC, factory painted: soft specular sheen on the most-lit facets, a darker reflection band,
-    # wet highlight dashes, faint mottling of the paint film
-    "pvc": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 2.4, "amount": 0.12},
-        {"id": "sheen", "op": "fill", "shift": 0.75, "min_light": 0.8},
-        {"id": "ref", "op": "fill", "shift": -0.3, "min_light": -0.1, "max_light": 0.22},
-        GLOSS]},
-    # soft vinyl / rubbery PVC: matte, no dashes
-    "matte": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 2.0, "amount": 0.16},
-        {"id": "grain", "op": "speckle", "density": 0.015, "shift": -0.5}]},
-    "skin": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 3.0, "amount": 0.1},
-        {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.84}]},
-    "cloth": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 2.2, "amount": 0.12},
-        _photo("rough_linen", 9, 0.9)]},
-    "denim": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("denim_fabric", 10, 1.0)]},
-    "velvet": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "nap", "op": "noise", "scale": 1.4, "amount": 0.25},
-        _photo("velour_velvet", 16, 0.45)]},
-    # fur: brush strokes that follow the form (strand clusters), a faint photo relief under them, sheen on the lit side
-    "fur": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"},
-            "brush": {"flow": "long", "length": 1.5, "width": 0.38, "rough": 0.75, "overshoot": 0.3},
-            "layers": [
-        {"id": "mottle", "op": "noise", "scale": 2.2, "amount": 0.18},
-        _photo("curly_teddy_natural", 12, 0.35),
-        {"id": "sheen", "op": "patches", "scale": 0.9, "threshold": 0.72, "shift": 0.6, "min_light": 0.6, "post": True}]},
-    # wood: grain lines that follow the board, a faint photo relief, a little varnish sheen
-    "wood": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "grain", "op": "stripes", "axis": "x", "period": 1.3, "width": 0.3, "wobble": 0.7, "shift": -0.55},
-        {"id": "figure", "op": "noise", "scale": 1.2, "amount": 0.3},
-        _photo("oak_veneer_01", 26, 0.6),
-        {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.82}]},
-    "plank": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "grain", "op": "stripes", "axis": "x", "period": 1.5, "width": 0.3, "wobble": 0.8, "shift": -0.6},
-        {"id": "boards", "op": "stripes", "axis": "z", "period": 6.0, "width": 0.05, "shift": -1.2},
-        _photo("wood_table_001", 30, 0.7)]},
-    # brushed metal with edge wear
-    "metal": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("metal_plate", 18, 0.7),
-        {"id": "sheen", "op": "fill", "shift": 1.1, "min_light": 0.7},
-        {"id": "ref", "op": "fill", "shift": -0.8, "min_light": -0.1, "max_light": 0.3},
-        {"id": "wear", "op": "wear", "width": 2, "density": 0.08, "shift": 1.2, "post": True}]},
-    # printed tinplate: enamel over metal, chipped to the metal at the edges, a little rust
-    "tin": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("metal_plate", 18, 0.45),
-        {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74},
-        {"id": "wear", "op": "wear", "width": 2, "density": 0.1, "ramp": "steel", "tone": 3.5, "post": True},
-        GLOSS]},
-    "bark": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "photo", "op": "photo", "src": "assets/photos/bark_brown_02", "scale": 14, "amount": 1.4},
-        {"id": "moss", "op": "patches", "scale": 1.0, "threshold": 0.72, "ramp": "moss", "tone": 2.6}]},
-    "rock": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "photo", "op": "photo", "src": "assets/photos/rock_face_03", "scale": 18, "amount": 1.3}]},
-    "leafy": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "photo", "op": "photo", "src": "assets/photos/forest_leaves_02", "scale": 12, "amount": 1.2}]},
-    "rust": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [_photo("rusty_metal_02", 20, 1.0)]},
-    "clay": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("clay_floor_001", 24, 1.2),
-        {"id": "chips", "op": "spots", "count": 6, "radius": [0.4, 0.9], "shift": -0.8}]},
-    "stone": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("concrete_floor_worn_001", 22, 1.2)]},
-    # food: soft matte with a fine crumb / powder grain
-    "food": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 1.6, "amount": 0.22},
-        _photo("concrete_floor_worn_001", 14, 0.55),
-        {"id": "sheen", "op": "fill", "shift": 0.4, "min_light": 0.85}]},
-    "glaze": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 1.8, "amount": 0.2},
-        {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.72}, GLOSS]},
-    "paper": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 3.0, "amount": 0.1}, _photo("rough_linen", 16, 0.35)]},
+    "pvc": _st(_mottle(3.2, 0.08), SHEEN, REF, GLOSS),      # injection-moulded, factory-painted PVC with a soft sheen
+    "matte": _st(_mottle(3.0, 0.1)),                        # soft vinyl / flat paint
+    "skin": _st(_mottle(3.0, 0.08), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.84}),
+    "cloth": _st(_mottle(2.4, 0.14)),
+    "denim": _st(_mottle(2.4, 0.14)),
+    "velvet": _st(_mottle(2.0, 0.18), {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.82}),
+    "fur": _st(_mottle(2.2, 0.16)),
+    "wood": _st({"id": "grain", "op": "stripes", "axis": "x", "period": 2.2, "width": 0.18, "wobble": 1.2, "shift": -0.45},
+                _mottle(5.0, 0.22), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.82}),
+    "plank": _st({"id": "grain", "op": "stripes", "axis": "x", "period": 1.8, "width": 0.3, "wobble": 0.8, "shift": -0.6},
+                 {"id": "boards", "op": "stripes", "axis": "z", "period": 6.0, "width": 0.06, "shift": -1.2}, _mottle(4.0, 0.15)),
+    "metal": _st(_mottle(4.0, 0.08), {"id": "sheen", "op": "fill", "shift": 1.1, "min_light": 0.7},
+                 {"id": "ref", "op": "fill", "shift": -0.8, "min_light": -0.1, "max_light": 0.3}),
+    "tin": _st(_mottle(4.0, 0.08), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74}, GLOSS),
+    "bark": _st({"id": "furrows", "op": "stripes", "axis": "z", "period": 1.4, "width": 0.35, "wobble": 0.9, "shift": -0.8},
+                _mottle(2.0, 0.25)),
+    "rock": _st(_mottle(2.6, 0.28), {"id": "facets", "op": "patches", "scale": 3.0, "threshold": 0.62, "shift": -0.6}),
+    "stone": _st(_mottle(3.0, 0.16)),
+    "leafy": _st(_mottle(1.8, 0.3)),
+    "rust": _st(_mottle(2.5, 0.2), {"id": "rust", "op": "patches", "scale": 2.5, "threshold": 0.6, "shift": -0.7}),
+    "clay": _st(_mottle(3.0, 0.15)),
+    "food": _st(_mottle(2.0, 0.15), {"id": "sheen", "op": "fill", "shift": 0.4, "min_light": 0.85}),
+    "glaze": _st(_mottle(3.0, 0.08), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.72}, GLOSS),
+    "paper": _st(_mottle(4.0, 0.06)),
     # clear tinted plastic (drawn with the game's glass material): a bright rim and inner depth
     "clear": {"dither": 0, "light": 0.6, "rim": {"light": 2, "dark": 1, "outline": "none"}, "layers": [
         {"id": "depth", "op": "gradient", "axis": "y", "amount": -0.8},
@@ -142,7 +112,7 @@ STYLES = {
     "flat": {"dither": 0, "light": 0.5, "rim": {"light": 0, "dark": 0}},
     "card": {"dither": 0, "light": 0.0, "rim": {"light": 0, "dark": 0}},
 }
-BRUSH_MARKS = {"fur": "fur"}
+BRUSH_MARKS = {}
 GAME_MAT = {"pvc": "gloss", "glaze": "gloss", "tin": "gloss", "metal": "metal", "clear": "glass", "glow": "glow"}
 
 # shared ramps every figure has
@@ -399,13 +369,48 @@ def r1(v):
     return v
 
 
+class Box:
+    def __init__(s, x0=1e9, y0=1e9, z0=1e9, x1=-1e9, y1=-1e9, z1=-1e9):
+        s.lo, s.hi = [x0, y0, z0], [x1, y1, z1]
+
+    def add(s, b):
+        s.lo = [min(a, c) for a, c in zip(s.lo, b.lo)]
+        s.hi = [max(a, c) for a, c in zip(s.hi, b.hi)]
+        return s
+
+    @property
+    def size(s):
+        return [s.hi[i] - s.lo[i] for i in range(3)]
+
+    @property
+    def top(s):
+        return s.hi[1]
+
+    @property
+    def centre(s):
+        return [(s.hi[i] + s.lo[i]) / 2 for i in range(3)]
+
+    def __repr__(s):
+        return "Box(%s..%s)" % (r1(s.lo), r1(s.hi))
+
+
+def _rot(pitch, yaw, roll):
+    """XYZ euler (degrees) -> 3x3, the same order pack.mjs turns a model node with (three.js Euler 'XYZ')."""
+    import numpy as np
+    a, b, c = (math.radians(v) for v in (pitch, yaw, roll))
+    Rx = np.array([[1, 0, 0], [0, math.cos(a), -math.sin(a)], [0, math.sin(a), math.cos(a)]])
+    Ry = np.array([[math.cos(b), 0, math.sin(b)], [0, 1, 0], [-math.sin(b), 0, math.cos(b)]])
+    Rz = np.array([[math.cos(c), -math.sin(c), 0], [math.sin(c), math.cos(c), 0], [0, 0, 1]])
+    return Rx @ Ry @ Rz
+
+
 class Fig:
     def __init__(s, key, name, desc="", dens=DENS, light=None, budget=6000):
         s.key, s.name = key, name
         s.spec = {
             "name": name, "description": desc, "author": "Gacha Garage (lowpix spec)", "license": "CC0-1.0",
             "density": dens, "budget": {"tris": budget, "colors": 96},
-            "light": light or {"dir": [-0.55, 1.0, 0.65], "strength": 0.85, "gradient": 0.35, "ao": 0.55, "ao_height": 4.0},
+            "light": light or {"dir": [-0.5, 1.0, 0.6], "strength": 1.15, "gradient": 0.0, "ao": 0.5, "ao_height": 3.0, "ground": 0.0},
             "render": {"background": "#2a2630", "hero": [32, 20], "shadow": 0.45},
             "palette": {"ramps": dict(BASE_RAMPS)}, "styles": json.loads(json.dumps(STYLES)), "parts": [],
         }
@@ -414,6 +419,7 @@ class Fig:
         s.meta = {"mats": {}, "clips": {}, "pts": {}}
         s.anims = {}
         s._ri = 0
+        s.subject = Box()  # what stands on the base (models + furniture): the base is sized to it
 
     # ---- colour
     def ramp(s, name, c, **kw):
@@ -652,26 +658,47 @@ class Fig:
         s.stamp(pid, ["dd", "hd"], {"d": f"{R}:1", "h": f"{R}:4"}, face="right", at="center")
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
-    def model(s, name, src, height, at=(0, 0, 0), yaw=0, tris=4000, style="painted", atlas=512, recolor=None, mat="matte", pitch=0,
-              roll=0, scale=None, opts=None, fill=None, fit=True, drop=None):
-        """A converted real model placed on the figure: `height` in mm, standing at `at`, turned `yaw` degrees.
-        recolor: {"brightness", "saturation", "hue", "tint": "#hex"} applied to its atlas (a black cat from a tabby)."""
-        m = {"name": name, "src": src, "height": height, "at": r1(list(at)), "yaw": yaw, "pitch": pitch, "roll": roll, "tris": tris,
-             "style": style, "atlas": atlas, "mat": mat}
-        if recolor:
-            m["recolor"] = recolor
-        if scale:
-            m["scale"] = scale
-        if fill:
-            m["fill"] = fill
-        if drop:
-            m["drop"] = list(drop)
-        if not fit:
-            m["fit"] = False
+    def model(s, name, src, h=None, w=None, d=None, at=(0, 0, 0), yaw=0, pitch=0, roll=0, tris=5000, mat="matte",
+              drop=None, keep=None, ramps=None, smooth=None, dark=False, **bad):
+        """A real model, converted at its final size so its texels are the line's DENS px/mm: scaled (before
+        conversion, never after) to the largest size that keeps it, turned by pitch/yaw/roll (degrees, XYZ), within
+        h (height), w (x) and d (z) mm, and stood with the bottom centre of its turned bounds at `at`.
+        No recolouring: a recolour is a finish of a figure (the game's finish system), never a new entry.
+        Returns the placed bounds (Box)."""
+        assert not bad, f"model(): unsupported {sorted(bad)} (one finish for the line; recolor / fit are gone)"
+        import numpy as np
+        from sources import subject_dims
+        w0, h0, d0 = subject_dims(src, drop, keep)
+        R = _rot(pitch, yaw, roll)
+        C = np.array([[x, y, z] for x in (-w0 / 2, w0 / 2) for y in (0, h0) for z in (-d0 / 2, d0 / 2)]) @ R.T
+        ext = C.max(0) - C.min(0)
+        k = min(v / e for v, e in ((w, ext[0]), (h, ext[1]), (d, ext[2])) if v)
+        lo, hi = C.min(0) * k, C.max(0) * k
+        pos = [at[0] - (lo[0] + hi[0]) / 2, at[1] - lo[1], at[2] - (lo[2] + hi[2]) / 2]
+        m = {"name": name, "src": src, "height": round(h0 * k, 3), "pos": r1(pos), "yaw": yaw, "pitch": pitch, "roll": roll,
+             "tris": tris, "mat": mat}
+        opts = {}
+        if ramps:
+            opts["ramps"] = ramps
+        if smooth:
+            opts["smooth"] = smooth
+        if dark:  # black lacquer / dark plastic: a narrower ramp so the lit side stays dark, not gold
+            opts["spread"] = 0.3
         if opts:
             m["opts"] = opts
+        if drop:
+            m["drop"] = list(drop)
+        if keep:
+            m["keep"] = list(keep)
         s.meta.setdefault("models", []).append(m)
-        return "model_" + name
+        box = Box(at[0] - (hi[0] - lo[0]) / 2, at[1], at[2] - (hi[2] - lo[2]) / 2,
+                  at[0] + (hi[0] - lo[0]) / 2, at[1] + hi[1] - lo[1], at[2] + (hi[2] - lo[2]) / 2)
+        s.subject.add(box)
+        return box
+
+    def prop(s, *box):
+        """Count a spec part (furniture the subject stands on, a rod) into the subject bounds the base is sized to."""
+        s.subject.add(Box(*box))
 
     def model_clip(s, node, kind, length=2.0, amp=None, axis="y"):
         """A gimmick clip on a converted model's node (pack.mjs bakes it): turn, hop, nod, spin, wobble, slide."""

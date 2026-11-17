@@ -1,0 +1,36 @@
+{
+ "joints": {
+  "station": [
+   0,
+   0,
+   0
+  ],
+  "stand": [
+   0,
+   0,
+   0
+  ]
+ },
+ "mats": {
+  "seal_body": "gloss",
+  "seal_plate": "metal",
+  "seal_lever": "gloss",
+  "seal_arm_l": "metal",
+  "seal_arm_r": "metal",
+  "seal_lamp": "glow",
+  "sbox_f": "glass",
+  "sbox_b": "glass",
+  "sbox_l": "glass",
+  "sbox_r": "glass",
+  "sbox_bot": "glass",
+  "sbox_st0": "glass",
+  "sbox_st1": "glass",
+  "sbox_st2": "glass",
+  "st_base": "glass",
+  "st_riser": "glass",
+  "st_plate": "gloss",
+  "st_rule": "metal"
+ },
+ "key": "packing",
+ "density": 1.1
+}

@@ -26,21 +26,14 @@ function quat(pitch, yaw, roll) { // XYZ euler (degrees) -> quaternion
   return [s1 * c2 * c3 + c1 * s2 * s3, c1 * s2 * c3 - s1 * c2 * s3, c1 * c2 * s3 + s1 * s2 * c3, c1 * c2 * c3 - s1 * s2 * s3];
 }
 const mulq = (a, b) => [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0], a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
-/** Painted model atlases are photographic: JPEG keeps them small (PNG only where there is real transparency). */
-async function compact(tex) {
-  // (the transparent texels are the atlas gutters: flattened onto the atlas' mean colour)
-  const st = await sharp(Buffer.from(tex.getImage())).stats();
+/** A converted model's pixel-art atlas: the transparent gutters are flattened onto the atlas' mean colour (so mipmaps
+ * do not bleed black into the edges) and it stays a lossless PNG (no JPEG ringing on pixel art). No recolouring here:
+ * every figure keeps the line's one finish (a recolour is a game finish, never a new entry). */
+async function flatten(tex) {
+  const img = sharp(Buffer.from(tex.getImage()));
+  const st = await img.stats();
   const bg = { r: Math.round(st.channels[0].mean), g: Math.round(st.channels[1].mean), b: Math.round(st.channels[2].mean) };
-  tex.setImage(new Uint8Array(await sharp(Buffer.from(tex.getImage())).flatten({ background: bg }).jpeg({ quality: 86, chromaSubsampling: '4:4:4' }).toBuffer())).setMimeType('image/jpeg');
-}
-async function recolor(png, r) {
-  let im = sharp(Buffer.from(png));
-  const meta = await im.metadata();
-  if (r.brightness || r.saturation || r.hue) im = im.modulate({ brightness: r.brightness ?? 1, saturation: r.saturation ?? 1, hue: r.hue ?? 0 });
-  if (r.tint) im = im.tint(r.tint);
-  if (r.gamma) im = im.gamma(r.gamma);
-  if (r.linear) im = im.linear(r.linear[0], r.linear[1]); // [a, b]: out = a * in + b (lift a coat to white)
-  return new Uint8Array(await im.png().toBuffer());
+  tex.setImage(new Uint8Array(await sharp(Buffer.from(tex.getImage())).flatten({ background: bg }).png({ compressionLevel: 9, palette: false }).toBuffer())).setMimeType('image/png');
 }
 /** A gimmick clip on a model node: turn (look aside and back), hop, nod, spin, wobble, slide. */
 function modelClip(doc, c) {
@@ -82,7 +75,6 @@ for (const series of seriesList) {
     const doc = await io.read(glbPath);
     const root = doc.getRoot();
     const mainScene = root.listScenes()[0];
-    const baseB = getBounds(mainScene); // the spec's base and props: models are fitted onto its footprint
     // real models: merge each converted GLB in under a placed node "model_<name>"
     for (const m of meta.models || []) {
       const key = m.key;
@@ -92,18 +84,14 @@ for (const series of seriesList) {
       const src = await io.read(join(dir, g));
       for (const a of src.getRoot().listAnimations()) a.dispose();
       const sb = getBounds(src.getRoot().listScenes()[0]);
-      const [w0, h0, d0] = [0, 1, 2].map((i) => sb.max[i] - sb.min[i]);
-      const th = (m.yaw || 0) * D2R, wx = Math.abs(w0 * Math.cos(th)) + Math.abs(d0 * Math.sin(th)), wz = Math.abs(w0 * Math.sin(th)) + Math.abs(d0 * Math.cos(th));
-      const bw = baseB.max[0] - baseB.min[0], bd = baseB.max[2] - baseB.min[2], fill = m.fill ?? 0.82;
-      const fit = Math.min(m.height / h0, m.fit === false ? 1e9 : (fill * bw) / wx, m.fit === false ? 1e9 : (fill * bd) / wz) * (m.scale || 1);
-      const tone = { brightness: 0.9, saturation: 1.04 };
-      for (const t of src.getRoot().listTextures()) t.setImage(await recolor(t.getImage(), m.recolor ? { ...tone, ...m.recolor } : tone));
-      for (const t of src.getRoot().listTextures()) await compact(t);
+      const h0 = sb.max[1] - sb.min[1], k = m.height / h0; // converted at its final size: k is 1 (up to lowpix rounding)
+      if (Math.abs(k - 1) > 0.03) console.error(`  ${series}/${id} model ${m.name}: converted ${h0.toFixed(2)} mm, wanted ${m.height}`);
+      for (const t of src.getRoot().listTextures()) await flatten(t);
       const map = mergeDocuments(doc, src);
       const holder = doc.createNode('model_' + m.name);
       const q = quat(m.pitch || 0, m.yaw || 0, m.roll || 0);
-      holder.setTranslation(m.at).setRotation(q);
-      holder.setScale([fit, fit, fit]);
+      holder.setTranslation(m.pos).setRotation(q);
+      if (Math.abs(k - 1) > 1e-3) holder.setScale([k, k, k]);
       for (const sc of src.getRoot().listScenes()) {
         const t = map.get(sc);
         for (const n of t.listChildren()) { t.removeChild(n); holder.addChild(n); }

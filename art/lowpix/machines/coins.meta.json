@@ -1,0 +1,14 @@
+{
+ "joints": {
+  "yen100": [
+   0,
+   0,
+   0
+  ]
+ },
+ "mats": {
+  "c100": "metal"
+ },
+ "key": "coins",
+ "density": 6.0
+}

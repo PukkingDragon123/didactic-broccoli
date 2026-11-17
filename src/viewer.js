@@ -3,7 +3,7 @@
 //   ?series=mochi            all items of a series
 //   ?item=mochi/shiba&finishes=1   one item in every finish
 //   ?props=garage            all props from src/data/props/<name>.js (default export: { id: {name, build(v), voxel} })
-//   &angle=back              view from behind;  &cols=4  grid columns
+//   &angle=back              view from behind;  &cols=4  grid columns;  &fixed=70  same camera/scale (mm of view)
 import '@fontsource/dotgothic16/400.css';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -122,7 +122,11 @@ function layout(entries) {
     const box = new THREE.Box3().setFromObject(obj);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    const radius = Math.max(size.x, size.y, size.z) * 0.5 || 0.1;
+    let radius = Math.max(size.x, size.y, size.z) * 0.5 || 0.1;
+    if (params.get('fixed')) { // the same camera and scale for every cell (&fixed=<mm> of view): a true-scale line-up
+      radius = +params.get('fixed') / 2000;
+      center.set(center.x, box.min.y + radius * 0.85, center.z);
+    }
     sun.shadow.camera.left = sun.shadow.camera.bottom = -radius * 3;
     sun.shadow.camera.right = sun.shadow.camera.top = radius * 3;
     sun.shadow.camera.near = 0.01; sun.shadow.camera.far = 20;

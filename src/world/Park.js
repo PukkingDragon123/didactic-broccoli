@@ -259,13 +259,13 @@ function toilet(t, mats) {
   // lamp's glow stay here
   const lp = !!archPlace('park_toilet', t.group, { cast: false });
   if (!lp) {
-  B.box(mats.tile, x1 - x0, 1.1, z1 - z0, xc, 0, zc, { ao: 0.18, uv: [0, 0] });
-  B.box(mats.stucco, x1 - x0 - 0.01, H - 1.1, z1 - z0 - 0.01, xc, 1.1, zc, { uv: [0.2, 0] });
-  B.box(m.pv, x1 - x0 + 0.02, 0.06, z1 - z0 + 0.02, xc, 1.08, zc, { tint: 0x5a8a6a });
-  // flat roof slab with an overhang and a parapet; vent louvres high up
-  B.box(m.conc, x1 - x0 + 0.6, 0.18, z1 - z0 + 0.6, xc - 0.1, H, zc, { k: 0.9 });
-  B.box(m.pv, x1 - x0 + 0.62, 0.06, z1 - z0 + 0.62, xc - 0.1, H + 0.18, zc, { tint: 0x8a8680 });
-  for (const z of [-6.5, -7.95]) for (let i = 0; i < 3; i++) B.box(m.pv, 0.04, 0.03, 0.6, x0 - 0.01, 2.25 + i * 0.1, z, { tint: 0x3a3a3a });
+    B.box(mats.tile, x1 - x0, 1.1, z1 - z0, xc, 0, zc, { ao: 0.18, uv: [0, 0] });
+    B.box(mats.stucco, x1 - x0 - 0.01, H - 1.1, z1 - z0 - 0.01, xc, 1.1, zc, { uv: [0.2, 0] });
+    B.box(m.pv, x1 - x0 + 0.02, 0.06, z1 - z0 + 0.02, xc, 1.08, zc, { tint: 0x5a8a6a });
+    // flat roof slab with an overhang and a parapet; vent louvres high up
+    B.box(m.conc, x1 - x0 + 0.6, 0.18, z1 - z0 + 0.6, xc - 0.1, H, zc, { k: 0.9 });
+    B.box(m.pv, x1 - x0 + 0.62, 0.06, z1 - z0 + 0.62, xc - 0.1, H + 0.18, zc, { tint: 0x8a8680 });
+    for (const z of [-6.5, -7.95]) for (let i = 0; i < 3; i++) B.box(m.pv, 0.04, 0.03, 0.6, x0 - 0.01, 2.25 + i * 0.1, z, { tint: 0x3a3a3a });
   }
   // two doorways on the west face (dark), screen walls, plates, a light
   for (const [z, half] of [[-6.5, 0], [-7.95, 1]]) {
@@ -421,38 +421,38 @@ function villa(t, mats) {
   const SX0 = 12.3, SX1 = 15.5, SZ = -25.0; // studio column (front-left)
   const wx0 = 12.75, wx1 = 15.15, wy0 = 1.0, wy1 = 2.95;
   if (!lp) {
-  // stone plinth, the body (split so the studio behind the big window can be seen into)
-  B.box(m.found, W + 0.1, base, D + 0.1, cx, 0, (ZF + ZK) / 2, { tint: 0x8a8a88 });
-  B.box(mats.stucco, W, f1 + f2, ZF - ZK - (ZF - SZ), cx, base, (SZ + ZK) / 2, { uv: [0, 0] });
-  B.box(mats.stucco, X1 - SX1, f1 + f2, ZF - SZ, (SX1 + X1) / 2, base, (ZF + SZ) / 2, { uv: [0.3, 0], ao: 0.12 });
-  B.box(mats.stucco, SX1 - SX0, f2, ZF - SZ, (SX0 + SX1) / 2, y1, (ZF + SZ) / 2, { uv: [0.6, 0] });
-  // the studio's front wall around the window, and its west wall
-  B.box(mats.stucco, wx0 - SX0, f1, 0.2, (SX0 + wx0) / 2, base, ZF - 0.1, { uv: [0.1, 0], ao: 0.12 });
-  B.box(mats.stucco, SX1 - wx1, f1, 0.2, (wx1 + SX1) / 2, base, ZF - 0.1, { uv: [0.2, 0], ao: 0.12 });
-  B.box(mats.stucco, wx1 - wx0, wy0 - base, 0.2, (wx0 + wx1) / 2, base, ZF - 0.1, { ao: 0.12 });
-  B.box(mats.stucco, wx1 - wx0, y1 - wy1, 0.2, (wx0 + wx1) / 2, wy1, ZF - 0.1, {});
-  B.box(mats.stucco, 0.15, f1, ZF - SZ, SX0 + 0.075, base, (SZ + ZF) / 2, {});
-  B.box(mats.stucco, 0.1, f1, ZF - SZ, SX1 - 0.05, base, (SZ + ZF) / 2, {});
-  // string course, cornice
-  B.box(m.pv, W + 0.08, 0.12, D + 0.08, cx, y1 - 0.06, (ZF + ZK) / 2, { tint: 0xe2ded4 });
-  B.box(m.pv, W + 0.34, 0.16, D + 0.34, cx, y2, (ZF + ZK) / 2, { tint: 0xeeeae2 });
-  B.box(m.pv, W + 0.44, 0.06, D + 0.44, cx, y2 + 0.16, (ZF + ZK) / 2, { tint: ink });
-  // hipped dark slate roof in stepped courses, a brick chimney
-  {
-    let w = W + 0.5, d = D + 0.5, y = y2 + 0.22;
-    for (let i = 0; w > 0.6 && d > 0.6; i++) {
-      B.box(mats.slate, w, 0.3, d, cx, y, (ZF + ZK) / 2, { uv: [i * 0.2, i * 0.13] });
-      w -= 0.86; d -= 0.86; y += 0.3;
+    // stone plinth, the body (split so the studio behind the big window can be seen into)
+    B.box(m.found, W + 0.1, base, D + 0.1, cx, 0, (ZF + ZK) / 2, { tint: 0x8a8a88 });
+    B.box(mats.stucco, W, f1 + f2, ZF - ZK - (ZF - SZ), cx, base, (SZ + ZK) / 2, { uv: [0, 0] });
+    B.box(mats.stucco, X1 - SX1, f1 + f2, ZF - SZ, (SX1 + X1) / 2, base, (ZF + SZ) / 2, { uv: [0.3, 0], ao: 0.12 });
+    B.box(mats.stucco, SX1 - SX0, f2, ZF - SZ, (SX0 + SX1) / 2, y1, (ZF + SZ) / 2, { uv: [0.6, 0] });
+    // the studio's front wall around the window, and its west wall
+    B.box(mats.stucco, wx0 - SX0, f1, 0.2, (SX0 + wx0) / 2, base, ZF - 0.1, { uv: [0.1, 0], ao: 0.12 });
+    B.box(mats.stucco, SX1 - wx1, f1, 0.2, (wx1 + SX1) / 2, base, ZF - 0.1, { uv: [0.2, 0], ao: 0.12 });
+    B.box(mats.stucco, wx1 - wx0, wy0 - base, 0.2, (wx0 + wx1) / 2, base, ZF - 0.1, { ao: 0.12 });
+    B.box(mats.stucco, wx1 - wx0, y1 - wy1, 0.2, (wx0 + wx1) / 2, wy1, ZF - 0.1, {});
+    B.box(mats.stucco, 0.15, f1, ZF - SZ, SX0 + 0.075, base, (SZ + ZF) / 2, {});
+    B.box(mats.stucco, 0.1, f1, ZF - SZ, SX1 - 0.05, base, (SZ + ZF) / 2, {});
+    // string course, cornice
+    B.box(m.pv, W + 0.08, 0.12, D + 0.08, cx, y1 - 0.06, (ZF + ZK) / 2, { tint: 0xe2ded4 });
+    B.box(m.pv, W + 0.34, 0.16, D + 0.34, cx, y2, (ZF + ZK) / 2, { tint: 0xeeeae2 });
+    B.box(m.pv, W + 0.44, 0.06, D + 0.44, cx, y2 + 0.16, (ZF + ZK) / 2, { tint: ink });
+    // hipped dark slate roof in stepped courses, a brick chimney
+    {
+      let w = W + 0.5, d = D + 0.5, y = y2 + 0.22;
+      for (let i = 0; w > 0.6 && d > 0.6; i++) {
+        B.box(mats.slate, w, 0.3, d, cx, y, (ZF + ZK) / 2, { uv: [i * 0.2, i * 0.13] });
+        w -= 0.86; d -= 0.86; y += 0.3;
+      }
+      B.box(m.ridge, Math.max(0.5, w + 0.86), 0.12, 0.26, cx, y, (ZF + ZK) / 2, { tint: 0x3a3e46 });
+      B.box(m.brick, 0.6, 3.1, 0.6, 18.3, y2 + 0.4, -26.2, { tint: 0xb89a8a });
+      B.box(m.pv, 0.72, 0.1, 0.72, 18.3, y2 + 3.5, -26.2, { tint: 0x3a3a3a });
     }
-    B.box(m.ridge, Math.max(0.5, w + 0.86), 0.12, 0.26, cx, y, (ZF + ZK) / 2, { tint: 0x3a3e46 });
-    B.box(m.brick, 0.6, 3.1, 0.6, 18.3, y2 + 0.4, -26.2, { tint: 0xb89a8a });
-    B.box(m.pv, 0.72, 0.1, 0.72, 18.3, y2 + 3.5, -26.2, { tint: 0x3a3a3a });
-  }
-  // ---- the studio window: black steel frame with a grid, glass, the room behind
-  const wz = ZF + 0.005;
-  for (const x of [wx0, wx1, (wx0 * 2 + wx1) / 3, (wx0 + wx1 * 2) / 3]) B.box(m.pv, 0.06, wy1 - wy0, 0.08, x, wy0, wz, { tint: ink });
-  for (const y of [wy0, wy1 - 0.05, 2.45]) B.box(m.pv, wx1 - wx0 + 0.06, 0.05, 0.08, (wx0 + wx1) / 2, y, wz, { tint: ink });
-  B.box(m.pv, wx1 - wx0 + 0.3, 0.07, 0.22, (wx0 + wx1) / 2, wy0 - 0.07, ZF + 0.08, { tint: 0xd8d4cc });
+    // ---- the studio window: black steel frame with a grid, glass, the room behind
+    const wz = ZF + 0.005;
+    for (const x of [wx0, wx1, (wx0 * 2 + wx1) / 3, (wx0 + wx1 * 2) / 3]) B.box(m.pv, 0.06, wy1 - wy0, 0.08, x, wy0, wz, { tint: ink });
+    for (const y of [wy0, wy1 - 0.05, 2.45]) B.box(m.pv, wx1 - wx0 + 0.06, 0.05, 0.08, (wx0 + wx1) / 2, y, wz, { tint: ink });
+    B.box(m.pv, wx1 - wx0 + 0.3, 0.07, 0.22, (wx0 + wx1) / 2, wy0 - 0.07, ZF + 0.08, { tint: 0xd8d4cc });
   }
   t.add(t.glassPane(wx1 - wx0 - 0.06, wy1 - wy0 - 0.06, (wx0 + wx1) / 2, (wy0 + wy1) / 2, ZF - 0.02));
   studio(t, mats, SX0 + 0.15, SX1 - 0.1, SZ + 0.02, ZF - 0.2, base, y1 - 0.02);
@@ -461,16 +461,16 @@ function villa(t, mats) {
   B.box(t.M('woodDark', { roughness: 0.55 }), dw, 2.3, 0.08, dx, base, ZF + 0.02, { unit: true, tint: 0x8a5a3a });
   B.box(t.G, dw - 0.1, 0.22, 0.04, dx, base + 2.36, ZF + 0.02, { tint: 0xffe0a0 });
   if (!lp) {
-  for (const [u, v] of [[-0.22, 0.35], [0.22, 0.35], [-0.22, 1.35], [0.22, 1.35]]) B.box(m.pv, 0.32, 0.75, 0.03, dx + u, base + v, ZF + 0.07, { tint: 0x6a4026 });
-  B.box(m.metal, 0.04, 0.2, 0.05, dx + 0.36, base + 1.0, ZF + 0.09, { tint: 0xd8b060 });
-  for (const s of [-1, 1]) B.box(m.pv, 0.08, 2.62, 0.1, dx + s * (dw / 2 + 0.04), base, ZF + 0.03, { tint: ink });
-  B.box(m.pv, dw + 0.16, 0.08, 0.1, dx, base + 2.3, ZF + 0.03, { tint: ink });
-  B.box(m.pv, 1.9, 0.14, 1.15, dx, base + 2.72, ZF + 0.57, { tint: ink });
-  B.box(m.pv, 1.95, 0.05, 1.2, dx, base + 2.86, ZF + 0.58, { tint: 0x3a3e46 });
-  for (const sx of [-0.82, 0.82]) { B.box(m.pv, 0.12, 2.72, 0.12, dx + sx, base, ZF + 1.05, { tint: white }); B.box(m.pv, 0.2, 0.08, 0.2, dx + sx, base, ZF + 1.05, { tint: 0xd8d4cc }); }
-  B.box(m.found, 1.9, base - 0.12, 1.2, dx, 0, ZF + 0.6, { tint: 0xa8a49c });
-  B.box(m.found, 1.6, base - 0.28, 0.4, dx, 0, ZF + 1.36, { tint: 0xb0aca4 });
-  B.box(m.pv, 0.16, 0.26, 0.1, dx - 0.72, base + 1.85, ZF + 0.05, { tint: ink });
+    for (const [u, v] of [[-0.22, 0.35], [0.22, 0.35], [-0.22, 1.35], [0.22, 1.35]]) B.box(m.pv, 0.32, 0.75, 0.03, dx + u, base + v, ZF + 0.07, { tint: 0x6a4026 });
+    B.box(m.metal, 0.04, 0.2, 0.05, dx + 0.36, base + 1.0, ZF + 0.09, { tint: 0xd8b060 });
+    for (const s of [-1, 1]) B.box(m.pv, 0.08, 2.62, 0.1, dx + s * (dw / 2 + 0.04), base, ZF + 0.03, { tint: ink });
+    B.box(m.pv, dw + 0.16, 0.08, 0.1, dx, base + 2.3, ZF + 0.03, { tint: ink });
+    B.box(m.pv, 1.9, 0.14, 1.15, dx, base + 2.72, ZF + 0.57, { tint: ink });
+    B.box(m.pv, 1.95, 0.05, 1.2, dx, base + 2.86, ZF + 0.58, { tint: 0x3a3e46 });
+    for (const sx of [-0.82, 0.82]) { B.box(m.pv, 0.12, 2.72, 0.12, dx + sx, base, ZF + 1.05, { tint: white }); B.box(m.pv, 0.2, 0.08, 0.2, dx + sx, base, ZF + 1.05, { tint: 0xd8d4cc }); }
+    B.box(m.found, 1.9, base - 0.12, 1.2, dx, 0, ZF + 0.6, { tint: 0xa8a49c });
+    B.box(m.found, 1.6, base - 0.28, 0.4, dx, 0, ZF + 1.36, { tint: 0xb0aca4 });
+    B.box(m.pv, 0.16, 0.26, 0.1, dx - 0.72, base + 1.85, ZF + 0.05, { tint: ink });
   }
   B.box(t.G, 0.1, 0.16, 0.05, dx - 0.72, base + 1.9, ZF + 0.1, { tint: 0xffd890 });
   t.sign('villaNo', 0.22, 0.13, dx + 0.75, base + 1.7, ZF + 0.012);
@@ -491,20 +491,20 @@ function villa(t, mats) {
   // balcony: slab, black iron railing with a scroll pattern, French doors, plants
   const bx0 = 14.1, bx1 = 17.6, bd = 0.95, by = y1 - 0.02;
   if (!lp) {
-  B.box(m.pv, bx1 - bx0 + 0.1, 0.16, bd, (bx0 + bx1) / 2, by - 0.16, ZF + bd / 2, { tint: 0xe8e4dc });
-  B.box(m.pv, bx1 - bx0 + 0.14, 0.05, bd + 0.04, (bx0 + bx1) / 2, by - 0.2, ZF + bd / 2, { tint: 0xd8d4cc });
-  for (let k = 0; k < 4; k++) B.box(m.pv, 0.12, 0.14, 0.12, bx0 + 0.3 + k * ((bx1 - bx0 - 0.6) / 3), by - 0.34, ZF + bd - 0.08, { tint: 0xd8d4cc }); // corbels
-  const rz = ZF + bd - 0.04;
-  B.box(m.metal, bx1 - bx0, 0.05, 0.05, (bx0 + bx1) / 2, by + 0.95, rz, { tint: 0x1e2024 });
-  B.box(m.metal, bx1 - bx0, 0.04, 0.04, (bx0 + bx1) / 2, by + 0.1, rz, { tint: 0x1e2024 });
-  for (let x = bx0; x <= bx1 + 0.01; x += 0.125) B.box(m.metal, 0.022, 0.85, 0.022, x, by + 0.1, rz, { tint: 0x1e2024 });
-  for (let x = bx0 + 0.25; x < bx1; x += 0.5) B.box(m.metal, 0.16, 0.16, 0.02, x, by + 0.72, rz, { tint: 0x1e2024, rz: Math.PI / 4 });
-  for (const s of [bx0, bx1]) for (let k = 1; k < 5; k++) B.box(m.metal, 0.022, 0.85, 0.022, s, by + 0.1, ZF + k * (bd / 5), { tint: 0x1e2024 });
-  for (const s of [bx0, bx1]) B.box(m.metal, 0.05, 0.05, bd, s, by + 0.95, ZF + bd / 2, { tint: 0x1e2024 });
-  for (const u of [-0.36, 0.36]) {
-    B.box(t.win.lit4, 0.66, 2.1, 0.1, 15.85 + u, by + 0.02, ZF, { unit: true });
-    B.box(m.pv, 0.06, 2.12, 0.06, 15.85 + u + (u < 0 ? -0.34 : 0.34), by + 0.02, ZF + 0.04, { tint: ink });
-  }
+    B.box(m.pv, bx1 - bx0 + 0.1, 0.16, bd, (bx0 + bx1) / 2, by - 0.16, ZF + bd / 2, { tint: 0xe8e4dc });
+    B.box(m.pv, bx1 - bx0 + 0.14, 0.05, bd + 0.04, (bx0 + bx1) / 2, by - 0.2, ZF + bd / 2, { tint: 0xd8d4cc });
+    for (let k = 0; k < 4; k++) B.box(m.pv, 0.12, 0.14, 0.12, bx0 + 0.3 + k * ((bx1 - bx0 - 0.6) / 3), by - 0.34, ZF + bd - 0.08, { tint: 0xd8d4cc }); // corbels
+    const rz = ZF + bd - 0.04;
+    B.box(m.metal, bx1 - bx0, 0.05, 0.05, (bx0 + bx1) / 2, by + 0.95, rz, { tint: 0x1e2024 });
+    B.box(m.metal, bx1 - bx0, 0.04, 0.04, (bx0 + bx1) / 2, by + 0.1, rz, { tint: 0x1e2024 });
+    for (let x = bx0; x <= bx1 + 0.01; x += 0.125) B.box(m.metal, 0.022, 0.85, 0.022, x, by + 0.1, rz, { tint: 0x1e2024 });
+    for (let x = bx0 + 0.25; x < bx1; x += 0.5) B.box(m.metal, 0.16, 0.16, 0.02, x, by + 0.72, rz, { tint: 0x1e2024, rz: Math.PI / 4 });
+    for (const s of [bx0, bx1]) for (let k = 1; k < 5; k++) B.box(m.metal, 0.022, 0.85, 0.022, s, by + 0.1, ZF + k * (bd / 5), { tint: 0x1e2024 });
+    for (const s of [bx0, bx1]) B.box(m.metal, 0.05, 0.05, bd, s, by + 0.95, ZF + bd / 2, { tint: 0x1e2024 });
+    for (const u of [-0.36, 0.36]) {
+      B.box(t.win.lit4, 0.66, 2.1, 0.1, 15.85 + u, by + 0.02, ZF, { unit: true });
+      B.box(m.pv, 0.06, 2.12, 0.06, 15.85 + u + (u < 0 ? -0.34 : 0.34), by + 0.02, ZF + 0.04, { tint: ink });
+    }
   }
   for (const u of [-0.36, 0.36]) if (lp) B.box(t.win.lit4, 0.66, 2.1, 0.1, 15.85 + u, by + 0.02, ZF, { unit: true });
   if (!lp) B.box(m.pv, 1.5, 0.08, 0.08, 15.85, by + 2.12, ZF + 0.04, { tint: ink });

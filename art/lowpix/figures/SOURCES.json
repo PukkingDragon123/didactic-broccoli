@@ -1,4 +1,60 @@
 {
+ "polyhaven:alarm_clock_01": {
+  "name": "alarm clock 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/alarm_clock_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:boombox": {
+  "name": "boombox",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/boombox",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:cassette_player": {
+  "name": "cassette player",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/cassette_player",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:filmstrip_projector_8mm": {
+  "name": "filmstrip projector 8mm",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/filmstrip_projector_8mm",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:modified_thermos": {
+  "name": "modified thermos",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/modified_thermos",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:street_rat": {
+  "name": "street rat",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/street_rat",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:television_02": {
+  "name": "television 02",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/television_02",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "sketchfab:046f4d21810e4bf68feabe393a6b83cf": {
   "name": "Dog Dachshund -Tacsk\u00f3",
   "author": "PAndras",
