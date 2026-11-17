@@ -8,7 +8,7 @@
   {
    "name": "bird",
    "src": "sketchfab:11b5b94688bc4ee380849585086da98a",
-   "height": 13.647,
+   "height": 17.08,
    "pos": [
     0.0,
     0.0,
@@ -19,7 +19,7 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "da5778254f7a57"
+   "key": "4651fbc7933374"
   }
  ],
  "model_clip": {
