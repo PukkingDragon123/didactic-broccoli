@@ -36,7 +36,7 @@ export function installCodex(game, os) {
     ['kappa', 'Kappa', 'A river imp with a dish of water on its head. Loves cucumbers and sumo.', 'Kids say something green steals cucumbers from Mikawa-ya.'],
     ['kitsune', 'Kitsune', 'A fox spirit. The more tails, the older and wiser.', 'Someone left fried tofu at the little shrine. It was gone in a minute.'],
     ['zashiki', 'Zashiki-warashi', 'A child spirit who brings luck to the house it lives in.', 'Small footprints in the dust of the garage, where nobody has walked.'],
-    ['tsukumo', 'Tsukumogami', 'An old tool that came alive on its 100th birthday.', 'Grandpa\'s oldest machine was heard turning its own handle at night.'],
+    ['yokaiya', 'Tsukumogami', 'An old tool that came alive on its 100th birthday.', 'Grandpa\'s oldest machine was heard turning its own handle at night.'],
     ['karakasa', 'Kasa-obake', 'A one-eyed, one-legged paper umbrella that hops.', 'An umbrella hopped past the bus stop. It did not need a bus.'],
     ['nurikabe', 'Nurikabe', 'An invisible wall that blocks the road at night.', 'People walking home through the underpass bump into... nothing.'],
     ['rokurokubi', 'Rokurokubi', 'By day a normal person. By night, the neck stretches.', 'A neighbour swears she saw a head peek in through a second-floor window.'],

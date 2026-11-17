@@ -53,19 +53,22 @@ export const RETIRED = {
   rojineko: { postbox: 'c', wall: 'c', box: 'c', laundry: 'u', kittens: 'u', boss: 'r', stalker: 'x', moon: 's' },
   asobi: { robot: 'u' }, sampuru: { soda: 'u' }, daikaiju: { anky: 'c', tetsujin: 'x', golden: 's' }, hikidashi: { soroban: 'u', randoseru: 'x' },
   inusanpo: { pug: 'u', corgi: 'u', terrier: 'r' }, machikado: { gaito: 'r', busstop: 'x' }, norimono: { van: 'c', golden: 's' },
-  shinkai: { goblin: 'r', oarfish: 'x', isopod: 'c', angler: 'u', coela: 's' }, shugorei: { golden: 's' }, tsukumo: { parade: 'x', golden: 's' },
-  yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's', karasu: 'c', kiji: 's' }, yatai: { wataame: 'u', yoyo: 'u' },
-  yudono: { capy: 'c', penguin: 'c', family: 'r', rotenburo: 'x', kinkapi: 's' }, kaiun: { jinja: 'x', goldneko: 's' },
+  shinkai: { goblin: 'r', oarfish: 'x', isopod: 'c', angler: 'u', coela: 's' }, shugorei: { golden: 's' }, tsukumo: { parade: 'x', golden: 's', chochin: 'c', kasa: 'c', geta: 'c', kettle: 'u', broom: 'u', mon: 's' },
+  yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's', karasu: 'c', kiji: 's' }, yatai: { wataame: 'u', yoyo: 'u', kingyo: 'c', omen: 'c', takoyaki: 'c', taiko: 'r', stall: 'x', golden: 's' },
+  yudono: { capy: 'c', penguin: 'c', family: 'r', rotenburo: 'x', kinkapi: 's', frog: 'c', otter: 'u', duck: 'u' }, kaiun: { jinja: 'x', goldneko: 's' },
   konchu: { tento: 'c', semi: 'c', larva: 'r' }, okashi: { kagami: 'x', dorayaki: 'c', matcha: 'r', momo: 's' },
 };
 /** The new series each old one hands its stock to (if it exists). */
 const THEME = {
   rojineko: 'nuigurumi', mochi: 'nuigurumi', hoshitate: 'nuigurumi', neko_cafe: 'nuigurumi', lanepals: 'machikado', shotengai: 'machikado', konbini: 'machikado',
   shokudo: 'sampuru', oden: 'sampuru', wagashi: 'okashi', dajare: 'okashi', showa: 'denka', kaden: 'denka', heya: 'denka',
-  omocha: 'asobi', gecen: 'asobi', pachimon: 'asobi', kasa: 'tsukumo', yokai: 'tsukumo', hyakki: 'tsukumo', obake_yashiki: 'tsukumo',
-  umi: 'shinkai', onsen: 'yudono', sento: 'yudono', kaiju: 'daikaiju', uchu: 'daikaiju', sentai: 'shugorei', bizarre: 'shugorei',
+  omocha: 'asobi', gecen: 'asobi', pachimon: 'asobi', kasa: 'yokaiya', yokai: 'yokaiya', hyakki: 'yokaiya', obake_yashiki: 'yokaiya',
+  umi: 'shinkai', onsen: 'furoba', sento: 'furoba', kaiju: 'daikaiju', uchu: 'daikaiju', sentai: 'shugorei', bizarre: 'shugorei',
   chibitto: 'shugorei', sumo: 'shugorei', bungu: 'hikidashi', bukatsu: 'hikidashi', densha: 'norimono', hataraku: 'norimono',
-  omamori: 'kaiun', haniwa: 'kaiun', matsuri: 'yatai',
+  omamori: 'kaiun', haniwa: 'kaiun', matsuri: 'yokaiya',
+  tsukumo: 'yokaiya',
+  yatai: 'yokaiya',
+  yudono: 'furoba',
 };
 const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 const live = () => SERIES.filter((s) => !s.hidden);

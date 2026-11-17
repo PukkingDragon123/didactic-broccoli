@@ -38,7 +38,9 @@ def hbody(F, pid, rings, col, style="vinyl", sides=16, at=(0, 0, 0), **kw):
 
 
 def dot(F, pid, centres, ramp, tone, rid):
-    F.layer(pid, id=rid, op="spots", centers=[list(c) for c in centres], ramp=ramp, tone=tone, roughness=0)
+    """Painted dots at model-space centres [x, y, z, r] (made relative to the part's pivot, as spots expects)."""
+    px, py, pz = F.ids[pid].get("pivot", [0, 0, 0])
+    F.layer(pid, id=rid, op="spots", centers=[[c[0] - px, c[1] - py, c[2] - pz] + list(c[3:]) for c in centres], ramp=ramp, tone=tone, roughness=0)
 
 
 def face(F, pid, eyeL, eyeR, er=1.1, mouth=None, mouth_kind="smile", mr=0.9, blushL=None, blushR=None, br=1.9,

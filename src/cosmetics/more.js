@@ -92,7 +92,7 @@ export function moreCosmetics(K) {
     { id: 'cx_wrapshades', slot: 'face', name: 'Y2K Wraparounds', price: 1600, rarity: 'uncommon', web: true, desc: 'The future is purple-to-orange and arrives in nine months.', ...onEyes('cx_wrapshades', V99.wrapShades) },
     { id: 'cx_kaiser', slot: 'face', name: 'Kaiser Moustache', price: 500, rarity: 'common', web: true, desc: 'Waxed, curled, distinguished. Mostly glue.', ...onEyes('cx_kaiser', V99.kaiser) },
     { id: 'cx_tengu', slot: 'face', name: 'Tengu Mask', price: 1800, rarity: 'rare', capsule: 'kaiun', desc: 'The mountain goblin, nose and all. Mind the doorways.', ...onEyes('cx_tengu', V99.tengu) },
-    { id: 'cx_okame', slot: 'face', name: 'Okame Mask', price: 1000, rarity: 'rare', capsule: 'yatai', desc: "Hyottoko's sweetheart: round cheeks, good fortune.", ...sideMask('cx_okame', V99.okame) },
+    { id: 'cx_okame', slot: 'face', name: 'Okame Mask', price: 1000, rarity: 'rare', capsule: 'yokaiya', desc: "Hyottoko's sweetheart: round cheeks, good fortune.", ...sideMask('cx_okame', V99.okame) },
     { id: 'cx_kurogitsune', slot: 'face', name: 'Black Fox Mask', price: 1600, rarity: 'rare', quest: 'relic', desc: 'Lord Kuromaru insists it is cursed. It is very nicely painted.', ...sideMask('cx_kurogitsune', V99.kurogitsune) },
     { id: 'cx_heromask', slot: 'face', name: 'Bootleg Hero Mask', price: 700, rarity: 'uncommon', capsule: 'asobi', desc: 'From a festival stall. The hero is called Ultla-Man.', ...sideMask('cx_heromask', V99.heroMask) },
     { id: 'cx_blackmask', slot: 'face', name: 'Sukeban Mask', price: 900, rarity: 'uncommon', capsule: 'shugorei', desc: 'A long skirt, a yo-yo and this. Nobody cuts in line.', ...onEyes('cx_blackmask', V99.blackMask) },
@@ -116,7 +116,7 @@ export function moreCosmetics(K) {
     { id: 'cx_shoulderbag', slot: 'bag', name: 'Canvas Shoulder Bag', price: 1100, rarity: 'common', shop: true, desc: 'Olive canvas, one long strap, room for a Walkman and a manga.', ...bag({ kind: 'shoulderbag', col: 0x6a7a4a }) },
     { id: 'cx_handbag', slot: 'bag', name: 'Obachan Handbag', price: 1400, rarity: 'uncommon', web: true, desc: 'Purple, faux croc, full of candy for strangers.', ...bag({ kind: 'handbag', col: 0x7a4a8a }) },
     { id: 'cx_pouch', slot: 'bag', name: 'Gamaguchi Pouch', price: 600, rarity: 'common', shop: true, desc: 'A frog-mouth purse with a snap. Clack.', ...bag({ kind: 'pouch', col: 0xd85a6a }) },
-    { id: 'cx_tanukitail', slot: 'bag', name: 'Tanuki Tail', price: 1400, rarity: 'rare', capsule: 'tsukumo', desc: 'Clip it on and nobody can tell what you really are.', ...tanukiTail },
+    { id: 'cx_tanukitail', slot: 'bag', name: 'Tanuki Tail', price: 1400, rarity: 'rare', capsule: 'yokaiya', desc: 'Clip it on and nobody can tell what you really are.', ...tanukiTail },
     { id: 'cx_furoshiki', slot: 'bag', name: "Thief's Furoshiki", price: 1500, rarity: 'rare', quest: 'cucumber', desc: 'Green with white swirls: the classic burglar bundle. Full of cucumbers.', ...K.voxBag('cx_furoshiki', V99.furoshiki, 1.45) },
 
     // ================================================================== shoes

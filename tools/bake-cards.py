@@ -19,6 +19,7 @@ TOYS = os.path.join(CACHE, 'toys')
 OUT = os.path.join(ROOT, 'public', 'img', 'print', 'cards')
 W, H = 640, 560  # 2x the banner's 320 x 280 (src/gfx/banner.js draws the card at this size)
 BACK = {  # series -> photo backdrop (focus x, y, zoom)
+    'furoba': ('oi:2a1c261ad12e6f62@test', (0.3, 0.3, 1.0)), 'yokaiya': ('oi:ccf0a3b89149f0d5@train', (0.5, 0.6, 1.1)),
     'gohan': ('oi:6324262554f184ab@test', (0.5, 0.6, 1.4)), 'tanukibin': ('local:back_street.jpg', (0.4, 0.55, 1.3)),
     'nuigurumi': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'rojineko': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'kogu': ('oi:8cf0d90fadf83514@test', (0.3, 0.5, 1.3)),
     'yaoya': ('oi:ccf0a3b89149f0d5@train', (0.3, 0.5, 1.3)), 'daidokoro': ('oi:f4200fadef07c329@test', (0.8, 0.5, 1.3)),
@@ -28,9 +29,7 @@ BACK = {  # series -> photo backdrop (focus x, y, zoom)
     'shinkai': ('oi:f5cb8e5bda89bf5c@test', (0.5, 0.5, 1.1)), 'yacho': ('oi:ab7b7786ca8649a8@test', (0.5, 0.5, 1.0)),
     'hikidashi': ('oi:8cf0d90fadf83514@test', (0.5, 0.5, 1.1)), 'kaiun': ('oi:808e21f5b9632bab@test', (0.5, 0.5, 1.1)),
     'shugorei': ('oi:34f24d2374c50c25@test', (0.5, 0.5, 1.1)), 'machikado': ('oi:ae8ffd814db5ce63@test', (0.5, 0.5, 1.1)),
-    'norimono': ('oi:43ef0d9ecd6dd4be@test', (0.5, 0.5, 1.1)), 'yatai': ('oi:ccf0a3b89149f0d5@train', (0.5, 0.6, 1.1)),
-    'yudono': ('oi:2a1c261ad12e6f62@test', (0.3, 0.3, 1.0)), 'daikaiju': ('local:skyline.jpg', (0.5, 0.5, 1.0)),
-    'tsukumo': ('oi:f4200fadef07c329@test', (0.2, 0.5, 1.4)), 'asobi': ('local:toy_shop.jpg', (0.5, 0.5, 1.1)),
+    'norimono': ('oi:43ef0d9ecd6dd4be@test', (0.5, 0.5, 1.1)), 'daikaiju': ('local:skyline.jpg', (0.5, 0.5, 1.0)), 'asobi': ('local:toy_shop.jpg', (0.5, 0.5, 1.1)),
 }
 INK = 0x1c1816; WHITE = 0xfbf8f1; RED = 0xc62a1f
 RANK = {'secret': 4, 'ultra': 3, 'rare': 2, 'uncommon': 1, 'common': 0}
@@ -145,5 +144,6 @@ if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     for sid, s in L.items():
         if only and sid not in only: continue
+        if not os.path.exists(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js')): continue  # a retired series
         im = card(s); im.save(os.path.join(OUT, sid + '.webp'), quality=92, method=6)
         print('card', sid, len(s['items']))

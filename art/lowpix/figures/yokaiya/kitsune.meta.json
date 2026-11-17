@@ -1,0 +1,12 @@
+{
+ "mats": {
+  "fireL": "glow",
+  "fireR": "glow"
+ },
+ "clips": {
+  "gimmick": "wobble"
+ },
+ "pts": {},
+ "mascot": true,
+ "key": "yokaiya/kitsune"
+}

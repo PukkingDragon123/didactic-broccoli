@@ -1,6 +1,6 @@
 // Render every toy that exists right now as a clean product shot (the in-game mesh, catalogue lighting, transparent),
 // for the display cards and toy packaging (tools/bake-cards.py). Re-run after the toy line-up changes.
-//   tools/slot.sh node tools/render-toys.mjs [series,series] [--size 384]
+//   tools/slot.sh node tools/render-toys.mjs [series,series] [--size 1024]  (card resolution: the hero is never upscaled)
 // Out: shots/.art-cache/toys/<series>/<item>.png + shots/.art-cache/toys/lineup.json (series, names, rarities)
 import { createServer } from 'vite';
 import { createRequire } from 'node:module';
@@ -9,7 +9,7 @@ import { resolve } from 'node:path';
 
 const args = process.argv.slice(2);
 const only = args.find((a) => !a.startsWith('--'))?.split(',') || null;
-const size = +(args[args.indexOf('--size') + 1] || 384) || 384;
+const size = +(args[args.indexOf('--size') + 1] || 1024) || 1024;
 let chromium;
 try { ({ chromium } = await import('playwright')); } catch { ({ chromium } = createRequire('/opt/node-tools/node_modules/')('playwright')); }
 const root = resolve(import.meta.dirname, '..');

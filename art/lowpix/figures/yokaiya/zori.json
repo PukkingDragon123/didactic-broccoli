@@ -1,0 +1,956 @@
+{
+ "name": "Walking Z\u014dri",
+ "description": "A straw sandal that got up and walked off to the festival, fanning itself all the way.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 6.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.6
+  ],
+  "strength": 1.5,
+  "gradient": 0.0,
+  "ao": 0.5,
+  "ao_height": 3.0,
+  "ground": 0.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#3b1e0b",
+    "#a76024",
+    "#dca974",
+    "#f6ecdf",
+    "#f8f2e9",
+    "#faf8f2",
+    "#fdfdfb"
+   ],
+   "steel": [
+    "#3d384a",
+    "#585365",
+    "#75707d",
+    "#918f93",
+    "#a5a5a5",
+    "#b9b9b9",
+    "#cecece"
+   ],
+   "blush": [
+    "#961239",
+    "#ce1e3f",
+    "#e14f5a",
+    "#e88f8c",
+    "#eaada3",
+    "#edc7ba",
+    "#f1dbcf"
+   ],
+   "moss": [
+    "#213917",
+    "#344e23",
+    "#496230",
+    "#5f743e",
+    "#859758",
+    "#a6ad7e",
+    "#c0c2a7"
+   ],
+   "cd8c088_spread0p6": [
+    "#74371a",
+    "#a9632b",
+    "#cc944f",
+    "#d9be89",
+    "#ded1a3",
+    "#e4e0bc",
+    "#ececd4"
+   ],
+   "cc83a3a_hue8": [
+    "#62141d",
+    "#861f27",
+    "#a92d30",
+    "#c6413f",
+    "#cc6c66",
+    "#d5938c",
+    "#dfb6af"
+   ],
+   "c2a2224_spread0p6": [
+    "#150c0f",
+    "#1e1215",
+    "#271a1b",
+    "#2f2222",
+    "#5d4c49",
+    "#887974",
+    "#ada8a6"
+   ],
+   "ca88850": [
+    "#532d1e",
+    "#71482e",
+    "#8e663f",
+    "#a98752",
+    "#b6a475",
+    "#c3bb97",
+    "#d2d0b8"
+   ],
+   "cf08a90": [
+    "#a20a41",
+    "#e01347",
+    "#ec4d64",
+    "#f08f92",
+    "#f1aca6",
+    "#f2c6bb",
+    "#f5dbd0"
+   ],
+   "c5a8ad8": [
+    "#191b72",
+    "#27379d",
+    "#375ac5",
+    "#658bcf",
+    "#85aad5",
+    "#a3c4db",
+    "#bfd9e4"
+   ],
+   "cf4f2ec": [
+    "#b64123",
+    "#da8058",
+    "#e8c0a3",
+    "#f9f2ea",
+    "#faf6ee",
+    "#fbf9f2",
+    "#fcfbf6"
+   ]
+  }
+ },
+ "styles": {
+  "vinyl": {
+   "dither": 0,
+   "rim": {
+    "light": 0,
+    "dark": 0,
+    "outline": "none",
+    "spec": [
+     0.965,
+     1.7
+    ]
+   },
+   "layers": []
+  }
+ },
+ "parts": [
+  {
+   "id": "root",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "sole",
+   "shape": "box",
+   "pivot": [
+    0,
+    15.6,
+    0
+   ],
+   "size": [
+    13.0,
+    27.0,
+    3.4
+   ],
+   "chamfer": 1.6,
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cd8c088_spread0p6",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "weave",
+      "op": "stripes",
+      "axis": "y",
+      "period": 1.4,
+      "width": 0.25,
+      "shift": -0.7,
+      "faces": [
+       "front",
+       "back"
+      ]
+     },
+     {
+      "id": "edge",
+      "op": "band",
+      "axis": "z",
+      "from": -1.0,
+      "to": -0.5,
+      "ramp": "ca88850",
+      "tone": 3.0
+     },
+     {
+      "id": "eyewhite",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        -6.6,
+        1.85,
+        2.8
+       ]
+      ],
+      "ramp": "white",
+      "tone": 4.6,
+      "roughness": 0
+     },
+     {
+      "id": "iris",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        -6.879999999999999,
+        2.0,
+        1.54
+       ]
+      ],
+      "ramp": "ink",
+      "tone": 1.2,
+      "roughness": 0
+     },
+     {
+      "id": "catch",
+      "op": "spots",
+      "centers": [
+       [
+        -0.616,
+        -6.263999999999999,
+        2.15,
+        0.5599999999999999
+       ]
+      ],
+      "ramp": "white",
+      "tone": 5.0,
+      "roughness": 0
+     },
+     {
+      "id": "blush",
+      "op": "spots",
+      "centers": [
+       [
+        -4.0,
+        -9.2,
+        1.85,
+        1.2
+       ],
+       [
+        4.0,
+        -9.2,
+        1.85,
+        1.2
+       ]
+      ],
+      "ramp": "cf08a90",
+      "tone": 3.6,
+      "roughness": 0
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "thongL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -5.0,
+      14.0,
+      1.8
+     ],
+     "size": [
+      1.4,
+      1.0
+     ]
+    },
+    {
+     "at": [
+      -3.4,
+      19.0,
+      3.6
+     ],
+     "size": [
+      1.4,
+      1.0
+     ]
+    },
+    {
+     "at": [
+      0,
+      22.0,
+      2.4
+     ],
+     "size": [
+      1.4,
+      1.0
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cc83a3a_hue8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "legL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -3.177,
+      4.268,
+      0.251
+     ],
+     "size": [
+      1.32,
+      1.32
+     ]
+    },
+    {
+     "at": [
+      -3.4,
+      3.6,
+      0.4
+     ],
+     "size": [
+      2.4,
+      2.4
+     ]
+    },
+    {
+     "at": [
+      -4.0,
+      1.8,
+      0.8
+     ],
+     "size": [
+      2.8,
+      2.8
+     ]
+    },
+    {
+     "at": [
+      -4.238,
+      1.085,
+      0.959
+     ],
+     "size": [
+      1.82,
+      1.82
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.1
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c2a2224_spread0p6",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "footL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -4.0,
+      0.8,
+      -3.6
+     ],
+     "size": [
+      2.8,
+      1.6
+     ]
+    },
+    {
+     "at": [
+      -4.0,
+      0.9,
+      1.0
+     ],
+     "size": [
+      3.4,
+      1.8
+     ]
+    },
+    {
+     "at": [
+      -4.0,
+      0.8,
+      4.6
+     ],
+     "size": [
+      2.6,
+      1.6
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c2a2224_spread0p6",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "thongR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      5.0,
+      14.0,
+      1.8
+     ],
+     "size": [
+      1.4,
+      1.0
+     ]
+    },
+    {
+     "at": [
+      3.4,
+      19.0,
+      3.6
+     ],
+     "size": [
+      1.4,
+      1.0
+     ]
+    },
+    {
+     "at": [
+      0,
+      22.0,
+      2.4
+     ],
+     "size": [
+      1.4,
+      1.0
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cc83a3a_hue8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "legR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      3.177,
+      4.268,
+      0.251
+     ],
+     "size": [
+      1.32,
+      1.32
+     ]
+    },
+    {
+     "at": [
+      3.4,
+      3.6,
+      0.4
+     ],
+     "size": [
+      2.4,
+      2.4
+     ]
+    },
+    {
+     "at": [
+      4.0,
+      1.8,
+      0.8
+     ],
+     "size": [
+      2.8,
+      2.8
+     ]
+    },
+    {
+     "at": [
+      4.238,
+      1.085,
+      0.959
+     ],
+     "size": [
+      1.82,
+      1.82
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.1
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c2a2224_spread0p6",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "footR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      4.0,
+      0.8,
+      -3.6
+     ],
+     "size": [
+      2.8,
+      1.6
+     ]
+    },
+    {
+     "at": [
+      4.0,
+      0.9,
+      1.0
+     ],
+     "size": [
+      3.4,
+      1.8
+     ]
+    },
+    {
+     "at": [
+      4.0,
+      0.8,
+      4.6
+     ],
+     "size": [
+      2.6,
+      1.6
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c2a2224_spread0p6",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "knot",
+   "shape": "loft",
+   "pivot": [
+    0,
+    22.4,
+    2.6
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      -1.2,
+      0
+     ],
+     "size": [
+      0.05,
+      0.05
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.849,
+      0
+     ],
+     "size": [
+      1.697,
+      1.697
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.0,
+      0
+     ],
+     "size": [
+      2.4,
+      2.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.849,
+      0
+     ],
+     "size": [
+      1.697,
+      1.697
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.2,
+      0
+     ],
+     "size": [
+      0.05,
+      0.05
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.0
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cc83a3a_hue8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "arm",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      4.92,
+      15.4,
+      -0.2
+     ],
+     "size": [
+      2.76,
+      2.4
+     ]
+    },
+    {
+     "at": [
+      6.2,
+      17.0,
+      0.6
+     ],
+     "size": [
+      2.4,
+      2.16
+     ]
+    },
+    {
+     "at": [
+      7.64,
+      18.8,
+      1.5
+     ],
+     "size": [
+      1.92,
+      1.8
+     ]
+    },
+    {
+     "at": [
+      8.696,
+      20.12,
+      2.16
+     ],
+     "size": [
+      1.62,
+      1.56
+     ]
+    },
+    {
+     "at": [
+      9.563,
+      21.204,
+      2.702
+     ],
+     "size": [
+      2.8,
+      2.59
+     ]
+    },
+    {
+     "at": [
+      10.174,
+      21.967,
+      3.084
+     ],
+     "size": [
+      1.68,
+      1.54
+     ]
+    },
+    {
+     "at": [
+      10.459,
+      22.324,
+      3.262
+     ],
+     "size": [
+      0.42,
+      0.42
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 9,
+    "round": 2.05
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cd8c088_spread0p6",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "fan",
+   "shape": "prism",
+   "pivot": [
+    10.0,
+    24.6,
+    2.6
+   ],
+   "rotation": [
+    0,
+    10,
+    -16
+   ],
+   "size": [
+    8.4,
+    8.0,
+    0.6
+   ],
+   "sides": 12,
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c5a8ad8",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "wave",
+      "op": "stripes",
+      "axis": "y",
+      "period": 2.0,
+      "width": 0.3,
+      "ramp": "cf4f2ec",
+      "tone": 3.4,
+      "wobble": 1.0
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "fanstick",
+   "shape": "prism",
+   "pivot": [
+    9.6,
+    19.6,
+    2.6
+   ],
+   "offset": [
+    0,
+    0,
+    2.5
+   ],
+   "rotation": [
+    -90,
+    0,
+    -16
+   ],
+   "size": [
+    0.8,
+    0.8,
+    5.0
+   ],
+   "sides": 6,
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cd8c088_spread0p6",
+    "tone": 3.1
+   },
+   "parent": "root"
+  }
+ ],
+ "animations": {
+  "wobble": {
+   "length": 1.0,
+   "loop": false,
+   "tracks": [
+    {
+     "part": "root",
+     "keys": [
+      [
+       0.0,
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      [
+       0.3,
+       [
+        0,
+        0,
+        10
+       ]
+      ],
+      [
+       0.65,
+       [
+        0,
+        0,
+        -6.0
+       ]
+      ],
+      [
+       1.0,
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     ]
+    }
+   ]
+  }
+ }
+}

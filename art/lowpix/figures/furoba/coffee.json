@@ -1,0 +1,1276 @@
+{
+ "name": "Coffee-Milk Bear",
+ "description": "Hand on hip, towel round the neck, coffee milk in one go. The only correct way to finish a bath.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 6.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.6
+  ],
+  "strength": 1.5,
+  "gradient": 0.0,
+  "ao": 0.5,
+  "ao_height": 3.0,
+  "ground": 0.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#3b1e0b",
+    "#a76024",
+    "#dca974",
+    "#f6ecdf",
+    "#f8f2e9",
+    "#faf8f2",
+    "#fdfdfb"
+   ],
+   "steel": [
+    "#3d384a",
+    "#585365",
+    "#75707d",
+    "#918f93",
+    "#a5a5a5",
+    "#b9b9b9",
+    "#cecece"
+   ],
+   "blush": [
+    "#961239",
+    "#ce1e3f",
+    "#e14f5a",
+    "#e88f8c",
+    "#eaada3",
+    "#edc7ba",
+    "#f1dbcf"
+   ],
+   "moss": [
+    "#213917",
+    "#344e23",
+    "#496230",
+    "#5f743e",
+    "#859758",
+    "#a6ad7e",
+    "#c0c2a7"
+   ],
+   "c9a6a40_hue12_spread0p7": [
+    "#321810",
+    "#57301e",
+    "#7a4c2f",
+    "#9b6a42",
+    "#b89268",
+    "#cbb699",
+    "#e0d7c7"
+   ],
+   "cecdcbc_spread0p55": [
+    "#a7401a",
+    "#da7434",
+    "#e3ae7a",
+    "#efdbbc",
+    "#f1e6ca",
+    "#f3eed7",
+    "#f6f4e3"
+   ],
+   "c7a4a24_spread0p7": [
+    "#280b09",
+    "#451b11",
+    "#61311b",
+    "#7b4a26",
+    "#b47d3e",
+    "#ccae78",
+    "#e0d6b5"
+   ],
+   "cf08a90_spread0p6": [
+    "#90093a",
+    "#d41243",
+    "#eb475f",
+    "#f08f92",
+    "#f1ada7",
+    "#f3c9bf",
+    "#f6dfd5"
+   ],
+   "cf4f2ec": [
+    "#b64123",
+    "#da8058",
+    "#e8c0a3",
+    "#f9f2ea",
+    "#faf6ee",
+    "#fbf9f2",
+    "#fcfbf6"
+   ],
+   "c3a6ac8": [
+    "#19175e",
+    "#242d80",
+    "#334aa1",
+    "#466cbe",
+    "#6c92c6",
+    "#90b2d0",
+    "#b3cddb"
+   ],
+   "ca8703a": [
+    "#521e15",
+    "#703521",
+    "#8d512e",
+    "#a8703d",
+    "#bd955b",
+    "#c8b484",
+    "#d6cdaa"
+   ],
+   "cf2ead0": [
+    "#b54e17",
+    "#e1893d",
+    "#eac088",
+    "#f5e9cf",
+    "#f6f0d9",
+    "#f7f5e2",
+    "#f9f9eb"
+   ]
+  }
+ },
+ "styles": {
+  "vinyl": {
+   "dither": 0,
+   "rim": {
+    "light": 0,
+    "dark": 0,
+    "outline": "none",
+    "spec": [
+     0.965,
+     1.7
+    ]
+   },
+   "layers": []
+  }
+ },
+ "parts": [
+  {
+   "id": "root",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "body",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0.0,
+      0.0
+     ],
+     "size": [
+      15,
+      13
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.6,
+      0.0
+     ],
+     "size": [
+      18.4,
+      16
+     ]
+    },
+    {
+     "at": [
+      0,
+      6,
+      0.0
+     ],
+     "size": [
+      20.6,
+      17.6
+     ]
+    },
+    {
+     "at": [
+      0,
+      11,
+      0.0
+     ],
+     "size": [
+      19.6,
+      16.8
+     ]
+    },
+    {
+     "at": [
+      0,
+      15.6,
+      0.0
+     ],
+     "size": [
+      16,
+      13.6
+     ]
+    },
+    {
+     "at": [
+      0,
+      18.0,
+      0.0
+     ],
+     "size": [
+      10,
+      9
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 16,
+    "round": 2.1
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "belly",
+      "op": "spots",
+      "centers": [
+       [
+        0.0,
+        8.0,
+        8.44,
+        5.6
+       ]
+      ],
+      "ramp": "cecdcbc_spread0p55",
+      "tone": 3.2,
+      "roughness": 0,
+      "stretch": [
+       1.0,
+       1.2,
+       1.0
+      ]
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "head",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      15.4,
+      0.0
+     ],
+     "size": [
+      9.0,
+      7.65
+     ]
+    },
+    {
+     "at": [
+      0,
+      16.648,
+      0.0
+     ],
+     "size": [
+      15.6,
+      13.26
+     ]
+    },
+    {
+     "at": [
+      0,
+      19.3,
+      0.0
+     ],
+     "size": [
+      19.2,
+      16.32
+     ]
+    },
+    {
+     "at": [
+      0,
+      22.888,
+      0.0
+     ],
+     "size": [
+      20,
+      17
+     ]
+    },
+    {
+     "at": [
+      0,
+      26.32,
+      0.0
+     ],
+     "size": [
+      19.0,
+      16.15
+     ]
+    },
+    {
+     "at": [
+      0,
+      28.816,
+      0.0
+     ],
+     "size": [
+      15.6,
+      13.26
+     ]
+    },
+    {
+     "at": [
+      0,
+      30.376,
+      0.0
+     ],
+     "size": [
+      9.6,
+      8.16
+     ]
+    },
+    {
+     "at": [
+      0,
+      31.0,
+      0.0
+     ],
+     "size": [
+      2.4,
+      2.04
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 16,
+    "round": 2.1
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "blush_soft",
+      "op": "spots",
+      "centers": [
+       [
+        -6.87,
+        20.6,
+        6.07,
+        2.08
+       ],
+       [
+        6.87,
+        20.6,
+        6.07,
+        2.08
+       ]
+      ],
+      "ramp": "cf08a90_spread0p6",
+      "tone": 4.5,
+      "roughness": 0
+     },
+     {
+      "id": "blush",
+      "op": "spots",
+      "centers": [
+       [
+        -6.87,
+        20.6,
+        6.07,
+        1.6
+       ],
+       [
+        6.87,
+        20.6,
+        6.07,
+        1.6
+       ]
+      ],
+      "ramp": "cf08a90_spread0p6",
+      "tone": 3.4,
+      "roughness": 0
+     },
+     {
+      "id": "eyes",
+      "op": "spots",
+      "centers": [
+       [
+        -4.12,
+        22.6,
+        7.88,
+        1.1
+       ],
+       [
+        4.12,
+        22.6,
+        7.88,
+        1.1
+       ]
+      ],
+      "ramp": "ink",
+      "tone": 1.2,
+      "roughness": 0
+     },
+     {
+      "id": "catch",
+      "op": "spots",
+      "centers": [
+       [
+        -4.505,
+        23.040000000000003,
+        8.08,
+        0.396
+       ],
+       [
+        3.7350000000000003,
+        23.040000000000003,
+        8.08,
+        0.396
+       ]
+      ],
+      "ramp": "white",
+      "tone": 5.0,
+      "roughness": 0
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "muzzle",
+   "shape": "loft",
+   "pivot": [
+    0,
+    20.4,
+    7.2
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      -2.652,
+      0
+     ],
+     "size": [
+      0.05,
+      0.05
+     ]
+    },
+    {
+     "at": [
+      0,
+      -2.146,
+      0
+     ],
+     "size": [
+      3.997,
+      3.997
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.82,
+      0
+     ],
+     "size": [
+      6.467,
+      6.467
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.82,
+      0
+     ],
+     "size": [
+      6.467,
+      6.467
+     ]
+    },
+    {
+     "at": [
+      0,
+      2.146,
+      0
+     ],
+     "size": [
+      3.997,
+      3.997
+     ]
+    },
+    {
+     "at": [
+      0,
+      2.652,
+      0
+     ],
+     "size": [
+      0.05,
+      0.05
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 12,
+    "round": 2.0
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cecdcbc_spread0p55",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        1.2000000000000028,
+        3.2,
+        1.1
+       ]
+      ],
+      "ramp": "c7a4a24_spread0p7",
+      "tone": 1.4,
+      "roughness": 0
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "earL",
+   "shape": "prism",
+   "pivot": [
+    -7.2,
+    29.0,
+    -0.8
+   ],
+   "rotation": [
+    -6,
+    16,
+    20
+   ],
+   "size": [
+    5.6,
+    5.32,
+    2.24
+   ],
+   "sides": 10,
+   "front_scale": [
+    0.82,
+    0.82
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "inner",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        -0.22399999999999998,
+        1.176,
+        1.68
+       ]
+      ],
+      "ramp": "cecdcbc_spread0p55",
+      "tone": 3.2,
+      "roughness": 0,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "legL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -4.516,
+      4.036,
+      -0.149
+     ],
+     "size": [
+      3.08,
+      3.08
+     ]
+    },
+    {
+     "at": [
+      -5.0,
+      3.6,
+      1.4
+     ],
+     "size": [
+      5.6,
+      5.6
+     ]
+    },
+    {
+     "at": [
+      -6.0,
+      2.7,
+      4.6
+     ],
+     "size": [
+      5.4,
+      5.4
+     ]
+    },
+    {
+     "at": [
+      -6.428,
+      2.315,
+      5.969
+     ],
+     "size": [
+      3.51,
+      3.51
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.1
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "earR",
+   "shape": "prism",
+   "pivot": [
+    7.2,
+    29.0,
+    -0.8
+   ],
+   "rotation": [
+    -6,
+    -16,
+    -20
+   ],
+   "size": [
+    5.6,
+    5.32,
+    2.24
+   ],
+   "sides": 10,
+   "front_scale": [
+    0.82,
+    0.82
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "inner",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        -0.22399999999999998,
+        1.176,
+        1.68
+       ]
+      ],
+      "ramp": "cecdcbc_spread0p55",
+      "tone": 3.2,
+      "roughness": 0,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "legR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      4.516,
+      4.036,
+      -0.149
+     ],
+     "size": [
+      3.08,
+      3.08
+     ]
+    },
+    {
+     "at": [
+      5.0,
+      3.6,
+      1.4
+     ],
+     "size": [
+      5.6,
+      5.6
+     ]
+    },
+    {
+     "at": [
+      6.0,
+      2.7,
+      4.6
+     ],
+     "size": [
+      5.4,
+      5.4
+     ]
+    },
+    {
+     "at": [
+      6.428,
+      2.315,
+      5.969
+     ],
+     "size": [
+      3.51,
+      3.51
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.1
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "towel",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      16.6,
+      0
+     ],
+     "size": [
+      17.6,
+      15.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      18.0,
+      0.3
+     ],
+     "size": [
+      16.6,
+      14.6
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 16,
+    "round": 2.1
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cf4f2ec",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "towel_end",
+   "shape": "box",
+   "pivot": [
+    -3.6,
+    13.2,
+    8.0
+   ],
+   "rotation": [
+    -14,
+    0,
+    6
+   ],
+   "size": [
+    3.4,
+    7.0,
+    1.2
+   ],
+   "chamfer": 0.5,
+   "style": "vinyl",
+   "paint": {
+    "ramp": "cf4f2ec",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "stripe",
+      "op": "band",
+      "axis": "y",
+      "from": -0.75,
+      "to": -0.55,
+      "ramp": "c3a6ac8",
+      "tone": 3.0
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "armL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -7.792,
+      15.51,
+      -0.135
+     ],
+     "size": [
+      5.52,
+      4.8
+     ]
+    },
+    {
+     "at": [
+      -8.6,
+      13.6,
+      0.6
+     ],
+     "size": [
+      4.8,
+      4.32
+     ]
+    },
+    {
+     "at": [
+      -9.59,
+      11.26,
+      1.5
+     ],
+     "size": [
+      3.84,
+      3.6
+     ]
+    },
+    {
+     "at": [
+      -10.316,
+      9.544,
+      2.16
+     ],
+     "size": [
+      3.24,
+      3.12
+     ]
+    },
+    {
+     "at": [
+      -10.976,
+      7.983,
+      2.76
+     ],
+     "size": [
+      4.8,
+      4.44
+     ]
+    },
+    {
+     "at": [
+      -11.637,
+      6.421,
+      3.361
+     ],
+     "size": [
+      2.88,
+      2.64
+     ]
+    },
+    {
+     "at": [
+      -11.946,
+      5.691,
+      3.642
+     ],
+     "size": [
+      0.72,
+      0.72
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 9,
+    "round": 2.05
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "armR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      8.505,
+      12.331,
+      -0.83
+     ],
+     "size": [
+      5.52,
+      4.8
+     ]
+    },
+    {
+     "at": [
+      8.6,
+      14.0,
+      0.6
+     ],
+     "size": [
+      4.8,
+      4.32
+     ]
+    },
+    {
+     "at": [
+      8.78,
+      17.15,
+      3.3
+     ],
+     "size": [
+      3.84,
+      3.6
+     ]
+    },
+    {
+     "at": [
+      8.912,
+      19.46,
+      5.28
+     ],
+     "size": [
+      3.24,
+      3.12
+     ]
+    },
+    {
+     "at": [
+      9.021,
+      21.364,
+      6.912
+     ],
+     "size": [
+      4.8,
+      4.44
+     ]
+    },
+    {
+     "at": [
+      9.099,
+      22.729,
+      8.082
+     ],
+     "size": [
+      2.88,
+      2.64
+     ]
+    },
+    {
+     "at": [
+      9.135,
+      23.367,
+      8.629
+     ],
+     "size": [
+      0.72,
+      0.72
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 9,
+    "round": 2.05
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "c9a6a40_hue12_spread0p7",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "bottle",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      8.6,
+      19.4,
+      8.2
+     ],
+     "size": [
+      3.2,
+      3.2
+     ]
+    },
+    {
+     "at": [
+      7.8,
+      22.4,
+      9.4
+     ],
+     "size": [
+      3.6,
+      3.6
+     ]
+    },
+    {
+     "at": [
+      6.8,
+      24.8,
+      10.4
+     ],
+     "size": [
+      2.4,
+      2.4
+     ]
+    },
+    {
+     "at": [
+      6.4,
+      25.8,
+      10.8
+     ],
+     "size": [
+      2.2,
+      2.2
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.0
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "vinyl",
+   "paint": {
+    "ramp": "ca8703a",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "cap",
+      "op": "band",
+      "axis": "path",
+      "from": 0.8,
+      "to": 1.0,
+      "ramp": "cf2ead0",
+      "tone": 3.4
+     }
+    ]
+   },
+   "parent": "root"
+  }
+ ],
+ "animations": {
+  "nod": {
+   "length": 1.2,
+   "loop": false,
+   "tracks": [
+    {
+     "part": "root",
+     "keys": [
+      [
+       0.0,
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      [
+       0.36,
+       [
+        8,
+        0,
+        0
+       ]
+      ],
+      [
+       0.78,
+       [
+        -4.8,
+        0,
+        0
+       ]
+      ],
+      [
+       1.2,
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     ]
+    }
+   ]
+  }
+ }
+}

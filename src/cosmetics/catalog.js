@@ -182,9 +182,9 @@ export const EXTRA = [
   { id: 'cx_pompadour', slot: 'hat', name: 'Legendary Pompadour', price: 3000, rarity: 'ultra', ach: 'fun_hair', cover: true, desc: 'You touched the hair. Now you ARE the hair.', ...pompadour },
   { id: 'cx_kasa', slot: 'hat', name: 'Kasa-obake', price: 1600, rarity: 'rare', ach: 'life_yokai', desc: 'A one-eyed umbrella yokai that decided to live on your head.', ...onCrown('cx_kasa', VX.kasa, [0, -1.2, 0]) },
   { id: 'cx_paperbag', slot: 'hat', name: 'Paper Bag of Shame', price: 100, rarity: 'uncommon', ach: 'fun_rent_late', cover: true, desc: 'For when the landlady is looking for you.', ...onHead('cx_paperbag', VX.paperbag) },
-  { id: 'cx_oni', slot: 'hat', name: 'Oni Horns', price: 1300, rarity: 'rare', capsule: 'tsukumo', desc: 'Setsubun horns on a tiger-stripe band. Beans not included.', ...both(onHead('cx_oniBand', VX.oniBand), onCrown('cx_oniHorns', VX.oniHorns, [0, -1, 0])) },
+  { id: 'cx_oni', slot: 'hat', name: 'Oni Horns', price: 1300, rarity: 'rare', capsule: 'yokaiya', desc: 'Setsubun horns on a tiger-stripe band. Beans not included.', ...both(onHead('cx_oniBand', VX.oniBand), onCrown('cx_oniHorns', VX.oniHorns, [0, -1, 0])) },
   { id: 'cx_catears', slot: 'hat', name: 'Cat Ears', price: 900, rarity: 'rare', capsule: 'nuigurumi', desc: 'Nya. Mikan is not impressed.', ...onCrown('cx_catears', VX.catears, [0, -0.8, 0]) },
-  { id: 'cx_towel', slot: 'hat', name: 'Onsen Towel', price: 600, rarity: 'rare', capsule: 'yudono', desc: 'Folded just so. Ahh, that\'s the stuff.', ...onCrown('cx_towel', VX.towel, [0, 0.2, 0]) },
+  { id: 'cx_towel', slot: 'hat', name: 'Onsen Towel', price: 600, rarity: 'rare', capsule: 'furoba', desc: 'Folded just so. Ahh, that\'s the stuff.', ...onCrown('cx_towel', VX.towel, [0, 0.2, 0]) },
   { id: 'cx_octopus', slot: 'hat', name: 'Tako Hat', price: 1100, rarity: 'rare', capsule: 'shinkai', desc: 'Eight arms, one very good hug.', ...onCrown('cx_octopus', VX.octopus, [0, -0.8, 0]) },
   { id: 'cx_conductor', slot: 'hat', name: "Conductor's Cap", price: 1200, rarity: 'rare', capsule: 'norimono', desc: 'Departing platform 2. Please stand behind the yellow line.', ...onCrown('cx_conductor', VX.conductor, [0, -1, 0]) },
   { id: 'cx_ranger', slot: 'hat', name: 'Ranger Helmet', price: 2200, rarity: 'ultra', capsule: 'shugorei', cover: true, desc: 'Red is the leader. Obviously.', ...onHead('cx_ranger', VX.ranger) },
@@ -209,8 +209,8 @@ export const EXTRA = [
   { id: 'cx_swirl', slot: 'face', name: 'Swirly Specs', price: 600, rarity: 'uncommon', quest: 'pinpon', desc: "Gonta's prank glasses. You can't see a thing. Perfect.", ...onEyes('cx_swirl', VX.swirl) },
   { id: 'cx_yenshades', slot: 'face', name: 'Yen Shades', price: 2000, rarity: 'rare', ach: 'life_coins', desc: 'You emptied a lot of coin boxes. It shows.', ...onEyes('cx_yenshades', VX.yenshades) },
   { id: 'cx_bandaid', slot: 'face', name: 'Plasters', price: 100, rarity: 'uncommon', ach: 'fun_slaps', desc: 'Slap people, get slapped. It all evens out.', ...onEyes('cx_bandaid', VX.bandaid) },
-  { id: 'cx_hyottoko', slot: 'face', name: 'Hyottoko Mask', price: 1000, rarity: 'rare', capsule: 'yatai', desc: 'The funny festival face, worn on the side of the head.', ...sideMask('cx_hyottoko', VX.hyottoko) },
-  { id: 'cx_onimask', slot: 'face', name: 'Oni Mask', price: 1200, rarity: 'rare', capsule: 'tsukumo', desc: 'Scary at the front, fun at the side.', ...sideMask('cx_onimask', VX.onimask) },
+  { id: 'cx_hyottoko', slot: 'face', name: 'Hyottoko Mask', price: 1000, rarity: 'rare', capsule: 'yokaiya', desc: 'The funny festival face, worn on the side of the head.', ...sideMask('cx_hyottoko', VX.hyottoko) },
+  { id: 'cx_onimask', slot: 'face', name: 'Oni Mask', price: 1200, rarity: 'rare', capsule: 'yokaiya', desc: 'Scary at the front, fun at the side.', ...sideMask('cx_onimask', VX.onimask) },
 
   // ================================================================== outfits
   { id: 'cx_gakuran', slot: 'outfit', name: 'Delinquent Gakuran', price: 2400, rarity: 'rare', quest: 'bizarre_hero', desc: 'Long jacket, gold buttons, an attitude. Hair sold separately.', ...top({ kind: 'gakuran', col: 0x1e2236 }, { kind: 'slacks', col: 0x1e2236, noCrease: true }) },

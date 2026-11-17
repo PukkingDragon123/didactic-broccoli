@@ -11,13 +11,15 @@ import { SCENES as S4 } from './bannerScenes4.js';
 const OLD = () => ({ ...S1, ...S2, ...S3, ...S4 });
 /** new series id -> the backdrop painter it uses */
 const BACKDROP = {
-  gohan: 'shokudo', tanukibin: 'shotengai', nuigurumi: 'lanepals', sampuru: 'shokudo', denka: 'showa', konchu: 'matsuri', asobi: 'gecen', shinkai: 'umi', inusanpo: 'mochi',
-  yacho: 'kasa', daikaiju: 'kaiju', hikidashi: 'bungu', machikado: 'shotengai', okashi: 'wagashi', norimono: 'densha', tsukumo: 'hyakki',
-  shugorei: 'bizarre', yudono: 'onsen', kaiun: 'omamori', yatai: 'oden',
+  furoba: 'onsen', yokaiya: 'hyakki', gohan: 'shokudo', tanukibin: 'shotengai', nuigurumi: 'lanepals', sampuru: 'shokudo', denka: 'showa', konchu: 'matsuri', asobi: 'gecen', shinkai: 'umi', inusanpo: 'mochi',
+  yacho: 'kasa', daikaiju: 'kaiju', hikidashi: 'bungu', machikado: 'shotengai', okashi: 'wagashi', norimono: 'densha', 
+  shugorei: 'bizarre', kaiun: 'omamori', 
 };
 export const SCENES = Object.fromEntries(Object.entries(BACKDROP).map(([id, old]) => [id, (...a) => OLD()[old](...a)]));
 
 export const BANNER_TEXT = {
+  furoba: { catch: 'いい湯だな！銭湯なかま', sub: 'おふろあがりはコーヒー牛乳' },
+  yokaiya: { catch: '夜店に妖怪あらわる！', sub: 'わたあめ・金魚・たこ焼き' },
   gohan: { catch: 'いただきます！ごはんズー', sub: 'おにぎりペンギンとなかまたち' },
   tanukibin: { catch: 'たぬき便、ただいま参上！', sub: '雨の日も風の日もおとどけします' },
   nuigurumi: { catch: 'ふわふわの仲間が集合！', sub: 'ぎゅっとしたくなるぬいぐるみ' },
@@ -37,9 +39,6 @@ export const BANNER_TEXT = {
   machikado: { catch: 'あの街角を手のひらに', sub: '商店街の夕暮れ' },
   okashi: { catch: 'おいしそうな和菓子たち', sub: '老舗の菓子処より' },
   norimono: { catch: '路地を走るのりものたち', sub: '朝の出発進行！' },
-  tsukumo: { catch: '百年たったら動きだす！', sub: '月夜の付喪神パレード' },
   shugorei: { catch: 'あらわれよ、守護の霊！', sub: '運命を守る者たち' },
-  yudono: { catch: 'いい湯だな〜どうぶつ温泉', sub: '雪見の露天風呂' },
   kaiun: { catch: 'ご利益たっぷり開運招福！', sub: '春の神社でおまいり' },
-  yatai: { catch: 'お祭りの屋台へようこそ！', sub: '夏の夜のにぎわい' },
 };
