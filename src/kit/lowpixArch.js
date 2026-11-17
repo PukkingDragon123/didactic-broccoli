@@ -22,12 +22,12 @@ export const LP_ARCH = {
   sky_shops: { min: [-5.05, 0, -3.05], max: [5.05, 10.1, 4], tris: 108, tex: [256, 368] },
   sky_works: { min: [-5, 0, -3], max: [5, 14, 3], tris: 144, tex: [256, 448] },
   slide: { min: [-0.423, -0.004, -2.1], max: [0.423, 2.097, 1.7], tris: 580, tex: [256, 336] },
+  tree_keyaki: { min: [-2.68, -0.006, -2.68], max: [2.68, 7.1, 2.68], tris: 804, tex: [512, 784] },
+  tree_pine: { min: [-1.533, -0.035, -1.436], max: [1.5, 3.895, 1.932], tris: 450, tex: [256, 256] },
   underpass_portal: { min: [25.55, 0, 5.09], max: [26.16, 4.3, 14.11], tris: 448, tex: [256, 480] },
   utility_pole: { min: [-0.9, 0, -0.241], max: [0.9, 8.06, 0.241], tris: 1056, tex: [256, 432] },
   villa: { min: [11.45, 0, -29.05], max: [20.22, 9.9, -19.79], tris: 2314, tex: [512, 640] },
   wagasa_parasol: { min: [-0.843, 0, -0.843], max: [0.843, 2.27, 0.843], tris: 364, tex: [256, 272] },
-  tree_keyaki: { min: [-2.68, -0.006, -2.68], max: [2.68, 7.1, 2.68], tris: 804, tex: [512, 784] },
-  tree_pine: { min: [-1.533, -0.035, -1.436], max: [1.5, 3.895, 1.932], tris: 450, tex: [256, 256] },
 };
 export const archAsset = (id) => 'lowpix/world_arch/' + id;
 // the houses each block model draws (art/lowpix/world_arch/_src/houses.py): house id (Town.js houseId) -> { block, ridge }

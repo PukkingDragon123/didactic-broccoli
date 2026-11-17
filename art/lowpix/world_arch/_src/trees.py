@@ -18,7 +18,7 @@ def _mats(S, leaf, bark):
         photo('weathered_planks', scale=0.8, amount=0.35),
         {'id': 'moss', 'op': 'patches', 'scale': 0.2, 'threshold': 0.7, 'ramp': 'moss', 'tone': 2.6}])
     S.style('leaf', ramp='leaf', tone=4.0, rim={'light_shift': 0.6, 'dark_shift': -1.2}, brush={'flow': 'vertical', 'length': 0.12, 'rough': 0.7}, layers=[
-        {'id': 'clusters', 'op': 'spots', 'count': 60, 'radius': [0.06, 0.16], 'shift': 0.9, 'bevel': {'shadow': 1, 'highlight': 1}},
+        {'id': 'clusters', 'op': 'spots', 'count': 60, 'radius': [0.06, 0.16], 'shift': 0.5, 'bevel': {'shadow': 1, 'highlight': 0}},
         {'id': 'gaps', 'op': 'spots', 'count': 30, 'radius': [0.04, 0.1], 'shift': -1.6},
         {'id': 'under', 'op': 'gradient', 'axis': 'y', 'amount': 1.2},
         {'id': 'mottle', 'op': 'noise', 'scale': 0.15, 'amount': 0.6}])

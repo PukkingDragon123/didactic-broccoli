@@ -90,7 +90,7 @@ export function archInstances(id, parent, list, { cast = false, receive = true }
   for (const mesh of t.children) {
     if (!mesh.isMesh) continue;
     const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, list.length);
-    list.forEach((it, i) => im.setMatrixAt(i, m4.compose(new THREE.Vector3(it.x, it.y ?? 0, it.z), q.setFromAxisAngle(up, it.ry ?? 0), one)));
+    list.forEach((it, i) => im.setMatrixAt(i, m4.compose(new THREE.Vector3(it.x, it.y ?? 0, it.z), q.setFromAxisAngle(up, it.ry ?? 0), it.s ? new THREE.Vector3(it.s, it.s, it.s) : one)));
     im.castShadow = cast; im.receiveShadow = receive;
     im.computeBoundingSphere();
     im.name = 'arch:' + id;

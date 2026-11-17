@@ -328,9 +328,9 @@ function furniture(t, mats) {
   B.box(m.pv, 0.4, 0.05, 0.4, 13.3, 0.7, -3.75, { tint: 0x1a4aa8 });
   t.game.player.addObstacle(13.05, 13.55, -4.0, -3.5);
   // trees: the big zelkova shading the SW corner, a smaller one by the slide, hedges along the north fence
-  t.prop('keyaki_tree', 12.75, 0, -15.9, 0.3);
+  t.tree('keyaki', 12.75, -15.9, 0.3, 1);
   t.game.player.addObstacle(12.4, 13.1, -16.25, -15.55);
-  t.prop('keyaki_tree', 25.05, 0, -15.6, 2.1, { scale: 0.72 });
+  t.tree('keyaki', 25.05, -15.6, 2.1, 0.72);
   t.game.player.addObstacle(24.8, 25.6, -15.85, -15.35);
   for (const x of [17.7, 19.8]) t.prop('hedge', x, 0, -6.25, 0, { scale: 0.85 });
   t.game.player.addObstacle(16.6, 20.7, -6.6, -5.8);
@@ -543,7 +543,7 @@ function villa(t, mats) {
   t.prop('hedge', 13.6, 0, -20.45, 0, { scale: 0.62 });
   t.prop('hedge', 19.0, 0, -20.45, 0, { scale: 0.48 });
   for (const [x, c] of [[13.0, 0xe5383b], [13.5, 0xff8fb2], [14.1, 0xfbf8f0], [18.7, 0xe5383b], [19.3, 0xff8fb2]]) B.box(m.pv, 0.1, 0.08, 0.1, x, 0.6, -20.35 - hash2(x, 4) * 0.15, { tint: c });
-  t.prop('keyaki_tree', 12.95, 0, -21.4, 1.2, { scale: 0.38 });
+  t.tree('keyaki', 12.95, -21.4, 1.2, 0.38);
   B.box(m.pv, 0.08, 0.9, 0.08, 18.9, 0, -21.6, { tint: ink });
   B.box(t.G, 0.16, 0.2, 0.16, 18.9, 0.9, -21.6, { tint: 0xffe0a0 });
   // ---- the low front wall: white render, dark coping, iron railing on top, gate pillars with lamps, iron gate

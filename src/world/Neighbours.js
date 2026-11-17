@@ -264,7 +264,7 @@ function nearSide(t) {
   for (let i = 0; i < 8; i++) B.box(m.pv, 0.04, 0.95, 0.03, 23.0 + i * 0.07, 0.1, ZB - 0.3 - i * 0.05, { tint: 0xc8b070, ry: -0.6 });
   for (const y of [0.3, 0.85]) B.box(m.pv, 0.62, 0.035, 0.035, 23.25, y, ZB - 0.45, { tint: 0xa88a50, ry: -0.6 });
   pillarKit(t, 22.7, s, { name: N('日下'), y: 0.75, z: ZB + 0.005 });
-  t.prop('pine_tree', 25.1, 0, 3.9, 0.6, { scale: 0.75 });
+  t.tree('pine', 25.1, 3.9, 0.6, 0.75);
   t.prop('stone_lantern', 24.95, 0, 4.75, -0.4, { scale: 0.7 });
   addDoor(t, 'kusaka', 'NE4', 'Kusaka', [23.35, 2.95], [23.2, ZB], [22.7, ZB + 0.08, 0.75], s);
 
@@ -334,7 +334,7 @@ function nearSide(t) {
   t.blockWall(-25.7, -20.85, ZB, s, { gaps: [[-22.6, -21.8]] });
   t.gate(-22.6, -21.8, ZB, s, 0.2);
   pillarKit(t, -22.72, s, { name: N('鳩田'), y: 0.95, mail: 0x8a8e92 });
-  t.prop('pine_tree', -24.7, 0, 3.6, 0.2);
+  t.tree('pine', -24.7, 3.6, 0.2, 1);
   t.prop('laundry_pole', -23.4, 0, 3.75, 0, { scale: 0.85 });
   addDoor(t, 'hatoda', 'NW4', 'Hatoda', [-21.95, 2.3], [-22.2, ZB], [-22.72, ZB + 0.08, 0.95], s);
 

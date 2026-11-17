@@ -106,10 +106,10 @@
       0.06,
       0.16
      ],
-     "shift": 0.9,
+     "shift": 0.5,
      "bevel": {
       "shadow": 1,
-      "highlight": 1
+      "highlight": 0
      }
     },
     {

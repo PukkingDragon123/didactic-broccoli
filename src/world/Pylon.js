@@ -10,6 +10,7 @@
 //   buildPylon(town) -> { group, main: { x, z, base } }
 import * as THREE from 'three';
 import { detailize, boxUV } from './surfaces.js';
+import { archInstances } from './archModels.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { hash2 } from '../core/util.js';
 
@@ -244,6 +245,9 @@ function buildHill(group) {
   spots.forEach(([x, z, k], i) => { q.setFromAxisAngle(V(0, 1, 0), hash2(x, z) * 6); tm.setMatrixAt(i, m4.compose(V(x, hillHeight(x, z) - 0.1, z), q, s.set(k, k * (0.9 + hash2(z, x) * 0.4), k))); });
   tm.computeBoundingSphere();
   tm.receiveShadow = false;
+  // the lowpix trees (art/lowpix/world_arch/_src/trees.py) instead of the cone trees when they are loaded
+  const lp = ['keyaki', 'pine'].map((k) => spots.filter((_, i) => (i % 3 === 0) === (k === 'pine')).map(([x, z, k2]) => ({ x, y: hillHeight(x, z) - 0.1, z, ry: hash2(x, z) * 6, s: k2 * (k === 'pine' ? 1.1 : 0.85) })));
+  if (archInstances('tree_keyaki', group, lp[0]) && archInstances('tree_pine', group, lp[1])) return;
   group.add(tm);
 }
 

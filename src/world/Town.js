@@ -476,6 +476,7 @@ export class Town {
     this.buildBounds();
     try { buildLanePosters(this); } catch (e) { console.error('Town: lane posters failed', e); }
     this.B.build(this.group);
+    this.flushTrees();
     this.flushProps();
     this.buildTrains();
     try { this.pylon = buildPylon(this); } catch (e) { console.error('Town: pylon failed', e); }
@@ -1537,6 +1538,18 @@ export class Town {
     const list = this._poles || [];
     this._poles = [];
     if (!archInstances('utility_pole', this.group, list)) for (const p of list) this.prop('utility_pole', p.x, 0, p.z, p.ry);
+  }
+
+  /** A lowpix tree ('keyaki' | 'pine', art/lowpix/world_arch/_src/trees.py), queued and drawn instanced by flushTrees();
+   *  falls back to the voxel prop. */
+  tree(kind, x, z, ry = 0, s = 1) { (this._trees ||= []).push({ kind, x, y: 0, z, ry, s }); }
+  flushTrees() {
+    const list = this._trees || [];
+    this._trees = [];
+    for (const kind of ['keyaki', 'pine']) {
+      const L = list.filter((t) => t.kind === kind);
+      if (L.length && !archInstances('tree_' + kind, this.group, L, { cast: true })) for (const t of L) this.prop(kind === 'pine' ? 'pine_tree' : 'keyaki_tree', t.x, 0, t.z, t.ry, { scale: t.s });
+    }
   }
 
   // ---------------------------------------------------------------- street dressing
