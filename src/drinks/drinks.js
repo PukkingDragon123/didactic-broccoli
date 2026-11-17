@@ -23,7 +23,7 @@ const ready = (async () => {
     sheet = img; regions = json;
     sheetTex = new THREE.Texture(img);
     sheetTex.colorSpace = THREE.SRGBColorSpace;
-    sheetTex.magFilter = THREE.NearestFilter; sheetTex.minFilter = THREE.NearestMipmapLinearFilter; sheetTex.generateMipmaps = true;
+    sheetTex.magFilter = THREE.NearestFilter; sheetTex.minFilter = THREE.LinearFilter; sheetTex.generateMipmaps = false; // held and seen close: no mip chain
     sheetTex.anisotropy = 4;
     sheetTex.needsUpdate = true;
     for (const m of waiting) applyWrap(m);

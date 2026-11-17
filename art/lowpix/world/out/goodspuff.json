@@ -1,0 +1,99 @@
+{
+ "id": "goodspuff",
+ "src": "art/lowpix/world/made/goodspuff.glb",
+ "credit": {
+  "title": "mk puff box",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/goodspuff.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 26,
+ "tex": 512,
+ "size": [
+  0.21,
+  0.23,
+  0.141
+ ],
+ "colours": 54,
+ "palette": {
+  "m0": [
+   "#8a4100",
+   "#b46300",
+   "#dc8d02",
+   "#f9b70f",
+   "#f7d23b",
+   "#f5e459",
+   "#f5f175",
+   "#f5f591",
+   "#f6f6ac"
+  ],
+  "m1": [
+   "#b75727",
+   "#d5854d",
+   "#e0b386",
+   "#ecd9bd",
+   "#fbf8f2",
+   "#fbf9f4",
+   "#fcfbf6",
+   "#fcfcf8",
+   "#fdfdfa"
+  ],
+  "m2": [
+   "#5d1900",
+   "#772b02",
+   "#914105",
+   "#aa5b09",
+   "#c2790d",
+   "#e5a213",
+   "#ebc038",
+   "#ecd660",
+   "#eee787"
+  ],
+  "m3": [
+   "#761d30",
+   "#982937",
+   "#b8363c",
+   "#c85853",
+   "#d08378",
+   "#d49c8d",
+   "#d9b1a1",
+   "#dfc4b4",
+   "#e5d5c7"
+  ],
+  "m4": [
+   "#670b20",
+   "#841122",
+   "#a11720",
+   "#bc221f",
+   "#d63a28",
+   "#d96348",
+   "#dc8868",
+   "#e1a787",
+   "#e6c1a5"
+  ],
+  "m5": [
+   "#842000",
+   "#ad3800",
+   "#d35802",
+   "#f77d07",
+   "#f6a230",
+   "#f4bc4f",
+   "#f4d16e",
+   "#f4e28b",
+   "#f5eea8"
+  ],
+  "m6": [
+   "#61360e",
+   "#7c4f15",
+   "#966c1d",
+   "#b08b25",
+   "#c8ac2f",
+   "#d0c34b",
+   "#d5d36a",
+   "#dbdb89",
+   "#e1e1a6"
+  ]
+ },
+ "warnings": []
+}

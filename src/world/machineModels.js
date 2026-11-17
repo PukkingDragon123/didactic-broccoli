@@ -133,6 +133,17 @@ function numberPlate(no) {
   return m;
 }
 
+const sideMats = new Map();
+/** The flank print's material (public/img/machines/side_<type>.png, nearest-filtered). */
+function sideMat(type) {
+  if (!sideMats.has(type)) {
+    const t = new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}img/machines/side_${type}.png`);
+    t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter;
+    sideMats.set(type, new THREE.MeshStandardMaterial({ map: t, roughness: 0.55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  }
+  return sideMats.get(type);
+}
+
 // ----------------------------------------------------------------------------- clear plastic (older callers)
 const glassMats = new Map();
 export function clearPlastic(tint = 0xf6fbff, opacity = 0.12) {
@@ -164,6 +175,18 @@ export function buildMachineModel(type, opts = {}) {
   let body;
   if (lp) { body = new THREE.Group(); body.name = 'machine-body'; body.add(lpMesh(type, 'body'), lpMesh(type, 'stand')); } else body = mesh(Gm.body);
   group.add(body, print(Gm.bodyPrint));
+  // the maker's side print, one quad on each flank (UVs 0..1: public/img/machines/side_<type>.png, a slot for print art)
+  const SQ = lp && LP_MANIFEST[type].sideQuad;
+  if (SQ) {
+    const m = sideMat(type), w = SQ.z1 - SQ.z0, h = SQ.y1 - SQ.y0;
+    for (const sx of [-1, 1]) {
+      const q = print(new THREE.PlaneGeometry(w, h));
+      q.material = m;
+      q.position.set(sx * SQ.x, (SQ.y0 + SQ.y1) / 2, (SQ.z0 + SQ.z1) / 2);
+      q.rotation.y = sx * Math.PI / 2;
+      group.add(q);
+    }
+  }
   const glass = mesh(Gm.glass, M.glass, false);
   glass.renderOrder = 3; glass.userData.noRim = true; glass.raycast = () => {};
   group.add(glass);

@@ -376,7 +376,8 @@ export function mikawayaAtlas() {
   const AH2 = Math.ceil((y + rowH + 1) / 4) * 4;
   const pix = new Pix(AW2, AH2, 5);
   const tex = new THREE.CanvasTexture(pix.canvas);
-  tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.anisotropy = 4;
+  // seen only indoors and close: no mip chain (a third less memory)
+  tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.anisotropy = 4;
   const paint = () => {
     pix.ctx.clearRect(0, 0, AW2, AH2);
     pix.ctx.fillStyle = '#e8e2d2'; pix.ctx.fillRect(0, 0, BW, BH);

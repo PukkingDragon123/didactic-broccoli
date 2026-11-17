@@ -37,6 +37,45 @@ const TW = 280, TH = 328; // panel texture (pixels)
 const COLS = 4, ROWS = 3, CELL_W = 66, CELL_H = 96, GX = 8, GY = 26;
 const OUTLET = V(-0.1, 0.13, 0.25);
 
+// ------------------------------------------------------------------ the cabinet's print slots
+// The lowpix cabinet (art/lowpix/machines/_src/vending.py) leaves its ad panel, header strip and flanks plain; the print
+// goes on quads with UVs 0..1 into PRINT's photo sheet (public/img/drinks/labels.webp + labels.json): poster:<menu> on
+// the ad panel, side:<menu> on both flanks. (Prop-local metres; the header keeps the cabinet's lit strip.)
+const SLOT = { ad: { x: 0, y: 0.635, z: 0.3556, w: 0.928, h: 0.466 }, side: { x: 0.4906, y: 0.98, z: -0.03, w: 0.56, h: 1.19 } };
+let sheet = null;
+function labelSheet() {
+  if (!sheet) {
+    const base = import.meta.env.BASE_URL;
+    const tex = new THREE.TextureLoader().load(`${base}img/drinks/labels.webp`);
+    tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearMipmapLinearFilter;
+    sheet = { mat: new THREE.MeshStandardMaterial({ map: tex, roughness: 0.5 }), rects: fetch(`${base}img/drinks/labels.json`).then((r) => r.json()).catch(() => ({})) };
+  }
+  return sheet;
+}
+function printSlots(root, menu) {
+  const S = labelSheet();
+  const quad = (key, w, h, x, y, z, ry) => {
+    const g = new THREE.PlaneGeometry(w, h);
+    const q = new THREE.Mesh(g, S.mat);
+    q.position.set(x, y, z); q.rotation.y = ry;
+    q.visible = false; q.raycast = () => {}; q.userData.noRim = true; q.receiveShadow = true;
+    root.add(q);
+    S.rects.then((R) => {
+      const r = R[key], img = S.mat.map.image;
+      if (!r) return;
+      const W = img?.width || 1024, H = img?.height || 4678;
+      const u0 = r[0] / W, u1 = (r[0] + r[2]) / W, v1 = 1 - r[1] / H, v0 = 1 - (r[1] + r[3]) / H;
+      const uv = g.attributes.uv;
+      uv.setXY(0, u0, v1); uv.setXY(1, u1, v1); uv.setXY(2, u0, v0); uv.setXY(3, u1, v0);
+      uv.needsUpdate = true;
+      q.visible = true;
+    });
+  };
+  const A = SLOT.ad, D = SLOT.side;
+  quad('poster:' + menu, A.w, A.h, A.x, A.y, A.z, 0);
+  for (const sx of [-1, 1]) quad('side:' + menu, D.w, D.h, sx * D.x, D.y, D.z, sx * Math.PI / 2);
+}
+
 export class Vending {
   constructor(game, places) {
     this.game = game;
@@ -72,6 +111,7 @@ export class Vending {
     m.panel.position.set((WIN.x0 + WIN.x1) / 2, (WIN.y0 + WIN.y1) / 2, WIN.z);
     m.panel.raycast = () => {};
     root.add(m.panel);
+    printSlots(root, sp.menu);
     // click box over the whole front
     const hb = hitBox(0.98, 1.85, 0.12, 0, 0.92, 0.36);
     root.add(hb);

@@ -2359,14 +2359,17 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0. Shipped as `models/lowpix/world/firebuckets.glb`
 - Garbage station (ごみ集積所) by Gacha Garage (made for the game, art/lowpix/world/made/garbagestation.glb), CC0 1.0. Shipped as `models/lowpix/world/garbagestation.glb`
 - Gas water heater (瞬間湯沸器) by Gacha Garage (made for the game, art/lowpix/world/made/waterheater.glb), CC0 1.0. Shipped as `models/lowpix/world/waterheater.glb`
+- milk carton by Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsmilk.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb), CC0 1.0. Shipped as `models/lowpix/world/milkcarton.glb`
 - Mini fridge by Gacha Garage (made for the game, art/lowpix/world/made/minifridge.glb), CC0 1.0. Shipped as `models/lowpix/world/minifridge.glb`
 - mk broom bin by Gacha Garage (made for the game, art/lowpix/world/made/broombin.glb), CC0 1.0. Shipped as `models/lowpix/world/broombin.glb`
 - mk dairy case by Gacha Garage (made for the game, art/lowpix/world/made/dairycase.glb), CC0 1.0. Shipped as `models/lowpix/world/dairycase.glb`
 - mk kamidana by Gacha Garage (made for the game, art/lowpix/world/made/kamidana.glb), CC0 1.0. Shipped as `models/lowpix/world/kamidana.glb`
+- mk puff box by Gacha Garage (made for the game, art/lowpix/world/made/goodspuff.glb), CC0 1.0. Shipped as `models/lowpix/world/goodspuff.glb`
 - mk puff box by Gacha Garage (made for the game, art/lowpix/world/made/puffbox.glb), CC0 1.0. Shipped as `models/lowpix/world/puffbox.glb`
 - mk watch case by Gacha Garage (made for the game, art/lowpix/world/made/watchcase.glb), CC0 1.0. Shipped as `models/lowpix/world/watchcase.glb`
 - Pink phone (ピンク電話) by Gacha Garage (made for the game, art/lowpix/world/made/pinkphone.glb), CC0 1.0. Shipped as `models/lowpix/world/pinkphone.glb`
+- room cupnoodle by Gacha Garage (made for the game, art/lowpix/world/made/goodsnoodle.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsnoodle.glb`
 - Rubbish pile by Gacha Garage (made for the game, art/lowpix/world/made/rubbishpile.glb), CC0 1.0. Shipped as `models/lowpix/world/rubbishpile.glb`
 - Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb), CC0 1.0. Shipped as `models/lowpix/world/kakigori.glb`
 - shop counter by Gacha Garage (made for the game, art/lowpix/world/made/showcase.glb), CC0 1.0. Shipped as `models/lowpix/world/showcase.glb`

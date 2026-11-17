@@ -21,7 +21,7 @@ W, H = 320, 280
 BACK = {  # series -> photo backdrop (focus x, y, zoom)
     'rojineko': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'denka': ('oi:f4200fadef07c329@test', (0.5, 0.55, 1.2)),
     'inusanpo': ('oi:1abfab68fd6a34c7@train', (0.6, 0.6, 1.2)), 'konchu': ('oi:42d6b48cf68049b9@test', (0.4, 0.5, 1.2)),
-    'okashi': ('oi:f291d677045b5a38@test', (0.5, 0.6, 1.1)), 'sampuru': ('oi:6324262554f184ab@test', (0.5, 0.5, 1.2)),
+    'okashi': ('oi:f291d677045b5a38@test', (0.5, 0.6, 1.1)), 'sampuru': ('oi:6324262554f184ab@test', (0.5, 0.75, 1.8)),
     'shinkai': ('oi:f5cb8e5bda89bf5c@test', (0.5, 0.5, 1.1)), 'yacho': ('oi:ab7b7786ca8649a8@test', (0.5, 0.5, 1.0)),
     'hikidashi': ('oi:8cf0d90fadf83514@test', (0.5, 0.5, 1.1)), 'kaiun': ('oi:808e21f5b9632bab@test', (0.5, 0.5, 1.1)),
     'shugorei': ('oi:34f24d2374c50c25@test', (0.5, 0.5, 1.1)), 'machikado': ('oi:ae8ffd814db5ce63@test', (0.5, 0.5, 1.1)),

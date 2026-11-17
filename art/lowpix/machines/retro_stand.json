@@ -617,18 +617,21 @@
   },
   {
    "id": "nail_0_False_32",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     -209.0,
     32,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -637,18 +640,21 @@
   },
   {
    "id": "nail_0_False_148",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     -209.0,
     148,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -657,18 +663,21 @@
   },
   {
    "id": "nail_0_True_32",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     209.0,
     32,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -677,18 +686,21 @@
   },
   {
    "id": "nail_0_True_148",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     209.0,
     148,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -697,18 +709,21 @@
   },
   {
    "id": "nail_1_False_222",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     -209.0,
     222,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -717,18 +732,21 @@
   },
   {
    "id": "nail_1_False_348",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     -209.0,
     348,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -737,18 +755,21 @@
   },
   {
    "id": "nail_1_True_222",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     209.0,
     222,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -757,18 +778,21 @@
   },
   {
    "id": "nail_1_True_348",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     209.0,
     348,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -777,18 +801,21 @@
   },
   {
    "id": "nail_2_False_422",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     -209.0,
     422,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -797,18 +824,21 @@
   },
   {
    "id": "nail_2_False_513.0",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     -209.0,
     513.0,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -817,18 +847,21 @@
   },
   {
    "id": "nail_2_True_422",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     209.0,
     422,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",
@@ -837,18 +870,21 @@
   },
   {
    "id": "nail_2_True_513.0",
-   "shape": "prism",
+   "shape": "box",
    "pivot": [
     209.0,
     513.0,
     196.0
    ],
    "size": [
-    7.0,
-    7.0,
+    6,
+    6,
     2
    ],
-   "sides": 8,
+   "hide": [
+    "back"
+   ],
+   "chamfer": 1.5,
    "style": "steel",
    "paint": {
     "ramp": "steel",

@@ -33,6 +33,7 @@ PH = {
 }
 def ph(k): return oi(PH[k])
 
+SCALE = 0.66
 POSTERS = {}  # key -> (w, h, design(P), age opts)
 def poster(key, w, h, **age):
     def deco(fn): POSTERS[key] = (w, h, fn, age); return fn
@@ -117,6 +118,45 @@ def _(P):
     P.hline(tx, ty + 33, w - 28, INK, 0.6)
 
 
+# ================================================================== the shop's own promo posters (src/world/Posters.js,
+# src/gfx/flyers.js promos): the ACTUAL toys (tools/render-toys.mjs renders) on real photographs, sheet 'promo'
+PROMO = {}
+TOYS = os.path.join(CACHE, 'toys')
+def toys_on(im, series, ids, box, hero=0):
+    """Composite toy renders (cropped to their alpha) standing along the bottom of box (x, y, w, h), output px."""
+    x0, y0, bw, bh = box; n = len(ids)
+    for k, iid in enumerate(ids):
+        p = os.path.join(TOYS, series, iid + '.png')
+        if not os.path.exists(p): continue
+        t = Image.open(p).convert('RGBA'); bb = t.getbbox()
+        if not bb: continue
+        t = t.crop(bb); big = k == hero
+        Ht, Wt = bh * (1.0 if big else 0.72), bw / n * (1.25 if big else 1.0)
+        kk = min(Ht / t.height, Wt / t.width); t = t.resize((max(1, int(t.width * kk)), max(1, int(t.height * kk))), Image.LANCZOS)
+        cx = x0 + bw * (k + 0.5) / n
+        im.alpha_composite(t, (int(cx - t.width / 2), int(y0 + bh - t.height)))
+    return im
+
+def promo(key, photo, f, series, ids, title, tface, sub, ground, ink, accent, foot):
+    def fn(P):
+        w, h = P.w, P.h
+        P.rect(0, 0, w, h, ground)
+        P.photo(photo, 0, 0, w, 230, f=f, sat=0.9, con=1.02, bright=0.85)
+        P.rect(0, 230, w, 4, accent)
+        P.text(title, tface, 30 if len(title) <= 6 else 24, 12, 262, ink, anchor='lm', maxw=w - 24)
+        P.text(sub, 'kakub', 10, 12, 290, ink, anchor='lm', maxw=w - 24)
+        P.rect(0, h - 30, w, 30, accent)
+        P.text('ガチャガレージ', 'kaku', 12, 12, h - 15, ground, anchor='lm')
+        P.text(foot, 'bebas', 11, w - 12, h - 15, ground, anchor='rm', track=1)
+        P.post = lambda im: toys_on(im.convert('RGBA'), series, ids, (14, 70, w - 28, 158)).convert('RGB')
+    PROMO['promo:' + key] = (240, 340, fn, dict(paper='Paper001', fade=0.08, crease=0.4, tape=('tl', 'tr'), seed=len(key)))
+promo('reopen', 'local:garage.jpg', (0.5, 0.5, 1.0), 'rojineko', ['wall', 'stalker', 'box'], '祝 再開店', 'oldmincho', 'おじいちゃんのガチャ屋、また開きます。', 0xf6efe0, INK, RED, 'OPEN 10:00-20:00')
+promo('kaiju', 'oi:6324262554f184ab@test', (0.5, 0.75, 1.7), 'sampuru', ['ramen', 'sundae', 'katsu'], 'サンプル食堂', 'mochiy', '本物そっくり、食品サンプル 全7種', 0xfbf6ee, INK, 0xd8402a, '300 YEN')
+promo('space', 'oi:f4200fadef07c329@test', (0.5, 0.55, 1.2), 'denka', ['radio', 'sewing', 'tv'], '昭和の家電', 'oldmincho', 'あの頃のおうち、ミニチュアで。全8種', 0xf3ecdc, INK, 0x2a7a6a, '300 YEN')
+promo('sakura', 'oi:f291d677045b5a38@test', (0.5, 0.6, 1.1), 'okashi', ['dango', 'matcha', 'taiyaki'], '和菓子処', 'oldmincho', 'ちいさな和菓子、ひとつどうぞ。全7種', 0xf8efe4, INK, 0xb8506a, '200 YEN')
+promo('secret', 'local:milky_way.jpg', (0.5, 0.5, 1.0), 'shinkai', ['angler', 'nautilus', 'jelly'], 'シークレット', 'mochiy', '各シリーズにひとつ。きみは引けるか？', 0x15182a, 0xf4e6c0, 0xe8b838, 'SECRET')
+promo('glow', 'local:rain_window.jpg', (0.5, 0.5, 1.0), 'shinkai', ['jelly', 'angler', 'dumbo'], '夜光る', 'mochiy', '暗いところで光る、蓄光フィニッシュ', 0x101820, 0xd8f0e0, 0x58c08a, 'GLOW')
+
 # ================================================================== vintage: real 1930s posters (public domain)
 VINTAGE = {  # key: (commons file, crop focus, title for credits)
     'v:obama': ('1930s_Japan_Travel_Poster_-_01.jpg', (0.5, 0.5, 1.0)),
@@ -147,7 +187,10 @@ def vintage(key, w, h, **age):
 def render(key, w, h, fn, age):
     P = Panel(w, h, 0xffffff); fn(P)
     im = P.image()
-    return PK.age(im, **age)
+    if callable(getattr(P, 'post', None)): im = P.post(im)
+    out = PK.age(im, **age)
+    # the lane sheet must stay within 1024 x 1024: posters are kept at 0.66 of their design size (~500 px/m)
+    return out.resize((round(w * SCALE), round(h * SCALE)), Image.LANCZOS)
 
 
 # the rest of the lane's notices (tools/bake-print.py 'street' designs), aged for a wall outdoors
@@ -190,3 +233,5 @@ if __name__ == '__main__':
         print('sheet', p, out.size)
     else:
         BP.save_sheet('lane', out, idx)
+        pr = {k: render(k, w, h, fn, age) for k, (w, h, fn, age) in PROMO.items()}
+        o2, i2 = BP.pack(pr, 1024, alpha=True); BP.save_sheet('promo', o2, i2)

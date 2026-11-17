@@ -1784,6 +1784,60 @@
   ],
   "bytes": 68160
  },
+ "goodsmilk": {
+  "id": "goodsmilk",
+  "name": "milk carton",
+  "src": "art/lowpix/world/made/goodsmilk.glb",
+  "title": "milk carton",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 18,
+  "tex": 512,
+  "size": [
+   0.07,
+   0.215,
+   0.077
+  ],
+  "bytes": 24656
+ },
+ "goodsnoodle": {
+  "id": "goodsnoodle",
+  "name": "room cupnoodle",
+  "src": "art/lowpix/world/made/goodsnoodle.glb",
+  "title": "room cupnoodle",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/goodsnoodle.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 54,
+  "tex": 288,
+  "size": [
+   0.108,
+   0.107,
+   0.11
+  ],
+  "bytes": 17280
+ },
+ "goodspuff": {
+  "id": "goodspuff",
+  "name": "mk puff box",
+  "src": "art/lowpix/world/made/goodspuff.glb",
+  "title": "mk puff box",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/goodspuff.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 26,
+  "tex": 512,
+  "size": [
+   0.21,
+   0.23,
+   0.141
+  ],
+  "bytes": 42236
+ },
  "grass_tuft": {
   "id": "grass_tuft",
   "name": "Grass Medium 01",

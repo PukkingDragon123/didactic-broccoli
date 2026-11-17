@@ -439,7 +439,7 @@ def stand(t):
         for i, (a, b) in enumerate(slats):
             for xx in (X0 + 11, X1 - 11):
                 for yy in (a + 22, b - 22):
-                    s.disc(f"nail_{i}_{xx > 0}_{yy}", 3.5, 2, (xx, yy, Z1 + 1), sides=8, col="steel", style="steel", tone=2.2)
+                    s.box(f"nail_{i}_{xx > 0}_{yy}", [6, 6, 2], (xx, yy, Z1 + 1), ch=1.5, col="steel", style="steel", tone=2.2, hide=["back"])
         nb = 4
         span = (Z1 - Z0 - (nb - 1) * 6) / nb
         for i in range(nb):

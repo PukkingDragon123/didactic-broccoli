@@ -11,6 +11,13 @@
 //   game.places.ramen = { enter(), seat, served, washing, ... }      save: game.state.ramen
 import * as THREE from 'three';
 import { printImage, printRegions, whenPrint } from '../../gfx/printAtlas.js';
+/** Draw a region of the baked ramen sheet into a 2D canvas; false until the sheet has loaded. */
+function rmDraw(c, key, x, y, w, h) {
+  const img = printImage('ramen'), r = printRegions('ramen')[key];
+  if (!img || !r) return false;
+  c.imageSmoothingEnabled = true; c.drawImage(img, r[0], r[1], r[2], r[3], x, y, w, h);
+  return true;
+}
 import { audio } from '../../core/audio.js';
 import { ensureState } from '../../game/stateExt.js';
 import { Human } from '../../people/Human.js';
@@ -99,11 +106,11 @@ export class Ramen {
     this.frontGlass.rotation.y = Math.PI;
     grp.add(this.frontGlass);
     // signboard, noren, lantern, the standing menu, a nobori flag
-    this.sign = pixCanvas(160, 32);
+    this.sign = pixCanvas(320, 64);
     const sign = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.46, 0.06), [t.P(0.7), t.P(0.7), t.P(0.7), t.P(0.7), new THREE.MeshStandardMaterial({ map: this.sign.tex, roughness: 0.6 }), t.P(0.7)]);
     sign.position.set(dx - 0.3, 2.68, z - 0.06); sign.rotation.y = Math.PI;
     grp.add(sign);
-    this.noren = pixCanvas(48, 32);
+    this.noren = pixCanvas(192, 128);
     const norenMat = new THREE.MeshStandardMaterial({ map: this.noren.tex, roughness: 0.95, side: THREE.DoubleSide });
     this.norenStrips = [];
     for (let i = 0; i < 3; i++) {
@@ -120,12 +127,12 @@ export class Ramen {
     const lan = prop('rm_lantern', null, dx - 0.78, 1.55, z - 0.32, 0, 0.75);
     grp.add(lan);
     this.lantern = lan;
-    this.board = pixCanvas(48, 72);
+    this.board = pixCanvas(192, 288);
     const board = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.75), new THREE.MeshStandardMaterial({ map: this.board.tex, roughness: 0.85 }));
     board.position.set(11.6, 0.62, 15.35); board.rotation.set(-0.12, Math.PI + 0.25, 0);
     grp.add(board);
     for (const sx of [-0.22, 0.22]) { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.0, 0.04), t.P(0.8)); leg.position.set(11.6 + sx * Math.cos(0.25), 0.5, 15.38 - sx * Math.sin(0.25)); leg.rotation.y = 0.25; grp.add(leg); }
-    this.flag = pixCanvas(16, 64);
+    this.flag = pixCanvas(64, 256);
     const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 1.4), new THREE.MeshStandardMaterial({ map: this.flag.tex, roughness: 0.9, side: THREE.DoubleSide }));
     flag.position.set(15.05, 1.45, 15.2); flag.rotation.y = Math.PI;
     grp.add(flag);
@@ -133,6 +140,7 @@ export class Ramen {
     pole.position.set(15.25, 1.15, 15.2); grp.add(pole);
     g.player.addObstacle(11.35, 11.85, 15.15, 15.55);
     this.redrawArt();
+    whenPrint('ramen').then(() => this.redrawArt());
     // the door into the shop
     const hb = hitBox(1.1, 2.0, 0.2, dx, 1.0, z - 0.1);
     grp.add(hb);
@@ -143,29 +151,9 @@ export class Ramen {
   openNow() { const h = this.game.clock?.hours ?? 18; return h >= 11 || h < 0.5 || !this.game.clock; }
 
   redrawArt() {
-    this.sign?.redraw((c, w, h) => {
-      c.fillStyle = '#2a1a12'; c.fillRect(0, 0, w, h);
-      c.fillStyle = '#c8a060'; c.fillRect(0, 0, w, 2); c.fillRect(0, h - 2, w, 2);
-      kanji(c, 'らーめん山田', w / 2, 4, 16, 0xf4e8c8, { align: 'center' });
-      draw5(c, 'RAMEN YAMADA', w / 2, 23, { s: 1, col: '#e8402a', align: 'center' });
-    });
-    this.noren?.redraw((c, w, h) => {
-      c.fillStyle = '#1e2a52'; c.fillRect(0, 0, w, h);
-      c.fillStyle = '#16203e'; for (let x = 15; x < w; x += 16) c.fillRect(x, 0, 2, h);
-      kanji(c, 'らーめん', w / 2, 8, 12, 0xf4f0e4, { align: 'center' });
-    });
-    this.board?.redraw((c, w, h) => {
-      c.fillStyle = '#1e2a22'; c.fillRect(0, 0, w, h);
-      c.fillStyle = '#8a6a3a'; c.fillRect(0, 0, w, 2); c.fillRect(0, h - 2, w, 2); c.fillRect(0, 0, 2, h); c.fillRect(w - 2, 0, 2, h);
-      kanji(c, 'お品書き', w / 2, 4, 10, 0xf4f0e4, { align: 'center' });
-      let y = 18;
-      for (const id of ['rm_shoyu', 'rm_miso', 'rm_tonkotsu', 'rm_gyoza', 'rm_beer']) { draw5(c, `${FOODS[id].price}`, w - 4, y, { s: 1, col: '#ffd23f', align: 'right' }); kanji(c, FOODS[id].jp.slice(0, 2), 4, y - 2, 10, 0xf4f0e4); y += 11; }
-    });
-    this.flag?.redraw((c, w, h) => {
-      c.fillStyle = '#c8302a'; c.fillRect(0, 0, w, h);
-      c.fillStyle = '#f4f0e4'; c.fillRect(0, 0, w, 3);
-      kanji(c, 'ラーメン', 2, 6, 12, 0xffffff, { vert: true });
-    });
+    // Ramen Yamada's print, baked from real dish photos (tools/bake-print.py -> ramen.webp); repainted once it loads
+    const rm = (pc, key) => pc?.redraw((c, w, h) => { if (!rmDraw(c, key, 0, 0, w, h)) { c.fillStyle = '#2a1a12'; c.fillRect(0, 0, w, h); } });
+    rm(this.sign, 'rm:sign'); rm(this.noren, 'rm:noren'); rm(this.board, 'rm:board'); rm(this.flag, 'rm:flag');
     this.redrawPlaques?.();
     this.drawTickets?.();
     this.drawMenuCard?.();
@@ -345,7 +333,7 @@ export class Ramen {
     root.add(body);
     const slot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.04), P.mat(new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.5 })));
     slot.position.set(0, 0.55, 0.23); root.add(slot);
-    this.tm = { root, canvas: pixCanvas(200, 248), sel: 0 };
+    this.tm = { root, canvas: pixCanvas(400, 496), sel: 0 };
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.67), new THREE.MeshBasicMaterial({ map: this.tm.canvas.tex, color: 0xdedede }));
     panel.position.set(0, 1.2, 0.228); panel.raycast = () => {};
     root.add(panel);
@@ -369,21 +357,11 @@ export class Ramen {
     if (!this.tm) return;
     const sel = this.pm?.active ? this.tm.sel : -1, blink = Math.floor((this.game.time || 0) * 3) % 2 === 0;
     this.tm.canvas.redraw((c, w, h) => {
-      c.fillStyle = '#f4f2ec'; c.fillRect(0, 0, w, h);
-      c.fillStyle = '#c8302a'; c.fillRect(0, 0, w, 20);
-      kanji(c, '食券', 6, 3, 14, 0xffffff);
-      draw5(c, 'MEAL TICKETS', w - 6, 7, { s: 1, col: '#ffffff', align: 'right' });
-      MENU.forEach((id, i) => {
-        const f = FOODS[id], cx = 6 + (i % 3) * 64, cy = 26 + Math.floor(i / 3) * 54;
-        const drink = id === 'rm_beer' || id === 'rm_sake' || id === 'rm_oolong';
-        // each button a printed paper card behind the plastic
-        paperFill(c, cx, cy, 60, 48, { base: drink ? '#dfe8ee' : i < 5 ? '#f4e6cc' : '#e8eed8', dark: drink ? '#c4d0d8' : '#dccaa8', seed: i * 7 + 1 });
-        if (i === sel) { c.fillStyle = blink ? '#c8322c' : '#e8b830'; c.fillRect(cx, cy, 60, 3); c.fillRect(cx, cy + 43, 60, 3); c.fillRect(cx, cy, 3, 46); c.fillRect(cx + 57, cy, 3, 46); }
-        c.fillStyle = '#5a5048'; c.fillRect(cx, cy + 46, 60, 2);
-        kanji(c, f.jp.length > 5 ? f.jp.slice(0, 5) : f.jp, cx + 30, cy + 6, 10, 0x1a1a1a, { align: 'center' });
-        draw5(c, SHORT[id] || f.name.toUpperCase().slice(0, 10), cx + 30, cy + 22, { s: 1, col: '#3a3a3a', align: 'center' });
-        draw5(c, `${f.price}`, cx + 30, cy + 34, { s: 1, col: '#c8302a', align: 'center' });
-      });
+      if (!rmDraw(c, 'rm:tickets', 0, 0, w, h)) { c.fillStyle = '#f4f2ec'; c.fillRect(0, 0, w, h); }
+      if (sel >= 0) { // the lit button
+        const x = 12 + (sel % 3) * 128, y = 52 + Math.floor(sel / 3) * 108;
+        c.strokeStyle = blink ? '#c8322c' : '#e8b830'; c.lineWidth = 6; c.strokeRect(x - 1, y - 1, 122, 98);
+      }
     });
   }
   buyTicket() {
@@ -404,7 +382,7 @@ export class Ramen {
   buildMenu() {
     const g = this.game, P = this.places;
     this.plaques = MENU.slice(0, 11).map((id, i) => {
-      const art = pixCanvas(16, 44);
+      const art = pixCanvas(48, 132);
       const m = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.36), P.mat(new THREE.MeshStandardMaterial({ map: art.tex, roughness: 0.7 })));
       m.position.copy(L(2.965, 1.55 + (i % 2) * 0.02, -0.15 + i * 0.105)); m.rotation.y = -Math.PI / 2;
       m.rotation.z = (i % 3 - 1) * 0.02;
@@ -413,17 +391,11 @@ export class Ramen {
       return { id, art };
     });
     this.redrawPlaques = () => {
-      for (const p of this.plaques) p.art.redraw((c, w, h) => {
-        const f = FOODS[p.id];
-        c.fillStyle = '#e8d0a0'; c.fillRect(0, 0, w, h);
-        c.fillStyle = '#c8a870'; c.fillRect(0, 0, 1, h); c.fillRect(w - 1, 0, 1, h);
-        kanji(c, f.jp.replace(/[ー]/g, '|').slice(0, 4), 3, 2, 10, 0x1a1208, { vert: true });
-        draw5(c, `${f.price}`, w / 2, h - 9, { s: 1, col: '#c8302a', align: 'center' });
-      });
+      for (const p of this.plaques) p.art.redraw((c, w, h) => { if (!rmDraw(c, 'rm:plaque:' + p.id, 0, 0, w, h)) { c.fillStyle = '#e8d0a0'; c.fillRect(0, 0, w, h); } });
     };
     this.redrawPlaques();
     // laminated paper menus on the counter: pick one up and read it (point at a dish for what it does)
-    this.menuCard = pixCanvas(704, 400); // the baked photo menu (tools/bake-print.py 'rm:menu'), 4 px per old px
+    this.menuCard = pixCanvas(352, 200); // the baked photo menu (tools/bake-print.py 'rm:menu'), 4 px per old px
     whenPrint('ramen').then(() => this.drawMenuCard());
     const cardMat = P.mat(new THREE.MeshStandardMaterial({ map: this.menuCard.tex, roughness: 0.4 }));
     this.cards = [1, 4].map((si) => {
@@ -457,8 +429,8 @@ export class Ramen {
       if (img && r) c.drawImage(img, r[0], r[1], r[2], r[3], 0, 0, w, h);
       else { c.fillStyle = '#f6eedc'; c.fillRect(0, 0, w, h); }
       if (sel >= 0) { // a red pen ring round the dish you point at
-        const x = 16 + Math.floor(sel / 6) * 344, y = 58 + (sel % 6) * 56;
-        c.strokeStyle = '#c8322c'; c.lineWidth = 3; c.strokeRect(x - 6, y - 5, 334, 58);
+        const x = (16 + Math.floor(sel / 6) * 344) / 2, y = (58 + (sel % 6) * 56) / 2;
+        c.strokeStyle = '#c8322c'; c.lineWidth = 2; c.strokeRect(x - 3, y - 3, 167, 29);
       }
     });
   }
