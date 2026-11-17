@@ -73,14 +73,14 @@
     "#a6ad7e",
     "#c0c2a7"
    ],
-   "cb0b8c4_k0p2": [
-    "#4b4563",
-    "#696687",
-    "#8f8fa3",
-    "#b7b8bf",
-    "#c6c7c9",
-    "#d4d4d4",
-    "#e0e0e0"
+   "c2a58a8_k0p1": [
+    "#12134d",
+    "#1c266a",
+    "#283e85",
+    "#355a9f",
+    "#4d81bd",
+    "#79a6c8",
+    "#a2c5d5"
    ],
    "cb8302a": [
     "#580f24",
@@ -91,14 +91,23 @@
     "#d39279",
     "#ddb9a2"
    ],
-   "c2a4a98": [
-    "#171346",
-    "#1d1f60",
-    "#283479",
-    "#354c90",
-    "#4a71b5",
-    "#769ac2",
-    "#a0bdd1"
+   "ce8b830": [
+    "#783308",
+    "#a55a0e",
+    "#d08817",
+    "#e4b437",
+    "#e5cf5f",
+    "#e8e386",
+    "#ededab"
+   ],
+   "cc82c28": [
+    "#5f0e25",
+    "#831629",
+    "#a52129",
+    "#c5342d",
+    "#d26551",
+    "#d9957c",
+    "#e1bba4"
    ],
    "cf0c840": [
     "#853b05",
@@ -281,8 +290,28 @@
    "chamfer": 1.2,
    "style": "tin",
    "paint": {
-    "ramp": "cb0b8c4_k0p2",
-    "tone": 3.2
+    "ramp": "c2a58a8_k0p1",
+    "tone": 3.2,
+    "layers": [
+     {
+      "id": "bands",
+      "op": "stripes",
+      "axis": "y",
+      "period": 3.0,
+      "width": 0.2,
+      "ramp": "ce8b830",
+      "tone": 3.4
+     },
+     {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.3,
+      "ramp": "steel",
+      "tone": 4.0,
+      "post": true
+     }
+    ]
    }
   },
   {
@@ -334,8 +363,28 @@
    "chamfer": 1.2,
    "style": "tin",
    "paint": {
-    "ramp": "cb0b8c4_k0p2",
-    "tone": 3.2
+    "ramp": "c2a58a8_k0p1",
+    "tone": 3.2,
+    "layers": [
+     {
+      "id": "bands",
+      "op": "stripes",
+      "axis": "y",
+      "period": 3.0,
+      "width": 0.2,
+      "ramp": "ce8b830",
+      "tone": 3.4
+     },
+     {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.3,
+      "ramp": "steel",
+      "tone": 4.0,
+      "post": true
+     }
+    ]
    }
   },
   {
@@ -413,7 +462,7 @@
    "chamfer": 2.2,
    "style": "tin",
    "paint": {
-    "ramp": "cb0b8c4_k0p2",
+    "ramp": "c2a58a8_k0p1",
     "tone": 3.3,
     "layers": [
      {
@@ -440,12 +489,28 @@
       "id": "panel",
       "op": "rect",
       "rect": [
-       0.2,
-       0.25,
-       0.8,
+       0.14,
+       0.18,
+       0.86,
+       0.86
+      ],
+      "ramp": "ce8b830",
+      "tone": 3.4,
+      "faces": [
+       "front"
+      ],
+      "bevel": true
+     },
+     {
+      "id": "panel2",
+      "op": "rect",
+      "rect": [
+       0.22,
+       0.58,
+       0.78,
        0.8
       ],
-      "ramp": "c2a4a98",
+      "ramp": "cc82c28",
       "tone": 3.0,
       "faces": [
        "front"
@@ -453,19 +518,102 @@
       "bevel": true
      },
      {
+      "id": "gauges",
+      "op": "spots",
+      "centers": [
+       [
+        -4.5,
+        2.5,
+        7,
+        2.2
+       ],
+       [
+        0,
+        2.5,
+        7,
+        2.2
+       ],
+       [
+        4.5,
+        2.5,
+        7,
+        2.2
+       ]
+      ],
+      "ramp": "white",
+      "tone": 4.2,
+      "faces": [
+       "front"
+      ],
+      "bevel": {
+       "shadow": 1,
+       "highlight": 0
+      }
+     },
+     {
+      "id": "needles",
+      "op": "spots",
+      "centers": [
+       [
+        -4.5,
+        2.5,
+        7,
+        0.6
+       ],
+       [
+        0,
+        2.5,
+        7,
+        0.6
+       ],
+       [
+        4.5,
+        2.5,
+        7,
+        0.6
+       ]
+      ],
+      "ramp": "ink",
+      "tone": 1.0,
+      "faces": [
+       "front"
+      ]
+     },
+     {
       "id": "vent",
       "op": "grille",
       "rect": [
-       0.25,
-       0.32,
-       0.75,
-       0.55
+       0.28,
+       0.6,
+       0.72,
+       0.76
       ],
       "period": 2,
       "dir": "h",
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "sidelitho",
+      "op": "stripes",
+      "axis": "y",
+      "period": 3.0,
+      "width": 0.18,
+      "ramp": "ce8b830",
+      "tone": 3.4,
+      "faces": [
+       "sides"
+      ]
+     },
+     {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.3,
+      "ramp": "steel",
+      "tone": 4.0,
+      "post": true
      },
      {
       "id": "rivets",
@@ -575,7 +723,7 @@
    ],
    "style": "tin",
    "paint": {
-    "ramp": "cb0b8c4_k0p2",
+    "ramp": "c2a58a8_k0p1",
     "tone": 3.2
    }
   },
@@ -678,7 +826,7 @@
    ],
    "style": "tin",
    "paint": {
-    "ramp": "cb0b8c4_k0p2",
+    "ramp": "c2a58a8_k0p1",
     "tone": 3.2
    }
   },
@@ -732,7 +880,7 @@
    "chamfer": 2.4,
    "style": "tin",
    "paint": {
-    "ramp": "cb0b8c4_k0p2",
+    "ramp": "c2a58a8_k0p1",
     "tone": 3.4,
     "layers": [
      {
@@ -756,19 +904,57 @@
       }
      },
      {
+      "id": "face",
+      "op": "rect",
+      "rect": [
+       0.12,
+       0.1,
+       0.88,
+       0.9
+      ],
+      "ramp": "cc82c28",
+      "tone": 3.0,
+      "faces": [
+       "front"
+      ],
+      "bevel": true
+     },
+     {
       "id": "mouth",
       "op": "grille",
       "rect": [
-       0.3,
-       0.15,
-       0.7,
-       0.32
+       0.25,
+       0.12,
+       0.75,
+       0.36
       ],
       "period": 2,
       "dir": "v",
+      "ramp": "steel",
+      "tone": 4.0,
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "rivets",
+      "op": "rivets",
+      "inset": 2,
+      "spacing": 6,
+      "faces": [
+       "sides",
+       "front",
+       "back"
+      ]
+     },
+     {
+      "id": "wear",
+      "op": "wear",
+      "width": 2,
+      "density": 0.3,
+      "ramp": "steel",
+      "tone": 4.0,
+      "post": true
      }
     ]
    }

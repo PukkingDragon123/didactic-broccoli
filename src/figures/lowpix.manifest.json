@@ -11,7 +11,7 @@
 "asobi/lcdgame":{"size":[34,44,9.5],"min":[-17,0,-4],"tris":260,"atlas":[512,512],"kb":20,"clips":{},
 "mats":{"case":"gloss","btn0":"gloss","btn1":"gloss"},
 "pts":{"scrA":"pt_scrA","scrB":"pt_scrB"}},
-"asobi/robot":{"size":[33.19,50,18.2],"min":[-16.59,0,-9.7],"tris":780,"atlas":[512,512],"kb":43,"clips":{},
+"asobi/robot":{"size":[33.19,50,18.2],"min":[-16.59,0,-9.7],"tris":780,"atlas":[512,512],"kb":59,"clips":{},
 "mats":{"leg-1":"gloss","foot-1":"gloss","leg1":"gloss","foot1":"gloss","chest":"gloss","arm-1_m":"gloss","hand-1":"metal","arm1_m":"gloss","hand1":"metal","head":"gloss","eye-1":"glow","eye1":"glow","antenna":"metal","ball":"gloss","key_bar":"metal","key_stem":"metal"},
 "pts":{"key":"pt_key"},
 "separate":["key"]},

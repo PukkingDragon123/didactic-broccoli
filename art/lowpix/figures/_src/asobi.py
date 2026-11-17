@@ -71,13 +71,21 @@ def yoyo():
 
 def robot():
     F = Fig(f"{S}/robot", "Wind-up Tin Robot", "Click to wind it up and set it down. It walks until it forgets why.")
-    T = F.c("#b0b8c4", k=0.2)
+    T = F.c("#2a58a8", k=0.1)  # lithographed blue tinplate
     for sx in (-1, 1):  # pressed-tin legs, splayed boots
         F.taper(f"leg{sx}", [6, 12, 6.5], (sx * 4.2, 7, 0), front=(0.86, 0.86), ch=1.2, col=T, style="tin", tone=3.2, rot=(90, 0, 0))
         F.taper(f"foot{sx}", [7.4, 3.2, 11], (sx * 4.2, 1.6, 1.4), front=(0.8, 0.7), ch=1.2, col="#b8302a", style="tin", tone=3.0)
+        F.layer(f"leg{sx}", id="bands", op="stripes", axis="y", period=3.0, width=0.2, ramp=F.c("#e8b830"), tone=3.4)
+        F.layer(f"leg{sx}", id="wear", op="wear", width=2, density=0.3, ramp="steel", tone=4.0, post=True)
     F.taper("chest", [21, 17, 14], (0, 21.5, 0), front=(0.9, 0.92), ch=2.2, col=T, style="tin", tone=3.3, rot=(90, 0, 0), seam="x")
-    F.layer("chest", id="panel", op="rect", rect=[0.2, 0.25, 0.8, 0.8], ramp=F.c("#2a4a98"), tone=3.0, faces=["front"], bevel=True)
-    F.layer("chest", id="vent", op="grille", rect=[0.25, 0.32, 0.75, 0.55], period=2, dir="h", faces=["front"])
+    F.layer("chest", id="panel", op="rect", rect=[0.14, 0.18, 0.86, 0.86], ramp=F.c("#e8b830"), tone=3.4, faces=["front"], bevel=True)
+    F.layer("chest", id="panel2", op="rect", rect=[0.22, 0.58, 0.78, 0.8], ramp=F.c("#c82c28"), tone=3.0, faces=["front"], bevel=True)
+    F.layer("chest", id="gauges", op="spots", centers=[[-4.5, 2.5, 7, 2.2], [0, 2.5, 7, 2.2], [4.5, 2.5, 7, 2.2]], ramp="white", tone=4.2, faces=["front"],
+            bevel={"shadow": 1, "highlight": 0})
+    F.layer("chest", id="needles", op="spots", centers=[[-4.5, 2.5, 7, 0.6], [0, 2.5, 7, 0.6], [4.5, 2.5, 7, 0.6]], ramp="ink", tone=1.0, faces=["front"])
+    F.layer("chest", id="vent", op="grille", rect=[0.28, 0.6, 0.72, 0.76], period=2, dir="h", faces=["front"])
+    F.layer("chest", id="sidelitho", op="stripes", axis="y", period=3.0, width=0.18, ramp=F.c("#e8b830"), tone=3.4, faces=["sides"])
+    F.layer("chest", id="wear", op="wear", width=2, density=0.3, ramp="steel", tone=4.0, post=True)
     F.layer("chest", id="rivets", op="rivets", inset=2, spacing=8, faces=["sides", "front", "back"])
     F.stamp("chest", text3("ROBO-1"), {"#": F.c("#f0c840") + ":4"}, "front", at="center", off=(0, -12))
     for sx in (-1, 1):
@@ -88,7 +96,10 @@ def robot():
     F.taper("head", [15, 12.5, 13], (0, 36, 0), front=(0.9, 0.9), ch=2.4, col=T, style="tin", tone=3.4, rot=(90, 0, 0), seam="x")
     for sx in (-1, 1):
         F.cyl(f"eye{sx}", 2.6, 1.2, (sx * 3.8, 37.6, 6.4), sides=14, col="#f0e8b0", style="glow", tone=4.0, rot=(90, 0, 0))
-    F.layer("head", id="mouth", op="grille", rect=[0.3, 0.15, 0.7, 0.32], period=2, dir="v", faces=["front"])
+    F.layer("head", id="face", op="rect", rect=[0.12, 0.1, 0.88, 0.9], ramp=F.c("#c82c28"), tone=3.0, faces=["front"], bevel=True)
+    F.layer("head", id="mouth", op="grille", rect=[0.25, 0.12, 0.75, 0.36], period=2, dir="v", ramp="steel", tone=4.0, faces=["front"])
+    F.layer("head", id="rivets", op="rivets", inset=2, spacing=6, faces=["sides", "front", "back"])
+    F.layer("head", id="wear", op="wear", width=2, density=0.3, ramp="steel", tone=4.0, post=True)
     F.cyl("antenna", 0.7, 5, (0, 42.2, 0), sides=8, col="#b8302a", style="metal")
     lathe(F, "ball", [(0, 0.3), (0.8, 2.8), (1.8, 3.4), (2.8, 2.8), (3.4, 0.3)], at=(0, 46.6, 0), sides=10, col="#b8302a", style="pvc")
     F.bone("key", (0, 22, -7.4))
