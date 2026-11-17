@@ -149,7 +149,7 @@ export class Human {
     this.root.name = 'human:' + spec.id;
     this.root.add(this.mesh);
     this.rest = Object.fromEntries(this.bones.map((bn) => [bn.name, bn.position.clone()]));
-    b.prop.scale.setScalar(0); b.box.scale.setScalar(0);
+    b.prop.scale.setScalar(1e-4); b.box.scale.setScalar(1e-4); // (tiny, not 0: zero-scaled bones give NaN skinned normals, which bloom spreads over the frame)
     this.boxPos = [0, 0.07 * spec.H, this.P.chestZ + 0.2];
     this.hasCam = spec.acc.some((a) => a.kind === 'camera');
     this.initAnim();
@@ -500,7 +500,7 @@ export class Human {
       setQ(b['hand' + side], 0.08, sd * 0.12, sd * 0.06);
     }
     // gestures (slerp toward the gesture pose)
-    b.prop.scale.setScalar(0); b.box.scale.setScalar(0);
+    b.prop.scale.setScalar(1e-4); b.box.scale.setScalar(1e-4); // (tiny, not 0: zero-scaled bones give NaN skinned normals, which bloom spreads over the frame)
     let lift = 0;
     for (const g of this.gestures) {
       const w = smooth(g.w), G = g.pose;
@@ -523,10 +523,10 @@ export class Human {
       if (!busyL && this.holdL !== 'case') this.armIK('L', LAP(P.shX * 0.55, ky, kz, 1), w);
       if (!busyR) this.armIK('R', LAP(-P.shX * 0.55, ky, kz, -1), w);
     }
-    if (b.box.scale.x) { b.box.position.set(this.boxPos[0], this.boxPos[1], this.boxPos[2]); b.box.quaternion.identity(); }
-    if (b.prop.scale.x) this.placeProp();
+    if (b.box.scale.x > 0.5) { b.box.position.set(this.boxPos[0], this.boxPos[1], this.boxPos[2]); b.box.quaternion.identity(); }
+    if (b.prop.scale.x > 0.5) this.placeProp();
     // the camera on the neck strap is the one in the hands while photographing
-    if (this.hasCam) b.bag.scale.setScalar(b.prop.scale.x ? 0 : 1);
+    if (this.hasCam) b.bag.scale.setScalar(b.prop.scale.x > 0.5 ? 1e-4 : 1);
     // --- secondary motion: tails, bag, skirt
     this.secondary(dt);
     // --- face
