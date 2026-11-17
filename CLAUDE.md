@@ -15,6 +15,10 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   realistic hand-painted pixel-art textures, built as lowpix specs (art/lowpix/) or converted from CC0 / CC BY Poly
   Haven and Sketchfab models; almost no voxel art. Never chibi, never stuck-together primitives, never cartoon.
   First-person arms are blocky but connected and flexible.
+- Gacha toys are one consistent product line: every figure has the same finish (hand-painted pixel-art PVC, same
+  lighting, ramps, texel density, quiet series bases), with no flat or untextured models and no noisy textures. **No
+  reskins**: every catalogue entry is its own unique sculpt; a recolour exists only as a finish (gold, clear, glow…)
+  of the same figure, never as a new entry. Check with art/lowpix/figures/audit.py.
 - Speech, subtitles and chat choices are plain floating text (hard ink outline, no paper box).
 - Product labels, posters and gacha display cards are detailed art; drinks and products use real photographs. All
   names and brands are original (real ones are genre reference only).

@@ -1,0 +1,310 @@
+{
+ "name": "lantern",
+ "description": "Red paper shop lantern",
+ "license": "CC0-1.0",
+ "density": 160,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.3,
+  "gradient": 0.2,
+  "ao": 0.0,
+  "ao_height": 0.1
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "paper": {
+    "base": "#b8302a",
+    "steps": 7,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.75
+   },
+   "white": {
+    "base": "#ece6d6",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "ink": {
+    "base": "#221c1c",
+    "steps": 5,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "gold": {
+    "base": "#d8a838",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   }
+  }
+ },
+ "styles": {},
+ "parts": [
+  {
+   "id": "paper_lo",
+   "shape": "prism",
+   "size": [
+    0.3,
+    0.3,
+    0.17
+   ],
+   "pivot": [
+    0.0,
+    -0.085,
+    0.0
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "paper",
+    "tone": 3.6,
+    "brush": {
+     "off": true
+    },
+    "rim": {
+     "light_shift": 0.4,
+     "dark_shift": -0.4
+    },
+    "layers": [
+     {
+      "id": "band",
+      "op": "band",
+      "axis": "z",
+      "from": 0.62,
+      "to": 1.0,
+      "ramp": "white",
+      "tone": 3.8
+     },
+     {
+      "id": "ribs",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.022,
+      "width": 0.22,
+      "shift": -1.0
+     },
+     {
+      "id": "crease",
+      "op": "noise",
+      "scale": 0.03,
+      "amount": 0.3
+     }
+    ]
+   },
+   "hide": [
+    "front"
+   ],
+   "sides": 14,
+   "back_scale": [
+    0.72,
+    0.72
+   ]
+  },
+  {
+   "id": "paper_hi",
+   "shape": "prism",
+   "size": [
+    0.3,
+    0.3,
+    0.17
+   ],
+   "pivot": [
+    0.0,
+    0.085,
+    0.0
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "paper",
+    "tone": 3.6,
+    "brush": {
+     "off": true
+    },
+    "rim": {
+     "light_shift": 0.4,
+     "dark_shift": -0.4
+    },
+    "layers": [
+     {
+      "id": "band",
+      "op": "band",
+      "axis": "z",
+      "from": -1.0,
+      "to": -0.62,
+      "ramp": "white",
+      "tone": 3.8
+     },
+     {
+      "id": "ribs",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.022,
+      "width": 0.22,
+      "shift": -1.0
+     },
+     {
+      "id": "crease",
+      "op": "noise",
+      "scale": 0.03,
+      "amount": 0.3
+     }
+    ]
+   },
+   "hide": [
+    "back"
+   ],
+   "sides": 14,
+   "front_scale": [
+    0.72,
+    0.72
+   ]
+  },
+  {
+   "id": "cap_top",
+   "shape": "prism",
+   "size": [
+    0.24,
+    0.24,
+    0.04
+   ],
+   "pivot": [
+    0.0,
+    0.185,
+    0.0
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "ink",
+    "tone": 2.0,
+    "brush": {
+     "off": true
+    }
+   },
+   "sides": 14
+  },
+  {
+   "id": "cap_bot",
+   "shape": "prism",
+   "size": [
+    0.24,
+    0.24,
+    0.04
+   ],
+   "pivot": [
+    0.0,
+    -0.185,
+    0.0
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "ink",
+    "tone": 2.0,
+    "brush": {
+     "off": true
+    }
+   },
+   "sides": 14
+  },
+  {
+   "id": "ring",
+   "shape": "prism",
+   "size": [
+    0.17,
+    0.17,
+    0.03
+   ],
+   "pivot": [
+    0.0,
+    0.22,
+    0.0
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "ink",
+    "tone": 1.6
+   },
+   "sides": 10
+  },
+  {
+   "id": "cord",
+   "shape": "prism",
+   "size": [
+    0.012,
+    0.012,
+    0.205
+   ],
+   "pivot": [
+    0.0,
+    0.3375,
+    0.0
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "ink",
+    "tone": 1.4
+   },
+   "sides": 4
+  },
+  {
+   "id": "tassel",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.06,
+    0.02
+   ],
+   "pivot": [
+    0.0,
+    -0.24,
+    0.0
+   ],
+   "paint": {
+    "ramp": "gold",
+    "tone": 3.4
+   }
+  }
+ ]
+}

@@ -1,0 +1,89 @@
+{
+ "id": "newspaper_stack",
+ "src": "sketchfab:c4311a0b918643af97904e10c7a34efc",
+ "credit": {
+  "title": "[CC0] Newspaper Stack - Ready to Unity HDRP",
+  "author": "karlwirbelwind",
+  "authorUrl": "https://sketchfab.com/karlwirbelwind",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cc0-newspaper-stack-ready-to-unity-hdrp-c4311a0b918643af97904e10c7a34efc",
+  "site": "Sketchfab"
+ },
+ "tris": 2132,
+ "tex": 512,
+ "size": [
+  0.633,
+  0.19,
+  1.059
+ ],
+ "colours": 46,
+ "palette": {
+  "m0": [
+   "#864b38",
+   "#ac6b4c",
+   "#bd9275",
+   "#ceb69e",
+   "#e0d5c6",
+   "#e3dccf",
+   "#e7e3d8",
+   "#eae9e0",
+   "#efeee8"
+  ],
+  "m1": [
+   "#542424",
+   "#6b3631",
+   "#814b40",
+   "#96614f",
+   "#a77a63",
+   "#b0927c",
+   "#baa793",
+   "#c5baaa",
+   "#d1cbbf"
+  ],
+  "m2": [
+   "#221d15",
+   "#2b271d",
+   "#343025",
+   "#3c3a2e",
+   "#444337",
+   "#5f5f51",
+   "#78786d",
+   "#8f8f8c",
+   "#a8a8a8"
+  ],
+  "m3": [
+   "#193a5b",
+   "#235274",
+   "#2e6d8d",
+   "#3a89a4",
+   "#49a6b9",
+   "#65b8bf",
+   "#81c7c7",
+   "#9bcfcb",
+   "#b4d9d3"
+  ],
+  "m4": [
+   "#75032e",
+   "#960630",
+   "#b70a2e",
+   "#d60f29",
+   "#eb1f28",
+   "#eb4841",
+   "#eb7362",
+   "#ed9882",
+   "#efb8a1"
+  ],
+  "m5": [
+   "#6f094b",
+   "#8f0d57",
+   "#ad145e",
+   "#cb1b61",
+   "#df2b64",
+   "#e04b6e",
+   "#e26b7d",
+   "#e6898f",
+   "#eaa7a6"
+  ]
+ },
+ "warnings": []
+}

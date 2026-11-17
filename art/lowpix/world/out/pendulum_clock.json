@@ -1,0 +1,45 @@
+{
+ "id": "pendulum_clock",
+ "src": "sketchfab:a1399c9b33554b9a9d25ec9e5fbdd5ca",
+ "credit": {
+  "title": "Antique Wall Pendulum Clock",
+  "author": "Odin Branigan",
+  "authorUrl": "https://sketchfab.com/Odin.Branigan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/antique-wall-pendulum-clock-a1399c9b33554b9a9d25ec9e5fbdd5ca",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 256,
+ "size": [
+  0.353,
+  0.64,
+  0.101
+ ],
+ "colours": 12,
+ "palette": {
+  "m0": [
+   "#200c0c",
+   "#291311",
+   "#321a16",
+   "#3a231b",
+   "#422c21",
+   "#654a36",
+   "#876a4d",
+   "#a48b69",
+   "#b6a98f"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

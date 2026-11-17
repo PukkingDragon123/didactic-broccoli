@@ -1,0 +1,56 @@
+{
+ "id": "street_light",
+ "src": "sketchfab:385a7cef98084a6698cd0a1c93acf21b",
+ "credit": {
+  "title": "Japanese street light",
+  "author": "huiminchen0111",
+  "authorUrl": "https://sketchfab.com/huiminchen0111",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-street-light-385a7cef98084a6698cd0a1c93acf21b",
+  "site": "Sketchfab"
+ },
+ "tris": 4000,
+ "tex": 268,
+ "size": [
+  2.377,
+  4.14,
+  2.377
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#1b1a11",
+   "#232217",
+   "#2a2a1d",
+   "#303124",
+   "#35372b",
+   "#535446",
+   "#707063",
+   "#8a8a82",
+   "#a3a3a2"
+  ],
+  "m1": [
+   "#240602",
+   "#2e0c04",
+   "#381405",
+   "#421d08",
+   "#4b270a",
+   "#7c4b13",
+   "#ac751e",
+   "#d6a32e",
+   "#ddc262"
+  ],
+  "m2": [
+   "#540e0a",
+   "#6c1b0e",
+   "#832c14",
+   "#99411b",
+   "#ae5822",
+   "#cd782d",
+   "#d5994e",
+   "#dab473",
+   "#e1cc95"
+  ]
+ },
+ "warnings": []
+}

@@ -83,9 +83,33 @@ def ensure_source(src):
         raise RuntimeError("sketchfab kept refusing " + uid)
 
 
+def drop_nodes(path, names):
+    """A copy of a downloaded glTF without some nodes (the colour-checker cube in a specimen scan), next to the original
+    so its buffers and textures still resolve."""
+    import re
+    if not path.endswith(".gltf"):
+        return path
+    d = json.load(open(path))
+    pat = re.compile("|".join(names))
+    gone = {i for i, n in enumerate(d.get("nodes", [])) if pat.search(n.get("name") or "")}
+    for n in d.get("nodes", []):
+        if "children" in n:
+            n["children"] = [c for c in n["children"] if c not in gone]
+    for i in gone:
+        d["nodes"][i].pop("mesh", None)
+        d["nodes"][i].pop("children", None)
+    for sc in d.get("scenes", []):
+        sc["nodes"] = [c for c in sc.get("nodes", []) if c not in gone]
+    out = path[:-5] + "_drop_" + hashlib.sha1("|".join(names).encode()).hexdigest()[:6] + ".gltf"
+    json.dump(d, open(out, "w"))
+    return out
+
+
 def conv_key(m):
     k = {x: m.get(x) for x in ("src", "tris", "style", "atlas", "opts")}
     k["height"] = float(CONV_H)
+    if m.get("drop"):
+        k["drop"] = m["drop"]
     return hashlib.sha1(json.dumps(k, sort_keys=True).encode()).hexdigest()[:14]
 
 
@@ -105,6 +129,8 @@ def convert(m):
         os.symlink(shared, link)
     try:
         local = ensure_source(m["src"])
+        if m.get("drop"):
+            local = drop_nodes(local, m["drop"])
     except Exception as e:  # noqa: BLE001
         return key, None, f"download: {e}"
     cmd = [sys.executable, "-m", "lowpix", "convert", local, "--style", m["style"], "--height", str(CONV_H), "--tris", str(m["tris"]),
@@ -160,7 +186,7 @@ def main():
         files = gen(s, only)
         convert_all(files)
         bdir = os.path.join(BUILD, s)
-        subprocess.run([sys.executable, "-m", "lowpix", "batch", *files, "-o", bdir, "-j", jobs], check=True, env=ENV)
+        subprocess.run([sys.executable, "-m", "lowpix", "batch", *files, "-o", bdir, "-j", jobs], check=False, env=ENV)  # (failures are listed; the rest still packs)
     subprocess.run(["node", os.path.join(HERE, "pack.mjs"), BUILD, *args], check=True)
 
 

@@ -1,0 +1,34 @@
+{
+ "id": "potted_row",
+ "src": "sketchfab:936c438fc2ab4631ab81cb05af343a9e",
+ "credit": {
+  "title": "Plant pots",
+  "author": "Vanum-Chan",
+  "authorUrl": "https://sketchfab.com/Patricia.Schad",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/plant-pots-936c438fc2ab4631ab81cb05af343a9e",
+  "site": "Sketchfab"
+ },
+ "tris": 1216,
+ "tex": 512,
+ "size": [
+  2.722,
+  1.05,
+  2.717
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#200508",
+   "#290709",
+   "#320a09",
+   "#3a110c",
+   "#42190f",
+   "#70331c",
+   "#9c542b",
+   "#c57a3d",
+   "#d0a16d"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,99 @@
+{
+ "id": "kakigori",
+ "src": "art/lowpix/world/made/kakigori.glb",
+ "credit": {
+  "title": "Shaved-ice flag (氷)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 82,
+ "tex": 512,
+ "size": [
+  0.577,
+  1.545,
+  0.259
+ ],
+ "colours": 51,
+ "palette": {
+  "m0": [
+   "#a06939",
+   "#c0935b",
+   "#d0b88d",
+   "#e2d8be",
+   "#f6f4ec",
+   "#f7f6ef",
+   "#f8f8f2",
+   "#f9f9f5",
+   "#fafaf7"
+  ],
+  "m1": [
+   "#63092a",
+   "#7f0e2e",
+   "#9b132f",
+   "#b51a2c",
+   "#ce2228",
+   "#db423b",
+   "#dd6e5d",
+   "#e1937e",
+   "#e6b49e"
+  ],
+  "m2": [
+   "#171945",
+   "#202758",
+   "#2a376a",
+   "#35497b",
+   "#405c8c",
+   "#5177a5",
+   "#6d93b3",
+   "#8cabbf",
+   "#a9c1cc"
+  ],
+  "m3": [
+   "#7b1236",
+   "#9d1a3d",
+   "#bf2340",
+   "#d63847",
+   "#da5e60",
+   "#dd7e77",
+   "#e09b8f",
+   "#e4b4a6",
+   "#e9cabc"
+  ],
+  "m4": [
+   "#0b1152",
+   "#101f69",
+   "#163080",
+   "#1c4595",
+   "#245caa",
+   "#2f7cc9",
+   "#509cd2",
+   "#74b7d8",
+   "#96cddf"
+  ],
+  "m5": [
+   "#95193f",
+   "#bf2447",
+   "#d74257",
+   "#de7177",
+   "#e6a09e",
+   "#e8b3ad",
+   "#eac4bb",
+   "#edd3c9",
+   "#f0e0d7"
+  ],
+  "m6": [
+   "#2a3278",
+   "#3a4b99",
+   "#4d6ab7",
+   "#738fc2",
+   "#98b0cf",
+   "#a8bfd4",
+   "#b8ccd9",
+   "#c6d7df",
+   "#d5e2e5"
+  ]
+ },
+ "warnings": []
+}

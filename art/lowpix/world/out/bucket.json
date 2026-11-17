@@ -1,0 +1,45 @@
+{
+ "id": "bucket",
+ "src": "sketchfab:0a7a3ccfdb624369b54dc7e06a5f2486",
+ "credit": {
+  "title": "Metal bucket",
+  "author": "Kozlov Maksim",
+  "authorUrl": "https://sketchfab.com/kozlovchik",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/metal-bucket-0a7a3ccfdb624369b54dc7e06a5f2486",
+  "site": "Sketchfab"
+ },
+ "tris": 1408,
+ "tex": 136,
+ "size": [
+  0.286,
+  0.287,
+  0.309
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#454564",
+   "#5d607f",
+   "#797e97",
+   "#999dab",
+   "#b7bac0",
+   "#c3c4c7",
+   "#cecece",
+   "#d7d7d7",
+   "#e1e1e1"
+  ],
+  "m1": [
+   "#2c0f10",
+   "#381815",
+   "#43221c",
+   "#4e2d23",
+   "#59392a",
+   "#7a563d",
+   "#997552",
+   "#ae9472",
+   "#beb095"
+  ]
+ },
+ "warnings": []
+}

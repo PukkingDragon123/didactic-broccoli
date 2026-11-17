@@ -1,0 +1,31 @@
+{
+ "joints": {
+  "top_lo": [
+   0,
+   0,
+   0
+  ],
+  "bottom_lo": [
+   0,
+   0,
+   0
+  ],
+  "top_paper_lo": [
+   0,
+   0,
+   0
+  ],
+  "bottom_paper_lo": [
+   0,
+   0,
+   0
+  ]
+ },
+ "mats": {
+  "top_lo_s": "gloss",
+  "top_lo_rim": "gloss",
+  "bottom_lo_s": "gloss"
+ },
+ "key": "capsule_lo",
+ "density": 1.0
+}

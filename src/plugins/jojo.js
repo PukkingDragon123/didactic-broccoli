@@ -32,7 +32,7 @@ export function install(game) {
       summon(id = 'jj_kujaku', dist = 2.4) {
         const n = g.lane?.npc(id); if (!n) return false;
         const P = g.player, x = P.pos.x - Math.sin(P.yaw) * dist, z = P.pos.z - Math.cos(P.yaw) * dist;
-        n.setPresent?.(true); n.place?.(new THREE.Vector3(x, 0, z), P.yaw); n.activity = 'debug'; return true;
+        n.setPresent?.(true); g.lane.tasks?.delete(n); n.place?.(new THREE.Vector3(x, 0, z), P.yaw); n.faceTo?.(P.pos); n.activity = 'debug'; return true;
       },
       filter(name = null) { J.impact.filter(name); return name; },
       /** Where the pose camera would stand for you now, and what's in the way. */

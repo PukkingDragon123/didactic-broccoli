@@ -1,0 +1,45 @@
+{
+ "id": "room_futon",
+ "src": "sketchfab:0d5590d1d2184aa98797c3d6382afd7e",
+ "credit": {
+  "title": "Japanese futon/bed",
+  "author": "nicolas_solo",
+  "authorUrl": "https://sketchfab.com/nicolas_solo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-futonbed-0d5590d1d2184aa98797c3d6382afd7e",
+  "site": "Sketchfab"
+ },
+ "tris": 3998,
+ "tex": 384,
+ "size": [
+  1.744,
+  0.28,
+  2.643
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#795762",
+   "#977880",
+   "#b09fa2",
+   "#cbc3c4",
+   "#e8e6e6",
+   "#ebeaea",
+   "#eeeeee",
+   "#f1f1f1",
+   "#f4f4f4"
+  ],
+  "m1": [
+   "#26263b",
+   "#34364c",
+   "#42465b",
+   "#525869",
+   "#626977",
+   "#787f89",
+   "#919599",
+   "#a8a9aa",
+   "#bdbdbd"
+  ]
+ },
+ "warnings": []
+}

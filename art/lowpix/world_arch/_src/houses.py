@@ -27,10 +27,10 @@ DUMP = os.path.join(HERE, '..', 'houses.json')
 
 # block id -> house ids (side + x, z in cm; see houseId in Town.js) and its texel density
 BLOCKS = {
-    'lane_nw': (['hn-705_340', 'hn-1255_370', 'hn-1800_528', 'hn-2325_200'], 32),
-    'lane_ne': (['hn705_140', 'hn1395_390', 'hn1935_220', 'hn2420_260'], 32),
-    'lane_fw': (['hf-2325_1630', 'hf-1810_1590', 'hf-450_1650'], 32),
-    'lane_fe': (['hf140_1660', 'hf725_1600', 'hf1270_1840', 'hf1820_1600'], 32),
+    'lane_nw': (['hn-705_340', 'hn-1255_370', 'hn-1800_528', 'hn-2325_200'], 28),
+    'lane_ne': (['hn705_140', 'hn1395_390', 'hn1935_220', 'hn2420_260'], 28),
+    'lane_fw': (['hf-2325_1630', 'hf-1810_1590', 'hf-1242_1490', 'hf-450_1650'], 28),
+    'lane_fe': (['hf140_1660', 'hf725_1600', 'hf1270_1840', 'hf1820_1600'], 28),
 }
 LITE_PPM = 12  # the second rows behind (background, seen over the roofs): one atlas for all of them
 
@@ -75,7 +75,7 @@ class House:
         self.S, self.o, self.lite, self.hide_back = S, o, lite, hide_back
         self.id = o['id']
         self.bone = S.part(self.id, 'bone', [0, 0, 0], [o['x'], o.get('y0') or 0, o['z']],
-                           rot=[0, 0 if (o.get('side', 1) or 1) > 0 else 180, 0])
+                           rot=[0, 0 if (o.get('side', 1) or 1) > 0 else 180, 0], paint={'ramp': 'conc'})
 
     # parts in the house frame
     def box(self, name, w, h, d, x, y, z, ry=0, **kw):
@@ -141,6 +141,8 @@ class House:
             top += h2
         self.top = top
         self.roof(W, D, top, o, wallB)
+        # the game needs the ridge height (antennas, the pigeon loft): src/kit/lowpixArch.js LP_HOUSES
+        self.S.d.setdefault('game', {}).setdefault('houses', {})[self.id] = {'ridge': round(self.ridge, 3)}
         if self.lite:
             for w in o.get('win') or []:
                 self.casing(w)

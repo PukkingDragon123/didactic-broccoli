@@ -1,0 +1,45 @@
+{
+ "id": "milk_fridge",
+ "src": "sketchfab:3557e8c50e84419387e8c26dd03e9837",
+ "credit": {
+  "title": "Beverages refrigerator",
+  "author": "Palmart Productions",
+  "authorUrl": "https://sketchfab.com/mizorri93",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/beverages-refrigerator-3557e8c50e84419387e8c26dd03e9837",
+  "site": "Sketchfab"
+ },
+ "tris": 2381,
+ "tex": 364,
+ "size": [
+  1.216,
+  1.86,
+  1.108
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#030201",
+   "#040202",
+   "#050302",
+   "#050402",
+   "#060503",
+   "#332d1b",
+   "#5d5735",
+   "#868252",
+   "#a6a676"
+  ],
+  "m1": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ]
+ },
+ "warnings": []
+}

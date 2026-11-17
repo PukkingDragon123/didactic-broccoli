@@ -75,7 +75,7 @@ def tri_jacobians(P, F, UV, W, H):
     return dT @ pinv                                # T, 2, 3
 
 
-def repaint(src, P, N, F, UV, ramps, classify, flow, seed=1, stroke_density=0.16, stroke_len=(3, 6), occl=None):
+def repaint(src, P, N, F, UV, ramps, classify, flow, seed=1, stroke_density=0.16, stroke_len=(3, 6), occl=None, strength=None):
     """src: the converted atlas (float RGB, H x W); returns uint8 RGB of the same size."""
     H, W = src.shape[:2]
     tri, bary = raster(P, F, UV, W, H)
@@ -94,7 +94,8 @@ def repaint(src, P, N, F, UV, ramps, classify, flow, seed=1, stroke_density=0.16
     # clusters: 2-3 texel blobs of a step lighter / darker (placed by a hash of a coarse cell)
     yy, xx = np.mgrid[0:H, 0:W]
     c1 = hash2(xx // 2, yy // 2, seed)
-    tone += np.where(c1 < 0.18, -0.6, np.where(c1 > 0.86, 0.45, 0))
+    k_s = strength(Ps) if strength is not None else 1.0
+    tone += np.where(c1 < 0.18, -0.6, np.where(c1 > 0.86, 0.45, 0)) * k_s
     # occlusion: creases, under the body, inside the legs (a caller field in 0..1, 1 = fully occluded)
     if occl is not None:
         tone -= occl(Ps, Ns) * 2.2
@@ -123,7 +124,7 @@ def repaint(src, P, N, F, UV, ramps, classify, flow, seed=1, stroke_density=0.16
             n = np.hypot(d[0], d[1])
             if n < 1e-6: break
             fx += d[0] / n; fy += d[1] / n
-    tone += stroke
+    tone += stroke * k_s
     out = src.copy()
     for g, ramp in enumerate(R):
         m = (group == g) & ok
@@ -153,3 +154,14 @@ def weld_normals(P, F, eps=1e-5):
     for c in range(3): np.add.at(acc, inv[F[:, c]], fn)
     acc /= np.linalg.norm(acc, axis=1, keepdims=True) + 1e-12
     return acc[inv]
+
+
+def vnoise3(x, y, z, seed=0):
+    """Value noise in 0..1 on a 3D lattice (smoothstepped trilinear), vectorised over arrays."""
+    xi, yi, zi = np.floor(x).astype(np.int64), np.floor(y).astype(np.int64), np.floor(z).astype(np.int64)
+    xf, yf, zf = x - xi, y - yi, z - zi
+    sx, sy, sz = xf * xf * (3 - 2 * xf), yf * yf * (3 - 2 * yf), zf * zf * (3 - 2 * zf)
+    h = lambda a, b, c: hash2((a * 73 + c * 151) & 0xffff, (b * 197 + c * 37) & 0xffff, seed)
+    l = lambda a, b, t: a + (b - a) * t
+    return l(l(l(h(xi, yi, zi), h(xi + 1, yi, zi), sx), l(h(xi, yi + 1, zi), h(xi + 1, yi + 1, zi), sx), sy),
+             l(l(h(xi, yi, zi + 1), h(xi + 1, yi, zi + 1), sx), l(h(xi, yi + 1, zi + 1), h(xi + 1, yi + 1, zi + 1), sx), sy), sz)

@@ -1,0 +1,55 @@
+{
+ "id": "ashtray_stand",
+ "src": "art/lowpix/world/made/ashtray.glb",
+ "credit": {
+  "title": "Standing ashtray (灰皿)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 186,
+ "tex": 256,
+ "size": [
+  0.28,
+  0.665,
+  0.28
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#401320",
+   "#521b26",
+   "#64232b",
+   "#742c2e",
+   "#843a36",
+   "#a05246",
+   "#b4725f",
+   "#bf9380",
+   "#ccb1a0"
+  ],
+  "m1": [
+   "#5c0b23",
+   "#761026",
+   "#8f1726",
+   "#a71e24",
+   "#be2c26",
+   "#d34b38",
+   "#d7745b",
+   "#dc987c",
+   "#e2b79d"
+  ],
+  "m2": [
+   "#231c1a",
+   "#2d2623",
+   "#36302d",
+   "#3e3a37",
+   "#464442",
+   "#5e5e5e",
+   "#777777",
+   "#919191",
+   "#ababab"
+  ]
+ },
+ "warnings": []
+}

@@ -71,7 +71,7 @@
 #pose-off .po-rule small { margin-left: auto; font: 16px/22px 'Alagard', monospace; color: rgba(36, 26, 30, .55); }
 @media (max-width: 640px) { #pose-off .po-opts { grid-template-columns: 1fr; gap: 4px; } #pose-off .po-head b { font-size: 16px; line-height: 18px; } }
 
-#pose-score { position: fixed; left: 50%; top: calc(11vh + 10px); translate: -50% 0; z-index: 35; pointer-events: none; }
+#pose-score { position: fixed; right: 16px; top: calc(11vh + 10px); z-index: 35; pointer-events: none; }
 #pose-score .ps-card {
   display: flex; align-items: center; gap: 12px; padding: 0 12px 2px; color: var(--jj-ink); font: 16px/24px 'Alagard', monospace; image-rendering: pixelated;
   border: 12px solid transparent; border-image: var(--pp-zig-receipt) 6 / 12px round; background: var(--pp-grain-receipt) 0 0 / 96px padding-box;

@@ -1,0 +1,40 @@
+{
+ "mats": {
+  "base": "gloss",
+  "tub_hoop0": "metal",
+  "tub_hoop1": "metal",
+  "tub_water": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:81a49956c5944279abfb2ccaa791f7d8",
+   "height": 7,
+   "at": [
+    0,
+    11.0,
+    7.5
+   ],
+   "yaw": 0,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "8f56b93cb9fa8b"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "hop",
+  "length": 0.8,
+  "amp": 3,
+  "axis": "y"
+ },
+ "key": "yudono/frog"
+}

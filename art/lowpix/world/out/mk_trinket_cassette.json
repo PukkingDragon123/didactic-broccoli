@@ -1,0 +1,78 @@
+{
+ "id": "mk_trinket_cassette",
+ "src": "sketchfab:820777808625494581401700ccc3e7f7",
+ "credit": {
+  "title": "Cassette tapes",
+  "author": "FEDDYFAZBARE",
+  "authorUrl": "https://sketchfab.com/FEDDYFAZBARE",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cassette-tapes-820777808625494581401700ccc3e7f7",
+  "site": "Sketchfab"
+ },
+ "tris": 1497,
+ "tex": 256,
+ "size": [
+  0.721,
+  0.021,
+  0.308
+ ],
+ "colours": 39,
+ "palette": {
+  "m0": [
+   "#5b080b",
+   "#75110c",
+   "#8e2111",
+   "#a63517",
+   "#bd4d1e",
+   "#d96c2a",
+   "#dc904f",
+   "#e0ae73",
+   "#e5c896"
+  ],
+  "m1": [
+   "#733918",
+   "#945423",
+   "#b3732e",
+   "#ca9442",
+   "#d0af66",
+   "#d4c07e",
+   "#d9cf94",
+   "#dedbaa",
+   "#e4e4c0"
+  ],
+  "m2": [
+   "#362a2e",
+   "#45393c",
+   "#52494a",
+   "#5f5a5a",
+   "#6b6b6b",
+   "#7f7f7f",
+   "#949494",
+   "#a8a8a8",
+   "#bcbcbc"
+  ],
+  "m3": [
+   "#250f0f",
+   "#301714",
+   "#3a211a",
+   "#432a21",
+   "#4c3528",
+   "#6d523d",
+   "#8c7254",
+   "#a59172",
+   "#b7ad95"
+  ],
+  "m4": [
+   "#111855",
+   "#19286d",
+   "#213b85",
+   "#2a519b",
+   "#3469b0",
+   "#4787c4",
+   "#67a2ca",
+   "#87bad2",
+   "#a5ceda"
+  ]
+ },
+ "warnings": []
+}

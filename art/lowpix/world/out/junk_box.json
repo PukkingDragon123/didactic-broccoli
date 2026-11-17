@@ -1,0 +1,89 @@
+{
+ "id": "junk_box",
+ "src": "sketchfab:ab5e036dd0244ad2afbd907d4a151b23",
+ "credit": {
+  "title": "Junk Box",
+  "author": "Phantasm8732",
+  "authorUrl": "https://sketchfab.com/Phantasm8732",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/junk-box-ab5e036dd0244ad2afbd907d4a151b23",
+  "site": "Sketchfab"
+ },
+ "tris": 290,
+ "tex": 368,
+ "size": [
+  0.805,
+  0.396,
+  0.837
+ ],
+ "colours": 47,
+ "palette": {
+  "m0": [
+   "#662c20",
+   "#83422c",
+   "#9e5b3a",
+   "#b87749",
+   "#c0956a",
+   "#c6a981",
+   "#cdbb98",
+   "#d4cbad",
+   "#ddd8c2"
+  ],
+  "m1": [
+   "#1b2037",
+   "#252d46",
+   "#303c54",
+   "#3b4b62",
+   "#475b6f",
+   "#5c7587",
+   "#758e9b",
+   "#92a5ab",
+   "#aebabd"
+  ],
+  "m2": [
+   "#51001b",
+   "#6a001a",
+   "#830015",
+   "#9c000c",
+   "#b40201",
+   "#de1805",
+   "#f73f19",
+   "#f57447",
+   "#f5a075"
+  ],
+  "m3": [
+   "#5e4950",
+   "#786268",
+   "#8f7e81",
+   "#a49c9d",
+   "#bab9b9",
+   "#c3c3c3",
+   "#cdcdcd",
+   "#d6d6d6",
+   "#e0e0e0"
+  ],
+  "m4": [
+   "#50151b",
+   "#661d1f",
+   "#7c2a26",
+   "#903d30",
+   "#a4523b",
+   "#ba6e4d",
+   "#c28d6c",
+   "#cba98b",
+   "#d5c1a8"
+  ],
+  "m5": [
+   "#0f0c15",
+   "#13111b",
+   "#181621",
+   "#1d1b26",
+   "#22202b",
+   "#403c4b",
+   "#5f596a",
+   "#7e7886",
+   "#9d9ba0"
+  ]
+ },
+ "warnings": []
+}

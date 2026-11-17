@@ -1,0 +1,100 @@
+{
+ "id": "paint_tins",
+ "src": "sketchfab:7223f972a1b44194abdc8f84b896086d",
+ "credit": {
+  "title": "Spray Paint Can",
+  "author": "Isuk",
+  "authorUrl": "https://sketchfab.com/Isuk",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/spray-paint-can-7223f972a1b44194abdc8f84b896086d",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 288,
+ "size": [
+  0.532,
+  0.21,
+  0.718
+ ],
+ "colours": 47,
+ "palette": {
+  "m0": [
+   "#010001",
+   "#010101",
+   "#010102",
+   "#010102",
+   "#010102",
+   "#191b2f",
+   "#343a5b",
+   "#505d84",
+   "#7585a5"
+  ],
+  "m1": [
+   "#00736c",
+   "#009681",
+   "#00b990",
+   "#00dc99",
+   "#00ff9c",
+   "#26fc97",
+   "#4cf999",
+   "#70f8a1",
+   "#93f8af"
+  ],
+  "m2": [
+   "#0e928b",
+   "#16bba4",
+   "#21e1b6",
+   "#4fe4b6",
+   "#7ce8be",
+   "#90e9bf",
+   "#a3ebc3",
+   "#b6edca",
+   "#c8f0d3"
+  ],
+  "m3": [
+   "#362a5a",
+   "#483973",
+   "#5a4a8b",
+   "#6d5ca1",
+   "#8478ad",
+   "#9a8db5",
+   "#ada2bf",
+   "#bfb5c9",
+   "#cfc8d4"
+  ],
+  "m4": [
+   "#1c403d",
+   "#27524b",
+   "#326356",
+   "#3e7361",
+   "#4b826b",
+   "#5e997b",
+   "#79a78d",
+   "#95b5a0",
+   "#b0c5b5"
+  ],
+  "m5": [
+   "#2f2355",
+   "#40306d",
+   "#563e84",
+   "#6d4d99",
+   "#8661aa",
+   "#9b7ab3",
+   "#ae92bc",
+   "#bfa9c7",
+   "#cfbed2"
+  ],
+  "m6": [
+   "#4c5d66",
+   "#677b82",
+   "#869699",
+   "#a6aeaf",
+   "#c4c7c7",
+   "#cdcdcd",
+   "#d5d5d5",
+   "#dddddd",
+   "#e5e5e5"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,1914 @@
+[
+{
+"id": "hn705_140",
+"x": 7.05,
+"z": 1.4,
+"w": 5.2,
+"d": 6.2,
+"wallA": "m:prefab",
+"wallB": "m:prefab",
+"roof": "hip",
+"roofM": "m:roofMetal",
+"eave": 0.55,
+"verge": 0.45,
+"step": 0.42,
+"rise": 0.08,
+"trim": 9073752,
+"corner": 9073752,
+"gutterTint": 6969930,
+"antenna": 1.2,
+"balcony": {
+"x0": -2.3,
+"x1": 0.9,
+"futon": 15784112,
+"dish": true,
+"tint": 12103840
+},
+"win": [
+[
+0,
+1.4,
+1.5,
+1.1,
+"lit",
+{
+"tobukuro": 1,
+"cc": 2,
+"tbTint": 9073752
+}
+],
+[
+0,
+-1.9,
+0.7,
+0.6,
+"frost",
+{
+"grille": true,
+"sill": 1.3
+}
+],
+[
+1,
+-0.7,
+2.6,
+1.85,
+"lace",
+{
+"sill": 0.05,
+"room": 0
+}
+],
+[
+1,
+1.8,
+1,
+1,
+"lit2",
+{
+"tobukuro": 1,
+"curtain": 3,
+"tbTint": 9073752
+}
+],
+[
+0,
+2.2,
+1.2,
+1,
+"kitchen",
+{
+"face": "r"
+}
+],
+[
+1,
+4,
+1,
+1,
+"dark",
+{
+"face": "r"
+}
+],
+[
+1,
+2,
+0.8,
+0.9,
+"lit3",
+{
+"face": "l"
+}
+]
+],
+"door": {
+"x": -0.4,
+"kind": "west",
+"w": 0.95,
+"name": 0,
+"porch": "tile",
+"mail": 2775690
+},
+"extra": "fn"
+},
+{
+"id": "hn1395_390",
+"x": 13.95,
+"z": 3.9,
+"w": 5.2,
+"d": 6.8,
+"wallA": "m:mortarG",
+"wallB": "m:mortarG",
+"roofM": "m:roofBlue",
+"pent": true,
+"antenna": -1.5,
+"trim": 5925466,
+"solar": 0.9,
+"skirt": {
+"h": 0.75
+},
+"win": [
+[
+0,
+-1.4,
+1.6,
+1.1,
+"lit3",
+{
+"grille": true,
+"room": 3,
+"curtain": 0
+}
+],
+[
+0,
+1.6,
+0.8,
+0.6,
+"frost",
+{
+"sill": 1.3,
+"grille": true
+}
+],
+[
+1,
+-1.2,
+1.6,
+1.1,
+"shoji",
+{
+"tobukuro": -1
+}
+],
+[
+1,
+1.4,
+1.4,
+1.1,
+"lit",
+{
+"hood": true,
+"sudare": 0.7,
+"cc": 4
+}
+],
+[
+0,
+2,
+1.2,
+1,
+"kitchen",
+{
+"face": "l"
+}
+],
+[
+1,
+3.5,
+1,
+0.9,
+"lit4",
+{
+"face": "l"
+}
+],
+[
+1,
+2.2,
+0.8,
+0.9,
+"dark",
+{
+"face": "r"
+}
+]
+],
+"door": {
+"x": 0.3,
+"kind": "genkan",
+"w": 1.3,
+"name": 1,
+"porch": "stone",
+"milk": false
+},
+"ac": [
+[
+1,
+0.12
+]
+]
+},
+{
+"id": "hn1935_220",
+"x": 19.35,
+"z": 2.2,
+"w": 5,
+"d": 7,
+"wallA": "m:wallBlue",
+"wallB": "m:wallBlue",
+"roof": "shed",
+"roofM": "m:tin",
+"eave": 0.6,
+"step": 0.5,
+"rise": 0.08,
+"trim": 9080466,
+"gutterTint": 8027778,
+"tiles": false,
+"win": [
+[
+0,
+-1.75,
+0.6,
+0.5,
+"frost",
+{
+"sill": 1.45,
+"grille": true
+}
+],
+[
+0,
+0,
+0.6,
+0.5,
+"frost",
+{
+"sill": 1.45,
+"grille": true
+}
+],
+[
+0,
+1.75,
+0.6,
+0.5,
+"kitchen",
+{
+"sill": 1.45,
+"grille": true,
+"lit": 0.9
+}
+],
+[
+1,
+-1.75,
+0.6,
+0.5,
+"kitchen",
+{
+"sill": 1.45,
+"grille": true
+}
+],
+[
+1,
+0,
+0.6,
+0.5,
+"frost",
+{
+"sill": 1.45,
+"grille": true
+}
+],
+[
+1,
+1.75,
+0.6,
+0.5,
+"frost",
+{
+"sill": 1.45,
+"grille": true
+}
+],
+[
+0,
+2.5,
+1.2,
+1,
+"lit2",
+{
+"face": "l"
+}
+],
+[
+1,
+2.5,
+1.2,
+1,
+"dark",
+{
+"face": "l"
+}
+],
+[
+0,
+5,
+1.2,
+1,
+"tv",
+{
+"face": "l"
+}
+],
+[
+1,
+5,
+1.2,
+1,
+"lit",
+{
+"face": "l"
+}
+]
+]
+},
+{
+"id": "hn2420_260",
+"x": 24.2,
+"z": 2.6,
+"w": 2.9,
+"d": 5.8,
+"floors": 1,
+"h1": 2.6,
+"base": 0.5,
+"wallA": "m:board",
+"roofM": "m:roofIbushi",
+"eave": 0.7,
+"verge": 0.3,
+"barge": 2760728,
+"rafters": true,
+"soffit": 6969928,
+"gutterTint": 6972512,
+"win": [
+[
+0,
+0.65,
+1.3,
+1.25,
+"lit3",
+{
+"tobukuro": -1,
+"sill": 0.7,
+"room": 3,
+"curtain": 0,
+"tbTint": 4864040,
+"frame": 5917240
+}
+],
+[
+0,
+2.4,
+1.2,
+1,
+"lit",
+{
+"face": "l",
+"frame": 5917240
+}
+]
+],
+"door": {
+"x": -0.85,
+"kind": "wood",
+"w": 0.95,
+"name": 2,
+"porch": "stone",
+"lamp": -1,
+"milk": false,
+"umbrella": false,
+"noCanopy": true
+},
+"extra": "fn"
+},
+{
+"id": "hn-705_340",
+"x": -7.05,
+"z": 3.4,
+"w": 5.25,
+"d": 7,
+"wallA": "m:mortarP",
+"wallB": "m:siding",
+"roofM": "m:roofBrown",
+"pent": true,
+"antenna": 1,
+"trim": 4864554,
+"win": [
+[
+0,
+-1.2,
+1.6,
+1.15,
+"kitchen",
+{
+"grille": true
+}
+],
+[
+0,
+1.7,
+0.8,
+0.6,
+"frost",
+{
+"sill": 1.3
+}
+],
+[
+1,
+-1.4,
+1.5,
+1.1,
+"lit2",
+{
+"tobukuro": -1,
+"cc": 1
+}
+],
+[
+1,
+1.3,
+1.5,
+1.1,
+"tv",
+{
+"cc": 5
+}
+],
+[
+0,
+2.4,
+1,
+1,
+"lit4",
+{
+"face": "l"
+}
+],
+[
+1,
+1.8,
+1,
+0.9,
+"dark",
+{
+"face": "l"
+}
+]
+],
+"door": {
+"x": 0.6,
+"kind": "genkan",
+"w": 1.2,
+"lamp": -1,
+"mail": 9080466,
+"name": 3,
+"porch": "tile"
+},
+"ac": [
+[
+1,
+-0.05
+]
+],
+"extra": "fn"
+},
+{
+"id": "hn-1255_370",
+"x": -12.55,
+"z": 3.7,
+"w": 5.2,
+"d": 6.6,
+"wallA": "m:mortar",
+"wallB": "m:wallGrey",
+"roofM": "m:roofIbushi",
+"pent": true,
+"balcony": {
+"x0": -0.6,
+"x1": 2.3,
+"pots": 3,
+"tint": 10127986
+},
+"antenna": -1.4,
+"trim": 4864040,
+"rafters": true,
+"soffit": 8022616,
+"win": [
+[
+0,
+-1.3,
+1.6,
+1.1,
+"lit2",
+{
+"flowers": true,
+"room": 0,
+"curtain": 1,
+"cc": 0
+}
+],
+[
+0,
+1.6,
+1.2,
+1.1,
+"shoji",
+{
+"grille": true
+}
+],
+[
+1,
+0.85,
+2.4,
+1.85,
+"lit4",
+{
+"sill": 0.05,
+"room": 3,
+"curtain": 2
+}
+],
+[
+1,
+-1.6,
+1.2,
+1,
+"dark",
+{
+"hood": true
+}
+],
+[
+0,
+2.5,
+1.2,
+1,
+"kitchen",
+{
+"face": "r"
+}
+],
+[
+1,
+2.2,
+1,
+0.9,
+"lit",
+{
+"face": "r"
+}
+],
+[
+1,
+3.2,
+0.9,
+0.9,
+"lit3",
+{
+"face": "l"
+}
+]
+],
+"door": {
+"x": 0.1,
+"kind": "wood",
+"w": 1.2,
+"name": 4,
+"porch": "stone"
+},
+"extra": "fn"
+},
+{
+"id": "hn-1800_528",
+"x": -18,
+"z": 5.28,
+"w": 5.15,
+"d": 7,
+"wallA": "m:siding",
+"wallB": "m:board",
+"roofM": "m:roofGrey",
+"trim": 3811872,
+"rafters": true,
+"soffit": 6969928,
+"win": [
+[
+1,
+-1.3,
+1.4,
+1,
+"lit2",
+{
+"tobukuro": 1,
+"room": 3,
+"curtain": 1,
+"cc": 6,
+"frame": 6969928
+}
+],
+[
+1,
+1.3,
+1.4,
+1,
+"dark",
+{
+"grille": true,
+"frame": 6969928
+}
+],
+[
+0,
+3,
+1,
+0.9,
+"dark",
+{
+"face": "r"
+}
+],
+[
+1,
+3.4,
+1,
+0.9,
+"lit",
+{
+"face": "r"
+}
+]
+],
+"extra": "fn"
+},
+{
+"id": "hn-2325_200",
+"x": -23.25,
+"z": 2,
+"w": 4.8,
+"d": 6,
+"wallA": "m:wallCream",
+"wallB": "m:wallCream",
+"roofM": "m:roofGreen",
+"pent": true,
+"trim": 5917242,
+"win": [
+[
+0,
+-0.9,
+1.8,
+1.15,
+"shoji",
+{
+"tobukuro": 1
+}
+],
+[
+1,
+0.9,
+1.4,
+1,
+"lit",
+{
+"sudare": 0.65,
+"cc": 3
+}
+],
+[
+1,
+-1.3,
+0.9,
+0.9,
+"dark"
+],
+[
+0,
+2.4,
+1,
+1,
+"kitchen",
+{
+"face": "r"
+}
+]
+],
+"door": {
+"x": 1.3,
+"kind": "genkan",
+"w": 1.2,
+"lamp": -1,
+"name": 5
+},
+"extra": "fn"
+},
+{
+"id": "hn-2300_-630",
+"x": -23,
+"z": -6.3,
+"w": 6,
+"d": 7,
+"side": 1,
+"lite": true,
+"floors": 1,
+"h1": 3.2,
+"h2": 2.8000000000000003,
+"wallA": "m:wallBeige",
+"roofM": "m:roofGrey",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.5,
+1.3,
+1,
+"dark"
+],
+[
+0,
+1.5,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hn-1700_-630",
+"x": -17,
+"z": -6.3,
+"w": 5.5,
+"d": 7,
+"side": 1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 4,
+"wallA": "m:wallCream",
+"roofM": "m:roofBlue",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.375,
+1.3,
+1,
+"lit"
+],
+[
+1,
+1.375,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hn-1320_-630",
+"x": -13.2,
+"z": -6.3,
+"w": 3.4,
+"d": 7,
+"side": 1,
+"lite": true,
+"floors": 1,
+"h1": 3.2,
+"h2": 2.4,
+"wallA": "m:wallGrey",
+"roofM": "m:roofGreen",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-0.85,
+1.3,
+1,
+"lit"
+],
+[
+0,
+0.85,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hf-2325_1630",
+"x": -23.25,
+"z": 16.3,
+"w": 4.8,
+"d": 7,
+"side": -1,
+"wallA": "m:wallGrey",
+"wallB": "m:wallGrey",
+"roofM": "m:roofBlue",
+"pent": true,
+"antenna": -1,
+"win": [
+[
+0,
+1,
+1.6,
+1.1,
+"lit",
+{
+"cc": 3,
+"curtain": 4
+}
+],
+[
+1,
+1,
+1.6,
+1.1,
+"lace",
+{
+"amado": true,
+"tobukuro": 1
+}
+],
+[
+1,
+-1.4,
+0.9,
+0.9,
+"dark",
+{
+"amado": true,
+"tobukuro": -1
+}
+],
+[
+0,
+2.5,
+1,
+1,
+"kitchen",
+{
+"face": "r"
+}
+],
+[
+1,
+2.8,
+1,
+0.9,
+"dark",
+{
+"face": "r"
+}
+]
+],
+"door": {
+"x": -1.1,
+"kind": "genkan",
+"w": 1.2,
+"name": 6,
+"milk": false
+},
+"ac": [
+[
+1,
+-0.35
+]
+],
+"extra": "fn"
+},
+{
+"id": "hf-1810_1590",
+"x": -18.1,
+"z": 15.9,
+"w": 5,
+"d": 7,
+"side": -1,
+"wallA": "m:mortar",
+"wallB": "m:mortarP",
+"roofM": "m:roofBrown",
+"pent": true,
+"balcony": {
+"x0": -2.1,
+"x1": 0.8,
+"futon": 16513264,
+"futonX": -0.2
+},
+"win": [
+[
+0,
+-1.3,
+1.6,
+1.1,
+"tv",
+{
+"grille": true
+}
+],
+[
+0,
+1.4,
+1.2,
+1.1,
+"dark",
+{
+"room": 3
+}
+],
+[
+1,
+-0.65,
+2.4,
+1.85,
+"lit2",
+{
+"sill": 0.05,
+"room": 3,
+"curtain": 1,
+"cc": 2
+}
+],
+[
+1,
+1.6,
+0.9,
+0.9,
+"lit",
+{
+"sudare": 0.7
+}
+],
+[
+0,
+2.3,
+1,
+1,
+"kitchen",
+{
+"face": "l"
+}
+],
+[
+1,
+3.3,
+0.9,
+0.9,
+"dark",
+{
+"face": "l"
+}
+]
+],
+"door": {
+"x": 0.9,
+"kind": "wood",
+"w": 1.1,
+"lamp": -1,
+"mail": 3828282,
+"name": 7,
+"porch": "stone"
+}
+},
+{
+"id": "hf-450_1650",
+"x": -4.5,
+"z": 16.5,
+"w": 5.4,
+"d": 7,
+"side": -1,
+"wallA": "m:wallCream",
+"wallB": "m:wallBeige",
+"roofM": "m:roofGrey",
+"pent": true,
+"antenna": 1.4,
+"balcony": {
+"x0": -2.4,
+"x1": 0.2,
+"small": true,
+"colors": [
+16513264,
+16304344,
+13164792,
+16773296,
+16513264
+],
+"pots": 1
+},
+"win": [
+[
+0,
+-1.4,
+1.6,
+1.1,
+"lit2",
+{
+"room": 0,
+"curtain": 1,
+"cc": 4
+}
+],
+[
+0,
+1.6,
+0.8,
+0.6,
+"frost",
+{
+"sill": 1.3,
+"grille": true
+}
+],
+[
+1,
+-1.1,
+1.6,
+1.85,
+"lit",
+{
+"sill": 0.05,
+"curtain": 2
+}
+],
+[
+1,
+1.5,
+1.2,
+1,
+"lit3",
+{
+"room": 2,
+"curtain": 4,
+"cc": 5,
+"lit": 0.45
+}
+],
+[
+0,
+2.5,
+1,
+1,
+"kitchen",
+{
+"face": "l"
+}
+],
+[
+1,
+3,
+1,
+0.9,
+"dark",
+{
+"face": "r"
+}
+]
+],
+"door": {
+"x": 0.3,
+"kind": "genkan",
+"w": 1.2,
+"mail": 13122090,
+"name": 8
+},
+"ac": [
+[
+1,
+0.2
+]
+],
+"extra": "fn"
+},
+{
+"id": "hf140_1660",
+"x": 1.4,
+"z": 16.6,
+"w": 5.8,
+"d": 7,
+"side": -1,
+"wallA": "m:wallBeige",
+"wallB": "m:wallCream",
+"roofM": "m:roofSlate",
+"pent": true,
+"pentM": "m:roofSlate",
+"balcony": {
+"x0": -0.4,
+"x1": 2.6,
+"dish": true
+},
+"trim": 3811872,
+"skirt": {
+"h": 0.6,
+"mat": "m:brick"
+},
+"corner": 15262938,
+"win": [
+[
+0,
+-1.6,
+1.6,
+1.1,
+"lit",
+{
+"flowers": true,
+"cc": 1
+}
+],
+[
+0,
+1.6,
+1.2,
+1,
+"kitchen",
+{
+"grille": true
+}
+],
+[
+1,
+1.1,
+2.6,
+1.85,
+"lace",
+{
+"sill": 0.05
+}
+],
+[
+1,
+-1.9,
+1,
+1,
+"lit2",
+{
+"hood": true,
+"room": 2,
+"curtain": 3
+}
+],
+[
+0,
+2.2,
+1,
+1,
+"lit4",
+{
+"face": "r"
+}
+],
+[
+1,
+2.5,
+1,
+0.9,
+"dark",
+{
+"face": "l"
+}
+]
+],
+"door": {
+"x": -0.1,
+"kind": "west",
+"w": 1,
+"lamp": -1,
+"name": 9,
+"porch": "tile"
+}
+},
+{
+"id": "hf725_1600",
+"x": 7.25,
+"z": 16,
+"w": 5.3,
+"d": 7,
+"side": -1,
+"wallA": "m:mortarG",
+"wallB": "m:mortarG",
+"roofM": "m:roofGrey",
+"pent": true,
+"antenna": -1.2,
+"win": [
+[
+0,
+-1.2,
+1.8,
+1.15,
+"shoji",
+{
+"tobukuro": 1
+}
+],
+[
+0,
+1.7,
+0.8,
+0.6,
+"frost",
+{
+"sill": 1.3
+}
+],
+[
+1,
+-1.3,
+1.5,
+1.1,
+"empty",
+{
+"lit": 0,
+"curtain": 0
+}
+],
+[
+1,
+1.4,
+1.5,
+1.1,
+"dark",
+{
+"amado": true,
+"tobukuro": 1
+}
+],
+[
+0,
+2.6,
+1.1,
+1,
+"lit",
+{
+"face": "l",
+"curtain": 4,
+"cc": 0
+}
+],
+[
+1,
+2.6,
+1,
+0.9,
+"dark",
+{
+"face": "r"
+}
+]
+],
+"door": {
+"x": 0.4,
+"kind": "genkan",
+"w": 1.2,
+"name": 10,
+"milk": false
+},
+"ac": [
+[
+1,
+0.05
+]
+],
+"extra": "fn"
+},
+{
+"id": "hf1270_1840",
+"x": 12.7,
+"z": 18.4,
+"w": 5,
+"d": 6.4,
+"side": -1,
+"wallA": "m:wallGrey",
+"wallB": "m:siding",
+"roof": "shed",
+"roofM": "m:roofMetalB",
+"eave": 0.5,
+"step": 0.4,
+"rise": 0.1,
+"trim": 2763306,
+"gutterTint": 3815994,
+"corner": 3815994,
+"win": [
+[
+0,
+-1.5,
+1.4,
+1.1,
+"lit2",
+{
+"room": 0,
+"curtain": 3
+}
+],
+[
+1,
+-0.6,
+2.8,
+0.9,
+"lit",
+{
+"sill": 0.9,
+"room": 2,
+"curtain": 4,
+"cc": 6,
+"lit": 0.7
+}
+],
+[
+1,
+1.9,
+0.6,
+0.9,
+"dark"
+],
+[
+0,
+2.4,
+1,
+1,
+"kitchen",
+{
+"face": "l"
+}
+],
+[
+1,
+3.4,
+1,
+0.9,
+"tv",
+{
+"face": "r"
+}
+]
+],
+"door": {
+"x": 1.2,
+"kind": "west",
+"w": 0.95,
+"mail": 2763306,
+"name": 11,
+"porch": "tile"
+}
+},
+{
+"id": "hf1820_1600",
+"x": 18.2,
+"z": 16,
+"w": 5.2,
+"d": 7,
+"side": -1,
+"wallA": "m:mortarP",
+"wallB": "m:wallCream",
+"roofM": "m:roofBrown",
+"pent": true,
+"solar": -0.6,
+"balcony": {
+"x0": -2.2,
+"x1": 0.6,
+"laundry": false
+},
+"win": [
+[
+0,
+-1.4,
+1.6,
+1.1,
+"empty",
+{
+"lit": 0,
+"curtain": 0
+}
+],
+[
+0,
+1.6,
+1,
+1,
+"dark",
+{
+"grille": true,
+"amado": true
+}
+],
+[
+1,
+-0.8,
+2.4,
+1.85,
+"dark",
+{
+"sill": 0.05,
+"amado": true
+}
+],
+[
+1,
+1.6,
+1,
+1,
+"dark",
+{
+"amado": true,
+"tobukuro": 1
+}
+],
+[
+0,
+2.6,
+1,
+1,
+"empty",
+{
+"face": "r",
+"lit": 0,
+"curtain": 0
+}
+],
+[
+1,
+3.1,
+1,
+0.9,
+"dark",
+{
+"face": "l"
+}
+]
+],
+"door": {
+"x": 1.4,
+"kind": "genkan",
+"w": 1.1,
+"lamp": -1,
+"name": 15,
+"milk": false,
+"umbrella": false
+}
+},
+{
+"id": "hf-2300_2527",
+"x": -23,
+"z": 25.266961747190674,
+"w": 5.5,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 4.199999999999999,
+"wallA": "m:mortar",
+"roofM": "m:roofBrown",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.375,
+1.3,
+1,
+"dark"
+],
+[
+1,
+1.375,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hf-1720_2502",
+"x": -17.2,
+"z": 25.01672581173869,
+"w": 5,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 1,
+"h1": 3.2,
+"h2": 2.8000000000000003,
+"wallA": "m:wallGrey",
+"roofM": "m:roofGreen",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.25,
+1.3,
+1,
+"dark"
+],
+[
+0,
+1.25,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hf-1160_2485",
+"x": -11.6,
+"z": 24.848309843672514,
+"w": 5.6,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 3.8000000000000003,
+"wallA": "m:wallCream",
+"roofM": "m:roofBlue",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.4,
+1.3,
+1,
+"lit"
+],
+[
+1,
+1.4,
+1.2,
+1,
+"lit3"
+]
+]
+},
+{
+"id": "hf-540_2496",
+"x": -5.4,
+"z": 24.95761654841658,
+"w": 5.4,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 1,
+"h1": 3.2,
+"h2": 2.6,
+"wallA": "m:mortar",
+"roofM": "m:roofBrown",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.35,
+1.3,
+1,
+"lit"
+],
+[
+0,
+1.35,
+1.2,
+1,
+"lit3"
+]
+]
+},
+{
+"id": "hf60_2491",
+"x": 0.6,
+"z": 24.913533075878757,
+"w": 5.6,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 4.4,
+"wallA": "m:wallGrey",
+"roofM": "m:roofGreen",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.4,
+1.3,
+1,
+"lit"
+],
+[
+1,
+1.4,
+1.2,
+1,
+"lit3"
+]
+]
+},
+{
+"id": "hf660_2505",
+"x": 6.6,
+"z": 25.050975555845298,
+"w": 5.2,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 1,
+"h1": 3.2,
+"h2": 3.0000000000000004,
+"wallA": "m:wallGrey",
+"roofM": "m:roofGreen",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.3,
+1.3,
+1,
+"dark"
+],
+[
+0,
+1.3,
+1.2,
+1,
+"lit3"
+]
+]
+},
+{
+"id": "hf1260_2548",
+"x": 12.6,
+"z": 25.478319952282664,
+"w": 5.8,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 4,
+"wallA": "m:wallCream",
+"roofM": "m:roofBlue",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.45,
+1.3,
+1,
+"lit"
+],
+[
+1,
+1.45,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hf1860_2495",
+"x": 18.6,
+"z": 24.95444019491655,
+"w": 5.2,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 1,
+"h1": 3.2,
+"h2": 2.6999999999999997,
+"wallA": "m:wallCream",
+"roofM": "m:roofBlue",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.3,
+1.3,
+1,
+"dark"
+],
+[
+0,
+1.3,
+1.2,
+1,
+"lit3"
+]
+]
+},
+{
+"id": "hf2400_2484",
+"x": 24,
+"z": 24.83871959164709,
+"w": 4.6,
+"d": 7,
+"side": -1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 3.6,
+"wallA": "m:mortar",
+"roofM": "m:roofBrown",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.15,
+1.3,
+1,
+"lit"
+],
+[
+1,
+1.15,
+1.2,
+1,
+"lit3"
+]
+]
+},
+{
+"id": "hn1340_-3020",
+"x": 13.4,
+"z": -30.2,
+"w": 5.6,
+"d": 7,
+"side": 1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 3.8000000000000003,
+"wallA": "m:wallGrey",
+"roofM": "m:roofGreen",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.4,
+1.3,
+1,
+"lit"
+],
+[
+1,
+1.4,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hn1890_-3020",
+"x": 18.9,
+"z": -30.2,
+"w": 5,
+"d": 7,
+"side": 1,
+"lite": true,
+"floors": 1,
+"h1": 3.2,
+"h2": 2.8000000000000003,
+"wallA": "m:wallBeige",
+"roofM": "m:roofGrey",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.25,
+1.3,
+1,
+"dark"
+],
+[
+0,
+1.25,
+1.2,
+1,
+"lit3"
+]
+]
+},
+{
+"id": "hn2360_-3020",
+"x": 23.6,
+"z": -30.2,
+"w": 4.4,
+"d": 7,
+"side": 1,
+"lite": true,
+"floors": 2,
+"h1": 2.7,
+"h2": 4,
+"wallA": "m:wallGrey",
+"roofM": "m:roofGreen",
+"step": 0.45,
+"rise": 0.2,
+"win": [
+[
+0,
+-1.1,
+1.3,
+1,
+"lit"
+],
+[
+1,
+1.1,
+1.2,
+1,
+"dark"
+]
+]
+},
+{
+"id": "hf-1242_1490",
+"x": -12.425,
+"z": 14.9,
+"w": 6.049999999999999,
+"d": 5.049999999999999,
+"side": -1,
+"y0": 3.0700000000000003,
+"floors": 1,
+"h1": 2.5,
+"wallA": "m:wallCream",
+"roofM": "m:roofGrey",
+"antenna": 1.6,
+"win": [
+[
+0,
+-1.4,
+1.6,
+1.1,
+"lit",
+{
+"tobukuro": -1,
+"sill": 0.8
+}
+],
+[
+0,
+1.5,
+1.4,
+1,
+"lit2",
+{
+"sill": 0.8
+}
+],
+[
+0,
+2.5,
+1.2,
+1,
+"lit3",
+{
+"face": "l",
+"sill": 0.8,
+"clean": true
+}
+],
+[
+0,
+2.5,
+1,
+1,
+"dark",
+{
+"face": "r",
+"sill": 0.8
+}
+]
+]
+}
+]

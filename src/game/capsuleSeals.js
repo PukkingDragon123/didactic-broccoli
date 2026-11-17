@@ -1,6 +1,7 @@
-// The seals on a sealed capsule (opened in your hands: src/game/ritual.js), in the voxel look:
-//   the tape   a printed paper strip round the seam that follows the voxel steps of the shell exactly (one quad per
-//              voxel edge), its free end tucked under the seal; it peels away edge by edge with a flap standing out
+// The seals on a sealed capsule (opened in your hands: src/game/ritual.js):
+//   the tape   a printed paper strip round the seam (on the smooth lowpix capsule a ring of short quads; on the voxel
+//              fallback it follows the voxel steps exactly), its free end tucked under the seal; it peels away edge by
+//              edge with a flap standing out
 //   the seal   a paper sticker (a red hanko ring with 封) across the seam on the front, or a red wax seal on ultra and
 //              secret capsules; it cracks in stages and comes off
 // dressSeals(cap, data) adds them to a capsule from makeCapsule (Capsule.js) once; data.seal (steps done) leaves off
@@ -28,6 +29,22 @@ function seamEdges(N) {
     if (!filled(x, z + 1)) edges.push([[x - LIFT, z + 1 + LIFT], [x + 1 + LIFT, z + 1 + LIFT]]);
     if (!filled(x, z - 1)) edges.push([[x - LIFT, z - LIFT], [x + 1 + LIFT, z - LIFT]]);
   }
+  pathCache.set(N, finishEdges(edges));
+  return pathCache.get(N);
+}
+/** The smooth capsule's seam (src/game/Capsule.js lowpix halves): a ring of M edges at radius R (in voxel units). */
+function roundEdges(R, M = 40) {
+  const key = 'r' + R + '|' + M;
+  if (pathCache.has(key)) return pathCache.get(key);
+  const edges = [];
+  for (let i = 0; i < M; i++) {
+    const a0 = (i / M) * Math.PI * 2, a1 = ((i + 1) / M) * Math.PI * 2;
+    edges.push([[Math.sin(a0) * R, Math.cos(a0) * R], [Math.sin(a1) * R, Math.cos(a1) * R]]);
+  }
+  pathCache.set(key, finishEdges(edges));
+  return pathCache.get(key);
+}
+function finishEdges(edges) {
   // in peeling order: from the front (+z, under the seal) round the way the capsule turns as you peel
   const rel = (e) => { const mx = (e[0][0] + e[1][0]) / 2, mz = (e[0][1] + e[1][1]) / 2; let a = -Math.atan2(mx, mz); if (a < 0) a += Math.PI * 2; return a; };
   edges.sort((p, q) => rel(p) - rel(q));
@@ -43,7 +60,6 @@ function seamEdges(N) {
     if (n[0] * mx + n[1] * mz < 0) n = [-n[0], -n[1]];
     e.n = n;
   }
-  pathCache.set(N, edges);
   return edges;
 }
 
@@ -185,6 +201,28 @@ function stickerGeo(N, vs, sw, sh, lift) {
   return g;
 }
 
+/** A sticker sw x sh (metres) laid on a sphere of radius R round the front (+z) at the seam: a grid bent onto it. */
+function sphereStickerGeo(R, sw, sh, n = 8) {
+  const pos = [], uv = [], nrm = [], idx = [];
+  for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) {
+    const u = i / n, v = j / n;
+    // arc lengths across the surface -> angles
+    const ax = (u - 0.5) * sw / R, ay = (v - 0.5) * sh / R;
+    const x = Math.sin(ax) * Math.cos(ay) * R, y = Math.sin(ay) * R, z = Math.cos(ax) * Math.cos(ay) * R;
+    pos.push(x, y, z); uv.push(u, v); nrm.push(x / R, y / R, z / R);
+  }
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const a = j * (n + 1) + i;
+    idx.push(a, a + 1, a + n + 2, a, a + n + 2, a + n + 1);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  return g;
+}
+
 // ------------------------------------------------------------------ the parts
 const mat = (map) => new THREE.MeshStandardMaterial({ map, roughness: 0.85, metalness: 0, alphaTest: 0.5, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
 
@@ -199,7 +237,7 @@ export function dressSeals(cap, data, stepsDone = data?.seal || 0) {
   if (cap.seals || !cap.group || !cap.paper) return cap.seals; // (hi-res capsules with their contents only)
   const N = cap.N || 20;
   const vs = (2 * cap.r) / N;
-  const edges = seamEdges(N);
+  const edges = cap.lowpix ? roundEdges(N / 2 * 1.014) : seamEdges(N);
   // the tape: one outward quad an edge, u running along it
   let total = 0;
   const lens = edges.map((e) => { const l = Math.hypot(e[1][0] - e[0][0], e[1][1] - e[0][1]); total += l; return l; });
@@ -231,7 +269,7 @@ export function dressSeals(cap, data, stepsDone = data?.seal || 0) {
   // the seal on the front, across the seam: stuck down onto the blocks (it steps with the shell, no edge in the air)
   const kind = sealKind(data);
   const sw = (kind === 'wax' ? 0.0152 : 0.0144) * cap.r / 0.0325, sh = sw * 34 / 28;
-  const seal = new THREE.Mesh(stickerGeo(N, vs, sw, sh, (LIFT + 0.12) * vs), mat(sealTex(kind, 0)));
+  const seal = new THREE.Mesh(cap.lowpix ? sphereStickerGeo(cap.r * 1.022, sw, sh) : stickerGeo(N, vs, sw, sh, (LIFT + 0.12) * vs), mat(sealTex(kind, 0)));
   seal.userData.kind = kind;
   seal.material.side = THREE.DoubleSide;
   const layers = cap.group.children[0]?.children?.[0]?.layers?.mask ?? cap.top.children[0]?.layers?.mask;

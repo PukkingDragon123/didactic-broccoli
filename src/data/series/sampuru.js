@@ -13,7 +13,7 @@ export default {
   capsule: { colors: [0xc8392b, 0xe8a33a, 0xfff1dc, 0x3a7a4a], style: 'clear' },
   items: [
     { id: 'ramen', name: 'Chopstick-Lift Ramen', jp: '箸上げラーメン', rarity: 'common', desc: 'The noodles hang in the air forever. That is the whole trick, and it never gets old.' },
-    { id: 'katsu', name: 'Katsu Curry', jp: 'カツカレー', rarity: 'common', desc: 'Golden cutlet, glossy roux, a hill of rice. The varnish is the secret ingredient.' },
+    { id: 'katsu', name: 'Ketchup Omurice', jp: 'オムライス', rarity: 'common', desc: "A glossy omelette over ketchup rice, a red zigzag on top, a sprig of parsley. The window's star." },
     { id: 'udon', name: 'Kitsune Udon', jp: 'きつねうどん', rarity: 'common', desc: 'Sweet fried tofu on a bowl of thick noodles, for the fox in you.' },
     { id: 'ebifry', name: 'Ebi-fry Plate', jp: 'エビフライ定食', rarity: 'uncommon', desc: 'Two crunchy prawns, curly tails up, a wedge of lemon and a mound of cabbage.' },
     { id: 'soda', name: 'Melon Cream Soda', jp: 'メロンクリームソーダ', rarity: 'uncommon', desc: 'Fizz you cannot drink, a scoop that never melts, a cherry on a stalk.', gimmick: { text: 'Wobble the glass' } },

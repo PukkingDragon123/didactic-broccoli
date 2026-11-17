@@ -90,6 +90,51 @@
     "#beae95",
     "#e3ddd2"
    ],
+   "c3a2c22_k0p1": [
+    "#0d0706",
+    "#1e120f",
+    "#2e1e18",
+    "#3e2c21",
+    "#856449",
+    "#b8a084",
+    "#e0d8cb"
+   ],
+   "c5a6a3a": [
+    "#15150b",
+    "#30311a",
+    "#484d2a",
+    "#5e673b",
+    "#98a05f",
+    "#bfc19a",
+    "#e4e4d4"
+   ],
+   "c6a5a4a": [
+    "#17100e",
+    "#342721",
+    "#514035",
+    "#6d5a4a",
+    "#9c8972",
+    "#bfb5a7",
+    "#e3e0da"
+   ],
+   "c6a4a2a_k0p0": [
+    "#170b07",
+    "#351d11",
+    "#52321c",
+    "#6f4a27",
+    "#b48242",
+    "#d1b685",
+    "#eae2cc"
+   ],
+   "c4a3424": [
+    "#100807",
+    "#241510",
+    "#38241a",
+    "#4c3424",
+    "#926b48",
+    "#c0a584",
+    "#e3dacb"
+   ],
    "cefe6cf": [
     "#492711",
     "#a86529",
@@ -102,6 +147,66 @@
   }
  },
  "styles": {
+  "pvc": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.4,
+     "amount": 0.12
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.75,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.3,
+     "min_light": -0.1,
+     "max_light": 0.22
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.2,
+     "shift": 1.0
+    }
+   ]
+  },
+  "matte": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.0,
+     "amount": 0.16
+    },
+    {
+     "id": "grain",
+     "op": "speckle",
+     "density": 0.015,
+     "shift": -0.5
+    }
+   ]
+  },
   "bark": {
    "dither": 0,
    "rim": {
@@ -141,6 +246,37 @@
      "src": "assets/photos/forest_leaves_02",
      "scale": 12,
      "amount": 1.2
+    }
+   ]
+  },
+  "glaze": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 1.8,
+     "amount": 0.2
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.9,
+     "min_light": 0.72
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.2,
+     "shift": 1.0
     }
    ]
   },
@@ -266,6 +402,859 @@
    }
   },
   {
+   "id": "cic",
+   "shape": "bone",
+   "pivot": [
+    0,
+    23.0,
+    4.4
+   ],
+   "rotation": [
+    -12,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "abdomen",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      -12,
+      0
+     ],
+     "size": 1.0
+    },
+    {
+     "at": [
+      0,
+      -10,
+      0
+     ],
+     "size": 4.6
+    },
+    {
+     "at": [
+      0,
+      -6,
+      0
+     ],
+     "size": 6.0
+    },
+    {
+     "at": [
+      0,
+      -2,
+      0
+     ],
+     "size": 6.4
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "c3a2c22_k0p1",
+    "tone": 2.6,
+    "layers": [
+     {
+      "id": "rings",
+      "op": "stripes",
+      "axis": "y",
+      "period": 1.2,
+      "width": 0.18,
+      "shift": -0.8
+     }
+    ]
+   }
+  },
+  {
+   "id": "thorax",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      -2.4,
+      0
+     ],
+     "size": [
+      6.6,
+      4.2
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.5,
+      0
+     ],
+     "size": [
+      7.4,
+      4.6
+     ]
+    },
+    {
+     "at": [
+      0,
+      4.6,
+      0
+     ],
+     "size": [
+      6.8,
+      4.0
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 12,
+    "round": 2.3
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "c3a2c22_k0p1",
+    "tone": 2.9,
+    "layers": [
+     {
+      "id": "mark",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        1.2,
+        2.2,
+        1.6
+       ],
+       [
+        -1.6,
+        3.0,
+        1.8,
+        0.8
+       ],
+       [
+        1.6,
+        3.0,
+        1.8,
+        0.8
+       ]
+      ],
+      "ramp": "c5a6a3a",
+      "tone": 2.8
+     }
+    ]
+   }
+  },
+  {
+   "id": "head",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      4.4,
+      0
+     ],
+     "size": [
+      7.6,
+      3.6
+     ]
+    },
+    {
+     "at": [
+      0,
+      6.2,
+      0
+     ],
+     "size": [
+      7.0,
+      3.2
+     ]
+    },
+    {
+     "at": [
+      0,
+      7.0,
+      0
+     ],
+     "size": [
+      4.0,
+      2.0
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.3
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "c3a2c22_k0p1",
+    "tone": 2.8
+   }
+  },
+  {
+   "id": "eye-1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    -3.4,
+    5.6,
+    0.6
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.1
+    },
+    {
+     "at": [
+      -0.6,
+      0,
+      0
+     ],
+     "size": 2.2
+    },
+    {
+     "at": [
+      -1.6,
+      0,
+      0
+     ],
+     "size": 2.2
+    },
+    {
+     "at": [
+      -2.0,
+      0,
+      0
+     ],
+     "size": 0.1
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.0
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "glaze",
+   "paint": {
+    "ramp": "c6a5a4a",
+    "tone": 3.2
+   }
+  },
+  {
+   "id": "eye1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    3.4,
+    5.6,
+    0.6
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.1
+    },
+    {
+     "at": [
+      0.6,
+      0,
+      0
+     ],
+     "size": 2.2
+    },
+    {
+     "at": [
+      1.6,
+      0,
+      0
+     ],
+     "size": 2.2
+    },
+    {
+     "at": [
+      2.0,
+      0,
+      0
+     ],
+     "size": 0.1
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.0
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "glaze",
+   "paint": {
+    "ramp": "c6a5a4a",
+    "tone": 3.2
+   }
+  },
+  {
+   "id": "wing-1",
+   "shape": "card",
+   "parent": "cic",
+   "pivot": [
+    -0.6,
+    3.6,
+    2.4
+   ],
+   "offset": [
+    -3.5,
+    -8,
+    0
+   ],
+   "rotation": [
+    -6,
+    -14,
+    6
+   ],
+   "plane": "xy",
+   "art": [
+    "...................vvvvvvvvv",
+    "..................wwsvvvvvvv",
+    ".................wwwsvvwvvvv",
+    "...............wwwwwvvvwvvvv",
+    "..............swwwwwvvwwvvvv",
+    ".............wswwwwvvswwvvvv",
+    "............wwwswwwvvwswvvvv",
+    "...........wwwwswwvvwwswvvvv",
+    "..........wwwwwswwvvwwswvvvv",
+    ".........vvvvvvvvvvvvvwsvvvv",
+    "........wswwwwwwvvvwwwwsvvvv",
+    "......wwwswwwwwwvvwwwwwsvvvv",
+    ".....wwwwwswwwwvvvwwwwwwvvvv",
+    "....wwwwwwswwwwvvswwwwwwvvvv",
+    "...swwwwwwswwwvvwswwwwwwvvvv",
+    "..wwswwwwwwswwvvwwswwwwwvvvv",
+    ".wwwswwwwwwswvvwwwswwwwwvvvv",
+    ".wwwswwwwwwswvvwwwswwwwwvvvv",
+    ".vvvvvvvvvvvvvvvvvvvvvwwvvvv",
+    ".wwwwswwwwwwsvvwwwwswwwwvvvv",
+    ".wwwwswwwwwwsvvwwwwswwwwvvvv",
+    ".wwwwwswwwwwwvvwwwwwswwwvvvv",
+    ".wwwwwswwwwwwvvwwwwwswwwvvvv",
+    ".wwwwwswwwwwwvvwwwwwswwwvvvv",
+    ".wwwwwwswwwwwvvvwwwwwswwvvvv",
+    ".wwwwwwswwwwwvvvwwwwwswwvvvv",
+    ".wwwwwwswwwwwvvvwwwwwswwvvvv",
+    "..vvvvvvvvvvvvvvvvvvvvswvvvv",
+    "..wwwwwwswwwwwvvwwwwwwswvvvv",
+    "..wwwwwwswwwwwvvwwwwwwswvvvv",
+    "..swwwwwwswwwwvvswwwwwwsvvvv",
+    "..swwwwwwswwwwvvswwwwwwsvvvv",
+    "..swwwwwwswwwwvvswwwwwwsvvvv",
+    "...swwwwwwswwwvvwswwwwwwvvvv",
+    "...swwwwwwswwwvvwswwwwwwvvvv",
+    "...swwwwwwswwwvvwswwwwwwvvvv",
+    "...vvvvvvvvvvvvvvvvvvvwwvvvv",
+    "...wswwwwwwswwvvvwswwwwwvvvv",
+    "....swwwwwwswwvvvwswwwwwvvvv",
+    "....wswwwwwwswwvvwwswwwwvvvv",
+    "....wswwwwwwswwvvwwswwwwvvvv",
+    ".....swwwwwwswwvvwwswwwwvvvv",
+    ".....wswwwwwwswvvwwwswwwvvvv",
+    ".....wswwwwwwswvvwwwswwwvvvv",
+    ".....wswwwwwwswvvvwwswwwvvvv",
+    "......vvvvvvvvvvvvvvvvwwvvvv",
+    "......wswwwwwwswvvwwwswwvvvv",
+    ".......swwwwwwswvvwwwswwvvvv",
+    ".......wswwwwwwsvvwwwwswvvvv",
+    ".......wswwwwwwsvvvwwwswvvvv",
+    "........swwwwwwsvvvwwwswvvvv",
+    "........wswwwwwwsvvwwwwsvvvv",
+    "........wswwwwwwsvvwwwwsvvvv",
+    ".........swwwwwwsvvwwwwsvvvv",
+    ".........vvvvvvvvvvvvvwwvvvv",
+    "..........swwwwwwsvvwwwwvvvv",
+    "..........swwwwwwsvvwwwwvvvv",
+    "...........swwwwwwvvwwwwvvvv",
+    "...........swwwwwwvvwwwwvvvv",
+    "............wwwwwwvvvwwwvvvv",
+    "............swwwwwwvvwwwvvvv",
+    ".............wwwwwwvvwwwvvvv",
+    ".............wwwwwwvvvwwvvvv",
+    "..............vvvvvvvvwwvvvv"
+   ],
+   "style": "pvc",
+   "paint": {
+    "art_key": {
+     "w": "c6a4a2a_k0p0:3",
+     "s": "c6a4a2a_k0p0:4",
+     "v": "c6a4a2a_k0p0:1"
+    },
+    "ramp": "c6a4a2a_k0p0",
+    "tone": 3
+   }
+  },
+  {
+   "id": "wing1",
+   "shape": "card",
+   "parent": "cic",
+   "pivot": [
+    0.6,
+    3.6,
+    2.4
+   ],
+   "offset": [
+    3.5,
+    -8,
+    0
+   ],
+   "rotation": [
+    -6,
+    14,
+    -6
+   ],
+   "plane": "xy",
+   "art": [
+    "vvvvvvvvv...................",
+    "vvvvvvvsww..................",
+    "vvvvwvvswww.................",
+    "vvvvwvvvwwwww...............",
+    "vvvvwwvvwwwwws..............",
+    "vvvvwwsvvwwwwsw.............",
+    "vvvvwswvvwwwswww............",
+    "vvvvwswwvvwwswwww...........",
+    "vvvvwswwvvwwswwwww..........",
+    "vvvvswvvvvvvvvvvvvv.........",
+    "vvvvswwwwvvvwwwwwwsw........",
+    "vvvvswwwwwvvwwwwwwswww......",
+    "vvvvwwwwwwvvvwwwwswwwww.....",
+    "vvvvwwwwwwsvvwwwwswwwwww....",
+    "vvvvwwwwwwswvvwwwswwwwwws...",
+    "vvvvwwwwwswwvvwwswwwwwwsww..",
+    "vvvvwwwwwswwwvvwswwwwwwswww.",
+    "vvvvwwwwwswwwvvwswwwwwwswww.",
+    "vvvvwwvvvvvvvvvvvvvvvvvvvvv.",
+    "vvvvwwwwswwwwvvswwwwwwswwww.",
+    "vvvvwwwwswwwwvvswwwwwwswwww.",
+    "vvvvwwwswwwwwvvwwwwwwswwwww.",
+    "vvvvwwwswwwwwvvwwwwwwswwwww.",
+    "vvvvwwwswwwwwvvwwwwwwswwwww.",
+    "vvvvwwswwwwwvvvwwwwwswwwwww.",
+    "vvvvwwswwwwwvvvwwwwwswwwwww.",
+    "vvvvwwswwwwwvvvwwwwwswwwwww.",
+    "vvvvwsvvvvvvvvvvvvvvvvvvvv..",
+    "vvvvwswwwwwwvvwwwwwswwwwww..",
+    "vvvvwswwwwwwvvwwwwwswwwwww..",
+    "vvvvswwwwwwsvvwwwwswwwwwws..",
+    "vvvvswwwwwwsvvwwwwswwwwwws..",
+    "vvvvswwwwwwsvvwwwwswwwwwws..",
+    "vvvvwwwwwwswvvwwwswwwwwws...",
+    "vvvvwwwwwwswvvwwwswwwwwws...",
+    "vvvvwwwwwwswvvwwwswwwwwws...",
+    "vvvvwwvvvvvvvvvvvvvvvvvvv...",
+    "vvvvwwwwwswvvvwwswwwwwwsw...",
+    "vvvvwwwwwswvvvwwswwwwwws....",
+    "vvvvwwwwswwvvwwswwwwwwsw....",
+    "vvvvwwwwswwvvwwswwwwwwsw....",
+    "vvvvwwwwswwvvwwswwwwwws.....",
+    "vvvvwwwswwwvvwswwwwwwsw.....",
+    "vvvvwwwswwwvvwswwwwwwsw.....",
+    "vvvvwwwswwvvvwswwwwwwsw.....",
+    "vvvvwwvvvvvvvvvvvvvvvv......",
+    "vvvvwwswwwvvwswwwwwwsw......",
+    "vvvvwwswwwvvwswwwwwws.......",
+    "vvvvwswwwwvvswwwwwwsw.......",
+    "vvvvwswwwvvvswwwwwwsw.......",
+    "vvvvwswwwvvvswwwwwws........",
+    "vvvvswwwwvvswwwwwwsw........",
+    "vvvvswwwwvvswwwwwwsw........",
+    "vvvvswwwwvvswwwwwws.........",
+    "vvvvwwvvvvvvvvvvvvv.........",
+    "vvvvwwwwvvswwwwwws..........",
+    "vvvvwwwwvvswwwwwws..........",
+    "vvvvwwwwvvwwwwwws...........",
+    "vvvvwwwwvvwwwwwws...........",
+    "vvvvwwwvvvwwwwww............",
+    "vvvvwwwvvwwwwwws............",
+    "vvvvwwwvvwwwwww.............",
+    "vvvvwwvvvwwwwww.............",
+    "vvvvwwvvvvvvvv.............."
+   ],
+   "style": "pvc",
+   "paint": {
+    "art_key": {
+     "w": "c6a4a2a_k0p0:3",
+     "s": "c6a4a2a_k0p0:4",
+     "v": "c6a4a2a_k0p0:1"
+    },
+    "ramp": "c6a4a2a_k0p0",
+    "tone": 3
+   }
+  },
+  {
+   "id": "leg0_-1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    -2.6,
+    2.6,
+    -1.4
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.8
+    },
+    {
+     "at": [
+      -3.0,
+      1.0,
+      -1.0
+     ],
+     "size": 0.7
+    },
+    {
+     "at": [
+      -4.6,
+      1.6,
+      -2.6
+     ],
+     "size": 0.5
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "c4a3424",
+    "tone": 2.6
+   }
+  },
+  {
+   "id": "leg0_1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    2.6,
+    2.6,
+    -1.4
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.8
+    },
+    {
+     "at": [
+      3.0,
+      1.0,
+      -1.0
+     ],
+     "size": 0.7
+    },
+    {
+     "at": [
+      4.6,
+      1.6,
+      -2.6
+     ],
+     "size": 0.5
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "c4a3424",
+    "tone": 2.6
+   }
+  },
+  {
+   "id": "leg1_-1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    -2.6,
+    0.2,
+    -1.4
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.8
+    },
+    {
+     "at": [
+      -3.0,
+      1.0,
+      -1.0
+     ],
+     "size": 0.7
+    },
+    {
+     "at": [
+      -4.6,
+      0.4,
+      -2.6
+     ],
+     "size": 0.5
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "c4a3424",
+    "tone": 2.6
+   }
+  },
+  {
+   "id": "leg1_1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    2.6,
+    0.2,
+    -1.4
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.8
+    },
+    {
+     "at": [
+      3.0,
+      1.0,
+      -1.0
+     ],
+     "size": 0.7
+    },
+    {
+     "at": [
+      4.6,
+      0.4,
+      -2.6
+     ],
+     "size": 0.5
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "c4a3424",
+    "tone": 2.6
+   }
+  },
+  {
+   "id": "leg2_-1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    -2.6,
+    -2.0,
+    -1.4
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.8
+    },
+    {
+     "at": [
+      -3.0,
+      1.0,
+      -1.0
+     ],
+     "size": 0.7
+    },
+    {
+     "at": [
+      -4.6,
+      -0.8,
+      -2.6
+     ],
+     "size": 0.5
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "c4a3424",
+    "tone": 2.6
+   }
+  },
+  {
+   "id": "leg2_1",
+   "shape": "loft",
+   "parent": "cic",
+   "pivot": [
+    2.6,
+    -2.0,
+    -1.4
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.8
+    },
+    {
+     "at": [
+      3.0,
+      1.0,
+      -1.0
+     ],
+     "size": 0.7
+    },
+    {
+     "at": [
+      4.6,
+      -0.8,
+      -2.6
+     ],
+     "size": 0.5
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "c4a3424",
+    "tone": 2.6
+   }
+  },
+  {
    "id": "label",
    "shape": "box",
    "pivot": [
@@ -340,5 +1329,25 @@
     ]
    }
   }
- ]
+ ],
+ "animations": {
+  "gimmick": {
+   "length": 1.0,
+   "loop": false,
+   "tracks": [
+    {
+     "part": "cic",
+     "channel": "scale",
+     "osc": {
+      "amp": [
+       0.03,
+       -0.02,
+       0.03
+      ],
+      "cycles": 6
+     }
+    }
+   ]
+  }
+ }
 }

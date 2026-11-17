@@ -1,5 +1,5 @@
 """Street Corner (街角コレクション): the furniture of a Showa street corner, real models made small on slabs of pavement."""
-from figlib import Fig, GOLD
+from figlib import Fig, text_jp, GOLD
 from props import asphalt, slab
 
 S = "machikado"
@@ -9,8 +9,8 @@ VENDING = "sketchfab:f537e142a592428d85ca7a940be221d3"   # Vending Machine
 HYDRANT = "sketchfab:7f9164e6018c4ec7a3585bbf6e6d70df"   # Fire Hydrant
 CONE = "sketchfab:573feef839d7450cb3e12da9986e7a98"      # Traffic Cone
 BOOTH = "sketchfab:068f8bc747114856a7505cadf7873792"     # Phone Booth
-LAMP = "sketchfab:b7cebcfb4b1c4d4a97e22072800704ca"      # Street Lamp
-BUSSTOP = "sketchfab:b9a3cab48d304eeabf096df4f14bb7e7"   # The Bus Stop at Hida City
+LAMP = "sketchfab:a6e3624a679a44efa17bbfc9abec35ce"      # Japanese street lamp
+BENCH = "sketchfab:68d9b8434ee6407da1e6fda1166d3ad2"     # Japan Train Station Bench
 
 
 def pavement(F, w=26, d=24):
@@ -64,9 +64,17 @@ def gaito():
 
 
 def busstop():
-    F = Fig(f"{S}/busstop", "Country Bus Stop", "A little shelter with a bench and a timetable: one bus in the morning, one at night.")
-    top = slab(F, "base", 34, 26, 3.0, col="#5a5a50", style="stone", tone=2.8)
-    F.model("m", BUSSTOP, 28, (0, top, 0), yaw=-15)
+    F = Fig(f"{S}/busstop", "Country Bus Stop", "A bench, a round sign and a timetable: one bus in the morning, one at night.")
+    top = slab(F, "base", 36, 24, 3.0, col="#5a5a50", style="stone", tone=2.8)
+    F.box("kerb", [35, 1.2, 6], (0, top + 0.6, 8.5), ch=0.3, col="#a8a49a", style="stone", tone=3.2)
+    F.model("bench", BENCH, 11, (-4, top, -2), yaw=0)
+    F.cyl("pole", 0.9, 30, (12, top, 4), sides=10, col="#c8c0b0", style="metal")
+    F.cyl("sign", 4.2, 0.8, (12, top + 30, 4), sides=20, col="#e8e2d0", style="tin", tone=3.8, rot=(90, 0, 0))
+    F.layer("sign", id="ring", op="band", axis="y", **{"from": -1, "to": 1}, ramp=F.c("#2a6ab8"), tone=3.0, faces=["front", "back"])
+    F.stamp("sign", text_jp("バス停", 9), {"#": F.c("#c8302a") + ":2"}, "front")
+    F.box("timetable", [6, 8, 0.8], (12, top + 18, 4.9), ch=0.2, col="#f0ece0", style="paper", tone=4.0)
+    F.layer("timetable", id="rows", op="stripes", axis="y", period=1.0, width=0.15, ramp="ink", tone=1.4, faces=["front"])
+    F.box("timeframe", [6.6, 8.6, 0.6], (12, top + 18, 4.5), ch=0.2, col="#2a6ab8", style="tin", tone=3.0)
     return F
 
 

@@ -1,4 +1,4 @@
-// Gacha capsules as voxel art, after the real ones from Japanese gashapon makers:
+// Gacha capsules (lowpix models, see below; voxel art as the fallback), after the real ones from Japanese gashapon makers:
 //  * 'clear'  - Bandai style: clear top, coloured bottom, a moulded seam ring (Ø55 / 65 / 75 mm by price)
 //  * 'tab'    - Takara Tomy A.R.T.S / old Yujin style: the same with a hinge tab you thumb open
 //  * 'opaque' - Kitan Club style: both halves coloured, you can't peek at the contents
@@ -10,6 +10,15 @@ import * as THREE from 'three';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { VoxelModel, gloss, glass } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
+import { preloadLP, lpReady, lpPart } from '../gachakit/lowpix.js';
+
+// The capsules are lowpix models (art/lowpix/machines/_src/capsule.py -> public/models/lowpix/machines/capsule.glb and
+// capsule_lo.glb: smooth halves with the moulded seam ring, the parting line, the gate mark, the hinge tab, the paper
+// capsule's pulp, the contents). The voxel build below is the fallback, and `?voxelcapsules` forces it.
+const LP_ON = typeof document !== 'undefined' && !/[?&]voxelcapsules\b/.test(location.search);
+if (LP_ON) await preloadLP(['capsule', 'capsule_lo']);
+const lpOK = () => LP_ON && lpReady('capsule') && lpReady('capsule_lo');
+const LP_R = 0.0325; // the modelled capsule's radius
 
 /** Capsule radii (m): Ø55, Ø65 and Ø75 mm. */
 export const CAPSULE_R = { S: 0.0275, M: 0.0325, L: 0.0375 };
@@ -141,6 +150,7 @@ function partGeo(key, build, r, N) {
 // origin 'none': voxel x spans [x, x + 1] * vs, so the sphere (voxels -N/2 .. N/2 - 1) is centred on the origin
 // with the seam at y = 0
 function halfGeo(size, part, kind, res, seriesId = null) {
+  if (lpOK()) return lpHalfGeo(size, part, kind, res);
   const N = RES[res], r = CAPSULE_R[size];
   const key = `${size}|${part}|${kind}|${res}|${kind === 'paper' ? seriesId : ''}`;
   if (geoCache.has(key)) return geoCache.get(key);
@@ -150,6 +160,87 @@ function halfGeo(size, part, kind, res, seriesId = null) {
   const g = meshVoxels(model, { voxelSize: vs, origin: 'none' });
   geoCache.set(key, g);
   return g;
+}
+
+// ------------------------------------------------------------------ the lowpix capsule
+/** The model's joint for a half: plastic, hinged or paper, hi or lo (the piles). */
+function lpJoint(part, kind, res) {
+  const lo = res === 'lo';
+  const j = part === 'top' ? (kind === 'paper' ? 'top_paper' : 'top') : (kind === 'paper' ? 'bottom_paper' : kind === 'tab' && !lo ? 'bottom_tab' : 'bottom');
+  return [lo ? 'capsule_lo' : 'capsule', lo ? j + '_lo' : j];
+}
+function lpScaled(id, joint, size) {
+  const key = `lp|${id}|${joint}|${size}`;
+  if (geoCache.has(key)) return geoCache.get(key);
+  const P = lpPart(id, joint), k = CAPSULE_R[size] / LP_R;
+  const g = P.geometry.clone();
+  g.scale(k, k, k);
+  g.computeBoundingBox(); g.computeBoundingSphere();
+  g.userData.lpMats = P.material;
+  geoCache.set(key, g);
+  return g;
+}
+function lpHalfGeo(size, part, kind, res) { const [id, j] = lpJoint(part, kind, res); return lpScaled(id, j, size); }
+const lpAtlas = (id = 'capsule') => lpPart(id, id === 'capsule' ? 'top' : 'top_lo')?.material[0]?.map || null;
+
+/**
+ * The atlas with its mask colours (painted pure red / green / blue in the spec) recoloured in a series' card colours:
+ * red -> the card's background, green -> its accent, blue -> accent2, each keeping the painted shade. Cached.
+ */
+const printTex = new Map();
+function seriesAtlas(seriesId, id = 'capsule') {
+  const key = id + '|' + seriesId;
+  if (printTex.has(key)) return printTex.get(key);
+  const src = lpAtlas(id), img = src?.image;
+  if (!img) return src;
+  const s = SERIES_BY_ID[seriesId];
+  const cols = [hexOf(s?.card?.bg, '#fff3e0'), hexOf(s?.card?.accent, '#e5383b'), hexOf(s?.card?.accent2, '#ffd23f')].map((c) => [(c >> 16) & 255, (c >> 8) & 255, c & 255]);
+  const cv = document.createElement('canvas');
+  cv.width = img.width; cv.height = img.height;
+  const g = cv.getContext('2d', { willReadFrequently: true });
+  g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, cv.width, cv.height), a = d.data;
+  for (let i = 0; i < a.length; i += 4) {
+    const r = a[i], gg = a[i + 1], b = a[i + 2], m = Math.max(r, gg, b);
+    if (m < 40) continue;
+    const others = r + gg + b - m;
+    if (others > m * 0.12) continue; // not a mask colour
+    const ch = m === r ? 0 : m === gg ? 1 : 2, v = Math.min(1.15, m / 224), c = cols[ch];
+    a[i] = Math.min(255, c[0] * v); a[i + 1] = Math.min(255, c[1] * v); a[i + 2] = Math.min(255, c[2] * v);
+  }
+  g.putImageData(d, 0, 0);
+  const t = new THREE.CanvasTexture(cv);
+  t.flipY = src.flipY; t.colorSpace = THREE.SRGBColorSpace;
+  t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true;
+  printTex.set(key, t);
+  return t;
+}
+/** Materials for the lowpix halves and contents (arrays: every group of the geometry draws with them). */
+function lpMats(kind, color, seriesId = null, id = 'capsule') {
+  const k = `lp|${kind}|${color}|${kind === 'paper' || kind === 'contents' ? seriesId : ''}|${id}`;
+  if (matCache.has(k)) return matCache.get(k);
+  const map = lpAtlas(id);
+  let m;
+  if (kind === 'clearTop') {
+    const gm = new THREE.MeshPhysicalMaterial({ map, color: 0xffffff, roughness: 0.06, transparent: true, opacity: 0.32, clearcoat: 1, clearcoatRoughness: 0.05, depthWrite: false, envMapIntensity: 1.6, side: THREE.DoubleSide });
+    m = [gm, gm, gm, gm, gm];
+  } else if (kind === 'paper') {
+    const pm = new THREE.MeshStandardMaterial({ map: seriesAtlas(seriesId, id), roughness: 0.92, side: THREE.DoubleSide });
+    m = [pm, pm, pm, pm, pm];
+  } else if (kind === 'contents') {
+    // the groups follow the model's own materials: matte (the insert), gloss (the figure, the crimp), glass (the bag)
+    const P = lpPart('capsule', 'contents');
+    const tex = seriesAtlas(seriesId);
+    m = (P?.material || []).map((x) => (x.userData.lpKind === 'glass'
+      ? new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.25, transparent: true, opacity: 0.4, depthWrite: false, side: THREE.DoubleSide })
+      : new THREE.MeshStandardMaterial({ map: tex, roughness: x.userData.lpKind === 'gloss' ? 0.4 : 0.85 })));
+  } else {
+    // coloured plastic: the white halves tinted
+    const pl = new THREE.MeshPhysicalMaterial({ map, color, roughness: 0.24, clearcoat: 1, clearcoatRoughness: 0.08, side: THREE.DoubleSide });
+    m = [pl, pl, pl, pl, pl];
+  }
+  matCache.set(k, m);
+  return m;
 }
 
 const matCache = new Map();
@@ -199,18 +290,25 @@ export function makeCapsule(seriesId, color, opts = {}) {
   };
   const topKind = kind === 'paper' ? 'paper' : kind === 'opaque' ? 'color' : 'clearTop';
   const topColor = kind === 'opaque' ? tintHex(color, 0.62) : 0xffffff; // Kitan-style: a pale top over the coloured half
-  const tm = mk(halfGeo(size, 'top', kind, res, seriesId), capMats(topKind, topColor), top);
+  const lp = lpOK(), lid = res === 'lo' ? 'capsule_lo' : 'capsule';
+  const mats = (k, c) => (lp ? lpMats(k, c, seriesId, lid) : capMats(k, c));
+  const tm = mk(halfGeo(size, 'top', kind, res, seriesId), mats(topKind, topColor), top);
   if (topKind === 'clearTop') { tm.renderOrder = 2; tm.castShadow = false; }
-  mk(halfGeo(size, 'bottom', kind, res, seriesId), capMats(kind === 'paper' ? 'paper' : 'color', color), bottom);
+  mk(halfGeo(size, 'bottom', kind, res, seriesId), mats(kind === 'paper' ? 'paper' : 'color', color), bottom);
   // contents (also there in opaque / paper capsules: you see them once it opens)
   let paper = null;
   if (res === 'hi') {
-    const cg = partGeo(`contents|${size}|${seriesId}`, () => contentsModel(N, seriesId), r, N);
-    paper = new THREE.Mesh(cg, capMats('contents', 0));
+    if (lp) {
+      paper = new THREE.Mesh(lpScaled('capsule', 'contents', size), lpMats('contents', 0, seriesId));
+      paper.renderOrder = 1;
+    } else {
+      const cg = partGeo(`contents|${size}|${seriesId}`, () => contentsModel(N, seriesId), r, N);
+      paper = new THREE.Mesh(cg, capMats('contents', 0));
+    }
     bottom.add(paper);
   }
   group.userData.capsule = true;
-  const cap = { group, top, bottom, r, paper, style: kind, size, N };
+  const cap = { group, top, bottom, r, paper, style: kind, size, N, lowpix: lp };
   installTwist(cap);
   return cap;
 }
@@ -261,12 +359,21 @@ export function pileGeometries(size = 'M', kind = 'clear', seriesId = null) {
   const paper = kind === 'paper';
   const top = halfGeo(size, 'top', kind, 'lo', seriesId);
   const bottom = halfGeo(size, 'bottom', kind, 'lo', seriesId);
+  if (lpOK()) {
+    const paperM = paper ? lpMats('paper', 0, seriesId, 'capsule_lo')[0] : null;
+    const topMat = paper ? paperM : kind === 'opaque' ? pileTint() : lpMats('clearTop', 0, null, 'capsule_lo')[0];
+    return { top, bottom, topMat, bottomMat: paper ? paperM : pileTint(), r };
+  }
   const topMat = paper ? capMats('paper', 0)[0] : kind === 'opaque' ? pileTint() : capMats('clearTop', 0)[0];
   const bottomMat = paper ? capMats('paper', 0)[0] : pileTint();
   return { top, bottom, topMat, bottomMat, r };
 }
 let _pileTint = null;
 function pileTint() {
-  if (!_pileTint) _pileTint = new THREE.MeshPhysicalMaterial({ vertexColors: true, color: 0xffffff, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.1 });
+  if (!_pileTint) {
+    _pileTint = lpOK()
+      ? new THREE.MeshPhysicalMaterial({ map: lpAtlas('capsule_lo'), color: 0xffffff, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.1 })
+      : new THREE.MeshPhysicalMaterial({ vertexColors: true, color: 0xffffff, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.1 });
+  }
   return _pileTint;
 }

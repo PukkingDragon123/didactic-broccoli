@@ -1,0 +1,38 @@
+{
+ "mats": {
+  "plate": "metal",
+  "rod": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "octo",
+   "src": "sketchfab:977d38f89ca54c8b91b9667d52cb3d79",
+   "height": 13,
+   "at": [
+    0,
+    14.4,
+    0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "d88e1165676a89"
+  }
+ ],
+ "model_clip": {
+  "node": "model_octo",
+  "kind": "hop",
+  "length": 2.0,
+  "amp": 2.5,
+  "axis": "y"
+ },
+ "key": "shinkai/dumbo"
+}

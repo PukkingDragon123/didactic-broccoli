@@ -14,8 +14,8 @@ sys.path.insert(0, HERE)
 from glbio import read_glb, write_glb
 from coat import repaint, weld_normals, set_mid
 from ortho import render
-from face import carve_eye, carve_eye2, split_mouth, jaw_weights, mouth_bag
-from eyes import eyeball, lid, closest_uv, paint_iris, frame_basis
+from face import carve_eye, carve_eye2, split_mouth, jaw_weights, mouth_bag, mouth_bowl
+from eyes import eyeball, lid, lid_texels, closest_uv, paint_iris, frame_basis
 from coat import hexes
 
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
@@ -27,6 +27,7 @@ OUT_ART = os.path.join(HERE, 'out')
 # the source models: sketchfab uid, lowpix convert options, the transform into the game's metres
 SOURCES = {
     'calico': dict(uid='7325331900d8458b852f39f0dbcdbf18', title='Calico Cat', author='AaronRydning', yaw=180, tris=10000, height=30),
+    'bsh': dict(uid='6bb01e10602241dd98bcd25143be14cf', title='Cat (British Shorthair Blue and White)', author='3D Creator (3DChuang-Ke-Ji)', yaw=0, tris=12000, height=30),
 }
 
 
@@ -88,8 +89,8 @@ MIKAN_JOINTS = {
     '_footFL': (2.85, 0, 19.3), '_footFR': (-2.85, 0, 19.3), '_footBL': (5.5, 0, 1.8), '_footBR': (-5.5, 0, 1.8),
     '_tailTip': (0, 21.2, -29), '_nose': (0, 24.8, 28.7), '_rump': (0, 19.5, -8.0),
 }
-MIKAN_IRIS = dict(ball='#1c140e', limbus='#2c3014', outer='#6e7a2c', mid='#97a23e', inner='#c2b049', fibre_d='#5c6624',
-                  fibre_l='#b5b552', shadow='#4f5a22', pupil='#080706', glint='#f4f0e2', glint2='#a8a888')
+MIKAN_IRIS = dict(ball='#1c140e', limbus='#2a2c16', outer='#66703a', mid='#8b9046', inner='#b6a252', fibre_d='#545c2c',
+                  fibre_l='#a9a45a', shadow='#4f5a22', pupil='#080706', glint='#f4f0e2', glint2='#a8a888')
 OPEN_EYE = (0.62, -0.5)   # the lids' edges with the eye open (CatRig EYE_POSE.open)
 MOUTH = {'rim': '#16100e', 'roof': '#7e3c40', 'dark': '#3a1517', 'tongue': '#c27578', 'tooth': '#ece6d6'}
 
@@ -142,7 +143,7 @@ def face_details(tex, src, dbg, Fd):
             tex[sp] = white[3]
 
 
-def make_mikan():
+def make_mikan_sculpt():
     g = convert('calico')
     P, F, UV = g['pos'], g['idx'], g['uv']
     N = weld_normals(P, F)
@@ -168,19 +169,20 @@ def make_mikan():
         o += ((Ps[..., 1] < 12) & (np.abs(Ps[..., 0]) < 3.2)) * 0.2       # the inner sides of the legs
         return o
 
-    body, dbg = repaint(src, P, N, F, UV, CALICO, calico_classify, flow, seed=7, occl=occl)
+    head_soft = lambda Ps: np.where((Ps[..., 2] > 20.5) & (Ps[..., 1] > 20), 0.55, 1.0)     # short face fur
+    body, dbg = repaint(src, P, N, F, UV, CALICO, calico_classify, flow, seed=7, occl=occl, strength=head_soft)
     face_details(body, src, dbg, FACE_MIKAN)
     return rig_cat('mikan', P, F, UV, N, body, MIKAN_JOINTS, MIKAN_IRIS, eye_y=26.05, eye_x=1.65, eye_r=1.1)
 
 
-def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r):
+def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, cut=None, scale=0.0108, shift=(0, 0, -10.0), source='calico', head_z=None):
     W, H0, H = body.shape[1], body.shape[0], body.shape[0] + 128
     tex = np.zeros((H, W, 3), np.uint8); tex[:H0] = body
     tex[H0:] = hexes([iris['ball']])[0]
     vs = H0 / H
     UVs = UV * [1, vs]
     # --- the strip below the coat: iris frames (64 px), mouth and lid-rim patches
-    frames = {'round': (0.36, 0.42), 'normal': (0.12, 0.8), 'narrow': (0.07, 0.85), 'slit': (0.03, 0.85)}
+    frames = {'round': (0.34, 0.4), 'normal': (0.26, 0.66), 'narrow': (0.13, 0.76), 'slit': (0.05, 0.8)}
     fuv = {}
     for k, (name, pup) in enumerate(frames.items()):
         tex[H0 + 32:H0 + 96, k * 64:(k + 1) * 64] = paint_iris(64, iris, pup, seed=3)
@@ -204,8 +206,11 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r):
         u = f * (s * h).sum(1); q = np.cross(s, e1); v = f * (q @ d); t = f * (e2 * q).sum(1)
         hit = ok & (u >= 0) & (v >= 0) & (u + v <= 1) & (t > 0)
         return 60 - t[hit].min()
-    eye_region = (P[F].mean(1)[:, 2] > J['head'][2] + 2) & (P[F].mean(1)[:, 1] > eye_y - 2.2) & (P[F].mean(1)[:, 1] < eye_y + 2.2)
+    eye_region = (P[F].mean(1)[:, 2] > (head_z if head_z is not None else J['head'][2] + 2)) & (P[F].mean(1)[:, 1] > eye_y - 2.2) & (P[F].mean(1)[:, 1] < eye_y + 2.2)
     surf_uv = closest_uv(P, F, UVs, eye_region)
+    def colour_at(p):
+        u, v = surf_uv(p)
+        return tex[min(H - 1, int(v * H)), min(W - 1, int(u * W))]
     eyes, parts = {}, []
     Pc = P.copy()
     for sx, side in ((1, 'L'), (-1, 'R')):
@@ -218,25 +223,35 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r):
         eyes[side] = dict(c=c, ax=ax, tilt=tilt, s=fb[2])
         bp, bn, buv, bt = eyeball(c, ax, eye_r, fuv['normal'])
         parts.append(('eye' + side, bp, bn, buv, bt))
-        for up in (True, False):
-            lp, ln, luv, lt = lid(c, ax, eye_r * 1.02, up, tilt, surf_uv, patch['rim'], az=1.5, rim=0.1)
+        for k, up in enumerate((True, False)):
+            # each lid its own patch in the strip (64 x 24 px): rim, then the fur round the eye
+            rx = 420 + (0 if sx > 0 else 140) + k * 70
+            rect = (rx, H0 + 40, 64, 24)
+            lid_texels(tex, rect, c, ax, eye_r * 1.02, up, tilt, colour_at, hexes([MOUTH['rim'], '#3a2c26']), seed=k + 3 * (sx > 0))
+            lp, ln, luv, lt = lid(c, ax, eye_r * 1.02, up, tilt, (rx / W, (H0 + 40) / H, 64 / W, 24 / H), az=1.5, rim=0.1)
             parts.append(('lid' + ('U' if up else 'D') + side, lp, ln, luv, lt))
     # --- the mouth: lips cut apart, the jaw weights, the inside of the mouth
     # the sculpt has a lip crease at y 23.63 (source units) from the nose to the corners (z 26): cut along it
     def zone(C): return (np.abs(C[:, 0]) < 1.55) & (C[:, 2] > 26.2) & (C[:, 1] > 22.6) & (C[:, 1] < 24.6)
     def lower(C): return (C[:, 1] < 23.63) & (C[:, 2] > 23.0) & (np.abs(C[:, 0]) < 2.9) & (C[:, 1] > 21.6)
-    P2, F2, UV2, low, pairs, ends = split_mouth(Pc, F, UVs, zone, lower)
+    if cut: zone, lower = cut['zone'], cut['lower']
+    P2, F2, UV2, low, pairs, ends = split_mouth(Pc, F, UVs, zone, lower, zc=cut.get('zc') if cut else None)
     def fall(Q):
         z, y, x = Q[:, 2], Q[:, 1], Q[:, 0]
         return np.clip((z - 23.3) / 2.2, 0, 1) * np.clip((y - 21.4) / 1.0, 0, 1) * np.clip((3.0 - np.abs(x)) / 0.8, 0, 1)
-    jaw = jaw_weights(P2, F2, low, fall)
+    if cut: fall = cut['fall']
+    jaw = jaw_weights(P2, F2, low, fall, below=cut.get('below') if cut else None, upper_ids=[u for u, _ in pairs] + list(ends))
     print('mouth: cut vertices', len(pairs), 'ends', len(ends), 'lower tris', int(low.sum()))
     N2 = np.concatenate([N, N[list(dict.fromkeys(i for i, _ in pairs))]]) if False else None
     # normals for the duplicated vertices: copy the originals'
     Nfull = np.zeros((len(P2), 3)); Nfull[:len(N)] = N
     for u, l in pairs: Nfull[l] = N[u]
-    inward = np.array(J['jaw']) + np.array([0, -0.1, 0.7])
-    bp, buv, bt, bj, tmask, tbase, tdir = mouth_bag(P2, pairs, ends, inward, 1.7, 1.9, patch['dark'], patch['roof'], patch['tongue'])
+    inward = np.array(cut['inward']) if cut else np.array(J['jaw']) + np.array([0, -0.1, 0.7])
+    if cut and 'bowl' in cut:
+        B = cut['bowl']
+        bp, buv, bt, bj, tmask, tbase, tdir = mouth_bowl(B['c'], B['rx'], B['ry'], B['depth'], patch['roof'], patch['dark'], patch['tongue'], B['tongue'], B['tdir'], B['tlen'])
+    else:
+        bp, buv, bt, bj, tmask, tbase, tdir = mouth_bag(P2, pairs, ends, inward, cut['depth'] if cut else 1.7, cut['tongue'] if cut else 1.9, patch['dark'], patch['roof'], patch['tongue'])
     # --- assemble: coat (+ mouth) first, then the lids (coat material), the eyeballs last (eye material)
     pos, nrm, uv, tri, part, jw = [P2], [Nfull], [UV2], [F2], [np.zeros(len(P2))], [jaw]
     n = len(P2)
@@ -253,7 +268,7 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r):
     for name, p, nn, t, tr in balls: add(p, nn, t, tr, PART[name], np.zeros(len(p)))
     pos, nrm, uv, tri = np.concatenate(pos), np.concatenate(nrm), np.concatenate(uv), np.concatenate([np.asarray(t, np.int64).reshape(-1, 3) for t in tri])
     part, jw = np.concatenate(part), np.concatenate(jw)
-    scale, shift = 0.0108, np.array([0, 0, -10.0])
+    shift = np.array(shift)
     M = lambda q: ((np.array(q, float) + shift) * scale).round(5).tolist()
     extras = {
         'joints': {k: M(v) for k, v in J.items()},
@@ -261,7 +276,7 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r):
         'tongue': dict(base=M(tbase), dir=tdir.round(4).tolist()),
         'frames': {k: [round(x, 6) for x in v] for k, v in fuv.items()},
         'eyeTris': [int(eye_start), int(len(tri))],
-        'parts': PART, 'source': SOURCES['calico'],
+        'parts': PART, 'source': SOURCES[source],
     }
     finish(gid, pos, nrm, tri, uv, tex, scale, tuple(shift), extra={'_PART': (part[:, None], 'SCALAR'), '_JAW': (jw[:, None], 'SCALAR')}, extras=extras)
 
@@ -283,6 +298,117 @@ def finish(gid, P, N, F, UV, tex, scale, shift, extra=None, extras=None):
     print(gid, 'verts', len(Pm), 'tris', len(F), 'atlas', tex.shape, 'size', (Pm.max(0) - Pm.min(0)).round(3), 'png', png.tell())
 
 
+
+# ------------------------------------------------------------------ the British Shorthair base (Mikan, the stray)
+def bsh_prepared():
+    """The converted BSH in source units, its head turned to face straight ahead (the sculpt looks 12.5 deg to her
+    right), normals welded."""
+    g = convert('bsh')
+    P, F, UV = g['pos'].copy(), g['idx'], g['uv']
+    piv = np.array([0, 21.0, 20.5])
+    w = np.clip((P[:, 2] - 18.5) / 4.0, 0, 1) * np.clip((P[:, 1] - 13.0) / 4.0, 0, 1)
+    w = w * w * (3 - 2 * w)
+    yaw = np.radians(12.5)
+    for i in np.where(w > 0)[0]:
+        a = yaw * w[i]
+        c, sn = np.cos(a), np.sin(a)
+        q = P[i] - piv
+        P[i] = piv + [c * q[0] + sn * q[2], q[1], -sn * q[0] + c * q[2]] + np.array([-0.17 * w[i], 0, 0])
+    N = weld_normals(P, F)
+    src = down2(np.asarray(Image.open(io.BytesIO(g['png'])).convert('RGB')))
+    return P, F, UV, N, src
+
+
+def debug_bsh():
+    P, F, UV, N, src = bsh_prepared()
+    t = np.asarray(Image.open(io.BytesIO(convert('bsh')['png'])).convert('RGB')).astype(np.float32)
+    a = render(P, F, 'front', (-7, 7, 18, 30.5), px=60, grid=0.5, tex=t, UV=UV)
+    b = render(P, F, 'side', (19, 31, 18, 30.5), px=60, grid=0.5, tex=t, UV=UV)
+    o = Image.new('RGB', (a.width + b.width, max(a.height, b.height))); o.paste(a, (0, 0)); o.paste(b, (a.width, 0))
+    o.save(os.path.join(CACHE, 'bsh_head_dbg.png'))
+
+
+# Mikan on the BSH: joints fitted to the model (source units, after bsh_prepared)
+BSH_JOINTS = {
+    'body': (0, 15.5, -4.0), 'chest': (0, 16.0, 9.0), 'head': (0, 21.0, 20.5), 'jaw': (0, 21.6, 25.2),
+    'earL': (4.3, 27.2, 23.6), 'earR': (-4.3, 27.2, 23.6),
+    'legFL': (4.6, 14.5, 19.0), 'armFL': (4.2, 8.5, 16.6), 'pawFL': (3.4, 2.6, 17.6),
+    'legFR': (-4.6, 14.5, 19.0), 'armFR': (-4.3, 8.5, 16.6), 'pawFR': (-3.7, 2.6, 18.0),
+    'legBL': (5.2, 14.5, -8.0), 'shinBL': (4.8, 8.5, 0.5), 'pawBL': (3.8, 3.5, -7.5),
+    'legBR': (-5.2, 14.5, -8.0), 'shinBR': (-4.8, 8.5, 0.3), 'pawBR': (-3.8, 3.5, -8.3),
+    'tail0': (0, 16.5, -13.5), 'tail1': (0, 12.0, -16.0), 'tail2': (0, 7.5, -18.8), 'tail3': (0, 5.0, -22.5), 'tail4': (0, 4.8, -26.5),
+    '_footFL': (3.5, 0, 20.6), '_footFR': (-3.7, 0, 21.0), '_footBL': (4.3, 0, -1.5), '_footBR': (-4.4, 0, -3.8),
+    '_tailTip': (0, 6.5, -30.5), '_nose': (0, 23.3, 30.6), '_rump': (0, 19.0, -11.0),
+}
+CAL2 = {
+    'white': ['#3e3b38', '#56524d', '#706a63', '#8b847a', '#a69e93', '#bdb5aa', '#d0c9be', '#e0d9cf', '#ebe6dd', '#f4f0e9'],
+    'orange': ['#2b140b', '#43200f', '#5d2d14', '#78391a', '#934720', '#ab5627', '#c06832', '#d07d41', '#dc9455', '#e6ac72'],
+    'black': ['#0a0807', '#110e0c', '#181412', '#201b18', '#29231f', '#332c27', '#3f3731', '#4c433b'],
+    'pink': ['#4a2426', '#653437', '#80474a', '#9a5c5d', '#b17271', '#c48986', '#d4a19c', '#e2b9b2'],
+    'dark': ['#0b0908', '#151110', '#1f1a18', '#2a2421'],
+}
+MIKAN2_IRIS = dict(ball='#1a120c', limbus='#3a2410', outer='#9a6420', mid='#c4892c', inner='#dcaa40', fibre_d='#7e4e16',
+                   fibre_l='#e6bc5a', shadow='#6a4414', pupil='#070605', glint='#f4f0e2', glint2='#b8a888')
+
+
+def make_mikan():
+    from coat import vnoise3
+    P, F, UV, N, src = bsh_prepared()
+    tri, bary = __import__('coat').raster(P, F, UV, src.shape[1], src.shape[0])
+    ok, Ps, Ns = __import__('coat').surface(P, N, F, tri, bary)
+    r, g, b = src[..., 0], src[..., 1], src[..., 2]
+    lum = (r * 0.3 + g * 0.55 + b * 0.15) / 255
+    mx, mn = src.max(-1), src.min(-1)
+    sat = (mx - mn) / (mx + 1)
+    x, y, z = Ps[..., 0], Ps[..., 1], Ps[..., 2]
+    grey = (b > r + 4) & (lum < 0.72) & (lum > 0.12)
+    ax = np.abs(Ps[..., 0])
+    skin = ((Ps[..., 2] > 29.0) & (ax < 1.3) & (Ps[..., 1] > 22.2) & (Ps[..., 1] < 24.2)) | ((Ps[..., 2] > 28.3) & (ax < 1.4) & (Ps[..., 1] < 22.4)) \
+        | ((Ps[..., 1] > 26.3) & (ax > 2.4)) | (Ps[..., 1] < 1.3)              # nose leather, lips, inner ears, pads
+    pink = (r > g + 22) & (r > b + 10) & (lum > 0.3) & skin
+    dark = lum < 0.13
+    white = ~grey & ~pink & ~dark
+    # calico: the grey coat becomes orange and black patches (face split down the middle, blobs on the body, rings on
+    # the tail), keeping the sculpt's painted fur (its light and dark strands) as the tone inside each patch
+    n1 = vnoise3(x * 0.16, y * 0.16, z * 0.16, 5)
+    n2 = vnoise3(x * 0.9 + 7, y * 0.9, z * 0.9, 9)
+    jag = (n2 - 0.5) * 1.6
+    head = z > 20.5
+    blackp = np.where(head, x < -0.4 + jag, n1 > 0.52 + (n2 - 0.5) * 0.12)
+    tail = (z < -12.5) & (y < 17)
+    blackp = np.where(tail, ((np.abs(z + 20) % 5.2) < 1.7 + jag * 0.5) | (z < -28.5), blackp)
+    out = src.copy()
+    def ramp_put(m, name, rel_k, mid):
+        R = hexes(CAL2[name])
+        if not m.any(): return
+        L = lum[m]; med = np.median(L)
+        idx = np.clip(np.round(mid * (len(R) - 1) + (L / max(med, 1e-3) - 1) * rel_k), 0, len(R) - 1).astype(int)
+        out[m] = R[idx]
+    ramp_put(ok & grey & blackp, 'black', 7, 0.5)
+    ramp_put(ok & grey & ~blackp, 'orange', 9, 0.58)
+    ramp_put(ok & white, 'white', 9, 0.82)
+    ramp_put(ok & pink, 'pink', 6, 0.6)
+    ramp_put(ok & dark, 'dark', 4, 0.4)
+    # a step of clustering so tones sit in 2-3 pixel clumps (no single-pixel dust)
+    body = np.clip(out, 0, 255).astype(np.uint8)
+    return rig_cat2('mikan', P, F, UV, N, body, BSH_JOINTS, MIKAN2_IRIS)
+
+
+def rig_cat2(gid, P, F, UV, N, body, J, iris):
+    """rig_cat for the BSH face: eye sockets at (+-2.2, 24.75), lips meeting at y 22 (source units)."""
+    global OPEN_EYE
+    OPEN_EYE = (0.86, -0.72)
+    return rig_cat(gid, P, F, UV, N, body, J, iris, eye_y=24.75, eye_x=2.2, eye_r=1.17, cut=dict(
+        # the lower lip between the whisker pads meets the upper at y 22; under the pads the mouth runs back at y ~21
+        zone=lambda C: (np.abs(C[:, 0]) < 1.3) & (C[:, 2] > 28.2) & (C[:, 1] > 20.9) & (C[:, 1] < 22.6),
+        lower=lambda C: (((np.abs(C[:, 0]) < 1.1) & (C[:, 1] < 21.98) & (C[:, 2] > 28.3)) | ((C[:, 1] < 21.05 - 0.15 * np.maximum(0, np.abs(C[:, 0]) - 1.1)) & (C[:, 2] > 25.0) & (np.abs(C[:, 0]) < 2.7))) & (C[:, 1] > 18.8),
+        zc=26.0,
+        fall=lambda Q: np.clip((Q[:, 2] - 25.5) / 2.0, 0, 1) * np.clip((Q[:, 1] - 19.2) / 0.8, 0, 1) * np.clip((2.3 - np.abs(Q[:, 0])) / 1.1, 0, 1),
+        below=lambda Q: np.clip((np.where(np.abs(Q[:, 0]) < 1.1, 21.98, 21.05) - Q[:, 1]) / 0.45 + 0.35, 0, 1),
+        inward=(0, 21.8, 27.2), depth=1.6, tongue=1.7,
+        bowl=dict(c=(0, 21.8, 29.1), rx=1.9, ry=1.0, depth=2.4, tongue=(0, 21.45, 29.1), tdir=(0, 0.05, -1), tlen=1.9)), scale=0.0098, shift=(0, 0, -9.0), source='bsh', head_z=21.5)
+
+
 if __name__ == '__main__':
     for a in sys.argv[1:] or ['mikan']:
-        globals()['make_' + a]()
+        (globals().get('make_' + a) or globals()[a])()

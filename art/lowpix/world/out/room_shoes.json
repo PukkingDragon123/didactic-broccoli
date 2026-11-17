@@ -1,0 +1,34 @@
+{
+ "id": "room_shoes",
+ "src": "sketchfab:689c29ec3a8a4f44b32f616bcb97cfaa",
+ "credit": {
+  "title": "sneakers",
+  "author": "abazibiz",
+  "authorUrl": "https://sketchfab.com/abazibiz",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/sneakers-689c29ec3a8a4f44b32f616bcb97cfaa",
+  "site": "Sketchfab"
+ },
+ "tris": 1497,
+ "tex": 128,
+ "size": [
+  0.15,
+  0.078,
+  0.144
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#141f0f",
+   "#1c2814",
+   "#25301a",
+   "#2e3820",
+   "#373f27",
+   "#575f3f",
+   "#787e58",
+   "#969976",
+   "#aeae99"
+  ]
+ },
+ "warnings": []
+}

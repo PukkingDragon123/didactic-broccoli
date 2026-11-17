@@ -1,0 +1,66 @@
+{
+ "id": "tomare",
+ "src": "art/lowpix/world/made/tomare.glb",
+ "credit": {
+  "title": "Stop sign (止まれ)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 80,
+ "tex": 432,
+ "size": [
+  0.806,
+  2.256,
+  0.262
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#5e0928",
+   "#790e2b",
+   "#93142c",
+   "#ac1a2a",
+   "#c42226",
+   "#d83e35",
+   "#db6b58",
+   "#df917a",
+   "#e5b29b"
+  ],
+  "m1": [
+   "#40445a",
+   "#575e72",
+   "#6f7889",
+   "#8b929c",
+   "#a7abaf",
+   "#b5b7b8",
+   "#c2c2c2",
+   "#cecece",
+   "#d9d9d9"
+  ],
+  "m2": [
+   "#962246",
+   "#c03051",
+   "#d15769",
+   "#db858b",
+   "#e6b3b2",
+   "#e8c2be",
+   "#ebd0c9",
+   "#eedbd4",
+   "#f1e5df"
+  ],
+  "m3": [
+   "#731636",
+   "#941f3e",
+   "#b32a43",
+   "#cd3a48",
+   "#d25e60",
+   "#d67d77",
+   "#da9a8f",
+   "#dfb3a6",
+   "#e5c9bc"
+  ]
+ },
+ "warnings": []
+}

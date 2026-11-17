@@ -1,0 +1,29 @@
+{
+ "mats": {
+  "base": "gloss",
+  "rim": "gloss"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "mochi",
+   "src": "sketchfab:2cb15ab24c1a468b931b30793d7c1296",
+   "height": 7,
+   "at": [
+    0,
+    3.2,
+    0
+   ],
+   "yaw": 0,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "6c99500abc1e70"
+  }
+ ],
+ "key": "okashi/sakura"
+}

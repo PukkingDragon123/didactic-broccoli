@@ -1,0 +1,56 @@
+{
+ "id": "mirror_pole",
+ "src": "sketchfab:6b7baf381f6c45ef8d92411e0467492b",
+ "credit": {
+  "title": "Blind spot traffic mirror",
+  "author": "Insane Ninja",
+  "authorUrl": "https://sketchfab.com/guru2fifa",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b",
+  "site": "Sketchfab"
+ },
+ "tris": 4000,
+ "tex": 496,
+ "size": [
+  1.048,
+  3.104,
+  0.499
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ],
+  "m1": [
+   "#5c001e",
+   "#78001e",
+   "#950018",
+   "#b1000e",
+   "#cc0201",
+   "#f21a05",
+   "#f74d2a",
+   "#f67e55",
+   "#f6a77f"
+  ],
+  "m2": [
+   "#010103",
+   "#010104",
+   "#010205",
+   "#020205",
+   "#020306",
+   "#142039",
+   "#294469",
+   "#3f6c98",
+   "#6395b9"
+  ]
+ },
+ "warnings": []
+}

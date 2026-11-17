@@ -17,7 +17,7 @@ export default {
     { id: 'jelly', name: 'Moon Jelly', jp: 'ミズクラゲ', rarity: 'common', desc: 'A see-through bell with four rings inside, pulsing in the dark.', gimmick: { text: 'Pulse' } },
     { id: 'nautilus', name: 'Chambered Nautilus', jp: 'オウムガイ', rarity: 'uncommon', desc: 'A living fossil in a striped shell, steering with ninety tentacles.', gimmick: { text: 'Turn' } },
     { id: 'angler', name: 'Lantern Anglerfish', jp: 'チョウチンアンコウ', rarity: 'uncommon', desc: 'Teeth like needles and a little light on a stick. Do not follow the light.', gimmick: { text: 'Lure' } },
-    { id: 'goblin', name: 'Goblin Shark', jp: 'ミツクリザメ', rarity: 'rare', desc: 'Its jaws shoot forward to catch you. Pink, ancient and very rude.', gimmick: { text: 'Lunge' } },
+    { id: 'goblin', name: 'Frilled Shark', jp: 'ラブカ', rarity: 'rare', desc: 'Three hundred needle teeth and six frilly gills: an eel-shaped shark unchanged since the dinosaurs.', gimmick: { text: 'Lunge' } },
     { id: 'oarfish', name: 'Oarfish', jp: 'リュウグウノツカイ', rarity: 'ultra', desc: 'The longest bony fish in the sea, a silver ribbon with a red crest.' },
     { id: 'coela', name: 'Golden Coelacanth', jp: '黄金のシーラカンス', rarity: 'secret', desc: "The fish that outlived the dinosaurs, cast in gold for the museum's hundredth year.", gimmick: { text: 'Turn' } },
   ],

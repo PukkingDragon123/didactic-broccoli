@@ -15,7 +15,7 @@ export default {
     { id: 'postbox', name: 'Post Box Sentry', jp: 'ポストの番ネコ', rarity: 'common', desc: 'A blue-grey shorthair on the red post box, checking every letter that goes in.', gimmick: { text: 'Look round' } },
     { id: 'wall', name: 'Wall Walker', jp: 'ブロック塀のおさんぽ', rarity: 'common', desc: 'Tail up, all the way along the block wall, like it owns it. It does.', gimmick: { text: 'Walk on' } },
     { id: 'box', name: 'Mikan Box Kuro', jp: 'みかん箱のクロ', rarity: 'common', desc: 'A black cat who found the one good box on the lane. Do not ask for it back.', gimmick: { text: 'Hop' } },
-    { id: 'laundry', name: 'Laundry Pile Nap', jp: 'せんたく物でおひるね', rarity: 'uncommon', desc: 'Fresh washing, still warm from the sun. Not for long.' },
+    { id: 'laundry', name: 'Zabuton Nap', jp: '座布団でおひるね', rarity: 'uncommon', desc: "Grandma's floor cushion, still warm from the sun. Not hers any more." },
     { id: 'kittens', name: 'Tin Bucket Kittens', jp: 'バケツの子ネコ', rarity: 'uncommon', desc: 'Two kittens and one bucket. The bucket is losing.', gimmick: { text: 'Hop out' } },
     { id: 'boss', name: 'The Boss of Lane 3', jp: '三丁目のボス', rarity: 'rare', desc: 'Scarred, unhurried and very large. Sits on the oil drum; owns the lane.', gimmick: { text: 'Stare them down' } },
     { id: 'stalker', name: 'Sparrow Stalker', jp: 'スズメねらい', rarity: 'ultra', desc: 'Low, still, tail twitching. The sparrow has noticed. The sparrow does not care.', gimmick: { text: 'Startle the sparrow' } },

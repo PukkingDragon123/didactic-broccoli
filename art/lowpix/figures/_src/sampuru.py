@@ -31,10 +31,18 @@ def ramen():
 
 
 def katsu():
-    F = Fig(f"{S}/katsu", "Yaki Udon", "Fat noodles fried with cabbage and pork, a heap of bonito on top. The varnish is the secret.")
+    F = Fig(f"{S}/katsu", "Ketchup Omurice", "A glossy omelette over ketchup rice, a red zigzag on top, a sprig of parsley. The window's star.")
     top = riser(F)
-    F.model("plate", YAKIUDON, 9, (0, top, -1), yaw=15)
-    price_card(F, "card", "Y600", "焼うどん", (10, top, 10), yaw=-25)
+    pt = plate(F, "plate", 11.5, (0, top, -1), col="#f4f2ea", rim="#3a6aa8")
+    F.loft("omelette", [((0, 0, -9), [6, 2.5]), ((0, 1.2, -5), [12, 7]), ((0, 1.8, 0), [14, 8.4]), ((0, 1.2, 5), [12, 7]), ((0, 0, 9), [6, 2.5])],
+           (0, pt + 1.2, -1), sides=14, rnd=2.1, col="#f0c84a", style="glaze", tone=3.4, rot=(0, 25, 0))
+    F.layer("omelette", id="browning", op="patches", scale=1.4, threshold=0.62, shift=-0.7)
+    F.layer("omelette", id="ketchup", op="stripes", axis=[1, 0, 0.35], period=3.4, width=0.28, range=[-0.5, 0.5], ramp=F.c("#c8282a"), tone=3.0,
+            faces=["up"], zigzag=[1.2, 2.4], zig_axis="z", bevel={"shadow": 1, "highlight": 1})
+    F.blob("parsley", 3.2, 2.0, 3.0, (8, pt, 5), col="#3a8a2a", style="matte", tone=3.0, sides=10)
+    F.layer("parsley", id="curl", op="patches", scale=0.5, threshold=0.4, shift=0.9)
+    F.blob("rice", 3.0, 1.0, 3.0, (-8, pt, 4), col="#d8603a", style="food", tone=3.2, sides=10)
+    price_card(F, "card", "Y750", "オムライス", (8, top, 7.5), yaw=-25)
     return F
 
 
@@ -42,7 +50,7 @@ def udon():
     F = Fig(f"{S}/udon", "Kitsune Udon", "Two sheets of sweet fried tofu on a bowl of thick noodles, for the fox in you.")
     top = riser(F)
     F.model("bowl", UDON, 13, (0, top, -1), yaw=0)
-    price_card(F, "card", "Y450", "きつね", (10, top, 10), yaw=-25)
+    price_card(F, "card", "Y450", "きつね", (8, top, 7.5), yaw=-25)
     return F
 
 
@@ -55,7 +63,7 @@ def ebifry():
     F.blob("cabbage", 9, 4.5, 8, (6, pt, -6), col="#b8d088", style="food", tone=3.4, sides=12, rnd=2.2)
     F.layer("cabbage", id="shreds", op="stripes", axis="x", period=0.5, width=0.4, wobble=0.9, shift=0.8)
     F.taper("lemon", [4.0, 2.4, 3.2], (-7, pt + 1.1, 4), front=(0.1, 0.6), col="#e8d050", style="glaze", tone=3.6, rot=(0, 30, 0))
-    price_card(F, "card", "Y720", "エビフライ", (10, top, 10), yaw=-25)
+    price_card(F, "card", "Y720", "エビフライ", (8, top, 7.5), yaw=-25)
     return F
 
 
@@ -64,7 +72,7 @@ def soda():
     top = riser(F, w=24, d=24)
     F.cyl("coaster", 7.5, 0.8, (0, top, -1), sides=20, col="#e8e0cc", style="paper", tone=3.6)
     F.model("glass", FLOAT, 28, (0, top + 0.8, -1), yaw=0, recolor={"hue": 115, "saturation": 1.1, "linear": [0.75, 70]})
-    price_card(F, "card", "Y380", "メロンソーダ", (8, top, 9), yaw=-25)
+    price_card(F, "card", "Y380", "メロンソーダ", (7, top, 7), yaw=-25)
     F.model_clip("model_glass", "wobble", 1.4, amp=5)
     return F
 
@@ -73,7 +81,7 @@ def pudding():
     F = Fig(f"{S}/pudding", "Purin a la Mode", "A wobbling custard pudding with cream, fruit and a wafer, on a footed glass boat.")
     top = riser(F)
     F.model("purin", PUDDING, 20, (0, top, -1), yaw=0)
-    price_card(F, "card", "Y550", "プリン", (10, top, 10), yaw=-25)
+    price_card(F, "card", "Y550", "プリン", (8, top, 7.5), yaw=-25)
     F.model_clip("model_purin", "wobble", 1.6, amp=4)
     return F
 
@@ -82,7 +90,7 @@ def sundae():
     F = Fig(f"{S}/sundae", "Tower Parfait", "Seven layers, three scoops, a spoon that will never reach the bottom.")
     top = riser(F, w=26, d=26)
     F.model("parfait", SUNDAE, 34, (0, top, -1), yaw=0)
-    price_card(F, "card", "Y980", "パフェ", (9, top, 9), yaw=-25)
+    price_card(F, "card", "Y980", "パフェ", (7.5, top, 7.5), yaw=-25)
     return F
 
 
@@ -90,12 +98,12 @@ def fork():
     F = Fig(f"{S}/fork", "Floating Fork Napolitan", "The fork twirls the spaghetti up and stays there, held by nothing at all. A window classic.")
     top = riser(F)
     pt = plate(F, "plate", 11.5, (0, top, -1), col="#f4f2ea", rim="#c8a040")
-    F.blob("pasta", 15, 4.5, 13, (0, pt, -1), col="#d8603a", style="glaze", tone=3.2, sides=14, rnd=2.2, bottom=0.95, top=0.5)
+    F.blob("pasta", 15, 3.6, 13, (0, pt, -1), col="#c8582e", style="glaze", tone=3.2, sides=14, rnd=2.2, bottom=0.95, top=0.5)
     F.layer("pasta", id="noodles", op="stripes", axis=[1, 0.2, 1], period=0.7, width=0.45, wobble=0.9, shift=0.9)
     F.layer("pasta", id="onion", op="spots", count=6, radius=[0.6, 1.0], ramp="white", tone=4.2)
     F.layer("pasta", id="pepper", op="spots", count=5, radius=[0.5, 0.8], ramp=F.c("#4a8a3a"), tone=3.0, seed=3)
-    F.model("pasta", FORK, 18, (1, pt + 3.0, -1), yaw=0, roll=50, fit=False)
-    price_card(F, "card", "Y700", "ナポリタン", (10, top, 10), yaw=-25)
+    F.model("pasta", FORK, 8, (0, pt + 12.5, -1), yaw=0, roll=80, fit=False)
+    price_card(F, "card", "Y700", "ナポリタン", (8, top, 7.5), yaw=-25)
     F.model_clip("model_pasta", "hop", 1.8, amp=2.5)
     return F
 

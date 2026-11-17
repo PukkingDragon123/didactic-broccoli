@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:b9a3cab48d304eeabf096df4f14bb7e7",
+   "height": 28,
+   "at": [
+    0,
+    3.0,
+    0
+   ],
+   "yaw": -15,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "edd564ba392169"
+  }
+ ],
+ "key": "machikado/busstop"
+}

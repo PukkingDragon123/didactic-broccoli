@@ -22,7 +22,7 @@ def desk(F, w=30, d=22):
 def fudebako():
     F = Fig(f"{S}/fudebako", "Pencil Case Set", "The case, the pencils, the sharpener, the eraser that smells of strawberries.")
     top = desk(F)
-    F.model("m", SET, 8, (0, top, 0), yaw=-15)
+    F.model("m", SET, 30, (0, top, 0), yaw=-15, fill=0.8)
     return F
 
 
@@ -52,7 +52,7 @@ def kezuri():
 def soroban():
     F = Fig(f"{S}/soroban", "Soroban", "The abacus from the after-school class. Clack the beads and the sums do themselves.")
     top = desk(F, 34, 22)
-    F.model("m", SOROBAN := ABACUS, 9, (0, top, 0), yaw=-10)
+    F.model("m", ABACUS, 9, (0, top, 0), yaw=-10, recolor={"tint": "#7a5030", "linear": [0.75, 0]})
     F.model_clip("model_m", "slide", 0.8, amp=1.5, axis="x")
     return F
 
@@ -62,7 +62,7 @@ def pen():
     top = desk(F, 32, 20)
     F.box("paper", [20, 0.3, 14], (0, top + 0.15, 0), ch=0.05, col="#f4f0e4", style="paper", tone=4.0, rot=(0, 8, 0))
     F.layer("paper", id="lines", op="stripes", axis="z", period=1.4, width=0.08, ramp=F.c("#8ab0d0"), tone=3.4, faces=["up"])
-    F.model("m", PEN, 4, (0, top + 0.3, 0), yaw=-30, mat="gloss")
+    F.model("m", PEN, 30, (0, top + 0.3, 0), yaw=-30, mat="gloss", fill=0.75)
     return F
 
 
@@ -78,7 +78,7 @@ def golden():
     F = Fig(f"{S}/golden", "Golden Fountain Pen", "The principal's gold pen, used once a year, for the graduation certificates.")
     top = slab(F, "base", 30, 20, 3.6, col="#2a1e18", style="glaze", tone=2.4)
     F.box("cushion", [24, 1.6, 10], (0, top + 0.8, 0), ch=0.6, col="#1e3a5a", style="velvet", tone=3.0)
-    F.model("m", PEN2, 4, (0, top + 1.6, 0), yaw=-20, mat="metal", recolor=GOLD)
+    F.model("m", PEN2, 30, (0, top + 1.6, 0), yaw=-20, mat="metal", recolor=GOLD, fill=0.8)
     F.model_clip("model_m", "turn", 2.4, amp=25)
     return F
 

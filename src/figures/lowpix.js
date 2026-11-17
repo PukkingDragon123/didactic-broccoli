@@ -309,9 +309,7 @@ export function updateFigureClips(dt) {
     if (!L) { live.delete(m); continue; }
     L.mixer.update(dt);
     L.t += dt;
-    let root = m;
-    while (root.parent) root = root.parent;
-    if (!root.isScene && L.t > 0.5) { stopFigureClip(m); continue; }
+    if (!m.parent && L.t > 0.5) { stopFigureClip(m); continue; } // dropped / disposed
     if (L.t > L.end + 0.6 && !L.hold) stopFigureClip(m);
   }
 }

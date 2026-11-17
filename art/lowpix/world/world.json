@@ -17,12 +17,6 @@
    "cap": 512
   },
   {
-   "id": "tv_crt",
-   "src": "sketchfab:29314bf8b66f49f98ad50dffe4950abf",
-   "h": 0.42,
-   "cap": 512
-  },
-  {
    "id": "boombox",
    "src": "polyhaven:boombox",
    "ppm": 220,
@@ -212,7 +206,8 @@
    "src": "sketchfab:8faeab51bf604cd092e827dc1eb88ff4",
    "h": 1.25,
    "ppm": 140,
-   "rotz": 90
+   "roty": 35.6,
+   "rotx": -90
   },
   {
    "id": "lpg_small",
@@ -234,13 +229,6 @@
    "ppm": 150
   },
   {
-   "id": "kei_truck",
-   "src": "sketchfab:13dc5e2aad2e4d00af57e8d99d7095e9",
-   "h": 1.8,
-   "tris": 6000,
-   "ppm": 90
-  },
-  {
    "id": "post_box",
    "src": "sketchfab:5e0f504bb5d144809390dac8c66a6dd5",
    "h": 1.0,
@@ -252,12 +240,6 @@
    "src": "sketchfab:1cbffb4169684e5a84ba186882bd55d7",
    "h": 0.7,
    "tris": 1200
-  },
-  {
-   "id": "street_lamp_jp",
-   "src": "sketchfab:a6e3624a679a44efa17bbfc9abec35ce",
-   "h": 4.6,
-   "ppm": 80
   },
   {
    "id": "manhole",
@@ -364,11 +346,6 @@
    "ppm": 240
   },
   {
-   "id": "books",
-   "src": "polyhaven:book_encyclopedia_set_01",
-   "ppm": 240
-  },
-  {
    "id": "kettle_electric",
    "src": "polyhaven:vintage_electric_kettle",
    "ppm": 240
@@ -377,10 +354,6 @@
    "id": "microwave",
    "src": "polyhaven:vintage_microwave",
    "ppm": 200
-  },
-  {
-   "id": "tv_02",
-   "src": "polyhaven:television_02"
   },
   {
    "id": "chair_painted",
@@ -1015,15 +988,6 @@
    "prop": "rice_sack"
   },
   {
-   "id": "fire_buckets",
-   "src": "sketchfab:17ba358bc2fc4669ab2d4ccecd236e5f",
-   "h": 0.854,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Fire sand bucket from safety item",
-   "prop": "fire_buckets"
-  },
-  {
    "id": "utility_sink",
    "src": "sketchfab:69eacffafcfe40378bf4de7822eaf0f5",
    "h": 0.97,
@@ -1031,15 +995,6 @@
    "tris": 3000,
    "name": "Utility Sink",
    "prop": "utility_sink"
-  },
-  {
-   "id": "water_heater",
-   "src": "sketchfab:63221a93315c4e4e9b3ed8234ff026e7",
-   "h": 0.68,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Soviet gas water heater KGI-56",
-   "prop": "water_heater"
   },
   {
    "id": "paint_tins",
@@ -1303,15 +1258,6 @@
    "prop": "park_bench"
   },
   {
-   "id": "swing_set",
-   "src": "sketchfab:6c558588b95e42b79bf18e0fe28937c3",
-   "h": 2.48,
-   "ppm": 100,
-   "tris": 4000,
-   "name": "Classic Swing Set",
-   "prop": "swing_set"
-  },
-  {
    "id": "slide",
    "src": "sketchfab:df79bfbdfe06443e8b20ffa35f94a714",
    "h": 2.12,
@@ -1555,15 +1501,6 @@
    "prop": "pendulum_clock"
   },
   {
-   "id": "shop_lamp",
-   "src": "sketchfab:a6cfbc66f2c445b19ee42e9cfe643cd5",
-   "h": 0.7,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "765027 Loft Lightstar pendant lamp",
-   "prop": "shop_lamp"
-  },
-  {
    "id": "abacus",
    "src": "sketchfab:faf7e2cf754544328730f6a43aab002e",
    "h": 0.02,
@@ -1724,15 +1661,6 @@
    "tris": 1500,
    "name": "Small Bell(Wind Bell)",
    "prop": "call_bell"
-  },
-  {
-   "id": "laundry_pole",
-   "src": "sketchfab:55d67327ade44bf29554ac343ae66984",
-   "h": 1.82,
-   "ppm": 100,
-   "tris": 4000,
-   "name": "Laundry Basket",
-   "prop": "laundry_pole"
   },
   {
    "id": "softserve",
@@ -1898,6 +1826,109 @@
    "tris": 3000,
    "name": "Jar Shelf",
    "prop": "wall_shelf_jars"
+  },
+  {
+   "id": "piggy_bank2",
+   "src": "sketchfab:c042b0ebfe064b56a9f032260a49e474",
+   "h": 0.144,
+   "ppm": 240,
+   "tris": 1500,
+   "prop": "piggy_bank",
+   "alpha": false
+  },
+  {
+   "id": "candy_jar",
+   "src": "sketchfab:1e5534d5bd2d4e60ba18201b895c2704",
+   "h": 0.23,
+   "ppm": 240,
+   "tris": 1500,
+   "prop": "mk_candy_jar_a",
+   "alpha": false
+  },
+  {
+   "id": "bonsai",
+   "src": "sketchfab:8b73fd97545b468288cd9ba03c93d358",
+   "h": 0.763,
+   "ppm": 180,
+   "tris": 3000,
+   "prop": "bonsai",
+   "alpha": true
+  },
+  {
+   "id": "sakura_tree",
+   "src": "sketchfab:1bba2a5f47a0444f84006bc65c65253e",
+   "h": 2.88,
+   "ppm": 100,
+   "tris": 4000,
+   "prop": "sakura_tree",
+   "alpha": true
+  },
+  {
+   "id": "momiji_tree",
+   "src": "sketchfab:b6eb627413ed40fdb8b0a1e1c9038fa9",
+   "h": 2.45,
+   "ppm": 100,
+   "tris": 4000,
+   "prop": "momiji_tree",
+   "alpha": true
+  },
+  {
+   "id": "tomare",
+   "src": "art/lowpix/world/made/tomare.glb",
+   "h": 2.256,
+   "ppm": 140,
+   "tris": 600,
+   "name": "Stop sign (\u6b62\u307e\u308c)",
+   "prop": "tomare_sign",
+   "cap": 512
+  },
+  {
+   "id": "kakigori",
+   "src": "art/lowpix/world/made/kakigori.glb",
+   "h": 1.545,
+   "ppm": 180,
+   "tris": 600,
+   "name": "Shaved-ice flag (\u6c37)",
+   "prop": "kakigori_flag",
+   "cap": 512
+  },
+  {
+   "id": "utility_pole",
+   "src": "sketchfab:f3dc37ced5d548ef98c7ee8bd2ad5491",
+   "h": 8.08,
+   "ppm": 60,
+   "tris": 4000,
+   "name": "Japanese Electric Pole",
+   "prop": "utility_pole"
+  },
+  {
+   "id": "firebuckets",
+   "src": "art/lowpix/world/made/firebuckets.glb",
+   "h": 0.87,
+   "ppm": 200,
+   "tris": 800,
+   "name": "Fire buckets (\u6d88\u706b\u7528)",
+   "prop": "fire_buckets",
+   "cap": 512
+  },
+  {
+   "id": "busstop",
+   "src": "art/lowpix/world/made/busstop.glb",
+   "h": 2.3,
+   "ppm": 140,
+   "tris": 800,
+   "name": "Bus stop sign (\u30d0\u30b9\u505c)",
+   "prop": "bus_stop",
+   "cap": 512
+  },
+  {
+   "id": "ashtray_stand",
+   "src": "art/lowpix/world/made/ashtray.glb",
+   "h": 0.665,
+   "ppm": 200,
+   "tris": 500,
+   "name": "Standing ashtray (\u7070\u76bf)",
+   "prop": "mk_stand_ashtray"
   }
  ]
 }

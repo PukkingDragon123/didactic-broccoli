@@ -1,0 +1,34 @@
+{
+ "id": "room_ac",
+ "src": "sketchfab:d93c5557a9ba46afbb00e35f48343077",
+ "credit": {
+  "title": "Indoor air conditioner unit",
+  "author": "Rylae Shylna",
+  "authorUrl": "https://sketchfab.com/risteralline",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/indoor-air-conditioner-unit-d93c5557a9ba46afbb00e35f48343077",
+  "site": "Sketchfab"
+ },
+ "tris": 528,
+ "tex": 384,
+ "size": [
+  0.823,
+  0.28,
+  0.203
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#4c486d",
+   "#63618a",
+   "#8283a1",
+   "#a4a6b6",
+   "#c4c6cd",
+   "#cecfd2",
+   "#d7d7d8",
+   "#dfdfdf",
+   "#e6e6e6"
+  ]
+ },
+ "warnings": []
+}

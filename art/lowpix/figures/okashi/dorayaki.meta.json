@@ -1,0 +1,30 @@
+{
+ "mats": {
+  "base": "gloss",
+  "rim": "gloss",
+  "plate": "gloss"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "cake",
+   "src": "sketchfab:530b15ed5bbb461982f692bc10966a02",
+   "height": 6,
+   "at": [
+    0,
+    4.8,
+    0
+   ],
+   "yaw": 10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "2ba9ace5e64947"
+  }
+ ],
+ "key": "okashi/dorayaki"
+}

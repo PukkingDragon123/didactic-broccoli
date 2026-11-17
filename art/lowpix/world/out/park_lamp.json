@@ -1,0 +1,45 @@
+{
+ "id": "park_lamp",
+ "src": "sketchfab:dea5920f66814e04a66fa87b338e0e8d",
+ "credit": {
+  "title": "Classic Street Lamp Post",
+  "author": "sacapuntas",
+  "authorUrl": "https://sketchfab.com/Sacapuntas96",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/classic-street-lamp-post-dea5920f66814e04a66fa87b338e0e8d",
+  "site": "Sketchfab"
+ },
+ "tris": 3913,
+ "tex": 512,
+ "size": [
+  0.669,
+  4.75,
+  0.745
+ ],
+ "colours": 11,
+ "palette": {
+  "m0": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ],
+  "m1": [
+   "#3c336f",
+   "#4a458e",
+   "#5b5daa",
+   "#7f85b8",
+   "#a1a8c7",
+   "#b0b8cd",
+   "#bec5d3",
+   "#ccd2da",
+   "#d9dde2"
+  ]
+ },
+ "warnings": []
+}

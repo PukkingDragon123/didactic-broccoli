@@ -1,0 +1,56 @@
+{
+ "id": "spring_panda",
+ "src": "sketchfab:7397fa465943485d83ada8a5fbcf40d5",
+ "credit": {
+  "title": "Wooden ladybug spring rider (Object Capture)",
+  "author": "Emm",
+  "authorUrl": "https://sketchfab.com/edemaistre",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-ladybug-spring-rider-object-capture-7397fa465943485d83ada8a5fbcf40d5",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 512,
+ "size": [
+  0.694,
+  0.975,
+  0.753
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#421425",
+   "#541c2d",
+   "#662532",
+   "#772f37",
+   "#87393c",
+   "#a24d4a",
+   "#b46e64",
+   "#bf9184",
+   "#ccafa3"
+  ],
+  "m1": [
+   "#14171c",
+   "#1b1f23",
+   "#22272a",
+   "#2a2f31",
+   "#323637",
+   "#4f5152",
+   "#6c6c6c",
+   "#888888",
+   "#a4a4a4"
+  ],
+  "m2": [
+   "#431728",
+   "#552030",
+   "#672a37",
+   "#78353d",
+   "#884043",
+   "#a15551",
+   "#b0756d",
+   "#bd968b",
+   "#cab2a9"
+  ]
+ },
+ "warnings": []
+}

@@ -8,7 +8,11 @@
 //                                      of that size so Box3.setFromObject() sees the right bounds at once
 //   preloadAssets(ids) -> Promise      fetch several up front;   assetReady(id) -> boolean
 //   assetMerged(id, { box, fit, ry }) -> { geometry, materials } one geometry, a group per material (the prop library)
-// Props: give a prop def `asset: { id, fit, ry }` (src/data/props) and src/world/props.js draws it with the model.
+// Props: give a prop def `asset: { id, fit, ry }` (src/data/props, or the table src/data/propModels.js) and
+// src/world/props.js draws it with the model. The lowpix conversions (real models in the game's pixel-art style,
+// art/lowpix/world -> tools/lowpix-world.mjs) live in models/lowpix/world/<id>.glb: their ids are 'lowpix/world/<id>'
+// (src/kit/lowpixWorld.js: sizes and credits, lpAsset(id)); they are lit, opaque (cut-outs where a model needs them),
+// palette PNG atlases with nearest magnification, meshopt-compressed.
 // opts: { size: number | [w, h, d], fit: 'max' (default: largest dimension = size) | 'x' | 'y' | 'z' (scale by that axis)
 //         | 'contain' (fit inside [w, h, d], uniform) | 'stretch' ([w, h, d] exactly), cast = true, receive = true }
 // Materials are MeshStandardMaterial (roughness kept in 0.3..0.95 unless metal), textures nearest-magnified and

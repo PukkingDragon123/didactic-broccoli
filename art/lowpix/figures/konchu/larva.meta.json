@@ -21,7 +21,10 @@
    "style": "painted",
    "atlas": 512,
    "mat": "matte",
-   "key": "0c72d18f3f733f"
+   "drop": [
+    "^Cube"
+   ],
+   "key": "d196ee107995d3"
   }
  ],
  "model_clip": {

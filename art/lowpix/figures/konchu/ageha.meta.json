@@ -7,7 +7,7 @@
  "models": [
   {
    "name": "butterfly",
-   "src": "sketchfab:d45ea22770f44818949e8933b853c6c4",
+   "src": "sketchfab:d642db74a3fa491a8143bd088b408094",
    "height": 9,
    "at": [
     0,
@@ -21,7 +21,7 @@
    "style": "painted",
    "atlas": 512,
    "mat": "matte",
-   "key": "640c4d1be2c597"
+   "key": "fa33ce2986b55e"
   }
  ],
  "model_clip": {

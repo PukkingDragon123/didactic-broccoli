@@ -6,12 +6,14 @@
 //   archReady(id) -> boolean              archPlace(id, parent, { x, y, z, ry, cast, receive }) -> Group | null
 //   archSlot(id, parent, o) -> Group      (lazy; never null)          ARCH_OFF: `?voxelarch` in the URL draws the old
 //   builds instead (before / after shots), and builders keep their old code for a model that failed to load.
+import * as THREE from 'three';
 import { assetNow, assetSlot, assetReady, preloadAssets } from '../kit/assets.js';
 import { LP_ARCH, archAsset } from '../kit/lowpixArch.js';
 
 export const ARCH_OFF = typeof location !== 'undefined' && /[?&]voxelarch\b/.test(location.search);
-// models the lane builds at boot (everything else is lazy)
-const BOOT = ['shopfront', 'garage_shell', 'shutter'];
+// every model is preloaded at boot (the town builds them synchronously) except the lazy ones (interiors: archSlot)
+export const ARCH_LAZY = new Set([]);
+const BOOT = Object.keys(LP_ARCH).filter((id) => !ARCH_LAZY.has(id));
 if (!ARCH_OFF && typeof document !== 'undefined') {
   const ids = BOOT.filter((id) => LP_ARCH[id]).map(archAsset);
   try { await preloadAssets(ids); } catch (e) { console.warn('arch: models failed to load, old builds used', e); }
@@ -61,4 +63,26 @@ export function archFace(id) {
   const x0 = p.getX(i0), y0 = p.getY(i0), x1 = p.getX(i1), y1 = p.getY(i1);
   const du = (uv.getX(i1) - uv.getX(i0)) / (x1 - x0), dv = (uv.getY(i1) - uv.getY(i0)) / (y1 - y0);
   return { material: mesh.material, x0, y0, x1, y1, uv: (x, y) => [uv.getX(i0) + (x - x0) * du, uv.getY(i0) + (y - y0) * dv] };
+}
+
+/**
+ * Many copies of one model as instanced meshes (a draw call per material for all of them): the utility poles.
+ * list = [{ x, y, z, ry }]; returns the InstancedMeshes added to parent, or null if the model is not loaded.
+ */
+export function archInstances(id, parent, list, { cast = false, receive = true } = {}) {
+  const t = archReady(id) ? assetNow(archAsset(id)) : null;
+  if (!t || !list.length) return null;
+  const out = [], m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1);
+  for (const mesh of t.children) {
+    if (!mesh.isMesh) continue;
+    const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, list.length);
+    list.forEach((it, i) => im.setMatrixAt(i, m4.compose(new THREE.Vector3(it.x, it.y ?? 0, it.z), q.setFromAxisAngle(up, it.ry ?? 0), one)));
+    im.castShadow = cast; im.receiveShadow = receive;
+    im.computeBoundingSphere();
+    im.name = 'arch:' + id;
+    im.matrixAutoUpdate = false;
+    parent.add(im);
+    out.push(im);
+  }
+  return out;
 }

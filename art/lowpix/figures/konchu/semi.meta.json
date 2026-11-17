@@ -1,35 +1,16 @@
 {
- "mats": {},
+ "mats": {
+  "abdomen": "gloss",
+  "thorax": "gloss",
+  "head": "gloss",
+  "eye-1": "gloss",
+  "eye1": "gloss",
+  "wing-1": "gloss",
+  "wing1": "gloss"
+ },
  "clips": {
   "gimmick": "gimmick"
  },
  "pts": {},
- "models": [
-  {
-   "name": "cicada",
-   "src": "sketchfab:ea9fefe65291491b97412972884657f1",
-   "height": 6.5,
-   "at": [
-    0,
-    17.0,
-    4.6
-   ],
-   "yaw": 180,
-   "pitch": 90,
-   "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "matte",
-   "key": "d9269b3fba9d21"
-  }
- ],
- "model_clip": {
-  "node": "model_cicada",
-  "kind": "wobble",
-  "length": 1.0,
-  "amp": 3,
-  "axis": "y"
- },
  "key": "konchu/semi"
 }

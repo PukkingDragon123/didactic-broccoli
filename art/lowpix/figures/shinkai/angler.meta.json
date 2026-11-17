@@ -1,0 +1,38 @@
+{
+ "mats": {
+  "plate": "metal",
+  "rod": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "fish",
+   "src": "sketchfab:5e2f4b2d2e1a4613a008b6caaf40d50c",
+   "height": 15,
+   "at": [
+    0,
+    10.4,
+    0
+   ],
+   "yaw": -35,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "330599c357f674"
+  }
+ ],
+ "model_clip": {
+  "node": "model_fish",
+  "kind": "wobble",
+  "length": 1.6,
+  "amp": 6,
+  "axis": "y"
+ },
+ "key": "shinkai/angler"
+}

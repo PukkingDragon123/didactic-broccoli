@@ -1,0 +1,34 @@
+{
+ "id": "mk_kitsune",
+ "src": "sketchfab:b51e4bb527d749c38bfb6f964b2b9ead",
+ "credit": {
+  "title": "Kitsune Fox Shrine Statue",
+  "author": "Sahir Virmani",
+  "authorUrl": "https://sketchfab.com/sahirvirmani",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kitsune-fox-shrine-statue-b51e4bb527d749c38bfb6f964b2b9ead",
+  "site": "Sketchfab"
+ },
+ "tris": 1498,
+ "tex": 128,
+ "size": [
+  0.072,
+  0.17,
+  0.072
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3b342b",
+   "#4b453b",
+   "#5b564b",
+   "#69665c",
+   "#76756e",
+   "#868685",
+   "#999999",
+   "#acacac",
+   "#c0c0c0"
+  ]
+ },
+ "warnings": []
+}

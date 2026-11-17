@@ -127,15 +127,15 @@ export class Moments {
     const feet = V(P.pos.x, 0, P.pos.z), yaw = P.yaw + Math.PI;
     S.show(feet, yaw);
     c.every((dt) => S.update(dt, c.game.camera.position));
-    const shot = freeShot(g, feet, yaw, { angles: [0.45, -0.45, 0.85, -0.85, 0, 1.3, -1.3], dists: [2.6, 2.1, 1.7, 1.3], height: 1.9, lookY: 1.2 });
+    const shot = freeShot(g, feet, yaw, { angles: [0.45, -0.45, 0.85, -0.85, 0, 1.3, -1.3], dists: [3.0, 2.5, 2.0, 1.5], height: 1.9, lookY: 1.1 });
     // up and out of your eyes to a high front angle, then down low as the pose snaps in
     yield c.cam({ pos: shot.pos, look: shot.look, dur: 0.7, fov: 52 });
     S.h.gesture('pose_tower', { hold: true });
     sting('rise');
-    const low = shot.pos.clone().lerp(shot.look, 0.18); low.y = 0.55;
-    yield c.all(c.cam({ pos: low, look: V(feet.x, 1.45, feet.z), dur: 0.55, fov: 42 }), rollTo(c, shot.angle > 0 ? -0.12 : 0.12, 0.55));
+    const low = shot.pos.clone().lerp(shot.look, 0.1); low.y = 0.6;
+    yield c.all(c.cam({ pos: low, look: V(feet.x, 1.15, feet.z), dur: 0.55, fov: 54 }), rollTo(c, shot.angle > 0 ? -0.12 : 0.12, 0.55));
     g.jojo?.kana.spawn({ kind: 'go', at: S.h, n: 3, dur: 2.8, side: shot.angle > 0 ? 1 : -1, sound: false });
-    yield c.all(this.card(`Level ${level}`, 'The shop levels up', '昇', 2.4), c.cam({ pos: low.clone().lerp(V(feet.x, 1.3, feet.z), 0.12), look: V(feet.x, 1.5, feet.z), dur: 2.4, fov: 36 }));
+    yield c.all(this.card(`Level ${level}`, 'The shop levels up', '昇', 2.4), c.cam({ pos: low.clone().lerp(V(feet.x, 1.1, feet.z), 0.08), look: V(feet.x, 1.22, feet.z), dur: 2.4, fov: 48 }));
     yield c.all(c.toPlayer(0.6), rollTo(c, 0, 0.5));
     S.hide();
   }

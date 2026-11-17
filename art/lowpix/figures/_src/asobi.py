@@ -26,7 +26,7 @@ def squishy():
 
 def superball():
     F = Fig(f"{S}/superball", "Super Ball", "Click to throw. It will find the one gap under the fridge.")
-    F.loft("ball", [((0, 0, 0), 0.1), ((0, 2.2, 0), 15), ((0, 7, 0), 25), ((0, 13, 0), 25), ((0, 17.8, 0), 15), ((0, 20, 0), 0.1)], (0, 0, 0),
+    F.loft("ball", [((0, 0, 0), 0.1), ((0, 2.6, 0), 15.5), ((0, 8.4, 0), 24.4), ((0, 16.6, 0), 24.4), ((0, 22.4, 0), 15.5), ((0, 25, 0), 0.1)], (0, 0, 0),
            sides=16, rnd=2.0, col="#3ab8d8", style="pvc", tone=3.2, up=[0, 0, 1])
     F.layer("ball", id="swirl", op="stripes", axis=[1, 1, 0.3], period=5.5, width=0.3, wobble=0.5, ramp=F.c("#f0d040"), tone=3.6,
             bevel={"shadow": 1, "highlight": 1})
@@ -70,6 +70,10 @@ def robot():
     F.layer("chest", id="panel", op="rect", rect=[0.2, 0.25, 0.8, 0.8], ramp=F.c("#2a4aa8"), tone=3.0, faces=["front"], bevel=True)
     F.layer("chest", id="vent", op="grille", rect=[0.25, 0.32, 0.75, 0.55], period=2, dir="h", faces=["front"])
     F.layer("chest", id="rivets", op="rivets", inset=2, spacing=8, faces=["sides", "front", "back"])
+    F.cyl("dial", 2.6, 1.2, (5.5, 24, 7.2), sides=12, col="#f0e8c8", style="pvc", tone=3.8, rot=(90, 0, 0))
+    F.layer("chest", id="vents", op="grille", rect=[0.15, 0.2, 0.85, 0.7], period=2, dir="h", faces=["right", "left"])
+    for sx in (-1, 1):
+        F.cyl(f"shoulder{sx}", 3.2, 2.0, (sx * 10.6, 26, 0), sides=12, col="#5a5a62", style="metal", rot=(0, 0, sx * 90))
     F.stamp("chest", text3("ROBO-1"), {"#": F.c("#f0d040") + ":4"}, "front", at="center", off=(0, -12))
     for sx in (-1, 1):
         F.bone(f"arm{sx}", (sx * 11.5, 26, 0), rot=(20, 0, sx * 10))
@@ -122,6 +126,13 @@ def dartgun():
     F.box("guard", [4, 7, 3], (0, 22, 4), ch=0.6, col="#2a2a2e", style="matte")
     F.cyl("muzzle", 3.6, 4, (0, 30, 18), sides=12, col="#3f86e8", style="pvc", rot=(90, 0, 0))
     F.box("sight", [5, 3, 14], (0, 36.5, 2), ch=0.8, col="#f6d84a", style="pvc", tone=3.4)
+    F.layer("sight", id="ridges", op="stripes", axis="z", period=1.6, width=0.3, shift=-0.7, faces=["up"])
+    F.box("pump", [10.5, 6, 12], (0, 26.5, 10), ch=1.4, col="#3f86e8", style="pvc", tone=3.0)
+    F.layer("pump", id="grip", op="stripes", axis="z", period=1.4, width=0.35, shift=-0.8, faces=["sides", "bottom"])
+    F.box("trigger", [2.2, 6, 3], (0, 21.5, 1.5), ch=0.5, col="#f6d84a", style="pvc", tone=3.2, rot=(15, 0, 0))
+    F.box("mag", [6, 9, 5], (0, 30, -12), ch=0.8, col="#2a2a2e", style="matte", tone=2.6)
+    for sx in (-1, 1):
+        F.cyl(f"bolt{sx}", 0.9, 1.0, (sx * 4.6, 30, -4), sides=8, col="#9aa0a8", style="metal", rot=(0, 0, sx * 90))
     F.bone("dart", (0, 0, 0))
     F.box("dart_foam", [3.4, 3.4, 10], (0, 0, -2), ch=1.2, col=O, style="matte", tone=3.4, parent="dart")
     F.cyl("dart_tip", 2.2, 2.4, (0, 0, 3.6), sides=10, col="#3f86e8", style="pvc", rot=(90, 0, 0), parent="dart")

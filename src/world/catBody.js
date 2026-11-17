@@ -56,6 +56,15 @@ export const CAT_BONES = [
   ['tail3', 'tail2', j('tail3')], ['tail4', 'tail3', j('tail4')],
 ];
 export const TAIL_N = 5;
+/** Each tail bone's pitch at rest relative to its parent (the model's tail hangs; CatRig poses a tail that is level
+ *  at rest, so it takes these off). Positive = the segment points up from the one before (or from level, backward). */
+export const TAIL_REST = (() => {
+  const pts = ['tail0', 'tail1', 'tail2', 'tail3', 'tail4', '_tailTip'].map(j);
+  const pitch = (a, b) => Math.atan2(b[1] - a[1], -(b[2] - a[2]));
+  const out = []; let prev = 0;
+  for (let i = 0; i < 5; i++) { const p = pitch(pts[i], pts[i + 1]); out.push(p - prev); prev = p; }
+  return out;
+})();
 export const CAT_JOINT = Object.fromEntries(CAT_BONES.map(([n, , p]) => [n, p]));
 /** Where each paw touches the floor at rest (root space). */
 export const CAT_FOOT = { FL: j('_footFL'), FR: j('_footFR'), BL: j('_footBL'), BR: j('_footBR') };

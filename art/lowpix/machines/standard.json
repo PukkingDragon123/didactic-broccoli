@@ -231,15 +231,6 @@
     "#e1ded8",
     "#eceae7",
     "#f7f6f5"
-   ],
-   "c8a8e94": [
-    "#1c1b1f",
-    "#414047",
-    "#66666d",
-    "#8e8e92",
-    "#adaeae",
-    "#cbcbcb",
-    "#e9e9e9"
    ]
   }
  },
@@ -2584,9 +2575,9 @@
       "id": "ribs",
       "op": "stripes",
       "axis": "x",
-      "period": 12,
-      "width": 0.5,
-      "shift": -0.35,
+      "period": 10,
+      "width": 0.3,
+      "shift": -0.18,
       "faces": [
        "front"
       ]
@@ -2643,8 +2634,8 @@
     0
    ],
    "size": [
-    216.48,
-    216.48,
+    177.12,
+    177.12,
     2
    ],
    "sides": 24,
@@ -2675,8 +2666,8 @@
     0
    ],
    "size": [
-    200.48,
-    200.48,
+    161.12,
+    161.12,
     2
    ],
    "sides": 24,
@@ -2820,6 +2811,104 @@
        "front"
       ]
      }
+    ],
+    "stamps": [
+     {
+      "face": "front",
+      "at": [
+       51,
+       56
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
+     },
+     {
+      "face": "front",
+      "at": [
+       177,
+       56
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
+     },
+     {
+      "face": "front",
+      "at": [
+       51,
+       164
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
+     },
+     {
+      "face": "front",
+      "at": [
+       177,
+       164
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
+     }
     ]
    }
   },
@@ -2944,127 +3033,6 @@
    "paint": {
     "ramp": "chrome",
     "tone": 3.0
-   }
-  },
-  {
-   "id": "mount",
-   "shape": "box",
-   "parent": "lid",
-   "pivot": [
-    0.0,
-    46.0,
-    175.0
-   ],
-   "size": [
-    229.6,
-    2.0,
-    280.0
-   ],
-   "hide": [
-    "bottom"
-   ],
-   "style": "steel",
-   "paint": {
-    "ramp": "c8a8e94",
-    "tone": 3.0,
-    "stamps": [
-     {
-      "face": "top",
-      "at": [
-       3,
-       3
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     },
-     {
-      "face": "top",
-      "at": [
-       141,
-       3
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     },
-     {
-      "face": "top",
-      "at": [
-       3,
-       174
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     },
-     {
-      "face": "top",
-      "at": [
-       141,
-       174
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     }
-    ]
    }
   }
  ]

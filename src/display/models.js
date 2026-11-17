@@ -1,6 +1,6 @@
-// Machine-top display cases (POP toppers) in the voxel look, mixed with clean low poly where it reads better:
-//   the plinth   moulded plastic in the machine's trim colour, 5 mm voxels like the machines, a cream lip and two
-//                rails it sits on (built with VoxelModel, the machines' materials)
+// Machine-top display cases (POP toppers):
+//   the plinth   moulded plastic in the machine's trim colour, a cream lip and two rails it sits on (a lowpix model,
+//                see below; the voxel build is the fallback)
 //   the stand    two or three cream tiers stepping up to the back, a printed name strip on each riser
 //   the card     the series' display card printed full size on a board across the back
 //   the acrylic  a clear case with bevelled edges (a low-poly rounded box), screw caps at the corners
@@ -16,6 +16,21 @@ import { Pix } from '../gfx/pix.js';
 import { draw5, textW5 } from '../gfx/font5x7.js';
 import { bannerTexture } from '../gfx/banner.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
+import { preloadLP, lpPart } from '../gachakit/lowpix.js';
+
+// The plinth and the tiers are a lowpix model (art/lowpix/machines/_src/display.py -> public/models/lowpix/machines/
+// display.glb), one pair of joints per machine size and style; the voxel build below is the fallback.
+if (typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search)) await preloadLP(['display']);
+const tintCache = new Map();
+/** The lowpix stand for these voxel dimensions: [plinth mesh (tinted in the trim colour), tiers mesh] or null. */
+function lpStand(style, W, D, trim) {
+  const key = `${style}_${W}x${D}`, P = lpPart('display', key + '_plinth'), T = lpPart('display', key + '_tiers');
+  if (!P || !T) return null;
+  const tk = key + ':' + trim;
+  if (!tintCache.has(tk)) tintCache.set(tk, P.material.map((m) => { const c = m.clone(); c.color.setHex(trim); return c; }));
+  const mk = (geo, mat) => Object.assign(new THREE.Mesh(geo, mat), { castShadow: true, receiveShadow: true });
+  return [mk(P.geometry, tintCache.get(tk)), mk(T.geometry, T.material)];
+}
 
 export const STYLES = {
   tier: { name: 'Tiered display case', price: 1800, tiers: 2, per: 3, h: 0.15, desc: 'Clear acrylic, two tiers, the series card behind. 6 figures.' },
@@ -106,14 +121,20 @@ export function buildDisplay(style, series, { w, d, trim = 0xc8322c } = {}, thum
   const group = new THREE.Group();
   const W = Math.max(24, Math.round(w / VS)), D = Math.max(20, Math.round(d / VS));
   const tierH = st.tiers === 3 ? 5 : 6;
-  const { v, step } = standModel(W, D, st.tiers, tierH, trim);
-  const geo = meshVoxels(v, { voxelSize: VS, origin: 'none' });
-  const stand = new THREE.Mesh(geo, voxelMaterials('normal'));
-  stand.rotation.y = Math.PI; // (the model's z = 0 is its front: turned so the front faces +z)
-  stand.position.set(W * VS / 2, VS, D * VS / 2);
-  stand.castShadow = true; stand.receiveShadow = true;
-  group.add(stand);
-  const disposables = [geo];
+  const step = Math.floor((D - 8) / st.tiers);
+  const disposables = [];
+  const lp = lpStand(style in STYLES ? style : 'tier', W, D, trim);
+  if (lp) group.add(...lp);
+  else {
+    const { v } = standModel(W, D, st.tiers, tierH, trim);
+    const geo = meshVoxels(v, { voxelSize: VS, origin: 'none' });
+    const stand = new THREE.Mesh(geo, voxelMaterials('normal'));
+    stand.rotation.y = Math.PI; // (the model's z = 0 is its front: turned so the front faces +z)
+    stand.position.set(W * VS / 2, VS, D * VS / 2);
+    stand.castShadow = true; stand.receiveShadow = true;
+    group.add(stand);
+    disposables.push(geo);
+  }
   const baseY = 7 * VS; // the plinth's top (y = 0 the rails)
   const H = st.h, iw = W * VS - 0.006, id = D * VS - 0.006;
   // the back card: the series' display card on a board against the back wall

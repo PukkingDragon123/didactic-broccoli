@@ -1,0 +1,34 @@
+{
+ "id": "heater",
+ "src": "sketchfab:a4a78d37b6ff4834a7fa6e897f2e592c",
+ "credit": {
+  "title": "Old Oil Heater_Gas stove_24_MB",
+  "author": "Mehdi Shahsavan",
+  "authorUrl": "https://sketchfab.com/ahmagh2e",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-oil-heater-gas-stove-24-mb-a4a78d37b6ff4834a7fa6e897f2e592c",
+  "site": "Sketchfab"
+ },
+ "tris": 2963,
+ "tex": 256,
+ "size": [
+  0.234,
+  0.56,
+  0.235
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#49251d",
+   "#5d3727",
+   "#704a33",
+   "#835e40",
+   "#94734d",
+   "#a78c61",
+   "#b2a27d",
+   "#beb698",
+   "#cbc8b2"
+  ]
+ },
+ "warnings": []
+}

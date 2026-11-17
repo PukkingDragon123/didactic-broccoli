@@ -1,6 +1,6 @@
 {
- "name": "Yaki Udon",
- "description": "Fat noodles fried with cabbage and pork, a heap of bonito on top. The varnish is the secret.",
+ "name": "Ketchup Omurice",
+ "description": "A glossy omelette over ketchup rice, a red zigzag on top, a sprig of parsley. The window's star.",
  "author": "Gacha Garage (lowpix spec)",
  "license": "CC0-1.0",
  "density": 4.0,
@@ -90,6 +90,60 @@
     "#d19a8d",
     "#ebd6cf"
    ],
+   "cf4f2ea_hue8_k0p1": [
+    "#4f2d11",
+    "#b6702b",
+    "#e0b581",
+    "#f9f2e8",
+    "#faf6ee",
+    "#fcfaf4",
+    "#fefdfb"
+   ],
+   "c3a6aa8": [
+    "#0d1121",
+    "#1f2b4c",
+    "#334975",
+    "#476b9e",
+    "#7397bd",
+    "#a7c1d4",
+    "#dae6ec"
+   ],
+   "cf0c84a": [
+    "#3a2006",
+    "#85540e",
+    "#cf9218",
+    "#e9c253",
+    "#eeda82",
+    "#f3ecb0",
+    "#faf9de"
+   ],
+   "cc8282a": [
+    "#280910",
+    "#5c1520",
+    "#90232b",
+    "#c23332",
+    "#d56f66",
+    "#e3aa9e",
+    "#f3ddd6"
+   ],
+   "c3a8a2a": [
+    "#091b08",
+    "#183f14",
+    "#2c6121",
+    "#44832e",
+    "#72be4c",
+    "#abd48f",
+    "#ddeccf"
+   ],
+   "cd8603a": [
+    "#2e0a09",
+    "#6a1e17",
+    "#a63b26",
+    "#d26643",
+    "#dd9777",
+    "#e8c2a9",
+    "#f5e7db"
+   ],
    "cf4efe0_k0p0": [
     "#52290c",
     "#be6c1d",
@@ -111,6 +165,28 @@
   }
  },
  "styles": {
+  "matte": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.0,
+     "amount": 0.16
+    },
+    {
+     "id": "grain",
+     "op": "speckle",
+     "density": 0.015,
+     "shift": -0.5
+    }
+   ]
+  },
   "velvet": {
    "dither": 0,
    "rim": {
@@ -120,11 +196,46 @@
    },
    "layers": [
     {
+     "id": "nap",
+     "op": "noise",
+     "scale": 1.4,
+     "amount": 0.25
+    },
+    {
      "id": "photo",
      "op": "photo",
      "src": "art/lowpix/photos/velour_velvet",
-     "scale": 12,
-     "amount": 0.9
+     "scale": 16,
+     "amount": 0.45
+    }
+   ]
+  },
+  "food": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 1.6,
+     "amount": 0.22
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/concrete_floor_worn_001",
+     "scale": 14,
+     "amount": 0.55
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.4,
+     "min_light": 0.85
     }
    ]
   },
@@ -267,6 +378,396 @@
    }
   },
   {
+   "id": "plate",
+   "shape": "loft",
+   "pivot": [
+    0,
+    4.6,
+    -1
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      12.65,
+      12.65
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.56,
+      0
+     ],
+     "size": [
+      17.25,
+      17.25
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.28,
+      0
+     ],
+     "size": [
+      22.425,
+      22.425
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.6,
+      0
+     ],
+     "size": [
+      23.0,
+      23.0
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 20,
+    "round": 2.0
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "glaze",
+   "paint": {
+    "ramp": "cf4f2ea_hue8_k0p1",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "rimline",
+      "op": "band",
+      "axis": "y",
+      "from": 0.55,
+      "to": 0.8,
+      "ramp": "c3a6aa8",
+      "tone": 3.0,
+      "faces": [
+       "sides"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "omelette",
+   "shape": "loft",
+   "pivot": [
+    0,
+    7.4,
+    -1
+   ],
+   "rotation": [
+    0,
+    25,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      -9
+     ],
+     "size": [
+      6,
+      2.5
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.2,
+      -5
+     ],
+     "size": [
+      12,
+      7
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.8,
+      0
+     ],
+     "size": [
+      14,
+      8.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.2,
+      5
+     ],
+     "size": [
+      12,
+      7
+     ]
+    },
+    {
+     "at": [
+      0,
+      0,
+      9
+     ],
+     "size": [
+      6,
+      2.5
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 14,
+    "round": 2.1
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "glaze",
+   "paint": {
+    "ramp": "cf0c84a",
+    "tone": 3.4,
+    "layers": [
+     {
+      "id": "browning",
+      "op": "patches",
+      "scale": 1.4,
+      "threshold": 0.62,
+      "shift": -0.7
+     },
+     {
+      "id": "ketchup",
+      "op": "stripes",
+      "axis": [
+       1,
+       0,
+       0.35
+      ],
+      "period": 3.4,
+      "width": 0.28,
+      "range": [
+       -0.5,
+       0.5
+      ],
+      "ramp": "cc8282a",
+      "tone": 3.0,
+      "faces": [
+       "up"
+      ],
+      "zigzag": [
+       1.2,
+       2.4
+      ],
+      "zig_axis": "z",
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "parsley",
+   "shape": "loft",
+   "pivot": [
+    8,
+    6.2,
+    5
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0.0,
+      0
+     ],
+     "size": [
+      2.496,
+      2.34
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.36,
+      0
+     ],
+     "size": [
+      3.04,
+      2.85
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.9,
+      0
+     ],
+     "size": [
+      3.2,
+      3.0
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.5,
+      0
+     ],
+     "size": [
+      2.88,
+      2.7
+     ]
+    },
+    {
+     "at": [
+      0,
+      2.0,
+      0
+     ],
+     "size": [
+      1.984,
+      1.86
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.4
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "c3a8a2a",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "curl",
+      "op": "patches",
+      "scale": 0.5,
+      "threshold": 0.4,
+      "shift": 0.9
+     }
+    ]
+   }
+  },
+  {
+   "id": "rice",
+   "shape": "loft",
+   "pivot": [
+    -8,
+    6.2,
+    4
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0.0,
+      0
+     ],
+     "size": [
+      2.34,
+      2.34
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.18,
+      0
+     ],
+     "size": [
+      2.85,
+      2.85
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.45,
+      0
+     ],
+     "size": [
+      3.0,
+      3.0
+     ]
+    },
+    {
+     "at": [
+      0,
+      0.75,
+      0
+     ],
+     "size": [
+      2.7,
+      2.7
+     ]
+    },
+    {
+     "at": [
+      0,
+      1.0,
+      0
+     ],
+     "size": [
+      1.86,
+      1.86
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.4
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "food",
+   "paint": {
+    "ramp": "cd8603a",
+    "tone": 3.2
+   }
+  },
+  {
    "id": "card0",
    "shape": "box",
    "pivot": [
@@ -334,10 +835,10 @@
       ],
       "art": [
        "#.#.###.###.###",
-       "#.#.#...#.#.#.#",
-       ".#..###.#.#.#.#",
-       ".#..#.#.#.#.#.#",
-       ".#..###.###.###"
+       "#.#...#.#...#.#",
+       ".#....#.###.#.#",
+       ".#...#....#.#.#",
+       ".#...#..###.###"
       ],
       "key": {
        "#": "ink:1"
@@ -351,14 +852,14 @@
        5
       ],
       "art": [
-       ".#...#............#..#....#....",
-       ".#..###...#####...#.#.##..#....",
-       "###.###...........#.##....#....",
-       "##.#####.######..###.....#.....",
-       ".#######.......##........###..#",
-       ".##.##.......##.#........#.#..#",
-       "#...##.#..###....#####..#...##.",
-       "#..#..##......................."
+       ".....#........................#.........",
+       ".....#.....#.....#####.......##..######.",
+       "#######...#......######.....##........#.",
+       "....##....#...........#....#.#.......#..",
+       "...#.#...#...#.......##..##..#.......#..",
+       "..#..#...#...#.......#.......#.....##.#.",
+       "##...#..#####.#....##........#...##....#",
+       "...##.........#..###.........#.........."
       ],
       "key": {
        "#": "cb83a2a:2"

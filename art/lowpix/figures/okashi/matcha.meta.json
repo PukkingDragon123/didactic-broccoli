@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "bowl",
+   "src": "sketchfab:938e05641929403cab1f0c77376e0d9b",
+   "height": 9,
+   "at": [
+    0,
+    3.4,
+    0
+   ],
+   "yaw": 20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "ba8e6fcc8eb4a7"
+  }
+ ],
+ "model_clip": {
+  "node": "model_bowl",
+  "kind": "spin",
+  "length": 2.0,
+  "amp": 0.25,
+  "axis": "y"
+ },
+ "key": "okashi/matcha"
+}

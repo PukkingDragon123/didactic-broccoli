@@ -74,10 +74,10 @@ def kitsune():
 def jinja():
     F = Fig(f"{S}/jinja", "Fox Gate at Dusk", "Two stone foxes, a torii and a lantern: a whole little shrine under a red sky.")
     top = gravel(F, 40, 28)
-    F.model("gate", TORII, 26, (0, top, -5), yaw=0)
-    F.model("fox1", FOXSTONE, 14, (-12, top, 6), yaw=30)
-    F.model("fox2", FOXSTONE, 14, (12, top, 6), yaw=-30)
-    F.model("lamp", LANTERN, 16, (0, top, 8), yaw=0)
+    F.model("gate", TORII, 26, (0, top, -5), yaw=0, tris=2200)
+    F.model("fox1", FOXSTONE, 14, (-12, top, 6), yaw=30, tris=2200)
+    F.model("fox2", FOXSTONE, 14, (12, top, 6), yaw=-30, tris=2200)
+    F.model("lamp", LANTERN, 16, (0, top, 8), yaw=0, tris=2200)
     return F
 
 

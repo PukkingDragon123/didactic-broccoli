@@ -1,0 +1,40 @@
+{
+ "mats": {
+  "base": "gloss",
+  "bk_wall": "metal",
+  "bk_rim": "metal",
+  "bk_handle": "metal"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:d798077b6ff3438791beee88e9ef1c8d",
+   "height": 22,
+   "at": [
+    3,
+    3.0,
+    -1
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "1fca548359a0bd"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.0,
+  "amp": 8,
+  "axis": "y"
+ },
+ "key": "yudono/penguin"
+}

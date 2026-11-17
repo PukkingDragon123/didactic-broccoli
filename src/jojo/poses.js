@@ -108,8 +108,8 @@ Object.assign(EXTRA_POSES, {
   pose_reach(t, h, g) {
     const { sx, sy, m } = frame(h), s = settle(t, 2.1, 0.02), k = snapIn(t);
     g.hands = { L: null, R: null };
-    g.R = arm(-sx * 0.55, sy + m(0.06), m(0.6) * k, -1, -0.7, 0.1);
-    g.hands.R = [0.1, 0.9, 0.35, 0, 0.2, 1];
+    g.R = arm(-sx - m(0.16), sy - m(0.02), m(0.56) * k, -1, -0.7, 0.1);
+    g.hands.R = [-0.1, 0.9, 0.35, 0, 0.2, 1];
     g.L = arm(sx + m(0.34), sy - m(0.44), -m(0.26), 1, 0.2, 0.4);
     g.hands.L = [0.3, -1, -0.4, 1, 0, 0];
     g.spine[0] = 0.16 * k + s; g.chest[1] = 0.24; g.chest[0] = 0.06;

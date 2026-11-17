@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:af9a74ebe6ee4e23b0c2b41d82a958a7",
+   "height": 30,
+   "at": [
+    0,
+    3.0,
+    0
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "88befa7cb857c7"
+  }
+ ],
+ "key": "kaiun/kitsune"
+}

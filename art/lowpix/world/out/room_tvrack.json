@@ -1,0 +1,34 @@
+{
+ "id": "room_tvrack",
+ "src": "sketchfab:4768d6fef8734c7aa99321f6b6b3c520",
+ "credit": {
+  "title": "Small Tv Stand",
+  "author": "Andrej Grave",
+  "authorUrl": "https://sketchfab.com/andrej.grave",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/small-tv-stand-4768d6fef8734c7aa99321f6b6b3c520",
+  "site": "Sketchfab"
+ },
+ "tris": 368,
+ "tex": 424,
+ "size": [
+  1.383,
+  0.39,
+  0.397
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0d0102",
+   "#110202",
+   "#150503",
+   "#190804",
+   "#1c0b05",
+   "#522710",
+   "#864b1e",
+   "#b9742d",
+   "#d29f56"
+  ]
+ },
+ "warnings": []
+}

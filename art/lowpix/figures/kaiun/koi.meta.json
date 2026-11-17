@@ -1,0 +1,38 @@
+{
+ "mats": {
+  "pond": "glass",
+  "rod": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:3e1b80c3653f43349252aab3b4fb1d86",
+   "height": 20,
+   "at": [
+    0,
+    8.0,
+    0
+   ],
+   "yaw": 70,
+   "pitch": -6,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "a022f85a2719b4"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.4,
+  "amp": 6,
+  "axis": "y"
+ },
+ "key": "kaiun/koi"
+}

@@ -13,6 +13,7 @@
 //     { id: supply id, prop, units: [{ p: Vector3, q: Quaternion, s }], restock: seconds, jar?: true (an endless
 //       source: units are the jars themselves), label }
 import * as THREE from 'three';
+import { archPlace } from './archModels.js';
 import { propGeometry } from './props.js';
 import { mikawayaAtlas, tatamiTexture, tvScreen } from './mikawayaArt.js';
 
@@ -433,13 +434,18 @@ export function buildCornerShop(t) {
 /** The building: walls, shopfront, signboard, awning, the dwelling upstairs, the alley side (merged with the town). */
 function buildShell(t, B, m, I, cx) {
   const { x0, x1, z0, z1, H1, dx0, dx1 } = MK;
-  // threshold
-  B.box(m.metal, dx1 - dx0 + 0.2, 0.025, 0.12, (dx0 + dx1) / 2, 0, z0 + 0.02, { tint: 0xb8bcc0 });
-  // shell: side walls (both floors), back wall, ceiling / 2F floor
-  for (const [xa, xb] of [[x0, x0 + 0.25], [x1 - 0.25, x1]]) {
-    B.box(m.mortar, 0.25, H1 + 0.1, z1 - z0, (xa + xb) / 2, 0, (z0 + z1) / 2, { uv: [0, 0], ao: 0.15 });
+  // the shell and shop front are a lowpix model (art/lowpix/world_arch/_src/mikawaya.py) unless it failed to load;
+  // the glass, posters, the lit signboard and the interior finishes stay here
+  const lp = !!archPlace('mikawaya_shell', t.group, { cast: false });
+  if (!lp) {
+    // threshold
+    B.box(m.metal, dx1 - dx0 + 0.2, 0.025, 0.12, (dx0 + dx1) / 2, 0, z0 + 0.02, { tint: 0xb8bcc0 });
+    // shell: side walls (both floors), back wall, ceiling / 2F floor
+    for (const [xa, xb] of [[x0, x0 + 0.25], [x1 - 0.25, x1]]) {
+      B.box(m.mortar, 0.25, H1 + 0.1, z1 - z0, (xa + xb) / 2, 0, (z0 + z1) / 2, { uv: [0, 0], ao: 0.15 });
+    }
+    B.box(m.mortar, x1 - x0, H1 + 0.1, 0.25, cx, 0, z1 - 0.125, { ao: 0.15 });
   }
-  B.box(m.mortar, x1 - x0, H1 + 0.1, 0.25, cx, 0, z1 - 0.125, { ao: 0.15 });
   // interior finishes: wainscot + plaster on the inner faces
   for (const sx of [-1, 1]) {
     const wx = sx < 0 ? x0 + 0.26 : x1 - 0.26;
@@ -450,24 +456,30 @@ function buildShell(t, B, m, I, cx) {
   B.box(I(m.ceil), x1 - x0 - 0.5, 0.06, z1 - z0 - 0.3, cx, H1 - 0.06, (z0 + z1) / 2 + 0.02, { k: 0.9 });
   for (const z of [16.0, 17.2, 18.4, 19.4]) B.box(I(m.wood), x1 - x0 - 0.5, 0.08, 0.1, cx, H1 - 0.14, z, { k: 0.75 }); // exposed joists
   B.box(I(m.wood), x1 - x0 - 0.6, 0.02, 0.2, cx, 2.3, z0 + 0.21, { k: 0.8 });
-  B.box(m.wood, x1 - x0 - 0.5, 0.22, z1 - z0, cx, H1, (z0 + z1) / 2, { k: 0.8 });
+  if (!lp) B.box(m.wood, x1 - x0 - 0.5, 0.22, z1 - z0, cx, H1, (z0 + z1) / 2, { k: 0.8 });
   // shopfront: piers, kick panels, display windows, transom, door frame, open sliding doors
-  for (const [a, b] of [[x0, x0 + 0.3], [x1 - 0.3, x1]]) B.box(m.mortar, b - a, H1 + 0.1, 0.28, (a + b) / 2, 0, z0 + 0.14, { ao: 0.2 });
+  if (!lp) for (const [a, b] of [[x0, x0 + 0.3], [x1 - 0.3, x1]]) B.box(m.mortar, b - a, H1 + 0.1, 0.28, (a + b) / 2, 0, z0 + 0.14, { ao: 0.2 });
   for (const [a, b] of [[x0 + 0.3, dx0], [dx1, x1 - 0.3]]) {
-    B.box(m.pv, b - a, 0.6, 0.2, (a + b) / 2, 0, z0 + 0.1, { tint: 0x8a6a4a });
-    B.box(m.metal, b - a, 0.05, 0.24, (a + b) / 2, 0.6, z0 + 0.1, { tint: 0xb8bcc0 });
-    B.box(m.metal, 0.05, 1.6, 0.06, (a + b) / 2, 0.65, z0 + 0.1, { tint: 0xb8bcc0 });
-    for (const sx of [a + 0.025, b - 0.025]) B.box(m.metal, 0.05, 1.6, 0.08, sx, 0.65, z0 + 0.1, { tint: 0xb8bcc0 });
+    if (!lp) {
+      B.box(m.pv, b - a, 0.6, 0.2, (a + b) / 2, 0, z0 + 0.1, { tint: 0x8a6a4a });
+      B.box(m.metal, b - a, 0.05, 0.24, (a + b) / 2, 0.6, z0 + 0.1, { tint: 0xb8bcc0 });
+      B.box(m.metal, 0.05, 1.6, 0.06, (a + b) / 2, 0.65, z0 + 0.1, { tint: 0xb8bcc0 });
+      for (const sx of [a + 0.025, b - 0.025]) B.box(m.metal, 0.05, 1.6, 0.08, sx, 0.65, z0 + 0.1, { tint: 0xb8bcc0 });
+    }
     t.add(t.glassPane(b - a, 1.6, (a + b) / 2, 0.65 + 0.8, z0 + 0.1));
   }
-  B.box(m.metal, x1 - x0 - 0.6, 0.06, 0.24, cx, 2.25, z0 + 0.1, { tint: 0xb8bcc0 });
-  B.box(m.wood, x1 - x0 - 0.6, 0.6, 0.2, cx, 2.31, z0 + 0.1);
-  for (const sx of [dx0, dx1]) B.box(m.metal, 0.06, 2.25, 0.12, sx, 0, z0 + 0.06, { tint: 0xa8acb0 });
+  if (!lp) {
+    B.box(m.metal, x1 - x0 - 0.6, 0.06, 0.24, cx, 2.25, z0 + 0.1, { tint: 0xb8bcc0 });
+    B.box(m.wood, x1 - x0 - 0.6, 0.6, 0.2, cx, 2.31, z0 + 0.1);
+    for (const sx of [dx0, dx1]) B.box(m.metal, 0.06, 2.25, 0.12, sx, 0, z0 + 0.06, { tint: 0xa8acb0 });
+  }
   // the two door leaves, slid open in front of the windows
   for (const [a, b] of [[dx0 - 0.85, dx0 - 0.02], [dx1 + 0.02, dx1 + 0.85]]) {
-    for (const sx of [a, b]) B.box(m.pv, 0.05, 2.18, 0.05, sx, 0.03, z0 - 0.04, { tint: 0xa8acb0 });
-    for (const y of [0.03, 2.16]) B.box(m.pv, b - a, 0.05, 0.05, (a + b) / 2, y, z0 - 0.04, { tint: 0xa8acb0 });
-    B.box(m.pv, b - a, 0.04, 0.05, (a + b) / 2, 0.95, z0 - 0.04, { tint: 0xa8acb0 });
+    if (!lp) {
+      for (const sx of [a, b]) B.box(m.pv, 0.05, 2.18, 0.05, sx, 0.03, z0 - 0.04, { tint: 0xa8acb0 });
+      for (const y of [0.03, 2.16]) B.box(m.pv, b - a, 0.05, 0.05, (a + b) / 2, y, z0 - 0.04, { tint: 0xa8acb0 });
+      B.box(m.pv, b - a, 0.04, 0.05, (a + b) / 2, 0.95, z0 - 0.04, { tint: 0xa8acb0 });
+    }
     t.add(t.glassPane(b - a - 0.05, 2.1, (a + b) / 2, 1.08, z0 - 0.04));
   }
   // posters in the windows
@@ -477,10 +489,12 @@ function buildShell(t, B, m, I, cx) {
   const sign = t.vmesh(new THREE.BoxGeometry(x1 - x0 + 0.1, 0.78, 0.12), [t.P(0.5), t.P(0.5), t.P(0.5), t.P(0.5), t.T('mikawaya', 240, 36, { glow: 0.55, rough: 0.4 }), t.P(0.5)]);
   sign.position.set(cx, H1 + 0.6, z0 - 0.16); sign.rotation.y = Math.PI;
   t.add(sign);
-  B.box(m.metal, x1 - x0 + 0.2, 0.06, 0.16, cx, H1 + 0.98, z0 - 0.16, { tint: 0x3a3c40 });
-  const aw = t.awningMat();
-  for (let j = 0; j < 3; j++) B.box(aw, x1 - x0 - 0.3, 0.07, 0.9 - j * 0.28, cx, 2.3 + j * 0.07, z0 - (0.9 - j * 0.28) / 2, { uv: [0.2, 0] });
-  B.box(aw, x1 - x0 - 0.3, 0.22, 0.03, cx, 2.1, z0 - 0.9, { uv: [0.2, 0] });
+  if (!lp) {
+    B.box(m.metal, x1 - x0 + 0.2, 0.06, 0.16, cx, H1 + 0.98, z0 - 0.16, { tint: 0x3a3c40 });
+    const aw = t.awningMat();
+    for (let j = 0; j < 3; j++) B.box(aw, x1 - x0 - 0.3, 0.07, 0.9 - j * 0.28, cx, 2.3 + j * 0.07, z0 - (0.9 - j * 0.28) / 2, { uv: [0.2, 0] });
+    B.box(aw, x1 - x0 - 0.3, 0.22, 0.03, cx, 2.1, z0 - 0.9, { uv: [0.2, 0] });
+  }
   t.house({ x: cx, z: z0, w: x1 - x0, d: z1 - z0, side: -1, y0: H1 + 0.22, floors: 1, h1: 2.5, wallA: m.wallCream, roofM: m.roofGrey, antenna: 1.6,
     win: [[0, -1.4, 1.6, 1.1, 'lit', { tobukuro: -1, sill: 0.8 }], [0, 1.5, 1.4, 1.0, 'lit2', { sill: 0.8 }], [0, 2.5, 1.2, 1.0, 'lit3', { face: 'l', sill: 0.8, clean: true }], [0, 2.5, 1.0, 1.0, 'dark', { face: 'r', sill: 0.8 }]] });
   // side (alley) wall details: a frosted window, an AC unit, the back door lamp

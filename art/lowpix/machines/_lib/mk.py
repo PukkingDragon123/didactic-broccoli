@@ -80,11 +80,11 @@ STYLES = {
     # baked enamel over pressed steel: orange-peel mottle, a little sheen, chipped to dark steel along the edges,
     # grime in the lower corners
     "enamel": {"dither": 0, "rim": RIM, "layers": [
-        photo("metal_plate", 140, 0.35),
-        {"id": "mottle", "op": "noise", "scale": 18, "amount": 0.2},
+        photo("metal_plate", 160, 0.12),
+        {"id": "mottle", "op": "noise", "scale": 22, "amount": 0.12},
         {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.82},
-        {"id": "grime", "op": "patches", "scale": 60, "threshold": 0.7, "shift": -0.45},
-        {"id": "wear", "op": "wear", "width": 2, "density": 0.12, "scratches": 0.4, "ramp": "steel", "tone": 2.0, "post": True},
+        {"id": "grime", "op": "patches", "scale": 70, "threshold": 0.76, "shift": -0.3},
+        {"id": "wear", "op": "wear", "width": 2, "density": 0.14, "scratches": 0.012, "ramp": "steel", "tone": 2.0, "post": True},
         dict(GLOSS, density=0.15)]},
     # chrome: high contrast, the sky reflected bright on top faces, the floor dark below, hard highlight dashes
     "chrome": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "none", "light_shift": 1.6, "dark_shift": -1.4}, "layers": [

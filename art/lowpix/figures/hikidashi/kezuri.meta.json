@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:d404f8700b304a91ad13924fa6af94d6",
+   "height": 20,
+   "at": [
+    0,
+    3.0,
+    0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "gloss",
+   "key": "c55b96c32e3a86"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 0.8,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "hikidashi/kezuri"
+}

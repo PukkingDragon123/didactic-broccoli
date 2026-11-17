@@ -1,0 +1,954 @@
+{
+ "name": "mikawaya_shell",
+ "description": "MIKAWA-YA shell and shop front",
+ "license": "CC0-1.0",
+ "density": 48,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.42,
+  "gradient": 0.25,
+  "ao": 0.55,
+  "ao_height": 1.2
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "mortar": {
+    "base": "#b8b2a2",
+    "steps": 8,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "alu": {
+    "base": "#a6abae",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "wood": {
+    "base": "#6a4a32",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "green": {
+    "base": "#2f7a48",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.75
+   },
+   "canvas": {
+    "base": "#e6e2d6",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "iron": {
+    "base": "#3a3c40",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "rust": {
+    "base": "#6a3a26",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "conc": {
+    "base": "#9c978d",
+    "steps": 8,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   }
+  }
+ },
+ "styles": {
+  "mortar": {
+   "ramp": "mortar",
+   "tone": 4.0,
+   "rim": {
+    "light_shift": 0.9,
+    "dark_shift": -0.9
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/cracked_concrete_wall",
+     "scale": 1.6,
+     "amount": 0.6
+    },
+    {
+     "id": "patch",
+     "op": "patches",
+     "scale": 0.6,
+     "threshold": 0.6,
+     "shift": -0.5
+    },
+    {
+     "id": "cracks",
+     "op": "cracks",
+     "scale": 0.7,
+     "width": 1,
+     "threshold": 0.8,
+     "shift": -1.4
+    },
+    {
+     "id": "splash",
+     "op": "band",
+     "axis": "y",
+     "from": -1,
+     "to": -0.8,
+     "shift": -0.8,
+     "wobble": 0.05
+    },
+    {
+     "id": "dirt",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.5
+    }
+   ]
+  },
+  "alu": {
+   "ramp": "alu",
+   "tone": 4.0,
+   "rim": {
+    "light_shift": 1.2,
+    "dark_shift": -1.0
+   },
+   "brush": {
+    "flow": "long"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 0.15,
+     "amount": 0.3
+    },
+    {
+     "id": "grime",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.4
+    }
+   ]
+  },
+  "wood": {
+   "ramp": "wood",
+   "tone": 3.4,
+   "rim": {
+    "light_shift": 0.9,
+    "dark_shift": -0.9
+   },
+   "brush": {
+    "flow": "horizontal"
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/weathered_planks",
+     "scale": 1.0,
+     "amount": 0.55
+    },
+    {
+     "id": "boards",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.15,
+     "width": 0.1,
+     "shift": -1.0
+    },
+    {
+     "id": "scuffs",
+     "op": "band",
+     "axis": "y",
+     "from": -1,
+     "to": -0.6,
+     "shift": -0.6,
+     "wobble": 0.1
+    }
+   ]
+  },
+  "canvas": {
+   "ramp": "canvas",
+   "tone": 3.8,
+   "rim": {
+    "light_shift": 0.6,
+    "dark_shift": -0.8
+   },
+   "brush": {
+    "flow": "long",
+    "rough": 0.3
+   },
+   "layers": [
+    {
+     "id": "stripes",
+     "op": "stripes",
+     "axis": "x",
+     "period": 0.5,
+     "width": 0.5,
+     "ramp": "green",
+     "tone": 3.0,
+     "space": "world"
+    },
+    {
+     "id": "fade",
+     "op": "patches",
+     "scale": 0.5,
+     "threshold": 0.55,
+     "shift": 0.6
+    },
+    {
+     "id": "soot",
+     "op": "noise",
+     "scale": 0.3,
+     "amount": 0.45
+    },
+    {
+     "id": "stain",
+     "op": "spots",
+     "count": 12,
+     "radius": [
+      0.03,
+      0.08
+     ],
+     "stretch": [
+      1,
+      1,
+      3
+     ],
+     "shift": -0.8
+    }
+   ]
+  },
+  "iron": {
+   "ramp": "iron",
+   "tone": 3.0,
+   "rim": {
+    "light_shift": 0.9,
+    "dark_shift": -0.9
+   },
+   "layers": [
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.15,
+     "threshold": 0.66,
+     "ramp": "rust",
+     "tone": 2.6
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "side",
+   "shape": "box",
+   "size": [
+    0.25,
+    2.95,
+    5.05
+   ],
+   "pivot": [
+    -15.325,
+    1.475,
+    17.425
+   ],
+   "style": "mortar",
+   "hide": [
+    "bottom",
+    "right"
+   ]
+  },
+  {
+   "id": "side_1",
+   "shape": "box",
+   "size": [
+    0.25,
+    2.95,
+    5.05
+   ],
+   "pivot": [
+    -9.525,
+    1.475,
+    17.425
+   ],
+   "style": "mortar",
+   "hide": [
+    "bottom",
+    "left"
+   ]
+  },
+  {
+   "id": "back",
+   "shape": "box",
+   "size": [
+    6.05,
+    2.95,
+    0.25
+   ],
+   "pivot": [
+    -12.425,
+    1.475,
+    19.825
+   ],
+   "style": "mortar",
+   "hide": [
+    "bottom",
+    "back"
+   ]
+  },
+  {
+   "id": "floor2",
+   "shape": "box",
+   "size": [
+    5.55,
+    0.22,
+    5.05
+   ],
+   "pivot": [
+    -12.425,
+    2.96,
+    17.425
+   ],
+   "style": "wood",
+   "hide": [
+    "top",
+    "bottom"
+   ]
+  },
+  {
+   "id": "pier",
+   "shape": "box",
+   "size": [
+    0.3,
+    2.95,
+    0.28
+   ],
+   "pivot": [
+    -15.3,
+    1.475,
+    15.04
+   ],
+   "chamfer": 0.01,
+   "style": "mortar",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "pier_1",
+   "shape": "box",
+   "size": [
+    0.3,
+    2.95,
+    0.28
+   ],
+   "pivot": [
+    -9.55,
+    1.475,
+    15.04
+   ],
+   "chamfer": 0.01,
+   "style": "mortar",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "kick",
+   "shape": "box",
+   "size": [
+    1.85,
+    0.6,
+    0.2
+   ],
+   "pivot": [
+    -14.225,
+    0.3,
+    15.0
+   ],
+   "style": "wood",
+   "paint": {
+    "layers": [
+     {
+      "op": "panel",
+      "faces": [
+       "back"
+      ],
+      "inset": 3,
+      "shift": -0.6
+     }
+    ]
+   },
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "sill",
+   "shape": "box",
+   "size": [
+    1.85,
+    0.05,
+    0.24
+   ],
+   "pivot": [
+    -14.225,
+    0.625,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "mullion",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.6,
+    0.06
+   ],
+   "pivot": [
+    -14.225,
+    1.45,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "jamb",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    -15.125,
+    1.45,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "jamb_1",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    -13.325,
+    1.45,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "kick_1",
+   "shape": "box",
+   "size": [
+    1.85,
+    0.6,
+    0.2
+   ],
+   "pivot": [
+    -10.625,
+    0.3,
+    15.0
+   ],
+   "style": "wood",
+   "paint": {
+    "layers": [
+     {
+      "op": "panel",
+      "faces": [
+       "back"
+      ],
+      "inset": 3,
+      "shift": -0.6
+     }
+    ]
+   },
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "sill_1",
+   "shape": "box",
+   "size": [
+    1.85,
+    0.05,
+    0.24
+   ],
+   "pivot": [
+    -10.625,
+    0.625,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "mullion_1",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.6,
+    0.06
+   ],
+   "pivot": [
+    -10.625,
+    1.45,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "jamb_2",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    -11.525,
+    1.45,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "jamb_3",
+   "shape": "box",
+   "size": [
+    0.05,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    -9.725,
+    1.45,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "transom",
+   "shape": "box",
+   "size": [
+    5.45,
+    0.06,
+    0.24
+   ],
+   "pivot": [
+    -12.425,
+    2.28,
+    15.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "fascia",
+   "shape": "box",
+   "size": [
+    5.45,
+    0.6,
+    0.2
+   ],
+   "pivot": [
+    -12.425,
+    2.61,
+    15.0
+   ],
+   "chamfer": 0.01,
+   "style": "wood"
+  },
+  {
+   "id": "door_post",
+   "shape": "box",
+   "size": [
+    0.06,
+    2.25,
+    0.12
+   ],
+   "pivot": [
+    -13.3,
+    1.125,
+    14.96
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "door_post_1",
+   "shape": "box",
+   "size": [
+    0.06,
+    2.25,
+    0.12
+   ],
+   "pivot": [
+    -11.55,
+    1.125,
+    14.96
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "threshold",
+   "shape": "box",
+   "size": [
+    1.95,
+    0.025,
+    0.12
+   ],
+   "pivot": [
+    -12.425,
+    0.0125,
+    14.92
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_stile",
+   "shape": "box",
+   "size": [
+    0.05,
+    2.18,
+    0.05
+   ],
+   "pivot": [
+    -14.15,
+    1.12,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_stile_1",
+   "shape": "box",
+   "size": [
+    0.05,
+    2.18,
+    0.05
+   ],
+   "pivot": [
+    -13.32,
+    1.12,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_rail",
+   "shape": "box",
+   "size": [
+    0.83,
+    0.05,
+    0.05
+   ],
+   "pivot": [
+    -13.735,
+    0.055,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_rail_1",
+   "shape": "box",
+   "size": [
+    0.83,
+    0.05,
+    0.05
+   ],
+   "pivot": [
+    -13.735,
+    2.185,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_bar",
+   "shape": "box",
+   "size": [
+    0.83,
+    0.04,
+    0.05
+   ],
+   "pivot": [
+    -13.735,
+    0.97,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_stile_2",
+   "shape": "box",
+   "size": [
+    0.05,
+    2.18,
+    0.05
+   ],
+   "pivot": [
+    -11.53,
+    1.12,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_stile_3",
+   "shape": "box",
+   "size": [
+    0.05,
+    2.18,
+    0.05
+   ],
+   "pivot": [
+    -10.7,
+    1.12,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_rail_2",
+   "shape": "box",
+   "size": [
+    0.83,
+    0.05,
+    0.05
+   ],
+   "pivot": [
+    -11.115,
+    0.055,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_rail_3",
+   "shape": "box",
+   "size": [
+    0.83,
+    0.05,
+    0.05
+   ],
+   "pivot": [
+    -11.115,
+    2.185,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "leaf_bar_1",
+   "shape": "box",
+   "size": [
+    0.83,
+    0.04,
+    0.05
+   ],
+   "pivot": [
+    -11.115,
+    0.97,
+    14.86
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "sign_rail",
+   "shape": "box",
+   "size": [
+    6.25,
+    0.06,
+    0.16
+   ],
+   "pivot": [
+    -12.425,
+    3.86,
+    14.74
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "awning",
+   "shape": "box",
+   "size": [
+    5.75,
+    0.03,
+    0.9265
+   ],
+   "pivot": [
+    -12.425,
+    2.3954,
+    14.4536
+   ],
+   "rotation": [
+    -13.7363,
+    0.0,
+    0.0
+   ],
+   "style": "canvas"
+  },
+  {
+   "id": "valance",
+   "shape": "box",
+   "size": [
+    5.75,
+    0.22,
+    0.02
+   ],
+   "pivot": [
+    -12.425,
+    2.19,
+    14.0
+   ],
+   "style": "canvas",
+   "paint": {
+    "layers": [
+     {
+      "id": "scallop",
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.25,
+      "width": 0.5,
+      "shift": -0.6,
+      "range": [
+       -1,
+       -0.7
+      ],
+      "space": "world"
+     }
+    ]
+   }
+  },
+  {
+   "id": "awn_arm",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.9265
+   ],
+   "pivot": [
+    -15.25,
+    2.41,
+    14.47
+   ],
+   "rotation": [
+    13.7363,
+    180.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 4
+  },
+  {
+   "id": "awn_arm_1",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.9265
+   ],
+   "pivot": [
+    -12.425,
+    2.41,
+    14.47
+   ],
+   "rotation": [
+    13.7363,
+    180.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 4
+  },
+  {
+   "id": "awn_arm_2",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.9265
+   ],
+   "pivot": [
+    -9.6,
+    2.41,
+    14.47
+   ],
+   "rotation": [
+    13.7363,
+    180.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 4
+  },
+  {
+   "id": "awn_bar",
+   "shape": "prism",
+   "size": [
+    0.028,
+    0.028,
+    5.75
+   ],
+   "pivot": [
+    -12.425,
+    2.3,
+    14.01
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 6
+  }
+ ],
+ "brush": {
+  "length": 0.2,
+  "width": 0.04,
+  "rough": 0.4,
+  "flow": "vertical",
+  "textures": {
+   "mortar": "stone",
+   "alu": "metal",
+   "wood": "wood",
+   "iron": "metal",
+   "conc": "stone"
+  }
+ }
+}

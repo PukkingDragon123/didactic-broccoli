@@ -165,7 +165,7 @@ export class Kana {
     if (typeof at === 'function') { const p = at(out); return p ? out.copy(p) : null; }
     if (at.isVector3) return out.copy(at);
     const h = at.headTop ? at : at.h?.headTop ? at.h : null;
-    if (h) { if (h.root && !h.root.visible && !h.root.parent) return null; h.headTop(out); out.y -= 0.2; return out; }
+    if (h) { if (h.root && !h.root.visible && !h.root.parent) return null; h.headTop(out); out.y -= 0.5; return out; } // (shoulder height: the column rises past the head)
     if (at.isObject3D) return at.getWorldPosition(out);
     return null;
   }
@@ -203,7 +203,7 @@ export class Kana {
         if (p.z > 1 || Math.abs(p.x) > 1.4 || Math.abs(p.y) > 1.4) continue;
         sx = (p.x * 0.5 + 0.5) * W; sy = (0.5 - p.y * 0.5) * H;
         const px = (it.K.h * it.size) / (Math.max(0.3, dist) * 2 * tanF) * H; // the glyph's height on screen
-        S = Math.max(1, Math.min(Math.round(5 * dpr), Math.round(px / 40)));
+        S = Math.max(1, Math.min(Math.round(3 * dpr), Math.round(px / 40)));
         // beside the head, not over the face
         sx += it.side * 28 * S;
       }

@@ -1,0 +1,38 @@
+{
+ "mats": {
+  "plate": "metal",
+  "rod": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "shark",
+   "src": "sketchfab:778fd6dec71442a2abd468477ecc3a17",
+   "height": 12,
+   "at": [
+    0,
+    11.4,
+    0
+   ],
+   "yaw": 90,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "d02a6165e167c3"
+  }
+ ],
+ "model_clip": {
+  "node": "model_shark",
+  "kind": "slide",
+  "length": 1.2,
+  "amp": 2,
+  "axis": "x"
+ },
+ "key": "shinkai/goblin"
+}

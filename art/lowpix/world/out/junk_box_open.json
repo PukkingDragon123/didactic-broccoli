@@ -1,0 +1,34 @@
+{
+ "id": "junk_box_open",
+ "src": "sketchfab:1ebaf13ac44748baa845ab7f5cb3fc9f",
+ "credit": {
+  "title": "Wooden Dirty Crates - Broken Whole 2 Piece Set",
+  "author": "Sunbox Games",
+  "authorUrl": "https://sketchfab.com/sunboxgames",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-dirty-crates-broken-whole-2-piece-set-1ebaf13ac44748baa845ab7f5cb3fc9f",
+  "site": "Sketchfab"
+ },
+ "tris": 2238,
+ "tex": 512,
+ "size": [
+  3.48,
+  0.468,
+  1.096
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,32 @@
+{
+ "joints": {
+  "flap": [
+   0,
+   356.0,
+   344.0
+  ]
+ },
+ "mats": {
+  "bay_lip_t": "metal",
+  "bay_lip_b": "metal",
+  "bay_lip_l": "metal",
+  "bay_lip_r": "metal",
+  "flap_p": "gloss",
+  "cup": "metal",
+  "win_t": "metal",
+  "win_b": "metal",
+  "win_l": "metal",
+  "win_r": "metal",
+  "win_back": "glow",
+  "header": "glow",
+  "pay": "gloss",
+  "disp": "glow",
+  "bill": "metal",
+  "coin": "metal",
+  "lever": "metal",
+  "lamp": "glow",
+  "ad": "glow"
+ },
+ "key": "vending",
+ "density": 0.32
+}

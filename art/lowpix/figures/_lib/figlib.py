@@ -653,7 +653,7 @@ class Fig:
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
     def model(s, name, src, height, at=(0, 0, 0), yaw=0, tris=4000, style="painted", atlas=512, recolor=None, mat="matte", pitch=0,
-              roll=0, scale=None, opts=None, fill=None, fit=True):
+              roll=0, scale=None, opts=None, fill=None, fit=True, drop=None):
         """A converted real model placed on the figure: `height` in mm, standing at `at`, turned `yaw` degrees.
         recolor: {"brightness", "saturation", "hue", "tint": "#hex"} applied to its atlas (a black cat from a tabby)."""
         m = {"name": name, "src": src, "height": height, "at": r1(list(at)), "yaw": yaw, "pitch": pitch, "roll": roll, "tris": tris,
@@ -664,6 +664,8 @@ class Fig:
             m["scale"] = scale
         if fill:
             m["fill"] = fill
+        if drop:
+            m["drop"] = list(drop)
         if not fit:
             m["fit"] = False
         if opts:

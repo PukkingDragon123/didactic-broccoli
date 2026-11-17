@@ -1,0 +1,45 @@
+{
+ "id": "utility_sink",
+ "src": "sketchfab:69eacffafcfe40378bf4de7822eaf0f5",
+ "credit": {
+  "title": "Utility Sink",
+  "author": "Janet Peña",
+  "authorUrl": "https://sketchfab.com/sandiaentrocito",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/utility-sink-69eacffafcfe40378bf4de7822eaf0f5",
+  "site": "Sketchfab"
+ },
+ "tris": 1308,
+ "tex": 288,
+ "size": [
+  8.801,
+  0.97,
+  6.139
+ ],
+ "colours": 11,
+ "palette": {
+  "m0": [
+   "#b5430f",
+   "#e86b18",
+   "#eb9b51",
+   "#efc389",
+   "#f5e2bf",
+   "#f5e9c9",
+   "#f6efd2",
+   "#f7f4db",
+   "#f9f8e4"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

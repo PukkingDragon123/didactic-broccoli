@@ -14,7 +14,7 @@
 // forces an expression for a moment; meow() opens the mouth; react('swat' | 'nibble'). onFx(kind, worldPos) is called
 // for zz's while she sleeps.
 import * as THREE from 'three';
-import { catAssets, setPupil, CAT_BONES, TAIL_N, CAT_FOOT, CAT_FACE } from './catBody.js';
+import { catAssets, setPupil, CAT_BONES, TAIL_N, CAT_FOOT, CAT_FACE, TAIL_REST } from './catBody.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -31,11 +31,11 @@ const HEAD = 1; // (the head's scale against the trunk's squash)
 const CLOSED = new Set(['sleepy', 'content', 'squeeze']);
 // eyes: [upper lid edge, lower lid edge] (radians from the eye's equator; they meet when the eye is shut), the pupil
 const EYE_POSE = {
-  open: [0.6, -0.48, 'normal'], wide: [0.8, -0.6, 'round'], slit: [0.56, -0.46, 'slit'], half: [0.14, -0.46, 'narrow'],
+  open: [0.84, -0.7, 'normal'], wide: [1.0, -0.82, 'round'], slit: [0.8, -0.68, 'slit'], half: [0.26, -0.68, 'narrow'],
   content: [-0.16, -0.18, 'narrow'], sleepy: [-0.2, -0.22, 'narrow'], squeeze: [-0.1, -0.08, 'slit'], blink: [-0.22, -0.24, 'normal'],
 };
 // mouths: [jaw open (radians), tongue out (0..1)]
-const MOUTH_POSE = { w: [0, 0], happy: [0, 0], open: [0.26, 0], blep: [0.05, 0.55], lap: [0.2, 1], yawn: [0.62, 0.15], hiss: [0.46, 0] };
+const MOUTH_POSE = { w: [0, 0], happy: [0, 0], open: [0.16, 0], blep: [0.03, 0.5], lap: [0.1, 0.9], yawn: [0.32, 0.12], hiss: [0.24, 0] };
 const _ax = new THREE.Vector3();
 const LOOKS = Object.fromEntries(['open', 'wide', 'slit', 'half'].map((e) => [e, { '': e, L: e + 'L', R: e + 'R' }]));
 const POSES = ['walk', 'sit', 'groom', 'sleep', 'held', 'drink', 'groove', 'hide', 'stretch', 'knead', 'stalk'];
@@ -463,7 +463,7 @@ export class CatRig {
       s.p += s.vp * dt; s.y += s.vy * dt;
       if (Math.abs(s.p - tp) > 1.5) { s.p = tp; s.vp = 0; }
       const bn = this.b['tail' + i];
-      bn.quaternion.setFromEuler(_e.set(s.p, s.y, 0, 'YXZ'));
+      bn.quaternion.setFromEuler(_e.set(s.p - TAIL_REST[i], s.y, 0, 'YXZ')); // (less the model's own droop at rest)
       // (scales compound down the chain: only the root puffs, the rest follow)
       const puff = i === 0 ? 1 + P.puff * 0.45 : 1;
       bn.scale.set(puff, puff, 1);

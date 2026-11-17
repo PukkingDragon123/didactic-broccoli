@@ -1,0 +1,34 @@
+{
+ "id": "stove_kettle",
+ "src": "sketchfab:056ccf898f9e49acb6e3e370deabf184",
+ "credit": {
+  "title": "Gas Stove",
+  "author": "Lyskilde",
+  "authorUrl": "https://sketchfab.com/longtail",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/gas-stove-056ccf898f9e49acb6e3e370deabf184",
+  "site": "Sketchfab"
+ },
+ "tris": 2530,
+ "tex": 112,
+ "size": [
+  0.171,
+  0.248,
+  0.183
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#4a2c29",
+   "#5e3e38",
+   "#725248",
+   "#846759",
+   "#957c6b",
+   "#a09183",
+   "#ada499",
+   "#bab6af",
+   "#c8c7c3"
+  ]
+ },
+ "warnings": []
+}

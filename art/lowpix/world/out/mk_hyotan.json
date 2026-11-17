@@ -1,0 +1,34 @@
+{
+ "id": "mk_hyotan",
+ "src": "sketchfab:fc5c13c5194241339121d8c2e99ae1c7",
+ "credit": {
+  "title": "Gourd Bottle",
+  "author": "Akio",
+  "authorUrl": "https://sketchfab.com/akio_illu",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/gourd-bottle-fc5c13c5194241339121d8c2e99ae1c7",
+  "site": "Sketchfab"
+ },
+ "tris": 1500,
+ "tex": 96,
+ "size": [
+  0.118,
+  0.164,
+  0.066
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#492117",
+   "#5e3121",
+   "#71432a",
+   "#845835",
+   "#966d41",
+   "#ae8951",
+   "#b8a170",
+   "#c3b78e",
+   "#cfc9aa"
+  ]
+ },
+ "warnings": []
+}

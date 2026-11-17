@@ -107,6 +107,15 @@
     "#f2e582",
     "#f6f3b0",
     "#fbfbde"
+   ],
+   "c9aa0a8": [
+    "#1f1e23",
+    "#494750",
+    "#73727b",
+    "#a0a0a4",
+    "#babbbb",
+    "#d4d4d4",
+    "#ececec"
    ]
   }
  },
@@ -168,6 +177,44 @@
      "op": "speckle",
      "density": 0.015,
      "shift": -0.5
+    }
+   ]
+  },
+  "metal": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 18,
+     "amount": 0.7
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 1.1,
+     "min_light": 0.7
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.8,
+     "min_light": -0.1,
+     "max_light": 0.3
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.08,
+     "shift": 1.2,
+     "post": true
     }
    ]
   }
@@ -397,7 +444,159 @@
    "style": "pvc",
    "paint": {
     "ramp": "cf6d84a",
-    "tone": 3.4
+    "tone": 3.4,
+    "layers": [
+     {
+      "id": "ridges",
+      "op": "stripes",
+      "axis": "z",
+      "period": 1.6,
+      "width": 0.3,
+      "shift": -0.7,
+      "faces": [
+       "up"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "pump",
+   "shape": "box",
+   "pivot": [
+    0,
+    26.5,
+    10
+   ],
+   "size": [
+    10.5,
+    6,
+    12
+   ],
+   "chamfer": 1.4,
+   "style": "pvc",
+   "paint": {
+    "ramp": "c3f86e8",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "grip",
+      "op": "stripes",
+      "axis": "z",
+      "period": 1.4,
+      "width": 0.35,
+      "shift": -0.8,
+      "faces": [
+       "sides",
+       "bottom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "trigger",
+   "shape": "box",
+   "pivot": [
+    0,
+    21.5,
+    1.5
+   ],
+   "rotation": [
+    15,
+    0,
+    0
+   ],
+   "size": [
+    2.2,
+    6,
+    3
+   ],
+   "chamfer": 0.5,
+   "style": "pvc",
+   "paint": {
+    "ramp": "cf6d84a",
+    "tone": 3.2
+   }
+  },
+  {
+   "id": "mag",
+   "shape": "box",
+   "pivot": [
+    0,
+    30,
+    -12
+   ],
+   "size": [
+    6,
+    9,
+    5
+   ],
+   "chamfer": 0.8,
+   "style": "matte",
+   "paint": {
+    "ramp": "c2a2a2e",
+    "tone": 2.6
+   }
+  },
+  {
+   "id": "bolt-1",
+   "shape": "prism",
+   "pivot": [
+    -4.6,
+    30,
+    -4
+   ],
+   "offset": [
+    0,
+    0,
+    0.5
+   ],
+   "rotation": [
+    -90,
+    0,
+    -90
+   ],
+   "size": [
+    1.8,
+    1.8,
+    1.0
+   ],
+   "sides": 8,
+   "style": "metal",
+   "paint": {
+    "ramp": "c9aa0a8",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "bolt1",
+   "shape": "prism",
+   "pivot": [
+    4.6,
+    30,
+    -4
+   ],
+   "offset": [
+    0,
+    0,
+    0.5
+   ],
+   "rotation": [
+    -90,
+    0,
+    90
+   ],
+   "size": [
+    1.8,
+    1.8,
+    1.0
+   ],
+   "sides": 8,
+   "style": "metal",
+   "paint": {
+    "ramp": "c9aa0a8",
+    "tone": 3.1
    }
   },
   {

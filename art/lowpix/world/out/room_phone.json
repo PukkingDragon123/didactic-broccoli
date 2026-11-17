@@ -1,0 +1,34 @@
+{
+ "id": "room_phone",
+ "src": "sketchfab:63ef9397e3b9418e8abfba9cc4c470a8",
+ "credit": {
+  "title": "Corded Public Phone - Low Poly",
+  "author": "Gamedirection",
+  "authorUrl": "https://sketchfab.com/Gamedirection",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/corded-public-phone-low-poly-63ef9397e3b9418e8abfba9cc4c470a8",
+  "site": "Sketchfab"
+ },
+ "tris": 1498,
+ "tex": 128,
+ "size": [
+  0.488,
+  0.075,
+  0.159
+ ],
+ "colours": 5,
+ "palette": {
+  "m0": [
+   "#010000",
+   "#010101",
+   "#010101",
+   "#010101",
+   "#010101",
+   "#242424",
+   "#474747",
+   "#6a6a6a",
+   "#8d8d8d"
+  ]
+ },
+ "warnings": []
+}

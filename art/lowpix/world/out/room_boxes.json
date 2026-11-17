@@ -1,0 +1,34 @@
+{
+ "id": "room_boxes",
+ "src": "sketchfab:f93cacf5a0e4444898e30b40e43ad669",
+ "credit": {
+  "title": "Stacked Cardboard Boxes | Crafted by jerovdl",
+  "author": "Jerovdl",
+  "authorUrl": "https://sketchfab.com/Jerovdl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/stacked-cardboard-boxes-crafted-by-jerovdl-f93cacf5a0e4444898e30b40e43ad669",
+  "site": "Sketchfab"
+ },
+ "tris": 1380,
+ "tex": 232,
+ "size": [
+  0.553,
+  0.57,
+  0.485
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#300806",
+   "#3d0f09",
+   "#4a190c",
+   "#572510",
+   "#633214",
+   "#8d5220",
+   "#b6782d",
+   "#ce9d4a",
+   "#d7bb77"
+  ]
+ },
+ "warnings": []
+}

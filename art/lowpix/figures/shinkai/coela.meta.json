@@ -1,0 +1,46 @@
+{
+ "mats": {
+  "plate": "metal",
+  "rod": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "fish",
+   "src": "sketchfab:2400195832b64f698096ed0fdac85d51",
+   "height": 14,
+   "at": [
+    0,
+    11.4,
+    0
+   ],
+   "yaw": 80,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "metal",
+   "recolor": {
+    "saturation": 0.2,
+    "linear": [
+     0.55,
+     95
+    ],
+    "tint": "#e8b850"
+   },
+   "key": "278984f3d935ce"
+  }
+ ],
+ "model_clip": {
+  "node": "model_fish",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 25,
+  "axis": "y"
+ },
+ "key": "shinkai/coela"
+}

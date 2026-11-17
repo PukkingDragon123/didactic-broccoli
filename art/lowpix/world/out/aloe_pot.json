@@ -1,0 +1,56 @@
+{
+ "id": "aloe_pot",
+ "src": "sketchfab:98b96bd41a1c4ab7af10c938e280c8c8",
+ "credit": {
+  "title": "Potted Aloe Vera",
+  "author": "Jubbies",
+  "authorUrl": "https://sketchfab.com/Jubbies",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/potted-aloe-vera-98b96bd41a1c4ab7af10c938e280c8c8",
+  "site": "Sketchfab"
+ },
+ "tris": 1498,
+ "tex": 128,
+ "size": [
+  0.058,
+  0.12,
+  0.115
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#3f3544",
+   "#534756",
+   "#665b68",
+   "#776f78",
+   "#878587",
+   "#979797",
+   "#a7a7a7",
+   "#b8b8b8",
+   "#c9c9c9"
+  ],
+  "m1": [
+   "#202b19",
+   "#2c3722",
+   "#38422b",
+   "#454d35",
+   "#515740",
+   "#6c7058",
+   "#868871",
+   "#9c9c8f",
+   "#b1b1ac"
+  ],
+  "m2": [
+   "#352c00",
+   "#453f00",
+   "#555500",
+   "#5d6500",
+   "#617401",
+   "#9aa704",
+   "#d8d809",
+   "#f3f324",
+   "#f3f35a"
+  ]
+ },
+ "warnings": []
+}

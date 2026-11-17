@@ -1,0 +1,34 @@
+{
+ "id": "call_bell_p",
+ "src": "sketchfab:5d754602e590417b889e500a06b67146",
+ "credit": {
+  "title": "Reception Bell. Wood, shiny copper",
+  "author": "Rylae Shylna",
+  "authorUrl": "https://sketchfab.com/risteralline",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/reception-bell-wood-shiny-copper-5d754602e590417b889e500a06b67146",
+  "site": "Sketchfab"
+ },
+ "tris": 1498,
+ "tex": 128,
+ "size": [
+  0.118,
+  0.065,
+  0.118
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#401f1c",
+   "#512d26",
+   "#623d31",
+   "#724f3d",
+   "#81614a",
+   "#987b5d",
+   "#a79478",
+   "#b5aa95",
+   "#c4bfaf"
+  ]
+ },
+ "warnings": []
+}

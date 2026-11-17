@@ -1,0 +1,40 @@
+{
+ "mats": {
+  "base": "gloss",
+  "tub_hoop0": "metal",
+  "tub_hoop1": "metal",
+  "tub_water": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:rubber_duck_toy",
+   "height": 10,
+   "at": [
+    0,
+    5.72,
+    0
+   ],
+   "yaw": -30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "gloss",
+   "key": "8a00a78f86a279"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.4,
+  "amp": 8,
+  "axis": "y"
+ },
+ "key": "yudono/duck"
+}

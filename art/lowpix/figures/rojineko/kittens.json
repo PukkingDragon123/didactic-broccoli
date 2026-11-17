@@ -111,11 +111,28 @@
    },
    "layers": [
     {
+     "id": "grain",
+     "op": "stripes",
+     "axis": "x",
+     "period": 1.5,
+     "width": 0.3,
+     "wobble": 0.8,
+     "shift": -0.6
+    },
+    {
+     "id": "boards",
+     "op": "stripes",
+     "axis": "z",
+     "period": 6.0,
+     "width": 0.05,
+     "shift": -1.2
+    },
+    {
      "id": "photo",
      "op": "photo",
      "src": "art/lowpix/photos/wood_table_001",
      "scale": 30,
-     "amount": 1.3
+     "amount": 0.7
     }
    ]
   },

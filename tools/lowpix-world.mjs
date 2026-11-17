@@ -69,13 +69,17 @@ async function convert(it) {
   if (existsSync(dir)) for (const f of readdirSync(dir)) if (f !== '_source' && f !== '_keep.glb') rmSync(join(dir, f), { recursive: true, force: true });
   const o = { ...D, ...it };
   const h = heightOf(it), ppm = o.ppm || 160;
-  let src = it.src;
-  if (it.keep || it.rotx || it.rotz) src = await keepNodes(it, dir);
+  let src = /^(polyhaven|sketchfab):/.test(it.src) ? it.src : resolve(ROOT, it.src); // a local file: our own source model
+  if (it.keep || it.rotx || it.roty || it.rotz) src = await keepNodes(it, dir);
   const args = ['-m', 'lowpix', 'convert', src, '--style', o.style || 'pixel-hd', '-o', dir, '--height', (h * ppm / PX_PER_UNIT).toFixed(2), '--name', it.name || it.id];
   if (o.yaw) args.push('--yaw', String(o.yaw));
   for (const k of LP_KEYS) if (o[k] != null) args.push('--' + k.replace('_', '-'), String(o[k]));
   const t0 = Date.now();
-  await run('python3', args, { cwd: LOWPIX, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1', LOWPIX_SKETCHFAB_TOKEN: process.env.LOWPIX_SKETCHFAB_TOKEN || 'proxy-injected' } });
+  // Sketchfab rate-limits downloads (HTTP 429): wait and try again, a little longer each time
+  for (let tryN = 0; ; tryN++) {
+    try { await run('python3', args, { cwd: LOWPIX, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1', LOWPIX_SKETCHFAB_TOKEN: process.env.LOWPIX_SKETCHFAB_TOKEN || 'proxy-injected' } }); break; }
+    catch (e) { if (!/429|Too Many Requests/.test(e.message) || tryN >= 8) throw e; const w = 45 + tryN * 30; console.log(`rate-limited on ${it.id}, waiting ${w} s`); await new Promise((r) => setTimeout(r, w * 1000)); }
+  }
   console.log(`converted ${it.id} (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
   return dir;
 }
@@ -95,9 +99,11 @@ async function keepNodes(it, dir) {
   const file = find(srcDir);
   const doc = await new NodeIO().registerExtensions(ALL_EXTENSIONS).read(file);
   if (it.keep) { const re = new RegExp(it.keep); for (const n of doc.getRoot().listNodes()) if (n.getMesh() && !re.test(n.getName())) n.dispose(); }
-  if (it.rotx || it.rotz) { // stand up a model that lies on its side (degrees about x or z)
-    const a = (it.rotx || it.rotz) * Math.PI / 360, scene = doc.getRoot().listScenes()[0];
-    const pivot = doc.createNode('rot').setRotation(it.rotx ? [Math.sin(a), 0, 0, Math.cos(a)] : [0, 0, Math.sin(a), Math.cos(a)]);
+  if (it.rotx || it.roty || it.rotz) { // stand up a model that lies on its side (degrees: about y first, then x, then z)
+    const q = (ax, deg) => { const a = (deg || 0) * Math.PI / 360, s = Math.sin(a); return [ax === 0 ? s : 0, ax === 1 ? s : 0, ax === 2 ? s : 0, Math.cos(a)]; };
+    const mul = (a, b) => [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0], a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
+    const scene = doc.getRoot().listScenes()[0];
+    const pivot = doc.createNode('rot').setRotation(mul(q(2, it.rotz), mul(q(0, it.rotx), q(1, it.roty))));
     for (const c of scene.listChildren()) { scene.removeChild(c); pivot.addChild(c); }
     scene.addChild(pivot);
   }
@@ -215,6 +221,8 @@ async function gameReady(it, dir) {
   if (it.src.startsWith('polyhaven:')) {
     const pid = it.src.slice(10), info = polyhavenInfo(pid);
     credit = { title: info.name, author: Object.keys(info.authors || {}).join(', '), license: 'CC0 1.0', url: 'https://polyhaven.com/a/' + pid, site: 'Poly Haven' };
+  } else if (!/^sketchfab:/.test(it.src)) {
+    credit = { title: it.name || it.id, author: 'Gacha Garage (made for the game, ' + it.src + ')', license: 'CC0 1.0', url: '', site: 'Original' };
   } else {
     const src = join(dir, '_source');
     const sub = existsSync(src) ? readdirSync(src).map((d) => join(src, d, 'ATTRIBUTION.json')).find((f) => existsSync(f)) : null;
@@ -232,7 +240,17 @@ async function gameReady(it, dir) {
 // ------------------------------------------------------------------ run
 const manPath = join(OUT_GLB, 'manifest.json');
 const man = existsSync(manPath) ? JSON.parse(readFileSync(manPath, 'utf8')) : {};
-const queue = items.slice();
+// --finalize: no conversion, just rebuild the manifest from what is on disk (art/lowpix/world/out/<id>.json + the .glb)
+const FINAL = argv.includes('--finalize');
+if (FINAL) {
+  for (const it of spec.items) {
+    const g = join(OUT_GLB, it.id + '.glb'), j = join(OUT_ART, it.id + '.json');
+    if (!existsSync(g) || !existsSync(j)) continue;
+    const o = JSON.parse(readFileSync(j, 'utf8'));
+    man[it.id] = { id: it.id, name: it.name || o.credit.title, src: it.src, ...o.credit, tris: o.tris, tex: o.tex, size: o.size, bytes: statSync(g).size };
+  }
+}
+const queue = FINAL ? [] : items.slice();
 let failed = 0;
 async function worker() {
   while (queue.length) {
@@ -267,7 +285,7 @@ export const lpAsset = (id) => 'lowpix/world/' + id;
 `);
 
 // credits: one generated block in each file
-const list = Object.values(man).sort((a, b) => a.site.localeCompare(b.site) || a.title.localeCompare(b.title));
+const list = Object.values(man).sort((a, b) => (a.site || '').localeCompare(b.site || '') || (a.title || a.id).localeCompare(b.title || b.id));
 const md = ['<!-- lowpix-world:begin (generated by tools/lowpix-world.mjs) -->', '## 3D models: world props and furniture (Poly Haven CC0, Sketchfab CC BY / CC0)', '',
   'Converted to the game\'s pixel-art style with lowpix (`python3 -m lowpix convert --style pixel-hd`), then scaled, re-textured and compressed by tools/lowpix-world.mjs. Shipped in `models/lowpix/world/`.', '',
   ...list.map((c) => `- ${c.title} by ${c.author} (${c.url}), ${c.license}${c.license.startsWith('CC BY') ? ' (https://creativecommons.org/licenses/by/4.0/)' : ''}. Shipped as \`models/lowpix/world/${c.id}.glb\``), '', '<!-- lowpix-world:end -->'].join('\n');

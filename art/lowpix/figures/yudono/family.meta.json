@@ -1,0 +1,68 @@
+{
+ "mats": {
+  "base": "gloss",
+  "tub_hoop0": "metal",
+  "tub_hoop1": "metal",
+  "tub_water": "glass",
+  "steam": "glass"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "a",
+   "src": "sketchfab:f9201e6cca66434dbb5f759bd9884d75",
+   "height": 15,
+   "at": [
+    -4,
+    4.6,
+    -3
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "2106fc7667d18d"
+  },
+  {
+   "name": "b",
+   "src": "sketchfab:f9201e6cca66434dbb5f759bd9884d75",
+   "height": 14,
+   "at": [
+    5,
+    4.6,
+    -1
+   ],
+   "yaw": -60,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "2106fc7667d18d"
+  },
+  {
+   "name": "c",
+   "src": "sketchfab:f9201e6cca66434dbb5f759bd9884d75",
+   "height": 9,
+   "at": [
+    0,
+    6.6,
+    6
+   ],
+   "yaw": 10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "2106fc7667d18d"
+  }
+ ],
+ "key": "yudono/family"
+}

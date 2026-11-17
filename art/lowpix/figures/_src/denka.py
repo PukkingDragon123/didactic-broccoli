@@ -32,7 +32,7 @@ def phone():
 def fan():
     F = Fig(f"{S}/fan", "Mint Electric Fan", "Three speeds, one oscillation, a cage you were told never to poke.")
     top = tatami(F, "base", 30, 26)
-    F.model("fan", FAN, 34, (0, top, -1), yaw=-20, recolor=GOLD)
+    F.model("fan", FAN, 34, (0, top, -1), yaw=-20, recolor={"hue": -35, "saturation": 0.7, "brightness": 1.15})
     F.model_clip("model_fan", "turn", 3.0, amp=35)
     return F
 

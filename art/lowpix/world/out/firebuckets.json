@@ -1,0 +1,66 @@
+{
+ "id": "firebuckets",
+ "src": "art/lowpix/world/made/firebuckets.glb",
+ "credit": {
+  "title": "Fire buckets (消火用)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 324,
+ "tex": 512,
+ "size": [
+  0.76,
+  0.87,
+  0.28
+ ],
+ "colours": 27,
+ "palette": {
+  "m0": [
+   "#1e1716",
+   "#26201e",
+   "#2e2926",
+   "#35312f",
+   "#3c3a38",
+   "#555555",
+   "#707070",
+   "#8b8b8b",
+   "#a6a6a6"
+  ],
+  "m1": [
+   "#520821",
+   "#690c24",
+   "#801124",
+   "#951722",
+   "#aa1e1e",
+   "#cb3628",
+   "#d75f47",
+   "#db886c",
+   "#e2ac91"
+  ],
+  "m2": [
+   "#9b653e",
+   "#bb8e61",
+   "#cdb492",
+   "#e0d6c1",
+   "#f6f4ee",
+   "#f7f6f1",
+   "#f8f8f3",
+   "#f9f9f6",
+   "#fafaf8"
+  ],
+  "m3": [
+   "#8d203c",
+   "#b42d44",
+   "#cd4854",
+   "#d67475",
+   "#e0a49f",
+   "#e3b6ae",
+   "#e6c6bc",
+   "#e9d4ca",
+   "#eee0d7"
+  ]
+ },
+ "warnings": []
+}

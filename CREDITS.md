@@ -2363,11 +2363,15 @@ Models from Poly Haven (polyhaven.com), CC0 1.0 (https://creativecommons.org/pub
 
 Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert --style pixel-hd`), then scaled, re-textured and compressed by tools/lowpix-world.mjs. Shipped in `models/lowpix/world/`.
 
+- Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb) (), CC0 1.0. Shipped as `models/lowpix/world/busstop.glb`
+- Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb) (), CC0 1.0. Shipped as `models/lowpix/world/firebuckets.glb`
+- Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb) (), CC0 1.0. Shipped as `models/lowpix/world/kakigori.glb`
+- Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb) (), CC0 1.0. Shipped as `models/lowpix/world/ashtray_stand.glb`
+- Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb) (), CC0 1.0. Shipped as `models/lowpix/world/tomare.glb`
 - Alarm Clock 01 by Yann Kervran, James Ray Cock (https://polyhaven.com/a/alarm_clock_01), CC0 1.0. Shipped as `models/lowpix/world/clock_alarm.glb`
 - Antique Ceramic Vase 01 by James Ray Cock (https://polyhaven.com/a/antique_ceramic_vase_01), CC0 1.0. Shipped as `models/lowpix/world/vase_ceramic.glb`
 - Arm Chair 01 by Kirill Sannikov (https://polyhaven.com/a/ArmChair_01), CC0 1.0. Shipped as `models/lowpix/world/armchair.glb`
 - Barber Shop Chair 01 by Fernando Quinn (https://polyhaven.com/a/BarberShopChair_01), CC0 1.0. Shipped as `models/lowpix/world/chair_barber.glb`
-- Book Encyclopedia Set 01 by John Malcolm (https://polyhaven.com/a/book_encyclopedia_set_01), CC0 1.0. Shipped as `models/lowpix/world/books.glb`
 - Boombox by Thomas Paul Mouilleron (https://polyhaven.com/a/boombox), CC0 1.0. Shipped as `models/lowpix/world/boombox.glb`
 - Brass Vase 01 by Rico Cilliers (https://polyhaven.com/a/brass_vase_01), CC0 1.0. Shipped as `models/lowpix/world/vase_brass.glb`
 - Caged Hanging Light by Ulan Cabanilla (https://polyhaven.com/a/caged_hanging_light), CC0 1.0. Shipped as `models/lowpix/world/lamp_caged.glb`
@@ -2436,10 +2440,8 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Steel Frame Shelves 01 by James Ray Cock (https://polyhaven.com/a/steel_frame_shelves_01), CC0 1.0. Shipped as `models/lowpix/world/shelf_steel.glb`
 - Steel Frame Shelves 02 by James Ray Cock (https://polyhaven.com/a/steel_frame_shelves_02), CC0 1.0. Shipped as `models/lowpix/world/shelf_steel2.glb`
 - Stone 01 by Dario Barresi, Rico Cilliers (https://polyhaven.com/a/stone_01), CC0 1.0. Shipped as `models/lowpix/world/rock_zen.glb`
-- Street Lamp 01 by Josh Dean (https://polyhaven.com/a/street_lamp_01), CC0 1.0. Shipped as `models/lowpix/world/street_lamp.glb`
 - Tea Set 01 by James Ray Cock, Rico Cilliers, Jurita Burger (https://polyhaven.com/a/tea_set_01), CC0 1.0. Shipped as `models/lowpix/world/tea_set.glb`
 - Television 01 by Gabriel Radić (https://polyhaven.com/a/Television_01), CC0 1.0. Shipped as `models/lowpix/world/tv_wood.glb`
-- Television 02 by Benny Weimer (https://polyhaven.com/a/television_02), CC0 1.0. Shipped as `models/lowpix/world/tv_02.glb`
 - Trashbag by Benny Weimer (https://polyhaven.com/a/trashbag), CC0 1.0. Shipped as `models/lowpix/world/trash_bag.glb`
 - Ukulele 01 by Joseph Burgan (https://polyhaven.com/a/Ukulele_01), CC0 1.0. Shipped as `models/lowpix/world/ukulele.glb`
 - Utility Box 01 by James Ray Cock (https://polyhaven.com/a/utility_box_01), CC0 1.0. Shipped as `models/lowpix/world/utility_box.glb`
@@ -2466,34 +2468,205 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Wooden Stool 01 by Kuutti Siitonen (https://polyhaven.com/a/wooden_stool_01), CC0 1.0. Shipped as `models/lowpix/world/stool_wood.glb`
 - Wooden Table 01 by Ethan Place (https://polyhaven.com/a/WoodenTable_01), CC0 1.0. Shipped as `models/lowpix/world/table_wood.glb`
 - Worn Metal Rack by Luca B (https://polyhaven.com/a/worn_metal_rack), CC0 1.0. Shipped as `models/lowpix/world/rack_worn.glb`
+- [CC0] Newspaper Stack - Ready to Unity HDRP by karlwirbelwind (https://sketchfab.com/3d-models/cc0-newspaper-stack-ready-to-unity-hdrp-c4311a0b918643af97904e10c7a34efc), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/newspaper_stack.glb`
 - [FREE] 3d Old The Wagasa  Japanese Umbrella V.3 by shadowdarkdemon2 (https://sketchfab.com/3d-models/free-3d-old-the-wagasa-japanese-umbrella-v3-23028b4a1e90409db025867565b51569), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wagasa_parasol.glb`
 - Abandoned Beer Crates & Bottles Low Poly by Fevzi_Beydili (https://sketchfab.com/3d-models/abandoned-beer-crates-bottles-low-poly-2be722c87cfd404698506f33f575b219), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/beer_crates.glb`
+- Antique Wall Pendulum Clock by Odin Branigan (https://sketchfab.com/3d-models/antique-wall-pendulum-clock-a1399c9b33554b9a9d25ec9e5fbdd5ca), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pendulum_clock.glb`
+- Arcade Cabinet by joshtmc (https://sketchfab.com/3d-models/arcade-cabinet-b0cf90709d634eee9b104bd6cb13cb1d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/arcade_cabinet.glb`
+- Ashtray with Cigarettes by YJ_ (https://sketchfab.com/3d-models/ashtray-with-cigarettes-6e9bfb5e4b1e42b791a51c40cb993306), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_ashtray.glb`
+- Bamboo with plant pot by Snowism (https://sketchfab.com/3d-models/bamboo-with-plant-pot-19c7ca832f4246638cbbd53be9ff6184), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bamboo.glb`
+- Beach Umbrella by stealth86 (https://sketchfab.com/3d-models/beach-umbrella-1014ad7c8a4c4aa8ba5e88fc6151aa4f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/beach_parasol.glb`
+- Beverages refrigerator by Palmart Productions (https://sketchfab.com/3d-models/beverages-refrigerator-3557e8c50e84419387e8c26dd03e9837), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/milk_fridge.glb`
+- Blind spot traffic mirror by Insane Ninja (https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mirror_pole.glb`
+- Brick by Rigsters (https://sketchfab.com/3d-models/brick-504a59ef14a148809cec657d7c99367c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_brick.glb`
+- Cactus Concrete Pot by 3DWALKABOUT (https://sketchfab.com/3d-models/cactus-concrete-pot-8bd83c9adb8640628ff4f69689d358ac), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cactus_pot.glb`
+- Candy Cane by Ariss (https://sketchfab.com/3d-models/candy-cane-a0367b22841e45268492c4f22f263c15), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/candy_cane.glb`
+- Candy Display by SuperSnazzyBear (https://sketchfab.com/3d-models/candy-display-b78cd4d26e164ef0ba11b0d11985a1a0), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/dagashi_rack.glb`
+- Car Barricade 2　車止めポール バリカー by shimodatombo (https://sketchfab.com/3d-models/car-barricade-2-7b4abf46987448168fa58e66f786c0f4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bollard_u.glb`
+- Cardboard Box by Andrew.Mischenko (https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cat_bed.glb`
+- Cardboard Box by Andrew.Mischenko (https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/noodle_box.glb`
+- Carton Box_03_Open by Molfgang (https://sketchfab.com/3d-models/carton-box-03-open-fb9958f7f2c74095a25589837e62aa9d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_snack_carton.glb`
+- Cassette tapes by FEDDYFAZBARE (https://sketchfab.com/3d-models/cassette-tapes-820777808625494581401700ccc3e7f7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_trinket_cassette.glb`
+- Cat Tree Ready for your game by B._.render (https://sketchfab.com/3d-models/cat-tree-ready-for-your-game-a4e89f00065f491c94ec8bb51606c12f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cat_tower.glb`
 - Chabudai Table by Akio (https://sketchfab.com/3d-models/chabudai-table-176eb5a05ea948bb82cb951cb817ab8d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chabudai.glb`
+- City bike low poly by guillaumemariette156 (https://sketchfab.com/3d-models/city-bike-low-poly-75647cd8b30548a9af8de5bd07446b16), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mamachari.glb`
+- Classic Street Lamp Post by sacapuntas (https://sketchfab.com/3d-models/classic-street-lamp-post-dea5920f66814e04a66fa87b338e0e8d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/park_lamp.glb`
+- Classic Telephone by irtizasb (https://sketchfab.com/3d-models/classic-telephone-1b3929f627a141be92f0c8c16a3ba296), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_phone.glb`
+- Coffee Mug (School Project) by Ole Gunnar Isager (https://sketchfab.com/3d-models/coffee-mug-school-project-5f5ccee1514c440887c072fae8e0d699), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_mug.glb`
+- Coin Display Shelf by CrystalAI (https://sketchfab.com/3d-models/coin-display-shelf-937c3c825cb347549c09167016229804), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_figshelf.glb`
 - Construction Helmet (Orange) by SuperMopsek (https://sketchfab.com/3d-models/construction-helmet-orange-2f9546f0aa9e4dbdade316e1b9d59f04), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/helmet.glb`
+- Corded Public Phone - Low Poly by Gamedirection (https://sketchfab.com/3d-models/corded-public-phone-low-poly-63ef9397e3b9418e8abfba9cc4c470a8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_phone.glb`
+- Crushed Can by jeffleguy (https://sketchfab.com/3d-models/crushed-can-05fc9a5628d64b5cb89f38a855eeb6fb), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/litter_can.glb`
 - Daruma Doll by KillTheSaint (https://sketchfab.com/3d-models/daruma-doll-c812095d86b64d11b36f088131b1d2d7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/daruma.glb`
+- Deep Freezer V1 by doorbin (https://sketchfab.com/3d-models/deep-freezer-v1-63f74a5275864eab9a51309b9c391cf4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_ice_freezer.glb`
+- Drinking Fountain by MooKorea (https://sketchfab.com/3d-models/drinking-fountain-796e0b2660a440e3a2e8a24c6ed0fe72), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/drinking_fountain.glb`
 - Electric Fan by Js_TuruokaJunpei (https://sketchfab.com/3d-models/electric-fan-feabb8d50d304af082461b9289289c92), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/fan_floor.glb`
+- Ema Wish board from Japan by DRTX_QING (https://sketchfab.com/3d-models/ema-wish-board-from-japan-eb5747f6a34b43b8aceb0a7473b5272d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_ema.glb`
+- Extra Chocolate Marshmallow Cupcake by jtressle (https://sketchfab.com/3d-models/extra-chocolate-marshmallow-cupcake-43b8a378e7a74898855fe0075215aa48), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cupcake.glb`
 - Fire Extinguisher by crow (https://sketchfab.com/3d-models/fire-extinguisher-68068b0dcc9c45388f958aef24e26c92), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/extinguisher_jp.glb`
+- Folded Towel by Nicothin (https://sketchfab.com/3d-models/folded-towel-c5f9e72edf7d4b5eaa2ec9b95c3b099d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/rag.glb`
+- Food shop showcase by bretzel44 (https://sketchfab.com/3d-models/food-shop-showcase-9079bf17aacf4570a0c2b2587104c5ab), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/shop_counter.glb`
+- Game Ready American 50s Style Retro Sofa by jQueary (https://sketchfab.com/3d-models/game-ready-american-50s-style-retro-sofa-d2fdfa286d6c4eda9c9358c9bdb09354), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/sofa_retro.glb`
+- Garbage Bag by Bailief (https://sketchfab.com/3d-models/garbage-bag-bf200222d79d4411aade19ddf312f122), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/trash_bag_b.glb`
+- Gas Stove by Lyskilde (https://sketchfab.com/3d-models/gas-stove-056ccf898f9e49acb6e3e370deabf184), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/stove_kettle.glb`
+- Gourd Bottle by Akio (https://sketchfab.com/3d-models/gourd-bottle-fc5c13c5194241339121d8c2e99ae1c7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_hyotan.glb`
+- Grocery store Shelf by Palmart Productions (https://sketchfab.com/3d-models/grocery-store-shelf-fe8010f2d2e4495599506deb4af9da9d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/goods_shelf.glb`
+- Hydrangea by hui.an.michelle.li (https://sketchfab.com/3d-models/hydrangea-d2213888b4974bd8a58a8c82e70a79db), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/flower_bed.glb`
+- Ice Bucket by Saandy (https://sketchfab.com/3d-models/ice-bucket-66fd712372f14a8f8d83d4d1e4ff6dce), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_ramune_tub.glb`
+- Ice Cream Sign by GetDeadEntertainment (https://sketchfab.com/3d-models/ice-cream-sign-cc27432fdaca4c909e2378b32b4edef3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/softserve.glb`
+- Indoor air conditioner unit by Rylae Shylna (https://sketchfab.com/3d-models/indoor-air-conditioner-unit-d93c5557a9ba46afbb00e35f48343077), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_ac.glb`
+- Japan post box by exiS7-Gs (https://sketchfab.com/3d-models/japan-post-box-ed30f71494e44801bb18cb5aeddcddf6), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/post_box_p.glb`
 - Japan Train Station Bench by Mxstifie (https://sketchfab.com/3d-models/japan-train-station-bench-68d9b8434ee6407da1e6fda1166d3ad2), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bench_station.glb`
+- Japanese futon/bed by nicolas_solo (https://sketchfab.com/3d-models/japanese-futonbed-0d5590d1d2184aa98797c3d6382afd7e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_futon.glb`
 - Japanese Lamp / Chōchin by i bull your wife (https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chochin.glb`
 - Japanese paper lantern by Abel Gamero (https://sketchfab.com/3d-models/japanese-paper-lantern-4450069fee444ae0920aa5babd5d9239), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chochin2.glb`
-- Japanese street lamp by SoraMiyazaki (https://sketchfab.com/3d-models/japanese-street-lamp-a6e3624a679a44efa17bbfc9abec35ce), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/street_lamp_jp.glb`
+- Japanese Stone Lantern by Sahir Virmani (https://sketchfab.com/3d-models/japanese-stone-lantern-e0417d1e05984727a50f9ab1451d162d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/stone_lantern.glb`
+- Japanese street light by huiminchen0111 (https://sketchfab.com/3d-models/japanese-street-light-385a7cef98084a6698cd0a1c93acf21b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/street_light.glb`
+- Japanese Study Desk by AFX/CGMotion 3DModel Maker (https://sketchfab.com/3d-models/japanese-study-desk-18da6abd259441aea570168cc86bc0ef), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_desk.glb`
 - Japanese Trash Can by ditovirnantio (https://sketchfab.com/3d-models/japanese-trash-can-477e8292037043508fcfcaed32805ca8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/trash_jp.glb`
 - Japanese Vintage Scooter by ISAACLAB (https://sketchfab.com/3d-models/japanese-vintage-scooter-f307b287177a40a2ba33e1a76ecee7df), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/scooter.glb`
-- Kei Truck by grs (https://sketchfab.com/3d-models/kei-truck-13dc5e2aad2e4d00af57e8d99d7095e9), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kei_truck.glb`
+- Jizo statue in Kyoto - MTSU Animation by MTSU Animation Virtual Production (https://sketchfab.com/3d-models/jizo-statue-in-kyoto-mtsu-animation-08f07b04c4384f8fa9b75e8203d9f26f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/jizo_shrine.glb`
+- Junk Box by Phantasm8732 (https://sketchfab.com/3d-models/junk-box-ab5e036dd0244ad2afbd907d4a151b23), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/junk_box.glb`
+- Kitsune Fox Shrine Statue by Sahir Virmani (https://sketchfab.com/3d-models/kitsune-fox-shrine-statue-b51e4bb527d749c38bfb6f964b2b9ead), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_kitsune.glb`
 - Kotatsu by Arya (https://sketchfab.com/3d-models/kotatsu-1e976c78d1eb4d2faa590316b0d38e24), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kotatsu.glb`
+- Kumade - XYZ Speedraft by WiNion (https://sketchfab.com/3d-models/kumade-xyz-speedraft-7efa84394c4c4185885be697adad932f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_kumade.glb`
+- Low Poly Cooler with Drinks by PolyDavid (https://sketchfab.com/3d-models/low-poly-cooler-with-drinks-d7c27f148d454a159cd8968694b59ab2), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/ramune_cooler.glb`
+- Low Poly Kitchenette Pack by lightdreamerlabs (https://sketchfab.com/3d-models/low-poly-kitchenette-pack-b623f028d70d4a758dfa67f82d0c96fb), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_kitchen.glb`
+- Low-Poly Gold Coin by BillieBones (https://sketchfab.com/3d-models/low-poly-gold-coin-7a40d686492545d1a6f6bd0c487f1cb9), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_koban.glb`
+- LP Furniture - Cube Shelf Sq by c0ntra5t (https://sketchfab.com/3d-models/lp-furniture-cube-shelf-sq-109368adc245432e93fbf8e0a2f86bda), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_bookshelf.glb`
+- Macaron tower by sion0211 (https://sketchfab.com/3d-models/macaron-tower-6511ba02a0df442aa734644dbcb4b27a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/macaron_tower.glb`
+- Maneki neko by Ramujiro (https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/lucky_cat_big.glb`
 - Maneki neko by Ramujiro (https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/manekineko.glb`
+- Metal bucket by Kozlov Maksim (https://sketchfab.com/3d-models/metal-bucket-0a7a3ccfdb624369b54dc7e06a5f2486), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bucket.glb`
 - Metal Folding Chair by Chen CheHsuan (https://sketchfab.com/3d-models/metal-folding-chair-7a99fce4bdbd40e1b2949cdeb39a8fba), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chair_folding.glb`
 - Metal Gas Cylinder by TheoClarke (https://sketchfab.com/3d-models/metal-gas-cylinder-8faeab51bf604cd092e827dc1eb88ff4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/gas_cylinder.glb`
+- Monstera Deliciosa Potted Mid-Century plant by Giora (https://sketchfab.com/3d-models/monstera-deliciosa-potted-mid-century-plant-1ab9bf841df04c07b1819be596327629), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/plant_monstera.glb`
 - Mount Fuji Volcano - Japan by Nate Loper  🗺️ ⛏🏺 (https://sketchfab.com/3d-models/mount-fuji-volcano-japan-bb83a647e5a8481d85a4bb33119d40a5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/fuji_diorama.glb`
+- Noodle Cup by LittleWhiteElk (https://sketchfab.com/3d-models/noodle-cup-60b5fae8d55e48f5bc3a554652d5d9ad), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_cupnoodle.glb`
+- Office Swivel Chair by Igrium (https://sketchfab.com/3d-models/office-swivel-chair-b416b2fa9f634fe0a881166a72d0f0d2), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_chair.glb`
+- Old Anchor by marvelmaster (https://sketchfab.com/3d-models/old-anchor-826db1334b3243f48b39b0415ed9a0be), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/anchor.glb`
 - Old Bicycle by Tidominer (https://sketchfab.com/3d-models/old-bicycle-17ab00cb733443a2b552a2b620a68087), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bicycle_old.glb`
+- Old Bucket - 2MB by Mehdi Shahsavan (https://sketchfab.com/3d-models/old-bucket-2mb-a49cf405e9f64b6682c7ae9399a65ffe), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wash_bucket.glb`
+- Old Green Payphone by Yevhen Avramenko (https://sketchfab.com/3d-models/old-green-payphone-ad06f3ec91a24943ad4a38dd70413cda), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/phone_booth.glb`
 - Old Japanese Post Box by Rusty-exe (https://sketchfab.com/3d-models/old-japanese-post-box-5e0f504bb5d144809390dac8c66a6dd5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/post_box.glb`
+- Old Oil Heater_Gas stove_24_MB by Mehdi Shahsavan (https://sketchfab.com/3d-models/old-oil-heater-gas-stove-24-mb-a4a78d37b6ff4834a7fa6e897f2e592c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/heater.glb`
+- Old Paper & Cardboard Boxes by TooManyDemons (https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cardboard_bundle.glb`
+- Old Paper & Cardboard Boxes by TooManyDemons (https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cardboard_flat.glb`
 - Old Tea Kettle by mickeymoose1204 (https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kettle.glb`
+- Old, dirty, stacked tires, PBR textures [free] by ZiemniaQ (https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tires.glb`
+- Paper Stack by heartgrinder (https://sketchfab.com/3d-models/paper-stack-19fd6da20c0f496bafbb4c1bf3456dff), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/flyer_stack.glb`
+- Park Bench by RBG_illustrations (https://sketchfab.com/3d-models/park-bench-2ee2bc87756d4bf0932d83ab860ddb8f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/park_bench.glb`
 - PBR old rotary phone by Marie Jockmans (https://sketchfab.com/3d-models/pbr-old-rotary-phone-52fb9ffd3bc241979f7192326e52aad8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/phone_rotary.glb`
-- Retro CRT Television by crow (https://sketchfab.com/3d-models/retro-crt-television-29314bf8b66f49f98ad50dffe4950abf), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tv_crt.glb`
+- Pet Bed by GeniusPilot2016 (https://sketchfab.com/3d-models/pet-bed-31fa30b8d8b34a73aac870b0c8443644), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cat_cushion.glb`
+- Pet Bowl by furkandgn (https://sketchfab.com/3d-models/pet-bowl-dbf27cb19fba4ba0850cf6076fc17ed5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cat_bowl.glb`
+- Planet lamp by Chepix (https://sketchfab.com/3d-models/planet-lamp-0a582da99b314741b7544798478d2978), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/planet_lamp.glb`
+- Plant pots by Vanum-Chan (https://sketchfab.com/3d-models/plant-pots-936c438fc2ab4631ab81cb05af343a9e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/potted_row.glb`
+- Plastic Waste Bin by LightSwitch (https://sketchfab.com/3d-models/plastic-waste-bin-cb278948a28a440d8e26573bbc8483df), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_trash.glb`
+- Pothos Plant by Blizzy (https://sketchfab.com/3d-models/pothos-plant-175142c4942b42169455eb20c4033c9d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/plant_pothos.glb`
+- Potted Aloe Vera by Jubbies (https://sketchfab.com/3d-models/potted-aloe-vera-98b96bd41a1c4ab7af10c938e280c8c8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/aloe_pot.glb`
+- RAMEN BOWL by Diego Clemente (https://sketchfab.com/3d-models/ramen-bowl-3d04380080ff4c269fe0ddd9b6924a3f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_jar_ramen.glb`
+- Reception Bell. Wood, shiny copper by Rylae Shylna (https://sketchfab.com/3d-models/reception-bell-wood-shiny-copper-5d754602e590417b889e500a06b67146), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/call_bell_p.glb`
+- Red Dot Cigar Box by IU Indianapolis University Library (https://sketchfab.com/3d-models/red-dot-cigar-box-bf5152c1f1fc44f4a81dbca1d502304c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_cigar_box.glb`
 - Rice Cooker by dartuchiwa (https://sketchfab.com/3d-models/rice-cooker-6c1e19fbe4134b9dabbec8f2355a504f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/rice_cooker.glb`
+- Rice Sack Pot by Sba Stuff (https://sketchfab.com/3d-models/rice-sack-pot-fecf642fc5a44223afe57075b354d07e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/rice_sack.glb`
+- Robot vacuum cleaner low poly by Moryak (https://sketchfab.com/3d-models/robot-vacuum-cleaner-low-poly-7230d8d80e8b4a82b4a34a5e7926d0d3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/robot_vacuum.glb`
+- Rope Coil - Low Poly Medieval, CC0 by Avramania (https://sketchfab.com/3d-models/rope-coil-low-poly-medieval-cc0-f61c5106eaaa45188e2cb805ed998f21), CC0 1.0. Shipped as `models/lowpix/world/rope_coil.glb`
+- Rusty Cash box by gorzi (https://sketchfab.com/3d-models/rusty-cash-box-4af08e1e8f594444ad79765332f299bb), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/coin_float.glb`
 - Shishi Odoshi by LucasT11 (https://sketchfab.com/3d-models/shishi-odoshi-dd236c21ee9b4fefac684c93f4aa803e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/shishi_odoshi.glb`
+- Small Bell(Wind Bell) by KOREA HERITAGE SERVICE [KHS] (https://sketchfab.com/3d-models/small-bellwind-bell-2c93e5a1a2be4795b7e273a9058396bf), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/call_bell.glb`
+- Small Tv Stand by Andrej Grave (https://sketchfab.com/3d-models/small-tv-stand-4768d6fef8734c7aa99321f6b6b3c520), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_tvrack.glb`
+- sneakers by abazibiz (https://sketchfab.com/3d-models/sneakers-689c29ec3a8a4f44b32f616bcb97cfaa), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_shoes.glb`
+- Soda Can crushed trash Low-poly by rzaletskyy (https://sketchfab.com/3d-models/soda-can-crushed-trash-low-poly-5ad17d589a6a41fc8905a576871e77ba), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/drink_cans.glb`
+- Space-suited astronaut standing upright by Skyzzer (https://sketchfab.com/3d-models/space-suited-astronaut-standing-upright-09c7521d87ad4e6ea4980ccb436dec26), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/astronaut.glb`
+- Sponge by Aullwen (https://sketchfab.com/3d-models/sponge-97aee64edf0c4521b82416f3b30c61ce), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/sponge.glb`
+- Spray Bottle by Yanez Designs (https://sketchfab.com/3d-models/spray-bottle-1611833f3eaa41bbba2b6944269429ab), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/spray_bottle.glb`
+- Spray Paint Can by Isuk (https://sketchfab.com/3d-models/spray-paint-can-7223f972a1b44194abdc8f84b896086d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/paint_tins.glb`
+- Stacked Cardboard Boxes | Crafted by jerovdl by Jerovdl (https://sketchfab.com/3d-models/stacked-cardboard-boxes-crafted-by-jerovdl-f93cacf5a0e4444898e30b40e43ad669), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_boxes.glb`
+- Star Lamp by dm3V (https://sketchfab.com/3d-models/star-lamp-acd19b5bd50d4cf3b179c222b0d29449), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/star_lamp.glb`
 - Tansu by Museo de Zaragoza (https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tansu.glb`
+- Telephone Pink by Blender Pink (https://sketchfab.com/3d-models/telephone-pink-c324968e1e2a4a7b873e275c152b35a3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pink_phone.glb`
+- Toy Rocket 4K Free 3D model by Desertsage (https://sketchfab.com/3d-models/toy-rocket-4k-free-3d-model-eeca5464cafe42fd9ae35b2451c14858), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/rocket.glb`
+- Trash bags by Bohdan Lvov (https://sketchfab.com/3d-models/trash-bags-cd134204748b4e28a9e3494638cc595f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bin_bags.glb`
 - ufo flying saucer by boriscargo (https://sketchfab.com/3d-models/ufo-flying-saucer-91713b0bff414b478660c28064e3021a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/ufo.glb`
+- UM-16-3 Metal Litter Bin | RGR pluss by RGRpluss (https://sketchfab.com/3d-models/um-16-3-metal-litter-bin-rgr-pluss-fd8b772552444e4e8b2afe2254f4ed20), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/trash_basket.glb`
+- Umbrellas holder with umbrellas by MCStevebrine12 (https://sketchfab.com/3d-models/umbrellas-holder-with-umbrellas-c14e9d5759a74916bcc4596512cda902), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/umbrella_stand.glb`
+- Unhyun_ Floor Cushion by KOREA HERITAGE SERVICE [KHS] (https://sketchfab.com/3d-models/unhyun--floor-cushion-6b0209cc65db435e921d0c10db469d52), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_zabuton.glb`
+- Utility Sink by Janet Peña (https://sketchfab.com/3d-models/utility-sink-69eacffafcfe40378bf4de7822eaf0f5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/utility_sink.glb`
+- Vase Flower Pot - 24 MB by Mehdi Shahsavan (https://sketchfab.com/3d-models/vase-flower-pot-24-mb-5f29539fda3748789361bb57e6b3c3e7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/asagao_pot.glb`
+- Voxel Breakable Pickle Jar by smiteis (https://sketchfab.com/3d-models/voxel-breakable-pickle-jar-f971db758c3040e281f536b42d40014e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_jar_pickle.glb`
+- Washing Machine by re1monsen (https://sketchfab.com/3d-models/washing-machine-d81d81853a9f478ca9fac019eabcf453), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/twin_tub.glb`
+- Wind Chimes by leman0312 (https://sketchfab.com/3d-models/wind-chimes-e5667a6a6cb241b19d90fd17269d2983), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/furin.glb`
+- Wood Display Rack by greasoft (https://sketchfab.com/3d-models/wood-display-rack-dfd6e6a1842d4e0dbbfe9316697f4f75), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_peg_stand.glb`
+- wooden bench Wooden chair- 15MB by Mehdi Shahsavan (https://sketchfab.com/3d-models/wooden-bench-wooden-chair-15mb-2fea1f718c14460882014d80b4b64ccd), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/shop_bench.glb`
+- Wooden Crate by YadroGames (https://sketchfab.com/3d-models/wooden-crate-e12fde1101b84b6da40056336a7b309d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_outbox.glb`
+- Wooden Dirty Crates - Broken Whole 2 Piece Set by Sunbox Games (https://sketchfab.com/3d-models/wooden-dirty-crates-broken-whole-2-piece-set-1ebaf13ac44748baa845ab7f5cb3fc9f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/junk_box_open.glb`
+- Wooden Floor Lamp by Atalaya22 (https://sketchfab.com/3d-models/wooden-floor-lamp-4766a03aa796440598426f8d5e975fec), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/floor_lamp.glb`
+- Wooden ladybug spring rider (Object Capture) by Emm (https://sketchfab.com/3d-models/wooden-ladybug-spring-rider-object-capture-7397fa465943485d83ada8a5fbcf40d5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/spring_panda.glb`
 - Worn Traffic Cone by Kuutti Siitonen (https://sketchfab.com/3d-models/worn-traffic-cone-1cbffb4169684e5a84ba186882bd55d7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cone.glb`
+- Zafu and zabuton by Thomas Deneuville (https://sketchfab.com/3d-models/zafu-and-zabuton-1e2b4dc9efe348548b681a1fe0a1343b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_zabuton.glb`
 
 <!-- lowpix-world:end -->
+
+<!-- toy figures: begin (art/lowpix/figures/credits.py) -->
+## 3D models: toy figures (Sketchfab CC BY / CC0, Poly Haven CC0)
+
+Real models made small for the capsule toys: converted by lowpix, repainted and posed on lowpix-modelled bases
+(art/lowpix/figures; photo textures for the bases from Poly Haven, CC0).
+
+- Bengal Cat by ItsKrish7 (https://sketchfab.com/3d-models/bengal-cat-6d82596b5db94f7b9093814a4a88caa9), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/rojineko/box.glb`, `models/lowpix/figures/rojineko/moon.glb`
+- Boombox by photon (that one larry) (https://sketchfab.com/3d-models/boombox-c13af52fcba1490c98871952e34d4f10), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/boombox.glb`
+- cat by toti.shroom (https://sketchfab.com/3d-models/cat-51cc3bfb49b64128aa54ffa29f36d8c1), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/rojineko/wall.glb`
+- Curious Cat 3d model free by iRahulRajput (https://sketchfab.com/3d-models/curious-cat-3d-model-free-c1465490a7c74d48b599e1d68ff990ef), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/rojineko/stalker.glb`
+- Kitten by FainoDS (https://sketchfab.com/3d-models/kitten-4ae3704cd65b423ab994545988d4db1a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/rojineko/kittens.glb`
+- National Rice Cooker by National Heritage Board (https://sketchfab.com/3d-models/national-rice-cooker-8376d2613cb74acdbfad039e7b5e161c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/cooker.glb`
+- Sitting cat(British Shorthair Blue Cat) by 3D Creator (https://sketchfab.com/3d-models/sitting-catbritish-shorthair-blue-cat-ee5dcbdd0c2b4c33adf83d4c6708e6ae), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/rojineko/boss.glb`, `models/lowpix/figures/rojineko/postbox.glb`
+- sketchfab:0e65de5934db4f0eae02835ba7227dcc by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/yacho/menfukuro.glb`
+- sketchfab:262da93cd8b64bcda24dcfd8752b634f by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/katsu.glb`
+- sketchfab:2e240bc3ebd241ccba0dfa19736397d7 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/golden.glb`
+- sketchfab:382be6710803495da6cc2035967f9648 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/ebifry.glb`
+- sketchfab:45a169ef98804f06a9b7a4af1a04d6f9 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/yacho/karasu.glb`
+- sketchfab:50f286afdcf14b54bf35f22affb0b15c by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/udon.glb`
+- sketchfab:6395f798f7d243e19975a55b76608a8b by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/kabuto.glb`
+- sketchfab:65d2444648ce4bd8850525de1b8bacee by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/yacho/kiji.glb`
+- sketchfab:6f9efa17eab544eba05518bf29454895 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/fork.glb`
+- sketchfab:7fcd555c03de4411a83aa5685fac1b5b by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/sundae.glb`
+- sketchfab:8ae63b5fbce94fbfa17eb2f6c4f095ff by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/pudding.glb`
+- sketchfab:902dfc2a95a24e988c6a961c61a0c6b5 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/yacho/uzura.glb`
+- sketchfab:a7652a3d813a479ba93cf880e466789c by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/soda.glb`
+- sketchfab:b67fb6cbe3fa455c81373aaa9f91fa1a by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/larva.glb`
+- sketchfab:d45ea22770f44818949e8933b853c6c4 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/ageha.glb`
+- sketchfab:e821b05809e54ab18d53b51de529666e by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/miyama.glb`
+- sketchfab:ea9fefe65291491b97412972884657f1 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/semi.glb`
+- sketchfab:eb654151f2d54b3a89169af96da09f89 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/yacho/kawasemi.glb`
+- sketchfab:ec088115ec8746d79c41f2db69665f15 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/kamakiri.glb`
+- sketchfab:f54db6b8e26f427b9ba93ca993dc234a by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/yacho/fukuro.glb`
+- sketchfab:f65a8eab51794fbc8c7941101a354a54 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/sampuru/ramen.glb`
+- sketchfab:f9b3decb485c4a7c9d97cf70b17cbd29 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/yacho/kinkei.glb`
+- sketchfab:fa3e5f2704904218a0e971e4edf63e20 by unknown (), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/konchu/tonbo.glb`
+- Sleeping Cat Scan 3d by mustafasahinfb (https://sketchfab.com/3d-models/sleeping-cat-scan-3d-fde417a3962547d9a15e71f55c1b90d8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/rojineko/laundry.glb`
+- Sparrow by Chenchanchong (https://sketchfab.com/3d-models/sparrow-11b5b94688bc4ee380849585086da98a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/rojineko/stalker.glb`, `models/lowpix/figures/yacho/suzume.glb`
+- Vintage Electric Fan - 3D Model by Andress (https://sketchfab.com/3d-models/vintage-electric-fan-3d-model-e4dffd0f67204f84a2595dd2d249f451), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/fan.glb`
+- Vintage Portable Transistor Radio{Regency TR-1} by cyclonicninja69 (https://sketchfab.com/3d-models/vintage-portable-transistor-radioregency-tr-1-c01869269a8b4bd2a8a05b8162fe7a11), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/radio.glb`
+- Vintage Radio 1940s by Guy in a Poncho (https://sketchfab.com/3d-models/vintage-radio-1940s-7724f81ad4e043079b7bf4b16146c087), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/valve.glb`
+- Vintage Rotary Telephone by Galaxy Abundant (https://sketchfab.com/3d-models/vintage-rotary-telephone-24c655388db749fe9a679ea4c6edc626), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/phone.glb`
+- Vintage sewing machine by Halil Kantarci (https://sketchfab.com/3d-models/vintage-sewing-machine-4f6c74f9f904439b8554078d1be14821), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/sewing.glb`
+- Vintage Television by Graveyart (https://sketchfab.com/3d-models/vintage-television-fe9acba84eed4a43b4315200aefbead1), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (painted), used in `models/lowpix/figures/denka/tv.glb`
+<!-- toy figures: end -->
+
+<!-- lowpix-world-arch:begin (generated by art/lowpix/world_arch/pack.mjs) -->
+## 3D models: buildings, the garage front, the street, vehicles (lowpix)
+
+Modelled for the game as lowpix specs (art/lowpix/world_arch/, CC0) and built with the owner's modeller lowpix; textures photo-bashed from these CC0 Poly Haven textures (art/lowpix/world_arch/photos/):
+
+- beige_wall_001: https://polyhaven.com/a/beige_wall_001 (CC0 1.0)
+- concrete_wall_003: https://polyhaven.com/a/concrete_wall_003 (CC0 1.0)
+- corrugated_iron_02: https://polyhaven.com/a/corrugated_iron_02 (CC0 1.0)
+- cracked_concrete_wall: https://polyhaven.com/a/cracked_concrete_wall (CC0 1.0)
+- grey_roof_tiles_02: https://polyhaven.com/a/grey_roof_tiles_02 (CC0 1.0)
+- painted_metal_shutter: https://polyhaven.com/a/painted_metal_shutter (CC0 1.0)
+- painted_plaster_wall: https://polyhaven.com/a/painted_plaster_wall (CC0 1.0)
+- rusty_corrugated_iron: https://polyhaven.com/a/rusty_corrugated_iron (CC0 1.0)
+- weathered_planks: https://polyhaven.com/a/weathered_planks (CC0 1.0)
+- worn_corrugated_iron: https://polyhaven.com/a/worn_corrugated_iron (CC0 1.0)
+
+<!-- lowpix-world-arch:end -->

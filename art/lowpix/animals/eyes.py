@@ -38,26 +38,48 @@ def eyeball(c, axis, r, frame_uv, nu=14, nv=10):
     return np.array(pos), np.array(nrm), np.array(uv), np.array(tri)
 
 
-def lid(c, axis, r, upper, tilt, surf_uv, rim_uv, az=1.35, el=1.45, na=12, ne=7, rim=0.12):
-    """A shell of radius r over the upper (or lower) half of the eye, its edge on the eye's equator at rest; vertices
-    sampled at azimuth -az..az and elevation 0..el (radians); the first rim (radians) of elevation is the dark rim."""
+def lid(c, axis, r, upper, tilt, patch, az=1.5, el=1.45, na=12, ne=7, rim=0.1):
+    """A shell of radius r over the upper (or lower) half of the eye, its edge on the eye's equator at rest; vertices at
+    azimuth -az..az and elevation 0..el (radians). Its texture is its own patch = (u0, v0, du, dv) in the atlas: column =
+    azimuth, row = elevation (row 0 the edge); paint it with lid_texels()."""
     f, up, s = frame_basis(axis, tilt)
     sg = 1 if upper else -1
     pos, nrm, uv, tri = [], [], [], []
+    u0, v0, du, dv = patch
     els = [0, rim * 0.5, rim] + list(np.linspace(rim, el, ne)[1:])
     for j, e in enumerate(els):
         for i in range(na + 1):
             a = -az + 2 * az * i / na
             d = (f * np.cos(a) + s * np.sin(a)) * np.cos(e) + up * np.sin(e) * sg
-            p = c + d * r
-            pos.append(p); nrm.append(d)
-            uv.append(rim_uv if e < rim * 0.99 else surf_uv(p))
+            pos.append(c + d * r); nrm.append(d)
+            uv.append((u0 + du * (i / na), v0 + dv * (e / el)))
     W = na + 1
     for j in range(len(els) - 1):
         for i in range(na):
             a = j * W + i; b = a + 1; cc = a + W; d = cc + 1
             tri += [(a, b, cc), (b, d, cc)] if upper else [(a, cc, b), (b, cc, d)]
     return np.array(pos), np.array(nrm), np.array(uv), np.array(tri)
+
+
+def lid_texels(tex, rect, c, axis, r, upper, tilt, colour_at, rim_cols, az=1.5, el=1.45, rim=0.1, seed=0):
+    """Paint a lid's patch: the dark rim along the edge, then the fur the lid shows when it closes, sampled from the face
+    round the eye (colour_at(p) -> rgb of the closest skin), with a few lash-dark clusters near the rim."""
+    x0, y0, w, h = rect
+    f, up, s = frame_basis(axis, tilt)
+    sg = 1 if upper else -1
+    rng = np.random.default_rng(seed)
+    for yy in range(h):
+        e = (yy + 0.5) / h * el
+        for xx in range(w):
+            a = -az + 2 * az * (xx + 0.5) / w
+            if e < rim:
+                tex[y0 + yy, x0 + xx] = rim_cols[0] if e < rim * 0.6 else rim_cols[1]
+                continue
+            d = (f * np.cos(a) + s * np.sin(a)) * np.cos(e) + up * np.sin(e) * sg
+            # the skin colour a little beyond the lid (the lid closes with the fur round the eye on it)
+            col = np.array(colour_at(c + d * r * 1.25), np.float32)
+            if rng.random() < 0.12: col *= 0.88
+            tex[y0 + yy, x0 + xx] = np.clip(col, 0, 255)
 
 
 def closest_uv(P, F, UV, region):

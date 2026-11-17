@@ -1,0 +1,49 @@
+{
+ "joints": {
+  "top": [
+   0,
+   0,
+   0
+  ],
+  "bottom": [
+   0,
+   0,
+   0
+  ],
+  "bottom_tab": [
+   0,
+   0,
+   0
+  ],
+  "top_paper": [
+   0,
+   0,
+   0
+  ],
+  "bottom_paper": [
+   0,
+   0,
+   0
+  ],
+  "contents": [
+   0,
+   0,
+   0
+  ]
+ },
+ "mats": {
+  "top_s": "gloss",
+  "top_rim": "gloss",
+  "bottom_s": "gloss",
+  "bottom_lip": "gloss",
+  "bottom_tab_s": "gloss",
+  "bottom_tab_lip": "gloss",
+  "tab": "gloss",
+  "tab_knuckle": "gloss",
+  "fig": "gloss",
+  "bag": "glass",
+  "crimp": "gloss"
+ },
+ "key": "capsule",
+ "density": 3.0
+}

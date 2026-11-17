@@ -298,10 +298,10 @@ def machine(t):
     # the back wall (printed with the maker's dot pattern) and the hopper funnel in the floor
     W = L["window"]
     s.boxr("backwall", -hw + pw, CY0, -fz + 2, hw - pw, top - 9, -fz + 20, ch=0, col=inner, style="abs", hide=["back", "top", "bottom"])
-    s.layer("backwall", id="ribs", op="stripes", axis="x", period=12, width=0.5, shift=-0.35, faces=["front"])
+    s.layer("backwall", id="ribs", op="stripes", axis="x", period=10, width=0.3, shift=-0.18, faces=["front"])
     s.layer("backwall", id="shade", op="gradient", axis="y", amount=0.6, faces=["front"])
     s.boxr("floor", -hw + pw, CY0 - 2, -fz + 20, hw - pw, CY0 + 1, fz - 9, ch=0, col=inner, style="abs", hide=["bottom", "left", "right", "front", "back"])
-    fr = min(W["x1"] - W["x0"], fz * 2) * 0.33
+    fr = min(W["x1"] - W["x0"], fz * 2) * 0.27
     s.disc("funnel", fr, 2, (0, CY0 + 1.5, (W["z0"] + fz - 28) / 2), axis="y", sides=24, top=0.86, col=MET, style=MST, tone=2.4, hide=["back"])
     s.disc("funnel_in", fr - 8, 2, (0, CY0 + 2.2, (W["z0"] + fz - 28) / 2), axis="y", sides=24, col="cavity", style="cavity", tone=2.4, hide=["back"])
     s.layer("funnel_in", id="spokes", op="fill", faces=["front"], shift=0.0)
@@ -327,9 +327,10 @@ def machine(t):
     s.stamp("lid_lock", ["..d..", ".ddd.", "..d..", "..d..", ".ddd."], {"d": "cavity:0"}, face="front")
     for k, sx in (("l", -1), ("r", 1)):
         s.disc("hinge_" + k, 4.5, 34, (sx * hw * 0.55, Ld["y"] + 1, -fz - 5), axis="x", parent="lid", sides=10, col=MET, style=MST)
-    mp = (W["x1"] - W["x0"]) * 0.7
-    s.boxr("mount", -mp / 2, lt, -fz + 30, mp / 2, lt + 2, fz - 30, ch=0, parent="lid", col=s.c("#8a8e94"), style="steel", hide=["bottom"])
-    s.screws("mount", [(3, 3), (px(s, mp) - 8, 3), (3, px(s, 2 * fz - 60) - 8), (px(s, mp) - 8, px(s, 2 * fz - 60) - 8)], face="top", ramp="chrome")
+    # the top: a moulded panel where a display top bolts on, its four screw bosses
+    tw, td = px(s, 2 * hw), px(s, 2 * fz + 7.5)
+    s.screws("lid_box", [(int(tw * 0.22), int(td * 0.25)), (int(tw * 0.78) - 5, int(td * 0.25)), (int(tw * 0.22), int(td * 0.75) - 5),
+                         (int(tw * 0.78) - 5, int(td * 0.75) - 5)], face="front", ramp="chrome")
     return s
 
 

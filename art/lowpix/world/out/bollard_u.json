@@ -1,0 +1,45 @@
+{
+ "id": "bollard_u",
+ "src": "sketchfab:7b4abf46987448168fa58e66f786c0f4",
+ "credit": {
+  "title": "Car Barricade 2　車止めポール バリカー",
+  "author": "shimodatombo",
+  "authorUrl": "https://sketchfab.com/shimodatombo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/car-barricade-2-7b4abf46987448168fa58e66f786c0f4",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 512,
+ "size": [
+  1.7,
+  0.925,
+  0.21
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#534c6a",
+   "#6e6687",
+   "#8c869e",
+   "#aba8b4",
+   "#c8c7cc",
+   "#d1d0d2",
+   "#d8d8d8",
+   "#e0e0e0",
+   "#e7e7e7"
+  ],
+  "m1": [
+   "#732400",
+   "#963b00",
+   "#b95900",
+   "#dc7c00",
+   "#ffa500",
+   "#fcc226",
+   "#f9d94c",
+   "#f8ea70",
+   "#f8f693"
+  ]
+ },
+ "warnings": []
+}

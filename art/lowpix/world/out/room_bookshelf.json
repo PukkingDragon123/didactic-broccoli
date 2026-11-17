@@ -1,0 +1,34 @@
+{
+ "id": "room_bookshelf",
+ "src": "sketchfab:109368adc245432e93fbf8e0a2f86bda",
+ "credit": {
+  "title": "LP Furniture - Cube Shelf Sq",
+  "author": "c0ntra5t",
+  "authorUrl": "https://sketchfab.com/c0ntr5t",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/lp-furniture-cube-shelf-sq-109368adc245432e93fbf8e0a2f86bda",
+  "site": "Sketchfab"
+ },
+ "tris": 268,
+ "tex": 336,
+ "size": [
+  0.91,
+  0.91,
+  0.228
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

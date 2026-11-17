@@ -1,0 +1,30 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:068f8bc747114856a7505cadf7873792",
+   "height": 34,
+   "at": [
+    0,
+    3.0,
+    1
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "recolor": {
+    "hue": 70,
+    "saturation": 0.8
+   },
+   "key": "7ac4ed8af2ae4c"
+  }
+ ],
+ "key": "machikado/denwa"
+}

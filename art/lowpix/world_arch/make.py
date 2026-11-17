@@ -1,6 +1,7 @@
 """Make the world architecture and vehicle models (the WORLD agent's lowpix set).
 
-    python3 art/lowpix/world_arch/make.py <id|module> [...]    ("all" = every module in _src/; --no-build = specs only)
+    python3 art/lowpix/world_arch/make.py <id|module> [...]    ("all" = every module in _src/; --no-build = specs only;
+                                                               --force = redo cached conversions)
 
 1. runs art/lowpix/world_arch/_src/<module>.py: its `specs()` returns {id: Spec} (art/lowpix/world_arch/_lib/arch.py),
    written to art/lowpix/world_arch/<id>.json (the lowpix specs, authored in metres in the frame the game places them in),
@@ -11,6 +12,7 @@ Run from the repository root; wrap in tools/slot.sh on a shared machine. Needs t
 """
 import concurrent.futures as cf
 import glob
+import json
 import importlib.util
 import os
 import shutil
@@ -22,7 +24,9 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(HERE, '_lib'))
 LOWPIX = os.environ.get('LOWPIX', '/home/user/pukkingdragon123/symmetrical-goggles')
 BUILD = os.path.join(ROOT, 'node_modules', '.cache', 'lowpix-arch')
-ENV = dict(os.environ, PYTHONPATH=LOWPIX, PYTHONDONTWRITEBYTECODE='1')
+ENV = dict(os.environ, PYTHONPATH=LOWPIX, PYTHONDONTWRITEBYTECODE='1',
+           LOWPIX_SKETCHFAB_TOKEN=os.environ.get('LOWPIX_SKETCHFAB_TOKEN', 'proxy-injected'))
+FORCE = '--force' in sys.argv
 
 
 def load(mod):
@@ -32,8 +36,31 @@ def load(mod):
     return m.specs()
 
 
+PX_PER_UNIT = 6  # lowpix pixel-hd: texels per unit, so --height = metres * ppm / 6 gives ppm texels per metre
+
+
 def build(id):
     out = os.path.join(BUILD, id)
+    with open(os.path.join(HERE, id + '.json')) as f:
+        spec = json.load(f)
+    conv = spec.get('convert')
+    if conv:  # a real model (Sketchfab / Poly Haven) converted to the style; cached unless --force
+        have = os.path.isdir(out) and any(f.endswith('.glb') for f in os.listdir(out))
+        if have and not FORCE:
+            return id, 'cached conversion'
+        cmd = [sys.executable, '-m', 'lowpix', 'convert', conv['src'], '--style', conv.get('style', 'pixel-hd'), '-o', out,
+               '--height', '%.2f' % (spec['game']['fit']['h'] * spec['density'] / PX_PER_UNIT), '--name', id]
+        for k in ('tris', 'light', 'detail', 'smooth', 'grain', 'crease', 'spread', 'ramps', 'steps', 'atlas', 'yaw'):
+            if conv.get(k) is not None:
+                cmd += ['--' + k, str(conv[k])]
+        r = subprocess.run(cmd, cwd=LOWPIX, env=ENV, capture_output=True, text=True)
+        if r.returncode:
+            return id, 'FAILED ' + (r.stderr or r.stdout)[-1500:]
+        for f in os.listdir(out):
+            if f.endswith('_hero.png'):
+                os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
+                shutil.copy(os.path.join(out, f), os.path.join(HERE, 'out', id + '.png'))
+        return id, 'converted'
     shutil.rmtree(out, ignore_errors=True)
     r = subprocess.run([sys.executable, '-m', 'lowpix', 'build', os.path.join(HERE, id + '.json'), '-o', out],
                        cwd=LOWPIX, env=ENV, capture_output=True, text=True)
@@ -62,7 +89,11 @@ def main(args):
         for id, S in load(mod).items():
             if only and id not in only:
                 continue
-            S.write(os.path.join(HERE, id + '.json'))
+            if isinstance(S, dict):  # a conversion: {'convert': {...}, 'game': {...}, 'density': ppm, 'name': ...}
+                with open(os.path.join(HERE, id + '.json'), 'w') as f:
+                    json.dump({'parts': [], **S}, f, indent=1)
+            else:
+                S.write(os.path.join(HERE, id + '.json'))
             ids.append(id)
     print('specs:', ' '.join(ids))
     if no_build or not ids:

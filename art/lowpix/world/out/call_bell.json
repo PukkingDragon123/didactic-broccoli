@@ -1,0 +1,34 @@
+{
+ "id": "call_bell",
+ "src": "sketchfab:2c93e5a1a2be4795b7e273a9058396bf",
+ "credit": {
+  "title": "Small Bell(Wind Bell)",
+  "author": "KOREA HERITAGE SERVICE [KHS]",
+  "authorUrl": "https://sketchfab.com/KHS_Asset",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/small-bellwind-bell-2c93e5a1a2be4795b7e273a9058396bf",
+  "site": "Sketchfab"
+ },
+ "tris": 1499,
+ "tex": 64,
+ "size": [
+  0.035,
+  0.065,
+  0.034
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#422217",
+   "#55321f",
+   "#664329",
+   "#775633",
+   "#876a3e",
+   "#a1874f",
+   "#b1a16a",
+   "#bdb589",
+   "#cac8a7"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,45 @@
+{
+ "id": "room_kitchen",
+ "src": "sketchfab:b623f028d70d4a758dfa67f82d0c96fb",
+ "credit": {
+  "title": "Low Poly Kitchenette Pack",
+  "author": "lightdreamerlabs",
+  "authorUrl": "https://sketchfab.com/lightdreamerlabs",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-kitchenette-pack-b623f028d70d4a758dfa67f82d0c96fb",
+  "site": "Sketchfab"
+ },
+ "tris": 880,
+ "tex": 296,
+ "size": [
+  1.722,
+  1.13,
+  0.377
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#522f2b",
+   "#69433a",
+   "#7f594b",
+   "#93705d",
+   "#a28874",
+   "#ac9c8a",
+   "#b7ad9f",
+   "#c2beb3",
+   "#cfcdc7"
+  ],
+  "m1": [
+   "#1d1719",
+   "#251e20",
+   "#2c2728",
+   "#333030",
+   "#393939",
+   "#545454",
+   "#6f6f6f",
+   "#8b8b8b",
+   "#a6a6a6"
+  ]
+ },
+ "warnings": []
+}

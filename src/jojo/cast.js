@@ -36,7 +36,7 @@ export function makeCast(id, { lazy = false } = {}) {
 export const voiceOf = (id) => { const C = CAST[id]; return C ? blipVoice(null, { base: C.voice.base, duty: C.voice.duty, vol: 0.9 }) : null; };
 
 /** Reading time for a line (seconds after it has finished typing). */
-export const readTime = (text) => Math.max(1.1, 0.5 + String(text).split(/\s+/).length * 0.24);
+export const readTime = (text) => Math.max(1.0, 0.45 + String(text).split(/\s+/).length * 0.2);
 
 /**
  * Someone says a line in a cutscene: plain floating text beside their head (src/people/Bubbles.js), typed with their

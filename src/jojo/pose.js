@@ -29,7 +29,8 @@ export function* poseScene(c, g, name, { kana = 'go', hold = 1.9, side = null, s
   if (!keep || !S.h.root.visible) S.show(feet, yaw);
   if (tick) c.every((dt) => S.update(dt, c.game.camera.position));
   const sd = side ?? (Math.random() < 0.5 ? 1 : -1);
-  const shot = freeShot(g, feet, yaw, { angles: [0.38 * sd, -0.38 * sd, 0.75 * sd, -0.75 * sd, 0, 1.2 * sd, -1.2 * sd], height: 0.78, lookY: 1.28 * (S.h.root.scale.y || 1) });
+  // a full-length low angle (the raised hand and the shoes both in frame), the subject a little off centre
+  const shot = freeShot(g, feet, yaw, { angles: [0.38 * sd, -0.38 * sd, 0.75 * sd, -0.75 * sd, 0, 1.2 * sd, -1.2 * sd], dists: [2.9, 2.4, 1.9, 1.5], height: 0.62, lookY: 1.12 * (S.h.root.scale.y || 1) });
   // out of your eyes, over the shoulder and round to the front (a short eased arc), then a low tilted angle
   if (swing) {
     const mid = V(feet.x + Math.sin(yaw + 1.9 * sd) * 1.1, 1.45, feet.z + Math.cos(yaw + 1.9 * sd) * 1.1);
@@ -37,25 +38,26 @@ export function* poseScene(c, g, name, { kana = 'go', hold = 1.9, side = null, s
   }
   S.h.gesture(name, { hold: true });
   sting('pose');
-  yield c.all(c.cam({ pos: shot.pos, look: shot.look, dur: 0.4, fov: 44 }), rollTo(c, -0.13 * sd, 0.4));
+  yield c.all(c.cam({ pos: shot.pos, look: shot.look, dur: 0.4, fov: 54 }), rollTo(c, -0.13 * sd, 0.4));
   if (kana) g.jojo?.kana.spawn({ kind: kana, at: S.h, side: -sd, n: 3, dur: hold + 0.8 });
   // a slow push in while the pose holds
-  const close = shot.pos.clone().lerp(shot.look, 0.16); close.y = shot.pos.y + 0.06;
-  yield c.all(c.cam({ pos: close, look: shot.look, dur: hold, fov: 38 }), rollTo(c, -0.09 * sd, hold));
+  const close = shot.pos.clone().lerp(shot.look, 0.1); close.y = shot.pos.y + 0.05;
+  yield c.all(c.cam({ pos: close, look: shot.look.clone().setY(shot.look.y + 0.05), dur: hold, fov: 48 }), rollTo(c, -0.09 * sd, hold));
   g.events.emit('pose', { name, by: 'player', pos: feet });
   return S;
 }
 
 /** Strike a pose with the cinematic camera (a skippable cutscene). */
+let poseTok = 0;
 export function strikePose(g, name, { onDone = null } = {}) {
   if (!g.cutscene || g.cutscene.active || g.talk?.active || g.pc?.active) return false;
-  const J = g.jojo;
+  const J = g.jojo, tok = ++poseTok;
   let S = null;
   g.cutscene.play(function* (c) {
     S = yield* poseScene(c, g, name);
     yield c.all(c.toPlayer(0.55), rollTo(c, 0, 0.5));
   }, { skippable: true, letterbox: true }).then(() => {
-    S?.hide();
+    if (tok === poseTok) S?.hide(); // (unless another pose has already taken the stand-in)
     if (J) { J.s.posed = (J.s.posed || 0) + 1; J.s.seen[name] = (J.s.seen[name] || 0) + 1; }
     reactions(g, name);
     onDone?.();

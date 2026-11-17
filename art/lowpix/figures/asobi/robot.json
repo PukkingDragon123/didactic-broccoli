@@ -99,14 +99,14 @@
     "#9bb2d8",
     "#d5e0ee"
    ],
-   "cf0d040": [
-    "#382205",
-    "#82580d",
-    "#cb9717",
-    "#e9c84a",
-    "#eedf7c",
-    "#f3efac",
-    "#fafadc"
+   "cf0e8c8": [
+    "#4a2b0f",
+    "#aa6f24",
+    "#ddb267",
+    "#f2e6c8",
+    "#f5efd7",
+    "#f8f6e6",
+    "#fcfcf4"
    ],
    "c5a5a62": [
     "#141114",
@@ -116,6 +116,15 @@
     "#8a8789",
     "#b4b4b4",
     "#dfdfdf"
+   ],
+   "cf0d040": [
+    "#382205",
+    "#82580d",
+    "#cb9717",
+    "#e9c84a",
+    "#eedf7c",
+    "#f3efac",
+    "#fafadc"
    ],
    "cf0e8b0": [
     "#492f0b",
@@ -460,6 +469,22 @@
        "front",
        "back"
       ]
+     },
+     {
+      "id": "vents",
+      "op": "grille",
+      "rect": [
+       0.15,
+       0.2,
+       0.85,
+       0.7
+      ],
+      "period": 2,
+      "dir": "h",
+      "faces": [
+       "right",
+       "left"
+      ]
      }
     ],
     "stamps": [
@@ -482,6 +507,96 @@
       }
      }
     ]
+   }
+  },
+  {
+   "id": "dial",
+   "shape": "prism",
+   "pivot": [
+    5.5,
+    24,
+    7.2
+   ],
+   "offset": [
+    0,
+    0,
+    0.6
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "size": [
+    5.2,
+    5.2,
+    1.2
+   ],
+   "sides": 12,
+   "style": "pvc",
+   "paint": {
+    "ramp": "cf0e8c8",
+    "tone": 3.8
+   }
+  },
+  {
+   "id": "shoulder-1",
+   "shape": "prism",
+   "pivot": [
+    -10.6,
+    26,
+    0
+   ],
+   "offset": [
+    0,
+    0,
+    1.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    -90
+   ],
+   "size": [
+    6.4,
+    6.4,
+    2.0
+   ],
+   "sides": 12,
+   "style": "metal",
+   "paint": {
+    "ramp": "c5a5a62",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "shoulder1",
+   "shape": "prism",
+   "pivot": [
+    10.6,
+    26,
+    0
+   ],
+   "offset": [
+    0,
+    0,
+    1.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    90
+   ],
+   "size": [
+    6.4,
+    6.4,
+    2.0
+   ],
+   "sides": 12,
+   "style": "metal",
+   "paint": {
+    "ramp": "c5a5a62",
+    "tone": 3.1
    }
   },
   {

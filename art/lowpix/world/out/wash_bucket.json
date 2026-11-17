@@ -1,0 +1,34 @@
+{
+ "id": "wash_bucket",
+ "src": "sketchfab:a49cf405e9f64b6682c7ae9399a65ffe",
+ "credit": {
+  "title": "Old Bucket - 2MB",
+  "author": "Mehdi Shahsavan",
+  "authorUrl": "https://sketchfab.com/ahmagh2e",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-bucket-2mb-a49cf405e9f64b6682c7ae9399a65ffe",
+  "site": "Sketchfab"
+ },
+ "tris": 2996,
+ "tex": 256,
+ "size": [
+  0.982,
+  0.42,
+  0.239
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#392c29",
+   "#493c37",
+   "#574c47",
+   "#655d57",
+   "#726d68",
+   "#83817f",
+   "#959595",
+   "#a9a9a9",
+   "#bdbdbd"
+  ]
+ },
+ "warnings": []
+}

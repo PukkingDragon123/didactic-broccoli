@@ -103,8 +103,7 @@
   "lid_trim": "metal",
   "lid_lock": "metal",
   "hinge_l": "metal",
-  "hinge_r": "metal",
-  "mount": "metal"
+  "hinge_r": "metal"
  },
  "key": "royal",
  "density": 0.65

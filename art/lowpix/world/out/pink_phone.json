@@ -1,0 +1,67 @@
+{
+ "id": "pink_phone",
+ "src": "sketchfab:c324968e1e2a4a7b873e275c152b35a3",
+ "credit": {
+  "title": "Telephone Pink",
+  "author": "Blender Pink",
+  "authorUrl": "https://sketchfab.com/merlinammm",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/telephone-pink-c324968e1e2a4a7b873e275c152b35a3",
+  "site": "Sketchfab"
+ },
+ "tris": 2793,
+ "tex": 512,
+ "size": [
+  0.43,
+  0.97,
+  0.445
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ],
+  "m1": [
+   "#2e001a",
+   "#3d001d",
+   "#4b001d",
+   "#58001b",
+   "#650218",
+   "#99051a",
+   "#cc0b15",
+   "#f0251f",
+   "#f06856"
+  ],
+  "m2": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m3": [
+   "#5c1f00",
+   "#783200",
+   "#944a00",
+   "#b06700",
+   "#cc8800",
+   "#f2b704",
+   "#f8d628",
+   "#f7e953",
+   "#f7f77e"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:b4676e41c38a4348af933f1d00051afb",
+   "height": 4,
+   "at": [
+    0,
+    3.3,
+    0
+   ],
+   "yaw": -30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "gloss",
+   "key": "22d5207abe5cdf"
+  }
+ ],
+ "key": "hikidashi/pen"
+}

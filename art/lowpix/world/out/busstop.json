@@ -1,0 +1,66 @@
+{
+ "id": "busstop",
+ "src": "art/lowpix/world/made/busstop.glb",
+ "credit": {
+  "title": "Bus stop sign (バス停)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 186,
+ "tex": 416,
+ "size": [
+  0.48,
+  2.3,
+  0.44
+ ],
+ "colours": 28,
+ "palette": {
+  "m0": [
+   "#42425a",
+   "#595b73",
+   "#71758a",
+   "#8e929c",
+   "#aaacb0",
+   "#b8b8b9",
+   "#c4c4c4",
+   "#cfcfcf",
+   "#dadada"
+  ],
+  "m1": [
+   "#0c1352",
+   "#122269",
+   "#183480",
+   "#204995",
+   "#2860aa",
+   "#3480c8",
+   "#559ecf",
+   "#78b8d5",
+   "#9acddd"
+  ],
+  "m2": [
+   "#1d245d",
+   "#283777",
+   "#344e90",
+   "#4267a8",
+   "#5782b8",
+   "#719abf",
+   "#8aafc6",
+   "#a3c1cf",
+   "#bad2d9"
+  ],
+  "m3": [
+   "#2d3777",
+   "#3d5198",
+   "#5370b4",
+   "#7994c0",
+   "#9db4ce",
+   "#acc2d3",
+   "#bbced8",
+   "#c9d8de",
+   "#d7e2e5"
+  ]
+ },
+ "warnings": []
+}

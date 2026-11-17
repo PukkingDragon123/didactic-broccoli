@@ -102,11 +102,17 @@
    },
    "layers": [
     {
+     "id": "nap",
+     "op": "noise",
+     "scale": 1.4,
+     "amount": 0.25
+    },
+    {
      "id": "photo",
      "op": "photo",
      "src": "art/lowpix/photos/velour_velvet",
-     "scale": 12,
-     "amount": 0.9
+     "scale": 16,
+     "amount": 0.45
     }
    ]
   },

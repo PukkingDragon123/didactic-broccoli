@@ -1,0 +1,56 @@
+{
+ "id": "cactus_pot",
+ "src": "sketchfab:8bd83c9adb8640628ff4f69689d358ac",
+ "credit": {
+  "title": "Cactus Concrete Pot",
+  "author": "3DWALKABOUT",
+  "authorUrl": "https://sketchfab.com/3dwalkabout",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cactus-concrete-pot-8bd83c9adb8640628ff4f69689d358ac",
+  "site": "Sketchfab"
+ },
+ "tris": 1499,
+ "tex": 256,
+ "size": [
+  0.285,
+  0.15,
+  0.288
+ ],
+ "colours": 19,
+ "palette": {
+  "m0": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ],
+  "m1": [
+   "#403e5f",
+   "#545479",
+   "#6b6f92",
+   "#8a8ea3",
+   "#a7abb6",
+   "#b5b8be",
+   "#c3c4c7",
+   "#d0d0d0",
+   "#dbdbdb"
+  ],
+  "m2": [
+   "#551870",
+   "#772290",
+   "#9c2eaf",
+   "#bf3ec8",
+   "#ce62cc",
+   "#d27ac9",
+   "#d792ca",
+   "#dda8cf",
+   "#e3bed6"
+  ]
+ },
+ "warnings": []
+}

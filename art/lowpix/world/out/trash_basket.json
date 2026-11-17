@@ -1,0 +1,56 @@
+{
+ "id": "trash_basket",
+ "src": "sketchfab:fd8b772552444e4e8b2afe2254f4ed20",
+ "credit": {
+  "title": "UM-16-3 Metal Litter Bin | RGR pluss",
+  "author": "RGRpluss",
+  "authorUrl": "https://sketchfab.com/rgrpluss",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/um-16-3-metal-litter-bin-rgr-pluss-fd8b772552444e4e8b2afe2254f4ed20",
+  "site": "Sketchfab"
+ },
+ "tris": 2992,
+ "tex": 360,
+ "size": [
+  0.356,
+  0.875,
+  0.356
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#25000e",
+   "#30000e",
+   "#3b000c",
+   "#460109",
+   "#500205",
+   "#870b06",
+   "#bd220b",
+   "#ee4315",
+   "#ef7e4f"
+  ],
+  "m1": [
+   "#110d0e",
+   "#161112",
+   "#1a1616",
+   "#1e1b1b",
+   "#222020",
+   "#404040",
+   "#5e5e5e",
+   "#7d7d7d",
+   "#9b9b9b"
+  ],
+  "m2": [
+   "#41467d",
+   "#5964a0",
+   "#7f8cb3",
+   "#a6b1c7",
+   "#cbd2dc",
+   "#d3d9e0",
+   "#dbe0e4",
+   "#e3e6e8",
+   "#eaeced"
+  ]
+ },
+ "warnings": []
+}

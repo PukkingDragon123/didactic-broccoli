@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:573feef839d7450cb3e12da9986e7a98",
+   "height": 22,
+   "at": [
+    0,
+    3.0,
+    1
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "0d533483d82ff6"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.0,
+  "amp": 6,
+  "axis": "y"
+ },
+ "key": "machikado/cone"
+}

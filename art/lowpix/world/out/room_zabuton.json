@@ -1,0 +1,78 @@
+{
+ "id": "room_zabuton",
+ "src": "sketchfab:6b0209cc65db435e921d0c10db469d52",
+ "credit": {
+  "title": "Unhyun_ Floor Cushion",
+  "author": "KOREA HERITAGE SERVICE [KHS]",
+  "authorUrl": "https://sketchfab.com/KHS_Asset",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/unhyun--floor-cushion-6b0209cc65db435e921d0c10db469d52",
+  "site": "Sketchfab"
+ },
+ "tris": 2994,
+ "tex": 256,
+ "size": [
+  0.416,
+  0.09,
+  0.411
+ ],
+ "colours": 38,
+ "palette": {
+  "m0": [
+   "#550d32",
+   "#6d133a",
+   "#841a3e",
+   "#9a2141",
+   "#af2a42",
+   "#ca3745",
+   "#d05a5c",
+   "#d6827c",
+   "#dea79d"
+  ],
+  "m1": [
+   "#1b174b",
+   "#202060",
+   "#2a3074",
+   "#344287",
+   "#405699",
+   "#5170b1",
+   "#708eba",
+   "#8da9c4",
+   "#aac0d0"
+  ],
+  "m2": [
+   "#1f2258",
+   "#2a3471",
+   "#374988",
+   "#45609f",
+   "#577ab1",
+   "#7193b9",
+   "#8ba9c1",
+   "#a3bccb",
+   "#baced5"
+  ],
+  "m3": [
+   "#441d2e",
+   "#572838",
+   "#693442",
+   "#7a404b",
+   "#8a4e54",
+   "#a06162",
+   "#ac807d",
+   "#b99d98",
+   "#c7b7b2"
+  ],
+  "m4": [
+   "#252d33",
+   "#333b41",
+   "#414a4e",
+   "#4f585b",
+   "#5f6566",
+   "#777979",
+   "#8e8e8e",
+   "#a3a3a3",
+   "#b9b9b9"
+  ]
+ },
+ "warnings": []
+}

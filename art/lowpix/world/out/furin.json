@@ -1,0 +1,56 @@
+{
+ "id": "furin",
+ "src": "sketchfab:e5667a6a6cb241b19d90fd17269d2983",
+ "credit": {
+  "title": "Wind Chimes",
+  "author": "leman0312",
+  "authorUrl": "https://sketchfab.com/leman0312",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wind-chimes-e5667a6a6cb241b19d90fd17269d2983",
+  "site": "Sketchfab"
+ },
+ "tris": 1493,
+ "tex": 128,
+ "size": [
+  0.102,
+  0.27,
+  0.092
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#51271a",
+   "#673a25",
+   "#7d4e30",
+   "#91653c",
+   "#a57d49",
+   "#b49660",
+   "#bdab7c",
+   "#c7be97",
+   "#d2cfb1"
+  ],
+  "m1": [
+   "#220e0f",
+   "#2b1413",
+   "#341d19",
+   "#3d251f",
+   "#452f26",
+   "#664c3c",
+   "#866b54",
+   "#a08b71",
+   "#b4a895"
+  ],
+  "m2": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ]
+ },
+ "warnings": []
+}

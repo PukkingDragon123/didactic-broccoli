@@ -14,7 +14,7 @@ export default {
   items: [
     { id: 'kabuto', name: 'Rhinoceros Beetle', jp: 'カブトムシ', rarity: 'common', desc: 'The king of the summer woods, horn up, on a sawtooth-oak log sticky with sap.', gimmick: { text: 'Lift the horn' } },
     { id: 'miyama', name: 'Mountain Stag Beetle', jp: 'ミヤマクワガタ', rarity: 'common', desc: 'Antler jaws and a gold-dusted head. Only found high up the cool valley.', gimmick: { text: 'Look round' } },
-    { id: 'semi', name: 'Brown Cicada', jp: 'アブラゼミ', rarity: 'common', desc: 'Meeeen-meeeen. Clinging to the bark, singing the whole of August.', gimmick: { text: 'Buzz' } },
+    { id: 'tento', name: 'Seven-spot Ladybird', jp: 'ナナホシテントウ', rarity: 'common', desc: 'Red, glossy, seven black spots, climbing to the top of the leaf to fly off.', gimmick: { text: 'Turn' } },
     { id: 'tonbo', name: 'Giant Dragonfly', jp: 'オニヤンマ', rarity: 'uncommon', desc: 'Perched on the tip of a reed over the paddy, wings flat, eyes everywhere.', gimmick: { text: 'Flit' } },
     { id: 'kamakiri', name: 'Praying Mantis', jp: 'オオカマキリ', rarity: 'uncommon', desc: 'Arms folded, head tilted. It has already decided about you.', gimmick: { text: 'Turn its head' } },
     { id: 'larva', name: 'Beetle Grub', jp: 'カブトムシの幼虫', rarity: 'rare', desc: 'Fat, curled and glossy in the leaf mould. Next summer it will be a king.', gimmick: { text: 'Wriggle' } },

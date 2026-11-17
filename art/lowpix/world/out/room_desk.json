@@ -1,0 +1,67 @@
+{
+ "id": "room_desk",
+ "src": "sketchfab:18da6abd259441aea570168cc86bc0ef",
+ "credit": {
+  "title": "Japanese Study Desk",
+  "author": "AFX/CGMotion 3DModel Maker",
+  "authorUrl": "https://sketchfab.com/afx_cgmotion",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-study-desk-18da6abd259441aea570168cc86bc0ef",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 280,
+ "size": [
+  1.009,
+  0.91,
+  0.704
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#3f170d",
+   "#502412",
+   "#613319",
+   "#71441f",
+   "#815727",
+   "#a27835",
+   "#be9b48",
+   "#c7b46e",
+   "#d2ca92"
+  ],
+  "m1": [
+   "#594633",
+   "#715f45",
+   "#887859",
+   "#9c9170",
+   "#aaa58c",
+   "#b3b19e",
+   "#bdbdb0",
+   "#c8c8c1",
+   "#d3d3d1"
+  ],
+  "m2": [
+   "#451323",
+   "#591a2a",
+   "#6b222e",
+   "#7d2b32",
+   "#8e3535",
+   "#aa4d44",
+   "#ba6f60",
+   "#c49281",
+   "#d0b0a0"
+  ],
+  "m3": [
+   "#1b110f",
+   "#231814",
+   "#2a1f1a",
+   "#312720",
+   "#372f27",
+   "#564d41",
+   "#746c5d",
+   "#8f8a7b",
+   "#a6a59d"
+  ]
+ },
+ "warnings": []
+}

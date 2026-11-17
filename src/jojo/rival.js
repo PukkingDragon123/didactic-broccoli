@@ -124,7 +124,10 @@ export class Rival {
     this.board.className = 'hidden';
     if (this.h) { this.h.clearGesture?.(); this.h.root.visible = false; this.h.root.parent?.remove(this.h.root); }
     this.stand?.hide();
+    for (const r of this.hidden || []) r.visible = true;
+    this.hidden = null;
     g.jojo.kana.clear();
+    if (this.result) { g.events.emit('poseOff', this.result); this.result = null; }
     g.save?.();
   }
 
@@ -136,8 +139,11 @@ export class Rival {
       W.update(dt, this.stand?.h.root.visible ? this.stand.h.headTop(new THREE.Vector3()) : c.game.camera.position);
       if (!W.moving && this.phase !== 'leave') W.face(Math.atan2(ME.x - h.root.position.x, ME.z - h.root.position.z), dt); // squared up to you
     });
-    // you take your mark in front of the shutter; your own character stands in for the shots
+    // you take your mark in front of the shutter; your own character stands in for the shots. Passers-by near the
+    // marks step out of the picture until it's over.
     P.pos.copy(ME); P.yaw = Math.PI; P.pitch = 0;
+    this.hidden = (g.pedestrians?.list || []).map((p) => p.h?.root).filter((r) => r?.visible && Math.hypot(r.position.x - ME.x, r.position.z - 8.55) < 7);
+    for (const r of this.hidden) r.visible = false;
     const S = this.stand = standIn(g);
     S.show(ME, 0);
     c.every((dt) => S.update(dt, h.headTop(new THREE.Vector3())));
@@ -147,7 +153,7 @@ export class Rival {
     sting('standoff');
     yield c.cam({ pos: V(HIM.x - 0.9, 0.18, HIM.z - 1.6), look: V(HIM.x + 0.2, 1.2, HIM.z), fov: 42 });
     c.roll = 0.16;
-    J.kana.spawn({ kind: 'do', at: h, n: 4, dur: 4, side: 1 });
+    J.kana.spawn({ kind: 'do', screen: [0.7, 0.86], n: 4, dur: 4, side: 1 });
     yield c.all(c.cam({ pos: V(HIM.x - 0.75, 0.22, HIM.z - 1.45), look: V(HIM.x, 1.45, HIM.z), dur: 2.0 }), c.wait(1.4));
     yield line(c, g, 'goda', first ? 'So. THIS is the "Gacha Garage" the whole lane keeps whispering about.' : 'Garage keeper. I said I would return.');
     // 2. the tilted two-shot: you in the foreground, him squared up
@@ -163,7 +169,7 @@ export class Rival {
     // 3. the stare: a narrow lens on his eyes, then the impact frame
     yield c.cam({ pos: V(HIM.x - 0.25, 1.6, HIM.z - 1.2), look: V(HIM.x, 1.62, HIM.z), fov: 30 });
     c.roll = 0.05;
-    J.kana.spawn({ kind: 'go', at: h, n: 3, dur: 3, side: -1 });
+    J.kana.spawn({ kind: 'go', screen: [0.12, 0.84], n: 3, dur: 3, side: -1 });
     yield c.all(c.cam({ pos: V(HIM.x - 0.18, 1.62, HIM.z - 0.95), look: V(HIM.x, 1.63, HIM.z), dur: 1.6, fov: 18 }), line(c, g, 'goda', 'Between shopkeepers there is only one honest way to settle this...'));
     h.gesture('pose_point');
     sting('impact');
@@ -176,6 +182,7 @@ export class Rival {
       line(c, g, 'goda', 'Three rounds. Power crushes Mystery. Mystery bewitches Grace. Grace outclasses Power. Even a child knows this.'));
     // ------------------------------------------------ the rounds: skipping the talk lands you here; holding skip again
     // during the rounds backs down (every round left is his)
+    if (c.skipping) { J.kana.clear(); this.card.className = 'hidden'; }
     c.skipping = false;
     let mine = 0, his = 0;
     this.marks = [];
@@ -190,7 +197,8 @@ export class Rival {
       sting('pose');
       yield c.cam({ pos: V(HIM.x - 0.6, 0.85, HIM.z - 2.0), look: V(HIM.x, 1.35, HIM.z), fov: 44 });
       c.roll = round % 2 ? 0.12 : -0.12;
-      J.kana.spawn({ kind: round === 3 ? 'do' : 'go', at: h, n: 3, dur: 3.4, side: round % 2 ? 1 : -1 });
+      // close on him: the lettering rises up the frame's edge rather than off the top of it
+      J.kana.spawn({ kind: round === 3 ? 'do' : 'go', screen: [round % 2 ? 0.74 : 0.1, 0.84], n: 3, dur: 3.4, side: round % 2 ? 1 : -1, size: 0.9 });
       yield c.all(c.cam({ pos: V(HIM.x - 0.5, 0.95, HIM.z - 1.7), look: V(HIM.x, 1.4, HIM.z), dur: 2.0, fov: 38 }), line(c, g, 'goda', TAUNT[pose], { hold: 0.8 }));
       // your answer, on the side two-shot
       yield c.cam({ pos: V(3.3, 1.3, 8.5), look: V(0.4, 1.25, 8.55), fov: 48 });
@@ -235,7 +243,10 @@ export class Rival {
     if (won) { s.wins = (s.wins || 0) + 1; s.done = true; } else if (lost) s.losses = (s.losses || 0) + 1; else s.draws = (s.draws || 0) + 1;
     s.next = (g.clock?.day ?? 0) + 3;
     if (s.visits >= 4) s.done = true;
-    g.events.emit('poseOff', { win: won, lose: lost, mine, his });
+    // the side quest that remembers the rivalry (it completes on the win, or waits for the rematch)
+    const SQ = g.sideQuests;
+    if (SQ?.get('jj_rival') && !SQ.isActive('jj_rival') && !SQ.isDone('jj_rival')) SQ.start('jj_rival', { quiet: true });
+    this.result = { win: won, lose: lost, mine, his }; // announced once the scene is over (banners wait for it)
     if (won) {
       h.gesture('pose_shock');
       sting('win');

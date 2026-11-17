@@ -1,28 +1,10 @@
 {
  "mats": {
-  "base": "gloss"
+  "base": "gloss",
+  "plate": "gloss",
+  "omelette": "gloss"
  },
  "clips": {},
  "pts": {},
- "models": [
-  {
-   "name": "plate",
-   "src": "sketchfab:262da93cd8b64bcda24dcfd8752b634f",
-   "height": 9,
-   "at": [
-    0,
-    4.6,
-    -1
-   ],
-   "yaw": 15,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "matte",
-   "key": "bbc876c23b57b6"
-  }
- ],
  "key": "sampuru/katsu"
 }

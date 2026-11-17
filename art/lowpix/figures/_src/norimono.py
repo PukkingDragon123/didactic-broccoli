@@ -5,7 +5,6 @@ from props import asphalt, slab
 
 S = "norimono"
 SCOOTER = "sketchfab:ad0f9220657c43fb89692dcf7a6b45a8"   # Vintage Scooter
-RABBIT = "sketchfab:041f66b1dc6f4392bc99898ebe8ac942"    # Vintage Scooter (rounded)
 KEI = "sketchfab:fb477a6082c5442ca060dfcdf8eae928"       # Simple Kei Truck
 VAN = "sketchfab:5772dc675e5347e09979998bfcf54938"       # Retro vintage van
 BUS = "sketchfab:5eb1166198a147949f95aacb4257ad37"       # Retro Bus
@@ -83,7 +82,7 @@ def tram():
 def golden():
     F = Fig(f"{S}/golden", "Golden Rabbit Scooter", "A round little scooter plated in gold for the maker's fiftieth birthday.")
     top = slab(F, "base", 34, 22, 3.6, col="#2a1e18", style="glaze", tone=2.4)
-    F.model("v", RABBIT, 19, (0, top, 0), yaw=-60, mat="metal", recolor=GOLD)
+    F.model("v", SCOOTER, 19, (0, top, 0), yaw=-60, mat="metal", recolor=GOLD)
     F.model_clip("model_v", "spin", 3.0, amp=1)
     return F
 

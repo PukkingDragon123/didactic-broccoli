@@ -1,0 +1,17 @@
+{
+ "parts": [],
+ "name": "Tall 1990s kei wagon (1997 Honda Life by niev, CC BY 4.0, converted)",
+ "density": 64,
+ "convert": {
+  "src": "sketchfab:40549ad17b8746d29b2da65acd2c74b7",
+  "style": "pixel-hd",
+  "tris": 4000,
+  "atlas": 1024
+ },
+ "game": {
+  "fit": {
+   "h": 1.6,
+   "ry": 0
+  }
+ }
+}

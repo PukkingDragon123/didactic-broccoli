@@ -1,0 +1,30 @@
+{
+ "mats": {
+  "plate": "metal",
+  "rod": "glass",
+  "rod2": "glass"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "fish",
+   "src": "sketchfab:7a60a4df5af940e58ff1f300609e7ee2",
+   "height": 9,
+   "at": [
+    0,
+    12.4,
+    0
+   ],
+   "yaw": 90,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "4ec3285b137775"
+  }
+ ],
+ "key": "shinkai/oarfish"
+}

@@ -1,0 +1,34 @@
+{
+ "id": "cat_bowl",
+ "src": "sketchfab:dbf27cb19fba4ba0850cf6076fc17ed5",
+ "credit": {
+  "title": "Pet Bowl",
+  "author": "furkandgn",
+  "authorUrl": "https://sketchfab.com/Propex",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pet-bowl-dbf27cb19fba4ba0850cf6076fc17ed5",
+  "site": "Sketchfab"
+ },
+ "tris": 828,
+ "tex": 88,
+ "size": [
+  0.225,
+  0.054,
+  0.225
+ ],
+ "colours": 6,
+ "palette": {
+  "m0": [
+   "#45515e",
+   "#5d6c78",
+   "#78878f",
+   "#969fa3",
+   "#b3b7b8",
+   "#bfc0c0",
+   "#cacaca",
+   "#d4d4d4",
+   "#dedede"
+  ]
+ },
+ "warnings": []
+}

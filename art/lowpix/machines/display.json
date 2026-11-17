@@ -1,0 +1,2180 @@
+{
+ "name": "Display case stands",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 0.45,
+ "budget": {
+  "tris": 8000,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.45,
+  "gradient": 0.2,
+  "ao": 0.4,
+  "ao_height": 40.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "neutral": [
+    "#6e6e72",
+    "#8e8e92",
+    "#ababae",
+    "#c4c4c6",
+    "#d8d8da",
+    "#e8e8e9",
+    "#f6f6f6"
+   ],
+   "cream": [
+    "#8a7e66",
+    "#a89a80",
+    "#c2b49a",
+    "#d8cab0",
+    "#e6dac4",
+    "#f0e8d8",
+    "#faf6ec"
+   ]
+  }
+ },
+ "styles": {
+  "abs": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 30,
+     "amount": 0.14
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.45,
+     "min_light": 0.82
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.25,
+     "min_light": -0.1,
+     "max_light": 0.25
+    },
+    {
+     "id": "scuff",
+     "op": "patches",
+     "scale": 40,
+     "threshold": 0.78,
+     "shift": -0.35
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 4,
+     "density": 0.22,
+     "shift": 0.9
+    }
+   ]
+  },
+  "steel": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 120,
+     "amount": 0.8
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.7,
+     "min_light": 0.75
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.5,
+     "max_light": 0.2
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.08,
+     "shift": 1.0,
+     "post": true
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "tier_64x58_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_64x58_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_64x58_plinth_foot",
+   "shape": "box",
+   "parent": "tier_64x58_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    320.0,
+    5.0,
+    290.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "tier_64x58_plinth_body",
+   "shape": "box",
+   "parent": "tier_64x58_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    319.2,
+    20.0,
+    289.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_64x58_tiers_lip",
+   "shape": "box",
+   "parent": "tier_64x58_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    320.0,
+    5.0,
+    290.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "tier_64x58_tiers_raill",
+   "shape": "box",
+   "parent": "tier_64x58_tiers",
+   "pivot": [
+    -142.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    270.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_64x58_tiers_railr",
+   "shape": "box",
+   "parent": "tier_64x58_tiers",
+   "pivot": [
+    142.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    270.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_64x58_tiers_t0",
+   "shape": "box",
+   "parent": "tier_64x58_tiers",
+   "pivot": [
+    0.0,
+    50.0,
+    72.5
+   ],
+   "size": [
+    300.0,
+    30.0,
+    125.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_64x58_tiers_t1",
+   "shape": "box",
+   "parent": "tier_64x58_tiers",
+   "pivot": [
+    0.0,
+    65.0,
+    -62.5
+   ],
+   "size": [
+    300.0,
+    60.0,
+    145.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_68x62_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_68x62_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_68x62_plinth_foot",
+   "shape": "box",
+   "parent": "tier_68x62_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    340.0,
+    5.0,
+    310.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "tier_68x62_plinth_body",
+   "shape": "box",
+   "parent": "tier_68x62_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    339.2,
+    20.0,
+    309.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_68x62_tiers_lip",
+   "shape": "box",
+   "parent": "tier_68x62_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    340.0,
+    5.0,
+    310.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "tier_68x62_tiers_raill",
+   "shape": "box",
+   "parent": "tier_68x62_tiers",
+   "pivot": [
+    -152.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    290.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_68x62_tiers_railr",
+   "shape": "box",
+   "parent": "tier_68x62_tiers",
+   "pivot": [
+    152.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    290.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_68x62_tiers_t0",
+   "shape": "box",
+   "parent": "tier_68x62_tiers",
+   "pivot": [
+    0.0,
+    50.0,
+    77.5
+   ],
+   "size": [
+    320.0,
+    30.0,
+    135.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_68x62_tiers_t1",
+   "shape": "box",
+   "parent": "tier_68x62_tiers",
+   "pivot": [
+    0.0,
+    65.0,
+    -67.5
+   ],
+   "size": [
+    320.0,
+    60.0,
+    155.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_76x70_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_76x70_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_76x70_plinth_foot",
+   "shape": "box",
+   "parent": "tier_76x70_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    380.0,
+    5.0,
+    350.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "tier_76x70_plinth_body",
+   "shape": "box",
+   "parent": "tier_76x70_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    379.2,
+    20.0,
+    349.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_76x70_tiers_lip",
+   "shape": "box",
+   "parent": "tier_76x70_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    380.0,
+    5.0,
+    350.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "tier_76x70_tiers_raill",
+   "shape": "box",
+   "parent": "tier_76x70_tiers",
+   "pivot": [
+    -172.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    330.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_76x70_tiers_railr",
+   "shape": "box",
+   "parent": "tier_76x70_tiers",
+   "pivot": [
+    172.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    330.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_76x70_tiers_t0",
+   "shape": "box",
+   "parent": "tier_76x70_tiers",
+   "pivot": [
+    0.0,
+    50.0,
+    87.5
+   ],
+   "size": [
+    360.0,
+    30.0,
+    155.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_76x70_tiers_t1",
+   "shape": "box",
+   "parent": "tier_76x70_tiers",
+   "pivot": [
+    0.0,
+    65.0,
+    -77.5
+   ],
+   "size": [
+    360.0,
+    60.0,
+    175.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_84x74_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_84x74_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "tier_84x74_plinth_foot",
+   "shape": "box",
+   "parent": "tier_84x74_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    420.0,
+    5.0,
+    370.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "tier_84x74_plinth_body",
+   "shape": "box",
+   "parent": "tier_84x74_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    419.2,
+    20.0,
+    369.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_84x74_tiers_lip",
+   "shape": "box",
+   "parent": "tier_84x74_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    420.0,
+    5.0,
+    370.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "tier_84x74_tiers_raill",
+   "shape": "box",
+   "parent": "tier_84x74_tiers",
+   "pivot": [
+    -192.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    350.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_84x74_tiers_railr",
+   "shape": "box",
+   "parent": "tier_84x74_tiers",
+   "pivot": [
+    192.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    350.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tier_84x74_tiers_t0",
+   "shape": "box",
+   "parent": "tier_84x74_tiers",
+   "pivot": [
+    0.0,
+    50.0,
+    92.5
+   ],
+   "size": [
+    400.0,
+    30.0,
+    165.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tier_84x74_tiers_t1",
+   "shape": "box",
+   "parent": "tier_84x74_tiers",
+   "pivot": [
+    0.0,
+    65.0,
+    -82.5
+   ],
+   "size": [
+    400.0,
+    60.0,
+    185.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_64x58_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_64x58_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_64x58_plinth_foot",
+   "shape": "box",
+   "parent": "grand_64x58_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    320.0,
+    5.0,
+    290.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "grand_64x58_plinth_body",
+   "shape": "box",
+   "parent": "grand_64x58_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    319.2,
+    20.0,
+    289.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_64x58_tiers_lip",
+   "shape": "box",
+   "parent": "grand_64x58_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    320.0,
+    5.0,
+    290.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "grand_64x58_tiers_raill",
+   "shape": "box",
+   "parent": "grand_64x58_tiers",
+   "pivot": [
+    -142.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    270.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_64x58_tiers_railr",
+   "shape": "box",
+   "parent": "grand_64x58_tiers",
+   "pivot": [
+    142.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    270.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_64x58_tiers_t0",
+   "shape": "box",
+   "parent": "grand_64x58_tiers",
+   "pivot": [
+    0.0,
+    47.5,
+    95.0
+   ],
+   "size": [
+    300.0,
+    25.0,
+    80.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_64x58_tiers_t1",
+   "shape": "box",
+   "parent": "grand_64x58_tiers",
+   "pivot": [
+    0.0,
+    60.0,
+    15.0
+   ],
+   "size": [
+    300.0,
+    50.0,
+    80.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_64x58_tiers_t2",
+   "shape": "box",
+   "parent": "grand_64x58_tiers",
+   "pivot": [
+    0.0,
+    72.5,
+    -80.0
+   ],
+   "size": [
+    300.0,
+    75.0,
+    110.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.7,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_68x62_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_68x62_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_68x62_plinth_foot",
+   "shape": "box",
+   "parent": "grand_68x62_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    340.0,
+    5.0,
+    310.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "grand_68x62_plinth_body",
+   "shape": "box",
+   "parent": "grand_68x62_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    339.2,
+    20.0,
+    309.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_68x62_tiers_lip",
+   "shape": "box",
+   "parent": "grand_68x62_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    340.0,
+    5.0,
+    310.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "grand_68x62_tiers_raill",
+   "shape": "box",
+   "parent": "grand_68x62_tiers",
+   "pivot": [
+    -152.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    290.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_68x62_tiers_railr",
+   "shape": "box",
+   "parent": "grand_68x62_tiers",
+   "pivot": [
+    152.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    290.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_68x62_tiers_t0",
+   "shape": "box",
+   "parent": "grand_68x62_tiers",
+   "pivot": [
+    0.0,
+    47.5,
+    100.0
+   ],
+   "size": [
+    320.0,
+    25.0,
+    90.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_68x62_tiers_t1",
+   "shape": "box",
+   "parent": "grand_68x62_tiers",
+   "pivot": [
+    0.0,
+    60.0,
+    10.0
+   ],
+   "size": [
+    320.0,
+    50.0,
+    90.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_68x62_tiers_t2",
+   "shape": "box",
+   "parent": "grand_68x62_tiers",
+   "pivot": [
+    0.0,
+    72.5,
+    -90.0
+   ],
+   "size": [
+    320.0,
+    75.0,
+    110.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.7,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_76x70_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_76x70_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_76x70_plinth_foot",
+   "shape": "box",
+   "parent": "grand_76x70_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    380.0,
+    5.0,
+    350.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "grand_76x70_plinth_body",
+   "shape": "box",
+   "parent": "grand_76x70_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    379.2,
+    20.0,
+    349.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_76x70_tiers_lip",
+   "shape": "box",
+   "parent": "grand_76x70_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    380.0,
+    5.0,
+    350.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "grand_76x70_tiers_raill",
+   "shape": "box",
+   "parent": "grand_76x70_tiers",
+   "pivot": [
+    -172.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    330.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_76x70_tiers_railr",
+   "shape": "box",
+   "parent": "grand_76x70_tiers",
+   "pivot": [
+    172.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    330.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_76x70_tiers_t0",
+   "shape": "box",
+   "parent": "grand_76x70_tiers",
+   "pivot": [
+    0.0,
+    47.5,
+    115.0
+   ],
+   "size": [
+    360.0,
+    25.0,
+    100.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_76x70_tiers_t1",
+   "shape": "box",
+   "parent": "grand_76x70_tiers",
+   "pivot": [
+    0.0,
+    60.0,
+    15.0
+   ],
+   "size": [
+    360.0,
+    50.0,
+    100.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_76x70_tiers_t2",
+   "shape": "box",
+   "parent": "grand_76x70_tiers",
+   "pivot": [
+    0.0,
+    72.5,
+    -100.0
+   ],
+   "size": [
+    360.0,
+    75.0,
+    130.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.7,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_84x74_plinth",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_84x74_tiers",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "grand_84x74_plinth_foot",
+   "shape": "box",
+   "parent": "grand_84x74_plinth",
+   "pivot": [
+    0.0,
+    7.5,
+    0.0
+   ],
+   "size": [
+    420.0,
+    5.0,
+    370.0
+   ],
+   "hide": [
+    "top"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 2.4
+   }
+  },
+  {
+   "id": "grand_84x74_plinth_body",
+   "shape": "box",
+   "parent": "grand_84x74_plinth",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "size": [
+    419.2,
+    20.0,
+    369.2
+   ],
+   "hide": [
+    "bottom",
+    "top"
+   ],
+   "chamfer": 1.5,
+   "style": "abs",
+   "paint": {
+    "ramp": "neutral",
+    "tone": 3.6,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 2,
+      "shift": -0.6,
+      "faces": [
+       "front",
+       "back",
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_84x74_tiers_lip",
+   "shape": "box",
+   "parent": "grand_84x74_tiers",
+   "pivot": [
+    0.0,
+    32.5,
+    0.0
+   ],
+   "size": [
+    420.0,
+    5.0,
+    370.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "chamfer": 1.0,
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.2
+   }
+  },
+  {
+   "id": "grand_84x74_tiers_raill",
+   "shape": "box",
+   "parent": "grand_84x74_tiers",
+   "pivot": [
+    -192.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    350.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_84x74_tiers_railr",
+   "shape": "box",
+   "parent": "grand_84x74_tiers",
+   "pivot": [
+    192.5,
+    2.5,
+    0.0
+   ],
+   "size": [
+    10.0,
+    5.0,
+    350.0
+   ],
+   "chamfer": 0.8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "grand_84x74_tiers_t0",
+   "shape": "box",
+   "parent": "grand_84x74_tiers",
+   "pivot": [
+    0.0,
+    47.5,
+    120.0
+   ],
+   "size": [
+    400.0,
+    25.0,
+    110.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_84x74_tiers_t1",
+   "shape": "box",
+   "parent": "grand_84x74_tiers",
+   "pivot": [
+    0.0,
+    60.0,
+    10.0
+   ],
+   "size": [
+    400.0,
+    50.0,
+    110.0
+   ],
+   "hide": [
+    "bottom",
+    "back"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.85,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "grand_84x74_tiers_t2",
+   "shape": "box",
+   "parent": "grand_84x74_tiers",
+   "pivot": [
+    0.0,
+    72.5,
+    -110.0
+   ],
+   "size": [
+    400.0,
+    75.0,
+    130.0
+   ],
+   "hide": [
+    "bottom"
+   ],
+   "style": "abs",
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.7,
+    "layers": [
+     {
+      "id": "nose",
+      "op": "band",
+      "axis": "y",
+      "from": 0.86,
+      "to": 1.0,
+      "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

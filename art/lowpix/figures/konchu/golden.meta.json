@@ -29,7 +29,10 @@
     ],
     "tint": "#e8b850"
    },
-   "key": "6307997f069edf"
+   "drop": [
+    "^Cube"
+   ],
+   "key": "d0eb8515985ac0"
   }
  ],
  "model_clip": {

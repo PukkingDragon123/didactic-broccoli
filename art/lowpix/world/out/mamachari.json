@@ -1,0 +1,56 @@
+{
+ "id": "mamachari",
+ "src": "sketchfab:75647cd8b30548a9af8de5bd07446b16",
+ "credit": {
+  "title": "City bike low poly",
+  "author": "guillaumemariette156",
+  "authorUrl": "https://sketchfab.com/guillaumemariette156",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/city-bike-low-poly-75647cd8b30548a9af8de5bd07446b16",
+  "site": "Sketchfab"
+ },
+ "tris": 1120,
+ "tex": 512,
+ "size": [
+  0.657,
+  1.188,
+  1.954
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#02014a",
+   "#03095f",
+   "#051574",
+   "#082688",
+   "#0c399b",
+   "#1359c4",
+   "#207fe6",
+   "#4da4e7",
+   "#79c3eb"
+  ],
+  "m1": [
+   "#3d0608",
+   "#4e0c09",
+   "#5f170d",
+   "#6f2511",
+   "#7e3516",
+   "#a55320",
+   "#cb762c",
+   "#d69b54",
+   "#ddba7e"
+  ],
+  "m2": [
+   "#0f0b0d",
+   "#131010",
+   "#161414",
+   "#1a1818",
+   "#1d1d1d",
+   "#3c3c3c",
+   "#5b5b5b",
+   "#7a7a7a",
+   "#999999"
+  ]
+ },
+ "warnings": []
+}

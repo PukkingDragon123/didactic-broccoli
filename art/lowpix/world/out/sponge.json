@@ -1,0 +1,45 @@
+{
+ "id": "sponge",
+ "src": "sketchfab:97aee64edf0c4521b82416f3b30c61ce",
+ "credit": {
+  "title": "Sponge",
+  "author": "Aullwen",
+  "authorUrl": "https://sketchfab.com/Aullwen",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/sponge-97aee64edf0c4521b82416f3b30c61ce",
+  "site": "Sketchfab"
+ },
+ "tris": 276,
+ "tex": 128,
+ "size": [
+  0.192,
+  0.048,
+  0.128
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#773205",
+   "#994e09",
+   "#ba6f0f",
+   "#d99415",
+   "#e7b52d",
+   "#e7cb4d",
+   "#e9dc6c",
+   "#ebe98a",
+   "#eeeea7"
+  ],
+  "m1": [
+   "#082720",
+   "#0c3226",
+   "#103c2b",
+   "#14462e",
+   "#195031",
+   "#297845",
+   "#3a9e55",
+   "#54bc68",
+   "#7fc987"
+  ]
+ },
+ "warnings": []
+}

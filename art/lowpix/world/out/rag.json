@@ -1,0 +1,67 @@
+{
+ "id": "rag",
+ "src": "sketchfab:c5f9e72edf7d4b5eaa2ec9b95c3b099d",
+ "credit": {
+  "title": "Folded Towel",
+  "author": "Nicothin",
+  "authorUrl": "https://sketchfab.com/juhyt80",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/folded-towel-c5f9e72edf7d4b5eaa2ec9b95c3b099d",
+  "site": "Sketchfab"
+ },
+ "tris": 1500,
+ "tex": 512,
+ "size": [
+  0.454,
+  0.042,
+  0.736
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#462e8d",
+   "#5d3fb4",
+   "#7767c5",
+   "#9893d3",
+   "#bdbde2",
+   "#c7cae5",
+   "#d1d5e8",
+   "#dbdfeb",
+   "#e4e8ef"
+  ],
+  "m1": [
+   "#190359",
+   "#200673",
+   "#1e098b",
+   "#190ea3",
+   "#1314ba",
+   "#1b2cdc",
+   "#3d5ae4",
+   "#6486e6",
+   "#8babea"
+  ],
+  "m2": [
+   "#311e6a",
+   "#422a88",
+   "#4a37a5",
+   "#5349bd",
+   "#6b6bc5",
+   "#8288ca",
+   "#98a2d0",
+   "#adb8d7",
+   "#c2ccdf"
+  ],
+  "m3": [
+   "#28165c",
+   "#341f76",
+   "#39298f",
+   "#3d34a7",
+   "#4041be",
+   "#5d67c4",
+   "#7a88cb",
+   "#95a5d2",
+   "#b0bfdb"
+  ]
+ },
+ "warnings": []
+}

@@ -1,16 +1,15 @@
 """Garden Birds (庭の野鳥): the birds of the shrine woods and the garden, real models made small on their perches."""
-from figlib import Fig, text_jp
+from figlib import Fig, text_jp, GOLD
 from props import slab, log, leaf_card
 
 S = "yacho"
 SPARROW = "sketchfab:11b5b94688bc4ee380849585086da98a"   # Sparrow
 QUAIL = "sketchfab:902dfc2a95a24e988c6a961c61a0c6b5"     # Realistic Common quail
 CROW = "sketchfab:45a169ef98804f06a9b7a4af1a04d6f9"      # Crow
-KINGFISHER = "sketchfab:eb654151f2d54b3a89169af96da09f89"  # White-throated Kingfisher (mounted)
+KINGFISHER = "sketchfab:abb60727b81c4c309eea4e785ac6bb8e"  # Belted Kingfisher (mounted)
 OWL = "sketchfab:f54db6b8e26f427b9ba93ca993dc234a"       # Owl
 BARNOWL = "sketchfab:0e65de5934db4f0eae02835ba7227dcc"   # Barn owl (CC0)
-PHEASANT = "sketchfab:65d2444648ce4bd8850525de1b8bacee"  # Pheasant
-GOLDEN = "sketchfab:f9b3decb485c4a7c9d97cf70b17cbd29"    # Golden Pheasant
+PHEASANT = "sketchfab:612c2ae00c8547eebd7e13a3cdcbe7ab"  # Stuffed Pheasant
 
 
 def garden(F, w=30, d=24):
@@ -75,7 +74,7 @@ def fukuro():
 def menfukuro():
     F = Fig(f"{S}/menfukuro", "Barn Owl", "A heart-shaped face as white as a moon, on a branch over the barley.")
     top = garden(F)
-    F.model("bird", BARNOWL, 28, (0, top, 0), yaw=0)
+    F.model("bird", BARNOWL, 28, (0, top, 0), yaw=0, recolor={"tint": "#d8b07a", "linear": [0.9, 0]})
     F.model_clip("model_bird", "turn", 2.6, amp=55)
     return F
 
@@ -91,7 +90,7 @@ def kinkei():
     F = Fig(f"{S}/kinkei", "Golden Pheasant", "Flame and gold in full flight. The emperor's garden bird, one in five hundred.")
     top = slab(F, "base", 34, 26, 3.6, col="#2a1e18", style="glaze", tone=2.4)
     F.cyl("rod", 0.8, 12, (0, top, 0), sides=8, col="#cfe4ec", style="clear", tone=3.6)
-    F.model("bird", GOLDEN, 22, (0, top + 10, 0), yaw=-30)
+    F.model("bird", PHEASANT, 16, (0, top + 10, 0), yaw=-30, mat="metal", recolor=GOLD)
     F.model_clip("model_bird", "hop", 1.6, amp=2)
     return F
 

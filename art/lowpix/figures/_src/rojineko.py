@@ -27,7 +27,7 @@ def wall():
     F = Fig(f"{S}/wall", "Wall Walker", "Tail up, all the way along the block wall, like it owns it. It does.")
     top = slab(F, "base", 38, 14, col="#5a5c5a", style="stone")
     wt = block_wall(F, "", 34, 13, 7, (0, top, 0))
-    F.model("cat", WALKER, 22, (1, wt, 0), yaw=90)
+    F.model("cat", WALKER, 17, (1, wt, 0), yaw=90, fit=False)
     F.model_clip("model_cat", "slide", 2.2, amp=4, axis="x")
     return F
 
@@ -42,7 +42,7 @@ def box():
 
 
 def laundry():
-    F = Fig(f"{S}/laundry", "Zabuton Nap", "Grandma's floor cushion, still warm from the sun. Not for long.")
+    F = Fig(f"{S}/laundry", "Zabuton Nap", "Grandma's floor cushion, still warm from the sun. Not hers any more.")
     top = tatami(F, "base", 34, 30)
     F.box("zabuton", [24, 3.2, 22], (0, top + 1.6, 0), ch=1.2, col="#8a3a3a", style="velvet", tone=3.0)
     F.layer("zabuton", id="tuft", op="spots", centers=[[0, 1.6, 0, 0.9]], ramp="ink", tone=2.0)

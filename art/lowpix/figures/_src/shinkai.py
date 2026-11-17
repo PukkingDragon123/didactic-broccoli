@@ -8,15 +8,16 @@ ISOPOD = "sketchfab:46469c568b3743ec8fb4bb711949d49a"    # Giant Isopod (Nature 
 DUMBO = "sketchfab:977d38f89ca54c8b91b9667d52cb3d79"     # Flapjack Dumbo Octopus
 JELLY = "sketchfab:d9262b63d7e042c0a455dc5d84cda1f9"     # Jellyfish
 NAUTILUS = "sketchfab:e5b5085369674ed28354d2a08f027d91"  # Nautilus
-ANGLER = "sketchfab:5e2f4b2d2e1a4613a008b6caaf40d50c"    # Anglerfish
-GOBLIN = "sketchfab:778fd6dec71442a2abd468477ecc3a17"    # Goblin Shark
+ANGLER = "sketchfab:6ee4e67640794f7b8cecd10295ab2f55"    # Deep Sea Fish (anglerfish)
+GOBLIN = "sketchfab:2b7eba3fc9aa4cdc8f62d5c2c20c6419"    # Animated Frilled Shark
 OARFISH = "sketchfab:7a60a4df5af940e58ff1f300609e7ee2"   # Oarfish
 COELA = "sketchfab:2400195832b64f698096ed0fdac85d51"     # Coelacanth
 
 
 def seafloor(F, w=32, d=24, depth="1000M", name=None):
-    top = slab(F, "base", w, d, 3.4, col="#2a3240", style="rock", tone=2.4)
-    F.layer("base", id="silt", op="patches", scale=0.7, threshold=0.55, ramp=F.c("#5a5a4a"), tone=2.8, faces=["up"])
+    top = slab(F, "base", w, d, 3.4, col="#2e3440", style="stone", tone=2.4)
+    F.layer("base", id="silt", op="noise", scale=1.0, amount=0.5, faces=["up"])
+    F.layer("base", id="snow", op="speckle", density=0.05, shift=1.2, faces=["up"])
     F.box("plate", [11, 3.2, 0.5], (0, 1.7, d / 2 + 0.2), ch=0.15, col="#c8a04a", style="metal", tone=3.4)
     art = text3("DEPTH " + depth)
     F.stamp("plate", art, {"#": "ink:1"}, "front", at="center")
@@ -58,7 +59,7 @@ def nautilus():
     F = Fig(f"{S}/nautilus", "Chambered Nautilus", "A living fossil in a striped shell, steering with ninety tentacles.")
     top = seafloor(F, depth="600M")
     rod(F, 9, (0, top, 0))
-    F.model("naut", NAUTILUS, 14, (0, top + 8, 0), yaw=-60)
+    F.model("naut", NAUTILUS, 14, (0, top + 8, 0), yaw=30)
     F.model_clip("model_naut", "turn", 2.4, amp=25)
     return F
 
@@ -73,7 +74,7 @@ def angler():
 
 
 def goblin():
-    F = Fig(f"{S}/goblin", "Goblin Shark", "Its jaws shoot forward to catch you. Pink, ancient and very rude.")
+    F = Fig(f"{S}/goblin", "Frilled Shark", "Three hundred needle teeth and six frilly gills: an eel-shaped shark unchanged since the dinosaurs.")
     top = seafloor(F, 38, 22, depth="1300M")
     rod(F, 9, (0, top, 0))
     F.model("shark", GOBLIN, 12, (0, top + 8, 0), yaw=90)
@@ -86,7 +87,7 @@ def oarfish():
     top = seafloor(F, 42, 20, depth="500M")
     rod(F, 10, (-8, top, 0), "rod")
     rod(F, 10, (8, top, 0), "rod2")
-    F.model("fish", OARFISH, 9, (0, top + 9, 0), yaw=90)
+    F.model("fish", OARFISH, 30, (0, top + 9, 0), yaw=90, fill=0.95)
     return F
 
 

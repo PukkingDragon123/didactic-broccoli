@@ -1,0 +1,34 @@
+{
+ "id": "trash_bag_b",
+ "src": "sketchfab:bf200222d79d4411aade19ddf312f122",
+ "credit": {
+  "title": "Garbage Bag",
+  "author": "Bailief",
+  "authorUrl": "https://sketchfab.com/Bailief",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/garbage-bag-bf200222d79d4411aade19ddf312f122",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 256,
+ "size": [
+  0.431,
+  0.336,
+  0.413
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0a0708",
+   "#0c0a0a",
+   "#0f0c0d",
+   "#110f0f",
+   "#131212",
+   "#333333",
+   "#545454",
+   "#747474",
+   "#959595"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,45 @@
+{
+ "id": "room_mug",
+ "src": "sketchfab:5f5ccee1514c440887c072fae8e0d699",
+ "credit": {
+  "title": "Coffee Mug (School Project)",
+  "author": "Ole Gunnar Isager",
+  "authorUrl": "https://sketchfab.com/FrenchBaguette",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/coffee-mug-school-project-5f5ccee1514c440887c072fae8e0d699",
+  "site": "Sketchfab"
+ },
+ "tris": 1032,
+ "tex": 128,
+ "size": [
+  0.087,
+  0.092,
+  0.1
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#7a6069",
+   "#988489",
+   "#b4abac",
+   "#d2cfd0",
+   "#f2f2f2",
+   "#f4f4f4",
+   "#f6f6f6",
+   "#f7f7f7",
+   "#f9f9f9"
+  ],
+  "m1": [
+   "#3c2923",
+   "#4c392f",
+   "#5c4a3d",
+   "#6a5b4b",
+   "#786c5a",
+   "#8c836f",
+   "#9b9789",
+   "#acaaa2",
+   "#bdbdba"
+  ]
+ },
+ "warnings": []
+}

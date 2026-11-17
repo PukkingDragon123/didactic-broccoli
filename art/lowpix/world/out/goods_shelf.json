@@ -1,0 +1,34 @@
+{
+ "id": "goods_shelf",
+ "src": "sketchfab:fe8010f2d2e4495599506deb4af9da9d",
+ "credit": {
+  "title": "Grocery store Shelf",
+  "author": "Palmart Productions",
+  "authorUrl": "https://sketchfab.com/mizorri93",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/grocery-store-shelf-fe8010f2d2e4495599506deb4af9da9d",
+  "site": "Sketchfab"
+ },
+ "tris": 2995,
+ "tex": 436,
+ "size": [
+  0.849,
+  1.66,
+  3.407
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#020101",
+   "#030201",
+   "#040301",
+   "#040302",
+   "#050402",
+   "#352e17",
+   "#635b2e",
+   "#908a47",
+   "#b1b16b"
+  ]
+ },
+ "warnings": []
+}

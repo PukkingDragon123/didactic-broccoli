@@ -1,0 +1,34 @@
+{
+ "id": "mk_koban",
+ "src": "sketchfab:7a40d686492545d1a6f6bd0c487f1cb9",
+ "credit": {
+  "title": "Low-Poly Gold Coin",
+  "author": "BillieBones",
+  "authorUrl": "https://sketchfab.com/BillieBones",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-gold-coin-7a40d686492545d1a6f6bd0c487f1cb9",
+  "site": "Sketchfab"
+ },
+ "tris": 796,
+ "tex": 112,
+ "size": [
+  0.108,
+  0.108,
+  0.024
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3a1100",
+   "#4b1d01",
+   "#5b2c03",
+   "#6b3d05",
+   "#7a5008",
+   "#a87c0e",
+   "#d5ae15",
+   "#e7d238",
+   "#eae669"
+  ]
+ },
+ "warnings": []
+}

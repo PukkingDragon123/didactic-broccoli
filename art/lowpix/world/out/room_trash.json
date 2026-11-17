@@ -1,0 +1,34 @@
+{
+ "id": "room_trash",
+ "src": "sketchfab:cb278948a28a440d8e26573bbc8483df",
+ "credit": {
+  "title": "Plastic Waste Bin",
+  "author": "LightSwitch",
+  "authorUrl": "https://sketchfab.com/edwardlewis450",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/plastic-waste-bin-cb278948a28a440d8e26573bbc8483df",
+  "site": "Sketchfab"
+ },
+ "tris": 2172,
+ "tex": 144,
+ "size": [
+  0.321,
+  0.31,
+  0.321
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

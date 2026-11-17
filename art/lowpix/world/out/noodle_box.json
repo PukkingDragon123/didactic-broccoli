@@ -1,0 +1,34 @@
+{
+ "id": "noodle_box",
+ "src": "sketchfab:f43199f19c3142c68cc672db55d9a40d",
+ "credit": {
+  "title": "Cardboard Box",
+  "author": "Andrew.Mischenko",
+  "authorUrl": "https://sketchfab.com/Andrew.Mischenko",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d",
+  "site": "Sketchfab"
+ },
+ "tris": 140,
+ "tex": 512,
+ "size": [
+  0.833,
+  0.336,
+  0.833
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#4c2820",
+   "#613a2c",
+   "#754e39",
+   "#886347",
+   "#9a7956",
+   "#a8906d",
+   "#b3a587",
+   "#bfb8a0",
+   "#ccc9b8"
+  ]
+ },
+ "warnings": []
+}

@@ -15,7 +15,64 @@
    0.928,
    0.376
   ],
-  "bytes": 79108
+  "bytes": 77116
+ },
+ "aloe_pot": {
+  "id": "aloe_pot",
+  "name": "Potted Aloe Vera",
+  "src": "sketchfab:98b96bd41a1c4ab7af10c938e280c8c8",
+  "title": "Potted Aloe Vera",
+  "author": "Jubbies",
+  "authorUrl": "https://sketchfab.com/Jubbies",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/potted-aloe-vera-98b96bd41a1c4ab7af10c938e280c8c8",
+  "site": "Sketchfab",
+  "tris": 1498,
+  "tex": 128,
+  "size": [
+   0.058,
+   0.12,
+   0.115
+  ],
+  "bytes": 36376
+ },
+ "anchor": {
+  "id": "anchor",
+  "name": "Old Anchor",
+  "src": "sketchfab:826db1334b3243f48b39b0415ed9a0be",
+  "title": "Old Anchor",
+  "author": "marvelmaster",
+  "authorUrl": "https://sketchfab.com/marvelmaster",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-anchor-826db1334b3243f48b39b0415ed9a0be",
+  "site": "Sketchfab",
+  "tris": 1172,
+  "tex": 384,
+  "size": [
+   1.311,
+   1.225,
+   0.151
+  ],
+  "bytes": 36348
+ },
+ "arcade_cabinet": {
+  "id": "arcade_cabinet",
+  "name": "Arcade Cabinet",
+  "src": "sketchfab:b0cf90709d634eee9b104bd6cb13cb1d",
+  "title": "Arcade Cabinet",
+  "author": "joshtmc",
+  "authorUrl": "https://sketchfab.com/joshtmc",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/arcade-cabinet-b0cf90709d634eee9b104bd6cb13cb1d",
+  "site": "Sketchfab",
+  "tris": 2122,
+  "tex": 296,
+  "size": [
+   0.584,
+   1.675,
+   0.668
+  ],
+  "bytes": 63820
  },
  "armchair": {
   "id": "armchair",
@@ -33,7 +90,7 @@
    1.065,
    0.768
   ],
-  "bytes": 80768
+  "bytes": 78624
  },
  "armchair_cn": {
   "id": "armchair_cn",
@@ -51,7 +108,82 @@
    1.587,
    0.789
   ],
-  "bytes": 74184
+  "bytes": 71624
+ },
+ "asagao_pot": {
+  "id": "asagao_pot",
+  "name": "Vase Flower Pot - 24 MB",
+  "src": "sketchfab:5f29539fda3748789361bb57e6b3c3e7",
+  "title": "Vase Flower Pot - 24 MB",
+  "author": "Mehdi Shahsavan",
+  "authorUrl": "https://sketchfab.com/ahmagh2e",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/vase-flower-pot-24-mb-5f29539fda3748789361bb57e6b3c3e7",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 496,
+  "size": [
+   0.787,
+   0.81,
+   0.736
+  ],
+  "bytes": 83168
+ },
+ "ashtray_stand": {
+  "id": "ashtray_stand",
+  "name": "Standing ashtray (灰皿)",
+  "src": "art/lowpix/world/made/ashtray.glb",
+  "title": "Standing ashtray (灰皿)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 186,
+  "tex": 256,
+  "size": [
+   0.28,
+   0.665,
+   0.28
+  ],
+  "bytes": 9796
+ },
+ "astronaut": {
+  "id": "astronaut",
+  "name": "Space-suited astronaut standing upright",
+  "src": "sketchfab:09c7521d87ad4e6ea4980ccb436dec26",
+  "title": "Space-suited astronaut standing upright",
+  "author": "Skyzzer",
+  "authorUrl": "https://sketchfab.com/notskyzzer001b226802eb469d",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/space-suited-astronaut-standing-upright-09c7521d87ad4e6ea4980ccb436dec26",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   0.755,
+   1.59,
+   0.527
+  ],
+  "bytes": 66516
+ },
+ "bamboo": {
+  "id": "bamboo",
+  "name": "Bamboo with plant pot",
+  "src": "sketchfab:19c7ca832f4246638cbbd53be9ff6184",
+  "title": "Bamboo with plant pot",
+  "author": "Snowism",
+  "authorUrl": "https://sketchfab.com/snowvy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bamboo-with-plant-pot-19c7ca832f4246638cbbd53be9ff6184",
+  "site": "Sketchfab",
+  "tris": 3794,
+  "tex": 512,
+  "size": [
+   1.472,
+   2.625,
+   1.317
+  ],
+  "bytes": 94160
  },
  "basket": {
   "id": "basket",
@@ -69,7 +201,26 @@
    0.117,
    0.299
   ],
-  "bytes": 77548
+  "bytes": 76220
+ },
+ "beach_parasol": {
+  "id": "beach_parasol",
+  "name": "Beach Umbrella",
+  "src": "sketchfab:1014ad7c8a4c4aa8ba5e88fc6151aa4f",
+  "title": "Beach Umbrella",
+  "author": "stealth86",
+  "authorUrl": "https://sketchfab.com/stealth86",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/beach-umbrella-1014ad7c8a4c4aa8ba5e88fc6151aa4f",
+  "site": "Sketchfab",
+  "tris": 2997,
+  "tex": 480,
+  "size": [
+   1.546,
+   1.975,
+   1.779
+  ],
+  "bytes": 74360
  },
  "beer_crates": {
   "id": "beer_crates",
@@ -82,13 +233,13 @@
   "url": "https://sketchfab.com/3d-models/abandoned-beer-crates-bottles-low-poly-2be722c87cfd404698506f33f575b219",
   "site": "Sketchfab",
   "tris": 2972,
-  "tex": 2048,
+  "tex": 512,
   "size": [
    3.817,
    0.62,
    2.284
   ],
-  "bytes": 336360
+  "bytes": 165292
  },
  "bench_station": {
   "id": "bench_station",
@@ -107,7 +258,7 @@
    0.8,
    0.438
   ],
-  "bytes": 30044
+  "bytes": 29508
  },
  "bicycle_old": {
   "id": "bicycle_old",
@@ -120,13 +271,32 @@
   "url": "https://sketchfab.com/3d-models/old-bicycle-17ab00cb733443a2b552a2b620a68087",
   "site": "Sketchfab",
   "tris": 4867,
-  "tex": 672,
+  "tex": 336,
   "size": [
    1.918,
    1.05,
    0.455
   ],
-  "bytes": 148684
+  "bytes": 155652
+ },
+ "bin_bags": {
+  "id": "bin_bags",
+  "name": "Trash bags",
+  "src": "sketchfab:cd134204748b4e28a9e3494638cc595f",
+  "title": "Trash bags",
+  "author": "Bohdan Lvov",
+  "authorUrl": "https://sketchfab.com/ostapblendercg",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/trash-bags-cd134204748b4e28a9e3494638cc595f",
+  "site": "Sketchfab",
+  "tris": 1325,
+  "tex": 128,
+  "size": [
+   0.245,
+   0.078,
+   0.245
+  ],
+  "bytes": 33624
  },
  "bin_metal": {
   "id": "bin_metal",
@@ -146,23 +316,24 @@
   ],
   "bytes": 75940
  },
- "books": {
-  "id": "books",
-  "name": "Book Encyclopedia Set 01",
-  "src": "polyhaven:book_encyclopedia_set_01",
-  "title": "Book Encyclopedia Set 01",
-  "author": "John Malcolm",
-  "license": "CC0 1.0",
-  "url": "https://polyhaven.com/a/book_encyclopedia_set_01",
-  "site": "Poly Haven",
-  "tris": 2796,
+ "bollard_u": {
+  "id": "bollard_u",
+  "name": "Car Barricade 2　車止めポール バリカー",
+  "src": "sketchfab:7b4abf46987448168fa58e66f786c0f4",
+  "title": "Car Barricade 2　車止めポール バリカー",
+  "author": "shimodatombo",
+  "authorUrl": "https://sketchfab.com/shimodatombo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/car-barricade-2-7b4abf46987448168fa58e66f786c0f4",
+  "site": "Sketchfab",
+  "tris": 2999,
   "tex": 512,
   "size": [
-   0.551,
-   0.237,
-   0.163
+   1.7,
+   0.925,
+   0.21
   ],
-  "bytes": 76240
+  "bytes": 53968
  },
  "bookshelf": {
   "id": "bookshelf",
@@ -174,13 +345,13 @@
   "url": "https://polyhaven.com/a/wooden_bookshelf_worn",
   "site": "Poly Haven",
   "tris": 2845,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    1.375,
    2.063,
    0.582
   ],
-  "bytes": 127884
+  "bytes": 156600
  },
  "boombox": {
   "id": "boombox",
@@ -198,7 +369,7 @@
    0.47,
    0.187
   ],
-  "bytes": 68420
+  "bytes": 66796
  },
  "box_cardboard": {
   "id": "box_cardboard",
@@ -216,7 +387,7 @@
    0.342,
    0.522
   ],
-  "bytes": 40848
+  "bytes": 40344
  },
  "broom": {
   "id": "broom",
@@ -234,7 +405,26 @@
    1.454,
    0.103
   ],
-  "bytes": 73928
+  "bytes": 73040
+ },
+ "bucket": {
+  "id": "bucket",
+  "name": "Metal bucket",
+  "src": "sketchfab:0a7a3ccfdb624369b54dc7e06a5f2486",
+  "title": "Metal bucket",
+  "author": "Kozlov Maksim",
+  "authorUrl": "https://sketchfab.com/kozlovchik",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/metal-bucket-0a7a3ccfdb624369b54dc7e06a5f2486",
+  "site": "Sketchfab",
+  "tris": 1408,
+  "tex": 136,
+  "size": [
+   0.286,
+   0.287,
+   0.309
+  ],
+  "bytes": 33592
  },
  "bucket_wood": {
   "id": "bucket_wood",
@@ -246,13 +436,31 @@
   "url": "https://polyhaven.com/a/wooden_bucket_01",
   "site": "Poly Haven",
   "tris": 2984,
-  "tex": 304,
+  "tex": 152,
   "size": [
    0.367,
    0.55,
    0.342
   ],
-  "bytes": 75340
+  "bytes": 75140
+ },
+ "busstop": {
+  "id": "busstop",
+  "name": "Bus stop sign (バス停)",
+  "src": "art/lowpix/world/made/busstop.glb",
+  "title": "Bus stop sign (バス停)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 186,
+  "tex": 416,
+  "size": [
+   0.48,
+   2.3,
+   0.44
+  ],
+  "bytes": 12368
  },
  "bust_marble": {
   "id": "bust_marble",
@@ -270,7 +478,7 @@
    0.515,
    0.3
   ],
-  "bytes": 70540
+  "bytes": 69220
  },
  "cabinet_cn": {
   "id": "cabinet_cn",
@@ -282,13 +490,13 @@
   "url": "https://polyhaven.com/a/chinese_cabinet",
   "site": "Poly Haven",
   "tris": 2857,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    1.262,
    2.872,
    0.545
   ],
-  "bytes": 154968
+  "bytes": 181668
  },
  "cabinet_drawer": {
   "id": "cabinet_drawer",
@@ -300,13 +508,13 @@
   "url": "https://polyhaven.com/a/drawer_cabinet",
   "site": "Poly Haven",
   "tris": 2964,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    1.141,
    1.881,
    0.488
   ],
-  "bytes": 140552
+  "bytes": 149708
  },
  "cabinet_vintage": {
   "id": "cabinet_vintage",
@@ -318,13 +526,127 @@
   "url": "https://polyhaven.com/a/vintage_cabinet_01",
   "site": "Poly Haven",
   "tris": 2806,
-  "tex": 1344,
+  "tex": 336,
   "size": [
    2.027,
    2.235,
    0.67
   ],
-  "bytes": 244484
+  "bytes": 120712
+ },
+ "cactus_pot": {
+  "id": "cactus_pot",
+  "name": "Cactus Concrete Pot",
+  "src": "sketchfab:8bd83c9adb8640628ff4f69689d358ac",
+  "title": "Cactus Concrete Pot",
+  "author": "3DWALKABOUT",
+  "authorUrl": "https://sketchfab.com/3dwalkabout",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cactus-concrete-pot-8bd83c9adb8640628ff4f69689d358ac",
+  "site": "Sketchfab",
+  "tris": 1499,
+  "tex": 256,
+  "size": [
+   0.285,
+   0.15,
+   0.288
+  ],
+  "bytes": 48820
+ },
+ "call_bell": {
+  "id": "call_bell",
+  "name": "Small Bell(Wind Bell)",
+  "src": "sketchfab:2c93e5a1a2be4795b7e273a9058396bf",
+  "title": "Small Bell(Wind Bell)",
+  "author": "KOREA HERITAGE SERVICE [KHS]",
+  "authorUrl": "https://sketchfab.com/KHS_Asset",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/small-bellwind-bell-2c93e5a1a2be4795b7e273a9058396bf",
+  "site": "Sketchfab",
+  "tris": 1499,
+  "tex": 64,
+  "size": [
+   0.035,
+   0.065,
+   0.034
+  ],
+  "bytes": 26752
+ },
+ "call_bell_p": {
+  "id": "call_bell_p",
+  "name": "Reception Bell. Wood, shiny copper",
+  "src": "sketchfab:5d754602e590417b889e500a06b67146",
+  "title": "Reception Bell. Wood, shiny copper",
+  "author": "Rylae Shylna",
+  "authorUrl": "https://sketchfab.com/risteralline",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/reception-bell-wood-shiny-copper-5d754602e590417b889e500a06b67146",
+  "site": "Sketchfab",
+  "tris": 1498,
+  "tex": 128,
+  "size": [
+   0.118,
+   0.065,
+   0.118
+  ],
+  "bytes": 23296
+ },
+ "candy_cane": {
+  "id": "candy_cane",
+  "name": "Candy Cane",
+  "src": "sketchfab:a0367b22841e45268492c4f22f263c15",
+  "title": "Candy Cane",
+  "author": "Ariss",
+  "authorUrl": "https://sketchfab.com/1its_ariss",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/candy-cane-a0367b22841e45268492c4f22f263c15",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 496,
+  "size": [
+   0.15,
+   1.6,
+   0.936
+  ],
+  "bytes": 58776
+ },
+ "cardboard_bundle": {
+  "id": "cardboard_bundle",
+  "name": "Old Paper & Cardboard Boxes",
+  "src": "sketchfab:72a4804f8a4d4de18e59abb60b81c54f",
+  "title": "Old Paper & Cardboard Boxes",
+  "author": "TooManyDemons",
+  "authorUrl": "https://sketchfab.com/toomanydemons",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 240,
+  "size": [
+   0.309,
+   0.15,
+   0.355
+  ],
+  "bytes": 52948
+ },
+ "cardboard_flat": {
+  "id": "cardboard_flat",
+  "name": "Old Paper & Cardboard Boxes",
+  "src": "sketchfab:72a4804f8a4d4de18e59abb60b81c54f",
+  "title": "Old Paper & Cardboard Boxes",
+  "author": "TooManyDemons",
+  "authorUrl": "https://sketchfab.com/toomanydemons",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 224,
+  "size": [
+   0.297,
+   0.144,
+   0.341
+  ],
+  "bytes": 52520
  },
  "cash_register": {
   "id": "cash_register",
@@ -342,7 +664,7 @@
    0.621,
    0.624
   ],
-  "bytes": 95300
+  "bytes": 92692
  },
  "cassette_player": {
   "id": "cassette_player",
@@ -354,13 +676,70 @@
   "url": "https://polyhaven.com/a/cassette_player",
   "site": "Poly Haven",
   "tris": 3000,
-  "tex": 176,
+  "tex": 88,
   "size": [
    0.129,
    0.237,
    0.049
   ],
-  "bytes": 50144
+  "bytes": 51512
+ },
+ "cat_bed": {
+  "id": "cat_bed",
+  "name": "Cardboard Box",
+  "src": "sketchfab:f43199f19c3142c68cc672db55d9a40d",
+  "title": "Cardboard Box",
+  "author": "Andrew.Mischenko",
+  "authorUrl": "https://sketchfab.com/Andrew.Mischenko",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d",
+  "site": "Sketchfab",
+  "tris": 140,
+  "tex": 256,
+  "size": [
+   0.397,
+   0.16,
+   0.397
+  ],
+  "bytes": 11744
+ },
+ "cat_bowl": {
+  "id": "cat_bowl",
+  "name": "Pet Bowl",
+  "src": "sketchfab:dbf27cb19fba4ba0850cf6076fc17ed5",
+  "title": "Pet Bowl",
+  "author": "furkandgn",
+  "authorUrl": "https://sketchfab.com/Propex",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pet-bowl-dbf27cb19fba4ba0850cf6076fc17ed5",
+  "site": "Sketchfab",
+  "tris": 828,
+  "tex": 88,
+  "size": [
+   0.225,
+   0.054,
+   0.225
+  ],
+  "bytes": 16724
+ },
+ "cat_cushion": {
+  "id": "cat_cushion",
+  "name": "Pet Bed",
+  "src": "sketchfab:31fa30b8d8b34a73aac870b0c8443644",
+  "title": "Pet Bed",
+  "author": "GeniusPilot2016",
+  "authorUrl": "https://sketchfab.com/GeniusPilot2016",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pet-bed-31fa30b8d8b34a73aac870b0c8443644",
+  "site": "Sketchfab",
+  "tris": 1692,
+  "tex": 256,
+  "size": [
+   0.519,
+   0.12,
+   0.364
+  ],
+  "bytes": 31140
  },
  "cat_statue": {
   "id": "cat_statue",
@@ -378,7 +757,26 @@
    0.283,
    0.25
   ],
-  "bytes": 48428
+  "bytes": 47700
+ },
+ "cat_tower": {
+  "id": "cat_tower",
+  "name": "Cat Tree Ready for your game",
+  "src": "sketchfab:a4e89f00065f491c94ec8bb51606c12f",
+  "title": "Cat Tree Ready for your game",
+  "author": "B._.render",
+  "authorUrl": "https://sketchfab.com/Brendan_489",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cat-tree-ready-for-your-game-a4e89f00065f491c94ec8bb51606c12f",
+  "site": "Sketchfab",
+  "tris": 2981,
+  "tex": 512,
+  "size": [
+   0.803,
+   1.575,
+   0.643
+  ],
+  "bytes": 93288
  },
  "chabudai": {
   "id": "chabudai",
@@ -397,7 +795,7 @@
    0.32,
    0.481
   ],
-  "bytes": 77176
+  "bytes": 75256
  },
  "chair_barber": {
   "id": "chair_barber",
@@ -409,13 +807,13 @@
   "url": "https://polyhaven.com/a/BarberShopChair_01",
   "site": "Poly Haven",
   "tris": 2992,
-  "tex": 608,
+  "tex": 304,
   "size": [
    0.763,
    1.489,
    1.328
   ],
-  "bytes": 109252
+  "bytes": 107292
  },
  "chair_folding": {
   "id": "chair_folding",
@@ -434,7 +832,7 @@
    0.82,
    0.433
   ],
-  "bytes": 53972
+  "bytes": 52708
  },
  "chair_green": {
   "id": "chair_green",
@@ -452,7 +850,7 @@
    1.059,
    0.666
   ],
-  "bytes": 83524
+  "bytes": 81364
  },
  "chair_lounge": {
   "id": "chair_lounge",
@@ -464,13 +862,13 @@
   "url": "https://polyhaven.com/a/mid_century_lounge_chair",
   "site": "Poly Haven",
   "tris": 2995,
-  "tex": 864,
+  "tex": 432,
   "size": [
    1.012,
    1.169,
    1.178
   ],
-  "bytes": 109692
+  "bytes": 115644
  },
  "chair_painted": {
   "id": "chair_painted",
@@ -488,7 +886,7 @@
    0.956,
    0.54
   ],
-  "bytes": 27012
+  "bytes": 25924
  },
  "chair_rocking": {
   "id": "chair_rocking",
@@ -506,7 +904,7 @@
    0.995,
    0.834
   ],
-  "bytes": 85696
+  "bytes": 83112
  },
  "chair_school": {
   "id": "chair_school",
@@ -524,7 +922,7 @@
    1.006,
    0.679
   ],
-  "bytes": 71608
+  "bytes": 69400
  },
  "chair_wood": {
   "id": "chair_wood",
@@ -536,13 +934,13 @@
   "url": "https://polyhaven.com/a/WoodenChair_01",
   "site": "Poly Haven",
   "tris": 3000,
-  "tex": 672,
+  "tex": 336,
   "size": [
    0.684,
    2.274,
    0.66
   ],
-  "bytes": 121160
+  "bytes": 117648
  },
  "chalkboard": {
   "id": "chalkboard",
@@ -554,13 +952,13 @@
   "url": "https://polyhaven.com/a/standing_chalkboard_01",
   "site": "Poly Haven",
   "tris": 1988,
-  "tex": 928,
+  "tex": 464,
   "size": [
    0.92,
    1.509,
    0.759
   ],
-  "bytes": 74128
+  "bytes": 76064
  },
  "chess": {
   "id": "chess",
@@ -578,7 +976,7 @@
    0.112,
    0.571
   ],
-  "bytes": 128248
+  "bytes": 124312
  },
  "chochin": {
   "id": "chochin",
@@ -591,13 +989,13 @@
   "url": "https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316",
   "site": "Sketchfab",
   "tris": 1718,
-  "tex": 304,
+  "tex": 152,
   "size": [
    0.258,
    0.55,
    0.253
   ],
-  "bytes": 44808
+  "bytes": 47564
  },
  "chochin2": {
   "id": "chochin2",
@@ -616,7 +1014,7 @@
    0.45,
    0.298
   ],
-  "bytes": 22188
+  "bytes": 21948
  },
  "clock_alarm": {
   "id": "clock_alarm",
@@ -628,13 +1026,13 @@
   "url": "https://polyhaven.com/a/alarm_clock_01",
   "site": "Poly Haven",
   "tris": 2998,
-  "tex": 192,
+  "tex": 96,
   "size": [
    0.131,
    0.174,
    0.066
   ],
-  "bytes": 56792
+  "bytes": 57176
  },
  "clock_grandfather": {
   "id": "clock_grandfather",
@@ -652,7 +1050,7 @@
    2.191,
    0.427
   ],
-  "bytes": 88752
+  "bytes": 85832
  },
  "clock_mantel": {
   "id": "clock_mantel",
@@ -670,7 +1068,7 @@
    0.161,
    0.128
   ],
-  "bytes": 46792
+  "bytes": 45376
  },
  "clock_wall": {
   "id": "clock_wall",
@@ -688,7 +1086,26 @@
    0.32,
    0.047
   ],
-  "bytes": 42196
+  "bytes": 41268
+ },
+ "coin_float": {
+  "id": "coin_float",
+  "name": "Rusty Cash box",
+  "src": "sketchfab:4af08e1e8f594444ad79765332f299bb",
+  "title": "Rusty Cash box",
+  "author": "gorzi",
+  "authorUrl": "https://sketchfab.com/gorzi90",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/rusty-cash-box-4af08e1e8f594444ad79765332f299bb",
+  "site": "Sketchfab",
+  "tris": 1500,
+  "tex": 256,
+  "size": [
+   0.403,
+   0.126,
+   0.209
+  ],
+  "bytes": 25536
  },
  "cone": {
   "id": "cone",
@@ -707,7 +1124,7 @@
    0.7,
    0.384
   ],
-  "bytes": 29692
+  "bytes": 29052
  },
  "crate_plastic": {
   "id": "crate_plastic",
@@ -719,13 +1136,13 @@
   "url": "https://polyhaven.com/a/plastic_crate_01",
   "site": "Poly Haven",
   "tris": 2975,
-  "tex": 320,
+  "tex": 160,
   "size": [
    0.298,
    0.264,
    0.408
   ],
-  "bytes": 83988
+  "bytes": 84692
  },
  "crate_plastic2": {
   "id": "crate_plastic2",
@@ -737,13 +1154,13 @@
   "url": "https://polyhaven.com/a/plastic_crate_02",
   "site": "Poly Haven",
   "tris": 2930,
-  "tex": 384,
+  "tex": 192,
   "size": [
    0.506,
    0.254,
    0.406
   ],
-  "bytes": 60388
+  "bytes": 65452
  },
  "crate_wood": {
   "id": "crate_wood",
@@ -761,7 +1178,7 @@
    0.35,
    0.407
   ],
-  "bytes": 89776
+  "bytes": 87496
  },
  "crate_wood2": {
   "id": "crate_wood2",
@@ -773,13 +1190,51 @@
   "url": "https://polyhaven.com/a/wooden_crate_02",
   "site": "Poly Haven",
   "tris": 2989,
-  "tex": 800,
+  "tex": 400,
   "size": [
    0.529,
    0.464,
    1.167
   ],
-  "bytes": 123212
+  "bytes": 132204
+ },
+ "cupcake": {
+  "id": "cupcake",
+  "name": "Extra Chocolate Marshmallow Cupcake",
+  "src": "sketchfab:43b8a378e7a74898855fe0075215aa48",
+  "title": "Extra Chocolate Marshmallow Cupcake",
+  "author": "jtressle",
+  "authorUrl": "https://sketchfab.com/jtressle",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/extra-chocolate-marshmallow-cupcake-43b8a378e7a74898855fe0075215aa48",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 336,
+  "size": [
+   0.908,
+   0.96,
+   0.917
+  ],
+  "bytes": 118348
+ },
+ "dagashi_rack": {
+  "id": "dagashi_rack",
+  "name": "Candy Display",
+  "src": "sketchfab:b78cd4d26e164ef0ba11b0d11985a1a0",
+  "title": "Candy Display",
+  "author": "SuperSnazzyBear",
+  "authorUrl": "https://sketchfab.com/butlerpay",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/candy-display-b78cd4d26e164ef0ba11b0d11985a1a0",
+  "site": "Sketchfab",
+  "tris": 2986,
+  "tex": 440,
+  "size": [
+   0.44,
+   1.215,
+   1.215
+  ],
+  "bytes": 110724
  },
  "dartboard": {
   "id": "dartboard",
@@ -791,13 +1246,13 @@
   "url": "https://polyhaven.com/a/dartboard",
   "site": "Poly Haven",
   "tris": 2884,
-  "tex": 336,
+  "tex": 168,
   "size": [
    0.451,
    0.451,
    0.04
   ],
-  "bytes": 59844
+  "bytes": 59900
  },
  "daruma": {
   "id": "daruma",
@@ -828,13 +1283,13 @@
   "url": "https://polyhaven.com/a/vintage_day_bed",
   "site": "Poly Haven",
   "tris": 2715,
-  "tex": 992,
+  "tex": 496,
   "size": [
    1.973,
    1.127,
    0.855
   ],
-  "bytes": 98960
+  "bytes": 106008
  },
  "desk_lamp": {
   "id": "desk_lamp",
@@ -852,7 +1307,7 @@
    0.879,
    0.605
   ],
-  "bytes": 83376
+  "bytes": 80568
  },
  "desk_office": {
   "id": "desk_office",
@@ -864,13 +1319,13 @@
   "url": "https://polyhaven.com/a/metal_office_desk",
   "site": "Poly Haven",
   "tris": 2999,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    2,
    0.787,
    0.947
   ],
-  "bytes": 99616
+  "bytes": 117572
  },
  "desk_school": {
   "id": "desk_school",
@@ -888,7 +1343,45 @@
    0.883,
    0.546
   ],
-  "bytes": 73516
+  "bytes": 71828
+ },
+ "drink_cans": {
+  "id": "drink_cans",
+  "name": "Soda Can crushed trash Low-poly",
+  "src": "sketchfab:5ad17d589a6a41fc8905a576871e77ba",
+  "title": "Soda Can crushed trash Low-poly",
+  "author": "rzaletskyy",
+  "authorUrl": "https://sketchfab.com/rzaletskyy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/soda-can-crushed-trash-low-poly-5ad17d589a6a41fc8905a576871e77ba",
+  "site": "Sketchfab",
+  "tris": 338,
+  "tex": 80,
+  "size": [
+   0.096,
+   0.105,
+   0.082
+  ],
+  "bytes": 10120
+ },
+ "drinking_fountain": {
+  "id": "drinking_fountain",
+  "name": "Drinking Fountain",
+  "src": "sketchfab:796e0b2660a440e3a2e8a24c6ed0fe72",
+  "title": "Drinking Fountain",
+  "author": "MooKorea",
+  "authorUrl": "https://sketchfab.com/MooKorea",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/drinking-fountain-796e0b2660a440e3a2e8a24c6ed0fe72",
+  "site": "Sketchfab",
+  "tris": 2965,
+  "tex": 328,
+  "size": [
+   0.712,
+   0.975,
+   0.898
+  ],
+  "bytes": 69304
  },
  "dustpan": {
   "id": "dustpan",
@@ -906,7 +1399,7 @@
    0.1,
    0.368
   ],
-  "bytes": 50136
+  "bytes": 49192
  },
  "elephant": {
   "id": "elephant",
@@ -924,7 +1417,7 @@
    0.096,
    0.058
   ],
-  "bytes": 46552
+  "bytes": 46048
  },
  "extinguisher": {
   "id": "extinguisher",
@@ -936,13 +1429,13 @@
   "url": "https://polyhaven.com/a/korean_fire_extinguisher_01",
   "site": "Poly Haven",
   "tris": 2992,
-  "tex": 288,
+  "tex": 144,
   "size": [
    0.28,
    0.659,
    0.368
   ],
-  "bytes": 64224
+  "bytes": 63120
  },
  "extinguisher_jp": {
   "id": "extinguisher_jp",
@@ -961,7 +1454,7 @@
    0.5,
    0.28
   ],
-  "bytes": 59528
+  "bytes": 57260
  },
  "fan_floor": {
   "id": "fan_floor",
@@ -980,7 +1473,7 @@
    0.85,
    0.475
   ],
-  "bytes": 83368
+  "bytes": 80368
  },
  "fire_alarm": {
   "id": "fire_alarm",
@@ -998,7 +1491,82 @@
    0.144,
    0.026
   ],
-  "bytes": 42684
+  "bytes": 41828
+ },
+ "firebuckets": {
+  "id": "firebuckets",
+  "name": "Fire buckets (消火用)",
+  "src": "art/lowpix/world/made/firebuckets.glb",
+  "title": "Fire buckets (消火用)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 324,
+  "tex": 512,
+  "size": [
+   0.76,
+   0.87,
+   0.28
+  ],
+  "bytes": 25504
+ },
+ "floor_lamp": {
+  "id": "floor_lamp",
+  "name": "Wooden Floor Lamp",
+  "src": "sketchfab:4766a03aa796440598426f8d5e975fec",
+  "title": "Wooden Floor Lamp",
+  "author": "Atalaya22",
+  "authorUrl": "https://sketchfab.com/atalaya22",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-floor-lamp-4766a03aa796440598426f8d5e975fec",
+  "site": "Sketchfab",
+  "tris": 2992,
+  "tex": 496,
+  "size": [
+   0.496,
+   1.55,
+   0.496
+  ],
+  "bytes": 62664
+ },
+ "flower_bed": {
+  "id": "flower_bed",
+  "name": "Hydrangea",
+  "src": "sketchfab:d2213888b4974bd8a58a8c82e70a79db",
+  "title": "Hydrangea",
+  "author": "hui.an.michelle.li",
+  "authorUrl": "https://sketchfab.com/hui.an.michelle.li",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/hydrangea-d2213888b4974bd8a58a8c82e70a79db",
+  "site": "Sketchfab",
+  "tris": 1240,
+  "tex": 416,
+  "size": [
+   0.756,
+   0.52,
+   0.708
+  ],
+  "bytes": 57852
+ },
+ "flyer_stack": {
+  "id": "flyer_stack",
+  "name": "Paper Stack",
+  "src": "sketchfab:19fd6da20c0f496bafbb4c1bf3456dff",
+  "title": "Paper Stack",
+  "author": "heartgrinder",
+  "authorUrl": "https://sketchfab.com/heartgrinder",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/paper-stack-19fd6da20c0f496bafbb4c1bf3456dff",
+  "site": "Sketchfab",
+  "tris": 110,
+  "tex": 64,
+  "size": [
+   0.015,
+   0.02,
+   0.015
+  ],
+  "bytes": 5456
  },
  "fuji_diorama": {
   "id": "fuji_diorama",
@@ -1019,6 +1587,25 @@
   ],
   "bytes": 112804
  },
+ "furin": {
+  "id": "furin",
+  "name": "Wind Chimes",
+  "src": "sketchfab:e5667a6a6cb241b19d90fd17269d2983",
+  "title": "Wind Chimes",
+  "author": "leman0312",
+  "authorUrl": "https://sketchfab.com/leman0312",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wind-chimes-e5667a6a6cb241b19d90fd17269d2983",
+  "site": "Sketchfab",
+  "tris": 1493,
+  "tex": 128,
+  "size": [
+   0.102,
+   0.27,
+   0.092
+  ],
+  "bytes": 28240
+ },
  "gas_cylinder": {
   "id": "gas_cylinder",
   "name": "Metal Gas Cylinder",
@@ -1030,13 +1617,32 @@
   "url": "https://sketchfab.com/3d-models/metal-gas-cylinder-8faeab51bf604cd092e827dc1eb88ff4",
   "site": "Sketchfab",
   "tris": 1312,
-  "tex": 512,
+  "tex": 256,
   "size": [
-   0.334,
+   0.233,
    1.25,
-   1.601
+   0.233
   ],
-  "bytes": 52400
+  "bytes": 29716
+ },
+ "goods_shelf": {
+  "id": "goods_shelf",
+  "name": "Grocery store Shelf",
+  "src": "sketchfab:fe8010f2d2e4495599506deb4af9da9d",
+  "title": "Grocery store Shelf",
+  "author": "Palmart Productions",
+  "authorUrl": "https://sketchfab.com/mizorri93",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/grocery-store-shelf-fe8010f2d2e4495599506deb4af9da9d",
+  "site": "Sketchfab",
+  "tris": 2995,
+  "tex": 436,
+  "size": [
+   0.849,
+   1.66,
+   3.407
+  ],
+  "bytes": 68160
  },
  "grass_tuft": {
   "id": "grass_tuft",
@@ -1072,7 +1678,26 @@
    1.403,
    0.692
   ],
-  "bytes": 68020
+  "bytes": 66244
+ },
+ "heater": {
+  "id": "heater",
+  "name": "Old Oil Heater_Gas stove_24_MB",
+  "src": "sketchfab:a4a78d37b6ff4834a7fa6e897f2e592c",
+  "title": "Old Oil Heater_Gas stove_24_MB",
+  "author": "Mehdi Shahsavan",
+  "authorUrl": "https://sketchfab.com/ahmagh2e",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-oil-heater-gas-stove-24-mb-a4a78d37b6ff4834a7fa6e897f2e592c",
+  "site": "Sketchfab",
+  "tris": 2963,
+  "tex": 256,
+  "size": [
+   0.234,
+   0.56,
+   0.235
+  ],
+  "bytes": 58868
  },
  "helmet": {
   "id": "helmet",
@@ -1109,7 +1734,7 @@
    0.455,
    0.172
   ],
-  "bytes": 64308
+  "bytes": 62548
  },
  "jerrycan_plastic": {
   "id": "jerrycan_plastic",
@@ -1127,26 +1752,82 @@
    0.318,
    0.342
   ],
-  "bytes": 53748
+  "bytes": 52372
  },
- "kei_truck": {
-  "id": "kei_truck",
-  "name": "Kei Truck",
-  "src": "sketchfab:13dc5e2aad2e4d00af57e8d99d7095e9",
-  "title": "Kei Truck",
-  "author": "grs",
-  "authorUrl": "https://sketchfab.com/sgrosjean",
+ "jizo_shrine": {
+  "id": "jizo_shrine",
+  "name": "Jizo statue in Kyoto - MTSU Animation",
+  "src": "sketchfab:08f07b04c4384f8fa9b75e8203d9f26f",
+  "title": "Jizo statue in Kyoto - MTSU Animation",
+  "author": "MTSU Animation Virtual Production",
+  "authorUrl": "https://sketchfab.com/fusion",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/kei-truck-13dc5e2aad2e4d00af57e8d99d7095e9",
+  "url": "https://sketchfab.com/3d-models/jizo-statue-in-kyoto-mtsu-animation-08f07b04c4384f8fa9b75e8203d9f26f",
   "site": "Sketchfab",
-  "tris": 5965,
-  "tex": 1024,
+  "tris": 2999,
+  "tex": 512,
   "size": [
-   2.212,
-   1.8,
-   3.351
+   1.209,
+   1.305,
+   1.197
   ],
-  "bytes": 148656
+  "bytes": 96244
+ },
+ "junk_box": {
+  "id": "junk_box",
+  "name": "Junk Box",
+  "src": "sketchfab:ab5e036dd0244ad2afbd907d4a151b23",
+  "title": "Junk Box",
+  "author": "Phantasm8732",
+  "authorUrl": "https://sketchfab.com/Phantasm8732",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/junk-box-ab5e036dd0244ad2afbd907d4a151b23",
+  "site": "Sketchfab",
+  "tris": 290,
+  "tex": 368,
+  "size": [
+   0.805,
+   0.396,
+   0.837
+  ],
+  "bytes": 74624
+ },
+ "junk_box_open": {
+  "id": "junk_box_open",
+  "name": "Wooden Dirty Crates - Broken Whole 2 Pie",
+  "src": "sketchfab:1ebaf13ac44748baa845ab7f5cb3fc9f",
+  "title": "Wooden Dirty Crates - Broken Whole 2 Piece Set",
+  "author": "Sunbox Games",
+  "authorUrl": "https://sketchfab.com/sunboxgames",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-dirty-crates-broken-whole-2-piece-set-1ebaf13ac44748baa845ab7f5cb3fc9f",
+  "site": "Sketchfab",
+  "tris": 2238,
+  "tex": 512,
+  "size": [
+   3.48,
+   0.468,
+   1.096
+  ],
+  "bytes": 104312
+ },
+ "kakigori": {
+  "id": "kakigori",
+  "name": "Shaved-ice flag (氷)",
+  "src": "art/lowpix/world/made/kakigori.glb",
+  "title": "Shaved-ice flag (氷)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 82,
+  "tex": 512,
+  "size": [
+   0.577,
+   1.545,
+   0.259
+  ],
+  "bytes": 17616
  },
  "kettle": {
   "id": "kettle",
@@ -1165,7 +1846,7 @@
    0.22,
    0.195
   ],
-  "bytes": 52184
+  "bytes": 51288
  },
  "kettle_electric": {
   "id": "kettle_electric",
@@ -1183,7 +1864,7 @@
    0.305,
    0.249
   ],
-  "bytes": 62556
+  "bytes": 61608
  },
  "kotatsu": {
   "id": "kotatsu",
@@ -1196,13 +1877,13 @@
   "url": "https://sketchfab.com/3d-models/kotatsu-1e976c78d1eb4d2faa590316b0d38e24",
   "site": "Sketchfab",
   "tris": 3999,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    2.414,
    0.45,
    2.399
   ],
-  "bytes": 308672
+  "bytes": 233872
  },
  "ladder": {
   "id": "ladder",
@@ -1220,7 +1901,7 @@
    1.335,
    0.5
   ],
-  "bytes": 78496
+  "bytes": 77336
  },
  "lamp_caged": {
   "id": "lamp_caged",
@@ -1238,7 +1919,7 @@
    0.75,
    0.309
   ],
-  "bytes": 87560
+  "bytes": 84936
  },
  "lamp_fluoro": {
   "id": "lamp_fluoro",
@@ -1256,7 +1937,7 @@
    0.035,
    0.647
   ],
-  "bytes": 60044
+  "bytes": 59260
  },
  "lamp_hanging": {
   "id": "lamp_hanging",
@@ -1274,7 +1955,7 @@
    1.355,
    0.546
   ],
-  "bytes": 83188
+  "bytes": 80820
  },
  "lamp_oil": {
   "id": "lamp_oil",
@@ -1292,7 +1973,7 @@
    0.802,
    0.219
   ],
-  "bytes": 55576
+  "bytes": 54312
  },
  "lamp_pipe": {
   "id": "lamp_pipe",
@@ -1310,7 +1991,7 @@
    0.364,
    0.262
   ],
-  "bytes": 60176
+  "bytes": 59328
  },
  "lantern": {
   "id": "lantern",
@@ -1328,7 +2009,7 @@
    0.294,
    0.097
   ],
-  "bytes": 63240
+  "bytes": 62416
  },
  "lantern_wood": {
   "id": "lantern_wood",
@@ -1340,13 +2021,32 @@
   "url": "https://polyhaven.com/a/wooden_lantern_01",
   "site": "Poly Haven",
   "tris": 3000,
-  "tex": 352,
+  "tex": 176,
   "size": [
    0.222,
    0.53,
    0.235
   ],
-  "bytes": 78504
+  "bytes": 78944
+ },
+ "litter_can": {
+  "id": "litter_can",
+  "name": "Crushed Can",
+  "src": "sketchfab:05fc9a5628d64b5cb89f38a855eeb6fb",
+  "title": "Crushed Can",
+  "author": "jeffleguy",
+  "authorUrl": "https://sketchfab.com/jeffleguy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/crushed-can-05fc9a5628d64b5cb89f38a855eeb6fb",
+  "site": "Sketchfab",
+  "tris": 1500,
+  "tex": 128,
+  "size": [
+   0.132,
+   0.056,
+   0.12
+  ],
+  "bytes": 34416
  },
  "lpg_small": {
   "id": "lpg_small",
@@ -1358,13 +2058,70 @@
   "url": "https://polyhaven.com/a/small_lpg_tank",
   "site": "Poly Haven",
   "tris": 3000,
-  "tex": 288,
+  "tex": 144,
   "size": [
    0.411,
    0.642,
    0.411
   ],
-  "bytes": 62716
+  "bytes": 61716
+ },
+ "lucky_cat_big": {
+  "id": "lucky_cat_big",
+  "name": "Maneki neko",
+  "src": "sketchfab:170f632b9b294fdabc660ba91894c10a",
+  "title": "Maneki neko",
+  "author": "Ramujiro",
+  "authorUrl": "https://sketchfab.com/Ramzus",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 256,
+  "size": [
+   0.372,
+   0.51,
+   0.43
+  ],
+  "bytes": 56380
+ },
+ "macaron_tower": {
+  "id": "macaron_tower",
+  "name": "Macaron tower",
+  "src": "sketchfab:6511ba02a0df442aa734644dbcb4b27a",
+  "title": "Macaron tower",
+  "author": "sion0211",
+  "authorUrl": "https://sketchfab.com/sion0211",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/macaron-tower-6511ba02a0df442aa734644dbcb4b27a",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   1.046,
+   1.3,
+   1.147
+  ],
+  "bytes": 94732
+ },
+ "mamachari": {
+  "id": "mamachari",
+  "name": "City bike low poly",
+  "src": "sketchfab:75647cd8b30548a9af8de5bd07446b16",
+  "title": "City bike low poly",
+  "author": "guillaumemariette156",
+  "authorUrl": "https://sketchfab.com/guillaumemariette156",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/city-bike-low-poly-75647cd8b30548a9af8de5bd07446b16",
+  "site": "Sketchfab",
+  "tris": 1120,
+  "tex": 512,
+  "size": [
+   0.657,
+   1.188,
+   1.954
+  ],
+  "bytes": 40528
  },
  "manekineko": {
   "id": "manekineko",
@@ -1395,13 +2152,13 @@
   "url": "https://polyhaven.com/a/water_manhole_cover",
   "site": "Poly Haven",
   "tris": 1155,
-  "tex": 512,
+  "tex": 256,
   "size": [
    0.685,
    0.068,
    0.685
   ],
-  "bytes": 46000
+  "bytes": 47880
  },
  "microwave": {
   "id": "microwave",
@@ -1413,13 +2170,32 @@
   "url": "https://polyhaven.com/a/vintage_microwave",
   "site": "Poly Haven",
   "tris": 3000,
-  "tex": 800,
+  "tex": 400,
   "size": [
    1.075,
    0.526,
    0.743
   ],
-  "bytes": 124228
+  "bytes": 122396
+ },
+ "milk_fridge": {
+  "id": "milk_fridge",
+  "name": "Beverages refrigerator",
+  "src": "sketchfab:3557e8c50e84419387e8c26dd03e9837",
+  "title": "Beverages refrigerator",
+  "author": "Palmart Productions",
+  "authorUrl": "https://sketchfab.com/mizorri93",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/beverages-refrigerator-3557e8c50e84419387e8c26dd03e9837",
+  "site": "Sketchfab",
+  "tris": 2381,
+  "tex": 364,
+  "size": [
+   1.216,
+   1.86,
+   1.108
+  ],
+  "bytes": 51924
  },
  "mirror": {
   "id": "mirror",
@@ -1437,7 +2213,368 @@
    0.744,
    0.026
   ],
-  "bytes": 61500
+  "bytes": 60356
+ },
+ "mirror_pole": {
+  "id": "mirror_pole",
+  "name": "Blind spot traffic mirror",
+  "src": "sketchfab:6b7baf381f6c45ef8d92411e0467492b",
+  "title": "Blind spot traffic mirror",
+  "author": "Insane Ninja",
+  "authorUrl": "https://sketchfab.com/guru2fifa",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b",
+  "site": "Sketchfab",
+  "tris": 4000,
+  "tex": 496,
+  "size": [
+   1.048,
+   3.104,
+   0.499
+  ],
+  "bytes": 49220
+ },
+ "mk_ashtray": {
+  "id": "mk_ashtray",
+  "name": "Ashtray with Cigarettes",
+  "src": "sketchfab:6e9bfb5e4b1e42b791a51c40cb993306",
+  "title": "Ashtray with Cigarettes",
+  "author": "YJ_",
+  "authorUrl": "https://sketchfab.com/YJ_",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ashtray-with-cigarettes-6e9bfb5e4b1e42b791a51c40cb993306",
+  "site": "Sketchfab",
+  "tris": 1486,
+  "tex": 72,
+  "size": [
+   0.186,
+   0.048,
+   0.231
+  ],
+  "bytes": 37672
+ },
+ "mk_brick": {
+  "id": "mk_brick",
+  "name": "Brick",
+  "src": "sketchfab:504a59ef14a148809cec657d7c99367c",
+  "title": "Brick",
+  "author": "Rigsters",
+  "authorUrl": "https://sketchfab.com/rigsters",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/brick-504a59ef14a148809cec657d7c99367c",
+  "site": "Sketchfab",
+  "tris": 1500,
+  "tex": 160,
+  "size": [
+   0.192,
+   0.08,
+   0.291
+  ],
+  "bytes": 22476
+ },
+ "mk_cigar_box": {
+  "id": "mk_cigar_box",
+  "name": "Red Dot Cigar Box",
+  "src": "sketchfab:bf5152c1f1fc44f4a81dbca1d502304c",
+  "title": "Red Dot Cigar Box",
+  "author": "IU Indianapolis University Library",
+  "authorUrl": "https://sketchfab.com/IUI-UniversityLibrary",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/red-dot-cigar-box-bf5152c1f1fc44f4a81dbca1d502304c",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 256,
+  "size": [
+   0.687,
+   0.21,
+   0.44
+  ],
+  "bytes": 46512
+ },
+ "mk_ema": {
+  "id": "mk_ema",
+  "name": "Ema Wish board from Japan",
+  "src": "sketchfab:eb5747f6a34b43b8aceb0a7473b5272d",
+  "title": "Ema Wish board from Japan",
+  "author": "DRTX_QING",
+  "authorUrl": "https://sketchfab.com/DRTX_QING",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ema-wish-board-from-japan-eb5747f6a34b43b8aceb0a7473b5272d",
+  "site": "Sketchfab",
+  "tris": 1410,
+  "tex": 128,
+  "size": [
+   0.129,
+   0.135,
+   0.062
+  ],
+  "bytes": 33356
+ },
+ "mk_hyotan": {
+  "id": "mk_hyotan",
+  "name": "Gourd Bottle",
+  "src": "sketchfab:fc5c13c5194241339121d8c2e99ae1c7",
+  "title": "Gourd Bottle",
+  "author": "Akio",
+  "authorUrl": "https://sketchfab.com/akio_illu",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/gourd-bottle-fc5c13c5194241339121d8c2e99ae1c7",
+  "site": "Sketchfab",
+  "tris": 1500,
+  "tex": 96,
+  "size": [
+   0.118,
+   0.164,
+   0.066
+  ],
+  "bytes": 26396
+ },
+ "mk_ice_freezer": {
+  "id": "mk_ice_freezer",
+  "name": "Deep Freezer V1",
+  "src": "sketchfab:63f74a5275864eab9a51309b9c391cf4",
+  "title": "Deep Freezer V1",
+  "author": "doorbin",
+  "authorUrl": "https://sketchfab.com/woodland.mid",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/deep-freezer-v1-63f74a5275864eab9a51309b9c391cf4",
+  "site": "Sketchfab",
+  "tris": 300,
+  "tex": 280,
+  "size": [
+   1.167,
+   0.88,
+   0.781
+  ],
+  "bytes": 21836
+ },
+ "mk_jar_pickle": {
+  "id": "mk_jar_pickle",
+  "name": "Voxel Breakable Pickle Jar",
+  "src": "sketchfab:f971db758c3040e281f536b42d40014e",
+  "title": "Voxel Breakable Pickle Jar",
+  "author": "smiteis",
+  "authorUrl": "https://sketchfab.com/smiteis",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/voxel-breakable-pickle-jar-f971db758c3040e281f536b42d40014e",
+  "site": "Sketchfab",
+  "tris": 768,
+  "tex": 128,
+  "size": [
+   0.132,
+   0.16,
+   0.132
+  ],
+  "bytes": 19812
+ },
+ "mk_jar_ramen": {
+  "id": "mk_jar_ramen",
+  "name": "RAMEN BOWL",
+  "src": "sketchfab:3d04380080ff4c269fe0ddd9b6924a3f",
+  "title": "RAMEN BOWL",
+  "author": "Diego Clemente",
+  "authorUrl": "https://sketchfab.com/diegoclemente2001",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ramen-bowl-3d04380080ff4c269fe0ddd9b6924a3f",
+  "site": "Sketchfab",
+  "tris": 1499,
+  "tex": 128,
+  "size": [
+   0.104,
+   0.07,
+   0.076
+  ],
+  "bytes": 35972
+ },
+ "mk_kitsune": {
+  "id": "mk_kitsune",
+  "name": "Kitsune Fox Shrine Statue",
+  "src": "sketchfab:b51e4bb527d749c38bfb6f964b2b9ead",
+  "title": "Kitsune Fox Shrine Statue",
+  "author": "Sahir Virmani",
+  "authorUrl": "https://sketchfab.com/sahirvirmani",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kitsune-fox-shrine-statue-b51e4bb527d749c38bfb6f964b2b9ead",
+  "site": "Sketchfab",
+  "tris": 1498,
+  "tex": 128,
+  "size": [
+   0.072,
+   0.17,
+   0.072
+  ],
+  "bytes": 33928
+ },
+ "mk_koban": {
+  "id": "mk_koban",
+  "name": "Low-Poly Gold Coin",
+  "src": "sketchfab:7a40d686492545d1a6f6bd0c487f1cb9",
+  "title": "Low-Poly Gold Coin",
+  "author": "BillieBones",
+  "authorUrl": "https://sketchfab.com/BillieBones",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-gold-coin-7a40d686492545d1a6f6bd0c487f1cb9",
+  "site": "Sketchfab",
+  "tris": 796,
+  "tex": 112,
+  "size": [
+   0.108,
+   0.108,
+   0.024
+  ],
+  "bytes": 16292
+ },
+ "mk_kumade": {
+  "id": "mk_kumade",
+  "name": "Kumade - XYZ Speedraft",
+  "src": "sketchfab:7efa84394c4c4185885be697adad932f",
+  "title": "Kumade - XYZ Speedraft",
+  "author": "WiNion",
+  "authorUrl": "https://sketchfab.com/winion",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kumade-xyz-speedraft-7efa84394c4c4185885be697adad932f",
+  "site": "Sketchfab",
+  "tris": 2996,
+  "tex": 256,
+  "size": [
+   0.104,
+   0.306,
+   0.065
+  ],
+  "bytes": 62596
+ },
+ "mk_outbox": {
+  "id": "mk_outbox",
+  "name": "Wooden Crate",
+  "src": "sketchfab:e12fde1101b84b6da40056336a7b309d",
+  "title": "Wooden Crate",
+  "author": "YadroGames",
+  "authorUrl": "https://sketchfab.com/yadrogames",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-crate-e12fde1101b84b6da40056336a7b309d",
+  "site": "Sketchfab",
+  "tris": 324,
+  "tex": 136,
+  "size": [
+   0.329,
+   0.216,
+   0.644
+  ],
+  "bytes": 14888
+ },
+ "mk_peg_stand": {
+  "id": "mk_peg_stand",
+  "name": "Wood Display Rack",
+  "src": "sketchfab:dfd6e6a1842d4e0dbbfe9316697f4f75",
+  "title": "Wood Display Rack",
+  "author": "greasoft",
+  "authorUrl": "https://sketchfab.com/greasoft",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wood-display-rack-dfd6e6a1842d4e0dbbfe9316697f4f75",
+  "site": "Sketchfab",
+  "tris": 900,
+  "tex": 256,
+  "size": [
+   0.105,
+   0.39,
+   0.474
+  ],
+  "bytes": 24512
+ },
+ "mk_phone": {
+  "id": "mk_phone",
+  "name": "Classic Telephone",
+  "src": "sketchfab:1b3929f627a141be92f0c8c16a3ba296",
+  "title": "Classic Telephone",
+  "author": "irtizasb",
+  "authorUrl": "https://sketchfab.com/irtizasb",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/classic-telephone-1b3929f627a141be92f0c8c16a3ba296",
+  "site": "Sketchfab",
+  "tris": 1499,
+  "tex": 128,
+  "size": [
+   0.14,
+   0.12,
+   0.066
+  ],
+  "bytes": 36512
+ },
+ "mk_ramune_tub": {
+  "id": "mk_ramune_tub",
+  "name": "Ice Bucket",
+  "src": "sketchfab:66fd712372f14a8f8d83d4d1e4ff6dce",
+  "title": "Ice Bucket",
+  "author": "Saandy",
+  "authorUrl": "https://sketchfab.com/Saandy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ice-bucket-66fd712372f14a8f8d83d4d1e4ff6dce",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 480,
+  "size": [
+   1.169,
+   0.66,
+   1.059
+  ],
+  "bytes": 133848
+ },
+ "mk_snack_carton": {
+  "id": "mk_snack_carton",
+  "name": "Carton Box_03_Open",
+  "src": "sketchfab:fb9958f7f2c74095a25589837e62aa9d",
+  "title": "Carton Box_03_Open",
+  "author": "Molfgang",
+  "authorUrl": "https://sketchfab.com/pixeledbun",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/carton-box-03-open-fb9958f7f2c74095a25589837e62aa9d",
+  "site": "Sketchfab",
+  "tris": 196,
+  "tex": 256,
+  "size": [
+   0.349,
+   0.38,
+   0.365
+  ],
+  "bytes": 17328
+ },
+ "mk_trinket_cassette": {
+  "id": "mk_trinket_cassette",
+  "name": "Cassette tapes",
+  "src": "sketchfab:820777808625494581401700ccc3e7f7",
+  "title": "Cassette tapes",
+  "author": "FEDDYFAZBARE",
+  "authorUrl": "https://sketchfab.com/FEDDYFAZBARE",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cassette-tapes-820777808625494581401700ccc3e7f7",
+  "site": "Sketchfab",
+  "tris": 1497,
+  "tex": 256,
+  "size": [
+   0.721,
+   0.021,
+   0.308
+  ],
+  "bytes": 44780
+ },
+ "mk_zabuton": {
+  "id": "mk_zabuton",
+  "name": "Zafu and zabuton",
+  "src": "sketchfab:1e2b4dc9efe348548b681a1fe0a1343b",
+  "title": "Zafu and zabuton",
+  "author": "Thomas Deneuville",
+  "authorUrl": "https://sketchfab.com/tdnvl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/zafu-and-zabuton-1e2b4dc9efe348548b681a1fe0a1343b",
+  "site": "Sketchfab",
+  "tris": 2284,
+  "tex": 144,
+  "size": [
+   0.247,
+   0.12,
+   0.301
+  ],
+  "bytes": 33308
  },
  "moon_rock": {
   "id": "moon_rock",
@@ -1457,6 +2594,25 @@
   ],
   "bytes": 163448
  },
+ "newspaper_stack": {
+  "id": "newspaper_stack",
+  "name": "[CC0] Newspaper Stack - Ready to Unity H",
+  "src": "sketchfab:c4311a0b918643af97904e10c7a34efc",
+  "title": "[CC0] Newspaper Stack - Ready to Unity HDRP",
+  "author": "karlwirbelwind",
+  "authorUrl": "https://sketchfab.com/karlwirbelwind",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cc0-newspaper-stack-ready-to-unity-hdrp-c4311a0b918643af97904e10c7a34efc",
+  "site": "Sketchfab",
+  "tris": 2132,
+  "tex": 512,
+  "size": [
+   0.633,
+   0.19,
+   1.059
+  ],
+  "bytes": 83780
+ },
  "nightstand": {
   "id": "nightstand",
   "name": "Classic Nightstand 01",
@@ -1467,13 +2623,32 @@
   "url": "https://polyhaven.com/a/ClassicNightstand_01",
   "site": "Poly Haven",
   "tris": 2002,
-  "tex": 512,
+  "tex": 256,
   "size": [
    0.568,
    0.7,
    0.424
   ],
-  "bytes": 61660
+  "bytes": 68460
+ },
+ "noodle_box": {
+  "id": "noodle_box",
+  "name": "Cardboard Box",
+  "src": "sketchfab:f43199f19c3142c68cc672db55d9a40d",
+  "title": "Cardboard Box",
+  "author": "Andrew.Mischenko",
+  "authorUrl": "https://sketchfab.com/Andrew.Mischenko",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d",
+  "site": "Sketchfab",
+  "tris": 140,
+  "tex": 512,
+  "size": [
+   0.833,
+   0.336,
+   0.833
+  ],
+  "bytes": 30044
  },
  "ottoman": {
   "id": "ottoman",
@@ -1491,7 +2666,102 @@
    0.624,
    0.621
   ],
-  "bytes": 66256
+  "bytes": 64744
+ },
+ "paint_tins": {
+  "id": "paint_tins",
+  "name": "Spray Paint Can",
+  "src": "sketchfab:7223f972a1b44194abdc8f84b896086d",
+  "title": "Spray Paint Can",
+  "author": "Isuk",
+  "authorUrl": "https://sketchfab.com/Isuk",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/spray-paint-can-7223f972a1b44194abdc8f84b896086d",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 288,
+  "size": [
+   0.532,
+   0.21,
+   0.718
+  ],
+  "bytes": 60432
+ },
+ "park_bench": {
+  "id": "park_bench",
+  "name": "Park Bench",
+  "src": "sketchfab:2ee2bc87756d4bf0932d83ab860ddb8f",
+  "title": "Park Bench",
+  "author": "RBG_illustrations",
+  "authorUrl": "https://sketchfab.com/RBG_illustrations",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/park-bench-2ee2bc87756d4bf0932d83ab860ddb8f",
+  "site": "Sketchfab",
+  "tris": 2924,
+  "tex": 512,
+  "size": [
+   3.172,
+   0.93,
+   0.727
+  ],
+  "bytes": 129452
+ },
+ "park_lamp": {
+  "id": "park_lamp",
+  "name": "Classic Street Lamp Post",
+  "src": "sketchfab:dea5920f66814e04a66fa87b338e0e8d",
+  "title": "Classic Street Lamp Post",
+  "author": "sacapuntas",
+  "authorUrl": "https://sketchfab.com/Sacapuntas96",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/classic-street-lamp-post-dea5920f66814e04a66fa87b338e0e8d",
+  "site": "Sketchfab",
+  "tris": 3913,
+  "tex": 512,
+  "size": [
+   0.669,
+   4.75,
+   0.745
+  ],
+  "bytes": 68724
+ },
+ "pendulum_clock": {
+  "id": "pendulum_clock",
+  "name": "Antique Wall Pendulum Clock",
+  "src": "sketchfab:a1399c9b33554b9a9d25ec9e5fbdd5ca",
+  "title": "Antique Wall Pendulum Clock",
+  "author": "Odin Branigan",
+  "authorUrl": "https://sketchfab.com/Odin.Branigan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/antique-wall-pendulum-clock-a1399c9b33554b9a9d25ec9e5fbdd5ca",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 256,
+  "size": [
+   0.353,
+   0.64,
+   0.101
+  ],
+  "bytes": 53564
+ },
+ "phone_booth": {
+  "id": "phone_booth",
+  "name": "Old Green Payphone",
+  "src": "sketchfab:ad06f3ec91a24943ad4a38dd70413cda",
+  "title": "Old Green Payphone",
+  "author": "Yevhen Avramenko",
+  "authorUrl": "https://sketchfab.com/naprimerjenya",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-green-payphone-ad06f3ec91a24943ad4a38dd70413cda",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   1.175,
+   1.55,
+   0.926
+  ],
+  "bytes": 133044
  },
  "phone_rotary": {
   "id": "phone_rotary",
@@ -1504,13 +2774,70 @@
   "url": "https://sketchfab.com/3d-models/pbr-old-rotary-phone-52fb9ffd3bc241979f7192326e52aad8",
   "site": "Sketchfab",
   "tris": 2999,
-  "tex": 240,
+  "tex": 120,
   "size": [
    0.168,
    0.13,
    0.095
   ],
-  "bytes": 82112
+  "bytes": 82080
+ },
+ "pink_phone": {
+  "id": "pink_phone",
+  "name": "Telephone Pink",
+  "src": "sketchfab:c324968e1e2a4a7b873e275c152b35a3",
+  "title": "Telephone Pink",
+  "author": "Blender Pink",
+  "authorUrl": "https://sketchfab.com/merlinammm",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/telephone-pink-c324968e1e2a4a7b873e275c152b35a3",
+  "site": "Sketchfab",
+  "tris": 2793,
+  "tex": 512,
+  "size": [
+   0.43,
+   0.97,
+   0.445
+  ],
+  "bytes": 69892
+ },
+ "planet_lamp": {
+  "id": "planet_lamp",
+  "name": "Planet lamp",
+  "src": "sketchfab:0a582da99b314741b7544798478d2978",
+  "title": "Planet lamp",
+  "author": "Chepix",
+  "authorUrl": "https://sketchfab.com/chepix",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/planet-lamp-0a582da99b314741b7544798478d2978",
+  "site": "Sketchfab",
+  "tris": 2980,
+  "tex": 464,
+  "size": [
+   0.884,
+   1.3,
+   0.811
+  ],
+  "bytes": 51656
+ },
+ "plant_monstera": {
+  "id": "plant_monstera",
+  "name": "Monstera Deliciosa Potted Mid-Century pl",
+  "src": "sketchfab:1ab9bf841df04c07b1819be596327629",
+  "title": "Monstera Deliciosa Potted Mid-Century plant",
+  "author": "Giora",
+  "authorUrl": "https://sketchfab.com/ChubbyPanda",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/monstera-deliciosa-potted-mid-century-plant-1ab9bf841df04c07b1819be596327629",
+  "site": "Sketchfab",
+  "tris": 2996,
+  "tex": 496,
+  "size": [
+   0.835,
+   1.3,
+   0.756
+  ],
+  "bytes": 94240
  },
  "plant_pot1": {
   "id": "plant_pot1",
@@ -1528,7 +2855,7 @@
    1.351,
    0.606
   ],
-  "bytes": 130932
+  "bytes": 125916
  },
  "plant_pot2": {
   "id": "plant_pot2",
@@ -1546,7 +2873,7 @@
    0.841,
    0.659
   ],
-  "bytes": 124112
+  "bytes": 117880
  },
  "plant_pot4": {
   "id": "plant_pot4",
@@ -1564,7 +2891,26 @@
    0.268,
    0.181
   ],
-  "bytes": 76612
+  "bytes": 75636
+ },
+ "plant_pothos": {
+  "id": "plant_pothos",
+  "name": "Pothos Plant",
+  "src": "sketchfab:175142c4942b42169455eb20c4033c9d",
+  "title": "Pothos Plant",
+  "author": "Blizzy",
+  "authorUrl": "https://sketchfab.com/jeffbas",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pothos-plant-175142c4942b42169455eb20c4033c9d",
+  "site": "Sketchfab",
+  "tris": 2926,
+  "tex": 512,
+  "size": [
+   1.082,
+   0.855,
+   0.838
+  ],
+  "bytes": 99180
  },
  "planter_box": {
   "id": "planter_box",
@@ -1576,13 +2922,13 @@
   "url": "https://polyhaven.com/a/planter_box_01",
   "site": "Poly Haven",
   "tris": 3000,
-  "tex": 544,
+  "tex": 272,
   "size": [
    0.907,
    0.425,
    0.409
   ],
-  "bytes": 93200
+  "bytes": 100456
  },
  "planter_clay": {
   "id": "planter_clay",
@@ -1600,7 +2946,7 @@
    0.222,
    0.263
   ],
-  "bytes": 43004
+  "bytes": 42188
  },
  "post_box": {
   "id": "post_box",
@@ -1619,7 +2965,45 @@
    1,
    0.548
   ],
-  "bytes": 45772
+  "bytes": 44036
+ },
+ "post_box_p": {
+  "id": "post_box_p",
+  "name": "Japan post box",
+  "src": "sketchfab:ed30f71494e44801bb18cb5aeddcddf6",
+  "title": "Japan post box",
+  "author": "exiS7-Gs",
+  "authorUrl": "https://sketchfab.com/exiS7-Gs",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japan-post-box-ed30f71494e44801bb18cb5aeddcddf6",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 336,
+  "size": [
+   0.887,
+   1.302,
+   0.563
+  ],
+  "bytes": 89452
+ },
+ "potted_row": {
+  "id": "potted_row",
+  "name": "Plant pots",
+  "src": "sketchfab:936c438fc2ab4631ab81cb05af343a9e",
+  "title": "Plant pots",
+  "author": "Vanum-Chan",
+  "authorUrl": "https://sketchfab.com/Patricia.Schad",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/plant-pots-936c438fc2ab4631ab81cb05af343a9e",
+  "site": "Sketchfab",
+  "tris": 1216,
+  "tex": 512,
+  "size": [
+   2.722,
+   1.05,
+   2.717
+  ],
+  "bytes": 166780
  },
  "power_box": {
   "id": "power_box",
@@ -1631,13 +3015,13 @@
   "url": "https://polyhaven.com/a/power_box_01",
   "site": "Poly Haven",
   "tris": 2990,
-  "tex": 480,
+  "tex": 240,
   "size": [
    0.459,
    0.503,
    0.399
   ],
-  "bytes": 74168
+  "bytes": 74592
  },
  "rack_worn": {
   "id": "rack_worn",
@@ -1655,7 +3039,45 @@
    1.9,
    0.598
   ],
-  "bytes": 61856
+  "bytes": 61072
+ },
+ "rag": {
+  "id": "rag",
+  "name": "Folded Towel",
+  "src": "sketchfab:c5f9e72edf7d4b5eaa2ec9b95c3b099d",
+  "title": "Folded Towel",
+  "author": "Nicothin",
+  "authorUrl": "https://sketchfab.com/juhyt80",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/folded-towel-c5f9e72edf7d4b5eaa2ec9b95c3b099d",
+  "site": "Sketchfab",
+  "tris": 1500,
+  "tex": 512,
+  "size": [
+   0.454,
+   0.042,
+   0.736
+  ],
+  "bytes": 79000
+ },
+ "ramune_cooler": {
+  "id": "ramune_cooler",
+  "name": "Low Poly Cooler with Drinks",
+  "src": "sketchfab:d7c27f148d454a159cd8968694b59ab2",
+  "title": "Low Poly Cooler with Drinks",
+  "author": "PolyDavid",
+  "authorUrl": "https://sketchfab.com/PolyDavid",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-cooler-with-drinks-d7c27f148d454a159cd8968694b59ab2",
+  "site": "Sketchfab",
+  "tris": 1344,
+  "tex": 512,
+  "size": [
+   0.794,
+   0.735,
+   1.132
+  ],
+  "bytes": 55680
  },
  "rice_cooker": {
   "id": "rice_cooker",
@@ -1674,7 +3096,45 @@
    0.26,
    0.158
   ],
-  "bytes": 49980
+  "bytes": 49164
+ },
+ "rice_sack": {
+  "id": "rice_sack",
+  "name": "Rice Sack Pot",
+  "src": "sketchfab:fecf642fc5a44223afe57075b354d07e",
+  "title": "Rice Sack Pot",
+  "author": "Sba Stuff",
+  "authorUrl": "https://sketchfab.com/sbastuff",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/rice-sack-pot-fecf642fc5a44223afe57075b354d07e",
+  "site": "Sketchfab",
+  "tris": 2957,
+  "tex": 240,
+  "size": [
+   0.238,
+   0.368,
+   0.229
+  ],
+  "bytes": 39992
+ },
+ "robot_vacuum": {
+  "id": "robot_vacuum",
+  "name": "Robot vacuum cleaner low poly",
+  "src": "sketchfab:7230d8d80e8b4a82b4a34a5e7926d0d3",
+  "title": "Robot vacuum cleaner low poly",
+  "author": "Moryak",
+  "authorUrl": "https://sketchfab.com/_moryak_",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/robot-vacuum-cleaner-low-poly-7230d8d80e8b4a82b4a34a5e7926d0d3",
+  "site": "Sketchfab",
+  "tris": 2944,
+  "tex": 256,
+  "size": [
+   0.445,
+   0.102,
+   0.445
+  ],
+  "bytes": 42136
  },
  "rock_moss": {
   "id": "rock_moss",
@@ -1712,6 +3172,329 @@
   ],
   "bytes": 147928
  },
+ "rocket": {
+  "id": "rocket",
+  "name": "Toy Rocket 4K Free 3D model",
+  "src": "sketchfab:eeca5464cafe42fd9ae35b2451c14858",
+  "title": "Toy Rocket 4K Free 3D model",
+  "author": "Desertsage",
+  "authorUrl": "https://sketchfab.com/Desertsage",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/toy-rocket-4k-free-3d-model-eeca5464cafe42fd9ae35b2451c14858",
+  "site": "Sketchfab",
+  "tris": 3985,
+  "tex": 280,
+  "size": [
+   1.264,
+   2.43,
+   1.264
+  ],
+  "bytes": 92520
+ },
+ "room_ac": {
+  "id": "room_ac",
+  "name": "Indoor air conditioner unit",
+  "src": "sketchfab:d93c5557a9ba46afbb00e35f48343077",
+  "title": "Indoor air conditioner unit",
+  "author": "Rylae Shylna",
+  "authorUrl": "https://sketchfab.com/risteralline",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/indoor-air-conditioner-unit-d93c5557a9ba46afbb00e35f48343077",
+  "site": "Sketchfab",
+  "tris": 528,
+  "tex": 384,
+  "size": [
+   0.823,
+   0.28,
+   0.203
+  ],
+  "bytes": 13460
+ },
+ "room_bookshelf": {
+  "id": "room_bookshelf",
+  "name": "LP Furniture - Cube Shelf Sq",
+  "src": "sketchfab:109368adc245432e93fbf8e0a2f86bda",
+  "title": "LP Furniture - Cube Shelf Sq",
+  "author": "c0ntra5t",
+  "authorUrl": "https://sketchfab.com/c0ntr5t",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/lp-furniture-cube-shelf-sq-109368adc245432e93fbf8e0a2f86bda",
+  "site": "Sketchfab",
+  "tris": 268,
+  "tex": 336,
+  "size": [
+   0.91,
+   0.91,
+   0.228
+  ],
+  "bytes": 22344
+ },
+ "room_boxes": {
+  "id": "room_boxes",
+  "name": "Stacked Cardboard Boxes | Crafted by jer",
+  "src": "sketchfab:f93cacf5a0e4444898e30b40e43ad669",
+  "title": "Stacked Cardboard Boxes | Crafted by jerovdl",
+  "author": "Jerovdl",
+  "authorUrl": "https://sketchfab.com/Jerovdl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/stacked-cardboard-boxes-crafted-by-jerovdl-f93cacf5a0e4444898e30b40e43ad669",
+  "site": "Sketchfab",
+  "tris": 1380,
+  "tex": 232,
+  "size": [
+   0.553,
+   0.57,
+   0.485
+  ],
+  "bytes": 30672
+ },
+ "room_chair": {
+  "id": "room_chair",
+  "name": "Office Swivel Chair",
+  "src": "sketchfab:b416b2fa9f634fe0a881166a72d0f0d2",
+  "title": "Office Swivel Chair",
+  "author": "Igrium",
+  "authorUrl": "https://sketchfab.com/Sam54123",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/office-swivel-chair-b416b2fa9f634fe0a881166a72d0f0d2",
+  "site": "Sketchfab",
+  "tris": 2990,
+  "tex": 400,
+  "size": [
+   0.571,
+   0.89,
+   0.547
+  ],
+  "bytes": 62792
+ },
+ "room_cupnoodle": {
+  "id": "room_cupnoodle",
+  "name": "Noodle Cup",
+  "src": "sketchfab:60b5fae8d55e48f5bc3a554652d5d9ad",
+  "title": "Noodle Cup",
+  "author": "LittleWhiteElk",
+  "authorUrl": "https://sketchfab.com/LittleWhiteElk",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/noodle-cup-60b5fae8d55e48f5bc3a554652d5d9ad",
+  "site": "Sketchfab",
+  "tris": 252,
+  "tex": 128,
+  "size": [
+   0.137,
+   0.136,
+   0.154
+  ],
+  "bytes": 9060
+ },
+ "room_desk": {
+  "id": "room_desk",
+  "name": "Japanese Study Desk",
+  "src": "sketchfab:18da6abd259441aea570168cc86bc0ef",
+  "title": "Japanese Study Desk",
+  "author": "AFX/CGMotion 3DModel Maker",
+  "authorUrl": "https://sketchfab.com/afx_cgmotion",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-study-desk-18da6abd259441aea570168cc86bc0ef",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 280,
+  "size": [
+   1.009,
+   0.91,
+   0.704
+  ],
+  "bytes": 109532
+ },
+ "room_figshelf": {
+  "id": "room_figshelf",
+  "name": "Coin Display Shelf",
+  "src": "sketchfab:937c3c825cb347549c09167016229804",
+  "title": "Coin Display Shelf",
+  "author": "CrystalAI",
+  "authorUrl": "https://sketchfab.com/CrystalAIC",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/coin-display-shelf-937c3c825cb347549c09167016229804",
+  "site": "Sketchfab",
+  "tris": 2918,
+  "tex": 408,
+  "size": [
+   1.007,
+   0.76,
+   0.719
+  ],
+  "bytes": 86924
+ },
+ "room_futon": {
+  "id": "room_futon",
+  "name": "Japanese futon/bed",
+  "src": "sketchfab:0d5590d1d2184aa98797c3d6382afd7e",
+  "title": "Japanese futon/bed",
+  "author": "nicolas_solo",
+  "authorUrl": "https://sketchfab.com/nicolas_solo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-futonbed-0d5590d1d2184aa98797c3d6382afd7e",
+  "site": "Sketchfab",
+  "tris": 3998,
+  "tex": 384,
+  "size": [
+   1.744,
+   0.28,
+   2.643
+  ],
+  "bytes": 129084
+ },
+ "room_kitchen": {
+  "id": "room_kitchen",
+  "name": "Low Poly Kitchenette Pack",
+  "src": "sketchfab:b623f028d70d4a758dfa67f82d0c96fb",
+  "title": "Low Poly Kitchenette Pack",
+  "author": "lightdreamerlabs",
+  "authorUrl": "https://sketchfab.com/lightdreamerlabs",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-kitchenette-pack-b623f028d70d4a758dfa67f82d0c96fb",
+  "site": "Sketchfab",
+  "tris": 880,
+  "tex": 296,
+  "size": [
+   1.722,
+   1.13,
+   0.377
+  ],
+  "bytes": 42972
+ },
+ "room_mug": {
+  "id": "room_mug",
+  "name": "Coffee Mug (School Project)",
+  "src": "sketchfab:5f5ccee1514c440887c072fae8e0d699",
+  "title": "Coffee Mug (School Project)",
+  "author": "Ole Gunnar Isager",
+  "authorUrl": "https://sketchfab.com/FrenchBaguette",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/coffee-mug-school-project-5f5ccee1514c440887c072fae8e0d699",
+  "site": "Sketchfab",
+  "tris": 1032,
+  "tex": 128,
+  "size": [
+   0.087,
+   0.092,
+   0.1
+  ],
+  "bytes": 19412
+ },
+ "room_phone": {
+  "id": "room_phone",
+  "name": "Corded Public Phone - Low Poly",
+  "src": "sketchfab:63ef9397e3b9418e8abfba9cc4c470a8",
+  "title": "Corded Public Phone - Low Poly",
+  "author": "Gamedirection",
+  "authorUrl": "https://sketchfab.com/Gamedirection",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/corded-public-phone-low-poly-63ef9397e3b9418e8abfba9cc4c470a8",
+  "site": "Sketchfab",
+  "tris": 1498,
+  "tex": 128,
+  "size": [
+   0.488,
+   0.075,
+   0.159
+  ],
+  "bytes": 35268
+ },
+ "room_shoes": {
+  "id": "room_shoes",
+  "name": "sneakers",
+  "src": "sketchfab:689c29ec3a8a4f44b32f616bcb97cfaa",
+  "title": "sneakers",
+  "author": "abazibiz",
+  "authorUrl": "https://sketchfab.com/abazibiz",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/sneakers-689c29ec3a8a4f44b32f616bcb97cfaa",
+  "site": "Sketchfab",
+  "tris": 1497,
+  "tex": 128,
+  "size": [
+   0.15,
+   0.078,
+   0.144
+  ],
+  "bytes": 27964
+ },
+ "room_trash": {
+  "id": "room_trash",
+  "name": "Plastic Waste Bin",
+  "src": "sketchfab:cb278948a28a440d8e26573bbc8483df",
+  "title": "Plastic Waste Bin",
+  "author": "LightSwitch",
+  "authorUrl": "https://sketchfab.com/edwardlewis450",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/plastic-waste-bin-cb278948a28a440d8e26573bbc8483df",
+  "site": "Sketchfab",
+  "tris": 2172,
+  "tex": 144,
+  "size": [
+   0.321,
+   0.31,
+   0.321
+  ],
+  "bytes": 38076
+ },
+ "room_tvrack": {
+  "id": "room_tvrack",
+  "name": "Small Tv Stand",
+  "src": "sketchfab:4768d6fef8734c7aa99321f6b6b3c520",
+  "title": "Small Tv Stand",
+  "author": "Andrej Grave",
+  "authorUrl": "https://sketchfab.com/andrej.grave",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/small-tv-stand-4768d6fef8734c7aa99321f6b6b3c520",
+  "site": "Sketchfab",
+  "tris": 368,
+  "tex": 424,
+  "size": [
+   1.383,
+   0.39,
+   0.397
+  ],
+  "bytes": 64932
+ },
+ "room_zabuton": {
+  "id": "room_zabuton",
+  "name": "Unhyun_ Floor Cushion",
+  "src": "sketchfab:6b0209cc65db435e921d0c10db469d52",
+  "title": "Unhyun_ Floor Cushion",
+  "author": "KOREA HERITAGE SERVICE [KHS]",
+  "authorUrl": "https://sketchfab.com/KHS_Asset",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/unhyun--floor-cushion-6b0209cc65db435e921d0c10db469d52",
+  "site": "Sketchfab",
+  "tris": 2994,
+  "tex": 256,
+  "size": [
+   0.416,
+   0.09,
+   0.411
+  ],
+  "bytes": 45184
+ },
+ "rope_coil": {
+  "id": "rope_coil",
+  "name": "Rope Coil - Low Poly Medieval, CC0",
+  "src": "sketchfab:f61c5106eaaa45188e2cb805ed998f21",
+  "title": "Rope Coil - Low Poly Medieval, CC0",
+  "author": "Avramania",
+  "authorUrl": "https://sketchfab.com/Avramania",
+  "license": "CC0 1.0",
+  "url": "https://sketchfab.com/3d-models/rope-coil-low-poly-medieval-cc0-f61c5106eaaa45188e2cb805ed998f21",
+  "site": "Sketchfab",
+  "tris": 1388,
+  "tex": 512,
+  "size": [
+   0.739,
+   0.37,
+   0.742
+  ],
+  "bytes": 46368
+ },
  "scooter": {
   "id": "scooter",
   "name": "Japanese Vintage Scooter",
@@ -1729,7 +3512,7 @@
    1.05,
    1.541
   ],
-  "bytes": 131448
+  "bytes": 126784
  },
  "screen_folding": {
   "id": "screen_folding",
@@ -1747,7 +3530,7 @@
    1.603,
    0.377
   ],
-  "bytes": 45700
+  "bytes": 44900
  },
  "shelf_display": {
   "id": "shelf_display",
@@ -1759,13 +3542,13 @@
   "url": "https://polyhaven.com/a/wooden_display_shelves_01",
   "site": "Poly Haven",
   "tris": 2924,
-  "tex": 704,
+  "tex": 352,
   "size": [
    0.371,
    1.556,
    1.078
   ],
-  "bytes": 97184
+  "bytes": 101096
  },
  "shelf_painted": {
   "id": "shelf_painted",
@@ -1783,7 +3566,7 @@
    1.125,
    0.367
   ],
-  "bytes": 22668
+  "bytes": 22028
  },
  "shelf_steel": {
   "id": "shelf_steel",
@@ -1795,13 +3578,13 @@
   "url": "https://polyhaven.com/a/steel_frame_shelves_01",
   "site": "Poly Haven",
   "tris": 2957,
-  "tex": 736,
+  "tex": 368,
   "size": [
    1.097,
    2.141,
    0.502
   ],
-  "bytes": 82040
+  "bytes": 94904
  },
  "shelf_steel2": {
   "id": "shelf_steel2",
@@ -1819,7 +3602,7 @@
    2.142,
    0.502
   ],
-  "bytes": 68196
+  "bytes": 67420
  },
  "shell_giant": {
   "id": "shell_giant",
@@ -1858,6 +3641,44 @@
   ],
   "bytes": 33408
  },
+ "shop_bench": {
+  "id": "shop_bench",
+  "name": "wooden bench Wooden chair- 15MB",
+  "src": "sketchfab:2fea1f718c14460882014d80b4b64ccd",
+  "title": "wooden bench Wooden chair- 15MB",
+  "author": "Mehdi Shahsavan",
+  "authorUrl": "https://sketchfab.com/ahmagh2e",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-bench-wooden-chair-15mb-2fea1f718c14460882014d80b4b64ccd",
+  "site": "Sketchfab",
+  "tris": 2981,
+  "tex": 512,
+  "size": [
+   1.497,
+   0.525,
+   1.22
+  ],
+  "bytes": 136268
+ },
+ "shop_counter": {
+  "id": "shop_counter",
+  "name": "Food shop showcase",
+  "src": "sketchfab:9079bf17aacf4570a0c2b2587104c5ab",
+  "title": "Food shop showcase",
+  "author": "bretzel44",
+  "authorUrl": "https://sketchfab.com/bretzel44",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/food-shop-showcase-9079bf17aacf4570a0c2b2587104c5ab",
+  "site": "Sketchfab",
+  "tris": 2992,
+  "tex": 512,
+  "size": [
+   1.381,
+   0.96,
+   0.394
+  ],
+  "bytes": 79904
+ },
  "sofa_02": {
   "id": "sofa_02",
   "name": "Sofa 02",
@@ -1868,13 +3689,13 @@
   "url": "https://polyhaven.com/a/sofa_02",
   "site": "Poly Haven",
   "tris": 2728,
-  "tex": 560,
+  "tex": 280,
   "size": [
    1.807,
    0.71,
    0.818
   ],
-  "bytes": 73704
+  "bytes": 79032
  },
  "sofa_03": {
   "id": "sofa_03",
@@ -1886,13 +3707,32 @@
   "url": "https://polyhaven.com/a/sofa_03",
   "site": "Poly Haven",
   "tris": 2999,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    2.737,
    1.118,
    0.929
   ],
-  "bytes": 209376
+  "bytes": 209648
+ },
+ "sofa_retro": {
+  "id": "sofa_retro",
+  "name": "Game Ready American 50s Style Retro Sofa",
+  "src": "sketchfab:d2fdfa286d6c4eda9c9358c9bdb09354",
+  "title": "Game Ready American 50s Style Retro Sofa",
+  "author": "jQueary",
+  "authorUrl": "https://sketchfab.com/jqueary1991",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/game-ready-american-50s-style-retro-sofa-d2fdfa286d6c4eda9c9358c9bdb09354",
+  "site": "Sketchfab",
+  "tris": 2982,
+  "tex": 448,
+  "size": [
+   1.829,
+   0.775,
+   0.886
+  ],
+  "bytes": 75112
  },
  "sofa_wood": {
   "id": "sofa_wood",
@@ -1904,13 +3744,127 @@
   "url": "https://polyhaven.com/a/painted_wooden_sofa",
   "site": "Poly Haven",
   "tris": 2995,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    2.451,
    1.281,
    0.787
   ],
-  "bytes": 93284
+  "bytes": 110300
+ },
+ "softserve": {
+  "id": "softserve",
+  "name": "Ice Cream Sign",
+  "src": "sketchfab:cc27432fdaca4c909e2378b32b4edef3",
+  "title": "Ice Cream Sign",
+  "author": "GetDeadEntertainment",
+  "authorUrl": "https://sketchfab.com/GetDeadEntertainment",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ice-cream-sign-cc27432fdaca4c909e2378b32b4edef3",
+  "site": "Sketchfab",
+  "tris": 2890,
+  "tex": 512,
+  "size": [
+   2.722,
+   1.7,
+   0.117
+  ],
+  "bytes": 46188
+ },
+ "sponge": {
+  "id": "sponge",
+  "name": "Sponge",
+  "src": "sketchfab:97aee64edf0c4521b82416f3b30c61ce",
+  "title": "Sponge",
+  "author": "Aullwen",
+  "authorUrl": "https://sketchfab.com/Aullwen",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/sponge-97aee64edf0c4521b82416f3b30c61ce",
+  "site": "Sketchfab",
+  "tris": 276,
+  "tex": 128,
+  "size": [
+   0.192,
+   0.048,
+   0.128
+  ],
+  "bytes": 7296
+ },
+ "spray_bottle": {
+  "id": "spray_bottle",
+  "name": "Spray Bottle",
+  "src": "sketchfab:1611833f3eaa41bbba2b6944269429ab",
+  "title": "Spray Bottle",
+  "author": "Yanez Designs",
+  "authorUrl": "https://sketchfab.com/Yanez-Designs",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/spray-bottle-1611833f3eaa41bbba2b6944269429ab",
+  "site": "Sketchfab",
+  "tris": 1490,
+  "tex": 112,
+  "size": [
+   0.071,
+   0.192,
+   0.053
+  ],
+  "bytes": 27728
+ },
+ "spring_panda": {
+  "id": "spring_panda",
+  "name": "Wooden ladybug spring rider (Object Capt",
+  "src": "sketchfab:7397fa465943485d83ada8a5fbcf40d5",
+  "title": "Wooden ladybug spring rider (Object Capture)",
+  "author": "Emm",
+  "authorUrl": "https://sketchfab.com/edemaistre",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-ladybug-spring-rider-object-capture-7397fa465943485d83ada8a5fbcf40d5",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 512,
+  "size": [
+   0.694,
+   0.975,
+   0.753
+  ],
+  "bytes": 95152
+ },
+ "star_lamp": {
+  "id": "star_lamp",
+  "name": "Star Lamp",
+  "src": "sketchfab:acd19b5bd50d4cf3b179c222b0d29449",
+  "title": "Star Lamp",
+  "author": "dm3V",
+  "authorUrl": "https://sketchfab.com/dm3V",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/star-lamp-acd19b5bd50d4cf3b179c222b0d29449",
+  "site": "Sketchfab",
+  "tris": 2952,
+  "tex": 512,
+  "size": [
+   1.575,
+   1.5,
+   0.644
+  ],
+  "bytes": 61048
+ },
+ "stone_lantern": {
+  "id": "stone_lantern",
+  "name": "Japanese Stone Lantern",
+  "src": "sketchfab:e0417d1e05984727a50f9ab1451d162d",
+  "title": "Japanese Stone Lantern",
+  "author": "Sahir Virmani",
+  "authorUrl": "https://sketchfab.com/sahirvirmani",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-stone-lantern-e0417d1e05984727a50f9ab1451d162d",
+  "site": "Sketchfab",
+  "tris": 2997,
+  "tex": 400,
+  "size": [
+   0.58,
+   1.325,
+   0.58
+  ],
+  "bytes": 57104
  },
  "stool_wood": {
   "id": "stool_wood",
@@ -1928,44 +3882,45 @@
    0.437,
    0.443
   ],
-  "bytes": 63692
+  "bytes": 62060
  },
- "street_lamp": {
-  "id": "street_lamp",
-  "name": "Street Lamp 01",
-  "src": "polyhaven:street_lamp_01",
-  "title": "Street Lamp 01",
-  "author": "Josh Dean",
-  "license": "CC0 1.0",
-  "url": "https://polyhaven.com/a/street_lamp_01",
-  "site": "Poly Haven",
-  "tris": 2998,
-  "tex": 416,
-  "size": [
-   0.697,
-   3.871,
-   0.386
-  ],
-  "bytes": 65280
- },
- "street_lamp_jp": {
-  "id": "street_lamp_jp",
-  "name": "Japanese street lamp",
-  "src": "sketchfab:a6e3624a679a44efa17bbfc9abec35ce",
-  "title": "Japanese street lamp",
-  "author": "SoraMiyazaki",
-  "authorUrl": "https://sketchfab.com/miyazaki1707",
+ "stove_kettle": {
+  "id": "stove_kettle",
+  "name": "Gas Stove",
+  "src": "sketchfab:056ccf898f9e49acb6e3e370deabf184",
+  "title": "Gas Stove",
+  "author": "Lyskilde",
+  "authorUrl": "https://sketchfab.com/longtail",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/japanese-street-lamp-a6e3624a679a44efa17bbfc9abec35ce",
+  "url": "https://sketchfab.com/3d-models/gas-stove-056ccf898f9e49acb6e3e370deabf184",
   "site": "Sketchfab",
-  "tris": 1304,
-  "tex": 512,
+  "tris": 2530,
+  "tex": 112,
   "size": [
-   0.813,
-   4.6,
-   0.617
+   0.171,
+   0.248,
+   0.183
   ],
-  "bytes": 35548
+  "bytes": 44820
+ },
+ "street_light": {
+  "id": "street_light",
+  "name": "Japanese street light",
+  "src": "sketchfab:385a7cef98084a6698cd0a1c93acf21b",
+  "title": "Japanese street light",
+  "author": "huiminchen0111",
+  "authorUrl": "https://sketchfab.com/huiminchen0111",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-street-light-385a7cef98084a6698cd0a1c93acf21b",
+  "site": "Sketchfab",
+  "tris": 4000,
+  "tex": 268,
+  "size": [
+   2.377,
+   4.14,
+   2.377
+  ],
+  "bytes": 106112
  },
  "table_coffee": {
   "id": "table_coffee",
@@ -1983,7 +3938,7 @@
    0.491,
    1.303
   ],
-  "bytes": 83820
+  "bytes": 80996
  },
  "table_round": {
   "id": "table_round",
@@ -2001,7 +3956,7 @@
    1.005,
    1.396
   ],
-  "bytes": 83632
+  "bytes": 81584
  },
  "table_side": {
   "id": "table_side",
@@ -2013,13 +3968,13 @@
   "url": "https://polyhaven.com/a/side_table_01",
   "site": "Poly Haven",
   "tris": 2756,
-  "tex": 464,
+  "tex": 232,
   "size": [
    0.55,
    0.551,
    0.45
   ],
-  "bytes": 54900
+  "bytes": 60092
  },
  "table_tea_cn": {
   "id": "table_tea_cn",
@@ -2037,7 +3992,7 @@
    0.499,
    0.836
   ],
-  "bytes": 61012
+  "bytes": 59396
  },
  "table_wood": {
   "id": "table_wood",
@@ -2055,7 +4010,7 @@
    0.549,
    0.657
   ],
-  "bytes": 39008
+  "bytes": 38192
  },
  "tansu": {
   "id": "tansu",
@@ -2068,13 +4023,13 @@
   "url": "https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812",
   "site": "Sketchfab",
   "tris": 2998,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    1.102,
    1,
    0.721
   ],
-  "bytes": 125504
+  "bytes": 133580
  },
  "tea_set": {
   "id": "tea_set",
@@ -2092,7 +4047,7 @@
    0.165,
    0.481
   ],
-  "bytes": 73536
+  "bytes": 71816
  },
  "thermos": {
   "id": "thermos",
@@ -2110,7 +4065,44 @@
    0.32,
    0.109
   ],
-  "bytes": 38060
+  "bytes": 37476
+ },
+ "tires": {
+  "id": "tires",
+  "name": "Old, dirty, stacked tires, PBR textures ",
+  "src": "sketchfab:f9d64bd1fdde49fe8571f83f59114663",
+  "title": "Old, dirty, stacked tires, PBR textures [free]",
+  "author": "ZiemniaQ",
+  "authorUrl": "https://sketchfab.com/ZiemniaQ",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663",
+  "site": "Sketchfab",
+  "tris": 2478,
+  "tex": 184,
+  "size": [
+   0.488,
+   0.57,
+   0.488
+  ],
+  "bytes": 54348
+ },
+ "tomare": {
+  "id": "tomare",
+  "name": "Stop sign (止まれ)",
+  "src": "art/lowpix/world/made/tomare.glb",
+  "title": "Stop sign (止まれ)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 80,
+  "tex": 432,
+  "size": [
+   0.806,
+   2.256,
+   0.262
+  ],
+  "bytes": 10088
  },
  "tool_chest": {
   "id": "tool_chest",
@@ -2122,13 +4114,13 @@
   "url": "https://polyhaven.com/a/metal_tool_chest",
   "site": "Poly Haven",
   "tris": 2984,
-  "tex": 512,
+  "tex": 256,
   "size": [
    0.684,
    0.652,
    0.407
   ],
-  "bytes": 78824
+  "bytes": 80416
  },
  "toolbox": {
   "id": "toolbox",
@@ -2140,13 +4132,13 @@
   "url": "https://polyhaven.com/a/metal_toolbox",
   "site": "Poly Haven",
   "tris": 2995,
-  "tex": 416,
+  "tex": 208,
   "size": [
    0.456,
    0.347,
    0.308
   ],
-  "bytes": 84160
+  "bytes": 81920
  },
  "trash_bag": {
   "id": "trash_bag",
@@ -2166,6 +4158,44 @@
   ],
   "bytes": 66160
  },
+ "trash_bag_b": {
+  "id": "trash_bag_b",
+  "name": "Garbage Bag",
+  "src": "sketchfab:bf200222d79d4411aade19ddf312f122",
+  "title": "Garbage Bag",
+  "author": "Bailief",
+  "authorUrl": "https://sketchfab.com/Bailief",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/garbage-bag-bf200222d79d4411aade19ddf312f122",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 256,
+  "size": [
+   0.431,
+   0.336,
+   0.413
+  ],
+  "bytes": 47600
+ },
+ "trash_basket": {
+  "id": "trash_basket",
+  "name": "UM-16-3 Metal Litter Bin | RGR pluss",
+  "src": "sketchfab:fd8b772552444e4e8b2afe2254f4ed20",
+  "title": "UM-16-3 Metal Litter Bin | RGR pluss",
+  "author": "RGRpluss",
+  "authorUrl": "https://sketchfab.com/rgrpluss",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/um-16-3-metal-litter-bin-rgr-pluss-fd8b772552444e4e8b2afe2254f4ed20",
+  "site": "Sketchfab",
+  "tris": 2992,
+  "tex": 360,
+  "size": [
+   0.356,
+   0.875,
+   0.356
+  ],
+  "bytes": 98444
+ },
  "trash_jp": {
   "id": "trash_jp",
   "name": "Japanese Trash Can",
@@ -2183,44 +4213,7 @@
    0.9,
    0.395
   ],
-  "bytes": 20388
- },
- "tv_02": {
-  "id": "tv_02",
-  "name": "Television 02",
-  "src": "polyhaven:television_02",
-  "title": "Television 02",
-  "author": "Benny Weimer",
-  "license": "CC0 1.0",
-  "url": "https://polyhaven.com/a/television_02",
-  "site": "Poly Haven",
-  "tris": 2310,
-  "tex": 256,
-  "size": [
-   0.4,
-   0.411,
-   0.35
-  ],
-  "bytes": 40712
- },
- "tv_crt": {
-  "id": "tv_crt",
-  "name": "Retro CRT Television",
-  "src": "sketchfab:29314bf8b66f49f98ad50dffe4950abf",
-  "title": "Retro CRT Television",
-  "author": "crow",
-  "authorUrl": "https://sketchfab.com/crow.bite",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/retro-crt-television-29314bf8b66f49f98ad50dffe4950abf",
-  "site": "Sketchfab",
-  "tris": 2979,
-  "tex": 336,
-  "size": [
-   0.431,
-   0.42,
-   0.578
-  ],
-  "bytes": 42472
+  "bytes": 19716
  },
  "tv_wood": {
   "id": "tv_wood",
@@ -2238,7 +4231,26 @@
    0.457,
    0.471
   ],
-  "bytes": 39452
+  "bytes": 38396
+ },
+ "twin_tub": {
+  "id": "twin_tub",
+  "name": "Washing Machine",
+  "src": "sketchfab:d81d81853a9f478ca9fac019eabcf453",
+  "title": "Washing Machine",
+  "author": "re1monsen",
+  "authorUrl": "https://sketchfab.com/re1monsen",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/washing-machine-d81d81853a9f478ca9fac019eabcf453",
+  "site": "Sketchfab",
+  "tris": 2966,
+  "tex": 512,
+  "size": [
+   10.758,
+   0.925,
+   10.758
+  ],
+  "bytes": 89564
  },
  "tyre": {
   "id": "tyre",
@@ -2250,13 +4262,13 @@
   "url": "https://polyhaven.com/a/old_tyre",
   "site": "Poly Haven",
   "tris": 2880,
-  "tex": 384,
+  "tex": 192,
   "size": [
    0.6,
    0.6,
    0.165
   ],
-  "bytes": 55996
+  "bytes": 55036
  },
  "ufo": {
   "id": "ufo",
@@ -2293,7 +4305,26 @@
    0.527,
    0.051
   ],
-  "bytes": 74696
+  "bytes": 72668
+ },
+ "umbrella_stand": {
+  "id": "umbrella_stand",
+  "name": "Umbrellas holder with umbrellas",
+  "src": "sketchfab:c14e9d5759a74916bcc4596512cda902",
+  "title": "Umbrellas holder with umbrellas",
+  "author": "MCStevebrine12",
+  "authorUrl": "https://sketchfab.com/MCStevebrine12",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/umbrellas-holder-with-umbrellas-c14e9d5759a74916bcc4596512cda902",
+  "site": "Sketchfab",
+  "tris": 2252,
+  "tex": 296,
+  "size": [
+   0.546,
+   0.89,
+   0.575
+  ],
+  "bytes": 63692
  },
  "utility_box": {
   "id": "utility_box",
@@ -2311,7 +4342,7 @@
    1.12,
    0.432
   ],
-  "bytes": 70724
+  "bytes": 69164
  },
  "utility_box2": {
   "id": "utility_box2",
@@ -2323,13 +4354,32 @@
   "url": "https://polyhaven.com/a/utility_box_02",
   "site": "Poly Haven",
   "tris": 2871,
-  "tex": 672,
+  "tex": 336,
   "size": [
    0.92,
    1.12,
    0.431
   ],
-  "bytes": 74248
+  "bytes": 81992
+ },
+ "utility_sink": {
+  "id": "utility_sink",
+  "name": "Utility Sink",
+  "src": "sketchfab:69eacffafcfe40378bf4de7822eaf0f5",
+  "title": "Utility Sink",
+  "author": "Janet Peña",
+  "authorUrl": "https://sketchfab.com/sandiaentrocito",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/utility-sink-69eacffafcfe40378bf4de7822eaf0f5",
+  "site": "Sketchfab",
+  "tris": 1308,
+  "tex": 288,
+  "size": [
+   8.801,
+   0.97,
+   6.139
+  ],
+  "bytes": 28140
  },
  "vase_brass": {
   "id": "vase_brass",
@@ -2347,7 +4397,7 @@
    0.692,
    0.228
   ],
-  "bytes": 51460
+  "bytes": 50292
  },
  "vase_ceramic": {
   "id": "vase_ceramic",
@@ -2359,13 +4409,13 @@
   "url": "https://polyhaven.com/a/antique_ceramic_vase_01",
   "site": "Poly Haven",
   "tris": 2999,
-  "tex": 336,
+  "tex": 168,
   "size": [
    0.251,
    0.44,
    0.251
   ],
-  "bytes": 76692
+  "bytes": 73244
  },
  "wagasa_parasol": {
   "id": "wagasa_parasol",
@@ -2386,6 +4436,25 @@
   ],
   "bytes": 121640
  },
+ "wash_bucket": {
+  "id": "wash_bucket",
+  "name": "Old Bucket - 2MB",
+  "src": "sketchfab:a49cf405e9f64b6682c7ae9399a65ffe",
+  "title": "Old Bucket - 2MB",
+  "author": "Mehdi Shahsavan",
+  "authorUrl": "https://sketchfab.com/ahmagh2e",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-bucket-2mb-a49cf405e9f64b6682c7ae9399a65ffe",
+  "site": "Sketchfab",
+  "tris": 2996,
+  "tex": 256,
+  "size": [
+   0.982,
+   0.42,
+   0.239
+  ],
+  "bytes": 62472
+ },
  "watering_can": {
   "id": "watering_can",
   "name": "Watering Can Metal 01",
@@ -2402,6 +4471,6 @@
    0.197,
    0.453
   ],
-  "bytes": 53640
+  "bytes": 52472
  }
 }

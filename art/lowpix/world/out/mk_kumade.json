@@ -1,0 +1,89 @@
+{
+ "id": "mk_kumade",
+ "src": "sketchfab:7efa84394c4c4185885be697adad932f",
+ "credit": {
+  "title": "Kumade - XYZ Speedraft",
+  "author": "WiNion",
+  "authorUrl": "https://sketchfab.com/winion",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kumade-xyz-speedraft-7efa84394c4c4185885be697adad932f",
+  "site": "Sketchfab"
+ },
+ "tris": 2996,
+ "tex": 256,
+ "size": [
+  0.104,
+  0.306,
+  0.065
+ ],
+ "colours": 44,
+ "palette": {
+  "m0": [
+   "#3e1609",
+   "#50230d",
+   "#613212",
+   "#714417",
+   "#81571d",
+   "#a57c29",
+   "#c8a336",
+   "#d0bd5f",
+   "#d8d187"
+  ],
+  "m1": [
+   "#650020",
+   "#84001f",
+   "#a0021a",
+   "#bb0612",
+   "#d60d0a",
+   "#f02c17",
+   "#f05f3f",
+   "#f08b66",
+   "#f2af8c"
+  ],
+  "m2": [
+   "#02280a",
+   "#03330a",
+   "#053e08",
+   "#094907",
+   "#12530a",
+   "#288412",
+   "#46b31d",
+   "#6dda2f",
+   "#9ae063"
+  ],
+  "m3": [
+   "#5e2704",
+   "#783d07",
+   "#92560b",
+   "#ab730f",
+   "#c39315",
+   "#e3bd1e",
+   "#e4d345",
+   "#e6e36b",
+   "#eaea90"
+  ],
+  "m4": [
+   "#3e535d",
+   "#546e76",
+   "#6c898e",
+   "#899ea0",
+   "#a6b3b3",
+   "#b4bbbb",
+   "#c2c4c4",
+   "#cfcfcf",
+   "#dadada"
+  ],
+  "m5": [
+   "#76510e",
+   "#987315",
+   "#b89a1d",
+   "#d7c326",
+   "#dbd74b",
+   "#dddd67",
+   "#e0e081",
+   "#e4e49b",
+   "#e9e9b4"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,45 @@
+{
+ "id": "drink_cans",
+ "src": "sketchfab:5ad17d589a6a41fc8905a576871e77ba",
+ "credit": {
+  "title": "Soda Can crushed trash Low-poly",
+  "author": "rzaletskyy",
+  "authorUrl": "https://sketchfab.com/rzaletskyy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/soda-can-crushed-trash-low-poly-5ad17d589a6a41fc8905a576871e77ba",
+  "site": "Sketchfab"
+ },
+ "tris": 338,
+ "tex": 80,
+ "size": [
+  0.096,
+  0.105,
+  0.082
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#006261",
+   "#027e73",
+   "#059980",
+   "#08b388",
+   "#0dcc8c",
+   "#15ec92",
+   "#3eec94",
+   "#65ed9d",
+   "#8befac"
+  ],
+  "m1": [
+   "#5b484e",
+   "#746166",
+   "#8b7c7e",
+   "#9f999a",
+   "#b5b5b5",
+   "#bfbfbf",
+   "#c9c9c9",
+   "#d4d4d4",
+   "#dedede"
+  ]
+ },
+ "warnings": []
+}

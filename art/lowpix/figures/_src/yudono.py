@@ -95,9 +95,9 @@ def family():
     F = Fig(f"{S}/family", "Capybara Family Bath", "Mother, father and the little one, all in one tub, all asleep.")
     top = tiles(F, 36, 28)
     wt = tub(F, "tub", 15, 8, (0, top, 0))
-    F.model("a", CAPY, 15, (-4, top + 1.6, -3), yaw=-20)
-    F.model("b", CAPY, 14, (5, top + 1.6, -1), yaw=-60)
-    F.model("c", CAPY, 9, (0, top + 3.6, 6), yaw=10)
+    F.model("a", CAPY, 15, (-4, top + 1.6, -3), yaw=-20, tris=2200)
+    F.model("b", CAPY, 14, (5, top + 1.6, -1), yaw=-60, tris=2200)
+    F.model("c", CAPY, 9, (0, top + 3.6, 6), yaw=10, tris=2200)
     steam(F, "steam", (-2, wt + 9, -6))
     return F
 
@@ -109,9 +109,9 @@ def rotenburo():
     for i, (x, z, s) in enumerate([(-14, -8, 8), (13, -9, 7), (-15, 7, 6), (14, 8, 6), (0, -11, 7)]):
         F.blob(f"rock{i}", s, s * 0.7, s * 0.8, (x, top, z), col="#5a5650", style="rock", tone=2.8, sides=10)
         F.layer(f"rock{i}", id="snow", op="drip", ramp="white", tone=5.0, depth=0.35, length=0.2, width=0.5, scale=1.2)
-    F.model("capy", CAPY, 13, (-3, top + 0.2, 1), yaw=-30)
-    F.model("otter", OTTER, 14, (11, top + 3, -8), yaw=-50)
-    F.model("frog", FROG, 6, (-14, top + 5.4, 7), yaw=40)
+    F.model("capy", CAPY, 13, (-3, top + 0.2, 1), yaw=-30, tris=2200)
+    F.model("otter", OTTER, 14, (11, top + 3, -8), yaw=-50, tris=2200)
+    F.model("frog", FROG, 6, (-14, top + 5.4, 7), yaw=40, tris=2200)
     steam(F, "steam", (0, top + 12, -2))
     return F
 

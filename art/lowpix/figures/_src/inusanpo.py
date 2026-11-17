@@ -4,11 +4,11 @@ from figlib import Fig, text_jp, GOLD
 from props import slab, asphalt
 
 S = "inusanpo"
-SHIBA = "sketchfab:dbfc8651274b4edc977632cce02c75da"      # Shiba Inu
+POINTER = "sketchfab:6e52a930b88c4580aa721f386998aa9b"    # Realistic Sitting Dog (pointer)
 SHIBA2 = "sketchfab:9abfce885a834399b2c3ccaed51cd474"     # Animated Dog, Shiba Inu
 DACHS = "sketchfab:046f4d21810e4bf68feabe393a6b83cf"      # Dog Dachshund
 CORGI = "sketchfab:7afb2c8ef92c40819abc690584e6772a"      # corgi dog
-PUG = "sketchfab:9fc09b8866214745b27b48334b65da87"        # A pug
+BEAGLE = "sketchfab:c199a59fc6b248b99261f24173d2a384"     # Beagle
 TERRIER = "sketchfab:51f498df96c049cbb9e600b0a88c5838"    # Realistic Terrier Dog
 HACHI = "sketchfab:75a9949393034d5cbc18625bc2bdb810"      # Hachiko statue (bronze Akita)
 NETSUKE = "sketchfab:3bf1533c76f94fcd94fe61da58fb4cdc"    # Netsuke in shape of puppy
@@ -32,17 +32,15 @@ def leash(F, pid, a, b, sag=3.0, col="#c83a2a"):
 def shiba():
     F = Fig(f"{S}/shiba", "Shiba on a Walk", "Curled tail, fox face, absolute refusal to go home yet.")
     top = path(F)
-    F.model("dog", SHIBA, 22, (0, top, 0), yaw=-30)
-    leash(F, "leash", (5, top + 15, 2), (15, top + 28, 8))
+    F.model("dog", SHIBA2, 22, (0, top, 0), yaw=-30)
     F.model_clip("model_dog", "turn", 2.2, amp=-30)
     return F
 
 
 def sitshiba():
-    F = Fig(f"{S}/sitshiba", "Shiba Says No", "Sat down mid-walk. Will not be moved. Has never been moved.")
+    F = Fig(f"{S}/sitshiba", "Pointer Sits", "Sat down mid-walk, ears up, waiting for the word. It may be some time.")
     top = path(F)
-    F.model("dog", SHIBA2, 22, (0, top, 0), yaw=20)
-    leash(F, "leash", (-2, top + 14, 4), (-14, top + 26, 12), sag=1.0)
+    F.model("dog", POINTER, 22, (0, top, 0), yaw=20)
     F.model_clip("model_dog", "wobble", 1.4, amp=5)
     return F
 
@@ -64,10 +62,10 @@ def corgi():
 
 
 def pug():
-    F = Fig(f"{S}/pug", "Pug on the Step", "Snorts at pigeons. Takes a rest every eleven steps, exactly.")
+    F = Fig(f"{S}/pug", "Beagle on the Step", "Nose down, ears flapping, following a smell only it can see.")
     top = path(F, 28, 22)
     F.box("step", [18, 4, 10], (0, top + 2, -3), ch=0.6, col="#9a948a", style="stone", tone=3.2)
-    F.model("dog", PUG, 15, (0, top, 4), yaw=-15)
+    F.model("dog", BEAGLE, 15, (0, top, 4), yaw=-15)
     F.box("bowl", [6, 2, 6], (-9, top + 1, 5), ch=1.4, col="#c8473b", style="pvc", tone=3.0)
     F.layer("bowl", id="water", op="band", axis="y", **{"from": 0.6, "to": 1}, ramp=F.c("#5a8ab8"), tone=3.4, faces=["up"])
     F.model_clip("model_dog", "turn", 2.0, amp=25)

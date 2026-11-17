@@ -1,0 +1,111 @@
+{
+ "id": "room_cupnoodle",
+ "src": "sketchfab:60b5fae8d55e48f5bc3a554652d5d9ad",
+ "credit": {
+  "title": "Noodle Cup",
+  "author": "LittleWhiteElk",
+  "authorUrl": "https://sketchfab.com/LittleWhiteElk",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/noodle-cup-60b5fae8d55e48f5bc3a554652d5d9ad",
+  "site": "Sketchfab"
+ },
+ "tris": 252,
+ "tex": 128,
+ "size": [
+  0.137,
+  0.136,
+  0.154
+ ],
+ "colours": 56,
+ "palette": {
+  "m0": [
+   "#211436",
+   "#2f1b45",
+   "#3e2453",
+   "#4e2c61",
+   "#5e366e",
+   "#7d498b",
+   "#9c5ea5",
+   "#b180b3",
+   "#c2a0c1"
+  ],
+  "m1": [
+   "#501d0f",
+   "#672d15",
+   "#7d411d",
+   "#925725",
+   "#a66f2e",
+   "#c28f3b",
+   "#caaa5c",
+   "#d1c07e",
+   "#dad29e"
+  ],
+  "m2": [
+   "#2a101f",
+   "#351626",
+   "#401d2c",
+   "#4b2431",
+   "#552c36",
+   "#754149",
+   "#93575b",
+   "#a97676",
+   "#ba9b98"
+  ],
+  "m3": [
+   "#614c53",
+   "#7c676c",
+   "#938587",
+   "#a9a4a4",
+   "#c1c1c1",
+   "#cacaca",
+   "#d2d2d2",
+   "#dbdbdb",
+   "#e3e3e3"
+  ],
+  "m4": [
+   "#b90067",
+   "#f10073",
+   "#ff2b7e",
+   "#fd6694",
+   "#fc9fb4",
+   "#fbadb9",
+   "#fbbcbf",
+   "#fbcac9",
+   "#fbdad6"
+  ],
+  "m5": [
+   "#493e6b",
+   "#615488",
+   "#7b6fa0",
+   "#9891b2",
+   "#b4b1c5",
+   "#c1bdcb",
+   "#ccc9d2",
+   "#d7d5d9",
+   "#e0e0e1"
+  ],
+  "m6": [
+   "#132813",
+   "#1b341a",
+   "#263e21",
+   "#314829",
+   "#3c5232",
+   "#587048",
+   "#758b60",
+   "#92a17f",
+   "#adb4a0"
+  ],
+  "m7": [
+   "#193806",
+   "#264809",
+   "#35570d",
+   "#466611",
+   "#587416",
+   "#829c21",
+   "#afc32e",
+   "#ccd251",
+   "#dada7c"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,148 @@
+{
+ "joints": {
+  "tier_64x58_plinth": [
+   0,
+   0,
+   0
+  ],
+  "tier_64x58_tiers": [
+   0,
+   0,
+   0
+  ],
+  "tier_68x62_plinth": [
+   0,
+   0,
+   0
+  ],
+  "tier_68x62_tiers": [
+   0,
+   0,
+   0
+  ],
+  "tier_76x70_plinth": [
+   0,
+   0,
+   0
+  ],
+  "tier_76x70_tiers": [
+   0,
+   0,
+   0
+  ],
+  "tier_84x74_plinth": [
+   0,
+   0,
+   0
+  ],
+  "tier_84x74_tiers": [
+   0,
+   0,
+   0
+  ],
+  "grand_64x58_plinth": [
+   0,
+   0,
+   0
+  ],
+  "grand_64x58_tiers": [
+   0,
+   0,
+   0
+  ],
+  "grand_68x62_plinth": [
+   0,
+   0,
+   0
+  ],
+  "grand_68x62_tiers": [
+   0,
+   0,
+   0
+  ],
+  "grand_76x70_plinth": [
+   0,
+   0,
+   0
+  ],
+  "grand_76x70_tiers": [
+   0,
+   0,
+   0
+  ],
+  "grand_84x74_plinth": [
+   0,
+   0,
+   0
+  ],
+  "grand_84x74_tiers": [
+   0,
+   0,
+   0
+  ]
+ },
+ "mats": {
+  "tier_64x58_plinth_foot": "gloss",
+  "tier_64x58_plinth_body": "gloss",
+  "tier_64x58_tiers_lip": "gloss",
+  "tier_64x58_tiers_raill": "metal",
+  "tier_64x58_tiers_railr": "metal",
+  "tier_64x58_tiers_t0": "gloss",
+  "tier_64x58_tiers_t1": "gloss",
+  "tier_68x62_plinth_foot": "gloss",
+  "tier_68x62_plinth_body": "gloss",
+  "tier_68x62_tiers_lip": "gloss",
+  "tier_68x62_tiers_raill": "metal",
+  "tier_68x62_tiers_railr": "metal",
+  "tier_68x62_tiers_t0": "gloss",
+  "tier_68x62_tiers_t1": "gloss",
+  "tier_76x70_plinth_foot": "gloss",
+  "tier_76x70_plinth_body": "gloss",
+  "tier_76x70_tiers_lip": "gloss",
+  "tier_76x70_tiers_raill": "metal",
+  "tier_76x70_tiers_railr": "metal",
+  "tier_76x70_tiers_t0": "gloss",
+  "tier_76x70_tiers_t1": "gloss",
+  "tier_84x74_plinth_foot": "gloss",
+  "tier_84x74_plinth_body": "gloss",
+  "tier_84x74_tiers_lip": "gloss",
+  "tier_84x74_tiers_raill": "metal",
+  "tier_84x74_tiers_railr": "metal",
+  "tier_84x74_tiers_t0": "gloss",
+  "tier_84x74_tiers_t1": "gloss",
+  "grand_64x58_plinth_foot": "gloss",
+  "grand_64x58_plinth_body": "gloss",
+  "grand_64x58_tiers_lip": "gloss",
+  "grand_64x58_tiers_raill": "metal",
+  "grand_64x58_tiers_railr": "metal",
+  "grand_64x58_tiers_t0": "gloss",
+  "grand_64x58_tiers_t1": "gloss",
+  "grand_64x58_tiers_t2": "gloss",
+  "grand_68x62_plinth_foot": "gloss",
+  "grand_68x62_plinth_body": "gloss",
+  "grand_68x62_tiers_lip": "gloss",
+  "grand_68x62_tiers_raill": "metal",
+  "grand_68x62_tiers_railr": "metal",
+  "grand_68x62_tiers_t0": "gloss",
+  "grand_68x62_tiers_t1": "gloss",
+  "grand_68x62_tiers_t2": "gloss",
+  "grand_76x70_plinth_foot": "gloss",
+  "grand_76x70_plinth_body": "gloss",
+  "grand_76x70_tiers_lip": "gloss",
+  "grand_76x70_tiers_raill": "metal",
+  "grand_76x70_tiers_railr": "metal",
+  "grand_76x70_tiers_t0": "gloss",
+  "grand_76x70_tiers_t1": "gloss",
+  "grand_76x70_tiers_t2": "gloss",
+  "grand_84x74_plinth_foot": "gloss",
+  "grand_84x74_plinth_body": "gloss",
+  "grand_84x74_tiers_lip": "gloss",
+  "grand_84x74_tiers_raill": "metal",
+  "grand_84x74_tiers_railr": "metal",
+  "grand_84x74_tiers_t0": "gloss",
+  "grand_84x74_tiers_t1": "gloss",
+  "grand_84x74_tiers_t2": "gloss"
+ },
+ "key": "display",
+ "density": 0.45
+}

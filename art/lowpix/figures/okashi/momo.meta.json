@@ -1,0 +1,45 @@
+{
+ "mats": {
+  "base": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "peach",
+   "src": "sketchfab:8cf8ce4a480e43dbafa390ae5394c627",
+   "height": 13,
+   "at": [
+    0,
+    6.0,
+    0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "metal",
+   "recolor": {
+    "saturation": 0.2,
+    "linear": [
+     0.55,
+     95
+    ],
+    "tint": "#e8b850"
+   },
+   "key": "ec1a7bc65837d0"
+  }
+ ],
+ "model_clip": {
+  "node": "model_peach",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 30,
+  "axis": "y"
+ },
+ "key": "okashi/momo"
+}

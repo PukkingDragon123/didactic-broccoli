@@ -9,7 +9,7 @@
  "models": [
   {
    "name": "dog",
-   "src": "sketchfab:9abfce885a834399b2c3ccaed51cd474",
+   "src": "sketchfab:6e52a930b88c4580aa721f386998aa9b",
    "height": 22,
    "at": [
     0,
@@ -23,7 +23,7 @@
    "style": "painted",
    "atlas": 512,
    "mat": "matte",
-   "key": "25d260b8110a60"
+   "key": "a5877bfcf45196"
   }
  ],
  "model_clip": {

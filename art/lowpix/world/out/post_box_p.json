@@ -1,0 +1,56 @@
+{
+ "id": "post_box_p",
+ "src": "sketchfab:ed30f71494e44801bb18cb5aeddcddf6",
+ "credit": {
+  "title": "Japan post box",
+  "author": "exiS7-Gs",
+  "authorUrl": "https://sketchfab.com/exiS7-Gs",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japan-post-box-ed30f71494e44801bb18cb5aeddcddf6",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 336,
+ "size": [
+  0.887,
+  1.302,
+  0.563
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#3f1c16",
+   "#50291f",
+   "#613928",
+   "#714a32",
+   "#805c3d",
+   "#9a784f",
+   "#ad9468",
+   "#baab88",
+   "#c8c1a6"
+  ],
+  "m1": [
+   "#433439",
+   "#55474a",
+   "#655a5c",
+   "#756e6f",
+   "#848484",
+   "#959595",
+   "#a6a6a6",
+   "#b7b7b7",
+   "#c8c8c8"
+  ],
+  "m2": [
+   "#5d142c",
+   "#771d32",
+   "#902637",
+   "#a8313a",
+   "#bf3d3c",
+   "#c66258",
+   "#cc8576",
+   "#d4a392",
+   "#dcbdad"
+  ]
+ },
+ "warnings": []
+}

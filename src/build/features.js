@@ -332,12 +332,15 @@ const lamp = {
     const on = !!p.data.st.on;
     p.root.traverse((o) => {
       if (!o.isMesh || !o.material || o.material.visible === false) return;
-      if (!o.userData.lampMat) { o.userData.lampMat = o.material.clone(); o.material = o.userData.lampMat; }
-      const m = o.material;
-      m.emissive?.setRGB(1, 0.72, 0.42);
-      m.emissiveMap = m.map || null;
-      m.emissiveIntensity = on ? (p.def.glow ?? 0.32) : 0;
-      m.needsUpdate = true;
+      // this piece's own copies (a prop mesh carries the shared material array: only the model's textured slots glow)
+      if (!o.userData.lampMat) { o.userData.lampMat = Array.isArray(o.material) ? o.material.map((m) => m.clone()) : o.material.clone(); o.material = o.userData.lampMat; }
+      for (const m of [].concat(o.material)) {
+        if (!m.map || !m.emissive) continue;
+        m.emissive.setRGB(1, 0.72, 0.42);
+        m.emissiveMap = m.map;
+        m.emissiveIntensity = on ? (p.def.glow ?? 0.32) : 0;
+        m.needsUpdate = true;
+      }
     });
   },
   hint: (p) => ({ key: 'LMB', text: p.data.st.on ? `Switch the ${p.def.short || 'lamp'} off` : `Switch the ${p.def.short || 'lamp'} on`, sub: 'A warm light after dark' }),

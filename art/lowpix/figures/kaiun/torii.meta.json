@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:e12d2fa1b2b94928b8b87cb7787e2462",
+   "height": 30,
+   "at": [
+    0,
+    3.0,
+    0
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "8a13f4fa002b35"
+  }
+ ],
+ "key": "kaiun/torii"
+}

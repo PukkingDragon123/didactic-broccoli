@@ -12,6 +12,7 @@
 import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { townPix } from '../gfx/textures.js';
+import { archPlace } from './archModels.js';
 
 export const PARK = {
   ax0: 9.8, ax1: 11.3, wx: 11.45, x0: 11.6, x1: 25.6, zN: -5.8, zP: -3.5, xP: 16.6, zS: -17.6,
@@ -254,6 +255,10 @@ function playground(t, mats) {
 function toilet(t, mats) {
   const B = t.B, m = t.m, x0 = 23.0, x1 = 25.75, z0 = -8.7, z1 = -5.85, H = 2.75;
   const xc = (x0 + x1) / 2, zc = (z0 + z1) / 2;
+  // the block is a lowpix model (art/lowpix/world_arch/_src/villa.py: park_toilet); the dark doorways, plates and the
+  // lamp's glow stay here
+  const lp = !!archPlace('park_toilet', t.group, { cast: false });
+  if (!lp) {
   B.box(mats.tile, x1 - x0, 1.1, z1 - z0, xc, 0, zc, { ao: 0.18, uv: [0, 0] });
   B.box(mats.stucco, x1 - x0 - 0.01, H - 1.1, z1 - z0 - 0.01, xc, 1.1, zc, { uv: [0.2, 0] });
   B.box(m.pv, x1 - x0 + 0.02, 0.06, z1 - z0 + 0.02, xc, 1.08, zc, { tint: 0x5a8a6a });
@@ -261,21 +266,28 @@ function toilet(t, mats) {
   B.box(m.conc, x1 - x0 + 0.6, 0.18, z1 - z0 + 0.6, xc - 0.1, H, zc, { k: 0.9 });
   B.box(m.pv, x1 - x0 + 0.62, 0.06, z1 - z0 + 0.62, xc - 0.1, H + 0.18, zc, { tint: 0x8a8680 });
   for (const z of [-6.5, -7.95]) for (let i = 0; i < 3; i++) B.box(m.pv, 0.04, 0.03, 0.6, x0 - 0.01, 2.25 + i * 0.1, z, { tint: 0x3a3a3a });
+  }
   // two doorways on the west face (dark), screen walls, plates, a light
   for (const [z, half] of [[-6.5, 0], [-7.95, 1]]) {
     B.box(t.indoor(m.pv), 0.04, 2.0, 0.78, x0 - 0.005, 0, z, { tint: 0x14120f });
-    B.box(m.pv, 0.06, 2.05, 0.06, x0 - 0.03, 0, z - 0.42, { tint: 0x8a8a84 }); B.box(m.pv, 0.06, 2.05, 0.06, x0 - 0.03, 0, z + 0.42, { tint: 0x8a8a84 });
-    B.box(m.pv, 0.06, 0.06, 0.9, x0 - 0.03, 2.0, z, { tint: 0x8a8a84 });
+    if (!lp) {
+      B.box(m.pv, 0.06, 2.05, 0.06, x0 - 0.03, 0, z - 0.42, { tint: 0x8a8a84 }); B.box(m.pv, 0.06, 2.05, 0.06, x0 - 0.03, 0, z + 0.42, { tint: 0x8a8a84 });
+      B.box(m.pv, 0.06, 0.06, 0.9, x0 - 0.03, 2.0, z, { tint: 0x8a8a84 });
+    }
     t.sign('wcSign', 0.28, 0.17, x0 - 0.04, 2.1, z, { ry: -Math.PI / 2 }, [half * 24, 0, 24, 14]);
-    B.box(m.found, 0.4, 0.06, 0.9, x0 - 0.2, 0, z, { k: 0.95 });
+    if (!lp) B.box(m.found, 0.4, 0.06, 0.9, x0 - 0.2, 0, z, { k: 0.95 });
   }
-  B.box(mats.tile, 0.1, 2.0, 0.08, x0 - 0.42, 0, -7.22, { k: 0.95 }); // little screen wall between the doors
-  B.box(m.pv, 0.12, 0.08, 0.3, x0 - 0.06, 2.38, -7.22, { tint: 0x3a3a3a });
+  if (!lp) {
+    B.box(mats.tile, 0.1, 2.0, 0.08, x0 - 0.42, 0, -7.22, { k: 0.95 }); // little screen wall between the doors
+    B.box(m.pv, 0.12, 0.08, 0.3, x0 - 0.06, 2.38, -7.22, { tint: 0x3a3a3a });
+  }
   B.box(t.G, 0.08, 0.06, 0.22, x0 - 0.1, 2.32, -7.22, { tint: 0xfff0d0 });
   // wash basin on the south face, a mirror, soap net, a "keep it clean" plate
-  B.box(m.conc, 0.7, 0.75, 0.42, 24.1, 0, z0 - 0.21, { k: 0.95 });
-  B.box(m.metal, 0.5, 0.06, 0.3, 24.1, 0.75, z0 - 0.2, { tint: 0xc8ccd0 });
-  B.box(m.metal, 0.04, 0.16, 0.04, 24.1, 0.82, z0 - 0.06, { tint: 0xd8dce0 }); B.box(m.metal, 0.04, 0.04, 0.12, 24.1, 0.96, z0 - 0.1, { tint: 0xd8dce0 });
+  if (!lp) {
+    B.box(m.conc, 0.7, 0.75, 0.42, 24.1, 0, z0 - 0.21, { k: 0.95 });
+    B.box(m.metal, 0.5, 0.06, 0.3, 24.1, 0.75, z0 - 0.2, { tint: 0xc8ccd0 });
+    B.box(m.metal, 0.04, 0.16, 0.04, 24.1, 0.82, z0 - 0.06, { tint: 0xd8dce0 }); B.box(m.metal, 0.04, 0.04, 0.12, 24.1, 0.96, z0 - 0.1, { tint: 0xd8dce0 });
+  }
   B.box(m.gloss, 0.42, 0.5, 0.02, 24.1, 1.25, z0 - 0.01, { tint: 0x9ab0c0 });
   B.box(m.pv, 0.1, 0.14, 0.03, 24.5, 0.95, z0 - 0.02, { tint: 0xe86a7a });
   t.prop('pigeon', 24.6, H + 0.24, -6.4, 2.2, { scale: 1.1 });
@@ -385,7 +397,7 @@ function backStreet(t, mats) {
   // a street light on the park side, a utility pole between the villa and the vacant lot, its wires
   t.prop('street_light', 13.3, 0, P.sz0 - 0.15, Math.PI / 2, { block: true });
   t.pool(13.3, -19.0, 2.6, 0xffc880, 0.45);
-  t.prop('utility_pole', 20.28, 0, P.sz1 - 0.22, Math.PI / 2);
+  t.pole(20.28, P.sz1 - 0.22, Math.PI / 2); t.flushPoles();
   t.game.player.addObstacle(20.08, 20.48, P.sz1 - 0.42, P.sz1);
   const wm = t.P(0.9), wire = (a, b, sag, r = 0.012) => {
     const pts = [];
@@ -403,14 +415,18 @@ function villa(t, mats) {
   const X0 = 12.3, X1 = 19.5, ZF = -22.2, ZK = -28.8, cx = (X0 + X1) / 2, W = X1 - X0, D = ZF - ZK;
   const base = 0.45, f1 = 3.0, f2 = 2.85, y1 = base + f1, y2 = y1 + f2;
   const ink = 0x2a2c30, white = 0xf4f2ec;
+  // the shell, roof, frames, porch, balcony and front wall are a lowpix model (art/lowpix/world_arch/_src/villa.py);
+  // the glass, rooms, the door leaf, lamps, signs, the studio, the garden and the gate stay here
+  const lp = !!archPlace('villa', t.group, { cast: false });
+  const SX0 = 12.3, SX1 = 15.5, SZ = -25.0; // studio column (front-left)
+  const wx0 = 12.75, wx1 = 15.15, wy0 = 1.0, wy1 = 2.95;
+  if (!lp) {
   // stone plinth, the body (split so the studio behind the big window can be seen into)
   B.box(m.found, W + 0.1, base, D + 0.1, cx, 0, (ZF + ZK) / 2, { tint: 0x8a8a88 });
-  const SX0 = 12.3, SX1 = 15.5, SZ = -25.0; // studio column (front-left)
   B.box(mats.stucco, W, f1 + f2, ZF - ZK - (ZF - SZ), cx, base, (SZ + ZK) / 2, { uv: [0, 0] });
   B.box(mats.stucco, X1 - SX1, f1 + f2, ZF - SZ, (SX1 + X1) / 2, base, (ZF + SZ) / 2, { uv: [0.3, 0], ao: 0.12 });
   B.box(mats.stucco, SX1 - SX0, f2, ZF - SZ, (SX0 + SX1) / 2, y1, (ZF + SZ) / 2, { uv: [0.6, 0] });
   // the studio's front wall around the window, and its west wall
-  const wx0 = 12.75, wx1 = 15.15, wy0 = 1.0, wy1 = 2.95;
   B.box(mats.stucco, wx0 - SX0, f1, 0.2, (SX0 + wx0) / 2, base, ZF - 0.1, { uv: [0.1, 0], ao: 0.12 });
   B.box(mats.stucco, SX1 - wx1, f1, 0.2, (wx1 + SX1) / 2, base, ZF - 0.1, { uv: [0.2, 0], ao: 0.12 });
   B.box(mats.stucco, wx1 - wx0, wy0 - base, 0.2, (wx0 + wx1) / 2, base, ZF - 0.1, { ao: 0.12 });
@@ -437,14 +453,16 @@ function villa(t, mats) {
   for (const x of [wx0, wx1, (wx0 * 2 + wx1) / 3, (wx0 + wx1 * 2) / 3]) B.box(m.pv, 0.06, wy1 - wy0, 0.08, x, wy0, wz, { tint: ink });
   for (const y of [wy0, wy1 - 0.05, 2.45]) B.box(m.pv, wx1 - wx0 + 0.06, 0.05, 0.08, (wx0 + wx1) / 2, y, wz, { tint: ink });
   B.box(m.pv, wx1 - wx0 + 0.3, 0.07, 0.22, (wx0 + wx1) / 2, wy0 - 0.07, ZF + 0.08, { tint: 0xd8d4cc });
+  }
   t.add(t.glassPane(wx1 - wx0 - 0.06, wy1 - wy0 - 0.06, (wx0 + wx1) / 2, (wy0 + wy1) / 2, ZF - 0.02));
   studio(t, mats, SX0 + 0.15, SX1 - 0.1, SZ + 0.02, ZF - 0.2, base, y1 - 0.02);
   // ---- front door under a little porch with two slim columns; fanlight; lamp; number plate
   const dx = 16.5, dw = 1.0;
   B.box(t.M('woodDark', { roughness: 0.55 }), dw, 2.3, 0.08, dx, base, ZF + 0.02, { unit: true, tint: 0x8a5a3a });
+  B.box(t.G, dw - 0.1, 0.22, 0.04, dx, base + 2.36, ZF + 0.02, { tint: 0xffe0a0 });
+  if (!lp) {
   for (const [u, v] of [[-0.22, 0.35], [0.22, 0.35], [-0.22, 1.35], [0.22, 1.35]]) B.box(m.pv, 0.32, 0.75, 0.03, dx + u, base + v, ZF + 0.07, { tint: 0x6a4026 });
   B.box(m.metal, 0.04, 0.2, 0.05, dx + 0.36, base + 1.0, ZF + 0.09, { tint: 0xd8b060 });
-  B.box(t.G, dw - 0.1, 0.22, 0.04, dx, base + 2.36, ZF + 0.02, { tint: 0xffe0a0 });
   for (const s of [-1, 1]) B.box(m.pv, 0.08, 2.62, 0.1, dx + s * (dw / 2 + 0.04), base, ZF + 0.03, { tint: ink });
   B.box(m.pv, dw + 0.16, 0.08, 0.1, dx, base + 2.3, ZF + 0.03, { tint: ink });
   B.box(m.pv, 1.9, 0.14, 1.15, dx, base + 2.72, ZF + 0.57, { tint: ink });
@@ -453,11 +471,13 @@ function villa(t, mats) {
   B.box(m.found, 1.9, base - 0.12, 1.2, dx, 0, ZF + 0.6, { tint: 0xa8a49c });
   B.box(m.found, 1.6, base - 0.28, 0.4, dx, 0, ZF + 1.36, { tint: 0xb0aca4 });
   B.box(m.pv, 0.16, 0.26, 0.1, dx - 0.72, base + 1.85, ZF + 0.05, { tint: ink });
+  }
   B.box(t.G, 0.1, 0.16, 0.05, dx - 0.72, base + 1.9, ZF + 0.1, { tint: 0xffd890 });
   t.sign('villaNo', 0.22, 0.13, dx + 0.75, base + 1.7, ZF + 0.012);
   // right ground-floor window (lace, lit), 2F windows with louvred shutters, the balcony with French doors
   const winX = (kind, x, y, w, h, shutters) => {
     B.box(t.win[kind], w, h, 0.1, x, y, ZF, { unit: true });
+    if (lp) return;
     B.box(m.pv, w + 0.14, 0.06, 0.18, x, y - 0.06, ZF + 0.06, { tint: 0xd8d4cc });
     B.box(m.pv, w + 0.1, 0.05, 0.08, x, y + h, ZF + 0.03, { tint: ink });
     if (shutters) for (const s of [-1, 1]) {
@@ -470,6 +490,7 @@ function villa(t, mats) {
   winX('dark', 18.8, y1 + 0.75, 0.9, 1.35, true);
   // balcony: slab, black iron railing with a scroll pattern, French doors, plants
   const bx0 = 14.1, bx1 = 17.6, bd = 0.95, by = y1 - 0.02;
+  if (!lp) {
   B.box(m.pv, bx1 - bx0 + 0.1, 0.16, bd, (bx0 + bx1) / 2, by - 0.16, ZF + bd / 2, { tint: 0xe8e4dc });
   B.box(m.pv, bx1 - bx0 + 0.14, 0.05, bd + 0.04, (bx0 + bx1) / 2, by - 0.2, ZF + bd / 2, { tint: 0xd8d4cc });
   for (let k = 0; k < 4; k++) B.box(m.pv, 0.12, 0.14, 0.12, bx0 + 0.3 + k * ((bx1 - bx0 - 0.6) / 3), by - 0.34, ZF + bd - 0.08, { tint: 0xd8d4cc }); // corbels
@@ -484,7 +505,9 @@ function villa(t, mats) {
     B.box(t.win.lit4, 0.66, 2.1, 0.1, 15.85 + u, by + 0.02, ZF, { unit: true });
     B.box(m.pv, 0.06, 2.12, 0.06, 15.85 + u + (u < 0 ? -0.34 : 0.34), by + 0.02, ZF + 0.04, { tint: ink });
   }
-  B.box(m.pv, 1.5, 0.08, 0.08, 15.85, by + 2.12, ZF + 0.04, { tint: ink });
+  }
+  for (const u of [-0.36, 0.36]) if (lp) B.box(t.win.lit4, 0.66, 2.1, 0.1, 15.85 + u, by + 0.02, ZF, { unit: true });
+  if (!lp) B.box(m.pv, 1.5, 0.08, 0.08, 15.85, by + 2.12, ZF + 0.04, { tint: ink });
   for (const [x, c] of [[bx0 + 0.3, 0x4a8a3a], [bx1 - 0.3, 0x5a9a42], [bx0 + 1.0, 0xd84a6a]]) {
     B.box(m.pv, 0.32, 0.3, 0.32, x, by, ZF + bd - 0.32, { tint: 0xb85a3a });
     B.box(m.pv, 0.4, 0.42, 0.4, x, by + 0.3, ZF + bd - 0.32, { tint: c });
@@ -496,11 +519,13 @@ function villa(t, mats) {
   // east side: two windows, a gas meter, the AC (the vacant lot sees this side)
   for (const [kind, y, z] of [['lit', 1.1, -24.2], ['dark', y1 + 0.75, -26.6], ['frost', 1.5, -27.4]]) {
     B.box(t.win[kind], 1.0, kind === 'frost' ? 0.6 : 1.2, 0.1, X1, y, z, { unit: true, ry: Math.PI / 2 });
-    B.box(m.pv, 0.16, 0.06, 1.12, X1 + 0.06, y - 0.06, z, { tint: 0xd8d4cc });
+    if (!lp) B.box(m.pv, 0.16, 0.06, 1.12, X1 + 0.06, y - 0.06, z, { tint: 0xd8d4cc });
   }
-  B.box(m.pv, 0.22, 0.32, 0.26, X1 + 0.11, 0.9, -25.6, { tint: 0xb8bcb0 });
-  B.box(m.pv, 0.3, 0.54, 0.78, X1 + 0.17, 0, -27.8, { tint: 0xe4e2d8 });
-  for (const x of [X1 + 0.05, X0 - 0.05]) B.box(m.pv, 0.06, y2 + 0.1, 0.08, x, 0, -22.35, { tint: 0x9a9690 });
+  if (!lp) {
+    B.box(m.pv, 0.22, 0.32, 0.26, X1 + 0.11, 0.9, -25.6, { tint: 0xb8bcb0 });
+    B.box(m.pv, 0.3, 0.54, 0.78, X1 + 0.17, 0, -27.8, { tint: 0xe4e2d8 });
+    for (const x of [X1 + 0.05, X0 - 0.05]) B.box(m.pv, 0.06, y2 + 0.1, 0.08, x, 0, -22.35, { tint: 0x9a9690 });
+  }
   // ---- the front garden: lawn, stepping stones, pots, a rose hedge, a small tree, a garden lamp
   B.plane(m.grass, X1 + 0.6 - X0, P.sz1 - 0.15 - ZF, (X0 + X1 + 0.6) / 2, 0.01, (ZF + P.sz1 - 0.15) / 2, { k: 1.05, uv: [1, 1] });
   for (const [z, r] of [[-20.55, 0.1], [-21.05, -0.2]]) B.box(m.found, 0.55, 0.05, 0.4, dx + (hash2(z * 9, 1) - 0.5) * 0.1, 0, z, { ry: r, tint: 0xc8c4bc });
@@ -518,7 +543,7 @@ function villa(t, mats) {
   B.box(t.G, 0.16, 0.2, 0.16, 18.9, 0.9, -21.6, { tint: 0xffe0a0 });
   // ---- the low front wall: white render, dark coping, iron railing on top, gate pillars with lamps, iron gate
   const g0 = P.gateX - 0.6, g1 = P.gateX + 0.6, zW = P.sz1 - 0.1;
-  for (const [a, b] of [[P.wx + 0.02, g0 - 0.2], [g1 + 0.2, 20.2]]) {
+  if (!lp) for (const [a, b] of [[P.wx + 0.02, g0 - 0.2], [g1 + 0.2, 20.2]]) {
     B.box(mats.stucco, b - a, 1.0, 0.2, (a + b) / 2, 0, zW, { uv: [a, 0], ao: 0.15 });
     B.box(m.pv, b - a + 0.04, 0.07, 0.28, (a + b) / 2, 1.0, zW, { tint: ink });
     B.box(m.metal, b - a, 0.03, 0.03, (a + b) / 2, 1.62, zW, { tint: 0x1e2024 });
@@ -526,11 +551,13 @@ function villa(t, mats) {
     t.stainRow(t.decal('stainBase', 32, 16), a, b, 0, 0.4, zW + 0.111, 0, 0xc8c4bc);
   }
   for (const px of [g0 - 0.1, g1 + 0.1]) {
-    B.box(mats.stucco, 0.44, 1.5, 0.44, px, 0, zW, { ao: 0.15 });
-    B.box(m.pv, 0.52, 0.08, 0.52, px, 1.5, zW, { tint: ink });
-    B.box(m.pv, 0.22, 0.04, 0.22, px, 1.58, zW, { tint: ink });
+    if (!lp) {
+      B.box(mats.stucco, 0.44, 1.5, 0.44, px, 0, zW, { ao: 0.15 });
+      B.box(m.pv, 0.52, 0.08, 0.52, px, 1.5, zW, { tint: ink });
+      B.box(m.pv, 0.22, 0.04, 0.22, px, 1.58, zW, { tint: ink });
+      B.box(m.pv, 0.24, 0.05, 0.24, px, 1.86, zW, { tint: ink });
+    }
     B.box(t.G, 0.16, 0.24, 0.16, px, 1.62, zW, { tint: 0xffe8b0 });
-    B.box(m.pv, 0.24, 0.05, 0.24, px, 1.86, zW, { tint: ink });
   }
   t.sign('kishibe', 0.3, 0.15, g1 + 0.1, 1.05, zW + 0.223);
   B.box(m.pv, 0.1, 0.14, 0.03, g1 + 0.1, 0.78, zW + 0.235, { tint: 0x3a3a3a });

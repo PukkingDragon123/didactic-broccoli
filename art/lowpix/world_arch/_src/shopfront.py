@@ -199,5 +199,29 @@ def shutter():
     return S
 
 
+def lantern():
+    """The shop's paper lantern (提灯): a red waxed-paper barrel on bamboo ribs with a white band, black lacquered rim
+    caps top and bottom, the hanging cord and a yellow tassel. Centred on its middle (the game hangs four under the
+    eave and makes the paper glow)."""
+    S = Spec('lantern', ppm=160, desc='Red paper shop lantern')
+    S.ramps(paper=ramp('#b8302a', 7, hue=14, sat=0.04, spread=0.75), white=ramp('#ece6d6', 6, hue=8, sat=0.02, spread=0.6),
+            ink=ramp('#221c1c', 5, hue=8, sat=0.02, spread=0.6), gold=ramp('#d8a838', 6, hue=14, sat=0.04, spread=0.7))
+    S.d['light'] = {'dir': [-0.45, 1.0, 0.6], 'strength': 0.3, 'gradient': 0.2, 'ao': 0.0, 'ao_height': 0.1}
+    def paper(a, b):  # the white band at the belly: the end of each half that meets the other (normalised a..b)
+        return {'ramp': 'paper', 'tone': 3.6, 'brush': {'off': True}, 'rim': {'light_shift': 0.4, 'dark_shift': -0.4}, 'layers': [
+            {'id': 'band', 'op': 'band', 'axis': 'z', 'from': a, 'to': b, 'ramp': 'white', 'tone': 3.8},
+            {'id': 'ribs', 'op': 'stripes', 'axis': 'z', 'period': 0.022, 'width': 0.22, 'shift': -1.0},
+            {'id': 'crease', 'op': 'noise', 'scale': 0.03, 'amount': 0.3}]}
+    # the barrel: two tapered 14-sided halves meeting at the belly
+    S.prism('paper_lo', 0.3, 0.3, 0.17, [0, -0.085, 0], sides=14, rot=[-90, 0, 0], back_scale=[0.72, 0.72], hide=['front'], paint=paper(0.62, 1.0))
+    S.prism('paper_hi', 0.3, 0.3, 0.17, [0, 0.085, 0], sides=14, rot=[-90, 0, 0], front_scale=[0.72, 0.72], hide=['back'], paint=paper(-1.0, -0.62))
+    for y, n in ((0.185, 'cap_top'), (-0.185, 'cap_bot')):
+        S.prism(n, 0.24, 0.24, 0.04, [0, y, 0], sides=14, rot=[-90, 0, 0], paint={'ramp': 'ink', 'tone': 2.0, 'brush': {'off': True}})
+    S.prism('ring', 0.17, 0.17, 0.03, [0, 0.22, 0], sides=10, rot=[-90, 0, 0], paint={'ramp': 'ink', 'tone': 1.6})
+    S.rod('cord', [0, 0.235, 0], [0, 0.44, 0], 0.006, sides=4, paint={'ramp': 'ink', 'tone': 1.4})
+    S.box('tassel', 0.05, 0.06, 0.02, 0, -0.27, 0, paint={'ramp': 'gold', 'tone': 3.4})
+    return S
+
+
 def specs():
-    return {'shopfront': shopfront(), 'garage_shell': garage_shell(), 'shutter': shutter()}
+    return {'shopfront': shopfront(), 'garage_shell': garage_shell(), 'shutter': shutter(), 'lantern': lantern()}

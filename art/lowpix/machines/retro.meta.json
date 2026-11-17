@@ -82,8 +82,7 @@
   "rail_b": "metal",
   "lid_lock": "metal",
   "hinge_l": "metal",
-  "hinge_r": "metal",
-  "mount": "metal"
+  "hinge_r": "metal"
  },
  "key": "retro",
  "density": 0.65

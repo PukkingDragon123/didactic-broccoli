@@ -1,0 +1,34 @@
+{
+ "id": "flyer_stack",
+ "src": "sketchfab:19fd6da20c0f496bafbb4c1bf3456dff",
+ "credit": {
+  "title": "Paper Stack",
+  "author": "heartgrinder",
+  "authorUrl": "https://sketchfab.com/heartgrinder",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/paper-stack-19fd6da20c0f496bafbb4c1bf3456dff",
+  "site": "Sketchfab"
+ },
+ "tris": 110,
+ "tex": 64,
+ "size": [
+  0.015,
+  0.02,
+  0.015
+ ],
+ "colours": 6,
+ "palette": {
+  "m0": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ]
+ },
+ "warnings": []
+}

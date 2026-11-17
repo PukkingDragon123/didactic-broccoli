@@ -5,7 +5,7 @@ from props import slab, plate
 
 S = "okashi"
 DANGO = "sketchfab:a874a02e5e9c4bcba54173a20c3732e8"     # Dangos in the plate
-TAIYAKI = "sketchfab:e93553d6796644818ee7bded37d3b5d9"   # Taiyaki (high poly)
+TAIYAKI = "sketchfab:a8ca187f40504b9084b9052c569e5122"   # Taiyaki
 DORAYAKI = "sketchfab:530b15ed5bbb461982f692bc10966a02"  # dorayaki
 SAKURA = "sketchfab:2cb15ab24c1a468b931b30793d7c1296"    # Sakuramochi
 MANJU = "sketchfab:2a94f9c0de5149dfbf9c0bbea1a0ee59"     # manju on a plate (scan)
@@ -25,7 +25,7 @@ def tray(F, w=30, d=24, col="#3a1c18"):
 def dango():
     F = Fig(f"{S}/dango", "Hanami Dango", "Pink, white and green on a bamboo skewer: spring, summer and winter. Autumn is the stick.")
     top = tray(F)
-    F.model("dango", DANGO, 7, (0, top, 0), yaw=-15)
+    F.model("dango", DANGO, 30, (0, top, 0), yaw=-15, fill=0.8)
     return F
 
 
@@ -33,7 +33,7 @@ def taiyaki():
     F = Fig(f"{S}/taiyaki", "Taiyaki", "A sea bream of crisp batter full of hot sweet bean paste. Head first or tail first?")
     top = tray(F)
     pt = plate(F, "plate", 11, (0, top, 0), col="#e8e2d0", rim="#3a5a8a")
-    F.model("fish", TAIYAKI, 5, (0, pt, 0), yaw=-20)
+    F.model("fish", TAIYAKI, 30, (0, pt, 0), yaw=-20, fill=0.62)
     F.model_clip("model_fish", "wobble", 1.2, amp=6)
     return F
 
@@ -42,21 +42,21 @@ def dorayaki():
     F = Fig(f"{S}/dorayaki", "Dorayaki", "Two honey pancakes and the red bean between them. A whole stack would be fair.")
     top = tray(F)
     pt = plate(F, "plate", 10, (0, top, 0), col="#f0ead8")
-    F.model("cake", DORAYAKI, 6, (0, pt, 0), yaw=10)
+    F.model("cake", DORAYAKI, 30, (0, pt, 0), yaw=-35, fill=0.55)
     return F
 
 
 def sakura():
     F = Fig(f"{S}/sakura", "Sakura Mochi", "Pink rice round sweet bean, wrapped in a salted cherry leaf. Eat the leaf.")
     top = tray(F, col="#2a1a18")
-    F.model("mochi", SAKURA, 7, (0, top, 0), yaw=0)
+    F.model("mochi", SAKURA, 30, (0, top, 0), yaw=0, fill=0.8)
     return F
 
 
 def manju():
     F = Fig(f"{S}/manju", "Onsen Manju", "Brown-sugar buns steamed by the hot spring, stamped with the inn's mark.")
-    top = tray(F)
-    F.model("buns", MANJU, 6, (0, top, 0), yaw=30)
+    top = slab(F, "base", 30, 24, 3.0, col="#3a1c18", style="glaze", tone=2.4)
+    F.model("buns", MANJU, 30, (0, top, 0), yaw=30, fill=0.92)
     return F
 
 

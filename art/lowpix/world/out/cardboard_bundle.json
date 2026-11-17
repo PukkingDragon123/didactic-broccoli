@@ -1,0 +1,56 @@
+{
+ "id": "cardboard_bundle",
+ "src": "sketchfab:72a4804f8a4d4de18e59abb60b81c54f",
+ "credit": {
+  "title": "Old Paper & Cardboard Boxes",
+  "author": "TooManyDemons",
+  "authorUrl": "https://sketchfab.com/toomanydemons",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 240,
+ "size": [
+  0.309,
+  0.15,
+  0.355
+ ],
+ "colours": 20,
+ "palette": {
+  "m0": [
+   "#3d231d",
+   "#4e3228",
+   "#5e4233",
+   "#6d5340",
+   "#7b654d",
+   "#927e61",
+   "#a2967c",
+   "#b1ab97",
+   "#c1bfb2"
+  ],
+  "m1": [
+   "#574b40",
+   "#6e6456",
+   "#847d6e",
+   "#979489",
+   "#aaa9a4",
+   "#b3b3b3",
+   "#bfbfbf",
+   "#cbcbcb",
+   "#d7d7d7"
+  ],
+  "m2": [
+   "#3b0b15",
+   "#4b0f17",
+   "#5b1518",
+   "#6a1d1a",
+   "#792b21",
+   "#9c442f",
+   "#be623e",
+   "#c98964",
+   "#d3ab8b"
+  ]
+ },
+ "warnings": []
+}

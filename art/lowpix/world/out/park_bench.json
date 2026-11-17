@@ -1,0 +1,34 @@
+{
+ "id": "park_bench",
+ "src": "sketchfab:2ee2bc87756d4bf0932d83ab860ddb8f",
+ "credit": {
+  "title": "Park Bench",
+  "author": "RBG_illustrations",
+  "authorUrl": "https://sketchfab.com/RBG_illustrations",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/park-bench-2ee2bc87756d4bf0932d83ab860ddb8f",
+  "site": "Sketchfab"
+ },
+ "tris": 2924,
+ "tex": 512,
+ "size": [
+  3.172,
+  0.93,
+  0.727
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#051313",
+   "#071917",
+   "#0a1e1a",
+   "#0c231d",
+   "#0f281f",
+   "#22543e",
+   "#377e58",
+   "#4da670",
+   "#76bb8b"
+  ]
+ },
+ "warnings": []
+}

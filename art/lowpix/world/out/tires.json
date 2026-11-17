@@ -1,0 +1,34 @@
+{
+ "id": "tires",
+ "src": "sketchfab:f9d64bd1fdde49fe8571f83f59114663",
+ "credit": {
+  "title": "Old, dirty, stacked tires, PBR textures [free]",
+  "author": "ZiemniaQ",
+  "authorUrl": "https://sketchfab.com/ZiemniaQ",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663",
+  "site": "Sketchfab"
+ },
+ "tris": 2478,
+ "tex": 184,
+ "size": [
+  0.488,
+  0.57,
+  0.488
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#21181b",
+   "#2a2022",
+   "#33292a",
+   "#3b3233",
+   "#423c3c",
+   "#5b5858",
+   "#747474",
+   "#8e8e8e",
+   "#a9a9a9"
+  ]
+ },
+ "warnings": []
+}

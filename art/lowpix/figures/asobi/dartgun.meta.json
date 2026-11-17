@@ -3,6 +3,10 @@
   "barrel": "gloss",
   "muzzle": "gloss",
   "sight": "gloss",
+  "pump": "gloss",
+  "trigger": "gloss",
+  "bolt-1": "metal",
+  "bolt1": "metal",
   "dart_tip": "gloss"
  },
  "clips": {},

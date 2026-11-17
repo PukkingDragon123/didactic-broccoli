@@ -1,0 +1,34 @@
+{
+ "id": "cat_bed",
+ "src": "sketchfab:f43199f19c3142c68cc672db55d9a40d",
+ "credit": {
+  "title": "Cardboard Box",
+  "author": "Andrew.Mischenko",
+  "authorUrl": "https://sketchfab.com/Andrew.Mischenko",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d",
+  "site": "Sketchfab"
+ },
+ "tris": 140,
+ "tex": 256,
+ "size": [
+  0.397,
+  0.16,
+  0.397
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#4b2921",
+   "#603b2d",
+   "#734f3b",
+   "#866449",
+   "#987a58",
+   "#a6916f",
+   "#b1a589",
+   "#beb8a2",
+   "#cbc9b9"
+  ]
+ },
+ "warnings": []
+}

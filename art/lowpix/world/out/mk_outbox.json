@@ -1,0 +1,34 @@
+{
+ "id": "mk_outbox",
+ "src": "sketchfab:e12fde1101b84b6da40056336a7b309d",
+ "credit": {
+  "title": "Wooden Crate",
+  "author": "YadroGames",
+  "authorUrl": "https://sketchfab.com/yadrogames",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-crate-e12fde1101b84b6da40056336a7b309d",
+  "site": "Sketchfab"
+ },
+ "tris": 324,
+ "tex": 136,
+ "size": [
+  0.329,
+  0.216,
+  0.644
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

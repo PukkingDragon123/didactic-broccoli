@@ -1,0 +1,29 @@
+{
+ "mats": {
+  "base": "gloss",
+  "rim": "gloss"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "buns",
+   "src": "sketchfab:2a94f9c0de5149dfbf9c0bbea1a0ee59",
+   "height": 6,
+   "at": [
+    0,
+    3.2,
+    0
+   ],
+   "yaw": 30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "89e88c56a02a94"
+  }
+ ],
+ "key": "okashi/manju"
+}

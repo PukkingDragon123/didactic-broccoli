@@ -1,0 +1,34 @@
+{
+ "id": "rope_coil",
+ "src": "sketchfab:f61c5106eaaa45188e2cb805ed998f21",
+ "credit": {
+  "title": "Rope Coil - Low Poly Medieval, CC0",
+  "author": "Avramania",
+  "authorUrl": "https://sketchfab.com/Avramania",
+  "license": "CC0 1.0",
+  "url": "https://sketchfab.com/3d-models/rope-coil-low-poly-medieval-cc0-f61c5106eaaa45188e2cb805ed998f21",
+  "site": "Sketchfab"
+ },
+ "tris": 1388,
+ "tex": 512,
+ "size": [
+  0.739,
+  0.37,
+  0.742
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#603420",
+   "#7b4b2c",
+   "#94643a",
+   "#ad8048",
+   "#b99a63",
+   "#c0ad7b",
+   "#c7bd93",
+   "#d0cca9",
+   "#d9d9bf"
+  ]
+ },
+ "warnings": []
+}

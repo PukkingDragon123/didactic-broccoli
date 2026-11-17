@@ -57,7 +57,9 @@ import { buildPark } from './Park.js';
 import { buildPylon } from './Pylon.js';
 import { buildLanePosters } from './LanePosters.js';
 import { InstanceCuller } from './propCull.js';
-import { archPlace } from './archModels.js';
+import { archPlace, archReady, archInstances } from './archModels.js';
+import { assetNow } from '../kit/assets.js';
+import { LP_HOUSES, archAsset } from '../kit/lowpixArch.js';
 
 // ------------------------------------------------------------------ layout
 const ZB = 5.3, ZG0 = 5.75, ZG1 = 6.1, ZR1 = 13.35, ZG3 = 13.7, ZF = 14.9;
@@ -574,7 +576,7 @@ export class Town {
       panel.rotation.x = 0.03;
       g.add(panel);
     }
-    const rod = this.vmesh(new THREE.BoxGeometry(2.3, 0.03, 0.03), this.P(0.6));
+    const rod = this.vmesh(new THREE.BoxGeometry(2.3, 0.03, 0.03), new THREE.MeshStandardMaterial({ color: 0x8a6a42, roughness: 0.7, vertexColors: true })); // a bamboo pole
     rod.position.set(0, H - 0.1, 6.06);
     g.add(rod);
     parent.add(g);
@@ -583,10 +585,27 @@ export class Town {
   /** Row of blocky paper lanterns under the eave. */
   buildLanterns(H) {
     const S = this.shop, B = this.B;
+    const XS = [-3.2, -1.6, 1.6, 3.2];
+    // the lowpix paper lantern (art/lowpix/world_arch/_src/shopfront.py: lantern), its paper glowing with its own map
+    const lt = archReady('lantern') ? assetNow(archAsset('lantern')) : null;
+    const lm = lt?.children.find((c) => c.isMesh);
+    if (lm) {
+      const mat = lm.material.clone();
+      Object.assign(mat, { emissive: new THREE.Color(0xffffff), emissiveMap: mat.map, emissiveIntensity: 1.3, roughness: 0.8 });
+      S.lanternM = mat;
+      const geos = XS.map((x) => lm.geometry.clone().translate(x, H - 0.55, 6.02));
+      S.lanterns = new THREE.Mesh(mergeGeometries(geos), mat);
+      S.lanterns.name = 'lanterns';
+      this.add(S.lanterns);
+      S.glow = new THREE.PointLight(0xff9a60, 2.4, 6.5, 1.6);
+      S.glow.position.set(0, H - 0.5, 6.4);
+      this.add(S.glow);
+      return;
+    }
     const tex = townPix('lantern', 16, 24).texture();
     S.lanternM = new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 1.3, roughness: 0.8 });
     const geos = [];
-    for (const x of [-3.2, -1.6, 1.6, 3.2]) {
+    for (const x of XS) {
       const y = H - 0.55, z = 6.02;
       const g = new THREE.BoxGeometry(0.28, 0.36, 0.28); g.translate(x, y, z); geos.push(g);
       // tapered paper ends + black caps + hanging cord
@@ -662,22 +681,26 @@ export class Town {
     const W = o.w, D = o.d, side = o.side ?? 1, seed = Math.floor(Math.abs(o.x * 3.7 + o.z * 1.3));
     this._lite = !!o.lite;
     this._depth = D;
+    // a lowpix model draws this house's shell (art/lowpix/world_arch/_src/houses.py: walls, roof, gutters, casings,
+    // services); the town keeps what glows, changes or is dressing (windows, doors, signs, lamps, balconies, extra)
+    const lp = this.archHouse(o);
+    this._lp = !!lp;
     B.push(o.x, o.y0 || 0, o.z, side > 0 ? 0 : Math.PI);
     const base = o.y0 ? 0 : (o.base ?? 0.4);
-    if (base) B.box(m.found, W + 0.08, base, D + 0.08, 0, 0, -D / 2, { uv: [seed, 0] });
+    if (base && !lp) B.box(m.found, W + 0.08, base, D + 0.08, 0, 0, -D / 2, { uv: [seed, 0] });
     const h1 = o.h1 ?? 2.65, h2 = (o.floors ?? 2) > 1 ? (o.h2 ?? 2.55) : 0;
     const fy = [base, base + h1];
     const wallA = o.wallA || m.wallCream, wallB = o.wallB || wallA;
-    B.box(wallA, W, h1, D, 0, base, -D / 2, { uv: [seed % 3, 0], ao: o.y0 ? 0 : 0.22 });
+    if (!lp) B.box(wallA, W, h1, D, 0, base, -D / 2, { uv: [seed % 3, 0], ao: o.y0 ? 0 : 0.22 });
     let top = base + h1;
     if (h2) {
-      B.box(m.pv, W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, { tint: o.trim ?? 0x6a5a4a });
-      B.box(wallB, W, h2, D, 0, top, -D / 2, { uv: [seed % 5, 0.4] });
+      if (!lp) B.box(m.pv, W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, { tint: o.trim ?? 0x6a5a4a });
+      if (!lp) B.box(wallB, W, h2, D, 0, top, -D / 2, { uv: [seed % 5, 0.4] });
       top += h2;
     }
-    this.roof(W, D, top, o, wallB);
+    if (lp) this._ridgeY = lp.ridge; else this.roof(W, D, top, o, wallB);
     // pent roof (下屋) over the ground floor, skipping the balcony, with its own eave tiles
-    if (o.pent && h2) {
+    if (o.pent && h2 && !lp) {
       const spans = o.balcony ? [[-W / 2 - 0.12, o.balcony.x0 - 0.05], [o.balcony.x1 + 0.05, W / 2 + 0.12]] : [[-W / 2 - 0.12, W / 2 + 0.12]];
       const pm = o.pentM || o.roofM || m.roofGrey;
       for (const [a, b] of spans) if (b - a > 0.3) {
@@ -687,9 +710,9 @@ export class Town {
       }
     }
     // the lane face: tile skirt (腰壁), corner boards, foundation vents (床下換気口)
-    if (o.skirt) B.box(o.skirt.mat || m.skirt, W + 0.02, o.skirt.h ?? 0.9, 0.03, 0, base, 0.012, { uv: [seed, 0] });
-    if (o.corner !== undefined) for (const sx of [-1, 1]) B.box(m.pv, 0.07, top - base, 0.07, sx * (W / 2 - 0.02), base, 0.02, { tint: o.corner });
-    if (base && o.vents !== false && !o.lite) for (const vx of [-W * 0.3, W * 0.3]) {
+    if (o.skirt && !lp) B.box(o.skirt.mat || m.skirt, W + 0.02, o.skirt.h ?? 0.9, 0.03, 0, base, 0.012, { uv: [seed, 0] });
+    if (o.corner !== undefined && !lp) for (const sx of [-1, 1]) B.box(m.pv, 0.07, top - base, 0.07, sx * (W / 2 - 0.02), base, 0.02, { tint: o.corner });
+    if (base && o.vents !== false && !o.lite && !lp) for (const vx of [-W * 0.3, W * 0.3]) {
       if (o.door && Math.abs(vx - o.door.x) < (o.door.w ?? 1.4) / 2 + 0.4) continue;
       B.box(m.pv, 0.4, 0.15, 0.03, vx, 0.12, 0.04, { tint: 0x3a3a38 });
       for (let i = 0; i < 4; i++) B.box(m.metal, 0.02, 0.13, 0.02, vx - 0.15 + i * 0.1, 0.13, 0.055, { tint: 0x8a8a84 });
@@ -699,7 +722,7 @@ export class Town {
     if (o.door) this.door(o.door, base, o.win, fy);
     // rain gutters + downpipes (offset from the gutter, wall brackets, a shoe over a splash block)
     const gt = o.gutterTint ?? 0x9a9690, e = o.eave ?? 0.45, dpx = (W / 2 + 0.06) * (seed % 2 ? 1 : -1);
-    if (o.roof !== 'flat') {
+    if (o.roof !== 'flat' && !lp) {
       B.box(m.pv, W + 0.6, 0.1, 0.1, 0, top - 0.08, e + 0.03, { tint: gt });
       B.box(m.pv, 0.08, top - 0.12, 0.08, dpx, 0.08, 0.12, { tint: gt });
       B.box(m.pv, 0.07, 0.07, e - 0.04, dpx, top - 0.2, (e + 0.15) / 2 + 0.02, { tint: gt });
@@ -708,18 +731,20 @@ export class Town {
       B.box(m.pv, 0.08, 0.07, 0.16, dpx, 0.06, 0.2, { tint: gt });
       if (!o.y0) B.box(m.found, 0.24, 0.04, 0.3, dpx, 0, 0.36, { k: 0.9 });
     }
-    B.box(m.pv, 0.08, top, 0.08, (W / 2 + 0.06) * (seed % 2 ? -1 : 1), 0, -D + 0.15, { tint: gt });
+    if (!lp) B.box(m.pv, 0.08, top, 0.08, (W / 2 + 0.06) * (seed % 2 ? -1 : 1), 0, -D + 0.15, { tint: gt });
     if (!o.lite) this.weather(W, D, base, fy, top, seed, !!h2, o);
     // side-wall services: an electric meter and the gas meter with its pipe
     const sx = seed % 2 ? 1 : -1;
     if (!o.lite) {
-      B.box(m.pv, 0.06, 0.4, 0.3, sx * (W / 2 + 0.03), base + 1.1, -1.2, { tint: 0xc8c4bc });
-      B.box(m.gloss, 0.02, 0.12, 0.16, sx * (W / 2 + 0.065), base + 1.3, -1.2, { tint: 0x2a2c2e });
-      B.box(m.pv, 0.08, 0.3, 0.24, sx * (W / 2 + 0.04), base + 0.65, -2.1, { tint: 0xb8bcb0 });
+      if (!lp) {
+        B.box(m.pv, 0.06, 0.4, 0.3, sx * (W / 2 + 0.03), base + 1.1, -1.2, { tint: 0xc8c4bc });
+        B.box(m.gloss, 0.02, 0.12, 0.16, sx * (W / 2 + 0.065), base + 1.3, -1.2, { tint: 0x2a2c2e });
+        B.box(m.pv, 0.08, 0.3, 0.24, sx * (W / 2 + 0.04), base + 0.65, -2.1, { tint: 0xb8bcb0 });
+        B.box(m.metal, 0.04, base + 0.65, 0.04, sx * (W / 2 + 0.05), 0, -2.3, { tint: 0xc8b848 });
+      }
       this.sign('gasMeter', 0.18, 0.12, sx * (W / 2 + 0.081), base + 0.8, -2.1, { ry: sx * Math.PI / 2 });
-      B.box(m.metal, 0.04, base + 0.65, 0.04, sx * (W / 2 + 0.05), 0, -2.3, { tint: 0xc8b848 });
     }
-    if (o.antenna !== undefined) {
+    if (o.antenna !== undefined && !lp) {
       const ax = o.antenna, ay = this._ridgeY, az = -D / 2;
       B.box(m.metal, 0.04, 1.6, 0.04, ax, ay, az, { tint: 0xb8bcc0 });
       B.box(m.metal, 0.03, 0.03, 1.4, ax, ay + 1.45, az, { tint: 0xb8bcc0 });
@@ -732,6 +757,7 @@ export class Town {
     const info = { W, D, base, fy, top, seed, ridge: this._ridgeY };
     if (o.extra) o.extra(B, info);
     B.pop();
+    this._lp = false;
     return { top, anchor, ridge: this._ridgeY };
   }
 
@@ -747,6 +773,18 @@ export class Town {
       return v;
     };
     return { id: houseId(o), ...plain(o) };
+  }
+
+  /** The lowpix model drawing this house's shell (placing its block model the first time), or null: { block, ridge }. */
+  archHouse(o) {
+    const h = LP_HOUSES[houseId(o)];
+    if (!h || !archReady(h.block)) return null;
+    this._archBlocks ||= new Set();
+    if (!this._archBlocks.has(h.block)) {
+      this._archBlocks.add(h.block);
+      archPlace(h.block, this.group, { cast: false });
+    }
+    return h;
   }
 
   /** Is this one of the kawara (clay tile) roof materials? */
@@ -766,6 +804,12 @@ export class Town {
    *  rain streaks, an address plate, wall-mounted AC units on brackets (o.ac = [[floor, u], ...]). */
   weather(W, D, base, fy, top, seed, two, o) {
     const B = this.B, m = this.m, drip = this.decal('stainDrip', 16, 48), sb = this.decal('stainBase', 32, 16);
+    if (this._lp) { // the lowpix model paints its own weathering and has the AC units; the address plate stays
+      const ax = (W / 2 - 0.25) * (seed % 2 ? -1 : 1);
+      B.box(m.pv, 0.28, 0.12, 0.012, ax, base + 1.68, 0.006, { tint: 0x2a3a6a });
+      this.addrPlate(seed % 3, 0.26, 0.1, ax, base + 1.69, 0.014);
+      return;
+    }
     if (base) this.stainRow(sb, -W / 2 - 0.035, W / 2 + 0.035, 0, base, 0.052, 0, 0xb0aca4);
     if (!o.y0) this.stainRow(sb, -W / 2, W / 2, base, 0.4, o.skirt ? 0.03 : 0.011, 0, 0xd0ccc4);
     if (!o.y0) for (const sx of [-1, 1]) this.stainRow(sb, -D, 0, base, 0.55, sx * (W / 2 + 0.011), sx * Math.PI / 2, 0xc0bcb4, 'z');
@@ -918,6 +962,10 @@ export class Town {
         kind: opt.room ?? room[0], lit: opt.lit ?? room[1], curtain: opt.curtain ?? room[2], cc: opt.cc ?? (k % 8), seed: k,
       });
     } else B.box(this.win[kind] || this.win.dark, w, h, 0.1, x, y, z, { unit: true, ry });
+    if (this._lp) { // the lowpix house model has the casing, sill, grille, shutter box and hood
+      this.windowDressing(x, y, z, w, h, nx, nz, tx, tz, ry, wp, opt);
+      return;
+    }
     // casing (jambs + head) standing proud of the wall, sill flashing below
     const ft = opt.frame ?? 0xb8bcc0;
     for (const s of [-1, 1]) B.box(m.metal, 0.05, h + 0.04, 0.08, x + tx * s * (w / 2 + 0.02) + nx * 0.035, y - 0.02, z + tz * s * (w / 2 + 0.02) + nz * 0.035, { ry, tint: ft });
@@ -937,6 +985,13 @@ export class Town {
     // rain streaks under the sill
     const hk = hash2(Math.round(wp.x * 7 + wp.z * 3), Math.round(y * 5));
     if (hk < 0.6 && !opt.clean && !this._lite) { const dh = 0.3 + hk * 0.6; B.quad(this.decal('stainDrip', 16, 48), w * 0.8, dh, x + nx * 0.012, y - 0.08 - dh, z + nz * 0.012, { ry, tint: 0xd8d4cc, flipU: hk < 0.3 }); }
+    this.windowDressing(x, y, z, w, h, nx, nz, tx, tz, ry, wp, opt);
+  }
+
+  /** What hangs on or sits at a window (kept by the town even when a lowpix model draws the house): a summer bamboo
+   *  blind, a window box of flowers. */
+  windowDressing(x, y, z, w, h, nx, nz, tx, tz, ry, wp, opt) {
+    const B = this.B, m = this.m;
     // summer bamboo blind (すだれ) hung over the window
     if (opt.sudare) {
       B.quad(this.T('sudare', 32, 48, { alpha: true, rough: 0.9 }), w + 0.16, h * opt.sudare + 0.08, x + nx * 0.17, y + h * (1 - opt.sudare) + 0.02, z + nz * 0.17, { ry });
@@ -961,25 +1016,26 @@ export class Town {
     const kind = d.kind || 'genkan', w = d.w ?? (kind === 'apt' || kind === 'west' ? 0.9 : 1.5), x = d.x, y = base + (d.y ?? 0);
     B.box(this.doorMats[kind], w, 2.0, 0.1, x, y, 0, { unit: true });
     const ct = kind === 'wood' ? 0x3a2a1c : kind === 'west' ? 0xe8e4dc : 0x8a8478;
-    for (const s of [-1, 1]) B.box(m.pv, 0.07, 2.08, 0.1, x + s * (w / 2 + 0.035), y, 0.03, { tint: ct });
-    B.box(m.metal, w + 0.16, 0.07, 0.12, x, y + 2.0, 0.03, { tint: ct });
-    if (!d.noStep) {
+    const lp = this._lp; // the lowpix house model has the casing, step, canopy, lamp housing, intercom and mailbox
+    if (!lp) for (const s of [-1, 1]) B.box(m.pv, 0.07, 2.08, 0.1, x + s * (w / 2 + 0.035), y, 0.03, { tint: ct });
+    if (!lp) B.box(m.metal, w + 0.16, 0.07, 0.12, x, y + 2.0, 0.03, { tint: ct });
+    if (!d.noStep && !lp) {
       const pm = d.porch === 'stone' ? m.found : d.porch === 'tile' ? m.tile : m.found;
       B.box(pm, w + 0.5, Math.max(0.1, base - 0.02), 0.6, x, 0, 0.3, { uv: [x, 0], tint: d.porch === 'tile' ? 0xc8a890 : 0xffffff });
       if (base > 0.25) B.box(m.found, w + 0.3, base / 2, 0.3, x, 0, 0.75, { uv: [x, 0.5], k: 0.95 });
     }
-    if (!d.noCanopy) { B.box(m.pv, w + 0.6, 0.06, 0.75, x, y + 2.28, 0.37, { tint: 0x5a5a58 }); B.box(m.pv, w + 0.6, 0.12, 0.04, x, y + 2.22, 0.74, { tint: 0x4a4a48 }); for (const s of [-1, 1]) B.box(m.metal, 0.03, 0.03, 0.75, x + s * (w / 2 + 0.2), y + 2.08, 0.37, { rx: -0.25, tint: 0x6a6a68 }); }
+    if (!d.noCanopy && !lp) { B.box(m.pv, w + 0.6, 0.06, 0.75, x, y + 2.28, 0.37, { tint: 0x5a5a58 }); B.box(m.pv, w + 0.6, 0.12, 0.04, x, y + 2.22, 0.74, { tint: 0x4a4a48 }); for (const s of [-1, 1]) B.box(m.metal, 0.03, 0.03, 0.75, x + s * (w / 2 + 0.2), y + 2.08, 0.37, { rx: -0.25, tint: 0x6a6a68 }); }
     const lx = x + (w / 2 + 0.25) * (d.lamp ?? 1);
     if (!this._lite) { const lp = B.world(x, 0, 0.75); this.pool(lp.x, lp.z, 1.25, 0xffc880, 0.42); }
-    B.box(m.pv, 0.16, 0.22, 0.08, lx, y + 1.95, 0.04, { tint: 0x2a2a2a });
+    if (!lp) B.box(m.pv, 0.16, 0.22, 0.08, lx, y + 1.95, 0.04, { tint: 0x2a2a2a });
     B.box(this.G, 0.11, 0.15, 0.04, lx, y + 1.98, 0.09, { tint: 0xffd890 });
     // 表札 name plate on a little wooden backing, the door chime button below it
     const dp = B.world(x, 0, 0), nk = d.name ?? Math.floor(hash2(Math.round(dp.x * 5), Math.round(dp.z * 5)) * NAME_COUNT);
-    B.box(m.pv, 0.13, 0.25, 0.03, lx, y + 1.42, 0.015, { tint: 0x5a4030 });
+    if (!lp) B.box(m.pv, 0.13, 0.25, 0.03, lx, y + 1.42, 0.015, { tint: 0x5a4030 });
     this.sign('namesL', 0.1, 0.2, lx, y + 1.445, 0.031, {}, [nk * 12, 0, 12, 24]);
-    B.box(m.pv, 0.08, 0.12, 0.04, lx, y + 1.22, 0.03, { tint: 0xd8d4cc });
+    if (!lp) B.box(m.pv, 0.08, 0.12, 0.04, lx, y + 1.22, 0.03, { tint: 0xd8d4cc });
     B.box(this.G, 0.02, 0.02, 0.01, lx, y + 1.3, 0.052, { tint: 0xff6040 });
-    if (d.mail) { B.box(m.pv, 0.32, 0.36, 0.14, lx, y + 0.8, 0.08, { tint: d.mail }); B.box(m.pv, 0.22, 0.03, 0.01, lx, y + 1.06, 0.155, { tint: 0x1a1a1a }); }
+    if (d.mail && !lp) { B.box(m.pv, 0.32, 0.36, 0.14, lx, y + 0.8, 0.08, { tint: d.mail }); B.box(m.pv, 0.22, 0.03, 0.01, lx, y + 1.06, 0.155, { tint: 0x1a1a1a }); }
     // an old wooden milk box (牛乳箱) on the other side, or an umbrella stand by the step
     const mx = x - (w / 2 + 0.28) * (d.lamp ?? 1);
     const clear = !win.some(([fl, u, ww, , , op = {}]) => fl === 0 && (op.face || 'f') === 'f' && Math.abs(u - mx) < ww / 2 + 0.14 && fy[0] + (op.sill ?? 0.9) < y + 1.3);
@@ -1372,9 +1428,10 @@ export class Town {
   buildPoles() {
     const zP = 14.32, xs = [-22.4, -16.3, -6.3, 2.6, 10.0, 17.6, 24.6];
     for (const x of xs) {
-      this.prop('utility_pole', x, 0, zP, Math.PI / 2);
+      this.pole(x, zP, Math.PI / 2);
       this.game.player.addObstacle(x - 0.2, x + 0.2, zP - 0.2, zP + 0.2);
     }
+    this.flushPoles();
     const B = this.B, wm = this.P(0.9);
     const wire = (a, b, sag, r = 0.012) => {
       const pts = [];
@@ -1408,6 +1465,15 @@ export class Town {
     lamp.position.set(-2.4, 3.9, 13.7);
     this.add(lamp);
     this.streetLamp = lamp; // switched by the time of day (applySky), never removed: no shader rebuilds
+  }
+
+  /** A concrete utility pole (the lowpix model, art/lowpix/world_arch/_src/street.py; else the voxel prop): queued, then
+   *  drawn instanced by flushPoles(). ry turns the prop's frame (crossarms along its x). */
+  pole(x, z, ry = 0) { (this._poles ||= []).push({ x, y: 0, z, ry }); }
+  flushPoles() {
+    const list = this._poles || [];
+    this._poles = [];
+    if (!archInstances('utility_pole', this.group, list)) for (const p of list) this.prop('utility_pole', p.x, 0, p.z, p.ry);
   }
 
   // ---------------------------------------------------------------- street dressing

@@ -231,15 +231,6 @@
     "#969696",
     "#bcbcbc",
     "#e2e2e2"
-   ],
-   "c8a8e94": [
-    "#1c1b1f",
-    "#414047",
-    "#66666d",
-    "#8e8e92",
-    "#adaeae",
-    "#cbcbcb",
-    "#e9e9e9"
    ]
   }
  },
@@ -2569,9 +2560,9 @@
       "id": "ribs",
       "op": "stripes",
       "axis": "x",
-      "period": 12,
-      "width": 0.5,
-      "shift": -0.35,
+      "period": 10,
+      "width": 0.3,
+      "shift": -0.18,
       "faces": [
        "front"
       ]
@@ -2628,8 +2619,8 @@
     0
    ],
    "size": [
-    242.88,
-    242.88,
+    198.72,
+    198.72,
     2
    ],
    "sides": 24,
@@ -2660,8 +2651,8 @@
     0
    ],
    "size": [
-    226.88,
-    226.88,
+    182.72,
+    182.72,
     2
    ],
    "sides": 24,
@@ -2804,6 +2795,104 @@
       "faces": [
        "front"
       ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "front",
+      "at": [
+       57,
+       63
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
+     },
+     {
+      "face": "front",
+      "at": [
+       197,
+       63
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
+     },
+     {
+      "face": "front",
+      "at": [
+       57,
+       184
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
+     },
+     {
+      "face": "front",
+      "at": [
+       197,
+       184
+      ],
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".hhh.",
+       "hhsld",
+       "hsssd",
+       "hlsdd",
+       ".ddd."
+      ],
+      "key": {
+       "h": "chrome:4",
+       "l": "chrome:6",
+       "s": "chrome:1",
+       "d": "chrome:2"
+      }
      }
     ]
    }
@@ -2959,127 +3048,6 @@
    "paint": {
     "ramp": "goldr",
     "tone": 3.0
-   }
-  },
-  {
-   "id": "mount",
-   "shape": "box",
-   "parent": "lid",
-   "pivot": [
-    0.0,
-    51.0,
-    195.0
-   ],
-   "size": [
-    257.6,
-    2.0,
-    320.0
-   ],
-   "hide": [
-    "bottom"
-   ],
-   "style": "steel",
-   "paint": {
-    "ramp": "c8a8e94",
-    "tone": 3.0,
-    "stamps": [
-     {
-      "face": "top",
-      "at": [
-       3,
-       3
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     },
-     {
-      "face": "top",
-      "at": [
-       159,
-       3
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     },
-     {
-      "face": "top",
-      "at": [
-       3,
-       200
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     },
-     {
-      "face": "top",
-      "at": [
-       159,
-       200
-      ],
-      "offset": [
-       0,
-       0
-      ],
-      "art": [
-       ".hhh.",
-       "hhsld",
-       "hsssd",
-       "hlsdd",
-       ".ddd."
-      ],
-      "key": {
-       "h": "chrome:4",
-       "l": "chrome:6",
-       "s": "chrome:1",
-       "d": "chrome:2"
-      }
-     }
-    ]
    }
   }
  ]

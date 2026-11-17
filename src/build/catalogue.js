@@ -212,6 +212,27 @@ export const CATALOGUE = [
     desc: 'Carved panels that fold in a zig-zag.', does: 'Hides the stock room. Makes the shop look established.', model: { lp: 'screen_folding' }, box: [1.2, 0.3, 0.4] },
   { id: 'lp_clock_grandfather', name: 'Grandfather Clock', jp: '大時計', price: 38000, category: 'decor', unlock: 'decor:retro', mount: 'floor', feature: 'decor', quality: 0.4, block: true, look: 'Tick. Tock. It has been in three shops before yours.',
     desc: 'A tall case clock with a brass pendulum.', does: 'Makes the shop look very established.', model: { lp: 'clock_grandfather' }, box: [0.6, 0.4, 0.5] },
+  // ---------------------------------------------------------------- the lane's and the museum's favourites (props with real models)
+  { id: 'lp_manekineko', name: 'Maneki-neko', jp: '招き猫', price: 3800, category: 'decor', unlock: null, mount: 'surface', feature: 'decor', quality: 0.2, look: 'Left paw up: it beckons customers in.',
+    desc: 'A glazed beckoning cat with a gold koban.', does: 'Every shopkeeper swears by it.', model: { prop: 'manekineko' }, box: [0.3, 0.3, 0.26] },
+  { id: 'lp_daruma', name: 'Daruma', jp: 'だるま', price: 2400, category: 'decor', unlock: null, mount: 'surface', feature: 'decor', quality: 0.14, look: 'One eye painted in. The other waits for a wish come true.',
+    desc: 'A red papier-mâché daruma from the New Year market.', does: 'Paint the second eye when the shop does well.', model: { prop: 'daruma' }, box: [0.3, 0.3, 0.3] },
+  { id: 'lp_stone_lantern', name: 'Stone Lantern', jp: '石灯籠', price: 16000, category: 'signs', unlock: 'decor:plants', mount: 'floor', feature: 'lamp', quality: 0.3, glow: 0.25, short: 'lantern', block: true,
+    desc: 'A carved granite tōrō for the garden corner.', does: 'A candle-glow after dark. Click to light it.', model: { prop: 'stone_lantern' }, box: [0.5, 0.5, 0.5] },
+  { id: 'lp_shishi_odoshi', name: 'Shishi-odoshi', jp: '鹿威し', price: 12000, category: 'decor', unlock: 'decor:plants', mount: 'floor', feature: 'decor', quality: 0.28, block: true, sound: 'clockTock', look: 'Fill, tip, clack. Fill, tip, clack.',
+    desc: 'A bamboo deer-scarer that clacks as it fills.', does: 'A calm garden corner.', model: { prop: 'shishi_odoshi' }, box: [0.6, 0.4, 0.4] },
+  { id: 'lp_bamboo', name: 'Potted Bamboo', jp: '鉢植えの竹', price: 2800, category: 'decor', unlock: 'decor:plants', mount: 'floor', feature: 'plant', quality: 0.2, block: true,
+    desc: 'Lucky bamboo in a woven pot.', does: 'Makes the shop feel alive.', model: { prop: 'bamboo' }, box: [0.4, 0.4, 0.4] },
+  { id: 'lp_floor_lamp', name: 'Floor Lamp', jp: 'フロアランプ', price: 5200, category: 'signs', unlock: null, mount: 'floor', feature: 'lamp', quality: 0.14, glow: 0.3, short: 'lamp', block: true,
+    desc: 'A fabric shade on a turned wooden stand.', does: 'A warm corner after dark. Click to switch.', model: { prop: 'floor_lamp' }, box: [0.36, 0.4, 0.36] },
+  { id: 'lp_planet_lamp', name: 'Saturn Lamp', jp: '土星ランプ', price: 6800, category: 'signs', unlock: 'decor:retro', mount: 'surface', feature: 'lamp', quality: 0.16, glow: 0.45, short: 'lamp',
+    desc: 'Planets hung from a ring, very space age.', does: 'Glows after dark. Click to switch.', model: { prop: 'planet_lamp' }, box: [0.36, 0.4, 0.36] },
+  { id: 'lp_rocket', name: 'Tin Rocket', jp: 'ブリキのロケット', price: 5800, category: 'fun', unlock: null, mount: 'surface', feature: 'decor', quality: 0.16, look: '3, 2, 1... it stays where it is.',
+    desc: 'A red and white rocket, 1960s style.', does: 'Kids point at it.', model: { prop: 'rocket' }, box: [0.3, 0.5, 0.3] },
+  { id: 'lp_cat_tower', name: 'Cat Tower', jp: 'キャットタワー', price: 7800, category: 'furniture', unlock: null, mount: 'floor', feature: 'catbed', quality: 0.16, block: true,
+    desc: 'Carpeted shelves and a scratching post.', does: 'Mikan naps on the top shelf.', model: { prop: 'cat_tower' }, box: [0.5, 0.5, 0.5] },
+  { id: 'lp_arcade', name: 'Arcade Cabinet', jp: 'アーケード筐体', price: 48000, category: 'fun', unlock: 'decor:retro', mount: 'floor', feature: 'decor', quality: 0.4, block: true, look: 'INSERT COIN. It is not plugged in, but it looks the part.',
+    desc: 'A retired upright cabinet from the game centre by the station.', does: 'Pulls in the kids (it does not play).', model: { prop: 'arcade_cabinet' }, box: [0.7, 0.5, 0.8] },
 ];
 
 // real-model pieces: their credit (title, author, licence) in the hint, and in the shop listing

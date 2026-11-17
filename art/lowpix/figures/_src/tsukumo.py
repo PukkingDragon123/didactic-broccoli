@@ -78,9 +78,9 @@ def mon():
 def parade():
     F = Fig(f"{S}/parade", "Night Parade", "Lantern, umbrella and clog marching under the moon. Do not join in.")
     top = slab(F, "base", 40, 26, 3.0, col="#2a2e3a", style="rock", tone=2.4)
-    F.model("lan", LANTERN, 18, (-11, top, -2), yaw=20)
-    F.model("um", UMBRELLA, 20, (2, top, -4), yaw=0)
-    F.model("geta", GETA, 5, (13, top, 4), yaw=-40)
+    F.model("lan", LANTERN, 18, (-11, top, -2), yaw=20, tris=2200)
+    F.model("um", UMBRELLA, 20, (2, top, -4), yaw=0, tris=2200)
+    F.model("geta", GETA, 5, (13, top, 4), yaw=-40, tris=2200)
     eye_card(F, "eye1", 4.5, (-10.6, top + 11, 2.2), rot=(0, 20, 0))
     eye_card(F, "eye2", 4.5, (2, top + 13, 1.2))
     eye_card(F, "eye3", 3.5, (14, top + 5, 6.4), rot=(0, -40, 0))

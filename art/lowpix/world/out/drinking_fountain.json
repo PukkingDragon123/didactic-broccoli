@@ -1,0 +1,34 @@
+{
+ "id": "drinking_fountain",
+ "src": "sketchfab:796e0b2660a440e3a2e8a24c6ed0fe72",
+ "credit": {
+  "title": "Drinking Fountain",
+  "author": "MooKorea",
+  "authorUrl": "https://sketchfab.com/MooKorea",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/drinking-fountain-796e0b2660a440e3a2e8a24c6ed0fe72",
+  "site": "Sketchfab"
+ },
+ "tris": 2965,
+ "tex": 328,
+ "size": [
+  0.712,
+  0.975,
+  0.898
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#271f22",
+   "#322a2c",
+   "#3c3536",
+   "#454142",
+   "#4e4e4e",
+   "#666666",
+   "#7f7f7f",
+   "#979797",
+   "#afafaf"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,56 @@
+{
+ "id": "litter_can",
+ "src": "sketchfab:05fc9a5628d64b5cb89f38a855eeb6fb",
+ "credit": {
+  "title": "Crushed Can",
+  "author": "jeffleguy",
+  "authorUrl": "https://sketchfab.com/jeffleguy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/crushed-can-05fc9a5628d64b5cb89f38a855eeb6fb",
+  "site": "Sketchfab"
+ },
+ "tris": 1500,
+ "tex": 128,
+ "size": [
+  0.132,
+  0.056,
+  0.12
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#17040b",
+   "#1e050d",
+   "#24070e",
+   "#2a0a0e",
+   "#300c0e",
+   "#601c1a",
+   "#8d352a",
+   "#b9553c",
+   "#ca8469"
+  ],
+  "m1": [
+   "#261f29",
+   "#322a34",
+   "#3d363f",
+   "#484249",
+   "#524f52",
+   "#686868",
+   "#808080",
+   "#989898",
+   "#b0b0b0"
+  ],
+  "m2": [
+   "#32000d",
+   "#41010c",
+   "#4f0309",
+   "#5c0505",
+   "#690f07",
+   "#9a240d",
+   "#c94114",
+   "#e66b2e",
+   "#e99a62"
+  ]
+ },
+ "warnings": []
+}
