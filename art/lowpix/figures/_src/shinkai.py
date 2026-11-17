@@ -20,7 +20,7 @@ def swim(F, name, src, L, h, top, yaw, **kw):
 
 def isopod():
     F = Fig(f"{S}/isopod", "Giant Isopod", "A woodlouse the size of a shoe, armoured and patient, from two thousand metres down.")
-    F.model("bug", ISOPOD, L=46, yaw=-30, cut=0.08, smooth=2.0)
+    F.model("bug", ISOPOD, L=46, yaw=-30, cut=0.08, smooth=2.0, rest=True)
     F.model_clip("model_bug", "turn", 2.2, amp=18)
     return F
 

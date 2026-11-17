@@ -49,3 +49,5 @@ set('pigeon_fly', (o) => mk(pigeonGeometry('flying'), pigeonMaterial(), o));
 set('stray_cat', (o) => { const B = bakeCat('stand'); return mk(B.geo, B.mat, o); });
 set('stray_cat_sit', (o) => { const B = bakeCat('sit'); return mk(B.geo, B.mat, o); });
 set('stray_cat_held', (o) => { const B = bakeCat('held'); return mk(B.geo, B.mat, o); });
+// the museum's sleeping garage cat: Mikan herself, curled up asleep
+set('garage_cat', (o) => { const B = bakeCat('sleep', 'calico'); return mk(B.geo, B.mat, o); });

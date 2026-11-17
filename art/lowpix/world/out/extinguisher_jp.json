@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/fire-extinguisher-68068b0dcc9c45388f958aef24e26c92",
   "site": "Sketchfab"
  },
- "tris": 2951,
+ "tris": 998,
  "tex": 256,
  "size": [
   0.159,
   0.5,
-  0.28
+  0.275
  ],
- "colours": 48,
+ "colours": 49,
  "palette": {
   "m0": [
    "#3b2e33",

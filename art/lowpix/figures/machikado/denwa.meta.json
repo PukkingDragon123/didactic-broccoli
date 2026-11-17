@@ -15,12 +15,12 @@
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
    "opts": {
     "smooth": 2.0
    },
-   "key": "bc50f14f0eba3b"
+   "key": "b5d3316411974c"
   }
  ],
  "key": "machikado/denwa"

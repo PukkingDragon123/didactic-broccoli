@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/antique_ceramic_vase_01",
   "site": "Poly Haven"
  },
- "tris": 2999,
- "tex": 336,
+ "tris": 999,
+ "tex": 320,
  "size": [
-  0.251,
+  0.25,
   0.44,
-  0.251
+  0.25
  ],
  "colours": 16,
  "palette": {

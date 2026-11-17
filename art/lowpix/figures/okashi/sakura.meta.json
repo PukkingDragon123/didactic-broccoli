@@ -15,12 +15,12 @@
    "yaw": 0,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
    "opts": {
     "smooth": 2.0
    },
-   "key": "bdc409a7d94820"
+   "key": "063beff2e69149"
   }
  ],
  "key": "okashi/sakura"

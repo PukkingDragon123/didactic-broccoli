@@ -48,7 +48,7 @@ def kamakiri():
 
 def larva():
     F = Fig(f"{S}/larva", "Beetle Grub", "Dug up from the leaf mould, fat and curled. Next summer it will have a horn.")
-    F.model("grub", LARVA, L=34, yaw=30, drop=CUBE, rest=True)
+    F.model("grub", LARVA, L=34, yaw=30, drop=CUBE, cut=0.04, rest=True)
     F.model_clip("model_grub", "wobble", 1.4, amp=6)
     return F
 

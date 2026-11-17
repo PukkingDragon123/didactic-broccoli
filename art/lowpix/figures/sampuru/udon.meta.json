@@ -15,14 +15,14 @@
    "yaw": -10,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
    "opts": {
     "smooth": 2.0
    },
    "level": 2,
    "cut": 0.07,
-   "key": "34edf80630f37c"
+   "key": "8eefaf159840e3"
   }
  ],
  "key": "sampuru/udon"

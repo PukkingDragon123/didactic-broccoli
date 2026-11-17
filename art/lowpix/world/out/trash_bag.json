@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/trashbag",
   "site": "Poly Haven"
  },
- "tris": 2999,
- "tex": 288,
+ "tris": 1000,
+ "tex": 256,
  "size": [
-  0.444,
+  0.426,
   0.48,
-  0.39
+  0.385
  ],
  "colours": 8,
  "palette": {

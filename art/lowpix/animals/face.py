@@ -189,7 +189,7 @@ def mouth_bowl(centre, rx, ry, depth, uv_roof, uv_floor, uv_tongue, tongue_base,
     return np.array(pos), np.array(uv), tri, np.array(jw), tongue, base, d
 
 
-def mouth_lens(xs, lip_y, surf_z, uv_rect, rows=5, out=0.03):
+def mouth_lens(xs, lip_y, surf_z, uv_rect, rows=4, out=0.03):
     """The open mouth as a lens lying on the muzzle along the lip line: its rows all coincide while the mouth is shut
     (zero height, invisible); row v is weighted v to the jaw, so as the jaw drops the lens opens between the upper lip
     and the chin, the corners pinched shut. Mapped onto a painted open-mouth patch (u across, v top lip -> bottom lip).

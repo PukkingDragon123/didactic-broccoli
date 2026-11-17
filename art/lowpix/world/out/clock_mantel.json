@@ -8,14 +8,14 @@
   "url": "https://polyhaven.com/a/mantel_clock_01",
   "site": "Poly Haven"
  },
- "tris": 2963,
- "tex": 256,
+ "tris": 999,
+ "tex": 208,
  "size": [
-  0.347,
+  0.348,
   0.161,
-  0.128
+  0.13
  ],
- "colours": 31,
+ "colours": 27,
  "palette": {
   "m0": [
    "#1c0b0d",

@@ -9,12 +9,12 @@
   "url": "https://sketchfab.com/3d-models/classic-telephone-1b3929f627a141be92f0c8c16a3ba296",
   "site": "Sketchfab"
  },
- "tris": 1499,
+ "tris": 999,
  "tex": 128,
  "size": [
-  0.14,
+  0.141,
   0.12,
-  0.066
+  0.067
  ],
  "colours": 8,
  "palette": {

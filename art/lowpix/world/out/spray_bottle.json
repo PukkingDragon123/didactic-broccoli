@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/spray-bottle-1611833f3eaa41bbba2b6944269429ab",
   "site": "Sketchfab"
  },
- "tris": 1490,
- "tex": 112,
+ "tris": 992,
+ "tex": 96,
  "size": [
-  0.071,
+  0.069,
   0.192,
   0.053
  ],
- "colours": 15,
+ "colours": 14,
  "palette": {
   "m0": [
    "#705860",

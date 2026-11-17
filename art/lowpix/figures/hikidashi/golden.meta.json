@@ -10,14 +10,14 @@
    "src": "polyhaven:vintage_pocket_watch",
    "height": 40.619,
    "pos": [
-    -0.076,
+    -0.069,
     0.0,
-    0.158
+    0.203
    ],
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "metal",
    "cut": 0.12,
    "rest": true,
@@ -26,7 +26,7 @@
     0,
     0
    ],
-   "key": "6085293ad37fd4",
+   "key": "75f26ce4962f9f",
    "rest_R": [
     [
      1.0,

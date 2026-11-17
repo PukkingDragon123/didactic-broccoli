@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/small_lpg_tank",
   "site": "Poly Haven"
  },
- "tris": 3000,
- "tex": 288,
+ "tris": 1000,
+ "tex": 256,
  "size": [
-  0.411,
+  0.408,
   0.642,
-  0.411
+  0.407
  ],
  "colours": 8,
  "palette": {

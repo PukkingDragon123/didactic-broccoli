@@ -70,13 +70,13 @@ export function accSegments(spec, P, J) {
     } else if (k === 'towel') {
       // a towel round the neck: a soft roll that sits on the shoulders, both ends hanging down the chest
       const nx = hu * 0.225, nz = hu * 0.22, y0 = P.neckBase - 0.022 * H, y1 = P.neckBase + 0.018 * H;
-      S.push(vtube({ part: 'towel', mat: 'acc', N: 16, lodMinN: 8, dens: 1.0, meta: { kind: 'towel' } }, [y0, y0 + 0.008 * H, (y0 + y1) / 2, y1 - 0.006 * H, y1], (y) => {
+      S.push(vtube({ part: 'towel', mat: 'acc', N: 10, lodMinN: 8, dens: 1.0, meta: { kind: 'towel' } }, [y0, y0 + 0.008 * H, (y0 + y1) / 2, y1 - 0.006 * H, y1], (y) => {
         const t = (y - y0) / (y1 - y0), b = Math.sin(Math.PI * Math.min(1, Math.max(0, t))) ** 0.5;
         return { hx: nx * (1.3 + 0.55 * b), hzF: nz * (1.25 + 0.5 * b), hzB: nz * (1.3 + 0.55 * b), cz: -0.012 * H, p: 2.2, mod: (x, z, a) => { const r = Math.hypot(x, z) || 1, d = 0.002 * H * Math.sin(a * 7 + t * 4); return [x / r * d, z / r * d]; } };
       }, () => [['chest', 1]]));
       for (const sx of [-1, 1]) {
         const x = sx * 0.05, zt = P.chestZ * 0.62 + 0.014 * H, zb = P.chestZ + P.bust + 0.012 * H;
-        S.push(ptube({ part: 'towelEnd', mat: 'acc', N: 8, lodMinN: 9, dens: 1.0, meta: { kind: 'towel' } }, [
+        S.push(ptube({ part: 'towelEnd', mat: 'acc', N: 4, lodMinN: 9, dens: 1.0, meta: { kind: 'towel' } }, [
           { c: [x, P.neckBase - 0.004 * H, zt - 0.01 * H], s: { hx: 0.032, hzF: 0.006, hzB: 0.006, p: 6 }, w: [['chest', 1]] },
           { c: [x * 1.05, (P.neckBase + P.bustY) / 2, (zt + zb) / 2], s: { hx: 0.033, hzF: 0.006, hzB: 0.006, p: 6 }, w: [['chest', 1]] },
           { c: [x * 1.12, P.bustY + 0.02 * H, zb], s: { hx: 0.034, hzF: 0.006, hzB: 0.006, p: 6 }, w: [['chest', 1]] }], [0, 0, 1]));

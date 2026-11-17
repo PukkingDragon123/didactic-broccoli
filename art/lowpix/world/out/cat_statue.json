@@ -8,10 +8,10 @@
   "url": "https://polyhaven.com/a/concrete_cat_statue",
   "site": "Poly Haven"
  },
- "tris": 3000,
- "tex": 208,
+ "tris": 999,
+ "tex": 192,
  "size": [
-  0.153,
+  0.158,
   0.283,
   0.25
  ],

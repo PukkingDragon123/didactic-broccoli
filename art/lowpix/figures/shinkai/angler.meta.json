@@ -20,12 +20,12 @@
    "yaw": -35,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1000,
    "mat": "matte",
    "opts": {
     "smooth": 2.0
    },
-   "key": "cffb4d49af5828"
+   "key": "9aad03dd2670eb"
   }
  ],
  "base": {

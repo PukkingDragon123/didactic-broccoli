@@ -15,13 +15,13 @@
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "gloss",
    "opts": {
     "smooth": 2.5
    },
    "level": 2,
-   "key": "c53c77bff6a0bc"
+   "key": "0727a48e8264c0"
   }
  ],
  "key": "machikado/shokasen"

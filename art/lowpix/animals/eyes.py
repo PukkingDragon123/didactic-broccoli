@@ -17,7 +17,7 @@ def frame_basis(axis, tilt):
     return f, up2, s2
 
 
-def eyeball(c, axis, r, frame_uv, nu=14, nv=10):
+def eyeball(c, axis, r, frame_uv, nu=10, nv=6):
     """A UV sphere around c; the front hemisphere mapped (planar along the axis) into frame_uv = (u0, v0, du, dv)."""
     f, up, s = frame_basis(axis, 0)
     pos, nrm, uv, tri = [], [], [], []
@@ -38,7 +38,7 @@ def eyeball(c, axis, r, frame_uv, nu=14, nv=10):
     return np.array(pos), np.array(nrm), np.array(uv), np.array(tri)
 
 
-def lid(c, axis, r, upper, tilt, patch, az=1.5, el=1.45, na=12, ne=7, rim=0.1):
+def lid(c, axis, r, upper, tilt, patch, az=1.5, el=1.45, na=8, ne=4, rim=0.1):
     """A shell of radius r over the upper (or lower) half of the eye, its edge on the eye's equator at rest; vertices at
     azimuth -az..az and elevation 0..el (radians). Its texture is its own patch = (u0, v0, du, dv) in the atlas: column =
     azimuth, row = elevation (row 0 the edge); paint it with lid_texels()."""

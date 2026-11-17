@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/CashRegister_01",
   "site": "Poly Haven"
  },
- "tris": 2996,
+ "tris": 1000,
  "tex": 512,
  "size": [
   0.596,
   0.621,
-  0.624
+  0.625
  ],
  "colours": 16,
  "palette": {

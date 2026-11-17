@@ -9,12 +9,12 @@
   "url": "https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a",
   "site": "Sketchfab"
  },
- "tris": 3000,
+ "tris": 1000,
  "tex": 256,
  "size": [
-  0.372,
+  0.375,
   0.51,
-  0.43
+  0.432
  ],
  "colours": 54,
  "palette": {

@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/red-dot-cigar-box-bf5152c1f1fc44f4a81dbca1d502304c",
   "site": "Sketchfab"
  },
- "tris": 3000,
- "tex": 256,
+ "tris": 1000,
+ "tex": 288,
  "size": [
-  0.687,
+  0.694,
   0.21,
-  0.44
+  0.445
  ],
- "colours": 47,
+ "colours": 46,
  "palette": {
   "m0": [
    "#45322f",

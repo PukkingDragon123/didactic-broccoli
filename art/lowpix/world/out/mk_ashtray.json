@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/ashtray-with-cigarettes-6e9bfb5e4b1e42b791a51c40cb993306",
   "site": "Sketchfab"
  },
- "tris": 1486,
- "tex": 144,
+ "tris": 999,
+ "tex": 128,
  "size": [
-  0.186,
+  0.182,
   0.048,
-  0.231
+  0.23
  ],
- "colours": 23,
+ "colours": 22,
  "palette": {
   "m0": [
    "#121914",

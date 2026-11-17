@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/kumade-xyz-speedraft-7efa84394c4c4185885be697adad932f",
   "site": "Sketchfab"
  },
- "tris": 2996,
- "tex": 256,
+ "tris": 1000,
+ "tex": 128,
  "size": [
-  0.104,
+  0.099,
   0.306,
-  0.065
+  0.057
  ],
- "colours": 44,
+ "colours": 43,
  "palette": {
   "m0": [
    "#3e1609",

@@ -146,7 +146,9 @@ export class Game {
   /** Light probe: render the garage into a cube map for glossy reflections on capsules, chrome & glass. */
   bakeEnvironment() {
     const r = this.renderer.renderer;
-    const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType });
+    // 8-bit target: a NaN/Inf from any one mesh (bad normals, over-bright emissive) clamps to a pixel instead of
+    // poisoning the whole PMREM, which turned every lit material black.
+    const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.UnsignedByteType });
     const cc = new THREE.CubeCamera(0.05, 60, rt);
     cc.position.set(0.2, 1.4, 0.5);
     this.scene.add(cc);

@@ -8,14 +8,14 @@
    "src": "sketchfab:b4676e41c38a4348af933f1d00051afb",
    "height": 48.725,
    "pos": [
-    14.642,
-    -9.556,
-    9.492
+    14.53,
+    -9.258,
+    9.31
    ],
    "yaw": -30,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "gloss",
    "rest": true,
    "at": [
@@ -23,7 +23,7 @@
     0,
     0
    ],
-   "key": "9f12fa1d7aabe1",
+   "key": "0f35daea79c1c8",
    "rest_R": [
     [
      0.694658,

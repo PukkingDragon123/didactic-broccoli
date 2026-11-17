@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/chess_set",
   "site": "Poly Haven"
  },
- "tris": 4000,
+ "tris": 1000,
  "tex": 512,
  "size": [
-  0.571,
+  0.634,
   0.112,
-  0.571
+  0.634
  ],
  "colours": 24,
  "palette": {

@@ -8,27 +8,28 @@
   {
    "name": "grub",
    "src": "sketchfab:b67fb6cbe3fa455c81373aaa9f91fa1a",
-   "height": 38.058,
+   "height": 36.535,
    "pos": [
-    -10.576,
-    2.596,
-    6.825
+    -9.759,
+    3.151,
+    6.434
    ],
    "yaw": 30,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
    "drop": [
     "^Cube"
    ],
+   "cut": 0.04,
    "rest": true,
    "at": [
     0,
     0,
     0
    ],
-   "key": "4c76c83d656e2f",
+   "key": "c441ca39588ce9",
    "rest_R": [
     [
      0.669131,

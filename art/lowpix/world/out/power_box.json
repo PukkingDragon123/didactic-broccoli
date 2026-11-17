@@ -8,14 +8,14 @@
   "url": "https://polyhaven.com/a/power_box_01",
   "site": "Poly Haven"
  },
- "tris": 2990,
- "tex": 480,
+ "tris": 991,
+ "tex": 416,
  "size": [
-  0.459,
+  0.46,
   0.503,
-  0.399
+  0.397
  ],
- "colours": 31,
+ "colours": 30,
  "palette": {
   "m0": [
    "#47373c",

@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/wooden_stool_01",
   "site": "Poly Haven"
  },
- "tris": 2990,
+ "tris": 999,
  "tex": 256,
  "size": [
-  0.427,
+  0.412,
   0.437,
-  0.443
+  0.432
  ],
  "colours": 8,
  "palette": {

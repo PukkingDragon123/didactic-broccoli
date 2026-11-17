@@ -15,14 +15,14 @@
    "yaw": -35,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
    "opts": {
     "smooth": 2.0
    },
    "level": 2,
    "cut": 0.04,
-   "key": "334df463a1d1d9"
+   "key": "6bd99fd4433929"
   }
  ],
  "key": "okashi/dorayaki"

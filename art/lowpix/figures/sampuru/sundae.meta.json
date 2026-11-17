@@ -6,7 +6,7 @@
   {
    "name": "parfait",
    "src": "sketchfab:7fcd555c03de4411a83aa5685fac1b5b",
-   "height": 30.586,
+   "height": 30.384,
    "pos": [
     0.0,
     0.0,
@@ -15,9 +15,9 @@
    "yaw": -15,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
-   "key": "5fa4d6fbf9e847"
+   "key": "d8112166455061"
   }
  ],
  "key": "sampuru/sundae"

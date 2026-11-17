@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/dartboard",
   "site": "Poly Haven"
  },
- "tris": 2884,
- "tex": 336,
+ "tris": 998,
+ "tex": 256,
  "size": [
   0.451,
   0.451,
-  0.04
+  0.039
  ],
  "colours": 32,
  "palette": {

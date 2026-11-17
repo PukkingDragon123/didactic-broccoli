@@ -245,21 +245,22 @@ export function dogAssets(kind = 'pochi') {
   if (CACHE[kind]) return CACHE[kind];
   const C = COATS[kind] || COATS.pochi;
   const B = new Builder(1024, 1024, 4, { px: 2, grain: 0.13 }), b = (n) => BI[n];
-  B.part(torso(), { rect: [0, 0, 760, 440], cols: 40, rows: 34, paint: painter(C, 'body'), skin: polySkin([[0, 0.34, -0.26], J.chest, J.neck, J.head, [0, 0.46, 0.27]], [b('body'), b('chest'), b('neck'), b('head')], [0.05, 0.03, 0.025]) });
-  B.part(head(C), { rect: [768, 0, 256, 300], px: 2, cols: 44, rows: 32, paint: painter(C, 'head'), skin: () => [[b('head'), 1]] });
-  B.part(jaw(), { rect: [768, 308, 128, 96], px: 2, grain: 0.06, coat: 'leather', cols: 20, rows: 10, paint: painter(C, 'jaw'), skin: () => [[b('jaw'), 1]] });
-  B.part(nose(), { rect: [904, 308, 64, 48], px: 2, grain: 0.14, coat: 'leather', cols: 16, rows: 6, paint: painter(C, 'nose'), skin: () => [[b('head'), 1]] });
-  for (const [n, s, x] of [['earL', 1, 768], ['earR', -1, 872]]) B.part(ear(C, s), { rect: [x, 412, 96, 100], px: 2, grain: 0.05, cols: 18, rows: 12, paint: painter(C, n), skin: () => [[b(n), 1]] });
+  B.part(torso(), { rect: [0, 0, 760, 440], cols: 20, rows: 17, paint: painter(C, 'body'), skin: polySkin([[0, 0.34, -0.26], J.chest, J.neck, J.head, [0, 0.46, 0.27]], [b('body'), b('chest'), b('neck'), b('head')], [0.05, 0.03, 0.025]) });
+  B.part(head(C), { rect: [768, 0, 256, 300], px: 2, cols: 22, rows: 16, paint: painter(C, 'head'), skin: () => [[b('head'), 1]] });
+  B.part(jaw(), { rect: [768, 308, 128, 96], px: 2, grain: 0.06, coat: 'leather', cols: 10, rows: 5, paint: painter(C, 'jaw'), skin: () => [[b('jaw'), 1]] });
+  B.part(nose(), { rect: [904, 308, 64, 48], px: 2, grain: 0.14, coat: 'leather', cols: 8, rows: 4, paint: painter(C, 'nose'), skin: () => [[b('head'), 1]] });
+  for (const [n, s, x] of [['earL', 1, 768], ['earR', -1, 872]]) B.part(ear(C, s), { rect: [x, 412, 96, 100], px: 2, grain: 0.05, cols: 9, rows: 6, paint: painter(C, n), skin: () => [[b(n), 1]] });
   const legs = [['FL', 1, 0], ['FR', -1, 128], ['BL', 1, 256], ['BR', -1, 384]];
   for (const [k, s, x] of legs) {
     const front = k[0] === 'F', top = front ? 'chest' : 'body', j1 = J['leg' + k], j2 = J[(front ? 'arm' : 'shin') + k], j3 = J['paw' + k];
     const toe = front ? [s * 0.048, 0.014, 0.18] : [s * 0.051, 0.014, -0.15];
-    B.part(front ? fore(s) : hindL(s), { rect: [x, 520, 120, 400], px: 2, cols: 18, rows: 26, paint: painter(C, 'leg' + k), skin: polySkin([[j1[0] * 0.6, j1[1] + 0.07, j1[2]], j1, j2, j3, toe], [b(top), b('leg' + k), b((front ? 'arm' : 'shin') + k), b('paw' + k)], front ? [0.035, 0.022, 0.016] : [0.05, 0.024, 0.016]) });
+    B.part(front ? fore(s) : hindL(s), { rect: [x, 520, 120, 400], px: 2, cols: 9, rows: 13, paint: painter(C, 'leg' + k), skin: polySkin([[j1[0] * 0.6, j1[1] + 0.07, j1[2]], j1, j2, j3, toe], [b(top), b('leg' + k), b((front ? 'arm' : 'shin') + k), b('paw' + k)], front ? [0.035, 0.022, 0.016] : [0.05, 0.024, 0.016]) });
   }
-  B.part(tail(), { rect: [512, 520, 120, 400], px: 2, cols: 18, rows: 30, paint: painter(C, 'tail'), skin: polySkin([[0, 0.35, -0.18], J.tail0, J.tail1, J.tail2, J.tail3, [0.03, 0.46, -0.13]], [b('body'), b('tail0'), b('tail1'), b('tail2'), b('tail3')], 0.02) });
+  B.part(tail(), { rect: [512, 520, 120, 400], px: 2, cols: 9, rows: 15, paint: painter(C, 'tail'), skin: polySkin([[0, 0.35, -0.18], J.tail0, J.tail1, J.tail2, J.tail3, [0.03, 0.46, -0.13]], [b('body'), b('tail0'), b('tail1'), b('tail2'), b('tail3')], 0.02) });
   const K = collar();
-  B.part(K.band, { rect: [640, 520, 120, 64], px: 2, grain: 0.06, coat: 'leather', mute: 0.2, cols: 10, rows: 30, paint: painter(C, 'collar'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
-  B.part(K.tag, { rect: [640, 592, 48, 32], px: 2, grain: 0.05, coat: 'leather', cols: 12, rows: 6, paint: painter(C, 'tag'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
+  B.part(K.band, { rect: [640, 520, 120, 64], px: 2, grain: 0.06, coat: 'leather', mute: 0.2, cols: 6, rows: 15, paint: painter(C, 'collar'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
+  B.part(K.tag, { rect: [640, 592, 48, 32], px: 2, grain: 0.05, coat: 'leather', cols: 6, rows: 4, paint: painter(C, 'tag'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
+  // (the game's animal budget: about 2.6k triangles a dog, smooth curves, the coat carries the detail)
   CACHE[kind] = { geometry: B.geometry(), map: B.texture() };
   return CACHE[kind];
 }

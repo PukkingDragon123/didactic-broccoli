@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/wind-chimes-e5667a6a6cb241b19d90fd17269d2983",
   "site": "Sketchfab"
  },
- "tris": 1493,
+ "tris": 992,
  "tex": 128,
  "size": [
-  0.102,
+  0.138,
   0.27,
-  0.092
+  0.128
  ],
- "colours": 23,
+ "colours": 24,
  "palette": {
   "m0": [
    "#51271a",

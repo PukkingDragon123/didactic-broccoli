@@ -8,14 +8,14 @@
   "url": "https://polyhaven.com/a/side_table_01",
   "site": "Poly Haven"
  },
- "tris": 2756,
+ "tris": 976,
  "tex": 464,
  "size": [
   0.55,
   0.551,
   0.45
  ],
- "colours": 24,
+ "colours": 23,
  "palette": {
   "m0": [
    "#471c16",

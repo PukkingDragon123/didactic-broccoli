@@ -6,7 +6,7 @@
   {
    "name": "bowl",
    "src": "sketchfab:f65a8eab51794fbc8c7941101a354a54",
-   "height": 16.989,
+   "height": 13.197,
    "pos": [
     0.0,
     0.0,
@@ -15,9 +15,9 @@
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
-   "key": "512ab78c8e473f"
+   "key": "09043b31731df4"
   }
  ],
  "key": "sampuru/ramen"

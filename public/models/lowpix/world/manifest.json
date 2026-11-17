@@ -27,14 +27,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/potted-aloe-vera-98b96bd41a1c4ab7af10c938e280c8c8",
   "site": "Sketchfab",
-  "tris": 1498,
-  "tex": 128,
+  "tris": 999,
+  "tex": 112,
   "size": [
    0.058,
    0.12,
-   0.115
+   0.114
   ],
-  "bytes": 36376
+  "bytes": 25412
  },
  "anchor": {
   "id": "anchor",
@@ -138,14 +138,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/bamboo-with-plant-pot-19c7ca832f4246638cbbd53be9ff6184",
   "site": "Sketchfab",
-  "tris": 3794,
+  "tris": 2997,
   "tex": 512,
   "size": [
    1.472,
    2.625,
    1.317
   ],
-  "bytes": 94160
+  "bytes": 89740
  },
  "bamboo_fence": {
   "id": "bamboo_fence",
@@ -175,14 +175,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/wicker_basket_01",
   "site": "Poly Haven",
-  "tris": 2914,
+  "tris": 993,
   "tex": 256,
   "size": [
-   0.397,
+   0.403,
    0.117,
-   0.299
+   0.306
   ],
-  "bytes": 76220
+  "bytes": 28060
  },
  "batterypack": {
   "id": "batterypack",
@@ -269,14 +269,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/old-bicycle-17ab00cb733443a2b552a2b620a68087",
   "site": "Sketchfab",
-  "tris": 4867,
-  "tex": 336,
+  "tris": 2924,
+  "tex": 512,
   "size": [
-   1.918,
+   1.916,
    1.05,
-   0.455
+   0.452
   ],
-  "bytes": 155652
+  "bytes": 98828
  },
  "bin_bags": {
   "id": "bin_bags",
@@ -288,14 +288,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/trash-bags-cd134204748b4e28a9e3494638cc595f",
   "site": "Sketchfab",
-  "tris": 1325,
-  "tex": 256,
+  "tris": 1000,
+  "tex": 240,
   "size": [
-   0.245,
+   0.246,
    0.078,
-   0.245
+   0.246
   ],
-  "bytes": 32616
+  "bytes": 25464
  },
  "bin_metal": {
   "id": "bin_metal",
@@ -379,14 +379,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/cardboard_box_01",
   "site": "Poly Haven",
-  "tris": 2999,
+  "tris": 998,
   "tex": 256,
   "size": [
-   0.394,
+   0.392,
    0.342,
-   0.522
+   0.52
   ],
-  "bytes": 40344
+  "bytes": 22816
  },
  "broom": {
   "id": "broom",
@@ -434,14 +434,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/metal-bucket-0a7a3ccfdb624369b54dc7e06a5f2486",
   "site": "Sketchfab",
-  "tris": 1408,
-  "tex": 272,
+  "tris": 999,
+  "tex": 256,
   "size": [
    0.286,
    0.287,
-   0.309
+   0.308
   ],
-  "bytes": 30832
+  "bytes": 26008
  },
  "bucket_wood": {
   "id": "bucket_wood",
@@ -452,14 +452,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/wooden_bucket_01",
   "site": "Poly Haven",
-  "tris": 2984,
-  "tex": 304,
+  "tris": 999,
+  "tex": 256,
   "size": [
-   0.367,
+   0.349,
    0.55,
    0.342
   ],
-  "bytes": 73612
+  "bytes": 35520
  },
  "busstop": {
   "id": "busstop",
@@ -488,14 +488,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/marble_bust_01",
   "site": "Poly Haven",
-  "tris": 3999,
+  "tris": 999,
   "tex": 256,
   "size": [
    0.272,
    0.515,
    0.3
   ],
-  "bytes": 69220
+  "bytes": 31412
  },
  "cabinet_cn": {
   "id": "cabinet_cn",
@@ -561,14 +561,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/cactus-concrete-pot-8bd83c9adb8640628ff4f69689d358ac",
   "site": "Sketchfab",
-  "tris": 1499,
+  "tris": 1000,
   "tex": 256,
   "size": [
-   0.285,
+   0.286,
    0.15,
-   0.288
+   0.286
   ],
-  "bytes": 48820
+  "bytes": 38264
  },
  "call_bell_p": {
   "id": "call_bell_p",
@@ -580,14 +580,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/reception-bell-wood-shiny-copper-5d754602e590417b889e500a06b67146",
   "site": "Sketchfab",
-  "tris": 1498,
+  "tris": 997,
   "tex": 128,
   "size": [
-   0.118,
+   0.119,
    0.065,
-   0.118
+   0.119
   ],
-  "bytes": 23296
+  "bytes": 17408
  },
  "candy_cane": {
   "id": "candy_cane",
@@ -636,14 +636,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f",
   "site": "Sketchfab",
-  "tris": 2999,
-  "tex": 240,
+  "tris": 999,
+  "tex": 208,
   "size": [
-   0.309,
+   0.305,
    0.15,
-   0.355
+   0.356
   ],
-  "bytes": 52948
+  "bytes": 29012
  },
  "cardboard_flat": {
   "id": "cardboard_flat",
@@ -655,14 +655,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f",
   "site": "Sketchfab",
-  "tris": 2999,
-  "tex": 224,
+  "tris": 999,
+  "tex": 192,
   "size": [
-   0.297,
+   0.293,
    0.144,
    0.341
   ],
-  "bytes": 52520
+  "bytes": 28644
  },
  "cardboardmess": {
   "id": "cardboardmess",
@@ -691,14 +691,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/CashRegister_01",
   "site": "Poly Haven",
-  "tris": 2996,
+  "tris": 1000,
   "tex": 512,
   "size": [
    0.596,
    0.621,
-   0.624
+   0.625
   ],
-  "bytes": 92692
+  "bytes": 44524
  },
  "cassette_player": {
   "id": "cassette_player",
@@ -709,14 +709,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/cassette_player",
   "site": "Poly Haven",
-  "tris": 3000,
-  "tex": 176,
+  "tris": 995,
+  "tex": 128,
   "size": [
    0.129,
    0.237,
    0.049
   ],
-  "bytes": 49664
+  "bytes": 19316
  },
  "cat_bed": {
   "id": "cat_bed",
@@ -766,14 +766,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/pet-bed-31fa30b8d8b34a73aac870b0c8443644",
   "site": "Sketchfab",
-  "tris": 1692,
+  "tris": 999,
   "tex": 256,
   "size": [
    0.519,
    0.12,
    0.364
   ],
-  "bytes": 31140
+  "bytes": 24464
  },
  "cat_statue": {
   "id": "cat_statue",
@@ -784,14 +784,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/concrete_cat_statue",
   "site": "Poly Haven",
-  "tris": 3000,
-  "tex": 208,
+  "tris": 999,
+  "tex": 192,
   "size": [
-   0.153,
+   0.158,
    0.283,
    0.25
   ],
-  "bytes": 47700
+  "bytes": 23712
  },
  "cat_tower": {
   "id": "cat_tower",
@@ -1003,14 +1003,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/chess_set",
   "site": "Poly Haven",
-  "tris": 4000,
+  "tris": 1000,
   "tex": 512,
   "size": [
-   0.571,
+   0.634,
    0.112,
-   0.571
+   0.634
   ],
-  "bytes": 124312
+  "bytes": 61040
  },
  "chochin": {
   "id": "chochin",
@@ -1022,14 +1022,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316",
   "site": "Sketchfab",
-  "tris": 1718,
-  "tex": 304,
+  "tris": 1000,
+  "tex": 256,
   "size": [
    0.258,
    0.55,
-   0.253
+   0.254
   ],
-  "bytes": 43832
+  "bytes": 30824
  },
  "chochin2": {
   "id": "chochin2",
@@ -1041,14 +1041,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/japanese-paper-lantern-4450069fee444ae0920aa5babd5d9239",
   "site": "Sketchfab",
-  "tris": 1312,
-  "tex": 240,
+  "tris": 996,
+  "tex": 256,
   "size": [
    0.298,
    0.45,
    0.298
   ],
-  "bytes": 21948
+  "bytes": 18968
  },
  "clock_alarm": {
   "id": "clock_alarm",
@@ -1059,14 +1059,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/alarm_clock_01",
   "site": "Poly Haven",
-  "tris": 2998,
-  "tex": 192,
+  "tris": 1000,
+  "tex": 176,
   "size": [
    0.131,
    0.174,
-   0.066
+   0.067
   ],
-  "bytes": 55824
+  "bytes": 28216
  },
  "clock_grandfather": {
   "id": "clock_grandfather",
@@ -1095,14 +1095,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/mantel_clock_01",
   "site": "Poly Haven",
-  "tris": 2963,
-  "tex": 256,
+  "tris": 999,
+  "tex": 208,
   "size": [
-   0.347,
+   0.348,
    0.161,
-   0.128
+   0.13
   ],
-  "bytes": 45376
+  "bytes": 22840
  },
  "clock_wall": {
   "id": "clock_wall",
@@ -1113,14 +1113,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/wall_clock",
   "site": "Poly Haven",
-  "tris": 2996,
+  "tris": 995,
   "tex": 256,
   "size": [
-   0.32,
+   0.321,
    0.32,
    0.047
   ],
-  "bytes": 41268
+  "bytes": 25032
  },
  "cobwebcard": {
   "id": "cobwebcard",
@@ -1150,14 +1150,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/rusty-cash-box-4af08e1e8f594444ad79765332f299bb",
   "site": "Sketchfab",
-  "tris": 1500,
+  "tris": 987,
   "tex": 256,
   "size": [
-   0.403,
+   0.404,
    0.126,
    0.209
   ],
-  "bytes": 25536
+  "bytes": 20096
  },
  "coinchanger": {
   "id": "coinchanger",
@@ -1223,14 +1223,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/plastic_crate_01",
   "site": "Poly Haven",
-  "tris": 2975,
-  "tex": 320,
+  "tris": 815,
+  "tex": 256,
   "size": [
-   0.298,
+   0.294,
    0.264,
-   0.408
+   0.407
   ],
-  "bytes": 82268
+  "bytes": 29568
  },
  "crate_plastic2": {
   "id": "crate_plastic2",
@@ -1241,14 +1241,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/plastic_crate_02",
   "site": "Poly Haven",
-  "tris": 2930,
-  "tex": 384,
+  "tris": 966,
+  "tex": 256,
   "size": [
-   0.506,
+   0.497,
    0.254,
-   0.406
+   0.387
   ],
-  "bytes": 59292
+  "bytes": 23636
  },
  "crate_wood": {
   "id": "crate_wood",
@@ -1350,14 +1350,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/dartboard",
   "site": "Poly Haven",
-  "tris": 2884,
-  "tex": 336,
+  "tris": 998,
+  "tex": 256,
   "size": [
    0.451,
    0.451,
-   0.04
+   0.039
   ],
-  "bytes": 58532
+  "bytes": 23776
  },
  "daruma": {
   "id": "daruma",
@@ -1369,14 +1369,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/daruma-doll-c812095d86b64d11b36f088131b1d2d7",
   "site": "Sketchfab",
-  "tris": 1499,
+  "tris": 998,
   "tex": 160,
   "size": [
    0.155,
    0.18,
    0.159
   ],
-  "bytes": 34680
+  "bytes": 25216
  },
  "daybed": {
   "id": "daybed",
@@ -1478,14 +1478,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/dustpan",
   "site": "Poly Haven",
-  "tris": 2999,
-  "tex": 208,
+  "tris": 998,
+  "tex": 144,
   "size": [
-   0.332,
+   0.335,
    0.1,
-   0.368
+   0.372
   ],
-  "bytes": 49192
+  "bytes": 22092
  },
  "dustpile": {
   "id": "dustpile",
@@ -1496,14 +1496,14 @@
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 1176,
+  "tris": 999,
   "tex": 512,
   "size": [
-   0.601,
+   0.605,
    0.056,
-   0.45
+   0.454
   ],
-  "bytes": 52336
+  "bytes": 47936
  },
  "elephant": {
   "id": "elephant",
@@ -1514,14 +1514,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/carved_wooden_elephant",
   "site": "Poly Haven",
-  "tris": 2752,
+  "tris": 1000,
   "tex": 128,
   "size": [
-   0.109,
+   0.111,
    0.096,
    0.058
   ],
-  "bytes": 46048
+  "bytes": 24292
  },
  "engawabench": {
   "id": "engawabench",
@@ -1550,14 +1550,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/korean_fire_extinguisher_01",
   "site": "Poly Haven",
-  "tris": 2992,
-  "tex": 288,
+  "tris": 981,
+  "tex": 256,
   "size": [
-   0.28,
+   0.281,
    0.659,
    0.368
   ],
-  "bytes": 62296
+  "bytes": 30528
  },
  "extinguisher_jp": {
   "id": "extinguisher_jp",
@@ -1569,14 +1569,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/fire-extinguisher-68068b0dcc9c45388f958aef24e26c92",
   "site": "Sketchfab",
-  "tris": 2951,
+  "tris": 998,
   "tex": 256,
   "size": [
    0.159,
    0.5,
-   0.28
+   0.275
   ],
-  "bytes": 57260
+  "bytes": 29184
  },
  "fan_floor": {
   "id": "fan_floor",
@@ -1606,14 +1606,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/fire_alarm",
   "site": "Poly Haven",
-  "tris": 2705,
+  "tris": 999,
   "tex": 128,
   "size": [
    0.099,
    0.144,
    0.026
   ],
-  "bytes": 41828
+  "bytes": 24908
  },
  "firebuckets": {
   "id": "firebuckets",
@@ -1719,14 +1719,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/wind-chimes-e5667a6a6cb241b19d90fd17269d2983",
   "site": "Sketchfab",
-  "tris": 1493,
+  "tris": 992,
   "tex": 128,
   "size": [
-   0.102,
+   0.138,
    0.27,
-   0.092
+   0.128
   ],
-  "bytes": 28240
+  "bytes": 23212
  },
  "garbagestation": {
   "id": "garbagestation",
@@ -1849,14 +1849,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/old-oil-heater-gas-stove-24-mb-a4a78d37b6ff4834a7fa6e897f2e592c",
   "site": "Sketchfab",
-  "tris": 2963,
-  "tex": 256,
+  "tris": 998,
+  "tex": 224,
   "size": [
-   0.234,
+   0.231,
    0.56,
-   0.235
+   0.231
   ],
-  "bytes": 58868
+  "bytes": 27272
  },
  "helmet": {
   "id": "helmet",
@@ -1868,14 +1868,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/construction-helmet-orange-2f9546f0aa9e4dbdade316e1b9d59f04",
   "site": "Sketchfab",
-  "tris": 2997,
-  "tex": 256,
+  "tris": 998,
+  "tex": 192,
   "size": [
-   0.241,
+   0.229,
    0.152,
-   0.314
+   0.313
   ],
-  "bytes": 59616
+  "bytes": 28308
  },
  "jerrycan_metal": {
   "id": "jerrycan_metal",
@@ -1886,14 +1886,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/metal_jerrycan",
   "site": "Poly Haven",
-  "tris": 3000,
+  "tris": 997,
   "tex": 256,
   "size": [
    0.35,
    0.455,
    0.172
   ],
-  "bytes": 62548
+  "bytes": 30136
  },
  "jerrycan_plastic": {
   "id": "jerrycan_plastic",
@@ -1904,14 +1904,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/plastic_jerrycan",
   "site": "Poly Haven",
-  "tris": 2976,
+  "tris": 993,
   "tex": 256,
   "size": [
-   0.269,
+   0.272,
    0.318,
-   0.342
+   0.346
   ],
-  "bytes": 52372
+  "bytes": 26100
  },
  "jizo_shrine": {
   "id": "jizo_shrine",
@@ -2016,14 +2016,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4",
   "site": "Sketchfab",
-  "tris": 2998,
-  "tex": 256,
+  "tris": 999,
+  "tex": 224,
   "size": [
-   0.273,
+   0.271,
    0.22,
-   0.195
+   0.196
   ],
-  "bytes": 51288
+  "bytes": 24896
  },
  "kettle_electric": {
   "id": "kettle_electric",
@@ -2034,14 +2034,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/vintage_electric_kettle",
   "site": "Poly Haven",
-  "tris": 2991,
+  "tris": 994,
   "tex": 256,
   "size": [
-   0.322,
+   0.316,
    0.305,
-   0.249
+   0.246
   ],
-  "bytes": 61608
+  "bytes": 26596
  },
  "kotatsu": {
   "id": "kotatsu",
@@ -2053,14 +2053,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/kotatsu-1e976c78d1eb4d2faa590316b0d38e24",
   "site": "Sketchfab",
-  "tris": 3999,
-  "tex": 512,
+  "tris": 3000,
+  "tex": 260,
   "size": [
-   2.414,
+   2.428,
    0.45,
-   2.399
+   2.413
   ],
-  "bytes": 233872
+  "bytes": 98372
  },
  "ladder": {
   "id": "ladder",
@@ -2161,14 +2161,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/industrial_pipe_lamp",
   "site": "Poly Haven",
-  "tris": 2987,
-  "tex": 224,
+  "tris": 996,
+  "tex": 208,
   "size": [
    0.182,
    0.364,
    0.262
   ],
-  "bytes": 59328
+  "bytes": 26992
  },
  "lantern": {
   "id": "lantern",
@@ -2179,14 +2179,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/Lantern_01",
   "site": "Poly Haven",
-  "tris": 2998,
-  "tex": 192,
+  "tris": 973,
+  "tex": 128,
   "size": [
-   0.123,
+   0.116,
    0.294,
-   0.097
+   0.098
   ],
-  "bytes": 62416
+  "bytes": 27584
  },
  "lantern_wood": {
   "id": "lantern_wood",
@@ -2197,14 +2197,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/wooden_lantern_01",
   "site": "Poly Haven",
-  "tris": 3000,
-  "tex": 352,
+  "tris": 998,
+  "tex": 288,
   "size": [
-   0.222,
+   0.224,
    0.53,
-   0.235
+   0.239
   ],
-  "bytes": 76032
+  "bytes": 36064
  },
  "litter_can": {
   "id": "litter_can",
@@ -2216,14 +2216,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/crushed-can-05fc9a5628d64b5cb89f38a855eeb6fb",
   "site": "Sketchfab",
-  "tris": 1500,
+  "tris": 1000,
   "tex": 128,
   "size": [
    0.132,
    0.056,
    0.12
   ],
-  "bytes": 34416
+  "bytes": 26348
  },
  "lpg_small": {
   "id": "lpg_small",
@@ -2234,14 +2234,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/small_lpg_tank",
   "site": "Poly Haven",
-  "tris": 3000,
-  "tex": 288,
+  "tris": 1000,
+  "tex": 256,
   "size": [
-   0.411,
+   0.408,
    0.642,
-   0.411
+   0.407
   ],
-  "bytes": 61052
+  "bytes": 32504
  },
  "lucky_cat_big": {
   "id": "lucky_cat_big",
@@ -2253,14 +2253,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a",
   "site": "Sketchfab",
-  "tris": 3000,
+  "tris": 1000,
   "tex": 256,
   "size": [
-   0.372,
+   0.375,
    0.51,
-   0.43
+   0.432
   ],
-  "bytes": 56380
+  "bytes": 30008
  },
  "macaron_tower": {
   "id": "macaron_tower",
@@ -2310,14 +2310,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a",
   "site": "Sketchfab",
-  "tris": 1500,
+  "tris": 1000,
   "tex": 160,
   "size": [
-   0.139,
+   0.14,
    0.19,
    0.161
   ],
-  "bytes": 31836
+  "bytes": 24460
  },
  "manhole": {
   "id": "manhole",
@@ -2328,14 +2328,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/water_manhole_cover",
   "site": "Poly Haven",
-  "tris": 1155,
-  "tex": 512,
+  "tris": 682,
+  "tex": 400,
   "size": [
    0.685,
    0.068,
    0.685
   ],
-  "bytes": 44016
+  "bytes": 30856
  },
  "microwave": {
   "id": "microwave",
@@ -2438,14 +2438,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b",
   "site": "Sketchfab",
-  "tris": 4000,
-  "tex": 496,
+  "tris": 2967,
+  "tex": 512,
   "size": [
    1.048,
    3.104,
-   0.499
+   0.502
   ],
-  "bytes": 49220
+  "bytes": 40844
  },
  "mk_ashtray": {
   "id": "mk_ashtray",
@@ -2457,14 +2457,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/ashtray-with-cigarettes-6e9bfb5e4b1e42b791a51c40cb993306",
   "site": "Sketchfab",
-  "tris": 1486,
-  "tex": 144,
+  "tris": 999,
+  "tex": 128,
   "size": [
-   0.186,
+   0.182,
    0.048,
-   0.231
+   0.23
   ],
-  "bytes": 37040
+  "bytes": 26108
  },
  "mk_brick": {
   "id": "mk_brick",
@@ -2476,14 +2476,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/brick-504a59ef14a148809cec657d7c99367c",
   "site": "Sketchfab",
-  "tris": 1500,
+  "tris": 999,
   "tex": 160,
   "size": [
-   0.192,
+   0.193,
    0.08,
    0.291
   ],
-  "bytes": 22476
+  "bytes": 19424
  },
  "mk_cigar_box": {
   "id": "mk_cigar_box",
@@ -2495,14 +2495,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/red-dot-cigar-box-bf5152c1f1fc44f4a81dbca1d502304c",
   "site": "Sketchfab",
-  "tris": 3000,
-  "tex": 256,
+  "tris": 1000,
+  "tex": 288,
   "size": [
-   0.687,
+   0.694,
    0.21,
-   0.44
+   0.445
   ],
-  "bytes": 46512
+  "bytes": 31380
  },
  "mk_ema": {
   "id": "mk_ema",
@@ -2514,14 +2514,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/ema-wish-board-from-japan-eb5747f6a34b43b8aceb0a7473b5272d",
   "site": "Sketchfab",
-  "tris": 1410,
+  "tris": 976,
   "tex": 128,
   "size": [
    0.129,
    0.135,
    0.062
   ],
-  "bytes": 33356
+  "bytes": 27720
  },
  "mk_hyotan": {
   "id": "mk_hyotan",
@@ -2533,14 +2533,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/gourd-bottle-fc5c13c5194241339121d8c2e99ae1c7",
   "site": "Sketchfab",
-  "tris": 1500,
+  "tris": 999,
   "tex": 96,
   "size": [
-   0.118,
+   0.105,
    0.164,
-   0.066
+   0.067
   ],
-  "bytes": 26396
+  "bytes": 19968
  },
  "mk_ice_freezer": {
   "id": "mk_ice_freezer",
@@ -2590,14 +2590,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/ramen-bowl-3d04380080ff4c269fe0ddd9b6924a3f",
   "site": "Sketchfab",
-  "tris": 1499,
+  "tris": 999,
   "tex": 128,
   "size": [
-   0.104,
+   0.103,
    0.07,
-   0.076
+   0.075
   ],
-  "bytes": 35972
+  "bytes": 23640
  },
  "mk_kitsune": {
   "id": "mk_kitsune",
@@ -2609,14 +2609,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/kitsune-fox-shrine-statue-b51e4bb527d749c38bfb6f964b2b9ead",
   "site": "Sketchfab",
-  "tris": 1498,
+  "tris": 1000,
   "tex": 128,
   "size": [
    0.072,
    0.17,
    0.072
   ],
-  "bytes": 33928
+  "bytes": 24988
  },
  "mk_koban": {
   "id": "mk_koban",
@@ -2647,14 +2647,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/kumade-xyz-speedraft-7efa84394c4c4185885be697adad932f",
   "site": "Sketchfab",
-  "tris": 2996,
-  "tex": 256,
+  "tris": 1000,
+  "tex": 128,
   "size": [
-   0.104,
+   0.099,
    0.306,
-   0.065
+   0.057
   ],
-  "bytes": 62596
+  "bytes": 27040
  },
  "mk_outbox": {
   "id": "mk_outbox",
@@ -2704,14 +2704,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/classic-telephone-1b3929f627a141be92f0c8c16a3ba296",
   "site": "Sketchfab",
-  "tris": 1499,
+  "tris": 999,
   "tex": 128,
   "size": [
-   0.14,
+   0.141,
    0.12,
-   0.066
+   0.067
   ],
-  "bytes": 36512
+  "bytes": 26412
  },
  "mk_ramune_tub": {
   "id": "mk_ramune_tub",
@@ -2780,14 +2780,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/zafu-and-zabuton-1e2b4dc9efe348548b681a1fe0a1343b",
   "site": "Sketchfab",
-  "tris": 2284,
+  "tris": 1000,
   "tex": 144,
   "size": [
-   0.247,
+   0.249,
    0.12,
    0.301
   ],
-  "bytes": 33308
+  "bytes": 19380
  },
  "moon_rock": {
   "id": "moon_rock",
@@ -2929,14 +2929,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/classic-street-lamp-post-dea5920f66814e04a66fa87b338e0e8d",
   "site": "Sketchfab",
-  "tris": 3913,
+  "tris": 2988,
   "tex": 512,
   "size": [
    0.669,
    4.75,
    0.745
   ],
-  "bytes": 68724
+  "bytes": 54144
  },
  "pendulum_clock": {
   "id": "pendulum_clock",
@@ -2948,14 +2948,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/antique-wall-pendulum-clock-a1399c9b33554b9a9d25ec9e5fbdd5ca",
   "site": "Sketchfab",
-  "tris": 3000,
+  "tris": 998,
   "tex": 256,
   "size": [
-   0.353,
+   0.351,
    0.64,
-   0.101
+   0.1
   ],
-  "bytes": 53564
+  "bytes": 27424
  },
  "phone_booth": {
   "id": "phone_booth",
@@ -2986,14 +2986,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/pbr-old-rotary-phone-52fb9ffd3bc241979f7192326e52aad8",
   "site": "Sketchfab",
-  "tris": 2999,
-  "tex": 240,
+  "tris": 999,
+  "tex": 176,
   "size": [
-   0.168,
+   0.166,
    0.13,
-   0.095
+   0.093
   ],
-  "bytes": 80704
+  "bytes": 33296
  },
  "pinkphone": {
   "id": "pinkphone",
@@ -3096,14 +3096,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/potted_plant_04",
   "site": "Poly Haven",
-  "tris": 2999,
-  "tex": 240,
+  "tris": 1000,
+  "tex": 160,
   "size": [
    0.164,
    0.268,
-   0.181
+   0.179
   ],
-  "bytes": 75636
+  "bytes": 30216
  },
  "plant_pothos": {
   "id": "plant_pothos",
@@ -3151,14 +3151,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/planter_pot_clay",
   "site": "Poly Haven",
-  "tris": 2998,
-  "tex": 160,
+  "tris": 1000,
+  "tex": 176,
   "size": [
-   0.266,
+   0.258,
    0.222,
-   0.263
+   0.256
   ],
-  "bytes": 42188
+  "bytes": 24612
  },
  "post_box": {
   "id": "post_box",
@@ -3207,14 +3207,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/power_box_01",
   "site": "Poly Haven",
-  "tris": 2990,
-  "tex": 480,
+  "tris": 991,
+  "tex": 416,
   "size": [
-   0.459,
+   0.46,
    0.503,
-   0.399
+   0.397
   ],
-  "bytes": 72648
+  "bytes": 37584
  },
  "puffbox": {
   "id": "puffbox",
@@ -3281,14 +3281,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/rice-sack-pot-fecf642fc5a44223afe57075b354d07e",
   "site": "Sketchfab",
-  "tris": 2957,
-  "tex": 240,
+  "tris": 999,
+  "tex": 192,
   "size": [
    0.238,
    0.368,
    0.229
   ],
-  "bytes": 39992
+  "bytes": 20168
  },
  "robot_vacuum": {
   "id": "robot_vacuum",
@@ -3300,14 +3300,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/robot-vacuum-cleaner-low-poly-7230d8d80e8b4a82b4a34a5e7926d0d3",
   "site": "Sketchfab",
-  "tris": 2944,
-  "tex": 256,
+  "tris": 941,
+  "tex": 192,
   "size": [
-   0.445,
+   0.444,
    0.102,
-   0.445
+   0.443
   ],
-  "bytes": 42136
+  "bytes": 20316
  },
  "rock_moss": {
   "id": "rock_moss",
@@ -3355,14 +3355,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/toy-rocket-4k-free-3d-model-eeca5464cafe42fd9ae35b2451c14858",
   "site": "Sketchfab",
-  "tris": 3985,
-  "tex": 280,
+  "tris": 2971,
+  "tex": 512,
   "size": [
    1.264,
    2.43,
    1.264
   ],
-  "bytes": 92520
+  "bytes": 80500
  },
  "room_ac": {
   "id": "room_ac",
@@ -3412,14 +3412,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/stacked-cardboard-boxes-crafted-by-jerovdl-f93cacf5a0e4444898e30b40e43ad669",
   "site": "Sketchfab",
-  "tris": 1380,
-  "tex": 464,
+  "tris": 1000,
+  "tex": 448,
   "size": [
    0.553,
    0.57,
    0.485
   ],
-  "bytes": 25844
+  "bytes": 22396
  },
  "room_chair": {
   "id": "room_chair",
@@ -3488,14 +3488,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/japanese-futonbed-0d5590d1d2184aa98797c3d6382afd7e",
   "site": "Sketchfab",
-  "tris": 3998,
-  "tex": 384,
+  "tris": 2999,
+  "tex": 344,
   "size": [
-   1.744,
+   1.709,
    0.28,
-   2.643
+   2.589
   ],
-  "bytes": 129084
+  "bytes": 106256
  },
  "room_kitchen": {
   "id": "room_kitchen",
@@ -3526,14 +3526,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/coffee-mug-school-project-5f5ccee1514c440887c072fae8e0d699",
   "site": "Sketchfab",
-  "tris": 1032,
+  "tris": 1000,
   "tex": 128,
   "size": [
    0.087,
    0.092,
    0.1
   ],
-  "bytes": 19412
+  "bytes": 18980
  },
  "room_phone": {
   "id": "room_phone",
@@ -3545,14 +3545,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/corded-public-phone-low-poly-63ef9397e3b9418e8abfba9cc4c470a8",
   "site": "Sketchfab",
-  "tris": 1498,
+  "tris": 1000,
   "tex": 128,
   "size": [
-   0.488,
+   0.489,
    0.075,
-   0.159
+   0.155
   ],
-  "bytes": 35268
+  "bytes": 22544
  },
  "room_shoes": {
   "id": "room_shoes",
@@ -3564,14 +3564,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/sneakers-689c29ec3a8a4f44b32f616bcb97cfaa",
   "site": "Sketchfab",
-  "tris": 1497,
+  "tris": 1000,
   "tex": 128,
   "size": [
    0.15,
    0.078,
-   0.144
+   0.143
   ],
-  "bytes": 27964
+  "bytes": 20696
  },
  "room_trash": {
   "id": "room_trash",
@@ -3583,14 +3583,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/plastic-waste-bin-cb278948a28a440d8e26573bbc8483df",
   "site": "Sketchfab",
-  "tris": 2172,
-  "tex": 288,
+  "tris": 985,
+  "tex": 256,
   "size": [
-   0.321,
+   0.316,
    0.31,
-   0.321
+   0.316
   ],
-  "bytes": 34812
+  "bytes": 24076
  },
  "room_tvrack": {
   "id": "room_tvrack",
@@ -3621,14 +3621,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/unhyun--floor-cushion-6b0209cc65db435e921d0c10db469d52",
   "site": "Sketchfab",
-  "tris": 2994,
+  "tris": 992,
   "tex": 256,
   "size": [
-   0.416,
+   0.421,
    0.09,
    0.411
   ],
-  "bytes": 45184
+  "bytes": 20880
  },
  "rubbishpile": {
   "id": "rubbishpile",
@@ -3895,14 +3895,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/spray-bottle-1611833f3eaa41bbba2b6944269429ab",
   "site": "Sketchfab",
-  "tris": 1490,
-  "tex": 112,
+  "tris": 992,
+  "tex": 96,
   "size": [
-   0.071,
+   0.069,
    0.192,
    0.053
   ],
-  "bytes": 27728
+  "bytes": 19968
  },
  "star_lamp": {
   "id": "star_lamp",
@@ -3951,14 +3951,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/wooden_stool_01",
   "site": "Poly Haven",
-  "tris": 2990,
+  "tris": 999,
   "tex": 256,
   "size": [
-   0.427,
+   0.412,
    0.437,
-   0.443
+   0.432
   ],
-  "bytes": 62060
+  "bytes": 31708
  },
  "stove_kettle": {
   "id": "stove_kettle",
@@ -3970,14 +3970,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/gas-stove-056ccf898f9e49acb6e3e370deabf184",
   "site": "Sketchfab",
-  "tris": 2530,
+  "tris": 916,
   "tex": 224,
   "size": [
    0.171,
    0.248,
    0.183
   ],
-  "bytes": 41852
+  "bytes": 24020
  },
  "streetlight": {
   "id": "streetlight",
@@ -4042,14 +4042,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/side_table_01",
   "site": "Poly Haven",
-  "tris": 2756,
+  "tris": 976,
   "tex": 464,
   "size": [
    0.55,
    0.551,
    0.45
   ],
-  "bytes": 53188
+  "bytes": 35708
  },
  "table_tea_cn": {
   "id": "table_tea_cn",
@@ -4133,14 +4133,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/plastic_thermos",
   "site": "Poly Haven",
-  "tris": 2966,
+  "tris": 999,
   "tex": 128,
   "size": [
-   0.141,
+   0.139,
    0.32,
    0.109
   ],
-  "bytes": 37476
+  "bytes": 17644
  },
  "tires": {
   "id": "tires",
@@ -4152,14 +4152,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663",
   "site": "Sketchfab",
-  "tris": 2478,
-  "tex": 368,
+  "tris": 1000,
+  "tex": 352,
   "size": [
-   0.488,
+   0.49,
    0.57,
    0.488
   ],
-  "bytes": 51612
+  "bytes": 33564
  },
  "tomare": {
   "id": "tomare",
@@ -4188,14 +4188,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/metal_tool_chest",
   "site": "Poly Haven",
-  "tris": 2984,
-  "tex": 512,
+  "tris": 996,
+  "tex": 480,
   "size": [
-   0.684,
+   0.676,
    0.652,
    0.407
   ],
-  "bytes": 77144
+  "bytes": 40372
  },
  "toolbox": {
   "id": "toolbox",
@@ -4206,14 +4206,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/metal_toolbox",
   "site": "Poly Haven",
-  "tris": 2995,
-  "tex": 416,
+  "tris": 996,
+  "tex": 400,
   "size": [
-   0.456,
+   0.457,
    0.347,
-   0.308
+   0.31
   ],
-  "bytes": 81680
+  "bytes": 45596
  },
  "torii": {
   "id": "torii",
@@ -4243,14 +4243,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/trashbag",
   "site": "Poly Haven",
-  "tris": 2999,
-  "tex": 288,
+  "tris": 1000,
+  "tex": 256,
   "size": [
-   0.444,
+   0.426,
    0.48,
-   0.39
+   0.385
   ],
-  "bytes": 62388
+  "bytes": 28536
  },
  "trash_bag_b": {
   "id": "trash_bag_b",
@@ -4262,14 +4262,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/garbage-bag-bf200222d79d4411aade19ddf312f122",
   "site": "Sketchfab",
-  "tris": 2999,
+  "tris": 1000,
   "tex": 256,
   "size": [
-   0.431,
+   0.43,
    0.336,
    0.413
   ],
-  "bytes": 44864
+  "bytes": 21204
  },
  "trash_basket": {
   "id": "trash_basket",
@@ -4336,14 +4336,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/Television_01",
   "site": "Poly Haven",
-  "tris": 1918,
-  "tex": 400,
+  "tris": 975,
+  "tex": 352,
   "size": [
    0.6,
    0.457,
    0.471
   ],
-  "bytes": 38396
+  "bytes": 26924
  },
  "tyre": {
   "id": "tyre",
@@ -4354,14 +4354,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/old_tyre",
   "site": "Poly Haven",
-  "tris": 2880,
-  "tex": 384,
+  "tris": 946,
+  "tex": 352,
   "size": [
    0.6,
    0.6,
    0.165
   ],
-  "bytes": 54940
+  "bytes": 35736
  },
  "ufo": {
   "id": "ufo",
@@ -4391,14 +4391,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/Ukulele_01",
   "site": "Poly Haven",
-  "tris": 2995,
+  "tris": 1000,
   "tex": 256,
   "size": [
-   0.177,
+   0.178,
    0.527,
-   0.051
+   0.05
   ],
-  "bytes": 72668
+  "bytes": 32680
  },
  "umbrella_stand": {
   "id": "umbrella_stand",
@@ -4483,14 +4483,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/brass_vase_01",
   "site": "Poly Haven",
-  "tris": 2979,
+  "tris": 994,
   "tex": 256,
   "size": [
    0.228,
    0.692,
    0.228
   ],
-  "bytes": 50292
+  "bytes": 27936
  },
  "vase_ceramic": {
   "id": "vase_ceramic",
@@ -4501,14 +4501,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/antique_ceramic_vase_01",
   "site": "Poly Haven",
-  "tris": 2999,
-  "tex": 336,
+  "tris": 999,
+  "tex": 320,
   "size": [
-   0.251,
+   0.25,
    0.44,
-   0.251
+   0.25
   ],
-  "bytes": 73876
+  "bytes": 38336
  },
  "vintage_watch": {
   "id": "vintage_watch",
@@ -4519,14 +4519,14 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/vintage_pocket_watch",
   "site": "Poly Haven",
-  "tris": 1497,
+  "tris": 995,
   "tex": 128,
   "size": [
    0.059,
    0.077,
    0.013
   ],
-  "bytes": 24544
+  "bytes": 19380
  },
  "wash_bucket": {
   "id": "wash_bucket",
@@ -4592,13 +4592,13 @@
   "license": "CC0 1.0",
   "url": "https://polyhaven.com/a/watering_can_metal_01",
   "site": "Poly Haven",
-  "tris": 2993,
-  "tex": 256,
+  "tris": 1000,
+  "tex": 240,
   "size": [
-   0.19,
+   0.189,
    0.197,
    0.453
   ],
-  "bytes": 52472
+  "bytes": 24512
  }
 }

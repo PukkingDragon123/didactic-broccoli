@@ -9,12 +9,12 @@
   "url": "https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4",
   "site": "Sketchfab"
  },
- "tris": 2998,
- "tex": 256,
+ "tris": 999,
+ "tex": 224,
  "size": [
-  0.273,
+  0.271,
   0.22,
-  0.195
+  0.196
  ],
  "colours": 8,
  "palette": {

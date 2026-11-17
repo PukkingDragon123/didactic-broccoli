@@ -9,12 +9,12 @@
   "url": "https://sketchfab.com/3d-models/kotatsu-1e976c78d1eb4d2faa590316b0d38e24",
   "site": "Sketchfab"
  },
- "tris": 3999,
- "tex": 512,
+ "tris": 3000,
+ "tex": 260,
  "size": [
-  2.414,
+  2.428,
   0.45,
-  2.399
+  2.413
  ],
  "colours": 23,
  "palette": {

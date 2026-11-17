@@ -93,7 +93,7 @@ export function hairSegments(spec, P, J) {
   // ---------------- the shell
   let shellTh = 0;
   if (sty) {
-    const N = 16, M = sty.mode === 'fall' ? 9 : 7;
+    const N = sty.long ? 12 : 14, M = sty.mode === 'fall' ? 8 : 6;
     const th0 = sty.th * hu;
     shellTh = th0;
     // per column: thickness jitter (locks in the silhouette), the hem
@@ -156,7 +156,7 @@ export function hairSegments(spec, P, J) {
     }
     S.push({
       tube: true, closed: true, part: 'hairShell', mat: 'hair', N, lodMinN: 8, rings, dens: 1.05,
-      double: sty.mode === 'fall' ? 0.003 * hu : 0,
+      double: sty.long ? 0.003 * hu : 0,
       meta: { sty, P, hem: (a) => (covered ? yBand - 0.01 * hu : hemAt(sty, P, a)), A0: Math.PI, seed, covered },
     });
   }
@@ -266,8 +266,8 @@ function hatTubes(spec, P, head, hairTh, yBand) {
   const hu = P.hu, hat = spec.hat.kind, out = [];
   const th = Math.max(hairTh * 0.45, 0.01 * hu) + 0.012 * hu;
   // a crown that fits over the skull + hair from the band up, closed at the top (shape: top lift, front tilt)
-  const crown = (part, lift, round, fwd = 0, N = 14, flat = false) => {
-    const M = 5, rings = [];
+  const crown = (part, lift, round, fwd = 0, N = 12, flat = false) => {
+    const M = 4, rings = [];
     for (let i = 0; i <= M; i++) {
       const s = i / M; // 0 = band .. 1 = top
       const y = lerp(yBand, P.crown, Math.sin(s * Math.PI / 2) ** 0.9);
@@ -292,9 +292,9 @@ function hatTubes(spec, P, head, hairTh, yBand) {
     return { tube: true, closed: true, part, mat: 'hat', N, lodMinN: 8, rings, dens: 1.05, meta: { kind: hat } };
   };
   // a ring brim: from the band out by `w` (front / back can differ), drooping by `droop`
-  const brim = (w, wF, droop, N = 14) => {
+  const brim = (w, wF, droop, N = 12) => {
     const rings = [];
-    const steps = [0, 0.35, 0.75, 1];
+    const steps = [0, 0.5, 1];
     for (const s of steps) {
       const pts = [];
       for (let k = 0; k < N; k++) {

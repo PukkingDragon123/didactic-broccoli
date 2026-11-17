@@ -9,12 +9,12 @@
   "url": "https://sketchfab.com/3d-models/pbr-old-rotary-phone-52fb9ffd3bc241979f7192326e52aad8",
   "site": "Sketchfab"
  },
- "tris": 2999,
- "tex": 240,
+ "tris": 999,
+ "tex": 176,
  "size": [
-  0.168,
+  0.166,
   0.13,
-  0.095
+  0.093
  ],
  "colours": 24,
  "palette": {

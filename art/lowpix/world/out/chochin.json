@@ -9,12 +9,12 @@
   "url": "https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316",
   "site": "Sketchfab"
  },
- "tris": 1718,
- "tex": 304,
+ "tris": 1000,
+ "tex": 256,
  "size": [
   0.258,
   0.55,
-  0.253
+  0.254
  ],
  "colours": 19,
  "palette": {

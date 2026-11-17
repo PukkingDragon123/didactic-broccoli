@@ -8,14 +8,14 @@
   "url": "https://polyhaven.com/a/metal_toolbox",
   "site": "Poly Haven"
  },
- "tris": 2995,
- "tex": 416,
+ "tris": 996,
+ "tex": 400,
  "size": [
-  0.456,
+  0.457,
   0.347,
-  0.308
+  0.31
  ],
- "colours": 23,
+ "colours": 22,
  "palette": {
   "m0": [
    "#5b0c23",

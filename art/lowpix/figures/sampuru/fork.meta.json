@@ -19,9 +19,9 @@
    "yaw": 0,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1000,
    "mat": "matte",
-   "key": "821f6494501805"
+   "key": "e8a036eeb4dd14"
   }
  ],
  "model_clip": {

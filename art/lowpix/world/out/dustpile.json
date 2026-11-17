@@ -8,14 +8,14 @@
   "url": "",
   "site": "Original"
  },
- "tris": 1176,
+ "tris": 999,
  "tex": 512,
  "size": [
-  0.601,
+  0.605,
   0.056,
-  0.45
+  0.454
  ],
- "colours": 47,
+ "colours": 48,
  "palette": {
   "m0": [
    "#3e2d29",

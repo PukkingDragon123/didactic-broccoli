@@ -9,12 +9,12 @@
   "url": "https://sketchfab.com/3d-models/metal-bucket-0a7a3ccfdb624369b54dc7e06a5f2486",
   "site": "Sketchfab"
  },
- "tris": 1408,
- "tex": 272,
+ "tris": 999,
+ "tex": 256,
  "size": [
   0.286,
   0.287,
-  0.309
+  0.308
  ],
  "colours": 15,
  "palette": {

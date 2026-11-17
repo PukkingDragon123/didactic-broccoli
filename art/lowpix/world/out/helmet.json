@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/construction-helmet-orange-2f9546f0aa9e4dbdade316e1b9d59f04",
   "site": "Sketchfab"
  },
- "tris": 2997,
- "tex": 256,
+ "tris": 998,
+ "tex": 192,
  "size": [
-  0.241,
+  0.229,
   0.152,
-  0.314
+  0.313
  ],
- "colours": 30,
+ "colours": 28,
  "palette": {
   "m0": [
    "#6b1607",

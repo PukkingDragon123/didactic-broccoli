@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/Lantern_01",
   "site": "Poly Haven"
  },
- "tris": 2998,
- "tex": 192,
+ "tris": 973,
+ "tex": 128,
  "size": [
-  0.123,
+  0.116,
   0.294,
-  0.097
+  0.098
  ],
  "colours": 8,
  "palette": {

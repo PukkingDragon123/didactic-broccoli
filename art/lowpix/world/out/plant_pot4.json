@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/potted_plant_04",
   "site": "Poly Haven"
  },
- "tris": 2999,
- "tex": 240,
+ "tris": 1000,
+ "tex": 160,
  "size": [
   0.164,
   0.268,
-  0.181
+  0.179
  ],
  "colours": 8,
  "palette": {

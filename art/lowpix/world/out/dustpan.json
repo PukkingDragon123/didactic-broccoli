@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/dustpan",
   "site": "Poly Haven"
  },
- "tris": 2999,
- "tex": 208,
+ "tris": 998,
+ "tex": 144,
  "size": [
-  0.332,
+  0.335,
   0.1,
-  0.368
+  0.372
  ],
  "colours": 8,
  "palette": {

@@ -17,12 +17,12 @@
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
    "opts": {
     "smooth": 2.0
    },
-   "key": "d326a65ee3a164"
+   "key": "254e46d97acc9b"
   }
  ],
  "model_clip": {

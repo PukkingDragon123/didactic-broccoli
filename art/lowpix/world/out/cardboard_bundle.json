@@ -9,14 +9,14 @@
   "url": "https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f",
   "site": "Sketchfab"
  },
- "tris": 2999,
- "tex": 240,
+ "tris": 999,
+ "tex": 208,
  "size": [
-  0.309,
+  0.305,
   0.15,
-  0.355
+  0.356
  ],
- "colours": 20,
+ "colours": 19,
  "palette": {
   "m0": [
    "#3d231d",

@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/plastic_crate_02",
   "site": "Poly Haven"
  },
- "tris": 2930,
- "tex": 384,
+ "tris": 966,
+ "tex": 256,
  "size": [
-  0.506,
+  0.497,
   0.254,
-  0.406
+  0.387
  ],
  "colours": 8,
  "palette": {

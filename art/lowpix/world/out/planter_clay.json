@@ -8,12 +8,12 @@
   "url": "https://polyhaven.com/a/planter_pot_clay",
   "site": "Poly Haven"
  },
- "tris": 2998,
- "tex": 160,
+ "tris": 1000,
+ "tex": 176,
  "size": [
-  0.266,
+  0.258,
   0.222,
-  0.263
+  0.256
  ],
  "colours": 8,
  "palette": {

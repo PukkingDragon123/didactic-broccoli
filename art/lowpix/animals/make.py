@@ -259,7 +259,7 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, eye_in=0.74, c
         Pz = P2.copy()
         def surf_z(x, y):
             return ray_z(x, y) if True else 0
-        xs = np.linspace(-L['w'], L['w'], 13)
+        xs = np.linspace(-L['w'], L['w'], 9)
         lp, luv, lt, lj = mouth_lens(xs, L['lip_y'], surf_z, (mrect[0] / W, mrect[1] / H, mrect[2] / W, mrect[3] / H))
         mouth_parts = (lp, luv, lt, lj)
         B = cut['bowl']
@@ -325,7 +325,7 @@ def finish(gid, P, N, F, UV, tex, scale, shift, extra=None, extras=None):
 
 
 # ------------------------------------------------------------------ Fripouille (guillaume bolis, hand-made): Mikan's base
-def fri_prepared():
+def fri_prepared(tris=2150):
     """Fripouille's body in her rigged standing pose (skinned on the CPU: gltfskin.py), turned to stand on y = 0 facing
     +z, squared to the z axis, scaled to 30 units tall (ear tips), her head centred; her own UVs and Substance-painted
     texture. Returns P, F, UV, N, src (1024 px, the repaint's base) and her skeleton's joints read off the skin weights
@@ -359,6 +359,21 @@ def fri_prepared():
     J = {key: T(v[0])[0] for key, v in pairs.items()}
     O = {key: T(v) for key, v in own.items()}
     tex = Image.open(os.path.join(dl, 'textures', 'SHD_frip_baseColor.png')).convert('RGB')
+    if tris:
+        # the game budget (<= 3k tris an animal, with eyes, lids and mouth): lowpix decimates her (feature-preserving,
+        # the silhouette kept) and re-bakes her texture onto the low mesh's own atlas
+        out = os.path.join(CACHE, f'fri_lo{tris}')
+        glb = os.path.join(out, 'src.glb')
+        if not os.path.exists(glb):
+            os.makedirs(out, exist_ok=True)
+            png = io.BytesIO(); tex.save(png, 'PNG')
+            write_glb(os.path.join(out, 'in.glb'), P, N, UV, F, png.getvalue())
+            subprocess.run([sys.executable, '-m', 'lowpix', 'convert', os.path.join(out, 'in.glb'), '--name', 'src', '--style', 'realistic', '--height', '30',
+                            '--tris', str(tris), '--atlas', '1024', '-o', out], check=True, env=dict(os.environ, PYTHONPATH=LOWPIX), cwd=LOWPIX)
+        g = read_glb(glb)
+        P2, F2, UV2 = g['pos'], g['idx'], g['uv']
+        print('decimated', len(F), '->', len(F2), 'bounds', P2.min(0).round(2), P2.max(0).round(2), 'vs', P.min(0).round(2), P.max(0).round(2))
+        return P2, F2, UV2, weld_normals(P2, F2), np.asarray(Image.open(io.BytesIO(g['png'])).convert('RGB')).astype(np.float32), J, O
     src = down2(np.asarray(tex))
     return P, F, UV, N, src, J, O
 
@@ -463,8 +478,9 @@ def make_mikan(coat='calico'):
         band = np.where(body_, np.sin((z + jitter * 3) * 1.25 + 0.4 * np.abs(x)) > 0.55 - 0.25 * np.clip((y - 14) / 8, 0, 1), False)
         band |= (z < -8.8) & (np.sin(z * 1.4 + jitter) > 0.35)
         band |= (y < 12) & (z > -14) & (np.sin(y * 1.5 + jitter * 2) > 0.62)
-        band |= head & (((ax < 0.9) & (y > 26.2) & (np.sin(x * 9) > 0.2)) | ((y > 24.1) & (y < 24.5) & (ax > 1.9)))
+        band |= head & (ax < 0.9) & (y > 26.4) & (z > 19.5) & (np.sin(x * 9) > 0.2)               # the forehead M
         band |= (z > -9) & (z < 15) & (ax < 0.55) & (y > 22)
+        band &= ~(head & (y < 26.4))                                                             # a clean face
         under = ~warm
         def tput(m, R, mid):
             if not m.any(): return
