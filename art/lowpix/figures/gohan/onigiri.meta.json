@@ -1,0 +1,12 @@
+{
+ "mats": {
+  "beak": "gloss",
+  "footL": "gloss",
+  "footR": "gloss"
+ },
+ "clips": {
+  "gimmick": "wobble"
+ },
+ "pts": {},
+ "key": "gohan/onigiri"
+}

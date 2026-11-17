@@ -1,0 +1,14 @@
+{
+ "mats": {
+  "plate": "gloss",
+  "tail": "gloss",
+  "plate0": "gloss",
+  "plate1": "gloss",
+  "plate2": "gloss"
+ },
+ "clips": {
+  "gimmick": "wobble"
+ },
+ "pts": {},
+ "key": "gohan/purin"
+}

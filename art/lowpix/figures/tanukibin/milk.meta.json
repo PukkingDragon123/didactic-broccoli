@@ -1,0 +1,13 @@
+{
+ "mats": {
+  "bottle0": "gloss",
+  "bottle1": "gloss",
+  "bottle2": "gloss",
+  "bottle3": "gloss"
+ },
+ "clips": {
+  "gimmick": "wobble"
+ },
+ "pts": {},
+ "key": "tanukibin/milk"
+}

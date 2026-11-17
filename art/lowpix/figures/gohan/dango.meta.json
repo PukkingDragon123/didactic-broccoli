@@ -1,0 +1,13 @@
+{
+ "mats": {
+  "antennaL": "gloss",
+  "tipL": "gloss",
+  "antennaR": "gloss",
+  "tipR": "gloss"
+ },
+ "clips": {
+  "gimmick": "wobble"
+ },
+ "pts": {},
+ "key": "gohan/dango"
+}
