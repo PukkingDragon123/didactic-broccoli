@@ -62,6 +62,7 @@ PH = {
     'beans': '59bc07aff213dead@test', 'fuji': '04da2550440dd624@validation', 'bubbles': '086e20b26cefa816@test', 'teafield': '2c6b472a3ddd5dd7@test',
     'cocoa': '0af12cae5301c91d@validation', 'barley': '16f8a879d09ef4cb@test', 'jasmine': '129df409588b04f4@test', 'sea': '011d1dcbfb65a15f@test',
 }
+PH.update({'oolong': '0b850f65c891705e@test', 'tantan': '57d0794f60026f31@test'})
 def ph(k): return 'oi:' + PH[k]
 INK = 0x231c1a; WHITE = 0xfbf8f2; RED = 0xc8241e; GOLD = 0xc9a24a; Y = 0xf6d23a
 
@@ -348,9 +349,9 @@ S['menu'] = (176, 240, menu)
 # ---- Ramen Yamada (src/products/ramenArt.js): the dishes on the ticket machine and the menu, the signboard, the beer
 # poster (keys 'rm:...', in the shop sheet)
 DISH = {'rm_shoyu': ('ramen_shoyu', (0.5, 0.5, 1.3)), 'rm_miso': ('ramen_miso', (0.5, 0.5, 1.4)), 'rm_tonkotsu': ('ramen_tonkotsu', (0.5, 0.5, 1.3)),
-        'rm_shio': ('ramen4', (0.5, 0.5, 1.3)), 'rm_tantan': ('ramen_miso', (0.35, 0.45, 2.0)), 'rm_gyoza': ('gyoza', (0.5, 0.5, 1.3)),
+        'rm_shio': ('ramen4', (0.5, 0.5, 1.3)), 'rm_tantan': ('tantan', (0.5, 0.5, 1.2)), 'rm_gyoza': ('gyoza', (0.5, 0.5, 1.3)),
         'rm_rice': ('rice', (0.5, 0.5, 1.6)), 'rm_chashu': ('ramen_shoyu', (0.62, 0.42, 2.6)), 'rm_beer': ('beer2', (0.5, 0.45, 1.2)),
-        'rm_sake': ('sake', (0.5, 0.5, 1.2)), 'rm_oolong': ('cola', (0.5, 0.5, 1.2)), 'rm_kaedama': ('kaedama', (0.5, 0.4, 1.4))}
+        'rm_sake': ('sake', (0.5, 0.5, 1.2)), 'rm_oolong': ('oolong', (0.5, 0.5, 1.3)), 'rm_kaedama': ('kaedama', (0.5, 0.4, 1.4))}
 def dish(k, f):
     def fn(P):
         P.photo(ph(k), 0, 0, P.w, P.h, f=f, sat=0.98, con=1.06)
@@ -397,6 +398,46 @@ def menucard(P):
         P.hline(x + 76, y + 40, 240, 0xc8b898, 0.8)
     P.rect(352, 56, 1, 336, 0xc8b898)
     P.text('食券は入口の券売機でお求めください', 'kakub', 9, w / 2, h - 8, 0x6a5a4a)
+# the wall plaques (お品書き, one per dish: wood, vertical mincho, the price), the ticket machine's photo buttons, the
+# standing board outside, the noren and the nobori flag (Ramen.js draws these; layout mirrored there)
+for k, jp, yen in RM:
+    def plaque(P, k=k, jp=jp, yen=yen):
+        P.texture('acg:Wood049', 0, 0, 48, 132, tint=0xd8b07a, k=1.0, mode='normal')
+        P.text(jp.replace('ー', '｜')[:6], 'oldmincho', 15, 24, 8, INK, anchor='mt', vert=True, maxh=96)
+        P.text('%d円' % yen, 'kakub', 9, 24, 122, RED)
+    S['rm:plaque:' + k] = (48, 132, plaque)
+def tickets(P):
+    w, h = 400, 496
+    P.rect(0, 0, w, h, 0xf4f2ec); P.rect(0, 0, w, 40, RED)
+    P.text('食券', 'kaku', 24, 12, 20, WHITE, anchor='lm'); P.text('MEAL TICKETS', 'bebas', 14, w - 12, 20, WHITE, anchor='rm', track=1)
+    for i, (k, jp, yen) in enumerate(RM):
+        x, y = 12 + (i % 3) * 128, 52 + (i // 3) * 108
+        P.rect(x, y, 120, 96, 0xfbfaf6); P.rect(x, y, 120, 96, 0x8a8478, line=1)
+        P.photo(ph(DISH[k][0]), x + 4, y + 4, 112, 52, f=DISH[k][1], sat=1.0, con=1.06)
+        P.text(jp, 'kakub', 12, x + 60, y + 68, INK, maxw=110)
+        P.text('%d円' % yen, 'kaku', 13, x + 60, y + 86, RED)
+S['rm:tickets'] = (400, 496, tickets)
+def board(P):
+    w, h = 192, 288
+    P.texture('acg:Wood049', 0, 0, w, h, tint=0x5a3a22, k=1.0, mode='normal'); P.rect(8, 8, w - 16, h - 16, 0x1e2a22)
+    P.text('お品書き', 'oldmincho', 20, w / 2, 26, 0xf4f0e4)
+    for i, (k, jp, yen) in enumerate(RM[:5]):
+        y = 48 + i * 46
+        P.photo(ph(DISH[k][0]), 16, y, 52, 40, f=DISH[k][1]); P.text(jp, 'kakub', 11, 74, y + 14, 0xf4f0e4, anchor='lm', maxw=100)
+        P.text('%d円' % yen, 'bebas', 14, w - 16, y + 32, 0xffd23f, anchor='rm')
+S['rm:board'] = (192, 288, board)
+def noren(P):
+    w, h = 192, 128
+    P.rect(0, 0, w, h, 0x1e2a52)
+    for x in (63, 127): P.rect(x, 0, 2, h, 0x141c3a)
+    P.text('らーめん', 'oldmincho', 34, w / 2, 64, 0xf4f0e4, track=4)
+    P.post = lambda im: PK.age(im, paper='Paper004', grain_k=0.8, fade=0.15, seed=3).convert('RGB')
+S['rm:noren'] = (192, 128, noren)
+def flag(P):
+    w, h = 64, 256
+    P.rect(0, 0, w, h, 0xc8302a); P.rect(0, 0, w, 10, WHITE)
+    P.text('ラーメン', 'oldmincho', 34, w / 2, 20, WHITE, anchor='mt', vert=True, maxh=222)
+S['rm:flag'] = (64, 256, flag)
 S['rm:menu'] = (704, 400, aged(menucard, paper='Paper001', grain_k=0.5, fade=0.05, rings=0.35, seed=12))
 
 

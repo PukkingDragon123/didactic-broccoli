@@ -296,4 +296,38 @@ await model('garbagestation', 'garbage.png', ({ box, cyl, mound }) => {
 });
 // AA batteries in a blister card (battery_pack)
 await model('batterypack', 'battery.png', ({ box }) => { box(-0.043, 0, -0.011, 0.043, 0.126, 0.011, [0.01, 0.01, 0.99, 0.99]); });
+// shop goods on the PRINT photo atlas (public/img/print/goods.webp + goods.json, copied to goods.png): the 1 l milk carton,
+// the puff-stick box, the cup noodle
+const G = (x, y, w, h) => [x / 1024, y / 962, (x + w) / 1024, (y + h) / 962];
+await model('goodsmilk', 'goods.png', ({ quad, tri }) => {
+  const w = 0.035, d = 0.0385, H = 0.18, side = (i) => G(i * 140, 0, 140, 322);
+  const UV = (r) => [[r[0], r[3]], [r[2], r[3]], [r[2], r[1]], [r[0], r[1]]];
+  quad([-w, 0, d], [w, 0, d], [w, H, d], [-w, H, d], [0, 0, 1], UV(side(0)));
+  quad([w, 0, d], [w, 0, -d], [w, H, -d], [w, H, d], [1, 0, 0], UV(side(1)));
+  quad([w, 0, -d], [-w, 0, -d], [-w, H, -d], [w, H, -d], [0, 0, -1], UV(side(2)));
+  quad([-w, 0, -d], [-w, 0, d], [-w, H, d], [-w, H, -d], [-1, 0, 0], UV(side(3)));
+  const t = G(528, 690, 280, 126);
+  quad([-w, H, d], [w, H, d], [w, H + 0.025, 0], [-w, H + 0.025, 0], [0, 0.8, 0.6], UV(t));
+  quad([w, H, -d], [-w, H, -d], [-w, H + 0.025, 0], [w, H + 0.025, 0], [0, 0.8, -0.6], UV(t));
+  tri([w, H, d], [w, H, -d], [w, H + 0.025, 0], [1, 0, 0], [[t[0], t[3]], [t[2], t[3]], [(t[0] + t[2]) / 2, t[1]]]);
+  tri([-w, H, -d], [-w, H, d], [-w, H + 0.025, 0], [-1, 0, 0], [[t[0], t[3]], [t[2], t[3]], [(t[0] + t[2]) / 2, t[1]]]);
+  quad([-w, H + 0.025, -0.004], [w, H + 0.025, -0.004], [w, H + 0.035, -0.004], [-w, H + 0.035, -0.004], [0, 0, -1], UV(t));
+  quad([w, H + 0.025, 0.004], [-w, H + 0.025, 0.004], [-w, H + 0.035, 0.004], [w, H + 0.035, 0.004], [0, 0, 1], UV(t));
+});
+await model('goodspuff', 'goods.png', ({ box, quad }) => {
+  const P = G(560, 0, 188, 220), side = G(700, 10, 40, 200);
+  box(-0.105, 0, -0.07, 0.105, 0.16, 0.07, side);
+  quad([-0.105, 0, 0.0705], [0.105, 0, 0.0705], [0.105, 0.23, 0.0705], [-0.105, 0.23, 0.0705], [0, 0, 1], [[P[0], P[3]], [P[2], P[3]], [P[2], P[1]], [P[0], P[1]]]);
+  box(-0.1, 0.16, -0.065, 0.1, 0.22, 0.06, G(600, 140, 100, 60));
+});
+await model('goodsnoodle', 'goods.png', ({ quad, tri }) => {
+  const n = 18, r0 = 0.045, r1 = 0.055, H = 0.105, S = G(392, 322, 528, 190), L = G(200, 322, 192, 192);
+  for (let i = 0; i < n; i++) {
+    const a0 = (i / n) * Math.PI * 2, a1 = ((i + 1) / n) * Math.PI * 2, u0 = S[0] + (S[2] - S[0]) * i / n, u1 = S[0] + (S[2] - S[0]) * (i + 1) / n;
+    const p = (a, r, y) => [Math.sin(a) * r, y, Math.cos(a) * r], am = (a0 + a1) / 2;
+    quad(p(a0, r0, 0), p(a1, r0, 0), p(a1, r1, H), p(a0, r1, H), [Math.sin(am), 0.1, Math.cos(am)], [[u0, S[3]], [u1, S[3]], [u1, S[1]], [u0, S[1]]]);
+    const c = [(L[0] + L[2]) / 2, (L[1] + L[3]) / 2], q = (a) => [c[0] + Math.sin(a) * (L[2] - L[0]) / 2, c[1] - Math.cos(a) * (L[3] - L[1]) / 2];
+    tri([0, H + 0.002, 0], p(a0, r1, H + 0.002), p(a1, r1, H + 0.002), [0, 1, 0], [c, q(a0), q(a1)]);
+  }
+});
 console.log('ok');

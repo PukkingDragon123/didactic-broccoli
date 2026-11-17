@@ -24,7 +24,7 @@
 "model": "broombin"
 },
 "mk_puff_box": {
-"model": "puffbox"
+"model": "goodspuff"
 },
 "pocket_watch": {
 "model": "vintage_watch"
@@ -136,7 +136,7 @@
 "model": "watchcase"
 },
 "milk_carton": {
-"model": "milkcarton"
+"model": "goodsmilk"
 },
 "tube_box": {
 "model": "tubebox"
@@ -152,5 +152,8 @@
 },
 "cash_tin": {
 "model": "coin_float"
+},
+"room_cupnoodle": {
+"model": "goodsnoodle"
 }
 }

@@ -2067,6 +2067,45 @@
    "tris": 1000,
    "prop": "pocket_watch",
    "cap": 256
+  },
+  {
+   "id": "goodsmilk",
+   "src": "art/lowpix/world/made/goodsmilk.glb",
+   "h": 0.215,
+   "ppm": 900,
+   "tris": 300,
+   "name": "milk carton",
+   "prop": "milk_carton",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 0.5,
+   "detail": 1.0
+  },
+  {
+   "id": "goodspuff",
+   "src": "art/lowpix/world/made/goodspuff.glb",
+   "h": 0.23,
+   "ppm": 900,
+   "tris": 300,
+   "name": "mk puff box",
+   "prop": "mk_puff_box",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 0.5,
+   "detail": 1.0
+  },
+  {
+   "id": "goodsnoodle",
+   "src": "art/lowpix/world/made/goodsnoodle.glb",
+   "h": 0.107,
+   "ppm": 900,
+   "tris": 300,
+   "name": "room cupnoodle",
+   "prop": "room_cupnoodle",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 0.5,
+   "detail": 1.0
   }
  ]
 }
