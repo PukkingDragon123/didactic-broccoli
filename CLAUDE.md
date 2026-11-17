@@ -15,6 +15,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   realistic hand-painted pixel-art textures, built as lowpix specs (art/lowpix/) or converted from CC0 / CC BY Poly
   Haven and Sketchfab models; almost no voxel art. Never chibi, never stuck-together primitives, never cartoon.
   First-person arms are blocky but connected and flexible.
+- **Low poly, stylised**: models use low triangle counts with clean, deliberate silhouettes (bevels and edge flow
+  where they read, no noisy scan geometry); the hand-painted pixel-art texture carries the detail. Real proportions,
+  not cartoon. Budgets: toy ≤1.5k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
 - Gacha toys are one consistent product line: every figure has the same finish (hand-painted pixel-art PVC, same
   lighting, ramps, texel density, quiet series bases), with no flat or untextured models and no noisy textures. **No
   reskins**: every catalogue entry is its own unique sculpt; a recolour exists only as a finish (gold, clear, glow…)
