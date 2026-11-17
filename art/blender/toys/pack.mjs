@@ -9,15 +9,20 @@ import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extension
 import { dedup, prune, quantize, reorder, resample, getBounds } from '@gltf-transform/functions';
 import { MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, renameSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { resolve, join } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '../../..');
-const [series, ...only] = process.argv.slice(2);
+const manPath = resolve(ROOT, 'src/figures/lowpix.manifest.json');
+const LOCK = '/tmp/gg-manifest.lock'; // every writer of lowpix.manifest.json should hold this (flock)
+if (process.argv[2] === '--merge') merge(process.argv[3]);
+else await pack(process.argv.slice(2));
+
+async function pack([series, ...only]) {
 if (!series) { console.error('usage: node art/blender/toys/pack.mjs <series> [<id> ...]'); process.exit(1); }
 await MeshoptEncoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
-const manPath = resolve(ROOT, 'src/figures/lowpix.manifest.json');
 const BUILD = resolve(ROOT, 'art/blender/toys/_build', series);
 const outDir = resolve(ROOT, 'public/models/lowpix/figures', series);
 mkdirSync(outDir, { recursive: true });
@@ -69,7 +74,30 @@ for (const id of ids) {
   const e = done[`${series}/${id}`];
   console.log(`${series}/${id}`, e.tris + ' tris', atlas?.join('x'), e.kb + ' KB', 'size', e.size.join('x'), 'clips', Object.keys(e.clips).join(','));
 }
-const man = existsSync(manPath) ? JSON.parse(readFileSync(manPath, 'utf8')) : {};
-Object.assign(man, done);
-const sorted = Object.fromEntries(Object.keys(man).sort().map((k) => [k, man[k]]));
-writeFileSync(manPath, JSON.stringify(sorted, null, 0).replace(/\},"/g, '},\n"') + '\n');
+// Merge into the shared manifest under an exclusive lock (several agents pack series in parallel): re-read the file
+// inside the lock, touch only this series' entries, write a temp file and rename it into place. A whole-series pack
+// (no ids given) also drops this series' entries (and GLBs) for figures that no longer exist.
+const part = join(BUILD, `_pack.${process.pid}.json`);
+writeFileSync(part, JSON.stringify({ series, full: !only.length, done }));
+execFileSync('flock', ['-w', '120', LOCK, process.execPath, import.meta.filename, '--merge', part], { stdio: 'inherit' });
+rmSync(part, { force: true });
+}
+
+function merge(partFile) {
+  const { series, full, done } = JSON.parse(readFileSync(partFile, 'utf8'));
+  const man = existsSync(manPath) ? JSON.parse(readFileSync(manPath, 'utf8')) : {};
+  if (full) {
+    for (const k of Object.keys(man)) {
+      if (!k.startsWith(series + '/') || done[k] || !man[k].blender) continue;
+      delete man[k];
+      rmSync(resolve(ROOT, 'public/models/lowpix/figures', k + '.glb'), { force: true });
+      console.log('pruned', k);
+    }
+  }
+  Object.assign(man, done);
+  const sorted = Object.fromEntries(Object.keys(man).sort().map((k) => [k, man[k]]));
+  const tmp = manPath + '.' + process.pid + '.tmp';
+  writeFileSync(tmp, JSON.stringify(sorted, null, 0).replace(/\},"/g, '},\n"') + '\n');
+  renameSync(tmp, manPath);
+  console.log(`manifest: ${Object.keys(done).length} ${series} entries merged`);
+}
