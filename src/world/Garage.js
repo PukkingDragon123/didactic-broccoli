@@ -136,7 +136,7 @@ export class Garage {
     const block = surfMat('blockHD', { ppm: 64, roughness: 0.92, bump: 0.5 });
     const corr = surfMat('corrugatedHD', { ppm: 64, roughness: 0.5, metalness: 0.35, bump: 0.7 });
     // plywood: 91 x 182 cm sheets, each its own grain and tone (art/lowpix/world_arch/tex/make_tex.py), 128 px/m
-    const ply = new THREE.MeshStandardMaterial({ map: surfaceTex('plywood', 3.64), roughness: 0.75 });
+    const ply = new THREE.MeshStandardMaterial({ map: surfaceTex('plywood', 3.64), roughness: 0.75, color: new THREE.Color(1.3, 1.3, 1.3) }); // lifted: the corner is dim
     const cwall = surfMat('concreteHD', { ppm: 64, roughness: 0.92, bump: 0.5 });
 
     // ------------------------------------------------------------ floor & ceiling

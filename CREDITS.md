@@ -2707,6 +2707,11 @@ textures (copies in `art/lowpix/photos/`):
 - Rusty Metal 02 by Rob Tuytel (https://polyhaven.com/a/rusty_metal_02), CC0 1.0
 <!-- lowpix-machines:end -->
 
+
+## 3D models: animals (lowpix)
+
+- "3d modelling my cat: Fripouille" by guillaume bolis (https://sketchfab.com/3d-models/3d-modelling-my-cat-fripouille-0ab14bf98e754f8d90fe1bf1c84ca66c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Reposed, decimated with lowpix, repainted as pixel-art coats (calico and tabby), eyes, eyelids and mouth added; used in `models/lowpix/animals/mikan.glb` and `stray.glb` (Mikan, the stray, the prop cats).
+
 [print15:start]
 ## Printed matter, phase 15 (posters, display cards, packaging, paper)
 
@@ -2760,7 +2765,3 @@ Typefaces used in baked print (SIL Open Font License 1.1, Google Fonts): Zen Old
 Zen Kaku Gothic New, Zen Maru Gothic, M PLUS 1p, BIZ UDPGothic, Kaisei Tokumin, Mochiy Pop One, DotGothic16, Bebas Neue,
 Archivo Black, Barlow Condensed, Playfair Display, Oswald.
 [print15:end]
-
-## 3D models: animals (lowpix)
-
-- "3d modelling my cat: Fripouille" by guillaume bolis (https://sketchfab.com/3d-models/3d-modelling-my-cat-fripouille-0ab14bf98e754f8d90fe1bf1c84ca66c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Reposed, decimated with lowpix, repainted as pixel-art coats (calico and tabby), eyes, eyelids and mouth added; used in `models/lowpix/animals/mikan.glb` and `stray.glb` (Mikan, the stray, the prop cats).
