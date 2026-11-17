@@ -14,11 +14,9 @@ export default {
   items: [
     { id: 'maneki', name: "Beckoning Cat", jp: "招き猫", rarity: 'common', desc: "Left paw up for customers, a gold koban coin in the other. Every shop needs one.", gimmick: { text: "Beckon" } },
     { id: 'daruma', name: "Daruma", jp: "だるま", rarity: 'common', desc: "Paint one eye when you make the wish, the other when it comes true. He never falls over.", gimmick: { text: "Wobble" } },
-    { id: 'torii', name: "Vermilion Torii", jp: "朱の鳥居", rarity: 'common', desc: "The gate between the street and the shrine. Bow once on the way through." },
+    { id: 'torii', name: "Vermilion Torii", jp: "朱の鳥居", rarity: 'uncommon', desc: "The gate between the street and the shrine. Bow once on the way through." },
     { id: 'toro', name: "Stone Lantern", jp: "石灯籠", rarity: 'uncommon', desc: "Moss on the roof, a candle inside on festival nights." },
-    { id: 'koi', name: "Lucky Koi", jp: "開運の鯉", rarity: 'uncommon', desc: "A red-and-white carp from the shrine pond. Climb the waterfall, become a dragon.", gimmick: { text: "Swim" } },
-    { id: 'kitsune', name: "Inari Fox", jp: "お稲荷さん", rarity: 'rare', desc: "The shrine fox in her red bib, a scroll key in her mouth. Leave her an inari-zushi." },
-    { id: 'jinja', name: "Fox Gate at Dusk", jp: "夕暮れの鳥居", rarity: 'ultra', desc: "Two stone foxes, a torii and a lantern: a whole little shrine under a red sky." },
-    { id: 'goldneko', name: "Golden Beckoning Cat", jp: "黄金の招き猫", rarity: 'secret', desc: "Solid-looking gold, both paws raised: customers AND money. Very greedy, very lucky.", gimmick: { text: "Beckon" } },
+    { id: 'koi', name: "Lucky Koi", jp: "開運の鯉", rarity: 'rare', desc: "A red-and-white carp from the shrine pond. Climb the waterfall, become a dragon.", gimmick: { text: "Swim" } },
+    { id: 'kitsune', name: "Inari Fox", jp: "お稲荷さん", rarity: 'secret', desc: "The shrine fox in her red bib, a scroll key in her mouth, on her stone plinth. Leave her an inari-zushi." },
   ],
 };
