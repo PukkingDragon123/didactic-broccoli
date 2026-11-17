@@ -69,6 +69,12 @@ async function convert(it) {
   if (existsSync(dir)) for (const f of readdirSync(dir)) if (f !== '_source' && f !== '_keep.glb') rmSync(join(dir, f), { recursive: true, force: true });
   const o = { ...D, ...it };
   const h = heightOf(it), ppm = o.ppm || 160;
+  if (it.direct) { // a flat card (a cobweb): nothing for lowpix to convert; its painted source goes straight to the game step
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, it.id + '.glb'), readFileSync(resolve(ROOT, it.src)));
+    writeFileSync(join(dir, it.id + '_report.json'), JSON.stringify({ colors_used: 0, palette: {}, warnings: [] }));
+    return dir;
+  }
   let src = /^(polyhaven|sketchfab):/.test(it.src) ? it.src : resolve(ROOT, it.src); // a local file: our own source model
   // a Sketchfab model already downloaded (an earlier run): convert the cached file (no API call: downloads are
   // rate-limited); the credit still comes from its ATTRIBUTION.json
@@ -192,13 +198,13 @@ async function gameReady(it, dir) {
   for (const m of root.listMaterials()) {
     m.setExtension('KHR_materials_unlit', null);
     m.setRoughnessFactor(it.rough ?? 0.88).setMetallicFactor(0);
-    if (!it.alpha) m.setAlphaMode('OPAQUE');
+    if (!it.alpha) m.setAlphaMode('OPAQUE'); else m.setAlphaMode('MASK').setAlphaCutoff(0.5).setDoubleSided(true);
     const t = m.getBaseColorTexture();
     if (t && !done.has(t)) {
-      // texture budget (they all load with the prop library): the long side at most 512, 256 under 0.7 m, 128 for
-      // things smaller than a hand; halved as often as needed (the pixels stay crisp: nearest filtering in the game)
+      // texture budget (they all load with the prop library): the long side at most 512 (256 for things smaller than a
+      // hand), halved only when the conversion came out bigger; the conversions themselves run at ~160-300 texels a metre
       const sz = [b0.max[0] - b0.min[0], b0.max[1] - b0.min[1], b0.max[2] - b0.min[2]].map((v) => v * k), mx = Math.max(...sz);
-      const cap = it.cap || (mx < 0.25 ? 128 : mx < 0.7 ? 256 : 512);
+      const cap = it.cap || (mx < 0.25 ? 256 : 512);
       const r = await polishAtlas(Buffer.from(t.getImage()), !!it.alpha, cap);
       t.setImage(r.png).setMimeType('image/png');
       done.set(t, r);
@@ -240,6 +246,7 @@ async function gameReady(it, dir) {
   const report = JSON.parse(readFileSync(join(dir, readdirSync(dir).find((f) => f.endsWith('_report.json'))), 'utf8'));
   const hero = readdirSync(dir).find((f) => f.endsWith('_hero.png'));
   if (hero) await sharp(join(dir, hero)).resize(400, 300, { fit: 'inside' }).jpeg({ quality: 82 }).toFile(join(OUT_ART, it.id + '.jpg'));
+  else if (it.direct) { const t = doc.getRoot().listTextures()[0]; if (t) await sharp(Buffer.from(t.getImage())).flatten({ background: '#1b1e2c' }).resize(300, 300, { fit: 'inside', kernel: 'nearest' }).jpeg({ quality: 82 }).toFile(join(OUT_ART, it.id + '.jpg')); }
   writeFileSync(join(OUT_ART, it.id + '.json'), JSON.stringify({ id: it.id, src: it.src, credit, tris, tex, size, colours: report.colors_used, palette: report.palette, warnings: report.warnings }, null, 1) + '\n');
   return { id: it.id, name: it.name || credit.title, src: it.src, ...credit, tris, tex, size, bytes: statSync(outPath).size };
 }

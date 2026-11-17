@@ -57,6 +57,7 @@ import { buildPark } from './Park.js';
 import { buildPylon } from './Pylon.js';
 import { buildLanePosters } from './LanePosters.js';
 import { InstanceCuller } from './propCull.js';
+import { detailize, surfaceTex } from './surfaces.js';
 import { archPlace, archReady, archInstances } from './archModels.js';
 import { assetNow } from '../kit/assets.js';
 import { LP_HOUSES, archAsset } from '../kit/lowpixArch.js';
@@ -108,6 +109,43 @@ const ROOMS = {
 // props that stay drawn even when built inside a zone (they show over the roofs)
 const ZONE_ALWAYS = new Set(['keyaki_tree', 'utility_pole', 'street_light']);
 const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+/** Night windows for the distant buildings: about a third of the glass texels (in 2 x 2 blocks) as warm lamplight,
+ *  everything else black; null if the map has no readable image. */
+function skylineGlow(map) {
+  const im = map?.image;
+  if (!im || !im.width) return null;
+  const c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(im, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height), a = d.data;
+  const warm = [[255, 214, 150], [255, 228, 176], [250, 196, 128], [226, 236, 255]];
+  for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) {
+    const o = (y * c.width + x) * 4, r = a[o], gg = a[o + 1], b = a[o + 2];
+    const glass = b > r + 6 && r < 110 && gg < 120 && b < 140;
+    const k = hash2((x >> 1) * 3 + 17, (y >> 1) * 5 + 3);
+    const col = glass && k < 0.34 ? warm[Math.floor(k * 11.7) % warm.length] : [0, 0, 0];
+    a[o] = col[0]; a[o + 1] = col[1]; a[o + 2] = col[2]; a[o + 3] = 255;
+  }
+  g.putImageData(d, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace; t.flipY = map.flipY; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter;
+  return t;
+}
+
+/** A small repeating pixel texture (16 px) laid out 4 x 4 on a 64 px canvas, repeat 1/4: the same look per UV unit,
+ *  but a texture big enough to mipmap well. */
+export function tiled4(t) {
+  const im = t.image, c = document.createElement('canvas');
+  c.width = im.width * 4; c.height = im.height * 4;
+  const g = c.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) g.drawImage(im, x * im.width, y * im.height);
+  const out = new THREE.CanvasTexture(c);
+  out.colorSpace = t.colorSpace; out.magFilter = THREE.NearestFilter; out.minFilter = THREE.LinearMipmapLinearFilter;
+  out.wrapS = out.wrapT = THREE.RepeatWrapping; out.repeat.set(0.25, 0.25);
+  return out;
+}
 
 /** Baked shade under the bridge decks (the real darkness inside is per-pixel, see tunnelDark.js). */
 function shadeAt(x, y, z) {
@@ -228,7 +266,14 @@ export class Town {
   /** Flat paint (tint per box via vertex colour). */
   P(rough = 0.75, metal = 0, extra = {}) {
     const ck = 'c:' + rough + ':' + metal + JSON.stringify(extra);
-    if (!this.mats.has(ck)) this.mats.set(ck, new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough, metalness: metal, ...extra }));
+    // every plain tinted part gets real surface detail (a neutral detail map, src/world/surfaces.js)
+    if (!this.mats.has(ck)) this.mats.set(ck, detailize(new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: rough, metalness: metal, ...extra }), metal >= 0.3 ? 'metal' : 'paint'));
+    return this.mats.get(ck);
+  }
+  /** A surface texture (src/world/surfaces.js) on world-metre UVs, vertex-tinted like the other town materials. */
+  S(name, tile, o = {}) {
+    const ck = 's:' + name + tile + JSON.stringify(o);
+    if (!this.mats.has(ck)) this.mats.set(ck, townShader(new THREE.MeshStandardMaterial({ map: surfaceTex(name, tile), vertexColors: true, roughness: 0.9, ...o })));
     return this.mats.get(ck);
   }
   /** Self-lit paint (lamps, LEDs). */
@@ -266,14 +311,15 @@ export class Town {
   initMats() {
     const M = (k, o) => this.M(k, o);
     this.m = {
-      road: M('asphaltHD', { roughness: 0.95, bump: 0.5, ppm: 40 }),
+      // the road and the concrete strips: lowpix photo-bashed asphalt / concrete at 128 px/m (src/world/surfaces.js)
+      road: this.S('asphalt', 4, { roughness: 0.95 }),
       paint: M('roadPaint', { roughness: 0.8, bump: 0, ppm: 64, decal: true }),
-      strip: M('concrete', { roughness: 0.95, color: 0xb8b0a2, ppm: 40 }),
+      strip: this.S('concrete', 4, { roughness: 0.95, color: 0xd8d0c4 }),
       paving: M('paving', { roughness: 0.92, ppm: 40 }),
       lid: M('gutterLid', { roughness: 0.92, ppm: 40 }),
       grate: M('grate', { roughness: 0.5, metalness: 0.5, ppm: 64, bump: 0 }),
-      ground: M('gravel', { roughness: 1, color: 0x8a8070, ppm: 32 }),
-      block: M('blockHD', { roughness: 0.92, bump: 1, ppm: 64 }),
+      ground: this.S('park_ground', 4, { roughness: 1, color: 0xb8ae9c }),
+      block: this.S('cblock', 4, { roughness: 0.92 }),
       found: M('concrete', { roughness: 0.95, color: 0x9a948a, ppm: 48 }),
       conc: M('concreteHD', { roughness: 0.92, bump: 0.8, ppm: 64 }),
       wallCream: M('houseWall', { roughness: 0.9, color: 0xf0e2c4 }),
@@ -576,7 +622,7 @@ export class Town {
       panel.rotation.x = 0.03;
       g.add(panel);
     }
-    const rod = this.vmesh(new THREE.BoxGeometry(2.3, 0.03, 0.03), new THREE.MeshStandardMaterial({ color: 0x8a6a42, roughness: 0.7, vertexColors: true })); // a bamboo pole
+    const rod = this.vmesh(new THREE.BoxGeometry(2.3, 0.03, 0.03), detailize(new THREE.MeshStandardMaterial({ color: 0x8a6a42, roughness: 0.7, vertexColors: true }), 'wood')); // a bamboo pole
     rod.position.set(0, H - 0.1, 6.06);
     g.add(rod);
     parent.add(g);
@@ -631,7 +677,7 @@ export class Town {
     const mk = (geo, mat, px, py, pz) => { const m = this.vmesh(geo, mat); m.position.set(px, py, pz); g.add(m); return m; };
     mk(new THREE.BoxGeometry(0.03, 2.1, 0.03), pole, 0, 1.05, 0);
     mk(new THREE.BoxGeometry(0.42, 0.025, 0.025), pole, 0.21, 2.0, 0);
-    mk(new THREE.BoxGeometry(0.3, 0.12, 0.3), new THREE.MeshStandardMaterial({ color: 0x2a6a3a, roughness: 0.6 }), 0, 0.06, 0);
+    mk(new THREE.BoxGeometry(0.3, 0.12, 0.3), detailize(new THREE.MeshStandardMaterial({ color: 0x2a6a3a, roughness: 0.6 }), 'paint'), 0, 0.06, 0); // the water-filled base
     const flag = mk(new THREE.BoxGeometry(0.4, 1.5, 0.01), this.T('nobori', 20, 80, { rough: 0.9 }), 0.22, 1.25, 0);
     flag.rotation.y = 0.15;
     g.rotation.y = -0.25;
@@ -1242,9 +1288,14 @@ export class Town {
   }
   awningMat() {
     if (!this.mats.has('awning')) {
-      const c = document.createElement('canvas'); c.width = 16; c.height = 4;
+      // green-and-white canvas stripes with a woven grain (64 x 32: big enough to mipmap, one repeat per 2 m)
+      const c = document.createElement('canvas'); c.width = 64; c.height = 32;
       const x = c.getContext('2d');
-      for (let i = 0; i < 16; i++) { x.fillStyle = Math.floor(i / 2) % 2 ? '#f2f0ea' : '#2f8a4a'; x.fillRect(i, 0, 1, 4); }
+      for (let i = 0; i < 64; i++) for (let j = 0; j < 32; j++) {
+        const w = Math.floor(i / 8) % 2, k = 0.92 + hash2(i * 3 + 1, j * 7 + 2) * 0.1 - ((i + j) % 2) * 0.03;
+        const [r, g, b] = w ? [242, 240, 234] : [47, 138, 74];
+        x.fillStyle = `rgb(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)})`; x.fillRect(i, j, 1, 1);
+      }
       const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 1);
       this.mats.set('awning', new THREE.MeshStandardMaterial({ map: t, roughness: 0.85, vertexColors: true }));
     }
@@ -1577,8 +1628,7 @@ export class Town {
   /** Green PVC-coated wire mesh (alpha-cut, double-sided, repeating). */
   fenceMeshM() {
     if (!this.mats.has('fenceMesh')) {
-      const map = townPix('fenceMesh', 16, 16).texture();
-      map.wrapS = map.wrapT = THREE.RepeatWrapping;
+      const map = tiled4(townPix('fenceMesh', 16, 16).texture());
       this.mats.set('fenceMesh', new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.35, side: THREE.DoubleSide }));
     }
     return this.mats.get('fenceMesh');
@@ -1802,6 +1852,7 @@ export class Town {
 
   /** Distant city all around: flat dusk silhouettes with lit windows (unfogged, merged). */
   buildBackdrop() {
+    if (this.buildSkylineLP()) return;
     const p = townPix('skyline', 64, 128), pe = townPix('skylineE', 64, 128);
     void pe;
     const t = p.texture(); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / 8, 1 / 16);
@@ -1844,6 +1895,40 @@ export class Town {
     B.build(this.group, { receive: false });
   }
 
+  /** The distant town as lowpix buildings (art/lowpix/world_arch/_src/skyline.py: an apartment block, an office with
+   *  its signs, a shophouse row, a sawtooth works), instanced round the same ring of lots, each stretched to its lot;
+   *  some of their window glass lights up after dark (an emissive map made from the glass texels). */
+  buildSkylineLP() {
+    const KINDS = ['sky_mansion', 'sky_office', 'sky_shops', 'sky_works'], BODY = [15, 18, 9.5, 6.6];
+    if (!KINDS.every((k) => archReady(k))) return false;
+    const lists = KINDS.map(() => []);
+    for (let i = 0; i < 54; i++) {
+      const a = (i / 54) * Math.PI * 2 + hash2(i, 1) * 0.06;
+      const r = 64 + hash2(i, 2) * 10;
+      if (Math.abs(Math.cos(a)) > 0.82) continue;
+      const w = 5 + hash2(i, 3) * 9, h = 6 + hash2(i, 4) * 10 + (hash2(i, 6) < 0.18 ? 10 : 0), q = hash2(i, 9);
+      const k = h > 16 ? (q < 0.5 ? 1 : 0) : h > 10 ? (q < 0.6 ? 0 : 2) : (q < 0.6 ? 2 : 3);
+      lists[k].push({ x: Math.cos(a) * r, z: 9.6 + Math.sin(a) * r * 0.92, ry: -a + Math.PI / 2, sx: w / 10, sy: h / BODY[k] });
+    }
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+    this.skylineLP = [];
+    KINDS.forEach((id, k) => {
+      const t = assetNow(archAsset(id)), mesh = t?.children.find((c) => c.isMesh);
+      if (!mesh || !lists[k].length) return;
+      const mat = mesh.material.clone();
+      const glow = skylineGlow(mat.map);
+      if (glow) Object.assign(mat, { emissive: new THREE.Color(0xffffff), emissiveMap: glow, emissiveIntensity: 0 });
+      const im = new THREE.InstancedMesh(mesh.geometry, mat, lists[k].length);
+      lists[k].forEach((it, i) => im.setMatrixAt(i, m4.compose(_p.set(it.x, 0, it.z), q.setFromAxisAngle(_up, it.ry), _s.set(it.sx, it.sy, 1))));
+      im.castShadow = false; im.receiveShadow = false; im.name = 'skyline:' + id;
+      im.computeBoundingSphere();
+      im.matrixAutoUpdate = false;
+      this.group.add(im);
+      this.skylineLP.push(mat);
+    });
+    return true;
+  }
+
   // ---------------------------------------------------------------- time of day
   /**
    * Day / night for the town's own materials, called a few times a second by src/game/Lighting.js with the sky look
@@ -1862,6 +1947,7 @@ export class Town {
       u.uMoon.value.copy(L.moonDir); u.uMoonK.value = L.moonK;
       u.uNight.value = night; u.uTwinkle.value = L.twinkle || 0;
     }
+    if (this.skylineLP) for (const m of this.skylineLP) m.emissiveIntensity = Math.min(1, Math.max(0, (night - 0.15) / 0.75)) * 1.1;
     if (this.skyline) {
       // silhouettes: daylight grey-blue -> deep dusk blue; windows switch on as it gets dark
       this.skyline.dim.value.setRGB(1, 1, 1).lerp(_c.setRGB(0.2, 0.24, 0.38), night * 0.92).multiply(_c2.setRGB(L.fog.r * 0.4 + 0.6, L.fog.g * 0.4 + 0.6, L.fog.b * 0.4 + 0.6));

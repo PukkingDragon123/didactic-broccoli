@@ -7,8 +7,7 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { draw5 } from '../gfx/font5x7.js';
-import { yenCoinGeometry } from '../world/machineModels.js';
-import { voxelMaterials } from '../voxel/materials.js';
+import { yenCoinGeometry, yenCoinMaterial } from '../world/machineModels.js';
 import './sfx.js';
 
 export const NOTES = [10000, 5000, 1000];
@@ -167,7 +166,7 @@ export function payOut(game, amount, to) {
   const cam = g.camera.getWorldPosition(new THREE.Vector3());
   const fwd = new THREE.Vector3(-0.15, -0.25, -0.45).applyQuaternion(g.camera.quaternion);
   const from = cam.add(fwd);
-  const pieces = [...notes.slice(0, 4).map((d) => noteMesh(d)), ...(coins > 0 ? [new THREE.Mesh(yenCoinGeometry(), voxelMaterials('normal'))] : [])];
+  const pieces = [...notes.slice(0, 4).map((d) => noteMesh(d)), ...(coins > 0 ? [new THREE.Mesh(yenCoinGeometry(), yenCoinMaterial())] : [])];
   pieces.forEach((m, i) => {
     g.scene.add(m);
     m.position.copy(from);

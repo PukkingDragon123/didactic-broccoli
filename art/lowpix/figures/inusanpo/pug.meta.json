@@ -1,7 +1,5 @@
 {
- "mats": {
-  "bowl": "gloss"
- },
+ "mats": {},
  "clips": {
   "gimmick": "gimmick"
  },
@@ -10,20 +8,18 @@
   {
    "name": "dog",
    "src": "sketchfab:9fc09b8866214745b27b48334b65da87",
-   "height": 15,
-   "at": [
-    0,
-    3.0,
-    4
+   "height": 18.69,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
-   "yaw": -15,
+   "yaw": -40,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "709eee2b554fb1"
+   "key": "fd67f1ac281964"
   }
  ],
  "model_clip": {

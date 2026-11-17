@@ -46,6 +46,15 @@ def build_all():
     s.box("st_riser", [54, 22.5, 45], (0, 9 + 11.25, -4), ch=2.5, parent="stand", col=clear, style="clear", tone=4.4, mat="glass")
     s.box("st_plate", [72, 16, 4], (0, 8, 29), ch=1.0, parent="stand", col=s.c("#2a2a2e"), style="lacquer")
     s.box("st_rule", [62, 3, 1.2], (0, 8, 31.4), ch=0.3, parent="stand", col="goldr", style="gold")
+    # ------------------------------------------------------------------ a blister card's board (72 x 102 x 3 mm, standing on its
+    # little foot): the printed front is the game's (it shows the figure's own card), the back and the cut edges are here
+    s.joint("blister", (0, 0, 0))
+    s.box("bl_card", [72, 102, 3], (0, 51, 0), ch=0, parent="blister", col=cream, style="paper", tone=4.0, hide=["front"])
+    s.layer("bl_card", id="edge", op="stripes", axis="y", period=1.6, width=0.4, shift=-0.5, faces=["left", "right", "top", "bottom"])
+    s.layer("bl_card", id="print", op="rect", rect=[0.1, 0.06, 0.9, 0.3], ramp=red, tone=3.0, faces=["back"])
+    s.stamp("bl_card", text3("CAPSULE CO.", "i"), {"i": "ink:2"}, face="back", at="center", off=(0, 8))
+    s.stamp("bl_card", text3("MADE IN JAPAN", "i"), {"i": "ink:2"}, face="back", at="bottom", off=(0, -6))
+    s.box("bl_foot", [50, 3, 30], (0, 1.5, -12), ch=0.6, parent="blister", col=cream, style="paper", tone=3.6)
     for j in list(s.meta["joints"]):
         s.meta["mats"].pop(j, None)
     return {"packing": s}

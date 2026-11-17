@@ -1,0 +1,383 @@
+{
+ "name": "Machine lock key",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 6.0,
+ "budget": {
+  "tris": 600,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.45,
+  "gradient": 0.0,
+  "ao": 0.0,
+  "ao_height": 1.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "nickel": [
+    "#4a4d52",
+    "#6a6e74",
+    "#8c9096",
+    "#aeb2b8",
+    "#c8ccd0",
+    "#dde0e3",
+    "#f0f2f4"
+   ],
+   "cc8a040_hue16_k0p0": [
+    "#2b180a",
+    "#643f18",
+    "#9c6d27",
+    "#cca03e",
+    "#d8c273",
+    "#e5dda7",
+    "#f4f2da"
+   ]
+  }
+ },
+ "styles": {
+  "chrome": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none",
+    "light_shift": 1.6,
+    "dark_shift": -1.4
+   },
+   "layers": [
+    {
+     "id": "base",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 1.2
+    },
+    {
+     "id": "sky",
+     "op": "fill",
+     "shift": 1.4,
+     "min_light": 0.75
+    },
+    {
+     "id": "floor",
+     "op": "fill",
+     "shift": -1.5,
+     "max_light": 0.05
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.5,
+     "shift": 1.6
+    }
+   ]
+  },
+  "gold": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none",
+    "light_shift": 1.5,
+    "dark_shift": -1.2
+   },
+   "layers": [
+    {
+     "id": "base",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.8
+    },
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 30,
+     "amount": 0.12
+    },
+    {
+     "id": "sky",
+     "op": "fill",
+     "shift": 1.1,
+     "min_light": 0.78
+    },
+    {
+     "id": "floor",
+     "op": "fill",
+     "shift": -1.0,
+     "max_light": 0.1
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.45,
+     "shift": 1.4
+    }
+   ]
+  },
+  "cavity": {
+   "dither": 0,
+   "light": 0.4,
+   "rim": {
+    "light": 0,
+    "dark": 0,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 40,
+     "amount": 0.1
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "bow",
+   "shape": "prism",
+   "pivot": [
+    0,
+    8.5,
+    0
+   ],
+   "size": [
+    14,
+    14,
+    2.0
+   ],
+   "sides": 14,
+   "style": "chrome",
+   "paint": {
+    "ramp": "nickel",
+    "tone": 4.0,
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       0,
+       -6
+      ],
+      "art": [
+       "iii",
+       "..i",
+       "..i",
+       ".i.",
+       ".i."
+      ],
+      "key": {
+       "i": "nickel:1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "bow_hole",
+   "shape": "prism",
+   "pivot": [
+    0,
+    10.5,
+    0
+   ],
+   "size": [
+    5.2,
+    5.2,
+    2.2
+   ],
+   "sides": 8,
+   "style": "cavity",
+   "paint": {
+    "ramp": "cavity",
+    "tone": 1.0
+   }
+  },
+  {
+   "id": "shank",
+   "shape": "box",
+   "pivot": [
+    0,
+    -6,
+    0
+   ],
+   "size": [
+    3.2,
+    18,
+    1.8
+   ],
+   "chamfer": 0.5,
+   "style": "chrome",
+   "paint": {
+    "ramp": "nickel",
+    "tone": 3.6
+   }
+  },
+  {
+   "id": "bit1",
+   "shape": "box",
+   "pivot": [
+    2.6,
+    -12,
+    0
+   ],
+   "size": [
+    2.4,
+    2.6,
+    1.8
+   ],
+   "chamfer": 0.3,
+   "style": "chrome",
+   "paint": {
+    "ramp": "nickel",
+    "tone": 3.4
+   }
+  },
+  {
+   "id": "bit2",
+   "shape": "box",
+   "pivot": [
+    2.6,
+    -7.5,
+    0
+   ],
+   "size": [
+    2.4,
+    2.0,
+    1.8
+   ],
+   "chamfer": 0.3,
+   "style": "chrome",
+   "paint": {
+    "ramp": "nickel",
+    "tone": 3.4
+   }
+  },
+  {
+   "id": "ring",
+   "shape": "prism",
+   "pivot": [
+    0,
+    17,
+    0
+   ],
+   "size": [
+    9.0,
+    9.0,
+    1.2
+   ],
+   "sides": 10,
+   "style": "gold",
+   "paint": {
+    "ramp": "cc8a040_hue16_k0p0",
+    "tone": 3.0
+   }
+  }
+ ]
+}

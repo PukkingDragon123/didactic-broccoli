@@ -152,4 +152,61 @@ await model('cardboardmess', 'debris.png', ({ sheet, mound, blob }) => {
   sheet(-0.25, 0.03, 0.18, 0.14, 0.1, 0.01, 0.4, C(1));
   blob(0.25, 0.04, 0.2, 0.035, C(2), 9);
 });
+// a mini fridge (fridge): cream enamel body, the door with stickers, a chrome handle, the grille at the back
+await model('minifridge', 'fridge.png', ({ box }) => {
+  const W = 0.49, H = 0.85, D = 0.51, BODY = [0.52, 0.02, 0.98, 0.72];
+  box(-W / 2, 0.03, -D / 2, W / 2, H, D / 2 - 0.03, BODY);
+  box(-W / 2 + 0.005, 0.04, D / 2 - 0.03, W / 2 - 0.005, H - 0.01, D / 2, [0.01, 0.01, 0.49, 0.99]);
+  box(W / 2 - 0.07, 0.45, D / 2, W / 2 - 0.05, 0.75, D / 2 + 0.03, [0.52, 0.91, 0.98, 0.99]);
+  for (const x of [-W / 2 + 0.04, W / 2 - 0.06]) for (const z of [-D / 2 + 0.04, D / 2 - 0.08]) box(x, 0, z, x + 0.03, 0.03, z + 0.03, [0.52, 0.77, 0.98, 0.88]);
+});
+// an instant gas water heater on the wall over the sink (water_heater)
+await model('waterheater', 'waterheater.png', ({ box, cyl }) => {
+  box(-0.15, 0.12, -0.2, 0.15, 0.68, 0.18, [0.52, 0.02, 0.98, 0.48]);
+  box(-0.14, 0.13, 0.18, 0.14, 0.67, 0.2, [0.01, 0.01, 0.49, 0.99]);
+  for (const x of [-0.08, 0.08]) cyl(x, 0.0, 0.012, 0.0, 0.13, 8, [0.52, 0.76, 0.98, 0.98]);
+  cyl(0.0, -0.05, 0.03, 0.68, 0.74, 10, [0.52, 0.51, 0.98, 0.74]);
+});
+// a corner cobweb: a curved card (alpha) from the corner
+await model('cobwebcard', 'cobweb.png', ({ quad }) => {
+  const n = 6;
+  for (let i = 0; i < n; i++) {
+    const a0 = i / n, a1 = (i + 1) / n, P = (u, v) => [u * 0.39, 0.39 - v * 0.39, Math.sin(Math.PI * Math.min(1, Math.hypot(u, v))) * 0.012];
+    quad(P(a0, 0), P(a1, 0), P(a1, 1), P(a0, 1), [0, 0, 1], [[a0, 0], [a1, 0], [a1, 1], [a0, 1]]);
+  }
+});
+// the rubber coin tray (coin_tray, the catalogue's Coin Tray)
+await model('cointray', 'cointray.png', ({ box }) => {
+  const W = 0.168, D = 0.12, F = [0.02, 0.02, 0.98, 0.76], R = [0.02, 0.8, 0.98, 0.98];
+  box(-W / 2, 0, -D / 2, W / 2, 0.006, D / 2, F);
+  box(-W / 2, 0, -D / 2, W / 2, 0.024, -D / 2 + 0.008, R); box(-W / 2, 0, D / 2 - 0.008, W / 2, 0.024, D / 2, R);
+  box(-W / 2, 0, -D / 2, -W / 2 + 0.008, 0.024, D / 2, R); box(W / 2 - 0.008, 0, -D / 2, W / 2, 0.024, D / 2, R);
+});
+// 縁台: the low slatted bench outside every dagashi shop (shop_bench)
+await model('engawabench', 'bench.png', ({ box }) => {
+  const W = 0.95, D = 0.35, H = 0.525, TOP = [0.0, 0.0, 1.0, 0.5], LEG = [0.0, 0.5, 0.5, 1.0];
+  for (let i = 0; i < 4; i++) { const z0 = -D / 2 + i * (D / 4) + 0.004; box(-W / 2, H - 0.03, z0, W / 2, H, z0 + D / 4 - 0.008, [0, i / 4, 1, (i + 1) / 4 - 0.01]); }
+  for (const x of [-W / 2 + 0.05, W / 2 - 0.1]) for (const z of [-D / 2 + 0.02, D / 2 - 0.07]) box(x, 0, z, x + 0.05, H - 0.03, z + 0.05, LEG);
+  for (const x of [-W / 2 + 0.05, W / 2 - 0.1]) box(x, 0.12, -D / 2 + 0.02, x + 0.05, 0.16, D / 2 - 0.02, LEG);
+  box(-W / 2 + 0.05, H - 0.09, -D / 2 + 0.03, W / 2 - 0.05, H - 0.03, -D / 2 + 0.06, LEG);
+  box(-W / 2 + 0.05, H - 0.09, D / 2 - 0.06, W / 2 - 0.05, H - 0.03, D / 2 - 0.03, LEG);
+});
+// the pink phone (ピンク電話) on its wooden stand (pink_phone)
+await model('pinkphone', 'pinkphone.png', ({ box, cyl }) => {
+  const S = [0.02, 0.52, 0.48, 0.98], S2 = [0.52, 0.52, 0.98, 0.98], P = [0.52, 0.02, 0.98, 0.48], F = [0.01, 0.01, 0.49, 0.49];
+  box(-0.17, 0.0, -0.14, 0.17, 0.04, 0.14, S2);
+  for (const x of [-0.15, 0.12]) for (const z of [-0.12, 0.09]) box(x, 0.04, z, x + 0.03, 0.66, z + 0.03, S);
+  box(-0.17, 0.66, -0.14, 0.17, 0.7, 0.14, S2); box(-0.15, 0.3, -0.12, 0.15, 0.32, 0.12, S2);
+  box(-0.13, 0.7, -0.11, 0.13, 0.9, 0.08, P);
+  box(-0.12, 0.7, 0.08, 0.12, 0.89, 0.1, F);
+  box(-0.14, 0.9, -0.08, 0.14, 0.95, -0.02, P); cyl(-0.12, -0.05, 0.03, 0.9, 0.96, 8, P); cyl(0.12, -0.05, 0.03, 0.9, 0.96, 8, P);
+});
+// a residential street light: a galvanised pole, the arm and the fluorescent lamp head (street_light)
+await model('streetlight', 'streetlight.png', ({ box, cyl }) => {
+  const G = [0.02, 0.02, 0.98, 0.48], DIF = [0.04, 0.54, 0.46, 0.96], PL = [0.52, 0.52, 0.98, 0.98];
+  cyl(0, 0, 0.065, 0, 0.25, 10, G); cyl(0, 0, 0.05, 0.25, 3.95, 10, G);
+  box(-0.05, 3.88, -0.02, 0.58, 3.93, 0.02, G);
+  box(0.12, 3.84, -0.08, 0.66, 3.93, 0.08, G); box(0.14, 3.81, -0.07, 0.64, 3.84, 0.07, DIF);
+  box(-0.06, 2.2, 0.05, 0.06, 2.42, 0.052, PL);
+});
 console.log('ok');

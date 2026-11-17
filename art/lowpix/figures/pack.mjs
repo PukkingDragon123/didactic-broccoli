@@ -74,7 +74,7 @@ for (const series of seriesList) {
     const meta = JSON.parse(readFileSync(join(specDir, id + '.meta.json'), 'utf8'));
     let doc;
     if (r) doc = await io.read(resolve(buildDir, series, r.files[Object.keys(r.files).find((f) => f.endsWith('.glb'))]));
-    else { doc = new Document(); doc.createBuffer(); doc.setDefaultScene(doc.createScene('figure')); } // models only, no spec parts
+    else { doc = new Document(); doc.createBuffer(); doc.getRoot().setDefaultScene(doc.createScene('figure')); } // models only, no spec parts
     const root = doc.getRoot();
     const mainScene = root.listScenes()[0];
     // real models: merge each converted GLB in under a placed node "model_<name>"

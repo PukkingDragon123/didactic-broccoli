@@ -9,8 +9,8 @@ import { audio } from '../core/audio.js';
 import { VoxelModel, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { yenCoinGeometry } from '../world/machineModels.js';
-import { preloadLP, lpReady, lpMaterialSlots } from '../gachakit/lowpix.js';
+import { yenCoinGeometry, yenCoinMaterial } from '../world/machineModels.js';
+import { preloadLP, lpReady, lpPart } from '../gachakit/lowpix.js';
 
 // the coin bag is a lowpix model (art/lowpix/machines/_src/held.py); the voxel bag below is the fallback
 if (typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search)) await preloadLP(['coin_bag']);
@@ -21,7 +21,7 @@ let bagGeo = null;
 function coinBagGeometry() {
   if (bagGeo) return bagGeo;
   if (lpReady('coin_bag')) {
-    bagGeo = lpMaterialSlots('coin_bag', 'bag', voxelMaterials('normal')).clone();
+    bagGeo = lpPart('coin_bag', 'bag').geometry.clone();
     bagGeo.scale(0.85, 0.85, 0.85); // (the voxel bag's size: about 8 cm across)
     return bagGeo;
   }
@@ -39,7 +39,8 @@ function coinBagGeometry() {
   return bagGeo;
 }
 
-const coinMat = () => voxelMaterials('normal');
+const coinMat = () => yenCoinMaterial();
+const bagMat = () => (lpReady('coin_bag') ? lpPart('coin_bag', 'bag').material : voxelMaterials('normal'));
 
 /**
  * Coins from `from` (world position) go into your coin bag and onto your money.
@@ -52,7 +53,7 @@ export function pocketCash(game, amount, from, opts = {}) {
   const n = Math.max(1, Math.min(opts.coins ?? Math.ceil(amount / 100), 24));
   // the bag appears in your left hand (viewmodel, drawn on top of the world)
   const anchor = g.held.anchor;
-  const bag = new THREE.Mesh(coinBagGeometry(), coinMat());
+  const bag = new THREE.Mesh(coinBagGeometry(), bagMat());
   bag.position.set(-0.17, -0.19, -0.42);
   bag.rotation.set(0.25, 0.4, 0);
   bag.scale.setScalar(0.01);

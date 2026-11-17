@@ -80,8 +80,8 @@ REF = {"id": "ref", "op": "fill", "shift": -0.3, "min_light": -0.1, "max_light":
 # light and rims, with only structured detail (grain, boards, ribs) and soft mottling on top: no photo noise, no
 # speckle, no random sparkle, so specs sit beside the converted models (lowpix pixel-hd) without a seam.
 STYLES = {
-    "pvc": _st(_mottle(3.2, 0.08), SHEEN, REF, GLOSS),      # injection-moulded, factory-painted PVC with a soft sheen
-    "matte": _st(_mottle(3.0, 0.1)),                        # soft vinyl / flat paint
+    "pvc": _st(_mottle(2.0, 0.3), SHEEN, REF, GLOSS),      # injection-moulded, factory-painted PVC with a soft sheen
+    "matte": _st(_mottle(2.0, 0.32)),                        # soft vinyl / flat paint
     "skin": _st(_mottle(3.0, 0.08), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.84}),
     "cloth": _st(_mottle(2.4, 0.14)),
     "denim": _st(_mottle(2.4, 0.14)),
@@ -91,19 +91,19 @@ STYLES = {
                 _mottle(5.0, 0.22), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.82}),
     "plank": _st({"id": "grain", "op": "stripes", "axis": "x", "period": 1.8, "width": 0.3, "wobble": 0.8, "shift": -0.6},
                  {"id": "boards", "op": "stripes", "axis": "z", "period": 6.0, "width": 0.06, "shift": -1.2}, _mottle(4.0, 0.15)),
-    "metal": _st(_mottle(4.0, 0.08), {"id": "sheen", "op": "fill", "shift": 1.1, "min_light": 0.7},
+    "metal": _st(_mottle(2.2, 0.32), {"id": "sheen", "op": "fill", "shift": 1.1, "min_light": 0.7},
                  {"id": "ref", "op": "fill", "shift": -0.8, "min_light": -0.1, "max_light": 0.3}),
-    "tin": _st(_mottle(4.0, 0.08), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74}, GLOSS),
+    "tin": _st(_mottle(2.0, 0.32), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74}, GLOSS),
     "bark": _st({"id": "furrows", "op": "stripes", "axis": "z", "period": 1.4, "width": 0.35, "wobble": 0.9, "shift": -0.8},
                 _mottle(2.0, 0.25)),
     "rock": _st(_mottle(2.6, 0.28), {"id": "facets", "op": "patches", "scale": 3.0, "threshold": 0.62, "shift": -0.6}),
-    "stone": _st(_mottle(3.0, 0.16)),
+    "stone": _st(_mottle(1.8, 0.38)),
     "leafy": _st(_mottle(1.8, 0.3)),
     "rust": _st(_mottle(2.5, 0.2), {"id": "rust", "op": "patches", "scale": 2.5, "threshold": 0.6, "shift": -0.7}),
     "clay": _st(_mottle(3.0, 0.15)),
     "food": _st(_mottle(2.0, 0.15), {"id": "sheen", "op": "fill", "shift": 0.4, "min_light": 0.85}),
-    "glaze": _st(_mottle(3.0, 0.08), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.72}, GLOSS),
-    "paper": _st(_mottle(4.0, 0.06)),
+    "glaze": _st(_mottle(1.8, 0.38), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.72}, GLOSS),
+    "paper": _st(_mottle(1.6, 0.4), {"id": "fibre", "op": "stripes", "axis": "x", "period": 1.4, "width": 0.25, "wobble": 1.5, "shift": -0.5}),
     # clear tinted plastic (drawn with the game's glass material): a bright rim and inner depth
     "clear": {"dither": 0, "light": 0.6, "rim": {"light": 2, "dark": 1, "outline": "none"}, "layers": [
         {"id": "depth", "op": "gradient", "axis": "y", "amount": -0.8},
@@ -659,7 +659,7 @@ class Fig:
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
     def model(s, name, src, h=None, w=None, d=None, at=(0, 0, 0), yaw=0, pitch=0, roll=0, tris=5000, mat="matte",
-              drop=None, keep=None, box=None, ramps=None, smooth=None, dark=False, **bad):
+              drop=None, keep=None, box=None, level=False, cut=0.0, ramps=None, smooth=None, dark=False, **bad):
         """A real model, converted at its final size so its texels are the line's DENS px/mm: scaled (before
         conversion, never after) to the largest size that keeps it, turned by pitch/yaw/roll (degrees, XYZ), within
         h (height), w (x) and d (z) mm, and stood with the bottom centre of its turned bounds at `at`.
@@ -668,7 +668,7 @@ class Fig:
         assert not bad, f"model(): unsupported {sorted(bad)} (one finish for the line; recolor / fit are gone)"
         import numpy as np
         from sources import subject_dims
-        w0, h0, d0 = subject_dims(src, drop, keep, box)
+        w0, h0, d0 = subject_dims(src, drop, keep, box, level, cut)
         R = _rot(pitch, yaw, roll)
         C = np.array([[x, y, z] for x in (-w0 / 2, w0 / 2) for y in (0, h0) for z in (-d0 / 2, d0 / 2)]) @ R.T
         ext = C.max(0) - C.min(0)
@@ -692,6 +692,10 @@ class Fig:
             m["keep"] = list(keep)
         if box:
             m["box"] = list(box)
+        if level:  # a scan shot on a slope: stood level on the shelf
+            m["level"] = 2  # (the levelling method version: part of the conversion key)
+        if cut:  # an uneven scanned underside sliced flat (this share of the height), so it sits without rocking
+            m["cut"] = cut
         s.meta.setdefault("models", []).append(m)
         box = Box(at[0] - (hi[0] - lo[0]) / 2, at[1], at[2] - (hi[2] - lo[2]) / 2,
                   at[0] + (hi[0] - lo[0]) / 2, at[1] + hi[1] - lo[1], at[2] + (hi[2] - lo[2]) / 2)

@@ -1,10 +1,10 @@
 // The Sanchōme Pose Society: a bizarre little side story with two original eccentrics of the lane, who teach you
 // poses (an affectionate homage to a certain manga's love of impossible stances; every character and line is
 // original). They live on the lane like everyone else (src/npc/Lane.js: routines, memory, chats, quest markers).
-//   Madame Kujaku   a retired revue star (the Hanamichi Revue, 1958-1979) with heart-shaped sunglasses and a fan;
+//   Madame Kujaku   a retired revue star (the Hanamichi Revue, 1958-1979), silver bun, plum knit, red high-tops;
 //                   afternoons on the north pavement. Quest "A Lesson in Posture": strike three poses, then show her the
 //                   Skyward Finger -> learn Picture Frame and Curtain Call.
-//   Mr. Hidari      a tailor who sees angles everywhere (monocle, flat cap, a tape measure round the neck in spirit);
+//   Mr. Hidari      a tailor who sees angles everywhere (blazer, flat cap, a tape measure round the neck in spirit);
 //                   mornings and late afternoons on the south pavement. Quest "The Tailor's Angles": pull a Guardian
 //                   Spirits figure and bring it to him -> learn Grasp of Fate and The Coil.
 //   Gōda Tetsuzan   the rival (src/jojo/rival.js). Quest "Showdown at the Shutter": beat him in a pose-off.
@@ -36,7 +36,7 @@ const hasBizarre = (g) => Object.keys(g.state.discovered || {}).some(worthIt);
 
 // ------------------------------------------------------------------ Madame Kujaku
 const KUJAKU = {
-  id: 'jj_kujaku', name: 'Madame Kujaku', role: 'Retired revue star', stranger: 'the lady with the fan', color: CAST.kujaku.color,
+  id: 'jj_kujaku', name: 'Madame Kujaku', role: 'Retired revue star', stranger: 'the lady with the silver bun', color: CAST.kujaku.color,
   build: () => makeCast('kujaku', { lazy: true }), voice: CAST.kujaku.voice, tts: { pitch: 1.3, rate: 0.95 }, speed: 0.85,
   door: [-25.5, 10.9], spots: [[-12.2, 13.95, Math.PI], [-14.6, 13.9, Math.PI], [-3.0, 13.95, Math.PI]],
   hours: [[13.5, 18.5, 'spot'], [18.5, 13.5, 'home']],
@@ -81,7 +81,7 @@ const KUJAKU = {
 
 // ------------------------------------------------------------------ Mr. Hidari
 const HIDARI = {
-  id: 'jj_hidari', name: 'Mr. Hidari', role: 'Tailor (angles)', stranger: 'the man with the monocle', color: CAST.hidari.color,
+  id: 'jj_hidari', name: 'Mr. Hidari', role: 'Tailor (angles)', stranger: 'the man in the flat cap', color: CAST.hidari.color,
   build: () => makeCast('hidari', { lazy: true }), voice: CAST.hidari.voice, tts: { pitch: 0.9, rate: 1.0 }, speed: 0.9,
   door: [25.5, 10.9], spots: [[8.7, 6.6, 0], [11.4, 6.6, 0], [-9.0, 6.6, 0], [6.6, 13.9, Math.PI]],
   hours: [[9.5, 12.5, 'spot'], [12.5, 15, 'wander'], [15, 17.5, 'spot'], [17.5, 9.5, 'home']],

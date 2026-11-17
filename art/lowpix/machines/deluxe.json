@@ -266,8 +266,8 @@
      "id": "scuff",
      "op": "patches",
      "scale": 40,
-     "threshold": 0.78,
-     "shift": -0.35
+     "threshold": 0.84,
+     "shift": -0.25
     },
     {
      "id": "gloss",
@@ -332,7 +332,7 @@
      "op": "photo",
      "src": "art/lowpix/photos/metal_plate",
      "scale": 120,
-     "amount": 0.8
+     "amount": 0.4
     },
     {
      "id": "sheen",
@@ -375,8 +375,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 10,
-     "amount": 0.3
+     "scale": 30,
+     "amount": 0.12
     },
     {
      "id": "sky",
@@ -413,8 +413,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 12,
-     "amount": 0.2
+     "scale": 40,
+     "amount": 0.1
     }
    ]
   },
@@ -2557,21 +2557,18 @@
     "tone": 3.0,
     "layers": [
      {
-      "id": "ribs",
-      "op": "stripes",
-      "axis": "x",
-      "period": 10,
-      "width": 0.3,
-      "shift": -0.18,
+      "id": "shade",
+      "op": "gradient",
+      "axis": "y",
+      "amount": 0.35,
       "faces": [
        "front"
       ]
      },
      {
-      "id": "shade",
-      "op": "gradient",
-      "axis": "y",
-      "amount": 0.6,
+      "id": "scuff",
+      "op": "fill",
+      "shift": 0.0,
       "faces": [
        "front"
       ]

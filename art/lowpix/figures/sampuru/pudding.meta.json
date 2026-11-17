@@ -1,40 +1,27 @@
 {
- "mats": {
-  "base": "gloss"
- },
- "clips": {
-  "gimmick": "gimmick"
- },
+ "mats": {},
+ "clips": {},
  "pts": {},
  "models": [
   {
-   "name": "purin",
-   "src": "sketchfab:8ae63b5fbce94fbfa17eb2f6c4f095ff",
-   "height": 28.0,
+   "name": "cake",
+   "src": "polyhaven:strawberry_chocolate_cake",
+   "height": 8.639,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
-   "yaw": 0,
+   "yaw": -20,
    "pitch": 0,
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "2424e449760dd9"
+   "opts": {
+    "smooth": 2.5
+   },
+   "key": "7a88190ff28056"
   }
  ],
- "base": {
-  "family": "riser",
-  "w": 29.5,
-  "d": 29.5
- },
- "model_clip": {
-  "node": "model_purin",
-  "kind": "wobble",
-  "length": 1.6,
-  "amp": 4,
-  "axis": "y"
- },
  "key": "sampuru/pudding"
 }

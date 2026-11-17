@@ -1,7 +1,7 @@
 {
  "mats": {
-  "plate": "metal",
-  "rod": "glass"
+  "base": "glass",
+  "base_rod": "glass"
  },
  "clips": {
   "gimmick": "gimmick"
@@ -11,22 +11,26 @@
   {
    "name": "octo",
    "src": "sketchfab:977d38f89ca54c8b91b9667d52cb3d79",
-   "height": 13,
-   "at": [
-    0,
-    14.4,
-    0
+   "height": 15.613,
+   "pos": [
+    0.0,
+    14.0,
+    0.0
    ],
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "d88e1165676a89"
+   "key": "ecbcce0ff3f6ee"
   }
  ],
+ "base": {
+  "family": "clear",
+  "w": 18.0,
+  "d": 18.0
+ },
+ "stand_why": "swimming: held up in the water on a clear rod",
  "model_clip": {
   "node": "model_octo",
   "kind": "hop",

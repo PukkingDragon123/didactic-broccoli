@@ -1,17 +1,15 @@
 {
- "mats": {
-  "base": "gloss"
- },
+ "mats": {},
  "clips": {},
  "pts": {},
  "models": [
   {
    "name": "bowl",
    "src": "sketchfab:50f286afdcf14b54bf35f22affb0b15c",
-   "height": 11.507,
+   "height": 11.347,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -10,
@@ -19,13 +17,13 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "932055dd796592"
+   "opts": {
+    "smooth": 2.0
+   },
+   "level": 2,
+   "cut": 0.07,
+   "key": "34edf80630f37c"
   }
  ],
- "base": {
-  "family": "riser",
-  "w": 38.0,
-  "d": 38.5
- },
  "key": "sampuru/udon"
 }

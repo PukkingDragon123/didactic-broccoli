@@ -10,8 +10,7 @@ import { audio } from '../../core/audio.js';
 import { createHuman } from '../../people/index.js';
 import { propMesh } from '../../world/props.js';
 import { noteMesh } from '../../money/cashfx.js';
-import { yenCoinGeometry } from '../../world/machineModels.js';
-import { voxelMaterials } from '../../voxel/materials.js';
+import { yenCoinGeometry, yenCoinMaterial } from '../../world/machineModels.js';
 import { draw5 } from '../../gfx/font5x7.js';
 import { pixCanvas, hitBox, walkStep, turnTo, paperFill } from '../util.js';
 import { earnCash, yen } from '../money.js';
@@ -164,7 +163,7 @@ export class Cashier {
     dr.add(new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.035, 0.14), wood));
     G.drawer = dr; dr.visible = false;
     G.group.add(dr);
-    const coinMat = voxelMaterials('normal');
+    const coinMat = yenCoinMaterial();
     const comp = [[1000, -0.105], [500, -0.05], [100, 0.0], [50, 0.045], [10, 0.09]];
     for (const [v, x] of comp) {
       if (v >= 1000) { const n = noteMesh(1000); n.position.set(x, 0.022, 0); n.rotation.set(-Math.PI / 2, 0, Math.PI / 2); n.scale.setScalar(0.55); dr.add(n); }

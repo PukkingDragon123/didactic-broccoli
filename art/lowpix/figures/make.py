@@ -39,7 +39,11 @@ def gen(series, only=None):
     for fid, fn in mod.FIGS.items():
         if only and fid not in only:
             continue
-        F = fn()
+        try:
+            F = fn()
+        except FileNotFoundError as e:  # NO_DOWNLOAD=1: a source still waiting for its download
+            print(f"SKIP {series}/{fid}: {e}", flush=True)
+            continue
         files.append(F.write(out))
     return files
 
@@ -52,8 +56,9 @@ OPT_OK = {"ramps", "smooth", "chart-angle", "spread"}  # what a figure may chang
 
 def conv_key(m):
     k = {x: m.get(x) for x in ("src", "tris", "opts", "drop", "keep")}
-    if m.get("box"):
-        k["box"] = m["box"]
+    for x in ("box", "level", "cut"):
+        if m.get(x):
+            k[x] = m[x]
     k["height"] = round(float(m["height"]), 2)
     k["finish"] = CONVERT
     return hashlib.sha1(json.dumps(k, sort_keys=True).encode()).hexdigest()[:14]
@@ -67,7 +72,7 @@ def convert(m):
         return key, done[0], None
     os.makedirs(out, exist_ok=True)
     try:
-        local = prepare(m["src"], m.get("drop"), m.get("keep"), m.get("box"))
+        local = prepare(m["src"], m.get("drop"), m.get("keep"), m.get("box"), m.get("level"), m.get("cut", 0.0))
     except Exception as e:  # noqa: BLE001
         return key, None, f"download: {e}"
     cmd = [sys.executable, "-m", "lowpix", "convert", local, "--height", str(m["height"]), "--tris", str(m["tris"]),

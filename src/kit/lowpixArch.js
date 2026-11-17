@@ -3,7 +3,9 @@
 // the frame the game places it in (metres), so min / max are its bounds there. Load through src/kit/assets.js with
 // archAsset(id) as the asset id.
 export const LP_ARCH = {
+  astronaut: { min: [-0.369, 0, -0.343], max: [0.369, 1.93, 0.343], tris: 1154, tex: [512, 400] },
   garage_shell: { min: [-4.35, 0, -5.43], max: [4.35, 3.45, 5.15], tris: 56, tex: [256, 496] },
+  ghost_alley: { min: [-9.4, -0.032, 15.016], max: [-7.472, 3.05, 21.28], tris: 1046, tex: [1024, 816] },
   lane_back: { min: [-26.43, 0, -37.72], max: [26.73, 9.616, 32.999], tris: 5004, tex: [1024, 1200] },
   lane_fe: { min: [-1.85, 0, 15.02], max: [21.23, 9.172, 25.329], tris: 4240, tex: [1024, 1696] },
   lane_fw: { min: [-26.08, 0, 14.33], max: [-1.37, 9.172, 24.019], tris: 4580, tex: [1024, 1584] },
@@ -12,11 +14,20 @@ export const LP_ARCH = {
   lantern: { min: [-0.15, -0.27, -0.146], max: [0.15, 0.44, 0.146], tris: 244, tex: [128, 240] },
   mikawaya_shell: { min: [-15.55, 0, 13.99], max: [-9.3, 3.89, 19.95], tris: 488, tex: [512, 976] },
   park_toilet: { min: [22.53, 0, -9.12], max: [25.96, 2.99, -5.54], tris: 322, tex: [512, 480] },
-  shopfront: { min: [-4.5, 0, 3.5], max: [4.5, 4.55, 6.255], tris: 1170, tex: [1024, 1072] },
+  playground: { min: [15.547, 0, -16.842], max: [23.092, 1.69, -9.922], tris: 3108, tex: [1024, 1024] },
+  rope_coil: { min: [-0.186, -0.007, -0.186], max: [0.264, 0.176, 0.265], tris: 2204, tex: [256, 448] },
+  scooter: { min: [-0.313, 0.005, -0.7], max: [0.313, 1.25, 0.762], tris: 976, tex: [512, 992] },
+  shopfront: { min: [-4.5, 0, 3.5], max: [4.5, 4.55, 6.255], tris: 1170, tex: [1024, 1808] },
   shutter: { min: [-3, 0, 5.08], max: [3, 2.85, 5.08], tris: 2, tex: [512, 192] },
+  sky_mansion: { min: [-5.1, 0, -3.1], max: [5.1, 18.6, 4.005], tris: 216, tex: [512, 320] },
+  sky_office: { min: [-5, 0, -3], max: [5, 21.8, 3.35], tris: 84, tex: [256, 496] },
+  sky_shops: { min: [-5.05, 0, -3.05], max: [5.05, 10.1, 4], tris: 108, tex: [256, 368] },
+  sky_works: { min: [-5, 0, -3], max: [5, 14, 3], tris: 144, tex: [256, 448] },
+  slide: { min: [-0.423, -0.004, -2.1], max: [0.423, 2.097, 1.7], tris: 580, tex: [512, 560] },
+  underpass_portal: { min: [25.55, 0, 5.09], max: [26.16, 4.3, 14.11], tris: 448, tex: [512, 592] },
   utility_pole: { min: [-0.9, 0, -0.241], max: [0.9, 8.06, 0.241], tris: 1056, tex: [256, 432] },
   villa: { min: [11.45, 0, -29.05], max: [20.22, 9.9, -19.79], tris: 2314, tex: [1024, 832] },
-  underpass_portal: { min: [25.55, 0, 5.09], max: [26.16, 4.3, 14.11], tris: 448, tex: [512, 592] },
+  wagasa_parasol: { min: [-0.843, 0, -0.843], max: [0.843, 2.27, 0.843], tris: 364, tex: [512, 512] },
 };
 export const archAsset = (id) => 'lowpix/world_arch/' + id;
 // the houses each block model draws (art/lowpix/world_arch/_src/houses.py): house id (Town.js houseId) -> { block, ridge }

@@ -9,7 +9,7 @@ export function accSegments(spec, P, J) {
   const lx = P.hipX, tw = P.thighX;
   // --- skirts (on the skirt bone, which follows the thighs)
   const sk = spec.bottom.kind === 'skirt' ? spec.bottom.cut : null;
-  if (sk) {
+  if (sk && false) { // (skirts are smooth tubes now: anatomy.js)
     const hem = { pleated: P.kneeY + 0.075 * H, pencil: P.kneeY - 0.02 * H, long: P.kneeY - 0.13 * H, mini: P.hipY - 0.085 * H }[sk];
     const flare = { pleated: 1.3, pencil: 0.98, long: 1.3, mini: 1.22 }[sk];
     const yh = P.hipY - 0.01 * H, top = [0, -0.001 * H, P.waistX * 1.08, P.waistZ * 1.1], hip = [0, -0.003 * H, P.hipsX * 1.07, P.hipsZ * 1.12];

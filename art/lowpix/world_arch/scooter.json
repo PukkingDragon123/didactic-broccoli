@@ -1,0 +1,1020 @@
+{
+ "name": "scooter",
+ "description": "50cc scooter (made for the game)",
+ "license": "CC0-1.0",
+ "density": 256,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.45,
+  "gradient": 0.25,
+  "ao": 0.5,
+  "ao_height": 0.4
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "red": {
+    "base": "#b8382e",
+    "steps": 7,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "cream": {
+    "base": "#e6dcc4",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "chrome": {
+    "base": "#a8b0b6",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.9
+   },
+   "rubber": {
+    "base": "#2a2a2c",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "black": {
+    "base": "#26262a",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "steel": {
+    "base": "#8e969a",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "rust": {
+    "base": "#6a3a26",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "yellow": {
+    "base": "#e2b02a",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "blue": {
+    "base": "#2f62a8",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "green": {
+    "base": "#3a8a4a",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "bamboo": {
+    "base": "#b89a5a",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.75
+   },
+   "wood": {
+    "base": "#6a4a30",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "rope": {
+    "base": "#b49a68",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "white": {
+    "base": "#e8e6e0",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "pink": {
+    "base": "#d87a8a",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "glass": {
+    "base": "#3e4a52",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.8
+   },
+   "conc": {
+    "base": "#9c978d",
+    "steps": 7,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "orange": {
+    "base": "#d8742a",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   }
+  }
+ },
+ "styles": {
+  "paint": {
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 0.06,
+     "amount": 0.3
+    },
+    {
+     "id": "chips",
+     "op": "wear",
+     "width": 1,
+     "density": 0.25,
+     "ramp": "rust",
+     "tone": 2.4
+    }
+   ]
+  },
+  "chrome": {
+   "ramp": "chrome",
+   "tone": 4.2,
+   "rim": {
+    "light_shift": 1.6,
+    "dark_shift": -1.6
+   },
+   "brush": {
+    "flow": "long"
+   },
+   "layers": [
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "dash": true,
+     "density": 0.5,
+     "shift": 1.5
+    }
+   ]
+  },
+  "rubber": {
+   "ramp": "rubber",
+   "tone": 2.4,
+   "rim": {
+    "light_shift": 0.6,
+    "dark_shift": -0.6
+   },
+   "layers": [
+    {
+     "id": "tread",
+     "op": "stripes",
+     "axis": "z",
+     "period": 0.02,
+     "width": 0.3,
+     "shift": -0.8,
+     "faces": [
+      "sides"
+     ]
+    }
+   ]
+  },
+  "steel": {
+   "ramp": "steel",
+   "tone": 3.6,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 0.08,
+     "amount": 0.35
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.08,
+     "threshold": 0.7,
+     "ramp": "rust",
+     "tone": 2.6
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "fw_tyre",
+   "shape": "prism",
+   "size": [
+    0.4,
+    0.4,
+    0.09
+   ],
+   "pivot": [
+    0.0,
+    0.2,
+    0.56
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 14
+  },
+  {
+   "id": "fw_rim",
+   "shape": "prism",
+   "size": [
+    0.24,
+    0.24,
+    0.1
+   ],
+   "pivot": [
+    0.0,
+    0.2,
+    0.56
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 12
+  },
+  {
+   "id": "fw_hub",
+   "shape": "prism",
+   "size": [
+    0.06,
+    0.06,
+    0.12
+   ],
+   "pivot": [
+    0.0,
+    0.2,
+    0.56
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "black",
+    "tone": 2.5
+   },
+   "sides": 8
+  },
+  {
+   "id": "rw_tyre",
+   "shape": "prism",
+   "size": [
+    0.4,
+    0.4,
+    0.1
+   ],
+   "pivot": [
+    0.0,
+    0.2,
+    -0.5
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 14
+  },
+  {
+   "id": "rw_rim",
+   "shape": "prism",
+   "size": [
+    0.24,
+    0.24,
+    0.11
+   ],
+   "pivot": [
+    0.0,
+    0.2,
+    -0.5
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 12
+  },
+  {
+   "id": "rw_hub",
+   "shape": "prism",
+   "size": [
+    0.06,
+    0.06,
+    0.13
+   ],
+   "pivot": [
+    0.0,
+    0.2,
+    -0.5
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "black",
+    "tone": 2.5
+   },
+   "sides": 8
+  },
+  {
+   "id": "floor",
+   "shape": "box",
+   "size": [
+    0.3,
+    0.06,
+    0.62
+   ],
+   "pivot": [
+    0.0,
+    0.29,
+    0.06
+   ],
+   "chamfer": 0.015,
+   "style": "paint",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0
+   }
+  },
+  {
+   "id": "floor_mat",
+   "shape": "box",
+   "size": [
+    0.26,
+    0.012,
+    0.5
+   ],
+   "pivot": [
+    0.0,
+    0.326,
+    0.06
+   ],
+   "paint": {
+    "ramp": "black",
+    "tone": 2.2,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.03,
+      "width": 0.4,
+      "shift": 0.8
+     }
+    ]
+   }
+  },
+  {
+   "id": "shield",
+   "shape": "taper",
+   "size": [
+    0.42,
+    0.62,
+    0.08
+   ],
+   "pivot": [
+    0.0,
+    0.6,
+    0.38
+   ],
+   "rotation": [
+    -12.0,
+    0.0,
+    0.0
+   ],
+   "chamfer": 0.02,
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "front_scale": [
+    1,
+    1
+   ],
+   "back_scale": [
+    0.9,
+    1
+   ]
+  },
+  {
+   "id": "apron",
+   "shape": "taper",
+   "size": [
+    0.36,
+    0.5,
+    0.06
+   ],
+   "pivot": [
+    0.0,
+    0.6,
+    0.33
+   ],
+   "rotation": [
+    -12.0,
+    0.0,
+    0.0
+   ],
+   "chamfer": 0.015,
+   "style": "paint",
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0
+   }
+  },
+  {
+   "id": "fender",
+   "shape": "taper",
+   "size": [
+    0.18,
+    0.08,
+    0.36
+   ],
+   "pivot": [
+    0.0,
+    0.42,
+    0.58
+   ],
+   "rotation": [
+    -8.0,
+    0.0,
+    0.0
+   ],
+   "chamfer": 0.02,
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "front_scale": [
+    0.8,
+    0.6
+   ]
+  },
+  {
+   "id": "fork",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    0.415
+   ],
+   "pivot": [
+    -0.055,
+    0.4,
+    0.525
+   ],
+   "rotation": [
+    -74.5634,
+    174.8056,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 8
+  },
+  {
+   "id": "fork_1",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    0.415
+   ],
+   "pivot": [
+    0.055,
+    0.4,
+    0.525
+   ],
+   "rotation": [
+    -74.5634,
+    -174.8056,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 8
+  },
+  {
+   "id": "stem",
+   "shape": "prism",
+   "size": [
+    0.05,
+    0.05,
+    0.3847
+   ],
+   "pivot": [
+    0.0,
+    0.79,
+    0.43
+   ],
+   "rotation": [
+    -81.0274,
+    180.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 8
+  },
+  {
+   "id": "cowl",
+   "shape": "box",
+   "size": [
+    0.42,
+    0.13,
+    0.18
+   ],
+   "pivot": [
+    0.0,
+    1.005,
+    0.42
+   ],
+   "chamfer": 0.03,
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   }
+  },
+  {
+   "id": "lamp",
+   "shape": "prism",
+   "size": [
+    0.14,
+    0.14,
+    0.04
+   ],
+   "pivot": [
+    0.0,
+    1.0,
+    0.52
+   ],
+   "paint": {
+    "ramp": "chrome",
+    "tone": 5,
+    "layers": [
+     {
+      "op": "spots",
+      "faces": [
+       "front"
+      ],
+      "centers": [
+       [
+        0,
+        0,
+        0.02,
+        0.055
+       ]
+      ],
+      "ramp": "cream",
+      "tone": 5.2
+     }
+    ]
+   },
+   "sides": 12
+  },
+  {
+   "id": "grip",
+   "shape": "prism",
+   "size": [
+    0.04,
+    0.04,
+    0.1118
+   ],
+   "pivot": [
+    -0.255,
+    0.98,
+    0.39
+   ],
+   "rotation": [
+    -0.0,
+    -100.3048,
+    0.0
+   ],
+   "paint": {
+    "ramp": "black",
+    "tone": 2.2
+   },
+   "sides": 8
+  },
+  {
+   "id": "mstalk",
+   "shape": "prism",
+   "size": [
+    0.016,
+    0.016,
+    0.2098
+   ],
+   "pivot": [
+    -0.2,
+    1.1,
+    0.41
+   ],
+   "rotation": [
+    -72.4516,
+    -108.4349,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 8
+  },
+  {
+   "id": "mirror",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.07,
+    0.015
+   ],
+   "pivot": [
+    -0.24,
+    1.215,
+    0.4
+   ],
+   "chamfer": 0.01,
+   "style": "chrome"
+  },
+  {
+   "id": "blinker",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.03,
+    0.04
+   ],
+   "pivot": [
+    -0.19,
+    0.935,
+    0.5
+   ],
+   "paint": {
+    "ramp": "orange",
+    "tone": 4
+   }
+  },
+  {
+   "id": "grip_1",
+   "shape": "prism",
+   "size": [
+    0.04,
+    0.04,
+    0.1118
+   ],
+   "pivot": [
+    0.255,
+    0.98,
+    0.39
+   ],
+   "rotation": [
+    -0.0,
+    100.3048,
+    0.0
+   ],
+   "paint": {
+    "ramp": "black",
+    "tone": 2.2
+   },
+   "sides": 8
+  },
+  {
+   "id": "mstalk_1",
+   "shape": "prism",
+   "size": [
+    0.016,
+    0.016,
+    0.2098
+   ],
+   "pivot": [
+    0.2,
+    1.1,
+    0.41
+   ],
+   "rotation": [
+    -72.4516,
+    108.4349,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 8
+  },
+  {
+   "id": "mirror_1",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.07,
+    0.015
+   ],
+   "pivot": [
+    0.24,
+    1.215,
+    0.4
+   ],
+   "chamfer": 0.01,
+   "style": "chrome"
+  },
+  {
+   "id": "blinker_1",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.03,
+    0.04
+   ],
+   "pivot": [
+    0.19,
+    0.935,
+    0.5
+   ],
+   "paint": {
+    "ramp": "orange",
+    "tone": 4
+   }
+  },
+  {
+   "id": "rear",
+   "shape": "taper",
+   "size": [
+    0.32,
+    0.36,
+    0.66
+   ],
+   "pivot": [
+    0.0,
+    0.48,
+    -0.33
+   ],
+   "chamfer": 0.06,
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "front_scale": [
+    0.95,
+    0.9
+   ],
+   "back_scale": [
+    0.7,
+    0.7
+   ]
+  },
+  {
+   "id": "seat",
+   "shape": "taper",
+   "size": [
+    0.28,
+    0.1,
+    0.56
+   ],
+   "pivot": [
+    0.0,
+    0.71,
+    -0.26
+   ],
+   "chamfer": 0.04,
+   "paint": {
+    "ramp": "black",
+    "tone": 2.6,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.07,
+      "width": 0.12,
+      "shift": -0.6
+     }
+    ]
+   },
+   "front_scale": [
+    0.85,
+    0.9
+   ],
+   "back_scale": [
+    0.9,
+    0.9
+   ]
+  },
+  {
+   "id": "tail",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.05,
+    0.03
+   ],
+   "pivot": [
+    0.0,
+    0.585,
+    -0.67
+   ],
+   "chamfer": 0.01,
+   "paint": {
+    "ramp": "red",
+    "tone": 5.0
+   }
+  },
+  {
+   "id": "plate",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.07,
+    0.01
+   ],
+   "pivot": [
+    0.0,
+    0.475,
+    -0.68
+   ],
+   "paint": {
+    "ramp": "white",
+    "tone": 4,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "y",
+      "period": 0.025,
+      "width": 0.3,
+      "ramp": "blue",
+      "tone": 2.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "rail",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.26
+   ],
+   "pivot": [
+    0.0,
+    0.66,
+    -0.58
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 8
+  },
+  {
+   "id": "rail_s",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.2809
+   ],
+   "pivot": [
+    -0.135,
+    0.65,
+    -0.44
+   ],
+   "rotation": [
+    4.083,
+    -2.0454,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 8
+  },
+  {
+   "id": "rail_s_1",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.2809
+   ],
+   "pivot": [
+    0.135,
+    0.65,
+    -0.44
+   ],
+   "rotation": [
+    4.083,
+    2.0454,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 8
+  },
+  {
+   "id": "engine",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.14,
+    0.36
+   ],
+   "pivot": [
+    -0.1,
+    0.2,
+    -0.38
+   ],
+   "chamfer": 0.02,
+   "style": "steel"
+  },
+  {
+   "id": "muffler",
+   "shape": "prism",
+   "size": [
+    0.09,
+    0.09,
+    0.4817
+   ],
+   "pivot": [
+    0.13,
+    0.24,
+    -0.44
+   ],
+   "rotation": [
+    -4.7636,
+    180.0,
+    0.0
+   ],
+   "style": "chrome",
+   "sides": 10
+  },
+  {
+   "id": "stand",
+   "shape": "box",
+   "size": [
+    0.2,
+    0.02,
+    0.04
+   ],
+   "pivot": [
+    0.0,
+    0.03,
+    -0.25
+   ],
+   "style": "steel"
+  }
+ ]
+}

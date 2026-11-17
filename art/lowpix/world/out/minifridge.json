@@ -1,0 +1,99 @@
+{
+ "id": "minifridge",
+ "src": "art/lowpix/world/made/minifridge.glb",
+ "credit": {
+  "title": "Mini fridge",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/minifridge.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 84,
+ "tex": 512,
+ "size": [
+  0.49,
+  0.85,
+  0.54
+ ],
+ "colours": 41,
+ "palette": {
+  "m0": [
+   "#7f5b42",
+   "#a27e5a",
+   "#b59f82",
+   "#c8bea9",
+   "#dedace",
+   "#e1e0d6",
+   "#e5e5dd",
+   "#e9e9e4",
+   "#eeeeeb"
+  ],
+  "m1": [
+   "#833a03",
+   "#a95a06",
+   "#cd7f0b",
+   "#efa813",
+   "#eec43c",
+   "#eed75a",
+   "#eee676",
+   "#efef92",
+   "#f2f2ad"
+  ],
+  "m2": [
+   "#621328",
+   "#7e1b2c",
+   "#99242f",
+   "#b22e30",
+   "#c8463c",
+   "#cc6c5a",
+   "#d28d77",
+   "#d8a993",
+   "#e0c2ae"
+  ],
+  "m3": [
+   "#215425",
+   "#2d6c2d",
+   "#40823a",
+   "#569749",
+   "#6eaa5a",
+   "#89b274",
+   "#a0bc8d",
+   "#b6c6a5",
+   "#c9d2bc"
+  ],
+  "m4": [
+   "#152c72",
+   "#1e4592",
+   "#2861b1",
+   "#3681cd",
+   "#5aa0d2",
+   "#73b5d5",
+   "#8cc6da",
+   "#a4d5df",
+   "#bae2e5"
+  ],
+  "m5": [
+   "#9f4805",
+   "#cc6e09",
+   "#f19a17",
+   "#f1bc49",
+   "#f2d679",
+   "#f2e38d",
+   "#f2eda1",
+   "#f3f3b4",
+   "#f5f5c7"
+  ],
+  "m6": [
+   "#4b7d38",
+   "#6a9f4d",
+   "#8eb56f",
+   "#aec596",
+   "#ccd7bb",
+   "#d4dbc6",
+   "#dce0d0",
+   "#e3e5da",
+   "#eaeae3"
+  ]
+ },
+ "warnings": []
+}

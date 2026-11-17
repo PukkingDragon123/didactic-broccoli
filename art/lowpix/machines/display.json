@@ -167,8 +167,8 @@
      "id": "scuff",
      "op": "patches",
      "scale": 40,
-     "threshold": 0.78,
-     "shift": -0.35
+     "threshold": 0.84,
+     "shift": -0.25
     },
     {
      "id": "gloss",
@@ -194,7 +194,7 @@
      "op": "photo",
      "src": "art/lowpix/photos/metal_plate",
      "scale": 120,
-     "amount": 0.8
+     "amount": 0.4
     },
     {
      "id": "sheen",
@@ -303,6 +303,18 @@
        "left",
        "right"
       ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
+      ]
      }
     ]
    }
@@ -406,6 +418,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -439,6 +478,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]
@@ -528,6 +594,18 @@
        "back",
        "left",
        "right"
+      ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
       ]
      }
     ]
@@ -632,6 +710,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -665,6 +770,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]
@@ -754,6 +886,18 @@
        "back",
        "left",
        "right"
+      ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
       ]
      }
     ]
@@ -858,6 +1002,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -891,6 +1062,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]
@@ -980,6 +1178,18 @@
        "back",
        "left",
        "right"
+      ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
       ]
      }
     ]
@@ -1084,6 +1294,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -1117,6 +1354,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]
@@ -1206,6 +1470,18 @@
        "back",
        "left",
        "right"
+      ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
       ]
      }
     ]
@@ -1310,6 +1586,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -1347,6 +1650,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -1380,6 +1710,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]
@@ -1469,6 +1826,18 @@
        "back",
        "left",
        "right"
+      ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
       ]
      }
     ]
@@ -1573,6 +1942,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -1610,6 +2006,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -1643,6 +2066,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]
@@ -1732,6 +2182,18 @@
        "back",
        "left",
        "right"
+      ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
       ]
      }
     ]
@@ -1836,6 +2298,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -1873,6 +2362,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -1906,6 +2422,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]
@@ -1995,6 +2538,18 @@
        "back",
        "left",
        "right"
+      ]
+     },
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "x",
+      "period": 6,
+      "width": 0.2,
+      "shift": -0.3,
+      "faces": [
+       "front",
+       "back"
       ]
      }
     ]
@@ -2099,6 +2654,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -2136,6 +2718,33 @@
       "faces": [
        "front"
       ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
      }
     ]
    }
@@ -2169,6 +2778,33 @@
       "from": 0.86,
       "to": 1.0,
       "shift": 0.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "id": "polka",
+      "op": "spots",
+      "count": 26,
+      "radius": [
+       2.2,
+       3.2
+      ],
+      "min_gap": 14,
+      "shift": -0.75,
+      "faces": [
+       "top",
+       "front"
+      ]
+     },
+     {
+      "id": "rule",
+      "op": "band",
+      "axis": "y",
+      "from": 0.72,
+      "to": 0.8,
+      "ramp": "neutral",
+      "tone": 2.6,
       "faces": [
        "front"
       ]

@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { preloadLP, lpReady, lpMaterialSlots } from '../gachakit/lowpix.js';
+import { preloadLP, lpReady, lpPart } from '../gachakit/lowpix.js';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capsuleColor, capsuleSize, capsuleStyle, pileGeometries, CAPSULE_R } from './Capsule.js';
@@ -16,15 +16,16 @@ const VS = 0.01;
 const hex = (s) => parseInt(String(s).replace('#', ''), 16);
 const SIZE = [0.27, 0.15, 0.2]; // w, h, d (a small inner carton)
 
-// the carton's board and flaps are a lowpix model (art/lowpix/machines/_src/carton.py; the voxel build is the fallback),
-// drawn with the shared voxel material array like before (its materials are appended to it)
+// the carton's board and flaps are a lowpix model (art/lowpix/machines/_src/carton.py; the voxel build is the fallback)
 if (typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search)) await preloadLP(['carton']);
 const LP_JOINT = { shell: 'shell', flapL: 'flap_l', flapS: 'flap_s' };
 const geoCache = new Map();
 function g(key, build) {
-  if (!geoCache.has(key)) geoCache.set(key, (lpReady('carton') && lpMaterialSlots('carton', LP_JOINT[key], voxelMaterials('normal'))) || meshVoxels(build(), { voxelSize: VS, origin: 'none' }));
+  if (!geoCache.has(key)) geoCache.set(key, lpReady('carton') ? lpPart('carton', LP_JOINT[key]).geometry : meshVoxels(build(), { voxelSize: VS, origin: 'none' }));
   return geoCache.get(key);
 }
+/** The material(s) a carton part draws with: the model's own, or the voxel array. */
+const matsOf = (key) => (lpReady('carton') ? lpPart('carton', LP_JOINT[key]).material : voxelMaterials('normal'));
 
 const W = Math.round(SIZE[0] / VS), H = Math.round(SIZE[1] / VS), D = Math.round(SIZE[2] / VS);
 const CB = 0xc89a5f, CB2 = 0xb68850, CB3 = 0xd8b07a;
@@ -44,6 +45,21 @@ function flapModel(long) {
   if (long) v.box(-W / 2, 0, 0, W / 2 - 1, 0, Math.floor(D / 2) - 1, CB3);
   else v.box(0, 0, -D / 2, Math.floor(W / 2) - 1, 0, D / 2 - 1, CB);
   return v;
+}
+
+/** Brown kraft packing tape, printed: its fibres, the edges a shade darker, 取扱注意 / FRAGILE in red every so often. */
+let tapeTex = null;
+function tapeTexture() {
+  if (tapeTex) return tapeTex;
+  const p = new Pix(64, 32, 9);
+  p.fill(0xc8a878);
+  for (let y = 0; y < 32; y += 2) for (let x = 0; x < 64; x += 4) if (p.r() < 0.35) p.rect(x, y, 3 + Math.floor(p.r() * 4), 1, p.r() < 0.5 ? 0xbe9c6a : 0xd2b486); // fibre streaks
+  p.rect(0, 0, 64, 2, 0xa8865a); p.rect(0, 30, 64, 2, 0xa8865a);
+  p.tinyText('FRAGILE', 4, 12, { color: 0xb8322a });
+  p.rect(44, 13, 3, 5, 0xb8322a); p.rect(49, 13, 3, 5, 0xb8322a); p.rect(54, 13, 3, 5, 0xb8322a); // ▮▮▮
+  tapeTex = p.texture();
+  tapeTex.wrapS = THREE.RepeatWrapping;
+  return tapeTex;
 }
 
 const labelCache = new Map();
@@ -71,9 +87,8 @@ function labelTexture(series, count) {
  */
 export function makeCapsuleBox(data) {
   data.stage = data.stage ?? 0;
-  const mats = voxelMaterials('normal');
   const group = new THREE.Group();
-  const shell = new THREE.Mesh(g('shell', shellModel), mats);
+  const shell = new THREE.Mesh(g('shell', shellModel), matsOf('shell'));
   shell.castShadow = shell.receiveShadow = true;
   group.add(shell);
   // label on the long sides
@@ -89,7 +104,7 @@ export function makeCapsuleBox(data) {
   const flaps = [];
   const mk = (long, sign) => {
     const piv = new THREE.Group();
-    const m = new THREE.Mesh(g(long ? 'flapL' : 'flapS', () => flapModel(long)), mats);
+    const m = new THREE.Mesh(g(long ? 'flapL' : 'flapS', () => flapModel(long)), matsOf(long ? 'flapL' : 'flapS'));
     m.castShadow = true;
     // each flap mesh extends from its hinge toward the centre; long (front / back) flaps lie over the short ones
     if (long) { piv.position.set(0, H * VS, sign * (D / 2) * VS); m.position.y = VS; }
@@ -101,7 +116,7 @@ export function makeCapsuleBox(data) {
   };
   mk(false, -1); mk(false, 1); mk(true, -1); mk(true, 1);
   // packing tape along the seam and down both ends
-  const tapeM = new THREE.MeshStandardMaterial({ color: 0xc8a878, roughness: 0.35, transparent: true, opacity: 0.88 });
+  const tapeM = new THREE.MeshStandardMaterial({ map: tapeTexture(), roughness: 0.35, transparent: true, opacity: 0.9 });
   const tape = new THREE.Group();
   const t1 = new THREE.Mesh(new THREE.BoxGeometry(SIZE[0] + 0.004, 0.002, 0.05), tapeM);
   t1.position.y = SIZE[1] + 2 * VS + 0.001;

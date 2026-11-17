@@ -2,10 +2,11 @@
 // shop is open, on the block wall across the lane, in Mikawa-ya's window and above the machines in the garage.
 // Each is a sheet of paper with two strips of tape; the art is crisp up close (nearest filtering).
 import * as THREE from 'three';
+import { detailize } from './surfaces.js';
 import { FLYER_W, FLYER_H, flyerTexture } from '../gfx/flyers.js';
 import { GARAGE } from './Garage.js';
 
-const TAPE = new THREE.MeshStandardMaterial({ color: 0xf2ead2, roughness: 0.55, transparent: true, opacity: 0.8, depthWrite: false });
+const TAPE = detailize(new THREE.MeshStandardMaterial({ color: 0xf2ead2, roughness: 0.55, transparent: true, opacity: 0.8, depthWrite: false }), 'paint'); // masking tape, paper grain
 
 /** A poster group (w metres wide; the sheet faces +z from its centre). */
 export function posterMesh(id, w = 0.42) {

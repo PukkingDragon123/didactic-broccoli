@@ -149,12 +149,6 @@
      "op": "noise",
      "scale": 8,
      "amount": 0.25
-    },
-    {
-     "id": "dust",
-     "op": "speckle",
-     "density": 0.02,
-     "shift": 0.6
     }
    ]
   },

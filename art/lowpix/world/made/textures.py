@@ -6,11 +6,17 @@ H = os.path.dirname(os.path.abspath(__file__))
 FONT = '/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf'
 random.seed(7)
 def grime(im, amt=18):
-    px = im.load(); W, Hh = im.size
-    for _ in range(W * Hh // 6):
-        x, y = random.randrange(W), random.randrange(Hh); r, g, b = px[x, y][:3]; d = random.randint(-amt, amt // 2)
-        px[x, y] = (max(0, min(255, r + d)), max(0, min(255, g + d)), max(0, min(255, b + d)))
-    return im
+    """Wear without speckle: soft darker blotches, a few scratches and edge dirt (no per-pixel noise)."""
+    W, Hh = im.size
+    lay = Image.new('L', (W, Hh), 0); d = ImageDraw.Draw(lay)
+    for _ in range(max(6, W * Hh // 9000)):
+        x, y, r = random.randrange(W), random.randrange(Hh), random.randint(6, 26)
+        d.ellipse([x - r, y - r * 0.7, x + r, y + r * 0.7], fill=random.randint(amt // 2, amt))
+    for _ in range(max(4, W * Hh // 20000)):
+        x, y = random.randrange(W), random.randrange(Hh); d.line([x, y, x + random.randint(-30, 30), y + random.randint(-6, 6)], fill=amt * 2, width=1)
+    lay = lay.filter(ImageFilter.GaussianBlur(2))
+    dark = Image.new('RGB', (W, Hh), (60, 52, 44))
+    return Image.composite(dark, im.convert('RGB'), lay.point(lambda v: min(90, v)))
 # stop sign: atlas 512x512, the plate face in the top 512x448 (an inverted triangle), metal + concrete strips below
 im = Image.new('RGB', (512, 512), (150, 154, 156)); d = ImageDraw.Draw(im)
 tri = [(8, 8), (504, 8), (256, 440)]
@@ -21,7 +27,7 @@ f = ImageFont.truetype(FONT, 104)
 for i, ch in enumerate('止まれ'):
     w = d.textlength(ch, font=f); d.text((256 - w / 2 + (i - 1) * 112, 74), ch, font=f, fill=(244, 244, 240), stroke_width=5, stroke_fill=(244, 244, 240))
 d.rectangle([0, 448, 255, 511], fill=(168, 172, 176)); d.rectangle([256, 448, 511, 511], fill=(150, 146, 138))
-grime(im).filter(ImageFilter.SMOOTH).save(os.path.join(H, 'tomare.png'))
+grime(im).save(os.path.join(H, 'tomare.png'))
 # shaved-ice flag (nobori): cloth 256x512 left, pole/stand strip right
 im = Image.new('RGB', (512, 512), (120, 120, 120)); d = ImageDraw.Draw(im)
 d.rectangle([0, 0, 255, 511], fill=(246, 244, 236))
@@ -71,9 +77,9 @@ print('ok')
 im = Image.new('RGB', (1024, 1024), (120, 110, 96)); d = ImageDraw.Draw(im)
 def cell(i): return (i % 4) * 256, (i // 4) * 256
 x0, y0 = cell(0)
-for _ in range(9000):
+for _ in range(5000):
     x, y = x0 + random.randrange(256), y0 + random.randrange(256); c = random.choice([(168, 140, 98), (150, 120, 80), (186, 160, 118), (120, 96, 66), (96, 88, 80)])
-    d.rectangle([x, y, x + random.randint(0, 2), y + random.randint(0, 1)], fill=c)
+    d.rectangle([x, y, x + random.randint(1, 3), y + random.randint(1, 2)], fill=c)
 x0, y0 = cell(1); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(206, 202, 188))
 fs = ImageFont.truetype(FONT, 9); fb = ImageFont.truetype(FONT, 22)
 d.text((x0 + 8, y0 + 6), '杜王新聞 夕刊', font=fb, fill=(40, 40, 40))
@@ -102,7 +108,7 @@ for _ in range(9000):
     d.rectangle([x, y, x + random.randint(0, 2), y + random.randint(0, 2)], fill=c)
 for _ in range(30): a, b = x0 + random.randrange(256), y0 + random.randrange(256); d.arc([a, b, a + 20, b + 14], 0, 300, fill=(190, 186, 180), width=1)
 x0, y0 = cell(7); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(128, 118, 104))
-for _ in range(5000): x, y = x0 + random.randrange(256), y0 + random.randrange(256); d.point((x, y), fill=random.choice([(150, 140, 120), (100, 92, 82), (170, 160, 140)]))
+for _ in range(5000): x, y = x0 + random.randrange(256), y0 + random.randrange(256); d.rectangle([x, y, x + 1, y + 1], fill=random.choice([(150, 140, 120), (100, 92, 82), (170, 160, 140)]))
 for _ in range(14):
     a, b = x0 + random.randrange(20, 230), y0 + random.randrange(20, 230); d.rectangle([a, b, a + 18, b + 5], fill=(236, 232, 220)); d.rectangle([a, b, a + 6, b + 5], fill=(200, 140, 70))
 for _ in range(6):
@@ -111,3 +117,71 @@ for i in range(8, 16):
     x0, y0 = cell(i); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(112, 104, 96))
 im.save(os.path.join(H, 'debris.png'))
 print('debris ok')
+# mini fridge (512x512): 0..255 x the door (cream enamel, chrome badge, stickers, scuffs), 256.. the body sides, the top, the
+# grille strip, the handle chrome
+im = Image.new('RGB', (512, 512), (226, 222, 210)); d = ImageDraw.Draw(im)
+d.rectangle([0, 0, 255, 511], fill=(234, 230, 218))
+for (x, y, w, h, c, t) in [(30, 90, 70, 52, (238, 196, 60), 'ガチャ'), (150, 60, 60, 60, (90, 160, 210), '★'), (60, 300, 90, 40, (200, 70, 60), 'SALE'), (160, 360, 56, 70, (110, 170, 90), '野菜')]:
+    d.rectangle([x, y, x + w, y + h], fill=c); d.text((x + 6, y + h // 2 - 12), t, font=ImageFont.truetype(FONT, 20), fill=(250, 248, 240))
+d.rectangle([90, 470, 166, 486], fill=(190, 194, 198)); d.text((96, 470), 'KOGURE', font=ImageFont.truetype(FONT, 13), fill=(80, 84, 90))
+d.rectangle([256, 0, 511, 383], fill=(222, 218, 206))
+for r in range(392, 452, 6): d.line([256, r, 511, r], fill=(70, 70, 72), width=3)
+d.rectangle([256, 460, 511, 511], fill=(196, 200, 204))
+grime(im, 8).save(os.path.join(H, 'fridge.png'))
+# gas water heater (瞬間湯沸器): white case, the flame window, the knob, the badge, pipes
+im = Image.new('RGB', (512, 512), (236, 234, 228)); d = ImageDraw.Draw(im)
+d.rectangle([0, 0, 255, 511], fill=(238, 236, 230))
+d.rectangle([90, 150, 166, 200], fill=(40, 36, 34)); d.rectangle([100, 168, 156, 190], fill=(60, 110, 200))
+d.ellipse([108, 250, 148, 290], fill=(70, 70, 74)); d.ellipse([118, 260, 138, 280], fill=(200, 200, 204))
+d.text((70, 60), '瞬間湯沸器', font=ImageFont.truetype(FONT, 24), fill=(70, 70, 76)); d.text((88, 330), 'TOKYO GAS-KI', font=ImageFont.truetype(FONT, 12), fill=(130, 60, 50))
+for r in range(380, 470, 10): d.line([40, r, 216, r], fill=(200, 198, 192), width=4)
+d.rectangle([256, 0, 511, 255], fill=(226, 224, 218)); d.rectangle([256, 256, 511, 383], fill=(184, 150, 96)); d.rectangle([256, 384, 511, 511], fill=(176, 180, 186))
+grime(im, 8).save(os.path.join(H, 'waterheater.png'))
+# cobweb (RGBA 256x256): silk threads, radial + spiral, a little dust caught in it
+im = Image.new('RGBA', (256, 256), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+import math
+for k in range(9):
+    a = math.pi * k / 16; d.line([0, 0, int(math.cos(a) * 250), int(math.sin(a) * 250)], fill=(232, 230, 222, 230), width=1)
+for r in range(14, 250, 13):
+    pts = [(int(math.cos(math.pi * k / 16) * (r + (k % 2) * 3)), int(math.sin(math.pi * k / 16) * (r + (k % 2) * 3))) for k in range(9)]
+    d.line(pts, fill=(222, 220, 212, 200), width=1)
+for _ in range(40): x, y = random.randrange(10, 160), random.randrange(10, 160); d.point((x, y), fill=(160, 150, 130, 255))
+im.save(os.path.join(H, 'cobweb.png'))
+# coin tray (カルトン): green rubber with a ribbed floor, a few coins
+im = Image.new('RGB', (256, 256), (52, 86, 62)); d = ImageDraw.Draw(im)
+for r in range(0, 256, 5): d.line([0, r, 255, r], fill=(44, 76, 54), width=2)
+for (x, y, c) in [(60, 80, (200, 170, 70)), (110, 120, (196, 196, 200)), (150, 70, (196, 196, 200)), (90, 150, (176, 120, 70))]: d.ellipse([x, y, x + 26, y + 26], fill=c); d.ellipse([x + 4, y + 4, x + 22, y + 22], outline=tuple(v - 30 for v in c))
+d.rectangle([0, 200, 255, 255], fill=(30, 72, 48))
+grime(im, 10).save(os.path.join(H, 'cointray.png'))
+print('more ok')
+# weathered cedar planks (縁台): grain lines, knots, nail heads, grey sun-bleached tops
+def planks(W, Hh, base=(150, 118, 84)):
+    im = Image.new('RGB', (W, Hh), base); d = ImageDraw.Draw(im)
+    for y in range(0, Hh, 3):
+        c = tuple(max(0, min(255, v + random.randint(-14, 10))) for v in base)
+        d.line([0, y, W, y + random.randint(-2, 2)], fill=c, width=2)
+    for _ in range(W * Hh // 9000): x, y = random.randrange(W), random.randrange(Hh); d.ellipse([x, y, x + 10, y + 6], fill=tuple(v - 40 for v in base)); d.ellipse([x + 3, y + 2, x + 7, y + 4], fill=tuple(v - 60 for v in base))
+    return grime(im, 22)
+im = planks(512, 512, (158, 132, 102)); d = ImageDraw.Draw(im)
+for x in range(0, 512, 128):
+    for y in (20, 236, 492): d.rectangle([x + 60, y, x + 63, y + 3], fill=(70, 66, 62))
+for x in range(0, 512, 128): d.line([x, 0, x, 255], fill=(96, 74, 52), width=2)
+im.save(os.path.join(H, 'bench.png'))
+# pink public phone on its little stand: pink plastic, the dial, the coin slot, the label, a wooden stand
+im = Image.new('RGB', (512, 512), (226, 140, 160)); d = ImageDraw.Draw(im)
+d.rectangle([0, 0, 255, 255], fill=(230, 146, 166)); d.ellipse([60, 90, 196, 226], fill=(240, 236, 228)); d.ellipse([86, 116, 170, 200], fill=(228, 136, 156))
+for k in range(10):
+    import math
+    a = math.pi * 2 * k / 10 - 1.2; x, y = 128 + math.cos(a) * 50, 158 + math.sin(a) * 50; d.ellipse([x - 8, y - 8, x + 8, y + 8], fill=(60, 56, 54)); d.text((x - 4, y - 7), str((k + 1) % 10), font=ImageFont.truetype(FONT, 11), fill=(244, 244, 240))
+d.rectangle([40, 24, 216, 70], fill=(246, 242, 236)); d.text((52, 30), '10円 電話', font=ImageFont.truetype(FONT, 30), fill=(196, 40, 60))
+d.rectangle([200, 100, 214, 150], fill=(70, 66, 64))
+d.rectangle([256, 0, 511, 255], fill=(220, 132, 152))
+im.paste(planks(256, 256, (120, 84, 56)), (0, 256)); im.paste(planks(256, 256, (110, 76, 50)), (256, 256))
+grime(im, 10).save(os.path.join(H, 'pinkphone.png'))
+# street light: galvanised steel, the lamp head's milky diffuser, a pole plate with a number
+im = Image.new('RGB', (256, 256), (150, 156, 158)); d = ImageDraw.Draw(im)
+for y in range(0, 128, 4): d.line([0, y, 255, y], fill=(140, 146, 148), width=1)
+d.rectangle([0, 128, 127, 255], fill=(226, 228, 220)); d.rectangle([8, 136, 119, 247], fill=(240, 240, 232))
+d.rectangle([128, 128, 255, 255], fill=(220, 222, 214)); d.text((140, 170), '杜王 26', font=ImageFont.truetype(FONT, 22), fill=(40, 60, 120))
+grime(im, 16).save(os.path.join(H, 'streetlight.png'))
+print('set3 ok')

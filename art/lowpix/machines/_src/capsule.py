@@ -71,7 +71,7 @@ def build_all():
         s.raw("maskB", MASK_B)
         s.raw("maskC", MASK_C)
         s.raw("inkg", INKG)
-        sides, n = (10, 3) if lo else (20, 6)
+        sides, n = (14, 4) if lo else (20, 6)
         sfx = "_lo" if lo else ""
         # plastic halves (white: tinted by the game) and the clear top
         p = half(s, "top" + sfx, True, sides, n, "abs", "clear", 4.6, lo)

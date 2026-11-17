@@ -263,7 +263,7 @@
      "op": "photo",
      "src": "art/lowpix/photos/metal_plate",
      "scale": 120,
-     "amount": 0.8
+     "amount": 0.4
     },
     {
      "id": "sheen",
@@ -306,8 +306,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 10,
-     "amount": 0.3
+     "scale": 30,
+     "amount": 0.12
     },
     {
      "id": "sky",
@@ -1049,6 +1049,131 @@
    "paint": {
     "ramp": "goldr",
     "tone": 3.0
+   }
+  },
+  {
+   "id": "blister",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "paint": {
+    "ramp": "ink"
+   }
+  },
+  {
+   "id": "bl_card",
+   "shape": "box",
+   "parent": "blister",
+   "pivot": [
+    0,
+    51,
+    0
+   ],
+   "size": [
+    72,
+    102,
+    3
+   ],
+   "hide": [
+    "front"
+   ],
+   "style": "paper",
+   "paint": {
+    "ramp": "ce8dcc4_hue8_k0p0",
+    "tone": 4.0,
+    "layers": [
+     {
+      "id": "edge",
+      "op": "stripes",
+      "axis": "y",
+      "period": 1.6,
+      "width": 0.4,
+      "shift": -0.5,
+      "faces": [
+       "left",
+       "right",
+       "top",
+       "bottom"
+      ]
+     },
+     {
+      "id": "print",
+      "op": "rect",
+      "rect": [
+       0.1,
+       0.06,
+       0.9,
+       0.3
+      ],
+      "ramp": "cc8352a_k0p08",
+      "tone": 3.0,
+      "faces": [
+       "back"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "back",
+      "at": "center",
+      "offset": [
+       0,
+       8
+      ],
+      "art": [
+       "iii.iii.iii.iii.i.i.i...iii....iii.iii..",
+       "i...i.i.i.i.i...i.i.i...i......i...i.i..",
+       "i...iii.iii.iii.i.i.i...ii.....i...i.i..",
+       "i...i.i.i.....i.i.i.i...i......i...i.i..",
+       "iii.i.i.i...iii.iii.iii.iii....iii.iii.i"
+      ],
+      "key": {
+       "i": "ink:2"
+      }
+     },
+     {
+      "face": "back",
+      "at": "bottom",
+      "offset": [
+       0,
+       -6
+      ],
+      "art": [
+       "i.i.iii.ii..iii....iii.ii.......i.iii.iii.iii.ii.",
+       "iii.i.i.i.i.i.......i..i.i......i.i.i.i.i.i.i.i.i",
+       "iii.iii.i.i.ii......i..i.i......i.iii.iii.iii.i.i",
+       "i.i.i.i.i.i.i.......i..i.i....i.i.i.i.i...i.i.i.i",
+       "i.i.i.i.ii..iii....iii.i.i....iii.i.i.i...i.i.i.i"
+      ],
+      "key": {
+       "i": "ink:2"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "bl_foot",
+   "shape": "box",
+   "parent": "blister",
+   "pivot": [
+    0,
+    1.5,
+    -12
+   ],
+   "size": [
+    50,
+    3,
+    30
+   ],
+   "chamfer": 0.6,
+   "style": "paper",
+   "paint": {
+    "ramp": "ce8dcc4_hue8_k0p0",
+    "tone": 3.6
    }
   }
  ]

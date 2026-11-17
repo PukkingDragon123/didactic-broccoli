@@ -222,13 +222,6 @@
    "ppm": 150
   },
   {
-   "id": "scooter",
-   "src": "sketchfab:f307b287177a40a2ba33e1a76ecee7df",
-   "h": 1.05,
-   "tris": 5000,
-   "ppm": 150
-  },
-  {
    "id": "post_box",
    "src": "sketchfab:5e0f504bb5d144809390dac8c66a6dd5",
    "h": 1.0,
@@ -310,12 +303,6 @@
    "src": "sketchfab:4450069fee444ae0920aa5babd5d9239",
    "h": 0.45,
    "ppm": 200
-  },
-  {
-   "id": "rice_cooker",
-   "src": "sketchfab:6c1e19fbe4134b9dabbec8f2355a504f",
-   "h": 0.26,
-   "ppm": 240
   },
   {
    "id": "kettle",
@@ -718,15 +705,6 @@
    "prop": "ufo"
   },
   {
-   "id": "astronaut",
-   "src": "sketchfab:09c7521d87ad4e6ea4980ccb436dec26",
-   "h": 1.59,
-   "ppm": 140,
-   "tris": 3000,
-   "name": "Space-suited astronaut standing upright",
-   "prop": "astronaut"
-  },
-  {
    "id": "star_lamp",
    "src": "sketchfab:acd19b5bd50d4cf3b179c222b0d29449",
    "h": 1.5,
@@ -871,15 +849,6 @@
    "prop": "torii"
   },
   {
-   "id": "wagasa_parasol",
-   "src": "sketchfab:23028b4a1e90409db025867565b51569",
-   "h": 2.135,
-   "ppm": 100,
-   "tris": 4000,
-   "name": "[FREE] 3d Old The Wagasa  Japanese Umbre",
-   "prop": "wagasa_parasol"
-  },
-  {
    "id": "bamboo_fence",
    "src": "sketchfab:c7c5f6cc7adb455b908fb352be5051c2",
    "h": 1.22,
@@ -1004,15 +973,6 @@
    "tris": 3000,
    "name": "Spray Paint Can",
    "prop": "paint_tins"
-  },
-  {
-   "id": "rope_coil",
-   "src": "sketchfab:f61c5106eaaa45188e2cb805ed998f21",
-   "h": 0.37,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Rope Coil - Low Poly Medieval, CC0",
-   "prop": "rope_coil"
   },
   {
    "id": "cactus_pot",
@@ -1244,15 +1204,6 @@
    "prop": "park_bench"
   },
   {
-   "id": "slide",
-   "src": "sketchfab:df79bfbdfe06443e8b20ffa35f94a714",
-   "h": 2.12,
-   "ppm": 100,
-   "tris": 4000,
-   "name": "Old Playground Slide",
-   "prop": "slide"
-  },
-  {
    "id": "drinking_fountain",
    "src": "sketchfab:796e0b2660a440e3a2e8a24c6ed0fe72",
    "h": 0.975,
@@ -1287,15 +1238,6 @@
    "tris": 3000,
    "name": "Car Barricade 2\u3000\u8eca\u6b62\u3081\u30dd\u30fc\u30eb \u30d0\u30ea\u30ab\u30fc",
    "prop": "bollard_u"
-  },
-  {
-   "id": "spring_panda",
-   "src": "sketchfab:7397fa465943485d83ada8a5fbcf40d5",
-   "h": 0.975,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Wooden ladybug spring rider (Object Capt",
-   "prop": "spring_panda"
   },
   {
    "id": "trash_bag_b",
@@ -1392,15 +1334,6 @@
    "prop": "room_bookshelf"
   },
   {
-   "id": "room_figshelf",
-   "src": "sketchfab:937c3c825cb347549c09167016229804",
-   "h": 0.76,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Coin Display Shelf",
-   "prop": "room_figshelf"
-  },
-  {
    "id": "room_tvrack",
    "src": "sketchfab:4768d6fef8734c7aa99321f6b6b3c520",
    "h": 0.39,
@@ -1491,51 +1424,6 @@
    "prop": "pendulum_clock"
   },
   {
-   "id": "dagashi_rack",
-   "src": "sketchfab:b78cd4d26e164ef0ba11b0d11985a1a0",
-   "h": 1.215,
-   "ppm": 140,
-   "tris": 3000,
-   "name": "Candy Display",
-   "prop": "dagashi_rack"
-  },
-  {
-   "id": "ramune_cooler",
-   "src": "sketchfab:d7c27f148d454a159cd8968694b59ab2",
-   "h": 0.735,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Low Poly Cooler with Drinks",
-   "prop": "ramune_cooler"
-  },
-  {
-   "id": "shop_bench",
-   "src": "sketchfab:2fea1f718c14460882014d80b4b64ccd",
-   "h": 0.525,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "wooden bench Wooden chair- 15MB",
-   "prop": "shop_bench"
-  },
-  {
-   "id": "pink_phone",
-   "src": "sketchfab:c324968e1e2a4a7b873e275c152b35a3",
-   "h": 0.97,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Telephone Pink",
-   "prop": "pink_phone"
-  },
-  {
-   "id": "asagao_pot",
-   "src": "sketchfab:5f29539fda3748789361bb57e6b3c3e7",
-   "h": 0.81,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Vase Flower Pot - 24 MB",
-   "prop": "asagao_pot"
-  },
-  {
    "id": "lucky_cat_big",
    "src": "sketchfab:170f632b9b294fdabc660ba91894c10a",
    "h": 0.51,
@@ -1543,24 +1431,6 @@
    "tris": 3000,
    "name": "Maneki neko",
    "prop": "lucky_cat_big"
-  },
-  {
-   "id": "street_light",
-   "src": "sketchfab:385a7cef98084a6698cd0a1c93acf21b",
-   "h": 4.14,
-   "ppm": 100,
-   "tris": 4000,
-   "name": "Japanese street light",
-   "prop": "street_light"
-  },
-  {
-   "id": "post_box_p",
-   "src": "sketchfab:ed30f71494e44801bb18cb5aeddcddf6",
-   "h": 1.302,
-   "ppm": 140,
-   "tris": 3000,
-   "name": "Japan post box",
-   "prop": "post_box"
   },
   {
    "id": "mirror_pole",
@@ -1579,15 +1449,6 @@
    "tris": 3000,
    "name": "Plant pots",
    "prop": "potted_row"
-  },
-  {
-   "id": "drink_cans",
-   "src": "sketchfab:5ad17d589a6a41fc8905a576871e77ba",
-   "h": 0.105,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Soda Can crushed trash Low-poly",
-   "prop": "drink_cans"
   },
   {
    "id": "mamachari",
@@ -1615,33 +1476,6 @@
    "tris": 3000,
    "name": "Grocery store Shelf",
    "prop": "goods_shelf"
-  },
-  {
-   "id": "twin_tub",
-   "src": "sketchfab:d81d81853a9f478ca9fac019eabcf453",
-   "h": 0.925,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Washing Machine",
-   "prop": "twin_tub"
-  },
-  {
-   "id": "call_bell",
-   "src": "sketchfab:2c93e5a1a2be4795b7e273a9058396bf",
-   "h": 0.065,
-   "ppm": 240,
-   "tris": 1500,
-   "name": "Small Bell(Wind Bell)",
-   "prop": "call_bell"
-  },
-  {
-   "id": "softserve",
-   "src": "sketchfab:cc27432fdaca4c909e2378b32b4edef3",
-   "h": 1.7,
-   "ppm": 140,
-   "tris": 3000,
-   "name": "Ice Cream Sign",
-   "prop": "softserve"
   },
   {
    "id": "moon_rock",
@@ -1703,15 +1537,6 @@
    "tris": 3000,
    "name": "Old Oil Heater_Gas stove_24_MB",
    "prop": "heater"
-  },
-  {
-   "id": "shop_counter",
-   "src": "sketchfab:9079bf17aacf4570a0c2b2587104c5ab",
-   "h": 0.96,
-   "ppm": 140,
-   "tris": 3000,
-   "name": "Food shop showcase",
-   "prop": "shop_counter"
   },
   {
    "id": "milk_fridge",
@@ -1831,15 +1656,6 @@
    "alpha": true
   },
   {
-   "id": "sakura_tree",
-   "src": "sketchfab:1bba2a5f47a0444f84006bc65c65253e",
-   "h": 2.88,
-   "ppm": 100,
-   "tris": 4000,
-   "prop": "sakura_tree",
-   "alpha": true
-  },
-  {
    "id": "momiji_tree",
    "src": "sketchfab:b6eb627413ed40fdb8b0a1e1c9038fa9",
    "h": 2.45,
@@ -1856,7 +1672,9 @@
    "tris": 600,
    "name": "Stop sign (\u6b62\u307e\u308c)",
    "prop": "tomare_sign",
-   "cap": 512
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   },
   {
    "id": "kakigori",
@@ -1866,16 +1684,9 @@
    "tris": 600,
    "name": "Shaved-ice flag (\u6c37)",
    "prop": "kakigori_flag",
-   "cap": 512
-  },
-  {
-   "id": "utility_pole",
-   "src": "sketchfab:f3dc37ced5d548ef98c7ee8bd2ad5491",
-   "h": 8.08,
-   "ppm": 60,
-   "tris": 4000,
-   "name": "Japanese Electric Pole",
-   "prop": "utility_pole"
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   },
   {
    "id": "firebuckets",
@@ -1885,7 +1696,9 @@
    "tris": 800,
    "name": "Fire buckets (\u6d88\u706b\u7528)",
    "prop": "fire_buckets",
-   "cap": 512
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   },
   {
    "id": "busstop",
@@ -1895,7 +1708,9 @@
    "tris": 800,
    "name": "Bus stop sign (\u30d0\u30b9\u505c)",
    "prop": "bus_stop",
-   "cap": 512
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   },
   {
    "id": "ashtray_stand",
@@ -1904,7 +1719,9 @@
    "ppm": 200,
    "tris": 500,
    "name": "Standing ashtray (\u7070\u76bf)",
-   "prop": "mk_stand_ashtray"
+   "prop": "mk_stand_ashtray",
+   "grain": 0.0,
+   "smooth": 1.0
   },
   {
    "id": "dustpile",
@@ -1914,7 +1731,9 @@
    "tris": 1500,
    "name": "Dust pile",
    "prop": "dust_pile",
-   "cap": 512
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   },
   {
    "id": "rubbishpile",
@@ -1924,7 +1743,9 @@
    "tris": 2000,
    "name": "Rubbish pile",
    "prop": "rubbish_pile",
-   "cap": 512
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   },
   {
    "id": "cardboardmess",
@@ -1934,7 +1755,111 @@
    "tris": 2000,
    "name": "Cardboard mess",
    "prop": "cardboard_mess",
-   "cap": 512
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "keyaki_tree",
+   "src": "sketchfab:024e8b42dd2a4657aec9d4c872337ab1",
+   "h": 8.36,
+   "ppm": 50,
+   "tris": 6000,
+   "prop": "keyaki_tree",
+   "cap": 1024
+  },
+  {
+   "id": "weeds",
+   "src": "sketchfab:7e2b98aab6064d63bb2fc3fda8450c27",
+   "h": 0.21,
+   "ppm": 300,
+   "tris": 1500,
+   "prop": "weeds",
+   "alpha": true
+  },
+  {
+   "id": "minifridge",
+   "src": "art/lowpix/world/made/minifridge.glb",
+   "h": 0.85,
+   "ppm": 280,
+   "tris": 400,
+   "name": "Mini fridge",
+   "prop": "fridge",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "waterheater",
+   "src": "art/lowpix/world/made/waterheater.glb",
+   "h": 0.74,
+   "ppm": 300,
+   "tris": 400,
+   "name": "Gas water heater (\u77ac\u9593\u6e6f\u6cb8\u5668)",
+   "prop": "water_heater",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "cobwebcard",
+   "src": "art/lowpix/world/made/cobwebcard.glb",
+   "h": 0.39,
+   "ppm": 500,
+   "tris": 60,
+   "name": "Cobweb",
+   "prop": "cobweb",
+   "alpha": true,
+   "cap": 256,
+   "direct": true
+  },
+  {
+   "id": "cointray",
+   "src": "art/lowpix/world/made/cointray.glb",
+   "h": 0.024,
+   "ppm": 600,
+   "tris": 60,
+   "name": "Coin tray (\u30ab\u30eb\u30c8\u30f3)",
+   "prop": "coin_tray",
+   "cap": 256,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "engawabench",
+   "src": "art/lowpix/world/made/engawabench.glb",
+   "h": 0.525,
+   "ppm": 300,
+   "tris": 400,
+   "name": "Shopfront bench (\u7e01\u53f0)",
+   "prop": "shop_bench",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "pinkphone",
+   "src": "art/lowpix/world/made/pinkphone.glb",
+   "h": 0.96,
+   "ppm": 300,
+   "tris": 500,
+   "name": "Pink phone (\u30d4\u30f3\u30af\u96fb\u8a71)",
+   "prop": "pink_phone",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "streetlight",
+   "src": "art/lowpix/world/made/streetlight.glb",
+   "h": 4.14,
+   "ppm": 120,
+   "tris": 400,
+   "name": "Street light",
+   "prop": "street_light",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   }
  ]
 }

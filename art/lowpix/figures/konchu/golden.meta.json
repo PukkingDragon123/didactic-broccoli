@@ -8,31 +8,21 @@
   {
    "name": "beetle",
    "src": "sketchfab:2e240bc3ebd241ccba0dfa19736397d7",
-   "height": 12,
-   "at": [
-    0,
-    11.55,
-    0
+   "height": 30.311,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "metal",
-   "recolor": {
-    "saturation": 0.2,
-    "linear": [
-     0.55,
-     95
-    ],
-    "tint": "#e8b850"
-   },
+   "tris": 5000,
+   "mat": "gloss",
    "drop": [
     "^Cube"
    ],
-   "key": "d0eb8515985ac0"
+   "key": "c83a3ccbe6d8aa"
   }
  ],
  "model_clip": {

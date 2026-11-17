@@ -9,6 +9,7 @@
 // trees (instanced). Distant things are given a lighter fog (FOG_K) so the silhouette still reads at 70–100 m.
 //   buildPylon(town) -> { group, main: { x, z, base } }
 import * as THREE from 'three';
+import { detailize, boxUV } from './surfaces.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { hash2 } from '../core/util.js';
 
@@ -217,7 +218,8 @@ function buildHill(group) {
   }
   flat.setAttribute('color', new THREE.BufferAttribute(c, 3));
   flat.computeBoundingSphere();
-  const mat = lightFog(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: true }), 'hill');
+  boxUV(flat); // world-metre UVs for the ground detail map
+  const mat = lightFog(detailize(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: true }), 'paint'), 'hill');
   const mesh = new THREE.Mesh(flat, mat);
   mesh.receiveShadow = false; mesh.matrixAutoUpdate = false;
   group.add(mesh);
@@ -237,7 +239,7 @@ function buildHill(group) {
     if (hash2(Math.round(x / 6), Math.round(z / 6)) < 0.35) continue;
     spots.push([x, z, 0.8 + hash2(i, 47) * 0.9]);
   }
-  const tm = new THREE.InstancedMesh(tgeo, lightFog(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, flatShading: true }), 'trees'), spots.length);
+  const tm = new THREE.InstancedMesh(tgeo, lightFog(detailize(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, flatShading: true }), 'wood'), 'trees'), spots.length);
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3();
   spots.forEach(([x, z, k], i) => { q.setFromAxisAngle(V(0, 1, 0), hash2(x, z) * 6); tm.setMatrixAt(i, m4.compose(V(x, hillHeight(x, z) - 0.1, z), q, s.set(k, k * (0.9 + hash2(z, x) * 0.4), k))); });
   tm.computeBoundingSphere();
@@ -262,9 +264,9 @@ export function buildPylon(town) {
   const towers = [{ ...PYLON, ry: 0.08 }, ...NEIGHBOURS];
   // steel (instanced: the three towers share one geometry)
   const steel = towerSteel();
-  const steelM = lightFog(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.55 }), 'steel');
+  const steelM = lightFog(detailize(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.55 }), 'metal'), 'steel');
   const ins = insulators();
-  const insM = lightFog(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.0 }), 'ins');
+  const insM = lightFog(detailize(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.0 }), 'paint'), 'ins');
   const steelI = new THREE.InstancedMesh(steel, steelM, towers.length), insI = new THREE.InstancedMesh(ins.geo, insM, towers.length);
   const mats = towers.map((t) => new THREE.Matrix4().compose(V(t.x, t.base, t.z), new THREE.Quaternion().setFromAxisAngle(V(0, 1, 0), t.ry), V(1, 1, 1)));
   mats.forEach((m4, i) => { steelI.setMatrixAt(i, m4); insI.setMatrixAt(i, m4); });
@@ -275,7 +277,7 @@ export function buildPylon(town) {
   const dGeo = D.merge();
   dGeo.applyMatrix4(mats[0]);
   dGeo.computeBoundingSphere();
-  const dress = new THREE.Mesh(dGeo, lightFog(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, side: THREE.DoubleSide }), 'dress'));
+  const dress = new THREE.Mesh(dGeo, lightFog(detailize(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, side: THREE.DoubleSide }), 'paint'), 'dress'));
   dress.matrixAutoUpdate = false;
   group.add(dress);
   // warning plates (sign atlas: one quad each, on the fence and the legs)

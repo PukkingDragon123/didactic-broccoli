@@ -11,7 +11,7 @@
    "height": 23.54,
    "pos": [
     0.0,
-    16.6,
+    13.6,
     0.0
    ],
    "yaw": 0,
@@ -22,11 +22,6 @@
    "key": "a94f1050738410"
   }
  ],
- "base": {
-  "family": "lane",
-  "w": 49.5,
-  "d": 31.0
- },
  "model_clip": {
   "node": "model_cat",
   "kind": "slide",

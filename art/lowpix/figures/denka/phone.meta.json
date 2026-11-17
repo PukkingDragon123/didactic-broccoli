@@ -8,10 +8,10 @@
   {
    "name": "phone",
    "src": "sketchfab:24c655388db749fe9a679ea4c6edc626",
-   "height": 20.233,
+   "height": 21.679,
    "pos": [
     0.0,
-    3.1,
+    0.0,
     0.0
    ],
    "yaw": -15,
@@ -22,14 +22,9 @@
    "opts": {
     "spread": 0.3
    },
-   "key": "5ca324f6f76a3f"
+   "key": "66601f5ec591d5"
   }
  ],
- "base": {
-  "family": "shelf",
-  "w": 37.5,
-  "d": 31.5
- },
  "model_clip": {
   "node": "model_phone",
   "kind": "hop",

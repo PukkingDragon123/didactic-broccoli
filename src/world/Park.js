@@ -13,6 +13,7 @@ import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { townPix } from '../gfx/textures.js';
 import { archPlace } from './archModels.js';
+import { tiled4 } from './Town.js';
 
 export const PARK = {
   ax0: 9.8, ax1: 11.3, wx: 11.45, x0: 11.6, x1: 25.6, zN: -5.8, zP: -3.5, xP: 16.6, zS: -17.6,
@@ -30,12 +31,12 @@ export function buildPark(t) {
   warehouse(t, mats);
 
   // ---------------------------------------------------------------- ground: plaza paving, the park's masa-do, planting strips
-  B.plane(m.strip, P.xP - P.ax1, P.zP - P.zN, (P.ax1 + P.xP) / 2, 0.003, (P.zP + P.zN) / 2, { uv: [3, 1], k: 0.95 });
+  B.plane(mats.paving, P.xP - P.ax1, P.zP - P.zN, (P.ax1 + P.xP) / 2, 0.003, (P.zP + P.zN) / 2, { uv: [3, 1], k: 0.95 });
   B.plane(mats.dirt, P.x1 + 0.4 - P.x0, P.zN - P.zS, (P.x0 + P.x1 + 0.4) / 2, 0.003, (P.zN + P.zS) / 2, { uv: [0.3, 0.7] });
   B.plane(mats.dirt, 26 - P.xP, -3.2 - P.zN, (26 + P.xP) / 2, 0.002, (-3.2 + P.zN) / 2, { k: 0.85 }); // back gardens behind the fence
   for (const [x0, x1, z0, z1] of [[16.6, 20.75, -6.75, -5.8], [24.9, 25.95, -17.6, -8.7], [11.6, 13.0, -17.6, -14.3]]) B.plane(m.grass, x1 - x0, z1 - z0, (x0 + x1) / 2, 0.01, (z0 + z1) / 2, { uv: [x0, z0], k: 0.95 });
   // worn paths: entrance → swings, entrance → exit (darker, compacted)
-  const worn = t.M('gravel', { roughness: 1, color: 0xb8a684, ppm: 28, decal: true });
+  const worn = mats.worn;
   for (const [x, z, w, d, r] of [[14.2, -6.9, 1.1, 3.6, 0.9], [17.3, -9.6, 1.0, 5.2, 0.45], [18.3, -15.6, 1.1, 3.8, 0.05]]) B.plane(worn, w, d, x, 0.004, z, { ry: r });
   B.plane(t.decal('chalk', 64, 64), 2.2, 2.2, 18.9, 0.006, -7.75, { unit: true, ry: 0.15, tint: 0xe8e4dc });
   t.puddle(21.0, -7.0, 1.0, 0.6, 0.3);
@@ -87,16 +88,18 @@ export function buildPark(t) {
 // ------------------------------------------------------------------ materials
 function parkMats(t) {
   if (t._parkMats) return t._parkMats;
-  const map = townPix('fenceMesh', 16, 16).texture();
-  map.wrapS = map.wrapT = THREE.RepeatWrapping;
+  const map = tiled4(townPix('fenceMesh', 16, 16).texture());
   const fence = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.35, side: THREE.DoubleSide });
   // unlit, vertex-coloured paint for the lamp-lit studio seen through the villa's window
   const flat = new THREE.MeshBasicMaterial({ vertexColors: true });
   const flatBack = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide });
   return (t._parkMats = {
     fence, flat, flatBack,
-    dirt: t.M('gravel', { roughness: 1, color: 0xd6c6a2, ppm: 30 }),
-    sand: t.M('gravel', { roughness: 1, color: 0xf0dcb0, ppm: 56, bump: 0.4 }),
+    // the park's masa-do, the sandbox sand and the plaza slabs: photo-bashed lowpix textures at 128 px/m
+    dirt: t.S('park_ground', 4, { roughness: 1 }),
+    sand: t.S('sand', 4, { roughness: 1 }),
+    paving: t.S('paving', 4, { roughness: 0.92 }),
+    worn: t.S('park_ground', 4, { roughness: 1, color: 0x9a8a72, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }),
     stucco: t.M('plaster', { roughness: 0.92, color: 0xf6f3ec, ppm: 48 }),
     slate: t.M('roofTile', { roughness: 0.45, metalness: 0.2, color: 0x5c6270 }),
     tile: t.M('tile', { roughness: 0.5, color: 0xd8d2c4, ppm: 64 }),
@@ -215,12 +218,14 @@ function fences(t, mats) {
 // ------------------------------------------------------------------ playground equipment
 function playground(t, mats) {
   const B = t.B, m = t.m, pl = t.game.player;
+  // the jungle gym, the horizontal bars and the swing rails are a lowpix model (art/lowpix/world_arch/_src/park.py)
+  const lp = !!archPlace('playground', t.group, { cast: false });
   // swings in their safety rails (open at the sides)
   t.prop('swing_set', 20.8, 0, -12.2, 0);
   pl.addObstacle(19.0, 19.5, -13.05, -11.35); pl.addObstacle(22.1, 22.6, -13.05, -11.35);
   for (const z of [-9.95, -14.45]) {
-    for (let x = 19.0; x <= 22.61; x += 1.2) B.box(m.metal, 0.06, 0.7, 0.06, x, 0, z, { tint: 0xf2c41a });
-    for (const y of [0.32, 0.68]) B.box(m.metal, 3.66, 0.05, 0.05, 20.8, y, z, { tint: 0x2f6fb8 });
+    if (!lp) for (let x = 19.0; x <= 22.61; x += 1.2) B.box(m.metal, 0.06, 0.7, 0.06, x, 0, z, { tint: 0xf2c41a });
+    if (!lp) for (const y of [0.32, 0.68]) B.box(m.metal, 3.66, 0.05, 0.05, 20.8, y, z, { tint: 0x2f6fb8 });
     pl.addObstacle(18.95, 22.65, z - 0.07, z + 0.07);
   }
   // slide (chute runs north), and the dip at its foot
@@ -233,8 +238,8 @@ function playground(t, mats) {
   // jungle gym: a 3×3×3 cube of painted pipe
   {
     const cx = 16.4, cz = -13.3, n = 3, s = 0.55, x0 = cx - n * s / 2, z0 = cz - n * s / 2, cols = [0xd8382e, 0x2f6fb8, 0xf2c41a, 0x3cae5a];
-    for (let i = 0; i <= n; i++) for (let k = 0; k <= n; k++) B.box(m.metal, 0.05, n * s + 0.04, 0.05, x0 + i * s, 0, z0 + k * s, { tint: 0xd8382e });
-    for (let j = 1; j <= n; j++) for (let i = 0; i <= n; i++) {
+    if (!lp) for (let i = 0; i <= n; i++) for (let k = 0; k <= n; k++) B.box(m.metal, 0.05, n * s + 0.04, 0.05, x0 + i * s, 0, z0 + k * s, { tint: 0xd8382e });
+    if (!lp) for (let j = 1; j <= n; j++) for (let i = 0; i <= n; i++) {
       B.box(m.metal, n * s, 0.04, 0.04, cx, j * s, z0 + i * s, { tint: cols[j] });
       B.box(m.metal, 0.04, 0.04, n * s, x0 + i * s, j * s - 0.02, cz, { tint: cols[j] });
     }
@@ -243,9 +248,9 @@ function playground(t, mats) {
   // 鉄棒: three horizontal bars of rising height
   {
     const xs = [20.2, 21.15, 22.1, 23.05], z = -16.8;
-    for (const x of xs) { B.box(m.metal, 0.07, 1.42, 0.07, x, 0, z, { tint: 0xd8382e }); B.box(m.metal, 0.09, 0.05, 0.09, x, 1.42, z, { tint: 0xf4f0e6 }); pl.addObstacle(x - 0.08, x + 0.08, z - 0.08, z + 0.08); }
-    [0.85, 1.05, 1.25].forEach((y, i) => B.box(m.metal, xs[i + 1] - xs[i], 0.035, 0.035, (xs[i] + xs[i + 1]) / 2, y, z, { tint: 0xc8ccd0 }));
-    for (let i = 0; i < 3; i++) B.plane(t.M('gravel', { roughness: 1, color: 0xb09c7a, ppm: 28, decal: true }), 0.7, 0.9, (xs[i] + xs[i + 1]) / 2, 0.004, z, {});
+    for (const x of xs) { if (!lp) { B.box(m.metal, 0.07, 1.42, 0.07, x, 0, z, { tint: 0xd8382e }); B.box(m.metal, 0.09, 0.05, 0.09, x, 1.42, z, { tint: 0xf4f0e6 }); } pl.addObstacle(x - 0.08, x + 0.08, z - 0.08, z + 0.08); }
+    if (!lp) [0.85, 1.05, 1.25].forEach((y, i) => B.box(m.metal, xs[i + 1] - xs[i], 0.035, 0.035, (xs[i] + xs[i + 1]) / 2, y, z, { tint: 0xc8ccd0 }));
+    for (let i = 0; i < 3; i++) B.plane(mats.worn, 0.7, 0.9, (xs[i] + xs[i + 1]) / 2, 0.004, z, {});
   }
   // spring rider panda
   t.prop('spring_panda', 14.6, 0, -6.8, 0.5, { block: true, pad: 0 });

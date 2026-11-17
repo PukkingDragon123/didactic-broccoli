@@ -12,7 +12,7 @@ import { LP_ARCH, archAsset } from '../kit/lowpixArch.js';
 
 export const ARCH_OFF = typeof location !== 'undefined' && /[?&]voxelarch\b/.test(location.search);
 // every model is preloaded at boot (the town builds them synchronously) except the lazy ones (interiors: archSlot)
-export const ARCH_LAZY = new Set([]);
+export const ARCH_LAZY = new Set(['scooter', 'wagasa_parasol', 'rope_coil', 'astronaut', 'slide', 'rice_cooker']); // props (src/data/propModels.js loads them)
 const BOOT = Object.keys(LP_ARCH).filter((id) => !ARCH_LAZY.has(id));
 if (!ARCH_OFF && typeof document !== 'undefined') {
   const ids = BOOT.filter((id) => LP_ARCH[id]).map(archAsset);

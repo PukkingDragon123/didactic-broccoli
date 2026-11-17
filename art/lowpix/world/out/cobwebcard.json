@@ -1,0 +1,21 @@
+{
+ "id": "cobwebcard",
+ "src": "art/lowpix/world/made/cobwebcard.glb",
+ "credit": {
+  "title": "Cobweb",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cobwebcard.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 12,
+ "tex": 256,
+ "size": [
+  0.39,
+  0.39,
+  0.012
+ ],
+ "colours": 0,
+ "palette": {},
+ "warnings": []
+}

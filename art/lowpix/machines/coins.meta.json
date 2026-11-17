@@ -4,10 +4,16 @@
    0,
    0,
    0
+  ],
+  "yen5": [
+   0,
+   0,
+   0
   ]
  },
  "mats": {
-  "c100": "metal"
+  "c100": "metal",
+  "c5": "metal"
  },
  "key": "coins",
  "density": 6.0

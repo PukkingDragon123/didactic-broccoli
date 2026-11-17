@@ -1,8 +1,152 @@
 {
+ "013151b2d05e473fb391b298adfd62d1": {
+  "verdict": "ok",
+  "name": "Sci Fi Ray Gun",
+  "author": "pfontaine23",
+  "reasons": []
+ },
+ "03b652b3678e4eba9fcad09145e51aa0": {
+  "verdict": "ok",
+  "name": "Japanese bilboquet (cup-and-ball game)",
+  "author": "kayaaku",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "046f4d21810e4bf68feabe393a6b83cf": {
+  "verdict": "ok",
+  "name": "Dog Dachshund -Tacskó",
+  "author": "PusztaiAndras",
+  "reasons": []
+ },
+ "068f8bc747114856a7505cadf7873792": {
+  "verdict": "ok",
+  "name": "Phone Booth",
+  "author": "rud.olenka",
+  "reasons": []
+ },
+ "0a43eeb601264d728fb5848ee62482b5": {
+  "verdict": "ok",
+  "name": "Dinosaur",
+  "author": "mortalityrexotable",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "0ac619b7b276445cb69c1887dd21ede9": {
+  "verdict": "ok",
+  "name": "Samurai",
+  "author": "Sirapop.Satemrn",
+  "reasons": []
+ },
+ "0b049255562349ad8072afb9c33acfea": {
+  "verdict": "ok",
+  "name": "Simple Outdoor Brooms Type A",
+  "author": "Mad_Lobster_Workshop",
+  "reasons": []
+ },
+ "0e65de5934db4f0eae02835ba7227dcc": {
+  "verdict": "ok",
+  "name": "Barn owl",
+  "author": "WirtualneMuzeaMalopolski",
+  "reasons": []
+ },
+ "11b5b94688bc4ee380849585086da98a": {
+  "verdict": "ok",
+  "name": "Sparrow",
+  "author": "Chenchanchong",
+  "reasons": []
+ },
+ "12dae70316694b5c9ae92bdb30f38f82": {
+  "verdict": "ok",
+  "name": "Momiji manju",
+  "author": "kaz003",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "1673131f9e914d60af48d2dd51b85339": {
+  "verdict": "ok",
+  "name": "Ninja Cyborg",
+  "author": "person-x",
+  "reasons": []
+ },
+ "170f632b9b294fdabc660ba91894c10a": {
+  "verdict": "ok",
+  "name": "Maneki neko",
+  "author": "Ramzus",
+  "reasons": []
+ },
+ "18b147a4dca547649b5f6ee65c954458": {
+  "verdict": "ok",
+  "name": "a fountain pen",
+  "author": "kiselevmiki",
+  "reasons": []
+ },
  "1912d5ed6498459abb50cda71a288258": {
   "verdict": "ok",
   "name": "cat sleeping on tatami",
   "author": "sekiri",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "2144079e664740b19997c83d07c3c0f8": {
+  "verdict": "ok",
+  "name": "Samurai Armor Scan",
+  "author": "adrianocanotto",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "2400195832b64f698096ed0fdac85d51": {
+  "verdict": "ok",
+  "name": "Coelacanth",
+  "author": "TimFallas",
+  "reasons": []
+ },
+ "24535a620f26435ab582bae2d14e172e": {
+  "verdict": "ai-rejected",
+  "name": "Frilled Shark",
+  "author": "yoshi2024-2025",
+  "reasons": [
+   "model text mentions AI: \"AI\"; author: 5/24 recent uploads are AI-tagged"
+  ]
+ },
+ "24c655388db749fe9a679ea4c6edc626": {
+  "verdict": "ok",
+  "name": "Vintage Rotary Telephone",
+  "author": "galaxyabundant",
+  "reasons": []
+ },
+ "252c28595d3c45fb87095faf71466113": {
+  "verdict": "ok",
+  "name": "Japanese teapot",
+  "author": "James.Harness",
+  "reasons": []
+ },
+ "26ccafaddb2745ceb56ae5cfc65bfed5": {
+  "verdict": "ok",
+  "name": "Cyber Samurai",
+  "author": "duongminhkhoa231",
+  "reasons": []
+ },
+ "296da41f47534f98ae2d3b958d4c4f98": {
+  "verdict": "ok",
+  "name": "Otter",
+  "author": "KillerOz1",
+  "reasons": []
+ },
+ "2a6f78db7ea4403eb0aa5de268126799": {
+  "verdict": "ok",
+  "name": "Playground Tram",
+  "author": "BizSD",
+  "reasons": []
+ },
+ "2a94f9c0de5149dfbf9c0bbea1a0ee59": {
+  "verdict": "ok",
+  "name": "scantest4",
+  "author": "keharafont",
   "reasons": [
    "scan"
   ]
@@ -15,84 +159,575 @@
    "scan"
   ]
  },
- "36bc3223d8ab49b39bc1f105f9b4dbb3": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+ "2c94940fb10a4b3899f19eb0f07b79db": {
+  "verdict": "ok",
+  "name": "Hakone Gardens Stone Lantern",
+  "author": "lord.xiphos",
+  "reasons": []
+ },
+ "2cb15ab24c1a468b931b30793d7c1296": {
+  "verdict": "ok",
+  "name": "Sakuramochi",
+  "author": "tessie675",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
   ]
+ },
+ "2e240bc3ebd241ccba0dfa19736397d7": {
+  "verdict": "ok",
+  "name": "CC0 サキシマヒラタクワガタ ♂ Sakishima Stag Beetle",
+  "author": "ffishAsia-and-floraZia",
+  "reasons": []
+ },
+ "2eea678d5ade4c4a9f8b55f5872af92c": {
+  "verdict": "ok",
+  "name": "Daruma",
+  "author": "e6life",
+  "reasons": []
+ },
+ "318709aab1ef49fcafc117ae22e85f0d": {
+  "verdict": "ai-rejected",
+  "name": "Japanese Dessert Set",
+  "author": "RittikaSen",
+  "reasons": [
+   "model text mentions AI: \"createdwithai\"; author: 6/16 recent uploads are AI-tagged"
+  ]
+ },
+ "36bc3223d8ab49b39bc1f105f9b4dbb3": {
+  "verdict": "ok",
+  "name": "Orange Tabby Cat",
+  "author": "Chenchanchong",
+  "reasons": []
+ },
+ "3933689067704a229f327093cbcb6653": {
+  "verdict": "ok",
+  "name": "桜餅 (Sakuramochi Japanese Sweets)",
+  "author": "horse_water",
+  "reasons": []
+ },
+ "3bf1533c76f94fcd94fe61da58fb4cdc": {
+  "verdict": "ok",
+  "name": "Netsuke in shape of puppy",
+  "author": "chesterbeatty",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "3cc5fe7b9ee34d448b16e04985a0cdf2": {
+  "verdict": "ok",
+  "name": "Kaiju : Toad",
+  "author": "pzit",
+  "reasons": []
+ },
+ "3da333ade95d47919ece6934f84cdccb": {
+  "verdict": "ok",
+  "name": "Japanese Umbrella",
+  "author": "YANGGA",
+  "reasons": []
+ },
+ "3e1b80c3653f43349252aab3b4fb1d86": {
+  "verdict": "ok",
+  "name": "Koi Fish",
+  "author": "sdpm",
+  "reasons": []
  },
  "3ffbfcabc4c34b58b03d43fd4f445b54": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+  "verdict": "ok",
+  "name": "Cat sitting upright",
+  "author": "elaughli",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
   ]
+ },
+ "45a169ef98804f06a9b7a4af1a04d6f9": {
+  "verdict": "ok",
+  "name": "Crow",
+  "author": "zixisun51",
+  "reasons": []
+ },
+ "46469c568b3743ec8fb4bb711949d49a": {
+  "verdict": "ok",
+  "name": "Giant Isopod",
+  "author": "RISDNaturelab",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "4ae3704cd65b423ab994545988d4db1a": {
+  "verdict": "ok",
+  "name": "Kitten",
+  "author": "doinspire",
+  "reasons": []
+ },
+ "50ea284f38c54d16b641fa78fe5c8c15": {
+  "verdict": "ok",
+  "name": "Ladybug #3DSM1",
+  "author": "juang3d",
+  "reasons": []
+ },
+ "50f286afdcf14b54bf35f22affb0b15c": {
+  "verdict": "ok",
+  "name": "Udon Scaniverse 2023-02-17 120102",
+  "author": "OHitsuji",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "51cc3bfb49b64128aa54ffa29f36d8c1": {
+  "verdict": "ok",
+  "name": "cat",
+  "author": "toti.shroom",
+  "reasons": []
+ },
+ "530b15ed5bbb461982f692bc10966a02": {
+  "verdict": "ok",
+  "name": "dorayaki",
+  "author": "gillga",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "573feef839d7450cb3e12da9986e7a98": {
+  "verdict": "ok",
+  "name": "Traffic Cone",
+  "author": "hinndia",
+  "reasons": []
+ },
+ "5772dc675e5347e09979998bfcf54938": {
+  "verdict": "ai-rejected",
+  "name": "Retro Anime Vintage Volkswagen Van",
+  "author": "jungle_jim",
+  "reasons": [
+   "author: 4/24 recent uploads are AI-tagged"
+  ]
+ },
+ "58ce63ddc7fa40abad42b7bb969f7a47": {
+  "verdict": "ok",
+  "name": "Taiko Drum",
+  "author": "OrchidIceDragon",
+  "reasons": []
+ },
+ "5e2f4b2d2e1a4613a008b6caaf40d50c": {
+  "verdict": "ok",
+  "name": "Anglerfish",
+  "author": "Abby_Holzworth1",
+  "reasons": []
+ },
+ "5eb1166198a147949f95aacb4257ad37": {
+  "verdict": "ok",
+  "name": "Retro Bus",
+  "author": "emelyarules",
+  "reasons": []
+ },
+ "608a48391a534d9aa67bbe82e2a96748": {
+  "verdict": "ok",
+  "name": "Japanese School Backpack",
+  "author": "afx_cgmotion",
+  "reasons": []
+ },
+ "6295676291c141728457ef7550b0650a": {
+  "verdict": "ok",
+  "name": "Giant Crab",
+  "author": "mohamedbenarous",
+  "reasons": []
+ },
+ "62d50825c5de4d1ba574356fbe9b2985": {
+  "verdict": "ok",
+  "name": "Pencil case, pencil, sharpener, eraser and ruler",
+  "author": "Mr.Octopus",
+  "reasons": []
+ },
+ "6395f798f7d243e19975a55b76608a8b": {
+  "verdict": "ok",
+  "name": "CC0 カブトムシ ♂ Japanese Rhinoceros Beetle",
+  "author": "ffishAsia-and-floraZia",
+  "reasons": []
+ },
+ "6465a297fa784598adc49f6e0042d449": {
+  "verdict": "ok",
+  "name": "Tyrant King - Tyrannosaurus",
+  "author": "mschanz",
+  "reasons": []
+ },
+ "65d2444648ce4bd8850525de1b8bacee": {
+  "verdict": "ok",
+  "name": "190402 Pheasant",
+  "author": "clementvalla1",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "68d9b8434ee6407da1e6fda1166d3ad2": {
+  "verdict": "ok",
+  "name": "Japan Train Station Bench",
+  "author": "Mxstifie",
+  "reasons": []
  },
  "69db9de4d5c446a895cec3c2a048f7a8": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+  "verdict": "ok",
+  "name": "Cat",
+  "author": "mustafasahinfb",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
   ]
+ },
+ "6e10c14d33c14963b01fd8d825ea0fe5": {
+  "verdict": "ok",
+  "name": "FREE 1938 Vairogs Fire Truck (based on Ford)",
+  "author": "robinmikart",
+  "reasons": []
+ },
+ "6f9efa17eab544eba05518bf29454895": {
+  "verdict": "ok",
+  "name": "Spaghetti and Fork",
+  "author": "OsianOHM",
+  "reasons": []
+ },
+ "6fd5dcdb4702409a8be04e5f0fb2c316": {
+  "verdict": "ok",
+  "name": "Japanese Lamp / Chōchin",
+  "author": "ugly_kid",
+  "reasons": []
  },
  "7325331900d8458b852f39f0dbcdbf18": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+  "verdict": "ok",
+  "name": "Calico Cat",
+  "author": "AaronRydning",
+  "reasons": []
+ },
+ "733c2f23e8154a5c9d3c8f0fda7ee2f6": {
+  "verdict": "ok",
+  "name": "Shaved Ice Stall",
+  "author": "Sheueer",
+  "reasons": []
+ },
+ "75a9949393034d5cbc18625bc2bdb810": {
+  "verdict": "ok",
+  "name": "渋谷駅ハチ公像 Hachiko Statue Loyal Akita Inu (3D)",
+  "author": "billycarlos354",
+  "reasons": []
+ },
+ "7780d6de101b47e085fc5397f7e33701": {
+  "verdict": "ok",
+  "name": "Vintage Toy Robot",
+  "author": "TomScudder",
+  "reasons": []
+ },
+ "778fd6dec71442a2abd468477ecc3a17": {
+  "verdict": "ok",
+  "name": "Goblin Shark.zip",
+  "author": "canyutsai1",
+  "reasons": []
+ },
+ "7b32f2b277e24186a78f3d04b5800b33": {
+  "verdict": "ok",
+  "name": "Takoyaki_Cart",
+  "author": "Jambon3D",
+  "reasons": []
+ },
+ "7f9164e6018c4ec7a3585bbf6e6d70df": {
+  "verdict": "ok",
+  "name": "Fire Hydrant",
+  "author": "jvouillon",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
   ]
+ },
+ "7fcd555c03de4411a83aa5685fac1b5b": {
+  "verdict": "ok",
+  "name": "Ice Cream Sundae",
+  "author": "Discovered",
+  "reasons": []
+ },
+ "80b61be8006840918e70a83b96568da0": {
+  "verdict": "ai-rejected",
+  "name": "low poly monster dragon realistic",
+  "author": "rt699448",
+  "reasons": [
+   "author checked by hand: AI uploads"
+  ]
+ },
+ "81a49956c5944279abfb2ccaa791f7d8": {
+  "verdict": "ok",
+  "name": "Realistic Frog",
+  "author": "maksroberthut",
+  "reasons": []
+ },
+ "835048164013473cb675841e27b67ee5": {
+  "verdict": "ok",
+  "name": "Auto Race - 80's Handheld Game",
+  "author": "tiagobarrozzo",
+  "reasons": []
  },
  "8bf1a653690d4f14b89f6548e95320a4": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+  "verdict": "ai-rejected",
+  "name": "Low-poly black and white cat lying down",
+  "author": "flightclubua",
   "reasons": [
-   "metadata not found (model removed?)"
+   "model text mentions AI: \"Rodin\"; author: 17/24 recent uploads are AI-tagged"
   ]
  },
- "9899bf74b406468b9efd32e4a32dd7a8": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+ "8cf8ce4a480e43dbafa390ae5394c627": {
+  "verdict": "ok",
+  "name": "Japanese Peach",
+  "author": "DuckbillStudio",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
+  ]
+ },
+ "926b53a3423d4dc4834c2196fe6c9e79": {
+  "verdict": "ok",
+  "name": "dorayaki",
+  "author": "BuuMya",
+  "reasons": []
+ },
+ "938e05641929403cab1f0c77376e0d9b": {
+  "verdict": "ok",
+  "name": "Japanese Matcha Bowl",
+  "author": "visionfountain",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "9709067ffaf2424b9bbaf1e08a46afac": {
+  "verdict": "ai-rejected",
+  "name": "Low Poly Ankylosaurus Dinosaur 3D Model Free",
+  "author": "rt699448",
+  "reasons": [
+   "author checked by hand: AI uploads"
+  ]
+ },
+ "977d38f89ca54c8b91b9667d52cb3d79": {
+  "verdict": "ok",
+  "name": "Flapjack Dumbo Octopus Adorabilis",
+  "author": "andrearosini",
+  "reasons": []
+ },
+ "9899bf74b406468b9efd32e4a32dd7a8": {
+  "verdict": "ok",
+  "name": "Persian Cat Sleeping - Gato Persa Dormindo",
+  "author": "romansn",
+  "reasons": [
+   "scan"
   ]
  },
  "98da5c4c2fff4c05898ba82c244b9eec": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+  "verdict": "ok",
+  "name": "Black cat",
+  "author": "Kanna-nakajima",
+  "reasons": []
+ },
+ "991ad2e0a9fc44b18ad6fb91e8e714fc": {
+  "verdict": "ai-rejected",
+  "name": "Dark Giant Robot Golem Steel Armor Pipes",
+  "author": "s8819296",
   "reasons": [
-   "metadata not found (model removed?)"
+   "one material, 71500 faces, 2026: look at it",
+   "by eye: Dark Giant Robot Golem: one material, 2026, melted detail"
   ]
+ },
+ "99a3c92192d04d088c9241d1cab3e765": {
+  "verdict": "ok",
+  "name": "Japanese paper lantern",
+  "author": "patrakeevasveta",
+  "reasons": []
+ },
+ "9abfce885a834399b2c3ccaed51cd474": {
+  "verdict": "ok",
+  "name": "Animated Dog, Shiba Inu",
+  "author": "quander",
+  "reasons": []
+ },
+ "9b4acc4a177c41e984a0199c6fdcf90e": {
+  "verdict": "ok",
+  "name": "Nautilus Shell",
+  "author": "RISDNaturelab",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "9b8de0c57d6446b1a29913094cfc9e3c": {
+  "verdict": "ai-rejected",
+  "name": "Chatter Teeth",
+  "author": "jondameron5",
+  "reasons": [
+   "author: 3/24 recent uploads are AI-tagged"
+  ]
+ },
+ "9c1cd4d051bc419b8ce121f9cd2730ff": {
+  "verdict": "ok",
+  "name": "Maneki-neko ~ Asian lucky cat",
+  "author": "Arestame",
+  "reasons": []
+ },
+ "9fc09b8866214745b27b48334b65da87": {
+  "verdict": "ok",
+  "name": "A pug",
+  "author": "Stephengury",
+  "reasons": []
+ },
+ "a0bbe212318b4ee9bfaec55a3e060227": {
+  "verdict": "ok",
+  "name": "Ninja",
+  "author": "shadowmodels3d",
+  "reasons": []
  },
  "a0df91f135d447acb9b69b1deeefbdcf": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+  "verdict": "ok",
+  "name": "Kosmo Sleeping Cat Scan",
+  "author": "samhodge",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
   ]
+ },
+ "a6e3624a679a44efa17bbfc9abec35ce": {
+  "verdict": "ok",
+  "name": "Japanese street lamp",
+  "author": "miyazaki1707",
+  "reasons": []
+ },
+ "a7652a3d813a479ba93cf880e466789c": {
+  "verdict": "ok",
+  "name": "Cherry Soda Float",
+  "author": "LittleWhiteElk",
+  "reasons": []
+ },
+ "a874a02e5e9c4bcba54173a20c3732e8": {
+  "verdict": "ok",
+  "name": "Dangos in the plate",
+  "author": "jaromir.ternavskiy",
+  "reasons": []
+ },
+ "a8ca187f40504b9084b9052c569e5122": {
+  "verdict": "ok",
+  "name": "Taiyaki",
+  "author": "patrakeevasveta",
+  "reasons": []
+ },
+ "a9c0b6ab4cb146d8a003d6c894af3fd4": {
+  "verdict": "ok",
+  "name": "Kagami-mochi💮📷",
+  "author": "rxf10240",
+  "reasons": []
+ },
+ "aad08d888ae4498da59c47faf149208e": {
+  "verdict": "ok",
+  "name": "Japanese mailbox",
+  "author": "Lisov1k",
+  "reasons": []
  },
  "acb0b2565d3a4618ad1e242013f8e3a4": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+  "verdict": "ok",
+  "name": "sleeping cat",
+  "author": "sekiri",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
   ]
  },
- "cdc2fa52cccf476fab8b64370455dd34": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+ "ad0f9220657c43fb89692dcf7a6b45a8": {
+  "verdict": "ok",
+  "name": "Vintage Scooter",
+  "author": "CinekR9",
+  "reasons": []
+ },
+ "af9a74ebe6ee4e23b0c2b41d82a958a7": {
+  "verdict": "ok",
+  "name": "Kitsune statue in Nagoya - MTSU Animation",
+  "author": "fusion",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
+  ]
+ },
+ "b16585738a284cafbb3c209766408b3a": {
+  "verdict": "ok",
+  "name": "Generic 70s Police Cruiser (+ Civillian Sedan)",
+  "author": "taperec",
+  "reasons": []
+ },
+ "b4676e41c38a4348af933f1d00051afb": {
+  "verdict": "ok",
+  "name": "Fountain Pen",
+  "author": "gazgolder",
+  "reasons": []
+ },
+ "b51e4bb527d749c38bfb6f964b2b9ead": {
+  "verdict": "ok",
+  "name": "Kitsune Fox Shrine Statue",
+  "author": "sahirvirmani",
+  "reasons": []
+ },
+ "b67fb6cbe3fa455c81373aaa9f91fa1a": {
+  "verdict": "ok",
+  "name": "CC0 カブトムシ ♂ Japanese Rhinoceros Beetle",
+  "author": "ffishAsia-and-floraZia",
+  "reasons": []
+ },
+ "b7cebcfb4b1c4d4a97e22072800704ca": {
+  "verdict": "ok",
+  "name": "Victorian Street Lamp",
+  "author": "Discovered",
+  "reasons": []
+ },
+ "b9a3cab48d304eeabf096df4f14bb7e7": {
+  "verdict": "ok",
+  "name": "The Bus Stop at Hida City",
+  "author": "tanukiart",
+  "reasons": []
+ },
+ "c199a59fc6b248b99261f24173d2a384": {
+  "verdict": "ok",
+  "name": "Beagle 200424 F From Gestltator A",
+  "author": "gsteptech",
+  "reasons": []
+ },
+ "cc027effc78844f6a3774ca0352a20f9": {
+  "verdict": "ok",
+  "name": "Kitsune Mask",
+  "author": "fenixman12",
+  "reasons": []
+ },
+ "cdc2fa52cccf476fab8b64370455dd34": {
+  "verdict": "ok",
+  "name": "Sleeping Cat",
+  "author": "3rik",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "d09c2142da5c41e498d4e8ce1e5a5502": {
+  "verdict": "ok",
+  "name": "Japanese Gyoza (ObjectCapture)",
+  "author": "edemaistre",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "d14eb14d83bd4e7ba7cbe443d76a10fd": {
+  "verdict": "ok",
+  "name": "⛨ The Forgotten Knight ⛨",
+  "author": "dark_igorek",
+  "reasons": []
+ },
+ "d404f8700b304a91ad13924fa6af94d6": {
+  "verdict": "ok",
+  "name": "Pencil sharpener",
+  "author": "thesidekick",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "d642db74a3fa491a8143bd088b408094": {
+  "verdict": "ok",
+  "name": "BUTTERFLY",
+  "author": "rukh3d",
+  "reasons": []
+ },
+ "d798077b6ff3438791beee88e9ef1c8d": {
+  "verdict": "ai-rejected",
+  "name": "Adorable 3D Penguin Cute and Realistic Character",
+  "author": "Nordener",
+  "reasons": [
+   "author checked by hand: AI uploads; mass uploader: 22 uploads in 7 days"
   ]
  },
  "d85d9b0a11be4a11a09f1193e821a6d9": {
@@ -103,21 +738,195 @@
    "metadata not found (model removed?)"
   ]
  },
- "e6a941f5599d4410a077f54b06c66890": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+ "db96c5d4efc04a77a88403deacb1619e": {
+  "verdict": "ai-rejected",
+  "name": "Wind-up Tin Robot - toy",
+  "author": "CMBC",
   "reasons": [
-   "metadata not found (model removed?)"
+   "model text mentions AI: \"AI\"; author: 3/24 recent uploads are AI-tagged"
   ]
  },
- "fc17f8a559cd4d75b7b75d1fb146266f": {
-  "verdict": "review",
-  "name": null,
-  "author": null,
+ "de0f08813c6f4090b1b163bfc94e5688": {
+  "verdict": "ok",
+  "name": "Giant Tower of TEMPURA Rice Bowl",
+  "author": "nantsune",
   "reasons": [
-   "metadata not found (model removed?)"
+   "scan"
   ]
+ },
+ "df2871d10eca42b68b9347dbd97d498e": {
+  "verdict": "ok",
+  "name": "Day 189: Takoyaki (Photocatch) - 1scanaday",
+  "author": "edemaistre",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "df2a3ce6d7934aefbc66d23006393c36": {
+  "verdict": "review",
+  "name": "Vintage Spinning Top Toy (Game Ready / Low Poly)",
+  "author": "3dcubetutorials",
+  "reasons": [
+   "SEO-style title, 2025: look at it"
+  ]
+ },
+ "df9a7c57c2b34d5a818f360e679b576a": {
+  "verdict": "ok",
+  "name": "Ryukin goldfish",
+  "author": "somitsu",
+  "reasons": []
+ },
+ "e12d2fa1b2b94928b8b87cb7787e2462": {
+  "verdict": "ok",
+  "name": "Japanese Torii gate Game Asset",
+  "author": "Bazylonator",
+  "reasons": []
+ },
+ "e530fd4c7f264088ad8dce405349f88e": {
+  "verdict": "ok",
+  "name": "Redcap Oranda goldfish",
+  "author": "somitsu",
+  "reasons": []
+ },
+ "e6a941f5599d4410a077f54b06c66890": {
+  "verdict": "ai-rejected",
+  "name": "black-and-white cat lying on a chair",
+  "author": "flightclubua",
+  "reasons": [
+   "model text mentions AI: \"Rodin\"; author: 17/24 recent uploads are AI-tagged"
+  ]
+ },
+ "e821b05809e54ab18d53b51de529666e": {
+  "verdict": "ok",
+  "name": "CC0 ミヤマクワガタ ♂ Mountain Stag Beetle",
+  "author": "ffishAsia-and-floraZia",
+  "reasons": []
+ },
+ "e93553d6796644818ee7bded37d3b5d9": {
+  "verdict": "ok",
+  "name": "Taiyaki (Naruto_Taiyaki/High Poly)",
+  "author": "okajima",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "e980d78b5535474e85c085e652eb9e4c": {
+  "verdict": "ok",
+  "name": "Japanese Mailbox",
+  "author": "javileria",
+  "reasons": []
+ },
+ "eb654151f2d54b3a89169af96da09f89": {
+  "verdict": "ok",
+  "name": "White-throated Kingfisher",
+  "author": "RISDNaturelab",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "ec088115ec8746d79c41f2db69665f15": {
+  "verdict": "ok",
+  "name": "Praying Mantis",
+  "author": "VirReal4",
+  "reasons": []
+ },
+ "ee04aa74fcd04b839d4b964a17fc1a20": {
+  "verdict": "ok",
+  "name": "Abacus",
+  "author": "hky111111",
+  "reasons": []
+ },
+ "f537e142a592428d85ca7a940be221d3": {
+  "verdict": "ok",
+  "name": "Vending Machine",
+  "author": "iJacques",
+  "reasons": []
+ },
+ "f54db6b8e26f427b9ba93ca993dc234a": {
+  "verdict": "ok",
+  "name": "Owl",
+  "author": "Horton",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "f5a4479d211e49d49937b55fd9478e85": {
+  "verdict": "ok",
+  "name": "Old king armor",
+  "author": "Pebegou",
+  "reasons": []
+ },
+ "f65a8eab51794fbc8c7941101a354a54": {
+  "verdict": "ok",
+  "name": "Japanese Ramen",
+  "author": "senkinsky",
+  "reasons": []
+ },
+ "f8fbbd4a2f05416288e4f7836ec61a11": {
+  "verdict": "ok",
+  "name": "Turtle Kaiju",
+  "author": "Mighty.Pinecone",
+  "reasons": []
+ },
+ "f9201e6cca66434dbb5f759bd9884d75": {
+  "verdict": "ai-rejected",
+  "name": "Capybara",
+  "author": "dylantneal",
+  "reasons": [
+   "model text mentions AI: \"createdwithai\""
+  ]
+ },
+ "f9785f6152484a44bbd73508655a9741": {
+  "verdict": "ok",
+  "name": "Japanese Geta",
+  "author": "takumanakata",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "f98c55a24c644051aaa8ac7461b98468": {
+  "verdict": "ai-rejected",
+  "name": "South African Frilled Shark",
+  "author": "yoshi2024-2025",
+  "reasons": [
+   "author: 5/24 recent uploads are AI-tagged"
+  ]
+ },
+ "f996b1c1902947caa506d56e565de77e": {
+  "verdict": "ok",
+  "name": "stapler",
+  "author": "thewatt",
+  "reasons": []
+ },
+ "fa3e5f2704904218a0e971e4edf63e20": {
+  "verdict": "ok",
+  "name": "Dragonfly",
+  "author": "Erlangga1",
+  "reasons": []
+ },
+ "fa72296b31164928b45b7732fb5bf9ae": {
+  "verdict": "ok",
+  "name": "pencil case Model",
+  "author": "daand",
+  "reasons": []
+ },
+ "fb477a6082c5442ca060dfcdf8eae928": {
+  "verdict": "ok",
+  "name": "Simple Kei Truck",
+  "author": "spookyghostboo",
+  "reasons": []
+ },
+ "fb53480e510c40a7bd5e12e0b182621e": {
+  "verdict": "ok",
+  "name": "moon jellyfish",
+  "author": "foxcc007",
+  "reasons": []
+ },
+ "fc17f8a559cd4d75b7b75d1fb146266f": {
+  "verdict": "ok",
+  "name": "Lazy Cat On Bike",
+  "author": "wz",
+  "reasons": []
  },
  "fde417a3962547d9a15e71f55c1b90d8": {
   "verdict": "ok",
@@ -126,5 +935,17 @@
   "reasons": [
    "scan"
   ]
+ },
+ "fe9acba84eed4a43b4315200aefbead1": {
+  "verdict": "ok",
+  "name": "Vintage Television",
+  "author": "GraveyArt",
+  "reasons": []
+ },
+ "ff2344351c384ee4be2adb73c22250e7": {
+  "verdict": "ok",
+  "name": "Cephalopod: Nautilus pompilius (PRI 70573)",
+  "author": "DigitalAtlasOfAncientLife",
+  "reasons": []
  }
 }

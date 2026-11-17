@@ -8,20 +8,18 @@
   {
    "name": "bird",
    "src": "sketchfab:11b5b94688bc4ee380849585086da98a",
-   "height": 8,
-   "at": [
-    1,
-    16.6,
-    -1
+   "height": 13.647,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "efabbdb94f1d19"
+   "key": "da5778254f7a57"
   }
  ],
  "model_clip": {

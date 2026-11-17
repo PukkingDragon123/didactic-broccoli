@@ -47,6 +47,7 @@ def build_all():
             s.boxr(pj + "_body", -hw + 0.4, 2 * VS, -hd + 0.4, hw - 0.4, 6 * VS, hd - 0.4, ch=1.5, parent=pj, col="neutral", style="abs", tone=3.6,
                    hide=["bottom", "top"])
             s.layer(pj + "_body", id="seam", op="panel", inset=2, shift=-0.6, faces=["front", "back", "left", "right"])
+            s.layer(pj + "_body", id="flute", op="stripes", axis="x", period=6, width=0.2, shift=-0.3, faces=["front", "back"])
             # the cream lip and the rails under it (steel)
             s.boxr(tj + "_lip", -hw, 6 * VS, -hd, hw, 7 * VS, hd, ch=1.0, parent=tj, col="cream", style="abs", tone=4.2, hide=["bottom"])
             for k, sx in (("l", -1), ("r", 1)):
@@ -61,6 +62,9 @@ def build_all():
                 s.boxr(f"{tj}_t{k}", -hw + 2 * VS, 7 * VS, zb, hw - 2 * VS, VS + top * VS, zf, ch=0, parent=tj, col="cream", style="abs",
                        tone=4.0 - k * 0.15, hide=["bottom"] + (["back"] if k < tiers - 1 else []))
                 s.layer(f"{tj}_t{k}", id="nose", op="band", axis="y", **{"from": 0.86, "to": 1.0}, shift=0.6, faces=["front"])
+                # printed card stock over the riser: a faint polka of little capsules, a printed rule along the nose
+                s.layer(f"{tj}_t{k}", id="polka", op="spots", count=26, radius=[2.2, 3.2], min_gap=14, shift=-0.75, faces=["top", "front"])
+                s.layer(f"{tj}_t{k}", id="rule", op="band", axis="y", **{"from": 0.72, "to": 0.8}, ramp="neutral", tone=2.6, faces=["front"])
     out = {"display": s}
     for j in list(s.meta["joints"]):
         s.meta["mats"].pop(j, None)

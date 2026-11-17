@@ -1,0 +1,66 @@
+{
+ "id": "pinkphone",
+ "src": "art/lowpix/world/made/pinkphone.glb",
+ "credit": {
+  "title": "Pink phone (ピンク電話)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pinkphone.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 168,
+ "tex": 280,
+ "size": [
+  0.34,
+  0.96,
+  0.28
+ ],
+ "colours": 28,
+ "palette": {
+  "m0": [
+   "#361612",
+   "#452119",
+   "#532e21",
+   "#613d29",
+   "#6e4c32",
+   "#8c6944",
+   "#a88858",
+   "#b5a37b",
+   "#c4bb9c"
+  ],
+  "m1": [
+   "#945b3f",
+   "#b6825d",
+   "#c7aa8c",
+   "#dbcdb9",
+   "#f0ece4",
+   "#f2efe8",
+   "#f3f2ec",
+   "#f5f5f0",
+   "#f7f7f4"
+  ],
+  "m2": [
+   "#851a56",
+   "#aa2564",
+   "#ce316f",
+   "#d45b81",
+   "#dc8498",
+   "#df97a1",
+   "#e2a9ad",
+   "#e6bcbb",
+   "#ebcfcc"
+  ],
+  "m3": [
+   "#5e0d32",
+   "#781439",
+   "#921b3e",
+   "#aa233f",
+   "#c22c3f",
+   "#d04349",
+   "#d56964",
+   "#da8f84",
+   "#e1afa3"
+  ]
+ },
+ "warnings": []
+}

@@ -176,6 +176,8 @@ def audit(series_list):
             if m.get("recolor"):
                 recolors.append(f"{key} model {m['name']}")
     for p in glob.glob(os.path.join(HERE, "_src", "*.py")):
+        if os.path.basename(p)[:-3] not in series_list:
+            continue
         t = open(p).read()
         for ln, row in enumerate(t.splitlines(), 1):
             if re.search(r"recolor\s*=|\bGOLD\b", row) and not row.strip().startswith("#"):
@@ -253,7 +255,8 @@ def audit(series_list):
             sw, sh, sd = hi(subj, 0) - lo(subj, 0), hi(subj, 1) - max(lo(subj, 1), hi(base, 1)), hi(subj, 2) - lo(subj, 2)
             fxz = max(min(sw, bw) / bw, min(sd, bd) / bd)
             fh = sh / max(bw, bd)
-            if not FILL_XZ[0] <= fxz <= FILL_XZ[1]:
+            clear = (meta.get("base") or {}).get("family") == "clear"  # a rod stand: the subject may overhang it
+            if not FILL_XZ[0] <= fxz <= (9.9 if clear else FILL_XZ[1]):
                 bad.append(f"fill {fxz:.2f} outside {FILL_XZ[0]}-{FILL_XZ[1]}")
             if fh < FILL_H_MIN:
                 bad.append(f"height fill {fh:.2f} < {FILL_H_MIN}")
@@ -299,9 +302,11 @@ def audit(series_list):
     lines.append(f"duplicate sources (whole line): {len(dups)}  {'PASS' if not dups else 'FAIL'}")
     for s, k in dups.items():
         lines.append(f"  {s}: {', '.join(k)}")
-    used = sorted({m for ms in [uses] for m in ms})
+    used = sorted(u for u, ks in uses.items() if any(k.split("/")[0] in series_list for k in ks))
     bad_ai = [u for u in used if ai_verdict(u) != "ok"]
-    lines.append(f"sources used: {len(used)}  AI-check verdicts: ok {len(used) - len(bad_ai)}, rejected/unchecked {len(bad_ai)}  {'PASS' if not bad_ai else 'FAIL'}")
+    every = sorted(uses)
+    lines.append(f"sources used by these series: {len(used)}  AI-check verdicts: ok {len(used) - len(bad_ai)}, rejected/unchecked {len(bad_ai)}  {'PASS' if not bad_ai else 'FAIL'}"
+                 f"   (whole line: {sum(ai_verdict(u) != 'ok' for u in every)} of {len(every)} not ok yet)")
     for u in used:
         a = aichk.get(u.split(":")[-1], {})
         why = "; ".join(a.get("reasons", []))[:110]

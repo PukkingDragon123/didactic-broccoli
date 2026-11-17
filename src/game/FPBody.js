@@ -330,6 +330,7 @@ export class FPBody {
    * below it is skin in the hands' colour, so forearm and hand always match.
    */
   armTexture(h) {
+    const ATLAS = h.atlas;
     const P = h.P, H = P.H, T = h.spec.top || {};
     const sleeve = T.sleeve || (['tee', 'aloha', 'polo'].includes(T.kind) ? 'short' : 'long');
     const cuffY = sleeve === 'short' ? P.elbowY + (T.kind === 'tee' && T.fitted ? 0.085 : 0.065) * H : sleeve === 'mid' ? P.elbowY - 0.055 * H : P.wristY + 0.008 * H;
@@ -397,6 +398,7 @@ export class FPBody {
 
   /** The hands' colour (sRGB bytes): median of the avatar's painted hand texels. */
   handColor(h) {
+    const ATLAS = h.atlas;
     const src = h.mesh.geometry, si = src.attributes.skinIndex, uv = src.attributes.uv, idx = src.index.array, d = h.pix.d;
     const hl = BONE_INDEX.handL, hr = BONE_INDEX.handR, cols = [];
     for (let i = 0; i < idx.length; i += 3) {

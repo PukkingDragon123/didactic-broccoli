@@ -52,6 +52,36 @@ def coins():
     big = ["".join(c * 2 for c in r) for r in digits for _ in (0, 1)]
     s.stamp("c100", big, {"i": f"{nickel}:1"}, face="front", at=[R + 10, R + 2])
     s.stamp("c100", text_jp("日本国 百円", 9, "i"), {"i": f"{nickel}:1"}, face="back", at="center")
+    # the owner's test token on the rope: a brass 5-yen with its hole (painted through: it is 1.5 mm thick) and the
+    # rice-ear and gear rings, facing +z
+    brass = s.c("#c8a048", hue=16, k=0.0)
+    s.joint("yen5", (0, 0, 0))
+    s.disc("c5", 11.0, 1.5, (0, 0, 0), axis="z", parent="yen5", sides=24, col=brass, style="gold", tone=3.6)
+    s.layer("c5", id="reeds", op="fill", faces=[f"side{i}" for i in range(0, 24, 2)], shift=-0.6)
+    R5 = int(11 * 6)
+    art5 = []
+    for yy in range(-R5, R5 + 1):
+        row = ""
+        for xx in range(-R5, R5 + 1):
+            d = math.hypot(xx, yy)
+            a = math.atan2(yy, xx)
+            if d > R5 - 0.5:
+                row += "."
+            elif d > R5 - 3:
+                row += "h" if (xx + yy) < 0 else "s"
+            elif d < R5 * 0.24:
+                row += "o" if d > R5 * 0.24 - 2 else "k"  # the hole and its rim
+            elif R5 * 0.55 < d < R5 * 0.78 and int((a + math.pi) / (math.pi / 16)) % 2 == 0:
+                row += "g"  # the gear's teeth ring
+            elif R5 * 0.3 < d < R5 * 0.5 and abs(math.sin(a * 6)) > 0.8:
+                row += "r"  # rice ears
+            else:
+                row += "."
+        art5.append(row)
+    s.stamp("c5", art5, {"h": f"{brass}:6", "s": f"{brass}:1", "o": f"{brass}:1", "k": "cavity:0", "g": f"{brass}:2", "r": f"{brass}:5"},
+            face="front")
+    s.stamp("c5", art5, {"h": f"{brass}:6", "s": f"{brass}:1", "o": f"{brass}:1", "k": "cavity:0", "g": f"{brass}:2", "r": f"{brass}:5"},
+            face="back")
     return s
 
 
@@ -130,9 +160,25 @@ def coin_bag():
     return s
 
 
+def mkey():
+    """The machines' little lock key (lid and coin box): a nickel-plated flat key with a brass-tagged round bow,
+    standing upright (the bow up, the blade down along -y), centred."""
+    s = Spec("mkey", "Machine lock key", dens=6.0, budget=600, light={"dir": [-0.5, 1.0, 0.7], "strength": 0.45, "gradient": 0.0, "ao": 0.0, "ao_height": 1.0})
+    nickel = s.raw("nickel", ["#4a4d52", "#6a6e74", "#8c9096", "#aeb2b8", "#c8ccd0", "#dde0e3", "#f0f2f4"])
+    brass = s.c("#c8a040", hue=16, k=0.0)
+    s.disc("bow", 7, 2.0, (0, 8.5, 0), sides=14, col=nickel, style="chrome", tone=4.0)
+    s.disc("bow_hole", 2.6, 2.2, (0, 10.5, 0), sides=8, col="cavity", style="cavity", tone=1.0)
+    s.box("shank", [3.2, 18, 1.8], (0, -6, 0), ch=0.5, col=nickel, style="chrome", tone=3.6)
+    s.box("bit1", [2.4, 2.6, 1.8], (2.6, -12, 0), ch=0.3, col=nickel, style="chrome", tone=3.4)
+    s.box("bit2", [2.4, 2.0, 1.8], (2.6, -7.5, 0), ch=0.3, col=nickel, style="chrome", tone=3.4)
+    s.disc("ring", 4.5, 1.2, (0, 17, 0), sides=10, col=brass, style="gold")
+    s.stamp("bow", text3("7", "i"), {"i": "nickel:1"}, face="front", at="center", off=(0, -6))
+    return s
+
+
 def build_all():
     out = {}
-    for f in (coins, key, milk, open_sign, coin_bag):
+    for f in (coins, key, milk, open_sign, coin_bag, mkey):
         S = f()
         for j in list(S.meta["joints"]):
             S.meta["mats"].pop(j, None)

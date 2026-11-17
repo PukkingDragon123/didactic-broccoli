@@ -6,7 +6,7 @@ detailed pixel-art coats (coat.py) and written as plain glTF for src/animals (ri
 Sources and credits: SOURCES below (and CREDITS.md). Output: public/models/lowpix/animals/<id>.glb, a review render
 art/lowpix/animals/out/<id>.png.
 """
-import io, os, sys, subprocess
+import io, os, sys, subprocess, json
 import numpy as np
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -433,6 +433,43 @@ def rig_cat2(gid, P, F, UV, N, body, J, iris):
         inward=(0, 21.8, 27.2), depth=1.6, tongue=1.7,
         bowl=dict(c=(0, 21.8, 29.1), rx=1.9, ry=1.0, depth=2.4, tongue=(0, 21.6, 28.9), tdir=(0, 0.05, -1), tlen=1.9),
         lens=dict(w=1.25, lip_y=lambda x: 21.98 + 0.1 * (x / 1.25) ** 2, cols=dict(lip='#2a1a1a', inside='#5c2226', throat='#2e0f12', ridge='#7a3439', tongue='#c27a7c', tongueD='#9a5658', tooth='#ece6d8'))), scale=0.0098, shift=(0, 0, -9.0), source='bsh', head_z=21.5)
+
+
+
+# ------------------------------------------------------------------ Fripouille (guillaume bolis, hand-made): Mikan's base
+def fri_prepared():
+    """Fripouille's body in its rigged standing pose (skinning baked in a browser: shots/animals13/bake.html ->
+    fri_baked.json), turned to stand on y = 0 facing +z, scaled to 30 units tall (ear tips); her own UVs and
+    Substance-painted texture (2048). Returns P, F, UV, N, src (1024, the pixel repaint's base)."""
+    d = json.loads(json.load(open(os.path.join(CACHE, 'fri_baked.json'))))
+    m = [x for x in d if x['mat'] == 'SHD_frip'][0]
+    P = np.array(m['pos'], float).reshape(-1, 3); F = np.array(m['idx'], int).reshape(-1, 3); UV = np.array(m['uv'], float).reshape(-1, 2)
+    P = np.stack([-P[:, 2], -P[:, 1], -P[:, 0]], 1)            # upside down, facing -x  ->  standing, facing +z
+    F = F[:, [0, 2, 1]]                                         # (the turn mirrors: keep the faces outward)
+    a = np.radians(-28.8)                                       # she walks diagonally: square her to +z
+    c, sn = np.cos(a), np.sin(a)
+    P = np.stack([c * P[:, 0] + sn * P[:, 2], P[:, 1], -sn * P[:, 0] + c * P[:, 2]], 1)
+    P -= [(P[:, 0].max() + P[:, 0].min()) / 2, P[:, 1].min(), (P[:, 2].max() + P[:, 2].min()) / 2]
+    P *= 30.0 / P[:, 1].max()
+    # her head is carried 1.4 to her right of the spine (a glance mid-stride): centre it, blended down the neck
+    w = np.clip((P[:, 2] - 13.5) / 4.5, 0, 1) * np.clip((P[:, 1] - 17.5) / 3.0, 0, 1)
+    P[:, 0] += 1.4 * w * w * (3 - 2 * w)
+    N = weld_normals(P, F)
+    tex = Image.open(os.path.join(CACHE, '_dl', 'fri', 'textures', 'SHD_frip_baseColor.png')).convert('RGB')
+    src = down2(np.asarray(tex))
+    return P, F, UV, N, src
+
+
+def debug_fri():
+    P, F, UV, N, src = fri_prepared()
+    print('bounds', P.min(0).round(2), P.max(0).round(2))
+    t = src.astype(np.float32)
+    a = render(P, F, 'side', None, px=22, grid=2, tex=t, UV=UV)
+    zmax = P[:, 2].max()
+    b = render(P, F, 'front', (-6, 6, P[:, 1].max() - 13, P[:, 1].max() + 0.5), px=50, grid=1, tex=t, UV=UV)
+    c = render(P, F, 'side', (zmax - 11, zmax + 0.5, P[:, 1].max() - 13, P[:, 1].max() + 0.5), px=50, grid=1, tex=t, UV=UV)
+    o = Image.new('RGB', (a.width + b.width + c.width, max(a.height, b.height, c.height))); o.paste(a, (0, 0)); o.paste(b, (a.width, 0)); o.paste(c, (a.width + b.width, 0))
+    o.save(os.path.join(CACHE, 'fri_dbg.png'))
 
 
 if __name__ == '__main__':

@@ -3,7 +3,8 @@
 // collars, pockets, belts, folds and patterns line up across faces. A soft baked occlusion / roundness pass
 // gives the boxes volume.
 import { clamp01, sstep, mixc, G, h2, vnoise, shadeInto, over, hairPx, scaleO, q8 } from './paintlib.js';
-import { ATLAS } from './mesh.js';
+import { walkTexels, cursor, texelAt } from './mesh.js';
+import { makeHairPainters } from './paintHair.js';
 
 const WHITE = [244, 242, 236], INK = [28, 22, 22], GOLD = [214, 170, 70], SILVER = [190, 190, 196];
 const C_255_255_255 = [255, 255, 255];
@@ -34,30 +35,15 @@ const C_120_90_60 = [120, 90, 60];
  */
 export function* paintAtlasJob(spec, P, faces, pix) {
   const ctx = makePainters(spec, P);
-  const d = pix.d, o = new Float32Array(4);
-  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 };
-  let run = 0; // texels since the last yield: big faces (a coat's back) are split over several steps too
+  const d = pix.d, W = pix.w, o = new Float32Array(4), c = cursor();
   for (const f of faces) {
-    const fn = ctx[f.seg.mat] || ctx.body;
-    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens;
-    c.kind = f.kind;
-    const R = f.rect, sw = f.s1 - f.s0, rh = f.r1 - f.r0;
-    for (let j = 0; j < R.h; j++) {
-      if (run >= 1200) { run = 0; yield null; }
-      run += R.w;
-      const r = f.r1 - (j - 0.5) / f.dens; // in-plane up coordinate
-      for (let i = 0; i < R.w; i++) {
-        const s = f.s0 + (i - 0.5) / f.dens;
-        c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
-        c.i = R.x + i; c.j = R.y + j;
-        c.e = sw > 0 ? ((s - f.s0) / sw) * 2 - 1 : 0; // -1..1 across the face
-        c.rb = r - f.r0; c.rt = f.r1 - r; c.rh = rh;
-        o[3] = 255;
-        fn(c, o);
-        const p = (c.j * ATLAS + c.i) * 4;
-        d[p] = q8(o[0]); d[p + 1] = q8(o[1]); d[p + 2] = q8(o[2]); d[p + 3] = o[3];
-      }
-    }
+    const fn = ctx[f.tube ? f.mat : f.seg.mat] || ctx.body;
+    yield* walkTexels(f, c, (c) => {
+      o[3] = 255;
+      fn(c, o);
+      const p = (c.j * W + c.i) * 4;
+      d[p] = q8(o[0], c.i, c.j); d[p + 1] = q8(o[1], c.i, c.j); d[p + 2] = q8(o[2], c.i, c.j); d[p + 3] = o[3];
+    });
     yield f;
   }
   pix.dirty = true;
@@ -67,18 +53,14 @@ export function paintAtlas(spec, P, faces, pix) { const it = paintAtlasJob(spec,
 /** Instant placeholder: every face filled with the colour its painter gives at the face centre. */
 export function paintAtlasFlat(spec, P, faces, pix) {
   const ctx = makePainters(spec, P);
-  const d = pix.d, o = new Float32Array(4);
-  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: null, seg: null, part: '', nx: 0, ny: 0, nz: 0, px: 0, kind: '', e: 0, rb: 0, rt: 0, rh: 0 };
+  const d = pix.d, W = pix.w, o = new Float32Array(4), c = cursor();
   for (const f of faces) {
-    const fn = ctx[f.seg.mat] || ctx.body;
-    c.f = f; c.seg = f.seg; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens; c.kind = f.kind;
-    const R = f.rect, s = (f.s0 + f.s1) / 2, r = (f.r0 + f.r1) / 2;
-    c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
-    c.i = R.x + (R.w >> 1); c.j = R.y + (R.h >> 1); c.e = 0; c.rh = f.r1 - f.r0; c.rb = c.rt = c.rh / 2;
-    o[3] = 255;
-    fn(c, o);
+    const fn = ctx[f.tube ? f.mat : f.seg.mat] || ctx.body;
+    const R = f.rect;
+    o[0] = o[1] = o[2] = 128; o[3] = 255;
+    if (texelAt(f, c, R.x + (R.w >> 1), R.y + (R.h >> 1))) fn(c, o);
     for (let j = 0; j < R.h; j++) for (let i = 0; i < R.w; i++) {
-      const p = ((R.y + j) * ATLAS + R.x + i) * 4;
+      const p = ((R.y + j) * W + R.x + i) * 4;
       d[p] = o[0]; d[p + 1] = o[1]; d[p + 2] = o[2]; d[p + 3] = 255;
     }
   }
@@ -639,68 +621,53 @@ function makePainters(spec, P) {
   }
 
   // ---------------------------------------------------------------- head (sides / back / top / jaw), ears, nose
-  const hairStyle = hair.style;
-  function headHair(c) {
-    // is this point of the scalp covered in painted hair?
-    if (hairStyle === 'none') return false;
-    const y = c.y;
-    if (hairStyle === 'bald') return y > P.earBot && y < P.earTop + 0.12 * hu && c.z < P.zf - 0.25 * hu;
-    if (c.kind === 'top') return true;
-    if (c.nz < -0.4) return y > P.napeY - 0.02 * hu;
-    // sides: above the ear tops, sideburns in front of the ear
-    if (Math.abs(c.nx) > 0.4) {
-      if (y > P.earTop + 0.02 * hu) return c.z < P.zf - 0.14 * hu || y > P.hairY - 0.05 * hu;
-      if (c.z < P.hcz - 0.18 * hu) return y > P.napeY;
-      return y > P.earBot + 0.12 * hu && c.z < P.hcz + 0.05 * hu && spec.sex === 'm';
-    }
-    return y > P.hairY;
-  }
+  const HP = makeHairPainters(spec, P, fabricK);
+  /** Skin of the head (sides, back, under the jaw; the front is the face block): mottled, form-shaded, scalp hair over it. */
   function headPx(c, o) {
-    let k = (c.part === 'scalp' ? 0.86 - 0.08 * Math.abs(c.nx) - 0.08 * Math.max(0, -c.nz) : 0.86) * (c.kind === 'bot' ? 0.62 : 1) * (1 + (h2(c.i, c.j, 21) - 0.5) * 0.035);
-    if (c.kind === 'side' && Math.abs(c.nx) > 0.4) k *= 0.96 - 0.06 * clamp01((P.zf - c.z) / (2 * P.hd));
+    let k = 0.9 * (1 + (vnoise(c.i * 0.3, c.j * 0.3, 21) - 0.5) * 0.05);
+    if (c.ny < -0.2) k *= 0.82 + 0.18 * (1 + c.ny); // under the jaw
+    // behind / round the ear a little darker, the back of the head away from the light
+    if (Math.abs(c.nx) > 0.5 && c.y > P.earBot - 0.04 * hu && c.y < P.earTop + 0.03 * hu && Math.abs(c.z - (P.hcz - 0.11 * hu)) < 0.08 * hu) k *= 0.86;
     shadeInto(o, skin, k, 0.25);
-    if (c.kind === 'bot') { if (spec.face.stubble) over(o, C_70_72_84, spec.face.stubble * 0.3 * h2(c.i, c.j, 77)); return; }
-    if (spec.face.stubble && c.part === 'jaw' && c.y < P.mouthY + 0.05 * hu) over(o, C_70_72_84, spec.face.stubble * (0.15 + 0.2 * h2(c.i, c.j, 77)));
-    // ear shadow on the head side
-    if (Math.abs(c.nx) > 0.5 && c.y > P.earBot - 0.03 * hu && c.y < P.earTop + 0.02 * hu && Math.abs(c.z - (P.hcz - 0.11 * hu)) < 0.1 * hu) { o[0] *= 0.88; o[1] *= 0.86; o[2] *= 0.86; }
-    if (c.part === 'scalp') {
-      // shiny skull: soft highlight on top / front, age spots
-      over(o, C_255_240_225, c.kind === 'top' ? 0.18 * G(c.x, c.z - P.hcz - 0.01, 0.03, 0.035) : 0.1 * G(c.e, c.rb / c.rh - 0.6, 0.5, 0.3) * Math.max(0, c.nz));
-      if (h2(c.i >> 1, c.j >> 1, 93) > 0.97) over(o, C_150_100_70, 0.3);
-    }
-    if (headHair(c)) {
-      const t = c.kind === 'top' ? Math.atan2(c.x, c.z - P.hcz + 0.06 * hu) * 26 : c.i;
-      hairPx(o, hair, t, c.j, 0.9, c.kind === 'top' ? 0.12 : 0.18 * G(0, c.y - (P.crown - 0.25 * hu), 1, 0.05 * hu));
-    }
-    if (spec.glasses && Math.abs(c.nx) > 0.5 && Math.abs(c.y - (P.eyeY + 0.02 * hu)) < c.px * 0.8 && c.z > P.hcz - 0.12 * hu) over(o, spec.glasses.col, 0.95);
+    over(o, C_210_120_110, 0.06 * clamp01(c.nz)); // warm cheeks / temples
+    if (spec.face.stubble && c.y < P.mouthY + 0.06 * hu && c.z > P.hcz - 0.12 * hu) over(o, C_70_72_84, spec.face.stubble * (0.14 + 0.24 * h2(c.i, c.j, 77)) * (c.ny < -0.2 ? 1.2 : 1));
+    if (spec.face.spots && h2(c.i >> 1, c.j >> 1, 93) > 0.975) over(o, C_150_100_70, 0.28);
+    if (hair.style === 'bald' && c.ny > 0.2) over(o, C_255_240_225, 0.16 * G(c.x, c.z - P.hcz - 0.02, 0.035, 0.04) * c.ny); // a shine on the skull
+    HP.scalp(c, o);
+    // glasses temple arms on their way to the ears
+    if (spec.glasses && Math.abs(c.nx) > 0.45 && Math.abs(c.y - (P.eyeY + 0.02 * hu)) < c.px * 0.9 && c.z > P.hcz - 0.13 * hu) over(o, spec.glasses.col, 0.95);
   }
+  /** The ear: an outer shell (helix rim, the bowl of the concha, a soft lobe), the back of it and its edge. */
   function earPx(c, o) {
-    const outward = c.nx > 0.5; // authored on the left (+x)
-    let k = 0.86;
-    if (!outward) k *= c.kind === 'side' && Math.abs(c.nz) > 0.5 ? 0.82 : 0.75;
+    const outward = c.nx > 0.35; // authored on the left (+x)
+    const ey = c.lt * 2 - 1, ez = (c.z - (P.hcz - 0.11 * hu)) / (0.05 * hu);
+    let k = outward ? 0.9 : 0.76;
     shadeInto(o, skin, k, 0.3);
-    over(o, C_220_120_110, 0.12);
+    over(o, C_220_120_110, 0.14);
     if (outward) {
-      // helix rim lighter, concha darker, lobe soft
-      const ex = c.e, ey = (c.rb / c.rh) * 2 - 1;
-      const rim = Math.max(Math.abs(ex), Math.abs(ey) * 0.9);
-      if (rim > 0.68) over(o, C_255_230_215, 0.12);
-      else if (rim > 0.45 && ey > -0.5) { o[0] *= 0.82; o[1] *= 0.76; o[2] *= 0.76; }
-      if (Math.abs(ex + 0.1) < 0.22 && Math.abs(ey + 0.05) < 0.3) { o[0] *= 0.72; o[1] *= 0.64; o[2] *= 0.64; }
-      if (ey < -0.62) over(o, C_230_150_140, 0.15);
+      const r = Math.hypot(ez * 1.0, ey * 0.95);
+      if (r > 0.78) over(o, C_255_230_215, 0.14); // the helix catches the light
+      else if (r > 0.6) { o[0] *= 0.84; o[1] *= 0.78; o[2] *= 0.78; } // the groove inside it
+      if (Math.hypot(ez + 0.12, ey + 0.08) < 0.34) { o[0] *= 0.7; o[1] *= 0.62; o[2] *= 0.62; } // concha
+      if (Math.hypot(ez - 0.32, ey + 0.2) < 0.12) { o[0] *= 0.82; o[1] *= 0.76; o[2] *= 0.76; } // tragus shadow
+      if (ey < -0.62) over(o, C_230_150_140, 0.18); // the lobe
     }
-    if (spec.glasses && Math.abs(c.y - (P.eyeY + 0.02 * hu)) < c.px * 0.8 && c.nz > 0.3) over(o, spec.glasses.col, 0.9);
+    HP.scalp(c, o) && null;
+    if (spec.glasses && Math.abs(c.y - (P.eyeY + 0.02 * hu)) < c.px * 0.8 && c.nx > 0.2) over(o, spec.glasses.col, 0.9);
   }
+  /** The nose's sides and underside (its front is in the face block): nostrils, wings, a warm tip. */
   function nosePx(c, o) {
-    if (c.kind === 'bot') {
-      shadeInto(o, skin, 0.62, 0.35);
-      const nx = Math.abs(c.x) - 0.035 * hu, nz = c.z - (P.zf + 0.06 * hu);
-      if (nx * nx / (0.022 * hu) ** 2 + nz * nz / (0.03 * hu) ** 2 < 1 && Math.abs(c.x) > 0.008 * hu) shadeInto(o, [70, 36, 34], 1);
+    const nzK = P.kid ? 0.72 : P.f ? 0.84 : 1;
+    if (c.ny < -0.3) {
+      shadeInto(o, skin, 0.66, 0.35);
+      const nx = (Math.abs(c.x) - 0.022 * hu * nzK) / (0.014 * hu * nzK), nz = (c.z - (P.zf + 0.018 * hu)) / (0.012 * hu);
+      if (nx * nx + nz * nz < 1) shadeInto(o, [72, 38, 36], 1);
+      else if (nx * nx + nz * nz < 1.8) { o[0] *= 0.86; o[1] *= 0.82; o[2] *= 0.82; }
       return;
     }
-    shadeInto(o, skin, 0.86 + 0.08 * (c.rb / c.rh), 0.3);
-    if (c.rb / c.rh < 0.3) { o[0] *= 0.92; o[1] *= 0.88; o[2] *= 0.88; }
-    over(o, C_215_115_105, 0.06);
+    shadeInto(o, skin, 0.84 + 0.1 * clamp01(c.nz), 0.3);
+    if (c.y < P.noseY + 0.02 * hu && Math.abs(c.x) > 0.03 * hu * nzK) { o[0] *= 0.9; o[1] *= 0.86; o[2] *= 0.86; } // the crease round the wings
+    over(o, C_215_115_105, 0.08 * clamp01((P.noseY + 0.05 * hu - c.y) / (0.05 * hu)));
   }
 
   // ---------------------------------------------------------------- hair shells
@@ -883,5 +850,5 @@ function makePainters(spec, P) {
     shadeInto(o, [200, 0, 200], 1);
   }
 
-  return { body: bodyPx, skin: neckPx, hand: handPx, shoe: shoePx, head: headPx, ear: earPx, nose: nosePx, hair: hairShellPx, hat: hatPx, hat2: hat2Px, acc: accPx };
+  return { body: bodyPx, skin: neckPx, hand: handPx, shoe: shoePx, head: headPx, ear: earPx, nose: nosePx, hair: (c, o) => (c.tube ? HP.hairTube(c, o) : hairShellPx(c, o)), hat: (c, o) => (c.tube ? HP.hatTube(c, o) : hatPx(c, o)), hat2: hat2Px, acc: accPx };
 }

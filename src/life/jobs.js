@@ -5,6 +5,7 @@
 // isn't open yet, again after a little while, so money for the first machine is always within reach).
 //   jobs.active (the running job)   jobs.take(id)   jobs.goal() -> objective for the card   jobs.cancel()
 import * as THREE from 'three';
+import { detailize } from '../world/surfaces.js';
 import { audio } from '../core/audio.js';
 import { formatYen } from '../core/util.js';
 import { jobFlyerPix, boardPix } from './art.js';
@@ -53,8 +54,9 @@ export class Jobs {
     const g = this.game;
     const grp = new THREE.Group();
     grp.position.set(BOARD.x, 0, BOARD.z);
-    const wood = new THREE.MeshStandardMaterial({ color: 0x5a3a1e, roughness: 0.85 });
-    const roof = new THREE.MeshStandardMaterial({ color: 0x3a4a3a, roughness: 0.6, metalness: 0.2 });
+    // weathered wood and a painted tin roof, with real surface detail (src/world/surfaces.js)
+    const wood = detailize(new THREE.MeshStandardMaterial({ color: 0x5a3a1e, roughness: 0.85 }), 'wood');
+    const roof = detailize(new THREE.MeshStandardMaterial({ color: 0x3a4a3a, roughness: 0.6, metalness: 0.2 }), 'metal');
     for (const x of [-0.48, 0.48]) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.95, 0.07), wood); p.position.set(x, 0.975, 0); p.castShadow = true; grp.add(p); }
     const cork = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.66, 0.04), [wood, wood, wood, wood, new THREE.MeshStandardMaterial({ map: boardPix().texture(), roughness: 0.95 }), wood]);
     cork.position.set(0, 1.42, 0.02);

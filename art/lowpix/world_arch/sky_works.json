@@ -1,0 +1,457 @@
+{
+ "name": "sky_works",
+ "description": "Distant sawtooth-roofed works with a brick chimney",
+ "license": "CC0-1.0",
+ "density": 10,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.4,
+  "gradient": 0.2,
+  "ao": 0.4,
+  "ao_height": 2.0
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "conc": {
+    "base": "#a8a49a",
+    "steps": 7,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "tile": {
+    "base": "#c8bca4",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "glass": {
+    "base": "#3a4652",
+    "steps": 5,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.6
+   },
+   "steel": {
+    "base": "#7a848a",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "blue": {
+    "base": "#4a6a9a",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "red": {
+    "base": "#a8402e",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "cream": {
+    "base": "#d8d0bc",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "brick": {
+    "base": "#8a5440",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "roof": {
+    "base": "#5a5e66",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "green": {
+    "base": "#3a7a52",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "yellow": {
+    "base": "#d8a838",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   }
+  }
+ },
+ "styles": {},
+ "parts": [
+  {
+   "id": "walls",
+   "shape": "box",
+   "size": [
+    10.0,
+    5.0,
+    6.0
+   ],
+   "pivot": [
+    0.0,
+    2.5,
+    0.0
+   ],
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.4,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.4,
+      "width": 0.4,
+      "shift": 0.6,
+      "faces": [
+       "front",
+       "back"
+      ]
+     },
+     {
+      "op": "band",
+      "axis": "y",
+      "from": 0.2,
+      "to": 0.6,
+      "ramp": "glass",
+      "tone": 2.4,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 2.5,
+      "width": 0.3,
+      "ramp": "steel",
+      "tone": 3.4,
+      "range": [
+       0.2,
+       0.6
+      ],
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw",
+   "shape": "box",
+   "size": [
+    10.0,
+    0.1,
+    2.126
+   ],
+   "pivot": [
+    0.0,
+    5.7671,
+    -2.2624
+   ],
+   "rotation": [
+    -48.8141,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "roof",
+    "tone": 3.2,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.4,
+      "width": 0.3,
+      "shift": 0.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw_glass",
+   "shape": "box",
+   "size": [
+    10.0,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    0.0,
+    5.8,
+    -1.55
+   ],
+   "paint": {
+    "ramp": "glass",
+    "tone": 2.6,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 1.0,
+      "width": 0.1,
+      "ramp": "steel",
+      "tone": 3
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw_1",
+   "shape": "box",
+   "size": [
+    10.0,
+    0.1,
+    2.126
+   ],
+   "pivot": [
+    0.0,
+    5.7671,
+    -0.7624
+   ],
+   "rotation": [
+    -48.8141,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "roof",
+    "tone": 3.2,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.4,
+      "width": 0.3,
+      "shift": 0.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw_glass_1",
+   "shape": "box",
+   "size": [
+    10.0,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    0.0,
+    5.8,
+    -0.05
+   ],
+   "paint": {
+    "ramp": "glass",
+    "tone": 2.6,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 1.0,
+      "width": 0.1,
+      "ramp": "steel",
+      "tone": 3
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw_2",
+   "shape": "box",
+   "size": [
+    10.0,
+    0.1,
+    2.126
+   ],
+   "pivot": [
+    0.0,
+    5.7671,
+    0.7376
+   ],
+   "rotation": [
+    -48.8141,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "roof",
+    "tone": 3.2,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.4,
+      "width": 0.3,
+      "shift": 0.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw_glass_2",
+   "shape": "box",
+   "size": [
+    10.0,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    0.0,
+    5.8,
+    1.45
+   ],
+   "paint": {
+    "ramp": "glass",
+    "tone": 2.6,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 1.0,
+      "width": 0.1,
+      "ramp": "steel",
+      "tone": 3
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw_3",
+   "shape": "box",
+   "size": [
+    10.0,
+    0.1,
+    2.126
+   ],
+   "pivot": [
+    0.0,
+    5.7671,
+    2.2376
+   ],
+   "rotation": [
+    -48.8141,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "roof",
+    "tone": 3.2,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.4,
+      "width": 0.3,
+      "shift": 0.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "saw_glass_3",
+   "shape": "box",
+   "size": [
+    10.0,
+    1.6,
+    0.08
+   ],
+   "pivot": [
+    0.0,
+    5.8,
+    2.95
+   ],
+   "paint": {
+    "ramp": "glass",
+    "tone": 2.6,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 1.0,
+      "width": 0.1,
+      "ramp": "steel",
+      "tone": 3
+     }
+    ]
+   }
+  },
+  {
+   "id": "chimney",
+   "shape": "prism",
+   "size": [
+    1.0,
+    1.0,
+    14.0
+   ],
+   "pivot": [
+    3.5,
+    7.0,
+    -1.5
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "paint": {
+    "ramp": "brick",
+    "tone": 3.4,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.25,
+      "width": 0.15,
+      "shift": -0.7
+     },
+     {
+      "op": "band",
+      "axis": "z",
+      "from": 0.85,
+      "to": 1.0,
+      "shift": -1.4
+     }
+    ]
+   },
+   "sides": 10,
+   "front_scale": [
+    0.7,
+    0.7
+   ]
+  }
+ ],
+ "brush": {
+  "off": true
+ }
+}

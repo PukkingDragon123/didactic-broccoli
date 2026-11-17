@@ -39,6 +39,14 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
+ "polyhaven:strawberry_chocolate_cake": {
+  "name": "strawberry chocolate cake",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/strawberry_chocolate_cake",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:street_rat": {
   "name": "street rat",
   "author": "Poly Haven",
@@ -52,6 +60,14 @@
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/television_02",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:vintage_electric_kettle": {
+  "name": "vintage electric kettle",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/vintage_electric_kettle",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -100,6 +116,14 @@
   "author": "Kisielev Mikhail",
   "author_url": "https://sketchfab.com/kiselevmiki",
   "source": "https://sketchfab.com/3d-models/a-fountain-pen-18b147a4dca547649b5f6ee65c954458",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
+ "sketchfab:1912d5ed6498459abb50cda71a288258": {
+  "name": "cat sleeping on tatami",
+  "author": "sekiri",
+  "author_url": "https://sketchfab.com/sekiri",
+  "source": "https://sketchfab.com/3d-models/cat-sleeping-on-tatami-1912d5ed6498459abb50cda71a288258",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -548,6 +572,14 @@
   "author": "iRahulRajput",
   "author_url": "https://sketchfab.com/rt699448",
   "source": "https://sketchfab.com/3d-models/curious-cat-3d-model-free-c1465490a7c74d48b599e1d68ff990ef",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
+ "sketchfab:cdc2fa52cccf476fab8b64370455dd34": {
+  "name": "Sleeping Cat",
+  "author": "Erik",
+  "author_url": "https://sketchfab.com/3rik",
+  "source": "https://sketchfab.com/3d-models/sleeping-cat-cdc2fa52cccf476fab8b64370455dd34",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },

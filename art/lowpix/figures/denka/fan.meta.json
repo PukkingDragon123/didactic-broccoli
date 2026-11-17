@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "kettle",
+   "src": "polyhaven:vintage_electric_kettle",
+   "height": 22.712,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "metal",
+   "key": "d21804115f7722"
+  }
+ ],
+ "model_clip": {
+  "node": "model_kettle",
+  "kind": "wobble",
+  "length": 1.2,
+  "amp": 5,
+  "axis": "y"
+ },
+ "key": "denka/fan"
+}

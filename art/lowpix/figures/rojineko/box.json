@@ -1,0 +1,476 @@
+{
+ "name": "Mikan Box Lodger",
+ "description": "Asleep on somebody's blue blanket in the one good box on the lane. Do not ask for either back.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 6.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.6
+  ],
+  "strength": 1.15,
+  "gradient": 0.0,
+  "ao": 0.5,
+  "ao_height": 3.0,
+  "ground": 0.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#3b1e0b",
+    "#a76024",
+    "#dca974",
+    "#f6ecdf",
+    "#f8f2e9",
+    "#faf8f2",
+    "#fdfdfb"
+   ],
+   "steel": [
+    "#3d384a",
+    "#585365",
+    "#75707d",
+    "#918f93",
+    "#a5a5a5",
+    "#b9b9b9",
+    "#cecece"
+   ],
+   "blush": [
+    "#961239",
+    "#ce1e3f",
+    "#e14f5a",
+    "#e88f8c",
+    "#eaada3",
+    "#edc7ba",
+    "#f1dbcf"
+   ],
+   "moss": [
+    "#213917",
+    "#344e23",
+    "#496230",
+    "#5f743e",
+    "#859758",
+    "#a6ad7e",
+    "#c0c2a7"
+   ],
+   "cb88a54_k0p2": [
+    "#5a2a1f",
+    "#7c462f",
+    "#9b6641",
+    "#b3895b",
+    "#bda67d",
+    "#c9be9d",
+    "#d6d2bc"
+   ],
+   "cc8a870": [
+    "#6f351f",
+    "#98582f",
+    "#be8043",
+    "#c9a772",
+    "#d0be8f",
+    "#d8d0ab",
+    "#e1e0c5"
+   ],
+   "cd8641e": [
+    "#660d0a",
+    "#8d2411",
+    "#b1411a",
+    "#d46625",
+    "#db924e",
+    "#e0b679",
+    "#e7d2a2"
+   ]
+  }
+ },
+ "styles": {
+  "paper": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 1.6,
+     "amount": 0.4
+    },
+    {
+     "id": "fibre",
+     "op": "stripes",
+     "axis": "x",
+     "period": 1.4,
+     "width": 0.25,
+     "wobble": 1.5,
+     "shift": -0.5
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "cb_floor",
+   "shape": "box",
+   "pivot": [
+    0,
+    0.45,
+    0
+   ],
+   "size": [
+    27,
+    0.9,
+    24
+   ],
+   "chamfer": 0.2,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 2.6
+   }
+  },
+  {
+   "id": "cb_front",
+   "shape": "box",
+   "pivot": [
+    0,
+    3.0,
+    11.55
+   ],
+   "size": [
+    27,
+    6,
+    0.9
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "y",
+      "period": 0.9,
+      "width": 0.3,
+      "shift": -0.25,
+      "faces": [
+       "top"
+      ]
+     },
+     {
+      "id": "tape",
+      "op": "band",
+      "axis": "x",
+      "from": -0.12,
+      "to": 0.12,
+      "ramp": "cc8a870",
+      "tone": 3.6,
+      "faces": [
+       "front"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       1,
+       2
+      ],
+      "art": [
+       "..............#............#.....",
+       "..####........#..##........#.....",
+       ".....#.....######..#......#......",
+       ".....#..#.....#..#.#.....#.......",
+       "....#...#....#...#.#....#..#....#",
+       "..##.####....#...#..#...#.#.#...#",
+       ".#.#....##..#....#......##..#..#.",
+       "#..#...#...#....#.......#...#..#.",
+       ".##...#....#..###......#....####.",
+       ".....#..........................."
+      ],
+      "key": {
+       "#": "cd8641e:3"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "cb_back",
+   "shape": "box",
+   "pivot": [
+    0,
+    3.0,
+    -11.55
+   ],
+   "size": [
+    27,
+    6,
+    0.9
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "y",
+      "period": 0.9,
+      "width": 0.3,
+      "shift": -0.25,
+      "faces": [
+       "top"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "cb_left",
+   "shape": "box",
+   "pivot": [
+    13.05,
+    3.0,
+    0
+   ],
+   "size": [
+    0.9,
+    6,
+    22.2
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "y",
+      "period": 0.9,
+      "width": 0.3,
+      "shift": -0.25,
+      "faces": [
+       "top"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "right",
+      "at": "center",
+      "offset": [
+       0,
+       2
+      ],
+      "art": [
+       "..............#............#.....",
+       "..####........#..##........#.....",
+       ".....#.....######..#......#......",
+       ".....#..#.....#..#.#.....#.......",
+       "....#...#....#...#.#....#..#....#",
+       "..##.####....#...#..#...#.#.#...#",
+       ".#.#....##..#....#......##..#..#.",
+       "#..#...#...#....#.......#...#..#.",
+       ".##...#....#..###......#....####.",
+       ".....#..........................."
+      ],
+      "key": {
+       "#": "cd8641e:3"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "cb_right",
+   "shape": "box",
+   "pivot": [
+    -13.05,
+    3.0,
+    0
+   ],
+   "size": [
+    0.9,
+    6,
+    22.2
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "flute",
+      "op": "stripes",
+      "axis": "y",
+      "period": 0.9,
+      "width": 0.3,
+      "shift": -0.25,
+      "faces": [
+       "top"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "cb_ff",
+   "shape": "box",
+   "pivot": [
+    0,
+    6,
+    12.0
+   ],
+   "offset": [
+    0,
+    0,
+    5.4
+   ],
+   "rotation": [
+    40,
+    0,
+    0
+   ],
+   "size": [
+    26.46,
+    0.9,
+    10.8
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.2
+   }
+  },
+  {
+   "id": "cb_fb",
+   "shape": "box",
+   "pivot": [
+    0,
+    6,
+    -12.0
+   ],
+   "offset": [
+    0,
+    0,
+    -5.4
+   ],
+   "rotation": [
+    -40,
+    0,
+    0
+   ],
+   "size": [
+    26.46,
+    0.9,
+    10.8
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.2
+   }
+  },
+  {
+   "id": "cb_fl",
+   "shape": "box",
+   "pivot": [
+    13.5,
+    6,
+    0
+   ],
+   "offset": [
+    6.075,
+    0,
+    0
+   ],
+   "rotation": [
+    0,
+    0,
+    -60
+   ],
+   "size": [
+    12.15,
+    0.9,
+    23.52
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.2
+   }
+  },
+  {
+   "id": "cb_fr",
+   "shape": "box",
+   "pivot": [
+    -13.5,
+    6,
+    0
+   ],
+   "offset": [
+    -6.075,
+    0,
+    0
+   ],
+   "rotation": [
+    0,
+    0,
+    60
+   ],
+   "size": [
+    12.15,
+    0.9,
+    23.52
+   ],
+   "double_sided": true,
+   "chamfer": 0.15,
+   "style": "paper",
+   "paint": {
+    "ramp": "cb88a54_k0p2",
+    "tone": 3.2
+   }
+  }
+ ]
+}

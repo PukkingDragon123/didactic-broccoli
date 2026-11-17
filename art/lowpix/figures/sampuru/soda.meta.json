@@ -1,7 +1,5 @@
 {
- "mats": {
-  "base": "gloss"
- },
+ "mats": {},
  "clips": {
   "gimmick": "gimmick"
  },
@@ -10,10 +8,10 @@
   {
    "name": "glass",
    "src": "sketchfab:a7652a3d813a479ba93cf880e466789c",
-   "height": 34.0,
+   "height": 36.0,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": 0,
@@ -21,14 +19,9 @@
    "roll": 0,
    "tris": 5000,
    "mat": "gloss",
-   "key": "380cff4fe5e59e"
+   "key": "f931874bc48fb3"
   }
  ],
- "base": {
-  "family": "riser",
-  "w": 18.0,
-  "d": 18.0
- },
  "model_clip": {
   "node": "model_glass",
   "kind": "wobble",

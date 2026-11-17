@@ -1,6 +1,6 @@
 {
  "mats": {
-  "bk_wall": "metal",
+  "bk_wall": "gloss",
   "bk_rim": "metal",
   "bk_handle": "metal"
  },
@@ -12,10 +12,10 @@
   {
    "name": "kit",
    "src": "sketchfab:4ae3704cd65b423ab994545988d4db1a",
-   "height": 17.0,
+   "height": 18.0,
    "pos": [
     6.0,
-    3.0,
+    0.0,
     3.0
    ],
    "yaw": -35,
@@ -23,14 +23,9 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "59dce7fef3044a"
+   "key": "a22983902e31a4"
   }
  ],
- "base": {
-  "family": "lane",
-  "w": 36.5,
-  "d": 30.0
- },
  "model_clip": {
   "node": "model_kit",
   "kind": "hop",

@@ -1,5 +1,5 @@
 // Series 1: Alley Cat Patrol (路地ネコパトロール). The lane's stray cats on the street furniture they own: real cats made
-// small (lowpix figures: art/lowpix/figures/_src/rojineko.py, GLBs in public/models/lowpix/figures/rojineko/).
+// small, standing on their own (lowpix figures: art/lowpix/figures/_src/rojineko.py, GLBs in public/models/lowpix/figures/rojineko/).
 export default {
   id: 'rojineko',
   order: 1,
@@ -12,13 +12,13 @@ export default {
   card: { bg: '#f2e6cf', accent: '#c8553a', text: '#2e2420', accent2: '#5a6a7a', pattern: 'dots' },
   capsule: { colors: [0xd8783a, 0x5a6a7a, 0xf2e6cf, 0x3a3236, 0xb8443a] },
   items: [
-    { id: 'postbox', name: 'Post Box Sentry', jp: 'ポストの番ネコ', rarity: 'common', desc: 'A blue-grey shorthair on the red post box, checking every letter that goes in.', gimmick: { text: 'Look round' } },
+    { id: 'postbox', name: 'Post Box Sentry', jp: 'ポストの番ネコ', rarity: 'common', desc: 'Curled up on top of the red post box, guarding every letter in it with its whole body.', gimmick: { text: 'Look round' } },
     { id: 'wall', name: 'Wall Walker', jp: 'ブロック塀のおさんぽ', rarity: 'common', desc: 'Tail up, all the way along the block wall, like it owns it. It does.', gimmick: { text: 'Walk on' } },
-    { id: 'box', name: 'Mikan Box Kuro', jp: 'みかん箱のクロ', rarity: 'common', desc: 'A big black long-hair who found the one good box on the lane. Do not ask for it back.', gimmick: { text: 'Hop' } },
+    { id: 'box', name: 'Mikan Box Lodger', jp: 'みかん箱の居候', rarity: 'common', desc: "Asleep on somebody's blue blanket in the one good box on the lane. Do not ask for either back.", gimmick: { text: 'Hop' } },
     { id: 'laundry', name: 'Zabuton Nap', jp: '座布団でおひるね', rarity: 'uncommon', desc: "Grandma's floor cushion, still warm from the sun. Not hers any more." },
     { id: 'kittens', name: 'Tin Bucket Kitten', jp: 'バケツと子ネコ', rarity: 'uncommon', desc: 'One kitten, one bucket. The bucket is losing.', gimmick: { text: 'Hop' } },
-    { id: 'boss', name: 'The Boss of Lane 3', jp: '三丁目のボス', rarity: 'rare', desc: 'Scarred, unhurried and very large. Sits on the oil drum; owns the lane.', gimmick: { text: 'Stare them down' } },
-    { id: 'stalker', name: 'Rat Patrol', jp: 'ネズミねらい', rarity: 'ultra', desc: 'Low, still, tail twitching. The rat by the drain has noticed, and is pretending it has not.', gimmick: { text: 'Creep closer' } },
-    { id: 'moon', name: 'Moonlit Siamese', jp: '月夜のシャム', rarity: 'secret', desc: 'Along the roof ridge under a crescent moon, blue eyes and not a sound. Nobody has ever seen it come down.', gimmick: { text: 'Look round' } },
+    { id: 'boss', name: 'The Boss of Lane 3', jp: '三丁目のボス', rarity: 'rare', desc: 'Unhurried and very large. Stands on the oil drum; owns the lane.', gimmick: { text: 'Stare them down' } },
+    { id: 'stalker', name: 'Sunbeam Sprawl', jp: 'ひなたでごろり', rarity: 'ultra', desc: 'Belly up on the rug in the one patch of sun, and nothing on earth will move it.', gimmick: { text: 'Stretch' } },
+    { id: 'moon', name: 'Moonlit Calico', jp: '月夜のオス三毛', rarity: 'secret', desc: 'A calico tom, one in three thousand, on the roof ridge under a crescent moon. Nobody has ever seen it come down.', gimmick: { text: 'Look round' } },
   ],
 };

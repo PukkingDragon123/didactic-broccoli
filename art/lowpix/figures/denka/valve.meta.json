@@ -8,10 +8,10 @@
   {
    "name": "proj",
    "src": "polyhaven:filmstrip_projector_8mm",
-   "height": 18.65,
+   "height": 20.099,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -70,
@@ -19,14 +19,9 @@
    "roll": 0,
    "tris": 5000,
    "mat": "metal",
-   "key": "a16ded42515173"
+   "key": "af431ae48bb2b8"
   }
  ],
- "base": {
-  "family": "shelf",
-  "w": 47.0,
-  "d": 32.0
- },
  "model_clip": {
   "node": "model_proj",
   "kind": "turn",

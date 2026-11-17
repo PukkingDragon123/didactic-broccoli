@@ -114,6 +114,30 @@ function headerStrip(series, w) {
   return p.texture();
 }
 
+/** The board behind the card: painted hardboard in the trim's dark shade, a lighter bevelled edge, faint brush strokes. */
+const boardTexCache = new Map();
+function boardTexture(c) {
+  if (boardTexCache.has(c)) return boardTexCache.get(c);
+  const p = new Pix(48, 48, 13);
+  p.fill(c);
+  for (let y = 2; y < 46; y += 3) for (let x = 2; x < 46; x += 6) if (p.r() < 0.4) p.rect(x, y, 4 + Math.floor(p.r() * 5), 1, shade(c, p.r() < 0.5 ? 0.92 : 1.07));
+  p.frame(0, 0, 48, 48, shade(c, 1.25)); p.frame(1, 1, 46, 46, shade(c, 0.8));
+  const t = p.texture();
+  boardTexCache.set(c, t);
+  return t;
+}
+/** A chrome screw cap seen from above: the dome lit top-left, its cross recess. */
+let capTex = null;
+function capTexture() {
+  if (capTex) return capTex;
+  const p = new Pix(24, 24, 3);
+  p.fill(0x8a9098);
+  for (let y = 0; y < 24; y++) for (let x = 0; x < 24; x++) { const d = Math.hypot(x - 11.5, y - 11.5); if (d < 11) p.px(x, y, d < 4 ? 0xf2f4f6 : x + y < 20 ? 0xdde2e6 : x + y > 28 ? 0x9aa0a8 : 0xc4cad0); }
+  p.rect(7, 11, 10, 2, 0x5a6068); p.rect(11, 7, 2, 10, 0x5a6068);
+  capTex = p.texture();
+  return capTex;
+}
+
 const acrylicMat = () => new THREE.MeshPhysicalMaterial({ color: 0xf4fbff, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.16, clearcoat: 1, clearcoatRoughness: 0.04, depthWrite: false });
 
 export function buildDisplay(style, series, { w, d, trim = 0xc8322c } = {}, thumbs = null) {
@@ -144,7 +168,7 @@ export function buildDisplay(style, series, { w, d, trim = 0xc8322c } = {}, thum
   const card = new THREE.Mesh(new THREE.PlaneGeometry(cardW, cardH), new THREE.MeshStandardMaterial({ map: cardTex, color: cardTex ? 0xffffff : 0xf2ead8, roughness: 0.7 }));
   card.position.set(0, baseY + st.tiers * tierH * VS + cardH / 2 + 0.004, -id / 2 + 0.006);
   if (card.position.y + cardH / 2 > baseY + H - 0.032) card.position.y = baseY + H - 0.032 - cardH / 2;
-  const board = new THREE.Mesh(new THREE.BoxGeometry(cardW + 0.008, cardH + 0.008, 0.004), new THREE.MeshStandardMaterial({ color: shade(trim, 0.6), roughness: 0.6 }));
+  const board = new THREE.Mesh(new THREE.BoxGeometry(cardW + 0.008, cardH + 0.008, 0.004), new THREE.MeshStandardMaterial({ map: boardTexture(shade(trim, 0.6)), roughness: 0.6 }));
   board.position.copy(card.position).add(new THREE.Vector3(0, 0, -0.0025));
   group.add(board, card);
   disposables.push(card.geometry, board.geometry);
@@ -164,7 +188,7 @@ export function buildDisplay(style, series, { w, d, trim = 0xc8322c } = {}, thum
   acrylic.renderOrder = 4;
   acrylic.raycast = () => {};
   group.add(acrylic);
-  const capM = new THREE.MeshStandardMaterial({ color: 0xd8dce0, roughness: 0.3, metalness: 0.8 });
+  const capM = new THREE.MeshStandardMaterial({ map: capTexture(), roughness: 0.3, metalness: 0.6 });
   const capG = new THREE.CylinderGeometry(0.004, 0.004, 0.002, 8);
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const c = new THREE.Mesh(capG, capM); c.position.set(sx * (iw / 2 - 0.01), baseY + H + 0.001, sz * (id / 2 - 0.01)); group.add(c); }
   const htex = headerStrip(series, iw);

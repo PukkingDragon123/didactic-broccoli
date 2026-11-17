@@ -17,10 +17,10 @@ import { Pix, FONT_EN } from '../gfx/pix.js';
 import { VoxelModel, gloss, glass, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { preloadLP, lpReady, lpMaterialSlots } from '../gachakit/lowpix.js';
+import { preloadLP, lpReady, lpPart } from '../gachakit/lowpix.js';
 
-// the packing station and the acrylic stand are a lowpix model (art/lowpix/machines/_src/packing.py), drawn with the
-// shared voxel material array like before; the voxel builds below are the fallback
+// the packing station and the acrylic stand are a lowpix model (art/lowpix/machines/_src/packing.py); the voxel builds
+// below are the fallback
 if (typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search)) await preloadLP(['packing']);
 import { formatYen } from '../core/util.js';
 import './gachaSfx.js';
@@ -57,13 +57,24 @@ const bubbleMat = new THREE.MeshPhysicalMaterial({ color: 0xf4fbff, transparent:
 export function makePackagedMesh(key, finish = 'normal') {
   const g = new THREE.Group();
   const W = 0.072, H = 0.102, D = 0.003;
-  const card = new THREE.Mesh(new THREE.BoxGeometry(W, H, D), [
-    ...Array(4).fill(new THREE.MeshStandardMaterial({ color: 0xe8e0d0, roughness: 0.9 })),
-    new THREE.MeshStandardMaterial({ map: cardTexture(key, finish), roughness: 0.75 }),
-    new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9 }),
-  ]);
-  card.position.y = H / 2;
-  card.castShadow = true;
+  let card;
+  if (lpReady('packing')) {
+    // the board (lowpix: cut edges, the printed back, its foot) with the figure's printed card on its front
+    const P = lpPart('packing', 'blister');
+    const board = new THREE.Mesh(P.geometry, P.material);
+    board.castShadow = true;
+    g.add(board);
+    card = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ map: cardTexture(key, finish), roughness: 0.75 }));
+    card.position.set(0, H / 2, D / 2 + 0.0002);
+  } else {
+    card = new THREE.Mesh(new THREE.BoxGeometry(W, H, D), [
+      ...Array(4).fill(new THREE.MeshStandardMaterial({ color: 0xe8e0d0, roughness: 0.9 })),
+      new THREE.MeshStandardMaterial({ map: cardTexture(key, finish), roughness: 0.75 }),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9 }),
+    ]);
+    card.position.y = H / 2;
+    card.castShadow = true;
+  }
   g.add(card);
   const fig = makeItemMesh(key, finish);
   const sz = fig.geometry.userData.size;
@@ -77,10 +88,12 @@ export function makePackagedMesh(key, finish = 'normal') {
   bub.renderOrder = 3;
   bub.userData.noRim = true;
   g.add(bub);
-  // a little foot so it stands
-  const foot = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.003, 0.03), new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9 }));
-  foot.position.set(0, 0.0015, -0.012);
-  g.add(foot);
+  // a little foot so it stands (the lowpix board has its own)
+  if (!lpReady('packing')) {
+    const foot = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.003, 0.03), new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9 }));
+    foot.position.set(0, 0.0015, -0.012);
+    g.add(foot);
+  }
   g.rotation.x = 0;
   g.userData.packaged = { key, finish };
   return g;
@@ -89,7 +102,7 @@ export function makePackagedMesh(key, finish = 'normal') {
 let standGeo = null;
 /** Acrylic display stand: a clear stepped riser on a base with a printed plate (figure slot on top). */
 function standMesh() {
-  if (!standGeo && lpReady('packing')) standGeo = lpMaterialSlots('packing', 'stand', voxelMaterials('normal'));
+  if (lpReady('packing')) { const P = lpPart('packing', 'stand'), m = new THREE.Mesh(P.geometry, P.material); m.castShadow = true; return m; }
   if (!standGeo) {
     const v = new VoxelModel();
     v.jitter = 0;
@@ -108,7 +121,7 @@ const STAND_TOP = 0.0045 * 7;
 
 let stationGeo = null;
 function stationMesh() {
-  if (!stationGeo && lpReady('packing')) stationGeo = lpMaterialSlots('packing', 'station', voxelMaterials('normal'));
+  if (lpReady('packing')) { const P = lpPart('packing', 'station'), m = new THREE.Mesh(P.geometry, P.material); m.castShadow = m.receiveShadow = true; return m; }
   if (!stationGeo) {
     const v = new VoxelModel();
     v.jitter = 0.02;

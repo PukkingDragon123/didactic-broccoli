@@ -8,20 +8,19 @@
   {
    "name": "bowl",
    "src": "sketchfab:938e05641929403cab1f0c77376e0d9b",
-   "height": 9,
-   "at": [
-    0,
-    3.4,
-    0
+   "height": 21.317,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
    "yaw": 20,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "ba8e6fcc8eb4a7"
+   "level": 2,
+   "key": "d4d25d39ef6143"
   }
  ],
  "model_clip": {

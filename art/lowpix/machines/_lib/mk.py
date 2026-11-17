@@ -69,7 +69,7 @@ STYLES = {
         {"id": "mottle", "op": "noise", "scale": 30, "amount": 0.14},
         {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.82},
         {"id": "ref", "op": "fill", "shift": -0.25, "min_light": -0.1, "max_light": 0.25},
-        {"id": "scuff", "op": "patches", "scale": 40, "threshold": 0.78, "shift": -0.35},
+        {"id": "scuff", "op": "patches", "scale": 40, "threshold": 0.84, "shift": -0.25},
         GLOSS]},
     # glossy lacquer (black / pearl cabinets): the same with stronger highlights
     "lacquer": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "none", "light_shift": 1.4}, "layers": [
@@ -106,7 +106,7 @@ STYLES = {
         {"id": "wear", "op": "wear", "width": 2, "density": 0.1, "ramp": "steel", "tone": 2.4, "post": True}]},
     "gold": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "none", "light_shift": 1.5, "dark_shift": -1.2}, "layers": [
         {"id": "base", "op": "gradient", "axis": "y", "amount": 0.8},
-        {"id": "mottle", "op": "noise", "scale": 10, "amount": 0.3},
+        {"id": "mottle", "op": "noise", "scale": 30, "amount": 0.12},
         {"id": "sky", "op": "fill", "shift": 1.1, "min_light": 0.78},
         {"id": "floor", "op": "fill", "shift": -1.0, "max_light": 0.1},
         dict(GLOSS, density=0.45, shift=1.4, length=3)]},

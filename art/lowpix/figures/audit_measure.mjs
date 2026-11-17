@@ -91,8 +91,8 @@ for (const key of keys) {
   };
   const I = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   for (const n of scene.listChildren()) walk(n, I, null);
-  // what touches the shelf: the corners within 0.5 mm of the lowest point (x, z rounded to 0.1 mm)
+  // what touches the shelf: the corners within 0.8 mm of the lowest point (a slightly uneven bottom still sits) (x, z rounded to 0.1 mm)
   const minY = Math.min(...verts.map((v) => v[1]));
-  const contact = [...new Set(verts.filter((v) => v[1] < minY + 0.5).map((v) => `${Math.round(v[0] * 10) / 10},${Math.round(v[2] * 10) / 10}`))].map((s) => s.split(',').map(Number));
+  const contact = [...new Set(verts.filter((v) => v[1] < minY + 0.8).map((v) => `${Math.round(v[0] * 10) / 10},${Math.round(v[2] * 10) / 10}`))].map((s) => s.split(',').map(Number));
   writeFileSync(join(dir, 'measure.json'), JSON.stringify({ key, textures: sizes, parts: Object.values(parts), minY, contact, com: com.map((v) => v / Math.max(comA, 1e-9)) }));
 }

@@ -1,0 +1,77 @@
+{
+ "id": "cointray",
+ "src": "art/lowpix/world/made/cointray.glb",
+ "credit": {
+  "title": "Coin tray (カルトン)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cointray.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 60,
+ "tex": 256,
+ "size": [
+  0.168,
+  0.024,
+  0.12
+ ],
+ "colours": 29,
+ "palette": {
+  "m0": [
+   "#11251e",
+   "#173025",
+   "#1d3a2b",
+   "#244331",
+   "#2c4c36",
+   "#426b4c",
+   "#5a8961",
+   "#78a17b",
+   "#9bb49a"
+  ],
+  "m1": [
+   "#552118",
+   "#6d3322",
+   "#83482d",
+   "#995e38",
+   "#ae7745",
+   "#ba915e",
+   "#c2a97a",
+   "#cbbd96",
+   "#d6cfb0"
+  ],
+  "m2": [
+   "#524b67",
+   "#6d6683",
+   "#88859a",
+   "#a6a5b0",
+   "#c4c4c8",
+   "#cecece",
+   "#d6d6d6",
+   "#dedede",
+   "#e5e5e5"
+  ],
+  "m3": [
+   "#653815",
+   "#81511d",
+   "#9d6e27",
+   "#b78d32",
+   "#c8aa46",
+   "#ccbd63",
+   "#d2cd7e",
+   "#d8d899",
+   "#e0e0b2"
+  ],
+  "m4": [
+   "#203417",
+   "#2d4320",
+   "#3c5129",
+   "#4b5e33",
+   "#5a6a3e",
+   "#768453",
+   "#929c6a",
+   "#a8ac89",
+   "#bcbda7"
+  ]
+ },
+ "warnings": []
+}

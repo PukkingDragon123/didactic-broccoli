@@ -20,6 +20,16 @@ FAMILIES = {
 FILL = 0.75
 
 
+def clear_stand(F, x, z, top, why, r=9.0, h=2.0):
+    """The line's stand for a flying or floating subject: a clear acrylic disc and a clear rod up to `top` (the
+    subject's underside at x, z). Clear plastic (the game's glass material), so the subject reads as in the air."""
+    F.spec["light"]["ground"] = h
+    F.cyl("base", r, h, (x, 0, z), sides=24, col="#d8e8ee", style="clear", tone=3.6, mat="glass")
+    F.cyl("base_rod", 0.8, top - h + 0.6, (x, h, z), sides=8, col="#d8e8ee", style="clear", tone=3.6, mat="glass")
+    F.meta["base"] = {"family": "clear", "w": 2 * r, "d": 2 * r}
+    F.meta["stand_why"] = why
+
+
 def series_base(F, family, why, fill=FILL, minw=18.0, aspect=0.62, maker="KAPUKAPU", year="1999"):
     """The series' base under everything placed so far (F.subject, standing at BASE_H), centred on it; `why` says
     why this toy needs a base at all (audit.py reports it). Returns (w, d)."""
@@ -189,7 +199,7 @@ def plate(F, pid, r, at=(0, 0, 0), col="#f2efe6", rim=None, h=1.6, sides=20, par
     """A glazed ceramic plate: a shallow lofted dish with a foot ring and an optional painted rim line."""
     C = F.c(col, k=0.1, hue=8)
     F.loft(pid, [((0, 0, 0), [r * 1.1, r * 1.1]), ((0, h * 0.35, 0), [r * 1.5, r * 1.5]), ((0, h * 0.8, 0), [r * 1.95, r * 1.95]),
-                 ((0, h, 0), [r * 2.0, r * 2.0])], at, sides=sides, rnd=2.0, col=C, style="glaze", tone=3.6, up=[0, 0, 1], parent=parent)
+                 ((0, h, 0), [r * 2.0, r * 2.0])], at, sides=sides, rnd=2.0, col=C, style="glaze", tone=2.7, up=[0, 0, 1], parent=parent)
     if rim:
         F.layer(pid, id="rimline", op="band", axis="y", **{"from": 0.55, "to": 0.8}, ramp=F.c(rim), tone=3.0, faces=["sides"])
     return at[1] + h

@@ -1,7 +1,7 @@
 {
  "mats": {
-  "plate": "metal",
-  "rod": "glass"
+  "base": "glass",
+  "base_rod": "glass"
  },
  "clips": {
   "gimmick": "gimmick"
@@ -11,22 +11,26 @@
   {
    "name": "fish",
    "src": "sketchfab:5e2f4b2d2e1a4613a008b6caaf40d50c",
-   "height": 15,
-   "at": [
-    0,
-    10.4,
-    0
+   "height": 19.665,
+   "pos": [
+    0.0,
+    12.0,
+    0.0
    ],
    "yaw": -35,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "330599c357f674"
+   "key": "1bd6f6db5cd0c4"
   }
  ],
+ "base": {
+  "family": "clear",
+  "w": 18.0,
+  "d": 18.0
+ },
+ "stand_why": "swimming: held up in the water on a clear rod",
  "model_clip": {
   "node": "model_fish",
   "kind": "wobble",

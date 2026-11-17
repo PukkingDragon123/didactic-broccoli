@@ -5,11 +5,11 @@
  "models": [
   {
    "name": "tv",
-   "src": "polyhaven:television_02",
-   "height": 24.731,
+   "src": "sketchfab:fe9acba84eed4a43b4315200aefbead1",
+   "height": 19.79,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -20,
@@ -17,13 +17,8 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "aa273de89ab5a9"
+   "key": "ac1b86a922d6e2"
   }
  ],
- "base": {
-  "family": "shelf",
-  "w": 39.5,
-  "d": 37.5
- },
  "key": "denka/tv"
 }

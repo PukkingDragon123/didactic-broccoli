@@ -1,0 +1,41 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "cat",
+   "src": "sketchfab:cdc2fa52cccf476fab8b64370455dd34",
+   "height": 8.023,
+   "pos": [
+    0.0,
+    0.9,
+    0.0
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "matte",
+   "box": [
+    0.93,
+    2.575,
+    1.02,
+    1.37,
+    2.8,
+    1.47
+   ],
+   "key": "e9bcd0bfe12006"
+  }
+ ],
+ "model_clip": {
+  "node": "model_cat",
+  "kind": "hop",
+  "length": 1.6,
+  "amp": 3,
+  "axis": "y"
+ },
+ "key": "rojineko/box"
+}

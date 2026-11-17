@@ -1,8 +1,5 @@
 {
- "mats": {
-  "bin": "gloss",
-  "key": "metal"
- },
+ "mats": {},
  "clips": {
   "gimmick": "gimmick"
  },
@@ -11,20 +8,18 @@
   {
    "name": "bird",
    "src": "sketchfab:45a169ef98804f06a9b7a4af1a04d6f9",
-   "height": 14,
-   "at": [
-    4,
-    13.6,
-    -1
+   "height": 23.427,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
    "yaw": -60,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
-   "mat": "matte",
-   "key": "256e98cc47b430"
+   "tris": 5000,
+   "mat": "gloss",
+   "key": "1e1d76fd092450"
   }
  ],
  "model_clip": {

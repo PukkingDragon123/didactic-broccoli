@@ -10,7 +10,7 @@
 // Events: machinePlay { machine, price, series, customer }, coinsCollected { machine, amount }, machinePrice
 // { machine, price }, machineRestock { machine, series, n }.
 import * as THREE from 'three';
-import { buildMachineModel, MACHINE_SPECS, VS, yenCoinGeometry } from '../world/machineModels.js';
+import { buildMachineModel, MACHINE_SPECS, VS, yenCoinGeometry, yenCoinMaterial } from '../world/machineModels.js';
 import { MACHINE_SLOTS } from '../world/Garage.js';
 import { Physics } from '../core/physics.js';
 import { Rope } from './Rope.js';
@@ -28,6 +28,7 @@ import { pocketCash } from './cash.js';
 import { capBoxOf, openBoxStep } from './capsuleBox.js';
 import { VoxelModel, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
+import { lpReady, lpMesh } from '../gachakit/lowpix.js';
 import './gachaSfx.js';
 
 const _m = new THREE.Matrix4();
@@ -42,6 +43,7 @@ const HAND_PLACED_BEFORE_POUR = 3;
 /** A little machine key (lid and coin box locks). */
 let keyGeo = null;
 function keyMesh() {
+  if (lpReady('mkey')) { const m = lpMesh('mkey', 'body'); m.userData.noRim = true; return m; } // (the lowpix key: art/lowpix/machines/_src/held.py)
   if (!keyGeo) {
     const v = new VoxelModel();
     v.jitter = 0;
@@ -410,7 +412,7 @@ export class GachaMachine {
 
   /** Voxel ¥100 coins in the coin box drawer (instanced). */
   buildCoins() {
-    const im = new THREE.InstancedMesh(yenCoinGeometry(), voxelMaterials('normal'), MAX_COINS_SHOWN);
+    const im = new THREE.InstancedMesh(yenCoinGeometry(), yenCoinMaterial(), MAX_COINS_SHOWN);
     im.count = 0;
     im.userData.part = 'coinbox';
     im.castShadow = true;

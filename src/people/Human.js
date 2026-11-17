@@ -30,6 +30,8 @@ const STYLE = {
 // body language per expression: head pitch, chest pitch, bounce
 const MOOD = { neutral: [0, 0, 0], smile: [0, 0, 0], sad: [0.16, 0.06, 0], sleepy: [0.12, 0.04, 0], surprised: [-0.1, -0.05, 0], angry: [0.06, 0.03, 0], happy: [-0.06, -0.03, 1] };
 
+const LOD_FAR = 11; // metres: beyond this people use their far mesh (about a third of the triangles)
+
 // time-sliced texture painting shared by all humans: ~3 ms of painting per frame in total
 const JOBS = new Set();
 let pumpAt = -1;
@@ -100,8 +102,9 @@ export class Human {
     const plan = opts.built?.plan || buildPlan(spec);
     this.P = plan.P; this.J = plan.J;
     const m = opts.built?.mesh || buildMesh(plan);
-    this.tris = m.tris;
-    this.pix = new Pix(ATLAS, ATLAS, spec.seed || 1);
+    this.tris = m.tris; this.trisFar = m.trisFar;
+    this.faces = m.faces; this.atlas = m.atlas || ATLAS;
+    this.pix = new Pix(this.atlas, this.atlas, spec.seed || 1);
     this.face = new FacePainter(spec, this.P, m.block, this.pix);
     this.E = exprParams('neutral');
     this.tex = this.pix.texture();
@@ -131,7 +134,10 @@ export class Human {
       this.bones.push(bn);
     }
     const b = this.b = Object.fromEntries(this.bones.map((bn) => [bn.name, bn]));
+    this.geoNear = m.geometry; this.geoFar = m.geometryFar || null;
     this.mesh = new THREE.SkinnedMesh(m.geometry, this.mat);
+    // level of detail: past LOD_FAR metres from the camera the coarser mesh (same atlas) is drawn from the next frame on
+    if (this.geoFar) this.mesh.onBeforeRender = (r, sc, cam) => this.lod(cam);
     this.mesh.add(this.bones[0]);
     this.mesh.updateMatrixWorld(true);
     this.mesh.bind(new THREE.Skeleton(this.bones));
@@ -192,6 +198,14 @@ export class Human {
     out.y += 0.22;
     return out;
   }
+  /** Pick the level of detail for this camera (called before the person is drawn; takes effect next frame). */
+  lod(cam) {
+    const e = this.mesh.matrixWorld.elements, dx = e[12] - cam.matrixWorld.elements[12], dy = e[13] - cam.matrixWorld.elements[13], dz = e[14] - cam.matrixWorld.elements[14];
+    const d2 = (dx * dx + dy * dy + dz * dz) / Math.max(0.3, cam.zoom || 1) ** 2;
+    const far = this.mesh.geometry === this.geoFar;
+    const want = d2 > (far ? LOD_FAR * 0.9 : LOD_FAR) ** 2;
+    if (want !== far) this.mesh.geometry = want ? this.geoFar : this.geoNear;
+  }
   /** Advance the detailed paint job a little; returns true when finished. */
   stepPaint() {
     if (!this.job) return true;
@@ -214,7 +228,7 @@ export class Human {
     const B = this.face.B;
     for (let y = 0; y < B.h; y += 8) { this.face.paint(this.E, [0, y, B.w, Math.min(B.h, y + 8)]); yield; }
     const pix = this.pix;
-    for (let y = 0; y < ATLAS; y += 64) { pix.ctx.putImageData(pix.img, 0, 0, 0, y, ATLAS, 64); yield; }
+    for (let y = 0; y < pix.h; y += 64) { pix.ctx.putImageData(pix.img, 0, 0, 0, y, pix.w, 64); yield; }
     pix.dirty = false;
   }
   /** Finish painting the detailed atlas now (e.g. for a close-up right after creation). */
@@ -223,7 +237,7 @@ export class Human {
   dispose() {
     JOBS.delete(this); this.job = null;
     this.root.removeFromParent();
-    this.mesh.geometry.dispose(); this.tex.dispose(); this.mat.dispose();
+    this.geoNear.dispose(); this.geoFar?.dispose(); this.tex.dispose(); this.mat.dispose();
     this.mesh.skeleton.dispose();
   }
 

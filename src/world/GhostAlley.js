@@ -15,6 +15,7 @@ import { createHuman } from '../people/index.js';
 import { talk } from '../people/voice.js';
 import { menace } from '../ui/menacing.js';
 import { audio } from '../core/audio.js';
+import { archPlace } from './archModels.js';
 import { draw5 } from '../gfx/font5x7.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { rollCapsule } from '../game/economy.js';
@@ -225,6 +226,9 @@ export class GhostAlley {
   // ---------------------------------------------------------------- scenery: post box, the lamp, the shrine's offerings, clutter
   buildScenery() {
     const G = this.group, geos = [];
+    // the post box, the lamp, the shrine's things, the drain, weeds and clutter: a lowpix model
+    // (art/lowpix/world_arch/_src/ghost_alley.py); the old merged build stays as the fallback
+    const lp = !!archPlace('ghost_alley', G, { cast: false });
     // 丸型ポスト: the old red round post box at the mouth (a 12-sided drum, domed cap, slot, white plate)
     const drum = new THREE.CylinderGeometry(0.21, 0.21, 1.05, 12); drum.translate(POST.x, 0.62, POST.z);
     const paint = (g, col) => { const c = new THREE.Color(col), n = g.attributes.position.count, a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); if (g.index) return g.toNonIndexed(); return g; };
@@ -247,9 +251,11 @@ export class GhostAlley {
     for (const g of [cbox(0.04, 0.9, 0.04, -9.25, 0, 17.6, 0x2a2a2a, { rz: 0.5 }), cbox(0.36, 0.06, 0.36, -9.05, 0.75, 17.6, 0x3a3a5a, { rz: 0.5 }),
       cbox(0.22, 0.18, 0.22, -9.2, 0, 19.2, 0xa8583a), cbox(0.18, 0.1, 0.12, -9.0, 0, 19.45, 0x98482a, { ry: 0.6 }),
       cbox(0.06, 0.32, 0.26, -9.37, 1.35, 18.2, 0xc8c4bc), cbox(0.02, 0.1, 0.14, -9.34, 1.45, 18.2, 0x2a2c2e)]) geos.push(g.toNonIndexed());
-    const mesh = new THREE.Mesh(mergeGeometries(geos.map((g) => { if (!g.attributes.normal) g.computeVertexNormals(); if (g.attributes.uv) g.deleteAttribute('uv'); return g; })), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 }));
-    mesh.receiveShadow = true;
-    G.add(mesh);
+    if (!lp) {
+      const mesh = new THREE.Mesh(mergeGeometries(geos.map((g) => { if (!g.attributes.normal) g.computeVertexNormals(); if (g.attributes.uv) g.deleteAttribute('uv'); return g; })), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 }));
+      mesh.receiveShadow = true;
+      G.add(mesh);
+    }
     this.game.player.addObstacle(POST.x - 0.24, POST.x + 0.24, POST.z - 0.24, POST.z + 0.24);
     this.game.player.addObstacle(LAMP.x - 0.08, LAMP.x + 0.08, LAMP.z - 0.08, LAMP.z + 0.08);
     // the bulb (flickers), its dithered pool on the ground

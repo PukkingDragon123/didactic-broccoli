@@ -4,13 +4,15 @@
 // placement stays. Models: art/lowpix/world/world.json -> tools/lowpix-world.mjs -> public/models/lowpix/world/ (credits
 // in CREDITS.md). A prop def's own `asset` wins over this table.
 export const PROP_MODELS = {
+  coin_tray: { id: 'lowpix/world/cointray' },
+  cobweb: { id: 'lowpix/world/cobwebcard' },
+  keyaki_tree: { id: 'lowpix/world/keyaki_tree' },
   cardboard_mess: { id: 'lowpix/world/cardboardmess' },
   rubbish_pile: { id: 'lowpix/world/rubbishpile' },
   dust_pile: { id: 'lowpix/world/dustpile' },
   fire_buckets: { id: 'lowpix/world/firebuckets' },
   bus_stop: { id: 'lowpix/world/busstop' },
   mk_stand_ashtray: { id: 'lowpix/world/ashtray_stand' },
-  utility_pole: { id: 'lowpix/world/utility_pole' },
   tomare_sign: { id: 'lowpix/world/tomare' },
   bicycle_parking: { id: 'lowpix/world/tomare' },
   kakigori_flag: { id: 'lowpix/world/kakigori' },
@@ -19,7 +21,6 @@ export const PROP_MODELS = {
   mk_candy_jar_b: { id: 'lowpix/world/candy_jar' },
   mk_candy_jar_c: { id: 'lowpix/world/candy_jar' },
   bonsai: { id: 'lowpix/world/bonsai' },
-  sakura_tree: { id: 'lowpix/world/sakura_tree' },
   momiji_tree: { id: 'lowpix/world/momiji_tree' },
   heater: { id: 'lowpix/world/heater' },
   shop_counter: { id: 'lowpix/world/shop_counter' },

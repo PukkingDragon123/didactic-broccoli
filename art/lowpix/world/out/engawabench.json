@@ -1,0 +1,33 @@
+{
+ "id": "engawabench",
+ "src": "art/lowpix/world/made/engawabench.glb",
+ "credit": {
+  "title": "Shopfront bench (縁台)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/engawabench.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 144,
+ "tex": 408,
+ "size": [
+  0.95,
+  0.525,
+  0.342
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#502d26",
+   "#674033",
+   "#7c5542",
+   "#906c52",
+   "#a18365",
+   "#ab987d",
+   "#b5ab95",
+   "#c1bcab",
+   "#ceccc0"
+  ]
+ },
+ "warnings": []
+}

@@ -54,6 +54,8 @@ def ensure_source(src):
     f = _find(d)
     if f:
         return f
+    if os.environ.get("NO_DOWNLOAD"):
+        raise FileNotFoundError("not downloaded yet: " + src)
     with _lock:
         for attempt in range(14):
             f = _find(d)
@@ -203,51 +205,106 @@ def _mat(n):
 
 
 def bbox(path):
-    """World-space [min, max] of a glTF's meshes (from the accessor bounds, so no geometry is read)."""
-    import numpy as np
+    """World-space [min, max] of the vertices a glTF's triangles really use (accessor bounds can be larger: scans
+    often share one vertex buffer with geometry that was cut away)."""
     if os.path.exists(path[:-5] + ".bounds.json"):  # a cropped scan: the kept triangles' bounds
         return json.load(open(path[:-5] + ".bounds.json"))
     cache = json.load(open(BBOX_CACHE)) if os.path.exists(BBOX_CACHE) else {}
-    if path in cache:
-        return cache[path]
-    d = _load_gltf(path)
-    nodes, meshes, acc = d.get("nodes", []), d.get("meshes", []), d.get("accessors", [])
-    lo, hi = np.full(3, 1e18), np.full(3, -1e18)
-    scenes = d.get("scenes", [{"nodes": list(range(len(nodes)))}])
-    roots = scenes[d.get("scene", 0)]["nodes"]
-    stack = [(r, np.eye(4)) for r in roots]
-    while stack:
-        i, P = stack.pop()
-        n = nodes[i]
-        W = P @ _mat(n)
-        if "mesh" in n:
-            for p in meshes[n["mesh"]]["primitives"]:
-                a = acc[p["attributes"]["POSITION"]]
-                if "min" not in a:
-                    continue
-                mn, mx = a["min"], a["max"]
-                for cx in (mn[0], mx[0]):
-                    for cy in (mn[1], mx[1]):
-                        for cz in (mn[2], mx[2]):
-                            v = W @ np.array([cx, cy, cz, 1.0])
-                            lo, hi = np.minimum(lo, v[:3]), np.maximum(hi, v[:3])
-        for c in n.get("children", []):
-            stack.append((c, W))
-    res = [lo.tolist(), hi.tolist()]
-    cache[path] = res
+    key = path + "#v2"
+    if key in cache:
+        return cache[key]
+    V = _world_vertices(path)
+    res = [V.min(0).tolist(), V.max(0).tolist()]
+    cache[key] = res
     os.makedirs(CONV, exist_ok=True)
     json.dump(cache, open(BBOX_CACHE, "w"))
     return res
 
 
-def prepare(src, drop=None, keep=None, box=None):
-    """The local file lowpix converts: the downloaded source, filtered (nodes / materials) and cropped."""
+def _world_vertices(path):
+    import numpy as np
+    d = _load_gltf(path)
+    base = os.path.dirname(path)
+    nodes = d.get("nodes", [])
+    out = []
+    stack = [(r, np.eye(4)) for r in d.get("scenes", [{"nodes": []}])[d.get("scene", 0)]["nodes"]]
+    while stack:
+        i, P = stack.pop()
+        W = P @ _mat(nodes[i])
+        if "mesh" in nodes[i]:
+            for p in d["meshes"][nodes[i]["mesh"]]["primitives"]:
+                V = _accessor(d, base, p["attributes"]["POSITION"]).astype(np.float64)
+                if "indices" in p:
+                    V = V[np.unique(_accessor(d, base, p["indices"]).reshape(-1))]
+                out.append((np.c_[V, np.ones(len(V))] @ W.T)[:, :3])
+        for c in nodes[i].get("children", []):
+            stack.append((c, W))
+    return np.concatenate(out)
+
+
+def level(path):
+    """A copy of a glTF turned so the surface it stands on is level (a tray scanned on a sloping table): a plane fitted
+    to the lowest point of each cell of a grid over its footprint (the underside), trimmed of the cells that sit
+    highest above it and refitted. Returns (path, degrees it was tilted)."""
+    import numpy as np
+    V = _world_vertices(path)
+    R = np.eye(3)
+    for _ in range(3):
+        P = V @ R.T
+        lo, hi = P.min(0), P.max(0)
+        ix = np.clip(((P[:, 0] - lo[0]) / max(hi[0] - lo[0], 1e-9) * 12).astype(int), 0, 11)
+        iz = np.clip(((P[:, 2] - lo[2]) / max(hi[2] - lo[2], 1e-9) * 12).astype(int), 0, 11)
+        cell = ix * 12 + iz
+        order = np.lexsort((P[:, 1], cell))
+        first = order[np.r_[True, cell[order][1:] != cell[order][:-1]]]
+        pts = P[first]
+        keep = np.ones(len(pts), bool)
+        for _ in range(3):
+            A = np.c_[pts[keep, 0], pts[keep, 2], np.ones(keep.sum())]
+            a, b, c = np.linalg.lstsq(A, pts[keep, 1], rcond=None)[0]
+            res = pts[:, 1] - (a * pts[:, 0] + b * pts[:, 2] + c)
+            keep = res <= np.percentile(res, 60)
+        n = np.array([-a, 1.0, -b]) / np.linalg.norm([-a, 1.0, -b])
+        axis = np.cross(n, [0, 1, 0])
+        s_ = np.linalg.norm(axis)
+        if s_ < 1e-5:
+            break
+        axis /= s_
+        ang = np.arcsin(min(s_, 1.0))
+        K = np.array([[0, -axis[2], axis[1]], [axis[2], 0, -axis[0]], [-axis[1], axis[0], 0]])
+        R = (np.eye(3) + np.sin(ang) * K + (1 - np.cos(ang)) * K @ K) @ R
+    tilt = float(np.degrees(np.arccos(np.clip(R[1, 1], -1, 1))))
+    d = _load_gltf(path)
+    M = np.eye(4)
+    M[:3, :3] = R
+    roots = d["scenes"][d.get("scene", 0)]["nodes"]
+    d["nodes"].append({"name": "level", "matrix": M.T.reshape(-1).tolist(), "children": roots})
+    d["scenes"][d.get("scene", 0)]["nodes"] = [len(d["nodes"]) - 1]
+    out = path[:-5] + "_drop_level.gltf"
+    json.dump(d, open(out, "w"))
+    if os.path.exists(path[:-5] + ".bounds.json"):  # (a crop: its bounds turn with it)
+        Vb = _world_vertices(out)
+        json.dump([Vb.min(0).tolist(), Vb.max(0).tolist()], open(out[:-5] + ".bounds.json", "w"))
+    return out, tilt
+
+
+def prepare(src, drop=None, keep=None, box=None, lev=False, cut=0.0):
+    """The local file lowpix converts: the downloaded source, filtered (nodes / materials), cropped, levelled and its
+    underside sliced flat (cut: that share of its height)."""
     p = filter_nodes(ensure_source(src), drop, keep)
-    return crop(p, box) if box else p
+    if box:
+        p = crop(p, box)
+    if lev:
+        p, _ = level(p)
+    if cut:
+        lo, hi = bbox(p) if not lev else (lambda V: (V.min(0).tolist(), V.max(0).tolist()))(_world_vertices(p))
+        y0 = lo[1] + cut * (hi[1] - lo[1])
+        p = crop(p, [lo[0] - 1, y0, lo[2] - 1, hi[0] + 1, hi[1] + 1, hi[2] + 1])
+    return p
 
 
-def subject_dims(src, drop=None, keep=None, box=None):
-    """(w, h, d) of a source in its own units, after node filters and crop."""
-    p = prepare(src, drop, keep, box)
+def subject_dims(src, drop=None, keep=None, box=None, lev=False, cut=0.0):
+    """(w, h, d) of a source in its own units, after node filters, crop, levelling and the flat cut."""
+    p = prepare(src, drop, keep, box, lev, cut)
     lo, hi = bbox(p)
     return [hi[i] - lo[i] for i in range(3)]

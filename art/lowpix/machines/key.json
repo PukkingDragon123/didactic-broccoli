@@ -155,8 +155,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 10,
-     "amount": 0.3
+     "scale": 30,
+     "amount": 0.12
     },
     {
      "id": "sky",
@@ -194,12 +194,6 @@
      "op": "noise",
      "scale": 8,
      "amount": 0.25
-    },
-    {
-     "id": "dust",
-     "op": "speckle",
-     "density": 0.02,
-     "shift": 0.6
     }
    ]
   },
@@ -215,8 +209,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 12,
-     "amount": 0.2
+     "scale": 40,
+     "amount": 0.1
     }
    ]
   },

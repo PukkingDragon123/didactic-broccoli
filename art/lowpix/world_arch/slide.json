@@ -1,0 +1,831 @@
+{
+ "name": "slide",
+ "description": "Park slide (made for the game)",
+ "license": "CC0-1.0",
+ "density": 128,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.45,
+  "gradient": 0.25,
+  "ao": 0.5,
+  "ao_height": 0.4
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "red": {
+    "base": "#b8382e",
+    "steps": 7,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "cream": {
+    "base": "#e6dcc4",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "chrome": {
+    "base": "#a8b0b6",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.9
+   },
+   "rubber": {
+    "base": "#2a2a2c",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "black": {
+    "base": "#26262a",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "steel": {
+    "base": "#8e969a",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "rust": {
+    "base": "#6a3a26",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "yellow": {
+    "base": "#e2b02a",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "blue": {
+    "base": "#2f62a8",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "green": {
+    "base": "#3a8a4a",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "bamboo": {
+    "base": "#b89a5a",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.75
+   },
+   "wood": {
+    "base": "#6a4a30",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "rope": {
+    "base": "#b49a68",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "white": {
+    "base": "#e8e6e0",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "pink": {
+    "base": "#d87a8a",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "glass": {
+    "base": "#3e4a52",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.8
+   },
+   "conc": {
+    "base": "#9c978d",
+    "steps": 7,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "orange": {
+    "base": "#d8742a",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   }
+  }
+ },
+ "styles": {
+  "paint": {
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 0.06,
+     "amount": 0.3
+    },
+    {
+     "id": "chips",
+     "op": "wear",
+     "width": 1,
+     "density": 0.25,
+     "ramp": "rust",
+     "tone": 2.4
+    }
+   ]
+  },
+  "chrome": {
+   "ramp": "chrome",
+   "tone": 4.2,
+   "rim": {
+    "light_shift": 1.6,
+    "dark_shift": -1.6
+   },
+   "brush": {
+    "flow": "long"
+   },
+   "layers": [
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "dash": true,
+     "density": 0.5,
+     "shift": 1.5
+    }
+   ]
+  },
+  "rubber": {
+   "ramp": "rubber",
+   "tone": 2.4,
+   "rim": {
+    "light_shift": 0.6,
+    "dark_shift": -0.6
+   },
+   "layers": [
+    {
+     "id": "tread",
+     "op": "stripes",
+     "axis": "z",
+     "period": 0.02,
+     "width": 0.3,
+     "shift": -0.8,
+     "faces": [
+      "sides"
+     ]
+    }
+   ]
+  },
+  "steel": {
+   "ramp": "steel",
+   "tone": 3.6,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 0.08,
+     "amount": 0.35
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.08,
+     "threshold": 0.7,
+     "ramp": "rust",
+     "tone": 2.6
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "deck",
+   "shape": "box",
+   "size": [
+    0.8,
+    0.05,
+    0.72
+   ],
+   "pivot": [
+    0.0,
+    1.455,
+    -1.24
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.06,
+      "width": 0.3,
+      "shift": -0.8,
+      "faces": [
+       "top"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "post",
+   "shape": "prism",
+   "size": [
+    0.05,
+    0.05,
+    2.08
+   ],
+   "pivot": [
+    -0.4,
+    1.04,
+    -1.6
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "post_1",
+   "shape": "prism",
+   "size": [
+    0.05,
+    0.05,
+    2.08
+   ],
+   "pivot": [
+    0.4,
+    1.04,
+    -1.6
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "post_2",
+   "shape": "prism",
+   "size": [
+    0.05,
+    0.05,
+    2.08
+   ],
+   "pivot": [
+    -0.4,
+    1.04,
+    -0.88
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "post_3",
+   "shape": "prism",
+   "size": [
+    0.05,
+    0.05,
+    2.08
+   ],
+   "pivot": [
+    0.4,
+    1.04,
+    -0.88
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "rail",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    0.72
+   ],
+   "pivot": [
+    -0.4,
+    1.8,
+    -1.24
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "rail_1",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    0.72
+   ],
+   "pivot": [
+    -0.4,
+    2.08,
+    -1.24
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "rail_2",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    0.72
+   ],
+   "pivot": [
+    0.4,
+    1.8,
+    -1.24
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "rail_3",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    0.72
+   ],
+   "pivot": [
+    0.4,
+    2.08,
+    -1.24
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "rail_back",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    0.8
+   ],
+   "pivot": [
+    0.0,
+    2.08,
+    -1.6
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "yellow",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "stringer",
+   "shape": "prism",
+   "size": [
+    0.044,
+    0.044,
+    2.0869
+   ],
+   "pivot": [
+    -0.32,
+    1.02,
+    -1.86
+   ],
+   "rotation": [
+    -77.8285,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "stringer_1",
+   "shape": "prism",
+   "size": [
+    0.044,
+    0.044,
+    2.0869
+   ],
+   "pivot": [
+    0.32,
+    1.02,
+    -1.86
+   ],
+   "rotation": [
+    -77.8285,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "rung",
+   "shape": "prism",
+   "size": [
+    0.032,
+    0.032,
+    0.64
+   ],
+   "pivot": [
+    0.0,
+    0.2467,
+    -2.0067
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "rung_1",
+   "shape": "prism",
+   "size": [
+    0.032,
+    0.032,
+    0.64
+   ],
+   "pivot": [
+    0.0,
+    0.4933,
+    -1.9333
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "rung_2",
+   "shape": "prism",
+   "size": [
+    0.032,
+    0.032,
+    0.64
+   ],
+   "pivot": [
+    0.0,
+    0.74,
+    -1.86
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "rung_3",
+   "shape": "prism",
+   "size": [
+    0.032,
+    0.032,
+    0.64
+   ],
+   "pivot": [
+    0.0,
+    0.9867,
+    -1.7867
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "rung_4",
+   "shape": "prism",
+   "size": [
+    0.032,
+    0.032,
+    0.64
+   ],
+   "pivot": [
+    0.0,
+    1.2333,
+    -1.7133
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "chute",
+   "shape": "box",
+   "size": [
+    0.5,
+    0.03,
+    2.4732
+   ],
+   "pivot": [
+    0.0,
+    0.8717,
+    0.2131
+   ],
+   "rotation": [
+    27.1867,
+    0.0,
+    0.0
+   ],
+   "style": "chrome",
+   "paint": {
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.5,
+      "width": 0.04,
+      "shift": -1.0
+     },
+     {
+      "op": "patches",
+      "scale": 0.2,
+      "threshold": 0.7,
+      "shift": -0.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "chute_wall",
+   "shape": "box",
+   "size": [
+    0.03,
+    0.18,
+    2.4732
+   ],
+   "pivot": [
+    -0.27,
+    0.965,
+    0.22
+   ],
+   "rotation": [
+    27.1867,
+    0.0,
+    0.0
+   ],
+   "style": "chrome"
+  },
+  {
+   "id": "chute_wall_1",
+   "shape": "box",
+   "size": [
+    0.03,
+    0.18,
+    2.4732
+   ],
+   "pivot": [
+    0.27,
+    0.965,
+    0.22
+   ],
+   "rotation": [
+    27.1867,
+    0.0,
+    0.0
+   ],
+   "style": "chrome"
+  },
+  {
+   "id": "runout",
+   "shape": "box",
+   "size": [
+    0.5,
+    0.03,
+    0.4
+   ],
+   "pivot": [
+    0.0,
+    0.275,
+    1.5
+   ],
+   "style": "chrome"
+  },
+  {
+   "id": "chute_leg",
+   "shape": "prism",
+   "size": [
+    0.04,
+    0.04,
+    0.28
+   ],
+   "pivot": [
+    -0.25,
+    0.14,
+    1.22
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "chute_leg2",
+   "shape": "prism",
+   "size": [
+    0.04,
+    0.04,
+    0.26
+   ],
+   "pivot": [
+    -0.25,
+    0.13,
+    1.64
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "chute_leg_1",
+   "shape": "prism",
+   "size": [
+    0.04,
+    0.04,
+    0.28
+   ],
+   "pivot": [
+    0.25,
+    0.14,
+    1.22
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  },
+  {
+   "id": "chute_leg2_1",
+   "shape": "prism",
+   "size": [
+    0.04,
+    0.04,
+    0.26
+   ],
+   "pivot": [
+    0.25,
+    0.13,
+    1.64
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "paint",
+   "paint": {
+    "ramp": "red",
+    "tone": 3.6
+   },
+   "sides": 8
+  }
+ ]
+}

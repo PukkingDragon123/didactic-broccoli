@@ -31,13 +31,16 @@ BANNER_W, BANNER_H = 320, 280
 # colours (src/gachakit/voxmachine.js STYLES, the identities kept)
 STY = {
     "retro": dict(body="#b8432f", body2="#8c2e22", panel="#e8dcc0", band="#e8be48", dial="#c4483c", dialEdge="#7a2018", knob="#e6e2d6",
-                  grip="#c4483c", inner="#e9dcbc", trim="#c4483c", header="#c4483c", metal="chrome", round=3, finish="enamel", flap="steel", stand="crate"),
+                  grip="#c4483c", inner="#e9dcbc", trim="#c4483c", header="#c4483c", metal="chrome", round=3, finish="enamel", flap="steel", stand="crate",
+                  model_name="GS-70  100YEN", sign_jp="ガチャガチャ"),
     "standard": dict(body="#e9e8e1", body2="#cfcec6", panel="#f4f3ee", band="#3a72c4", dial="#3a72c4", dialEdge="#1f4688", knob="#f1efe8",
-                     grip="#3a72c4", inner="#dde7f3", trim="#3a72c4", header="#3a72c4", metal="chrome", round=16, finish="abs", flap="smoke", stand="pedestal"),
+                     grip="#3a72c4", inner="#dde7f3", trim="#3a72c4", header="#3a72c4", metal="chrome", round=16, finish="abs", flap="smoke", stand="pedestal",
+                     model_name="CAPSULE GS-90"),
     "deluxe": dict(body="#2b2a2f", body2="#1c1b1f", panel="#34323a", band="#1c1b1f", dial="#1e1d22", dialEdge="#d8b04a", knob="#2c2a2f",
                    grip="#d8b04a", inner="#302e36", trim="#d8b04a", header="#2b2a2f", metal="gold", round=8, finish="lacquer", flap="smoke", stand="twotier"),
     "royal": dict(body="#f2eaee", body2="#ddcfd8", panel="#fbf6f2", band="#c8509e", dial="#c8509e", dialEdge="#8a2a70", knob="#f8f2ee",
-                  grip="#c8509e", inner="#f6e4ee", trim="#c8509e", header="#c8509e", metal="gold", round=16, finish="lacquer", flap="smoke", stand="cabinet"),
+                  grip="#c8509e", inner="#f6e4ee", trim="#c8509e", header="#c8509e", metal="gold", round=16, finish="lacquer", flap="smoke", stand="cabinet",
+                  model_name="ROYAL GS-1000", sign_jp="ガチャガチャ"),
 }
 
 # world face -> the local face of a vbox (a box pitched -90 deg so its chamfers round the vertical edges)
@@ -93,6 +96,64 @@ class M(Spec):
             s.stamp(pid, art, key, face=face, at=[int(x), int(y)])
 
 
+def side_graphic(s, pid, L, st, band, MET):
+    """A printed panel on the lower unit's flanks: a colour band with a capsule and the name (pixel art, stamped)."""
+    W = int(2 * L["fz"] * s.dens) - 24  # the flank's width in texels (minus the rounded corners)
+    H = int(min(150, (L["caseY0"] - 16 - L["outlet"]["y1"] - 9) * 0.52) * s.dens)
+    r = int(H * 0.36)
+    rows = []
+    for y in range(H):
+        row = ""
+        for x in range(W):
+            # the band (a rounded strip), a lighter rule above and below
+            if y < 2 or y >= H - 2:
+                row += "l"
+                continue
+            cx, cy = int(W * 0.2), H // 2
+            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            if d <= r:
+                if d > r - 2:
+                    row += "o"  # the capsule's outline
+                elif abs(y - cy) <= 1:
+                    row += "s"  # its seam
+                elif y < cy:
+                    row += "w" if (x - cx + y - cy) > -r * 0.9 else "h"  # the clear top, a highlight
+                else:
+                    row += "c"  # the coloured half
+            else:
+                row += "b"
+        rows.append(row)
+    # the name, in kana, on the band
+    jp = text_jp(st.get("sign_jp", "カプセルトイ"), max(10, int(H * 0.3)), "t")
+    while jp and len(jp[0]) > W * 0.6:
+        jp = text_jp(st.get("sign_jp", "カプセルトイ"), max(8, len(jp) - 2), "t")
+    x0, y0 = int(W * 0.36), H // 2 - len(jp) // 2 - int(H * 0.12)
+    for j, rr in enumerate(jp):
+        if 0 <= y0 + j < H:
+            row = list(rows[y0 + j])
+            for i, ch in enumerate(rr):
+                if ch == "t" and x0 + i < W:
+                    row[x0 + i] = "t"
+            rows[y0 + j] = "".join(row)
+    en = text5(st.get("model_name", "GACHA"), "t")
+    x1, y1 = int(W * 0.36), y0 + len(jp) + max(2, int(H * 0.08))
+    for j, rr in enumerate(en):
+        if 0 <= y1 + j < H - 2:
+            row = list(rows[y1 + j])
+            for i, ch in enumerate(rr):
+                if ch == "t" and x1 + i < W:
+                    row[x1 + i] = "u"
+            rows[y1 + j] = "".join(row)
+    key = {"b": f"{band}:3", "l": f"{band}:5", "o": f"{band}:1", "s": "paperw:3", "w": "paperw:6", "h": "paperw:5", "c": f"{band}:4",
+           "t": "paperw:6", "u": "paperw:5"}
+    # (a vbox's flanks have image-x running up the machine: the art is turned a quarter for them)
+    Hh = len(rows)
+    cw = ["".join(rows[Hh - 1 - j][i] for j in range(Hh)) for i in range(len(rows[0]))]
+    ccw = ["".join(rows[j][len(rows[0]) - 1 - i] for j in range(Hh)) for i in range(len(rows[0]))]
+    s.stamp(pid, ccw, key, face="right", at="left", off=(int(10 * s.dens), 0))
+    s.stamp(pid, cw, key, face="left", at="right", off=(-int(10 * s.dens), 0))
+
+
 def px(s, mm):
     return int(round(mm * s.dens))
 
@@ -130,6 +191,10 @@ def machine(t):
     # side vents (two short rows of slits) and a moulding seam on the back
     s.layer("unit", id="vent", op="grille", rect=[0.62, 0.55, 0.92, 0.8], period=3, slit_tone=0.4, lip=0.6, faces=["right"])
     s.layer("unit", id="vent2", op="grille", rect=[0.3, 0.2, 0.7, 0.42], period=3, slit_tone=0.4, lip=0.6, faces=["top"])
+    # the maker's side graphic, printed on both flanks: a big two-tone capsule, カプセルトイ and the model name, on a
+    # coloured band (it is what makes a white machine read from across the shop)
+    if t != "deluxe":
+        side_graphic(s, "unit", L, st, band, MET)
     s.boxr("unit_back", O["x0"] - 6, Y0 + plinth, -fz, CB["x1"] + 6, rowT, fz - 130, ch=0, col=body, style=fin, hide=["top", "bottom", "front", "left", "right"])
     # the front pieces: left of the chute (full depth), between chute and coin box, right of the coin box (full depth),
     # the strips below the openings
@@ -284,7 +349,7 @@ def machine(t):
     # ------------------------------------------------------------------ the window frame (the clear panes are the game's)
     top = CY0 + L["caseH"]
     pw = 15
-    framecol, framesty = (MET, MST) if st["metal"] == "gold" else (body, fin)
+    framecol, framesty = (MET, MST) if st["metal"] == "gold" else ((band, fin) if t == "standard" else (body, fin))
     for k, (x0, z0) in {"fl": (-hw, fz - pw), "fr": (hw - pw, fz - pw), "bl": (-hw, -fz), "br": (hw - pw, -fz)}.items():
         s.vbox("post_" + k, x0, CY0, z0, x0 + pw, top - 9, z0 + pw, ch=min(rnd, 7), col=framecol, style=framesty)
     # the rims: under the lid (round the top) and the glass shoe along the bottom front
@@ -298,8 +363,8 @@ def machine(t):
     # the back wall (printed with the maker's dot pattern) and the hopper funnel in the floor
     W = L["window"]
     s.boxr("backwall", -hw + pw, CY0, -fz + 2, hw - pw, top - 9, -fz + 20, ch=0, col=inner, style="abs", hide=["back", "top", "bottom"])
-    s.layer("backwall", id="ribs", op="stripes", axis="x", period=10, width=0.3, shift=-0.18, faces=["front"])
-    s.layer("backwall", id="shade", op="gradient", axis="y", amount=0.6, faces=["front"])
+    s.layer("backwall", id="shade", op="gradient", axis="y", amount=0.35, faces=["front"])
+    s.layer("backwall", id="scuff", op="fill", shift=0.0, faces=["front"])
     s.boxr("floor", -hw + pw, CY0 - 2, -fz + 20, hw - pw, CY0 + 1, fz - 9, ch=0, col=inner, style="abs", hide=["bottom", "left", "right", "front", "back"])
     fr = min(W["x1"] - W["x0"], fz * 2) * 0.27
     s.disc("funnel", fr, 2, (0, CY0 + 1.5, (W["z0"] + fz - 28) / 2), axis="y", sides=24, top=0.86, col=MET, style=MST, tone=2.4, hide=["back"])

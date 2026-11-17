@@ -224,7 +224,7 @@
      "op": "photo",
      "src": "art/lowpix/photos/metal_plate",
      "scale": 120,
-     "amount": 0.8
+     "amount": 0.4
     },
     {
      "id": "sheen",
@@ -307,8 +307,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 10,
-     "amount": 0.3
+     "scale": 30,
+     "amount": 0.12
     },
     {
      "id": "sky",
@@ -346,12 +346,6 @@
      "op": "noise",
      "scale": 8,
      "amount": 0.25
-    },
-    {
-     "id": "dust",
-     "op": "speckle",
-     "density": 0.02,
-     "shift": 0.6
     }
    ]
   }

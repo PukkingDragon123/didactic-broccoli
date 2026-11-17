@@ -6,10 +6,10 @@
   {
    "name": "flask",
    "src": "polyhaven:modified_thermos",
-   "height": 34.0,
+   "height": 36.0,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -30,
@@ -17,13 +17,8 @@
    "roll": 0,
    "tris": 5000,
    "mat": "gloss",
-   "key": "cab38ca1dc6537"
+   "key": "5881ba3f46827d"
   }
  ],
- "base": {
-  "family": "shelf",
-  "w": 26.0,
-  "d": 23.5
- },
  "key": "denka/cooker"
 }

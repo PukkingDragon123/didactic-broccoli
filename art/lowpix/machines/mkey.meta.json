@@ -1,0 +1,12 @@
+{
+ "joints": {},
+ "mats": {
+  "bow": "metal",
+  "shank": "metal",
+  "bit1": "metal",
+  "bit2": "metal",
+  "ring": "metal"
+ },
+ "key": "mkey",
+ "density": 6.0
+}

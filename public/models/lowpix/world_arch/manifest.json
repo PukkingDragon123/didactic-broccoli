@@ -1,4 +1,25 @@
 {
+ "astronaut": {
+  "id": "astronaut",
+  "name": "astronaut",
+  "min": [
+   -0.369,
+   0,
+   -0.343
+  ],
+  "max": [
+   0.369,
+   1.93,
+   0.343
+  ],
+  "tris": 1154,
+  "tex": [
+   512,
+   400
+  ],
+  "bytes": 34812,
+  "ppm": 160
+ },
  "garage_shell": {
   "id": "garage_shell",
   "name": "garage_shell",
@@ -19,6 +40,27 @@
   ],
   "bytes": 23732,
   "ppm": 24
+ },
+ "ghost_alley": {
+  "id": "ghost_alley",
+  "name": "ghost_alley",
+  "min": [
+   -9.4,
+   -0.032,
+   15.016
+  ],
+  "max": [
+   -7.472,
+   3.05,
+   21.28
+  ],
+  "tris": 1046,
+  "tex": [
+   1024,
+   816
+  ],
+  "bytes": 96228,
+  "ppm": 160
  },
  "lane_back": {
   "id": "lane_back",
@@ -291,6 +333,69 @@
   "bytes": 33356,
   "ppm": 40
  },
+ "playground": {
+  "id": "playground",
+  "name": "playground",
+  "min": [
+   15.547,
+   0,
+   -16.842
+  ],
+  "max": [
+   23.092,
+   1.69,
+   -9.922
+  ],
+  "tris": 3108,
+  "tex": [
+   1024,
+   1024
+  ],
+  "bytes": 92224,
+  "ppm": 160
+ },
+ "rope_coil": {
+  "id": "rope_coil",
+  "name": "rope_coil",
+  "min": [
+   -0.186,
+   -0.007,
+   -0.186
+  ],
+  "max": [
+   0.264,
+   0.176,
+   0.265
+  ],
+  "tris": 2204,
+  "tex": [
+   256,
+   448
+  ],
+  "bytes": 55420,
+  "ppm": 320
+ },
+ "scooter": {
+  "id": "scooter",
+  "name": "scooter",
+  "min": [
+   -0.313,
+   0.005,
+   -0.7
+  ],
+  "max": [
+   0.313,
+   1.25,
+   0.762
+  ],
+  "tris": 976,
+  "tex": [
+   512,
+   992
+  ],
+  "bytes": 49268,
+  "ppm": 256
+ },
  "shopfront": {
   "id": "shopfront",
   "name": "shopfront",
@@ -307,10 +412,10 @@
   "tris": 1170,
   "tex": [
    1024,
-   1072
+   1808
   ],
-  "bytes": 118072,
-  "ppm": 64
+  "bytes": 182100,
+  "ppm": 96
  },
  "shutter": {
   "id": "shutter",
@@ -332,6 +437,111 @@
   ],
   "bytes": 12388,
   "ppm": 64
+ },
+ "sky_mansion": {
+  "id": "sky_mansion",
+  "name": "sky_mansion",
+  "min": [
+   -5.1,
+   0,
+   -3.1
+  ],
+  "max": [
+   5.1,
+   18.6,
+   4.005
+  ],
+  "tris": 216,
+  "tex": [
+   512,
+   320
+  ],
+  "bytes": 10168,
+  "ppm": 10
+ },
+ "sky_office": {
+  "id": "sky_office",
+  "name": "sky_office",
+  "min": [
+   -5,
+   0,
+   -3
+  ],
+  "max": [
+   5,
+   21.8,
+   3.35
+  ],
+  "tris": 84,
+  "tex": [
+   256,
+   496
+  ],
+  "bytes": 7600,
+  "ppm": 10
+ },
+ "sky_shops": {
+  "id": "sky_shops",
+  "name": "sky_shops",
+  "min": [
+   -5.05,
+   0,
+   -3.05
+  ],
+  "max": [
+   5.05,
+   10.1,
+   4
+  ],
+  "tris": 108,
+  "tex": [
+   256,
+   368
+  ],
+  "bytes": 7736,
+  "ppm": 10
+ },
+ "sky_works": {
+  "id": "sky_works",
+  "name": "sky_works",
+  "min": [
+   -5,
+   0,
+   -3
+  ],
+  "max": [
+   5,
+   14,
+   3
+  ],
+  "tris": 144,
+  "tex": [
+   256,
+   448
+  ],
+  "bytes": 7412,
+  "ppm": 10
+ },
+ "slide": {
+  "id": "slide",
+  "name": "slide",
+  "min": [
+   -0.423,
+   -0.004,
+   -2.1
+  ],
+  "max": [
+   0.423,
+   2.097,
+   1.7
+  ],
+  "tris": 580,
+  "tex": [
+   512,
+   560
+  ],
+  "bytes": 29284,
+  "ppm": 128
  },
  "underpass_portal": {
   "id": "underpass_portal",
@@ -395,5 +605,26 @@
   ],
   "bytes": 143364,
   "ppm": 28
+ },
+ "wagasa_parasol": {
+  "id": "wagasa_parasol",
+  "name": "wagasa_parasol",
+  "min": [
+   -0.843,
+   0,
+   -0.843
+  ],
+  "max": [
+   0.843,
+   2.27,
+   0.843
+  ],
+  "tris": 364,
+  "tex": [
+   512,
+   512
+  ],
+  "bytes": 17164,
+  "ppm": 128
  }
 }

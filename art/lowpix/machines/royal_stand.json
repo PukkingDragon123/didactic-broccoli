@@ -221,8 +221,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 10,
-     "amount": 0.3
+     "scale": 30,
+     "amount": 0.12
     },
     {
      "id": "sky",

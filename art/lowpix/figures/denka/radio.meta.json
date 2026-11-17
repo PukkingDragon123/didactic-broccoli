@@ -8,10 +8,10 @@
   {
    "name": "rec",
    "src": "polyhaven:cassette_player",
-   "height": 30.0,
+   "height": 32.0,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -20,
@@ -19,14 +19,9 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "37eaef06f0712d"
+   "key": "2c5ec6848149af"
   }
  ],
- "base": {
-  "family": "shelf",
-  "w": 23.5,
-  "d": 15.0
- },
  "model_clip": {
   "node": "model_rec",
   "kind": "hop",

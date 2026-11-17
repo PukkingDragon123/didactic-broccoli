@@ -176,7 +176,7 @@
      "op": "photo",
      "src": "art/lowpix/photos/metal_plate",
      "scale": 120,
-     "amount": 0.8
+     "amount": 0.4
     },
     {
      "id": "sheen",

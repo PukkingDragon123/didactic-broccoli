@@ -177,8 +177,6 @@ export const CATALOGUE = [
     desc: 'A pump-top thermos of hot tea for the long afternoons.', does: 'Pour a cup: a little energy back.', model: { lp: 'thermos' }, box: [0.22, 0.4, 0.22] },
   { id: 'lp_kettle_electric', name: 'Electric Kettle', jp: '電気ケトル', price: 2600, category: 'electric', unlock: null, mount: 'surface', feature: 'tea', quality: 0.06, verb: 'Boil the kettle', done: 'The kettle clicks off. Tea time.',
     desc: 'A chrome kettle with a bakelite handle.', does: 'Make tea: a little energy back.', model: { lp: 'kettle_electric' }, box: [0.26, 0.3, 0.2] },
-  { id: 'lp_rice_cooker', name: 'Rice Cooker', jp: '炊飯器', price: 6800, category: 'electric', unlock: null, mount: 'surface', feature: 'tea', quality: 0.08, verb: 'Eat a rice ball', busy: 'Keeping warm', done: 'A warm onigiri from the cooker.',
-    desc: 'A flowered rice cooker that keeps rice warm all day.', does: 'A rice ball when you are flagging: energy back.', model: { lp: 'rice_cooker' }, box: [0.34, 0.3, 0.3] },
   { id: 'lp_microwave', name: 'Microwave', jp: '電子レンジ', price: 9800, category: 'electric', unlock: null, mount: 'surface', feature: 'tea', quality: 0.08, verb: 'Heat up a snack', busy: 'Still warm', done: 'Ding! A warm snack.',
     desc: 'A chunky beige microwave with a dial timer.', does: 'Heat up a snack: energy back.', model: { lp: 'microwave' }, box: [0.56, 0.4, 0.44] },
   { id: 'lp_tv_wood', name: 'Console Television', jp: '家具調テレビ', price: 9800, category: 'electric', unlock: null, mount: 'surface', feature: 'tv', quality: 0.26, block: true,

@@ -9,6 +9,8 @@ import { VoxelModel, gloss, metal, glow } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { taxiParts, TAXI } from '../vehicles/taxi.js';
+import { assetSlot } from '../kit/assets.js';
+import { LP_WORLD, lpAsset } from '../kit/lowpixWorld.js';
 
 const hash = (x, y, z, s = 0) => {
   let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(z | 0, 1274126177) ^ Math.imul(s + 1013, 1442695041);
@@ -96,7 +98,14 @@ function buildPhone() {
   for (let k = 0; k < 16; k++) { const a = k * 1.3; v.set(-13 - Math.round(k * 0.5), 2 + Math.round(Math.sin(a) * 1.2), -3 + Math.round(Math.cos(a) * 1.2), 0x2a2622); }
   return v;
 }
-export const phoneMesh = () => mesh('phone', buildPhone, { voxelSize: 0.01 });
+// the desk telephone: the lowpix model of a classic black telephone (Sketchfab CC BY, art/lowpix/world), the voxel
+// build only if that model is missing
+export const phoneMesh = () => {
+  const s = LP_WORLD.mk_phone?.size;
+  if (!s) return mesh('phone', buildPhone, { voxelSize: 0.01 });
+  const k = 0.13 / s[1];
+  return assetSlot(lpAsset('mk_phone'), { size: [s[0] * k, s[1] * k, s[2] * k], fit: 'stretch' });
+};
 
 // ------------------------------------------------------------------ the taxi (src/vehicles/taxi.js)
 const SEAT = [0.4, -0.45], DOOR_SPOT = [1.45, -0.5]; // van-local (x, z): the rear seat, where a passenger waits

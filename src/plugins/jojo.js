@@ -8,6 +8,7 @@ import { JoJo } from '../jojo/index.js';
 import { learn } from '../jojo/society.js';
 import { MENU_POSES } from '../jojo/pose.js';
 import { freeShot } from '../cinema/shots.js';
+import { createAvatarHuman } from '../people/avatar.js';
 
 export function install(game) {
   const g = game;
@@ -42,6 +43,8 @@ export function install(game) {
         return { pos: r.pos.toArray().map((v) => +v.toFixed(2)), angle: r.angle, dist: r.dist, near };
       },
       state() { return JSON.parse(JSON.stringify(J.s)); },
+      /** Build a test person from an avatar look (named jojo-test-<i>) for the material audit. */
+      build(look, i = 0) { const h = createAvatarHuman(look, { lazy: false }); h.finishPaint?.(); h.root.name = 'jojo-test-' + i; h.root.position.set(i * 0.8 - 2, 0, 10); g.scene.add(h.root); h.update(0.016, {}); return h.root.name; },
     };
   }, 0);
 }

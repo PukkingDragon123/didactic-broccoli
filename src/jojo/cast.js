@@ -1,5 +1,6 @@
 // The original eccentrics of the bizarre side story, built from the player-character kit (src/people/avatar.js:
 // a base look plus closet cosmetics, painted and dressed like you are), and the shared helpers their scenes use.
+// Only cosmetics that are painted / textured (no voxel-era glasses: they fail the look audit, tools/look-audit.mjs).
 //   makeCast(id, { lazy }) -> Human         CAST[id] = { name, color, voice, look }
 //   line(c, g, who, text, opts)    a floating line (plain text beside the head, typed with an 8-bit voice) as a cutscene
 //                                  waiter that lasts as long as it takes to read (skipping closes it)
@@ -11,15 +12,15 @@ import { talk as blipVoice } from '../people/voice.js';
 export const CAST = {
   goda: {
     name: 'Gōda Tetsuzan', short: 'Gōda', color: '#e8b830', voice: { base: 132, duty: 0.5 }, scale: 1.05,
-    look: { body: 'm', skin: 'medium', hair: 'sidepart', hairCol: 'black', top: 'aloha', topCol: 'white', bottom: 'slacks', botCol: 'black', eyes: 'sharp', brows: 'thick', outfit: 'cx_sukajan', face: 'cx_yenshades', shoes: 'cx_goldkicks', seed: 31 },
+    look: { body: 'm', skin: 'medium', hair: 'sidepart', hairCol: 'black', top: 'aloha', topCol: 'white', bottom: 'slacks', botCol: 'black', eyes: 'sharp', brows: 'thick', outfit: 'cx_sukajan', shoes: 'cx_goldkicks', seed: 31 },
   },
   kujaku: {
     name: 'Madame Kujaku', short: 'Kujaku', color: '#d86ab0', voice: { base: 340, duty: 0.125 }, scale: 0.97,
-    look: { body: 'f', skin: 'fair', hair: 'bun', hairCol: 'silver', top: 'knit', topCol: 'plum', bottom: 'longskirt', botCol: 'black', eyes: 'almond', brows: 'arched', cheeks: 'blush', face: 'cx_heart', shoes: 'cx_redhi', bag: 'cx_handbag', seed: 52 },
+    look: { body: 'f', skin: 'fair', hair: 'bun', hairCol: 'silver', top: 'knit', topCol: 'plum', bottom: 'longskirt', botCol: 'black', eyes: 'almond', brows: 'arched', cheeks: 'blush', shoes: 'cx_redhi', bag: 'cx_handbag', seed: 52 },
   },
   hidari: {
     name: 'Mr. Hidari', short: 'Hidari', color: '#7aa6d8', voice: { base: 228, duty: 0.25 }, scale: 0.94,
-    look: { body: 'm', skin: 'light', hair: 'short', hairCol: 'silver', top: 'flannel', topCol: 'charcoal', bottom: 'slacks', botCol: 'grey', eyes: 'sleepy', brows: 'straight', outfit: 'cx_blazer', face: 'cx_monocle', hat: 'cx_flatcap', shoes: 'cx_loafers', seed: 77 },
+    look: { body: 'm', skin: 'light', hair: 'short', hairCol: 'silver', top: 'flannel', topCol: 'charcoal', bottom: 'slacks', botCol: 'grey', eyes: 'sleepy', brows: 'straight', outfit: 'cx_blazer', hat: 'cx_flatcap', shoes: 'cx_loafers', seed: 77 },
   },
 };
 

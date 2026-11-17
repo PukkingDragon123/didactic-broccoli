@@ -177,20 +177,28 @@ export class Moments {
     const parent = A.parent;
     proxy.add(A);
     proxy.updateMatrixWorld(true);
-    const copy = this._copy = holder.clone(true);
-    copy.matrixAutoUpdate = false;
-    copy.traverse((o) => { o.layers.set(0); o.userData.mainPass = true; });
-    g.scene.add(copy);
-    const src = [], dst = [];
-    holder.traverse((o) => src.push(o)); copy.traverse((o) => dst.push(o));
+    // (a figure model can still be streaming in: the copy is rebuilt whenever the original's parts change)
+    let copy = null, src = [], dst = [], sig = '';
+    const signature = () => { let k = ''; holder.traverse((o) => { k += (o.geometry?.uuid || '-') + o.children.length; }); return k; };
+    const rebuild = () => {
+      if (copy) g.scene.remove(copy);
+      copy = this._copy = holder.clone(true);
+      copy.matrixAutoUpdate = false;
+      copy.traverse((o) => { o.layers.set(0); o.userData.mainPass = true; });
+      g.scene.add(copy);
+      src = []; dst = [];
+      holder.traverse((o) => src.push(o)); copy.traverse((o) => dst.push(o));
+      sig = signature();
+    };
     const sync = () => {
+      if (!copy || signature() !== sig) rebuild();
       holder.updateWorldMatrix(true, true);
       copy.matrix.copy(holder.matrixWorld); copy.matrixWorldNeedsUpdate = true;
       for (let i = 1; i < src.length && i < dst.length; i++) { dst[i].position.copy(src[i].position); dst[i].quaternion.copy(src[i].quaternion); dst[i].scale.copy(src[i].scale); }
     };
     sync();
     c.every(sync);
-    const restore = this._restore = () => { if (A.parent === proxy) parent.add(A); g.scene.remove(proxy); g.scene.remove(copy); };
+    const restore = this._restore = () => { if (A.parent === proxy) parent.add(A); g.scene.remove(proxy); if (copy) g.scene.remove(copy); };
     const f = holder.getWorldPosition(new THREE.Vector3());
     const eye = cam.position.clone();
     const d0 = Math.max(0.3, Math.hypot(eye.x - f.x, eye.z - f.z));

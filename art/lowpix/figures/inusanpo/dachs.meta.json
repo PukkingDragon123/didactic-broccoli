@@ -8,20 +8,18 @@
   {
    "name": "dog",
    "src": "sketchfab:046f4d21810e4bf68feabe393a6b83cf",
-   "height": 14,
-   "at": [
-    0,
-    3.0,
-    0
+   "height": 20.604,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
    "yaw": 90,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "249a1530bef9d1"
+   "key": "a4920ad5e11644"
   }
  ],
  "model_clip": {

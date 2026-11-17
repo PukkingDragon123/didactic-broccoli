@@ -11,7 +11,7 @@
    "height": 34.0,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -15,
@@ -25,11 +25,6 @@
    "key": "8af26a0f2561fd"
   }
  ],
- "base": {
-  "family": "shelf",
-  "w": 37.5,
-  "d": 24.5
- },
  "model_clip": {
   "node": "model_clock",
   "kind": "wobble",

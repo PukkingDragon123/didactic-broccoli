@@ -13,12 +13,10 @@ export default {
   capsule: { colors: [0xd8783a, 0x4a7a3a, 0xf4ead8, 0x8a5a3a] },
   items: [
     { id: 'shiba', name: 'Shiba on a Walk', jp: 'おさんぽ柴犬', rarity: 'common', desc: 'Curled tail, fox face, absolute refusal to go home yet.', gimmick: { text: 'Look back' } },
-    { id: 'sitshiba', name: 'Pointer Sits', jp: 'おすわりポインター', rarity: 'common', desc: 'Sat down mid-walk, ears up, waiting for the word. It may be some time.', gimmick: { text: 'Tug the leash' } },
+    { id: 'sitshiba', name: 'Beagle on the Scent', jp: 'においをたどるビーグル', rarity: 'common', desc: 'Nose down, ears flapping, following a smell only it can find.', gimmick: { text: 'Sniff' } },
     { id: 'dachs', name: 'Long Dachshund', jp: 'ながいダックス', rarity: 'common', desc: 'Mostly dog, length-wise. Takes the corner in two instalments.', gimmick: { text: 'Walk on' } },
-    { id: 'corgi', name: 'Corgi Trot', jp: 'コーギーのお散歩', rarity: 'uncommon', desc: 'Short legs, big ears, the happiest bottom on the riverbank.', gimmick: { text: 'Trot' } },
-    { id: 'pug', name: 'Beagle on the Step', jp: '石段のビーグル', rarity: 'uncommon', desc: 'Nose down, ears flapping, following a smell only it can see.', gimmick: { text: 'Look round' } },
-    { id: 'terrier', name: 'Terrier at the Post', jp: '電柱のテリア', rarity: 'rare', desc: 'Read every message on the telegraph pole. Replied to all of them.', gimmick: { text: 'Sniff' } },
-    { id: 'hachi', name: 'The Loyal Akita', jp: '忠犬の銅像', rarity: 'ultra', desc: 'The bronze dog by the station, still waiting. Pat its nose for luck.' },
-    { id: 'netsuke', name: 'Golden Netsuke Puppy', jp: '黄金の根付', rarity: 'secret', desc: "A tiny carved puppy from a merchant's sash, covered in gold leaf.", gimmick: { text: 'Turn it' } },
+    { id: 'pug', name: 'Shar Pei', jp: 'シャー・ペイ', rarity: 'uncommon', desc: 'More wrinkles than dog, and a frown that has seen it all.', gimmick: { text: 'Look round' } },
+    { id: 'hachi', name: 'The Loyal Akita', jp: '忠犬の銅像', rarity: 'ultra', desc: 'The bronze dog by the station, still waiting on its pedestal. Pat its nose for luck.' },
+    { id: 'netsuke', name: 'Netsuke Puppy', jp: '子犬の根付', rarity: 'secret', desc: "A tiny carved puppy that hung from a merchant's sash two hundred years ago. Rubbed smooth by a thousand thumbs.", gimmick: { text: 'Turn it' } },
   ],
 };

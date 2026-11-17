@@ -12,6 +12,13 @@ import { draw5 } from '../gfx/font5x7.js';
 import { formatYen } from '../core/util.js';
 import { noteStack, cashInHand, payOut, splitCash } from './cashfx.js';
 import './sfx.js';
+import { preloadLP, lpReady, lpMesh } from '../gachakit/lowpix.js';
+
+// the kiosk, its soft keys, keypad keys and cash shutter are a lowpix model (art/lowpix/machines/_src/atm.py); the
+// voxel prop (src/data/props/build.js atm_kiosk) is the fallback
+const LP_ON = typeof document !== 'undefined' && !/[?&]voxelmachines\b/.test(location.search);
+if (LP_ON) await preloadLP(['atm']);
+const lp = () => LP_ON && lpReady('atm');
 
 const SW = 128, SH = 80;
 const KEY_Y = [1.13, 1.075, 1.02, 0.965]; // soft keys (local y), top to bottom
@@ -37,15 +44,19 @@ function cardTexture() {
 }
 
 /** Tiny key-cap texture: a label (or digit) on a coloured cap. */
+/** A keycap's print, 48 x 36 px (about 1 mm a pixel): the moulded dish, its worn shine, the legend in 5x7. */
 function keyTexture(label, bg = '#d8dce0', ink = '#2a2c30') {
-  const c = document.createElement('canvas');
-  c.width = 16; c.height = 12;
+  const W = 48, H = 36, c = document.createElement('canvas');
+  c.width = W; c.height = H;
   const g = c.getContext('2d');
-  g.fillStyle = bg; g.fillRect(0, 0, 16, 12);
-  g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(0, 11, 16, 1); g.fillRect(15, 0, 1, 12);
-  g.fillStyle = 'rgba(255,255,255,0.45)'; g.fillRect(0, 0, 16, 1);
-  if (label.length <= 2) draw5(g, label, 8, 3, { col: ink, align: 'center' });
-  else { g.fillStyle = ink; g.fillRect(3, 5, 10, 2); }
+  const col = new THREE.Color(bg), sh = (k) => '#' + col.clone().multiplyScalar(k).getHexString();
+  g.fillStyle = sh(0.78); g.fillRect(0, 0, W, H); // the rim
+  g.fillStyle = bg; g.fillRect(2, 2, W - 4, H - 4); // the dish
+  g.fillStyle = sh(1.12); g.fillRect(2, 2, W - 4, 2); g.fillRect(2, 2, 2, H - 4); // lit edges
+  g.fillStyle = sh(0.88); g.fillRect(2, H - 4, W - 4, 2); g.fillRect(W - 4, 2, 2, H - 4); // shaded edges
+  g.fillStyle = sh(1.06); g.fillRect(12, 8, 10, 3); g.fillRect(10, 11, 4, 2); // a worn shine where fingers press
+  if (label.length <= 2) draw5(g, label, W / 2, 8, { col: ink, align: 'center', s: 3 });
+  else draw5(g, label, W / 2, 14, { col: ink, align: 'center' });
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
   return t;
@@ -61,7 +72,7 @@ export class Atm {
     this.root.scale.setScalar(1.18); // (the model is drawn a little small: keypad at waist height, screen at chest height)
     this.root.name = 'atm';
     g.scene.add(this.root);
-    const body = propMesh('atm_kiosk', { fallbackSize: [0.76, 1.6, 0.56] });
+    const body = lp() ? lpMesh('atm', 'body') : propMesh('atm_kiosk', { fallbackSize: [0.76, 1.6, 0.56] });
     this.root.add(body);
     this.root.updateMatrixWorld(true);
     // collision: the cabinet and its console
@@ -97,7 +108,7 @@ export class Atm {
     const softMat = new THREE.MeshStandardMaterial({ color: 0xb8bec4, roughness: 0.4, metalness: 0.3 });
     const softGeo = new THREE.BoxGeometry(0.034, 0.026, 0.012);
     for (const side of [-1, 1]) KEY_Y.forEach((y, i) => {
-      const k = new THREE.Mesh(softGeo, softMat);
+      const k = lp() ? lpMesh('atm', 'soft') : new THREE.Mesh(softGeo, softMat);
       k.position.set(side * 0.25, y, 0.226);
       this.detail.add(k);
       const id = (side < 0 ? 'L' : 'R') + (i + 1);
@@ -118,7 +129,14 @@ export class Atm {
       const f = fcol[lab];
       const cap = new THREE.MeshStandardMaterial({ map: keyTexture(f ? lab : lab, f ? f[0] : '#dfe3e6', f ? f[1] : '#2a2c30'), roughness: 0.45 });
       const side = new THREE.MeshStandardMaterial({ color: f ? new THREE.Color(f[0]).multiplyScalar(0.7) : 0x9aa0a6, roughness: 0.5 });
-      const k = new THREE.Mesh(kgeo, [side, cap]);
+      let k;
+      if (lp()) {
+        // the key's moulded body (lowpix) with its printed cap on top
+        k = lpMesh('atm', 'key');
+        const top = new THREE.Mesh(new THREE.PlaneGeometry(0.043, 0.03), cap);
+        top.rotation.x = -Math.PI / 2; top.position.y = 0.0061;
+        k.add(top);
+      } else k = new THREE.Mesh(kgeo, [side, cap]);
       k.position.set(-0.27 + col * 0.056 + (f ? 0.008 : 0), 0.766, 0.245 + r * 0.037);
       if (f) k.scale.x = 1.25;
       k.userData.home = k.position.y;
@@ -144,8 +162,12 @@ export class Atm {
     this.trayHit.position.set(-0.1, 0.7, 0.42);
     this.root.add(this.trayHit);
     g.interaction.add(this.trayHit, { reach: 1.9, hint: () => this.trayHint(), use: () => { this.onTray(); return false; } });
-    const shutter = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.042, 0.004), new THREE.MeshStandardMaterial({ color: 0x5a6066, roughness: 0.35, metalness: 0.6 }));
-    shutter.geometry.translate(0, -0.021, 0);
+    let shutter;
+    if (lp()) shutter = lpMesh('atm', 'shutter');
+    else {
+      shutter = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.042, 0.004), new THREE.MeshStandardMaterial({ color: 0x5a6066, roughness: 0.35, metalness: 0.6 }));
+      shutter.geometry.translate(0, -0.021, 0);
+    }
     shutter.position.set(-0.1, 0.721, 0.383);
     this.root.add(shutter);
     this.shutter = shutter;

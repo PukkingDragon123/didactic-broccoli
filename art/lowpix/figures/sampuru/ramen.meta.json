@@ -1,17 +1,15 @@
 {
- "mats": {
-  "base": "gloss"
- },
+ "mats": {},
  "clips": {},
  "pts": {},
  "models": [
   {
    "name": "bowl",
    "src": "sketchfab:f65a8eab51794fbc8c7941101a354a54",
-   "height": 15.928,
+   "height": 16.989,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -20,
@@ -19,13 +17,8 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "d0b5ed11833d06"
+   "key": "512ab78c8e473f"
   }
  ],
- "base": {
-  "family": "riser",
-  "w": 38.5,
-  "d": 38.0
- },
  "key": "sampuru/ramen"
 }

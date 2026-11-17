@@ -10,14 +10,15 @@ import * as THREE from 'three';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
 import { voxelMachineParts, machineDressing, STYLES } from '../gachakit/voxmachine.js';
-import { preloadLP, lpReady, lpMesh, lpMaterialSlots, LP_MANIFEST } from '../gachakit/lowpix.js';
+import { preloadLP, lpReady, lpMesh, lpPart, LP_MANIFEST } from '../gachakit/lowpix.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { activeLogo, paintLogo } from '../logo/logo.js';
 import { VoxelModel, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 
+const lpCoin = () => !FORCE_VOXEL && lpReady('coins');
 const FORCE_VOXEL = typeof location !== 'undefined' && /[?&]voxelmachines\b/.test(location.search);
-if (typeof document !== 'undefined' && !FORCE_VOXEL) await preloadLP(['retro', 'standard', 'deluxe', 'royal', 'coins']);
+if (typeof document !== 'undefined' && !FORCE_VOXEL) await preloadLP(['retro', 'standard', 'deluxe', 'royal', 'coins', 'mkey']);
 const useLowpix = (type) => !FORCE_VOXEL && lpReady(type);
 
 export const VS = 0.005; // the old models' 5 mm voxel: still the unit of a few offsets in the game logic
@@ -264,6 +265,7 @@ export function caseExtension() { return 0; }
 /** Fake coin on the owner's test rope (brass token with a hole, like a 5-yen coin). */
 let coinGeo = null, coinMat = null;
 export function makeCoin() {
+  if (lpCoin()) { const m = lpMesh('coins', 'yen5'); m.castShadow = true; return m; } // the lowpix brass token
   if (!coinGeo) {
     const shape = new THREE.Shape();
     shape.absarc(0, 0, 0.0115, 0, Math.PI * 2, false);
@@ -280,13 +282,13 @@ export function makeCoin() {
 }
 
 /**
- * A ¥100 coin lying flat, centred (Ø22.6 mm): the lowpix coin (art/lowpix/machines/_src/held.py), its groups pointing
- * into the shared voxel material array, so every caller keeps drawing it with voxelMaterials('normal'); the old voxel
- * disc if the model is missing. Shared geometry for coin piles.
+ * A ¥100 coin lying flat, centred (Ø22.6 mm): the lowpix coin (art/lowpix/machines/_src/held.py), or the old voxel
+ * disc if the model is missing. Shared geometry for coin piles; draw it with yenCoinMaterial().
  */
+export function yenCoinMaterial() { return lpCoin() ? lpPart('coins', 'yen100').material : voxelMaterials('normal'); }
 let yenGeo = null;
 export function yenCoinGeometry() {
-  if (!yenGeo && !FORCE_VOXEL && lpReady('coins')) yenGeo = lpMaterialSlots('coins', 'yen100', voxelMaterials('normal'));
+  if (!yenGeo && lpCoin()) yenGeo = lpPart('coins', 'yen100').geometry;
   if (!yenGeo) {
     const v = new VoxelModel();
     v.jitter = 0;

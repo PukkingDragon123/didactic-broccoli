@@ -27,9 +27,13 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   painting or an obvious tiling repeat; texel density stays consistent across the game. Check with
   `tools/slot.sh node tools/look-audit.mjs [filter]` (shots/audit/AUDIT.txt).
 - Speech, subtitles and chat choices are plain floating text (hard ink outline, no paper box).
-- Product labels, posters and gacha display cards are detailed art; drinks and products use real photographs. All
-  names and brands are original (real ones are genre reference only).
-- Real photos used for 2D backgrounds come from Google Open Images (CC BY), credited in CREDITS.md.
+- **All printed 2D art uses real images**: posters, flyers, packaging, product and drink labels, boxes, menus,
+  magazines, signs with pictures, website product shots and gacha display cards are built from real photographs
+  (toy cards: a render of the actual in-game toy on a real photo backdrop). Never drawn, procedural or AI-generated
+  imagery. Typography stays original and flat (no glows, gradients, bevels). All names and brands are original
+  (real ones are genre reference only).
+- Real photos come from Google Open Images (CC BY), Wikimedia Commons (PD / CC0 / CC BY) or other CC0 sources, never
+  AI images, each credited in CREDITS.md and public/CREDITS.txt.
 - People talk in 8-bit voices (src/people/voice.js).
 
 ## Code

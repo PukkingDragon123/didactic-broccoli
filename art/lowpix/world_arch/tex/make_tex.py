@@ -2,8 +2,8 @@
 Haven photos stylised by lowpix (`python3 -m lowpix photo polyhaven:<id> --style pixel-hd --size N -o src/<id>.png`,
 src/ holds those outputs). This step cleans them (stray palette specks), sets their colour and contrast, and writes
 public/textures/lowpix/world_arch/<name>.png:
-  asphalt (4 m tile), park_ground (masa-do, 4 m), sand (sandbox, 4 m), paving (plaza slabs, 4 m),
-  plywood (3.64 x 3.64 m: eight 91 x 182 cm sheets, each with its own grain shift and tone, seams and nail rows),
+  asphalt (4 m tile), concrete (kerbs, strips, aprons, 4 m), park_ground (masa-do, 4 m), sand (sandbox, 4 m), paving (plaza slabs, 4 m),
+  cblock (concrete-block walls, 4 m), plywood (3.64 x 3.64 m: eight 91 x 182 cm sheets, each with its own grain shift and tone, seams and nail rows),
   detail_paint / detail_metal / detail_wood (2 m, neutral grey, mean 0.85: multiplied by a material's colour and
   vertex tint, so the town's plain painted, metal and wooden parts get real surface detail instead of a flat colour).
 Run: python3 art/lowpix/world_arch/tex/make_tex.py
@@ -47,10 +47,10 @@ def grade(a, contrast=1.0, gain=(1, 1, 1), mean=None, sat=1.0):
     return np.clip(a, 0, 1)
 
 
-def neutral(a, contrast=0.6, mean=0.85):
+def neutral(a, contrast=0.06, mean=0.85):
+    """Luminance only, normalised: mean 0.85, standard deviation `contrast` (so every detail map has the same strength)."""
     L = a.mean(2)
-    L = L.mean() + (L - L.mean()) * contrast
-    L = L * (mean / L.mean())
+    L = mean + (L - L.mean()) / max(1e-3, L.std()) * contrast
     return np.clip(np.stack([L, L, L], 2), 0, 1)
 
 
@@ -93,15 +93,47 @@ def plywood():
     return np.clip(tile, 0, 1)
 
 
+def cblock():
+    """Japanese concrete-block wall (コンクリートブロック塀): 40 x 20 cm blocks in stretcher bond on a 4 m tile (512 px),
+    each block its own tone, struck mortar joints with a lit lower lip, efflorescence and rain streaks."""
+    base = grade(despeckle(load('concrete_wall_003')), contrast=0.32, gain=(1.0, 0.99, 0.95), mean=0.6, sat=0.25)
+    H, W = base.shape[:2]
+    out = base.copy()
+    rng = np.random.default_rng(1964)
+    rows = 20
+    for r in range(rows):
+        y0, y1 = int(r * H / rows), int((r + 1) * H / rows)
+        off = 0.5 if r % 2 else 0.0
+        for c in range(-1, 11):
+            x0, x1 = int((c + off) * W / 10), int((c + 1 + off) * W / 10)
+            xa, xb = max(0, x0), min(W, x1)
+            if xb <= xa:
+                continue
+            out[y0:y1, xa:xb] *= rng.uniform(0.9, 1.08)
+        out[y0, :] *= 0.62            # bed joint
+        out[min(H - 1, y0 + 1), :] *= 0.85
+        out[max(0, y1 - 1), :] *= 1.08  # the lit lower edge of the block above
+        for c in range(11):
+            x = int((c + off) * W / 10) % W
+            out[y0:y1, x] *= 0.62     # head joints
+            out[y0:y1, (x + 1) % W] *= 1.06
+    for _ in range(14):               # efflorescence / rain streaks running down from the joints
+        x, y, L = rng.integers(0, W), rng.integers(0, H), rng.integers(20, 120)
+        out[y:min(H, y + L), x:x + 2] *= rng.choice([0.85, 1.12])
+    return np.clip(out, 0, 1)
+
+
 def main():
+    save(cblock(), 'cblock')
     save(grade(despeckle(load('asphalt_01')), contrast=0.8, gain=(0.97, 0.98, 1.02), mean=0.33, sat=0.35), 'asphalt')
     save(grade(despeckle(load('rocky_trail_02')), contrast=0.7, gain=(1.08, 1.02, 0.92), mean=0.56, sat=0.8), 'park_ground')
     save(grade(despeckle(load('sand_01')), contrast=0.45, gain=(1.05, 1.0, 0.9), mean=0.66, sat=0.8), 'sand')
     save(grade(despeckle(load('rectangular_paving')), contrast=0.3, gain=(1.0, 0.99, 0.97), mean=0.62, sat=0.3), 'paving')
+    save(grade(despeckle(load('concrete_wall_003')), contrast=0.55, gain=(1.0, 0.99, 0.96), mean=0.62, sat=0.4), 'concrete')
     save(plywood(), 'plywood')
-    save(neutral(despeckle(load('painted_plaster_wall')), contrast=0.22), 'detail_paint')
-    save(neutral(despeckle(load('rusty_metal_02')), contrast=0.22), 'detail_metal')
-    save(neutral(despeckle(load('weathered_planks')), contrast=0.25), 'detail_wood')
+    save(neutral(despeckle(load('painted_plaster_wall')), contrast=0.06), 'detail_paint')
+    save(neutral(despeckle(load('rusty_metal_02')), contrast=0.06), 'detail_metal')
+    save(neutral(despeckle(load('weathered_planks')), contrast=0.07), 'detail_wood')
 
 
 if __name__ == '__main__':

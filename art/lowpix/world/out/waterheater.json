@@ -1,0 +1,55 @@
+{
+ "id": "waterheater",
+ "src": "art/lowpix/world/made/waterheater.glb",
+ "credit": {
+  "title": "Gas water heater (瞬間湯沸器)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/waterheater.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 102,
+ "tex": 320,
+ "size": [
+  0.3,
+  0.74,
+  0.4
+ ],
+ "colours": 18,
+ "palette": {
+  "m0": [
+   "#7c604c",
+   "#9d8268",
+   "#b2a490",
+   "#c9c3b6",
+   "#e2e0da",
+   "#e5e4e0",
+   "#e9e8e6",
+   "#ececeb",
+   "#f0f0f0"
+  ],
+  "m1": [
+   "#5f311f",
+   "#79482b",
+   "#926139",
+   "#ab7c47",
+   "#b89660",
+   "#bfaa79",
+   "#c7bb91",
+   "#cfcaa8",
+   "#d9d7be"
+  ],
+  "m2": [
+   "#131562",
+   "#1b257e",
+   "#243a99",
+   "#2e52b2",
+   "#3c6ec8",
+   "#5a8ccc",
+   "#77a7d2",
+   "#93bdd8",
+   "#aed0e0"
+  ]
+ },
+ "warnings": []
+}

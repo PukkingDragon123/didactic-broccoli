@@ -167,7 +167,7 @@
      "op": "photo",
      "src": "art/lowpix/photos/metal_plate",
      "scale": 120,
-     "amount": 0.8
+     "amount": 0.4
     },
     {
      "id": "sheen",
@@ -204,12 +204,6 @@
      "op": "noise",
      "scale": 8,
      "amount": 0.25
-    },
-    {
-     "id": "dust",
-     "op": "speckle",
-     "density": 0.02,
-     "shift": 0.6
     }
    ]
   },

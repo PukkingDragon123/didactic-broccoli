@@ -8,10 +8,10 @@
   {
    "name": "deck",
    "src": "polyhaven:boombox",
-   "height": 21.386,
+   "height": 23.902,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -15,
@@ -19,14 +19,9 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "c67c795197cc30"
+   "key": "99ae4653188f38"
   }
  ],
- "base": {
-  "family": "shelf",
-  "w": 45.5,
-  "d": 28.0
- },
  "model_clip": {
   "node": "model_deck",
   "kind": "hop",

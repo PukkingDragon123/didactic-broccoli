@@ -7,8 +7,7 @@ import { audio } from '../core/audio.js';
 import { radio } from '../core/music.js';
 import { pocketCash } from '../game/cash.js';
 import { cashInHand, payOut } from '../money/cashfx.js';
-import { yenCoinGeometry } from '../world/machineModels.js';
-import { voxelMaterials } from '../voxel/materials.js';
+import { yenCoinGeometry, yenCoinMaterial } from '../world/machineModels.js';
 import { photoInfo, randomPhoto } from './photos.js';
 import { drawCalendar, NEON_DESIGNS, setFlaps } from './models.js';
 import { STORAGE } from './storage.js';
@@ -69,7 +68,7 @@ const register = {
 const tipjar = {
   init(p, g) {
     p.data.st.yen ??= 0;
-    const im = new THREE.InstancedMesh(yenCoinGeometry(), voxelMaterials('normal'), 40);
+    const im = new THREE.InstancedMesh(yenCoinGeometry(), yenCoinMaterial(), 40);
     im.count = 0;
     im.castShadow = false;
     im.frustumCulled = false; // (its bounds would be computed while empty)
@@ -101,7 +100,7 @@ const tipjar = {
   },
   /** A coin arcs into the jar from `from`. */
   tip(p, amount, from, g) {
-    const c = new THREE.Mesh(yenCoinGeometry(), voxelMaterials('normal'));
+    const c = new THREE.Mesh(yenCoinGeometry(), yenCoinMaterial());
     const to = at(p, 0, 0.12, 0);
     const a = from ? from.clone() : to.clone().add(new THREE.Vector3(0.4, 0.5, 0.3));
     c.position.copy(a);

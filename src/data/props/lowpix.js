@@ -8,7 +8,7 @@ const M = (id, o = {}) => ({ asset: { id: 'lowpix/world/' + id, ...o } });
 export default {
   // ---------------------------------------------------------------- the lane
   lp_bicycle_old: M('bicycle_old', { h: 1.0 }),
-  lp_scooter: M('scooter', { h: 1.05 }),
+  lp_scooter: { asset: { id: 'lowpix/world_arch/scooter', h: 1.05 } }, // hand-made (art/lowpix/world_arch), the AI source is gone
   lp_gas_cylinder: M('gas_cylinder', { h: 1.2 }),
   lp_trash_jp: M('trash_jp', { h: 0.85 }),
   lp_plant_pot1: M('plant_pot1', { h: 0.7 }),

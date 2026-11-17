@@ -3,6 +3,7 @@
 // authored on the left side only; the mesher mirrors them onto the right bones and they share texture space.
 import { hairSegments } from './hair.js';
 import { accSegments } from './acc.js';
+import { anatomyTubes } from './anatomy.js';
 
 // [bone, parent]. Extra bones: skirt (skirts / aprons / coat tails), tailL/R (ponytails, spring-driven),
 // bag (shoulder bag / camera on a strap, pendulum), prop (phone or camera in the right hand), box (carried box).
@@ -116,6 +117,6 @@ export function bodySegments(s, P) {
 export function buildPlan(spec) {
   const P = proportions(spec);
   const J = joints(P);
-  const segs = [...bodySegments(spec, P), ...hairSegments(spec, P, J), ...accSegments(spec, P, J)];
+  const segs = [...anatomyTubes(spec, P, J), ...hairSegments(spec, P, J), ...accSegments(spec, P, J)];
   return { P, J, segs };
 }

@@ -185,8 +185,8 @@
      "id": "scuff",
      "op": "patches",
      "scale": 40,
-     "threshold": 0.78,
-     "shift": -0.35
+     "threshold": 0.84,
+     "shift": -0.25
     },
     {
      "id": "gloss",
@@ -291,12 +291,6 @@
      "op": "noise",
      "scale": 8,
      "amount": 0.25
-    },
-    {
-     "id": "dust",
-     "op": "speckle",
-     "density": 0.02,
-     "shift": 0.6
     }
    ]
   }

@@ -279,7 +279,7 @@ export class Rival {
     if (!c.skipping) yield c.tbc(3.0);
     S.hide();
     yield c.toPlayer(0.6);
-    if (won) g.news?.('You won the pose-off!', `¥${(s.wins === 1 ? 5000 : 2000).toLocaleString()} and a pair of yen shades he left behind`);
+    if (won) g.news?.('You won the pose-off!', `¥${(s.wins === 1 ? 5000 : 2000).toLocaleString()}, and a pair of yen shades from his pocket (in your closet)`);
     else g.news?.(lost ? 'Gōda won the pose-off' : 'The pose-off was a draw', 'He\'ll be back in a few days. Practise your poses (V)');
   }
 

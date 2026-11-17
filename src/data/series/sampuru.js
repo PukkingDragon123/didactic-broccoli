@@ -1,5 +1,5 @@
 // Series 3: Fake Food Window (サンプル食堂). The plastic food samples of a Showa restaurant window, as real-food models
-// made small on black lacquer risers with their price cards (art/lowpix/figures/_src/sampuru.py).
+// made small, each in its own bowl, plate or glass (art/lowpix/figures/_src/sampuru.py).
 export default {
   id: 'sampuru',
   order: 3,
@@ -17,7 +17,7 @@ export default {
     { id: 'udon', name: 'Kitsune Udon', jp: 'きつねうどん', rarity: 'common', desc: 'Two sheets of sweet fried tofu on a bowl of thick noodles, for the fox in you.' },
     { id: 'ebifry', name: 'Tower Tendon', jp: 'ジャンボ天丼', rarity: 'uncommon', desc: 'Prawns, squid and lotus root stacked as high as the cook dared, in a black lacquer bowl.' },
     { id: 'soda', name: 'Cola Float', jp: 'コーラフロート', rarity: 'uncommon', desc: 'A tall dark glass, a scoop of vanilla that never melts and a cherry on top.', gimmick: { text: 'Wobble the glass' } },
-    { id: 'pudding', name: 'Purin a la Mode', jp: 'プリン・ア・ラ・モード', rarity: 'rare', desc: 'A wobbling custard pudding with cream and a cherry, on its footed glass dish.', gimmick: { text: 'Wobble' } },
+    { id: 'pudding', name: 'Strawberry Chocolate Cake', jp: 'いちごのチョコケーキ', rarity: 'rare', desc: 'A whole cake under the counter glass, crowned with strawberries. Nobody has ever been sold a slice.' },
     { id: 'sundae', name: 'Tower Parfait', jp: 'ジャンボパフェ', rarity: 'ultra', desc: 'Three scoops, a wafer, a cherry and a spoon that will never reach the bottom.' },
     { id: 'fork', name: 'Floating Fork Napolitan', jp: '浮かぶフォークのナポリタン', rarity: 'secret', desc: 'The fork twirls the spaghetti up and stays there, held by nothing at all.', gimmick: { text: 'Twirl' } },
   ],

@@ -1,17 +1,15 @@
 {
- "mats": {
-  "base": "gloss"
- },
+ "mats": {},
  "clips": {},
  "pts": {},
  "models": [
   {
    "name": "parfait",
    "src": "sketchfab:7fcd555c03de4411a83aa5685fac1b5b",
-   "height": 28.675,
+   "height": 30.586,
    "pos": [
     0.0,
-    3.0,
+    0.0,
     0.0
    ],
    "yaw": -15,
@@ -19,13 +17,8 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "7fa1c41c708775"
+   "key": "5fa4d6fbf9e847"
   }
  ],
- "base": {
-  "family": "riser",
-  "w": 37.0,
-  "d": 38.5
- },
  "key": "sampuru/sundae"
 }

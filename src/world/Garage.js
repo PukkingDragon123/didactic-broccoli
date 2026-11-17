@@ -1,7 +1,8 @@
 // The garage: architecture, outside street at dusk, lighting and fixed interactables. It starts nearly empty: the
 // furniture and decor you buy are placed with the builder (src/build/) on the attach points below (ATTACH).
 import * as THREE from 'three';
-import { worldBox, worldPlane, pixMat, boxMesh, colMat } from '../gfx/geo.js';
+import { worldBox, worldPlane, pixMat, boxMesh, colMat as plainMat } from '../gfx/geo.js';
+import { detailize, surfaceTex } from './surfaces.js';
 import { posterTexture, Pix } from '../gfx/textures.js';
 import { propMesh, hasProp } from './props.js';
 import { SHOP_ART } from '../gfx/shopArt.js';
@@ -9,6 +10,14 @@ import { hash2 } from '../core/util.js';
 import { Town } from './Town.js';
 import { archReady, archFace } from './archModels.js';
 import { GarageDetail, garageBatches, bakeInto, placeProp, surfMat } from './GarageDetail.js';
+
+// the garage's plain-coloured parts (frames, the door furniture, the bar, the table legs...) get real surface detail
+const colCache = new Map();
+function colMat(color, opts = {}) {
+  const k = color + JSON.stringify(opts);
+  if (!colCache.has(k)) colCache.set(k, detailize(plainMat(color, opts).clone(), (opts.metalness ?? 0) >= 0.3 ? 'metal' : 'paint'));
+  return colCache.get(k);
+}
 
 export const GARAGE = { minX: -4, maxX: 4, minZ: -5, maxZ: 5, height: 3.2, shutterY: 2.25, doorHalf: 0.6, doorH: 2.1 };
 
@@ -126,7 +135,8 @@ export class Garage {
     const concrete = surfMat('garageSlab', { ppm: 64, roughness: 0.84, bump: 0.3, color: 0xd2cabe });
     const block = surfMat('blockHD', { ppm: 64, roughness: 0.92, bump: 0.5 });
     const corr = surfMat('corrugatedHD', { ppm: 64, roughness: 0.5, metalness: 0.35, bump: 0.7 });
-    const ply = surfMat('plywoodHD', { ppm: 64, roughness: 0.75, bump: 0.3 });
+    // plywood: 91 x 182 cm sheets, each its own grain and tone (art/lowpix/world_arch/tex/make_tex.py), 128 px/m
+    const ply = new THREE.MeshStandardMaterial({ map: surfaceTex('plywood', 3.64), roughness: 0.75 });
     const cwall = surfMat('concreteHD', { ppm: 64, roughness: 0.92, bump: 0.5 });
 
     // ------------------------------------------------------------ floor & ceiling
@@ -135,7 +145,7 @@ export class Garage {
     floor.userData.surface = true;
     this.floor = floor;
     // the roof casts shadows: low sun only gets in through the shutter and the window (no light through the roof boards)
-    const ceil = boxMesh(8.4, 0.12, 10.4, surfMat('plywoodHD', { ppm: 64, roughness: 0.9, color: 0xb0a490, bump: 0.25 }), { cast: true });
+    const ceil = boxMesh(8.4, 0.12, 10.4, new THREE.MeshStandardMaterial({ map: surfaceTex('plywood', 3.64), roughness: 0.9, color: 0xc8bca8 }), { cast: true });
     ceil.position.set(0, H + 0.06, 0);
     this.add(ceil);
     // (joists, steel H-beams, columns and the rest of the structure: GarageDetail)

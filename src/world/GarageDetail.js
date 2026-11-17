@@ -16,6 +16,7 @@ import { decalAtlas, cardAtlas } from '../gfx/garageArt.js';
 import { propGeometry, propSize, hasProp } from './props.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { hash2 } from '../core/util.js';
+import { detailize, boxUV, surfaceTex } from './surfaces.js';
 
 const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -41,7 +42,8 @@ export function surfMat(key, { ppm = 64, roughness = 0.85, metalness = 0, bump =
   surfCache.set(ck, m);
   return m;
 }
-const flat = (roughness, metalness = 0, extra = {}) => new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness, metalness, ...extra });
+// plain tinted parts get real surface detail (a neutral detail map: painted, metal or wooden), src/world/surfaces.js
+const flat = (roughness, metalness = 0, extra = {}) => detailize(new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness, metalness, ...extra }), metalness >= 0.3 ? 'metal' : 'paint');
 
 // ------------------------------------------------------------------------------------------------ batcher
 const _c = new THREE.Color();
@@ -54,8 +56,8 @@ export class Batch {
   constructor(shade) { this.lists = new Map(); this.casters = new Map(); this.shade = shade; }
   /** Add a geometry already in world space. o: tint, k (brightness), alpha (needs an RGBA material), ao (false = no AO), src (halo source). */
   geo(mat, g, o = {}) {
-    if (!g.attributes.uv) g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
     if (!g.attributes.normal) g.computeVertexNormals();
+    if (!g.attributes.uv) boxUV(g); // world-metre UVs, so the detail maps (src/world/surfaces.js) land at their real size
     const pos = g.attributes.position, n = pos.count;
     const rgba = !!mat.userData.rgba;
     const col = new Float32Array(n * (rgba ? 4 : 3));
@@ -294,7 +296,7 @@ export class GarageDetail {
       decal: decal(0.85), oil: decal(0.5, 0.02, 1), card, ao, halo, glow: glowM,
       wood: surfMat('woodDark', { ppm: 48, roughness: 0.75, bump: 0.3, vertexColors: true }),
       woodL: surfMat('woodLight', { ppm: 48, roughness: 0.7, bump: 0.3, vertexColors: true }),
-      ply: surfMat('plywoodHD', { ppm: 64, roughness: 0.78, bump: 0.25, vertexColors: true }),
+      ply: new THREE.MeshStandardMaterial({ map: surfaceTex('plywood', 3.64), roughness: 0.78, vertexColors: true }),
       tile: surfMat('pTile', { ppm: 66.6667, roughness: 0.42, bump: 0.15, vertexColors: true }),
       cb: surfMat('cardboard', { ppm: 64, roughness: 0.95, bump: 0.3, vertexColors: true }),
       steel: flat(0.42, 0.55), paint: flat(0.72), gloss: flat(0.32), rubber: flat(0.92), white: flat(0.4),

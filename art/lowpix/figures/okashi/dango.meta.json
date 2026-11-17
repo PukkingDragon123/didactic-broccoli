@@ -1,28 +1,23 @@
 {
- "mats": {
-  "base": "gloss",
-  "rim": "gloss"
- },
+ "mats": {},
  "clips": {},
  "pts": {},
  "models": [
   {
    "name": "dango",
    "src": "sketchfab:a874a02e5e9c4bcba54173a20c3732e8",
-   "height": 7,
-   "at": [
-    0,
-    3.2,
-    0
+   "height": 5.761,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
    "yaw": -15,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 5000,
    "mat": "matte",
-   "key": "d197d8ea2e86aa"
+   "key": "7791957c1eb59c"
   }
  ],
  "key": "okashi/dango"

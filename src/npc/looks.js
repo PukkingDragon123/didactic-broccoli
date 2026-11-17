@@ -12,8 +12,7 @@
 // character painter repaint the ones it cares about. Voxel props ride on the bones like the closet cosmetics.
 import * as THREE from 'three';
 import { createHuman } from '../people/index.js';
-import { buildPlan } from '../people/body.js';
-import { buildMesh, ATLAS } from '../people/mesh.js';
+import { walkTexels, cursor } from '../people/mesh.js';
 import { dressHuman } from '../people/cosmetics.js';
 import { shadeInto, over, h2, mixc, G } from '../people/paintlib.js';
 import { VoxelModel, metal, gloss } from '../voxel/VoxelModel.js';
@@ -31,28 +30,15 @@ const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1
  */
 export function retouch(h, fn) {
   h.finishPaint?.();
-  const m = buildMesh(buildPlan(h.spec));
-  m.geometry.dispose();
-  if (m.block.x !== h.face.B.x || m.block.y !== h.face.B.y) { console.warn('retouch: atlas layout mismatch'); return; }
-  const d = h.pix.d, o = new Float32Array(4);
-  const c = { x: 0, y: 0, z: 0, i: 0, j: 0, part: '', kind: '', nx: 0, ny: 0, nz: 0, px: 0, e: 0, rb: 0, rt: 0, rh: 0, seg: null };
-  for (const f of m.faces) {
-    c.seg = f.seg; c.part = f.seg.part; c.kind = f.kind; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.px = 1 / f.dens;
-    const R = f.rect, sw = f.s1 - f.s0, rh = f.r1 - f.r0;
-    for (let j = 0; j < R.h; j++) {
-      const r = f.r1 - (j - 0.5) / f.dens;
-      for (let i = 0; i < R.w; i++) {
-        const s = f.s0 + (i - 0.5) / f.dens;
-        c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
-        c.i = R.x + i; c.j = R.y + j;
-        c.e = sw > 0 ? ((s - f.s0) / sw) * 2 - 1 : 0;
-        c.rb = r - f.r0; c.rt = f.r1 - r; c.rh = rh;
-        const p = (c.j * ATLAS + c.i) * 4;
-        o[0] = d[p]; o[1] = d[p + 1]; o[2] = d[p + 2]; o[3] = d[p + 3];
-        if (!fn(c, o)) continue;
-        d[p] = Math.max(0, Math.min(255, o[0])); d[p + 1] = Math.max(0, Math.min(255, o[1])); d[p + 2] = Math.max(0, Math.min(255, o[2])); d[p + 3] = o[3];
-      }
-    }
+  const d = h.pix.d, W = h.pix.w, o = new Float32Array(4), c = cursor();
+  for (const f of h.faces) {
+    const it = walkTexels(f, c, (c) => {
+      const p = (c.j * W + c.i) * 4;
+      o[0] = d[p]; o[1] = d[p + 1]; o[2] = d[p + 2]; o[3] = d[p + 3];
+      if (!fn(c, o)) return;
+      d[p] = Math.max(0, Math.min(255, o[0])); d[p + 1] = Math.max(0, Math.min(255, o[1])); d[p + 2] = Math.max(0, Math.min(255, o[2])); d[p + 3] = o[3];
+    });
+    while (!it.next().done);
   }
   h.pix.dirty = true;
   h.pix.flush();

@@ -7,48 +7,36 @@
  "models": [
   {
    "name": "cat",
-   "src": "sketchfab:c1465490a7c74d48b599e1d68ff990ef",
-   "height": 10.177,
+   "src": "sketchfab:1912d5ed6498459abb50cda71a288258",
+   "height": 6.142,
    "pos": [
-    -4.0,
-    3.0,
-    -2.0
+    0.0,
+    0.0,
+    0.0
    ],
-   "yaw": 40,
+   "yaw": 60,
    "pitch": 0,
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "f09abf33bb4bd3"
-  },
-  {
-   "name": "rat",
-   "src": "polyhaven:street_rat",
-   "height": 2.543,
-   "pos": [
-    11.0,
-    3.0,
-    8.0
+   "box": [
+    -0.24,
+    0.118,
+    -0.31,
+    0.065,
+    0.32,
+    0.42
    ],
-   "yaw": -140,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 5000,
-   "mat": "matte",
-   "key": "76afaf1944d5ce"
+   "level": 2,
+   "key": "31f69dd36345e7"
   }
  ],
- "base": {
-  "family": "lane",
-  "w": 40.5,
-  "d": 35.0
- },
  "model_clip": {
   "node": "model_cat",
-  "kind": "slide",
-  "length": 1.6,
-  "amp": 2.5,
-  "axis": "z"
+  "kind": "nod",
+  "length": 2.0,
+  "amp": 4,
+  "axis": "y"
  },
  "key": "rojineko/stalker"
 }

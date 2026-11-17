@@ -1,0 +1,436 @@
+{
+ "name": "sky_shops",
+ "description": "Distant three-storey shophouse row",
+ "license": "CC0-1.0",
+ "density": 10,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.4,
+  "gradient": 0.2,
+  "ao": 0.4,
+  "ao_height": 2.0
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "conc": {
+    "base": "#a8a49a",
+    "steps": 7,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "tile": {
+    "base": "#c8bca4",
+    "steps": 7,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "glass": {
+    "base": "#3a4652",
+    "steps": 5,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.6
+   },
+   "steel": {
+    "base": "#7a848a",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "blue": {
+    "base": "#4a6a9a",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "red": {
+    "base": "#a8402e",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "cream": {
+    "base": "#d8d0bc",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "brick": {
+    "base": "#8a5440",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "roof": {
+    "base": "#5a5e66",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "green": {
+    "base": "#3a7a52",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "yellow": {
+    "base": "#d8a838",
+    "steps": 6,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   }
+  }
+ },
+ "styles": {},
+ "parts": [
+  {
+   "id": "body",
+   "shape": "box",
+   "size": [
+    10.0,
+    9.5,
+    6.0
+   ],
+   "pivot": [
+    0.0,
+    4.75,
+    0.0
+   ],
+   "paint": {
+    "ramp": "tile",
+    "tone": 3.6,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 3.33,
+      "width": 0.04,
+      "shift": -1.4
+     },
+     {
+      "op": "band",
+      "axis": "y",
+      "from": -1,
+      "to": -0.45,
+      "ramp": "glass",
+      "tone": 2.6,
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "op": "stripes",
+      "axis": "y",
+      "period": 2.8,
+      "width": 0.42,
+      "phase": -4.2,
+      "ramp": "glass",
+      "tone": 2.4,
+      "range": [
+       -0.3,
+       0.9
+      ],
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 1.66,
+      "width": 0.35,
+      "ramp": "tile",
+      "tone": 3.5,
+      "range": [
+       -0.3,
+       0.9
+      ],
+      "faces": [
+       "front"
+      ]
+     },
+     {
+      "op": "gradient",
+      "axis": "y",
+      "amount": 0.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "signboard",
+   "shape": "box",
+   "size": [
+    3.0,
+    0.8,
+    0.2
+   ],
+   "pivot": [
+    -3.33,
+    3.2,
+    3.1
+   ],
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "op": "rect",
+      "faces": [
+       "front"
+      ],
+      "rect": [
+       0.05,
+       0.15,
+       0.95,
+       0.85
+      ],
+      "ramp": "red",
+      "tone": 3.2
+     },
+     {
+      "op": "stripes",
+      "faces": [
+       "front"
+      ],
+      "axis": "x",
+      "period": 0.5,
+      "width": 0.6,
+      "ramp": "cream",
+      "tone": 4.2,
+      "range": [
+       -0.6,
+       0.6
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "awning",
+   "shape": "box",
+   "size": [
+    3.0,
+    0.1,
+    1.0
+   ],
+   "pivot": [
+    -3.33,
+    2.45,
+    3.5
+   ],
+   "paint": {
+    "ramp": "red",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "signboard_1",
+   "shape": "box",
+   "size": [
+    3.0,
+    0.8,
+    0.2
+   ],
+   "pivot": [
+    0.0,
+    3.2,
+    3.1
+   ],
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "op": "rect",
+      "faces": [
+       "front"
+      ],
+      "rect": [
+       0.05,
+       0.15,
+       0.95,
+       0.85
+      ],
+      "ramp": "green",
+      "tone": 3.2
+     },
+     {
+      "op": "stripes",
+      "faces": [
+       "front"
+      ],
+      "axis": "x",
+      "period": 0.5,
+      "width": 0.6,
+      "ramp": "cream",
+      "tone": 4.2,
+      "range": [
+       -0.6,
+       0.6
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "awning_1",
+   "shape": "box",
+   "size": [
+    3.0,
+    0.1,
+    1.0
+   ],
+   "pivot": [
+    0.0,
+    2.45,
+    3.5
+   ],
+   "paint": {
+    "ramp": "green",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "signboard_2",
+   "shape": "box",
+   "size": [
+    3.0,
+    0.8,
+    0.2
+   ],
+   "pivot": [
+    3.33,
+    3.2,
+    3.1
+   ],
+   "paint": {
+    "ramp": "cream",
+    "tone": 4.0,
+    "layers": [
+     {
+      "op": "rect",
+      "faces": [
+       "front"
+      ],
+      "rect": [
+       0.05,
+       0.15,
+       0.95,
+       0.85
+      ],
+      "ramp": "blue",
+      "tone": 3.2
+     },
+     {
+      "op": "stripes",
+      "faces": [
+       "front"
+      ],
+      "axis": "x",
+      "period": 0.5,
+      "width": 0.6,
+      "ramp": "cream",
+      "tone": 4.2,
+      "range": [
+       -0.6,
+       0.6
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "awning_2",
+   "shape": "box",
+   "size": [
+    3.0,
+    0.1,
+    1.0
+   ],
+   "pivot": [
+    3.33,
+    2.45,
+    3.5
+   ],
+   "paint": {
+    "ramp": "blue",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "parapet",
+   "shape": "box",
+   "size": [
+    10.1,
+    0.6,
+    6.1
+   ],
+   "pivot": [
+    0.0,
+    9.8,
+    0.0
+   ],
+   "paint": {
+    "ramp": "roof",
+    "tone": 3,
+    "layers": [
+     {
+      "op": "stripes",
+      "axis": "x",
+      "period": 0.3,
+      "width": 0.3,
+      "shift": -0.8
+     }
+    ]
+   }
+  },
+  {
+   "id": "ac",
+   "shape": "box",
+   "size": [
+    0.8,
+    0.6,
+    0.3
+   ],
+   "pivot": [
+    2.0,
+    6.3,
+    3.15
+   ],
+   "paint": {
+    "ramp": "cream",
+    "tone": 3.8
+   }
+  }
+ ],
+ "brush": {
+  "off": true
+ }
+}
