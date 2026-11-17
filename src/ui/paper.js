@@ -1,4 +1,4 @@
-// The paper look for the HUD and panels (src/ui/paper.css): hand-pixelled paper stocks, torn and zig-zag edges,
+// The paper look for the HUD and panels (src/ui/paper.css): paper stocks inked from real paper scans (see SCAN below), torn and zig-zag edges,
 // masking tape and a square hanko stamp, painted once into data URLs and exposed as CSS custom properties.
 // Everything is drawn at 1 texel = 1 CSS px and shown at 2x with pixelated scaling.
 //   --pp-grain-{cream,note,receipt,kraft}   tileable 48x48 paper grain (background, 96px)
@@ -40,14 +40,29 @@ function shadeOf(base, r) {
   return base.map((c) => clamp(c * k));
 }
 
+// Real paper (phase 15): once public/img/paper/grain.png has loaded (tileable 48 x 48 lightness tiles cut from real CC0
+// paper scans by tools/bake-paper.py: fine stock | newsprint | kraft | crumpled), every stock's grain and torn edges are
+// re-inked from the scan instead of the random texels below: the paper's own fibres, tinted to the stock colour.
+const SCAN = { tiles: null, kind: 0, k: 1 };
+const SCAN_OF = (base) => (base === STOCKS.kraft || base[0] - base[2] > 70 ? [2, 1.1] : base === STOCKS.receipt ? [1, 0.55] : [0, 1]);
+/** One texel of paper at (x, y): from the real scan when it has loaded, else the hand-pixelled shade. */
+function texel(base, x, y, r) {
+  if (!SCAN.tiles) return shadeOf(base, r);
+  const L = SCAN.tiles[SCAN.kind * 48 * 48 + (((y % 48) + 48) % 48) * 48 + (((x % 48) + 48) % 48)];
+  const k = 1 + ((L - 128) / 128) * 0.55 * SCAN.k;
+  return base.map((c) => clamp(c * k));
+}
+function useScan(base) { const [kind, k] = SCAN_OF(base); SCAN.kind = kind; SCAN.k = k; }
+
 function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
 
 function grain(base, seed) {
   const W = 48, c = canvas(W, W), g = c.getContext('2d'), img = g.createImageData(W, W), r = rng(seed);
   const put = (x, y, col, a = 255) => { const i = (((y + W) % W) * W + ((x + W) % W)) * 4; img.data[i] = col[0]; img.data[i + 1] = col[1]; img.data[i + 2] = col[2]; img.data[i + 3] = a; };
-  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) put(x, y, shadeOf(base, r));
-  // short pressed fibres running mostly sideways
-  for (let i = 0; i < 26; i++) {
+  useScan(base);
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) put(x, y, texel(base, x, y, r));
+  // short pressed fibres running mostly sideways (the real scan has its own)
+  if (!SCAN.tiles) for (let i = 0; i < 26; i++) {
     const x0 = Math.floor(r() * W), y0 = Math.floor(r() * W), len = 2 + Math.floor(r() * 5), dy = r() < 0.3 ? 1 : 0;
     const col = base.map((c2) => clamp(c2 * (r() < 0.5 ? 0.94 : 1.03)));
     for (let k = 0; k < len; k++) put(x0 + k, y0 + (dy && k > len / 2 ? 1 : 0), col);
@@ -75,13 +90,14 @@ function edge(base, seed, { zig = false, S = 24, B = 6, dog = false } = {}) {
   }
   for (const [x, y] of [[0, 0], [S - 1, 0], [0, S - 1], [S - 1, S - 1], [1, 0], [0, 1], [S - 2, 0], [S - 1, 1], [0, S - 2], [1, S - 1], [S - 1, S - 2], [S - 2, S - 1]]) cut[y * S + x] = 1;
   const lo = base.map((v) => clamp(v * 0.82));
+  useScan(base);
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     const i = (y * S + x) * 4;
     if (cut[y * S + x]) { img.data[i + 3] = 0; continue; }
     // texels touching a cut get the darker edge shade (the torn fibres)
     const nearCut = (x > 0 && cut[y * S + x - 1]) || (x < S - 1 && cut[y * S + x + 1]) || (y > 0 && cut[(y - 1) * S + x]) || (y < S - 1 && cut[(y + 1) * S + x])
       || x === 0 || y === 0 || x === S - 1 || y === S - 1;
-    const col = nearCut && (x < B || y < B || x >= S - B || y >= S - B) ? lo : shadeOf(base, r);
+    const col = nearCut && (x < B || y < B || x >= S - B || y >= S - B) ? lo : texel(base, x, y, r);
     img.data[i] = col[0]; img.data[i + 1] = col[1]; img.data[i + 2] = col[2]; img.data[i + 3] = 255;
   }
   if (dog) dogEar(img, S, B, base);
@@ -166,8 +182,9 @@ const BLUE_LINE = [150, 172, 206];
 /** Graph paper (方眼紙): cream grain with a pale blue grid every 8 texels, a darker line every 4 squares. */
 function graph(seed) {
   const W = 32, s = sheet(W, W), r = rng(seed), base = [242, 236, 216];
+  useScan(base);
   for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
-    let col = shadeOf(base, r);
+    let col = texel(base, x, y, r);
     if (x % 8 === 0 || y % 8 === 0) col = (x % 32 === 0 || y % 32 === 0) ? [146, 172, 204] : (r() < 0.12 ? [196, 208, 222] : [184, 200, 220]);
     s.put(x, y, col);
   }
@@ -177,7 +194,8 @@ function graph(seed) {
 /** Brown paper bag: kraft with long crinkle lines (a lighter ridge over a darker fold) running at a slant. */
 function bag(seed) {
   const W = 48, s = sheet(W, W), r = rng(seed), base = [184, 140, 92];
-  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) s.put(x, y, shadeOf(base, r));
+  useScan(base);
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) s.put(x, y, texel(base, x, y, r));
   for (let i = 0; i < 7; i++) {
     let x = Math.floor(r() * W), y = Math.floor(r() * W);
     const len = 8 + Math.floor(r() * 14), dx = r() < 0.5 ? 1 : -1;
@@ -196,7 +214,7 @@ function airmail(seed) {
   const red = [200, 50, 44], blue = [47, 90, 154], lo = base.map((c) => clamp(c * 0.82));
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     const d = Math.min(x, y, S - 1 - x, S - 1 - y);
-    let col = shadeOf(base, r);
+    useScan(base); let col = texel(base, x, y, r);
     if (d === 0) col = lo;
     else if (d >= 1 && d <= 4) { const k = (x + y) % 12; col = k < 3 ? red : k < 6 ? col : k < 9 ? blue : col; }
     s.put(x, y, col);
@@ -210,6 +228,7 @@ function airmail(seed) {
  *  the other edges are clean guillotine cuts with a 1-texel darker line. */
 function spiralEdge(base, seed) {
   const S = 24, s = sheet(S, S), r = rng(seed), lo = base.map((c) => clamp(c * 0.82));
+  useScan(base);
   const cut = new Uint8Array(S * S);
   for (let x = 0; x < S; x++) {
     const m = (x - 6 + 12) % 12; // the middle slice (x 6..17) is one ring pitch
@@ -222,7 +241,7 @@ function spiralEdge(base, seed) {
     if (cut[y * S + x]) { s.put(x, y, base, 0); continue; }
     const near = (y > 0 && cut[(y - 1) * S + x]) || (x > 0 && cut[y * S + x - 1]) || (x < S - 1 && cut[y * S + x + 1]) || y === 0;
     const rim = x === 0 || x === S - 1 || y === S - 1;
-    s.put(x, y, (near && y < 6) || rim ? lo : shadeOf(base, r));
+    s.put(x, y, (near && y < 6) || rim ? lo : texel(base, x, y, r));
   }
   return s.out();
 }
@@ -386,6 +405,26 @@ let done = false;
 export function installPaper() {
   if (done) return;
   done = true;
+  paintStocks();
+  // the real paper scan: repaint the stocks from it once it has loaded
+  try {
+    const img = new Image();
+    img.onload = () => {
+      const c = canvas(img.width, img.height), g = c.getContext('2d', { willReadFrequently: true });
+      g.drawImage(img, 0, 0);
+      const d = g.getImageData(0, 0, img.width, img.height).data, n = img.width / 48;
+      // re-pack as [tile][y][x] lightness
+      const t = new Uint8Array(n * 48 * 48);
+      for (let k = 0; k < n; k++) for (let y = 0; y < 48; y++) for (let x = 0; x < 48; x++) t[k * 2304 + y * 48 + x] = d[(y * img.width + k * 48 + x) * 4];
+      SCAN.tiles = t;
+      paintStocks();
+    };
+    img.src = `${import.meta.env?.BASE_URL ?? '/'}img/paper/grain.png`;
+  } catch { /* no DOM images: keep the hand-pixelled paper */ }
+  document.body.classList.add('paper-ui');
+}
+
+function paintStocks() {
   const root = document.documentElement.style;
   const set = (k, url) => root.setProperty(k, `url(${url})`);
   let seed = 101;
@@ -423,5 +462,4 @@ export function installPaper() {
   const seals = () => { for (const [k, ch] of Object.entries(SEALS)) set(`--pp-hanko-${k}`, hankoChar(ch, k === 'mi' ? [47, 90, 154] : [200, 50, 44])); };
   seals();
   try { document.fonts?.load('16px "DotGothic16"', Object.values(SEALS).join('')).then(seals, () => {}); } catch { /* no font loading API */ }
-  document.body.classList.add('paper-ui');
 }

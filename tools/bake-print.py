@@ -11,7 +11,7 @@ Google Open Images photos (CC BY 2.0), credited in CREDITS.md; the names and mak
 import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image, ImageDraw
-from printkit import Panel, mixc, ROOT
+from printkit import Panel, mixc, ROOT, CACHE
 
 OUT = os.path.join(ROOT, 'public', 'img', 'print')
 PH = {
@@ -301,11 +301,22 @@ def poster(title, sub, k, f, ground, ink, accent, face='dela', size=26, vert=Fal
         P.text(sub, 'kakub', 9, 80, 224, ink, maxw=150)
         P.rect(0, 0, 160, 240, mixc(ground, 0, 0.3), line=1)
     return fn
+# Mikawa-ya's walls: half the posters are real 1930s railway travel posters (public domain, Wikimedia Commons), sun-faded
+# for decades in the shop window; the rest are our own, on the same real paper (tools/paperkit.py).
+import paperkit as PK
+COMMONS = os.path.join(CACHE, 'commons')
+def aged(fn, **age):
+    def f(P):
+        fn(P); P.post = lambda im: PK.age(im, **age).convert('RGB')
+    return f
+def vposter(name, f=(0.5, 0.5, 1.0)):
+    def fn(P): P.photo('file:' + os.path.join(COMMONS, name), 0, 0, P.w, P.h, f=f, sat=1.0, con=1.0)
+    return fn
 S['poster0'] = (160, 240, poster('ラムネ', '冷えてます 一本80円', 'soda', (0.5, 0.5, 1.3), 0x2a6ad8, WHITE, 0x123e8a))
 S['poster1'] = (160, 240, poster('アイス', 'つめたい アイスクリーム あります', 'icecream', (0.5, 0.5, 1.2), 0xfbf6ee, RED, WHITE))
-S['poster2'] = (160, 240, poster('超合金', 'ロボット プラモデル 入荷', 'robot', (0.5, 0.45, 1.1), 0x1a2a5a, 0xffd23f, 0x6a1a1a))
-S['poster3'] = (160, 240, poster('プロレス', '4月24日(土) 汐見市体育館 午後6時', 'wrestling', (0.5, 0.45, 1.1), 0x101010, 0xf0c838, 0x6a1a1a))
-S['poster4'] = (160, 240, poster('カレー', 'ほこほこ堂 レトルトカレー 中辛', 'curry', (0.5, 0.5, 1.2), 0x8a2a1a, WHITE, 0x4a1008))
+S['poster2'] = (160, 240, vposter('1930s_Japan_Travel_Poster_-_13.jpg'))
+S['poster3'] = (160, 240, vposter('1930s_Japan_Travel_Poster_-_03.jpg'))
+S['poster4'] = (160, 240, vposter('1930s_Japan_Travel_Poster_-_14.jpg'))
 S['poster5'] = (160, 240, poster('大怪獣', '汐見東映 4月29日より公開', 'dino', (0.5, 0.45, 1.1), 0x1a0a0a, 0xffd23f, 0x8a1a10, size=30))
 
 def calendar(P):
@@ -319,7 +330,10 @@ def calendar(P):
         P.text(str(d), 'barlow', 7, 13 + i * 17, 130 + j * 11, RED if i == 0 or d == 29 else 0x2a5aa8 if i == 6 else INK)
     P.text('三河屋 横丁かど TEL 0123-45-6789', 'biz', 5, w / 2, 186, INK)
     P.rect(w / 2 - 3, 0, 6, 5, 0x6a6a6a); P.rect(0, 0, w, h, 0xc8c0b0, line=0.8)
-S['calendar'] = (128, 192, calendar)
+S['calendar'] = (128, 192, aged(calendar, paper='Paper001', fade=0.1, crease=0.3, seed=7))
+for i, (fd, sd) in enumerate([(0.35, 1), (0.25, 2), (0.55, 3), (0.5, 4), (0.45, 5), (0.3, 6)]):
+    w_, h_, fn_ = S['poster%d' % i]
+    S['poster%d' % i] = (w_, h_, aged(fn_, paper='Paper001', fade=fd, crease=0.8, folds=(1, 1) if i % 2 else (0, 0), specks=0.4, yellow=0.6, seed=sd))
 
 def menu(P):
     w, h = 176, 240
@@ -377,7 +391,7 @@ def travel(src, title, sub, f=(0.5, 0.5, 1.0)):
         P.photo(src, 8, 8, w - 16, round(h * 0.66), f=f, sat=0.88, warm=0.03)
         P.text(title, 'mincho', 26 if len(title) <= 3 else 20, w / 2, round(h * 0.66) + 34, INK, maxw=w - 20)
         P.text(sub, 'serifb', 10, w / 2, h - 30, 0x8a2a2a, track=3)
-        P.rect(14, h - 14, w - 28, 3, RED); P.text('JNR', 'barlowx', 7, w - 18, h - 22, 0x1f4a9a, anchor='rm')
+        P.rect(14, h - 14, w - 28, 3, RED); P.text('上山鉄道', 'kakub', 7, w - 18, h - 22, 0x1f4a9a, anchor='rm')
         tape(P, w)
     return fn
 for i, (n, t, s, f) in enumerate([('fuji_morning', '富士山', 'SEE JAPAN', (0.5, 0.5, 1.0)), ('snow_monkeys', '湯けむり', 'ONSEN', (0.5, 0.5, 1.0)), ('sailboat', '夏の海', 'SUMMER', (0.5, 0.5, 1.0)), ('hydrangea', '旅に出よう', 'BY RAIL', (0.5, 0.5, 1.0)), ('shinkansen', 'ふるさと', 'BY RAIL', (0.5, 0.4, 1.0)), ('fuji_izu', '伊豆の春', 'SEE JAPAN', (0.45, 0.45, 1.2))]):

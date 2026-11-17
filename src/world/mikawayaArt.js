@@ -6,6 +6,7 @@
 //   tatamiTexture();  tvScreen() -> { tex, update(dt) }
 import * as THREE from 'three';
 import { Pix, FONT_JP } from '../gfx/pix.js';
+import { printRegions, printImage, whenPrint } from '../gfx/printAtlas.js';
 
 const AW = 512, AH = 256;
 const rnd = (s) => { let x = s * 9301 + 49297; return () => ((x = (x * 9301 + 49297) % 233280) / 233280); };
@@ -356,23 +357,31 @@ const CELLS = [
 const ALPHA = new Set(['flypaper', 'noren']); // painted with transparent gaps
 
 let ATLAS = null;
-/** The shop's shared atlas (cached). */
+/** The shop's shared atlas (cached). Phase 15: the printed matter is baked from real photographs and real vintage
+ * posters (tools/bake-print.py 'shop' -> public/img/print/shop.webp, keys 'mk:<cell>'); the baked sheet sits at the
+ * top of the atlas, and any cell not baked yet is still painted below it (packed at 1x) so every key resolves. */
 export function mikawayaAtlas() {
   if (ATLAS) return ATLAS;
-  const pix = new Pix(AW, AH, 5);
-  const rects = {};
-  let x = 0, y = 0, rowH = 0;
+  const R = printRegions('shop'), [BW, BH] = R._size;
+  const AW2 = Math.max(AW, BW);
+  const rects = {}, baked = new Set();
+  for (const [k] of CELLS) if (R['mk:' + k]) { rects[k] = R['mk:' + k]; baked.add(k); }
+  let x = 0, y = BH + 2, rowH = 0;
   for (const [k, w, h] of CELLS) {
-    if (x + w > AW) { x = 0; y += rowH + 1; rowH = 0; }
+    if (baked.has(k)) continue;
+    if (x + w > AW2) { x = 0; y += rowH + 1; rowH = 0; }
     rects[k] = [x, y, w, h];
     x += w + 1; rowH = Math.max(rowH, h);
   }
-  if (y + rowH > AH) console.warn('mikawaya atlas overflow', y + rowH);
+  const AH2 = Math.ceil((y + rowH + 1) / 4) * 4;
+  const pix = new Pix(AW2, AH2, 5);
   const tex = new THREE.CanvasTexture(pix.canvas);
   tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.anisotropy = 4;
   const paint = () => {
-    pix.ctx.clearRect(0, 0, AW, AH);
+    pix.ctx.clearRect(0, 0, AW2, AH2);
+    pix.ctx.fillStyle = '#e8e2d2'; pix.ctx.fillRect(0, 0, BW, BH);
     for (const [k, w, h] of CELLS) {
+      if (baked.has(k)) continue;
       const [rx, ry] = rects[k];
       const p = new Pix(w, h, rx * 31 + ry);
       if (!ALPHA.has(k)) p.fill(0xffffff);
@@ -380,17 +389,20 @@ export function mikawayaAtlas() {
       p.flush();
       pix.ctx.drawImage(p.canvas, rx, ry);
     }
+    const img = printImage('shop');
+    if (img) pix.ctx.drawImage(img, 0, 0);
     pix.pull();
     tex.needsUpdate = true;
   };
   paint();
+  whenPrint('shop').then((img) => { if (img) { pix.ctx.drawImage(img, 0, 0); pix.pull(); tex.needsUpdate = true; } });
   ATLAS = {
-    tex, rects, W: AW, H: AH,
+    tex, rects, W: AW2, H: AH2,
     has: (k) => !!rects[k],
     /** [u0, v0, u1, v1] of a cell (a 0.5 px inset keeps neighbours from bleeding in). */
-    uv(k, inset = 0.5) { const [rx, ry, w, h] = rects[k]; return [(rx + inset) / AW, 1 - (ry + h - inset) / AH, (rx + w - inset) / AW, 1 - (ry + inset) / AH]; },
+    uv(k, inset = 0.5) { const [rx, ry, w, h] = rects[k]; return [(rx + inset) / AW2, 1 - (ry + h - inset) / AH2, (rx + w - inset) / AW2, 1 - (ry + inset) / AH2]; },
     /** A tiny solid swatch inside a cell (box sides, tops). */
-    edge(k) { const [rx, ry, w, h] = rects[k]; return [(rx + 0.5) / AW, 1 - (ry + h - 0.5) / AH, (rx + 1.5) / AW, 1 - (ry + h - 1.5) / AH]; },
+    edge(k) { const [rx, ry, w, h] = rects[k]; return [(rx + 0.5) / AW2, 1 - (ry + h - 0.5) / AH2, (rx + 1.5) / AW2, 1 - (ry + h - 1.5) / AH2]; },
     repaint: paint,
   };
   return ATLAS;

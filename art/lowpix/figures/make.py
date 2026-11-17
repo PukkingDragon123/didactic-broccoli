@@ -117,7 +117,7 @@ def convert_all(spec_files):
             if not m.get("rest") or not objs:
                 continue
             V, Fc = read_obj(objs[0])
-            Rr = rest_matrix(V, Fc)
+            Rr = rest_matrix(V, Fc, span=float(m['rest']) if not isinstance(m['rest'], bool) else 50.0)
             P = V @ (_rot(m.get("pitch", 0), m.get("yaw", 0), m.get("roll", 0)) @ Rr).T
             lo, hi = P.min(0), P.max(0)
             at = m["at"]

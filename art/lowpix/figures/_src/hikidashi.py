@@ -26,7 +26,7 @@ def cup():
 
 def stapler():
     F = Fig(f"{S}/stapler", "Stapler", "Open wide, clack. It has eaten a thousand worksheets and wants more.")
-    F.model("m", STAPLER, w=40, d=16, yaw=-30, mat="gloss")
+    F.model("m", STAPLER, L=44, yaw=-30, mat="gloss")
     F.model_clip("model_m", "hop", 0.6, amp=1)
     return F
 
@@ -46,7 +46,7 @@ def pen():
 
 def golden():
     F = Fig(f"{S}/golden", "Grandfather's Pocket Watch", "Engraved gold, wound every morning at six, never once late. It is still ticking in the drawer.")
-    F.model("m", WATCH, w=34, d=34, h=12, yaw=-20, mat="metal", cut=0.06, rest=True)
+    F.model("m", WATCH, L=36, yaw=-20, mat="metal", cut=0.12, rest=True)
     F.model_clip("model_m", "turn", 2.4, amp=25)
     return F
 

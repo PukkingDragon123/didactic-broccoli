@@ -8,7 +8,7 @@
   {
    "name": "m",
    "src": "polyhaven:vintage_stapler",
-   "height": 10.491,
+   "height": 20.524,
    "pos": [
     0.0,
     0.0,
@@ -19,7 +19,7 @@
    "roll": 0,
    "tris": 5000,
    "mat": "gloss",
-   "key": "02d45bf2a49459"
+   "key": "49e5982afcf591"
   }
  ],
  "model_clip": {

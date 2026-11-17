@@ -416,7 +416,7 @@ export class Needs {
       mystery_speed: ['Huh. My legs feel weird. Fast weird.'], mystery_sleepy: ['That tasted like... a nap.'], mystery_jitters: ['WHAT WAS IN THAT.'],
       mystery_focus: ['Everything is very... clear.'], mystery_full: ['How is a drink this filling?'], mystery_drunk: ['Was that... alcohol?!'],
       mystery_stinky: ['...Why do I smell like a fish market?'], mystery_boost: ['WOW. I could run to Tokyo.'], mystery_drain: ['I feel drained. Literally.'], mystery_hiccups: ['*hic* Oh no. *hic*'],
-      random_speed: ['Cherry medicine. And now I\'m fast?'], random_sleepy: ['Mr. Peppo... why...'], random_jitters: ['Twenty-three flavours of WHOA.'], random_calm: ['Oddly soothing.'], random_focus: ['Strangely focused. Thanks, Mr. Peppo.'],
+      random_speed: ['Cherry medicine. And now I\'m fast?'], random_sleepy: ['Number 23... why...'], random_jitters: ['Twenty-three flavours of WHOA.'], random_calm: ['Oddly soothing.'], random_focus: ['Strangely focused. Thanks, Mr. Peppo.'],
     }[kind];
     if (!L) return;
     let text = pick(L);

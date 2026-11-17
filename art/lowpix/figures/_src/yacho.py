@@ -40,7 +40,7 @@ def fukuro():
 
 def kiji():
     F = Fig(f"{S}/kiji", "Green Pheasant", "The bird on the old banknotes: emerald breast, red face, a tail as long as itself.")
-    F.model("bird", PHEASANT, L=48, h=36, yaw=-70, smooth=2.0, rest=True)
+    F.model("bird", PHEASANT, L=48, h=36, yaw=-70, smooth=2.0, rest=12)
     return F
 
 

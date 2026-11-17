@@ -46,6 +46,21 @@ FONTS = {  # name: (file in the Google Fonts repo, variation name or None)
     'oswald': ('oswald/Oswald[wght].ttf', b'Bold'),
     'serif': ('playfairdisplay/PlayfairDisplay[wght].ttf', b'Black'),
     'serifb': ('playfairdisplay/PlayfairDisplay[wght].ttf', b'Bold'),
+    # phase 15 (graphic-design pass): period Japanese display faces and matching retro Latin, all OFL
+    'oldmincho': ('zenoldmincho/ZenOldMincho-Black.ttf', None),
+    'oldminchob': ('zenoldmincho/ZenOldMincho-Bold.ttf', None),
+    'shippori': ('shipporimincho/ShipporiMincho-ExtraBold.ttf', None),
+    'reggae': ('reggaeone/ReggaeOne-Regular.ttf', None),
+    'decol': ('kaiseidecol/KaiseiDecol-Bold.ttf', None),
+    'yusei': ('yuseimagic/YuseiMagic-Regular.ttf', None),
+    'dot': ('dotgothic16/DotGothic16-Regular.ttf', None),
+    'antiqueb': ('zenkakugothicantique/ZenKakuGothicAntique-Black.ttf', None),
+    'mochiy': ('mochiypopone/MochiyPopOne-Regular.ttf', None),
+    'train': ('trainone/TrainOne-Regular.ttf', None),
+    'abril': ('abrilfatface/AbrilFatface-Regular.ttf', None),
+    'alfa': ('alfaslabone/AlfaSlabOne-Regular.ttf', None),
+    'bebas': ('bebasneue/BebasNeue-Regular.ttf', None),
+    'limelight': ('limelight/Limelight-Regular.ttf', None),
 }
 
 
@@ -86,6 +101,8 @@ def source(ref):
             z = zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(urllib.request.Request('https://ambientcg.com/get?file=%s_1K-JPG.zip' % rest, headers=UA), timeout=120).read()))
             os.makedirs(os.path.dirname(p), exist_ok=True)
             with open(p, 'wb') as f: f.write(z.read(next(n for n in z.namelist() if n.endswith('_Color.jpg'))))
+    elif kind == 'file':  # an absolute path (a cached Commons download)
+        p = rest
     elif kind == 'local':  # a photo already shipped with the game (public/img/photos/..., credited there)
         p = os.path.join(ROOT, 'public', 'img', 'photos', rest)
     else:
@@ -522,7 +539,7 @@ Panel.prect = _prect
 #   kana / kanji (DotGothic16):  >= 40 px -> 48, >= 22 -> 32, >= 12.5 -> 16, smaller -> grey small print (16 reduced)
 #   Latin: serif / display faces -> Alagard (16 / 32 / 48); the rest -> the 5 x 7 font at a whole scale (7, 14, 21... px)
 # A line that would overflow maxw steps down a size, then (last resort) drops whole columns.
-PIXEL = True
+PIXEL = os.environ.get('PRINT_PIXEL') == '1'  # off: printed art may use real OFL faces (owner, phase 15)
 HEAVY = {'dela', 'kaku', 'mplus', 'maru', 'rock', 'archivo', 'anton', 'barlowx', 'tokumin', 'mincho'}
 SERIF = {'serif', 'serifb', 'tokumin', 'antique', 'mincho', 'brush'}
 _orig_text, _orig_lines, _orig_info = Panel.text, Panel.lines, Panel.info
