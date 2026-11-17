@@ -1,0 +1,44 @@
+{
+ "id": "lantern_wood",
+ "src": "polyhaven:wooden_lantern_01",
+ "credit": {
+  "title": "Wooden Lantern 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_lantern_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 352,
+ "size": [
+  0.222,
+  0.53,
+  0.235
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#321410",
+   "#401e16",
+   "#4e2a1d",
+   "#5b3824",
+   "#67462c",
+   "#87643e",
+   "#a68451",
+   "#b6a173",
+   "#c4ba96"
+  ],
+  "m1": [
+   "#4e2821",
+   "#633a2d",
+   "#784e3a",
+   "#8b6449",
+   "#9e7a58",
+   "#aa9170",
+   "#b5a68a",
+   "#c1b9a2",
+   "#cdcaba"
+  ]
+ },
+ "warnings": []
+}

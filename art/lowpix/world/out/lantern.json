@@ -1,0 +1,33 @@
+{
+ "id": "lantern",
+ "src": "polyhaven:Lantern_01",
+ "credit": {
+  "title": "Lantern 01",
+  "author": "Rajil Jose Macatangay",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Lantern_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2998,
+ "tex": 192,
+ "size": [
+  0.123,
+  0.294,
+  0.097
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#261612",
+   "#301f19",
+   "#3a2a20",
+   "#433428",
+   "#4c3f30",
+   "#6a5d47",
+   "#867b60",
+   "#9d967e",
+   "#b1af9f"
+  ]
+ },
+ "warnings": []
+}
