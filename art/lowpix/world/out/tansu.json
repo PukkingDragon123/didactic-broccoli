@@ -1,0 +1,45 @@
+{
+ "id": "tansu",
+ "src": "sketchfab:48bbd9962cc04725907c14a1a98fb812",
+ "credit": {
+  "title": "Tansu",
+  "author": "Museo de Zaragoza",
+  "authorUrl": "https://sketchfab.com/Museo_De_Zaragoza",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 1024,
+ "size": [
+  1.102,
+  1,
+  0.721
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#4c2802",
+   "#623c04",
+   "#775307",
+   "#8b6d0b",
+   "#9f890f",
+   "#c6ba16",
+   "#e3e328",
+   "#e5e554",
+   "#e9e97e"
+  ],
+  "m1": [
+   "#0b090a",
+   "#0e0c0c",
+   "#110f0f",
+   "#141213",
+   "#161616",
+   "#363636",
+   "#565656",
+   "#767676",
+   "#969696"
+  ]
+ },
+ "warnings": []
+}

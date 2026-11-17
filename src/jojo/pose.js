@@ -22,12 +22,12 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const _v = new THREE.Vector3();
 
 /** The cinematic of your character striking `name`. opts: { shot: 'low' | 'hero', kana: 'go' | 'do' | null, hold }. */
-export function* poseScene(c, g, name, { kana = 'go', hold = 1.9, side = null, swing = true } = {}) {
+export function* poseScene(c, g, name, { kana = 'go', hold = 1.9, side = null, swing = true, tick = true, keep = false } = {}) {
   const P = g.player, S = standIn(g);
   if (!S) return;
   const feet = V(P.pos.x, 0, P.pos.z), yaw = P.yaw + Math.PI;
-  S.show(feet, yaw);
-  c.every((dt) => S.update(dt, c.game.camera.position));
+  if (!keep || !S.h.root.visible) S.show(feet, yaw);
+  if (tick) c.every((dt) => S.update(dt, c.game.camera.position));
   const sd = side ?? (Math.random() < 0.5 ? 1 : -1);
   const shot = freeShot(g, feet, yaw, { angles: [0.38 * sd, -0.38 * sd, 0.75 * sd, -0.75 * sd, 0, 1.2 * sd, -1.2 * sd], height: 0.78, lookY: 1.28 * (S.h.root.scale.y || 1) });
   // out of your eyes, over the shoulder and round to the front (a short eased arc), then a low tilted angle
@@ -35,7 +35,7 @@ export function* poseScene(c, g, name, { kana = 'go', hold = 1.9, side = null, s
     const mid = V(feet.x + Math.sin(yaw + 1.9 * sd) * 1.1, 1.45, feet.z + Math.cos(yaw + 1.9 * sd) * 1.1);
     yield c.cam({ pos: mid, look: V(feet.x, 1.3, feet.z), dur: 0.42, fov: 56 });
   }
-  S.h.gesture(name);
+  S.h.gesture(name, { hold: true });
   sting('pose');
   yield c.all(c.cam({ pos: shot.pos, look: shot.look, dur: 0.4, fov: 44 }), rollTo(c, -0.13 * sd, 0.4));
   if (kana) g.jojo?.kana.spawn({ kind: kana, at: S.h, side: -sd, n: 3, dur: hold + 0.8 });

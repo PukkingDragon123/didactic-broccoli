@@ -1,0 +1,33 @@
+{
+ "id": "tea_set",
+ "src": "polyhaven:tea_set_01",
+ "credit": {
+  "title": "Tea Set 01",
+  "author": "James Ray Cock, Rico Cilliers, Jurita Burger",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/tea_set_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2826,
+ "tex": 320,
+ "size": [
+  0.91,
+  0.165,
+  0.481
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#76493d",
+   "#966753",
+   "#ad8974",
+   "#bfaa99",
+   "#d2c8bc",
+   "#d7d1c7",
+   "#dcd9d1",
+   "#e2e0db",
+   "#e8e7e4"
+  ]
+ },
+ "warnings": []
+}

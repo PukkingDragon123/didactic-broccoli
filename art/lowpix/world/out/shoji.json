@@ -1,0 +1,34 @@
+{
+ "id": "shoji",
+ "src": "sketchfab:d3dec406af444af7b5025134005a9696",
+ "credit": {
+  "title": "Shoji Screen",
+  "author": "Geraldo Pratama Wahyu Teddy",
+  "authorUrl": "https://sketchfab.com/juyo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/shoji-screen-d3dec406af444af7b5025134005a9696",
+  "site": "Sketchfab"
+ },
+ "tris": 1356,
+ "tex": 1024,
+ "size": [
+  0.562,
+  1.8,
+  2.266
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

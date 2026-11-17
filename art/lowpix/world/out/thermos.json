@@ -1,0 +1,33 @@
+{
+ "id": "thermos",
+ "src": "polyhaven:plastic_thermos",
+ "credit": {
+  "title": "Plastic Thermos",
+  "author": "PierreB3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_thermos",
+  "site": "Poly Haven"
+ },
+ "tris": 2966,
+ "tex": 128,
+ "size": [
+  0.141,
+  0.32,
+  0.109
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2e2313",
+   "#3b301a",
+   "#473e21",
+   "#534d29",
+   "#5e5b32",
+   "#7c7c46",
+   "#98985c",
+   "#abab7c",
+   "#bcbc9d"
+  ]
+ },
+ "warnings": []
+}
