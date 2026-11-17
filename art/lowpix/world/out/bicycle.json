@@ -1,0 +1,34 @@
+{
+ "id": "bicycle",
+ "src": "sketchfab:25aa85eeba944baea33ce5cde985ca49",
+ "credit": {
+  "title": "Bicycle",
+  "author": "Lyskilde",
+  "authorUrl": "https://sketchfab.com/longtail",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bicycle-25aa85eeba944baea33ce5cde985ca49",
+  "site": "Sketchfab"
+ },
+ "tris": 4921,
+ "tex": 528,
+ "size": [
+  1.47,
+  1.05,
+  0.769
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1d2d31",
+   "#273b3e",
+   "#334a4b",
+   "#3e5756",
+   "#4b625f",
+   "#627974",
+   "#7c8e88",
+   "#98a09d",
+   "#b2b4b3"
+  ]
+ },
+ "warnings": []
+}

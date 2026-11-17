@@ -323,6 +323,61 @@ const seat = {
   use(p, held, g) { g.decor.sit(p); },
 };
 
+// ------------------------------------------------------------------ the lowpix furniture (real models, src/build/catalogue.js)
+/** Lamps: click to switch. On, the shade and bulb glow warm (the piece's own material copies get an emissive tint from
+ *  their texture, so the pixels light up, never a white halo); a lit lamp counts for more after dark. */
+const lamp = {
+  init(p, g) { p.data.st.on ??= true; lamp.show(p, g); p.root.traverse((o) => { if (o.name?.startsWith('slot:')) o.addEventListener('assetloaded', () => lamp.show(p, g)); }); },
+  show(p) {
+    const on = !!p.data.st.on;
+    p.root.traverse((o) => {
+      if (!o.isMesh || !o.material || o.material.visible === false) return;
+      if (!o.userData.lampMat) { o.userData.lampMat = o.material.clone(); o.material = o.userData.lampMat; }
+      const m = o.material;
+      m.emissive?.setRGB(1, 0.72, 0.42);
+      m.emissiveMap = m.map || null;
+      m.emissiveIntensity = on ? (p.def.glow ?? 0.32) : 0;
+      m.needsUpdate = true;
+    });
+  },
+  hint: (p) => ({ key: 'LMB', text: p.data.st.on ? `Switch the ${p.def.short || 'lamp'} off` : `Switch the ${p.def.short || 'lamp'} on`, sub: 'A warm light after dark' }),
+  use(p, held, g) { p.data.st.on = !p.data.st.on; audio.play('switchClick', { pos: p.root.position, vol: 0.7 }); lamp.show(p, g); },
+  quality: (p, g) => (p.data.st.on ? p.def.quality * (0.6 + 0.4 * (1 - (g.clock?.daylight?.() ?? 1))) : p.def.quality * 0.4),
+};
+/** Decor: look at it closely (a line about the piece), give it a nudge. */
+const decor = {
+  hint: (p) => ({ key: 'LMB', text: p.def.name, sub: 'Have a look' }),
+  use(p, held, g) {
+    audio.play(p.def.sound || 'place', { pos: p.root.position, vol: 0.5 });
+    if (p.def.look) g.news(p.def.name, p.def.look, 4200);
+    wobble(g, p.root, 0.03, 0.35);
+  },
+};
+/** Tables and desks: a top for small things (def.top), and a wipe now and then keeps the shop looking cared for. */
+const table = {
+  hint: (p, held, g) => ({ key: 'LMB', text: g.time - (p.wiped ?? -999) < 120 ? p.def.name : `Wipe the ${p.def.short || 'table'}`, sub: g.time - (p.wiped ?? -999) < 120 ? 'Clean and shiny' : 'Small things can go on top' }),
+  use(p, held, g) {
+    if (g.time - (p.wiped ?? -999) < 120) { audio.play('place', { pos: p.root.position, vol: 0.4 }); return; }
+    p.wiped = g.time;
+    audio.play('paper', { pos: p.root.position, vol: 0.6 });
+    g.effects.puff({ pos: at(p, 0, p.box.max.y, 0), count: 5, colors: [0xd8d0c0, 0xb8b0a0], size: 0.03, up: 0.1 });
+  },
+  quality: (p, g) => p.def.quality * (g.time - (p.wiped ?? -999) < 600 ? 1 : 0.8),
+};
+/** A kettle, a thermos, a rice cooker: a short break (some energy back, and calm for a while). */
+const tea = {
+  hint: (p, held, g) => ({ key: 'LMB', text: g.time - (p.used ?? -999) < 90 ? (p.def.busy || 'Still warm') : (p.def.verb || 'Make tea'), sub: 'A little energy back' }),
+  use(p, held, g) {
+    if (g.time - (p.used ?? -999) < 90) { audio.play('place', { pos: p.root.position, vol: 0.4 }); return; }
+    p.used = g.time;
+    audio.play('switchClick', { pos: p.root.position, vol: 0.6 });
+    g.needs?.add?.(8, p.def.verb || 'tea');
+    g.needs?.buff?.('calm', 20, 0.6);
+    g.effects.puff({ pos: at(p, 0, p.box.max.y + 0.02, 0), count: 4, colors: [0xe8e4dc, 0xcfcac0], size: 0.025, up: 0.25 });
+    if (p.def.done) g.news(p.def.name, p.def.done, 3600);
+  },
+};
+
 const catbed = {
   hint: () => ({ key: 'LMB', text: 'Fluff the cushion', sub: "Mikan's favourite spot" }),
   use(p, held, g) {
@@ -424,5 +479,5 @@ const tv = {
   quality: (p) => (p.data.st.on ? p.def.quality : 0.06),
 };
 
-export const FEATURES = { piggy, register, tipjar, gumball, bell, poster, clock, calendar, rug, plant, neon, seat, catbed, radio: radioF, fan, tv, storage: STORAGE, vacuum: VACUUM };
+export const FEATURES = { piggy, register, tipjar, gumball, bell, poster, clock, calendar, rug, plant, neon, seat, catbed, radio: radioF, fan, tv, storage: STORAGE, vacuum: VACUUM, lamp, decor, table, tea };
 void setFlaps;

@@ -1,0 +1,44 @@
+{
+ "id": "plant_pot1",
+ "src": "polyhaven:potted_plant_01",
+ "credit": {
+  "title": "Potted Plant 01",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/potted_plant_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 512,
+ "size": [
+  0.58,
+  1.351,
+  0.606
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#32251d",
+   "#403327",
+   "#4d4133",
+   "#59503e",
+   "#655e4b",
+   "#7c7762",
+   "#918e7b",
+   "#a3a297",
+   "#b6b6b2"
+  ],
+  "m1": [
+   "#521a19",
+   "#6a2a22",
+   "#803d2d",
+   "#955238",
+   "#a96945",
+   "#b7855c",
+   "#c09e79",
+   "#c9b595",
+   "#d4c9af"
+  ]
+ },
+ "warnings": []
+}

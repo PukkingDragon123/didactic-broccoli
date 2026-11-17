@@ -1,0 +1,56 @@
+{
+ "id": "chochin",
+ "src": "sketchfab:6fd5dcdb4702409a8be04e5f0fb2c316",
+ "credit": {
+  "title": "Japanese Lamp / Chōchin",
+  "author": "i bull your wife",
+  "authorUrl": "https://sketchfab.com/ugly_kid",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316",
+  "site": "Sketchfab"
+ },
+ "tris": 1718,
+ "tex": 304,
+ "size": [
+  0.258,
+  0.55,
+  0.253
+ ],
+ "colours": 19,
+ "palette": {
+  "m0": [
+   "#493b30",
+   "#5d4f41",
+   "#706453",
+   "#827966",
+   "#918c7c",
+   "#9d9b91",
+   "#aaaaa5",
+   "#b8b8b8",
+   "#c9c9c9"
+  ],
+  "m1": [
+   "#431623",
+   "#561e2a",
+   "#68272f",
+   "#793134",
+   "#893f3c",
+   "#a3574d",
+   "#b37768",
+   "#bf9787",
+   "#ccb4a5"
+  ],
+  "m2": [
+   "#4a282c",
+   "#5f3637",
+   "#724745",
+   "#855c56",
+   "#967167",
+   "#a1897f",
+   "#ae9f96",
+   "#bbb3ac",
+   "#c9c6c1"
+  ]
+ },
+ "warnings": []
+}

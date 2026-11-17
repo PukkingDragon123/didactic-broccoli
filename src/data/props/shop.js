@@ -203,6 +203,7 @@ const shop = {
   // ------------------------------------------------------------- cash register
   cash_register: {
     name: 'Shōwa Cash Register', jp: '金銭登録機', voxel: 0.01,
+    asset: { id: 'lowpix/world/cash_register' }, // Poly Haven CC0, lowpix pixel-art conversion (art/lowpix/world)
     build(v) {
       const cream = (x, y, z) => gloss(shade(0xece2c6, 0.97 + hash(x >> 1, y >> 1, z >> 1, 1) * 0.04));
       const brass = gloss(0xcfa446), brassD = gloss(0xa07a36), brassL = gloss(0xeccb7e);

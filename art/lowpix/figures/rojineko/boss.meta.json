@@ -1,0 +1,12 @@
+{
+ "mats": {
+  "drum": "gloss",
+  "drum_lid": "gloss",
+  "drum_bung": "metal"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "key": "rojineko/boss"
+}

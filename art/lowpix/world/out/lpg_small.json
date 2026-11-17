@@ -1,0 +1,33 @@
+{
+ "id": "lpg_small",
+ "src": "polyhaven:small_lpg_tank",
+ "credit": {
+  "title": "Small Lpg Tank",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/small_lpg_tank",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 288,
+ "size": [
+  0.411,
+  0.642,
+  0.411
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2b0f12",
+   "#371415",
+   "#431d1a",
+   "#4e2721",
+   "#583328",
+   "#794f3b",
+   "#996d50",
+   "#af8d6f",
+   "#bfac93"
+  ]
+ },
+ "warnings": []
+}

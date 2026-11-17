@@ -1,0 +1,56 @@
+{
+ "id": "bicycle_old",
+ "src": "sketchfab:17ab00cb733443a2b552a2b620a68087",
+ "credit": {
+  "title": "Old Bicycle",
+  "author": "Tidominer",
+  "authorUrl": "https://sketchfab.com/tidominer",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-bicycle-17ab00cb733443a2b552a2b620a68087",
+  "site": "Sketchfab"
+ },
+ "tris": 4867,
+ "tex": 672,
+ "size": [
+  1.918,
+  1.05,
+  0.455
+ ],
+ "colours": 19,
+ "palette": {
+  "m0": [
+   "#130f10",
+   "#181415",
+   "#1c191a",
+   "#211f1f",
+   "#252525",
+   "#434343",
+   "#616161",
+   "#7f7f7f",
+   "#9d9d9d"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m2": [
+   "#301b11",
+   "#3d2717",
+   "#4a341e",
+   "#564226",
+   "#62512e",
+   "#817241",
+   "#9f9355",
+   "#b1ac76",
+   "#c1c199"
+  ]
+ },
+ "warnings": []
+}

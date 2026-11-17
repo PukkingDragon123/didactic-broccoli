@@ -1,0 +1,33 @@
+{
+ "id": "crate_plastic2",
+ "src": "polyhaven:plastic_crate_02",
+ "credit": {
+  "title": "Plastic Crate 02",
+  "author": "Fabi_G",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_crate_02",
+  "site": "Poly Haven"
+ },
+ "tris": 2930,
+ "tex": 384,
+ "size": [
+  0.506,
+  0.254,
+  0.406
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3b0300",
+   "#4e0b00",
+   "#601500",
+   "#722300",
+   "#843300",
+   "#b55703",
+   "#e58207",
+   "#f5ac2b",
+   "#f5cb5f"
+  ]
+ },
+ "warnings": []
+}

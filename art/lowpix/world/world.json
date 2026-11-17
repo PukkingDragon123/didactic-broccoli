@@ -35,11 +35,6 @@
    "h": 0.85
   },
   {
-   "id": "fan_desk",
-   "src": "sketchfab:612736f7659d451e811c967c8fea370b",
-   "h": 0.42
-  },
-  {
    "id": "extinguisher",
    "src": "polyhaven:korean_fire_extinguisher_01",
    "ppm": 200
@@ -100,7 +95,8 @@
   {
    "id": "clock_wall",
    "src": "polyhaven:wall_clock",
-   "ppm": 240
+   "ppm": 240,
+   "yaw": 180
   },
   {
    "id": "clock_alarm",
@@ -144,7 +140,8 @@
   },
   {
    "id": "bin_metal",
-   "src": "polyhaven:metal_trash_can"
+   "src": "polyhaven:metal_trash_can",
+   "keep": "^metal_trash_can(_lid|_handle_left|_handle_right)?$"
   },
   {
    "id": "shelf_steel",
@@ -193,7 +190,8 @@
   },
   {
    "id": "ac_unit",
-   "src": "polyhaven:exterior_aircon_unit"
+   "src": "polyhaven:exterior_aircon_unit",
+   "keep": "rusted"
   },
   {
    "id": "utility_box",
@@ -207,19 +205,13 @@
    "id": "gas_cylinder",
    "src": "sketchfab:8faeab51bf604cd092e827dc1eb88ff4",
    "h": 1.25,
-   "ppm": 140
+   "ppm": 140,
+   "rotx": -90
   },
   {
    "id": "lpg_small",
    "src": "polyhaven:small_lpg_tank",
    "ppm": 180
-  },
-  {
-   "id": "bicycle",
-   "src": "sketchfab:25aa85eeba944baea33ce5cde985ca49",
-   "h": 1.05,
-   "tris": 5000,
-   "ppm": 150
   },
   {
    "id": "bicycle_old",
@@ -232,13 +224,6 @@
    "id": "scooter",
    "src": "sketchfab:f307b287177a40a2ba33e1a76ecee7df",
    "h": 1.05,
-   "tris": 5000,
-   "ppm": 150
-  },
-  {
-   "id": "scooter_rabbit",
-   "src": "sketchfab:45ba211f5f1c469590a28946c605962a",
-   "h": 1.0,
    "tris": 5000,
    "ppm": 150
   },
@@ -256,18 +241,6 @@
    "ppm": 160
   },
   {
-   "id": "mailbox_house",
-   "src": "sketchfab:a5667f86065f45a4a5721bc4429f6d39",
-   "h": 0.4,
-   "ppm": 200
-  },
-  {
-   "id": "public_phone",
-   "src": "sketchfab:ef8e005698264e48a7ba28e5738e6d7f",
-   "h": 0.45,
-   "ppm": 220
-  },
-  {
    "id": "cone",
    "src": "sketchfab:1cbffb4169684e5a84ba186882bd55d7",
    "h": 0.7,
@@ -277,11 +250,6 @@
    "id": "street_lamp_jp",
    "src": "sketchfab:a6e3624a679a44efa17bbfc9abec35ce",
    "h": 4.6,
-   "ppm": 80
-  },
-  {
-   "id": "street_lamp",
-   "src": "polyhaven:street_lamp_01",
    "ppm": 80
   },
   {
@@ -637,6 +605,24 @@
    "id": "screen_folding",
    "src": "polyhaven:chinese_screen_panels",
    "ppm": 110
+  },
+  {
+   "id": "extinguisher_jp",
+   "src": "sketchfab:68068b0dcc9c45388f958aef24e26c92",
+   "h": 0.5,
+   "ppm": 200
+  },
+  {
+   "id": "bench_station",
+   "src": "sketchfab:68d9b8434ee6407da1e6fda1166d3ad2",
+   "h": 0.8,
+   "ppm": 140
+  },
+  {
+   "id": "sake_barrels",
+   "src": "sketchfab:ca8a0493a8bb429ca4ede0f297d5cdfe",
+   "h": 1.1,
+   "ppm": 130
   }
  ]
 }

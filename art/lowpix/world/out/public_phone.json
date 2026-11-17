@@ -1,0 +1,89 @@
+{
+ "id": "public_phone",
+ "src": "sketchfab:ef8e005698264e48a7ba28e5738e6d7f",
+ "credit": {
+  "title": "Japanese public phone",
+  "author": "javileria",
+  "authorUrl": "https://sketchfab.com/javileria",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-public-phone-ef8e005698264e48a7ba28e5738e6d7f",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 256,
+ "size": [
+  0.162,
+  0.45,
+  0.132
+ ],
+ "colours": 45,
+ "palette": {
+  "m0": [
+   "#656149",
+   "#817f63",
+   "#979881",
+   "#acada1",
+   "#c3c4bf",
+   "#cacbc9",
+   "#d2d2d2",
+   "#dbdbdb",
+   "#e3e3e3"
+  ],
+  "m1": [
+   "#02542f",
+   "#046c34",
+   "#078436",
+   "#0a9a35",
+   "#0fb031",
+   "#16d52e",
+   "#31e639",
+   "#60e85b",
+   "#90eb83"
+  ],
+  "m2": [
+   "#0d1523",
+   "#121d2d",
+   "#172737",
+   "#1d313f",
+   "#233c48",
+   "#385e6b",
+   "#4e828c",
+   "#6aa2a7",
+   "#90b9b8"
+  ],
+  "m3": [
+   "#712201",
+   "#913903",
+   "#b15507",
+   "#cf750b",
+   "#ec9a11",
+   "#edb734",
+   "#edce57",
+   "#eedf79",
+   "#f0ed9a"
+  ],
+  "m4": [
+   "#144a2b",
+   "#1c5f32",
+   "#257338",
+   "#2e863d",
+   "#399841",
+   "#48b248",
+   "#6ebd67",
+   "#91c786",
+   "#b0d2a5"
+  ],
+  "m5": [
+   "#2a1517",
+   "#351d1d",
+   "#402725",
+   "#4a322e",
+   "#543e37",
+   "#70594e",
+   "#8a7567",
+   "#9f9285",
+   "#b3ada4"
+  ]
+ },
+ "warnings": []
+}

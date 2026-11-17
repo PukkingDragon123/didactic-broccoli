@@ -1,0 +1,34 @@
+{
+ "id": "kettle",
+ "src": "sketchfab:0eb111108b4f40d9881a29d7a073c6b4",
+ "credit": {
+  "title": "Old Tea Kettle",
+  "author": "mickeymoose1204",
+  "authorUrl": "https://sketchfab.com/mickeymoose1204",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 256,
+ "size": [
+  0.273,
+  0.22,
+  0.195
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#322b21",
+   "#40392d",
+   "#4d483a",
+   "#5a5647",
+   "#656355",
+   "#7a796d",
+   "#8d8d86",
+   "#a0a0a0",
+   "#b6b6b6"
+  ]
+ },
+ "warnings": []
+}

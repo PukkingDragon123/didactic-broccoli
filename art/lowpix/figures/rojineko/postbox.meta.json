@@ -1,0 +1,14 @@
+{
+ "mats": {
+  "pb_body": "gloss",
+  "pb_cap": "gloss",
+  "pb_dome": "gloss",
+  "pb_slot": "metal",
+  "pb_mark": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "key": "rojineko/postbox"
+}

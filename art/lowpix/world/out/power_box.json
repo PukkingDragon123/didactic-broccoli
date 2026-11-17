@@ -1,0 +1,66 @@
+{
+ "id": "power_box",
+ "src": "polyhaven:power_box_01",
+ "credit": {
+  "title": "Power Box 01",
+  "author": "Rico Cilliers, Yann Kervran",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/power_box_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2990,
+ "tex": 480,
+ "size": [
+  0.459,
+  0.503,
+  0.399
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#47373c",
+   "#5a4b4f",
+   "#6c5f61",
+   "#7c7576",
+   "#8c8c8c",
+   "#9c9c9c",
+   "#acacac",
+   "#bbbbbb",
+   "#cbcbcb"
+  ],
+  "m1": [
+   "#6a0023",
+   "#890224",
+   "#a60520",
+   "#c30918",
+   "#de0e0e",
+   "#ed3524",
+   "#ed654a",
+   "#ee8f6f",
+   "#f0b292"
+  ],
+  "m2": [
+   "#221a38",
+   "#2c2448",
+   "#342e57",
+   "#3c3965",
+   "#454672",
+   "#595f8b",
+   "#727b9e",
+   "#9098ae",
+   "#acb3bf"
+  ],
+  "m3": [
+   "#7b0b31",
+   "#9f1135",
+   "#c01835",
+   "#df2334",
+   "#e14a4b",
+   "#e26f66",
+   "#e59080",
+   "#e8ad9a",
+   "#ecc6b3"
+  ]
+ },
+ "warnings": []
+}

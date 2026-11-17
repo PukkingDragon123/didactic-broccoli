@@ -1,0 +1,34 @@
+{
+ "id": "trash_jp",
+ "src": "sketchfab:477e8292037043508fcfcaed32805ca8",
+ "credit": {
+  "title": "Japanese Trash Can",
+  "author": "ditovirnantio",
+  "authorUrl": "https://sketchfab.com/ditovirnantio",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-trash-can-477e8292037043508fcfcaed32805ca8",
+  "site": "Sketchfab"
+ },
+ "tris": 647,
+ "tex": 320,
+ "size": [
+  0.327,
+  0.9,
+  0.395
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#262330",
+   "#332f3d",
+   "#413d49",
+   "#4f4a54",
+   "#5c595f",
+   "#727273",
+   "#898989",
+   "#9f9f9f",
+   "#b6b6b6"
+  ]
+ },
+ "warnings": []
+}

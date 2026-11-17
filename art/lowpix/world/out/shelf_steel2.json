@@ -1,0 +1,44 @@
+{
+ "id": "shelf_steel2",
+ "src": "polyhaven:steel_frame_shelves_02",
+ "credit": {
+  "title": "Steel Frame Shelves 02",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/steel_frame_shelves_02",
+  "site": "Poly Haven"
+ },
+ "tris": 2960,
+ "tex": 512,
+ "size": [
+  0.593,
+  2.142,
+  0.502
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#1c1618",
+   "#241e1f",
+   "#2b2627",
+   "#322f2f",
+   "#383838",
+   "#535353",
+   "#6f6f6f",
+   "#8a8a8a",
+   "#a5a5a5"
+  ],
+  "m1": [
+   "#712716",
+   "#913e20",
+   "#af592a",
+   "#cb7838",
+   "#d0985c",
+   "#d4ae75",
+   "#d8c18d",
+   "#ded1a5",
+   "#e4debb"
+  ]
+ },
+ "warnings": []
+}

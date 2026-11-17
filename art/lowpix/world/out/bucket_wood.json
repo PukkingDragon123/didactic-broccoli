@@ -1,0 +1,33 @@
+{
+ "id": "bucket_wood",
+ "src": "polyhaven:wooden_bucket_01",
+ "credit": {
+  "title": "Wooden Bucket 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_bucket_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2984,
+ "tex": 304,
+ "size": [
+  0.367,
+  0.55,
+  0.342
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2f140f",
+   "#3d1f15",
+   "#492a1b",
+   "#553722",
+   "#61452a",
+   "#82643c",
+   "#a18550",
+   "#b3a271",
+   "#c3ba95"
+  ]
+ },
+ "warnings": []
+}

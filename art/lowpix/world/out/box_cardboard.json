@@ -1,0 +1,44 @@
+{
+ "id": "box_cardboard",
+ "src": "polyhaven:cardboard_box_01",
+ "credit": {
+  "title": "Cardboard Box 01",
+  "author": "Rahul Chaudhary",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/cardboard_box_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 256,
+ "size": [
+  0.394,
+  0.342,
+  0.522
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#513223",
+   "#684730",
+   "#7d5d3e",
+   "#92744d",
+   "#a48c5e",
+   "#ad9f77",
+   "#b8b190",
+   "#c3c0a7",
+   "#cfcfbd"
+  ],
+  "m1": [
+   "#301c16",
+   "#3d281f",
+   "#4a3527",
+   "#564231",
+   "#61503b",
+   "#7c6c50",
+   "#968967",
+   "#a7a187",
+   "#b9b7a6"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,33 @@
+{
+ "id": "planter_clay",
+ "src": "polyhaven:planter_pot_clay",
+ "credit": {
+  "title": "Planter Pot Clay",
+  "author": "Amal Kumar",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/planter_pot_clay",
+  "site": "Poly Haven"
+ },
+ "tris": 2998,
+ "tex": 160,
+ "size": [
+  0.266,
+  0.222,
+  0.263
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#40241c",
+   "#523326",
+   "#634431",
+   "#73563d",
+   "#82694a",
+   "#99835d",
+   "#a89b78",
+   "#b6af95",
+   "#c5c2b0"
+  ]
+ },
+ "warnings": []
+}

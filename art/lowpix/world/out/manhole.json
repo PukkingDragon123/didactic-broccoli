@@ -1,0 +1,33 @@
+{
+ "id": "manhole",
+ "src": "polyhaven:water_manhole_cover",
+ "credit": {
+  "title": "Water Manhole Cover",
+  "author": "Raunox",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/water_manhole_cover",
+  "site": "Poly Haven"
+ },
+ "tris": 1155,
+ "tex": 512,
+ "size": [
+  0.685,
+  0.068,
+  0.685
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2b211e",
+   "#362d28",
+   "#413934",
+   "#4b453f",
+   "#55514c",
+   "#6b6966",
+   "#808080",
+   "#989898",
+   "#b0b0b0"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "shelf_display",
+ "src": "polyhaven:wooden_display_shelves_01",
+ "credit": {
+  "title": "Wooden Display Shelves 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_display_shelves_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2924,
+ "tex": 704,
+ "size": [
+  0.371,
+  1.556,
+  1.078
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#66241a",
+   "#833824",
+   "#9e5030",
+   "#b96c3c",
+   "#c48a58",
+   "#c9a272",
+   "#cfb68b",
+   "#d6c8a3",
+   "#ded7ba"
+  ],
+  "m1": [
+   "#634e55",
+   "#7e696f",
+   "#96888a",
+   "#aca7a8",
+   "#c5c5c5",
+   "#cdcdcd",
+   "#d5d5d5",
+   "#dddddd",
+   "#e5e5e5"
+  ]
+ },
+ "warnings": []
+}

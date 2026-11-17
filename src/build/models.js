@@ -4,12 +4,18 @@
 // at the centre of their back (the face against the wall), facing +z out of the wall.
 //   buildPiece(def, st) -> { root, parts, box (local Box3) }
 //   ghostOf(def, st)    -> a dim, solid, slightly transparent stand-in (never white, never glowing)
+//   preloadPieces(ids) -> Promise   load the real models of these pieces (model.lp) in the background; pieceReady(def)
+// Real-model pieces (model: { lp }) are lowpix conversions (src/kit/lowpixWorld.js), loaded on demand through an asset
+// slot that holds an invisible proxy of the right size until the model is in.
 import * as THREE from 'three';
 import { propMesh } from '../world/props.js';
 import { pixMat, boxMesh } from '../gfx/geo.js';
 import { draw5 } from '../gfx/font5x7.js';
 import { GLYPHS } from '../data/props/garage.js';
 import { printCanvas } from './photos.js';
+import { assetSlot, preloadAssets, assetReady } from '../kit/assets.js';
+import { LP_WORLD, lpAsset } from '../kit/lowpixWorld.js';
+import { FURNITURE } from './catalogue.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const canvasTex = (c) => { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter; return t; };
@@ -27,7 +33,8 @@ export function buildPiece(def, st = {}) {
     root.add(m);
     parts.body = m;
     if (def.id === 'crt_tv') tvScreen(root, parts, M.scale || 1);
-  } else if (M.gumball) gumball(root, parts);
+  } else if (M.lp) lpModel(root, parts, M, def);
+  else if (M.gumball) gumball(root, parts);
   else if (M.poster) poster(root, parts, st);
   else if (M.clock) clock(root, parts);
   else if (M.calendar) calendar(root, parts);
@@ -42,6 +49,40 @@ export function buildPiece(def, st = {}) {
   return { root, parts, box };
 }
 
+// ------------------------------------------------------------------ real models (lowpix conversions, src/kit/lowpixWorld.js)
+/** A lowpix world model (model: { lp, h | scale, ry, screen }): an asset slot (an invisible proxy box of the right size
+ *  until the model has loaded, so bounds, seats and placement work at once), plus a TV screen when `screen` is given:
+ *  [x, y, w, h] (m, the screen's centre and size on the model's front face). */
+function lpModel(root, parts, M, def) {
+  const L = LP_WORLD[M.lp];
+  const s = L ? L.size : def.box || [0.4, 0.4, 0.4];
+  const k = M.h ? M.h / s[1] : M.scale || 1;
+  const size = [s[0] * k, s[1] * k, s[2] * k];
+  const m = assetSlot(lpAsset(M.lp), { size, fit: 'stretch' });
+  if (M.ry) m.rotation.y = M.ry;
+  root.add(m);
+  parts.body = m;
+  if (M.screen) {
+    const c = document.createElement('canvas');
+    c.width = 40; c.height = 32;
+    const g = c.getContext('2d');
+    g.fillStyle = '#1e2624'; g.fillRect(0, 0, 40, 32);
+    const t = canvasTex(c);
+    const [x, y, w, h] = M.screen;
+    const sc = new THREE.Mesh(new THREE.PlaneGeometry(w * k, h * k), new THREE.MeshBasicMaterial({ map: t, color: 0x9aa0a0 }));
+    sc.position.set(x * k, y * k, size[2] / 2 + 0.004);
+    sc.userData.noRim = true;
+    root.add(sc);
+    parts.screen = sc; parts.screenCanvas = c; parts.screenTex = t;
+  }
+}
+/** Start loading the models of these catalogue pieces (ids) in the background; resolves when they are in. */
+export function preloadPieces(ids) {
+  return preloadAssets(ids.map((id) => FURNITURE[id]?.model?.lp).filter(Boolean).map(lpAsset));
+}
+/** True when the piece's model (if it has one to load) is in. */
+export function pieceReady(def) { return !def?.model?.lp || assetReady(lpAsset(def.model.lp)); }
+
 // ------------------------------------------------------------------ the ghost: a dim solid stand-in
 const ghostCache = new Map();
 function ghostMaterial(src) {
@@ -54,15 +95,23 @@ function ghostMaterial(src) {
   ghostCache.set(key, m);
   return m;
 }
-export function ghostOf(def, st = {}) {
-  const b = buildPiece(def, st);
-  b.root.traverse((o) => {
+function ghostify(root) {
+  root.traverse((o) => {
     if (o.isLight) o.visible = false;
     if (!o.isMesh && !o.isInstancedMesh) return;
+    if (o.userData.ghost) return;
+    o.userData.ghost = true;
     o.castShadow = false; o.receiveShadow = false;
     o.raycast = () => {};
+    if (o.material?.visible === false) return; // an asset slot's invisible proxy
     o.material = Array.isArray(o.material) ? o.material.map((m) => ghostMaterial(m).clone()) : ghostMaterial(o.material).clone();
   });
+}
+export function ghostOf(def, st = {}) {
+  const b = buildPiece(def, st);
+  ghostify(b.root);
+  // a model that arrives later (asset slot) is ghosted too
+  b.root.traverse((o) => { if (o.name?.startsWith('slot:')) o.addEventListener('assetloaded', () => ghostify(b.root)); });
   return b;
 }
 /** Tint a ghost for valid (dim, as is) / invalid (dim brick red). */

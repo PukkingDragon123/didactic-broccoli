@@ -1,0 +1,45 @@
+{
+ "id": "rice_cooker",
+ "src": "sketchfab:6c1e19fbe4134b9dabbec8f2355a504f",
+ "credit": {
+  "title": "Rice Cooker",
+  "author": "dartuchiwa",
+  "authorUrl": "https://sketchfab.com/dartuchiwa",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/rice-cooker-6c1e19fbe4134b9dabbec8f2355a504f",
+  "site": "Sketchfab"
+ },
+ "tris": 2981,
+ "tex": 256,
+ "size": [
+  0.186,
+  0.26,
+  0.158
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#231919",
+   "#2c2222",
+   "#352c2b",
+   "#3d3735",
+   "#45413f",
+   "#5d5c5b",
+   "#767676",
+   "#909090",
+   "#aaaaaa"
+  ],
+  "m1": [
+   "#551d10",
+   "#6d2e17",
+   "#85431f",
+   "#9b5a28",
+   "#b07332",
+   "#c59144",
+   "#cbab65",
+   "#d3c085",
+   "#dbd3a3"
+  ]
+ },
+ "warnings": []
+}

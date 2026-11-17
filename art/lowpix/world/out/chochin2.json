@@ -1,0 +1,34 @@
+{
+ "id": "chochin2",
+ "src": "sketchfab:4450069fee444ae0920aa5babd5d9239",
+ "credit": {
+  "title": "Japanese paper lantern",
+  "author": "Abel Gamero",
+  "authorUrl": "https://sketchfab.com/abelGB",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-paper-lantern-4450069fee444ae0920aa5babd5d9239",
+  "site": "Sketchfab"
+ },
+ "tris": 1312,
+ "tex": 240,
+ "size": [
+  0.298,
+  0.45,
+  0.298
+ ],
+ "colours": 6,
+ "palette": {
+  "m0": [
+   "#3c1b26",
+   "#4c252f",
+   "#5c3037",
+   "#6b3c40",
+   "#794848",
+   "#91605c",
+   "#a27d76",
+   "#b19a93",
+   "#c1b4ae"
+  ]
+ },
+ "warnings": []
+}

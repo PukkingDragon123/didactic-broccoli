@@ -1,0 +1,44 @@
+{
+ "id": "utility_box2",
+ "src": "polyhaven:utility_box_02",
+ "credit": {
+  "title": "Utility Box 02",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/utility_box_02",
+  "site": "Poly Haven"
+ },
+ "tris": 2871,
+ "tex": 672,
+ "size": [
+  0.92,
+  1.12,
+  0.431
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#43302d",
+   "#55423e",
+   "#67554f",
+   "#776961",
+   "#867c74",
+   "#948f8a",
+   "#a2a1a0",
+   "#b3b3b3",
+   "#c4c4c4"
+  ],
+  "m1": [
+   "#492517",
+   "#5e371f",
+   "#714a29",
+   "#845f34",
+   "#96753f",
+   "#af934f",
+   "#b9a96e",
+   "#c4bc8c",
+   "#cfcea9"
+  ]
+ },
+ "warnings": []
+}

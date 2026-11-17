@@ -2,9 +2,12 @@
 // adventure). Registered with the gesture library like poses.js; arm targets are in chest space (+x = own left,
 // +y up from the waist, +z forward), scaled for height.
 //   h.gesture('pose_point' | 'pose_lean' | 'pose_cross')      BIZARRE: the list, for picking one at random
+//   BIZARRE_ALL: these three plus the full-body stances of src/jojo/poses.js (tower, frame, reach, coil, sweep, guard)
 import { GESTURES, EXTRA_POSES } from './gestures.js';
+import { MORE_BIZARRE } from '../jojo/poses.js';
 
 export const BIZARRE = ['pose_point', 'pose_lean', 'pose_cross'];
+export const BIZARRE_ALL = [...BIZARRE, ...MORE_BIZARRE];
 Object.assign(GESTURES, {
   pose_point: { dur: 3.4, expr: 'grin' },
   pose_lean: { dur: 3.4, expr: 'smile' },

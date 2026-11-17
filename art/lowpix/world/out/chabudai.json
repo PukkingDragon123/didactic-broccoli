@@ -1,0 +1,56 @@
+{
+ "id": "chabudai",
+ "src": "sketchfab:176eb5a05ea948bb82cb951cb817ab8d",
+ "credit": {
+  "title": "Chabudai Table",
+  "author": "Akio",
+  "authorUrl": "https://sketchfab.com/akio_illu",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/chabudai-table-176eb5a05ea948bb82cb951cb817ab8d",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 512,
+ "size": [
+  1.064,
+  0.32,
+  0.481
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#7b5b66",
+   "#9a7e85",
+   "#b4a5a8",
+   "#d1cbcb",
+   "#efeeee",
+   "#f1f1f1",
+   "#f3f3f3",
+   "#f5f5f5",
+   "#f8f8f8"
+  ],
+  "m1": [
+   "#110e1d",
+   "#171325",
+   "#1c182c",
+   "#211e33",
+   "#25243a",
+   "#403c5b",
+   "#5e567a",
+   "#7e7396",
+   "#9f97ac"
+  ],
+  "m2": [
+   "#170a09",
+   "#1e0f0d",
+   "#241411",
+   "#291a15",
+   "#2f2119",
+   "#544030",
+   "#786249",
+   "#9a8563",
+   "#afa48a"
+  ]
+ },
+ "warnings": []
+}

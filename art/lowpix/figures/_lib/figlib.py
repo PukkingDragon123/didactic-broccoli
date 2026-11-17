@@ -79,9 +79,13 @@ STYLES = {
         _photo("denim_fabric", 10, 1.0)]},
     "velvet": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
         _photo("velour_velvet", 12, 0.9)]},
-    "fur": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("curly_teddy_natural", 7, 1.1),
-        {"id": "sheen", "op": "patches", "scale": 0.9, "threshold": 0.72, "shift": 0.7, "min_light": 0.6, "post": True}]},
+    # fur: brush strokes that follow the form (strand clusters), a faint photo relief under them, sheen on the lit side
+    "fur": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"},
+            "brush": {"flow": "long", "length": 1.5, "width": 0.38, "rough": 0.75, "overshoot": 0.3},
+            "layers": [
+        {"id": "mottle", "op": "noise", "scale": 2.2, "amount": 0.18},
+        _photo("curly_teddy_natural", 12, 0.35),
+        {"id": "sheen", "op": "patches", "scale": 0.9, "threshold": 0.72, "shift": 0.6, "min_light": 0.6, "post": True}]},
     "wood": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
         _photo("oak_veneer_01", 26, 1.3)]},
     "plank": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
@@ -122,6 +126,7 @@ STYLES = {
     "flat": {"dither": 0, "light": 0.5, "rim": {"light": 0, "dark": 0}},
     "card": {"dither": 0, "light": 0.0, "rim": {"light": 0, "dark": 0}},
 }
+BRUSH_MARKS = {"fur": "fur"}
 GAME_MAT = {"pvc": "gloss", "glaze": "gloss", "tin": "gloss", "metal": "metal", "clear": "glass", "glow": "glow"}
 
 # shared ramps every figure has
@@ -440,6 +445,9 @@ class Fig:
                     pa.setdefault("layers", []).append({"id": "seam", "op": "band", "axis": "x" if seam == "x" else "z", "from": -wdt, "to": wdt,
                                                         "shift": -0.55, "faces": ["-front", "-back", "-end", "-start"],
                                                         "bevel": {"shadow": 1, "highlight": 1, "shadow_shift": -0.6, "highlight_shift": 0.7}})
+            st0 = style if isinstance(style, str) else style[0]
+            if st0 in BRUSH_MARKS and "ramp" in pa:
+                pa.setdefault("brush", {"textures": {pa["ramp"]: BRUSH_MARKS[st0]}})
             p["paint"] = pa
             gm = mat or GAME_MAT.get(style if isinstance(style, str) else style[0])
             if gm:

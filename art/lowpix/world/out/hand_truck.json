@@ -1,0 +1,33 @@
+{
+ "id": "hand_truck",
+ "src": "polyhaven:hand_truck",
+ "credit": {
+  "title": "Hand Truck",
+  "author": "Mutanzom3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/hand_truck",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 400,
+ "size": [
+  0.591,
+  1.403,
+  0.692
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3d111a",
+   "#4f181e",
+   "#5f1f21",
+   "#6f2a27",
+   "#7e3a30",
+   "#9c5440",
+   "#b47256",
+   "#c09479",
+   "#ccb19b"
+  ]
+ },
+ "warnings": []
+}

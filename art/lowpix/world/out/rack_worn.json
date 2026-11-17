@@ -1,0 +1,33 @@
+{
+ "id": "rack_worn",
+ "src": "polyhaven:worn_metal_rack",
+ "credit": {
+  "title": "Worn Metal Rack",
+  "author": "Luca B",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/worn_metal_rack",
+  "site": "Poly Haven"
+ },
+ "tris": 2956,
+ "tex": 512,
+ "size": [
+  0.915,
+  1.9,
+  0.598
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2c281a",
+   "#383524",
+   "#44422e",
+   "#4f4f39",
+   "#575944",
+   "#71715c",
+   "#888876",
+   "#9c9c93",
+   "#b1b1ae"
+  ]
+ },
+ "warnings": []
+}

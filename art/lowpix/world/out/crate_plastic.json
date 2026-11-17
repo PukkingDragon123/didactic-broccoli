@@ -1,0 +1,33 @@
+{
+ "id": "crate_plastic",
+ "src": "polyhaven:plastic_crate_01",
+ "credit": {
+  "title": "Plastic Crate 01",
+  "author": "PierreB3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_crate_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2975,
+ "tex": 320,
+ "size": [
+  0.298,
+  0.264,
+  0.408
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#310d1c",
+   "#3f1321",
+   "#4c1925",
+   "#591f28",
+   "#65262b",
+   "#873737",
+   "#a85149",
+   "#ba786a",
+   "#c79e90"
+  ]
+ },
+ "warnings": []
+}

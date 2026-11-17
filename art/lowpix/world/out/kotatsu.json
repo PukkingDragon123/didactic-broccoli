@@ -1,0 +1,67 @@
+{
+ "id": "kotatsu",
+ "src": "sketchfab:1e976c78d1eb4d2faa590316b0d38e24",
+ "credit": {
+  "title": "Kotatsu",
+  "author": "Arya",
+  "authorUrl": "https://sketchfab.com/Ana.Maria.Farbotko",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kotatsu-1e976c78d1eb4d2faa590316b0d38e24",
+  "site": "Sketchfab"
+ },
+ "tris": 3999,
+ "tex": 1024,
+ "size": [
+  2.414,
+  0.45,
+  2.399
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#320d19",
+   "#40131e",
+   "#4d1921",
+   "#5a1f24",
+   "#662626",
+   "#883d37",
+   "#a95949",
+   "#ba7e6a",
+   "#c8a290"
+  ],
+  "m1": [
+   "#110d0e",
+   "#151213",
+   "#191617",
+   "#1d1c1c",
+   "#212121",
+   "#404040",
+   "#5e5e5e",
+   "#7d7d7d",
+   "#9b9b9b"
+  ],
+  "m2": [
+   "#65331e",
+   "#814a29",
+   "#9d6536",
+   "#b78244",
+   "#c09d63",
+   "#c6b07b",
+   "#cdc093",
+   "#d4cfa9",
+   "#dddbbf"
+  ],
+  "m3": [
+   "#492920",
+   "#5e3b2c",
+   "#714e39",
+   "#846346",
+   "#957855",
+   "#a5906b",
+   "#b0a486",
+   "#bdb79f",
+   "#cac8b7"
+  ]
+ },
+ "warnings": []
+}

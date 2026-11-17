@@ -1,0 +1,33 @@
+{
+ "id": "crate_wood",
+ "src": "polyhaven:wooden_crate_01",
+ "credit": {
+  "title": "Wooden Crate 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_crate_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2997,
+ "tex": 512,
+ "size": [
+  0.826,
+  0.35,
+  0.407
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3b100e",
+   "#4b1b13",
+   "#5b2919",
+   "#6a3720",
+   "#794828",
+   "#9a6637",
+   "#b98748",
+   "#c3a56e",
+   "#cfbe92"
+  ]
+ },
+ "warnings": []
+}

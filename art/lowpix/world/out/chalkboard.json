@@ -1,0 +1,44 @@
+{
+ "id": "chalkboard",
+ "src": "polyhaven:standing_chalkboard_01",
+ "credit": {
+  "title": "Standing Chalkboard 01",
+  "author": "ParzivalCG",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/standing_chalkboard_01",
+  "site": "Poly Haven"
+ },
+ "tris": 1988,
+ "tex": 928,
+ "size": [
+  0.92,
+  1.509,
+  0.759
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#181314",
+   "#1e191a",
+   "#242021",
+   "#2a2728",
+   "#2f2f2f",
+   "#4c4c4c",
+   "#686868",
+   "#858585",
+   "#a1a1a1"
+  ],
+  "m1": [
+   "#371110",
+   "#471c17",
+   "#55291e",
+   "#643726",
+   "#71462e",
+   "#90633f",
+   "#ae8252",
+   "#ba9f76",
+   "#c8b998"
+  ]
+ },
+ "warnings": []
+}

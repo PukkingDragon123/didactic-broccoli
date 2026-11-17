@@ -1,0 +1,14 @@
+{
+ "mats": {
+  "rim": "metal",
+  "cowl": "gloss",
+  "carrier": "metal",
+  "lamp": "glass",
+  "plate": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "key": "rojineko/scooter"
+}

@@ -1,0 +1,33 @@
+{
+ "id": "lamp_fluoro",
+ "src": "polyhaven:mounted_fluorescent_lights",
+ "credit": {
+  "title": "Mounted Fluorescent Lights",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/mounted_fluorescent_lights",
+  "site": "Poly Haven"
+ },
+ "tris": 2885,
+ "tex": 512,
+ "size": [
+  0.914,
+  0.035,
+  0.647
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#5b474e",
+   "#736065",
+   "#8a7b7e",
+   "#9e9899",
+   "#b4b4b4",
+   "#bebebe",
+   "#c9c9c9",
+   "#d3d3d3",
+   "#dddddd"
+  ]
+ },
+ "warnings": []
+}

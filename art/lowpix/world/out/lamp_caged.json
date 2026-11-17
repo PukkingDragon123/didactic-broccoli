@@ -1,0 +1,33 @@
+{
+ "id": "lamp_caged",
+ "src": "polyhaven:caged_hanging_light",
+ "credit": {
+  "title": "Caged Hanging Light",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/caged_hanging_light",
+  "site": "Poly Haven"
+ },
+ "tris": 2993,
+ "tex": 512,
+ "size": [
+  1.163,
+  0.75,
+  0.309
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#191922",
+   "#22232b",
+   "#2c2d33",
+   "#36373b",
+   "#404143",
+   "#5c5c5c",
+   "#767676",
+   "#909090",
+   "#aaaaaa"
+  ]
+ },
+ "warnings": []
+}

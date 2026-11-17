@@ -1,0 +1,33 @@
+{
+ "id": "tyre",
+ "src": "polyhaven:old_tyre",
+ "credit": {
+  "title": "Old Tyre",
+  "author": "MP",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/old_tyre",
+  "site": "Poly Haven"
+ },
+ "tris": 2880,
+ "tex": 384,
+ "size": [
+  0.6,
+  0.6,
+  0.165
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0e0909",
+   "#120d0c",
+   "#16110f",
+   "#1a1512",
+   "#1d1916",
+   "#3f3933",
+   "#5f5a52",
+   "#7e7a72",
+   "#9a9996"
+  ]
+ },
+ "warnings": []
+}

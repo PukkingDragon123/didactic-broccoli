@@ -1,0 +1,17 @@
+{
+ "mats": {
+  "roof": "gloss",
+  "tile0": "gloss",
+  "tile1": "gloss",
+  "tile2": "gloss",
+  "tile3": "gloss",
+  "tile4": "gloss",
+  "pole": "metal",
+  "moon": "glow"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "key": "rojineko/moon"
+}

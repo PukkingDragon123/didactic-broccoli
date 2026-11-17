@@ -1,0 +1,33 @@
+{
+ "id": "shelf_painted",
+ "src": "polyhaven:painted_wooden_shelves",
+ "credit": {
+  "title": "Painted Wooden Shelves",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/painted_wooden_shelves",
+  "site": "Poly Haven"
+ },
+ "tris": 524,
+ "tex": 352,
+ "size": [
+  0.511,
+  1.125,
+  0.367
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2a0a10",
+   "#360e12",
+   "#411314",
+   "#4c1a18",
+   "#56251d",
+   "#7c3f2d",
+   "#a15d3f",
+   "#ba815c",
+   "#c8a485"
+  ]
+ },
+ "warnings": []
+}

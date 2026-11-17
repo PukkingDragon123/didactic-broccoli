@@ -1,0 +1,33 @@
+{
+ "id": "bin_metal",
+ "src": "polyhaven:metal_trash_can",
+ "credit": {
+  "title": "Metal Trash Can",
+  "author": "GurJas Studios",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_trash_can",
+  "site": "Poly Haven"
+ },
+ "tris": 2997,
+ "tex": 800,
+ "size": [
+  1.776,
+  0.906,
+  0.551
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#30251f",
+   "#3e322a",
+   "#4a4035",
+   "#564e42",
+   "#615b4f",
+   "#777367",
+   "#8b8981",
+   "#9e9e9c",
+   "#b4b4b4"
+  ]
+ },
+ "warnings": []
+}

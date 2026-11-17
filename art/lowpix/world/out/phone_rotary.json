@@ -1,0 +1,56 @@
+{
+ "id": "phone_rotary",
+ "src": "sketchfab:52fb9ffd3bc241979f7192326e52aad8",
+ "credit": {
+  "title": "PBR old rotary phone",
+  "author": "Marie Jockmans",
+  "authorUrl": "https://sketchfab.com/maariej",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pbr-old-rotary-phone-52fb9ffd3bc241979f7192326e52aad8",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 240,
+ "size": [
+  0.168,
+  0.13,
+  0.095
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#161113",
+   "#1c1718",
+   "#211d1e",
+   "#262424",
+   "#2b2b2b",
+   "#484848",
+   "#656565",
+   "#828282",
+   "#a0a0a0"
+  ],
+  "m1": [
+   "#7c3d25",
+   "#9f5a33",
+   "#be7b45",
+   "#c89d6c",
+   "#d3ba92",
+   "#d7c7a3",
+   "#dcd3b3",
+   "#e1ddc3",
+   "#e7e6d2"
+  ],
+  "m2": [
+   "#2a0f14",
+   "#351518",
+   "#401b1b",
+   "#4b2522",
+   "#553029",
+   "#764b3d",
+   "#956852",
+   "#ab8971",
+   "#bca895"
+  ]
+ },
+ "warnings": []
+}

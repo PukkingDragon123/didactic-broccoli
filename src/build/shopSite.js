@@ -2,7 +2,7 @@
 // (src/build/catalogue.js) with pictures rendered from the real models, paid from the bank, delivered in a box by the
 // shutter. Registered with game.os.browser (http://www.hirano-kagu.co.jp/), bookmarked, and announced by mail once.
 import { CATALOGUE, CATEGORIES, FURNITURE, orderFurniture } from './catalogue.js';
-import { buildPiece } from './models.js';
+import { buildPiece, pieceReady, preloadPieces } from './models.js';
 import { unlockLevel } from '../data/unlocks.js';
 
 const URL0 = 'http://www.hirano-kagu.co.jp/';
@@ -25,7 +25,7 @@ export function installFurnitureSite(game) {
   const os = game.os, B = os?.browser;
   if (!B?.registerSite) return;
   B.registerSite({
-    domain: 'hirano-kagu.co.jp', title: 'Hirano Kagu - Furniture & Interior', keywords: 'furniture interior decor poster posters plant plants sofa bench clock calendar neon sign rug fan tv radio piggy bank tip jar gumball vacuum robot box boxes storage register kagu',
+    domain: 'hirano-kagu.co.jp', title: 'Hirano Kagu - Furniture & Interior', keywords: 'furniture interior decor poster posters plant plants sofa bench clock calendar neon sign rug fan tv radio piggy bank tip jar gumball vacuum robot box boxes storage register kagu chair chairs table tables desk shelf shelves cabinet lamp lamps lantern kotatsu chabudai tansu kettle thermos rice cooker microwave boombox mirror vase bust',
     blurb: 'Furniture, decor and gadgets for your home and shop. Delivered to your door.',
     render(page, path, nav, ctx) {
       ctx.title?.('Hirano Kagu - Furniture & Interior');
@@ -50,7 +50,12 @@ export function installFurnitureSite(game) {
       const pump = () => {
         if (!page.isConnected) return;
         const t0 = performance.now();
-        while (imgs.length && performance.now() - t0 < 12) { const im = imgs.shift(); const u = thumb(game, im.dataset.th); if (u) im.src = u; }
+        while (imgs.length && performance.now() - t0 < 12) {
+          const im = imgs.shift(), id = im.dataset.th;
+          // a real-model piece renders its picture once its model is in (loaded on demand, src/build/models.js)
+          if (!pieceReady(FURNITURE[id])) { preloadPieces([id]).then(() => { if (page.isConnected) { const u = thumb(game, id); if (u) im.src = u; } }); continue; }
+          const u = thumb(game, id); if (u) im.src = u;
+        }
         if (imgs.length) setTimeout(pump, 30);
       };
       setTimeout(pump, 20);

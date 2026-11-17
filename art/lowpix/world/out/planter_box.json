@@ -1,0 +1,33 @@
+{
+ "id": "planter_box",
+ "src": "polyhaven:planter_box_01",
+ "credit": {
+  "title": "Planter Box 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/planter_box_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 544,
+ "size": [
+  0.907,
+  0.425,
+  0.409
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#171010",
+   "#1e1715",
+   "#241d1b",
+   "#2a2421",
+   "#2f2b28",
+   "#4c4945",
+   "#686664",
+   "#838383",
+   "#a0a0a0"
+  ]
+ },
+ "warnings": []
+}

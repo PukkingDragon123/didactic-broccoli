@@ -1,0 +1,33 @@
+{
+ "id": "plant_pot4",
+ "src": "polyhaven:potted_plant_04",
+ "credit": {
+  "title": "Potted Plant 04",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/potted_plant_04",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 240,
+ "size": [
+  0.164,
+  0.268,
+  0.181
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#4e3c33",
+   "#645245",
+   "#786859",
+   "#8b7e6d",
+   "#9a9386",
+   "#a5a29a",
+   "#b1b0ac",
+   "#bebebe",
+   "#cdcdcd"
+  ]
+ },
+ "warnings": []
+}

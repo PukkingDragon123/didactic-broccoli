@@ -1,0 +1,33 @@
+{
+ "id": "ac_unit",
+ "src": "polyhaven:exterior_aircon_unit",
+ "credit": {
+  "title": "Exterior Aircon Unit",
+  "author": "Monsta3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/exterior_aircon_unit",
+  "site": "Poly Haven"
+ },
+ "tris": 2977,
+ "tex": 640,
+ "size": [
+  1.808,
+  0.928,
+  0.377
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#37261e",
+   "#463529",
+   "#544434",
+   "#615341",
+   "#6e634e",
+   "#847c64",
+   "#97937d",
+   "#a8a799",
+   "#babab3"
+  ]
+ },
+ "warnings": []
+}

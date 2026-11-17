@@ -1,0 +1,12 @@
+{
+ "mats": {
+  "bk_wall": "metal",
+  "bk_rim": "metal",
+  "bk_handle": "metal"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "key": "rojineko/bucket"
+}

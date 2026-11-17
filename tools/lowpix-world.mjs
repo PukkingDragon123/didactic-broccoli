@@ -64,18 +64,45 @@ function run(cmd, args, opts) {
 }
 async function convert(it) {
   const dir = join(CACHE, it.id);
-  const have = existsSync(dir) && readdirSync(dir).some((f) => f.endsWith('.glb'));
+  const have = existsSync(dir) && readdirSync(dir).some((f) => f.endsWith('.glb') && !f.startsWith('_'));
   if (have && !FORCE) return dir;
-  if (existsSync(dir)) for (const f of readdirSync(dir)) if (f !== '_source') rmSync(join(dir, f), { recursive: true, force: true });
+  if (existsSync(dir)) for (const f of readdirSync(dir)) if (f !== '_source' && f !== '_keep.glb') rmSync(join(dir, f), { recursive: true, force: true });
   const o = { ...D, ...it };
   const h = heightOf(it), ppm = o.ppm || 160;
-  const args = ['-m', 'lowpix', 'convert', it.src, '--style', o.style || 'pixel-hd', '-o', dir, '--height', (h * ppm / PX_PER_UNIT).toFixed(2), '--name', it.name || it.id];
+  let src = it.src;
+  if (it.keep || it.rotx) src = await keepNodes(it, dir);
+  const args = ['-m', 'lowpix', 'convert', src, '--style', o.style || 'pixel-hd', '-o', dir, '--height', (h * ppm / PX_PER_UNIT).toFixed(2), '--name', it.name || it.id];
   if (o.yaw) args.push('--yaw', String(o.yaw));
   for (const k of LP_KEYS) if (o[k] != null) args.push('--' + k.replace('_', '-'), String(o[k]));
   const t0 = Date.now();
   await run('python3', args, { cwd: LOWPIX, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1', LOWPIX_SKETCHFAB_TOKEN: process.env.LOWPIX_SKETCHFAB_TOKEN || 'proxy-injected' } });
   console.log(`converted ${it.id} (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
   return dir;
+}
+
+/** `keep: '<regex>'`: one object out of a set (a Poly Haven file with several variants), and/or `rotx` (degrees): a model
+ *  lying on its side stood up. The source is fetched once (a plain lowpix conversion into the cache), then the prepared
+ *  copy is written to _keep.glb and converted. */
+async function keepNodes(it, dir) {
+  const out = join(dir, '_keep.glb');
+  if (existsSync(out)) return out;
+  const srcDir = join(dir, '_source');
+  if (!existsSync(srcDir)) {
+    mkdirSync(dir, { recursive: true });
+    await run('python3', ['-m', 'lowpix', 'convert', it.src, '--style', 'pixel', '-o', dir, '--tris', '300'], { cwd: LOWPIX, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
+  }
+  const find = (d) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) { const r = find(p); if (r) return r; } else if (/\.(gltf|glb)$/.test(f)) return p; } return null; };
+  const file = find(srcDir);
+  const doc = await new NodeIO().registerExtensions(ALL_EXTENSIONS).read(file);
+  if (it.keep) { const re = new RegExp(it.keep); for (const n of doc.getRoot().listNodes()) if (n.getMesh() && !re.test(n.getName())) n.dispose(); }
+  if (it.rotx) { // stand up a model that lies on its side (degrees about x)
+    const a = it.rotx * Math.PI / 360, scene = doc.getRoot().listScenes()[0];
+    const pivot = doc.createNode('rotx').setRotation([Math.sin(a), 0, 0, Math.cos(a)]);
+    for (const c of scene.listChildren()) { scene.removeChild(c); pivot.addChild(c); }
+    scene.addChild(pivot);
+  }
+  await new NodeIO().registerExtensions(ALL_EXTENSIONS).write(out, doc);
+  return out;
 }
 
 /** Fill the empty atlas texels from their neighbours (so mips never pull in black) and crop unused rows. */
@@ -115,7 +142,7 @@ async function polishAtlas(png, keepAlpha) {
 
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
 async function gameReady(it, dir) {
-  const glb = readdirSync(dir).find((f) => f.endsWith('.glb'));
+  const glb = readdirSync(dir).find((f) => f.endsWith('.glb') && !f.startsWith('_'));
   const doc = await io.read(join(dir, glb));
   const root = doc.getRoot();
   const h = heightOf(it);
