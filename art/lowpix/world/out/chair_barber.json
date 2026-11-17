@@ -1,0 +1,55 @@
+{
+ "id": "chair_barber",
+ "src": "polyhaven:BarberShopChair_01",
+ "credit": {
+  "title": "Barber Shop Chair 01",
+  "author": "Fernando Quinn",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/BarberShopChair_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2992,
+ "tex": 608,
+ "size": [
+  0.763,
+  1.489,
+  1.328
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#0a0a10",
+   "#0d0e15",
+   "#111319",
+   "#15171d",
+   "#191c21",
+   "#363c43",
+   "#545c62",
+   "#747c80",
+   "#979a9b"
+  ],
+  "m1": [
+   "#4b3b2c",
+   "#60513c",
+   "#74664d",
+   "#867c5f",
+   "#969073",
+   "#a19f89",
+   "#aead9f",
+   "#bbbbb3",
+   "#c9c9c7"
+  ],
+  "m2": [
+   "#42180f",
+   "#552615",
+   "#66361b",
+   "#784823",
+   "#885c2b",
+   "#a77c39",
+   "#be9c50",
+   "#c8b574",
+   "#d2ca97"
+  ]
+ },
+ "warnings": []
+}

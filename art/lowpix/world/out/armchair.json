@@ -1,0 +1,33 @@
+{
+ "id": "armchair",
+ "src": "polyhaven:ArmChair_01",
+ "credit": {
+  "title": "Arm Chair 01",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/ArmChair_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 512,
+ "size": [
+  0.85,
+  1.065,
+  0.768
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#4d413b",
+   "#625750",
+   "#766e66",
+   "#88847d",
+   "#999896",
+   "#a6a6a6",
+   "#b4b4b4",
+   "#c2c2c2",
+   "#d0d0d0"
+  ]
+ },
+ "warnings": []
+}

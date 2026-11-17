@@ -1,0 +1,33 @@
+{
+ "id": "chair_rocking",
+ "src": "polyhaven:Rockingchair_01",
+ "credit": {
+  "title": "Rockingchair 01",
+  "author": "Jorge Camacho",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Rockingchair_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2985,
+ "tex": 512,
+ "size": [
+  0.706,
+  0.995,
+  0.834
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1d0606",
+   "#250a08",
+   "#2c100b",
+   "#34170e",
+   "#3b1f11",
+   "#673e20",
+   "#926232",
+   "#ba8945",
+   "#c8ab73"
+  ]
+ },
+ "warnings": []
+}

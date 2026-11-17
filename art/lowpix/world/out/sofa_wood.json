@@ -1,0 +1,33 @@
+{
+ "id": "sofa_wood",
+ "src": "polyhaven:painted_wooden_sofa",
+ "credit": {
+  "title": "Painted Wooden Sofa",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/painted_wooden_sofa",
+  "site": "Poly Haven"
+ },
+ "tris": 2995,
+ "tex": 1024,
+ "size": [
+  2.451,
+  1.281,
+  0.787
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#352524",
+   "#433430",
+   "#50433e",
+   "#5d524c",
+   "#69615b",
+   "#7d7873",
+   "#8e8d8c",
+   "#a3a3a3",
+   "#b8b8b8"
+  ]
+ },
+ "warnings": []
+}

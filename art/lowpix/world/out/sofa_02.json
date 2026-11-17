@@ -1,0 +1,33 @@
+{
+ "id": "sofa_02",
+ "src": "polyhaven:sofa_02",
+ "credit": {
+  "title": "Sofa 02",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/sofa_02",
+  "site": "Poly Haven"
+ },
+ "tris": 2728,
+ "tex": 560,
+ "size": [
+  1.807,
+  0.71,
+  0.818
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#090705",
+   "#0b0906",
+   "#0e0c08",
+   "#100e0a",
+   "#12110c",
+   "#383728",
+   "#5c5c46",
+   "#7f7f65",
+   "#9c9c8a"
+  ]
+ },
+ "warnings": []
+}

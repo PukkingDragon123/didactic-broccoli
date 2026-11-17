@@ -1,0 +1,44 @@
+{
+ "id": "chair_lounge",
+ "src": "polyhaven:mid_century_lounge_chair",
+ "credit": {
+  "title": "Mid Century Lounge Chair",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/mid_century_lounge_chair",
+  "site": "Poly Haven"
+ },
+ "tris": 2995,
+ "tex": 864,
+ "size": [
+  1.012,
+  1.169,
+  1.178
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#260f0f",
+   "#301715",
+   "#3a201b",
+   "#442a22",
+   "#4d3529",
+   "#6e523e",
+   "#8d7155",
+   "#a59073",
+   "#b7ac96"
+  ],
+  "m1": [
+   "#415556",
+   "#586e6e",
+   "#708482",
+   "#8b9795",
+   "#a6aaa9",
+   "#b4b4b4",
+   "#c0c0c0",
+   "#cccccc",
+   "#d8d8d8"
+  ]
+ },
+ "warnings": []
+}

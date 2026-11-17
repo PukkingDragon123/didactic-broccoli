@@ -1,0 +1,33 @@
+{
+ "id": "chair_wood",
+ "src": "polyhaven:WoodenChair_01",
+ "credit": {
+  "title": "Wooden Chair 01",
+  "author": "Jake Mobley",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/WoodenChair_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 672,
+ "size": [
+  0.684,
+  2.274,
+  0.66
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#30181f",
+   "#3d2126",
+   "#492b2e",
+   "#553536",
+   "#604240",
+   "#7a5c56",
+   "#92776e",
+   "#a3948d",
+   "#b7afaa"
+  ]
+ },
+ "warnings": []
+}

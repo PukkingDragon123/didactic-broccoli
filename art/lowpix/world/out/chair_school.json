@@ -1,0 +1,33 @@
+{
+ "id": "chair_school",
+ "src": "polyhaven:SchoolChair_01",
+ "credit": {
+  "title": "School Chair 01",
+  "author": "Ethan Place",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/SchoolChair_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2995,
+ "tex": 512,
+ "size": [
+  0.568,
+  1.006,
+  0.679
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0a0c21",
+   "#0e122a",
+   "#131a33",
+   "#18233b",
+   "#1d2c43",
+   "#304b68",
+   "#466d8c",
+   "#6090ab",
+   "#88aebc"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,55 @@
+{
+ "id": "desk_school",
+ "src": "polyhaven:SchoolDesk_01",
+ "credit": {
+  "title": "School Desk 01",
+  "author": "Ethan Place",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/SchoolDesk_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2969,
+ "tex": 512,
+ "size": [
+  0.712,
+  0.883,
+  0.546
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#1e1719",
+   "#262021",
+   "#2d2829",
+   "#343132",
+   "#3b3b3b",
+   "#565656",
+   "#717171",
+   "#8c8c8c",
+   "#a7a7a7"
+  ],
+  "m1": [
+   "#3d1a13",
+   "#4e271a",
+   "#5e3622",
+   "#6e472b",
+   "#7d5934",
+   "#9a7745",
+   "#b1955c",
+   "#bdad7e",
+   "#cac39e"
+  ],
+  "m2": [
+   "#524046",
+   "#68575b",
+   "#7c6e71",
+   "#8f8889",
+   "#a2a2a2",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ]
+ },
+ "warnings": []
+}

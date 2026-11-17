@@ -1,0 +1,33 @@
+{
+ "id": "chair_green",
+ "src": "polyhaven:GreenChair_01",
+ "credit": {
+  "title": "Green Chair 01",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/GreenChair_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2998,
+ "tex": 512,
+ "size": [
+  0.674,
+  1.059,
+  0.666
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#190b0a",
+   "#20110e",
+   "#271713",
+   "#2d1e17",
+   "#33251c",
+   "#574433",
+   "#7a654c",
+   "#9a8867",
+   "#afa58d"
+  ]
+ },
+ "warnings": []
+}
