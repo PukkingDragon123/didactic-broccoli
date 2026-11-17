@@ -177,7 +177,7 @@ export class Moments {
     const parent = A.parent;
     proxy.add(A);
     proxy.updateMatrixWorld(true);
-    const copy = holder.clone(true);
+    const copy = this._copy = holder.clone(true);
     copy.matrixAutoUpdate = false;
     copy.traverse((o) => { o.layers.set(0); o.userData.mainPass = true; });
     g.scene.add(copy);
