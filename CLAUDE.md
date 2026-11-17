@@ -15,6 +15,11 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   realistic hand-painted pixel-art textures, built as lowpix specs (art/lowpix/) or converted from CC0 / CC BY Poly
   Haven and Sketchfab models; almost no voxel art. Never chibi, never stuck-together primitives, never cartoon.
   First-person arms are blocky but connected and flexible.
+- **Toys are modelled in Blender** (`tools/blender.sh script.py`, headless bpy): real subdivision / poly modelling
+  with edge loops and creases, a detailed high-poly sculpt baked (normal, AO, colour) onto a clean low-poly game
+  mesh, rigged clips for gimmicks, exported as glb. Never toys built from code primitives (balls, tubes, boxes).
+  Each series has a strong original idea with a twist (transformations, costumes, playsets, dark-cute, mythic) and
+  real gimmicks (press to animate, transform, keychain version, playset parts), like the owner's gashapon boards.
 - **We model it ourselves**: low-poly lowpix models textured by photo-bashing real photos, per docs/LOWPOLY.md
   (reference → silhouette → refine in budget → photo-bash + hand paint → check against the photo). Downloads are
   reference only.
