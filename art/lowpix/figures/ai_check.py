@@ -15,6 +15,7 @@ Poly Haven assets are made by the Poly Haven team (scans and hand modelling) and
 import glob
 import importlib.util
 import json
+import subprocess
 import os
 import re
 import sys
@@ -62,7 +63,10 @@ def main():
         _, v, why, m = T.verdict(uid)
         verdict = {"OK": "ok", "REJECT": "ai-rejected", "REVIEW": "review"}[v]
         reasons = [why] if why else []
-        if uid in VISUAL and verdict != "ai-rejected":
+        if verdict != "ai-rejected" and (why == "scan" or T.SCAN.search(json.dumps(m or {}))):
+            verdict = "scan"  # OWNER RULE: never use scans (photogrammetry, LiDAR, Object Capture...): hand-made models only
+            reasons.append("scanned model")
+        elif uid in VISUAL and verdict != "ai-rejected":
             verdict = VISUAL[uid][0]
             reasons.append("by eye: " + VISUAL[uid][1])
         elif uid in VISUAL:
@@ -70,7 +74,33 @@ def main():
         res[uid] = {"verdict": verdict, "name": (m or {}).get("name"), "author": ((m or {}).get("user") or {}).get("username"),
                     "reasons": reasons}
         print(f"{verdict:12} {uid[:8]} {res[uid]['name']!r} by {res[uid]['author']}  {'; '.join(reasons)[:150]}", flush=True)
+    for pid in ([] if any(re.fullmatch(r"[0-9a-f]{32}", a) for a in sys.argv[1:]) else polyhaven_sources()):
+        res["polyhaven:" + pid] = ph_verdict(pid, T)
+        print(f"{res['polyhaven:' + pid]['verdict']:12} {pid} (Poly Haven)  {'; '.join(res['polyhaven:' + pid]['reasons'])[:150]}", flush=True)
     json.dump(dict(sorted(res.items())), open(OUT, "w"), indent=1, ensure_ascii=False)
+
+
+def polyhaven_sources():
+    s = set()
+    for py in glob.glob(os.path.join(HERE, "_src", "*.py")):
+        s |= set(re.findall(r"polyhaven:([A-Za-z0-9_]+)", open(py).read()))
+    return sorted(s)
+
+
+# Poly Haven's natural things (produce, baked food, plants, rocks) are photoscans even where the page does not say so
+PH_SCANNED = re.compile(r"^(Food & Kitchen/(Produce|Prepared Food)|Nature|Plants)")
+
+
+def ph_verdict(pid, T):
+    """A Poly Haven asset: made by the Poly Haven team (never AI); "scan" when it is a photoscan (OWNER RULE)."""
+    out = subprocess.run(["curl", "-sf", "https://api.polyhaven.com/info/" + pid], capture_output=True, text=True).stdout
+    a = json.loads(out) if out else {}
+    if not a:
+        return {"verdict": "unchecked", "name": pid, "author": None, "reasons": ["no Poly Haven info"]}
+    text = " ".join([a.get("description", ""), " ".join(a.get("tags", []))])
+    scan = T.SCAN.search(text) or PH_SCANNED.search(a.get("category", ""))
+    return {"verdict": "scan" if scan else "ok", "name": a.get("name"), "author": ", ".join(a.get("authors", {})),
+            "reasons": ["scanned model (" + (a.get("category") or "") + ")"] if scan else []}
 
 
 if __name__ == "__main__":

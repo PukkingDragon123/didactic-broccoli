@@ -190,9 +190,7 @@ def audit(series_list):
     aichk = json.load(open(aip)) if os.path.exists(aip) else {}
 
     def ai_verdict(src):
-        if src.startswith("polyhaven:"):
-            return "ok"
-        v = aichk.get(src.split(":")[-1])
+        v = aichk.get(src) if src.startswith("polyhaven:") else aichk.get(src.split(":")[-1])
         return v["verdict"] if v else "unchecked"
     # ---- figures
     keys = []
