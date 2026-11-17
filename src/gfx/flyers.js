@@ -10,6 +10,7 @@
 //   upscaleFlyer(canvas, k)               a k x nearest-neighbour copy (exports)
 //   FLYERS: [{ id, kind, name, lines }]   lines: what people say after reading it;  POSTERS: the promo ones
 import * as THREE from 'three';
+import { printHas, printRegions, whenPrint } from './printAtlas.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Human } from '../people/Human.js';
 import { makeSpec } from '../people/presets.js';
@@ -142,6 +143,16 @@ function pump() {
 }
 
 async function draw(id) {
+  // the promos are baked from real photos and the actual toys (tools/bake-posters.py 'promo'): copy the print in
+  if (printHas('promo', 'promo:' + id)) {
+    const img = await whenPrint('promo'), r = printRegions('promo')['promo:' + id];
+    if (img && r) {
+      const g = sheet(id).canvas.getContext('2d');
+      g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+      g.clearRect(0, 0, W, H); g.drawImage(img, r[0], r[1], r[2], r[3], 0, 0, W, H);
+      return;
+    }
+  }
   const d = DESIGNS[id];
   await Promise.all((d.photos || []).map(loadPhoto));
   // drawn off-screen and copied onto the sheet at the end: the 3D shots now finish asynchronously, over several idle
