@@ -143,7 +143,7 @@ export function anatomyTubes(spec, P, J) {
       if (elder && z < 0) dz -= 0.006 * H * G(y - (P.shoulderY - 0.03 * H), 0.05 * H); // a rounded upper back
       return [0, dz];
     };
-    S.push(vtube({ part: 'torso', mat: 'body', N: 16, lodMinN: 8, dens: 1, partAt: (c) => (c.y < P.hipY ? 'hipsLo' : c.y < P.pelvisY ? 'hipsUp' : c.y < P.waistY ? 'spine' : c.y < P.bustY ? 'chestLo' : c.y < P.shoulderY - 0.004 * H ? 'chestHi' : 'traps') },
+    S.push(vtube({ part: 'torso', mat: 'body', N: 12, lodMinN: 8, dens: 1, partAt: (c) => (c.y < P.hipY ? 'hipsLo' : c.y < P.pelvisY ? 'hipsUp' : c.y < P.waistY ? 'spine' : c.y < P.bustY ? 'chestLo' : c.y < P.shoulderY - 0.004 * H ? 'chestHi' : 'traps') },
       uniq(ys), (y) => {
         const [hx, hzF, hzB, cz, p] = tb(y), e = ease(y) * easeK(y);
         return { hx: hx + e, hzF: hzF + e, hzB: hzB + e, cz, p, pB: p - 0.15, mod: mod(y) };
@@ -159,7 +159,7 @@ export function anatomyTubes(spec, P, J) {
   {
     const nw = hu * (f ? 0.19 : kid ? 0.2 : 0.215), nd = hu * 0.21;
     const y0 = P.neckBase - 0.03 * H, y3 = P.chin + 0.2 * hu;
-    S.push(vtube({ part: 'neck', mat: 'skin', N: 12, lodMinN: 8 }, [y0, P.neckBase - 0.004 * H, (P.neckBase + P.chin) / 2, P.chin + 0.1 * hu, y3], (y) => {
+    S.push(vtube({ part: 'neck', mat: 'skin', N: 8, lodMinN: 8 }, [y0, P.neckBase - 0.004 * H, (P.neckBase + P.chin) / 2, P.chin + 0.1 * hu, y3], (y) => {
       const t = (y - y0) / (y3 - y0);
       return { hx: nw * (1.08 - 0.1 * t), hzF: nd * (0.92 - 0.06 * t), hzB: nd * (1.0 - 0.04 * t), cz: lerp(-0.012 * H, -0.006 * H, t), p: 2.1 };
     }, (y) => (y < P.neckBase - 0.012 * H ? W1('chest') : y > P.chin + 0.05 * hu ? WB('neck', 'head', 0.6) : W1('neck'))));
@@ -171,7 +171,7 @@ export function anatomyTubes(spec, P, J) {
       : ['polo', 'jacket', 'blazer', 'cardigan', 'blouse'].includes(k) ? base + 0.022 * H : 0;
     if (top) {
       const nw = hu * (f ? 0.19 : kid ? 0.2 : 0.215), nd = hu * 0.21, y0 = base - 0.012 * H, stand = k === 'gakuran';
-      S.push(vtube({ part: 'collar', mat: 'collar', N: 16, lodMinN: 8, dens: 1.1, double: 0.0016 * H }, [y0, base, (base + top) / 2, top - 0.003 * H, top], (y) => {
+      S.push(vtube({ part: 'collar', mat: 'collar', N: 10, lodMinN: 8, dens: 1.1, double: 0.0016 * H }, [y0, base, (base + top) / 2, top - 0.003 * H, top], (y) => {
         const t = (y - y0) / (top - y0), spread = stand ? 1.06 : lerp(1.32, 1.08, smooth(t * 1.4));
         return { hx: nw * spread + 0.004 * H, hzF: nd * spread * (stand ? 1.0 : 0.96) + 0.004 * H, hzB: nd * spread + 0.004 * H, cz: lerp(-0.012 * H, -0.009 * H, t), p: 2.2 };
       }, (y) => (y < base + 0.004 * H ? W1('chest') : WB('chest', 'neck', 0.45))));
@@ -202,7 +202,7 @@ export function anatomyTubes(spec, P, J) {
       P.elbowY + 0.04 * H, (P.shoulderY + P.elbowY) / 2 + 0.01 * H, P.shoulderY - 0.032 * H, P.shoulderY - 0.01 * H, P.shoulderY + 0.003 * H, P.shoulderY + 0.009 * H];
     if (cuff > P.wristY && cuff < P.shoulderY - 0.02 * H) ys.push(cuff - lip, cuff, cuff + 0.01 * H);
     const ease = (y) => (y >= cuff ? es + (y < cuff + 0.01 * H ? 0.001 * H * (1 - (y - cuff) / (0.01 * H)) : 0) * (g.sleeve === 'short' ? 1.6 : 0.8) : 0);
-    S.push(vtube({ part: 'arm', mat: 'body', N: 12, lodMinN: 8, mirror: true, a0: -Math.PI / 2, partAt: (c) => (c.y > P.elbowY ? 'uarm' : 'farm') }, uniq(ys), (y) => {
+    S.push(vtube({ part: 'arm', mat: 'body', N: 8, lodMinN: 8, mirror: true, a0: -Math.PI / 2, partAt: (c) => (c.y > P.elbowY ? 'uarm' : 'farm') }, uniq(ys), (y) => {
       const [hx, hzF, hzB, ox, cz] = tb(y), e = y > P.shoulderY ? ease(y) * smooth((P.shoulderY + 0.009 * H - y) / (0.006 * H)) : ease(y);
       return { hx: hx + e, hzF: hzF + e, hzB: hzB + e, cx: ax + ox, cz, p: 2.2 };
     }, (y) => (y > P.elbowY + 0.022 * H ? W1('armL') : y < P.elbowY - 0.022 * H ? W1('foreL') : WB('foreL', 'armL', (y - P.elbowY + 0.022 * H) / (0.044 * H)))));
@@ -243,7 +243,7 @@ export function anatomyTubes(spec, P, J) {
     const tobi = spec.bottom.kind === 'tobi', loose = spec.legs === 'loosesocks';
     if (tobi) ys.push(P.ankleY + 0.07 * H, P.ankleY + 0.09 * H, P.kneeY - 0.03 * H, P.kneeY + 0.04 * H);
     if (loose) ys.push(P.ankleY + 0.02 * H, P.ankleY + 0.05 * H, P.ankleY + 0.08 * H, P.ankleY + 0.105 * H, P.ankleY + 0.115 * H);
-    S.push(vtube({ part: 'leg', mat: 'body', N: 12, lodMinN: 8, mirror: true, a0: -Math.PI / 2, partAt: (c) => (c.y > P.kneeY ? 'thigh' : c.y > P.kneeY - 0.1 * H ? 'calf' : 'shin') }, uniq(ys), (y) => {
+    S.push(vtube({ part: 'leg', mat: 'body', N: 8, lodMinN: 8, mirror: true, a0: -Math.PI / 2, partAt: (c) => (c.y > P.kneeY ? 'thigh' : c.y > P.kneeY - 0.1 * H ? 'calf' : 'shin') }, uniq(ys), (y) => {
       let [hx, hzF, hzB, cx, cz] = tb(y);
       if (longTrousers || y >= hem - 1e-6) [hx, hzF, hzB] = trouser(y, hx, hzF, hzB);
       let mod = null;
@@ -329,7 +329,7 @@ function headTubes(spec, P) {
   const { eye, brow, nose, mouth, rows } = headRows(spec, P);
   const tb = table(rows.map((r) => [r[0], ...r.slice(1)]));
   const ts = uniq([...rows.map((r) => r[0]), 0.015, (mouth + nose) / 2, (eye + brow) / 2]);
-  const head = vtube({ part: 'head', mat: 'head', N: 22, lodMinN: 8, block: 'face', blockNz: 0.42, dens: 1.25, partAt: (c) => (c.y < P.noseY ? 'jaw' : 'cranium') }, ts.map(y), (yy) => {
+  const head = vtube({ part: 'head', mat: 'head', N: 16, lodMinN: 8, block: 'face', blockNz: 0.42, dens: 1.25, partAt: (c) => (c.y < P.noseY ? 'jaw' : 'cranium') }, ts.map(y), (yy) => {
     const [hx, zF, zB, p] = tb(t(yy)), cz = (zF + zB) / 2, hz = (zF - zB) / 2;
     const tt = t(yy);
     // cheekbones: the front corners a little fuller between the nose and the eyes; a slight temple hollow above
@@ -353,7 +353,7 @@ function headTubes(spec, P) {
     [nt, 0.032 * hu, zf - 0.036 * hu, 0.014 * hu],
   ];
   const ntb = table(nrows);
-  const noseT = vtube({ part: 'nose', mat: 'nose', N: 10, lodMinN: 11, block: 'face', blockNz: 0.25, blockNy: -0.45, dens: 1.4 }, nrows.map((r) => r[0]), (yy) => {
+  const noseT = vtube({ part: 'nose', mat: 'nose', N: 6, lodMinN: 11, block: 'face', blockNz: 0.25, blockNy: -0.45, dens: 1.4 }, nrows.map((r) => r[0]), (yy) => {
     const [hx, cz, hzF] = ntb(yy);
     return { hx, hzF, hzB: hzF * 0.4, cz, p: 2.0, pB: 2.2 };
   }, () => W1('head'));
@@ -367,7 +367,7 @@ function headTubes(spec, P) {
     [P.earTop + 0.012 * hu, 0.008 * hu, 0.02 * hu, -0.012 * hu],
   ];
   const etb = table(erows);
-  const ear = vtube({ part: 'ear', mat: 'ear', N: 8, lodMinN: 9, mirror: true, dens: 1.5, a0: -Math.PI / 2 }, erows.map((r) => r[0]), (yy) => {
+  const ear = vtube({ part: 'ear', mat: 'ear', N: 6, lodMinN: 9, mirror: true, dens: 1.5, a0: -Math.PI / 2 }, erows.map((r) => r[0]), (yy) => {
     const [hx, hz, dz] = etb(yy);
     return { hx, hzF: hz, hzB: hz * 0.9, cx: ex + hx * 0.9, cz: ez + dz, p: 2.2 };
   }, () => W1('head'));
@@ -381,7 +381,7 @@ function handTubes(spec, P) {
   const k = H * hs; // hand scale
   const wr = P.wristY, kn = wr - 0.05 * k; // knuckle line
   // palm: thick at the heel, flatter and wider at the knuckles
-  out.push(vtube({ part: 'palm', mat: 'hand', N: 10, lodMinN: 9, mirror: true, dens: 1.5, a0: -Math.PI / 2 }, [kn - 0.004 * k, kn + 0.006 * k, wr - 0.03 * k, wr - 0.008 * k, wr + 0.008 * H], (y) => {
+  out.push(vtube({ part: 'palm', mat: 'hand', N: 6, lodMinN: 9, mirror: true, dens: 1.5, a0: -Math.PI / 2 }, [kn - 0.004 * k, kn + 0.006 * k, wr - 0.03 * k, wr - 0.008 * k, wr + 0.008 * H], (y) => {
     const t = clamp((wr - y) / (wr - kn), 0, 1.1);
     return { hx: lerp(0.0092, 0.0074, t) * k, hzF: lerp(0.019, 0.0235, t) * k, hzB: lerp(0.019, 0.0228, t) * k, cx: ax - 0.0012 * k - t * 0.0016 * k, cz: hz + (y < kn ? 0.0005 * k : 0), p: 2.6 };
   }, () => W1('handL')));
@@ -412,7 +412,7 @@ function handTubes(spec, P) {
         path.push({ c: tip, s: { hx: 0, hzF: 0, hzB: 0 }, w: W1('handL') });
       }
     }
-    out.push(ptube({ part: 'fingers', mat: 'hand', N: 6, lodMinN: 6, mirror: true, dens: 1.7, fi, a0: Math.PI / 2 }, path, [1, 0, 0]));
+    out.push(ptube({ part: 'fingers', mat: 'hand', N: 4, lodMinN: 6, mirror: true, dens: 1.7, fi, a0: Math.PI / 2 }, path, [1, 0, 0]));
   });
   // thumb: from the heel of the palm on the +z side, forward and down
   {
@@ -423,7 +423,7 @@ function handTubes(spec, P) {
     const p2 = [p1[0] + d2[0] * 0.026 * k, p1[1] + d2[1] * 0.026 * k, p1[2] + d2[2] * 0.026 * k];
     const p3 = [p2[0] + d2[0] * 0.016 * k, p2[1] + d2[1] * 0.016 * k, p2[2] + d2[2] * 0.016 * k];
     const tip = [p3[0] + d2[0] * 0.004 * k, p3[1] + d2[1] * 0.004 * k, p3[2] + d2[2] * 0.004 * k];
-    out.push(ptube({ part: 'thumb', mat: 'hand', N: 6, lodMinN: 6, mirror: true, dens: 1.7, a0: Math.PI / 2 }, [
+    out.push(ptube({ part: 'thumb', mat: 'hand', N: 4, lodMinN: 6, mirror: true, dens: 1.7, a0: Math.PI / 2 }, [
       { c: [p0[0] + 0.004 * k, p0[1] + 0.006 * k, p0[2] - 0.008 * k], s: { hx: r * 1.3, hzF: r * 1.5, hzB: r * 1.5, p: 2.2 }, w: W1('handL') },
       { c: p0, s: { hx: r * 1.25, hzF: r * 1.35, hzB: r * 1.35, p: 2.2 }, w: W1('handL') },
       { c: p1, s: { hx: r * 1.02, hzF: r * 1.05, hzB: r * 1.05, p: 2.3 }, w: W1('handL'), keep: true },
@@ -476,7 +476,7 @@ function shoeTubes(spec, P) {
     const sh = first || last ? 0.25 : 1;
     return { c: [lx + (z - z0) / fl * 0.003 * H, b + hy * (last ? 0.7 : 1), z], s: { hx: hx * sh, hzF: hy * (last ? 0.3 : first ? 0.6 : 1), hzB: hy * (last ? 0.3 : first ? 0.6 : 1), p: 3.4, pB: 4.2 }, w: W1('footL') };
   });
-  out.push(ptube({ part: 'foot', mat: 'shoe', N: 12, lodMinN: 8, mirror: true, dens: 1.15, partAt: (c) => (c.z > z0 + 0.62 * fl ? 'toe' : 'foot'), meta: { z0, fl, base, top, lx, width, S } }, path, [0, 1, 0]));
+  out.push(ptube({ part: 'foot', mat: 'shoe', N: 8, lodMinN: 8, mirror: true, dens: 1.15, partAt: (c) => (c.z > z0 + 0.62 * fl ? 'toe' : 'foot'), meta: { z0, fl, base, top, lx, width, S } }, path, [0, 1, 0]));
   // the sole: a slab a little wider than the upper, following the heel lift
   const sz = [z0 - 0.004, z0 + 0.02 * fl, z0 + 0.2 * fl, z0 + 0.4 * fl, z0 + 0.6 * fl, z0 + 0.8 * fl, z0 + 0.94 * fl, z1 + 0.004];
   const solePath = sz.map((z, i) => {
@@ -485,11 +485,11 @@ function shoeTubes(spec, P) {
     const hy = (b1 - b0) / 2;
     return { c: [lx + (z - z0) / fl * 0.003 * H, b0 + hy, z], s: { hx: hx * (end ? 0.7 : 1), hzF: hy, hzB: hy, p: 6, pB: 8 }, w: W1('footL') };
   });
-  out.push(ptube({ part: 'sole', mat: 'shoe', N: 12, lodMinN: 8, mirror: true, dens: 1.1, meta: { z0, fl, base, lx, S } }, solePath, [0, 1, 0]));
+  out.push(ptube({ part: 'sole', mat: 'shoe', N: 6, lodMinN: 8, mirror: true, dens: 1.1, meta: { z0, fl, base, lx, S } }, solePath, [0, 1, 0]));
   // a block heel under women's pumps / a real heel on dress shoes is part of the sole's rise; pumps get a slim heel post
   if (heel > 0.02 * H) {
     const hzc = z0 + 0.1 * fl;
-    out.push(vtube({ part: 'heel', mat: 'shoe', N: 8, lodMinN: 9, mirror: true, dens: 1.2, meta: { z0, fl, base, lx, S } }, [0, heel * 0.5, base(hzc) - sole + 0.002], (y) => ({ hx: 0.006 * H * (y < 0.01 ? 0.8 : 1), hzF: 0.007 * H, hzB: 0.008 * H, cx: lx, cz: hzc - 0.004 * H * (y / heel), p: 2.6 }), () => W1('footL')));
+    out.push(vtube({ part: 'heel', mat: 'shoe', N: 4, lodMinN: 9, mirror: true, dens: 1.2, meta: { z0, fl, base, lx, S } }, [0, heel * 0.5, base(hzc) - sole + 0.002], (y) => ({ hx: 0.006 * H * (y < 0.01 ? 0.8 : 1), hzF: 0.007 * H, hzB: 0.008 * H, cx: lx, cz: hzc - 0.004 * H * (y / heel), p: 2.6 }), () => W1('footL')));
   }
   return out;
 }
@@ -500,8 +500,8 @@ function skirtTube(spec, P) {
   const hem = { pleated: P.kneeY + 0.075 * H, pencil: P.kneeY - 0.02 * H, long: P.kneeY - 0.13 * H, mini: P.hipY - 0.085 * H }[cut] ?? P.kneeY;
   const flare = { pleated: 1.32, pencil: 0.98, long: 1.32, mini: 1.24 }[cut] ?? 1.2;
   const yh = P.hipY - 0.01 * H, yt = P.pelvisY + 0.016 * H;
-  const pleats = cut === 'pleated' ? 24 : cut === 'long' ? 16 : 0;
-  const N = pleats ? 32 : 16;
+  const pleats = cut === 'pleated' ? 10 : cut === 'long' ? 6 : 0;
+  const N = pleats ? 20 : 12;
   // an untucked top hangs over the skirt's waistband: the skirt then hugs the body under it (no poke-through at the hem)
   const g = garmentLines(spec, P), under = g.topHem < yt, k1 = under ? 1.0 : 1.08, k2 = under ? 1.0 : 1.1;
   const tb = table([

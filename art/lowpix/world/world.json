@@ -9,12 +9,14 @@
    "id": "cash_register",
    "src": "polyhaven:CashRegister_01",
    "ppm": 200,
-   "cap": 512
+   "cap": 512,
+   "tris": 1000
   },
   {
    "id": "tv_wood",
    "src": "polyhaven:Television_01",
-   "cap": 512
+   "cap": 512,
+   "tris": 1000
   },
   {
    "id": "boombox",
@@ -25,7 +27,8 @@
   {
    "id": "cassette_player",
    "src": "polyhaven:cassette_player",
-   "ppm": 240
+   "ppm": 240,
+   "tris": 1000
   },
   {
    "id": "fan_floor",
@@ -35,7 +38,8 @@
   {
    "id": "extinguisher",
    "src": "polyhaven:korean_fire_extinguisher_01",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "desk_lamp",
@@ -45,11 +49,13 @@
   {
    "id": "toolbox",
    "src": "polyhaven:metal_toolbox",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "tool_chest",
-   "src": "polyhaven:metal_tool_chest"
+   "src": "polyhaven:metal_tool_chest",
+   "tris": 1000
   },
   {
    "id": "broom",
@@ -59,7 +65,8 @@
   {
    "id": "dustpan",
    "src": "polyhaven:dustpan",
-   "ppm": 220
+   "ppm": 220,
+   "tris": 1000
   },
   {
    "id": "ladder",
@@ -68,7 +75,8 @@
   },
   {
    "id": "stool_wood",
-   "src": "polyhaven:wooden_stool_01"
+   "src": "polyhaven:wooden_stool_01",
+   "tris": 1000
   },
   {
    "id": "chair_folding",
@@ -78,29 +86,34 @@
   {
    "id": "watering_can",
    "src": "polyhaven:watering_can_metal_01",
-   "ppm": 220
+   "ppm": 220,
+   "tris": 1000
   },
   {
    "id": "jerrycan_plastic",
    "src": "polyhaven:plastic_jerrycan",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "jerrycan_metal",
    "src": "polyhaven:metal_jerrycan",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "clock_wall",
    "src": "polyhaven:wall_clock",
    "ppm": 240,
    "yaw": 180,
-   "cap": 512
+   "cap": 512,
+   "tris": 1000
   },
   {
    "id": "clock_alarm",
    "src": "polyhaven:alarm_clock_01",
-   "ppm": 260
+   "ppm": 260,
+   "tris": 1000
   },
   {
    "id": "lamp_hanging",
@@ -127,15 +140,18 @@
   },
   {
    "id": "crate_plastic",
-   "src": "polyhaven:plastic_crate_01"
+   "src": "polyhaven:plastic_crate_01",
+   "tris": 1000
   },
   {
    "id": "crate_plastic2",
-   "src": "polyhaven:plastic_crate_02"
+   "src": "polyhaven:plastic_crate_02",
+   "tris": 1000
   },
   {
    "id": "box_cardboard",
-   "src": "polyhaven:cardboard_box_01"
+   "src": "polyhaven:cardboard_box_01",
+   "tris": 1000
   },
   {
    "id": "bin_metal",
@@ -170,13 +186,15 @@
   {
    "id": "power_box",
    "src": "polyhaven:power_box_01",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "fire_alarm",
    "src": "polyhaven:fire_alarm",
    "ppm": 260,
-   "cap": 512
+   "cap": 512,
+   "tris": 1000
   },
   {
    "id": "chalkboard",
@@ -212,13 +230,14 @@
   {
    "id": "lpg_small",
    "src": "polyhaven:small_lpg_tank",
-   "ppm": 180
+   "ppm": 180,
+   "tris": 1000
   },
   {
    "id": "bicycle_old",
    "src": "sketchfab:17ab00cb733443a2b552a2b620a68087",
    "h": 1.05,
-   "tris": 5000,
+   "tris": 3000,
    "ppm": 150
   },
   {
@@ -238,7 +257,7 @@
    "id": "manhole",
    "src": "polyhaven:water_manhole_cover",
    "ppm": 200,
-   "tris": 1500
+   "tris": 1000
   },
   {
    "id": "trash_jp",
@@ -258,11 +277,13 @@
   {
    "id": "plant_pot4",
    "src": "polyhaven:potted_plant_04",
-   "alpha": true
+   "alpha": true,
+   "tris": 1000
   },
   {
    "id": "planter_clay",
-   "src": "polyhaven:planter_pot_clay"
+   "src": "polyhaven:planter_pot_clay",
+   "tris": 1000
   },
   {
    "id": "planter_box",
@@ -270,7 +291,8 @@
   },
   {
    "id": "tyre",
-   "src": "polyhaven:old_tyre"
+   "src": "polyhaven:old_tyre",
+   "tris": 1000
   },
   {
    "id": "beer_crates",
@@ -279,13 +301,14 @@
   },
   {
    "id": "bucket_wood",
-   "src": "polyhaven:wooden_bucket_01"
+   "src": "polyhaven:wooden_bucket_01",
+   "tris": 1000
   },
   {
    "id": "kotatsu",
    "src": "sketchfab:1e976c78d1eb4d2faa590316b0d38e24",
    "h": 0.45,
-   "tris": 4000
+   "tris": 3000
   },
   {
    "id": "chabudai",
@@ -296,25 +319,29 @@
    "id": "chochin",
    "src": "sketchfab:6fd5dcdb4702409a8be04e5f0fb2c316",
    "h": 0.55,
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "chochin2",
    "src": "sketchfab:4450069fee444ae0920aa5babd5d9239",
    "h": 0.45,
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "kettle",
    "src": "sketchfab:0eb111108b4f40d9881a29d7a073c6b4",
    "h": 0.22,
-   "ppm": 260
+   "ppm": 260,
+   "tris": 1000
   },
   {
    "id": "phone_rotary",
    "src": "sketchfab:52fb9ffd3bc241979f7192326e52aad8",
    "h": 0.13,
-   "ppm": 300
+   "ppm": 300,
+   "tris": 1000
   },
   {
    "id": "tansu",
@@ -330,12 +357,14 @@
   {
    "id": "thermos",
    "src": "polyhaven:plastic_thermos",
-   "ppm": 240
+   "ppm": 240,
+   "tris": 1000
   },
   {
    "id": "kettle_electric",
    "src": "polyhaven:vintage_electric_kettle",
-   "ppm": 240
+   "ppm": 240,
+   "tris": 1000
   },
   {
    "id": "microwave",
@@ -428,7 +457,8 @@
   },
   {
    "id": "table_side",
-   "src": "polyhaven:side_table_01"
+   "src": "polyhaven:side_table_01",
+   "tris": 1000
   },
   {
    "id": "desk_office",
@@ -462,7 +492,8 @@
   {
    "id": "lamp_pipe",
    "src": "polyhaven:industrial_pipe_lamp",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "lamp_oil",
@@ -472,51 +503,58 @@
   {
    "id": "lantern_wood",
    "src": "polyhaven:wooden_lantern_01",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "lantern",
    "src": "polyhaven:Lantern_01",
-   "ppm": 220
+   "ppm": 220,
+   "tris": 1000
   },
   {
    "id": "vase_ceramic",
    "src": "polyhaven:antique_ceramic_vase_01",
-   "ppm": 220
+   "ppm": 220,
+   "tris": 1000
   },
   {
    "id": "vase_brass",
    "src": "polyhaven:brass_vase_01",
-   "ppm": 220
+   "ppm": 220,
+   "tris": 1000
   },
   {
    "id": "bust_marble",
    "src": "polyhaven:marble_bust_01",
    "ppm": 220,
-   "tris": 4000,
+   "tris": 1000,
    "cap": 512
   },
   {
    "id": "cat_statue",
    "src": "polyhaven:concrete_cat_statue",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "elephant",
    "src": "polyhaven:carved_wooden_elephant",
-   "ppm": 220
+   "ppm": 220,
+   "tris": 1000
   },
   {
    "id": "chess",
    "src": "polyhaven:chess_set",
    "ppm": 240,
-   "tris": 4000,
+   "tris": 1000,
    "cap": 512
   },
   {
    "id": "dartboard",
    "src": "polyhaven:dartboard",
-   "ppm": 240
+   "ppm": 240,
+   "tris": 1000
   },
   {
    "id": "mirror",
@@ -526,17 +564,20 @@
   {
    "id": "ukulele",
    "src": "polyhaven:Ukulele_01",
-   "ppm": 240
+   "ppm": 240,
+   "tris": 1000
   },
   {
    "id": "basket",
    "src": "polyhaven:wicker_basket_01",
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "clock_mantel",
    "src": "polyhaven:mantel_clock_01",
-   "ppm": 240
+   "ppm": 240,
+   "tris": 1000
   },
   {
    "id": "clock_grandfather",
@@ -552,7 +593,8 @@
    "id": "extinguisher_jp",
    "src": "sketchfab:68068b0dcc9c45388f958aef24e26c92",
    "h": 0.5,
-   "ppm": 200
+   "ppm": 200,
+   "tris": 1000
   },
   {
    "id": "bench_station",
@@ -565,7 +607,7 @@
    "src": "sketchfab:7230d8d80e8b4a82b4a34a5e7926d0d3",
    "h": 0.102,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Robot vacuum cleaner low poly",
    "prop": "robot_vacuum"
   },
@@ -574,7 +616,7 @@
    "src": "sketchfab:31fa30b8d8b34a73aac870b0c8443644",
    "h": 0.12,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Pet Bed",
    "prop": "cat_cushion"
   },
@@ -601,7 +643,7 @@
    "src": "sketchfab:dfd6e6a1842d4e0dbbfe9316697f4f75",
    "h": 0.39,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Wood Display Rack",
    "prop": "mk_peg_stand"
   },
@@ -610,7 +652,7 @@
    "src": "sketchfab:fb9958f7f2c74095a25589837e62aa9d",
    "h": 0.38,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Carton Box_03_Open",
    "prop": "mk_snack_carton"
   },
@@ -619,7 +661,7 @@
    "src": "sketchfab:6e9bfb5e4b1e42b791a51c40cb993306",
    "h": 0.048,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Ashtray with Cigarettes",
    "prop": "mk_ashtray"
   },
@@ -628,7 +670,7 @@
    "src": "sketchfab:1e2b4dc9efe348548b681a1fe0a1343b",
    "h": 0.12,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Zafu and zabuton",
    "prop": "mk_zabuton"
   },
@@ -637,7 +679,7 @@
    "src": "sketchfab:1b3929f627a141be92f0c8c16a3ba296",
    "h": 0.12,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Classic Telephone",
    "prop": "mk_phone"
   },
@@ -646,7 +688,7 @@
    "src": "sketchfab:bf5152c1f1fc44f4a81dbca1d502304c",
    "h": 0.21,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Red Dot Cigar Box",
    "prop": "mk_cigar_box"
   },
@@ -682,7 +724,7 @@
    "src": "sketchfab:eeca5464cafe42fd9ae35b2451c14858",
    "h": 2.43,
    "ppm": 100,
-   "tris": 4000,
+   "tris": 3000,
    "name": "Toy Rocket 4K Free 3D model",
    "prop": "rocket"
   },
@@ -817,7 +859,7 @@
    "src": "sketchfab:19c7ca832f4246638cbbd53be9ff6184",
    "h": 2.625,
    "ppm": 100,
-   "tris": 4000,
+   "tris": 3000,
    "name": "Bamboo with plant pot",
    "prop": "bamboo"
   },
@@ -844,7 +886,7 @@
    "src": "sketchfab:2027a248de1b4b70985ff97e708fb50d",
    "h": 2.32,
    "ppm": 100,
-   "tris": 4000,
+   "tris": 3000,
    "name": "Japanese Torii Gate",
    "prop": "torii"
   },
@@ -880,7 +922,7 @@
    "src": "sketchfab:170f632b9b294fdabc660ba91894c10a",
    "h": 0.19,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Maneki neko",
    "prop": "manekineko"
   },
@@ -889,7 +931,7 @@
    "src": "sketchfab:c812095d86b64d11b36f088131b1d2d7",
    "h": 0.18,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Daruma Doll",
    "prop": "daruma"
   },
@@ -898,7 +940,7 @@
    "src": "sketchfab:2f9546f0aa9e4dbdade316e1b9d59f04",
    "h": 0.152,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Construction Helmet (Orange)",
    "prop": "helmet"
   },
@@ -907,7 +949,7 @@
    "src": "sketchfab:056ccf898f9e49acb6e3e370deabf184",
    "h": 0.248,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Gas Stove",
    "prop": "stove_kettle"
   },
@@ -934,7 +976,7 @@
    "src": "sketchfab:f9d64bd1fdde49fe8571f83f59114663",
    "h": 0.57,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Old, dirty, stacked tires, PBR textures ",
    "prop": "tires"
   },
@@ -943,7 +985,7 @@
    "src": "sketchfab:0a7a3ccfdb624369b54dc7e06a5f2486",
    "h": 0.287,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Metal bucket",
    "prop": "bucket"
   },
@@ -952,7 +994,7 @@
    "src": "sketchfab:fecf642fc5a44223afe57075b354d07e",
    "h": 0.368,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Rice Sack Pot",
    "prop": "rice_sack"
   },
@@ -979,7 +1021,7 @@
    "src": "sketchfab:8bd83c9adb8640628ff4f69689d358ac",
    "h": 0.15,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Cactus Concrete Pot",
    "prop": "cactus_pot"
   },
@@ -988,7 +1030,7 @@
    "src": "sketchfab:98b96bd41a1c4ab7af10c938e280c8c8",
    "h": 0.12,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Potted Aloe Vera",
    "prop": "aloe_pot"
   },
@@ -997,7 +1039,7 @@
    "src": "sketchfab:e5667a6a6cb241b19d90fd17269d2983",
    "h": 0.27,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Wind Chimes",
    "prop": "furin"
   },
@@ -1015,7 +1057,7 @@
    "src": "sketchfab:cd134204748b4e28a9e3494638cc595f",
    "h": 0.078,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Trash bags",
    "prop": "bin_bags",
    "smooth": 3.0,
@@ -1028,7 +1070,7 @@
    "src": "sketchfab:4af08e1e8f594444ad79765332f299bb",
    "h": 0.126,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Rusty Cash box",
    "prop": "coin_float"
   },
@@ -1037,7 +1079,7 @@
    "src": "sketchfab:72a4804f8a4d4de18e59abb60b81c54f",
    "h": 0.144,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Old Paper & Cardboard Boxes",
    "prop": "cardboard_flat"
   },
@@ -1046,7 +1088,7 @@
    "src": "sketchfab:72a4804f8a4d4de18e59abb60b81c54f",
    "h": 0.15,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Old Paper & Cardboard Boxes",
    "prop": "cardboard_bundle"
   },
@@ -1082,7 +1124,7 @@
    "src": "sketchfab:97aee64edf0c4521b82416f3b30c61ce",
    "h": 0.048,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Sponge",
    "prop": "sponge"
   },
@@ -1091,7 +1133,7 @@
    "src": "sketchfab:1611833f3eaa41bbba2b6944269429ab",
    "h": 0.192,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Spray Bottle",
    "prop": "spray_bottle"
   },
@@ -1100,7 +1142,7 @@
    "src": "sketchfab:05fc9a5628d64b5cb89f38a855eeb6fb",
    "h": 0.056,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Crushed Can",
    "prop": "litter_can"
   },
@@ -1109,7 +1151,7 @@
    "src": "sketchfab:7efa84394c4c4185885be697adad932f",
    "h": 0.306,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Kumade - XYZ Speedraft",
    "prop": "mk_kumade"
   },
@@ -1118,7 +1160,7 @@
    "src": "sketchfab:eb5747f6a34b43b8aceb0a7473b5272d",
    "h": 0.135,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Ema Wish board from Japan",
    "prop": "mk_ema"
   },
@@ -1127,7 +1169,7 @@
    "src": "sketchfab:7a40d686492545d1a6f6bd0c487f1cb9",
    "h": 0.108,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Low-Poly Gold Coin",
    "prop": "mk_koban"
   },
@@ -1136,7 +1178,7 @@
    "src": "sketchfab:fc5c13c5194241339121d8c2e99ae1c7",
    "h": 0.164,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Gourd Bottle",
    "prop": "mk_hyotan"
   },
@@ -1145,7 +1187,7 @@
    "src": "sketchfab:b51e4bb527d749c38bfb6f964b2b9ead",
    "h": 0.17,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Kitsune Fox Shrine Statue",
    "prop": "mk_kitsune"
   },
@@ -1154,7 +1196,7 @@
    "src": "sketchfab:f971db758c3040e281f536b42d40014e",
    "h": 0.16,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Voxel Breakable Pickle Jar",
    "prop": "mk_jar_pickle"
   },
@@ -1163,7 +1205,7 @@
    "src": "sketchfab:3d04380080ff4c269fe0ddd9b6924a3f",
    "h": 0.07,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "RAMEN BOWL",
    "prop": "mk_jar_ramen"
   },
@@ -1172,7 +1214,7 @@
    "src": "sketchfab:504a59ef14a148809cec657d7c99367c",
    "h": 0.08,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Brick",
    "prop": "mk_brick"
   },
@@ -1190,7 +1232,7 @@
    "src": "sketchfab:e12fde1101b84b6da40056336a7b309d",
    "h": 0.216,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Wooden Crate",
    "prop": "mk_outbox"
   },
@@ -1217,7 +1259,7 @@
    "src": "sketchfab:dea5920f66814e04a66fa87b338e0e8d",
    "h": 4.75,
    "ppm": 100,
-   "tris": 4000,
+   "tris": 3000,
    "name": "Classic Street Lamp Post",
    "prop": "park_lamp"
   },
@@ -1244,7 +1286,7 @@
    "src": "sketchfab:bf200222d79d4411aade19ddf312f122",
    "h": 0.336,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Garbage Bag",
    "prop": "trash_bag_b",
    "smooth": 3.0,
@@ -1266,7 +1308,7 @@
    "src": "sketchfab:dbf27cb19fba4ba0850cf6076fc17ed5",
    "h": 0.054,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Pet Bowl",
    "prop": "cat_bowl"
   },
@@ -1275,7 +1317,7 @@
    "src": "sketchfab:f43199f19c3142c68cc672db55d9a40d",
    "h": 0.16,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Cardboard Box",
    "prop": "cat_bed"
   },
@@ -1284,7 +1326,7 @@
    "src": "sketchfab:19fd6da20c0f496bafbb4c1bf3456dff",
    "h": 0.02,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Paper Stack",
    "prop": "flyer_stack"
   },
@@ -1293,7 +1335,7 @@
    "src": "sketchfab:0d5590d1d2184aa98797c3d6382afd7e",
    "h": 0.28,
    "ppm": 100,
-   "tris": 4000,
+   "tris": 3000,
    "name": "Japanese futon/bed",
    "prop": "room_futon"
   },
@@ -1302,7 +1344,7 @@
    "src": "sketchfab:6b0209cc65db435e921d0c10db469d52",
    "h": 0.09,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Unhyun_ Floor Cushion",
    "prop": "room_zabuton"
   },
@@ -1365,7 +1407,7 @@
    "src": "sketchfab:cb278948a28a440d8e26573bbc8483df",
    "h": 0.31,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Plastic Waste Bin",
    "prop": "room_trash"
   },
@@ -1374,7 +1416,7 @@
    "src": "sketchfab:689c29ec3a8a4f44b32f616bcb97cfaa",
    "h": 0.078,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "sneakers",
    "prop": "room_shoes"
   },
@@ -1383,7 +1425,7 @@
    "src": "sketchfab:f93cacf5a0e4444898e30b40e43ad669",
    "h": 0.57,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Stacked Cardboard Boxes | Crafted by jer",
    "prop": "room_boxes"
   },
@@ -1392,7 +1434,7 @@
    "src": "sketchfab:5f5ccee1514c440887c072fae8e0d699",
    "h": 0.092,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Coffee Mug (School Project)",
    "prop": "room_mug"
   },
@@ -1401,7 +1443,7 @@
    "src": "sketchfab:60b5fae8d55e48f5bc3a554652d5d9ad",
    "h": 0.136,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Noodle Cup",
    "prop": "room_cupnoodle"
   },
@@ -1410,7 +1452,7 @@
    "src": "sketchfab:63ef9397e3b9418e8abfba9cc4c470a8",
    "h": 0.075,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Corded Public Phone - Low Poly",
    "prop": "room_phone"
   },
@@ -1419,7 +1461,7 @@
    "src": "sketchfab:a1399c9b33554b9a9d25ec9e5fbdd5ca",
    "h": 0.64,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Antique Wall Pendulum Clock",
    "prop": "pendulum_clock"
   },
@@ -1428,7 +1470,7 @@
    "src": "sketchfab:170f632b9b294fdabc660ba91894c10a",
    "h": 0.51,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Maneki neko",
    "prop": "lucky_cat_big"
   },
@@ -1437,7 +1479,7 @@
    "src": "sketchfab:6b7baf381f6c45ef8d92411e0467492b",
    "h": 3.104,
    "ppm": 100,
-   "tris": 4000,
+   "tris": 3000,
    "name": "Blind spot traffic mirror",
    "prop": "mirror_pole"
   },
@@ -1514,7 +1556,7 @@
    "src": "polyhaven:trashbag",
    "h": 0.48,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "prop": "trash_bag",
    "smooth": 3.0,
    "grain": 0.0,
@@ -1534,7 +1576,7 @@
    "src": "sketchfab:a4a78d37b6ff4834a7fa6e897f2e592c",
    "h": 0.56,
    "ppm": 180,
-   "tris": 3000,
+   "tris": 1000,
    "name": "Old Oil Heater_Gas stove_24_MB",
    "prop": "heater"
   },
@@ -1552,7 +1594,7 @@
    "src": "sketchfab:5d754602e590417b889e500a06b67146",
    "h": 0.065,
    "ppm": 240,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Reception Bell. Wood, shiny copper",
    "prop": "call_bell"
   },
@@ -1728,7 +1770,7 @@
    "src": "art/lowpix/world/made/dustpile.glb",
    "h": 0.056,
    "ppm": 400,
-   "tris": 1500,
+   "tris": 1000,
    "name": "Dust pile",
    "prop": "dust_pile",
    "cap": 512,
@@ -1740,7 +1782,7 @@
    "src": "art/lowpix/world/made/rubbishpile.glb",
    "h": 0.234,
    "ppm": 400,
-   "tris": 2000,
+   "tris": 1000,
    "name": "Rubbish pile",
    "prop": "rubbish_pile",
    "cap": 512,
@@ -2022,7 +2064,7 @@
    "src": "polyhaven:vintage_pocket_watch",
    "h": 0.077,
    "ppm": 800,
-   "tris": 1500,
+   "tris": 1000,
    "prop": "pocket_watch",
    "cap": 256
   }

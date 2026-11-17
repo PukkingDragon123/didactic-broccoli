@@ -658,7 +658,7 @@ class Fig:
         s.stamp(pid, ["dd", "hd"], {"d": f"{R}:1", "h": f"{R}:4"}, face="right", at="center")
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
-    def model(s, name, src, h=None, w=None, d=None, L=None, at=(0, 0, 0), yaw=0, pitch=0, roll=0, tris=5000, mat="matte",
+    def model(s, name, src, h=None, w=None, d=None, L=None, at=(0, 0, 0), yaw=0, pitch=0, roll=0, tris=1400, mat="matte",
               drop=None, keep=None, box=None, level=False, cut=0.0, rest=False, ramps=None, smooth=None, dark=False, **bad):
         """A real model, converted at its final size so its texels are the line's DENS px/mm: scaled (before
         conversion, never after) to the largest size that keeps it, turned by pitch/yaw/roll (degrees, XYZ), within
@@ -734,6 +734,15 @@ class Fig:
                 used.update([st] if isinstance(st, str) else st)
         spec["styles"] = {k: v for k, v in spec["styles"].items() if k in used}
         fid = s.key.split("/")[-1]
+        # the toy budget is 1.5k triangles in all: models share it with any spec furniture / stand
+        if any(p["shape"] != "bone" for p in spec["parts"]):
+            for m in s.meta.get("models", []):
+                if m["tris"] == 1400:
+                    m["tris"] = 1000 if len(s.meta["models"]) == 1 else 500
+        else:
+            for m in s.meta.get("models", []):
+                if m["tris"] == 1400 and len(s.meta["models"]) > 1:
+                    m["tris"] = 700
         with open(os.path.join(out_dir, fid + ".json"), "w") as fh:
             json.dump(spec, fh, indent=1)
         meta = dict(s.meta)

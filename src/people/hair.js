@@ -93,7 +93,7 @@ export function hairSegments(spec, P, J) {
   // ---------------- the shell
   let shellTh = 0;
   if (sty) {
-    const N = 26, M = sty.mode === 'fall' ? 15 : 11;
+    const N = 16, M = sty.mode === 'fall' ? 9 : 7;
     const th0 = sty.th * hu;
     shellTh = th0;
     // per column: thickness jitter (locks in the silhouette), the hem
@@ -171,7 +171,7 @@ export function hairSegments(spec, P, J) {
       path.push({ c: [x + swing * Math.sin(t * 2.2) * 0.02 * H * Math.sign(x || 1), y + 0.015 * hu - t * len, z - 0.012 * hu - Math.sin(t * 1.6) * 0.035 * len], s: { hx: r, hzF: r * 0.9, hzB: r * 0.95, p: 2.1 }, w: W1(bone) });
     }
     path.push({ c: [path[n].c[0], path[n].c[1] - 0.02 * len, path[n].c[2]], s: { hx: w * 0.12, hzF: w * 0.1, hzB: w * 0.1 }, w: W1(bone) });
-    S.push(ptubeH({ part: 'tail', mat: 'hair', N: 10, lodMinN: 8, dens: 1.1, meta: { kind: 'tail', len, seed: seed + x * 100 } }, path, [0, 0, -1]));
+    S.push(ptubeH({ part: 'tail', mat: 'hair', N: 6, lodMinN: 8, dens: 1.1, meta: { kind: 'tail', len, seed: seed + x * 100 } }, path, [0, 0, -1]));
   };
   const tie = (bone) => { /* the hair tie is painted at the top of the tail */ void bone; };
   if (!covered && sty) {
@@ -182,7 +182,7 @@ export function hairSegments(spec, P, J) {
       for (const sx of [1, -1]) tailTube(sx > 0 ? 'tailL' : 'tailR', len, w, sx * (P.hw + 0.02 * hu), P.earTop + 0.06 * hu, P.hcz - 0.3 * hu, 0.3);
     } else if (st === 'bun') {
       const cy = P.crown - 0.2 * hu, cz = zb - 0.06 * hu, r = 0.14 * hu;
-      S.push(vtubeH({ part: 'bun', mat: 'hair', N: 14, lodMinN: 8, dens: 1.1, meta: { kind: 'bun', seed } }, [-1, -0.8, -0.4, 0, 0.4, 0.8, 1], (u) => ({ y: cy + u * r * 0.85, hx: r * Math.sqrt(1 - u * u * 0.96), hz: r * 0.9 * Math.sqrt(1 - u * u * 0.96), cz: cz + u * 0.02 * hu }), W1('head')));
+      S.push(vtubeH({ part: 'bun', mat: 'hair', N: 8, lodMinN: 8, dens: 1.1, meta: { kind: 'bun', seed } }, [-1, -0.8, -0.4, 0, 0.4, 0.8, 1], (u) => ({ y: cy + u * r * 0.85, hx: r * Math.sqrt(1 - u * u * 0.96), hz: r * 0.9 * Math.sqrt(1 - u * u * 0.96), cz: cz + u * 0.02 * hu }), W1('head')));
     } else if (st === 'pompadour') {
       // a towering roll of hair over the brow, combed up and jutting forward like a ship's prow (a loft across the head)
       const vol = spec.hair.volume || 1, f = head.at(0, P.hairY, shellTh);
@@ -193,7 +193,7 @@ export function hairSegments(spec, P, J) {
         const top = head.at(Math.atan2(x, 0.05), P.crown - 0.05 * hu, shellTh);
         path.push({ c: [x, lerp(top[1], P.hairY + 0.16 * hu * vol, 0.7) , f[2] - 0.1 * hu + 0.05 * hu * vol * e], s: { hx: 0.15 * hu * vol * k, hzF: 0.26 * hu * vol * k, hzB: 0.16 * hu * k, p: 2.2, pB: 2.4 }, w: W1('head') });
       }
-      S.push(ptubeH({ part: 'quiff', mat: 'hair', N: 14, lodMinN: 8, dens: 1.0, meta: { kind: 'quiff', seed } }, path, [0, 0.35, 1]));
+      S.push(ptubeH({ part: 'quiff', mat: 'hair', N: 8, lodMinN: 8, dens: 1.0, meta: { kind: 'quiff', seed } }, path, [0, 0.35, 1]));
     } else if (st === 'spiky') {
       const SP = [[0, 0.8, 1.1], [-0.42, 0.72, 1], [0.42, 0.72, 1], [-0.2, 0.35, 1.15], [0.22, 0.38, 1.1], [-0.66, 0.3, 0.9], [0.66, 0.3, 0.9],
         [0, -0.05, 1.1], [-0.45, -0.1, 1], [0.45, -0.1, 1], [-0.25, -0.5, 0.95], [0.25, -0.5, 0.95], [-0.6, -0.42, 0.8], [0.6, -0.42, 0.8], [0, -0.8, 0.85]];
@@ -266,8 +266,8 @@ function hatTubes(spec, P, head, hairTh, yBand) {
   const hu = P.hu, hat = spec.hat.kind, out = [];
   const th = Math.max(hairTh * 0.45, 0.01 * hu) + 0.012 * hu;
   // a crown that fits over the skull + hair from the band up, closed at the top (shape: top lift, front tilt)
-  const crown = (part, lift, round, fwd = 0, N = 22, flat = false) => {
-    const M = 7, rings = [];
+  const crown = (part, lift, round, fwd = 0, N = 14, flat = false) => {
+    const M = 5, rings = [];
     for (let i = 0; i <= M; i++) {
       const s = i / M; // 0 = band .. 1 = top
       const y = lerp(yBand, P.crown, Math.sin(s * Math.PI / 2) ** 0.9);
@@ -292,7 +292,7 @@ function hatTubes(spec, P, head, hairTh, yBand) {
     return { tube: true, closed: true, part, mat: 'hat', N, lodMinN: 8, rings, dens: 1.05, meta: { kind: hat } };
   };
   // a ring brim: from the band out by `w` (front / back can differ), drooping by `droop`
-  const brim = (w, wF, droop, N = 24) => {
+  const brim = (w, wF, droop, N = 14) => {
     const rings = [];
     const steps = [0, 0.35, 0.75, 1];
     for (const s of steps) {
@@ -320,7 +320,7 @@ function hatTubes(spec, P, head, hairTh, yBand) {
     return { ...ptubeH({ part: 'visor', mat: 'hat', N: 10, lodMinN: 9, dens: 1.0, meta: { kind: hat } }, path, [0, 1, 0]) };
   };
   if (hat === 'cap') { out.push(crown('hatCrown', 0.0, 0.7, -0.01)); out.push(visor(0.42, 0.8, 0.06)); }
-  else if (hat === 'flatcap') { out.push(crown('hatCrown', -0.01 * hu, 0.15, 0.04, 22, true)); out.push(visor(0.24, 0.86, 0.06)); }
+  else if (hat === 'flatcap') { out.push(crown('hatCrown', -0.01 * hu, 0.15, 0.04, 14, true)); out.push(visor(0.24, 0.86, 0.06)); }
   else if (hat === 'schoolhat' || hat === 'bucket' || hat === 'sunhat') {
     out.push(crown('hatCrown', 0.06 * hu, hat === 'schoolhat' ? 0.5 : 0.75, 0));
     const w = hat === 'sunhat' ? 0.38 * hu : hat === 'schoolhat' ? 0.24 * hu : 0.2 * hu;
@@ -330,7 +330,7 @@ function hatTubes(spec, P, head, hairTh, yBand) {
     out.push(brim(0.06 * hu, 0.16 * hu, 0.02 * hu));
   } else if (hat === 'headband') {
     // tenugui headband just above the brows
-    const N = 22, rings = [];
+    const N = 14, rings = [];
     for (const y of [P.browY + 0.1 * hu, P.browY + 0.15 * hu, P.browY + 0.2 * hu]) {
       const pts = [];
       for (let k = 0; k < N; k++) pts.push(head.at(Math.PI + (k / N) * Math.PI * 2, y, hairTh * 0.7 + 0.014 * hu));
