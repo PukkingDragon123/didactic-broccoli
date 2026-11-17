@@ -64,12 +64,15 @@ export function printUV(name, key, inset = 0.5) {
 }
 
 /** A texture clone showing just one region (for a plain PlaneGeometry; clones share the one upload). */
-export function printRegionTexture(name, key, opts) {
-  const base = printTexture(name, opts), [u0, v0, u1, v1] = printUV(name, key, 0);
-  const t = base.clone();
+export function printRegionTexture(name, key, { mips = true } = {}) {
+  const [u0, v0, u1, v1] = printUV(name, key, 0);
+  // its own texture object (no clone: a clone of a sheet that hasn't arrived would be flagged for upload with no image)
+  const t = new THREE.Texture();
+  t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
+  t.minFilter = mips ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter; t.generateMipmaps = mips; t.anisotropy = 4;
   t.repeat.set(u1 - u0, v1 - v0); t.offset.set(u0, v0);
   t.userData.print = name;
-  // the clone must follow the sheet when it arrives
-  if (!printImage(name)) whenPrint(name).then((img) => { if (img) { t.image = img; t.needsUpdate = true; } });
+  const set = (img) => { if (img) { t.source = printTexture(name, { mips }).source; t.needsUpdate = true; } };
+  if (printImage(name)) set(printImage(name)); else whenPrint(name).then(set);
   return t;
 }

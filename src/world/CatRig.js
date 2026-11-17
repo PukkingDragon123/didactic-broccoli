@@ -40,7 +40,7 @@ const _ax = new THREE.Vector3();
 const LOOKS = Object.fromEntries(['open', 'wide', 'slit', 'half'].map((e) => [e, { '': e, L: e + 'L', R: e + 'R' }]));
 const POSES = ['walk', 'sit', 'groom', 'sleep', 'held', 'drink', 'groove', 'hide', 'stretch', 'knead', 'stalk'];
 const KEYS = ['y', 'z', 'pitch', 'roll', 'yaw', 'cp', 'cy', 'squash', 'hp', 'hy', 'hr', 'stab', 'earB', 'earO', 'tailUp', 'tailCurl', 'tailSide', 'tailWrap', 'swish', 'swishF', 'puff',
-  'fl', 'fr', 'bl', 'br', 'flUp', 'frUp', 'fold', 'hindFold', 'purr'];
+  'fl', 'fr', 'bl', 'br', 'flUp', 'frUp', 'fold', 'hindFold', 'purr', 'tuck'];
 const EXTRA = ['tailBeat', 'lap', 'lick', 'yawn', 'content', 'groomLick', 'dangle'];
 function base(p) {
   for (const k of KEYS) p[k] = 0;
@@ -194,7 +194,7 @@ export class CatRig {
         if (this.mood === 'scared') Object.assign(p, { y: -0.035, pitch: 0.04, earB: 1, tailUp: -0.25, tailCurl: 0.02, puff: 1, swish: 0.04, fold: 0.2, hindFold: 0.15 });
         return p;
       case 'sit':
-        return Object.assign(p, { y: -0.088, z: -0.012, pitch: -0.62, cp: -0.24, hp: 0.05, hindFold: 1, tailUp: -0.6, tailSide: 0.7, tailWrap: 0.22, tailCurl: -0.04, swish: 0.06, swishF: 0.3 });
+        return Object.assign(p, { y: -0.095, z: -0.02, pitch: -0.7, cp: -0.18, hp: 0.12, hindFold: 1.15, tuck: 1, fl: 0.1, fr: 0.1, tailUp: -0.6, tailSide: 1.0, tailWrap: 0.5, tailCurl: -0.04, swish: 0.06, swishF: 0.3 });
       case 'hide':
         // crouched low, ready to bolt: ears flat, wide eyes, tail tucked along her side
         return Object.assign(p, { y: -0.075, squash: 0.06, pitch: 0.04, hp: 0.1, earB: 1, tailUp: -0.45, tailSide: 0.6, tailCurl: 0.03, puff: 0.6, swish: 0.03, fold: 0.75, hindFold: 0.55 });
@@ -256,7 +256,8 @@ export class CatRig {
       }
       case 'held':
         // hanging under her front legs: back straight up, hind legs and tail dangling
-        return Object.assign(p, { pitch: -1.25, cp: 0.22, y: -0.02, stab: 1, fl: 0.6, fr: 0.6, bl: 0.55, br: 0.45, tailUp: -0.9, tailWrap: 0.15, tailCurl: 0.05, swish: 0.3, swishF: 0.7, dangle: 1 });
+        // cradled in the arms: lying back along the forearm, front paws folded on the chest, hind legs tucked, tail hanging
+        return Object.assign(p, { pitch: -0.5, cp: -0.1, y: -0.02, stab: 1, fold: 0.9, tuck: 1, hindFold: 0.75, bl: 0.3, br: 0.25, tailUp: -0.7, tailWrap: 0.3, tailSide: 0.5, tailCurl: 0.04, swish: 0.15, swishF: 0.5, dangle: 0.25 });
     }
     return p;
   }
@@ -415,6 +416,7 @@ export class CatRig {
       if (P.dangle > 0.5) s = lerp(s, 1.2, P.dangle);
       // foot contact point, then the wrist / hock above it (the metatarsus lies flat when she sits on her hocks)
       const foot = _v2.copy(_e2v(piv, ang, s * L.L));
+      if (!hind && P.tuck > 0) foot.x *= 1 - 0.55 * Math.min(1, P.tuck); // front paws placed together (sitting, cradled)
       if (hind && P.dangle > 0) foot.x += L.side * 0.022 * P.dangle; // the hind legs hang a little apart
       const contact = clamp(1 - Math.max(raise * 1.6, lf * 1.2, P.dangle, P.fold * (hind ? 0.2 : 0.6)), 0, 1);
       foot.y = lerp(foot.y, 0, contact);

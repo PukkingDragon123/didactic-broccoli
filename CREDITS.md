@@ -2615,15 +2615,14 @@ and clear stands (art/lowpix/figures). No AI-generated models (art/lowpix/figure
 - Animated Dog, Shiba Inu by quander (https://sketchfab.com/3d-models/animated-dog-shiba-inu-9abfce885a834399b2c3ccaed51cd474), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/inusanpo/shiba.glb`
 - boombox by Poly Haven (https://polyhaven.com/a/boombox), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/denka/boombox.glb`
 - BUTTERFLY by Rukh3D (https://sketchfab.com/3d-models/butterfly-d642db74a3fa491a8143bd088b408094), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/konchu/ageha.glb`
+- carrot cake by Poly Haven (https://polyhaven.com/a/carrot_cake), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/sampuru/pudding.glb`
 - CashRegister 01 by Poly Haven (https://polyhaven.com/a/CashRegister_01), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/machikado/golden.glb`
 - cassette player by Poly Haven (https://polyhaven.com/a/cassette_player), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/denka/radio.glb`
-- cat by toti.shroom (https://sketchfab.com/3d-models/cat-51cc3bfb49b64128aa54ffa29f36d8c1), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/rojineko/wall.glb`
 - cat sleeping on tatami by sekiri (https://sketchfab.com/3d-models/cat-sleeping-on-tatami-1912d5ed6498459abb50cda71a288258), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/rojineko/stalker.glb`
 - CC0 カブトムシ ♂ Japanese Rhinoceros Beetle by ffish.asia / floraZia.com (https://sketchfab.com/3d-models/cc0-japanese-rhinoceros-beetle-b67fb6cbe3fa455c81373aaa9f91fa1a), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/konchu/larva.glb`
 - CC0 カブトムシ ♂ Japanese Rhinoceros Beetle by ffish.asia / floraZia.com (https://sketchfab.com/3d-models/cc0-japanese-rhinoceros-beetle-6395f798f7d243e19975a55b76608a8b), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/konchu/kabuto.glb`
 - CC0 サキシマヒラタクワガタ ♂ Sakishima Stag Beetle by ffish.asia / floraZia.com (https://sketchfab.com/3d-models/cc0-sakishima-stag-beetle-2e240bc3ebd241ccba0dfa19736397d7), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/konchu/golden.glb`
 - CC0 ミヤマクワガタ ♂ Mountain Stag Beetle by ffish.asia / floraZia.com (https://sketchfab.com/3d-models/cc0-mountain-stag-beetle-e821b05809e54ab18d53b51de529666e), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/konchu/miyama.glb`
-- Cherry Soda Float by LittleWhiteElk (https://sketchfab.com/3d-models/cherry-soda-float-a7652a3d813a479ba93cf880e466789c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/sampuru/soda.glb`
 - Coelacanth by Tim (https://sketchfab.com/3d-models/coelacanth-2400195832b64f698096ed0fdac85d51), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/shinkai/coela.glb`
 - Crow by zixisun02 (https://sketchfab.com/3d-models/crow-45a169ef98804f06a9b7a4af1a04d6f9), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/yacho/karasu.glb`
 - Dangos in the plate by Kroko.blend (https://sketchfab.com/3d-models/dangos-in-the-plate-a874a02e5e9c4bcba54173a20c3732e8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/okashi/dango.glb`
@@ -2644,7 +2643,6 @@ and clear stands (art/lowpix/figures). No AI-generated models (art/lowpix/figure
 - Japanese Ramen by Senkinsky (https://sketchfab.com/3d-models/japanese-ramen-f65a8eab51794fbc8c7941101a354a54), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/sampuru/ramen.glb`
 - Japanese Torii gate Game Asset by Bazylonator (https://sketchfab.com/3d-models/japanese-torii-gate-game-asset-e12d2fa1b2b94928b8b87cb7787e2462), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/kaiun/torii.glb`
 - Kitsune statue in Nagoya - MTSU Animation by MTSU Animation Virtual Production (https://sketchfab.com/3d-models/kitsune-statue-in-nagoya-mtsu-animation-af9a74ebe6ee4e23b0c2b41d82a958a7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/kaiun/kitsune.glb`
-- Kitten by FainoDS (https://sketchfab.com/3d-models/kitten-4ae3704cd65b423ab994545988d4db1a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/rojineko/kittens.glb`
 - Koi Fish by SDPM Esare (https://sketchfab.com/3d-models/koi-fish-3e1b80c3653f43349252aab3b4fb1d86), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/kaiun/koi.glb`
 - Maneki neko by Ramujiro (https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/kaiun/maneki.glb`
 - modified thermos by Poly Haven (https://polyhaven.com/a/modified_thermos), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/denka/cooker.glb`
@@ -2659,7 +2657,6 @@ and clear stands (art/lowpix/figures). No AI-generated models (art/lowpix/figure
 - Sleeping Cat by Erik (https://sketchfab.com/3d-models/sleeping-cat-cdc2fa52cccf476fab8b64370455dd34), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/rojineko/box.glb`
 - Spaghetti and Fork by Osian CG (https://sketchfab.com/3d-models/spaghetti-and-fork-6f9efa17eab544eba05518bf29454895), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/sampuru/fork.glb`
 - Sparrow by Chenchanchong (https://sketchfab.com/3d-models/sparrow-11b5b94688bc4ee380849585086da98a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/yacho/suzume.glb`
-- strawberry chocolate cake by Poly Haven (https://polyhaven.com/a/strawberry_chocolate_cake), CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/sampuru/pudding.glb`
 - Traffic Cone by hinndia (https://sketchfab.com/3d-models/traffic-cone-573feef839d7450cb3e12da9986e7a98), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/machikado/cone.glb`
 - Udon Scaniverse 2023-02-17 120102 by O_Hitsuji (https://sketchfab.com/3d-models/udon-scaniverse-2023-02-17-120102-50f286afdcf14b54bf35f22affb0b15c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/sampuru/udon.glb`
 - Vending Machine by ¡Jacques (https://sketchfab.com/3d-models/vending-machine-f537e142a592428d85ca7a940be221d3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Converted with lowpix (pixel-hd), used in `models/lowpix/figures/machikado/jihanki.glb`
@@ -2714,6 +2711,7 @@ textures (copies in `art/lowpix/photos/`):
 
 Photographs from Google Open Images (CC BY 2.0, https://creativecommons.org/licenses/by/2.0/), cropped and printed:
 
+- "Oolong Tea, Green" by Ty Konzak, CC BY 2.0, https://www.flickr.com/photos/aramek/6207069617 (Open Images ID 0b850f65c891705e)
 - "Sumo Wrestling" by SteFou!, CC BY 2.0, https://www.flickr.com/photos/stephen-oung/6082800765 (Open Images ID 0deee1bb956b2216)
 - "Mount Fuji @ Lake Kawaguchiko" by Guilhem Vellut, CC BY 2.0, https://www.flickr.com/photos/o_0/10863000084 (Open Images ID 1abfab68fd6a34c7)
 - "Snow monkeys in hot spring Japan" by Chi Tranter, CC BY 2.0, https://www.flickr.com/photos/chitranter/14212780326 (Open Images ID 2a1c261ad12e6f62)
@@ -2723,11 +2721,13 @@ Photographs from Google Open Images (CC BY 2.0, https://creativecommons.org/lice
 - "uma chuva de balas para Elisa" by Mauren Veras, CC BY 2.0, https://www.flickr.com/photos/mauren/2429240906 (Open Images ID 436ed2d6e9cd8ca4)
 - "Japan-Kyoto-Train Station-Shinkansen-Bullet-Train-April-2004" by tiarescott, CC BY 2.0, https://www.flickr.com/photos/tiarescott/33754698 (Open Images ID 43ef0d9ecd6dd4be)
 - "Japan Mount Fuji (12)" by Michael G Winters, CC BY 2.0, https://www.flickr.com/photos/michaegwinters/13910560969 (Open Images ID 537d350a5dbe1f18)
+- "Tantan Ramen_Kyoto" by benketaro, CC BY 2.0, https://www.flickr.com/photos/misskei/8187796808 (Open Images ID 57d0794f60026f31)
 - "Plastic food" by Vincent, CC BY 2.0, https://www.flickr.com/photos/vincentsl/410965322 (Open Images ID 6324262554f184ab)
 - "Shrine Proper" by Mark Mrwizard, CC BY 2.0, https://www.flickr.com/photos/mark_mrwizard/8460230590 (Open Images ID 808e21f5b9632bab)
 - "Hikari Shinkansen" by alisdair, CC BY 2.0, https://www.flickr.com/photos/alisdair/2849800683 (Open Images ID 842fcd9c97854956)
 - "Tansu0018" by falling_james, CC BY 2.0, https://www.flickr.com/photos/10915994@N05/1004316580 (Open Images ID 8cf0d90fadf83514)
 - "Summer Festival - Hanabi 5" by sankuy, CC BY 2.0, https://www.flickr.com/photos/26471517@N06/2730883469 (Open Images ID 99d0d046afd231c4)
+- "gumballs galore!" by Ms NyKenJee, CC BY 2.0, https://www.flickr.com/photos/nykenjee/5278075528 (Open Images ID 9a73ee8933d93045)
 - "Posing Sparrow" by Don O&#x27;Brien, CC BY 2.0, https://www.flickr.com/photos/dok1/2390986226 (Open Images ID ab7b7786ca8649a8)
 - "Yanaka Ginza shopping street" by Yoshikazu TAKADA, CC BY 2.0, https://www.flickr.com/photos/yoshikazut/4041690725 (Open Images ID ae8ffd814db5ce63)
 - "Shiba Inu dog @ Mount Mitake" by Guilhem Vellut, CC BY 2.0, https://www.flickr.com/photos/o_0/13438613015 (Open Images ID c14e22cfec55c7d2)
