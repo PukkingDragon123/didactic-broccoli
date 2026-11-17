@@ -285,4 +285,15 @@ await model('broombin', 'mikawaya.png', ({ box, cyl }) => {
     box(x - 0.05, 0.12, z - 0.03, x + 0.05, 0.36, z + 0.03, M(15, 0, 0, 0.5, 1));
   }
 });
+// the neighbourhood garbage station: the rolled crow net on the kerb, the rules board on its post (garbage_station)
+await model('garbagestation', 'garbage.png', ({ box, cyl, mound }) => {
+  const NET = [0.02, 0.02, 0.48, 0.48], BOARD = [0.52, 0.02, 0.98, 0.48], POST = [0.02, 0.52, 0.48, 0.98], CON = [0.52, 0.52, 0.98, 0.98];
+  box(-0.77, 0, -0.52, 0.77, 0.04, 0.52, CON);
+  mound(0.05, -0.32, 1.3, 0.35, 0.16, NET, 31);
+  mound(0.25, 0.1, 0.9, 0.5, 0.08, NET, 33);
+  cyl(-0.68, -0.44, 0.03, 0.04, 1.74, 8, POST);
+  box(-0.98, 1.1, -0.43, -0.38, 1.6, -0.41, BOARD);
+});
+// AA batteries in a blister card (battery_pack)
+await model('batterypack', 'battery.png', ({ box }) => { box(-0.043, 0, -0.011, 0.043, 0.126, 0.011, [0.01, 0.01, 0.99, 0.99]); });
 console.log('ok');

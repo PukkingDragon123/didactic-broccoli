@@ -4,6 +4,10 @@
 // placement stays. Models: art/lowpix/world/world.json -> tools/lowpix-world.mjs -> public/models/lowpix/world/ (credits
 // in CREDITS.md). A prop def's own `asset` wins over this table.
 export const PROP_MODELS = {
+  cash_tin: { id: 'lowpix/world/coin_float' },
+  battery_pack: { id: 'lowpix/world/batterypack' },
+  garbage_station_empty: { id: 'lowpix/world/garbagestation' },
+  garbage_station: { id: 'lowpix/world/garbagestation' },
   tube_box: { id: 'lowpix/world/tubebox' },
   milk_carton: { id: 'lowpix/world/milkcarton' },
   mk_watch_case: { id: 'lowpix/world/watchcase' },
@@ -117,6 +121,7 @@ export const PROP_MODELS = {
   planet_lamp: { id: 'lowpix/world/planet_lamp' },
   plant_monstera: { id: 'lowpix/world/plant_monstera' },
   plant_pothos: { id: 'lowpix/world/plant_pothos' },
+  pocket_watch: { id: 'lowpix/world/vintage_watch' },
   post_box: { id: 'lowpix/world/post_box' },
   potted_row: { id: 'lowpix/world/potted_row' },
   propane: { id: 'lowpix/world/gas_cylinder' },

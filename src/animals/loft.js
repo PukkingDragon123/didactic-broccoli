@@ -56,7 +56,7 @@ export function fringe(r, from, to, n, amp) {
 }
 
 /** Block mode (the default): every loft is a stack of chamfered block segments, like the people (src/people/mesh.js). */
-export const BLOCK = { on: true, ch: 0.32 };
+export const BLOCK = { on: false, ch: 0.32 }; // (block segments were the phase-12 look; the animals are smooth now)
 
 /** The chamfered box ring in a section's frame: [side, up] points from the bottom centre round to it again (10). */
 function boxRing(r, ch, out = []) {

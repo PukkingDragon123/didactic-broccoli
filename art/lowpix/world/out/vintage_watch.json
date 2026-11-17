@@ -1,0 +1,33 @@
+{
+ "id": "vintage_watch",
+ "src": "polyhaven:vintage_pocket_watch",
+ "credit": {
+  "title": "Vintage Pocket Watch",
+  "author": "Tal Swicegood",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_pocket_watch",
+  "site": "Poly Haven"
+ },
+ "tris": 1497,
+ "tex": 128,
+ "size": [
+  0.059,
+  0.077,
+  0.013
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#4c2c24",
+   "#603f32",
+   "#745340",
+   "#876850",
+   "#997e60",
+   "#a59378",
+   "#b0a790",
+   "#bdb8a8",
+   "#cbc9be"
+  ]
+ },
+ "warnings": []
+}

@@ -1992,6 +1992,39 @@
    "cap": 512,
    "grain": 0.0,
    "smooth": 1.0
+  },
+  {
+   "id": "garbagestation",
+   "src": "art/lowpix/world/made/garbagestation.glb",
+   "h": 1.74,
+   "ppm": 200,
+   "tris": 1500,
+   "name": "Garbage station (\u3054\u307f\u96c6\u7a4d\u6240)",
+   "prop": "garbage_station",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "batterypack",
+   "src": "art/lowpix/world/made/batterypack.glb",
+   "h": 0.126,
+   "ppm": 600,
+   "tris": 40,
+   "name": "AA batteries",
+   "prop": "battery_pack",
+   "cap": 256,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "vintage_watch",
+   "src": "polyhaven:vintage_pocket_watch",
+   "h": 0.077,
+   "ppm": 800,
+   "tris": 1500,
+   "prop": "pocket_watch",
+   "cap": 256
   }
  ]
 }

@@ -4,6 +4,7 @@
 // sketchbook's cover and the day's receipt. Friends who visit see it too (it travels in the save like every state key).
 // Debug: dbg.logo.open(), .demo(name), .draw([[x, y, ink], ...]), .reset(), .state(), .receipt()
 import * as THREE from 'three';
+import { detailize } from '../world/surfaces.js';
 import { readLogo, setActiveLogo, writeLogo, logoURL, crestPixels, INKS, DEFAULT_NAME } from '../logo/logo.js';
 import { openLogoEditor, logoEditorOpen } from '../logo/editor.js';
 import { buildSketchbook, PAD } from '../logo/sketchbook.js';
@@ -46,7 +47,7 @@ function projectingSign(game) {
   const H = GARAGE.height, pix = new Pix(SIGN.w, SIGN.h, 9), tex = pix.texture();
   const g = new THREE.Group();
   const face = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.42, metalness: 0.05 });
-  const steel = new THREE.MeshStandardMaterial({ color: 0x2a2624, roughness: 0.55, metalness: 0.6 });
+  const steel = detailize(new THREE.MeshStandardMaterial({ color: 0x2a2624, roughness: 0.55, metalness: 0.6 }), 'metal');
   const W = SIGN.w / 100, Ht = SIGN.h / 100, T = 0.035;
   // the board: printed both sides, a steel edge round it
   const board = new THREE.Mesh(new THREE.BoxGeometry(T, Ht, W), [face, face, steel, steel, steel, steel]); // (±x: up and down the lane)

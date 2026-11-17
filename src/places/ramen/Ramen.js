@@ -424,7 +424,7 @@ export class Ramen {
     this.redrawPlaques();
     // laminated paper menus on the counter: pick one up and read it (point at a dish for what it does)
     this.menuCard = pixCanvas(704, 400); // the baked photo menu (tools/bake-print.py 'rm:menu'), 4 px per old px
-    whenPrint('shop').then(() => this.drawMenuCard());
+    whenPrint('ramen').then(() => this.drawMenuCard());
     const cardMat = P.mat(new THREE.MeshStandardMaterial({ map: this.menuCard.tex, roughness: 0.4 }));
     this.cards = [1, 4].map((si) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(0.33, 0.19).rotateX(-Math.PI / 2), cardMat);
@@ -452,7 +452,7 @@ export class Ramen {
   drawMenuCard() {
     if (!this.menuCard) return;
     const sel = this.menuPm?.active ? this.menuSel : -1;
-    const img = printImage('shop'), r = printRegions('shop')['rm:menu'];
+    const img = printImage('ramen'), r = printRegions('ramen')['rm:menu'];
     this.menuCard.redraw((c, w, h) => {
       if (img && r) c.drawImage(img, r[0], r[1], r[2], r[3], 0, 0, w, h);
       else { c.fillStyle = '#f6eedc'; c.fillRect(0, 0, w, h); }

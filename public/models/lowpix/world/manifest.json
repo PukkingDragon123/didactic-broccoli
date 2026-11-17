@@ -184,6 +184,24 @@
   ],
   "bytes": 76220
  },
+ "batterypack": {
+  "id": "batterypack",
+  "name": "AA batteries",
+  "src": "art/lowpix/world/made/batterypack.glb",
+  "title": "AA batteries",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/batterypack.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 12,
+  "tex": 176,
+  "size": [
+   0.086,
+   0.126,
+   0.022
+  ],
+  "bytes": 4140
+ },
  "beach_parasol": {
   "id": "beach_parasol",
   "name": "Beach Umbrella",
@@ -1709,6 +1727,24 @@
    0.092
   ],
   "bytes": 28240
+ },
+ "garbagestation": {
+  "id": "garbagestation",
+  "name": "Garbage station (ごみ集積所)",
+  "src": "art/lowpix/world/made/garbagestation.glb",
+  "title": "Garbage station (ごみ集積所)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garbagestation.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 736,
+  "tex": 512,
+  "size": [
+   1.75,
+   1.74,
+   1.04
+  ],
+  "bytes": 48480
  },
  "gas_cylinder": {
   "id": "gas_cylinder",
@@ -4473,6 +4509,24 @@
    0.251
   ],
   "bytes": 73876
+ },
+ "vintage_watch": {
+  "id": "vintage_watch",
+  "name": "Vintage Pocket Watch",
+  "src": "polyhaven:vintage_pocket_watch",
+  "title": "Vintage Pocket Watch",
+  "author": "Tal Swicegood",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_pocket_watch",
+  "site": "Poly Haven",
+  "tris": 1497,
+  "tex": 128,
+  "size": [
+   0.059,
+   0.077,
+   0.013
+  ],
+  "bytes": 24544
  },
  "wash_bucket": {
   "id": "wash_bucket",

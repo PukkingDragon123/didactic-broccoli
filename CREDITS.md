@@ -2347,6 +2347,7 @@ by `tools/pixelart.py`.
 
 Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert --style pixel-hd`), then scaled, re-textured and compressed by tools/lowpix-world.mjs. Shipped in `models/lowpix/world/`.
 
+- AA batteries by Gacha Garage (made for the game, art/lowpix/world/made/batterypack.glb), CC0 1.0. Shipped as `models/lowpix/world/batterypack.glb`
 - Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0. Shipped as `models/lowpix/world/busstop.glb`
 - capsule return by Gacha Garage (made for the game, art/lowpix/world/made/capsulereturn.glb), CC0 1.0. Shipped as `models/lowpix/world/capsulereturn.glb`
 - Cardboard mess by Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb), CC0 1.0. Shipped as `models/lowpix/world/cardboardmess.glb`
@@ -2356,6 +2357,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - dagashi rack by Gacha Garage (made for the game, art/lowpix/world/made/dagashirack.glb), CC0 1.0. Shipped as `models/lowpix/world/dagashirack.glb`
 - Dust pile by Gacha Garage (made for the game, art/lowpix/world/made/dustpile.glb), CC0 1.0. Shipped as `models/lowpix/world/dustpile.glb`
 - Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0. Shipped as `models/lowpix/world/firebuckets.glb`
+- Garbage station (ごみ集積所) by Gacha Garage (made for the game, art/lowpix/world/made/garbagestation.glb), CC0 1.0. Shipped as `models/lowpix/world/garbagestation.glb`
 - Gas water heater (瞬間湯沸器) by Gacha Garage (made for the game, art/lowpix/world/made/waterheater.glb), CC0 1.0. Shipped as `models/lowpix/world/waterheater.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb), CC0 1.0. Shipped as `models/lowpix/world/milkcarton.glb`
 - Mini fridge by Gacha Garage (made for the game, art/lowpix/world/made/minifridge.glb), CC0 1.0. Shipped as `models/lowpix/world/minifridge.glb`
@@ -2457,6 +2459,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Vintage Grandfather Clock 01 by Yann Kervran, James Ray Cock (https://polyhaven.com/a/vintage_grandfather_clock_01), CC0 1.0. Shipped as `models/lowpix/world/clock_grandfather.glb`
 - Vintage Microwave by Adam Nekola (https://polyhaven.com/a/vintage_microwave), CC0 1.0. Shipped as `models/lowpix/world/microwave.glb`
 - Vintage Oil Lamp by Monsta3D (https://polyhaven.com/a/vintage_oil_lamp), CC0 1.0. Shipped as `models/lowpix/world/lamp_oil.glb`
+- Vintage Pocket Watch by Tal Swicegood (https://polyhaven.com/a/vintage_pocket_watch), CC0 1.0. Shipped as `models/lowpix/world/vintage_watch.glb`
 - Wall Clock by PierreB3D (https://polyhaven.com/a/wall_clock), CC0 1.0. Shipped as `models/lowpix/world/clock_wall.glb`
 - Water Manhole Cover by Raunox (https://polyhaven.com/a/water_manhole_cover), CC0 1.0. Shipped as `models/lowpix/world/manhole.glb`
 - Watering Can Metal 01 by Charles Nderitu (https://polyhaven.com/a/watering_can_metal_01), CC0 1.0. Shipped as `models/lowpix/world/watering_can.glb`

@@ -243,3 +243,17 @@ for k in range(0, 128, 4): d.line([x0 + k, y0, x0 + k + random.randint(-3, 3), y
 im.paste(planks(128, 256, (120, 86, 54)), (x0 + 128, y0))
 grime(im, 12).save(os.path.join(H, 'mikawaya.png'))
 print('mikawaya ok')
+# garbage station: the green crow net (rolled), the rules board, its post; batteries in a blister card
+im = Image.new('RGB', (512, 512), (40, 110, 70)); d = ImageDraw.Draw(im)
+for k in range(0, 256, 8): d.line([k, 0, k + 64, 255], fill=(30, 86, 54), width=2); d.line([k + 64, 0, k, 255], fill=(54, 132, 86), width=2)
+d.rectangle([256, 0, 511, 255], fill=(240, 238, 228)); d.rectangle([256, 0, 511, 40], fill=(40, 110, 70))
+d.text((270, 6), 'ごみ集積所', font=ImageFont.truetype(FONT, 26), fill=(250, 250, 244))
+rules = ['月・木  燃えるごみ', '水  資源ごみ', '金  びん・かん', '朝8時までに', '杜王町 町内会']
+for i, t in enumerate(rules): d.text((268, 52 + i * 38), t, font=ImageFont.truetype(FONT, 22), fill=(40, 40, 44))
+d.rectangle([0, 256, 255, 511], fill=(150, 156, 160)); d.rectangle([256, 256, 511, 511], fill=(130, 126, 118))
+grime(im, 12).save(os.path.join(H, 'garbage.png'))
+im = Image.new('RGB', (256, 256), (236, 236, 230)); d = ImageDraw.Draw(im)
+d.rectangle([0, 0, 255, 70], fill=(30, 60, 140)); d.text((14, 14), '単3 アルカリ', font=ImageFont.truetype(FONT, 30), fill=(250, 250, 250))
+for k in range(4): d.rectangle([20 + k * 56, 90, 64 + k * 56, 240], fill=(40, 40, 44)); d.rectangle([20 + k * 56, 90, 64 + k * 56, 130], fill=(200, 160, 40)); d.rectangle([34 + k * 56, 82, 50 + k * 56, 90], fill=(190, 190, 196))
+grime(im, 6).save(os.path.join(H, 'battery.png'))
+print('set5 ok')

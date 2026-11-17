@@ -27,7 +27,7 @@
 "model": "puffbox"
 },
 "pocket_watch": {
-"skip": true
+"model": "vintage_watch"
 },
 "mk_outbox": {
 "ry": "Math.PI / 2"
@@ -140,5 +140,17 @@
 },
 "tube_box": {
 "model": "tubebox"
+},
+"garbage_station": {
+"model": "garbagestation"
+},
+"garbage_station_empty": {
+"model": "garbagestation"
+},
+"battery_pack": {
+"model": "batterypack"
+},
+"cash_tin": {
+"model": "coin_float"
 }
 }

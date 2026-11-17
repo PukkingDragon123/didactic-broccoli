@@ -1616,6 +1616,7 @@ by `tools/pixelart.py`.
 
 [lowpix-world:begin]
 3D models: world props and furniture (converted to pixel art with lowpix)
+- AA batteries by Gacha Garage (made for the game, art/lowpix/world/made/batterypack.glb), CC0 1.0 (models/lowpix/world/batterypack.glb)
 - Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0 (models/lowpix/world/busstop.glb)
 - capsule return by Gacha Garage (made for the game, art/lowpix/world/made/capsulereturn.glb), CC0 1.0 (models/lowpix/world/capsulereturn.glb)
 - Cardboard mess by Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb), CC0 1.0 (models/lowpix/world/cardboardmess.glb)
@@ -1625,6 +1626,7 @@ by `tools/pixelart.py`.
 - dagashi rack by Gacha Garage (made for the game, art/lowpix/world/made/dagashirack.glb), CC0 1.0 (models/lowpix/world/dagashirack.glb)
 - Dust pile by Gacha Garage (made for the game, art/lowpix/world/made/dustpile.glb), CC0 1.0 (models/lowpix/world/dustpile.glb)
 - Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0 (models/lowpix/world/firebuckets.glb)
+- Garbage station (ごみ集積所) by Gacha Garage (made for the game, art/lowpix/world/made/garbagestation.glb), CC0 1.0 (models/lowpix/world/garbagestation.glb)
 - Gas water heater (瞬間湯沸器) by Gacha Garage (made for the game, art/lowpix/world/made/waterheater.glb), CC0 1.0 (models/lowpix/world/waterheater.glb)
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb), CC0 1.0 (models/lowpix/world/milkcarton.glb)
 - Mini fridge by Gacha Garage (made for the game, art/lowpix/world/made/minifridge.glb), CC0 1.0 (models/lowpix/world/minifridge.glb)
@@ -1726,6 +1728,7 @@ by `tools/pixelart.py`.
 - Vintage Grandfather Clock 01 by Yann Kervran, James Ray Cock, CC0 1.0: https://polyhaven.com/a/vintage_grandfather_clock_01 (models/lowpix/world/clock_grandfather.glb)
 - Vintage Microwave by Adam Nekola, CC0 1.0: https://polyhaven.com/a/vintage_microwave (models/lowpix/world/microwave.glb)
 - Vintage Oil Lamp by Monsta3D, CC0 1.0: https://polyhaven.com/a/vintage_oil_lamp (models/lowpix/world/lamp_oil.glb)
+- Vintage Pocket Watch by Tal Swicegood, CC0 1.0: https://polyhaven.com/a/vintage_pocket_watch (models/lowpix/world/vintage_watch.glb)
 - Wall Clock by PierreB3D, CC0 1.0: https://polyhaven.com/a/wall_clock (models/lowpix/world/clock_wall.glb)
 - Water Manhole Cover by Raunox, CC0 1.0: https://polyhaven.com/a/water_manhole_cover (models/lowpix/world/manhole.glb)
 - Watering Can Metal 01 by Charles Nderitu, CC0 1.0: https://polyhaven.com/a/watering_can_metal_01 (models/lowpix/world/watering_can.glb)

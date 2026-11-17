@@ -1,0 +1,44 @@
+{
+ "id": "garbagestation",
+ "src": "art/lowpix/world/made/garbagestation.glb",
+ "credit": {
+  "title": "Garbage station (ごみ集積所)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garbagestation.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 736,
+ "tex": 512,
+ "size": [
+  1.75,
+  1.74,
+  1.04
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#0e362c",
+   "#144535",
+   "#1a533c",
+   "#216141",
+   "#286e46",
+   "#388f56",
+   "#4aaf64",
+   "#6dbd7c",
+   "#92ca97"
+  ],
+  "m1": [
+   "#41352e",
+   "#53473f",
+   "#645a50",
+   "#736c63",
+   "#827e76",
+   "#908f8c",
+   "#a0a0a0",
+   "#b2b2b2",
+   "#c4c4c4"
+  ]
+ },
+ "warnings": []
+}

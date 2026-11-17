@@ -400,6 +400,89 @@ def menucard(P):
 S['rm:menu'] = (704, 400, aged(menucard, paper='Paper001', grain_k=0.5, fade=0.05, rings=0.35, seed=12))
 
 
+# ---- the rest of Mikawa-ya's printed matter (phase 15), 4x the old cells: cardboard sides, the newspaper bundle, the
+# kuji board, menko and bromide sheets, strips of bagged sweets, a framed photo, the hand-written signs and price tags
+def kraft(P, w, h): P.texture('acg:Cardboard002', 0, 0, w, h, k=1.0, mode='normal')
+for i, (t, col) in enumerate([('みかん', 0x8a2a1a), ('ラムネ', 0x2a5aa8), ('こわれもの', 0x8a2a1a), ('三河屋', 0x3a2a1a)]):
+    def card_(P, t=t, col=col):
+        kraft(P, 128, 80)
+        P.text(t, 'kaku', 26 if len(t) <= 3 else 20, 64, 40, col, maxw=116)
+        P.rect(8, 64, 112, 2, col)
+    S['card%d' % i] = (128, 80, card_)
+
+def news(P):
+    P.texture('acg:Paper002', 0, 0, 64, 64, k=1.0, mode='normal')
+    P.text('汐見新聞', 'oldmincho', 12, 32, 8, INK)
+    P.photo('local:lane/baseball.jpg', 4, 16, 34, 26, sat=0.0, con=1.2)
+    P.lines('夏の大会 開幕 地元校が初戦突破', 'kakub', 6, 40, 16, 22, INK, maxy=60)
+    for y in range(46, 62, 4): P.hline(4, y, 34, 0x6a6a6a, 1)
+S['news'] = (64, 64, news)
+
+def kuji(P):
+    w, h = 160, 208
+    P.rect(0, 0, w, h, 0xf6efe0); P.rect(0, 0, w, 30, RED)
+    P.text('くじびき', 'mochiy', 18, w / 2, 15, WHITE)
+    for k, (ref, lab) in enumerate([(ph('robot'), '1等'), (ph('plane'), '2等'), (ph('gumdrop'), '3等')]):
+        x = 6 + k * 50
+        P.photo(ref, x, 36, 46, 44, f=(0.5, 0.5, 1.2)); P.rect(x, 80, 46, 12, INK); P.text(lab, 'kakub', 8, x + 23, 86, 0xffd23f)
+    cols = [0xf6a0b8, 0xf8e080, 0xa8d8f0, 0xb8e8a0]
+    import random; rn = random.Random(17)
+    for j in range(7):
+        for i in range(9):
+            x, y = 8 + i * 16 + (j % 2) * 2, 100 + j * 14
+            if rn.random() < 0.3: P.rect(x, y, 13, 10, 0xd8c8a8); continue
+            P.rect(x, y, 13, 10, cols[(i + j) % 4]); P.rect(x, y + 4, 13, 1, mixc(cols[(i + j) % 4], 0, 0.25))
+    P.text('1回 20円', 'kaku', 11, w / 2, h - 8, RED)
+S['kuji'] = (160, 208, aged(kuji, paper='Paper001', fade=0.3, crease=0.4, seed=21))
+
+def menko(P):
+    w, h = 128, 160
+    P.rect(0, 0, w, h, 0xe9dcc0)
+    refs = [ph('wrestling'), 'local:lane/sumo.jpg', 'local:lane/baseball.jpg', ph('robot'), ph('tank'), ph('dino')]
+    for k, ref in enumerate(refs):
+        i, j = k % 2, k // 2; x, y = 6 + i * 60, 6 + j * 51
+        P.rect(x, y, 56, 48, [RED, 0x2a5aa8, 0xe8b830, 0x3aa65a, 0x8a5ad8, 0xf08a3a][k])
+        P.photo(ref, x + 4, y + 4, 48, 32, f=(0.5, 0.45, 1.2), sat=1.1)
+        P.text(['横綱', '大関', '四番', '超合金', '戦車', '怪獣'][k], 'kakub', 8, x + 28, y + 42, WHITE)
+S['menko'] = (128, 160, aged(menko, paper='Paper001', fade=0.35, seed=22))
+
+def bromide(P):
+    w, h = 128, 168
+    P.rect(0, 0, w, h, 0xf2ecdc); P.text('ブロマイド', 'kakub', 9, w / 2, 8, INK)
+    refs = ['local:lane/cat_black.jpg', 'local:lane/cat_grey.jpg', 'local:lane/shiba.jpg', 'local:lane/shinkansen.jpg', 'local:lane/fuji_morning.jpg', 'local:lane/snow_monkeys.jpg']
+    for k, ref in enumerate(refs):
+        i, j = k % 3, k // 3; x, y = 4 + i * 41, 18 + j * 74
+        P.rect(x, y, 38, 70, WHITE); P.photo(ref, x + 2, y + 2, 34, 54, sat=0.0 if k % 2 else 0.8, con=1.1); P.text('No.%d' % (k + 1), 'bebas', 7, x + 19, y + 63, INK)
+S['bromide'] = (128, 168, aged(bromide, paper='Paper001', fade=0.4, seed=23))
+
+for i, k in enumerate(['gumdrop', 'konpeito', 'lollipop', 'caramelcorn']):
+    def strip_(P, k=k, i=i):
+        w, h = 48, 216
+        P.rect(0, 0, w, h, 0xdcd8d0); P.rect(w / 2 - 3, 0, 6, h, [RED, 0x2a5aa8, 0x3aa65a, 0xe8b830][i])
+        for j in range(5):
+            y = 10 + j * 42
+            P.photo(ph(k), 4, y, 40, 36, f=(0.5, 0.5, 1.2 + j * 0.15), sat=1.0); P.rect(4, y, 40, 36, 0xffffff, line=1)
+            P.rect(4, y + 28, 40, 8, WHITE); P.text('10円', 'kakub', 6, 24, y + 32, RED)
+    S['strip%d' % i] = (48, 216, strip_)
+
+def photo_(P):
+    P.rect(0, 0, 64, 80, 0x5a3a22); P.photo('local:lane/fuji_izu.jpg', 6, 6, 52, 68, sat=0.5, warm=0.1)
+S['photo'] = (64, 80, aged(photo_, paper='Paper001', fade=0.5, seed=24))
+
+for key, (w, h, t, bg, fg, face) in {
+    'tabako': (160, 60, 'たばこ', 0xb8241c, WHITE, 'oldmincho'), 'kinen': (96, 48, '禁煙', WHITE, RED, 'kaku'),
+    'manbiki': (224, 48, '万引きは犯罪です', 0xfdf6e0, RED, 'kakub'), 'tsuke': (256, 48, 'ツケはききません 店主', 0xfdf6e0, INK, 'yusei'),
+    'dagashi': (160, 60, 'だがし', 0x2a5aa8, WHITE, 'mochiy'), 'freezerSign': (256, 56, 'アイスクリーム', 0x2a8ac8, WHITE, 'mochiy'),
+    'milkSign': (112, 56, '牛乳', 0x1f4ea8, WHITE, 'kaku'), 'flyerSign': (128, 68, 'チラシ ご自由に', 0xfdf6e0, INK, 'yusei')}.items():
+    def sign_(P, w=w, h=h, t=t, bg=bg, fg=fg, face=face):
+        P.rect(0, 0, w, h, bg); P.text(t, face, h * 0.55, w / 2, h / 2, fg, maxw=w - 10)
+    S[key] = (w, h, aged(sign_, paper='Paper001', fade=0.2, seed=len(key)))
+for i, v in enumerate(['10', '20', '30', '50']):
+    def tag_(P, v=v):
+        P.rect(0, 0, 48, 32, 0xfbf8f0); P.rect(0, 0, 48, 4, RED); P.text(v + '円', 'kaku', 15, 24, 19, RED)
+    S['tag%d' % i] = (48, 32, tag_)
+
+
 # ================================================================== street (src/world/LanePosters.js, keys 'lane:<design>:<n>')
 # Posters and notices pasted up round the lane, 4x their old size: (48 x 68 -> 192 x 272, 40 x 58 -> 160 x 232,
 # 56 x 44 -> 224 x 176). Photos: the lane set already shipped in public/img/photos (credited there).
@@ -558,6 +641,10 @@ def bake_sheet(name, width=1024):
         P = Panel(w, h, 0xffffff); r = fn(P); im = P.image()
         if callable(getattr(P, 'post', None)): im = P.post(im)
         ims[k if k.startswith('rm:') else prefix + k] = im
+    if name == 'shop':  # Ramen Yamada's print is its own sheet (only ever read into its canvases, never uploaded whole)
+        rm = {k: v for k, v in ims.items() if k.startswith('rm:')}
+        o2, i2 = pack(rm, width); save_sheet('ramen', o2, i2)
+        ims = {k: v for k, v in ims.items() if not k.startswith('rm:')}
     alpha = any(im.mode == 'RGBA' for im in ims.values())
     out, idx = pack(ims, width, alpha=alpha)
     save_sheet(name, out, idx)
