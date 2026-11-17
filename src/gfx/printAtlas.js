@@ -37,21 +37,18 @@ export const whenPrint = (name) => sheet(name).promise;
 export const printImage = (name) => sheet(name).img;
 
 /** The sheet's texture (one per sheet). mips: false for things only ever seen up close (saves a third). */
-export function printTexture(name, { mips = true, placeholder = '#e8e2d2' } = {}) {
+export function printTexture(name, { mips = true } = {}) {
   const s = sheet(name);
   if (!s.tex) {
-    let image = s.img;
-    if (!image) {
-      image = document.createElement('canvas'); image.width = image.height = 4;
-      const g = image.getContext('2d'); g.fillStyle = placeholder; g.fillRect(0, 0, 4, 4);
-    }
-    const t = new THREE.Texture(image);
+    // no stand-in image: a texture's storage can't change size once uploaded, so it stays un-uploaded (version 0,
+    // drawn as the empty texture) until the sheet itself arrives
+    const t = new THREE.Texture(s.img || undefined);
     t.colorSpace = THREE.SRGBColorSpace;
     t.magFilter = THREE.NearestFilter;
     t.minFilter = mips ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter;
     t.generateMipmaps = mips;
     t.anisotropy = 4;
-    t.needsUpdate = true;
+    if (s.img) t.needsUpdate = true;
     t.userData.print = name;
     s.tex = t;
   }
