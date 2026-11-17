@@ -1,0 +1,44 @@
+{
+ "id": "table_coffee",
+ "src": "polyhaven:coffee_table_round_01",
+ "credit": {
+  "title": "Coffee Table Round 01",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/coffee_table_round_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2780,
+ "tex": 512,
+ "size": [
+  1.304,
+  0.491,
+  1.303
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#433c73",
+   "#545292",
+   "#7173aa",
+   "#959abb",
+   "#b7bcce",
+   "#c2c7d3",
+   "#cdd2d9",
+   "#d8dbdf",
+   "#e2e4e6"
+  ],
+  "m1": [
+   "#0e0b0c",
+   "#110e0f",
+   "#151213",
+   "#181717",
+   "#1b1b1b",
+   "#3a3a3a",
+   "#5a5a5a",
+   "#797979",
+   "#989898"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,33 @@
+{
+ "id": "table_wood",
+ "src": "polyhaven:WoodenTable_01",
+ "credit": {
+  "title": "Wooden Table 01",
+  "author": "Ethan Place",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/WoodenTable_01",
+  "site": "Poly Haven"
+ },
+ "tris": 952,
+ "tex": 512,
+ "size": [
+  1.8,
+  0.549,
+  0.657
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#311107",
+   "#3f1b0a",
+   "#4d270d",
+   "#5a3511",
+   "#664416",
+   "#8f6a22",
+   "#b69430",
+   "#cdb74f",
+   "#d6cd7b"
+  ]
+ },
+ "warnings": []
+}

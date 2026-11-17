@@ -447,6 +447,7 @@ export function* taxiLeaveScene(c, sys) {
   if (cat && !cat.held) { cat.pos.set(1.0, 0, 6.2); cat.heading = 1.8; st.setCatState('sit', 30); }
   if (me) { me.h.root.position.set(0.2, 0, 6.9); me.face = Math.PI / 2 + 0.2; me.look = V(20, 1.4, TAXI_Z); }
   yield c.cam({ pos: V(-0.2, 1.05, 5.4), look: V(1.4, 1.2, 8.4), fov: 44 });
+  g.cinema?.sting('farewell'); // a soft bell chord under the last shot (src/cinema/stings.js)
   yield c.all(c.cam({ pos: V(-0.4, 1.1, 5.7), look: V(1.4, 1.3, 8.6), dur: 4.6 }), c.say('...Bye, Grandpa.', 2.6));
   c.hideSay();
   yield c.fade(1, 0.8);

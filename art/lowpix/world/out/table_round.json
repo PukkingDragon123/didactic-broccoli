@@ -1,0 +1,33 @@
+{
+ "id": "table_round",
+ "src": "polyhaven:round_wooden_table_01",
+ "credit": {
+  "title": "Round Wooden Table 01",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/round_wooden_table_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2998,
+ "tex": 512,
+ "size": [
+  1.396,
+  1.005,
+  1.396
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1e0406",
+   "#260606",
+   "#2f0c08",
+   "#36120b",
+   "#3e1a0e",
+   "#6d361b",
+   "#9a582a",
+   "#c5803a",
+   "#cfa66b"
+  ]
+ },
+ "warnings": []
+}

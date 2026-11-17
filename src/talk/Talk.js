@@ -464,6 +464,7 @@ class Session {
     const at = (out) => { this.mePos(out); return out; };
     const list = new ChoiceList(this.talk, texts, { time: st.time || 0, at, prompt: st.prompt ? this.fmt(st.prompt) : '' });
     this.choice = list;
+    if (st.time) this.game.events.emit('talk:timed', { who: this.spk, time: st.time }); // a tense moment (src/jojo: ゴゴゴ)
     await this.talk.until((dt) => list.update(dt));
     list.dispose();
     this.choice = null;

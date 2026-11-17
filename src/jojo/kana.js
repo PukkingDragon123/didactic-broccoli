@@ -7,7 +7,8 @@
 // Stepped animation only: a three-frame pop, a one-texel tremble ten times a second, a slow stepped rise and an
 // ordered-dither dissolve. No rotation (it would resample), no smoothing, no glows.
 //   const K = new Kana(game);   K.spawn({ kind: 'go' | 'do' | 'don' | 'ban' | 'zun', at, n, dur, side, size })
-//   at: Vector3 | Human (h.headTop) | Npc (n.h) | () => Vector3 | null (screen: [x, y] as 0..1 fractions)
+//   at: Vector3 | Human (h.headTop) | Npc (n.h) | () => Vector3 | null (screen: [x, y] as 0..1 fractions; px: screen
+//   pixels per art pixel there), text: a word instead of the kind's own
 //   K.update(dt)  (Game.updaters)   K.clear()
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
@@ -106,7 +107,7 @@ function bake(ch, palName) {
     frames.push(f);
   }
   const r = { frames, w: W, h: H, adv: CELL + 1 };
-  if (fontReady) CACHE[key] = r;
+  CACHE[key] = r; // (cleared once DotGothic16 has loaded, so early bakes are redone in the real face)
   return r;
 }
 
@@ -139,7 +140,7 @@ export class Kana {
       id: SEQ++, kind: o.kind || 'go', K, pal, glyphs, col: !!K.col && !o.text,
       at: o.at || null, screen: o.screen || null, t: -(o.delay || 0), dur: o.dur ?? 2.6,
       side: o.side ?? (Math.random() < 0.5 ? -1 : 1), size: o.size ?? 1, lift: o.lift ?? 0, seed: Math.random() * 100,
-      offset: o.offset || null,
+      offset: o.offset || null, px: o.px || 0,
     };
     if (!it.at && !it.screen) it.screen = [it.side > 0 ? 0.8 : 0.12, 0.62];
     this.items.push(it);
@@ -187,7 +188,7 @@ export class Kana {
       let sx, sy, S;
       if (it.screen) {
         sx = it.screen[0] * W; sy = it.screen[1] * H;
-        S = Math.max(2, Math.round((H / 150) * it.size * (it.K.h / 0.3)));
+        S = it.px || Math.max(2, Math.round((H / 150) * it.size * (it.K.h / 0.3)));
       } else {
         const p = this.anchorPos(it.at, _v);
         if (!p) { this.items.splice(i, 1); continue; }

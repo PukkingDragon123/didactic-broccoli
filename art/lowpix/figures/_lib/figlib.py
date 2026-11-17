@@ -634,6 +634,27 @@ class Fig:
         s.stamp(pid, mk, {"#": f"{R}:1"}, face="bottom", at="center")
         s.stamp(pid, ["dd", "hd"], {"d": f"{R}:1", "h": f"{R}:4"}, face="right", at="center")
 
+    # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
+    def model(s, name, src, height, at=(0, 0, 0), yaw=0, tris=4000, style="pixel-hd", atlas=512, recolor=None, mat="matte", pitch=0,
+              roll=0, scale=None, opts=None):
+        """A converted real model placed on the figure: `height` in mm, standing at `at`, turned `yaw` degrees.
+        recolor: {"brightness", "saturation", "hue", "tint": "#hex"} applied to its atlas (a black cat from a tabby)."""
+        m = {"name": name, "src": src, "height": height, "at": r1(list(at)), "yaw": yaw, "pitch": pitch, "roll": roll, "tris": tris,
+             "style": style, "atlas": atlas, "mat": mat}
+        if recolor:
+            m["recolor"] = recolor
+        if scale:
+            m["scale"] = scale
+        if opts:
+            m["opts"] = opts
+        s.meta.setdefault("models", []).append(m)
+        return "model_" + name
+
+    def model_clip(s, node, kind, length=2.0, amp=None, axis="y"):
+        """A gimmick clip on a converted model's node (pack.mjs bakes it): turn, hop, nod, spin, wobble, slide."""
+        s.meta["model_clip"] = {"node": node, "kind": kind, "length": length, "amp": amp, "axis": axis}
+        s.meta["clips"]["gimmick"] = "gimmick"
+
     # ---- clips
     def clip(s, name, length, tracks, loop=False, role=None):
         s.anims[name] = {"length": length, "loop": loop, "tracks": tracks}

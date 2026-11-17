@@ -1,0 +1,33 @@
+{
+ "id": "sofa_03",
+ "src": "polyhaven:sofa_03",
+ "credit": {
+  "title": "Sofa 03",
+  "author": "Fran Calvente",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/sofa_03",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 1024,
+ "size": [
+  2.737,
+  1.118,
+  0.929
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2a1311",
+   "#351c18",
+   "#40271f",
+   "#4b3226",
+   "#553e2e",
+   "#745b43",
+   "#927a5a",
+   "#a79779",
+   "#b9b19b"
+  ]
+ },
+ "warnings": []
+}
