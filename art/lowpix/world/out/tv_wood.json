@@ -1,0 +1,33 @@
+{
+ "id": "tv_wood",
+ "src": "polyhaven:Television_01",
+ "credit": {
+  "title": "Television 01",
+  "author": "Gabriel Radić",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Television_01",
+  "site": "Poly Haven"
+ },
+ "tris": 1918,
+ "tex": 400,
+ "size": [
+  0.6,
+  0.457,
+  0.471
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1d1815",
+   "#24201d",
+   "#2c2825",
+   "#33302d",
+   "#393836",
+   "#535353",
+   "#6e6e6e",
+   "#8a8a8a",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

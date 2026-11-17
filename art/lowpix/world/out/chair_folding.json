@@ -1,0 +1,34 @@
+{
+ "id": "chair_folding",
+ "src": "sketchfab:7a99fce4bdbd40e1b2949cdeb39a8fba",
+ "credit": {
+  "title": "Metal Folding Chair",
+  "author": "Chen CheHsuan",
+  "authorUrl": "https://sketchfab.com/jn930194",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/metal-folding-chair-7a99fce4bdbd40e1b2949cdeb39a8fba",
+  "site": "Sketchfab"
+ },
+ "tris": 2172,
+ "tex": 512,
+ "size": [
+  0.521,
+  0.82,
+  0.433
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#4a2d2d",
+   "#5e403d",
+   "#71544e",
+   "#836960",
+   "#937f74",
+   "#9f938a",
+   "#aba6a0",
+   "#b9b7b4",
+   "#c8c8c7"
+  ]
+ },
+ "warnings": []
+}

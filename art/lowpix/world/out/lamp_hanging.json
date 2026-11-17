@@ -1,0 +1,33 @@
+{
+ "id": "lamp_hanging",
+ "src": "polyhaven:hanging_industrial_lamp",
+ "credit": {
+  "title": "Hanging Industrial Lamp",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/hanging_industrial_lamp",
+  "site": "Poly Haven"
+ },
+ "tris": 2994,
+ "tex": 512,
+ "size": [
+  0.546,
+  1.355,
+  0.546
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#51383a",
+   "#674c4c",
+   "#7b6361",
+   "#8e7c78",
+   "#9e9592",
+   "#a9a5a4",
+   "#b4b4b4",
+   "#c2c2c2",
+   "#d1d1d1"
+  ]
+ },
+ "warnings": []
+}

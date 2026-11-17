@@ -1,0 +1,55 @@
+{
+ "id": "clock_alarm",
+ "src": "polyhaven:alarm_clock_01",
+ "credit": {
+  "title": "Alarm Clock 01",
+  "author": "Yann Kervran, James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/alarm_clock_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2998,
+ "tex": 192,
+ "size": [
+  0.131,
+  0.174,
+  0.066
+ ],
+ "colours": 18,
+ "palette": {
+  "m0": [
+   "#2a4f4f",
+   "#3a6561",
+   "#4a7a71",
+   "#5c8d80",
+   "#719d8e",
+   "#88a79a",
+   "#9db3a8",
+   "#b2bfb7",
+   "#c6ccc8"
+  ],
+  "m1": [
+   "#533f36",
+   "#6a5649",
+   "#806e5d",
+   "#938573",
+   "#a29b8e",
+   "#aca9a0",
+   "#b7b6b2",
+   "#c3c3c2",
+   "#d1d1d1"
+  ],
+  "m2": [
+   "#8b0023",
+   "#b6001f",
+   "#e00013",
+   "#ff0c0c",
+   "#fe4737",
+   "#fc7055",
+   "#fa9472",
+   "#f9b28f",
+   "#f9cbaa"
+  ]
+ },
+ "warnings": []
+}

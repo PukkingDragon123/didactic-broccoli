@@ -1,0 +1,55 @@
+{
+ "id": "toolbox",
+ "src": "polyhaven:metal_toolbox",
+ "credit": {
+  "title": "Metal Toolbox",
+  "author": "Mateusz Sadek",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_toolbox",
+  "site": "Poly Haven"
+ },
+ "tris": 2995,
+ "tex": 416,
+ "size": [
+  0.456,
+  0.347,
+  0.308
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#5b0c23",
+   "#751226",
+   "#8e1927",
+   "#a62025",
+   "#bd3029",
+   "#d0503c",
+   "#d5785e",
+   "#da9a7f",
+   "#e1b89f"
+  ],
+  "m1": [
+   "#293927",
+   "#384835",
+   "#485743",
+   "#596453",
+   "#697163",
+   "#7f837a",
+   "#939492",
+   "#a7a7a7",
+   "#bcbcbc"
+  ],
+  "m2": [
+   "#5d3e2a",
+   "#775639",
+   "#8f714a",
+   "#a68b5c",
+   "#b1a27a",
+   "#b9b18f",
+   "#c2bfa3",
+   "#cccbb6",
+   "#d6d6c9"
+  ]
+ },
+ "warnings": []
+}

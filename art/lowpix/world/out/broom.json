@@ -1,0 +1,44 @@
+{
+ "id": "broom",
+ "src": "polyhaven:wooden_broom",
+ "credit": {
+  "title": "Wooden Broom",
+  "author": "Balen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_broom",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 512,
+ "size": [
+  0.49,
+  1.454,
+  0.103
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#231815",
+   "#2d211c",
+   "#362b24",
+   "#3f352c",
+   "#473f35",
+   "#635b4e",
+   "#7d7769",
+   "#949187",
+   "#aaaaa6"
+  ],
+  "m1": [
+   "#242d41",
+   "#313e53",
+   "#3f5165",
+   "#4d6375",
+   "#5d7684",
+   "#728c96",
+   "#8c9fa3",
+   "#a4b1b2",
+   "#bbc2c2"
+  ]
+ },
+ "warnings": []
+}

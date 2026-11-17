@@ -1,0 +1,44 @@
+{
+ "id": "jerrycan_plastic",
+ "src": "polyhaven:plastic_jerrycan",
+ "credit": {
+  "title": "Plastic Jerrycan",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_jerrycan",
+  "site": "Poly Haven"
+ },
+ "tris": 2976,
+ "tex": 256,
+ "size": [
+  0.269,
+  0.318,
+  0.342
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#311916",
+   "#3e251e",
+   "#4b3127",
+   "#573f30",
+   "#634d3a",
+   "#7f694f",
+   "#998665",
+   "#a99f86",
+   "#bbb6a4"
+  ],
+  "m1": [
+   "#31161a",
+   "#3f1e20",
+   "#4c2827",
+   "#583430",
+   "#64423a",
+   "#805c4f",
+   "#9a7865",
+   "#aa9585",
+   "#bbb0a4"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,66 @@
+{
+ "id": "extinguisher",
+ "src": "polyhaven:korean_fire_extinguisher_01",
+ "credit": {
+  "title": "Korean Fire Extinguisher 01",
+  "author": "UM JOORIN",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/korean_fire_extinguisher_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2992,
+ "tex": 288,
+ "size": [
+  0.28,
+  0.659,
+  0.368
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#3e4668",
+   "#546185",
+   "#6e7f9d",
+   "#8f9daf",
+   "#afb9c2",
+   "#bcc4c9",
+   "#c8cdd0",
+   "#d4d7d7",
+   "#dfe0e0"
+  ],
+  "m1": [
+   "#651d07",
+   "#82310c",
+   "#9e4a11",
+   "#b96618",
+   "#d3851f",
+   "#dea439",
+   "#e0bd5b",
+   "#e4d17d",
+   "#e8e19d"
+  ],
+  "m2": [
+   "#440714",
+   "#580b14",
+   "#6b0f13",
+   "#7d1914",
+   "#8e291a",
+   "#b34325",
+   "#d16335",
+   "#d78c5e",
+   "#deaf86"
+  ],
+  "m3": [
+   "#070506",
+   "#080707",
+   "#0a0909",
+   "#0c0b0b",
+   "#0d0d0d",
+   "#2e2e2e",
+   "#505050",
+   "#717171",
+   "#929292"
+  ]
+ },
+ "warnings": []
+}

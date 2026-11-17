@@ -1,0 +1,66 @@
+{
+ "id": "cassette_player",
+ "src": "polyhaven:cassette_player",
+ "credit": {
+  "title": "Cassette Player",
+  "author": "Oday Abuzaeed",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/cassette_player",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 176,
+ "size": [
+  0.129,
+  0.237,
+  0.049
+ ],
+ "colours": 29,
+ "palette": {
+  "m0": [
+   "#15110f",
+   "#1b1715",
+   "#201d1b",
+   "#252321",
+   "#2a2927",
+   "#464646",
+   "#636363",
+   "#818181",
+   "#9e9e9e"
+  ],
+  "m1": [
+   "#5c1707",
+   "#77280b",
+   "#903e10",
+   "#a85616",
+   "#c0721d",
+   "#db952a",
+   "#ddb14f",
+   "#e1c873",
+   "#e6da96"
+  ],
+  "m2": [
+   "#644b32",
+   "#7f6744",
+   "#998457",
+   "#aa9d74",
+   "#b9b393",
+   "#c0bea4",
+   "#c8c8b5",
+   "#d1d1c4",
+   "#dbdbd3"
+  ],
+  "m3": [
+   "#152b2d",
+   "#1d393a",
+   "#254644",
+   "#2e514c",
+   "#385c54",
+   "#4e786b",
+   "#659281",
+   "#84a596",
+   "#a4b8ac"
+  ]
+ },
+ "warnings": []
+}

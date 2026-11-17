@@ -1,0 +1,33 @@
+{
+ "id": "jerrycan_metal",
+ "src": "polyhaven:metal_jerrycan",
+ "credit": {
+  "title": "Metal Jerrycan",
+  "author": "Sean Buckley",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_jerrycan",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 256,
+ "size": [
+  0.35,
+  0.455,
+  0.172
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#410d17",
+   "#541219",
+   "#66181a",
+   "#77251f",
+   "#873527",
+   "#a84f35",
+   "#c16f49",
+   "#ca936f",
+   "#d4b293"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,33 @@
+{
+ "id": "stool_wood",
+ "src": "polyhaven:wooden_stool_01",
+ "credit": {
+  "title": "Wooden Stool 01",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_stool_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2990,
+ "tex": 256,
+ "size": [
+  0.427,
+  0.437,
+  0.443
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#311f1f",
+   "#3f2c2a",
+   "#4c3936",
+   "#584843",
+   "#635650",
+   "#796f68",
+   "#8d8781",
+   "#9f9e9c",
+   "#b5b5b5"
+  ]
+ },
+ "warnings": []
+}

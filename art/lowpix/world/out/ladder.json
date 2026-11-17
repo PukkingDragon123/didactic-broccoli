@@ -1,0 +1,33 @@
+{
+ "id": "ladder",
+ "src": "polyhaven:wooden_ladder",
+ "credit": {
+  "title": "Wooden Ladder",
+  "author": "Miroslav Turura",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_ladder",
+  "site": "Poly Haven"
+ },
+ "tris": 2986,
+ "tex": 512,
+ "size": [
+  0.959,
+  1.335,
+  0.5
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2d1a15",
+   "#3a251c",
+   "#463125",
+   "#513e2e",
+   "#5c4b37",
+   "#78684d",
+   "#938564",
+   "#a69e83",
+   "#b8b5a3"
+  ]
+ },
+ "warnings": []
+}

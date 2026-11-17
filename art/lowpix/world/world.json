@@ -1,0 +1,642 @@
+{
+ "_about": "lowpix conversions for the world props and the furniture catalogue: node tools/lowpix-world.mjs (header there). ids are the file names in public/models/lowpix/world/; h = height in metres (Poly Haven: the model's real height), ppm = texels per metre.",
+ "defaults": {
+  "style": "pixel-hd",
+  "ppm": 160
+ },
+ "items": [
+  {
+   "id": "cash_register",
+   "src": "polyhaven:CashRegister_01",
+   "ppm": 200
+  },
+  {
+   "id": "tv_wood",
+   "src": "polyhaven:Television_01"
+  },
+  {
+   "id": "tv_crt",
+   "src": "sketchfab:29314bf8b66f49f98ad50dffe4950abf",
+   "h": 0.42
+  },
+  {
+   "id": "boombox",
+   "src": "polyhaven:boombox",
+   "ppm": 220
+  },
+  {
+   "id": "cassette_player",
+   "src": "polyhaven:cassette_player",
+   "ppm": 240
+  },
+  {
+   "id": "fan_floor",
+   "src": "sketchfab:feabb8d50d304af082461b9289289c92",
+   "h": 0.85
+  },
+  {
+   "id": "fan_desk",
+   "src": "sketchfab:612736f7659d451e811c967c8fea370b",
+   "h": 0.42
+  },
+  {
+   "id": "extinguisher",
+   "src": "polyhaven:korean_fire_extinguisher_01",
+   "ppm": 200
+  },
+  {
+   "id": "desk_lamp",
+   "src": "polyhaven:desk_lamp_arm_01",
+   "ppm": 220
+  },
+  {
+   "id": "toolbox",
+   "src": "polyhaven:metal_toolbox",
+   "ppm": 200
+  },
+  {
+   "id": "tool_chest",
+   "src": "polyhaven:metal_tool_chest"
+  },
+  {
+   "id": "broom",
+   "src": "polyhaven:wooden_broom",
+   "ppm": 200
+  },
+  {
+   "id": "dustpan",
+   "src": "polyhaven:dustpan",
+   "ppm": 220
+  },
+  {
+   "id": "ladder",
+   "src": "polyhaven:wooden_ladder",
+   "ppm": 120
+  },
+  {
+   "id": "stool_wood",
+   "src": "polyhaven:wooden_stool_01"
+  },
+  {
+   "id": "chair_folding",
+   "src": "sketchfab:7a99fce4bdbd40e1b2949cdeb39a8fba",
+   "h": 0.82
+  },
+  {
+   "id": "watering_can",
+   "src": "polyhaven:watering_can_metal_01",
+   "ppm": 220
+  },
+  {
+   "id": "jerrycan_plastic",
+   "src": "polyhaven:plastic_jerrycan",
+   "ppm": 200
+  },
+  {
+   "id": "jerrycan_metal",
+   "src": "polyhaven:metal_jerrycan",
+   "ppm": 200
+  },
+  {
+   "id": "clock_wall",
+   "src": "polyhaven:wall_clock",
+   "ppm": 240
+  },
+  {
+   "id": "clock_alarm",
+   "src": "polyhaven:alarm_clock_01",
+   "ppm": 260
+  },
+  {
+   "id": "lamp_hanging",
+   "src": "polyhaven:hanging_industrial_lamp",
+   "ppm": 200
+  },
+  {
+   "id": "lamp_caged",
+   "src": "polyhaven:caged_hanging_light",
+   "ppm": 220
+  },
+  {
+   "id": "lamp_fluoro",
+   "src": "polyhaven:mounted_fluorescent_lights",
+   "ppm": 160
+  },
+  {
+   "id": "crate_wood",
+   "src": "polyhaven:wooden_crate_01"
+  },
+  {
+   "id": "crate_wood2",
+   "src": "polyhaven:wooden_crate_02"
+  },
+  {
+   "id": "crate_plastic",
+   "src": "polyhaven:plastic_crate_01"
+  },
+  {
+   "id": "crate_plastic2",
+   "src": "polyhaven:plastic_crate_02"
+  },
+  {
+   "id": "box_cardboard",
+   "src": "polyhaven:cardboard_box_01"
+  },
+  {
+   "id": "bin_metal",
+   "src": "polyhaven:metal_trash_can"
+  },
+  {
+   "id": "shelf_steel",
+   "src": "polyhaven:steel_frame_shelves_01",
+   "ppm": 120
+  },
+  {
+   "id": "shelf_steel2",
+   "src": "polyhaven:steel_frame_shelves_02",
+   "ppm": 120
+  },
+  {
+   "id": "shelf_display",
+   "src": "polyhaven:wooden_display_shelves_01",
+   "ppm": 120
+  },
+  {
+   "id": "shelf_painted",
+   "src": "polyhaven:painted_wooden_shelves",
+   "ppm": 120
+  },
+  {
+   "id": "rack_worn",
+   "src": "polyhaven:worn_metal_rack",
+   "ppm": 120
+  },
+  {
+   "id": "power_box",
+   "src": "polyhaven:power_box_01",
+   "ppm": 200
+  },
+  {
+   "id": "fire_alarm",
+   "src": "polyhaven:fire_alarm",
+   "ppm": 260
+  },
+  {
+   "id": "chalkboard",
+   "src": "polyhaven:standing_chalkboard_01",
+   "ppm": 160
+  },
+  {
+   "id": "hand_truck",
+   "src": "polyhaven:hand_truck",
+   "ppm": 140
+  },
+  {
+   "id": "ac_unit",
+   "src": "polyhaven:exterior_aircon_unit"
+  },
+  {
+   "id": "utility_box",
+   "src": "polyhaven:utility_box_01"
+  },
+  {
+   "id": "utility_box2",
+   "src": "polyhaven:utility_box_02"
+  },
+  {
+   "id": "gas_cylinder",
+   "src": "sketchfab:8faeab51bf604cd092e827dc1eb88ff4",
+   "h": 1.25,
+   "ppm": 140
+  },
+  {
+   "id": "lpg_small",
+   "src": "polyhaven:small_lpg_tank",
+   "ppm": 180
+  },
+  {
+   "id": "bicycle",
+   "src": "sketchfab:25aa85eeba944baea33ce5cde985ca49",
+   "h": 1.05,
+   "tris": 5000,
+   "ppm": 150
+  },
+  {
+   "id": "bicycle_old",
+   "src": "sketchfab:17ab00cb733443a2b552a2b620a68087",
+   "h": 1.05,
+   "tris": 5000,
+   "ppm": 150
+  },
+  {
+   "id": "scooter",
+   "src": "sketchfab:f307b287177a40a2ba33e1a76ecee7df",
+   "h": 1.05,
+   "tris": 5000,
+   "ppm": 150
+  },
+  {
+   "id": "scooter_rabbit",
+   "src": "sketchfab:45ba211f5f1c469590a28946c605962a",
+   "h": 1.0,
+   "tris": 5000,
+   "ppm": 150
+  },
+  {
+   "id": "kei_truck",
+   "src": "sketchfab:13dc5e2aad2e4d00af57e8d99d7095e9",
+   "h": 1.8,
+   "tris": 6000,
+   "ppm": 90
+  },
+  {
+   "id": "post_box",
+   "src": "sketchfab:5e0f504bb5d144809390dac8c66a6dd5",
+   "h": 1.0,
+   "ppm": 160
+  },
+  {
+   "id": "mailbox_house",
+   "src": "sketchfab:a5667f86065f45a4a5721bc4429f6d39",
+   "h": 0.4,
+   "ppm": 200
+  },
+  {
+   "id": "public_phone",
+   "src": "sketchfab:ef8e005698264e48a7ba28e5738e6d7f",
+   "h": 0.45,
+   "ppm": 220
+  },
+  {
+   "id": "cone",
+   "src": "sketchfab:1cbffb4169684e5a84ba186882bd55d7",
+   "h": 0.7,
+   "tris": 1200
+  },
+  {
+   "id": "street_lamp_jp",
+   "src": "sketchfab:a6e3624a679a44efa17bbfc9abec35ce",
+   "h": 4.6,
+   "ppm": 80
+  },
+  {
+   "id": "street_lamp",
+   "src": "polyhaven:street_lamp_01",
+   "ppm": 80
+  },
+  {
+   "id": "manhole",
+   "src": "polyhaven:water_manhole_cover",
+   "ppm": 200,
+   "tris": 1500
+  },
+  {
+   "id": "trash_jp",
+   "src": "sketchfab:477e8292037043508fcfcaed32805ca8",
+   "h": 0.9
+  },
+  {
+   "id": "plant_pot1",
+   "src": "polyhaven:potted_plant_01",
+   "alpha": true
+  },
+  {
+   "id": "plant_pot2",
+   "src": "polyhaven:potted_plant_02",
+   "alpha": true
+  },
+  {
+   "id": "plant_pot4",
+   "src": "polyhaven:potted_plant_04",
+   "alpha": true
+  },
+  {
+   "id": "planter_clay",
+   "src": "polyhaven:planter_pot_clay"
+  },
+  {
+   "id": "planter_box",
+   "src": "polyhaven:planter_box_01"
+  },
+  {
+   "id": "tyre",
+   "src": "polyhaven:old_tyre"
+  },
+  {
+   "id": "beer_crates",
+   "src": "sketchfab:2be722c87cfd404698506f33f575b219",
+   "h": 0.62
+  },
+  {
+   "id": "bucket_wood",
+   "src": "polyhaven:wooden_bucket_01"
+  },
+  {
+   "id": "kotatsu",
+   "src": "sketchfab:1e976c78d1eb4d2faa590316b0d38e24",
+   "h": 0.45,
+   "tris": 4000
+  },
+  {
+   "id": "kotatsu_lp",
+   "src": "sketchfab:e8644463bb9541eda6a00d857baa4ac4",
+   "h": 0.45
+  },
+  {
+   "id": "chabudai",
+   "src": "sketchfab:176eb5a05ea948bb82cb951cb817ab8d",
+   "h": 0.32
+  },
+  {
+   "id": "shoji",
+   "src": "sketchfab:d3dec406af444af7b5025134005a9696",
+   "h": 1.8,
+   "ppm": 110
+  },
+  {
+   "id": "chochin",
+   "src": "sketchfab:6fd5dcdb4702409a8be04e5f0fb2c316",
+   "h": 0.55,
+   "ppm": 200
+  },
+  {
+   "id": "chochin2",
+   "src": "sketchfab:4450069fee444ae0920aa5babd5d9239",
+   "h": 0.45,
+   "ppm": 200
+  },
+  {
+   "id": "rice_cooker",
+   "src": "sketchfab:6c1e19fbe4134b9dabbec8f2355a504f",
+   "h": 0.26,
+   "ppm": 240
+  },
+  {
+   "id": "kettle",
+   "src": "sketchfab:0eb111108b4f40d9881a29d7a073c6b4",
+   "h": 0.22,
+   "ppm": 260
+  },
+  {
+   "id": "phone_rotary",
+   "src": "sketchfab:52fb9ffd3bc241979f7192326e52aad8",
+   "h": 0.13,
+   "ppm": 300
+  },
+  {
+   "id": "tansu",
+   "src": "sketchfab:48bbd9962cc04725907c14a1a98fb812",
+   "h": 1.0,
+   "ppm": 140
+  },
+  {
+   "id": "tea_set",
+   "src": "polyhaven:tea_set_01",
+   "ppm": 260
+  },
+  {
+   "id": "thermos",
+   "src": "polyhaven:plastic_thermos",
+   "ppm": 240
+  },
+  {
+   "id": "books",
+   "src": "polyhaven:book_encyclopedia_set_01",
+   "ppm": 240
+  },
+  {
+   "id": "kettle_electric",
+   "src": "polyhaven:vintage_electric_kettle",
+   "ppm": 240
+  },
+  {
+   "id": "microwave",
+   "src": "polyhaven:vintage_microwave",
+   "ppm": 200
+  },
+  {
+   "id": "tv_02",
+   "src": "polyhaven:television_02"
+  },
+  {
+   "id": "chair_painted",
+   "src": "polyhaven:painted_wooden_chair_01"
+  },
+  {
+   "id": "chair_wood",
+   "src": "polyhaven:WoodenChair_01"
+  },
+  {
+   "id": "chair_school",
+   "src": "polyhaven:SchoolChair_01"
+  },
+  {
+   "id": "desk_school",
+   "src": "polyhaven:SchoolDesk_01"
+  },
+  {
+   "id": "chair_rocking",
+   "src": "polyhaven:Rockingchair_01"
+  },
+  {
+   "id": "chair_barber",
+   "src": "polyhaven:BarberShopChair_01"
+  },
+  {
+   "id": "chair_green",
+   "src": "polyhaven:GreenChair_01"
+  },
+  {
+   "id": "chair_lounge",
+   "src": "polyhaven:mid_century_lounge_chair"
+  },
+  {
+   "id": "armchair",
+   "src": "polyhaven:ArmChair_01"
+  },
+  {
+   "id": "armchair_cn",
+   "src": "polyhaven:chinese_armchair"
+  },
+  {
+   "id": "sofa_02",
+   "src": "polyhaven:sofa_02",
+   "ppm": 130
+  },
+  {
+   "id": "sofa_03",
+   "src": "polyhaven:sofa_03",
+   "ppm": 130
+  },
+  {
+   "id": "sofa_wood",
+   "src": "polyhaven:painted_wooden_sofa",
+   "ppm": 130
+  },
+  {
+   "id": "daybed",
+   "src": "polyhaven:vintage_day_bed",
+   "ppm": 120
+  },
+  {
+   "id": "ottoman",
+   "src": "polyhaven:Ottoman_01"
+  },
+  {
+   "id": "table_wood",
+   "src": "polyhaven:WoodenTable_01",
+   "ppm": 130
+  },
+  {
+   "id": "table_round",
+   "src": "polyhaven:round_wooden_table_01",
+   "ppm": 130
+  },
+  {
+   "id": "table_coffee",
+   "src": "polyhaven:coffee_table_round_01",
+   "ppm": 140
+  },
+  {
+   "id": "table_tea_cn",
+   "src": "polyhaven:chinese_tea_table",
+   "ppm": 140
+  },
+  {
+   "id": "table_side",
+   "src": "polyhaven:side_table_01"
+  },
+  {
+   "id": "desk_office",
+   "src": "polyhaven:metal_office_desk",
+   "ppm": 130
+  },
+  {
+   "id": "bookshelf",
+   "src": "polyhaven:wooden_bookshelf_worn",
+   "ppm": 120
+  },
+  {
+   "id": "cabinet_drawer",
+   "src": "polyhaven:drawer_cabinet",
+   "ppm": 140
+  },
+  {
+   "id": "cabinet_vintage",
+   "src": "polyhaven:vintage_cabinet_01",
+   "ppm": 130
+  },
+  {
+   "id": "cabinet_cn",
+   "src": "polyhaven:chinese_cabinet",
+   "ppm": 130
+  },
+  {
+   "id": "nightstand",
+   "src": "polyhaven:ClassicNightstand_01"
+  },
+  {
+   "id": "lamp_pipe",
+   "src": "polyhaven:industrial_pipe_lamp",
+   "ppm": 200
+  },
+  {
+   "id": "lamp_oil",
+   "src": "polyhaven:vintage_oil_lamp",
+   "ppm": 240
+  },
+  {
+   "id": "lantern_wood",
+   "src": "polyhaven:wooden_lantern_01",
+   "ppm": 200
+  },
+  {
+   "id": "lantern",
+   "src": "polyhaven:Lantern_01",
+   "ppm": 220
+  },
+  {
+   "id": "plant_anthurium",
+   "src": "polyhaven:anthurium_botany_01",
+   "alpha": true
+  },
+  {
+   "id": "plant_calathea",
+   "src": "polyhaven:calathea_orbifolia_01",
+   "alpha": true
+  },
+  {
+   "id": "plant_pachira",
+   "src": "polyhaven:pachira_aquatica_01",
+   "alpha": true,
+   "ppm": 130
+  },
+  {
+   "id": "vase_ceramic",
+   "src": "polyhaven:antique_ceramic_vase_01",
+   "ppm": 220
+  },
+  {
+   "id": "vase_brass",
+   "src": "polyhaven:brass_vase_01",
+   "ppm": 220
+  },
+  {
+   "id": "bust_marble",
+   "src": "polyhaven:marble_bust_01",
+   "ppm": 220,
+   "tris": 4000
+  },
+  {
+   "id": "cat_statue",
+   "src": "polyhaven:concrete_cat_statue",
+   "ppm": 200
+  },
+  {
+   "id": "elephant",
+   "src": "polyhaven:carved_wooden_elephant",
+   "ppm": 220
+  },
+  {
+   "id": "chess",
+   "src": "polyhaven:chess_set",
+   "ppm": 240,
+   "tris": 4000
+  },
+  {
+   "id": "dartboard",
+   "src": "polyhaven:dartboard",
+   "ppm": 240
+  },
+  {
+   "id": "mirror",
+   "src": "polyhaven:ornate_mirror_01",
+   "ppm": 180
+  },
+  {
+   "id": "ukulele",
+   "src": "polyhaven:Ukulele_01",
+   "ppm": 240
+  },
+  {
+   "id": "basket",
+   "src": "polyhaven:wicker_basket_01",
+   "ppm": 200
+  },
+  {
+   "id": "clock_mantel",
+   "src": "polyhaven:mantel_clock_01",
+   "ppm": 240
+  },
+  {
+   "id": "clock_grandfather",
+   "src": "polyhaven:vintage_grandfather_clock_01",
+   "ppm": 120
+  },
+  {
+   "id": "screen_folding",
+   "src": "polyhaven:chinese_screen_panels",
+   "ppm": 110
+  }
+ ]
+}

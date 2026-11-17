@@ -1,0 +1,44 @@
+{
+ "id": "tool_chest",
+ "src": "polyhaven:metal_tool_chest",
+ "credit": {
+  "title": "Metal Tool Chest",
+  "author": "Yann Kervran, John Hutcheson",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_tool_chest",
+  "site": "Poly Haven"
+ },
+ "tris": 2984,
+ "tex": 512,
+ "size": [
+  0.684,
+  0.652,
+  0.407
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#4f0f23",
+   "#661627",
+   "#7b1d2a",
+   "#90262b",
+   "#a4332f",
+   "#c04b3c",
+   "#c8735d",
+   "#d0967e",
+   "#d9b49e"
+  ],
+  "m1": [
+   "#211716",
+   "#29201e",
+   "#322926",
+   "#3a332f",
+   "#413c38",
+   "#5b5753",
+   "#747270",
+   "#8d8d8d",
+   "#a7a7a7"
+  ]
+ },
+ "warnings": []
+}

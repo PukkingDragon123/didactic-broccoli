@@ -1,0 +1,66 @@
+{
+ "id": "desk_lamp",
+ "src": "polyhaven:desk_lamp_arm_01",
+ "credit": {
+  "title": "Desk Lamp Arm 01",
+  "author": "Yann Kervran, Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/desk_lamp_arm_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2995,
+ "tex": 416,
+ "size": [
+  0.199,
+  0.879,
+  0.605
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#634d49",
+   "#7e6963",
+   "#958780",
+   "#aaa49f",
+   "#c1bfbd",
+   "#c8c8c8",
+   "#d1d1d1",
+   "#d9d9d9",
+   "#e2e2e2"
+  ],
+  "m1": [
+   "#730402",
+   "#941305",
+   "#b4280a",
+   "#d3420f",
+   "#eb631b",
+   "#eb883e",
+   "#eba75f",
+   "#edc180",
+   "#efd69f"
+  ],
+  "m2": [
+   "#451014",
+   "#591716",
+   "#6c241d",
+   "#7e3525",
+   "#8f472e",
+   "#ad633c",
+   "#bf8356",
+   "#c9a179",
+   "#d3bc9a"
+  ],
+  "m3": [
+   "#5b0d10",
+   "#751613",
+   "#8d2719",
+   "#a53c21",
+   "#bc542a",
+   "#cf733d",
+   "#d4945f",
+   "#dab080",
+   "#e0c8a0"
+  ]
+ },
+ "warnings": []
+}

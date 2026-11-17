@@ -1,0 +1,33 @@
+{
+ "id": "watering_can",
+ "src": "polyhaven:watering_can_metal_01",
+ "credit": {
+  "title": "Watering Can Metal 01",
+  "author": "Charles Nderitu",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/watering_can_metal_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2993,
+ "tex": 256,
+ "size": [
+  0.19,
+  0.197,
+  0.453
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#38384a",
+   "#4c4e5e",
+   "#616470",
+   "#777a82",
+   "#8f9092",
+   "#a0a0a0",
+   "#afafaf",
+   "#bebebe",
+   "#cdcdcd"
+  ]
+ },
+ "warnings": []
+}

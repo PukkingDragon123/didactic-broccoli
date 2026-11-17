@@ -1,0 +1,44 @@
+{
+ "id": "boombox",
+ "src": "polyhaven:boombox",
+ "credit": {
+  "title": "Boombox",
+  "author": "Thomas Paul Mouilleron",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/boombox",
+  "site": "Poly Haven"
+ },
+ "tris": 2997,
+ "tex": 448,
+ "size": [
+  0.728,
+  0.47,
+  0.187
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#33282c",
+   "#413739",
+   "#4e4647",
+   "#5b5556",
+   "#666666",
+   "#7b7b7b",
+   "#909090",
+   "#a5a5a5",
+   "#bababa"
+  ],
+  "m1": [
+   "#201b2f",
+   "#2a243c",
+   "#352e48",
+   "#403953",
+   "#49455e",
+   "#635c76",
+   "#7d758d",
+   "#9893a0",
+   "#b1aeb4"
+  ]
+ },
+ "warnings": []
+}

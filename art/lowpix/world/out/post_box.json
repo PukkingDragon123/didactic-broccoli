@@ -1,0 +1,45 @@
+{
+ "id": "post_box",
+ "src": "sketchfab:5e0f504bb5d144809390dac8c66a6dd5",
+ "credit": {
+  "title": "Old Japanese Post Box",
+  "author": "Rusty-exe",
+  "authorUrl": "https://sketchfab.com/dustyrusty",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-japanese-post-box-5e0f504bb5d144809390dac8c66a6dd5",
+  "site": "Sketchfab"
+ },
+ "tris": 1454,
+ "tex": 512,
+ "size": [
+  0.559,
+  1,
+  0.548
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#6e1228",
+   "#8d1a2c",
+   "#ab232d",
+   "#c82f2d",
+   "#d2574a",
+   "#d57a66",
+   "#d99881",
+   "#dfb29b",
+   "#e5c9b4"
+  ],
+  "m1": [
+   "#39222b",
+   "#492e36",
+   "#583b42",
+   "#66484d",
+   "#735759",
+   "#876d6d",
+   "#988887",
+   "#a9a2a0",
+   "#bbb9b8"
+  ]
+ },
+ "warnings": []
+}

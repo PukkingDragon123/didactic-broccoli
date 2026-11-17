@@ -1,0 +1,33 @@
+{
+ "id": "dustpan",
+ "src": "polyhaven:dustpan",
+ "credit": {
+  "title": "Dustpan",
+  "author": "Balen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/dustpan",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 208,
+ "size": [
+  0.332,
+  0.1,
+  0.368
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#4a3c2f",
+   "#5e5140",
+   "#716652",
+   "#837b65",
+   "#928e7a",
+   "#9e9d8f",
+   "#ababa4",
+   "#b9b9b7",
+   "#c9c9c9"
+  ]
+ },
+ "warnings": []
+}

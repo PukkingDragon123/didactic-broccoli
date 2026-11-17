@@ -1,0 +1,55 @@
+{
+ "id": "clock_wall",
+ "src": "polyhaven:wall_clock",
+ "credit": {
+  "title": "Wall Clock",
+  "author": "PierreB3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wall_clock",
+  "site": "Poly Haven"
+ },
+ "tris": 2998,
+ "tex": 256,
+ "size": [
+  0.32,
+  0.32,
+  0.047
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#0f0b0d",
+   "#131010",
+   "#161414",
+   "#1a1818",
+   "#1d1d1d",
+   "#3c3c3c",
+   "#5b5b5b",
+   "#7a7a7a",
+   "#999999"
+  ],
+  "m1": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ],
+  "m2": [
+   "#54021d",
+   "#6c041e",
+   "#83071b",
+   "#990a16",
+   "#af0f0f",
+   "#d42616",
+   "#e64f30",
+   "#e87e5a",
+   "#eba683"
+  ]
+ },
+ "warnings": []
+}
