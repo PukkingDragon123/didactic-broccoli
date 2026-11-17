@@ -270,13 +270,13 @@ export function makePainters(spec, P) {
       if (!th && Math.abs(c.nz) > 0.7) { o[0] *= 0.88; o[1] *= 0.85; o[2] *= 0.85; }
       if (L > 0.86) over(o, C_220_120_110, 0.12); // warm fingertips
       // the nail
-      const nailL = th ? 0.7 : 0.77;
-      if (bk > 0.28 && L > nailL) {
-        const edge = Math.min((L - nailL) * c.rh, (bk - 0.28) * 0.02);
-        over(o, mixT(skin, [252, 232, 222], 0.55), 0.85);
-        if (L > 0.95) over(o, C_255_248_238, 0.5); // free edge
-        else if (L < nailL + 0.05) over(o, C_255_245_235, 0.3); // lunula
-        if (edge < c.px * 0.8) over(o, [150, 90, 80], 0.45);
+      const nailL = th ? 0.74 : 0.8;
+      if (bk > 0.55 && L > nailL && L < 0.985) {
+        // the nail plate: a pale pink oval on the back of the last joint, a lighter free edge, a darker rim
+        over(o, mixT(skin, [238, 200, 190], 0.5), 0.7);
+        if (L > 0.95) over(o, [246, 232, 222], 0.45);
+        else if (L < nailL + 0.035) over(o, [244, 222, 212], 0.25);
+        if (bk < 0.66 || L < nailL + 0.012) over(o, [150, 92, 82], 0.4);
       }
     }
   }
