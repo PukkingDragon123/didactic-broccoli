@@ -56,8 +56,8 @@ def card(s):
     # --- title band
     P.rect(0, 0, W, 34, acc); P.rect(0, 34, W, 2, txt)
     P.text(s['jp'], 'mochiy', 20, 10, 17, WHITE, anchor='lm', maxw=232)
-    P.rect(W - 74, 5, 66, 24, WHITE); P.text('1回', 'kakub', 8, W - 66, 17, txt, anchor='lm')
-    P.text('%d' % s['price'], 'bebas', 22, W - 30, 17, RED, anchor='rm'); P.text('円', 'kakub', 9, W - 13, 19, RED, anchor='rm')
+    P.rect(W - 82, 5, 74, 24, WHITE); P.text('1回', 'kakub', 8, W - 77, 17, txt, anchor='lm')
+    P.text('%d' % s['price'], 'bebas', 22, W - 24, 17, RED, anchor='rm'); P.text('円', 'kakub', 9, W - 11, 19, RED, anchor='rm')
     # --- line-up strip
     y0 = 204
     P.rect(0, y0, W, H - y0, bg); P.rect(0, y0, W, 2, txt)
@@ -67,7 +67,7 @@ def card(s):
     P.text('対象年齢15才以上', 'kakub', 5.5, W / 2, H - 8, txt)
     im = P.image().convert('RGBA')
     # --- figures: the hero line on the stage (rarest in the middle, bigger), the full line-up in the strip
-    stage = sorted([i for i in items if not i['secret']], key=lambda i: -RANK.get(i['rarity'], 0))[:5]
+    stage = sorted([i for i in items if not i['secret'] and toy(s['id'], i['id']) is not None], key=lambda i: -RANK.get(i['rarity'], 0))[:5]
     order = stage[1::2][::-1] + stage[:1] + stage[2::2] if stage else []
     order = [stage[k] for k in ([3, 1, 0, 2, 4] if len(stage) == 5 else range(len(stage)))] if len(stage) == 5 else stage
     slots = len(order)
@@ -75,9 +75,9 @@ def card(s):
         t = toy(s['id'], it['id'])
         if t is None: continue
         hero = it is stage[0]
-        th = int((150 if hero else 112) * (1 if slots <= 3 else 0.92))
-        t = t.resize((max(1, int(t.width * th / t.height)), th), Image.LANCZOS)
-        if t.width > (W / slots) * 1.25: t = t.resize((int(W / slots * 1.25), int(t.height * W / slots * 1.25 / t.width)), Image.LANCZOS)
+        Ht, Wt = (150 if hero else 112), W / max(slots, 2.2) * (1.2 if hero else 1.05)
+        k_ = min(Ht / t.height, Wt / t.width)
+        t = t.resize((max(1, int(t.width * k_)), max(1, int(t.height * k_))), Image.LANCZOS)
         cx = int(W * (k + 0.5) / slots); by = 198 if hero else 192
         sh = Image.new('RGBA', t.size, (20, 14, 10, 0)); sh.putalpha(t.getchannel('A').point(lambda v: int(v * 0.45)))
         sh = sh.filter(ImageFilter.GaussianBlur(3))

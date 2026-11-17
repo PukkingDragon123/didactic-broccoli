@@ -215,7 +215,28 @@ const cache = new Map();
  * The banner canvas for a series. opts.faded: sun-bleached old card (the Shōwa machine).
  * @param {import('./thumbs.js').Thumbs} thumbs
  */
+// Phase 15: the card is the baked one (tools/bake-cards.py: the series' real toys rendered from their in-game models,
+// on a real photo backdrop, printed on real card stock) -> public/img/print/cards/<series>.webp. The painted card below
+// is only drawn for a series that has no baked card yet.
+const baked = new Map(); // key -> canvas
+const bakedTex = new Map(); // key -> [textures]
 export function bannerCanvas(seriesId, thumbs, opts = {}) {
+  const key = seriesId + (opts.faded ? ':f' : '');
+  if (baked.has(key)) return baked.get(key);
+  const c = document.createElement('canvas'); c.width = BANNER_W; c.height = BANNER_H;
+  const g = c.getContext('2d'); g.fillStyle = '#efe6d2'; g.fillRect(0, 0, c.width, c.height);
+  baked.set(key, c);
+  const img = new Image();
+  const done = () => { for (const t of bakedTex.get(key) || []) t.needsUpdate = true; };
+  img.onload = () => {
+    if (opts.faded) g.filter = 'saturate(0.55) sepia(0.25) brightness(1.05)';
+    g.drawImage(img, 0, 0, c.width, c.height); g.filter = 'none'; done();
+  };
+  img.onerror = () => { try { g.drawImage(paintedBanner(seriesId, thumbs, opts), 0, 0); } catch (e) { console.warn('banner', e); } done(); };
+  img.src = `${import.meta.env?.BASE_URL ?? '/'}img/print/cards/${(SERIES_BY_ID[seriesId] ? seriesId : 'rojineko')}.webp`;
+  return c;
+}
+function paintedBanner(seriesId, thumbs, opts = {}) {
   const key = seriesId + (opts.faded ? ':f' : '');
   if (cache.has(key)) return cache.get(key);
   const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.rojineko || Object.values(SERIES_BY_ID)[0];
@@ -244,7 +265,7 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
       const old = cache.get(key);
       if (!old) return;
       cache.delete(key);
-      const fresh = bannerCanvas(seriesId, thumbs, opts);
+      const fresh = paintedBanner(seriesId, thumbs, opts);
       old.getContext('2d').drawImage(fresh, 0, 0);
       cache.set(key, old);
       const t = texCache.get(key);
@@ -388,6 +409,8 @@ export function bannerTexture(seriesId, thumbs, opts = {}) {
   const key = seriesId + (opts.faded ? ':f' : '');
   if (texCache.has(key)) return texCache.get(key);
   const t = new THREE.CanvasTexture(bannerCanvas(seriesId, thumbs, opts));
+  if (!bakedTex.has(key)) bakedTex.set(key, []);
+  bakedTex.get(key).push(t);
   t.colorSpace = THREE.SRGBColorSpace;
   t.magFilter = THREE.NearestFilter;
   t.minFilter = THREE.LinearMipmapLinearFilter;

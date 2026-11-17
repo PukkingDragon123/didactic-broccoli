@@ -9,8 +9,7 @@ RAMEN = "sketchfab:f65a8eab51794fbc8c7941101a354a54"     # Japanese Ramen (senki
 TEMPURA = "sketchfab:de0f08813c6f4090b1b163bfc94e5688"   # Giant Tower of TEMPURA Rice Bowl (nantsune, scan)
 UDON = "sketchfab:50f286afdcf14b54bf35f22affb0b15c"      # Udon (OHitsuji, Scaniverse scan): kitsune udon on its tray
 GYOZA = "sketchfab:d09c2142da5c41e498d4e8ce1e5a5502"     # Japanese Gyoza (edemaistre, ObjectCapture scan)
-FLOAT = "sketchfab:a7652a3d813a479ba93cf880e466789c"     # Cherry Soda Float (LittleWhiteElk): a dark cola glass
-CAKE = "polyhaven:strawberry_chocolate_cake"             # a chocolate cake crowned with strawberries
+CAKE = "polyhaven:carrot_cake"                           # an iced ring cake, the sponge showing under the icing
 SUNDAE = "sketchfab:7fcd555c03de4411a83aa5685fac1b5b"    # Ice Cream Sundae (Discovered)
 FORK = "sketchfab:6f9efa17eab544eba05518bf29454895"      # Spaghetti and Fork (OsianOHM)
 
@@ -39,16 +38,9 @@ def ebifry():
     return F
 
 
-def soda():
-    F = Fig(f"{S}/soda", "Cola Float", "A tall dark glass, a scoop of vanilla that never melts and a cherry on top.")
-    F.model("glass", FLOAT, h=36, yaw=0, mat="gloss")
-    F.model_clip("model_glass", "wobble", 1.4, amp=5)
-    return F
-
-
 def pudding():
-    F = Fig(f"{S}/pudding", "Strawberry Chocolate Cake", "A whole cake under the counter glass, crowned with strawberries. Nobody has ever been sold a slice.")
-    F.model("cake", CAKE, w=34, d=34, h=26, yaw=-20, smooth=2.5)
+    F = Fig(f"{S}/pudding", "Iced Ring Cake", "The kissaten's ring cake under the counter glass, the icing running down the sponge. Nobody has ever been sold a slice.")
+    F.model("cake", CAKE, L=36, h=26, yaw=-20)
     return F
 
 
@@ -61,9 +53,9 @@ def sundae():
 def fork():
     F = Fig(f"{S}/fork", "Floating Fork Napolitan", "The fork twirls the spaghetti up and stays there, held by nothing at all. A window classic.")
     top = plate(F, "plate", 13.0, (0, 0, 0), col="#f4f2ea", rim="#c8a040")
-    F.model("pasta", FORK, w=34, d=16, at=(12, top, 0), yaw=0)  # the noodle strands (at the tines end) land mid-plate
+    F.model("pasta", FORK, w=24, d=12, at=(8, top, 0), yaw=0)  # the noodle strands (at the tines end) land mid-plate
     F.model_clip("model_pasta", "hop", 1.8, amp=2.0)
     return F
 
 
-FIGS = {"ramen": ramen, "katsu": katsu, "udon": udon, "ebifry": ebifry, "soda": soda, "pudding": pudding, "sundae": sundae, "fork": fork}
+FIGS = {"ramen": ramen, "katsu": katsu, "udon": udon, "ebifry": ebifry, "pudding": pudding, "sundae": sundae, "fork": fork}

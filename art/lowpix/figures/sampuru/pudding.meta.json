@@ -5,8 +5,8 @@
  "models": [
   {
    "name": "cake",
-   "src": "polyhaven:strawberry_chocolate_cake",
-   "height": 8.639,
+   "src": "polyhaven:carrot_cake",
+   "height": 12.158,
    "pos": [
     0.0,
     0.0,
@@ -17,10 +17,7 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "opts": {
-    "smooth": 2.5
-   },
-   "key": "7a88190ff28056"
+   "key": "cf915024653e70"
   }
  ],
  "key": "sampuru/pudding"

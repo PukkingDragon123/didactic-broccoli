@@ -202,8 +202,11 @@ def plate(F, pid, r, at=(0, 0, 0), col="#f2efe6", rim=None, h=1.6, sides=20, par
     C = F.c(col, k=0.1, hue=8)
     F.loft(pid, [((0, 0, 0), [r * 1.1, r * 1.1]), ((0, h * 0.35, 0), [r * 1.5, r * 1.5]), ((0, h * 0.8, 0), [r * 1.95, r * 1.95]),
                  ((0, h, 0), [r * 2.0, r * 2.0])], at, sides=sides, rnd=2.0, col=C, style="glaze", tone=2.7, up=[0, 0, 1], parent=parent)
-    if rim:
+    if rim:  # a hand-painted rim: a gold line, a blue band of little dashes, a second fine line inside
         F.layer(pid, id="rimline", op="band", axis="y", **{"from": 0.55, "to": 0.8}, ramp=F.c(rim), tone=3.0, faces=["sides"])
+        F.layer(pid, id="rimband", op="stripes", axis="around", period=1.6, width=0.45, ramp=F.c("#2a4a8a"), tone=2.8, faces=["sides"], range=[0.15, 0.45])
+    F.layer(pid, id="crazing", op="patches", scale=1.2, threshold=0.58, shift=-0.5)
+    F.layer(pid, id="pooling", op="noise", scale=1.0, amount=0.6)  # glaze pooled thicker and thinner
     return at[1] + h
 
 

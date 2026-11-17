@@ -2702,3 +2702,54 @@ textures (copies in `art/lowpix/photos/`):
 - Rough Linen by colormass, Rico Cilliers (https://polyhaven.com/a/rough_linen), CC0 1.0
 - Rusty Metal 02 by Rob Tuytel (https://polyhaven.com/a/rusty_metal_02), CC0 1.0
 <!-- lowpix-machines:end -->
+
+[print15:start]
+## Printed matter, phase 15 (posters, display cards, packaging, paper)
+
+Photographs from Google Open Images (CC BY 2.0, https://creativecommons.org/licenses/by/2.0/), cropped and printed:
+
+- "Sumo Wrestling" by SteFou!, CC BY 2.0, https://www.flickr.com/photos/stephen-oung/6082800765 (Open Images ID 0deee1bb956b2216)
+- "Mount Fuji @ Lake Kawaguchiko" by Guilhem Vellut, CC BY 2.0, https://www.flickr.com/photos/o_0/10863000084 (Open Images ID 1abfab68fd6a34c7)
+- "Snow monkeys in hot spring Japan" by Chi Tranter, CC BY 2.0, https://www.flickr.com/photos/chitranter/14212780326 (Open Images ID 2a1c261ad12e6f62)
+- "Tokyo Bay Fireworks Festival 2010 #7" by megawheel360, CC BY 2.0, https://www.flickr.com/photos/megawheel360/4892677310 (Open Images ID 3273e580b71afeef)
+- "20131014 02 Kyoto - Higashiyama - Yasaka Shrine 京都市 東山区 八坂神社" by Sjaak Kempe, CC BY 2.0, https://www.flickr.com/photos/22991060@N04/10512529846 (Open Images ID 34f24d2374c50c25)
+- "Dragonfly" by Isabelle Acatauassú Alves Almeida, CC BY 2.0, https://www.flickr.com/photos/96386958@N07/17635262609 (Open Images ID 42d6b48cf68049b9)
+- "uma chuva de balas para Elisa" by Mauren Veras, CC BY 2.0, https://www.flickr.com/photos/mauren/2429240906 (Open Images ID 436ed2d6e9cd8ca4)
+- "Japan-Kyoto-Train Station-Shinkansen-Bullet-Train-April-2004" by tiarescott, CC BY 2.0, https://www.flickr.com/photos/tiarescott/33754698 (Open Images ID 43ef0d9ecd6dd4be)
+- "Japan Mount Fuji (12)" by Michael G Winters, CC BY 2.0, https://www.flickr.com/photos/michaegwinters/13910560969 (Open Images ID 537d350a5dbe1f18)
+- "Plastic food" by Vincent, CC BY 2.0, https://www.flickr.com/photos/vincentsl/410965322 (Open Images ID 6324262554f184ab)
+- "Shrine Proper" by Mark Mrwizard, CC BY 2.0, https://www.flickr.com/photos/mark_mrwizard/8460230590 (Open Images ID 808e21f5b9632bab)
+- "Hikari Shinkansen" by alisdair, CC BY 2.0, https://www.flickr.com/photos/alisdair/2849800683 (Open Images ID 842fcd9c97854956)
+- "Tansu0018" by falling_james, CC BY 2.0, https://www.flickr.com/photos/10915994@N05/1004316580 (Open Images ID 8cf0d90fadf83514)
+- "Summer Festival - Hanabi 5" by sankuy, CC BY 2.0, https://www.flickr.com/photos/26471517@N06/2730883469 (Open Images ID 99d0d046afd231c4)
+- "Posing Sparrow" by Don O&#x27;Brien, CC BY 2.0, https://www.flickr.com/photos/dok1/2390986226 (Open Images ID ab7b7786ca8649a8)
+- "Yanaka Ginza shopping street" by Yoshikazu TAKADA, CC BY 2.0, https://www.flickr.com/photos/yoshikazut/4041690725 (Open Images ID ae8ffd814db5ce63)
+- "Shiba Inu dog @ Mount Mitake" by Guilhem Vellut, CC BY 2.0, https://www.flickr.com/photos/o_0/13438613015 (Open Images ID c14e22cfec55c7d2)
+- "Hachioji Fireworks Festival 2012" by Dick Thomas Johnson, CC BY 2.0, https://www.flickr.com/photos/31029865@N06/7843731868 (Open Images ID ccf0a3b89149f0d5)
+- "Our Room in a Traditional Ryokan" by Shadowgate, CC BY 2.0, https://www.flickr.com/photos/shadowgate/524709174 (Open Images ID f291d677045b5a38)
+- "Komorebi Village @ Showa Kinen Park @ Tachikawa" by Guilhem Vellut, CC BY 2.0, https://www.flickr.com/photos/o_0/10605798875 (Open Images ID f4200fadef07c329)
+- "jellyfish" by Stacy Blackman, CC BY 2.0, https://www.flickr.com/photos/stacyblackman/4226091446 (Open Images ID f5cb8e5bda89bf5c)
+
+Real vintage posters, public domain (Wikimedia Commons; Japanese Government Railways, 1930s):
+
+- 1930s Japan Travel Poster - 01.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_01.jpg
+- 1930s Japan Travel Poster - 02.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_02.jpg
+- 1930s Japan Travel Poster - 03.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_03.jpg
+- 1930s Japan Travel Poster - 04.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_04.jpg
+- 1930s Japan Travel Poster - 05.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_05.jpg
+- 1930s Japan Travel Poster - 06.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_06.jpg
+- 1930s Japan Travel Poster - 07.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_07.jpg
+- 1930s Japan Travel Poster - 09.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_09.jpg
+- 1930s Japan Travel Poster - 10.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_10.jpg
+- 1930s Japan Travel Poster - 11.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_11.jpg
+- 1930s Japan Travel Poster - 13.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_13.jpg
+- 1930s Japan Travel Poster - 14.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_14.jpg
+- 1930s Japan Travel Poster - 15.jpg, Public domain, https://commons.wikimedia.org/wiki/File:1930s_Japan_Travel_Poster_-_15.jpg
+
+Real paper and grime scans, CC0 (ambientCG, https://ambientcg.com): Paper001, Paper002, Paper003, Paper004, Paper005,
+Cardboard002, SurfaceImperfections003, SurfaceImperfections005, SurfaceImperfections007.
+
+Typefaces used in baked print (SIL Open Font License 1.1, Google Fonts): Zen Old Mincho, Shippori Mincho B1, Dela Gothic One,
+Zen Kaku Gothic New, Zen Maru Gothic, M PLUS 1p, BIZ UDPGothic, Kaisei Tokumin, Mochiy Pop One, DotGothic16, Bebas Neue,
+Archivo Black, Barlow Condensed, Playfair Display, Oswald.
+[print15:end]

@@ -23,6 +23,14 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
+ "polyhaven:carrot_cake": {
+  "name": "carrot cake",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/carrot_cake",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:cassette_player": {
   "name": "cassette player",
   "author": "Poly Haven",

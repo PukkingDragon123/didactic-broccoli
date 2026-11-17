@@ -90,6 +90,15 @@
     "#ccb86a",
     "#d5ce8f",
     "#dfdfb1"
+   ],
+   "c2a4a8a": [
+    "#141240",
+    "#1c2158",
+    "#27356e",
+    "#344c83",
+    "#4a71a9",
+    "#7399bc",
+    "#9ebccc"
    ]
   }
  },
@@ -211,6 +220,35 @@
       "faces": [
        "sides"
       ]
+     },
+     {
+      "id": "rimband",
+      "op": "stripes",
+      "axis": "around",
+      "period": 1.6,
+      "width": 0.45,
+      "ramp": "c2a4a8a",
+      "tone": 2.8,
+      "faces": [
+       "sides"
+      ],
+      "range": [
+       0.15,
+       0.45
+      ]
+     },
+     {
+      "id": "crazing",
+      "op": "patches",
+      "scale": 1.2,
+      "threshold": 0.58,
+      "shift": -0.5
+     },
+     {
+      "id": "pooling",
+      "op": "noise",
+      "scale": 1.0,
+      "amount": 0.6
      }
     ]
    }

@@ -8,7 +8,7 @@ from props import post_box, oil_drum, cardboard_box, block_wall, roof_tiles, cre
 
 S = "rojineko"
 TABBY_WHITE = "sketchfab:51cc3bfb49b64128aa54ffa29f36d8c1"  # cat (toti.shroom): brown tabby and white, walking, tail up
-KITTEN = "sketchfab:4ae3704cd65b423ab994545988d4db1a"       # Kitten (doinspire): standing
+PERSIAN = "sketchfab:9899bf74b406468b9efd32e4a32dd7a8"      # Persian Cat Sleeping (romansn, scan): curled up
 COMFY = "sketchfab:2c2baa9563db4f20ba23f869ec3288dc"        # Sleepy Comfy Cat (leoskateman, scan): asleep on a cushion
 TUXEDO = "sketchfab:1912d5ed6498459abb50cda71a288258"       # cat sleeping on tatami (sekiri, scan): sprawled, cut out
 TUXEDO_BOX = [-0.24, 0.118, -0.31, 0.065, 0.32, 0.42]      # (the cat and its rug, without the room)
@@ -50,10 +50,10 @@ def laundry():
 
 
 def kittens():
-    F = Fig(f"{S}/kittens", "Tin Bucket Kitten", "One kitten, one bucket. The bucket is losing.")
-    bucket(F, "", (-6, 0, -3), r=7.5, h=8)
-    F.model("kit", KITTEN, h=18, at=(6, 0, 3), yaw=-35)
-    F.model_clip("model_kit", "hop", 1.2, amp=2)
+    F = Fig(f"{S}/kittens", "Tin Bucket Nap", "A long-haired ginger curled up in the washing bucket, which is now its bucket.")
+    bt = bucket(F, "", (0, 0, 0), r=10.0, h=7)
+    F.model("cat", PERSIAN, L=22, at=(0, 1.0, 0), yaw=-35)
+    F.model_clip("model_cat", "hop", 1.2, amp=2)
     return F
 
 
