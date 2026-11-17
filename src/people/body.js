@@ -19,14 +19,14 @@ export const BONE_INDEX = Object.fromEntries(BONES.map(([b], i) => [b, i]));
 export function proportions(s) {
   const H = s.H, f = s.sex === 'f';
   const a = s.age === 'kid' ? 0 : s.age === 'teen' ? 0.72 : 1; // adulthood
-  const ht = s.age === 'kid' ? 5.9 : s.age === 'teen' ? 6.85 : s.age === 'elder' ? 6.95 : f ? 7.05 : 7.25;
+  const ht = s.age === 'kid' ? 6.25 : s.age === 'teen' ? 6.85 : s.age === 'elder' ? 6.95 : f ? 7.05 : 7.25;
   const hu = H / ht; // head height (crown to chin)
   const k = (kid, adult) => H * (kid + (adult - kid) * a);
   const w = s.build || 1;
   const P = {
     H, hu, f, a, w, kid: a < 0.5,
     crown: H, chin: H - hu,
-    neckBase: k(0.805, 0.84), shoulderY: k(0.776, 0.806), bustY: k(0.7, 0.728), waistY: k(0.618, 0.632),
+    neckBase: k(0.79, 0.84), shoulderY: k(0.762, 0.806), bustY: k(0.7, 0.728), waistY: k(0.618, 0.632),
     pelvisY: k(0.572, 0.588), hipY: k(0.492, 0.52), crotchY: k(0.442, 0.468), kneeY: k(0.268, 0.285), ankleY: k(0.05, 0.046),
     elbowY: k(0.6, 0.625), wristY: k(0.462, 0.48), tipY: k(0.375, 0.374),
     shX: k(0.1, f ? 0.092 : 0.1) * (0.5 + 0.5 * w), hipX: k(0.052, f ? 0.056 : 0.052) * w,

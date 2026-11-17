@@ -854,7 +854,7 @@ export function makePainters(spec, P) {
       else if (nx * nx + nz * nz < 1.8) { o[0] *= 0.86; o[1] *= 0.82; o[2] *= 0.82; }
       return;
     }
-    shadeInto(o, skin, 0.84 + 0.1 * clamp01(c.nz), 0.3);
+    shadeInto(o, skin, 0.8 + 0.08 * clamp01(c.nz), 0.3); // the nose's sides sit a little in shadow (no pale wedge)
     if (c.y < P.noseY + 0.02 * hu && Math.abs(c.x) > 0.03 * hu * nzK) { o[0] *= 0.9; o[1] *= 0.86; o[2] *= 0.86; } // the crease round the wings
     over(o, C_215_115_105, 0.08 * clamp01((P.noseY + 0.05 * hu - c.y) / (0.05 * hu)));
   }

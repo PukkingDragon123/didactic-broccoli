@@ -121,7 +121,10 @@ const OutlineShader = {
       // second derivative catches creases, first derivative catches silhouettes; both relative to distance
       float lap = abs(dl + dr + du + dd - 4.0 * d) / d;
       float jump = max(max(abs(dl - d), abs(dr - d)), max(abs(du - d), abs(dd - d))) / d;
-      float e = max(smoothstep(0.05, 0.12, lap), smoothstep(0.08, 0.16, jump));
+      // people's skin and faces (marked by alpha 0.5 from their material, src/people/Human.js) get no crease lines and a
+      // lighter silhouette: inked creases across a face read as wooden planes
+      float skin = step(col.a, 0.75) * step(0.25, col.a);
+      float e = max(smoothstep(0.05, 0.12, lap) * (1.0 - skin), smoothstep(0.08, 0.16, jump) * (1.0 - 0.5 * skin));
       e *= 1.0 - smoothstep(25.0, 60.0, d); // fade far away so the skyline stays soft
       vec3 outc = mix(col.rgb, col.rgb * uInkK + uInk * 0.4, e * uStrength);
       // crepuscular rays: march from this pixel toward the sun, collecting open sky (wires, poles and roofs cut it)

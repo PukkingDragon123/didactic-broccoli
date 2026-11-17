@@ -85,7 +85,7 @@ export class FacePainter {
     h += 1.5 * s * G(ax - L.eyeX, y - L.eyeY, L.ew * 0.95, L.eh * 1.9); // eyeballs
     // nose: bridge ridge widening to the tip, wings, tip ball, nostrils
     const tn = clamp01((y - (L.eyeY - 2 * s)) / (L.noseY - L.eyeY + 2 * s));
-    if (y > L.eyeY - 1 * s && y < L.noseY + 2 * s) h += (0.5 + 1.6 * tn) * s * Math.exp(-(dx * dx) / (2 * (lerp(2.2, 3.0, tn) * s) ** 2)) * sstep(L.eyeY - 1 * s, L.eyeY + 3 * s, y);
+    if (y > L.eyeY - 1 * s && y < L.noseY + 2 * s) h += (0.3 + 0.9 * tn) * s * Math.exp(-(dx * dx) / (2 * (lerp(1.6, 2.6, tn) * s) ** 2)) * sstep(L.eyeY - 1 * s, L.eyeY + 3 * s, y);
     h += 1.5 * s * G(dx, y - (L.noseY - 2 * s), 2.6 * s, 2.3 * s);
     h += 1.0 * s * G(ax - L.noseW * 0.72, y - (L.noseY - 1.2 * s), 1.8 * s, 1.8 * s);
     h -= 1.0 * s * G(ax - L.noseW * 0.4, y - (L.noseY + 0.1 * s), 0.9 * s, 0.55 * s);

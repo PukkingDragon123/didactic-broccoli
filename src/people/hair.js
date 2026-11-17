@@ -35,7 +35,7 @@ function styleOf(spec, P) {
   switch (st) {
     case 'short': case 'sidepart': return {
       th: 0.05 * vol, mode: 'follow', locks: 5, side: st === 'sidepart', part: st === 'sidepart' ? part || 1 : 0,
-      hem: keys([[0, hairY - (st === 'sidepart' ? 0.015 : 0.05) * hu], [0.8, hairY - 0.07 * hu], [1.3, earTop + 0.06 * hu], [1.42, earBot + 0.07 * hu], [1.56, earBot + 0.07 * hu], ...shortBack]),
+      hem: keys([[0, hairY - (st === 'sidepart' ? 0.015 : 0.05) * hu], [0.45, hairY - 0.03 * hu], [0.75, hairY + 0.02 * hu], [0.95, hairY - 0.02 * hu], [1.3, earTop + 0.06 * hu], [1.42, earBot + 0.07 * hu], [1.56, earBot + 0.07 * hu], ...shortBack]),
       sweep: st === 'sidepart' ? 0.5 : 0.2,
     };
     case 'messy': return {
@@ -103,7 +103,7 @@ export function hairSegments(spec, P, J) {
     for (let k = 0; k < N; k++) {
       const a = Math.atan2(Math.sin(A(k)), Math.cos(A(k)));
       const side = Math.sign(a) || 1, Aa = Math.abs(a);
-      let th = th0 * (0.84 + 0.32 * hash(k, seed)) * (1 + (sty.flareTh || 0) * smooth((Aa - 1.0) / 1.2));
+      let th = th0 * (sty.locks >= 5 && !sty.blunt ? 0.68 + 0.64 * hash(k, seed) : 0.84 + 0.32 * hash(k, seed)) * (1 + (sty.flareTh || 0) * smooth((Aa - 1.0) / 1.2));
       if (sty.tight) th *= Aa < 1.0 ? 1 : lerp(1, 0.7, smooth((Aa - 1.0) / 0.8));
       if (sty.side && sty.part) th *= 1 + 0.25 * G1(a - sty.part * 0.5, 0.5); // the swept side is fuller
       colTh.push(th);

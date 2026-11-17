@@ -30,6 +30,7 @@ const STYLE = {
 // body language per expression: head pitch, chest pitch, bounce
 const MOOD = { neutral: [0, 0, 0], smile: [0, 0, 0], sad: [0.16, 0.06, 0], sleepy: [0.12, 0.04, 0], surprised: [-0.1, -0.05, 0], angry: [0.06, 0.03, 0], happy: [-0.06, -0.03, 1] };
 
+const PEOPLE_MARK = (sh) => { sh.fragmentShader = sh.fragmentShader.replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  gl_FragColor.a = 0.5;'); };
 const LOD_FAR = 11; // metres: beyond this people use their far mesh (about a third of the triangles)
 
 // time-sliced texture painting shared by all humans: ~3 ms of painting per frame in total
@@ -124,6 +125,8 @@ export class Human {
       JOBS.add(this);
     }
     this.mat = new THREE.MeshStandardMaterial({ map: this.tex, roughness: 0.85, metalness: 0, alphaTest: 0.5 });
+    // (alpha 0.5 in the frame marks people for the ink outline pass: no crease lines across faces, src/core/renderer.js)
+    this.mat.onBeforeCompile = PEOPLE_MARK; this.mat.customProgramCacheKey = () => 'people-mark';
     // skeleton (rest pose = the modelled pose; all bones axis-aligned)
     this.bones = [];
     for (const [name, parent] of BONES) {

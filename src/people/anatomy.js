@@ -349,12 +349,12 @@ function headTubes(spec, P) {
   const nz = kid ? 0.72 : f ? 0.84 : 1;
   const nb = P.noseY - 0.012 * hu, nt = P.eyeY - 0.03 * hu;
   const nrows = [
-    [nb - 0.004 * hu, 0.004 * hu, zf + 0.004 * hu, 0.004 * hu],
-    [nb, 0.054 * hu * nz, zf + 0.002 * hu, 0.032 * hu * nz],
-    [nb + 0.026 * hu, 0.056 * hu * nz, zf + 0.004 * hu, 0.034 * hu * nz],
-    [nb + 0.07 * hu, 0.038 * hu * nz, zf - 0.01 * hu, 0.026 * hu * nz],
-    [lerp(nb, nt, 0.72), 0.034 * hu, zf - 0.024 * hu, 0.02 * hu],
-    [nt, 0.032 * hu, zf - 0.036 * hu, 0.014 * hu],
+    [nb - 0.004 * hu, 0.004 * hu, zf + 0.0 * hu, 0.004 * hu],
+    [nb, 0.05 * hu * nz, zf - 0.004 * hu, 0.026 * hu * nz],
+    [nb + 0.026 * hu, 0.052 * hu * nz, zf - 0.003 * hu, 0.026 * hu * nz],
+    [nb + 0.07 * hu, 0.04 * hu * nz, zf - 0.016 * hu, 0.018 * hu * nz],
+    [lerp(nb, nt, 0.72), 0.038 * hu, zf - 0.03 * hu, 0.013 * hu],
+    [nt, 0.036 * hu, zf - 0.042 * hu, 0.01 * hu],
   ];
   const ntb = table(nrows);
   const noseT = vtube({ part: 'nose', mat: 'nose', N: 6, lodMinN: 11, block: 'face', blockNz: 0.25, blockNy: -0.45, dens: 1.4 }, nrows.map((r) => r[0]), (yy) => {
