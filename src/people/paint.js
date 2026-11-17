@@ -33,9 +33,26 @@ const C_120_90_60 = [120, 90, 60];
  * Paint every face of the atlas. A generator: yields after each face (and every ~1200 texels inside a big one) so the
  * work can be time-sliced (see Human); run it to completion with paintAtlas().
  */
-export function* paintAtlasJob(spec, P, faces, pix) {
+export function* paintAtlasJob(spec, P, faces, pix, coarse = false) {
   const ctx = makePainters(spec, P);
   const d = pix.d, W = pix.w, o = new Float32Array(4), c = cursor();
+  if (coarse) {
+    // a quick first pass: the painters at every 3rd texel, filled as 3 x 3 blocks, so a person shows their real clothes,
+    // hair and skin within a few frames even on a slow machine; the full pass then paints over it
+    for (const f of faces) {
+      const fn = ctx[f.tube ? f.mat : f.seg.mat] || ctx.body, R = f.rect;
+      yield* walkTexels(f, c, (c) => {
+        const li = c.i - R.x, lj = c.j - R.y;
+        if (li % 3 || lj % 3) return;
+        o[3] = 255; fn(c, o);
+        for (let y = c.j; y < Math.min(c.j + 3, R.y + R.h); y++) for (let x = c.i; x < Math.min(c.i + 3, R.x + R.w); x++) {
+          const p = (y * W + x) * 4; d[p] = o[0]; d[p + 1] = o[1]; d[p + 2] = o[2]; d[p + 3] = o[3];
+        }
+      });
+    }
+    pix.dirty = true;
+    yield 'coarse';
+  }
   for (const f of faces) {
     const fn = ctx[f.tube ? f.mat : f.seg.mat] || ctx.body;
     yield* walkTexels(f, c, (c) => {

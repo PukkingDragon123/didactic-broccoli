@@ -119,6 +119,7 @@ export class Human {
       paintAtlasFlat(spec, this.P, m.faces, this.pix);
       this.face.paintFlat();
       this.pix.flush();
+      this.lazyPaint = true;
       this.job = this.paintJob(m.faces);
       JOBS.add(this);
     }
@@ -227,7 +228,10 @@ export class Human {
    *  then the canvas in bands. The same pixels as painting it in one go, without the long last step that used to
    *  paint the whole face and upload the whole canvas at once (performance). */
   *paintJob(faces) {
-    yield* paintAtlasJob(this.spec, this.P, faces, this.pix);
+    for (const st of paintAtlasJob(this.spec, this.P, faces, this.pix, this.lazyPaint)) {
+      if (st === 'coarse') { const pix = this.pix; pix.ctx.putImageData(pix.img, 0, 0); pix.dirty = false; this.tex.needsUpdate = true; }
+      yield st;
+    }
     yield* this.face.bakeJob();
     const B = this.face.B;
     for (let y = 0; y < B.h; y += 8) { this.face.paint(this.E, [0, y, B.w, Math.min(B.h, y + 8)]); yield; }
