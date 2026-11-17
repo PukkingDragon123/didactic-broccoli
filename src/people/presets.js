@@ -455,10 +455,10 @@ Object.assign(BUILD, {
   gramps: () => ({
     sex: 'm', age: 'elder', H: 1.57, build: 1.03, belly: 0.55,
     skin: SKIN.medium,
-    hair: { style: 'short', col: HAIR.white, grey: 1 },
+    hair: { style: 'short', col: HAIR.white, grey: 1, volume: 1.25 },
     face: { iris: hex(IRIS.dbrown), lid: 'mono', tilt: 0.45, wrinkles: 1, spots: 1, mustache: true, browW: 1.4, browArch: 0.6, lipFull: 0.72, stubble: 0.12, blush: 0.5 },
     glasses: { kind: 'round', col: [48, 36, 30], thick: 1.8 },
-    hat: { kind: 'flatcap', col: hex(0x5c4a3a) },
+    hat: null, // (bare-headed: his white hair is part of him)
     top: { kind: 'cardigan', col: hex(0x7a5030), shirt: hex(0xece2cc) },
     bottom: { kind: 'slacks', col: hex(0x5e5b56), belt: [50, 36, 26] },
     shoes: { kind: 'sandal', col: hex(0x4a3626) }, socks: { col: [212, 206, 194] },

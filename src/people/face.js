@@ -39,19 +39,19 @@ export class FacePainter {
       earTopY: Y(P.earTop), earBotY: Y(P.earBot),
     };
     L.eyeX = L.hw * (kid ? 0.4 : 0.385);
-    L.ew = L.hw * (kid ? 0.225 : 0.185) * (F.eyeW || 1);
-    L.eh = s * (kid ? 2.7 : f ? 2.2 : 2.0) * (F.eyeH || 1) * (F.lid === 'mono' && !kid ? 0.9 : 1);
+    L.ew = L.hw * (kid ? 0.235 : 0.205) * (F.eyeW || 1);
+    L.eh = s * (kid ? 3.2 : f ? 2.9 : 2.6) * (F.eyeH || 1) * (F.lid === 'mono' && !kid ? 0.92 : 1);
     L.tilt = s * (F.tilt ?? 0.7);
-    L.ir = L.ew * (kid ? 0.5 : 0.44);
+    L.ir = L.ew * (kid ? 0.52 : 0.47);
     L.browIn = L.hw * 0.15; L.browOut = L.hw * 0.66;
-    L.browTh = s * (F.browW || 1) * (kid ? 1.35 : f ? 1.7 : 2.4);
+    L.browTh = s * (F.browW || 1) * (kid ? 1.7 : f ? 2.1 : 2.9);
     L.browArch = s * (F.browArch ?? (f || kid ? 1.6 : 0.9));
     L.noseW = s * (kid ? 4.2 : f ? 4.8 : 5.4);
     L.mouthW = s * (kid ? 6.6 : f ? 7.8 : 8.6);
-    L.lipU = s * (kid ? 1.5 : f ? 2.0 : 1.7) * (F.lipFull || 1);
-    L.lipL = s * (kid ? 2.2 : f ? 2.8 : 2.4) * (F.lipFull || 1);
+    L.lipU = s * (kid ? 1.9 : f ? 2.5 : 2.2) * (F.lipFull || 1);
+    L.lipL = s * (kid ? 2.6 : f ? 3.3 : 2.9) * (F.lipFull || 1);
     this.skin = spec.skin;
-    this.lip = F.lipstick || mixc(mixc(spec.skin, [188, 86, 86], f ? 0.5 : 0.36), [120, 60, 60], 0.12);
+    this.lip = F.lipstick || mixc(mixc(spec.skin, [176, 82, 80], f ? 0.62 : 0.5), [110, 54, 54], 0.15);
     this.brow = F.browCol || mixc(mixc(spec.hair.col, [30, 22, 20], spec.hair.grey ? 0 : 0.25), spec.skin, spec.hair.grey ? 0.25 : kid ? 0.3 : 0.08);
     this.iris = F.iris || [72, 44, 30];
     this.age = spec.age === 'elder' ? 1 : spec.age === 'adult' ? 0.25 : 0;
@@ -77,7 +77,7 @@ export class FacePainter {
   heightStatic(x, y) {
     const L = this.L, s = this.s, dx = x - L.cx, ax = Math.abs(dx), hw = L.hw, kid = this.P.kid;
     const low = sstep(L.eyeY, L.chinY, y);
-    let h = -(dx * dx) / (hw * hw) * (13 + (kid ? 5 : 12) * low) * s;
+    let h = -(dx * dx) / (hw * hw) * (6 + (kid ? 3 : 6) * low) * s;
     const top = clamp01((L.browY - y) / (L.browY - L.hairY + 6 * s));
     h -= top * top * 6 * s;
     h += 0.7 * s * G(dx, y - L.browY - 1.5 * s, 2.6 * s, 3 * s); // glabella

@@ -57,7 +57,7 @@ function styleOf(spec, P) {
       sideBangs: !!part,
     };
     case 'ponytail': case 'twintails': case 'pigtails': case 'bun': return {
-      th: 0.032 * vol, mode: 'follow', locks: 4, tight: true, part: part || 1,
+      th: 0.045 * vol, mode: 'follow', locks: 4, tight: true, part: part || 1,
       hem: keys([[0, st === 'ponytail' || st === 'bun' ? hairY - 0.02 * hu : browY + 0.06 * hu], [0.5, st === 'ponytail' || st === 'bun' ? hairY - 0.04 * hu : browY + 0.09 * hu], [0.95, hairY - 0.12 * hu], ...tightSides]),
       sideBangs: st !== 'ponytail' && st !== 'bun',
     };
@@ -93,7 +93,7 @@ export function hairSegments(spec, P, J) {
   // ---------------- the shell
   let shellTh = 0;
   if (sty) {
-    const N = sty.long ? 12 : 14, M = sty.mode === 'fall' ? 8 : 6;
+    const N = sty.long ? 11 : 12, M = sty.mode === 'fall' ? 8 : 6;
     const th0 = sty.th * hu;
     shellTh = th0;
     // per column: thickness jitter (locks in the silhouette), the hem
@@ -292,7 +292,7 @@ function hatTubes(spec, P, head, hairTh, yBand) {
     return { tube: true, closed: true, part, mat: 'hat', N, lodMinN: 8, rings, dens: 1.05, meta: { kind: hat } };
   };
   // a ring brim: from the band out by `w` (front / back can differ), drooping by `droop`
-  const brim = (w, wF, droop, N = 12) => {
+  const brim = (w, wF, droop, N = 10) => {
     const rings = [];
     const steps = [0, 0.5, 1];
     for (const s of steps) {
