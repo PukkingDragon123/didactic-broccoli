@@ -21,6 +21,12 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - **Low poly, stylised**: models use low triangle counts with clean, deliberate silhouettes (bevels and edge flow
   where they read, no noisy scan geometry); the hand-painted pixel-art texture carries the detail. Real proportions,
   not cartoon. Budgets: toy ≤1.5k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
+- **Toy style = real Japanese capsule-toy (gashapon) mascot figures** (owner's reference boards): original pun and
+  fusion concepts (animal × food or object, little creatures with a job or a pose, transforming toys), chunky
+  readable silhouettes, clean factory PVC paint with soft airbrushed blush and simple painted faces (bead eyes), about
+  4–6 cm, series of 5–8 with one secret, each series on a bold gashapon display card. This cute mascot style is
+  wanted for the toys (the world stays realistic). Original designs only: never copy a real product, character or
+  brand. Still modelled by us in lowpix, low poly, per docs/LOWPOLY.md.
 - Gacha toys are one consistent product line: every figure has the same finish (hand-painted pixel-art PVC, same
   lighting, ramps, texel density, quiet series bases), with no flat or untextured models and no noisy textures. **No
   reskins**: every catalogue entry is its own unique sculpt; a recolour exists only as a finish (gold, clear, glow…)

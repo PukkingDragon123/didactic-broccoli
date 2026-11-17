@@ -1,6 +1,6 @@
 {
  "name": "Old Teddy",
- "description": "Bald at the paws from forty years of hugs. Still the first one in the bed.",
+ "description": "Bald at the paws from forty years of hugs, in the dungarees Grandma sewed. Still the first one in the bed.",
  "author": "Gacha Garage (lowpix spec)",
  "license": "CC0-1.0",
  "density": 6.0,
@@ -72,9 +72,1474 @@
     "#859758",
     "#a6ad7e",
     "#c0c2a7"
+   ],
+   "c8a5a2c_hue14_spread0p85": [
+    "#160905",
+    "#3f2011",
+    "#663b1e",
+    "#8a5a2e",
+    "#c09054",
+    "#d6c09b",
+    "#f0eadd"
+   ],
+   "cb89068_spread0p7": [
+    "#411d16",
+    "#703d2b",
+    "#9c6442",
+    "#b99069",
+    "#c6b08f",
+    "#d5cbb4",
+    "#e6e3d6"
+   ],
+   "c4a6a98_hue8_spread0p8": [
+    "#0e1220",
+    "#222e48",
+    "#3a4b6e",
+    "#536b92",
+    "#8094b0",
+    "#b1bdca",
+    "#dfe3e7"
+   ],
+   "ce2d2b0_spread0p75": [
+    "#522513",
+    "#a0592a",
+    "#d09960",
+    "#e5d1b0",
+    "#eae0c5",
+    "#f0ecda",
+    "#f7f6ed"
+   ],
+   "cc83a2c": [
+    "#5f0f22",
+    "#831926",
+    "#a52425",
+    "#c54031",
+    "#d07057",
+    "#d79c80",
+    "#e0c0a7"
+   ],
+   "cc8b070": [
+    "#6f3b1f",
+    "#98602f",
+    "#be8a43",
+    "#c9ae72",
+    "#d0c38f",
+    "#d8d4ab",
+    "#e1e1c5"
    ]
   }
  },
- "styles": {},
- "parts": []
+ "styles": {
+  "pvc": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 1.4,
+     "amount": 0.6
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.75,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.3,
+     "min_light": -0.1,
+     "max_light": 0.22
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.12,
+     "shift": 1.0
+    }
+   ]
+  },
+  "metal": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 1.4,
+     "amount": 0.55
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 1.1,
+     "min_light": 0.7
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.8,
+     "min_light": -0.1,
+     "max_light": 0.3
+    }
+   ]
+  },
+  "plush": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.6,
+     "amount": 0.18
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/curly_teddy_natural",
+     "scale": 24,
+     "amount": 0.7,
+     "mode": "detail"
+    }
+   ]
+  },
+  "knit": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.4,
+     "amount": 0.1
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/knitted_fleece",
+     "scale": 9,
+     "amount": 1.1,
+     "mode": "detail"
+    }
+   ]
+  },
+  "felt": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.0,
+     "amount": 0.12
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/caban",
+     "scale": 9,
+     "amount": 0.7,
+     "mode": "detail"
+    }
+   ]
+  },
+  "jean": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.4,
+     "amount": 0.1
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/denim_fabric",
+     "scale": 10,
+     "amount": 1.0,
+     "mode": "detail"
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "root",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "pants",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      14.6,
+      12.6
+     ]
+    },
+    {
+     "at": [
+      0,
+      2.2,
+      0.3
+     ],
+     "size": [
+      17.4,
+      15.2
+     ]
+    },
+    {
+     "at": [
+      0,
+      6.4,
+      0.6
+     ],
+     "size": [
+      17.6,
+      15.0
+     ]
+    },
+    {
+     "at": [
+      0,
+      10.6,
+      0.3
+     ],
+     "size": [
+      15.6,
+      13.4
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "jean",
+   "paint": {
+    "ramp": "c4a6a98_hue8_spread0p8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "jumper",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      10.0,
+      0.3
+     ],
+     "size": [
+      15.4,
+      13.2
+     ]
+    },
+    {
+     "at": [
+      0,
+      13.6,
+      0
+     ],
+     "size": [
+      14.6,
+      12.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      16.4,
+      0
+     ],
+     "size": [
+      11.4,
+      9.8
+     ]
+    },
+    {
+     "at": [
+      0,
+      17.6,
+      0
+     ],
+     "size": [
+      8.0,
+      7.0
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 10,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "knit",
+   "paint": {
+    "ramp": "ce2d2b0_spread0p75",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "bib",
+   "shape": "box",
+   "pivot": [
+    0,
+    13.2,
+    6.4
+   ],
+   "rotation": [
+    -12,
+    0,
+    0
+   ],
+   "size": [
+    8.2,
+    6.4,
+    1.0
+   ],
+   "chamfer": 0.3,
+   "style": "jean",
+   "paint": {
+    "ramp": "c4a6a98_hue8_spread0p8",
+    "tone": 3.1,
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       0,
+       1
+      ],
+      "art": [
+       "#####.#####.####..####..#...#",
+       "..#...#.....#...#.#...#.#...#",
+       "..#...#.....#...#.#...#..#.#.",
+       "..#...####..#...#.#...#...#..",
+       "..#...#.....#...#.#...#...#..",
+       "..#...#.....#...#.#...#...#..",
+       "..#...#####.####..####....#.."
+      ],
+      "key": {
+       "#": "cc83a2c:3"
+      }
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "strapL",
+   "shape": "box",
+   "pivot": [
+    -3.4,
+    16.4,
+    4.6
+   ],
+   "rotation": [
+    -38,
+    0,
+    6
+   ],
+   "size": [
+    1.6,
+    8.0,
+    0.8
+   ],
+   "chamfer": 0.2,
+   "style": "jean",
+   "paint": {
+    "ramp": "c4a6a98_hue8_spread0p8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "buttonL",
+   "shape": "prism",
+   "pivot": [
+    -3.4,
+    15.6,
+    7.2
+   ],
+   "rotation": [
+    -12,
+    0,
+    0
+   ],
+   "size": [
+    1.2,
+    1.2,
+    0.5
+   ],
+   "sides": 6,
+   "style": "metal",
+   "paint": {
+    "ramp": "cc8b070",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "strapR",
+   "shape": "box",
+   "pivot": [
+    3.4,
+    16.4,
+    4.6
+   ],
+   "rotation": [
+    -38,
+    0,
+    -6
+   ],
+   "size": [
+    1.6,
+    8.0,
+    0.8
+   ],
+   "chamfer": 0.2,
+   "style": "jean",
+   "paint": {
+    "ramp": "c4a6a98_hue8_spread0p8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "buttonR",
+   "shape": "prism",
+   "pivot": [
+    3.4,
+    15.6,
+    7.2
+   ],
+   "rotation": [
+    -12,
+    0,
+    0
+   ],
+   "size": [
+    1.2,
+    1.2,
+    0.5
+   ],
+   "sides": 6,
+   "style": "metal",
+   "paint": {
+    "ramp": "cc8b070",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "head",
+   "shape": "loft",
+   "pivot": [
+    0,
+    24.8,
+    0.6
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      -0.312,
+      -7.3
+     ],
+     "size": [
+      10.349,
+      9.173
+     ]
+    },
+    {
+     "at": [
+      0,
+      0,
+      -4.38
+     ],
+     "size": [
+      17.072,
+      15.132
+     ]
+    },
+    {
+     "at": [
+      0,
+      0,
+      0.73
+     ],
+     "size": [
+      17.6,
+      15.6
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.468,
+      4.672
+     ],
+     "size": [
+      15.84,
+      13.478
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.936,
+      7.3
+     ],
+     "size": [
+      10.454,
+      9.266
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 12,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "plush",
+   "paint": {
+    "ramp": "c8a5a2c_hue14_spread0p85",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "band",
+      "axis": "x",
+      "from": -0.012557077625570777,
+      "to": 0.012557077625570777,
+      "shift": -0.55,
+      "faces": [
+       "-front",
+       "-back",
+       "-end",
+       "-start"
+      ],
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1,
+       "shadow_shift": -0.6,
+       "highlight_shift": 0.7
+      }
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "muzzle",
+   "shape": "loft",
+   "pivot": [
+    0,
+    22.4,
+    6.0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      8.0,
+      6.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.3,
+      2.4
+     ],
+     "size": [
+      7.2,
+      5.6
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.6,
+      3.8
+     ],
+     "size": [
+      5.0,
+      3.8
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "felt",
+   "paint": {
+    "ramp": "cb89068_spread0p7",
+    "tone": 3.1,
+    "stamps": [
+     {
+      "face": "end",
+      "at": "center",
+      "offset": [
+       0,
+       -4
+      ],
+      "art": [
+       "mnmhmnmnm",
+       ".mnmnmnm.",
+       "..mnmnm..",
+       "...mnm...",
+       "...nmn...",
+       "....n....",
+       "....n....",
+       "...nnn...",
+       "..n...n.."
+      ],
+      "key": {
+       "n": "ink:1",
+       "m": "ink:2",
+       "h": "ink:4"
+      }
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "earL",
+   "shape": "prism",
+   "pivot": [
+    -7.0,
+    31.8,
+    -1.2
+   ],
+   "rotation": [
+    -8,
+    14,
+    20
+   ],
+   "size": [
+    7.6,
+    6.992,
+    2.0
+   ],
+   "sides": 8,
+   "front_scale": [
+    0.9,
+    0.9
+   ],
+   "style": "plush",
+   "paint": {
+    "ramp": "c8a5a2c_hue14_spread0p85",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "inner",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        -0.38,
+        1.0,
+        2.6599999999999997
+       ]
+      ],
+      "ramp": "cb89068_spread0p7",
+      "tone": 3.0,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "eyeL",
+   "shape": "prism",
+   "pivot": [
+    -3.3,
+    26.9,
+    8.5
+   ],
+   "rotation": [
+    0,
+    -20,
+    0
+   ],
+   "size": [
+    2.0,
+    2.0,
+    0.9
+   ],
+   "sides": 8,
+   "front_scale": [
+    0.62,
+    0.62
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "ink",
+    "tone": 1.4,
+    "stamps": [
+     {
+      "face": "front",
+      "at": [
+       1,
+       1
+      ],
+      "art": [
+       "w"
+      ],
+      "key": {
+       "w": "white:5"
+      }
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "armL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -6.695,
+      16.33,
+      -0.054
+     ],
+     "size": [
+      3.92,
+      3.606
+     ]
+    },
+    {
+     "at": [
+      -7.2,
+      15.2,
+      0.6
+     ],
+     "size": [
+      5.6,
+      5.152
+     ]
+    },
+    {
+     "at": [
+      -8.9,
+      11.4,
+      2.8
+     ],
+     "size": [
+      5.088,
+      4.681
+     ]
+    },
+    {
+     "at": [
+      -9.4,
+      7.2,
+      4.4
+     ],
+     "size": [
+      5.0,
+      4.6
+     ]
+    },
+    {
+     "at": [
+      -9.524,
+      6.155,
+      4.798
+     ],
+     "size": [
+      4.3,
+      3.956
+     ]
+    },
+    {
+     "at": [
+      -9.621,
+      5.342,
+      5.108
+     ],
+     "size": [
+      2.6,
+      2.392
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "knit",
+   "paint": {
+    "ramp": "ce2d2b0_spread0p75",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "pawL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -9.5,
+      7.0,
+      4.6
+     ],
+     "size": [
+      4.4,
+      4.0
+     ]
+    },
+    {
+     "at": [
+      -9.7,
+      4.6,
+      5.8
+     ],
+     "size": [
+      4.6,
+      4.2
+     ]
+    },
+    {
+     "at": [
+      -9.8,
+      3.2,
+      6.4
+     ],
+     "size": [
+      2.6,
+      2.4
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "plush",
+   "paint": {
+    "ramp": "c8a5a2c_hue14_spread0p85",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "legL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -4.404,
+      3.42,
+      0.311
+     ],
+     "size": [
+      4.76,
+      4.379
+     ]
+    },
+    {
+     "at": [
+      -4.6,
+      3.4,
+      2.0
+     ],
+     "size": [
+      6.8,
+      6.256
+     ]
+    },
+    {
+     "at": [
+      -5.6,
+      3.3,
+      10.6
+     ],
+     "size": [
+      6.6,
+      6.072
+     ]
+    },
+    {
+     "at": [
+      -5.772,
+      3.283,
+      12.075
+     ],
+     "size": [
+      5.676,
+      5.222
+     ]
+    },
+    {
+     "at": [
+      -5.905,
+      3.27,
+      13.222
+     ],
+     "size": [
+      3.432,
+      3.157
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "jean",
+   "paint": {
+    "ramp": "c4a6a98_hue8_spread0p8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "footL",
+   "shape": "prism",
+   "pivot": [
+    -5.7,
+    3.3,
+    12.4
+   ],
+   "size": [
+    6.0,
+    6.4,
+    1.4
+   ],
+   "sides": 10,
+   "front_scale": [
+    0.86,
+    0.86
+   ],
+   "style": "felt",
+   "paint": {
+    "ramp": "cb89068_spread0p7",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "earR",
+   "shape": "prism",
+   "pivot": [
+    7.0,
+    31.8,
+    -1.2
+   ],
+   "rotation": [
+    -8,
+    -14,
+    -20
+   ],
+   "size": [
+    7.6,
+    6.992,
+    2.0
+   ],
+   "sides": 8,
+   "front_scale": [
+    0.9,
+    0.9
+   ],
+   "style": "plush",
+   "paint": {
+    "ramp": "c8a5a2c_hue14_spread0p85",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "inner",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        -0.38,
+        1.0,
+        2.6599999999999997
+       ]
+      ],
+      "ramp": "cb89068_spread0p7",
+      "tone": 3.0,
+      "faces": [
+       "front"
+      ]
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "eyeR",
+   "shape": "prism",
+   "pivot": [
+    3.3,
+    26.9,
+    8.5
+   ],
+   "rotation": [
+    0,
+    20,
+    0
+   ],
+   "size": [
+    2.0,
+    2.0,
+    0.9
+   ],
+   "sides": 8,
+   "front_scale": [
+    0.62,
+    0.62
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "ink",
+    "tone": 1.4,
+    "stamps": [
+     {
+      "face": "front",
+      "at": [
+       1,
+       1
+      ],
+      "art": [
+       "w"
+      ],
+      "key": {
+       "w": "white:5"
+      }
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "armR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      6.695,
+      16.33,
+      -0.054
+     ],
+     "size": [
+      3.92,
+      3.606
+     ]
+    },
+    {
+     "at": [
+      7.2,
+      15.2,
+      0.6
+     ],
+     "size": [
+      5.6,
+      5.152
+     ]
+    },
+    {
+     "at": [
+      8.9,
+      11.4,
+      2.8
+     ],
+     "size": [
+      5.088,
+      4.681
+     ]
+    },
+    {
+     "at": [
+      9.4,
+      7.2,
+      4.4
+     ],
+     "size": [
+      5.0,
+      4.6
+     ]
+    },
+    {
+     "at": [
+      9.524,
+      6.155,
+      4.798
+     ],
+     "size": [
+      4.3,
+      3.956
+     ]
+    },
+    {
+     "at": [
+      9.621,
+      5.342,
+      5.108
+     ],
+     "size": [
+      2.6,
+      2.392
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "knit",
+   "paint": {
+    "ramp": "ce2d2b0_spread0p75",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "pawR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      9.5,
+      7.0,
+      4.6
+     ],
+     "size": [
+      4.4,
+      4.0
+     ]
+    },
+    {
+     "at": [
+      9.7,
+      4.6,
+      5.8
+     ],
+     "size": [
+      4.6,
+      4.2
+     ]
+    },
+    {
+     "at": [
+      9.8,
+      3.2,
+      6.4
+     ],
+     "size": [
+      2.6,
+      2.4
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "plush",
+   "paint": {
+    "ramp": "c8a5a2c_hue14_spread0p85",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "legR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      4.404,
+      3.42,
+      0.311
+     ],
+     "size": [
+      4.76,
+      4.379
+     ]
+    },
+    {
+     "at": [
+      4.6,
+      3.4,
+      2.0
+     ],
+     "size": [
+      6.8,
+      6.256
+     ]
+    },
+    {
+     "at": [
+      5.6,
+      3.3,
+      10.6
+     ],
+     "size": [
+      6.6,
+      6.072
+     ]
+    },
+    {
+     "at": [
+      5.772,
+      3.283,
+      12.075
+     ],
+     "size": [
+      5.676,
+      5.222
+     ]
+    },
+    {
+     "at": [
+      5.905,
+      3.27,
+      13.222
+     ],
+     "size": [
+      3.432,
+      3.157
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "jean",
+   "paint": {
+    "ramp": "c4a6a98_hue8_spread0p8",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "footR",
+   "shape": "prism",
+   "pivot": [
+    5.7,
+    3.3,
+    12.4
+   ],
+   "size": [
+    6.0,
+    6.4,
+    1.4
+   ],
+   "sides": 10,
+   "front_scale": [
+    0.86,
+    0.86
+   ],
+   "style": "felt",
+   "paint": {
+    "ramp": "cb89068_spread0p7",
+    "tone": 3.1
+   },
+   "parent": "root"
+  }
+ ],
+ "animations": {
+  "nod": {
+   "length": 1.6,
+   "loop": false,
+   "tracks": [
+    {
+     "part": "root",
+     "keys": [
+      [
+       0.0,
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      [
+       0.48,
+       [
+        10,
+        0,
+        0
+       ]
+      ],
+      [
+       1.04,
+       [
+        -6.0,
+        0,
+        0
+       ]
+      ],
+      [
+       1.6,
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     ]
+    }
+   ]
+  }
+ }
 }

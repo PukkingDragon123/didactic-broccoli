@@ -1,56 +1,16 @@
 {
- "mats": {},
+ "mats": {
+  "box": "metal",
+  "lid": "metal",
+  "lugL": "metal",
+  "lugR": "metal",
+  "handle": "metal",
+  "hasp": "metal",
+  "staple": "metal"
+ },
  "clips": {
-  "gimmick": "gimmick"
+  "gimmick": "clack"
  },
  "pts": {},
- "models": [
-  {
-   "name": "m",
-   "src": "polyhaven:metal_toolbox",
-   "height": 28.117,
-   "pos": [
-    0.002,
-    0.0,
-    -0.191
-   ],
-   "yaw": -25,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 1400,
-   "mat": "metal",
-   "rest": true,
-   "at": [
-    0,
-    0,
-    0
-   ],
-   "key": "3810e6a9a05f12",
-   "rest_R": [
-    [
-     1.0,
-     0.0,
-     0.0
-    ],
-    [
-     0.0,
-     1.0,
-     0.0
-    ],
-    [
-     0.0,
-     0.0,
-     1.0
-    ]
-   ]
-  }
- ],
- "model_clip": {
-  "node": "model_m",
-  "kind": "hop",
-  "length": 1.6,
-  "amp": 4,
-  "axis": "y"
- },
  "key": "kogu/toolbox"
 }

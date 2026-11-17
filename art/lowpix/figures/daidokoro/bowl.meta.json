@@ -1,56 +1,8 @@
 {
  "mats": {},
  "clips": {
-  "gimmick": "gimmick"
+  "gimmick": "lift"
  },
  "pts": {},
- "models": [
-  {
-   "name": "m",
-   "src": "polyhaven:wooden_bowl_01",
-   "height": 8.139,
-   "pos": [
-    0.186,
-    0.0,
-    -0.642
-   ],
-   "yaw": -25,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 1400,
-   "mat": "gloss",
-   "rest": true,
-   "at": [
-    0,
-    0,
-    0
-   ],
-   "key": "31edb42b17894c",
-   "rest_R": [
-    [
-     1.0,
-     0.0,
-     0.0
-    ],
-    [
-     0.0,
-     1.0,
-     0.0
-    ],
-    [
-     0.0,
-     0.0,
-     1.0
-    ]
-   ]
-  }
- ],
- "model_clip": {
-  "node": "model_m",
-  "kind": "turn",
-  "length": 1.6,
-  "amp": 12,
-  "axis": "y"
- },
  "key": "daidokoro/bowl"
 }

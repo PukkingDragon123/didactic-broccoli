@@ -1,0 +1,14 @@
+{
+ "mats": {
+  "pot": "gloss",
+  "lid": "gloss",
+  "knob": "gloss",
+  "spout": "gloss",
+  "handle": "gloss"
+ },
+ "clips": {
+  "gimmick": "pour"
+ },
+ "pts": {},
+ "key": "daidokoro/teapot"
+}

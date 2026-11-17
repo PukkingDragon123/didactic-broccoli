@@ -1,56 +1,16 @@
 {
- "mats": {},
+ "mats": {
+  "ring": "glass"
+ },
  "clips": {
-  "gimmick": "gimmick"
+  "gimmick": "spin"
  },
  "pts": {},
- "models": [
-  {
-   "name": "m",
-   "src": "polyhaven:baseball_01",
-   "height": 28.0,
-   "pos": [
-    -0.692,
-    -0.017,
-    -0.965
-   ],
-   "yaw": -25,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 1400,
-   "mat": "matte",
-   "rest": true,
-   "at": [
-    0,
-    0,
-    0
-   ],
-   "key": "db86c03b68c5b1",
-   "rest_R": [
-    [
-     0.997564,
-     0.069756,
-     0.0
-    ],
-    [
-     -0.069714,
-     0.996956,
-     -0.034899
-    ],
-    [
-     -0.002434,
-     0.034814,
-     0.999391
-    ]
-   ]
-  }
- ],
- "model_clip": {
-  "node": "model_m",
-  "kind": "hop",
-  "length": 1.6,
-  "amp": 4,
-  "axis": "y"
+ "base": {
+  "family": "clear",
+  "w": 12.8,
+  "d": 12.8
  },
+ "stand_why": "a ball rolls away: it rests in a clear acrylic ball ring",
  "key": "undou/baseball"
 }

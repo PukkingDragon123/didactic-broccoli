@@ -1,56 +1,13 @@
 {
- "mats": {},
+ "mats": {
+  "buttonL": "metal",
+  "buttonR": "metal",
+  "eyeL": "gloss",
+  "eyeR": "gloss"
+ },
  "clips": {
-  "gimmick": "gimmick"
+  "gimmick": "nod"
  },
  "pts": {},
- "models": [
-  {
-   "name": "m",
-   "src": "sketchfab:459ce5b99da947438d3ea11d7c0d4225",
-   "height": 36.0,
-   "pos": [
-    0.235,
-    -0.845,
-    -0.412
-   ],
-   "yaw": -25,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 1400,
-   "mat": "matte",
-   "rest": true,
-   "at": [
-    0,
-    0,
-    0
-   ],
-   "key": "c3582b47c3d1ed",
-   "rest_R": [
-    [
-     0.997564,
-     0.069756,
-     0.0
-    ],
-    [
-     -0.069756,
-     0.997564,
-     0.0
-    ],
-    [
-     0.0,
-     0.0,
-     1.0
-    ]
-   ]
-  }
- ],
- "model_clip": {
-  "node": "model_m",
-  "kind": "nod",
-  "length": 1.6,
-  "amp": 12,
-  "axis": "y"
- },
  "key": "nuigurumi/teddy"
 }

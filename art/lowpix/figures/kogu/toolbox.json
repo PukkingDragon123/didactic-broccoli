@@ -1,6 +1,6 @@
 {
- "name": "Red Toolbox",
- "description": "Grandpa's own steel toolbox, dented, the lid still shutting with a clack.",
+ "name": "Tin Toolbox",
+ "description": "Grandpa's galvanised tin box, dented, the hasp held with a bent nail. It still shuts with a clack.",
  "author": "Gacha Garage (lowpix spec)",
  "license": "CC0-1.0",
  "density": 6.0,
@@ -72,9 +72,458 @@
     "#859758",
     "#a6ad7e",
     "#c0c2a7"
+   ],
+   "c6a6e66_hue6_k0p05_spread0p5": [
+    "#3e3a2c",
+    "#504d3d",
+    "#605e50",
+    "#6f6e64",
+    "#848481",
+    "#9b9b9b",
+    "#b4b4b4"
+   ],
+   "c7a5a3a": [
+    "#3d1b16",
+    "#532e21",
+    "#68432d",
+    "#7c5a3b",
+    "#a08053",
+    "#b4a37b",
+    "#c7c0a4"
+   ],
+   "c4a4a48": [
+    "#281d1b",
+    "#362c29",
+    "#433b37",
+    "#4f4a46",
+    "#6e6c69",
+    "#8d8d8d",
+    "#aeaeae"
+   ],
+   "c5a4a3a": [
+    "#2e1916",
+    "#3f2820",
+    "#4f382c",
+    "#5e4a39",
+    "#837056",
+    "#a0947b",
+    "#b8b4a4"
    ]
   }
  },
- "styles": {},
- "parts": []
+ "styles": {
+  "paint": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 1.8,
+     "amount": 0.2
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/rusty_painted_metal",
+     "scale": 30,
+     "amount": 0.5,
+     "mode": "detail"
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.7,
+     "min_light": 0.76
+    }
+   ]
+  },
+  "steelp": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 3.0,
+     "amount": 0.08
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate_02",
+     "scale": 60,
+     "amount": 0.12,
+     "mode": "detail"
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.8,
+     "min_light": 0.86
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.7,
+     "min_light": -0.1,
+     "max_light": 0.3
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "box",
+   "shape": "box",
+   "pivot": [
+    0,
+    8.5,
+    0
+   ],
+   "size": [
+    42.0,
+    17.0,
+    21.0
+   ],
+   "chamfer": 0.6,
+   "style": "steelp",
+   "paint": {
+    "ramp": "c6a6e66_hue6_k0p05_spread0p5",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "rust",
+      "op": "patches",
+      "scale": 4.0,
+      "threshold": 0.7,
+      "ramp": "c7a5a3a",
+      "tone": 2.6,
+      "faces": [
+       "sides"
+      ]
+     },
+     {
+      "id": "seam",
+      "op": "band",
+      "axis": "y",
+      "from": -1.0,
+      "to": -0.88,
+      "shift": -0.8,
+      "faces": [
+       "sides"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "lid",
+   "shape": "box",
+   "pivot": [
+    0,
+    19.0,
+    0
+   ],
+   "size": [
+    43.0,
+    4.0,
+    22.0
+   ],
+   "chamfer": 0.9,
+   "style": "steelp",
+   "paint": {
+    "ramp": "c6a6e66_hue6_k0p05_spread0p5",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "rim",
+      "op": "band",
+      "axis": "y",
+      "from": -1.0,
+      "to": -0.4,
+      "shift": 0.5,
+      "faces": [
+       "sides"
+      ],
+      "bevel": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "lugL",
+   "shape": "box",
+   "pivot": [
+    -7.0,
+    21.6,
+    0
+   ],
+   "size": [
+    2.4,
+    1.6,
+    2.0
+   ],
+   "chamfer": 0.3,
+   "style": "steelp",
+   "paint": {
+    "ramp": "c6a6e66_hue6_k0p05_spread0p5",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "lugR",
+   "shape": "box",
+   "pivot": [
+    7.0,
+    21.6,
+    0
+   ],
+   "size": [
+    2.4,
+    1.6,
+    2.0
+   ],
+   "chamfer": 0.3,
+   "style": "steelp",
+   "paint": {
+    "ramp": "c6a6e66_hue6_k0p05_spread0p5",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "handle",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -7.0,
+      22.0,
+      0.0
+     ],
+     "size": [
+      0.9,
+      0.9
+     ]
+    },
+    {
+     "at": [
+      -4.667,
+      23.5,
+      0.0
+     ],
+     "size": [
+      0.9,
+      0.9
+     ]
+    },
+    {
+     "at": [
+      -2.333,
+      24.598,
+      0.0
+     ],
+     "size": [
+      0.9,
+      0.9
+     ]
+    },
+    {
+     "at": [
+      0.0,
+      25.0,
+      0.0
+     ],
+     "size": [
+      0.9,
+      0.9
+     ]
+    },
+    {
+     "at": [
+      2.333,
+      24.598,
+      0.0
+     ],
+     "size": [
+      0.9,
+      0.9
+     ]
+    },
+    {
+     "at": [
+      4.667,
+      23.5,
+      0.0
+     ],
+     "size": [
+      0.9,
+      0.9
+     ]
+    },
+    {
+     "at": [
+      7.0,
+      22.0,
+      0.0
+     ],
+     "size": [
+      0.9,
+      0.9
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2.0
+   },
+   "subdiv": 0,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "steelp",
+   "paint": {
+    "ramp": "c4a4a48",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "hasp",
+   "shape": "box",
+   "pivot": [
+    0,
+    15.8,
+    11.2
+   ],
+   "rotation": [
+    -4,
+    0,
+    0
+   ],
+   "size": [
+    3.6,
+    7.6,
+    0.6
+   ],
+   "chamfer": 0.2,
+   "style": "steelp",
+   "paint": {
+    "ramp": "c6a6e66_hue6_k0p05_spread0p5",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "staple",
+   "shape": "box",
+   "pivot": [
+    0,
+    13.2,
+    11.6
+   ],
+   "size": [
+    1.6,
+    1.8,
+    1.2
+   ],
+   "chamfer": 0.2,
+   "style": "steelp",
+   "paint": {
+    "ramp": "c4a4a48",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "nail",
+   "shape": "prism",
+   "pivot": [
+    0,
+    13.2,
+    12.4
+   ],
+   "rotation": [
+    0,
+    90,
+    20
+   ],
+   "size": [
+    0.6,
+    0.6,
+    3.2
+   ],
+   "sides": 6,
+   "style": "paint",
+   "paint": {
+    "ramp": "c5a4a3a",
+    "tone": 3.1
+   }
+  }
+ ],
+ "animations": {
+  "clack": {
+   "length": 1.2,
+   "loop": false,
+   "tracks": [
+    {
+     "part": "lid",
+     "channel": "rotation",
+     "keys": [
+      [
+       0,
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      [
+       0.3,
+       [
+        -18,
+        0,
+        0
+       ]
+      ],
+      [
+       0.8,
+       [
+        -18,
+        0,
+        0
+       ]
+      ],
+      [
+       1.0,
+       [
+        2,
+        0,
+        0
+       ]
+      ],
+      [
+       1.2,
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     ]
+    }
+   ]
+  }
+ }
 }

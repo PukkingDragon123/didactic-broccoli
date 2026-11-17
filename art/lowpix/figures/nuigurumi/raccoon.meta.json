@@ -1,0 +1,12 @@
+{
+ "mats": {
+  "nose": "gloss",
+  "eyeL": "gloss",
+  "eyeR": "gloss"
+ },
+ "clips": {
+  "gimmick": "wobble"
+ },
+ "pts": {},
+ "key": "nuigurumi/raccoon"
+}

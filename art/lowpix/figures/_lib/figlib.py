@@ -112,8 +112,38 @@ STYLES = {
     "flat": {"dither": 0, "light": 0.5, "rim": {"light": 0, "dark": 0}},
     "card": {"dither": 0, "light": 0.0, "rim": {"light": 0, "dark": 0}},
 }
+
+# ---- photo-bashed materials (docs/LOWPOLY.md, the house method): real CC0 material photos (Poly Haven, vendored in
+# art/lowpix/photos) under the painted light. "detail" keeps the part's hand-picked ramp (dyed plush, enamel paint) and
+# adds the photo's relief; "colour" paints the photo's own colours (wood, leather), relit by the painted light.
+def _pb(pid, scale, amount=1.0, mode="detail", **kw):
+    return _photo(pid, scale, amount, mode=mode, **kw)
+
+
+STYLES.update({
+    "plush": _st(_mottle(2.6, 0.18), _pb("curly_teddy_natural", 24, 0.7)),          # mohair / curly plush pile
+    "minky": _st(_mottle(2.6, 0.14), _pb("velour_velvet", 14, 0.8),                 # short-pile minky plush
+                 {"id": "sheen", "op": "fill", "shift": 0.4, "min_light": 0.84}),
+    "fleece": _st(_mottle(2.4, 0.14), _pb("polar_fleece", 12, 1.0)),                # polar fleece / fake fleece
+    "knit": _st(_mottle(2.4, 0.1), _pb("knitted_fleece", 9, 1.1)),                  # hand-knitted wool
+    "felt": _st(_mottle(2.0, 0.12), _pb("caban", 9, 0.7)),                          # wool felt
+    "jean": _st(_mottle(2.4, 0.1), _pb("denim_fabric", 10, 1.0)),                   # denim
+    "cotton": _st(_mottle(2.4, 0.1), _pb("jersey_melange", 10, 0.8)),               # cotton jersey
+    "oak": _st(_mottle(2.4, 0.1), _pb("oak_veneer_01", 44, 0.7),                   # real wood grain on a stained ramp
+               {"id": "sheen", "op": "fill", "shift": 0.35, "min_light": 0.84}),
+    "beech": _st(_pb("wood_table_001", 40, 1.0, mode="colour", relight=0.45)),
+    "hide": _st(_mottle(2.0, 0.14), _pb("leather_white", 12, 0.9)),             # white cowhide (baseball)
+    "enamel": _st(_mottle(1.8, 0.18), _pb("painted_metal_shutter", 22, 0.5),        # vitreous enamel / gloss paint
+                  {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74}, GLOSS),
+    "paint": _st(_mottle(1.8, 0.2), _pb("rusty_painted_metal", 30, 0.5),              # painted steel, worn
+                 {"id": "sheen", "op": "fill", "shift": 0.7, "min_light": 0.76}),
+    "steelp": _st(_mottle(3.0, 0.08), _pb("metal_plate_02", 60, 0.12), {"id": "sheen", "op": "fill", "shift": 0.8, "min_light": 0.86},
+                  {"id": "ref", "op": "fill", "shift": -0.7, "min_light": -0.1, "max_light": 0.3}),
+    "ceramic": _st(_mottle(1.8, 0.16), {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.8}, GLOSS),
+})
 BRUSH_MARKS = {}
-GAME_MAT = {"pvc": "gloss", "glaze": "gloss", "tin": "gloss", "metal": "metal", "clear": "glass", "glow": "glow"}
+GAME_MAT = {"pvc": "gloss", "glaze": "gloss", "tin": "gloss", "metal": "metal", "clear": "glass", "glow": "glow",
+            "enamel": "gloss", "ceramic": "gloss", "steelp": "metal"}
 
 # shared ramps every figure has
 BASE_RAMPS = {

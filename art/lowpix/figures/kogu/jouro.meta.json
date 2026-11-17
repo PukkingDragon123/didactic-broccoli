@@ -1,0 +1,14 @@
+{
+ "mats": {
+  "tank": "metal",
+  "spout": "metal",
+  "rose": "metal",
+  "carry": "metal",
+  "back": "metal"
+ },
+ "clips": {
+  "gimmick": "pour"
+ },
+ "pts": {},
+ "key": "kogu/jouro"
+}

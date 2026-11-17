@@ -1,56 +1,13 @@
 {
- "mats": {},
+ "mats": {
+  "can": "metal",
+  "lid": "metal",
+  "handleL": "metal",
+  "handleR": "metal"
+ },
  "clips": {
-  "gimmick": "gimmick"
+  "gimmick": "wobble"
  },
  "pts": {},
- "models": [
-  {
-   "name": "m",
-   "src": "polyhaven:metal_jug",
-   "height": 40.0,
-   "pos": [
-    -0.064,
-    0.0,
-    0.045
-   ],
-   "yaw": -25,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 1400,
-   "mat": "gloss",
-   "rest": true,
-   "at": [
-    0,
-    0,
-    0
-   ],
-   "key": "e448cc98effe75",
-   "rest_R": [
-    [
-     1.0,
-     0.0,
-     0.0
-    ],
-    [
-     0.0,
-     1.0,
-     0.0
-    ],
-    [
-     0.0,
-     0.0,
-     1.0
-    ]
-   ]
-  }
- ],
- "model_clip": {
-  "node": "model_m",
-  "kind": "wobble",
-  "length": 1.6,
-  "amp": 12,
-  "axis": "y"
- },
  "key": "daidokoro/milk"
 }

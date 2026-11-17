@@ -1,6 +1,6 @@
 {
  "name": "Penguin Plush",
- "description": "A round penguin with felt feet. It sits up by itself, which is more than most.",
+ "description": "A round minky penguin on orange felt feet. It sits up by itself, which is more than most.",
  "author": "Gacha Garage (lowpix spec)",
  "license": "CC0-1.0",
  "density": 6.0,
@@ -72,9 +72,797 @@
     "#859758",
     "#a6ad7e",
     "#c0c2a7"
+   ],
+   "c7c8088_spread0p75": [
+    "#1e1c25",
+    "#3e3b48",
+    "#5f5c68",
+    "#828085",
+    "#a2a2a2",
+    "#c1c1c1",
+    "#e0e0e0"
+   ],
+   "cecebe6_spread0p7": [
+    "#653428",
+    "#af6b4b",
+    "#cfb099",
+    "#f1ebe4",
+    "#f4f1eb",
+    "#f7f5f1",
+    "#fafaf8"
+   ],
+   "c2c2c34_spread0p6": [
+    "#150f16",
+    "#201820",
+    "#2a2229",
+    "#322c31",
+    "#5b565a",
+    "#828282",
+    "#acacac"
+   ],
+   "ce8702a_hue10": [
+    "#761d07",
+    "#a2330d",
+    "#cd4e16",
+    "#e47231",
+    "#e5955b",
+    "#e8b382",
+    "#edcda9"
    ]
   }
  },
- "styles": {},
- "parts": []
+ "styles": {
+  "pvc": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 1.4,
+     "amount": 0.6
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.75,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.3,
+     "min_light": -0.1,
+     "max_light": 0.22
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.12,
+     "shift": 1.0
+    }
+   ]
+  },
+  "minky": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.6,
+     "amount": 0.14
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/velour_velvet",
+     "scale": 14,
+     "amount": 0.8,
+     "mode": "detail"
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.4,
+     "min_light": 0.84
+    }
+   ]
+  },
+  "felt": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.0,
+     "amount": 0.12
+    },
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/caban",
+     "scale": 9,
+     "amount": 0.7,
+     "mode": "detail"
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "root",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "body",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      21.0,
+      18.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      3.0,
+      0.2
+     ],
+     "size": [
+      25.6,
+      22.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      10.0,
+      0.4
+     ],
+     "size": [
+      26.4,
+      23.0
+     ]
+    },
+    {
+     "at": [
+      0,
+      19.0,
+      0.2
+     ],
+     "size": [
+      22.6,
+      20.2
+     ]
+    },
+    {
+     "at": [
+      0,
+      26.0,
+      0
+     ],
+     "size": [
+      18.6,
+      17.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      31.0,
+      -0.2
+     ],
+     "size": [
+      13.0,
+      12.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      33.6,
+      -0.4
+     ],
+     "size": [
+      6.0,
+      5.8
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 14,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "minky",
+   "paint": {
+    "ramp": "c7c8088_spread0p75",
+    "tone": 3.1,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "band",
+      "axis": "x",
+      "from": -0.007971014492753625,
+      "to": 0.007971014492753625,
+      "shift": -0.55,
+      "faces": [
+       "-front",
+       "-back",
+       "-end",
+       "-start"
+      ],
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1,
+       "shadow_shift": -0.6,
+       "highlight_shift": 0.7
+      }
+     },
+     {
+      "id": "belly",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        11.0,
+        10.0,
+        11.6
+       ],
+       [
+        0,
+        21.0,
+        9.0,
+        8.0
+       ]
+      ],
+      "ramp": "cecebe6_spread0p7",
+      "tone": 3.4,
+      "roughness": 0.15
+     },
+     {
+      "id": "hood",
+      "op": "band",
+      "axis": "y",
+      "from": 0.42,
+      "to": 1.0,
+      "ramp": "c2c2c34_spread0p6",
+      "tone": 2.6,
+      "wobble": 0.04
+     },
+     {
+      "id": "face",
+      "op": "spots",
+      "centers": [
+       [
+        -3.8,
+        24.4,
+        8.4,
+        3.4
+       ],
+       [
+        3.8,
+        24.4,
+        8.4,
+        3.4
+       ],
+       [
+        0,
+        22.2,
+        9.4,
+        4.0
+       ]
+      ],
+      "ramp": "cecebe6_spread0p7",
+      "tone": 3.3,
+      "roughness": 0.1
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "beak",
+   "shape": "loft",
+   "pivot": [
+    0,
+    23.0,
+    8.6
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": [
+      4.6,
+      2.8
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.2,
+      2.4
+     ],
+     "size": [
+      3.0,
+      1.8
+     ]
+    },
+    {
+     "at": [
+      0,
+      -0.5,
+      3.6
+     ],
+     "size": [
+      0.6,
+      0.5
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "felt",
+   "paint": {
+    "ramp": "ce8702a_hue10",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "eyeL",
+   "shape": "prism",
+   "pivot": [
+    -3.8,
+    25.6,
+    8.0
+   ],
+   "rotation": [
+    0,
+    -22,
+    0
+   ],
+   "size": [
+    2.1,
+    2.1,
+    0.945
+   ],
+   "sides": 8,
+   "front_scale": [
+    0.62,
+    0.62
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "ink",
+    "tone": 1.4,
+    "stamps": [
+     {
+      "face": "front",
+      "at": [
+       1,
+       1
+      ],
+      "art": [
+       "w"
+      ],
+      "key": {
+       "w": "white:5"
+      }
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "wingL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -11.2,
+      19.0,
+      0
+     ],
+     "size": [
+      2.2,
+      7.2
+     ]
+    },
+    {
+     "at": [
+      -13.2,
+      12.0,
+      0.6
+     ],
+     "size": [
+      2.6,
+      7.6
+     ]
+    },
+    {
+     "at": [
+      -13.6,
+      6.0,
+      1.0
+     ],
+     "size": [
+      2.0,
+      5.4
+     ]
+    },
+    {
+     "at": [
+      -13.0,
+      3.6,
+      1.2
+     ],
+     "size": [
+      1.2,
+      2.4
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "minky",
+   "paint": {
+    "ramp": "c7c8088_spread0p75",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "footL",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      -4.6,
+      0.8,
+      6.0
+     ],
+     "size": [
+      5.0,
+      1.6
+     ]
+    },
+    {
+     "at": [
+      -5.2,
+      0.8,
+      9.4
+     ],
+     "size": [
+      6.6,
+      1.6
+     ]
+    },
+    {
+     "at": [
+      -5.6,
+      0.7,
+      12.0
+     ],
+     "size": [
+      5.4,
+      1.2
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.4
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "felt",
+   "paint": {
+    "ramp": "ce8702a_hue10",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "eyeR",
+   "shape": "prism",
+   "pivot": [
+    3.8,
+    25.6,
+    8.0
+   ],
+   "rotation": [
+    0,
+    22,
+    0
+   ],
+   "size": [
+    2.1,
+    2.1,
+    0.945
+   ],
+   "sides": 8,
+   "front_scale": [
+    0.62,
+    0.62
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "ink",
+    "tone": 1.4,
+    "stamps": [
+     {
+      "face": "front",
+      "at": [
+       1,
+       1
+      ],
+      "art": [
+       "w"
+      ],
+      "key": {
+       "w": "white:5"
+      }
+     }
+    ]
+   },
+   "parent": "root"
+  },
+  {
+   "id": "wingR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      11.2,
+      19.0,
+      0
+     ],
+     "size": [
+      2.2,
+      7.2
+     ]
+    },
+    {
+     "at": [
+      13.2,
+      12.0,
+      0.6
+     ],
+     "size": [
+      2.6,
+      7.6
+     ]
+    },
+    {
+     "at": [
+      13.6,
+      6.0,
+      1.0
+     ],
+     "size": [
+      2.0,
+      5.4
+     ]
+    },
+    {
+     "at": [
+      13.0,
+      3.6,
+      1.2
+     ],
+     "size": [
+      1.2,
+      2.4
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "minky",
+   "paint": {
+    "ramp": "c7c8088_spread0p75",
+    "tone": 3.1
+   },
+   "parent": "root"
+  },
+  {
+   "id": "footR",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      4.6,
+      0.8,
+      6.0
+     ],
+     "size": [
+      5.0,
+      1.6
+     ]
+    },
+    {
+     "at": [
+      5.2,
+      0.8,
+      9.4
+     ],
+     "size": [
+      6.6,
+      1.6
+     ]
+    },
+    {
+     "at": [
+      5.6,
+      0.7,
+      12.0
+     ],
+     "size": [
+      5.4,
+      1.2
+     ]
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2.4
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "style": "felt",
+   "paint": {
+    "ramp": "ce8702a_hue10",
+    "tone": 3.1
+   },
+   "parent": "root"
+  }
+ ],
+ "animations": {
+  "hop": {
+   "length": 1.2,
+   "loop": false,
+   "tracks": [
+    {
+     "part": "root",
+     "channel": "position",
+     "keys": [
+      [
+       0.0,
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      [
+       0.3,
+       [
+        0,
+        2.0,
+        0
+       ]
+      ],
+      [
+       0.6,
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      [
+       0.9,
+       [
+        0,
+        1.2,
+        0
+       ]
+      ],
+      [
+       1.2,
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     ]
+    }
+   ]
+  }
+ }
 }

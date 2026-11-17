@@ -1,56 +1,8 @@
 {
  "mats": {},
  "clips": {
-  "gimmick": "gimmick"
+  "gimmick": "wobble"
  },
  "pts": {},
- "models": [
-  {
-   "name": "m",
-   "src": "sketchfab:4e5df1084d524a83aa3bacdd41660fb7",
-   "height": 38.0,
-   "pos": [
-    -0.814,
-    -0.561,
-    2.699
-   ],
-   "yaw": -25,
-   "pitch": 0,
-   "roll": 0,
-   "tris": 1400,
-   "mat": "matte",
-   "rest": true,
-   "at": [
-    0,
-    0,
-    0
-   ],
-   "key": "0ceee86076a11c",
-   "rest_R": [
-    [
-     0.997564,
-     -0.069756,
-     0.0
-    ],
-    [
-     0.068697,
-     0.982409,
-     0.173648
-    ],
-    [
-     -0.012113,
-     -0.173225,
-     0.984808
-    ]
-   ]
-  }
- ],
- "model_clip": {
-  "node": "model_m",
-  "kind": "wobble",
-  "length": 1.6,
-  "amp": 12,
-  "axis": "y"
- },
  "key": "nuigurumi/bunny"
 }
