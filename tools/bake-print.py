@@ -375,6 +375,30 @@ def beer(P):
     P.rect(0, 76, w, 20, 0xc9a24a); P.text('ホーホー酒造', 'kakub', 6, w / 2, 82, 0x14204e); P.text('中ジョッキ 550円', 'kakub', 5, w / 2, 90, 0x14204e)
 S['rm:beer'] = (64, 96, beer)
 
+# the laminated menu on the counter (Ramen.js drawMenuCard draws this, then its selection on top): 704 x 400, two columns
+# of six dishes, each with its real photo. Layout constants mirrored in Ramen.js (MENU_LAYOUT).
+RM = [('rm_shoyu', '醤油らーめん', 650), ('rm_miso', '味噌らーめん', 750), ('rm_tonkotsu', '豚骨らーめん', 800), ('rm_shio', '塩らーめん', 650),
+      ('rm_tantan', '担々麺', 850), ('rm_gyoza', '餃子', 350), ('rm_rice', 'ライス', 150), ('rm_chashu', 'チャーシュー丼', 400),
+      ('rm_beer', '瓶ビール', 550), ('rm_sake', '熱燗', 450), ('rm_oolong', '烏龍茶', 200), ('rm_kaedama', '替え玉', 150)]
+def menucard(P):
+    w, h = 704, 400
+    P.rect(0, 0, w, h, 0xf6eedc)
+    P.rect(0, 0, w, 48, 0xb8241c)
+    P.text('お品書き', 'oldmincho', 30, 18, 24, 0xfbf6ea, anchor='lm')
+    P.text('らーめん山田', 'oldminchob', 16, w - 18, 20, 0xfbf6ea, anchor='rm')
+    P.text('RAMEN YAMADA  SINCE 1971', 'bebas', 10, w - 18, 38, 0xf0c8b8, anchor='rm', track=1.5)
+    for i, (k, jp, yen) in enumerate(RM):
+        x = 16 + (i // 6) * 344; y = 58 + (i % 6) * 56
+        f = DISH[k]
+        P.photo(ph(f[0]), x, y, 66, 48, f=f[1], sat=0.98, con=1.06)
+        P.rect(x, y, 66, 48, 0x2e1f28, line=0.8)
+        P.text(jp, 'shippori', 17, x + 76, y + 18, INK, anchor='lm', maxw=170)
+        P.text('%d' % yen, 'bebas', 22, x + 300, y + 20, RED, anchor='rm'); P.text('円', 'kakub', 10, x + 314, y + 22, RED, anchor='rm')
+        P.hline(x + 76, y + 40, 240, 0xc8b898, 0.8)
+    P.rect(352, 56, 1, 336, 0xc8b898)
+    P.text('食券は入口の券売機でお求めください', 'kakub', 9, w / 2, h - 8, 0x6a5a4a)
+S['rm:menu'] = (704, 400, aged(menucard, paper='Paper001', grain_k=0.5, fade=0.05, rings=0.35, seed=12))
+
 
 # ================================================================== street (src/world/LanePosters.js, keys 'lane:<design>:<n>')
 # Posters and notices pasted up round the lane, 4x their old size: (48 x 68 -> 192 x 272, 40 x 58 -> 160 x 232,

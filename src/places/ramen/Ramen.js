@@ -10,6 +10,7 @@
 // master also pays cash for washing dishes in the back (pick a bowl, scrub it with the sponge, rinse, rack it).
 //   game.places.ramen = { enter(), seat, served, washing, ... }      save: game.state.ramen
 import * as THREE from 'three';
+import { printImage, printRegions, whenPrint } from '../../gfx/printAtlas.js';
 import { audio } from '../../core/audio.js';
 import { ensureState } from '../../game/stateExt.js';
 import { Human } from '../../people/Human.js';
@@ -422,7 +423,8 @@ export class Ramen {
     };
     this.redrawPlaques();
     // laminated paper menus on the counter: pick one up and read it (point at a dish for what it does)
-    this.menuCard = pixCanvas(176, 100);
+    this.menuCard = pixCanvas(704, 400); // the baked photo menu (tools/bake-print.py 'rm:menu'), 4 px per old px
+    whenPrint('shop').then(() => this.drawMenuCard());
     const cardMat = P.mat(new THREE.MeshStandardMaterial({ map: this.menuCard.tex, roughness: 0.4 }));
     this.cards = [1, 4].map((si) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(0.33, 0.19).rotateX(-Math.PI / 2), cardMat);
@@ -450,17 +452,14 @@ export class Ramen {
   drawMenuCard() {
     if (!this.menuCard) return;
     const sel = this.menuPm?.active ? this.menuSel : -1;
+    const img = printImage('shop'), r = printRegions('shop')['rm:menu'];
     this.menuCard.redraw((c, w, h) => {
-      paperFill(c, 0, 0, w, h, { base: '#f6eedc', seed: 41, border: '#8a6a4a' });
-      c.fillStyle = '#c8322c'; c.fillRect(0, 0, w, 12);
-      kanji(c, 'お品書き', 4, 1, 10, 0xffffff);
-      draw5(c, 'MENU', w - 4, 3, { s: 1, col: '#ffffff', align: 'right' });
-      MENU.forEach((id, i) => {
-        const f = FOODS[id], x = 4 + Math.floor(i / 6) * 86, y = 15 + (i % 6) * 14;
-        kanji(c, f.jp.slice(0, 6), x, y, 10, 0x241a1e);
-        draw5(c, `${f.price}`, x + 80, y + 2, { s: 1, col: '#c8322c', align: 'right' });
-        if (i === sel) { c.fillStyle = '#2f5a9a'; for (let k = 0; k < 84; k += 2) { c.fillRect(x - 2 + k, y - 1, 1, 1); c.fillRect(x - 2 + k, y + 11, 1, 1); } c.fillRect(x - 3, y, 1, 11); c.fillRect(x + 82, y, 1, 11); }
-      });
+      if (img && r) c.drawImage(img, r[0], r[1], r[2], r[3], 0, 0, w, h);
+      else { c.fillStyle = '#f6eedc'; c.fillRect(0, 0, w, h); }
+      if (sel >= 0) { // a red pen ring round the dish you point at
+        const x = 16 + Math.floor(sel / 6) * 344, y = 58 + (sel % 6) * 56;
+        c.strokeStyle = '#c8322c'; c.lineWidth = 3; c.strokeRect(x - 6, y - 5, 334, 58);
+      }
     });
   }
 
