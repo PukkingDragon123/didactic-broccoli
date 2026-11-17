@@ -1,8 +1,14 @@
 {
  "mats": {
+  "iron": "metal",
   "tip": "metal"
  },
  "clips": {},
  "pts": {},
+ "lay": [
+  0,
+  0,
+  62
+ ],
  "key": "asobi/koma"
 }

@@ -80,20 +80,20 @@ REF = {"id": "ref", "op": "fill", "shift": -0.3, "min_light": -0.1, "max_light":
 # light and rims, with only structured detail (grain, boards, ribs) and soft mottling on top: no photo noise, no
 # speckle, no random sparkle, so specs sit beside the converted models (lowpix pixel-hd) without a seam.
 STYLES = {
-    "pvc": _st(_mottle(2.0, 0.3), SHEEN, REF, GLOSS),      # injection-moulded, factory-painted PVC with a soft sheen
-    "matte": _st(_mottle(2.0, 0.32)),                        # soft vinyl / flat paint
+    "pvc": _st(_mottle(1.4, 0.6), SHEEN, REF, GLOSS),      # injection-moulded, factory-painted PVC with a soft sheen
+    "matte": _st(_mottle(1.4, 0.6)),                        # soft vinyl / flat paint
     "skin": _st(_mottle(3.0, 0.08), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.84}),
     "cloth": _st(_mottle(2.4, 0.14)),
     "denim": _st(_mottle(2.4, 0.14)),
     "velvet": _st(_mottle(2.0, 0.18), {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.82}),
     "fur": _st(_mottle(2.2, 0.16)),
     "wood": _st({"id": "grain", "op": "stripes", "axis": "x", "period": 2.2, "width": 0.18, "wobble": 1.2, "shift": -0.45},
-                _mottle(5.0, 0.22), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.82}),
+                _mottle(1.8, 0.5), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.82}),
     "plank": _st({"id": "grain", "op": "stripes", "axis": "x", "period": 1.8, "width": 0.3, "wobble": 0.8, "shift": -0.6},
                  {"id": "boards", "op": "stripes", "axis": "z", "period": 6.0, "width": 0.06, "shift": -1.2}, _mottle(4.0, 0.15)),
-    "metal": _st(_mottle(2.2, 0.32), {"id": "sheen", "op": "fill", "shift": 1.1, "min_light": 0.7},
+    "metal": _st(_mottle(1.4, 0.55), {"id": "sheen", "op": "fill", "shift": 1.1, "min_light": 0.7},
                  {"id": "ref", "op": "fill", "shift": -0.8, "min_light": -0.1, "max_light": 0.3}),
-    "tin": _st(_mottle(2.0, 0.32), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74}, GLOSS),
+    "tin": _st(_mottle(1.4, 0.6), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74}, GLOSS),
     "bark": _st({"id": "furrows", "op": "stripes", "axis": "z", "period": 1.4, "width": 0.35, "wobble": 0.9, "shift": -0.8},
                 _mottle(2.0, 0.25)),
     "rock": _st(_mottle(2.6, 0.28), {"id": "facets", "op": "patches", "scale": 3.0, "threshold": 0.62, "shift": -0.6}),
@@ -101,7 +101,7 @@ STYLES = {
     "leafy": _st(_mottle(1.8, 0.3)),
     "rust": _st(_mottle(2.5, 0.2), {"id": "rust", "op": "patches", "scale": 2.5, "threshold": 0.6, "shift": -0.7}),
     "clay": _st(_mottle(3.0, 0.15)),
-    "food": _st(_mottle(2.0, 0.15), {"id": "sheen", "op": "fill", "shift": 0.4, "min_light": 0.85}),
+    "food": _st(_mottle(1.4, 0.55), {"id": "sheen", "op": "fill", "shift": 0.4, "min_light": 0.85}),
     "glaze": _st(_mottle(1.8, 0.38), {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.72}, GLOSS),
     "paper": _st(_mottle(1.6, 0.4), {"id": "fibre", "op": "stripes", "axis": "x", "period": 1.4, "width": 0.25, "wobble": 1.5, "shift": -0.5}),
     # clear tinted plastic (drawn with the game's glass material): a bright rim and inner depth

@@ -8,7 +8,7 @@ import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { dequantize } from '@gltf-transform/functions';
 import { MeshoptDecoder } from 'meshoptimizer';
-import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import sharp from 'sharp';
 
@@ -44,6 +44,7 @@ for (const key of keys) {
     sizes.push(t.getSize());
   }
   const parts = {};
+  const sep = new Set((JSON.parse(readFileSync(resolve(ROOT, 'src/figures/lowpix.manifest.json'), 'utf8'))[key] || {}).separate || []);
   const scene = root.listScenes()[0];
   const verts = []; // [x, y, z] of every triangle corner (for the shelf contact) and the surface centroid
   const com = [0, 0, 0];
@@ -51,6 +52,7 @@ for (const key of keys) {
   const walk = (node, M, top) => {
     const W = mul(M, mat4(node));
     const name = top || node.getName();
+    if (sep.has(node.getName())) return; // a separate moving part (a dart, a key) is not part of the standing toy
     const mesh = node.getMesh();
     if (mesh) {
       for (const prim of mesh.listPrimitives()) {
@@ -87,7 +89,7 @@ for (const key of keys) {
         }
       }
     }
-    for (const ch of node.listChildren()) walk(ch, W, name);
+    for (const ch of node.listChildren()) walk(ch, W, name === 'lay' ? null : name);
   };
   const I = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   for (const n of scene.listChildren()) walk(n, I, null);

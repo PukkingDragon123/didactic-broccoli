@@ -8,7 +8,7 @@ S = "sampuru"
 RAMEN = "sketchfab:f65a8eab51794fbc8c7941101a354a54"     # Japanese Ramen (senkinsky): shoyu, naruto, egg, chopsticks
 TEMPURA = "sketchfab:de0f08813c6f4090b1b163bfc94e5688"   # Giant Tower of TEMPURA Rice Bowl (nantsune, scan)
 UDON = "sketchfab:50f286afdcf14b54bf35f22affb0b15c"      # Udon (OHitsuji, Scaniverse scan): kitsune udon on its tray
-GYOZA = "sketchfab:d09c2142da5c41e498d4e8ce1e5a5502"     # Japanese Gyoza (edemaistre, ObjectCapture scan)
+CROISSANT = "polyhaven:croissant"                        # a butter croissant
 CAKE = "polyhaven:carrot_cake"                           # an iced ring cake, the sponge showing under the icing
 SUNDAE = "sketchfab:7fcd555c03de4411a83aa5685fac1b5b"    # Ice Cream Sundae (Discovered)
 FORK = "sketchfab:6f9efa17eab544eba05518bf29454895"      # Spaghetti and Fork (OsianOHM)
@@ -21,8 +21,9 @@ def ramen():
 
 
 def katsu():
-    F = Fig(f"{S}/katsu", "Gyoza Plate", "Six pan-fried dumplings, crisp side up, on the blue-and-white plate.")
-    F.model("plate", GYOZA, w=36, d=32, yaw=-25)
+    F = Fig(f"{S}/katsu", "Morning Set Croissant", "The kissaten's morning set: a butter croissant on a gold-rimmed plate, coffee not included.")
+    top = plate(F, "plate", 14.0, (0, 0, 0), col="#f4f2ea", rim="#c8a040")
+    F.model("bread", CROISSANT, L=24, at=(0, top - 0.3, 0), yaw=-25, tris=1000)
     return F
 
 

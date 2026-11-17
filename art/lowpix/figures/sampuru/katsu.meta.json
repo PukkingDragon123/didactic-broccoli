@@ -1,0 +1,26 @@
+{
+ "mats": {
+  "plate": "gloss"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "bread",
+   "src": "polyhaven:croissant",
+   "height": 6.98,
+   "pos": [
+    0.0,
+    1.3,
+    0.0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1000,
+   "mat": "matte",
+   "key": "7d019cbbca03c1"
+  }
+ ],
+ "key": "sampuru/katsu"
+}

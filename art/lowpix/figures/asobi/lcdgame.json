@@ -3,21 +3,22 @@
  "description": "Click to play Capsule Dash. The high score is still 9999 from 1983. Nobody knows who.",
  "author": "Gacha Garage (lowpix spec)",
  "license": "CC0-1.0",
- "density": 4.0,
+ "density": 6.0,
  "budget": {
   "tris": 6000,
   "colors": 96
  },
  "light": {
   "dir": [
-   -0.55,
+   -0.5,
    1.0,
-   0.65
+   0.6
   ],
-  "strength": 0.85,
-  "gradient": 0.35,
-  "ao": 0.55,
-  "ao_height": 4.0
+  "strength": 1.15,
+  "gradient": 0.0,
+  "ao": 0.5,
+  "ao_height": 3.0,
+  "ground": 0.0
  },
  "render": {
   "background": "#2a2630",
@@ -37,85 +38,85 @@
     "#706068"
    ],
    "white": [
-    "#391f0e",
-    "#a26029",
-    "#daa976",
+    "#3b1e0b",
+    "#a76024",
+    "#dca974",
     "#f6ecdf",
-    "#f8f2e8",
-    "#fbf8f1",
-    "#fdfdfa"
+    "#f8f2e9",
+    "#faf8f2",
+    "#fdfdfb"
    ],
    "steel": [
-    "#1c1b1f",
-    "#434047",
-    "#6a676e",
+    "#3d384a",
+    "#585365",
+    "#75707d",
     "#918f93",
-    "#aeaeae",
-    "#cccccc",
-    "#e9e9e9"
+    "#a5a5a5",
+    "#b9b9b9",
+    "#cecece"
    ],
    "blush": [
-    "#400b15",
-    "#941a29",
-    "#d9373f",
+    "#961239",
+    "#ce1e3f",
+    "#e14f5a",
     "#e88f8c",
-    "#edb3ac",
-    "#f3d2ca",
-    "#faede9"
+    "#eaada3",
+    "#edc7ba",
+    "#f1dbcf"
    ],
    "moss": [
-    "#10180c",
-    "#28381c",
-    "#43562c",
+    "#213917",
+    "#344e23",
+    "#496230",
     "#5f743e",
-    "#92a862",
-    "#bdc69d",
-    "#e4e6d5"
+    "#859758",
+    "#a6ad7e",
+    "#c0c2a7"
    ],
-   "cd8d4c8": [
-    "#36261e",
-    "#7c5d48",
-    "#b39981",
-    "#dcd3c7",
-    "#e5e0d6",
-    "#eeece6",
-    "#f8f7f4"
+   "cd4cfc2": [
+    "#7c4e3b",
+    "#a9795a",
+    "#bfa78e",
+    "#d8cfc0",
+    "#ddd9cd",
+    "#e4e2da",
+    "#ebeae5"
    ],
    "c2a2a34": [
-    "#09080a",
-    "#161318",
-    "#231f24",
+    "#151119",
+    "#1e1921",
+    "#27222a",
     "#302b31",
-    "#6a616b",
-    "#a19aa1",
-    "#d6d5d6"
+    "#565256",
+    "#7b7b7b",
+    "#a1a1a1"
    ],
-   "c9fae8e": [
-    "#1f2619",
-    "#4b573c",
-    "#798760",
-    "#a4ac8e",
-    "#bdc1ad",
-    "#d6d7cc",
-    "#edede9"
+   "c9cab8a": [
+    "#585532",
+    "#77784a",
+    "#8f9664",
+    "#a1a989",
+    "#b3b5a2",
+    "#c3c3b9",
+    "#d3d3cf"
    ],
    "c8a2a2a": [
-    "#1c080c",
-    "#41141a",
-    "#652124",
-    "#88312e",
-    "#c05a4d",
-    "#d69d8f",
-    "#edd7d0"
+    "#430f1f",
+    "#5c1724",
+    "#742128",
+    "#8a2f2c",
+    "#b3503f",
+    "#c4816a",
+    "#d2ad98"
    ],
-   "cd8302a": [
-    "#2c080f",
-    "#65141d",
-    "#9e2226",
-    "#d13b34",
-    "#dc796c",
-    "#e8b0a2",
-    "#f5e0d8"
+   "cc82c28": [
+    "#5f0e25",
+    "#831629",
+    "#a52129",
+    "#c5342d",
+    "#d26551",
+    "#d9957c",
+    "#e1bba4"
    ]
   }
  },
@@ -131,8 +132,8 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 2.4,
-     "amount": 0.12
+     "scale": 1.4,
+     "amount": 0.6
     },
     {
      "id": "sheen",
@@ -153,7 +154,7 @@
      "post": true,
      "dash": true,
      "length": 3,
-     "density": 0.2,
+     "density": 0.12,
      "shift": 1.0
     }
    ]
@@ -162,7 +163,7 @@
  "parts": [
   {
    "id": "case",
-   "shape": "box",
+   "shape": "taper",
    "pivot": [
     0,
     22,
@@ -173,18 +174,22 @@
     44,
     8
    ],
-   "chamfer": 1.6,
+   "front_scale": [
+    0.96,
+    0.97
+   ],
+   "chamfer": 2.6,
    "style": "pvc",
    "paint": {
-    "ramp": "cd8d4c8",
+    "ramp": "cd4cfc2",
     "tone": 3.4,
     "layers": [
      {
       "id": "seam",
       "op": "band",
       "axis": "x",
-      "from": -0.034375,
-      "to": 0.034375,
+      "from": -0.02291666666666667,
+      "to": 0.02291666666666667,
       "shift": -0.55,
       "faces": [
        "-front",
@@ -224,7 +229,7 @@
        0.85,
        0.44
       ],
-      "ramp": "c9fae8e",
+      "ramp": "c9cab8a",
       "tone": 3.0,
       "faces": [
        "front"
@@ -259,6 +264,18 @@
       "dir": "v",
       "faces": [
        "front"
+      ]
+     },
+     {
+      "id": "grain",
+      "op": "stripes",
+      "axis": "y",
+      "period": 1.2,
+      "width": 0.35,
+      "shift": -0.35,
+      "faces": [
+       "sides",
+       "back"
       ]
      }
     ],
@@ -302,7 +319,7 @@
        "#.#.#.#.##..###....###.#.#....###.#.#.#...#.#.#.#"
       ],
       "key": {
-       "#": "cd8d4c8:1"
+       "#": "cd4cfc2:1"
       }
      }
     ]
@@ -310,61 +327,119 @@
   },
   {
    "id": "btn0",
-   "shape": "prism",
+   "shape": "loft",
    "pivot": [
     9,
     11,
     4
    ],
-   "offset": [
-    0,
-    0,
-    0.7
-   ],
    "rotation": [
-    0,
+    90,
     0,
     0
    ],
-   "size": [
-    6.0,
-    6.0,
-    1.4
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 6.0
+    },
+    {
+     "at": [
+      0,
+      0.9,
+      0
+     ],
+     "size": 6.0
+    },
+    {
+     "at": [
+      0,
+      1.5,
+      0
+     ],
+     "size": 4.8
+    }
    ],
-   "sides": 12,
+   "profile": {
+    "sides": 12,
+    "round": 2.0
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
    "style": "pvc",
    "paint": {
-    "ramp": "cd8302a",
+    "ramp": "cc82c28",
     "tone": 3.1
    }
   },
   {
    "id": "btn1",
-   "shape": "prism",
+   "shape": "loft",
    "pivot": [
     3,
     7,
     4
    ],
-   "offset": [
-    0,
-    0,
-    0.7
-   ],
    "rotation": [
-    0,
+    90,
     0,
     0
    ],
-   "size": [
-    6.0,
-    6.0,
-    1.4
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 6.0
+    },
+    {
+     "at": [
+      0,
+      0.9,
+      0
+     ],
+     "size": 6.0
+    },
+    {
+     "at": [
+      0,
+      1.5,
+      0
+     ],
+     "size": 4.8
+    }
    ],
-   "sides": 12,
+   "profile": {
+    "sides": 12,
+    "round": 2.0
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
    "style": "pvc",
    "paint": {
-    "ramp": "cd8302a",
+    "ramp": "cc82c28",
     "tone": 3.1
    }
   },

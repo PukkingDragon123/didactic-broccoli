@@ -43,6 +43,67 @@ async function flatten(tex) {
   const bg = { r: Math.round(st.channels[0].mean), g: Math.round(st.channels[1].mean), b: Math.round(st.channels[2].mean) };
   tex.setImage(new Uint8Array(await sharp(Buffer.from(tex.getImage())).flatten({ background: bg }).png({ compressionLevel: 9, palette: false }).toBuffer())).setMimeType('image/png');
 }
+/** The smallest extra tilt (about x and z, up to 50 deg) that leaves a laid-down toy steady on the shelf: its surface
+ * centroid over what touches (corners within 0.5 mm of the lowest), with a tipping angle >= 10 deg. */
+function settle(doc, scene, node, sep) {
+  const P = [], A = [];
+  const walk = (n, M) => {
+    if (sep.has(n.getName())) return;
+    const W = new Float64Array(16); mul4(M, n.getMatrix(), W);
+    const mesh = n.getMesh();
+    if (mesh) for (const prim of mesh.listPrimitives()) {
+      const pos = prim.getAttribute('POSITION'), idx = prim.getIndices(), v = [];
+      const cnt = idx ? idx.getCount() : pos.getCount();
+      for (let i = 0; i < cnt; i++) { pos.getElement(idx ? idx.getScalar(i) : i, v); P.push(xf4(W, v)); }
+    }
+    for (const c of n.listChildren()) walk(c, W);
+  };
+  const N0 = node.getMatrix(); // the lay rotation: points in the frame the extra tilt applies to
+  for (const c of node.listChildren()) walk(c, N0);
+  let cx = 0, cy = 0, cz = 0, at = 0;
+  for (let i = 0; i + 2 < P.length; i += 3) {
+    const [a, b, c] = [P[i], P[i + 1], P[i + 2]];
+    const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], w = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    const ar = 0.5 * Math.hypot(u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]);
+    cx += ar * (a[0] + b[0] + c[0]) / 3; cy += ar * (a[1] + b[1] + c[1]) / 3; cz += ar * (a[2] + b[2] + c[2]) / 3; at += ar;
+  }
+  const C = [cx / at, cy / at, cz / at];
+  const q0 = node.getRotation();
+  const margin = (ax, az) => {
+    const q = quat(ax, 0, az); // extra tilt applied after the lay rotation
+    const pts = P.map((p) => rotq(q, [p[0] - C[0], p[1] - C[1], p[2] - C[2]]));
+    const y0 = Math.min(...pts.map((p) => p[1]));
+    const H = hull2(pts.filter((p) => p[1] < y0 + 0.3).map((p) => [p[0], p[2]]));
+    if (H.length < 3) return -1;
+    let d = Infinity, inside = true;
+    for (let i = 0; i < H.length; i++) {
+      const [a, b] = [H[(i + H.length - 1) % H.length], H[i]];
+      const cr = (b[0] - a[0]) * (0 - a[1]) - (b[1] - a[1]) * (0 - a[0]);
+      if (cr < 0) inside = false;
+      d = Math.min(d, Math.abs(cr) / Math.max(Math.hypot(b[0] - a[0], b[1] - a[1]), 1e-9));
+    }
+    return inside ? Math.atan2(d, -y0) * 180 / Math.PI : -1;
+  };
+  const cands = [];
+  for (let i = -35; i <= 35; i++) for (let j = -35; j <= 35; j++) cands.push([i * 2, j * 2]);
+  cands.sort((a, b) => a[0] ** 2 + a[1] ** 2 - b[0] ** 2 - b[1] ** 2);
+  let best = [-2, [0, 0]];
+  for (const [ax, az] of cands) { const m = margin(ax, az); if (m >= 14) { best = [m, [ax, az]]; break; } if (m > best[0]) best = [m, [ax, az]]; }
+  node.setRotation(mulq(quat(best[1][0], 0, best[1][1]), q0));
+}
+function mul4(a, b, o) { for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = s; } }
+const xf4 = (m, p) => [0, 1, 2].map((r) => m[r] * p[0] + m[4 + r] * p[1] + m[8 + r] * p[2] + m[12 + r]);
+function rotq(q, v) { const [x, y, z, w] = q; const ix = w * v[0] + y * v[2] - z * v[1], iy = w * v[1] + z * v[0] - x * v[2], iz = w * v[2] + x * v[1] - y * v[0], iw = -x * v[0] - y * v[1] - z * v[2];
+  return [ix * w + iw * -x + iy * -z - iz * -y, iy * w + iw * -y + iz * -x - ix * -z, iz * w + iw * -z + ix * -y - iy * -x]; }
+function hull2(pts) {
+  pts = [...new Map(pts.map((p) => [p[0].toFixed(3) + ',' + p[1].toFixed(3), p])).values()].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (pts.length < 3) return pts;
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = [];
+  for (const p of pts) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (const p of pts.slice().reverse()) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  return lo.slice(0, -1).concat(up.slice(0, -1));
+}
 /** A gimmick clip on a model node: turn (look aside and back), hop, nod, spin, wobble, slide. */
 function modelClip(doc, c) {
   const node = doc.getRoot().listNodes().find((n) => n.getName() === c.node);
@@ -113,6 +174,18 @@ for (const series of seriesList) {
       meta.mats['model_' + m.name] = m.mat || 'matte';
     }
     if (missing) { console.error('SKIPPED', `${series}/${id}`, '(a model did not convert)'); continue; }
+    const sep = new Set(meta.separate || []);
+    if (meta.lay) { // the whole toy laid down the way it rests on a shelf (a top on its side), then stood on y = 0
+      const lay = doc.createNode('lay').setRotation(quat(...meta.lay));
+      for (const n of mainScene.listChildren()) { mainScene.removeChild(n); lay.addChild(n); }
+      mainScene.addChild(lay);
+      settle(doc, mainScene, lay, new Set(meta.separate || []));
+      const keep = lay.listChildren().filter((n) => sep.has(n.getName()));
+      for (const n of keep) lay.removeChild(n);
+      const lb = getBounds(mainScene);
+      for (const n of keep) lay.addChild(n);
+      lay.setTranslation([0, -lb.min[1], 0]);
+    }
     if ((meta.models || []).length) await doc.transform(unpartition());
     if (meta.model_clip) modelClip(doc, meta.model_clip);
     const keep = new Set(Object.values(meta.clips || {}));

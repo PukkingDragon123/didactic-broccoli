@@ -3,21 +3,22 @@
  "description": "Hold to squeeze. Smells like a bakery. Squeaks like a duck.",
  "author": "Gacha Garage (lowpix spec)",
  "license": "CC0-1.0",
- "density": 4.0,
+ "density": 6.0,
  "budget": {
   "tris": 6000,
   "colors": 96
  },
  "light": {
   "dir": [
-   -0.55,
+   -0.5,
    1.0,
-   0.65
+   0.6
   ],
-  "strength": 0.85,
-  "gradient": 0.35,
-  "ao": 0.55,
-  "ao_height": 4.0
+  "strength": 1.15,
+  "gradient": 0.0,
+  "ao": 0.5,
+  "ao_height": 3.0,
+  "ground": 0.0
  },
  "render": {
   "background": "#2a2630",
@@ -37,58 +38,58 @@
     "#706068"
    ],
    "white": [
-    "#391f0e",
-    "#a26029",
-    "#daa976",
+    "#3b1e0b",
+    "#a76024",
+    "#dca974",
     "#f6ecdf",
-    "#f8f2e8",
-    "#fbf8f1",
-    "#fdfdfa"
+    "#f8f2e9",
+    "#faf8f2",
+    "#fdfdfb"
    ],
    "steel": [
-    "#1c1b1f",
-    "#434047",
-    "#6a676e",
+    "#3d384a",
+    "#585365",
+    "#75707d",
     "#918f93",
-    "#aeaeae",
-    "#cccccc",
-    "#e9e9e9"
+    "#a5a5a5",
+    "#b9b9b9",
+    "#cecece"
    ],
    "blush": [
-    "#400b15",
-    "#941a29",
-    "#d9373f",
+    "#961239",
+    "#ce1e3f",
+    "#e14f5a",
     "#e88f8c",
-    "#edb3ac",
-    "#f3d2ca",
-    "#faede9"
+    "#eaada3",
+    "#edc7ba",
+    "#f1dbcf"
    ],
    "moss": [
-    "#10180c",
-    "#28381c",
-    "#43562c",
+    "#213917",
+    "#344e23",
+    "#496230",
     "#5f743e",
-    "#92a862",
-    "#bdc69d",
-    "#e4e6d5"
+    "#859758",
+    "#a6ad7e",
+    "#c0c2a7"
    ],
-   "ce8c878": [
-    "#3d210a",
-    "#8c5719",
-    "#d7952c",
-    "#e5c57d",
-    "#ebdaa1",
-    "#f2ebc4",
-    "#f9f8e6"
+   "ce2bc6e": [
+    "#873711",
+    "#b9601d",
+    "#db9139",
+    "#e1ba71",
+    "#e4cf8e",
+    "#e8e0a9",
+    "#edecc4"
    ],
-   "cd8a868": [
-    "#34190d",
-    "#77431f",
-    "#b97333",
-    "#d5a76d",
-    "#dfc495",
-    "#eaddbc",
-    "#f6f2e3"
+   "ccaa060": [
+    "#6d2f1a",
+    "#965029",
+    "#bc7739",
+    "#ca9f63",
+    "#d0b983",
+    "#d8cda1",
+    "#e2dfbe"
    ]
   }
  },
@@ -104,14 +105,7 @@
     {
      "id": "mottle",
      "op": "noise",
-     "scale": 1.6,
-     "amount": 0.22
-    },
-    {
-     "id": "photo",
-     "op": "photo",
-     "src": "art/lowpix/photos/concrete_floor_worn_001",
-     "scale": 14,
+     "scale": 1.4,
      "amount": 0.55
     },
     {
@@ -136,61 +130,70 @@
     {
      "at": [
       0,
-      0.0,
+      0,
       0
      ],
-     "size": [
-      27.6,
-      27.6
-     ]
+     "size": 24
     },
     {
      "at": [
       0,
-      3.06,
+      0.8,
       0
      ],
-     "size": [
-      28.5,
-      28.5
-     ]
+     "size": 28
     },
     {
      "at": [
       0,
-      7.65,
+      3,
       0
      ],
-     "size": [
-      30.0,
-      30.0
-     ]
+     "size": 31
     },
     {
      "at": [
       0,
-      12.75,
+      7,
       0
      ],
-     "size": [
-      27.0,
-      27.0
-     ]
+     "size": 30
     },
     {
      "at": [
       0,
-      17.0,
+      11,
       0
      ],
-     "size": [
-      16.5,
-      16.5
-     ]
+     "size": 25
+    },
+    {
+     "at": [
+      0,
+      14,
+      0
+     ],
+     "size": 16
+    },
+    {
+     "at": [
+      0,
+      15.5,
+      0
+     ],
+     "size": 5
+    },
+    {
+     "at": [
+      0,
+      15.8,
+      0
+     ],
+     "size": 0.5
     }
    ],
    "profile": {
-    "sides": 16,
+    "sides": 22,
     "round": 2.0
    },
    "subdiv": 1,
@@ -205,19 +208,19 @@
    ],
    "style": "food",
    "paint": {
-    "ramp": "ce8c878",
-    "tone": 3.4,
+    "ramp": "ce2bc6e",
+    "tone": 3.3,
     "layers": [
      {
-      "id": "crust",
+      "id": "crust0",
       "op": "stripes",
       "axis": [
        1,
        0,
        1
       ],
-      "period": 4.2,
-      "width": 0.12,
+      "period": 4.6,
+      "width": 0.1,
       "shift": -0.9,
       "faces": [
        "up"
@@ -228,15 +231,15 @@
       }
      },
      {
-      "id": "crust2",
+      "id": "crust1",
       "op": "stripes",
       "axis": [
        1,
        0,
        -1
       ],
-      "period": 4.2,
-      "width": 0.12,
+      "period": 4.6,
+      "width": 0.1,
       "shift": -0.9,
       "faces": [
        "up"
@@ -247,18 +250,15 @@
       }
      },
      {
-      "id": "sugar",
-      "op": "speckle",
-      "density": 0.18,
-      "shift": 1.4,
-      "faces": [
-       "up"
-      ]
-     },
-     {
       "id": "bake",
       "op": "gradient",
       "axis": "y",
+      "amount": 0.9
+     },
+     {
+      "id": "crumb",
+      "op": "noise",
+      "scale": 0.8,
       "amount": 0.8
      },
      {
@@ -266,8 +266,8 @@
       "op": "band",
       "axis": "y",
       "from": -1,
-      "to": -0.55,
-      "ramp": "cd8a868",
+      "to": -0.6,
+      "ramp": "ccaa060",
       "tone": 3.0
      }
     ],
@@ -293,7 +293,7 @@
        "#.#.#.#.##..###....###.#.#....###.#.#.#...#.#.#.#"
       ],
       "key": {
-       "#": "ce8c878:1"
+       "#": "ce2bc6e:1"
       }
      }
     ]

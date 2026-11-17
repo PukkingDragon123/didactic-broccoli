@@ -1,10 +1,5 @@
 {
  "mats": {
-  "knob": "gloss",
-  "cross": "gloss",
-  "cup_big": "gloss",
-  "cup_small": "gloss",
-  "spike": "gloss",
   "ball": "gloss"
  },
  "clips": {},
@@ -15,5 +10,10 @@
   "spike": "pt_spike",
   "miss": "pt_miss"
  },
+ "lay": [
+  0,
+  0,
+  90
+ ],
  "key": "asobi/kendama"
 }

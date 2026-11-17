@@ -3,10 +3,6 @@
   "barrel": "gloss",
   "muzzle": "gloss",
   "sight": "gloss",
-  "pump": "gloss",
-  "trigger": "gloss",
-  "bolt-1": "metal",
-  "bolt1": "metal",
   "dart_tip": "gloss"
  },
  "clips": {},
@@ -15,6 +11,11 @@
  },
  "separate": [
   "dart"
+ ],
+ "lay": [
+  0,
+  0,
+  90
  ],
  "key": "asobi/dartgun"
 }

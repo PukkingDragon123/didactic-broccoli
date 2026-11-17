@@ -39,6 +39,14 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
+ "polyhaven:croissant": {
+  "name": "croissant",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/croissant",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:filmstrip_projector_8mm": {
   "name": "filmstrip projector 8mm",
   "author": "Poly Haven",

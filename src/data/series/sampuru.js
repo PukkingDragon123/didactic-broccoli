@@ -13,7 +13,7 @@ export default {
   capsule: { colors: [0xc8392b, 0xe8a33a, 0xfff1dc, 0x3a7a4a], style: 'clear' },
   items: [
     { id: 'ramen', name: 'Shoyu Ramen', jp: 'しょうゆラーメン', rarity: 'common', desc: 'Naruto, a soft egg, nori and the chopsticks resting on the bowl. Smells of nothing at all.' },
-    { id: 'katsu', name: 'Gyoza Plate', jp: 'ギョーザ', rarity: 'common', desc: 'Six pan-fried dumplings, crisp side up, on the blue-and-white plate.' },
+    { id: 'katsu', name: 'Morning Set Croissant', jp: 'モーニングのクロワッサン', rarity: 'common', desc: "The kissaten's morning set: a butter croissant on a gold-rimmed plate, coffee not included." },
     { id: 'udon', name: 'Kitsune Udon', jp: 'きつねうどん', rarity: 'common', desc: 'Two sheets of sweet fried tofu on a bowl of thick noodles, for the fox in you.' },
     { id: 'ebifry', name: 'Tower Tendon', jp: 'ジャンボ天丼', rarity: 'uncommon', desc: 'Prawns, squid and lotus root stacked as high as the cook dared, in a black lacquer bowl.' },
     { id: 'pudding', name: 'Iced Ring Cake', jp: 'リングケーキ', rarity: 'rare', desc: "The kissaten's ring cake under the counter glass, the icing running down the sponge. Nobody has ever been sold a slice." },
