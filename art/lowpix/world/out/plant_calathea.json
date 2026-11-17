@@ -1,0 +1,33 @@
+{
+ "id": "plant_calathea",
+ "src": "polyhaven:calathea_orbifolia_01",
+ "credit": {
+  "title": "Calathea Orbifolia 01",
+  "author": "Rob Tuytel, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/calathea_orbifolia_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 256,
+ "size": [
+  2.503,
+  0.424,
+  1.195
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#242215",
+   "#2e2d1c",
+   "#383824",
+   "#3f412d",
+   "#464936",
+   "#63654f",
+   "#7f7f6a",
+   "#959588",
+   "#ababa6"
+  ]
+ },
+ "warnings": []
+}

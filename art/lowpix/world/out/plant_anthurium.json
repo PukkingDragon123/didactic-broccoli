@@ -1,0 +1,33 @@
+{
+ "id": "plant_anthurium",
+ "src": "polyhaven:anthurium_botany_01",
+ "credit": {
+  "title": "Anthurium Botany 01",
+  "author": "Rob Tuytel, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/anthurium_botany_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 496,
+ "size": [
+  2.906,
+  0.507,
+  1.854
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0f210b",
+   "#172a10",
+   "#1f3314",
+   "#283b19",
+   "#32431f",
+   "#536733",
+   "#768a49",
+   "#99a864",
+   "#b3b98b"
+  ]
+ },
+ "warnings": []
+}
