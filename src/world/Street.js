@@ -182,8 +182,8 @@ export class Street {
     const holder = new THREE.Group();
     holder.position.copy(c.g.getWorldPosition(new THREE.Vector3()));
     this.group.remove(c.g);
-    c.g.position.set(0, -0.12, 0);
-    c.g.rotation.set(0, Math.PI, 0); // she faces you, held up under her front legs
+    c.g.position.set(0.04, -0.2, 0.03);
+    c.g.rotation.set(0, Math.PI * 0.72, 0); // cradled across the arms, her head toward your left elbow, looking up at you
     c.rig.heldFlip = -1;
     holder.add(c.g);
     game.scene.add(holder);
