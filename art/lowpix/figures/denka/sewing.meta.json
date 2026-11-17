@@ -17,12 +17,12 @@
    "yaw": -15,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "gloss",
    "drop": [
     "mat:Glass"
    ],
-   "key": "8af26a0f2561fd"
+   "key": "1d28a551f175e7"
   }
  ],
  "model_clip": {

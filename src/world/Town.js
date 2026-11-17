@@ -1900,7 +1900,7 @@ export class Town {
    *  some of their window glass lights up after dark (an emissive map made from the glass texels). */
   buildSkylineLP() {
     const KINDS = ['sky_mansion', 'sky_office', 'sky_shops', 'sky_works'], BODY = [15, 18, 9.5, 6.6];
-    if (!KINDS.every((k) => archReady(k))) return false;
+    if (!KINDS.every((k) => archReady(k)) || /[?&]oldskyline\b/.test(location.search)) return false;
     const lists = KINDS.map(() => []);
     for (let i = 0; i < 54; i++) {
       const a = (i / 54) * Math.PI * 2 + hash2(i, 1) * 0.06;

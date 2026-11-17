@@ -8,7 +8,7 @@
   {
    "name": "phone",
    "src": "sketchfab:24c655388db749fe9a679ea4c6edc626",
-   "height": 21.679,
+   "height": 21.678,
    "pos": [
     0.0,
     0.0,
@@ -17,12 +17,12 @@
    "yaw": -15,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "gloss",
    "opts": {
     "spread": 0.3
    },
-   "key": "66601f5ec591d5"
+   "key": "86796335b67b0c"
   }
  ],
  "model_clip": {

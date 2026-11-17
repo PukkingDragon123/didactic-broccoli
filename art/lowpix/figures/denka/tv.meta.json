@@ -6,7 +6,7 @@
   {
    "name": "tv",
    "src": "sketchfab:fe9acba84eed4a43b4315200aefbead1",
-   "height": 19.79,
+   "height": 19.819,
    "pos": [
     0.0,
     0.0,
@@ -15,9 +15,9 @@
    "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 5000,
+   "tris": 1400,
    "mat": "matte",
-   "key": "ac1b86a922d6e2"
+   "key": "e98ec5d10f8de8"
   }
  ],
  "key": "denka/tv"

@@ -8,14 +8,14 @@
   "url": "https://polyhaven.com/a/cassette_player",
   "site": "Poly Haven"
  },
- "tris": 3000,
- "tex": 176,
+ "tris": 995,
+ "tex": 128,
  "size": [
   0.129,
   0.237,
   0.049
  ],
- "colours": 29,
+ "colours": 25,
  "palette": {
   "m0": [
    "#15110f",

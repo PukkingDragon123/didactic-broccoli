@@ -120,10 +120,10 @@ def rope_coil():
     R, r = 0.16, 0.022
     for k, (rr, y) in enumerate(((R, r), (R - 0.004, 3 * r - 0.004), (R + 0.004, 5 * r - 0.008), (R - 0.002, 7 * r - 0.012))):
         rings = [{'at': [rr * math.cos(t), y, rr * math.sin(t)], 'size': 2 * r} for t in [i * 2 * math.pi / 16 for i in range(17)]]
-        S.part(f'turn{k}', 'loft', [0, 0, 0], [0, 0, 0], rings=rings, profile={'sides': 8, 'round': 2.2}, subdiv=1, paint=rope)
+        S.part(f'turn{k}', 'loft', [0, 0, 0], [0, 0, 0], rings=rings, profile={'sides': 6, 'round': 2.2}, subdiv=0, paint=rope)
     rings = [{'at': [R, 7 * r, 0.0], 'size': 2 * r}, {'at': [R + 0.05, 6 * r, 0.08], 'size': 2 * r},
              {'at': [R + 0.08, r, 0.16], 'size': 2 * r}, {'at': [R + 0.06, r, 0.26], 'size': 1.6 * r}]
-    S.part('end', 'loft', [0, 0, 0], [0, 0, 0], rings=rings, profile={'sides': 8, 'round': 2.2}, subdiv=1, paint=rope)
+    S.part('end', 'loft', [0, 0, 0], [0, 0, 0], rings=rings, profile={'sides': 6, 'round': 2.2}, subdiv=0, paint=rope)
     return S
 
 

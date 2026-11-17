@@ -426,10 +426,10 @@
     }
    ],
    "profile": {
-    "sides": 8,
+    "sides": 6,
     "round": 2.2
    },
-   "subdiv": 1
+   "subdiv": 0
   },
   {
    "id": "turn1",
@@ -611,10 +611,10 @@
     }
    ],
    "profile": {
-    "sides": 8,
+    "sides": 6,
     "round": 2.2
    },
-   "subdiv": 1
+   "subdiv": 0
   },
   {
    "id": "turn2",
@@ -796,10 +796,10 @@
     }
    ],
    "profile": {
-    "sides": 8,
+    "sides": 6,
     "round": 2.2
    },
-   "subdiv": 1
+   "subdiv": 0
   },
   {
    "id": "turn3",
@@ -981,10 +981,10 @@
     }
    ],
    "profile": {
-    "sides": 8,
+    "sides": 6,
     "round": 2.2
    },
-   "subdiv": 1
+   "subdiv": 0
   },
   {
    "id": "end",
@@ -1062,10 +1062,10 @@
     }
    ],
    "profile": {
-    "sides": 8,
+    "sides": 6,
     "round": 2.2
    },
-   "subdiv": 1
+   "subdiv": 0
   }
  ]
 }

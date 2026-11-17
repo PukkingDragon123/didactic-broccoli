@@ -26,28 +26,28 @@ def playground():
     level = ['red', 'blue', 'yellow', 'green']
     for i in range(n + 1):
         for k in range(n + 1):
-            S.rod('jg_post', [x0 + i * s, 0, z0 + k * s], [x0 + i * s, n * s + 0.04, z0 + k * s], 0.024, sides=8, style='red')
+            S.rod('jg_post', [x0 + i * s, 0, z0 + k * s], [x0 + i * s, n * s + 0.04, z0 + k * s], 0.024, sides=6, style='red')
     for j in range(1, n + 1):
         for i in range(n + 1):
-            S.rod('jg_x', [x0, j * s, z0 + i * s], [x0 + n * s, j * s, z0 + i * s], 0.02, sides=8, style=level[j])
-            S.rod('jg_z', [x0 + i * s, j * s - 0.02, z0], [x0 + i * s, j * s - 0.02, z0 + n * s], 0.02, sides=8, style=level[j])
+            S.rod('jg_x', [x0, j * s, z0 + i * s], [x0 + n * s, j * s, z0 + i * s], 0.02, sides=6, style=level[j])
+            S.rod('jg_z', [x0 + i * s, j * s - 0.02, z0], [x0 + i * s, j * s - 0.02, z0 + n * s], 0.02, sides=6, style=level[j])
             for k in range(n + 1):
-                S.prism('jg_knuckle', 0.06, 0.06, 0.06, [x0 + i * s, j * s - 0.01, z0 + k * s], sides=8, style='red')
+                S.prism('jg_knuckle', 0.06, 0.06, 0.06, [x0 + i * s, j * s - 0.01, z0 + k * s], sides=6, style='red')
     # horizontal bars (鉄棒)
     xs, z = [20.2, 21.15, 22.1, 23.05], -16.8
     for x in xs:
-        S.rod('hb_post', [x, 0, z], [x, 1.42, z], 0.035, sides=8, style='red')
+        S.rod('hb_post', [x, 0, z], [x, 1.42, z], 0.035, sides=6, style='red')
         S.prism('hb_cap', 0.09, 0.09, 0.05, [x, 1.445, z], sides=8, rot=[-90, 0, 0], paint={'ramp': 'white', 'tone': 3.8})
     for i, y in enumerate((0.85, 1.05, 1.25)):
-        S.rod('hb_bar', [xs[i], y, z], [xs[i + 1], y, z], 0.017, sides=8, style='chrome')
+        S.rod('hb_bar', [xs[i], y, z], [xs[i + 1], y, z], 0.017, sides=6, style='chrome')
     # swing safety rails (open at the sides)
     for z in (-9.95, -14.45):
         x = 19.0
         while x <= 22.61:
-            S.rod('sr_post', [x, 0, z], [x, 0.7, z], 0.03, sides=8, style='yellow')
+            S.rod('sr_post', [x, 0, z], [x, 0.7, z], 0.03, sides=6, style='yellow')
             x += 1.2
         for y in (0.34, 0.7):
-            S.rod('sr_rail', [18.97, y, z], [22.63, y, z], 0.025, sides=8, style='blue')
+            S.rod('sr_rail', [18.97, y, z], [22.63, y, z], 0.025, sides=6, style='blue')
     return S
 
 
