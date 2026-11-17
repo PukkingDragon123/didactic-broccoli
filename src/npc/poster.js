@@ -1,6 +1,7 @@
 // Kishibe Rohan's poster for the garage (the "Reference Material" reward): a manga-style one-sheet in pixel art,
 // taped up where passers-by see it. While it hangs, extra customers find their way in (Story.update).
 import * as THREE from 'three';
+import { drawPrint } from '../gfx/printAtlas.js';
 
 const TAPE = new THREE.MeshStandardMaterial({ color: 0xf2ead2, roughness: 0.55, transparent: true, opacity: 0.8, depthWrite: false });
 
@@ -55,10 +56,11 @@ function draw(cv) {
 /** The poster as a group (w metres wide, facing +z from its centre). */
 export function rohanPoster(w = 0.46) {
   const cv = document.createElement('canvas');
-  cv.width = 192; cv.height = 272;
+  cv.width = 288; cv.height = 408;
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearFilter;
-  const redraw = () => { draw(cv); tex.needsUpdate = true; };
+  // the baked one-sheet (real photo, real type, real paper: tools/bake-misc.py 'rohan'); the drawn one as a fallback
+  const redraw = () => { if (!drawPrint(cv.getContext('2d'), 'misc', 'rohan')) draw(cv); tex.needsUpdate = true; };
   redraw();
   document.fonts?.ready?.then(redraw).catch(() => {});
   const h = w * cv.height / cv.width;

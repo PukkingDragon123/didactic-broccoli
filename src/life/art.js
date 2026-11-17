@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { Pix, FONT_EN, FONT_JP } from '../gfx/pix.js';
 import { mask5, textW5 } from '../gfx/font5x7.js';
 import { rng } from '../core/util.js';
+import { pixPrint } from '../gfx/printAtlas.js';
 
 export const INK = 0x26345e, INK_LIGHT = 0x4a5a8e, RED_INK = 0xb8322e, PENCIL = 0x6a6660;
 
@@ -233,6 +234,7 @@ const JOB_ART = {
 };
 export function jobFlyerPix(kind, title, pay) {
   const A = JOB_ART[kind] || JOB_ART.street;
+  { const q = new Pix(128, 160, 5); if (pixPrint(q, 'misc', 'life:job:' + kind)) return q; } // real photo flyer (tools/bake-misc.py)
   const p = new Pix(32, 40, kind.length * 11);
   p.fill(0xf4efe2); p.noise(0.03);
   p.rect(0, 0, 32, 9, A.band);
@@ -247,6 +249,7 @@ export function jobFlyerPix(kind, title, pay) {
 
 /** Cork for the board, with the association's header strip. */
 export function boardPix() {
+  { const q = new Pix(384, 256, 5); if (pixPrint(q, 'misc', 'life:board')) return q; } // real photos on real cork
   const p = new Pix(96, 64, 61);
   p.fill(0xb8875a); p.noise(0.12);
   p.speckle(0.08, [0x8a5e3a, 0xd0a070, 0x9a6a40]);

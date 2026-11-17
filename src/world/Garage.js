@@ -463,7 +463,7 @@ export class Garage {
     // framed 3D pieces (wooden or metal frame, glass front) and thick enamel tin plates
     const artTex = new Map();
     const tex = (id) => {
-      if (!artTex.has(id)) { const a = SHOP_ART[id]; const p = new Pix(a.w, a.h, 4); a.paint(p); artTex.set(id, p.texture()); }
+      if (!artTex.has(id)) { const a = SHOP_ART[id]; const p = new Pix(a.w * (a.px || 1), a.h * (a.px || 1), 4); a.paint(p); artTex.set(id, p.texture()); }
       return artTex.get(id);
     };
     const frameM = colMat(0x3a2418, { roughness: 0.5 });

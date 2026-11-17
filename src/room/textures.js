@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { Pix, FONT_EN, FONT_JP } from '../gfx/pix.js';
 import { hash2 } from '../core/util.js';
+import { pixPrint } from '../gfx/printAtlas.js';
 
 const shade = (c, f) => {
   const r = Math.min(255, Math.max(0, Math.round(((c >> 16) & 255) * f))), g = Math.min(255, Math.max(0, Math.round(((c >> 8) & 255) * f))), b = Math.min(255, Math.max(0, Math.round((c & 255) * f)));
@@ -160,6 +161,7 @@ export function doorInside(w = 40, h = 88) {
 // ------------------------------------------------------------------ posters
 /** Poster for the Mikan Run game on the PC (unit-mapped). */
 export function posterMikanRun(w = 48, h = 68) {
+  { const q = new Pix(w * 4, h * 4, 7); if (pixPrint(q, 'misc', 'room:mikan')) return q; } // baked from a real photo (tools/bake-misc.py)
   const p = new Pix(w, h, 101);
   p.gradient(0, 0, w, Math.round(h * 0.62), 0x5a4a9a, 0xff9a5a);
   p.circle(Math.round(w * 0.7), Math.round(h * 0.5), 7, 0xffd870);
@@ -180,6 +182,7 @@ export function posterMikanRun(w = 48, h = 68) {
 
 /** A retro "kaiju vs. robot" film poster, original. */
 export function posterKaiju(w = 48, h = 68) {
+  { const q = new Pix(w * 4, h * 4, 7); if (pixPrint(q, 'misc', 'room:kaiju')) return q; } // baked from a real photo (tools/bake-misc.py)
   const p = new Pix(w, h, 111);
   p.gradient(0, 0, w, h, 0x1a2a4a, 0x8a2a2a);
   for (let i = 0; i < 18; i++) p.px(Math.floor(hash2(i, 1) * w), Math.floor(hash2(i, 2) * h * 0.4), 0xfff4c8);
@@ -199,6 +202,7 @@ export function posterKaiju(w = 48, h = 68) {
 
 /** A pin-up of a (fictional) 80s idol singer, original. */
 export function posterIdol(w = 48, h = 68) {
+  { const q = new Pix(w * 4, h * 4, 7); if (pixPrint(q, 'misc', 'room:idol')) return q; } // baked from a real photo (tools/bake-misc.py)
   const p = new Pix(w, h, 121);
   p.gradient(0, 0, w, h, 0xffd0e0, 0x9ad0ff);
   for (let i = 0; i < 30; i++) p.px(Math.floor(hash2(i, 5) * w), Math.floor(hash2(i, 6) * h), 0xffffff);

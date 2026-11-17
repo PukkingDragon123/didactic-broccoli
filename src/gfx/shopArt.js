@@ -4,6 +4,7 @@
 // (opaque, including the rolled metal edge). Displayed on walls with nearest filtering at ~4–5 mm / px.
 // Text uses the DotGothic16 pixel font via p.text (16px is the native grid; complex kanji need ≥20px).
 
+import { pixPrint } from './printAtlas.js';
 // ------------------------------------------------------------------ helpers
 const INK = 0x1a1612, WHITE = 0xf6f1e4, CREAM = 0xf2e8cc, RED = 0xc8281e, REDD = 0x8e1a14;
 const NAVY = 0x1c2a58, GOLD = 0xe6b844, GOLDD = 0xa87a26, RIM = 0x1c2030;
@@ -588,3 +589,11 @@ export const SHOP_ART = {
 
 /** Every glyph drawn by the painters with p.text (preload with document.fonts.load). */
 export const SHOP_TEXT = 'ねこ印醤油特級ガチャラムネ金鶴せんべい元気ドリンクゲンキン学生服ツバメふじマッチたぬき蚊取線香ミルクキャラメル8月1986円くじガム0123456789だがし大怪獣近日公開屋レージ堂';
+
+// Phase 15: every piece is baked from real photographs on real paper and tin (tools/bake-misc.py 'shop:<id>', 4x the
+// old pixels: a.px); the painter above is only the fallback when the sheet is missing.
+for (const [id, a] of Object.entries(SHOP_ART)) {
+  const paint = a.paint;
+  a.px = 4;
+  a.paint = (p) => { if (!pixPrint(p, 'misc', 'shop:' + id)) paint(p); };
+}

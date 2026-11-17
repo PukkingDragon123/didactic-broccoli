@@ -41,7 +41,7 @@ function artTexture(id) {
   if (artTexCache.has(id)) return artTexCache.get(id);
   const a = SHOP_ART[id];
   if (!a) return null;
-  const p = new Pix(a.w, a.h, 4);
+  const p = new Pix(a.w * (a.px || 1), a.h * (a.px || 1), 4);
   try { a.paint(p); } catch (e) { console.warn('shop art', id, e); }
   const t = p.texture();
   artTexCache.set(id, t);

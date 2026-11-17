@@ -6,6 +6,7 @@
 //                 web font being loaded.
 // Each atlas returns { tex, size: [w, h], rect(name) -> [u0, v0, u1, v1] } (UVs with v up, three.js style).
 import * as THREE from 'three';
+import { drawPrint } from './printAtlas.js';
 import { Pix } from './pix.js';
 import { hash2 } from '../core/util.js';
 import { mask5, textW5 } from './font5x7.js';
@@ -507,6 +508,10 @@ export function cardAtlas() {
     ink(p, '10:00-19:00', x + w / 2, y + 17, INK, { align: 'center' });
     ink(p, '日 CLOSED', x + w / 2, y + 28, RED, { align: 'center' });
   });
+  // the pictures among the cards are real photos (tools/bake-misc.py 'gcard:<cell>')
+  p.flush?.();
+  for (const k of ['drawCat', 'drawGacha', 'photo']) { const r = A.rects[k]; if (r) drawPrint(p.ctx, 'misc', 'gcard:' + k, r[0], r[1], r[2], r[3]); }
+  p.pull?.();
   CARDS = A.done();
   return CARDS;
 }

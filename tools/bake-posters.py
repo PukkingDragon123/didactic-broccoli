@@ -157,6 +157,27 @@ promo('sakura', 'oi:f291d677045b5a38@test', (0.5, 0.6, 1.1), 'okashi', ['dango',
 promo('secret', 'local:milky_way.jpg', (0.5, 0.5, 1.0), 'shinkai', ['angler', 'nautilus', 'jelly'], 'シークレット', 'mochiy', '各シリーズにひとつ。きみは引けるか？', 0x15182a, 0xf4e6c0, 0xe8b838, 'SECRET')
 promo('glow', 'local:rain_window.jpg', (0.5, 0.5, 1.0), 'shinkai', ['jelly', 'angler', 'dumbo'], '夜光る', 'mochiy', '暗いところで光る、蓄光フィニッシュ', 0x101820, 0xd8f0e0, 0x58c08a, 'GLOW')
 
+# the handed-out joke flyers (src/gfx/flyers.js 'meme' designs): real photos, two-line captions on plain ink bands
+MEMES = {
+    'much': ('local:lane/shiba_puppy.jpg', 'WOW. SUCH CAPSULE.', 'MUCH WANT. ガチャガレージ'),
+    'nope': ('local:lane/cat_black.jpg', '通販？ NOPE.', '路地のガチャ？ YEP.'),
+    'distracted': ('local:back_street.jpg', '昼休み、給料日。', 'その足は、ガチャ屋へ。'),
+    'brain': ('local:milky_way.jpg', '1回まわす → 10回まわす', '→ ガレージを継ぐ。'),
+    'simply': ('local:lane/fuji_morning.jpg', 'ONE DOES NOT SIMPLY', 'TURN ONLY ONCE.'),
+    'nobody': ('local:rainy_lane.jpg', '誰も: ', '深夜3時のわたし: あと1回だけ。'),
+    'expect': ('oi:9a73ee8933d93045@test', '期待: シークレット', '現実: 同じハムスター、6回目。'),
+    'manager': ('local:lane/cat_grey.jpg', '新しい店長です。', '給料はおやつ。'),
+    'itwasme': ('local:lane/cat_fluffy.jpg', 'カプセルの中身は…', 'わたしだ。ミカン'),
+}
+for mid, (photo, top, bot) in MEMES.items():
+    def meme(P, photo=photo, top=top, bot=bot):
+        w, h = P.w, P.h
+        P.rect(0, 0, w, h, INK); P.photo(photo, 0, 46, w, h - 112, sat=0.95)
+        P.text(top, 'kaku', 17, w / 2, 24, WHITE, maxw=w - 16)
+        P.text(bot, 'kaku', 15, w / 2, h - 44, WHITE, maxw=w - 16)
+        P.text('ガチャガレージ 路地の奥', 'kakub', 8, w / 2, h - 14, 0xb8b0a0)
+    PROMO['promo:' + mid] = (240, 340, meme, dict(paper='Paper002', fade=0.06, crease=0.5, seed=len(mid)))
+
 # ================================================================== vintage: real 1930s posters (public domain)
 VINTAGE = {  # key: (commons file, crop focus, title for credits)
     'v:obama': ('1930s_Japan_Travel_Poster_-_01.jpg', (0.5, 0.5, 1.0)),

@@ -6,6 +6,7 @@
 //   packagedValue(key, finish): what a sealed figure fetches
 // Held-item hooks for the 'packaged' and 'stand' kinds are installed into game.held (Held.js untouched).
 import * as THREE from 'three';
+import { drawPrint } from '../gfx/printAtlas.js';
 import { audio } from '../core/audio.js';
 import { ensureState } from './stateExt.js';
 import { makeItemMesh } from './collectibles.js';
@@ -35,6 +36,18 @@ function cardTexture(key, finish) {
   const k = key + '|' + finish;
   if (cardTex.has(k)) return cardTex.get(k);
   const it = getItem(key), s = SERIES_BY_ID[it?.series] || {};
+  { // a real blister card: the series' photo backdrop, the actual toy (tools/bake-misc.py 'toycut'), the name in type
+    const q = new Pix(128, 180, 4); q.flush?.(); const g = q.ctx;
+    if (drawPrint(g, 'toycut', 'bd:' + it?.series, 0, 32, 128, 108) && drawPrint(g, 'toycut', 'toy:' + key, 14, 36, 100, 100)) {
+      g.fillStyle = s.card?.accent || '#e5383b'; g.fillRect(0, 0, 128, 32);
+      g.fillStyle = '#f4efe4'; g.beginPath(); g.arc(64, 12, 6, 0, 7); g.fill();
+      g.fillStyle = s.card?.bg || '#fff6e8'; g.fillRect(0, 140, 128, 40);
+      g.fillStyle = s.card?.text || '#2a2220'; g.textAlign = 'center'; g.font = '16px "DotGothic16", sans-serif';
+      g.fillText((it?.jp || it?.name || '').slice(0, 9), 64, 158);
+      g.font = '16px "Alagard", sans-serif'; g.fillText(finish && finish !== 'normal' ? finish.toUpperCase() : (s.name || '').toUpperCase().slice(0, 14), 64, 175);
+      q.pull?.(); const t = q.texture(); cardTex.set(k, t); return t;
+    }
+  }
   const p = new Pix(64, 90, 4);
   p.fill(hex(s.card?.bg || '#fff6e8'));
   p.rect(0, 0, 64, 16, hex(s.card?.accent || '#e5383b'));

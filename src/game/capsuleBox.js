@@ -10,6 +10,7 @@ import { Pix, FONT_EN } from '../gfx/pix.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { capsuleColor, capsuleSize, capsuleStyle, pileGeometries, CAPSULE_R } from './Capsule.js';
 import { audio } from '../core/audio.js';
+import { pixPrint } from '../gfx/printAtlas.js';
 import './gachaSfx.js';
 
 const VS = 0.01;
@@ -67,6 +68,13 @@ function labelTexture(series, count) {
   const k = series + ':' + count;
   if (labelCache.has(k)) return labelCache.get(k);
   const s = SERIES_BY_ID[series];
+  { // the baked label: the series' real toys on a real photo (tools/bake-misc.py 'carton:<series>'), the count stamped on
+    const q = new Pix(384, 224, 6);
+    if (pixPrint(q, 'misc', 'carton:' + series)) {
+      q.flush?.(); const g = q.ctx; g.fillStyle = '#c62a1f'; g.font = 'bold 40px "Alagard", sans-serif'; g.textAlign = 'right'; g.fillText('x' + count, 372, 212); q.pull?.();
+      const t = q.texture(); labelCache.set(k, t); return t;
+    }
+  }
   const p = new Pix(96, 56, 6);
   p.fill(0xf7f0de);
   p.rect(0, 0, 96, 12, hex(s?.card?.accent || '#e5383b'));
