@@ -73,7 +73,7 @@ def _common(S):
 
 
 def shopfront():
-    S = Spec('shopfront', ppm=96, desc="Gacha Garage's lane face: box-profile false front, piers, eave, shutter hood and rails")
+    S = Spec('shopfront', ppm=48, desc="Gacha Garage's lane face: box-profile false front, piers, eave, shutter hood and rails")
     _common(S)
     # ---------------------------------------------------------------- the two piers (cladding over the concrete walls)
     for sx in (-1, 1):

@@ -2,7 +2,7 @@
  "name": "wagasa_parasol",
  "description": "Wagasa parasol (made for the game)",
  "license": "CC0-1.0",
- "density": 128,
+ "density": 64,
  "budget": {
   "tris": 60000,
   "colors": 400

@@ -13,7 +13,7 @@ CX = (X0 + X1) / 2
 
 
 def mikawaya_shell():
-    S = Spec('mikawaya_shell', ppm=48, desc='MIKAWA-YA shell and shop front')
+    S = Spec('mikawaya_shell', ppm=32, desc='MIKAWA-YA shell and shop front')
     S.ramps(
         mortar=ramp('#b8b2a2', 8, hue=8, sat=0.02, spread=0.75),
         alu=ramp('#a6abae', 7, hue=10, sat=0.02, spread=0.7),

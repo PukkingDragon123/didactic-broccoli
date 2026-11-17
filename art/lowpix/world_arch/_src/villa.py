@@ -76,7 +76,7 @@ def _mats(S):
 
 
 def villa():
-    S = Spec('villa', ppm=28, desc="The mangaka's Western-style villa: render, slate hip roof, chimney, porch, balcony, front wall")
+    S = Spec('villa', ppm=16, desc="The mangaka's Western-style villa: render, slate hip roof, chimney, porch, balcony, front wall")
     _mats(S)
     zc = (ZF + ZK) / 2
     # stone plinth and the rendered body (split round the studio, as the game builds it so its window can be seen into)
@@ -187,7 +187,7 @@ def villa():
 
 
 def toilet():
-    S = Spec('park_toilet', ppm=40, desc='The park public toilet block')
+    S = Spec('park_toilet', ppm=24, desc='The park public toilet block')
     _mats(S)
     x0, x1, z0, z1, H = 23.0, 25.75, -8.7, -5.85, 2.75
     xc, zc = (x0 + x1) / 2, (z0 + z1) / 2

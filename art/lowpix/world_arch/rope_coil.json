@@ -2,7 +2,7 @@
  "name": "rope_coil",
  "description": "Coil of hemp rope (made for the game)",
  "license": "CC0-1.0",
- "density": 320,
+ "density": 200,
  "budget": {
   "tris": 60000,
   "colors": 400

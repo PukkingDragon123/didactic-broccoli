@@ -8,6 +8,24 @@
 import * as THREE from 'three';
 import { Loft, Builder, egg, fringe, polySkin, shade, mixc, smooth as sm, adist, vnoise3 } from './loft.js';
 import { legChain, solveLeg } from './ik.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// The dogs are the lowpix Shiba sculpt (art/lowpix/animals/shiba.py, painted per coat by dogpaint.py):
+// public/models/lowpix/animals/dog_<coat>.glb, loaded before anything is built (top-level await) and skinned here
+// part by part to DOG_BONES. The collar is still built in code (a band and a tag on the neck).
+const SCULPT = {};
+if (typeof document !== 'undefined') {
+  const base = import.meta.env?.BASE_URL ?? '/';
+  await Promise.all(['pochi', 'kuro', 'shiro', 'goma', 'chibi', 'ghost'].map(async (k) => {
+    try {
+      const g = await new GLTFLoader().loadAsync(`${base}models/lowpix/animals/dog_${k}.glb`);
+      let m = null; g.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
+      const map = m.material.map;
+      map.magFilter = THREE.NearestFilter; map.minFilter = THREE.LinearMipmapLinearFilter; map.colorSpace = THREE.SRGBColorSpace; map.needsUpdate = true;
+      SCULPT[k] = { geometry: m.geometry, map, parts: m.userData.parts };
+    } catch (e) { console.warn('dog model failed to load', k, e); }
+  }));
+}
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -231,10 +249,10 @@ function collar() {
   for (let k = 0; k <= n; k++) {
     // round the block neck: a squarish path (superellipse) lying on its faces, sagging at the front where the tag hangs
     const f = (k / n) * Math.PI * 2, c = Math.cos(f), sn = Math.sin(f), q = 1 / Math.pow(Math.abs(c) ** 4 + Math.abs(sn) ** 4, 0.25), r = c > 0 ? 0.05 : 0.05 + 0.016 * -c;
-    const p = C.clone().addScaledVector(S, sn * q * 0.054).addScaledVector(U, c * q * r);
+    const p = C.clone().addScaledVector(S, sn * q * 0.044).addScaledVector(U, c * q * r * 0.84); // (fitted to the sculpt's neck)
     secs.push(sec(p.toArray(), egg(0.0032, 0.0085, 0.0085), A.toArray()));
   }
-  const tag = C.clone().addScaledVector(U, -0.072).addScaledVector(A, -0.008);
+  const tag = C.clone().addScaledVector(U, -0.062).addScaledVector(A, -0.008);
   const D = U.clone().negate();
   const tagL = new Loft([sec(tag.clone().addScaledVector(D, -0.002).toArray(), egg(0.0095, 0.0095, 0.0095), A.toArray()), sec(tag.clone().addScaledVector(D, 0.002).toArray(), egg(0.0095, 0.0095, 0.0095), A.toArray())], { cap: [0.001, 0.001], capSteps: 2 });
   return { band: new Loft(secs), tag: tagL };
@@ -244,6 +262,39 @@ const CACHE = {};
 export function dogAssets(kind = 'pochi') {
   if (CACHE[kind]) return CACHE[kind];
   const C = COATS[kind] || COATS.pochi;
+  const M = SCULPT[kind] || SCULPT.pochi;
+  if (M) {
+    // the sculpt, skinned part by part (polylines through the joints, blended across each joint)
+    const b = (n) => BI[n], g = new THREE.BufferGeometry();
+    for (const k of ['position', 'normal', 'uv']) g.setAttribute(k, M.geometry.attributes[k]);
+    g.setIndex(M.geometry.index);
+    const pos = g.attributes.position, part = M.geometry.attributes._part, n = pos.count;
+    const leg = (k, front, s) => polySkin([[J['leg' + k][0] * 0.6, J['leg' + k][1] + 0.07, J['leg' + k][2]], J['leg' + k], J[(front ? 'arm' : 'shin') + k], J['paw' + k], front ? [s * 0.048, 0.012, 0.18] : [s * 0.051, 0.012, -0.15]],
+      [b(front ? 'chest' : 'body'), b('leg' + k), b((front ? 'arm' : 'shin') + k), b('paw' + k)], front ? [0.035, 0.022, 0.016] : [0.05, 0.024, 0.016]);
+    const SK = {
+      body: polySkin([[0, 0.34, -0.26], J.chest, J.neck, J.head, [0, 0.46, 0.27]], [b('body'), b('chest'), b('neck'), b('head')], [0.05, 0.03, 0.025]),
+      head: () => [[b('head'), 1]], nose: () => [[b('head'), 1]], jaw: () => [[b('jaw'), 1]],
+      ear_l: () => [[b('earL'), 1]], ear_r: () => [[b('earR'), 1]],
+      fore_l: leg('FL', true, 1), fore_r: leg('FR', true, -1), hind_l: leg('BL', false, 1), hind_r: leg('BR', false, -1),
+      tail: polySkin([[0, 0.35, -0.18], J.tail0, J.tail1, J.tail2, J.tail3, [0.03, 0.446, -0.126]], [b('body'), b('tail0'), b('tail1'), b('tail2'), b('tail3')], 0.02),
+    };
+    const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4), p = [0, 0, 0];
+    for (let i = 0; i < n; i++) {
+      p[0] = pos.getX(i); p[1] = pos.getY(i); p[2] = pos.getZ(i);
+      const w = (SK[M.parts[Math.round(part.getX(i))]] || SK.body)(0, p).slice().sort((a, c) => c[1] - a[1]).slice(0, 4);
+      const tot = w.reduce((a, c) => a + c[1], 0) || 1;
+      for (let k = 0; k < 4; k++) { si[i * 4 + k] = w[k] ? w[k][0] : 0; sw[i * 4 + k] = w[k] ? w[k][1] / tot : 0; }
+    }
+    g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4));
+    g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+    g.computeBoundingBox(); g.computeBoundingSphere();
+    // the collar and its tag, painted on their own little atlas
+    const B = new Builder(128, 128, 2, { px: 2, grain: 0.06, coat: 'leather' }), K = collar();
+    B.part(K.band, { rect: [0, 0, 120, 64], cols: 6, rows: 15, paint: painter(C, 'collar'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
+    B.part(K.tag, { rect: [0, 72, 48, 32], cols: 6, rows: 3, paint: painter(C, 'tag'), skin: () => [[b('neck'), 0.6], [b('chest'), 0.4]] });
+    CACHE[kind] = { geometry: g, map: M.map, collar: { geometry: B.geometry(), map: B.texture() } };
+    return CACHE[kind];
+  }
   const B = new Builder(1024, 1024, 4, { px: 2, grain: 0.13 }), b = (n) => BI[n];
   B.part(torso(), { rect: [0, 0, 760, 440], cols: 20, rows: 17, paint: painter(C, 'body'), skin: polySkin([[0, 0.34, -0.26], J.chest, J.neck, J.head, [0, 0.46, 0.27]], [b('body'), b('chest'), b('neck'), b('head')], [0.05, 0.03, 0.025]) });
   B.part(head(C), { rect: [768, 0, 256, 300], px: 2, cols: 22, rows: 16, paint: painter(C, 'head'), skin: () => [[b('head'), 1]] });
@@ -297,6 +348,12 @@ export class Dog {
     this.mesh.frustumCulled = false;
     this.mesh.raycast = () => {};
     this.root.add(this.mesh);
+    if (A.collar) {
+      const c = this.collarMesh = new THREE.SkinnedMesh(A.collar.geometry, new THREE.MeshStandardMaterial({ map: A.collar.map, roughness: 0.7 }));
+      c.bind(this.mesh.skeleton, this.mesh.bindMatrix);
+      c.castShadow = opts.cast ?? true; c.frustumCulled = false; c.raycast = () => {};
+      this.mesh.add(c);
+    }
     this.pos = this.root.position;
     this.heading = 0; this.phase = 0; this.speed = 0; this.pose = 'stand'; this.wag = 0.5; this.t = Math.random() * 10; this.barkT = 0;
     this.w = { stand: 1, sit: 0, sniff: 0, squat: 0 };

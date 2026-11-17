@@ -11,6 +11,7 @@ import { hex } from '../../people/paintlib.js';
 import { VoxelModel, glow } from '../../voxel/VoxelModel.js';
 import { meshVoxels } from '../../voxel/mesher.js';
 import { voxelMaterials } from '../../voxel/materials.js';
+import { bakedVoxelMesh } from '../../people/voxbake.js';
 
 const vm = () => { const v = new VoxelModel(); v.jitter = 0.02; return v; };
 const geo = (v) => { const g = meshVoxels(v, { voxelSize: 1, origin: 'none' }); g.translate(-0.5, -0.5, -0.5); g.computeBoundingSphere(); return g; };
@@ -106,7 +107,7 @@ export function makeOldMan(mats = null) {
   head.scale.set(U * kx, U, U * kz);
   h.b.head.add(head);
   mats ||= voxelMaterials('normal');
-  const add = (v, parent = head) => { const m = new THREE.Mesh(geo(v), mats); m.castShadow = true; m.raycast = () => {}; parent.add(m); return m; };
+  const add = (v, parent = head) => { const m = bakedVoxelMesh(geo(v), mats); m.castShadow = true; m.raycast = () => {}; parent.add(m); return m; };
   add(mask()); add(beard()); add(hat());
   const cg = new THREE.Group();
   cg.position.set(0.5, -0.5, 12.0);

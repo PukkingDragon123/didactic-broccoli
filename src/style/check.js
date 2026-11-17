@@ -107,10 +107,10 @@ export function installCheck(game) {
     return t;
   };
   const hsh = (i, j) => (((i * 73856093) ^ (j * 19349663)) >>> 0) % 100 / 100;
-  const caseTex = pixTex(16, 16, (i, j) => {
-    const edge = i === 0 || j === 0 || i === 15 || j === 15, lit = i === 1 || j === 1, k = 1 + (hsh(i, j) - 0.5) * 0.12;
+  const caseTex = pixTex(32, 32, (i, j) => {
+    const edge = i < 2 || j < 2 || i > 29 || j > 29, lit = i < 4 || j < 4, k = 1 + (hsh(i >> 1, j >> 1) - 0.5) * 0.12;
     const b = edge ? 18 : lit ? 64 : 34 * k;
-    return (i === 4 || i === 11) && j > 6 && j < 9 ? [150, 150, 156] : [b, b, b + 4];
+    return (i >> 1 === 4 || i >> 1 === 11) && j > 13 && j < 18 ? [150, 150, 156] : [b, b, b + 4];
   });
   const strapTex = pixTex(16, 32, (i, j) => {
     const rib = (j % 3) === 0 ? 0.8 : 1, hole = (j % 6) === 3 && i > 6 && i < 9;

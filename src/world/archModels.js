@@ -21,7 +21,20 @@ if (!ARCH_OFF && typeof document !== 'undefined') {
 
 export const archReady = (id) => !ARCH_OFF && !!LP_ARCH[id] && assetReady(archAsset(id));
 
+/** The lowpix atlases are pixel art seen with nearest filtering: no mip chain (keeps world_arch under ~25 MB of GPU). */
+function noMips(g) {
+  g.traverse((o) => {
+    if (!o.isMesh) return;
+    for (const m of [].concat(o.material)) {
+      const t = m?.map;
+      if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.NearestFilter; t.needsUpdate = true; }
+    }
+  });
+  return g;
+}
+
 function put(g, parent, { x = 0, y = 0, z = 0, ry = 0, cast = true, receive = true, name } = {}) {
+  noMips(g);
   g.position.set(x, y, z);
   g.rotation.y = ry;
   g.name = name || g.name;
@@ -41,7 +54,7 @@ export function archPlace(id, parent, o = {}) {
 /** The model placed lazily: an empty group now, the model in it once loaded. */
 export function archSlot(id, parent, o = {}) {
   const g = assetSlot(archAsset(id), { cast: o.cast ?? true, receive: o.receive ?? true });
-  g.addEventListener?.('assetloaded', () => { g.traverse((m) => { if (m.isMesh) { m.castShadow = o.cast ?? true; m.receiveShadow = o.receive ?? true; } }); g.updateMatrixWorld(true); });
+  g.addEventListener?.('assetloaded', () => { noMips(g); g.traverse((m) => { if (m.isMesh) { m.castShadow = o.cast ?? true; m.receiveShadow = o.receive ?? true; } }); g.updateMatrixWorld(true); });
   return put(g, parent, { name: 'arch:' + id, ...o, cast: o.cast ?? true });
 }
 
@@ -72,6 +85,7 @@ export function archFace(id) {
 export function archInstances(id, parent, list, { cast = false, receive = true } = {}) {
   const t = archReady(id) ? assetNow(archAsset(id)) : null;
   if (!t || !list.length) return null;
+  noMips(t);
   const out = [], m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1);
   for (const mesh of t.children) {
     if (!mesh.isMesh) continue;

@@ -117,7 +117,7 @@ def underpass_portal():
     plinths with dressed cap blocks, the hazard-striped corner guards, and the riveted steel plate girder spanning the
     opening (web, flanges, stiffeners every 62 cm, a hazard stripe on the bottom flange), in world coordinates."""
     XT, TZ0, TZ1, TH, YE = 26.0, 6.6, 12.6, 3.4, 4.25
-    S = Spec('underpass_portal', ppm=40, desc='Railway underpass portal: brick abutments and a riveted plate girder')
+    S = Spec('underpass_portal', ppm=24, desc='Railway underpass portal: brick abutments and a riveted plate girder')
     S.ramps(brick=ramp('#8a4c38', 8, hue=12, sat=0.04, spread=0.75), stone=ramp('#b0a898', 7, hue=8, sat=0.02, spread=0.7),
             girder=ramp('#6e6658', 8, hue=12, sat=0.03, spread=0.75), rust=ramp('#6a3a26', 6, hue=14, sat=0.02, spread=0.75),
             yellow=ramp('#d8aa2a', 6, hue=14, sat=0.04, spread=0.7), ink=ramp('#2a2826', 5, hue=8, sat=0.02, spread=0.6),

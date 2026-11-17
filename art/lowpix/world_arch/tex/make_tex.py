@@ -78,8 +78,10 @@ def plywood():
             if rng.random() < 0.5:
                 sheet = sheet[:, ::-1]
             k = rng.uniform(-0.04, 0.04)
-            sheet = grade(sheet, contrast=0.75, gain=(1.0 + k, 1.0, 1.0 - k))
-            sheet *= rng.uniform(0.92, 1.05)
+            # light lauan / birch ply: the photo's grain kept faint, pulled to a pale warm tan
+            sheet = grade(sheet, contrast=0.3, sat=0.55, mean=0.66)
+            sheet = sheet * np.array([1.08 + k, 0.98, 0.8 - k], np.float32)
+            sheet *= rng.uniform(0.95, 1.04)
             # the seam: a dark line on the left and top edge, a lit line just inside it
             sheet[:, 0] *= 0.55
             sheet[0, :] *= 0.55

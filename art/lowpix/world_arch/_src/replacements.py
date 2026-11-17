@@ -41,7 +41,7 @@ def wheel(S, id, x, y, z, r, w, rim_r):
 def scooter():
     """A late-80s / 90s Japanese 50cc step-through scooter (原付): red body, cream leg shield and floor, round headlamp
     on the handlebar cowl, 10-inch wheels, chrome muffler and grab rail, a square tail lamp, mirrors on stalks."""
-    S = Spec('scooter', ppm=256, desc='50cc scooter (made for the game)')
+    S = Spec('scooter', ppm=96, desc='50cc scooter (made for the game)')
     _base(S)
     body = {'ramp': 'red', 'tone': 3.6}
     cream = {'ramp': 'cream', 'tone': 4.0}
@@ -89,7 +89,7 @@ def scooter():
 def wagasa():
     """A big red wagasa parasol (野点傘) on a bamboo pole: oiled-paper canopy over 24 bamboo ribs, the white ring
     (蛇の目) near the rim, the lacquered head, a stand stone at the foot."""
-    S = Spec('wagasa_parasol', ppm=128, desc='Wagasa parasol (made for the game)')
+    S = Spec('wagasa_parasol', ppm=64, desc='Wagasa parasol (made for the game)')
     _base(S)
     paper = {'ramp': 'red', 'tone': 3.4, 'brush': {'off': True}, 'rim': {'light_shift': 0.5, 'dark_shift': -0.5}, 'layers': [
         {'id': 'ribs', 'op': 'stripes', 'axis': 'around', 'period': 1 / 24, 'width': 0.12, 'shift': -0.8},
@@ -112,7 +112,7 @@ def wagasa():
 
 def rope_coil():
     """A coil of hemp rope: four stacked turns of three-strand rope (the twist painted along each turn), a loose end."""
-    S = Spec('rope_coil', ppm=320, desc='Coil of hemp rope (made for the game)')
+    S = Spec('rope_coil', ppm=200, desc='Coil of hemp rope (made for the game)')
     _base(S)
     rope = {'ramp': 'rope', 'tone': 3.6, 'brush': {'off': True}, 'layers': [
         {'id': 'twist', 'op': 'stripes', 'axis': 'path', 'period': 0.03, 'width': 0.35, 'shift': -1.2, 'zigzag': [0.012, 0.05], 'zig_axis': 'around'},
@@ -198,7 +198,7 @@ def astronaut():
 def slide():
     """A 1990s park slide: a steel ladder at the back (-z), the platform with its hoop rails, a stainless chute running
     down to the front (+z), the frame painted red and yellow, chipped and rusting at the joints."""
-    S = Spec('slide', ppm=128, desc='Park slide (made for the game)')
+    S = Spec('slide', ppm=64, desc='Park slide (made for the game)')
     _base(S)
     red = {'ramp': 'red', 'tone': 3.6}
     yel = {'ramp': 'yellow', 'tone': 3.6}

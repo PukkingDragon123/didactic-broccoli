@@ -2,7 +2,7 @@
  "name": "scooter",
  "description": "50cc scooter (made for the game)",
  "license": "CC0-1.0",
- "density": 256,
+ "density": 96,
  "budget": {
   "tris": 60000,
   "colors": 400

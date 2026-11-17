@@ -2,7 +2,7 @@
  "name": "park_toilet",
  "description": "The park public toilet block",
  "license": "CC0-1.0",
- "density": 40,
+ "density": 24,
  "budget": {
   "tris": 60000,
   "colors": 400

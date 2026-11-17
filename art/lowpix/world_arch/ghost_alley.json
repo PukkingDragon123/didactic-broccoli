@@ -2,7 +2,7 @@
  "name": "ghost_alley",
  "description": "Ghost alley fixtures: post box, lamp, shrine offerings, drain, weeds",
  "license": "CC0-1.0",
- "density": 160,
+ "density": 64,
  "budget": {
   "tris": 60000,
   "colors": 400

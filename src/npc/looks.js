@@ -369,12 +369,12 @@ function sketchbook() {
     return [154 * k, 122 * k, 82 * k];
   }) });
   const page = new THREE.MeshStandardMaterial({ map: pageTexture(), roughness: 0.95 });
-  const edge = new THREE.MeshStandardMaterial({ roughness: 0.95, map: ptex('sb-edge', 16, 32, (i, j) => { const k = (i % 2) ? 0.88 : 1; return [236 * k, 228 * k, 208 * k]; }) });
+  const edge = new THREE.MeshStandardMaterial({ roughness: 0.95, map: ptex('sb-edge', 32, 32, (i, j) => { const k = (i % 2) ? 0.88 : 1; return [236 * k, 228 * k, 208 * k]; }) });
   // box faces: +x, -x, +y, -y, +z, -z
   const book = new THREE.Mesh(new THREE.BoxGeometry(W, Hb, D), [cover, page, edge, edge, edge, edge]); // the page faces the palm
   book.castShadow = true;
   g.add(book);
-  const ring = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.6, map: ptex('sb-ring', 8, 4, (i, j) => { const b = j === 0 ? 90 : j === 3 ? 20 : 44; return [b, b, b + 4]; }) });
+  const ring = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.6, map: ptex('sb-ring', 32, 32, (i, j) => { const b = (j % 8) === 0 ? 90 : (j % 8) === 7 ? 20 : 44 + ((i * 7 + j) % 5); return [b, b, b + 4]; }) });
   for (let k = 0; k < 9; k++) {
     const r = new THREE.Mesh(new THREE.BoxGeometry(W * 1.25, 0.006, 0.006), ring);
     r.position.set(0, Hb / 2 - 0.012 - k * 0.022, -D / 2);
@@ -390,7 +390,7 @@ function gpen() {
   const wood = ptex('gpen-holder', 8, 64, (i, j) => { const k = 0.85 + 0.25 * hh(i, j >> 2, 3) + (j > 54 ? 0.25 : 0); return j > 54 ? [150 * k, 150 * k, 156 * k] : [70 * k, 46 * k, 36 * k]; });
   const holder = new THREE.Mesh(new THREE.BoxGeometry(0.009, 0.13, 0.009), new THREE.MeshStandardMaterial({ map: wood, roughness: 0.6 }));
   holder.position.y = 0.035;
-  const nibT = ptex('gpen-nib', 8, 16, (i, j) => { const slit = i === 3 && j > 6; const k = (i === 0 ? 1.2 : i === 7 ? 0.7 : 1) * (j < 3 ? 0.8 : 1); return slit ? [60, 46, 20] : [217 * k, 178 * k, 92 * k]; });
+  const nibT = ptex('gpen-nib', 16, 32, (i, j) => { const slit = i === 7 && j > 13; const k = (i < 2 ? 1.2 : i > 13 ? 0.7 : 1) * (j < 5 ? 0.8 : 1); return slit ? [60, 46, 20] : [217 * k, 178 * k, 92 * k]; });
   const nib = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.022, 0.004), new THREE.MeshStandardMaterial({ map: nibT, roughness: 0.3, metalness: 0.9 }));
   nib.position.y = -0.04;
   g.add(holder, nib);
