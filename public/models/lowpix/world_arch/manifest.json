@@ -497,6 +497,48 @@
   "bytes": 18820,
   "ppm": 64
  },
+ "tree_keyaki": {
+  "id": "tree_keyaki",
+  "name": "tree_keyaki",
+  "min": [
+   -2.68,
+   -0.006,
+   -2.68
+  ],
+  "max": [
+   2.68,
+   7.1,
+   2.68
+  ],
+  "tris": 804,
+  "tex": [
+   512,
+   784
+  ],
+  "bytes": 60760,
+  "ppm": 40
+ },
+ "tree_pine": {
+  "id": "tree_pine",
+  "name": "tree_pine",
+  "min": [
+   -1.533,
+   -0.035,
+   -1.436
+  ],
+  "max": [
+   1.5,
+   3.895,
+   1.932
+  ],
+  "tris": 450,
+  "tex": [
+   256,
+   256
+  ],
+  "bytes": 23380,
+  "ppm": 40
+ },
  "underpass_portal": {
   "id": "underpass_portal",
   "name": "underpass_portal",
