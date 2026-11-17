@@ -210,7 +210,9 @@ for (const series of seriesList) {
     for (const m of root.listMeshes()) for (const p of m.listPrimitives()) tris += (p.getIndices()?.getCount() || p.getAttribute('POSITION').getCount()) / 3;
     const tex = root.listTextures()[0];
     const atlas = tex ? tex.getSize() : null;
-    await doc.transform(dedup(), prune(), reorder({ encoder: MeshoptEncoder }), quantize());
+    // capsule-toy mascots keep their smooth vertex normals (smoothlight.py) so the game's lit view is soft, not faceted;
+    // prune() would otherwise drop NORMAL as unused by the unlit material
+    await doc.transform(dedup(), prune({ keepAttributes: !!meta.mascot }), reorder({ encoder: MeshoptEncoder }), quantize());
     doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
     const out = join(outDir, id + '.glb');
     await io.write(out, doc);

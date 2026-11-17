@@ -14,7 +14,7 @@
    1.0,
    0.6
   ],
-  "strength": 1.15,
+  "strength": 1.5,
   "gradient": 0.0,
   "ao": 0.5,
   "ao_height": 3.0,
@@ -133,31 +133,15 @@
   "vinyl": {
    "dither": 0,
    "rim": {
-    "light": 1,
-    "dark": 1,
-    "outline": "dark"
+    "light": 0,
+    "dark": 0,
+    "outline": "none",
+    "spec": [
+     0.965,
+     1.7
+    ]
    },
-   "layers": [
-    {
-     "id": "mottle",
-     "op": "noise",
-     "scale": 2.6,
-     "amount": 0.1
-    },
-    {
-     "id": "sheen",
-     "op": "fill",
-     "shift": 0.45,
-     "min_light": 0.86
-    },
-    {
-     "id": "ref",
-     "op": "fill",
-     "shift": -0.3,
-     "min_light": -0.1,
-     "max_light": 0.22
-    }
-   ]
+   "layers": []
   }
  },
  "parts": [
@@ -284,18 +268,18 @@
      {
       "id": "toast",
       "op": "spots",
-      "count": 26,
+      "count": 14,
       "radius": [
        0.8,
-       1.8
+       1.4
       ],
       "ramp": "cc8843a_hue10_spread0p8",
-      "tone": 3.6,
-      "roughness": 0.6,
+      "tone": 3.8,
+      "roughness": 0,
       "where": {
        "y": [
         -0.8,
-        0.0
+        -0.2
        ]
       }
      },
@@ -498,30 +482,41 @@
     {
      "at": [
       0,
-      13.2,
+      13.0,
       -15.0
      ],
      "size": [
-      1.6,
-      2.0
+      2.0,
+      2.4
      ]
     },
     {
      "at": [
       0,
-      14.8,
+      15.2,
       -8.0
      ],
      "size": [
-      2.6,
-      3.4
+      3.6,
+      5.2
      ]
     },
     {
      "at": [
       0,
-      15.0,
+      15.6,
       2.0
+     ],
+     "size": [
+      3.8,
+      5.4
+     ]
+    },
+    {
+     "at": [
+      0,
+      14.0,
+      9.6
      ],
      "size": [
       2.8,
@@ -531,23 +526,12 @@
     {
      "at": [
       0,
-      13.8,
-      9.6
-     ],
-     "size": [
-      2.0,
-      2.6
-     ]
-    },
-    {
-     "at": [
-      0,
       12.4,
       13.0
      ],
      "size": [
-      1.0,
-      1.4
+      1.2,
+      1.6
      ]
     }
    ],
@@ -569,9 +553,9 @@
       "id": "crimp",
       "op": "stripes",
       "axis": "z",
-      "period": 2.2,
-      "width": 0.4,
-      "shift": -1.0
+      "period": 2.6,
+      "width": 0.42,
+      "shift": -1.6
      }
     ]
    },

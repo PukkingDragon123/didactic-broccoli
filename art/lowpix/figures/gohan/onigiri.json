@@ -14,7 +14,7 @@
    1.0,
    0.6
   ],
-  "strength": 1.15,
+  "strength": 1.5,
   "gradient": 0.0,
   "ao": 0.5,
   "ao_height": 3.0,
@@ -82,14 +82,14 @@
     "#faf8ee",
     "#fbfbf4"
    ],
-   "c24302a_hue10_spread0p7": [
-    "#0b100a",
-    "#151b13",
-    "#1f251d",
-    "#2a2f27",
-    "#5c6158",
-    "#8e8f8c",
-    "#bfbfbf"
+   "c1e3a2c_hue10_spread0p75": [
+    "#08100b",
+    "#101e15",
+    "#1a2c1f",
+    "#243929",
+    "#507557",
+    "#88a68b",
+    "#c5d0c6"
    ],
    "cf08a28_hue10": [
     "#7b2a04",
@@ -112,72 +112,18 @@
   }
  },
  "styles": {
-  "pvc": {
-   "dither": 0,
-   "rim": {
-    "light": 1,
-    "dark": 1,
-    "outline": "dark"
-   },
-   "layers": [
-    {
-     "id": "mottle",
-     "op": "noise",
-     "scale": 1.4,
-     "amount": 0.6
-    },
-    {
-     "id": "sheen",
-     "op": "fill",
-     "shift": 0.75,
-     "min_light": 0.8
-    },
-    {
-     "id": "ref",
-     "op": "fill",
-     "shift": -0.3,
-     "min_light": -0.1,
-     "max_light": 0.22
-    },
-    {
-     "id": "gloss",
-     "op": "gloss",
-     "post": true,
-     "dash": true,
-     "length": 3,
-     "density": 0.12,
-     "shift": 1.0
-    }
-   ]
-  },
   "vinyl": {
    "dither": 0,
    "rim": {
-    "light": 1,
-    "dark": 1,
-    "outline": "dark"
+    "light": 0,
+    "dark": 0,
+    "outline": "none",
+    "spec": [
+     0.965,
+     1.7
+    ]
    },
-   "layers": [
-    {
-     "id": "mottle",
-     "op": "noise",
-     "scale": 2.6,
-     "amount": 0.1
-    },
-    {
-     "id": "sheen",
-     "op": "fill",
-     "shift": 0.45,
-     "min_light": 0.86
-    },
-    {
-     "id": "ref",
-     "op": "fill",
-     "shift": -0.3,
-     "min_light": -0.1,
-     "max_light": 0.22
-    }
-   ]
+   "layers": []
   }
  },
  "parts": [
@@ -289,7 +235,7 @@
     }
    ],
    "profile": {
-    "sides": 14,
+    "sides": 16,
     "round": 2.1
    },
    "subdiv": 1,
@@ -310,30 +256,19 @@
      {
       "id": "grains",
       "op": "spots",
-      "count": 160,
+      "count": 46,
       "radius": [
-       0.45,
-       0.8
+       0.5,
+       0.7
       ],
       "stretch": [
        1.0,
-       0.6,
+       0.55,
        1.0
       ],
-      "shift": 0.8,
-      "roughness": 0.3
-     },
-     {
-      "id": "gaps",
-      "op": "spots",
-      "count": 120,
-      "radius": [
-       0.3,
-       0.5
-      ],
-      "shift": -0.7,
-      "roughness": 0.3,
-      "seed": 5
+      "shift": 0.7,
+      "roughness": 0,
+      "min_gap": 1.5
      },
      {
       "id": "nori",
@@ -341,7 +276,7 @@
       "axis": "z",
       "from": -1.0,
       "to": 0.42,
-      "ramp": "c24302a_hue10_spread0p7",
+      "ramp": "c1e3a2c_hue10_spread0p75",
       "tone": 3.0,
       "wobble": 0.02
      },
@@ -351,20 +286,8 @@
       "axis": "y",
       "from": -1.0,
       "to": -0.62,
-      "ramp": "c24302a_hue10_spread0p7",
+      "ramp": "c1e3a2c_hue10_spread0p75",
       "tone": 3.0
-     },
-     {
-      "id": "sheet",
-      "op": "stripes",
-      "axis": "y",
-      "period": 0.7,
-      "width": 0.3,
-      "wobble": 1.5,
-      "shift": -0.35,
-      "ramps": [
-       "c24302a_hue10_spread0p7"
-      ]
      },
      {
       "id": "blush_soft",
@@ -506,7 +429,7 @@
     true,
     true
    ],
-   "style": "pvc",
+   "style": "vinyl",
    "paint": {
     "ramp": "cf08a28_hue10",
     "tone": 3.1
@@ -567,7 +490,7 @@
    ],
    "style": "vinyl",
    "paint": {
-    "ramp": "c24302a_hue10_spread0p7",
+    "ramp": "c1e3a2c_hue10_spread0p75",
     "tone": 3.1
    },
    "parent": "root"
@@ -624,7 +547,7 @@
     true,
     true
    ],
-   "style": "pvc",
+   "style": "vinyl",
    "paint": {
     "ramp": "cf08a28_hue10",
     "tone": 3.1
@@ -685,7 +608,7 @@
    ],
    "style": "vinyl",
    "paint": {
-    "ramp": "c24302a_hue10_spread0p7",
+    "ramp": "c1e3a2c_hue10_spread0p75",
     "tone": 3.1
    },
    "parent": "root"
@@ -742,7 +665,7 @@
     true,
     true
    ],
-   "style": "pvc",
+   "style": "vinyl",
    "paint": {
     "ramp": "cf08a28_hue10",
     "tone": 3.1

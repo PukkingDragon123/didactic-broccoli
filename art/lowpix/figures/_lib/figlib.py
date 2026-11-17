@@ -139,8 +139,10 @@ STYLES.update({
                  {"id": "sheen", "op": "fill", "shift": 0.7, "min_light": 0.76}),
     "steelp": _st(_mottle(3.0, 0.08), _pb("metal_plate_02", 60, 0.12), {"id": "sheen", "op": "fill", "shift": 0.8, "min_light": 0.86},
                   {"id": "ref", "op": "fill", "shift": -0.7, "min_light": -0.1, "max_light": 0.3}),
-    # capsule-toy mascot PVC (CLAUDE.md toy rule): clean factory paint, soft satin sheen, only a faint mottle
-    "vinyl": _st(_mottle(2.6, 0.1), {"id": "sheen", "op": "fill", "shift": 0.45, "min_light": 0.86}, REF),
+    # capsule-toy mascot PVC (CLAUDE.md toy rule): clean flat factory colour, the stepped airbrush shade from smooth
+    # normals (_lib/smoothlight.py) and a small specular highlight; vinyl_hard for crisp props (crates, trays, plates)
+    "vinyl": {"dither": 0, "rim": {"light": 0, "dark": 0, "outline": "none", "spec": [0.965, 1.7]}, "layers": []},
+    "vinyl_hard": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "none", "spec": [0.95, 1.2]}, "layers": []},
     "ceramic": _st(_mottle(1.8, 0.16), {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.8}, GLOSS),
 })
 BRUSH_MARKS = {}

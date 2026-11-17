@@ -159,7 +159,7 @@ def main():
         run = {"spec": [os.path.basename(f)[:-5] for f in spec], "model": [os.path.basename(f)[:-5] for f in files if f not in spec]}
         json.dump(run, open(os.path.join(bdir, "run.json"), "w"))
         if spec:
-            subprocess.run([sys.executable, "-m", "lowpix", "batch", *spec, "-o", bdir, "-j", jobs], check=False, env=ENV)  # (failures are listed; the rest still packs)
+            subprocess.run([sys.executable, os.path.join(HERE, "_lib", "lowpix_run.py"), "batch", *spec, "-o", bdir, "-j", jobs], check=False, env=ENV)  # (failures are listed; the rest still packs)
     subprocess.run(["node", os.path.join(HERE, "pack.mjs"), BUILD, *args], check=True)
 
 

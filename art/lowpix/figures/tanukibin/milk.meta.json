@@ -1,13 +1,9 @@
 {
- "mats": {
-  "bottle0": "gloss",
-  "bottle1": "gloss",
-  "bottle2": "gloss",
-  "bottle3": "gloss"
- },
+ "mats": {},
  "clips": {
   "gimmick": "wobble"
  },
  "pts": {},
+ "mascot": true,
  "key": "tanukibin/milk"
 }

@@ -1,12 +1,9 @@
 {
- "mats": {
-  "tail0": "gloss",
-  "tail1": "gloss",
-  "tail2": "gloss"
- },
+ "mats": {},
  "clips": {
   "gimmick": "nod"
  },
  "pts": {},
+ "mascot": true,
  "key": "gohan/ebi"
 }

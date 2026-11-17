@@ -45,6 +45,9 @@ PART_DENSITY = (DENS * 0.75, DENS * 1.3)  # each part with >= 3 % of the figure'
 # calibrated on sources converted in the line's finish: a white untextured rice cooker 67 % flat, a good blue
 # shorthair 28 % (dark glass 39 %); the speckled nautilus the owner flagged 23.5 % noise, good models 1.5-6 %
 FLAT_MAX = 0.45                         # flat share of the subject's texels
+# capsule-toy mascots modelled in lowpix (CLAUDE.md toy rule) are clean factory vinyl: large even colour areas are the
+# look and the stepped airbrush shade comes from smooth normals, so they only fail when nearly unshaded
+FLAT_MAX_MASCOT = 0.80
 NOISE_MAX = 0.08                        # isolated-texel share of the subject's chart-interior texels
 FILL_XZ = (0.62, 0.90)                  # subject footprint / base footprint
 FILL_H_MIN = 0.40                       # subject height / larger base side
@@ -240,8 +243,9 @@ def audit(series_list):
             worst.append((owner, f, n))
         flat = fl_s / fl_n if fl_n else 1.0
         noise = no_s / fl_n if fl_n else 0.0
-        if flat > FLAT_MAX:
-            bad.append(f"flat {flat:.0%} > {FLAT_MAX:.0%} (" + ", ".join(f"{o} {f:.0%}" for o, f, _ in worst if f > FLAT_MAX) + ")")
+        fmax = FLAT_MAX_MASCOT if (meta or {}).get("mascot") else FLAT_MAX
+        if flat > fmax:
+            bad.append(f"flat {flat:.0%} > {fmax:.0%} (" + ", ".join(f"{o} {f:.0%}" for o, f, _ in worst if f > fmax) + ")")
         if noise > NOISE_MAX:
             bad.append(f"noise {noise:.1%} > {NOISE_MAX:.0%} (" + ", ".join(f"{o} {n:.1%}" for o, _, n in worst if n > NOISE_MAX) + ")")
         # fill

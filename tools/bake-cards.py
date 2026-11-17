@@ -19,6 +19,7 @@ TOYS = os.path.join(CACHE, 'toys')
 OUT = os.path.join(ROOT, 'public', 'img', 'print', 'cards')
 W, H = 640, 560  # 2x the banner's 320 x 280 (src/gfx/banner.js draws the card at this size)
 BACK = {  # series -> photo backdrop (focus x, y, zoom)
+    'gohan': ('oi:6324262554f184ab@test', (0.5, 0.6, 1.4)), 'tanukibin': ('local:back_street.jpg', (0.4, 0.55, 1.3)),
     'nuigurumi': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'rojineko': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'kogu': ('oi:8cf0d90fadf83514@test', (0.3, 0.5, 1.3)),
     'yaoya': ('oi:ccf0a3b89149f0d5@train', (0.3, 0.5, 1.3)), 'daidokoro': ('oi:f4200fadef07c329@test', (0.8, 0.5, 1.3)),
     'undou': ('local:skyline.jpg', (0.5, 0.7, 1.2)), 'denka': ('oi:f4200fadef07c329@test', (0.5, 0.55, 1.2)),

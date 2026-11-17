@@ -11,13 +11,15 @@ import { SCENES as S4 } from './bannerScenes4.js';
 const OLD = () => ({ ...S1, ...S2, ...S3, ...S4 });
 /** new series id -> the backdrop painter it uses */
 const BACKDROP = {
-  nuigurumi: 'lanepals', sampuru: 'shokudo', denka: 'showa', konchu: 'matsuri', asobi: 'gecen', shinkai: 'umi', inusanpo: 'mochi',
+  gohan: 'shokudo', tanukibin: 'shotengai', nuigurumi: 'lanepals', sampuru: 'shokudo', denka: 'showa', konchu: 'matsuri', asobi: 'gecen', shinkai: 'umi', inusanpo: 'mochi',
   yacho: 'kasa', daikaiju: 'kaiju', hikidashi: 'bungu', machikado: 'shotengai', okashi: 'wagashi', norimono: 'densha', tsukumo: 'hyakki',
   shugorei: 'bizarre', yudono: 'onsen', kaiun: 'omamori', yatai: 'oden',
 };
 export const SCENES = Object.fromEntries(Object.entries(BACKDROP).map(([id, old]) => [id, (...a) => OLD()[old](...a)]));
 
 export const BANNER_TEXT = {
+  gohan: { catch: 'いただきます！ごはんズー', sub: 'おにぎりペンギンとなかまたち' },
+  tanukibin: { catch: 'たぬき便、ただいま参上！', sub: '雨の日も風の日もおとどけします' },
   nuigurumi: { catch: 'ふわふわの仲間が集合！', sub: 'ぎゅっとしたくなるぬいぐるみ' },
   kogu: { catch: 'おじいちゃんの道具、勢ぞろい！', sub: '使いこまれた名品たち' },
   yaoya: { catch: 'とれたて！まちの八百屋さん', sub: '今日のおすすめはこちら' },

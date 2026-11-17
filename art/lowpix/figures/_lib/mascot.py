@@ -4,7 +4,7 @@ and the whole-toy gimmick. Units mm, Y up, the figure faces +Z and stands on y =
 import math
 
 
-def vbody(F, pid, rings, col, style="pvc", sides=14, at=(0, 0, 0), **kw):
+def vbody(F, pid, rings, col, style="vinyl", sides=16, at=(0, 0, 0), **kw):
     """A soft upright form from rings [(y, w, d), ...] or [(y, w, d, z), ...] bottom to top; returns a surface lookup."""
     R = [(r[0], r[1], r[2], r[3] if len(r) > 3 else 0.0) for r in rings]
     F.loft(pid, [((0, y, z), [w, d]) for y, w, d, z in R], at, sides=sides, rnd=2.1, up=[0, 0, 1], col=col, style=style, **kw)
@@ -21,7 +21,7 @@ def vbody(F, pid, rings, col, style="pvc", sides=14, at=(0, 0, 0), **kw):
     return surf
 
 
-def hbody(F, pid, rings, col, style="pvc", sides=12, at=(0, 0, 0), **kw):
+def hbody(F, pid, rings, col, style="vinyl", sides=16, at=(0, 0, 0), **kw):
     """A soft lying form along Z from rings [(z, w, h, y), ...] back to front; returns a surface lookup."""
     F.loft(pid, [((0, y, z), [w, h]) for z, w, h, y in rings], at, sides=sides, rnd=2.1, col=col, style=style, **kw)
 
@@ -69,7 +69,7 @@ def face(F, pid, eyeL, eyeR, er=1.1, mouth=None, mouth_kind="smile", mr=0.9, blu
             dot(F, pid, pts, mr_, 1.6, "mouth")
 
 
-def nub(F, pid, a, b, r0, r1, col, style="pvc", sides=8, flat=1.0):
+def nub(F, pid, a, b, r0, r1, col, style="vinyl", sides=8, flat=1.0):
     """A chunky rounded limb / stub from a to b with domed ends (mascot arms, legs, feet)."""
     dx, dy, dz = (b[i] - a[i] for i in range(3))
     L = max(math.sqrt(dx * dx + dy * dy + dz * dz), 1e-6)
@@ -80,7 +80,20 @@ def nub(F, pid, a, b, r0, r1, col, style="pvc", sides=8, flat=1.0):
     return F.loft(pid, rings, (0, 0, 0), sides=sides, rnd=2.1, subdiv=0, col=col, style=style)
 
 
-def ball(F, pid, c, r, col, style="pvc", sides=12, n=8, squash=1.0, **kw):
+def arm(F, pid, shoulder, hand, col, style="vinyl", r=2.7, paw=2.6, sides=9, inset=2.2):
+    """A soft mascot arm that grows out of the body: thick at the shoulder (starting `inset` mm inside the body),
+    tapering to the wrist, ending in a round mitten paw."""
+    dx, dy, dz = (hand[i] - shoulder[i] for i in range(3))
+    L = max(math.sqrt(dx * dx + dy * dy + dz * dz), 1e-6)
+    u = (dx / L, dy / L, dz / L)
+    p = lambda t, o=0.0: tuple(shoulder[i] + u[i] * (L * t + o) for i in range(3))
+    rings = [(p(0, -inset), [r * 2.3, r * 2.0]), (p(0), [r * 2.0, r * 1.8]), (p(0.45), [r * 1.6, r * 1.5]),
+             (p(0.78), [r * 1.35, r * 1.3]), (p(1.0, paw * 0.2), [paw * 2.0, paw * 1.85]), (p(1.0, paw * 0.95), [paw * 1.2, paw * 1.1]),
+             (p(1.0, paw * 1.3), [paw * 0.3, paw * 0.3])]
+    return F.loft(pid, rings, (0, 0, 0), sides=sides, rnd=2.05, subdiv=0, col=col, style=style)
+
+
+def ball(F, pid, c, r, col, style="vinyl", sides=12, n=8, squash=1.0, **kw):
     """A soft ball (dango, a bead, a pompom), slightly squashed by `squash` in Y."""
     rings = []
     for i in range(n + 1):
@@ -91,6 +104,8 @@ def ball(F, pid, c, r, col, style="pvc", sides=12, n=8, squash=1.0, **kw):
 
 def gimmick(F, kind="wobble", length=1.4, amp=8.0):
     """The click gimmick: the whole figure rocks (wobble), nods (nod), hops (hop) or spins (spin) as one piece."""
+    F.meta["mascot"] = True  # audit.py: clean factory vinyl (the flat check is relaxed, see FLAT_MAX_MASCOT)
+    F.spec["light"]["strength"] = 1.5  # the stepped airbrush shade of capsule PVC (with smoothlight.py's normals)
     root = {"id": "root", "shape": "bone", "pivot": [0, 0, 0]}
     for p in F.spec["parts"]:
         p.setdefault("parent", "root")

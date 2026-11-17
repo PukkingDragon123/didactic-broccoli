@@ -14,7 +14,7 @@
    1.0,
    0.6
   ],
-  "strength": 1.15,
+  "strength": 1.5,
   "gradient": 0.0,
   "ao": 0.5,
   "ao_height": 3.0,
@@ -130,103 +130,31 @@
   }
  },
  "styles": {
-  "pvc": {
-   "dither": 0,
-   "rim": {
-    "light": 1,
-    "dark": 1,
-    "outline": "dark"
-   },
-   "layers": [
-    {
-     "id": "mottle",
-     "op": "noise",
-     "scale": 1.4,
-     "amount": 0.6
-    },
-    {
-     "id": "sheen",
-     "op": "fill",
-     "shift": 0.75,
-     "min_light": 0.8
-    },
-    {
-     "id": "ref",
-     "op": "fill",
-     "shift": -0.3,
-     "min_light": -0.1,
-     "max_light": 0.22
-    },
-    {
-     "id": "gloss",
-     "op": "gloss",
-     "post": true,
-     "dash": true,
-     "length": 3,
-     "density": 0.12,
-     "shift": 1.0
-    }
-   ]
-  },
-  "wood": {
-   "dither": 0,
-   "rim": {
-    "light": 1,
-    "dark": 1,
-    "outline": "dark"
-   },
-   "layers": [
-    {
-     "id": "grain",
-     "op": "stripes",
-     "axis": "x",
-     "period": 2.2,
-     "width": 0.18,
-     "wobble": 1.2,
-     "shift": -0.45
-    },
-    {
-     "id": "mottle",
-     "op": "noise",
-     "scale": 1.8,
-     "amount": 0.5
-    },
-    {
-     "id": "sheen",
-     "op": "fill",
-     "shift": 0.45,
-     "min_light": 0.82
-    }
-   ]
-  },
   "vinyl": {
    "dither": 0,
    "rim": {
+    "light": 0,
+    "dark": 0,
+    "outline": "none",
+    "spec": [
+     0.965,
+     1.7
+    ]
+   },
+   "layers": []
+  },
+  "vinyl_hard": {
+   "dither": 0,
+   "rim": {
     "light": 1,
     "dark": 1,
-    "outline": "dark"
+    "outline": "none",
+    "spec": [
+     0.95,
+     1.2
+    ]
    },
-   "layers": [
-    {
-     "id": "mottle",
-     "op": "noise",
-     "scale": 2.6,
-     "amount": 0.1
-    },
-    {
-     "id": "sheen",
-     "op": "fill",
-     "shift": 0.45,
-     "min_light": 0.86
-    },
-    {
-     "id": "ref",
-     "op": "fill",
-     "shift": -0.3,
-     "min_light": -0.1,
-     "max_light": 0.22
-    }
-   ]
+   "layers": []
   }
  },
  "parts": [
@@ -367,18 +295,6 @@
     "ramp": "cf4a4b8_spread0p6",
     "tone": 3.1,
     "layers": [
-     {
-      "id": "dust",
-      "op": "spots",
-      "count": 50,
-      "radius": [
-       0.3,
-       0.6
-      ],
-      "shift": 0.6,
-      "roughness": 0.3,
-      "seed": 0
-     },
      {
       "id": "blush_soft",
       "op": "spots",
@@ -772,21 +688,7 @@
    "style": "vinyl",
    "paint": {
     "ramp": "cf2eee2_spread0p55",
-    "tone": 3.1,
-    "layers": [
-     {
-      "id": "dust",
-      "op": "spots",
-      "count": 50,
-      "radius": [
-       0.3,
-       0.6
-      ],
-      "shift": 0.6,
-      "roughness": 0.3,
-      "seed": 1
-     }
-    ]
+    "tone": 3.1
    },
    "parent": "root"
   },
@@ -1056,21 +958,7 @@
    "style": "vinyl",
    "paint": {
     "ramp": "c8cc070_hue10_spread0p65",
-    "tone": 3.1,
-    "layers": [
-     {
-      "id": "dust",
-      "op": "spots",
-      "count": 50,
-      "radius": [
-       0.3,
-       0.6
-      ],
-      "shift": 0.6,
-      "roughness": 0.3,
-      "seed": 2
-     }
-    ]
+    "tone": 3.1
    },
    "parent": "root"
   },
@@ -1233,7 +1121,7 @@
     22.0
    ],
    "sides": 6,
-   "style": "wood",
+   "style": "vinyl_hard",
    "paint": {
     "ramp": "cc8a070_spread0p6",
     "tone": 3.1
@@ -1303,7 +1191,7 @@
     true,
     true
    ],
-   "style": "pvc",
+   "style": "vinyl",
    "paint": {
     "ramp": "cc8a070_spread0p6",
     "tone": 3.1
@@ -1400,7 +1288,7 @@
     0,
     1
    ],
-   "style": "pvc",
+   "style": "vinyl",
    "paint": {
     "ramp": "cf4a4b8_spread0p6",
     "tone": 3.1
@@ -1470,7 +1358,7 @@
     true,
     true
    ],
-   "style": "pvc",
+   "style": "vinyl",
    "paint": {
     "ramp": "cc8a070_spread0p6",
     "tone": 3.1
@@ -1567,7 +1455,7 @@
     0,
     1
    ],
-   "style": "pvc",
+   "style": "vinyl",
    "paint": {
     "ramp": "cf4a4b8_spread0p6",
     "tone": 3.1
