@@ -1,0 +1,28 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:7f9164e6018c4ec7a3585bbf6e6d70df",
+   "height": 33.988,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "gloss",
+   "opts": {
+    "smooth": 2.5
+   },
+   "level": 2,
+   "key": "c53c77bff6a0bc"
+  }
+ ],
+ "key": "machikado/shokasen"
+}

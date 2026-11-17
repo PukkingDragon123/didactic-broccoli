@@ -11,7 +11,7 @@
   {
    "name": "octo",
    "src": "sketchfab:977d38f89ca54c8b91b9667d52cb3d79",
-   "height": 15.613,
+   "height": 17.576,
    "pos": [
     0.0,
     14.0,
@@ -22,7 +22,10 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "ecbcce0ff3f6ee"
+   "opts": {
+    "smooth": 2.0
+   },
+   "key": "a57b0c56d0697e"
   }
  ],
  "base": {

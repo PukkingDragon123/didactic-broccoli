@@ -1,0 +1,55 @@
+{
+ "id": "kamidana",
+ "src": "art/lowpix/world/made/kamidana.glb",
+ "credit": {
+  "title": "mk kamidana",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kamidana.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 100,
+ "tex": 512,
+ "size": [
+  0.749,
+  0.405,
+  0.283
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#5d2f21",
+   "#77442d",
+   "#905d3b",
+   "#a77749",
+   "#b59162",
+   "#bca57b",
+   "#c4b792",
+   "#cdc7a9",
+   "#d7d5bf"
+  ],
+  "m1": [
+   "#123618",
+   "#19451d",
+   "#215321",
+   "#2e6129",
+   "#3c6e32",
+   "#568c44",
+   "#73a858",
+   "#93b57b",
+   "#b0c49c"
+  ],
+  "m2": [
+   "#a46131",
+   "#c68b4f",
+   "#d3b283",
+   "#e3d3b4",
+   "#f4f0e4",
+   "#f5f3e8",
+   "#f6f5ec",
+   "#f8f8f0",
+   "#f9f9f4"
+  ]
+ },
+ "warnings": []
+}

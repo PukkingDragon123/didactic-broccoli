@@ -6,7 +6,7 @@
   {
    "name": "mochi",
    "src": "sketchfab:2cb15ab24c1a468b931b30793d7c1296",
-   "height": 13.998,
+   "height": 12.34,
    "pos": [
     0.0,
     0.0,
@@ -17,8 +17,10 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "level": 2,
-   "key": "4a090fe1609f25"
+   "opts": {
+    "smooth": 2.0
+   },
+   "key": "bdc409a7d94820"
   }
  ],
  "key": "okashi/sakura"

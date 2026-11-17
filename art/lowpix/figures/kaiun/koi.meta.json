@@ -1,0 +1,45 @@
+{
+ "mats": {
+  "base": "glass",
+  "base_rod": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:3e1b80c3653f43349252aab3b4fb1d86",
+   "height": 14.324,
+   "pos": [
+    0.0,
+    13.877,
+    0.749
+   ],
+   "yaw": 70,
+   "pitch": -6,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "matte",
+   "opts": {
+    "smooth": 2.5
+   },
+   "key": "22b6dd428fbab8"
+  }
+ ],
+ "base": {
+  "family": "clear",
+  "w": 18.0,
+  "d": 18.0
+ },
+ "stand_why": "swimming: held up in the pond on a clear rod",
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.4,
+  "amp": 6,
+  "axis": "y"
+ },
+ "key": "kaiun/koi"
+}

@@ -1,0 +1,144 @@
+{
+"aquarium": {
+"skip": true
+},
+"broom": {
+"skip": true
+},
+"donut_seat": {
+"skip": true
+},
+"fridge": {
+"model": "minifridge"
+},
+"ghost_lamp": {
+"skip": true
+},
+"koi_pond": {
+"skip": true
+},
+"ladder": {
+"model": "ladder"
+},
+"mk_broom_bin": {
+"model": "broombin"
+},
+"mk_puff_box": {
+"model": "puffbox"
+},
+"pocket_watch": {
+"skip": true
+},
+"mk_outbox": {
+"ry": "Math.PI / 2"
+},
+"mk_peg_stand": {
+"ry": "Math.PI / 2"
+},
+"swing_set": {
+"ry": "Math.PI / 2",
+"skip": true
+},
+"water_heater": {
+"model": "waterheater"
+},
+"step_stool": {
+"skip": true
+},
+"squeegee": {
+"skip": true
+},
+"abacus": {
+"skip": true
+},
+"plant_pots": {
+"skip": true
+},
+"torii": {
+"ry": "Math.PI / 2"
+},
+"rope_coil": {
+"id": "lowpix/world_arch/rope_coil"
+},
+"astronaut": {
+"id": "lowpix/world_arch/astronaut"
+},
+"wagasa_parasol": {
+"id": "lowpix/world_arch/wagasa_parasol"
+},
+"cobweb": {
+"model": "cobwebcard"
+},
+"coin_tray": {
+"model": "cointray"
+},
+"asagao_pot": {
+"skip": true
+},
+"dagashi_rack": {
+"model": "dagashirack"
+},
+"drink_cans": {
+"skip": true
+},
+"pink_phone": {
+"model": "pinkphone"
+},
+"ramune_cooler": {
+"skip": true
+},
+"room_figshelf": {
+"skip": true
+},
+"shop_bench": {
+"model": "engawabench"
+},
+"shop_counter": {
+"model": "showcase"
+},
+"softserve": {
+"skip": true
+},
+"spring_panda": {
+"skip": true
+},
+"street_light": {
+"model": "streetlight"
+},
+"twin_tub": {
+"skip": true
+},
+"call_bell": {
+"model": "call_bell_p"
+},
+"post_box": {
+"model": "post_box"
+},
+"scooter": {
+"id": "lowpix/world_arch/scooter"
+},
+"slide": {
+"id": "lowpix/world_arch/slide"
+},
+"coin_changer": {
+"model": "coinchanger"
+},
+"capsule_return": {
+"model": "capsulereturn"
+},
+"mk_dairy_case": {
+"model": "dairycase"
+},
+"mk_kamidana": {
+"model": "kamidana"
+},
+"mk_watch_case": {
+"model": "watchcase"
+},
+"milk_carton": {
+"model": "milkcarton"
+},
+"tube_box": {
+"model": "tubebox"
+}
+}

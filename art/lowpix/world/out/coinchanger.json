@@ -1,0 +1,99 @@
+{
+ "id": "coinchanger",
+ "src": "art/lowpix/world/made/coinchanger.glb",
+ "credit": {
+  "title": "coin changer",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/coinchanger.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 84,
+ "tex": 512,
+ "size": [
+  0.4,
+  1.28,
+  0.41
+ ],
+ "colours": 41,
+ "palette": {
+  "m0": [
+   "#3a4051",
+   "#4e5767",
+   "#636e7c",
+   "#7b858f",
+   "#959b9f",
+   "#a6a9aa",
+   "#b6b6b6",
+   "#c4c4c4",
+   "#d2d2d2"
+  ],
+  "m1": [
+   "#600c2a",
+   "#7c112e",
+   "#961830",
+   "#b01f2f",
+   "#c8282c",
+   "#d54940",
+   "#d97362",
+   "#dd9782",
+   "#e3b6a1"
+  ],
+  "m2": [
+   "#6c3509",
+   "#8a500f",
+   "#a86f15",
+   "#c4911c",
+   "#dcb428",
+   "#dec949",
+   "#e0da69",
+   "#e4e487",
+   "#e8e8a5"
+  ],
+  "m3": [
+   "#0f0e13",
+   "#141318",
+   "#19181d",
+   "#1e1e22",
+   "#242426",
+   "#434343",
+   "#616161",
+   "#7f7f7f",
+   "#9d9d9d"
+  ],
+  "m4": [
+   "#154e33",
+   "#1d643d",
+   "#277945",
+   "#318d4b",
+   "#3ca050",
+   "#4db759",
+   "#6cbf6f",
+   "#8ec98b",
+   "#aed4a8"
+  ],
+  "m5": [
+   "#83173b",
+   "#a82143",
+   "#cc2c47",
+   "#d5525d",
+   "#dc7a7a",
+   "#df958e",
+   "#e2ada2",
+   "#e6c1b5",
+   "#ebd3c8"
+  ],
+  "m6": [
+   "#355d54",
+   "#497768",
+   "#5d8f7b",
+   "#78a18d",
+   "#95b1a1",
+   "#a6b9ad",
+   "#b6c2b9",
+   "#c6ccc7",
+   "#d4d7d5"
+  ]
+ },
+ "warnings": []
+}

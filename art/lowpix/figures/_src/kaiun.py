@@ -2,7 +2,8 @@
 (Sketchfab CC BY; credits in art/lowpix/figures/SOURCES.json), in the line's finish. Each stands on its own base or
 body; the koi swims on a clear rod."""
 from figlib import Fig
-from props import clear_stand
+from props import clear_stand, series_base
+from figlib import BASE_H
 
 S = "kaiun"
 MANEKI = "sketchfab:170f632b9b294fdabc660ba91894c10a"    # Maneki neko (Ramzus)
@@ -29,7 +30,8 @@ def daruma():
 
 def torii():
     F = Fig(f"{S}/torii", "Vermilion Torii", "The gate between the street and the shrine. Bow once on the way through.")
-    F.model("m", TORII, w=44, h=40, d=16, yaw=-10)
+    F.model("m", TORII, w=44, h=40, d=16, at=(0, BASE_H, 0), yaw=-10, smooth=2.0)
+    series_base(F, "shrine", "a gate on two thin posts: it stands in its granite footing", fill=0.8)
     return F
 
 
@@ -42,7 +44,7 @@ def toro():
 def koi():
     F = Fig(f"{S}/koi", "Lucky Koi", "A red-and-white carp from the shrine pond. Climb the waterfall, become a dragon.")
     top = 12.0
-    F.model("m", KOI, w=44, d=24, h=18, at=(0, top, 0), yaw=70, pitch=-6)
+    F.model("m", KOI, L=46, h=18, at=(0, top, 0), yaw=70, pitch=-6, smooth=2.5)
     clear_stand(F, 0, 0, top + 0.5, "swimming: held up in the pond on a clear rod")
     F.model_clip("model_m", "wobble", 1.4, amp=6)
     return F
@@ -50,7 +52,7 @@ def koi():
 
 def kitsune():
     F = Fig(f"{S}/kitsune", "Inari Fox", "The shrine fox in her red bib, a scroll key in her mouth, on her stone plinth. Leave her an inari-zushi.")
-    F.model("m", FOX, h=46, w=26, d=26, yaw=-10, level=True)
+    F.model("m", FOX, h=42, w=26, d=26, yaw=-10, level=True, cut=0.3)
     return F
 
 

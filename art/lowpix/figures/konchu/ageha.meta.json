@@ -22,7 +22,10 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "5cd4741d221b2c"
+   "opts": {
+    "smooth": 2.5
+   },
+   "key": "87876cd05c4d41"
   }
  ],
  "base": {

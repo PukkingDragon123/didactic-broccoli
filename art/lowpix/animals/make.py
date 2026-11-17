@@ -27,7 +27,7 @@ OUT_ART = os.path.join(HERE, 'out')
 # the source models: sketchfab uid, lowpix convert options, the transform into the game's metres
 SOURCES = {
     'calico': dict(uid='7325331900d8458b852f39f0dbcdbf18', title='Calico Cat', author='AaronRydning', yaw=180, tris=10000, height=30),
-    'bsh': dict(uid='6bb01e10602241dd98bcd25143be14cf', title='Cat (British Shorthair Blue and White)', author='3D Creator (3DChuang-Ke-Ji)', yaw=0, tris=12000, height=30),
+    'fri': dict(uid='0ab14bf98e754f8d90fe1bf1c84ca66c', title='3d modelling my cat: Fripouille', author='guillaume bolis', licence='CC BY 4.0'),
 }
 
 
@@ -175,7 +175,7 @@ def make_mikan_sculpt():
     return rig_cat('mikan', P, F, UV, N, body, MIKAN_JOINTS, MIKAN_IRIS, eye_y=26.05, eye_x=1.65, eye_r=1.1)
 
 
-def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, cut=None, scale=0.0108, shift=(0, 0, -10.0), source='calico', head_z=None):
+def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, eye_in=0.74, cut=None, scale=0.0108, shift=(0, 0, -10.0), source='calico', head_z=None):
     W, H0, H = body.shape[1], body.shape[0], body.shape[0] + 128
     tex = np.zeros((H, W, 3), np.uint8); tex[:H0] = body
     tex[H0:] = hexes([iris['ball']])[0]
@@ -216,7 +216,7 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, cut=None, scal
     for sx, side in ((1, 'L'), (-1, 'R')):
         S = np.array([sx * eye_x, eye_y, ray_z(sx * eye_x, eye_y)])
         ax = np.array([0.27 * sx, 0.06, 1.0]); ax /= np.linalg.norm(ax)
-        c = S - ax * (eye_r * 0.74)                                # the cornea proud of the socket, as a cat's is
+        c = S - ax * (eye_r * eye_in)                              # the cornea proud of the socket, as a cat's is
         tilt = 0.16 * sx                                           # outer corner up
         fb = frame_basis(ax, tilt)
         Pc = carve_eye2(Pc, c, fb[0], fb[1], fb[2], eye_r, OPEN_EYE[0], OPEN_EYE[1])
@@ -324,145 +324,49 @@ def finish(gid, P, N, F, UV, tex, scale, shift, extra=None, extras=None):
 
 
 
-# ------------------------------------------------------------------ the British Shorthair base (Mikan, the stray)
-def bsh_prepared():
-    """The converted BSH in source units, its head turned to face straight ahead (the sculpt looks 12.5 deg to her
-    right), normals welded."""
-    g = convert('bsh')
-    P, F, UV = g['pos'].copy(), g['idx'], g['uv']
-    piv = np.array([0, 21.0, 20.5])
-    w = np.clip((P[:, 2] - 18.5) / 4.0, 0, 1) * np.clip((P[:, 1] - 13.0) / 4.0, 0, 1)
-    w = w * w * (3 - 2 * w)
-    yaw = np.radians(12.5)
-    for i in np.where(w > 0)[0]:
-        a = yaw * w[i]
-        c, sn = np.cos(a), np.sin(a)
-        q = P[i] - piv
-        P[i] = piv + [c * q[0] + sn * q[2], q[1], -sn * q[0] + c * q[2]] + np.array([-0.17 * w[i], 0, 0])
-    N = weld_normals(P, F)
-    src = down2(np.asarray(Image.open(io.BytesIO(g['png'])).convert('RGB')))
-    return P, F, UV, N, src
-
-
-def debug_bsh():
-    P, F, UV, N, src = bsh_prepared()
-    t = np.asarray(Image.open(io.BytesIO(convert('bsh')['png'])).convert('RGB')).astype(np.float32)
-    a = render(P, F, 'front', (-7, 7, 18, 30.5), px=60, grid=0.5, tex=t, UV=UV)
-    b = render(P, F, 'side', (19, 31, 18, 30.5), px=60, grid=0.5, tex=t, UV=UV)
-    o = Image.new('RGB', (a.width + b.width, max(a.height, b.height))); o.paste(a, (0, 0)); o.paste(b, (a.width, 0))
-    o.save(os.path.join(CACHE, 'bsh_head_dbg.png'))
-
-
-# Mikan on the BSH: joints fitted to the model (source units, after bsh_prepared)
-BSH_JOINTS = {
-    'body': (0, 15.5, -4.0), 'chest': (0, 16.0, 9.0), 'head': (0, 21.0, 20.5), 'jaw': (0, 21.6, 25.2),
-    'earL': (4.3, 27.2, 23.6), 'earR': (-4.3, 27.2, 23.6),
-    'legFL': (4.6, 14.5, 19.0), 'armFL': (4.2, 8.5, 16.6), 'pawFL': (3.4, 2.6, 17.6),
-    'legFR': (-4.6, 14.5, 19.0), 'armFR': (-4.3, 8.5, 16.6), 'pawFR': (-3.7, 2.6, 18.0),
-    'legBL': (5.2, 14.5, -8.0), 'shinBL': (4.8, 8.5, 0.5), 'pawBL': (3.8, 3.5, -7.5),
-    'legBR': (-5.2, 14.5, -8.0), 'shinBR': (-4.8, 8.5, 0.3), 'pawBR': (-3.8, 3.5, -8.3),
-    'tail0': (0, 16.5, -13.5), 'tail1': (0, 12.0, -16.0), 'tail2': (0, 7.5, -18.8), 'tail3': (0, 5.0, -22.5), 'tail4': (0, 4.8, -26.5),
-    '_footFL': (3.5, 0, 20.6), '_footFR': (-3.7, 0, 21.0), '_footBL': (4.3, 0, -1.5), '_footBR': (-4.4, 0, -3.8),
-    '_tailTip': (0, 6.5, -30.5), '_nose': (0, 23.3, 30.6), '_rump': (0, 19.0, -11.0),
-}
-CAL2 = {
-    'white': ['#3e3b38', '#56524d', '#706a63', '#8b847a', '#a69e93', '#bdb5aa', '#d0c9be', '#e0d9cf', '#ebe6dd', '#f4f0e9'],
-    'orange': ['#2b140b', '#43200f', '#5d2d14', '#78391a', '#934720', '#ab5627', '#c06832', '#d07d41', '#dc9455', '#e6ac72'],
-    'black': ['#0a0807', '#110e0c', '#181412', '#201b18', '#29231f', '#332c27', '#3f3731', '#4c433b'],
-    'pink': ['#4a2426', '#653437', '#80474a', '#9a5c5d', '#b17271', '#c48986', '#d4a19c', '#e2b9b2'],
-    'dark': ['#0b0908', '#151110', '#1f1a18', '#2a2421'],
-}
-MIKAN2_IRIS = dict(ball='#1a120c', limbus='#3a2410', outer='#9a6420', mid='#c4892c', inner='#dcaa40', fibre_d='#7e4e16',
-                   fibre_l='#e6bc5a', shadow='#6a4414', pupil='#070605', glint='#f4f0e2', glint2='#b8a888')
-
-
-def make_mikan():
-    from coat import vnoise3
-    P, F, UV, N, src = bsh_prepared()
-    tri, bary = __import__('coat').raster(P, F, UV, src.shape[1], src.shape[0])
-    ok, Ps, Ns = __import__('coat').surface(P, N, F, tri, bary)
-    r, g, b = src[..., 0], src[..., 1], src[..., 2]
-    lum = (r * 0.3 + g * 0.55 + b * 0.15) / 255
-    mx, mn = src.max(-1), src.min(-1)
-    sat = (mx - mn) / (mx + 1)
-    x, y, z = Ps[..., 0], Ps[..., 1], Ps[..., 2]
-    grey = (b > r + 4) & (lum < 0.72) & (lum > 0.12)
-    ax = np.abs(Ps[..., 0])
-    skin = ((Ps[..., 2] > 29.0) & (ax < 1.3) & (Ps[..., 1] > 22.2) & (Ps[..., 1] < 24.2)) | ((Ps[..., 2] > 28.3) & (ax < 1.4) & (Ps[..., 1] < 22.4)) \
-        | ((Ps[..., 1] > 26.3) & (ax > 2.4)) | (Ps[..., 1] < 1.3)              # nose leather, lips, inner ears, pads
-    pink = (r > g + 22) & (r > b + 10) & (lum > 0.3) & skin
-    dark = lum < 0.13
-    white = ~grey & ~pink & ~dark
-    # calico: the grey coat becomes orange and black patches (face split down the middle, blobs on the body, rings on
-    # the tail), keeping the sculpt's painted fur (its light and dark strands) as the tone inside each patch
-    n1 = vnoise3(x * 0.16, y * 0.16, z * 0.16, 5)
-    n2 = vnoise3(x * 0.9 + 7, y * 0.9, z * 0.9, 9)
-    jag = (n2 - 0.5) * 1.6
-    head = z > 20.5
-    blackp = np.where(head, x < -0.4 + jag, n1 > 0.52 + (n2 - 0.5) * 0.12)
-    tail = (z < -12.5) & (y < 17)
-    blackp = np.where(tail, ((np.abs(z + 20) % 5.2) < 1.7 + jag * 0.5) | (z < -28.5), blackp)
-    out = src.copy()
-    def ramp_put(m, name, rel_k, mid):
-        R = hexes(CAL2[name])
-        if not m.any(): return
-        L = lum[m]; med = np.median(L)
-        idx = np.clip(np.round(mid * (len(R) - 1) + (L / max(med, 1e-3) - 1) * rel_k), 0, len(R) - 1).astype(int)
-        out[m] = R[idx]
-    ramp_put(ok & grey & blackp, 'black', 7, 0.5)
-    ramp_put(ok & grey & ~blackp, 'orange', 9, 0.58)
-    ramp_put(ok & white, 'white', 9, 0.82)
-    ramp_put(ok & pink, 'pink', 6, 0.6)
-    ramp_put(ok & dark, 'dark', 4, 0.4)
-    # a step of clustering so tones sit in 2-3 pixel clumps (no single-pixel dust)
-    body = np.clip(out, 0, 255).astype(np.uint8)
-    return rig_cat2('mikan', P, F, UV, N, body, BSH_JOINTS, MIKAN2_IRIS)
-
-
-def rig_cat2(gid, P, F, UV, N, body, J, iris):
-    """rig_cat for the BSH face: eye sockets at (+-2.2, 24.75), lips meeting at y 22 (source units)."""
-    global OPEN_EYE
-    OPEN_EYE = (0.86, -0.72)
-    return rig_cat(gid, P, F, UV, N, body, J, iris, eye_y=24.75, eye_x=2.2, eye_r=1.17, cut=dict(
-        # the lower lip between the whisker pads meets the upper at y 22; under the pads the mouth runs back at y ~21
-        zone=lambda C: (np.abs(C[:, 0]) < 1.3) & (C[:, 2] > 28.2) & (C[:, 1] > 20.9) & (C[:, 1] < 22.6),
-        lower=lambda C: (((np.abs(C[:, 0]) < 1.1) & (C[:, 1] < 21.98) & (C[:, 2] > 28.3)) | ((C[:, 1] < 21.05 - 0.15 * np.maximum(0, np.abs(C[:, 0]) - 1.1)) & (C[:, 2] > 25.0) & (np.abs(C[:, 0]) < 2.7))) & (C[:, 1] > 18.8),
-        zc=26.0,
-        fall=lambda Q: np.clip((Q[:, 2] - 25.5) / 2.0, 0, 1) * np.clip((Q[:, 1] - 19.2) / 0.8, 0, 1) * np.clip((2.3 - np.abs(Q[:, 0])) / 1.1, 0, 1),
-        below=lambda Q: np.clip((np.where(np.abs(Q[:, 0]) < 1.1, 21.98, 21.05) - Q[:, 1]) / 0.45 + 0.35, 0, 1),
-        inward=(0, 21.8, 27.2), depth=1.6, tongue=1.7,
-        bowl=dict(c=(0, 21.8, 29.1), rx=1.9, ry=1.0, depth=2.4, tongue=(0, 21.6, 28.9), tdir=(0, 0.05, -1), tlen=1.9),
-        lens=dict(w=1.25, lip_y=lambda x: 21.98 + 0.1 * (x / 1.25) ** 2, cols=dict(lip='#2a1a1a', inside='#5c2226', throat='#2e0f12', ridge='#7a3439', tongue='#c27a7c', tongueD='#9a5658', tooth='#ece6d8'))), scale=0.0098, shift=(0, 0, -9.0), source='bsh', head_z=21.5)
-
-
-
 # ------------------------------------------------------------------ Fripouille (guillaume bolis, hand-made): Mikan's base
 def fri_prepared():
-    """Fripouille's body in its rigged standing pose (skinning baked in a browser: shots/animals13/bake.html ->
-    fri_baked.json), turned to stand on y = 0 facing +z, scaled to 30 units tall (ear tips); her own UVs and
-    Substance-painted texture (2048). Returns P, F, UV, N, src (1024, the pixel repaint's base)."""
-    d = json.loads(json.load(open(os.path.join(CACHE, 'fri_baked.json'))))
-    m = [x for x in d if x['mat'] == 'SHD_frip'][0]
-    P = np.array(m['pos'], float).reshape(-1, 3); F = np.array(m['idx'], int).reshape(-1, 3); UV = np.array(m['uv'], float).reshape(-1, 2)
-    P = np.stack([-P[:, 2], -P[:, 1], -P[:, 0]], 1)            # upside down, facing -x  ->  standing, facing +z
-    F = F[:, [0, 2, 1]]                                         # (the turn mirrors: keep the faces outward)
+    """Fripouille's body in her rigged standing pose (skinned on the CPU: gltfskin.py), turned to stand on y = 0 facing
+    +z, squared to the z axis, scaled to 30 units tall (ear tips), her head centred; her own UVs and Substance-painted
+    texture. Returns P, F, UV, N, src (1024 px, the repaint's base) and her skeleton's joints read off the skin weights
+    (same units): {pair or name: xyz}."""
+    from gltfskin import load, joints_from_weights
+    dl = os.path.join(CACHE, '_dl', 'fri')
+    if not os.path.exists(os.path.join(dl, 'scene.gltf')):
+        sys.path.insert(0, LOWPIX)
+        from lowpix.sketchfab import fetch
+        fetch(SOURCES['fri']['uid'], dl)
+    M, _ = load(os.path.join(dl, 'scene.gltf'))
+    m = [x for x in M if x['mat'] == 'SHD_frip'][0]
+    pairs, own = joints_from_weights(m)
+    P, F, UV = m['pos'].copy(), m['idx'][:, [0, 2, 1]].copy(), m['uv']
     a = np.radians(-28.8)                                       # she walks diagonally: square her to +z
     c, sn = np.cos(a), np.sin(a)
-    P = np.stack([c * P[:, 0] + sn * P[:, 2], P[:, 1], -sn * P[:, 0] + c * P[:, 2]], 1)
-    P -= [(P[:, 0].max() + P[:, 0].min()) / 2, P[:, 1].min(), (P[:, 2].max() + P[:, 2].min()) / 2]
-    P *= 30.0 / P[:, 1].max()
-    # her head is carried 1.4 to her right of the spine (a glance mid-stride): centre it, blended down the neck
-    w = np.clip((P[:, 2] - 13.5) / 4.5, 0, 1) * np.clip((P[:, 1] - 17.5) / 3.0, 0, 1)
-    P[:, 0] += 1.4 * w * w * (3 - 2 * w)
+    def T0(Q):
+        Q = np.stack([-Q[:, 2], -Q[:, 1], -Q[:, 0]], 1)          # upside down, facing -x  ->  standing, facing +z
+        return np.stack([c * Q[:, 0] + sn * Q[:, 2], Q[:, 1], -sn * Q[:, 0] + c * Q[:, 2]], 1)
+    P = T0(P)
+    off = np.array([(P[:, 0].max() + P[:, 0].min()) / 2, P[:, 1].min(), (P[:, 2].max() + P[:, 2].min()) / 2])
+    k = 30.0 / (P[:, 1].max() - off[1])
+    def T(Q):
+        Q = (T0(np.atleast_2d(Q)) - off) * k
+        # her head is carried 1.4 to her right of the spine (a glance mid-stride): centre it, blended down the neck
+        w = np.clip((Q[:, 2] - 13.5) / 4.5, 0, 1) * np.clip((Q[:, 1] - 17.5) / 3.0, 0, 1)
+        Q[:, 0] += 1.4 * w * w * (3 - 2 * w)
+        return Q
+    P = T(m['pos'])
     N = weld_normals(P, F)
-    tex = Image.open(os.path.join(CACHE, '_dl', 'fri', 'textures', 'SHD_frip_baseColor.png')).convert('RGB')
+    J = {key: T(v[0])[0] for key, v in pairs.items()}
+    O = {key: T(v) for key, v in own.items()}
+    tex = Image.open(os.path.join(dl, 'textures', 'SHD_frip_baseColor.png')).convert('RGB')
     src = down2(np.asarray(tex))
-    return P, F, UV, N, src
+    return P, F, UV, N, src, J, O
 
 
 def debug_fri():
-    P, F, UV, N, src = fri_prepared()
+    P, F, UV, N, src, J, O = fri_prepared()
     print('bounds', P.min(0).round(2), P.max(0).round(2))
+    for kk, v in sorted(J.items()): print(kk, v.round(2))
     t = src.astype(np.float32)
     a = render(P, F, 'side', None, px=22, grid=2, tex=t, UV=UV)
     zmax = P[:, 2].max()
@@ -470,6 +374,109 @@ def debug_fri():
     c = render(P, F, 'side', (zmax - 11, zmax + 0.5, P[:, 1].max() - 13, P[:, 1].max() + 0.5), px=50, grid=1, tex=t, UV=UV)
     o = Image.new('RGB', (a.width + b.width + c.width, max(a.height, b.height, c.height))); o.paste(a, (0, 0)); o.paste(b, (a.width, 0)); o.paste(c, (a.width + b.width, 0))
     o.save(os.path.join(CACHE, 'fri_dbg.png'))
+
+
+
+# ------------------------------------------------------------------ Mikan: Fripouille repainted as a calico
+CAL = {
+    'white': ['#3e3b38', '#56524d', '#706a63', '#8b847a', '#a69e93', '#bdb5aa', '#d0c9be', '#e0d9cf', '#ebe6dd', '#f4f0e9'],
+    'orange': ['#2a160d', '#402213', '#583019', '#6f3e20', '#874d27', '#9c5d30', '#ae6e3b', '#bd8149', '#c9945b', '#d4a874'],
+    'black': ['#0a0807', '#110e0c', '#181412', '#201b18', '#29231f', '#332c27', '#3f3731', '#4c433b'],
+    'pink': ['#4a2a2a', '#62393a', '#7a4b4a', '#905e5b', '#a3716c', '#b4847d', '#c29790', '#cfaaa2'],
+    'dark': ['#0b0908', '#151110', '#1f1a18', '#2a2421'],
+}
+MIKAN_EYE = dict(ball='#1a120c', limbus='#2e2a12', outer='#76702c', mid='#a29438', inner='#c8a846', fibre_d='#5e5620',
+                 fibre_l='#c6b45a', shadow='#4a4416', pupil='#070605', glint='#f4f0e2', glint2='#b8a888')
+
+
+def fri_joints(J, O):
+    """CatRig's joints on Fripouille (source units): the trunk, legs and neck from her own skeleton (read off the skin
+    weights: y and z; x from each leg's centre line), the hips, tail, ears and contact points from the sculpt."""
+    g = lambda a, b: J[(a, b)] if (a, b) in J else J[(b, a)]
+    yz = lambda v, x: (x, float(v[1]), float(v[2]))
+    low = lambda k: O[k][O[k][:, 1] < O[k][:, 1].min() + 0.6].mean(0)
+    c = {k: O[k].mean(0) for k in ['Bone.005_014', 'Bone.006_015', 'Bone.007_016', 'Bone.008_017', 'Bone.010_019']}
+    mid = lambda a, b: tuple(((c[a] + c[b]) / 2).round(3).tolist())
+    tip = O['Bone.010_019'][O['Bone.010_019'][:, 2].argmin()]
+    return {
+        'body': (0, 18.0, 1.0), 'chest': (0, 19.5, 9.3), 'head': yz(g('Bone.003_04', 'Bone.004_05'), 0.0), 'jaw': (0, 22.9, 21.2),
+        'earL': (2.5, 27.9, 20.7), 'earR': (-2.5, 27.9, 20.8),
+        'legFL': yz(g('Bone.015_06', 'Bone.016_07'), 3.8), 'armFL': yz(g('Bone.016_07', 'Bone.017_08'), 3.2), 'pawFL': yz(g('Bone.017_08', 'Bone.018_09'), 2.1),
+        'legFR': yz(g('Bone.019_010', 'Bone.020_011'), -3.9), 'armFR': yz(g('Bone.020_011', 'Bone.021_012'), -3.6), 'pawFR': yz(g('Bone.021_012', 'Bone.022_013'), -3.2),
+        'legBL': (3.4, 18.5, -5.5), 'shinBL': yz(g('Bone.011_020', 'Bone.012_021'), 2.5), 'pawBL': yz(g('Bone.012_021', 'Bone.013_022'), 1.9),
+        'legBR': (-3.4, 18.5, -5.5), 'shinBR': yz(g('Bone.023_024', 'Bone.024_00'), -3.1), 'pawBR': yz(g('Bone.024_00', 'Bone.025_025'), -3.0),
+        'tail0': (0, 21.9, -8.6), 'tail1': mid('Bone.005_014', 'Bone.006_015'), 'tail2': mid('Bone.006_015', 'Bone.007_016'),
+        'tail3': mid('Bone.007_016', 'Bone.008_017'), 'tail4': mid('Bone.008_017', 'Bone.010_019'),
+        '_footFL': tuple(low('Bone.018_09')), '_footFR': tuple(low('Bone.022_013')), '_footBL': tuple(low('Bone.014_023')), '_footBR': tuple(low('Bone.026_026')),
+        '_tailTip': tuple(tip), '_nose': (0, 23.9, 25.5), '_rump': (0, 21.0, -10.5),
+    }
+
+
+def make_mikan():
+    from coat import vnoise3, raster, surface
+    P, F, UV, N, src, J, O = fri_prepared()
+    H, W = src.shape[:2]
+    tri, bary = raster(P, F, UV, W, H)
+    ok, Ps, Ns = surface(P, N, F, tri, bary)
+    r, g, b = src[..., 0], src[..., 1], src[..., 2]
+    lum = (r * 0.3 + g * 0.55 + b * 0.15) / 255
+    x, y, z = Ps[..., 0], Ps[..., 1], Ps[..., 2]
+    ax = np.abs(x)
+    warm = (r - b > 38) & (lum < 0.86)
+    # inner ears: the front-facing hollow, inside its rim (the rim and the back of the ear keep the coat)
+    ear = (y > 27.4) & (ax > 1.4) & (z > 19.8)
+    ex = np.where(x > 0, 2.55, -2.55)
+    inner_ear = ear & (Ns[..., 2] > 0.35) & (np.abs(x - ex) < 0.75 - 0.35 * np.clip((y - 27.4) / 2.6, 0, 1))
+    skin = ((z > 24.7) & (ax < 0.75) & (y > 23.3) & (y < 24.6)) | (y < 0.7) | inner_ear
+    pink = skin & (r > g + 18) & (r > b + 6) & (lum > 0.28)
+    pink |= inner_ear
+    dark = lum < 0.1
+    # calico: black patches over the orange (noise, a jagged edge), the face split down the blaze: her right cheek and
+    # ear black, her left orange; the tail ringed
+    n1 = vnoise3(x * 0.15, y * 0.15, z * 0.15, 5)
+    n2 = vnoise3(x * 1.7 + 7, y * 1.7, z * 1.7, 9)
+    n3 = vnoise3(x * 4.5, y * 4.5, z * 4.5, 13)
+    jag = (n2 - 0.5) * 1.6 + (n3 - 0.5) * 0.7          # a ragged, furry patch edge
+    head = z > 17.5
+    blackp = np.where(head, x < -0.5 + jag * 0.8, n1 > 0.53 + (n2 - 0.5) * 0.12)
+    tail = z < -8.8
+    blackp = np.where(tail, ((np.abs(z + 20) % 4.8) < 1.6 + jag * 0.4) | (z < -24.2), blackp)
+    out = src.copy()
+    def put(m, name, k, mid):
+        R = hexes(CAL[name])
+        if not m.any(): return
+        L = lum[m]; med = np.median(L)
+        idx = np.clip(np.round(mid * (len(R) - 1) + (L / max(med, 1e-3) - 1) * k), 0, len(R) - 1).astype(int)
+        out[m] = R[idx]
+    base = ok & ~pink & ~dark
+    put(base & warm & blackp, 'black', 6, 0.5)
+    put(base & warm & ~blackp, 'orange', 8, 0.6)
+    put(base & ~warm, 'white', 8, 0.8)
+    put(ok & pink, 'pink', 6, 0.62)
+    put(ok & dark, 'dark', 3, 0.4)
+    # the sculpt's dark eye sockets round the new eyeballs: coat colour (the eyes and lids are modelled now)
+    for sx in (1, -1):
+        d = np.sqrt((x - sx * 1.6) ** 2 + (y - 25.24) ** 2)
+        sock = ok & (d < 1.25) & (z > 21.5) & (lum < 0.3)
+        out[sock & blackp] = hexes(CAL['black'])[4]
+        out[sock & ~blackp] = hexes(CAL['orange'])[5]
+    # inner-ear furnishings: pale hairs fanning up from the base of the hollow
+    from coat import hash2
+    hh = hash2((x * 9).astype(int) & 0xffff, (y * 3).astype(int) & 0xffff, 21)
+    out[inner_ear & (y < 28.6) & (hh < 0.14)] = hexes(CAL['white'])[5]
+    body = np.clip(out, 0, 255).astype(np.uint8)
+    global OPEN_EYE
+    OPEN_EYE = (0.74, -0.66)
+    lip = lambda X: 22.55 - 0.35 * (np.asarray(X) / 1.5) ** 2
+    return rig_cat('mikan', P, F, UV, N, body, fri_joints(J, O), MIKAN_EYE, eye_y=25.24, eye_x=1.6, eye_r=0.72, eye_in=0.62, cut=dict(
+        zone=lambda C: np.zeros(len(C), bool),
+        lower=lambda C: (C[:, 1] < lip(C[:, 0]) - 0.02) & (C[:, 2] > 21.0) & (np.abs(C[:, 0]) < 2.6) & (C[:, 1] > 19.8),
+        fall=lambda Q: np.clip((Q[:, 2] - 21.0) / 1.6, 0, 1) * np.clip((2.6 - np.abs(Q[:, 0])) / 0.9, 0, 1) * np.clip((Q[:, 1] - 19.8) / 0.8, 0, 1),
+        below=lambda Q: np.clip((lip(Q[:, 0]) - Q[:, 1]) / 0.4 + 0.35, 0, 1),
+        inward=(0, 22.3, 22.5), depth=1.4, tongue=1.5,
+        bowl=dict(c=(0, 22.3, 24.6), rx=1.3, ry=0.6, depth=2.0, tongue=(0, 22.25, 24.4), tdir=(0, 0.05, -1), tlen=1.5),
+        lens=dict(w=1.45, lip_y=lip, cols=dict(lip='#2a1a1a', inside='#5c2226', throat='#2e0f12', ridge='#7a3439', tongue='#c27a7c', tongueD='#9a5658', tooth='#ece6d8'))),
+        scale=0.0102, shift=(0, 0, -3.0), source='fri', head_z=21.5)
 
 
 if __name__ == '__main__':

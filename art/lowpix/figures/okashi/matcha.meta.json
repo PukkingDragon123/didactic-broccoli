@@ -8,7 +8,7 @@
   {
    "name": "bowl",
    "src": "sketchfab:938e05641929403cab1f0c77376e0d9b",
-   "height": 21.317,
+   "height": 15.207,
    "pos": [
     0.0,
     0.0,
@@ -19,8 +19,7 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "level": 2,
-   "key": "d4d25d39ef6143"
+   "key": "1140340e2f6f86"
   }
  ],
  "model_clip": {

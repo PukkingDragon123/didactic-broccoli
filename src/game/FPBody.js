@@ -19,6 +19,8 @@ import { flyerTexture } from '../gfx/flyers.js';
 import { Game } from './Game.js';
 import { BONES, BONE_INDEX } from '../people/body.js';
 import { ATLAS } from '../people/mesh.js';
+import { makePainters } from '../people/paint.js';
+import { q8 } from '../people/paintlib.js';
 import { createAvatarHuman } from '../people/avatar.js';
 import { audio } from '../core/audio.js';
 import { talk } from '../people/voice.js';
@@ -84,16 +86,18 @@ function octagon(hx, hz, ch) {
  * without cracks; hinge blocks across the joints keep the corners filled when they bend a long way.
  */
 class BlockGeo {
-  constructor(texV) { this.pos = []; this.nrm = []; this.uv = []; this.col = []; this.si = []; this.sw = []; this.idx = []; this.texV = texV; }
+  constructor(texV, uScale = 1) { this.pos = []; this.nrm = []; this.uv = []; this.col = []; this.si = []; this.sw = []; this.idx = []; this.texV = texV; this.uScale = uScale; }
   get count() { return this.pos.length / 3; }
-  vert(p, n, u, col, w) {
-    this.pos.push(p.x, p.y, p.z); this.nrm.push(n.x, n.y, n.z); this.uv.push(u, this.texV(p.y)); this.col.push(col[0], col[1], col[2]);
+  vert(p, n, u, col, w, uvf) {
+    this.pos.push(p.x, p.y, p.z); this.nrm.push(n.x, n.y, n.z);
+    if (uvf) { const t = uvf(u, p); this.uv.push(t[0], t[1]); } else this.uv.push(u * this.uScale, this.texV(p.y));
+    this.col.push(col[0], col[1], col[2]);
     let s = 0;
     for (const x of w) s += x[1];
     for (let i = 0; i < 4; i++) { const x = w[i]; this.si.push(x ? x[0] : 0); this.sw.push(x ? x[1] / (s || 1) : 0); }
   }
   /** One flat face (3 or 4 points, any winding) turned to face away from `ref`. */
-  face(pts, us, ws, ref, tint) {
+  face(pts, us, ws, ref, tint, uvf) {
     const A = pts[0], n = _v2.subVectors(pts[1], A).cross(_v3.subVectors(pts[2], A));
     if (pts.length === 4 && n.lengthSq() < 1e-16) n.subVectors(pts[2], A).cross(_v3.subVectors(pts[3], A));
     if (n.lengthSq() < 1e-16) return;
@@ -101,7 +105,7 @@ class BlockGeo {
     let order = pts.map((_, i) => i);
     if (n.dot(_v4.subVectors(A, ref)) < 0) { n.negate(); order = order.reverse(); }
     const col = tint ? tint(n) : ONE, b = this.count;
-    for (const i of order) this.vert(pts[i], n, us[i], col, ws[i]);
+    for (const i of order) this.vert(pts[i], n, us[i], col, ws[i], uvf ? (u, p) => uvf(u, p, i) : null);
     this.idx.push(b, b + 1, b + 2);
     if (pts.length === 4) this.idx.push(b, b + 2, b + 3);
   }
@@ -122,12 +126,14 @@ class BlockGeo {
         const k2 = (k + 1) % 8;
         let u0 = U[k], u1 = U[k2];
         if (u1 < u0) u1 += 1;
-        this.face([A[k], A[k2], B[k2], B[k]], [u0, u1, u1, u0], [wa, wa, wb, wb], ref, tint);
+        const uq = o.uvQuad ? o.uvQuad(i) : null;
+        this.face([A[k], A[k2], B[k2], B[k]], [u0, u1, u1, u0], [wa, wa, wb, wb], ref, tint, uq ? (u, p, j) => uq(u, j < 2 ? i : i + 1, p) : null);
       }
     }
     const cap = (i, j, id) => {
       const ref = C[j], w = rings[i].w, tint = o.tint ? (n) => o.tint(n, id) : null;
-      for (let k = 0; k < 8; k++) this.face([C[i], P[i][k], P[i][(k + 1) % 8]], [0.5, U[k], U[(k + 1) % 8]], [w, w, w], ref, tint);
+      const uq = o.uvQuad ? o.uvQuad(Math.min(i, rings.length - 2)) : null;
+      for (let k = 0; k < 8; k++) this.face([C[i], P[i][k], P[i][(k + 1) % 8]], [0.5, U[k], U[(k + 1) % 8]], [w, w, w], ref, tint, uq ? (u, p) => uq(u, i, p) : null);
     };
     const caps = o.caps ?? 'both';
     if (caps === 'both' || caps === 'start') cap(0, 1, -1);
@@ -234,13 +240,25 @@ export class FPBody {
     h.root.visible = false;
     h.mesh.frustumCulled = false;
     g.scene.add(h.root);
-    // head + arms only in shadow maps
-    const sk = h.mesh.skeleton;
-    // (Human's pose-only skinning flags the bone texture only when update() changed a matrix: after a shadow redraw this
-    // frame the matrices are already whole, so the zeroing below must flag the upload itself, or the colour pass draws
-    // the head and arms round the camera: dark slabs across the view)
-    h.mesh.onBeforeRender = () => { sk.update(); const m = sk.boneMatrices; for (const i of HIDE) m.fill(0, i * 16, i * 16 + 16); if (sk.boneTexture) sk.boneTexture.needsUpdate = true; };
-    h.mesh.onBeforeShadow = () => sk.update();
+    // head + arms only in shadow maps: the colour pass draws the body without any triangle that rides on a hidden bone
+    // (the camera sits in the head, the viewmodel arms replace the arms; blended joints would otherwise stretch), and a
+    // twin with the whole mesh, sharing the skeleton, draws only into shadow maps, so you still cast a complete shadow
+    const full = h.geoNear, sk = h.mesh.skeleton, hid = new Set(HIDE);
+    const si = full.attributes.skinIndex, sw = full.attributes.skinWeight, ix = full.index.array, keep = [];
+    const onHidden = (v) => { for (let j = 0; j < 4; j++) if (sw.getComponent(v, j) > 0 && hid.has(si.getComponent(v, j))) return true; return false; };
+    for (let i = 0; i < ix.length; i += 3) if (!onHidden(ix[i]) && !onHidden(ix[i + 1]) && !onHidden(ix[i + 2])) keep.push(ix[i], ix[i + 1], ix[i + 2]);
+    const body = new THREE.BufferGeometry();
+    for (const k in full.attributes) body.setAttribute(k, full.attributes[k]);
+    body.setIndex(keep);
+    h.mesh.geometry = body; h.mesh.onBeforeRender = () => {}; h.mesh.castShadow = false;
+    const shadowMat = h.mat.clone(); shadowMat.colorWrite = false; shadowMat.depthWrite = false;
+    const twin = this.shadowTwin = new THREE.SkinnedMesh(full, shadowMat);
+    twin.name = 'fp-body-shadow';
+    twin.bindMode = THREE.DetachedBindMode;
+    twin.bind(sk, h.mesh.bindMatrix);
+    twin.castShadow = true; twin.receiveShadow = false; twin.frustumCulled = false;
+    twin.onBeforeShadow = () => sk.update();
+    h.root.add(twin);
     // extra meshes riding on hidden bones (hats, hair pieces from cosmetics) would sit in front of the camera
     for (const i of HIDE) h.bones[i].traverse((o) => { if (o.isMesh && o !== h.mesh) o.visible = false; });
     this.bs = clamp(g.player.eye / P.eyeY, 0.8, 1.3);
@@ -325,75 +343,71 @@ export class FPBody {
   }
 
   /**
-   * The arms' own little texture: v runs down the arm (shoulder to fingertips), u around it. Above the cuff it is
-   * sampled from the avatar's atlas (whatever sleeve it wears: knit, flannel checks, prints, a suit's shirt cuff...),
-   * below it is skin in the hands' colour, so forearm and hand always match.
+   * The arms' own texture (256 x 256): a strip on the left (u round the arm, v down it from the shoulder to the wrist,
+   * columns 64-71 repeat 0-7 for the wrap), then islands for the palm and for every segment of every finger and the
+   * thumb. Everything is painted by the avatar's own painters (src/people/paint.js) at matching points of its body, so
+   * the sleeves are the avatar's cloth (weave, creases, cuffs, prints) and the hands get the same skin with knuckles,
+   * palm creases, finger joints and nails.
    */
   armTexture(h) {
-    const ATLAS = h.atlas;
-    const P = h.P, H = P.H, T = h.spec.top || {};
+    const P = h.P, H = P.H, spec = h.spec, T = spec.top || {};
     const sleeve = T.sleeve || (['tee', 'aloha', 'polo'].includes(T.kind) ? 'short' : 'long');
     const cuffY = sleeve === 'short' ? P.elbowY + (T.kind === 'tee' && T.fitted ? 0.085 : 0.065) * H : sleeve === 'mid' ? P.elbowY - 0.055 * H : P.wristY + 0.008 * H;
-    const yTop = P.shoulderY + 0.02 * H, yBot = P.wristY - 0.15 * H, W = 64, HT = 256;
-    // the avatar's left arm (rest pose) with its atlas UVs
-    const g = h.mesh.geometry, pa = g.attributes.position, ua = g.attributes.uv, sa = g.attributes.skinIndex, ix = g.index.array;
-    const tris = [];
-    for (let i = 0; i < ix.length; i += 3) {
-      const bi = sa.getX(ix[i]);
-      if ((bi !== BONE_INDEX.armL && bi !== BONE_INDEX.foreL) || sa.getX(ix[i + 1]) !== bi || sa.getX(ix[i + 2]) !== bi) continue;
-      tris.push([ix[i], ix[i + 1], ix[i + 2]].map((j) => [pa.getX(j), pa.getY(j), pa.getZ(j), ua.getX(j), ua.getY(j)]));
-    }
-    const d = h.pix.d, skin = this.handColor(h);
+    const yTop = P.shoulderY + 0.02 * H, yBot = P.wristY - 0.15 * H, S = 256;
+    const pt = makePainters(spec, P);
     const cv = document.createElement('canvas');
-    cv.width = W; cv.height = HT;
-    const ctx = cv.getContext('2d'), img = ctx.createImageData(W, HT), o = img.data;
-    const hash = (a, b) => { let x = Math.imul(a * 374761393 + b * 668265263, 1274126177); x ^= x >>> 13; return ((Math.imul(x, 1103515245) >>> 0) % 1000) / 1000; };
-    const hit = (y, dx, dz) => {
-      let best = Infinity, bu = 0, bv = 0;
-      const ox = P.shX, oy = y, oz = 0;
-      for (const [A, B, C] of tris) {
-        const e1x = B[0] - A[0], e1y = B[1] - A[1], e1z = B[2] - A[2], e2x = C[0] - A[0], e2y = C[1] - A[1], e2z = C[2] - A[2];
-        const px = -dz * e2y, py = dz * e2x - dx * e2z, pz = dx * e2y; // d x e2 (d.y = 0)
-        const det = e1x * px + e1y * py + e1z * pz;
-        if (Math.abs(det) < 1e-12) continue;
-        const inv = 1 / det, tx = ox - A[0], ty = oy - A[1], tz = oz - A[2];
-        const u = (tx * px + ty * py + tz * pz) * inv;
-        if (u < 0 || u > 1) continue;
-        const qx = ty * e1z - tz * e1y, qy = tz * e1x - tx * e1z, qz = tx * e1y - ty * e1x;
-        const w = (dx * qx + dz * qz) * inv;
-        if (w < 0 || u + w > 1) continue;
-        const t = (e2x * qx + e2y * qy + e2z * qz) * inv;
-        if (t > 0 && t < best) { best = t; bu = A[3] * (1 - u - w) + B[3] * u + C[3] * w; bv = A[4] * (1 - u - w) + B[4] * u + C[4] * w; }
+    cv.width = S; cv.height = S;
+    const ctx = cv.getContext('2d'), img = ctx.createImageData(S, S), d = img.data;
+    const o = new Float32Array(4);
+    const c = { x: 0, y: 0, z: 0, i: 0, j: 0, f: { s0: 0, s1: 0.3 }, seg: { meta: {}, part: '' }, part: '', nx: 0, ny: 0, nz: 0, px: 0.004, kind: 'side', e: 0, rb: 0.1, rt: 0.1, rh: 0.2, lu: 0, lt: 0, tube: true };
+    const put = (i, j) => { const q = (j * S + i) * 4; d[q] = q8(o[0]); d[q + 1] = q8(o[1]); d[q + 2] = q8(o[2]); d[q + 3] = 255; };
+    const angle = (U) => (U - 0.25) * Math.PI * 2; // BlockGeo's octagon u -> direction (cos, sin) in the (ex, ez) plane
+    const setN = (a) => { c.nx = Math.cos(a); c.ny = 0; c.nz = Math.sin(a); const ang = Math.atan2(c.nx, c.nz); c.e = (ang - Math.round(ang / (Math.PI / 2)) * (Math.PI / 2)) / (Math.PI / 4); };
+    const aw = P.armX;
+    // the arm strip
+    for (let r = 0; r < S; r++) {
+      const y = yBot + (1 - (r + 0.5) / S) * (yTop - yBot);
+      for (let i = 0; i < 72; i++) {
+        const U = ((i % 64) + 0.5) / 64, a = angle(U);
+        setN(a);
+        c.y = y; c.x = P.shX + c.nx * aw * 0.8; c.z = c.nz * aw * 0.85; c.i = i % 64; c.j = r; c.lu = U; c.lt = (y - yBot) / (yTop - yBot);
+        c.part = y > P.elbowY ? 'uarm' : y > P.wristY ? 'farm' : 'palm';
+        o[0] = o[1] = o[2] = 128; o[3] = 255;
+        if (y > P.wristY - 0.004 * H) pt.body(c, o); else { c.part = 'palm'; pt.hand(c, o); }
+        put(i, r);
       }
-      return best < Infinity ? [bu, bv] : null;
-    };
-    for (let r = 0; r < HT; r++) {
-      const y = yBot + (1 - (r + 0.5) / HT) * (yTop - yBot);
-      for (let i = 0; i < W; i++) {
-        const t = -Math.PI / 2 + (2 * Math.PI * (i + 0.5)) / W, c = Math.cos(t), s = Math.sin(t), q = (r * W + i) * 4;
-        const uv = y > cuffY + 0.001 ? hit(y, c, s) : null;
-        if (uv) {
-          const a = (clamp(Math.floor((1 - uv[1]) * ATLAS), 0, ATLAS - 1) * ATLAS + clamp(Math.floor(uv[0] * ATLAS), 0, ATLAS - 1)) * 4;
-          o[q] = d[a]; o[q + 1] = d[a + 1]; o[q + 2] = d[a + 2];
-        } else if (y > cuffY + 0.001 && r > 0) {
-          o[q] = o[q - W * 4]; o[q + 1] = o[q - W * 4 + 1]; o[q + 2] = o[q - W * 4 + 2];
-        } else {
-          // skin: the outer forearm a touch lighter, the inner side and the back of the elbow a touch darker
-          let kk = 1 + 0.035 * Math.max(0, c) - 0.03 * Math.max(0, -c) + (hash(i, r) - 0.5) * 0.035;
-          if (Math.abs(y - P.elbowY) < 0.02 * H && s < -0.55) kk *= 0.94;
-          const pink = c < -0.3 && y < P.wristY + 0.05 * H && y > P.wristY - 0.01 * H ? 0.04 : 0;
-          o[q] = clamp(skin[0] * kk * (1 + pink), 0, 255); o[q + 1] = clamp(skin[1] * kk * (1 - pink * 0.6), 0, 255); o[q + 2] = clamp(skin[2] * kk * (1 - pink), 0, 255);
-        }
-        o[q + 3] = 255;
+    }
+    // hand islands (left hand, rest pose): palm, then fingers 0-3 and the thumb (4), three segments each
+    const handK = H * (P.f ? 0.92 : 1), handZ = 0.004 * H;
+    for (let r = 0; r < 64; r++) for (let i = 0; i < 72; i++) {
+      const U = ((i % 64) + 0.5) / 64, a = angle(U), t = (r + 0.5) / 64;
+      setN(a);
+      c.part = 'palm'; c.y = P.wristY - t * 0.05 * handK; c.x = P.shX + c.nx * 0.0085 * handK; c.z = handZ + c.nz * 0.022 * handK;
+      c.i = 72 + i; c.j = r; c.lu = U; c.lt = 1 - t;
+      o[0] = o[1] = o[2] = 128; o[3] = 255; pt.hand(c, o); put(72 + i, r);
+    }
+    const LEN = [0.95, 1, 0.95, 0.78];
+    for (let fi = 0; fi < 5; fi++) for (let j = 0; j < 3; j++) {
+      const th = fi === 4, span = th ? [0, 0.34, 0.68, 1] : [0, 0.45, 0.75, 1];
+      for (let r = 0; r < 28; r++) for (let i = 0; i < 36; i++) {
+        const U = ((i % 32) + 0.5) / 32, a = angle(U), v = (r + 0.5) / 28;
+        setN(a);
+        c.part = th ? 'thumb' : 'fingers'; c.lt = span[j] + (span[j + 1] - span[j]) * v; c.rh = (th ? 0.073 : 0.054 * LEN[fi]) * handK;
+        c.x = P.shX + c.nx * 0.005; c.y = P.wristY - 0.05 * handK - c.lt * c.rh; c.z = handZ + c.nz * 0.005;
+        c.i = 144 + j * 37 + i; c.j = fi * 30 + r; c.lu = U; c.px = 0.0018;
+        o[0] = o[1] = o[2] = 128; o[3] = 255; pt.hand(c, o); put(c.i, c.j);
       }
     }
     ctx.putImageData(img, 0, 0);
     const map = new THREE.CanvasTexture(cv);
     map.colorSpace = THREE.SRGBColorSpace;
     map.magFilter = THREE.NearestFilter; map.minFilter = THREE.LinearMipmapLinearFilter;
-    map.wrapS = THREE.RepeatWrapping;
     map.anisotropy = 4;
-    return { map, cuffY, sleeve, v: (y) => clamp((y - yBot) / (yTop - yBot), 0.002, 0.998) };
+    const island = (x0, y0, w, hh) => (u, vl) => [(x0 + u * w) / S, 1 - (y0 + Math.max(0, Math.min(1, vl)) * hh) / S];
+    return {
+      map, cuffY, sleeve, v: (y) => clamp((y - yBot) / (yTop - yBot), 0.002, 0.998), uScale: 64 / S,
+      palm: island(72, 0, 64, 64), digit: (fi, j) => island(144 + j * 37, fi * 30, 32, 28),
+    };
   }
 
   /** The hands' colour (sRGB bytes): median of the avatar's painted hand texels. */
@@ -420,7 +434,7 @@ export class FPBody {
    */
   limbGeometry() {
     const P = this.P, k = this.k, ar = this.ar, T = this.tex;
-    const G = new BlockGeo(T.v);
+    const G = new BlockGeo(T.v, T.uScale);
     const { shX, shoulderY: sh, elbowY: el, wristY: wr } = P;
     const Lf = el - wr;
     const ARM = BONE_INDEX.armL, FORE = BONE_INDEX.foreL, HAND = BONE_INDEX.handL, TA = twistBone(0, 0), TB = twistBone(0, 1);
@@ -436,7 +450,7 @@ export class FPBody {
       return L[L.length - 1];
     };
     const ring = (p, w, grow = 0, extra) => ({ y: p[0], hx: p[1] * ar + grow, hz: p[2] * ar + grow, oz: p[3] * ar, w, ...extra });
-    const palmTint = (n) => (n.x < -0.5 ? [1.04, 0.95, 0.93] : ONE);
+    const palmTint = () => ONE; // (palms, nails and knuckles are painted now: armTexture)
     const dark = () => [0.42, 0.42, 0.46];
     // --- skin: upper arm (inside the sleeve), the elbow hinge, forearm -> wrist -> palm in one welded piece
     G.loft({ ...AX }, up.map((p) => ring(p, [[ARM, 1]])));
@@ -446,10 +460,11 @@ export class FPBody {
     const arm = fore.map((p) => ring(p, tw(p[0])));
     const nArm = arm.length;
     for (const [y, hx, hz, ox, oz] of PALM) arm.push({ y: wr + y * k, hx: hx * k, hz: hz * k, ox: ox * k, oz: oz * k, w: [[HAND, 1]], ch: 0.26 });
-    G.loft({ ...AX, tint: (n, i) => (i >= nArm - 1 || i === -2 ? palmTint(n) : ONE) }, arm);
+    const palmV = (ri) => (ri < nArm ? 0 : (-PALM[ri - nArm][0] - 0.003) / (0.0935 - 0.003));
+    G.loft({ ...AX, tint: (n, i) => (i >= nArm - 1 || i === -2 ? palmTint(n) : ONE), uvQuad: (i) => (i >= nArm ? (u, ri) => T.palm(u, palmV(ri)) : null) }, arm);
     // --- fingers: rigid blocks per segment, overlapping into hinge blocks at each joint (the knuckles)
-    const nail = (n, i) => (i >= 1 && n.x > 0.6 ? [1.13, 1.05, 1.04] : palmTint(n));
-    const digit = (base, F, b0, lens, w0, t0, thumb) => {
+    const nail = (n) => palmTint(n);
+    const digit = (base, F, b0, lens, w0, t0, thumb, fi) => {
       const { ex, ey, ez } = F;
       let o = base.clone();
       lens.forEach((L, j) => {
@@ -464,19 +479,21 @@ export class FPBody {
           { y: j ? 0.3 * w : 0.012 * k, hx: t * 0.86, hz: w * 0.88 }, { y: 0, hx: t * 0.98, hz: w * 0.98 }, { y: -L, hx: t * 0.94, hz: w * 0.94 }, { y: -L - 0.3 * w, hx: t * 0.8, hz: w * 0.82 },
         ];
         for (const r of rings) r.w = r.w || [[b, 1]];
-        G.loft({ ex, ey, ez, o, ch: 0.32, tint: j === 2 ? nail : palmTint }, rings);
+        const isl = T.digit(fi, j), r0 = rings[0].y, r1 = rings[rings.length - 1].y;
+        G.loft({ ex, ey, ez, o, ch: 0.32, tint: j === 2 ? nail : palmTint, uvQuad: () => (u, ri) => isl(u, (r0 - rings[ri].y) / (r0 - r1)) }, rings);
         // the hinge block at this segment's root (knuckle), turning with it about the digit's z
         if (j > 0 || !thumb) {
           const r = t * (j ? 0.9 : 0.95);
-          G.loft({ ex, ey: ez, ez: ey, o, ch: 0.42, tint: palmTint }, [{ y: -w * 0.86, hx: r, hz: r, w: [[b, 1]] }, { y: w * 0.86, hx: r, hz: r, w: [[b, 1]] }]);
+          const isl = T.digit(fi, j);
+          G.loft({ ex, ey: ez, ez: ey, o, ch: 0.42, tint: palmTint, uvQuad: () => (u) => isl(u, 0.04) }, [{ y: -w * 0.86, hx: r, hz: r, w: [[b, 1]] }, { y: w * 0.86, hx: r, hz: r, w: [[b, 1]] }]);
         }
         o = o.clone().addScaledVector(ey, -L);
       });
     };
-    FING.forEach((F, fi) => digit(new THREE.Vector3(shX + F.k[0] * k, wr + F.k[1] * k, F.k[2] * k), { ex: X, ey: Y, ez: Z }, fingBone(0, fi, 0), F.len.map((x) => x * k), F.w * k * 1.08, F.t * k * 1.06, false));
+    FING.forEach((F, fi) => digit(new THREE.Vector3(shX + F.k[0] * k, wr + F.k[1] * k, F.k[2] * k), { ex: X, ey: Y, ez: Z }, fingBone(0, fi, 0), F.len.map((x) => x * k), F.w * k * 1.08, F.t * k * 1.06, false, fi));
     const tq = this.thumbQ[0].relax;
     digit(new THREE.Vector3(shX + THUMB.base[0] * k, wr + THUMB.base[1] * k, THUMB.base[2] * k), { ex: X.clone().applyQuaternion(tq), ey: Y.clone().applyQuaternion(tq), ez: Z.clone().applyQuaternion(tq) },
-      fingBone(0, 4, 0), THUMB.len.map((x) => x * k), THUMB.w * k * 1.06, THUMB.t * k * 1.06, true);
+      fingBone(0, 4, 0), THUMB.len.map((x) => x * k), THUMB.w * k * 1.06, THUMB.t * k * 1.06, true, 4);
     // --- sleeve: a size up from the arm, hinged at the elbow when it reaches past it, a cuff band and the dark inside of the hem
     const cuff = T.cuffY, long = T.sleeve === 'long', off = 0.0065 * ar;
     const hem = (L, w) => {
@@ -504,19 +521,31 @@ export class FPBody {
   }
 
   buildProps() {
-    const steel = new THREE.MeshStandardMaterial({ color: 0xb8bec6, metalness: 0.85, roughness: 0.3 });
+    // small pixel-art textures: brushed chrome-vanadium steel with a stamped size, a dipped red rubber grip, paper edges
+    const tex = (w, h, f) => {
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const g = cv.getContext('2d'), im = g.createImageData(w, h);
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const c = f(i, j), q = (j * w + i) * 4; im.data[q] = c[0]; im.data[q + 1] = c[1]; im.data[q + 2] = c[2]; im.data[q + 3] = 255; }
+      g.putImageData(im, 0, 0);
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter;
+      return t;
+    };
+    const hsh = (i, j) => { let x = Math.imul(i * 374761393 + j * 668265263, 1274126177); x ^= x >>> 13; return ((Math.imul(x, 1103515245) >>> 0) % 1000) / 1000; };
+    const steelT = tex(8, 64, (i, j) => { const k = 0.82 + 0.22 * hsh(i >> 2, j) + (i === 0 ? 0.15 : i === 7 ? -0.15 : 0); const st = j > 20 && j < 26 && i > 2 && i < 6 && (j % 2); return st ? [90, 94, 100] : [184 * k, 190 * k, 198 * k]; });
+    const steel = new THREE.MeshStandardMaterial({ map: steelT, metalness: 0.85, roughness: 0.3 });
     const wrench = new THREE.Group();
     const shaft = new THREE.Mesh(new THREE.BoxGeometry(0.011, 0.005, 0.13), steel);
     shaft.position.z = 0.03;
     const jaw = new THREE.Mesh(new THREE.TorusGeometry(0.014, 0.0045, 6, 12, Math.PI * 1.35), steel);
     jaw.rotation.set(Math.PI / 2, 0, Math.PI * 0.82);
     jaw.position.z = 0.104;
-    const grip = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.009, 0.064), new THREE.MeshStandardMaterial({ color: 0xd8352a, roughness: 0.5 }));
+    const gripT = tex(8, 32, (i, j) => { const k = (j % 4 === 0 ? 0.82 : 1) * (0.94 + 0.1 * hsh(i, j)) * (i === 0 ? 1.12 : 1); return [216 * k, 53 * k, 42 * k]; });
+    const grip = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.009, 0.064), new THREE.MeshStandardMaterial({ map: gripT, roughness: 0.5 }));
     grip.position.z = -0.002;
     wrench.add(shaft, jaw, grip);
     wrench.visible = false;
     // the sheet in your hand as you give it away: the design on both faces, plain paper edges
-    const paper = new THREE.MeshStandardMaterial({ color: 0xfff4dc, roughness: 0.8 }), art = new THREE.MeshStandardMaterial({ roughness: 0.8 });
+    const paper = new THREE.MeshStandardMaterial({ map: tex(4, 32, (i, j) => { const k = 0.93 + 0.08 * hsh(i, j); return [255 * k, 244 * k, 220 * k]; }), roughness: 0.8 }), art = new THREE.MeshStandardMaterial({ roughness: 0.8 });
     const flyer = new THREE.Mesh(new THREE.BoxGeometry(0.0015, 0.1, 0.0707), [art, art, paper, paper, paper, paper]);
     flyer.rotation.set(0, 0, 0.5);
     flyer.visible = false;
@@ -529,6 +558,7 @@ export class FPBody {
     this.rig.remove(this.arms);
     this.arms.geometry.dispose(); this.arms.material.dispose(); this.tex?.map.dispose();
     this.arms.skeleton.dispose();
+    this.shadowTwin?.material.dispose(); this.shadowTwin = null;
     h.dispose();
     this.human = null;
   }

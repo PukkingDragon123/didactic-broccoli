@@ -1,0 +1,36 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:f537e142a592428d85ca7a940be221d3",
+   "height": 42.0,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -15,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "gloss",
+   "opts": {
+    "smooth": 2.0
+   },
+   "key": "95a80bf793cace"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 0.8,
+  "amp": 2,
+  "axis": "y"
+ },
+ "key": "machikado/jihanki"
+}

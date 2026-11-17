@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:2eea678d5ade4c4a9f8b55f5872af92c",
+   "height": 33.114,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "gloss",
+   "key": "e418bc96c90d3b"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.6,
+  "amp": 14,
+  "axis": "y"
+ },
+ "key": "kaiun/daruma"
+}

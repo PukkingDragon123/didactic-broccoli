@@ -1,0 +1,77 @@
+{
+ "id": "showcase",
+ "src": "art/lowpix/world/made/showcase.glb",
+ "credit": {
+  "title": "shop counter",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/showcase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 96,
+ "tex": 512,
+ "size": [
+  1.6,
+  0.96,
+  0.56
+ ],
+ "colours": 36,
+ "palette": {
+  "m0": [
+   "#2c0f0c",
+   "#391811",
+   "#452216",
+   "#502d1c",
+   "#5b3a22",
+   "#7f5933",
+   "#a17b46",
+   "#b79c65",
+   "#c5b78b"
+  ],
+  "m1": [
+   "#36475d",
+   "#4a6176",
+   "#5e7b8e",
+   "#7994a0",
+   "#96aab0",
+   "#a7b6b8",
+   "#b7c1c2",
+   "#c6cccc",
+   "#d5d6d6"
+  ],
+  "m2": [
+   "#67172b",
+   "#852031",
+   "#a12a34",
+   "#bb3636",
+   "#c85a50",
+   "#cd7b6b",
+   "#d29885",
+   "#d9b29e",
+   "#e0c8b6"
+  ],
+  "m3": [
+   "#9c5106",
+   "#c8790c",
+   "#eea617",
+   "#eec548",
+   "#f0dc78",
+   "#f0e88d",
+   "#f1f1a0",
+   "#f2f2b4",
+   "#f4f4c6"
+  ],
+  "m4": [
+   "#212e6f",
+   "#2e468e",
+   "#3c61ac",
+   "#5581bf",
+   "#78a0c8",
+   "#8db2cd",
+   "#a1c2d3",
+   "#b5d0da",
+   "#c7dde1"
+  ]
+ },
+ "warnings": []
+}

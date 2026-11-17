@@ -14,11 +14,9 @@ export default {
   items: [
     { id: 'kingyo', name: "Goldfish in a Bag", jp: "金魚すくい", rarity: 'common', desc: "Won at the scooping stall with the third paper net. Name: Kintaro.", gimmick: { text: "Swish" } },
     { id: 'omen', name: "Fox Mask", jp: "きつねのお面", rarity: 'common', desc: "White fox with red marks, from the mask stall. Wear it on the side of your head, like everyone." },
-    { id: 'takoyaki', name: "Takoyaki Boat", jp: "たこ焼き舟", rarity: 'common', desc: "Eight hot octopus balls with sauce, mayo and dancing bonito flakes. Burns every time." },
-    { id: 'wataame', name: "Cotton Candy", jp: "わたあめ", rarity: 'uncommon', desc: "A pink cloud on a stick, in a bag with a hero printed on it." },
-    { id: 'yoyo', name: "Water Yo-yo Balloon", jp: "水ヨーヨー", rarity: 'uncommon', desc: "A water balloon on a rubber band. Thwack, thwack, splash." },
+    { id: 'takoyaki', name: "Takoyaki Boat", jp: "たこ焼き舟", rarity: 'common', desc: "Hot octopus balls with sauce, mayo and dancing bonito flakes, in their paper boat. Burns your mouth every time." },
     { id: 'taiko', name: "Festival Drum", jp: "祭り太鼓", rarity: 'rare', desc: "The big drum on the yagura stand. You feel it in your chest before you hear it.", gimmick: { text: "Drum" } },
     { id: 'stall', name: "Shaved Ice Stall", jp: "かき氷屋台", rarity: 'ultra', desc: "Flags flapping, syrups lined up, the ice shaver turning. Strawberry or melon?" },
-    { id: 'golden', name: "Golden Lucky Goldfish", jp: "黄金の金魚", rarity: 'secret', desc: "The one nobody can scoop: a golden oranda with a red cap. Lucky all year.", gimmick: { text: "Swish" } },
+    { id: 'golden', name: "Redcap Oranda", jp: "タンチョウ", rarity: 'secret', desc: "The one nobody can scoop: a fat white oranda with a red cap, swimming in the lantern light.", gimmick: { text: "Swim" } },
   ],
 };

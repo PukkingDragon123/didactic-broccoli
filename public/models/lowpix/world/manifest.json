@@ -388,6 +388,24 @@
   ],
   "bytes": 73040
  },
+ "broombin": {
+  "id": "broombin",
+  "name": "mk broom bin",
+  "src": "art/lowpix/world/made/broombin.glb",
+  "title": "mk broom bin",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/broombin.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 114,
+  "tex": 512,
+  "size": [
+   0.293,
+   0.96,
+   0.3
+  ],
+  "bytes": 12280
+ },
  "bucket": {
   "id": "bucket",
   "name": "Metal bucket",
@@ -571,6 +589,24 @@
    0.936
   ],
   "bytes": 58776
+ },
+ "capsulereturn": {
+  "id": "capsulereturn",
+  "name": "capsule return",
+  "src": "art/lowpix/world/made/capsulereturn.glb",
+  "title": "capsule return",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/capsulereturn.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 48,
+  "tex": 368,
+  "size": [
+   0.34,
+   0.62,
+   0.31
+  ],
+  "bytes": 42588
  },
  "cardboard_bundle": {
   "id": "cardboard_bundle",
@@ -1105,6 +1141,24 @@
   ],
   "bytes": 25536
  },
+ "coinchanger": {
+  "id": "coinchanger",
+  "name": "coin changer",
+  "src": "art/lowpix/world/made/coinchanger.glb",
+  "title": "coin changer",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/coinchanger.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 84,
+  "tex": 512,
+  "size": [
+   0.4,
+   1.28,
+   0.41
+  ],
+  "bytes": 40880
+ },
  "cointray": {
   "id": "cointray",
   "name": "Coin tray (カルトン)",
@@ -1232,6 +1286,42 @@
    0.917
   ],
   "bytes": 118348
+ },
+ "dagashirack": {
+  "id": "dagashirack",
+  "name": "dagashi rack",
+  "src": "art/lowpix/world/made/dagashirack.glb",
+  "title": "dagashi rack",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/dagashirack.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 132,
+  "tex": 512,
+  "size": [
+   0.99,
+   1.215,
+   0.5
+  ],
+  "bytes": 43344
+ },
+ "dairycase": {
+  "id": "dairycase",
+  "name": "mk dairy case",
+  "src": "art/lowpix/world/made/dairycase.glb",
+  "title": "mk dairy case",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/dairycase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 156,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.72,
+   0.58
+  ],
+  "bytes": 53536
  },
  "dartboard": {
   "id": "dartboard",
@@ -1862,6 +1952,24 @@
   ],
   "bytes": 12156
  },
+ "kamidana": {
+  "id": "kamidana",
+  "name": "mk kamidana",
+  "src": "art/lowpix/world/made/kamidana.glb",
+  "title": "mk kamidana",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kamidana.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 100,
+  "tex": 512,
+  "size": [
+   0.749,
+   0.405,
+   0.283
+  ],
+  "bytes": 16304
+ },
  "kettle": {
   "id": "kettle",
   "name": "Old Tea Kettle",
@@ -2229,6 +2337,24 @@
    1.108
   ],
   "bytes": 51924
+ },
+ "milkcarton": {
+  "id": "milkcarton",
+  "name": "milk carton",
+  "src": "art/lowpix/world/made/milkcarton.glb",
+  "title": "milk carton",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 28,
+  "tex": 208,
+  "size": [
+   0.072,
+   0.21,
+   0.077
+  ],
+  "bytes": 5136
  },
  "minifridge": {
   "id": "minifridge",
@@ -3054,6 +3180,24 @@
   ],
   "bytes": 72648
  },
+ "puffbox": {
+  "id": "puffbox",
+  "name": "mk puff box",
+  "src": "art/lowpix/world/made/puffbox.glb",
+  "title": "mk puff box",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/puffbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 36,
+  "tex": 512,
+  "size": [
+   0.21,
+   0.23,
+   0.14
+  ],
+  "bytes": 25012
+ },
  "rack_worn": {
   "id": "rack_worn",
   "name": "Worn Metal Rack",
@@ -3595,6 +3739,24 @@
   ],
   "bytes": 33408
  },
+ "showcase": {
+  "id": "showcase",
+  "name": "shop counter",
+  "src": "art/lowpix/world/made/showcase.glb",
+  "title": "shop counter",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/showcase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 96,
+  "tex": 512,
+  "size": [
+   1.6,
+   0.96,
+   0.56
+  ],
+  "bytes": 56452
+ },
  "sofa_02": {
   "id": "sofa_02",
   "name": "Sofa 02",
@@ -4111,6 +4273,24 @@
   ],
   "bytes": 19716
  },
+ "tubebox": {
+  "id": "tubebox",
+  "name": "tube box",
+  "src": "art/lowpix/world/made/tubebox.glb",
+  "title": "tube box",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/tubebox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 12,
+  "tex": 512,
+  "size": [
+   1.22,
+   0.04,
+   0.045
+  ],
+  "bytes": 11736
+ },
  "tv_wood": {
   "id": "tv_wood",
   "name": "Television 01",
@@ -4312,6 +4492,24 @@
    0.239
   ],
   "bytes": 62472
+ },
+ "watchcase": {
+  "id": "watchcase",
+  "name": "mk watch case",
+  "src": "art/lowpix/world/made/watchcase.glb",
+  "title": "mk watch case",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/watchcase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 24,
+  "tex": 512,
+  "size": [
+   0.21,
+   0.17,
+   0.16
+  ],
+  "bytes": 16460
  },
  "waterheater": {
   "id": "waterheater",

@@ -204,7 +204,11 @@ export class Human {
     const d2 = (dx * dx + dy * dy + dz * dz) / Math.max(0.3, cam.zoom || 1) ** 2;
     const far = this.mesh.geometry === this.geoFar;
     const want = d2 > (far ? LOD_FAR * 0.9 : LOD_FAR) ** 2;
-    if (want !== far) this.mesh.geometry = want ? this.geoFar : this.geoNear;
+    if (want === far) return;
+    const g = want ? this.geoFar : this.geoNear;
+    this.mesh.geometry = g;
+    // twins that share the body mesh (a depth pre-pass, an outline) follow along
+    for (const ch of this.mesh.children) if (ch.isSkinnedMesh && (ch.geometry === this.geoNear || ch.geometry === this.geoFar)) ch.geometry = g;
   }
   /** Advance the detailed paint job a little; returns true when finished. */
   stepPaint() {

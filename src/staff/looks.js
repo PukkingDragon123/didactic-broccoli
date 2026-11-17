@@ -9,6 +9,7 @@
 //   portrait(game, look, { size, uniform })    -> data: URL (cached; renders once, ~a frame's work)
 //   portraitLater(game, look, cb)              queue a portrait so pages never hitch (cb(url) when ready)
 import * as THREE from 'three';
+import { bakedVoxelMesh } from '../people/voxbake.js';
 import { Human } from '../people/Human.js';
 import { makeSpec } from '../people/presets.js';
 import { dressHuman } from '../people/cosmetics.js';
@@ -51,7 +52,7 @@ function geo(key, build) {
   return g;
 }
 function vmesh(key, build) {
-  const m = new THREE.Mesh(geo(key, build), voxelMaterials('normal'));
+  const m = bakedVoxelMesh(geo(key, build), voxelMaterials('normal'));
   m.castShadow = true; m.receiveShadow = true; m.raycast = () => {};
   return m;
 }

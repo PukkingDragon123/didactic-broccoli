@@ -1,0 +1,88 @@
+{
+ "id": "dairycase",
+ "src": "art/lowpix/world/made/dairycase.glb",
+ "credit": {
+  "title": "mk dairy case",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/dairycase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 156,
+ "tex": 512,
+ "size": [
+  0.9,
+  1.72,
+  0.58
+ ],
+ "colours": 46,
+ "palette": {
+  "m0": [
+   "#5c0c2a",
+   "#76112f",
+   "#8f1831",
+   "#a72030",
+   "#be282e",
+   "#d1423b",
+   "#d66d5d",
+   "#db927f",
+   "#e2b29e"
+  ],
+  "m1": [
+   "#831c3e",
+   "#a82848",
+   "#cb354e",
+   "#d25f68",
+   "#da8787",
+   "#dd9f9a",
+   "#e1b4ab",
+   "#e5c7bd",
+   "#ead7cd"
+  ],
+  "m2": [
+   "#131a62",
+   "#1b2c7e",
+   "#244299",
+   "#2e5cb2",
+   "#3c78c8",
+   "#5a95cc",
+   "#77add2",
+   "#93c2d8",
+   "#aed4e0"
+  ],
+  "m3": [
+   "#7f6f4f",
+   "#9f936e",
+   "#b6b096",
+   "#ceccbd",
+   "#e8e8e2",
+   "#eaeae7",
+   "#ededeb",
+   "#f0f0ef",
+   "#f3f3f3"
+  ],
+  "m4": [
+   "#7c3207",
+   "#9f4f0c",
+   "#c17012",
+   "#e19619",
+   "#e6b43c",
+   "#e7c95a",
+   "#e8da76",
+   "#eae792",
+   "#eeeead"
+  ],
+  "m5": [
+   "#172072",
+   "#213692",
+   "#2c50b1",
+   "#3c6eca",
+   "#6091d0",
+   "#79a8d4",
+   "#90bcd8",
+   "#a7cdde",
+   "#bddbe4"
+  ]
+ },
+ "warnings": []
+}

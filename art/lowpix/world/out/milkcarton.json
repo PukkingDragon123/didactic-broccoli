@@ -1,0 +1,55 @@
+{
+ "id": "milkcarton",
+ "src": "art/lowpix/world/made/milkcarton.glb",
+ "credit": {
+  "title": "milk carton",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 28,
+ "tex": 208,
+ "size": [
+  0.072,
+  0.21,
+  0.077
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#0c1460",
+   "#11257c",
+   "#183a96",
+   "#1f52b0",
+   "#286ec8",
+   "#408ed5",
+   "#62a9d9",
+   "#82c1dd",
+   "#a1d4e3"
+  ],
+  "m1": [
+   "#26234b",
+   "#30315f",
+   "#3e4373",
+   "#4d5785",
+   "#5d6c97",
+   "#7485a4",
+   "#8d9cb0",
+   "#a5b1bc",
+   "#bcc4ca"
+  ],
+  "m2": [
+   "#957b49",
+   "#b3a26e",
+   "#c8c19d",
+   "#dfddc9",
+   "#f8f8f4",
+   "#f9f9f6",
+   "#fafaf7",
+   "#fafaf9",
+   "#fbfbfb"
+  ]
+ },
+ "warnings": []
+}

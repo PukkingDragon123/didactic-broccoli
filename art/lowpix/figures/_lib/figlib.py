@@ -658,11 +658,11 @@ class Fig:
         s.stamp(pid, ["dd", "hd"], {"d": f"{R}:1", "h": f"{R}:4"}, face="right", at="center")
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
-    def model(s, name, src, h=None, w=None, d=None, at=(0, 0, 0), yaw=0, pitch=0, roll=0, tris=5000, mat="matte",
-              drop=None, keep=None, box=None, level=False, cut=0.0, ramps=None, smooth=None, dark=False, **bad):
+    def model(s, name, src, h=None, w=None, d=None, L=None, at=(0, 0, 0), yaw=0, pitch=0, roll=0, tris=5000, mat="matte",
+              drop=None, keep=None, box=None, level=False, cut=0.0, rest=False, ramps=None, smooth=None, dark=False, **bad):
         """A real model, converted at its final size so its texels are the line's DENS px/mm: scaled (before
         conversion, never after) to the largest size that keeps it, turned by pitch/yaw/roll (degrees, XYZ), within
-        h (height), w (x) and d (z) mm, and stood with the bottom centre of its turned bounds at `at`.
+        h (height), w (x), d (z) and L (its longest side across the shelf) mm, and stood with the bottom centre of its turned bounds at `at`.
         No recolouring: a recolour is a finish of a figure (the game's finish system), never a new entry.
         Returns the placed bounds (Box)."""
         assert not bad, f"model(): unsupported {sorted(bad)} (one finish for the line; recolor / fit are gone)"
@@ -672,7 +672,7 @@ class Fig:
         R = _rot(pitch, yaw, roll)
         C = np.array([[x, y, z] for x in (-w0 / 2, w0 / 2) for y in (0, h0) for z in (-d0 / 2, d0 / 2)]) @ R.T
         ext = C.max(0) - C.min(0)
-        k = min(v / e for v, e in ((w, ext[0]), (h, ext[1]), (d, ext[2])) if v)
+        k = min(v / e for v, e in ((w, ext[0]), (h, ext[1]), (d, ext[2]), (L, max(ext[0], ext[2]))) if v)
         lo, hi = C.min(0) * k, C.max(0) * k
         pos = [at[0] - (lo[0] + hi[0]) / 2, at[1] - lo[1], at[2] - (lo[2] + hi[2]) / 2]
         m = {"name": name, "src": src, "height": round(h0 * k, 3), "pos": r1(pos), "yaw": yaw, "pitch": pitch, "roll": roll,
@@ -696,6 +696,9 @@ class Fig:
             m["level"] = 2  # (the levelling method version: part of the conversion key)
         if cut:  # an uneven scanned underside sliced flat (this share of the height), so it sits without rocking
             m["cut"] = cut
+        if rest:  # settled after conversion the way it lies on a shelf (make.py: rest_R, then re-stood at `at`)
+            m["rest"] = True
+            m["at"] = r1(list(at))
         s.meta.setdefault("models", []).append(m)
         box = Box(at[0] - (hi[0] - lo[0]) / 2, at[1], at[2] - (hi[2] - lo[2]) / 2,
                   at[0] + (hi[0] - lo[0]) / 2, at[1] + hi[1] - lo[1], at[2] + (hi[2] - lo[2]) / 2)

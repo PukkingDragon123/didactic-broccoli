@@ -11,7 +11,7 @@
   {
    "name": "fly",
    "src": "sketchfab:fa3e5f2704904218a0e971e4edf63e20",
-   "height": 12.209,
+   "height": 10.292,
    "pos": [
     0.0,
     22.0,
@@ -22,7 +22,7 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "eacabdf1034aef"
+   "key": "c95a0a95d2cf9a"
   }
  ],
  "base": {

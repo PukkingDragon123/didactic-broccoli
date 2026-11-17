@@ -115,12 +115,15 @@ export function hairSegments(spec, P, J) {
     }
     // ring s (0 = crown .. 1 = hem) on column k
     const point = (k, s) => {
-      const a = A(k), th = colTh[k], yh = colHem[k];
+      const a = A(k), yh = colHem[k];
       const y = P.crown - (P.crown - yh) * s * s;
+      // short cuts taper to the skin at the nape and over the ears (a fade), thick fringes stay thick
+      const Aa = Math.abs(Math.atan2(Math.sin(a), Math.cos(a)));
+      const th = colTh[k] * (sty.mode === 'follow' && !sty.blunt && Aa > 0.9 ? lerp(0.3, 1, smooth((y - yh) / (0.14 * hu))) : 1);
+      if (covered && y > yBand + 0.005 * hu) return head.at(a, y, 0.002 * hu); // tucked under the hat
       if (sty.mode === 'follow' || y >= yFall || covered) {
-        const yy = covered ? Math.min(y, yBand + 0.01 * hu) : y;
-        const p = head.at(a, Math.max(yy, P.chin + 0.12 * hu), th);
-        if (yy < P.chin + 0.12 * hu) p[1] = yy;
+        const p = head.at(a, Math.max(y, P.chin + 0.12 * hu), th);
+        if (y < P.chin + 0.12 * hu) p[1] = y;
         return p;
       }
       // falling free below the widest part of the head
@@ -181,16 +184,16 @@ export function hairSegments(spec, P, J) {
       const cy = P.crown - 0.2 * hu, cz = zb - 0.06 * hu, r = 0.14 * hu;
       S.push(vtubeH({ part: 'bun', mat: 'hair', N: 14, lodMinN: 8, dens: 1.1, meta: { kind: 'bun', seed } }, [-1, -0.8, -0.4, 0, 0.4, 0.8, 1], (u) => ({ y: cy + u * r * 0.85, hx: r * Math.sqrt(1 - u * u * 0.96), hz: r * 0.9 * Math.sqrt(1 - u * u * 0.96), cz: cz + u * 0.02 * hu }), W1('head')));
     } else if (st === 'pompadour') {
-      // a towering quiff over the brow, combed up and forward like a prow
-      const vol = spec.hair.volume || 1, base = head.at(0, P.hairY, shellTh);
-      const path = [];
-      const pts = [[0, -0.06], [0.06, 0.05], [0.16, 0.13], [0.26, 0.17], [0.34, 0.15], [0.39, 0.08], [0.4, 0.02]];
-      pts.forEach(([u, v], i) => {
-        const r = 0.22 * hu * vol * (i === 0 ? 0.6 : i === pts.length - 1 ? 0.25 : 1 - i * 0.07);
-        path.push({ c: [0, base[1] + 0.06 * hu + v * hu * vol * 1.4, base[2] - 0.32 * hu + u * hu * vol * 1.1], s: { hx: P.hw * (0.92 - i * 0.06), hzF: r * 0.55, hzB: r * 0.55, p: 2.6 }, w: W1('head') });
-      });
-      path.push({ c: [0, path[pts.length - 1].c[1] - 0.03 * hu, path[pts.length - 1].c[2] + 0.01 * hu], s: { hx: P.hw * 0.3, hzF: 0.02 * hu, hzB: 0.02 * hu }, w: W1('head') });
-      S.push(ptubeH({ part: 'quiff', mat: 'hair', N: 14, lodMinN: 8, dens: 1.0, meta: { kind: 'quiff', seed } }, path, [0, 1, 0]));
+      // a towering roll of hair over the brow, combed up and jutting forward like a ship's prow (a loft across the head)
+      const vol = spec.hair.volume || 1, f = head.at(0, P.hairY, shellTh);
+      const path = [], n = 8;
+      for (let i = 0; i <= n; i++) {
+        const t = i / n, x = (t * 2 - 1) * P.hw * 0.86, e = Math.sin(t * Math.PI);
+        const k = i === 0 || i === n ? 0.05 : 0.35 + 0.65 * Math.pow(e, 0.6);
+        const top = head.at(Math.atan2(x, 0.05), P.crown - 0.05 * hu, shellTh);
+        path.push({ c: [x, lerp(top[1], P.hairY + 0.16 * hu * vol, 0.7) , f[2] - 0.1 * hu + 0.05 * hu * vol * e], s: { hx: 0.15 * hu * vol * k, hzF: 0.26 * hu * vol * k, hzB: 0.16 * hu * k, p: 2.2, pB: 2.4 }, w: W1('head') });
+      }
+      S.push(ptubeH({ part: 'quiff', mat: 'hair', N: 14, lodMinN: 8, dens: 1.0, meta: { kind: 'quiff', seed } }, path, [0, 0.35, 1]));
     } else if (st === 'spiky') {
       const SP = [[0, 0.8, 1.1], [-0.42, 0.72, 1], [0.42, 0.72, 1], [-0.2, 0.35, 1.15], [0.22, 0.38, 1.1], [-0.66, 0.3, 0.9], [0.66, 0.3, 0.9],
         [0, -0.05, 1.1], [-0.45, -0.1, 1], [0.45, -0.1, 1], [-0.25, -0.5, 0.95], [0.25, -0.5, 0.95], [-0.6, -0.42, 0.8], [0.6, -0.42, 0.8], [0, -0.8, 0.85]];
@@ -261,9 +264,9 @@ function ptubeH(o, path, up) {
 // ------------------------------------------------------------------ hats
 function hatTubes(spec, P, head, hairTh, yBand) {
   const hu = P.hu, hat = spec.hat.kind, out = [];
-  const th = Math.max(hairTh * 0.9, 0.012 * hu) + 0.012 * hu;
+  const th = Math.max(hairTh * 0.45, 0.01 * hu) + 0.012 * hu;
   // a crown that fits over the skull + hair from the band up, closed at the top (shape: top lift, front tilt)
-  const crown = (part, lift, round, fwd = 0, N = 22) => {
+  const crown = (part, lift, round, fwd = 0, N = 22, flat = false) => {
     const M = 7, rings = [];
     for (let i = 0; i <= M; i++) {
       const s = i / M; // 0 = band .. 1 = top
@@ -275,8 +278,13 @@ function hatTubes(spec, P, head, hairTh, yBand) {
         // squash towards the top into a domed lid
         const sec = head.sec(Math.min(y, P.crown - 0.002 * hu)), k2 = s ** 3 * (1 - round);
         p[0] *= 1 - k2 * 0.15; p[2] = sec.cz + (p[2] - sec.cz) * (1 - k2 * 0.12) + fwd * s * hu;
-        p[1] = i === M ? P.crown + th + lift : p[1] + lift * s * s;
+        p[1] = i === M ? P.crown + th + lift * 0.9 : p[1] + lift * s * s;
         if (i === M) { p[0] = 0; p[2] = sec.cz + fwd * hu; }
+        if (flat) { // a flat cap: the crown pressed down flat and pulled forward over the brow
+          const yc = P.crown + th - 0.035 * hu;
+          if (p[1] > yc) p[1] = yc + (p[1] - yc) * 0.22;
+          p[2] += 0.06 * hu * s * s * (0.6 + 0.4 * Math.max(0, Math.cos(a)));
+        }
         pts.push(p);
       }
       rings.push({ pts, c: [0, pts[0][1], head.sec(Math.min(y, P.crown)).cz], w: W1('head') });
@@ -311,14 +319,14 @@ function hatTubes(spec, P, head, hairTh, yBand) {
     }
     return { ...ptubeH({ part: 'visor', mat: 'hat', N: 10, lodMinN: 9, dens: 1.0, meta: { kind: hat } }, path, [0, 1, 0]) };
   };
-  if (hat === 'cap') { out.push(crown('hatCrown', 0.03 * hu, 0.6, -0.02)); out.push(visor(0.42, 0.8, 0.06)); }
-  else if (hat === 'flatcap') { out.push(crown('hatCrown', -0.01 * hu, 0.15, 0.07)); out.push(visor(0.2, 0.86, 0.05)); }
+  if (hat === 'cap') { out.push(crown('hatCrown', 0.0, 0.7, -0.01)); out.push(visor(0.42, 0.8, 0.06)); }
+  else if (hat === 'flatcap') { out.push(crown('hatCrown', -0.01 * hu, 0.15, 0.04, 22, true)); out.push(visor(0.24, 0.86, 0.06)); }
   else if (hat === 'schoolhat' || hat === 'bucket' || hat === 'sunhat') {
     out.push(crown('hatCrown', 0.06 * hu, hat === 'schoolhat' ? 0.5 : 0.75, 0));
     const w = hat === 'sunhat' ? 0.38 * hu : hat === 'schoolhat' ? 0.24 * hu : 0.2 * hu;
     out.push(brim(w, w, hat === 'sunhat' ? 0.07 * hu : 0.05 * hu));
   } else if (hat === 'hardhat') {
-    out.push(crown('hatCrown', 0.1 * hu, 0.85, 0));
+    out.push(crown('hatCrown', 0.05 * hu, 0.85, 0));
     out.push(brim(0.06 * hu, 0.16 * hu, 0.02 * hu));
   } else if (hat === 'headband') {
     // tenugui headband just above the brows

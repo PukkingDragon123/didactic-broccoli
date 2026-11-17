@@ -143,6 +143,14 @@
   "author": "BizSD",
   "reasons": []
  },
+ "2a850e782dcd483eaa844f8dcb2483f0": {
+  "verdict": "ai-rejected",
+  "name": "Spinning Top - toy",
+  "author": "CMBC",
+  "reasons": [
+   "model text mentions AI: \"AI\"; author: 3/24 recent uploads are AI-tagged"
+  ]
+ },
  "2a94f9c0de5149dfbf9c0bbea1a0ee59": {
   "verdict": "ok",
   "name": "scantest4",

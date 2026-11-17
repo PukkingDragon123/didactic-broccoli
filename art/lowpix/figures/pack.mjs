@@ -25,6 +25,14 @@ function quat(pitch, yaw, roll) { // XYZ euler (degrees) -> quaternion
   const [c1, c2, c3, s1, s2, s3] = [Math.cos(x), Math.cos(y), Math.cos(z), Math.sin(x), Math.sin(y), Math.sin(z)];
   return [s1 * c2 * c3 + c1 * s2 * s3, c1 * s2 * c3 - s1 * c2 * s3, c1 * c2 * s3 + s1 * s2 * c3, c1 * c2 * c3 - s1 * s2 * s3];
 }
+function quatFromMatrix(M) { // 3x3 rotation (rows) -> [x, y, z, w]
+  const [[m00, m01, m02], [m10, m11, m12], [m20, m21, m22]] = M;
+  const t = m00 + m11 + m22;
+  if (t > 0) { const s = 0.5 / Math.sqrt(t + 1); return [(m21 - m12) * s, (m02 - m20) * s, (m10 - m01) * s, 0.25 / s]; }
+  if (m00 > m11 && m00 > m22) { const s = 2 * Math.sqrt(1 + m00 - m11 - m22); return [0.25 * s, (m01 + m10) / s, (m02 + m20) / s, (m21 - m12) / s]; }
+  if (m11 > m22) { const s = 2 * Math.sqrt(1 + m11 - m00 - m22); return [(m01 + m10) / s, 0.25 * s, (m12 + m21) / s, (m02 - m20) / s]; }
+  const s = 2 * Math.sqrt(1 + m22 - m00 - m11); return [(m02 + m20) / s, (m12 + m21) / s, 0.25 * s, (m10 - m01) / s];
+}
 const mulq = (a, b) => [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0], a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
 /** A converted model's pixel-art atlas: the transparent gutters are flattened onto the atlas' mean colour (so mipmaps
  * do not bleed black into the edges) and it stays a lossless PNG (no JPEG ringing on pixel art). No recolouring here:
@@ -78,11 +86,12 @@ for (const series of seriesList) {
     const root = doc.getRoot();
     const mainScene = root.listScenes()[0];
     // real models: merge each converted GLB in under a placed node "model_<name>"
+    let missing = false;
     for (const m of meta.models || []) {
       const key = m.key;
       const dir = resolve(ROOT, 'node_modules/.cache/lowpix-conv', key);
       const g = existsSync(dir) ? readdirSync(dir).find((f) => f.endsWith('.glb')) : null;
-      if (!g) { console.error('missing conversion', m.src, key); continue; }
+      if (!g) { console.error('missing conversion', m.src, key); missing = true; break; }
       const src = await io.read(join(dir, g));
       for (const a of src.getRoot().listAnimations()) a.dispose();
       const sb = getBounds(src.getRoot().listScenes()[0]);
@@ -91,7 +100,8 @@ for (const series of seriesList) {
       for (const t of src.getRoot().listTextures()) await flatten(t);
       const map = mergeDocuments(doc, src);
       const holder = doc.createNode('model_' + m.name);
-      const q = quat(m.pitch || 0, m.yaw || 0, m.roll || 0);
+      let q = quat(m.pitch || 0, m.yaw || 0, m.roll || 0);
+      if (m.rest_R) q = mulq(q, quatFromMatrix(m.rest_R)); // settled on the shelf first, then turned
       holder.setTranslation(m.pos).setRotation(q);
       if (Math.abs(k - 1) > 1e-3) holder.setScale([k, k, k]);
       for (const sc of src.getRoot().listScenes()) {
@@ -102,6 +112,7 @@ for (const series of seriesList) {
       mainScene.addChild(holder);
       meta.mats['model_' + m.name] = m.mat || 'matte';
     }
+    if (missing) { console.error('SKIPPED', `${series}/${id}`, '(a model did not convert)'); continue; }
     if ((meta.models || []).length) await doc.transform(unpartition());
     if (meta.model_clip) modelClip(doc, meta.model_clip);
     const keep = new Set(Object.values(meta.clips || {}));

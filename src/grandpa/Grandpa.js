@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { createHuman, Human } from '../people/index.js';
 import { makeSpec } from '../people/presets.js';
 import { audio } from '../core/audio.js';
-import { caneMesh, fanMesh, CANE_LEN } from './props.js';
+import { caneMesh, fanMesh, CANE_LEN } from './caneFan.js';
 import { VOICE, TTS, NAME_TAG } from './data.js';
 import './poses.js';
 

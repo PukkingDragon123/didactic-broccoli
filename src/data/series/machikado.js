@@ -13,12 +13,10 @@ export default {
   capsule: { colors: [0xc8392b, 0x3a7a5a, 0xefe8dc, 0xe8a83a] },
   items: [
     { id: 'posuto', name: "Round Post Box", jp: "丸ポスト", rarity: 'common', desc: "The red pillar box on the corner, collections at nine and at four." },
-    { id: 'jihanki', name: "Drinks Machine", jp: "ジュースの自販機", rarity: 'common', desc: "Lit up all night at the end of the lane: hot cans on the bottom row, cold on top.", gimmick: { text: "Thump it" } },
+    { id: 'jihanki', name: "Candy Vending Machine", jp: "キャンディー自販機", rarity: 'common', desc: "Push the big button: a capsule of sweets and a tune that sticks for a week.", gimmick: { text: "Thump it" } },
     { id: 'shokasen', name: "Fire Hydrant", jp: "消火栓", rarity: 'common', desc: "Chained caps and flaking paint, guarding the corner for fifty years." },
     { id: 'cone', name: "Roadworks Cone", jp: "工事のコーン", rarity: 'uncommon', desc: "Orange, striped, a little squashed. Somebody has to stand there.", gimmick: { text: "Knock it" } },
-    { id: 'denwa', name: "Phone Booth", jp: "電話ボックス", rarity: 'uncommon', desc: "A glass box with a payphone and a phone book. Ten-yen coins stacked on the shelf." },
-    { id: 'gaito', name: "Street Lamp", jp: "街灯", rarity: 'rare', desc: "The lamp where everyone waited to be picked up, moths and all." },
-    { id: 'busstop', name: "Country Bus Stop", jp: "田舎のバス停", rarity: 'ultra', desc: "A little shelter with a bench and a timetable: one bus in the morning, one at night." },
+    { id: 'denwa', name: "Phone Booth", jp: "電話ボックス", rarity: 'rare', desc: "A glass box with a payphone and a phone book. Ten-yen coins stacked on the shelf." },
     { id: 'golden', name: "Corner Shop Till", jp: "たばこ屋のレジ", rarity: 'secret', desc: "The tobacco shop's brass till: every key clacks, the drawer rings, and the total pops up in the window.", gimmick: { text: "Ring it up" } },
   ],
 };

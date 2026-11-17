@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:170f632b9b294fdabc660ba91894c10a",
+   "height": 27.153,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "gloss",
+   "key": "e490fb49c43411"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "nod",
+  "length": 1.2,
+  "amp": 8,
+  "axis": "y"
+ },
+ "key": "kaiun/maneki"
+}

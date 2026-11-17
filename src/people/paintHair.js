@@ -3,16 +3,17 @@
 // wave a little, each lock rounded (lighter in the middle, a dark gap at its edges), single strands of a neighbouring
 // tone inside it, a broken sheen band where the hair turns towards the light, darker roots and thinner, lighter tips,
 // and every lock ends in its own pointed tip (alpha cut) at the hem.
-import { clamp01, sstep, mixc, G, h2, vnoise, shadeInto, over } from './paintlib.js';
+import { clamp01, sstep, mixc, mixT, G, h2, vnoise, shadeInto, over } from './paintlib.js';
 import { hemAt } from './hair.js';
 
 const INK = [28, 22, 22], WHITE = [244, 242, 236];
 
 export function makeHairPainters(spec, P, fabricK) {
   const hair = spec.hair, hu = P.hu;
-  const col = hair.col, hi = hair.hi;
+  const col = hair.col, hi = mixc(hair.hi, [214, 200, 186], 0.45);
   const dark = mixc(col, [20, 14, 24], 0.55), shadow = mixc(col, [36, 26, 44], 0.3);
   const grey = hair.grey ? 1 : 0;
+  const lum01 = Math.min(1, (col[0] * 0.3 + col[1] * 0.59 + col[2] * 0.11) / 160); // dark hair keeps a subtler sheen
 
   /** Shade one hair texel. u: across strands (px), v: along (px, increasing towards the tips), light: 0..1 form light. */
   function strands(o, u, v, lockW, light, sheen, seed, curl = 0) {
@@ -30,14 +31,14 @@ export function makeHairPainters(spec, P, fabricK) {
     // dark gaps between locks
     if (q < 0.1 || q > 0.94) k *= 0.62;
     k *= 0.55 + 0.6 * light;
-    let c = k < 0.62 ? mixc(dark, shadow, clamp01((k - 0.35) / 0.27)) : k < 0.9 ? mixc(shadow, col, (k - 0.62) / 0.28) : mixc(col, mixc(col, hi, 0.45), clamp01((k - 0.9) / 0.35));
+    let c = k < 0.62 ? mixT(dark, shadow, clamp01((k - 0.35) / 0.27)) : k < 0.9 ? mixT(shadow, col, (k - 0.62) / 0.28) : mixT(col, mixT(col, hi, 0.2), clamp01((k - 0.9) / 0.35));
     o[0] = c[0]; o[1] = c[1]; o[2] = c[2]; o[3] = 255;
     // sheen: a band broken by locks and strands
     if (sheen > 0.02) {
       const b = sheen * (0.45 + 0.7 * Math.sin(Math.PI * q)) * (sh > 0.35 ? 1 : 0.35);
-      if (b > 0.18) over(o, mixc(col, hi, 0.75), Math.min(0.85, b));
+      if (b > 0.18) over(o, mixT(col, hi, 0.5 + 0.25 * lum01), Math.min(0.8, b));
     }
-    if (grey && h2(strand, lock * 3 + (v >> 3), seed + 11) > 0.62) over(o, mixc(WHITE, hi, 0.3), 0.55 * grey);
+    if (grey && h2(strand, lock * 3 + (v >> 3), seed + 11) > 0.62) over(o, mixT(WHITE, hi, 0.3), 0.55 * grey);
     return lock;
   }
 
@@ -61,16 +62,16 @@ export function makeHairPainters(spec, P, fabricK) {
       const tip = hem - h2(lock, 9, M.seed) * 0.03 * hu * jag + Math.abs(q - 0.5) * 2 * 0.022 * hu * (sty.blunt ? 0.3 : 1) * Math.min(1.4, jag + 0.4);
       if (c.y < tip) { o[3] = 0; return; }
       // ends lighter and thinner just above the tip
-      if (c.y < tip + 0.02 * hu) over(o, mixc(col, hi, 0.2), 0.12);
+      if (c.y < tip + 0.02 * hu) over(o, mixT(col, hi, 0.2), 0.12);
     }
     // roots: darker where the shell meets the scalp at the hairline / crown whorl
     const top = c.ny > 0.86;
     if (top) { const cw = G(c.x, c.z - (P.hcz - 0.25 * P.hd), 0.02, 0.02); if (cw > 0.2) { o[0] *= 0.82; o[1] *= 0.82; o[2] *= 0.84; } }
     // a parting line
-    if (sty.part && !sty.tight && !sty.curls && c.ny > 0.35 && c.z > P.hcz - 0.2 * hu) {
-      const px = sty.part * P.hw * 0.32;
-      if (Math.abs(c.x - px) < c.px * 0.7 + 0.002 * (1 - c.ny)) shadeInto(o, spec.skin, 0.72);
-      else if (Math.abs(c.x - px) < c.px * 1.8) { o[0] *= 0.8; o[1] *= 0.8; o[2] *= 0.82; }
+    if (sty.part && !sty.tight && !sty.curls && c.ny > 0.6 && c.z > P.hcz - 0.15 * hu) {
+      const px = sty.part * P.hw * 0.34;
+      if (Math.abs(c.x - px) < c.px * 0.5) shadeInto(o, mixT(spec.skin, col, 0.35), 0.8);
+      else if (Math.abs(c.x - px) < c.px * 1.6) { o[0] *= 0.82; o[1] *= 0.82; o[2] *= 0.84; }
     }
     if (M.covered) { o[0] *= 0.9; o[1] *= 0.9; o[2] *= 0.9; }
   }
@@ -90,9 +91,9 @@ export function makeHairPainters(spec, P, fabricK) {
     if (best > r * 0.75 && best < r) k *= 0.8;
     k *= 0.6 + 0.55 * formLight(c);
     k += (id - 0.5) * 0.12;
-    const cc = k < 0.62 ? mixc(dark, shadow, clamp01((k - 0.35) / 0.27)) : k < 0.92 ? mixc(shadow, col, (k - 0.62) / 0.3) : mixc(col, hi, clamp01((k - 0.92) / 0.4) * 0.6);
+    const cc = k < 0.62 ? mixT(dark, shadow, clamp01((k - 0.35) / 0.27)) : k < 0.92 ? mixT(shadow, col, (k - 0.62) / 0.3) : mixT(col, hi, clamp01((k - 0.92) / 0.4) * 0.6);
     o[0] = cc[0]; o[1] = cc[1]; o[2] = cc[2]; o[3] = 255;
-    if (grey && id > 0.5) over(o, mixc(WHITE, hi, 0.3), 0.35);
+    if (grey && id > 0.5) over(o, mixT(WHITE, hi, 0.3), 0.35);
     // the hem: curls, not a straight line
     const M = c.seg.meta, a = Math.atan2(Math.sin(M.A0 + c.lu * Math.PI * 2), Math.cos(M.A0 + c.lu * Math.PI * 2));
     const hem = M.hem(a) - Math.abs(Math.sin(u * 0.55)) * 0.025 * hu;
@@ -142,10 +143,10 @@ export function makeHairPainters(spec, P, fabricK) {
     if (st === 'none') return 0;
     const sec = P.hcz, a = Math.atan2(c.x, c.z - sec * 0.5), A = Math.abs(a);
     if (st === 'bald') {
-      // a horseshoe of short grey hair round the back and sides
-      if (A < 1.25) return 0;
-      const top = P.earTop + 0.13 * hu - (A - 1.25) * 0.03 * hu;
-      return c.y < top && c.y > buzzHem(A) ? sstep(top, top - 0.03 * hu, c.y) : 0;
+      // a horseshoe of short hair round the back and sides, from temple to temple above the ears
+      if (A < 1.2) return 0;
+      const top = P.earTop + 0.09 * hu + Math.sin((A - 1.2) * 1.6) * 0.03 * hu + (vnoise(A * 9, 3, 77) - 0.5) * 0.03 * hu;
+      return c.y < top && c.y > buzzHem(A) ? 1 : 0;
     }
     return c.y > buzzHem(A) ? 1 : 0;
   }
@@ -153,13 +154,19 @@ export function makeHairPainters(spec, P, fabricK) {
     // called after the skin is painted: lays stubble / short hair / hair roots over it
     const cov = scalpCover(c);
     if (cov <= 0) return false;
-    const buzz = st === 'buzz' || st === 'bald' || st === 'spiky' || hat === 'hood';
+    if (st === 'bald') {
+      // short combed hair: little strokes running back, lighter tips at the top edge
+      strands(o, c.i * 1.3, c.j * 0.5, 3, 0.55 + 0.4 * clamp01(c.ny + 0.6), 0.1, 9);
+      return true;
+    }
+    const buzz = st === 'buzz' || st === 'spiky' || hat === 'hood';
     if (buzz) {
       // close-cropped: dense dark dots over skin, denser on top
-      const d = h2(c.i, c.j, 71), d2 = h2(c.i >> 1, c.j >> 1, 72);
-      const dens = (st === 'bald' ? 0.55 : 0.78) * cov;
-      if (d < dens) over(o, d2 > 0.5 ? dark : shadow, 0.55 + 0.35 * d2);
-      if (grey && d > 0.82) over(o, mixc(WHITE, hi, 0.3), 0.5);
+      const d = h2(c.i, c.j, 71), d2 = vnoise(c.i * 0.5, c.j * 0.5, 72);
+      over(o, shadow, (st === 'bald' ? 0.45 : 0.62) * cov); // the cropped hair tints the scalp
+      if (d < 0.6 * cov) over(o, d2 > 0.5 ? dark : mixT(shadow, col, 0.5), 0.5 + 0.4 * d2);
+      if (st !== 'bald' && c.ny > 0.3 && d > 0.9) over(o, mixT(col, hi, 0.5), 0.35 * c.ny); // a little sheen on top
+      if (grey && d > 0.78) over(o, mixT(WHITE, hi, 0.3), 0.5);
       return true;
     }
     // under a shell: plain hair so gaps never show skin
@@ -180,22 +187,22 @@ export function makeHairPainters(spec, P, fabricK) {
       if (c.seg.part === 'hatCrown') {
         const a = Math.atan2(c.x, c.z - P.hcz) / (Math.PI / 3);
         if (Math.abs(a - Math.round(a)) < 0.03 + c.px * 6 * (1 - c.ny * 0.6) && c.lt > 0.05) kk *= 0.8;
-        if (c.ny > 0.97) base = mixc(base, INK, 0.3);
+        if (c.ny > 0.97) base = mixT(base, INK, 0.3);
         if (c.nz > 0.75 && c.lt > 0.25 && c.lt < 0.62 && Math.abs(c.x) < 0.03 * hu * 1.4) base = H0.col2 || WHITE;
         if (c.lt < 0.06) kk *= 0.86; // the sweatband edge
       }
-      if (c.seg.part === 'visor') { if (c.ny < -0.3) base = mixc(base, [40, 70, 50], 0.5); if (Math.abs(((u / 3) % 1) - 0.5) < 0.12 && c.ny > 0.3) kk *= 0.92; }
+      if (c.seg.part === 'visor') { if (c.ny < -0.3) base = mixT(base, [40, 70, 50], 0.5); if (Math.abs(((u / 3) % 1) - 0.5) < 0.12 && c.ny > 0.3) kk *= 0.92; }
     } else if (k === 'flatcap') {
       // wool tweed: herringbone + flecks
       const hb = ((Math.floor(u / 3) % 2 ? u + v : u - v) % 4 + 4) % 4;
       kk *= hb < 2 ? 1.04 : 0.95;
-      if (h2(c.i, c.j, 61) > 0.93) base = mixc(base, h2(c.i, c.j, 62) > 0.5 ? [200, 180, 150] : [80, 60, 50], 0.5);
+      if (h2(c.i, c.j, 61) > 0.965) base = mixT(base, h2(c.i, c.j, 62) > 0.5 ? [170, 150, 124] : [70, 54, 44], 0.35);
       if (c.seg.part === 'visor' && c.ny < -0.3) kk *= 0.75;
     } else if (k === 'sunhat' || k === 'bucket' || k === 'schoolhat') {
       if (k === 'sunhat') { const w = ((u >> 1) + (v >> 1)) % 2; kk *= w ? 1.06 : 0.9; if ((u + v * 3) % 7 === 0) kk *= 0.85; }
       else kk *= ((u + v) % 2) ? 1.02 : 0.96;
       // a ribbon round the crown just above the brim
-      if (c.seg.part === 'hatCrown' && c.lt < 0.22) { base = H0.col2 || mixc(base, INK, 0.35); if (Math.abs(c.lt - 0.22) < 0.03) kk *= 0.8; }
+      if (c.seg.part === 'hatCrown' && c.lt < 0.22) { base = H0.col2 || mixT(base, INK, 0.35); if (Math.abs(c.lt - 0.22) < 0.03) kk *= 0.8; }
       if (c.seg.part === 'brim') { if (c.ny < 0) kk *= 0.72; if (c.lt < 0.08) kk *= 0.85; }
     } else if (k === 'hardhat') {
       kk = 0.8 + 0.3 * light;

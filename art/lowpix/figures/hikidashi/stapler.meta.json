@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:vintage_stapler",
+   "height": 10.491,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "gloss",
+   "key": "02d45bf2a49459"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "hop",
+  "length": 0.6,
+  "amp": 1,
+  "axis": "y"
+ },
+ "key": "hikidashi/stapler"
+}

@@ -1,0 +1,24 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:fa72296b31164928b45b7732fb5bf9ae",
+   "height": 33.624,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "matte",
+   "key": "509614b59816a2"
+  }
+ ],
+ "key": "hikidashi/cup"
+}

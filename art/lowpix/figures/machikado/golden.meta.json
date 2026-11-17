@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:CashRegister_01",
+   "height": 24.263,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "metal",
+   "key": "fa04b726685aa4"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "hop",
+  "length": 0.8,
+  "amp": 1.2,
+  "axis": "y"
+ },
+ "key": "machikado/golden"
+}

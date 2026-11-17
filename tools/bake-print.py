@@ -477,23 +477,52 @@ for i, (src, cap) in enumerate([('local:sakura.jpg', 'APRIL 1987'), (lp('fuji_mo
 SHEETS = {'goods': (G, 'goods:'), 'shop': (S, 'mk:'), 'street': (L, 'lane:')}
 
 
+REGIONS = os.path.join(ROOT, 'src', 'gfx', 'print')  # region maps, imported by src/gfx/printAtlas.js
+GUTTER = 2  # px between panels, filled with each panel's own edge so mip levels don't bleed
+
+
+def pack(ims, width=1024, gutter=GUTTER, alpha=False):
+    """Shelf-pack panels into one sheet -> (sheet, { key: [x, y, w, h] , _size: [W, H] })."""
+    order = sorted(ims, key=lambda i: (-ims[i].height, -ims[i].width))
+    x = y = rh = 0; idx = {}
+    for i in order:
+        w, h = ims[i].size
+        if x + w + gutter > width: x = 0; y += rh + gutter; rh = 0
+        idx[i] = [x + gutter, y + gutter, w, h]; x += w + gutter; rh = max(rh, h)
+    H = y + rh + 2 * gutter
+    H = (H + 3) // 4 * 4
+    out = Image.new('RGBA' if alpha else 'RGB', (width, H), (0, 0, 0, 0) if alpha else (0, 0, 0))
+    for i, (x, y, w, h) in idx.items():
+        im = ims[i].convert(out.mode)
+        if gutter:  # bleed the panel's edge pixels into the gutter
+            big = im.resize((w + 2 * gutter, h + 2 * gutter), Image.NEAREST)
+            big.paste(im, (gutter, gutter))
+            for g in range(gutter):
+                big.paste(im.crop((0, 0, w, 1)), (gutter, g)); big.paste(im.crop((0, h - 1, w, h)), (gutter, h + gutter + g))
+                big.paste(im.crop((0, 0, 1, h)), (g, gutter)); big.paste(im.crop((w - 1, 0, w, h)), (w + gutter + g, gutter))
+            out.paste(big, (x - gutter, y - gutter))
+        out.paste(im, (x, y))
+    idx['_size'] = [width, H]
+    return out, idx
+
+
+def save_sheet(name, out, idx, quality=92):
+    os.makedirs(OUT, exist_ok=True); os.makedirs(REGIONS, exist_ok=True)
+    out.save(os.path.join(OUT, name + '.webp'), quality=quality, method=6, alpha_quality=90)
+    json.dump(idx, open(os.path.join(REGIONS, name + '.json'), 'w'), separators=(',', ':'))
+    print(name, out.size, os.path.getsize(os.path.join(OUT, name + '.webp')) // 1024, 'KB')
+
+
 def bake_sheet(name, width=1024):
     reg, prefix = SHEETS[name]
     ims = {}
     for k, (w, h, fn) in reg.items():
-        P = Panel(w, h, 0xffffff); fn(P); ims[k if k.startswith('rm:') else prefix + k] = P.image()
-    order = sorted(ims, key=lambda i: -ims[i].height)
-    x = y = rh = 0; idx = {}
-    for i in order:
-        w, h = ims[i].size
-        if x + w > width: x = 0; y += rh; rh = 0
-        idx[i] = [x, y, w, h]; x += w; rh = max(rh, h)
-    out = Image.new('RGB', (width, y + rh), (0, 0, 0))
-    for i, (x, y, w, h) in idx.items(): out.paste(ims[i], (x, y))
-    os.makedirs(OUT, exist_ok=True)
-    out.save(os.path.join(OUT, name + '.webp'), quality=94, method=6)
-    json.dump(idx, open(os.path.join(OUT, name + '.json'), 'w'), separators=(',', ':'))
-    print(name, out.size, os.path.getsize(os.path.join(OUT, name + '.webp')) // 1024, 'KB')
+        P = Panel(w, h, 0xffffff); r = fn(P); im = P.image()
+        if callable(getattr(P, 'post', None)): im = P.post(im)
+        ims[k if k.startswith('rm:') else prefix + k] = im
+    alpha = any(im.mode == 'RGBA' for im in ims.values())
+    out, idx = pack(ims, width, alpha=alpha)
+    save_sheet(name, out, idx)
     return out
 
 

@@ -104,6 +104,28 @@ def convert_all(spec_files):
     with cf.ThreadPoolExecutor(jobs) as ex:
         for key, glb, err in ex.map(convert, todo.values()):
             print("convert", key, "ok" if glb else "FAILED " + str(err))
+    # models that settle on the shelf: the resting turn of the converted mesh, and its new standing position
+    import numpy as np
+    from sources import rest_matrix, read_obj
+    from figlib import _rot
+    for f in spec_files:
+        mp = f.replace(".json", ".meta.json")
+        meta = json.load(open(mp))
+        changed = False
+        for m in meta.get("models", []):
+            objs = glob.glob(os.path.join(CONV, m["key"], "*.obj"))
+            if not m.get("rest") or not objs:
+                continue
+            V, Fc = read_obj(objs[0])
+            Rr = rest_matrix(V, Fc)
+            P = V @ (_rot(m.get("pitch", 0), m.get("yaw", 0), m.get("roll", 0)) @ Rr).T
+            lo, hi = P.min(0), P.max(0)
+            at = m["at"]
+            m["rest_R"] = [[round(x, 6) for x in row] for row in Rr.tolist()]
+            m["pos"] = [round(at[0] - (lo[0] + hi[0]) / 2, 3), round(at[1] - lo[1], 3), round(at[2] - (lo[2] + hi[2]) / 2, 3)]
+            changed = True
+        if changed:
+            json.dump(meta, open(mp, "w"), indent=1)
     # attributions
     sp = os.path.join(HERE, "SOURCES.json")
     src = json.load(open(sp)) if os.path.exists(sp) else {}

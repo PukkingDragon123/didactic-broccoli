@@ -1860,6 +1860,138 @@
    "cap": 512,
    "grain": 0.0,
    "smooth": 1.0
+  },
+  {
+   "id": "coinchanger",
+   "src": "art/lowpix/world/made/coinchanger.glb",
+   "h": 1.28,
+   "ppm": 300,
+   "tris": 600,
+   "name": "coin changer",
+   "prop": "coin_changer",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "capsulereturn",
+   "src": "art/lowpix/world/made/capsulereturn.glb",
+   "h": 0.62,
+   "ppm": 300,
+   "tris": 600,
+   "name": "capsule return",
+   "prop": "capsule_return",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "dairycase",
+   "src": "art/lowpix/world/made/dairycase.glb",
+   "h": 1.72,
+   "ppm": 300,
+   "tris": 600,
+   "name": "mk dairy case",
+   "prop": "mk_dairy_case",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "kamidana",
+   "src": "art/lowpix/world/made/kamidana.glb",
+   "h": 0.405,
+   "ppm": 300,
+   "tris": 600,
+   "name": "mk kamidana",
+   "prop": "mk_kamidana",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "watchcase",
+   "src": "art/lowpix/world/made/watchcase.glb",
+   "h": 0.17,
+   "ppm": 500,
+   "tris": 600,
+   "name": "mk watch case",
+   "prop": "mk_watch_case",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "puffbox",
+   "src": "art/lowpix/world/made/puffbox.glb",
+   "h": 0.23,
+   "ppm": 500,
+   "tris": 600,
+   "name": "mk puff box",
+   "prop": "mk_puff_box",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "dagashirack",
+   "src": "art/lowpix/world/made/dagashirack.glb",
+   "h": 1.215,
+   "ppm": 300,
+   "tris": 600,
+   "name": "dagashi rack",
+   "prop": "dagashi_rack",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "showcase",
+   "src": "art/lowpix/world/made/showcase.glb",
+   "h": 0.96,
+   "ppm": 300,
+   "tris": 600,
+   "name": "shop counter",
+   "prop": "shop_counter",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "milkcarton",
+   "src": "art/lowpix/world/made/milkcarton.glb",
+   "h": 0.21,
+   "ppm": 500,
+   "tris": 600,
+   "name": "milk carton",
+   "prop": "milk_carton",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "tubebox",
+   "src": "art/lowpix/world/made/tubebox.glb",
+   "h": 0.04,
+   "ppm": 500,
+   "tris": 600,
+   "name": "tube box",
+   "prop": "tube_box",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "broombin",
+   "src": "art/lowpix/world/made/broombin.glb",
+   "h": 0.96,
+   "ppm": 300,
+   "tris": 600,
+   "name": "mk broom bin",
+   "prop": "mk_broom_bin",
+   "cap": 512,
+   "grain": 0.0,
+   "smooth": 1.0
   }
  ]
 }

@@ -11,6 +11,7 @@
 // `retouch` walks every texel again (the mesh layout is deterministic: same spec -> same faces and rects) and lets a
 // character painter repaint the ones it cares about. Voxel props ride on the bones like the closet cosmetics.
 import * as THREE from 'three';
+import { bakedVoxelMesh } from '../people/voxbake.js';
 import { createHuman } from '../people/index.js';
 import { walkTexels, cursor } from '../people/mesh.js';
 import { dressHuman } from '../people/cosmetics.js';
@@ -249,7 +250,7 @@ const vmesh = (key, build, res = 1) => {
     g.computeBoundingSphere();
     _geo.set(key, g);
   }
-  const m = new THREE.Mesh(g, voxelMaterials('normal'));
+  const m = bakedVoxelMesh(g, voxelMaterials('normal'));
   m.castShadow = true; m.receiveShadow = true; m.raycast = () => {};
   return m;
 };
@@ -342,17 +343,38 @@ function pageTexture() {
 }
 
 /** Rohan's sketchbook (hand-local, metres): spiral-bound kraft cover on one side, the open page on the other. */
+/** A small pixel-art texture painted by f(i, j) -> [r, g, b] (nearest filtered, cached by key). */
+const _ptex = new Map();
+function ptex(key, w, h, f) {
+  let t = _ptex.get(key);
+  if (t) return t;
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const g = cv.getContext('2d'), im = g.createImageData(w, h);
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const c = f(i, j), q = (j * w + i) * 4; im.data[q] = c[0]; im.data[q + 1] = c[1]; im.data[q + 2] = c[2]; im.data[q + 3] = 255; }
+  g.putImageData(im, 0, 0);
+  t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter;
+  _ptex.set(key, t);
+  return t;
+}
+const hh = (i, j, s = 0) => { let x = Math.imul(i * 374761393 + j * 668265263 + s * 1442695041, 1274126177); x ^= x >>> 13; return ((Math.imul(x, 1103515245) >>> 0) % 1000) / 1000; };
+
 function sketchbook() {
   const g = new THREE.Group();
   const W = 0.016, Hb = 0.2, D = 0.155;
-  const cover = new THREE.MeshStandardMaterial({ color: 0x9a7a52, roughness: 0.9 });
+  // kraft-board cover (fibres, scuffed corners, a white label), page edges in thin lines, black wire rings
+  const cover = new THREE.MeshStandardMaterial({ roughness: 0.9, map: ptex('sb-cover', 32, 40, (i, j) => {
+    let k = 0.9 + 0.12 * hh(i >> 1, j, 1) + (hh(i, j, 2) - 0.5) * 0.06;
+    if ((i < 2 || i > 29) && (j < 2 || j > 37)) k *= 0.8;
+    if (i > 8 && i < 24 && j > 6 && j < 12) return j === 9 && i > 10 && i < 22 && (i % 3) ? [70, 64, 60] : [236, 230, 214];
+    return [154 * k, 122 * k, 82 * k];
+  }) });
   const page = new THREE.MeshStandardMaterial({ map: pageTexture(), roughness: 0.95 });
-  const edge = new THREE.MeshStandardMaterial({ color: 0xece4d0, roughness: 0.95 });
+  const edge = new THREE.MeshStandardMaterial({ roughness: 0.95, map: ptex('sb-edge', 16, 32, (i, j) => { const k = (i % 2) ? 0.88 : 1; return [236 * k, 228 * k, 208 * k]; }) });
   // box faces: +x, -x, +y, -y, +z, -z
   const book = new THREE.Mesh(new THREE.BoxGeometry(W, Hb, D), [cover, page, edge, edge, edge, edge]); // the page faces the palm
   book.castShadow = true;
   g.add(book);
-  const ring = new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.4, metalness: 0.6 });
+  const ring = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.6, map: ptex('sb-ring', 8, 4, (i, j) => { const b = j === 0 ? 90 : j === 3 ? 20 : 44; return [b, b, b + 4]; }) });
   for (let k = 0; k < 9; k++) {
     const r = new THREE.Mesh(new THREE.BoxGeometry(W * 1.25, 0.006, 0.006), ring);
     r.position.set(0, Hb / 2 - 0.012 - k * 0.022, -D / 2);
@@ -362,12 +384,14 @@ function sketchbook() {
   return g;
 }
 
-/** The G-pen (hand-local): a slim dark holder with a gold nib. */
+/** The G-pen (hand-local): a slim dark wooden holder with a gold nib. */
 function gpen() {
   const g = new THREE.Group();
-  const holder = new THREE.Mesh(new THREE.BoxGeometry(0.009, 0.13, 0.009), new THREE.MeshStandardMaterial({ color: 0x3a2a24, roughness: 0.6 }));
+  const wood = ptex('gpen-holder', 8, 64, (i, j) => { const k = 0.85 + 0.25 * hh(i, j >> 2, 3) + (j > 54 ? 0.25 : 0); return j > 54 ? [150 * k, 150 * k, 156 * k] : [70 * k, 46 * k, 36 * k]; });
+  const holder = new THREE.Mesh(new THREE.BoxGeometry(0.009, 0.13, 0.009), new THREE.MeshStandardMaterial({ map: wood, roughness: 0.6 }));
   holder.position.y = 0.035;
-  const nib = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.022, 0.004), new THREE.MeshStandardMaterial({ color: 0xd9b25c, roughness: 0.3, metalness: 0.9 }));
+  const nibT = ptex('gpen-nib', 8, 16, (i, j) => { const slit = i === 3 && j > 6; const k = (i === 0 ? 1.2 : i === 7 ? 0.7 : 1) * (j < 3 ? 0.8 : 1); return slit ? [60, 46, 20] : [217 * k, 178 * k, 92 * k]; });
+  const nib = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.022, 0.004), new THREE.MeshStandardMaterial({ map: nibT, roughness: 0.3, metalness: 0.9 }));
   nib.position.y = -0.04;
   g.add(holder, nib);
   g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.raycast = () => {}; } });

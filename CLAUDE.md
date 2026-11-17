@@ -30,8 +30,10 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - **All printed 2D art uses real images**: posters, flyers, packaging, product and drink labels, boxes, menus,
   magazines, signs with pictures, website product shots and gacha display cards are built from real photographs
   (toy cards: a render of the actual in-game toy on a real photo backdrop). Never drawn, procedural or AI-generated
-  imagery. Typography stays original and flat (no glows, gradients, bevels). All names and brands are original
-  (real ones are genre reference only).
+  imagery. Real public-domain / CC0 vintage posters are welcome (brands retouched out); the rest is designed to a
+  graphic-designer standard with free (OFL) print fonts (mincho, gothic, retro display), on real scanned paper
+  (folds, fade, tape, wear). Typography stays flat (no glows, gradients, bevels). All names and brands are original
+  (real ones are genre reference only). Paper UI uses real paper scans too.
 - Real photos come from Google Open Images (CC BY), Wikimedia Commons (PD / CC0 / CC BY) or other CC0 sources, never
   AI images, each credited in CREDITS.md and public/CREDITS.txt.
 - People talk in 8-bit voices (src/people/voice.js).

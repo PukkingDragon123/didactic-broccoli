@@ -10,6 +10,7 @@
 // More catalogue entries are registered by src/cosmetics/catalog.js: they bring their own spec(spec, look) (painted
 // clothes, hats, glasses, bags, shoes), dress(ctx) (voxel parts, see dressHuman) and preview(add) (thumbnails).
 import * as THREE from 'three';
+import { bakedVoxelMesh } from './voxbake.js';
 import { VoxelModel, gloss } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -528,7 +529,7 @@ function hairLift(spec) {
 }
 
 // ------------------------------------------------------------------ dressing a human
-const mesh = (geo) => { const m = new THREE.Mesh(geo, MATS()); m.castShadow = true; m.receiveShadow = true; m.raycast = () => {}; return m; };
+const mesh = (geo) => { const m = bakedVoxelMesh(geo, MATS()); m.castShadow = true; m.receiveShadow = true; m.raycast = () => {}; return m; };
 const pivotGroup = (p, child) => { const g = new THREE.Group(); g.position.set(p[0], p[1], p[2]); if (child) g.add(child); return g; };
 
 /**
@@ -630,12 +631,12 @@ export function dressHuman(h, look = {}) {
   const ctx = { h, P, J, b, spec, U, kx, kz, head, crown, eyes, add, rig, hoodOn, hat, out, face, bag, shoes, lift, eyeY, mesh, pivotGroup };
   for (const c of [out, hat, face, bag, shoes]) if (c?.dress) { try { c.dress(ctx); } catch (e) { console.warn('cosmetic', c.id, e); } }
   // ---- peace-sign fingers (shown by gestures that ask for them: pose.vsign = 'L' | 'R' | 'LR')
-  const sk = spec.skin;
-  const skinMat = new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(sk[0] / 255 * 0.92, sk[1] / 255 * 0.9, sk[2] / 255 * 0.9, THREE.SRGBColorSpace), roughness: 0.85 });
+  // (painted from the person's own atlas: the middle finger's island, so skin, joints and the nail match the hands)
+  const skinMat = h.mat, fGeo = fingerGeoFor(h);
   rig.vsign = ['L', 'R'].map((s) => {
     const g = new THREE.Group(), jh = J['hand' + s], Hh = P.H;
     for (const [dz, a] of [[0.01, -0.26], [-0.004, 0.18]]) {
-      const f = new THREE.Mesh(fingerGeo(), skinMat);
+      const f = new THREE.Mesh(fGeo, skinMat);
       f.scale.set(0.0085 * Hh, 0.052 * Hh, 0.0085 * Hh);
       f.position.set(0, P.tipY + 0.03 * Hh - jh[1], 0.004 * Hh + dz * Hh - jh[2]);
       f.rotation.x = a;
@@ -649,7 +650,7 @@ export function dressHuman(h, look = {}) {
     return g;
   });
   rig.update = (dt) => updateRig(rig, dt);
-  rig.dispose = () => { for (const p of rig.parts) p.removeFromParent(); rig.parts.length = 0; skinMat.dispose(); };
+  rig.dispose = () => { for (const p of rig.parts) p.removeFromParent(); rig.parts.length = 0; if (fGeo !== fingerGeo()) fGeo.dispose(); };
   // drive the rig from the human's own update
   const up = h.update, dis = h.dispose;
   h.update = function (dt, o) { up.call(this, dt, o); rig.update(Math.min(dt, 0.1)); };
@@ -658,6 +659,17 @@ export function dressHuman(h, look = {}) {
   return rig;
 }
 
+/** A unit finger with its UVs on h's middle-finger atlas island (base at the knuckle, the nail at the tip). */
+function fingerGeoFor(h) {
+  const isl = h.faces?.find((f) => f.tube && f.part === 'fingers' && f.fi === 1);
+  if (!isl) return fingerGeo();
+  const g = fingerGeo().clone(), uv = g.attributes.uv, pos = g.attributes.position, A = h.atlas, R = isl.rect;
+  for (let i = 0; i < uv.count; i++) {
+    const u = uv.getX(i), t = -pos.getY(i); // 0 knuckle .. 1 tip
+    uv.setXY(i, (R.x + 1 + u * (R.w - 2)) / A, 1 - (R.y + 1 + (1 - t) * (R.h - 2)) / A);
+  }
+  return g;
+}
 let _finger = null;
 function fingerGeo() {
   // a unit finger hanging down from its knuckle (y 0 .. -1)

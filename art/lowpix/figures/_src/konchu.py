@@ -18,14 +18,14 @@ CUBE = ["^Cube"]                                          # (the scans' colour-c
 
 def kabuto():
     F = Fig(f"{S}/kabuto", "Rhinoceros Beetle", "The king of the summer woods, horn up, polished like a new conker.")
-    F.model("beetle", KABUTO, w=44, d=30, yaw=-30, drop=CUBE, mat="gloss", dark=True, smooth=2.0)
+    F.model("beetle", KABUTO, L=46, yaw=-30, drop=CUBE, mat="gloss", dark=True, smooth=2.0, rest=True)
     F.model_clip("model_beetle", "nod", 1.6, amp=8)
     return F
 
 
 def miyama():
     F = Fig(f"{S}/miyama", "Mountain Stag Beetle", "Golden fuzz on its back and jaws like antlers. Only found high up, early in the morning.")
-    F.model("beetle", MIYAMA, w=44, d=30, yaw=25, drop=CUBE, mat="gloss", smooth=2.0)
+    F.model("beetle", MIYAMA, L=46, yaw=25, drop=CUBE, mat="gloss", smooth=2.0, rest=True)
     F.model_clip("model_beetle", "turn", 2.0, amp=25)
     return F
 
@@ -33,7 +33,7 @@ def miyama():
 def tonbo():
     F = Fig(f"{S}/tonbo", "Giant Dragonfly", "Hovering over the rice paddy, four glass wings and eyes that see everything.")
     top = 22.0
-    F.model("fly", DRAGON, w=46, d=46, at=(0, top, 0), yaw=60)
+    F.model("fly", DRAGON, L=48, at=(0, top, 0), yaw=60)
     clear_stand(F, 0, 0, top + 0.5, "flying: held up on a clear rod")
     F.model_clip("model_fly", "hop", 1.2, amp=1.5)
     return F
@@ -41,14 +41,14 @@ def tonbo():
 
 def kamakiri():
     F = Fig(f"{S}/kamakiri", "Praying Mantis", "Arms folded, head turning to follow you. It is not praying.")
-    F.model("mantis", MANTIS, w=40, d=44, yaw=-60, smooth=2.0)
+    F.model("mantis", MANTIS, L=46, yaw=-60, smooth=2.0, rest=True)
     F.model_clip("model_mantis", "turn", 2.2, amp=20)
     return F
 
 
 def larva():
     F = Fig(f"{S}/larva", "Beetle Grub", "Dug up from the leaf mould, fat and curled. Next summer it will have a horn.")
-    F.model("grub", LARVA, w=32, d=32, yaw=30, drop=CUBE)
+    F.model("grub", LARVA, L=34, yaw=30, drop=CUBE, rest=True)
     F.model_clip("model_grub", "wobble", 1.4, amp=6)
     return F
 
@@ -56,7 +56,7 @@ def larva():
 def ageha():
     F = Fig(f"{S}/ageha", "Swallowtail Butterfly", "Tails on its wings and a dusting of blue, gone the moment you lift the net.")
     top = 24.0
-    F.model("butterfly", BUTTERFLY, w=44, d=40, at=(0, top, 0), yaw=-20, pitch=-15, smooth=1.8)
+    F.model("butterfly", BUTTERFLY, L=44, at=(0, top, 0), yaw=-20, pitch=-15, smooth=2.5)
     clear_stand(F, 0, 0, top + 0.5, "flying: held up on a clear rod")
     F.model_clip("model_butterfly", "hop", 0.8, amp=1.2)
     return F
@@ -64,7 +64,7 @@ def ageha():
 
 def golden():
     F = Fig(f"{S}/golden", "Sakishima Stag Beetle", "From the far southern islands: the widest jaws of any stag beetle in Japan. Collectors wait years.")
-    F.model("beetle", SAKISHIMA, w=48, d=34, yaw=-20, drop=CUBE, mat="gloss", dark=True, smooth=2.0)
+    F.model("beetle", SAKISHIMA, L=50, yaw=-20, drop=CUBE, mat="gloss", dark=True, smooth=2.0, rest=True)
     F.model_clip("model_beetle", "turn", 2.4, amp=30)
     return F
 

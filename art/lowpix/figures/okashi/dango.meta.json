@@ -6,7 +6,7 @@
   {
    "name": "dango",
    "src": "sketchfab:a874a02e5e9c4bcba54173a20c3732e8",
-   "height": 5.761,
+   "height": 5.633,
    "pos": [
     0.0,
     0.0,
@@ -17,7 +17,7 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "7791957c1eb59c"
+   "key": "7df227e51074f2"
   }
  ],
  "key": "okashi/dango"

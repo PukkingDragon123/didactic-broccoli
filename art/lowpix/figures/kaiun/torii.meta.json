@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:e12d2fa1b2b94928b8b87cb7787e2462",
+   "height": 39.65,
+   "pos": [
+    0.0,
+    3.0,
+    0.0
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "matte",
+   "opts": {
+    "smooth": 2.0
+   },
+   "key": "f4e28a6d6182c2"
+  }
+ ],
+ "base": {
+  "family": "shrine",
+  "w": 55.0,
+  "d": 34.0
+ },
+ "stand_why": "a gate on two thin posts: it stands in its granite footing",
+ "key": "kaiun/torii"
+}

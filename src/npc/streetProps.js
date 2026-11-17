@@ -5,6 +5,7 @@
 //   holdIn(h, mesh, side, at)   attach to a hand bone        free(mesh)   detach
 //   canMesh(drinkId)  cigMesh()  bagMesh()  wateringCan()  new Cart()  new StreetDog(game, kind)  new Lead(game)
 import * as THREE from 'three';
+import { bakedVoxelMesh } from '../people/voxbake.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -16,7 +17,7 @@ const _z = new THREE.Vector3(0, 0, 1);
 const cache = new Map();
 const once = (key, fn) => { if (!cache.has(key)) cache.set(key, fn()); return cache.get(key); };
 const vox = (vs, build, pivot = null, origin) => { const v = new VoxelModel(); v.jitter = 0.02; build(v); if (pivot) v.pivot = pivot; return meshVoxels(v, { voxelSize: vs, origin }); };
-const mesh = (geo, cast = true) => { const m = new THREE.Mesh(geo, voxelMaterials('normal')); m.castShadow = cast; return m; };
+const mesh = (geo, cast = true) => { const m = bakedVoxelMesh(geo, voxelMaterials('normal')); m.castShadow = cast; return m; };
 
 /** Attach a mesh to a hand (side 'R' | 'L'), offset in the hand's frame (metres for a 1.72 m adult). */
 export function holdIn(h, m, side = 'R', at = [0, -0.07, 0.02]) {

@@ -6,7 +6,7 @@
   {
    "name": "cake",
    "src": "sketchfab:530b15ed5bbb461982f692bc10966a02",
-   "height": 22.527,
+   "height": 5.513,
    "pos": [
     0.0,
     0.0,
@@ -17,8 +17,12 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
+   "opts": {
+    "smooth": 2.0
+   },
    "level": 2,
-   "key": "fac430b1b46a9d"
+   "cut": 0.04,
+   "key": "334df463a1d1d9"
   }
  ],
  "key": "okashi/dorayaki"

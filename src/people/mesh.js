@@ -146,7 +146,22 @@ function pack(rects, size) {
 }
 
 /** Island position (atlas px) of tube vertex (ring r, column k). */
-const tubeUV = (t, r, k) => [t.rect.x + PAD + t.U[k] * t.dens, t.rect.y + PAD + (t.V[t.V.length - 1] - t.V[r]) * t.dens];
+const tubeUV = (t, r, k) => [t.rect.x + PAD + t.Up[k], t.rect.y + PAD + (t.Vp[t.Vp.length - 1] - t.Vp[r])];
+/** Cumulative metres -> whole texels: every ring / column boundary lands on a texel edge (crisp hems and seams), and every
+ *  non-empty span gets at least one texel. */
+function snapPx(a, dens) {
+  const o = new Int32Array(a.length);
+  for (let i = 1; i < a.length; i++) o[i] = Math.max(o[i - 1] + (a[i] - a[i - 1] > 1e-6 ? 1 : 0), Math.round(a[i] * dens));
+  return o;
+}
+/** Find the span of a snapped array holding pixel coordinate x: [index, fraction]. */
+function spanAt(px, x) {
+  let k = 0;
+  const n = px.length - 1;
+  while (k < n - 1 && px[k + 1] <= x) k++;
+  const w = px[k + 1] - px[k];
+  return [k, w > 0 ? Math.min(1, Math.max(0, (x - px[k]) / w)) : 0];
+}
 
 /**
  * Build the skinned geometry. Returns { geometry, geometryFar, faces, block, tris, trisFar, atlas }: faces (segment faces
@@ -173,7 +188,8 @@ export function buildMesh(plan, size = ATLAS) {
   const sizeAt = (f, scale) => {
     if (f.tube) {
       f.dens = BASE_DENS * scale * (f.dens0 || 1);
-      f.rect = { w: Math.max(2, Math.ceil(f.U[f.nc] * f.dens)) + PAD * 2, h: Math.max(2, Math.ceil(f.V[f.V.length - 1] * f.dens)) + PAD * 2 };
+      f.Up = snapPx(f.U, f.dens); f.Vp = snapPx(f.V, f.dens);
+      f.rect = { w: Math.max(2, f.Up[f.nc]) + PAD * 2, h: Math.max(2, f.Vp[f.Vp.length - 1]) + PAD * 2 };
       return;
     }
     f.dens = BASE_DENS * scale * (f.seg.dens || 1) * (f.seg.mat === 'head' || f.seg.mat === 'ear' ? 1.2 : 1) * (f.kind === 'side' ? 1 : 0.7);
@@ -326,21 +342,17 @@ export function* walkTexels(f, c, fn) {
   if (f.tube) {
     const t = f, R = t.rings, N = t.N, W = t.rect.w, Hh = t.rect.h, Ut = t.U[t.nc], Vt = t.V[t.V.length - 1];
     c.seg = t; c.tube = true; c.rh = Vt;
-    // per column: k, fa; per row: r, ft
-    const ck = new Int32Array(W), cf = new Float32Array(W), cu = new Float32Array(W);
-    for (let i = 0, k = 0; i < W; i++) {
-      const u = Math.min(Ut, Math.max(0, (i - PAD + 0.5) / t.dens));
-      while (k < t.nc - 1 && t.U[k + 1] < u) k++;
-      ck[i] = k; cf[i] = (u - t.U[k]) / (t.U[k + 1] - t.U[k]); cu[i] = u / Ut;
+    // per column: k, fa; per row: r, ft (in snapped texels)
+    const ck = new Int32Array(W), cf = new Float32Array(W), cu = new Float32Array(W), Upn = t.Up[t.nc], Vpn = t.Vp[t.Vp.length - 1];
+    for (let i = 0; i < W; i++) {
+      const [k, fa] = spanAt(t.Up, Math.min(Upn, Math.max(0, i - PAD + 0.5)));
+      ck[i] = k; cf[i] = fa; cu[i] = (t.U[k] + fa * (t.U[k + 1] - t.U[k])) / Ut;
     }
-    const R1 = R.length - 1;
-    for (let j = 0, r = R1 - 1; j < Hh; j++) {
+    for (let j = 0; j < Hh; j++) {
       if (run >= 1200) { run = 0; yield null; }
       run += W;
-      const v = Math.min(Vt, Math.max(0, Vt - (j - PAD + 0.5) / t.dens));
-      while (r > 0 && t.V[r] > v) r--;
-      while (r < R1 - 1 && t.V[r + 1] < v) r++;
-      const ft = Math.min(1, Math.max(0, (v - t.V[r]) / (t.V[r + 1] - t.V[r])));
+      const [r, ft] = spanAt(t.Vp, Math.min(Vpn, Math.max(0, Vpn - (j - PAD + 0.5))));
+      const v = t.V[r] + ft * (t.V[r + 1] - t.V[r]);
       c.rb = v; c.rt = Vt - v; c.lt = v / Vt;
       const A = R[r].pts, B = R[r + 1].pts, NA = t.nrm[r], NB = t.nrm[r + 1];
       for (let i = 0; i < W; i++) {
@@ -388,19 +400,28 @@ void TAU;
 export function texelAt(f, c, i, j) {
   const R = f.rect;
   if (i < R.x || j < R.y || i >= R.x + R.w || j >= R.y + R.h) return false;
-  let hit = false;
-  const it = walkTexelsRows(f, c, j - R.y, j - R.y + 1, (cc) => { if (cc.i === i) { hit = true; return true; } });
-  while (!it.next().done && !hit);
-  return hit;
-}
-/** walkTexels limited to island rows [j0, j1); fn returning true stops the walk. */
-function* walkTexelsRows(f, c, j0, j1, fn) {
-  const R = f.rect, save = R.h;
-  // reuse walkTexels on a temporary window: shift the island rows by faking the rect
-  const sub = Object.create(f);
-  sub.rect = { x: R.x, y: R.y, w: R.w, h: j1 };
-  let stop = false;
-  const it = walkTexels(sub, c, (cc) => { if (!stop && cc.j - R.y >= j0 && fn(cc)) stop = true; });
-  while (!stop && !it.next().done);
-  void save;
+  c.f = f; c.px = 1 / f.dens; c.i = i; c.j = j;
+  if (!f.tube) {
+    c.seg = f.seg; c.tube = false; c.part = f.seg.part; c.nx = f.N[0]; c.ny = f.N[1]; c.nz = f.N[2]; c.kind = f.kind;
+    const sw = f.s1 - f.s0, rh = f.r1 - f.r0, r = f.r1 - (j - R.y - 0.5) / f.dens, s = f.s0 + (i - R.x - 0.5) / f.dens;
+    c.x = f.o[0] + f.U[0] * s + f.V[0] * r; c.y = f.o[1] + f.U[1] * s + f.V[1] * r; c.z = f.o[2] + f.U[2] * s + f.V[2] * r;
+    c.e = sw > 0 ? ((s - f.s0) / sw) * 2 - 1 : 0; c.rb = r - f.r0; c.rt = f.r1 - r; c.rh = rh; c.lu = c.e * 0.5 + 0.5; c.lt = rh > 0 ? c.rb / rh : 0;
+    return true;
+  }
+  const t = f, Rg = t.rings, N = t.N, Ut = t.U[t.nc], Vt = t.V[t.V.length - 1];
+  const Upn = t.Up[t.nc], Vpn = t.Vp[t.Vp.length - 1];
+  const [k, fa] = spanAt(t.Up, Math.min(Upn, Math.max(0, i - R.x - PAD + 0.5)));
+  const [r, ft] = spanAt(t.Vp, Math.min(Vpn, Math.max(0, Vpn - (j - R.y - PAD + 0.5))));
+  const u = t.U[k] + fa * (t.U[k + 1] - t.U[k]), v = t.V[r] + ft * (t.V[r + 1] - t.V[r]), k2 = (k + 1) % N;
+  const w00 = (1 - fa) * (1 - ft), w10 = fa * (1 - ft), w01 = (1 - fa) * ft, w11 = fa * ft;
+  const A = Rg[r].pts, B = Rg[r + 1].pts, NA = t.nrm[r], NB = t.nrm[r + 1];
+  const P3 = [0, 1, 2].map((m) => A[k][m] * w00 + A[k2][m] * w10 + B[k][m] * w01 + B[k2][m] * w11);
+  const N3 = [0, 1, 2].map((m) => NA[k][m] * w00 + NA[k2][m] * w10 + NB[k][m] * w01 + NB[k2][m] * w11);
+  const l = Math.hypot(N3[0], N3[1], N3[2]) || 1;
+  c.seg = t; c.tube = true; c.rh = Vt; c.rb = v; c.rt = Vt - v; c.lt = v / Vt; c.lu = u / Ut;
+  c.x = P3[0]; c.y = P3[1]; c.z = P3[2]; c.nx = N3[0] / l; c.ny = N3[1] / l; c.nz = N3[2] / l;
+  c.kind = c.ny > 0.75 ? 'top' : c.ny < -0.75 ? 'bot' : 'side';
+  const ang = Math.atan2(c.nx, c.nz); c.e = (ang - Math.round(ang / Q) * Q) / (Q / 2);
+  c.part = t.partAt ? t.partAt(c) : t.part;
+  return true;
 }

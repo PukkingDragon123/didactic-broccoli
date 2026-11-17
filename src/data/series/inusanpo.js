@@ -15,7 +15,6 @@ export default {
     { id: 'shiba', name: 'Shiba on a Walk', jp: 'おさんぽ柴犬', rarity: 'common', desc: 'Curled tail, fox face, absolute refusal to go home yet.', gimmick: { text: 'Look back' } },
     { id: 'sitshiba', name: 'Beagle on the Scent', jp: 'においをたどるビーグル', rarity: 'common', desc: 'Nose down, ears flapping, following a smell only it can find.', gimmick: { text: 'Sniff' } },
     { id: 'dachs', name: 'Long Dachshund', jp: 'ながいダックス', rarity: 'common', desc: 'Mostly dog, length-wise. Takes the corner in two instalments.', gimmick: { text: 'Walk on' } },
-    { id: 'pug', name: 'Shar Pei', jp: 'シャー・ペイ', rarity: 'uncommon', desc: 'More wrinkles than dog, and a frown that has seen it all.', gimmick: { text: 'Look round' } },
     { id: 'hachi', name: 'The Loyal Akita', jp: '忠犬の銅像', rarity: 'ultra', desc: 'The bronze dog by the station, still waiting on its pedestal. Pat its nose for luck.' },
     { id: 'netsuke', name: 'Netsuke Puppy', jp: '子犬の根付', rarity: 'secret', desc: "A tiny carved puppy that hung from a merchant's sash two hundred years ago. Rubbed smooth by a thousand thumbs.", gimmick: { text: 'Turn it' } },
   ],

@@ -8,7 +8,7 @@
   {
    "name": "bug",
    "src": "sketchfab:46469c568b3743ec8fb4bb711949d49a",
-   "height": 9.028,
+   "height": 11.784,
    "pos": [
     0.0,
     0.0,
@@ -19,8 +19,11 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "level": 2,
-   "key": "b52fe0c013ca52"
+   "opts": {
+    "smooth": 2.0
+   },
+   "cut": 0.08,
+   "key": "fdcd4062463d33"
   }
  ],
  "model_clip": {

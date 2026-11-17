@@ -1,0 +1,44 @@
+{
+ "id": "watchcase",
+ "src": "art/lowpix/world/made/watchcase.glb",
+ "credit": {
+  "title": "mk watch case",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/watchcase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 24,
+ "tex": 512,
+ "size": [
+  0.21,
+  0.17,
+  0.16
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#2c0e0c",
+   "#381710",
+   "#442115",
+   "#4f2d1b",
+   "#5a3921",
+   "#7e5832",
+   "#a17b44",
+   "#b89c63",
+   "#c6b78a"
+  ],
+  "m1": [
+   "#9d6438",
+   "#be8d58",
+   "#ceb389",
+   "#dfd3b9",
+   "#f3f0e6",
+   "#f4f3ea",
+   "#f5f5ee",
+   "#f7f7f1",
+   "#f9f9f5"
+  ]
+ },
+ "warnings": []
+}

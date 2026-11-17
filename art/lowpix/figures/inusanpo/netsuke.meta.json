@@ -8,7 +8,7 @@
   {
    "name": "puppy",
    "src": "sketchfab:3bf1533c76f94fcd94fe61da58fb4cdc",
-   "height": 30.473,
+   "height": 29.381,
    "pos": [
     0.0,
     0.0,
@@ -19,8 +19,11 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
+   "opts": {
+    "smooth": 2.0
+   },
    "level": 2,
-   "key": "5fc61568bf0134"
+   "key": "e0e5a4255f3d3a"
   }
  ],
  "model_clip": {

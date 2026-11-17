@@ -14,11 +14,9 @@ export default {
   items: [
     { id: 'scooter', name: "Mint Scooter", jp: "ミントのスクーター", rarity: 'common', desc: "The family scooter in mint green, the one that took everyone everywhere.", gimmick: { text: "Ride" } },
     { id: 'keitruck', name: "Kei Truck", jp: "軽トラ", rarity: 'common', desc: "Small, white, unstoppable: carries the whole greengrocer's shop at dawn.", gimmick: { text: "Bump" } },
-    { id: 'van', name: "Delivery Van", jp: "配達バン", rarity: 'common', desc: "The laundry's round-nosed van, two-tone and polished every Sunday.", gimmick: { text: "Bump" } },
     { id: 'bus', name: "Bonnet Bus", jp: "ボンネットバス", rarity: 'uncommon', desc: "The old mountain-line bus with its nose out front. Mind the step." },
     { id: 'patrol', name: "Patrol Car", jp: "パトカー", rarity: 'uncommon', desc: "Black and white, lamp on the roof, parked by the police box all afternoon.", gimmick: { text: "Lights" } },
     { id: 'fire', name: "Fire Engine", jp: "消防車", rarity: 'rare', desc: "Red as a lacquer bowl, bell polished, ladder ready. Out of the way!", gimmick: { text: "Go!" } },
     { id: 'tram', name: "Chin-Chin Tram", jp: "チンチン電車", rarity: 'ultra', desc: "The streetcar that rings its bell at every corner. Ten yen, any distance.", gimmick: { text: "Ring the bell" } },
-    { id: 'golden', name: "Golden Rabbit Scooter", jp: "黄金のスクーター", rarity: 'secret', desc: "A round little scooter plated in gold for the maker's fiftieth birthday.", gimmick: { text: "Spin" } },
   ],
 };

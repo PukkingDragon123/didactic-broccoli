@@ -1,0 +1,44 @@
+{
+ "id": "broombin",
+ "src": "art/lowpix/world/made/broombin.glb",
+ "credit": {
+  "title": "mk broom bin",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/broombin.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 114,
+ "tex": 512,
+ "size": [
+  0.293,
+  0.96,
+  0.3
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#404858",
+   "#576170",
+   "#6f7b86",
+   "#8b9399",
+   "#a6aaac",
+   "#b4b5b5",
+   "#c1c1c1",
+   "#cccccc",
+   "#d8d8d8"
+  ],
+  "m1": [
+   "#532f1d",
+   "#6a4428",
+   "#815b35",
+   "#967342",
+   "#aa8c50",
+   "#b4a16a",
+   "#bdb484",
+   "#c7c49e",
+   "#d3d3b6"
+  ]
+ },
+ "warnings": []
+}

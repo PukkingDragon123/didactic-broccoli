@@ -77,7 +77,8 @@ def lid_texels(tex, rect, c, axis, r, upper, tilt, colour_at, rim_cols, az=1.5, 
                 continue
             d = (f * np.cos(a) + s * np.sin(a)) * np.cos(e) + up * np.sin(e) * sg
             # the skin colour a little beyond the lid (the lid closes with the fur round the eye on it)
-            col = np.array(colour_at(c + d * r * 1.25), np.float32)
+            col = np.array(colour_at(c + d * r * 1.6), np.float32)
+            if col.mean() < 40: col = np.array(colour_at(c + d * r * 2.0), np.float32)
             if rng.random() < 0.12: col *= 0.88
             tex[y0 + yy, x0 + xx] = np.clip(col, 0, 255)
 

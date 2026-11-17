@@ -54,7 +54,10 @@ SAME = 6                                # two texels are "the same colour" when 
 
 def catalogue(series):
     src = open(os.path.join(ROOT, "src", "data", "series", series + ".js")).read()
-    return re.findall(r"\{\s*id:\s*'([^']+)',\s*name:\s*'((?:[^'\\]|\\.)*)'.*?rarity:\s*'(\w+)'", src)
+    out = []
+    for m in re.finditer(r"\{\s*id:\s*['\"]([^'\"]+)['\"],\s*name:\s*(\"(?:[^\"\\]|\\.)*\"|'(?:[^'\\]|\\.)*').*?rarity:\s*'(\w+)'", src):
+        out.append((m.group(1), m.group(2)[1:-1], m.group(3)))
+    return out
 
 
 def all_series():

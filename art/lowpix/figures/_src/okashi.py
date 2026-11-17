@@ -28,13 +28,13 @@ def taiyaki():
 
 def dorayaki():
     F = Fig(f"{S}/dorayaki", "Dorayaki", "Two honey pancakes and the red bean between them.")
-    F.model("cake", DORAYAKI, w=30, d=30, yaw=-35)
+    F.model("cake", DORAYAKI, w=30, d=30, yaw=-35, level=True, cut=0.04, smooth=2.0)
     return F
 
 
 def sakura():
     F = Fig(f"{S}/sakura", "Sakura Mochi", "Pink rice round sweet bean, wrapped in a salted cherry leaf. Eat the leaf.")
-    F.model("mochi", SAKURA, w=30, d=30, yaw=0)
+    F.model("mochi", SAKURA, w=30, d=30, yaw=0, smooth=2.0)
     return F
 
 

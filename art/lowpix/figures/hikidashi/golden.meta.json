@@ -1,0 +1,57 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:vintage_pocket_watch",
+   "height": 12.0,
+   "pos": [
+    -0.027,
+    0.0,
+    0.044
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "metal",
+   "cut": 0.06,
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "715194123bb8d9",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 25,
+  "axis": "y"
+ },
+ "key": "hikidashi/golden"
+}

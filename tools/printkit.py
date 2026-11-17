@@ -351,3 +351,250 @@ def _draw_ean(im, x, y, d12, h, ink, bg, digits):
         d.text((x - 6, y + h), code[0], font=f, fill=rgb(ink))
         for i, c in enumerate(code[1:7]): d.text((x + 4 + i * 7, y + h), c, font=f, fill=rgb(ink))
         for i, c in enumerate(code[7:]): d.text((x + 50 + i * 7, y + h), c, font=f, fill=rgb(ink))
+
+
+# ================================================================== pixel type (the game's fonts, set on whole pixels)
+# The owner's rule for every printed thing: kana and kanji in DotGothic16, Latin in the game's own fonts (Alagard, and
+# the hand-made 5 x 7 bitmap font for tiny print). They are set AFTER the photo work is reduced to the output size, at
+# their native pixel grid (DotGothic16 / Alagard at 16, 32, 48 px; 5x7 at whole scales), thresholded to hard edges:
+# crisp under nearest filtering, no smoothing, no effects. Smaller than 16 px, DotGothic16 is drawn at 16 and reduced
+# with a box filter to grey small print (too small to read in the world, just as on a real pack).
+#   P.ptext(s, x, y, fill, size=16, face='dot'|'ala'|'b5', anchor='lt', vert=False, track=0, outline=None, maxw=None)
+#   ptext_w(s, size, face) -> width in px
+DOT = ('dotgothic16/DotGothic16-Regular.ttf', None)
+ALAGARD = os.path.join(ROOT, 'src', 'assets', 'fonts', 'alagard.woff2')
+_pfonts = {}
+
+
+def _pfont(face, px):
+    k = (face, px)
+    if k not in _pfonts:
+        if face == 'dot': p = fetch(GF + DOT[0], os.path.join(CACHE, 'fonts', 'DotGothic16-Regular.ttf'))
+        elif face == 'ala': p = ALAGARD
+        else: raise ValueError(face)
+        _pfonts[k] = ImageFont.truetype(p, px)
+    return _pfonts[k]
+
+
+_B5 = None
+def _b5():
+    """The 5 x 7 bitmap glyphs, read from src/gfx/font5x7.js (one source of truth)."""
+    global _B5
+    if _B5 is None:
+        import re
+        src = open(os.path.join(ROOT, 'src', 'gfx', 'font5x7.js'), encoding='utf-8').read()
+        body = src[src.index('const GLYPHS'):src.index('};', src.index('const GLYPHS'))]
+        _B5 = {}
+        for m in re.finditer(r"(?:'((?:\\'|[^'])+)'|\"([^\"]+)\"|([A-Za-z0-9]))\s*:\s*'([.#|]+)'", body):
+            ch = (m.group(1) or m.group(2) or m.group(3)).replace("\\'", "'")
+            _B5[ch] = m.group(4).split('|')
+    return _B5
+
+
+def _is_cjk(s):
+    return any(ord(c) > 0x2e7f for c in s)
+
+
+def _mask_b5(s, scale=1, track=1):
+    G = _b5(); s = s.upper()
+    al = {'’': "'", '‘': "'", '“': '"', '”': '"', '–': '-', '—': '-', '…': '...', 'É': 'E', '〜': '-', '～': '-'}
+    s = ''.join(al.get(c, c) for c in s)
+    rows = [G.get(c) or G.get('?') for c in s]
+    w = sum(len(r[0]) + track for r in rows) - track if rows else 1
+    m = Image.new('L', (max(1, w * scale), 7 * scale), 0); d = ImageDraw.Draw(m); x = 0
+    for r in rows:
+        for j, row in enumerate(r):
+            for i, c in enumerate(row):
+                if c == '#': d.rectangle((x + i * scale, j * scale, x + (i + 1) * scale - 1, (j + 1) * scale - 1), fill=255)
+        x += (len(r[0]) + track) * scale
+    return m
+
+
+def _mask_ttf(s, face, size, track=0, vert=False):
+    """A hard-edged mask of a line set in a pixel font at its grid (size: a multiple of 16 for crisp, else reduced)."""
+    grid = 16
+    real = size if size >= grid else grid
+    real = int(round(real / grid) * grid) if size >= grid else grid
+    f = _pfont(face, real)
+    asc, desc = f.getmetrics()
+    if vert:
+        cells = []
+        for ch in s:
+            m = _mask_ttf(ch, face, real, 0, False)
+            if ch in 'ー〜～ー（）()「」-―…': m = m.rotate(-90, expand=True)
+            cells.append(m)
+        W = max(c.width for c in cells); H = sum(c.height for c in cells) + int(track) * (len(cells) - 1) + (len(cells) - 1) * max(1, real // 16)
+        out = Image.new('L', (W, H), 0); y = 0
+        for c in cells: out.paste(c, ((W - c.width) // 2, y)); y += c.height + int(track) + max(1, real // 16)
+        m = out
+    else:
+        if track:
+            parts = [_mask_ttf(ch, face, real, 0, False) if ch != ' ' else Image.new('L', (real // 2, 1), 0) for ch in s]
+            W = sum(p.width for p in parts) + int(track) * (len(parts) - 1); H = max(p.height for p in parts)
+            m = Image.new('L', (max(1, W), H), 0); x = 0
+            for p in parts: m.paste(p, (x, H - p.height if p.height < H * 0.6 else 0)); x += p.width + int(track)
+        else:
+            w = int(f.getlength(s)) + 4
+            m = Image.new('L', (max(1, w), asc + desc + 4), 0)
+            ImageDraw.Draw(m).text((2, 2), s, font=f, fill=255)
+            m = m.point(lambda v: 255 if v >= 128 else 0)
+            # trim to the ink, keeping a line's baseline consistent: trim columns fully, rows to ascender box
+            bb = m.getbbox()
+            if bb: m = m.crop((bb[0], 2, bb[2], 2 + asc + desc))
+            bb = m.getbbox()
+            if bb: m = m.crop((0, bb[1], m.width, bb[3]))
+    if size < grid:
+        k = size / grid
+        m = m.resize((max(1, int(round(m.width * k))), max(1, int(round(m.height * k)))), Image.BOX)
+    return m
+
+
+def pmask(s, size=16, face='dot', track=0, vert=False, bold=False):
+    if face == 'b5':
+        m = _mask_b5(s, max(1, int(size)), 1 + int(track))
+        return m.rotate(-90, expand=True) if vert else m
+    if bold:  # the pixel-font bold: every stroke one font pixel wider to the right
+        m = _mask_ttf(s, face, size, track, vert)
+        k = max(1, int(size) // 16)
+        a = np.asarray(m) > 0; b = a.copy()
+        for i in range(1, k + 1): b[:, i:] |= a[:, :-i]
+        return Image.fromarray(np.pad(b, ((0, 0), (0, k))).astype(np.uint8) * 255)
+    if face == 'auto': face = 'dot' if _is_cjk(s) else 'ala'
+    return _mask_ttf(s, face, size, track, vert)
+
+
+def ptext_w(s, size=16, face='dot', track=0):
+    return pmask(s, size, face, track).width
+
+
+def _late_ptext(im, s, x, y, fill, size, face, anchor, vert, track, outline, maxw, shadow, bold=False):
+    m = pmask(s, size, face, track, vert, bold)
+    if maxw and m.width > maxw:  # condense on whole columns (drop every n-th column), never smear
+        keep = [i for i in range(m.width) if int(i * maxw / m.width) != int((i + 1) * maxw / m.width) or i == m.width - 1]
+        a = np.asarray(m)[:, keep]; m = Image.fromarray(a)
+    ax, ay = anchor[0], anchor[1]
+    X = int(round(x - {'l': 0, 'm': m.width / 2, 'r': m.width}[ax]))
+    Y = int(round(y - {'t': 0, 'm': m.height / 2, 'b': m.height}[ay]))
+    if shadow:
+        dx, dy, col = shadow
+        im.paste(Image.new('RGB', m.size, rgb(col)), (X + dx, Y + dy), m)
+    if outline:
+        w, col = outline
+        o = m.filter(ImageFilter.MaxFilter(2 * w + 1)) if w else m
+        big = Image.new('L', (m.width + 2 * w, m.height + 2 * w), 0); big.paste(m, (w, w))
+        big = big.filter(ImageFilter.MaxFilter(2 * w + 1))
+        im.paste(Image.new('RGB', big.size, rgb(col)), (X - w, Y - w), big)
+    im.paste(Image.new('RGB', m.size, rgb(fill)), (X, Y), m)
+    return m.size
+
+
+def _ptext(self, s, x, y, fill, size=16, face='auto', anchor='lt', vert=False, track=0, outline=None, maxw=None, shadow=None, bold=False):
+    """Pixel type, laid in after the reduction (see above). Returns (w, h) in px."""
+    f = 'dot' if face == 'auto' and _is_cjk(s) else ('ala' if face == 'auto' else face)
+    m = pmask(s, size, f, track, vert, bold)
+    self.late.append(('ptext', s, x, y, fill, size, f, anchor, vert, track, outline, maxw, shadow, bold))
+    w = min(m.width, maxw) if maxw else m.width
+    return w, m.height
+
+
+def _image(self):
+    im = self.im.resize((self.w, self.h), Image.LANCZOS)
+    im = im.filter(ImageFilter.UnsharpMask(radius=0.6, percent=40, threshold=2))
+    for job in self.late:
+        if job[0] == 'bar': _draw_ean(im, *job[1:])
+        elif job[0] == 'ptext': _late_ptext(im, *job[1:])
+        elif job[0] == 'prect': ImageDraw.Draw(im).rectangle(job[1], fill=rgb(job[2]))
+    return im
+
+
+def _prect(self, x, y, w, h, c):
+    """A hard-edged rule or box on whole output pixels (laid in with the type)."""
+    self.late.append(('prect', (int(round(x)), int(round(y)), int(round(x + w)) - 1, int(round(y + h)) - 1), c))
+
+
+Panel.ptext = _ptext
+Panel.image = _image
+Panel.prect = _prect
+
+
+# ------------------------------------------------------------------ PIXEL: every P.text() is set in the game's pixel type
+# Layouts written for vector faces keep their positions and anchors; the size snaps to the pixel grid:
+#   kana / kanji (DotGothic16):  >= 40 px -> 48, >= 22 -> 32, >= 12.5 -> 16, smaller -> grey small print (16 reduced)
+#   Latin: serif / display faces -> Alagard (16 / 32 / 48); the rest -> the 5 x 7 font at a whole scale (7, 14, 21... px)
+# A line that would overflow maxw steps down a size, then (last resort) drops whole columns.
+PIXEL = True
+HEAVY = {'dela', 'kaku', 'mplus', 'maru', 'rock', 'archivo', 'anton', 'barlowx', 'tokumin', 'mincho'}
+SERIF = {'serif', 'serifb', 'tokumin', 'antique', 'mincho', 'brush'}
+_orig_text, _orig_lines, _orig_info = Panel.text, Panel.lines, Panel.info
+
+
+def _snap_cjk(s):
+    return 48 if s >= 40 else 32 if s >= 22 else 16 if s >= 12.5 else max(6, round(s))
+
+
+def _plan(s, face, size):
+    """(pface, psize) for a run of text."""
+    if _is_cjk(s): return 'dot', _snap_cjk(size)
+    if face in SERIF and size >= 12.5: return 'ala', _snap_cjk(size)
+    return 'b5', max(1, int(round(size / 8.5))) if size >= 12.5 else 1
+
+
+def _fit(s, face, size, maxw, track=0):
+    pf, ps = _plan(s, face, size)
+    if not maxw: return pf, ps
+    while ptext_w(s, ps, pf, track) > maxw:
+        if pf == 'b5':
+            if ps <= 1: break
+            ps -= 1
+        elif ps > 16: ps -= 16
+        elif ps == 16: ps = 12
+        else: break
+    return pf, ps
+
+
+def _text_px(self, s, face, size, x, y, fill, anchor='mm', stroke=None, stroke2=None, sx=1.0, track=0.0, vert=False, maxw=None, maxh=None, rot=0):
+    if not PIXEL: return _orig_text(self, s, face, size, x, y, fill, anchor, stroke, stroke2, sx, track, vert, maxw, maxh, rot)
+    if vert and maxh: maxw = None
+    pf, ps = _fit(s, face, size, maxw if not vert else None, int(track))
+    if vert and maxh:
+        while pmask(s, ps, pf, int(track), True).height > maxh and ps > 16: ps -= 16
+    ol = (max(1, int(round(stroke2[0] if stroke2 else stroke[0]))), (stroke2 or stroke)[1]) if (stroke or stroke2) else None
+    bold = face in HEAVY and pf != 'b5' and ps >= 32
+    w, h = _ptext(self, s, x, y, fill, ps, pf, anchor if len(anchor) == 2 else anchor + 't', vert, int(track), ol, maxw, None, bold)
+    return w, h
+
+
+def _lines_px(self, text, face, size, x, y, w, fill, lh=None, maxy=None, align='l'):
+    if not PIXEL: return _orig_lines(self, text, face, size, x, y, w, fill, lh, maxy, align)
+    pf, ps = _plan(text, face, size)
+    lh = max(lh or 0, (pmask('漢Ag', ps, pf).height if pf != 'b5' else 7 * ps) + 1)
+    out, cur = [], ''
+    for ch in text:
+        if ch == '\n': out.append(cur); cur = ''; continue
+        if cur and ch not in '、。）」' and ptext_w(cur + ch, ps, pf) > w: out.append(cur); cur = ch
+        else: cur += ch
+    if cur: out.append(cur)
+    for l in out:
+        if maxy is not None and y + lh > maxy + 0.5: break
+        _ptext(self, l, x if align == 'l' else x + w / 2, y, fill, ps, pf, ('l' if align == 'l' else 'm') + 't')
+        y += lh
+    return y
+
+
+def _info_px(self, x, y, w, rows, ink=0x222222, paper=None, size=6.5, maxy=None, head=None):
+    if not PIXEL: return _orig_info(self, x, y, w, rows, ink, paper, size, maxy, head)
+    hw = max(ptext_w(h, *_plan(h, 'bizb', size)[::-1][::-1][1:] or (16,), _plan(h, 'bizb', size)[0]) if False else ptext_w(h, _plan(h, 'bizb', size)[1], _plan(h, 'bizb', size)[0]) for h, _ in rows) + 3
+    top = y
+    if paper is not None: self.rect(x, y, w, (maxy or self.h) - y, paper)
+    y += 1.5
+    for h, t in rows:
+        _ptext(self, h, x + 2, y, ink, _plan(h, 'bizb', size)[1], _plan(h, 'bizb', size)[0], 'lt')
+        y = _lines_px(self, t, 'biz', size, x + hw + 2, y, w - hw - 4, ink, lh=size * 1.32, maxy=maxy)
+        if maxy and y > maxy: break
+        self.prect(x, y + 0.5, w, 1, ink); y += 1.5
+    self.prect(x, top, w, 1, ink); self.prect(x, top, 1, y - top, ink); self.prect(x + w - 1, top, 1, y - top, ink); self.prect(x, y - 1, w, 1, ink)
+    self.prect(x + hw, top, 1, y - top, ink)
+    return y + 2
+
+
+Panel.text, Panel.lines, Panel.info = _text_px, _lines_px, _info_px

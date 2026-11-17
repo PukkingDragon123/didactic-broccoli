@@ -18,7 +18,6 @@ export default {
     { id: 'ou', name: "Old King's Armour", jp: "老王の甲冑", rarity: 'uncommon', desc: "Gilded plate with nobody inside, still walking the castle walls.", gimmick: { text: "Turn" } },
     { id: 'raijin', name: "Lightning Edge", jp: "稲妻の刃", rarity: 'uncommon', desc: "A cyborg guardian frozen mid-lunge, blade out, crackling with stolen thunder.", gimmick: { text: "Strike" } },
     { id: 'yoroi', name: "Empty Armour", jp: "空っぽの鎧", rarity: 'rare', desc: "A great general's armour on its stand. At night the stand is empty.", gimmick: { text: "Turn" } },
-    { id: 'mecha', name: "Chrome Shogun", jp: "鋼の将軍", rarity: 'ultra', desc: "A samurai of chrome and cable, mask lit from inside. It guards the arcade after closing.", gimmick: { text: "Turn" } },
-    { id: 'golden', name: "Golden Requiem Guardian", jp: "黄金の守護霊", rarity: 'secret', desc: "A guardian of pure gold whose aura stops time for one second. One in five hundred.", gimmick: { text: "Turn" } },
+    { id: 'mecha', name: "Chrome Shinobi", jp: "クロームの忍", rarity: 'ultra', desc: "Half shadow, half machine: the ninja the future sent back.", gimmick: { text: "Turn" } },
   ],
 };

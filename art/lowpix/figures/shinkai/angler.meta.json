@@ -11,7 +11,7 @@
   {
    "name": "fish",
    "src": "sketchfab:5e2f4b2d2e1a4613a008b6caaf40d50c",
-   "height": 19.665,
+   "height": 25.232,
    "pos": [
     0.0,
     12.0,
@@ -22,7 +22,10 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "key": "1bd6f6db5cd0c4"
+   "opts": {
+    "smooth": 2.0
+   },
+   "key": "cffb4d49af5828"
   }
  ],
  "base": {

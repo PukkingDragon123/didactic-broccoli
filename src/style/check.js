@@ -97,9 +97,29 @@ export function installCheck(game) {
   const wf = panel(20, 12);
   const watch = new THREE.Group();
   watch.name = 'check-watch';
-  const caseM = new THREE.MeshStandardMaterial({ color: 0x1e1e22, roughness: 0.5 });
+  // the case: black resin with a bevelled rim and two little buttons; the strap: ribbed resin with its holes (pixel art)
+  const pixTex = (w, h, f) => {
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const g2 = cv.getContext('2d'), im = g2.createImageData(w, h);
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const c = f(i, j), q = (j * w + i) * 4; im.data[q] = c[0]; im.data[q + 1] = c[1]; im.data[q + 2] = c[2]; im.data[q + 3] = 255; }
+    g2.putImageData(im, 0, 0);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter;
+    return t;
+  };
+  const hsh = (i, j) => (((i * 73856093) ^ (j * 19349663)) >>> 0) % 100 / 100;
+  const caseTex = pixTex(16, 16, (i, j) => {
+    const edge = i === 0 || j === 0 || i === 15 || j === 15, lit = i === 1 || j === 1, k = 1 + (hsh(i, j) - 0.5) * 0.12;
+    const b = edge ? 18 : lit ? 64 : 34 * k;
+    return (i === 4 || i === 11) && j > 6 && j < 9 ? [150, 150, 156] : [b, b, b + 4];
+  });
+  const strapTex = pixTex(16, 32, (i, j) => {
+    const rib = (j % 3) === 0 ? 0.8 : 1, hole = (j % 6) === 3 && i > 6 && i < 9;
+    const b = hole ? 12 : (40 + (hsh(i, j) - 0.5) * 6) * rib * (i === 0 || i === 15 ? 0.75 : 1);
+    return [b, b, b * 1.08];
+  });
+  const caseM = new THREE.MeshStandardMaterial({ map: caseTex, roughness: 0.45 });
   const wcase = new THREE.Mesh(new THREE.BoxGeometry(0.009, 0.03, 0.034), caseM);
-  const strap = new THREE.Mesh(new THREE.BoxGeometry(1, 0.016, 1), new THREE.MeshStandardMaterial({ color: 0x2a2a30, roughness: 0.8 }));
+  const strap = new THREE.Mesh(new THREE.BoxGeometry(1, 0.016, 1), new THREE.MeshStandardMaterial({ map: strapTex, roughness: 0.8 }));
   const face = new THREE.Mesh(new THREE.PlaneGeometry(0.028, 0.02), new THREE.MeshBasicMaterial({ map: wf.t, color: 0xd8d8d0 }));
   face.rotation.set(0, -Math.PI / 2, Math.PI); // faces -x (the palm side), reading across the wrist
   face.position.x = -0.0047;

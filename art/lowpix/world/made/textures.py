@@ -185,3 +185,61 @@ d.rectangle([0, 128, 127, 255], fill=(226, 228, 220)); d.rectangle([8, 136, 119,
 d.rectangle([128, 128, 255, 255], fill=(220, 222, 214)); d.text((140, 170), '杜王 26', font=ImageFont.truetype(FONT, 22), fill=(40, 60, 120))
 grime(im, 16).save(os.path.join(H, 'streetlight.png'))
 print('set3 ok')
+# Mikawa-ya fixtures and the gacha corner (1024 atlas, 4x4 cells of 256)
+im = Image.new('RGB', (1024, 1024), (120, 100, 80)); d = ImageDraw.Draw(im)
+def C(i): return (i % 4) * 256, (i // 4) * 256
+J = lambda s, n: ImageFont.truetype(FONT, n)
+# 0 dark varnished wood   1 light wood   2 grey steel (coin changer body)   3 coin changer front
+for i, base in [(0, (92, 58, 34)), (1, (176, 140, 98))]:
+    x0, y0 = C(i); im.paste(planks(256, 256, base), (x0, y0))
+x0, y0 = C(2); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(150, 156, 160))
+for y in range(0, 256, 3): d.line([x0, y0 + y, x0 + 255, y0 + y], fill=(144, 150, 154))
+x0, y0 = C(3); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(176, 182, 186)); d.rectangle([x0 + 20, y0 + 14, x0 + 236, y0 + 64], fill=(200, 40, 44))
+d.text((x0 + 60, y0 + 18), '両替機', font=J(0, 38), fill=(250, 248, 240)); d.text((x0 + 30, y0 + 74), '千円札 → 百円玉', font=J(0, 22), fill=(40, 40, 44))
+d.rectangle([x0 + 50, y0 + 110, x0 + 206, y0 + 124], fill=(30, 30, 32)); d.rectangle([x0 + 60, y0 + 140, x0 + 120, y0 + 160], fill=(60, 160, 80)); d.rectangle([x0 + 136, y0 + 140, x0 + 196, y0 + 160], fill=(220, 180, 40))
+d.rectangle([x0 + 70, y0 + 186, x0 + 186, y0 + 240], fill=(60, 62, 66)); d.rectangle([x0 + 80, y0 + 196, x0 + 176, y0 + 232], fill=(36, 36, 38))
+# 4 capsule return box front: clear window full of capsules, label
+x0, y0 = C(4); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(220, 60, 50)); d.rectangle([x0 + 20, y0 + 70, x0 + 236, y0 + 236], fill=(200, 214, 220))
+for _ in range(60):
+    a, b = x0 + random.randrange(28, 210), y0 + random.randrange(120, 210); c = random.choice([(230, 80, 80), (80, 140, 220), (240, 200, 60), (120, 200, 120), (240, 240, 240)])
+    d.ellipse([a, b, a + 24, b + 24], fill=c); d.line([a, b + 12, a + 24, b + 12], fill=(250, 250, 250), width=2)
+d.text((x0 + 22, y0 + 14), 'カプセル回収', font=J(0, 34), fill=(250, 248, 240))
+# 5 dairy case back: shelves of milk bottles and cartons   6 dairy case body (white enamel, a red stripe)
+x0, y0 = C(5); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(70, 84, 92))
+for r in range(4):
+    yy = y0 + 10 + r * 62; d.rectangle([x0, yy + 52, x0 + 255, yy + 58], fill=(170, 176, 180))
+    for k in range(9):
+        xx = x0 + 6 + k * 28
+        if (k + r) % 3 == 0: d.rectangle([xx, yy + 18, xx + 18, yy + 52], fill=(246, 246, 240)); d.rectangle([xx, yy + 26, xx + 18, yy + 36], fill=(60, 120, 200)); d.polygon([(xx, yy + 18), (xx + 9, yy + 8), (xx + 18, yy + 18)], fill=(236, 236, 230))
+        else: d.rounded_rectangle([xx + 2, yy + 16, xx + 16, yy + 52], 5, fill=(240, 240, 236)); d.rectangle([xx + 4, yy + 12, xx + 14, yy + 18], fill=(200, 60, 50) if k % 2 else (230, 180, 60))
+x0, y0 = C(6); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(232, 232, 226)); d.rectangle([x0, y0 + 30, x0 + 255, y0 + 60], fill=(190, 40, 46)); d.text((x0 + 60, y0 + 32), '牛乳 乳製品', font=J(0, 24), fill=(250, 248, 240))
+# 7 kamidana: white paper, the shrine's wood, a sakaki green, the rope
+x0, y0 = C(7); im.paste(planks(256, 128, (200, 170, 120)), (x0, y0)); d.rectangle([x0, y0 + 128, x0 + 127, y0 + 255], fill=(244, 240, 228))
+d.rectangle([x0 + 128, y0 + 128, x0 + 255, y0 + 190], fill=(60, 110, 50)); d.rectangle([x0 + 128, y0 + 190, x0 + 255, y0 + 255], fill=(214, 190, 120))
+for k in range(0, 128, 10): d.line([x0 + 128 + k, y0 + 190, x0 + 136 + k, y0 + 255], fill=(180, 150, 80), width=3)
+# 8 watch case top (glass over watches)   9 puff box front + top
+x0, y0 = C(8); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(70, 30, 34))
+for k in range(6):
+    a, b = x0 + 20 + (k % 3) * 76, y0 + 30 + (k // 3) * 110; d.ellipse([a, b, a + 50, b + 50], fill=(220, 210, 180)); d.ellipse([a + 6, b + 6, a + 44, b + 44], fill=(246, 244, 236)); d.line([a + 25, b + 25, a + 25, b + 10], fill=(30, 30, 30), width=2); d.line([a + 25, b + 25, a + 36, b + 28], fill=(30, 30, 30), width=2); d.rectangle([a + 18, b + 48, a + 32, b + 80], fill=(110, 70, 40))
+x0, y0 = C(9); d.rectangle([x0, y0, x0 + 255, y0 + 127], fill=(240, 200, 60)); d.text((x0 + 20, y0 + 20), 'うまか棒', font=J(0, 40), fill=(200, 40, 40)); d.text((x0 + 30, y0 + 76), '10円 30本入', font=J(0, 22), fill=(60, 40, 30))
+for k in range(16): d.rectangle([x0 + k * 16, y0 + 128, x0 + k * 16 + 12, y0 + 255], fill=random.choice([(240, 200, 60), (230, 120, 60), (120, 180, 220), (200, 80, 120)]))
+# 10 dagashi rack fronts: rows of sweets   11 counter showcase front (glass, goods behind)
+x0, y0 = C(10); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(176, 140, 98))
+for r in range(4):
+    for k in range(6):
+        a, b = x0 + 4 + k * 42, y0 + 6 + r * 62; c = random.choice([(220, 60, 60), (240, 200, 60), (80, 150, 220), (240, 140, 180), (120, 190, 110), (250, 240, 230)])
+        d.rectangle([a, b, a + 38, b + 54], fill=c); d.text((a + 4, b + 18), random.choice(['あめ', 'ガム', 'チョコ', 'くじ', 'ラムネ']), font=J(0, 12), fill=(255, 255, 255) if sum(c) < 500 else (60, 40, 40))
+x0, y0 = C(11); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(150, 170, 176))
+for k in range(10):
+    a, b = x0 + 8 + k * 24, y0 + 120 + (k % 3) * 30; d.rectangle([a, b, a + 20, b + 90], fill=random.choice([(220, 200, 150), (200, 90, 80), (240, 220, 120), (120, 160, 200)]))
+for k in range(0, 256, 40): d.line([x0 + k, y0, x0 + k + 80, y0 + 255], fill=(196, 214, 220), width=4)
+# 12 milk carton print   13 fluorescent tube box print   14 tin bucket   15 broom straw and handles
+x0, y0 = C(12); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(248, 248, 244)); d.rectangle([x0, y0 + 90, x0 + 255, y0 + 180], fill=(40, 110, 200)); d.text((x0 + 70, y0 + 100), '牛乳', font=J(0, 60), fill=(250, 250, 250)); d.text((x0 + 60, y0 + 196), '1000ml 森王牧場', font=J(0, 22), fill=(40, 60, 120))
+x0, y0 = C(13); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(236, 230, 214)); d.rectangle([x0, y0 + 100, x0 + 255, y0 + 156], fill=(40, 90, 170)); d.text((x0 + 10, y0 + 108), '蛍光灯 FL20SS 昼光色', font=J(0, 28), fill=(250, 250, 250))
+x0, y0 = C(14); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(166, 170, 172))
+for y in range(0, 256, 22): d.line([x0, y0 + y, x0 + 255, y0 + y], fill=(140, 144, 146), width=3)
+x0, y0 = C(15); d.rectangle([x0, y0, x0 + 127, y0 + 255], fill=(196, 168, 100))
+for k in range(0, 128, 4): d.line([x0 + k, y0, x0 + k + random.randint(-3, 3), y0 + 255], fill=random.choice([(170, 140, 80), (210, 186, 120)]), width=2)
+im.paste(planks(128, 256, (120, 86, 54)), (x0 + 128, y0))
+grime(im, 12).save(os.path.join(H, 'mikawaya.png'))
+print('mikawaya ok')

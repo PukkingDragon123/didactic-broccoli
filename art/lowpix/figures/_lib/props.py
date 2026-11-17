@@ -14,6 +14,8 @@ FAMILIES = {
     "riser": dict(col="#2c2628", style="glaze", tone=2.6, ch=0.6, edge="#7a2a2a"),
     # Showa Home Appliances: a walnut-veneer sideboard top
     "shelf": dict(col="#6a4228", style="wood", tone=2.8, ch=0.6, edge=None),
+    # Lucky Charms: a footing of grey shrine granite, for what cannot stand on its own posts
+    "shrine": dict(col="#8a8a86", style="stone", tone=3.0, ch=0.8, edge=None),
     # the line's display stand for floating subjects: a clear acrylic plate (a rod goes up from it)
     "clear": dict(col="#d8e8ee", style="clear", tone=3.6, ch=0.6, edge=None, mat="glass"),
 }

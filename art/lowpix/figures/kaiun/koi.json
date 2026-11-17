@@ -1,0 +1,174 @@
+{
+ "name": "Lucky Koi",
+ "description": "A red-and-white carp from the shrine pond. Climb the waterfall, become a dragon.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 6.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.6
+  ],
+  "strength": 1.15,
+  "gradient": 0.0,
+  "ao": 0.5,
+  "ao_height": 3.0,
+  "ground": 2.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#3b1e0b",
+    "#a76024",
+    "#dca974",
+    "#f6ecdf",
+    "#f8f2e9",
+    "#faf8f2",
+    "#fdfdfb"
+   ],
+   "steel": [
+    "#3d384a",
+    "#585365",
+    "#75707d",
+    "#918f93",
+    "#a5a5a5",
+    "#b9b9b9",
+    "#cecece"
+   ],
+   "blush": [
+    "#961239",
+    "#ce1e3f",
+    "#e14f5a",
+    "#e88f8c",
+    "#eaada3",
+    "#edc7ba",
+    "#f1dbcf"
+   ],
+   "moss": [
+    "#213917",
+    "#344e23",
+    "#496230",
+    "#5f743e",
+    "#859758",
+    "#a6ad7e",
+    "#c0c2a7"
+   ],
+   "cd8e8ee": [
+    "#43618a",
+    "#6f92b2",
+    "#a8bfcc",
+    "#dee7ea",
+    "#e5eced",
+    "#ebf0f0",
+    "#f2f4f4"
+   ]
+  }
+ },
+ "styles": {
+  "clear": {
+   "dither": 0,
+   "light": 0.6,
+   "rim": {
+    "light": 2,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "depth",
+     "op": "gradient",
+     "axis": "y",
+     "amount": -0.8
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 1.4,
+     "min_light": 0.7
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "base",
+   "shape": "prism",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "offset": [
+    0,
+    0,
+    1.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    18.0,
+    18.0,
+    2.0
+   ],
+   "sides": 24,
+   "style": "clear",
+   "paint": {
+    "ramp": "cd8e8ee",
+    "tone": 3.6
+   }
+  },
+  {
+   "id": "base_rod",
+   "shape": "prism",
+   "pivot": [
+    0,
+    2.0,
+    0
+   ],
+   "offset": [
+    0,
+    0,
+    5.55
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    1.6,
+    1.6,
+    11.1
+   ],
+   "sides": 8,
+   "style": "clear",
+   "paint": {
+    "ramp": "cd8e8ee",
+    "tone": 3.6
+   }
+  }
+ ]
+}

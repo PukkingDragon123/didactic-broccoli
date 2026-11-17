@@ -1,0 +1,99 @@
+{
+ "id": "capsulereturn",
+ "src": "art/lowpix/world/made/capsulereturn.glb",
+ "credit": {
+  "title": "capsule return",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/capsulereturn.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 48,
+ "tex": 368,
+ "size": [
+  0.34,
+  0.62,
+  0.31
+ ],
+ "colours": 56,
+ "palette": {
+  "m0": [
+   "#6f0a26",
+   "#8f1028",
+   "#ad1727",
+   "#ca1e23",
+   "#dc3c32",
+   "#de6551",
+   "#e08970",
+   "#e4a88d",
+   "#e9c2a9"
+  ],
+  "m1": [
+   "#0e1979",
+   "#152d9b",
+   "#1e47bc",
+   "#2a66d9",
+   "#508cdc",
+   "#6ba6de",
+   "#85bce1",
+   "#9ecee5",
+   "#b6ddea"
+  ],
+  "m2": [
+   "#3e567f",
+   "#5578a2",
+   "#7b9ab5",
+   "#a2b9c8",
+   "#c8d6dc",
+   "#d1dce0",
+   "#d9e2e4",
+   "#e1e8e8",
+   "#e9eded"
+  ],
+  "m3": [
+   "#a61132",
+   "#d51a34",
+   "#e4434c",
+   "#e97a76",
+   "#efb0a8",
+   "#f0c1b5",
+   "#f1cfc2",
+   "#f3dccf",
+   "#f5e6db"
+  ],
+  "m4": [
+   "#853c02",
+   "#ac5d05",
+   "#d08309",
+   "#f1ad12",
+   "#f0c83c",
+   "#efdb5a",
+   "#f0e976",
+   "#f1f192",
+   "#f3f3ad"
+  ],
+  "m5": [
+   "#216f3b",
+   "#2e8e46",
+   "#3cac4f",
+   "#55bf5e",
+   "#78c878",
+   "#92cd8d",
+   "#aad3a1",
+   "#bedab5",
+   "#d0e1c7"
+  ],
+  "m6": [
+   "#870e2d",
+   "#ae1530",
+   "#d31d2e",
+   "#e13d3f",
+   "#e47067",
+   "#e58e7e",
+   "#e8a895",
+   "#eabfaa",
+   "#eed2bf"
+  ]
+ },
+ "warnings": []
+}

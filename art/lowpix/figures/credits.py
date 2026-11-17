@@ -21,6 +21,8 @@ def main():
         meta = json.load(open(mp))
         if not os.path.exists(os.path.join(ROOT, "public", "models", "lowpix", "figures", meta["key"] + ".glb")):
             continue
+        if any("pos" not in m for m in meta.get("models", [])):
+            continue  # (an old-pipeline figure that is not shipped any more)
         for m in meta.get("models", []):
             used.setdefault(m["src"], set()).add(meta["key"])
     md, txt = [], []
@@ -31,11 +33,12 @@ def main():
         url = a.get("source") or a.get("url") or ""
         lic, lurl = LIC.get(a.get("licence") or a.get("license") or "by", ("CC BY 4.0", LIC["by"][1]))
         figs = ", ".join(f"`models/lowpix/figures/{k}.glb`" for k in sorted(used[s]))
-        md.append(f"- {name} by {author} ({url}), {lic} ({lurl}). Converted with lowpix (painted), used in {figs}")
+        md.append(f"- {name} by {author} ({url}), {lic} ({lurl}). Converted with lowpix (pixel-hd), used in {figs}")
         txt.append(f"- {name} by {author}, {lic}: {url} ({', '.join(sorted(used[s]))})")
     head_md = ["## 3D models: toy figures (Sketchfab CC BY / CC0, Poly Haven CC0)", "",
-               "Real models made small for the capsule toys: converted by lowpix, repainted and posed on lowpix-modelled bases",
-               "(art/lowpix/figures; photo textures for the bases from Poly Haven, CC0).", ""]
+               "Real models (hand-made by their artists, or photogrammetry scans) made small for the capsule toys: converted by",
+               "lowpix in one pixel-art finish, cut out / levelled where a scan needed it, with lowpix-modelled street furniture",
+               "and clear stands (art/lowpix/figures). No AI-generated models (art/lowpix/figures/AI_CHECK.json).", ""]
     for path, body, head in ((os.path.join(ROOT, "CREDITS.md"), md, head_md),
                              (os.path.join(ROOT, "public", "CREDITS.txt"), txt, ["3D models: toy figures (Sketchfab CC BY / CC0, Poly Haven CC0)", ""])):
         cur = open(path, encoding="utf8").read()

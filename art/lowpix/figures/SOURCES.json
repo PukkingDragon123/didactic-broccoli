@@ -1,4 +1,12 @@
 {
+ "polyhaven:CashRegister_01": {
+  "name": "CashRegister 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/CashRegister_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:alarm_clock_01": {
   "name": "alarm clock 01",
   "author": "Poly Haven",
@@ -68,6 +76,22 @@
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/vintage_electric_kettle",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:vintage_pocket_watch": {
+  "name": "vintage pocket watch",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/vintage_pocket_watch",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:vintage_stapler": {
+  "name": "vintage stapler",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/vintage_stapler",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },

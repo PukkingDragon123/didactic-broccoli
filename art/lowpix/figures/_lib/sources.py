@@ -210,7 +210,7 @@ def bbox(path):
     if os.path.exists(path[:-5] + ".bounds.json"):  # a cropped scan: the kept triangles' bounds
         return json.load(open(path[:-5] + ".bounds.json"))
     cache = json.load(open(BBOX_CACHE)) if os.path.exists(BBOX_CACHE) else {}
-    key = path + "#v2"
+    key = path + "#v3"
     if key in cache:
         return cache[key]
     V = _world_vertices(path)
@@ -233,6 +233,8 @@ def _world_vertices(path):
         W = P @ _mat(nodes[i])
         if "mesh" in nodes[i]:
             for p in d["meshes"][nodes[i]["mesh"]]["primitives"]:
+                if p.get("mode", 4) != 4 or "POSITION" not in p["attributes"]:
+                    continue  # (lines and points: lowpix converts triangles only)
                 V = _accessor(d, base, p["attributes"]["POSITION"]).astype(np.float64)
                 if "indices" in p:
                     V = V[np.unique(_accessor(d, base, p["indices"]).reshape(-1))]
@@ -288,10 +290,121 @@ def level(path):
     return out, tilt
 
 
+MAX_TRIS = 250000  # denser scans are pre-simplified (lowpix runs out of memory on them)
+
+
+def _tri_count(path):
+    d = _load_gltf(path)
+    n = 0
+    for me in d.get("meshes", []):
+        for p in me["primitives"]:
+            a = d["accessors"][p["indices"]] if "indices" in p else d["accessors"][p["attributes"]["POSITION"]]
+            n += a["count"] // 3
+    return n
+
+
+def presimplify(path):
+    if _tri_count(path) <= MAX_TRIS:
+        return path
+    out = path[:-5] + "_drop_simp.gltf"
+    if not os.path.exists(out):
+        import subprocess
+        subprocess.run(["node", os.path.join(os.path.dirname(HERE), "simplify.mjs"), path, out, str(MAX_TRIS)], check=True, cwd=ROOT)
+    return out
+
+
+def _rot_axis(axis, ang):
+    import numpy as np
+    a = axis / np.linalg.norm(axis)
+    K = np.array([[0, -a[2], a[1]], [a[2], 0, -a[0]], [-a[1], a[0], 0]])
+    return np.eye(3) + np.sin(ang) * K + (1 - np.cos(ang)) * K @ K
+
+
+def _surface_centroid(path):
+    import numpy as np
+    d = _load_gltf(path)
+    base = os.path.dirname(path)
+    nodes = d.get("nodes", [])
+    tot, acc = 0.0, np.zeros(3)
+    stack = [(r, np.eye(4)) for r in d.get("scenes", [{"nodes": []}])[d.get("scene", 0)]["nodes"]]
+    while stack:
+        i, P = stack.pop()
+        W = P @ _mat(nodes[i])
+        if "mesh" in nodes[i]:
+            for p in d["meshes"][nodes[i]["mesh"]]["primitives"]:
+                if p.get("mode", 4) != 4:
+                    continue
+                V = _accessor(d, base, p["attributes"]["POSITION"]).astype(np.float64)
+                V = (np.c_[V, np.ones(len(V))] @ W.T)[:, :3]
+                I = _accessor(d, base, p["indices"]).reshape(-1, 3) if "indices" in p else np.arange(len(V)).reshape(-1, 3)
+                A, B, C = V[I[:, 0]], V[I[:, 1]], V[I[:, 2]]
+                ar = 0.5 * np.linalg.norm(np.cross(B - A, C - A), axis=1)
+                tot += ar.sum()
+                acc += (ar[:, None] * (A + B + C) / 3).sum(0)
+        for c in nodes[i].get("children", []):
+            stack.append((c, W))
+    return acc / max(tot, 1e-12)
+
+
+def rest_matrix(V, F, band=0.5, want=10.0, span=50.0, step=2.0):
+    """The smallest tilt (about x and z, up to `span` degrees) that makes a mesh sit steadily on a shelf: its centre of
+    mass (surface centroid) inside what touches the shelf (the corners within `band` mm of the lowest point), with a
+    tipping angle of at least `want` degrees, or the steadiest tilt found. V (n, 3), F (m, 3)."""
+    import math
+    import numpy as np
+    from audit_hull import hull2, inside2
+    A, B, C = V[F[:, 0]], V[F[:, 1]], V[F[:, 2]]
+    ar = 0.5 * np.linalg.norm(np.cross(B - A, C - A), axis=1)
+    c = (ar[:, None] * (A + B + C) / 3).sum(0) / max(ar.sum(), 1e-12)
+    V0 = V - c
+
+    def margin(R):
+        P = V0 @ R.T
+        y0 = P[:, 1].min()
+        t = P[P[:, 1] < y0 + band][:, [0, 2]]
+        H = hull2(t)
+        if len(H) < 3 or not inside2(H, (0.0, 0.0)):
+            return -1.0
+        d = min(abs((H[i][0] - H[i - 1][0]) * (0 - H[i - 1][1]) - (H[i][1] - H[i - 1][1]) * (0 - H[i - 1][0]))
+                / max(math.hypot(H[i][0] - H[i - 1][0], H[i][1] - H[i - 1][1]), 1e-9) for i in range(len(H)))
+        return math.degrees(math.atan2(d, -y0))
+
+    best, best_any = None, (-2.0, np.eye(3))
+    n = int(span / step)
+    cands = sorted(((i * step, j * step) for i in range(-n, n + 1) for j in range(-n, n + 1)), key=lambda t: t[0] ** 2 + t[1] ** 2)
+    for ax, az in cands:
+        rx, rz = math.radians(ax), math.radians(az)
+        Rx = np.array([[1, 0, 0], [0, math.cos(rx), -math.sin(rx)], [0, math.sin(rx), math.cos(rx)]])
+        Rz = np.array([[math.cos(rz), -math.sin(rz), 0], [math.sin(rz), math.cos(rz), 0], [0, 0, 1]])
+        R = Rx @ Rz
+        mg = margin(R)
+        if mg >= want:
+            return R
+        if mg > best_any[0]:
+            best_any = (mg, R)
+    return best_any[1]
+
+
+def read_obj(path):
+    """Vertices and triangles of a lowpix OBJ export."""
+    import numpy as np
+    V, F = [], []
+    for ln in open(path):
+        if ln.startswith("v "):
+            V.append([float(x) for x in ln.split()[1:4]])
+        elif ln.startswith("f "):
+            idx = [int(t.split("/")[0]) - 1 for t in ln.split()[1:]]
+            for k in range(1, len(idx) - 1):
+                F.append([idx[0], idx[k], idx[k + 1]])
+    return np.array(V), np.array(F, dtype=np.int64)
+
+
 def prepare(src, drop=None, keep=None, box=None, lev=False, cut=0.0):
     """The local file lowpix converts: the downloaded source, filtered (nodes / materials), cropped, levelled and its
-    underside sliced flat (cut: that share of its height)."""
+    underside sliced flat (cut: that share of its height); very dense scans pre-simplified first."""
     p = filter_nodes(ensure_source(src), drop, keep)
+    if p.endswith(".gltf"):
+        p = presimplify(p)
     if box:
         p = crop(p, box)
     if lev:

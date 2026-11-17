@@ -1,0 +1,33 @@
+{
+ "id": "tubebox",
+ "src": "art/lowpix/world/made/tubebox.glb",
+ "credit": {
+  "title": "tube box",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/tubebox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 12,
+ "tex": 512,
+ "size": [
+  1.22,
+  0.04,
+  0.045
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#975b34",
+   "#bc824c",
+   "#caa87c",
+   "#dac9aa",
+   "#ece6d6",
+   "#eeebdc",
+   "#f0efe3",
+   "#f2f2e8",
+   "#f5f5ee"
+  ]
+ },
+ "warnings": []
+}

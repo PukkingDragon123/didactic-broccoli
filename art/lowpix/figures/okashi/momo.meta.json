@@ -8,7 +8,7 @@
   {
    "name": "peach",
    "src": "sketchfab:8cf8ce4a480e43dbafa390ae5394c627",
-   "height": 22.976,
+   "height": 22.146,
    "pos": [
     0.0,
     0.0,
@@ -19,8 +19,7 @@
    "roll": 0,
    "tris": 5000,
    "mat": "matte",
-   "level": 2,
-   "key": "ae7cd685d9e932"
+   "key": "f6c452e7788c37"
   }
  ],
  "model_clip": {

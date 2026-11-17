@@ -1,0 +1,27 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:068f8bc747114856a7505cadf7873792",
+   "height": 40.619,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "matte",
+   "opts": {
+    "smooth": 2.0
+   },
+   "key": "bc50f14f0eba3b"
+  }
+ ],
+ "key": "machikado/denwa"
+}

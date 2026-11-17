@@ -31,7 +31,7 @@ const HEAD = 1; // (the head's scale against the trunk's squash)
 const CLOSED = new Set(['sleepy', 'content', 'squeeze']);
 // eyes: [upper lid edge, lower lid edge] (radians from the eye's equator; they meet when the eye is shut), the pupil
 const EYE_POSE = {
-  open: [0.84, -0.7, 'normal'], wide: [1.0, -0.82, 'round'], slit: [0.8, -0.68, 'slit'], half: [0.26, -0.68, 'narrow'],
+  open: [0.74, -0.66, 'normal'], wide: [0.92, -0.8, 'round'], slit: [0.7, -0.62, 'slit'], half: [0.2, -0.62, 'narrow'],
   content: [-0.16, -0.18, 'narrow'], sleepy: [-0.2, -0.22, 'narrow'], squeeze: [-0.1, -0.08, 'slit'], blink: [-0.22, -0.24, 'normal'],
 };
 // mouths: [jaw open (radians), tongue out (0..1)]
@@ -194,7 +194,7 @@ export class CatRig {
         if (this.mood === 'scared') Object.assign(p, { y: -0.035, pitch: 0.04, earB: 1, tailUp: -0.25, tailCurl: 0.02, puff: 1, swish: 0.04, fold: 0.2, hindFold: 0.15 });
         return p;
       case 'sit':
-        return Object.assign(p, { y: -0.062, z: -0.006, pitch: -0.52, cp: -0.32, hp: 0.05, hindFold: 1, tailUp: -0.6, tailSide: 0.7, tailWrap: 0.22, tailCurl: -0.04, swish: 0.06, swishF: 0.3 });
+        return Object.assign(p, { y: -0.088, z: -0.012, pitch: -0.62, cp: -0.24, hp: 0.05, hindFold: 1, tailUp: -0.6, tailSide: 0.7, tailWrap: 0.22, tailCurl: -0.04, swish: 0.06, swishF: 0.3 });
       case 'hide':
         // crouched low, ready to bolt: ears flat, wide eyes, tail tucked along her side
         return Object.assign(p, { y: -0.075, squash: 0.06, pitch: 0.04, hp: 0.1, earB: 1, tailUp: -0.45, tailSide: 0.6, tailCurl: 0.03, puff: 0.6, swish: 0.03, fold: 0.75, hindFold: 0.55 });

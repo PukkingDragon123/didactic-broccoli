@@ -17,7 +17,6 @@ export default {
     { id: 'jelly', name: 'Moon Jelly', jp: 'ミズクラゲ', rarity: 'common', desc: 'Four pale rings in a bell of glass, pulsing slowly up through the dark.', gimmick: { text: 'Pulse' } },
     { id: 'nautilus', name: 'Chambered Nautilus', jp: 'オウムガイ', rarity: 'uncommon', desc: 'Striped like a tiger, built in perfect rooms. It has not changed in five hundred million years.', gimmick: { text: 'Turn' } },
     { id: 'angler', name: 'Lantern Anglerfish', jp: 'チョウチンアンコウ', rarity: 'uncommon', desc: 'All teeth and a lamp on a stalk. Do not follow the light.', gimmick: { text: 'Lunge' } },
-    { id: 'goblin', name: 'Goblin Shark', jp: 'ミツクリザメ', rarity: 'rare', desc: 'A long flat snout and jaws that shoot forward. Pink, sleepy and very, very old.', gimmick: { text: 'Glide' } },
     { id: 'coela', name: 'Living Fossil Coelacanth', jp: 'シーラカンス', rarity: 'secret', desc: 'Steel-blue, white-flecked, with fins like little legs. Thought gone with the dinosaurs, until a fisherman pulled one up.', gimmick: { text: 'Turn' } },
   ],
 };

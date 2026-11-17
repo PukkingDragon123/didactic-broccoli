@@ -161,7 +161,14 @@ export class Moments {
     J.impact.frame({ at: holder.getWorldPosition(new THREE.Vector3()), palette: ['violet', 'blood', 'acid'], dur: first ? 0.95 : 0.8, clear: 0.1 });
     if (!first) return;
     this.C.s.firsts.secret = g.clock?.day ?? 1;
-    g.tweens.wait(1.0, () => { if (!g.cutscene.active && !g.talk?.active) g.cutscene.play((c) => this.showcase(c, holder, data), { skippable: true }).then(() => { this._restore?.(); this._restore = null; this.lastCine = g.time; }); });
+    // the showcase needs the figure itself: wait (a little) for its model to stream in, or let the moment pass
+    const pending = () => { let p = false; holder.traverse((o) => { if (o.userData?.pending) p = true; }); return p; };
+    const go = (tries) => {
+      if (pending() && tries > 0) { g.tweens.wait(0.25, () => go(tries - 1)); return; }
+      if (pending() || g.cutscene.active || g.talk?.active || !holder.parent) return;
+      g.cutscene.play((c) => this.showcase(c, holder, data), { skippable: true }).then(() => { this._restore?.(); this._restore = null; this.lastCine = g.time; });
+    };
+    g.tweens.wait(1.0, () => go(8));
   }
 
   /** The figure hangs in the air where you held it; the camera circles it. */

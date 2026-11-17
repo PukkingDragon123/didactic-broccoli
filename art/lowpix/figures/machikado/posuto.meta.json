@@ -1,0 +1,24 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:e980d78b5535474e85c085e652eb9e4c",
+   "height": 40.0,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -15,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 5000,
+   "mat": "gloss",
+   "key": "2572d8d7ac4daa"
+  }
+ ],
+ "key": "machikado/posuto"
+}

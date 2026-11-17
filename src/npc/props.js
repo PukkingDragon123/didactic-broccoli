@@ -4,6 +4,7 @@
 // with the same small API as a Human (root, height, headTop(out), update(dt, { speed, lookAt, talking }), gesture,
 // setExpression, clearGesture, currentGesture, dispose).
 import * as THREE from 'three';
+import { bakedVoxelMesh } from '../people/voxbake.js';
 import { VoxelModel, gloss, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -40,7 +41,7 @@ export function vmesh(key, build, vox = 1, pivot = [0, 0, 0]) {
     g.computeBoundingSphere();
     _geo.set(key, g);
   }
-  const m = new THREE.Mesh(g, voxelMaterials('normal'));
+  const m = /^(yokai|kitsune)/.test(key) ? new THREE.Mesh(g, voxelMaterials('normal')) : bakedVoxelMesh(g, voxelMaterials('normal'));
   m.scale.setScalar(vox);
   m.castShadow = true; m.receiveShadow = true; m.raycast = () => {};
   return m;
