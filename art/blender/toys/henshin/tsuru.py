@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import numpy as np  # noqa: E402
 
 import tk  # noqa: E402  (imports bpy first)
+import bpy  # noqa: E402
 from fig import Fig  # noqa: E402
 from mathutils import Vector  # noqa: E402
 
@@ -123,7 +124,11 @@ head = tk.loft('head', [{'c': (0, -4.2, 53.0), 'w': 3.6, 'h': 2.0, 'e': 2.2}, {'
 def sculpt_head(h):
     def f(V, N):
         crown = tk.bump(V, (0, -6.6, 55.8), 2.6, 0.45)  # the red crown's raised, bare skin
-        return crown
+        # a brow over each eye and the eye itself, a little glossy dome
+        d = 0.0
+        for sx in (1, -1):
+            d = d + tk.bump(V, (sx * 2.2, -7.6, 54.6), 1.3, 0.3) + tk.bump(V, (sx * 2.35, -8.0, 53.5), 1.1, 0.3)
+        return crown + d
     tk.push(h, f)
 
 
@@ -160,7 +165,17 @@ for sx, nm in ((1, 'wing_l'), (-1, 'wing_r')):
     WING[nm] = (w_lo, w_hi, np.array(M))
 
 # ------------------------------------------------------------------ parts
+# the stand: a half protractor the crane stands on (a school set's protractor, and a steady footing)
+BASE_T = 1.6
+arc = [(22.0 * math.cos(math.radians(a)), 7.0 - 22.0 * math.sin(math.radians(a))) for a in np.linspace(0, 180, 25)]
+stand_hi = tk.slab('stand_hi', arc, BASE_T, plane='XY', at=BASE_T / 2, bevel=0.35, segs=2)
+stand_lo = tk.slab('stand', arc, BASE_T, plane='XY', at=BASE_T / 2, bevel=0, segs=0)
+tk.boolean(stand_hi, tk.cyl('hole', 2.4, -1, 3, n=16, at=(0, 7.0), axis='Z', bevel=0.2, segs=1))
+tk.set_region(stand_hi, 'stand')
+for o in [o for o in bpy.data.objects if o.type == 'MESH' and not o.name.startswith('stand')]:
+    tk.move(o, (0, 0, BASE_T))  # the crane stands on it
 F.part('body', body_lo, [body_hi, bu_hi], bone='root')
+F.part('stand', stand_lo, [stand_hi], bone='stand', kind='gloss')
 F.part('pivot', piv_lo, [piv_hi], bone='root', kind='metal', uvw=0.6)
 for nm, (lo, highs, top) in LEGS.items():
     F.part(nm, lo, highs, bone=nm, kind='metal')
@@ -178,14 +193,16 @@ OUT = os.path.join(F.out, F.id)
 def make_rig():
     from rig import Rig
     R = Rig()
-    R.bone('root', HIP)
+    R.bone('stand', (0, 7.0, 0.8))
+    R.bone('root', (HIP[0], HIP[1], HIP[2] + BASE_T))
     for nm, (lo, highs, top) in LEGS.items():
-        R.bone(nm, top, parent='root')
-    R.bone('neck1', NECK0, parent='root')
-    R.bone('neck2', N2[0], parent='neck1')
-    R.bone('beak', BEAK0, parent='neck2')
+        R.bone(nm, (top[0], top[1], top[2] + BASE_T), parent='root')
+    up = lambda p: (p[0], p[1], p[2] + BASE_T)  # noqa: E731
+    R.bone('neck1', up(NECK0), parent='root')
+    R.bone('neck2', up(N2[0]), parent='neck1')
+    R.bone('beak', up(BEAK0), parent='neck2')
     for nm in WING:
-        R.bone(nm, SHOULDER, parent='root')
+        R.bone(nm, up(SHOULDER), parent='root')
     for p in F.parts:
         R.attach(p.low, p.bone)
     wings = {'wing_l': 1, 'wing_r': -1}
@@ -223,13 +240,14 @@ def make_rig():
         k('beak', 34, rot=('X', -86))
         # 34-90 the dance: wings sweep up and beat, neck stretches up, a call, one leg up, a hop
         for nm, sx in wings.items():
-            k(nm, 42, rot=('Y', -sx * 8), ease='BACK')
+            k(nm, 38, rot=[('Z', -sx * 7), ('X', -6), ('Y', sx * 50)])
+            k(nm, 42, rot=('Y', sx * 6), ease='BACK')
             k(nm, 48, rot=('Y', sx * 22))
-            k(nm, 54, rot=('Y', -sx * 10))
+            k(nm, 54, rot=('Y', sx * 2))
             k(nm, 60, rot=('Y', sx * 18))
             k(nm, 68, rot=('Y', 0))
-        k('neck1', 42, rot=('X', -10), ease='BACK')
-        k('neck2', 44, rot=('X', -30))
+        k('neck1', 42, rot=('X', 6), ease='BACK')
+        k('neck2', 44, rot=('X', 14))
         k('beak', 42, rot=('X', 0), ease='BACK')
         k('beak', 47, rot=('X', 14))
         k('beak', 50, rot=('X', 0))
@@ -238,8 +256,8 @@ def make_rig():
         k('neck2', 58, rot=('X', 0))
         k('neck1', 58, rot=('X', 0))
         k('leg_r', 44)
-        k('leg_r', 52, rot=[('Y', -10)], move=(0, 0, 4.5))
-        k('leg_r', 66, rot=[('Y', -10)], move=(0, 0, 4.5))
+        k('leg_r', 52, rot=[('X', -24)])   # the leg swings forward and up off the stand (a crane's high step)
+        k('leg_r', 66, rot=[('X', -24)])
         k('leg_r', 72)
         k('leg_l', 34, rot=('Y', 7.5))
         k('leg_l', 44)
@@ -251,6 +269,15 @@ def make_rig():
             k(b, 90)
     return R
 
+
+if '--clip' in ARGS:
+    from rig import check_clip
+    R = make_rig()
+    res = check_clip(R, F.parts, range(1, 91), skip=[('pivot', 'body'), ('neck1', 'body'), ('neck2', 'neck1'), ('head', 'neck2'), ('beak', 'head')], tol=0.35)
+    for f, L in sorted(res.items()):
+        print('CLIP', f, L)
+    print('CLIP frames', len(res))
+    sys.exit(0)
 
 if '--preview' in ARGS or '--fold' in ARGS:
     lows = [p.low for p in F.parts]
@@ -280,7 +307,7 @@ F.bake(ao_samples=24 if FAST else 128, ao_dist=6.0, reuse='--repaint' in ARGS)
 
 def paint(P):
     on, X, Yc, Z = P.on, P.X, P.Y, P.Z
-    sh = P.shade(light=0.45, ao=0.8, cav=1.1)
+    sh = P.shade(light=0.0, ao=0.8, cav=1.1)
     WHITE = pt.ramp('#f1ede2', 7, dark=0.42, shift=0.07)
     P.fill('white', WHITE, tone=sh, base=0.12)
     BLACK = pt.ramp('#26232a', 6, dark=0.4, light=0.45, shift=0.05)
@@ -292,7 +319,8 @@ def paint(P):
     P.fill('chrome', pt.ramp('#b3bbc4', 7, dark=0.75, light=0.75, shift=0.05), tone=sh * 1.5, base=0.1)
     # the eye: a small amber eye with a black pupil on the black face
     for sx in (1, -1):
-        P.eye((sx * 2.25, -8.0, 53.6), (sx, -0.15, 0.2), 0.8, iris='#e0b030', ring='#120e10', where=P.region('black') | P.region('white'),
+        P.eye((sx * 2.55, -8.0, 53.5 + BASE_T), (sx, -0.2, 0.15), 1.15, iris='#e8b838', ring='#120e10', lid=0.38, lidcol='#26232a',
+              where=P.region('black') | P.region('white'),
               facing=0.2)
     # the protractor wings: white plastic, a black outer band (the crane's black wing tips), printed degree ticks
     for nm, (lo, hi, M) in WING.items():
@@ -300,7 +328,7 @@ def paint(P):
         m = P.region('proto') & (P.part == [p.name for p in F.parts].index(nm))
         if not m.any():
             continue
-        Q = (P.pos - np.array(SHOULDER)) @ M  # back into the folded plane (rows: x, y, z of the folded wing)
+        Q = (P.pos - np.array(SHOULDER) - np.array((0, 0, BASE_T))) @ M  # back into the folded plane (rows: x, y, z of the folded wing)
         u, v = Q[:, :, 0] * sx, Q[:, :, 2]
         r = np.hypot(u, v)
         ang = np.degrees(np.arctan2(u, -v))  # 0 = down the leg, 90 = out
@@ -318,6 +346,18 @@ def paint(P):
         P.flat(m & (np.abs(r - 2.2) < 0.32), '#2a2629')
         P.flat(m & (r < 3.2) & ((np.abs(u) < 0.22) | (np.abs(v) < 0.22)), '#2a2629')
         P.flat(m & (r > 3.4) & (r < WR - 3.4) & (np.abs(ang - 45) < 0.35), '#c43a2e')
+    # the stand: a white protractor, its degree scale printed round the arc, the origin mark at the hole
+    st = P.region('stand')
+    P.fill('stand', WHITE, tone=sh * 0.7, base=0.18)
+    sr = np.hypot(X, Yc - 7.0)
+    sa = np.degrees(np.arctan2(7.0 - Yc, X))
+    topf = on[:, :, 2] > 0.5
+    a5 = np.abs(((sa + 2.5) % 5) - 2.5) < 0.5
+    a10 = np.abs(((sa + 5) % 10) - 5) < 0.6
+    P.flat(st & topf & (sr > 20.6 - 1.5 * a10) & (sr < 21.6) & (a5 | a10), '#2a2629')
+    P.flat(st & topf & (np.abs(sr - 17.6) < 0.25), '#2a2629')
+    P.flat(st & topf & (np.abs(sa - 90) < 0.45) & (sr > 3.2) & (sr < 17.6), '#c43a2e')
+    P.flat(st & ~topf, WHITE[2])
     P.lines(['white'], ['tail', 'black', 'red'], step=1)
     P.clusters()
     return P.done()

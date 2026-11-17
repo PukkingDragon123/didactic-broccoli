@@ -23,7 +23,7 @@ import tk
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
 BUILD = os.path.join(ROOT, 'art', 'blender', 'toys', '_build')
-DENS_MAX = 5.0  # px per mm: the line's texel density (a figure that packs finer is brought down to it)
+DENS_MAX = 5.6  # px per mm: the line's texel density (a figure that packs finer is brought down to it)
 
 
 class Part:
@@ -64,10 +64,13 @@ class Fig:
         return sum(tk.tri_count(p.low) for p in s.parts)
 
     # -------------------------------------------------------------- UVs
-    def unwrap(s, angle=66, margin=0.005):
+    def unwrap(s, angle=None, margin=None):
         """One atlas for every part: islands cut where the surface turns more than `angle` (smart project), then
         re-unwrapped along those seams with minimum stretch (big, calm islands for pixel paint), one texel density
-        everywhere, packed."""
+        everywhere except the faces nobody sees on a shelf (undersides: half density) and small hidden mechanics
+        (Part.uvw), packed tight (1.5 px gutters: the paint is bled into them)."""
+        angle = angle or float(os.environ.get('UV_ANGLE', 66))
+        margin = margin or float(os.environ.get('UV_MARGIN', 0.002))
         bpy.ops.object.select_all(action='DESELECT')
         lows = [p.low for p in s.parts]
         for o in lows:
@@ -80,42 +83,49 @@ class Fig:
                                  correct_aspect=True, scale_to_bounds=False)
         bpy.ops.uv.select_all(action='SELECT')
         bpy.ops.uv.seams_from_islands(mark_seams=True)
-        bpy.ops.uv.unwrap(method='MINIMUM_STRETCH', margin=margin)
+        if os.environ.get('UVMODE', 'conformal') == 'stretch':
+            bpy.ops.uv.unwrap(method='MINIMUM_STRETCH', margin=margin)
+        elif os.environ.get('UVMODE', 'conformal') == 'conformal':
+            bpy.ops.uv.unwrap(method='CONFORMAL', margin=margin)
         bpy.ops.uv.select_all(action='SELECT')
         bpy.ops.uv.average_islands_scale()
         bpy.ops.object.mode_set(mode='OBJECT')
         for p in s.parts:
-            if p.uvw != 1.0:
-                uv = p.low.data.uv_layers.active.data
-                a = np.zeros(len(uv) * 2)
-                uv.foreach_get('uv', a)
-                uv.foreach_set('uv', a * p.uvw)
+            _weight_islands(p.low, p.uvw)
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.uv.select_all(action='SELECT')
-        bpy.ops.uv.pack_islands(rotate=True, margin=margin, shape_method='CONCAVE', margin_method='FRACTION')
+        for _ in range(int(os.environ.get('UV_PASSES', 1))):
+            bpy.ops.uv.pack_islands(rotate=True, rotate_method=os.environ.get('UV_ROT', 'ANY'), margin=margin,
+                                    shape_method=os.environ.get('UV_SHAPE', 'CONCAVE'), margin_method='FRACTION')
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
         # texel density report (px per mm, area weighted)
-        tot_a = tot_uv = 0.0
-        for o in lows:
-            me = o.data
+        tot_a = tot_uv = vis_a = vis_uv = 0.0
+        for pt in s.parts:
+            me = pt.low.data
             uv = me.uv_layers.active.data
             for p in me.polygons:
-                tot_a += p.area
                 l = list(p.loop_indices)
                 a_, b_, c_ = (uv[i].uv for i in l[:3])
-                tot_uv += abs((b_ - a_).cross(c_ - a_)) / 2
+                ua = abs((b_ - a_).cross(c_ - a_)) / 2
+                tot_a += p.area
+                tot_uv += ua
+                if pt.uvw == 1.0 and p.normal.z >= -0.6:  # what you see of the figure on a shelf
+                    vis_a += p.area
+                    vis_uv += ua
         s.density = s.size * math.sqrt(tot_uv / max(tot_a, 1e-9))
-        if s.density > DENS_MAX:  # one texel density across the line: a small figure does not get finer pixels
-            k = DENS_MAX / s.density
+        s.density_seen = s.size * math.sqrt(vis_uv / max(vis_a, 1e-9))
+        if s.density_seen > DENS_MAX:  # one texel density across the line: a small figure does not get finer pixels
+            k = DENS_MAX / s.density_seen
+            s.density_seen = DENS_MAX
             for o in lows:
                 uv = o.data.uv_layers.active.data
                 a = np.zeros(len(uv) * 2)
                 uv.foreach_get('uv', a)
                 uv.foreach_set('uv', a * k)
             tot_uv *= k * k
-            s.density = DENS_MAX
+            s.density *= k
         areas = {}
         for o in lows:
             uv = o.data.uv_layers.active.data
@@ -124,7 +134,9 @@ class Fig:
             areas[o.name] = f'{ar:.0f}mm2 {s.size * math.sqrt(ua / max(ar, 1e-9)):.1f}px/mm'
         us = np.array([l.uv for o in lows for l in o.data.uv_layers.active.data])
         s.log('uv bounds', us.min(0), us.max(0))
-        s.log(f'UV texel density {s.density:.2f} px/mm, UV coverage {tot_uv:.2f}, area {tot_a:.0f} mm2', areas)
+        s.log(f'UV texel density {s.density_seen:.2f} px/mm on what you see ({s.density:.2f} overall), UV coverage {tot_uv:.2f}, area {tot_a:.0f} mm2', areas)
+        if os.environ.get('UVONLY'):
+            raise SystemExit(0)
 
     # -------------------------------------------------------------- bakes
     def _img(s, name, float_buf=True):
@@ -362,6 +374,7 @@ class Fig:
                                   export_rest_position_armature=True)
         meta = dict(s.meta)
         meta['tris'] = s.tris()
+        meta['density'] = [round(getattr(s, 'density_seen', 0), 2), round(getattr(s, 'density', 0), 2)]
         if rig:
             meta['clips'] = {a: a for a in rig.actions}
             meta['pts'] = {e.name[3:]: e.name for e in rig.points}
@@ -369,6 +382,47 @@ class Fig:
         json.dump(meta, open(os.path.join(s.out, s.id + '.meta.json'), 'w'), indent=1)
         s.log(f'exported {glb}: {meta["tris"]} tris')
         return glb
+
+
+# ------------------------------------------------------------------ UV helpers
+def _weight_islands(ob, w=1.0, under=0.45):
+    """Scale each UV island (faces joined across non-seam edges) by w, and by `under` more when it faces down."""
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    uvl = bm.loops.layers.uv.active
+    bm.faces.ensure_lookup_table()
+    seen = set()
+    for f in bm.faces:
+        if f.index in seen:
+            continue
+        isl, stack = [], [f]
+        seen.add(f.index)
+        while stack:
+            g = stack.pop()
+            isl.append(g)
+            for e in g.edges:
+                if e.seam:
+                    continue
+                for h in e.link_faces:
+                    if h.index not in seen:
+                        seen.add(h.index)
+                        stack.append(h)
+        area = sum(g.calc_area() for g in isl)
+        nz = sum(g.normal.z * g.calc_area() for g in isl) / max(area, 1e-9)
+        k = w * (under if nz < -0.6 else 1.0)
+        if abs(k - 1.0) < 1e-6:
+            continue
+        loops = [l for g in isl for l in g.loops]
+        c = sum((l[uvl].uv for l in loops), mathutils_vec2()) / len(loops)
+        for l in loops:
+            l[uvl].uv = c + (l[uvl].uv - c) * k
+    bm.to_mesh(ob.data)
+    bm.free()
+
+
+def mathutils_vec2():
+    from mathutils import Vector
+    return Vector((0.0, 0.0))
 
 
 # ------------------------------------------------------------------ image helpers

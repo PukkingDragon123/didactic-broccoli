@@ -61,8 +61,25 @@ def sculpt_base(h):
 
 TOP = B0 + 5.6  # the base's top (the tongue)
 cage = tk.loft('base', base_rings(), n=16, cap0='round', cap1='round')
-base_lo, base_hi = tk.lowhigh(cage, 'base', lo=1, hi=3, tris=190, sculpt=sculpt_base, region=(
+base_lo, base_hi = tk.lowhigh(cage, 'base', lo=1, hi=3, tris=170, sculpt=sculpt_base, region=(
     'jaw', [('mouth', lambda C, N: (N[:, 2] > 0.55) & (C[:, 1] < Y(16)) & (np.abs(C[:, 0]) < 6.0))]))
+LEG_Y = (Y(-10.6), Y(9.0))
+
+
+def hollow(o):
+    """The stapler base is hollow underneath (as a real one is): the legs fold up into it through notches in its
+    sides and the tail slides in at the back, so nothing passes through anything."""
+    tk.boolean(o, tk.rbox('cavity', (11.2, 61.0, 6.8), centre=(0, 9.5, B0 + 0.4), bevel=0.6, segs=1))
+    for y in LEG_Y:
+        for sx in (1, -1):
+            tk.boolean(o, tk.rbox('notch', (5.0, 6.4, 6.9), centre=(sx * 7.0, y, B0 + 0.45), bevel=0.5, segs=1))
+    tk.regions(o, 'jaw', [('mouth', lambda C, N: (N[:, 2] > 0.55) & (C[:, 1] < Y(16)) & (np.abs(C[:, 0]) < 6.0) & (C[:, 2] > B0 + 5)),
+                          ('inner', lambda C, N: (C[:, 2] < B0 + 3.95) & (np.abs(C[:, 0]) < 6.4) & (N[:, 2] < 0.9))])
+
+
+hollow(base_lo)
+hollow(base_hi)
+tk.decimate(base_lo, 290)
 
 
 def teeth(nm, x, y0, y1, n, zroot, h, big=(), slope=0.0, sink=1.2):
@@ -101,10 +118,10 @@ for sx in (1, -1):
 
 hinge = tk.rbox('hinge', (12.6, 6.4, 6.0), centre=(0, Y(23.9), B0 + 6.8), bevel=1.6, segs=3)
 hinge_lo, hinge_hi = tk.lowhigh(hinge, 'hinge', lo=0, hi=1, region='green')
-tk.decimate(hinge_lo, 70)
+tk.decimate(hinge_lo, 50)
 pin = tk.cyl('pin', 1.7, -7.6, 7.6, n=12, at=(HINGE[1], HINGE[2]), axis='X', bevel=0.35, segs=2)
 pin_lo, pin_hi = tk.lowhigh(pin, 'pin', lo=0, hi=0, region='chrome')
-tk.decimate(pin_lo, 40)
+tk.decimate(pin_lo, 28)
 
 ANVIL = [(-3.6, Y(-26.0)), (3.6, Y(-26.0)), (4.0, Y(-14.0)), (-4.0, Y(-14.0))]
 anvil_hi = tk.slab('anvil_hi', ANVIL, 0.7, plane='XY', at=TOP - 0.2, bevel=0.22, segs=2)
@@ -149,6 +166,11 @@ arm_lo, arm_hi = tk.lowhigh(cage, 'arm', lo=1, hi=3, tris=250, sculpt=sculpt_arm
     'green', [('lip', lambda C, N: (C[:, 2] < B0 + 9.3 + 0.045 * (C[:, 1] + 28)) & (N[:, 2] > -0.5)),
               ('mouth', lambda C, N: N[:, 2] <= -0.5)]))
 
+for sx in (1, -1):  # the eye knobs' sockets: they sink into these for the stapler
+    for o in (arm_lo, arm_hi):
+        tk.boolean(o, tk.loft('socket', [{'c': (sx * 4.6, Y(12.6) - 0.1, B0 + z), 'w': 9.0, 'h': 3.8, 'e': 2.3} for z in (10.4, 22.0)],
+                              n=12, up=(0, -1, 0), cap0='flat', cap1='flat'))
+tk.decimate(arm_lo, 256)
 mag = tk.rbox('magazine', (8.0, 40.0 * K, 1.8), centre=(0, Y(-6.0), B0 + 7.7), bevel=0.5, segs=2)
 mag_lo, mag_hi = tk.lowhigh(mag, 'magazine', lo=0, hi=1, region='chrome')
 tk.decimate(mag_lo, 36)
@@ -178,7 +200,7 @@ for sx, nm in ((1, 'eye_l'), (-1, 'eye_r')):
             crease = -0.3 * tk.smoothstep(0.9, 0.0, np.abs(V[:, 2] - (top - 1.6)))
             return brow + crease
         tk.push(h, f)
-    lo, hi = tk.lowhigh(t, nm, lo=1, hi=3, tris=50, sculpt=sc_eye, region='eye')
+    lo, hi = tk.lowhigh(t, nm, lo=1, hi=3, tris=42, sculpt=sc_eye, region="eye")
 
     def bead(name, n, lv):
         b = tk.lathe(name, [(0, -1.7), (2.0, -1.25), (2.75, 0.0), (2.0, 1.25), (0.0, 1.7)], n=n)
@@ -195,56 +217,52 @@ for sx, nm in ((1, 'eye_l'), (-1, 'eye_r')):
 
 # ------------------------------------------------------------------ legs: stubby, sprawled, clawed
 def leg(nm, y, sx, rear):
+    """A stubby sprawled leg, straight from the hip inside the hollow base out through its notch to a broad clawed foot
+    (straight, so it folds flat along the inside of the base)."""
     s = sx
-    yb = 1.0 if rear else -1.0  # the elbow / knee sprawls back on the front legs, forward on the rear ones
-    sh = (s * 5.4, y, B0 + 2.8)
-    # the upper limb flattened like a crocodile's (wider than tall), a fat elbow, a short forearm
-    limb = tk.loft(nm + '_limb', [
-        {'c': sh, 'w': 6.4, 'h': 2.7, 'e': 2.2},
-        {'c': (s * 7.7, y + 0.6 * yb, B0 + 3.0), 'w': 5.8, 'h': 2.6, 'e': 2.2},
-        {'c': (s * 9.6, y + 1.2 * yb, B0 + 1.9), 'w': 5.4, 'h': 2.7, 'e': 2.1},
-        {'c': (s * 10.3, y + 0.8 * yb, B0 - 1.0), 'w': 4.2, 'h': 2.0, 'e': 2.1},
-        {'c': (s * 10.5, y + 0.2 * yb, 1.6), 'w': 3.8, 'h': 1.8, 'e': 2.1},
-    ], n=8, up=(0, -1, 0) if False else (0, 0, 1), cap0='round', cap1='round')
+    sh = np.array((s * 2.8, y, B0 + 1.8))  # the hip: inside the hollow base, behind the notch
+    d = np.array((s * math.cos(math.radians(35)), 0, -math.sin(math.radians(35))))
+    pts = [sh + d * t for t in (0.0, 3.0, 6.0, 8.0)]
+    limb = tk.loft(nm + '_limb', [{'c': tuple(p), 'w': w, 'h': h, 'e': 2.3} for p, w, h in zip(pts, (4.4, 4.3, 3.9, 3.6), (1.55, 1.5, 1.4, 1.35))],
+                   n=8, cap0='round', cap1='round')
+    end = pts[-1]
     ft = tk.loft(nm + '_foot', [
-        {'c': (s * 10.5, y + 1.3, 1.05), 'w': 4.4, 'ht': 1.05, 'hb': 0.9, 'e': 2.4},
-        {'c': (s * 10.9, y - 1.0, 0.95), 'w': 5.6, 'ht': 0.95, 'hb': 0.85, 'e': 2.6},
-        {'c': (s * 11.2, y - 3.4, 0.7), 'w': 6.6, 'ht': 0.7, 'hb': 0.65, 'e': 3.2},
-    ], n=8, cap0='round', cap1=1.2)
-    toes = []
+        {'c': (end[0] + s * 0.6, y + 1.4, 0.95), 'w': 4.0, 'ht': 0.95, 'hb': 0.85, 'e': 2.4},
+        {'c': (end[0] + s * 0.9, y - 0.8, 0.85), 'w': 5.0, 'ht': 0.85, 'hb': 0.8, 'e': 2.6},
+        {'c': (end[0] + s * 1.0, y - 2.9, 0.65), 'w': 5.4, 'ht': 0.6, 'hb': 0.6, 'e': 3.2},
+    ], n=8, cap0='round', cap1=1.0)
+    toes = []  # (sculpt only: baked into the foot)
     ntoe = 4 if rear else 5
     for k in range(ntoe):
-        a = math.radians(-36 + 72 * k / (ntoe - 1)) * s
-        bx, by = s * 11.2 + math.sin(a) * 1.8, y - 2.6
-        dx, dy = math.sin(a + s * math.radians(6)), -math.cos(a)
-        L = 2.5 + (0.5 if 0 < k < ntoe - 1 else 0)
-        t = tk.tube(nm + f'_toe{k}', [(bx, by, 0.75), (bx + dx * L * 0.6, by + dy * L * 0.6, 0.66), (bx + dx * L, by + dy * L, 0.4)],
-                    [0.72, 0.58, 0.08], n=8, cap0='round', cap1='point')
+        a = math.radians(-34 + 68 * k / (ntoe - 1)) * s
+        bx, by = end[0] + s * 1.0 + math.sin(a) * 1.7, y - 2.2
+        dx, dy = math.sin(a), -math.cos(a)
+        L = 1.9 + (0.4 if 0 < k < ntoe - 1 else 0)
+        t = tk.tube(nm + f'_toe{k}', [(bx, by, 0.7), (bx + dx * L * 0.6, by + dy * L * 0.6, 0.62), (bx + dx * L, by + dy * L, 0.42)],
+                    [0.7, 0.56, 0.08], n=8, cap0='round', cap1='point')
         tk.subsurf(t, 2)
         tk.set_region(t, 'claw')
         toes.append(t)
 
-    def sc_limb(h, s=s):
-        def f(V, N):
-            # elbow wrinkle and a soft muscle bulge on the upper limb
-            el = np.array([s * 9.6, y + 1.2 * yb, B0 + 1.9])
-            wr = -0.18 * tk.smoothstep(1.4, 0.0, np.abs(np.linalg.norm(V - el, axis=1) - 2.4))
-            return wr
+    def sc_limb(h):
+        def f(V, N):  # scaly bands round the leg and a knuckle ridge (baked)
+            u = (V - sh) @ d
+            return -0.12 * (np.abs(np.sin(u * 2.4)) ** 6)
         tk.push(h, f)
-    l0, h0 = tk.lowhigh(limb, nm + '_limb', lo=1, hi=3, tris=46, sculpt=sc_limb, region=('leg', [('belly', lambda C, N: N[:, 2] < -0.4)]))
-    l1, h1 = tk.lowhigh(ft, nm + '_foot', lo=1, hi=3, tris=28, region='leg')
-    return tk.join([l0, l1], nm), [h0, h1] + toes, sh
+    l0, h0 = tk.lowhigh(limb, nm + '_limb', lo=1, hi=3, tris=40, sculpt=sc_limb, region=('leg', [('belly', lambda C, N: N[:, 2] < -0.5)]))
+    l1, h1 = tk.lowhigh(ft, nm + '_foot', lo=1, hi=3, tris=26, region='leg')
+    return tk.join([l0, l1], nm), [h0, h1] + toes, tuple(sh)
 
 
 LEGS = {}
-for nm, y, sx, rear in (('leg_fl', Y(-10.0), 1, False), ('leg_fr', Y(-10.0), -1, False), ('leg_bl', Y(13.6), 1, True), ('leg_br', Y(13.6), -1, True)):
+for nm, y, sx, rear in (('leg_fl', LEG_Y[0], 1, False), ('leg_fr', LEG_Y[0], -1, False), ('leg_bl', LEG_Y[1], 1, True), ('leg_br', LEG_Y[1], -1, True)):
     LEGS[nm] = leg(nm, y, sx, rear)
 
 # ------------------------------------------------------------------ the tail: three telescoping segments, curling
-TAIL_PTS = [(0, Y(24.0), B0 + 2.8), (0, Y(24.0) + 6.6, B0 + 2.0), (1.4, Y(24.0) + 12.4, B0 + 0.5), (4.8, Y(24.0) + 16.8, 3.3),
+TAIL_PTS = [(0, Y(24.0), B0 + 1.65), (0, Y(24.0) + 6.6, B0 + 1.2), (1.4, Y(24.0) + 12.4, B0 + 0.3), (4.8, Y(24.0) + 16.8, 3.3),
             (9.4, Y(24.0) + 19.0, 2.6), (13.8, Y(24.0) + 18.4, 1.9), (17.0, Y(24.0) + 15.8, 1.3)]
-TAIL_W = [10.0, 8.8, 7.2, 5.7, 4.3, 2.9, 1.0]
-TAIL_H = [2.55, 2.45, 2.3, 2.0, 1.6, 1.2, 0.5]
+TAIL_W = [9.6, 8.6, 7.2, 5.7, 4.3, 2.9, 1.0]
+TAIL_H = [1.8, 1.75, 1.7, 1.6, 1.4, 1.1, 0.5]
 
 
 def sculpt_tail(h):
@@ -330,9 +348,14 @@ def make_rig():
     for p in F.parts:
         R.attach(p.low, p.bone)
     up = Vector((0, math.sin(math.radians(JAW_OPEN)), math.cos(math.radians(JAW_OPEN))))  # the arm's 'up' at rest
-    sink = {'eye_l': tuple(-5.4 * up + Vector((-1.4, 0, 0))), 'eye_r': tuple(-5.4 * up + Vector((1.4, 0, 0)))}
+    sink = {'eye_l': tuple(-4.3 * up), 'eye_r': tuple(-4.3 * up)}  # straight down into their sockets
     legs = {'leg_fl': 1, 'leg_bl': 1, 'leg_fr': -1, 'leg_br': -1}
-    LOW = B0 - 1.6  # how far the body comes down: the folded legs are the stapler's rubber feet
+    LOW = B0  # the base comes down flat on the desk: the legs are folded up inside it
+    # a leg tucks in under the base through its notch, then lies forward along the hollow, clear of the tail
+    # a leg swings forward along the side (it slopes under the wall), then lifts flat into the hollow
+    FZ, FX = float(os.environ.get('FOLD_Z', 80)), float(os.environ.get('FOLD_X', 35))
+    TUCK = {nm: [('Z', -sx * FZ)] for nm, sx in {'leg_fl': 1, 'leg_bl': 1, 'leg_fr': -1, 'leg_br': -1}.items()}
+    FOLD = {nm: [('Z', -sx * FZ), ('X', -FX)] for nm, sx in {'leg_fl': 1, 'leg_bl': 1, 'leg_fr': -1, 'leg_br': -1}.items()}
 
     # the tail straightened (each segment turned back onto the one before it) and telescoped into the base
     def tdir(a, b):
@@ -350,7 +373,7 @@ def make_rig():
     q1 = Q(T_ROT['tail1'])
     q2 = q1 @ Q(T_ROT['tail2'])
     # a child's slide is in its parent's turned frame: give it in figure space along the straightened tail
-    T_IN = {'tail1': (0, -13.0, 0), 'tail2': tuple(q1.inverted() @ Vector((0, -9.0, 0))), 'tail3': tuple(q2.inverted() @ Vector((0, -9.0, 0)))}
+    T_IN = {'tail1': (0, -9.0, 0), 'tail2': tuple(q1.inverted() @ Vector((0, -12.0, 0))), 'tail3': tuple(q2.inverted() @ Vector((0, -10.0, 0)))}
     with R.action('gimmick'):
         k = R.key
         for b in ['root', 'jaw', 'eye_l', 'eye_r', 'tail1', 'tail2', 'tail3'] + list(legs):
@@ -360,12 +383,13 @@ def make_rig():
         k('jaw', 4, rot=('X', -7))
         # 5-16 the hop: up, legs swing in under the base, the tail straightens and telescopes in, eyes sink, jaw shuts
         k('root', 10, move=(0, 0, 6.0))
-        k('root', 16, move=(0, 0, -LOW), ease='BOUNCE')
+        k('root', 18, move=(0, 0, -LOW), ease='BOUNCE')
         k('root', 22, move=(0, 0, -LOW))
         for nm, sx in legs.items():
             d = 1 if nm[-2] == 'b' else 0
             k(nm, 5 + d, rot=('Y', 0))
-            k(nm, 13 + d, rot=('Y', sx * 138))
+            k(nm, 11 + d, rot=TUCK[nm])   # under the base and in through the notch...
+            k(nm, 15 + d, rot=FOLD[nm])   # ...then laid back along the hollow
         for t in ('tail1', 'tail2', 'tail3'):
             k(t, 6)
             k(t, 11, rot=T_ROT[t])
@@ -382,7 +406,8 @@ def make_rig():
         k('jaw', 42, rot=('X', JAW_OPEN))
         k('root', 42, move=(0, 0, -LOW))
         for nm, sx in legs.items():
-            k(nm, 42, rot=('Y', sx * 138))
+            k(nm, 42, rot=FOLD[nm])
+            k(nm, 45, rot=TUCK[nm])
         for t in ('tail1', 'tail2', 'tail3'):
             k(t, 42, rot=T_ROT[t], move=T_IN[t])
         for e in ('eye_l', 'eye_r'):
@@ -391,7 +416,7 @@ def make_rig():
         k('root', 47, move=(0, 0, 3.0))
         k('root', 53, move=(0, 0, 0), ease='BOUNCE')
         for nm, sx in legs.items():
-            k(nm, 49, rot=('Y', 0), ease='BACK')
+            k(nm, 50, rot=('Y', 0), ease='BACK')
         for e in ('eye_l', 'eye_r'):
             k(e, 46, move=(0, 0, 0), ease='BACK')
         for t in ('tail1', 'tail2', 'tail3'):
@@ -417,6 +442,17 @@ def make_rig():
     return R
 
 
+if '--clip' in ARGS:
+    from rig import check_clip
+    R = make_rig()
+    skip = [('tail1', 'tail2'), ('tail2', 'tail3'), ('tail1', 'tail3'), ('hinge', 'base'), ('pin', 'hinge'), ('pin', 'base'), ('anvil', 'base'),
+            ('magazine', 'arm'), ('arm', 'hinge'), ('pin', 'arm'), ('magazine', 'hinge')]
+    res = check_clip(R, F.parts, range(1, 86, 1), skip=skip, tol=0.35)
+    for f, L in sorted(res.items()):
+        print('CLIP', f, L)
+    print('CLIP frames', len(res))
+    sys.exit(0)
+
 if '--preview' in ARGS or '--fold' in ARGS:
     lows = [p.low for p in F.parts]
     highs = [h for p in F.parts for h in p.highs]
@@ -434,7 +470,8 @@ if '--preview' in ARGS or '--fold' in ARGS:
                     V = np.array([o.matrix_world @ v.co for v in o.data.vertices])
                     print(fr, o.name, np.round(V.min(0), 1), np.round(V.max(0), 1))
             sys.exit(0)
-        views = [(36, ((0, 8, 120), (0, 8, 0)), 40), (36, ((90, 30, 10), (0, 10, 6)), 50), (36, ((-60, 70, 30), (0, 8, 6)), 50), (12, ((58, -66, 48), (0, 2, 8)), 45)]
+        FR = int(os.environ.get('FR', 30))
+        views = [(FR, ((0, 8, -120), (0, 8, 0)), 40), (FR, ((90, 30, 10), (0, 10, 6)), 50), (FR, ((-60, 70, 30), (0, 8, 6)), 50), (int(os.environ.get('FR2', 10)), ((58, -66, 48), (0, 2, 8)), 45)]
         for i, (fr, cam, lens) in enumerate(views):
             bpy.context.scene.frame_set(fr)
             tk.preview(OUT + f'_p{i + 1}.png', lows, cam=cam, lens=lens)
@@ -456,7 +493,7 @@ F.bake(ao_samples=24 if FAST else 128, ao_dist=6.0, reuse="--repaint" in ARGS)
 
 def paint(P):
     on, X, Yc, Z = P.on, P.X, P.Y, P.Z
-    sh = P.shade(light=0.42, ao=0.85, cav=1.1)
+    sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     top = np.clip(on[:, :, 2], 0, 1)
     GREEN = pt.ramp('#3f8247', 7, shift=0.08)
     # factory airbrush: a darker back, lighter flanks; the crocodile's dark crossbands across the back
@@ -473,6 +510,7 @@ def paint(P):
     CREAM = pt.ramp('#ecdcaa', 6, shift=0.07)
     P.fill('jaw', CREAM, tone=sh, base=0.08)
     P.fill('belly', CREAM, tone=sh, base=0.0)
+    P.fill('inner', pt.ramp('#a39878', 5, shift=0.06), tone=sh, base=-0.15)  # the hollow underneath
     P.fill('mouth', pt.ramp('#cf6670', 6, shift=0.06), tone=sh, base=-0.05 - 0.25 * tk.smoothstep(4.0, 6.0, np.abs(X)))
     P.fill('tooth', pt.ramp('#f4ecd8', 5, shift=0.05, dark=0.4), tone=sh, base=0.15)
     P.fill('chrome', pt.ramp('#b3bbc4', 7, dark=0.75, light=0.75, shift=0.05), tone=sh * 1.5, base=0.1)

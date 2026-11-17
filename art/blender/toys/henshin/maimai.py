@@ -59,6 +59,9 @@ for sx in (1, -1):
     cheeks.append(ch)
 foot_lo, foot_hi = tk.lowhigh(cage, 'foot', lo=1, hi=3, tris=230, sculpt=sculpt_foot, region=(
     'body', [('sole', lambda C, N: N[:, 2] < -0.5)]))
+for o in (foot_lo, foot_hi):  # the well the roll turns in
+    tk.boolean(o, tk.cyl('well', RO + 0.5, -RW / 2 - 0.4, RW / 2 + 0.4, n=32, at=(ROLL[1], ROLL[2]), axis='X', bevel=0.3, segs=1))
+tk.decimate(foot_lo, 240)
 ch_lo, ch_hi = [], []
 for ch in cheeks:
     lo, hi = tk.lowhigh(ch, 'cheek', lo=0, hi=2, tris=70, region='body')
@@ -83,13 +86,22 @@ def sculpt_head(h):
         # a soft brow over where the eye-stalks come out, a smile crease above the cutter, a chin
         brow = tk.bump(V, (0, -24.6, 17.0), 5.0, 0.6, sharp=1.5)
         smile = -0.3 * tk.smoothstep(0.5, 0.0, np.abs(V[:, 2] - (10.2 - 0.02 * V[:, 0] ** 2))) * (V[:, 1] < -24.0)
-        sockets = sum(-tk.bump(V, (sx * 3.0, -24.4, 19.4), 1.9, 0.7) for sx in (1, -1))
+        sockets = sum(-tk.bump(V, (sx * 3.4, -24.4, 19.4), 2.1, 0.5) for sx in (1, -1))
         return brow + smile + sockets
     tk.push(h, f)
 
 
 cage = tk.loft('head', head_rings(), n=14, up=(0, -1, 0.35), cap0='round', cap1='round')
 head_lo, head_hi = tk.lowhigh(cage, 'head', lo=1, hi=3, tris=170, sculpt=sculpt_head, region='body')
+STALK_DIR = {sx: np.array((sx * 0.42, -0.42, 1.0)) / np.linalg.norm((0.42, 0.42, 1.0)) for sx in (1, -1)}
+FEEL_DIR = {sx: np.array((sx * 0.55, -1.0, -0.25)) / np.linalg.norm((0.55, 1.0, 0.25)) for sx in (1, -1)}
+for o in (head_lo, head_hi):  # the sockets the eye-stalks and feelers draw back into
+    for sx in (1, -1):
+        b, d = np.array((sx * 3.4, -24.4, 18.6)), STALK_DIR[sx]
+        tk.boolean(o, tk.tube('sock', [tuple(b - d * 6.0), tuple(b + d * 2.0)], [1.75, 1.75], n=12, cap0='flat', cap1='flat'))
+        b, d = np.array((sx * 4.2, -26.0, 12.6)), FEEL_DIR[sx]
+        tk.boolean(o, tk.tube('sock', [tuple(b - d * 4.4), tuple(b + d * 1.0)], [1.3, 1.3], n=10, cap0='flat', cap1='flat'))
+tk.decimate(head_lo, 190)
 # the serrated cutter: a chrome blade under the head, teeth pointing down and forward (the lip)
 pts = [(-6.0, 0.0)]
 for i in range(12):
@@ -127,12 +139,12 @@ sculpt_roll(roll_hi)
 # ------------------------------------------------------------------ eye-stalks (two telescoping segments) and feelers
 STALK = {}
 for sx, nm in ((1, 'l'), (-1, 'r')):
-    base = np.array((sx * 3.0, -24.4, 18.6))
+    base = np.array((sx * 3.4, -24.4, 18.6))
     tipdir = np.array((sx * 0.42, -0.42, 1.0))
     tipdir /= np.linalg.norm(tipdir)
     a = base + tipdir * 7.2
     b = a + tipdir * 6.2
-    s1 = tk.tube('stalk_' + nm + '1', [tuple(base - tipdir * 1.0), tuple(base + tipdir * 3.0), tuple(a + tipdir * 0.6)], [1.55, 1.4, 1.25], n=8,
+    s1 = tk.tube('stalk_' + nm + '1', [tuple(base - tipdir * 0.5), tuple(base + tipdir * 3.0), tuple(a + tipdir * 0.6)], [1.55, 1.4, 1.25], n=8,
                  cap0='round', cap1='round')
     s2 = tk.tube('stalk_' + nm + '2', [tuple(a - tipdir * 1.2), tuple(a + tipdir * 3.0), tuple(b)], [1.05, 0.95, 0.9], n=8,
                  cap0='round', cap1='flat')
@@ -194,29 +206,29 @@ def make_rig():
             k('stalk_' + nm + '2', 2)
             k('stalk_' + nm + '2', 7, move=tuple(-d * 6.4))
             k('stalk_' + nm + '1', 5)
-            k('stalk_' + nm + '1', 11, move=tuple(-d * 7.6))
+            k('stalk_' + nm + '1', 11, move=tuple(-d * 3.8))
         for nm, (lo, hi, base, d) in FEEL.items():
             k('feeler_' + nm, 4)
             k('feeler_' + nm, 9, move=tuple(-np.array(d) * 3.4))
         k('head', 6)
-        k('head', 12, move=(0, 2.4, -0.6), rot=('X', -4))
+        k('head', 12, rot=('X', -5))
         # 14-40 the roll spins out tape, the head nods to cut it ('pishi')
         k('roll', 14)
         k('roll', 34, rot=('X', -540))
-        k('head', 34, move=(0, 2.4, -0.6), rot=('X', -4))
-        k('head', 37, move=(0, 2.4, -1.2), rot=('X', 8))
-        k('head', 40, move=(0, 2.4, -0.6), rot=('X', -4))
+        k('head', 34, rot=('X', -5))
+        k('head', 37, rot=('X', 1.5))
+        k('head', 40, rot=('X', -5))
         k('root', 34)
         k('root', 37, move=(0, 0, -0.5))
         k('root', 40)
         for nm, d in st.items():
-            k('stalk_' + nm + '1', 44, move=tuple(-d * 7.6))
+            k('stalk_' + nm + '1', 44, move=tuple(-d * 3.8))
             k('stalk_' + nm + '2', 44, move=tuple(-d * 6.4))
         for nm, (lo, hi, base, d) in FEEL.items():
             k('feeler_' + nm, 44, move=tuple(-np.array(d) * 3.4))
-        k('head', 44, move=(0, 2.4, -0.6), rot=('X', -4))
+        k('head', 44, rot=('X', -5))
         # 44-60 out again: the head stretches, one stalk then the other pops up, the feelers poke out
-        k('head', 50, move=(0, -0.8, 0.3), rot=('X', 3), ease='BACK')
+        k('head', 50, rot=('X', 1.0), ease='BACK')
         k('head', 56, move=(0, 0, 0))
         k('stalk_l1', 49, move=(0, 0, 0), ease='BACK')
         k('stalk_l2', 52, move=(0, 0, 0), ease='BACK')
@@ -238,6 +250,16 @@ def make_rig():
             k(b, 90)
     return R
 
+
+if '--clip' in ARGS:
+    from rig import check_clip
+    R = make_rig()
+    res = check_clip(R, F.parts, range(1, 91), skip=[('spindle', 'foot'), ('spindle', 'roll'), ('blade', 'head'), ('stalk_l2', 'stalk_l1'),
+                                                    ('stalk_r2', 'stalk_r1')], tol=0.35)
+    for f, L in sorted(res.items()):
+        print('CLIP', f, L)
+    print('CLIP frames', len(res))
+    sys.exit(0)
 
 if '--preview' in ARGS or '--fold' in ARGS:
     lows = [p.low for p in F.parts]
@@ -267,7 +289,7 @@ F.bake(ao_samples=24 if FAST else 128, ao_dist=6.0, reuse='--repaint' in ARGS)
 
 def paint(P):
     on, X, Yc, Z = P.on, P.X, P.Y, P.Z
-    sh = P.shade(light=0.42, ao=0.85, cav=1.1)
+    sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     top = np.clip(on[:, :, 2], 0, 1)
     TEAL = pt.ramp('#4a8a90', 7, shift=0.07)
     # factory airbrush: the body darkens to the sole, the head and stalks paler toward the top
@@ -281,7 +303,7 @@ def paint(P):
     turn = (r - RI) / 2.3 + th / (2 * math.pi)
     band = np.where((np.mod(turn, 1.0) < 0.5), 0.12, -0.12)
     side = np.abs(on[:, :, 0]) > 0.6
-    shr = P.shade(light=0.0, ao=0.85, cav=1.1)  # (the roll spins: no painted key light on it, only its own shadows)
+    shr = P.shade(light=0.0, ao=0.0, cav=1.1)  # (the roll spins: no painted light or contact shadow on it, only its own grooves)
     P.fill('tape', AMBER, tone=shr, base=0.12 + band * side)
     seam = P.region('tape') & side & (np.abs(np.mod(turn, 1.0) - 0.5) < 0.075) & (r > RI + 0.6)
     P.tint(seam, AMBER, shr - 0.75)

@@ -43,8 +43,8 @@ CACHE = os.path.join(ROOT, "node_modules", ".cache", "lowpix-audit")
 DENSITY = (DENS * 0.9, DENS * 1.1)      # figure px/mm (area-weighted)
 PART_DENSITY = (DENS * 0.75, DENS * 1.3)  # each part with >= 3 % of the figure's area
 # the Blender line (art/blender/toys): one 512 px atlas holds a whole multi-part transforming toy (normal-mapped), so its
-# density is lower; it is capped at 5 px/mm (lib/fig.py DENS_MAX), small hidden mechanics get 0.6 of it
-BLENDER_DENSITY = (4.0, 5.2)
+# density is lower; what you see is capped at 5.6 px/mm (lib/fig.py DENS_MAX), undersides and small hidden mechanics get less
+BLENDER_DENSITY = (4.2, 5.8)
 BLENDER_PART_DENSITY = (2.5, 5.5)
 # calibrated on sources converted in the line's finish: a white untextured rice cooker 67 % flat, a good blue
 # shorthair 28 % (dark glass 39 %); the speckled nautilus the owner flagged 23.5 % noise, good models 1.5-6 %

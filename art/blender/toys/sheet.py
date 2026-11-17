@@ -83,8 +83,8 @@ def main():
         x = 24
         D.text((24, y0 - 4), "the owner's reference boards" if mode == 'series' else 'in the game: capsule reveal, in hand, on the shelf', font=font(18), fill=(90, 80, 70))
         for im in extra:
-            k = (ref_h - 40) / im.height
-            im = im.resize((int(im.width * k), ref_h - 40), Image.LANCZOS)
+            k = min((ref_h - 40) / im.height, (W - 48) / im.width)  # (a wide strip is fitted to the sheet)
+            im = im.resize((int(im.width * k), int(im.height * k)), Image.LANCZOS)
             if x + im.width > W - 24:
                 break
             S.paste(im, (x, y0 + 22))

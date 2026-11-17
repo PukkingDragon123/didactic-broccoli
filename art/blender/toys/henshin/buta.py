@@ -32,14 +32,17 @@ FRONT = -L / 2 - 1.5   # the front face (the loft's domed cap)
 
 # ------------------------------------------------------------------ the housing (the pig's body)
 def body_rings():
+    """A round-bellied pig that is still a bakelite sharpener housing: soft superellipse sections, a belly that hangs
+    a little, a narrower face and a round rump."""
     R = []
-    # a rounded box with a fuller belly and a slightly narrower rump; front at -y
-    for y, w, ht, hb, e in ((-L / 2, W * 0.86, H * 0.42, H * 0.42, 3.0), (-L / 2 + 1.6, W * 0.97, H * 0.5, H * 0.5, 3.3),
-                            (-L / 2 + 6, W, H * 0.52, H * 0.5, 3.4), (0, W * 1.02, H * 0.53, H * 0.5, 3.4),
-                            (L / 2 - 6, W * 0.98, H * 0.51, H * 0.5, 3.4), (L / 2 - 1.6, W * 0.93, H * 0.47, H * 0.47, 3.2),
-                            (L / 2, W * 0.8, H * 0.38, H * 0.38, 2.9)):
-        R.append({'c': (0, y, ZC), 'w': w, 'ht': ht, 'hb': hb, 'e': e})
+    for y, w, ht, hb, e in ((-L / 2, 0.80, 0.40, 0.40, 2.5), (-L / 2 + 2.2, 0.95, 0.50, 0.50, 2.7), (-L / 2 + 7.5, 1.0, 0.52, 0.55, 2.8),
+                            (0.0, 1.05, 0.53, 0.60, 2.8), (L / 2 - 7.5, 1.0, 0.52, 0.56, 2.7), (L / 2 - 2.4, 0.9, 0.47, 0.47, 2.5),
+                            (L / 2, 0.68, 0.35, 0.35, 2.3)):
+        R.append({'c': (0, y, ZC), 'w': W * w, 'ht': H * ht, 'hb': H * hb, 'e': e})
     return R
+
+
+EYE_C = {1: (6.9, FRONT + 1.3, ZC + 6.0), -1: (-6.9, FRONT + 1.3, ZC + 6.0)}
 
 
 def sculpt_body(h):
@@ -53,42 +56,61 @@ def sculpt_body(h):
         # a soft belly, chubby cheeks either side of the snout, a raised top cover
         d += 0.6 * tk.smoothstep(-0.2, -0.9, N[:, 2]) * np.exp(-(V[:, 1] / 12) ** 2)
         for sx in (1, -1):
-            d += tk.bump(V, (sx * 10.5, FRONT + 2.5, ZC - 3.5), 6.5, 1.1, sharp=1.6)
+            d += tk.bump(V, (sx * 10.2, FRONT + 2.8, ZC - 3.0), 7.0, 1.6, sharp=1.6)  # round cheeks
+            ec = np.array(EYE_C[sx])
+            d -= tk.bump(V, tuple(ec + np.array((0, 1.0, 0))), 3.4, 0.7)  # eye sockets
+        # brows: the left one cocked up, the right one down over a half-shut eye (a pig with a plan)
+        d += tk.bump(V, (7.2, FRONT + 1.7, ZC + 9.6), 2.6, 0.75) + tk.bump(V, (-6.6, FRONT + 1.7, ZC + 8.5), 2.8, 0.85)
+        # the smirk: a crease under the snout, curling up at one corner
+        u = V[:, 0]
+        smirk_z = ZC - 8.9 + 0.012 * u ** 2 + 0.09 * np.clip(u + 2, 0, None)
+        d -= 0.4 * tk.smoothstep(0.55, 0.0, np.abs(V[:, 2] - smirk_z)) * (np.abs(u) < 6.2) * (V[:, 1] < FRONT + 2.5)
         d += 0.35 * tk.smoothstep(Z0 + H - 6.2, Z0 + H - 5.6, V[:, 2])
         return d
     tk.push(h, f)
     # the pencil entry socket in the front: the snout part sits in it
-    tk.boolean(h, tk.cyl('sock', 6.5, FRONT - 1.0, FRONT + 3.0, n=24, at=(0, ZC - 1.5), axis='Y', bevel=0.4, segs=2))
+    tk.boolean(h, tk.cyl('sock', 6.7, FRONT - 1.0, FRONT + 5.8, n=24, at=(0, ZC - 1.5), axis='Y', bevel=0.4, segs=2))
     # the drawer opening at the bottom front
-    tk.boolean(h, tk.rbox('slot', (17.5, 8, 6.6), centre=(0, -L / 2 + 2.6, Z0 + 3.4), bevel=0.8, segs=2))
+    tk.boolean(h, tk.rbox('slot', (13.5, 8.6, 4.0), centre=(0, -L / 2 + 1.0, Z0 + 2.0), bevel=0.6, segs=2))
+
+
+def sockets(o):
+    """The four wells the trotters draw up into (the sharpener's feet)."""
+    for x, y in ((8.6, -7.6), (-8.6, -7.6), (8.6, 9.5), (-8.6, 9.5)):
+        tk.boolean(o, tk.loft('well', [{'c': (x * 1.01, y, Z0 + z), 'w': 9.9, 'h': 4.7, 'e': 2.3} for z in (-2.0, 10.4)], n=12, up=(0, -1, 0),
+                              cap0='flat', cap1='flat'))
 
 
 cage = tk.loft('body', body_rings(), n=20, cap0='round', cap1='round', capd=1.6)
 plate = tk.rbox('plate', (0.8, 13.0, 6.4), centre=(W * 0.51 + 0.2, 2.0, ZC - 0.5), bevel=0.35, segs=2)
 tk.set_region(plate, 'label')
-body_lo, body_hi = tk.lowhigh(cage, 'body', lo=1, hi=3, tris=330, sculpt=sculpt_body, region=(
-    'pink', [('blush', lambda C, N: (C[:, 1] < -L / 2 + 3) & (np.abs(C[:, 0]) > 7) & (C[:, 2] > ZC - 4) & (C[:, 2] < ZC + 3))]))
+body_lo, body_hi = tk.lowhigh(cage, 'body', lo=1, hi=3, tris=330, sculpt=sculpt_body, region='pink')
+for o in (body_lo, body_hi):
+    sockets(o)
+tk.boolean(body_lo, tk.cyl('sock', 6.7, FRONT - 1.0, FRONT + 5.8, n=20, at=(0, ZC - 1.5), axis='Y', bevel=0, segs=0))
+tk.boolean(body_lo, tk.rbox('slot', (13.5, 8.6, 4.0), centre=(0, -L / 2 + 1.0, Z0 + 2.0), bevel=0.6, segs=1))
+tk.decimate(body_lo, 380)
 
 # ------------------------------------------------------------------ the snout: a two-size pencil selector (nostrils)
 SN = (0, FRONT, ZC - 1.5)
 # (lathes along y: the profile's z is +y, so negative z sticks out of the front)
-snout = tk.lathe('snout', [(0, 2.5), (6.1, 2.5), (6.4, -0.6), (6.1, -2.6), (5.2, -3.5), (0, -3.7)], n=20, axis='Y', centre=SN)
+snout = tk.lathe('snout', [(0, 2.5), (6.3, 2.5), (6.6, -0.8), (6.4, -3.2), (5.5, -4.4), (0, -4.6)], n=20, axis='Y', centre=SN)
 
 
 def sculpt_snout(h):
     for sx in (1, -1):  # the nostrils: the big- and small-pencil holes
-        tk.boolean(h, tk.cyl('hole', 1.55 if sx > 0 else 1.25, SN[1] - 6, SN[1] - 1.6, n=16, at=(sx * 2.3, SN[2] + 0.3), axis='Y', bevel=0.2, segs=1))
+        tk.boolean(h, tk.cyl('hole', 1.85 if sx > 0 else 1.55, SN[1] - 7, SN[1] - 2.2, n=16, at=(sx * 2.7, SN[2] + 0.4), axis='Y', bevel=0.2, segs=1))
 
 
 snout_lo, snout_hi = tk.lowhigh(snout, 'snout', lo=0, hi=2, tris=None, sculpt=sculpt_snout, region='snout')
 tk.decimate(snout_lo, 90)
-bezel = tk.lathe('bezel', [(6.0, 0.6), (7.3, 0.6), (7.4, -0.3), (6.7, -0.8), (6.0, -0.6)], n=24, axis='Y', centre=SN)
+bezel = tk.lathe('bezel', [(6.2, 0.6), (7.3, 0.6), (7.4, -0.3), (6.8, -0.8), (6.2, -0.6)], n=24, axis='Y', centre=SN)
 bezel_lo, bezel_hi = tk.lowhigh(bezel, 'bezel', lo=0, hi=1, region='chrome')
 tk.decimate(bezel_lo, 60)
 
 # ------------------------------------------------------------------ the shavings drawer (the mouth)
-drawer = tk.rbox('drawer', (17.0, 9.0, 6.0), centre=(0, -L / 2 + 3.3, Z0 + 3.4), bevel=0.9, segs=2)
-tab = tk.rbox('tab', (8.0, 2.0, 2.6), centre=(0, -L / 2 - 1.6, Z0 + 3.0), bevel=0.6, segs=2)
+drawer = tk.rbox('drawer', (13.0, 7.0, 3.4), centre=(0, -L / 2 + 1.6, Z0 + 2.0), bevel=0.7, segs=2)
+tab = tk.rbox('tab', (8.0, 2.0, 2.2), centre=(0, -L / 2 - 1.6, Z0 + 1.9), bevel=0.5, segs=2)
 drawer_lo, drawer_hi = tk.lowhigh(drawer, 'drawer', lo=0, hi=1, region='drawer')
 tab_lo, tab_hi = tk.lowhigh(tab, 'tab', lo=0, hi=1, region='drawer')
 tk.decimate(drawer_lo, 60)
@@ -97,10 +119,10 @@ tk.decimate(tab_lo, 30)
 # ------------------------------------------------------------------ ears: the top-cover latches
 EARS = {}
 for sx, nm in ((1, 'ear_l'), (-1, 'ear_r')):
-    root = (sx * 8.0, -L / 2 + 7.5, Z0 + H - 0.6)
+    root = (sx * 8.0, -L / 2 + 7.5, Z0 + H + float(os.environ.get('EARZ', 0.8)))
     # a soft triangular flap, cupped, tipping forward and out (pig ears flop forward)
-    pts = [(-4.6, 0.0), (4.6, 0.0), (4.2, 3.4), (2.4, 7.0), (0.5, 9.0), (-0.5, 9.0), (-2.6, 6.8), (-4.3, 3.2)]
-    e = tk.slab(nm, pts, 2.2, plane='XZ', at=0.0, bevel=0.8, segs=1)
+    pts = [(-5.2, 0.0), (5.2, 0.0), (5.0, 3.6), (3.4, 7.2), (0.8, 9.6), (-0.8, 9.6), (-3.6, 7.0), (-5.0, 3.4)]
+    e = tk.slab(nm, pts, 3.0, plane='XZ', at=0.0, bevel=1.1, segs=1)
     tk.subsurf(e, 1)
 
     def cup(V, sx=sx):
@@ -109,19 +131,23 @@ for sx, nm in ((1, 'ear_l'), (-1, 'ear_r')):
         return V
     tk.deform(e, cup)
     tk.rotate(e, -sx * 24, 'Y')     # splayed out
-    tk.rotate(e, 38, 'X')           # tipped forward
+    tk.rotate(e, 44, 'X')           # tipped forward, floppy
     tk.move(e, root)
     lo, hi = tk.lowhigh(e, nm, lo=0, hi=2, region=('pink', [('inner', lambda C, N: N[:, 1] < -0.45)]))
     tk.decimate(lo, 40)
-    EARS[nm] = (lo, hi, root)
+    # the latch hinge the ear turns on: a knuckle moulded on the housing's top
+    kn = tk.cyl('knuckle', 2.5, root[0] - 3.4, root[0] + 3.4, n=12, at=(root[1], root[2]), axis='X', bevel=0.4, segs=2)
+    knl, knh = tk.lowhigh(kn, 'knuckle', lo=0, hi=1, region='pink')
+    tk.decimate(knl, 28)
+    EARS[nm] = (lo, hi, root, knl, knh)
 
 # ------------------------------------------------------------------ trotters (telescoping rubber feet)
 LEGS = {}
-for nm, x, y in (('leg_fl', 8.6, -9.5), ('leg_fr', -8.6, -9.5), ('leg_bl', 8.6, 9.5), ('leg_br', -8.6, 9.5)):
-    lg = tk.loft(nm, [{'c': (x, y, Z0 + 3.5), 'w': 8.2, 'h': 3.9, 'e': 2.3},
-                      {'c': (x * 1.02, y, Z0 - 1.2), 'w': 7.2, 'h': 3.5, 'e': 2.3},
-                      {'c': (x * 1.03, y - 0.4, 2.0), 'w': 6.6, 'h': 3.3, 'e': 2.5},
-                      {'c': (x * 1.03, y - 0.5, 0.0), 'w': 6.8, 'h': 3.4, 'e': 2.8}], n=10, up=(0, -1, 0), cap0='round', cap1='flat')
+for nm, x, y in (('leg_fl', 8.6, -7.6), ('leg_fr', -8.6, -7.6), ('leg_bl', 8.6, 9.5), ('leg_br', -8.6, 9.5)):
+    lg = tk.loft(nm, [{'c': (x, y, Z0 + 3.5), 'w': 9.2, 'h': 4.3, 'e': 2.3},
+                      {'c': (x * 1.02, y, Z0 - 0.6), 'w': 8.6, 'h': 4.1, 'e': 2.3},
+                      {'c': (x * 1.03, y - 0.3, 2.2), 'w': 7.8, 'h': 3.8, 'e': 2.5},
+                      {'c': (x * 1.04, y - 0.6, 0.0), 'w': 8.2, 'h': 4.0, 'e': 2.9}], n=10, up=(0, -1, 0), cap0='round', cap1='flat')
 
     def sc_leg(h, x=x, y=y):
         def f(V, N):
@@ -156,21 +182,32 @@ for o, reg, tri in ((shaft, 'chrome', 24), (boss, 'chrome', 40), (arm, 'chrome',
 crank_lo = tk.join(lows, 'crank')
 crank_hi = highs
 
-# ------------------------------------------------------------------ eyes (little bead eyes on the front, sculpted)
+# ------------------------------------------------------------------ eyes: glossy beads set in sockets under the brows
 EYES = []
 for sx in (1, -1):
-    c = (sx * 6.4, FRONT + 0.9, ZC + 6.0)
-    b = tk.lathe('eyebead', [(0, 0.8), (1.5, 0.7), (1.85, 0.0), (1.2, -0.75), (0, -0.95)], n=16, axis='Y', centre=c)
-    tk.subsurf(b, 1)
-    tk.set_region(b, 'eye')
-    EYES.append((b, c))
+    c = np.array(EYE_C[sx])
+    ax = np.array((sx * 0.32, -1.0, 0.12))
+    ax /= np.linalg.norm(ax)
+    bl = []
+    for nm_, n_, lv in (('eye_hi', 16, 2), ('eye', 8, 0)):
+        b = tk.lathe(nm_, [(0, -1.4), (2.0, -1.0), (2.5, 0.0), (2.0, 1.05), (0, 1.45)], n=n_)
+        q = Vector((0, 0, 1)).rotation_difference(Vector(tuple(ax)))
+        tk.transform(b, q.to_matrix().to_4x4())
+        tk.move(b, tuple(c))
+        tk.subsurf(b, lv)
+        bl.append(b)
+    tk.set_region(bl[0], 'eye')
+    EYES.append((bl[1], bl[0], tuple(c), tuple(ax)))
 
 # ------------------------------------------------------------------ parts
-F.part('body', body_lo, [body_hi, plate] + [b for b, c in EYES])
+for v in EARS.values():  # (no hinge barrel: the ear sits on the top cover and folds flat on it)
+    tk.delete(v[3])
+    tk.delete(v[4])
+F.part('body', tk.join([body_lo] + [e[0] for e in EYES], 'body'), [body_hi, plate] + [e[1] for e in EYES])
 F.part('snout', snout_lo, [snout_hi], bone='snout')
 F.part('bezel', bezel_lo, [bezel_hi], kind='metal', uvw=0.6)
 F.part('drawer', tk.join([drawer_lo, tab_lo], 'drawer'), [drawer_hi, tab_hi], bone='drawer', uvw=0.8)
-for nm, (lo, hi, root) in EARS.items():
+for nm, (lo, hi, root, knl, knh) in EARS.items():
     F.part(nm, lo, [hi], bone=nm)
 for nm, (lo, hi, p) in LEGS.items():
     F.part(nm, lo, [hi], bone=nm)
@@ -188,7 +225,7 @@ def make_rig():
     R.bone('root', (0, 0, ZC))
     R.bone('snout', SN, parent='root')
     R.bone('drawer', (0, -L / 2 + 3, Z0 + 3), parent='root')
-    for nm, (lo, hi, root) in EARS.items():
+    for nm, (lo, hi, root, knl, knh) in EARS.items():
         R.bone(nm, root, parent='root')
     for nm, (lo, hi, p) in LEGS.items():
         R.bone(nm, p, parent='root')
@@ -196,6 +233,7 @@ def make_rig():
     for p in F.parts:
         R.attach(p.low, p.bone)
     ears = {'ear_l': 1, 'ear_r': -1}
+    EAR = float(os.environ.get('EAR', 70))
     with R.action('gimmick'):
         k = R.key
         allb = ['root', 'snout', 'drawer', 'crank'] + list(ears) + list(LEGS)
@@ -204,12 +242,12 @@ def make_rig():
         # 0-14 it sits down into a sharpener: ears fold flat, trotters slide up, the body drops onto them
         for nm, sx in ears.items():
             k(nm, 3, rot=('X', -10))
-            k(nm, 9, rot=[('X', -38), ('Y', sx * 24), ('X', -92)])
+            k(nm, 9, rot=[('X', -44), ('Y', sx * 24), ('X', -EAR)])
         k('root', 4, move=(0, 0, 1.2))
-        k('root', 12, move=(0, 0, -LEG + 1.4), ease='BOUNCE')
+        k('root', 12, move=(0, 0, -LEG + 1.0), ease='BOUNCE')
         for nm in LEGS:
             k(nm, 4)
-            k(nm, 11, move=(0, 0, LEG - 1.4))
+            k(nm, 11, move=(0, 0, LEG - 1.0))
         k('snout', 6)
         k('snout', 10, move=(0, 2.2, 0))
         # 14-50 a sharpener: the crank turns three times (the tail spins), then the drawer pops out full of shavings
@@ -221,10 +259,10 @@ def make_rig():
         k('drawer', 58, move=(0, -6.5, -0.6))
         k('drawer', 63, move=(0, 0, 0), ease='BACK')
         for nm in LEGS:
-            k(nm, 60, move=(0, 0, LEG - 1.4))
+            k(nm, 60, move=(0, 0, LEG - 1.0))
         for nm, sx in ears.items():
-            k(nm, 62, rot=[('X', -38), ('Y', sx * 24), ('X', -92)])
-        k('root', 60, move=(0, 0, -LEG + 1.4))
+            k(nm, 62, rot=[('X', -44), ('Y', sx * 24), ('X', -EAR)])
+        k('root', 60, move=(0, 0, -LEG + 1.0))
         k('snout', 60, move=(0, 2.2, 0))
         # 60-80 it stands back up with a hop: trotters out, snout out, ears flick
         k('root', 66, move=(0, 0, 3.0))
@@ -242,6 +280,15 @@ def make_rig():
     return R
 
 
+if '--clip' in ARGS:
+    from rig import check_clip
+    R = make_rig()
+    res = check_clip(R, F.parts, range(1, 85), skip=[('bezel', 'body'), ('snout', 'bezel'), ('crank', 'body')], tol=0.35)
+    for f, L_ in sorted(res.items()):
+        print('CLIP', f, L_)
+    print('CLIP frames', len(res))
+    sys.exit(0)
+
 if '--preview' in ARGS or '--fold' in ARGS:
     lows = [p.low for p in F.parts]
     highs = [h for p in F.parts for h in p.highs]
@@ -256,7 +303,7 @@ if '--preview' in ARGS or '--fold' in ARGS:
     tk.preview(OUT + '_p1.png', highs, cam=((62, -70, 50), (0, 0, 14)), lens=50)
     tk.preview(OUT + '_p2.png', highs, cam=((-62, 66, 44), (0, 2, 14)), lens=50)
     tk.preview(OUT + '_p3.png', lows, cam=((62, -70, 50), (0, 0, 14)), lens=50)
-    tk.preview(OUT + '_p4.png', highs, cam=((0, -95, 22), (0, 0, 16)), lens=55)
+    tk.preview(OUT + '_p4.png', lows, cam=((70, -10, 40), (6, -9, 30)), lens=90)
     sys.exit(0)
 
 
@@ -270,7 +317,7 @@ F.bake(ao_samples=24 if FAST else 128, ao_dist=6.0, reuse='--repaint' in ARGS)
 
 def paint(P):
     on, X, Yc, Z = P.on, P.X, P.Y, P.Z
-    sh = P.shade(light=0.42, ao=0.85, cav=1.1)
+    sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     top = np.clip(on[:, :, 2], 0, 1)
     PINK = pt.ramp('#eaa0a4', 7, shift=0.06)
     # factory airbrush: a warmer, deeper pink low on the flanks and round the rump; the top cover a touch paler
@@ -293,11 +340,19 @@ def paint(P):
     shav = P.region('drawer') & (np.sin(X * 2.6 + np.sin(Z * 3.1) * 2) * np.sin(Z * 4.0 + X) > 0.25) & (Yc > FRONT + 0.6) & (Z < Z0 + 5.6)
     P.tint(shav, pt.ramp('#d9a86a', 5, shift=0.05), sh + 0.2)
     P.flat(shav & (np.sin(X * 5.0 + Z * 3.0) > 0.85), '#5a3a2a')  # the painted pencil-lead ends
-    # bead eyes: glossy black with a catchlight
-    P.fill('eye', pt.ramp('#1e1a1c', 5, shift=0.05, light=0.3), tone=sh, base=0.0)
-    for sx in (1, -1):
-        c = np.array((sx * 6.4, FRONT + 0.9, ZC + 6.0))
-        P.flat(P.ellipse(tuple(c + np.array((sx * -0.45, -1.0, 0.5))), (0, -1, 0.2), 0.42, 0.42) & P.region('eye'), '#fbf6ec')
+    # the eyes: glossy beads with whites, the right one half shut under its brow, both glancing sideways (up to something)
+    P.fill('eye', pt.ramp('#f4eee2', 5, shift=0.05), tone=sh * 0.5, base=0.2)
+    for (lo_, hi_, c, ax), sx in zip(EYES, (1, -1)):
+        c, ax = np.array(c), np.array(ax)
+        P.eye(tuple(c + ax * 1.4), tuple(ax), 2.15, ry=2.05, white='#f6f1e6', iris='#4a2e24', pupil='#140c0a', ring='#3a2420',
+              look=(0.22, -0.05), lid=0.2 if sx > 0 else -0.05, lidcol=PINK[2], where=P.region('eye'), facing=-0.3)
+    # brows (a darker pink stroke on each sculpted brow) and the smirk under the snout
+    brow_l = (np.abs((Z - (ZC + 9.6)) + 0.18 * (X - 7.2)) < 0.55) & (np.abs(X - 7.2) < 2.6)
+    brow_r = (np.abs((Z - (ZC + 8.5)) - 0.2 * (X + 6.6)) < 0.6) & (np.abs(X + 6.6) < 2.7)
+    face = P.region('pink') & (Yc < FRONT + 3.5) & (on[:, :, 1] < -0.3)
+    P.tint(face & (brow_l | brow_r), pt.ramp('#b85466', 6, shift=0.06), sh - 0.1)
+    smirk_z = ZC - 8.9 + 0.012 * X ** 2 + 0.09 * np.clip(X + 2, 0, None)
+    P.flat(face & (np.abs(Z - smirk_z) < 0.42) & (np.abs(X) < 5.8), '#8e3446')
     # the side label: a red enamel plate with a cream rule and the maker's pencil mark
     lab = P.region('label')
     P.fill('label', pt.ramp('#c23a2c', 6, shift=0.05), tone=sh * 0.6, base=0.05)
