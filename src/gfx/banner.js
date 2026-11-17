@@ -223,7 +223,7 @@ const bakedTex = new Map(); // key -> [textures]
 export function bannerCanvas(seriesId, thumbs, opts = {}) {
   const key = seriesId + (opts.faded ? ':f' : '');
   if (baked.has(key)) return baked.get(key);
-  const c = document.createElement('canvas'); c.width = BANNER_W; c.height = BANNER_H;
+  const c = document.createElement('canvas'); c.width = BANNER_W * 2; c.height = BANNER_H * 2; // the baked card is 2x
   const g = c.getContext('2d'); g.fillStyle = '#efe6d2'; g.fillRect(0, 0, c.width, c.height);
   baked.set(key, c);
   const img = new Image();
@@ -232,7 +232,7 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
     if (opts.faded) g.filter = 'saturate(0.55) sepia(0.25) brightness(1.05)';
     g.drawImage(img, 0, 0, c.width, c.height); g.filter = 'none'; done();
   };
-  img.onerror = () => { try { g.drawImage(paintedBanner(seriesId, thumbs, opts), 0, 0); } catch (e) { console.warn('banner', e); } done(); };
+  img.onerror = () => { try { g.imageSmoothingEnabled = false; g.drawImage(paintedBanner(seriesId, thumbs, opts), 0, 0, c.width, c.height); } catch (e) { console.warn('banner', e); } done(); };
   img.src = `${import.meta.env?.BASE_URL ?? '/'}img/print/cards/${(SERIES_BY_ID[seriesId] ? seriesId : 'nuigurumi')}.webp`;
   return c;
 }

@@ -146,7 +146,7 @@ for sid, s in L.items():
         P.rect(0, 0, w, h, WHITE); P.rect(0, 0, w, 40, acc)
         P.text(s['jp'], 'mochiy', 20, 10, 20, WHITE, anchor='lm', maxw=w - 120)
         P.text('取扱注意', 'kakub', 12, w - 10, 20, WHITE, anchor='rm')
-        ref, f = BC.BACK.get(sid, ('local:gacha_rows.jpg', (0.5, 0.5, 1.0)))
+        ref, f = BC.BACK.get(sid, ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
         P.photo(ref, 8, 48, 168, 168, f=f, sat=0.9)
         P.text('カプセル入り', 'kakub', 13, 190, 70, INK, anchor='lm'); P.text('%d円' % s['price'], 'bebas', 28, 190, 110, RED, anchor='lm')
         P.text('全%d種' % len(s['items']), 'kaku', 16, 190, 150, INK, anchor='lm')
@@ -178,6 +178,6 @@ if __name__ == '__main__':
             if t is None: continue
             k = min(96 / t.width, 96 / t.height); t = t.resize((max(1, int(t.width * k)), max(1, int(t.height * k))), Image.LANCZOS)
             c = Image.new('RGBA', (96, 96), (0, 0, 0, 0)); c.alpha_composite(t, ((96 - t.width) // 2, 96 - t.height)); cut['toy:%s/%s' % (sid, it['id'])] = c
-        ref, f = BC.BACK.get(sid, ('local:gacha_rows.jpg', (0.5, 0.5, 1.0)))
+        ref, f = BC.BACK.get(sid, ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
         P = Panel(128, 96, 0); P.photo(ref, 0, 0, 128, 96, f=f, sat=0.9); cut['bd:' + sid] = P.image().convert('RGBA')
     o2, i2 = BP.pack(cut, 1024, alpha=True); BP.save_sheet('toycut', o2, i2)
