@@ -1,0 +1,254 @@
+"""Factory-PVC paint for the toy line, per texel, from the baked maps (lib/fig.py): lowpix's rules for painting like
+a person (docs/STYLE_GUIDE.md of the lowpix repo) applied to a capsule toy's finish.
+
+- Every colour is a hand-picked base turned into a hue-shifted ramp: shadows cooler and more saturated, lights
+  warmer and paler, the darkest tone a tinted near-black.
+- The tone at a texel is the form's light (sculpt normal), ambient occlusion, cavity / edge (pointiness) and the
+  factory airbrush gradient, quantised to the ramp in clean bands, then cleaned of lone texels (clusters, no noise).
+- Paint lines: a crisp darker texel line where two paint colours meet on the sculpt.
+- Printed details (eyes, pupils, catchlights, markings) are shapes evaluated in figure space, so they wrap across
+  UV seams; they sit on top in flat ink colours.
+Everything is sRGB 0..1. Figure space: mm, Z up, the figure faces -Y.
+"""
+import colorsys
+import math
+
+import numpy as np
+
+KEY = np.array([-0.45, -0.62, 0.64])  # the painted key light: upper front-left
+KEY = KEY / np.linalg.norm(KEY)
+
+
+def hexrgb(h):
+    h = h.lstrip('#')
+    return np.array([int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)])
+
+
+def _hue_toward(h, target, k):
+    d = ((target - h + 0.5) % 1.0) - 0.5
+    return (h + d * k) % 1.0
+
+
+def ramp(base, n=7, dark=0.55, light=0.42, shift=0.07, sat=0.22, ink=None):
+    """A hue-shifted ramp of n tones around `base` (index n // 2 - ish is the base). dark / light: how far the ends go
+    in value; shift: hue turn (toward blue-violet in shadow, toward yellow in light); sat: saturation change."""
+    r, g, b = hexrgb(base) if isinstance(base, str) else base
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    mid = (n - 1) * 0.55
+    out = []
+    for i in range(n):
+        t = (i - mid) / (mid if i < mid else (n - 1 - mid))  # -1 (darkest) .. 1 (lightest)
+        if t < 0:
+            hh = _hue_toward(h, 0.70, shift * -t * (1 if s > 0.08 else 0.4))
+            ss = min(1, s * (1 + sat * -t) + 0.04 * -t)
+            vv = v * (1 - dark * -t)
+        else:
+            hh = _hue_toward(h, 0.13, shift * t * (1 if s > 0.08 else 0.4))
+            ss = max(0, s * (1 - sat * 1.6 * t))
+            vv = min(1, v + (1 - v) * light * t + 0.06 * t)
+        out.append(colorsys.hsv_to_rgb(hh, ss, vv))
+    if ink:
+        out[0] = tuple(hexrgb(ink))
+    return np.array(out)
+
+
+class Painter:
+    """Paints the albedo of a figure from its maps: P = Painter(F.maps, F.region_index)."""
+
+    def __init__(s, maps, regions, size):
+        s.m = maps
+        s.ri = regions
+        s.n = size
+        s.rgb = np.zeros((size, size, 3), np.float32)
+        s.idx = np.full((size, size), -1, np.int32)  # ramp index per texel (for clusters and lines)
+        s.ramps = {}  # region id -> ramp
+        s.pos, s.on, s.ao, s.cav = maps['pos'], maps['on'], maps['ao'], maps['cav']
+        s.reg, s.mask, s.part = maps['reg'], maps['mask'], maps['part']
+        s.X, s.Y, s.Z = s.pos[:, :, 0], s.pos[:, :, 1], s.pos[:, :, 2]
+
+    def region(s, name):
+        return s.mask & (s.reg == s.ri.get(name, -99))
+
+    def shade(s, light=0.55, ao=0.9, cav=1.2, wrap=0.35):
+        """The tone field (about -1 .. 1) before any airbrush: form light + AO + cavity."""
+        l = np.einsum('ijk,k->ij', s.on, KEY)
+        l = (l + wrap) / (1 + wrap)
+        v = light * (np.clip(l, -0.2, 1) - 0.45)
+        v += ao * (np.clip(s.ao, 0, 1) - 1)
+        v += cav * np.clip((s.cav - 0.5) * 2, -0.5, 0.5)
+        return v
+
+    def fill(s, name, rmp, tone=None, base=0.0, levels=None, extra=None, where=None):
+        """Paint a region with a ramp. tone: the tone field (default shade()); base: offset (airbrush, a float or a
+        field); levels: how many ramp tones per unit of tone (default the ramp's length); extra: a field added."""
+        m = s.region(name) if isinstance(name, str) else name
+        if where is not None:
+            m = m & where
+        if not m.any():
+            return m
+        t = s.shade() if tone is None else tone
+        t = t + base
+        if extra is not None:
+            t = t + extra
+        n = len(rmp)
+        mid = (n - 1) * 0.55
+        k = (levels or n * 0.62)
+        i = np.clip(np.rint(mid + t * k), 0, n - 1).astype(np.int32)
+        rid = len(s.ramps)
+        s.ramps[rid] = rmp
+        s.idx[m] = i[m] + rid * 64
+        s.rgb[m] = rmp[i[m]]
+        return m
+
+    def flat(s, m, col):
+        """Flat ink (printed details): no shading."""
+        s.rgb[m] = hexrgb(col) if isinstance(col, str) else col
+        s.idx[m] = -2
+        return m
+
+    def tint(s, m, rmp, tone):
+        """Paint a mask with a ramp at a given tone field (decals that still take the form's light)."""
+        n = len(rmp)
+        i = np.clip(np.rint((n - 1) * 0.55 + tone * n * 0.62), 0, n - 1).astype(np.int32)
+        rid = len(s.ramps)
+        s.ramps[rid] = rmp
+        s.idx[m] = i[m] + rid * 64
+        s.rgb[m] = rmp[i[m]]
+
+    # ---------------------------------------------------------- shapes in figure space
+    def frame(s, c, axis, up=(0, 0, 1)):
+        """Local 2D coordinates (u, v) and depth w of every texel in a plane through c facing `axis`."""
+        a = np.asarray(axis, float)
+        a /= np.linalg.norm(a)
+        upv = np.asarray(up, float)
+        u = np.cross(upv, a)
+        if np.linalg.norm(u) < 1e-6:
+            u = np.cross([0, 1, 0], a)
+        u /= np.linalg.norm(u)
+        v = np.cross(a, u)
+        d = s.pos - np.asarray(c, float)
+        return d @ u, d @ v, d @ a, a
+
+    def ellipse(s, c, axis, rx, ry, up=(0, 0, 1), facing=0.15, rot=0.0):
+        """A printed ellipse (eyes, spots) on the surface around c, seen from `axis`."""
+        U, V, W, a = s.frame(c, axis, up)
+        if rot:
+            cr, sr = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+            U, V = U * cr + V * sr, -U * sr + V * cr
+        d = (U / rx) ** 2 + (V / ry) ** 2
+        face = np.einsum('ijk,k->ij', s.on, a) > facing
+        return s.mask & (d <= 1) & face & (np.abs(W) < max(rx, ry) * 1.5)
+
+    def eye(s, c, axis, r, up=(0, 0, 1), iris='#e8b830', pupil='#140f12', white=None, slit=0.0, ring='#1a1214',
+            ry=None, look=(0.0, 0.0), lid=None, lidcol=None, rot=0.0, facing=0.1, hi=True, where=None):
+        """A painted bead eye: dark ring, iris (or white), pupil (round, or a slit `slit` wide), a catchlight up-left.
+        lid: a heavy upper lid line height (-1..1 in the eye's v) painted in lidcol."""
+        ry = ry or r
+        U, V, W, a = s.frame(c, axis, up)
+        if rot:
+            cr, sr = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+            U, V = U * cr + V * sr, -U * sr + V * cr
+        face = (np.einsum('ijk,k->ij', s.on, a) > facing) & (np.abs(W) < r * 2) & s.mask
+        if where is not None:
+            face &= where
+        d = np.sqrt((U / r) ** 2 + (V / ry) ** 2)
+        out = face & (d <= 1.0)
+        s.flat(out, ring)
+        inner = face & (d <= 0.84)
+        s.flat(inner, white or iris)
+        pu, pv = U / r - look[0], V / ry - look[1]
+        if slit:
+            pm = inner & (np.abs(pu) <= slit) & (np.sqrt(pu ** 2 * 0.15 + pv ** 2) <= 0.74)
+        else:
+            pm = inner & (np.sqrt(pu ** 2 + pv ** 2) <= 0.5)
+        if white:
+            im = inner & (np.sqrt(pu ** 2 + pv ** 2) <= 0.62)
+            s.flat(im, iris)
+            pm = inner & (np.sqrt(pu ** 2 + pv ** 2) <= 0.36)
+        s.flat(pm, pupil)
+        # lower iris glow: a lighter crescent at the bottom of the iris
+        if not white:
+            gl = inner & ~pm & (V / ry < -0.35) & (d <= 0.8)
+            s.flat(gl, _lighter(iris, 0.28))
+        if lid is not None:
+            lm = out & (V / ry > lid)
+            s.flat(lm, ring if lidcol is None else lidcol)
+            lline = out & (np.abs(V / ry - lid) < 0.13)
+            s.flat(lline, ring)
+        if hi:
+            hm = face & (np.sqrt(((U / r) + 0.32) ** 2 + ((V / ry) - 0.34) ** 2) <= 0.2)
+            s.flat(hm & out, '#fffaf0')
+            hm2 = face & (np.sqrt(((U / r) - 0.3) ** 2 + ((V / ry) + 0.36) ** 2) <= 0.09)
+            s.flat(hm2 & out, '#f4efe6')
+        return out
+
+    # ---------------------------------------------------------- finishing passes
+    def lines(s, regions_a, regions_b=None, col=None, step=1, maxd=0.7):
+        """A crisp 1-texel paint line on texels of regions_a that touch regions_b (default: any other region)."""
+        A = np.zeros_like(s.mask)
+        for r in regions_a:
+            A |= s.region(r)
+        B = None
+        if regions_b:
+            B = np.zeros_like(s.mask)
+            for r in regions_b:
+                B |= s.region(r)
+        edge = np.zeros_like(s.mask)
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nb_reg = np.roll(s.reg, (dy, dx), (0, 1))
+            nb_mask = np.roll(s.mask, (dy, dx), (0, 1))
+            nb_pos = np.roll(s.pos, (dy, dx), (0, 1))
+            near = np.linalg.norm(nb_pos - s.pos, axis=2) < maxd
+            other = nb_mask & near & (nb_reg != s.reg)
+            if B is not None:
+                other &= np.roll(B, (dy, dx), (0, 1))
+            edge |= other
+        m = A & edge
+        if col:
+            s.flat(m, col)
+        else:
+            s._darken(m, step)
+        return m
+
+    def _darken(s, m, step=1):
+        ys, xs = np.nonzero(m & (s.idx >= 0))
+        for y, x in zip(ys, xs):
+            code = s.idx[y, x]
+            rid, i = code // 64, code % 64
+            r = s.ramps[rid]
+            j = max(0, i - step)
+            s.idx[y, x] = rid * 64 + j
+            s.rgb[y, x] = r[j]
+
+    def clusters(s, iters=2):
+        """Clean lone texels: a texel whose ramp tone none of its 4 neighbours share takes the commonest neighbour tone
+        of its own ramp (pixel artists paint in clusters)."""
+        for _ in range(iters):
+            idx = s.idx
+            shad = idx >= 0
+            nb = [np.roll(idx, sh, (0, 1)) for sh in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+            same = sum((n == idx) for n in nb)
+            lone = shad & (same == 0)
+            if not lone.any():
+                break
+            ys, xs = np.nonzero(lone)
+            for y, x in zip(ys, xs):
+                rid = idx[y, x] // 64
+                cand = [int(n[y, x]) for n in nb if n[y, x] >= 0 and n[y, x] // 64 == rid]
+                if not cand:
+                    continue
+                v = max(set(cand), key=cand.count)
+                s.idx[y, x] = v
+                s.rgb[y, x] = s.ramps[rid][v % 64]
+
+    def done(s):
+        return s.rgb
+
+
+def _lighter(col, k):
+    c = hexrgb(col) if isinstance(col, str) else np.asarray(col)
+    return np.clip(c + (1 - c) * k, 0, 1)
+
+
+def mix(a, b, t):
+    return np.asarray(a) * (1 - t) + np.asarray(b) * t

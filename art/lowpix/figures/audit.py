@@ -42,6 +42,10 @@ CACHE = os.path.join(ROOT, "node_modules", ".cache", "lowpix-audit")
 
 DENSITY = (DENS * 0.9, DENS * 1.1)      # figure px/mm (area-weighted)
 PART_DENSITY = (DENS * 0.75, DENS * 1.3)  # each part with >= 3 % of the figure's area
+# the Blender line (art/blender/toys): one 512 px atlas holds a whole multi-part transforming toy (normal-mapped), so its
+# density is lower; it is capped at 5 px/mm (lib/fig.py DENS_MAX), small hidden mechanics get 0.6 of it
+BLENDER_DENSITY = (4.0, 5.2)
+BLENDER_PART_DENSITY = (2.5, 5.5)
 # calibrated on sources converted in the line's finish: a white untextured rice cooker 67 % flat, a good blue
 # shorthair 28 % (dark glass 39 %); the speckled nautilus the owner flagged 23.5 % noise, good models 1.5-6 %
 FLAT_MAX = 0.45                         # flat share of the subject's texels
@@ -205,6 +209,8 @@ def audit(series_list):
         s, fid = key.split("/")
         mp = os.path.join(HERE, s, fid + ".meta.json")
         meta = json.load(open(mp)) if os.path.exists(mp) else None
+        if meta is None and os.path.exists(os.path.join(ROOT, "art", "blender", "toys", s, fid + ".py")):
+            meta = {"mascot": True, "blender": True}  # a Blender-modelled figure (art/blender/toys): its script is the spec
         m = M[key]
         bad = []
         if m.get("missing") or key not in man or meta is None:
@@ -219,15 +225,17 @@ def audit(series_list):
         tex = [p for p in parts if p["uvpx"] > 0 and p["area"] > 0]
         A = sum(p["area"] for p in tex)
         dens = (sum(p["uvpx"] for p in tex) / A) ** 0.5 if A else 0
+        plo, phi = BLENDER_PART_DENSITY if meta.get("blender") else PART_DENSITY
         off = [f"{p['name']} {(p['uvpx'] / p['area']) ** 0.5:.1f}" for p in tex if p["area"] >= 0.03 * A
-               and not PART_DENSITY[0] <= (p["uvpx"] / p["area"]) ** 0.5 <= PART_DENSITY[1]]
-        if not DENSITY[0] <= dens <= DENSITY[1]:
-            bad.append(f"px/mm {dens:.2f} outside {DENSITY[0]:.1f}-{DENSITY[1]:.1f}")
+               and not plo <= (p["uvpx"] / p["area"]) ** 0.5 <= phi]
+        dlo, dhi = BLENDER_DENSITY if meta.get("blender") else DENSITY
+        if not dlo <= dens <= dhi:
+            bad.append(f"px/mm {dens:.2f} outside {dlo:.1f}-{dhi:.1f}")
         if off:
             bad.append("part px/mm off: " + ", ".join(off[:4]))
         # texel stats over the subject (everything but the base)
-        base = [p for p in parts if p["name"].startswith("base")]
-        subj = [p for p in parts if not p["name"].startswith("base")]
+        base = [] if meta.get("blender") else [p for p in parts if p["name"].startswith("base")]  # (Blender toys: no stands)
+        subj = parts if meta.get("blender") else [p for p in parts if not p["name"].startswith("base")]
         fl_n = fl_s = no_s = 0
         worst = []
         for ti, (W, H) in enumerate(m["textures"]):

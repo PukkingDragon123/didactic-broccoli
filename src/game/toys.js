@@ -4,12 +4,14 @@
 //  robot (wind, set down, it walks the floor or the table and turns at edges), kendama (flip the ball onto a cup or
 //  the spike), foam dart blaster (darts fly with gravity and stick to walls and people), pocket LCD game (a little
 //  runner on the toy's own screen: click to jump).
-//  On a shelf or lying around (right click with empty hands): they play in place.
+//  On a shelf or lying around (right click with empty hands): they play in place. So do the figures with a gimmick
+//  clip (the Blender toy line, src/game/figureGimmicks.js): a press plays the clip where they stand.
 // game.toys.use(item) / hint(item) are wired into game.held here (instance wrappers, Held.js is untouched).
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { isLowpix, figurePartMesh, figurePoint } from '../figures/lowpix.js';
+import { hasFigureGimmick, playFigureGimmick } from './figureGimmicks.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -539,10 +541,16 @@ export class Toys {
       if (h) {
         const ent = [...g.items.list].find((e) => e.obj === h.obj && e.kind === 'toy');
         if (ent && toyKind(ent.data.key)) this.playInPlace(ent.mesh, ent.data.key, ent);
+        else if (ent && hasFigureGimmick(ent.data.key)) playFigureGimmick(ent.mesh);
         else {
           for (const d of g.allDisplays()) {
             const s = d.slots.find((x) => x.hit === h.obj);
-            if (s) { const cur = d.items[s.i]; if (cur && s.mesh && toyKind(cur.k)) this.playInPlace(s.mesh, cur.k); break; }
+            if (s) {
+              const cur = d.items[s.i];
+              if (cur && s.mesh && toyKind(cur.k)) this.playInPlace(s.mesh, cur.k);
+              else if (cur && s.mesh && !d.opts.prices && hasFigureGimmick(cur.k)) playFigureGimmick(s.mesh);
+              break;
+            }
           }
         }
       }
@@ -563,7 +571,8 @@ export function installInto(game) {
   game.items.spawnToy = (data, pos, opts) => {
     const ent = spawnToy(data, pos, opts);
     const h = ent.obj.userData.handler;
-    if (h && toyKind(data.key)) { const orig = h.hint; h.hint = (...a) => { const r = orig(...a); return r && !game.held.item ? { ...r, sub: `${r.sub ? r.sub + ' · ' : ''}RMB play` } : r; }; }
+    const what = toyKind(data.key) ? 'play' : hasFigureGimmick(data.key) ? (getItem(data.key)?.gimmick?.text || 'play').toLowerCase() : null;
+    if (h && what) { const orig = h.hint; h.hint = (...a) => { const r = orig(...a); return r && !game.held.item ? { ...r, sub: `${r.sub ? r.sub + ' · ' : ''}RMB ${what}` } : r; }; }
     return ent;
   };
   const dHint = DisplaySlots.prototype.hint;
@@ -572,6 +581,7 @@ export function installInto(game) {
       const r = dHint.call(this, slot, held);
       const it = this.items[slot.i];
       if (r && !held && it && toyKind(it.k) && !this.opts.prices) return { ...r, sub: `${r.sub ? r.sub + ' · ' : ''}RMB play` };
+      if (r && !held && it && hasFigureGimmick(it.k) && !this.opts.prices) return { ...r, sub: `${r.sub ? r.sub + ' · ' : ''}RMB ${(getItem(it.k)?.gimmick?.text || 'play').toLowerCase()}` };
       return r;
     };
     DisplaySlots.prototype.hint.__toys = true;

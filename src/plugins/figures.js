@@ -4,19 +4,16 @@
 //  - gimmicks: with a figure in your hand that has a gimmick clip (a lid, a head turn, a hop...), left click plays it
 //    (also while you inspect it); the figure goes back to its resting pose when the clip ends.
 // Hooks game.held the way src/game/toys.js does (Held.js is untouched); toys.js keeps its own playable toys.
-import { setFigureEvents, preloadSeries, loadFigure, playFigureClip, stopFigureClip, figureClipPlaying, updateFigureClips, isLowpix } from '../figures/lowpix.js';
+import { setFigureEvents, preloadSeries, loadFigure, stopFigureClip, updateFigureClips, isLowpix } from '../figures/lowpix.js';
 import { SERIES_BY_ID, getItem } from '../data/series/index.js';
-import { audio } from '../core/audio.js';
+import { playFigureGimmick, updateFigureGimmicks } from '../game/figureGimmicks.js';
 
 export function install(game) {
   setFigureEvents(game.events);
   const H = game.held;
   const meshOf = (it) => (it?.kind === 'toy' ? it.obj?.children.find((c) => c.userData.itemKey && isLowpix(getItem(c.userData.itemKey))) || null : null);
   const gimmickOf = (m) => { const item = m && getItem(m.userData.itemKey); return item && !item.toy && m.userData.gimmick ? m.userData.gimmick : null; };
-  const play = (m) => {
-    if (figureClipPlaying(m)) return;
-    if (playFigureClip(m, 'gimmick')) { try { audio.play('flap', { vol: 0.3 }); } catch { /* no such sound */ } }
-  };
+  const play = (m) => playFigureGimmick(m); // (src/game/figureGimmicks.js: the clip and its timed sounds)
   if (H) {
     const hint = H.hint.bind(H), primary = H.primary.bind(H);
     H.hint = () => {
@@ -28,6 +25,7 @@ export function install(game) {
   let down = false, last = null;
   game.constructor.updaters.push((g, dt) => {
     updateFigureClips(dt);
+    updateFigureGimmicks(dt);
     if (!H) return;
     const m = meshOf(H.item);
     const b = !!g.input?.button?.(0);

@@ -27,7 +27,7 @@ BACK = {  # series -> photo backdrop (focus x, y, zoom)
     'inusanpo': ('oi:1abfab68fd6a34c7@train', (0.6, 0.6, 1.2)), 'konchu': ('oi:42d6b48cf68049b9@test', (0.4, 0.5, 1.2)),
     'okashi': ('oi:f291d677045b5a38@test', (0.5, 0.6, 1.1)), 'sampuru': ('oi:6324262554f184ab@test', (0.5, 0.75, 1.8)),
     'shinkai': ('oi:f5cb8e5bda89bf5c@test', (0.5, 0.5, 1.1)), 'yacho': ('oi:ab7b7786ca8649a8@test', (0.5, 0.5, 1.0)),
-    'hikidashi': ('oi:8cf0d90fadf83514@test', (0.5, 0.5, 1.1)), 'kaiun': ('oi:808e21f5b9632bab@test', (0.5, 0.5, 1.1)),
+    'hikidashi': ('oi:8cf0d90fadf83514@test', (0.5, 0.5, 1.1)), 'henshin': ('oi:8cf0d90fadf83514@test', (0.7, 0.35, 1.5)), 'kaiun': ('oi:808e21f5b9632bab@test', (0.5, 0.5, 1.1)),
     'shugorei': ('oi:34f24d2374c50c25@test', (0.5, 0.5, 1.1)), 'machikado': ('oi:ae8ffd814db5ce63@test', (0.5, 0.5, 1.1)),
     'norimono': ('oi:43ef0d9ecd6dd4be@test', (0.5, 0.5, 1.1)), 'daikaiju': ('local:skyline.jpg', (0.5, 0.5, 1.0)), 'asobi': ('local:toy_shop.jpg', (0.5, 0.5, 1.1)),
 }
@@ -96,7 +96,7 @@ def card(s):
     parts = [title] if len(title) <= 6 else [title[:len(title) // 2 + len(title) % 2], title[len(title) // 2 + len(title) % 2:]]
     for k, t in enumerate(parts): logo(P, t, 22, 70 + k * 74, 62 if len(parts) > 1 else 70, acc, txt, 290)
     yb = 70 + len(parts) * 74 - 22
-    P.rect(22, yb, 210, 30, txt); P.text('マスコットフィギュア', 'kakub', 16, 127, yb + 15, 0xffffff)
+    P.rect(22, yb, 210, 30, txt); P.text((s.get('card') or {}).get('kind') or 'マスコットフィギュア', 'kakub', 16, 127, yb + 15, 0xffffff)
     P.text(s['name'].upper(), 'bebas', 18, 24, yb + 50, txt, anchor='lm', track=1)
     # --- price and count badges, the age box
     P.rect(22, 268, 74, 56, 0xffd23f); P.rect(22, 268, 74, 56, txt, line=2)

@@ -132,16 +132,22 @@ function build(R) {
   const W = new THREE.Matrix4(), N = new THREE.Matrix3();
   const sep = new Set(R.entry.separate || []); // moving parts the game shows on their own (a wind-up key, a dart)
   const separated = (o) => { for (let n = o; n && n !== scene; n = n.parent) if (sep.has(n.name)) return true; return false; };
+  // Blender-modelled figures (art/blender/toys) carry a baked normal map per atlas and vertex tangents for it
+  let tangents = true;
+  scene.traverse((o) => { if (o.isMesh && !o.userData.figPart && !(sep.size && separated(o)) && !o.geometry.attributes.tangent) tangents = false; });
+  R.normals = new Map(); // atlas -> normal map
   scene.traverse((o) => {
     if (!o.isMesh || o.userData.figPart || (sep.size && separated(o))) return;
     const map = o.material?.map || null;
     if (map && !texIndex.has(map)) { texIndex.set(map, texIndex.size); tidy(map); }
+    if (map && o.material.normalMap && !R.normals.has(map)) { R.normals.set(map, o.material.normalMap); tidy(o.material.normalMap, false); }
     const ti = map ? texIndex.get(map) : 0;
     const slot = ti * NK + kindOf(o, R.entry.mats || {});
     const src = o.geometry, g = new THREE.BufferGeometry();
     g.setAttribute('position', toFloat(src.attributes.position));
     if (src.attributes.normal) g.setAttribute('normal', toFloat(src.attributes.normal));
     g.setAttribute('uv', src.attributes.uv ? toFloat(src.attributes.uv) : new THREE.Float32BufferAttribute(new Float32Array(src.attributes.position.count * 2), 2));
+    if (tangents) g.setAttribute('tangent', toFloat(src.attributes.tangent));
     if (src.index) g.setIndex(src.index.clone());
     W.multiplyMatrices(M, o.matrixWorld);
     g.applyMatrix4(W);
@@ -160,6 +166,7 @@ function build(R) {
   geo.computeBoundingBox(); geo.computeBoundingSphere();
   geo.userData = { size: geo.boundingBox.getSize(new THREE.Vector3()), fig: frame, lowpix: true };
   R.geo = geo;
+  R.tangents = tangents;
   R.tris = geo.index.count / 3;
 }
 function indexed(g) { const n = g.attributes.position.count, idx = new Uint32Array(n); for (let i = 0; i < n; i++) idx[i] = i; g.setIndex(new THREE.BufferAttribute(idx, 1)); return g; }
@@ -170,12 +177,13 @@ function addBackFaces(g) {
   g.setAttribute('position', grow(g.attributes.position, false));
   g.setAttribute('normal', grow(g.attributes.normal, true));
   g.setAttribute('uv', grow(g.attributes.uv, false));
+  if (g.attributes.tangent) g.setAttribute('tangent', grow(g.attributes.tangent, true));
   const back = [];
   for (let i = 0; i < idx.length; i += 3) back.push(idx[i] + n, idx[i + 2] + n, idx[i + 1] + n);
   g.setIndex([...idx, ...back]);
 }
-function tidy(t) {
-  t.colorSpace = THREE.SRGBColorSpace;
+function tidy(t, colour = true) {
+  t.colorSpace = colour ? THREE.SRGBColorSpace : THREE.NoColorSpace;
   t.magFilter = THREE.NearestFilter;
   t.minFilter = THREE.LinearMipmapLinearFilter;
   t.generateMipmaps = true;
@@ -199,6 +207,8 @@ function materials(R, finish = 'normal') {
         m = b.clone();
         m.vertexColors = false;
         m.map = tex;
+        const nm = tex && R.normals?.get(tex);
+        if (nm && 'normalMap' in m) { m.normalMap = nm; m.normalScale.set(1, R.tangents ? 1 : -1); } // (no tangents: three's derivative frame flips green)
         if (!m.transparent) m.alphaTest = 0.5;
         m.onBeforeCompile = b.onBeforeCompile;
         if (b.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey) m.customProgramCacheKey = b.customProgramCacheKey;
@@ -350,6 +360,7 @@ export function figurePartMesh(item, name, { own = false, finish = 'normal' } = 
         gg.setAttribute('position', toFloat(o.geometry.attributes.position));
         gg.setAttribute('normal', toFloat(o.geometry.attributes.normal));
         gg.setAttribute('uv', toFloat(o.geometry.attributes.uv));
+        if (R.tangents && o.geometry.attributes.tangent) gg.setAttribute('tangent', toFloat(o.geometry.attributes.tangent));
         if (o.geometry.index) gg.setIndex(o.geometry.index.clone()); else indexed(gg);
         gg.applyMatrix4(new THREE.Matrix4().multiplyMatrices(M, o.matrixWorld));
         const ti = Math.max(0, R.texs.indexOf(o.material?.map));
