@@ -1,0 +1,33 @@
+{
+ "id": "cardboardmess",
+ "src": "art/lowpix/world/made/cardboardmess.glb",
+ "credit": {
+  "title": "Cardboard mess",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 560,
+ "tex": 448,
+ "size": [
+  0.876,
+  0.216,
+  0.653
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#552a1f",
+   "#6c3e2b",
+   "#835438",
+   "#986b45",
+   "#ac8455",
+   "#b49a70",
+   "#bdae89",
+   "#c8c0a2",
+   "#d3d0b9"
+  ]
+ },
+ "warnings": []
+}

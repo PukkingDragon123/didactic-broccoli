@@ -667,6 +667,24 @@
   ],
   "bytes": 52520
  },
+ "cardboardmess": {
+  "id": "cardboardmess",
+  "name": "Cardboard mess",
+  "src": "art/lowpix/world/made/cardboardmess.glb",
+  "title": "Cardboard mess",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 560,
+  "tex": 448,
+  "size": [
+   0.876,
+   0.216,
+   0.653
+  ],
+  "bytes": 83224
+ },
  "cash_register": {
   "id": "cash_register",
   "name": "Cash Register 01",
@@ -1419,6 +1437,24 @@
    0.368
   ],
   "bytes": 49192
+ },
+ "dustpile": {
+  "id": "dustpile",
+  "name": "Dust pile",
+  "src": "art/lowpix/world/made/dustpile.glb",
+  "title": "Dust pile",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/dustpile.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1176,
+  "tex": 512,
+  "size": [
+   0.601,
+   0.056,
+   0.45
+  ],
+  "bytes": 49672
  },
  "elephant": {
   "id": "elephant",
@@ -3533,6 +3569,24 @@
   ],
   "bytes": 46368
  },
+ "rubbishpile": {
+  "id": "rubbishpile",
+  "name": "Rubbish pile",
+  "src": "art/lowpix/world/made/rubbishpile.glb",
+  "title": "Rubbish pile",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/rubbishpile.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 926,
+  "tex": 512,
+  "size": [
+   0.605,
+   0.234,
+   0.368
+  ],
+  "bytes": 62664
+ },
  "scooter": {
   "id": "scooter",
   "name": "Japanese Vintage Scooter",
@@ -4232,7 +4286,7 @@
    0.48,
    0.39
   ],
-  "bytes": 66160
+  "bytes": 64432
  },
  "trash_bag_b": {
   "id": "trash_bag_b",
@@ -4251,7 +4305,7 @@
    0.336,
    0.413
   ],
-  "bytes": 47600
+  "bytes": 44864
  },
  "trash_basket": {
   "id": "trash_basket",

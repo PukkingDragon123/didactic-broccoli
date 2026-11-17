@@ -1,0 +1,48 @@
+{
+ "joints": {
+  "body": [
+   0,
+   0,
+   0
+  ],
+  "soft": [
+   0,
+   0,
+   0
+  ],
+  "key": [
+   0,
+   0,
+   0
+  ],
+  "shutter": [
+   0,
+   0,
+   0
+  ]
+ },
+ "mats": {
+  "fas_t": "gloss",
+  "fas_b": "gloss",
+  "fas_l": "gloss",
+  "fas_r": "gloss",
+  "lip_t": "gloss",
+  "lip_b": "gloss",
+  "lip_l": "gloss",
+  "lip_r": "gloss",
+  "wing_l": "gloss",
+  "wing_r": "gloss",
+  "brow": "gloss",
+  "cash_lip_t": "metal",
+  "cash_lip_b": "metal",
+  "card": "gloss",
+  "door": "gloss",
+  "door_lock": "metal",
+  "sign": "gloss",
+  "soft_b": "metal",
+  "key_b": "gloss",
+  "shutter_b": "metal"
+ },
+ "key": "atm",
+ "density": 0.5
+}

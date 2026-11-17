@@ -3,7 +3,7 @@
 //   keeps only the clips the game plays (the meta's clip roles), drops joint channels that never move, quantizes and
 //   meshopt-compresses the GLB into public/models/lowpix/figures/<series>/<id>.glb, and records the figure in
 //   src/figures/lowpix.manifest.json: { "<series>/<id>": { size [x,y,z] mm, min [x,y,z], tris, atlas, clips, mats, pts } }.
-import { NodeIO } from '@gltf-transform/core';
+import { NodeIO, Document } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
 import { dedup, prune, quantize, reorder, resample, getBounds, mergeDocuments, unpartition } from '@gltf-transform/functions';
 import sharp from 'sharp';
@@ -64,15 +64,17 @@ function modelClip(doc, c) {
 
 for (const series of seriesList) {
   const specDir = resolve(ROOT, 'art/lowpix/figures', series);
-  const summary = JSON.parse(readFileSync(resolve(buildDir, series, 'summary.json'), 'utf8'));
+  const run = JSON.parse(readFileSync(resolve(buildDir, series, 'run.json'), 'utf8'));
+  const summary = run.spec.length ? JSON.parse(readFileSync(resolve(buildDir, series, 'summary.json'), 'utf8')) : { results: [] };
   const outDir = resolve(ROOT, 'public/models/lowpix/figures', series);
   mkdirSync(outDir, { recursive: true });
-  for (const r of summary.results) {
-    if (r.status !== 'ok') { console.error('FAILED', r.source, r.error); continue; }
-    const id = r.source.split('/').pop().replace(/\.json$/, '');
+  const jobs = [...run.spec.map((id) => ({ id, r: summary.results.find((r) => r.source.split('/').pop() === id + '.json') })), ...run.model.map((id) => ({ id, r: null }))];
+  for (const { id, r } of jobs) {
+    if (r === undefined || (r && r.status !== 'ok')) { console.error('FAILED', series, id, r?.error); continue; }
     const meta = JSON.parse(readFileSync(join(specDir, id + '.meta.json'), 'utf8'));
-    const glbPath = resolve(buildDir, series, r.files[Object.keys(r.files).find((f) => f.endsWith('.glb'))]);
-    const doc = await io.read(glbPath);
+    let doc;
+    if (r) doc = await io.read(resolve(buildDir, series, r.files[Object.keys(r.files).find((f) => f.endsWith('.glb'))]));
+    else { doc = new Document(); doc.createBuffer(); doc.setDefaultScene(doc.createScene('figure')); } // models only, no spec parts
     const root = doc.getRoot();
     const mainScene = root.listScenes()[0];
     // real models: merge each converted GLB in under a placed node "model_<name>"

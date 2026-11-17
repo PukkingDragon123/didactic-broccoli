@@ -84,6 +84,23 @@ function assetGeometry(def, voxGeo) {
   g.userData.asset = A.id;
   return g;
 }
+// A model's geometry only uses its own material slots, but meshes are made with the whole shared array (the voxel
+// slots 0-5 ride along unused): give them a copy where every slot the geometry never draws is an invisible stand-in, so
+// nothing voxel-era is left on the mesh (and the look audit sees only the model's textured material).
+const HIDDEN = new THREE.MeshBasicMaterial({ visible: false });
+const maskCache = new WeakMap();
+export function maskedMaterials(geo, mats) {
+  if (!Array.isArray(mats) || !geo?.userData?.asset || !geo.groups?.length) return mats;
+  let byArr = maskCache.get(mats);
+  if (!byArr) maskCache.set(mats, byArr = new Map());
+  const used = [...new Set(geo.groups.map((g) => g.materialIndex))].sort((a, b) => a - b), key = used.join(',');
+  if (!byArr.has(key)) byArr.set(key, mats.map((m, i) => (used.includes(i) ? m : HIDDEN)));
+  return byArr.get(key);
+}
+/** Mask the unused slots on every model-drawn prop mesh under root (see maskedMaterials). */
+export function maskPropMaterials(root) {
+  root?.traverse((o) => { if ((o.isMesh || o.isInstancedMesh) && Array.isArray(o.material) && o.geometry?.userData?.asset) o.material = maskedMaterials(o.geometry, o.material); });
+}
 /** The model a prop is drawn with (its id), or null. */
 export const propAsset = (id) => propGeometry(id)?.userData.asset || null;
 
@@ -184,7 +201,7 @@ export function propMesh(id, opts = {}) {
   const geo = propGeometry(id);
   let mesh;
   if (geo) {
-    mesh = new THREE.Mesh(geo, voxelMaterials('normal'));
+    mesh = new THREE.Mesh(geo, maskedMaterials(geo, voxelMaterials('normal')));
   } else {
     const [w, h, d] = opts.fallbackSize || [0.3, 0.3, 0.3];
     const g = new THREE.BoxGeometry(w, h, d);

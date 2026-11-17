@@ -1057,7 +1057,11 @@
    "ppm": 240,
    "tris": 1500,
    "name": "Trash bags",
-   "prop": "bin_bags"
+   "prop": "bin_bags",
+   "smooth": 3.0,
+   "grain": 0.0,
+   "detail": 0.55,
+   "spread": 0.45
   },
   {
    "id": "coin_float",
@@ -1300,7 +1304,11 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Garbage Bag",
-   "prop": "trash_bag_b"
+   "prop": "trash_bag_b",
+   "smooth": 3.0,
+   "grain": 0.0,
+   "detail": 0.55,
+   "spread": 0.45
   },
   {
    "id": "newspaper_stack",
@@ -1673,7 +1681,11 @@
    "h": 0.48,
    "ppm": 180,
    "tris": 3000,
-   "prop": "trash_bag"
+   "prop": "trash_bag",
+   "smooth": 3.0,
+   "grain": 0.0,
+   "detail": 0.55,
+   "spread": 0.45
   },
   {
    "id": "grass_tuft",
@@ -1893,6 +1905,36 @@
    "tris": 500,
    "name": "Standing ashtray (\u7070\u76bf)",
    "prop": "mk_stand_ashtray"
+  },
+  {
+   "id": "dustpile",
+   "src": "art/lowpix/world/made/dustpile.glb",
+   "h": 0.056,
+   "ppm": 400,
+   "tris": 1500,
+   "name": "Dust pile",
+   "prop": "dust_pile",
+   "cap": 512
+  },
+  {
+   "id": "rubbishpile",
+   "src": "art/lowpix/world/made/rubbishpile.glb",
+   "h": 0.234,
+   "ppm": 400,
+   "tris": 2000,
+   "name": "Rubbish pile",
+   "prop": "rubbish_pile",
+   "cap": 512
+  },
+  {
+   "id": "cardboardmess",
+   "src": "art/lowpix/world/made/cardboardmess.glb",
+   "h": 0.216,
+   "ppm": 320,
+   "tris": 2000,
+   "name": "Cardboard mess",
+   "prop": "cardboard_mess",
+   "cap": 512
   }
  ]
 }

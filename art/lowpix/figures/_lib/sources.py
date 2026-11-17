@@ -79,6 +79,69 @@ def _load_gltf(path):
     return json.load(open(path))
 
 
+def _accessor(d, base, ai):
+    """numpy view of a glTF accessor (non-sparse, from external .bin buffers)."""
+    import numpy as np
+    a = d["accessors"][ai]
+    bv = d["bufferViews"][a["bufferView"]]
+    buf = d["buffers"][bv["buffer"]]
+    raw = open(os.path.join(base, buf["uri"]), "rb").read() if "uri" in buf else b""
+    ct = {5120: np.int8, 5121: np.uint8, 5122: np.int16, 5123: np.uint16, 5125: np.uint32, 5126: np.float32}[a["componentType"]]
+    n = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4}[a["type"]]
+    off = bv.get("byteOffset", 0) + a.get("byteOffset", 0)
+    stride = bv.get("byteStride", 0)
+    item = np.dtype(ct).itemsize * n
+    if stride and stride != item:
+        arr = np.frombuffer(raw, dtype=np.uint8, count=stride * (a["count"] - 1) + item, offset=off)
+        rows = np.lib.stride_tricks.as_strided(arr, (a["count"], item), (stride, 1))
+        return np.frombuffer(rows.copy().tobytes(), dtype=ct).reshape(a["count"], n)
+    return np.frombuffer(raw, dtype=ct, count=a["count"] * n, offset=off).reshape(a["count"], n)
+
+
+def crop(path, box):
+    """A copy of a glTF keeping only the triangles inside `box` [x0, y0, z0, x1, y1, z1] (source world units): a scanned
+    cat cut out of its blanket, a dish lifted off the scanned table."""
+    import numpy as np
+    d = _load_gltf(path)
+    base = os.path.dirname(path)
+    nodes = d.get("nodes", [])
+    lo, hi = np.array(box[:3]), np.array(box[3:])
+    out = bytearray()
+    blo, bhi = np.full(3, 1e18), np.full(3, -1e18)
+    scenes = d.get("scenes", [{"nodes": list(range(len(nodes)))}])
+    stack = [(r, np.eye(4)) for r in scenes[d.get("scene", 0)]["nodes"]]
+    done = set()
+    while stack:
+        i, P = stack.pop()
+        W = P @ _mat(nodes[i])
+        if "mesh" in nodes[i] and nodes[i]["mesh"] not in done:
+            done.add(nodes[i]["mesh"])
+            for p in d["meshes"][nodes[i]["mesh"]]["primitives"]:
+                V = _accessor(d, base, p["attributes"]["POSITION"]).astype(np.float64)
+                V = (np.c_[V, np.ones(len(V))] @ W.T)[:, :3]
+                I = _accessor(d, base, p["indices"]).reshape(-1, 3) if "indices" in p else np.arange(len(V)).reshape(-1, 3)
+                inside = np.all((V >= lo) & (V <= hi), axis=1)
+                I = I[inside[I].all(axis=1)].astype(np.uint32)
+                if I.size:
+                    blo, bhi = np.minimum(blo, V[I.reshape(-1)].min(0)), np.maximum(bhi, V[I.reshape(-1)].max(0))
+                while len(out) % 4:
+                    out.append(0)
+                d.setdefault("bufferViews", []).append({"buffer": len(d["buffers"]), "byteOffset": len(out), "byteLength": I.nbytes, "target": 34963})
+                d["accessors"].append({"bufferView": len(d["bufferViews"]) - 1, "componentType": 5125, "count": int(I.size), "type": "SCALAR"})
+                p["indices"] = len(d["accessors"]) - 1
+                out += I.tobytes()
+        for c in nodes[i].get("children", []):
+            stack.append((c, W))
+    tag = "_drop_crop" + hashlib.sha1(json.dumps(box).encode()).hexdigest()[:6]
+    bin_name = os.path.basename(path)[:-5] + tag + ".bin"
+    open(os.path.join(base, bin_name), "wb").write(bytes(out))
+    d["buffers"].append({"uri": bin_name, "byteLength": len(out)})
+    o = path[:-5] + tag + ".gltf"
+    json.dump(d, open(o, "w"))
+    json.dump([blo.tolist(), bhi.tolist()], open(o[:-5] + ".bounds.json", "w"))
+    return o
+
+
 def filter_nodes(path, drop=None, keep=None):
     """A copy of a glTF without some nodes (drop: name regexes; "mat:<regex>" drops the primitives drawn with a
     material, such as a clock's glass), or with only some nodes (keep), beside the original so its buffers resolve."""
@@ -142,6 +205,8 @@ def _mat(n):
 def bbox(path):
     """World-space [min, max] of a glTF's meshes (from the accessor bounds, so no geometry is read)."""
     import numpy as np
+    if os.path.exists(path[:-5] + ".bounds.json"):  # a cropped scan: the kept triangles' bounds
+        return json.load(open(path[:-5] + ".bounds.json"))
     cache = json.load(open(BBOX_CACHE)) if os.path.exists(BBOX_CACHE) else {}
     if path in cache:
         return cache[path]
@@ -175,8 +240,14 @@ def bbox(path):
     return res
 
 
-def subject_dims(src, drop=None, keep=None):
-    """(w, h, d) of a source in its own units, after node filters."""
+def prepare(src, drop=None, keep=None, box=None):
+    """The local file lowpix converts: the downloaded source, filtered (nodes / materials) and cropped."""
     p = filter_nodes(ensure_source(src), drop, keep)
+    return crop(p, box) if box else p
+
+
+def subject_dims(src, drop=None, keep=None, box=None):
+    """(w, h, d) of a source in its own units, after node filters and crop."""
+    p = prepare(src, drop, keep, box)
     lo, hi = bbox(p)
     return [hi[i] - lo[i] for i in range(3)]

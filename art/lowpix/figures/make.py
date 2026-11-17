@@ -44,7 +44,7 @@ def gen(series, only=None):
     return files
 
 
-from sources import ensure_source, filter_nodes  # noqa: E402
+from sources import prepare  # noqa: E402
 from figlib import CONVERT  # noqa: E402
 OPT_OK = {"ramps", "smooth", "chart-angle", "spread"}  # what a figure may change (spread: only to keep black lacquer
 # and dark plastics dark); everything else is the line's finish (CONVERT)
@@ -52,6 +52,8 @@ OPT_OK = {"ramps", "smooth", "chart-angle", "spread"}  # what a figure may chang
 
 def conv_key(m):
     k = {x: m.get(x) for x in ("src", "tris", "opts", "drop", "keep")}
+    if m.get("box"):
+        k["box"] = m["box"]
     k["height"] = round(float(m["height"]), 2)
     k["finish"] = CONVERT
     return hashlib.sha1(json.dumps(k, sort_keys=True).encode()).hexdigest()[:14]
@@ -65,7 +67,7 @@ def convert(m):
         return key, done[0], None
     os.makedirs(out, exist_ok=True)
     try:
-        local = filter_nodes(ensure_source(m["src"]), m.get("drop"), m.get("keep"))
+        local = prepare(m["src"], m.get("drop"), m.get("keep"), m.get("box"))
     except Exception as e:  # noqa: BLE001
         return key, None, f"download: {e}"
     cmd = [sys.executable, "-m", "lowpix", "convert", local, "--height", str(m["height"]), "--tris", str(m["tris"]),
@@ -124,7 +126,13 @@ def main():
         files = gen(s, only)
         convert_all(files)
         bdir = os.path.join(BUILD, s)
-        subprocess.run([sys.executable, "-m", "lowpix", "batch", *files, "-o", bdir, "-j", jobs], check=False, env=ENV)  # (failures are listed; the rest still packs)
+        os.makedirs(bdir, exist_ok=True)
+        # a figure that is only real models (most: they stand on their own) has no spec geometry to build
+        spec = [f for f in files if any(p["shape"] != "bone" for p in json.load(open(f))["parts"])]
+        run = {"spec": [os.path.basename(f)[:-5] for f in spec], "model": [os.path.basename(f)[:-5] for f in files if f not in spec]}
+        json.dump(run, open(os.path.join(bdir, "run.json"), "w"))
+        if spec:
+            subprocess.run([sys.executable, "-m", "lowpix", "batch", *spec, "-o", bdir, "-j", jobs], check=False, env=ENV)  # (failures are listed; the rest still packs)
     subprocess.run(["node", os.path.join(HERE, "pack.mjs"), BUILD, *args], check=True)
 
 

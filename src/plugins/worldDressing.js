@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import { asset } from '../kit/assets.js';
 import { lpAsset } from '../kit/lowpixWorld.js';
-import { hasProp } from '../world/props.js';
+import { hasProp, maskPropMaterials } from '../world/props.js';
 
 const PI = Math.PI, H = PI / 2;
 // [prop id, x, y, z, ry, opts?]  (opts: block (the player bumps into it), scale, shadow). Near side: the strip in front
@@ -75,7 +75,11 @@ export function install(game) {
     // the shop's pieces sit under the garage lights: let them cast (the lane's stay cheap)
     if (shadowed.size) town.group.traverse((o) => { if (o.isInstancedMesh && shadowed.has(o.name)) o.castShadow = true; });
   }
+  // model-drawn props everywhere: only their own material slots (no voxel-era leftovers on the mesh)
+  maskPropMaterials(game.scene);
+  setTimeout(() => maskPropMaterials(game.scene), 4000);
   const P = game.places, done = new Set();
+  game.events.on('place', ({ where }) => { const gr = where && P?.list[where]?.group; if (gr) setTimeout(() => maskPropMaterials(gr), 0); });
   game.events.on('place', ({ where }) => {
     if (!where || done.has(where) || !INSIDE[where] || !P?.list[where]?.group) return;
     done.add(where);

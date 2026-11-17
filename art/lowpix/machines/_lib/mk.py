@@ -84,7 +84,7 @@ STYLES = {
         {"id": "mottle", "op": "noise", "scale": 22, "amount": 0.12},
         {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.82},
         {"id": "grime", "op": "patches", "scale": 70, "threshold": 0.76, "shift": -0.3},
-        {"id": "wear", "op": "wear", "width": 2, "density": 0.14, "scratches": 0.012, "ramp": "steel", "tone": 2.0, "post": True},
+        {"id": "wear", "op": "wear", "width": 2, "density": 0.14, "scratches": 0.0, "ramp": "steel", "tone": 2.0, "post": True},
         dict(GLOSS, density=0.15)]},
     # chrome: high contrast, the sky reflected bright on top faces, the floor dark below, hard highlight dashes
     "chrome": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "none", "light_shift": 1.6, "dark_shift": -1.4}, "layers": [
@@ -94,7 +94,7 @@ STYLES = {
         dict(GLOSS, density=0.5, shift=1.6, length=3)]},
     # brushed / galvanised steel
     "steel": {"dither": 0, "rim": RIM, "layers": [
-        photo("metal_plate", 120, 0.8),
+        photo("metal_plate", 120, 0.4),
         {"id": "sheen", "op": "fill", "shift": 0.7, "min_light": 0.75},
         {"id": "ref", "op": "fill", "shift": -0.5, "max_light": 0.2},
         {"id": "wear", "op": "wear", "width": 2, "density": 0.08, "shift": 1.0, "post": True}]},
@@ -111,11 +111,10 @@ STYLES = {
         {"id": "floor", "op": "fill", "shift": -1.0, "max_light": 0.1},
         dict(GLOSS, density=0.45, shift=1.4, length=3)]},
     "rubber": {"dither": 0, "rim": {"light": 1, "dark": 0, "outline": "none"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 8, "amount": 0.25},
-        {"id": "dust", "op": "speckle", "density": 0.02, "shift": 0.6}]},
+        {"id": "mottle", "op": "noise", "scale": 8, "amount": 0.25}]},
     # the dark inside of a chute / slot / cavity
     "cavity": {"dither": 0, "light": 0.4, "rim": {"light": 0, "dark": 0, "outline": "none"}, "layers": [
-        {"id": "mottle", "op": "noise", "scale": 12, "amount": 0.2}]},
+        {"id": "mottle", "op": "noise", "scale": 40, "amount": 0.1}]},
     "wood": {"dither": 0, "rim": RIM, "brush": {"flow": "long", "length": 8, "width": 1.5, "rough": 0.55},
              "layers": [photo("wood_table_001", 260, 1.4),
                         {"id": "grime", "op": "patches", "scale": 80, "threshold": 0.72, "shift": -0.5}]},

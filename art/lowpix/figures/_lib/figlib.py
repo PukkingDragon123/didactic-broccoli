@@ -659,7 +659,7 @@ class Fig:
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
     def model(s, name, src, h=None, w=None, d=None, at=(0, 0, 0), yaw=0, pitch=0, roll=0, tris=5000, mat="matte",
-              drop=None, keep=None, ramps=None, smooth=None, dark=False, **bad):
+              drop=None, keep=None, box=None, ramps=None, smooth=None, dark=False, **bad):
         """A real model, converted at its final size so its texels are the line's DENS px/mm: scaled (before
         conversion, never after) to the largest size that keeps it, turned by pitch/yaw/roll (degrees, XYZ), within
         h (height), w (x) and d (z) mm, and stood with the bottom centre of its turned bounds at `at`.
@@ -668,7 +668,7 @@ class Fig:
         assert not bad, f"model(): unsupported {sorted(bad)} (one finish for the line; recolor / fit are gone)"
         import numpy as np
         from sources import subject_dims
-        w0, h0, d0 = subject_dims(src, drop, keep)
+        w0, h0, d0 = subject_dims(src, drop, keep, box)
         R = _rot(pitch, yaw, roll)
         C = np.array([[x, y, z] for x in (-w0 / 2, w0 / 2) for y in (0, h0) for z in (-d0 / 2, d0 / 2)]) @ R.T
         ext = C.max(0) - C.min(0)
@@ -690,6 +690,8 @@ class Fig:
             m["drop"] = list(drop)
         if keep:
             m["keep"] = list(keep)
+        if box:
+            m["box"] = list(box)
         s.meta.setdefault("models", []).append(m)
         box = Box(at[0] - (hi[0] - lo[0]) / 2, at[1], at[2] - (hi[2] - lo[2]) / 2,
                   at[0] + (hi[0] - lo[0]) / 2, at[1] + hi[1] - lo[1], at[2] + (hi[2] - lo[2]) / 2)

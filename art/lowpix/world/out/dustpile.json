@@ -1,0 +1,77 @@
+{
+ "id": "dustpile",
+ "src": "art/lowpix/world/made/dustpile.glb",
+ "credit": {
+  "title": "Dust pile",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/dustpile.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1176,
+ "tex": 512,
+ "size": [
+  0.601,
+  0.056,
+  0.45
+ ],
+ "colours": 39,
+ "palette": {
+  "m0": [
+   "#6b320d",
+   "#894c13",
+   "#a6691b",
+   "#c28a23",
+   "#d6aa34",
+   "#d8bf53",
+   "#dcd171",
+   "#e0df8e",
+   "#e6e6aa"
+  ],
+  "m1": [
+   "#550f23",
+   "#6d1527",
+   "#841d29",
+   "#9b2529",
+   "#b0342e",
+   "#c8503e",
+   "#cd7760",
+   "#d49980",
+   "#dcb7a0"
+  ],
+  "m2": [
+   "#3e2e29",
+   "#4f3f38",
+   "#5f5147",
+   "#6e6358",
+   "#7c7469",
+   "#8c887f",
+   "#9b9a97",
+   "#acacac",
+   "#c0c0c0"
+  ],
+  "m3": [
+   "#1a451c",
+   "#255824",
+   "#356a2e",
+   "#477b3a",
+   "#5a8c46",
+   "#74a458",
+   "#8fb075",
+   "#a8bc91",
+   "#bfcaad"
+  ],
+  "m4": [
+   "#151f4e",
+   "#1d2f64",
+   "#274279",
+   "#31578d",
+   "#3c6ea0",
+   "#4d8bb7",
+   "#6ca4bf",
+   "#8bb9c9",
+   "#a8ccd4"
+  ]
+ },
+ "warnings": []
+}

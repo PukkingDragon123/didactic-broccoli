@@ -65,3 +65,49 @@ d.rectangle([0, 128, 127, 255], fill=(70, 68, 66)); d.rectangle([128, 128, 255, 
 for _ in range(60): x, y = random.randrange(132, 252), random.randrange(132, 252); d.rectangle([x, y, x + 6, y + 2], fill=(230, 220, 200))
 grime(im, 16).save(os.path.join(H, 'ashtray.png'))
 print('ok')
+# debris atlas (1024x1024, 4x4 cells of 256): 0 sawdust and grit, 1 newspaper, 2 crumpled white paper, 3 sweet wrappers,
+# 4 can (silver and red, an original label), 5 cardboard (corrugated, tape, print), 6 grey dust and fluff, 7 cigarette
+# butts and bottle caps on grit
+im = Image.new('RGB', (1024, 1024), (120, 110, 96)); d = ImageDraw.Draw(im)
+def cell(i): return (i % 4) * 256, (i // 4) * 256
+x0, y0 = cell(0)
+for _ in range(9000):
+    x, y = x0 + random.randrange(256), y0 + random.randrange(256); c = random.choice([(168, 140, 98), (150, 120, 80), (186, 160, 118), (120, 96, 66), (96, 88, 80)])
+    d.rectangle([x, y, x + random.randint(0, 2), y + random.randint(0, 1)], fill=c)
+x0, y0 = cell(1); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(206, 202, 188))
+fs = ImageFont.truetype(FONT, 9); fb = ImageFont.truetype(FONT, 22)
+d.text((x0 + 8, y0 + 6), '杜王新聞 夕刊', font=fb, fill=(40, 40, 40))
+for col in range(4):
+    for r in range(22): d.text((x0 + 8 + col * 62, y0 + 40 + r * 9.5), ''.join(random.choice('の地町店駅市日本人時間今年月円会社') for _ in range(5)), font=fs, fill=(70, 70, 70))
+d.rectangle([x0 + 140, y0 + 120, x0 + 240, y0 + 200], fill=(150, 146, 138))
+x0, y0 = cell(2); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(232, 230, 222))
+for _ in range(60):
+    a, b = x0 + random.randrange(256), y0 + random.randrange(256); d.line([a, b, a + random.randint(-40, 40), b + random.randint(-40, 40)], fill=random.choice([(200, 198, 190), (214, 212, 204), (180, 178, 170)]), width=random.randint(1, 3))
+for r in range(8): d.line([x0 + 20, y0 + 30 + r * 24, x0 + 220, y0 + 30 + r * 24], fill=(150, 170, 200), width=1)
+x0, y0 = cell(3)
+for k, c in enumerate([(176, 52, 46), (214, 170, 52), (60, 110, 160), (90, 140, 70)]):
+    xs, ys = x0 + (k % 2) * 128, y0 + (k // 2) * 128; d.rectangle([xs, ys, xs + 127, ys + 127], fill=c)
+    for _ in range(25): a, b = xs + random.randrange(128), ys + random.randrange(128); d.line([a, b, a + random.randint(-20, 20), b + random.randint(-20, 20)], fill=tuple(min(255, v + 40) for v in c), width=2)
+    d.text((xs + 20, ys + 50), random.choice(['ラムネ', 'チョコ', 'あめ', 'ガム']), font=ImageFont.truetype(FONT, 26), fill=(246, 242, 230))
+x0, y0 = cell(4); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(184, 188, 192))
+d.rectangle([x0, y0 + 40, x0 + 255, y0 + 200], fill=(178, 40, 42)); d.text((x0 + 30, y0 + 80), 'COLA', font=ImageFont.truetype(FONT, 60), fill=(246, 244, 240))
+for _ in range(40): a = x0 + random.randrange(256); d.line([a, y0, a + random.randint(-10, 10), y0 + 255], fill=(150, 150, 156), width=1)
+x0, y0 = cell(5); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(176, 136, 88))
+for r in range(0, 256, 6): d.line([x0, y0 + r, x0 + 255, y0 + r], fill=(160, 122, 78), width=2)
+d.rectangle([x0, y0 + 110, x0 + 255, y0 + 140], fill=(196, 176, 130)); d.text((x0 + 30, y0 + 30), '取扱注意', font=ImageFont.truetype(FONT, 34), fill=(60, 40, 30))
+d.text((x0 + 30, y0 + 170), 'FRAGILE ↑↑', font=ImageFont.truetype(FONT, 26), fill=(70, 50, 36))
+x0, y0 = cell(6)
+for _ in range(9000):
+    x, y = x0 + random.randrange(256), y0 + random.randrange(256); c = random.choice([(132, 128, 122), (150, 146, 140), (112, 108, 104), (170, 166, 160)])
+    d.rectangle([x, y, x + random.randint(0, 2), y + random.randint(0, 2)], fill=c)
+for _ in range(30): a, b = x0 + random.randrange(256), y0 + random.randrange(256); d.arc([a, b, a + 20, b + 14], 0, 300, fill=(190, 186, 180), width=1)
+x0, y0 = cell(7); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(128, 118, 104))
+for _ in range(5000): x, y = x0 + random.randrange(256), y0 + random.randrange(256); d.point((x, y), fill=random.choice([(150, 140, 120), (100, 92, 82), (170, 160, 140)]))
+for _ in range(14):
+    a, b = x0 + random.randrange(20, 230), y0 + random.randrange(20, 230); d.rectangle([a, b, a + 18, b + 5], fill=(236, 232, 220)); d.rectangle([a, b, a + 6, b + 5], fill=(200, 140, 70))
+for _ in range(6):
+    a, b = x0 + random.randrange(20, 230), y0 + random.randrange(20, 230); d.ellipse([a, b, a + 12, b + 12], fill=random.choice([(190, 150, 60), (200, 200, 205), (180, 40, 40)]))
+for i in range(8, 16):
+    x0, y0 = cell(i); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(112, 104, 96))
+im.save(os.path.join(H, 'debris.png'))
+print('debris ok')

@@ -2348,7 +2348,10 @@ by `tools/pixelart.py`.
 Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert --style pixel-hd`), then scaled, re-textured and compressed by tools/lowpix-world.mjs. Shipped in `models/lowpix/world/`.
 
 - Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0. Shipped as `models/lowpix/world/busstop.glb`
+- Cardboard mess by Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb), CC0 1.0. Shipped as `models/lowpix/world/cardboardmess.glb`
+- Dust pile by Gacha Garage (made for the game, art/lowpix/world/made/dustpile.glb), CC0 1.0. Shipped as `models/lowpix/world/dustpile.glb`
 - Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0. Shipped as `models/lowpix/world/firebuckets.glb`
+- Rubbish pile by Gacha Garage (made for the game, art/lowpix/world/made/rubbishpile.glb), CC0 1.0. Shipped as `models/lowpix/world/rubbishpile.glb`
 - Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb), CC0 1.0. Shipped as `models/lowpix/world/kakigori.glb`
 - Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb), CC0 1.0. Shipped as `models/lowpix/world/ashtray_stand.glb`
 - Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb), CC0 1.0. Shipped as `models/lowpix/world/tomare.glb`
