@@ -385,6 +385,8 @@ CAL = {
     'pink': ['#4a2a2a', '#62393a', '#7a4b4a', '#905e5b', '#a3716c', '#b4847d', '#c29790', '#cfaaa2'],
     'dark': ['#0b0908', '#151110', '#1f1a18', '#2a2421'],
 }
+STRAY_EYE = dict(ball='#1a120c', limbus='#3a2410', outer='#94621e', mid='#bc862a', inner='#d6a83e', fibre_d='#7a4c14',
+                 fibre_l='#e0b656', shadow='#664012', pupil='#070605', glint='#f4f0e2', glint2='#b8a888')
 MIKAN_EYE = dict(ball='#1a120c', limbus='#2e2a12', outer='#76702c', mid='#a29438', inner='#c8a846', fibre_d='#5e5620',
                  fibre_l='#c6b45a', shadow='#4a4416', pupil='#070605', glint='#f4f0e2', glint2='#b8a888')
 
@@ -412,7 +414,7 @@ def fri_joints(J, O):
     }
 
 
-def make_mikan():
+def make_mikan(coat='calico'):
     from coat import vnoise3, raster, surface
     P, F, UV, N, src, J, O = fri_prepared()
     H, W = src.shape[:2]
@@ -449,17 +451,42 @@ def make_mikan():
         idx = np.clip(np.round(mid * (len(R) - 1) + (L / max(med, 1e-3) - 1) * k), 0, len(R) - 1).astype(int)
         out[m] = R[idx]
     base = ok & ~pink & ~dark
-    put(base & warm & blackp, 'black', 6, 0.5)
-    put(base & warm & ~blackp, 'orange', 8, 0.6)
-    put(base & ~warm, 'white', 8, 0.8)
-    put(ok & pink, 'pink', 6, 0.62)
-    put(ok & dark, 'dark', 3, 0.4)
+    if coat == 'tabby':
+        # the stray: a dark grey-brown mackerel tabby: narrow dark stripes down the flanks (perpendicular to the spine),
+        # rings on the legs and tail, the forehead M and cheek lines, a dark spine line; a paler buff underside
+        TB = {'coat': hexes(['#1c1916', '#262220', '#302b27', '#3b3530', '#47403a', '#544c45', '#625951', '#70675e', '#7f756b']),
+              'stripe': hexes(['#0e0c0b', '#161311', '#1d1a17', '#25211e', '#2e2925']),
+              'pale': hexes(['#4a443d', '#5a534b', '#6b635a', '#7c7368', '#8d8377', '#9d9386', '#ada395'])}
+        L = lum; med = np.median(L[base]) if base.any() else 0.5
+        jitter = (n3 - 0.5) * 0.25 + (n2 - 0.5) * 0.3
+        body_ = (z > -8.8) & (z < 17.5)
+        band = np.where(body_, np.sin((z + jitter * 3) * 1.25 + 0.4 * np.abs(x)) > 0.55 - 0.25 * np.clip((y - 14) / 8, 0, 1), False)
+        band |= (z < -8.8) & (np.sin(z * 1.4 + jitter) > 0.35)
+        band |= (y < 12) & (z > -14) & (np.sin(y * 1.5 + jitter * 2) > 0.62)
+        band |= head & (((ax < 0.9) & (y > 26.2) & (np.sin(x * 9) > 0.2)) | ((y > 24.1) & (y < 24.5) & (ax > 1.9)))
+        band |= (z > -9) & (z < 15) & (ax < 0.55) & (y > 22)
+        under = ~warm
+        def tput(m, R, mid):
+            if not m.any(): return
+            idx = np.clip(np.round(mid * (len(R) - 1) + (L[m] / max(med, 1e-3) - 1) * 5 + jitter[m] * 3), 0, len(R) - 1).astype(int)
+            out[m] = R[idx]
+        tput(base & band & ~(under & (y < 13) & (z > -9) & (z < 17)), TB['stripe'], 0.5)
+        tput(base & ~band & warm, TB['coat'], 0.6)
+        tput(base & under & ~band, TB['pale'], 0.62)
+        put(ok & pink, 'pink', 6, 0.35)
+        put(ok & dark, 'dark', 3, 0.4)
+    else:
+        put(base & warm & blackp, 'black', 6, 0.5)
+        put(base & warm & ~blackp, 'orange', 8, 0.6)
+        put(base & ~warm, 'white', 8, 0.8)
+        put(ok & pink, 'pink', 6, 0.62)
+        put(ok & dark, 'dark', 3, 0.4)
     # the sculpt's dark eye sockets round the new eyeballs: coat colour (the eyes and lids are modelled now)
     for sx in (1, -1):
         d = np.sqrt((x - sx * 1.6) ** 2 + (y - 25.24) ** 2)
         sock = ok & (d < 1.25) & (z > 21.5) & (lum < 0.3)
-        out[sock & blackp] = hexes(CAL['black'])[4]
-        out[sock & ~blackp] = hexes(CAL['orange'])[5]
+        out[sock & (blackp if coat == 'calico' else True)] = hexes(CAL['black'])[4]
+        if coat == 'calico': out[sock & ~blackp] = hexes(CAL['orange'])[5]
     # inner-ear furnishings: pale hairs fanning up from the base of the hollow
     from coat import hash2
     hh = hash2((x * 9).astype(int) & 0xffff, (y * 3).astype(int) & 0xffff, 21)
@@ -468,7 +495,7 @@ def make_mikan():
     global OPEN_EYE
     OPEN_EYE = (0.74, -0.66)
     lip = lambda X: 22.55 - 0.35 * (np.asarray(X) / 1.5) ** 2
-    return rig_cat('mikan', P, F, UV, N, body, fri_joints(J, O), MIKAN_EYE, eye_y=25.24, eye_x=1.6, eye_r=0.72, eye_in=0.62, cut=dict(
+    return rig_cat('mikan' if coat == 'calico' else 'stray', P, F, UV, N, body, fri_joints(J, O), MIKAN_EYE if coat == 'calico' else STRAY_EYE, eye_y=25.24, eye_x=1.6, eye_r=0.72, eye_in=0.62, cut=dict(
         zone=lambda C: np.zeros(len(C), bool),
         lower=lambda C: (C[:, 1] < lip(C[:, 0]) - 0.02) & (C[:, 2] > 21.0) & (np.abs(C[:, 0]) < 2.6) & (C[:, 1] > 19.8),
         fall=lambda Q: np.clip((Q[:, 2] - 21.0) / 1.6, 0, 1) * np.clip((2.6 - np.abs(Q[:, 0])) / 0.9, 0, 1) * np.clip((Q[:, 1] - 19.8) / 0.8, 0, 1),
@@ -477,6 +504,10 @@ def make_mikan():
         bowl=dict(c=(0, 22.3, 24.6), rx=1.3, ry=0.6, depth=2.0, tongue=(0, 22.25, 24.4), tdir=(0, 0.05, -1), tlen=1.5),
         lens=dict(w=1.45, lip_y=lip, cols=dict(lip='#2a1a1a', inside='#5c2226', throat='#2e0f12', ridge='#7a3439', tongue='#c27a7c', tongueD='#9a5658', tooth='#ece6d8'))),
         scale=0.0102, shift=(0, 0, -3.0), source='fri', head_z=21.5)
+
+
+def make_stray():
+    return make_mikan('tabby')
 
 
 if __name__ == '__main__':
