@@ -16,6 +16,7 @@ import { talk } from '../people/voice.js';
 import { menace } from '../ui/menacing.js';
 import { audio } from '../core/audio.js';
 import { archPlace } from './archModels.js';
+import { surfaceTex } from './surfaces.js';
 import { draw5 } from '../gfx/font5x7.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { rollCapsule } from '../game/economy.js';
@@ -229,6 +230,18 @@ export class GhostAlley {
     // the post box, the lamp, the shrine's things, the drain, weeds and clutter: a lowpix model
     // (art/lowpix/world_arch/_src/ghost_alley.py); the old merged build stays as the fallback
     const lp = !!archPlace('ghost_alley', G, { cast: false });
+    // the alley's concrete-block walls (the CB surface at 128 px/m, src/world/surfaces.js) over both side walls
+    {
+      const wm = new THREE.MeshStandardMaterial({ map: surfaceTex('cblock', 4), roughness: 0.92 });
+      for (const [x, ry, h] of [[X1 + 0.03, -Math.PI / 2, 2.2], [X0 - 0.08, Math.PI / 2, 2.6]]) {
+        const L = BACK - MOUTH, g = new THREE.PlaneGeometry(L, h), uv = g.attributes.uv;
+        for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * L, uv.getY(i) * h);
+        const w = new THREE.Mesh(g, wm);
+        w.rotation.y = ry; w.position.set(x, h / 2, (MOUTH + BACK) / 2);
+        w.receiveShadow = true; w.name = 'ghostAlley:wall';
+        G.add(w);
+      }
+    }
     // 丸型ポスト: the old red round post box at the mouth (a 12-sided drum, domed cap, slot, white plate)
     const drum = new THREE.CylinderGeometry(0.21, 0.21, 1.05, 12); drum.translate(POST.x, 0.62, POST.z);
     const paint = (g, col) => { const c = new THREE.Color(col), n = g.attributes.position.count, a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); if (g.index) return g.toNonIndexed(); return g; };
