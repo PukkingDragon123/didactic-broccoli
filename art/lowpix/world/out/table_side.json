@@ -1,0 +1,55 @@
+{
+ "id": "table_side",
+ "src": "polyhaven:side_table_01",
+ "credit": {
+  "title": "Side Table 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/side_table_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2756,
+ "tex": 464,
+ "size": [
+  0.55,
+  0.551,
+  0.45
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#471c16",
+   "#5b2b1e",
+   "#6e3d28",
+   "#805032",
+   "#91643d",
+   "#ab804d",
+   "#b79b6a",
+   "#c2b289",
+   "#cec6a7"
+  ],
+  "m1": [
+   "#1b1517",
+   "#231d1e",
+   "#292526",
+   "#302d2d",
+   "#363636",
+   "#525252",
+   "#6d6d6d",
+   "#898989",
+   "#a5a5a5"
+  ],
+  "m2": [
+   "#743517",
+   "#955021",
+   "#b56f2c",
+   "#cc903f",
+   "#d2ac64",
+   "#d6be7c",
+   "#dacd93",
+   "#dfdaa9",
+   "#e5e5bf"
+  ]
+ },
+ "warnings": []
+}

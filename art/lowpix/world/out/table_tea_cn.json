@@ -1,0 +1,33 @@
+{
+ "id": "table_tea_cn",
+ "src": "polyhaven:chinese_tea_table",
+ "credit": {
+  "title": "Chinese Tea Table",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chinese_tea_table",
+  "site": "Poly Haven"
+ },
+ "tris": 2508,
+ "tex": 512,
+ "size": [
+  0.841,
+  0.499,
+  0.836
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#26100e",
+   "#301813",
+   "#3a2119",
+   "#442b1f",
+   "#4d3626",
+   "#6f543a",
+   "#8f7551",
+   "#a8946e",
+   "#bab093"
+  ]
+ },
+ "warnings": []
+}
