@@ -50,10 +50,9 @@ def laundry():
 
 
 def kittens():
-    F = Fig(f"{S}/kittens", "Tin Bucket Nap", "A long-haired ginger curled up in the washing bucket, which is now its bucket.")
-    bt = bucket(F, "", (0, 0, 0), r=10.0, h=7)
-    F.model("cat", PERSIAN, L=22, at=(0, 1.0, 0), yaw=-35)
-    F.model_clip("model_cat", "hop", 1.2, amp=2)
+    F = Fig(f"{S}/kittens", "Long-Haired Loafer", "A long-haired ginger stretched flat on the cool concrete, refusing to move for anyone.")
+    F.model("cat", PERSIAN, L=44, yaw=-35, rest=12)
+    F.model_clip("model_cat", "nod", 2.0, amp=3)
     return F
 
 
@@ -75,7 +74,7 @@ def stalker():
 def moon():
     F = Fig(f"{S}/moon", "Moonlit Sleeper", "Stretched out on the warm roof tiles under a crescent moon. Nobody has ever seen it come down.")
     rt = roof_tiles(F, "", 34, 18, (0, 0, 0), tilt=10)
-    F.model("cat", MOONCAT, L=30, at=(-1, rt - 0.4, 1), yaw=-8, rest=12)
+    F.model("cat", MOONCAT, L=30, at=(-1, rt - 0.4, 1), yaw=-8, box=[-0.05, 0.05, -0.33, 0.43, 0.4, 0.21], rest=12)
     F.cyl("rod", 0.7, 30, (12, rt - 1.0, -6.5), sides=8, col="#cfe4ee", style="clear", mat="glass")  # the moon's clear rod
     crescent_moon(F, "moon", (12, rt + 33, -6.5), r=6)
     F.model_clip("model_cat", "turn", 2.6, amp=-28)

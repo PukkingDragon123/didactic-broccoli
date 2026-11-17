@@ -1,0 +1,24 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "bowl",
+   "src": "sketchfab:de0f08813c6f4090b1b163bfc94e5688",
+   "height": 39.889,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "key": "c3e2f91c823c9e"
+  }
+ ],
+ "key": "sampuru/ebifry"
+}

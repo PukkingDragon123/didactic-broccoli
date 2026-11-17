@@ -1,0 +1,39 @@
+{
+ "mats": {
+  "pb_body": "gloss",
+  "pb_cap": "gloss",
+  "pb_dome": "gloss",
+  "pb_slot": "metal",
+  "pb_mark": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "cat",
+   "src": "sketchfab:a0df91f135d447acb9b69b1deeefbdcf",
+   "height": 6.48,
+   "pos": [
+    0.0,
+    26.325,
+    0.0
+   ],
+   "yaw": -14,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1000,
+   "mat": "matte",
+   "key": "efaea037866b36"
+  }
+ ],
+ "model_clip": {
+  "node": "model_cat",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 30,
+  "axis": "y"
+ },
+ "key": "rojineko/postbox"
+}

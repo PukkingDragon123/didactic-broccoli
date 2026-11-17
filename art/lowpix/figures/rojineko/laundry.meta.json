@@ -1,0 +1,24 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "cat",
+   "src": "sketchfab:2c2baa9563db4f20ba23f869ec3288dc",
+   "height": 9.432,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": 20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "key": "1af8359be18c9d"
+  }
+ ],
+ "key": "rojineko/laundry"
+}
