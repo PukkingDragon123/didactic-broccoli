@@ -23,7 +23,7 @@ export function exprParams(name, out = {}) {
   return out;
 }
 
-const LIGHT = (() => { const l = [0.12, 0.6, 0.79]; const n = Math.hypot(...l); return l.map((v) => v / n); })();
+const LIGHT = (() => { const l = [0.38, 0.66, 0.66]; const n = Math.hypot(...l); return l.map((v) => v / n); })();
 const INK = [26, 18, 18];
 
 export class FacePainter {
@@ -187,7 +187,7 @@ export class FacePainter {
       }
       if (F.mustache) {
         const mw = L.mouthW + 1.5 * s, u = dx / mw;
-        if (Math.abs(u) < 1.05 && y > L.noseY + 1.2 * s && y < L.mouthY - 0.4 * s + Math.abs(u) * 1.5 * s) {
+        if (Math.abs(u) < 1.05 && y > L.noseY + 1.4 * s + u * u * 2.2 * s && y < L.mouthY - 0.6 * s + Math.abs(u) * 2.4 * s - (Math.abs(u) < 0.12 ? 0.8 * s : 0)) {
           hairPx(c, this.hair, i, j, 0.85, 0.1);
           const t = 0.85 * sstep(1.05, 0.8, Math.abs(u)) * (h2(i, j, 61) > 0.15 ? 1 : 0.4);
           o[0] = o[0] * (1 - t) + c[0] * t; o[1] = o[1] * (1 - t) + c[1] * t; o[2] = o[2] * (1 - t) + c[2] * t; a = a + (1 - a) * t;
@@ -219,7 +219,7 @@ export class FacePainter {
       const nl = 1 / Math.sqrt(gx * gx + gy * gy + 1);
       const dif = Math.max(0, (-gx * LIGHT[0] + gy * LIGHT[1] + LIGHT[2]) * nl);
       const cav = (hb[k0 - 1] + hb[k0 + 1] + hb[k0 - hw] + hb[k0 + hw]) * 0.25 - hb[k0];
-      shadeInto(o, skin, (0.54 + 0.5 * dif - Math.max(0, cav) * 0.05) * kk[q], 0.26);
+      shadeInto(o, skin, (0.42 + 0.66 * dif - Math.max(0, cav) * 0.08) * kk[q], 0.3);
       o[3] = 255;
       const A = tA[q];
       if (A < 0.999) { o[0] = o[0] * A + tB[q * 3]; o[1] = o[1] * A + tB[q * 3 + 1]; o[2] = o[2] * A + tB[q * 3 + 2]; }
@@ -304,7 +304,7 @@ export class FacePainter {
       if (y - top < 1) { o[0] *= 0.75; o[1] *= 0.72; o[2] *= 0.72; }
     }
     // upper lash line (thicker at the outer half), closed-lid line
-    const lw = (open < 0.08 ? 1.1 : 0.9 + 0.7 * sstep(-0.3, 0.8, t)) * s + liner;
+    const lw = (open < 0.08 ? 1.3 : 1.25 + 0.8 * sstep(-0.3, 0.8, t)) * s + liner;
     if (t > -1.02 && t < 1.04 && y <= top + 0.45 && y > top - lw) over(o, INK, t < -0.75 ? 0.6 : 0.95);
     // winged liner / lashes beyond the outer corner
     if ((lash > 0 || liner > 0) && t >= 0.85 && t < 1.15 + lash * 0.35) {

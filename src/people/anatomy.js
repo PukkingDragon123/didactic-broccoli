@@ -497,14 +497,16 @@ function skirtTube(spec, P) {
   const H = P.H, cut = spec.bottom.cut;
   const hem = { pleated: P.kneeY + 0.075 * H, pencil: P.kneeY - 0.02 * H, long: P.kneeY - 0.13 * H, mini: P.hipY - 0.085 * H }[cut] ?? P.kneeY;
   const flare = { pleated: 1.32, pencil: 0.98, long: 1.32, mini: 1.24 }[cut] ?? 1.2;
-  const yh = P.hipY - 0.01 * H, yt = P.pelvisY + 0.016 * H;
+  const yh = P.hipY - 0.01 * H, yt0 = P.pelvisY + 0.016 * H, topHem0 = garmentLines(spec, P).topHem;
+  // an untucked top hangs over the skirt: the skirt then starts just under its hem (no facets poking through)
+  const yt = topHem0 < yt0 ? Math.max(yh + 0.006 * H, topHem0 - 0.004 * H) : yt0;
   const pleats = cut === 'pleated' ? 8 : cut === 'long' ? 5 : 0;
   const N = pleats ? 16 : 10;
   // an untucked top hangs over the skirt's waistband: the skirt then hugs the body under it (no poke-through at the hem)
-  const g = garmentLines(spec, P), under = g.topHem < yt, k1 = under ? 1.0 : 1.08, k2 = under ? 1.0 : 1.1;
+  const g = garmentLines(spec, P), under = g.topHem < yt, k1 = under ? 0.94 : 1.08, k2 = under ? 0.95 : 1.1;
   const tb = table([
     [hem - 0.002 * H, P.hipsX * flare, P.hipsZ * (flare + 0.12), P.hipsZ * (flare + 0.12)],
-    [yh, P.hipsX * (under ? 1.02 : 1.08), P.hipsZ * (under ? 1.0 : 1.12), P.hipsZ * (under ? 1.08 : 1.2)],
+    [yh, P.hipsX * (under ? 0.98 : 1.08), P.hipsZ * (under ? 0.96 : 1.12), P.hipsZ * (under ? 1.04 : 1.2)],
     [P.pelvisY, (P.hipsX + P.waistX) / 2 * k2, P.waistZ * (under ? 1.02 : 1.14) + P.belly * 0.75, P.waistZ * (under ? 0.98 : 1.1)],
     [yt, P.waistX * k1, P.waistZ * (under ? 1.0 : 1.1) + P.belly * 0.7, P.waistZ * (under ? 0.95 : 1.08)],
   ]);
