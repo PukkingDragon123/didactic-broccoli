@@ -1,0 +1,36 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:252c28595d3c45fb87095faf71466113",
+   "height": 27.743,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "metal",
+   "opts": {
+    "spread": 0.3
+   },
+   "key": "a2e44fb36885eb"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.0,
+  "amp": 8,
+  "axis": "y"
+ },
+ "key": "tsukumo/kettle"
+}

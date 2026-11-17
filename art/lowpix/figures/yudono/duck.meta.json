@@ -1,38 +1,47 @@
 {
- "mats": {
-  "base": "gloss",
-  "tub_hoop0": "metal",
-  "tub_hoop1": "metal",
-  "tub_water": "glass"
- },
+ "mats": {},
  "clips": {
   "gimmick": "gimmick"
  },
  "pts": {},
  "models": [
   {
-   "name": "m",
-   "src": "polyhaven:rubber_duck_toy",
-   "height": 10,
-   "at": [
-    0,
-    5.72,
-    0
+   "name": "pail",
+   "src": "polyhaven:wooden_bucket_01",
+   "height": 22.0,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
-   "yaw": -30,
+   "yaw": 0,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 700,
+   "mat": "matte",
+   "key": "0ec21682fa5fde"
+  },
+  {
+   "name": "duck",
+   "src": "polyhaven:rubber_duck_toy",
+   "height": 15.769,
+   "pos": [
+    0.0,
+    21.5,
+    0.0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 700,
    "mat": "gloss",
-   "key": "8a00a78f86a279"
+   "key": "2bf33656609b12"
   }
  ],
  "model_clip": {
-  "node": "model_m",
+  "node": "model_duck",
   "kind": "wobble",
-  "length": 1.4,
+  "length": 1.2,
   "amp": 8,
   "axis": "y"
  },

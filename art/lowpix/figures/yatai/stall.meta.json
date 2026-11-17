@@ -1,0 +1,24 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "stall",
+   "src": "sketchfab:733c2f23e8154a5c9d3c8f0fda7ee2f6",
+   "height": 33.398,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -15,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "key": "07d290bcc6183b"
+  }
+ ],
+ "key": "yatai/stall"
+}

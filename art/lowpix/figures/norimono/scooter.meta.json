@@ -1,0 +1,40 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "v",
+   "src": "sketchfab:ad0f9220657c43fb89692dcf7a6b45a8",
+   "height": 20.133,
+   "pos": [
+    0.0,
+    3.0,
+    0.0
+   ],
+   "yaw": -60,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1000,
+   "mat": "gloss",
+   "level": 2,
+   "key": "113a11fe3e5454"
+  }
+ ],
+ "base": {
+  "family": "lane",
+  "w": 53.5,
+  "d": 41.5
+ },
+ "stand_why": "a two-wheeler cannot stand by itself: it is parked on a strip of kerb",
+ "model_clip": {
+  "node": "model_v",
+  "kind": "slide",
+  "length": 1.6,
+  "amp": 3,
+  "axis": "x"
+ },
+ "key": "norimono/scooter"
+}

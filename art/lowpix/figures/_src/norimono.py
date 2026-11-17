@@ -1,6 +1,7 @@
 """Lane Vehicles (まちのくるま): the vehicles of a Showa town as die-cast-style minis, from hand-made models (Sketchfab
 CC BY; credits in art/lowpix/figures/SOURCES.json) in the line's finish. They stand on their own wheels."""
-from figlib import Fig
+from figlib import Fig, BASE_H
+from props import series_base
 
 S = "norimono"
 SCOOTER = "sketchfab:ad0f9220657c43fb89692dcf7a6b45a8"   # Vintage Scooter
@@ -11,14 +12,17 @@ FIRE = "sketchfab:6e10c14d33c14963b01fd8d825ea0fe5"      # 1938 Vairogs Fire Tru
 TRAM = "sketchfab:2a6f78db7ea4403eb0aa5de268126799"      # Playground Tram
 
 
-def vehicle(F, name, src, L, yaw, mat="gloss"):
-    F.model("v", src, L=L, yaw=yaw, mat=mat, level=True)
+def vehicle(F, name, src, L, yaw, mat="gloss", base=None, **kw):
+    kw.setdefault("level", True)
+    F.model("v", src, L=L, yaw=yaw, mat=mat, at=(0, BASE_H if base else 0, 0), **kw)
+    if base:
+        series_base(F, "lane", base)
     F.model_clip("model_v", "slide", 1.6, amp=3, axis="x")
 
 
 def scooter():
     F = Fig(f"{S}/scooter", "Mint Scooter", "A round-nosed scooter with a spare wheel on the back, for the fish market at dawn.")
-    vehicle(F, "v", SCOOTER, 40, -60)
+    vehicle(F, "v", SCOOTER, 40, -60, base="a two-wheeler cannot stand by itself: it is parked on a strip of kerb")
     return F
 
 
@@ -42,13 +46,13 @@ def patrol():
 
 def fire():
     F = Fig(f"{S}/fire", "Fire Engine", "Red, brass and ladders, polished every morning whether there is a fire or not.")
-    vehicle(F, "v", FIRE, 50, -60)
+    vehicle(F, "v", FIRE, 50, -60, smooth=2)
     return F
 
 
 def tram():
     F = Fig(f"{S}/tram", "Chin-Chin Tram", "Two-tone, one car, ringing its bell down the middle of the main street.")
-    vehicle(F, "v", TRAM, 50, -60)
+    vehicle(F, "v", TRAM, 50, -60, level=False, cut=0.03)
     return F
 
 

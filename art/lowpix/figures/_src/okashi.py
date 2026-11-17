@@ -21,7 +21,7 @@ def dango():
 
 def taiyaki():
     F = Fig(f"{S}/taiyaki", "Taiyaki", "A sea bream of crisp batter full of hot sweet bean paste. Head first or tail first?")
-    F.model("fish", TAIYAKI, w=36, d=24, yaw=-20)
+    F.model("fish", TAIYAKI, w=36, d=24, yaw=-20, cut=0.05)
     F.model_clip("model_fish", "wobble", 1.2, amp=6)
     return F
 
@@ -40,7 +40,7 @@ def sakura():
 
 def manju():
     F = Fig(f"{S}/manju", "Momiji Manju", "Little sponge cakes baked in the shape of maple leaves, bean paste inside. The island's souvenir.")
-    F.model("cakes", MANJU, w=36, d=30, yaw=30)
+    F.model("cakes", MANJU, w=36, d=30, yaw=30, smooth=2)
     return F
 
 

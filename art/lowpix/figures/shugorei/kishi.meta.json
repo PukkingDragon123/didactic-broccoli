@@ -1,0 +1,34 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:d14eb14d83bd4e7ba7cbe443d76a10fd",
+   "height": 12.397,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "metal",
+   "level": 2,
+   "key": "d09c63c40b9969"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "turn",
+  "length": 2.2,
+  "amp": 20,
+  "axis": "y"
+ },
+ "key": "shugorei/kishi"
+}

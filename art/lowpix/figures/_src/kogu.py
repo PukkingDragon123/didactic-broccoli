@@ -6,7 +6,7 @@ S = "kogu"
 
 def f_hammer():
     F = Fig(f"{S}/hammer", "Wooden Mallet", "A beech mallet, its face dented from a thousand chisels.")
-    F.model("m", "polyhaven:wooden_hammer_01", L=40, yaw=-25, mat="matte", rest=12)
+    F.model("m", "polyhaven:wooden_hammer_01", L=40, yaw=-25, mat="matte", pitch=90, rest=12)
     F.model_clip("model_m", "wobble", 1.6, amp=12)
     return F
 
@@ -20,14 +20,14 @@ def f_plane():
 
 def f_wrench():
     F = Fig(f"{S}/wrench", "Pipe Wrench", "Red handle, toothed jaw, heavy as a brick. Fixes the bath every winter.")
-    F.model("m", "polyhaven:pipe_wrench", L=44, yaw=-25, mat="metal", rest=12)
+    F.model("m", "polyhaven:pipe_wrench", L=44, yaw=-25, mat="metal", pitch=90, rest=12)
     F.model_clip("model_m", "wobble", 1.6, amp=12)
     return F
 
 
 def f_drill():
     F = Fig(f"{S}/drill", "Hand Drill", "Turn the wheel and the bit goes round. Slowly. Very slowly.")
-    F.model("m", "polyhaven:vintage_hand_drill", L=44, yaw=-25, mat="metal", rest=12)
+    F.model("m", "polyhaven:vintage_hand_drill", L=44, yaw=-25, mat="metal", pitch=90, rest=12)
     F.model_clip("model_m", "turn", 1.6, amp=12)
     return F
 

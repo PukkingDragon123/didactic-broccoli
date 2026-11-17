@@ -27,7 +27,7 @@ def karasu():
 
 def kawasemi():
     F = Fig(f"{S}/kawasemi", "Kingfisher", "A jewel of blue and orange on its perch, gone in a flash of colour.")
-    F.model("bird", KINGFISHER, h=38, L=34, yaw=-20)
+    F.model("bird", KINGFISHER, h=38, L=34, yaw=-20, smooth=2)
     return F
 
 

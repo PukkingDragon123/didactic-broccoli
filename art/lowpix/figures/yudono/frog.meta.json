@@ -1,40 +1,40 @@
 {
- "mats": {
-  "base": "gloss",
-  "tub_hoop0": "metal",
-  "tub_hoop1": "metal",
-  "tub_water": "glass"
- },
- "clips": {
-  "gimmick": "gimmick"
- },
+ "mats": {},
+ "clips": {},
  "pts": {},
  "models": [
   {
-   "name": "m",
-   "src": "sketchfab:81a49956c5944279abfb2ccaa791f7d8",
-   "height": 7,
-   "at": [
-    0,
-    11.0,
-    7.5
+   "name": "tub",
+   "src": "polyhaven:wooden_bucket_02",
+   "height": 15.089,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
    ],
-   "yaw": 0,
+   "yaw": -20,
    "pitch": 0,
    "roll": 0,
-   "tris": 4000,
-   "style": "painted",
-   "atlas": 512,
+   "tris": 700,
    "mat": "matte",
-   "key": "8f56b93cb9fa8b"
+   "key": "c8755ebd1292fb"
+  },
+  {
+   "name": "frog",
+   "src": "sketchfab:81a49956c5944279abfb2ccaa791f7d8",
+   "height": 9.829,
+   "pos": [
+    2.0,
+    12.089,
+    3.0
+   ],
+   "yaw": -30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 700,
+   "mat": "matte",
+   "key": "3633b9f531b401"
   }
  ],
- "model_clip": {
-  "node": "model_m",
-  "kind": "hop",
-  "length": 0.8,
-  "amp": 3,
-  "axis": "y"
- },
  "key": "yudono/frog"
 }

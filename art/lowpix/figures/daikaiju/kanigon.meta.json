@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:6295676291c141728457ef7550b0650a",
+   "height": 15.085,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "level": 2,
+   "cut": 0.06,
+   "key": "9285dc9bbb0318"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "slide",
+  "length": 1.4,
+  "amp": 3,
+  "axis": "x"
+ },
+ "key": "daikaiju/kanigon"
+}

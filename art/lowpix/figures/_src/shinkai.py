@@ -41,7 +41,7 @@ def jelly():
 
 def nautilus():
     F = Fig(f"{S}/nautilus", "Chambered Nautilus", "Striped like a tiger, built in perfect rooms. It has not changed in five hundred million years.")
-    F.model("naut", NAUTILUS, L=40, h=34, yaw=30, level=True)
+    F.model("naut", NAUTILUS, L=40, h=34, yaw=30, level=True, cut=0.05)
     F.model_clip("model_naut", "turn", 2.4, amp=25)
     return F
 

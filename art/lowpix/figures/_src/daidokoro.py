@@ -6,7 +6,7 @@ S = "daidokoro"
 
 def f_nabe():
     F = Fig(f"{S}/nabe", "Enamel Pot", "Flower-painted enamel with a chip on the lid, for curry on Fridays.")
-    F.model("m", "polyhaven:pot_enamel_01", L=38, yaw=-25, mat="gloss", rest=12)
+    F.model("m", "polyhaven:pot_enamel_01", L=38, yaw=-25, mat="gloss", smooth=2, rest=12)
     F.model_clip("model_m", "hop", 1.6, amp=4)
     return F
 

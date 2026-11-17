@@ -20,7 +20,7 @@ def frog():
 
 def otter():
     F = Fig(f"{S}/otter", "Otter on the Rocks", "Floating on its back by the hot spring rocks, a pebble on its tummy for later.")
-    F.model("otter", OTTER, L=44, yaw=-30, level=True)
+    F.model("otter", OTTER, L=44, yaw=-30, level=True, cut=0.06)
     F.model_clip("model_otter", "wobble", 1.6, amp=5)
     return F
 

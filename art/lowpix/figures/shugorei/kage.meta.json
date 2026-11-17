@@ -1,0 +1,34 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:a0bbe212318b4ee9bfaec55a3e060227",
+   "height": 17.679,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "level": 2,
+   "key": "23e444687012c6"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "turn",
+  "length": 2.2,
+  "amp": 20,
+  "axis": "y"
+ },
+ "key": "shugorei/kage"
+}

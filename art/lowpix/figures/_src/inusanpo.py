@@ -20,7 +20,7 @@ def shiba():
 
 def sitshiba():
     F = Fig(f"{S}/sitshiba", "Beagle on the Scent", "Nose down, ears flapping, following a smell only it can find.")
-    F.model("dog", BEAGLE, L=42, h=32, yaw=20)
+    F.model("dog", BEAGLE, L=42, h=32, yaw=20, cut=0.03, rest=True, ramps=12)
     F.model_clip("model_dog", "wobble", 1.4, amp=5)
     return F
 

@@ -17,7 +17,7 @@ def water_bag(F, h=36.0, r=13.0):
     """The festival's clear plastic water bag, knotted at the top (the game's glass material)."""
     F.loft("bag", [((0, 0, 0), [r * 1.2, r * 1.2]), ((0, h * 0.2, 0), [r * 2.0, r * 2.0]), ((0, h * 0.55, 0), [r * 1.9, r * 1.9]),
                    ((0, h * 0.8, 0), [r * 0.9, r * 0.9]), ((0, h * 0.92, 0), [r * 0.35, r * 0.35]), ((0, h, 0), [r * 0.6, r * 0.6])],
-           (0, 0, 0), sides=14, rnd=2.2, col="#cfe6ee", style="clear", tone=3.4, up=[0, 0, 1], mat="glass")
+           (0, 0, 0), sides=14, rnd=2.2, col="#cfe6ee", style="clear", tone=6.0, up=[0, 0, 1], mat="glass")
     F.loft("water", [((0, 0.6, 0), [r * 1.1, r * 1.1]), ((0, h * 0.2, 0), [r * 1.85, r * 1.85]), ((0, h * 0.5, 0), [r * 1.82, r * 1.82])],
            (0, 0, 0), sides=14, rnd=2.2, col="#9cc8d8", style="clear", tone=3.0, up=[0, 0, 1], mat="glass")
     return h * 0.18
@@ -41,7 +41,7 @@ def omen():
 
 def takoyaki():
     F = Fig(f"{S}/takoyaki", "Takoyaki Boat", "Hot octopus balls with sauce, mayo and dancing bonito flakes, in their paper boat. Burns your mouth every time.")
-    F.model("food", TAKO, L=44, yaw=-20, level=True)
+    F.model("food", TAKO, L=44, yaw=-20, level=True, smooth=2)
     return F
 
 

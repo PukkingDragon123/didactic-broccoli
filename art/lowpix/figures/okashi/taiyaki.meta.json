@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "fish",
+   "src": "sketchfab:a8ca187f40504b9084b9052c569e5122",
+   "height": 21.734,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "key": "58aa45b1108950"
+  }
+ ],
+ "model_clip": {
+  "node": "model_fish",
+  "kind": "wobble",
+  "length": 1.2,
+  "amp": 6,
+  "axis": "y"
+ },
+ "key": "okashi/taiyaki"
+}

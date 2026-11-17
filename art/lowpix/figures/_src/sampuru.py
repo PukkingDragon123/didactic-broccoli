@@ -35,7 +35,7 @@ def udon():
 
 def ebifry():
     F = Fig(f"{S}/ebifry", "Tower Tendon", "Prawns, squid and lotus root stacked as high as the cook dared, in a black lacquer bowl.")
-    F.model("bowl", TEMPURA, h=40, w=30, d=30, yaw=-20)
+    F.model("bowl", TEMPURA, h=40, w=30, d=30, yaw=-20, cut=0.04)
     return F
 
 

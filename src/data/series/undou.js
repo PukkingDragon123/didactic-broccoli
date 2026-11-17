@@ -12,8 +12,7 @@ export default {
   capsule: { colors: [0xc8302a, 0x2a6ac8, 0xeaf0f2, 0xe8c030] },
   items: [
     { id: 'baseball', name: "Baseball", jp: 'やきゅうのボール', rarity: 'common', desc: "Red stitches, grass stains and a name in marker that has nearly worn away.", gimmick: { text: 'Hop' } },
-    { id: 'football', name: "Football", jp: 'サッカーボール', rarity: 'common', desc: "Black and white panels, scuffed from the gravel pitch behind the school.", gimmick: { text: 'Hop' } },
-    { id: 'rugby', name: "Rugby Ball", jp: 'ラグビーボール', rarity: 'uncommon', desc: "Bounces in every direction but the one you want.", gimmick: { text: 'Wobble' } },
+    { id: 'rugby', name: "Rugby Ball", jp: 'ラグビーボール', rarity: 'common', desc: "Bounces in every direction but the one you want.", gimmick: { text: 'Wobble' } },
     { id: 'bat', name: "Wooden Bat", jp: '木のバット', rarity: 'uncommon', desc: "Taped at the grip, signed by the whole team in the last summer.", gimmick: { text: 'Slide' } },
     { id: 'megaphone', name: "Megaphone", jp: 'メガホン', rarity: 'rare', desc: "The teacher's megaphone: \"Red team, last lap!\" heard three streets away.", gimmick: { text: 'Wobble' } },
     { id: 'dartboard', name: "Dartboard", jp: 'ダーツボード', rarity: 'secret', desc: "From the teachers' room, the real secret of sports day. Nobody ever hits the bull.", gimmick: { text: 'Turn' } },

@@ -20,7 +20,7 @@ def f_bunny():
 
 def f_penguin():
     F = Fig(f"{S}/penguin", "Penguin Plush", "A round penguin with felt feet. It sits up by itself, which is more than most.")
-    F.model("m", "sketchfab:228fddb7362f42e2a349b84cbe8191b4", h=34, yaw=-25, mat="matte", rest=12)
+    F.model("m", "sketchfab:228fddb7362f42e2a349b84cbe8191b4", h=34, yaw=-25, mat="matte", ramps=12, rest=12)
     F.model_clip("model_m", "hop", 1.6, amp=4)
     return F
 
@@ -34,14 +34,14 @@ def f_lamb():
 
 def f_fox():
     F = Fig(f"{S}/fox", "Corduroy Fox", "Orange corduroy, a white-tipped tail and a stitched smile that never changes.")
-    F.model("m", "sketchfab:9a9460010885486f93774384609fe24f", h=38, yaw=-25, mat="matte", rest=12)
+    F.model("m", "sketchfab:9a9460010885486f93774384609fe24f", h=38, yaw=-25, mat="matte", ramps=12, rest=12)
     F.model_clip("model_m", "turn", 1.6, amp=12)
     return F
 
 
 def f_elephant():
     F = Fig(f"{S}/elephant", "Temple Elephant Plush", "Red flowered cloth, a little blanket on its back, bought at a festival far away.")
-    F.model("m", "sketchfab:5072de467d74471fbbc7d945514c5d27", L=40, yaw=-25, mat="matte", rest=12)
+    F.model("m", "sketchfab:5072de467d74471fbbc7d945514c5d27", L=40, yaw=-25, mat="matte", smooth=2, rest=12)
     F.model_clip("model_m", "wobble", 1.6, amp=12)
     return F
 
@@ -55,7 +55,7 @@ def f_whale():
 
 def f_owl():
     F = Fig(f"{S}/owl", "Patchwork Owl", "Plaid wings, a heart on its tummy and two big felt eyes. Made from the scrap bag.")
-    F.model("m", "sketchfab:f174cf27c27c4e5bb816d41ad15394a1", h=38, yaw=-25, mat="matte", rest=12)
+    F.model("m", "sketchfab:f174cf27c27c4e5bb816d41ad15394a1", h=38, yaw=-25, mat="matte", smooth=2, rest=12)
     F.model_clip("model_m", "turn", 1.6, amp=12)
     return F
 

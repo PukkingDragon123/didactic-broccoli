@@ -1,0 +1,38 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:6465a297fa784598adc49f6e0042d449",
+   "height": 29.072,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -40,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "opts": {
+    "ramps": 12
+   },
+   "level": 2,
+   "cut": 0.04,
+   "key": "0e3c9a39eff504"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "nod",
+  "length": 1.6,
+  "amp": 10,
+  "axis": "y"
+ },
+ "key": "daikaiju/gyaosaur"
+}

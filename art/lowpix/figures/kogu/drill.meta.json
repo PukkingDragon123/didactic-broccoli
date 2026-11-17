@@ -8,14 +8,14 @@
   {
    "name": "m",
    "src": "polyhaven:vintage_hand_drill",
-   "height": 124.373,
+   "height": 44.0,
    "pos": [
-    2.754,
-    0.0,
-    -2.581
+    0.974,
+    7.353,
+    -22.0
    ],
    "yaw": -25,
-   "pitch": 0,
+   "pitch": 90,
    "roll": 0,
    "tris": 1400,
    "mat": "metal",
@@ -25,7 +25,7 @@
     0,
     0
    ],
-   "key": "eb3467386c2f4e",
+   "key": "8935a45de00bb3",
    "rest_R": [
     [
      1.0,

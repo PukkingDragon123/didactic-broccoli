@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "drum",
+   "src": "sketchfab:58ce63ddc7fa40abad42b7bb969f7a47",
+   "height": 24.91,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "key": "fd1c24c895c68a"
+  }
+ ],
+ "model_clip": {
+  "node": "model_drum",
+  "kind": "wobble",
+  "length": 0.6,
+  "amp": 3,
+  "axis": "y"
+ },
+ "key": "yatai/taiko"
+}

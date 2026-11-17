@@ -1,0 +1,42 @@
+{
+ "mats": {
+  "base": "glass",
+  "base_rod": "glass"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "fish",
+   "src": "sketchfab:e530fd4c7f264088ad8dce405349f88e",
+   "height": 33.085,
+   "pos": [
+    0.0,
+    12.0,
+    0.0
+   ],
+   "yaw": 70,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1000,
+   "mat": "matte",
+   "key": "5847c6a9bf12e9"
+  }
+ ],
+ "base": {
+  "family": "clear",
+  "w": 18.0,
+  "d": 18.0
+ },
+ "stand_why": "swimming: held up in the water on a clear rod",
+ "model_clip": {
+  "node": "model_fish",
+  "kind": "wobble",
+  "length": 1.0,
+  "amp": 10,
+  "axis": "y"
+ },
+ "key": "yatai/golden"
+}

@@ -8,14 +8,14 @@
   {
    "name": "m",
    "src": "polyhaven:pipe_wrench",
-   "height": 196.47,
+   "height": 44.0,
    "pos": [
-    -5.398,
-    0.36,
-    -2.362
+    -1.209,
+    3.251,
+    -21.946
    ],
    "yaw": -25,
-   "pitch": 0,
+   "pitch": 90,
    "roll": 0,
    "tris": 1400,
    "mat": "metal",
@@ -25,7 +25,7 @@
     0,
     0
    ],
-   "key": "2db95fb3f634ee",
+   "key": "9946271a902102",
    "rest_R": [
     [
      0.999391,

@@ -12,14 +12,14 @@ TOAD = "sketchfab:3cc5fe7b9ee34d448b16e04985a0cdf2"      # Kaiju : Toad
 
 def gyaosaur():
     F = Fig(f"{S}/gyaosaur", "Gyaosaur", "Up from the bay at midnight, roaring at the lighthouse. The lighthouse lost.")
-    F.model("m", TREX, L=48, h=40, yaw=-40, level=True)
+    F.model("m", TREX, L=48, h=40, yaw=-40, level=True, cut=0.04, ramps=12)
     F.model_clip("model_m", "nod", 1.6, amp=10)
     return F
 
 
 def kanigon():
     F = Fig(f"{S}/kanigon", "Kanigon", "A crab the size of a ferry, one claw bigger than the other, walking sideways through the harbour.")
-    F.model("m", CRAB, L=48, yaw=-20, level=True)
+    F.model("m", CRAB, L=48, yaw=-20, level=True, cut=0.06)
     F.model_clip("model_m", "slide", 1.4, amp=3, axis="x")
     return F
 

@@ -1,0 +1,33 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:0b049255562349ad8072afb9c33acfea",
+   "height": 16.654,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": 0,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "key": "21c8bd535c1160"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.2,
+  "amp": 10,
+  "axis": "y"
+ },
+ "key": "tsukumo/broom"
+}

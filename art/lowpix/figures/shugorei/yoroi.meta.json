@@ -1,0 +1,34 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:2144079e664740b19997c83d07c3c0f8",
+   "height": 10.211,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "gloss",
+   "level": 2,
+   "key": "9a45a0ce46f679"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "turn",
+  "length": 2.2,
+  "amp": 20,
+  "axis": "y"
+ },
+ "key": "shugorei/yoroi"
+}

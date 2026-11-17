@@ -8,14 +8,14 @@
   {
    "name": "m",
    "src": "polyhaven:wooden_hammer_01",
-   "height": 100.392,
+   "height": 40.0,
    "pos": [
-    0.256,
-    0.0,
-    0.252
+    0.102,
+    4.689,
+    -20.0
    ],
    "yaw": -25,
-   "pitch": 0,
+   "pitch": 90,
    "roll": 0,
    "tris": 1400,
    "mat": "matte",
@@ -25,7 +25,7 @@
     0,
     0
    ],
-   "key": "207adf0b47338a",
+   "key": "9ea7c40216c30c",
    "rest_R": [
     [
      1.0,

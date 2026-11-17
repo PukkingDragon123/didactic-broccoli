@@ -1,0 +1,37 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "v",
+   "src": "sketchfab:6e10c14d33c14963b01fd8d825ea0fe5",
+   "height": 18.397,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -60,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "gloss",
+   "opts": {
+    "smooth": 2
+   },
+   "level": 2,
+   "key": "66b3362ec3902d"
+  }
+ ],
+ "model_clip": {
+  "node": "model_v",
+  "kind": "slide",
+  "length": 1.6,
+  "amp": 3,
+  "axis": "x"
+ },
+ "key": "norimono/fire"
+}

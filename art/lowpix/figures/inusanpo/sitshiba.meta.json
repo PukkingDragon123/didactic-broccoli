@@ -1,0 +1,60 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "dog",
+   "src": "sketchfab:c199a59fc6b248b99261f24173d2a384",
+   "height": 25.612,
+   "pos": [
+    -1.414,
+    0.431,
+    -1.918
+   ],
+   "yaw": 20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "opts": {
+    "ramps": 12
+   },
+   "cut": 0.03,
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "a283d1131e5982",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.994522,
+     -0.104528
+    ],
+    [
+     0.0,
+     0.104528,
+     0.994522
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_dog",
+  "kind": "wobble",
+  "length": 1.4,
+  "amp": 5,
+  "axis": "y"
+ },
+ "key": "inusanpo/sitshiba"
+}

@@ -19,13 +19,16 @@
    "roll": 0,
    "tris": 1400,
    "mat": "gloss",
+   "opts": {
+    "smooth": 2
+   },
    "rest": true,
    "at": [
     0,
     0,
     0
    ],
-   "key": "034d44078d5a1f",
+   "key": "b56cb9b96025eb",
    "rest_R": [
     [
      1.0,
