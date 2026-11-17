@@ -24,7 +24,8 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   of the same figure, never as a new entry. Check with art/lowpix/figures/audit.py. Most toys stand on their own
   (feet, bowl, plate, own base); a stand or diorama only where the toy really needs one.
 - **Never use AI-generated models** (Meshy, Tripo, Rodin/Hyper3D, Luma, CSM, "made with AI", photo-to-3D services,
-  AI mass uploaders): only models hand-made by real artists, or real photogrammetry / LiDAR scans. Check every
+  AI mass uploaders): only models hand-made by real artists. **Never use scans** (photogrammetry, LiDAR, Object
+  Capture, Polycam, Scaniverse… anything scanned). Check every
   Sketchfab source with `python3 tools/ai-check.py` (zero REJECT; look at every REVIEW yourself).
 - Nothing visible may be untextured, a flat single colour, voxel-era vertex colours, speckle noise, a blown-up blurry
   painting or an obvious tiling repeat; texel density stays consistent across the game. Check with
