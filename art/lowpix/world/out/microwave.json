@@ -1,0 +1,66 @@
+{
+ "id": "microwave",
+ "src": "polyhaven:vintage_microwave",
+ "credit": {
+  "title": "Vintage Microwave",
+  "author": "Adam Nekola",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_microwave",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 800,
+ "size": [
+  1.075,
+  0.526,
+  0.743
+ ],
+ "colours": 30,
+ "palette": {
+  "m0": [
+   "#270701",
+   "#320d02",
+   "#3d1603",
+   "#472005",
+   "#512b07",
+   "#84510e",
+   "#b67e16",
+   "#e0af26",
+   "#e5cc5c"
+  ],
+  "m1": [
+   "#655437",
+   "#81724b",
+   "#9c9060",
+   "#aca680",
+   "#bcbb9f",
+   "#c3c3ae",
+   "#cbcbbd",
+   "#d3d3cb",
+   "#dcdcd8"
+  ],
+  "m2": [
+   "#0f1215",
+   "#14181b",
+   "#191e20",
+   "#1f2325",
+   "#25292a",
+   "#434747",
+   "#626363",
+   "#808080",
+   "#9e9e9e"
+  ],
+  "m3": [
+   "#561b23",
+   "#6f2529",
+   "#863331",
+   "#9c483d",
+   "#b15f4b",
+   "#b97d66",
+   "#c29981",
+   "#cbb19b",
+   "#d5c6b4"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "books",
+ "src": "polyhaven:book_encyclopedia_set_01",
+ "credit": {
+  "title": "Book Encyclopedia Set 01",
+  "author": "John Malcolm",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/book_encyclopedia_set_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2796,
+ "tex": 512,
+ "size": [
+  0.551,
+  0.237,
+  0.163
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#73463a",
+   "#93634f",
+   "#ab846d",
+   "#bca591",
+   "#cec2b4",
+   "#d3ccc0",
+   "#d9d5cb",
+   "#dfddd6",
+   "#e6e5e1"
+  ],
+  "m1": [
+   "#1b0a0c",
+   "#230e0e",
+   "#2a1512",
+   "#311c17",
+   "#37231c",
+   "#5c4032",
+   "#7f604a",
+   "#9f8264",
+   "#b3a38b"
+  ]
+ },
+ "warnings": []
+}

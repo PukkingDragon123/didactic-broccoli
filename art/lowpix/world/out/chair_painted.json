@@ -1,0 +1,33 @@
+{
+ "id": "chair_painted",
+ "src": "polyhaven:painted_wooden_chair_01",
+ "credit": {
+  "title": "Painted Wooden Chair 01",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/painted_wooden_chair_01",
+  "site": "Poly Haven"
+ },
+ "tris": 724,
+ "tex": 384,
+ "size": [
+  0.432,
+  0.956,
+  0.54
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#6e6452",
+   "#8b846f",
+   "#a3a092",
+   "#bcbbb4",
+   "#d6d6d4",
+   "#dbdbdb",
+   "#e1e1e1",
+   "#e6e6e6",
+   "#ececec"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,33 @@
+{
+ "id": "kettle_electric",
+ "src": "polyhaven:vintage_electric_kettle",
+ "credit": {
+  "title": "Vintage Electric Kettle",
+  "author": "SV Garip",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_electric_kettle",
+  "site": "Poly Haven"
+ },
+ "tris": 2991,
+ "tex": 256,
+ "size": [
+  0.322,
+  0.305,
+  0.249
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#4d3531",
+   "#614a42",
+   "#755f54",
+   "#887568",
+   "#978b7f",
+   "#a29c94",
+   "#afaca7",
+   "#bcbbba",
+   "#cbcbcb"
+  ]
+ },
+ "warnings": []
+}

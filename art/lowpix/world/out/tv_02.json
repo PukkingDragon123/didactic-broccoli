@@ -1,0 +1,55 @@
+{
+ "id": "tv_02",
+ "src": "polyhaven:television_02",
+ "credit": {
+  "title": "Television 02",
+  "author": "Benny Weimer",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/television_02",
+  "site": "Poly Haven"
+ },
+ "tris": 2310,
+ "tex": 256,
+ "size": [
+  0.4,
+  0.411,
+  0.35
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#1b1915",
+   "#23211c",
+   "#292823",
+   "#30302b",
+   "#363634",
+   "#515151",
+   "#6d6d6d",
+   "#888888",
+   "#a4a4a4"
+  ],
+  "m1": [
+   "#5e4a51",
+   "#786469",
+   "#8f8083",
+   "#a49e9f",
+   "#bbbbbb",
+   "#c4c4c4",
+   "#cecece",
+   "#d7d7d7",
+   "#e0e0e0"
+  ],
+  "m2": [
+   "#4f1e2c",
+   "#662a36",
+   "#7b363e",
+   "#8f4446",
+   "#a25652",
+   "#ae736a",
+   "#b89085",
+   "#c3a99e",
+   "#d0c0b7"
+  ]
+ },
+ "warnings": []
+}
