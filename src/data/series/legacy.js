@@ -53,10 +53,10 @@ export const RETIRED = {
   rojineko: { postbox: 'c', wall: 'c', box: 'c', laundry: 'u', kittens: 'u', boss: 'r', stalker: 'x', moon: 's' },
   asobi: { robot: 'u' }, sampuru: { soda: 'u' }, daikaiju: { anky: 'c', tetsujin: 'x', golden: 's' }, hikidashi: { soroban: 'u', randoseru: 'x' },
   inusanpo: { pug: 'u', corgi: 'u', terrier: 'r' }, machikado: { gaito: 'r', busstop: 'x' }, norimono: { van: 'c', golden: 's' },
-  shinkai: { goblin: 'r', oarfish: 'x' }, shugorei: { golden: 's' }, tsukumo: { parade: 'x', golden: 's' },
-  yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's' }, yatai: { wataame: 'u', yoyo: 'u' },
+  shinkai: { goblin: 'r', oarfish: 'x', isopod: 'c', angler: 'u', coela: 's' }, shugorei: { golden: 's' }, tsukumo: { parade: 'x', golden: 's' },
+  yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's', karasu: 'c', kiji: 's' }, yatai: { wataame: 'u', yoyo: 'u' },
   yudono: { capy: 'c', penguin: 'c', family: 'r', rotenburo: 'x', kinkapi: 's' }, kaiun: { jinja: 'x', goldneko: 's' },
-  konchu: { tento: 'c', semi: 'c' }, okashi: { kagami: 'x' },
+  konchu: { tento: 'c', semi: 'c', larva: 'r' }, okashi: { kagami: 'x', dorayaki: 'c', matcha: 'r', momo: 's' },
 };
 /** The new series each old one hands its stock to (if it exists). */
 const THEME = {

@@ -14,10 +14,7 @@ export default {
   items: [
     { id: 'dango', name: 'Hanami Dango', jp: '花見だんご', rarity: 'common', desc: 'Pink, white and green on bamboo skewers: spring, summer and winter. Autumn is the stick.' },
     { id: 'taiyaki', name: 'Taiyaki', jp: 'たい焼き', rarity: 'common', desc: 'A sea bream of crisp batter full of hot sweet bean paste. Head first or tail first?', gimmick: { text: 'Wiggle' } },
-    { id: 'dorayaki', name: 'Dorayaki', jp: 'どら焼き', rarity: 'common', desc: 'Two honey pancakes and the red bean between them.' },
     { id: 'sakura', name: 'Sakura Mochi', jp: '桜もち', rarity: 'uncommon', desc: 'Pink rice round sweet bean, wrapped in a salted cherry leaf. Eat the leaf.' },
-    { id: 'manju', name: 'Momiji Manju', jp: 'もみじまんじゅう', rarity: 'uncommon', desc: "Little sponge cakes baked in the shape of maple leaves, bean paste inside. The island's souvenir." },
-    { id: 'matcha', name: 'Matcha Bowl', jp: 'お抹茶', rarity: 'rare', desc: 'Whisked to a fine green foam in a rough bowl. Turn it twice before you drink.', gimmick: { text: 'Turn the bowl' } },
-    { id: 'momo', name: 'Peach of Long Life', jp: '仙桃', rarity: 'secret', desc: "The hermits' peach from the mountain orchard, blushing and heavy. One bite, one thousand years.", gimmick: { text: 'Turn it' } },
+    { id: 'manju', name: 'Momiji Manju', jp: 'もみじまんじゅう', rarity: 'secret', desc: "Little sponge cakes baked in the shape of maple leaves, bean paste inside. The island's souvenir." },
   ],
 };

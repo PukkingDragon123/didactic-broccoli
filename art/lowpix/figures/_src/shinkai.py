@@ -60,4 +60,4 @@ def coela():
     return F
 
 
-FIGS = {"isopod": isopod, "dumbo": dumbo, "jelly": jelly, "nautilus": nautilus, "angler": angler, "coela": coela}
+FIGS = {"dumbo": dumbo, "jelly": jelly, "nautilus": nautilus}

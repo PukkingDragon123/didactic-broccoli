@@ -16,7 +16,6 @@ export default {
     { id: 'miyama', name: 'Mountain Stag Beetle', jp: 'ミヤマクワガタ', rarity: 'common', desc: 'Golden fuzz on its back and jaws like antlers. Only found high up, early in the morning.', gimmick: { text: 'Look round' } },
     { id: 'tonbo', name: 'Giant Dragonfly', jp: 'オニヤンマ', rarity: 'uncommon', desc: 'Hovering over the rice paddy, four glass wings and eyes that see everything.', gimmick: { text: 'Flit' } },
     { id: 'kamakiri', name: 'Praying Mantis', jp: 'オオカマキリ', rarity: 'uncommon', desc: 'Arms folded, head turning to follow you. It is not praying.', gimmick: { text: 'Turn its head' } },
-    { id: 'larva', name: 'Beetle Grub', jp: 'カブトムシの幼虫', rarity: 'rare', desc: 'Dug up from the leaf mould, fat and curled. Next summer it will have a horn.', gimmick: { text: 'Wriggle' } },
     { id: 'ageha', name: 'Swallowtail Butterfly', jp: 'アゲハチョウ', rarity: 'ultra', desc: 'Tails on its wings and a dusting of blue, gone the moment you lift the net.', gimmick: { text: 'Flutter' } },
     { id: 'golden', name: 'Sakishima Stag Beetle', jp: 'サキシマヒラタクワガタ', rarity: 'secret', desc: 'From the far southern islands: the widest jaws of any stag beetle in Japan. Collectors wait years.', gimmick: { text: 'Turn it to the light' } },
   ],

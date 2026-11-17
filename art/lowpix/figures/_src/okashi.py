@@ -58,4 +58,4 @@ def momo():
     return F
 
 
-FIGS = {"dango": dango, "taiyaki": taiyaki, "dorayaki": dorayaki, "sakura": sakura, "manju": manju, "matcha": matcha, "momo": momo}
+FIGS = {"dango": dango, "taiyaki": taiyaki, "sakura": sakura, "manju": manju}

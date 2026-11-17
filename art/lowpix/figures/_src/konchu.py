@@ -69,4 +69,4 @@ def golden():
     return F
 
 
-FIGS = {"kabuto": kabuto, "miyama": miyama, "tonbo": tonbo, "kamakiri": kamakiri, "larva": larva, "ageha": ageha, "golden": golden}
+FIGS = {"kabuto": kabuto, "miyama": miyama, "tonbo": tonbo, "kamakiri": kamakiri, "ageha": ageha, "golden": golden}

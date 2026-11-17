@@ -44,4 +44,4 @@ def kiji():
     return F
 
 
-FIGS = {"suzume": suzume, "karasu": karasu, "kawasemi": kawasemi, "fukuro": fukuro, "kiji": kiji}
+FIGS = {"suzume": suzume, "kawasemi": kawasemi, "fukuro": fukuro}
