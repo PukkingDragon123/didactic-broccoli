@@ -76,3 +76,20 @@ export function printRegionTexture(name, key, { mips = true } = {}) {
   if (printImage(name)) set(printImage(name)); else whenPrint(name).then(set);
   return t;
 }
+
+/** Copy a baked region into a canvas context at (x, y, w, h) (the sheet must have loaded: main.js waits for 'misc'
+ * and 'promo' before the world builds). Returns false when it isn't there, so the caller can fall back. */
+export function drawPrint(ctx, name, key, x = 0, y = 0, w = null, h = null) {
+  const img = printImage(name), r = printRegions(name)[key];
+  if (!img || !r) return false;
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, r[0], r[1], r[2], r[3], x, y, w ?? ctx.canvas.width, h ?? ctx.canvas.height);
+  return true;
+}
+/** The same into a Pix (src/gfx/pix.js): drawn on its canvas, then pulled back into its pixel buffer. */
+export function pixPrint(p, name, key) {
+  p.flush?.();
+  if (!drawPrint(p.ctx, name, key, 0, 0, p.w, p.h)) return false;
+  p.pull?.();
+  return true;
+}

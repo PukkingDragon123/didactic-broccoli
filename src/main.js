@@ -4,6 +4,7 @@ import '@fontsource/pixelify-sans/400.css';
 import './ui/fonts.css';
 import './style.css';
 import * as THREE from 'three';
+import { whenPrint } from './gfx/printAtlas.js';
 import { Game } from './game/Game.js';
 import { audio } from './core/audio.js';
 import { bgm } from './core/bgm.js';
@@ -47,7 +48,8 @@ async function boot() {
   // multiplayer: a guest's tab connects to the host first and loads the host's world (src/net/boot.js)
   const netBoot = await prepareNet((t) => loading.msg(t));
   if (netBoot) loading.msg('');
-  await loadFonts();
+  // the baked print sheets that synchronous painters copy from (src/gfx/printAtlas.js) are in before the world builds
+  await Promise.all([loadFonts(), whenPrint('misc'), whenPrint('promo')]);
   loading.set(0.04);
   const game = new Game($('app'));
   window.__game = game;
