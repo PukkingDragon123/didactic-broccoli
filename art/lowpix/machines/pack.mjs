@@ -83,7 +83,7 @@ for (const [pack, specs] of Object.entries(PACKS)) {
     const dir = join(CACHE, sid);
     const file = readdirSync(dir).find((f) => f.endsWith('.glb'));
     const meta = JSON.parse(readFileSync(join(ART, sid + '.meta.json'), 'utf8'));
-    Object.assign(metaAll, { [sid]: { standBox: meta.standBox, density: meta.density } });
+    Object.assign(metaAll, { [sid]: { standBox: meta.standBox, sideQuad: meta.sideQuad, density: meta.density } });
     const doc = await io.read(join(dir, file));
     const root = doc.getRoot();
     const joints = meta.joints || {};
@@ -158,6 +158,7 @@ for (const [pack, specs] of Object.entries(PACKS)) {
   await io.write(path, out);
   const b = getBounds(scene);
   const meta = {};
+  for (const [sid, m] of Object.entries(metaAll)) if (m.sideQuad) meta.sideQuad = Object.fromEntries(Object.entries(m.sideQuad).map(([k, v]) => [k, +(v * UNIT).toFixed(4)]));
   for (const [sid, m] of Object.entries(metaAll)) if (m.standBox) meta.standBox = Object.fromEntries(Object.entries(m.standBox).map(([k, v]) => [k, +(v * UNIT).toFixed(4)]));
   man[pack] = { nodes: info, size: [0, 1, 2].map((i) => +(b.max[i] - b.min[i]).toFixed(4)), min: b.min.map((v) => +v.toFixed(4)), atlas, bytes: statSync(path).size, ...meta };
   const tris = Object.values(info).reduce((a, n) => a + n.tris, 0);

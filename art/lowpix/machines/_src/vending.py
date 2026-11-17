@@ -37,10 +37,6 @@ def build_all():
     # ------------------------------------------------------------------ the cabinet
     s.box("cab", [X1 - X0, 1816 - 60, ZF - Z0], (0, (60 + 1816) / 2, (Z0 + ZF) / 2), ch=0, col=red, style="enamel",
           hide=["bottom", "front"])
-    s.layer("cab", id="swoosh", op="band", axis="y", **{"from": 0.05, "to": 0.2}, wobble=0.12, wobble_scale=500, ramp=white, tone=4.0,
-            faces=["left", "right"], bevel=True)
-    s.layer("cab", id="swoosh2", op="band", axis="y", **{"from": -0.05, "to": 0.0}, wobble=0.12, wobble_scale=500, ramp=white, tone=4.4,
-            faces=["left", "right"])
     s.layer("cab", id="vents", op="grille", rect=[0.2, 0.05, 0.8, 0.14], period=3, slit_tone=0.4, lip=0.6, faces=["back"])
     s.layer("cab", id="rustfoot", op="band", axis="y", **{"from": -1.0, "to": -0.9}, wobble=0.05, ramp="rust", tone=3.0,
             faces=["left", "right", "back"])
@@ -85,9 +81,6 @@ def build_all():
     # the lit header sign over the window
     s.boxr("header", dx0 + 10, 1764, DZ1, dx1 - 10, 1806, DZ1 + 8, ch=3, col=s.c("#fff4dc"), style="glow", tone=4.6)
     hw_ = int((dx1 - dx0 - 20) * s.dens)
-    s.stamp("header", text_jp("つめたい のみもの", 10, "i"), {"i": f"{red}:2"}, face="front", at=[8, 2])
-    s.stamp("header", text5("COLD DRINKS", "i"), {"i": f"{blue}:2"}, face="front", at=[hw_ - 72, 3])
-    s.layer("header", id="rule", op="band", axis="y", **{"from": -1.0, "to": -0.72}, ramp=red, tone=3.0, faces=["front"])
     # ------------------------------------------------------------------ the payment column
     px0, px1 = vx(15) - 4, vx(23) + 4
     s.boxr("pay", px0, 880, DZ1, px1, 1740, DZ1 + 6, ch=2, col=s.c("#e2ded6", k=0.0), style="abs")
@@ -107,16 +100,9 @@ def build_all():
     # ------------------------------------------------------------------ the illuminated ad panel (brand-free)
     ay0, ay1 = 400.0, 870.0
     s.boxr("ad", dx0 + 6, ay0, DZ1, dx1 - 6, ay1, DZ1 + 4, ch=2, col=blue, style="glow", tone=3.0)
-    s.layer("ad", id="sky", op="gradient", axis="y", amount=1.6, faces=["front"])
-    s.layer("ad", id="wave", op="band", axis="y", **{"from": 0.2, "to": 0.34}, wobble=0.18, wobble_scale=180, ramp="paperw", tone=6.0, faces=["front"])
-    s.layer("ad", id="wave2", op="band", axis="y", **{"from": -0.1, "to": 0.0}, wobble=0.2, wobble_scale=140, ramp=sky, tone=5.0, faces=["front"])
-    s.layer("ad", id="bubbles", op="spots", count=26, radius=[3, 8], where={"y": [-0.2, 0.9]}, ramp=sky, tone=5.5, faces=["front"])
     bottle = ["...hh...", "...hh...", "..hhhh..", ".hbbbbh.", "hbwwbbbh", "hbwwbbbh", "hbbbbbbh", "hrrrrrrh", "hrwwwwrh", "hrrrrrrh",
               "hbbbbbbh", "hbbbbbbh", "hbbbbbbh", ".hhhhhh."]
     big = ["".join(c * 4 for c in r) for r in bottle for _ in range(4)]
-    s.stamp("ad", big, {"h": f"{blue}:1", "b": f"{sky}:4", "w": "paperw:6", "r": f"{red}:3"}, face="front", at=[int((dx1 - dx0) * s.dens * 0.66), 16])
-    s.stamp("ad", text_jp("おいしい水", 16, "i"), {"i": "paperw:6"}, face="front", at=[16, 14])
-    s.stamp("ad", text5("FRESH & COLD", "i"), {"i": f"{blue}:1"}, face="front", at=[18, 38])
     # stickers on the door: the operator's number, a recycle-bin note
     s.stamp("door_top", [".kkkkkkkkkkkkkkkkkkkk.", *["k" + r.replace(".", "y").replace("i", "k") + "k" for r in text3("No.4417 ", "i")], ".kkkkkkkkkkkkkkkkkkkk."],
             {"k": "ink:1", "y": s.c("#f6d84a") + ":4"}, face="front", at=[int((vx(16) - dx0) * s.dens), int((1800 - 392) * s.dens)])

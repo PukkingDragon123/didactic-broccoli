@@ -1,0 +1,99 @@
+{
+ "id": "goodsmilk",
+ "src": "art/lowpix/world/made/goodsmilk.glb",
+ "credit": {
+  "title": "milk carton",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 18,
+ "tex": 512,
+ "size": [
+  0.07,
+  0.215,
+  0.077
+ ],
+ "colours": 55,
+ "palette": {
+  "m0": [
+   "#b75727",
+   "#d5854d",
+   "#e0b386",
+   "#ecd9bd",
+   "#fbf8f2",
+   "#fbf9f4",
+   "#fcfbf6",
+   "#fcfcf8",
+   "#fdfdfa"
+  ],
+  "m1": [
+   "#3d352e",
+   "#4d463e",
+   "#5d584f",
+   "#6b6861",
+   "#797874",
+   "#898989",
+   "#9c9c9c",
+   "#afafaf",
+   "#c2c2c2"
+  ],
+  "m2": [
+   "#090951",
+   "#0d1569",
+   "#12257f",
+   "#183894",
+   "#1f4ea9",
+   "#296dc9",
+   "#4890d5",
+   "#6daedb",
+   "#91c7e1"
+  ],
+  "m3": [
+   "#451413",
+   "#58211a",
+   "#6a3022",
+   "#7c422b",
+   "#8d5535",
+   "#a97144",
+   "#ba8f5f",
+   "#c4aa80",
+   "#d0c1a0"
+  ],
+  "m4": [
+   "#1c1a4e",
+   "#242764",
+   "#2f3978",
+   "#3b4d8c",
+   "#48629f",
+   "#5d7db0",
+   "#7a98ba",
+   "#96afc5",
+   "#b0c4d0"
+  ],
+  "m5": [
+   "#600620",
+   "#7b0a21",
+   "#950f1f",
+   "#af141a",
+   "#c7231b",
+   "#de422b",
+   "#e06f50",
+   "#e49574",
+   "#e8b596"
+  ],
+  "m6": [
+   "#2c3483",
+   "#3d50a7",
+   "#5c75be",
+   "#859ccb",
+   "#acbfd9",
+   "#b9cbdd",
+   "#c5d6e1",
+   "#d1dfe5",
+   "#dde7eb"
+  ]
+ },
+ "warnings": []
+}

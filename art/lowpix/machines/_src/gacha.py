@@ -146,12 +146,22 @@ def side_graphic(s, pid, L, st, band, MET):
             rows[y1 + j] = "".join(row)
     key = {"b": f"{band}:3", "l": f"{band}:5", "o": f"{band}:1", "s": "paperw:3", "w": "paperw:6", "h": "paperw:5", "c": f"{band}:4",
            "t": "paperw:6", "u": "paperw:5"}
-    # (a vbox's flanks have image-x running up the machine: the art is turned a quarter for them)
-    Hh = len(rows)
-    cw = ["".join(rows[Hh - 1 - j][i] for j in range(Hh)) for i in range(len(rows[0]))]
-    ccw = ["".join(rows[j][len(rows[0]) - 1 - i] for j in range(Hh)) for i in range(len(rows[0]))]
-    s.stamp(pid, ccw, key, face="right", at="left", off=(int(10 * s.dens), 0))
-    s.stamp(pid, cw, key, face="left", at="right", off=(-int(10 * s.dens), 0))
+    # The print is its own quad on each flank now (a slot PRINT can fill with photo art): the art is written as
+    # public/img/machines/side_<type>.png (UVs 0..1), the quad's place goes to the game through the meta (mm).
+    from PIL import Image
+    pal = s.spec["palette"]["ramps"]
+
+    def col(ref):
+        r, k = ref.split(":")
+        c = pal[r][int(k)]
+        return tuple(int(c[q:q + 2], 16) for q in (1, 3, 5))
+    im = Image.new("RGB", (len(rows[0]), len(rows)))
+    im.putdata([col(key[ch]) for row in rows for ch in row])
+    out = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "public", "img", "machines")
+    os.makedirs(out, exist_ok=True)
+    im.save(os.path.join(out, f"side_{s.key}.png"))
+    top = L["caseY0"] - 16 - 10
+    s.meta["sideQuad"] = {"x": L["hw"] + 0.6, "y1": top, "y0": top - len(rows) / s.dens, "z0": -len(rows[0]) / s.dens / 2, "z1": len(rows[0]) / s.dens / 2}
 
 
 def px(s, mm):
