@@ -32,6 +32,15 @@ job now is to raise its quality without losing the look.
   rendered as detailed, crisp pixel art: natural, slightly muted colours, real shading and grime, no flat cartoon
   fills, no thick outlines, no saturated candy colours. Lighting is natural, not toon.
 
+## Update: lowpix technique everywhere, almost no voxels (the owner's newest direction; wins over everything above)
+- The game moves to the owner's own modelling technique (lowpix, /home/user/pukkingdragon123/symmetrical-goggles):
+  properly proportioned models (real anatomy and construction, not chibi, not blocks) with detailed, realistic,
+  hand-painted pixel-art textures. Real CC0 / CC BY models from Poly Haven and Sketchfab are converted into the same
+  style (`lowpix convert ... --style pixel-hd`); everything else is modelled as lowpix specs from real reference.
+- Almost no voxel art remains: buildings, props, furniture, machines, vehicles, animals and toys are lowpix models.
+  Voxels only where a thing is genuinely blocky in real life.
+- Textures: realistic content, crisp detailed pixel art, natural colours, real wear; never cartoon, never flat.
+
 ## 2D
 - UI is paper in detailed pixel art (src/ui/paper.js). Speech is plain floating text.
 - Drinks, products, posters and display cards are detailed art built from real photographs where possible, with
