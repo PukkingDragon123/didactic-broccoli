@@ -26,6 +26,7 @@ sys.path.insert(0, os.path.join(HERE, "_lib"))
 LOWPIX = os.environ.get("LOWPIX", "/home/user/pukkingdragon123/symmetrical-goggles")
 BUILD = os.path.join(ROOT, "node_modules", ".cache", "lowpix-figures")
 CONV = os.path.join(ROOT, "node_modules", ".cache", "lowpix-conv")
+CONV_H = 26  # every model is converted at this height (mm); pack.mjs scales it to the figure's
 ENV = dict(os.environ, PYTHONPATH=LOWPIX, LOWPIX_SKETCHFAB_TOKEN=os.environ.get("LOWPIX_SKETCHFAB_TOKEN", "proxy-injected"))
 
 
@@ -45,7 +46,8 @@ def gen(series, only=None):
 
 
 def conv_key(m):
-    k = {x: m.get(x) for x in ("src", "height", "tris", "style", "atlas", "opts")}
+    k = {x: m.get(x) for x in ("src", "tris", "style", "atlas", "opts")}
+    k["height"] = float(CONV_H)
     return hashlib.sha1(json.dumps(k, sort_keys=True).encode()).hexdigest()[:14]
 
 
@@ -63,7 +65,7 @@ def convert(m):
     link = os.path.join(out, "_source")
     if not os.path.exists(link):
         os.symlink(shared, link)
-    cmd = [sys.executable, "-m", "lowpix", "convert", m["src"], "--style", m["style"], "--height", str(m["height"]), "--tris", str(m["tris"]),
+    cmd = [sys.executable, "-m", "lowpix", "convert", m["src"], "--style", m["style"], "--height", str(CONV_H), "--tris", str(m["tris"]),
            "--atlas", str(m["atlas"]), "-o", out, "--name", key]
     for k, v in (m.get("opts") or {}).items():
         cmd += [f"--{k}"] if v is True else [f"--{k}", str(v)]

@@ -141,3 +141,15 @@ def crescent_moon(F, pid, at, r=9.0, parent=None):
     F.ramp("moon", "#f4d47a", k=0.0)
     F.card(pid, art, {"m": "moon:5", "o": "moon:3"}, at, plane="xy", style="glow", parent=parent)
     F.meta["mats"][pid] = "glow"
+
+
+def tatami(F, pid, w, d, h=3.0, at=(0, 0, 0), col="#b8b070", edge="#2a3a2a"):
+    """A slab of tatami: woven rush (fine stripes over a linen photo), the cloth border (heri) along the long sides."""
+    top = slab(F, pid, w, d, h, col=col, style="cloth", at=at, ch=0.5, tone=3.2)
+    F.layer(pid, id="weave", op="stripes", axis="z", period=0.55, width=0.35, shift=-0.45, faces=["up", "front", "back"])
+    F.layer(pid, id="sun", op="gradient", axis="x", amount=0.6, faces=["up"])
+    F.layer(pid, id="heri", op="band", axis="x", **{"from": 0.86, "to": 1.0}, ramp=F.c(edge), tone=2.6, faces=["up", "right", "left"],
+            bevel={"shadow": 1, "highlight": 1})
+    F.layer(pid, id="heri2", op="band", axis="x", **{"from": -1.0, "to": -0.86}, ramp=F.c(edge), tone=2.6, faces=["up", "right", "left"],
+            bevel={"shadow": 1, "highlight": 1})
+    return top

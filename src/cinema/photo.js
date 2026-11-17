@@ -84,6 +84,8 @@ export class PhotoMode {
     g.jojo?.impact.filter(null);
     this.S?.hide();
     this.hud.classList.add('hidden');
+    // the pointer came loose (Esc): now show the pause menu the game would have shown
+    if (!g.input.locked && !g.input.touch && !/autotest/.test(location.search)) g.input.onLockChange?.(false);
   }
 
   apply() {

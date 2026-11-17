@@ -1,0 +1,33 @@
+{
+ "id": "nightstand",
+ "src": "polyhaven:ClassicNightstand_01",
+ "credit": {
+  "title": "Classic Nightstand 01",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/ClassicNightstand_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2002,
+ "tex": 512,
+ "size": [
+  0.568,
+  0.7,
+  0.424
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#110401",
+   "#160702",
+   "#1b0a03",
+   "#200f04",
+   "#241405",
+   "#5b3a0e",
+   "#90671a",
+   "#c39a27",
+   "#d9c052"
+  ]
+ },
+ "warnings": []
+}

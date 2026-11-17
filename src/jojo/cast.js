@@ -1,6 +1,6 @@
 // The original eccentrics of the bizarre side story, built from the player-character kit (src/people/avatar.js:
 // a base look plus closet cosmetics, painted and dressed like you are), and the shared helpers their scenes use.
-//   makeCast(id) -> Human          CAST[id] = { name, color, voice, look }
+//   makeCast(id, { lazy }) -> Human         CAST[id] = { name, color, voice, look }
 //   line(c, g, who, text, opts)    a floating line (plain text beside the head, typed with an 8-bit voice) as a cutscene
 //                                  waiter that lasts as long as it takes to read (skipping closes it)
 //   walker(h)                      walk a Human to a point at a pace: w.to(x, z, speed), w.update(dt) -> arrived
@@ -23,10 +23,10 @@ export const CAST = {
   },
 };
 
-export function makeCast(id) {
+export function makeCast(id, { lazy = false } = {}) {
   const C = CAST[id];
-  const h = createAvatarHuman(C.look, { lazy: false });
-  h.finishPaint?.();
+  const h = createAvatarHuman(C.look, { lazy });
+  if (!lazy) h.finishPaint?.();
   h.root.scale.setScalar(C.scale || 1);
   h.root.name = 'jojo-' + id;
   h.castId = id;

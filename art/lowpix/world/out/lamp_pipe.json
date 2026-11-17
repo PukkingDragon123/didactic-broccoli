@@ -1,0 +1,33 @@
+{
+ "id": "lamp_pipe",
+ "src": "polyhaven:industrial_pipe_lamp",
+ "credit": {
+  "title": "Industrial Pipe Lamp",
+  "author": "Mateusz Sadek",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/industrial_pipe_lamp",
+  "site": "Poly Haven"
+ },
+ "tris": 2987,
+ "tex": 224,
+ "size": [
+  0.182,
+  0.364,
+  0.262
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2d2d3a",
+   "#3c3d4a",
+   "#4d4f59",
+   "#5e6167",
+   "#717274",
+   "#868686",
+   "#999999",
+   "#acacac",
+   "#c0c0c0"
+  ]
+ },
+ "warnings": []
+}

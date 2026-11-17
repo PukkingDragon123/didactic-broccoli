@@ -1,0 +1,33 @@
+{
+ "id": "bookshelf",
+ "src": "polyhaven:wooden_bookshelf_worn",
+ "credit": {
+  "title": "Wooden Bookshelf Worn",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_bookshelf_worn",
+  "site": "Poly Haven"
+ },
+ "tris": 2845,
+ "tex": 1024,
+ "size": [
+  1.375,
+  2.063,
+  0.582
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#462c2c",
+   "#5a3d3b",
+   "#6c504c",
+   "#7d645d",
+   "#8d7970",
+   "#9a8e87",
+   "#a7a29d",
+   "#b5b4b2",
+   "#c5c5c5"
+  ]
+ },
+ "warnings": []
+}

@@ -8,6 +8,7 @@ import { mergeByMaterial } from '../voxel/merge.js';
 import { leafCards, CELLS } from '../voxel/cards.js';
 import { preloadAssets, assetMerged } from '../kit/assets.js';
 import { shade } from '../voxel/palette.js';
+import { PROP_MODELS } from '../data/propModels.js';
 
 const libs = import.meta.glob('../data/props/*.js', { eager: true });
 export const PROPS = {};
@@ -17,6 +18,9 @@ for (const [path, mod] of Object.entries(libs)) {
     PROPS[id] = { ...def, id, lib: file };
   }
 }
+
+// the lowpix model table (src/data/propModels.js): a def without its own `asset` takes its model from there
+for (const [id, a] of Object.entries(PROP_MODELS)) if (PROPS[id] && !PROPS[id].asset) PROPS[id].asset = a;
 
 const geoCache = new Map();
 

@@ -9,7 +9,7 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
-import { figPartMesh, figPoint } from '../figures/kit.js';
+import { isLowpix, figurePartMesh, figurePoint } from '../figures/lowpix.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -38,13 +38,13 @@ export function toyKind(key) { return getItem(key)?.toy || null; }
 const partCache = new Map();
 /** Mesh frame of an item: the full figure mesh is bottom-centred on its design-voxel bounds. */
 function frameOf(item) {
-  if (item.fig) return { b: null, vs: ITEM_VOXEL, off: new THREE.Vector3() }; // kit figures: parts share the figure's frame
+  if (isLowpix(item)) return { b: null, vs: ITEM_VOXEL, off: new THREE.Vector3() }; // lowpix figures: parts share the figure's frame
   const b = buildItemModel(item).bounds();
   return { b, vs: ITEM_VOXEL, off: new THREE.Vector3(-(b.minX + b.w / 2) * ITEM_VOXEL, -b.minY * ITEM_VOXEL, -(b.minZ + b.d / 2) * ITEM_VOXEL) };
 }
-/** A named gimmick point (kit figures: item.pts, mm) or the old design-voxel coordinates. */
+/** A named gimmick point (lowpix figures: the GLB's pt_<name> joint) or the old design-voxel coordinates. */
 function pt(item, name, vox, out = new THREE.Vector3()) {
-  if (item.fig) return figPoint(item, SERIES_BY_ID[item.series], name, out);
+  if (isLowpix(item)) return item.pts?.[name] ? out.set(...item.pts[name]) : figurePoint(item, name, out);
   return toMesh(item, ...vox, out);
 }
 /** Design voxel coordinates -> the item mesh's local space. */
@@ -54,7 +54,7 @@ function toMesh(item, x, y, z, out = new THREE.Vector3()) {
 }
 /** A moving part (item.parts[name]) as a mesh in the same frame as the figure (up-resolved like it). */
 function partMesh(item, name) {
-  if (item.fig) return figPartMesh(item, SERIES_BY_ID[item.series], name);
+  if (isLowpix(item)) return figurePartMesh(item, name, { own: (item.ownParts || []).includes(name) });
   const k = item.key + ':' + name;
   if (!partCache.has(k)) {
     const v = new VoxelModel();

@@ -1,0 +1,33 @@
+{
+ "id": "desk_office",
+ "src": "polyhaven:metal_office_desk",
+ "credit": {
+  "title": "Metal Office Desk",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_office_desk",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 1024,
+ "size": [
+  2,
+  0.787,
+  0.947
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#23202a",
+   "#2e2c36",
+   "#393841",
+   "#45454b",
+   "#525254",
+   "#6b6b6b",
+   "#828282",
+   "#9a9a9a",
+   "#b2b2b2"
+  ]
+ },
+ "warnings": []
+}

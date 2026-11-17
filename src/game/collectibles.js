@@ -1,4 +1,6 @@
 // Geometry + mesh factory for collectibles (cached per item; materials shared per finish).
+// The toy figures are lowpix GLBs (src/figures/lowpix.js, art/lowpix/figures): makeItemMesh gives a mesh at once, its
+// geometry swapped in when the figure's GLB has loaded (itemReady / whenItemReady). Mini decos are voxel models:
 // Every figure is modelled on a coarse voxel grid (src/data/series/*.js) and then up-resolved 2x with a 3D EPX
 // smoother (src/voxel/upres.js) before greedy meshing: finer, rounder silhouettes with the same crisp colour regions.
 // Per item, `upres: false` keeps the original voxels, or `upres: { carve, fill, recolor }` tunes the smoother.
@@ -8,7 +10,9 @@ import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { upres2x } from '../voxel/upres.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
-import { figGeometry, figMaterials, figFlatGeometry } from '../figures/kit.js';
+import { isLowpix, lowpixMesh, lowpixGeometry, figureReady, loadFigure, setSeriesLookup } from '../figures/lowpix.js';
+
+setSeriesLookup((item) => SERIES_BY_ID[item.series]);
 
 export const ITEM_VOXEL = 0.0027; // metres per (design) voxel for collectibles (a 26-voxel figure ≈ 7 cm)
 export const ITEM_MAX = 0.088; // largest allowed dimension in metres (fits a shelf slot)
@@ -38,7 +42,7 @@ export function itemGeometry(key, opts = {}) {
   if (g) return g;
   const item = getItem(key);
   if (!item) throw new Error('Unknown item ' + key);
-  if (item.fig) return opts.lowres ? figFlatGeometry(item) : figGeometry(item, SERIES_BY_ID[item.series]); // kit figures, cached by the kit
+  if (isLowpix(item)) return lowpixGeometry(item); // lowpix figures (src/figures/lowpix.js): the stand-in until the GLB is in
   const { model, scale } = itemModel(item, opts);
   const b = model.bounds();
   const maxDim = (Math.max(b.w, b.h, b.d) / scale) * ITEM_VOXEL;
@@ -50,19 +54,16 @@ export function itemGeometry(key, opts = {}) {
 }
 
 /** Is this item's up-res geometry already built (cheap to show)? */
-export function hasItemGeometry(key) { return geoCache.has(key) || !!getItem(key)?.fig; }
+export function hasItemGeometry(key) { const it = getItem(key); return geoCache.has(key) || (isLowpix(it) && figureReady(key)); }
+/** Is an item's real geometry in (lowpix figures load lazily)? */
+export function itemReady(key) { const it = getItem(key); return !isLowpix(it) || figureReady(key); }
+/** Resolves once an item's geometry has loaded (at once for built-in items). */
+export function whenItemReady(key) { const it = getItem(key); return isLowpix(it) ? loadFigure(it) : Promise.resolve(); }
 
 /** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
   const it = getItem(key);
-  if (it?.fig) {
-    // small thumbnails (opts.lowres) use the flat-colour blocks: no series atlas until a figure is seen up close
-    const flat = !!opts.lowres;
-    const mesh = new THREE.Mesh(flat ? figFlatGeometry(it) : figGeometry(it, SERIES_BY_ID[it.series]), flat ? voxelMaterials(finish) : figMaterials(SERIES_BY_ID[it.series], finish));
-    mesh.castShadow = true; mesh.receiveShadow = true;
-    mesh.userData.itemKey = key; mesh.userData.finish = finish;
-    return mesh;
-  }
+  if (isLowpix(it)) return lowpixMesh(it, finish); // a lowpix figure GLB (src/figures/lowpix.js)
   let geo;
   const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));
   if (lod) geo = geoCache.get(key) || itemGeometry(key, { lowres: true });
@@ -76,7 +77,7 @@ export function makeItemMesh(key, finish = 'normal', opts = {}) {
   return mesh;
 }
 
-function wantsUpres(item) { return !!item && !item.fig && item.upres !== false && !item.mini; }
+function wantsUpres(item) { return !!item && !isLowpix(item) && item.upres !== false && !item.mini && !!item.build; }
 
 // ------------------------------------------------------------------ level of detail
 // Figures far from the camera (a full shelf across the room) draw their original coarse voxels; the 2x up-res mesh

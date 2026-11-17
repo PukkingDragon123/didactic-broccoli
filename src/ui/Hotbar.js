@@ -27,6 +27,7 @@ export class Hotbar {
     }
     game.events.on('slot', () => this.refresh(true));
     game.events.on('held', () => this.refresh(false));
+    game.events.on('figureReady', () => this.refresh(false)); // a figure's model arrived: its card picture
     this.refresh(false);
   }
 

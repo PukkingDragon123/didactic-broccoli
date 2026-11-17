@@ -1,0 +1,55 @@
+{
+ "id": "lamp_oil",
+ "src": "polyhaven:vintage_oil_lamp",
+ "credit": {
+  "title": "Vintage Oil Lamp",
+  "author": "Monsta3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_oil_lamp",
+  "site": "Poly Haven"
+ },
+ "tris": 2994,
+ "tex": 256,
+ "size": [
+  0.22,
+  0.802,
+  0.219
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#3f0521",
+   "#500725",
+   "#610b27",
+   "#720e27",
+   "#821325",
+   "#aa1c28",
+   "#d12827",
+   "#da5c50",
+   "#e18c7b"
+  ],
+  "m1": [
+   "#653700",
+   "#845300",
+   "#a37400",
+   "#c29b00",
+   "#e1c600",
+   "#fbf30d",
+   "#f9f937",
+   "#f7f75f",
+   "#f7f786"
+  ],
+  "m2": [
+   "#3b261b",
+   "#4c3525",
+   "#5b4630",
+   "#6a573c",
+   "#786848",
+   "#90835c",
+   "#a29a76",
+   "#b1ae93",
+   "#c1c1ae"
+  ]
+ },
+ "warnings": []
+}

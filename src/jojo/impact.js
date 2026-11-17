@@ -153,7 +153,9 @@ export class Impact {
 
   setPalette(name) {
     const P = PALETTES[name] || PALETTES.violet;
-    this.u.uP0.value.set(P[0]); this.u.uP1.value.set(P[1]); this.u.uP2.value.set(P[2]); this.u.uP3.value.set(P[3]);
+    // display colours as they are (the pass runs after the output transform): no sRGB -> linear conversion
+    const set = (c, h) => c.setHex(parseInt(h.slice(1), 16), THREE.LinearSRGBColorSpace);
+    set(this.u.uP0.value, P[0]); set(this.u.uP1.value, P[1]); set(this.u.uP2.value, P[2]); set(this.u.uP3.value, P[3]);
   }
 
   /** Where a world point (or a screen fraction, y down) is, in the pass's coordinates (0..1, y up). */

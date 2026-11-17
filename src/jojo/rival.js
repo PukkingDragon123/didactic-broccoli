@@ -132,7 +132,10 @@ export class Rival {
   *scene(c) {
     const g = this.game, J = g.jojo, h = this.h, W = this.walk, s = this.s, P = g.player;
     const first = (s.wins || 0) + (s.losses || 0) + (s.draws || 0) === 0;
-    c.every((dt) => { if (this.phase !== 'gone') W.update(dt, this.stand?.h.root.visible ? this.stand.h.headTop(new THREE.Vector3()) : c.game.camera.position); });
+    c.every((dt) => {
+      W.update(dt, this.stand?.h.root.visible ? this.stand.h.headTop(new THREE.Vector3()) : c.game.camera.position);
+      if (!W.moving && this.phase !== 'leave') W.face(Math.atan2(ME.x - h.root.position.x, ME.z - h.root.position.z), dt); // squared up to you
+    });
     // you take your mark in front of the shutter; your own character stands in for the shots
     P.pos.copy(ME); P.yaw = Math.PI; P.pitch = 0;
     const S = this.stand = standIn(g);

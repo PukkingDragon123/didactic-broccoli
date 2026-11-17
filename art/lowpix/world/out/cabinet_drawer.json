@@ -1,0 +1,55 @@
+{
+ "id": "cabinet_drawer",
+ "src": "polyhaven:drawer_cabinet",
+ "credit": {
+  "title": "Drawer Cabinet",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/drawer_cabinet",
+  "site": "Poly Haven"
+ },
+ "tris": 2964,
+ "tex": 1024,
+ "size": [
+  1.141,
+  1.881,
+  0.488
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#56271d",
+   "#6e3a29",
+   "#854f35",
+   "#9b6742",
+   "#af8051",
+   "#b7986c",
+   "#bfac86",
+   "#c9bf9f",
+   "#d4cfb8"
+  ],
+  "m1": [
+   "#2b1711",
+   "#372117",
+   "#432c1e",
+   "#4e3826",
+   "#58452e",
+   "#776443",
+   "#958459",
+   "#a99f78",
+   "#bbb79a"
+  ],
+  "m2": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ]
+ },
+ "warnings": []
+}

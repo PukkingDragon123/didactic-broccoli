@@ -37,7 +37,7 @@ const hasBizarre = (g) => Object.keys(g.state.discovered || {}).some((k) => getI
 // ------------------------------------------------------------------ Madame Kujaku
 const KUJAKU = {
   id: 'jj_kujaku', name: 'Madame Kujaku', role: 'Retired revue star', stranger: 'the lady with the fan', color: CAST.kujaku.color,
-  build: () => makeCast('kujaku'), voice: CAST.kujaku.voice, tts: { pitch: 1.3, rate: 0.95 }, speed: 0.85,
+  build: () => makeCast('kujaku', { lazy: true }), voice: CAST.kujaku.voice, tts: { pitch: 1.3, rate: 0.95 }, speed: 0.85,
   door: [-25.5, 10.9], spots: [[-12.2, 13.95, Math.PI], [-14.6, 13.9, Math.PI], [-3.0, 13.95, Math.PI]],
   hours: [[13.5, 18.5, 'spot'], [18.5, 13.5, 'home']],
   lines: {
@@ -82,7 +82,7 @@ const KUJAKU = {
 // ------------------------------------------------------------------ Mr. Hidari
 const HIDARI = {
   id: 'jj_hidari', name: 'Mr. Hidari', role: 'Tailor (angles)', stranger: 'the man with the monocle', color: CAST.hidari.color,
-  build: () => makeCast('hidari'), voice: CAST.hidari.voice, tts: { pitch: 0.9, rate: 1.0 }, speed: 0.9,
+  build: () => makeCast('hidari', { lazy: true }), voice: CAST.hidari.voice, tts: { pitch: 0.9, rate: 1.0 }, speed: 0.9,
   door: [25.5, 10.9], spots: [[8.7, 6.6, 0], [11.4, 6.6, 0], [-9.0, 6.6, 0], [6.6, 13.9, Math.PI]],
   hours: [[9.5, 12.5, 'spot'], [12.5, 15, 'wander'], [15, 17.5, 'spot'], [17.5, 9.5, 'home']],
   lines: {

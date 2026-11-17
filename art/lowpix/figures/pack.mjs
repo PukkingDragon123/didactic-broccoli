@@ -87,7 +87,8 @@ for (const series of seriesList) {
       const holder = doc.createNode('model_' + m.name);
       const q = quat(m.pitch || 0, m.yaw || 0, m.roll || 0);
       holder.setTranslation(m.at).setRotation(q);
-      if (m.scale) holder.setScale([m.scale, m.scale, m.scale]);
+      const k = (m.height / 26) * (m.scale || 1);
+      holder.setScale([k, k, k]);
       for (const sc of src.getRoot().listScenes()) {
         const t = map.get(sc);
         for (const n of t.listChildren()) { t.removeChild(n); holder.addChild(n); }

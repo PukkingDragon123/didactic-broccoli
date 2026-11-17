@@ -1,7 +1,7 @@
 // Offscreen "product photos" of collectibles & props, rendered once and cached as canvases.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { makeItemMesh } from '../game/collectibles.js';
+import { makeItemMesh, itemReady } from '../game/collectibles.js';
 
 export class Thumbs {
   constructor(renderer) {
@@ -43,6 +43,8 @@ export class Thumbs {
     } else {
       const mesh = makeItemMesh(key, finish, size <= 64 ? { lowres: true } : { hires: true });
       canvas = this.renderObject(mesh, size, opts);
+      // a lowpix figure still loading: draw it again next time (game.events 'figureReady' tells the UI)
+      if (mesh.userData.pending) return canvas;
     }
     this.cache.set(ck, canvas);
     return canvas;
@@ -65,6 +67,7 @@ export class Thumbs {
       const [key, size] = this.queue.shift();
       const ck = `${key}|normal|${size}|0`;
       if (this.cache.has(ck)) continue;
+      if (!itemReady(key)) continue; // (lowpix figures not loaded yet are not fetched for a prewarm)
       if (!this.renderer.readRenderTargetPixelsAsync) { this.item(key, { size }); continue; }
       this.shoot(makeItemMesh(key, 'normal', size <= 64 ? { lowres: true } : { hires: true }), size, {});
       this.pending = true;

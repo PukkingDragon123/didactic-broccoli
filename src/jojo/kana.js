@@ -160,7 +160,7 @@ export class Kana {
     if (typeof at === 'function') { const p = at(out); return p ? out.copy(p) : null; }
     if (at.isVector3) return out.copy(at);
     const h = at.headTop ? at : at.h?.headTop ? at.h : null;
-    if (h) { if (h.root && !h.root.visible && !h.root.parent) return null; return h.headTop(out).add(_v.set(0, -0.2, 0)); }
+    if (h) { if (h.root && !h.root.visible && !h.root.parent) return null; h.headTop(out); out.y -= 0.2; return out; }
     if (at.isObject3D) return at.getWorldPosition(out);
     return null;
   }
@@ -182,7 +182,7 @@ export class Kana {
     for (let i = this.items.length - 1; i >= 0; i--) {
       const it = this.items[i];
       it.t += dt;
-      if (it.t >= it.dur + 0.15 * it.glyphs.length) { this.items.splice(i, 1); continue; }
+      if (it.t >= it.dur + 0.13 * it.glyphs.length + 0.35) { this.items.splice(i, 1); continue; }
       if (it.t < 0) continue;
       // where on the screen, and how many screen pixels per art pixel
       let sx, sy, S;

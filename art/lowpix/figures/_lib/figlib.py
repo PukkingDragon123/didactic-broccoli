@@ -635,7 +635,7 @@ class Fig:
         s.stamp(pid, ["dd", "hd"], {"d": f"{R}:1", "h": f"{R}:4"}, face="right", at="center")
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
-    def model(s, name, src, height, at=(0, 0, 0), yaw=0, tris=4000, style="pixel-hd", atlas=512, recolor=None, mat="matte", pitch=0,
+    def model(s, name, src, height, at=(0, 0, 0), yaw=0, tris=4000, style="painted", atlas=512, recolor=None, mat="matte", pitch=0,
               roll=0, scale=None, opts=None):
         """A converted real model placed on the figure: `height` in mm, standing at `at`, turned `yaw` degrees.
         recolor: {"brightness", "saturation", "hue", "tint": "#hex"} applied to its atlas (a black cat from a tabby)."""

@@ -1,0 +1,33 @@
+{
+ "id": "cabinet_cn",
+ "src": "polyhaven:chinese_cabinet",
+ "credit": {
+  "title": "Chinese Cabinet",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chinese_cabinet",
+  "site": "Poly Haven"
+ },
+ "tris": 2857,
+ "tex": 1024,
+ "size": [
+  1.262,
+  2.872,
+  0.545
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#270a09",
+   "#32110c",
+   "#3d1911",
+   "#472315",
+   "#512e1a",
+   "#794d2a",
+   "#9e703b",
+   "#bb9456",
+   "#c8b281"
+  ]
+ },
+ "warnings": []
+}
