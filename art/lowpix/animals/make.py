@@ -325,7 +325,7 @@ def finish(gid, P, N, F, UV, tex, scale, shift, extra=None, extras=None):
 
 
 # ------------------------------------------------------------------ Fripouille (guillaume bolis, hand-made): Mikan's base
-def fri_prepared(tris=2150):
+def fri_prepared(tris=2350):
     """Fripouille's body in her rigged standing pose (skinned on the CPU: gltfskin.py), turned to stand on y = 0 facing
     +z, squared to the z axis, scaled to 30 units tall (ear tips), her head centred; her own UVs and Substance-painted
     texture. Returns P, F, UV, N, src (1024 px, the repaint's base) and her skeleton's joints read off the skin weights
@@ -459,11 +459,23 @@ def make_mikan(coat='calico'):
     tail = z < -8.8
     blackp = np.where(tail, ((np.abs(z + 20) % 4.8) < 1.6 + jag * 0.4) | (z < -24.2), blackp)
     out = src.copy()
+    # fur: strands three texels long running down the body (staggered columns), clumps, and painted form shading:
+    # darker under the belly, inside the legs and under the chin, a lit back
+    from coat import hash2
+    yy_, xx_ = np.mgrid[0:H, 0:W]
+    col = hash2(xx_, np.zeros_like(xx_), 3)
+    st = yy_ + (col * 3).astype(int)
+    strand = hash2(xx_, st // 3, 17)
+    fur = np.where(strand < 0.3, np.where(st % 3 == 0, -1.2, -0.5), np.where(strand > 0.9, 0.7, 0.0))
+    clump = (vnoise3(x * 2.2, y * 2.2, z * 2.2, 3) - 0.5) * 2.2
+    form = -np.clip(-Ns[..., 1], 0, 1) * 2.2 + np.clip(Ns[..., 1], 0, 1) * 0.6 - ((y < 12) & (ax < 2.8)) * 0.8 - (y < 3) * 0.5
+    ftone = fur + clump + form
     def put(m, name, k, mid):
         R = hexes(CAL[name])
         if not m.any(): return
         L = lum[m]; med = np.median(L)
-        idx = np.clip(np.round(mid * (len(R) - 1) + (L / max(med, 1e-3) - 1) * k), 0, len(R) - 1).astype(int)
+        gain = 1.0 if name in ('white', 'orange') else 0.6
+        idx = np.clip(np.round(mid * (len(R) - 1) + (L / max(med, 1e-3) - 1) * k + ftone[m] * gain), 0, len(R) - 1).astype(int)
         out[m] = R[idx]
     base = ok & ~pink & ~dark
     if coat == 'tabby':
@@ -494,7 +506,7 @@ def make_mikan(coat='calico'):
     else:
         put(base & warm & blackp, 'black', 6, 0.5)
         put(base & warm & ~blackp, 'orange', 8, 0.6)
-        put(base & ~warm, 'white', 8, 0.8)
+        put(base & ~warm, 'white', 8, 0.74)
         put(ok & pink, 'pink', 6, 0.62)
         put(ok & dark, 'dark', 3, 0.4)
     # the sculpt's dark eye sockets round the new eyeballs: coat colour (the eyes and lids are modelled now)
@@ -506,7 +518,12 @@ def make_mikan(coat='calico'):
     # inner-ear furnishings: pale hairs fanning up from the base of the hollow
     from coat import hash2
     hh = hash2((x * 9).astype(int) & 0xffff, (y * 3).astype(int) & 0xffff, 21)
-    out[inner_ear & (y < 28.6) & (hh < 0.14)] = hexes(CAL['white'])[5]
+    ie = hexes(['#6e4f4c', '#82605b', '#957168', '#a47f74', '#b08d80'])
+    k_ear = np.clip(((y - 27.4) / 2.4 * 4) + (0.75 - np.abs(x - ex)) * 1.5, 0, 4).astype(int)
+    out[inner_ear] = ie[4 - k_ear[inner_ear]]
+    out[inner_ear & (y < 28.3) & (np.abs(x - ex) < 0.3)] = hexes(CAL['white'])[6]          # the pale tuft at the base
+    pads = ok & (y < 0.6) & (Ns[..., 1] < -0.3)
+    out[pads] = hexes(['#7a5f5c', '#8c6e69', '#9b7b74'])[np.clip((hash2(xx_, yy_, 5) * 3).astype(int), 0, 2)[pads]]
     body = np.clip(out, 0, 255).astype(np.uint8)
     global OPEN_EYE
     OPEN_EYE = (0.74, -0.66)

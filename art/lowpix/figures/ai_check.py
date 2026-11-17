@@ -25,6 +25,7 @@ OUT = os.path.join(HERE, "AI_CHECK.json")
 
 # Looked at by eye (the Sketchfab viewer / thumbnails and the lowpix conversion). uid -> (verdict, note)
 VISUAL = {
+    "51cc3bfb49b64128aa54ffa29f36d8c1": ("ai-rejected", "cat (toti.shroom): 49,999-face export, rejected by the ANIMALS review as AI-made"),
     "6d82596b5db94f7b9093814a4a88caa9": ("ai-rejected", "Bengal Cat: one material, ~100k faces, 2026; smooth melted paws and face, painted-on stripes"),
     "e4dffd0f67204f84a2595dd2d249f451": ("ai-rejected", "Vintage Electric Fan: melted blob base and stand, smeared cage"),
     "51f498df96c049cbb9e600b0a88c5838": ("ai-rejected", "Realistic Terrier Dog: SEO title 2026, over-smooth body"),

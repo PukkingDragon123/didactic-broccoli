@@ -7,7 +7,7 @@ from figlib import Fig
 from props import post_box, oil_drum, cardboard_box, block_wall, roof_tiles, crescent_moon, bucket
 
 S = "rojineko"
-TABBY_WHITE = "sketchfab:51cc3bfb49b64128aa54ffa29f36d8c1"  # cat (toti.shroom): brown tabby and white, walking, tail up
+MOONCAT = "sketchfab:69db9de4d5c446a895cec3c2a048f7a8"      # Cat (mustafasahinfb, scan): a tabby lying stretched out
 PERSIAN = "sketchfab:9899bf74b406468b9efd32e4a32dd7a8"      # Persian Cat Sleeping (romansn, scan): curled up
 COMFY = "sketchfab:2c2baa9563db4f20ba23f869ec3288dc"        # Sleepy Comfy Cat (leoskateman, scan): asleep on a cushion
 TUXEDO = "sketchfab:1912d5ed6498459abb50cda71a288258"       # cat sleeping on tatami (sekiri, scan): sprawled, cut out
@@ -28,9 +28,9 @@ def postbox():
 
 
 def wall():
-    F = Fig(f"{S}/wall", "Wall Walker", "Tail up, all the way along the block wall, like it owns it. It does.")
+    F = Fig(f"{S}/wall", "Wall Walker", "A calico tail-up all the way along the block wall, like it owns it. It does.")
     wt = block_wall(F, "", 36, 12, 8, (0, 0, 0))
-    F.model("cat", TABBY_WHITE, w=34, at=(0, wt, 0), yaw=0)
+    F.model("cat", CALICO, L=34, at=(0, wt, 0), yaw=0)
     F.model_clip("model_cat", "slide", 2.2, amp=3, axis="x")
     return F
 
@@ -73,9 +73,9 @@ def stalker():
 
 
 def moon():
-    F = Fig(f"{S}/moon", "Moonlit Calico", "A calico tom, one in three thousand, on the roof ridge under a crescent moon.")
+    F = Fig(f"{S}/moon", "Moonlit Sleeper", "Stretched out on the warm roof tiles under a crescent moon. Nobody has ever seen it come down.")
     rt = roof_tiles(F, "", 34, 18, (0, 0, 0), tilt=10)
-    F.model("cat", CALICO, w=30, at=(-1, rt - 0.4, 1), yaw=-8)
+    F.model("cat", MOONCAT, L=30, at=(-1, rt - 0.4, 1), yaw=-8, rest=12)
     F.cyl("rod", 0.7, 30, (12, rt - 1.0, -6.5), sides=8, col="#cfe4ee", style="clear", mat="glass")  # the moon's clear rod
     crescent_moon(F, "moon", (12, rt + 33, -6.5), r=6)
     F.model_clip("model_cat", "turn", 2.6, amp=-28)

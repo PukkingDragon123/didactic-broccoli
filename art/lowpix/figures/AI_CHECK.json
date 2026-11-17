@@ -282,10 +282,12 @@
   ]
  },
  "51cc3bfb49b64128aa54ffa29f36d8c1": {
-  "verdict": "ok",
+  "verdict": "ai-rejected",
   "name": "cat",
   "author": "toti.shroom",
-  "reasons": []
+  "reasons": [
+   "by eye: cat (toti.shroom): 49,999-face export, rejected by the ANIMALS review as AI-made"
+  ]
  },
  "530b15ed5bbb461982f692bc10966a02": {
   "verdict": "ok",
