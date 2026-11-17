@@ -15,11 +15,43 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
+ "polyhaven:bananas": {
+  "name": "bananas",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/bananas",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:bench_vice_01": {
+  "name": "bench vice 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/bench_vice_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:boombox": {
   "name": "boombox",
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/boombox",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:brass_blowtorch": {
+  "name": "brass blowtorch",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/brass_blowtorch",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:brass_pot_01": {
+  "name": "brass pot 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/brass_pot_01",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -55,11 +87,115 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
+ "polyhaven:food_apple_01": {
+  "name": "food apple 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/food_apple_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:food_ginger_01": {
+  "name": "food ginger 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/food_ginger_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:food_lychee_01": {
+  "name": "food lychee 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/food_lychee_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:food_pears_asian_01": {
+  "name": "food pears asian 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/food_pears_asian_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:food_pomegranate_01": {
+  "name": "food pomegranate 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/food_pomegranate_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:hand_plane_no4": {
+  "name": "hand plane no4",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/hand_plane_no4",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:jug_01": {
+  "name": "jug 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/jug_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:lemon": {
+  "name": "lemon",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/lemon",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:metal_jug": {
+  "name": "metal jug",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/metal_jug",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:metal_toolbox": {
+  "name": "metal toolbox",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/metal_toolbox",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:modified_thermos": {
   "name": "modified thermos",
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/modified_thermos",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:pipe_wrench": {
+  "name": "pipe wrench",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/pipe_wrench",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:pot_enamel_01": {
+  "name": "pot enamel 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/pot_enamel_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:small_oil_can_01": {
+  "name": "small oil can 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/small_oil_can_01",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -79,6 +215,22 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
+ "polyhaven:sweet_potato": {
+  "name": "sweet potato",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/sweet_potato",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:tea_set_01": {
+  "name": "tea set 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/tea_set_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:television_02": {
   "name": "television 02",
   "author": "Poly Haven",
@@ -95,6 +247,14 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
+ "polyhaven:vintage_hand_drill": {
+  "name": "vintage hand drill",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/vintage_hand_drill",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
  "polyhaven:vintage_pocket_watch": {
   "name": "vintage pocket watch",
   "author": "Poly Haven",
@@ -108,6 +268,30 @@
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/vintage_stapler",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:wooden_bowl_01": {
+  "name": "wooden bowl 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/wooden_bowl_01",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:wooden_cutting_board": {
+  "name": "wooden cutting board",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/wooden_cutting_board",
+  "licence": "cc0",
+  "note": "CC0: no attribution required (credited anyway)."
+ },
+ "polyhaven:wooden_hammer_01": {
+  "name": "wooden hammer 01",
+  "author": "Poly Haven",
+  "author_url": "https://polyhaven.com",
+  "source": "https://polyhaven.com/a/wooden_hammer_01",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -164,6 +348,14 @@
   "author": "sekiri",
   "author_url": "https://sketchfab.com/sekiri",
   "source": "https://sketchfab.com/3d-models/cat-sleeping-on-tatami-1912d5ed6498459abb50cda71a288258",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
+ "sketchfab:228fddb7362f42e2a349b84cbe8191b4": {
+  "name": "Penguin plush",
+  "author": "SunnyBuns",
+  "author_url": "https://sketchfab.com/SunnyBuns",
+  "source": "https://sketchfab.com/3d-models/penguin-plush-228fddb7362f42e2a349b84cbe8191b4",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -263,6 +455,14 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
+ "sketchfab:459ce5b99da947438d3ea11d7c0d4225": {
+  "name": "teddy_bear",
+  "author": "colinethille",
+  "author_url": "https://sketchfab.com/colinethille",
+  "source": "https://sketchfab.com/3d-models/teddy-bear-459ce5b99da947438d3ea11d7c0d4225",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
  "sketchfab:45a169ef98804f06a9b7a4af1a04d6f9": {
   "name": "Crow",
   "author": "zixisun02",
@@ -287,11 +487,27 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
+ "sketchfab:4e5df1084d524a83aa3bacdd41660fb7": {
+  "name": "Bunny plush toy",
+  "author": "astistudio",
+  "author_url": "https://sketchfab.com/astistudio",
+  "source": "https://sketchfab.com/3d-models/bunny-plush-toy-4e5df1084d524a83aa3bacdd41660fb7",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
  "sketchfab:4f6c74f9f904439b8554078d1be14821": {
   "name": "Vintage sewing machine",
   "author": "Halil Kantarci",
   "author_url": "https://sketchfab.com/halilkantarci",
   "source": "https://sketchfab.com/3d-models/vintage-sewing-machine-4f6c74f9f904439b8554078d1be14821",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
+ "sketchfab:5072de467d74471fbbc7d945514c5d27": {
+  "name": "Thailand Elephant Plush Toy",
+  "author": "dawgt",
+  "author_url": "https://sketchfab.com/dawgt",
+  "source": "https://sketchfab.com/3d-models/thailand-elephant-plush-toy-5072de467d74471fbbc7d945514c5d27",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -479,6 +695,14 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
+ "sketchfab:83eb9c35e5784c33b4f94e730b93fd15": {
+  "name": "Lamb",
+  "author": "pillyliu",
+  "author_url": "https://sketchfab.com/pillyliu",
+  "source": "https://sketchfab.com/3d-models/lamb-83eb9c35e5784c33b4f94e730b93fd15",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
  "sketchfab:8ae63b5fbce94fbfa17eb2f6c4f095ff": {
   "name": "Caramel Pudding Cream & Cherry",
   "author": "qanitaarif0207",
@@ -524,6 +748,14 @@
   "author": "RomanSn",
   "author_url": "https://sketchfab.com/romansn",
   "source": "https://sketchfab.com/3d-models/persian-cat-sleeping-gato-persa-dormindo-9899bf74b406468b9efd32e4a32dd7a8",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
+ "sketchfab:9a9460010885486f93774384609fe24f": {
+  "name": "Fox toy",
+  "author": "adamaf",
+  "author_url": "https://sketchfab.com/adamaf",
+  "source": "https://sketchfab.com/3d-models/fox-toy-9a9460010885486f93774384609fe24f",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -711,11 +943,27 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
+ "sketchfab:e099fdc80c954e44b784d9b9127ec4fc": {
+  "name": "Denim Whale Plush",
+  "author": "Mattyew",
+  "author_url": "https://sketchfab.com/mattyu",
+  "source": "https://sketchfab.com/3d-models/denim-whale-plush-e099fdc80c954e44b784d9b9127ec4fc",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
  "sketchfab:e12d2fa1b2b94928b8b87cb7787e2462": {
   "name": "Japanese Torii gate Game Asset",
   "author": "Bazylonator",
   "author_url": "https://sketchfab.com/Bazylonator",
   "source": "https://sketchfab.com/3d-models/japanese-torii-gate-game-asset-e12d2fa1b2b94928b8b87cb7787e2462",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
+ "sketchfab:e328e8d141de47829040efaf55306148": {
+  "name": "Rainbow Narwhal Plushie Artec Spider 3D Scan",
+  "author": "ianroy",
+  "author_url": "https://sketchfab.com/ianroy",
+  "source": "https://sketchfab.com/3d-models/rainbow-narwhal-plushie-artec-spider-3d-scan-e328e8d141de47829040efaf55306148",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -796,6 +1044,14 @@
   "author": "3D Creator",
   "author_url": "https://sketchfab.com/3DChuang-Ke-Ji",
   "source": "https://sketchfab.com/3d-models/sitting-catbritish-shorthair-blue-cat-ee5dcbdd0c2b4c33adf83d4c6708e6ae",
+  "licence": "by",
+  "note": "Credit the author when you share anything made from this model."
+ },
+ "sketchfab:f174cf27c27c4e5bb816d41ad15394a1": {
+  "name": "Owl soft toy",
+  "author": "NEXIC",
+  "author_url": "https://sketchfab.com/CoFate",
+  "source": "https://sketchfab.com/3d-models/owl-soft-toy-f174cf27c27c4e5bb816d41ad15394a1",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },

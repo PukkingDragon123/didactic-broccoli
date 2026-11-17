@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:small_oil_can_01",
+   "height": 34.0,
+   "pos": [
+    0.424,
+    0.0,
+    0.924
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "metal",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "6f7fd194228b49",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "hop",
+  "length": 1.6,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "kogu/oilcan"
+}

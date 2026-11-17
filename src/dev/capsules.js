@@ -21,7 +21,7 @@ export async function viewerEntries(params) {
     g.position.y = -box.min.y;
     out.push({ obj: g, label: `${series} · ${size}<br><span class="r">${a.style}</span>` });
   }
-  const sh = makeShell('rojineko', 0xff9eb5);
+  const sh = makeShell('nuigurumi', 0xff9eb5);
   out.push({ obj: sh.group, label: 'empty shell' });
   return out;
 }

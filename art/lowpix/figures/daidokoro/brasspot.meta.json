@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:brass_pot_01",
+   "height": 27.56,
+   "pos": [
+    -0.044,
+    0.0,
+    0.053
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "gloss",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "e8cb6fb1e962d3",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "turn",
+  "length": 1.6,
+  "amp": 12,
+  "axis": "y"
+ },
+ "key": "daidokoro/brasspot"
+}

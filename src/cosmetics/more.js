@@ -82,7 +82,7 @@ export function moreCosmetics(K) {
     { id: 'cx_santa', slot: 'hat', name: 'Christmas Cake Hat', price: 600, rarity: 'common', web: true, desc: 'Worn by every konbini part-timer selling Christmas cake on the 24th.', ...onCrown('cx_santa', V99.santa, [0, -1.4, 0]) },
     { id: 'cx_capsulehat', slot: 'hat', name: 'Capsule Helmet', price: 1800, rarity: 'rare', ach: 'sim_three_machines', cover: true, desc: 'Three machines! You are now, technically, a capsule.', ...onHead('cx_capsulehat', V99.capsuleHat) },
     { id: 'cx_daruma', slot: 'hat', name: 'Daruma Hood', price: 2200, rarity: 'rare', ach: 'sim_debt_free', cover: true, desc: 'Debt free: the wish came true. Paint in the other eye.', ...onHead('cx_daruma', V99.daruma) },
-    { id: 'cx_kagami', slot: 'hat', name: 'Kagami Mochi Hat', price: 1500, rarity: 'rare', capsule: 'rojineko', desc: 'New Year on your head. Do not eat until January the eleventh.', ...onCrown('cx_kagami', V99.kagami, [0, -1, 0]) },
+    { id: 'cx_kagami', slot: 'hat', name: 'Kagami Mochi Hat', price: 1500, rarity: 'rare', capsule: 'nuigurumi', desc: 'New Year on your head. Do not eat until January the eleventh.', ...onCrown('cx_kagami', V99.kagami, [0, -1, 0]) },
     { id: 'cx_visor', slot: 'hat', name: 'Pachinko Visor', price: 900, rarity: 'uncommon', capsule: 'denka', desc: 'See-through green. Lucky, says the man who wore it before you.', ...onHead('cx_visor', V99.visor) },
     { id: 'cx_chonmage', slot: 'hat', name: 'Chonmage Wig', price: 1500, rarity: 'uncommon', secondhand: true, cover: true, desc: 'From a party shop that closed in 1993. The topknot is real horsehair.', ...chonmage },
 

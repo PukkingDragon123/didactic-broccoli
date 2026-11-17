@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "sketchfab:83eb9c35e5784c33b4f94e730b93fd15",
+   "height": 27.934,
+   "pos": [
+    -1.089,
+    -0.29,
+    0.224
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "304087ca9d81cb",
+   "rest_R": [
+    [
+     0.999391,
+     0.034899,
+     0.0
+    ],
+    [
+     -0.034899,
+     0.999391,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "nod",
+  "length": 1.6,
+  "amp": 12,
+  "axis": "y"
+ },
+ "key": "nuigurumi/lamb"
+}

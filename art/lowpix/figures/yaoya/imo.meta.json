@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:sweet_potato",
+   "height": 55.366,
+   "pos": [
+    3.04,
+    0.339,
+    -1.134
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "113b4f59f0c4b0",
+   "rest_R": [
+    [
+     0.997564,
+     -0.069756,
+     0.0
+    ],
+    [
+     0.069587,
+     0.995134,
+     -0.069756
+    ],
+    [
+     0.004866,
+     0.069587,
+     0.997564
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "slide",
+  "length": 1.6,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "yaoya/imo"
+}

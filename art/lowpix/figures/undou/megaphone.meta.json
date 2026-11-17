@@ -1,0 +1,39 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:Megaphone_01",
+   "height": 29.141,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "1ebfd069b900d6"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.6,
+  "amp": 12,
+  "axis": "y"
+ },
+ "key": "undou/megaphone"
+}

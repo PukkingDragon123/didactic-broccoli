@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:pipe_wrench",
+   "height": 196.47,
+   "pos": [
+    -5.398,
+    0.36,
+    -2.362
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "metal",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "2db95fb3f634ee",
+   "rest_R": [
+    [
+     0.999391,
+     0.034899,
+     0.0
+    ],
+    [
+     -0.034899,
+     0.999391,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.6,
+  "amp": 12,
+  "axis": "y"
+ },
+ "key": "kogu/wrench"
+}

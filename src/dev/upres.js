@@ -4,7 +4,7 @@ import { SERIES_BY_ID } from '../data/series/index.js';
 import { makeItemMesh, setItemUpres } from '../game/collectibles.js';
 
 export async function viewerEntries(params) {
-  const ids = (params.get('s') || 'rojineko').split(',');
+  const ids = (params.get('s') || 'nuigurumi').split(',');
   const only = params.get('only');
   const n = +(params.get('n') || 8);
   const skip = +(params.get('skip') || 0);

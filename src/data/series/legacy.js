@@ -47,9 +47,20 @@ export const OLD_ITEMS = {
   wagashi: { dango: 'c', taiyaki: 'c', ichigo: 'c', dorayaki: 'u', sakura: 'u', kakigori: 'r', chakai: 'x', shiruko: 's' },
   yokai: { chochin: 'c', kappa: 'c', hitotsume: 'c', kitsune: 'u', tengu: 'u', zashiki: 'r', nekomata: 'x', nurikabe: 's' },
 };
+/** Figures cut from this season's line-up after release (series -> item id -> rarity letter): a save holding one gets a
+ *  same-rarity figure, from the same series while it still exists. */
+export const RETIRED = {
+  rojineko: { postbox: 'c', wall: 'c', box: 'c', laundry: 'u', kittens: 'u', boss: 'r', stalker: 'x', moon: 's' },
+  asobi: { robot: 'u' }, sampuru: { soda: 'u' }, daikaiju: { anky: 'c', tetsujin: 'x', golden: 's' }, hikidashi: { soroban: 'u', randoseru: 'x' },
+  inusanpo: { pug: 'u', corgi: 'u', terrier: 'r' }, machikado: { gaito: 'r', busstop: 'x' }, norimono: { van: 'c', golden: 's' },
+  shinkai: { goblin: 'r', oarfish: 'x' }, shugorei: { golden: 's' }, tsukumo: { parade: 'x', golden: 's' },
+  yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's' }, yatai: { wataame: 'u', yoyo: 'u' },
+  yudono: { capy: 'c', penguin: 'c', family: 'r', rotenburo: 'x', kinkapi: 's' }, kaiun: { jinja: 'x', goldneko: 's' },
+  konchu: { tento: 'c', semi: 'c' }, okashi: { kagami: 'x' },
+};
 /** The new series each old one hands its stock to (if it exists). */
 const THEME = {
-  mochi: 'rojineko', hoshitate: 'rojineko', neko_cafe: 'rojineko', lanepals: 'machikado', shotengai: 'machikado', konbini: 'machikado',
+  rojineko: 'nuigurumi', mochi: 'nuigurumi', hoshitate: 'nuigurumi', neko_cafe: 'nuigurumi', lanepals: 'machikado', shotengai: 'machikado', konbini: 'machikado',
   shokudo: 'sampuru', oden: 'sampuru', wagashi: 'okashi', dajare: 'okashi', showa: 'denka', kaden: 'denka', heya: 'denka',
   omocha: 'asobi', gecen: 'asobi', pachimon: 'asobi', kasa: 'tsukumo', yokai: 'tsukumo', hyakki: 'tsukumo', obake_yashiki: 'tsukumo',
   umi: 'shinkai', onsen: 'yudono', sento: 'yudono', kaiju: 'daikaiju', uchu: 'daikaiju', sentai: 'shugorei', bizarre: 'shugorei',
@@ -70,8 +81,8 @@ export function newSeriesFor(oldId) {
 /** The new item key an old item key maps to (same rarity, deterministic); null if it isn't an old key. */
 export function newKeyFor(oldKey) {
   const [sid, iid] = String(oldKey).split('/');
-  const r = R[OLD_ITEMS[sid]?.[iid]];
-  if (!r) return null;
+  const r = R[OLD_ITEMS[sid]?.[iid] || RETIRED[sid]?.[iid]];
+  if (!r || SERIES_BY_ID[sid]?.items.some((it) => it.id === iid)) return null;
   const first = SERIES_BY_ID[newSeriesFor(sid)];
   const same = first?.items.find((it) => it.id === iid && it.rarity === r); // (playable toys keep their ids)
   if (same) return same.key;
@@ -81,8 +92,12 @@ export function newKeyFor(oldKey) {
   return all.length ? all[hash(oldKey) % all.length].key : null;
 }
 
-const isOldKey = (s) => typeof s === 'string' && s.includes('/') && !!OLD_ITEMS[s.split('/')[0]]?.[s.split('/')[1]];
-const isOldSeries = (s) => typeof s === 'string' && !!OLD_ITEMS[s] && !SERIES_BY_ID[s];
+const isOldKey = (s) => {
+  if (typeof s !== 'string' || !s.includes('/')) return false;
+  const [sid, iid] = s.split('/');
+  return !!(OLD_ITEMS[sid]?.[iid] || RETIRED[sid]?.[iid]) && !SERIES_BY_ID[sid]?.items.some((it) => it.id === iid);
+};
+const isOldSeries = (s) => typeof s === 'string' && !!(OLD_ITEMS[s] || RETIRED[s]) && !SERIES_BY_ID[s];
 
 /** Swap every old item key / series id in a save for the new line-up. Returns the number of swaps. */
 export function migrateLineup(state) {

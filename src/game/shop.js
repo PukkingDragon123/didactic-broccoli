@@ -57,7 +57,7 @@ export function buyMachine(g, type) {
   const slot = MACHINE_SLOTS.findIndex((_, i) => !used.has(i));
   if (slot < 0) return fail('No free machine slot in the garage');
   if (!payOnline(g, price, `machine:${type}`)) return fail('Not enough money');
-  const series = g.state.licenses[g.state.licenses.length - 1] || 'rojineko';
+  const series = g.state.licenses[g.state.licenses.length - 1] || 'nuigurumi';
   // machines arrive empty: order a capsule box and pour it in. `up` stays at zero (upgrades are gone; older code
   // still reads it). price = the coin price on the machine's price plate.
   const data = { id: 'm' + Date.now().toString(36), type, slot, up: { speed: 0, cap: 0, coins: 0 }, stock: [], series, price: Math.max(100, Math.round(SERIES_BY_ID[series].price / 100) * 100) };

@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:hand_plane_no4",
+   "height": 24.767,
+   "pos": [
+    -0.314,
+    0.0,
+    -0.165
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "79281e191bc1d8",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "slide",
+  "length": 1.6,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "kogu/plane"
+}

@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:pot_enamel_01",
+   "height": 21.534,
+   "pos": [
+    0.066,
+    0.0,
+    0.154
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "gloss",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "034d44078d5a1f",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "hop",
+  "length": 1.6,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "daidokoro/nabe"
+}

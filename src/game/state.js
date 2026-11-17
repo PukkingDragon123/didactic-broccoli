@@ -28,7 +28,7 @@ export function defaultState() {
     story: newStoryState(),
     inventory: [{ kind: 'tool', d: { id: 'key' } }, null, null, null, null],
     promo: { flyers: 0, level: 0 },
-    licenses: ['rojineko'],
+    licenses: ['nuigurumi'],
     opener: 0,
     charms: [],
     discovered: {}, // key -> { n, f: {finish: count} }

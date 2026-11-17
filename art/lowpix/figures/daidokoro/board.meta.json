@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:wooden_cutting_board",
+   "height": 3.545,
+   "pos": [
+    0.008,
+    0.0,
+    -0.024
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "gloss",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "d37d33d7d696a0",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "slide",
+  "length": 1.6,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "daidokoro/board"
+}

@@ -565,7 +565,7 @@ export class Mall {
   }
   async stockRoom() {
     const g = this.game;
-    const lic = g.state.licenses || ['rojineko'];
+    const lic = g.state.licenses || ['nuigurumi'];
     const series = await slip(g, {
       title: 'Stock room', jp: '倉庫', note: 'A carton of 20 capsules, straight off the shelf. Paid by bank transfer.',
       options: lic.slice(-8).map((id) => ({ label: SERIES_BY_ID[id]?.name || id, sub: `${SERIES_BY_ID[id]?.jp || ''}`, price: capsuleCost(id) * 20, value: id })),

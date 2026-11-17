@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:lemon",
+   "height": 35.595,
+   "pos": [
+    -9.475,
+    0.076,
+    4.938
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "891e0c6dc13e67",
+   "rest_R": [
+    [
+     0.939693,
+     0.34202,
+     0.0
+    ],
+    [
+     -0.296198,
+     0.813798,
+     0.5
+    ],
+    [
+     0.17101,
+     -0.469846,
+     0.866025
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.6,
+  "amp": 12,
+  "axis": "y"
+ },
+ "key": "yaoya/lemon"
+}

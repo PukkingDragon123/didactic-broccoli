@@ -75,7 +75,7 @@ export function install(game) {
     bank: (v) => addBank(g, v, 'test'),
     /** A parcel straight into your hands. */
     parcel(contents = null) {
-      const d = { type: 'parcel', size: 'M', from: 'Off-Hobby', label: 'Test parcel', contents: contents || [{ kind: 'toy', d: { key: 'rojineko/postbox', finish: 'normal', variant: { stickers: [{ id: 'star', u: 0.5, v: 0.5, rot: 0.2, s: 1 }], doodle: 'moustache' } } }, { kind: 'mkt', d: { t: 'charm', id: 'maneki_black', grade: 'A' } }] };
+      const d = { type: 'parcel', size: 'M', from: 'Off-Hobby', label: 'Test parcel', contents: contents || [{ kind: 'toy', d: { key: 'nuigurumi/teddy', finish: 'normal', variant: { stickers: [{ id: 'star', u: 0.5, v: 0.5, rot: 0.2, s: 1 }], doodle: 'moustache' } } }, { kind: 'mkt', d: { t: 'charm', id: 'maneki_black', grade: 'A' } }] };
       const m = g.delivery.meshFor(d);
       m.position.copy(g.camera.getWorldPosition(new THREE.Vector3()));
       g.scene.add(m);

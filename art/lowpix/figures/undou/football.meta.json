@@ -1,0 +1,39 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:football",
+   "height": 32.0,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "84e66189d488a8"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "hop",
+  "length": 1.6,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "undou/football"
+}

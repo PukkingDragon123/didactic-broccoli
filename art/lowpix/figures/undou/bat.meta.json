@@ -1,0 +1,39 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:baseball_bat",
+   "height": 497.527,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "matte",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "d12ff9d42f96d4"
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "slide",
+  "length": 1.6,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "undou/bat"
+}

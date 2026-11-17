@@ -114,7 +114,7 @@ function debug(g, staff) {
       D.carton(series || m.data.series, 20);
       return true;
     },
-    carton(series = 'rojineko', count = 20, x = 1.6, z = 4.1) {
+    carton(series = 'nuigurumi', count = 20, x = 1.6, z = 4.1) {
       const data = { type: 'refill', series, count, stage: 0, label: `x${count}` };
       return !!g.items.spawnBox(data, V(x, z), g.delivery.meshFor(data));
     },

@@ -19,7 +19,9 @@ TOYS = os.path.join(CACHE, 'toys')
 OUT = os.path.join(ROOT, 'public', 'img', 'print', 'cards')
 W, H = 320, 280
 BACK = {  # series -> photo backdrop (focus x, y, zoom)
-    'rojineko': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'denka': ('oi:f4200fadef07c329@test', (0.5, 0.55, 1.2)),
+    'nuigurumi': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'kogu': ('oi:8cf0d90fadf83514@test', (0.3, 0.5, 1.3)),
+    'yaoya': ('oi:ccf0a3b89149f0d5@train', (0.3, 0.5, 1.3)), 'daidokoro': ('oi:f4200fadef07c329@test', (0.8, 0.5, 1.3)),
+    'undou': ('local:skyline.jpg', (0.5, 0.7, 1.2)), 'denka': ('oi:f4200fadef07c329@test', (0.5, 0.55, 1.2)),
     'inusanpo': ('oi:1abfab68fd6a34c7@train', (0.6, 0.6, 1.2)), 'konchu': ('oi:42d6b48cf68049b9@test', (0.4, 0.5, 1.2)),
     'okashi': ('oi:f291d677045b5a38@test', (0.5, 0.6, 1.1)), 'sampuru': ('oi:6324262554f184ab@test', (0.5, 0.75, 1.8)),
     'shinkai': ('oi:f5cb8e5bda89bf5c@test', (0.5, 0.5, 1.1)), 'yacho': ('oi:ab7b7786ca8649a8@test', (0.5, 0.5, 1.0)),

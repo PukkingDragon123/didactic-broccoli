@@ -150,7 +150,7 @@ def promo(key, photo, f, series, ids, title, tface, sub, ground, ink, accent, fo
         P.text(foot, 'bebas', 11, w - 12, h - 15, ground, anchor='rm', track=1)
         P.post = lambda im: toys_on(im.convert('RGBA'), series, ids, (14, 70, w - 28, 158)).convert('RGB')
     PROMO['promo:' + key] = (240, 340, fn, dict(paper='Paper001', fade=0.08, crease=0.4, tape=('tl', 'tr'), seed=len(key)))
-promo('reopen', 'local:garage.jpg', (0.5, 0.5, 1.0), 'rojineko', ['wall', 'stalker', 'box'], '祝 再開店', 'oldmincho', 'おじいちゃんのガチャ屋、また開きます。', 0xf6efe0, INK, RED, 'OPEN 10:00-20:00')
+promo('reopen', 'local:garage.jpg', (0.5, 0.5, 1.0), 'nuigurumi', ['teddy', 'owl', 'bunny'], '祝 再開店', 'oldmincho', 'おじいちゃんのガチャ屋、また開きます。', 0xf6efe0, INK, RED, 'OPEN 10:00-20:00')
 promo('kaiju', 'oi:6324262554f184ab@test', (0.5, 0.75, 1.7), 'sampuru', ['ramen', 'sundae', 'katsu'], 'サンプル食堂', 'mochiy', '本物そっくり、食品サンプル 全7種', 0xfbf6ee, INK, 0xd8402a, '300 YEN')
 promo('space', 'oi:f4200fadef07c329@test', (0.5, 0.55, 1.2), 'denka', ['radio', 'sewing', 'tv'], '昭和の家電', 'oldmincho', 'あの頃のおうち、ミニチュアで。全8種', 0xf3ecdc, INK, 0x2a7a6a, '300 YEN')
 promo('sakura', 'oi:f291d677045b5a38@test', (0.5, 0.6, 1.1), 'okashi', ['dango', 'matcha', 'taiyaki'], '和菓子処', 'oldmincho', 'ちいさな和菓子、ひとつどうぞ。全7種', 0xf8efe4, INK, 0xb8506a, '200 YEN')

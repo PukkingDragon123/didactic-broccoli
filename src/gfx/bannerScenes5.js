@@ -11,14 +11,18 @@ import { SCENES as S4 } from './bannerScenes4.js';
 const OLD = () => ({ ...S1, ...S2, ...S3, ...S4 });
 /** new series id -> the backdrop painter it uses */
 const BACKDROP = {
-  rojineko: 'lanepals', sampuru: 'shokudo', denka: 'showa', konchu: 'matsuri', asobi: 'gecen', shinkai: 'umi', inusanpo: 'mochi',
+  nuigurumi: 'lanepals', sampuru: 'shokudo', denka: 'showa', konchu: 'matsuri', asobi: 'gecen', shinkai: 'umi', inusanpo: 'mochi',
   yacho: 'kasa', daikaiju: 'kaiju', hikidashi: 'bungu', machikado: 'shotengai', okashi: 'wagashi', norimono: 'densha', tsukumo: 'hyakki',
   shugorei: 'bizarre', yudono: 'onsen', kaiun: 'omamori', yatai: 'oden',
 };
 export const SCENES = Object.fromEntries(Object.entries(BACKDROP).map(([id, old]) => [id, (...a) => OLD()[old](...a)]));
 
 export const BANNER_TEXT = {
-  rojineko: { catch: 'この路地のボスはだれだ？', sub: '夕方の三丁目パトロール' },
+  nuigurumi: { catch: 'ふわふわの仲間が集合！', sub: 'ぎゅっとしたくなるぬいぐるみ' },
+  kogu: { catch: 'おじいちゃんの道具、勢ぞろい！', sub: '使いこまれた名品たち' },
+  yaoya: { catch: 'とれたて！まちの八百屋さん', sub: '今日のおすすめはこちら' },
+  daidokoro: { catch: 'なつかしの台所へようこそ', sub: 'ほうろう鍋とよそいきの茶器' },
+  undou: { catch: 'よーい、どん！運動会', sub: '校庭のヒーローたち' },
   sampuru: { catch: '本物そっくり！食品サンプル', sub: 'ショーウィンドウの名物たち' },
   denka: { catch: 'なつかしの昭和家電が集合！', sub: '夕焼けのお茶の間で' },
   konchu: { catch: '夏休みの昆虫採集！', sub: '朝の雑木林で見つけたよ' },

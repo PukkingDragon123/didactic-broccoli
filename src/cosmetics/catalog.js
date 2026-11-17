@@ -183,7 +183,7 @@ export const EXTRA = [
   { id: 'cx_kasa', slot: 'hat', name: 'Kasa-obake', price: 1600, rarity: 'rare', ach: 'life_yokai', desc: 'A one-eyed umbrella yokai that decided to live on your head.', ...onCrown('cx_kasa', VX.kasa, [0, -1.2, 0]) },
   { id: 'cx_paperbag', slot: 'hat', name: 'Paper Bag of Shame', price: 100, rarity: 'uncommon', ach: 'fun_rent_late', cover: true, desc: 'For when the landlady is looking for you.', ...onHead('cx_paperbag', VX.paperbag) },
   { id: 'cx_oni', slot: 'hat', name: 'Oni Horns', price: 1300, rarity: 'rare', capsule: 'tsukumo', desc: 'Setsubun horns on a tiger-stripe band. Beans not included.', ...both(onHead('cx_oniBand', VX.oniBand), onCrown('cx_oniHorns', VX.oniHorns, [0, -1, 0])) },
-  { id: 'cx_catears', slot: 'hat', name: 'Cat Ears', price: 900, rarity: 'rare', capsule: 'rojineko', desc: 'Nya. Mikan is not impressed.', ...onCrown('cx_catears', VX.catears, [0, -0.8, 0]) },
+  { id: 'cx_catears', slot: 'hat', name: 'Cat Ears', price: 900, rarity: 'rare', capsule: 'nuigurumi', desc: 'Nya. Mikan is not impressed.', ...onCrown('cx_catears', VX.catears, [0, -0.8, 0]) },
   { id: 'cx_towel', slot: 'hat', name: 'Onsen Towel', price: 600, rarity: 'rare', capsule: 'yudono', desc: 'Folded just so. Ahh, that\'s the stuff.', ...onCrown('cx_towel', VX.towel, [0, 0.2, 0]) },
   { id: 'cx_octopus', slot: 'hat', name: 'Tako Hat', price: 1100, rarity: 'rare', capsule: 'shinkai', desc: 'Eight arms, one very good hug.', ...onCrown('cx_octopus', VX.octopus, [0, -0.8, 0]) },
   { id: 'cx_conductor', slot: 'hat', name: "Conductor's Cap", price: 1200, rarity: 'rare', capsule: 'norimono', desc: 'Departing platform 2. Please stand behind the yellow line.', ...onCrown('cx_conductor', VX.conductor, [0, -1, 0]) },

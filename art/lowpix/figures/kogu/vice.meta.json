@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:bench_vice_01",
+   "height": 25.725,
+   "pos": [
+    -1.989,
+    -4.365,
+    2.478
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "metal",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "84fe8a605b3e73",
+   "rest_R": [
+    [
+     0.999391,
+     0.034899,
+     0.0
+    ],
+    [
+     -0.033548,
+     0.960676,
+     0.275637
+    ],
+    [
+     0.00962,
+     -0.275469,
+     0.961262
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "turn",
+  "length": 1.6,
+  "amp": 12,
+  "axis": "y"
+ },
+ "key": "kogu/vice"
+}

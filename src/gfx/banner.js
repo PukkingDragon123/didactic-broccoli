@@ -233,13 +233,13 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
     g.drawImage(img, 0, 0, c.width, c.height); g.filter = 'none'; done();
   };
   img.onerror = () => { try { g.drawImage(paintedBanner(seriesId, thumbs, opts), 0, 0); } catch (e) { console.warn('banner', e); } done(); };
-  img.src = `${import.meta.env?.BASE_URL ?? '/'}img/print/cards/${(SERIES_BY_ID[seriesId] ? seriesId : 'rojineko')}.webp`;
+  img.src = `${import.meta.env?.BASE_URL ?? '/'}img/print/cards/${(SERIES_BY_ID[seriesId] ? seriesId : 'nuigurumi')}.webp`;
   return c;
 }
 function paintedBanner(seriesId, thumbs, opts = {}) {
   const key = seriesId + (opts.faded ? ':f' : '');
   if (cache.has(key)) return cache.get(key);
-  const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.rojineko || Object.values(SERIES_BY_ID)[0];
+  const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.nuigurumi || Object.values(SERIES_BY_ID)[0];
   const W = BANNER_W, H = BANNER_H;
   const p = new Pix(W, H, 7);
   const bg = hex(s.card.bg), ac = hex(s.card.accent), tx = hex(s.card.text), ac2 = hex(s.card.accent2 || s.card.accent);

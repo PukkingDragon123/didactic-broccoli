@@ -5,6 +5,14 @@
   "author": "pfontaine23",
   "reasons": []
  },
+ "034a2148631443b1b90ab70150992926": {
+  "verdict": "ok",
+  "name": "Handmade stuffed toy (Red)",
+  "author": "naka2012",
+  "reasons": [
+   "scan"
+  ]
+ },
  "03b652b3678e4eba9fcad09145e51aa0": {
   "verdict": "ok",
   "name": "Japanese bilboquet (cup-and-ball game)",
@@ -98,6 +106,12 @@
   "reasons": [
    "scan"
   ]
+ },
+ "228fddb7362f42e2a349b84cbe8191b4": {
+  "verdict": "ok",
+  "name": "Penguin plush",
+  "author": "SunnyBuns",
+  "reasons": []
  },
  "2400195832b64f698096ed0fdac85d51": {
   "verdict": "ok",
@@ -239,6 +253,12 @@
   "author": "sdpm",
   "reasons": []
  },
+ "3e997b4cf64d4ace8f23ecd5b0a1cdd7": {
+  "verdict": "ok",
+  "name": "Beaver Stuffed Animal",
+  "author": "gizacorp01",
+  "reasons": []
+ },
  "3ffbfcabc4c34b58b03d43fd4f445b54": {
   "verdict": "ok",
   "name": "Cat sitting upright",
@@ -246,6 +266,12 @@
   "reasons": [
    "scan"
   ]
+ },
+ "459ce5b99da947438d3ea11d7c0d4225": {
+  "verdict": "ok",
+  "name": "teddy_bear",
+  "author": "colinethille",
+  "reasons": []
  },
  "45a169ef98804f06a9b7a4af1a04d6f9": {
   "verdict": "ok",
@@ -265,6 +291,26 @@
   "verdict": "ok",
   "name": "Kitten",
   "author": "doinspire",
+  "reasons": []
+ },
+ "4e5df1084d524a83aa3bacdd41660fb7": {
+  "verdict": "ok",
+  "name": "Bunny plush toy",
+  "author": "astistudio",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "4fcb87e8e80c4e16b6c6a24804567372": {
+  "verdict": "ok",
+  "name": "Sloth Stuffed Animal",
+  "author": "jessrosedraw",
+  "reasons": []
+ },
+ "5072de467d74471fbbc7d945514c5d27": {
+  "verdict": "ok",
+  "name": "Thailand Elephant Plush Toy",
+  "author": "dawgt",
   "reasons": []
  },
  "50ea284f38c54d16b641fa78fe5c8c15": {
@@ -469,6 +515,22 @@
   "author": "tiagobarrozzo",
   "reasons": []
  },
+ "83eb9c35e5784c33b4f94e730b93fd15": {
+  "verdict": "ok",
+  "name": "Lamb",
+  "author": "pillyliu",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "867bb6cc590441a0a0bf0341da9b2c93": {
+  "verdict": "ok",
+  "name": "3D scaned Shark plush toy",
+  "author": "vadimoo",
+  "reasons": [
+   "scan"
+  ]
+ },
  "8bf1a653690d4f14b89f6548e95320a4": {
   "verdict": "ai-rejected",
   "name": "Low-poly black and white cat lying down",
@@ -542,6 +604,14 @@
   "author": "patrakeevasveta",
   "reasons": []
  },
+ "9a9460010885486f93774384609fe24f": {
+  "verdict": "ok",
+  "name": "Fox toy",
+  "author": "adamaf",
+  "reasons": [
+   "scan"
+  ]
+ },
  "9abfce885a834399b2c3ccaed51cd474": {
   "verdict": "ok",
   "name": "Animated Dog, Shiba Inu",
@@ -586,6 +656,14 @@
   "verdict": "ok",
   "name": "Kosmo Sleeping Cat Scan",
   "author": "samhodge",
+  "reasons": [
+   "scan"
+  ]
+ },
+ "a6393c1d79e14ae1bce17031fc0ac91c": {
+  "verdict": "ok",
+  "name": "Alpaca Plushie Doorstop, Processed Photoscan",
+  "author": "TECHGUNK",
   "reasons": [
    "scan"
   ]
@@ -683,6 +761,14 @@
   "name": "The Bus Stop at Hida City",
   "author": "tanukiart",
   "reasons": []
+ },
+ "c181a32a9efb49d9af36aa02927f638f": {
+  "verdict": "review",
+  "name": "Koala Plush Toy",
+  "author": "yanix",
+  "reasons": [
+   "one material, 51294 faces, 2024: look at it"
+  ]
  },
  "c199a59fc6b248b99261f24173d2a384": {
   "verdict": "ok",
@@ -786,11 +872,25 @@
   "author": "somitsu",
   "reasons": []
  },
+ "e099fdc80c954e44b784d9b9127ec4fc": {
+  "verdict": "ok",
+  "name": "Denim Whale Plush",
+  "author": "mattyu",
+  "reasons": []
+ },
  "e12d2fa1b2b94928b8b87cb7787e2462": {
   "verdict": "ok",
   "name": "Japanese Torii gate Game Asset",
   "author": "Bazylonator",
   "reasons": []
+ },
+ "e328e8d141de47829040efaf55306148": {
+  "verdict": "ok",
+  "name": "Rainbow Narwhal Plushie Artec Spider 3D Scan",
+  "author": "ianroy",
+  "reasons": [
+   "scan"
+  ]
  },
  "e530fd4c7f264088ad8dce405349f88e": {
   "verdict": "ok",
@@ -844,6 +944,12 @@
   "verdict": "ok",
   "name": "Abacus",
   "author": "hky111111",
+  "reasons": []
+ },
+ "f174cf27c27c4e5bb816d41ad15394a1": {
+  "verdict": "ok",
+  "name": "Owl soft toy",
+  "author": "CoFate",
   "reasons": []
  },
  "f537e142a592428d85ca7a940be221d3": {

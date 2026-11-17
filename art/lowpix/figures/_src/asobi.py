@@ -174,4 +174,4 @@ def lcdgame():
     return F
 
 
-FIGS = {"squishy": squishy, "superball": superball, "koma": koma, "yoyo": yoyo, "robot": robot, "kendama": kendama, "dartgun": dartgun, "lcdgame": lcdgame}
+FIGS = {"squishy": squishy, "superball": superball, "koma": koma, "yoyo": yoyo, "kendama": kendama, "dartgun": dartgun, "lcdgame": lcdgame}

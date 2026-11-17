@@ -309,7 +309,7 @@ export class Story {
         if (H.item?.kind === 'box' && H.item.data?.type === 'refill') return { id: 'restock:fill', icon: 'box', text: 'Fill your machine', sub: m.lidOpen ? `Put the capsules in one by one (${c}), then lock the lid` : `${c[0].toUpperCase() + c.slice(1)} the machine: unlock the lid`, at: mTop };
         if (box) return { id: 'restock:box', icon: 'box', text: 'Your capsules arrived', sub: 'Pick up the carton by the shutter', at: () => box.obj.position.clone().setY(0.7) };
         if (m.lidOpen) return { id: 'restock:lid', icon: 'machine', text: 'Close and lock the lid', sub: `${c[0].toUpperCase() + c.slice(1)} the machine`, at: mTop };
-        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'rojineko') * 10, 'capsules') || { id: 'restock:order', icon: 'capsule', text: 'Order a box of capsules', sub: `On the computer: Daikoku Toys, Capsules. ${gp('Fill it up.')}`, at: pc };
+        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'nuigurumi') * 10, 'capsules') || { id: 'restock:order', icon: 'capsule', text: 'Order a box of capsules', sub: `On the computer: Daikoku Toys, Capsules. ${gp('Fill it up.')}`, at: pc };
         return { id: 'restock:wait', icon: 'box', text: 'Wait for the capsules', sub: 'The box comes to the shutter', at: () => V(0, 0.8, GARAGE.maxZ - 0.6) };
       }
       case 'price': return { id, icon: 'yen', text: 'Set the price', sub: `The plate on the machine: - and +. ${gp('Kids pay 100.')}`, at: () => m.local(0, m.L.slot.y - 0.1, m.L.front + 0.05) };

@@ -1,0 +1,56 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "m",
+   "src": "polyhaven:brass_blowtorch",
+   "height": 40.0,
+   "pos": [
+    -0.994,
+    0.0,
+    -0.219
+   ],
+   "yaw": -25,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 1400,
+   "mat": "metal",
+   "rest": true,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "key": "a7dc5eb9d6413f",
+   "rest_R": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  }
+ ],
+ "model_clip": {
+  "node": "model_m",
+  "kind": "wobble",
+  "length": 1.6,
+  "amp": 12,
+  "axis": "y"
+ },
+ "key": "kogu/torch"
+}
