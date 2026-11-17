@@ -1,0 +1,34 @@
+{
+ "id": "cat_tower",
+ "src": "sketchfab:a4e89f00065f491c94ec8bb51606c12f",
+ "credit": {
+  "title": "Cat Tree Ready for your game",
+  "author": "B._.render",
+  "authorUrl": "https://sketchfab.com/Brendan_489",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cat-tree-ready-for-your-game-a4e89f00065f491c94ec8bb51606c12f",
+  "site": "Sketchfab"
+ },
+ "tris": 2981,
+ "tex": 512,
+ "size": [
+  0.803,
+  1.575,
+  0.643
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#44322b",
+   "#57453a",
+   "#69584a",
+   "#796c5c",
+   "#897f6e",
+   "#979185",
+   "#a4a29b",
+   "#b3b3b0",
+   "#c4c4c4"
+  ]
+ },
+ "warnings": []
+}

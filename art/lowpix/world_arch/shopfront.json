@@ -1,0 +1,1733 @@
+{
+ "name": "shopfront",
+ "description": "Gacha Garage's lane face: box-profile false front, piers, eave, shutter hood and rails",
+ "license": "CC0-1.0",
+ "density": 64,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.42,
+  "gradient": 0.25,
+  "ao": 0.55,
+  "ao_height": 1.2
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "teal": {
+    "base": "#456e5e",
+    "steps": 8,
+    "hue_shift": 16,
+    "sat_shift": 0.04,
+    "spread": 0.85
+   },
+   "rust": {
+    "base": "#6a3a26",
+    "steps": 7,
+    "hue_shift": 14,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "galv": {
+    "base": "#80878a",
+    "steps": 8,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "red": {
+    "base": "#763428",
+    "steps": 7,
+    "hue_shift": 14,
+    "sat_shift": 0.02,
+    "spread": 0.8
+   },
+   "wood": {
+    "base": "#5a4232",
+    "steps": 7,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "conc": {
+    "base": "#a39e94",
+    "steps": 8,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "enamel": {
+    "base": "#2f5a46",
+    "steps": 7,
+    "hue_shift": 14,
+    "sat_shift": 0.04,
+    "spread": 0.8
+   },
+   "white": {
+    "base": "#e6e2d6",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "iron": {
+    "base": "#3c3c3e",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   },
+   "beige": {
+    "base": "#b8b4a4",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.7
+   }
+  }
+ },
+ "styles": {
+  "teal": {
+   "ramp": "teal",
+   "tone": 4.0,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "ribs",
+     "op": "stripes",
+     "axis": "x",
+     "period": 0.2,
+     "width": 0.28,
+     "shift": 0.7,
+     "space": "world",
+     "bevel": {
+      "highlight": 1,
+      "shadow": 1,
+      "shadow_shift": -1.6,
+      "highlight_shift": 1.0
+     }
+    },
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/worn_corrugated_iron",
+     "scale": 1.6,
+     "amount": 0.55
+    },
+    {
+     "id": "chalk",
+     "op": "noise",
+     "scale": 0.5,
+     "amount": 0.5
+    },
+    {
+     "id": "dirt",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.9
+    },
+    {
+     "id": "rustrun",
+     "op": "spots",
+     "count": 10,
+     "radius": [
+      0.01,
+      0.025
+     ],
+     "stretch": [
+      0.4,
+      6.0,
+      0.4
+     ],
+     "ramp": "rust",
+     "tone": 2.2
+    },
+    {
+     "id": "chips",
+     "op": "wear",
+     "width": 2,
+     "density": 0.35,
+     "ramp": "rust",
+     "tone": 2.2
+    }
+   ]
+  },
+  "galv": {
+   "ramp": "galv",
+   "tone": 3.8,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/corrugated_iron_02",
+     "scale": 1.4,
+     "amount": 0.45
+    },
+    {
+     "id": "spangle",
+     "op": "noise",
+     "scale": 0.12,
+     "amount": 0.45
+    },
+    {
+     "id": "white_rust",
+     "op": "patches",
+     "scale": 0.4,
+     "threshold": 0.66,
+     "shift": 0.8
+    },
+    {
+     "id": "grime",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.6
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.2,
+     "threshold": 0.82,
+     "ramp": "rust",
+     "tone": 3.0
+    }
+   ]
+  },
+  "iron": {
+   "ramp": "iron",
+   "tone": 3.2,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 0.2,
+     "amount": 0.4
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.15,
+     "threshold": 0.62,
+     "ramp": "rust",
+     "tone": 2.6
+    }
+   ]
+  },
+  "red": {
+   "ramp": "red",
+   "tone": 3.6,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "id": "corr",
+     "op": "stripes",
+     "axis": "x",
+     "period": 0.076,
+     "width": 0.45,
+     "shift": 0.8,
+     "space": "world",
+     "bevel": {
+      "highlight": 1,
+      "shadow": 1,
+      "shadow_shift": -1.2
+     }
+    },
+    {
+     "id": "chalk",
+     "op": "noise",
+     "scale": 0.4,
+     "amount": 0.6
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.3,
+     "threshold": 0.6,
+     "ramp": "rust",
+     "tone": 2.8
+    },
+    {
+     "id": "edge",
+     "op": "wear",
+     "width": 2,
+     "density": 0.5,
+     "ramp": "rust",
+     "tone": 2.0
+    }
+   ]
+  },
+  "wood": {
+   "ramp": "wood",
+   "tone": 3.4,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "brush": {
+    "flow": "horizontal"
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/weathered_planks",
+     "scale": 1.2,
+     "amount": 0.7
+    },
+    {
+     "id": "grain",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.03,
+     "width": 0.25,
+     "shift": -0.6,
+     "wobble": 0.4
+    },
+    {
+     "id": "grey",
+     "op": "patches",
+     "scale": 0.5,
+     "threshold": 0.55,
+     "shift": 0.7
+    }
+   ]
+  },
+  "conc": {
+   "ramp": "conc",
+   "tone": 4.0,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -1.0
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/concrete_wall_003",
+     "scale": 1.2,
+     "amount": 0.8
+    },
+    {
+     "id": "cracks",
+     "op": "cracks",
+     "scale": 0.6,
+     "width": 1,
+     "threshold": 0.78,
+     "shift": -1.4
+    },
+    {
+     "id": "splash",
+     "op": "band",
+     "axis": "y",
+     "from": -1,
+     "to": -0.3,
+     "shift": -0.8,
+     "wobble": 0.3
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "pier",
+   "shape": "box",
+   "size": [
+    1.3,
+    3.03,
+    0.05
+   ],
+   "pivot": [
+    -3.65,
+    1.735,
+    5.235
+   ],
+   "chamfer": 0.006,
+   "style": "teal",
+   "hide": [
+    "back"
+   ]
+  },
+  {
+   "id": "kerb",
+   "shape": "box",
+   "size": [
+    1.34,
+    0.22,
+    0.12
+   ],
+   "pivot": [
+    -3.65,
+    0.11,
+    5.24
+   ],
+   "chamfer": 0.015,
+   "style": "conc",
+   "hide": [
+    "bottom",
+    "back"
+   ]
+  },
+  {
+   "id": "trim",
+   "shape": "box",
+   "size": [
+    0.04,
+    3.23,
+    0.06
+   ],
+   "pivot": [
+    -4.29,
+    1.815,
+    5.25
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "trim_1",
+   "shape": "box",
+   "size": [
+    0.03,
+    3.0,
+    0.04
+   ],
+   "pivot": [
+    -3.05,
+    1.72,
+    5.245
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "lap",
+   "shape": "box",
+   "size": [
+    1.3,
+    0.03,
+    0.012
+   ],
+   "pivot": [
+    -3.65,
+    1.915,
+    5.266
+   ],
+   "style": "galv",
+   "paint": {
+    "layers": [
+     {
+      "op": "rivets",
+      "spacing": 13,
+      "inset": 0,
+      "ramp": "galv",
+      "tone": 6,
+      "min_size": 1
+     }
+    ]
+   },
+   "hide": [
+    "back"
+   ]
+  },
+  {
+   "id": "pier_1",
+   "shape": "box",
+   "size": [
+    1.3,
+    3.03,
+    0.05
+   ],
+   "pivot": [
+    3.65,
+    1.735,
+    5.235
+   ],
+   "chamfer": 0.006,
+   "style": "teal",
+   "hide": [
+    "back"
+   ]
+  },
+  {
+   "id": "kerb_1",
+   "shape": "box",
+   "size": [
+    1.34,
+    0.22,
+    0.12
+   ],
+   "pivot": [
+    3.65,
+    0.11,
+    5.24
+   ],
+   "chamfer": 0.015,
+   "style": "conc",
+   "hide": [
+    "bottom",
+    "back"
+   ]
+  },
+  {
+   "id": "trim_2",
+   "shape": "box",
+   "size": [
+    0.04,
+    3.23,
+    0.06
+   ],
+   "pivot": [
+    4.29,
+    1.815,
+    5.25
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "trim_3",
+   "shape": "box",
+   "size": [
+    0.03,
+    3.0,
+    0.04
+   ],
+   "pivot": [
+    3.05,
+    1.72,
+    5.245
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "lap_1",
+   "shape": "box",
+   "size": [
+    1.3,
+    0.03,
+    0.012
+   ],
+   "pivot": [
+    3.65,
+    1.915,
+    5.266
+   ],
+   "style": "galv",
+   "paint": {
+    "layers": [
+     {
+      "op": "rivets",
+      "spacing": 13,
+      "inset": 0,
+      "ramp": "galv",
+      "tone": 6,
+      "min_size": 1
+     }
+    ]
+   },
+   "hide": [
+    "back"
+   ]
+  },
+  {
+   "id": "rail_web",
+   "shape": "box",
+   "size": [
+    0.012,
+    2.82,
+    0.12
+   ],
+   "pivot": [
+    -3.055,
+    1.41,
+    5.05
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "rail_flange",
+   "shape": "box",
+   "size": [
+    0.06,
+    2.82,
+    0.012
+   ],
+   "pivot": [
+    -3.025,
+    1.41,
+    4.995
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "rail_flange_1",
+   "shape": "box",
+   "size": [
+    0.06,
+    2.82,
+    0.012
+   ],
+   "pivot": [
+    -3.025,
+    1.41,
+    5.105
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "rail_foot",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.05,
+    0.14
+   ],
+   "pivot": [
+    -3.02,
+    0.025,
+    5.05
+   ],
+   "chamfer": 0.01,
+   "style": "iron"
+  },
+  {
+   "id": "rail_web_1",
+   "shape": "box",
+   "size": [
+    0.012,
+    2.82,
+    0.12
+   ],
+   "pivot": [
+    3.055,
+    1.41,
+    5.05
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "rail_flange_2",
+   "shape": "box",
+   "size": [
+    0.06,
+    2.82,
+    0.012
+   ],
+   "pivot": [
+    3.025,
+    1.41,
+    4.995
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "rail_flange_3",
+   "shape": "box",
+   "size": [
+    0.06,
+    2.82,
+    0.012
+   ],
+   "pivot": [
+    3.025,
+    1.41,
+    5.105
+   ],
+   "style": "galv",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "rail_foot_1",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.05,
+    0.14
+   ],
+   "pivot": [
+    3.02,
+    0.025,
+    5.05
+   ],
+   "chamfer": 0.01,
+   "style": "iron"
+  },
+  {
+   "id": "hood",
+   "shape": "box",
+   "size": [
+    6.36,
+    0.36,
+    0.38
+   ],
+   "pivot": [
+    0.0,
+    3.01,
+    5.05
+   ],
+   "chamfer": 0.03,
+   "style": "galv",
+   "paint": {
+    "layers": [
+     {
+      "id": "screws",
+      "op": "rivets",
+      "spacing": 40,
+      "inset": 2,
+      "ramp": "galv",
+      "tone": 6.5,
+      "min_size": 3
+     },
+     {
+      "id": "seam",
+      "op": "stripes",
+      "axis": "x",
+      "period": 2.12,
+      "width": 0.008,
+      "shift": -1.6,
+      "space": "world"
+     }
+    ]
+   }
+  },
+  {
+   "id": "hood_lip",
+   "shape": "box",
+   "size": [
+    6.36,
+    0.04,
+    0.05
+   ],
+   "pivot": [
+    0.0,
+    2.82,
+    5.22
+   ],
+   "chamfer": 0.012,
+   "style": "galv"
+  },
+  {
+   "id": "hood_cap",
+   "shape": "box",
+   "size": [
+    0.03,
+    0.4,
+    0.42
+   ],
+   "pivot": [
+    -3.2,
+    3.01,
+    5.05
+   ],
+   "chamfer": 0.008,
+   "style": "galv"
+  },
+  {
+   "id": "hood_cap_1",
+   "shape": "box",
+   "size": [
+    0.03,
+    0.4,
+    0.42
+   ],
+   "pivot": [
+    3.2,
+    3.01,
+    5.05
+   ],
+   "chamfer": 0.008,
+   "style": "galv"
+  },
+  {
+   "id": "fascia",
+   "shape": "box",
+   "size": [
+    8.4,
+    0.22,
+    0.07
+   ],
+   "pivot": [
+    0.0,
+    3.3,
+    5.255
+   ],
+   "chamfer": 0.01,
+   "style": "wood",
+   "hide": [
+    "back"
+   ]
+  },
+  {
+   "id": "fascia_cap",
+   "shape": "box",
+   "size": [
+    8.44,
+    0.025,
+    0.09
+   ],
+   "pivot": [
+    0.0,
+    3.4225,
+    5.255
+   ],
+   "style": "galv"
+  },
+  {
+   "id": "parapet",
+   "shape": "box",
+   "size": [
+    8.7,
+    1.15,
+    0.26
+   ],
+   "pivot": [
+    0.0,
+    3.775,
+    5.08
+   ],
+   "chamfer": 0.006,
+   "style": "teal",
+   "hide": [
+    "back",
+    "bottom"
+   ]
+  },
+  {
+   "id": "return",
+   "shape": "box",
+   "size": [
+    0.22,
+    1.15,
+    1.6
+   ],
+   "pivot": [
+    -4.24,
+    3.775,
+    4.3
+   ],
+   "style": "teal",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "pilaster",
+   "shape": "box",
+   "size": [
+    0.3,
+    1.17,
+    0.34
+   ],
+   "pivot": [
+    -4.25,
+    3.785,
+    5.12
+   ],
+   "chamfer": 0.012,
+   "style": "galv",
+   "paint": {
+    "layers": [
+     {
+      "id": "tone",
+      "op": "fill",
+      "shift": -1.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "return_1",
+   "shape": "box",
+   "size": [
+    0.22,
+    1.15,
+    1.6
+   ],
+   "pivot": [
+    4.24,
+    3.775,
+    4.3
+   ],
+   "style": "teal",
+   "hide": [
+    "bottom"
+   ]
+  },
+  {
+   "id": "pilaster_1",
+   "shape": "box",
+   "size": [
+    0.3,
+    1.17,
+    0.34
+   ],
+   "pivot": [
+    4.25,
+    3.785,
+    5.12
+   ],
+   "chamfer": 0.012,
+   "style": "galv",
+   "paint": {
+    "layers": [
+     {
+      "id": "tone",
+      "op": "fill",
+      "shift": -1.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "coping",
+   "shape": "box",
+   "size": [
+    9.0,
+    0.12,
+    0.46
+   ],
+   "pivot": [
+    0.0,
+    4.41,
+    5.1
+   ],
+   "chamfer": 0.01,
+   "style": "galv",
+   "paint": {
+    "layers": [
+     {
+      "id": "laps",
+      "op": "stripes",
+      "axis": "x",
+      "period": 1.8,
+      "width": 0.012,
+      "shift": -1.5,
+      "space": "world"
+     }
+    ]
+   }
+  },
+  {
+   "id": "coping_top",
+   "shape": "box",
+   "size": [
+    8.8,
+    0.08,
+    0.36
+   ],
+   "pivot": [
+    0.0,
+    4.51,
+    5.08
+   ],
+   "chamfer": 0.02,
+   "style": "galv"
+  },
+  {
+   "id": "eave",
+   "shape": "box",
+   "size": [
+    8.2,
+    0.03,
+    0.8658
+   ],
+   "pivot": [
+    0.0,
+    3.3551,
+    5.7183
+   ],
+   "rotation": [
+    6.6325,
+    0.0,
+    0.0
+   ],
+   "style": "red",
+   "paint": {
+    "layers": [
+     {
+      "id": "under",
+      "op": "fill",
+      "faces": [
+       "bottom"
+      ],
+      "ramp": "galv",
+      "tone": 3.0
+     },
+     {
+      "id": "under_rust",
+      "op": "patches",
+      "faces": [
+       "bottom"
+      ],
+      "scale": 0.5,
+      "threshold": 0.6,
+      "ramp": "rust",
+      "tone": 2.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "eave_flash",
+   "shape": "box",
+   "size": [
+    8.2,
+    0.05,
+    0.12
+   ],
+   "pivot": [
+    0.0,
+    3.425,
+    5.33
+   ],
+   "rotation": [
+    -6.0,
+    0.0,
+    0.0
+   ],
+   "style": "galv"
+  },
+  {
+   "id": "gutter",
+   "shape": "prism",
+   "size": [
+    0.12,
+    0.12,
+    8.3
+   ],
+   "pivot": [
+    0.0,
+    3.28,
+    6.2
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "galv",
+   "paint": {
+    "layers": [
+     {
+      "id": "leaf",
+      "op": "patches",
+      "scale": 0.3,
+      "threshold": 0.7,
+      "ramp": "rust",
+      "tone": 2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "gutter_end",
+   "shape": "prism",
+   "size": [
+    0.116,
+    0.116,
+    0.02
+   ],
+   "pivot": [
+    -4.16,
+    3.23,
+    6.2
+   ],
+   "rotation": [
+    -0.0,
+    -90.0,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 8
+  },
+  {
+   "id": "gutter_end_1",
+   "shape": "prism",
+   "size": [
+    0.116,
+    0.116,
+    0.02
+   ],
+   "pivot": [
+    4.16,
+    3.23,
+    6.2
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 8
+  },
+  {
+   "id": "dp_neck",
+   "shape": "prism",
+   "size": [
+    0.07,
+    0.07,
+    0.8238
+   ],
+   "pivot": [
+    -4.125,
+    3.145,
+    5.8
+   ],
+   "rotation": [
+    13.3351,
+    -176.4237,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 6
+  },
+  {
+   "id": "dp",
+   "shape": "prism",
+   "size": [
+    0.07,
+    0.07,
+    2.93
+   ],
+   "pivot": [
+    -4.15,
+    1.585,
+    5.36
+   ],
+   "rotation": [
+    90.0,
+    0.0,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 6
+  },
+  {
+   "id": "dp_shoe",
+   "shape": "prism",
+   "size": [
+    0.072,
+    0.072,
+    0.1664
+   ],
+   "pivot": [
+    -4.15,
+    0.075,
+    5.43
+   ],
+   "rotation": [
+    32.7352,
+    0.0,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 6
+  },
+  {
+   "id": "dp_clip",
+   "shape": "box",
+   "size": [
+    0.09,
+    0.03,
+    0.1
+   ],
+   "pivot": [
+    -4.15,
+    0.615,
+    5.32
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "dp_clip_1",
+   "shape": "box",
+   "size": [
+    0.09,
+    0.03,
+    0.1
+   ],
+   "pivot": [
+    -4.15,
+    1.515,
+    5.32
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "dp_clip_2",
+   "shape": "box",
+   "size": [
+    0.09,
+    0.03,
+    0.1
+   ],
+   "pivot": [
+    -4.15,
+    2.415,
+    5.32
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut",
+   "shape": "box",
+   "size": [
+    0.04,
+    0.04,
+    0.9683
+   ],
+   "pivot": [
+    -3.95,
+    3.0,
+    5.67
+   ],
+   "rotation": [
+    -38.2902,
+    0.0,
+    0.0
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut_plate",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.14,
+    0.012
+   ],
+   "pivot": [
+    -3.95,
+    2.69,
+    5.296
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut_1",
+   "shape": "box",
+   "size": [
+    0.04,
+    0.04,
+    0.9683
+   ],
+   "pivot": [
+    -1.35,
+    3.0,
+    5.67
+   ],
+   "rotation": [
+    -38.2902,
+    0.0,
+    0.0
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut_plate_1",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.14,
+    0.012
+   ],
+   "pivot": [
+    -1.35,
+    2.69,
+    5.296
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut_2",
+   "shape": "box",
+   "size": [
+    0.04,
+    0.04,
+    0.9683
+   ],
+   "pivot": [
+    1.35,
+    3.0,
+    5.67
+   ],
+   "rotation": [
+    -38.2902,
+    0.0,
+    0.0
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut_plate_2",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.14,
+    0.012
+   ],
+   "pivot": [
+    1.35,
+    2.69,
+    5.296
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut_3",
+   "shape": "box",
+   "size": [
+    0.04,
+    0.04,
+    0.9683
+   ],
+   "pivot": [
+    3.95,
+    3.0,
+    5.67
+   ],
+   "rotation": [
+    -38.2902,
+    0.0,
+    0.0
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "strut_plate_3",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.14,
+    0.012
+   ],
+   "pivot": [
+    3.95,
+    2.69,
+    5.296
+   ],
+   "style": "iron"
+  },
+  {
+   "id": "conduit",
+   "shape": "prism",
+   "size": [
+    0.044,
+    0.044,
+    6.8
+   ],
+   "pivot": [
+    0.0,
+    4.15,
+    5.235
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 6
+  },
+  {
+   "id": "conduit_drop",
+   "shape": "prism",
+   "size": [
+    0.044,
+    0.044,
+    0.4
+   ],
+   "pivot": [
+    -3.4,
+    3.95,
+    5.235
+   ],
+   "rotation": [
+    90.0,
+    0.0,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 6
+  },
+  {
+   "id": "conduit_drop_1",
+   "shape": "prism",
+   "size": [
+    0.044,
+    0.044,
+    0.4
+   ],
+   "pivot": [
+    3.4,
+    3.95,
+    5.235
+   ],
+   "rotation": [
+    90.0,
+    0.0,
+    0.0
+   ],
+   "style": "galv",
+   "sides": 6
+  },
+  {
+   "id": "lamp_base",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.12,
+    0.03
+   ],
+   "pivot": [
+    -2.2,
+    4.14,
+    5.225
+   ],
+   "chamfer": 0.01,
+   "style": "iron"
+  },
+  {
+   "id": "lamp_arm",
+   "shape": "prism",
+   "size": [
+    0.028,
+    0.028,
+    0.2608
+   ],
+   "pivot": [
+    -2.2,
+    4.13,
+    5.37
+   ],
+   "rotation": [
+    4.3987,
+    0.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 6
+  },
+  {
+   "id": "lamp_neck",
+   "shape": "prism",
+   "size": [
+    0.028,
+    0.028,
+    0.1769
+   ],
+   "pivot": [
+    -2.2,
+    4.055,
+    5.56
+   ],
+   "rotation": [
+    47.2906,
+    0.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 6
+  },
+  {
+   "id": "lamp_shade",
+   "shape": "prism",
+   "size": [
+    0.26,
+    0.26,
+    0.09
+   ],
+   "pivot": [
+    -2.2,
+    3.935,
+    5.62
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "iron",
+   "paint": {
+    "ramp": "enamel",
+    "tone": 3.4,
+    "layers": [
+     {
+      "op": "fill",
+      "faces": [
+       "back"
+      ],
+      "ramp": "white",
+      "tone": 4.4
+     },
+     {
+      "op": "wear",
+      "width": 1,
+      "density": 0.5,
+      "ramp": "iron",
+      "tone": 1.5
+     }
+    ]
+   },
+   "sides": 10,
+   "front_scale": [
+    0.36,
+    0.36
+   ]
+  },
+  {
+   "id": "lamp_base_1",
+   "shape": "box",
+   "size": [
+    0.1,
+    0.12,
+    0.03
+   ],
+   "pivot": [
+    2.2,
+    4.14,
+    5.225
+   ],
+   "chamfer": 0.01,
+   "style": "iron"
+  },
+  {
+   "id": "lamp_arm_1",
+   "shape": "prism",
+   "size": [
+    0.028,
+    0.028,
+    0.2608
+   ],
+   "pivot": [
+    2.2,
+    4.13,
+    5.37
+   ],
+   "rotation": [
+    4.3987,
+    0.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 6
+  },
+  {
+   "id": "lamp_neck_1",
+   "shape": "prism",
+   "size": [
+    0.028,
+    0.028,
+    0.1769
+   ],
+   "pivot": [
+    2.2,
+    4.055,
+    5.56
+   ],
+   "rotation": [
+    47.2906,
+    0.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 6
+  },
+  {
+   "id": "lamp_shade_1",
+   "shape": "prism",
+   "size": [
+    0.26,
+    0.26,
+    0.09
+   ],
+   "pivot": [
+    2.2,
+    3.935,
+    5.62
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "iron",
+   "paint": {
+    "ramp": "enamel",
+    "tone": 3.4,
+    "layers": [
+     {
+      "op": "fill",
+      "faces": [
+       "back"
+      ],
+      "ramp": "white",
+      "tone": 4.4
+     },
+     {
+      "op": "wear",
+      "width": 1,
+      "density": 0.5,
+      "ramp": "iron",
+      "tone": 1.5
+     }
+    ]
+   },
+   "sides": 10,
+   "front_scale": [
+    0.36,
+    0.36
+   ]
+  },
+  {
+   "id": "meter",
+   "shape": "box",
+   "size": [
+    0.3,
+    0.4,
+    0.12
+   ],
+   "pivot": [
+    -3.62,
+    2.2,
+    5.32
+   ],
+   "chamfer": 0.02,
+   "style": "galv",
+   "paint": {
+    "ramp": "beige",
+    "tone": 3.6,
+    "layers": [
+     {
+      "op": "rect",
+      "faces": [
+       "front"
+      ],
+      "rect": [
+       0.18,
+       0.45,
+       0.82,
+       0.85
+      ],
+      "ramp": "iron",
+      "tone": 1.2,
+      "bevel": true
+     },
+     {
+      "op": "rect",
+      "faces": [
+       "front"
+      ],
+      "rect": [
+       0.25,
+       0.58,
+       0.75,
+       0.72
+      ],
+      "ramp": "white",
+      "tone": 3.4
+     },
+     {
+      "op": "rivets",
+      "faces": [
+       "front"
+      ],
+      "inset": 1,
+      "spacing": 99,
+      "ramp": "galv",
+      "tone": 5
+     }
+    ]
+   }
+  },
+  {
+   "id": "meter_cable",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.3
+   ],
+   "pivot": [
+    -3.62,
+    2.55,
+    5.33
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "iron",
+   "sides": 5
+  }
+ ],
+ "brush": {
+  "length": 0.16,
+  "width": 0.03,
+  "rough": 0.45,
+  "overshoot": 0.2,
+  "flow": "vertical",
+  "textures": {
+   "teal": "metal",
+   "galv": "metal",
+   "red": "metal",
+   "rust": "metal",
+   "iron": "metal",
+   "wood": "wood",
+   "conc": "stone",
+   "enamel": "metal"
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "id": "mk_phone",
+ "src": "sketchfab:1b3929f627a141be92f0c8c16a3ba296",
+ "credit": {
+  "title": "Classic Telephone",
+  "author": "irtizasb",
+  "authorUrl": "https://sketchfab.com/irtizasb",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/classic-telephone-1b3929f627a141be92f0c8c16a3ba296",
+  "site": "Sketchfab"
+ },
+ "tris": 1499,
+ "tex": 128,
+ "size": [
+  0.14,
+  0.12,
+  0.066
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#060405",
+   "#070606",
+   "#080708",
+   "#0a0909",
+   "#0b0b0b",
+   "#2d2d2d",
+   "#4e4e4e",
+   "#707070",
+   "#919191"
+  ]
+ },
+ "warnings": []
+}

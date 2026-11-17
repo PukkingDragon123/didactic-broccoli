@@ -1,0 +1,28 @@
+{
+ "joints": {},
+ "mats": {
+  "nail_0_False_32": "metal",
+  "nail_0_False_148": "metal",
+  "nail_0_True_32": "metal",
+  "nail_0_True_148": "metal",
+  "nail_1_False_222": "metal",
+  "nail_1_False_348": "metal",
+  "nail_1_True_222": "metal",
+  "nail_1_True_348": "metal",
+  "nail_2_False_422": "metal",
+  "nail_2_False_513.0": "metal",
+  "nail_2_True_422": "metal",
+  "nail_2_True_513.0": "metal"
+ },
+ "standBox": {
+  "x0": -220.0,
+  "x1": 220.0,
+  "z0": -195.0,
+  "z1": 195.0,
+  "front": 195.0,
+  "printZ": 195.0,
+  "printY": 290
+ },
+ "key": "retro_stand",
+ "density": 0.4
+}

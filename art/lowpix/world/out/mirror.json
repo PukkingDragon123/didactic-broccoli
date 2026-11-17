@@ -1,0 +1,55 @@
+{
+ "id": "mirror",
+ "src": "polyhaven:ornate_mirror_01",
+ "credit": {
+  "title": "Ornate Mirror 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/ornate_mirror_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2827,
+ "tex": 432,
+ "size": [
+  0.487,
+  0.744,
+  0.026
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#6e565e",
+   "#8b757a",
+   "#a4989a",
+   "#bebaba",
+   "#dadada",
+   "#dfdfdf",
+   "#e4e4e4",
+   "#e9e9e9",
+   "#eeeeee"
+  ],
+  "m1": [
+   "#532b20",
+   "#6a3f2c",
+   "#805439",
+   "#956c47",
+   "#a98457",
+   "#b29a71",
+   "#bbad8b",
+   "#c6bfa3",
+   "#d1cfba"
+  ],
+  "m2": [
+   "#372c30",
+   "#463b3e",
+   "#554b4d",
+   "#625c5d",
+   "#6e6e6e",
+   "#828282",
+   "#969696",
+   "#aaaaaa",
+   "#bebebe"
+  ]
+ },
+ "warnings": []
+}

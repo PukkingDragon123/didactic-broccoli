@@ -1,0 +1,110 @@
+{
+ "joints": {
+  "pawl": [
+   0,
+   0,
+   0
+  ],
+  "crank": [
+   -25.0,
+   820.0,
+   180.0
+  ],
+  "btn_minus": [
+   72.0,
+   784.0,
+   170.0
+  ],
+  "btn_plus": [
+   112.0,
+   784.0,
+   170.0
+  ],
+  "flap": [
+   0,
+   710.0,
+   172.5
+  ],
+  "drawer": [
+   81.0,
+   620.0,
+   170.0
+  ],
+  "lid": [
+   0,
+   1350.0,
+   -175.0
+  ]
+ },
+ "mats": {
+  "unit": "gloss",
+  "unit_back": "gloss",
+  "unit_l": "gloss",
+  "unit_m": "gloss",
+  "unit_r": "gloss",
+  "unit_ob": "gloss",
+  "unit_cb": "gloss",
+  "plinth": "gloss",
+  "band": "gloss",
+  "band2": "metal",
+  "rail": "metal",
+  "dial_bezel": "metal",
+  "dial": "gloss",
+  "pawl_b": "metal",
+  "pawl_pin": "metal",
+  "hub": "metal",
+  "knob": "gloss",
+  "grip": "gloss",
+  "cap": "metal",
+  "mech": "metal",
+  "coin_ret": "metal",
+  "plate_bz": "metal",
+  "btn_sock_l": "metal",
+  "btn_sock_r": "metal",
+  "btn_minus_cap": "gloss",
+  "btn_plus_cap": "gloss",
+  "obz_l": "metal",
+  "obz_r": "metal",
+  "obz_b": "metal",
+  "ohood": "metal",
+  "flap_p": "glass",
+  "flap_pin": "metal",
+  "cbz": "metal",
+  "dr_front": "metal",
+  "dr_box": "metal",
+  "dr_lock": "metal",
+  "dr_pull": "metal",
+  "tray_floor": "gloss",
+  "tray_wl": "gloss",
+  "tray_wr": "gloss",
+  "tray_lip": "gloss",
+  "hook_plate": "metal",
+  "hook_arm": "metal",
+  "hook_tip": "metal",
+  "post_fl": "gloss",
+  "post_fr": "gloss",
+  "post_bl": "gloss",
+  "post_br": "gloss",
+  "rim_f": "gloss",
+  "rim_b": "gloss",
+  "rim_l": "gloss",
+  "rim_r": "gloss",
+  "shoe_f": "metal",
+  "shoe_l": "metal",
+  "shoe_r": "metal",
+  "backwall": "gloss",
+  "floor": "gloss",
+  "funnel": "metal",
+  "rail_l": "metal",
+  "rail_r": "metal",
+  "rail_b": "metal",
+  "lid_box": "gloss",
+  "lid_seam": "gloss",
+  "lid_lock": "metal",
+  "hinge_l": "metal",
+  "hinge_r": "metal",
+  "mount": "metal"
+ },
+ "key": "standard",
+ "density": 0.65
+}

@@ -1,0 +1,264 @@
+{
+ "name": "Super Ball",
+ "description": "Click to throw. It will find the one gap under the fridge.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 4.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.55,
+   1.0,
+   0.65
+  ],
+  "strength": 0.85,
+  "gradient": 0.35,
+  "ao": 0.55,
+  "ao_height": 4.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#391f0e",
+    "#a26029",
+    "#daa976",
+    "#f6ecdf",
+    "#f8f2e8",
+    "#fbf8f1",
+    "#fdfdfa"
+   ],
+   "steel": [
+    "#1c1b1f",
+    "#434047",
+    "#6a676e",
+    "#918f93",
+    "#aeaeae",
+    "#cccccc",
+    "#e9e9e9"
+   ],
+   "blush": [
+    "#400b15",
+    "#941a29",
+    "#d9373f",
+    "#e88f8c",
+    "#edb3ac",
+    "#f3d2ca",
+    "#faede9"
+   ],
+   "moss": [
+    "#10180c",
+    "#28381c",
+    "#43562c",
+    "#5f743e",
+    "#92a862",
+    "#bdc69d",
+    "#e4e6d5"
+   ],
+   "c3ab8d8": [
+    "#0b1e2c",
+    "#1b4c66",
+    "#2c7f9e",
+    "#4ab1ca",
+    "#7cccd7",
+    "#ace2e4",
+    "#dcf3f2"
+   ],
+   "cf0d040": [
+    "#382205",
+    "#82580d",
+    "#cb9717",
+    "#e9c84a",
+    "#eedf7c",
+    "#f3efac",
+    "#fafadc"
+   ],
+   "ce84a8a": [
+    "#370824",
+    "#7e134c",
+    "#c51f6a",
+    "#e2558a",
+    "#e984a2",
+    "#f0b1bf",
+    "#f8dee2"
+   ]
+  }
+ },
+ "styles": {
+  "pvc": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.4,
+     "amount": 0.12
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.75,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.3,
+     "min_light": -0.1,
+     "max_light": 0.22
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.2,
+     "shift": 1.0
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "ball",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.1
+    },
+    {
+     "at": [
+      0,
+      2.2,
+      0
+     ],
+     "size": 15
+    },
+    {
+     "at": [
+      0,
+      7,
+      0
+     ],
+     "size": 25
+    },
+    {
+     "at": [
+      0,
+      13,
+      0
+     ],
+     "size": 25
+    },
+    {
+     "at": [
+      0,
+      17.8,
+      0
+     ],
+     "size": 15
+    },
+    {
+     "at": [
+      0,
+      20,
+      0
+     ],
+     "size": 0.1
+    }
+   ],
+   "profile": {
+    "sides": 16,
+    "round": 2.0
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "c3ab8d8",
+    "tone": 3.2,
+    "layers": [
+     {
+      "id": "swirl",
+      "op": "stripes",
+      "axis": [
+       1,
+       1,
+       0.3
+      ],
+      "period": 5.5,
+      "width": 0.3,
+      "wobble": 0.5,
+      "ramp": "cf0d040",
+      "tone": 3.6,
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1
+      }
+     },
+     {
+      "id": "swirl2",
+      "op": "stripes",
+      "axis": [
+       -1,
+       0.6,
+       1
+      ],
+      "period": 7,
+      "width": 0.2,
+      "wobble": 0.5,
+      "ramp": "ce84a8a",
+      "tone": 3.2
+     },
+     {
+      "id": "glitter",
+      "op": "speckle",
+      "density": 0.06,
+      "shift": 1.6
+     }
+    ]
+   }
+  }
+ ]
+}

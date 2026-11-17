@@ -1,0 +1,26 @@
+{
+ "joints": {},
+ "mats": {
+  "kick": "gloss",
+  "cab": "gloss",
+  "cornice": "metal",
+  "skirt": "metal",
+  "bead_t": "metal",
+  "bead_b": "metal",
+  "bead_l": "metal",
+  "bead_r": "metal",
+  "cab_panel": "gloss",
+  "medal_o": "metal",
+  "medal": "gloss",
+  "medal_i": "metal"
+ },
+ "standBox": {
+  "x0": -230.0,
+  "x1": 230.0,
+  "z0": -210.0,
+  "z1": 210.0,
+  "front": 210.0
+ },
+ "key": "royal_stand",
+ "density": 0.4
+}

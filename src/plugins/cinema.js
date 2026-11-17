@@ -4,6 +4,7 @@
 // dbg.cinema: machine(), level(n), secret(), beat(), card(t, s, stamp), photo(filter), snap(), sting(kind).
 import { Game } from '../game/Game.js';
 import { Cinema } from '../cinema/index.js';
+import { SERIES } from '../data/series/index.js';
 
 export function install(game) {
   const g = game;
@@ -18,7 +19,11 @@ export function install(game) {
       beat() { M.beat('rise'); },
       card(t = 'Level 5', s = 'The shop levels up', stamp = '昇') { const w = M.card(t, s, stamp, 4); let k = 0; const tick = () => { if (!w.update(1 / 30) && k++ < 200) setTimeout(tick, 33); }; tick(); },
       /** The first-secret showcase on whatever figure is in your hand (or a fresh capsule's). */
-      secret(key = null) { cine.s.firsts.secret = 0; const d = g.debug.capsule('bizarre', 'secret'); g.debug.open(); return d; },
+      secret(series = null) {
+        delete cine.s.firsts.secret;
+        const sid = series || SERIES.find((s) => s.items.some((it) => it.rarity === 'secret'))?.id;
+        const d = g.debug.capsule(sid, 'secret'); g.debug.open(); return d;
+      },
       photo(filter = null) { if (!cine.photo.active) cine.photo.enter(); if (filter !== null) { const i = ['', 'gekiga', 'impact', 'pocket', 'sepia', 'pixel', 'neon', 'negative'].indexOf(filter); cine.photo.fi = Math.max(0, i); g.jojo?.impact.filter(filter || null); cine.photo.render(); } return cine.photo.active; },
       photoPose(name) { cine.photo.S?.h.gesture(name, { hold: true }); cine.photo.pose = name; cine.photo.render(); },
       photoCam(x, y, z, yaw, pitch, fov = 50) { const P = cine.photo; P.cam.pos.set(x, y, z); P.yaw = yaw; P.pitch = pitch; P.fov = fov; P.apply(); },

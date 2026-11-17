@@ -10,5 +10,32 @@
   "gimmick": "gimmick"
  },
  "pts": {},
+ "models": [
+  {
+   "name": "cat",
+   "src": "sketchfab:ee5dcbdd0c2b4c33adf83d4c6708e6ae",
+   "height": 20,
+   "at": [
+    0,
+    31.25,
+    -0.5
+   ],
+   "yaw": -12,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "1384b699e98776"
+  }
+ ],
+ "model_clip": {
+  "node": "model_cat",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 30,
+  "axis": "y"
+ },
  "key": "rojineko/postbox"
 }

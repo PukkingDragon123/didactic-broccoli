@@ -1,0 +1,67 @@
+{
+ "id": "star_lamp",
+ "src": "sketchfab:acd19b5bd50d4cf3b179c222b0d29449",
+ "credit": {
+  "title": "Star Lamp",
+  "author": "dm3V",
+  "authorUrl": "https://sketchfab.com/dm3V",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/star-lamp-acd19b5bd50d4cf3b179c222b0d29449",
+  "site": "Sketchfab"
+ },
+ "tris": 2952,
+ "tex": 1024,
+ "size": [
+  1.575,
+  1.5,
+  0.644
+ ],
+ "colours": 27,
+ "palette": {
+  "m0": [
+   "#12004a",
+   "#150060",
+   "#0f0077",
+   "#07008d",
+   "#0107a3",
+   "#041dcf",
+   "#0d3df6",
+   "#3e72f5",
+   "#6ea0f5"
+  ],
+  "m1": [
+   "#700025",
+   "#920024",
+   "#b4001e",
+   "#d60012",
+   "#f80000",
+   "#fc3320",
+   "#f96547",
+   "#f88f6c",
+   "#f8b390"
+  ],
+  "m2": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ],
+  "m3": [
+   "#0a0600",
+   "#0e0800",
+   "#110c00",
+   "#141000",
+   "#171400",
+   "#595501",
+   "#989805",
+   "#d6d60a",
+   "#f2f231"
+  ]
+ },
+ "warnings": []
+}

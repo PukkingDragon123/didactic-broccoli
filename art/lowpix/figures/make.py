@@ -45,6 +45,44 @@ def gen(series, only=None):
     return files
 
 
+_dl_lock = __import__("threading").Lock()
+
+
+def ensure_source(src):
+    """Download a Sketchfab model once (shared cache, polite: one at a time, backing off on 429) and return a local path
+    for `lowpix convert` (its own fetch would download again every time)."""
+    if not src.startswith("sketchfab:"):
+        return src
+    import time
+    import urllib.error
+    os.environ.setdefault("LOWPIX_SKETCHFAB_TOKEN", "proxy-injected")
+    sys.path.insert(0, LOWPIX)
+    from lowpix.sketchfab import fetch
+    uid = src.split(":", 1)[1]
+    d = os.path.join(CONV, "src", "sketchfab_" + uid, "sketchfab_" + uid)
+    def found():
+        for base, _, files in os.walk(d):
+            for f in sorted(files):
+                if f.lower().endswith((".gltf", ".glb")):
+                    return os.path.join(base, f)
+        return None
+    if found():
+        return found()
+    with _dl_lock:
+        for attempt in range(12):
+            if found():
+                return found()
+            try:
+                return fetch(uid, d)
+            except urllib.error.HTTPError as e:
+                if e.code != 429:
+                    raise
+                wait = 45 * (attempt + 1)
+                print(f"  sketchfab busy (429), waiting {wait}s for {uid}", flush=True)
+                time.sleep(wait)
+        raise RuntimeError("sketchfab kept refusing " + uid)
+
+
 def conv_key(m):
     k = {x: m.get(x) for x in ("src", "tris", "style", "atlas", "opts")}
     k["height"] = float(CONV_H)
@@ -65,7 +103,11 @@ def convert(m):
     link = os.path.join(out, "_source")
     if not os.path.exists(link):
         os.symlink(shared, link)
-    cmd = [sys.executable, "-m", "lowpix", "convert", m["src"], "--style", m["style"], "--height", str(CONV_H), "--tris", str(m["tris"]),
+    try:
+        local = ensure_source(m["src"])
+    except Exception as e:  # noqa: BLE001
+        return key, None, f"download: {e}"
+    cmd = [sys.executable, "-m", "lowpix", "convert", local, "--style", m["style"], "--height", str(CONV_H), "--tris", str(m["tris"]),
            "--atlas", str(m["atlas"]), "-o", out, "--name", key]
     for k, v in (m.get("opts") or {}).items():
         cmd += [f"--{k}"] if v is True else [f"--{k}", str(v)]
@@ -96,8 +138,8 @@ def convert_all(spec_files):
     src = json.load(open(sp)) if os.path.exists(sp) else {}
     for m in todo.values():
         sid = m["src"].replace(":", "_").replace("/", "_")
-        a = os.path.join(CONV, "src", sid, "ATTRIBUTION.json")
-        if os.path.exists(a):
+        a = next((os.path.join(b, "ATTRIBUTION.json") for b, _, fs in os.walk(os.path.join(CONV, "src", sid)) if "ATTRIBUTION.json" in fs), "")
+        if a and os.path.exists(a):
             src[m["src"]] = json.load(open(a))
         elif m["src"].startswith("polyhaven:"):
             src[m["src"]] = {"title": m["src"].split(":")[1], "author": "Poly Haven", "license": "CC0", "url": "https://polyhaven.com/a/" + m["src"].split(":")[1]}

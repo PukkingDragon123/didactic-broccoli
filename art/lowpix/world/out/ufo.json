@@ -1,0 +1,56 @@
+{
+ "id": "ufo",
+ "src": "sketchfab:91713b0bff414b478660c28064e3021a",
+ "credit": {
+  "title": "ufo flying saucer",
+  "author": "boriscargo",
+  "authorUrl": "https://sketchfab.com/boriscargo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ufo-flying-saucer-91713b0bff414b478660c28064e3021a",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 512,
+ "size": [
+  5.067,
+  1.5,
+  5.067
+ ],
+ "colours": 18,
+ "palette": {
+  "m0": [
+   "#1f181a",
+   "#272122",
+   "#2f2a2a",
+   "#363333",
+   "#3d3d3d",
+   "#585858",
+   "#727272",
+   "#8d8d8d",
+   "#a8a8a8"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m2": [
+   "#090097",
+   "#0005c5",
+   "#001bf4",
+   "#234dff",
+   "#5181ff",
+   "#6b9ffd",
+   "#85b9fb",
+   "#9dcefa",
+   "#b5dffa"
+  ]
+ },
+ "warnings": []
+}

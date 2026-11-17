@@ -1,0 +1,33 @@
+{
+ "id": "moon_rock",
+ "src": "polyhaven:moon_rock_01",
+ "credit": {
+  "title": "Moon Rock 01",
+  "author": "Greg Zaal, Rico Cilliers, Jenelle van Heerden, Dario Barresi",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/moon_rock_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 512,
+ "size": [
+  1.901,
+  0.68,
+  1.002
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#43332d",
+   "#55453e",
+   "#66584f",
+   "#766b61",
+   "#857e74",
+   "#93908a",
+   "#a1a1a0",
+   "#b2b2b2",
+   "#c4c4c4"
+  ]
+ },
+ "warnings": []
+}

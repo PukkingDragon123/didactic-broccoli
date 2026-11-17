@@ -58,7 +58,7 @@ export class Moments {
 
   free() {
     const g = this.game;
-    return !g.cutscene?.active && !g.talk?.active && !g.pc?.active && !g.uiOpen && !g.jojo?.photo?.active && !g.held?.busy;
+    return !g.cutscene?.active && !g.talk?.active && !g.pc?.active && !g.uiOpen && !g.cinema?.photo?.active && !g.held?.busy;
   }
 
   update(dt) {

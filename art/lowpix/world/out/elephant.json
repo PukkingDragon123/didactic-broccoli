@@ -1,0 +1,33 @@
+{
+ "id": "elephant",
+ "src": "polyhaven:carved_wooden_elephant",
+ "credit": {
+  "title": "Carved Wooden Elephant",
+  "author": "Greg Zaal",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/carved_wooden_elephant",
+  "site": "Poly Haven"
+ },
+ "tris": 2752,
+ "tex": 128,
+ "size": [
+  0.109,
+  0.096,
+  0.058
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3d120b",
+   "#4e1d10",
+   "#5f2b15",
+   "#6f3b1b",
+   "#7e4d22",
+   "#a16e2f",
+   "#c1923f",
+   "#caae66",
+   "#d4c68c"
+  ]
+ },
+ "warnings": []
+}

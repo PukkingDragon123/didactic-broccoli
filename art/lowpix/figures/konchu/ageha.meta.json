@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "butterfly",
+   "src": "sketchfab:d45ea22770f44818949e8933b853c6c4",
+   "height": 9,
+   "at": [
+    0,
+    27.0,
+    -1
+   ],
+   "yaw": -20,
+   "pitch": -15,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "640c4d1be2c597"
+  }
+ ],
+ "model_clip": {
+  "node": "model_butterfly",
+  "kind": "hop",
+  "length": 0.8,
+  "amp": 1.2,
+  "axis": "y"
+ },
+ "key": "konchu/ageha"
+}

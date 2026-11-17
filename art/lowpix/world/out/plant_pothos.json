@@ -1,0 +1,78 @@
+{
+ "id": "plant_pothos",
+ "src": "sketchfab:175142c4942b42169455eb20c4033c9d",
+ "credit": {
+  "title": "Pothos Plant",
+  "author": "Blizzy",
+  "authorUrl": "https://sketchfab.com/jeffbas",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pothos-plant-175142c4942b42169455eb20c4033c9d",
+  "site": "Sketchfab"
+ },
+ "tris": 2926,
+ "tex": 512,
+ "size": [
+  1.082,
+  0.855,
+  0.838
+ ],
+ "colours": 40,
+ "palette": {
+  "m0": [
+   "#2f2528",
+   "#3c3234",
+   "#473f41",
+   "#534e4e",
+   "#5d5d5d",
+   "#737373",
+   "#8a8a8a",
+   "#a0a0a0",
+   "#b6b6b6"
+  ],
+  "m1": [
+   "#337521",
+   "#4d962e",
+   "#6bb63c",
+   "#8dc55c",
+   "#abce80",
+   "#bcd294",
+   "#cad8a7",
+   "#d6deb9",
+   "#e1e4cb"
+  ],
+  "m2": [
+   "#0d1e0a",
+   "#14270e",
+   "#1c2f12",
+   "#243716",
+   "#2d3e1b",
+   "#4f642f",
+   "#738944",
+   "#97a95e",
+   "#b2ba86"
+  ],
+  "m3": [
+   "#4fbe03",
+   "#7bf507",
+   "#a9f641",
+   "#ccf77b",
+   "#e7f9b4",
+   "#eff9bf",
+   "#f5f9ca",
+   "#f9f9d5",
+   "#fafadf"
+  ],
+  "m4": [
+   "#220d0e",
+   "#2b1312",
+   "#341b17",
+   "#3d241d",
+   "#452d23",
+   "#684a38",
+   "#896a4f",
+   "#a48a6b",
+   "#b7a891"
+  ]
+ },
+ "warnings": []
+}

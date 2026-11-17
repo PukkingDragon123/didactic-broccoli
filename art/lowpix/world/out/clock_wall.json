@@ -8,14 +8,14 @@
   "url": "https://polyhaven.com/a/wall_clock",
   "site": "Poly Haven"
  },
- "tris": 2998,
+ "tris": 2996,
  "tex": 256,
  "size": [
   0.32,
   0.32,
   0.047
  ],
- "colours": 21,
+ "colours": 20,
  "palette": {
   "m0": [
    "#0f0b0d",

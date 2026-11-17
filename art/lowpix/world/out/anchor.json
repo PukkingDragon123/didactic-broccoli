@@ -1,0 +1,34 @@
+{
+ "id": "anchor",
+ "src": "sketchfab:826db1334b3243f48b39b0415ed9a0be",
+ "credit": {
+  "title": "Old Anchor",
+  "author": "marvelmaster",
+  "authorUrl": "https://sketchfab.com/marvelmaster",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-anchor-826db1334b3243f48b39b0415ed9a0be",
+  "site": "Sketchfab"
+ },
+ "tris": 1172,
+ "tex": 384,
+ "size": [
+  1.311,
+  1.225,
+  0.151
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#181612",
+   "#1e1d18",
+   "#24231f",
+   "#2a2926",
+   "#2f2f2d",
+   "#4b4b4b",
+   "#676767",
+   "#848484",
+   "#a1a1a1"
+  ]
+ },
+ "warnings": []
+}

@@ -12,7 +12,7 @@ export async function viewerEntries(params) {
   await document.fonts.load('16px "DotGothic16"', bannerGlyphs() + 'コイン投入口返却ボタン印を合わせてからコインを入れてくださいとりだしぐち見本円ねだんガチャ対象年齢才以上');
   const r = new THREE.WebGLRenderer({ antialias: true });
   const thumbs = new Thumbs(r);
-  const def = { retro: 'mochi', standard: 'konbini', deluxe: 'dajare', royal: 'uchu' };
+  const def = { retro: 'rojineko', standard: 'sampuru', deluxe: 'denka', royal: 'rojineko' };
   const types = params.get('type') ? params.get('type').split(',') : Object.keys(MACHINE_SPECS);
   return types.map((t, ti) => {
     const series = params.get('series') || def[t];

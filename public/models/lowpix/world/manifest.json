@@ -1,4 +1,331 @@
 {
+ "ac_unit": {
+  "id": "ac_unit",
+  "name": "Exterior Aircon Unit",
+  "src": "polyhaven:exterior_aircon_unit",
+  "title": "Exterior Aircon Unit",
+  "author": "Monsta3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/exterior_aircon_unit",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   0.804,
+   0.928,
+   0.376
+  ],
+  "bytes": 79108
+ },
+ "armchair": {
+  "id": "armchair",
+  "name": "Arm Chair 01",
+  "src": "polyhaven:ArmChair_01",
+  "title": "Arm Chair 01",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/ArmChair_01",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   0.85,
+   1.065,
+   0.768
+  ],
+  "bytes": 80768
+ },
+ "armchair_cn": {
+  "id": "armchair_cn",
+  "name": "Chinese Armchair",
+  "src": "polyhaven:chinese_armchair",
+  "title": "Chinese Armchair",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chinese_armchair",
+  "site": "Poly Haven",
+  "tris": 2675,
+  "tex": 512,
+  "size": [
+   0.848,
+   1.587,
+   0.789
+  ],
+  "bytes": 74184
+ },
+ "basket": {
+  "id": "basket",
+  "name": "Wicker Basket 01",
+  "src": "polyhaven:wicker_basket_01",
+  "title": "Wicker Basket 01",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wicker_basket_01",
+  "site": "Poly Haven",
+  "tris": 2914,
+  "tex": 256,
+  "size": [
+   0.397,
+   0.117,
+   0.299
+  ],
+  "bytes": 77548
+ },
+ "beer_crates": {
+  "id": "beer_crates",
+  "name": "Abandoned Beer Crates & Bottles Low Poly",
+  "src": "sketchfab:2be722c87cfd404698506f33f575b219",
+  "title": "Abandoned Beer Crates & Bottles Low Poly",
+  "author": "Fevzi_Beydili",
+  "authorUrl": "https://sketchfab.com/Fevzi_Beydili",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/abandoned-beer-crates-bottles-low-poly-2be722c87cfd404698506f33f575b219",
+  "site": "Sketchfab",
+  "tris": 2972,
+  "tex": 2048,
+  "size": [
+   3.817,
+   0.62,
+   2.284
+  ],
+  "bytes": 336360
+ },
+ "bench_station": {
+  "id": "bench_station",
+  "name": "Japan Train Station Bench",
+  "src": "sketchfab:68d9b8434ee6407da1e6fda1166d3ad2",
+  "title": "Japan Train Station Bench",
+  "author": "Mxstifie",
+  "authorUrl": "https://sketchfab.com/Mxstifie",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japan-train-station-bench-68d9b8434ee6407da1e6fda1166d3ad2",
+  "site": "Sketchfab",
+  "tris": 2164,
+  "tex": 400,
+  "size": [
+   1.548,
+   0.8,
+   0.438
+  ],
+  "bytes": 30044
+ },
+ "bicycle_old": {
+  "id": "bicycle_old",
+  "name": "Old Bicycle",
+  "src": "sketchfab:17ab00cb733443a2b552a2b620a68087",
+  "title": "Old Bicycle",
+  "author": "Tidominer",
+  "authorUrl": "https://sketchfab.com/tidominer",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-bicycle-17ab00cb733443a2b552a2b620a68087",
+  "site": "Sketchfab",
+  "tris": 4867,
+  "tex": 672,
+  "size": [
+   1.918,
+   1.05,
+   0.455
+  ],
+  "bytes": 148684
+ },
+ "bin_metal": {
+  "id": "bin_metal",
+  "name": "Metal Trash Can",
+  "src": "polyhaven:metal_trash_can",
+  "title": "Metal Trash Can",
+  "author": "GurJas Studios",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_trash_can",
+  "site": "Poly Haven",
+  "tris": 2936,
+  "tex": 512,
+  "size": [
+   0.613,
+   0.906,
+   0.552
+  ],
+  "bytes": 75940
+ },
+ "books": {
+  "id": "books",
+  "name": "Book Encyclopedia Set 01",
+  "src": "polyhaven:book_encyclopedia_set_01",
+  "title": "Book Encyclopedia Set 01",
+  "author": "John Malcolm",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/book_encyclopedia_set_01",
+  "site": "Poly Haven",
+  "tris": 2796,
+  "tex": 512,
+  "size": [
+   0.551,
+   0.237,
+   0.163
+  ],
+  "bytes": 76240
+ },
+ "bookshelf": {
+  "id": "bookshelf",
+  "name": "Wooden Bookshelf Worn",
+  "src": "polyhaven:wooden_bookshelf_worn",
+  "title": "Wooden Bookshelf Worn",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_bookshelf_worn",
+  "site": "Poly Haven",
+  "tris": 2845,
+  "tex": 1024,
+  "size": [
+   1.375,
+   2.063,
+   0.582
+  ],
+  "bytes": 127884
+ },
+ "boombox": {
+  "id": "boombox",
+  "name": "Boombox",
+  "src": "polyhaven:boombox",
+  "title": "Boombox",
+  "author": "Thomas Paul Mouilleron",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/boombox",
+  "site": "Poly Haven",
+  "tris": 2997,
+  "tex": 448,
+  "size": [
+   0.728,
+   0.47,
+   0.187
+  ],
+  "bytes": 68420
+ },
+ "box_cardboard": {
+  "id": "box_cardboard",
+  "name": "Cardboard Box 01",
+  "src": "polyhaven:cardboard_box_01",
+  "title": "Cardboard Box 01",
+  "author": "Rahul Chaudhary",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/cardboard_box_01",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 256,
+  "size": [
+   0.394,
+   0.342,
+   0.522
+  ],
+  "bytes": 40848
+ },
+ "broom": {
+  "id": "broom",
+  "name": "Wooden Broom",
+  "src": "polyhaven:wooden_broom",
+  "title": "Wooden Broom",
+  "author": "Balen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_broom",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   0.49,
+   1.454,
+   0.103
+  ],
+  "bytes": 73928
+ },
+ "bucket_wood": {
+  "id": "bucket_wood",
+  "name": "Wooden Bucket 01",
+  "src": "polyhaven:wooden_bucket_01",
+  "title": "Wooden Bucket 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_bucket_01",
+  "site": "Poly Haven",
+  "tris": 2984,
+  "tex": 304,
+  "size": [
+   0.367,
+   0.55,
+   0.342
+  ],
+  "bytes": 75340
+ },
+ "bust_marble": {
+  "id": "bust_marble",
+  "name": "Marble Bust 01",
+  "src": "polyhaven:marble_bust_01",
+  "title": "Marble Bust 01",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/marble_bust_01",
+  "site": "Poly Haven",
+  "tris": 3999,
+  "tex": 256,
+  "size": [
+   0.272,
+   0.515,
+   0.3
+  ],
+  "bytes": 70540
+ },
+ "cabinet_cn": {
+  "id": "cabinet_cn",
+  "name": "Chinese Cabinet",
+  "src": "polyhaven:chinese_cabinet",
+  "title": "Chinese Cabinet",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chinese_cabinet",
+  "site": "Poly Haven",
+  "tris": 2857,
+  "tex": 1024,
+  "size": [
+   1.262,
+   2.872,
+   0.545
+  ],
+  "bytes": 154968
+ },
+ "cabinet_drawer": {
+  "id": "cabinet_drawer",
+  "name": "Drawer Cabinet",
+  "src": "polyhaven:drawer_cabinet",
+  "title": "Drawer Cabinet",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/drawer_cabinet",
+  "site": "Poly Haven",
+  "tris": 2964,
+  "tex": 1024,
+  "size": [
+   1.141,
+   1.881,
+   0.488
+  ],
+  "bytes": 140552
+ },
+ "cabinet_vintage": {
+  "id": "cabinet_vintage",
+  "name": "Vintage Cabinet 01",
+  "src": "polyhaven:vintage_cabinet_01",
+  "title": "Vintage Cabinet 01",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_cabinet_01",
+  "site": "Poly Haven",
+  "tris": 2806,
+  "tex": 1344,
+  "size": [
+   2.027,
+   2.235,
+   0.67
+  ],
+  "bytes": 244484
+ },
  "cash_register": {
   "id": "cash_register",
   "name": "Cash Register 01",
@@ -16,6 +343,1264 @@
    0.624
   ],
   "bytes": 95300
+ },
+ "cassette_player": {
+  "id": "cassette_player",
+  "name": "Cassette Player",
+  "src": "polyhaven:cassette_player",
+  "title": "Cassette Player",
+  "author": "Oday Abuzaeed",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/cassette_player",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 176,
+  "size": [
+   0.129,
+   0.237,
+   0.049
+  ],
+  "bytes": 50144
+ },
+ "cat_statue": {
+  "id": "cat_statue",
+  "name": "Concrete Cat Statue",
+  "src": "polyhaven:concrete_cat_statue",
+  "title": "Concrete Cat Statue",
+  "author": "Rico Cilliers, Riley Queen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/concrete_cat_statue",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 208,
+  "size": [
+   0.153,
+   0.283,
+   0.25
+  ],
+  "bytes": 48428
+ },
+ "chabudai": {
+  "id": "chabudai",
+  "name": "Chabudai Table",
+  "src": "sketchfab:176eb5a05ea948bb82cb951cb817ab8d",
+  "title": "Chabudai Table",
+  "author": "Akio",
+  "authorUrl": "https://sketchfab.com/akio_illu",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/chabudai-table-176eb5a05ea948bb82cb951cb817ab8d",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   1.064,
+   0.32,
+   0.481
+  ],
+  "bytes": 77176
+ },
+ "chair_barber": {
+  "id": "chair_barber",
+  "name": "Barber Shop Chair 01",
+  "src": "polyhaven:BarberShopChair_01",
+  "title": "Barber Shop Chair 01",
+  "author": "Fernando Quinn",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/BarberShopChair_01",
+  "site": "Poly Haven",
+  "tris": 2992,
+  "tex": 608,
+  "size": [
+   0.763,
+   1.489,
+   1.328
+  ],
+  "bytes": 109252
+ },
+ "chair_folding": {
+  "id": "chair_folding",
+  "name": "Metal Folding Chair",
+  "src": "sketchfab:7a99fce4bdbd40e1b2949cdeb39a8fba",
+  "title": "Metal Folding Chair",
+  "author": "Chen CheHsuan",
+  "authorUrl": "https://sketchfab.com/jn930194",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/metal-folding-chair-7a99fce4bdbd40e1b2949cdeb39a8fba",
+  "site": "Sketchfab",
+  "tris": 2172,
+  "tex": 512,
+  "size": [
+   0.521,
+   0.82,
+   0.433
+  ],
+  "bytes": 53972
+ },
+ "chair_green": {
+  "id": "chair_green",
+  "name": "Green Chair 01",
+  "src": "polyhaven:GreenChair_01",
+  "title": "Green Chair 01",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/GreenChair_01",
+  "site": "Poly Haven",
+  "tris": 2998,
+  "tex": 512,
+  "size": [
+   0.674,
+   1.059,
+   0.666
+  ],
+  "bytes": 83524
+ },
+ "chair_lounge": {
+  "id": "chair_lounge",
+  "name": "Mid Century Lounge Chair",
+  "src": "polyhaven:mid_century_lounge_chair",
+  "title": "Mid Century Lounge Chair",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/mid_century_lounge_chair",
+  "site": "Poly Haven",
+  "tris": 2995,
+  "tex": 864,
+  "size": [
+   1.012,
+   1.169,
+   1.178
+  ],
+  "bytes": 109692
+ },
+ "chair_painted": {
+  "id": "chair_painted",
+  "name": "Painted Wooden Chair 01",
+  "src": "polyhaven:painted_wooden_chair_01",
+  "title": "Painted Wooden Chair 01",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/painted_wooden_chair_01",
+  "site": "Poly Haven",
+  "tris": 724,
+  "tex": 384,
+  "size": [
+   0.432,
+   0.956,
+   0.54
+  ],
+  "bytes": 27012
+ },
+ "chair_rocking": {
+  "id": "chair_rocking",
+  "name": "Rockingchair 01",
+  "src": "polyhaven:Rockingchair_01",
+  "title": "Rockingchair 01",
+  "author": "Jorge Camacho",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Rockingchair_01",
+  "site": "Poly Haven",
+  "tris": 2985,
+  "tex": 512,
+  "size": [
+   0.706,
+   0.995,
+   0.834
+  ],
+  "bytes": 85696
+ },
+ "chair_school": {
+  "id": "chair_school",
+  "name": "School Chair 01",
+  "src": "polyhaven:SchoolChair_01",
+  "title": "School Chair 01",
+  "author": "Ethan Place",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/SchoolChair_01",
+  "site": "Poly Haven",
+  "tris": 2995,
+  "tex": 512,
+  "size": [
+   0.568,
+   1.006,
+   0.679
+  ],
+  "bytes": 71608
+ },
+ "chair_wood": {
+  "id": "chair_wood",
+  "name": "Wooden Chair 01",
+  "src": "polyhaven:WoodenChair_01",
+  "title": "Wooden Chair 01",
+  "author": "Jake Mobley",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/WoodenChair_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 672,
+  "size": [
+   0.684,
+   2.274,
+   0.66
+  ],
+  "bytes": 121160
+ },
+ "chalkboard": {
+  "id": "chalkboard",
+  "name": "Standing Chalkboard 01",
+  "src": "polyhaven:standing_chalkboard_01",
+  "title": "Standing Chalkboard 01",
+  "author": "ParzivalCG",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/standing_chalkboard_01",
+  "site": "Poly Haven",
+  "tris": 1988,
+  "tex": 928,
+  "size": [
+   0.92,
+   1.509,
+   0.759
+  ],
+  "bytes": 74128
+ },
+ "chess": {
+  "id": "chess",
+  "name": "Chess Set",
+  "src": "polyhaven:chess_set",
+  "title": "Chess Set",
+  "author": "Riley Queen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chess_set",
+  "site": "Poly Haven",
+  "tris": 4000,
+  "tex": 512,
+  "size": [
+   0.571,
+   0.112,
+   0.571
+  ],
+  "bytes": 128248
+ },
+ "chochin": {
+  "id": "chochin",
+  "name": "Japanese Lamp / Chōchin",
+  "src": "sketchfab:6fd5dcdb4702409a8be04e5f0fb2c316",
+  "title": "Japanese Lamp / Chōchin",
+  "author": "i bull your wife",
+  "authorUrl": "https://sketchfab.com/ugly_kid",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316",
+  "site": "Sketchfab",
+  "tris": 1718,
+  "tex": 304,
+  "size": [
+   0.258,
+   0.55,
+   0.253
+  ],
+  "bytes": 44808
+ },
+ "chochin2": {
+  "id": "chochin2",
+  "name": "Japanese paper lantern",
+  "src": "sketchfab:4450069fee444ae0920aa5babd5d9239",
+  "title": "Japanese paper lantern",
+  "author": "Abel Gamero",
+  "authorUrl": "https://sketchfab.com/abelGB",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-paper-lantern-4450069fee444ae0920aa5babd5d9239",
+  "site": "Sketchfab",
+  "tris": 1312,
+  "tex": 240,
+  "size": [
+   0.298,
+   0.45,
+   0.298
+  ],
+  "bytes": 22188
+ },
+ "clock_alarm": {
+  "id": "clock_alarm",
+  "name": "Alarm Clock 01",
+  "src": "polyhaven:alarm_clock_01",
+  "title": "Alarm Clock 01",
+  "author": "Yann Kervran, James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/alarm_clock_01",
+  "site": "Poly Haven",
+  "tris": 2998,
+  "tex": 192,
+  "size": [
+   0.131,
+   0.174,
+   0.066
+  ],
+  "bytes": 56792
+ },
+ "clock_grandfather": {
+  "id": "clock_grandfather",
+  "name": "Vintage Grandfather Clock 01",
+  "src": "polyhaven:vintage_grandfather_clock_01",
+  "title": "Vintage Grandfather Clock 01",
+  "author": "Yann Kervran, James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_grandfather_clock_01",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   0.624,
+   2.191,
+   0.427
+  ],
+  "bytes": 88752
+ },
+ "clock_mantel": {
+  "id": "clock_mantel",
+  "name": "Mantel Clock 01",
+  "src": "polyhaven:mantel_clock_01",
+  "title": "Mantel Clock 01",
+  "author": "Yann Kervran, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/mantel_clock_01",
+  "site": "Poly Haven",
+  "tris": 2963,
+  "tex": 256,
+  "size": [
+   0.347,
+   0.161,
+   0.128
+  ],
+  "bytes": 46792
+ },
+ "clock_wall": {
+  "id": "clock_wall",
+  "name": "Wall Clock",
+  "src": "polyhaven:wall_clock",
+  "title": "Wall Clock",
+  "author": "PierreB3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wall_clock",
+  "site": "Poly Haven",
+  "tris": 2996,
+  "tex": 256,
+  "size": [
+   0.32,
+   0.32,
+   0.047
+  ],
+  "bytes": 42196
+ },
+ "cone": {
+  "id": "cone",
+  "name": "Worn Traffic Cone",
+  "src": "sketchfab:1cbffb4169684e5a84ba186882bd55d7",
+  "title": "Worn Traffic Cone",
+  "author": "Kuutti Siitonen",
+  "authorUrl": "https://sketchfab.com/kuuttisiitonen",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/worn-traffic-cone-1cbffb4169684e5a84ba186882bd55d7",
+  "site": "Sketchfab",
+  "tris": 1136,
+  "tex": 256,
+  "size": [
+   0.384,
+   0.7,
+   0.384
+  ],
+  "bytes": 29692
+ },
+ "crate_plastic": {
+  "id": "crate_plastic",
+  "name": "Plastic Crate 01",
+  "src": "polyhaven:plastic_crate_01",
+  "title": "Plastic Crate 01",
+  "author": "PierreB3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_crate_01",
+  "site": "Poly Haven",
+  "tris": 2975,
+  "tex": 320,
+  "size": [
+   0.298,
+   0.264,
+   0.408
+  ],
+  "bytes": 83988
+ },
+ "crate_plastic2": {
+  "id": "crate_plastic2",
+  "name": "Plastic Crate 02",
+  "src": "polyhaven:plastic_crate_02",
+  "title": "Plastic Crate 02",
+  "author": "Fabi_G",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_crate_02",
+  "site": "Poly Haven",
+  "tris": 2930,
+  "tex": 384,
+  "size": [
+   0.506,
+   0.254,
+   0.406
+  ],
+  "bytes": 60388
+ },
+ "crate_wood": {
+  "id": "crate_wood",
+  "name": "Wooden Crate 01",
+  "src": "polyhaven:wooden_crate_01",
+  "title": "Wooden Crate 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_crate_01",
+  "site": "Poly Haven",
+  "tris": 2997,
+  "tex": 512,
+  "size": [
+   0.826,
+   0.35,
+   0.407
+  ],
+  "bytes": 89776
+ },
+ "crate_wood2": {
+  "id": "crate_wood2",
+  "name": "Wooden Crate 02",
+  "src": "polyhaven:wooden_crate_02",
+  "title": "Wooden Crate 02",
+  "author": "James Ray Cock, Jurita Burger",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_crate_02",
+  "site": "Poly Haven",
+  "tris": 2989,
+  "tex": 800,
+  "size": [
+   0.529,
+   0.464,
+   1.167
+  ],
+  "bytes": 123212
+ },
+ "dartboard": {
+  "id": "dartboard",
+  "name": "Dartboard",
+  "src": "polyhaven:dartboard",
+  "title": "Dartboard",
+  "author": "Satyaki Mandal",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/dartboard",
+  "site": "Poly Haven",
+  "tris": 2884,
+  "tex": 336,
+  "size": [
+   0.451,
+   0.451,
+   0.04
+  ],
+  "bytes": 59844
+ },
+ "daruma": {
+  "id": "daruma",
+  "name": "Daruma Doll",
+  "src": "sketchfab:c812095d86b64d11b36f088131b1d2d7",
+  "title": "Daruma Doll",
+  "author": "KillTheSaint",
+  "authorUrl": "https://sketchfab.com/KillTheSaint",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/daruma-doll-c812095d86b64d11b36f088131b1d2d7",
+  "site": "Sketchfab",
+  "tris": 1499,
+  "tex": 80,
+  "size": [
+   0.155,
+   0.18,
+   0.159
+  ],
+  "bytes": 33992
+ },
+ "daybed": {
+  "id": "daybed",
+  "name": "Vintage Day Bed",
+  "src": "polyhaven:vintage_day_bed",
+  "title": "Vintage Day Bed",
+  "author": "Aron Łyczek",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_day_bed",
+  "site": "Poly Haven",
+  "tris": 2715,
+  "tex": 992,
+  "size": [
+   1.973,
+   1.127,
+   0.855
+  ],
+  "bytes": 98960
+ },
+ "desk_lamp": {
+  "id": "desk_lamp",
+  "name": "Desk Lamp Arm 01",
+  "src": "polyhaven:desk_lamp_arm_01",
+  "title": "Desk Lamp Arm 01",
+  "author": "Yann Kervran, Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/desk_lamp_arm_01",
+  "site": "Poly Haven",
+  "tris": 2995,
+  "tex": 416,
+  "size": [
+   0.199,
+   0.879,
+   0.605
+  ],
+  "bytes": 83376
+ },
+ "desk_office": {
+  "id": "desk_office",
+  "name": "Metal Office Desk",
+  "src": "polyhaven:metal_office_desk",
+  "title": "Metal Office Desk",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_office_desk",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 1024,
+  "size": [
+   2,
+   0.787,
+   0.947
+  ],
+  "bytes": 99616
+ },
+ "desk_school": {
+  "id": "desk_school",
+  "name": "School Desk 01",
+  "src": "polyhaven:SchoolDesk_01",
+  "title": "School Desk 01",
+  "author": "Ethan Place",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/SchoolDesk_01",
+  "site": "Poly Haven",
+  "tris": 2969,
+  "tex": 512,
+  "size": [
+   0.712,
+   0.883,
+   0.546
+  ],
+  "bytes": 73516
+ },
+ "dustpan": {
+  "id": "dustpan",
+  "name": "Dustpan",
+  "src": "polyhaven:dustpan",
+  "title": "Dustpan",
+  "author": "Balen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/dustpan",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 208,
+  "size": [
+   0.332,
+   0.1,
+   0.368
+  ],
+  "bytes": 50136
+ },
+ "elephant": {
+  "id": "elephant",
+  "name": "Carved Wooden Elephant",
+  "src": "polyhaven:carved_wooden_elephant",
+  "title": "Carved Wooden Elephant",
+  "author": "Greg Zaal",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/carved_wooden_elephant",
+  "site": "Poly Haven",
+  "tris": 2752,
+  "tex": 128,
+  "size": [
+   0.109,
+   0.096,
+   0.058
+  ],
+  "bytes": 46552
+ },
+ "extinguisher": {
+  "id": "extinguisher",
+  "name": "Korean Fire Extinguisher 01",
+  "src": "polyhaven:korean_fire_extinguisher_01",
+  "title": "Korean Fire Extinguisher 01",
+  "author": "UM JOORIN",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/korean_fire_extinguisher_01",
+  "site": "Poly Haven",
+  "tris": 2992,
+  "tex": 288,
+  "size": [
+   0.28,
+   0.659,
+   0.368
+  ],
+  "bytes": 64224
+ },
+ "extinguisher_jp": {
+  "id": "extinguisher_jp",
+  "name": "Fire Extinguisher",
+  "src": "sketchfab:68068b0dcc9c45388f958aef24e26c92",
+  "title": "Fire Extinguisher",
+  "author": "crow",
+  "authorUrl": "https://sketchfab.com/crow.bite",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fire-extinguisher-68068b0dcc9c45388f958aef24e26c92",
+  "site": "Sketchfab",
+  "tris": 2951,
+  "tex": 256,
+  "size": [
+   0.159,
+   0.5,
+   0.28
+  ],
+  "bytes": 59528
+ },
+ "fan_floor": {
+  "id": "fan_floor",
+  "name": "Electric Fan",
+  "src": "sketchfab:feabb8d50d304af082461b9289289c92",
+  "title": "Electric Fan",
+  "author": "Js_TuruokaJunpei",
+  "authorUrl": "https://sketchfab.com/Js_TuruokaJunpei",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/electric-fan-feabb8d50d304af082461b9289289c92",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 448,
+  "size": [
+   0.621,
+   0.85,
+   0.475
+  ],
+  "bytes": 83368
+ },
+ "fire_alarm": {
+  "id": "fire_alarm",
+  "name": "Fire Alarm",
+  "src": "polyhaven:fire_alarm",
+  "title": "Fire Alarm",
+  "author": "Slinc",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/fire_alarm",
+  "site": "Poly Haven",
+  "tris": 2705,
+  "tex": 128,
+  "size": [
+   0.099,
+   0.144,
+   0.026
+  ],
+  "bytes": 42684
+ },
+ "fuji_diorama": {
+  "id": "fuji_diorama",
+  "name": "Mount Fuji Volcano - Japan",
+  "src": "sketchfab:bb83a647e5a8481d85a4bb33119d40a5",
+  "title": "Mount Fuji Volcano - Japan",
+  "author": "Nate Loper  🗺️ ⛏🏺",
+  "authorUrl": "https://sketchfab.com/arizonaguide",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/mount-fuji-volcano-japan-bb83a647e5a8481d85a4bb33119d40a5",
+  "site": "Sketchfab",
+  "tris": 2930,
+  "tex": 304,
+  "size": [
+   4.072,
+   0.92,
+   3.473
+  ],
+  "bytes": 112804
+ },
+ "gas_cylinder": {
+  "id": "gas_cylinder",
+  "name": "Metal Gas Cylinder",
+  "src": "sketchfab:8faeab51bf604cd092e827dc1eb88ff4",
+  "title": "Metal Gas Cylinder",
+  "author": "TheoClarke",
+  "authorUrl": "https://sketchfab.com/TheoClarke",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/metal-gas-cylinder-8faeab51bf604cd092e827dc1eb88ff4",
+  "site": "Sketchfab",
+  "tris": 1312,
+  "tex": 512,
+  "size": [
+   0.334,
+   1.25,
+   1.601
+  ],
+  "bytes": 52400
+ },
+ "grass_tuft": {
+  "id": "grass_tuft",
+  "name": "Grass Medium 01",
+  "src": "polyhaven:grass_medium_01",
+  "title": "Grass Medium 01",
+  "author": "Rob Tuytel, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/grass_medium_01",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 288,
+  "size": [
+   5.712,
+   0.35,
+   0.293
+  ],
+  "bytes": 118756
+ },
+ "hand_truck": {
+  "id": "hand_truck",
+  "name": "Hand Truck",
+  "src": "polyhaven:hand_truck",
+  "title": "Hand Truck",
+  "author": "Mutanzom3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/hand_truck",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 400,
+  "size": [
+   0.591,
+   1.403,
+   0.692
+  ],
+  "bytes": 68020
+ },
+ "helmet": {
+  "id": "helmet",
+  "name": "Construction Helmet (Orange)",
+  "src": "sketchfab:2f9546f0aa9e4dbdade316e1b9d59f04",
+  "title": "Construction Helmet (Orange)",
+  "author": "SuperMopsek",
+  "authorUrl": "https://sketchfab.com/pajamakeke",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/construction-helmet-orange-2f9546f0aa9e4dbdade316e1b9d59f04",
+  "site": "Sketchfab",
+  "tris": 2997,
+  "tex": 256,
+  "size": [
+   0.241,
+   0.152,
+   0.314
+  ],
+  "bytes": 59616
+ },
+ "jerrycan_metal": {
+  "id": "jerrycan_metal",
+  "name": "Metal Jerrycan",
+  "src": "polyhaven:metal_jerrycan",
+  "title": "Metal Jerrycan",
+  "author": "Sean Buckley",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_jerrycan",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 256,
+  "size": [
+   0.35,
+   0.455,
+   0.172
+  ],
+  "bytes": 64308
+ },
+ "jerrycan_plastic": {
+  "id": "jerrycan_plastic",
+  "name": "Plastic Jerrycan",
+  "src": "polyhaven:plastic_jerrycan",
+  "title": "Plastic Jerrycan",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_jerrycan",
+  "site": "Poly Haven",
+  "tris": 2976,
+  "tex": 256,
+  "size": [
+   0.269,
+   0.318,
+   0.342
+  ],
+  "bytes": 53748
+ },
+ "kei_truck": {
+  "id": "kei_truck",
+  "name": "Kei Truck",
+  "src": "sketchfab:13dc5e2aad2e4d00af57e8d99d7095e9",
+  "title": "Kei Truck",
+  "author": "grs",
+  "authorUrl": "https://sketchfab.com/sgrosjean",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kei-truck-13dc5e2aad2e4d00af57e8d99d7095e9",
+  "site": "Sketchfab",
+  "tris": 5965,
+  "tex": 1024,
+  "size": [
+   2.212,
+   1.8,
+   3.351
+  ],
+  "bytes": 148656
+ },
+ "kettle": {
+  "id": "kettle",
+  "name": "Old Tea Kettle",
+  "src": "sketchfab:0eb111108b4f40d9881a29d7a073c6b4",
+  "title": "Old Tea Kettle",
+  "author": "mickeymoose1204",
+  "authorUrl": "https://sketchfab.com/mickeymoose1204",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 256,
+  "size": [
+   0.273,
+   0.22,
+   0.195
+  ],
+  "bytes": 52184
+ },
+ "kettle_electric": {
+  "id": "kettle_electric",
+  "name": "Vintage Electric Kettle",
+  "src": "polyhaven:vintage_electric_kettle",
+  "title": "Vintage Electric Kettle",
+  "author": "SV Garip",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_electric_kettle",
+  "site": "Poly Haven",
+  "tris": 2991,
+  "tex": 256,
+  "size": [
+   0.322,
+   0.305,
+   0.249
+  ],
+  "bytes": 62556
+ },
+ "kotatsu": {
+  "id": "kotatsu",
+  "name": "Kotatsu",
+  "src": "sketchfab:1e976c78d1eb4d2faa590316b0d38e24",
+  "title": "Kotatsu",
+  "author": "Arya",
+  "authorUrl": "https://sketchfab.com/Ana.Maria.Farbotko",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kotatsu-1e976c78d1eb4d2faa590316b0d38e24",
+  "site": "Sketchfab",
+  "tris": 3999,
+  "tex": 1024,
+  "size": [
+   2.414,
+   0.45,
+   2.399
+  ],
+  "bytes": 308672
+ },
+ "ladder": {
+  "id": "ladder",
+  "name": "Wooden Ladder",
+  "src": "polyhaven:wooden_ladder",
+  "title": "Wooden Ladder",
+  "author": "Miroslav Turura",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_ladder",
+  "site": "Poly Haven",
+  "tris": 2986,
+  "tex": 512,
+  "size": [
+   0.959,
+   1.335,
+   0.5
+  ],
+  "bytes": 78496
+ },
+ "lamp_caged": {
+  "id": "lamp_caged",
+  "name": "Caged Hanging Light",
+  "src": "polyhaven:caged_hanging_light",
+  "title": "Caged Hanging Light",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/caged_hanging_light",
+  "site": "Poly Haven",
+  "tris": 2993,
+  "tex": 512,
+  "size": [
+   1.163,
+   0.75,
+   0.309
+  ],
+  "bytes": 87560
+ },
+ "lamp_fluoro": {
+  "id": "lamp_fluoro",
+  "name": "Mounted Fluorescent Lights",
+  "src": "polyhaven:mounted_fluorescent_lights",
+  "title": "Mounted Fluorescent Lights",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/mounted_fluorescent_lights",
+  "site": "Poly Haven",
+  "tris": 2885,
+  "tex": 512,
+  "size": [
+   0.914,
+   0.035,
+   0.647
+  ],
+  "bytes": 60044
+ },
+ "lamp_hanging": {
+  "id": "lamp_hanging",
+  "name": "Hanging Industrial Lamp",
+  "src": "polyhaven:hanging_industrial_lamp",
+  "title": "Hanging Industrial Lamp",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/hanging_industrial_lamp",
+  "site": "Poly Haven",
+  "tris": 2994,
+  "tex": 512,
+  "size": [
+   0.546,
+   1.355,
+   0.546
+  ],
+  "bytes": 83188
+ },
+ "lamp_oil": {
+  "id": "lamp_oil",
+  "name": "Vintage Oil Lamp",
+  "src": "polyhaven:vintage_oil_lamp",
+  "title": "Vintage Oil Lamp",
+  "author": "Monsta3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_oil_lamp",
+  "site": "Poly Haven",
+  "tris": 2994,
+  "tex": 256,
+  "size": [
+   0.22,
+   0.802,
+   0.219
+  ],
+  "bytes": 55576
+ },
+ "lamp_pipe": {
+  "id": "lamp_pipe",
+  "name": "Industrial Pipe Lamp",
+  "src": "polyhaven:industrial_pipe_lamp",
+  "title": "Industrial Pipe Lamp",
+  "author": "Mateusz Sadek",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/industrial_pipe_lamp",
+  "site": "Poly Haven",
+  "tris": 2987,
+  "tex": 224,
+  "size": [
+   0.182,
+   0.364,
+   0.262
+  ],
+  "bytes": 60176
+ },
+ "lantern": {
+  "id": "lantern",
+  "name": "Lantern 01",
+  "src": "polyhaven:Lantern_01",
+  "title": "Lantern 01",
+  "author": "Rajil Jose Macatangay",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Lantern_01",
+  "site": "Poly Haven",
+  "tris": 2998,
+  "tex": 192,
+  "size": [
+   0.123,
+   0.294,
+   0.097
+  ],
+  "bytes": 63240
+ },
+ "lantern_wood": {
+  "id": "lantern_wood",
+  "name": "Wooden Lantern 01",
+  "src": "polyhaven:wooden_lantern_01",
+  "title": "Wooden Lantern 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_lantern_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 352,
+  "size": [
+   0.222,
+   0.53,
+   0.235
+  ],
+  "bytes": 78504
+ },
+ "lpg_small": {
+  "id": "lpg_small",
+  "name": "Small Lpg Tank",
+  "src": "polyhaven:small_lpg_tank",
+  "title": "Small Lpg Tank",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/small_lpg_tank",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 288,
+  "size": [
+   0.411,
+   0.642,
+   0.411
+  ],
+  "bytes": 62716
+ },
+ "manekineko": {
+  "id": "manekineko",
+  "name": "Maneki neko",
+  "src": "sketchfab:170f632b9b294fdabc660ba91894c10a",
+  "title": "Maneki neko",
+  "author": "Ramujiro",
+  "authorUrl": "https://sketchfab.com/Ramzus",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a",
+  "site": "Sketchfab",
+  "tris": 1500,
+  "tex": 80,
+  "size": [
+   0.139,
+   0.19,
+   0.161
+  ],
+  "bytes": 32404
+ },
+ "manhole": {
+  "id": "manhole",
+  "name": "Water Manhole Cover",
+  "src": "polyhaven:water_manhole_cover",
+  "title": "Water Manhole Cover",
+  "author": "Raunox",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/water_manhole_cover",
+  "site": "Poly Haven",
+  "tris": 1155,
+  "tex": 512,
+  "size": [
+   0.685,
+   0.068,
+   0.685
+  ],
+  "bytes": 46000
+ },
+ "microwave": {
+  "id": "microwave",
+  "name": "Vintage Microwave",
+  "src": "polyhaven:vintage_microwave",
+  "title": "Vintage Microwave",
+  "author": "Adam Nekola",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_microwave",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 800,
+  "size": [
+   1.075,
+   0.526,
+   0.743
+  ],
+  "bytes": 124228
+ },
+ "mirror": {
+  "id": "mirror",
+  "name": "Ornate Mirror 01",
+  "src": "polyhaven:ornate_mirror_01",
+  "title": "Ornate Mirror 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/ornate_mirror_01",
+  "site": "Poly Haven",
+  "tris": 2827,
+  "tex": 432,
+  "size": [
+   0.487,
+   0.744,
+   0.026
+  ],
+  "bytes": 61500
+ },
+ "moon_rock": {
+  "id": "moon_rock",
+  "name": "Moon Rock 01",
+  "src": "polyhaven:moon_rock_01",
+  "title": "Moon Rock 01",
+  "author": "Greg Zaal, Rico Cilliers, Jenelle van Heerden, Dario Barresi",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/moon_rock_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   1.901,
+   0.68,
+   1.002
+  ],
+  "bytes": 163448
+ },
+ "nightstand": {
+  "id": "nightstand",
+  "name": "Classic Nightstand 01",
+  "src": "polyhaven:ClassicNightstand_01",
+  "title": "Classic Nightstand 01",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/ClassicNightstand_01",
+  "site": "Poly Haven",
+  "tris": 2002,
+  "tex": 512,
+  "size": [
+   0.568,
+   0.7,
+   0.424
+  ],
+  "bytes": 61660
+ },
+ "ottoman": {
+  "id": "ottoman",
+  "name": "Ottoman 01",
+  "src": "polyhaven:Ottoman_01",
+  "title": "Ottoman 01",
+  "author": "Caspian Fortune",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Ottoman_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   0.885,
+   0.624,
+   0.621
+  ],
+  "bytes": 66256
+ },
+ "phone_rotary": {
+  "id": "phone_rotary",
+  "name": "PBR old rotary phone",
+  "src": "sketchfab:52fb9ffd3bc241979f7192326e52aad8",
+  "title": "PBR old rotary phone",
+  "author": "Marie Jockmans",
+  "authorUrl": "https://sketchfab.com/maariej",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pbr-old-rotary-phone-52fb9ffd3bc241979f7192326e52aad8",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 240,
+  "size": [
+   0.168,
+   0.13,
+   0.095
+  ],
+  "bytes": 82112
+ },
+ "plant_pot1": {
+  "id": "plant_pot1",
+  "name": "Potted Plant 01",
+  "src": "polyhaven:potted_plant_01",
+  "title": "Potted Plant 01",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/potted_plant_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   0.58,
+   1.351,
+   0.606
+  ],
+  "bytes": 130932
+ },
+ "plant_pot2": {
+  "id": "plant_pot2",
+  "name": "Potted Plant 02",
+  "src": "polyhaven:potted_plant_02",
+  "title": "Potted Plant 02",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/potted_plant_02",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   0.7,
+   0.841,
+   0.659
+  ],
+  "bytes": 124112
+ },
+ "plant_pot4": {
+  "id": "plant_pot4",
+  "name": "Potted Plant 04",
+  "src": "polyhaven:potted_plant_04",
+  "title": "Potted Plant 04",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/potted_plant_04",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 240,
+  "size": [
+   0.164,
+   0.268,
+   0.181
+  ],
+  "bytes": 76612
+ },
+ "planter_box": {
+  "id": "planter_box",
+  "name": "Planter Box 01",
+  "src": "polyhaven:planter_box_01",
+  "title": "Planter Box 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/planter_box_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 544,
+  "size": [
+   0.907,
+   0.425,
+   0.409
+  ],
+  "bytes": 93200
+ },
+ "planter_clay": {
+  "id": "planter_clay",
+  "name": "Planter Pot Clay",
+  "src": "polyhaven:planter_pot_clay",
+  "title": "Planter Pot Clay",
+  "author": "Amal Kumar",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/planter_pot_clay",
+  "site": "Poly Haven",
+  "tris": 2998,
+  "tex": 160,
+  "size": [
+   0.266,
+   0.222,
+   0.263
+  ],
+  "bytes": 43004
  },
  "post_box": {
   "id": "post_box",
@@ -35,5 +1620,788 @@
    0.548
   ],
   "bytes": 45772
+ },
+ "power_box": {
+  "id": "power_box",
+  "name": "Power Box 01",
+  "src": "polyhaven:power_box_01",
+  "title": "Power Box 01",
+  "author": "Rico Cilliers, Yann Kervran",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/power_box_01",
+  "site": "Poly Haven",
+  "tris": 2990,
+  "tex": 480,
+  "size": [
+   0.459,
+   0.503,
+   0.399
+  ],
+  "bytes": 74168
+ },
+ "rack_worn": {
+  "id": "rack_worn",
+  "name": "Worn Metal Rack",
+  "src": "polyhaven:worn_metal_rack",
+  "title": "Worn Metal Rack",
+  "author": "Luca B",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/worn_metal_rack",
+  "site": "Poly Haven",
+  "tris": 2956,
+  "tex": 512,
+  "size": [
+   0.915,
+   1.9,
+   0.598
+  ],
+  "bytes": 61856
+ },
+ "rice_cooker": {
+  "id": "rice_cooker",
+  "name": "Rice Cooker",
+  "src": "sketchfab:6c1e19fbe4134b9dabbec8f2355a504f",
+  "title": "Rice Cooker",
+  "author": "dartuchiwa",
+  "authorUrl": "https://sketchfab.com/dartuchiwa",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/rice-cooker-6c1e19fbe4134b9dabbec8f2355a504f",
+  "site": "Sketchfab",
+  "tris": 2981,
+  "tex": 256,
+  "size": [
+   0.186,
+   0.26,
+   0.158
+  ],
+  "bytes": 49980
+ },
+ "rock_moss": {
+  "id": "rock_moss",
+  "name": "Rock Moss Set 01",
+  "src": "polyhaven:rock_moss_set_01",
+  "title": "Rock Moss Set 01",
+  "author": "Kless Gyzen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/rock_moss_set_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   1.635,
+   0.36,
+   1.419
+  ],
+  "bytes": 99368
+ },
+ "rock_zen": {
+  "id": "rock_zen",
+  "name": "Stone 01",
+  "src": "polyhaven:stone_01",
+  "title": "Stone 01",
+  "author": "Dario Barresi, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/stone_01",
+  "site": "Poly Haven",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   1.968,
+   0.96,
+   1.201
+  ],
+  "bytes": 147928
+ },
+ "scooter": {
+  "id": "scooter",
+  "name": "Japanese Vintage Scooter",
+  "src": "sketchfab:f307b287177a40a2ba33e1a76ecee7df",
+  "title": "Japanese Vintage Scooter",
+  "author": "ISAACLAB",
+  "authorUrl": "https://sketchfab.com/stevelamuerte",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-vintage-scooter-f307b287177a40a2ba33e1a76ecee7df",
+  "site": "Sketchfab",
+  "tris": 4999,
+  "tex": 512,
+  "size": [
+   0.635,
+   1.05,
+   1.541
+  ],
+  "bytes": 131448
+ },
+ "screen_folding": {
+  "id": "screen_folding",
+  "name": "Chinese Screen Panels",
+  "src": "polyhaven:chinese_screen_panels",
+  "title": "Chinese Screen Panels",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chinese_screen_panels",
+  "site": "Poly Haven",
+  "tris": 784,
+  "tex": 512,
+  "size": [
+   1.294,
+   1.603,
+   0.377
+  ],
+  "bytes": 45700
+ },
+ "shelf_display": {
+  "id": "shelf_display",
+  "name": "Wooden Display Shelves 01",
+  "src": "polyhaven:wooden_display_shelves_01",
+  "title": "Wooden Display Shelves 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_display_shelves_01",
+  "site": "Poly Haven",
+  "tris": 2924,
+  "tex": 704,
+  "size": [
+   0.371,
+   1.556,
+   1.078
+  ],
+  "bytes": 97184
+ },
+ "shelf_painted": {
+  "id": "shelf_painted",
+  "name": "Painted Wooden Shelves",
+  "src": "polyhaven:painted_wooden_shelves",
+  "title": "Painted Wooden Shelves",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/painted_wooden_shelves",
+  "site": "Poly Haven",
+  "tris": 524,
+  "tex": 352,
+  "size": [
+   0.511,
+   1.125,
+   0.367
+  ],
+  "bytes": 22668
+ },
+ "shelf_steel": {
+  "id": "shelf_steel",
+  "name": "Steel Frame Shelves 01",
+  "src": "polyhaven:steel_frame_shelves_01",
+  "title": "Steel Frame Shelves 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/steel_frame_shelves_01",
+  "site": "Poly Haven",
+  "tris": 2957,
+  "tex": 736,
+  "size": [
+   1.097,
+   2.141,
+   0.502
+  ],
+  "bytes": 82040
+ },
+ "shelf_steel2": {
+  "id": "shelf_steel2",
+  "name": "Steel Frame Shelves 02",
+  "src": "polyhaven:steel_frame_shelves_02",
+  "title": "Steel Frame Shelves 02",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/steel_frame_shelves_02",
+  "site": "Poly Haven",
+  "tris": 2960,
+  "tex": 512,
+  "size": [
+   0.593,
+   2.142,
+   0.502
+  ],
+  "bytes": 68196
+ },
+ "shell_giant": {
+  "id": "shell_giant",
+  "name": "Lambis Shell",
+  "src": "polyhaven:lambis_shell",
+  "title": "Lambis Shell",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/lambis_shell",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   1.438,
+   0.48,
+   0.77
+  ],
+  "bytes": 103488
+ },
+ "shishi_odoshi": {
+  "id": "shishi_odoshi",
+  "name": "Shishi Odoshi",
+  "src": "sketchfab:dd236c21ee9b4fefac684c93f4aa803e",
+  "title": "Shishi Odoshi",
+  "author": "LucasT11",
+  "authorUrl": "https://sketchfab.com/LucasT11",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/shishi-odoshi-dd236c21ee9b4fefac684c93f4aa803e",
+  "site": "Sketchfab",
+  "tris": 1095,
+  "tex": 512,
+  "size": [
+   0.763,
+   0.78,
+   0.183
+  ],
+  "bytes": 33408
+ },
+ "sofa_02": {
+  "id": "sofa_02",
+  "name": "Sofa 02",
+  "src": "polyhaven:sofa_02",
+  "title": "Sofa 02",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/sofa_02",
+  "site": "Poly Haven",
+  "tris": 2728,
+  "tex": 560,
+  "size": [
+   1.807,
+   0.71,
+   0.818
+  ],
+  "bytes": 73704
+ },
+ "sofa_03": {
+  "id": "sofa_03",
+  "name": "Sofa 03",
+  "src": "polyhaven:sofa_03",
+  "title": "Sofa 03",
+  "author": "Fran Calvente",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/sofa_03",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 1024,
+  "size": [
+   2.737,
+   1.118,
+   0.929
+  ],
+  "bytes": 209376
+ },
+ "sofa_wood": {
+  "id": "sofa_wood",
+  "name": "Painted Wooden Sofa",
+  "src": "polyhaven:painted_wooden_sofa",
+  "title": "Painted Wooden Sofa",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/painted_wooden_sofa",
+  "site": "Poly Haven",
+  "tris": 2995,
+  "tex": 1024,
+  "size": [
+   2.451,
+   1.281,
+   0.787
+  ],
+  "bytes": 93284
+ },
+ "stool_wood": {
+  "id": "stool_wood",
+  "name": "Wooden Stool 01",
+  "src": "polyhaven:wooden_stool_01",
+  "title": "Wooden Stool 01",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wooden_stool_01",
+  "site": "Poly Haven",
+  "tris": 2990,
+  "tex": 256,
+  "size": [
+   0.427,
+   0.437,
+   0.443
+  ],
+  "bytes": 63692
+ },
+ "street_lamp": {
+  "id": "street_lamp",
+  "name": "Street Lamp 01",
+  "src": "polyhaven:street_lamp_01",
+  "title": "Street Lamp 01",
+  "author": "Josh Dean",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/street_lamp_01",
+  "site": "Poly Haven",
+  "tris": 2998,
+  "tex": 416,
+  "size": [
+   0.697,
+   3.871,
+   0.386
+  ],
+  "bytes": 65280
+ },
+ "street_lamp_jp": {
+  "id": "street_lamp_jp",
+  "name": "Japanese street lamp",
+  "src": "sketchfab:a6e3624a679a44efa17bbfc9abec35ce",
+  "title": "Japanese street lamp",
+  "author": "SoraMiyazaki",
+  "authorUrl": "https://sketchfab.com/miyazaki1707",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-street-lamp-a6e3624a679a44efa17bbfc9abec35ce",
+  "site": "Sketchfab",
+  "tris": 1304,
+  "tex": 512,
+  "size": [
+   0.813,
+   4.6,
+   0.617
+  ],
+  "bytes": 35548
+ },
+ "table_coffee": {
+  "id": "table_coffee",
+  "name": "Coffee Table Round 01",
+  "src": "polyhaven:coffee_table_round_01",
+  "title": "Coffee Table Round 01",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/coffee_table_round_01",
+  "site": "Poly Haven",
+  "tris": 2780,
+  "tex": 512,
+  "size": [
+   1.304,
+   0.491,
+   1.303
+  ],
+  "bytes": 83820
+ },
+ "table_round": {
+  "id": "table_round",
+  "name": "Round Wooden Table 01",
+  "src": "polyhaven:round_wooden_table_01",
+  "title": "Round Wooden Table 01",
+  "author": "Ulan Cabanilla",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/round_wooden_table_01",
+  "site": "Poly Haven",
+  "tris": 2998,
+  "tex": 512,
+  "size": [
+   1.396,
+   1.005,
+   1.396
+  ],
+  "bytes": 83632
+ },
+ "table_side": {
+  "id": "table_side",
+  "name": "Side Table 01",
+  "src": "polyhaven:side_table_01",
+  "title": "Side Table 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/side_table_01",
+  "site": "Poly Haven",
+  "tris": 2756,
+  "tex": 464,
+  "size": [
+   0.55,
+   0.551,
+   0.45
+  ],
+  "bytes": 54900
+ },
+ "table_tea_cn": {
+  "id": "table_tea_cn",
+  "name": "Chinese Tea Table",
+  "src": "polyhaven:chinese_tea_table",
+  "title": "Chinese Tea Table",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chinese_tea_table",
+  "site": "Poly Haven",
+  "tris": 2508,
+  "tex": 512,
+  "size": [
+   0.841,
+   0.499,
+   0.836
+  ],
+  "bytes": 61012
+ },
+ "table_wood": {
+  "id": "table_wood",
+  "name": "Wooden Table 01",
+  "src": "polyhaven:WoodenTable_01",
+  "title": "Wooden Table 01",
+  "author": "Ethan Place",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/WoodenTable_01",
+  "site": "Poly Haven",
+  "tris": 952,
+  "tex": 512,
+  "size": [
+   1.8,
+   0.549,
+   0.657
+  ],
+  "bytes": 39008
+ },
+ "tansu": {
+  "id": "tansu",
+  "name": "Tansu",
+  "src": "sketchfab:48bbd9962cc04725907c14a1a98fb812",
+  "title": "Tansu",
+  "author": "Museo de Zaragoza",
+  "authorUrl": "https://sketchfab.com/Museo_De_Zaragoza",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 1024,
+  "size": [
+   1.102,
+   1,
+   0.721
+  ],
+  "bytes": 125504
+ },
+ "tea_set": {
+  "id": "tea_set",
+  "name": "Tea Set 01",
+  "src": "polyhaven:tea_set_01",
+  "title": "Tea Set 01",
+  "author": "James Ray Cock, Rico Cilliers, Jurita Burger",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/tea_set_01",
+  "site": "Poly Haven",
+  "tris": 2826,
+  "tex": 320,
+  "size": [
+   0.91,
+   0.165,
+   0.481
+  ],
+  "bytes": 73536
+ },
+ "thermos": {
+  "id": "thermos",
+  "name": "Plastic Thermos",
+  "src": "polyhaven:plastic_thermos",
+  "title": "Plastic Thermos",
+  "author": "PierreB3D",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/plastic_thermos",
+  "site": "Poly Haven",
+  "tris": 2966,
+  "tex": 128,
+  "size": [
+   0.141,
+   0.32,
+   0.109
+  ],
+  "bytes": 38060
+ },
+ "tool_chest": {
+  "id": "tool_chest",
+  "name": "Metal Tool Chest",
+  "src": "polyhaven:metal_tool_chest",
+  "title": "Metal Tool Chest",
+  "author": "Yann Kervran, John Hutcheson",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_tool_chest",
+  "site": "Poly Haven",
+  "tris": 2984,
+  "tex": 512,
+  "size": [
+   0.684,
+   0.652,
+   0.407
+  ],
+  "bytes": 78824
+ },
+ "toolbox": {
+  "id": "toolbox",
+  "name": "Metal Toolbox",
+  "src": "polyhaven:metal_toolbox",
+  "title": "Metal Toolbox",
+  "author": "Mateusz Sadek",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/metal_toolbox",
+  "site": "Poly Haven",
+  "tris": 2995,
+  "tex": 416,
+  "size": [
+   0.456,
+   0.347,
+   0.308
+  ],
+  "bytes": 84160
+ },
+ "trash_bag": {
+  "id": "trash_bag",
+  "name": "Trashbag",
+  "src": "polyhaven:trashbag",
+  "title": "Trashbag",
+  "author": "Benny Weimer",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/trashbag",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 144,
+  "size": [
+   0.444,
+   0.48,
+   0.39
+  ],
+  "bytes": 66160
+ },
+ "trash_jp": {
+  "id": "trash_jp",
+  "name": "Japanese Trash Can",
+  "src": "sketchfab:477e8292037043508fcfcaed32805ca8",
+  "title": "Japanese Trash Can",
+  "author": "ditovirnantio",
+  "authorUrl": "https://sketchfab.com/ditovirnantio",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-trash-can-477e8292037043508fcfcaed32805ca8",
+  "site": "Sketchfab",
+  "tris": 647,
+  "tex": 320,
+  "size": [
+   0.327,
+   0.9,
+   0.395
+  ],
+  "bytes": 20388
+ },
+ "tv_02": {
+  "id": "tv_02",
+  "name": "Television 02",
+  "src": "polyhaven:television_02",
+  "title": "Television 02",
+  "author": "Benny Weimer",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/television_02",
+  "site": "Poly Haven",
+  "tris": 2310,
+  "tex": 256,
+  "size": [
+   0.4,
+   0.411,
+   0.35
+  ],
+  "bytes": 40712
+ },
+ "tv_crt": {
+  "id": "tv_crt",
+  "name": "Retro CRT Television",
+  "src": "sketchfab:29314bf8b66f49f98ad50dffe4950abf",
+  "title": "Retro CRT Television",
+  "author": "crow",
+  "authorUrl": "https://sketchfab.com/crow.bite",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/retro-crt-television-29314bf8b66f49f98ad50dffe4950abf",
+  "site": "Sketchfab",
+  "tris": 2979,
+  "tex": 336,
+  "size": [
+   0.431,
+   0.42,
+   0.578
+  ],
+  "bytes": 42472
+ },
+ "tv_wood": {
+  "id": "tv_wood",
+  "name": "Television 01",
+  "src": "polyhaven:Television_01",
+  "title": "Television 01",
+  "author": "Gabriel Radić",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Television_01",
+  "site": "Poly Haven",
+  "tris": 1918,
+  "tex": 400,
+  "size": [
+   0.6,
+   0.457,
+   0.471
+  ],
+  "bytes": 39452
+ },
+ "tyre": {
+  "id": "tyre",
+  "name": "Old Tyre",
+  "src": "polyhaven:old_tyre",
+  "title": "Old Tyre",
+  "author": "MP",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/old_tyre",
+  "site": "Poly Haven",
+  "tris": 2880,
+  "tex": 384,
+  "size": [
+   0.6,
+   0.6,
+   0.165
+  ],
+  "bytes": 55996
+ },
+ "ufo": {
+  "id": "ufo",
+  "name": "ufo flying saucer",
+  "src": "sketchfab:91713b0bff414b478660c28064e3021a",
+  "title": "ufo flying saucer",
+  "author": "boriscargo",
+  "authorUrl": "https://sketchfab.com/boriscargo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ufo-flying-saucer-91713b0bff414b478660c28064e3021a",
+  "site": "Sketchfab",
+  "tris": 2998,
+  "tex": 512,
+  "size": [
+   5.067,
+   1.5,
+   5.067
+  ],
+  "bytes": 133140
+ },
+ "ukulele": {
+  "id": "ukulele",
+  "name": "Ukulele 01",
+  "src": "polyhaven:Ukulele_01",
+  "title": "Ukulele 01",
+  "author": "Joseph Burgan",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Ukulele_01",
+  "site": "Poly Haven",
+  "tris": 2995,
+  "tex": 256,
+  "size": [
+   0.177,
+   0.527,
+   0.051
+  ],
+  "bytes": 74696
+ },
+ "utility_box": {
+  "id": "utility_box",
+  "name": "Utility Box 01",
+  "src": "polyhaven:utility_box_01",
+  "title": "Utility Box 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/utility_box_01",
+  "site": "Poly Haven",
+  "tris": 2920,
+  "tex": 512,
+  "size": [
+   0.52,
+   1.12,
+   0.432
+  ],
+  "bytes": 70724
+ },
+ "utility_box2": {
+  "id": "utility_box2",
+  "name": "Utility Box 02",
+  "src": "polyhaven:utility_box_02",
+  "title": "Utility Box 02",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/utility_box_02",
+  "site": "Poly Haven",
+  "tris": 2871,
+  "tex": 672,
+  "size": [
+   0.92,
+   1.12,
+   0.431
+  ],
+  "bytes": 74248
+ },
+ "vase_brass": {
+  "id": "vase_brass",
+  "name": "Brass Vase 01",
+  "src": "polyhaven:brass_vase_01",
+  "title": "Brass Vase 01",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/brass_vase_01",
+  "site": "Poly Haven",
+  "tris": 2979,
+  "tex": 256,
+  "size": [
+   0.228,
+   0.692,
+   0.228
+  ],
+  "bytes": 51460
+ },
+ "vase_ceramic": {
+  "id": "vase_ceramic",
+  "name": "Antique Ceramic Vase 01",
+  "src": "polyhaven:antique_ceramic_vase_01",
+  "title": "Antique Ceramic Vase 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/antique_ceramic_vase_01",
+  "site": "Poly Haven",
+  "tris": 2999,
+  "tex": 336,
+  "size": [
+   0.251,
+   0.44,
+   0.251
+  ],
+  "bytes": 76692
+ },
+ "wagasa_parasol": {
+  "id": "wagasa_parasol",
+  "name": "[FREE] 3d Old The Wagasa  Japanese Umbre",
+  "src": "sketchfab:23028b4a1e90409db025867565b51569",
+  "title": "[FREE] 3d Old The Wagasa  Japanese Umbrella V.3",
+  "author": "shadowdarkdemon2",
+  "authorUrl": "https://sketchfab.com/shadowdarkdemon2",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/free-3d-old-the-wagasa-japanese-umbrella-v3-23028b4a1e90409db025867565b51569",
+  "site": "Sketchfab",
+  "tris": 3998,
+  "tex": 340,
+  "size": [
+   1.721,
+   2.135,
+   1.727
+  ],
+  "bytes": 121640
+ },
+ "watering_can": {
+  "id": "watering_can",
+  "name": "Watering Can Metal 01",
+  "src": "polyhaven:watering_can_metal_01",
+  "title": "Watering Can Metal 01",
+  "author": "Charles Nderitu",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/watering_can_metal_01",
+  "site": "Poly Haven",
+  "tris": 2993,
+  "tex": 256,
+  "size": [
+   0.19,
+   0.197,
+   0.453
+  ],
+  "bytes": 53640
  }
 }

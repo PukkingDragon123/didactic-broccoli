@@ -1,0 +1,389 @@
+{
+ "name": "Spinning Top",
+ "description": "Click to spin it on the floor or the table. It wobbles like it means it.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 4.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.55,
+   1.0,
+   0.65
+  ],
+  "strength": 0.85,
+  "gradient": 0.35,
+  "ao": 0.55,
+  "ao_height": 4.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#391f0e",
+    "#a26029",
+    "#daa976",
+    "#f6ecdf",
+    "#f8f2e8",
+    "#fbf8f1",
+    "#fdfdfa"
+   ],
+   "steel": [
+    "#1c1b1f",
+    "#434047",
+    "#6a676e",
+    "#918f93",
+    "#aeaeae",
+    "#cccccc",
+    "#e9e9e9"
+   ],
+   "blush": [
+    "#400b15",
+    "#941a29",
+    "#d9373f",
+    "#e88f8c",
+    "#edb3ac",
+    "#f3d2ca",
+    "#faede9"
+   ],
+   "moss": [
+    "#10180c",
+    "#28381c",
+    "#43562c",
+    "#5f743e",
+    "#92a862",
+    "#bdc69d",
+    "#e4e6d5"
+   ],
+   "ce0bc84": [
+    "#3a1d0d",
+    "#874d21",
+    "#cd853a",
+    "#dfbb88",
+    "#e7d2a9",
+    "#efe5c9",
+    "#f8f5e8"
+   ],
+   "cc8302a": [
+    "#28090f",
+    "#5c161d",
+    "#902427",
+    "#c23a33",
+    "#d57567",
+    "#e3ad9f",
+    "#f3ded6"
+   ],
+   "c2a7a4a": [
+    "#0a1812",
+    "#173727",
+    "#265639",
+    "#357449",
+    "#55ae6b",
+    "#94ca9d",
+    "#d2e8d4"
+   ],
+   "c2a4aa8": [
+    "#0a0a20",
+    "#181c4b",
+    "#283374",
+    "#384e9d",
+    "#607ec4",
+    "#9bb2d8",
+    "#d5e0ee"
+   ],
+   "c8a5a2a": [
+    "#1c0d08",
+    "#412314",
+    "#653d21",
+    "#885a2e",
+    "#c08e4d",
+    "#d6bd8f",
+    "#ede5d0"
+   ],
+   "c9aa0a8": [
+    "#1f1e23",
+    "#494750",
+    "#73727b",
+    "#a0a0a4",
+    "#babbbb",
+    "#d4d4d4",
+    "#ececec"
+   ]
+  }
+ },
+ "styles": {
+  "wood": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/oak_veneer_01",
+     "scale": 26,
+     "amount": 1.3
+    }
+   ]
+  },
+  "metal": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 18,
+     "amount": 0.7
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 1.1,
+     "min_light": 0.7
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.8,
+     "min_light": -0.1,
+     "max_light": 0.3
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.08,
+     "shift": 1.2,
+     "post": true
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "body",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0.6,
+      0
+     ],
+     "size": 1.2
+    },
+    {
+     "at": [
+      0,
+      4,
+      0
+     ],
+     "size": 10
+    },
+    {
+     "at": [
+      0,
+      9,
+      0
+     ],
+     "size": 22
+    },
+    {
+     "at": [
+      0,
+      12.5,
+      0
+     ],
+     "size": 26
+    },
+    {
+     "at": [
+      0,
+      14.5,
+      0
+     ],
+     "size": 25
+    },
+    {
+     "at": [
+      0,
+      16,
+      0
+     ],
+     "size": 12
+    }
+   ],
+   "profile": {
+    "sides": 18,
+    "round": 2.0
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "wood",
+   "paint": {
+    "ramp": "ce0bc84",
+    "tone": 3.4,
+    "layers": [
+     {
+      "id": "ring0",
+      "op": "band",
+      "axis": "path",
+      "from": 0.42,
+      "to": 0.52,
+      "ramp": "cc8302a",
+      "tone": 3.0,
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1
+      }
+     },
+     {
+      "id": "ring1",
+      "op": "band",
+      "axis": "path",
+      "from": 0.62,
+      "to": 0.68,
+      "ramp": "c2a7a4a",
+      "tone": 3.0,
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1
+      }
+     },
+     {
+      "id": "ring2",
+      "op": "band",
+      "axis": "path",
+      "from": 0.74,
+      "to": 0.8,
+      "ramp": "c2a4aa8",
+      "tone": 3.0,
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "stem",
+   "shape": "prism",
+   "pivot": [
+    0,
+    15.5,
+    0
+   ],
+   "offset": [
+    0,
+    0,
+    3.5
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    4.8,
+    4.8,
+    7
+   ],
+   "sides": 10,
+   "front_scale": [
+    0.85,
+    0.85
+   ],
+   "style": "wood",
+   "paint": {
+    "ramp": "c8a5a2a",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "tip",
+   "shape": "loft",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.4
+    },
+    {
+     "at": [
+      0,
+      1.4,
+      0
+     ],
+     "size": 1.6
+    }
+   ],
+   "profile": {
+    "sides": 8,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "metal",
+   "paint": {
+    "ramp": "c9aa0a8",
+    "tone": 3.1
+   }
+  }
+ ]
+}

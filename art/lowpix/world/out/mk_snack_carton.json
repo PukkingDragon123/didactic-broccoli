@@ -1,0 +1,34 @@
+{
+ "id": "mk_snack_carton",
+ "src": "sketchfab:fb9958f7f2c74095a25589837e62aa9d",
+ "credit": {
+  "title": "Carton Box_03_Open",
+  "author": "Molfgang",
+  "authorUrl": "https://sketchfab.com/pixeledbun",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/carton-box-03-open-fb9958f7f2c74095a25589837e62aa9d",
+  "site": "Sketchfab"
+ },
+ "tris": 196,
+ "tex": 256,
+ "size": [
+  0.349,
+  0.38,
+  0.365
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#41211a",
+   "#543024",
+   "#65412f",
+   "#75533b",
+   "#856647",
+   "#9d8159",
+   "#ab9975",
+   "#b8af92",
+   "#c7c3ad"
+  ]
+ },
+ "warnings": []
+}

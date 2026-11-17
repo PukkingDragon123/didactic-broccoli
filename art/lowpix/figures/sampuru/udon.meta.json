@@ -1,0 +1,28 @@
+{
+ "mats": {
+  "base": "gloss"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "bowl",
+   "src": "sketchfab:50f286afdcf14b54bf35f22affb0b15c",
+   "height": 13,
+   "at": [
+    0,
+    4.6,
+    -1
+   ],
+   "yaw": 0,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "add937807a55a1"
+  }
+ ],
+ "key": "sampuru/udon"
+}

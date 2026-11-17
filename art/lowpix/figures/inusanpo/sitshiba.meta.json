@@ -1,0 +1,37 @@
+{
+ "mats": {
+  "leash": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "dog",
+   "src": "sketchfab:9abfce885a834399b2c3ccaed51cd474",
+   "height": 22,
+   "at": [
+    0,
+    3.0,
+    0
+   ],
+   "yaw": 20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "25d260b8110a60"
+  }
+ ],
+ "model_clip": {
+  "node": "model_dog",
+  "kind": "wobble",
+  "length": 1.4,
+  "amp": 5,
+  "axis": "y"
+ },
+ "key": "inusanpo/sitshiba"
+}

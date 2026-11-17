@@ -24,8 +24,8 @@ const PAL = {
 };
 /** What each kind writes: a repeated glyph rising in a column, or one word read left to right. */
 const KINDS = {
-  go: { ch: 'ゴ', col: true, n: 3, h: 0.3, jit: 1 },
-  do: { ch: 'ド', col: true, n: 3, h: 0.3, jit: 2 },
+  go: { ch: 'ゴ', col: true, n: 3, h: 0.42, jit: 1 },
+  do: { ch: 'ド', col: true, n: 3, h: 0.42, jit: 2 },
   don: { word: 'ドン!', h: 0.42, jit: 0, pal: 'don' },
   ban: { word: 'バーン!', h: 0.36, jit: 0, pal: 'ban' },
   zun: { word: 'ズン', h: 0.34, jit: 1, pal: 'zun' },
@@ -43,70 +43,75 @@ const CACHE = {};
 
 const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 
-/** Bake one glyph in one palette: [frames] where frame 0 is whole and 1..3 dissolve away (ordered dither). */
-function bake(ch, palName) {
+/**
+ * Bake one glyph in one palette: { frames, w, h, adv } where frames[0] is whole and 1..3 dissolve away (ordered dither).
+ * The font's 16 px design grid is doubled (every design pixel 2x2 texels), made bold by half a design pixel (strokes
+ * three texels wide, the gaps between strokes and the dakuten marks stay open), slanted a texel every six rows, then
+ * shaded in flat bands with a one-texel highlight along the top and left edges, outlined two texels deep in ink and
+ * extruded three texels down and to the right.
+ */
+export function bake(ch, palName) {
   const key = ch + '|' + palName;
   if (CACHE[key]) return CACHE[key];
+  // on the font's own 16 px grid: an integer pen position on the baseline keeps every stroke one whole texel
   const src = document.createElement('canvas');
-  src.width = src.height = CELL + 4;
+  src.width = CELL + 4; src.height = CELL + 6;
   const sg = src.getContext('2d', { willReadFrequently: true });
   sg.font = '16px "DotGothic16", monospace';
-  sg.textBaseline = 'top';
+  sg.textBaseline = 'alphabetic';
   sg.textAlign = 'left';
   sg.fillStyle = '#000';
-  sg.fillText(ch, 1, 1);
+  sg.fillText(ch, 2, 17);
   const a = sg.getImageData(0, 0, src.width, src.height).data;
   const SW = src.width, SH = src.height;
-  const on = (x, y) => x >= 0 && y >= 0 && x < SW && y < SH && a[(y * SW + x) * 4 + 3] > 110;
-  // bold: one texel wider and taller; slant: one texel to the right for every five rows up
-  const W = SW + 1 + 4 + PAD * 2, H = SH + 1 + PAD * 2;
+  const on = (x, y) => x >= 0 && y >= 0 && x < SW && y < SH && a[(y * SW + x) * 4 + 3] > 96;
+  const TW = SW * 2, TH = SH * 2, SL = Math.ceil(TH / 6);
+  const W = TW + 1 + SL + PAD * 2, H = TH + 1 + PAD * 2;
   const m = new Uint8Array(W * H);
   let y0 = H, y1 = 0;
-  for (let y = 0; y < SH + 1; y++) for (let x = 0; x < SW + 1; x++) {
-    if (!(on(x, y) || on(x - 1, y) || on(x, y - 1) || on(x - 1, y - 1))) continue;
-    const sx = x + PAD + Math.floor((SH - y) / 5), sy = y + PAD;
+  for (let y = 0; y < TH + 1; y++) for (let x = 0; x < TW + 1; x++) {
+    const lit = (X, Y) => X >= 0 && Y >= 0 && on(X >> 1, Y >> 1);
+    if (!(lit(x, y) || lit(x - 1, y) || lit(x, y - 1) || lit(x - 1, y - 1))) continue;
+    const sx = x + PAD + Math.floor((TH - y) / 6), sy = y + PAD;
     m[sy * W + sx] = 1; y0 = Math.min(y0, sy); y1 = Math.max(y1, sy);
   }
-  const P = PAL[palName] || PAL.go;
-  const C = P.map(hex);
+  const C = (PAL[palName] || PAL.go).map(hex);
   const out = document.createElement('canvas');
   out.width = W; out.height = H;
   const og = out.getContext('2d');
   const img = og.createImageData(W, H), d = img.data;
   const set = (x, y, c) => { if (x < 0 || y < 0 || x >= W || y >= H) return; const i = (y * W + x) * 4; d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255; };
   const M = (x, y) => x >= 0 && y >= 0 && x < W && y < H && m[y * W + x];
-  // the extrude: two texels down and to the right, in the dark ink
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (M(x - 1, y - 1) || M(x - 2, y - 2) || M(x - 1, y - 2)) set(x, y, C[1]);
-  // the outline: every texel touching the letter (8-neighbourhood) that isn't the letter
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    if (M(x, y)) continue;
-    if (M(x - 1, y) || M(x + 1, y) || M(x, y - 1) || M(x, y + 1) || M(x - 1, y - 1) || M(x + 1, y - 1) || M(x - 1, y + 1) || M(x + 1, y + 1)) set(x, y, C[0]);
-  }
-  // the letter: flat bands (light top, base middle, dark bottom), a highlight along every top edge, a darker texel
-  // under every overhang so the strokes read as solid blocks
+  const near = (x, y, r) => { for (let j = -r; j <= r; j++) for (let i = -r; i <= r; i++) if (M(x + i, y + j)) return true; return false; };
+  // the extrude: three texels down and to the right, in the dark ink (behind everything)
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (near(x - 2, y - 2, 1) || near(x - 3, y - 3, 1)) set(x, y, C[1]);
+  // the outline: two texels of ink round the letter
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!M(x, y) && near(x, y, 2)) set(x, y, C[0]);
+  // the letter: flat bands (light top, base middle, dark bottom), a highlight along top and left edges, a dark texel
+  // under every overhang
   const span = Math.max(1, y1 - y0);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     if (!M(x, y)) continue;
     const k = (y - y0) / span;
-    let c = k < 0.34 ? C[4] : k < 0.74 ? C[3] : C[2];
+    let c = k < 0.36 ? C[4] : k < 0.72 ? C[3] : C[2];
     if (!M(x, y - 1)) c = C[5];
-    else if (!M(x, y + 1)) c = C[2];
-    else if (!M(x - 1, y) && k < 0.74) c = C[4];
+    else if (!M(x, y + 1) || !M(x + 1, y + 1)) c = C[2];
+    else if (!M(x - 1, y)) c = k < 0.72 ? C[5] : C[4];
     set(x, y, c);
   }
   og.putImageData(img, 0, 0);
-  // dissolve frames: drop texels on a 4x4 ordered-dither threshold
+  // dissolve frames: drop texels on a 4x4 ordered-dither threshold (in 2x2 blocks, the design grid)
   const frames = [out];
-  for (let s = 1; s <= 3; s++) {
+  for (let st = 1; st <= 3; st++) {
     const f = document.createElement('canvas');
     f.width = W; f.height = H;
     const fg = f.getContext('2d'), fi = fg.createImageData(W, H);
     fi.data.set(d);
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (BAYER[(y & 3) * 4 + (x & 3)] < s * 4 + 1) fi.data[(y * W + x) * 4 + 3] = 0;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (BAYER[((y >> 1) & 3) * 4 + ((x >> 1) & 3)] < st * 4 + 1) fi.data[(y * W + x) * 4 + 3] = 0;
     fg.putImageData(fi, 0, 0);
     frames.push(f);
   }
-  const r = { frames, w: W, h: H, adv: CELL + 1 };
+  const r = { frames, w: W, h: H, adv: (CELL + 1) * 2 };
   CACHE[key] = r; // (cleared once DotGothic16 has loaded, so early bakes are redone in the real face)
   return r;
 }
@@ -188,7 +193,7 @@ export class Kana {
       let sx, sy, S;
       if (it.screen) {
         sx = it.screen[0] * W; sy = it.screen[1] * H;
-        S = it.px || Math.max(2, Math.round((H / 150) * it.size * (it.K.h / 0.3)));
+        S = it.px || Math.max(1, Math.round((H / 300) * it.size * (it.K.h / 0.3)));
       } else {
         const p = this.anchorPos(it.at, _v);
         if (!p) { this.items.splice(i, 1); continue; }
@@ -198,9 +203,9 @@ export class Kana {
         if (p.z > 1 || Math.abs(p.x) > 1.4 || Math.abs(p.y) > 1.4) continue;
         sx = (p.x * 0.5 + 0.5) * W; sy = (0.5 - p.y * 0.5) * H;
         const px = (it.K.h * it.size) / (Math.max(0.3, dist) * 2 * tanF) * H; // the glyph's height on screen
-        S = Math.max(2, Math.min(Math.round(9 * dpr), Math.round(px / 20)));
+        S = Math.max(1, Math.min(Math.round(5 * dpr), Math.round(px / 40)));
         // beside the head, not over the face
-        sx += it.side * 14 * S;
+        sx += it.side * 28 * S;
       }
       if (it.offset) { sx += it.offset[0] * S; sy += it.offset[1] * S; }
       this.drawItem(it, sx, sy, S);
@@ -230,14 +235,14 @@ export class Kana {
       // layout: a column rises on a diagonal away from the anchor, each glyph a little bigger; a word reads across
       let ox, oy, sc = s;
       if (it.col) {
-        sc = s + Math.floor(k / 2) * Math.max(1, Math.round(S / 4));
-        ox = it.side * k * 9 * S - (it.side < 0 ? gl.w * sc : 0);
-        oy = -k * 15 * S - gl.h * sc;
+        sc = s + Math.floor(k / 2) * Math.round(S / 4);
+        ox = it.side * k * 18 * S - (it.side < 0 ? gl.w * sc : 0);
+        oy = -k * 30 * S - gl.h * sc;
       } else {
         ox = (k - n / 2) * gl.adv * S - (gl.w - gl.adv) * sc / 2;
-        oy = -gl.h * sc / 2 + (k % 2 ? 2 * S : 0);
+        oy = -gl.h * sc / 2 + (k % 2 ? 4 * S : 0);
       }
-      const x = Math.round(sx + ox + jx * S), y = Math.round(sy + oy + (jy - rise) * S);
+      const x = Math.round(sx + ox + jx * 2 * S), y = Math.round(sy + oy + (jy - rise) * 2 * S);
       g.drawImage(gl.frames[fr], x, y, gl.w * sc, gl.h * sc);
     }
   }

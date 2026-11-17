@@ -1,0 +1,23 @@
+{
+ "joints": {},
+ "mats": {
+  "sis_lo": "gloss",
+  "sis_seam": "metal",
+  "sis_hi": "gloss",
+  "shutter": "metal",
+  "sis_dial": "gloss",
+  "sis_dialr": "metal",
+  "sis_hub": "metal"
+ },
+ "standBox": {
+  "x0": -212.0,
+  "x1": 212.0,
+  "z0": -202.0,
+  "z1": 202.0,
+  "front": 184.0,
+  "shutterY": 408.85,
+  "unitFront": 187.0
+ },
+ "key": "deluxe_stand",
+ "density": 0.4
+}

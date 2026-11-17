@@ -127,7 +127,7 @@ export class MachineSpots {
       if (!type) return;
       const T = MACHINE_TYPES[type];
       if (!g.sim?.payDigital(T.price, `machine:${type}`)) { g.news?.('The bank declined the transfer', `${yen(T.price)} needed`); sfx('error', { vol: 0.4 }); return; }
-      const series = g.state.licenses[g.state.licenses.length - 1] || 'mochi';
+      const series = g.state.licenses[g.state.licenses.length - 1] || 'rojineko';
       const d = { id: 'z' + Date.now().toString(36) + i, type, slot: i, stock: [], series, price: Math.max(100, Math.round((SERIES_BY_ID[series]?.price || 100) / 100) * 100), cash: 0 };
       if (g.sim?.recommendedPrice) d.price = g.sim.recommendedPrice({ data: d });
       this.data.push(d);

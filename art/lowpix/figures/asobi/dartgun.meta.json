@@ -1,0 +1,16 @@
+{
+ "mats": {
+  "barrel": "gloss",
+  "muzzle": "gloss",
+  "sight": "gloss",
+  "dart_tip": "gloss"
+ },
+ "clips": {},
+ "pts": {
+  "muzzle": "pt_muzzle"
+ },
+ "separate": [
+  "dart"
+ ],
+ "key": "asobi/dartgun"
+}

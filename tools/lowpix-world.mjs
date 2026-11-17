@@ -64,13 +64,13 @@ function run(cmd, args, opts) {
 }
 async function convert(it) {
   const dir = join(CACHE, it.id);
-  const have = existsSync(dir) && readdirSync(dir).some((f) => f.endsWith('.glb') && !f.startsWith('_'));
+  const have = existsSync(dir) && readdirSync(dir).some((f) => f.endsWith('.glb') && !f.startsWith('_')) && readdirSync(dir).some((f) => f.endsWith('_report.json'));
   if (have && !FORCE) return dir;
   if (existsSync(dir)) for (const f of readdirSync(dir)) if (f !== '_source' && f !== '_keep.glb') rmSync(join(dir, f), { recursive: true, force: true });
   const o = { ...D, ...it };
   const h = heightOf(it), ppm = o.ppm || 160;
   let src = it.src;
-  if (it.keep || it.rotx) src = await keepNodes(it, dir);
+  if (it.keep || it.rotx || it.rotz) src = await keepNodes(it, dir);
   const args = ['-m', 'lowpix', 'convert', src, '--style', o.style || 'pixel-hd', '-o', dir, '--height', (h * ppm / PX_PER_UNIT).toFixed(2), '--name', it.name || it.id];
   if (o.yaw) args.push('--yaw', String(o.yaw));
   for (const k of LP_KEYS) if (o[k] != null) args.push('--' + k.replace('_', '-'), String(o[k]));
@@ -95,9 +95,9 @@ async function keepNodes(it, dir) {
   const file = find(srcDir);
   const doc = await new NodeIO().registerExtensions(ALL_EXTENSIONS).read(file);
   if (it.keep) { const re = new RegExp(it.keep); for (const n of doc.getRoot().listNodes()) if (n.getMesh() && !re.test(n.getName())) n.dispose(); }
-  if (it.rotx) { // stand up a model that lies on its side (degrees about x)
-    const a = it.rotx * Math.PI / 360, scene = doc.getRoot().listScenes()[0];
-    const pivot = doc.createNode('rotx').setRotation([Math.sin(a), 0, 0, Math.cos(a)]);
+  if (it.rotx || it.rotz) { // stand up a model that lies on its side (degrees about x or z)
+    const a = (it.rotx || it.rotz) * Math.PI / 360, scene = doc.getRoot().listScenes()[0];
+    const pivot = doc.createNode('rot').setRotation(it.rotx ? [Math.sin(a), 0, 0, Math.cos(a)] : [0, 0, Math.sin(a), Math.cos(a)]);
     for (const c of scene.listChildren()) { scene.removeChild(c); pivot.addChild(c); }
     scene.addChild(pivot);
   }
@@ -106,38 +106,34 @@ async function keepNodes(it, dir) {
 }
 
 /** Fill the empty atlas texels from their neighbours (so mips never pull in black) and crop unused rows. */
-async function polishAtlas(png, keepAlpha) {
+async function polishAtlas(png, keepAlpha, cap = 512) {
   const { data, info } = await sharp(png).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const W = info.width, H = info.height, px = new Uint8ClampedArray(data);
   let maxY = 0;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (px[(y * W + x) * 4 + 3] > 0) maxY = y;
   const Hc = Math.min(H, Math.ceil((maxY + 9) / 16) * 16);
-  const solid = new Uint8Array(W * Hc);
-  for (let i = 0; i < W * Hc; i++) solid[i] = px[i * 4 + 3] > 0 ? 1 : 0;
-  const origAlpha = new Uint8Array(W * Hc);
-  for (let i = 0; i < W * Hc; i++) origAlpha[i] = px[i * 4 + 3];
-  for (let pass = 0; pass < 24; pass++) {
-    const add = [];
-    for (let y = 0; y < Hc; y++) for (let x = 0; x < W; x++) {
-      const i = y * W + x;
-      if (solid[i]) continue;
-      let r = 0, g = 0, b = 0, n = 0;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const X = x + dx, Y = y + dy;
-        if (X < 0 || Y < 0 || X >= W || Y >= Hc) continue;
-        const j = Y * W + X;
-        if (!solid[j]) continue;
-        r += px[j * 4]; g += px[j * 4 + 1]; b += px[j * 4 + 2]; n++;
-      }
-      if (n) add.push([i, r / n, g / n, b / n]);
+  // multi-source flood from the painted texels (one pass, O(texels)): every empty texel takes its nearest neighbour's colour
+  const N = W * Hc, solid = new Uint8Array(N), origAlpha = new Uint8Array(N), queue = new Int32Array(N);
+  let qh = 0, qt = 0;
+  for (let i = 0; i < N; i++) { origAlpha[i] = px[i * 4 + 3]; if (origAlpha[i] > 0) { solid[i] = 1; queue[qt++] = i; } }
+  while (qh < qt) {
+    const i = queue[qh++], x = i % W, y = (i / W) | 0;
+    for (let k = 0; k < 4; k++) {
+      const X = x + (k === 0 ? 1 : k === 1 ? -1 : 0), Y = y + (k === 2 ? 1 : k === 3 ? -1 : 0);
+      if (X < 0 || Y < 0 || X >= W || Y >= Hc) continue;
+      const j = Y * W + X;
+      if (solid[j]) continue;
+      solid[j] = 1;
+      px[j * 4] = px[i * 4]; px[j * 4 + 1] = px[i * 4 + 1]; px[j * 4 + 2] = px[i * 4 + 2];
+      queue[qt++] = j;
     }
-    if (!add.length) break;
-    for (const [i, r, g, b] of add) { px[i * 4] = r; px[i * 4 + 1] = g; px[i * 4 + 2] = b; solid[i] = 1; }
   }
   for (let i = 0; i < W * Hc; i++) px[i * 4 + 3] = keepAlpha ? origAlpha[i] : 255;
-  const out = await sharp(Buffer.from(px.buffer, 0, W * Hc * 4), { raw: { width: W, height: Hc, channels: 4 } })
-    .png({ compressionLevel: 9, palette: !keepAlpha, colours: 256, effort: 10 }).toBuffer();
-  return { png: out, vScale: H / Hc, W, H: Hc };
+  let img = sharp(Buffer.from(px.buffer, 0, W * Hc * 4), { raw: { width: W, height: Hc, channels: 4 } }), w = W, h = Hc;
+  while (Math.max(w, h) > cap) { w = Math.max(1, w >> 1); h = Math.max(1, h >> 1); }
+  if (w !== W) img = sharp(await img.png().toBuffer()).resize(w, h, { kernel: 'mitchell' });
+  const out = await img.png({ compressionLevel: 9, palette: !keepAlpha, colours: 256, effort: 7 }).toBuffer();
+  return { png: out, vScale: H / Hc, W: w, H: h };
 }
 
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
@@ -186,7 +182,11 @@ async function gameReady(it, dir) {
     if (!it.alpha) m.setAlphaMode('OPAQUE');
     const t = m.getBaseColorTexture();
     if (t && !done.has(t)) {
-      const r = await polishAtlas(Buffer.from(t.getImage()), !!it.alpha);
+      // texture budget (they all load with the prop library): the long side at most 512, 256 under 0.7 m, 128 for
+      // things smaller than a hand; halved as often as needed (the pixels stay crisp: nearest filtering in the game)
+      const sz = [b0.max[0] - b0.min[0], b0.max[1] - b0.min[1], b0.max[2] - b0.min[2]].map((v) => v * k), mx = Math.max(...sz);
+      const cap = it.cap || (mx < 0.25 ? 128 : mx < 0.7 ? 256 : 512);
+      const r = await polishAtlas(Buffer.from(t.getImage()), !!it.alpha, cap);
       t.setImage(r.png).setMimeType('image/png');
       done.set(t, r);
       tex = Math.max(tex, r.W, r.H);
@@ -245,8 +245,14 @@ async function worker() {
   }
 }
 await Promise.all(Array.from({ length: Math.max(1, JOBS) }, worker));
-const ids = new Set(spec.items.map((i) => i.id));
-for (const k of Object.keys(man)) if (!ids.has(k)) delete man[k];
+// merge with what other runs wrote meanwhile, keep only the spec's current items
+const spec2 = JSON.parse(readFileSync(SPEC, 'utf8'));
+const ids = new Set(spec2.items.map((i) => i.id));
+const disk = existsSync(manPath) ? JSON.parse(readFileSync(manPath, 'utf8')) : {};
+for (const it of items) if (man[it.id]) disk[it.id] = man[it.id];
+for (const k of Object.keys(man)) if (!disk[k] && existsSync(join(OUT_GLB, k + '.glb'))) disk[k] = man[k];
+for (const k of Object.keys(disk)) if (!ids.has(k) || !existsSync(join(OUT_GLB, k + '.glb'))) delete disk[k];
+Object.keys(man).forEach((k) => delete man[k]); Object.assign(man, disk);
 writeFileSync(manPath, JSON.stringify(Object.fromEntries(Object.entries(man).sort()), null, 1) + '\n');
 
 // the runtime table (sizes for proxies before a model loads, credits for hints)

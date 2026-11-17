@@ -4,6 +4,7 @@
 // save starts with an empty garage: no machines, no shelves, only the starter series licence and a little cash.
 // Saves from v1 are not carried over (the new progression starts fresh) except for the settings and your avatar.
 import { START_MONEY } from './economy.js';
+import { migrateLineup } from '../data/series/legacy.js';
 
 export const STORY_START_MONEY = START_MONEY;
 /** Story flags for a brand-new game (see src/game/Story.js). */
@@ -27,7 +28,7 @@ export function defaultState() {
     story: newStoryState(),
     inventory: [{ kind: 'tool', d: { id: 'key' } }, null, null, null, null],
     promo: { flyers: 0, level: 0 },
-    licenses: ['mochi'],
+    licenses: ['rojineko'],
     opener: 0,
     charms: [],
     discovered: {}, // key -> { n, f: {finish: count} }
@@ -86,6 +87,8 @@ export function loadState() {
     s.stats = { ...d.stats, ...s.stats };
     s.avatar = { ...d.avatar, ...s.avatar };
     if (!Array.isArray(s.avatar.owned)) s.avatar.owned = [];
+    // the 1998 line-up was retired: owned figures become this season's (src/data/series/legacy.js)
+    try { migrateLineup(s); } catch (e) { console.warn('line-up migration', e); }
     return s;
   } catch (e) {
     console.warn('save load failed', e);

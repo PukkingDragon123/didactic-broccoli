@@ -76,7 +76,7 @@ const REVIEW = ['Nothing to see yet...', 'Kind of cute.', 'Pretty fun!', 'I want
 
 // ------------------------------------------------------------------ thumbnails (rendered on demand, cached as data URLs)
 const URLS = new Map();
-const BANNER_PICK = { retro: 'mochi', standard: 'konbini', deluxe: 'dajare', royal: 'omamori' };
+const BANNER_PICK = { retro: 'rojineko', standard: 'sampuru', deluxe: 'denka', royal: 'kaiun' };
 
 function makeThumb(game, key) {
   const [kind, a, b, c, d] = key.split('|');
@@ -85,7 +85,7 @@ function makeThumb(game, key) {
   if (kind === 'b') return bannerCanvas(a, T);
   if (kind === 's') return styleTile(a).canvas;
   if (kind === 'm') {
-    const { group } = buildMachineModel(a, { banner: bannerTexture(BANNER_PICK[a] || 'mochi', T, { faded: a === 'retro' }) });
+    const { group } = buildMachineModel(a, { banner: bannerTexture(BANNER_PICK[a] || 'rojineko', T, { faded: a === 'retro' }) });
     return T.renderObject(group, +b, { side: 0.6, up: 0.15 });
   }
   if (kind === 'p') return T.renderObject(propMesh(a), +b, { side: 0.6, up: 0.3 });

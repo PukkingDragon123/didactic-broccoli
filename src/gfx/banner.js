@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { Pix, FONT_EN } from './pix.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { drawPattern } from '../game/cards.js';
+import { itemReady, whenItemReady } from '../game/collectibles.js';
 
 // scene painters live in src/gfx/bannerScenes*.js (one file per batch of series); merged here
 const sceneMods = Object.values(import.meta.glob('./bannerScenes*.js', { eager: true }));
@@ -217,7 +218,7 @@ const cache = new Map();
 export function bannerCanvas(seriesId, thumbs, opts = {}) {
   const key = seriesId + (opts.faded ? ':f' : '');
   if (cache.has(key)) return cache.get(key);
-  const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.mochi;
+  const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.rojineko || Object.values(SERIES_BY_ID)[0];
   const W = BANNER_W, H = BANNER_H;
   const p = new Pix(W, H, 7);
   const bg = hex(s.card.bg), ac = hex(s.card.accent), tx = hex(s.card.text), ac2 = hex(s.card.accent2 || s.card.accent);
@@ -236,6 +237,20 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
     { it: byR('rare', 0), x: 222, foot: 178, size: 68 },
     { it: byR('ultra', 0), x: 160, foot: 196, size: 88, star: true },
   ].filter((c) => c.it);
+  // (lowpix figures load lazily: a card drawn before its figures are in is drawn again into the same canvas when they are)
+  const waiting = thumbs ? cast.filter((c) => !itemReady(c.it.key)) : [];
+  if (waiting.length) {
+    Promise.all(waiting.map((c) => whenItemReady(c.it.key).catch(() => {}))).then(() => {
+      const old = cache.get(key);
+      if (!old) return;
+      cache.delete(key);
+      const fresh = bannerCanvas(seriesId, thumbs, opts);
+      old.getContext('2d').drawImage(fresh, 0, 0);
+      cache.set(key, old);
+      const t = texCache.get(key);
+      if (t) t.needsUpdate = true;
+    });
+  }
   if (thumbs) {
     for (const c of cast) {
       const cv = thumbs.item(c.it.key, { size: c.size });

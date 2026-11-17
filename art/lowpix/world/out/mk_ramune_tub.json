@@ -1,0 +1,34 @@
+{
+ "id": "mk_ramune_tub",
+ "src": "sketchfab:66fd712372f14a8f8d83d4d1e4ff6dce",
+ "credit": {
+  "title": "Ice Bucket",
+  "author": "Saandy",
+  "authorUrl": "https://sketchfab.com/Saandy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ice-bucket-66fd712372f14a8f8d83d4d1e4ff6dce",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 960,
+ "size": [
+  1.169,
+  0.66,
+  1.059
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#413337",
+   "#524448",
+   "#625759",
+   "#726b6c",
+   "#808080",
+   "#919191",
+   "#a3a3a3",
+   "#b4b4b4",
+   "#c6c6c6"
+  ]
+ },
+ "warnings": []
+}

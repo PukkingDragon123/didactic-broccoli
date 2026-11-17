@@ -1,0 +1,474 @@
+{
+ "name": "Foam Dart Blaster",
+ "description": "Click to fire. The darts stick to walls, windows and very surprised neighbours.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 4.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.55,
+   1.0,
+   0.65
+  ],
+  "strength": 0.85,
+  "gradient": 0.35,
+  "ao": 0.55,
+  "ao_height": 4.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#391f0e",
+    "#a26029",
+    "#daa976",
+    "#f6ecdf",
+    "#f8f2e8",
+    "#fbf8f1",
+    "#fdfdfa"
+   ],
+   "steel": [
+    "#1c1b1f",
+    "#434047",
+    "#6a676e",
+    "#918f93",
+    "#aeaeae",
+    "#cccccc",
+    "#e9e9e9"
+   ],
+   "blush": [
+    "#400b15",
+    "#941a29",
+    "#d9373f",
+    "#e88f8c",
+    "#edb3ac",
+    "#f3d2ca",
+    "#faede9"
+   ],
+   "moss": [
+    "#10180c",
+    "#28381c",
+    "#43562c",
+    "#5f743e",
+    "#92a862",
+    "#bdc69d",
+    "#e4e6d5"
+   ],
+   "cf08a2a": [
+    "#341005",
+    "#792f0c",
+    "#bc5714",
+    "#e78a35",
+    "#ecb36c",
+    "#f2d5a2",
+    "#f9efd8"
+   ],
+   "c3f86e8": [
+    "#091033",
+    "#162e75",
+    "#2454b6",
+    "#5088da",
+    "#80b0e3",
+    "#afd1ec",
+    "#ddedf7"
+   ],
+   "c2a2a2e": [
+    "#0a0809",
+    "#171314",
+    "#231e20",
+    "#2f2a2b",
+    "#696162",
+    "#9f9b9b",
+    "#d5d5d5"
+   ],
+   "cf6d84a": [
+    "#3d2404",
+    "#8c5e0a",
+    "#daa312",
+    "#efd053",
+    "#f2e582",
+    "#f6f3b0",
+    "#fbfbde"
+   ]
+  }
+ },
+ "styles": {
+  "pvc": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.4,
+     "amount": 0.12
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.75,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.3,
+     "min_light": -0.1,
+     "max_light": 0.22
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.2,
+     "shift": 1.0
+    }
+   ]
+  },
+  "matte": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.0,
+     "amount": 0.16
+    },
+    {
+     "id": "grain",
+     "op": "speckle",
+     "density": 0.015,
+     "shift": -0.5
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "barrel",
+   "shape": "box",
+   "pivot": [
+    0,
+    30,
+    0
+   ],
+   "size": [
+    9,
+    10,
+    36
+   ],
+   "chamfer": 1.6,
+   "style": "pvc",
+   "paint": {
+    "ramp": "cf08a2a",
+    "tone": 3.2,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "band",
+      "axis": "x",
+      "from": -0.0076388888888888895,
+      "to": 0.0076388888888888895,
+      "shift": -0.55,
+      "faces": [
+       "-front",
+       "-back",
+       "-end",
+       "-start"
+      ],
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1,
+       "shadow_shift": -0.6,
+       "highlight_shift": 0.7
+      }
+     },
+     {
+      "id": "stripe",
+      "op": "band",
+      "axis": "y",
+      "from": -0.2,
+      "to": 0.2,
+      "ramp": "c3f86e8",
+      "tone": 3.0,
+      "faces": [
+       "sides"
+      ],
+      "bevel": true
+     }
+    ],
+    "stamps": [
+     {
+      "face": "right",
+      "at": "center",
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       "###.###.###.#.#.....#.#",
+       "#...#.#.#.#.###.....#.#",
+       "##..#.#.###.###.###..#.",
+       "#...#.#.#.#.#.#.....#.#",
+       "#...###.#.#.#.#.....#.#"
+      ],
+      "key": {
+       "#": "ink:0"
+      }
+     },
+     {
+      "face": "left",
+      "at": "center",
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       "###.###.###.#.#.....#.#",
+       "#...#.#.#.#.###.....#.#",
+       "##..#.#.###.###.###..#.",
+       "#...#.#.#.#.#.#.....#.#",
+       "#...###.#.#.#.#.....#.#"
+      ],
+      "key": {
+       "#": "ink:0"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "grip",
+   "shape": "box",
+   "pivot": [
+    0,
+    15,
+    -8
+   ],
+   "rotation": [
+    -18,
+    0,
+    0
+   ],
+   "size": [
+    7,
+    22,
+    9
+   ],
+   "chamfer": 1.4,
+   "style": "matte",
+   "paint": {
+    "ramp": "c2a2a2e",
+    "tone": 2.8,
+    "layers": [
+     {
+      "id": "knurl",
+      "op": "stripes",
+      "axis": "y",
+      "period": 1.2,
+      "width": 0.3,
+      "shift": -0.6,
+      "faces": [
+       "sides"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "bottom",
+      "at": "center",
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".....#.###.#..#.#.###.###.#.#.#.#.###.###.#.#....",
+       "....#..#....#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#....",
+       "....#..#....#.##..###.###.#.#.##..###.###.#.#....",
+       "....#..#....#.#.#.#.#.#...#.#.#.#.#.#.#...#.#....",
+       ".....#.###.#..#.#.#.#.#...###.#.#.#.#.#...###....",
+       ".................................................",
+       "#.#.###.##..###....###.##.......#.###.###.###.##.",
+       "###.#.#.#.#.#.......#..#.#......#.#.#.#.#.#.#.#.#",
+       "###.###.#.#.##......#..#.#......#.###.###.###.#.#",
+       "#.#.#.#.#.#.#.......#..#.#....#.#.#.#.#...#.#.#.#",
+       "#.#.#.#.##..###....###.#.#....###.#.#.#...#.#.#.#"
+      ],
+      "key": {
+       "#": "c2a2a2e:1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "guard",
+   "shape": "box",
+   "pivot": [
+    0,
+    22,
+    4
+   ],
+   "size": [
+    4,
+    7,
+    3
+   ],
+   "chamfer": 0.6,
+   "style": "matte",
+   "paint": {
+    "ramp": "c2a2a2e",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "muzzle",
+   "shape": "prism",
+   "pivot": [
+    0,
+    30,
+    18
+   ],
+   "offset": [
+    0,
+    0,
+    2.0
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "size": [
+    7.2,
+    7.2,
+    4
+   ],
+   "sides": 12,
+   "style": "pvc",
+   "paint": {
+    "ramp": "c3f86e8",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "sight",
+   "shape": "box",
+   "pivot": [
+    0,
+    36.5,
+    2
+   ],
+   "size": [
+    5,
+    3,
+    14
+   ],
+   "chamfer": 0.8,
+   "style": "pvc",
+   "paint": {
+    "ramp": "cf6d84a",
+    "tone": 3.4
+   }
+  },
+  {
+   "id": "dart",
+   "shape": "bone",
+   "pivot": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "dart_foam",
+   "shape": "box",
+   "parent": "dart",
+   "pivot": [
+    0,
+    0,
+    -2
+   ],
+   "size": [
+    3.4,
+    3.4,
+    10
+   ],
+   "chamfer": 1.2,
+   "style": "matte",
+   "paint": {
+    "ramp": "cf08a2a",
+    "tone": 3.4
+   }
+  },
+  {
+   "id": "dart_tip",
+   "shape": "prism",
+   "parent": "dart",
+   "pivot": [
+    0,
+    0,
+    3.6
+   ],
+   "offset": [
+    0,
+    0,
+    1.2
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "size": [
+    4.4,
+    4.4,
+    2.4
+   ],
+   "sides": 10,
+   "style": "pvc",
+   "paint": {
+    "ramp": "c3f86e8",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "pt_muzzle",
+   "shape": "bone",
+   "pivot": [
+    0,
+    30,
+    23
+   ]
+  }
+ ]
+}

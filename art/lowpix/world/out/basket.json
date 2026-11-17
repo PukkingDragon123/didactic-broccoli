@@ -1,0 +1,33 @@
+{
+ "id": "basket",
+ "src": "polyhaven:wicker_basket_01",
+ "credit": {
+  "title": "Wicker Basket 01",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/wicker_basket_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2914,
+ "tex": 256,
+ "size": [
+  0.397,
+  0.117,
+  0.299
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#29140f",
+   "#341d15",
+   "#3f281b",
+   "#493322",
+   "#533f29",
+   "#745e3d",
+   "#937f53",
+   "#aa9d71",
+   "#bbb695"
+  ]
+ },
+ "warnings": []
+}

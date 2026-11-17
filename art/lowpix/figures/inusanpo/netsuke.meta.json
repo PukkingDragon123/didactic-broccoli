@@ -1,0 +1,45 @@
+{
+ "mats": {
+  "base": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "puppy",
+   "src": "sketchfab:3bf1533c76f94fcd94fe61da58fb4cdc",
+   "height": 13,
+   "at": [
+    0,
+    6.4,
+    0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "metal",
+   "recolor": {
+    "saturation": 0.2,
+    "linear": [
+     0.55,
+     95
+    ],
+    "tint": "#e8b850"
+   },
+   "key": "dade53a5d4f4e8"
+  }
+ ],
+ "model_clip": {
+  "node": "model_puppy",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 30,
+  "axis": "y"
+ },
+ "key": "inusanpo/netsuke"
+}

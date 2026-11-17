@@ -1,0 +1,44 @@
+{
+ "id": "vase_ceramic",
+ "src": "polyhaven:antique_ceramic_vase_01",
+ "credit": {
+  "title": "Antique Ceramic Vase 01",
+  "author": "James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/antique_ceramic_vase_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 336,
+ "size": [
+  0.251,
+  0.44,
+  0.251
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#25194c",
+   "#2d2361",
+   "#332e75",
+   "#393a89",
+   "#464e9b",
+   "#5969af",
+   "#7788b9",
+   "#93a4c3",
+   "#aebccf"
+  ],
+  "m1": [
+   "#5c4340",
+   "#755d57",
+   "#8c776f",
+   "#9f938d",
+   "#b2ada9",
+   "#bab9b7",
+   "#c4c4c4",
+   "#cfcfcf",
+   "#dadada"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,34 @@
+{
+ "id": "robot_vacuum",
+ "src": "sketchfab:7230d8d80e8b4a82b4a34a5e7926d0d3",
+ "credit": {
+  "title": "Robot vacuum cleaner low poly",
+  "author": "Moryak",
+  "authorUrl": "https://sketchfab.com/_moryak_",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/robot-vacuum-cleaner-low-poly-7230d8d80e8b4a82b4a34a5e7926d0d3",
+  "site": "Sketchfab"
+ },
+ "tris": 2944,
+ "tex": 256,
+ "size": [
+  0.445,
+  0.102,
+  0.445
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

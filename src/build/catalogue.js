@@ -5,7 +5,8 @@
 //   id, name, jp, price (¥), category (CATEGORIES), unlock (an id from src/data/unlocks.js, or null = always),
 //   mount: 'floor' | 'surface' (table, desk, rack, shelf, another box... or the floor) | 'wall'
 //   feature: the behaviour id (src/build/features.js), quality: 0..1 how much it lifts the shop's decor score,
-//   desc: shop blurb, does: one line on what the feature does, model: how it is built (src/build/models.js),
+//   desc: shop blurb, does: one line on what the feature does, model: how it is built (src/build/models.js: { prop } a
+//   prop from the library, { lp, h, ry, screen } a lowpix conversion of a real model, loaded on demand),
 //   box: delivery box size [w, h, d] (m), block: true when people bump into it, top: it has a flat top (height above
 //   its base, m) that small things can go on, seat: it seats people ([{ x, z, rotY }] local), stack: storage boxes.
 // For other systems:
@@ -85,8 +86,8 @@ export const CATALOGUE = [
     desc: 'Plywood and steel tube, from the primary school that closed last spring.', does: 'Sit down. Kids love it.', model: { lp: 'chair_school' }, box: [0.42, 0.2, 0.46] },
   { id: 'lp_chair_painted', name: 'Painted Kitchen Chair', jp: 'ペンキ塗りの椅子', price: 2800, category: 'furniture', unlock: null, mount: 'floor', feature: 'seat', quality: 0.1, block: true,
     desc: 'A wooden chair with chipped blue paint and a woven seat.', does: 'Sit down. Customers sit here too.', model: { lp: 'chair_painted' }, box: [0.48, 0.2, 0.48] },
-  { id: 'lp_chair_wood', name: 'Bentwood Chair', jp: '曲げ木の椅子', price: 3200, category: 'furniture', unlock: null, mount: 'floor', feature: 'seat', quality: 0.12, block: true,
-    desc: 'Steamed and bent beech, the café chair of every kissaten.', does: 'Sit down. Customers sit here too.', model: { lp: 'chair_wood' }, box: [0.48, 0.2, 0.5] },
+  { id: 'lp_chair_wood', name: 'High-back Chair', jp: '背もたれの高い椅子', price: 3200, category: 'furniture', unlock: null, mount: 'floor', feature: 'seat', quality: 0.12, block: true,
+    desc: 'A carved wooden chair with a tall back, from an old kissaten.', does: 'Sit down. Customers sit here too.', model: { lp: 'chair_wood' }, box: [0.48, 0.2, 0.5] },
   { id: 'lp_ottoman', name: 'Ottoman', jp: 'オットマン', price: 4200, category: 'furniture', unlock: null, mount: 'floor', feature: 'seat', quality: 0.12, block: true, top: true,
     desc: 'A plump buttoned footstool.', does: 'Sit down, or rest your feet.', model: { lp: 'ottoman' }, box: [0.56, 0.24, 0.56] },
   { id: 'lp_chair_green', name: 'Green Armchair', jp: '緑のアームチェア', price: 8800, category: 'furniture', unlock: 'decor:retro', mount: 'floor', feature: 'seat', quality: 0.24, block: true,
@@ -111,7 +112,7 @@ export const CATALOGUE = [
     desc: 'A turned-wood day bed for an afternoon nap.', does: 'Sit down. Customers sit and chat here.', model: { lp: 'daybed' }, box: [1.6, 0.4, 0.8] },
   // ---------------------------------------------------------------- tables and desks
   { id: 'lp_chabudai', name: 'Chabudai', jp: 'ちゃぶ台', price: 3800, category: 'furniture', unlock: null, mount: 'floor', feature: 'table', quality: 0.14, block: true, top: true, short: 'chabudai',
-    desc: 'A low round table with folding legs. Every Shōwa dinner happened at one.', does: 'Put small things on top. Wipe it now and then.', model: { lp: 'chabudai', h: 0.3 }, box: [0.7, 0.14, 0.7] },
+    desc: 'A low table with folding legs and a cloth. Every Shōwa dinner happened at one.', does: 'Put small things on top. Wipe it now and then.', model: { lp: 'chabudai', h: 0.3 }, box: [0.7, 0.14, 0.7] },
   { id: 'lp_kotatsu', name: 'Kotatsu', jp: 'こたつ', price: 8800, category: 'furniture', unlock: null, mount: 'floor', feature: 'table', quality: 0.22, block: true, top: true, short: 'kotatsu',
     desc: 'A low table with a quilt and a heater underneath. Nobody ever leaves.', does: 'Put small things on top. Wipe it now and then.', model: { lp: 'kotatsu', h: 0.42 }, box: [0.9, 0.24, 0.9] },
   { id: 'lp_table_side', name: 'Side Table', jp: 'サイドテーブル', price: 2600, category: 'furniture', unlock: null, mount: 'floor', feature: 'table', quality: 0.08, block: true, top: true,
@@ -167,12 +168,6 @@ export const CATALOGUE = [
     desc: 'A bushy green plant in a clay pot.', does: 'Makes the shop feel alive.', model: { lp: 'plant_pot2' }, box: [0.4, 0.3, 0.4] },
   { id: 'lp_plant_pot4', name: 'Palm in a Pot', jp: '鉢植えのヤシ', price: 2200, category: 'decor', unlock: 'decor:plants', mount: 'floor', feature: 'plant', quality: 0.2, block: true,
     desc: 'Arching fronds, a little holiday in the corner.', does: 'Makes the shop feel alive.', model: { lp: 'plant_pot4' }, box: [0.46, 0.3, 0.46] },
-  { id: 'lp_plant_anthurium', name: 'Anthurium', jp: 'アンスリウム', price: 2400, category: 'decor', unlock: 'decor:plants', mount: 'surface', feature: 'plant', quality: 0.18,
-    desc: 'Waxy red flowers that last for weeks.', does: 'Brightens a counter.', model: { lp: 'plant_anthurium' }, box: [0.3, 0.3, 0.3] },
-  { id: 'lp_plant_calathea', name: 'Calathea', jp: 'カラテア', price: 2400, category: 'decor', unlock: 'decor:plants', mount: 'floor', feature: 'plant', quality: 0.18, block: true,
-    desc: 'Striped round leaves that fold up at night.', does: 'Makes the shop feel alive.', model: { lp: 'plant_calathea' }, box: [0.4, 0.3, 0.4] },
-  { id: 'lp_plant_pachira', name: 'Money Tree', jp: 'パキラ', price: 3800, category: 'decor', unlock: 'decor:plants', mount: 'floor', feature: 'plant', quality: 0.26, block: true,
-    desc: 'A braided pachira: shopkeepers say it brings money in.', does: 'Makes the shop feel alive (and lucky).', model: { lp: 'plant_pachira' }, box: [0.5, 0.4, 0.5] },
   // ---------------------------------------------------------------- appliances
   { id: 'lp_boombox', name: 'Silver Boombox', jp: 'ラジカセ', price: 4200, category: 'electric', unlock: null, mount: 'surface', feature: 'radio', quality: 0.16,
     desc: 'Twin speakers, twin decks, a long chrome aerial.', does: 'Plays the radio stations. Music keeps customers browsing.', model: { lp: 'boombox' }, box: [0.56, 0.24, 0.2] },

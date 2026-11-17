@@ -1,0 +1,50 @@
+{
+ "mats": {
+  "base": "gloss",
+  "plate": "gloss",
+  "lemon": "gloss"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "shrimp1",
+   "src": "sketchfab:382be6710803495da6cc2035967f9648",
+   "height": 16,
+   "at": [
+    -3,
+    7.8,
+    -2
+   ],
+   "yaw": 10,
+   "pitch": 90,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "fill": 0.6,
+   "key": "9fdffc506b5e67"
+  },
+  {
+   "name": "shrimp2",
+   "src": "sketchfab:382be6710803495da6cc2035967f9648",
+   "height": 16,
+   "at": [
+    3,
+    7.8,
+    2
+   ],
+   "yaw": 35,
+   "pitch": 90,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "fill": 0.6,
+   "key": "9fdffc506b5e67"
+  }
+ ],
+ "key": "sampuru/ebifry"
+}

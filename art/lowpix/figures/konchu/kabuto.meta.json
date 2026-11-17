@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "beetle",
+   "src": "sketchfab:6395f798f7d243e19975a55b76608a8b",
+   "height": 10,
+   "at": [
+    0,
+    11.625,
+    -0.5
+   ],
+   "yaw": -30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "59a4230d4bf896"
+  }
+ ],
+ "model_clip": {
+  "node": "model_beetle",
+  "kind": "nod",
+  "length": 1.6,
+  "amp": 8,
+  "axis": "y"
+ },
+ "key": "konchu/kabuto"
+}

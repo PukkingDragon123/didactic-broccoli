@@ -1,0 +1,55 @@
+{
+ "id": "chess",
+ "src": "polyhaven:chess_set",
+ "credit": {
+  "title": "Chess Set",
+  "author": "Riley Queen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chess_set",
+  "site": "Poly Haven"
+ },
+ "tris": 4000,
+ "tex": 512,
+ "size": [
+  0.571,
+  0.112,
+  0.571
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#76624e",
+   "#96846a",
+   "#aca390",
+   "#c3c0b5",
+   "#dddcd7",
+   "#e1e0dd",
+   "#e5e5e4",
+   "#e9e9e9",
+   "#eeeeee"
+  ],
+  "m1": [
+   "#141011",
+   "#1a1516",
+   "#1f1b1c",
+   "#242122",
+   "#282828",
+   "#464646",
+   "#636363",
+   "#818181",
+   "#9e9e9e"
+  ],
+  "m2": [
+   "#213419",
+   "#2e4222",
+   "#3c502c",
+   "#4b5d37",
+   "#5a6942",
+   "#758257",
+   "#90996f",
+   "#a5a98e",
+   "#babbaa"
+  ]
+ },
+ "warnings": []
+}

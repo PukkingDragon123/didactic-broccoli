@@ -1,0 +1,45 @@
+{
+ "id": "stone_lantern",
+ "src": "sketchfab:e0417d1e05984727a50f9ab1451d162d",
+ "credit": {
+  "title": "Japanese Stone Lantern",
+  "author": "Sahir Virmani",
+  "authorUrl": "https://sketchfab.com/sahirvirmani",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-stone-lantern-e0417d1e05984727a50f9ab1451d162d",
+  "site": "Sketchfab"
+ },
+ "tris": 2997,
+ "tex": 400,
+ "size": [
+  0.58,
+  1.325,
+  0.58
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#241c19",
+   "#2d2622",
+   "#36302b",
+   "#3f3a35",
+   "#474440",
+   "#5f5e5b",
+   "#777777",
+   "#919191",
+   "#ababab"
+  ],
+  "m1": [
+   "#8f5a0e",
+   "#b88216",
+   "#dfb01e",
+   "#e3ca4b",
+   "#e7de77",
+   "#e8e88c",
+   "#eaeaa0",
+   "#ededb3",
+   "#f0f0c6"
+  ]
+ },
+ "warnings": []
+}

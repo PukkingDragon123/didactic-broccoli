@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "grub",
+   "src": "sketchfab:b67fb6cbe3fa455c81373aaa9f91fa1a",
+   "height": 9,
+   "at": [
+    0,
+    5.5,
+    0
+   ],
+   "yaw": 30,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "0c72d18f3f733f"
+  }
+ ],
+ "model_clip": {
+  "node": "model_grub",
+  "kind": "wobble",
+  "length": 1.4,
+  "amp": 6,
+  "axis": "y"
+ },
+ "key": "konchu/larva"
+}

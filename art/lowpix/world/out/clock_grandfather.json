@@ -1,0 +1,66 @@
+{
+ "id": "clock_grandfather",
+ "src": "polyhaven:vintage_grandfather_clock_01",
+ "credit": {
+  "title": "Vintage Grandfather Clock 01",
+  "author": "Yann Kervran, James Ray Cock",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_grandfather_clock_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 512,
+ "size": [
+  0.624,
+  2.191,
+  0.427
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#260b08",
+   "#31120b",
+   "#3c1b0f",
+   "#452513",
+   "#4f3018",
+   "#785127",
+   "#9e7639",
+   "#bd9b52",
+   "#c9b87e"
+  ],
+  "m1": [
+   "#5f4a51",
+   "#786569",
+   "#8f8184",
+   "#a59fa0",
+   "#bcbcbc",
+   "#c5c5c5",
+   "#cecece",
+   "#d8d8d8",
+   "#e1e1e1"
+  ],
+  "m2": [
+   "#6a3222",
+   "#884a30",
+   "#a5653e",
+   "#b98354",
+   "#c3a076",
+   "#c9b28b",
+   "#cfc2a0",
+   "#d7cfb4",
+   "#dfdcc7"
+  ],
+  "m3": [
+   "#100d0e",
+   "#141112",
+   "#191616",
+   "#1c1b1b",
+   "#202020",
+   "#3f3f3f",
+   "#5d5d5d",
+   "#7c7c7c",
+   "#9b9b9b"
+  ]
+ },
+ "warnings": []
+}

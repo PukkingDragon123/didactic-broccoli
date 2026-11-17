@@ -232,6 +232,8 @@ function surfaces(obj) {
  */
 export function decorate(obj, v, opts = {}) {
   if (!obj || !v) return obj;
+  // a lowpix figure still loading (src/figures/lowpix.js): decorate it again once its model is in
+  if (obj.userData?.pending) obj.userData.redecorate = () => decorate(obj, v, opts);
   undecorate(obj);
   const kind = opts.kind || 'prop';
   // recolour (faded paint, misprints, bootlegs)

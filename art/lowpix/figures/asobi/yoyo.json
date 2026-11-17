@@ -1,0 +1,503 @@
+{
+ "name": "Champion Yo-yo",
+ "description": "Click to throw it down. Hold to make it sleep. Walk the dog at your own risk.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 4.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.55,
+   1.0,
+   0.65
+  ],
+  "strength": 0.85,
+  "gradient": 0.35,
+  "ao": 0.55,
+  "ao_height": 4.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#391f0e",
+    "#a26029",
+    "#daa976",
+    "#f6ecdf",
+    "#f8f2e8",
+    "#fbf8f1",
+    "#fdfdfa"
+   ],
+   "steel": [
+    "#1c1b1f",
+    "#434047",
+    "#6a676e",
+    "#918f93",
+    "#aeaeae",
+    "#cccccc",
+    "#e9e9e9"
+   ],
+   "blush": [
+    "#400b15",
+    "#941a29",
+    "#d9373f",
+    "#e88f8c",
+    "#edb3ac",
+    "#f3d2ca",
+    "#faede9"
+   ],
+   "moss": [
+    "#10180c",
+    "#28381c",
+    "#43562c",
+    "#5f743e",
+    "#92a862",
+    "#bdc69d",
+    "#e4e6d5"
+   ],
+   "cd8302a": [
+    "#2c080f",
+    "#65141d",
+    "#9e2226",
+    "#d13b34",
+    "#dc796c",
+    "#e8b0a2",
+    "#f5e0d8"
+   ],
+   "cf0d040": [
+    "#382205",
+    "#82580d",
+    "#cb9717",
+    "#e9c84a",
+    "#eedf7c",
+    "#f3efac",
+    "#fafadc"
+   ],
+   "cc8c8d0": [
+    "#2c252d",
+    "#675766",
+    "#9c8e9a",
+    "#cec9cd",
+    "#dad8da",
+    "#e7e7e7",
+    "#f5f5f5"
+   ],
+   "cf0ece0": [
+    "#482716",
+    "#a66334",
+    "#d6ab81",
+    "#f4ebdf",
+    "#f7f1e8",
+    "#faf7f0",
+    "#fdfcf9"
+   ]
+  }
+ },
+ "styles": {
+  "pvc": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.4,
+     "amount": 0.12
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.75,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.3,
+     "min_light": -0.1,
+     "max_light": 0.22
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.2,
+     "shift": 1.0
+    }
+   ]
+  },
+  "matte": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 2.0,
+     "amount": 0.16
+    },
+    {
+     "id": "grain",
+     "op": "speckle",
+     "density": 0.015,
+     "shift": -0.5
+    }
+   ]
+  },
+  "metal": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 18,
+     "amount": 0.7
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 1.1,
+     "min_light": 0.7
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.8,
+     "min_light": -0.1,
+     "max_light": 0.3
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.08,
+     "shift": 1.2,
+     "post": true
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "disc_a",
+   "shape": "prism",
+   "pivot": [
+    0,
+    14,
+    3.6
+   ],
+   "size": [
+    28,
+    28,
+    6.0
+   ],
+   "sides": 20,
+   "front_scale": [
+    0.84,
+    0.84
+   ],
+   "back_scale": [
+    1,
+    1
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "cd8302a",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "band",
+      "axis": "x",
+      "from": -0.009821428571428573,
+      "to": 0.009821428571428573,
+      "shift": -0.55,
+      "faces": [
+       "-front",
+       "-back",
+       "-end",
+       "-start"
+      ],
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1,
+       "shadow_shift": -0.6,
+       "highlight_shift": 0.7
+      }
+     },
+     {
+      "id": "ring",
+      "op": "band",
+      "axis": "y",
+      "from": -1,
+      "to": 1,
+      "faces": [
+       "front"
+      ],
+      "ramp": "white",
+      "tone": 4.4
+     },
+     {
+      "id": "center",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        0,
+        3.2,
+        8
+       ]
+      ],
+      "ramp": "cd8302a",
+      "tone": 3.0,
+      "faces": [
+       "front",
+       "back"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       1,
+       0
+      ],
+      "art": [
+       "....y....",
+       "...yyy...",
+       "yyyyyyyyy",
+       ".yyyyyyy.",
+       "..yyyyy..",
+       ".yyy.yyy.",
+       "yy.....yy"
+      ],
+      "key": {
+       "y": "cf0d040:4"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "disc_b",
+   "shape": "prism",
+   "pivot": [
+    0,
+    14,
+    -3.6
+   ],
+   "size": [
+    28,
+    28,
+    6.0
+   ],
+   "sides": 20,
+   "front_scale": [
+    1,
+    1
+   ],
+   "back_scale": [
+    0.84,
+    0.84
+   ],
+   "style": "pvc",
+   "paint": {
+    "ramp": "cd8302a",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "seam",
+      "op": "band",
+      "axis": "x",
+      "from": -0.009821428571428573,
+      "to": 0.009821428571428573,
+      "shift": -0.55,
+      "faces": [
+       "-front",
+       "-back",
+       "-end",
+       "-start"
+      ],
+      "bevel": {
+       "shadow": 1,
+       "highlight": 1,
+       "shadow_shift": -0.6,
+       "highlight_shift": 0.7
+      }
+     },
+     {
+      "id": "ring",
+      "op": "band",
+      "axis": "y",
+      "from": -1,
+      "to": 1,
+      "faces": [
+       "back"
+      ],
+      "ramp": "white",
+      "tone": 4.4
+     },
+     {
+      "id": "center",
+      "op": "spots",
+      "centers": [
+       [
+        0,
+        0,
+        -3.2,
+        8
+       ]
+      ],
+      "ramp": "cd8302a",
+      "tone": 3.0,
+      "faces": [
+       "front",
+       "back"
+      ]
+     }
+    ],
+    "stamps": [
+     {
+      "face": "back",
+      "at": "center",
+      "offset": [
+       1,
+       0
+      ],
+      "art": [
+       "....y....",
+       "...yyy...",
+       "yyyyyyyyy",
+       ".yyyyyyy.",
+       "..yyyyy..",
+       ".yyy.yyy.",
+       "yy.....yy"
+      ],
+      "key": {
+       "y": "cf0d040:4"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "axle",
+   "shape": "prism",
+   "pivot": [
+    0,
+    14,
+    -0.8
+   ],
+   "offset": [
+    0,
+    0,
+    0.8
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "size": [
+    4.4,
+    4.4,
+    1.6
+   ],
+   "sides": 10,
+   "style": "metal",
+   "paint": {
+    "ramp": "cc8c8d0",
+    "tone": 3.1
+   }
+  },
+  {
+   "id": "string",
+   "shape": "loft",
+   "pivot": [
+    0,
+    28,
+    0
+   ],
+   "rings": [
+    {
+     "at": [
+      0,
+      0,
+      0
+     ],
+     "size": 0.6
+    },
+    {
+     "at": [
+      0.4,
+      7,
+      0
+     ],
+     "size": 0.5
+    },
+    {
+     "at": [
+      0,
+      12,
+      0
+     ],
+     "size": 0.5
+    }
+   ],
+   "profile": {
+    "sides": 6,
+    "round": 2
+   },
+   "subdiv": 1,
+   "caps": [
+    true,
+    true
+   ],
+   "up": [
+    0,
+    0,
+    1
+   ],
+   "style": "matte",
+   "paint": {
+    "ramp": "cf0ece0",
+    "tone": 3.1
+   }
+  }
+ ]
+}

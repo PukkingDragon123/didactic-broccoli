@@ -1,0 +1,33 @@
+{
+ "id": "shell_giant",
+ "src": "polyhaven:lambis_shell",
+ "credit": {
+  "title": "Lambis Shell",
+  "author": "Kuutti Siitonen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/lambis_shell",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 512,
+ "size": [
+  1.438,
+  0.48,
+  0.77
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#5a2b1f",
+   "#733f2a",
+   "#8b5637",
+   "#a26f45",
+   "#b38959",
+   "#ba9f73",
+   "#c3b28c",
+   "#ccc3a4",
+   "#d6d3bb"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "cabinet_vintage",
+ "src": "polyhaven:vintage_cabinet_01",
+ "credit": {
+  "title": "Vintage Cabinet 01",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/vintage_cabinet_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2806,
+ "tex": 1344,
+ "size": [
+  2.027,
+  2.235,
+  0.67
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#140405",
+   "#1a0505",
+   "#200907",
+   "#250e09",
+   "#2a130b",
+   "#5a301a",
+   "#88522a",
+   "#b57a3d",
+   "#c8a168"
+  ],
+  "m1": [
+   "#5e3026",
+   "#784634",
+   "#915f43",
+   "#a97954",
+   "#b49471",
+   "#bca787",
+   "#c4b89d",
+   "#cdc7b1",
+   "#d7d5c5"
+  ]
+ },
+ "warnings": []
+}

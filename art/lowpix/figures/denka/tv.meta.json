@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "tv",
+   "src": "sketchfab:fe9acba84eed4a43b4315200aefbead1",
+   "height": 26,
+   "at": [
+    0,
+    3.0,
+    -1
+   ],
+   "yaw": -18,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "0e9b295b21224a"
+  }
+ ],
+ "key": "denka/tv"
+}

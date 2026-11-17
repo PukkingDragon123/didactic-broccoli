@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "statue",
+   "src": "sketchfab:75a9949393034d5cbc18625bc2bdb810",
+   "height": 34,
+   "at": [
+    0,
+    3.6,
+    0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "metal",
+   "key": "02a212b15f1867"
+  }
+ ],
+ "key": "inusanpo/hachi"
+}

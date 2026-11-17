@@ -1,0 +1,56 @@
+{
+ "id": "cat_cushion",
+ "src": "sketchfab:31fa30b8d8b34a73aac870b0c8443644",
+ "credit": {
+  "title": "Pet Bed",
+  "author": "GeniusPilot2016",
+  "authorUrl": "https://sketchfab.com/GeniusPilot2016",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pet-bed-31fa30b8d8b34a73aac870b0c8443644",
+  "site": "Sketchfab"
+ },
+ "tris": 1692,
+ "tex": 256,
+ "size": [
+  0.519,
+  0.12,
+  0.364
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#372c29",
+   "#463b38",
+   "#544c47",
+   "#615c58",
+   "#6d6b69",
+   "#7f7f7f",
+   "#949494",
+   "#a8a8a8",
+   "#bcbcbc"
+  ],
+  "m1": [
+   "#852d00",
+   "#ae4900",
+   "#d46c03",
+   "#f89407",
+   "#f6b532",
+   "#f4cc51",
+   "#f4de6f",
+   "#f4ec8c",
+   "#f5f5a9"
+  ],
+  "m2": [
+   "#97453f",
+   "#b86d60",
+   "#ca9d8f",
+   "#ddc7bd",
+   "#f3ede9",
+   "#f4f0ec",
+   "#f6f3f0",
+   "#f7f6f3",
+   "#f9f8f6"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,37 @@
+{
+ "mats": {
+  "sign": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "dog",
+   "src": "sketchfab:51f498df96c049cbb9e600b0a88c5838",
+   "height": 16,
+   "at": [
+    4,
+    3.0,
+    2
+   ],
+   "yaw": -110,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "33d80bb65af023"
+  }
+ ],
+ "model_clip": {
+  "node": "model_dog",
+  "kind": "turn",
+  "length": 2.0,
+  "amp": 25,
+  "axis": "y"
+ },
+ "key": "inusanpo/terrier"
+}

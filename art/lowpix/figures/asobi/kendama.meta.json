@@ -1,0 +1,19 @@
+{
+ "mats": {
+  "knob": "gloss",
+  "cross": "gloss",
+  "cup_big": "gloss",
+  "cup_small": "gloss",
+  "spike": "gloss",
+  "ball": "gloss"
+ },
+ "clips": {},
+ "pts": {
+  "from": "pt_from",
+  "big": "pt_big",
+  "small": "pt_small",
+  "spike": "pt_spike",
+  "miss": "pt_miss"
+ },
+ "key": "asobi/kendama"
+}

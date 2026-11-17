@@ -1,0 +1,100 @@
+{
+ "id": "extinguisher_jp",
+ "src": "sketchfab:68068b0dcc9c45388f958aef24e26c92",
+ "credit": {
+  "title": "Fire Extinguisher",
+  "author": "crow",
+  "authorUrl": "https://sketchfab.com/crow.bite",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fire-extinguisher-68068b0dcc9c45388f958aef24e26c92",
+  "site": "Sketchfab"
+ },
+ "tris": 2951,
+ "tex": 256,
+ "size": [
+  0.159,
+  0.5,
+  0.28
+ ],
+ "colours": 48,
+ "palette": {
+  "m0": [
+   "#3b2e33",
+   "#4b3f42",
+   "#5a5051",
+   "#686262",
+   "#757575",
+   "#888888",
+   "#9b9b9b",
+   "#aeaeae",
+   "#c1c1c1"
+  ],
+  "m1": [
+   "#4e071f",
+   "#640b21",
+   "#790f21",
+   "#8d151f",
+   "#a11b1b",
+   "#c33225",
+   "#d6573e",
+   "#db8366",
+   "#e1a88c"
+  ],
+  "m2": [
+   "#0f0b0d",
+   "#131010",
+   "#161414",
+   "#1a1818",
+   "#1d1d1d",
+   "#3c3c3c",
+   "#5b5b5b",
+   "#7a7a7a",
+   "#999999"
+  ],
+  "m3": [
+   "#b13041",
+   "#ce585d",
+   "#db918f",
+   "#eac8c4",
+   "#fcf8f7",
+   "#fcf9f8",
+   "#fdfbf9",
+   "#fdfcfb",
+   "#fdfdfc"
+  ],
+  "m4": [
+   "#430c1e",
+   "#561122",
+   "#681724",
+   "#791e25",
+   "#8a2525",
+   "#ab3c32",
+   "#c45c47",
+   "#cd856d",
+   "#d6a891"
+  ],
+  "m5": [
+   "#642c2e",
+   "#7f3e3c",
+   "#99564d",
+   "#ad7466",
+   "#b99485",
+   "#c0a798",
+   "#c8b8ab",
+   "#d1c7bc",
+   "#dad5cd"
+  ],
+  "m6": [
+   "#3b305b",
+   "#4e4275",
+   "#62548c",
+   "#756ba0",
+   "#8c88ae",
+   "#a09bb7",
+   "#b2adc0",
+   "#c3beca",
+   "#d2cfd5"
+  ]
+ },
+ "warnings": []
+}

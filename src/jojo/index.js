@@ -89,7 +89,7 @@ export class JoJo {
       const x = (parseFloat(el.style.left) || 0) + (fontPx * [...txt].length) / 2, y = (parseFloat(el.style.top) || 0) + fontPx / 2;
       const delay = parseFloat(el.style.animationDelay) || 0, dur = parseFloat(el.style.getPropertyValue('--d')) || 2.6;
       const dpr = Math.min(2, window.devicePixelRatio || 1);
-      this.kana.spawn({ kind, text: txt, screen: [x / innerWidth, y / innerHeight], px: Math.max(2, Math.round((fontPx * dpr) / 21)), delay, dur, sound: false });
+      this.kana.spawn({ kind, text: txt, screen: [x / innerWidth, y / innerHeight], px: Math.max(1, Math.round((fontPx * dpr) / 42)), delay, dur, sound: false });
     };
     const attach = (L) => {
       if (this.menaceObs) return;

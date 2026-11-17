@@ -1,0 +1,37 @@
+{
+ "mats": {
+  "water": "gloss"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "fly",
+   "src": "sketchfab:fa3e5f2704904218a0e971e4edf63e20",
+   "height": 14,
+   "at": [
+    -1.5,
+    35.0,
+    2.6
+   ],
+   "yaw": 60,
+   "pitch": 0,
+   "roll": 4,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "dfea483a2b3ce2"
+  }
+ ],
+ "model_clip": {
+  "node": "model_fly",
+  "kind": "hop",
+  "length": 1.2,
+  "amp": 1.5,
+  "axis": "y"
+ },
+ "key": "konchu/tonbo"
+}

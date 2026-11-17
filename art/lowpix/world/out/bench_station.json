@@ -1,0 +1,34 @@
+{
+ "id": "bench_station",
+ "src": "sketchfab:68d9b8434ee6407da1e6fda1166d3ad2",
+ "credit": {
+  "title": "Japan Train Station Bench",
+  "author": "Mxstifie",
+  "authorUrl": "https://sketchfab.com/Mxstifie",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japan-train-station-bench-68d9b8434ee6407da1e6fda1166d3ad2",
+  "site": "Sketchfab"
+ },
+ "tris": 2164,
+ "tex": 400,
+ "size": [
+  1.548,
+  0.8,
+  0.438
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

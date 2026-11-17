@@ -448,7 +448,8 @@ export class Toys {
       L = new LcdGame();
       const s = item.screen;
       let a, b;
-      if (s.mm) { const [x0, y0, x1, y1, z] = s.mm; item.pts = { ...item.pts, scrA: [x0, y1, z], scrB: [x1, y0, z] }; a = pt(item, 'scrA'); b = pt(item, 'scrB'); }
+      if (s.pts) { a = pt(item, 'scrA'); b = pt(item, 'scrB'); } // lowpix: the GLB's pt_scrA / pt_scrB joints
+      else if (s.mm) { const [x0, y0, x1, y1, z] = s.mm; item.pts = { ...item.pts, scrA: [x0, y1, z], scrB: [x1, y0, z] }; a = pt(item, 'scrA'); b = pt(item, 'scrB'); }
       else { a = toMesh(item, s.x0, s.y1 + 1, s.z + 1); b = toMesh(item, s.x1 + 1, s.y0, s.z + 1); }
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(b.x - a.x, a.y - b.y), new THREE.MeshBasicMaterial({ map: L.tex }));
       plane.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, a.z + 0.0004);

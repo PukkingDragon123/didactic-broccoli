@@ -1,0 +1,89 @@
+{
+ "id": "rocket",
+ "src": "sketchfab:eeca5464cafe42fd9ae35b2451c14858",
+ "credit": {
+  "title": "Toy Rocket 4K Free 3D model",
+  "author": "Desertsage",
+  "authorUrl": "https://sketchfab.com/Desertsage",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/toy-rocket-4k-free-3d-model-eeca5464cafe42fd9ae35b2451c14858",
+  "site": "Sketchfab"
+ },
+ "tris": 3985,
+ "tex": 560,
+ "size": [
+  1.264,
+  2.43,
+  1.264
+ ],
+ "colours": 46,
+ "palette": {
+  "m0": [
+   "#600020",
+   "#7e001f",
+   "#9b001a",
+   "#b9000f",
+   "#d60000",
+   "#fb1804",
+   "#f9502f",
+   "#f78059",
+   "#f7a982"
+  ],
+  "m1": [
+   "#0a0808",
+   "#0c0a0b",
+   "#0f0d0d",
+   "#111010",
+   "#131313",
+   "#333333",
+   "#545454",
+   "#747474",
+   "#959595"
+  ],
+  "m2": [
+   "#4b3a40",
+   "#604e53",
+   "#736466",
+   "#857b7b",
+   "#959393",
+   "#a3a3a3",
+   "#b1b1b1",
+   "#c0c0c0",
+   "#cfcfcf"
+  ],
+  "m3": [
+   "#5b1029",
+   "#75172e",
+   "#8d1f31",
+   "#a52832",
+   "#bc3232",
+   "#ca5449",
+   "#d07a69",
+   "#d69c88",
+   "#deb8a6"
+  ],
+  "m4": [
+   "#080f33",
+   "#0c1942",
+   "#102550",
+   "#15335d",
+   "#1a426a",
+   "#276591",
+   "#368bb6",
+   "#57adc9",
+   "#81c6d3"
+  ],
+  "m5": [
+   "#4c2431",
+   "#60313d",
+   "#743f48",
+   "#874f53",
+   "#995f5f",
+   "#a57b77",
+   "#b19590",
+   "#bdada7",
+   "#cbc2bd"
+  ]
+ },
+ "warnings": []
+}

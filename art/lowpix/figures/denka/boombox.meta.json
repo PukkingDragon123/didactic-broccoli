@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "deck",
+   "src": "sketchfab:c13af52fcba1490c98871952e34d4f10",
+   "height": 18,
+   "at": [
+    0,
+    4.0,
+    0
+   ],
+   "yaw": -12,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "b798fdd41d2d55"
+  }
+ ],
+ "model_clip": {
+  "node": "model_deck",
+  "kind": "hop",
+  "length": 0.8,
+  "amp": 1.0,
+  "axis": "y"
+ },
+ "key": "denka/boombox"
+}

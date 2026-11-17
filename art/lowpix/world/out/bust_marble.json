@@ -1,0 +1,33 @@
+{
+ "id": "bust_marble",
+ "src": "polyhaven:marble_bust_01",
+ "credit": {
+  "title": "Marble Bust 01",
+  "author": "Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/marble_bust_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3999,
+ "tex": 256,
+ "size": [
+  0.272,
+  0.515,
+  0.3
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#533d33",
+   "#6a5446",
+   "#806b59",
+   "#94836e",
+   "#a29989",
+   "#aca89c",
+   "#b7b5ae",
+   "#c3c2bf",
+   "#d0d0d0"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,65 @@
+{
+ "garage_shell": {
+  "id": "garage_shell",
+  "name": "garage_shell",
+  "min": [
+   -4.35,
+   0,
+   -5.43
+  ],
+  "max": [
+   4.35,
+   3.45,
+   5.15
+  ],
+  "tris": 56,
+  "tex": [
+   256,
+   496
+  ],
+  "bytes": 23732,
+  "ppm": 24
+ },
+ "shopfront": {
+  "id": "shopfront",
+  "name": "shopfront",
+  "min": [
+   -4.5,
+   0,
+   3.5
+  ],
+  "max": [
+   4.5,
+   4.55,
+   6.255
+  ],
+  "tris": 1170,
+  "tex": [
+   1024,
+   1072
+  ],
+  "bytes": 118072,
+  "ppm": 64
+ },
+ "shutter": {
+  "id": "shutter",
+  "name": "shutter",
+  "min": [
+   -3,
+   0,
+   5.08
+  ],
+  "max": [
+   3,
+   2.85,
+   5.08
+  ],
+  "tris": 2,
+  "tex": [
+   512,
+   192
+  ],
+  "bytes": 12388,
+  "ppm": 64
+ }
+}

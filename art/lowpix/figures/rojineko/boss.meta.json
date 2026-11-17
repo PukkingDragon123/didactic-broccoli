@@ -8,5 +8,36 @@
   "gimmick": "gimmick"
  },
  "pts": {},
+ "models": [
+  {
+   "name": "cat",
+   "src": "sketchfab:ee5dcbdd0c2b4c33adf83d4c6708e6ae",
+   "height": 25,
+   "at": [
+    0,
+    20.5,
+    -0.5
+   ],
+   "yaw": -10,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "recolor": {
+    "tint": "#a8784c",
+    "brightness": 0.95
+   },
+   "key": "1384b699e98776"
+  }
+ ],
+ "model_clip": {
+  "node": "model_cat",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 25,
+  "axis": "y"
+ },
  "key": "rojineko/boss"
 }

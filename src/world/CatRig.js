@@ -1,5 +1,6 @@
-// Mikan the stray (and the dark tabby that prowls the lane at night): a real cat (catBody.js: one skinned mesh,
-// one painted atlas) animated in code, with a painted face that changes expression.
+// Mikan the stray (and the dark tabby that prowls the lane at night): a real cat (catBody.js: a converted CC BY cat
+// sculpt with a pixel-art coat, one skinned mesh, two materials: the coat and the glossy eyes) animated in code, with a
+// modelled face: eyelids that open, close and narrow over the eyeballs, pupils that change, a jaw that opens.
 //   const rig = new CatRig({ coat: 'calico' | 'tabby' });  scene.add(rig.root);  rig.setPose('sit');  rig.update(dt, speed);
 // Poses: walk (stand / walk / trot / run by speed), sit, groom, sleep (loaf, or curled with her nose in her tail), held,
 // drink, groove ({ bpm, phase, clock }), hide, stretch, knead, stalk. Blended pose parameters; a bending spine (hips and
@@ -13,7 +14,7 @@
 // forces an expression for a moment; meow() opens the mouth; react('swat' | 'nibble'). onFx(kind, worldPos) is called
 // for zz's while she sleeps.
 import * as THREE from 'three';
-import { catAssets, setFrame, CAT_BONES, TAIL_N, EYES, MOUTHS, EYE_F, MOUTH_F } from './catBody.js';
+import { catAssets, setPupil, CAT_BONES, TAIL_N, CAT_FOOT, CAT_FACE } from './catBody.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -26,8 +27,16 @@ const _m = new THREE.Matrix4(), _m2 = new THREE.Matrix4(), _inv = new THREE.Matr
 const X = new THREE.Vector3(1, 0, 0);
 
 export const CAT_SCALE = 1;
-const HEAD = 1.07; // a touch more head than the reference cat: Mikan's charm
+const HEAD = 1; // (the head's scale against the trunk's squash)
 const CLOSED = new Set(['sleepy', 'content', 'squeeze']);
+// eyes: [upper lid edge, lower lid edge] (radians from the eye's equator; they meet when the eye is shut), the pupil
+const EYE_POSE = {
+  open: [0.6, -0.48, 'normal'], wide: [0.8, -0.6, 'round'], slit: [0.56, -0.46, 'slit'], half: [0.14, -0.46, 'narrow'],
+  content: [-0.16, -0.18, 'narrow'], sleepy: [-0.2, -0.22, 'narrow'], squeeze: [-0.1, -0.08, 'slit'], blink: [-0.22, -0.24, 'normal'],
+};
+// mouths: [jaw open (radians), tongue out (0..1)]
+const MOUTH_POSE = { w: [0, 0], happy: [0, 0], open: [0.26, 0], blep: [0.05, 0.55], lap: [0.2, 1], yawn: [0.62, 0.15], hiss: [0.46, 0] };
+const _ax = new THREE.Vector3();
 const LOOKS = Object.fromEntries(['open', 'wide', 'slit', 'half'].map((e) => [e, { '': e, L: e + 'L', R: e + 'R' }]));
 const POSES = ['walk', 'sit', 'groom', 'sleep', 'held', 'drink', 'groove', 'hide', 'stretch', 'knead', 'stalk'];
 const KEYS = ['y', 'z', 'pitch', 'roll', 'yaw', 'cp', 'cy', 'squash', 'hp', 'hy', 'hr', 'stab', 'earB', 'earO', 'tailUp', 'tailCurl', 'tailSide', 'tailWrap', 'swish', 'swishF', 'puff',
@@ -47,12 +56,14 @@ export class CatRig {
     const A = catAssets(opts.coat || 'calico', opts.lod || 0);
     this.root = new THREE.Group();
     this.root.name = 'cat';
-    this.mat = new THREE.MeshStandardMaterial({ map: A.map, alphaTest: 0.5, roughness: 0.9, metalness: 0, flatShading: true }); // flat block faces, like the people
-    // per-cat UVs (the face frames differ per cat); everything else is shared
+    this.mat = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.92, metalness: 0 });
+    this.matEye = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.14, metalness: 0, envMapIntensity: 1.6 }); // wet: the window's highlight
+    // per-cat UVs (the pupil frame differs per cat); everything else is shared
     this.geo = new THREE.BufferGeometry();
     for (const k of ['position', 'normal', 'skinIndex', 'skinWeight']) this.geo.setAttribute(k, A.geometry.attributes[k]);
     this.geo.setAttribute('uv', A.geometry.attributes.uv.clone());
     this.geo.setIndex(A.geometry.index);
+    for (const gr of A.geometry.groups) this.geo.addGroup(gr.start, gr.count, gr.materialIndex);
     this.geo.boundingBox = A.geometry.boundingBox.clone(); this.geo.boundingSphere = A.geometry.boundingSphere.clone();
     this.uv = this.geo.attributes.uv;
     this.uv.setUsage(THREE.DynamicDrawUsage);
@@ -73,10 +84,10 @@ export class CatRig {
     // leg chains: segment lengths and rest directions (root space; every rest rotation is identity)
     this.legs = LEGS.map(([a, m, p, hind, side]) => {
       const A0 = new THREE.Vector3(...J[a]), M0 = new THREE.Vector3(...J[m]), P0 = new THREE.Vector3(...J[p]);
-      const foot = hind ? new THREE.Vector3(side * 0.037, 0, -0.145) : new THREE.Vector3(side * 0.03, 0, 0.128);
+      const foot = new THREE.Vector3(...CAT_FOOT[(hind ? 'B' : 'F') + (side > 0 ? 'L' : 'R')]);
       return { a, m, p, hind, side, la: A0.distanceTo(M0), lb: M0.distanceTo(P0), d1: M0.clone().sub(A0).normalize(), d2: P0.clone().sub(M0).normalize(), d3: foot.clone().sub(P0).normalize(), off: P0.clone().sub(foot), L: A0.y, lift: 0, prev: new THREE.Vector3() };
     });
-    this.mesh = new THREE.SkinnedMesh(this.geo, this.mat);
+    this.mesh = new THREE.SkinnedMesh(this.geo, [this.mat, this.matEye]);
     this.mesh.add(this.bones[0]);
     this.mesh.updateMatrixWorld(true);
     this.mesh.bind(new THREE.Skeleton(this.bones));
@@ -86,10 +97,10 @@ export class CatRig {
     this.root.add(this.mesh);
     // invisible hit boxes riding the body and the head (cheap raycasts, and grips for the first-person hands)
     const hitM = new THREE.MeshBasicMaterial({ visible: false });
-    this.hitBody = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.16, 0.4), hitM);
-    this.hitBody.position.set(0, 0.0, 0.04);
-    this.hitHead = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), hitM);
-    this.hitHead.position.set(0, 0.022, 0.035);
+    this.hitBody = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.15, 0.4), hitM);
+    this.hitBody.position.set(0, 0.012, 0.075);
+    this.hitHead = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.1, 0.1), hitM);
+    this.hitHead.position.set(0, 0.03, 0.055);
     b.body.add(this.hitBody); b.head.add(this.hitHead);
     this.root.userData.catRig = this;
     // state
@@ -107,7 +118,8 @@ export class CatRig {
     this.curl = false;
     this.groove = { bpm: 120, phase: 0, clock: null }; this.grooveT = 0;
     this.forced = null; this.meowT = 0; this.zT = 2; this.onFx = null;
-    this.face = { eyes: '', mouth: '' };
+    this.face = { eyes: '', mouth: '', pupil: '', up: 0.5, lo: -0.4, jaw: 0, tongue: 0, lookX: 0, lookY: 0 };
+    this.faceT = { up: 0.5, lo: -0.4, jaw: 0, tongue: 0 };
     this.setFace('open', 'w');
     this.update(1 / 60, 0);
     this.started = false; // the first setPose() snaps straight to its pose
@@ -136,10 +148,38 @@ export class CatRig {
   /** A quick reaction: 'swat' (a front paw lashes out at the hand) or 'nibble' (a lunge with an open mouth). */
   react(kind) { this.reactK = kind; this.reactT = 0; }
 
+  /** Expression targets: eyelid edges (radians above / below the eye's equator), the pupil, the jaw and tongue. */
   setFace(eyes, mouth) {
-    const F = this.face, A = this.A;
-    if (eyes && eyes !== F.eyes && EYES[eyes]) { setFrame(this.uv, A.eyes, EYES[eyes], EYE_F.w, EYE_F.h); F.eyes = eyes; this.uv.needsUpdate = true; }
-    if (mouth && mouth !== F.mouth && MOUTHS[mouth]) { setFrame(this.uv, A.mouth, MOUTHS[mouth], MOUTH_F.w, MOUTH_F.h); F.mouth = mouth; this.uv.needsUpdate = true; }
+    const F = this.face, T = this.faceT;
+    if (eyes) {
+      const kind = eyes.replace(/[LR]$/, ''), E = EYE_POSE[kind] || EYE_POSE.open;
+      T.up = E[0]; T.lo = E[1];
+      F.lookX = eyes.endsWith('L') ? 0.32 : eyes.endsWith('R') ? -0.32 : 0;
+      let pupil = E[2];
+      if (pupil === 'normal' && this.dark > 0.7) pupil = 'round';
+      if (pupil !== F.pupil) { setPupil(this.uv, this.A, pupil); F.pupil = pupil; }
+      F.eyes = eyes;
+    }
+    if (mouth) { const M = MOUTH_POSE[mouth] || MOUTH_POSE.w; T.jaw = M[0]; T.tongue = M[1]; F.mouth = mouth; }
+  }
+
+  /** The modelled face, each frame: lids (quick, a blink snaps shut), eyes turned to the look, jaw and tongue. */
+  applyFace(dt) {
+    const F = this.face, T = this.faceT, b = this.b, k = 1 - Math.exp(-dt * 26), kj = 1 - Math.exp(-dt * 18);
+    F.up = lerp(F.up, T.up, k); F.lo = lerp(F.lo, T.lo, k);
+    F.jaw = lerp(F.jaw, T.jaw + (T.tongue > 0.5 ? Math.sin(this.t * 22) * 0.04 : 0), kj); F.tongue = lerp(F.tongue, T.tongue, kj);
+    if (!CAT_FACE) return;
+    for (const s of ['L', 'R']) {
+      const E = CAT_FACE.eyes[s];
+      _ax.fromArray(E.s);
+      b['lidU' + s].quaternion.setFromAxisAngle(_ax, -F.up);
+      b['lidD' + s].quaternion.setFromAxisAngle(_ax, -F.lo);
+      b['eye' + s].quaternion.setFromEuler(_e.set(-this.look[1] * 0.25, F.lookX + this.eyeLead * 0.2, 0, 'YXZ'));
+    }
+    b.jaw.quaternion.setFromAxisAngle(X, F.jaw);
+    // the tongue slides out along its length (a blep, lapping milk)
+    const t = CAT_FACE.tongue.dir, out = F.tongue * 0.012;
+    b.tongue.position.copy(this.rest.tongue).addScaledVector(_ax.fromArray(t), -out);
   }
 
   // ------------------------------------------------------------------ poses
@@ -456,6 +496,7 @@ export class CatRig {
     if (this.reactK) { eyes = 'squeeze'; mouth = 'hiss'; }
     if (this.forced) { eyes = this.forced.eyes || eyes; mouth = this.forced.mouth || mouth; }
     this.setFace(eyes, mouth);
+    this.applyFace(dt);
     // sleepy z's float up now and then
     if (w.sleep > 0.8 && this.onFx) {
       this.zT -= dt;
@@ -465,9 +506,9 @@ export class CatRig {
 
   /** World points for the first-person hands: either side of her chest (sd +1 her left; heldFlip -1 while she faces
    *  the one holding her, so each hand keeps its own side), and her back for strokes. */
-  chestSide(sd, out) { return this.b.chest.localToWorld(out.set(sd * (this.heldFlip || 1) * 0.056, -0.012, 0.045)); }
-  headTop(out) { return this.b.head.localToWorld(out.set(0, 0.056, 0.024)); }
-  backTop(u, out) { return this.b.body.localToWorld(out.set(0, 0.066, lerp(0.16, -0.11, u))); }
+  chestSide(sd, out) { return this.b.chest.localToWorld(out.set(sd * (this.heldFlip || 1) * 0.052, -0.01, 0.05)); }
+  headTop(out) { return this.b.head.localToWorld(out.set(0, 0.062, 0.035)); }
+  backTop(u, out) { return this.b.body.localToWorld(out.set(0, 0.078, lerp(0.15, -0.08, u))); }
 }
 
 // scratch for the leg solver

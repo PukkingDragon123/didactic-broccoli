@@ -1,0 +1,45 @@
+{
+ "id": "mk_ice_freezer",
+ "src": "sketchfab:63f74a5275864eab9a51309b9c391cf4",
+ "credit": {
+  "title": "Deep Freezer V1",
+  "author": "doorbin",
+  "authorUrl": "https://sketchfab.com/woodland.mid",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/deep-freezer-v1-63f74a5275864eab9a51309b9c391cf4",
+  "site": "Sketchfab"
+ },
+ "tris": 300,
+ "tex": 560,
+ "size": [
+  1.167,
+  0.88,
+  0.781
+ ],
+ "colours": 6,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m1": [
+   "#084217",
+   "#0c5419",
+   "#106619",
+   "#157717",
+   "#22881b",
+   "#3aad26",
+   "#58ce35",
+   "#83d45e",
+   "#a8dc86"
+  ]
+ },
+ "warnings": []
+}

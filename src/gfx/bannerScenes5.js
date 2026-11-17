@@ -1,0 +1,39 @@
+// Display-card scenes for the new line-up (the lowpix figure series, src/data/series/*.js). Each new series is shown
+// on a hand-pixelled backdrop: the painters of src/gfx/bannerScenes*.js reused under the new ids where the setting
+// fits (a back lane for the stray cats, the diner window for the food samples, the Showa living room for the
+// appliances...), with this season's own catchphrases. The figures standing in each scene are the series' own
+// (pixel-rendered from their GLBs by src/gfx/banner.js).
+import { SCENES as S1 } from './bannerScenes.js';
+import { SCENES as S2 } from './bannerScenes2.js';
+import { SCENES as S3 } from './bannerScenes3.js';
+import { SCENES as S4 } from './bannerScenes4.js';
+
+const OLD = () => ({ ...S1, ...S2, ...S3, ...S4 });
+/** new series id -> the backdrop painter it uses */
+const BACKDROP = {
+  rojineko: 'lanepals', sampuru: 'shokudo', denka: 'showa', konchu: 'matsuri', asobi: 'gecen', shinkai: 'umi', inusanpo: 'mochi',
+  yacho: 'kasa', daikaiju: 'kaiju', hikidashi: 'bungu', machikado: 'shotengai', okashi: 'wagashi', norimono: 'densha', tsukumo: 'hyakki',
+  shugorei: 'bizarre', yudono: 'onsen', kaiun: 'omamori', yatai: 'oden',
+};
+export const SCENES = Object.fromEntries(Object.entries(BACKDROP).map(([id, old]) => [id, (...a) => OLD()[old](...a)]));
+
+export const BANNER_TEXT = {
+  rojineko: { catch: 'この路地のボスはだれだ？', sub: '夕方の三丁目パトロール' },
+  sampuru: { catch: '本物そっくり！食品サンプル', sub: 'ショーウィンドウの名物たち' },
+  denka: { catch: 'なつかしの昭和家電が集合！', sub: '夕焼けのお茶の間で' },
+  konchu: { catch: '夏休みの昆虫採集！', sub: '朝の雑木林で見つけたよ' },
+  asobi: { catch: '遊べる！駄菓子屋おもちゃ', sub: '十円玉をにぎりしめて' },
+  shinkai: { catch: '深海のふしぎな生きもの', sub: '水深千メートルの世界' },
+  inusanpo: { catch: 'いっしょにおさんぽ行こう！', sub: '川べりの夕暮れ道' },
+  yacho: { catch: '庭にやってくる小鳥たち', sub: '梅の枝でひとやすみ' },
+  daikaiju: { catch: '大怪獣、街にあらわる！', sub: '夕焼けの大決戦' },
+  hikidashi: { catch: '机の引き出し大集合！', sub: '新学期の文房具' },
+  machikado: { catch: 'あの街角を手のひらに', sub: '商店街の夕暮れ' },
+  okashi: { catch: 'おいしそうな和菓子たち', sub: '老舗の菓子処より' },
+  norimono: { catch: '路地を走るのりものたち', sub: '朝の出発進行！' },
+  tsukumo: { catch: '百年たったら動きだす！', sub: '月夜の付喪神パレード' },
+  shugorei: { catch: 'あらわれよ、守護の霊！', sub: '運命を守る者たち' },
+  yudono: { catch: 'いい湯だな〜どうぶつ温泉', sub: '雪見の露天風呂' },
+  kaiun: { catch: 'ご利益たっぷり開運招福！', sub: '春の神社でおまいり' },
+  yatai: { catch: 'お祭りの屋台へようこそ！', sub: '夏の夜のにぎわい' },
+};

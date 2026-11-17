@@ -1,0 +1,56 @@
+{
+ "id": "mk_ashtray",
+ "src": "sketchfab:6e9bfb5e4b1e42b791a51c40cb993306",
+ "credit": {
+  "title": "Ashtray with Cigarettes",
+  "author": "YJ_",
+  "authorUrl": "https://sketchfab.com/YJ_",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ashtray-with-cigarettes-6e9bfb5e4b1e42b791a51c40cb993306",
+  "site": "Sketchfab"
+ },
+ "tris": 1486,
+ "tex": 144,
+ "size": [
+  0.186,
+  0.048,
+  0.231
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#121914",
+   "#191f1a",
+   "#1f2620",
+   "#262b27",
+   "#2e312e",
+   "#4c4c4c",
+   "#696969",
+   "#858585",
+   "#a2a2a2"
+  ],
+  "m1": [
+   "#57170d",
+   "#702713",
+   "#883b1a",
+   "#9f5221",
+   "#b56b2a",
+   "#cd8b3a",
+   "#d2a75c",
+   "#d8be7e",
+   "#dfd29e"
+  ],
+  "m2": [
+   "#4f3225",
+   "#654633",
+   "#7a5c41",
+   "#8e7351",
+   "#a08a63",
+   "#aa9d7c",
+   "#b5ae93",
+   "#c1beaa",
+   "#cdcdc0"
+  ]
+ },
+ "warnings": []
+}

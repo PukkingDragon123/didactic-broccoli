@@ -1,6 +1,6 @@
 {
  "name": "Moon-White Stray",
- "description": "On the roof under a crescent moon. Odd eyes: one gold, one blue.",
+ "description": "On the roof under a crescent moon, white as rice paper.",
  "author": "Gacha Garage (lowpix spec)",
  "license": "CC0-1.0",
  "density": 4.0,
@@ -63,6 +63,15 @@
     "#f3d2ca",
     "#faede9"
    ],
+   "moss": [
+    "#10180c",
+    "#28381c",
+    "#43562c",
+    "#5f743e",
+    "#92a862",
+    "#bdc69d",
+    "#e4e6d5"
+   ],
    "c2a2e40": [
     "#0a090d",
     "#17151d",
@@ -80,60 +89,6 @@
     "#8b8c92",
     "#b6b7b9",
     "#e0e0e0"
-   ],
-   "cf4f2ee_hue12": [
-    "#4c2315",
-    "#b05c33",
-    "#dba988",
-    "#f9f2ec",
-    "#faf6f1",
-    "#fcfaf6",
-    "#fefdfb"
-   ],
-   "cefe6d6_hue8_k0p05": [
-    "#492b12",
-    "#aa692b",
-    "#daab74",
-    "#f3e6d4",
-    "#f6eee0",
-    "#f9f4eb",
-    "#fcfbf7"
-   ],
-   "eye": [
-    "#2e1b07",
-    "#6b4611",
-    "#a7791d",
-    "#d9ae32",
-    "#e2cc6a",
-    "#ebe4a1",
-    "#f6f5d7"
-   ],
-   "nose": [
-    "#301117",
-    "#6e2931",
-    "#ab4347",
-    "#c97e7b",
-    "#d6a69f",
-    "#e4c9c3",
-    "#f3e9e6"
-   ],
-   "mouth": [
-    "#1f0c11",
-    "#491d26",
-    "#712e37",
-    "#984145",
-    "#bd6d6a",
-    "#d4a7a2",
-    "#ecdbd7"
-   ],
-   "ce8b0b0_k0p1": [
-    "#430f19",
-    "#9a2531",
-    "#d5585b",
-    "#eab3b0",
-    "#efcbc6",
-    "#f4e0db",
-    "#faf3f0"
    ],
    "c3a3a44": [
     "#0d0b0e",
@@ -156,45 +111,6 @@
   }
  },
  "styles": {
-  "fur": {
-   "dither": 0,
-   "rim": {
-    "light": 1,
-    "dark": 1,
-    "outline": "dark"
-   },
-   "brush": {
-    "flow": "long",
-    "length": 1.5,
-    "width": 0.38,
-    "rough": 0.75,
-    "overshoot": 0.3
-   },
-   "layers": [
-    {
-     "id": "mottle",
-     "op": "noise",
-     "scale": 2.2,
-     "amount": 0.18
-    },
-    {
-     "id": "photo",
-     "op": "photo",
-     "src": "art/lowpix/photos/curly_teddy_natural",
-     "scale": 12,
-     "amount": 0.35
-    },
-    {
-     "id": "sheen",
-     "op": "patches",
-     "scale": 0.9,
-     "threshold": 0.72,
-     "shift": 0.6,
-     "min_light": 0.6,
-     "post": true
-    }
-   ]
-  },
   "metal": {
    "dither": 0,
    "rim": {
@@ -300,9 +216,9 @@
     0
    ],
    "size": [
-    30,
+    32,
     3.0,
-    22
+    24
    ],
    "chamfer": 0.7,
    "style": "stone",
@@ -367,9 +283,9 @@
     0
    ],
    "size": [
-    28,
+    30,
     2.0,
-    18
+    20
    ],
    "chamfer": 0.4,
    "style": "glaze",
@@ -382,7 +298,7 @@
    "id": "tile0",
    "shape": "loft",
    "pivot": [
-    -11.2,
+    -12.5,
     5.0,
     0
    ],
@@ -396,10 +312,10 @@
      "at": [
       0,
       0,
-      -9.0
+      -10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     },
@@ -407,10 +323,10 @@
      "at": [
       0,
       0,
-      9.0
+      10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     }
@@ -433,7 +349,7 @@
       "id": "rows",
       "op": "stripes",
       "axis": "z",
-      "period": 4.5,
+      "period": 5.0,
       "width": 0.1,
       "shift": -1.0
      }
@@ -444,7 +360,7 @@
    "id": "tile1",
    "shape": "loft",
    "pivot": [
-    -5.6,
+    -7.5,
     5.0,
     0
    ],
@@ -458,10 +374,10 @@
      "at": [
       0,
       0,
-      -9.0
+      -10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     },
@@ -469,10 +385,10 @@
      "at": [
       0,
       0,
-      9.0
+      10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     }
@@ -495,7 +411,7 @@
       "id": "rows",
       "op": "stripes",
       "axis": "z",
-      "period": 4.5,
+      "period": 5.0,
       "width": 0.1,
       "shift": -1.0
      }
@@ -506,7 +422,7 @@
    "id": "tile2",
    "shape": "loft",
    "pivot": [
-    0.0,
+    -2.5,
     5.0,
     0
    ],
@@ -520,10 +436,10 @@
      "at": [
       0,
       0,
-      -9.0
+      -10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     },
@@ -531,10 +447,10 @@
      "at": [
       0,
       0,
-      9.0
+      10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     }
@@ -557,7 +473,7 @@
       "id": "rows",
       "op": "stripes",
       "axis": "z",
-      "period": 4.5,
+      "period": 5.0,
       "width": 0.1,
       "shift": -1.0
      }
@@ -568,7 +484,7 @@
    "id": "tile3",
    "shape": "loft",
    "pivot": [
-    5.6,
+    2.5,
     5.0,
     0
    ],
@@ -582,10 +498,10 @@
      "at": [
       0,
       0,
-      -9.0
+      -10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     },
@@ -593,10 +509,10 @@
      "at": [
       0,
       0,
-      9.0
+      10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     }
@@ -619,7 +535,7 @@
       "id": "rows",
       "op": "stripes",
       "axis": "z",
-      "period": 4.5,
+      "period": 5.0,
       "width": 0.1,
       "shift": -1.0
      }
@@ -630,7 +546,7 @@
    "id": "tile4",
    "shape": "loft",
    "pivot": [
-    11.2,
+    7.5,
     5.0,
     0
    ],
@@ -644,10 +560,10 @@
      "at": [
       0,
       0,
-      -9.0
+      -10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     },
@@ -655,10 +571,10 @@
      "at": [
       0,
       0,
-      9.0
+      10.0
      ],
      "size": [
-      3.472,
+      3.1,
       2.4
      ]
     }
@@ -681,7 +597,7 @@
       "id": "rows",
       "op": "stripes",
       "axis": "z",
-      "period": 4.5,
+      "period": 5.0,
       "width": 0.1,
       "shift": -1.0
      }
@@ -689,15 +605,15 @@
    }
   },
   {
-   "id": "body",
+   "id": "tile5",
    "shape": "loft",
    "pivot": [
-    0,
-    6.285,
-    1
+    12.5,
+    5.0,
+    0
    ],
    "rotation": [
-    0,
+    14,
     0,
     0
    ],
@@ -706,1290 +622,61 @@
      "at": [
       0,
       0,
-      -0.646
+      -10.0
      ],
      "size": [
-      12.749,
-      9.044
-     ]
-    },
-    {
-     "at": [
-      0,
-      4.275,
-      -0.323
-     ],
-     "size": [
-      11.913,
-      8.398
-     ]
-    },
-    {
-     "at": [
-      0,
-      9.025,
-      1.292
-     ],
-     "size": [
-      8.987,
-      6.137
-     ]
-    },
-    {
-     "at": [
-      0,
-      13.11,
-      2.422
-     ],
-     "size": [
-      7.106,
-      4.845
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 14,
-    "round": 2.05
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "layers": [
-     {
-      "id": "seam",
-      "op": "band",
-      "axis": "x",
-      "from": -0.0896349413298566,
-      "to": 0.0896349413298566,
-      "shift": -0.55,
-      "faces": [
-       "-front",
-       "-back",
-       "-end",
-       "-start"
-      ],
-      "bevel": {
-       "shadow": 1,
-       "highlight": 1,
-       "shadow_shift": -0.6,
-       "highlight_shift": 0.7
-      }
-     }
-    ],
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "head_j",
-   "shape": "bone",
-   "pivot": [
-    0,
-    12.92,
-    2.907
-   ],
-   "parent": "body",
-   "rotation": [
-    -12,
-    -16,
-    0
-   ]
-  },
-  {
-   "id": "head",
-   "shape": "loft",
-   "parent": "head_j",
-   "pivot": [
-    0,
-    4.788,
-    1.254
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0,
-      -5.225
-     ],
-     "size": [
-      10.374,
-      9.12
+      3.1,
+      2.4
      ]
     },
     {
      "at": [
       0,
       0,
-      -1.567
+      10.0
      ],
      "size": [
-      13.3,
-      11.4
+      3.1,
+      2.4
      ]
-    },
-    {
-     "at": [
-      0,
-      -0.228,
-      2.299
-     ],
-     "size": [
-      12.768,
-      10.716
-     ]
-    },
-    {
-     "at": [
-      0,
-      -0.57,
-      5.225
-     ],
-     "size": [
-      11.172,
-      8.81
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 14,
-    "round": 2.25
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "layers": [
-     {
-      "id": "seam",
-      "op": "band",
-      "axis": "z",
-      "from": -0.026315789473684216,
-      "to": 0.026315789473684216,
-      "shift": -0.55,
-      "faces": [
-       "-front",
-       "-back",
-       "-end",
-       "-start"
-      ],
-      "bevel": {
-       "shadow": 1,
-       "highlight": 1,
-       "shadow_shift": -0.6,
-       "highlight_shift": 0.7
-      }
-     }
-    ],
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    },
-    "stamps": [
-     {
-      "face": "end",
-      "at": "center",
-      "offset": [
-       -10,
-       -5
-      ],
-      "art": [
-       "...........",
-       "..kkkkkk...",
-       ".kkkkpikk..",
-       ".kkiwwpiik.",
-       ".kkipppiik.",
-       ".kkipppjii.",
-       ".kkjpppjjk.",
-       "..kklplsj..",
-       "...kkkkk...",
-       "..........."
-      ],
-      "key": {
-       "k": "ink:0",
-       "d": "ink:1",
-       "w": "white:-1",
-       "s": "white:2",
-       "i": "eye:2",
-       "j": "eye:4",
-       "l": "eye:5",
-       "p": "ink:0"
-      }
-     },
-     {
-      "face": "end",
-      "at": "center",
-      "offset": [
-       10,
-       -5
-      ],
-      "art": [
-       "...........",
-       "...kkkkkk..",
-       "..kkipkkkk.",
-       ".kiipwwikk.",
-       ".kiipppikk.",
-       ".iijpppikk.",
-       ".kjjpppjkk.",
-       "..jslplkk..",
-       "...kkkkk...",
-       "..........."
-      ],
-      "key": {
-       "k": "ink:0",
-       "d": "ink:1",
-       "w": "white:-1",
-       "s": "white:2",
-       "i": "eye:2",
-       "j": "eye:4",
-       "l": "eye:5",
-       "p": "ink:0"
-      }
-     }
-    ]
-   }
-  },
-  {
-   "id": "muzzle",
-   "shape": "loft",
-   "parent": "head",
-   "pivot": [
-    0,
-    -3.078,
-    4.37
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0,
-      0
-     ],
-     "size": [
-      6.46,
-      4.37
-     ]
-    },
-    {
-     "at": [
-      0,
-      -0.095,
-      1.359
-     ],
-     "size": [
-      6.072,
-      3.933
-     ]
-    },
-    {
-     "at": [
-      0,
-      -0.285,
-      2.47
-     ],
-     "size": [
-      4.264,
-      2.884
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 12,
-    "round": 2.1
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cefe6d6_hue8_k0p05",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cefe6d6_hue8_k0p05": "fur"
-     }
-    },
-    "stamps": [
-     {
-      "face": "end",
-      "at": "center",
-      "offset": [
-       0,
-       -2
-      ],
-      "art": [
-       "kkkhkkkk",
-       "........",
-       ".kkkkkkk",
-       "........",
-       "........"
-      ],
-      "key": {
-       "k": "nose:1",
-       "h": "nose:4",
-       "d": "ink:0"
-      }
-     },
-     {
-      "face": "end",
-      "at": "center",
-      "offset": [
-       0,
-       3
-      ],
-      "art": [
-       "..................",
-       "..k.....kkk.....k.",
-       "...kkkkkk.kkkkkk..",
-       ".................."
-      ],
-      "key": {
-       "k": "ink:1",
-       "m": "mouth:3"
-      }
-     }
-    ],
-    "layers": [
-     {
-      "id": "pores",
-      "op": "spots",
-      "centers": [
-       [
-        -1.938,
-        -0.21849999999999997,
-        1.7289999999999996,
-        0.304
-       ],
-       [
-        -1.938,
-        0.6365000000000001,
-        1.7289999999999996,
-        0.304
-       ],
-       [
-        1.938,
-        -0.21849999999999997,
-        1.7289999999999996,
-        0.304
-       ],
-       [
-        1.938,
-        0.6365000000000001,
-        1.7289999999999996,
-        0.304
-       ]
-      ],
-      "shift": -1.2
-     }
-    ]
-   }
-  },
-  {
-   "id": "ear_r",
-   "shape": "taper",
-   "parent": "head_j",
-   "pivot": [
-    -3.99,
-    8.55,
-    0.209
-   ],
-   "offset": [
-    0,
-    0,
-    2.755
-   ],
-   "rotation": [
-    -82,
-    0,
-    15.5
-   ],
-   "size": [
-    4.94,
-    1.615,
-    5.51
-   ],
-   "front_scale": [
-    0.21,
-    0.6
-   ],
-   "chamfer": 0.332,
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    },
-    "layers": [
-     {
-      "id": "inner",
-      "op": "band",
-      "axis": "x",
-      "from": -0.5,
-      "to": 0.5,
-      "ramp": "ce8b0b0_k0p1",
-      "tone": 3.2,
-      "faces": [
-       "bottom"
-      ],
-      "bevel": {
-       "shadow": 1,
-       "highlight": 0,
-       "shadow_shift": -0.8
-      }
-     }
-    ]
-   }
-  },
-  {
-   "id": "ear_l",
-   "shape": "taper",
-   "parent": "head_j",
-   "pivot": [
-    3.99,
-    8.55,
-    0.209
-   ],
-   "offset": [
-    0,
-    0,
-    2.755
-   ],
-   "rotation": [
-    -82,
-    0,
-    -15.5
-   ],
-   "size": [
-    4.94,
-    1.615,
-    5.51
-   ],
-   "front_scale": [
-    0.21,
-    0.6
-   ],
-   "chamfer": 0.332,
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    },
-    "layers": [
-     {
-      "id": "inner",
-      "op": "band",
-      "axis": "x",
-      "from": -0.5,
-      "to": 0.5,
-      "ramp": "ce8b0b0_k0p1",
-      "tone": 3.2,
-      "faces": [
-       "bottom"
-      ],
-      "bevel": {
-       "shadow": 1,
-       "highlight": 0,
-       "shadow_shift": -0.8
-      }
-     }
-    ]
-   }
-  },
-  {
-   "id": "fleg_r",
-   "shape": "loft",
-   "parent": "body",
-   "pivot": [
-    -1.985,
-    9.975,
-    3.876
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0,
-      0
-     ],
-     "size": [
-      3.23,
-      3.61
-     ]
-    },
-    {
-     "at": [
-      0,
-      -5.225,
-      0.475
-     ],
-     "size": [
-      2.85,
-      3.04
-     ]
-    },
-    {
-     "at": [
-      0,
-      -9.69,
-      0.665
-     ],
-     "size": [
-      2.755,
-      2.945
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 10,
-    "round": 2.2
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "fleg_r_paw",
-   "shape": "loft",
-   "parent": "fleg_r",
-   "pivot": [
-    0,
-    -11.115,
-    1.33
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0.0,
-      0
-     ],
-     "size": [
-      3.249,
-      3.933
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.342,
-      0
-     ],
-     "size": [
-      3.429,
-      4.151
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.855,
-      0
-     ],
-     "size": [
-      3.61,
-      4.37
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.425,
-      0
-     ],
-     "size": [
-      3.249,
-      3.933
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.9,
-      0
-     ],
-     "size": [
-      2.166,
-      2.622
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 10,
-    "round": 2.4
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "haunch_r",
-   "shape": "loft",
-   "parent": "body",
-   "pivot": [
-    -5.225,
-    -0.19,
-    -0.646
-   ],
-   "rotation": [
-    0,
-    8,
-    0
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0.0,
-      0
-     ],
-     "size": [
-      4.361,
-      6.864
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.231,
-      0
-     ],
-     "size": [
-      4.873,
-      7.671
-     ]
-    },
-    {
-     "at": [
-      0,
-      3.078,
-      0
-     ],
-     "size": [
-      5.13,
-      8.075
-     ]
-    },
-    {
-     "at": [
-      0,
-      5.13,
-      0
-     ],
-     "size": [
-      4.617,
-      7.267
-     ]
-    },
-    {
-     "at": [
-      0,
-      6.84,
-      0
-     ],
-     "size": [
-      2.308,
-      3.634
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 12,
-    "round": 2.1
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "haunch_r_foot",
-   "shape": "loft",
-   "parent": "body",
-   "pivot": [
-    -3.762,
-    -0.19,
-    1.938
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0.0,
-      0
-     ],
-     "size": [
-      3.078,
-      4.959
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.342,
-      0
-     ],
-     "size": [
-      3.249,
-      5.234
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.855,
-      0
-     ],
-     "size": [
-      3.42,
-      5.51
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.425,
-      0
-     ],
-     "size": [
-      3.078,
-      4.959
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.9,
-      0
-     ],
-     "size": [
-      2.052,
-      3.306
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 10,
-    "round": 2.4
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "fleg_l",
-   "shape": "loft",
-   "parent": "body",
-   "pivot": [
-    1.985,
-    9.975,
-    3.876
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0,
-      0
-     ],
-     "size": [
-      3.23,
-      3.61
-     ]
-    },
-    {
-     "at": [
-      0,
-      -5.225,
-      0.475
-     ],
-     "size": [
-      2.85,
-      3.04
-     ]
-    },
-    {
-     "at": [
-      0,
-      -9.69,
-      0.665
-     ],
-     "size": [
-      2.755,
-      2.945
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 10,
-    "round": 2.2
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "fleg_l_paw",
-   "shape": "loft",
-   "parent": "fleg_l",
-   "pivot": [
-    0,
-    -11.115,
-    1.33
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0.0,
-      0
-     ],
-     "size": [
-      3.249,
-      3.933
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.342,
-      0
-     ],
-     "size": [
-      3.429,
-      4.151
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.855,
-      0
-     ],
-     "size": [
-      3.61,
-      4.37
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.425,
-      0
-     ],
-     "size": [
-      3.249,
-      3.933
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.9,
-      0
-     ],
-     "size": [
-      2.166,
-      2.622
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 10,
-    "round": 2.4
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "haunch_l",
-   "shape": "loft",
-   "parent": "body",
-   "pivot": [
-    5.225,
-    -0.19,
-    -0.646
-   ],
-   "rotation": [
-    0,
-    -8,
-    0
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0.0,
-      0
-     ],
-     "size": [
-      4.361,
-      6.864
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.231,
-      0
-     ],
-     "size": [
-      4.873,
-      7.671
-     ]
-    },
-    {
-     "at": [
-      0,
-      3.078,
-      0
-     ],
-     "size": [
-      5.13,
-      8.075
-     ]
-    },
-    {
-     "at": [
-      0,
-      5.13,
-      0
-     ],
-     "size": [
-      4.617,
-      7.267
-     ]
-    },
-    {
-     "at": [
-      0,
-      6.84,
-      0
-     ],
-     "size": [
-      2.308,
-      3.634
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 12,
-    "round": 2.1
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "haunch_l_foot",
-   "shape": "loft",
-   "parent": "body",
-   "pivot": [
-    3.762,
-    -0.19,
-    1.938
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0.0,
-      0
-     ],
-     "size": [
-      3.078,
-      4.959
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.342,
-      0
-     ],
-     "size": [
-      3.249,
-      5.234
-     ]
-    },
-    {
-     "at": [
-      0,
-      0.855,
-      0
-     ],
-     "size": [
-      3.42,
-      5.51
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.425,
-      0
-     ],
-     "size": [
-      3.078,
-      4.959
-     ]
-    },
-    {
-     "at": [
-      0,
-      1.9,
-      0
-     ],
-     "size": [
-      2.052,
-      3.306
-     ]
-    }
-   ],
-   "profile": {
-    "sides": 10,
-    "round": 2.4
-   },
-   "subdiv": 1,
-   "caps": [
-    true,
-    true
-   ],
-   "up": [
-    0,
-    0,
-    1
-   ],
-   "style": "fur",
-   "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
-     }
-    }
-   }
-  },
-  {
-   "id": "tail",
-   "shape": "loft",
-   "parent": "body",
-   "pivot": [
-    0,
-    0.76,
-    -2.907
-   ],
-   "rings": [
-    {
-     "at": [
-      0,
-      0,
-      0
-     ],
-     "size": 2.47
-    },
-    {
-     "at": [
-      3.135,
-      0.19,
-      -2.907
-     ],
-     "size": 2.254
-    },
-    {
-     "at": [
-      7.837,
-      0.285,
-      -0.807
-     ],
-     "size": 2.038
-    },
-    {
-     "at": [
-      10.45,
-      0.38,
-      3.23
-     ],
-     "size": 1.822
-    },
-    {
-     "at": [
-      9.405,
-      0.475,
-      6.783
-     ],
-     "size": 0.883
     }
    ],
    "profile": {
     "sides": 8,
-    "round": 2.3
+    "round": 2.0
    },
    "subdiv": 1,
    "caps": [
-    false,
+    true,
     true
    ],
-   "chain": true,
-   "style": "fur",
+   "style": "glaze",
    "paint": {
-    "ramp": "cf4f2ee_hue12",
-    "tone": 3.1,
-    "brush": {
-     "textures": {
-      "cf4f2ee_hue12": "fur"
+    "ramp": "c5a6070_k0p2",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "rows",
+      "op": "stripes",
+      "axis": "z",
+      "period": 5.0,
+      "width": 0.1,
+      "shift": -1.0
      }
-    }
+    ]
    }
   },
   {
    "id": "pole",
    "shape": "box",
    "pivot": [
-    8,
-    16.0,
-    -7
+    10,
+    17.0,
+    -8
    ],
    "size": [
     1.0,
-    26,
+    28,
     1.0
    ],
    "chamfer": 0.3,
@@ -2003,76 +690,68 @@
    "id": "moon",
    "shape": "card",
    "pivot": [
-    8,
-    33.0,
-    -7
+    10,
+    34.0,
+    -8
    ],
    "plane": "xy",
    "art": [
-    "..........................oooooooooooo..........................",
-    "......................oooooooooooooooooooo......................",
-    "....................oooooooooooooooooooooooo....................",
-    ".................ooooooooooooooooooooooo........................",
-    "................ooooooooooooooooooooo...........................",
-    "..............oooooooooooommmmmmmm..............................",
-    ".............oooooooooommmmmmmmmm...............................",
-    "...........ooooooooommmmmmmmmmm.................................",
-    "..........oooooooommmmmmmmmmmm..................................",
-    ".........oooooooommmmmmmmmmmm...................................",
-    "........ooooooommmmmmmmmmmm.....................................",
-    ".......ooooooommmmmmmmmmmmm.....................................",
-    ".......oooooommmmmmmmmmmmm......................................",
-    "......oooooommmmmmmmmmmmm.......................................",
-    ".....oooooommmmmmmmmmmmm........................................",
-    ".....ooooommmmmmmmmmmmmm........................................",
-    "....oooooommmmmmmmmmmmm.........................................",
-    "...oooooommmmmmmmmmmmmm.........................................",
-    "...ooooommmmmmmmmmmmmm..........................................",
-    "...ooooommmmmmmmmmmmmm..........................................",
-    "..ooooommmmmmmmmmmmmm...........................................",
-    "..ooooommmmmmmmmmmmmm...........................................",
-    ".oooooommmmmmmmmmmmmm...........................................",
-    ".ooooommmmmmmmmmmmmmm...........................................",
-    ".ooooommmmmmmmmmmmmmm...........................................",
-    ".ooooommmmmmmmmmmmmm............................................",
-    "ooooommmmmmmmmmmmmmm............................................",
-    "ooooommmmmmmmmmmmmmm............................................",
-    "ooooommmmmmmmmmmmmmm............................................",
-    "ooooommmmmmmmmmmmmmm............................................",
-    "ooooommmmmmmmmmmmmmm............................................",
-    "ooooommmmmmmmmmmmmmm............................................",
-    "ooooommmmmmmmmmmmmmmm...........................................",
-    "ooooommmmmmmmmmmmmmmm...........................................",
-    "ooooommmmmmmmmmmmmmmm...........................................",
-    "ooooommmmmmmmmmmmmmmm...........................................",
-    "ooooommmmmmmmmmmmmmmmm..........................................",
-    "ooooommmmmmmmmmmmmmmmm..........................................",
-    ".ooooommmmmmmmmmmmmmmm..........................................",
-    ".ooooommmmmmmmmmmmmmmmm.........................................",
-    ".ooooommmmmmmmmmmmmmmmm.........................................",
-    ".oooooommmmmmmmmmmmmmmmm........................................",
-    "..ooooommmmmmmmmmmmmmmmmm.......................................",
-    "..ooooommmmmmmmmmmmmmmmmm.......................................",
-    "...ooooommmmmmmmmmmmmmmmmm......................................",
-    "...ooooommmmmmmmmmmmmmmmmmm.....................................",
-    "...oooooommmmmmmmmmmmmmmmmmm....................................",
-    "....oooooommmmmmmmmmmmmmmmmmm...................................",
-    ".....ooooommmmmmmmmmmmmmmmmmmmm.................................",
-    ".....oooooommmmmmmmmmmmmmmmmmmmm................................",
-    "......oooooommmmmmmmmmmmmmmmmmmmmm.......................o......",
-    ".......oooooommmmmmmmmmmmmmmmmmmmmmm...................oo.......",
-    ".......ooooooommmmmmmmmmmmmmmmmmmmmmmmm.............ooooo.......",
-    "........ooooooommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmooooooo........",
-    ".........oooooooommmmmmmmmmmmmmmmmmmmmmmmmmmmmmoooooooo.........",
-    "..........oooooooommmmmmmmmmmmmmmmmmmmmmmmmmmmoooooooo..........",
-    "...........ooooooooommmmmmmmmmmmmmmmmmmmmmmmooooooooo...........",
-    ".............oooooooooommmmmmmmmmmmmmmmmmoooooooooo.............",
-    "..............oooooooooooommmmmmmmmmmmoooooooooooo..............",
-    "................oooooooooooooooooooooooooooooooo................",
-    ".................oooooooooooooooooooooooooooooo.................",
-    "....................oooooooooooooooooooooooo....................",
-    "......................oooooooooooooooooooo......................",
-    "..........................oooooooooooo.........................."
+    ".......................oooooooooo.......................",
+    "...................oooooooooooooooooo...................",
+    "................oooooooooooooooooooooooo................",
+    "..............oooooooooooooooooooo......................",
+    ".............oooooooooooommmmmm.........................",
+    "...........ooooooooommmmmmmmm...........................",
+    "..........oooooooommmmmmmmm.............................",
+    ".........ooooooommmmmmmmmm..............................",
+    "........oooooommmmmmmmmmm...............................",
+    ".......oooooommmmmmmmmmm................................",
+    "......oooooommmmmmmmmmm.................................",
+    ".....oooooommmmmmmmmmm..................................",
+    ".....ooooommmmmmmmmmm...................................",
+    "....ooooommmmmmmmmmmm...................................",
+    "...ooooommmmmmmmmmmm....................................",
+    "...ooooommmmmmmmmmmm....................................",
+    "..ooooommmmmmmmmmmm.....................................",
+    "..ooooommmmmmmmmmmm.....................................",
+    "..oooommmmmmmmmmmmm.....................................",
+    ".ooooommmmmmmmmmmm......................................",
+    ".oooommmmmmmmmmmmm......................................",
+    ".oooommmmmmmmmmmmm......................................",
+    ".oooommmmmmmmmmmmm......................................",
+    "ooooommmmmmmmmmmmm......................................",
+    "ooooommmmmmmmmmmmm......................................",
+    "oooommmmmmmmmmmmmm......................................",
+    "oooommmmmmmmmmmmmm......................................",
+    "oooommmmmmmmmmmmmm......................................",
+    "oooommmmmmmmmmmmmm......................................",
+    "oooommmmmmmmmmmmmm......................................",
+    "oooommmmmmmmmmmmmmm.....................................",
+    "ooooommmmmmmmmmmmmm.....................................",
+    "ooooommmmmmmmmmmmmm.....................................",
+    ".oooommmmmmmmmmmmmmm....................................",
+    ".oooommmmmmmmmmmmmmm....................................",
+    ".oooommmmmmmmmmmmmmmm...................................",
+    ".ooooommmmmmmmmmmmmmm...................................",
+    "..oooommmmmmmmmmmmmmmm..................................",
+    "..ooooommmmmmmmmmmmmmmm.................................",
+    "..ooooommmmmmmmmmmmmmmm.................................",
+    "...ooooommmmmmmmmmmmmmmm................................",
+    "...ooooommmmmmmmmmmmmmmmmm..............................",
+    "....ooooommmmmmmmmmmmmmmmmm.............................",
+    ".....ooooommmmmmmmmmmmmmmmmm............................",
+    ".....oooooommmmmmmmmmmmmmmmmmm...................oo.....",
+    "......oooooommmmmmmmmmmmmmmmmmmmm..............ooo......",
+    ".......oooooommmmmmmmmmmmmmmmmmmmmmmm......oooooo.......",
+    "........oooooommmmmmmmmmmmmmmmmmmmmmmmmmmmoooooo........",
+    ".........ooooooommmmmmmmmmmmmmmmmmmmmmmmooooooo.........",
+    "..........oooooooommmmmmmmmmmmmmmmmmmmoooooooo..........",
+    "...........ooooooooommmmmmmmmmmmmmmmooooooooo...........",
+    ".............oooooooooooommmmmmoooooooooooo.............",
+    "..............oooooooooooooooooooooooooooo..............",
+    "................oooooooooooooooooooooooo................",
+    "...................oooooooooooooooooo...................",
+    ".......................oooooooooo......................."
    ],
    "style": "glow",
    "paint": {
@@ -2084,62 +763,5 @@
     "tone": 2
    }
   }
- ],
- "animations": {
-  "gimmick": {
-   "length": 3.0,
-   "loop": false,
-   "tracks": [
-    {
-     "part": "tail",
-     "segments": "all",
-     "axis": "y",
-     "keys": [
-      [
-       0,
-       0
-      ],
-      [
-       0.8,
-       18
-      ],
-      [
-       1.6,
-       -12
-      ],
-      [
-       2.4,
-       10
-      ],
-      [
-       3.0,
-       0
-      ]
-     ]
-    },
-    {
-     "part": "head_j",
-     "axis": "x",
-     "keys": [
-      [
-       0,
-       0
-      ],
-      [
-       0.7,
-       -14
-      ],
-      [
-       2.2,
-       -14
-      ],
-      [
-       3.0,
-       0
-      ]
-     ]
-    }
-   ]
-  }
- }
+ ]
 }

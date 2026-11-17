@@ -5,15 +5,15 @@
 //                   afternoons on the north pavement. Quest "A Lesson in Posture": strike three poses, then show her the
 //                   Skyward Finger -> learn Picture Frame and Curtain Call.
 //   Mr. Hidari      a tailor who sees angles everywhere (monocle, flat cap, a tape measure round the neck in spirit);
-//                   mornings and late afternoons on the south pavement. Quest "The Tailor's Angles": pull a Bizarre
-//                   Pose Club figure and bring it to him -> learn Grasp of Fate and The Coil.
+//                   mornings and late afternoons on the south pavement. Quest "The Tailor's Angles": pull a Guardian
+//                   Spirits figure and bring it to him -> learn Grasp of Fate and The Coil.
 //   Gōda Tetsuzan   the rival (src/jojo/rival.js). Quest "Showdown at the Shutter": beat him in a pose-off.
 //   registerSociety(game, jojo)   adds them to the lane (once it exists) and defines the quests
 import * as THREE from 'three';
 import { makeCast, CAST } from './cast.js';
 import { POSE_INFO } from './poses.js';
 import { clearAt } from '../cinema/shots.js';
-import { getItem } from '../data/series/index.js';
+import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -28,11 +28,11 @@ export function learn(g, names) {
   return fresh;
 }
 
-const holdingBizarre = (g) => {
-  const it = g.held?.item;
-  return it?.kind === 'toy' && getItem(it.data?.key)?.series === 'bizarre';
-};
-const hasBizarre = (g) => Object.keys(g.state.discovered || {}).some((k) => getItem(k)?.series === 'bizarre');
+// the figures worth measuring: the Guardian Spirits series (or, while that series isn't in the line-up, anything rare
+// or better: the best sculpts strike the best poses)
+const worthIt = (key) => { const it = getItem(key); return !!it && (SERIES_BY_ID.shugorei ? it.series === 'shugorei' : ['rare', 'ultra', 'secret'].includes(it.rarity)); };
+const holdingBizarre = (g) => { const it = g.held?.item; return it?.kind === 'toy' && worthIt(it.data?.key); };
+const hasBizarre = (g) => Object.keys(g.state.discovered || {}).some(worthIt);
 
 // ------------------------------------------------------------------ Madame Kujaku
 const KUJAKU = {
@@ -106,7 +106,7 @@ const HIDARI = {
       ...(first ? [{ gesture: 'think', say: 'Don\'t move. ...Your left shoulder sits two degrees lower than your right.' }, 'Hidari. Tailor. Forty years of sleeves. I see angles the way you see prices.'] : [{ say: pick(['Ah. The two-degree shoulder.', 'Good day. Your collar is folded at sixty. Acceptable.', 'Stand still. ...Fine. Hello.']) }]),
       { if: () => q?.isActive('jj_angles') && q.stepIndex('jj_angles') === 1 && holdingBizarre(g), then: 'measure' },
       { if: () => q?.isActive('jj_angles') && q.stepIndex('jj_angles') === 1, then: ['You have one? Hold it in your hand when you come, so I can see the elbow.'] },
-      { if: () => q?.isActive('jj_angles') && q.stepIndex('jj_angles') === 0, then: ['A Bizarre Pose Club figure. From your capsule machines. I must measure one.'] },
+      { if: () => q?.isActive('jj_angles') && q.stepIndex('jj_angles') === 0, then: ['A Guardian Spirits figure. From your capsule machines. I must measure one.'] },
       { if: () => !q?.isActive('jj_angles') && !q?.isDone('jj_angles'), then: 'offer' },
       { choose: [
         { text: 'Any tips?', then: [pick(['Your Grace poses are soft. Lift the elbow. Higher. There.', 'Mystery is in the twist. If your spine isn\'t complaining, it isn\'t Mystery.', 'Power is a straight line from the heel to the fingertip. Draw it.', 'That man from the station poses with his weight on his left foot. Every time. Watch for it.'])] },
@@ -114,7 +114,7 @@ const HIDARI = {
         { text: 'Good day, Mr. Hidari.', rel: 1, then: ['Good day. At a slight angle.'] },
       ], time: 10, timeout: 2 },
     ],
-    offer: ['Those figures in your capsule machines. The Bizarre Pose Club. Have you SEEN their elbows?', 'I must measure one. For science. For sleeves.', { choose: [
+    offer: ['Those figures in your capsule machines. The Guardian Spirits. Have you SEEN their elbows?', 'I must measure one. For science. For sleeves.', { choose: [
       { text: 'I\'ll find you one.', rel: 1, quest: 'jj_angles', then: ['Good. Hold it in your hand when you bring it. I measure by eye.'] },
       { text: 'They\'re just toys.', quest: 'jj_angles', then: ['Toys are where the angles hide. Bring me one.'] },
     ], time: 10, timeout: 1 }],
@@ -136,7 +136,7 @@ export const QUESTS = [
   {
     id: 'jj_angles', title: 'The Tailor\'s Angles', giver: 'jj_hidari', giverName: 'Mr. Hidari', color: CAST.hidari.color,
     steps: [
-      { text: 'Pull a Bizarre Pose Club figure', sub: 'Any machine stocked with the series', check: (g) => hasBizarre(g) },
+      { text: 'Pull a Guardian Spirits figure', sub: 'Any machine stocked with the series', check: (g) => hasBizarre(g) },
       { text: 'Hold it and show it to Mr. Hidari', sub: 'Mornings and late afternoons on the lane', talk: 'jj_hidari' },
     ],
     reward: { money: 2000, text: 'Learned: Grasp of Fate, The Coil', fn: (g) => learn(g, ['pose_reach', 'pose_coil']) },

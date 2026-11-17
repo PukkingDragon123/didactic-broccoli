@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "mantis",
+   "src": "sketchfab:ec088115ec8746d79c41f2db69665f15",
+   "height": 15,
+   "at": [
+    -2,
+    8.0,
+    -1
+   ],
+   "yaw": -60,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "cfd3288ca22ad0"
+  }
+ ],
+ "model_clip": {
+  "node": "model_mantis",
+  "kind": "turn",
+  "length": 2.2,
+  "amp": 20,
+  "axis": "y"
+ },
+ "key": "konchu/kamakiri"
+}

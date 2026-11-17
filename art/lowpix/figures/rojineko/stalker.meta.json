@@ -1,0 +1,53 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "cat",
+   "src": "sketchfab:c1465490a7c74d48b599e1d68ff990ef",
+   "height": 18,
+   "at": [
+    -6,
+    3.0,
+    0
+   ],
+   "yaw": 70,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "f50fe6c217e464"
+  },
+  {
+   "name": "bird",
+   "src": "sketchfab:11b5b94688bc4ee380849585086da98a",
+   "height": 7.5,
+   "at": [
+    12,
+    3.0,
+    3
+   ],
+   "yaw": -110,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "efabbdb94f1d19"
+  }
+ ],
+ "model_clip": {
+  "node": "model_bird",
+  "kind": "hop",
+  "length": 1.2,
+  "amp": 2.5,
+  "axis": "y"
+ },
+ "key": "rojineko/stalker"
+}

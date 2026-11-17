@@ -130,8 +130,10 @@ function build(R) {
   const buckets = new Map(); // slot -> [geometry]
   const M = new THREE.Matrix4().makeTranslation(-frame.cx * frame.sc, -frame.cy * frame.sc, -frame.cz * frame.sc).multiply(new THREE.Matrix4().makeScale(frame.sc, frame.sc, frame.sc));
   const W = new THREE.Matrix4(), N = new THREE.Matrix3();
+  const sep = new Set(R.entry.separate || []); // moving parts the game shows on their own (a wind-up key, a dart)
+  const separated = (o) => { for (let n = o; n && n !== scene; n = n.parent) if (sep.has(n.name)) return true; return false; };
   scene.traverse((o) => {
-    if (!o.isMesh || o.userData.figPart) return;
+    if (!o.isMesh || o.userData.figPart || (sep.size && separated(o))) return;
     const map = o.material?.map || null;
     if (map && !texIndex.has(map)) { texIndex.set(map, texIndex.size); tidy(map); }
     const ti = map ? texIndex.get(map) : 0;
@@ -213,7 +215,10 @@ const STAND_MATS = [new THREE.MeshBasicMaterial({ visible: false })];
 function adopt(mesh, R) {
   if (mesh.userData.figLive) return; // posed by a clip: it swaps back when the clip ends
   mesh.geometry = R.geo;
+  if (mesh.userData.mat0) mesh.userData.mat0 = null; // (a variant was painted over the stand-in: redone below)
   mesh.material = materials(R, mesh.userData.finish || 'normal');
+  const redo = mesh.userData.redecorate;
+  if (redo) { delete mesh.userData.redecorate; try { redo(); } catch (e) { console.warn('figure variant', e); } }
 }
 
 /** A mesh of a figure in a finish (the stand-in until the GLB is in; it loads now, its series after it). */

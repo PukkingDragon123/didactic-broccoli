@@ -1,0 +1,642 @@
+{
+ "name": "Capsule machine stand (standard)",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 0.4,
+ "budget": {
+  "tris": 6000,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.5,
+  "gradient": 0.25,
+  "ao": 0.55,
+  "ao_height": 120.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "ce9e8e1_k0p06": [
+    "#3d2c1f",
+    "#8d6c4a",
+    "#c2ad8f",
+    "#ede8df",
+    "#f1efe8",
+    "#f6f5f0",
+    "#fbfbf9"
+   ],
+   "ccfcec6_k0p06": [
+    "#312821",
+    "#70604e",
+    "#a69984",
+    "#d3cec4",
+    "#dedcd4",
+    "#eae9e4",
+    "#f6f5f4"
+   ],
+   "c3a72c4_k0p08": [
+    "#0c1127",
+    "#1d2d5a",
+    "#2f4e8d",
+    "#4373bd",
+    "#779ecd",
+    "#a9c5de",
+    "#dbe8f1"
+   ],
+   "c7a7e84": [
+    "#19181b",
+    "#3a393f",
+    "#5b5b61",
+    "#7e7e82",
+    "#a2a2a2",
+    "#c4c4c4",
+    "#e6e6e6"
+   ]
+  }
+ },
+ "styles": {
+  "abs": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 30,
+     "amount": 0.14
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.45,
+     "min_light": 0.82
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.25,
+     "min_light": -0.1,
+     "max_light": 0.25
+    },
+    {
+     "id": "scuff",
+     "op": "patches",
+     "scale": 40,
+     "threshold": 0.78,
+     "shift": -0.35
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 4,
+     "density": 0.22,
+     "shift": 0.9
+    }
+   ]
+  },
+  "lacquer": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none",
+    "light_shift": 1.4
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 24,
+     "amount": 0.12
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.7,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.4,
+     "min_light": -0.2,
+     "max_light": 0.25
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 5,
+     "density": 0.35,
+     "shift": 1.3
+    }
+   ]
+  },
+  "ironpaint": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 120,
+     "amount": 0.5
+    },
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 16,
+     "amount": 0.2
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 50,
+     "threshold": 0.8,
+     "ramp": "rust",
+     "tone": 3.0
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.1,
+     "ramp": "steel",
+     "tone": 2.4,
+     "post": true
+    }
+   ]
+  },
+  "rubber": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 0,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 8,
+     "amount": 0.25
+    },
+    {
+     "id": "dust",
+     "op": "speckle",
+     "density": 0.02,
+     "shift": 0.6
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "foot",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    21.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    390.0,
+    370.0,
+    22
+   ],
+   "chamfer": 24,
+   "style": "ironpaint",
+   "paint": {
+    "ramp": "c7a7e84",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "foot_rub",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    7.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    386.0,
+    366.0,
+    6
+   ],
+   "chamfer": 22,
+   "style": "rubber",
+   "paint": {
+    "ramp": "rubber",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "lev_a",
+   "shape": "prism",
+   "pivot": [
+    -169.0,
+    3,
+    -159.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    22,
+    22,
+    6
+   ],
+   "sides": 12,
+   "style": "rubber",
+   "paint": {
+    "ramp": "rubber",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "lev_b",
+   "shape": "prism",
+   "pivot": [
+    169.0,
+    3,
+    -159.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    22,
+    22,
+    6
+   ],
+   "sides": 12,
+   "style": "rubber",
+   "paint": {
+    "ramp": "rubber",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "lev_c",
+   "shape": "prism",
+   "pivot": [
+    -169.0,
+    3,
+    159.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    22,
+    22,
+    6
+   ],
+   "sides": 12,
+   "style": "rubber",
+   "paint": {
+    "ramp": "rubber",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "lev_d",
+   "shape": "prism",
+   "pivot": [
+    169.0,
+    3,
+    159.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    22,
+    22,
+    6
+   ],
+   "sides": 12,
+   "style": "rubber",
+   "paint": {
+    "ramp": "rubber",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "column",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    302.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    216.0,
+    204.0,
+    540.0
+   ],
+   "chamfer": 16,
+   "style": "abs",
+   "paint": {
+    "ramp": "ce9e8e1_k0p06",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "stripe",
+      "op": "band",
+      "axis": "x",
+      "from": -0.08,
+      "to": 0.08,
+      "ramp": "c3a72c4_k0p08",
+      "tone": 3.0,
+      "faces": [
+       "bottom"
+      ]
+     },
+     {
+      "id": "seam",
+      "op": "panel",
+      "inset": 4,
+      "shift": -0.8,
+      "faces": [
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "col_foot",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    42.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    220.0,
+    208.0,
+    20
+   ],
+   "chamfer": 17,
+   "style": "abs",
+   "paint": {
+    "ramp": "c3a72c4_k0p08",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "col_top",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    586.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    356.0,
+    336.0,
+    28.0
+   ],
+   "chamfer": 16,
+   "style": "abs",
+   "paint": {
+    "ramp": "c3a72c4_k0p08",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "col_top2",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    569.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    348.0,
+    328.0,
+    6.0
+   ],
+   "chamfer": 14,
+   "style": "abs",
+   "paint": {
+    "ramp": "ccfcec6_k0p06",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "badge",
+   "shape": "prism",
+   "pivot": [
+    0,
+    342.0,
+    103.5
+   ],
+   "size": [
+    60,
+    60,
+    3
+   ],
+   "sides": 24,
+   "style": "lacquer",
+   "paint": {
+    "ramp": "c3a72c4_k0p08",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "badge_in",
+   "shape": "prism",
+   "pivot": [
+    0,
+    342.0,
+    105.5
+   ],
+   "size": [
+    44,
+    44,
+    2
+   ],
+   "sides": 24,
+   "style": "lacquer",
+   "paint": {
+    "ramp": "paperw",
+    "tone": 4.5,
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".iii.",
+       "i...i",
+       "i....",
+       "i....",
+       "i....",
+       "i...i",
+       ".iii."
+      ],
+      "key": {
+       "i": "c3a72c4_k0p08:2"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

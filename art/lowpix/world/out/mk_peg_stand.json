@@ -1,0 +1,34 @@
+{
+ "id": "mk_peg_stand",
+ "src": "sketchfab:dfd6e6a1842d4e0dbbfe9316697f4f75",
+ "credit": {
+  "title": "Wood Display Rack",
+  "author": "greasoft",
+  "authorUrl": "https://sketchfab.com/greasoft",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wood-display-rack-dfd6e6a1842d4e0dbbfe9316697f4f75",
+  "site": "Sketchfab"
+ },
+ "tris": 900,
+ "tex": 256,
+ "size": [
+  0.105,
+  0.39,
+  0.474
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#370a0a",
+   "#47130e",
+   "#561e13",
+   "#642b18",
+   "#723a1e",
+   "#97582b",
+   "#ba7a3a",
+   "#c99c5e",
+   "#d3b986"
+  ]
+ },
+ "warnings": []
+}

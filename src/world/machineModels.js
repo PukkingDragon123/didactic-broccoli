@@ -1,15 +1,23 @@
 // Gacha machines: the layout the game plays on (sizes, where the slot / crank / chute / drawer are) and the assembly
-// of the voxel models (src/gachakit/voxmachine.js builds the geometry and the print per machine type):
+// of the models: lowpix models (art/lowpix/machines/_src/gacha.py -> public/models/lowpix/machines/<type>.glb, loaded
+// below before anything builds: their joints are the crank, lid, flap, coin drawer, price buttons and pawl), dressed with
+// the pixel-art print decals and the window's clear panes (src/gachakit/voxmachine.js machineDressing). The old voxel
+// build (voxmachine.js) is the fallback if a model fails to load, and `?voxelmachines` in the URL forces it.
 //   retro     a 1970s countertop coin machine on a fruit crate      standard  a 1990s single-crank floor machine
 //   deluxe    a two-tier station (the lower unit shuttered)          royal     the premium machine on its cabinet
 // All dimensions in metres, machine-local: front = +z, origin = floor centre.
 import * as THREE from 'three';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { BANNER_W, BANNER_H } from '../gfx/banner.js';
-import { voxelMachineParts, STYLES } from '../gachakit/voxmachine.js';
+import { voxelMachineParts, machineDressing, STYLES } from '../gachakit/voxmachine.js';
+import { preloadLP, lpReady, lpMesh, LP_MANIFEST } from '../gachakit/lowpix.js';
 import { activeLogo, paintLogo } from '../logo/logo.js';
 import { VoxelModel, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
+
+const FORCE_VOXEL = typeof location !== 'undefined' && /[?&]voxelmachines\b/.test(location.search);
+if (typeof document !== 'undefined' && !FORCE_VOXEL) await preloadLP(['retro', 'standard', 'deluxe', 'royal']);
+const useLowpix = (type) => !FORCE_VOXEL && lpReady(type);
 
 export const VS = 0.005; // the old models' 5 mm voxel: still the unit of a few offsets in the game logic
 
@@ -140,13 +148,19 @@ export function clearPlastic(tint = 0xf6fbff, opacity = 0.12) {
  */
 export function buildMachineModel(type, opts = {}) {
   const spec = MACHINE_SPECS[type], L = layout(spec);
-  const P = voxelMachineParts(type, spec, L), M = P.mats, Gm = P.geo;
+  const lp = useLowpix(type);
+  const P = lp ? null : voxelMachineParts(type, spec, L);
+  const standBox = lp ? LP_MANIFEST[type].standBox : P.stand;
+  const Gm = lp ? machineDressing(type, spec, L, standBox) : P.geo, M = lp ? Gm.mats : P.mats;
   const group = new THREE.Group();
   const mesh = (geo, mat = M.body, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.castShadow = shadow; m.receiveShadow = true; return m; };
+  // a moving part: the lowpix model's joint (its geometry in the joint's frame), or the voxel part
+  const part = (joint, voxGeo, shadow = true) => (lp ? Object.assign(lpMesh(type, joint), { castShadow: shadow }) : mesh(voxGeo, M.body, shadow));
   const print = (geo) => { const m = mesh(geo, M.print, false); m.userData.noRim = true; m.raycast = () => {}; return m; };
   const plane = (w, h, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.userData.noRim = true; m.castShadow = false; m.receiveShadow = true; return m; };
   // everything that never moves: the stand, the lower unit, the window's frame, the tray, the fine chrome parts
-  const body = mesh(Gm.body);
+  let body;
+  if (lp) { body = new THREE.Group(); body.name = 'machine-body'; body.add(lpMesh(type, 'body'), lpMesh(type, 'stand')); } else body = mesh(Gm.body);
   group.add(body, print(Gm.bodyPrint));
   const glass = mesh(Gm.glass, M.glass, false);
   glass.renderOrder = 3; glass.userData.noRim = true; glass.raycast = () => {};
@@ -165,11 +179,12 @@ export function buildMachineModel(type, opts = {}) {
   const lid = new THREE.Group();
   lid.position.set(0, 0, -L.lid.z);
   lidPivot.add(lid);
-  const lidMesh = mesh(Gm.lid);
+  const lidMesh = part('lid', P?.geo.lid);
   lidMesh.userData.part = 'lid';
   const lidPrint = print(Gm.lidPrint);
   lidPrint.userData.part = 'lid';
-  lid.add(lidMesh, lidPrint);
+  (lp ? lidPivot : lid).add(lidMesh); // (the lowpix lid is modelled round its hinge)
+  lid.add(lidPrint);
   const num = plane(0.05, 0.017, numberPlate(opts.no || 1));
   num.position.set((L.lid.lockX + 0.014 + spec.w / 2 - 0.006) / 2, spec.capH / 2, spec.d / 2 + 0.0025 + 0.0008);
   num.userData.part = 'lid';
@@ -182,7 +197,7 @@ export function buildMachineModel(type, opts = {}) {
   const CB = L.coinBox;
   const drawer = new THREE.Group();
   drawer.position.set(CB.x0, CB.y0, CB.z);
-  const drawerMesh = mesh(Gm.drawer);
+  const drawerMesh = part('drawer', P?.geo.drawer);
   drawerMesh.userData.part = 'coinbox';
   const drawerPrint = print(Gm.drawerPrint);
   drawer.add(drawerMesh, drawerPrint);
@@ -193,15 +208,15 @@ export function buildMachineModel(type, opts = {}) {
   // the crank
   const handleGroup = new THREE.Group();
   handleGroup.position.set(L.handle.x, L.handle.y, L.handle.z);
-  const handle = mesh(Gm.handle);
+  const handle = part('crank', P?.geo.handle);
   handle.userData.part = 'handle';
   const hpiv = new THREE.Group();
   hpiv.add(handle);
   handleGroup.add(hpiv);
   group.add(handleGroup);
   // the ratchet's pawl on the bezel: it rides each tooth of the crank
-  const pawl = mesh(Gm.pawl, M.body, false);
-  const pa = 0.9, pr = Gm.knob + 0.008;
+  const pawl = part('pawl', P?.geo.pawl, false);
+  const pa = 0.9, pr = spec.dial.knob + 0.008;
   pawl.position.set(L.handle.x + Math.cos(pa) * pr, L.handle.y + Math.sin(pa) * pr, L.front + 0.005);
   pawl.rotation.z = pa - Math.PI / 2;
   pawl.userData.rest = pawl.rotation.z;
@@ -210,8 +225,8 @@ export function buildMachineModel(type, opts = {}) {
   const O = L.outlet;
   const flapPivot = new THREE.Group();
   flapPivot.position.set(0, O.y1 - VS, L.front + VS * 0.5);
-  const flap = mesh(Gm.flap, M.body, false);
-  if (Gm.flapClear) flap.renderOrder = 3;
+  const flap = part('flap', P?.geo.flap, false);
+  if (!lp && Gm.flapClear) flap.renderOrder = 3;
   flapPivot.add(flap);
   group.add(flapPivot);
   // the price plate and its buttons
@@ -220,19 +235,20 @@ export function buildMachineModel(type, opts = {}) {
   plateMesh.position.set(L.plate.x, L.plate.y, L.front + 0.004);
   plateMesh.userData.part = 'plate';
   group.add(plateMesh);
-  const minus = mesh(Gm.btnMinus, M.body, false), plus = mesh(Gm.btnPlus, M.body, false);
+  const minus = part('btn_minus', P?.geo.btnMinus, false), plus = part('btn_plus', P?.geo.btnPlus, false);
   minus.position.set(L.plate.x - L.buttons.dx, L.buttons.y, L.front);
   plus.position.set(L.plate.x + L.buttons.dx, L.buttons.y, L.front);
   minus.userData.part = 'priceDown'; plus.userData.part = 'priceUp';
   group.add(minus, plus);
   return {
     group, L, body, stand: body, bannerMesh, bannerHolder, domeAnchor, lid, lidPivot, drawer, coinAnchor, flapPivot, handleGroup, handlePivot: hpiv,
-    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [glass], tray: body, mats: M, pawl, standBox: P.stand,
+    plate: { mesh: plateMesh, draw: pp.draw }, buttons: { minus, plus }, glassParts: [glass], tray: body, mats: M, pawl, standBox, lowpix: lp,
   };
 }
 
 /** Handle (dev viewers): the crank on its own. */
 export function buildHandle(r, type = 'standard') {
+  if (useLowpix(type)) { const g = new THREE.Group(); g.add(lpMesh(type, 'crank')); return g; }
   const spec = MACHINE_SPECS[type], P = voxelMachineParts(type, spec, layout(spec));
   const m = new THREE.Mesh(P.geo.handle, P.mats.body);
   m.castShadow = true;

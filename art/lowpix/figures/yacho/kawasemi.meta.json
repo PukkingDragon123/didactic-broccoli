@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "bird",
+   "src": "sketchfab:eb654151f2d54b3a89169af96da09f89",
+   "height": 26,
+   "at": [
+    0,
+    3.4,
+    0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "ed1ce93e7cd222"
+  }
+ ],
+ "key": "yacho/kawasemi"
+}

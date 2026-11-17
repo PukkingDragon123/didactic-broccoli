@@ -1,0 +1,28 @@
+{
+ "mats": {
+  "base": "gloss"
+ },
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "bowl",
+   "src": "sketchfab:f65a8eab51794fbc8c7941101a354a54",
+   "height": 26,
+   "at": [
+    0,
+    4.6,
+    -1
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "b3953b8ced6fad"
+  }
+ ],
+ "key": "sampuru/ramen"
+}

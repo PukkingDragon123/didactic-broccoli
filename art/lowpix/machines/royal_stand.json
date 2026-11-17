@@ -1,0 +1,553 @@
+{
+ "name": "Capsule machine stand (royal)",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 0.4,
+ "budget": {
+  "tris": 6000,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.5,
+  "gradient": 0.25,
+  "ao": 0.55,
+  "ao_height": 120.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "cf2eaee_k0p06": [
+    "#461a2a",
+    "#a13f5d",
+    "#d18f9e",
+    "#f6eaec",
+    "#f8f0f1",
+    "#fbf5f6",
+    "#fdfbfb"
+   ],
+   "cddcfd8_k0p06": [
+    "#37202e",
+    "#7e4c67",
+    "#b5889d",
+    "#e0cfd6",
+    "#e8dce0",
+    "#f0e9eb",
+    "#f8f6f6"
+   ],
+   "cc8509e_k0p08": [
+    "#2c0d26",
+    "#661f54",
+    "#9e327c",
+    "#c7559b",
+    "#d584b0",
+    "#e3b1c9",
+    "#f3dee7"
+   ],
+   "c3a3036": [
+    "#0d090b",
+    "#1d1619",
+    "#2d2327",
+    "#3d3034",
+    "#776166",
+    "#a9999c",
+    "#dad4d5"
+   ],
+   "cfbf6f2_k0p04": [
+    "#631400",
+    "#e73e00",
+    "#ff9d6c",
+    "#fff6f0",
+    "#fff9f4",
+    "#fffcf8",
+    "#fffefc"
+   ]
+  }
+ },
+ "styles": {
+  "lacquer": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none",
+    "light_shift": 1.4
+   },
+   "layers": [
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 24,
+     "amount": 0.12
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.7,
+     "min_light": 0.8
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.4,
+     "min_light": -0.2,
+     "max_light": 0.25
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 5,
+     "density": 0.35,
+     "shift": 1.3
+    }
+   ]
+  },
+  "gold": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none",
+    "light_shift": 1.5,
+    "dark_shift": -1.2
+   },
+   "layers": [
+    {
+     "id": "base",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.8
+    },
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 10,
+     "amount": 0.3
+    },
+    {
+     "id": "sky",
+     "op": "fill",
+     "shift": 1.1,
+     "min_light": 0.78
+    },
+    {
+     "id": "floor",
+     "op": "fill",
+     "shift": -1.0,
+     "max_light": 0.1
+    },
+    {
+     "id": "gloss",
+     "op": "gloss",
+     "post": true,
+     "dash": true,
+     "length": 3,
+     "density": 0.45,
+     "shift": 1.4
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "kick",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    20.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    440.0,
+    400.0,
+    40
+   ],
+   "chamfer": 6,
+   "style": "lacquer",
+   "paint": {
+    "ramp": "c3a3036",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "cab",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    272.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    460.0,
+    420.0,
+    464.0
+   ],
+   "chamfer": 8,
+   "style": "lacquer",
+   "paint": {
+    "ramp": "cf2eaee_k0p06",
+    "tone": 3.0,
+    "layers": [
+     {
+      "id": "vent",
+      "op": "grille",
+      "rect": [
+       0.25,
+       0.45,
+       0.75,
+       0.75
+      ],
+      "period": 4,
+      "slit_tone": 0.6,
+      "lip": 0.5,
+      "faces": [
+       "left",
+       "right"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "cornice",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    512.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    464.0,
+    424.0,
+    16.0
+   ],
+   "chamfer": 9,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "skirt",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    45.0,
+    0.0
+   ],
+   "rotation": [
+    -90,
+    0,
+    0
+   ],
+   "size": [
+    462.0,
+    422.0,
+    10
+   ],
+   "chamfer": 8,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "bead_t",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    478.5,
+    211.5
+   ],
+   "size": [
+    416.0,
+    5.0,
+    3.0
+   ],
+   "chamfer": 1.5,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "bead_b",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    67.5,
+    211.5
+   ],
+   "size": [
+    416.0,
+    5,
+    3.0
+   ],
+   "chamfer": 1.5,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "bead_l",
+   "shape": "box",
+   "pivot": [
+    -210.5,
+    273.0,
+    211.5
+   ],
+   "size": [
+    5.0,
+    416.0,
+    3.0
+   ],
+   "chamfer": 1.5,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "bead_r",
+   "shape": "box",
+   "pivot": [
+    210.5,
+    273.0,
+    211.5
+   ],
+   "size": [
+    5.0,
+    416.0,
+    3.0
+   ],
+   "chamfer": 1.5,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "cab_panel",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    273.0,
+    210.0
+   ],
+   "size": [
+    416.0,
+    406.0,
+    2.0
+   ],
+   "style": "lacquer",
+   "paint": {
+    "ramp": "cfbf6f2_k0p04",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "medal_o",
+   "shape": "prism",
+   "pivot": [
+    0,
+    273.0,
+    212.5
+   ],
+   "size": [
+    108,
+    108,
+    3
+   ],
+   "sides": 28,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "medal",
+   "shape": "prism",
+   "pivot": [
+    0,
+    273.0,
+    214.5
+   ],
+   "size": [
+    92,
+    92,
+    3
+   ],
+   "sides": 28,
+   "style": "lacquer",
+   "paint": {
+    "ramp": "cc8509e_k0p08",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "medal_i",
+   "shape": "prism",
+   "pivot": [
+    0,
+    273.0,
+    216.5
+   ],
+   "size": [
+    56,
+    56,
+    2
+   ],
+   "sides": 24,
+   "style": "gold",
+   "paint": {
+    "ramp": "goldr",
+    "tone": 4.5,
+    "stamps": [
+     {
+      "face": "front",
+      "at": "center",
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".iii.",
+       "i...i",
+       "i....",
+       "i.iii",
+       "i...i",
+       "i...i",
+       ".iiii"
+      ],
+      "key": {
+       "i": "cc8509e_k0p08:1"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

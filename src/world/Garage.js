@@ -7,6 +7,7 @@ import { propMesh, hasProp } from './props.js';
 import { SHOP_ART } from '../gfx/shopArt.js';
 import { hash2 } from '../core/util.js';
 import { Town } from './Town.js';
+import { archReady, archFace } from './archModels.js';
 import { GarageDetail, garageBatches, bakeInto, placeProp, surfMat } from './GarageDetail.js';
 
 export const GARAGE = { minX: -4, maxX: 4, minZ: -5, maxZ: 5, height: 3.2, shutterY: 2.25, doorHalf: 0.6, doorH: 2.1 };
@@ -167,7 +168,10 @@ export class Garage {
     this.solid(1.2, H, 0.2, cwall, -3.6 + 0.0, 0, G.maxZ + 0.1, { player: true, material: 'concrete' });
     this.solid(1.2, H, 0.2, cwall, 3.6, 0, G.maxZ + 0.1, { player: true, material: 'concrete' });
     // roller shutter: its visible height changes as it rolls up into the hood (setShutter)
-    const shutter = new THREE.Mesh(new THREE.BufferGeometry(), pixMat('shutter', { roughness: 0.55, metalness: 0.45, bump: 2 }));
+    // the curtain is painted by lowpix (art/lowpix/world_arch/_src/shopfront.py: shutter); setShutter maps its lower part
+    this.shutterFace = archFace('shutter');
+    const shutterMat = this.shutterFace ? Object.assign(this.shutterFace.material.clone(), { roughness: 0.5, metalness: 0.3 }) : pixMat('shutter', { roughness: 0.55, metalness: 0.45, bump: 2 });
+    const shutter = new THREE.Mesh(new THREE.BufferGeometry(), shutterMat);
     shutter.castShadow = true; shutter.receiveShadow = true;
     shutter.position.set(0, 0, G.maxZ + 0.05);
     shutter.name = 'shutter';
@@ -179,11 +183,13 @@ export class Garage {
     this.shutterBar = bar;
     this.shutterOb = this.game.player.addObstacle(-3.0, 3.0, G.maxZ - 0.05, G.maxZ + 0.18);
     this.shutterOpen = -1;
-    const hood = boxMesh(6.4, 0.38, 0.4, pixMat('steel', { roughness: 0.6, metalness: 0.4 }));
-    hood.position.set(0, H - 0.19, G.maxZ + 0.05);
-    this.bake(hood);
-    // shutter rails
-    for (const x of [-3.02, 3.02]) { const r = boxMesh(0.06, H, 0.12, colMat(0x6a706a, { metalness: 0.6 })); r.position.set(x, H / 2, G.maxZ + 0.05); this.bake(r); }
+    // the hood and the guide rails are part of the lowpix shop front (Town.buildShopFront) unless it failed to load
+    if (!archReady('shopfront')) {
+      const hood = boxMesh(6.4, 0.38, 0.4, pixMat('steel', { roughness: 0.6, metalness: 0.4 }));
+      hood.position.set(0, H - 0.19, G.maxZ + 0.05);
+      this.bake(hood);
+      for (const x of [-3.02, 3.02]) { const r = boxMesh(0.06, H, 0.12, colMat(0x6a706a, { metalness: 0.6 })); r.position.set(x, H / 2, G.maxZ + 0.05); this.bake(r); }
+    }
     // the shop front piers (the street, the neighbourhood and the shop facade live in Town.js)
     const P = this.game.player;
     P.addObstacle(-4.3, -3.0, G.maxZ - 0.1, G.maxZ + 0.35); P.addObstacle(3.0, 4.3, G.maxZ - 0.1, G.maxZ + 0.35);
@@ -640,6 +646,12 @@ export class Garage {
     const m = this.shutterMesh;
     m.geometry.dispose();
     m.geometry = worldBox(6.0, h, 0.06);
+    const F = this.shutterFace;
+    if (F) { // the lowest h metres of the painted curtain (its bottom bar stays at the bottom)
+      const pos = m.geometry.attributes.position, uv = m.geometry.attributes.uv;
+      for (let i = 0; i < pos.count; i++) uv.setXY(i, ...F.uv(pos.getX(i), F.y0 + pos.getY(i) + h / 2));
+      uv.needsUpdate = true;
+    }
     m.position.y = bottom + h / 2;
     this.shutterBar.position.y = bottom + 0.03;
     this.shutterOb.enabled = k < 0.85;

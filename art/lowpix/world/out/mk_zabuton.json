@@ -1,0 +1,34 @@
+{
+ "id": "mk_zabuton",
+ "src": "sketchfab:1e2b4dc9efe348548b681a1fe0a1343b",
+ "credit": {
+  "title": "Zafu and zabuton",
+  "author": "Thomas Deneuville",
+  "authorUrl": "https://sketchfab.com/tdnvl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/zafu-and-zabuton-1e2b4dc9efe348548b681a1fe0a1343b",
+  "site": "Sketchfab"
+ },
+ "tris": 2284,
+ "tex": 144,
+ "size": [
+  0.247,
+  0.12,
+  0.301
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#030207",
+   "#040209",
+   "#05030b",
+   "#07040c",
+   "#09050e",
+   "#2c183e",
+   "#542d6d",
+   "#7f4499",
+   "#a669b8"
+  ]
+ },
+ "warnings": []
+}

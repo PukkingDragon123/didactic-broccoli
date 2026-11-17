@@ -1,0 +1,959 @@
+{
+ "name": "Capsule machine stand (retro)",
+ "description": "",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 0.4,
+ "budget": {
+  "tris": 6000,
+  "colors": 160
+ },
+ "light": {
+  "dir": [
+   -0.5,
+   1.0,
+   0.7
+  ],
+  "strength": 0.5,
+  "gradient": 0.25,
+  "ao": 0.55,
+  "ao_height": 120.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   18
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#120f15",
+    "#211b22",
+    "#332a31",
+    "#4a3f45",
+    "#62575c",
+    "#7c7276"
+   ],
+   "steel": [
+    "#1b1b1f",
+    "#404047",
+    "#66666d",
+    "#8e8e92",
+    "#adadae",
+    "#cbcbcb",
+    "#e9e9e9"
+   ],
+   "chrome": [
+    "#2a2d33",
+    "#4a4f57",
+    "#6f757e",
+    "#9aa1aa",
+    "#c3c9d0",
+    "#e2e6ea",
+    "#f8f9fa"
+   ],
+   "goldr": [
+    "#140b05",
+    "#513317",
+    "#8b622a",
+    "#c19741",
+    "#d1bd7c",
+    "#e4ddb6",
+    "#f8f7ed"
+   ],
+   "rust": [
+    "#1c0c08",
+    "#411e14",
+    "#663320",
+    "#894c2d",
+    "#c27a4c",
+    "#d7af8e",
+    "#eddecf"
+   ],
+   "rubber": [
+    "#121113",
+    "#1b1a1d",
+    "#252428",
+    "#302e33",
+    "#3c3a40",
+    "#4a484e"
+   ],
+   "cavity": [
+    "#0b0a0d",
+    "#141217",
+    "#1d1a20",
+    "#28242b",
+    "#332e36"
+   ],
+   "paperw": [
+    "#925a25",
+    "#ce8d45",
+    "#e0bd8e",
+    "#f3e8d6",
+    "#f5eedf",
+    "#f7f3e7",
+    "#faf7ef"
+   ],
+   "kraft": [
+    "#251810",
+    "#553b26",
+    "#84613e",
+    "#af895a",
+    "#c3ac87",
+    "#d8ccb4",
+    "#eeeadf"
+   ],
+   "wood": [
+    "#271810",
+    "#5a3b25",
+    "#8b623c",
+    "#b58c5b",
+    "#c7af88",
+    "#dbceb4",
+    "#efebdf"
+   ],
+   "cb8432f_k0p06": [
+    "#26090a",
+    "#581715",
+    "#882c23",
+    "#b84631",
+    "#d37a60",
+    "#e2af9b",
+    "#f2dfd5"
+   ],
+   "c8c2e22_k0p06": [
+    "#1d0608",
+    "#430f10",
+    "#681d19",
+    "#8d3023",
+    "#cc583d",
+    "#dd9b85",
+    "#f0d7cb"
+   ],
+   "cc4483c_k0p08": [
+    "#280b0e",
+    "#5d1b1e",
+    "#912f2c",
+    "#c24c40",
+    "#d18374",
+    "#e1b5a8",
+    "#f2e1da"
+   ],
+   "cb08454_hue10": [
+    "#251710",
+    "#553825",
+    "#845d3c",
+    "#af8457",
+    "#c3a885",
+    "#d8cab3",
+    "#eee9df"
+   ],
+   "c9a7046_hue10": [
+    "#20130d",
+    "#4a3020",
+    "#724f33",
+    "#9a7048",
+    "#bb9a73",
+    "#d3c1a7",
+    "#ebe5da"
+   ]
+  }
+ },
+ "styles": {
+  "steel": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 120,
+     "amount": 0.8
+    },
+    {
+     "id": "sheen",
+     "op": "fill",
+     "shift": 0.7,
+     "min_light": 0.75
+    },
+    {
+     "id": "ref",
+     "op": "fill",
+     "shift": -0.5,
+     "max_light": 0.2
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.08,
+     "shift": 1.0,
+     "post": true
+    }
+   ]
+  },
+  "ironpaint": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/metal_plate",
+     "scale": 120,
+     "amount": 0.5
+    },
+    {
+     "id": "mottle",
+     "op": "noise",
+     "scale": 16,
+     "amount": 0.2
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 50,
+     "threshold": 0.8,
+     "ramp": "rust",
+     "tone": 3.0
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 2,
+     "density": 0.1,
+     "ramp": "steel",
+     "tone": 2.4,
+     "post": true
+    }
+   ]
+  },
+  "wood": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "brush": {
+    "flow": "long",
+    "length": 8,
+    "width": 1.5,
+    "rough": 0.55
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/wood_table_001",
+     "scale": 260,
+     "amount": 1.4
+    },
+    {
+     "id": "grime",
+     "op": "patches",
+     "scale": 80,
+     "threshold": 0.72,
+     "shift": -0.5
+    }
+   ]
+  },
+  "plank": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "none"
+   },
+   "brush": {
+    "flow": "long",
+    "length": 8,
+    "width": 1.5,
+    "rough": 0.55
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/oak_veneer_01",
+     "scale": 220,
+     "amount": 1.3
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "cpost_a",
+   "shape": "box",
+   "pivot": [
+    -209.0,
+    270.0,
+    -184.0
+   ],
+   "size": [
+    22.0,
+    540.0,
+    22.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "cpost_b",
+   "shape": "box",
+   "pivot": [
+    209.0,
+    270.0,
+    -184.0
+   ],
+   "size": [
+    22.0,
+    540.0,
+    22.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "cpost_c",
+   "shape": "box",
+   "pivot": [
+    -209.0,
+    270.0,
+    184.0
+   ],
+   "size": [
+    22.0,
+    540.0,
+    22.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "cpost_d",
+   "shape": "box",
+   "pivot": [
+    209.0,
+    270.0,
+    184.0
+   ],
+   "size": [
+    22.0,
+    540.0,
+    22.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_f0",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    90.0,
+    189.0
+   ],
+   "size": [
+    436.0,
+    160,
+    12.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_b0",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    90.0,
+    -189.0
+   ],
+   "size": [
+    436.0,
+    160,
+    12.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_l0",
+   "shape": "box",
+   "pivot": [
+    -214.0,
+    90.0,
+    0.0
+   ],
+   "size": [
+    12.0,
+    160,
+    386.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_r0",
+   "shape": "box",
+   "pivot": [
+    214.0,
+    90.0,
+    0.0
+   ],
+   "size": [
+    12.0,
+    160,
+    386.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_f1",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    285.0,
+    189.0
+   ],
+   "size": [
+    436.0,
+    170,
+    12.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_b1",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    285.0,
+    -189.0
+   ],
+   "size": [
+    436.0,
+    170,
+    12.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_l1",
+   "shape": "box",
+   "pivot": [
+    -214.0,
+    285.0,
+    0.0
+   ],
+   "size": [
+    12.0,
+    170,
+    386.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_r1",
+   "shape": "box",
+   "pivot": [
+    214.0,
+    285.0,
+    0.0
+   ],
+   "size": [
+    12.0,
+    170,
+    386.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_f2",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    467.5,
+    189.0
+   ],
+   "size": [
+    436.0,
+    135.0,
+    12.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_b2",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    467.5,
+    -189.0
+   ],
+   "size": [
+    436.0,
+    135.0,
+    12.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_l2",
+   "shape": "box",
+   "pivot": [
+    -214.0,
+    467.5,
+    0.0
+   ],
+   "size": [
+    12.0,
+    135.0,
+    386.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "slat_r2",
+   "shape": "box",
+   "pivot": [
+    214.0,
+    467.5,
+    0.0
+   ],
+   "size": [
+    12.0,
+    135.0,
+    386.0
+   ],
+   "chamfer": 1.5,
+   "style": "wood",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "nail_0_False_32",
+   "shape": "prism",
+   "pivot": [
+    -209.0,
+    32,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_0_False_148",
+   "shape": "prism",
+   "pivot": [
+    -209.0,
+    148,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_0_True_32",
+   "shape": "prism",
+   "pivot": [
+    209.0,
+    32,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_0_True_148",
+   "shape": "prism",
+   "pivot": [
+    209.0,
+    148,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_1_False_222",
+   "shape": "prism",
+   "pivot": [
+    -209.0,
+    222,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_1_False_348",
+   "shape": "prism",
+   "pivot": [
+    -209.0,
+    348,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_1_True_222",
+   "shape": "prism",
+   "pivot": [
+    209.0,
+    222,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_1_True_348",
+   "shape": "prism",
+   "pivot": [
+    209.0,
+    348,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_2_False_422",
+   "shape": "prism",
+   "pivot": [
+    -209.0,
+    422,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_2_False_513.0",
+   "shape": "prism",
+   "pivot": [
+    -209.0,
+    513.0,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_2_True_422",
+   "shape": "prism",
+   "pivot": [
+    209.0,
+    422,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "nail_2_True_513.0",
+   "shape": "prism",
+   "pivot": [
+    209.0,
+    513.0,
+    196.0
+   ],
+   "size": [
+    7.0,
+    7.0,
+    2
+   ],
+   "sides": 8,
+   "style": "steel",
+   "paint": {
+    "ramp": "steel",
+    "tone": 2.2
+   }
+  },
+  {
+   "id": "top0",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    550.0,
+    -148.5
+   ],
+   "size": [
+    440.0,
+    20.0,
+    93.0
+   ],
+   "chamfer": 2,
+   "style": "plank",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "top1",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    550.0,
+    -49.5
+   ],
+   "size": [
+    440.0,
+    20.0,
+    93.0
+   ],
+   "chamfer": 2,
+   "style": "plank",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "top2",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    550.0,
+    49.5
+   ],
+   "size": [
+    440.0,
+    20.0,
+    93.0
+   ],
+   "chamfer": 2,
+   "style": "plank",
+   "paint": {
+    "ramp": "c9a7046_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "top3",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    550.0,
+    148.5
+   ],
+   "size": [
+    440.0,
+    20.0,
+    93.0
+   ],
+   "chamfer": 2,
+   "style": "plank",
+   "paint": {
+    "ramp": "cb08454_hue10",
+    "tone": 3.0
+   }
+  },
+  {
+   "id": "strap",
+   "shape": "box",
+   "pivot": [
+    0.0,
+    506.0,
+    194.75
+   ],
+   "size": [
+    442.0,
+    12.0,
+    3.5
+   ],
+   "chamfer": 0.6,
+   "style": "ironpaint",
+   "paint": {
+    "ramp": "steel",
+    "tone": 3.0
+   }
+  }
+ ]
+}

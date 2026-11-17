@@ -45,4 +45,9 @@ export function install(game) {
     for (const id of want) preloadSeries(SERIES_BY_ID[id]);
   } catch (e) { console.warn('figure preload', e); }
   game.figures = { play: () => { const m = meshOf(H?.item); if (m) play(m); return !!m; } };
+  // a save from before this season: its figures were swapped for the new line-up (src/data/series/legacy.js)
+  if (game.state.flags?.lineupSwap) {
+    const note = () => game.tip?.('lineup', "Grandpa swapped the old stock for this season's line-up", 'Your old figures are new ones of the same rarity');
+    if (game.tweens?.wait) game.tweens.wait(4, note); else setTimeout(note, 4000);
+  }
 }

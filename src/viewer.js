@@ -8,7 +8,7 @@ import '@fontsource/dotgothic16/400.css';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { SERIES_BY_ID, getItem } from './data/series/index.js';
-import { makeItemMesh } from './game/collectibles.js';
+import { makeItemMesh, whenItemReady } from './game/collectibles.js';
 import { FINISHES } from './data/finishes.js';
 import { RARITIES } from './data/rarity.js';
 import { VoxelModel } from './voxel/VoxelModel.js';
@@ -34,7 +34,14 @@ const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
 async function loadEntries() {
   const entries = [];
-  if (params.get('series')) {
+  if (params.get('series') === 'all' || params.get('series')?.includes(',')) {
+    // a contact sheet of several series (?series=all or ?series=a,b,c): one row each
+    const { SERIES } = await import('./data/series/index.js');
+    const ids = params.get('series') === 'all' ? SERIES.filter((s) => !s.hidden).map((s) => s.id) : params.get('series').split(',');
+    for (const id of ids) for (const it of SERIES_BY_ID[id]?.items || []) {
+      entries.push({ obj: makeItemMesh(it.key, params.get('finish') || 'normal'), label: `${it.name}<br><span class="r">${SERIES_BY_ID[id].name} · ${RARITIES[it.rarity].name}</span>` });
+    }
+  } else if (params.get('series')) {
     const s = SERIES_BY_ID[params.get('series')];
     if (!s) throw new Error('No series ' + params.get('series'));
     for (const it of s.items) {
@@ -156,6 +163,10 @@ function render() {
 
 try {
   const entries = await loadEntries();
+  // lowpix figures load lazily: wait for them before framing
+  const keys = new Set();
+  for (const e of entries) e.obj?.traverse?.((o) => { if (o.userData?.itemKey) keys.add(o.userData.itemKey); });
+  await Promise.all([...keys].map((k) => whenItemReady(k).catch(() => {})));
   layout(entries);
   await document.fonts.ready;
   render();

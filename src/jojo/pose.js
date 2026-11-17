@@ -125,7 +125,7 @@ export class PoseMenu {
 
   toggle(on = !this.open) {
     const g = this.game;
-    if (on && (g.cutscene?.active || g.talk?.active || g.pc?.active || g.uiOpen || g.jojo?.photo?.active)) return;
+    if (on && (g.cutscene?.active || g.talk?.active || g.pc?.active || g.uiOpen || g.cinema?.photo?.active)) return;
     this.open = on;
     if (on) { this.prevUi = g.uiOpen; g.uiOpen = true; this.render(); }
     else g.uiOpen = this.prevUi || false;

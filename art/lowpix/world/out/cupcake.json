@@ -1,0 +1,34 @@
+{
+ "id": "cupcake",
+ "src": "sketchfab:43b8a378e7a74898855fe0075215aa48",
+ "credit": {
+  "title": "Extra Chocolate Marshmallow Cupcake",
+  "author": "jtressle",
+  "authorUrl": "https://sketchfab.com/jtressle",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/extra-chocolate-marshmallow-cupcake-43b8a378e7a74898855fe0075215aa48",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 672,
+ "size": [
+  0.908,
+  0.96,
+  0.917
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2f191a",
+   "#3b2323",
+   "#48302c",
+   "#533d37",
+   "#5e4a42",
+   "#776459",
+   "#8f7f72",
+   "#a1998f",
+   "#b5b1ac"
+  ]
+ },
+ "warnings": []
+}

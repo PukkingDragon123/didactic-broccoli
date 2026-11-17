@@ -709,6 +709,47 @@ function boxGeo(list) {
   return out;
 }
 
+// ----------------------------------------------------------------------------- print + glass (shared by every look)
+const dressCache = new Map();
+/**
+ * The print decals (header, あそびかた, slot / chute / coin labels, warning sticker, maker's plate, the crate's stencil,
+ * the shuttered unit's sign) and the window's clear panes of a machine type. stand: the stand's box (front, unitFront,
+ * shutterY: metres). o.chute: also print the chute label over the outlet. Cached per type.
+ * Returns { bodyPrint, lidPrint, drawerPrint, glass (geometries), mats: { glass, print } }.
+ */
+export function machineDressing(type, spec, L, stand, o = {}) {
+  const key = type + (o.chute ? ':c' : '');
+  if (dressCache.has(key)) return dressCache.get(key);
+  const st = STYLES[type];
+  // the window's clear plastic: front, sides and the inner divider are thin panes
+  const fz = spec.d / 2, hw = spec.w / 2, gy0 = L.caseY0, gy1 = L.caseY0 + spec.caseH - 2 * VB, t = 0.002, p = 3 * VB;
+  const glassGeo = boxGeo([
+    [-hw + p - 0.002, gy0, fz - 0.006, hw - p + 0.002, gy1, fz - 0.006 + t],
+    [-hw + 0.003, gy0, -fz + 0.02, -hw + 0.003 + t, gy1, fz - p],
+    [hw - 0.003 - t, gy0, -fz + 0.02, hw - 0.003, gy1, fz - p],
+  ]);
+  // the print
+  const S = printSheet(type, st, spec, L);
+  const O = L.outlet, PL = L.plate, CB = L.coinBox, eps = 0.0007;
+  const quads = [
+    { r: 'howto', x: Math.max(-hw + 0.04, O.x0 - 0.045), y: spec.y0 + (O.y0 + O.y1) / 2 - spec.y0 + 0.004, z: fz + eps },
+    { r: 'slot', x: L.slot.x, y: L.slot.y + 0.044, z: fz + eps },
+    { r: 'warn', x: -hw - eps, y: spec.y0 + spec.lowH * 0.45, z: -0.08, face: 'nx' },
+    { r: 'maker', x: -hw - eps, y: spec.y0 + spec.lowH * 0.22, z: -0.04, face: 'nx' },
+  ];
+  if (o.chute) quads.push({ r: 'chute', x: 0, y: O.y1 + 0.011, z: fz + eps });
+  if (st.stand === 'twotier') quads.push({ r: 'junbi', x: 0.04, y: stand.shutterY, z: stand.unitFront + eps });
+  if (st.stand === 'crate') quads.push({ r: 'crate', x: 0, y: stand.printY ?? 0.29, z: (stand.printZ ?? stand.front - VB * 3 + VB) + eps, w: 0.24, h: 0.068 });
+  const bodyPrint = decalGeo(quads, S.rects);
+  const lidPrint = decalGeo([{ r: 'header', x: -hw + 0.008 + (spec.w * 0.56) / 2, y: spec.capH / 2, z: fz + VF + eps }], S.rects);
+  const drawerPrint = decalGeo([{ r: 'coin', x: (CB.x1 - CB.x0) * 0.32, y: (CB.y1 - CB.y0) * 0.36, z: 2 * VF + eps, w: Math.min(0.04, (CB.x1 - CB.x0) * 0.5), h: 0.01 }], S.rects);
+  const printMat = new THREE.MeshStandardMaterial({ map: S.tex, transparent: true, alphaTest: 0.5, roughness: 0.62, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xf6fbff, transparent: true, opacity: 0.1, roughness: 0.06, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.04, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.2 });
+  const out = { bodyPrint, lidPrint, drawerPrint, glass: glassGeo, mats: { glass: glassMat, print: printMat } };
+  dressCache.set(key, out);
+  return out;
+}
+
 // ----------------------------------------------------------------------------- assembly
 /** A voxel model stored shifted down by oy blocks (a VoxelModel holds coordinates within +-511 only). */
 class Shifted extends VoxelModel {
@@ -736,30 +777,8 @@ export function voxelMachineParts(type, spec, L) {
   frontFine(F, spec, L, st);
   const T = trayModel(L, st);
   const body = mergeByMaterial([{ geometry: mesh(B, VB) }, { geometry: mesh(F, VF), matrix: up }, { geometry: mesh(T, VF) }]);
-  // the window's clear plastic: front, sides and the inner divider are thin panes
-  const fz = spec.d / 2, hw = spec.w / 2, gy0 = L.caseY0, gy1 = L.caseY0 + spec.caseH - 2 * VB, t = 0.002, p = 3 * VB;
-  const glassGeo = boxGeo([
-    [-hw + p - 0.002, gy0, fz - 0.006, hw - p + 0.002, gy1, fz - 0.006 + t],
-    [-hw + 0.003, gy0, -fz + 0.02, -hw + 0.003 + t, gy1, fz - p],
-    [hw - 0.003 - t, gy0, -fz + 0.02, hw - 0.003, gy1, fz - p],
-  ]);
-  // the print
-  const S = printSheet(type, st, spec, L);
-  const O = L.outlet, PL = L.plate, CB = L.coinBox, eps = 0.0007;
-  const quads = [
-    { r: 'howto', x: Math.max(-hw + 0.04, O.x0 - 0.045), y: spec.y0 + (O.y0 + O.y1) / 2 - spec.y0 + 0.004, z: fz + eps },
-    { r: 'slot', x: L.slot.x, y: L.slot.y + 0.044, z: fz + eps },
-    { r: 'chute', x: 0, y: O.y1 + 0.011, z: fz + eps },
-    { r: 'warn', x: -hw - eps, y: spec.y0 + spec.lowH * 0.45, z: -0.08, face: 'nx' },
-    { r: 'maker', x: -hw - eps, y: spec.y0 + spec.lowH * 0.22, z: -0.04, face: 'nx' },
-  ];
-  if (st.stand === 'twotier') quads.push({ r: 'junbi', x: 0.04, y: stand.shutterY, z: stand.unitFront + eps });
-  if (st.stand === 'crate') quads.push({ r: 'crate', x: 0, y: 0.29, z: stand.front - VB * 3 + VB + eps, w: 0.24, h: 0.068 });
-  const bodyPrint = decalGeo(quads, S.rects);
-  const lidPrint = decalGeo([{ r: 'header', x: -hw + 0.008 + (spec.w * 0.56) / 2, y: spec.capH / 2, z: fz + VF + eps }], S.rects);
-  const drawerPrint = decalGeo([{ r: 'coin', x: (CB.x1 - CB.x0) * 0.32, y: (CB.y1 - CB.y0) * 0.36, z: 2 * VF + eps, w: Math.min(0.04, (CB.x1 - CB.x0) * 0.5), h: 0.01 }], S.rects);
-  const printMat = new THREE.MeshStandardMaterial({ map: S.tex, transparent: true, alphaTest: 0.5, roughness: 0.62, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-  const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xf6fbff, transparent: true, opacity: 0.1, roughness: 0.06, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.04, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.2 });
+  const Dr = machineDressing(type, spec, L, stand, { chute: true });
+  const { bodyPrint, lidPrint, drawerPrint } = Dr, glassGeo = Dr.glass, printMat = Dr.mats.print, glassMat = Dr.mats.glass;
   const pawl = new VoxelModel(); pawl.jitter = 0;
   pawl.box(-1, -1, 0, 1, 2, 1, metal(CHROME[1])); pawl.set(0, 3, 1, metal(CHROME[3]));
   const out = {

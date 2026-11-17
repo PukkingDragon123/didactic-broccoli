@@ -26,12 +26,20 @@ function quat(pitch, yaw, roll) { // XYZ euler (degrees) -> quaternion
   return [s1 * c2 * c3 + c1 * s2 * s3, c1 * s2 * c3 - s1 * c2 * s3, c1 * c2 * s3 + s1 * s2 * c3, c1 * c2 * c3 - s1 * s2 * s3];
 }
 const mulq = (a, b) => [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0], a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
+/** Painted model atlases are photographic: JPEG keeps them small (PNG only where there is real transparency). */
+async function compact(tex) {
+  // (the transparent texels are the atlas gutters: flattened onto the atlas' mean colour)
+  const st = await sharp(Buffer.from(tex.getImage())).stats();
+  const bg = { r: Math.round(st.channels[0].mean), g: Math.round(st.channels[1].mean), b: Math.round(st.channels[2].mean) };
+  tex.setImage(new Uint8Array(await sharp(Buffer.from(tex.getImage())).flatten({ background: bg }).jpeg({ quality: 86, chromaSubsampling: '4:4:4' }).toBuffer())).setMimeType('image/jpeg');
+}
 async function recolor(png, r) {
   let im = sharp(Buffer.from(png));
   const meta = await im.metadata();
   if (r.brightness || r.saturation || r.hue) im = im.modulate({ brightness: r.brightness ?? 1, saturation: r.saturation ?? 1, hue: r.hue ?? 0 });
   if (r.tint) im = im.tint(r.tint);
   if (r.gamma) im = im.gamma(r.gamma);
+  if (r.linear) im = im.linear(r.linear[0], r.linear[1]); // [a, b]: out = a * in + b (lift a coat to white)
   return new Uint8Array(await im.png().toBuffer());
 }
 /** A gimmick clip on a model node: turn (look aside and back), hop, nod, spin, wobble, slide. */
@@ -74,6 +82,7 @@ for (const series of seriesList) {
     const doc = await io.read(glbPath);
     const root = doc.getRoot();
     const mainScene = root.listScenes()[0];
+    const baseB = getBounds(mainScene); // the spec's base and props: models are fitted onto its footprint
     // real models: merge each converted GLB in under a placed node "model_<name>"
     for (const m of meta.models || []) {
       const key = m.key;
@@ -82,13 +91,19 @@ for (const series of seriesList) {
       if (!g) { console.error('missing conversion', m.src, key); continue; }
       const src = await io.read(join(dir, g));
       for (const a of src.getRoot().listAnimations()) a.dispose();
-      if (m.recolor) for (const t of src.getRoot().listTextures()) t.setImage(await recolor(t.getImage(), m.recolor));
+      const sb = getBounds(src.getRoot().listScenes()[0]);
+      const [w0, h0, d0] = [0, 1, 2].map((i) => sb.max[i] - sb.min[i]);
+      const th = (m.yaw || 0) * D2R, wx = Math.abs(w0 * Math.cos(th)) + Math.abs(d0 * Math.sin(th)), wz = Math.abs(w0 * Math.sin(th)) + Math.abs(d0 * Math.cos(th));
+      const bw = baseB.max[0] - baseB.min[0], bd = baseB.max[2] - baseB.min[2], fill = m.fill ?? 0.82;
+      const fit = Math.min(m.height / h0, m.fit === false ? 1e9 : (fill * bw) / wx, m.fit === false ? 1e9 : (fill * bd) / wz) * (m.scale || 1);
+      const tone = { brightness: 0.9, saturation: 1.04 };
+      for (const t of src.getRoot().listTextures()) t.setImage(await recolor(t.getImage(), m.recolor ? { ...tone, ...m.recolor } : tone));
+      for (const t of src.getRoot().listTextures()) await compact(t);
       const map = mergeDocuments(doc, src);
       const holder = doc.createNode('model_' + m.name);
       const q = quat(m.pitch || 0, m.yaw || 0, m.roll || 0);
       holder.setTranslation(m.at).setRotation(q);
-      const k = (m.height / 26) * (m.scale || 1);
-      holder.setScale([k, k, k]);
+      holder.setScale([fit, fit, fit]);
       for (const sc of src.getRoot().listScenes()) {
         const t = map.get(sc);
         for (const n of t.listChildren()) { t.removeChild(n); holder.addChild(n); }
@@ -128,10 +143,12 @@ for (const series of seriesList) {
     const key = `${series}/${id}`;
     man[key] = {
       size: b.max.map((v, i) => +(v - b.min[i]).toFixed(2)), min: b.min.map((v) => +v.toFixed(2)), tris: Math.round(tris), atlas,
-      kb: Math.round(statSync(out).size / 1024), clips: meta.clips || {}, mats: meta.mats || {}, pts: meta.pts || {},
+      kb: Math.round(statSync(out).size / 1024), clips: meta.clips || {}, mats: meta.mats || {}, pts: meta.pts || {}, ...(meta.separate ? { separate: meta.separate } : {}),
     };
     console.log(key, man[key].tris + ' tris', atlas?.join('x'), man[key].kb + ' KB', Object.keys(meta.clips || {}).join(','));
   }
 }
-const sorted = Object.fromEntries(Object.keys(man).sort().map((k) => [k, man[k]]));
+const fresh = existsSync(manPath) ? JSON.parse(readFileSync(manPath, 'utf8')) : {};
+for (const [k, v] of Object.entries(man)) if (seriesList.some((s) => k.startsWith(s + '/'))) fresh[k] = v;
+const sorted = Object.fromEntries(Object.keys(fresh).sort().map((k) => [k, fresh[k]]));
 writeFileSync(manPath, JSON.stringify(sorted, null, 0).replace(/\},"/g, '},\n"') + '\n');

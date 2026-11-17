@@ -2363,7 +2363,137 @@ Models from Poly Haven (polyhaven.com), CC0 1.0 (https://creativecommons.org/pub
 
 Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert --style pixel-hd`), then scaled, re-textured and compressed by tools/lowpix-world.mjs. Shipped in `models/lowpix/world/`.
 
+- Alarm Clock 01 by Yann Kervran, James Ray Cock (https://polyhaven.com/a/alarm_clock_01), CC0 1.0. Shipped as `models/lowpix/world/clock_alarm.glb`
+- Antique Ceramic Vase 01 by James Ray Cock (https://polyhaven.com/a/antique_ceramic_vase_01), CC0 1.0. Shipped as `models/lowpix/world/vase_ceramic.glb`
+- Arm Chair 01 by Kirill Sannikov (https://polyhaven.com/a/ArmChair_01), CC0 1.0. Shipped as `models/lowpix/world/armchair.glb`
+- Barber Shop Chair 01 by Fernando Quinn (https://polyhaven.com/a/BarberShopChair_01), CC0 1.0. Shipped as `models/lowpix/world/chair_barber.glb`
+- Book Encyclopedia Set 01 by John Malcolm (https://polyhaven.com/a/book_encyclopedia_set_01), CC0 1.0. Shipped as `models/lowpix/world/books.glb`
+- Boombox by Thomas Paul Mouilleron (https://polyhaven.com/a/boombox), CC0 1.0. Shipped as `models/lowpix/world/boombox.glb`
+- Brass Vase 01 by Rico Cilliers (https://polyhaven.com/a/brass_vase_01), CC0 1.0. Shipped as `models/lowpix/world/vase_brass.glb`
+- Caged Hanging Light by Ulan Cabanilla (https://polyhaven.com/a/caged_hanging_light), CC0 1.0. Shipped as `models/lowpix/world/lamp_caged.glb`
+- Cardboard Box 01 by Rahul Chaudhary (https://polyhaven.com/a/cardboard_box_01), CC0 1.0. Shipped as `models/lowpix/world/box_cardboard.glb`
+- Carved Wooden Elephant by Greg Zaal (https://polyhaven.com/a/carved_wooden_elephant), CC0 1.0. Shipped as `models/lowpix/world/elephant.glb`
 - Cash Register 01 by Joe Seabuhr (https://polyhaven.com/a/CashRegister_01), CC0 1.0. Shipped as `models/lowpix/world/cash_register.glb`
+- Cassette Player by Oday Abuzaeed (https://polyhaven.com/a/cassette_player), CC0 1.0. Shipped as `models/lowpix/world/cassette_player.glb`
+- Chess Set by Riley Queen (https://polyhaven.com/a/chess_set), CC0 1.0. Shipped as `models/lowpix/world/chess.glb`
+- Chinese Armchair by Kirill Sannikov (https://polyhaven.com/a/chinese_armchair), CC0 1.0. Shipped as `models/lowpix/world/armchair_cn.glb`
+- Chinese Cabinet by Kirill Sannikov (https://polyhaven.com/a/chinese_cabinet), CC0 1.0. Shipped as `models/lowpix/world/cabinet_cn.glb`
+- Chinese Screen Panels by Kirill Sannikov (https://polyhaven.com/a/chinese_screen_panels), CC0 1.0. Shipped as `models/lowpix/world/screen_folding.glb`
+- Chinese Tea Table by Kirill Sannikov (https://polyhaven.com/a/chinese_tea_table), CC0 1.0. Shipped as `models/lowpix/world/table_tea_cn.glb`
+- Classic Nightstand 01 by Kirill Sannikov (https://polyhaven.com/a/ClassicNightstand_01), CC0 1.0. Shipped as `models/lowpix/world/nightstand.glb`
+- Coffee Table Round 01 by Ulan Cabanilla (https://polyhaven.com/a/coffee_table_round_01), CC0 1.0. Shipped as `models/lowpix/world/table_coffee.glb`
+- Concrete Cat Statue by Rico Cilliers, Riley Queen (https://polyhaven.com/a/concrete_cat_statue), CC0 1.0. Shipped as `models/lowpix/world/cat_statue.glb`
+- Dartboard by Satyaki Mandal (https://polyhaven.com/a/dartboard), CC0 1.0. Shipped as `models/lowpix/world/dartboard.glb`
+- Desk Lamp Arm 01 by Yann Kervran, Kuutti Siitonen (https://polyhaven.com/a/desk_lamp_arm_01), CC0 1.0. Shipped as `models/lowpix/world/desk_lamp.glb`
+- Drawer Cabinet by Ulan Cabanilla (https://polyhaven.com/a/drawer_cabinet), CC0 1.0. Shipped as `models/lowpix/world/cabinet_drawer.glb`
+- Dustpan by Balen (https://polyhaven.com/a/dustpan), CC0 1.0. Shipped as `models/lowpix/world/dustpan.glb`
+- Exterior Aircon Unit by Monsta3D (https://polyhaven.com/a/exterior_aircon_unit), CC0 1.0. Shipped as `models/lowpix/world/ac_unit.glb`
+- Fire Alarm by Slinc (https://polyhaven.com/a/fire_alarm), CC0 1.0. Shipped as `models/lowpix/world/fire_alarm.glb`
+- Grass Medium 01 by Rob Tuytel, Rico Cilliers (https://polyhaven.com/a/grass_medium_01), CC0 1.0. Shipped as `models/lowpix/world/grass_tuft.glb`
+- Green Chair 01 by Kirill Sannikov (https://polyhaven.com/a/GreenChair_01), CC0 1.0. Shipped as `models/lowpix/world/chair_green.glb`
+- Hand Truck by Mutanzom3D (https://polyhaven.com/a/hand_truck), CC0 1.0. Shipped as `models/lowpix/world/hand_truck.glb`
+- Hanging Industrial Lamp by Kuutti Siitonen (https://polyhaven.com/a/hanging_industrial_lamp), CC0 1.0. Shipped as `models/lowpix/world/lamp_hanging.glb`
+- Industrial Pipe Lamp by Mateusz Sadek (https://polyhaven.com/a/industrial_pipe_lamp), CC0 1.0. Shipped as `models/lowpix/world/lamp_pipe.glb`
+- Korean Fire Extinguisher 01 by UM JOORIN (https://polyhaven.com/a/korean_fire_extinguisher_01), CC0 1.0. Shipped as `models/lowpix/world/extinguisher.glb`
+- Lambis Shell by Kuutti Siitonen (https://polyhaven.com/a/lambis_shell), CC0 1.0. Shipped as `models/lowpix/world/shell_giant.glb`
+- Lantern 01 by Rajil Jose Macatangay (https://polyhaven.com/a/Lantern_01), CC0 1.0. Shipped as `models/lowpix/world/lantern.glb`
+- Mantel Clock 01 by Yann Kervran, Rico Cilliers (https://polyhaven.com/a/mantel_clock_01), CC0 1.0. Shipped as `models/lowpix/world/clock_mantel.glb`
+- Marble Bust 01 by Rico Cilliers (https://polyhaven.com/a/marble_bust_01), CC0 1.0. Shipped as `models/lowpix/world/bust_marble.glb`
+- Metal Jerrycan by Sean Buckley (https://polyhaven.com/a/metal_jerrycan), CC0 1.0. Shipped as `models/lowpix/world/jerrycan_metal.glb`
+- Metal Office Desk by Ulan Cabanilla (https://polyhaven.com/a/metal_office_desk), CC0 1.0. Shipped as `models/lowpix/world/desk_office.glb`
+- Metal Tool Chest by Yann Kervran, John Hutcheson (https://polyhaven.com/a/metal_tool_chest), CC0 1.0. Shipped as `models/lowpix/world/tool_chest.glb`
+- Metal Toolbox by Mateusz Sadek (https://polyhaven.com/a/metal_toolbox), CC0 1.0. Shipped as `models/lowpix/world/toolbox.glb`
+- Metal Trash Can by GurJas Studios (https://polyhaven.com/a/metal_trash_can), CC0 1.0. Shipped as `models/lowpix/world/bin_metal.glb`
+- Mid Century Lounge Chair by Kuutti Siitonen (https://polyhaven.com/a/mid_century_lounge_chair), CC0 1.0. Shipped as `models/lowpix/world/chair_lounge.glb`
+- Moon Rock 01 by Greg Zaal, Rico Cilliers, Jenelle van Heerden, Dario Barresi (https://polyhaven.com/a/moon_rock_01), CC0 1.0. Shipped as `models/lowpix/world/moon_rock.glb`
+- Mounted Fluorescent Lights by Ulan Cabanilla (https://polyhaven.com/a/mounted_fluorescent_lights), CC0 1.0. Shipped as `models/lowpix/world/lamp_fluoro.glb`
+- Old Tyre by MP (https://polyhaven.com/a/old_tyre), CC0 1.0. Shipped as `models/lowpix/world/tyre.glb`
+- Ornate Mirror 01 by James Ray Cock (https://polyhaven.com/a/ornate_mirror_01), CC0 1.0. Shipped as `models/lowpix/world/mirror.glb`
+- Ottoman 01 by Caspian Fortune (https://polyhaven.com/a/Ottoman_01), CC0 1.0. Shipped as `models/lowpix/world/ottoman.glb`
+- Painted Wooden Chair 01 by Kuutti Siitonen (https://polyhaven.com/a/painted_wooden_chair_01), CC0 1.0. Shipped as `models/lowpix/world/chair_painted.glb`
+- Painted Wooden Shelves by Kirill Sannikov (https://polyhaven.com/a/painted_wooden_shelves), CC0 1.0. Shipped as `models/lowpix/world/shelf_painted.glb`
+- Painted Wooden Sofa by Kirill Sannikov (https://polyhaven.com/a/painted_wooden_sofa), CC0 1.0. Shipped as `models/lowpix/world/sofa_wood.glb`
+- Planter Box 01 by James Ray Cock (https://polyhaven.com/a/planter_box_01), CC0 1.0. Shipped as `models/lowpix/world/planter_box.glb`
+- Planter Pot Clay by Amal Kumar (https://polyhaven.com/a/planter_pot_clay), CC0 1.0. Shipped as `models/lowpix/world/planter_clay.glb`
+- Plastic Crate 01 by PierreB3D (https://polyhaven.com/a/plastic_crate_01), CC0 1.0. Shipped as `models/lowpix/world/crate_plastic.glb`
+- Plastic Crate 02 by Fabi_G (https://polyhaven.com/a/plastic_crate_02), CC0 1.0. Shipped as `models/lowpix/world/crate_plastic2.glb`
+- Plastic Jerrycan by Ulan Cabanilla (https://polyhaven.com/a/plastic_jerrycan), CC0 1.0. Shipped as `models/lowpix/world/jerrycan_plastic.glb`
+- Plastic Thermos by PierreB3D (https://polyhaven.com/a/plastic_thermos), CC0 1.0. Shipped as `models/lowpix/world/thermos.glb`
+- Potted Plant 01 by Rico Cilliers (https://polyhaven.com/a/potted_plant_01), CC0 1.0. Shipped as `models/lowpix/world/plant_pot1.glb`
+- Potted Plant 02 by Rico Cilliers (https://polyhaven.com/a/potted_plant_02), CC0 1.0. Shipped as `models/lowpix/world/plant_pot2.glb`
+- Potted Plant 04 by James Ray Cock (https://polyhaven.com/a/potted_plant_04), CC0 1.0. Shipped as `models/lowpix/world/plant_pot4.glb`
+- Power Box 01 by Rico Cilliers, Yann Kervran (https://polyhaven.com/a/power_box_01), CC0 1.0. Shipped as `models/lowpix/world/power_box.glb`
+- Rock Moss Set 01 by Kless Gyzen (https://polyhaven.com/a/rock_moss_set_01), CC0 1.0. Shipped as `models/lowpix/world/rock_moss.glb`
+- Rockingchair 01 by Jorge Camacho (https://polyhaven.com/a/Rockingchair_01), CC0 1.0. Shipped as `models/lowpix/world/chair_rocking.glb`
+- Round Wooden Table 01 by Ulan Cabanilla (https://polyhaven.com/a/round_wooden_table_01), CC0 1.0. Shipped as `models/lowpix/world/table_round.glb`
+- School Chair 01 by Ethan Place (https://polyhaven.com/a/SchoolChair_01), CC0 1.0. Shipped as `models/lowpix/world/chair_school.glb`
+- School Desk 01 by Ethan Place (https://polyhaven.com/a/SchoolDesk_01), CC0 1.0. Shipped as `models/lowpix/world/desk_school.glb`
+- Side Table 01 by James Ray Cock (https://polyhaven.com/a/side_table_01), CC0 1.0. Shipped as `models/lowpix/world/table_side.glb`
+- Small Lpg Tank by Ulan Cabanilla (https://polyhaven.com/a/small_lpg_tank), CC0 1.0. Shipped as `models/lowpix/world/lpg_small.glb`
+- Sofa 02 by Kirill Sannikov (https://polyhaven.com/a/sofa_02), CC0 1.0. Shipped as `models/lowpix/world/sofa_02.glb`
+- Sofa 03 by Fran Calvente (https://polyhaven.com/a/sofa_03), CC0 1.0. Shipped as `models/lowpix/world/sofa_03.glb`
+- Standing Chalkboard 01 by ParzivalCG (https://polyhaven.com/a/standing_chalkboard_01), CC0 1.0. Shipped as `models/lowpix/world/chalkboard.glb`
+- Steel Frame Shelves 01 by James Ray Cock (https://polyhaven.com/a/steel_frame_shelves_01), CC0 1.0. Shipped as `models/lowpix/world/shelf_steel.glb`
+- Steel Frame Shelves 02 by James Ray Cock (https://polyhaven.com/a/steel_frame_shelves_02), CC0 1.0. Shipped as `models/lowpix/world/shelf_steel2.glb`
+- Stone 01 by Dario Barresi, Rico Cilliers (https://polyhaven.com/a/stone_01), CC0 1.0. Shipped as `models/lowpix/world/rock_zen.glb`
+- Street Lamp 01 by Josh Dean (https://polyhaven.com/a/street_lamp_01), CC0 1.0. Shipped as `models/lowpix/world/street_lamp.glb`
+- Tea Set 01 by James Ray Cock, Rico Cilliers, Jurita Burger (https://polyhaven.com/a/tea_set_01), CC0 1.0. Shipped as `models/lowpix/world/tea_set.glb`
+- Television 01 by Gabriel Radić (https://polyhaven.com/a/Television_01), CC0 1.0. Shipped as `models/lowpix/world/tv_wood.glb`
+- Television 02 by Benny Weimer (https://polyhaven.com/a/television_02), CC0 1.0. Shipped as `models/lowpix/world/tv_02.glb`
+- Trashbag by Benny Weimer (https://polyhaven.com/a/trashbag), CC0 1.0. Shipped as `models/lowpix/world/trash_bag.glb`
+- Ukulele 01 by Joseph Burgan (https://polyhaven.com/a/Ukulele_01), CC0 1.0. Shipped as `models/lowpix/world/ukulele.glb`
+- Utility Box 01 by James Ray Cock (https://polyhaven.com/a/utility_box_01), CC0 1.0. Shipped as `models/lowpix/world/utility_box.glb`
+- Utility Box 02 by James Ray Cock (https://polyhaven.com/a/utility_box_02), CC0 1.0. Shipped as `models/lowpix/world/utility_box2.glb`
+- Vintage Cabinet 01 by Rico Cilliers (https://polyhaven.com/a/vintage_cabinet_01), CC0 1.0. Shipped as `models/lowpix/world/cabinet_vintage.glb`
+- Vintage Day Bed by Aron Łyczek (https://polyhaven.com/a/vintage_day_bed), CC0 1.0. Shipped as `models/lowpix/world/daybed.glb`
+- Vintage Electric Kettle by SV Garip (https://polyhaven.com/a/vintage_electric_kettle), CC0 1.0. Shipped as `models/lowpix/world/kettle_electric.glb`
+- Vintage Grandfather Clock 01 by Yann Kervran, James Ray Cock (https://polyhaven.com/a/vintage_grandfather_clock_01), CC0 1.0. Shipped as `models/lowpix/world/clock_grandfather.glb`
+- Vintage Microwave by Adam Nekola (https://polyhaven.com/a/vintage_microwave), CC0 1.0. Shipped as `models/lowpix/world/microwave.glb`
+- Vintage Oil Lamp by Monsta3D (https://polyhaven.com/a/vintage_oil_lamp), CC0 1.0. Shipped as `models/lowpix/world/lamp_oil.glb`
+- Wall Clock by PierreB3D (https://polyhaven.com/a/wall_clock), CC0 1.0. Shipped as `models/lowpix/world/clock_wall.glb`
+- Water Manhole Cover by Raunox (https://polyhaven.com/a/water_manhole_cover), CC0 1.0. Shipped as `models/lowpix/world/manhole.glb`
+- Watering Can Metal 01 by Charles Nderitu (https://polyhaven.com/a/watering_can_metal_01), CC0 1.0. Shipped as `models/lowpix/world/watering_can.glb`
+- Wicker Basket 01 by Kuutti Siitonen (https://polyhaven.com/a/wicker_basket_01), CC0 1.0. Shipped as `models/lowpix/world/basket.glb`
+- Wooden Bookshelf Worn by Ulan Cabanilla (https://polyhaven.com/a/wooden_bookshelf_worn), CC0 1.0. Shipped as `models/lowpix/world/bookshelf.glb`
+- Wooden Broom by Balen (https://polyhaven.com/a/wooden_broom), CC0 1.0. Shipped as `models/lowpix/world/broom.glb`
+- Wooden Bucket 01 by James Ray Cock (https://polyhaven.com/a/wooden_bucket_01), CC0 1.0. Shipped as `models/lowpix/world/bucket_wood.glb`
+- Wooden Chair 01 by Jake Mobley (https://polyhaven.com/a/WoodenChair_01), CC0 1.0. Shipped as `models/lowpix/world/chair_wood.glb`
+- Wooden Crate 01 by James Ray Cock (https://polyhaven.com/a/wooden_crate_01), CC0 1.0. Shipped as `models/lowpix/world/crate_wood.glb`
+- Wooden Crate 02 by James Ray Cock, Jurita Burger (https://polyhaven.com/a/wooden_crate_02), CC0 1.0. Shipped as `models/lowpix/world/crate_wood2.glb`
+- Wooden Display Shelves 01 by James Ray Cock (https://polyhaven.com/a/wooden_display_shelves_01), CC0 1.0. Shipped as `models/lowpix/world/shelf_display.glb`
+- Wooden Ladder by Miroslav Turura (https://polyhaven.com/a/wooden_ladder), CC0 1.0. Shipped as `models/lowpix/world/ladder.glb`
+- Wooden Lantern 01 by James Ray Cock (https://polyhaven.com/a/wooden_lantern_01), CC0 1.0. Shipped as `models/lowpix/world/lantern_wood.glb`
+- Wooden Stool 01 by Kuutti Siitonen (https://polyhaven.com/a/wooden_stool_01), CC0 1.0. Shipped as `models/lowpix/world/stool_wood.glb`
+- Wooden Table 01 by Ethan Place (https://polyhaven.com/a/WoodenTable_01), CC0 1.0. Shipped as `models/lowpix/world/table_wood.glb`
+- Worn Metal Rack by Luca B (https://polyhaven.com/a/worn_metal_rack), CC0 1.0. Shipped as `models/lowpix/world/rack_worn.glb`
+- [FREE] 3d Old The Wagasa  Japanese Umbrella V.3 by shadowdarkdemon2 (https://sketchfab.com/3d-models/free-3d-old-the-wagasa-japanese-umbrella-v3-23028b4a1e90409db025867565b51569), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wagasa_parasol.glb`
+- Abandoned Beer Crates & Bottles Low Poly by Fevzi_Beydili (https://sketchfab.com/3d-models/abandoned-beer-crates-bottles-low-poly-2be722c87cfd404698506f33f575b219), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/beer_crates.glb`
+- Chabudai Table by Akio (https://sketchfab.com/3d-models/chabudai-table-176eb5a05ea948bb82cb951cb817ab8d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chabudai.glb`
+- Construction Helmet (Orange) by SuperMopsek (https://sketchfab.com/3d-models/construction-helmet-orange-2f9546f0aa9e4dbdade316e1b9d59f04), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/helmet.glb`
+- Daruma Doll by KillTheSaint (https://sketchfab.com/3d-models/daruma-doll-c812095d86b64d11b36f088131b1d2d7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/daruma.glb`
+- Electric Fan by Js_TuruokaJunpei (https://sketchfab.com/3d-models/electric-fan-feabb8d50d304af082461b9289289c92), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/fan_floor.glb`
+- Fire Extinguisher by crow (https://sketchfab.com/3d-models/fire-extinguisher-68068b0dcc9c45388f958aef24e26c92), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/extinguisher_jp.glb`
+- Japan Train Station Bench by Mxstifie (https://sketchfab.com/3d-models/japan-train-station-bench-68d9b8434ee6407da1e6fda1166d3ad2), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bench_station.glb`
+- Japanese Lamp / Chōchin by i bull your wife (https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chochin.glb`
+- Japanese paper lantern by Abel Gamero (https://sketchfab.com/3d-models/japanese-paper-lantern-4450069fee444ae0920aa5babd5d9239), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chochin2.glb`
+- Japanese street lamp by SoraMiyazaki (https://sketchfab.com/3d-models/japanese-street-lamp-a6e3624a679a44efa17bbfc9abec35ce), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/street_lamp_jp.glb`
+- Japanese Trash Can by ditovirnantio (https://sketchfab.com/3d-models/japanese-trash-can-477e8292037043508fcfcaed32805ca8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/trash_jp.glb`
+- Japanese Vintage Scooter by ISAACLAB (https://sketchfab.com/3d-models/japanese-vintage-scooter-f307b287177a40a2ba33e1a76ecee7df), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/scooter.glb`
+- Kei Truck by grs (https://sketchfab.com/3d-models/kei-truck-13dc5e2aad2e4d00af57e8d99d7095e9), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kei_truck.glb`
+- Kotatsu by Arya (https://sketchfab.com/3d-models/kotatsu-1e976c78d1eb4d2faa590316b0d38e24), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kotatsu.glb`
+- Maneki neko by Ramujiro (https://sketchfab.com/3d-models/maneki-neko-170f632b9b294fdabc660ba91894c10a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/manekineko.glb`
+- Metal Folding Chair by Chen CheHsuan (https://sketchfab.com/3d-models/metal-folding-chair-7a99fce4bdbd40e1b2949cdeb39a8fba), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/chair_folding.glb`
+- Metal Gas Cylinder by TheoClarke (https://sketchfab.com/3d-models/metal-gas-cylinder-8faeab51bf604cd092e827dc1eb88ff4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/gas_cylinder.glb`
+- Mount Fuji Volcano - Japan by Nate Loper  🗺️ ⛏🏺 (https://sketchfab.com/3d-models/mount-fuji-volcano-japan-bb83a647e5a8481d85a4bb33119d40a5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/fuji_diorama.glb`
+- Old Bicycle by Tidominer (https://sketchfab.com/3d-models/old-bicycle-17ab00cb733443a2b552a2b620a68087), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bicycle_old.glb`
 - Old Japanese Post Box by Rusty-exe (https://sketchfab.com/3d-models/old-japanese-post-box-5e0f504bb5d144809390dac8c66a6dd5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/post_box.glb`
+- Old Tea Kettle by mickeymoose1204 (https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kettle.glb`
+- PBR old rotary phone by Marie Jockmans (https://sketchfab.com/3d-models/pbr-old-rotary-phone-52fb9ffd3bc241979f7192326e52aad8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/phone_rotary.glb`
+- Retro CRT Television by crow (https://sketchfab.com/3d-models/retro-crt-television-29314bf8b66f49f98ad50dffe4950abf), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tv_crt.glb`
+- Rice Cooker by dartuchiwa (https://sketchfab.com/3d-models/rice-cooker-6c1e19fbe4134b9dabbec8f2355a504f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/rice_cooker.glb`
+- Shishi Odoshi by LucasT11 (https://sketchfab.com/3d-models/shishi-odoshi-dd236c21ee9b4fefac684c93f4aa803e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/shishi_odoshi.glb`
+- Tansu by Museo de Zaragoza (https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tansu.glb`
+- ufo flying saucer by boriscargo (https://sketchfab.com/3d-models/ufo-flying-saucer-91713b0bff414b478660c28064e3021a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/ufo.glb`
+- Worn Traffic Cone by Kuutti Siitonen (https://sketchfab.com/3d-models/worn-traffic-cone-1cbffb4169684e5a84ba186882bd55d7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cone.glb`
 
 <!-- lowpix-world:end -->

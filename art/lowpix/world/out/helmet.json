@@ -1,0 +1,67 @@
+{
+ "id": "helmet",
+ "src": "sketchfab:2f9546f0aa9e4dbdade316e1b9d59f04",
+ "credit": {
+  "title": "Construction Helmet (Orange)",
+  "author": "SuperMopsek",
+  "authorUrl": "https://sketchfab.com/pajamakeke",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/construction-helmet-orange-2f9546f0aa9e4dbdade316e1b9d59f04",
+  "site": "Sketchfab"
+ },
+ "tris": 2997,
+ "tex": 256,
+ "size": [
+  0.241,
+  0.152,
+  0.314
+ ],
+ "colours": 30,
+ "palette": {
+  "m0": [
+   "#6b1607",
+   "#89290b",
+   "#a64110",
+   "#c35d17",
+   "#de7c1e",
+   "#e19c3e",
+   "#e3b660",
+   "#e6cc80",
+   "#eadda0"
+  ],
+  "m1": [
+   "#0f0c0d",
+   "#131011",
+   "#171415",
+   "#1b1919",
+   "#1e1e1e",
+   "#3d3d3d",
+   "#5c5c5c",
+   "#7b7b7b",
+   "#9a9a9a"
+  ],
+  "m2": [
+   "#4a3a3f",
+   "#5d4e52",
+   "#706366",
+   "#827a7b",
+   "#929292",
+   "#a1a1a1",
+   "#b0b0b0",
+   "#bfbfbf",
+   "#cecece"
+  ],
+  "m3": [
+   "#482620",
+   "#5c372b",
+   "#6f4938",
+   "#815d45",
+   "#927254",
+   "#a38a69",
+   "#afa084",
+   "#bcb49e",
+   "#c9c6b7"
+  ]
+ },
+ "warnings": []
+}

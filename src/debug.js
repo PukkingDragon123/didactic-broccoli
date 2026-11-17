@@ -18,7 +18,7 @@ export function installDebug(game, params) {
       game.player.vel.set(0, 0, 0);
     },
     money(n) { game.addMoney(n); },
-    capsule(series = 'mochi', rarity = null, finish = null) {
+    capsule(series = 'rojineko', rarity = null, finish = null) {
       let roll;
       for (let i = 0; i < 5000; i++) { roll = rollCapsule(series, Math.random); if ((!rarity || roll.rarity === rarity)) break; }
       const data = { series, key: roll.key, finish: finish || roll.finish, rarity: roll.rarity };

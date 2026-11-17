@@ -1,0 +1,20 @@
+{
+ "joints": {},
+ "mats": {
+  "column": "gloss",
+  "col_foot": "gloss",
+  "col_top": "gloss",
+  "col_top2": "gloss",
+  "badge": "gloss",
+  "badge_in": "gloss"
+ },
+ "standBox": {
+  "x0": -195.0,
+  "x1": 195.0,
+  "z0": -185.0,
+  "z1": 185.0,
+  "front": 185.0
+ },
+ "key": "standard_stand",
+ "density": 0.4
+}

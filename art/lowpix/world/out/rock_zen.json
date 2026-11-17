@@ -1,0 +1,33 @@
+{
+ "id": "rock_zen",
+ "src": "polyhaven:stone_01",
+ "credit": {
+  "title": "Stone 01",
+  "author": "Dario Barresi, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/stone_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 512,
+ "size": [
+  1.968,
+  0.96,
+  1.201
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3d191a",
+   "#4e2422",
+   "#5f332c",
+   "#6e4336",
+   "#7d5442",
+   "#966e55",
+   "#a88a6f",
+   "#b6a48d",
+   "#c5bbaa"
+  ]
+ },
+ "warnings": []
+}

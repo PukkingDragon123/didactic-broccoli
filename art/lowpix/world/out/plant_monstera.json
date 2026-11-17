@@ -1,0 +1,56 @@
+{
+ "id": "plant_monstera",
+ "src": "sketchfab:1ab9bf841df04c07b1819be596327629",
+ "credit": {
+  "title": "Monstera Deliciosa Potted Mid-Century plant",
+  "author": "Giora",
+  "authorUrl": "https://sketchfab.com/ChubbyPanda",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/monstera-deliciosa-potted-mid-century-plant-1ab9bf841df04c07b1819be596327629",
+  "site": "Sketchfab"
+ },
+ "tris": 2996,
+ "tex": 496,
+ "size": [
+  0.835,
+  1.3,
+  0.756
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#554349",
+   "#6c5a5f",
+   "#827376",
+   "#958e8f",
+   "#a9a9a9",
+   "#b5b5b5",
+   "#c1c1c1",
+   "#cccccc",
+   "#d8d8d8"
+  ],
+  "m1": [
+   "#10260b",
+   "#183110",
+   "#223b15",
+   "#2c451a",
+   "#374e20",
+   "#587332",
+   "#7b9547",
+   "#9db063",
+   "#b7c08a"
+  ],
+  "m2": [
+   "#290d11",
+   "#341114",
+   "#3f1717",
+   "#4a211d",
+   "#542c23",
+   "#774735",
+   "#996549",
+   "#b18767",
+   "#c1a88d"
+  ]
+ },
+ "warnings": []
+}

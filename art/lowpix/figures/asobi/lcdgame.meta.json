@@ -1,0 +1,14 @@
+{
+ "mats": {
+  "case": "gloss",
+  "btn0": "gloss",
+  "btn1": "gloss"
+ },
+ "clips": {},
+ "pts": {
+  "scrA": "pt_scrA",
+  "scrB": "pt_scrB"
+ },
+ "screen": true,
+ "key": "asobi/lcdgame"
+}

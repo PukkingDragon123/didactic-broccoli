@@ -95,7 +95,7 @@ function debug(g, G) {
       return A.step;
     },
     /** Machines in every free spot of a zone ('annex', 'mall1'..), stocked. */
-    fill(key = 'annex', type = 'standard', series = 'mochi', frac = 0.8) {
+    fill(key = 'annex', type = 'standard', series = 'rojineko', frac = 0.8) {
       const S = key === 'annex' ? (G.annex.build(), G.annex.spots) : (G.mall.ensureFloor(+key.slice(4)), G.mall.spots[+key.slice(4)]);
       S.ensureBuilt();
       const types = Array.isArray(type) ? type : [type];

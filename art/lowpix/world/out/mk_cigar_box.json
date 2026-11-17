@@ -1,0 +1,89 @@
+{
+ "id": "mk_cigar_box",
+ "src": "sketchfab:bf5152c1f1fc44f4a81dbca1d502304c",
+ "credit": {
+  "title": "Red Dot Cigar Box",
+  "author": "IU Indianapolis University Library",
+  "authorUrl": "https://sketchfab.com/IUI-UniversityLibrary",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/red-dot-cigar-box-bf5152c1f1fc44f4a81dbca1d502304c",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 256,
+ "size": [
+  0.687,
+  0.21,
+  0.44
+ ],
+ "colours": 47,
+ "palette": {
+  "m0": [
+   "#45322f",
+   "#58453f",
+   "#6a5851",
+   "#7a6c63",
+   "#8a8077",
+   "#97928d",
+   "#a5a4a2",
+   "#b5b5b5",
+   "#c6c6c6"
+  ],
+  "m1": [
+   "#151727",
+   "#1d2131",
+   "#252b3b",
+   "#2e3645",
+   "#37414e",
+   "#4f5d6a",
+   "#697984",
+   "#879499",
+   "#a6adaf"
+  ],
+  "m2": [
+   "#5c2101",
+   "#763503",
+   "#8f4d06",
+   "#a7680a",
+   "#bf870f",
+   "#e2b216",
+   "#e8ce39",
+   "#eae161",
+   "#eded88"
+  ],
+  "m3": [
+   "#502613",
+   "#66381b",
+   "#7c4d23",
+   "#90642d",
+   "#a47d37",
+   "#bc9c47",
+   "#c4b267",
+   "#ccc587",
+   "#d6d5a5"
+  ],
+  "m4": [
+   "#570d15",
+   "#701315",
+   "#88211a",
+   "#9f3421",
+   "#b54a2a",
+   "#cd683a",
+   "#d28b5c",
+   "#d8a97e",
+   "#dfc39e"
+  ],
+  "m5": [
+   "#361310",
+   "#451d16",
+   "#532a1d",
+   "#613825",
+   "#6e472d",
+   "#8e653e",
+   "#ac8451",
+   "#b9a174",
+   "#c7ba97"
+  ]
+ },
+ "warnings": []
+}

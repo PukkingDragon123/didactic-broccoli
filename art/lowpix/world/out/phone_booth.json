@@ -1,0 +1,56 @@
+{
+ "id": "phone_booth",
+ "src": "sketchfab:ad06f3ec91a24943ad4a38dd70413cda",
+ "credit": {
+  "title": "Old Green Payphone",
+  "author": "Yevhen Avramenko",
+  "authorUrl": "https://sketchfab.com/naprimerjenya",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-green-payphone-ad06f3ec91a24943ad4a38dd70413cda",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 1024,
+ "size": [
+  1.175,
+  1.55,
+  0.926
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#1d5d2f",
+   "#287738",
+   "#34903f",
+   "#42a845",
+   "#5cb857",
+   "#7cbf71",
+   "#97c68a",
+   "#b0cfa3",
+   "#c6d9ba"
+  ],
+  "m1": [
+   "#16281b",
+   "#1e3323",
+   "#273d2a",
+   "#304731",
+   "#3b503a",
+   "#556b52",
+   "#71846c",
+   "#8f998a",
+   "#abafa8"
+  ],
+  "m2": [
+   "#31513b",
+   "#42674b",
+   "#557c5b",
+   "#69906c",
+   "#829e82",
+   "#98a896",
+   "#abb4a9",
+   "#bdc0bb",
+   "#cdcdcd"
+  ]
+ },
+ "warnings": []
+}

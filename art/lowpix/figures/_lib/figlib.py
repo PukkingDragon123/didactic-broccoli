@@ -20,6 +20,8 @@ sys.path.insert(0, LOWPIX)
 from lowpix.palette import make_ramp  # noqa: E402
 
 DENS = 4.0
+# the gold-plated secrets: a converted model's atlas lifted and tinted gold (pack.mjs recolor)
+GOLD = {"saturation": 0.2, "linear": [0.55, 95], "tint": "#e8b850"}
 PHOTO = "art/lowpix/photos/"
 
 # ------------------------------------------------------------------ colour
@@ -78,7 +80,8 @@ STYLES = {
     "denim": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
         _photo("denim_fabric", 10, 1.0)]},
     "velvet": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("velour_velvet", 12, 0.9)]},
+        {"id": "nap", "op": "noise", "scale": 1.4, "amount": 0.25},
+        _photo("velour_velvet", 16, 0.45)]},
     # fur: brush strokes that follow the form (strand clusters), a faint photo relief under them, sheen on the lit side
     "fur": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"},
             "brush": {"flow": "long", "length": 1.5, "width": 0.38, "rough": 0.75, "overshoot": 0.3},
@@ -86,10 +89,16 @@ STYLES = {
         {"id": "mottle", "op": "noise", "scale": 2.2, "amount": 0.18},
         _photo("curly_teddy_natural", 12, 0.35),
         {"id": "sheen", "op": "patches", "scale": 0.9, "threshold": 0.72, "shift": 0.6, "min_light": 0.6, "post": True}]},
+    # wood: grain lines that follow the board, a faint photo relief, a little varnish sheen
     "wood": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("oak_veneer_01", 26, 1.3)]},
+        {"id": "grain", "op": "stripes", "axis": "x", "period": 1.3, "width": 0.3, "wobble": 0.7, "shift": -0.55},
+        {"id": "figure", "op": "noise", "scale": 1.2, "amount": 0.3},
+        _photo("oak_veneer_01", 26, 0.6),
+        {"id": "sheen", "op": "fill", "shift": 0.5, "min_light": 0.82}]},
     "plank": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
-        _photo("wood_table_001", 30, 1.3)]},
+        {"id": "grain", "op": "stripes", "axis": "x", "period": 1.5, "width": 0.3, "wobble": 0.8, "shift": -0.6},
+        {"id": "boards", "op": "stripes", "axis": "z", "period": 6.0, "width": 0.05, "shift": -1.2},
+        _photo("wood_table_001", 30, 0.7)]},
     # brushed metal with edge wear
     "metal": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
         _photo("metal_plate", 18, 0.7),
@@ -102,6 +111,13 @@ STYLES = {
         {"id": "sheen", "op": "fill", "shift": 0.9, "min_light": 0.74},
         {"id": "wear", "op": "wear", "width": 2, "density": 0.1, "ramp": "steel", "tone": 3.5, "post": True},
         GLOSS]},
+    "bark": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
+        {"id": "photo", "op": "photo", "src": "assets/photos/bark_brown_02", "scale": 14, "amount": 1.4},
+        {"id": "moss", "op": "patches", "scale": 1.0, "threshold": 0.72, "ramp": "moss", "tone": 2.6}]},
+    "rock": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
+        {"id": "photo", "op": "photo", "src": "assets/photos/rock_face_03", "scale": 18, "amount": 1.3}]},
+    "leafy": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
+        {"id": "photo", "op": "photo", "src": "assets/photos/forest_leaves_02", "scale": 12, "amount": 1.2}]},
     "rust": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [_photo("rusty_metal_02", 20, 1.0)]},
     "clay": {"dither": 0, "rim": {"light": 1, "dark": 1, "outline": "dark"}, "layers": [
         _photo("clay_floor_001", 24, 1.2),
@@ -135,6 +151,7 @@ BASE_RAMPS = {
     "white": ramp("#f1ece2", hue=10, k=0.0, spread=0.85),
     "steel": ramp("#8c8f96", k=0.0),
     "blush": ramp("#e88a8a", k=0.1),
+    "moss": ramp("#5a7a3a", k=0.2),
 }
 
 
@@ -636,7 +653,7 @@ class Fig:
 
     # ---- real models (Sketchfab / Poly Haven), converted by lowpix and merged in by pack.mjs
     def model(s, name, src, height, at=(0, 0, 0), yaw=0, tris=4000, style="painted", atlas=512, recolor=None, mat="matte", pitch=0,
-              roll=0, scale=None, opts=None):
+              roll=0, scale=None, opts=None, fill=None, fit=True):
         """A converted real model placed on the figure: `height` in mm, standing at `at`, turned `yaw` degrees.
         recolor: {"brightness", "saturation", "hue", "tint": "#hex"} applied to its atlas (a black cat from a tabby)."""
         m = {"name": name, "src": src, "height": height, "at": r1(list(at)), "yaw": yaw, "pitch": pitch, "roll": roll, "tris": tris,
@@ -645,6 +662,10 @@ class Fig:
             m["recolor"] = recolor
         if scale:
             m["scale"] = scale
+        if fill:
+            m["fill"] = fill
+        if not fit:
+            m["fit"] = False
         if opts:
             m["opts"] = opts
         s.meta.setdefault("models", []).append(m)

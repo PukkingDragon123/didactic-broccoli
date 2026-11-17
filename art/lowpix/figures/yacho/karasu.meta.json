@@ -1,0 +1,38 @@
+{
+ "mats": {
+  "bin": "gloss",
+  "key": "metal"
+ },
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "bird",
+   "src": "sketchfab:45a169ef98804f06a9b7a4af1a04d6f9",
+   "height": 14,
+   "at": [
+    4,
+    13.6,
+    -1
+   ],
+   "yaw": -60,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "256e98cc47b430"
+  }
+ ],
+ "model_clip": {
+  "node": "model_bird",
+  "kind": "nod",
+  "length": 1.4,
+  "amp": 14,
+  "axis": "y"
+ },
+ "key": "yacho/karasu"
+}

@@ -18,7 +18,8 @@ export const POSE_INFO = {
   pose_sweep: { name: 'Curtain Call', style: 'grace', blurb: 'A theatrical bow, one arm swept wide.' },
   pose_guard: { name: 'Ready Stance', style: 'mystery', blurb: 'Fists up, weight low, eyes steady.' },
   pose_shock: { name: 'Shock!', style: null, blurb: 'Clutch your head. Lean back. Scream inside.' },
-  dab: { name: 'Dab', style: null }, flex: { name: 'Flex', style: null }, peace: { name: 'Double Peace', style: null },
+  dab: { name: 'Dab', style: null, blurb: 'Just for fun. No element.' }, flex: { name: 'Flex', style: null, blurb: 'Just for fun. No element.' },
+  peace: { name: 'Double Peace', style: null, blurb: 'Just for fun. No element.' },
 };
 
 Object.assign(GESTURES, {

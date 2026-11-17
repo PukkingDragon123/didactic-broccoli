@@ -15,7 +15,7 @@ const baked = new Map();
 export function bakeCat(pose, coat = 'tabby', sec = 2.5) {
   const key = pose + ':' + coat;
   if (baked.has(key)) return baked.get(key);
-  const r = new CatRig({ coat, lod: 1 });
+  const r = new CatRig({ coat });
   r.setPose(pose === 'stand' ? 'walk' : pose);
   r.glanceT = 99; r.glance = [0, 0]; r.blinkT = 99;
   for (let t = 0; t < sec; t += 1 / 30) r.update(1 / 30, 0);
@@ -35,9 +35,10 @@ export function bakeCat(pose, coat = 'tabby', sec = 2.5) {
   g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   g.setAttribute('uv', r.uv.clone());
   g.setIndex(src.index);
+  for (const gr of src.groups) g.addGroup(gr.start, gr.count, gr.materialIndex);
   g.computeBoundingBox(); g.computeBoundingSphere();
   g.userData.size = g.boundingBox.getSize(new THREE.Vector3());
-  const out = { geo: g, mat: r.mat };
+  const out = { geo: g, mat: [r.mat, r.matEye] };
   baked.set(key, out);
   return out;
 }

@@ -43,6 +43,7 @@ export function itemGeometry(key, opts = {}) {
   const item = getItem(key);
   if (!item) throw new Error('Unknown item ' + key);
   if (isLowpix(item)) return lowpixGeometry(item); // lowpix figures (src/figures/lowpix.js): the stand-in until the GLB is in
+  if (!item.build) return missingMesh(key).geometry;
   const { model, scale } = itemModel(item, opts);
   const b = model.bounds();
   const maxDim = (Math.max(b.w, b.h, b.d) / scale) * ITEM_VOXEL;
@@ -64,6 +65,7 @@ export function whenItemReady(key) { const it = getItem(key); return isLowpix(it
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
   const it = getItem(key);
   if (isLowpix(it)) return lowpixMesh(it, finish); // a lowpix figure GLB (src/figures/lowpix.js)
+  if (it && !it.build) return missingMesh(key, finish); // a figure whose model has not been built yet
   let geo;
   const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));
   if (lod) geo = geoCache.get(key) || itemGeometry(key, { lowres: true });
@@ -109,4 +111,20 @@ export function updateItemLod(camPos, budget = 2) {
       L.hi = false;
     }
   }
+}
+
+// ------------------------------------------------------------------ a figure without a built model
+let MISSING = null;
+/** An empty stand-in (a figure listed in the data whose GLB has not been built): sized like a small figure, draws nothing. */
+function missingMesh(key, finish = 'normal') {
+  if (!MISSING) {
+    MISSING = new THREE.BufferGeometry();
+    MISSING.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
+    MISSING.boundingBox = new THREE.Box3(new THREE.Vector3(-0.015, 0, -0.015), new THREE.Vector3(0.015, 0.04, 0.015));
+    MISSING.boundingSphere = MISSING.boundingBox.getBoundingSphere(new THREE.Sphere());
+    MISSING.userData = { size: new THREE.Vector3(0.03, 0.04, 0.03), missing: true };
+  }
+  const m = new THREE.Mesh(MISSING, voxelMaterials(finish));
+  m.userData.itemKey = key; m.userData.finish = finish;
+  return m;
 }

@@ -1,0 +1,45 @@
+{
+ "id": "wagasa_parasol",
+ "src": "sketchfab:23028b4a1e90409db025867565b51569",
+ "credit": {
+  "title": "[FREE] 3d Old The Wagasa  Japanese Umbrella V.3",
+  "author": "shadowdarkdemon2",
+  "authorUrl": "https://sketchfab.com/shadowdarkdemon2",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/free-3d-old-the-wagasa-japanese-umbrella-v3-23028b4a1e90409db025867565b51569",
+  "site": "Sketchfab"
+ },
+ "tris": 3998,
+ "tex": 340,
+ "size": [
+  1.721,
+  2.135,
+  1.727
+ ],
+ "colours": 12,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m1": [
+   "#0b0f26",
+   "#0f1730",
+   "#14203a",
+   "#192a44",
+   "#1f354d",
+   "#315672",
+   "#457995",
+   "#619bb1",
+   "#89b6c0"
+  ]
+ },
+ "warnings": []
+}

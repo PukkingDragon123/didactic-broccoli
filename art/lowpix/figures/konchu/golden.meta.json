@@ -1,0 +1,43 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "beetle",
+   "src": "sketchfab:2e240bc3ebd241ccba0dfa19736397d7",
+   "height": 12,
+   "at": [
+    0,
+    11.55,
+    0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "metal",
+   "recolor": {
+    "saturation": 0.2,
+    "linear": [
+     0.55,
+     95
+    ],
+    "tint": "#e8b850"
+   },
+   "key": "6307997f069edf"
+  }
+ ],
+ "model_clip": {
+  "node": "model_beetle",
+  "kind": "turn",
+  "length": 2.4,
+  "amp": 30,
+  "axis": "y"
+ },
+ "key": "konchu/golden"
+}

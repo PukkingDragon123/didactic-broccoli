@@ -1,0 +1,294 @@
+{
+ "name": "Black Rotary Phone",
+ "description": "Heavy as a brick, rings like a fire bell. Dial with one finger and patience.",
+ "author": "Gacha Garage (lowpix spec)",
+ "license": "CC0-1.0",
+ "density": 4.0,
+ "budget": {
+  "tris": 6000,
+  "colors": 96
+ },
+ "light": {
+  "dir": [
+   -0.55,
+   1.0,
+   0.65
+  ],
+  "strength": 0.85,
+  "gradient": 0.35,
+  "ao": 0.55,
+  "ao_height": 4.0
+ },
+ "render": {
+  "background": "#2a2630",
+  "hero": [
+   32,
+   20
+  ],
+  "shadow": 0.45
+ },
+ "palette": {
+  "ramps": {
+   "ink": [
+    "#141019",
+    "#241c26",
+    "#3a2c34",
+    "#54424a",
+    "#706068"
+   ],
+   "white": [
+    "#391f0e",
+    "#a26029",
+    "#daa976",
+    "#f6ecdf",
+    "#f8f2e8",
+    "#fbf8f1",
+    "#fdfdfa"
+   ],
+   "steel": [
+    "#1c1b1f",
+    "#434047",
+    "#6a676e",
+    "#918f93",
+    "#aeaeae",
+    "#cccccc",
+    "#e9e9e9"
+   ],
+   "blush": [
+    "#400b15",
+    "#941a29",
+    "#d9373f",
+    "#e88f8c",
+    "#edb3ac",
+    "#f3d2ca",
+    "#faede9"
+   ],
+   "moss": [
+    "#10180c",
+    "#28381c",
+    "#43562c",
+    "#5f743e",
+    "#92a862",
+    "#bdc69d",
+    "#e4e6d5"
+   ],
+   "c7a4a2a": [
+    "#190b08",
+    "#3a1d14",
+    "#5a3220",
+    "#7a4b2d",
+    "#b97e49",
+    "#d1b28d",
+    "#ebe0cf"
+   ]
+  }
+ },
+ "styles": {
+  "wood": {
+   "dither": 0,
+   "rim": {
+    "light": 1,
+    "dark": 1,
+    "outline": "dark"
+   },
+   "layers": [
+    {
+     "id": "photo",
+     "op": "photo",
+     "src": "art/lowpix/photos/oak_veneer_01",
+     "scale": 26,
+     "amount": 1.3
+    }
+   ]
+  },
+  "card": {
+   "dither": 0,
+   "light": 0.0,
+   "rim": {
+    "light": 0,
+    "dark": 0
+   }
+  }
+ },
+ "parts": [
+  {
+   "id": "base",
+   "shape": "box",
+   "pivot": [
+    0,
+    2.0,
+    0
+   ],
+   "size": [
+    32,
+    4.0,
+    24
+   ],
+   "chamfer": 0.7,
+   "style": "wood",
+   "paint": {
+    "ramp": "c7a4a2a",
+    "tone": 3.0,
+    "stamps": [
+     {
+      "face": "bottom",
+      "at": "center",
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       ".#.###.#..#.#.###.###.#.#.#.#.###.###.#.#.....#..###.###.###",
+       "#..#....#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#....##..#.#.#.#.#.#",
+       "#..#....#.##..###.###.#.#.##..###.###.#.#.....#..###.###.###",
+       "#..#....#.#.#.#.#.#...#.#.#.#.#.#.#...#.#.....#....#...#...#",
+       ".#.###.#..#.#.#.#.#...###.#.#.#.#.#...###....###.###.###.###",
+       "............................................................",
+       ".....#.#.###.##..###....###.##.......#.###.###.###.##.......",
+       ".....###.#.#.#.#.#.......#..#.#......#.#.#.#.#.#.#.#.#......",
+       ".....###.###.#.#.##......#..#.#......#.###.###.###.#.#......",
+       ".....#.#.#.#.#.#.#.......#..#.#....#.#.#.#.#...#.#.#.#......",
+       ".....#.#.#.#.##..###....###.#.#....###.#.#.#...#.#.#.#......"
+      ],
+      "key": {
+       "#": "c7a4a2a:1"
+      }
+     },
+     {
+      "face": "right",
+      "at": "center",
+      "offset": [
+       0,
+       0
+      ],
+      "art": [
+       "dd",
+       "hd"
+      ],
+      "key": {
+       "d": "c7a4a2a:1",
+       "h": "c7a4a2a:4"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "doily",
+   "shape": "card",
+   "pivot": [
+    0,
+    4.1,
+    0
+   ],
+   "plane": "xz",
+   "art": [
+    "................................................................................................",
+    "................................................................................................",
+    "................................................................................................",
+    "................................................................................................",
+    ".............................................w....w.............................................",
+    "............................................ssssssss............................................",
+    "...........................................ssssssssss...........................................",
+    "..........................................ssssssssssss..........................................",
+    "...........................w..............ssssssssssss..............w...........................",
+    ".........................wwwwws..........wwwwwwwwwwwwww..........swwwww.........................",
+    "........................wwwwsssss.......wwwwwwwwwwwwwwww.......ssssswwww........................",
+    "........................wwssssssswww...wwwwwww....wwwwwww...wwwsssssssww........................",
+    ".......................wssssssswwwwwwwwwwwwwww....wwwwwwwwwwwwwwwsssssssw.......................",
+    ".......................sssssswwwws.wwwwwwwwwww....wwwwwwwwwww.swwwwssssss.......................",
+    ".......................sssswwwws....wwwwwwwwwww..wwwwwwwwwww....swwwwssss.......................",
+    ".......................ssswwwswww...wwwwwwwwwww..wwwwwwwwwww...wwwswwwsss.......................",
+    ".......................swwwwwwwww....wwwwwsssssssssssswwwww....wwwwwwwwws.......................",
+    ".......................wwwwwwwwwww...wssssssssssssssssssssw...wwwwwwwwwww.......................",
+    ".......................wwwwwwwwwww..ssssssssssssssssssssssss..wwwwwwwwwww.......................",
+    "......................wwwwwwwwwwwsssssssssssssssssssssssssssssswwwwwwwwwww......................",
+    "......................wwwwwwwwwwsssssssssssssssssssssssssssssssswwwwwwwwww......................",
+    "........................wwwwwwsssssssssssssssww..wwssssssssssssssswwwwww........................",
+    "...................ww....wwwwssssssssssswwwwwww..wwwwwwwssssssssssswwww....ww...................",
+    "............wsssswwww.....wssssssssss..wwwwwwww..wwwwwwww..ssssssssssw.....wwwwssssw............",
+    "..........wwsssswwwwww....sssssssssww..wwwwwwww..wwwwwwww..wwsssssssss....wwwwwwssssww..........",
+    ".........wwwsssswwwwwww..ssssssssswww...wwwwwww..wwwwwww...wwwsssssssss..wwwwwwwsssswww.........",
+    ".........wwsssswwwwwwwwwsssssssswwwwww..wwwwwww..wwwwwww..wwwwwwsssssssswwwwwwwwwssssww.........",
+    "........wwwssswwwwwwwwwsssssssswwwwwww...wssssssssssssw...wwwwwwwsssssssswwwwwwwwwssswww........",
+    ".........wsssswwwwwwwwwssssssswwwwwwwwwsssssssssssssssssswwwwwwwwwssssssswwwwwwwwwssssw.........",
+    ".........wssswwswwwwwwsssssss..wwwwwwsssssssssssssssssssssswwwwww..ssssssswwwwwwswwsssw.........",
+    ".........sssswwwwwwwwsssssssw...wwwwsssssssssssssssssssssssswwww...wssssssswwwwwwwwssss.........",
+    "..........sswwswwwwwwsssssswww...wssssssssssssssssssssssssssssw...wwwsssssswwwwwwswwss..........",
+    "..........ssww.wwwwwsssssswwwww..ssssssssssswww..wwwsssssssssss..wwwwwsssssswwwww.wwss..........",
+    "...........wws...wwssssssswwwwwwsssssssss..wwww..wwww..ssssssssswwwwwwsssssssww...sww...........",
+    "...........ww......sssssswwwwwwsssssssswww.wwww..wwww.wwwsssssssswwwwwwssssss......ww...........",
+    "...........www.....ssssswwwwwwwssssssswwww.wwww..wwww.wwwwssssssswwwwwwwsssss.....www...........",
+    "............wwww..sssssswwwwwwssssssswwwwww.www..www.wwwwwwssssssswwwwwwssssss..wwww............",
+    "............wwwwwwsssss...wwwsssssssw.wwwww.wwssssww.wwwww.wssssssswww...ssssswwwwww............",
+    "............wwwwwssssss.....wsssssswww.wwwwsssssssssswwww.wwwssssssw.....sssssswwwww............",
+    "...........wwwwwwssssssww...sssssswwwww.wwsssswwwwssssww.wwwwwssssss...wwsssssswwwwww...........",
+    "..........wwwwwwwssssswwwww.sssssswwwwwwsssswwwwwwwwsssswwwwwwssssss.wwwwwssssswwwwwww..........",
+    ".........wwwwwwwwssssswwwwwwsssss.wwwwwwsswwwwwwwwwwwwsswwwwww.ssssswwwwwwssssswwwwwwww.........",
+    ".......sswwwwwwwsssssswwwwwssssss...wwwsswwwwwwwwwwwwwwsswww...sssssswwwwwsssssswwwwwwwss.......",
+    "......ssswwwwwwwsssssswwwwwsssssswww..ssswwwwwwwwwwwwwwsss..wwwsssssswwwwwsssssswwwwwwwsss......",
+    ".....sssswwwwwwwsssssswwwwwssssswwwwwwsswwwwwwwwwwwwwwwwsswwwwwwssssswwwwwsssssswwwwwwwssss.....",
+    "....wsssswwwwwwwssssswwwwwwssssswwwwwwsswwwwwwwwwwwwwwwwsswwwwwwssssswwwwwwssssswwwwwwwssssw....",
+    ".....ssssww...wwssssswwwwwwssssswwwwwsswwwwwwwwwwwwwwwwwwsswwwwwssssswwwwwwsssssww...wwssss.....",
+    ".....ssssww.....sssss......sssss.....sswwwwwwwwwwwwwwwwwwss.....sssss......sssss.....wwssss.....",
+    ".....ssssww.....sssss......sssss.....sswwwwwwwwwwwwwwwwwwss.....sssss......sssss.....wwssss.....",
+    ".....ssssww...wwssssswwwwwwssssswwwwwsswwwwwwwwwwwwwwwwwwsswwwwwssssswwwwwwsssssww...wwssss.....",
+    "....wsssswwwwwwwssssswwwwwwssssswwwwwwsswwwwwwwwwwwwwwwwsswwwwwwssssswwwwwwssssswwwwwwwssssw....",
+    ".....sssswwwwwwwsssssswwwwwssssswwwwwwsswwwwwwwwwwwwwwwwsswwwwwwssssswwwwwsssssswwwwwwwssss.....",
+    "......ssswwwwwwwsssssswwwwwsssssswww..ssswwwwwwwwwwwwwwsss..wwwsssssswwwwwsssssswwwwwwwsss......",
+    ".......sswwwwwwwsssssswwwwwssssss...wwwsswwwwwwwwwwwwwwsswww...sssssswwwwwsssssswwwwwwwss.......",
+    ".........wwwwwwwwssssswwwwwwsssss.wwwwwwsswwwwwwwwwwwwsswwwwww.ssssswwwwwwssssswwwwwwww.........",
+    "..........wwwwwwwssssswwwww.sssssswwwwwwsssswwwwwwwwsssswwwwwwssssss.wwwwwssssswwwwwww..........",
+    "...........wwwwwwssssssww...sssssswwwww.wwsssswwwwssssww.wwwwwssssss...wwsssssswwwwww...........",
+    "............wwwwwssssss.....wsssssswww.wwwwsssssssssswwww.wwwssssssw.....sssssswwwww............",
+    "............wwwwwwsssss...wwwsssssssw.wwwww.wwssssww.wwwww.wssssssswww...ssssswwwwww............",
+    "............wwww..sssssswwwwwwssssssswwwwww.www..www.wwwwwwssssssswwwwwwssssss..wwww............",
+    "...........www.....ssssswwwwwwwssssssswwww.wwww..wwww.wwwwssssssswwwwwwwsssss.....www...........",
+    "...........ww......sssssswwwwwwsssssssswww.wwww..wwww.wwwsssssssswwwwwwssssss......ww...........",
+    "...........wws...wwssssssswwwwwwsssssssss..wwww..wwww..ssssssssswwwwwwsssssssww...sww...........",
+    "..........ssww.wwwwwsssssswwwww..ssssssssssswww..wwwsssssssssss..wwwwwsssssswwwww.wwss..........",
+    "..........sswwswwwwwwsssssswww...wssssssssssssssssssssssssssssw...wwwsssssswwwwwwswwss..........",
+    ".........sssswwwwwwwwsssssssw...wwwwsssssssssssssssssssssssswwww...wssssssswwwwwwwwssss.........",
+    ".........wssswwswwwwwwsssssss..wwwwwwsssssssssssssssssssssswwwwww..ssssssswwwwwwswwsssw.........",
+    ".........wsssswwwwwwwwwssssssswwwwwwwwwsssssssssssssssssswwwwwwwwwssssssswwwwwwwwwssssw.........",
+    "........wwwssswwwwwwwwwsssssssswwwwwww...wssssssssssssw...wwwwwwwsssssssswwwwwwwwwssswww........",
+    ".........wwsssswwwwwwwwwsssssssswwwwww..wwwwwww..wwwwwww..wwwwwwsssssssswwwwwwwwwssssww.........",
+    ".........wwwsssswwwwwww..ssssssssswww...wwwwwww..wwwwwww...wwwsssssssss..wwwwwwwsssswww.........",
+    "..........wwsssswwwwww....sssssssssww..wwwwwwww..wwwwwwww..wwsssssssss....wwwwwwssssww..........",
+    "............wsssswwww.....wssssssssss..wwwwwwww..wwwwwwww..ssssssssssw.....wwwwssssw............",
+    "...................ww....wwwwssssssssssswwwwwww..wwwwwwwssssssssssswwww....ww...................",
+    "........................wwwwwwsssssssssssssssww..wwssssssssssssssswwwwww........................",
+    "......................wwwwwwwwwwsssssssssssssssssssssssssssssssswwwwwwwwww......................",
+    "......................wwwwwwwwwwwsssssssssssssssssssssssssssssswwwwwwwwwww......................",
+    ".......................wwwwwwwwwww..ssssssssssssssssssssssss..wwwwwwwwwww.......................",
+    ".......................wwwwwwwwwww...wssssssssssssssssssssw...wwwwwwwwwww.......................",
+    ".......................swwwwwwwww....wwwwwsssssssssssswwwww....wwwwwwwwws.......................",
+    ".......................ssswwwswww...wwwwwwwwwww..wwwwwwwwwww...wwwswwwsss.......................",
+    ".......................sssswwwws....wwwwwwwwwww..wwwwwwwwwww....swwwwssss.......................",
+    ".......................sssssswwwws.wwwwwwwwwww....wwwwwwwwwww.swwwwssssss.......................",
+    ".......................wssssssswwwwwwwwwwwwwww....wwwwwwwwwwwwwwwsssssssw.......................",
+    "........................wwssssssswww...wwwwwww....wwwwwww...wwwsssssssww........................",
+    "........................wwwwsssss.......wwwwwwwwwwwwwwww.......ssssswwww........................",
+    ".........................wwwwws..........wwwwwwwwwwwwww..........swwwww.........................",
+    "...........................w..............ssssssssssss..............w...........................",
+    "..........................................ssssssssssss..........................................",
+    "...........................................ssssssssss...........................................",
+    "............................................ssssssss............................................",
+    ".............................................w....w.............................................",
+    "................................................................................................",
+    "................................................................................................",
+    "................................................................................................",
+    "................................................................................................"
+   ],
+   "style": "card",
+   "paint": {
+    "art_key": {
+     "w": "white:-1",
+     "s": "white:3"
+    },
+    "ramp": "white",
+    "tone": 4
+   }
+  }
+ ]
+}

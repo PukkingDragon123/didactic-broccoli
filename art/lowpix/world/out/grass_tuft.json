@@ -1,0 +1,44 @@
+{
+ "id": "grass_tuft",
+ "src": "polyhaven:grass_medium_01",
+ "credit": {
+  "title": "Grass Medium 01",
+  "author": "Rob Tuytel, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/grass_medium_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2999,
+ "tex": 288,
+ "size": [
+  5.712,
+  0.35,
+  0.293
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#2a270c",
+   "#363510",
+   "#3e4115",
+   "#444c1b",
+   "#495621",
+   "#6f7a33",
+   "#969d46",
+   "#b5b563",
+   "#c4c48a"
+  ],
+  "m1": [
+   "#030700",
+   "#040900",
+   "#060c00",
+   "#080e00",
+   "#0b1000",
+   "#405301",
+   "#7e9305",
+   "#c5d20a",
+   "#f2f22e"
+  ]
+ },
+ "warnings": []
+}

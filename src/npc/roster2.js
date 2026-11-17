@@ -248,7 +248,7 @@ const KUROMARU = {
     if (n.knocking?.script) return n.knocking.script;
     return { start: [
       ...opener(L, n, { first, firstHello: [{ gesture: 'spell', say: 'Halt, mortal! You stand before Lord Kuromaru, Keeper of the Ninth Shadow!' }, { choose: [{ text: 'Cool eyepatch.', rel: 1, then: ['...It seals my Dragon Eye. Thank you. It\'s from a 100 yen shop.'] }, { text: 'Aren\'t you Mrs. Yamada\'s son?', rel: -1, then: ['THAT NAME HAS NO POWER HERE.'] }], time: 6, timeout: 0 }], hello: ['We meet again, mortal.', 'The shadows whispered of your coming.', 'Ah. The capsule merchant.'] }),
-      { if: () => q?.isActive('relic') && heldFigure(g, ['yokai', 'obake_yashiki']), then: 'give' },
+      { if: () => q?.isActive('relic') && heldFigure(g, ['tsukumo', 'shugorei']), then: 'give' },
       { if: () => !q?.isActive('relic') && !q?.isDone('relic'), then: relicScript.start },
       { choose: [
         { text: 'Read my fortune. (¥100)', then: [{ pay: 100 }, { say: 'Choose a card! Quickly, before the darkness sees!', gesture: 'spell' }, { choose: [{ text: 'The Sun', then: ['The Sun! A bright day. A customer will smile at you. That is all. Fate is mostly small.'] }, { text: 'The Moon', then: ['The Moon... something strange walks the lane tonight. Something... green.'] }, { text: 'The Capsule', then: ['The Capsule! Your next pull... will be a capsule. ...The spirits are very literal.'] }], time: 4, timeout: 2 }] },
@@ -261,7 +261,7 @@ const KUROMARU = {
   quests: [{
     id: 'relic', title: 'The cursed relic', giver: 'kuromaru', giverName: 'Lord Kuromaru', color: '#9a6ad8',
     steps: [
-      { text: 'Get a figure from the Yokai or Haunted House series', check: (g) => ['yokai', 'obake_yashiki'].some((s) => Object.keys(g.state.discovered).some((k) => getItem(k)?.series === s)) },
+      { text: 'Get a figure from the Tsukumogami or Guardian Spirits series', check: (g) => ['tsukumo', 'shugorei'].some((s) => Object.keys(g.state.discovered).some((k) => getItem(k)?.series === s)) },
       { text: 'Hold it and bring it to Lord Kuromaru', sub: 'He haunts the mouth of the alley by Mikawa-ya in the evening', talk: 'kuromaru' },
     ],
     reward: { money: 2500, text: 'Protected by the Ninth Shadow' },

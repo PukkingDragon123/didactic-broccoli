@@ -1,0 +1,33 @@
+{
+ "id": "screen_folding",
+ "src": "polyhaven:chinese_screen_panels",
+ "credit": {
+  "title": "Chinese Screen Panels",
+  "author": "Kirill Sannikov",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/chinese_screen_panels",
+  "site": "Poly Haven"
+ },
+ "tris": 784,
+ "tex": 512,
+ "size": [
+  1.294,
+  1.603,
+  0.377
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#240608",
+   "#2f0a09",
+   "#38110c",
+   "#421910",
+   "#4b2314",
+   "#764022",
+   "#9f6232",
+   "#c18849",
+   "#ccab77"
+  ]
+ },
+ "warnings": []
+}

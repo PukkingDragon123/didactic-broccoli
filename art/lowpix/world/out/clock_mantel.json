@@ -1,0 +1,66 @@
+{
+ "id": "clock_mantel",
+ "src": "polyhaven:mantel_clock_01",
+ "credit": {
+  "title": "Mantel Clock 01",
+  "author": "Yann Kervran, Rico Cilliers",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/mantel_clock_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2963,
+ "tex": 256,
+ "size": [
+  0.347,
+  0.161,
+  0.128
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#1c0b0d",
+   "#230f10",
+   "#2a1514",
+   "#311c19",
+   "#38241e",
+   "#5c4135",
+   "#7e604d",
+   "#9d8168",
+   "#b1a28e"
+  ],
+  "m1": [
+   "#6b4238",
+   "#885e4d",
+   "#a27b64",
+   "#b29a86",
+   "#c3b6a7",
+   "#c9c2b5",
+   "#d0ccc2",
+   "#d8d6cf",
+   "#e0dfdb"
+  ],
+  "m2": [
+   "#844229",
+   "#a96139",
+   "#c28556",
+   "#cda87f",
+   "#dac6a7",
+   "#ddd1b5",
+   "#e1dac2",
+   "#e6e3cf",
+   "#ebeadb"
+  ],
+  "m3": [
+   "#422512",
+   "#54361a",
+   "#664822",
+   "#775c2a",
+   "#877134",
+   "#a49244",
+   "#b7ae5d",
+   "#c2c17f",
+   "#cece9f"
+  ]
+ },
+ "warnings": []
+}

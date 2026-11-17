@@ -7,6 +7,7 @@ import { Game } from '../game/Game.js';
 import { JoJo } from '../jojo/index.js';
 import { learn } from '../jojo/society.js';
 import { MENU_POSES } from '../jojo/pose.js';
+import { freeShot } from '../cinema/shots.js';
 
 export function install(game) {
   const g = game;
@@ -34,6 +35,12 @@ export function install(game) {
         n.setPresent?.(true); n.place?.(new THREE.Vector3(x, 0, z), P.yaw); n.activity = 'debug'; return true;
       },
       filter(name = null) { J.impact.filter(name); return name; },
+      /** Where the pose camera would stand for you now, and what's in the way. */
+      shot() {
+        const P = g.player, feet = new THREE.Vector3(P.pos.x, 0, P.pos.z), r = freeShot(g, feet, P.yaw + Math.PI);
+        const near = (P.obstacles || []).filter((o) => o.enabled !== false && o.maxX > feet.x - 3 && o.minX < feet.x + 3 && o.maxZ > feet.z - 3 && o.minZ < feet.z + 3).map((o) => [o.minX, o.maxX, o.minZ, o.maxZ].map((v) => +v.toFixed(2)));
+        return { pos: r.pos.toArray().map((v) => +v.toFixed(2)), angle: r.angle, dist: r.dist, near };
+      },
       state() { return JSON.parse(JSON.stringify(J.s)); },
     };
   }, 0);

@@ -323,7 +323,7 @@ const JOSUKE = {
     return { start: [
       ...opener(L, n, { first, firstHello: ['Yo. Josuke. I live right over there.', "You're Grandpa's grandkid, right? He used to give me free turns."], hello: ['Yo.', 'Hey. What\'s up?', 'Oh, it\'s you.'] }),
       { if: () => q?.isActive('crew') && q.step('crew')?.talk === 'josuke', then: 'crew' },
-      { if: () => q?.isActive('bizarre_hero') && heldFigure(g, 'bizarre'), then: 'hero' },
+      { if: () => q?.isActive('bizarre_hero') && heldFigure(g, 'shugorei'), then: 'hero' },
       { choose: [
         { text: 'Your hair looks amazing.', rel: 1, then: [{ gesture: 'comb', say: 'Heh. Finally, someone with taste.' }] },
         { text: 'What is with your hair?', then: [{ do: (c) => rage(L, c.npc, 'say'), say: 'WHAT DID YOU SAY ABOUT MY HAIR?!', style: 'shout' }, { rel: -2, set: { hairInsult: true } }, '...Hah... hah... NOBODY insults this hair.'] },
@@ -332,14 +332,14 @@ const JOSUKE = {
         { text: 'See you.', then: ['Later.'] },
       ], time: 9, timeout: 4 },
     ],
-    hero: ['Wait. Is that... from the Bizarre series?', { choose: [{ text: 'It\'s yours.', do: () => giveHeld(g, n), advance: 'bizarre_hero', rel: 2, then: [{ gesture: 'pose_point', say: 'GREAT! This must be the work of fate!' }] }, { text: 'Just showing off.', then: ['...Mean.'] }] }],
+    hero: ['Wait. Is that... from the Guardian Spirits series?', { choose: [{ text: 'It\'s yours.', do: () => giveHeld(g, n), advance: 'bizarre_hero', rel: 2, then: [{ gesture: 'pose_point', say: 'GREAT! This must be the work of fate!' }] }, { text: 'Just showing off.', then: ['...Mean.'] }] }],
     crew: ['Join a PIRATE crew? That straw hat guy?', { choose: [{ text: 'He says you get free meat.', then: ['...Tempting. But no. Tell him I said "maybe".', { advance: 'crew' }] }, { text: 'Think about it.', then: ['I thought about it. No. ...Maybe.', { advance: 'crew' }] }] }],
     };
   },
   quests: [{
     id: 'bizarre_hero', title: 'A bizarre hero', giver: 'josuke', giverName: 'Josuke', color: '#ff6fb0',
     steps: [
-      { text: 'Pull a figure from the Bizarre series', sub: 'Stock a machine with it, or order capsules', check: (g) => SERIES_BY_ID.bizarre?.items.some((it) => g.state.discovered[it.key]) },
+      { text: 'Pull a figure from the Guardian Spirits series', sub: 'Stock a machine with it, or order capsules', check: (g) => SERIES_BY_ID.shugorei?.items.some((it) => g.state.discovered[it.key]) },
       { text: 'Bring it to Josuke', sub: 'Hold it in your hands and talk to him', talk: 'josuke' },
     ],
     reward: { money: 2500, text: 'Josuke owes you one' },
@@ -440,7 +440,7 @@ const OKUYASU = {
   quests: [{
     id: 'snacks', title: 'Snack attack', giver: 'okuyasu', giverName: 'Okuyasu', color: '#ff9a4a',
     steps: [
-      { text: 'Stock a machine with food capsules', sub: 'The Shokudo (diner) series', check: (g) => g.machines.some((m) => m.data.series === 'shokudo' || m.data.stock?.includes?.('shokudo')) },
+      { text: 'Stock a machine with food capsules', sub: 'The Fake Food Window series', check: (g) => g.machines.some((m) => m.data.series === 'sampuru' || m.data.stock?.includes?.('sampuru')) },
       { text: 'Tell Okuyasu', sub: 'He hangs out by the vending machines after school', talk: 'okuyasu' },
     ],
     reward: { money: 1500, text: 'Okuyasu is your biggest fan' },

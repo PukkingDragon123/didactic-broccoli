@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "radio",
+   "src": "sketchfab:c01869269a8b4bd2a8a05b8162fe7a11",
+   "height": 20,
+   "at": [
+    0,
+    4.2,
+    0
+   ],
+   "yaw": -15,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "25d01a3b4840d0"
+  }
+ ],
+ "model_clip": {
+  "node": "model_radio",
+  "kind": "wobble",
+  "length": 1.2,
+  "amp": 4,
+  "axis": "y"
+ },
+ "key": "denka/radio"
+}

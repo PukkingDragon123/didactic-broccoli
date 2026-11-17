@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "bird",
+   "src": "sketchfab:65d2444648ce4bd8850525de1b8bacee",
+   "height": 15,
+   "at": [
+    0,
+    3.0,
+    0
+   ],
+   "yaw": -70,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "4f3c4f4c8dfcd2"
+  }
+ ],
+ "key": "yacho/kiji"
+}

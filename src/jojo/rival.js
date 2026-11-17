@@ -68,7 +68,7 @@ export class Rival {
 
   free() {
     const g = this.game;
-    return !g.cutscene?.active && !g.talk?.active && !g.pc?.active && !g.uiOpen && !g.jojo?.photo?.active && !g.timeStop?.active;
+    return !g.cutscene?.active && !g.talk?.active && !g.pc?.active && !g.uiOpen && !g.cinema?.photo?.active && !g.timeStop?.active;
   }
 
   /** He comes up the lane (now: straight into the standoff, for tests). */
@@ -174,9 +174,9 @@ export class Rival {
     c.roll = 0;
     yield c.all(orbit(c, { center: V(0.4, 0, 8.55), radius: 3.2, from: Math.PI / 2 + 0.12, to: Math.PI / 2 - 0.1, height: 1.25, look: V(0.4, 1.3, 8.55), dur: 4.2 }),
       line(c, g, 'goda', 'Three rounds. Power crushes Mystery. Mystery bewitches Grace. Grace outclasses Power. Even a child knows this.'));
-    // ------------------------------------------------ the rounds (not skippable: they're yours to play)
+    // ------------------------------------------------ the rounds: skipping the talk lands you here; holding skip again
+    // during the rounds backs down (every round left is his)
     c.skipping = false;
-    c.skippable = false;
     let mine = 0, his = 0;
     this.marks = [];
     this.score(0, 0, 1);
@@ -230,7 +230,6 @@ export class Rival {
     }
     this.card.className = 'hidden';
     this.board.className = 'hidden';
-    c.skippable = true;
     // ------------------------------------------------ the verdict
     const won = mine > his, lost = his > mine;
     if (won) { s.wins = (s.wins || 0) + 1; s.done = true; } else if (lost) s.losses = (s.losses || 0) + 1; else s.draws = (s.draws || 0) + 1;
@@ -296,7 +295,7 @@ export class Rival {
       this.card.className = '';
       this.card.innerHTML = `<div class="po-card"><div class="po-head"><span>Round ${round}</span><b>${esc(POSE_INFO[pose].name)}</b><i class="st st-${style}">${STYLE_KANJI[style]}</i><small>${STYLE_NAME[style]}</small></div>`
         + `<div class="po-opts">${opts.map((p, i) => `<button class="po-opt${i === sel ? ' sel' : ''}" data-i="${i}"><kbd>${i + 1}</kbd><b>${esc(POSE_INFO[p].name)}</b><i class="st st-${POSE_INFO[p].style}">${STYLE_KANJI[POSE_INFO[p].style]}</i></button>`).join('')}</div>`
-        + `<div class="po-time"><span style="width:${Math.round(left * 100)}%"></span></div><div class="po-rule"><i class="st st-power">力</i> beats <i class="st st-mystery">謎</i> beats <i class="st st-grace">雅</i> beats <i class="st st-power">力</i></div></div>`;
+        + `<div class="po-time"><span style="width:${Math.round(left * 100)}%"></span></div><div class="po-rule"><i class="st st-power">力</i> beats <i class="st st-mystery">謎</i> beats <i class="st st-grace">雅</i> beats <i class="st st-power">力</i><small>hold Space to back down</small></div></div>`;
       this.card.querySelectorAll('.po-opt').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); chosen = opts[+b.dataset.i]; }));
     };
     render();

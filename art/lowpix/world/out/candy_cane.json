@@ -1,0 +1,45 @@
+{
+ "id": "candy_cane",
+ "src": "sketchfab:a0367b22841e45268492c4f22f263c15",
+ "credit": {
+  "title": "Candy Cane",
+  "author": "Ariss",
+  "authorUrl": "https://sketchfab.com/1its_ariss",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/candy-cane-a0367b22841e45268492c4f22f263c15",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 496,
+ "size": [
+  0.15,
+  1.6,
+  0.936
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#5c001f",
+   "#78001e",
+   "#940019",
+   "#b0000f",
+   "#cc0000",
+   "#f21804",
+   "#f84b28",
+   "#f77c53",
+   "#f7a67e"
+  ],
+  "m1": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ]
+ },
+ "warnings": []
+}

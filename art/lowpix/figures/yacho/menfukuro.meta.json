@@ -1,0 +1,35 @@
+{
+ "mats": {},
+ "clips": {
+  "gimmick": "gimmick"
+ },
+ "pts": {},
+ "models": [
+  {
+   "name": "bird",
+   "src": "sketchfab:0e65de5934db4f0eae02835ba7227dcc",
+   "height": 28,
+   "at": [
+    0,
+    3.0,
+    0
+   ],
+   "yaw": 0,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "78f3ecbf5ed5d3"
+  }
+ ],
+ "model_clip": {
+  "node": "model_bird",
+  "kind": "turn",
+  "length": 2.6,
+  "amp": 55,
+  "axis": "y"
+ },
+ "key": "yacho/menfukuro"
+}

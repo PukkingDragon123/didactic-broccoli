@@ -57,6 +57,7 @@ import { buildPark } from './Park.js';
 import { buildPylon } from './Pylon.js';
 import { buildLanePosters } from './LanePosters.js';
 import { InstanceCuller } from './propCull.js';
+import { archPlace } from './archModels.js';
 
 // ------------------------------------------------------------------ layout
 const ZB = 5.3, ZG0 = 5.75, ZG1 = 6.1, ZR1 = 13.35, ZG3 = 13.7, ZF = 14.9;
@@ -94,6 +95,9 @@ function townShader(m, indoor = false, src = null) {
   m.customProgramCacheKey = () => (indoor ? 'town-in' : 'town') + bk + (m.userData.texDetail && !base ? '-td' : '');
   return m;
 }
+const DUMP_HOUSES = typeof location !== 'undefined' && /[?&]dumphouses\b/.test(location.search);
+/** A house's id for its lowpix model (art/lowpix/world_arch/_src/houses.py): side, then x and z in cm. */
+export const houseId = (o) => `h${(o.side ?? 1) > 0 ? 'n' : 'f'}${Math.round(o.x * 100)}_${Math.round(o.z * 100)}`;
 // window kinds that look into a room (interiors.js): [room, lit, curtain]
 const ROOMS = {
   lit: [ROOM.living, 1, 1], lit2: [ROOM.kid, 1, 3], lit3: [ROOM.washitsu, 1, 2], lit4: [ROOM.living, 1, 2], lace: [ROOM.living, 0.9, 2],
@@ -504,30 +508,36 @@ export class Town {
     const G = GARAGE, H = G.height, B = this.B, m = this.m;
     // apron in front of the shutter
     B.plane(this.M('floorHD', { roughness: 0.85, ppm: 64 }), 8.6, ZG0 - 5.2, 0, 0, (5.2 + ZG0) / 2, { uv: [0, 0.4] });
-    // corrugated cladding on the two piers
-    for (const sx of [-1, 1]) B.box(m.tinTeal, 1.3, H + 0.05, 0.05, sx * 3.65, 0, 5.235, { uv: [sx, 0], ao: 0.15 });
-    // a plain low false front above the shutter: corrugated cladding with returns, pilasters and coping
-    const PH = 1.15;
-    B.box(m.tinTeal, 8.7, PH, 0.26, 0, H, 5.08, { uv: [0.4, 0.3] });
-    for (const sx of [-1, 1]) {
-      B.box(m.tinTeal, 0.22, PH, 1.6, sx * 4.24, H, 4.3, { uv: [0.2, 0.3] });
-      B.box(m.pv, 0.3, PH + 0.02, 0.34, sx * 4.25, H, 5.12, { tint: 0x5a5a52 });
+    // the lane face (piers, false front, eave, fascia, conduit, lamps, meter box; the shutter hood and rails too, see
+    // Garage.build) and the roof + east wall: lowpix models (art/lowpix/world_arch/_src/shopfront.py), else the old build
+    if (!archPlace('shopfront', this.group)) {
+      // corrugated cladding on the two piers
+      for (const sx of [-1, 1]) B.box(m.tinTeal, 1.3, H + 0.05, 0.05, sx * 3.65, 0, 5.235, { uv: [sx, 0], ao: 0.15 });
+      // a plain low false front above the shutter: corrugated cladding with returns, pilasters and coping
+      const PH = 1.15;
+      B.box(m.tinTeal, 8.7, PH, 0.26, 0, H, 5.08, { uv: [0.4, 0.3] });
+      for (const sx of [-1, 1]) {
+        B.box(m.tinTeal, 0.22, PH, 1.6, sx * 4.24, H, 4.3, { uv: [0.2, 0.3] });
+        B.box(m.pv, 0.3, PH + 0.02, 0.34, sx * 4.25, H, 5.12, { tint: 0x5a5a52 });
+      }
+      B.box(m.pv, 9.0, 0.12, 0.46, 0, H + PH, 5.1, { tint: 0x5a5650 });
+      B.box(m.pv, 8.8, 0.08, 0.36, 0, H + PH + 0.12, 5.08, { tint: 0x4a4640 });
+      // a few bolted-on bits: conduit, an old enamel lamp bracket, a meter box
+      B.box(m.pv, 6.8, 0.05, 0.05, 0, H + 0.95, 5.24, { tint: 0x3a3a38 });
+      for (const x of [-2.2, 2.2]) { B.box(m.metal, 0.05, 0.05, 0.4, x, H + 0.82, 5.42, { tint: 0x2a2c2e }); B.box(m.metal, 0.24, 0.1, 0.24, x, H + 0.7, 5.62, { tint: 0x2a3a2e }); }
+      B.box(m.pv, 0.32, 0.4, 0.12, -3.62, 2.2, 5.3, { tint: 0x8a8e88 });
+      // fascia band + tin eave (庇) over the shutter
+      B.box(m.wood, 8.4, 0.24, 0.08, 0, H - 0.02, 5.25);
+      B.box(m.tinRed, 8.2, 0.07, 0.95, 0, H + 0.05, 5.7, { rx: 0.07 });
+      B.box(m.tinRed, 8.0, 0.06, 0.5, 0, H + 0.11, 5.48, { rx: 0.07 });
+      B.box(m.pv, 8.26, 0.14, 0.05, 0, H - 0.06, 6.16, { tint: 0x3a3430 });
+      for (const sx of [-1, 1]) B.box(m.metal, 0.04, 0.5, 0.04, sx * 3.95, H - 0.4, 5.85, { rx: -0.9, tint: 0x5a5a58 });
     }
-    B.box(m.pv, 9.0, 0.12, 0.46, 0, H + PH, 5.1, { tint: 0x5a5650 });
-    B.box(m.pv, 8.8, 0.08, 0.36, 0, H + PH + 0.12, 5.08, { tint: 0x4a4640 });
-    // a few bolted-on bits: conduit, an old enamel lamp bracket, a meter box
-    B.box(m.pv, 6.8, 0.05, 0.05, 0, H + 0.95, 5.24, { tint: 0x3a3a38 });
-    for (const x of [-2.2, 2.2]) { B.box(m.metal, 0.05, 0.05, 0.4, x, H + 0.82, 5.42, { tint: 0x2a2c2e }); B.box(m.metal, 0.24, 0.1, 0.24, x, H + 0.7, 5.62, { tint: 0x2a3a2e }); }
-    B.box(m.pv, 0.32, 0.4, 0.12, -3.62, 2.2, 5.3, { tint: 0x8a8e88 });
-    // the garage roof behind the parapet + an exterior skin on the exposed east wall
-    B.box(m.tin, 8.7, 0.12, 10.6, 0, H + 0.14, -0.1, { k: 0.8 });
-    B.box(m.tin, 0.06, H + 0.25, 10.4, 4.24, 0, -0.05, { uv: [0, 0.2], ao: 0.2, k: 0.9 });
-    // fascia band + tin eave (庇) over the shutter
-    B.box(m.wood, 8.4, 0.24, 0.08, 0, H - 0.02, 5.25);
-    B.box(m.tinRed, 8.2, 0.07, 0.95, 0, H + 0.05, 5.7, { rx: 0.07 });
-    B.box(m.tinRed, 8.0, 0.06, 0.5, 0, H + 0.11, 5.48, { rx: 0.07 });
-    B.box(m.pv, 8.26, 0.14, 0.05, 0, H - 0.06, 6.16, { tint: 0x3a3430 });
-    for (const sx of [-1, 1]) B.box(m.metal, 0.04, 0.5, 0.04, sx * 3.95, H - 0.4, 5.85, { rx: -0.9, tint: 0x5a5a58 });
+    if (!archPlace('garage_shell', this.group, { cast: false })) {
+      // the garage roof behind the parapet + an exterior skin on the exposed east wall
+      B.box(m.tin, 8.7, 0.12, 10.6, 0, H + 0.14, -0.1, { k: 0.8 });
+      B.box(m.tin, 0.06, H + 0.25, 10.4, 4.24, 0, -0.05, { uv: [0, 0.2], ao: 0.2, k: 0.9 });
+    }
     this.shop = { openG: new THREE.Group(), closedG: new THREE.Group() };
     this.add(this.shop.openG); this.add(this.shop.closedG);
     this.buildLanterns(H);
@@ -648,6 +658,7 @@ export class Town {
    */
   house(o) {
     const B = this.B, m = this.m;
+    if (DUMP_HOUSES) (this.houseDump ||= []).push(this.dumpHouse(o));
     const W = o.w, D = o.d, side = o.side ?? 1, seed = Math.floor(Math.abs(o.x * 3.7 + o.z * 1.3));
     this._lite = !!o.lite;
     this._depth = D;
@@ -722,6 +733,20 @@ export class Town {
     if (o.extra) o.extra(B, info);
     B.pop();
     return { top, anchor, ridge: this._ridgeY };
+  }
+
+  /** A house's parameters as plain JSON (materials by their name in this.m) for the lowpix house generator
+   *  (art/lowpix/world_arch/_src/houses.py reads the dump: `?dumphouses`, then town.houseDump). */
+  dumpHouse(o) {
+    const names = new Map(Object.entries(this.m).map(([k, v]) => [v, k]));
+    const plain = (v) => {
+      if (v && v.isMaterial) return 'm:' + (names.get(v) || v.name || '?');
+      if (typeof v === 'function') return 'fn';
+      if (Array.isArray(v)) return v.map(plain);
+      if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, plain(x)]));
+      return v;
+    };
+    return { id: houseId(o), ...plain(o) };
   }
 
   /** Is this one of the kawara (clay tile) roof materials? */

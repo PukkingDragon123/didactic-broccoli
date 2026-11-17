@@ -40,7 +40,7 @@ function cartonHooks(g) {
 function debugHelpers(g) {
   return {
     /** Put one machine of each type (or `types`) in the first free slots, filled with `series`. */
-    setup(types = ['retro', 'standard', 'deluxe', 'royal'], series = 'mochi', fill = 0.7) {
+    setup(types = ['retro', 'standard', 'deluxe', 'royal'], series = 'rojineko', fill = 0.7) {
       for (const m of [...g.machines]) { m.dispose(); }
       g.machines.length = 0;
       g.state.machines = [];
@@ -63,7 +63,7 @@ function debugHelpers(g) {
       g.player.vel.set(0, 0, 0);
     },
     /** Hand the player a capsule carton. */
-    carton(series = 'mochi', count = 20, stage = 0) {
+    carton(series = 'rojineko', count = 20, stage = 0) {
       const data = { type: 'refill', series, count, stage };
       const mesh = g.delivery.meshFor(data);
       mesh.position.copy(g.camera.getWorldPosition(new THREE.Vector3()));

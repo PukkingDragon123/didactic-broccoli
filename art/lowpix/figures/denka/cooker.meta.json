@@ -1,0 +1,26 @@
+{
+ "mats": {},
+ "clips": {},
+ "pts": {},
+ "models": [
+  {
+   "name": "cooker",
+   "src": "sketchfab:8376d2613cb74acdbfad039e7b5e161c",
+   "height": 22,
+   "at": [
+    0,
+    4.0,
+    0
+   ],
+   "yaw": -20,
+   "pitch": 0,
+   "roll": 0,
+   "tris": 4000,
+   "style": "painted",
+   "atlas": 512,
+   "mat": "matte",
+   "key": "0c19c974759e28"
+  }
+ ],
+ "key": "denka/cooker"
+}

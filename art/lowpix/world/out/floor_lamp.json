@@ -1,0 +1,45 @@
+{
+ "id": "floor_lamp",
+ "src": "sketchfab:4766a03aa796440598426f8d5e975fec",
+ "credit": {
+  "title": "Wooden Floor Lamp",
+  "author": "Atalaya22",
+  "authorUrl": "https://sketchfab.com/atalaya22",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-floor-lamp-4766a03aa796440598426f8d5e975fec",
+  "site": "Sketchfab"
+ },
+ "tris": 2992,
+ "tex": 496,
+ "size": [
+  0.496,
+  1.55,
+  0.496
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#444133",
+   "#575545",
+   "#696858",
+   "#78796c",
+   "#878881",
+   "#959595",
+   "#a6a6a6",
+   "#b7b7b7",
+   "#c8c8c8"
+  ],
+  "m1": [
+   "#340605",
+   "#430d07",
+   "#52180a",
+   "#60240e",
+   "#6d3212",
+   "#98521c",
+   "#c07728",
+   "#d59d48",
+   "#dcbc75"
+  ]
+ },
+ "warnings": []
+}

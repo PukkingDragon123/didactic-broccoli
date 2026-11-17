@@ -1,0 +1,55 @@
+{
+ "id": "ukulele",
+ "src": "polyhaven:Ukulele_01",
+ "credit": {
+  "title": "Ukulele 01",
+  "author": "Joseph Burgan",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/Ukulele_01",
+  "site": "Poly Haven"
+ },
+ "tris": 2995,
+ "tex": 256,
+ "size": [
+  0.177,
+  0.527,
+  0.051
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#38120e",
+   "#481d13",
+   "#572a1a",
+   "#653820",
+   "#734828",
+   "#946738",
+   "#b48849",
+   "#c0a56e",
+   "#ccbe92"
+  ],
+  "m1": [
+   "#48342f",
+   "#5b4840",
+   "#6e5c51",
+   "#7f7164",
+   "#8f8579",
+   "#9b978f",
+   "#a8a7a3",
+   "#b7b7b7",
+   "#c8c8c8"
+  ],
+  "m2": [
+   "#723f27",
+   "#915b36",
+   "#b07946",
+   "#be9867",
+   "#c9b38a",
+   "#cec19c",
+   "#d4cdae",
+   "#dbd8bf",
+   "#e2e2cf"
+  ]
+ },
+ "warnings": []
+}

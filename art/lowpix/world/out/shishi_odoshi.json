@@ -1,0 +1,34 @@
+{
+ "id": "shishi_odoshi",
+ "src": "sketchfab:dd236c21ee9b4fefac684c93f4aa803e",
+ "credit": {
+  "title": "Shishi Odoshi",
+  "author": "LucasT11",
+  "authorUrl": "https://sketchfab.com/LucasT11",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/shishi-odoshi-dd236c21ee9b4fefac684c93f4aa803e",
+  "site": "Sketchfab"
+ },
+ "tris": 1095,
+ "tex": 512,
+ "size": [
+  0.763,
+  0.78,
+  0.183
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#34120e",
+   "#431c13",
+   "#512819",
+   "#5e3620",
+   "#6b4527",
+   "#8d6437",
+   "#ad8649",
+   "#bca36c",
+   "#c9bd91"
+  ]
+ },
+ "warnings": []
+}

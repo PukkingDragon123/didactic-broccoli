@@ -1,0 +1,100 @@
+{
+ "id": "beach_parasol",
+ "src": "sketchfab:1014ad7c8a4c4aa8ba5e88fc6151aa4f",
+ "credit": {
+  "title": "Beach Umbrella",
+  "author": "stealth86",
+  "authorUrl": "https://sketchfab.com/stealth86",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/beach-umbrella-1014ad7c8a4c4aa8ba5e88fc6151aa4f",
+  "site": "Sketchfab"
+ },
+ "tris": 2997,
+ "tex": 960,
+ "size": [
+  1.546,
+  1.975,
+  1.779
+ ],
+ "colours": 36,
+ "palette": {
+  "m0": [
+   "#622905",
+   "#7e3f09",
+   "#995a0d",
+   "#b37813",
+   "#cc9919",
+   "#e1bc2b",
+   "#e3d150",
+   "#e6e273",
+   "#eaea96"
+  ],
+  "m1": [
+   "#54005e",
+   "#78007b",
+   "#98008e",
+   "#b30298",
+   "#cc059e",
+   "#f10aa8",
+   "#f331a6",
+   "#f35aa9",
+   "#f483b4"
+  ],
+  "m2": [
+   "#620226",
+   "#7e0428",
+   "#990826",
+   "#b30c21",
+   "#cc1119",
+   "#e8251d",
+   "#e95844",
+   "#ea856a",
+   "#edaa8f"
+  ],
+  "m3": [
+   "#005f1f",
+   "#007c1e",
+   "#009819",
+   "#03b311",
+   "#08cc07",
+   "#20f00c",
+   "#54f134",
+   "#83f15d",
+   "#aaf285"
+  ],
+  "m4": [
+   "#004f60",
+   "#00717e",
+   "#039699",
+   "#06b3a7",
+   "#0accaf",
+   "#10efbb",
+   "#39efb5",
+   "#61efb6",
+   "#88f1be"
+  ],
+  "m5": [
+   "#18005f",
+   "#17007c",
+   "#100098",
+   "#0603b3",
+   "#0714cc",
+   "#0c2ef0",
+   "#3460f1",
+   "#5d8cf1",
+   "#85b1f2"
+  ],
+  "m6": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ]
+ },
+ "warnings": []
+}

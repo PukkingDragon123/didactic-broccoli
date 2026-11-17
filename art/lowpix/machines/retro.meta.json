@@ -1,0 +1,90 @@
+{
+ "joints": {
+  "pawl": [
+   0,
+   0,
+   0
+  ],
+  "crank": [
+   -20.0,
+   775.0,
+   170.0
+  ],
+  "btn_minus": [
+   68.0,
+   739.0,
+   160.0
+  ],
+  "btn_plus": [
+   108.0,
+   739.0,
+   160.0
+  ],
+  "flap": [
+   0,
+   660.0,
+   162.5
+  ],
+  "drawer": [
+   76.0,
+   580.0,
+   160.0
+  ],
+  "lid": [
+   0,
+   1250.0,
+   -165.0
+  ]
+ },
+ "mats": {
+  "band": "metal",
+  "rail": "metal",
+  "dial_bezel": "metal",
+  "dial": "gloss",
+  "pawl_b": "metal",
+  "pawl_pin": "metal",
+  "hub": "metal",
+  "knob": "gloss",
+  "grip": "gloss",
+  "cap": "metal",
+  "mech": "metal",
+  "coin_ret": "metal",
+  "plate_bz": "metal",
+  "btn_sock_l": "metal",
+  "btn_sock_r": "metal",
+  "btn_minus_cap": "gloss",
+  "btn_plus_cap": "gloss",
+  "obz_l": "metal",
+  "obz_r": "metal",
+  "obz_b": "metal",
+  "ohood": "metal",
+  "flap_p": "metal",
+  "flap_pin": "metal",
+  "cbz": "metal",
+  "dr_box": "metal",
+  "dr_lock": "metal",
+  "dr_pull": "metal",
+  "tray_floor": "metal",
+  "tray_wl": "metal",
+  "tray_wr": "metal",
+  "tray_lip": "metal",
+  "hook_plate": "metal",
+  "hook_arm": "metal",
+  "hook_tip": "metal",
+  "shoe_f": "metal",
+  "shoe_l": "metal",
+  "shoe_r": "metal",
+  "backwall": "gloss",
+  "floor": "gloss",
+  "funnel": "metal",
+  "rail_l": "metal",
+  "rail_r": "metal",
+  "rail_b": "metal",
+  "lid_lock": "metal",
+  "hinge_l": "metal",
+  "hinge_r": "metal",
+  "mount": "metal"
+ },
+ "key": "retro",
+ "density": 0.65
+}

@@ -1,0 +1,33 @@
+{
+ "id": "rock_moss",
+ "src": "polyhaven:rock_moss_set_01",
+ "credit": {
+  "title": "Rock Moss Set 01",
+  "author": "Kless Gyzen",
+  "license": "CC0 1.0",
+  "url": "https://polyhaven.com/a/rock_moss_set_01",
+  "site": "Poly Haven"
+ },
+ "tris": 3000,
+ "tex": 512,
+ "size": [
+  1.635,
+  0.36,
+  1.419
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#311812",
+   "#3e2418",
+   "#4b3020",
+   "#573e27",
+   "#634c30",
+   "#826b43",
+   "#9f8b58",
+   "#b0a579",
+   "#c0bb9b"
+  ]
+ },
+ "warnings": []
+}
