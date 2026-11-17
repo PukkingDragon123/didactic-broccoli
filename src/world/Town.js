@@ -1916,7 +1916,7 @@ export class Town {
       const t = assetNow(archAsset(id)), mesh = t?.children.find((c) => c.isMesh);
       if (!mesh || !lists[k].length) return;
       const mat = mesh.material.clone();
-      const glow = /[?&]skyglow\b/.test(location.search) ? skylineGlow(mat.map) : null;
+      const glow = skylineGlow(mat.map);
       if (glow) Object.assign(mat, { emissive: new THREE.Color(0xffffff), emissiveMap: glow, emissiveIntensity: 0 });
       const im = new THREE.InstancedMesh(mesh.geometry, mat, lists[k].length);
       lists[k].forEach((it, i) => im.setMatrixAt(i, m4.compose(_p.set(it.x, 0, it.z), q.setFromAxisAngle(_up, it.ry), _s.set(it.sx, it.sy, 1))));

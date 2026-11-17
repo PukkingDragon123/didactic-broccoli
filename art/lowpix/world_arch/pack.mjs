@@ -120,6 +120,24 @@ for (const id of ids) {
   for (const n of meshNodes.slice(1)) { for (const p of n.getMesh().listPrimitives()) keepMesh.addPrimitive(p); n.getMesh().dispose(); n.dispose(); }
   keep.setName(id);
   await doc.transform(dedup(), join({ keepNamed: false }), prune());
+  // clean geometry: drop degenerate (zero-area) triangles, give zero / NaN normals the face normal (NaN shading
+  // poisons the environment bake and the bloom: black frames)
+  for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
+    const pos = p.getAttribute('POSITION'), nor = p.getAttribute('NORMAL'), idx = p.getIndices();
+    if (!pos || !idx) continue;
+    const P = pos.getArray(), N = nor ? nor.getArray().slice() : null, I = idx.getArray(), keep = [];
+    for (let t = 0; t < I.length; t += 3) {
+      const a = I[t] * 3, b = I[t + 1] * 3, c = I[t + 2] * 3;
+      const ux = P[b] - P[a], uy = P[b + 1] - P[a + 1], uz = P[b + 2] - P[a + 2], vx = P[c] - P[a], vy = P[c + 1] - P[a + 1], vz = P[c + 2] - P[a + 2];
+      let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      const L = Math.hypot(nx, ny, nz);
+      if (!(L > 1e-10)) continue;
+      keep.push(I[t], I[t + 1], I[t + 2]);
+      if (N) for (const v of [a, b, c]) { const l = Math.hypot(N[v], N[v + 1], N[v + 2]); if (!(l > 1e-6) || !Number.isFinite(l)) { N[v] = nx / L; N[v + 1] = ny / L; N[v + 2] = nz / L; } }
+    }
+    idx.setArray(new (I.constructor)(keep));
+    if (N) nor.setArray(N);
+  }
   let tex = [0, 0], tris = 0;
   const done = new Map();
   for (const m of root.listMaterials()) {
