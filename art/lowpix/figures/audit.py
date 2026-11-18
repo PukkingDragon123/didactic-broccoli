@@ -46,6 +46,9 @@ PART_DENSITY = (DENS * 0.75, DENS * 1.3)  # each part with >= 3 % of the figure'
 # density is lower; what you see is capped at 5.6 px/mm (lib/fig.py DENS_MAX), undersides and small hidden mechanics get less
 BLENDER_DENSITY = (4.2, 5.8)
 BLENDER_PART_DENSITY = (2.5, 5.5)
+# the faceted line (art/blender/toys/FACET.md: flat facets, no normal map) paints a 1024 px atlas: double the density
+FACET_DENSITY = (8.4, 11.6)
+FACET_PART_DENSITY = (5.0, 11.0)
 # calibrated on sources converted in the line's finish: a white untextured rice cooker 67 % flat, a good blue
 # shorthair 28 % (dark glass 39 %); the speckled nautilus the owner flagged 23.5 % noise, good models 1.5-6 %
 FLAT_MAX = 0.45                         # flat share of the subject's texels
@@ -225,10 +228,11 @@ def audit(series_list):
         tex = [p for p in parts if p["uvpx"] > 0 and p["area"] > 0]
         A = sum(p["area"] for p in tex)
         dens = (sum(p["uvpx"] for p in tex) / A) ** 0.5 if A else 0
-        plo, phi = BLENDER_PART_DENSITY if meta.get("blender") else PART_DENSITY
+        fac = bool(man.get(key, {}).get("facet"))
+        plo, phi = (FACET_PART_DENSITY if fac else BLENDER_PART_DENSITY) if meta.get("blender") else PART_DENSITY
         off = [f"{p['name']} {(p['uvpx'] / p['area']) ** 0.5:.1f}" for p in tex if p["area"] >= 0.03 * A
                and not plo <= (p["uvpx"] / p["area"]) ** 0.5 <= phi]
-        dlo, dhi = BLENDER_DENSITY if meta.get("blender") else DENSITY
+        dlo, dhi = (FACET_DENSITY if fac else BLENDER_DENSITY) if meta.get("blender") else DENSITY
         if not dlo <= dens <= dhi:
             bad.append(f"px/mm {dens:.2f} outside {dlo:.1f}-{dhi:.1f}")
         if off:
