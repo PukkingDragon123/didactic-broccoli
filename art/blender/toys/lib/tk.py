@@ -104,7 +104,7 @@ def decimate(ob, tris):
     the target is the faceted budget instead (about facet.RATIO of it, symmetric, slivers merged)."""
     import facet
     if facet.ON:
-        return facet.reduce(ob, facet.budget(tris), cap=tris)
+        return facet.reduce(ob, facet.budget(tris), cap=facet.cap(tris))
     n = tri_count(ob)
     if n <= tris:
         return ob

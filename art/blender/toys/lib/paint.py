@@ -190,7 +190,7 @@ class Painter:
             s.shift(s.m['rim'] < 0, -1)
         if wear:
             near = s.mask & (s.m['hard'] < 2.6) & (s.idx >= 0)
-            who, d = s.dabs(near, size=0.55, spacing=1.5, seed=seed)
+            who, d = s.dabs(near, size=0.42, spacing=1.2, seed=seed)  # (the 2048 atlas: finer chips)
             rng = np.random.default_rng(seed)
             keep = rng.random(max(int(who.max()) + 1, 1)) < wear
             chip = (who >= 0) & keep[np.maximum(who, 0)]

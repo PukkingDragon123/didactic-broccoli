@@ -72,9 +72,9 @@ for id in "${ids[@]}"; do
   rm -f art/blender/toys/_build/$S/$id.glb
   slot tools/blender.sh art/blender/toys/$S/$id.py "${flags[@]}" 2>&1 | grep -E "^\[|Error|Traceback|error" || true
   [ -f art/blender/toys/_build/$S/$id.glb ] || { echo "no glb for $S/$id"; exit 1; }
-  # facet (FACET.md): a simple figure should not land far under ~700 tris; one that did is built again with its
+  # facet (FACET.md): a simple figure should not land far under ~1400 tris; one that did is built again with its
   # collapse starting proportionally higher (GG_FACET_RATIO), once
-  r=$(python3 -c "import json;m=json.load(open('art/blender/toys/_build/$S/$id.meta.json'));t=m.get('tris',0);print(round(min(0.95,0.6*720/t),3) if m.get('facet') and 0<t<600 and 'GG_FACET_RATIO' not in __import__('os').environ else '')")
+  r=$(python3 -c "import json;m=json.load(open('art/blender/toys/_build/$S/$id.meta.json'));t=m.get('tris',0);print(round(min(2.5,1.25*1450/t),3) if m.get('facet') and 0<t<1150 and 'GG_FACET_RATIO' not in __import__('os').environ else '')")
   if [ -n "$r" ]; then
     echo "[$S/$id] facet: too few tris, building again with GG_FACET_RATIO=$r"
     rm -f art/blender/toys/_build/$S/$id.glb

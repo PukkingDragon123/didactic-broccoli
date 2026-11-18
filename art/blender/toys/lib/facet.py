@@ -3,8 +3,9 @@
 A figure built in facet mode keeps the same script (cages, sculpts, rig, gimmick clips) but its game mesh and paint
 change at the lib level:
 - geometry: every game mesh is a deliberate low-poly (symmetric collapse to about RATIO of the old budget, coplanar
-  slivers merged), flat shaded (one normal per face: crisp facets), 300-700 tris a figure (900 for a complex secret);
-- texture: one 1024 px colour atlas (double the old density), no normal map (it would smooth the facets away); the
+  slivers merged), flat shaded (one normal per face: crisp facets), ~1400-1600 tris a simple figure, ~2000-2200 a
+  detailed one, up to 2500 for a secret (the owner's higher-resolution pass: smoother silhouettes, more detail);
+- texture: one 2048 px colour atlas (four times the old density), finer brushwork, no normal map (it would smooth the facets away); the
   sculpt's AO and cavity are baked in, and the paint is laid as hand-painted brushwork: strokes that follow the form
   (Painter.fill brush presets), a lit rim / shadow line along the facet edges, soft rubbed wear on hard corners,
   hand-brushed ink faces (lib/face.py) and stippled blush.
@@ -21,12 +22,14 @@ import numpy as np
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
           'ekiin', 'kabuki', 'meijin', 'sento', 'otenki', 'yomise',
           'sabaku', 'minato', 'datesha', 'janru', 'kasabuki', 'kanikan'}            # the series built in the faceted style (add a series here to convert it on rebuild)
-RATIO = float(os.environ.get('GG_FACET_RATIO', 0.6))  # where a piece's collapse starts, from its old (smooth) budget
-TOL = float(os.environ.get('GG_FACET_TOL', 1.5))      # ...and keeps more triangles while 95 % of its form is not within this
-TOL_MAX = float(os.environ.get('GG_FACET_TOL_MAX', 0.9))  # (mm) or any point is further than this: a feature (ear, toe, tooth, fold) was erased
-SIZE = 1024                     # atlas size (px): double the smooth line's 512
-TRIS = (700, 1100, 1200)        # a simple figure lands near 700-800, a detailed one up to 1100, a secret up to 1200
-RIM_PX = 1.15                   # facet-edge rim width (texels)
+RATIO = float(os.environ.get('GG_FACET_RATIO', 1.25))  # where a piece's collapse starts, from its old (smooth) budget
+GROW = 1.6                      # ...and how far past that start it may grow to keep a feature (the cap)
+TOL = float(os.environ.get('GG_FACET_TOL', 1.0))      # ...and keeps more triangles while 95 % of its form is not within this
+TOL_MAX = float(os.environ.get('GG_FACET_TOL_MAX', 0.6))  # (mm) or any point is further than this: a feature (ear, toe, tooth, fold) was erased
+SIZE = 2048                     # atlas size (px): four times the smooth line's 512 (the owner's higher-resolution pass)
+TRIS = (1500, 2200, 2500)       # a simple figure lands near 1400-1600, a detailed one up to 2200, a secret up to 2500
+RIM_PX = 1.7                    # facet-edge rim width (texels: a finer line at 2048)
+FINE = 0.72                     # brush strokes (PRESETS L / W) scaled to the finer atlas
 RIM_DEG = 16.0                  # an edge turning more than this is a facet edge that gets a rim
 ON = False                      # set by Fig() for the figure being built (tk.decimate reads it)
 
@@ -195,6 +198,11 @@ def budget(tris):
     if tris <= SMALL or KEEP:
         return int(tris)
     return max(int(round(tris * RATIO)), SMALL)
+
+
+def cap(tris):
+    """How many triangles a piece the smooth line gave `tris` may grow to while its features need them."""
+    return max(int(tris), int(round(budget(tris) * GROW)))
 
 
 KEEP = False
@@ -441,6 +449,7 @@ def strokes(pos, nrm, tone, step, flow='around', L=2.8, W=0.8, cover=1.3, p=0.2,
     gl = np.zeros(k, np.int8)
     if k < 20:
         return tone, gl
+    L, W = L * FINE, W * FINE  # (the 2048 atlas: finer brushwork)
     rng = np.random.default_rng(seed)
     area = k / max(ppmm, 1e-6) ** 2
     ns = int(cover * area / (L * W * 0.62))
