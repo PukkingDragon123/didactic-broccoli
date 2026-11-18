@@ -142,7 +142,7 @@
 "mats":{"robe":"matte","leg_r":"matte","leg_l":"matte","arm_r":"matte","arm_l":"matte","head":"matte","water":"gloss"},
 "pts":{},
 "blender":true,"facet":1},
-"kabuki/nekomata":{"size":[24.29,44.79,24.79],"min":[-12.15,0,-14.23],"tris":674,"atlas":[1024,1024],"kb":317,"clips":{"gimmick":"gimmick"},
+"kabuki/nekomata":{"size":[24.11,44.71,24.79],"min":[-11.97,0,-14.23],"tris":850,"atlas":[1024,1024],"kb":341,"clips":{"gimmick":"gimmick"},
 "mats":{"robe":"matte","arms":"matte","head":"matte","ear_l":"matte","ear_r":"matte","tail_l":"matte","tail_r":"matte"},
 "pts":{},
 "blender":true,"facet":1},

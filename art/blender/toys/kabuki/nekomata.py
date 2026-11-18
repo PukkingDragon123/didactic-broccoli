@@ -22,6 +22,8 @@ from fig import Fig  # noqa: E402
 
 tk.reset()
 F = Fig('kabuki', 'nekomata')
+import facet  # noqa: E402
+facet.RATIO = 0.8  # (it stands on small feet: a gentler collapse keeps its footprint)
 
 HC = (0, -0.8, 33.0)           # the head's centre
 NECK = (0, 0.0, 26.2)
