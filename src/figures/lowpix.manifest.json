@@ -350,7 +350,7 @@
 "mats":{"body":"matte","tongue":"gloss"},
 "pts":{},
 "blender":true,"facet":1},
-"punipuni/onibi":{"size":[18.78,19.26,13.62],"min":[-9.26,0,-7.51],"tris":720,"atlas":[1024,1024],"kb":102,"clips":{"gimmick":"gimmick"},
+"punipuni/onibi":{"size":[18.78,19.26,13.62],"min":[-9.26,0,-7.51],"tris":718,"atlas":[1024,1024],"kb":117,"clips":{"gimmick":"gimmick"},
 "mats":{"pin":"gloss","body":"matte","flames":"matte"},
 "pts":{"chain":"pt_chain"},
 "blender":true,"facet":1},

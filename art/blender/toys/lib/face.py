@@ -38,6 +38,8 @@ CATCH = '#f3ede0'      # the off-white dab of a catchlight
 HATCH = '#d9505c'      # cheek hatching
 ANGER = '#cf3b2e'      # an anger mark
 FRECKLE = '#9a5a3c'
+BOLD = 1.55            # the kit's graphic ink: confident, heavier strokes ...
+STEADY = 0.45          # ... and a steadier hand (less wobble): bold simple shapes, nothing fussy or realistic
 
 
 def _hex(h):
@@ -114,7 +116,8 @@ class Face:
         uu, vv = du * cr + dv * sr, -du * sr + dv * cr
         th = np.arctan2(vv / ry, uu / rx)
         ph = s.rng.random(3) * 2 * math.pi
-        rr = 1 + 0.09 * np.sin(2 * th + ph[0]) + 0.06 * np.sin(3 * th + ph[1]) + 0.04 * np.sin(5 * th + ph[2])
+        lk = STEADY if V3 else 1.0  # (the kit: a cleaner, bolder blob)
+        rr = 1 + lk * (0.09 * np.sin(2 * th + ph[0]) + 0.06 * np.sin(3 * th + ph[1]) + 0.04 * np.sin(5 * th + ph[2]))
         BIG = 14  # (texels: a smaller mark is solid ink with only its edge wobble; dry brush and pooling smear it)
         if getattr(s.P, 'facet', False) and 2 * max(rx, ry) / s.px >= BIG:  # a big brush dab: dry ragged rim, ink pooled low
             d = np.sqrt((uu / rx) ** 2 + (vv / ry) ** 2) / rr
@@ -130,6 +133,8 @@ class Face:
         """One brush / marker stroke along a polyline (u, v) in mm: pressure taper at both ends, a wobble across it,
         a little weight variation along it."""
         pts = np.asarray(pts, float)
+        if V3:
+            weight, wobble = weight * BOLD, wobble * STEADY
         seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
         L = seg.sum()
         if L < 1e-6:
@@ -364,19 +369,19 @@ class Face:
         elif shape == 'lid':
             pts = [R(rx * math.cos(a), min(ry * math.sin(a), 0.2 * ry)) for a in t]
         else:
-            pts = s._lumpy(u, v, rx, ry, 0.05, rot)
+            pts = s._lumpy(u, v, rx, ry, 0.03, rot)
         m = s.fill(pts, s.ink)
         big = w / s.px >= 12
         if shape == 'lid' or (lid if lid is not None else big):  # the upper lid: a brush stroke over the top
             k0, k1 = (0.98, 0.12) if shape != 'lid' else (1.06, -0.06)
             arc = [R(rx * 1.12 * math.cos(a) + sx * 0.1 * rx, (0.2 * ry if shape == 'lid' else ry * k0 * math.sin(a)) + 0.06 * ry)
                    for a in np.linspace(math.pi * k1 if sx < 0 else math.pi * (1 - k1), math.pi * (1 - k1) if sx < 0 else math.pi * k1, 7)]
-            s.stroke(arc, max(0.12, 0.17 * w), taper=(0.6, 0.95) if sx > 0 else (0.95, 0.6), wobble=0.01)
+            s.stroke(arc, max(0.12, 0.2 * w), taper=(0.6, 0.95) if sx > 0 else (0.95, 0.6), wobble=0.01)
         for i in range(lashes):  # little lash ticks at the outer corner
             a = math.radians(25 + 22 * i)
             x0, y0 = sx * rx * math.cos(a) * 1.02, ry * math.sin(a) * 1.02
             s.stroke([R(x0, y0), R(x0 + sx * 0.4 * ry * math.cos(a + 0.5), y0 + 0.45 * ry * math.sin(a + 0.5) + 0.12 * ry)],
-                     max(0.08, 0.1 * w), taper=(1, 0.3), wobble=0.005)
+                     max(0.1, 0.14 * w), taper=(1, 0.2), wobble=0.003)
         if lower:  # a lower-lid mark
             s.stroke([R(rx * 0.95 * math.cos(a), -ry * 1.35 * abs(math.sin(a)) - 0.1 * ry) for a in np.linspace(math.pi * 1.2, math.pi * 1.8, 5)],
                      max(0.07, 0.08 * w), taper=(0.6, 0.6), wobble=0.01)
@@ -445,9 +450,9 @@ class Face:
             if V3 and kk in ('dot', 'big', 'side', 'teary') and not (style is None and size * 2 / s.px < 5):
                 kk = style or 'oval'
             if kk in ('oval', 'bean', 'halfmoon', 'lid'):
-                f = 1.0
+                f = 1.15  # (the kit: bold, graphic eye shapes)
                 du = 0.25 * size * look if kind == 'side' else 0.0
-                s.eye(u + du, v, 2 * size * k * (1 + r.normal() * 0.05), 2 * size * shape * k * (1 + r.normal() * 0.06), kk, sx=sx,
+                s.eye(u + du, v, 2 * f * size * k * (1 + r.normal() * 0.05), 2 * f * size * shape * k * (1 + r.normal() * 0.06), kk, sx=sx,
                       catch=False, lid=lid, lashes=lashes, lower=lower, rot=r.normal() * 5 + sx * tilt)
                 if kind == 'teary' and sx == look:
                     s.drop(u + 0.3 * size, v - size * 3.4, r=size * 0.9)
