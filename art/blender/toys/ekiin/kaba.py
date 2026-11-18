@@ -22,6 +22,8 @@ from fig import Fig  # noqa: E402
 
 tk.reset()
 F = Fig('ekiin', 'kaba')
+import facet  # noqa: E402
+facet.RATIO = 0.5  # (its arms fold against the case: at the default level the facets clip there)
 os.environ.setdefault('UV_MARGIN', '0.001')   # (a tighter pack: this big figure needs every texel)
 
 BZ = 3.0                     # the platform's top

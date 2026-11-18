@@ -141,7 +141,7 @@ def paint(P, pt):
     ax = (0.2, -1, 0.1)
     fc = face.Face(P, c=(-0.6, -6.2, 31.4), axis=ax, where=hd, seed=1101)
     fc.eyes('sleepy', spread=5.0, size=0.6, dy=0.4)
-    fc.brows('raised', spread=5.4, dy=1.6, w=1.8, weight=0.4, only='l')
+    fc.brows('raised', spread=5.4, dy=1.6, w=1.8, weight=0.4, only=-1)
     fm = face.Face(P, c=(-0.6, -7.4, 28.8), axis=ax, where=hd, seed=1102)
     fm.mouth('upturn', w=2.0, dy=-0.2, weight=0.3)
     P.lines(['jacket', 'band', 'pants', 'shirt'], step=1)

@@ -21,6 +21,7 @@ In facet mode (lib/facet.py) the same calls paint real brushwork: uneven ink den
 dry-brush edge, ink pooled darker where a stroke lands and lifts (and low in a dot), and blush dabbed on as stipple.
 """
 import math
+import os
 
 import numpy as np
 
@@ -29,6 +30,14 @@ WHITE = '#f6f2ea'      # teeth
 SHADE = '#cfc8be'      # the shade under the top lip
 INSIDE = '#6e2a2c'     # a mouth's dark inside
 TONGUE = '#e47c7c'
+# the richer hand-drawn kit (faces_v3: inked eye shapes with a dabbed catchlight, lid strokes, lash ticks, tapered
+# brows, hatched or dabbed cheeks, corner ticks, open mouths, sweat / anger marks, freckles): GG_FACE_V3=1 turns it
+# on for a build; it becomes the default once the owner approves the sheet (art/blender/toys/faces.py)
+V3 = os.environ.get('GG_FACE_V3', '0') == '1'
+CATCH = '#f3ede0'      # the off-white dab of a catchlight
+HATCH = '#d9505c'      # cheek hatching
+ANGER = '#cf3b2e'      # an anger mark
+FRECKLE = '#9a5a3c'
 
 
 def _hex(h):
@@ -308,14 +317,94 @@ class Face:
             return s.patch(du, dy, 0.7 * k, 2.6 * k, col or '#f4efe4')
         raise ValueError(kind)
 
+    # ------------------------------------------------------------------ the v3 hand-drawn kit
+    def _lumpy(s, u, v, rx, ry, lumpy=0.1, rot=0.0, n=20):
+        ph = s.rng.random(2) * 6.283
+        c, sn = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+        pts = []
+        for a in np.linspace(0, 2 * math.pi, n, endpoint=False):
+            r = 1 + lumpy * (0.6 * math.sin(2 * a + ph[0]) + 0.4 * math.sin(3 * a + ph[1]))
+            x, y = rx * r * math.cos(a), ry * r * math.sin(a)
+            pts.append((u + x * c - y * sn, v + x * sn + y * c))
+        return pts
+
+    def dab(s, u, v, r, col, lumpy=0.22):
+        """A small hand-dabbed spot of paint (a catchlight, a freckle): an uneven blob, never a perfect circle."""
+        r = max(r, 0.9 * s.px)
+        return s.fill(s._lumpy(u, v, r * (1 + 0.15 * s.rng.normal()), r * 0.82, lumpy, rot=s.rng.normal() * 40, n=12), col)
+
+    def eye(s, u, v, w, h, shape='oval', sx=1, catch=True, lid=None, lashes=0, lower=False, rot=0.0):
+        """One hand-inked eye centred (u, v), w x h mm, sx the side (-1 the figure's right, as the viewer sees it on
+        the left). shape: oval, bean (pinched on the inner side), halfmoon (a dome, flat underneath), lid (sleepy: the
+        top cut off by a heavy lid line). catch: a dabbed off-white catchlight up and to the outside; lid: an upper-lid
+        stroke over the eye (default on big eyes); lashes: little ticks at the outer corner; lower: a lower-lid mark."""
+        rx, ry = w / 2, h / 2
+        c, sn = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+        R = lambda x, y: (u + x * c - y * sn, v + x * sn + y * c)  # noqa: E731
+        t = np.linspace(0, 2 * math.pi, 26, endpoint=False)
+        if shape == 'bean':
+            pts = [R(rx * math.cos(a), ry * math.sin(a) * (1 - 0.32 * max(0.0, -math.cos(a) * sx) ** 2)) for a in t]
+        elif shape == 'halfmoon':
+            top = [R(rx * math.cos(a), -0.15 * ry + 1.15 * ry * math.sin(a)) for a in np.linspace(0, math.pi, 14)]
+            bot = [R(rx * math.cos(a), -0.15 * ry - 0.18 * ry * math.sin(a)) for a in np.linspace(math.pi, 2 * math.pi, 8)[1:-1]]
+            pts = top + bot
+        elif shape == 'lid':
+            pts = [R(rx * math.cos(a), min(ry * math.sin(a), 0.2 * ry)) for a in t]
+        else:
+            pts = s._lumpy(u, v, rx, ry, 0.05, rot)
+        m = s.fill(pts, s.ink)
+        big = w / s.px >= 12
+        if shape == 'lid' or (lid if lid is not None else big):  # the upper lid: a brush stroke over the top
+            k0, k1 = (0.98, 0.12) if shape != 'lid' else (1.06, -0.06)
+            arc = [R(rx * 1.12 * math.cos(a) + sx * 0.1 * rx, (0.2 * ry if shape == 'lid' else ry * k0 * math.sin(a)) + 0.06 * ry)
+                   for a in np.linspace(math.pi * k1 if sx < 0 else math.pi * (1 - k1), math.pi * (1 - k1) if sx < 0 else math.pi * k1, 7)]
+            s.stroke(arc, max(0.12, 0.17 * w), taper=(0.6, 0.95) if sx > 0 else (0.95, 0.6), wobble=0.01)
+        for i in range(lashes):  # little lash ticks at the outer corner
+            a = math.radians(25 + 22 * i)
+            x0, y0 = sx * rx * math.cos(a) * 1.02, ry * math.sin(a) * 1.02
+            s.stroke([R(x0, y0), R(x0 + sx * 0.4 * ry * math.cos(a + 0.5), y0 + 0.45 * ry * math.sin(a + 0.5) + 0.12 * ry)],
+                     max(0.08, 0.1 * w), taper=(1, 0.3), wobble=0.005)
+        if lower:  # a lower-lid mark
+            s.stroke([R(rx * 0.95 * math.cos(a), -ry * 1.35 * abs(math.sin(a)) - 0.1 * ry) for a in np.linspace(math.pi * 1.2, math.pi * 1.8, 5)],
+                     max(0.07, 0.08 * w), taper=(0.6, 0.6), wobble=0.01)
+        light_ink = float(_hex(s.ink) @ np.array([0.3, 0.59, 0.11])) > 0.5
+        if catch and min(w, h) / s.px >= 4.5 and shape != 'lid' and not light_ink:  # a dabbed catchlight, up and outside
+            s.dab(*R(sx * 0.2 * rx, 0.32 * ry), max(0.3 * min(rx, ry), 1.0 * s.px), CATCH)
+        return m
+
+    def anger(s, du, dy, size=1.0, col=ANGER):
+        """An anger mark: four short curved strokes popping out of a corner (the manga vein cross)."""
+        k = size
+        for qx, qy in ((1, 1), (-1, 1), (-1, -1), (1, -1)):
+            s.stroke([(du + qx * 0.25 * k, dy + qy * 0.75 * k), (du + qx * 0.32 * k, dy + qy * 0.32 * k), (du + qx * 0.75 * k, dy + qy * 0.25 * k)],
+                     0.16 * k + 0.04, taper=(0.7, 0.7), wobble=0.01, col=col)
+
+    def freckles(s, du, dy, spread=4.0, n=3, size=0.12, col=FRECKLE):
+        """A few freckle dabs on each cheek."""
+        for sx in (-1, 1):
+            for i in range(n):
+                s.dab(du + sx * (spread / 2 + (i - (n - 1) / 2) * 0.45 + s.rng.normal() * 0.08), dy + (0.2 if i % 2 else -0.15) + s.rng.normal() * 0.06, size, col)
+
+    def sweat(s, du, dy, r=0.5):
+        return s.drop(du, dy, r)
+
+    def ticks(s, x0, x1, dy, w, weight):
+        """Small corner ticks at both ends of a mouth line (a dimple-like flick)."""
+        for x, sgn in ((x0, -1), (x1, 1)):
+            s.stroke([(x + sgn * 0.02 * w, dy + 0.1 * w), (x - sgn * 0.03 * w, dy - 0.06 * w)], weight * 0.55, taper=(0.9, 0.4), wobble=0.005)
+
     # ------------------------------------------------------------------ the face
     EYES = ('dot', 'big', 'tiny', 'happy', 'squeeze', 'sleepy', 'dizzy', 'swirl', 'wink', 'side', 'teary', 'shock')
 
-    def eyes(s, kind='dot', spread=4.0, size=0.5, dy=0.0, uneven=0.2, shape=1.35, tilt=0.0, look=1, close=None, only=None):
+    def eyes(s, kind='dot', spread=4.0, size=0.5, dy=0.0, uneven=0.2, shape=1.35, tilt=0.0, look=1, close=None, only=None,
+             catch=True, lid=None, lashes=0, lower=False, style=None):
         """Two eyes `spread` mm apart at height dy, in the quick-marker hand. kind:
         dot (two solid dots, never a matched pair), big, tiny, happy (^ ^ arcs), squeeze (> <), sleepy (- - lines),
         dizzy (x x), swirl (@ @), wink (a dot and a ^), side (dots glancing to `look` side), teary (dots, a drop
-        under one), shock (two small rings). size: a dot's half-width (mm)."""
+        under one), shock (two small rings). size: a dot's half-width (mm).
+        v3 kit (V3): oval, bean, halfmoon, lid (sleepy lid) are inked eye shapes with a dabbed catchlight (catch), an
+        upper-lid stroke on big eyes (lid), lash ticks (lashes = n) and lower-lid marks (lower); with V3 on, dot / big /
+        side / teary eyes are drawn as ovals (style: the shape to use instead)."""
         if close:
             kind = 'squeeze'
         r = s.rng
@@ -327,7 +416,16 @@ class Face:
             kk = kind
             if kind == 'wink':
                 kk = 'dot' if sx < 0 else 'happy'
-            if kk in ('dot', 'big', 'tiny', 'side', 'teary'):
+            if V3 and kk in ('dot', 'big', 'side', 'teary') and not (style is None and size * 2 / s.px < 5):
+                kk = style or 'oval'
+            if kk in ('oval', 'bean', 'halfmoon', 'lid'):
+                f = 1.0
+                du = 0.25 * size * look if kind == 'side' else 0.0
+                s.eye(u + du, v, 2 * size * k * (1 + r.normal() * 0.05), 2 * size * shape * k * (1 + r.normal() * 0.06), kk, sx=sx,
+                      catch=catch, lid=lid, lashes=lashes, lower=lower, rot=r.normal() * 6 + sx * tilt * 0.3)
+                if kind == 'teary' and sx == look:
+                    s.drop(u + 0.3 * size, v - size * 3.4, r=size * 0.9)
+            elif kk in ('dot', 'big', 'tiny', 'side', 'teary'):
                 f = {'big': 1.7, 'tiny': 0.62}.get(kk, 1.0)
                 du = 0.32 * size * look if kk == 'side' else 0.0
                 s.dot(u + du, v, size * f * k * (1 + r.normal() * 0.05), size * f * shape * k * (1 + r.normal() * 0.06), rot=r.normal() * 9)
@@ -357,11 +455,29 @@ class Face:
             u = sx * spread / 2
             inner, outer = {'angry': (-0.45, 0.25), 'worried': (0.4, -0.3), 'flat': (0, 0),
                             'raised': ((0.5, 0.45) if sx > 0 else (0, 0))}.get(kind, (0, 0))
+            if V3:  # a tapered brush stroke, a slight arch, heavy at the inner end
+                pts = [(u - sx * w / 2, dy + inner * w / 2), (u, dy + (inner + outer) * w / 4 + 0.08 * w), (u + sx * w / 2, dy + outer * w / 2)]
+                s.stroke(pts, weight * 1.15, taper=(0.95, 0.25), wobble=0.02)
+                continue
             s.stroke([(u - sx * w / 2, dy + inner * w / 2), (u + sx * w / 2, dy + outer * w / 2)], weight, wobble=0.03)
 
     MOUTHS = ('upturn', 'line', 'dash', 'frown', 'grin', 'gritted', 'shout', 'tongue', 'smug', 'wobble', 'pout', 'drool', 'w', 'o')
 
-    def mouth(s, kind='upturn', w=4.0, dy=-1.5, weight=0.42, h=None, side=1, teeth=3, slant=10.0, du=0.0):
+    def mouth(s, kind='upturn', w=4.0, dy=-1.5, weight=0.42, h=None, side=1, teeth=3, slant=10.0, du=0.0, ticks=None):
+        if V3 and (ticks or (ticks is None and kind in ('line', 'upturn', 'smug') and w / s.px >= 22)):
+            s.ticks(du - w / 2, du + w / 2, dy, w, weight)
+        if kind == 'open':  # an open mouth: dark inside, a tongue at the bottom, two top teeth, the ink rim
+            h = h or w * 0.6
+            rim = [(du + w / 2 * math.cos(a), dy - h * 0.5 * math.sin(a) * (1.0 if math.sin(a) > 0 else 0.25)) for a in np.linspace(0, 2 * math.pi, 22)]
+            s.fill(rim, INSIDE)
+            s.fill([(du + w * 0.3 * math.cos(a), dy - h * 0.48 + h * 0.2 * math.sin(a)) for a in np.linspace(0, math.pi, 10)] +
+                   [(du - w * 0.3, dy - h * 0.5)], TONGUE)
+            for x in (-0.13, 0.13):
+                s.fill([(du + (x - 0.1) * w, dy + 0.02 * h), (du + (x + 0.1) * w, dy + 0.02 * h), (du + (x + 0.08) * w, dy - 0.2 * h), (du + (x - 0.08) * w, dy - 0.2 * h)], WHITE)
+            return s.stroke(rim, weight, taper=(1, 1), wobble=0.02)
+        return s._mouth(kind, w, dy, weight, h, side, teeth, slant, du)
+
+    def _mouth(s, kind='upturn', w=4.0, dy=-1.5, weight=0.42, h=None, side=1, teeth=3, slant=10.0, du=0.0):
         """ONE mouth stroke centred (du, dy), w mm wide.
         upturn: a flat line, the `side` end flicking up (+1 the viewer's right); line: flat, a hint of a smile;
         dash: a short slanted dash (slant degrees); grin: a big open grin, an arched top lip, a U below and `teeth`
@@ -452,7 +568,16 @@ class Face:
             return s.stroke(ring, weight * 0.9, taper=(1, 1), wobble=0.02)
         raise ValueError(kind)
 
-    def blush(s, spread, dy, rx=1.6, ry=0.9, col='#f08a86', base=None):
+    def blush(s, spread, dy, rx=1.6, ry=0.9, col='#f08a86', base=None, style=None):
+        if style == 'hatch':  # three or four short diagonal hatch strokes on each cheek
+            for sx in (-1, 1):
+                for i in range(4):
+                    x = sx * spread / 2 + (i - 1.5) * rx * 0.42 + s.rng.normal() * 0.04
+                    s.stroke([(x - 0.18 * rx, dy - 0.45 * ry), (x + 0.22 * rx, dy + 0.5 * ry)], max(0.1, 0.11 * rx), taper=(0.8, 0.5), wobble=0.01, col=HATCH)
+            return
+        return s._blush(spread, dy, rx, ry, col, base)
+
+    def _blush(s, spread, dy, rx=1.6, ry=0.9, col='#f08a86', base=None):
         """Two airbrushed blush patches (cheeks), as two stepped tones of `col` over the paint (pixel art: no blur)."""
         c = _hex(col)
         if getattr(s.P, 'facet', False):  # hand-dabbed stipple: dense in the middle, scattered dabs at the edge

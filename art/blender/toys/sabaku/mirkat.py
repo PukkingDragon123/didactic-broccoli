@@ -196,7 +196,7 @@ def paint(P, pt):
         pf = face.Face(P, c=(sx * 1.6, -3.4, 31.0), axis=(sx * 0.3, -1, 0.1), where=hd, seed=941 + sx, ink='#3a2c24')
         pf.dot(0, 0, 0.95, 0.75, rot=sx * 20)
     fc = face.Face(P, c=(0, -4.4, 31.0), axis=(0, -1, 0.1), where=hd, seed=943, ink='#efe4c8')
-    fc.eyes('dot', spread=3.2, size=0.32, dy=0.0, only='l')
+    fc.eyes('dot', spread=3.2, size=0.32, dy=0.0, only=-1)
     fm = face.Face(P, c=(0, -5.4, 29.0), axis=(0, -1, -0.1), where=hd, seed=944)
     fm.mouth('dash', w=1.0, dy=-0.2, weight=0.28)
     # the spirit: a ghostly lapis scarab with gold wing cases

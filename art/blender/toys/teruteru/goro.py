@@ -19,6 +19,8 @@ import tt  # noqa: E402
 import kit  # noqa: E402  (lib/kit.py: the keychain screw eye)
 
 F = bk.start('teruteru', 'goro')
+import facet  # noqa: E402
+facet.RATIO = 0.5  # (the bolt swings out past the cloud's corner: at the default level the facets clip there)
 
 RINGS = [(0.0, 6.2, 0.0), (0.8, 9.0, 0.0), (3.0, 11.4, 0.0), (7.2, 12.6, 0.0), (11.4, 12.0, 0.0), (15.2, 9.7, 0.0),
          (17.9, 7.1, 0.0), (19.2, 6.9, 0.0), (21.2, 7.9, 0.0), (24.0, 7.7, 0.0), (26.8, 6.1, 0.0), (29.2, 4.2, 0.0),

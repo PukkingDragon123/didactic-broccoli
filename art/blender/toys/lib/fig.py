@@ -23,7 +23,7 @@ import tk
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
-BUILD = os.path.join(ROOT, 'art', 'blender', 'toys', '_build')
+BUILD = os.environ.get('GG_BUILD_ROOT') or os.path.join(ROOT, 'art', 'blender', 'toys', '_build')  # (GG_BUILD_ROOT: an isolated build, e.g. faces.py)
 DENS_MAX = 5.6  # px per mm: the line's texel density (a figure that packs finer is brought down to it)
 
 
@@ -495,6 +495,14 @@ class Fig:
             p.low.data.materials.clear()
             p.low.data.materials.append(m)
         s.material = m
+        shot = os.environ.get('GG_FACE_SHOT')
+        if shot:  # (art/blender/toys/faces.py: a front 3/4 look at the painted figure, then stop)
+            lows = [p.low for p in s.parts]
+            V = np.concatenate([tk.verts(o) for o in lows])
+            c, D = (V.min(0) + V.max(0)) / 2, float(np.ptp(V, axis=0).max()) * 1.35
+            c[2] += 0.12 * float(np.ptp(V[:, 2]))
+            tk.preview(shot, lows, cam=((c[0] + 0.4 * D, c[1] - D, c[2] + 0.28 * D), tuple(c)), res=(360, 360), samples=24)
+            raise SystemExit(0)
 
     def drop_highs(s):
         for p in s.parts:

@@ -32,9 +32,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   not cartoon. Budgets: toy ≤1.5k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
 - **Toy faces are hand-drawn, with some detail** (gacha toys only; the in-game cats, dogs and other animals keep
   their own realistic look). Base: the owner's sketch docs/ref/faces_owner.png (uneven ink eyes, one brush-stroke
-  mouth, wobbly marker line weight). Newer direction: "better eyes and face, more detail, but hand-drawn": inked
-  eye shapes (bean, oval, half-moon, sleepy lid) with a small hand-dabbed uneven catchlight, a lid stroke on bigger
-  eyes, tapered brush brows, hatch or dabbed blush, inner-mouth colour, tongue and teeth detail, animal noses. Always
+  mouth, wobbly marker line weight). Newer direction: "better eyes and face, more detail, but hand-drawn": solid-ink
+  eye shapes (bean, oval, half-moon, sleepy lid) with NO catchlight or white inside the eye, a lid stroke on bigger
+  eyes, many cool face types with attitude, a unique species-specific face per animal, tapered brush brows, hatch or dabbed blush, inner-mouth colour, tongue and teeth detail, animal noses. Always
   ink and brush, slightly uneven between the two eyes; never glossy rendered "AI" eyes, irises with gradients,
   modelled eyeballs or vector-perfect shapes. Painted onto the texture with lib/face.py.
 - **Toy style = real Japanese capsule-toy (gashapon) mascot figures** (owner's reference boards): original pun and

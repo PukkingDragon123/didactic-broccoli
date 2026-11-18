@@ -107,8 +107,11 @@ def card(s):
     c = s.get('card') or {}
     bg, acc, txt, acc2 = hexc(c.get('bg')), hexc(c.get('accent'), RED), hexc(c.get('text'), INK), hexc(c.get('accent2'), 0x2a5aa8)
     lum = lambda v: (0.3 * ((v >> 16) & 255) + 0.59 * ((v >> 8) & 255) + 0.11 * (v & 255)) / 255
-    if lum(txt) > 0.45: txt = mixc(bg, 0, 0.55) if lum(bg) < 0.45 else INK  # the ink must read on the light print
-    if lum(bg) < 0.45: bg = light(acc, 0.7)   # dark themes print their band in a light tint of the accent
+    dark = lum(bg) < 0.45  # a night theme (yomise's navy, obakebaito's plum): the logo field and the line-up band print dark
+    ltxt = txt if lum(txt) > 0.45 else 0xf2efe6  # (the light ink on a dark field)
+    if lum(txt) > 0.45: txt = mixc(bg, 0, 0.55) if dark else INK  # the ink must read on the light print
+    field, dots = (bg, mixc(bg, 0xffffff, 0.14)) if dark else (light(acc, 0.78), light(acc, 0.6))
+    band, btxt = (bg, ltxt) if dark else (light(bg, 0.25), txt)
     items = s['items']; n = len(items)
     rendered = [i for i in items if not i['secret'] and toy(s['id'], i['id']) is not None]
     # the hero: the rarest figure that stands up well (a tall render), so the card leads with something that reads
@@ -117,16 +120,16 @@ def card(s):
     # --- the stage: a real photo, bright as print; a colour field with a dot screen down the left for the logo
     ref, f = BACK.get(s['id'], ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
     P.photo(photo_ref(ref), 0, 0, W, 360, f=f, sat=1.05, con=1.04, bright=1.06)
-    P.poly([(0, 0), (330, 0), (250, 360), (0, 360)], light(acc, 0.78))
+    P.poly([(0, 0), (330, 0), (250, 360), (0, 360)], field)
     for yy in range(8, 360, 14):
-        for xx in range(8, 330 - int(yy * 80 / 360) - 6, 14): P.ellipse(xx, yy, 4, 4, light(acc, 0.6))
+        for xx in range(8, 330 - int(yy * 80 / 360) - 6, 14): P.ellipse(xx, yy, 4, 4, dots)
     # --- logo + subtitle
     title = s['jp']
     parts = [title] if len(title) <= 6 else [title[:len(title) // 2 + len(title) % 2], title[len(title) // 2 + len(title) % 2:]]
-    for k, t in enumerate(parts): logo(P, t, 22, 70 + k * 74, 62 if len(parts) > 1 else 70, acc, txt, 290)
+    for k, t in enumerate(parts): logo(P, t, 22, 70 + k * 74, 62 if len(parts) > 1 else 70, acc, mixc(bg, 0, 0.5) if dark else txt, 290)
     yb = 70 + len(parts) * 74 - 22
-    P.rect(22, yb, 210, 30, txt); P.text((s.get('card') or {}).get('kind') or 'マスコットフィギュア', 'kakub', 16, 127, yb + 15, 0xffffff)
-    P.text(s['name'].upper(), 'bebas', 18, 24, yb + 50, txt, anchor='lm', track=1)
+    P.rect(22, yb, 210, 30, acc2 if dark else txt); P.text((s.get('card') or {}).get('kind') or 'マスコットフィギュア', 'kakub', 16, 127, yb + 15, 0xffffff)
+    P.text(s['name'].upper(), 'bebas', 18, 24, yb + 50, ltxt if dark else txt, anchor='lm', track=1)
     # --- price and count badges, the age box
     P.rect(22, 268, 74, 56, 0xffd23f); P.rect(22, 268, 74, 56, txt, line=2)
     P.text('%d' % s['price'], 'bebas', 34, 52, 292, RED, anchor='mm'); P.text('円', 'kakub', 14, 84, 300, RED)
@@ -135,11 +138,11 @@ def card(s):
     P.rect(172, 268, 70, 56, 0xffffff); P.rect(172, 268, 70, 56, txt, line=2)
     P.text('対象年齢', 'kakub', 11, 207, 284, txt); P.text('15才以上', 'kakub', 14, 207, 306, txt)
     # --- line-up band with each figure's name
-    P.rect(0, 360, W, 112, light(bg, 0.25)); P.rect(0, 360, W, 4, acc)
+    P.rect(0, 360, W, 112, band); P.rect(0, 360, W, 4, acc)
     cw = (W - 20) / max(1, n)
     for k, it in enumerate(items):
         nm = 'シークレット' if it['secret'] else (it.get('jp') or it['name'])
-        P.text(nm, 'kakub', 10 if len(nm) <= 8 else 8.5, 10 + cw * (k + 0.5), 460, txt, maxw=cw - 6)
+        P.text(nm, 'kakub', 10 if len(nm) <= 8 else 8.5, 10 + cw * (k + 0.5), 460, btxt, maxw=cw - 6)
     # --- the small print: warning block, maker, code, barcode
     P.rect(0, 472, W, 88, 0xffffff); P.rect(0, 472, W, 2, txt)
     P.rect(10, 480, 300, 72, 0xffe14a); P.rect(10, 480, 300, 72, txt, line=1.5)
@@ -162,7 +165,7 @@ def card(s):
         if t is None: continue
         k_ = min(80 / t.height, (cw - 8) / t.width); t = t.resize((max(1, int(t.width * k_)), max(1, int(t.height * k_))), Image.LANCZOS)
         if it['secret']:
-            a = t.getchannel('A'); t = Image.new('RGBA', t.size, rgb(txt) + (0,)); t.putalpha(a)
+            a = t.getchannel('A'); t = Image.new('RGBA', t.size, rgb(mixc(btxt, band, 0.25) if dark else txt) + (0,)); t.putalpha(a)
         im.alpha_composite(t, (int(10 + cw * (k + 0.5) - t.width / 2), 448 - t.height))
     return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.35, fade=0.03, seed=abs(hash(s['id'])) % 997).convert('RGB')
 

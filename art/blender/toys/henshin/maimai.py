@@ -21,6 +21,8 @@ from mathutils import Vector  # noqa: E402
 ARGS = sys.argv[1:]
 tk.reset()
 F = Fig('henshin', 'maimai')
+import facet  # noqa: E402
+facet.RATIO = 0.5  # (its head retracts into the foot: at the default level the facets clip there)
 
 ROLL = (0, 6.0, 19.0)   # the roll's centre (axis x)
 RO, RI = 13.6, 8.2      # tape outer radius, core radius
