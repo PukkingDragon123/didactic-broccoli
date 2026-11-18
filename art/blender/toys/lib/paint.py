@@ -239,3 +239,21 @@ def _lighter(col, k):
 
 def mix(a, b, t):
     return np.asarray(a) * (1 - t) + np.asarray(b) * t
+
+
+# ------------------------------------------------------------------ paint fields (from agent C's kaden/_cx/cx.py)
+def polar(X, Z, c):
+    """Radius and angle (degrees, 0 = +x, counter-clockwise seen from the front) of points about c = (x, z)."""
+    dx, dz = X - c[0], Z - c[1]
+    return np.hypot(dx, dz), np.degrees(np.arctan2(dz, -dx)) % 360
+
+
+def stripes(u, period, width):
+    """Mask of bands across u: |u mod period| < width (centred)."""
+    f = np.mod(u, period) - period / 2
+    return np.abs(f) < width / 2
+
+
+def chevrons(X, Z, x0, z0, period, w, spread=0.45):
+    """Printed chevrons (rows of V marks, feathers, a happi's pattern) on a front: a mask."""
+    return stripes(Z - z0 + np.abs(X - x0) * spread, period, w)

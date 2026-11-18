@@ -23,10 +23,16 @@ BACK = {  # series -> photo backdrop (focus x, y, zoom)
     'teruteru': ('local:rain_window.jpg', (0.5, 0.5, 1.1)), 'kaden': ('oi:a15e83bbe9f87d4f@test', (0.4, 0.5, 1.15)),
     'otsukai': ('oi:34f24d2374c50c25@test', (0.5, 0.42, 1.2)), 'nakanohito': ('local:skyline.jpg', (0.72, 0.72, 1.6)),
     'tsuppari': ('commons:Nighttime_on_the_shotengai_(238464174).jpg', (0.55, 0.45, 1.2)), 'obakebaito': ('commons:Obake_Yashiki.jpg', (0.3, 0.36, 1.45)),
+    'ekiin': ('commons:Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg', (0.62, 0.55, 1.15)),
+    'kabuki': ('commons:Misono-za_Nagoya_March_2013_(2).JPG', (0.55, 0.42, 1.55)),
+    'meijin': ('commons:Shimizuike_Park_playground.jpg', (0.55, 0.6, 1.25)),
 }
 COMMONS = {  # photos from Wikimedia Commons (credited in CREDITS.md / public/CREDITS.txt), fetched once into the cache
     'commons:Nighttime_on_the_shotengai_(238464174).jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Nighttime_on_the_shotengai_%28238464174%29.jpg/1280px-Nighttime_on_the_shotengai_%28238464174%29.jpg',
     'commons:Obake_Yashiki.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Obake_Yashiki.jpg/960px-Obake_Yashiki.jpg',
+    'commons:Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg/1280px-Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg',
+    'commons:Misono-za_Nagoya_March_2013_(2).JPG': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Misono-za_Nagoya_March_2013_%282%29.JPG/960px-Misono-za_Nagoya_March_2013_%282%29.JPG',
+    'commons:Shimizuike_Park_playground.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Combination_playground_equipment_at_Shimizuike_Park%28north_east%29_in_Takatsuki.jpg/1280px-Combination_playground_equipment_at_Shimizuike_Park%28north_east%29_in_Takatsuki.jpg',
 }
 
 
@@ -36,10 +42,19 @@ def photo_ref(ref):
         return ref
     p = os.path.join(CACHE, 'commons', ref.split(':', 1)[1])
     if not os.path.exists(p):
+        import urllib.error
         import urllib.request
         os.makedirs(os.path.dirname(p), exist_ok=True)
         req = urllib.request.Request(COMMONS[ref], headers={'User-Agent': 'GachaGarageAssetBot/1.0 (generic client)'})
-        data = urllib.request.urlopen(req, timeout=120).read()  # (read first: a failed fetch leaves no empty file)
+        import time
+        for i in range(8):  # (Wikimedia rate-limits bursts: back off and retry)
+            try:
+                data = urllib.request.urlopen(req, timeout=120).read()  # (read first: a failed fetch leaves no empty file)
+                break
+            except urllib.error.HTTPError as e:
+                if e.code != 429 or i == 7:
+                    raise
+                time.sleep(30 + 15 * i)
         with open(p, 'wb') as f:
             f.write(data)
     return 'file:' + p

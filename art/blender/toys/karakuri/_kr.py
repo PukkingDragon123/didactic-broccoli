@@ -7,10 +7,16 @@ whalebone spring coiled inside, gold-leaf bands, and the brass wind key out of i
     kr.wind(R.key, 0, 12, 2)       # the key winds two turns, frames 0-12 (quarter-turn keys, linear)
     kr.unwind(R.key, 12, 90, 2)    # ... and unwinds as the trick runs
     kr.paint_base(P, pt, sh)
+
+Rig helpers for the automata's arms (a karakuri arm is two rigid links on cams, so the clips are solved here):
+    E = kr.ik2(S, H, a, b, pole)                      # elbow of a two-link arm from shoulder S reaching H
+    kr.arm(R.key, 'uarm', 'farm', S, E0, H0, E, H, f) # key both links so the hand moves from H0 (rest) to H
+    q = kr.qframe(d0, n0, d1, n1)                      # the turn taking a part's (direction, face normal) to new ones
 """
 import math
 
 import numpy as np
+from mathutils import Matrix, Vector
 
 import tk
 import ak
@@ -106,3 +112,64 @@ def paint_base(P, pt, sh):
     back = P.on[:, :, 1] > 0.7
     P.fill(b & back & (np.abs(X) < 6.0) & (np.abs(Z - 3.0) < 2.2) & (P.cav > 0.55), pt.ramp('#e8dcc0', 4), tone=sh, base=0.1)  # the whalebone spring
     P.fill('brass', BRASS, tone=sh * 1.4, base=0.08)
+
+
+# ------------------------------------------------------------------ rig helpers
+def ease(t):
+    t = min(1.0, max(0.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def ik2(S, H, a, b, pole):
+    """The elbow of a two-link arm (upper a, fore b) from S reaching H, bending toward `pole`."""
+    S, H, pole = Vector(S), Vector(H), Vector(pole)
+    d = H - S
+    L = min(max(d.length, abs(a - b) + 1e-3), a + b - 1e-3)
+    dh = d.normalized()
+    ca = (a * a + L * L - b * b) / (2 * a * L)
+    p = (pole - dh * pole.dot(dh)).normalized()
+    return S + a * (ca * dh + math.sqrt(max(0.0, 1 - ca * ca)) * p)
+
+
+def qdir(r0, r1):
+    return Vector(r0).normalized().rotation_difference(Vector(r1).normalized())
+
+
+def qframe(d0, n0, d1, n1):
+    """The rotation taking direction d0 (with a face normal n0) to d1 (with n1)."""
+    def M(d, n):
+        d = Vector(d).normalized()
+        n = Vector(n)
+        n = (n - d * n.dot(d)).normalized()
+        return Matrix((d, n.cross(d), n)).transposed()
+    return (M(d1, n1) @ M(d0, n0).transposed()).to_quaternion()
+
+
+def arm(k, b1, b2, S, E0, H0, E, H, f, ease=None):
+    """Key a two-link arm (bones b1 at S, b2 at its elbow, child of b1): from rest (elbow E0, hand H0) to E, H."""
+    S, E0, H0, E, H = (Vector(v) for v in (S, E0, H0, E, H))
+    q1 = qdir(E0 - S, E - S)
+    q2 = qdir(H0 - E0, H - E)
+    k(b1, f, quat=tuple(q1), ease=ease)
+    k(b2, f, quat=tuple(q1.inverted() @ q2), ease=ease)
+
+
+# ------------------------------------------------------------------ paint helpers
+def kikko(u, v, size, w):
+    """Mask of a tortoiseshell (kikko) honeycomb's lines, hexagons `size` across, lines w wide, on plane coords u, v."""
+    s = size / math.sqrt(3)
+    q = (math.sqrt(3) / 3 * u - v / 3) / s
+    r = (2 / 3 * v) / s
+    x, z = q, r
+    y = -x - z
+    rx, ry, rz = np.round(x), np.round(y), np.round(z)
+    dx, dy, dz = np.abs(rx - x), np.abs(ry - y), np.abs(rz - z)
+    fx = (dx > dy) & (dx > dz)
+    fz = ~fx & (dz > dy)
+    rx = np.where(fx, -ry - rz, rx)
+    rz = np.where(fz, -rx - ry, rz)
+    cu = s * (math.sqrt(3) * rx + math.sqrt(3) / 2 * rz)
+    cv = s * 1.5 * rz
+    du, dv = np.abs(u - cu), np.abs(v - cv)
+    d = np.maximum(du, du / 2 + dv * math.sqrt(3) / 2)
+    return d > size / 2 - w

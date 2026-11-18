@@ -2819,6 +2819,14 @@ toys over a photograph, cropped and graded like print. Photos from Wikimedia Com
   https://commons.wikimedia.org/wiki/File:Nighttime_on_the_shotengai_(238464174).jpg (cropped, resized, colour-graded)
 - Haunted House Part-Timers card: "Obake Yashiki" by Tomomarusan, CC BY 2.5 (https://creativecommons.org/licenses/by/2.5),
   https://commons.wikimedia.org/wiki/File:Obake_Yashiki.jpg (cropped, resized, colour-graded)
+- Platform Staff card: "Shin-keisei railway Futawamukodai station platform" by LERK, CC BY 3.0
+  (https://creativecommons.org/licenses/by/3.0), https://commons.wikimedia.org/wiki/File:Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg
+  (cropped, resized, colour-graded)
+- Yōkai Kabuki card: "Misono-za Nagoya March 2013 (2)" by Gryffindor, CC0 1.0,
+  https://commons.wikimedia.org/wiki/File:Misono-za_Nagoya_March_2013_(2).JPG (cropped, resized, colour-graded)
+- Playground Champions card: "Combination playground equipment at Shimizuike Park (north east) in Takatsuki" by Barsaka2,
+  CC0 1.0, https://commons.wikimedia.org/wiki/File:Combination_playground_equipment_at_Shimizuike_Park(north_east)_in_Takatsuki.jpg
+  (cropped, resized, colour-graded)
 
 Shippori Mincho B1 by FONTDASU, SIL Open Font License 1.1 (https://openfontlicense.org), Google Fonts: the kanji on the
 Tsuppari Zoo figures' printed coats and card. Used only at bake time; the game ships the baked images, not the font.

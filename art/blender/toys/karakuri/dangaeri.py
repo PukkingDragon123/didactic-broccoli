@@ -2,7 +2,7 @@
 
 The Edo step-somersault automaton as a monkey: a little acrobat with a gofun-white face picked out in red, a red and
 gold brocade jacket, white leggings and a curling tail, standing at the top of its own black-lacquer three-step stair
-with its arms up, ready. The stair is a playset part: stand two side by side and they make one long flight.
+with its arms up, ready, facing out over the key side so its face shows; the stair falls away to its back. The stair is a playset part: stand two side by side and they make one long flight.
 Gimmick (wind-up): the key winds; it throws a back somersault down onto the middle step, another onto the bottom
 step, bows, and scampers back up as the key runs down.
 
@@ -27,7 +27,7 @@ F = bk.start('karakuri', 'dangaeri')
 b = kr.base(F, w=28.0)
 SZ = kr.SZ
 STEP = 2.8
-STEPS = [(-9.33, 3), (0.0, 2), (9.33, 1)]           # (x centre, level): the stair falls away to the right
+STEPS = [(9.33, 3), (0.0, 2), (-9.33, 1)]           # (x centre, level): the stair falls away to the left
 for x, n in STEPS:
     h = STEP * n
     o = tk.rbox('step_hi', (9.33, 14.0, h), centre=(x, 0.0, SZ + h / 2), bevel=0.4, segs=2)
@@ -38,9 +38,12 @@ for x, n in STEPS:
 kit.connector(F, 'in', (-14.0, 0.0, 0.0))
 kit.connector(F, 'out', (14.0, 0.0, 0.0))
 TOP = SZ + STEP * 3
-MX = -9.6                                            # the monkey stands here, facing -x (its back to the drop)
+MX = 9.6                                             # the monkey stands here, facing +x (its back to the drop)
+YAW = 75.0                                           # ... turned a little toward the front, so its face shows
+FV = (math.sin(math.radians(YAW)), -math.cos(math.radians(YAW)), 0.0)   # the way it faces
+FL = (math.cos(math.radians(YAW)), math.sin(math.radians(YAW)), 0.0)    # its somersault axis (its left-right)
 
-# ------------------------------------------------------------------ the acrobat (built facing -y, then turned to face -x)
+# ------------------------------------------------------------------ the acrobat (built facing -y, then turned to face +x)
 m_lo, m_hi = [], []
 LEGS = []
 for sx in (1, -1):
@@ -106,7 +109,7 @@ m_lo += [tf_lo, tl_lo]
 m_hi += tf_hi + tl_hi
 MZ = 7.0                                            # its middle (the somersault's pivot), above its feet
 from mathutils import Matrix  # noqa: E402
-M = Matrix.Translation((MX, 0.0, TOP)) @ Matrix.Rotation(math.radians(-90), 4, 'Z')    # face -x
+M = Matrix.Translation((MX, 0.0, TOP)) @ Matrix.Rotation(math.radians(YAW), 4, 'Z')    # face +x, a little to the front
 for o in m_lo + m_hi:
     tk.transform(o, M)
 
@@ -131,27 +134,27 @@ def make_rig():
         k('monkey', 0)
         kr.wind(k, 0, 12, 2)
         kr.unwind(k, 12, 110, 2)
-        # two back somersaults down the stair (+x, one step each), each a full turn about y through its middle
-        k('monkey', 14, rot=('Y', 0.0))
-        k('monkey', 18, move=(0, 0, 0.4), rot=('Y', -6))             # it gathers itself
-        for j, (f0, x0, z0) in enumerate(((20, 0.0, 0.0), (40, 9.33, -STEP))):
+        # two back somersaults down the stair (-x, one step each), each a full turn about y through its middle
+        k('monkey', 14, rot=(FL, 0.0))
+        k('monkey', 18, move=(0, 0, 0.4), rot=(FL, 6))               # it gathers itself
+        for j, (f0, x0, z0) in enumerate(((20, 0.0, 0.0), (40, -9.33, -STEP))):
             for i in range(1, 9):
                 t = i / 8
-                k('monkey', f0 + 2 * i, move=(x0 + 9.33 * t, 0, z0 - STEP * t + 6.0 * math.sin(math.pi * t)), rot=('Y', 360.0 * t),
+                k('monkey', f0 + 2 * i, move=(x0 - 9.33 * t, 0, z0 - STEP * t + 6.0 * math.sin(math.pi * t)), rot=(FL, -360.0 * t),
                   ease='LINEAR')
-            k('monkey', f0 + 18, move=(x0 + 9.33, 0, z0 - STEP), rot=('Y', 360.0))
-            k('monkey', f0 + 20, move=(x0 + 9.33, 0, z0 - STEP), rot=('Y', 360.0))
+            k('monkey', f0 + 18, move=(x0 - 9.33, 0, z0 - STEP), rot=(FL, -360.0))
+            k('monkey', f0 + 20, move=(x0 - 9.33, 0, z0 - STEP), rot=(FL, -360.0))
         # a bow at the bottom, then it scampers back up, two hops
-        k('monkey', 66, move=(18.66, 0, -2 * STEP), rot=('Y', 360.0))
-        k('monkey', 72, move=(18.66, 0, -2 * STEP), rot=[('Y', 360.0), ('Y', -24)])
-        k('monkey', 78, move=(18.66, 0, -2 * STEP), rot=('Y', 360.0))
-        k('monkey', 82, move=(15.5, 0, -2 * STEP + 5.0), rot=('Y', 360.0))
-        k('monkey', 86, move=(9.33, 0, -STEP + 3.0), rot=('Y', 360.0))
-        k('monkey', 92, move=(9.33, 0, -STEP), rot=('Y', 360.0))
-        k('monkey', 96, move=(6.2, 0, -STEP + 5.0), rot=('Y', 360.0))
-        k('monkey', 100, move=(0, 0, 3.0), rot=('Y', 360.0))
-        k('monkey', 106, move=(0, 0, 0), rot=('Y', 360.0), ease='BOUNCE')
-        k('monkey', 110, rot=('Y', 360.0))
+        k('monkey', 66, move=(-18.66, 0, -2 * STEP), rot=(FL, -360.0))
+        k('monkey', 72, move=(-18.66, 0, -2 * STEP), rot=[(FL, -360.0), (FL, 24)])
+        k('monkey', 78, move=(-18.66, 0, -2 * STEP), rot=(FL, -360.0))
+        k('monkey', 82, move=(-15.5, 0, -2 * STEP + 5.0), rot=(FL, -360.0))
+        k('monkey', 86, move=(-9.33, 0, -STEP + 3.0), rot=(FL, -360.0))
+        k('monkey', 92, move=(-9.33, 0, -STEP), rot=(FL, -360.0))
+        k('monkey', 96, move=(-6.2, 0, -STEP + 5.0), rot=(FL, -360.0))
+        k('monkey', 100, move=(0, 0, 3.0), rot=(FL, -360.0))
+        k('monkey', 106, move=(0, 0, 0), rot=(FL, -360.0), ease='BOUNCE')
+        k('monkey', 110, rot=(FL, -360.0))
         k('root', 110)
     return R
 
@@ -177,9 +180,9 @@ def paint(P):
     P.fill('skin', pt.ramp('#d88a78', 5, shift=0.05), tone=sh, base=0.05)
     P.fill('gofun', pt.ramp('#f4f0e8', 5, shift=0.03), tone=sh, base=0.25)
     import face
-    fc = face.Face(P, c=(MX - 3.4, 0.0, TOP + HC[2]), axis=(-1, 0, 0.1), where=P.region('gofun'), seed=811)
+    fc = face.Face(P, c=(MX + 3.4 * FV[0], 3.4 * FV[1], TOP + HC[2]), axis=(FV[0], FV[1], 0.1), where=P.region('gofun'), seed=811)
     fc.patch(0.0, 0.6, 2.0, 1.1, '#d8584a')                         # the red mask round its eyes, finely painted
-    fe = face.Face(P, c=(MX - 3.4, 0.0, TOP + HC[2]), axis=(-1, 0, 0.1), where=P.region('gofun'), seed=812)
+    fe = face.Face(P, c=(MX + 3.4 * FV[0], 3.4 * FV[1], TOP + HC[2]), axis=(FV[0], FV[1], 0.1), where=P.region('gofun'), seed=812)
     fe.eyes('dot', spread=1.9, size=0.3, dy=0.6)
     fe.nose('nostrils', dy=-0.6, size=0.35)
     fe.mouth('upturn', w=1.2, dy=-1.4, weight=0.22)

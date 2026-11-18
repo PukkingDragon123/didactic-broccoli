@@ -556,3 +556,82 @@ def dilate_mask(mask, px):
 def dilate(arr, mask, px):
     """Bleed the islands `px` texels into the gutters (mipmaps and seams never sample the empty background)."""
     return fill(arr, mask, dilate_mask(mask, px), iters=px)
+
+
+# ------------------------------------------------------------------ the figure script's command line (shared)
+def montage(paths, out, cols=4):
+    """Glue preview renders side by side (bpy images: no PIL inside Blender's Python); the parts are removed."""
+    ims = [bpy.data.images.load(p) for p in paths]
+    w, h = ims[0].size
+    rows = (len(ims) + cols - 1) // cols
+    big = np.ones((rows * h, cols * w, 4), np.float32)
+    for i, im in enumerate(ims):
+        a = np.empty(w * h * 4, np.float32)
+        im.pixels.foreach_get(a)
+        r, c = divmod(i, cols)
+        big[(rows - 1 - r) * h:(rows - r) * h, c * w:(c + 1) * w] = a.reshape(h, w, 4)
+    o = bpy.data.images.new('montage', cols * w, rows * h, alpha=False)
+    o.pixels.foreach_set(big.reshape(-1))
+    o.filepath_raw = out
+    o.file_format = 'PNG'
+    o.save()
+    for p in paths:
+        os.remove(p)
+    print('[montage]', out)
+
+
+def cli(F, make_rig, paint_fn, args=None, clip=None, cams=None, fold=(0, 30, 52, 68), ao_dist=6.0, roughness=0.42,
+        res=(420, 420), ao_by_bone=True, ao_also=None):
+    """The figure script's command line (the shape of agent C's cx.run, nakanohito/_suit.run, hashigo/_frog.run):
+        --preview  sculpts and game meshes from each camera (one montage png: <id>_prev.png)
+        --fold     the game meshes at the `fold` frames of the gimmick clip (<id>_fold.png)
+        --clip     report parts passing through each other during the clip (clip = {frames, skip, tol}); 0 frames to ship
+        (none)     unwrap, bake (--fast: fewer AO samples; --repaint: reuse the last bake; per-bone AO), paint, rig,
+                   gimmick points (kit.points), export (with the stand check).
+    paint_fn(P) or paint_fn(P, pt) returns P.done()."""
+    import inspect
+    import sys
+    import kit
+    args = sys.argv[1:] if args is None else args
+    OUT = os.path.join(F.out, F.id)
+    cams = cams or [((62, -70, 50), (0, 0, 22)), ((-62, 66, 44), (0, 2, 22))]
+    F.log('tris', F.tris(), {p.name: tk.tri_count(p.low) for p in F.parts})
+    if '--clip' in args:
+        from rig import check_clip
+        R = make_rig()
+        clip = clip or {}
+        res_ = check_clip(R, F.parts, clip.get('frames', range(1, 90)), skip=clip.get('skip', []), tol=clip.get('tol', 0.35))
+        for f, L_ in sorted(res_.items()):
+            print('CLIP', f, L_)
+        print('CLIP frames', len(res_))
+        sys.exit(0)
+    if '--preview' in args or '--fold' in args:
+        lows = [p.low for p in F.parts]
+        highs = [h for p in F.parts for h in p.highs]
+        paths = []
+        if '--fold' in args:
+            R = make_rig()
+            R.arm.animation_data.action = bpy.data.actions['gimmick']
+            for i, fr in enumerate(fold):
+                bpy.context.scene.frame_set(fr)
+                paths.append(OUT + f'_f{i}.png')
+                tk.preview(paths[-1], lows, cam=cams[0], res=res)
+            montage(paths, OUT + '_fold.png', cols=len(paths))
+            sys.exit(0)
+        for i, cam in enumerate(cams):
+            paths.append(OUT + f'_h{i}.png')
+            tk.preview(paths[-1], highs, cam=cam, res=res)
+        for i, cam in enumerate(cams):
+            paths.append(OUT + f'_l{i}.png')
+            tk.preview(paths[-1], lows, cam=cam, res=res)
+        montage(paths, OUT + '_prev.png', cols=len(cams) * 2)
+        sys.exit(0)
+    import paint as pt
+    F.unwrap()
+    F.bake(ao_samples=24 if '--fast' in args else 128, ao_dist=ao_dist, reuse='--repaint' in args, ao_by_bone=ao_by_bone, ao_also=ao_also)
+    P = pt.Painter(F.maps, F.region_index, F.size)
+    F.finish(paint_fn(P, pt) if len(inspect.signature(paint_fn).parameters) >= 2 else paint_fn(P), roughness=roughness)
+    F.drop_highs()
+    R = make_rig()
+    kit.points(R)
+    F.export(R)

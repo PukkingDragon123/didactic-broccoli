@@ -619,3 +619,36 @@ def preview(path, objs=None, res=(640, 480), cam=((70, -90, 60), (0, 0, 12)), sa
         o.hide_render = h
     bpy.data.objects.remove(cam_ob)
     bpy.data.objects.remove(lo)
+
+
+# ------------------------------------------------------------------ clean-up helpers (from agent C's kaden/_cx/cx.py)
+def lowdec(o, name, tris, lo=1, hi=2, region=None, sculpt=None, keep_corners=False):
+    """lowhigh + decimate in one go: (low decimated to `tris`, high)."""
+    a, b = lowhigh(o, name, lo=lo, hi=hi, sculpt=sculpt, region=region or name, keep_corners=keep_corners)
+    decimate(a, tris)
+    return a, b
+
+
+def drop_faces(ob, pred):
+    """Delete the faces whose centre / normal pass pred(C (n,3), N (n,3)): surfaces buried inside another part (they
+    would only take texels from what you see)."""
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    C = np.array([f.calc_center_median() for f in bm.faces])
+    N = np.array([f.normal for f in bm.faces])
+    kill = [f for f, k in zip(bm.faces, np.asarray(pred(C, N), bool)) if k]
+    bmesh.ops.delete(bm, geom=kill, context='FACES')
+    bm.to_mesh(ob.data)
+    bm.free()
+    ob.data.update()
+    return ob
+
+
+def flat_bottom(ob, h=0.9):
+    """Press the lowest `h` mm of a mesh flat onto the shelf (z = 0): a hem or a sole that subdivision rounded off
+    stands on its whole footprint again."""
+    V = verts(ob)
+    V[:, 2] = np.where(V[:, 2] < h, 0.0, V[:, 2])
+    set_verts(ob, V)
+    return ob

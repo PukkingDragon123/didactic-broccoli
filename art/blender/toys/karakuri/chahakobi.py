@@ -3,9 +3,10 @@
 An Edo tea-serving automaton made as a tanuki: a big head with a gofun-white face and finely painted features, a
 red brocade kimono with a gold diamond pattern over dark striped hakama, holding out a black lacquer tray with a tea
 bowl on it, its fat tail behind; it stands at the back of a black-lacquer base with a gear window in front, the
-whalebone spring behind its hatch, and a brass key in its side.
-Gimmick (wind-up): the key winds; it glides forward with its tea, stops, bows deeply, rises and glides back as the
-key unwinds.
+whalebone spring behind its hatch, and a brass key in its side; it runs on four little brass wheels that peek out
+under its hem, as the real tea-carriers do.
+Gimmick (wind-up): the key winds; it rolls forward on its wheels with its tea, stops, bows deeply, rises and rolls back
+as the key unwinds.
 
     tools/blender.sh art/blender/toys/karakuri/chahakobi.py [--preview] [--fold] [--clip] [--fast] [--repaint]
 """
@@ -29,14 +30,16 @@ SZ = kr.SZ
 DY = 4.0          # the doll stands at the back of the base; it glides forward to DY - 7
 
 # ------------------------------------------------------------------ the doll: pleated hakama, brocade kimono, the tray held out
-HK = [(SZ, DY + 0.4, 11.0, 5.2, 5.4, 2.2), (SZ + 3.0, DY + 0.3, 10.0, 4.8, 5.0, 2.2), (SZ + 6.4, DY + 0.2, 8.6, 4.2, 4.2, 2.2),
+LIFT = 1.3        # the hem rides this high over the base, on its wheels
+WR = 1.15         # wheel radius
+HK = [(SZ + LIFT, DY + 0.4, 11.0, 5.2, 5.4, 2.2), (SZ + 3.0, DY + 0.3, 10.0, 4.8, 5.0, 2.2), (SZ + 6.4, DY + 0.2, 8.6, 4.2, 4.2, 2.2),
       (SZ + 7.6, DY + 0.2, 8.4, 4.0, 4.0, 2.2)]
 
 
 def sc_hk(h):
     def f(V, N):
         a = np.arctan2(V[:, 0], -(V[:, 1] - DY))
-        return 0.3 * (np.mod(a * 10 / (2 * math.pi), 1.0) - 0.5) * tk.smoothstep(SZ + 7.0, SZ + 1.0, V[:, 2]) - 0.3 * np.exp(-((V[:, 2] - SZ - 6.9) / 0.3) ** 2)
+        return 0.3 * (np.mod(a * 10 / (2 * math.pi), 1.0) - 0.5) * tk.smoothstep(SZ + 7.0, SZ + 1.0 + LIFT, V[:, 2]) - 0.3 * np.exp(-((V[:, 2] - SZ - 6.9) / 0.3) ** 2)
     tk.push(h, f)
 
 
@@ -75,10 +78,32 @@ bowl_hi = tk.lathe('bowl_hi', [(0, 0), (0.9, 0.0), (1.0, 0.4), (1.9, 1.4), (2.0,
 tk.subsurf(bowl_hi, 1)
 tk.set_region(bowl_hi, 'bowl')
 bowl_lo = tk.lathe('bowl', [(0, 0), (1.0, 0.0), (2.0, 2.4), (1.6, 1.6), (0, 1.5)], n=8, centre=BOWL)
-TAIL = [(0, DY + 4.4, SZ + 2.0), (0.8, DY + 7.2, SZ + 2.6), (1.2, DY + 8.4, SZ + 4.6), (0.8, DY + 7.8, SZ + 6.6)]
+TAIL = [(0, DY + 4.4, SZ + 2.8), (0.8, DY + 7.2, SZ + 3.4), (1.2, DY + 8.4, SZ + 5.2), (0.8, DY + 7.8, SZ + 7.0)]
 tl_lo, tl_hi = ak.spine('tail', TAIL, [3.0, 4.2, 4.0, 2.0], [2.4, 3.4, 3.2, 1.6], n=10, up=(0, 0, 1), tris=40, region='fur',
                         cap0='round', cap1='round')
 tk.push(tl_hi[0], lambda V, N: 0.15 * np.cos(V[:, 2] * 3.0 + V[:, 0] * 2.0) ** 6)
+# the wheels: two brass axles under the hem, front and back, a spoked wheel at each end
+WHEELS = {'whf': DY - 3.7, 'whb': DY + 3.4}
+WZ = SZ + WR
+wh = {}
+for bn, wy in WHEELS.items():
+    lo_, hi_ = [], []
+    for sx in (1, -1):
+        c = (sx * 3.1, wy, WZ)
+        prof = [(0, -0.45), (WR * 0.8, -0.45), (WR, -0.3), (WR, 0.3), (WR * 0.8, 0.45), (0, 0.45)]
+        h_ = tk.lathe(bn + '_hi', prof, n=20, axis='X', centre=c)
+        tk.subsurf(h_, 1)
+
+        def spokes(V, N, c=c):
+            r = np.hypot(V[:, 1] - c[1], V[:, 2] - c[2])
+            a = np.arctan2(V[:, 2] - c[2], V[:, 1] - c[1])
+            side = np.abs(N[:, 0]) > 0.6
+            return -0.25 * side * (r < WR * 0.72) * (r > 0.3) * (np.abs(np.sin(a * 3)) > 0.35)    # six spokes, cut through
+        tk.push(h_, spokes)
+        tk.set_region(h_, 'brass')
+        hi_.append(h_)
+        lo_.append(tk.lathe(bn, [(0, -0.45), (WR, -0.35), (WR, 0.35), (0, 0.45)], n=8, axis='X', centre=c))
+    wh[bn] = (tk.join(lo_, bn), hi_)
 
 # ------------------------------------------------------------------ the head: big, as on the old dolls; a gofun-white face
 HZ = SZ + 19.2
@@ -113,6 +138,8 @@ F.part('key', b['key'][0], b['key'][1], bone='key', kind='metal')
 F.part('legs', tk.join([hk_lo, tl_lo], 'legs'), hk_hi + tl_hi, bone='doll')
 F.part('upper', tk.join([up_lo] + arms_lo + [tray_lo, bowl_lo], 'upper'), up_hi + arms_hi + [tray_hi, bowl_hi], bone='upper', kind='gloss')
 F.part('head', tk.join([hd_lo] + ears_lo, 'head'), hd_hi + ears_hi, bone='head')
+for bn, (lo_, hi_) in wh.items():
+    F.part(bn, lo_, hi_, bone=bn, kind='metal')
 
 
 def make_rig():
@@ -123,11 +150,14 @@ def make_rig():
     R.bone('doll', (0, DY, SZ), parent='root')
     R.bone('upper', (0, DY, SZ + 7.0), parent='doll')
     R.bone('head', (0, DY, SZ + 13.6), parent='upper')
+    for bn, wy in WHEELS.items():
+        R.bone(bn, (0, wy, WZ), parent='doll')
     for p in F.parts:
         R.attach(p.low, p.bone)
     k = R.key
     with R.action('gimmick'):
-        bones = ['root', 'key', 'doll', 'upper', 'head']
+        bones = ['root', 'key', 'doll', 'upper', 'head'] + list(WHEELS)
+        roll = math.degrees(7.0 / WR) / 6                 # the wheels' turn per step of the glide
         for bn in bones:
             k(bn, 0)
         kr.wind(k, 0, 12, 2)
@@ -136,7 +166,13 @@ def make_rig():
         k('doll', 14)
         for i, f in enumerate((18, 22, 26, 30, 34, 38)):
             k('doll', f, move=(0, -7.0 * (i + 1) / 6, 0), rot=('Z', 3 if i % 2 == 0 else -3), ease='LINEAR')
+            for bn in WHEELS:
+                k(bn, f, rot=('X', roll * (i + 1)), ease='LINEAR')
         k('doll', 42, move=(0, -7.0, 0))
+        for bn in WHEELS:
+            k(bn, 14)
+            k(bn, 42, rot=('X', roll * 6))
+            k(bn, 66, rot=('X', roll * 6))
         k('upper', 44)
         k('upper', 52, rot=('X', 26))
         k('head', 44)
@@ -149,6 +185,8 @@ def make_rig():
         k('doll', 66, move=(0, -7.0, 0))
         for i, f in enumerate((70, 75, 80, 85, 90, 95)):
             k('doll', f, move=(0, -7.0 + 7.0 * (i + 1) / 6, 0), rot=('Z', 3 if i % 2 == 0 else -3), ease='LINEAR')
+            for bn in WHEELS:
+                k(bn, f, rot=('X', roll * (5 - i)), ease='LINEAR')
         for bn in bones:
             if bn != 'key':
                 k(bn, 104)
@@ -191,5 +229,6 @@ def paint(P):
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('legs', 'base'), ('key', 'base'), ('upper', 'legs'), ('head', 'upper')],
+bk.run(F, make_rig, paint, skip=[('legs', 'base'), ('key', 'base'), ('upper', 'legs'), ('head', 'upper'), ('whf', 'legs'), ('whb', 'legs'),
+                                 ('whf', 'base'), ('whb', 'base')],
        cam=((62, -90, 56), (0, 0, 14)), fold=(0, 12, 42, 52), frames=104)
