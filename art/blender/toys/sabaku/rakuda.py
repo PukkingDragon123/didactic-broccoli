@@ -222,9 +222,10 @@ def paint(P, pt):
     P.tint(sc & ((np.abs(np.mod(X + Yc, 2.0) - 1.0) < 0.3) | (np.abs(np.mod(Z * 1.6, 2.0) - 1.0) < 0.3)), pt.ramp('#efe6d0', 5), sh)
     # the face: bushy-browed, eyes narrowed into the glare, his mouth open under the moustache
     hd = P.region('fur') & (Z > 33)
-    fc = face.Face(P, c=(0, -11.4, 37.4), axis=(0, -1, 0.15), where=hd | P.region('muzzle'), seed=911)
-    fc.eyes('squeeze', spread=6.0, size=0.6, dy=0.6)
-    fc.brows('raised', spread=6.4, dy=2.0, w=2.4, weight=0.55)
+    # (low on the face, facing up a little: under the hat's brim the eyes were hidden from the shelf)
+    fc = face.Face(P, c=(0, -12.2, 36.0), axis=(0, -1, 0.35), where=hd | P.region('muzzle'), seed=911)
+    fc.eyes('squeeze', spread=5.2, size=0.6, dy=0.4)
+    fc.brows('raised', spread=5.6, dy=1.7, w=2.2, weight=0.5)
     mz = face.Face(P, c=(0, -15.0, 33.4), axis=(0, -1, -0.1), where=P.region('muzzle'), seed=912)
     mz.mouth('o', w=1.6, dy=-0.2, weight=0.35)
     # the spirit: a dusky violet vulture, a paler ruff

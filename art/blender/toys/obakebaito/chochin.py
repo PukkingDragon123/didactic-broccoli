@@ -176,7 +176,7 @@ def paint(P):
     tf = face.Face(P, c=tuple(hc + fdir * 4.4), axis=tuple(fdir + (0, 0, 0.1)), where=P.region('fur_tanuki'), seed=722)
     for sx in (1, -1):
         tf.patch(sx * 1.45, 0.45, 1.05, 0.7, '#3a2a20', rot=-sx * 28)
-    te = face.Face(P, c=tuple(hc + fdir * 4.4), axis=tuple(fdir + (0, 0, 0.1)), where=P.region('fur_tanuki'), seed=723, ink='#f1e8d4')
+    te = face.Face(P, c=tuple(hc + fdir * 4.4), axis=tuple(fdir + (0, 0, 0.1)), where=P.region('fur_tanuki'), seed=723, ink='#d6ad80')  # (tan closed-eye strokes on the dark patches: never white eyes)
     te.eyes('sleepy', spread=2.8, size=0.36, dy=0.6)
     tf.nose('button', dy=-0.8, size=0.4)
     tf.mouth('o', w=0.8, dy=-1.8, weight=0.22)

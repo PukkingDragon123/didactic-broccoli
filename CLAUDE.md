@@ -16,8 +16,8 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   Haven and Sketchfab models; almost no voxel art. Never chibi, never stuck-together primitives, never cartoon.
   First-person arms are blocky but connected and flexible.
 - **Toy look = faceted low-poly, hand-painted** (owner-approved): flat-shaded chunky planes, still clearly low poly:
-  simple figures ~700–800 tris, detailed figures (fingers, beaks, props, mechanisms) up to ~1100, secrets ≤1200
-  (just a little above the approved 480–680 sample; never decimate away a detail that reads at shelf distance), one 1024 px brush-stroke atlas (no normal map), facet-edge rims, painted wear, brushwork faces. Built with the
+  simple figures ~1000–1200 tris, detailed figures (fingers, beaks, props, mechanisms) ~1500–1700, secrets ≤1900
+  (the owner's higher-resolution pass; never decimate away a detail that reads at shelf distance), one 2048 px brush-stroke atlas (no normal map), facet-edge rims, painted wear, brushwork faces. Built with the
   lib facet mode (art/blender/toys/FACET.md); every series uses it.
 - **Toys are modelled in Blender** (`tools/blender.sh script.py`, headless bpy): real subdivision / poly modelling
   with edge loops and creases, a detailed high-poly sculpt baked (normal, AO, colour) onto a clean low-poly game
@@ -29,7 +29,7 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   reference only.
 - **Low poly, stylised**: models use low triangle counts with clean, deliberate silhouettes (bevels and edge flow
   where they read, no noisy scan geometry); the hand-painted pixel-art texture carries the detail. Real proportions,
-  not cartoon. Budgets: toy ≤1.5k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
+  not cartoon. Budgets: toy ≤2k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
 - **Toy faces are hand-drawn, with some detail** (gacha toys only; the in-game cats, dogs and other animals keep
   their own realistic look). Base: the owner's sketch docs/ref/faces_owner.png (uneven ink eyes, one brush-stroke
   mouth, wobbly marker line weight). Newer direction: "better eyes and face, more detail, but hand-drawn": solid-ink

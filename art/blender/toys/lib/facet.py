@@ -126,12 +126,14 @@ def reduce(ob, tris, cap=None):
             p95, mx = _deviation(V0, ob.data)
             if os.environ.get('GG_FACET_DEBUG'):
                 print(f'[facet] {ob.name}: {n} -> {t} (cap {cap}): deviation p95 {p95:.3f} max {mx:.3f}', flush=True)
-            if (p95 <= TOL and mx <= TOL_MAX) or t >= cap or not grow:
+            if (p95 <= TOL and mx <= TOL_MAX) or not grow:
                 break
+            if t >= cap and (mx <= 4 * TOL_MAX or t >= 3 * cap):  # (past the cap only while the form is badly broken:
+                break                                              #  a crushed head or a body gone to a stem)
             old = ob.data
             ob.data = src
             bpy.data.meshes.remove(old)
-            t = min(cap, int(t * 1.3) + 2)
+            t = min(cap if t < cap else 3 * cap, int(t * 1.3) + 2)
         if src.users == 0:
             bpy.data.meshes.remove(src)
         ob.data.name = ob.name

@@ -2,21 +2,21 @@
 
 The owner's direction: "a lot more low poly and more detail" — then "still low poly, just a little higher; the
 high-detail models get more count". Every toy is a **visible low-poly**: crisp flat-shaded faces and chunky
-deliberate planes, wearing a much richer **hand-painted** 1024 px texture: brush strokes that follow the form, a lit
+deliberate planes, wearing a much richer **hand-painted** 2048 px texture: brush strokes that follow the form, a lit
 rim along the facet edges, soft rubbed wear on hard corners, hand-brushed ink faces and stippled blush. No normal map
 (it would smooth the facets away).
 
 ## The budgeting rule (polycount follows detail)
 
-- Simple figures (a pig, a snail, a teru-teru body): about **700–800 tris**.
-- Detailed figures (fingers, beaks, feathers, armour, props, multi-part mechanisms): up to about **1100**, so their
-  modelled detail survives. A series' **secret**: up to **1200**.
+- Simple figures (a pig, a snail, a teru-teru body): about **1000–1200 tris**.
+- Detailed figures (fingers, beaks, feathers, armour, props, multi-part mechanisms): about **1500–1700**, so their
+  modelled detail survives. A series' **secret**: up to **1900**.
 - **Never let decimation erase a shape detail that reads at shelf distance** (ears, toes, beaks, teeth, cloth folds,
   props). The lib enforces it: every piece's collapse starts at `RATIO` (0.6) of its smooth-line budget and keeps
   more triangles, up to that budget, while any point of the form lies further than `TOL_MAX` (0.9 mm) from the facets
   (a feature was erased). Round forms are allowed to go chunky; features are not allowed to vanish. Pieces asked for
   16 tris or fewer keep them all; `facet.keeping()` keeps a whole piece (thin moving parts).
-- A figure over 1100 (1200 for a secret) is trimmed: its bigger parts give up triangles in proportion.
+- A figure over 1700 (1900 for a secret) is trimmed: its bigger parts give up triangles in proportion.
 - A figure that still lands under 600 (a simple one with a small smooth budget) is built again by `make.sh` with its
   collapse starting proportionally higher (`GG_FACET_RATIO`), once.
 
@@ -36,9 +36,9 @@ henshin (`shots/blender_toys/facet_henshin.png`).
 | --- | --- | --- |
 | game mesh | `tk.decimate(ob, n)` to n | from `facet.budget(n)` = `RATIO` (0.6) of n, growing toward n while a feature would be erased (the budgeting rule above; pieces asked for 16 or fewer keep them), symmetric across x = 0 when the part is, coplanar slivers merged, a vertex the collapse pushed more than 0.25 mm off the form pulled back, a body's footprint kept (its floor vertices are not collapsed), vertices in a canonical order (repeatable builds, so `--repaint` works) |
 | parts never decimated | as built | reduced by `RATIO` in `F.part` |
-| the whole figure | — | trimmed under 1100 tris (1200 for a secret) once every part is in (`facet.trim`, run by `F.unwrap` and `rig.check_clip`): the bigger parts give up triangles in proportion |
+| the whole figure | — | trimmed under 1700 tris (1900 for a secret) once every part is in (`facet.trim`, run by `F.unwrap` and `rig.check_clip`): the bigger parts give up triangles in proportion |
 | shading | smooth + sharp angle | flat (one normal per face) |
-| atlas | 512, colour + normal map | 1024 (double density), colour only; no tangents exported |
+| atlas | 512, colour + normal map | 2048 (four times the density), colour only; no tangents exported |
 | bake | normal, AO, position, region, cavity | the same minus the normal map; 2 mm cage; texels whose rays missed are refilled from their 3D neighbours (no smeared streaks) |
 | metal parts | `metal` material | painted chrome on a `gloss` material (a mirror finish only flashes black and white on flat facets) |
 | in the game | — | the manifest entry carries `facet: 1`; `src/figures/lowpix.js` gives it a soft sheen (roughness ≥ 0.55, clearcoat ≤ 0.12, metalness ≤ 0.6) so glossy facets never flash white; the shine is painted |

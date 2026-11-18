@@ -165,9 +165,9 @@ def paint(P):
     # the face in white chalk: dots wide apart, one long flat mouth the rainbow comes out of
     import face
     fc = face.Face(P, c=FACE, axis=(0, -1, 0.1), where=P.region('cloth'), seed=51, ink='#efe4c8')
-    fc.eyes('happy', spread=9.0, size=0.8, dy=1.8)
+    fc.eyes('happy', spread=8.0, size=0.85, dy=7.6)  # (above the burped cloud, which covers the head's front below z 14)
     fc.mouth('pout', w=2.8, dy=-1.7, du=1.4)
-    fc.blush(13.0, -0.6, rx=2.0, ry=1.1, col='#7a5d74')
+    fc.blush(12.0, 5.6, rx=1.8, ry=1.0, col='#7a5d74')
     # the drippy rainbow lips: drips of every colour running down from its mouth
     for i, (du, L_) in enumerate(((-0.6, 2.0), (0.4, 3.1), (1.3, 1.6), (2.1, 2.6), (2.9, 1.9))):
         col = RAINBOW[(i * 2) % 7]

@@ -198,7 +198,7 @@ def paint(P, pt):
     hm.blush(8.0, -1.0, rx=1.3, ry=0.75)
     sweat(hm, [(5.2, 3.0)], r=0.45)
     # the mole's face: tiny squinting eyes under heavy brows, a gritted grin under the snout
-    mf = face.Face(P, c=(0, -9.8, 42.8), axis=(0, -1, 0.3), where=P.region('suit'), seed=11)
+    mf = face.Face(P, c=(0, -9.8, 42.8), axis=(0, -1, 0.3), where=P.region('suit'), seed=11, ink='#ece0c6')  # (pale brows on the dark suit; the eyes keep their dark pupils)
     mf.eyes('tiny', spread=9.4, size=0.7, dy=0.0)
     mf.brows('angry', spread=9.6, dy=1.7, w=2.8, weight=0.5)
     mm = face.Face(P, c=(0, -14.4, 35.0), axis=(0, -1, -0.25), where=P.region('snout'), seed=12)

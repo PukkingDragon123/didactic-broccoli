@@ -44,22 +44,24 @@ BOLD = 1.55            # the kit's graphic ink: confident, heavier strokes ...
 STEADY = 0.45          # ... and a steadier hand (less wobble): bold simple shapes, nothing fussy or realistic
 
 
-MARK = {'m': None, 'axes': []}  # every texel a Face inked (and each face's axis, weight): the face close-up (fig.py)
+MARK = []  # [axis, texels inked] per Face drawn: the face close-up's framing (fig.py face_close)
 
 
 class _Rec:
     """The Painter as a Face sees it: every flat() mark is also recorded in MARK (the face close-up's framing)."""
 
-    def __init__(s, P):
+    def __init__(s, P, rec):
         object.__setattr__(s, '_P', P)
+        object.__setattr__(s, '_rec', rec)
 
     def __getattr__(s, k):
         return getattr(s._P, k)
 
     def flat(s, m, col):
-        if MARK['m'] is None or MARK['m'].shape != m.shape:
-            MARK['m'] = np.zeros(m.shape, bool)
-        MARK['m'] |= m
+        r = s._rec
+        r[1] = m.copy() if r[1] is None else (r[1] | m)
+        if os.environ.get('GG_FACE_DEBUG'):
+            print('[face] flat', int(m.sum()), col, flush=True)
         return s._P.flat(m, col)
 
 
@@ -70,9 +72,21 @@ def _hex(h):
 
 class Face:
     def __init__(s, P, c, axis, up=(0, 0, 1), where=None, seed=1, ink=INK, facing=0.12, depth=6.0):
-        s.P, s.ink, s.rng = _Rec(P), ink, np.random.default_rng(seed)
         s.U, s.V, s.W, a = P.frame(c, axis, up)
-        MARK['axes'].append((np.asarray(a, float), np.asarray(up, float)))
+        fm = (np.einsum('ijk,k->ij', P.on, a) > facing) & P.mask
+        if where is not None:
+            fm = fm & where
+        core = fm & (np.abs(s.U) < 2.5) & (np.abs(s.V) < 2.5)
+        if not (core & (np.abs(s.W) < depth)).any() and (core & (np.abs(s.W) < 20)).any():
+            # the face's centre floats off the surface (the game mesh sits deeper than the plane the script was tuned
+            # on): slide it along the axis onto the surface, so the face is painted where it was meant to be
+            dw = float(np.median(s.W[core & (np.abs(s.W) < 20)]))
+            c = tuple(np.asarray(c, float) + np.asarray(a, float) * dw)
+            s.U, s.V, s.W, a = P.frame(c, axis, up)
+            print(f'[face] centre slid {dw:+.1f} mm onto the surface', flush=True)
+        rec = [np.asarray(a, float), None]
+        MARK.append(rec)
+        s.P, s.ink, s.rng = _Rec(P, rec), ink, np.random.default_rng(seed)
         m = (np.einsum('ijk,k->ij', P.on, a) > facing) & (np.abs(s.W) < depth) & P.mask
         s.m = m if where is None else (m & where)
         # texel size here (mm per texel), so a dot is never smaller than a couple of texels
@@ -267,6 +281,7 @@ class Face:
     def nose(s, kind='tri', du=0.0, dy=0.0, size=0.6, col=None):
         """tri (cat, rabbit: a small rounded inverted triangle), button (dog, bear: a solid oval), snout (pig: an oval
         with two nostril dots), nostrils (frog, horse: two tiny dots), beak (bird: a filled wedge), beak_open."""
+        s._used = True  # (a nose drawn first on its own face is a nose, not an eye)
         k = size
         if kind == 'tri':
             poly = [(du - k, dy + 0.45 * k), (du + k, dy + 0.5 * k), (du + 0.08 * k, dy - 0.75 * k)]
@@ -409,6 +424,16 @@ class Face:
         the left). shape: oval, bean (pinched on the inner side), halfmoon (a dome, flat underneath), lid (sleepy: the
         top cut off by a heavy lid line). catch: a dabbed off-white catchlight up and to the outside; lid: an upper-lid
         stroke over the eye (default on big eyes); lashes: little ticks at the outer corner; lower: a lower-lid mark."""
+        if shape == 'round' and float(_hex((s.sp or {}).get('iris', '#d9a43a')) @ np.array([0.3, 0.59, 0.11])) < 0.22:
+            # a near-black iris: the round eye would be a black disc (a vector-perfect circle, the pupil lost):
+            # drawn as the kit's solid-ink oval instead, a hand-inked blob a little smaller, a lid stroke when big
+            shape, w, h = 'oval', w * 0.82, h * 0.92
+            if float(_hex(s.ink) @ np.array([0.3, 0.59, 0.11])) > 0.45:  # (a light ink on dark skin: a dark bead, rimmed in that ink)
+                rx, ry = w / 2, h / 2
+                pts = s._lumpy(u, v, rx, ry, 0.03, rot)
+                m = s.fill(pts, INK)
+                s.stroke(pts + [pts[0]], max(0.1, 0.13 * w), taper=(1, 1), wobble=0.005)
+                return m
         rx, ry = w / 2, h / 2
         c, sn = math.cos(math.radians(rot)), math.sin(math.radians(rot))
         R = lambda x, y: (u + x * c - y * sn, v + x * sn + y * c)  # noqa: E731
@@ -432,6 +457,9 @@ class Face:
             return s._compound(u, v, w, h, sx, rot)
         if shape in ('bar', 'slit', 'round', 'pin', 'compound'):  # a real animal eye: a coloured iris, an ink rim, the species' pupil
             iris = (s.sp or {}).get('iris', '#d9a43a')
+            ink0 = s.ink
+            if float(_hex(s.ink) @ np.array([0.3, 0.59, 0.11])) > 0.45:  # (a light ink on dark skin: the pupil and rim stay ink-dark)
+                s.ink = INK
             m = s.fill(pts, iris)
             s.stroke(pts + [pts[0]], max(0.1, 0.16 * w), taper=(1, 1), wobble=0.005)
             if shape == 'bar':    # octopus, goat, toad: a horizontal bar
@@ -442,6 +470,7 @@ class Face:
                 s.fill(s._lumpy(u, v, rx * 0.5, ry * 0.5, 0.04, rot), s.ink)
             else:                  # pin: a small pupil (fish, frog)
                 s.fill(s._lumpy(u, v, rx * 0.3, ry * 0.3, 0.04, rot), s.ink)
+            s.ink = ink0
             return m
         m = s.fill(pts, s.ink)
         big = w / s.px >= 12
@@ -578,6 +607,8 @@ class Face:
                             s.patch(u, v - 0.1 * R_, R_ * 1.6, R_ * 1.1, (sp or {}).get('patch', '#3a2c24'), rot=-sx * 16)
                         elif feat == 'stalk':  # crab eyes on stalks
                             s.stroke([(u, v - R_ * 1.0), (u - sx * 0.1 * R_, v - R_ * 2.6)], max(0.14, size * 0.45), taper=(1, 1))
+                        elif feat == 'ring' and float(_hex((sp or {}).get('iris', '#d9a43a')) @ np.array([0.3, 0.59, 0.11])) < 0.22:
+                            pass  # (a dark bead eye is drawn as a solid ink oval: a ring round it would leave a pale 'white' gap)
                         elif feat == 'ring':  # a fish's or bird's eye ring
                             s.stroke([(u + R_ * 1.35 * math.cos(a), v + R_ * 1.35 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 14)], max(0.08, size * 0.18), taper=(1, 1))
                 du = 0.25 * size * look if kind == 'side' else 0.0
@@ -624,6 +655,7 @@ class Face:
     MOUTHS = ('upturn', 'line', 'dash', 'frown', 'grin', 'gritted', 'shout', 'tongue', 'smug', 'wobble', 'pout', 'drool', 'w', 'o')
 
     def mouth(s, kind='upturn', w=4.0, dy=-1.5, weight=0.42, h=None, side=1, teeth=3, slant=10.0, du=0.0, ticks=None):
+        s._used = True  # (a mouth's nose leather or tooth dots are never the species' eye)
         sp = s.sp
         if sp:
             if sp.get('mouth') and (kind in ('upturn', 'line', 'dash', 'smug', 'w', 'o', 'frown', 'wobble', 'pout') or sp['mouth'] in ANATOMY):
@@ -961,7 +993,7 @@ STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): 
     'crow': dict(eye='round', iris='#2a2420', around=('ring',), brows=('angry', 1.1), mouth='beakline'),
     'rooster': dict(eye='round', iris='#e08a20', around=('ring',), brows=('angry', 1.3), mouth='beakline'),
     'crane': dict(eye='round', iris='#d8b040', around=('ring',), eyek=1.0, mouth='beakline'),
-    'woodpecker': dict(eye='round', iris='#2a2420', around=('ring',), brows=('angry', 1.1), mouth='beakline'),
+    'woodpecker': dict(eye='round', iris='#8a3a22', around=('ring',), brows=('angry', 1.1), mouth='beakline', eyek=0.8),  # a smaller red-brown eye, not a black hole
     'pelican': dict(eye='pin', iris='#f0e0a0', around=('ring',), mouth='beakline'),
     'duck': dict(eye='round', iris='#3a2a20', around=('ring',), mouth='beakline'),
     'ptarmigan': dict(eye='round', iris='#2a2420', around=('ring',)),
@@ -979,7 +1011,7 @@ STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): 
     'fox': dict(eye='slit', iris='#e0a030', tilt=22, lid=True, mouth='muzzle', muzzle='#f4ead8', eyek=1.2),
     'tanuki': dict(eye='round', iris='#3a2a20', around=('patch',), mouth='muzzle', muzzle='#f0e2c4', eyek=1.1),
     'dog': dict(eye='round', iris='#5a3a20', around=('patch',), mouth='muzzle'),
-    'pug': dict(eye='round', iris='#4a3020', around=('patch',), spread=1.4, mouth='muzzle', muzzle='#3a2e28', eyek=1.5),
+    'pug': dict(eye='round', iris='#9a6430', around=('patch',), spread=1.4, mouth='muzzle', muzzle='#3a2e28', eyek=1.5),
     'wolf': dict(eye='slit', iris='#e8c040', tilt=14, brows=('angry', 1.2), mouth='muzzle', muzzle='#e8e0d0', eyek=1.1),
     'hyena': dict(eye='round', iris='#e0b030', tilt=18, brows=('angry', 1.3), mouth='muzzle', muzzle='#d8c8a0'),
     'bear': dict(eye='round', iris='#3a2418', brows=('angry', 1.4), mouth='muzzle', muzzle='#d8b890', eyek=0.9),
@@ -996,10 +1028,10 @@ STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): 
     'giraffe': dict(eye='round', iris='#3a2418', lid=True, lashes=3, mouth='muzzle', muzzle='#e8d0a8'),
     'otter': dict(eye='round', iris='#2a1e18', mouth='muzzle', muzzle='#e8dcc8', extras=('whiskers',)),
     'seal': dict(eye='round', iris='#2a1e18', spread=1.3, eyek=1.7, mouth='muzzle', muzzle='#e8e8e0', extras=('whiskers',)),
-    'monkey': dict(eye='round', iris='#5a3420', brows=('raised', 1.0), mouth='muzzle', muzzle='#e8b8a0'),
+    'monkey': dict(eye='round', iris='#7a4a28', brows=('raised', 1.0), mouth='muzzle', muzzle='#e8b8a0', eyek=1.1),
     'hippo': dict(eye='round', iris='#4a3020', around=('bulge',), spread=1.4, mouth='long', mw=1.3),
     'elephant': dict(eye='round', iris='#4a3020', lid=True, lashes=2),
-    'mole': dict(eye='pin', iris='#2a2420', spread=0.7, mouth='muzzle', muzzle='#e8b0b0', eyek=0.7),
+    'mole': dict(eye='pin', iris='#b88a5a', spread=0.7, mouth='muzzle', muzzle='#e8b0b0', eyek=0.9),  # tiny tan-ringed eyes that read on dark fur
     'hedgehog': dict(eye='round', iris='#2a1e18', mouth='muzzle', muzzle='#e8d8c0'),
     'meerkat': dict(eye='round', iris='#2a1e18', around=('patch',), mouth='muzzle', muzzle='#e8d8b8', patch='#4a3a2a'),
     'bat': dict(eye='slit', iris='#e05030', tilt=24, lid=True, mouth='smirk', extras=('fang',)),
@@ -1007,11 +1039,13 @@ STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): 
     'weasel': dict(eye='round', iris='#2a1e18', tilt=16, brows=('angry', 1.3), mouth='muzzle', muzzle='#f0e6d0'),
     'calf': dict(eye='round', iris='#3a2418', spread=1.25, uneven=0.4, mouth='muzzle', muzzle='#f0c8c0'),
     'squirrel': dict(eye='round', iris='#2a1e18', eyek=1.5, mouth='muzzle', muzzle='#f0e2c8'),
-    'pig': dict(eye='round', iris='#3a2418', spread=0.85, eyek=0.8, lid=True),
+    'pig': dict(eye='round', iris='#2a1a12', spread=0.85, eyek=1.35, lid=False, lashes=2),  # small dark eyes, pale lashes: a real pig's, never a brow line
     'isopod': dict(eye='compound', iris='#2c2832', facet='#55505e', tilt=26, spread=1.5, eyek=1.7, lid=False),  # wide-set kidney compound eyes
     'ladybird': dict(eye='round', iris='#2a2420', mouth='w'),
 })
 STYLE['dragon'] = dict(eye='slit', iris='#f2c230', tilt=16, eyek=1.2)
+SPECIES['henshin/kuwagata'] = 'beetle'
+STYLE['beetle'] = dict(eye='compound', iris='#4a3220', facet='#9a7440', tilt=10, eyek=1.5, lid=False)  # amber-brown compound eyes that read on the black head
 SPECIES.update({f'kanikan/{i}': 'crab' for i in ('iwashi', 'saba', 'konbi', 'beans', 'pine', 'caviar')})
 SPECIES.update({'janru/robo': 'hamster', 'janru/usagi': 'rabbit', 'janru/mangusu': 'mongoose', 'janru/shiba': 'dog',
                 'janru/gorira': 'gorilla', 'janru/musasabi': 'squirrel'})
@@ -1019,5 +1053,5 @@ STYLE.update({
     'hamster': dict(eye='round', iris='#2a1e18', eyek=1.1, lid=False, mouth='catnose', nose='#e8a0a8'),
     'kitten': dict(eye='slit', almond=True, iris='#b8cc48', eyek=1.25, tilt=14, lid=False, mouth='catnose', nose='#e47c86', extras=('whiskers',)),
     'mongoose': dict(eye='round', iris='#3a2418', tilt=12, brows=('angry', 1.1), mouth='muzzle', muzzle='#d8c4a0'),
-    'gorilla': dict(eye='round', iris='#3a2418', brows=('flat', 1.5), mouth='muzzle', muzzle='#6a5a52', eyek=0.9),
+    'gorilla': dict(eye='round', iris='#a0703a', brows=('flat', 1.5), mouth='muzzle', muzzle='#6a5a52', eyek=1.15),  # amber-brown: reads on the dark face
 })

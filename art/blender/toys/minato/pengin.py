@@ -169,8 +169,8 @@ def paint(P, pt):
     P.fill('handle', pt.ramp('#7a4a2a', 6, shift=0.06), tone=sh, base=0.1, brush={'preset': 'wood', 'flow': 'along', 'axis': (0.1, -1, 0.1), 'L': 5})
     # the face: proud closed-eye arcs, a pink blush
     fc = face.Face(P, c=(0, -4.2, 29.8), axis=(0, -1, 0.1), where=P.region('face') | P.region('back'), seed=981)
-    fc.eyes('happy', spread=4.6, size=0.6, dy=0.4)
-    fc.blush(5.8, -1.2, rx=1.1, ry=0.6)
+    fc.eyes('happy', spread=4.4, size=0.62, dy=-0.5)  # (on the white face, under the navy cap of the head: dark ink reads there)
+    fc.blush(5.8, -1.7, rx=1.1, ry=0.6)
     ghost(P, pt, 'spirit', '#7ec4e6', sh)
     P.lines(['jacket', 'apron', 'kerchief', 'toque'], step=1)
     P.clusters()

@@ -159,7 +159,7 @@ def paint(P):
     P.fill('string', pt.ramp('#d8343a', 5, shift=0.05), tone=free * 0.4, base=0.2)
     # the face, drawn on in pale ink on the dark fur: two big eyes, two small ones beside them, a little 'ω'
     hd = fm & (P.part == PI['body']) & (Yc < HEADC[1] - 3.0)
-    fc = face.Face(P, c=(0, HEADC[1] - 7.4, HEADC[2] + 1.6), axis=(0, -1, 0.15), where=hd, seed=211, ink='#efe6d2')
+    fc = face.Face(P, c=(0, HEADC[1] - 7.4, HEADC[2] + 1.6), axis=(0, -1, 0.15), where=hd, seed=211, ink='#e2a43c')  # (amber spider eyes: never a blank white eye)
     fc.eyes('big', spread=4.6, size=0.75, dy=0.6)
     fc.dot(-5.4, 1.6, 0.42, 0.5)
     fc.dot(5.4, 1.4, 0.4, 0.48)

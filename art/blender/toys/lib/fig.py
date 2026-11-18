@@ -333,6 +333,10 @@ class Fig:
         if reuse and os.path.exists(cache):
             z = np.load(cache, allow_pickle=True)
             s.maps = {k: z[k] for k in z.files if k not in ('regions', 'uvkey')}
+            pz = s.maps['pos']  # (cached as int16 5 um steps (float32 in older caches): see the save below)
+            s.maps['pos'] = pz / 200.0 if pz.dtype == np.int16 else pz.astype(np.float64)
+            for k in ('on', 'nrm', 'cav', 'ao'):
+                s.maps[k] = s.maps[k].astype(np.float32)
             s.regions = list(z['regions'])
             s.region_index = {nm: i for i, nm in enumerate(s.regions)}
             s.log('reused the bake', cache)
@@ -435,7 +439,13 @@ class Fig:
         on = s.maps['on']
         s.maps['on'] = on / np.maximum(np.linalg.norm(on, axis=2), 1e-6)[:, :, None]
         s.region_index = {nm: i for i, nm in enumerate(s.regions)}
-        np.savez_compressed(cache, regions=np.array(s.regions), uvkey=np.array(uvkey), **s.maps)
+        # (the cache at 2048 is big: the maps are rounded to what the cache keeps, float16 normals / AO / cavity and
+        # positions to 5 um, before anything is painted, so a --repaint from the cache paints exactly the same)
+        for k in ('on', 'nrm', 'cav', 'ao'):
+            s.maps[k] = s.maps[k].astype(np.float16).astype(np.float32)
+        s.maps['pos'] = np.round(s.maps['pos'] * 200.0) / 200.0  # (positions to 5 um: int16 in the cache)
+        small = {k: (v.astype(np.float16) if k in ('on', 'nrm', 'cav', 'ao') else np.round(v * 200.0).astype(np.int16) if k == 'pos' else v) for k, v in s.maps.items()}
+        np.savez_compressed(cache, regions=np.array(s.regions), uvkey=np.array(uvkey), **small)
         s._facet_maps()
 
     def _facet_maps(s):
@@ -619,21 +629,24 @@ class Fig:
         """A head-on close-up of the painted face (the face audit sheet, faces_audit.py): framed on every texel
         lib/face.py inked, seen along the faces' axis."""
         import face
-        m = face.MARK['m']
-        if m is None or not m.any() or not face.MARK['axes']:
+        recs = [(a, m & s.maps['mask']) for a, m in face.MARK if m is not None and (m & s.maps['mask']).any()]
+        if not recs:
             s.log('face close-up: no face painted')
             return
-        P = s.maps['pos'][m & s.maps['mask']]
-        a = np.mean([ax for ax, _ in face.MARK['axes']], axis=0)
-        a /= max(1e-6, np.linalg.norm(a))
+        a0 = max(recs, key=lambda r: r[1].sum())[0]  # the main face; the marks facing about the same way go with it
+        m = np.zeros_like(recs[0][1])
+        for a, mm in recs:
+            if float(a @ a0) > 0.6:
+                m |= mm
+        P = s.maps['pos'][m]
+        a = a0 / max(1e-6, np.linalg.norm(a0))
         up = np.array([0.0, 0.0, 1.0]) if abs(a[2]) < 0.8 else np.array([0.0, 1.0, 0.0])
         u = np.cross(up, a)
         u /= np.linalg.norm(u)
         v = np.cross(a, u)
-        lo, hi = np.percentile(P, 2, axis=0), np.percentile(P, 98, axis=0)
-        c = (lo + hi) / 2
+        c = (np.percentile(P, 1, axis=0) + np.percentile(P, 99, axis=0)) / 2
         ext = max(float(np.ptp(P @ u)), float(np.ptp(P @ v)))
-        r = max(3.5, 0.62 * ext + 1.2)
+        r = max(3.0, 0.72 * ext + 1.0)
         D = r / math.sin(math.atan(18 / 60))
         cam = c + a * D + v * 0.08 * D
         lows = [p.low for p in s.parts]
