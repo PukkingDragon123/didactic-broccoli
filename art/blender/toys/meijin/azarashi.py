@@ -23,7 +23,7 @@ F = Fig('meijin', 'azarashi')
 
 HC = (0, -7.6, 15.6)            # the head's centre (raised, looking ahead)
 SH = (-7.4, -4.0, 9.2)          # the slapping flipper's shoulder
-CARD_EDGE = (-9.0, -19.0, 0.0)  # the rival card's hinge edge (it flips over this)
+CARD_EDGE = (-2.4, -19.0, 0.0)  # the rival card's hinge edge (it flips over this)
 
 # ------------------------------------------------------------------ the seal: a plump body on its belly, the tail flippers
 body = tk.loft('body', [{'c': (0, -5.4, 9.6), 'w': 13.0, 'ht': 6.0, 'hb': 5.6, 'e': 2.2},
@@ -105,9 +105,9 @@ def make_rig():
             k(b, 0)
         # the wind-up... SLAP
         k('slap', 2)
-        k('slap', 10, rot=('X', 22))
-        k('slap', 14, rot=('X', -36), ease='LINEAR')
-        k('slap', 22, rot=('X', -36))
+        k('slap', 10, rot=('X', -22))
+        k('slap', 14, rot=('X', 78), ease='LINEAR')
+        k('slap', 22, rot=('X', 78))
         k('slap', 30)
         k('body', 12)
         k('body', 14, scale=(1.04, 0.98, 0.94))

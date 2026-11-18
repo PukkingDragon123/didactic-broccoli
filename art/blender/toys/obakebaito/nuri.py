@@ -122,12 +122,12 @@ def make_rig():
             k(b, 0)
         # two heaves: the wall lurches forward at you and rocks back; the shover follows it, the leaner nearly falls over
         for f0, deg in ((4, 11.0), (24, 14.0)):
-            k('rab1', f0)
-            k('rab1', f0 + 5, move=(0, -1.4, 0), rot=('X', 12), ease='BACK')
+            k('rab1', f0 + 1)
+            k('rab1', f0 + 6, move=(0, -0.4, 0), rot=('X', 6))
             k('wall', f0 + 1)
             k('wall', f0 + 6, rot=('X', deg), ease='BACK')
-            k('wall', f0 + 12, ease='BOUNCE')
-            k('rab1', f0 + 12, ease='BACK')
+            k('wall', f0 + 12)
+            k('rab1', f0 + 9)
             k('rab2', f0 + 2)
             k('rab2', f0 + 7, rot=('X', -9), ease='BACK')
             k('rab2', f0 + 13, ease='BOUNCE')
