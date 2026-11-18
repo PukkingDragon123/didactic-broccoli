@@ -30,14 +30,13 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - **Low poly, stylised**: models use low triangle counts with clean, deliberate silhouettes (bevels and edge flow
   where they read, no noisy scan geometry); the hand-painted pixel-art texture carries the detail. Real proportions,
   not cartoon. Budgets: toy ≤1.5k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
-- **Toy faces are as simple as possible and hand-drawn** (gacha toys only; the in-game cats, dogs and other animals
-  keep their own realistic look). The owner's own sketch is
-  docs/ref/faces_owner.png: two small solid ink dots for eyes (slightly uneven, never perfectly round or matched), one
-  brush-stroke mouth (a flat line with a little upturn at one end, a short slanted dash, or a big grin with a few
-  vertical tooth strokes), wobbly and imperfect line weight, like a quick marker drawing. Cute comes from placement
-  and spacing (eyes wide apart or tiny and close, mouth small or one big grin), not from detail. No iris, pupil,
-  whites, highlights, lashes, sculpted lids or glossy "AI" eyes; no smooth vector-perfect shapes. Painted onto the
-  texture, not modelled.
+- **Toy faces are hand-drawn, with some detail** (gacha toys only; the in-game cats, dogs and other animals keep
+  their own realistic look). Base: the owner's sketch docs/ref/faces_owner.png (uneven ink eyes, one brush-stroke
+  mouth, wobbly marker line weight). Newer direction: "better eyes and face, more detail, but hand-drawn": inked
+  eye shapes (bean, oval, half-moon, sleepy lid) with a small hand-dabbed uneven catchlight, a lid stroke on bigger
+  eyes, tapered brush brows, hatch or dabbed blush, inner-mouth colour, tongue and teeth detail, animal noses. Always
+  ink and brush, slightly uneven between the two eyes; never glossy rendered "AI" eyes, irises with gradients,
+  modelled eyeballs or vector-perfect shapes. Painted onto the texture with lib/face.py.
 - **Toy style = real Japanese capsule-toy (gashapon) mascot figures** (owner's reference boards): original pun and
   fusion concepts (animal × food or object, little creatures with a job or a pose, transforming toys), chunky
   readable silhouettes, clean factory PVC paint with soft airbrushed blush and simple painted faces (bead eyes), about

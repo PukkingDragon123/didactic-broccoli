@@ -8,15 +8,17 @@ rim along the facet edges, soft rubbed wear on hard corners, hand-brushed ink fa
 
 ## The budgeting rule (polycount follows detail)
 
-- Simple figures (a pig, a snail, a teru-teru body): about **550–650 tris**.
-- Detailed figures (fingers, beaks, feathers, armour, props, multi-part mechanisms): up to about **900**, so their
-  modelled detail survives. A series' **secret**: up to **1000**.
+- Simple figures (a pig, a snail, a teru-teru body): about **700–800 tris**.
+- Detailed figures (fingers, beaks, feathers, armour, props, multi-part mechanisms): up to about **1100**, so their
+  modelled detail survives. A series' **secret**: up to **1200**.
 - **Never let decimation erase a shape detail that reads at shelf distance** (ears, toes, beaks, teeth, cloth folds,
-  props). The lib enforces it: every piece's collapse starts at `RATIO` (0.5) of its smooth-line budget and keeps
+  props). The lib enforces it: every piece's collapse starts at `RATIO` (0.6) of its smooth-line budget and keeps
   more triangles, up to that budget, while any point of the form lies further than `TOL_MAX` (0.9 mm) from the facets
   (a feature was erased). Round forms are allowed to go chunky; features are not allowed to vanish. Pieces asked for
   16 tris or fewer keep them all; `facet.keeping()` keeps a whole piece (thin moving parts).
-- A figure over 900 (1000 for a secret) is trimmed: its bigger parts give up triangles in proportion.
+- A figure over 1100 (1200 for a secret) is trimmed: its bigger parts give up triangles in proportion.
+- A figure that still lands under 600 (a simple one with a small smooth budget) is built again by `make.sh` with its
+  collapse starting proportionally higher (`GG_FACET_RATIO`), once.
 
 It is a lib-level mode (`lib/facet.py`): a figure script written for the smooth line converts by rebuilding. Sample:
 henshin (`shots/blender_toys/facet_henshin.png`).
@@ -32,9 +34,9 @@ henshin (`shots/blender_toys/facet_henshin.png`).
 
 | step | smooth line | facet mode |
 | --- | --- | --- |
-| game mesh | `tk.decimate(ob, n)` to n | from `facet.budget(n)` = `RATIO` (0.5) of n, growing toward n while a feature would be erased (the budgeting rule above; pieces asked for 16 or fewer keep them), symmetric across x = 0 when the part is, coplanar slivers merged, a vertex the collapse pushed more than 0.25 mm off the form pulled back, a body's footprint kept (its floor vertices are not collapsed), vertices in a canonical order (repeatable builds, so `--repaint` works) |
+| game mesh | `tk.decimate(ob, n)` to n | from `facet.budget(n)` = `RATIO` (0.6) of n, growing toward n while a feature would be erased (the budgeting rule above; pieces asked for 16 or fewer keep them), symmetric across x = 0 when the part is, coplanar slivers merged, a vertex the collapse pushed more than 0.25 mm off the form pulled back, a body's footprint kept (its floor vertices are not collapsed), vertices in a canonical order (repeatable builds, so `--repaint` works) |
 | parts never decimated | as built | reduced by `RATIO` in `F.part` |
-| the whole figure | — | trimmed under 900 tris (1000 for a secret) once every part is in (`facet.trim`, run by `F.unwrap` and `rig.check_clip`): the bigger parts give up triangles in proportion |
+| the whole figure | — | trimmed under 1100 tris (1200 for a secret) once every part is in (`facet.trim`, run by `F.unwrap` and `rig.check_clip`): the bigger parts give up triangles in proportion |
 | shading | smooth + sharp angle | flat (one normal per face) |
 | atlas | 512, colour + normal map | 1024 (double density), colour only; no tangents exported |
 | bake | normal, AO, position, region, cavity | the same minus the normal map; 2 mm cage; texels whose rays missed are refilled from their 3D neighbours (no smeared streaks) |
