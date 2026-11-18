@@ -137,6 +137,121 @@ class Face:
         s.fill(poly, col)
         s.stroke(poly, weight, taper=(0.9, 0.9), wobble=0.02)
 
+
+    # ------------------------------------------------------------------ animal features (the same marker hand)
+    def nose(s, kind='tri', du=0.0, dy=0.0, size=0.6, col=None):
+        """tri (cat, rabbit: a small rounded inverted triangle), button (dog, bear: a solid oval), snout (pig: an oval
+        with two nostril dots), nostrils (frog, horse: two tiny dots), beak (bird: a filled wedge), beak_open."""
+        k = size
+        if kind == 'tri':
+            poly = [(du - k, dy + 0.45 * k), (du + k, dy + 0.5 * k), (du + 0.08 * k, dy - 0.75 * k)]
+            s.fill(poly, col or INK)
+            return s.stroke(poly + [poly[0]], 0.3 * k, taper=(1, 1), wobble=0.02, col=col)
+        if kind == 'button':
+            return s.dot(du, dy, k * 0.95, k * 0.7, rot=s.rng.normal() * 6)
+        if kind == 'snout':
+            ring = [(du + 1.5 * k * math.cos(a), dy + 1.05 * k * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 16)]
+            s.fill(ring, col or '#f2a0a8')
+            s.stroke(ring, 0.32 * k, taper=(1, 1), wobble=0.02)
+            s.dot(du - 0.55 * k, dy, 0.24 * k, 0.4 * k)
+            return s.dot(du + 0.55 * k, dy, 0.22 * k, 0.38 * k)
+        if kind == 'nostrils':
+            s.dot(du - 0.6 * k, dy, 0.16 * k, 0.2 * k)
+            return s.dot(du + 0.6 * k, dy + 0.04 * k, 0.15 * k, 0.19 * k)
+        if kind in ('beak', 'beak_open'):
+            top = [(du - 1.1 * k, dy + 0.35 * k), (du + 1.1 * k, dy + 0.35 * k), (du, dy - 1.0 * k)]
+            if kind == 'beak_open':
+                top = [(du - 1.1 * k, dy + 0.35 * k), (du + 1.1 * k, dy + 0.35 * k), (du, dy - 0.45 * k)]
+                low = [(du - 0.75 * k, dy - 0.55 * k), (du + 0.75 * k, dy - 0.55 * k), (du, dy - 1.35 * k)]
+                s.fill([(du - 0.8 * k, dy - 0.2 * k), (du + 0.8 * k, dy - 0.2 * k), (du, dy - 1.1 * k)], INSIDE)
+                s.fill(low, col or '#f0a830')
+                s.stroke(low + [low[0]], 0.28 * k, taper=(1, 1), wobble=0.02)
+            s.fill(top, col or '#f0a830')
+            return s.stroke(top + [top[0]], 0.3 * k, taper=(1, 1), wobble=0.02)
+        raise ValueError(kind)
+
+    def patch(s, du, dy, rx, ry, col, rot=0.0, lumpy=0.12):
+        """A painted patch (a muzzle, panda eye patches, a tanuki mask, a belly blaze): a lumpy filled oval."""
+        ph = s.rng.random(2) * 6.3
+        pts = []
+        for a in np.linspace(0, 2 * math.pi, 22, endpoint=False):
+            r = 1 + lumpy * math.sin(3 * a + ph[0]) + lumpy * 0.6 * math.sin(5 * a + ph[1])
+            x, y = rx * r * math.cos(a), ry * r * math.sin(a)
+            c, sn = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+            pts.append((du + x * c - y * sn, dy + x * sn + y * c))
+        return s.fill(pts, col)
+
+    def snout_mouth(s, kind='Y', du=0.0, dy=0.0, w=2.0, weight=0.38):
+        """Animal mouths hung under a nose at (du, dy): Y (dog, bear: a stroke down, two curves out), cat (a small
+        omega), rabbit (a little x under a Y)."""
+        if kind == 'cat':
+            return s.mouth('w', w=w, dy=dy - 0.3 * w, du=du, weight=weight)
+        s.stroke([(du, dy), (du + 0.02 * w, dy - 0.35 * w)], weight, wobble=0.015)
+        for sx in (-1, 1):
+            s.stroke([(du, dy - 0.35 * w), (du + sx * 0.25 * w, dy - 0.55 * w), (du + sx * 0.5 * w, dy - 0.42 * w)], weight, taper=(0.9, 0.6), wobble=0.02)
+        if kind == 'rabbit':
+            s.stroke([(du - 0.15 * w, dy - 0.62 * w), (du + 0.15 * w, dy - 0.85 * w)], weight * 0.7)
+            s.stroke([(du + 0.15 * w, dy - 0.62 * w), (du - 0.15 * w, dy - 0.85 * w)], weight * 0.7)
+
+    def fangs(s, du=0.0, dy=0.0, gap=1.4, n=2, size=0.5):
+        """One or two tiny white fangs peeking down from a mouth line, ink outlined."""
+        for i in range(n):
+            x = du + (i - (n - 1) / 2) * gap
+            tri = [(x - 0.45 * size, dy), (x + 0.45 * size, dy), (x + 0.05 * size, dy - 1.0 * size)]
+            s.fill(tri, WHITE)
+            s.stroke(tri, 0.22 * size + 0.12, taper=(1, 1), wobble=0.01)
+
+    def blep(s, du=0.0, dy=0.0, w=1.0):
+        """A tongue blep: a little pink lobe poking out under the mouth."""
+        lobe = [(du - 0.5 * w, dy)] + [(du + 0.5 * w * math.cos(a), dy - 0.15 * w - 0.55 * w * math.sin(a)) for a in np.linspace(math.pi, 2 * math.pi, 9)] + [(du + 0.5 * w, dy)]
+        s.fill(lobe, TONGUE)
+        s.stroke(lobe, 0.22 * w + 0.1, taper=(1, 1), wobble=0.015)
+
+    def whiskers(s, du=0.0, dy=0.0, spread=2.4, n=3, length=2.8, weight=0.26, dots=False):
+        """Whiskers: n uneven strokes fanning out each side of (du, dy); dots: whisker dots on the muzzle instead."""
+        r = s.rng
+        for sx in (-1, 1):
+            for i in range(n):
+                a = math.radians((i - (n - 1) / 2) * 14 + r.normal() * 4)
+                x0, y0 = du + sx * spread / 2, dy + (i - (n - 1) / 2) * 0.35
+                if dots:
+                    s.dot(x0 - sx * 0.2 * i, y0, 0.14, 0.16)
+                    continue
+                L = length * (0.85 + 0.3 * r.random())
+                s.stroke([(x0, y0), (x0 + sx * L * math.cos(a), y0 + L * math.sin(a))], weight, taper=(0.8, 0.4), wobble=0.04)
+
+    def tufts(s, du=0.0, dy=0.0, spread=7.0, size=1.0, weight=0.3):
+        """Cheek tufts: a little zig-zag of fur sticking out each side (fox, cat, tanuki)."""
+        for sx in (-1, 1):
+            x = du + sx * spread / 2
+            s.stroke([(x, dy + 0.5 * size), (x + sx * 0.7 * size, dy + 0.2 * size), (x + sx * 0.2 * size, dy - 0.05 * size),
+                      (x + sx * 0.8 * size, dy - 0.35 * size), (x, dy - 0.55 * size)], weight, taper=(0.7, 0.7), wobble=0.02)
+
+    def marks(s, kind='tabby', du=0.0, dy=0.0, size=1.0, col=None, weight=0.34):
+        """Forehead and face marks: tabby (an M), stripes (tiger: three a side), tanuki (a dark mask round the eyes),
+        panda (black eye patches), blaze (a pale stripe down the middle)."""
+        k = size
+        if kind == 'tabby':
+            return s.stroke([(du - 1.4 * k, dy), (du - 0.9 * k, dy + 1.0 * k), (du, dy + 0.2 * k), (du + 0.9 * k, dy + 1.0 * k), (du + 1.4 * k, dy)],
+                            weight, taper=(0.7, 0.7), wobble=0.03, col=col)
+        if kind == 'stripes':
+            for sx in (-1, 1):
+                for i in range(3):
+                    y = dy + (i - 1) * 0.9 * k
+                    s.stroke([(du + sx * 4.6 * k, y + 0.2 * k), (du + sx * 3.2 * k, y)], weight * 1.2, taper=(0.9, 0.3), wobble=0.03, col=col)
+            return s.stroke([(du - 0.3 * k, dy + 2.6 * k), (du, dy + 1.6 * k), (du + 0.3 * k, dy + 2.6 * k)], weight * 1.2, wobble=0.02, col=col)
+        if kind == 'tanuki':
+            for sx in (-1, 1):
+                s.patch(du + sx * 1.9 * k, dy, 1.7 * k, 1.05 * k, col or '#3a2c24', rot=-sx * 18)
+            return None
+        if kind == 'panda':
+            for sx in (-1, 1):
+                s.patch(du + sx * 1.9 * k, dy - 0.1 * k, 1.05 * k, 1.45 * k, col or '#1e1a1c', rot=sx * 28)
+            return None
+        if kind == 'blaze':
+            return s.patch(du, dy, 0.7 * k, 2.6 * k, col or '#f4efe4')
+        raise ValueError(kind)
+
     # ------------------------------------------------------------------ the face
     EYES = ('dot', 'big', 'tiny', 'happy', 'squeeze', 'sleepy', 'dizzy', 'swirl', 'wink', 'side', 'teary', 'shock')
 
