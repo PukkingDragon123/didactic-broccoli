@@ -20,7 +20,7 @@ def ring_r(rings, z):
 
 
 def body(rings, n=18, neck_z=17.5, knot=(0, 0, 35), folds=7, fold_amp=0.5, soggy=0.0, cheeks=(), tris=520,
-         depth=1.0, region='cloth', extra=None, twist=0.0, keep=None):
+         depth=1.0, region='cloth', extra=None, twist=0.0, keep=None, seam=90.0):
     """rings: [(z, r, x-centre)], bottom to top. depth: front-back scale of the sections. twist: degrees the sack's
     folds turn per mm (a wrung cloth). extra(V, N, th) -> more sculpt offsets. keep(V) -> rings deformation (both)."""
     R = [{'c': (x, 0, z), 'w': 2 * r, 'h': r * depth, 'e': 2.0} for z, r, x in rings]
@@ -47,6 +47,11 @@ def body(rings, n=18, neck_z=17.5, knot=(0, 0, 35), folds=7, fold_amp=0.5, soggy
             d += soggy * np.exp(-((z - neck_z - 5.5) / 3.0) ** 2) * (0.6 + 0.4 * np.cos(2 * th))
             for cx, cz in cheeks:  # round cheeks either side of the face
                 d += tk.bump(V, (cx, -11.5, cz), 4.6, 0.6, sharp=1.5)
+            if seam:  # the back seam where the handkerchief was sewn: a groove with a row of stitches across it
+                sd = np.abs(np.mod(th - math.radians(seam) + math.pi, 2 * math.pi) - math.pi) * np.hypot(V[:, 0] - xc, V[:, 1])
+                on = tk.smoothstep(neck_z + 0.8, neck_z + 1.6, z) * tk.smoothstep(zk - 1.0, zk - 2.5, z)
+                d -= 0.32 * np.exp(-(sd / 0.32) ** 2) * on
+                d += 0.16 * (np.abs(np.mod(z, 1.3) - 0.65) < 0.22) * (sd < 0.9) * on
             if extra is not None:
                 d += extra(V, N, th)
             return d
@@ -127,6 +132,9 @@ def corner(name, knot_c, ang, L=12.0, W=6.0, a0=20, a1=-70, cup=0.6, ripple=0.3,
         t = uu / L
         off = w + cup * (v / (W / 2)) ** 2 * (0.4 + t) - curl * t ** 3 * 2.0
         off = off + rip * np.sin(v * 1.6 + u * 0.9) * (0.3 + t)
+        if rip:  # the rolled hem round the edge of the cloth
+            hw = W / 2 * np.clip(1 - (uu / L) ** 2, 0, 1) ** shape
+            off = off + 0.28 * np.sign(w) * tk.smoothstep(0.9, 0.25, hw - np.abs(v))
         tw = np.radians(twist) * t
         o2 = off * np.cos(tw) + v * np.sin(tw)
         vv = v * np.cos(tw) - off * np.sin(tw)
@@ -215,3 +223,59 @@ def drop_gloss(P, reg):
     P.flat(m & (l > 0.9), '#f8fbff')
     l2 = np.einsum('ijk,k->ij', P.on, np.array((0.5, -0.6, -0.62)) / np.linalg.norm((0.5, -0.6, -0.62)))
     P.flat(m & (l2 > 0.93), '#d6efff')
+
+
+def arm(name, pts, r=1.7, hand=2.1, tris=56, region='cloth', hand_region='hand', mitt=None):
+    """A stubby cloth arm poking out of the sack: a tube through pts (the first point inside the cloth), ending in a
+    round mitten hand (a thumb nub pointing `mitt`, a unit vector, when given). Returns (low, [sculpt], hand centre)."""
+    P = [np.asarray(p, float) for p in pts]
+    d = P[-1] - P[-2]
+    d /= np.linalg.norm(d)
+    hc = P[-1] + d * hand * 0.55
+    radii = [r * 1.05] + [r * (1 - 0.1 * i / max(1, len(P) - 1)) for i in range(1, len(P))]
+    lo = tk.tube(name, [tuple(p) for p in P], radii, n=5, cap0='flat', cap1='flat')
+    hi = tk.tube(name + '_hi', [tuple(p) for p in P], radii, n=12, cap0='flat', cap1='flat')
+    tk.subsurf(hi, 1)
+    # cloth wrinkles round the sleeve
+    tk.push(hi, lambda V, N: 0.18 * np.cos((V @ d) * 2.6) ** 4)
+    tk.set_region(hi, region)
+    hp = [(0, -hand), (hand * 0.75, -hand * 0.7), (hand, 0), (hand * 0.8, hand * 0.62), (0, hand)]
+    h_lo = tk.lathe(name + '_h', hp, n=6, centre=tuple(hc))
+    h_hi = tk.lathe(name + '_hhi', [(0, -hand)] + [(hand * math.sin(q), -hand * math.cos(q)) for q in np.linspace(0.25, math.pi - 0.25, 8)] + [(0, hand)], n=14, centre=tuple(hc))
+    tk.subsurf(h_hi, 1)
+    his = [hi, h_hi]
+    if mitt is not None:
+        m = np.asarray(mitt, float)
+        tc = hc + m * hand * 0.85
+        th_hi = tk.lathe(name + '_thumb', [(0, -0.9), (0.8, -0.5), (0.85, 0.3), (0, 0.9)], n=10, centre=tuple(tc))
+        tk.subsurf(th_hi, 1)
+        tk.set_region(th_hi, hand_region)
+        his.append(th_hi)
+    tk.set_region(h_hi, hand_region)
+    lo = tk.join([lo, h_lo], name)
+    tk.decimate(lo, tris)
+    return lo, his, tuple(hc)
+
+
+def feet(name, rings, x=4.3, y=None, size=(4.6, 5.6, 2.6), toe=-6.5, tris=24, region='hand', splay=14):
+    """Two little feet peeking out under the head at the front (they stand on them, with the crown)."""
+    los, his = [], []
+    for sx in (-1, 1):
+        r0 = ring_r(rings, 1.2)[0]
+        cy = y if y is not None else -(r0 - size[1] * 0.25)
+        c = (sx * x, cy, 0.0)
+        w, d_, h = size
+        prof = [(0, 0), (w / 2 * 0.92, 0.0), (w / 2, h * 0.35), (w / 2 * 0.8, h * 0.8), (0, h)]
+        lo = tk.lathe(name, prof, n=8, centre=c)
+        hi = tk.lathe(name + '_hi', [(0, 0), (w / 2 * 0.9, 0.0), (w / 2, h * 0.3), (w / 2 * 0.92, h * 0.6), (w / 2 * 0.6, h * 0.9), (0, h)], n=16, centre=c)
+        for o in (lo, hi):
+            tk.scale(o, (1.0, d_ / w, 1.0), pivot=c)
+            tk.rotate(o, -sx * splay, 'Z', pivot=c)
+        tk.subsurf(hi, 1)
+        # two toe creases at the front
+        tk.push(hi, lambda V, N, c=c: -0.22 * (np.abs(np.abs(V[:, 0] - c[0]) - 0.75) < 0.22) * (V[:, 1] < c[1] - d_ * 0.2) * (V[:, 2] > 0.3))
+        tk.set_region(hi, region)
+        tk.decimate(lo, tris)
+        los.append(lo)
+        his.append(hi)
+    return tk.join(los, name), his

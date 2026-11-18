@@ -30,7 +30,7 @@ CZ = LZ + CH / 2
 FY = -CD / 2                 # the cabinet front
 SW, SH = 17.0, 14.6          # the screen's opening
 SZ = CZ + 1.0                # the screen's centre height
-DW = 10.0                    # a door's width
+DW = 8.4                    # a door's width
 TOPZ = LZ + CH
 ANT = (0, 4.0, TOPZ + 1.2)   # the aerial's base
 
@@ -68,7 +68,7 @@ for x in (-10.5, 10.5):
 # ------------------------------------------------------------------ the doors (eyelids), open to the sides of the screen
 DOORS = {}
 for sx, nm in ((1, 'door_l'), (-1, 'door_r')):
-    d = tk.rbox(nm, (DW, 1.4, SH + 3.6), centre=(sx * (SW / 2 + DW / 2 + 0.3), FY - 0.75, SZ), bevel=0.5, segs=1)
+    d = tk.rbox(nm, (DW, 1.1, SH + 3.6), centre=(sx * (SW / 2 + DW / 2 + 0.3), FY - 0.75, SZ), bevel=0.45, segs=1)
 
     def sc_door(h, sx=sx):
         def f(V, N):  # tambour slats
@@ -94,15 +94,15 @@ base = tk.lathe('abase', [(0, 0), (4.6, 0), (4.4, 1.6), (3.0, 3.0), (1.6, 3.4), 
 base_lo, base_hi = cx.low(base, 'abase', 50, lo=0, hi=2, region='brass')
 EARS = []
 for sx in (1, -1):
-    e = tk.slab('ear', [(0.0, -1.8), (3.0, -2.2), (6.4, -1.0), (7.6, 0.4), (6.0, 1.8), (2.6, 2.2), (0.0, 1.4)], 1.4, plane='XZ', at=0.0, bevel=0.55, segs=1)
+    e = tk.slab('ear', [(0.0, -2.0), (3.6, -2.8), (7.4, -1.8), (10.2, 0.2), (7.6, 2.2), (3.6, 2.8), (0.0, 1.8)], 1.6, plane='XZ', at=0.0, bevel=0.6, segs=1)
     tk.subsurf(e, 1)
-    tk.deform(e, lambda V: np.stack([V[:, 0], V[:, 1] + 0.05 * (V[:, 2]) ** 2 * 2 - 0.4, V[:, 2]], 1))
+    tk.deform(e, lambda V: np.stack([V[:, 0], V[:, 1] + 0.09 * V[:, 2] ** 2 - 0.3, V[:, 2]], 1))  # cupped toward the front
     if sx < 0:
         tk.scale(e, (-1, 1, 1))
         tk.fix_normals(e)
-    tk.rotate(e, -sx * 18, 'Y')
-    tk.move(e, (ANT[0] + sx * 3.4, ANT[1] - 0.6, ANT[2] + 0.6))
-    EARS.append(cx.low(e, 'ear', 40, lo=0, hi=2, region=('walnut', [('cream', lambda C, N: N[:, 1] < -0.5)])))
+    tk.rotate(e, -sx * 32, 'Y')        # up and out
+    tk.move(e, (sx * 14.4, -3.6, TOPZ - 1.4))
+    EARS.append(cx.low(e, 'ear', 44, lo=0, hi=2, region=('walnut', [('inner', lambda C, N: N[:, 1] < -0.5)])))
 RODS = {}
 for sx, nm in ((1, 'ant_l'), (-1, 'ant_r')):
     a = math.radians(28)
@@ -146,7 +146,7 @@ def make_rig():
     for p in F.parts:
         R.attach(p.low, p.bone)
     allb = ['root', 'door_l', 'door_r', 'ant_l', 'ant_r', 'ant_l_tip', 'ant_r_tip']
-    shut = DW / 2 + SW / 2 - SW / 4 - 0.2  # (each door slides over half the screen)
+    shut = SW / 2 + 0.3 - 0.05  # (each door slides over half the screen: they meet in the middle)
     with R.action('gimmick'):
         k = R.key
         for b in allb:
@@ -189,16 +189,23 @@ def paint(P):
     free = P.shade(light=0.0, ao=0.3, cav=1.1)
     WAL = pt.ramp('#8a5634', 7, shift=0.07)
     # walnut veneer: the grain in long wavy figure, two tones
-    grain = 0.12 * np.sin(Z * 2.3 + np.sin(X * 0.35) * 2.2 + np.sin(Yc * 0.4) * 1.6)
-    P.fill('walnut', WAL, tone=sh, base=grain + 0.05)
-    P.tint(P.region('walnut') & (np.sin(Z * 2.3 + np.sin(X * 0.35) * 2.2 + np.sin(Yc * 0.4) * 1.6) > 0.82), pt.ramp('#6a3e24', 6, shift=0.06), sh)
+    ph = Z * 1.7 + np.sin(X * 0.23 + 1.3) * 2.6 + np.sin(Yc * 0.31) * 1.9 + np.sin(X * 0.71 + Z * 0.4) * 0.8
+    P.fill('walnut', WAL, tone=sh, base=0.05 + 0.06 * np.sin(ph * 0.5))
+    streak = (np.sin(ph) > 0.94) & (np.sin(X * 0.9 + Z * 0.3 + Yc * 0.5) > -0.2)
+    P.tint(P.region('walnut') & streak, pt.ramp('#6e4228', 6, shift=0.06), sh)
     # cream sika spots in rows along the flanks and the top (the deer)
     flank = P.region('walnut') & (P.part == 0) & (Z > LZ + 3) & ((np.abs(on[:, :, 0]) > 0.7) | (on[:, :, 2] > 0.7))
     for row, (zz, n0) in enumerate(((TOPZ - 4.0, 0.0), (TOPZ - 8.6, 1.6), (TOPZ - 13.0, 0.4))):
         uu = Yc + n0
-        sp = (np.abs(np.mod(uu, 4.2) - 2.1) < 0.9) & (np.abs(Z - zz - 0.3 * np.sin(uu * 1.3)) < 0.85)
+        cell = np.floor(uu / 4.2)
+        cu = uu - (cell + 0.5) * 4.2 + 0.5 * np.sin(cell * 2.7 + row)
+        cz = Z - zz - 0.6 * np.sin(cell * 1.9 + row * 2.0)
+        sp = (cu / 1.0) ** 2 + (cz / 0.8) ** 2 < 1
         P.flat(flank & (np.abs(on[:, :, 0]) > 0.7) & sp & (np.abs(Yc) < CD / 2 - 2.0), '#f1e4c6')
-    tsp = (np.abs(np.mod(X + 1.0, 4.6) - 2.3) < 0.9) & (np.abs(np.mod(Yc + 0.6 * np.floor((X + 1.0) / 4.6), 5.0) - 2.5) < 0.85)
+    ci, cj = np.floor((X + 1.0) / 4.6), np.floor((Yc + 1.3 * np.floor((X + 1.0) / 4.6)) / 5.0)
+    du = X + 1.0 - (ci + 0.5) * 4.6 + 0.6 * np.sin(cj * 2.1 + ci)
+    dv = Yc + 1.3 * ci - (cj + 0.5) * 5.0 + 0.7 * np.sin(ci * 1.7 + cj * 0.6)
+    tsp = (du / 0.95) ** 2 + (dv / 0.8) ** 2 < 1
     P.flat(P.region('walnut') & (P.part == 0) & (on[:, :, 2] > 0.85) & tsp & (np.hypot(X - ANT[0], Yc - ANT[1]) > 6.0) & (np.abs(X) < CW / 2 - 3) & (np.abs(Yc) < CD / 2 - 2.5), '#f1e4c6')
     P.fill('bezel', pt.ramp('#d2b06a', 7, shift=0.06), tone=sh * 1.2, base=0.1)
     P.fill('panel', pt.ramp('#5a3a26', 6, shift=0.06), tone=sh, base=0.1)
@@ -207,6 +214,7 @@ def paint(P):
     P.fill('brass', pt.ramp('#d2a64a', 7, dark=0.6, light=0.6, shift=0.06), tone=sh * 1.3, base=0.1)
     P.fill('gold', pt.ramp('#dcb050', 7, dark=0.6, light=0.6, shift=0.06), tone=free * 1.3, base=0.15)
     P.fill('cream', pt.ramp('#f1e4c6', 6, shift=0.05), tone=sh, base=0.1)
+    P.fill('inner', pt.ramp('#e9c2ac', 6, shift=0.05), tone=sh, base=0.1)
     P.fill('door', pt.ramp('#b07a48', 7, shift=0.07), tone=free, base=0.1)
     P.tint(P.region('door') & (np.abs(np.mod(X, 1.6) - 0.8) < 0.22), pt.ramp('#8a5a34', 6, shift=0.06), free)
     # the screen: a pale blue-grey picture (it glows when lit), soft scan lines, and the deer's face on it

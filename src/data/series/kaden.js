@@ -40,5 +40,11 @@ export default {
       desc: 'A moss-green Shōwa dial telephone, warts and all. The handset is its upper jaw and the dial its pale belly. When it rings, it hops, and when it answers, watch the tongue.',
       gimmick: { text: 'Ring', sfx: [[0.05, 'phoneRing'], [0.9, 'hookUp'], [1.15, 'toySnap', { f: 900, v: 0.6 }], [1.55, 'gulp'], [1.8, 'toyTap'], [1.9, 'toyRatchet', { n: 9, gap: 0.035 }], [2.25, 'toyRatchet', { n: 9, gap: 0.03 }]] },
     },
+    {
+      id: 'shika', name: 'TV Deer', jp: 'テレビジカ', rarity: 'secret',
+      desc: 'A walnut television on four splayed legs, with sika spots down its flanks. Its rabbit-ear aerial is a pair of antlers and its face is on the screen. Switch it on: it blinks its sliding doors, listens, and bows.',
+      light: { part: 'screen', color: '#d8f0ff', mode: 'press', dur: 2.8 },
+      gimmick: { text: 'Switch on', sfx: [[0.05, 'tvOn'], [0.15, 'slideDoor'], [0.45, 'toyClick'], [0.87, 'toyClick'], [1.0, 'toyClick'], [1.2, 'toyFold', { n: 4, gap: 0.04 }], [1.6, 'tvChannel'], [2.2, 'toyTap']] },
+    },
   ],
 };

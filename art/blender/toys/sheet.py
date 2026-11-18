@@ -71,7 +71,7 @@ def main():
     H = head + ref_h + rows * th + 40
     S = Image.new('RGB', (W, H), PAPER)
     D = ImageDraw.Draw(S)
-    title = f'{sjp}  {sname}' + ('  — the gimmicks in the game renderer' if mode == 'gimmick' else '  — series 1, modelled in Blender')
+    title = f'{sjp}  {sname}' + ('  — the gimmicks in the game renderer' if mode == 'gimmick' else f'  — {sid}, modelled in Blender')
     D.text((24, 24), title, font=font(44), fill=INK)
     if mode == 'series':
         cap = 'front 3/4 · back 3/4 · inside the gimmick (the object) · the signature move   (the in-game mesh, materials and baked normal maps)'

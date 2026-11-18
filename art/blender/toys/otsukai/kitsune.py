@@ -135,7 +135,7 @@ def sc_tail(h):
     tk.push(h, f)
 
 
-tail_lo, tail_hi = ak.spine('tail', tpts, [5.2, 7.6, 9.0, 8.6, 6.2, 2.4], [2.7, 3.9, 4.5, 4.3, 3.1, 1.2], e=2.1, n=12,
+tail_lo, tail_hi = ak.spine('tail', tpts, [3.6, 7.2, 9.0, 8.6, 6.2, 2.4], [1.9, 3.7, 4.5, 4.3, 3.1, 1.2], e=2.1, n=12,
                             up=(0, 1, 0), tris=150, sculpt=sc_tail, region='tail', cap0='round', cap1='point')
 JEWEL = (1.0, 8.9, PZ + 28.6)
 jw_prof = [(0, -2.0), (1.6, -1.6), (2.3, -0.3), (2.1, 0.9), (1.3, 2.0), (0.5, 2.9), (0, 3.6)]
@@ -176,18 +176,18 @@ def make_rig():
         k('head', 32, rot=('Y', 6))
         # 12-46 the tail flicks: a swish to one side, the other, and a proud lift
         k('tail', 12)
-        k('tail', 18, rot=[('Z', 16), ('X', -4)])
-        k('tail', 25, rot=[('Z', -14), ('X', -6)])
-        k('tail', 32, rot=[('Z', 8), ('X', 5)])
-        k('tail', 40, rot=('X', 3))
+        k('tail', 18, rot=[('Z', 9), ('X', -9)])
+        k('tail', 25, rot=[('Z', -8), ('X', -9)])
+        k('tail', 32, rot=[('Z', 7), ('X', -9)])
+        k('tail', 40, rot=('X', -3))
         # 40-66 it bows to you (a messenger's bow), holds, and sits back up
         k('head', 40, rot=('Y', 0))
         k('head', 48, rot=('X', 16))
         k('root', 40)
         k('root', 48, rot=('X', 0))
         k('head', 58, rot=('X', 16))
-        k('head', 66, rot=('X', -3), ease='BACK')
-        k('tail', 66, rot=('X', 0))
+        k('head', 66, rot=('X', 1.5), ease='BACK')
+        k('tail', 66, rot=('X', -1))
         for b in bones:
             k(b, 74)
     return R
