@@ -30,6 +30,9 @@ SP = [(0, 0.9, 0.6, 11.6, 4.8), (0, 0.6, 3.4, 15.4, 6.0), (0, 0.4, 7.0, 15.6, 7.
 body = tk.loft('body', [{'c': (x, y, z), 'w': w, 'h': h, 'e': 2.2} for x, y, z, w, h in SP], n=16, up=(0, -1, 0), cap0='flat', cap1='point')
 BODY = [low(body, 'body', 480, sculpt=pu.lumps(0.2, 1.3, 8), region=('fire', [('core', lambda C, N: (N[:, 1] < -0.55) & (C[:, 2] < 10.0))]))]
 tk.flat_bottom(BODY[0][0], 1.3)   # (it stands on its flat foot)
+foot = tk.lathe('foot', [(0, 0.0), (6.2, 0.0), (6.6, 0.6), (5.8, 1.6), (0, 1.9)], n=14, centre=(0, 0.9, 0))
+tk.scale(foot, (1.0, 0.85, 1.0), pivot=(0, 0.9, 0))
+BODY.append(low(foot, 'foot', 60, lo=1, hi=1, region='fire'))   # (the flame's puddle of a foot: it stands on it)
 kit.eyepin(F, at=(0.0, 3.0, 15.8), bone='body')
 FL = []
 for sx, z, L in ((1, 6.0, 4.0), (-1, 6.6, 3.6), (1, 10.2, 2.8), (-1, 10.8, 2.6)):   # licks of flame at the sides (they flare)
