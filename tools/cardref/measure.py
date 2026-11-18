@@ -20,9 +20,11 @@ SPEC = {
         sample=dict(bg=(.02, .40, .05, .60), label=(.10, .14, .20, .17), label_logo=(.30, .21, .70, .29), lid_ring=(.10, .02, .90, .09),
                     lineup_name=(.10, .86, .60, .885), footer=(.05, .95, .70, 1))),
     'pipeotter': dict(
+        override=dict(stripe='#cfe8f2', green='#1f9a3a', red='#e2403a', yellow='#f0b020', blue='#3a70c0', shadow='#8a9aa4',
+                      cell='#f2ec96', maker='#e8862a'),  # picked by eye from a 2x zoom (the k-means boxes mix pipes in)
         aspect=356 / 367, bg='diagonal stripes', logo=dict(style='chunky rounded', fill='logo_a', fill2=['logo_b', 'logo_c', 'logo_d'],
                                                             outline=(2, 'white'), shadow=(1, 2, 'logo_shadow'), angle=0),
-        box=dict(maker=(.02, .03, .10, .14), catch=(.38, .03, .80, .17), stripes=(0, 0, 1, .66), hero=(.62, .06, .95, .56),
+        box=dict(maker=(.02, .03, .10, .14), catch=(.38, .03, .80, .17), stripes=(0, 0, 1, .66), hero=(.60, .03, .97, .46),
                  pipes=(.05, .06, .62, .62), logo=(.02, .47, .97, .67), opts=(.02, .66, .30, .75), callout=(.40, .66, .80, .75),
                  extra=(.88, .66, .98, .75), count=(.02, .74, .12, .81), info=(.14, .745, .38, .80),
                  lineup=(.02, .80, .98, .985), lineup_head=(.02, .80, .98, .835), floor=(0, .76, 1, 1)),
@@ -30,6 +32,7 @@ SPEC = {
                     logo_c=(.52, .52, .64, .64), logo_d=(.80, .48, .96, .62), logo_shadow=(.05, .62, .95, .67), cell=(.05, .84, .25, .97),
                     cell_frame=(.02, .80, .98, .835), floor=(0, .78, 1, .80), maker=(.03, .04, .09, .13), count=(.02, .74, .12, .81))),
     'fruitdragon': dict(
+        override=dict(red='#c8322a', leaf_dark='#2f5426', leaf_mid='#4f7a3a', leaf_light='#7ea255'),
         aspect=425 / 366, bg='leaves on cream', logo=dict(style='heavy brush', fill='logo', outline=(2, 'white'), shadow=None, angle=0),
         box=dict(catch=(.04, .025, .46, .085), logo1=(.07, .10, .42, .25), logo2=(.06, .25, .50, .36), sub=(.07, .37, .52, .43),
                  maker=(.87, .03, .97, .24), hero=(.43, .05, .84, .52), heroname=(.62, .26, .76, .29),

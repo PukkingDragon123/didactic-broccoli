@@ -650,6 +650,16 @@ def card5(s):
 
 if __name__ == '__main__':
     L = json.load(open(os.path.join(TOYS, 'lineup.json')))
+    if '--ref' in sys.argv:  # card6: clone a measured reference card (tools/card6.py, tools/cardref/<ref>.json)
+        from card6 import card6, REF_OF
+        a = sys.argv[sys.argv.index('--ref') + 1:]
+        ref, sids = (a[0], a[1].split(',')) if len(a) > 1 else (None, a[0].split(','))
+        os.makedirs(os.path.join(ROOT, 'shots', 'clone'), exist_ok=True)
+        for sid in sids:
+            name, mcol, em = MAKERS[MAKER_OF.get(sid, 0)]
+            im = card6(L[sid], ref or REF_OF[sid], (name, mcol, ''.join(w[0] for w in name.split()[:2]), em))
+            im.save(os.path.join(ROOT, 'shots', 'clone', 'clone_%s.png' % sid)); print('card6', sid, ref or REF_OF[sid], im.size)
+        sys.exit(0)
     only = sys.argv[1].split(',') if len(sys.argv) > 1 else None
     os.makedirs(OUT, exist_ok=True)
     for sid, s in L.items():

@@ -1,4 +1,10 @@
 {
+ "override": {
+  "red": "#c8322a",
+  "leaf_dark": "#2f5426",
+  "leaf_mid": "#4f7a3a",
+  "leaf_light": "#7ea255"
+ },
  "aspect": 1.1612021857923498,
  "bg": "leaves on cream",
  "logo": {

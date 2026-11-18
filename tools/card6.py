@@ -96,11 +96,6 @@ def heroes(s):
     return items, reg, hero
 
 
-def pose(sid, iid, n):
-    from bake_cards_shim import TOYS
-    return iid
-
-
 def _pose(sid, iid, n):
     p = os.path.join(ROOT, 'shots', '.art-cache', 'toys', sid, 'pose', '%s_%d.png' % (iid, n))
     return 'pose/%s_%d' % (iid, n) if os.path.exists(p) else iid
@@ -148,8 +143,9 @@ def t_crabcan(s, MAKER):
     x, y, w, h = bx('arrow'); B.arrow([(x + 6, y + h), (x + 6, y + 6), (x + w + 4, y + 6)], WH, t=5, head=8)
     # big catch + hero name
     x, y, w, h = bx('catch2'); B.text('FROM STAPLER TO CROC!', x, y + 1, 'micro5', 1, WH)
-    x, y, w, h = bx('big'); letters(B, 'TRANSFORMS!', 'jersey15', (x, y - 2, w + 12, h + 4), WH, bold=2, shear=0.0, maxk=(2, 2))
-    x, y, w, h = bx('heroname'); B.text(hero['name'].upper(), x + w // 2, y + 2, 'b5', 1, WH, anchor='mt')
+    F = Sheet(GW, H, None)
+    x, y, w, h = bx('big'); letters(F, 'TRANSFORMS!', 'jersey15', (x, y - 2, w + 12, h + 4), WH, bold=2, shear=0.0, maxk=(2, 2))
+    x, y, w, h = bx('heroname'); F.text(hero['name'].upper(), x + w // 2, y + 2, 'b5', 1, WH, anchor='mt', outline=[(1, red)])
     # the line-up can: lid ellipse + white body
     x, y, w, h = bx('lineup'); B.rrect(x, y, w, h, WH, r=10)
     x, y, w, h = bx('lineup_lid'); B.ellipse(x, y, w, h, WH, line=ring, t=2); B.ellipse(x + 14, y + 4, w - 28, h - 8, WH, line=ring, t=1)
@@ -176,7 +172,7 @@ def t_crabcan(s, MAKER):
     for k, it in enumerate(rest):
         T.toy(sid, _pose(sid, it['id'], 2), 2 * (lx + cw * (k + .5)), 2 * (ly + lh - 11), h=2 * (lh - 26), w=2 * (cw - 3),
               silhouette=INK if it['secret'] else None)
-    im.alpha_composite(T.im)
+    im.alpha_composite(T.im); im.alpha_composite(upscale(F.im, 2))
     return im
 
 
@@ -192,17 +188,18 @@ def t_pipeotter(s, MAKER):
             B.rect(xx, yy + int(2 * math.sin(xx / 23 + k)), 4, 9, O['stripe'])
     x, y, w, h = bx('floor'); B.rect(x, y, w, h, WH)
     maker_square(B, *bx('maker'), O['maker'], MAKER[2])
+    F = Sheet(GW, H, None)
     x, y, w, h = bx('catch')
-    B.text('EVERY STALL BRINGS', x + 6, y + 4, 'b5', 1, O['red'], bounce=[0] * 18)
-    B.text('ITS OWN LIGHT!', x + 14, y + 14, 'b5', 1, O['red'])
-    B.poly([(x + w - 18, y + 6), (x + w - 4, y + 2), (x + w - 10, y + 16)], O['red'])
+    F.text('EVERY STALL BRINGS', x + 6, y + 4, 'b5', 1, O['red'], outline=[(1, WH)])
+    F.text('ITS OWN LIGHT!', x + 14, y + 14, 'b5', 1, O['red'], outline=[(1, WH)])
+    F.poly([(x + w - 18, y + 6), (x + w - 4, y + 2), (x + w - 10, y + 16)], O['red'])
     # logo: green word with white pipe-joint cuts, then one colour per letter, white rim + grey shadow
     x, y, w, h = bx('logo'); words = s['name'].upper().split(' ')
     top, last = words[0], words[-1]
-    bb = letters(B, top + ' ' + last, 'ps2p', (x, y, w, h), [O['green']] * (len(top) + 1) + [O['red'], O['green'], O['yellow'], O['blue']],
-                 outline=[(3, WH)], shadow=(1, 2, O['shadow']), bold=1, track=-1, maxk=(3, 7), ratio=2.2, anchor='m')
+    bb = letters(F, top + ' ' + last, 'silkb', (x, y, w, h), [O['green']] * (len(top) + 1) + [O['red'], O['green'], O['yellow'], O['blue']],
+                 outline=[(3, WH)], shadow=(1, 2, O['shadow']), bold=1, track=0, maxk=(3, 8), ratio=2.7, anchor='m')
     for xx in range(bb[0] + 12, bb[0] + (bb[2] - bb[0]) * len(top) // (len(top) + len(last) + 1), 21):
-        B.rect(xx, bb[1] + (bb[3] - bb[1]) // 2 - 1, 2, 3, WH)  # the pipe-joint seams across the green word
+        F.rect(xx, bb[1] + (bb[3] - bb[1]) // 2 - 1, 2, 3, WH)  # the pipe-joint seams across the green word
     # options row: two round swatches, OR
     x, y, w, h = bx('opts'); r = h - 4
     B.ellipse(x + 2, y + 4, r, r, O['green'], line=WH, t=2); B.ellipse(x + r + 22, y + 4, r, r, 0xd8dee0, line=WH, t=2)
@@ -232,7 +229,7 @@ def t_pipeotter(s, MAKER):
     for k, it in enumerate(items):
         cx = lx + cw * (k + .5)
         T.toy(sid, _pose(sid, it['id'], 2), 2 * cx, 2 * (ly + lh - 4), h=2 * (lh - 16), w=2 * (cw - 10), silhouette=INK if it['secret'] else None)
-    im.alpha_composite(T.im)
+    im.alpha_composite(T.im); im.alpha_composite(upscale(F.im, 2))
     return im
 
 
@@ -249,17 +246,18 @@ def t_fruitdragon(s, MAKER):
         leaf(B, cx, cy, L, a, lc, rn)
     x, y, w, h = bx('band'); B.rect(x, y, w, h, band)
     # catch line (red, white rim, stepping up like the reference's arc) + logo + sub
-    x, y, w, h = bx('catch'); B.text('BORN FROM A FILM SET!', x + 4, y + 4, 'b5', 1, O['red'], outline=[(2, WH)], bounce=[3, 3, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3])
+    F = Sheet(GW, H, None)
+    x, y, w, h = bx('catch'); F.text('BORN FROM A FILM SET!', x + 4, y + 4, 'b5', 1, O['red'], outline=[(2, WH)], bounce=[3, 3, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3])
     name = s['name'].upper().replace('’', "'").rstrip('?')
     l1, l2 = ("WHO'S IN", 'THE SUIT?') if s['id'] == 'nakanohito' else (name.split(' ', 1) + [''])[:2]
-    letters(B, l1, 'jersey15', bx('logo1'), green, outline=[(3, WH)], bold=2, maxk=(3, 4), ratio=1.6)
-    letters(B, l2, 'jersey15', bx('logo2'), green, outline=[(3, WH)], bold=2, maxk=(3, 4), ratio=1.4)
-    letters(B, 'MONSTER SUIT FIGURE', 'b5', bx('sub'), green, outline=[(2, WH)], bold=1, maxk=(1, 2), ratio=2)
+    letters(F, l1, 'jersey10', bx('logo1'), green, outline=[(3, WH)], bold=1, maxk=(3, 6), ratio=2.6)
+    letters(F, l2, 'jersey10', bx('logo2'), green, outline=[(3, WH)], bold=1, maxk=(3, 6), ratio=2.6)
+    letters(F, 'MONSTER SUIT FIGURE', 'b5', bx('sub'), green, outline=[(2, WH)], bold=1, maxk=(1, 2), ratio=2)
     x, y, w, h = bx('maker'); B.rrect(x, y, w, h, WH, r=3)
     emblem(B, MAKER[3], x + (w - 12) // 2, y + 3, MAKER[1], ink=INK, paper=WH)
     for j, t in enumerate(['WATCH', 'IT', 'MOVE!']): B.text(t, x + w // 2, y + 21 + 6 * j, 'micro5', 1, INK, anchor='mt')
     B.qr(x + 4, y + h - 32, 1, 11, INK, bg=WH)
-    x, y, w, h = bx('heroname'); B.text(hero['name'].upper(), x + w // 2, y, 'b5', 1, INK, anchor='mt', outline=[(1, WH)])
+    x, y, w, h = bx('heroname'); F.text(hero['name'].upper(), x + w // 2, y, 'b5', 1, INK, anchor='mt', outline=[(1, WH)])
     lx, ly, lw, lh = bx('lineup'); rest = [i for i in items if i is not hero]; cw = lw / len(rest)
     nx, ny, nw, nh = bx('lineup_names')
     for k, it in enumerate(rest):
@@ -286,7 +284,7 @@ def t_fruitdragon(s, MAKER):
     x, y, w, h = bx('hero'); T.toy(sid, _pose(sid, hero['id'], 2), 2 * (x + w / 2), 2 * (y + h), h=2 * h, w=2 * w)
     for k, it in enumerate(rest):
         T.toy(sid, _pose(sid, it['id'], 2), 2 * (lx + cw * (k + .5)), 2 * (ly + lh), h=2 * lh, w=2 * (cw - 2), silhouette=INK if it['secret'] else None)
-    im.alpha_composite(T.im)
+    im.alpha_composite(T.im); im.alpha_composite(upscale(F.im, 2))
     return im
 
 

@@ -1,4 +1,14 @@
 {
+ "override": {
+  "stripe": "#cfe8f2",
+  "green": "#1f9a3a",
+  "red": "#e2403a",
+  "yellow": "#f0b020",
+  "blue": "#3a70c0",
+  "shadow": "#8a9aa4",
+  "cell": "#f2ec96",
+  "maker": "#e8862a"
+ },
  "aspect": 0.9700272479564033,
  "bg": "diagonal stripes",
  "logo": {
@@ -40,10 +50,10 @@
    0.66
   ],
   "hero": [
-   0.62,
-   0.06,
-   0.95,
-   0.56
+   0.6,
+   0.03,
+   0.97,
+   0.46
   ],
   "pipes": [
    0.05,
