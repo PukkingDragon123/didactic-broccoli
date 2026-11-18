@@ -76,8 +76,6 @@ def callout(S, text, tx, ty, px, py, anchor='rm', fill=WH, ink=INK, face='micro5
     """A printed callout: a label tag with a leader line to the point on the figure (a dot at the end)."""
     tw = line_mask(text, face)[0].shape[1] + 6; th = 9
     X = {'l': tx, 'm': tx - tw // 2, 'r': tx - tw}[anchor[0]]; Y = ty - th // 2
-    ex = X + tw if px > X + tw else X if px < X else X + tw // 2
-    S.line([(ex, ty), (px, py)], ink, 1); S.rect(px - 1, py - 1, 3, 3, ink)
     S.rect(X - 1, Y - 1, tw + 2, th + 2, ink); S.rect(X, Y, tw, th, fill); S.text(text, X + 3, Y + 2, face, 1, ink)
 
 
@@ -213,8 +211,64 @@ def designer(K, c):
         X0, Y0, X1, Y1 = hb; w_, h_ = X1 - X0, Y1 - Y0
         for t, tx_, ty_, fx, fy in c.get('calls', []):
             callout(F, t, tx_, ty_, X0 + w_ * fx, Y0 + h_ * fy, anchor='rm')
+    fill_space(K, POOL.get(K.sid, []))
     sw = c.get('sw', [col, fill, 0x3a6ab0, 0x5a8a3a, 0xc87a3a, 0x2a2a30, 0x8a5a9a])
     K.legal(246, [(i + 1, it['name'].upper().replace('THE ', ''), sw[i % len(sw)]) for i, it in enumerate(K.items)], col, col)
+
+
+def fill_space(K, pool, top=246, cell=8):
+    """Dense dressing: real cut-outs from the series' pool dropped into the emptiest parts of the card (largest
+    first: 3 sizes), behind the toys and type, a few in front at the edges, until no gap of ~15% is left."""
+    if not pool: return
+    def occ():
+        o = np.zeros((top, W), bool)
+        for L in (K.P, K.T, K.FC):
+            a = np.asarray(L.im.getchannel('A').resize((W, H), Image.NEAREST))[:top] > 0; o |= a
+        o |= np.asarray(K.F.im.getchannel('A'))[:top] > 0
+        return o
+    o = occ(); rn = __import__('random').Random(sum(map(ord, K.sid))); used = 0
+    for size in (60, 50, 42, 34, 34, 28, 28, 28):
+        n = size // cell; best = None
+        ch, cw_ = top // cell, W // cell
+        cells = o[:ch * cell, :cw_ * cell].reshape(ch, cell, cw_, cell).mean((1, 3)) < 0.06
+        for gy in range(-1, ch - n + 2):
+            for gx in range(-1, cw_ - n + 2):
+                y0, x0 = max(gy, 0), max(gx, 0)
+                win = cells[y0:gy + n, x0:gx + n]
+                if win.size and win.all() and win.size >= (n - 1) * (n - 1):
+                    sc = rn.random()
+                    if best is None or sc > best[0]: best = (sc, gx, gy)
+        if best is None: continue
+        _, gx, gy = best; key = pool[used % len(pool)]; used += 1
+        cx, cy = (gx + n / 2) * cell, (gy + n / 2) * cell
+        edge = cx < 30 or cx > W - 30 or cy > top - 40
+        K.cut(key, cx, cy, size, rn.choice([-24, -14, -6, 8, 16, 26]), 'front' if edge and size <= 42 else 'back')
+        o = occ()
+
+
+POOL = {  # series -> real cut-outs that belong in its scene (Open Images masks, credited)
+    'kanikan': ['oyster_1', 'fish_1', 'lemon_0', 'starfish_0', 'fish_2', 'oyster_0', 'sea_turtle_1', 'lemon_2'],
+    'nakanohito': ['skyscraper_1', 'camera_0', 'camera_2', 'skyscraper_0', 'skyscraper_2'],
+    'kasabuki': ['flower_1', 'rose_1', 'sword_1', 'flower_0', 'rose_0', 'dagger_1'],
+    'henshin': ['scissors_0', 'pen_0', 'ruler_0', 'adhesive_tape_1', 'pencil_case_0', 'scissors_2', 'pen_2'],
+    'kaden': ['clock_0', 'teapot_0', 'kettle_0', 'corded_phone_1', 'alarm_clock_0', 'corded_phone_2'],
+    'yomise': ['starfish_0', 'sea_turtle_1', 'oyster_1', 'starfish_2', 'sea_kelp', 'oyster_0', 'sea_turtle_0'],
+    'hashigo': ['frog_0', 'mushroom_2', 'flower_1', 'frog_1', 'strawberry_0', 'mushroom_1'],
+    'obakebaito': ['raven_0', 'bat_(animal)_0', 'candle_0', 'owl_1', 'pumpkin_1', 'raven_1', 'skull_0', 'bat_(animal)_1'],
+    'sento': ['duck_0', 'milk_1', 'tap_2', 'duck_1', 'milk_2', 'tap_0'],
+    'kabuki': ['flower_1', 'rose_1', 'sword_1', 'flower_0', 'rose_2', 'flower_2'],
+    'karakuri': ['watch_2', 'clock_0', 'teapot_2', 'alarm_clock_1', 'teapot_0', 'watch_0'],
+    'janru': ['rocket_0', 'dice_0', 'kite_2', 'rocket_2', 'ball_1', 'dice_2'],
+    'teruteru': ['frog_0', 'duck_0', 'mushroom_0', 'boot_0', 'frog_1', 'mushroom_2', 'duck_1'],
+    'otenki': ['kite_2', 'common_sunflower_1', 'sun_hat_0', 'balloon_2', 'common_sunflower_2', 'kite_1', 'sun_hat_2'],
+    'ekiin': ['backpack_0', 'coffee_cup_0', 'suitcase_0', 'clock_1', 'train_0', 'briefcase_0', 'backpack_1', 'coffee_cup_1'],
+    'otsukai': ['candle_2', 'flower_1', 'rose_0', 'candle_0', 'flower_0', 'rose_2'],
+    'tsuppari': ['guitar_0', 'motorcycle_0', 'rose_1', 'guitar_1', 'dice_2', 'motorcycle_2', 'rose_0'],
+    'meijin': ['skateboard_0', 'football_0', 'roller_skates_0', 'dice_0', 'kite_0', 'skateboard_1', 'football_1', 'roller_skates_1'],
+    'sabaku': ['lizard_2', 'snake_0', 'skull_0', 'cowboy_hat_0', 'lizard_0', 'snake_2', 'skull_2', 'cowboy_hat_2'],
+    'minato': ['harbor_seal_0', 'canoe_0', 'fish_0', 'lighthouse_2', 'harbor_seal_1', 'oyster_2', 'canoe_1', 'fish_1'],
+    'datesha': ['wine_0', 'briefcase_1', 'fedora_0', 'rose_0', 'cocktail_0', 'tie_0', 'wine_1', 'fedora_1'],
+}
 
 
 R, Lf = 'right', 'left'

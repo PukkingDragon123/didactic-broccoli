@@ -15,7 +15,7 @@ WANT = ['Pen', 'Ruler', 'Scissors', 'Pencil case', 'Adhesive tape', 'Sword', 'Da
         'Corded phone', 'Alarm clock', 'Starfish', 'Sea turtle', 'Flag', 'Balloon', 'Pumpkin', 'Candle', 'Skull', 'Milk', 'Towel',
         'Duck', 'Tap', 'Skyscraper', 'Tank', 'Camera', 'Flower', 'Rose', 'Clock', 'Teapot', 'Watch', 'Rocket', 'Dice', 'Boot',
         'Kite', 'Sun hat', 'Common sunflower', 'Train', 'Suitcase', 'Coin', 'Motorcycle', 'Ball', 'Cowboy hat', 'Snake',
-        'Lighthouse', 'Canoe', 'Fedora', 'Tie', 'Cocktail', 'Mushroom', 'Frog', 'Strawberry', 'Lizard', 'Flashlight', 'Toy']
+        'Lighthouse', 'Canoe', 'Fedora', 'Tie', 'Cocktail', 'Mushroom', 'Frog', 'Strawberry', 'Lizard', 'Flashlight', 'Toy', 'Backpack', 'Coffee cup', 'Guitar', 'Skateboard', 'Roller skates', 'Football', 'Harbor seal', 'Wine', 'Briefcase', 'Bat (Animal)', 'Raven', 'Owl']
 PER = 3
 SKIP = set()  # mask files rejected on review (cut badly / other things in the cut)
 
