@@ -42,7 +42,7 @@ cl, clh = collar('collar', (0, -0.6, 33.7), 5.0, 4.6, r=0.85)
 zl, zh = zip_tab('tab', (0, 6.95, 31.0))
 los += [tl, cl, zl]
 his += [tlh, clh] + zh
-F.part('body', tk.join(los, 'body'), his, bone='body')
+F.part('body', tk.decimate(tk.join(los, 'body'), 440), his, bone='body')
 
 # ------------------------------------------------------------------ the arms: big spade hands, palms turned out
 SH = {}
@@ -52,7 +52,7 @@ for sx, nm in ((1, 'arm_l'), (-1, 'arm_r')):
     a, ah = limb(nm, [sh_, (sx * 11.8, -3.2, 24.4), wr], [3.5, 3.1, 2.7], tris=56)
     hd, hdh = mitten(nm + '_hand', wr, (sx * 0.42, -1, -0.12), (sx * 1.0, -0.15, 0.55), L=6.4, W=7.4, T=2.5, claws=5, claw=0.62,
                      region='skin', tris=70)
-    F.part(nm, tk.join([a, hd], nm), [ah] + hdh, bone=nm)
+    F.part(nm, tk.decimate(tk.join([a, hd], nm), 110), [ah] + hdh, bone=nm)
     SH[nm] = sh_
 
 # ------------------------------------------------------------------ the hood: a mole's head on a snout, hollow

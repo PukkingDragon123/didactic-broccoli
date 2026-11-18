@@ -98,7 +98,7 @@ def foot(name, heel, toe_dir, L, W, H, toes=3, claw=1.0, region='suit', claw_reg
         ch = cone(name + '_claw_hi', b, tip, claw, n=10)
         tk.set_region(ch, claw_region)
         his.append(ch)
-        los.append(cone(name + '_claw', b, tip, claw, n=4))
+        los.append(tk.tube(name + '_claw', [tuple(b), tuple(tip)], [claw, claw * 0.15], n=4, cap0=None, cap1='point'))
     return tk.join(los, name), his
 
 
@@ -131,7 +131,7 @@ def mitten(name, wrist, d, up, L=5.0, W=4.4, T=2.6, claws=3, claw=0.6, region='s
         ch = cone(name + '_cl_hi', b, tip, claw, n=8)
         tk.set_region(ch, claw_region)
         his.append(ch)
-        los.append(cone(name + '_cl', b, tip, claw, n=3))
+        los.append(tk.tube(name + '_cl', [tuple(b), tuple(tip)], [claw, claw * 0.15], n=4, cap0=None, cap1='point'))
     return tk.join(los, name), his
 
 
