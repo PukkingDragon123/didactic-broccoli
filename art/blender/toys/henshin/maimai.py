@@ -316,8 +316,7 @@ def paint(P):
         e = np.array(S['eye'])
         look = np.array((0, -1.0, 0.25))
         look /= np.linalg.norm(look)
-        P.eye(tuple(e + look * 2.0), tuple(look), 1.75, iris='#2a2225', pupil='#120e10', ring='#120e10', where=P.region('eyeball'),
-              facing=-0.2)
+        P.eye(tuple(e + look * 2.0), tuple(look), 1.75, full=True, bead=None, where=P.region('eyeball'), facing=-0.2)
     # a printed smile above the cutter and two blush dots
     for sx in (1, -1):
         P.flat(P.ellipse((sx * 4.6, -25.2, 12.6), (sx * 0.5, -1, 0.2), 1.2, 0.8) & P.region('body'), '#e88a86')

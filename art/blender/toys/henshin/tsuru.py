@@ -317,11 +317,10 @@ def paint(P):
     P.fill('beak', pt.ramp('#b9a86c', 6, shift=0.07), tone=sh, base=0.05)
     P.fill('steel', pt.ramp('#565a66', 7, dark=0.6, light=0.6, shift=0.05), tone=sh * 1.3, base=0.0)
     P.fill('chrome', pt.ramp('#b3bbc4', 7, dark=0.75, light=0.75, shift=0.05), tone=sh * 1.5, base=0.1)
-    # the eye: a small amber eye with a black pupil on the black face
+    # the eye: a black bead in a charcoal socket ring on the black face
     for sx in (1, -1):
-        P.eye((sx * 2.55, -8.0, 53.5 + BASE_T), (sx, -0.2, 0.15), 1.15, iris='#e8b838', ring='#120e10', lid=0.38, lidcol='#26232a',
-              where=P.region('black') | P.region('white'),
-              facing=0.2)
+        P.eye((sx * 2.55, -8.0, 53.5 + BASE_T), (sx, -0.2, 0.15), 1.15, scale=0.8, bead='#0b090a', rim='#4a454e',
+              where=P.region('black') | P.region('white'), facing=0.2)
     # the protractor wings: white plastic, a black outer band (the crane's black wing tips), printed degree ticks
     for nm, (lo, hi, M) in WING.items():
         sx = 1 if nm == 'wing_l' else -1

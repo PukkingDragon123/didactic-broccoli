@@ -21,6 +21,14 @@ export function install(game) {
   onFigurePress((mesh, item) => {
     let d = L.press(mesh);
     if (item?.pullback) {
+      const H = game.held;
+      let inHand = false;
+      for (let o = mesh; o; o = o.parent) if (o === H?.item?.obj) inHand = true;
+      if (inHand) { // LMB in hand: set it down and let it go (a click while inspecting plays its press clip instead)
+        if (H.inspecting || !game.toys) return d;
+        game.toys.pullBack(H.item);
+        return Math.max(d, 1);
+      }
       const ent = [...(game.items?.list || [])].find((e) => e.mesh === mesh && e.kind === 'toy');
       if (ent && game.toys) { // lying loose: it runs off across the floor
         const p = ent.obj.position.clone(), yaw = ent.obj.rotation.y, data = ent.data;

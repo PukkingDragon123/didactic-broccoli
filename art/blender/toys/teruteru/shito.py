@@ -3,7 +3,7 @@
 A teru-teru bōzu hung head-down until it turned into a raindrop: the cloth-covered head at the bottom (it stands on
 its flattened crown), a faded red string round the neck, the cloth sack gathered up into a knot whose four
 handkerchief corners hang limp like wet ears. Grey-blue and soggy, a sleepy painted eye and one drawn in marker with
-the ink running, three fat drops clinging to the corner tips. A keychain (screw eye, ball chain).
+the ink running, three fat drops clinging to the corner tips. A keychain (it hangs by the screw eye in its knot).
 Gimmick: it shivers, the drops let go one by one and splash on the shelf, the corners flick up, the drops well up
 again.
 
@@ -54,7 +54,7 @@ for nm, cn, r in (('drop_a', 'c_fr', 1.75), ('drop_b', 'c_fl', 1.5), ('drop_c', 
     DROPS[nm] = (lo, [hi], tuple(tip), cn)
 
 # ------------------------------------------------------------------ the keychain
-chain_lo, chain_hi, HANG = bk.keychain((KNOT[0], KNOT[1], KNOT[2] + 1.4), h=11.0, w=8.5, lean=8)
+eye_lo, eye_hi, PIN = bk.screw_eye((KNOT[0], KNOT[1], KNOT[2] + 1.4))
 
 # ------------------------------------------------------------------ parts
 F.part('body', tk.join([body[0], knot[0], cord[0]], 'body'), body[1] + knot[1] + cord[1])
@@ -62,7 +62,7 @@ for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
 for nm, (lo, his, tip, cn) in DROPS.items():
     F.part(nm, lo, his, bone=nm, kind='gloss', uvw=0.7)
-F.part('chain', chain_lo, chain_hi, bone='chain', kind='metal', uvw=0.5)
+F.part('eye', eye_lo, eye_hi, kind='metal', uvw=0.5)
 
 
 # ------------------------------------------------------------------ rig and the gimmick
@@ -88,13 +88,12 @@ def make_rig():
         R.bone(nm, root, parent='root')
     for nm, (lo, his, tip, cn) in DROPS.items():
         R.bone(nm, tip, parent='root')
-    R.bone('chain', (KNOT[0], KNOT[1], KNOT[2] + 2), parent='root')
     for p in F.parts:
         R.attach(p.low, p.bone)
-    R.point('hang', HANG, bone='chain')
+    R.point('chain', PIN, bone='root')
     k = R.key
     with R.action('gimmick'):
-        bones = ['root', 'chain'] + list(CORNERS) + list(DROPS)
+        bones = ['root'] + list(CORNERS) + list(DROPS)
         for b in bones:
             k(b, 0)
         # 0-7 a sniff: it squashes down, then the shiver (brrr) on its crown
@@ -158,20 +157,12 @@ def paint(P):
     f = bk.Face(P, FACE_C, (0, -1, 0), depth=5, where=P.region('cloth'))
     P.flat(f.ell(-5.0, -1.6, 2.8, 1.8) & (f.V < -1.0), '#e9a3a6')  # (blush, painted under everything else)
     P.flat(f.ell(5.2, -1.8, 2.6, 1.7) & (f.V < -1.1), '#e9a3a6')
-    # the painted eye (left): a sleepy bead under a heavy lid, a catchlight
-    e = f.ell(-4.0, 1.3, 1.95, 2.15)
-    P.flat(e, '#1d1a22')
-    P.flat(e & (f.V > 1.55 + 0.3 * np.cos((f.U + 4.0) / 2.0)), CLOTH[3])
-    P.flat(f.stroke(bk.arc(-4.0, 1.25, 2.1, 12, 168, 10, ry=0.6), 0.55), '#1d1a22')
-    P.flat(f.ell(-4.65, 0.6, 0.55), '#f6f2ea')
-    P.flat(f.ell(-3.3, 0.1, 0.25), '#f6f2ea')
-    P.flat(f.stroke([(-6.1, 3.8), (-4.3, 4.25), (-2.5, 4.75)], 0.5, taper=True), '#2b2830')
-    # the marker eye (right): a scribbled blob with the pen's overshoot, and the ink running down in the rain
-    blob = f.ell(4.2, 1.2, 1.7, 1.9, rot=12)
-    for i in range(5):
-        blob |= f.stroke([(2.8 + 0.1 * i, 0.0 + 0.55 * i), (5.5 + 0.2 * i, 0.4 + 0.55 * i)], 0.45)
-    P.flat(blob, '#262330')
-    P.flat(f.ell(3.7, 1.9, 0.45), '#5d6278')  # (the marker's wet sheen)
+    # the painted eye (left): a plain dark bead, a little flattened (sleepy), one tiny highlight; a worried brow
+    P.flat(f.ell(-4.0, 1.2, 1.5, 1.15), '#1d1a22')
+    P.flat(f.ell(-4.5, 1.55, 0.36), '#f6f2ea')
+    P.flat(f.stroke([(-6.1, 3.5), (-4.3, 3.95), (-2.5, 4.5)], 0.5, taper=True), '#2b2830')
+    # the marker eye (right): a dot drawn in marker with the pen's tail, and the ink running down in the rain
+    P.flat(f.ell(4.2, 1.2, 1.45, 1.35, rot=12) | f.stroke([(3.4, 0.5), (5.6, 1.9)], 0.5, taper=True), '#262330')
     for u0, L, w in ((3.4, 5.6, 0.5), (4.8, 3.9, 0.42), (2.6, 2.6, 0.36)):
         pts = [(u0 + 0.25 * math.sin(i * 1.7), -0.5 - L * i / 6) for i in range(7)]
         P.flat(f.stroke(pts, w, taper=True), '#3a3f58')
@@ -184,5 +175,5 @@ def paint(P):
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'chain')] + [(c, 'body') for c in CORNERS], cam=((60, -84, 52), (0, 0, 24)),
+bk.run(F, make_rig, paint, skip=[('body', 'eye')] + [(c, 'body') for c in CORNERS], cam=((60, -84, 52), (0, 0, 24)),
        fold=(0, 12, 36, 92), frames=100)

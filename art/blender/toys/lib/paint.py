@@ -159,7 +159,8 @@ class Painter:
         out = (where & s.mask) if (full and where is not None) else (face & (d <= 1.0))
         if rim:
             s.flat(face & (d <= 1.4) & ~out, rim)
-        s.flat(out, bead)
+        if bead:  # (None: the bead's own shaded fill is already painted, only the catchlight goes on)
+            s.flat(out, bead)
         if hi:  # one tiny catchlight, up and to the left (at least a texel)
             px = 1.0 / max(1e-6, getattr(s, 'ppmm', 5.0))
             hr = max(0.17 * rb, 0.55 * px)

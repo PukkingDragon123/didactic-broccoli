@@ -26,8 +26,13 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - **Low poly, stylised**: models use low triangle counts with clean, deliberate silhouettes (bevels and edge flow
   where they read, no noisy scan geometry); the hand-painted pixel-art texture carries the detail. Real proportions,
   not cartoon. Budgets: toy ≤1.5k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
-- **Animal eyes are simple beads or dots** (toys AND the animals in the game: cats, dogs, birds…): a solid dark
-  bead or dot, at most one tiny highlight. Never realistic eyeballs with iris, pupil, lashes or glossy "AI" eyes.
+- **Faces are as simple as possible and hand-drawn** (toys AND the animals in the game). The owner's own sketch is
+  docs/ref/faces_owner.png: two small solid ink dots for eyes (slightly uneven, never perfectly round or matched), one
+  brush-stroke mouth (a flat line with a little upturn at one end, a short slanted dash, or a big grin with a few
+  vertical tooth strokes), wobbly and imperfect line weight, like a quick marker drawing. Cute comes from placement
+  and spacing (eyes wide apart or tiny and close, mouth small or one big grin), not from detail. No iris, pupil,
+  whites, highlights, lashes, sculpted lids or glossy "AI" eyes; no smooth vector-perfect shapes. Painted onto the
+  texture, not modelled.
 - **Toy style = real Japanese capsule-toy (gashapon) mascot figures** (owner's reference boards): original pun and
   fusion concepts (animal × food or object, little creatures with a job or a pose, transforming toys), chunky
   readable silhouettes, clean factory PVC paint with soft airbrushed blush and simple painted faces (bead eyes), about

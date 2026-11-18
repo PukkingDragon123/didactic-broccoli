@@ -114,7 +114,7 @@ for a in DRUM_A:
 ring_lo = tk.join([cord[0], hoop_lo] + spokes_lo + drums_lo, 'ring')
 tk.decimate(ring_lo, 470)
 
-chain_lo, chain_hi, HANG = bk.keychain((KNOT[0], KNOT[1] + 1.6, KNOT[2] + 1.0), h=11.0, w=8.5, lean=18)
+eye_lo, eye_hi, PIN = bk.screw_eye((KNOT[0], KNOT[1] + 1.6, KNOT[2] + 1.0))
 
 # ------------------------------------------------------------------ parts
 F.part('body', tk.join([body[0], knot[0]], 'body'), body[1] + knot[1])
@@ -122,7 +122,7 @@ F.part('ring', ring_lo, cord[1] + [hoop_hi] + spokes_hi + drums_hi, bone='ring')
 for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
 F.part('bolt', bolt_lo, [bolt_hi], bone='bolt', kind='gloss', sharp=50)
-F.part('chain', chain_lo, chain_hi, bone='chain', kind='metal', uvw=0.5)
+F.part('eye', eye_lo, eye_hi, kind='metal', uvw=0.5)
 
 
 def make_rig():
@@ -133,13 +133,12 @@ def make_rig():
     for nm, (lo, hi, root) in CORNERS.items():
         R.bone(nm, root, parent='root')
     R.bone('bolt', BROOT, parent='root')
-    R.bone('chain', (KNOT[0], KNOT[1] + 1.6, KNOT[2] + 2), parent='root')
     for p in F.parts:
         R.attach(p.low, p.bone)
-    R.point('hang', HANG, bone='chain')
+    R.point('chain', PIN, bone='root')
     k = R.key
     with R.action('gimmick'):
-        bones = ['root', 'ring', 'bolt', 'chain'] + list(CORNERS)
+        bones = ['root', 'ring', 'bolt'] + list(CORNERS)
         for b in bones:
             k(b, 0)
         # 0-8 it winds up: squash, the bolt leans back, the ring turns back a little (anticipation)
@@ -218,13 +217,10 @@ def paint(P):
     f = bk.Face(P, FACE, (0, -1, 0), depth=5, where=P.region('cloth'))
     P.flat(f.ell(-5.6, -1.5, 2.3, 1.4), '#ef7f5c')
     P.flat(f.ell(5.6, -1.5, 2.3, 1.4), '#ef7f5c')
-    for su in (-1, 1):  # bright round eyes with small pupils, looking up at the bolt (mischief)
-        e = f.ell(su * 3.6, 1.4, 1.75, 2.0)
-        P.flat(e, '#231c1e')
-        P.flat(f.ell(su * 3.6, 1.4, 1.35, 1.6), '#fdf6e6')
-        P.flat(f.ell(su * 3.6 + 0.3, 1.95, 0.85, 1.0), '#231c1e')
-        P.flat(f.ell(su * 3.6 + 0.0, 2.3, 0.32), '#fffaf0')
-        P.flat(f.stroke([(su * 5.6, 3.5), (su * 3.8, 3.75), (su * 2.0, 4.6)], 0.75, taper=True), '#231c1e')
+    for su in (-1, 1):  # bead eyes (one tiny highlight); the mischief is in the cocked brows and the grin
+        P.flat(f.ell(su * 3.6, 1.5, 1.25, 1.45), '#231c1e')
+        P.flat(f.ell(su * 3.6 - 0.45, 1.95, 0.34), '#fffaf0')
+        P.flat(f.stroke([(su * 5.5, 3.3), (su * 3.8, 3.55), (su * 2.1, 4.4)], 0.75, taper=True), '#231c1e')
     m = f.poly(MOUTH)
     P.flat(m, '#5a1a22')
     P.flat(m & (f.V < -3.0) & (np.abs(f.U) < 1.6), '#d9545e')  # the tongue
@@ -240,5 +236,5 @@ def paint(P):
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'chain'), ('body', 'ring'), ('bolt', 'body'), ('bolt', 'chain')] + [(c, 'body') for c in CORNERS],
+bk.run(F, make_rig, paint, skip=[('body', 'eye'), ('body', 'ring'), ('bolt', 'body'), ('bolt', 'eye')] + [(c, 'body') for c in CORNERS],
        cam=((60, -84, 52), (0, 0, 22)), fold=(0, 14, 26, 44), frames=86)

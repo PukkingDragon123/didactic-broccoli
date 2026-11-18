@@ -316,13 +316,15 @@ def paint(P):
     P.fill('inner', pt.ramp('#3a3638', 5, shift=0.03), tone=sh, base=-0.2)
     P.fill('under', pt.ramp('#43322a', 6, shift=0.05), tone=sh, base=0.0)
     P.fill('chrome', pt.ramp('#b3bbc4', 7, dark=0.75, light=0.75, shift=0.05), tone=sh * 1.5, base=0.1)
-    # compound eyes: deep amber domes with a catchlight
-    P.fill('ceye', pt.ramp('#3a2a22', 6, shift=0.06), tone=sh, base=0.05)
-    for sx in (1, -1):  # big amber eyes with a heavy black lid (a cross, determined look) and a catchlight
+    # the eyes: jet beads in a dull bronze socket rim (so they read on the black head), the look is in the brows
+    P.fill('ceye', pt.ramp('#1c1517', 5, dark=0.6, light=0.35, shift=0.04), tone=sh, base=-0.1)
+    for sx in (1, -1):
         ax = np.array((sx * 0.72, -0.62, 0.32))
         ax /= np.linalg.norm(ax)
-        P.eye(tuple(np.array((sx * 7.5, -17.0, ZB + 1.2)) + ax * 2.1), tuple(ax), 2.05, ry=1.9, iris='#d8902e', pupil='#1a0f0a',
-              ring='#140f10', lid=0.32, lidcol=BLACK[1], where=P.region('ceye') | P.region('black'), facing=0.2, rot=-sx * 14)
+        P.eye(tuple(np.array((sx * 7.5, -17.0, ZB + 1.2)) + ax * 2.1), tuple(ax), 2.05, ry=1.9, full=True, bead=None,
+              where=P.region('ceye'), facing=0.2)
+        rimz = P.region('black') & ~P.region('ceye') & (np.hypot(np.abs(X) - 7.5, Yc + 17.0) < 3.25)
+        P.flat(rimz, '#5e4c3c')
     # hind wings: amber membrane with dark veins
     P.fill('wing', pt.ramp('#d6a04a', 6, shift=0.07), tone=sh * 0.6, base=0.1)
     vein = P.region('wing') & ((np.abs(np.sin((np.abs(X) * 1.2 + Yc * 0.35))) < 0.12) | (np.abs(np.sin(Yc * 0.55)) < 0.08))

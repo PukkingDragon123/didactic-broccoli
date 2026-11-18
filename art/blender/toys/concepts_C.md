@@ -1,11 +1,11 @@
 # Gacha Garage: the Blender toy line, agent C's four series
 
 Four more original capsule-toy series in the spirit of the owner's gashapon boards (ref_gacha 4, 5, 6, 9, 10, 11), each a
-different kind of toy: a transforming household object, creatures with a job, yōkai with attitude and clockwork
-automata. They take the genre from the boards and do something new with it. All names, characters and logos are our
+different kind of toy: a transforming household object, creatures with a job, yōkai with attitude and a
+playset of Shōwa street games. They take the genre from the boards and do something new with it. All names, characters and logos are our
 own; they borrow no product, character or brand. The finish is the same as series 1 (concepts.md): factory PVC, a
-512 px pixel-art paint over a sculpt baked onto a low-poly game mesh (≤1.5k tris), a normal map, bead eyes with a
-catchlight. Every figure is its own sculpt with a press-to-play gimmick clip. Each series has five figures and a secret.
+512 px pixel-art paint over a sculpt baked onto a low-poly game mesh (≤1.5k tris), a normal map, simple solid dark
+bead eyes (one tiny highlight at most); expression comes from brows, mouth and pose. Every figure is its own sculpt with a press-to-play gimmick clip. Each series has five figures and a secret.
 
 ---
 
@@ -57,41 +57,40 @@ Card: a station timetable board and a cardboard ticket (硬券), punched.
 **Hook:** the yōkai of the old picture scrolls, cast in kabuki: each plays a role type and wears its stage paint
 (kumadori), its costume and its props.
 **Twist:** the kabuki role fits the yōkai: the kappa is the swaggering aragoto hero in red kumadori, the tengu the
-villain in indigo, the rokurokubi the elegant onnagata whose neck gives the game away, the umbrella yōkai the comic
-servant, the paper lantern the ghost of the piece. They hold the big frozen pose, the mie, with crossed eyes.
-**Gimmick:** press the button for the mie: the wind-up, the head roll, the freeze with crossed eyes, a stamp
-(the clappers clack in the sound).
+villain in indigo, the two-tailed nekomata the elegant onnagata whose tails give the game away, the sickle-weasel the
+sword fighter of the fight scene, the bean-washer the comic old servant. They hold the big frozen pose, the mie.
+**Gimmick:** press the button for the mie: the wind-up, the head roll, the freeze, a stamp (the clappers clack).
+(Kept clear of B's haunted-house props: no umbrella, lantern or long-neck yōkai here.)
 
 | # | Figure | Role | The gimmick | Rarity |
 |---|--------|------|-------------|--------|
-| 1 | あらごとカッパ Aragoto Kappa | the hero: red kumadori on green, huge sleeves, a sword, the water dish on his head | head roll, freeze cross-eyed, foot stamp, the dish sloshes | common |
+| 1 | あらごとカッパ Aragoto Kappa | the hero: red kumadori on green, huge sleeves, a sword, the water dish on his head | head roll, freeze, foot stamp, the dish sloshes | common |
 | 2 | かたきやくテング Villain Tengu | the villain: indigo kumadori, a feather fan, one-tooth geta | he fans, the nose lifts, the wings unfold for his mie | common |
-| 3 | おやまろくろ首 Onnagata Rokurokubi | the female role: kimono, parasol, a demure bow | the neck telescopes up, the head looks round and back, it slides back down | uncommon |
-| 4 | さんまいめカラカサ Comic Karakasa | the comic servant: an umbrella yōkai on one geta, one eye, a long tongue | hop, spin, the tongue flicks out, the canopy springs half open | uncommon |
-| 5 | ゆうれいチョウチン Ghost Lantern | the ghost: a paper lantern on its pole, a rope sash and a mourning brow | it splits open into a grin, the tongue lolls, it stretches like an accordion (light-up later) | rare |
+| 3 | おやまネコマタ Onnagata Nekomata | the female role: a courtesan's kimono and hair pins, a tenugui on her head for the cat dance | the coy bow, then both tails whip out from under the kimono and the ears pop up through the hair | uncommon |
+| 4 | たちまわりカマイタチ Sword-Fight Kamaitachi | the fight scene: a weasel with sickle forearms, a whirlwind round its feet | the spinning slash: a full turn, both sickles out, freeze | uncommon |
+| 5 | さんまいめアズキアライ Comic Azukiarai | the comic old servant: the bean-washer with his sieve of azuki at the riverbank | shoki-shoki: he shakes the sieve, the beans hop, he peers up | rare |
 | S | かがみジシ Mirror Lion | the lion spirit of the lion dance: the long white mane, the peony fan | the mane whips round in the lion's circle (kegurui), the peony fan flutters | secret |
 
 Card: a kabuki programme (banzuke) with the three-colour curtain (jōshiki-maku) stripes.
 
 ---
 
-## C4. からくりどうぶつ Karakuri Dōbutsu: "Clockwork Zoo" (automata, wind-up) · id `karakuri`
+## C4. あそびの名人 Asobi no Meijin: "Playground Champions" (playset with action, Shōwa street games) · id `meijin`
 
-**Hook:** Edo karakuri automata (the tea-serving doll, the archer boy, the somersaulting doll), made as animals in
-carved, lacquered hinoki with painted kimono.
-**Twist:** the mechanism shows: a key in the back, a brass spring drum and gear train behind a little window, whalebone
-spring strip, and each animal's trick is the real karakuri trick: the tanuki brings you tea and bows when you take it,
-the rabbit draws and shoots, the frog somersaults down its own stairs.
-**Gimmick:** press the button: the key turns and it performs its trick (a wind-up version when the wind-up
-system lands).
+**Hook:** the street games of a Shōwa childhood (beigoma tops, menko cards, kendama, bamboo stilts, cat's cradle),
+played by animal champions, each with its game piece as a little playset part.
+**Twist:** each animal is a natural at its game, or hopelessly built for it: the seal slaps menko with a flipper,
+the chameleon plays kendama with its tongue, the penguin is on bamboo stilts, the spider makes the string tower with
+eight legs, and the hedgehog's iron top spins in a bucket ring. (Replaces the earlier karakuri idea: B has `karakuri`.)
+**Gimmick:** press: it plays, and the game piece does its thing.
 
-| # | Figure | The trick | Rarity |
-|---|--------|-----------|--------|
-| 1 | ちゃはこびタヌキ Tea Tanuki | walks forward with a teacup on a tray, stops, bows, turns round and trundles back | common |
-| 2 | ゆみひきウサギ Archer Rabbit | kneeling: takes an arrow, draws, aims (the ears flick), shoots at the target on its base | common |
-| 3 | だんがえりカエル Somersault Frog | flips backwards down the three steps of its staircase, landing each time | uncommon |
-| 4 | もじかきサル Calligrapher Monkey | dips the brush, writes 寿 on its paper in four strokes, looks up proudly | uncommon |
-| 5 | つなわたりネズミ Tightrope Mouse | walks the rope between two posts with a parasol, wobbles, rights itself | rare |
-| S | からくりホウオウ Clockwork Phoenix | gold-leaf phoenix on a drum: the wings beat, the tail fans open, the head bows | secret |
+| # | Figure | The play | Rarity |
+|---|--------|----------|--------|
+| 1 | ベーゴマハリネズミ Beigoma Hedgehog | winds the string round its iron top and launches it: the top spins in the bucket ring (the playset part) | common |
+| 2 | メンコアザラシ Menko Seal | a flipper slap: the card on the ground flips over | common |
+| 3 | けんだまカメレオン Kendama Chameleon | the ball flies up, turns over and lands on the spike, the tongue flicks | uncommon |
+| 4 | たけうまペンギン Stilt Penguin | wobbles across on bamboo stilts and rights itself | uncommon |
+| 5 | あやとりグモ Cat's-Cradle Spider | eight legs work the string: the figure goes from the ladder to the tower | rare |
+| S | むしずもう Mushi-Zumō | a stag beetle and a rhino beetle on a log ring: the ring drums, they shove, one tips over | secret |
 
-Card: a woodblock-print instruction sheet (からくり図彙 style) with gear diagrams on washi.
+Card: a dagashi-ya menko sheet with die-cut cards and the champions' portraits.

@@ -477,12 +477,12 @@ def paint(P):
         th = np.arctan2(v, u - 0.8)
         swirl = np.abs(((rr - 0.33 * th) % 1.15) - 0.57) < 0.19
         P.tint(m & side & swirl & (rr < 2.8), GOLD, sh * 1.3 + 0.15)
-    # the eyes: gold beads with a red slit, glaring from under the brows
+    # the eyes: black beads glaring from under the heavy brows
+    P.fill('eyeball', pt.ramp('#2a2024', 5, dark=0.6, light=0.35, shift=0.04), tone=sh, base=-0.1)
     for (lo_, hi_, c, ax), sx in zip(EYES, (1, -1)):
         c = Vector(posed('head', c))
         axv = (LIFT @ world('head')).to_3x3() @ Vector(ax)
-        P.eye(tuple(c + axv * 0.65), tuple(axv.normalized()), 1.35, iris='#f0b830', slit=0.24, ring='#2a0f0c', pupil='#6a0e0c',
-              lid=0.35, lidcol=BLACK[2], where=P.region('eyeball'), facing=-0.2, look=(-0.1, 0.0))
+        P.eye(tuple(c + axv * 0.65), tuple(axv.normalized()), 1.35, full=True, bead=None, where=P.region('eyeball'), facing=-0.2)
     P.clusters()
     return P.done()
 

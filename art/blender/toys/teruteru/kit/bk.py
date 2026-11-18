@@ -11,8 +11,7 @@
   export), so each figure script is only its sculpt, its paint and its clip.
 - Face: painted strokes, dots and shapes on a surface seen from one direction (mouths, brows, stitches, marker
   lines), in figure space so they wrap across UV seams.
-- keychain(): a screw eye, a ball-chain loop and its connector, as one part on its own bone ('chain') with the
-  gimmick point pt_hang at the top of the loop.
+- screw_eye(): the keychain screw eye (the game's ball chain hangs from its pt_chain point: src/game/keychains.js).
 """
 import math
 import os
@@ -123,79 +122,26 @@ def drop(name, tip, r, length, region='drop', n=10, axis=(0, 0, -1)):
     return ob
 
 
-def keychain(top, h=15.0, w=10.5, tilt=(0.0, 0.0), ball=1.15, eye_r=2.3, lean=0.0):
-    """The keychain hardware on top of a figure: a screw eye whose shank goes into the figure at `top`, a ball-chain
-    loop of height h and width w threaded through it, and the chain's connector capsule. Returns
-    (low, [sculpt...], hang_point). Game mesh: thin tubes; sculpt: real balls and links, baked onto them.
-    tilt: (degrees about x, about y) of the whole loop; lean: the loop leans back (degrees)."""
-    tx, ty = tilt
+def screw_eye(top, eye_r=2.0, wire=0.55, yaw=0.0):
+    """The keychain screw eye (the game hangs its ball chain from it: src/game/keychains.js, pt_chain): a wire ring
+    on a short threaded shank screwed into the figure at `top`. Returns (low, [sculpt...], pin) where pin is the inside
+    top of the ring (where the chain's clasp hangs). yaw: turn of the ring's plane (degrees about Z)."""
     t = np.array(top, float)
-    # the screw eye: a ring on a short shank
-    eye_c = t + np.array((0, 0, 1.0 + eye_r))
-    ring_pts = [tuple(eye_c + np.array((eye_r * math.cos(a), 0, eye_r * math.sin(a)))) for a in np.linspace(0, 2 * math.pi, 12, endpoint=False)]
-    eye_lo = tk.tube('eye', ring_pts[::2], 0.55, n=4, closed=True)
-    eye_hi = tk.tube('eye_hi', ring_pts, 0.6, n=10, closed=True)
-    tk.subsurf(eye_hi, 1)
-    sh_lo = tk.cyl('shank', 0.7, t[2] - 2.5, t[2] + 1.4, n=6, at=(t[0], t[1]), bevel=0, segs=0)
-    sh_hi = tk.cyl('shank_hi', 0.75, t[2] - 2.5, t[2] + 1.4, n=12, at=(t[0], t[1]), bevel=0.15, segs=1)
-    # the ball-chain loop: a teardrop through the eye's top, standing up (a gashapon keychain as it's photographed)
-    base = eye_c + np.array((0, 0, eye_r - 0.2))
-    loop = []
-    N = 18
-    for i in range(N):
-        a = 2 * math.pi * i / N
-        # teardrop: pinched at the bottom (through the eye), round at the top
-        x = w / 2 * math.sin(a) * (0.35 + 0.65 * (1 - math.cos(a)) / 2) ** 0.9
-        z = h * (1 - math.cos(a)) / 2
-        loop.append(np.array((x, 0.0, z)))
-    loop = [base + p for p in loop]
-
-    def tilt_pts(P):
-        P = [np.asarray(p, float) - t for p in P]
-        out = []
-        for p in P:
-            v = Vector(p)
-            v.rotate(Vector((1, 0, 0)).rotation_difference(Vector((1, 0, 0))))
-            from mathutils import Matrix
-            M = Matrix.Rotation(math.radians(tx - lean), 3, 'X') @ Matrix.Rotation(math.radians(ty), 3, 'Y')
-            out.append(tuple(np.array(M @ v) + t))
-        return out
-    loop_t = tilt_pts(loop)
-    ch_lo = tk.tube('chain', loop_t, 0.62, n=4, closed=True)
-    # sculpt: the balls (spheres along the loop) and the short necks between them
-    P = np.array(loop_t + [loop_t[0]])
-    seg = np.linalg.norm(np.diff(P, axis=0), axis=1)
-    L = seg.sum()
-    nb = int(L / (ball * 1.32))
-    balls = []
-    cum = np.concatenate([[0], np.cumsum(seg)])
-    conn_at = None
-    for k in range(nb):
-        s_ = (k + 0.5) * L / nb
-        i = np.searchsorted(cum, s_) - 1
-        f = (s_ - cum[i]) / seg[i]
-        c = P[i] * (1 - f) + P[i + 1] * f
-        if k == nb // 2:  # the connector capsule sits at the top of the loop
-            conn_at = (c, P[i + 1] - P[i])
-            continue
-        b = tk.lathe('ball', [(0, -ball / 2), (ball * 0.36, -ball * 0.42), (ball / 2, 0), (ball * 0.36, ball * 0.42), (0, ball / 2)], n=8, centre=tuple(c))
-        balls.append(b)
-    neck = tk.tube('neck_hi', loop_t, 0.22, n=6, closed=True)
-    c, d = conn_at
-    d = d / np.linalg.norm(d)
-    conn = tk.lathe('conn', [(0, -2.2), (0.75, -2.1), (0.95, -1.6), (0.95, 1.6), (0.75, 2.1), (0, 2.2)], n=10)
-    q = Vector((0, 0, 1)).rotation_difference(Vector(tuple(d)))
-    tk.transform(conn, q.to_matrix().to_4x4())
-    tk.move(conn, tuple(c))
-    conn_lo = tk.copy(conn, 'conn_lo')
-    tk.decimate(conn_lo, 24)
-    hi = tk.join(balls + [neck, conn], 'chain_hi')
-    tk.set_region(hi, 'metal')
-    tk.set_region(eye_hi, 'metal')
-    tk.set_region(sh_hi, 'metal')
-    lo = tk.join([ch_lo, eye_lo, sh_lo, conn_lo], 'chain')
-    top_pt = max(loop_t, key=lambda p: p[2])
-    return lo, [hi, eye_hi, sh_hi], tuple(top_pt)
+    c = t + np.array((0, 0, 1.0 + eye_r))
+    ring = [tuple(c + np.array((eye_r * math.cos(a), 0, eye_r * math.sin(a)))) for a in np.linspace(0, 2 * math.pi, 24, endpoint=False)]
+    lo = tk.tube('eye', ring[::4], wire, n=4, closed=True)
+    hi = tk.tube('eye_hi', ring, wire * 1.05, n=10, closed=True)
+    tk.subsurf(hi, 1)
+    sh_lo = tk.cyl('shank', 0.72, t[2] - 2.5, t[2] + 1.3, n=6, at=(t[0], t[1]), bevel=0, segs=0)
+    sh_hi = tk.lathe('shank_hi', [(0, t[2] - 2.5)] + [(0.78 if k % 2 else 0.6, t[2] - 2.3 + 0.32 * k) for k in range(6)] +
+                     [(0.95, t[2] + 0.2), (0.95, t[2] + 0.75), (0.7, t[2] + 1.3), (0, t[2] + 1.3)], n=12, centre=(t[0], t[1], 0))
+    for o in (lo, hi):
+        tk.rotate(o, yaw, 'Z', pivot=tuple(t))
+    for o in (hi, sh_hi):
+        tk.set_region(o, 'metal')
+    low = tk.join([lo, sh_lo], 'eye')
+    pin = tuple(c + np.array((0, 0, eye_r - wire)))
+    return low, [hi, sh_hi], pin
 
 
 # ------------------------------------------------------------------ AO only from what moves with the part

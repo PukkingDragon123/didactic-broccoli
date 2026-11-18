@@ -1,7 +1,7 @@
 // Sakasa Teru-teru (さかさてるてる, "Upside-Down Rain Charms"): teru-teru bōzu hung head-down until they turned into
 // raindrops, an original dark-cute keychain series modelled in Blender (art/blender/toys/teruteru, concept in
 // art/blender/toys/concepts_B.md). Each brings its own weather: press it (left click in hand, right click on a shelf)
-// and it shivers and does it. Every one carries its screw eye and ball chain (the gimmick point pt_hang).
+// and it shivers and does it. Every one is a keychain: the ball chain hangs from the screw eye in its knot (pt_chain).
 // gimmick.sfx: little sounds timed to the clip, [seconds, sound, opts] (src/game/figureGimmicks.js).
 export default {
   id: 'teruteru',
@@ -14,6 +14,7 @@ export default {
   themes: ['weird', 'retro', 'japan'],
   card: { bg: '#cfd8de', accent: '#34536e', text: '#1d2731', accent2: '#c0463a', pattern: 'dots', kind: 'ボールチェーン付きマスコット' },
   capsule: { colors: [0x8fa6b8, 0xe9e4d8, 0x34536e, 0xc0463a] },
+  keychain: { chain: 90 }, // every charm comes on a ball chain from the screw eye in its knot (src/game/keychains.js)
   items: [
     {
       id: 'shito', name: 'Drizzle', jp: 'しとしと', rarity: 'common',

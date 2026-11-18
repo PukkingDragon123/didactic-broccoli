@@ -340,12 +340,11 @@ def paint(P):
     shav = P.region('drawer') & (np.sin(X * 2.6 + np.sin(Z * 3.1) * 2) * np.sin(Z * 4.0 + X) > 0.25) & (Yc > FRONT + 0.6) & (Z < Z0 + 5.6)
     P.tint(shav, pt.ramp('#d9a86a', 5, shift=0.05), sh + 0.2)
     P.flat(shav & (np.sin(X * 5.0 + Z * 3.0) > 0.85), '#5a3a2a')  # the painted pencil-lead ends
-    # the eyes: glossy beads with whites, the right one half shut under its brow, both glancing sideways (up to something)
-    P.fill('eye', pt.ramp('#f4eee2', 5, shift=0.05), tone=sh * 0.5, base=0.2)
+    # the eyes: plain glossy black beads (the mischief is in the cocked brows and the smirk)
+    P.fill('eye', pt.ramp('#2a2024', 5, dark=0.6, light=0.35, shift=0.04), tone=sh, base=-0.1)
     for (lo_, hi_, c, ax), sx in zip(EYES, (1, -1)):
         c, ax = np.array(c), np.array(ax)
-        P.eye(tuple(c + ax * 1.4), tuple(ax), 2.15, ry=2.05, white='#f6f1e6', iris='#4a2e24', pupil='#140c0a', ring='#3a2420',
-              look=(0.22, -0.05), lid=0.2 if sx > 0 else -0.05, lidcol=PINK[2], where=P.region('eye'), facing=-0.3)
+        P.eye(tuple(c + ax * 1.4), tuple(ax), 2.15, ry=2.05, full=True, bead=None, where=P.region('eye'), facing=-0.3)
     # brows (a darker pink stroke on each sculpted brow) and the smirk under the snout
     brow_l = (np.abs((Z - (ZC + 9.6)) + 0.18 * (X - 7.2)) < 0.55) & (np.abs(X - 7.2) < 2.6)
     brow_r = (np.abs((Z - (ZC + 8.5)) - 0.2 * (X + 6.6)) < 0.6) & (np.abs(X + 6.6) < 2.7)
