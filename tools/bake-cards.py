@@ -106,13 +106,13 @@ KIND_EN = {  # the card's catch ribbon (series data card.kind is the Japanese pr
     'kasabuki': 'TRANSFORMING UMBRELLA ARMS', 'meijin': 'PLAYGROUND MASTER FIGURE', 'nakanohito': 'MONSTER SUIT FIGURE',
     'obakebaito': 'HAUNTED HOUSE PLAYSET', 'otenki': 'WEATHER DELIVERY FIGURE', 'otsukai': 'LACQUER & GOLD LEAF FIGURE',
     'sento': 'BATHHOUSE REGULARS FIGURE', 'teruteru': 'BALL-CHAIN MASCOT', 'tsuppari': 'TOUGH-GUY ANIMAL FIGURE',
-    'yomise': 'DEEP-SEA NIGHT STALL FIGURE',
+    'yomise': 'DEEP-SEA NIGHT STALL FIGURE', 'kanikan': 'CRAB IN A TIN FIGURE', 'janru': 'ANIME GENRE FIGURE',
 }
 BURST = {  # the round sticker on the stage
     'henshin': ('TRANS-', 'FORMS!'), 'kasabuki': ('TRANS-', 'FORMS!'), 'hashigo': ('PLAY', 'SET!'), 'obakebaito': ('PLAY', 'SET!'),
     'teruteru': ('BALL', 'CHAIN!'), 'karakuri': ('WIND', 'IT UP!'), 'nakanohito': ('WHO', 'INSIDE?'), 'kaden': ('IT', 'MOVES!'),
     'yomise': ('LIGHTS', 'UP!'), 'otsukai': ('GOLD', 'LEAF!'), 'kabuki': ('MIE!',), 'sabaku': ('POSE!',), 'minato': ('POSE!',),
-    'datesha': ('POSE!',),
+    'datesha': ('POSE!',), 'kanikan': ('OPEN', 'THE TIN!'), 'janru': ('BIG', 'MOMENT!'),
 }
 LOGO = {  # series -> the hand-lettered logotype (tools/lettering.py alphabet, lines, style); one effect only
     'henshin': ('ruler', [('STATIONERY', 1), ('BEASTS', 2)], dict(outline=(1, 0x1c1816), track=1, bounce=[0, 0, 1, 0, -1, 0, 0, 1, 0, 0])),
@@ -650,14 +650,17 @@ def card5(s):
 
 if __name__ == '__main__':
     L = json.load(open(os.path.join(TOYS, 'lineup.json')))
-    if '--ref' in sys.argv:  # card6: clone a measured reference card (tools/card6.py, tools/cardref/<ref>.json)
-        from card6 import card6, REF_OF
+    from card6 import card6, REF_OF  # the cards built on the owner's reference structure (tools/card6.py)
+    def ctx(sid):
+        name, mcol, em = MAKERS[MAKER_OF.get(sid, 0)]
+        return dict(maker=(name, mcol, em), kind=KIND_EN.get(sid, 'MASCOT FIGURE'), burst=BURST.get(sid, ('NEW!',)),
+                    tagline=meta(sid)[0], toys=TOYS, cuts=os.path.join(CACHE, 'cuts'))
+    if '--ref' in sys.argv:  # one template forced (tools/cardref/<ref>.json), clones into shots/clone/
         a = sys.argv[sys.argv.index('--ref') + 1:]
         ref, sids = (a[0], a[1].split(',')) if len(a) > 1 else (None, a[0].split(','))
         os.makedirs(os.path.join(ROOT, 'shots', 'clone'), exist_ok=True)
         for sid in sids:
-            name, mcol, em = MAKERS[MAKER_OF.get(sid, 0)]
-            im = card6(L[sid], ref or REF_OF[sid], (name, mcol, ''.join(w[0] for w in name.split()[:2]), em))
+            im = card6(L[sid], ref or REF_OF[sid], ctx(sid))
             im.save(os.path.join(ROOT, 'shots', 'clone', 'clone_%s.png' % sid)); print('card6', sid, ref or REF_OF[sid], im.size)
         sys.exit(0)
     only = sys.argv[1].split(',') if len(sys.argv) > 1 else None
@@ -665,5 +668,7 @@ if __name__ == '__main__':
     for sid, s in L.items():
         if only and sid not in only: continue
         if not os.path.exists(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js')): continue  # a retired series
-        im = card5(s) if sid in CARD5 else card(s); save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
+        im = card6(s, REF_OF[sid], ctx(sid)) if sid in REF_OF else card5(s) if sid in CARD5 else card(s)
+        im.save(os.path.join(ROOT, 'shots', 'clone', 'clone_%s.png' % sid)) if sid in REF_OF else None
+        save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
         print('card', sid, len(s['items']))

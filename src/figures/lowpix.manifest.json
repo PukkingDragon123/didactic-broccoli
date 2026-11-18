@@ -110,7 +110,7 @@
 "mats":{"base":"matte","body":"matte","arm_l":"matte","arm_r":"matte","shuriken":"gloss","wing_l":"matte","wing_r":"matte","head":"matte"},
 "pts":{},
 "blender":true,"facet":1},
-"janru/robo":{"size":[28,32.71,28],"min":[-14,0,-14],"tris":646,"atlas":[1024,1024],"kb":270,"clips":{"gimmick":"gimmick"},
+"janru/robo":{"size":[28,32.71,28],"min":[-14,0,-14],"tris":646,"atlas":[1024,1024],"kb":271,"clips":{"gimmick":"gimmick"},
 "mats":{"body":"matte","rocket":"matte","rhead":"matte","pilot":"matte"},
 "pts":{},
 "blender":true,"facet":1},

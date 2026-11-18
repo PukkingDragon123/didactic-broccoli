@@ -3,7 +3,7 @@
 How a Blender toy series (art/blender/toys/<series>/, src/data/series/<series>.js) asks for each gimmick. The
 modelling side uses `art/blender/toys/lib/` (`kit.py` for the shared hardware and points); the game side is
 `src/game/figureGimmicks.js`, `keychains.js`, `lightup.js`, `playsets.js`, `toys.js` (pull-back), wired by
-`src/plugins/toyKit.js`. Build with `art/blender/toys/make.sh <series> [ids] [--fast] [--repaint] [--card] [--variants]`.
+`src/plugins/toyKit.js`. Build with `art/blender/toys/make.sh <series> [ids] [--fast] [--repaint] [--card] [--faces]`.
 
 Every gimmick works in the three places a figure lives: in your hand (LMB, or a click while inspecting), on a display
 shelf (RMB with empty hands, not on price-tagged sale displays) and lying loose (RMB).
@@ -112,44 +112,30 @@ pullback: { clip: 'run', speed: 0.8, dist: 1.0, wind: 0.45, text: 'Pull it back 
 - A figure can have both `pullback` and a `gimmick` clip. The press clip then plays only while you inspect it, or on
   a shelf.
 
-## 6. Figure variants (`variants`)
+## 6. Figure variants (automatic)
 
-Each catalogue entry can come in 2–3 versions of the SAME sculpt with one small change: an alternate colourway, an
-extra or swapped accessory, or a different face expression. They are pulled at random by weight, shown as a variant
-tag (reveal caption, the hand tag, the shelf plaque, the hotbar picture) and kept in saves. This is not a reskin
-(never a new catalogue entry) and not a finish (clear, gold, glow… still roll on top of any variant).
+Every figure comes in up to three versions of the same sculpt, mass-produced with no per-figure work, pulled at
+random next to the finish (src/data/variants.js `rollVariant`, called by `rollCapsule`) and shown as a variant tag
+(the reveal caption, the hand tag, the shelf plaque, the hotbar picture):
 
-```js
-variants: [
-  { id: 'std', name: 'Desk Green', weight: 6 },                     // [0] the standard figure
-  { id: 'blue', name: 'Office Blue', weight: 3, texture: 'blue',     // a colourway: a repainted atlas
-    recolor: [[['green', 'eye', 'leg', 'skin', 'eyeball'], '#3d63a6']] },
-  { id: 'happy', name: 'Happy Snap', weight: 2, texture: 'happy', face: 'happy' },   // a face swap
-  { id: 'hat', name: 'Rain Hat', weight: 2, show: ['hat'], hide: ['cap'] },          // an accessory swap
-  { id: 'warm', name: 'Sunset', weight: 1, tint: '#ffd8c0' },                        // a quick tint
-],
-```
+| id | name | weight | how |
+|---|---|---|---|
+| `std` | Standard | 6 | the figure as built |
+| `alt` | Alt Colour | 3 | runtime: the atlas's main body colour (its strongest chromatic hue) turned round the colour wheel by a per-figure amount; ink, greys, whites and other hues (eyes, details) stay (src/figures/lowpix.js `hueTex`) |
+| `face` | Happy Face / Sleepy Face / Winking | 2 | a repainted atlas `public/models/lowpix/figures/<series>/<id>.face.png` with an expression picked per figure from the face kit; only figures listed in src/figures/variants.manifest.json |
 
-- **Fields:** `id` (stored in saves), `name` (the tag), `weight` (default 1), and any of:
-  - `texture`: the variant's repainted atlas, `public/models/lowpix/figures/<series>/<id>.<texture>.png`, on the
-    figure's own UVs. Built by `make.sh <series> [ids] --variants` (after the figure) or `--variants-only` (the
-    figure's last build stays): the figure script runs again on the same unwrap (`--repaint`) with `GG_VARIANT` set
-    to the variant's JSON; `lib/fig.py` paints it as usual, applies `recolor`, writes `<id>.<texture>_col.png` and
-    stops (no GLB). The paint function can also read `F.variant` for bigger changes.
-  - `recolor`: `[[regions, '#target'], ...]`: the paint of those regions moved to the target colour, keeping the
-    ramp, brushwork and shading (lib/fig.py `recolor`; face ink, decals and lines on them are left alone).
-  - `face`: the expression the repaint draws (lib/face.py `EXPR`): `happy` (^ ^), `sleepy` (closed) or `wink`
-    (every second eye drawn shut). It applies to `fc.eyes()` and to single-dot eyes (a fresh Face's first `dot()`).
-  - `show` / `hide`: GLB node names. A node any variant `show`s is hidden on all the others (model the accessory as
-    its own named part, hidden by default in the game); `hide` removes nodes for that variant (a swapped part).
-  - `tint`: a colour multiplied over the whole figure's materials (cheap, use sparingly: a texture reads better).
-- **Game:** `rollCapsule` (src/game/economy.js) rolls it next to the finish (src/data/variants.js `rollVariant`).
-  Records carry `variant: '<id>'` only for a non-standard one (`v` on display slots, `key|finish|variant` in
-  storage); old saves read as `variants[0]`. Meshes: `makeItemMesh(key, finish, { variant })` →
-  `lowpixMesh(item, finish, variant)` (src/figures/lowpix.js swaps the atlas when its PNG has loaded, the tint and
-  the node visibility, in the merged mesh and the live clip rig).
-- Check: `tools/slot.sh node art/blender/toys/look.mjs <series>/<id> out.png --variant <id>`.
-- Example: every Stationery Beasts (henshin) figure has a colourway and a face swap.
+- **Batch the faces:** `art/blender/toys/make.sh all --faces-only` (every series; or `make.sh <series> [ids] --faces`
+  / `--faces-only`). Each figure script runs again on its last unwrap (`--repaint`) with `GG_VARIANT`
+  (`{"texture":"face","face":"auto"}`): lib/fig.py sets lib/face.py `EXPR` (`happy` ^ ^, `sleepy` closed, `wink`
+  every second eye shut; it applies to `fc.eyes()` and to single-dot eyes) and writes only `<id>.face_col.png`, no
+  GLB. A repaint that changes nothing (a face not drawn with face.py) or that does not match the GLB's atlas (a stale
+  unwrap) is dropped from the manifest.
+- **Records:** `variant: '<id>'` next to `finish`, only for a non-standard one (`v` on display slots,
+  `key|finish|variant` in storage); old saves read as the standard figure. Meshes: `makeItemMesh(key, finish,
+  { variant })` → `lowpixMesh(item, finish, variant)`.
+- **Override** (rarely): a series item may list its own `variants: [{ id, name, weight, texture?, hue?, tint?,
+  show?: [node], hide?: [node] }]` (variants[0] standard; `show` nodes are hidden on the other variants).
+- Check: `tools/slot.sh node art/blender/toys/look.mjs <series>/<id> out.png --variant alt`.
 
 ## Adding a gimmick kind
 
