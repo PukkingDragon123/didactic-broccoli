@@ -84,8 +84,10 @@ Flat ink (`P.flat`, face.py, printed details) is never brushed, rimmed or worn: 
 
 ## Faces
 
-Unchanged API (`lib/face.py`); in facet mode `dot`, `stroke` (and everything built on them: eyes, mouths, brows,
-noses, whiskers) paint as brushwork, `blush` as hand-dabbed stipple. Keep faces simple: dots and one stroke.
+Unchanged API (`lib/face.py`). In facet mode a big mark (14 texels or more across: a big dot, a wide grin stroke)
+paints as brushwork (bristle streaks, dry edge, ink pooled inside the mark); a smaller one stays solid ink with only
+its hand-drawn edge wobble, so small faces keep two crisp uneven dots and one stroke. `blush` is hand-dabbed stipple.
+Keep faces simple: dots and one stroke.
 
 ## Iterating
 

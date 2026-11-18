@@ -93,7 +93,8 @@ class Face:
         th = np.arctan2(vv / ry, uu / rx)
         ph = s.rng.random(3) * 2 * math.pi
         rr = 1 + 0.09 * np.sin(2 * th + ph[0]) + 0.06 * np.sin(3 * th + ph[1]) + 0.04 * np.sin(5 * th + ph[2])
-        if getattr(s.P, 'facet', False):  # a brush dab: dry ragged rim, ink pooled low in the dot
+        BIG = 14  # (texels: a smaller mark is solid ink with only its edge wobble; dry brush and pooling smear it)
+        if getattr(s.P, 'facet', False) and 2 * max(rx, ry) / s.px >= BIG:  # a big brush dab: dry ragged rim, ink pooled low
             d = np.sqrt((uu / rx) ** 2 + (vv / ry) ** 2) / rr
             cand = s.m & (d <= 1.12)
             br = s._bristles(np.cos(th * 2 + ph[0]), 12)
@@ -137,7 +138,7 @@ class Face:
         d = np.linalg.norm(X[:, None, :] - Pp, axis=2)
         k = d.argmin(1)
         wk = w[:-1][k] * (1 - h[np.arange(len(k)), k]) + w[1:][k] * h[np.arange(len(k)), k]
-        if getattr(s.P, 'facet', False) and col is None:  # brushwork: bristle streaks, a dry edge, pooled ends
+        if getattr(s.P, 'facet', False) and col is None and weight / s.px >= 14:  # a big brush stroke: bristle streaks, a dry edge, pooled ends
             hk = h[np.arange(len(k)), k]
             tt = (k + hk) / (n - 1)
             AB_k = AB[k]

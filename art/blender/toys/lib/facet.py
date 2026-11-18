@@ -19,7 +19,7 @@ import bmesh
 import numpy as np
 
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
-          'ekiin', 'kabuki', 'meijin'}            # the series built in the faceted style (add a series here to convert it on rebuild)
+          'ekiin', 'kabuki', 'meijin', 'sento', 'otenki', 'yomise'}            # the series built in the faceted style (add a series here to convert it on rebuild)
 RATIO = float(os.environ.get('GG_FACET_RATIO', 0.5))  # where a piece's collapse starts, from its old (smooth) budget
 TOL = float(os.environ.get('GG_FACET_TOL', 1.5))      # ...and keeps more triangles while 95 % of its form is not within this
 TOL_MAX = float(os.environ.get('GG_FACET_TOL_MAX', 0.9))  # (mm) or any point is further than this: a feature (ear, toe, tooth, fold) was erased
