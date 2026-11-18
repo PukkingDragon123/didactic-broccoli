@@ -92,6 +92,7 @@ def toy(sid, iid):
 # Laid out on a 320 x 280 pixel grid and printed 2x (640 x 560): every rule, badge, sticker and letter is a whole 2 x 2
 # block; only the real photo backdrop and the real toy renders are at the full resolution.
 from pixprint import Sheet, text_size, upscale, save_webp
+from lettering import logo, emblem
 import re
 
 LW, LH = W // 2, H // 2
@@ -113,10 +114,14 @@ BURST = {  # the round sticker on the stage
     'yomise': ('LIGHTS', 'UP!'), 'otsukai': ('GOLD', 'LEAF!'), 'kabuki': ('MIE!',), 'sabaku': ('POSE!',), 'minato': ('POSE!',),
     'datesha': ('POSE!',),
 }
+LOGO = {  # series -> the hand-lettered logotype (tools/lettering.py alphabet, lines, style); one effect only
+    'henshin': ('ruler', [('STATIONERY', 1), ('BEASTS', 2)], dict(outline=(1, 0x1c1816), track=1, bounce=[0, 0, 1, 0, -1, 0, 0, 1, 0, 0])),
+    'yomise': ('bubble', [('DEEP-SEA', 1), ('NIGHT', 2), ('STALLS', 2)], dict(outline=(1, 0x0c1020), track=1, bounce=[0, 1, 0, -1, 0, 1, 0, 0, -1, 0, 1, 0])),
+}
 TITLE_FACE = {'obakebaito': 'jacq24', 'kabuki': 'jacq24', 'otsukai': 'ala', 'karakuri': 'ps2p', 'otenki': 'ps2p'}
-MAKERS = [  # original makers (no real brand): name, mark colour, initials ('' = the capsule mark)
-    ('GACHA GARAGE TOYS', 0xd8402a, ''), ('KOROKORO CAPSULE', 0x2f8a4a, 'KC'), ('TOY HUTCH', 0x2a5aa8, 'TH'),
-    ('POKKE WORKS', 0xe08a1a, 'PW'), ('MARUMARU TOYS', 0x8a3a8a, 'MM'),
+MAKERS = [  # original makers (no real brand): name, mark colour, emblem (tools/lettering.py EMBLEM, hand-drawn stamps)
+    ('GACHA GARAGE TOYS', 0xd8402a, 'gg'), ('KOROKORO CAPSULE', 0x2f8a4a, 'koro'), ('TOY HUTCH', 0x2a5aa8, 'hutch'),
+    ('POKKE WORKS', 0xe08a1a, 'pokke'), ('MARUMARU TOYS', 0x8a3a8a, 'maru'),
 ]
 MAKER_OF = {'henshin': 0, 'nakanohito': 0, 'teruteru': 0, 'kaden': 1, 'otsukai': 3, 'yomise': 2, 'obakebaito': 4,
             'tsuppari': 2, 'ekiin': 1, 'kabuki': 4, 'meijin': 3, 'hashigo': 1, 'sento': 2, 'otenki': 3, 'sabaku': 4,
@@ -160,11 +165,9 @@ def pattern(S, region, kind, col, seed=0):
     else: S.dots(region, col, step=8, size=3)
 
 
-def maker_mark(S, x, y, k, s=16):
-    name, col, ini = MAKERS[k]
-    S.rrect(x, y, s, s, col, r=3)
-    if ini: S.text(ini, x + s // 2, y + s // 2, 'silkb', 1, 0xfbf8f1, anchor='mm')
-    else: S.capsule(x + 2, y + 2, s - 4, top=0xfbf8f1, bot=col, line=0xfbf8f1)
+def maker_mark(S, x, y, k, s=16, scale=1):
+    name, col, em = MAKERS[k]
+    emblem(S, em, x, y, col, scale=scale)
     return name
 
 
@@ -249,101 +252,67 @@ def card(s):
             T.toy(sid, it['id'], 2 * cx, 2 * foot, h=2 * hh, w=2 * (cw - 10))
     im.alpha_composite(T.im)
 
-    # --- the print over the toys: the logo, badges, sticker, captions and arrows (pixel grid)
+    # --- the print over the toys: kind line, logotype, badges, one sticker, the hero's caption (pixel grid)
     F = Sheet(LW, LH, None)
     kind = KIND_EN.get(sid, 'MASCOT FIGURE')
-    kw = text_size(kind, 'silkb')[0]
-    F.ribbon(5, 6, kw + 16, 11, ink, notch='r')
-    F.text(kind, 9, 9, 'silkb', 1, 0xfbf8f1)
-    face = TITLE_FACE.get(sid, 'jersey25')
-    lines = split_title(s['name'], face, 150)
-    if face == 'jersey25' and max(text_size(l, face)[0] for l in lines) > 196: face = 'jersey20'
-    if face == 'jersey20' and max(text_size(l, face)[0] for l in lines) > 196: face = 'jersey15'
-    sc = 2 if face in ('ala', 'ps2p') else 1
-    if face == 'ps2p': sc = 3 if max(text_size(l, face)[0] for l in lines) * 3 <= 190 else 2
-    y = 24
-    ol = [(1, ink), (2, 0xfbf8f1), (1, ink)]
-    busy = []  # boxes already printed on the stage (the hero's caption keeps clear of them)
-    for l in lines:
-        b = F.text(l, 8, y, face, sc, acc if not dark else YEL, outline=ol, shadow=(3, 3, ink), maxw=200)
-        busy.append((b[0] - 4, b[1] - 4, b[2] + 7, b[3] + 7))
-        y = b[3] + 9
-    tag = re.split(r'[:.!?]\s', tagline.upper().replace('’', "'"))[0].strip(' .')
-    if tag and tag.split(' ')[0] not in kind and text_size(tag, 'silkb')[0] < 236:
-        y += 3
-        words, rows, cur = tag.split(' '), [], ''
-        for wd in words:
-            t = (cur + ' ' + wd).strip()
-            if cur and text_size(t, 'silkb')[0] > 118: rows.append(cur); cur = wd
-            else: cur = t
-        rows.append(cur)
-        rw = max(text_size(r, 'silkb')[0] for r in rows)
-        F.rect(6, y - 3, rw + 8, 9 * len(rows) + 3, 0xfbf8f1 if not dark else ink); F.frame(6, y - 3, rw + 8, 9 * len(rows) + 3, ink)
-        F.rect(8, y - 3 + 9 * len(rows) + 3, rw + 8, 2, ink)
-        for j, r in enumerate(rows): F.text(r, 10, y + 9 * j, 'silkb', 1, ink if not dark else ltxt)
-        busy.append((6, y - 3, rw + 16, y + 9 * len(rows) + 2))
-    # price / types / age, the Qualia stack
+    F.text(kind, 8, 8, 'silkb', 1, ltxt if dark else txt)
+    y = 20; boxes = []
+    if sid in LOGO:
+        al, lines, kw = LOGO[sid]
+        for j, (l, sc_) in enumerate(lines):
+            b = logo(F, al, l, 6, y, sc_, acc if not dark else YEL, accent=acc2 if not dark else RED, accent2=ink, **kw)
+            y = b[3] + 2; boxes.append(b)
+    else:  # (series without their own logotype yet)
+        face = TITLE_FACE.get(sid, 'jersey25')
+        for l in split_title(s['name'], face, 150):
+            b = F.text(l, 8, y, face, 1, acc if not dark else YEL, shadow=(1, 1, ink), maxw=200); y = b[3] + 4; boxes.append(b)
+    busy = [(b[0] - 2, b[1] - 2, b[2] + 4, b[3] + 4) for b in boxes]
+    # price / types / age
     by = PH - 37
     pw_ = text_size('%d' % s['price'], 'jersey20')[0]
-    F.rrect(6, by, pw_ + 30, 32, YEL, r=3, line=ink)
+    F.rrect(6, by, pw_ + 30, 32, YEL, r=2, line=ink)
     pb = F.text('%d' % s['price'], 11, by + 4, 'jersey20', 1, RED)
     F.text('YEN', pb[2] + 3, pb[3], 'silkb', 1, RED, anchor='lb')
     F.text('PER TURN', 6 + (pw_ + 30) // 2, by + 28, 'micro5', 1, ink, anchor='mb')
     x_ = 6 + pw_ + 33
-    F.rrect(x_, by, 44, 32, RED, r=3, line=ink)
+    F.rect(x_, by, 44, 32, ink); F.rect(x_ + 1, by + 1, 42, 30, RED)
     nb = F.text(str(n), x_ + 5, by + 6, 'jersey20', 1, 0xfbf8f1)
-    F.text('ALL', nb[2] + 3, by + 9, 'micro5', 1, 0xfbf8f1)
-    F.text('TYPES', nb[2] + 3, by + 16, 'micro5', 1, 0xfbf8f1)
+    F.text('ALL', nb[2] + 3, by + 9, 'micro5', 1, 0xfbf8f1); F.text('TYPES', nb[2] + 3, by + 16, 'micro5', 1, 0xfbf8f1)
     x_ += 47
-    F.rrect(x_, by, 26, 32, 0xfbf8f1, r=3, line=ink)
-    F.text('AGES', x_ + 13, by + 5, 'micro5', 1, ink, anchor='mt')
-    F.text('15+', x_ + 13, by + 14, 'jersey10', 1, ink, anchor='mt')
+    F.rect(x_, by, 26, 32, ink); F.rect(x_ + 1, by + 1, 24, 30, 0xfbf8f1)
+    F.text('AGES', x_ + 13, by + 5, 'micro5', 1, ink, anchor='mt'); F.text('15+', x_ + 13, by + 14, 'jersey10', 1, ink, anchor='mt')
     busy.append((0, by - 2, x_ + 30, by + 34))
-    # the maker's mark, top right (as the boards carry theirs)
-    F.rrect(LW - 25, 4, 21, 21, 0xfbf8f1, r=3, line=ink)
-    maker_mark(F, LW - 22, 7, mk, 15)
-    # the sticker
+    # the maker's stamp, top right
+    maker_mark(F, LW - 28, 6, mk, scale=2)
+    # one round sticker
     bw = BURST.get(sid, ('NEW!',))
-    bx, byy = LW - 38, 54
-    br = max(15, max(text_size(l, 'silkb')[0] for l in bw) // 2 + 5 + 2 * (len(bw) > 1))
-    F.roundel(bx, byy, br, fill=YEL if acc != YEL else 0xfbf8f1, line=ink, t=2, shadow=(2, 2, ink))
-    for j, l in enumerate(bw):
-        F.text(l, bx, byy + (j - (len(bw) - 1) / 2) * 9, 'silkb', 1, RED, anchor='mm')
-    # the hero's caption: its name on a tag, its gimmick, an arrow to it, and a size bar
+    bx, byy = LW - 34, 58
+    br = max(14, max(text_size(l, 'silkb')[0] for l in bw) // 2 + 4 + 2 * (len(bw) > 1))
+    F.roundel(bx, byy, br, fill=YEL if acc != YEL else 0xfbf8f1, line=ink, t=1)
+    for j, l in enumerate(bw): F.text(l, bx, byy + (j - (len(bw) - 1) / 2) * 9, 'silkb', 1, RED, anchor='mm')
+    # the hero's name on a tag, one arrow to it
     if hb:
         x0, y0, x1, y1 = [v // 2 for v in hb]
         rows = wrap2(hero['name'], 92, 'silkb')
-        g = (gim.get(hero['id']) or '').upper().replace('’', "'")
         tw = max(text_size(r, 'silkb')[0] for r in rows); th = 9 * len(rows) + 3
         tx = max(124, min(LW - tw - 10, x0 + 8 - tw))
-        hit = lambda yy: any(not (tx + tw + 4 < a or tx - 4 > c_ or yy + th + 9 < b_ or yy - 3 > d_) for a, b_, c_, d_ in busy)
+        hit = lambda yy: any(not (tx + tw + 4 < a or tx - 4 > c_ or yy + th < b_ or yy - 3 > d_) for a, b_, c_, d_ in busy)
         cands = [int(y0 + (y1 - y0) * f_) for f_ in (0.42, 0.3, 0.55, 0.2, 0.66)] + list(range(30, PH - 20, 6))
-        ty = next((yy for yy in cands if 26 <= yy <= PH - 12 - th and not hit(yy)), cands[0])
-        F.rrect(tx - 4, ty - 3, tw + 8, th, 0xfbf8f1, r=2, line=ink)
+        ty = next((yy for yy in cands if 26 <= yy <= PH - 12 - th and not hit(yy)), None)
+        if ty is None: tx, ty = LW - tw - 8, PH - 46 - th  # no room by the logo: tuck it at the stage's right edge
+        F.rect(tx - 4, ty - 3, tw + 8, th, ink); F.rect(tx - 3, ty - 2, tw + 6, th - 2, 0xfbf8f1)
         for j, r in enumerate(rows): F.text(r, tx, ty + 9 * j, 'silkb', 1, ink)
-        if g:
-            gw = text_size(g, 'micro5')[0]
-            F.rrect(tx - 2, ty + th - 2, gw + 6, 9, RED, r=2, line=ink)
-            F.text(g, tx + 1, ty + th, 'micro5', 1, 0xfbf8f1)
-        ax, ay = tx + tw - 2, ty + th // 2 - 2
         hx, hy = x0 + (x1 - x0) * 0.42, y0 + (y1 - y0) * 0.5
-        F.arrow([(ax + 4, ay), ((ax + hx) / 2 + 2, ay - 12), (hx, hy)], ink, t=1, head=3, outline=0xfbf8f1)
-        # size bar (skipped where the sticker sits)
-        sx = min(LW - 6, x1 + 4)
-        if not (abs(sx - bx) < br + 4 and y0 < byy + br):
-            F.rect(sx, y0, 1, y1 - y0, ink); F.rect(sx - 2, y0, 5, 1, ink); F.rect(sx - 2, y1 - 1, 5, 1, ink)
-            F.rrect(sx - 9, (y0 + y1) // 2 - 5, 19, 10, 0xfbf8f1, r=2, line=ink)
-            F.text('5CM', sx + 1, (y0 + y1) // 2, 'micro5', 1, ink, anchor='mm')
-    # line-up: numbered discs, the gimmick words, the secret's '?'
+        if hx > tx + tw + 4: ax, ay = tx + tw + 4, ty + th // 2 - 2
+        elif hx < tx - 4: ax, ay = tx - 5, ty + th // 2 - 2
+        else: ax, ay = tx + tw // 2, ty + th - 1
+        if tx - 6 <= hx <= tx + tw + 6 and ty - 4 <= hy <= ty + th + 6: hy = min(y1 - 4, ty + th + 12)  # aim clear of the tag
+        below = ay >= ty + th - 1  # leaving from the tag's foot: the curve dips, never back through the tag
+        mid = ((ax + hx) / 2, max(ay, hy) + 6) if below else ((ax + hx) / 2 + 2, ay - 10)
+        F.arrow([(ax, ay), mid, (hx, hy)], ink, t=1, head=3)
+    # the secret's mark in the line-up
     for k, it in enumerate(items):
-        cx = 4 + cw * (k + 0.5); x = int(cx - cw / 2) + 3
-        F.ellipse(x, PH + 7, 9, 9, ink); F.text(str(k + 1), x + 5, PH + 12, 'micro5', 1, 0xfbf8f1, anchor='mm')
-        if it['secret']:
-            F.text('?', cx, PH + 26, 'ps2p', 2, 0xfbf8f1 if not dark else YEL, anchor='mm', outline=[(1, ink)])
-        else:
-            g = (gim.get(it['id']) or '').upper().replace('’', "'")
-            if g and text_size(g, 'micro5')[0] < cw - 18 and list(gim.values()).count(gim.get(it['id'])) == 1:
-                F.text(g, int(cx + cw / 2) - 3, PH + 8, 'micro5', 1, acc2 if not dark else YEL, anchor='rt', outline=[(1, 0xfbf8f1 if not dark else ink, 'plus')])
+        if it['secret']: F.text('?', 4 + cw * (k + 0.5), PH + 24, 'ps2p', 2, YEL if dark else 0xfbf8f1, anchor='mm')
     im.alpha_composite(upscale(F.im, 2))
     return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.3, fade=0.03, seed=seed % 997).convert('RGB')
 

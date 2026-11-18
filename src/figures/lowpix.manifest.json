@@ -74,7 +74,7 @@
 "mats":{"ladder":"matte","body":"matte","arm_l":"matte","arm_r":"matte","leg_l":"matte","leg_r":"matte"},
 "pts":{"in":"pt_in","out":"pt_out"},
 "blender":true,"facet":1},
-"henshin/buta":{"size":[29.7,37.94,51.31],"min":[-14.85,0.05,-28.22],"tris":762,"atlas":[1024,1024],"kb":314,"clips":{"gimmick":"gimmick"},
+"henshin/buta":{"size":[29.7,37.94,51.31],"min":[-14.85,0.05,-28.22],"tris":760,"atlas":[1024,1024],"kb":316,"clips":{"gimmick":"gimmick"},
 "mats":{"body":"matte","snout":"matte","bezel":"gloss","drawer":"matte","ear_l":"matte","ear_r":"matte","leg_fl":"matte","leg_fr":"matte","leg_bl":"matte","leg_br":"matte","crank":"gloss"},
 "pts":{},
 "blender":true,"facet":1},
