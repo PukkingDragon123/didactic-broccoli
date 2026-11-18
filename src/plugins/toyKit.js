@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { onFigureMesh, playFigureClip, stopFigureClip } from '../figures/lowpix.js';
 import { onFigurePress } from '../game/figureGimmicks.js';
 import { getItem } from '../data/series/index.js';
-import { Keychains, keychainOf } from '../game/keychains.js';
+import { Keychains, keychainOf, chainOf } from '../game/keychains.js';
 import { LightUp } from '../game/lightup.js';
 import { Playsets } from '../game/playsets.js';
 import { DisplaySlots } from '../game/Display.js';
@@ -52,13 +52,13 @@ export function install(game) {
     DisplaySlots.prototype.showItem = function showKeychain(i, data, pop) {
       const r = show.call(this, i, data, pop), s = this.slots[i];
       if (s.kcHook) { s.kcHook.parent?.remove(s.kcHook); s.kcHook = null; }
-      if (s.mesh?.userData.chain) {
+      if (chainOf(s.mesh)) {
         const h = (s.def.size?.[1] ?? 0.13), chain = keychainOf(getItem(data.k)).chain * 0.001, fig = s.mesh.geometry.userData.size?.y || 0.05;
         if (fig + chain + 0.006 <= h + 0.008) {
           // the cup hook's collar against the underside of the board above, the chain in the bottom of its curl
           const local = s.def.pos.clone().add(new THREE.Vector3(0, h + 0.014, -0.012)), at = local.clone().add(new THREE.Vector3(0, -0.0052, 0));
           const hang = () => { s.kcHook ||= K.hookMesh(this.owner, local); this.owner.updateWorldMatrix(true, false); K.setHook(s.mesh, this.owner.localToWorld(at), s.def.rotY || 0); };
-          if (s.mesh.userData.chain.built) hang(); else game.tweens?.wait?.(0.5, hang);
+          if (chainOf(s.mesh).built) hang(); else game.tweens?.wait?.(0.5, hang);
         }
       }
       return r;

@@ -20,6 +20,7 @@ Object.assign(SOUNDS, {
 
 const parts = (L) => (Array.isArray(L.part) ? L.part : [L.part || 'led']);
 const mats = new Map(); // key|colour -> lit material per atlas
+const LIGHTS = new WeakMap(); // mesh -> its light state (off userData: Object3D.clone copies userData through JSON)
 
 function litMaterial(key, tex, color) {
   const ck = key + '|' + color + '|' + (tex?.uuid || '');
@@ -38,14 +39,14 @@ export class LightUp {
   /** (lowpix mesh hook) */
   adopt(mesh, item) {
     if (!item?.light) return;
-    mesh.userData.light = { cfg: { color: '#ffe6a0', mode: 'press', dur: 4, ...item.light }, on: false, t: 0, item };
+    LIGHTS.set(mesh, { cfg: { color: '#ffe6a0', mode: 'press', dur: 4, ...item.light }, on: false, t: 0, item });
     if (!mesh.userData.gimmick) mesh.userData.gimmick = item.gimmick || { text: item.light.mode === 'toggle' ? 'Switch it on' : 'Light it up' };
     if (item.light.mode === 'dark') this.lit.add(mesh);
   }
 
   /** A press: light it (press), switch it (toggle). Returns how long it stays lit. */
   press(mesh) {
-    const L = mesh?.userData.light;
+    const L = mesh && LIGHTS.get(mesh);
     if (!L || L.cfg.mode === 'dark') return 0;
     const on = L.cfg.mode === 'toggle' ? !L.on : true;
     L.on = on; L.t = 0;
@@ -88,7 +89,7 @@ export class LightUp {
   update(dt) {
     const dark = glowUniform.value > 1.6; // (src/game/Lighting.js raises it as the lights go down)
     for (const mesh of this.lit) {
-      const L = mesh.userData.light;
+      const L = LIGHTS.get(mesh);
       if (!mesh.parent && L.t > 1) { this.lit.delete(mesh); continue; }
       L.t += dt;
       if (L.cfg.mode === 'dark') L.on = dark;

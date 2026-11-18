@@ -288,7 +288,9 @@ export function playFigureClip(mesh, role = 'gimmick', { loop = false, reverse =
     rig.scale.setScalar(fr.sc);
     rig.position.set(-fr.cx * fr.sc, -fr.cy * fr.sc, -fr.cz * fr.sc);
     const mixer = new THREE.AnimationMixer(rig);
-    L = mesh.userData.figLive = { rig, mixer, was: mesh.geometry, action: null, t: 0 };
+    L = { rig, mixer, was: mesh.geometry, action: null, t: 0 };
+    // (not enumerable: Object3D.clone copies userData through JSON, and the rig is circular)
+    Object.defineProperty(mesh.userData, 'figLive', { value: L, writable: true, configurable: true, enumerable: false });
     mesh.add(rig);
     mesh.geometry = R.stand;
     live.add(mesh);

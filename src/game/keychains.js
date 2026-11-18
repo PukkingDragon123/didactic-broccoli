@@ -20,6 +20,10 @@ const PITCH = 0.0031; // m between bead centres (2.4 mm beads)
 const GRAV = new THREE.Vector3(0, -9.8, 0);
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _c = new THREE.Vector3(), _m = new THREE.Matrix4(), _inv = new THREE.Matrix4(), _q = new THREE.Quaternion(), _s = new THREE.Vector3();
 const UP = new THREE.Vector3(0, 1, 0);
+// (kept off userData: Object3D.clone copies userData through JSON, and a Chain holds the mesh it hangs from)
+const CHAINS = new WeakMap();
+/** The ball chain of a keychain figure mesh (or undefined). */
+export const chainOf = (mesh) => (mesh ? CHAINS.get(mesh) : undefined);
 
 Object.assign(SOUNDS, {
   /** A ball chain rattling (tiny bright ticks). */
@@ -160,16 +164,16 @@ export class Keychains {
   /** (lowpix mesh hook) a figure mesh of a keychain item gets its chain. */
   adopt(mesh, item) {
     const kc = keychainOf(item);
-    if (!kc || mesh.userData.chain) return;
+    if (!kc || CHAINS.has(mesh)) return;
     const c = new Chain(mesh, item, kc);
-    mesh.userData.chain = c;
+    CHAINS.set(mesh, c);
     this.chains.add(c);
     if (!figureReady(item.key)) loadFigure(item).then(() => c.built || c.build()); else c.build();
   }
 
   /** Hang a figure mesh from a world point (or null: back to draping). */
   setHook(mesh, worldPoint, yaw = 0) {
-    const c = mesh?.userData.chain;
+    const c = chainOf(mesh);
     if (!c) return;
     c.hang = worldPoint ? worldPoint.clone() : null;
     c.yaw = yaw; c.init = false; c.still = 0; c.twistV = 1.2 * (Math.random() - 0.5) + 1.5;
@@ -299,10 +303,11 @@ export class Keychains {
       const side = 0.2 + B.i * 0.018, fwd = 0.02 - B.i * 0.03;
       const x = P.pos.x + cos * side - sin * fwd, z = P.pos.z - sin * side - cos * fwd;
       const pt = _a.set(x, (P.pos.y || 0) + 0.9, z);
-      if (!B.mesh.userData.chain) continue;
-      if (!B.mesh.userData.chain.hang) this.setHook(B.mesh, pt, yaw);
-      else B.mesh.userData.chain.hang.copy(pt);
-      B.mesh.userData.chain.yaw = yaw + Math.PI / 2;
+      const ch = chainOf(B.mesh);
+      if (!ch) continue;
+      if (!ch.hang) this.setHook(B.mesh, pt, yaw);
+      else ch.hang.copy(pt);
+      ch.yaw = yaw + Math.PI / 2;
     }
   }
 }
