@@ -1,4 +1,19 @@
-# Posters and gacha cards: references and the studio system (POSTER-3)
+# Posters and gacha cards: references and the studio system
+
+**POSTER-4 (current direction).** The owner rejected POSTER-3's muted riso palette and screened photos as "AI slop"
+and "ugly colours". The new direction:
+- **Colour:** every piece takes its colours from `pressworks.BOARD`, palettes sampled by k-means from the owner's
+  own reference cards (scratchpad `p3/km.py`, `p3/km2.py`). The sources are the KANIKAN red card, the PIPE OTTER sky
+  card, the TAKO WINNER yellow card, the LIVING DEAD PUDDING teal card, the MOROKOSHI INKO yellow card and the KAJU
+  DRAGON cream card.
+- **Photos:** full-colour real photos, big, in white print borders.
+- **Toys:** the real toy renders as the hero.
+- **Logo:** one pixel-lettered colour with a white die-cut border.
+- **Card information:** a badge row (price, N types, age) and a line-up on name tags, with the red warning block.
+
+The research below still holds for layout, grid and hierarchy. Its palettes and halftone rules are superseded.
+
+# POSTER-3 notes
 
 The owner on the second attempt: "Still kinda bad. Remake from zero, research more references, and better colour."
 The rules still apply: all text in English, pixel-art lettering, no AI-looking text effects (glows, gradients,

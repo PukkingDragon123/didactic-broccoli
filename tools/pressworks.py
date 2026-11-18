@@ -17,6 +17,17 @@ from printkit import source, cover, rgb
 
 PAPER = 0xf1e7d0  # the studio's cream stock (aged further by tools/paperkit.py)
 
+# The owner's boards, sampled (k-means over each reference card, scratchpad p3/km2.py): bright, clean candy
+# colours, used the way those cards use them (field, logo, badges, ink). Name: the card each set comes from.
+BOARD = {
+    'kanikan': dict(red=0xe23929, white=0xfcfaf8, lemon=0xfae90c, ink=0x2a262d, sky=0x43a7d0),       # festival
+    'pipe-otter': dict(green=0x087e24, sky=0x43a7d0, white=0xf3f8f7, lemon=0xfae90c, ink=0x2a262d),  # museum
+    'tako-winner': dict(lemon=0xfbe80b, orange=0xe8682a, red=0xe43827, cream=0xf4ebbb, ink=0x753f29), # kaiju
+    'pudding': dict(teal=0x3a9b96, yellow=0xe1c235, sky=0x86c1cd, white=0xf4f4f3, ink=0x3a2a20, red=0xe43827),  # secret
+    'morokoshi': dict(yellow=0xfae90c, leaf=0x579d44, cream=0xfafae1, ink=0x834619, red=0xe23929),  # henshin card
+    'kaju-dragon': dict(white=0xf8f5e6, forest=0x285726, mustard=0xd59c2a, red=0xe23929, sky=0x43a7d0, ink=0x2a262d),  # yomise card
+}
+
 PALETTES = {  # name: inks (warm, slightly muted Showa print colours; deliberate value contrast)
     'bon-night': dict(paper=PAPER, navy=0x232c4a, marigold=0xe2a53c, verm=0xd2553a),       # summer festival
     'specimen': dict(paper=PAPER, teal=0x2c5e58, ochre=0xd6a456, sumi=0x2b2622),            # museum

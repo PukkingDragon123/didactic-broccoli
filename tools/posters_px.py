@@ -22,140 +22,124 @@ def spaced(S, s, x, y, col, face='b5', track=2, anchor='lt'):
     return S.text(s, x, y, face, 1, col, anchor=anchor, track=track)
 
 
-# ================================================================== lane: the summer festival ('bon-night')
-# The 1930s rail-poster lesson: one big picture, one big title, the facts in a quiet column. Real fireworks (Open
-# Images) screened in marigold on a navy night; the title knocked out to the paper; the date in vermilion.
-@design('lane:festival:0', 158, 224, paper='Paper001', fade=0.08, streak=0.4, tape=('tl', 'tr'), crease=0.45, seed=11)
+def framed(S, ref, x, y, w, h, f=(0.5, 0.5, 1.0), rim=0xffffff, t=2, sat=1.15, con=1.08, bright=1.04, ink=None):
+    """A real photo in full colour with a white print border (and an optional thin ink line round it)."""
+    if ink is not None: S.rect(x - t - 1, y - t - 1, w + 2 * t + 2, h + 2 * t + 2, ink)
+    S.rect(x - t, y - t, w + 2 * t, h + 2 * t, rim)
+    S.photo(ref, x, y, w, h, f=f, sat=sat, con=con, bright=bright)
+
+
+def badge(S, x, y, w, h, fill, line, r=2):
+    S.rrect(x, y, w, h, fill, r=r, line=line)
+
+
+def tag(S, s, x, y, fill, ink, line=None, face='b5', anchor='lt'):
+    return S.tag(x, y, s, fill=fill, ink=ink, line=line if line is not None else fill, face=face, anchor=anchor, pad=2)
+
+
+# ================================================================== lane: the summer festival (board: KANIKAN red card)
+# Red field, the real bon-dance photo big and full colour, a lantern-lettered logo in lemon with a white die-cut
+# border, the fireworks as a white-framed snapshot, the date and programme in white.
+@design('lane:festival:0', 158, 224, paper='Paper001', fade=0.04, streak=0.3, tape=('tl', 'tr'), crease=0.35, seed=11)
 def _(S):
-    P = PALETTES['bon-night']; navy, mari, verm, pap = P['navy'], P['marigold'], P['verm'], P['paper']
+    P = PW.BOARD['kanikan']; red, wh, lem, ink = P['red'], P['white'], P['lemon'], P['ink']
     w, h = S.w, S.h
-    S.rect(0, 0, w, h, pap)
-    X, Y, W, H = 6, 6, w - 12, h - 18
-    S.rect(X, Y, W, H, navy)
-    halftone(S, 'oi:3273e580b71afeef@validation', X, Y, W, 96, mari, T=4, f=(0.62, 0.36, 1.2), invert=True, lo=0.24, hi=0.85, gamma=0.9)
-    spaced(S, 'THE 28TH KAMIYAMA', X + 6, Y + 6, pap, track=1)
-    LF.word(S, 'chochin', 'SUMMER', X + 6, Y + 104, verm)
-    LF.word(S, 'chochin20', 'FESTIVAL', X + 6, Y + 120, pap)
-    y0 = Y + 148
-    S.rect(X + 6, y0, W - 12, 1, mari)
-    b = LF.word(S, 'figs', '8.14', X + 6, y0 + 6, verm)
-    S.text('SAT', b[2] + 4, b[1], 'b5', 1, mari)
-    S.text('FROM 5PM', X + 6, b[3] + 5, 'b5', 1, pap)
-    S.text('FREE ENTRY', X + 6, b[3] + 15, 'b5', 1, verm)
-    S.rect(X + 72, y0 + 6, 1, 45, tint(mari, 0.45, navy))
-    y = y0 + 7
-    for t, ev in [('5:00', 'STALLS'), ('6:30', 'BON DANCE'), ('7:30', 'MIKOSHI'), ('8:30', 'FIREWORKS')]:
-        S.text(t, X + 78, y, 'b5', 1, mari); S.text(ev, X + 103, y + 1, 'micro5', 1, pap); y += 11
-    S.text('KAMIYAMA TOWN ASSOC.', X, h - 3, 'micro5', 1, navy, anchor='lb')
-    S.text(IMPRINT, X + W, h - 3, 'micro5', 1, tint(navy, 0.55), anchor='rb')
+    S.rect(0, 0, w, h, wh); S.rect(3, 3, w - 6, h - 6, red)
+    S.photo('oi:99d0d046afd231c4@train', 3, 3, w - 6, 112, f=(0.4, 0.42, 1.2), sat=1.2, con=1.08, bright=1.08)
+    tag(S, 'THE 28TH KAMIYAMA', 8, 8, wh, red)
+    LF.word(S, 'chochin', 'SUMMER', 9, 92, wh, border=(2, ink), bounce=[0, -1, 0, 1, 0, -1])
+    LF.word(S, 'chochin20', 'FESTIVAL', 8, 108, lem, border=(2, wh), bounce=[0, 1, 0, -1, 0, 1, 0, -1])
+    b = LF.word(S, 'figs', '8.14', 9, 140, wh)
+    tag(S, 'SAT', b[2] + 4, b[1], lem, red)
+    S.text('FROM 5PM', b[2] + 4, b[1] + 11, 'b5', 1, wh)
+    y = 164
+    for t, ev in [('5:00', 'STALLS'), ('6:30', 'BON DANCE'), ('7:30', 'MIKOSHI')]:
+        S.text(t, 9, y, 'b5', 1, lem); S.text(ev, 36, y, 'b5', 1, wh); y += 10
+    framed(S, 'oi:3273e580b71afeef@validation', 100, 140, 50, 44, f=(0.62, 0.4, 1.3))
+    tag(S, '8:30 FIREWORKS!', 125, 188, lem, red, face='micro5', anchor='mt')
+    S.rect(3, h - 20, w - 6, 17, lem)
+    S.text('FREE ENTRY', 8, h - 15, 'b5', 1, red)
+    S.text('KAMIYAMA TOWN ASSOC.', w - 8, h - 14, 'micro5', 1, ink, anchor='rt')
 
 
-# ================================================================== lane: the museum's elephant ('specimen')
-# A specimen label: an engraved Didone title, the real museum elephant as an ochre + sumi duotone, a height rule
-# like a natural-history plate, the facts in a ruled table.
-@design('lane:zoo:0', 158, 224, paper='Paper001', fade=0.14, streak=0.35, tape=('tl', 'tr'), crease=0.5, seed=41)
+# ================================================================== lane: the museum (board: PIPE OTTER sky card)
+# Sky-blue field, a heavy leaf-green logo in a white border, the real elephant in the museum hall big and full
+# colour, three more halls as framed snapshots with green name tags.
+@design('lane:zoo:0', 158, 224, paper='Paper001', fade=0.05, streak=0.3, tape=('tl', 'tr'), crease=0.35, seed=41)
 def _(S):
-    P = PALETTES['specimen']; teal, ochre, sumi, pap = P['teal'], P['ochre'], P['sumi'], P['paper']
+    P = PW.BOARD['pipe-otter']; grn, sky, wh, lem, ink = P['green'], P['sky'], P['white'], P['lemon'], P['ink']
     w, h = S.w, S.h
-    S.rect(0, 0, w, h, pap)
-    X, W = 8, w - 16
-    S.text('SHIOMI CITY MUSEUM OF NATURE', w // 2, 9, 'micro5', 1, teal, anchor='mt', track=1)
-    S.rect(X, 17, W, 1, teal)
-    LF.word(S, 'didone', 'BIG ONES!', w // 2, 23, teal, anchor='mt')
-    S.rect(X, 47, W, 1, teal)
-    # the duotone: an ochre underprint, the real giraffe (Open Images) screened in sumi over it, a tall plate
-    py, ph, pw = 53, 120, 90
-    S.rect(X, py, pw, ph, ochre)
-    halftone(S, 'local:lane/giraffe.jpg', X, py, pw, ph, sumi, T=4, over=True, f=(0.62, 0.45, 1.4), lo=0.2, hi=0.6, gamma=1.5, chan=(0.2, 0.3, 0.5))
-    # the height rule, like a natural-history plate: hoof to horn
-    rx, r0, r1 = X + pw + 4, py + 18, py + ph - 3
-    S.rect(rx, r0, 1, r1 - r0 + 1, sumi)
-    for k in range(0, r1 - r0 + 1, 5): S.rect(rx, r1 - k, 3 if k % 25 == 0 else 2, 1, sumi)
-    S.text('5.5M', rx - 4, r0 - 2, 'micro5', 1, sumi, anchor='rb')
-    # the wall label, a narrow column
-    cx = X + pw + 11; cw = X + W - cx
-    S.text('NO.2', cx, py, 'b5', 1, teal)
-    y = py + 11
-    S.rect(cx, y - 2, cw, 1, teal)
-    for t, c in [('GIRAFFE', sumi), ('', None), ('GIRAFFA', tint(sumi, 0.65)), ('CAMELO-', tint(sumi, 0.65)), ('PARDALIS', tint(sumi, 0.65))]:
-        if t: S.text(t, cx, y, 'micro5', 1, c)
-        y += 7
-    y += 4
-    S.rect(cx, y, cw, 1, teal); y += 4
-    S.text('ALSO', cx, y, 'micro5', 1, teal); y += 9
-    for t in ['ELEPHANT', 'SNOW APES', 'CLOWN-', 'FISH']:
-        S.text(t, cx, y, 'micro5', 1, sumi); y += 7
-    S.text('LIFE-SIZE HALL', X, py + ph + 6, 'b5', 1, teal)
-    S.text('NOW OPEN', X + W, py + ph + 6, 'b5', 1, sumi, anchor='rt')
-    fy = h - 24
-    S.rect(X, fy, W, 13, teal)
-    S.text('ADULTS 600 YEN  KIDS 200', X + 4, fy + 4, 'micro5', 1, pap)
-    S.text('CLOSED MON', X + W - 4, fy + 4, 'micro5', 1, ochre, anchor='rt')
-    imprint(S, IMPRINT, tint(teal, 0.7))
+    S.rect(0, 0, w, h, wh); S.rect(3, 3, w - 6, h - 6, sky)
+    LF.word(S, 'chochin20', 'BIG ONES!', w // 2, 9, grn, border=(2, wh), anchor='mt', bounce=[0, -1, 1, 0, 0, -1, 1, 0, -1])
+    tag(S, 'SHIOMI CITY MUSEUM OF NATURE', w // 2, 37, grn, wh, face='micro5', anchor='mt')
+    framed(S, 'local:lane/elephant.jpg', 8, 52, w - 16, 92, f=(0.45, 0.5, 1.05))
+    tag(S, 'LIFE SIZE!', 12, 56, lem, ink, line=ink)
+    tag(S, 'TUSKS 1.5 M', w - 12, 134, wh, ink, line=ink, face='micro5', anchor='rb')
+    for k, (ph, nm, f) in enumerate([('giraffe', 'GIRAFFE', (0.6, 0.45, 1.3)), ('aquarium', 'CLOWNFISH', (0.5, 0.5, 1.5)), ('snow_monkeys', 'SNOW APES', (0.5, 0.4, 1.4))]):
+        x = 9 + k * 48
+        framed(S, 'local:lane/%s.jpg' % ph, x, 153, 44, 34, f=f)
+        tag(S, nm, x + 22, 190, grn, wh, face='micro5', anchor='mt')
+    S.rect(3, h - 22, w - 6, 19, grn)
+    S.text('ADULTS 600 YEN  KIDS 200', 8, h - 18, 'b5', 1, wh)
+    S.text('CLOSED MONDAYS', 8, h - 10, 'micro5', 1, lem)
 
 
-# ================================================================== promo: the kaiju-suit series ('tokusatsu')
-# The monster-movie sheet: a leaning title card, the city at night screened in navy across a salmon sky, the hero
-# figure towering over it like a suit actor over a miniature set; the line-up on a jade band.
-@design('promo:kaiju', 150, 212, paper='Paper001', fade=0.05, crease=0.35, tape=('tl', 'tr'), seed=7)
+# ================================================================== promo: the kaiju-suit series (board: TAKO WINNER yellow card)
+# Lemon field, an orange leaning title-card logo in a white border, the hero figure big on a real photo of the city,
+# breaking out of its frame; the line-up with names on orange tags; price, types and age badges.
+@design('promo:kaiju', 150, 212, paper='Paper001', fade=0.03, crease=0.3, tape=('tl', 'tr'), seed=7)
 def _(S):
-    P = PALETTES['tokusatsu']; sal, navy, jade, pap = P['salmon'], P['navy'], P['jade'], P['paper']
+    P = PW.BOARD['tako-winner']; lem, org, red, cr, ink = P['lemon'], P['orange'], P['red'], P['cream'], P['ink']
     w, h = S.w, S.h
-    S.rect(0, 0, w, h, pap)
-    X, Y, W, H = 5, 5, w - 10, h - 17
-    S.rect(X, Y, W, 130, sal)
-    LF.word(S, 'kaiju', "WHO'S IN", X + 5, Y + 6, navy, lean=3, track=1)
-    LF.word(S, 'kaiju', 'THE SUIT?', X + 5, Y + 23, navy, lean=3, track=1)
-    S.text('MONSTER SUIT FIGURES', X + 6, Y + 43, 'micro5', 1, navy)
-    # the city: buildings print solid navy, the lit windows and the dusk stay salmon
-    halftone(S, 'local:skyline.jpg', X, Y + 84, W, 46, navy, T=4, f=(0.62, 0.28, 1.4), lo=0.08, hi=0.32)
-    S.toy('nakanohito', 'tanbo', X + W * 0.7, Y + 128, h=84, w=72)
-    S.text('ZIP AT', X + 6, Y + 60, 'b5', 1, navy); S.text('THE BACK!', X + 6, Y + 69, 'b5', 1, navy)
-    # the line-up on jade
-    by = Y + 130
-    S.rect(X, by, W, 40, jade)
-    names = [('mogura', 'MOLE'), ('entotsu', 'LIZARD'), ('denpa', 'MOTH'), ('hamaguri', 'CLAM'), ('tanbo', 'HYDRA'), ('kantoku', '?')]
-    cw = W / 6
+    S.rect(0, 0, w, h, 0xffffff); S.rect(3, 3, w - 6, h - 6, lem)
+    LF.word(S, 'kaiju', "WHO'S IN", 8, 7, org, border=(2, 0xffffff), lean=3, track=1)
+    LF.word(S, 'kaiju', 'THE SUIT?', 8, 24, org, border=(2, 0xffffff), lean=3, track=1)
+    S.text('MONSTER SUIT FIGURES', 9, 45, 'micro5', 1, ink)
+    framed(S, 'local:skyline.jpg', 8, 58, w - 16, 66, f=(0.6, 0.45, 1.25))
+    S.toy('nakanohito', 'tanbo', w * 0.64, 122, h=82, w=72)
+    tag(S, 'ZIP AT THE BACK!', 12, 62, 0xffffff, ink, line=ink, face='micro5')
+    by = 130
+    S.rect(3, by, w - 6, 44, cr)
+    names = [('mogura', 'MOLE'), ('entotsu', 'LIZARD'), ('denpa', 'MOTH'), ('hamaguri', 'CLAM'), ('tanbo', 'HYDRA'), ('kantoku', 'SECRET')]
+    cw = (w - 8) / 6
     for k, (iid, nm) in enumerate(names):
-        cx = X + cw * (k + 0.5)
-        S.toy('nakanohito', iid, cx, by + 29, h=24, w=cw - 3, silhouette=navy if nm == '?' else None)
-        S.text(nm if nm != '?' else '???', cx, by + 32, 'micro5', 1, pap if nm != '?' else navy, anchor='mt')
-    fy = by + 40
-    S.rect(X, fy, W, Y + H - fy, navy)
-    b = LF.word(S, 'figs', '300', X + 5, fy + 3, pap)
-    S.text('YEN', b[2] + 3, b[1], 'b5', 1, sal)
-    S.text('PER TURN', b[2] + 3, b[3], 'micro5', 1, sal, anchor='lb')
-    S.text('ALL 6', X + W - 5, fy + 4, 'b5', 1, pap, anchor='rt')
-    S.text('TYPES', X + W - 5, fy + 13, 'b5', 1, pap, anchor='rt')
-    S.text('GACHA GARAGE, BACK LANE', X, h - 3, 'micro5', 1, navy, anchor='lb')
-    S.text(IMPRINT, X + W, h - 3, 'micro5', 1, tint(navy, 0.5), anchor='rb')
+        cx = 4 + cw * (k + 0.5)
+        S.toy('nakanohito', iid, cx, by + 31, h=27, w=cw - 2, silhouette=ink if nm == 'SECRET' else None)
+        if nm == 'SECRET': LF.word(S, 'figs', '?', cx, by + 9, lem, anchor='mt')
+        tag(S, nm, cx, by + 34, red if nm == 'SECRET' else org, 0xffffff, face='micro5', anchor='mt')
+    fy = by + 48
+    badge(S, 6, fy, 57, 27, 0xffffff, ink)
+    b = LF.word(S, 'figs', '300', 10, fy + 5, red)
+    S.text('YEN', b[2] + 2, b[1], 'b5', 1, red); S.text('A TURN', b[2] + 2, b[1] + 10, 'micro5', 1, ink)
+    badge(S, 66, fy, 47, 27, red, ink)
+    n = LF.word(S, 'figs', '6', 70, fy + 5, 0xffffff)
+    S.text('ALL', n[2] + 3, fy + 6, 'micro5', 1, 0xffffff); S.text('TYPES', n[2] + 3, fy + 14, 'b5', 1, 0xffffff)
+    badge(S, 116, fy, 28, 27, 0xffffff, ink)
+    S.text('AGES', 130, fy + 5, 'micro5', 1, ink, anchor='mt'); S.text('15+', 130, fy + 14, 'b5', 1, ink, anchor='mt')
 
 
-# ================================================================== promo: the secret figures ('vault')
-# Two inks only, plum and gold: a crate-stencil title knocked out to the paper, the real Milky Way screened in gold,
-# the one secret in its true colours, the other secrets as plum shapes on a gold shelf.
-@design('promo:secret', 150, 212, paper='Paper001', fade=0.05, crease=0.35, tape=('tl', 'tr'), seed=9)
+# ================================================================== promo: the secret figures (board: LIVING DEAD PUDDING teal card)
+# Teal field, the real Milky Way big and full colour, the dragon secret in front of it, a stencil logo in yellow with
+# a white border, the other secrets as silhouettes on sky blue, the odds on a yellow badge.
+@design('promo:secret', 150, 212, paper='Paper001', fade=0.03, crease=0.3, tape=('tl', 'tr'), seed=9)
 def _(S):
-    P = PALETTES['vault']; plum, gold, pap = P['plum'], P['gold'], P['paper']
+    P = PW.BOARD['pudding']; teal, yel, sky, wh, ink, red = P['teal'], P['yellow'], P['sky'], P['white'], P['ink'], P['red']
     w, h = S.w, S.h
-    S.rect(0, 0, w, h, pap)
-    X, Y, W, H = 5, 5, w - 10, h - 17
-    S.rect(X, Y, W, H, plum)
-    halftone(S, 'local:milky_way.jpg', X, Y, W, 132, gold, T=4, f=(0.5, 0.5, 1.2), invert=True, lo=0.2, hi=0.75, gamma=0.8)
-    S.text('SUPER', w // 2, Y + 7, 'b5', 1, gold, anchor='mt', track=4)
-    LF.word(S, 'stencil', 'SECRET', w // 2, Y + 17, pap, anchor='mt')
-    S.toy('henshin', 'ryu', w // 2, Y + 124, h=78, w=W - 24)
-    S.rect(X + 34, Y + 124, W - 68, 1, gold)
-    S.text('ONE HIDES IN EVERY SERIES', w // 2, Y + 130, 'b5', 1, pap, anchor='mt')
-    sy = Y + 142
-    S.rect(X, sy, W, H - 142, gold)
-    t = S.text('1 IN', X + 6, sy + 6, 'b5', 1, plum)
-    b = LF.word(S, 'figs', '500', t[2] + 4, sy + 6, plum)
-    S.text('CAN YOU', X + W - 6, b[1] + 1, 'b5', 1, plum, anchor='rt')
-    S.text('PULL ONE?', X + W - 6, b[1] + 10, 'b5', 1, plum, anchor='rt')
-    S.rect(X + 6, sy + 26, W - 12, 1, plum)
-    sil = [('nakanohito', 'kantoku'), ('teruteru', 'niji'), ('obakebaito', 'honmono'), ('yomise', 'ryuuguu'), ('kaden', 'shika'), ('kabuki', 'jishi')]
+    S.rect(0, 0, w, h, wh); S.rect(3, 3, w - 6, h - 6, teal)
+    framed(S, 'local:milky_way.jpg', 8, 44, w - 16, 84, f=(0.5, 0.5, 1.15), sat=1.25, bright=1.15)
+    tag(S, 'SUPER', w // 2, 7, red, wh, anchor='mt')
+    LF.word(S, 'stencil', 'SECRET', w // 2, 18, yel, border=(2, wh), anchor='mt')
+    S.toy('henshin', 'ryu', w // 2, 132, h=82, w=w - 30)
+    tag(S, 'ONE HIDES IN EVERY SERIES!', w // 2, 136, wh, ink, line=ink, face='micro5', anchor='mt')
+    sy = 152
+    S.rect(3, sy, w - 6, 36, sky)
+    sil = [('nakanohito', 'kantoku'), ('teruteru', 'niji'), ('obakebaito', 'honmono'), ('yomise', 'ryuuguu'), ('kaden', 'shika')]
     for k, (sid, iid) in enumerate(sil):
-        S.toy(sid, iid, X + W * (k + 0.5) / len(sil), Y + H - 3, h=21, w=W / len(sil) - 4, silhouette=plum)
-    S.text('GACHA GARAGE, BACK LANE', X, h - 3, 'micro5', 1, plum, anchor='lb')
-    S.text(IMPRINT, X + W, h - 3, 'micro5', 1, tint(plum, 0.5), anchor='rb')
+        cx = 6 + (w - 12) * (k + 0.5) / len(sil)
+        S.toy(sid, iid, cx, sy + 33, h=28, w=(w - 12) / len(sil) - 4, silhouette=ink)
+        S.text('?', cx, sy + 18, 'b5', 1, yel, anchor='mm')
+    badge(S, 8, sy + 39, 70, 18, yel, ink)
+    t = S.text('1 IN', 13, sy + 45, 'b5', 1, ink)
+    LF.word(S, 'figs', '500', t[2] + 3, sy + 40, red) if False else S.text('500', t[2] + 4, sy + 45, 'b5', 1, red)
+    S.text('CAN YOU PULL ONE?', w - 8, sy + 42, 'micro5', 1, wh, anchor='rt')
+    S.text('GACHA GARAGE', w - 8, sy + 50, 'micro5', 1, yel, anchor='rt')
