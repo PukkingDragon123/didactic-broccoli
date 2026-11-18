@@ -174,7 +174,9 @@ def designer(K, c):
     """One card from its config c: real photo grounds, cut-outs behind, the hero and its callouts, cut-outs in front,
     the full numbered line-up, the hand-set logo with its kickers, price piece, capsule badge, the legal strip."""
     F = K.F; ink = INK; col = c['col']; fill = c['fill']
-    for g in c['bg']: K.photo(g[0], g[1], tint=g[2], k=g[3], bright=g[4] if len(g) > 4 else 1.0, con=1.05, rep=g[5] if len(g) > 5 else 1)
+    sc = SCENE.get(K.sid)
+    if sc: K.photo('oi:%s@test' % sc, (0, 0, W, 246), tint=c['col'], k=0.12, con=1.04)
+    for g in ([] if sc else c['bg']): K.photo(g[0], g[1], tint=g[2], k=g[3], bright=g[4] if len(g) > 4 else 1.0, con=1.05, rep=g[5] if len(g) > 5 else 1)
     for cu in c.get('back', []): K.cut(*cu, 'back')
     hx, hfoot, hh, hw = c['hero']
     hid = c.get('hero_id', K.hero['id']); hb = K.toy(K.pose(hid, 2), hx, hfoot, hh, hw)
@@ -227,7 +229,7 @@ def fill_space(K, pool, top=246, cell=8):
         o |= np.asarray(K.F.im.getchannel('A'))[:top] > 0
         return o
     o = occ(); rn = __import__('random').Random(sum(map(ord, K.sid))); used = 0
-    for size in (60, 50, 42, 34, 34, 28, 28, 28):
+    for size in (48, 38, 30):  # the scene fills the card now: a few pieces only
         n = size // cell; best = None
         ch, cw_ = top // cell, W // cell
         cells = o[:ch * cell, :cw_ * cell].reshape(ch, cell, cw_, cell).mean((1, 3)) < 0.06
@@ -244,6 +246,9 @@ def fill_space(K, pool, top=246, cell=8):
         edge = cx < 30 or cx > W - 30 or cy > top - 40
         K.cut(key, cx, cy, size, rn.choice([-24, -14, -6, 8, 16, 26]), 'front' if edge and size <= 42 else 'back')
         o = occ()
+
+
+SCENE = {"ekiin": "5ae14ddecd96d964", "kaden": "01681d52ad599ab4", "sento": "7bf02f84d9e7e793", "obakebaito": "1c618757d7fbe472", "kabuki": "c53e9e5ce002345f", "minato": "b32ff2eda0976748", "sabaku": "3429ee539afa4b6b", "meijin": "6ba33481bde04590", "otenki": "5ad31e2a209ce02e", "kanikan": "d886a2ce6734eefe", "yomise": "fe304f3a84e56aa6", "henshin": "3da8d61c1402ad41", "janru": "d498ff3de2bb80da", "karakuri": "e1cd3f6c8713b840", "otsukai": "3e32e7bab925c99f", "datesha": "ee5961ef538e122c", "tsuppari": "4341168486bcf6f2", "hashigo": "68a9c1b45c6b1603", "nakanohito": "d4ddcc06cc2b1f9b", "kasabuki": "09c51578bda20b16", "teruteru": "d83ad91bc283b22c"}  # series -> its full-card scene photo (Open Images, CC BY 2.0, CREDITS.md)
 
 
 POOL = {  # series -> real cut-outs that belong in its scene (Open Images masks, credited)

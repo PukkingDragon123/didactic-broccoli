@@ -2987,3 +2987,27 @@ Planks012, Tatami001, Tiles032, Concrete034, PavingStones070, Asphalt025A, Grave
 - "Train" by Tim Green, https://www.flickr.com/photos/atoach/4523892040, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 2698ca98439ea03a: the train cut-out
 - "92742750 copy" by Sean Naber, https://www.flickr.com/photos/seannaber/3953232214, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 758de2f0c9fda72a: the wine cut-out
 - "_IGP4497" by lifelikeapps, https://www.flickr.com/photos/56532794@N02/5352636041, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b9472e4a7f1a02a6: the wine cut-out
+
+### Gacha card scenes (Open Images, CC BY 2.0): one full photo behind each card
+
+- ekiin card: "Oak Park &quot;L&quot; Station" by Jeff Dlouhy, https://www.flickr.com/photos/jdlouhy/3980901678, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 5ae14ddecd96d964 (cropped, colour-graded)
+- kaden card: "Diana and Roger's House" by Rictor Norton  &amp; David Allen, https://www.flickr.com/photos/rictor-and-david/7071889985, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 01681d52ad599ab4 (cropped, colour-graded)
+- sento card: "Main pool" by BCC Leisure Centres, https://www.flickr.com/photos/92902289@N06/8444881076/, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 7bf02f84d9e7e793 (cropped, colour-graded)
+- obakebaito card: "DSC00576" by Rajib Ghosh, https://www.flickr.com/photos/syshook/4490673432, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 1c618757d7fbe472 (cropped, colour-graded)
+- kabuki card: "Teatro CPFL em Macatuba" by CPFL Cultura, https://www.flickr.com/photos/cpflcultura/3794861209, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID c53e9e5ce002345f (cropped, colour-graded)
+- minato card: "Greenland 2012" by Rene Schwietzke, https://www.flickr.com/photos/rene-germany/15828437296, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b32ff2eda0976748 (cropped, colour-graded)
+- sabaku card: "P1190699" by Yusuke Kawasaki, https://www.flickr.com/photos/u-suke/8145448755, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 3429ee539afa4b6b (cropped, colour-graded)
+- meijin card: "Veterans Memorial Park" by cityofroundrock, https://www.flickr.com/photos/cityofroundrock/2105554981, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 6ba33481bde04590 (cropped, colour-graded)
+- otenki card: "Sunset sky" by Seiichi Kusunoki, https://www.flickr.com/photos/67975747@N02/8482018466, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 5ad31e2a209ce02e (cropped, colour-graded)
+- kanikan card: "3 day break in Bandos, Maldives" by Shayan (USA), https://www.flickr.com/photos/ssanyal/5623174708, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID d886a2ce6734eefe (cropped, colour-graded)
+- yomise card: "Jacks are Wild" by LASZLO ILYES, https://www.flickr.com/photos/laszlo-photo/2055843531, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID fe304f3a84e56aa6 (cropped, colour-graded)
+- henshin card: "1382_donald-deskey-desk-art-deco-architectural-05" by Maegan Tintari, https://www.flickr.com/photos/lovemaegan/4315298222, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 3da8d61c1402ad41 (cropped, colour-graded)
+- janru card: "Looking downtown from Delancey Street" by Christine Barrett, https://www.flickr.com/photos/31929761@N06/3584761334, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID d498ff3de2bb80da (cropped, colour-graded)
+- karakuri card: "Campus scape autumn 2008" by hu album, https://www.flickr.com/photos/hualbum2012/9022572453, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e1cd3f6c8713b840 (cropped, colour-graded)
+- otsukai card: "Giethoorn 3" by Riessdo, https://www.flickr.com/photos/riessdo/9869686534, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 3e32e7bab925c99f (cropped, colour-graded)
+- datesha card: "Hong Kong" by Abdul Rahman, https://www.flickr.com/photos/abdulrahman-cc/6536093195, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID ee5961ef538e122c (cropped, colour-graded)
+- tsuppari card: "Mei Sheng" by Melinda, https://www.flickr.com/photos/melindarae/24381541/in/set-557720, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 4341168486bcf6f2 (cropped, colour-graded)
+- hashigo card: "Swamp In The Forest" by Sharunas Jurevic, https://www.flickr.com/photos/stuffedpeppers/9816902694, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 68a9c1b45c6b1603 (cropped, colour-graded)
+- nakanohito card: "Downtown Nashville, winter" by RecoilRick, https://www.flickr.com/photos/magneticmediafed/16433223577, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID d4ddcc06cc2b1f9b (cropped, colour-graded)
+- kasabuki card: "Cardiff Castle" by Anna-Maria Oléhn, https://www.flickr.com/photos/agrajag42/16583051821, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 09c51578bda20b16 (cropped, colour-graded)
+- teruteru card: "Shot out Rick Smolan's window" by Robert Scoble, https://www.flickr.com/photos/scobleizer/2780327497, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID d83ad91bc283b22c (cropped, colour-graded)
