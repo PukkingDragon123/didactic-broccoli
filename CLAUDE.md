@@ -46,7 +46,8 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - Gacha toys are one consistent product line: every figure has the same finish (hand-painted pixel-art PVC, same
   lighting, ramps, texel density, quiet series bases), with no flat or untextured models and no noisy textures. **No
   reskins**: every catalogue entry is its own unique sculpt; a recolour exists only as a finish (gold, clear, glow…)
-  of the same figure, never as a new entry. Check with art/lowpix/figures/audit.py. Most toys stand on their own
+  of the same figure, never as a new entry. Figures may have 2–3 variants of the same entry (alternate colourway,
+  accessory, face expression), pulled at random. Check with art/lowpix/figures/audit.py. Most toys stand on their own
   (feet, bowl, plate, own base); a stand or diorama only where the toy really needs one.
 - **Never use AI-generated models** (Meshy, Tripo, Rodin/Hyper3D, Luma, CSM, "made with AI", photo-to-3D services,
   AI mass uploaders): only models hand-made by real artists. **Never use scans** (photogrammetry, LiDAR, Object

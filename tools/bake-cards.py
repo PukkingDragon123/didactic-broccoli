@@ -26,6 +26,12 @@ BACK = {  # series -> photo backdrop (focus x, y, zoom)
     'ekiin': ('commons:Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg', (0.62, 0.55, 1.15)),
     'kabuki': ('commons:Misono-za_Nagoya_March_2013_(2).JPG', (0.55, 0.42, 1.55)),
     'meijin': ('commons:Shimizuike_Park_playground.jpg', (0.55, 0.6, 1.25)),
+    'sento': ('commons:Japanese_communal_bathhouse_SENTO_Sentō_銭湯の浴室.jpg', (0.32, 0.4, 1.25)),
+    'otenki': ('commons:Japanese_Summer_(14646910072).jpg', (0.5, 0.32, 1.1)),
+    'yomise': ('commons:夏祭り_Summer_Festival_(8413673378).jpg', (0.62, 0.42, 1.2)),
+    'sabaku': ('commons:Sand_dunes_in_the_desert,_Sahara_Desert,_Dakhla_Oasis,_Egypt.jpg', (0.5, 0.5, 1.1)),
+    'minato': ('commons:Maeganeku_fishing_port_3.jpg', (0.45, 0.55, 1.15)),
+    'datesha': ('commons:Black_and_white_marble_tile_in_the_southeast_gallery_(5396530982).jpg', (0.5, 0.5, 1.25)),
 }
 COMMONS = {  # photos from Wikimedia Commons (credited in CREDITS.md / public/CREDITS.txt), fetched once into the cache
     'commons:Nighttime_on_the_shotengai_(238464174).jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Nighttime_on_the_shotengai_%28238464174%29.jpg/1280px-Nighttime_on_the_shotengai_%28238464174%29.jpg',
@@ -33,6 +39,12 @@ COMMONS = {  # photos from Wikimedia Commons (credited in CREDITS.md / public/CR
     'commons:Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg/1280px-Shin-keisei-railway-Futawamukodai-station-platform-20100101.jpg',
     'commons:Misono-za_Nagoya_March_2013_(2).JPG': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Misono-za_Nagoya_March_2013_%282%29.JPG/960px-Misono-za_Nagoya_March_2013_%282%29.JPG',
     'commons:Shimizuike_Park_playground.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Combination_playground_equipment_at_Shimizuike_Park%28north_east%29_in_Takatsuki.jpg/1280px-Combination_playground_equipment_at_Shimizuike_Park%28north_east%29_in_Takatsuki.jpg',
+    'commons:Japanese_communal_bathhouse_SENTO_Sentō_銭湯の浴室.jpg': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Japanese_communal_bathhouse_SENTO_Sent%C5%8D_%E9%8A%AD%E6%B9%AF%E3%81%AE%E6%B5%B4%E5%AE%A4.jpg/1280px-Japanese_communal_bathhouse_SENTO_Sent%C5%8D_%E9%8A%AD%E6%B9%AF%E3%81%AE%E6%B5%B4%E5%AE%A4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    'commons:Japanese_Summer_(14646910072).jpg': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Japanese_Summer_%2814646910072%29.jpg/1280px-Japanese_Summer_%2814646910072%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    'commons:夏祭り_Summer_Festival_(8413673378).jpg': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/%E5%A4%8F%E7%A5%AD%E3%82%8A_Summer_Festival_%288413673378%29.jpg/1280px-%E5%A4%8F%E7%A5%AD%E3%82%8A_Summer_Festival_%288413673378%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    'commons:Sand_dunes_in_the_desert,_Sahara_Desert,_Dakhla_Oasis,_Egypt.jpg': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Sand_dunes_in_the_desert%2C_Sahara_Desert%2C_Dakhla_Oasis%2C_Egypt.jpg/1280px-Sand_dunes_in_the_desert%2C_Sahara_Desert%2C_Dakhla_Oasis%2C_Egypt.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    'commons:Maeganeku_fishing_port_3.jpg': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Maeganeku_fishing_port_3.jpg/1280px-Maeganeku_fishing_port_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    'commons:Black_and_white_marble_tile_in_the_southeast_gallery_(5396530982).jpg': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Black_and_white_marble_tile_in_the_southeast_gallery_%285396530982%29.jpg/1280px-Black_and_white_marble_tile_in_the_southeast_gallery_%285396530982%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
 }
 
 

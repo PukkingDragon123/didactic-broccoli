@@ -2827,6 +2827,18 @@ toys over a photograph, cropped and graded like print. Photos from Wikimedia Com
 - Playground Champions card: "Combination playground equipment at Shimizuike Park (north east) in Takatsuki" by Barsaka2,
   CC0 1.0, https://commons.wikimedia.org/wiki/File:Combination_playground_equipment_at_Shimizuike_Park(north_east)_in_Takatsuki.jpg
   (cropped, resized, colour-graded)
+- Bathhouse Regulars card: "Japanese communal bathhouse SENTO Sentō 銭湯の浴室" by ウィキ太郎(WikiTaro), public domain,
+  https://commons.wikimedia.org/wiki/File:Japanese_communal_bathhouse_SENTO_Sent%C5%8D_%E9%8A%AD%E6%B9%AF%E3%81%AE%E6%B5%B4%E5%AE%A4.jpg (cropped, resized, colour-graded)
+- Weather Express card: "Japanese Summer (14646910072)" by Tagosaku, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0),
+  https://commons.wikimedia.org/wiki/File:Japanese_Summer_(14646910072).jpg (cropped, resized, colour-graded)
+- Deep-Sea Night Stalls card: "夏祭り Summer Festival (8413673378)" by Yuya Sekiguchi, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0),
+  https://commons.wikimedia.org/wiki/File:%E5%A4%8F%E7%A5%AD%E3%82%8A_Summer_Festival_(8413673378).jpg (cropped, resized, colour-graded)
+- Pose Beasts I: Desert Road card: "Sand dunes in the desert, Sahara Desert, Dakhla Oasis, Egypt" by Vyacheslav Argenberg, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0),
+  https://commons.wikimedia.org/wiki/File:Sand_dunes_in_the_desert,_Sahara_Desert,_Dakhla_Oasis,_Egypt.jpg (cropped, resized, colour-graded)
+- Pose Beasts II: Harbour Town card: "Maeganeku fishing port 3" by Syced, CC0 1.0,
+  https://commons.wikimedia.org/wiki/File:Maeganeku_fishing_port_3.jpg (cropped, resized, colour-graded)
+- Pose Beasts III: Dandy Gang card: "Black and white marble tile in the southeast gallery (5396530982)" by Jefferson National Expansion Memorial, NPS from St. Louis, MO, USA, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0),
+  https://commons.wikimedia.org/wiki/File:Black_and_white_marble_tile_in_the_southeast_gallery_(5396530982).jpg (cropped, resized, colour-graded)
 
 Shippori Mincho B1 by FONTDASU, SIL Open Font License 1.1 (https://openfontlicense.org), Google Fonts: the kanji on the
 Tsuppari Zoo figures' printed coats and card. Used only at bake time; the game ships the baked images, not the font.
