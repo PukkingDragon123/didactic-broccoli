@@ -1,9 +1,22 @@
 # Faceted low-poly: the toy line's style
 
-The owner's direction: "a lot more low poly and more detail". Every toy is a **visible low-poly**: crisp flat-shaded
-faces, chunky deliberate planes, 300–700 triangles a figure (900 hard cap for a complex secret), wearing a much richer
-**hand-painted** 1024 px texture: brush strokes that follow the form, a lit rim along the facet edges, soft rubbed
-wear on hard corners, hand-brushed ink faces and stippled blush. No normal map (it would smooth the facets away).
+The owner's direction: "a lot more low poly and more detail" — then "still low poly, just a little higher; the
+high-detail models get more count". Every toy is a **visible low-poly**: crisp flat-shaded faces and chunky
+deliberate planes, wearing a much richer **hand-painted** 1024 px texture: brush strokes that follow the form, a lit
+rim along the facet edges, soft rubbed wear on hard corners, hand-brushed ink faces and stippled blush. No normal map
+(it would smooth the facets away).
+
+## The budgeting rule (polycount follows detail)
+
+- Simple figures (a pig, a snail, a teru-teru body): about **550–650 tris**.
+- Detailed figures (fingers, beaks, feathers, armour, props, multi-part mechanisms): up to about **900**, so their
+  modelled detail survives. A series' **secret**: up to **1000**.
+- **Never let decimation erase a shape detail that reads at shelf distance** (ears, toes, beaks, teeth, cloth folds,
+  props). The lib enforces it: every piece's collapse starts at `RATIO` (0.5) of its smooth-line budget and keeps
+  more triangles, up to that budget, while any point of the form lies further than `TOL_MAX` (0.9 mm) from the facets
+  (a feature was erased). Round forms are allowed to go chunky; features are not allowed to vanish. Pieces asked for
+  16 tris or fewer keep them all; `facet.keeping()` keeps a whole piece (thin moving parts).
+- A figure over 900 (1000 for a secret) is trimmed: its bigger parts give up triangles in proportion.
 
 It is a lib-level mode (`lib/facet.py`): a figure script written for the smooth line converts by rebuilding. Sample:
 henshin (`shots/blender_toys/facet_henshin.png`).
@@ -19,18 +32,20 @@ henshin (`shots/blender_toys/facet_henshin.png`).
 
 | step | smooth line | facet mode |
 | --- | --- | --- |
-| game mesh | `tk.decimate(ob, n)` to n | to `facet.budget(n)` = about `RATIO` (0.42) of n (pieces asked for 16 or fewer keep them), symmetric across x = 0 when the part is, coplanar slivers merged, a vertex the collapse pushed more than 0.5 mm off the form pulled back, a body's footprint kept (its floor vertices are not collapsed), vertices in a canonical order (repeatable builds, so `--repaint` works) |
+| game mesh | `tk.decimate(ob, n)` to n | from `facet.budget(n)` = `RATIO` (0.5) of n, growing toward n while a feature would be erased (the budgeting rule above; pieces asked for 16 or fewer keep them), symmetric across x = 0 when the part is, coplanar slivers merged, a vertex the collapse pushed more than 0.25 mm off the form pulled back, a body's footprint kept (its floor vertices are not collapsed), vertices in a canonical order (repeatable builds, so `--repaint` works) |
 | parts never decimated | as built | reduced by `RATIO` in `F.part` |
-| the whole figure | — | trimmed under 700 tris once every part is in (`facet.trim`, run by `F.unwrap` and `rig.check_clip`): the bigger parts give up triangles in proportion |
+| the whole figure | — | trimmed under 900 tris (1000 for a secret) once every part is in (`facet.trim`, run by `F.unwrap` and `rig.check_clip`): the bigger parts give up triangles in proportion |
 | shading | smooth + sharp angle | flat (one normal per face) |
 | atlas | 512, colour + normal map | 1024 (double density), colour only; no tangents exported |
 | bake | normal, AO, position, region, cavity | the same minus the normal map; 2 mm cage; texels whose rays missed are refilled from their 3D neighbours (no smeared streaks) |
 | metal parts | `metal` material | painted chrome on a `gloss` material (a mirror finish only flashes black and white on flat facets) |
+| in the game | — | the manifest entry carries `facet: 1`; `src/figures/lowpix.js` gives it a soft sheen (roughness ≥ 0.55, clearcoat ≤ 0.12, metalness ≤ 0.6) so glossy facets never flash white; the shine is painted |
 | paint | ramp bands | the same ramps laid as brush strokes (`fill(..., brush=)`), then facet rims and wear (`P.done()`) |
 | faces | ink dots and strokes | the same calls, painted as brushwork (bristle streaks, dry edge, pooled ends, stippled blush) |
 
-Budget: the export log warns when a figure leaves 300–700 tris. Tune with `GG_FACET_RATIO` for a build, or give a
-part an explicit smaller `tk.decimate` target in its script. Thin moving parts that crumple when faceted (a compass's
+Budget: the export log warns when a figure is very low or over its cap; `--clip` prints `[facet] figure tris N`.
+Tune with `GG_FACET_RATIO` / `GG_FACET_TOL_MAX` for a build, or give a part an explicit smaller `tk.decimate` target
+in its script. Thin moving parts that crumple when faceted (a compass's
 legs, a hinge pin) keep their smooth-line counts and are left out of the trim:
 
 ```py
@@ -39,7 +54,8 @@ with facet.keeping():
     LEGS = {nm: leg(nm, sx) for nm, sx in (('leg_l', 1), ('leg_r', -1))}
 ```
 
-If a gimmick clip then reports a clip at a hinge the parts are pinned through (the faceted surfaces sit up to about
+The clip check allows a faceted figure `CLIP_SLACK` (0.12 mm) more than its tolerance (faceted surfaces sit a few
+tenths of a mm off the smooth form at the joints). If a gimmick clip still reports a clip at a hinge the parts are pinned through (the faceted surfaces sit up to about
 0.5 mm off the smooth form), skip that pair in the script's `check_clip` call with a comment saying it is the hinge.
 
 ## Paint API additions (`lib/paint.py`, facet mode)
@@ -61,7 +77,7 @@ the tone), `tilt` (degrees of hand wobble), `cross` (a second set across: weave)
 between two ramp tones, the painter's thin glaze). A stroke picks up the tone where it lands and drags it along, tapered at both ends, its
 tail breaking into dry bristle streaks; light strokes favour faces that look up, dark ones faces that look down.
 
-Default preset by part: `metal` on metal parts and on regions named chrome / steel / gold / brass / pin / nickel /
+Presets are calm on big planes (pvc / gloss: few long strokes, mostly half-step glazes). Default preset by part: `metal` on metal parts and on regions named chrome / steel / gold / brass / pin / nickel /
 tin, `pvc` elsewhere. Pick per region what the material is (fur, feather, cloth weave, wood grain, lacquer).
 
 Flat ink (`P.flat`, face.py, printed details) is never brushed, rimmed or worn: prints stay crisp.

@@ -21,10 +21,10 @@ import numpy as np
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
           'ekiin', 'kabuki', 'meijin'}            # the series built in the faceted style (add a series here to convert it on rebuild)
 RATIO = float(os.environ.get('GG_FACET_RATIO', 0.5))  # where a piece's collapse starts, from its old (smooth) budget
-TOL = float(os.environ.get('GG_FACET_TOL', 0.36))      # ...and it keeps more triangles until 95 % of its form is this
-TOL_MAX = 0.6                   # close (mm), and all of it this close: no ear, toe, tooth or fold is erased
+TOL = float(os.environ.get('GG_FACET_TOL', 1.5))      # ...and keeps more triangles while 95 % of its form is not within this
+TOL_MAX = float(os.environ.get('GG_FACET_TOL_MAX', 0.9))  # (mm) or any point is further than this: a feature (ear, toe, tooth, fold) was erased
 SIZE = 1024                     # atlas size (px): double the smooth line's 512
-TRIS = (800, 1100, 1300)        # a simple figure lands near 800, a detailed one up to 1100, the hard cap 1300
+TRIS = (550, 900, 1000)         # a simple figure lands near 550-650, a detailed one up to 900, a secret up to 1000
 RIM_PX = 1.15                   # facet-edge rim width (texels)
 RIM_DEG = 16.0                  # an edge turning more than this is a facet edge that gets a rim
 ON = False                      # set by Fig() for the figure being built (tk.decimate reads it)
@@ -103,6 +103,7 @@ def reduce(ob, tris, cap=None):
     me = ob.data
     n = sum(len(p.vertices) - 2 for p in me.polygons)
     cap = int(min(n, cap if cap else n))
+    grow = not ob.get('facet')  # (a mesh faceted once already, then cut or joined, only goes to its budget)
     canon(ob)
     me = ob.data
     if n > tris:
@@ -120,7 +121,7 @@ def reduce(ob, tris, cap=None):
             p95, mx = _deviation(V0, ob.data)
             if os.environ.get('GG_FACET_DEBUG'):
                 print(f'[facet] {ob.name}: {n} -> {t} (cap {cap}): deviation p95 {p95:.3f} max {mx:.3f}', flush=True)
-            if (p95 <= TOL and mx <= TOL_MAX) or t >= cap:
+            if (p95 <= TOL and mx <= TOL_MAX) or t >= cap or not grow:
                 break
             old = ob.data
             ob.data = src
@@ -183,7 +184,7 @@ def canon(ob):
 
 
 CLIP_SLACK = 0.12               # extra mm the gimmick clip check allows a faceted figure (rig.check_clip)
-SMALL = 40                      # a piece asked for this few triangles (an ear, a toe, a tooth) keeps them all
+SMALL = 16                      # a piece asked for this few triangles keeps them all (bigger ones keep what their detail needs)
 FIG = None                      # the figure being built (Fig sets it; rig.check_clip trims through it)
 
 
@@ -211,10 +212,10 @@ class keeping:
         KEEP = False
 
 
-def trim(parts, top=None, log=print):
+def trim(parts, top=None, log=print, secret=False):
     """The figure's budget: when the parts still add up to more than TRIS[1] (many small pieces kept whole), reduce
     the bigger parts further, in proportion, to land just under it. Returns the new total."""
-    top = top or TRIS[2]
+    top = top or (TRIS[2] if secret else TRIS[1])
     count = lambda o: sum(len(p.vertices) - 2 for p in o.data.polygons)  # noqa: E731
     tot = sum(count(p.low) for p in parts)
     if tot <= top:

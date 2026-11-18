@@ -75,11 +75,21 @@ class Fig:
     def tris(s):
         return sum(tk.tri_count(p.low) for p in s.parts)
 
+    def secret(s):
+        """Is this figure its series' secret (src/data/series/<series>.js)? (a secret may carry more detail)"""
+        import re
+        try:
+            src = open(os.path.join(ROOT, 'src', 'data', 'series', s.series + '.js'), encoding='utf8').read()
+        except OSError:
+            return False
+        m = re.search(r"id: '" + re.escape(s.id) + r"'[^}]*?rarity: '(\w+)'", src)
+        return bool(m and m.group(1) == 'secret')
+
     def facet_trim(s):
         """Facet mode: bring the figure under its budget once every part is in (unwrap and the clip check call it)."""
         if s.facet and not s._trimmed:
             s._trimmed = True
-            facet.trim(s.parts, log=s.log)
+            facet.trim(s.parts, log=s.log, secret=s.secret())
 
     # -------------------------------------------------------------- UVs
     def unwrap(s, angle=None, margin=None):
@@ -560,7 +570,7 @@ class Fig:
         if s.facet:
             meta['facet'] = 1
             lo, hi, cap = facet.TRIS
-            if meta['tris'] > cap or meta['tris'] < lo * 0.75:
+            if meta['tris'] > (cap if s.secret() else hi) or meta['tris'] < lo * 0.75:
                 s.log(f'facet: {meta["tris"]} tris (simple ~{lo}, detailed up to {hi}, cap {cap})' + ('  << OVER THE CAP' if meta['tris'] > cap else '  (low)'))
         st, com = s.stability()
         meta['stand'] = round(st, 2)
