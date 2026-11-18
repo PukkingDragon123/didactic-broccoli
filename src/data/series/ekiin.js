@@ -30,5 +30,10 @@ export default {
       desc: 'The platform lunchbox seller: a tray of station bentō and clay tea pots on a strap, five arms to stand on and three to work with. "Bentō, bentō! O-cha!" Nobody on the platform is quicker with the change.',
       gimmick: { text: 'Sell a bentō', sfx: [[0.1, 'toyTap'], [0.3, 'toyTap'], [0.5, 'toyFold', { n: 3 }], [0.95, 'coinClink'], [1.1, 'toyClick'], [1.3, 'dishClink'], [1.5, 'dishClink'], [1.9, 'toyTap']] },
     },
+    {
+      id: 'perikan', name: 'Red-Cap Pelican', jp: 'あかぼうペリカン', rarity: 'uncommon',
+      desc: 'The porter in the red cap, hugging a tower of luggage with his bill on top to steady it. Something a passenger forgot is in his pouch: you can see the crook of an umbrella.',
+      gimmick: { text: 'Steady!', sfx: [[0.12, 'toyTap'], [0.3, 'toyTap'], [0.45, 'toyTap'], [0.85, 'toyFold', { n: 3 }], [1.6, 'toySnap', { f: 1100, v: 0.6 }], [1.72, 'gulp'], [2.05, 'toyTap']] },
+    },
   ],
 };
