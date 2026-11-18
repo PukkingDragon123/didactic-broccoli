@@ -141,7 +141,8 @@ class Painter:
 
     def eye(s, c, axis, r, up=(0, 0, 1), ry=None, where=None, full=False, scale=0.62, bead='#16100e', rim=None,
             facing=0.1, hi=True, rot=0.0, **_old):
-        """A bead eye (the owner's rule: animal eyes are simple beads or dots): a solid dark bead with at most one
+        """DEPRECATED: paint faces with lib/face.py (hand-drawn ink dots and one mouth stroke, the owner's drawing).
+        A bead eye (the owner's rule: animal eyes are simple beads or dots): a solid dark bead with at most one
         tiny highlight, never an iris, pupil ring, white, lid or lashes. Expression comes from brows, mouth and pose.
         full: the whole `where` region is the bead (a modelled eyeball); else a painted dot of radius r * scale.
         rim: an optional surround in a body tone (a dark bead on a dark face needs it to read).

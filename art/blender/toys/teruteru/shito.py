@@ -32,7 +32,7 @@ KNOT = (2.1, 0.0, 34.6)
 body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=7, fold_amp=0.55, soggy=0.5,
                cheeks=((-5.4, 6.6), (5.4, 6.6)), tris=520)
 knot = tt.knot('knot', KNOT, r=2.9, h=3.6, lean=(0.25, 0.0), tris=70)
-cord = tt.neck_cord('cord', NECK_Z, RINGS, bow_at=-35, ends=((-0.6, -6.5), (0.8, -7.8)), thick=0.75, tris=150)
+cord = tt.neck_cord('cord', NECK_Z, RINGS, bow_at=-8, ends=((-0.6, -6.5), (0.8, -7.8)), thick=0.75, tris=150)
 
 # ------------------------------------------------------------------ the four corners: limp, wet, hanging like ears
 CORNERS = {}

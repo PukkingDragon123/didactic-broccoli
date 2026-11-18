@@ -57,14 +57,7 @@ def sculpt_body(h):
         d += 0.6 * tk.smoothstep(-0.2, -0.9, N[:, 2]) * np.exp(-(V[:, 1] / 12) ** 2)
         for sx in (1, -1):
             d += tk.bump(V, (sx * 10.2, FRONT + 2.8, ZC - 3.0), 7.0, 1.6, sharp=1.6)  # round cheeks
-            ec = np.array(EYE_C[sx])
-            d -= tk.bump(V, tuple(ec + np.array((0, 1.0, 0))), 3.4, 0.7)  # eye sockets
-        # brows: the left one cocked up, the right one down over a half-shut eye (a pig with a plan)
-        d += tk.bump(V, (7.2, FRONT + 1.7, ZC + 9.6), 2.6, 0.75) + tk.bump(V, (-6.6, FRONT + 1.7, ZC + 8.5), 2.8, 0.85)
-        # the smirk: a crease under the snout, curling up at one corner
-        u = V[:, 0]
-        smirk_z = ZC - 8.9 + 0.012 * u ** 2 + 0.09 * np.clip(u + 2, 0, None)
-        d -= 0.4 * tk.smoothstep(0.55, 0.0, np.abs(V[:, 2] - smirk_z)) * (np.abs(u) < 6.2) * (V[:, 1] < FRONT + 2.5)
+        # (the face is painted on: lib/face.py, no sculpted eyes, brows or mouth)
         d += 0.35 * tk.smoothstep(Z0 + H - 6.2, Z0 + H - 5.6, V[:, 2])
         return d
     tk.push(h, f)
@@ -182,22 +175,7 @@ for o, reg, tri in ((shaft, 'chrome', 24), (boss, 'chrome', 40), (arm, 'chrome',
 crank_lo = tk.join(lows, 'crank')
 crank_hi = highs
 
-# ------------------------------------------------------------------ eyes: glossy beads set in sockets under the brows
-EYES = []
-for sx in (1, -1):
-    c = np.array(EYE_C[sx])
-    ax = np.array((sx * 0.32, -1.0, 0.12))
-    ax /= np.linalg.norm(ax)
-    bl = []
-    for nm_, n_, lv in (('eye_hi', 16, 2), ('eye', 8, 0)):
-        b = tk.lathe(nm_, [(0, -1.4), (2.0, -1.0), (2.5, 0.0), (2.0, 1.05), (0, 1.45)], n=n_)
-        q = Vector((0, 0, 1)).rotation_difference(Vector(tuple(ax)))
-        tk.transform(b, q.to_matrix().to_4x4())
-        tk.move(b, tuple(c))
-        tk.subsurf(b, lv)
-        bl.append(b)
-    tk.set_region(bl[0], 'eye')
-    EYES.append((bl[1], bl[0], tuple(c), tuple(ax)))
+EYES = []  # (the eyes are painted: lib/face.py)
 
 # ------------------------------------------------------------------ parts
 for v in EARS.values():  # (no hinge barrel: the ear sits on the top cover and folds flat on it)
@@ -309,6 +287,7 @@ if '--preview' in ARGS or '--fold' in ARGS:
 
 # ------------------------------------------------------------------ bake, paint
 import paint as pt  # noqa: E402
+import face  # noqa: E402
 
 FAST = '--fast' in ARGS
 F.unwrap()
@@ -340,18 +319,10 @@ def paint(P):
     shav = P.region('drawer') & (np.sin(X * 2.6 + np.sin(Z * 3.1) * 2) * np.sin(Z * 4.0 + X) > 0.25) & (Yc > FRONT + 0.6) & (Z < Z0 + 5.6)
     P.tint(shav, pt.ramp('#d9a86a', 5, shift=0.05), sh + 0.2)
     P.flat(shav & (np.sin(X * 5.0 + Z * 3.0) > 0.85), '#5a3a2a')  # the painted pencil-lead ends
-    # the eyes: plain glossy black beads (the mischief is in the cocked brows and the smirk)
-    P.fill('eye', pt.ramp('#2a2024', 5, dark=0.6, light=0.35, shift=0.04), tone=sh, base=-0.1)
-    for (lo_, hi_, c, ax), sx in zip(EYES, (1, -1)):
-        c, ax = np.array(c), np.array(ax)
-        P.eye(tuple(c + ax * 1.4), tuple(ax), 2.15, ry=2.05, full=True, bead=None, where=P.region('eye'), facing=-0.3)
-    # brows (a darker pink stroke on each sculpted brow) and the smirk under the snout
-    brow_l = (np.abs((Z - (ZC + 9.6)) + 0.18 * (X - 7.2)) < 0.55) & (np.abs(X - 7.2) < 2.6)
-    brow_r = (np.abs((Z - (ZC + 8.5)) - 0.2 * (X + 6.6)) < 0.6) & (np.abs(X + 6.6) < 2.7)
-    face = P.region('pink') & (Yc < FRONT + 3.5) & (on[:, :, 1] < -0.3)
-    P.tint(face & (brow_l | brow_r), pt.ramp('#b85466', 6, shift=0.06), sh - 0.1)
-    smirk_z = ZC - 8.9 + 0.012 * X ** 2 + 0.09 * np.clip(X + 2, 0, None)
-    P.flat(face & (np.abs(Z - smirk_z) < 0.42) & (np.abs(X) < 5.8), '#8e3446')
+    # the face, hand-drawn (lib/face.py): two ink dots far apart above the snout, a little smirk flicking up under it
+    fc = face.Face(P, c=(0, FRONT, ZC), axis=(0, -1, 0), where=P.region('pink') | P.region('blush'), seed=7)
+    fc.eyes(spread=12.6, size=0.62, dy=6.4, uneven=0.25)
+    fc.mouth('upturn', w=4.6, dy=-9.3, du=0.8, weight=0.5, side=1)
     # the side label: a red enamel plate with a cream rule and the maker's pencil mark
     lab = P.region('label')
     P.fill('label', pt.ramp('#c23a2c', 6, shift=0.05), tone=sh * 0.6, base=0.05)
@@ -364,7 +335,7 @@ def paint(P):
     tip = lab & (U >= 1.6) & (U < 3.6) & (np.abs(V) < 0.95 * (3.6 - U) / 2.0)
     P.flat(tip, '#e9cfa0')
     P.flat(tip & (U > 3.0), '#2a2224')
-    P.lines(['pink', 'blush'], ['snout', 'hoof', 'inner', 'eye'], step=2)
+    P.lines(['pink', 'blush'], ['snout', 'hoof', 'inner'], step=2)
     P.lines(['snout'], ['pink', 'blush'], step=1)
     P.clusters()
     return P.done()

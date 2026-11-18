@@ -100,7 +100,6 @@ def sculpt_head(h):
         for sx in (1, -1):
             # brows sweeping back and up (a fierce frown), the eye socket under them, flared nostrils, cheek plates
             d = d + tk.bump(V, (sx * 3.0, J[0] - 5.4, ZP + 4.4), 2.2, 0.9) + tk.bump(V, (sx * 3.6, J[0] - 3.0, ZP + 4.9), 2.0, 0.7)
-            d = d - tk.bump(V, EYE_C[sx], 1.9, 0.6)
             d = d + tk.bump(V, (sx * 2.0, J[0] - 11.2, ZP + 2.1), 1.3, 0.6) - tk.bump(V, (sx * 2.0, J[0] - 11.8, ZP + 2.0), 0.6, 0.55)
             d = d + tk.bump(V, (sx * 4.7, J[0] - 2.0, ZP - 1.0), 2.4, 0.6)
         grip = -0.12 * (np.abs(np.sin(V[:, 1] * 3.2)) ** 6) * (V[:, 2] < ZP - 1)
@@ -111,22 +110,9 @@ def sculpt_head(h):
 cage = tk.loft('head', head_rings(), n=14, cap0='round', cap1='round')
 head_lo, head_hi = tk.lowhigh(cage, 'head', lo=1, hi=3, tris=150, sculpt=sculpt_head, region=(
     'black', [('mouth', lambda C, N: (N[:, 2] < -0.5) & (C[:, 1] < J[0] - 6.0))]))
-# the eyes: glossy beads in the sockets
+# the eyes are painted (lib/face.py): gold dots, like the pen's maki-e
 EYES = []
-for sx in (1, -1):
-    c = np.array(EYE_C[sx])
-    ax = np.array((sx * 0.86, -0.42, 0.28))
-    ax /= np.linalg.norm(ax)
-    bl = []
-    for nm_, n_, lv in (('eye_hi', 14, 2), ('eye', 8, 0)):
-        b = tk.lathe(nm_, [(0, -1.0), (1.3, -0.7), (1.6, 0.0), (1.25, 0.75), (0, 1.0)], n=n_)
-        q = Vector((0, 0, 1)).rotation_difference(Vector(tuple(ax)))
-        tk.transform(b, q.to_matrix().to_4x4())
-        tk.move(b, tuple(c - ax * 0.4))
-        tk.subsurf(b, lv)
-        bl.append(b)
-    tk.set_region(bl[0], 'eyeball')
-    EYES.append((bl[1], bl[0], tuple(c), tuple(ax)))
+EYE_AX = {sx: tuple(np.array((sx * 0.86, -0.42, 0.28)) / np.linalg.norm((0.86, 0.42, 0.28))) for sx in (1, -1)}
 NIB0 = (0, J[0] - 6.6, ZP + 2.6)
 nib_out = [(-2.6, 0.0), (2.6, 0.0), (2.3, -2.8), (1.3, -5.4), (0.0, -6.8), (-1.3, -5.4), (-2.3, -2.8)]
 nib_hi = tk.slab('nib_hi', nib_out, 0.7, plane='XY', at=0, bevel=0.2, segs=2)
@@ -439,6 +425,7 @@ if '--preview' in ARGS or '--fold' in ARGS:
 
 # ------------------------------------------------------------------ bake, paint
 import paint as pt  # noqa: E402
+import face  # noqa: E402
 
 FAST = '--fast' in ARGS
 F.unwrap()
@@ -477,12 +464,13 @@ def paint(P):
         th = np.arctan2(v, u - 0.8)
         swirl = np.abs(((rr - 0.33 * th) % 1.15) - 0.57) < 0.19
         P.tint(m & side & swirl & (rr < 2.8), GOLD, sh * 1.3 + 0.15)
-    # the eyes: black beads glaring from under the heavy brows
-    P.fill('eyeball', pt.ramp('#2a2024', 5, dark=0.6, light=0.35, shift=0.04), tone=sh, base=-0.1)
-    for (lo_, hi_, c, ax), sx in zip(EYES, (1, -1)):
-        c = Vector(posed('head', c))
-        axv = (LIFT @ world('head')).to_3x3() @ Vector(ax)
-        P.eye(tuple(c + axv * 0.65), tuple(axv.normalized()), 1.35, full=True, bead=None, where=P.region('eyeball'), facing=-0.2)
+    # the eyes: one gold dot each side under the brow, hand-dotted (a little uneven), like the pen's maki-e
+    for sx in (1, -1):
+        c = Vector(posed('head', EYE_C[sx]))
+        axv = ((LIFT @ world('head')).to_3x3() @ Vector(EYE_AX[sx])).normalized()
+        fc = face.Face(P, tuple(c), tuple(axv), where=P.region('black'), seed=12 + sx, ink='#e4bc52', depth=2.5)
+        k = 1.12 if sx > 0 else 0.92
+        fc.dot(0.15 * sx, -0.1, 0.5 * k, 0.68 * k, rot=sx * 8)
     P.clusters()
     return P.done()
 

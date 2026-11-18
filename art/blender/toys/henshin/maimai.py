@@ -87,7 +87,7 @@ def sculpt_head(h):
         brow = tk.bump(V, (0, -24.6, 17.0), 5.0, 0.6, sharp=1.5)
         smile = -0.3 * tk.smoothstep(0.5, 0.0, np.abs(V[:, 2] - (10.2 - 0.02 * V[:, 0] ** 2))) * (V[:, 1] < -24.0)
         sockets = sum(-tk.bump(V, (sx * 3.4, -24.4, 19.4), 2.1, 0.5) for sx in (1, -1))
-        return brow + smile + sockets
+        return brow + sockets  # (the mouth is painted: lib/face.py)
     tk.push(h, f)
 
 
@@ -281,6 +281,7 @@ if '--preview' in ARGS or '--fold' in ARGS:
 
 # ------------------------------------------------------------------ bake, paint
 import paint as pt  # noqa: E402
+import face  # noqa: E402
 
 FAST = '--fast' in ARGS
 F.unwrap()
@@ -311,15 +312,17 @@ def paint(P):
     P.fill('hub', pt.ramp('#efe2c0', 6, shift=0.06), tone=sh, base=0.1)
     P.fill('chrome', pt.ramp('#b3bbc4', 7, dark=0.75, light=0.75, shift=0.05), tone=sh * 1.5, base=0.1)
     # eyes on the stalk tips: big glossy black beads with a catchlight, looking forward
-    P.fill('eyeball', pt.ramp('#211c1f', 5, shift=0.05, light=0.3), tone=sh, base=0.0)
+    P.fill('eyeball', TEAL, tone=sh, base=0.05)  # (the stalk tips: body colour, an ink dot eye on each)
     for nm, S in STALK.items():
         e = np.array(S['eye'])
         look = np.array((0, -1.0, 0.25))
         look /= np.linalg.norm(look)
-        P.eye(tuple(e + look * 2.0), tuple(look), 1.75, full=True, bead=None, where=P.region('eyeball'), facing=-0.2)
-    # a printed smile above the cutter and two blush dots
-    for sx in (1, -1):
-        P.flat(P.ellipse((sx * 4.6, -25.2, 12.6), (sx * 0.5, -1, 0.2), 1.2, 0.8) & P.region('body'), '#e88a86')
+        k = 1.1 if nm.endswith('l') else 0.92
+        face.Face(P, tuple(e + look * 2.0), tuple(look), where=P.region('eyeball'), seed=31 + len(nm), depth=1.6).dot(0.0, -0.1, 0.5 * k, 0.7 * k, rot=6)
+    # the mouth: one small upturned stroke above the cutter, and a little airbrushed blush either side
+    fc = face.Face(P, c=(0, -25.0, 11.2), axis=(0, -1, 0.2), where=P.region('body'), seed=33)
+    fc.blush(9.0, 1.2, rx=1.5, ry=0.85, col='#ee8c88')
+    fc.mouth('upturn', w=3.6, dy=-0.6, du=-0.4, weight=0.48, side=-1)
     P.lines(['body'], ['tape', 'core', 'hub', 'eyeball', 'chrome'], step=2)
     P.clusters()
     return P.done()

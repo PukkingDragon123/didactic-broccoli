@@ -257,19 +257,13 @@ def paint(P):
     for sx in (1, -1):
         ch = ((X - sx * 7.6) ** 2 / 12 + (Z - (ZC - 3.4)) ** 2 / 6 < 1)
         P.tint(face & ch, pt.ramp('#eab0b4', 6, shift=0.05), sh + 0.1)
-        for dz, slope in ((0.0, 0.12), (1.5, -0.08)):
-            wz = ZC - 2.4 + dz + slope * (np.abs(X) - 4.5)
-            P.flat(face & (np.abs(Z - wz) < 0.3) & (sx * X > 4.4) & (sx * X < 11.5), '#4a3e3c')
-    r, a = cx.polar(X, Z, (0, ZC - 1.8))
-    ticks = face & (r > 3.8) & (r < 4.6) & (np.abs(np.mod(a - 30, 30) - 15) > 12) & (a > 20) & (a < 160)
-    P.flat(ticks, '#4a3e3c')
     P.fill('nose', pt.ramp('#e98a96', 7, shift=0.06), tone=sh, base=0.1)
     P.flat(P.region('nose') & (np.abs(X) < 0.35) & (Z > ZC - 1.4) & (on[:, :, 1] < -0.6), '#fff4f0')
     P.fill('teeth', pt.ramp('#f6efe0', 6, shift=0.05), tone=sh, base=0.15)
     P.lines(['teeth'], None, col='#9a8c80')
     P.flat(P.region('teeth') & (np.abs(X) < 0.3) & (Yc < FRONT + 0.5), '#9a8c80')
     # the face, drawn on by hand: two ink dots set wide apart either side of the nose knob (the buck teeth are its mouth)
-    cx.face(P, (0, FRONT, ZC), (0, -1, 0), eyes=[(6.9, 0.6), (-6.6, 0.3)], eye_r=1.05, where=face, facing=0.1)
+    cx.face(P, (0, FRONT, ZC), (0, -1, 0), eyes=[(6.9, 0.8), (-6.6, 0.5)], eye_r=1.2, where=face, facing=0.1)
     # the toast: golden, paler in the middle, the crust brown, a stripe of toasting from the element
     TOAST = pt.ramp('#e2ac5c', 7, shift=0.07)
     tz = Z - EAR_Z

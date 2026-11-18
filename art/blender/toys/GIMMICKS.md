@@ -6,9 +6,12 @@ modelling side uses `art/blender/toys/lib/` (`kit.py` for the shared hardware an
 `src/plugins/toyKit.js`. Build with `art/blender/toys/make.sh <series> [ids] [--fast] [--repaint] [--card]`.
 
 Every gimmick works in the three places a figure lives: in your hand (LMB, or a click while inspecting), on a display
-shelf (RMB with empty hands, not on price-tagged sale displays) and lying loose (RMB). Faces follow the owner's rule:
-**animal eyes are simple beads or dots** (`Painter.eye`: a solid dark bead with one tiny catchlight, never an iris,
-white, lid or lashes); the expression comes from brows, mouth and pose.
+shelf (RMB with empty hands, not on price-tagged sale displays) and lying loose (RMB).
+
+Faces follow the owner's drawing (docs/ref/faces_owner.png): paint them with `lib/face.py`. Eyes are two small solid
+ink dots, a little uneven. The mouth is ONE marker stroke: `upturn`, `line`, `dash`, `grin` with tooth strokes, `w`
+or `o`. The face sits low on the head. There are no modelled eyeballs, whites, irises, highlights or lids. On a dark
+body, dot in a light ink (`ink='#efe4c8'`).
 
 ## 1. Press clip (`gimmick`)
 

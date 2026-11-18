@@ -58,7 +58,7 @@ bolt_lo = place_bolt(tk.slab('bolt', BOLT, 2.2, plane='XZ', bevel=0.0, segs=0))
 
 # ------------------------------------------------------------------ the drum ring: string, spokes, hoop, six taiko
 HZ, HR = 19.6, 13.4  # the hoop's height and radius
-cord = tt.neck_cord('cord', NECK_Z, RINGS, bow_at=-58, ends=((-0.4, -6.0), (0.9, -7.2)), thick=0.8, tris=110)
+cord = tt.neck_cord('cord', NECK_Z, RINGS, bow_at=-14, ends=((-0.4, -6.0), (0.9, -7.2)), thick=0.8, tris=110)
 hoop_pts = [(HR * math.cos(t), HR * math.sin(t), HZ) for t in np.linspace(0, 2 * math.pi, 18, endpoint=False)]
 hoop_lo = tk.tube('hoop', hoop_pts, 0.75, n=4, closed=True)
 hoop_hi = tk.tube('hoop_hi', [(HR * math.cos(t), HR * math.sin(t), HZ) for t in np.linspace(0, 2 * math.pi, 72, endpoint=False)],
@@ -167,7 +167,7 @@ def paint(P):
     P.fill('corner', TIGER, tone=sh, base=0.1)
     # tiger stripes: tapered wavy bands round the cloth, broken, kept off the face
     th = np.arctan2(Yc, X)
-    face_zone = (Yc < -4) & (np.abs(X) < 8.5) & (Z > 3) & (Z < 16.5)
+    face_zone = (Yc < -3) & (np.abs(X) < 10.5) & (Z > 3) & (Z < 16.5)
     # (lens-shaped strokes: a wavy band whose width swells and tapers to points round the body)
     s1 = np.sin(Z * 0.82 + 0.9 * np.sin(th * 2 + Z * 0.21) + 0.35 * th)
     brk = np.sin(th * 3 + Z * 0.33 + 0.8 * np.sin(Z * 0.5))

@@ -485,6 +485,7 @@ if '--preview' in ARGS or '--fold' in ARGS:
 
 # ------------------------------------------------------------------ bake, paint
 import paint as pt  # noqa: E402
+import face  # noqa: E402
 
 FAST = '--fast' in ARGS
 F.unwrap()
@@ -517,7 +518,7 @@ def paint(P):
     P.fill('steel', pt.ramp('#6c747e', 6, dark=0.7, light=0.6, shift=0.05), tone=sh * 1.3, base=0.0)
     P.fill('claw', pt.ramp('#3e3029', 5, shift=0.05), tone=sh, base=0.2)
     # the eyeballs: a lid of skin over the top, the yellow eye with a slit pupil looking sideways at you
-    P.fill('eyeball', pt.ramp('#2a2024', 5, dark=0.6, light=0.35, shift=0.04), tone=sh, base=-0.1)  # black bead eyes on the eye knobs
+    P.fill('eyeball', GREEN, tone=sh, base=-0.05)  # (the eye domes are part of the knobs: the eyes are ink dots)
     for nm in ('eye_l', 'eye_r'):
         # (the eyes were modelled with the jaw shut: turn them with it to the rest pose)
         ec = np.array(jawed(EYE[nm][2]))
@@ -525,7 +526,8 @@ def paint(P):
         axv.rotate(__import__('mathutils').Matrix.Rotation(math.radians(-JAW_OPEN), 3, 'X'))
         ax = np.array(axv)
         c = ec + ax * 1.65
-        P.eye(tuple(c), tuple(ax), 2.65, ry=2.55, full=True, bead=None, facing=-0.3, where=P.region('eyeball'))
+        k = 1.1 if nm == 'eye_l' else 0.9
+        face.Face(P, tuple(c), tuple(ax), where=P.region('eyeball') | P.region('eye'), seed=21 + (nm == 'eye_l'), depth=2.0).dot(0.0, 0.2, 0.62 * k, 0.86 * k, rot=8 if nm == 'eye_l' else -5)
     # nostrils, the claws' tips, a printed maker's badge on the left flank
     for sx in (1, -1):
         P.flat(P.ellipse((sx * 1.25, Y(-26.9), B0 + 13.4), (0, -0.3, 1), 0.55, 0.75, up=(0, 1, 0)) & P.region('green'), '#1f1a17')

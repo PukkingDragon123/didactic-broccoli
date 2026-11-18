@@ -525,6 +525,17 @@ def make_mikan(coat='calico'):
     out[inner_ear & (y < 28.3) & (np.abs(x - ex) < 0.3)] = hexes(CAL['white'])[6]          # the pale tuft at the base
     pads = ok & (y < 0.6) & (Ns[..., 1] < -0.3)
     out[pads] = hexes(['#7a5f5c', '#8c6e69', '#9b7b74'])[np.clip((hash2(xx_, yy_, 5) * 3).astype(int), 0, 2)[pads]]
+    # round the dot eyes: plain fur, no socket, rim or lighter patch (the sculpt's painted socket and lids go)
+    for sx in (1, -1):
+        d = np.sqrt((x - sx * 1.6) ** 2 + (y - 25.24) ** 2)
+        disc = ok & (d < 1.3) & (z > 21.5) & ~pink
+        if coat == 'tabby':
+            R, mid, gain = TB['coat'], 0.6, 0.6
+            out[disc] = R[np.clip(np.round(mid * (len(R) - 1) + ftone[disc] * gain), 0, len(R) - 1).astype(int)]
+        else:
+            for m, name, mid in ((disc & blackp, 'black', 0.5), (disc & ~blackp, 'orange', 0.6)):
+                R = hexes(CAL[name])
+                out[m] = R[np.clip(np.round(mid * (len(R) - 1) + ftone[m] * 0.8), 0, len(R) - 1).astype(int)]
     mz = ok & (z > 24.3) & (ax < 1.9) & (y > 21.7) & (y < 23.3) & (lum < 0.62)
     put(mz & ~pink, 'white', 8, 0.74)
     ink = hexes(['#3a2a26'])[0]
