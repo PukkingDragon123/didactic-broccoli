@@ -28,13 +28,14 @@ const LIGHTS = {
   shop: { env: 0.25, key: 1.3, fill: 0.35, rim: 0.5, hemi: 0.5, exp: 0.95 }, // a dim, warm Shōwa shop
 };
 
-window.look = async (k, { size = 512, yaw = -0.6, pitch = 0.22, t = null, light = 'catalogue', finish = 'normal', bg = null, frame = null } = {}) => {
+window.look = async (k, { size = 512, yaw = -0.6, pitch = 0.22, t = null, light = 'catalogue', finish = 'normal', variant = null, bg = null, frame = null } = {}) => {
   await whenItemReady(k);
   const L = LIGHTS[light] || LIGHTS.catalogue;
   scene.environmentIntensity = L.env; key.intensity = L.key; fill.intensity = L.fill; rim.intensity = L.rim; hemi.intensity = L.hemi;
   renderer.toneMappingExposure = L.exp;
   renderer.setClearColor(bg ? new THREE.Color(bg) : 0x000000, bg ? 1 : 0);
-  const m = makeItemMesh(k, finish);
+  const m = makeItemMesh(k, finish, { variant });
+  for (let i = 0; i < 200 && m.userData.vpending; i++) await new Promise((r) => setTimeout(r, 25)); // (a variant's repaint loading)
   const holder = new THREE.Group(); holder.add(m); scene.add(holder);
   m.rotation.y = yaw;
   // the framing box is the rest pose's (or a given one), so every moment of a clip is shot from the same camera

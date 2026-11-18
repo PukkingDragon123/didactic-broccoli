@@ -1,5 +1,5 @@
 // Contact sheet of the Blender toy figures as the game draws them (toylook.html, src/dev/toyLook.js):
-//   tools/slot.sh node art/blender/toys/look.mjs <series>[/<id>,...] <out.png> [--views a,b,...] [--size 360] [--light shop]
+//   tools/slot.sh node art/blender/toys/look.mjs <series>[/<id>,...] <out.png> [--views a,b,...] [--size 360] [--light shop] [--variant <id>]
 // views: front (3/4 front), back (3/4 back), side, top, t<sec> (the gimmick at that time, 3/4 front), e.g. t0.4
 //   --spec views.json: per figure views instead, { "<id>": ["front", "t1.0", ...] } (rows padded to the longest)
 import { createServer } from 'vite';
@@ -14,6 +14,7 @@ const [which, out] = pos;
 const size = +opt('size', 360);
 const views = opt('views', 'front,back,t0.5,t1.0,t1.9').split(',');
 const light = opt('light', 'catalogue');
+const variant = opt('variant', null); // a figure variant's id (src/data/variants.js)
 const bg = opt('bg', '#9c958c');
 const spec = opt('spec', null) ? JSON.parse((await import('node:fs')).readFileSync(opt('spec', null), 'utf8')) : null;
 let chromium;
@@ -39,7 +40,7 @@ try {
       const v = vs[i];
       if (!v) { tiles.push(null); continue; }
       const o = v.startsWith('t') ? { ...V.front, t: +v.slice(1) } : { ...V[v] };
-      const url = await pg.evaluate(([k, o]) => window.look(k, o), [k, { ...o, size, light, bg }]);
+      const url = await pg.evaluate(([k, o]) => window.look(k, o), [k, { ...o, size, light, bg, variant }]);
       tiles.push(Buffer.from(url.split(',')[1], 'base64'));
     }
   }

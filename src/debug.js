@@ -21,7 +21,7 @@ export function installDebug(game, params) {
     capsule(series = 'teruteru', rarity = null, finish = null) {
       let roll;
       for (let i = 0; i < 5000; i++) { roll = rollCapsule(series, Math.random); if ((!rarity || roll.rarity === rarity)) break; }
-      const data = { series, key: roll.key, finish: finish || roll.finish, rarity: roll.rarity };
+      const data = { series, key: roll.key, finish: finish || roll.finish, ...(roll.variant ? { variant: roll.variant } : {}), rarity: roll.rarity };
       const p = game.camera.getWorldPosition(new THREE.Vector3());
       const ent = game.items.spawnCapsule(data, p.add(new THREE.Vector3(0, -0.2, -0.3)));
       game.items.pickUp(ent);
