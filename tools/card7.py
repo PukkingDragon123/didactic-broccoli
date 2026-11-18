@@ -92,11 +92,16 @@ class Card7(Card):
         super().__init__(s, ctx)
         self.G = Sheet(2 * W, 2 * H, PAPER); self.B = Sheet(W, H, None)
 
-    def photo(self, ref, box, focus=(0.5, 0.5, 1.0), tint=None, k=0.35, bright=1.0, con=1.0, layer=None):
+    def photo(self, ref, box, focus=(0.5, 0.5, 1.0), tint=None, k=0.35, bright=1.0, con=1.0, layer=None, rep=1):
         """A real photo ground cropped to box, colour-graded toward tint (k: how far), hard-edged."""
         x, y, w, h = box
         a = np.asarray(source(ref), np.float32); a = a * 255 if a.max() <= 1.5 else a
         im = Image.fromarray(a.clip(0, 255).astype(np.uint8)).convert('RGB')
+        if rep > 1:  # a tileable material shown at its real scale (e.g. small bath tiles)
+            t = Image.new('RGB', (im.width * rep, im.height * rep))
+            for i in range(rep):
+                for j in range(rep): t.paste(im, (i * im.width, j * im.height))
+            im = t.resize((im.width, im.height), Image.LANCZOS)
         fx, fy, z = focus; Wt, Ht = 2 * w, 2 * h
         sc = max(Wt / im.width, Ht / im.height) * z
         im = im.resize((max(Wt, int(im.width * sc)), max(Ht, int(im.height * sc))), Image.LANCZOS)
@@ -116,10 +121,10 @@ class Card7(Card):
         rows = 3; cw = 60
         for i, (num, name, col) in enumerate(entries):
             cx = 5 + (i // rows) * cw; cy = y + 5 + (i % rows) * 9
-            while line_mask(name, 'micro5')[0].shape[1] > cw - 22 and ' ' in name: name = name.rsplit(' ', 1)[0]
-            while line_mask(name, 'micro5')[0].shape[1] > cw - 22: name = name[:-2] + '.'
-            F.rect(cx, cy, 6, 6, INK); F.rect(cx + 1, cy + 1, 4, 4, col)
-            F.text('%02d %s' % (num, name), cx + 9, cy + 1, 'micro5', 1, INK)
+            name = name.replace('-', ' ').replace("'S", '')
+            while line_mask(name, 'micro5')[0].shape[1] > cw - 14 and ' ' in name: name = name.rsplit(' ', 1)[0]
+            F.rect(cx, cy, 11, 7, col if lum(col) < 0.55 else INK); F.text('%02d' % num, cx + 6, cy + 1, 'micro5', 1, WH, anchor='mt')
+            F.text(name, cx + 13, cy + 1, 'micro5', 1, INK)
         sx = 128; F.rect(sx - 4, y + 4, 1, H - y - 8, INK)
         for j, l in enumerate(['SMALL PARTS.', 'NOT FOR UNDER 3.', 'KEEP FROM MOUTH.', 'PVC/ABS. 50MM', 'FOR ILLUSTRATION']):
             F.text(l, sx, y + 4 + 6 * j, 'micro5', 1, INK)
@@ -171,7 +176,7 @@ def designer(K, c):
     """One card from its config c: real photo grounds, cut-outs behind, the hero and its callouts, cut-outs in front,
     the full numbered line-up, the hand-set logo with its kickers, price piece, capsule badge, the legal strip."""
     F = K.F; ink = INK; col = c['col']; fill = c['fill']
-    for g in c['bg']: K.photo(g[0], g[1], tint=g[2], k=g[3], bright=g[4] if len(g) > 4 else 1.0, con=1.05)
+    for g in c['bg']: K.photo(g[0], g[1], tint=g[2], k=g[3], bright=g[4] if len(g) > 4 else 1.0, con=1.05, rep=g[5] if len(g) > 5 else 1)
     for cu in c.get('back', []): K.cut(*cu, 'back')
     hx, hfoot, hh, hw = c['hero']
     hid = c.get('hero_id', K.hero['id']); hb = K.toy(K.pose(hid, 2), hx, hfoot, hh, hw)
@@ -215,8 +220,8 @@ def designer(K, c):
 R, Lf = 'right', 'left'
 CFG = {
     'kanikan': dict(col=0xc8302a, fill=GOLD, face='jersey10', lines=['CRABS IN', 'FOOD CANS'], logo=(6, 6, 186, 76),
-        bg=[('oi:0d76fa17adca869d@test', (0, 0, W, 246), 0x1d5f8a, 0.3)], back=[('sea_splash', 236, 104, 116, 0), ('fish_0', 26, 146, 50, -28)],
-        hero=(226, 182, 116, 128), crest=[(0, W, 178, 196, 'front', 0x1d6a9a, 0.55)], crest_low=[(0, W, 232, 246, 'front', 0x1d6a9a, 0.55)],
+        bg=[('oi:0d76fa17adca869d@test', (0, 0, W, 246), 0x1d5f8a, 0.3)], back=[('fish_0', 26, 146, 50, -28), ('oyster_2', 300, 200, 40, 10)],
+        hero=(226, 182, 116, 128), crest_low=[(0, W, 232, 246, 'front', 0x1d6a9a, 0.55)],
         front=[('lemon_1', 132, 182, 32, 18), ('lemon_2', 308, 190, 24, -12)],
         kick=['EVERY CRAB HAS FOUND', 'A TIN TO ITS TASTE.'], vol=(116, 8), burst=(200, 30, 21, ('NEW', 'CATCH!'), 0xc8302a),
         price_at=(294, 26), caps=(246, 54), calls=[('PULL-TAB LID OPENS', 146, 132, 0.42, 0.14), ('THE CRAB LIVES INSIDE', 146, 148, 0.36, 0.42)],
@@ -253,7 +258,7 @@ CFG = {
         calls=[('LANTERN GLOWS', 196, 150, 0.4, 0.2), ('A STALL ON ITS BACK', 196, 166, 0.4, 0.6)], numcol=0xf2c230),
     'hashigo': dict(col=0x2c3c6a, fill=0xf2e6c8, face='jersey15', lines=['LADDER', 'FROGS'], logo=(150, 6, 164, 90), align='r',
         bg=[('local:cumulus.jpg', (0, 0, W, 190), 0x8ab0d8, 0.15), ('acg:Planks012', (0, 190, W, 56), 0x8a6a40, 0.2)],
-        back=[('flag_2', 60, 30, 90, -8), ('mushroom_0', 300, 196, 40, 0)], hero=(80, 210, 170, 120),
+        back=[('mushroom_0', 300, 196, 40, 0)], hero=(80, 210, 170, 120),
         front=[('frog_2', 160, 210, 44, -10)], kick_at=(156, 100), kick=['STACK THE LADDER,', 'UP THEY GO!'],
         burst=(286, 140, 22, ('PLAY', 'SET!'), 0xc8342c), price='ticket', pricecol=0xf2e6c8, price_at=(206, 150), caps=(180, 172),
         calls=[('HANDS ON THE RUNG', 300, 192, 0.6, 0.35)], flow=True),
@@ -262,11 +267,11 @@ CFG = {
         back=[('pumpkin_0', 30, 170, 64, -8), ('candle_2', 286, 100, 50, 0), ('pumpkin_2', 300, 196, 50, 10)],
         hero=(210, 204, 140, 120), front=[('candle_1', 110, 206, 36, 0)], kick=['SCARY FROM THE FRONT.', 'TIRED FROM THE BACK.'],
         burst=(262, 40, 22, ('PLAY', 'SET!'), 0xd8c27a), price='tsuba', pricecol=0xd8c27a, price_at=(40, 152), caps=(70, 170),
-        calls=[('SPOOKY SIDE', 150, 120, 0.4, 0.3), ('TURN IT: BREAK TIME', 150, 136, 0.45, 0.7)], numcol=0xd8c27a),
+        calls=[('TURN IT: BREAK TIME', 316, 192, 0.6, 0.6)], numcol=0xd8c27a),
     'sento': dict(col=0x2a5aa8, fill=0xf2f2ea, face='jersey15', lines=['BATHHOUSE', 'REGULARS'], logo=(6, 6, 190, 86),
-        bg=[('acg:Tiles074', (0, 0, W, 246), 0xe8f0f2, 0.1)],
-        back=[('sea_splash', 240, 120, 100, 0), ('towel_1', 30, 150, 60, -10)], hero=(236, 196, 140, 120),
-        crest=[(0, W, 180, 198, 'front', 0x7ac0e8, 0.5)], front=[('milk_0', 130, 180, 40, 0), ('tap_1', 304, 30, 40, 0)],
+        bg=[('acg:Tiles032', (0, 0, W, 246), 0x3a8a6a, 0.15, 1.0, 3)],
+        back=[('duck_2', 40, 186, 40, 0)], hero=(236, 196, 140, 120),
+        front=[('milk_0', 130, 180, 40, 0), ('tap_1', 304, 30, 40, 0)],
         kick=['EVERYONE HAS THEIR OWN', 'WAY TO TAKE A BATH.'], burst=(170, 120, 22, ('BATH', 'TIME!'), 0xc8303a), price_at=(30, 150), caps=(56, 168),
         calls=[('BUBBLES ON HEAD', 180, 100, 0.5, 0.12)]),
     'kabuki': dict(col=0xc8303a, fill=0xf2e6cf, face='ala', lines=['YOKAI', 'KABUKI'], logo=(6, 18, 160, 100),
@@ -331,8 +336,8 @@ CFG = {
         calls=[('HOLD THE POSE', 196, 116, 0.4, 0.3)]),
     'minato': dict(col=0x2f4a6a, fill=0xf2f2ea, face='ala', lines=['HARBOUR TOWN'], logo=(6, 20, 200, 60),
         bg=[('local:cumulus.jpg', (0, 0, W, 150), 0x9ab8d8, 0.15), ('oi:0d76fa17adca869d@test', (0, 150, W, 96), 0x2a6a90, 0.25)],
-        back=[('lighthouse_0', 296, 110, 100, 0), ('sea_splash', 200, 150, 80, 0)], hero=(220, 196, 150, 120),
-        crest=[(0, W, 184, 202, 'front', 0x2a6a90, 0.5)], front=[('fish_2', 140, 186, 36, -35)], kick_at=(10, 4), kick=['POSE BEASTS II', 'NOTHING ODD HERE AT ALL.'],
+        back=[('lighthouse_0', 296, 110, 100, 0)], hero=(220, 196, 150, 120),
+        front=[('fish_2', 140, 186, 36, -35)], kick_at=(10, 4), kick=['POSE BEASTS II', 'NOTHING ODD HERE AT ALL.'],
         burst=(160, 100, 20, ('POSE!',), 0xc8343a), price='ticket', pricecol=0xdfe6e4, price_at=(40, 128), caps=(70, 146),
         calls=[('QUIET NEIGHBOUR?', 196, 120, 0.4, 0.4)]),
     'datesha': dict(col=0xc89a30, fill=0xf2f2ea, face='ala', lines=['DANDY GANG'], logo=(6, 20, 200, 60),

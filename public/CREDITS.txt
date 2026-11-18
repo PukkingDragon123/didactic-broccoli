@@ -2195,3 +2195,4 @@ GACHA CARD CUT-OUTS (Open Images photos, CC BY 2.0; segmentation masks by Google
 - "The Hampton Apartment | Jakarta" by Jerry Toisa, https://www.flickr.com/photos/toisa/4906399976 (CC BY 2.0)
 - "American flag bunting" by US Embassy Canada, https://www.flickr.com/photos/us_mission_canada/5912615231 (CC BY 2.0)
 - "Beyond Vape Stickers" by John Fischer, https://www.flickr.com/photos/stickergiant/15697927437 (CC BY 2.0)
+- ambientCG Tiles032 (CC0): bath tiles on the Bathhouse Regulars card

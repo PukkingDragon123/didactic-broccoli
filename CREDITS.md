@@ -2949,3 +2949,4 @@ https://storage.googleapis.com/openimages/web/index.html), shrunk, colour-graded
 - "The Hampton Apartment | Jakarta" by Jerry Toisa, https://www.flickr.com/photos/toisa/4906399976, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8fd024c48ed0f8e9: the skyscraper cut-out
 - "American flag bunting" by US Embassy Canada, https://www.flickr.com/photos/us_mission_canada/5912615231, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 6a822d2a60c65259: the flag cut-out
 - "Beyond Vape Stickers" by John Fischer, https://www.flickr.com/photos/stickergiant/15697927437, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 440e6966a346efa4: the flashlight cut-out
+- ambientCG "Tiles032" (CC0, https://ambientcg.com/view?id=Tiles032): the green bath tiles behind the Bathhouse Regulars card
