@@ -347,15 +347,17 @@ def paint(P):
         blade |= (da < 30 - r * 0.6) & (r < 13.6) & (r > 3.2)
     P.fill(gap & blade, pt.ramp('#88b4c4', 5, shift=0.05), tone=sh * 0.5, base=-0.3)
     P.fill(gap & ~blade, pt.ramp('#384448', 5, shift=0.05), tone=sh * 0.5, base=0.0)
-    # the face plate: cream enamel, a soft airbrushed blush, and the face drawn on by hand: two ink dots set wide
+    # the face plate: cream enamel and the face drawn on by hand (lib/face.py): two ink dots set wide, a soft blush
+    import face
     P.fill('plate', CREAM, tone=sh, base=0.12)
     pl = P.region('plate')
-    for sx in (1, -1):
-        P.tint(pl & ((X - sx * 5.6) ** 2 / 5.0 + (Z - (HZ - 2.4)) ** 2 / 2.2 < 1), pt.ramp('#efb4a0', 6, shift=0.05), sh + 0.15)
-    cx.face(P, (0, GF - 1.7, HZ), (0, -1, 0), eyes=[(4.7, 0.3), (-4.5, 0.1)], eye_r=0.95, where=pl, facing=-0.2)
+    fc = face.Face(P, c=(0, GF - 1.7, HZ), axis=(0, -1, 0), where=pl, seed=3)
+    fc.blush(11.4, -2.6, rx=1.9, ry=1.1)
+    fc.eyes(spread=9.2, size=0.7, dy=0.1)
     # the back cover: the false face a pygmy owl has on the back of its head (it still looks at you when it turns)
-    back = P.region('mint') & (Yc > 6.6)
-    cx.face(P, (0, 11.9, HZ), (0, 1, 0), eyes=[(4.4, 1.4), (-4.6, 1.6)], eye_r=0.9, mouth=[cx.dash(2.2, slant=0.25)], where=back, facing=0.2)
+    fb = face.Face(P, c=(0, 11.9, HZ), axis=(0, 1, 0), where=P.region('mint') & (Yc > 6.6), seed=5)
+    fb.eyes(spread=9.0, size=0.65, dy=1.4)
+    fb.mouth('dash', w=2.2, dy=-1.2, slant=-12)
     # the badge-beak: orange enamel, a chrome edge, a darker hooked tip
     P.fill('badge', pt.ramp('#e99a34', 6, shift=0.06), tone=sh, base=0.1)
     bd = P.region('badge')

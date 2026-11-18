@@ -106,11 +106,51 @@ def closest_uv(P, F, UV, region):
 
 
 def paint_iris(size, iris, pupil, seed=3):
-    """One eye frame (size x size px): the owner's rule, a simple solid dark bead with one tiny highlight (no iris,
-    pupil, whites or lashes). `pupil` is ignored: every frame is the same bead (the lids carry the expressions)."""
-    col = lambda h: np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)], np.uint8)
-    out = np.zeros((size, size, 3), np.uint8) + col(iris.get('bead', '#141010'))
-    return out                     # (no highlight: the owner wants plain hand-drawn dots)
+    """One iris frame (size x size px): the eyeball's front seen along its axis. iris: dict of colours; pupil: (w, h)
+    as fractions of the eyeball radius (a vertical slit or a round pupil). Painted per pixel at 3x and reduced by
+    majority: a darker limbus ring, the body greener outside and golden round the pupil, fine radial fibres (alternating
+    lighter / darker spokes whose widths vary), the upper lid's shadow, a small sharp catchlight."""
+    K = 3
+    S = size * K
+    rng = np.random.default_rng(seed)
+    yy, xx = np.mgrid[0:S, 0:S]
+    x = (xx + 0.5) / S * 2 - 1; y = (yy + 0.5) / S * 2 - 1      # -1..1 over the eyeball
+    rr = np.hypot(x, y); ang = np.arctan2(y, x)
+    ri = iris.get('size', 0.82)
+    col = lambda h: np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)], np.float32)
+    out = np.zeros((S, S, 3), np.float32) + col(iris['ball'])
+    k = rr / ri
+    # body: outer -> mid -> inner by radius (stepped, 3 bands with a jagged, fibrous boundary)
+    spokes = np.zeros_like(ang)
+    nsp = 46
+    edges = np.sort(rng.random(nsp)) * 2 * np.pi
+    idx = np.searchsorted(edges, (ang + np.pi) % (2 * np.pi)) % nsp
+    jag = rng.random(nsp)[idx] * 0.08
+    band = np.where(k < 0.5 + jag, 2, np.where(k < 0.78 + jag, 1, 0))
+    for b, name in enumerate(['outer', 'mid', 'inner']):
+        out[band == b] = col(iris[name])
+    # fibres: alternate spokes a shade lighter / darker in the mid and outer bands
+    light = (idx % 3 == 0); dark = (idx % 3 == 1)
+    fib = (k > 0.36) & (k < 0.94)
+    out[fib & light] = out[fib & light] * 0.55 + col(iris['fibre_l']) * 0.45
+    out[fib & dark] = out[fib & dark] * 0.55 + col(iris['fibre_d']) * 0.45
+    # limbus ring and the edge of the iris
+    out[(k > 0.9) & (k <= 1)] = col(iris['limbus'])
+    out[k > 1] = col(iris['ball'])
+    # the upper lid's shadow over the top of the iris
+    sh = (y < -0.42 + 0.25 * x * x) & (k <= 1)
+    out[sh] = out[sh] * 0.62 + col(iris['shadow']) * 0.38
+    # pupil (with a faint darker ring)
+    pw, ph = pupil
+    pk = (x / pw) ** 2 + (y / ph) ** 2
+    out[pk < 1.35] = out[pk < 1.35] * 0.6 + col(iris['pupil']) * 0.4
+    out[pk < 1] = col(iris['pupil'])
+    # catchlight (the window, upper left of the pupil) and a faint second one lower right
+    g1 = ((x + 0.3) / 0.13) ** 2 + ((y + 0.34) / 0.1) ** 2 < 1
+    out[g1] = col(iris['glint'])
+    g2 = ((x - 0.33) / 0.05) ** 2 + ((y - 0.38) / 0.04) ** 2 < 1
+    out[g2] = out[g2] * 0.4 + col(iris['glint2']) * 0.6
+    return majority(np.clip(out, 0, 255).astype(np.uint8), K, keep=[iris['glint'], iris['pupil']])
 
 
 def majority(a, K, keep=()):

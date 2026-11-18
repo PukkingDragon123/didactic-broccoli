@@ -57,7 +57,7 @@ export class CatRig {
     this.root = new THREE.Group();
     this.root.name = 'cat';
     this.mat = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.92, metalness: 0 });
-    this.matEye = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.95, metalness: 0 }); // a plain dark dot, flush with the face
+    this.matEye = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.14, metalness: 0, envMapIntensity: 1.6 }); // wet: the window's highlight
     this.matMouth = new THREE.MeshStandardMaterial({ map: A.map, roughness: 0.6, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
     // per-cat UVs (the pupil frame differs per cat); everything else is shared
     this.geo = new THREE.BufferGeometry();

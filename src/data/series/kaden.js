@@ -25,5 +25,20 @@ export default {
       desc: 'A chrome pop-up toaster with ruby eyes. Its ears are two slices of toast, its nose is the browning knob and its tail is the plug. Press the lever: tick, tick, tick, DING.',
       gimmick: { text: 'Toast', sfx: [[0.1, 'switchClick'], [0.28, 'toyFold', { n: 3 }], [0.5, 'clockTick'], [0.75, 'clockTick'], [1.0, 'clockTick'], [1.25, 'clockTick'], [1.36, 'bellDing'], [1.42, 'boing'], [1.72, 'toyTap'], [1.95, 'toyClick'], [2.08, 'toyClick', { f: 2800 }]] },
     },
+    {
+      id: 'zou', name: 'Kettle Elephant', jp: 'ケトルゾウ', rarity: 'uncommon',
+      desc: 'A grey enamel whistling kettle on a trivet, with a camellia on each flank. Its spout is its trunk and the whistle flap is on the end of it. Bring it to the boil and it trumpets.',
+      gimmick: { text: 'Boil', sfx: [[0.1, 'toyRatchet', { n: 18, gap: 0.055 }], [1.1, 'toyFold', { n: 3 }], [1.25, 'policeWhistle'], [1.35, 'toyClick'], [1.5, 'toyTap'], [2.1, 'toyClick'], [2.4, 'toyTap']] },
+    },
+    {
+      id: 'sagi', name: 'Sewing Heron', jp: 'ミシンサギ', rarity: 'uncommon',
+      desc: 'A dove-grey sewing machine with gold reeds on its flank. The gooseneck arm is a heron\'s neck, the needle its beak and the hand wheel its wing. There is a fish on the cloth, and it has noticed.',
+      gimmick: { text: 'Sew', sfx: [[0.1, 'motor', { dur: 2.2 }], [0.27, 'toyRatchet', { n: 14, gap: 0.085 }], [1.47, 'toyFold', { n: 2 }], [1.6, 'toySnap', { v: 0.8 }], [2.07, 'toyClick'], [2.15, 'toyTap']] },
+    },
+    {
+      id: 'gama', name: 'Dial-Phone Toad', jp: 'くろでんわガマ', rarity: 'rare',
+      desc: 'A moss-green Shōwa dial telephone, warts and all. The handset is its upper jaw and the dial its pale belly. When it rings, it hops, and when it answers, watch the tongue.',
+      gimmick: { text: 'Ring', sfx: [[0.05, 'phoneRing'], [0.9, 'hookUp'], [1.15, 'toySnap', { f: 900, v: 0.6 }], [1.55, 'gulp'], [1.8, 'toyTap'], [1.9, 'toyRatchet', { n: 9, gap: 0.035 }], [2.25, 'toyRatchet', { n: 9, gap: 0.03 }]] },
+    },
   ],
 };

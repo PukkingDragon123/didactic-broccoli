@@ -198,10 +198,11 @@ def paint(P):
         P.flat(head & tom, '#231c1e')
         P.flat(head & (r < 0.28) & (np.abs(W) < 0.6), '#231c1e')
     # the face: dots wide apart and one big grin with three tooth strokes
-    fb = bk.Face(P, FACE, (0, -1, 0), depth=5, where=P.region('cloth'))
-    P.flat(fb.ell(-5.6, -0.9, 1.9, 1.15) | fb.ell(5.5, -1.0, 1.9, 1.1), '#ef8b68')
-    bk.hand_face(P, FACE, eyes=(4.1, 1.5), eye=(1.0, 1.3), mouth='grin', mouth_at=(0.0, -0.4), mouth_w=5.4, teeth=3, seed=5,
-                 where=P.region('cloth'), line=0.44)
+    import face
+    fc = face.Face(P, c=FACE, axis=(0, -1, 0.1), where=P.region('cloth'), seed=5)
+    fc.blush(11.0, -0.9, rx=1.9, ry=1.1, col='#ef8b68')
+    fc.eyes(8.2, 0.5, dy=1.5)
+    fc.mouth('grin', w=5.4, dy=-0.6, teeth=3)
     P.lines(['cloth', 'corner'], ['cord'], step=2)
     P.lines(['bolt'], step=2)
     P.lines(['drum'], ['head'], step=2)

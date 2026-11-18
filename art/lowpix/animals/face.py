@@ -214,7 +214,22 @@ def mouth_lens(xs, lip_y, surf_z, uv_rect, rows=4, out=0.03):
 
 
 def paint_open_mouth(tex, rect, cols):
-    """The open mouth, kept as simple as the rest of the face: one flat dark shape, no teeth, ridges or tongue."""
+    """The inside of an open cat's mouth as pixel art (w x h): dark lips top and bottom, the roof's ridges, the dark
+    throat, a pink tongue on the floor with its groove, two small fangs hanging from the upper lip."""
     x0, y0, w, h = rect
     C = {k: np.array([int(v[i:i + 2], 16) for i in (1, 3, 5)], np.uint8) for k, v in cols.items()}
-    tex[y0:y0 + h, x0:x0 + w] = C['inside']
+    for yy in range(h):
+        for xx in range(w):
+            u, v = (xx + 0.5) / w, (yy + 0.5) / h
+            e = abs(u - 0.5) * 2                                   # 0 centre .. 1 corners
+            col = C['throat'] if (0.3 < v < 0.7 and e < 0.55) else C['inside']
+            if v < 0.3 and (yy % 3 == 0) and e < 0.8: col = C['ridge']
+            # tongue: an ellipse on the floor
+            tg = ((u - 0.5) / 0.24) ** 2 + ((v - 0.95) / 0.26) ** 2 < 1
+            if tg: col = C['tongue']
+            if tg and abs(u - 0.5) < 0.025: col = C['tongueD']
+            # fangs: small white triangles under the upper lip
+            for fx in (0.27, 0.73):
+                if v < 0.36 and abs(u - fx) < 0.05 * (1 - v / 0.36): col = C['tooth']
+            if v < 0.07 or v > 0.95: col = C['lip']
+            tex[y0 + yy, x0 + xx] = col

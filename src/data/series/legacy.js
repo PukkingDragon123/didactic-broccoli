@@ -76,7 +76,8 @@ const live = () => SERIES.filter((s) => !s.hidden);
 /** The new series an old series id maps to. */
 export function newSeriesFor(oldId) {
   if (SERIES_BY_ID[oldId] && !OLD_ITEMS[oldId]) return oldId;
-  const t = THEME[oldId];
+  let t = THEME[oldId];
+  for (let i = 0; i < 4 && t && !SERIES_BY_ID[t] && THEME[t]; i++) t = THEME[t]; // (a series that was itself retired hands on)
   if (t && SERIES_BY_ID[t]) return t;
   const L = live();
   return L[hash(oldId) % L.length]?.id || L[0]?.id;

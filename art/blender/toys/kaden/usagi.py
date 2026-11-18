@@ -252,18 +252,18 @@ def paint(P):
     P.fill('skirt', CREAM, tone=sh, base=-0.05)
     P.fill('bakelite', CREAM, tone=sh, base=0.05)
     P.fill('slotin', pt.ramp('#3a3433', 5, shift=0.05), tone=sh, base=-0.1)
-    # the face: rosy airbrushed cheeks, printed whiskers and the browning scale round the nose
-    face = P.region('chrome') & (Yc < FRONT + 5.0) & (on[:, :, 1] < -0.3)
-    for sx in (1, -1):
-        ch = ((X - sx * 7.6) ** 2 / 12 + (Z - (ZC - 3.4)) ** 2 / 6 < 1)
-        P.tint(face & ch, pt.ramp('#eab0b4', 6, shift=0.05), sh + 0.1)
+    face_m = P.region('chrome') & (Yc < FRONT + 5.0) & (on[:, :, 1] < -0.3)
     P.fill('nose', pt.ramp('#e98a96', 7, shift=0.06), tone=sh, base=0.1)
     P.flat(P.region('nose') & (np.abs(X) < 0.35) & (Z > ZC - 1.4) & (on[:, :, 1] < -0.6), '#fff4f0')
     P.fill('teeth', pt.ramp('#f6efe0', 6, shift=0.05), tone=sh, base=0.15)
     P.lines(['teeth'], None, col='#9a8c80')
     P.flat(P.region('teeth') & (np.abs(X) < 0.3) & (Yc < FRONT + 0.5), '#9a8c80')
-    # the face, drawn on by hand: two ink dots set wide apart either side of the nose knob (the buck teeth are its mouth)
-    cx.face(P, (0, FRONT, ZC), (0, -1, 0), eyes=[(6.9, 0.8), (-6.6, 0.5)], eye_r=1.2, where=face, facing=0.1)
+    # the face, drawn on by hand (lib/face.py): two ink dots set wide apart either side of the nose knob, rosy cheeks
+    # (the buck teeth are its mouth)
+    import face
+    fc = face.Face(P, c=(0, FRONT, ZC), axis=(0, -1, 0), where=face_m, seed=2)
+    fc.blush(15.2, -3.4, rx=2.0, ry=1.2)
+    fc.eyes(spread=13.4, size=0.85, dy=0.6)
     # the toast: golden, paler in the middle, the crust brown, a stripe of toasting from the element
     TOAST = pt.ramp('#e2ac5c', 7, shift=0.07)
     tz = Z - EAR_Z

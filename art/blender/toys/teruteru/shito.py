@@ -154,11 +154,12 @@ def paint(P):
     tt.drop_gloss(P, 'drop')
     # the face, drawn the right way up on the upside-down head, low and small: two tiny dots close together and a
     # short slanted dash (glum); the rain has made one eye's ink run
-    fb = bk.Face(P, FACE_C, (0, -1, 0), depth=5, where=P.region('cloth'))
-    P.flat(fb.ell(-3.9, -1.2, 1.7, 1.0) | fb.ell(4.1, -1.3, 1.6, 0.95), '#e5aeb0')
-    f = bk.hand_face(P, FACE_C, eyes=(1.55, 0.7), eye=(0.9, 1.15), mouth='dash', mouth_at=(0.35, -1.5), mouth_w=1.8, seed=11,
-                     where=P.region('cloth'), line=0.4)
-    P.flat(bk.ink_line(f, [(1.62, 0.2), (1.8, -1.0), (1.55, -2.4), (1.75, -3.6)], 0.26, seed=4, press=(1.0, 0.6, 0.35)), '#3d4560')
+    import face
+    fc = face.Face(P, c=FACE_C, axis=(0, -1, 0.1), where=P.region('cloth'), seed=11)
+    fc.blush(8.0, -1.3, rx=1.6, ry=0.95, col='#e9a7a9')
+    fc.eyes(3.1, 0.45, dy=0.7)
+    fc.mouth('dash', w=1.8, dy=-1.5, du=0.35)
+    fc.stroke([(1.62, 0.1), (1.8, -1.0), (1.55, -2.4), (1.75, -3.6)], weight=0.26, col='#3d4560')
     P.lines(['cloth', 'corner'], ['cord'], step=2)
     P.lines(['cord'], step=1)
     P.lines(['drop'], step=1)
