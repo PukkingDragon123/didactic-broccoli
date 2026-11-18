@@ -22,7 +22,8 @@ import numpy as np
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
           'ekiin', 'kabuki', 'meijin', 'sento', 'otenki', 'yomise',
           'sabaku', 'minato', 'datesha', 'janru', 'kasabuki', 'kanikan'}            # the series built in the faceted style (add a series here to convert it on rebuild)
-RATIO = float(os.environ.get('GG_FACET_RATIO', 0.9))  # where a piece's collapse starts, from its old (smooth) budget
+RATIO = float(os.environ.get('GG_FACET_RATIO', 0.6))  # where a piece's collapse starts, from its old (smooth) budget (a figure may set its own)
+HIRES = 1.5                     # x RATIO: the owner's higher-resolution pass (every figure, its own RATIO included)
 GROW = 1.6                      # ...and how far past that start it may grow to keep a feature (the cap)
 TOL = float(os.environ.get('GG_FACET_TOL', 1.0))      # ...and keeps more triangles while 95 % of its form is not within this
 TOL_MAX = float(os.environ.get('GG_FACET_TOL_MAX', 0.6))  # (mm) or any point is further than this: a feature (ear, toe, tooth, fold) was erased
@@ -197,7 +198,7 @@ def budget(tris):
     small pieces and facet.keeping() keep them all)."""
     if tris <= SMALL or KEEP:
         return int(tris)
-    return max(int(round(tris * RATIO)), SMALL)
+    return max(int(round(tris * RATIO * HIRES)), SMALL)
 
 
 def cap(tris):

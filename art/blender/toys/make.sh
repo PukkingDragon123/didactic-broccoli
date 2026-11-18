@@ -74,7 +74,7 @@ for id in "${ids[@]}"; do
   [ -f art/blender/toys/_build/$S/$id.glb ] || { echo "no glb for $S/$id"; exit 1; }
   # facet (FACET.md): a simple figure should not land far under ~1000 tris; one that did is built again with its
   # collapse starting proportionally higher (GG_FACET_RATIO), once
-  r=$(python3 -c "import json;m=json.load(open('art/blender/toys/_build/$S/$id.meta.json'));t=m.get('tris',0);print(round(min(1.9,0.9*1080/t),3) if m.get('facet') and 0<t<860 and 'GG_FACET_RATIO' not in __import__('os').environ else '')")
+  r=$(python3 -c "import json;m=json.load(open('art/blender/toys/_build/$S/$id.meta.json'));t=m.get('tris',0);print(round(min(1.3,0.6*1080/t),3) if m.get('facet') and 0<t<860 and 'GG_FACET_RATIO' not in __import__('os').environ else '')")
   if [ -n "$r" ]; then
     echo "[$S/$id] facet: too few tris, building again with GG_FACET_RATIO=$r"
     rm -f art/blender/toys/_build/$S/$id.glb

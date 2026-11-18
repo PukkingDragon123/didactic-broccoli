@@ -633,7 +633,7 @@ class Fig:
         lo, hi = np.percentile(P, 2, axis=0), np.percentile(P, 98, axis=0)
         c = (lo + hi) / 2
         ext = max(float(np.ptp(P @ u)), float(np.ptp(P @ v)))
-        r = max(4.5, 0.85 * ext + 2.0)
+        r = max(3.5, 0.62 * ext + 1.2)
         D = r / math.sin(math.atan(18 / 60))
         cam = c + a * D + v * 0.08 * D
         lows = [p.low for p in s.parts]

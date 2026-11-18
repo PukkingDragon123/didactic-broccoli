@@ -573,6 +573,9 @@ def regions(ob, default, rules):
 def lowhigh(cage, name, lo=1, hi=3, tris=None, sculpt=None, region=None, keep_corners=False):
     """From one subdivision cage: the game mesh (subdivision `lo`, decimated to `tris`) and the sculpt (subdivision
     `hi`, then sculpt(high) for displacement detail). The cage is consumed. Returns (low, high)."""
+    import facet
+    if facet.ON:  # (the higher-resolution facet line: the game mesh collapses from one subdivision level finer)
+        lo = min(lo + 1, hi)
     high = copy(cage, name + '_hi')
     subsurf(high, hi, keep_corners)
     if sculpt:
