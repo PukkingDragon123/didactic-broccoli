@@ -132,9 +132,9 @@ class Face:
             ys = dy - 0.06 * w * np.sin(np.linspace(0, math.pi, n)) * (0.4 if kind == 'line' else 0.15)
             pts = list(zip(xs, ys))
             if kind != 'line':
-                flick = (0.22 if kind == 'upturn' else -0.18) * w
+                flick = (0.1 if kind == 'upturn' else -0.09) * w
                 e = x1 if side > 0 else x0
-                pts = (pts if side > 0 else pts[::-1]) + [(e + side * 0.1 * w, dy + flick * 0.55), (e + side * 0.13 * w, dy + flick)]
+                pts = (pts if side > 0 else pts[::-1]) + [(e + side * 0.05 * w, dy + flick * 0.35), (e + side * 0.085 * w, dy + flick)]
             return s.stroke(pts, weight, taper=(0.75, 0.6) if side > 0 else (0.6, 0.75))
         if kind == 'dash':
             a = math.radians(slant)
@@ -150,8 +150,8 @@ class Face:
                 q = (i + 1) / (teeth + 1)
                 x = x0 + w * (0.08 + 0.84 * q) + r.normal() * 0.04 * w
                 depth = h * math.sin(math.pi * q) ** 0.85 * (0.82 + 0.1 * r.random())
-                lean = 0.12 * h * (q - 0.35)
-                s.stroke([(x, dy + 0.02 * h), (x + lean, dy - depth + 0.12 * h)], weight * 0.7, taper=(0.9, 0.7), wobble=0.02)
+                lean = 0.18 * h + 0.1 * h * (q - 0.5)  # (a quick hand: the strokes all lean the same way)
+                s.stroke([(x - lean * 0.4, dy + 0.0 * h), (x + lean * 0.6, dy - depth * 0.86 + 0.12 * h)], weight * 0.7, taper=(0.9, 0.7), wobble=0.02)
             return None
         if kind == 'w':
             k = w / 4
