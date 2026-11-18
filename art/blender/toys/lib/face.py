@@ -401,6 +401,11 @@ class Face:
             pts = top + bot
         elif shape == 'lid':
             pts = [R(rx * math.cos(a), min(ry * math.sin(a), 0.2 * ry)) for a in t]
+        elif shape == 'slit' and (s.sp or {}).get('almond'):  # a kitten's almond eye: a lens, pointed at both corners
+            rx = 0.5 * max(w, h) * 0.95
+            ry = rx * 0.62
+            tt = np.linspace(-1, 1, 13)
+            pts = [R(rx * t, ry * (1 - t * t) ** 0.8) for t in tt] + [R(rx * t, -0.85 * ry * (1 - t * t) ** 0.8) for t in tt[::-1][1:-1]]
         else:
             pts = s._lumpy(u, v, rx, ry, 0.03, rot)
         if shape == 'compound':  # an isopod's / insect's compound eye: a solid dark kidney, a fine facet hatch, no pupil
@@ -991,7 +996,8 @@ SPECIES.update({f'kanikan/{i}': 'crab' for i in ('iwashi', 'saba', 'konbi', 'bea
 SPECIES.update({'janru/robo': 'hamster', 'janru/usagi': 'rabbit', 'janru/mangusu': 'mongoose', 'janru/shiba': 'dog',
                 'janru/gorira': 'gorilla', 'janru/musasabi': 'squirrel'})
 STYLE.update({
-    'hamster': dict(eye='round', iris='#2a1e18', eyek=1.4, mouth='catnose', nose='#e8a0a8', extras=('blush',)),
+    'hamster': dict(eye='round', iris='#2a1e18', eyek=1.1, lid=False, mouth='catnose', nose='#e8a0a8', extras=('blush',)),
+    'kitten': dict(eye='slit', almond=True, iris='#b8cc48', eyek=1.25, tilt=14, lid=False, mouth='catnose', nose='#e47c86', extras=('whiskers',)),
     'mongoose': dict(eye='round', iris='#3a2418', tilt=12, brows=('angry', 1.1), mouth='muzzle', muzzle='#d8c4a0'),
     'gorilla': dict(eye='round', iris='#3a2418', brows=('flat', 1.5), mouth='muzzle', muzzle='#6a5a52', eyek=0.9),
 })
