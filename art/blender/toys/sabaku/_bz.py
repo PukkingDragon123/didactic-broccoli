@@ -21,10 +21,13 @@ from fig import Fig, cli  # noqa: E402,F401
 V3 = lambda *a: np.array(a, float)  # noqa: E731
 
 
+K = float(os.environ.get('GG_BZ_K', 1.0))   # every piece's smooth-line budget times this (a build-wide detail knob)
+
+
 def low(o, name, tris, lo=1, hi=2, region=None, sculpt=None):
     """lowhigh + decimate: (game mesh, sculpt)."""
     a, b = tk.lowhigh(o, name, lo=lo, hi=hi, sculpt=sculpt, region=region or name)
-    tk.decimate(a, tris)
+    tk.decimate(a, max(tris, int(round(tris * K))) if tris > 16 else tris)
     return a, b
 
 
@@ -172,7 +175,7 @@ def run(F, make_rig, paint, frames=90, skip=(), cams=None, fold=(0, 30, 52, 68),
 # ------------------------------------------------------------------ paint helpers
 def ghost(P, pt, reg, col, tone, lines=True):
     """A spirit's clear tint: a pale, even ramp (it is the glass material that makes it see-through)."""
-    P.fill(reg, pt.ramp(col, 6, shift=0.05, light=0.7), tone=tone * 0.7, base=0.05, brush='gloss')
+    P.fill(reg, pt.ramp(col, 6, shift=0.07, light=0.5, dark=0.75), tone=tone * 0.8, base=-0.15, brush='gloss')
 
 
 def sand(P, pt, tone, col='#d9b77a'):

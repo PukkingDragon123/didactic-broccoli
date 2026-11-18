@@ -125,7 +125,7 @@ def HX(p, d=False):
 
 # ------------------------------------------------------------------ the spirit: a ghostly baboon in a long scarf, taped fists
 G = 2.8                                   # how much it swells
-Q_FULL = V3(7.6, 9.0, 31.6)              # its waist when out, behind him
+Q_FULL = V3(9.0, 8.4, 34.6)              # its waist when out, behind him
 Q_REST = V3(6.8, 3.4, 31.2)              # ...and riding on his right shoulder, small
 
 
@@ -197,10 +197,10 @@ def make_rig():
             k(nm, 18)
             for i in range(7):
                 f = 20 + i * 6 + ph * 3
-                k(nm, f, move=(0, -3.4, 0.4), ease='LINEAR')
+                k(nm, f, move=(0, -3.6, 1.2), ease='LINEAR')
                 k(nm, f + 3, move=(0, 0.4, 0), ease='LINEAR')
-            k(nm, 64, move=(0, -3.8, 0.6), ease='BACK')
-            k(nm, 70, move=(0, -3.8, 0.6))
+            k(nm, 64, move=(0, -4.0, 1.4), ease='BACK')
+            k(nm, 70, move=(0, -4.0, 1.4))
             k(nm, 80)
         # his pointing arm jabs with the last punch
         k('arm_r', 60)

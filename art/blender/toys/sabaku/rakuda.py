@@ -102,8 +102,8 @@ B.add('arm_l', limb('arm_l', [SL, (11.0, -4.6, 29.4), WL], [2.5, 2.2, 1.6], tris
 B.add('arm_l', *hand('hand_l', WL + (-0.3, -0.4, 0.2), (-1, -0.5, 0.1), r=1.7, kind='mitt', region='fur', up=(0, -0.3, 1)))
 
 # ------------------------------------------------------------------ the spirit: a ghostly vulture on his hump, wings hanging folded
-G = 2.4
-Q_FULL = V3(0.0, 7.0, 44.0)
+G = 3.1
+Q_FULL = V3(3.0, 8.0, 46.0)
 Q_REST = V3(0.0, 4.8, 27.6)
 
 

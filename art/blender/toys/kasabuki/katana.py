@@ -21,7 +21,7 @@ tk.reset()
 F = Fig('kasabuki', 'katana')
 AZ = kk.AZ
 low = kk.low
-XG = -15.6                 # the guard (tsuba) station
+XG = -13.4                 # the guard (tsuba) station
 SLIDE = 21.0               # how far the scabbard slides off
 
 base_lo, base_hi = kk.stand(F)

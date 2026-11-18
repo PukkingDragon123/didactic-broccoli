@@ -54,13 +54,13 @@ for sx in (1, -1):
 
 # ------------------------------------------------------------------ the hood (folded close; it flares), the head, the fedora, the tongue
 HOOD0 = V3(0, 1.6, 26.0)
-hood = tk.slab('hood', [(-3.0, -2.6), (-4.6, 0.8), (-4.4, 4.6), (-2.4, 7.0), (0.0, 7.6), (2.4, 7.0), (4.4, 4.6), (4.6, 0.8), (3.0, -2.6)], 1.0, plane='XZ',
+hood = tk.slab('hood', [(-3.0, -2.6), (-5.0, 1.0), (-5.2, 5.6), (-3.4, 9.0), (0.0, 10.2), (3.4, 9.0), (5.2, 5.6), (5.0, 1.0), (3.0, -2.6)], 1.0, plane='XZ',
                at=0.0, bevel=0.35, segs=1)
 tk.move(hood, tuple(HOOD0))
 tk.deform(hood, lambda V: V + np.stack([0 * V[:, 0], 0.15 * V[:, 0] ** 2, 0 * V[:, 0]], 1))
 hp = low(hood, 'hood', 40, lo=1, hi=2, region=('hoodback', [('hoodfront', lambda C, N: N[:, 1] < -0.3)]))
 for o in hp:
-    tk.scale(o, (0.45, 1, 1), pivot=tuple(HOOD0))
+    tk.scale(o, (0.9, 1, 1), pivot=tuple(HOOD0))
 B.add('hood', hp)
 NECK = (0, -0.4, 25.0)
 HC = V3(0, -2.4, 29.6)
@@ -105,8 +105,8 @@ def make_rig():
         k('body', 64, move=(0, 0, 1.6), rot=('X', -4))
         k('body', 74)
         k('hood', 8)
-        k('hood', 18, scale=(2.4, 1.0, 1.15), ease='BACK')
-        k('hood', 64, scale=(2.4, 1.0, 1.15))
+        k('hood', 18, scale=(1.7, 1.0, 1.12), ease='BACK')
+        k('hood', 64, scale=(1.7, 1.0, 1.12))
         k('hood', 74)
         k('head', 14)
         k('head', 22, rot=('X', 12), ease='BACK')

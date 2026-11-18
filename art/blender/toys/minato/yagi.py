@@ -20,14 +20,14 @@ GZ = 3.0
 
 # ------------------------------------------------------------------ the cobbles; the long skirt to the ground, two hooves peeping out
 B.add('body', cobbles(seed=11))
-SK = [dict(c=(0, 0.4, GZ + 0.6), w=17.6, ht=8.2, hb=8.6, e=2.2), dict(c=(0, 0.6, 7.0), w=13.4, ht=6.2, hb=6.6), dict(c=(0, 0.8, 13.6), w=10.6, ht=5.0, hb=5.2),
+SK = [dict(c=(1.8, 1.6, GZ + 0.6), w=19.4, ht=8.4, hb=10.4, e=2.2), dict(c=(0.8, 1.0, 7.0), w=14.2, ht=6.4, hb=7.6), dict(c=(0, 0.8, 13.6), w=10.6, ht=5.0, hb=5.2),
       dict(c=(0, 1.2, 18.0), w=11.2, ht=5.0, hb=5.0), dict(c=(0, 1.8, 22.4), w=12.2, ht=4.6, hb=4.8, e=2.4), dict(c=(0, 2.2, 24.6), w=7.0, h=3.4)]
 
 
 def sc_skirt(h):
     def f(V, N):
         x, y, z = V[:, 0], V[:, 1], V[:, 2]
-        folds = 0.45 * np.cos(np.arctan2(x, y - 0.6) * 7.0) ** 4 * tk.smoothstep(13.0, 4.0, z)
+        folds = 0.8 * np.cos(np.arctan2(x, y - 0.6) * 6.0 + 0.25 * z) ** 4 * tk.smoothstep(14.0, 3.0, z)   # sweeping, twisted folds
         sash = 0.35 * tk.smoothstep(1.0, 0.4, np.abs(z - 13.8))
         return folds + sash
     tk.push(h, f)

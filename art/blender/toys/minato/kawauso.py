@@ -79,8 +79,9 @@ for sx in (1, -1):
 B.add('head', *HP)
 # the quiff: a wave sweeping up off his crown and curling over at the crest, a lick of foam at its lip
 QB = V3(0, 0.2, 33.2)
-quiff = tk.loft('quiff', [dict(c=(0, 1.0, 32.6), w=7.4, h=1.6), dict(c=(0, -1.6, 35.2), w=7.0, h=2.0), dict(c=(0, -5.2, 37.6), w=6.4, h=2.0),
-                          dict(c=(0, -9.0, 37.4), w=5.6, h=1.8), dict(c=(0, -11.0, 35.4), w=4.6, h=1.5), dict(c=(0, -10.0, 33.6), w=3.2, h=1.0)],
+quiff = tk.loft('quiff', [dict(c=(0, 1.4, 32.6), w=7.6, h=1.6), dict(c=(0, -0.6, 36.6), w=6.8, h=2.2), dict(c=(0, -3.8, 40.6), w=6.2, h=2.4),
+                          dict(c=(0, -8.4, 41.4), w=5.6, h=2.2), dict(c=(0, -11.8, 38.8), w=4.8, h=1.8), dict(c=(0, -11.2, 35.8), w=3.6, h=1.4),
+                          dict(c=(0, -9.0, 35.0), w=2.4, h=0.9)],
                 n=10, up=(1, 0, 0), cap0='round', cap1='round')
 
 
@@ -90,8 +91,8 @@ def sc_quiff(h):
     tk.push(h, f)
 
 
-QP = [low(quiff, 'quiff', 80, lo=1, hi=3, sculpt=sc_quiff, region=('hair', [('foam', lambda C, N: (C[:, 1] < -9.4) & (C[:, 2] < 36.0))]))]
-for i, (x, y, z) in enumerate(((1.8, -10.6, 33.4), (-1.6, -10.4, 33.6), (0.2, -11.4, 34.6))):
+QP = [low(quiff, 'quiff', 80, lo=1, hi=3, sculpt=sc_quiff, region=('hair', [('foam', lambda C, N: (C[:, 1] < -8.0) & (C[:, 2] > 39.6) | (C[:, 1] < -10.4))]))]
+for i, (x, y, z) in enumerate(((1.8, -11.6, 36.4), (-1.6, -11.4, 36.8), (0.2, -12.6, 38.2), (0.6, -10.6, 41.6))):
     QP.append(blob('foam', (x, y, z), 0.9, tris=10, region='foam'))
 B.add('quiff', *QP)
 B.commit(F)

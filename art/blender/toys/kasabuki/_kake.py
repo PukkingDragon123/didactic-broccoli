@@ -39,11 +39,12 @@ def stand(F):
         lo.append(p[0])
         hi.append(p[1])
     for sx in (1, -1):
-        post = tk.slab('post', [(-2.0, 0.0), (2.0, 0.0), (1.4, 5.0), (1.8, AZ - 2.6), (3.2, AZ + 1.4), (2.0, AZ + 2.0), (1.2, AZ - 0.4), (0.0, AZ - 1.6),
-                                (-1.2, AZ - 0.4), (-2.0, AZ + 2.0), (-3.2, AZ + 1.4), (-1.8, AZ - 2.6), (-1.4, 5.0)], 3.0, plane='XZ', at=0.0, bevel=0.35, segs=1)
+        A = AZ - 3.4      # (the post stands on the step at z = 3.4)
+        post = tk.slab('post', [(-2.0, 0.0), (2.0, 0.0), (1.4, 3.0), (1.8, A - 2.6), (3.4, A + 1.0), (2.2, A + 1.8), (1.3, A - 0.4), (0.0, A - 1.6),
+                                (-1.3, A - 0.4), (-2.2, A + 1.8), (-3.4, A + 1.0), (-1.8, A - 2.6), (-1.4, 3.0)], 3.0, plane='XZ', at=0.0, bevel=0.35, segs=1)
         tk.rotate(post, 90, 'Z')
         tk.move(post, (sx * PX, 0, 3.4))
-        a, b = low(post, 'post', 120, lo=0, hi=1, region='lacquer')
+        a, b = low(post, 'post', 400, lo=0, hi=1, region='lacquer')   # (kept whole: the fork's notch must stay open)
         lo.append(a)
         hi.append(b)
     return lo, hi
@@ -77,9 +78,9 @@ def ring(name, x, r, w, region, n=12):
 
 # ------------------------------------------------------------------ paint
 def paint_stand(P, pt, sh):
-    P.fill('lacquer', pt.ramp('#221c1e', 6, shift=0.05, light=0.5), tone=sh, base=0.15, brush='lacquer')
+    P.fill('lacquer', pt.ramp('#1c1618', 6, shift=0.05, light=0.35), tone=sh, base=0.0, brush={'preset': 'pvc', 'flow': 'along', 'axis': (1, 0, 0), 'p': 0.1})
     lq = P.region('lacquer')
-    P.fill(lq & (P.Z < 2.7) & (P.Z > 2.2), pt.ramp('#c8a048', 5, shift=0.05), tone=sh, base=0.1, brush=False)     # gold rim on the plinth
+    P.fill(lq & (P.Z < 2.65) & (P.Z > 2.35) & (np.abs(P.on[:, :, 2]) < 0.5), pt.ramp('#c8a048', 5, shift=0.05), tone=sh, base=0.1, brush=False)     # a gold line round the plinth
     P.fill(lq & (np.abs(P.X) > PX - 2.6) & (P.Z > AZ - 1.8) & (P.on[:, :, 2] > 0.3), pt.ramp('#7a1e22', 5), tone=sh, base=0.1, brush='cloth')  # red felt in the forks
     fr = lq & (P.on[:, :, 1] < -0.7) & (np.abs(P.X) < 3.0) & (np.abs(P.Z - 1.3) < 0.8)
     P.fill(fr, pt.ramp('#c8a048', 5, shift=0.05), tone=sh, base=0.1)                                            # a brass plate on the front

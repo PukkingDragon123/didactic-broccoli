@@ -90,18 +90,18 @@ def paint(P, pt):
     X, Y, Z = P.X, P.Y, P.Z
     PI = {p.name: i for i, p in enumerate(F.parts)}
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
-    sk = pu.sugar(P, pt, sh, 'skin', '#2e6e80', seed=31)
+    sk = pu.sugar(P, pt, sh, 'skin', '#3aa2b6', seed=31)
     pu.sugar(P, pt, sh, 'water', '#3ec8d8', seed=32)
     pu.sugar(P, pt, sh, 'foam', '#d8fff8', seed=33)
     wt = P.region('water')
     P.shift(wt & (np.abs(np.sin(np.hypot(X, Y) * 1.2 + np.arctan2(Y, X) * 2)) > 0.9), 1)     # ripples
     P.fill('jet', pt.ramp('#bff4ff', 5, shift=0.04), tone=sh, base=0.25, brush='gloss')
     # the face: on the dark dome, light ink: sulky half-moon eyes under heavy brows, a little downturned mouth
-    fc = face.Face(P, c=tuple(FC), axis=(0, -1, 0.1), where=sk & (P.part == PI['body']), seed=821, ink='#f2ecd8')
+    fc = face.Face(P, c=tuple(FC), axis=(0, -1, 0.1), where=sk & (P.part == PI['body']), seed=821)
     fc.eyes('halfmoon', spread=6.4, size=0.85, dy=0.6, catch=False)
-    fc.brows('angry', spread=6.8, dy=2.2, w=2.4, weight=0.48)
+    fc.brows('angry', spread=6.8, dy=2.0, w=2.2, weight=0.36)
     fc.mouth('frown', w=2.6, dy=-2.4, weight=0.38)
-    fc.blush(spread=8.4, dy=-1.2, rx=1.4, ry=0.7, col='#7ab4c8')
+    fc.blush(spread=8.4, dy=-1.2, rx=1.4, ry=0.7)
     P.lines(['foam', 'jet'], step=1)
     P.clusters()
     return P.done()
