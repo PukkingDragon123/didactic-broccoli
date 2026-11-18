@@ -18,7 +18,8 @@ import bpy  # noqa: F401  (first: it provides bmesh and mathutils)
 import bmesh
 import numpy as np
 
-SERIES = {'henshin'}            # the series built in the faceted style (add a series here to convert it on rebuild)
+SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
+          'ekiin', 'kabuki', 'meijin'}            # the series built in the faceted style (add a series here to convert it on rebuild)
 RATIO = float(os.environ.get('GG_FACET_RATIO', 0.42))  # game-mesh triangles kept from the old (smooth) budget
 SIZE = 1024                     # atlas size (px): double the smooth line's 512
 TRIS = (300, 700, 900)          # the figure's target range and the hard cap (a complex secret)
@@ -328,8 +329,9 @@ def refill(maps, missed, got, keys=('ao', 'cav', 'on', 'reg', 'nrm')):
 PRESETS = {
     # flow: the stroke direction on the surface; L / W: stroke length / width (mm); cover: how many layers of strokes;
     # p: the share of strokes that move the tone a step lighter (and as many darker); the rest only drag tone along
-    'pvc': dict(flow='around', L=4.6, W=0.95, cover=1.2, p=0.1, tilt=12),
-    'gloss': dict(flow='around', L=5.2, W=1.0, cover=1.1, p=0.09, tilt=10),
+    # (calm on big planes: few long strokes, mostly half-step glazes; whole steps are rare)
+    'pvc': dict(flow='around', L=6.5, W=1.15, cover=0.85, p=0.045, glaze=0.32, tilt=8),
+    'gloss': dict(flow='around', L=7.0, W=1.2, cover=0.8, p=0.04, glaze=0.3, tilt=7),
     'metal': dict(flow='down', L=4.5, W=0.45, cover=1.3, p=0.16, tilt=5),
     'fur': dict(flow='down', L=1.7, W=0.45, cover=1.8, p=0.32, tilt=28),
     'feather': dict(flow='down', L=2.4, W=0.5, cover=1.5, p=0.28, tilt=10),

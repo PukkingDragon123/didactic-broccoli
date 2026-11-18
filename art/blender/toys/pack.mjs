@@ -71,6 +71,7 @@ for (const id of ids) {
     size: b.max.map((v, i) => +(v - b.min[i]).toFixed(2)), min: b.min.map((v) => +v.toFixed(2)), tris: Math.round(tris), atlas,
     kb: Math.round(statSync(out).size / 1024), clips: meta.clips || {}, mats: meta.mats || {}, pts: meta.pts || {}, blender: true,
     ...(meta.separate ? { separate: meta.separate } : {}),
+    ...(meta.facet ? { facet: 1 } : {}),
   };
   const e = done[`${series}/${id}`];
   console.log(`${series}/${id}`, e.tris + ' tris', atlas?.join('x'), e.kb + ' KB', 'size', e.size.join('x'), 'clips', Object.keys(e.clips).join(','));

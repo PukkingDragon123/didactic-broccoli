@@ -210,6 +210,11 @@ function materials(R, finish = 'normal') {
         const nm = tex && R.normals?.get(tex);
         if (nm && 'normalMap' in m) { m.normalMap = nm; m.normalScale.set(1, R.tangents ? 1 : -1); } // (no tangents: three's derivative frame flips green)
         if (!m.transparent) m.alphaTest = 0.5;
+        if (R.entry.facet && !m.transparent) { // faceted figures: a soft sheen (a sharp gloss flashes whole flat faces white; the shine is painted)
+          if (m.roughness < 0.55) m.roughness = 0.55;
+          if ('clearcoat' in m && m.clearcoat > 0.12) { m.clearcoat = 0.12; m.clearcoatRoughness = Math.max(m.clearcoatRoughness, 0.6); }
+          if (m.metalness > 0.6) m.metalness = 0.6;
+        }
         m.onBeforeCompile = b.onBeforeCompile;
         if (b.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey) m.customProgramCacheKey = b.customProgramCacheKey;
         made.set(b, m);
