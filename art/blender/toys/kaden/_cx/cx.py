@@ -160,3 +160,29 @@ def station_cap(at, r=5.6, h=4.6, tilt=-8.0, yaw=0.0, visor=1.0, scale=(1.0, 1.0
 
 def circle_pts(r, n, c=(0, 0)):
     return [(c[0] + r * math.cos(2 * math.pi * k / n), c[1] + r * math.sin(2 * math.pi * k / n)) for k in range(n)]
+
+
+def drop_faces(ob, pred):
+    """Delete the faces of a mesh whose centre / normal pass pred(C (n,3), N (n,3)): surfaces buried inside another part
+    (they would only take texels from what you see)."""
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    C = np.array([f.calc_center_median() for f in bm.faces])
+    N = np.array([f.normal for f in bm.faces])
+    kill = [f for f, k in zip(bm.faces, np.asarray(pred(C, N), bool)) if k]
+    bmesh.ops.delete(bm, geom=kill, context='FACES')
+    bm.to_mesh(ob.data)
+    bm.free()
+    ob.data.update()
+    return ob
+
+
+def flat_bottom(ob, h=0.9):
+    """Press the lowest `h` mm of a mesh flat onto the shelf (z = 0): a hem or a sole that subdivision rounded off
+    stands on its whole footprint again."""
+    V = tk.verts(ob)
+    V[:, 2] = np.where(V[:, 2] < h, 0.0, V[:, 2])
+    tk.set_verts(ob, V)
+    return ob

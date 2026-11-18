@@ -239,7 +239,7 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
 function paintedBanner(seriesId, thumbs, opts = {}) {
   const key = seriesId + (opts.faded ? ':f' : '');
   if (cache.has(key)) return cache.get(key);
-  const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.nuigurumi || Object.values(SERIES_BY_ID)[0];
+  const s = SERIES_BY_ID[seriesId] || SERIES_BY_ID.teruteru || Object.values(SERIES_BY_ID)[0];
   const W = BANNER_W, H = BANNER_H;
   const p = new Pix(W, H, 7);
   const bg = hex(s.card.bg), ac = hex(s.card.accent), tx = hex(s.card.text), ac2 = hex(s.card.accent2 || s.card.accent);

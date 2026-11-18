@@ -19,20 +19,32 @@ TOYS = os.path.join(CACHE, 'toys')
 OUT = os.path.join(ROOT, 'public', 'img', 'print', 'cards')
 W, H = 640, 560  # 2x the banner's 320 x 280 (src/gfx/banner.js draws the card at this size)
 BACK = {  # series -> photo backdrop (focus x, y, zoom)
-    'furoba': ('oi:2a1c261ad12e6f62@test', (0.3, 0.3, 1.0)), 'yokaiya': ('oi:ccf0a3b89149f0d5@train', (0.5, 0.6, 1.1)),
-    'gohan': ('oi:6324262554f184ab@test', (0.5, 0.6, 1.4)), 'tanukibin': ('local:back_street.jpg', (0.4, 0.55, 1.3)),
-    'nuigurumi': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'rojineko': ('local:back_street.jpg', (0.5, 0.6, 1.1)), 'kogu': ('oi:8cf0d90fadf83514@test', (0.3, 0.5, 1.3)),
-    'yaoya': ('oi:ccf0a3b89149f0d5@train', (0.3, 0.5, 1.3)), 'daidokoro': ('oi:f4200fadef07c329@test', (0.8, 0.5, 1.3)),
-    'undou': ('local:skyline.jpg', (0.5, 0.7, 1.2)), 'denka': ('oi:f4200fadef07c329@test', (0.5, 0.55, 1.2)),
-    'inusanpo': ('oi:1abfab68fd6a34c7@train', (0.6, 0.6, 1.2)), 'konchu': ('oi:42d6b48cf68049b9@test', (0.4, 0.5, 1.2)),
-    'okashi': ('oi:f291d677045b5a38@test', (0.5, 0.6, 1.1)), 'sampuru': ('oi:6324262554f184ab@test', (0.5, 0.75, 1.8)),
-    'shinkai': ('oi:f5cb8e5bda89bf5c@test', (0.5, 0.5, 1.1)), 'yacho': ('oi:ab7b7786ca8649a8@test', (0.5, 0.5, 1.0)),
-    'hikidashi': ('oi:8cf0d90fadf83514@test', (0.5, 0.5, 1.1)), 'henshin': ('oi:8cf0d90fadf83514@test', (0.7, 0.35, 1.5)), 'hashigo': ('local:skyline.jpg', (0.5, 0.35, 1.2)),
+    'henshin': ('oi:8cf0d90fadf83514@test', (0.7, 0.35, 1.5)), 'hashigo': ('local:skyline.jpg', (0.5, 0.35, 1.2)),
     'teruteru': ('local:rain_window.jpg', (0.5, 0.5, 1.1)), 'kaden': ('oi:a15e83bbe9f87d4f@test', (0.4, 0.5, 1.15)),
-    'otsukai': ('oi:34f24d2374c50c25@test', (0.5, 0.42, 1.2)), 'nakanohito': ('local:skyline.jpg', (0.72, 0.72, 1.6)), 'kaiun': ('oi:808e21f5b9632bab@test', (0.5, 0.5, 1.1)),
-    'shugorei': ('oi:34f24d2374c50c25@test', (0.5, 0.5, 1.1)), 'machikado': ('oi:ae8ffd814db5ce63@test', (0.5, 0.5, 1.1)),
-    'norimono': ('oi:43ef0d9ecd6dd4be@test', (0.5, 0.5, 1.1)), 'daikaiju': ('local:skyline.jpg', (0.5, 0.5, 1.0)), 'asobi': ('local:toy_shop.jpg', (0.5, 0.5, 1.1)),
+    'otsukai': ('oi:34f24d2374c50c25@test', (0.5, 0.42, 1.2)), 'nakanohito': ('local:skyline.jpg', (0.72, 0.72, 1.6)),
+    'tsuppari': ('commons:Nighttime_on_the_shotengai_(238464174).jpg', (0.55, 0.45, 1.2)), 'obakebaito': ('commons:Obake_Yashiki.jpg', (0.3, 0.36, 1.45)),
 }
+COMMONS = {  # photos from Wikimedia Commons (credited in CREDITS.md / public/CREDITS.txt), fetched once into the cache
+    'commons:Nighttime_on_the_shotengai_(238464174).jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Nighttime_on_the_shotengai_%28238464174%29.jpg/1920px-Nighttime_on_the_shotengai_%28238464174%29.jpg',
+    'commons:Obake_Yashiki.jpg': 'https://upload.wikimedia.org/wikipedia/commons/0/05/Obake_Yashiki.jpg',
+}
+
+
+def photo_ref(ref):
+    """commons:<file> -> file:<cached path> (downloaded on first use); any other reference as it is."""
+    if ref not in COMMONS:
+        return ref
+    p = os.path.join(CACHE, 'commons', ref.split(':', 1)[1])
+    if not os.path.exists(p):
+        import urllib.request
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        req = urllib.request.Request(COMMONS[ref], headers={'User-Agent': 'GachaGarageAssetBot/1.0 (generic client)'})
+        data = urllib.request.urlopen(req, timeout=120).read()  # (read first: a failed fetch leaves no empty file)
+        with open(p, 'wb') as f:
+            f.write(data)
+    return 'file:' + p
+
+
 INK = 0x1c1816; WHITE = 0xfbf8f1; RED = 0xc62a1f
 RANK = {'secret': 4, 'ultra': 3, 'rare': 2, 'uncommon': 1, 'common': 0}
 
@@ -89,7 +101,7 @@ def card(s):
     P = Panel(W, H, WHITE)
     # --- the stage: a real photo, bright as print; a colour field with a dot screen down the left for the logo
     ref, f = BACK.get(s['id'], ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
-    P.photo(ref, 0, 0, W, 360, f=f, sat=1.05, con=1.04, bright=1.06)
+    P.photo(photo_ref(ref), 0, 0, W, 360, f=f, sat=1.05, con=1.04, bright=1.06)
     P.poly([(0, 0), (330, 0), (250, 360), (0, 360)], light(acc, 0.78))
     for yy in range(8, 360, 14):
         for xx in range(8, 330 - int(yy * 80 / 360) - 6, 14): P.ellipse(xx, yy, 4, 4, light(acc, 0.6))

@@ -22,25 +22,25 @@ from fig import Fig  # noqa: E402
 
 tk.reset()
 F = Fig('ekiin', 'kaba')
+os.environ.setdefault('UV_MARGIN', '0.001')   # (a tighter pack: this big figure needs every texel)
 
 BZ = 3.0                     # the platform's top
 WY = 10.0                    # the car side's front face (y)
 OPX, OPZ = 10.0, BZ + 25.0   # the doorway's half width and top
-CW, CTOP = 22.0, BZ + 31.0   # the car side's half width and top
+CW, CTOP = 19.6, BZ + 30.0   # the car side's half width and top
 LY = WY + 2.2                # the door leaves' plane (between the car's skins: pocket doors)
 HY = -1.2                    # the hippo's centre line (y)
 HEAD = (0, HY - 2.6, BZ + 29.0)
 SH = {sx: (sx * 10.2, HY + 1.0, BZ + 21.0) for sx in (1, -1)}
 
 # ------------------------------------------------------------------ the platform and the carriage side (two skins, pocket doors)
-plat = tk.rbox('plat', (2 * CW + 4.0, 28.0, BZ), centre=(0, -2.0, BZ / 2), bevel=0.8, segs=1)
+plat = tk.rbox('plat', (2 * CW + 3.0, 25.0, BZ), centre=(0, -0.6, BZ / 2), bevel=0.8, segs=1)
 plat_lo, plat_hi = cx.low(plat, 'plat', 40, lo=0, hi=1, region='concrete')
 skin = tk.rbox('car', (2 * CW, 1.4, CTOP - BZ), centre=(0, WY + 0.7, (CTOP + BZ) / 2), bevel=0.5, segs=1)
 tk.boolean(skin, tk.rbox('doorway', (2 * OPX, 6.0, OPZ - BZ + 0.2), centre=(0, WY + 0.7, (OPZ + BZ) / 2 - 0.1), bevel=0.4, segs=1))
-back = tk.rbox('back', (2 * CW, 1.4, CTOP - BZ), centre=(0, WY + 4.3, (CTOP + BZ) / 2), bevel=0.5, segs=1)
-frames = [tk.rbox('fr', (2 * CW, 5.0, 1.8), centre=(0, WY + 2.5, CTOP - 0.9), bevel=0.6, segs=1)] + \
-         [tk.rbox('fr', (1.8, 5.0, CTOP - BZ), centre=(sx * (CW - 0.9), WY + 2.5, (CTOP + BZ) / 2), bevel=0.6, segs=1) for sx in (1, -1)]
-_lh = [cx.low(o, o.name, t, lo=0, hi=1, region='cream') for o, t in ((skin, 70), (back, 24))] + [cx.low(f_, 'fr', 20, lo=0, hi=1, region='cream') for f_ in frames]
+BACKW = 2 * OPX + 3.0        # the panel behind the doorway: the packed carriage's insides (the crowd)
+back = tk.rbox('back', (BACKW, 1.4, OPZ - BZ + 1.6), centre=(0, WY + 4.3, (OPZ + BZ) / 2 + 0.6), bevel=0.5, segs=1)
+_lh = [cx.low(o, o.name, t, lo=0, hi=1, region='cream') for o, t in ((skin, 70), (back, 24))]
 for _l, _h in _lh:
     tk.delete(_h)   # (the sculpts are rebuilt below with their detail)
 car_lo = tk.join([_l for _l, _h in _lh], 'car')
@@ -54,7 +54,7 @@ def sc_car(h):
     def f(V, N):  # the rivet line and the window frames' raised edges on the car side
         side = N[:, 1] < -0.8
         d = 0.2 * (np.abs(V[:, 2] - (BZ + 13.0)) < 0.3) * side
-        for wx in (-16.0, 16.0):
+        for wx in (-15.0, 15.0):
             d += 0.25 * (np.abs(np.maximum(np.abs(V[:, 0] - wx) - 3.4, np.abs(V[:, 2] - (BZ + 22.0)) - 4.0)) < 0.3) * side
         return d
     tk.push(h, f)
@@ -62,14 +62,10 @@ def sc_car(h):
 
 sc_car(skin)
 tk.regions(skin, 'cream', [('maroon', lambda C, N: C[:, 2] < BZ + 13.0)])
-back_hi = tk.rbox('back_hi', (2 * CW, 1.4, CTOP - BZ), centre=(0, WY + 4.3, (CTOP + BZ) / 2), bevel=0.5, segs=2)
+back_hi = tk.rbox('back_hi', (BACKW, 1.4, OPZ - BZ + 1.6), centre=(0, WY + 4.3, (OPZ + BZ) / 2 + 0.6), bevel=0.5, segs=2)
 tk.regions(back_hi, 'crowd', [('cream', lambda C, N: (N[:, 1] > -0.5) | (np.abs(C[:, 0]) > OPX + 0.5) | (C[:, 2] > OPZ + 0.5)),
                               ('maroon', lambda C, N: (N[:, 1] > 0.5) & (C[:, 2] < BZ + 13.0))])
-fr_hi = [tk.rbox('fr_hi', (2 * CW, 5.0, 1.8), centre=(0, WY + 2.5, CTOP - 0.9), bevel=0.6, segs=2)] + \
-        [tk.rbox('fr_hi', (1.8, 5.0, CTOP - BZ), centre=(sx * (CW - 0.9), WY + 2.5, (CTOP + BZ) / 2), bevel=0.6, segs=2) for sx in (1, -1)]
-for o_ in fr_hi:
-    tk.set_region(o_, 'cream')
-car_hi = [skin, back_hi] + fr_hi
+car_hi = [skin, back_hi]
 
 # the doors: two leaves slid away into their pockets between the car's skins
 DOORS = {}
@@ -244,8 +240,8 @@ def paint(P):
     P.fill('cream', pt.ramp('#ece0c0', 7, shift=0.06), tone=sh, base=0.08)
     P.fill('maroon', pt.ramp('#8a3a36', 7, shift=0.06), tone=sh, base=0.1)
     P.fill('inside', pt.ramp('#4a4a4e', 5, shift=0.05), tone=sh, base=-0.1)
-    for wx in (-16.0, 16.0):
-        P.flat(P.region('cream') & (on[:, :, 1] < -0.8) & (Yc < WY + 0.5) & (np.abs(X - wx) < 3.1) & (np.abs(Z - (BZ + 22.0)) < 3.7), '#5f7884')
+    for wx in (-15.0, 15.0):
+        P.flat(P.region('cream') & (on[:, :, 1] < -0.8) & (Yc < WY + 0.5) & (np.abs(X - wx) < 2.8) & (np.abs(Z - (BZ + 22.0)) < 3.7), '#5f7884')
     # the crowd: commuters packed in the doorway, flat painted silhouettes (backs, shoulders, hats, a newspaper)
     cr = P.region('crowd')
     P.fill('crowd', pt.ramp('#6a6c72', 5, shift=0.05), tone=sh * 0.5, base=-0.1)

@@ -146,8 +146,8 @@ def paint(P):
     # old plaster: warm off-white, rain stains running down from the tiles, the cracks inked
     P.fill('plaster', pt.ramp('#e2dccd', 6, shift=0.04), tone=sh, base=0.12)
     pl = P.region('plaster')
-    stain = (np.sin(X * 2.3) * 0.5 + 0.5) * np.clip((Z - (TZ - 7.0)) / 7.0, 0, 1)
-    P.fill(pl & (stain > 0.45), pt.ramp('#b8ae98', 5, shift=0.04), tone=sh, base=0.05)
+    edge = TZ - 2.6 - 1.1 * (np.sin(X * 0.7 + 0.4) + 0.6 * np.sin(X * 1.9 + 2.0) + 0.3 * np.sin(X * 4.3))
+    P.fill(pl & (Z > edge) & (Yc < WY), pt.ramp('#c4baa4', 5, shift=0.04), tone=sh, base=0.05)   # damp under the eaves
     P.fill(pl & (P.cav < 0.42), pt.ramp('#5a4e40', 4), tone=sh)
     P.fill('earth', pt.ramp('#8a6a44', 5, shift=0.05), tone=sh, base=0.0)
     P.fill(P.region('earth') & (np.abs(np.sin(X * 4.0 + Z * 2.0)) < 0.2), pt.ramp('#d8b862', 4), tone=sh)    # straw in the clay

@@ -22,6 +22,7 @@ from fig import Fig  # noqa: E402
 
 tk.reset()
 F = Fig('kaden', 'zou')
+os.environ.setdefault('UV_MARGIN', '0.001')   # (a tighter pack: this big figure needs every texel)
 
 ZB = 5.4                  # the kettle's bottom (it stands on the trivet legs)
 ZT = 23.6                 # the lid seat
@@ -144,7 +145,7 @@ F.part('trunk', trunk_lo, [trunk_hi], bone='trunk', kind='gloss')
 F.part('flap', tk.join([f[0] for f in FLAP], 'flap'), [f[1] for f in FLAP], bone='flap', kind='metal', uvw=0.8)
 for nm, (lo, hi, root) in EARS.items():
     F.part(nm, lo, [hi], bone=nm, kind='gloss')
-S = 1.15   # (the whole kettle a size up: it read small beside the others)
+S = 1.1   # (the whole kettle a size up: it read small beside the others)
 for p in F.parts:
     for o in [p.low] + p.highs:
         tk.scale(o, S)

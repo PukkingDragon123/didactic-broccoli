@@ -28,12 +28,12 @@ MANE_P = (0, 4.4, 39.0)       # the mane's root (it lifts and whirls round from 
 
 # ------------------------------------------------------------------ legs in a wide stance (red trousers), the gold costume, the sleeves
 LEGS = []
-for sx, fy in ((-1, -1.6), (1, 1.0)):
+for sx, fy in ((-1, -0.6), (1, 0.4)):
     hip = np.array((sx * 4.2, 0.4, 11.0))
     knee = np.array((sx * 7.6, fy - 1.0, 5.6))
     ank = np.array((sx * 8.4, fy, 1.8))
     lg = tk.tube('leg', [tuple(hip), tuple(knee), tuple(ank)], [4.2, 3.6, 2.6], n=8)
-    ft = tk.loft('foot', [{'c': tuple(ank + (0, 1.6, -0.8)), 'w': 3.6, 'h': 1.2, 'e': 2.3}, {'c': tuple(ank + (0, -2.8, -0.9)), 'w': 4.0, 'h': 1.1, 'e': 2.3}],
+    ft = tk.loft('foot', [{'c': tuple(ank + (0, 3.6, -0.8)), 'w': 4.6, 'h': 1.2, 'e': 2.6}, {'c': tuple(ank + (0, -4.4, -0.9)), 'w': 5.2, 'h': 1.1, 'e': 2.6}],
                  n=8, up=(0, 0, 1), cap0='round', cap1='round', capd=1.0)
     LEGS += [cx.low(lg, 'leg', 50, lo=1, hi=1, region='trousers'), cx.low(ft, 'foot', 24, lo=1, hi=1, region='tabi')]
 robe = tk.loft('robe', [{'c': (0, 0.4, 9.0), 'w': 22.0, 'ht': 8.0, 'hb': 8.6, 'e': 2.6},

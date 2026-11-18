@@ -317,7 +317,8 @@ def paint(P):
     # the face: the tanuki mask round the eyes, stern dots under brows; he is doing his best
     import face
     fc = face.Face(P, c=(0.0, -1.6, HZ + 1.0), axis=(0, -1, 0.2), where=P.region('fur'), seed=641)
-    fc.marks('tanuki', dy=0.4, size=1.1)
+    for sx in (1, -1):    # the mask: a dark patch round each eye, slanting down onto the cheek, a pale gap over the nose
+        fc.patch(sx * 2.9, -0.3, 2.0, 1.25, '#3a2a20', rot=-sx * 28)
     fe = face.Face(P, c=(0.0, -1.6, HZ + 1.0), axis=(0, -1, 0.2), where=P.region('fur'), seed=643, ink='#f1e8d4')
     fe.eyes('dot', spread=5.6, size=0.6, dy=0.4)    # (cream dots on the dark mask)
     fc.brows('angry', spread=6.0, dy=2.4, w=2.0, weight=0.45)

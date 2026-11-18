@@ -77,12 +77,13 @@ def main():
         print('...', leg[leg.index('\n};', a) - 300:leg.index('\n};', a) + 3])
         return
     open(LEG, 'w').write(leg)
-    cat = os.path.join(ROOT, 'src/cosmetics/catalog.js')  # (capsule-exclusive cosmetics follow the series' stock)
-    src = open(cat).read()
-    new = re.sub(r"capsule: '(" + '|'.join(sids) + r")'", f"capsule: '{to}'", src)
-    if new != src:
-        open(cat, 'w').write(new)
-        print('cosmetics: capsule ->', to)
+    import glob
+    for cat in glob.glob(os.path.join(ROOT, 'src/cosmetics/*.js')):  # (capsule-exclusive cosmetics follow the series' stock)
+        src = open(cat).read()
+        new = re.sub(r"capsule: '(" + '|'.join(sids) + r")'", f"capsule: '{to}'", src)
+        if new != src:
+            open(cat, 'w').write(new)
+            print('cosmetics:', os.path.basename(cat), 'capsule ->', to)
     with open('/tmp/gg-manifest.lock', 'w') as lk:
         fcntl.flock(lk, fcntl.LOCK_EX)
         man = json.load(open(MAN))

@@ -22,7 +22,7 @@ tk.reset()
 F = Fig('meijin', 'kumo')
 
 CY = -13.0                      # the cradle's plane (y)
-ANCH = {(-1, 0): (-8.6, CY - 1.0, 11.4), (-1, 1): (-8.6, CY - 1.0, 4.4), (1, 0): (8.6, CY - 1.0, 11.4), (1, 1): (8.6, CY - 1.0, 4.4)}
+ANCH = {(-1, 0): (-8.6, CY - 2.6, 8.4), (-1, 1): (-8.6, CY - 2.6, 0.9), (1, 0): (8.6, CY - 2.6, 8.4), (1, 1): (8.6, CY - 2.6, 0.9)}
 HEADC = (0, -4.6, 13.6)         # the cephalothorax (the head end)
 ABD = (0, 6.4, 8.4)            # the abdomen
 
@@ -100,7 +100,7 @@ def make_rig():
     R.bone('body', (0, 0, 1.0), parent='root')
     for nm, (lg, hip) in FRONT.items():
         R.bone(nm, hip, parent='body')
-    R.bone('cradle', (0, CY - 1.0, 7.9), parent='body')
+    R.bone('cradle', (0, CY - 2.6, 4.65), parent='body')
     for p in F.parts:
         R.attach(p.low, p.bone)
     allb = ['root', 'body', 'legs_l', 'legs_r', 'cradle']

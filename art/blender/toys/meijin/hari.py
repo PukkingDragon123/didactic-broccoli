@@ -107,6 +107,9 @@ LEGS = []
 for sx in (1, -1):
     lg = tk.tube('leg', [(HX + sx * 3.4, 0.6, 6.4), (HX + sx * 3.8, 0.0, 2.6), (HX + sx * 3.8, -1.6, 0.9)], [2.4, 2.0, 1.8], n=8)
     LEGS.append(cx.low(lg, 'leg', 30, lo=1, hi=1, region='skin'))
+    ft = tk.loft('foot', [{'c': (HX + sx * 4.0, 3.0, 0.8), 'w': 3.8, 'h': 0.8, 'e': 2.4}, {'c': (HX + sx * 4.0, -3.4, 0.8), 'w': 4.4, 'h': 0.8, 'e': 2.4}],
+                 n=8, up=(0, 0, 1), cap0='round', cap1='round', capd=0.8)
+    LEGS.append(cx.low(ft, 'foot', 18, lo=1, hi=1, region='skin'))
 
 # ------------------------------------------------------------------ arms: the throwing arm (with the string), the other on his hip; the head
 ARM_S = (HX + 6.4, -0.6, 16.6)

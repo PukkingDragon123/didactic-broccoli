@@ -33,11 +33,11 @@ LEGS = {}
 for sx, nm in ((-1, 'leg_r'), (1, 'leg_l')):
     hip = np.array((sx * 4.4, 0.6, 10.6))
     knee = np.array((sx * 7.6, -1.6 if sx < 0 else 0.6, 5.6))
-    ank = np.array((sx * 8.8, -2.2 if sx < 0 else 0.8, 1.8))
+    ank = np.array((sx * 8.8, -0.9 if sx < 0 else 0.3, 1.8))
     lg = tk.tube(nm, [tuple(hip), tuple(knee), tuple(ank)], [3.8, 3.2, 2.8], n=8)
-    ft = tk.slab('foot', [(-2.4, 2.2), (2.4, 2.2), (3.4, -3.0), (1.6, -2.2), (0.0, -4.0), (-1.6, -2.2), (-3.4, -3.0)], 1.4, plane='XY', at=0.7, bevel=0.5, segs=1)
-    tk.rotate(ft, sx * 12, 'Z')
-    tk.move(ft, (ank[0], ank[1] - 0.6, 0))
+    ft = tk.slab('foot', [(-2.6, 4.2), (2.6, 4.2), (3.4, 0.0), (4.4, -4.0), (2.0, -3.0), (0.0, -5.2), (-2.0, -3.0), (-4.4, -4.0), (-3.4, 0.0)], 1.4, plane='XY', at=0.7, bevel=0.5, segs=1)
+    tk.rotate(ft, sx * 18, 'Z')
+    tk.move(ft, (ank[0], (ank[1] - 0.6) * 0.4, 0))
     LEGS[nm] = ([cx.low(lg, nm, 46, lo=1, hi=2, region=('skin', [('legging', lambda C, N: (C[:, 2] < 6.8) & (C[:, 2] > 2.6))])),
                  cx.low(ft, 'foot', 30, lo=1, hi=1, region='skin')], tuple(hip))
 

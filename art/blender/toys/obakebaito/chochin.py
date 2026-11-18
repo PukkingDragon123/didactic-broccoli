@@ -174,7 +174,8 @@ def paint(P):
     fdir = np.array((math.sin(math.radians(205)), -math.cos(math.radians(205)), 0.0))
     hc = np.array(w['head'])
     tf = face.Face(P, c=tuple(hc + fdir * 4.4), axis=tuple(fdir + (0, 0, 0.1)), where=P.region('fur_tanuki'), seed=722)
-    tf.marks('tanuki', dy=0.6, size=0.6)
+    for sx in (1, -1):
+        tf.patch(sx * 1.45, 0.45, 1.05, 0.7, '#3a2a20', rot=-sx * 28)
     te = face.Face(P, c=tuple(hc + fdir * 4.4), axis=tuple(fdir + (0, 0, 0.1)), where=P.region('fur_tanuki'), seed=723, ink='#f1e8d4')
     te.eyes('sleepy', spread=2.8, size=0.36, dy=0.6)
     tf.nose('button', dy=-0.8, size=0.4)

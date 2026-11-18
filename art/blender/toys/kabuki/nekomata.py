@@ -48,6 +48,8 @@ def sc_robe(h):
 
 robe_lo, robe_hi = cx.low(robe, 'robe', 230, lo=1, hi=3, sculpt=sc_robe, region=('kimono', [('obi', lambda C, N: np.abs(C[:, 2] - 16.6) < 2.6),
                                                                                              ('collar', lambda C, N: (np.abs(np.abs(C[:, 0]) - 0.5 * (26.0 - C[:, 2])) < 0.9) & (N[:, 1] < -0.4) & (C[:, 2] > 19.0))]))
+cx.flat_bottom(robe_lo, 1.2)
+cx.flat_bottom(robe_hi, 1.2)
 knot = tk.rbox('knot', (11.0, 3.6, 7.6), centre=(0, 7.4, 17.2), bevel=1.2, segs=2)
 knot_lo, knot_hi = cx.low(knot, 'knot', 50, lo=0, hi=2, region='obi')
 

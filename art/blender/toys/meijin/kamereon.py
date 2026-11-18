@@ -44,7 +44,7 @@ body_lo, body_hi = cx.low(body, 'body', 200, lo=1, hi=3, sculpt=sc_body, region=
 LEGS = []
 for sx in (1, -1):
     lg = tk.tube('leg', [(sx * 4.4, 0.6, 10.0), (sx * 6.6, -2.4, 6.0), (sx * 6.0, -1.6, 1.6)], [2.4, 2.0, 1.7], n=8)
-    ft = tk.loft('foot', [{'c': (sx * 6.0, 0.6, 0.9), 'w': 3.4, 'h': 0.9, 'e': 2.2}, {'c': (sx * 6.0, -3.6, 0.9), 'w': 3.8, 'h': 0.9, 'e': 2.2}],
+    ft = tk.loft('foot', [{'c': (sx * 6.0, 0.6, 0.9), 'w': 3.6, 'h': 0.9, 'e': 2.4}, {'c': (sx * 6.6, -7.4, 0.9), 'w': 4.4, 'h': 0.9, 'e': 2.4}],
                  n=8, up=(0, 0, 1), cap0='round', cap1='round', capd=0.9)
     LEGS += [cx.low(lg, 'leg', 30, lo=1, hi=1, region='green'), cx.low(ft, 'foot', 16, lo=1, hi=1, region='green')]
 spiral = []

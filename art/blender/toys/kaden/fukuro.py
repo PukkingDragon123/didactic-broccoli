@@ -23,6 +23,7 @@ from fig import Fig  # noqa: E402
 
 tk.reset()
 F = Fig('kaden', 'fukuro')
+os.environ.setdefault('UV_MARGIN', '0.001')   # (a tighter pack: this big figure needs every texel)
 
 BH = 6.2                 # the base's height
 HZ = 40.0                # the head's centre (the fan's motor axis)
@@ -191,6 +192,11 @@ def sc_guard(h):
 
 
 guard_lo, guard_hi = cx.low(guard, 'guard', 230, lo=0, hi=3, sculpt=sc_guard, region='wire')
+# the guard's back and the housing's front are buried inside each other: drop them (more texels for what you see)
+for o in (guard_lo, guard_hi):
+    cx.drop_faces(o, lambda C, N: (N[:, 1] > 0.7) & (C[:, 1] > GF + 6.5) & (np.hypot(C[:, 0], C[:, 2] - HZ) < 12.0))
+for o in (house_lo, house_hi):
+    cx.drop_faces(o, lambda C, N: (N[:, 1] < -0.7) & (C[:, 1] < -5.9) & (np.hypot(C[:, 0], C[:, 2] - HZ) < 11.8))
 
 # the face plate (cream enamel: the owl's face, painted by hand) and the maker's badge on it: the beak
 FACE = []

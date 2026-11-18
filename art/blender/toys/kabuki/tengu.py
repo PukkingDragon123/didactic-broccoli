@@ -30,10 +30,10 @@ FAN = np.array((-11.8, -4.6, 37.6))
 
 # ------------------------------------------------------------------ one-tooth geta and tabi feet
 FEET = []
-for sx, fy in ((-1, -2.2), (1, 1.2)):
-    x = sx * 6.0
-    plat = tk.rbox('geta', (5.6, 9.0, 1.2), centre=(x, fy, GZ - 0.6), bevel=0.35, segs=1)
-    tooth = tk.rbox('tooth', (1.6, 6.6, GZ - 1.2), centre=(x, fy, (GZ - 1.2) / 2), bevel=0.3, segs=1)
+for sx, fy in ((-1, -1.2), (1, 0.6)):
+    x = sx * 7.4
+    plat = tk.rbox('geta', (6.2, 10.4, 1.2), centre=(x, fy, GZ - 0.6), bevel=0.35, segs=1)
+    tooth = tk.rbox('tooth', (3.0, 9.4, GZ - 1.2), centre=(x, fy, (GZ - 1.2) / 2), bevel=0.3, segs=1)
     foot = tk.loft('tabi', [{'c': (x, fy + 2.6, GZ + 0.9), 'w': 4.4, 'h': 1.4, 'e': 2.4}, {'c': (x, fy, GZ + 1.0), 'w': 4.6, 'h': 1.6, 'e': 2.4},
                             {'c': (x, fy - 3.2, GZ + 0.8), 'w': 4.0, 'h': 1.3, 'e': 2.4}], n=8, up=(0, 0, 1), cap0='round', cap1='round', capd=1.0)
     FEET += [cx.low(plat, 'geta', 20, lo=0, hi=1, region='wood'), cx.low(tooth, 'tooth', 16, lo=0, hi=1, region='wood'), cx.low(foot, 'tabi', 30, lo=1, hi=1, region='tabi')]

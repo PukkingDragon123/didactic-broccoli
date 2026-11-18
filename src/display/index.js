@@ -50,7 +50,7 @@ export class PopDisplays {
   /** A display model filled with a few sample figures (the shop page's picture). */
   preview(style) {
     const b = buildDisplay(style, 'teruteru', { w: 0.34, d: 0.31 }, this.game.thumbs);
-    const S = SERIES_BY_ID.nuigurumi;
+    const S = SERIES_BY_ID.teruteru;
     b.slots.forEach((s, i) => {
       const fig = makeItemMesh(S.items[i % S.items.length].key, 'normal');
       const sz = fig.geometry?.userData?.size || new THREE.Box3().setFromObject(fig).getSize(new THREE.Vector3());

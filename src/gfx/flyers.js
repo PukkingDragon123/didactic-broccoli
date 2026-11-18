@@ -49,11 +49,11 @@ const MIN_PRICE = Math.min(...SERIES.map((s) => s.price));
 export const FLYERS = [
   { id: 'reopen', kind: 'promo', name: 'Grand Reopening', lines: ['Grandpa\'s gacha garage is back!', 'I used to come here as a kid!', 'A shop cat too? I am going.'] },
   { id: 'much', kind: 'meme', name: 'Such Capsule', lines: ['Wow. Such flyer. Much want.', 'Very gacha... okay, I am in.', 'Haha, that cat is so smug!'] },
-  { id: 'kaiju', kind: 'promo', name: 'Fake Food Window', lines: ['Noodles floating in the air? I need it.', 'It looks real enough to eat, haha!', 'My dad loves the ramen ones...'] },
+  { id: 'kaiju', kind: 'promo', name: 'Who\'s in the Suit?', lines: ['A monster with a hamster inside? I need it.', 'There\'s a zip down its back, haha!', 'My dad loves the kaiju ones...'] },
   { id: 'nope', kind: 'meme', name: 'Nope / Yep', lines: ['Ha! That is me with online shopping.', 'One turn at a time? Okay, I will come.', 'The dino suit, haha!'] },
-  { id: 'space', kind: 'promo', name: 'Showa Home Appliances', lines: ['Grandma had that exact phone!', 'A tiny rice cooker, haha.', 'I want the fan one.'] },
+  { id: 'space', kind: 'promo', name: 'Appliance Animals', lines: ['Grandma had that exact fan!', 'A toaster rabbit, haha.', 'I want the kettle one.'] },
   { id: 'distracted', kind: 'meme', name: 'Distracted Customer', lines: ['That is literally me at lunch.', 'My salary is crying already.', 'Ha! Sorry, wallet.'] },
-  { id: 'sakura', kind: 'promo', name: 'Window Sweets', lines: ['A tiny cream soda? Lovely.', 'These look good enough to eat.', 'I will bring my grandma.'] },
+  { id: 'sakura', kind: 'promo', name: 'The Gods\' Messengers', lines: ['A little lacquer fox? Lovely.', 'The white snake looks lucky.', 'I will bring my grandma.'] },
   { id: 'brain', kind: 'meme', name: 'Galaxy Collector', lines: ['Inherit the garage... galaxy brain.', 'I am at step two. Help.', 'Haha, step four is the dream.'] },
   { id: 'secret', kind: 'promo', name: 'Super Secret', lines: [`One in ${SECRET_ODDS}? I feel lucky.`, 'A golden one... I must try.', 'Every series has a secret?'] },
   { id: 'simply', kind: 'meme', name: 'One Does Not Simply', lines: ['So true. Nobody stops at one turn.', 'Just one more. Just one.', 'Haha, he looks so serious!'] },
@@ -399,7 +399,7 @@ function cat(o = {}) {
   return rig;
 }
 
-function machine(type = 'retro', series = 'nuigurumi') {
+function machine(type = 'retro', series = 'teruteru') {
   const banner = env.thumbs ? bannerTexture(series, env.thumbs, { faded: type === 'retro' }) : null;
   const { group } = buildMachineModel(type, banner ? { banner } : {});
   return group;
@@ -407,7 +407,7 @@ function machine(type = 'retro', series = 'nuigurumi') {
 
 const CAPSULE_COLS = [0xff9eb5, 0x9ed8ff, 0xfff09e, 0xb8f0a8, 0xffc890];
 /** A few capsules piled in the machine's window. */
-function fillMachine(group, series = 'nuigurumi', seed = 7) {
+function fillMachine(group, series = 'teruteru', seed = 7) {
   const b = bbox(group);
   const glass = [];
   group.traverse((o) => { if (o.isMesh && o.material && !Array.isArray(o.material) && o.material.transparent) glass.push(o); });
@@ -480,7 +480,7 @@ const DESIGNS = {
       band(g, 0, 40, '', C.ink);
       px(g, 'GRAND', 6, 6, { s: 2, col: C.yellow });
       px(g, 'REOPENING!', 6, 23, { s: 2, col: C.white });
-      const objs = [], set = [['retro', 'nuigurumi', -0.5, 0.3], ['standard', 'sampuru', 0, 0], ['deluxe', 'denka', 0.52, -0.3]];
+      const objs = [], set = [['retro', 'teruteru', -0.5, 0.3], ['standard', 'henshin', 0, 0], ['deluxe', 'kaden', 0.52, -0.3]];
       for (const [type, s, x, ry] of set) { const m = machine(type, s); fillMachine(m, s, hashStr(s)); m.position.set(x, 0, Math.abs(x) * -0.25); m.rotation.y = ry; objs.push(m); }
       const c = cat({ at: [0.36, 0, 0.78], yaw: -0.35, lookAt: [0, 0.5, 3], mood: 'happy' });
       objs.push(c.root);
@@ -497,13 +497,13 @@ const DESIGNS = {
     photos: ['skyline'],
     async draw(g) {
       photoBg(g, 'skyline', 0, 0, W, PH, { fx: 0.55, fy: 0.62, zoom: 1.12, tint: ['#3a50ff', 0.25], dark: 0.1 });
-      const k = makeItemMesh('sampuru/ramen'); k.rotation.y = -0.45;
+      const k = makeItemMesh('nakanohito/tanbo'); k.rotation.y = -0.45;
       const b = bbox(k), sz = b.getSize(new THREE.Vector3()), ce = b.getCenter(new THREE.Vector3());
       const img = await shot([k], { w: 140, h: 150, ...orbit([ce.x, b.min.y + sz.y * 0.48, ce.z], 0.1, -0.12, sz.y * 2.3), fov: 32, key: [-0.8, 0.5, 1.6], keyCol: 0xffd0b0, keyI: 2.4, rim: [1.2, 0.4, -1.4], rimCol: 0x8aa0ff, rimI: 3, hemi: 0.7 });
       put(g, img, 8, PH - 13 - 146);
       px(g, 'NEW SERIES!', 6, 6, { col: C.yellow });
-      px(g, 'FAKE FOOD\nWINDOW', 6, 18, { s: 2, col: C.white, lh: 4 });
-      band(g, PH - 13, 13, `8 FIGURES · ¥${SERIES_BY_ID.kaiju.price} A TURN`, C.ink, C.white);
+      px(g, 'WHO\'S IN\nTHE SUIT?', 6, 18, { s: 2, col: C.white, lh: 4 });
+      band(g, PH - 13, 13, `6 FIGURES · ¥${SERIES_BY_ID.nakanohito.price} A TURN`, C.ink, C.white);
     },
   },
 
@@ -513,9 +513,9 @@ const DESIGNS = {
     async draw(g) {
       photoBg(g, 'milky_way', 0, 0, W, PH, { fx: 0.45, fy: 0.4, zoom: 1.1, tint: ['#4a6aff', 0.25], levels: 4 });
       const lights = { key: [-1.2, 1.6, 2], keyCol: 0xfff4e8, keyI: 2.6, rimCol: 0x8ab4ff, rimI: 2.4, hemi: 0.8 };
-      const items = [['denka/fan', 74, 4, 44, 0.2], ['denka/phone', 60, W - 66, 46, 0.6], ['denka/radio', 50, W - 58, 108, 0.5], ['denka/tv', 66, 46, 108, -0.3]];
+      const items = [['kaden/fukuro', 74, 4, 44, 0.2], ['kaden/gama', 60, W - 66, 46, 0.6], ['kaden/zou', 50, W - 58, 108, 0.5], ['kaden/usagi', 66, 46, 108, -0.3]];
       for (const [key, s, x, y, yaw] of items) put(g, await figure(key, 'normal', { w: s, h: s, yaw, pitch: 0.25, margin: 1.02, ...lights }), x, y);
-      px(g, 'SHOWA HOME\nAPPLIANCES', 6, 6, { s: 2, col: C.white, lh: 4 });
+      px(g, 'APPLIANCE\nANIMALS', 6, 6, { s: 2, col: C.white, lh: 4 });
       band(g, PH - 13, 13, 'ONE SMALL TURN FOR A CAT', C.blue, C.white);
     },
   },
@@ -526,15 +526,15 @@ const DESIGNS = {
     async draw(g) {
       photoBg(g, 'sakura', 0, 0, W, PH, { fx: 0.5, fy: 0.3, tint: ['#ffb0d0', 0.25] });
       band(g, 0, 40, '', C.paper);
-      px(g, 'WINDOW', 6, 6, { s: 2, col: C.rose });
-      px(g, 'SWEETS', 6, 23, { s: 2, col: C.ink });
+      px(g, 'SHRINE', 6, 6, { s: 2, col: C.rose });
+      px(g, 'ERRANDS', 6, 23, { s: 2, col: C.ink });
       px(g, 'NEW!', W - 6, 6, { col: C.red, align: 'right' });
-      const keys = ['sampuru/katsu', 'sampuru/soda', 'sampuru/pudding', 'sampuru/udon', 'sampuru/ebifry'];
+      const keys = ['otsukai/kitsune', 'otsukai/shika', 'otsukai/hebi', 'otsukai/saru', 'otsukai/karasu'];
       const objs = keys.map((k, i) => { const m = makeItemMesh(k); const back = i % 2 === 0; m.position.set((i - 2) * 0.05, 0, back ? -0.03 : 0.02); m.rotation.y = (2 - i) * 0.18; return m; });
       const img = await shot(objs, fit(objs, { w: W, h: 120, yaw: 0.1, pitch: 0.3, margin: 0.75, key: [-1, 2.4, 2], keyCol: 0xfff0f4, rimCol: 0xffc0e0, rimI: 1.6, hemi: 1.2 }));
       for (const o of objs) contact(g, img, 0, 60, o.position.x, o.position.z, 0.028);
       put(g, img, 0, 60);
-      band(g, PH - 13, 13, `NIKONIKO WAGASHI · ¥${SERIES_BY_ID.wagashi.price}`, C.rose, C.white);
+      band(g, PH - 13, 13, `THE GODS' MESSENGERS · ¥${SERIES_BY_ID.otsukai.price}`, C.rose, C.white);
     },
   },
 
@@ -545,7 +545,7 @@ const DESIGNS = {
       photoBg(g, 'blossom_lamp', 0, 0, W, PH, { fx: 0.3, fy: 0.4, tint: ['#ffb040', 0.3], dark: 0.4, levels: 4 });
       px(g, 'SUPER', 6, 6, { s: 2, col: C.gold });
       px(g, 'SECRET', 6, 23, { s: 2, col: C.gold });
-      const img = await figure('nuigurumi/narwhal', 'gold', { w: 110, h: 110, yaw: 0.35, pitch: 0.2, margin: 1.0, key: [-1.4, 1.8, 1.8], keyCol: 0xfff0d8, keyI: 2.4, rimCol: 0xffd090, rimI: 2.6, env: 0.9, hemi: 0.35, grade: goldGrade });
+      const img = await figure('henshin/ryu', 'gold', { w: 110, h: 110, yaw: 0.35, pitch: 0.2, margin: 1.0, key: [-1.4, 1.8, 1.8], keyCol: 0xfff0d8, keyI: 2.4, rimCol: 0xffd090, rimI: 2.6, env: 0.9, hemi: 0.35, grade: goldGrade });
       oval(g, W / 2 + 6, PH - 22, 34, 5, 'rgba(10,6,4,0.5)');
       put(g, img, W / 2 - 50, PH - 22 - 104);
       px(g, `1 IN ${SECRET_ODDS}`, W - 6, 50, { col: C.white, align: 'right' });
@@ -561,7 +561,7 @@ const DESIGNS = {
       photoBg(g, 'neon_night', 0, 0, W, PH, { fx: 0.5, fy: 0.45, dark: 0.5, sat: 0.7, tint: ['#3020a0', 0.3], levels: 4 });
       px(g, 'GLOW IN', 6, 6, { s: 2, col: C.mint });
       px(g, 'THE DARK', 6, 23, { s: 2, col: C.mint });
-      const keys = [['nuigurumi/teddy', -0.5], ['denka/radio', 0], ['sampuru/soda', 0.5]];
+      const keys = [['teruteru/para', -0.5], ['kaden/usagi', 0], ['henshin/buta', 0.5]];
       const objs = keys.map(([k, ry], i) => { const m = makeItemMesh(k, 'glow'); m.position.set((i - 1) * 0.07, 0, i === 1 ? 0.02 : -0.02); m.rotation.y = ry; return m; });
       put(g, await shot(objs, fit(objs, { w: W, h: 110, yaw: 0.05, pitch: 0.22, margin: 0.9, key: [-1, 1.4, 1.5], keyCol: 0x9080ff, keyI: 0.9, rimCol: 0xff60d0, rimI: 2.2, hemi: 0.25, env: 0.25 })), 0, PH - 13 - 112);
       band(g, PH - 13, 13, `1 IN ${GLOW_ODDS} TURNS · ${FINISHES.glow.mult}× VALUE`, C.mint, C.ink);
@@ -614,8 +614,8 @@ const DESIGNS = {
     async draw(g) {
       const w = W - M * 2, h = PH - M * 2;
       photoBg(g, 'back_street', M, M, w, h, { fx: 0.5, fy: 0.62, zoom: 1.05, tint: ['#ff9a50', 0.3] });
-      const mach = machine('deluxe', 'sampuru');
-      fillMachine(mach, 'sampuru');
+      const mach = machine('deluxe', 'kaden');
+      fillMachine(mach, 'kaden');
       mach.position.set(0.95, 0, -0.9); mach.rotation.y = -0.55;
       const head = new THREE.Vector3(0.95, 1.35, -0.6);
       const her = await person('office_lady', 5, { at: [-0.62, 0, -0.35], yaw: 0.55, expr: 'angry', lookAt: [0.1, 1.5, 0.35], noBag: true, t: 1.2 });
@@ -642,13 +642,13 @@ const DESIGNS = {
         ['INHERITING\nGRANDPA\'S\nGARAGE', 'galaxy', { fx: 0.5, fy: 0.5, zoom: 1.5, levels: 4 }],
       ];
       const shots = [];
-      { const f = makeItemMesh('nuigurumi/teddy'); shots.push(await shot([f], fit([f], { w: iw, h: rh, yaw: 0.4, pitch: 0.2, margin: 1.15 }))); }
+      { const f = makeItemMesh('teruteru/para'); shots.push(await shot([f], fit([f], { w: iw, h: rh, yaw: 0.4, pitch: 0.2, margin: 1.15 }))); }
       {
-        const ids = ['nuigurumi/teddy', 'nuigurumi/bunny', 'nuigurumi/penguin', 'nuigurumi/lamb', 'nuigurumi/owl'];
+        const ids = ['teruteru/para', 'teruteru/niji', 'teruteru/goro', 'teruteru/byu', 'teruteru/moya'];
         const objs = ids.map((k, i) => { const m = makeItemMesh(k); const back = i < 3; m.position.set(back ? (i - 1) * 0.036 : (i - 3.5) * 0.036, 0, back ? -0.03 : 0); m.rotation.y = (i - 2) * -0.2; return m; });
         shots.push(await shot(objs, fit(objs, { w: iw, h: rh, yaw: 0.15, pitch: 0.2, margin: 1.0 })));
       }
-      { const m = machine('standard', 'nuigurumi'); fillMachine(m); shots.push(await shot([m], fit([m], { w: iw, h: rh, yaw: 0.45, pitch: 0.12, margin: 1.05 }))); }
+      { const m = machine('standard', 'teruteru'); fillMachine(m); shots.push(await shot([m], fit([m], { w: iw, h: rh, yaw: 0.45, pitch: 0.12, margin: 1.05 }))); }
       { const gp = await person('grandpa', 4, { gesture: 'cheer', expr: 'happy', t: 1.1, noBag: true }); shots.push(await shot([gp.root], { w: iw, h: rh, ...orbit([0, 1.3, 0], 0.15, 0.05, 2.3), fov: 30, rimCol: 0xe0a0ff, rimI: 2.4 })); gp.dispose(); }
       rows.forEach(([lab, ph, po], i) => {
         const ry = M + i * rh;
@@ -685,7 +685,7 @@ const DESIGNS = {
       photoBg(g, 'rainy_lane', M, iy, W - M * 2, ih, { fx: 0.38, fy: 0.45, tint: ['#3050c0', 0.35], dark: 0.3, levels: 4 });
       const kid = await person('kid', 2, { look: { hat: 'chicken' }, gesture: 'hug', expr: 'happy', yaw: 0.25, t: 1.4, noHat: true, noBag: true, lookAt: [0.4, 0.9, 2] });
       // a giant capsule in their arms
-      const P = kid.P, cp = capsule('nuigurumi', 0xff6f91, 0.19);
+      const P = kid.P, cp = capsule('teruteru', 0xff6f91, 0.19);
       cp.traverse((o) => { if (o.isMesh && o.material?.transparent) { o.material = new THREE.MeshStandardMaterial({ color: 0xfff6f0, roughness: 0.25 }); o.renderOrder = 0; } });
       kid.b.chest.updateWorldMatrix(true, false);
       cp.position.copy(new THREE.Vector3(0, 0.03 * P.H, 0.32 * P.H / 1.72 + 0.04).applyMatrix4(kid.b.chest.matrixWorld)); cp.rotation.set(-0.35, 0.6, 0.2);
@@ -705,9 +705,9 @@ const DESIGNS = {
       px(g, 'REALITY', M + hw + hw / 2, M + 5, { align: 'center' });
       photoBg(g, 'fireworks', M, iy, hw, ih, { fx: 0.5, fy: 0.4, tint: ['#ffc040', 0.25], levels: 4 });
       photoBg(g, 'rain_window', M + hw, iy, hw, ih, { fx: 0.5, sat: 0.2, levels: 4 });
-      put(g, await figure('nuigurumi/bunny', 'gold', { w: hw, h: 90, yaw: 0.2, pitch: 0.15, margin: 1.0, env: 0.9, keyI: 2.4, keyCol: 0xfff0d8, rimCol: 0xffd090, rimI: 2.6, hemi: 0.35, grade: goldGrade }), M, iy + 30);
+      put(g, await figure('teruteru/niji', 'gold', { w: hw, h: 90, yaw: 0.2, pitch: 0.15, margin: 1.0, env: 0.9, keyI: 2.4, keyCol: 0xfff0d8, rimCol: 0xffd090, rimI: 2.6, hemi: 0.35, grade: goldGrade }), M, iy + 30);
       const dups = [];
-      for (let i = 0; i < 6; i++) { const m = makeItemMesh('nuigurumi/lamb'); const row = i < 3 ? 0 : 1; m.position.set((i % 3 - 1) * 0.05 + row * 0.022, row * 0.024, row * -0.04 + (i % 2) * 0.01); m.rotation.y = (i * 1.7) % 1 - 0.5; dups.push(m); }
+      for (let i = 0; i < 6; i++) { const m = makeItemMesh('teruteru/goro'); const row = i < 3 ? 0 : 1; m.position.set((i % 3 - 1) * 0.05 + row * 0.022, row * 0.024, row * -0.04 + (i % 2) * 0.01); m.rotation.y = (i * 1.7) % 1 - 0.5; dups.push(m); }
       put(g, await shot(dups, fit(dups, { w: hw, h: 80, yaw: 0.3, pitch: 0.35, margin: 0.85, keyCol: 0xdde4f0, keyI: 1.8, rimCol: 0xa0b0c8 })), M + hw, iy + 40);
       px(g, '×6', M + hw * 2 - 4, iy + 6, { s: 2, col: C.red, align: 'right' });
       tag(g, 'SECRET!', M + hw / 2, PH - M - 16, C.yellow, C.ink);
@@ -722,7 +722,7 @@ const DESIGNS = {
     async draw(g) {
       const bh = 26, ih = PH - M * 2 - bh * 2;
       photoBg(g, 'cumulus', M, M + bh, W - M * 2, ih, { fx: 0.55, fy: 0.4, zoom: 1.05, tint: ['#5aa0ff', 0.15], levels: 4 });
-      const m = machine('standard', 'nuigurumi');
+      const m = machine('standard', 'teruteru');
       m.rotation.y = 0.32;
       const b = bbox(m);
       const c = cat({ at: [0, b.max.y - 0.005, -0.02], yaw: 0.3, lookAt: [0.6, b.max.y + 0.3, 2.4], mood: 'happy' });
@@ -743,7 +743,7 @@ const DESIGNS = {
       const bh = 26, ih = PH - M * 2 - bh * 2;
       photoBg(g, 'neon_night', M, M + bh, W - M * 2, ih, { fx: 0.5, fy: 0.45, tint: ['#7a30d0', 0.45], dark: 0.42, levels: 4 });
       // a big capsule split open: the coloured half as a cup she sits in, the clear lid tipped over beside it
-      const r = 0.15, cp = makeCapsule('nuigurumi', 0xb070ff, { radius: r });
+      const r = 0.15, cp = makeCapsule('teruteru', 0xb070ff, { radius: r });
       cp.paper.visible = false;
       cp.bottom.children.forEach((o, i) => { if (i > 2) o.visible = false; });
       cp.group.position.set(0, r, 0);
