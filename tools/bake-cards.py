@@ -317,6 +317,133 @@ def card(s):
     return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.3, fade=0.03, seed=seed % 997).convert('RGB')
 
 
+# ================================================================== the studio cards (POSTER-3, tools/pressworks.py)
+# The same print studio as the posters: cream card stock, the series' own 2-3 inks (pressworks.PALETTES), the photo
+# backdrop screened in those inks (a duotone on the 320 x 280 grid, printed 2x), a hand-pixelled logotype
+# (tools/letterforms.py), the facts set as a ruled table instead of stickers. The toys are the real renders, in
+# their true colours, at full resolution. Layout: the label column (left) and the stage (right), the numbered
+# line-up, the small print (warning, maker, codes).
+import pressworks as PW
+import letterforms as LFm
+STUDIO = {  # series -> palette, roles, backdrop tone, logotype lines, motif inks
+    'henshin': dict(pal='schoolroom', field='paper', ink='cobalt', acc='pencil', hot='redpen', stage=('pencil', 'cobalt'),
+                    under_k=0.42, tone=dict(lo=0.08, hi=0.8, gamma=1.0), logo=('draft', ['STATiONERY', 'BEASTS'], {}),
+                    kind='TRANSFORMING ANIMAL FIGURE', catch='EVERY ONE TRANSFORMS',
+                    blurb='STAPLERS, SHARPENERS AND PENS FROM A SHOWA DESK THAT UNFOLD INTO ANIMALS.'),
+    'yomise': dict(pal='night-stall', field='deep', ink='deep', acc='aqua', hot='lantern', stage=('deep', 'lantern'),
+                   tone=dict(lo=0.08, hi=0.6, gamma=0.8, invert=True), logo=('wire', ['DEEP-SEA', 'NiGHT STALLS'], dict(bounce=[0, 1, 0, -1, 0, 1, -1, 0])),
+                   kind='DEEP-SEA NIGHT STALL FIGURE', catch='THE STALLS LIGHT UP'),
+}
+
+
+def wrap3(name, w, face='micro5'):
+    """wrap2, also breaking long hyphenated words after their hyphen."""
+    words = []
+    for wd in name.upper().replace('’', "'").split(' '):
+        if text_size(wd, face)[0] > w and '-' in wd:
+            a, b = wd.split('-', 1); words += [a + '-', b]
+        else: words.append(wd)
+    if words[0] == 'THE' and len(words) > 1: words = words[1:]
+    lines, cur = [], ''
+    for wd in words:
+        t = (cur + ('' if cur.endswith('-') else ' ') + wd).strip()
+        if cur and text_size(t, face)[0] > w: lines.append(cur); cur = wd
+        else: cur = t
+    lines.append(cur)
+    return lines[:3]
+
+
+def card3(s):
+    sid = s['id']; st = STUDIO[sid]; P = PW.PALETTES[st['pal']]
+    pap = P['paper']; ink = P[st['ink']]; acc = P[st['acc']]; hot = P[st['hot']]
+    dark = st['field'] != 'paper'
+    fld = P[st['field']] if dark else pap
+    on = pap if dark else ink           # type on the label column
+    items = s['items']; n = len(items)
+    rendered = [i for i in items if not i['secret'] and toy(sid, i['id']) is not None]
+    hero = max(rendered, key=lambda i: RANK.get(i['rarity'], 0)) if rendered else None
+    seed = sum(map(ord, sid))
+    M = 6; SX = 150; SY = 146; LY = 149; BY = 236
+    B = Sheet(LW, LH, pap)
+    # the label column
+    B.rect(M, M, SX - M - 3, SY - M, fld)
+    # the stage: the real photo screened in the series' inks (flat underprint + halftone)
+    under, top = st['stage']
+    sw, sh = LW - M - SX, SY - M
+    B.rect(SX, M, sw, sh, PW.tint(P[under], st.get('under_k', 1.0)))
+    ref, f = BACK.get(sid, ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
+    PW.halftone(B, photo_ref(ref), SX, M, sw, sh, P[top], T=4, over=not dark, f=f, **st['tone'])
+    # label column type
+    x = M + 6; y = M + 7
+    B.text(st['kind'], x, y, 'micro5', 1, acc if dark else hot)
+    al, lines, kw = st['logo']; y += 10
+    for l in lines:
+        bb = LFm.word(B, al, l, x, y, on if not dark else acc, accent=hot, accent2=hot if dark else acc, **kw); y = bb[3] + 4
+    tagline, gim = meta(sid)
+    y = B.para(tagline.upper() if tagline else st['catch'], x, y + 2, SX - M - 16, 'micro5', 1, hot if not dark else on, lh=7, maxy=y + 22)
+    if st.get('blurb'): B.para(st['blurb'], x, y + 3, SX - M - 16, 'micro5', 1, on, lh=7, maxy=SY - 40)
+    # the facts as a ruled table: price | types | age
+    ty = SY - 34
+    B.rect(x, ty, SX - M - 15, 1, on)
+    pb = LFm.word(B, 'figs', '%d' % s['price'], x, ty + 5, on)
+    B.text('YEN', pb[2] + 2, pb[1], 'b5', 1, acc if dark else hot); B.text('A TURN', pb[2] + 2, pb[1] + 9, 'micro5', 1, on)
+    vx = pb[2] + 34
+    B.rect(vx, ty + 4, 1, 21, on)
+    nb = LFm.word(B, 'figs', str(n), vx + 5, ty + 5, on)
+    B.text('TYPES', nb[2] + 2, nb[1], 'b5', 1, on); B.text('AGES 15+', nb[2] + 2, nb[1] + 9, 'micro5', 1, on)
+    # the line-up: numbered cells on the paper
+    B.rect(M, LY, LW - 2 * M, 1, ink)
+    cw = (LW - 2 * M) / n
+    for k, it in enumerate(items):
+        cx = M + cw * (k + 0.5)
+        B.text(str(k + 1), M + cw * k + 3, LY + 4, 'b5', 1, hot)
+        lines_ = ['SECRET'] if it['secret'] else wrap3(it['name'], int(cw) - 6)
+        for j, l in enumerate(lines_):
+            B.text(l, cx, BY - 5 - 6 * (len(lines_) - j), 'micro5', 1, hot if it['secret'] else ink, anchor='mt')
+        if k: B.rect(M + cw * k, LY + 4, 1, BY - LY - 8, PW.tint(ink, 0.3))
+    B.rect(M, BY, LW - 2 * M, 1, ink)
+    # the small print: the warning (ruled, one ink), maker, codes
+    wy = BY + 4; ww = 150
+    B.frame(M, wy, ww, LH - wy - M, ink)
+    B.rect(M, wy, ww, 8, ink)
+    tx = M + 3
+    B.poly([(tx + 3, wy + 1), (tx + 6, wy + 7), (tx, wy + 7)], hot); B.rect(tx + 3, wy + 3, 1, 2, ink); B.rect(tx + 3, wy + 6, 1, 1, ink)
+    B.text('WARNING', tx + 10, wy + 2, 'micro5', 1, pap); B.text('CHOKING HAZARD', M + ww - 3, wy + 2, 'micro5', 1, pap, anchor='rt')
+    B.para('SMALL PARTS. NOT FOR CHILDREN UNDER 3. DO NOT PUT THE CAPSULE IN YOUR MOUTH OR OVER YOUR HEAD.', M + 3, wy + 11, ww - 6, 'micro5', 1, ink, lh=6, maxy=LH - M - 2)
+    mk = MAKER_OF.get(sid, seed % len(MAKERS)); name, mcol, em = MAKERS[mk]
+    emblem(B, em, M + ww + 6, wy + 1, hot, ink=ink, paper=pap)
+    B.text(name, M + ww + 20, wy + 2, 'b5', 1, ink)
+    B.text('TOY LINE 0120-00-1999', M + ww + 20, wy + 11, 'micro5', 1, ink)
+    B.qr(LW - M - 21, wy + 2, 1, seed, ink, bg=pap)
+    B.barcode(M + ww + 12, wy + 20, '4970' + str(seed * 7919 % 10 ** 8).zfill(8), h=8, ink=ink, bg=pap)
+    B.text('MADE IN JAPAN', LW - M, LH - M + 1, 'micro5', 1, ink, anchor='rb')
+    im = upscale(B.im.convert('RGB'), 2).convert('RGBA')
+    # the toys, full resolution: the hero on the stage, the line-up in its cells
+    T = Sheet(W, H, None)
+    hb = None
+    if hero is not None:
+        hb = T.toy(sid, hero['id'], 2 * (SX + sw * 0.55), 2 * (SY - 6), h=2 * (sh - 22), w=2 * (sw - 20))
+    for k, it in enumerate(items):
+        cx = M + cw * (k + 0.5)
+        nl = 1 if it['secret'] else len(wrap3(it['name'], int(cw) - 6))
+        foot = BY - 7 - 6 * nl
+        T.toy(sid, it['id'], 2 * cx, 2 * foot, h=2 * (foot - LY - 10), w=2 * (cw - 10), silhouette=ink if it['secret'] else None)
+    im.alpha_composite(T.im)
+    F = Sheet(LW, LH, None)
+    for k, it in enumerate(items):
+        if it['secret']:
+            LFm.word(F, 'figs', '?', M + cw * (k + 0.5), (LY + BY) / 2 - 8, acc if not dark else hot, anchor='mm')
+    if hb:  # the hero's name, a museum-label caption on a paper slip with one leader rule
+        x0, y0, x1, y1 = [v // 2 for v in hb]
+        nm = hero['name'].upper()
+        tw = text_size(nm, 'micro5')[0]
+        tx_, ty_ = LW - M - tw - 8, M + 6
+        F.rect(tx_ - 3, ty_ - 3, tw + 6, 11, pap); F.text(nm, tx_, ty_, 'micro5', 1, ink)
+        F.rect(tx_ + tw // 2, ty_ + 8, 1, max(0, int(y0 + (y1 - y0) * 0.25) - ty_ - 8), pap)
+    im.alpha_composite(upscale(F.im, 2))
+    return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.3, fade=0.03, seed=seed % 997).convert('RGB')
+
+
 if __name__ == '__main__':
     L = json.load(open(os.path.join(TOYS, 'lineup.json')))
     only = sys.argv[1].split(',') if len(sys.argv) > 1 else None
@@ -324,5 +451,5 @@ if __name__ == '__main__':
     for sid, s in L.items():
         if only and sid not in only: continue
         if not os.path.exists(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js')): continue  # a retired series
-        im = card(s); save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
+        im = card3(s) if sid in STUDIO else card(s); save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
         print('card', sid, len(s['items']))
