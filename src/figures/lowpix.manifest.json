@@ -302,7 +302,7 @@
 "mats":{"body":"matte","arm_l":"matte","arm_r":"matte","hood":"matte","smoke":"matte","actor":"matte"},
 "pts":{},
 "blender":true,"facet":1},
-"nakanohito/hamaguri":{"size":[32.85,46.15,25.45],"min":[-16.43,0,-11.06],"tris":694,"atlas":[1024,1024],"kb":337,"clips":{"gimmick":"gimmick"},
+"nakanohito/hamaguri":{"size":[32.85,46.15,25.45],"min":[-16.43,0,-11.06],"tris":694,"atlas":[1024,1024],"kb":335,"clips":{"gimmick":"gimmick"},
 "mats":{"body":"matte","lamp":"led","arm_l":"matte","arm_r":"matte","hood":"gloss","actor":"matte"},
 "pts":{},
 "blender":true,"facet":1},
