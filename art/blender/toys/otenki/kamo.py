@@ -51,7 +51,7 @@ tk.scale(brim, (0.9, 1.0, 1.0), pivot=tuple(HB))
 tk.rotate(brim, -12, 'X', pivot=tuple(HB))
 crown = tk.lathe('crown', [(0, 0.0), (3.7, 0.0), (3.7, 1.0), (3.0, 2.4), (1.6, 3.2), (0, 3.4)], n=14, centre=tuple(HB))
 tk.rotate(crown, -12, 'X', pivot=tuple(HB))
-HEAD = [low(head, 'head', 110, region=('face', [('crownf', lambda C_, N: C_[:, 2] > HC[2] + 1.6)])), low(bill, 'bill', 50, region=('bill', [('billtip', lambda C_, N: C_[:, 1] < HC[1] - 6.2)])),
+HEAD = [low(head, 'head', 110, region=('face', [('crownf', lambda C_, N: C_[:, 2] > HC[2] + 2.4)])), low(bill, 'bill', 50, region=('bill', [('billtip', lambda C_, N: C_[:, 1] < HC[1] - 6.2)])),
         low(brim, 'brim', 70, lo=0, hi=1, region='hat'), low(crown, 'crown', 60, lo=0, hi=1, region='hat')]
 # ------------------------------------------------------------------ the watering can: tin body, long spout, rose, top handle; the wings on it
 can = tk.lathe('can', [(0, 0.0), (2.6, 0.0), (2.75, 0.3), (2.75, 4.4), (2.4, 4.8), (0, 4.9)], n=14, centre=tuple(CB))
@@ -150,14 +150,14 @@ def paint(P, pt):
     pl = P.region('plume')
     P.fill('plume', pt.ramp('#8a6440', 7, shift=0.07), tone=sh, base=0.05, brush='feather')
     who, d = P.dabs(pl, size=1.0, spacing=1.6, seed=31)
-    P.fill(pl & (who >= 0) & (d > 0.72), pt.ramp('#d2b48a', 5), tone=sh, base=0.1, brush=False)     # pale feather edges
+    P.shift(pl & (who >= 0) & (d > 0.78), 1)     # pale feather edges
     P.fill('breast', pt.ramp('#b08a62', 6, shift=0.06), tone=sh, base=0.1, brush='feather')
     P.fill('specul', pt.ramp('#3a5ab8', 5, shift=0.06), tone=sh, base=0.1)
     P.fill('tailf', pt.ramp('#3a2e26', 5), tone=sh, base=0.05)
     P.fill('face', pt.ramp('#e6d4b0', 6, shift=0.05), tone=sh, base=0.15, brush='feather')
     P.fill('crownf', pt.ramp('#4a3626', 5, shift=0.05), tone=sh, base=0.05, brush='feather')
     fa = P.region('face') & (P.part == PI['head'])
-    P.fill(fa & (np.abs(Z - HC[2] - 0.5 + 0.25 * (Y - HC[1])) < 0.35) & (Y < HC[1] + 1.0), pt.ramp('#4a3626', 4), tone=sh, base=0.05, brush=False)   # eye-line
+    P.fill(fa & (np.abs(Z - HC[2] - 0.1 + 0.25 * (Y - HC[1])) < 0.16) & (Y < HC[1] - 0.6) & (np.abs(X) > 1.6), pt.ramp('#4a3626', 4), tone=sh, base=0.05, brush=False)   # eye-line
     P.fill('bill', pt.ramp('#34363a', 6, shift=0.05), tone=sh, base=0.1)
     P.fill('billtip', pt.ramp('#f0c030', 5, shift=0.05), tone=sh, base=0.1)
     P.fill('foot', pt.ramp('#e88a30', 5, shift=0.06), tone=sh, base=0.1)
@@ -174,7 +174,7 @@ def paint(P, pt):
     # the face: dots in the eye-line, blush at the bill's root, a smile line along the bill
     hd = (P.region('face') | P.region('crownf')) & (P.part == PI['head'])
     fc = face.Face(P, c=tuple(HC + (0, -3.4, 0.8)), axis=(0, -1, 0.15), where=hd, seed=631)
-    fc.eyes('dot', spread=4.8, size=0.55, dy=0.0, uneven=0.2)
+    fc.eyes('dot', spread=4.8, size=0.55, dy=0.6, uneven=0.2)
     fc.blush(spread=5.2, dy=-1.2, rx=0.9, ry=0.5)
     P.lines(['bill', 'hat', 'foot'], step=1)
     P.clusters()

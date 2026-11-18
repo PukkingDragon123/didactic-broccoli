@@ -136,8 +136,8 @@ def paint(P, pt):
     hd = P.region('plume') & (P.part == PI['head'])
     fc = face.Face(P, c=tuple(HC + (0, -3.2, 0.6)), axis=(0, -1, 0.1), where=hd, seed=641)
     for sx in (1, -1):
-        fc.patch(sx * 1.8, 0.1, 1.5, 0.45, '#2c2a2a', rot=sx * 8)      # the black lores
-        fc.patch(sx * 2.0, 1.1, 1.2, 0.42, '#d23a32', rot=-sx * 10)    # the red comb
+        fc.patch(sx * 1.3, -0.1, 0.8, 0.26, '#2c2a2a', rot=sx * 8)     # the black lores
+        fc.patch(sx * 2.2, 1.3, 0.85, 0.3, '#d23a32', rot=-sx * 14)    # the red comb
     fe = face.Face(P, c=tuple(HC + (0, -3.2, 0.6)), axis=(0, -1, 0.1), where=hd, seed=642, ink='#efe4c8')
     fe.eyes('dot', spread=4.0, size=0.42, dy=0.1, uneven=0.2)
     fc.blush(spread=4.6, dy=-1.0, rx=0.9, ry=0.5)

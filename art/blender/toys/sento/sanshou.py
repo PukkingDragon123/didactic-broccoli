@@ -98,7 +98,7 @@ HEAD = [low(head, 'head', 150, sculpt=sc_skin, region=('skin', [('lip', lambda C
 band = [(HC[0] + 6.0 * math.cos(a), HC[1] + 0.6 + 4.4 * math.sin(a), HC[2] + 1.2 + 0.5 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 14, endpoint=False)]
 bnd = tk.loft('band', [{'c': p_, 'w': 1.0, 'h': 0.7, 'e': 2.0} for p_ in band], n=6, closed=True)
 knot = tk.tube('knot', [(HC[0] + 2.6, HC[1] + 4.8, HC[2] + 1.8), (HC[0] + 4.0, HC[1] + 6.6, HC[2] + 0.6), (HC[0] + 4.6, HC[1] + 7.6, HC[2] - 1.4)], [0.7, 0.6, 0.4], n=5, squash=0.5)
-HEAD += [low(bnd, 'band', 70, lo=1, hi=1, region='band'), low(knot, 'knot', 20, lo=1, hi=1, region='band')]
+HEAD += [low(bnd, 'band', 70, lo=1, hi=1, region='hachimaki'), low(knot, 'knot', 20, lo=1, hi=1, region='hachimaki')]
 ARMS = []
 for sx in (1, -1):
     sh_ = (SX + sx * 5.0, -1.0, H + 11.6)
@@ -212,15 +212,15 @@ def paint(P, pt):
     P.fill(sk & (who >= 0) & (d < 0.5) & (np.mod(who, 3) == 0), pt.ramp('#2e2618', 5), tone=sh, base=0.05)
     P.fill('belly', pt.ramp('#9a8a62', 6, shift=0.05), tone=sh, base=0.1)
     P.fill('lip', pt.ramp('#8a7a52', 6, shift=0.05), tone=sh, base=0.1)
-    P.fill('band', pt.ramp('#f2ece0', 5, shift=0.04), tone=sh, base=0.2, brush='cloth')
-    P.fill(P.region('band') & (np.mod(np.floor((X + Y) * 0.9), 2) == 0), pt.ramp('#c8302a', 4), tone=sh, base=0.1, brush='cloth')
+    P.fill('hachimaki', pt.ramp('#f2ece0', 5, shift=0.04), tone=sh, base=0.2, brush='cloth')
+    P.fill(P.region('hachimaki') & (np.mod(np.floor((X + Y) * 0.9), 2) == 0), pt.ramp('#c8302a', 4), tone=sh, base=0.1, brush='cloth')
     # the face: two tiny dots very far apart near the edges of his wide head, one long grin right across it
     hd = (sk | P.region('lip')) & (P.part == PI['head'])
     fc = face.Face(P, c=tuple(HC + (0, -5.6, 0.6)), axis=(0, -1, 0.35), where=hd, seed=561)
     fc.eyes('dot', spread=8.4, size=0.38, dy=0.8, uneven=0.3)
     fc.mouth('upturn', w=8.8, dy=-1.2, weight=0.42)
     fc.blush(spread=9.0, dy=-0.4, rx=1.2, ry=0.6, col='#d88a6a')
-    P.lines(['band', 'plank'], step=1)
+    P.lines(['hachimaki', 'plank'], step=1)
     P.clusters()
     return P.done()
 

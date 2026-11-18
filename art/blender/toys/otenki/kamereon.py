@@ -58,12 +58,12 @@ for sx in (1, -1):
 head = tk.loft('head', [{'c': tuple(HC + (0, 2.0, -0.4)), 'w': 4.6, 'h': 2.6, 'e': 2.2}, {'c': tuple(HC + (0, 0.0, 0.0)), 'w': 5.2, 'h': 3.0, 'e': 2.3},
                         {'c': tuple(HC + (0, -2.4, -0.4)), 'w': 4.0, 'h': 2.2, 'e': 2.3}, {'c': tuple(HC + (0, -3.8, -0.8)), 'w': 2.6, 'h': 1.5, 'e': 2.2}],
                n=12, up=(0, 0, 1), cap0='round', cap1='round', capd=0.8)
-casque = tk.loft('casque', [{'c': tuple(HC + (0, -0.6, 2.0)), 'w': 2.2, 'h': 1.2}, {'c': tuple(HC + (0, 1.4, 3.0)), 'w': 2.6, 'h': 1.4},
-                            {'c': tuple(HC + (0, 3.2, 3.0)), 'w': 1.4, 'h': 0.8}], n=8, up=(0, 0, 1), cap1='point')
+casque = tk.loft('casque', [{'c': tuple(HC + (0, -1.0, 2.0)), 'w': 2.6, 'h': 1.4}, {'c': tuple(HC + (0, 1.2, 3.8)), 'w': 3.0, 'h': 2.0},
+                            {'c': tuple(HC + (0, 3.4, 4.4)), 'w': 2.0, 'h': 1.2}, {'c': tuple(HC + (0, 4.6, 3.4)), 'w': 0.8, 'h': 0.5}], n=8, up=(0, 0, 1), cap1='point')
 HEAD = [low(head, 'head', 100, region=('skin', [('belly', lambda C_, N: (N[:, 2] < -0.5))])), low(casque, 'casque', 30, lo=1, hi=1, region='skin')]
 for sx in (1, -1):
     ec = HC + (sx * 2.0, -0.6, 0.6)
-    eye = tk.lathe('turret', [(0, -0.2), (1.5, 0.0), (1.3, 0.9), (0.7, 1.5), (0, 1.6)], n=10, axis='X', centre=(0, 0, 0))
+    eye = tk.lathe('turret', [(0, -0.2), (1.9, 0.0), (1.7, 1.0), (1.0, 1.9), (0.5, 2.3), (0, 2.4)], n=10, axis='X', centre=(0, 0, 0))
     if sx < 0:
         tk.scale(eye, (-1, 1, 1))
         tk.fix_normals(eye)
@@ -174,14 +174,16 @@ def paint(P, pt):
     rb = P.region('rainbow')
     rr = np.hypot(X - RP[0], np.hypot(Y - RP[1], Z - RP[2]))
     for i, col in enumerate(COLS):
-        r0 = RO - (RO - RI) * (i + 1) / 7
-        P.fill(rb & (rr >= r0 - 0.05), pt.ramp(col, 5, shift=0.05), tone=sh, base=0.15, brush={'preset': 'gloss', 'flow': 'around'})
+        r0, r1 = RO - (RO - RI) * (i + 1) / 7, RO - (RO - RI) * i / 7
+        band = (rr >= r0) & (rr < r1) if 0 < i < 6 else ((rr >= r0) if i == 0 else (rr < r1))
+        P.fill(rb & band, pt.ramp(col, 5, shift=0.05), tone=sh, base=0.15, brush={'preset': 'gloss', 'flow': 'around'})
     # the chameleon: leaf green, a pale lemon belly and a pale stripe along each flank, pebbly dabs
     sk = P.region('skin')
     P.fill('skin', pt.ramp('#5aa84a', 7, shift=0.07), tone=sh, base=0.08)
     who, d = P.dabs(sk, size=0.7, spacing=1.1, seed=51)
     P.shift(sk & (who >= 0) & (d > 0.8), -1)
     P.fill(sk & (np.abs(Z - ST - 4.8 + 0.5 * Y) < 0.5) & (P.part == PI['rider']) & (np.abs(X) > 2.0), pt.ramp('#d8e070', 5), tone=sh, base=0.1)
+    P.fill(sk & (np.abs(np.mod(Y * 0.8 + Z * 0.5, 3.2) - 1.6) < 0.45) & (P.part == PI['rider']), pt.ramp('#3a8a3a', 6, shift=0.06), tone=sh, base=0.05)   # dark bands
     P.fill('belly', pt.ramp('#d8e08a', 6, shift=0.05), tone=sh, base=0.1)
     P.fill('turret', pt.ramp('#6ab858', 6, shift=0.06), tone=sh, base=0.1)
     tr = P.region('turret')
@@ -190,7 +192,7 @@ def paint(P, pt):
     P.fill('tongue', pt.ramp('#f08aa0', 5, shift=0.05), tone=sh, base=0.15)
     # the face: an ink dot at the tip of each turret eye (looking two ways), a long happy mouth line, blush
     for sx in (1, -1):
-        tip = HC + (sx * 2.0, -0.6, 0.6) + np.array((sx * math.cos(math.radians(25)), -math.sin(math.radians(25)), 0)) * 1.6
+        tip = HC + (sx * 2.0, -0.6, 0.6) + np.array((sx * math.cos(math.radians(25)), -math.sin(math.radians(25)), 0)) * 2.4
         fe = face.Face(P, c=tuple(tip), axis=(sx * math.cos(math.radians(25)), -math.sin(math.radians(25)), 0.0), where=tr, seed=650 + sx)
         fe.dot(0.0, 0.0, 0.42 if sx > 0 else 0.36)
     hd = (sk | P.region('belly')) & (P.part == PI['head'])

@@ -144,7 +144,7 @@ def paint(P, pt):
     # the face: big dark eyes set wide (a momonga's), a tiny pink nose, a little Y mouth, puffed blush
     hd = (P.region('fur') | P.region('cream')) & (P.part == PI['head'])
     fc = face.Face(P, c=tuple(HC + (0, -4.4, 0.6)), axis=(0, -1, 0.1), where=hd, seed=621)
-    fc.eyes('big', spread=5.0, size=0.95, dy=0.6, uneven=0.15)
+    fc.eyes('dot', spread=5.6, size=0.72, dy=0.5, uneven=0.15)
     fc.blush(spread=6.0, dy=-1.0, rx=1.2, ry=0.6)
     fn = face.Face(P, c=tuple(HC + (0, -4.6, -0.8)), axis=(0, -1, 0.05), where=hd, seed=622)
     fn.nose('tri', 0.0, 0.4, size=0.6, col='#d07a7a')
