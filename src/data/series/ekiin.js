@@ -20,5 +20,10 @@ export default {
       desc: 'The wicket clipper. He twirls his steel clipper between passengers out of habit, but when it comes to the ticket he punches it with his beak. Three pecks, one neat hole.',
       gimmick: { text: 'Clip a ticket', sfx: [[0.1, 'toyClick', { f: 3200 }], [0.25, 'toyClick', { f: 3400 }], [0.4, 'toyClick', { f: 3200 }], [0.55, 'toyClick', { f: 3400 }], [1.2, 'toyTap'], [1.47, 'toyTap'], [1.74, 'toyTap'], [2.1, 'toyClick']] },
     },
+    {
+      id: 'kaba', name: 'Pusher Hippo', jp: 'おしやカバ', rarity: 'common',
+      desc: 'The rush-hour pusher, in white gloves. The carriage is full and there is still a briefcase in the doorway, so he backs up, wiggles, and applies the biggest backside on the line.',
+      gimmick: { text: 'Push', sfx: [[0.15, 'footstep'], [0.4, 'toyFold', { n: 4, gap: 0.09 }], [0.9, 'thud'], [1.0, 'toyTap'], [1.3, 'footstep'], [1.35, 'slideDoor'], [1.55, 'toySnap', { f: 900 }], [1.65, 'toyClick'], [1.75, 'toyClick'], [1.9, 'toyClick'], [2.0, 'toyClick']] },
+    },
   ],
 };

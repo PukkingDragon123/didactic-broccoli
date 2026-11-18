@@ -67,12 +67,12 @@ def face_disc(V, N):
 
 
 tk.push(head_hi, face_disc)
-tk.regions(head_hi, 'body', [('mask', lambda C, N: (N[:, 1] < -0.45) & (np.abs(C[:, 0]) < 5.0) & (C[:, 2] < HC[2] + 3.6) & (C[:, 2] > HC[2] - 5.2))])
+tk.regions(head_hi, 'body', [('mask', lambda C, N: (N[:, 1] < -0.25) & ((C[:, 0] / 5.3) ** 2 + ((C[:, 2] - HC[2] + 0.5) / 4.8) ** 2 < 1))])
 EARS = []
 for sx in (1, -1):
-    c = (sx * 6.6, HC[1] + 0.6, HC[2] + 0.4)
+    c = (sx * 7.0, HC[1] + 0.8, HC[2] + 0.4)
     for nm_, n_, lst in (('ear', 8, None), ('ear_hi', 16, None)):
-        o = tk.lathe(nm_, [(0, -0.8), (2.0, -0.6), (2.3, 0.0), (1.9, 0.7), (0, 0.9)], n=n_, axis='X', centre=c)
+        o = tk.lathe(nm_, [(0, -0.9), (2.6, -0.7), (3.0, 0.0), (2.5, 0.8), (0, 1.0)], n=n_, axis='X', centre=c)
         EARS.append(o)
 for o in EARS[1::2]:
     tk.subsurf(o, 1)
@@ -85,10 +85,10 @@ tk.push(cap_hi[0], lambda V, N: -0.3 * np.exp(-((V[:, 0]) / 0.35) ** 2) * (V[:, 
 
 # ------------------------------------------------------------------ arms: the right one up with the gohei, the left on its knee
 ARM_R = (5.6, -0.6, PZ + 13.2)
-arm_r = tt.arm('arm_r', [ARM_R, (8.2, -3.0, PZ + 12.6), (9.0, -5.6, PZ + 15.4)], r=1.8, hand=2.0, region='body', hand_region='mask')
+arm_r = tt.arm('arm_r', [ARM_R, (9.0, -2.0, PZ + 13.0), (11.4, -3.0, PZ + 15.8)], r=1.8, hand=2.0, region='body', hand_region='mask')
 arm_l = tt.arm('arm_l', [(-5.6, -0.6, PZ + 13.2), (-7.6, -3.6, PZ + 11.0), (-6.4, -6.0, PZ + 9.6)], r=1.8, hand=2.0, region='body', hand_region='mask')
 hc = np.array(arm_r[2])
-G_TOP = hc + np.array((0.6, -0.6, 12.0))
+G_TOP = hc + np.array((2.2, -0.4, 11.0))
 gw_pts = [tuple(hc + np.array((-0.15, 0.15, -2.6))), tuple(hc), tuple(G_TOP)]
 gw_lo = tk.tube('gohei', gw_pts, 0.55, n=5, cap0='round', cap1='round')
 gw_hi = tk.tube('gohei_hi', gw_pts, 0.55, n=10, cap0='round', cap1='round')
@@ -154,11 +154,10 @@ def paint(P):
     GOLD = pt.ramp('#d9a640', 7, dark=0.6, light=0.6, shift=0.08)
     VERM = pt.ramp('#cc4a32', 7, shift=0.06)
     ak.lacquer(P, ('body', 'cap'))
-    P.fill('mask', pt.ramp('#c8463a', 7, shift=0.06), tone=sh * 0.6, base=0.08)  # the red-lacquer face, ears and hands
+    P.fill('mask', pt.ramp('#c8463a', 7, shift=0.06), tone=sh * 0.4, base=0.1)  # the red-lacquer face, ears and hands
     # gold leaf: bands round the cap and its fold, the wrists, the wand
     ak.gold_bands(P, P.region('cap'), Z - (HC[2] + 5.4), 1.3)
     ak.gold_bands(P, P.region('cap'), Z - (HC[2] + 11.6), 0.7)
-    ak.gold_bands(P, P.region('body'), np.hypot(X, Yc) - 3.0, 0.0)  # (none: keep the body plain black)
     for hcx in (arm_r[2], arm_l[2]):
         d_ = np.linalg.norm(P.pos - np.array(hcx), axis=2)
         P.fill(P.region('body') & (np.abs(d_ - 2.7) < 0.55), GOLD, tone=sh, base=0.1)

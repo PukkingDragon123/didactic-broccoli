@@ -25,47 +25,64 @@ F = Fig('ekiin', 'kaba')
 
 BZ = 3.0                     # the platform's top
 WY = 10.0                    # the car side's front face (y)
-OPX, OPZ = 9.6, BZ + 27.0    # the doorway's half width and top
+OPX, OPZ = 10.0, BZ + 25.0   # the doorway's half width and top
+CW, CTOP = 22.0, BZ + 31.0   # the car side's half width and top
+LY = WY + 2.2                # the door leaves' plane (between the car's skins: pocket doors)
 HY = -1.2                    # the hippo's centre line (y)
 HEAD = (0, HY - 2.6, BZ + 29.0)
 SH = {sx: (sx * 10.2, HY + 1.0, BZ + 21.0) for sx in (1, -1)}
 
-# ------------------------------------------------------------------ the platform and the carriage side
-plat = tk.rbox('plat', (50.0, 28.0, BZ), centre=(0, -2.0, BZ / 2), bevel=0.8, segs=1)
+# ------------------------------------------------------------------ the platform and the carriage side (two skins, pocket doors)
+plat = tk.rbox('plat', (2 * CW + 4.0, 28.0, BZ), centre=(0, -2.0, BZ / 2), bevel=0.8, segs=1)
 plat_lo, plat_hi = cx.low(plat, 'plat', 40, lo=0, hi=1, region='concrete')
-car = tk.rbox('car', (50.0, 3.4, BZ + 34.0), centre=(0, WY + 1.7, (BZ + 34.0) / 2 + 0.01), bevel=1.2, segs=2)
-for o_ in (car,):
-    tk.boolean(o_, tk.rbox('door', (2 * OPX, 8.0, OPZ - BZ + 0.2), centre=(0, WY + 1.7, (OPZ + BZ) / 2 - 0.1), bevel=0.6, segs=1))
+skin = tk.rbox('car', (2 * CW, 1.4, CTOP - BZ), centre=(0, WY + 0.7, (CTOP + BZ) / 2), bevel=0.5, segs=1)
+tk.boolean(skin, tk.rbox('doorway', (2 * OPX, 6.0, OPZ - BZ + 0.2), centre=(0, WY + 0.7, (OPZ + BZ) / 2 - 0.1), bevel=0.4, segs=1))
+back = tk.rbox('back', (2 * CW, 1.4, CTOP - BZ), centre=(0, WY + 4.3, (CTOP + BZ) / 2), bevel=0.5, segs=1)
+frames = [tk.rbox('fr', (2 * CW, 5.0, 1.8), centre=(0, WY + 2.5, CTOP - 0.9), bevel=0.6, segs=1)] + \
+         [tk.rbox('fr', (1.8, 5.0, CTOP - BZ), centre=(sx * (CW - 0.9), WY + 2.5, (CTOP + BZ) / 2), bevel=0.6, segs=1) for sx in (1, -1)]
+_lh = [cx.low(o, o.name, t, lo=0, hi=1, region='cream') for o, t in ((skin, 70), (back, 24))] + [cx.low(f_, 'fr', 20, lo=0, hi=1, region='cream') for f_ in frames]
+for _l, _h in _lh:
+    tk.delete(_h)   # (the sculpts are rebuilt below with their detail)
+car_lo = tk.join([_l for _l, _h in _lh], 'car')
+# (the sculpts: rebuild them the same way, the outside skin with its rivet line and window frames)
+skin = tk.rbox('car_hi', (2 * CW, 1.4, CTOP - BZ), centre=(0, WY + 0.7, (CTOP + BZ) / 2), bevel=0.5, segs=2)
+tk.boolean(skin, tk.rbox('doorway', (2 * OPX, 6.0, OPZ - BZ + 0.2), centre=(0, WY + 0.7, (OPZ + BZ) / 2 - 0.1), bevel=0.4, segs=1))
+tk.subsurf(skin, 1, keep_corners=True)
 
 
 def sc_car(h):
     def f(V, N):  # the rivet line and the window frames' raised edges on the car side
         side = N[:, 1] < -0.8
-        d = 0.2 * (np.abs(V[:, 2] - (BZ + 16.0)) < 0.3) * side
-        for wx in (-17.5, 17.5):
-            d += 0.25 * (np.abs(np.maximum(np.abs(V[:, 0] - wx) - 4.6, np.abs(V[:, 2] - (BZ + 25.0)) - 4.4)) < 0.3) * side
+        d = 0.2 * (np.abs(V[:, 2] - (BZ + 13.0)) < 0.3) * side
+        for wx in (-16.0, 16.0):
+            d += 0.25 * (np.abs(np.maximum(np.abs(V[:, 0] - wx) - 3.4, np.abs(V[:, 2] - (BZ + 22.0)) - 4.0)) < 0.3) * side
         return d
     tk.push(h, f)
 
 
-car_lo, car_hi = cx.low(car, 'car', 160, lo=0, hi=2, sculpt=sc_car, region=('cream', [
-    ('maroon', lambda C, N: C[:, 2] < BZ + 16.0), ('inside', lambda C, N: (np.abs(C[:, 0]) < OPX + 0.2) & (C[:, 2] < OPZ + 0.2) & (C[:, 1] > WY + 0.1))]))
-crowd = tk.rbox('crowd', (2 * OPX + 1.0, 1.0, OPZ - BZ), centre=(0, WY + 3.0, (OPZ + BZ) / 2), bevel=0.3, segs=1)
-crowd_lo, crowd_hi = cx.low(crowd, 'crowd', 12, lo=0, hi=1, region='crowd')
+sc_car(skin)
+tk.regions(skin, 'cream', [('maroon', lambda C, N: C[:, 2] < BZ + 13.0)])
+back_hi = tk.rbox('back_hi', (2 * CW, 1.4, CTOP - BZ), centre=(0, WY + 4.3, (CTOP + BZ) / 2), bevel=0.5, segs=2)
+tk.regions(back_hi, 'crowd', [('cream', lambda C, N: (N[:, 1] > -0.5) | (np.abs(C[:, 0]) > OPX + 0.5) | (C[:, 2] > OPZ + 0.5)),
+                              ('maroon', lambda C, N: (N[:, 1] > 0.5) & (C[:, 2] < BZ + 13.0))])
+fr_hi = [tk.rbox('fr_hi', (2 * CW, 5.0, 1.8), centre=(0, WY + 2.5, CTOP - 0.9), bevel=0.6, segs=2)] + \
+        [tk.rbox('fr_hi', (1.8, 5.0, CTOP - BZ), centre=(sx * (CW - 0.9), WY + 2.5, (CTOP + BZ) / 2), bevel=0.6, segs=2) for sx in (1, -1)]
+for o_ in fr_hi:
+    tk.set_region(o_, 'cream')
+car_hi = [skin, back_hi] + fr_hi
 
-# the doors: two leaves slid open to the sides of the doorway
+# the doors: two leaves slid away into their pockets between the car's skins
 DOORS = {}
 for sx, nm in ((1, 'door_l'), (-1, 'door_r')):
-    d = tk.rbox(nm, (OPX + 0.4, 1.0, OPZ - BZ - 0.4), centre=(sx * (OPX + OPX / 2 + 0.2), WY - 0.6, (OPZ + BZ) / 2), bevel=0.35, segs=1)
-    tk.boolean(d, tk.rbox('win', (OPX - 3.4, 3.0, 9.0), centre=(sx * (OPX + OPX / 2 + 0.2), WY - 0.6, BZ + 21.0), bevel=0.8, segs=1))
-    lo, hi = cx.low(d, nm, 60, lo=0, hi=1, region=('door', [('glass', lambda C, N: (np.abs(N[:, 1]) < 0.5) & (C[:, 2] > BZ + 16.0) & (C[:, 2] < BZ + 26.0))]))
+    d = tk.rbox(nm, (OPX + 0.2, 1.1, OPZ - BZ - 0.3), centre=(sx * (OPX + OPX / 2 + 0.3), LY, (OPZ + BZ) / 2), bevel=0.3, segs=1)
+    lo, hi = cx.low(d, nm, 24, lo=0, hi=1, region=('door', [('glass', lambda C, N, sx=sx: (np.abs(C[:, 0] - sx * (OPX + OPX / 2 + 0.3)) < 3.4) & (np.abs(C[:, 2] - (BZ + 19.0)) < 4.2))]))
     DOORS[nm] = (lo, hi, sx)
 
 # the briefcase still sticking out of the doorway (top right)
-bc = tk.rbox('case', (7.0, 6.0, 5.2), centre=(5.6, WY - 1.6, BZ + 25.2), bevel=0.8, segs=2)
-tk.rotate(bc, -14, 'Y', (5.6, WY - 1.6, BZ + 25.2))
-hnd = tk.tube('handle', [(3.6, WY - 1.6, BZ + 28.0), (4.0, WY - 1.6, BZ + 29.4), (6.6, WY - 1.6, BZ + 29.0), (7.0, WY - 1.6, BZ + 27.6)], 0.5, n=6)
-tk.rotate(hnd, -14, 'Y', (5.6, WY - 1.6, BZ + 25.2))
+bc = tk.rbox('case', (6.0, 4.8, 5.0), centre=(4.2, WY - 0.4, BZ + 20.6), bevel=0.8, segs=2)
+tk.rotate(bc, -14, 'Y', (4.2, WY - 0.4, BZ + 20.6))
+hnd = tk.tube('handle', [(2.6, WY - 0.4, BZ + 23.2), (3.0, WY - 0.4, BZ + 24.5), (5.2, WY - 0.4, BZ + 24.1), (5.6, WY - 0.4, BZ + 22.8)], 0.5, n=6)
+tk.rotate(hnd, -14, 'Y', (4.2, WY - 0.4, BZ + 20.6))
 CASE = [cx.low(bc, 'case', 40, lo=0, hi=2, region='leather'), cx.low(hnd, 'handle', 20, lo=0, hi=1, region='leather')]
 
 # ------------------------------------------------------------------ the hippo
@@ -88,7 +105,7 @@ def sc_body(h):
     tk.push(h, f)
 
 
-body_lo, body_hi = cx.low(body, 'body', 260, lo=1, hi=3, sculpt=sc_body, region=('navy', [('hide', lambda C, N: C[:, 2] < BZ + 11.0)]))
+body_lo, body_hi = cx.low(body, 'body', 260, lo=1, hi=3, sculpt=sc_body, region='navy')
 
 head = tk.loft('head', [{'c': (HEAD[0], HEAD[1] + 4.6, HEAD[2] + 0.6), 'w': 11.0, 'h': 4.6, 'e': 2.2},
                         {'c': (HEAD[0], HEAD[1] + 2.4, HEAD[2] + 0.8), 'w': 14.0, 'ht': 5.8, 'hb': 5.4, 'e': 2.3},
@@ -129,14 +146,14 @@ for sx in (1, -1):
 ARMS = {}
 for sx, nm in ((1, 'arm_l'), (-1, 'arm_r')):
     s = np.array(SH[sx])
-    hand = np.array((sx * (OPX + 1.0), WY - 1.6, BZ + 19.0))
+    hand = np.array((sx * (OPX + 1.4), WY - 1.4, BZ + 19.0))
     mid = (s + hand) / 2 + np.array((sx * 2.2, -0.8, -1.2))
     a = tk.tube(nm, [tuple(s), tuple(mid), tuple(hand - (hand - mid) / np.linalg.norm(hand - mid) * 1.6)], [3.0, 2.7, 2.5], n=10)
     g = tk.lathe('glove', [(0, -2.6), (2.0, -2.2), (2.7, -0.4), (2.4, 1.4), (1.2, 2.6), (0, 2.8)], n=10, centre=tuple(hand))
     ARMS[nm] = (cx.low(a, nm, 60, lo=1, hi=2, region='navy'), cx.low(g, 'glove', 40, lo=1, hi=2, region='glove'), tuple(s))
 
 # ------------------------------------------------------------------ parts
-F.part('set', tk.join([plat_lo, car_lo, crowd_lo], 'set'), [plat_hi, car_hi, crowd_hi], bone='root')
+F.part('set', tk.join([plat_lo, car_lo], 'set'), [plat_hi] + car_hi, bone='root')
 for nm, (lo, hi, sx) in DOORS.items():
     F.part(nm, lo, [hi], bone=nm, kind='gloss')
 F.part('case', tk.join([c[0] for c in CASE], 'case'), [c[1] for c in CASE], bone='case')
@@ -153,8 +170,8 @@ def make_rig():
     R = Rig()
     R.bone('root', (0, 0, 0.5))
     for nm, (lo, hi, sx) in DOORS.items():
-        R.bone(nm, (sx * OPX * 1.5, WY - 0.6, BZ + 14), parent='root')
-    R.bone('case', (5.6, WY - 1.6, BZ + 25.2), parent='root')
+        R.bone(nm, (sx * OPX * 1.5, LY, BZ + 14), parent='root')
+    R.bone('case', (4.2, WY + 1.4, BZ + 20.6), parent='root')
     R.bone('hippo', (0, HY, BZ), parent='root')
     R.bone('head', (0, HY - 0.6, BZ + 25.4), parent='hippo')
     for nm, (a, g, s) in ARMS.items():
@@ -179,19 +196,20 @@ def make_rig():
         k('head', 22)
         k('head', 26, rot=('X', -10))
         k('head', 32)
-        # the briefcase is shoved in
-        k('case', 26)
-        k('case', 30, move=(0, 5.6, 0), ease='BACK')
+        # the briefcase is shoved in (and swallowed by the crowd)
+        k('case', 22)
+        k('case', 26, move=(0, 2.4, 0), ease='BACK')
+        k('case', 29, move=(0, 2.8, 0), scale=0.02)
         # he steps away and the doors slide shut
         k('hippo', 34, move=(0, 1.0, 0))
         k('hippo', 40, move=(0, -3.0, 0))
         for nm, sx in (('door_l', 1), ('door_r', -1)):
             k(nm, 40)
-            k(nm, 47, move=(-sx * (OPX * 1.5 - OPX / 2 - 0.05), 0, 0), ease='BACK')
-            k(nm, 70, move=(-sx * (OPX * 1.5 - OPX / 2 - 0.05), 0, 0))
+            k(nm, 47, move=(-sx * (OPX + 0.25), 0, 0), ease='BACK')
+            k(nm, 70, move=(-sx * (OPX + 0.25), 0, 0))
             k(nm, 77)
-        k('case', 72, move=(0, 5.6, 0))
-        k('case', 79, ease='BACK')   # (and the next commuter's briefcase is sticking out again)
+        k('case', 74, move=(0, 2.8, 0), scale=0.02)
+        k('case', 80, ease='BACK')   # (and the next commuter's briefcase is sticking out again)
         # dusting off the gloves: the hands clap in front of him, and back to the posts
         for nm, sx in (('arm_l', 1), ('arm_r', -1)):
             k(nm, 42, rot=('Z', sx * 26))
@@ -214,6 +232,7 @@ def paint(P):
     import paint as pt
     import face
     on, X, Yc, Z = P.on, P.X, P.Y, P.Z
+    PI = {p.name: i for i, p in enumerate(F.parts)}
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     free = P.shade(light=0.0, ao=0.35, cav=1.1)
     # the set: concrete platform with the yellow tactile strip and the white safety line; the cream and maroon car
@@ -225,8 +244,8 @@ def paint(P):
     P.fill('cream', pt.ramp('#ece0c0', 7, shift=0.06), tone=sh, base=0.08)
     P.fill('maroon', pt.ramp('#8a3a36', 7, shift=0.06), tone=sh, base=0.1)
     P.fill('inside', pt.ramp('#4a4a4e', 5, shift=0.05), tone=sh, base=-0.1)
-    for wx in (-17.5, 17.5):
-        P.flat(P.region('cream') & (on[:, :, 1] < -0.8) & (np.abs(X - wx) < 4.3) & (np.abs(Z - (BZ + 25.0)) < 4.1), '#5f7884')
+    for wx in (-16.0, 16.0):
+        P.flat(P.region('cream') & (on[:, :, 1] < -0.8) & (Yc < WY + 0.5) & (np.abs(X - wx) < 3.1) & (np.abs(Z - (BZ + 22.0)) < 3.7), '#5f7884')
     # the crowd: commuters packed in the doorway, flat painted silhouettes (backs, shoulders, hats, a newspaper)
     cr = P.region('crowd')
     P.fill('crowd', pt.ramp('#6a6c72', 5, shift=0.05), tone=sh * 0.5, base=-0.1)
@@ -241,15 +260,15 @@ def paint(P):
     P.fill('leather', pt.ramp('#6a4228', 6, shift=0.06), tone=free, base=0.1)
     # the hippo: lilac-grey hide, pinker underneath and round the muzzle; the navy jacket and trousers, gold buttons
     HIDE = pt.ramp('#a898a8', 7, shift=0.06)
-    P.fill('hide', HIDE, tone=np.where(P.part == 4, sh, free), base=0.05)
-    hd = P.part == 4
+    P.fill('hide', HIDE, tone=free, base=0.05)
+    hd = P.part == PI['head']
     P.tint(P.region('hide') & hd & (Yc < HEAD[1] - 3.0) & (Z < HEAD[2] - 1.0), pt.ramp('#d8a4ac', 6, shift=0.06), free)
     NAVY = pt.ramp('#2c3a5c', 7, shift=0.06)
-    P.fill('navy', NAVY, tone=np.where(P.part == 3, sh, free), base=0.12)
-    jk = P.region('navy') & (P.part == 3) & (on[:, :, 1] < -0.5)
+    P.fill('navy', NAVY, tone=free, base=0.12)
+    jk = P.region('navy') & (P.part == PI['hippo']) & (on[:, :, 1] < -0.5)
     for z in (BZ + 13.0, BZ + 17.0, BZ + 21.0):
         P.flat(jk & ((X - 1.6) ** 2 + (Z - z) ** 2 < 0.5), '#e2b84c')
-    P.flat(P.region('navy') & (P.part == 3) & (np.abs(Z - (BZ + 15.6)) < 0.35) & (np.abs(np.abs(X) - 5.6) < 2.6) & (on[:, :, 1] < -0.5), '#1c2440')
+    P.flat(P.region('navy') & (P.part == PI['hippo']) & (np.abs(Z - (BZ + 15.6)) < 0.35) & (np.abs(np.abs(X) - 5.6) < 2.6) & (on[:, :, 1] < -0.5), '#1c2440')
     P.fill('glove', pt.ramp('#f4f0e6', 6, shift=0.05), tone=free, base=0.15)
     P.fill('cap', NAVY, tone=free, base=0.15)
     P.fill('band', NAVY, tone=free, base=-0.05)

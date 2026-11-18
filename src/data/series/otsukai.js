@@ -35,5 +35,15 @@ export default {
       desc: 'The mountain shrine\'s guardian wolf, chest thrown out, the sacred shimenawa rope round its neck hung with paper shide and its tail curled round its paws. Press it and it lifts its head and howls.',
       gimmick: { text: 'Howl', sfx: [[0.2, 'toyTap'], [0.55, 'toyClick', { f: 1200 }], [0.6, 'whoosh', { dur: 1.0, v: 0.05 }], [1.7, 'toySnap', { v: 0.4 }], [1.85, 'paper'], [2.0, 'toyTap']] },
     },
+    {
+      id: 'saru', name: 'Hie Monkey', jp: '日吉ザル', rarity: 'uncommon',
+      desc: 'The mountain king\'s monkey in a tall court cap, its red-lacquer face round and wise, holding up a gohei wand with two white paper streamers. Press it and it purifies you: left, right, left, and a bow.',
+      gimmick: { text: 'Purify', sfx: [[0.2, 'paper'], [0.45, 'whoosh', { dur: 0.25, v: 0.07 }], [0.75, 'paper'], [1.0, 'whoosh', { dur: 0.25, v: 0.07 }], [1.3, 'paper'], [1.75, 'toyTap'], [2.15, 'toyClick', { f: 1500 }]] },
+    },
+    {
+      id: 'hebi', name: 'White Snake of Benzaiten', jp: '白蛇', rarity: 'secret',
+      desc: "The goddess of music's white snake in white lacquer banded with gold, coiled twice round a gold biwa. Press it and it rises out of its coil, sways, and plucks the strings with its tail.",
+      gimmick: { text: 'Play', sfx: [[0.15, 'toyFold', { n: 3 }], [0.5, 'whoosh', { dur: 0.3, v: 0.05 }], [0.8, 'furin'], [1.2, 'furin'], [1.8, 'toyTap']] },
+    },
   ],
 };
