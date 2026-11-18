@@ -30,12 +30,12 @@ SZ = kr.SZ
 P0 = (-7.4, 2.6)                 # the archer's seat
 CZ = SZ + 0.9                    # the top of its cushion
 YA, ZA = -2.15, CZ + 10.0        # the arrow's line (along +x, at the rabbit's cheek)
-XB, YB = -1.4, -1.55             # the bow's grip (x) and its plane (y)
+XB, YB = 1.6, -1.55              # the bow's grip (x) and its plane (y)
 ZG = ZA - 1.1                    # the grip's middle (the arrow rests on the bow hand)
 ZTU, ZTL = ZA + 10.5, ZA - 6.0   # the bow's tips: a yumi is held a third of the way up
 XS = XB - 1.0                    # the string, straight between the tips
-AL = 8.6                         # the arrow
-XN0, XNF = XS - 1.6, -7.1        # the nock at rest (half drawn) and at full draw
+AL = 9.6                         # the arrow
+XN0, XNF = -3.0, -7.1            # the nock at rest (half drawn) and at full draw
 TC = (11.6, YA, ZA)              # the target's middle; its paper faces x = TC - 0.45
 XHIT = TC[0] + 0.45              # the arrow's tip, stuck in the target
 POST = (12.45, YA, SZ + 0.8)     # the target's post (its pivot when it rocks)
@@ -94,7 +94,7 @@ for o in body_lo + body_hi:
 # the left arm, held out to the bow: a short tied-back sleeve, a white forearm, the paw round the grip
 LS = Vector(at((3.3, 1.0, CZ + 8.2)))
 GP = Vector((XB, YB - 0.15, ZG - 0.1))
-LE = kr.ik2(LS, GP, 3.2, 3.2, (0.4, 0.2, -1.0))
+LE = kr.ik2(LS, GP, 4.0, 4.0, (0.4, 0.2, -1.0))
 lo, hi = ak.spine('lsleeve', [tuple(LS), tuple(LS * 0.45 + LE * 0.55), tuple(LE)], [2.7, 2.5, 2.1], 1.2, n=8, up=(0, 0, 1), tris=26,
                   region='kimono', cap0='round', cap1='round')
 body_lo.append(lo)
@@ -106,10 +106,10 @@ body_hi += hi
 
 # ------------------------------------------------------------------ the head: big, white, turned down the arrow; long ears
 HC = Vector(at((0.0, 0.8, CZ + 13.2)))
-TURN = 70.0
+TURN = 38.0                      # (part way to the target: it looks at you over its arrow)
 HEAD = [(0, 3.4, 0.2), (0, 1.0, 0.4), (0, -1.8, 0.1), (0, -3.6, -1.0), (0, -4.6, -1.4)]
-hd_lo, hd_hi = ak.spine('head', HEAD, [6.2, 9.0, 8.8, 5.6, 3.6], [3.6, 4.5, 4.3, 2.6, 1.6], [3.6, 4.4, 4.2, 2.8, 1.8], e=2.2, n=14,
-                        up=(0, 0, 1), tris=150, region='fur')
+hd_lo, hd_hi = ak.spine('head', HEAD, [6.2, 9.0, 8.8, 5.6, 3.6], [3.6, 4.5, 4.3, 2.6, 1.6], [3.6, 4.4, 4.2, 2.8, 1.8], e=2.2, n=16,
+                        up=(0, 0, 1), tris=210, region='fur')
 
 
 def sc_head(V, N):
@@ -137,7 +137,7 @@ NOD = Vector((math.cos(math.radians(TURN)), math.sin(math.radians(TURN)), 0.0)) 
 
 # ------------------------------------------------------------------ the right arm, drawing: upper sleeve and forearm with the glove
 RS = Vector(at((-3.3, 1.0, CZ + 8.2)))
-UA, FA = 4.2, 5.2
+UA, FA = 4.4, 5.6
 POLE = (-1.0, 0.3, 0.25)
 H0 = Vector((XN0, YA, ZA))
 RE0 = kr.ik2(RS, H0, UA, FA, POLE)
@@ -265,8 +265,8 @@ def make_rig():
         for f in range(14, 35, 2):
             nock(f, XN0 + (XNF - XN0) * kr.ease((f - 14) / 20))
         k('head', 14)
-        k('head', 30, rot=(NOD, 4))
-        k('head', 46, rot=(NOD, 4))
+        k('head', 30, rot=[(NOD, 4)])
+        k('head', 46, rot=[(NOD, 4)])
         nock(46, XNF)
         # 46 it looses: the string snaps straight (overshoots and settles), the arrow flies, the right arm flies open,
         # the bow turns over in its hand (yugaeri)
@@ -278,7 +278,7 @@ def make_rig():
         ZAN = (RS[0] - 5.0, YA - 0.6, ZA - 0.4)
         hand(51, ZAN, ease=None)
         hand(66, ZAN)
-        k('head', 52, rot=(NOD, -3))
+        k('head', 52, rot=[(NOD, -3)])
         k('head', 60)
         k('bow', 47)
         k('bow', 50, rot=('Z', 120))
@@ -343,7 +343,7 @@ def paint(P):
     # green brocade kimono, a gold tortoiseshell (kikko) lattice; white collar; dark obi; purple hakama with fine stripes
     P.fill('kimono', pt.ramp('#2f6a4a', 7, shift=0.07), tone=sh, base=0.0)
     km = P.region('kimono')
-    P.fill(km & kr.kikko(X + Yc * 0.6, Z, 1.9, 0.16), GOLD, tone=sh, base=0.05)
+    P.fill(km & kr.kikko(X + Yc * 0.6, Z, 1.5, 0.13), GOLD, tone=sh, base=0.05)
     P.fill('collar', pt.ramp('#efe9dc', 5, shift=0.04), tone=sh, base=0.15)
     P.fill('obi', pt.ramp('#2a2430', 6, shift=0.06), tone=sh, base=0.0)
     P.fill(P.region('obi') & (np.abs(Z - CZ - 4.5) < 0.18), GOLD, tone=sh, base=0.1)
@@ -390,9 +390,8 @@ def paint(P):
     import face
     c = HC + FACE * 4.2 + Vector((0, 0, -0.6))
     fc = face.Face(P, c=tuple(c), axis=(FACE[0], FACE[1], 0.15), where=P.region('fur'), seed=821)
-    fc.eyes('dot', spread=4.6, size=0.4, dy=0.9, only=1)
-    fc.eyes('sleepy', spread=4.6, size=0.45, dy=0.95, only=-1)
-    fc.brows('worried', spread=4.6, dy=2.2, w=1.3, weight=0.2, only=-1)
+    fc.eyes('side', spread=4.0, size=0.42, dy=0.9, only=1, look=1)
+    fc.eyes('sleepy', spread=4.0, size=0.45, dy=0.95, only=-1)
     sn = face.Face(P, c=tuple(HC + FACE * 4.8 + Vector((0, 0, -1.2))), axis=(FACE[0], FACE[1], 0.1), where=P.region('fur'), seed=822)
     sn.nose('tri', dy=0.2, size=0.45, col='#e88a92')
     sn.snout_mouth('rabbit', dy=-0.25, w=1.3, weight=0.22)

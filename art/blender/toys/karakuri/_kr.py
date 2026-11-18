@@ -173,3 +173,19 @@ def kikko(u, v, size, w):
     du, dv = np.abs(u - cu), np.abs(v - cv)
     d = np.maximum(du, du / 2 + dv * math.sqrt(3) / 2)
     return d > size / 2 - w
+
+
+def seigaiha(u, v, R, w, rings=3):
+    """Mask of the seigaiha wave pattern's lines (overlapping fans of `rings` arcs, radius R) on plane coords u, v."""
+    h = R / 2
+    owner_d = np.full(u.shape, 1e9)
+    j0 = np.floor(v / h)
+    for k in range(5):                       # (lower rows are drawn over the ones above)
+        j = j0 - k
+        cv = j * h
+        off = np.mod(j, 2) * R
+        cu = np.round((u - off) / (2 * R)) * 2 * R + off
+        d = np.hypot(u - cu, v - cv)
+        owner_d = np.where(d < R, d, owner_d)
+    step = R / rings
+    return (owner_d < R) & (np.mod(owner_d, step) < w)

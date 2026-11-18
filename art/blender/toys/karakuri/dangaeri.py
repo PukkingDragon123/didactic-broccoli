@@ -135,26 +135,26 @@ def make_rig():
         kr.wind(k, 0, 12, 2)
         kr.unwind(k, 12, 110, 2)
         # two back somersaults down the stair (-x, one step each), each a full turn about y through its middle
-        k('monkey', 14, rot=(FL, 0.0))
-        k('monkey', 18, move=(0, 0, 0.4), rot=(FL, 6))               # it gathers itself
+        k('monkey', 14, rot=[(FL, 0.0)])
+        k('monkey', 18, move=(0, 0, 0.4), rot=[(FL, 6)])               # it gathers itself
         for j, (f0, x0, z0) in enumerate(((20, 0.0, 0.0), (40, -9.33, -STEP))):
             for i in range(1, 9):
                 t = i / 8
-                k('monkey', f0 + 2 * i, move=(x0 - 9.33 * t, 0, z0 - STEP * t + 6.0 * math.sin(math.pi * t)), rot=(FL, -360.0 * t),
+                k('monkey', f0 + 2 * i, move=(x0 - 9.33 * t, 0, z0 - STEP * t + 6.0 * math.sin(math.pi * t)), rot=[(FL, -360.0 * t)],
                   ease='LINEAR')
-            k('monkey', f0 + 18, move=(x0 - 9.33, 0, z0 - STEP), rot=(FL, -360.0))
-            k('monkey', f0 + 20, move=(x0 - 9.33, 0, z0 - STEP), rot=(FL, -360.0))
+            k('monkey', f0 + 18, move=(x0 - 9.33, 0, z0 - STEP), rot=[(FL, -360.0)])
+            k('monkey', f0 + 20, move=(x0 - 9.33, 0, z0 - STEP), rot=[(FL, -360.0)])
         # a bow at the bottom, then it scampers back up, two hops
-        k('monkey', 66, move=(-18.66, 0, -2 * STEP), rot=(FL, -360.0))
+        k('monkey', 66, move=(-18.66, 0, -2 * STEP), rot=[(FL, -360.0)])
         k('monkey', 72, move=(-18.66, 0, -2 * STEP), rot=[(FL, -360.0), (FL, 24)])
-        k('monkey', 78, move=(-18.66, 0, -2 * STEP), rot=(FL, -360.0))
-        k('monkey', 82, move=(-15.5, 0, -2 * STEP + 5.0), rot=(FL, -360.0))
-        k('monkey', 86, move=(-9.33, 0, -STEP + 3.0), rot=(FL, -360.0))
-        k('monkey', 92, move=(-9.33, 0, -STEP), rot=(FL, -360.0))
-        k('monkey', 96, move=(-6.2, 0, -STEP + 5.0), rot=(FL, -360.0))
-        k('monkey', 100, move=(0, 0, 3.0), rot=(FL, -360.0))
-        k('monkey', 106, move=(0, 0, 0), rot=(FL, -360.0), ease='BOUNCE')
-        k('monkey', 110, rot=(FL, -360.0))
+        k('monkey', 78, move=(-18.66, 0, -2 * STEP), rot=[(FL, -360.0)])
+        k('monkey', 82, move=(-15.5, 0, -2 * STEP + 5.0), rot=[(FL, -360.0)])
+        k('monkey', 86, move=(-9.33, 0, -STEP + 3.0), rot=[(FL, -360.0)])
+        k('monkey', 92, move=(-9.33, 0, -STEP), rot=[(FL, -360.0)])
+        k('monkey', 96, move=(-6.2, 0, -STEP + 5.0), rot=[(FL, -360.0)])
+        k('monkey', 100, move=(0, 0, 3.0), rot=[(FL, -360.0)])
+        k('monkey', 106, move=(0, 0, 0), rot=[(FL, -360.0)], ease='BOUNCE')
+        k('monkey', 110, rot=[(FL, -360.0)])
         k('root', 110)
     return R
 
