@@ -655,6 +655,11 @@ if __name__ == '__main__':
         name, mcol, em = MAKERS[MAKER_OF.get(sid, 0)]
         return dict(maker=(name, mcol, em), kind=KIND_EN.get(sid, 'MASCOT FIGURE'), burst=BURST.get(sid, ('NEW!',)),
                     tagline=meta(sid)[0], toys=TOYS, cuts=os.path.join(CACHE, 'cuts'))
+    if '--card7' in sys.argv:  # the designer-made cards (tools/card7.py), into shots/clone/card7_<series>.png
+        from card7 import card7
+        for sid in sys.argv[sys.argv.index('--card7') + 1].split(','):
+            card7(L[sid], ctx(sid)).save(os.path.join(ROOT, 'shots', 'clone', 'card7_%s.png' % sid)); print('card7', sid)
+        sys.exit(0)
     if '--ref' in sys.argv:  # one template forced (tools/cardref/<ref>.json), clones into shots/clone/
         a = sys.argv[sys.argv.index('--ref') + 1:]
         ref, sids = (a[0], a[1].split(',')) if len(a) > 1 else (None, a[0].split(','))

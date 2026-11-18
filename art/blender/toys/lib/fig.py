@@ -609,7 +609,36 @@ class Fig:
         meta.update(extra_meta or {})
         json.dump(meta, open(os.path.join(s.out, s.id + '.meta.json'), 'w'), indent=1)
         s.log(f'exported {glb}: {meta["tris"]} tris')
+        if os.environ.get('GG_FACE_CLOSE'):
+            d = os.environ['GG_FACE_CLOSE']  # (a folder: <series>__<id>.png in it)
+            os.makedirs(d, exist_ok=True)
+            s.face_close(os.path.join(d, f'{s.series}__{s.id}.png'))
         return glb
+
+    def face_close(s, path, res=320):
+        """A head-on close-up of the painted face (the face audit sheet, faces_audit.py): framed on every texel
+        lib/face.py inked, seen along the faces' axis."""
+        import face
+        m = face.MARK['m']
+        if m is None or not m.any() or not face.MARK['axes']:
+            s.log('face close-up: no face painted')
+            return
+        P = s.maps['pos'][m & s.maps['mask']]
+        a = np.mean([ax for ax, _ in face.MARK['axes']], axis=0)
+        a /= max(1e-6, np.linalg.norm(a))
+        up = np.array([0.0, 0.0, 1.0]) if abs(a[2]) < 0.8 else np.array([0.0, 1.0, 0.0])
+        u = np.cross(up, a)
+        u /= np.linalg.norm(u)
+        v = np.cross(a, u)
+        lo, hi = np.percentile(P, 2, axis=0), np.percentile(P, 98, axis=0)
+        c = (lo + hi) / 2
+        ext = max(float(np.ptp(P @ u)), float(np.ptp(P @ v)))
+        r = max(4.5, 0.85 * ext + 2.0)
+        D = r / math.sin(math.atan(18 / 60))
+        cam = c + a * D + v * 0.08 * D
+        lows = [p.low for p in s.parts]
+        tk.preview(path, lows, cam=(tuple(cam), tuple(c)), res=(res, res), samples=12, lens=60)
+        s.log('face close-up ->', path)
 
 
 # ------------------------------------------------------------------ UV helpers

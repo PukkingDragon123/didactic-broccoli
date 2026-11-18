@@ -44,6 +44,25 @@ BOLD = 1.55            # the kit's graphic ink: confident, heavier strokes ...
 STEADY = 0.45          # ... and a steadier hand (less wobble): bold simple shapes, nothing fussy or realistic
 
 
+MARK = {'m': None, 'axes': []}  # every texel a Face inked (and each face's axis, weight): the face close-up (fig.py)
+
+
+class _Rec:
+    """The Painter as a Face sees it: every flat() mark is also recorded in MARK (the face close-up's framing)."""
+
+    def __init__(s, P):
+        object.__setattr__(s, '_P', P)
+
+    def __getattr__(s, k):
+        return getattr(s._P, k)
+
+    def flat(s, m, col):
+        if MARK['m'] is None or MARK['m'].shape != m.shape:
+            MARK['m'] = np.zeros(m.shape, bool)
+        MARK['m'] |= m
+        return s._P.flat(m, col)
+
+
 def _hex(h):
     h = h.lstrip('#')
     return np.array([int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)], np.float32)
@@ -51,8 +70,9 @@ def _hex(h):
 
 class Face:
     def __init__(s, P, c, axis, up=(0, 0, 1), where=None, seed=1, ink=INK, facing=0.12, depth=6.0):
-        s.P, s.ink, s.rng = P, ink, np.random.default_rng(seed)
+        s.P, s.ink, s.rng = _Rec(P), ink, np.random.default_rng(seed)
         s.U, s.V, s.W, a = P.frame(c, axis, up)
+        MARK['axes'].append((np.asarray(a, float), np.asarray(up, float)))
         m = (np.einsum('ijk,k->ij', P.on, a) > facing) & (np.abs(s.W) < depth) & P.mask
         s.m = m if where is None else (m & where)
         # texel size here (mm per texel), so a dot is never smaller than a couple of texels

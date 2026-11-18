@@ -3,8 +3,8 @@
 A figure built in facet mode keeps the same script (cages, sculpts, rig, gimmick clips) but its game mesh and paint
 change at the lib level:
 - geometry: every game mesh is a deliberate low-poly (symmetric collapse to about RATIO of the old budget, coplanar
-  slivers merged), flat shaded (one normal per face: crisp facets), ~1400-1600 tris a simple figure, ~2000-2200 a
-  detailed one, up to 2500 for a secret (the owner's higher-resolution pass: smoother silhouettes, more detail);
+  slivers merged), flat shaded (one normal per face: crisp facets), ~1000-1200 tris a simple figure, ~1500-1700 a
+  detailed one, up to 1900 for a secret (the owner's higher-resolution pass: smoother silhouettes, more detail);
 - texture: one 2048 px colour atlas (four times the old density), finer brushwork, no normal map (it would smooth the facets away); the
   sculpt's AO and cavity are baked in, and the paint is laid as hand-painted brushwork: strokes that follow the form
   (Painter.fill brush presets), a lit rim / shadow line along the facet edges, soft rubbed wear on hard corners,
@@ -22,12 +22,12 @@ import numpy as np
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
           'ekiin', 'kabuki', 'meijin', 'sento', 'otenki', 'yomise',
           'sabaku', 'minato', 'datesha', 'janru', 'kasabuki', 'kanikan'}            # the series built in the faceted style (add a series here to convert it on rebuild)
-RATIO = float(os.environ.get('GG_FACET_RATIO', 1.25))  # where a piece's collapse starts, from its old (smooth) budget
+RATIO = float(os.environ.get('GG_FACET_RATIO', 0.9))  # where a piece's collapse starts, from its old (smooth) budget
 GROW = 1.6                      # ...and how far past that start it may grow to keep a feature (the cap)
 TOL = float(os.environ.get('GG_FACET_TOL', 1.0))      # ...and keeps more triangles while 95 % of its form is not within this
 TOL_MAX = float(os.environ.get('GG_FACET_TOL_MAX', 0.6))  # (mm) or any point is further than this: a feature (ear, toe, tooth, fold) was erased
 SIZE = 2048                     # atlas size (px): four times the smooth line's 512 (the owner's higher-resolution pass)
-TRIS = (1500, 2200, 2500)       # a simple figure lands near 1400-1600, a detailed one up to 2200, a secret up to 2500
+TRIS = (1100, 1700, 1900)       # a simple figure lands near 1000-1200, a detailed one up to 1700, a secret up to 1900
 RIM_PX = 1.7                    # facet-edge rim width (texels: a finer line at 2048)
 FINE = 0.72                     # brush strokes (PRESETS L / W) scaled to the finer atlas
 RIM_DEG = 16.0                  # an edge turning more than this is a facet edge that gets a rim
