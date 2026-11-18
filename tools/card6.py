@@ -1,9 +1,10 @@
 """card6.py: the gacha display cards, built on the STRUCTURE of the owner's six reference cards
-(shots/clone/ref_<ref>.png, measured in tools/cardref/<ref>.json) and dressed in each series' own world: its credited
-real photo as the scene, its palette, a prop or motif from its theme, a logotype face that suits it, its toys graded
-to the photo with hard contact shadows and foreground pieces overlapping them. Design checklist: docs/ref/posters.md.
+(shots/clone/ref_<ref>.png, measured in tools/cardref/<ref>.json) and dressed in each series' own world: its palette,
+a pixel ground and a prop or motif from its theme, real-photo cut-outs of themed things (tools/cardref/cutouts.py)
+layered behind and in front of the toys, a logotype face that suits it, the toys graded to the card with hard contact
+shadows. Design checklist: docs/ref/posters.md.
 Laid out on the in-game card grid (320 x 280, src/gfx/banner.js) and printed 2x: rules, badges and pixel type are 2 x 2
-blocks; the photos and toy renders are full resolution.
+blocks; the cut-outs and toy renders are full resolution.
   python3 -I tools/bake-cards.py --ref [template] series,...   (all 21 series: python3 -I tools/bake-cards.py)"""
 import os, math
 import numpy as np
@@ -317,7 +318,7 @@ def t_crabcan(K):
     B.rrect(60, 14, 208, 58, WH, r=29)
     F.text(K.ctx['kind'], 161, 20, 'micro5', 1, lab, anchor='mt')
     K.logo(F, (74, 28, 174, 40), fill=lab, align='m')
-    # the product window: the scene photo with the transformation
+    # the product window: the themed ground, cut-outs, the transformation
     B.rrect(6, 78, 200, 120, WH, r=8); B.rrect(8, 80, 196, 116, mixc(field, WH, 0.86), r=7); K.ground(B, (12, 84, 188, 108), mixc(field, WH, 0.86)); K.decor('crabcan')
     h = K.hero; poses = K.pose(h['id'], 2) != h['id']
     if poses:
@@ -443,7 +444,7 @@ def t_pipeotter(K):
     K.strip(266, K.ac2)
 
 
-# ============================================== FRUIT DRAGON: the scene photo framed by a motif, the footer band
+# ======================================= FRUIT DRAGON: cut-outs framing the cast, a themed motif band, the footer
 def motif(K, S, y, h, front=False):
     if K.sid == 'nakanohito':  # film strip
         S.rect(0, y, W, h, 0x161414)
@@ -464,7 +465,7 @@ def t_fruitdragon(K):
     B, M, F = K.B, K.M, K.F
     K.ground(B, (0, 0, W, 206), mixc(K.bg, PAPER, 0.4), t=0.9); K.decor('fruitdragon')
     motif(K, M, 0, 12)
-    set_lines(F, [K.ctx['tagline'].upper()], (8, 15, 178, 11), 'b5', WH, outline=[(1, INK)], maxk=1)
+    set_lines(F, [K.ctx['tagline'].upper()], (8, 15, 178, 9), 'b5', INK, maxk=1)
     red = K.ac2 if K.sid != 'kabuki' else K.ac2
     K.logo(F, (8, 28, 176, 64), fill=K.ac if lum(K.ac) < 0.6 else K.ac2, outline=[(2, WH), (1, INK)], align='l', maxk=3)
     F.text(K.ctx['kind'], 12, 98, 'b5', 1, INK, outline=[(1, WH)])
@@ -524,29 +525,29 @@ def t_tamakero(K):
     K.strip(268, K.ac2)
 
 
-# ============================================================== BIRD PHONE: an old print of the scene, hero + grid
+# ============================================================== BIRD PHONE: one big hero, the rest in a grid
 def t_birdphone(K):
     B, M, F = K.B, K.M, K.F
     K.ground(B, (0, 0, W, 206), mixc(K.bg, PAPER, 0.3), t=0.9); K.decor('birdphone')
-    for j, l in enumerate(_wrap(K.ctx['tagline'], 'b5', 136, 2)): F.text(l, 8, 8 + 10 * j, 'b5', 1, INK, outline=[(1, WH)])
+    for j, l in enumerate(_wrap(K.ctx['tagline'], 'b5', 136, 2)): F.text(l, 8, 8 + 10 * j, 'b5', 1, INK)
     bb = K.logo(F, (146, 6, 132, 40), fill=K.ac2 if K.sid != 'tsuppari' else K.ac2, outline=[(1, WH)], shadow=(1, 1, INK), align='m', maxk=3)
     F.text(K.ctx['kind'], 212, bb[3] + 3, 'micro5', 1, INK, anchor='mt', outline=[(1, WH)])
     M.rrect(284, 6, 30, 50, WH, r=3); emblem(M, K.em, 293, 9, K.mcol, ink=INK, paper=WH); M.qr(287, 26, 1, sum(map(ord, K.sid)), INK, bg=WH)
     K.toy(K.hero['id'], 74, 200, 150, 136)
     nm = _wrap(K.hero['name'], 'micro5', 90, 2)
-    for j, l in enumerate(nm): F.text(l, 74, 186 + 6 * j, 'micro5', 1, INK, anchor='mt', outline=[(1, WH)])
+    for j, l in enumerate(nm): F.text(l, 74, 186 + 6 * j, 'micro5', 1, INK, anchor='mt')
     rows = [K.rest[:3], K.rest[3:]]
     for r, row in enumerate(rows):
         cw = 56; x0 = 148 + (168 - cw * len(row)) / 2; foot = 124 + 70 * r
         for k, it in enumerate(row):
             cx = x0 + cw * (k + .5)
             K.toy(it['id'], cx, foot - 12, 52, cw - 6, sil=it['secret'], shadow=not it['secret'])
-            K.names(F, it, cx, foot - 10, cw - 4, outline=[(1, WH)])
+            K.names(F, it, cx, foot - 10, cw - 4)
     B.rect(0, 206, W, H - 206, PAPER)
     K.footer(B, 206, mixc(K.ac, PAPER, 0.25), K.ac2)
 
 
-# ======================================================== MANDRAKE: on location, bunting, a line-up of round frames
+# ================================================ MANDRAKE: themed ground, bunting, a line-up of round frames
 def t_mandrake(K):
     B, M, F = K.B, K.M, K.F
     K.ground(B, (0, 0, W, 262), {'sabaku': 0xd8b878, 'minato': 0x5a8ab0, 'datesha': 0x2a2a30}.get(K.sid, K.ac), t=0.85); K.decor('mandrake')
