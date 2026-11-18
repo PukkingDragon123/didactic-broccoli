@@ -84,7 +84,7 @@
 "denka/valve":{"size":[33.18,20.1,21.71],"min":[-18.88,0,-12.95],"tris":1197,"atlas":[512,512],"kb":44,"clips":{"gimmick":"gimmick"},
 "mats":{"model_proj":"metal"},
 "pts":{}},
-"ekiin/kitsutsuki":{"size":[21.29,41.31,26.92],"min":[-11.06,0.08,-12.44],"tris":1018,"atlas":[512,512],"kb":163,"clips":{"gimmick":"gimmick"},
+"ekiin/kitsutsuki":{"size":[21.29,41.31,26.92],"min":[-11.06,0.08,-12.44],"tris":1018,"atlas":[512,512],"kb":164,"clips":{"gimmick":"gimmick"},
 "mats":{"body":"matte","head":"matte","wing_l":"matte","wing_r":"matte","clipper":"metal"},
 "pts":{},
 "blender":true},

@@ -6,7 +6,7 @@
 export default {
   id: 'otsukai',
   order: 34,
-  name: "The Gods' Messengers",
+  name: 'The Gods’ Messengers',
   jp: 'かみのおつかい',
   tagline: 'Sent by the shrine, on official business.',
   taglineJp: '神さまのおつかい、ただいま参上',
