@@ -778,4 +778,21 @@ SPECIES = {  # figure (series/id or id) -> species
     'otenki/kamereon': 'chameleon', 'otenki/tentou': 'ladybird',
     'yomise/ankou': 'angler', 'yomise/demenigisu': 'barreleye', 'yomise/hotaruika': 'squid', 'yomise/fukurounagi': 'eel',
     'yomise/gusokumushi': 'isopod',
+    'sabaku/wani': 'croc', 'sabaku/rakuda': 'camel', 'sabaku/fennec': 'fox', 'sabaku/hyena': 'hyena', 'sabaku/mirkat': 'meerkat',
+    'sabaku/koumori': 'bat',
+    'minato/tako': 'octopus', 'minato/kawauso': 'otter', 'minato/pengin': 'penguin', 'minato/azarashi': 'seal', 'minato/yagi': 'goat',
+    'minato/yamori': 'gecko',
+    'datesha/ookami': 'wolf', 'datesha/kujaku': 'peacock', 'datesha/pagu': 'pug', 'datesha/flamingo': 'crane',
+    'datesha/kameleon': 'chameleon', 'datesha/kobura': 'snake',
 }
+STYLE.update({
+    'croc': dict(eye='lid', tilt=6, brows=('flat', 1.2), mouth='smirk'),               # a lazy, toothy croc
+    'camel': dict(eye='lid', tilt=-10, lashes=3, mouth='smug'),                        # a weary old guide
+    'hyena': dict(eye='bean', tilt=20, brows=('angry', 1.3), mouth='line', extras=('fangs',)),  # the assassin
+    'meerkat': dict(eye='oval', size=1.2, brows=('worried', 1.0), mouth='o'),          # on the lookout
+    'bat': dict(eye='bean', tilt=24, lid=True, mouth='smirk', extras=('fang',)),       # the night lord
+    'goat': dict(eye='lid', tilt=-4, mouth='flat'),                                    # deadpan fortune teller
+    'gecko': dict(eye='oval', size=1.25, spread=1.25, mouth='long'),                   # the quiet neighbour
+    'peacock': dict(eye='bean', tilt=14, lid=True, lashes=2, mouth=None),              # vain
+    'pug': dict(eye='oval', spread=1.4, uneven=0.45, brows=('worried', 1.2), mouth='frown'),  # the bowl-cut pug
+})

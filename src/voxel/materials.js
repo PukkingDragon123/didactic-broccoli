@@ -108,7 +108,7 @@ function makeNormalSet() {
   const glowM = new THREE.MeshBasicMaterial({ vertexColors: true });
   glowM.color.setScalar(1.8);
   const glassM = new THREE.MeshPhysicalMaterial({
-    vertexColors: true, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.42,
+    vertexColors: true, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.58,
     clearcoat: 1, clearcoatRoughness: 0.05, depthWrite: false,
   });
   return [matte, gloss, metalM, glowM, glassM, cardMaterial()];
