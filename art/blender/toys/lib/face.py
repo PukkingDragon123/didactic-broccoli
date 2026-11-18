@@ -996,7 +996,7 @@ SPECIES.update({f'kanikan/{i}': 'crab' for i in ('iwashi', 'saba', 'konbi', 'bea
 SPECIES.update({'janru/robo': 'hamster', 'janru/usagi': 'rabbit', 'janru/mangusu': 'mongoose', 'janru/shiba': 'dog',
                 'janru/gorira': 'gorilla', 'janru/musasabi': 'squirrel'})
 STYLE.update({
-    'hamster': dict(eye='round', iris='#2a1e18', eyek=1.1, lid=False, mouth='catnose', nose='#e8a0a8', extras=('blush',)),
+    'hamster': dict(eye='round', iris='#2a1e18', eyek=1.1, lid=False, mouth='catnose', nose='#e8a0a8'),
     'kitten': dict(eye='slit', almond=True, iris='#b8cc48', eyek=1.25, tilt=14, lid=False, mouth='catnose', nose='#e47c86', extras=('whiskers',)),
     'mongoose': dict(eye='round', iris='#3a2418', tilt=12, brows=('angry', 1.1), mouth='muzzle', muzzle='#d8c4a0'),
     'gorilla': dict(eye='round', iris='#3a2418', brows=('flat', 1.5), mouth='muzzle', muzzle='#6a5a52', eyek=0.9),
