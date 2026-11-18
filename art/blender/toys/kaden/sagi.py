@@ -53,8 +53,17 @@ def local(X, Yc):
 
 
 # ------------------------------------------------------------------ the bed (the riverbank) and the fish-print cloth
-bed = tk.rbox('bed', (44.0, 19.0, BZ), centre=(5.0, 0, BZ / 2), bevel=1.4, segs=2)
-bed_lo, bed_hi = cx.low(bed, 'bed', 110, lo=0, hi=1, region='bed')
+# the machine's bed on its wooden sewing-table top (the machine reads as a machine: plinth, bed, wheel, spool)
+plinth = tk.rbox('plinth', (48.0, 22.0, 1.8), centre=(5.0, 0, 0.9), bevel=0.6, segs=1)
+bed = tk.rbox('bed', (42.0, 16.0, BZ - 1.6), centre=(5.0, 0, 1.6 + (BZ - 1.6) / 2), bevel=1.0, segs=2)
+_p = cx.low(plinth, 'plinth', 30, lo=0, hi=1, region='wood')
+_b = cx.low(bed, 'bed', 80, lo=0, hi=1, region='bed')
+bed_lo, bed_hi = tk.join([_p[0], _b[0]], 'bedjoin'), tk.join([_p[1], _b[1]], 'bedjoin_hi')
+# the spool pin on the machine's arm (the heron's back) with its big spool of red thread
+pin = tk.cyl('pin', 0.55, 26.0, 34.4, n=8, at=(-5.0, 0), axis='Z', bevel=0.15, segs=1)
+bspool = tk.lathe('bspool', [(0, 0), (3.2, 0), (3.2, 0.8), (2.5, 1.1), (2.6, 2.4), (2.5, 3.8), (3.2, 4.1), (3.2, 4.9), (0, 4.9)], n=16, centre=(-5.0, 0, 28.6))
+SPOOL = [cx.low(pin, 'pin', 16, lo=0, hi=1, region='chrome'),
+         cx.low(bspool, 'bspool', 60, lo=0, hi=2, region=('thread', [('wood', lambda C, N: (C[:, 2] < 29.5) | (C[:, 2] > 32.6))]))]
 plate = tk.rbox('nplate', (6.0, 5.0, 0.6), centre=(BEAK_ROOT[0] + BEAK_DIR[0] * BEAK_LEN, 0, BZ + 0.2), bevel=0.25, segs=1)
 plate_lo, plate_hi = cx.low(plate, 'nplate', 24, lo=0, hi=1, region='chrome')
 cloth = tk.slab('cloth', [(-6.5, -8.0), (6.0, -8.6), (7.2, 7.6), (-7.0, 8.4)], 0.8, plane='XY', at=BZ + 0.35, bevel=0.3, segs=1)
@@ -151,11 +160,11 @@ needle = tk.tube('needle', [tuple(tip - BEAK_DIR * 2.6), tuple(tip - BEAK_DIR * 
 needle_lo, needle_hi = cx.low(needle, 'needle', 20, lo=0, hi=1, region='chrome')
 
 # ------------------------------------------------------------------ the quarter turn, parts
-ALL = [bed_lo, bed_hi, plate_lo, plate_hi, cloth_lo, cloth_hi, body_lo, body_hi, wheel_lo, wheel_hi, neck_lo, neck_hi, head_lo, head_hi,
+ALL = [o for sp in SPOOL for o in sp] + [bed_lo, bed_hi, plate_lo, plate_hi, cloth_lo, cloth_hi, body_lo, body_hi, wheel_lo, wheel_hi, neck_lo, neck_hi, head_lo, head_hi,
        spool_lo, spool_hi, beak_lo, beak_hi, needle_lo, needle_hi] + [o for l in LEGS for o in l] + [o for p in PLUMES for o in p]
 for o in ALL:
     tk.rotate(o, TURN, 'Z')
-F.part('base', tk.join([bed_lo, plate_lo, cloth_lo] + [l[0] for l in LEGS] + [body_lo], 'base'), [bed_hi, plate_hi, cloth_hi] + [l[1] for l in LEGS] + [body_hi], bone='root')
+F.part('base', tk.join([bed_lo, plate_lo, cloth_lo] + [l[0] for l in LEGS] + [body_lo] + [sp[0] for sp in SPOOL], 'base'), [bed_hi, plate_hi, cloth_hi] + [l[1] for l in LEGS] + [body_hi] + [sp[1] for sp in SPOOL], bone='root')
 F.part('wheel', wheel_lo, [wheel_hi], bone='wheel', kind='gloss')
 F.part('neck', tk.join([neck_lo, head_lo, spool_lo] + [p[0] for p in PLUMES], 'neck'), [neck_hi, head_hi, spool_hi] + [p[1] for p in PLUMES], bone='neck')
 F.part('beak', tk.join([beak_lo, needle_lo], 'beak'), [beak_hi, needle_hi], bone='beak')
@@ -246,7 +255,7 @@ def paint(P):
         P.flat(side & ((Lx - x0 - 0.18 * h - 0.3) ** 2 / 0.7 + (Z - 17.0 - h) ** 2 / 3.0 < 1), GOLD)
     bed = P.region('bed')
     P.flat(bed & (np.abs(Z - (BZ - 0.9)) < 0.22), GOLD)
-    P.flat(bed & (on[:, :, 2] > 0.8) & ((np.abs(np.abs(Ly) - 8.2) < 0.25) | (np.abs(np.abs(Lx - 5.0) - 20.6) < 0.25)), GOLD)
+    P.flat(bed & (on[:, :, 2] > 0.8) & ((np.abs(np.abs(Ly) - 6.8) < 0.25) | (np.abs(np.abs(Lx - 5.0) - 19.6) < 0.25)), GOLD)
     # the cloth: indigo with white fish (the heron's catch)
     cl = P.region('cloth')
     P.fill('cloth', pt.ramp('#34548a', 6, shift=0.06), tone=sh, base=0.1)

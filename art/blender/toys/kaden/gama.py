@@ -258,6 +258,7 @@ def paint(P):
     fm = face.Face(P, c=(0, -8.2, TOP - 1.3), axis=(0, -1, 0.45), where=P.region('green') & (P.part == 0), seed=37)
     fm.mouth('upturn', w=15.0, dy=-0.2, side=-1, weight=0.5)
     fm.blush(17.0, -1.6, rx=1.8, ry=0.9)
+    fm.nose('nostrils', 0.0, 1.6, size=0.6)
     P.lines(['green'], ['belly', 'mouth', 'dial'], step=2)
     P.clusters()
     return P.done()

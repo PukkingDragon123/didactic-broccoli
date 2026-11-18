@@ -40,5 +40,11 @@ export default {
       desc: 'The dispatcher, standing on one leg like a signal post, in the red-banded cap. Her flag is red on one side and green on the other, and the whistle never leaves her bill.',
       gimmick: { text: 'Send it off', sfx: [[0.1, 'toyFold', { n: 3 }], [0.75, 'policeWhistle'], [1.05, 'flapFold'], [1.3, 'toyClick'], [1.45, 'toyTap'], [1.6, 'toyTap']] },
     },
+    {
+      id: 'mogura', name: 'Subway Mole', jp: 'ちかてつモグラ', rarity: 'secret',
+      desc: 'The underground line\'s driver, in the railway\'s navy and a lamp helmet. Nobody dug the subway faster. He comes up out of his hole now and then to check the line is still where he left it.',
+      light: { part: 'lamplens', color: '#fff2c0', mode: 'press', dur: 2.4 },
+      gimmick: { text: 'Pop up', sfx: [[0.1, 'dust'], [0.62, 'boing'], [0.85, 'switchClick'], [1.0, 'toyClick'], [1.3, 'toyClick'], [1.5, 'toyTap'], [1.6, 'toyTap']] },
+    },
   ],
 };

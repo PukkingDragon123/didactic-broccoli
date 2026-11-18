@@ -144,6 +144,16 @@ F.part('trunk', trunk_lo, [trunk_hi], bone='trunk', kind='gloss')
 F.part('flap', tk.join([f[0] for f in FLAP], 'flap'), [f[1] for f in FLAP], bone='flap', kind='metal', uvw=0.8)
 for nm, (lo, hi, root) in EARS.items():
     F.part(nm, lo, [hi], bone=nm, kind='gloss')
+S = 1.15   # (the whole kettle a size up: it read small beside the others)
+for p in F.parts:
+    for o in [p.low] + p.highs:
+        tk.scale(o, S)
+
+
+def sv(p):
+    return tuple(np.array(p, float) * S)
+
+
 F.log('tris', F.tris(), {p.name: tk.tri_count(p.low) for p in F.parts})
 
 
@@ -152,11 +162,11 @@ def make_rig():
     from rig import Rig
     R = Rig()
     R.bone('root', (0, 0, 0.5))
-    R.bone('lid', (0, 0, ZT), parent='root')
-    R.bone('trunk', SP, parent='root')
-    R.bone('flap', FLAP_P, parent='trunk')
+    R.bone('lid', sv((0, 0, ZT)), parent='root')
+    R.bone('trunk', sv(SP), parent='root')
+    R.bone('flap', sv(FLAP_P), parent='trunk')
     for nm, (lo, hi, root) in EARS.items():
-        R.bone(nm, root, parent='root')
+        R.bone(nm, sv(root), parent='root')
     for p in F.parts:
         R.attach(p.low, p.bone)
     allb = ['root', 'lid', 'trunk', 'flap', 'ear_l', 'ear_r']
@@ -204,7 +214,7 @@ def make_rig():
 def paint(P):
     import paint as pt
     import face
-    on, X, Yc, Z = P.on, P.X, P.Y, P.Z
+    on, X, Yc, Z = P.on, P.X / S, P.Y / S, P.Z / S   # (paint fields in the build's units)
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     free = P.shade(light=0.0, ao=0.35, cav=1.1)  # (moving parts: little baked occlusion)
     GREY = pt.ramp('#aebcc8', 7, shift=0.07)
@@ -238,10 +248,10 @@ def paint(P):
             uu, vv = cu * cr + cv * sr, -cu * sr + cv * cr
             P.tint(side & ((uu / 2.3) ** 2 + (vv / 1.0) ** 2 < 1) & ~petal, pt.ramp('#3f7a46', 6, shift=0.06), sh)
     # the face, drawn on by hand: two little ink dots set wide above the trunk, a small upturned smile beside it
-    fc = face.Face(P, c=(0, -16.6, 13.6), axis=(0, -1, 0.15), where=P.region('enamel') & (P.part == 0), seed=11)
-    fc.blush(13.0, -2.4, rx=2.0, ry=1.1)
-    fc.eyes(spread=15.0, size=0.85, dy=2.6)
-    fc.mouth('upturn', w=2.8, dy=-3.6, du=5.6, side=1)
+    fc = face.Face(P, c=sv((0, -16.6, 13.6)), axis=(0, -1, 0.15), where=P.region('enamel') & (P.part == 0), seed=11)
+    fc.blush(13.0 * S, -2.4 * S, rx=2.0 * S, ry=1.1 * S)
+    fc.eyes('happy', spread=15.0 * S, size=0.9, dy=2.6 * S)
+    fc.mouth('upturn', w=2.8 * S, dy=-3.6 * S, du=5.6 * S, side=1)
     P.lines(['enamel'], ['rim', 'dark', 'cap', 'metal', 'grip', 'inner'], step=2)
     P.clusters()
     return P.done()

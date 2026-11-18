@@ -150,7 +150,7 @@ def hollow(lo, hi, centre, r, bottom, top=None, region='inside', n_lo=10, n_hi=2
         c = tk.lathe('cav', prof, n=n)
         tk.transform(c, Matrix.Translation((cx, cy, 0)) @ Matrix.Diagonal((rx, ry, 1, 1)))
         tk.set_region(c, region)
-        tk.boolean(o, c)
+        tk.boolean(o, c, transfer=True)
     return lo, hi
 
 
@@ -198,6 +198,20 @@ def zip_groove(xc, path, w=0.5, depth=0.22):
         teeth = 0.12 * (np.sin(along * 9.0) > 0)
         return np.where(on, -depth * tk.smoothstep(w + 0.35, w, dx) + teeth * (dx < w * 0.7), 0.0)
     return f
+
+
+def smooth_outline(pts, n=24):
+    """A closed outline resampled as a smooth Catmull-Rom loop of n points (for slab wings, fins, petals)."""
+    P = V3(pts)
+    m = len(P)
+    out = []
+    for i in range(n):
+        t = i * m / n
+        k = int(t)
+        u = t - k
+        p0, p1, p2, p3 = P[(k - 1) % m], P[k % m], P[(k + 1) % m], P[(k + 2) % m]
+        out.append(tuple(0.5 * ((2 * p1) + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (-p0 + 3 * p1 - 3 * p2 + p3) * u ** 3)))
+    return out
 
 
 # ------------------------------------------------------------------ the actors' heads
@@ -266,8 +280,8 @@ def foam(P, pt, sh, region='inside', col='#4a4440'):
     if not m.any():
         return m
     P.fill(region, pt.ramp(col, 5, shift=0.03), tone=sh * 0.5, base=-0.1)
-    pits = m & (np.sin(P.X * 4.1 + np.sin(P.Z * 3.3)) * np.sin(P.Y * 3.7 + P.Z * 1.3) > 0.55)
-    P.flat(pits, '#2e2a28')
+    pits = m & (np.sin(P.X * 4.1 + np.sin(P.Z * 3.3)) * np.sin(P.Y * 3.7 + P.Z * 1.3) > 0.7)
+    P.flat(pits, '#36302e')
     return m
 
 

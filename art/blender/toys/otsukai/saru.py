@@ -70,12 +70,17 @@ tk.push(head_hi, face_disc)
 tk.regions(head_hi, 'body', [('mask', lambda C, N: (N[:, 1] < -0.25) & ((C[:, 0] / 5.3) ** 2 + ((C[:, 2] - HC[2] + 0.5) / 4.8) ** 2 < 1))])
 EARS = []
 for sx in (1, -1):
-    c = (sx * 7.0, HC[1] + 0.8, HC[2] + 0.4)
-    for nm_, n_, lst in (('ear', 8, None), ('ear_hi', 16, None)):
-        o = tk.lathe(nm_, [(0, -0.9), (2.6, -0.7), (3.0, 0.0), (2.5, 0.8), (0, 1.0)], n=n_, axis='X', centre=c)
+    # a macaque's ears: small flat ovals laid against the sides of the head at eye level, a little behind the face,
+    # their fronts turned forward and cupped
+    c = (sx * 7.1, HC[1] + 1.6, HC[2] + 0.2)
+    for nm_, n_ in (('ear', 8), ('ear_hi', 16)):
+        o = tk.lathe(nm_, [(0, -0.35), (1.3, -0.3), (1.6, 0.0), (1.35, 0.3), (0, 0.4)], n=n_, axis='X', centre=c)
+        tk.scale(o, (1.0, 0.85, 1.25), pivot=c)
+        tk.rotate(o, sx * -28, 'Z', pivot=c)
         EARS.append(o)
 for o in EARS[1::2]:
     tk.subsurf(o, 1)
+    tk.push(o, lambda V, N: -0.28 * np.exp(-((V[:, 1] - HC[1] - 1.6) ** 2 + (V[:, 2] - HC[2] - 0.2) ** 2) / 0.9) * (np.abs(V[:, 0]) > 7.0))  # the cup
     tk.set_region(o, 'mask')
 # the court eboshi: a tall lacquered cap leaning back, a gold cord round its base
 cap_r = [(HC[2] + 4.6, -1.2, 9.6, 4.4, 4.6, 2.6), (HC[2] + 7.2, -0.4, 8.4, 3.6, 3.8, 2.8), (HC[2] + 10.4, 0.8, 6.4, 2.6, 2.8, 3.0),

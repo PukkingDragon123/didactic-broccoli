@@ -260,11 +260,14 @@ def crease(ob, pred, value=1.0):
     return ob
 
 
-def boolean(ob, cutter, op='DIFFERENCE', keep=False):
+def boolean(ob, cutter, op='DIFFERENCE', keep=False, transfer=False):
+    """transfer: the new faces from the cutter keep the cutter's own material (paint region), not the target's."""
     m = ob.modifiers.new('bool', 'BOOLEAN')
     m.operation = op
     m.solver = 'EXACT'
     m.object = cutter
+    if transfer:
+        m.material_mode = 'TRANSFER'
     apply(ob)
     if not keep:
         delete(cutter)

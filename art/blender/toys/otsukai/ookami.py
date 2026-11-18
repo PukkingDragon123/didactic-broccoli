@@ -29,6 +29,15 @@ BODY = [(PZ + 0.0, 3.0, 17.0, 9.0, 10.0, 2.6), (PZ + 2.6, 2.8, 18.0, 9.4, 10.6, 
         (PZ + 22.8, -2.4, 7.6, 4.8, 3.8, 2.0)]
 
 
+def ruff(X, Y, Z):
+    """The chest ruff's lower edge, a U round the front from shoulder to shoulder hung with flame-tufts: (t, tri), t the
+    height above the edge, tri 1 at a tuft's centre line and 0 between tufts (nine across the front)."""
+    u = np.clip(np.arctan2(X, -(Y - 0.6)) / (math.pi / 2), -1.2, 1.2)
+    t = Z - (PZ + 10.6 + 6.4 * u ** 2)
+    tri = 1 - np.abs(np.mod(u * 4.5 + 0.5, 1.0) - 0.5) * 2
+    return t, tri, np.abs(u) < 1.05
+
+
 def sc_body(h):
     def f(V, N):
         d = np.zeros(len(V))
@@ -38,7 +47,11 @@ def sc_body(h):
         # the chest ruff: carved flame-tufts down the front
         front = tk.smoothstep(-0.3, -0.8, N[:, 1])
         tuft = np.cos(V[:, 0] * 1.5) ** 2 * tk.smoothstep(PZ + 9, PZ + 13, V[:, 2]) * tk.smoothstep(PZ + 21, PZ + 18, V[:, 2])
-        d += 0.95 * front * tuft * (0.55 + 0.45 * np.cos(V[:, 2] * 1.7 + V[:, 0] * 0.8)) ** 2  # carved fur tufts
+        d += 0.6 * front * tuft * (0.55 + 0.45 * np.cos(V[:, 2] * 1.7 + V[:, 0] * 0.8)) ** 2  # carved fur tufts
+        # the ruff's edge: a raised scalloped hem of flame-tufts hanging over the chest, shoulder to shoulder
+        t, tri, on = ruff(V[:, 0], V[:, 1], V[:, 2])
+        hem = (t < 0.8) & (t > -2.4 * tri ** 1.3)
+        d += 0.55 * hem * on * tk.smoothstep(0.2, -0.3, N[:, 1])
         d -= 0.3 * np.exp(-(V[:, 0] / 0.5) ** 2) * tk.smoothstep(0.3, 0.8, N[:, 1])   # the spine groove down the back
         return d
     tk.push(h, f)
@@ -196,8 +209,10 @@ def paint(P):
     ak.lacquer(P, ('body', 'tail', 'ear'))
     # gold leaf: the ear rims and linings, the ruff's carved tufts (their crests only), a band round the tail's tip
     P.fill(P.region('ear') & ((P.on[:, :, 1] < -0.2) | (P.cav > 0.53)), GOLD, tone=sh, base=0.1)
-    ruff = P.region('body') & (Yc < -2.0) & (Z > PZ + 9.0) & (Z < PZ + 20.0)
-    P.fill(ruff & (P.cav > 0.53), GOLD, tone=sh, base=0.1)
+    # (the ruff's hem: one gold flame-tuft every ninth of the way round the chest, each a band with a point hanging down)
+    t, tri, on = ruff(X, Yc, Z)
+    hem = P.region('body') & on & (P.on[:, :, 1] < 0.2) & (t < 0.7) & (t > -2.2 * tri ** 1.3)
+    P.fill(hem, GOLD, tone=sh, base=0.1)
     ak.gold_bands(P, P.region('tail'), Yc + 7.0, 1.6)
     P.fill(P.region('tail') & (Yc < -8.5), GOLD, tone=sh, base=0.1)
     P.fill('rope', pt.ramp('#d8c48a', 6, shift=0.06), tone=sh, base=0.05)

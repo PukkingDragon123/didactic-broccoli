@@ -353,10 +353,10 @@ def paint(P):
     pl = P.region('plate')
     fc = face.Face(P, c=(0, GF - 1.7, HZ), axis=(0, -1, 0), where=pl, seed=3)
     fc.blush(11.4, -2.6, rx=1.9, ry=1.1)
-    fc.eyes(spread=9.2, size=0.7, dy=0.1)
+    fc.eyes('big', spread=9.4, size=0.72, dy=0.2)  # (an owl: two big dots and the beak, the badge)
     # the back cover: the false face a pygmy owl has on the back of its head (it still looks at you when it turns)
     fb = face.Face(P, c=(0, 11.9, HZ), axis=(0, 1, 0), where=P.region('mint') & (Yc > 6.6), seed=5)
-    fb.eyes(spread=9.0, size=0.65, dy=1.4)
+    fb.eyes('sleepy', spread=9.0, size=0.65, dy=1.4)
     fb.mouth('dash', w=2.2, dy=-1.2, slant=-12)
     # the badge-beak: orange enamel, a chrome edge, a darker hooked tip
     P.fill('badge', pt.ramp('#e99a34', 6, shift=0.06), tone=sh, base=0.1)

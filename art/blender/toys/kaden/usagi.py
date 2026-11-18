@@ -264,6 +264,7 @@ def paint(P):
     fc = face.Face(P, c=(0, FRONT, ZC), axis=(0, -1, 0), where=face_m, seed=2)
     fc.blush(15.2, -3.4, rx=2.0, ry=1.2)
     fc.eyes(spread=13.4, size=0.85, dy=0.8, close=True)  # (a happy squint: it can smell the toast)
+    fc.whiskers(0.0, -1.6, spread=9.6, n=2, length=3.2)
     # the toast: golden, paler in the middle, the crust brown, a stripe of toasting from the element
     TOAST = pt.ramp('#e2ac5c', 7, shift=0.07)
     tz = Z - EAR_Z

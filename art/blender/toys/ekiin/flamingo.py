@@ -26,7 +26,7 @@ BZ = 3.0                      # the tile's top
 BC = (0, 1.0, 30.0)           # the body's centre
 HD = (0, -7.6, 51.0)          # the head's centre
 NECK0 = (0, -6.0, 33.0)       # the neck's pivot (at the chest)
-POLE = (-9.0, -7.0)           # the flag pole (x, y)
+POLE = (-10.2, -7.0)           # the flag pole (x, y)
 POLE_Z = (29.0, 45.0)
 
 # ------------------------------------------------------------------ the platform tile
@@ -91,8 +91,8 @@ fw = tk.loft('fwing', [{'c': tuple(s), 'w': 3.0, 'h': 4.6, 'e': 2.2}, {'c': tupl
                        {'c': tuple(hand + np.array((0.8, 0.6, 0))), 'w': 2.2, 'h': 3.2, 'e': 2.2}], n=10, up=(0, 0, 1), cap0='round', cap1='round', capd=1.0)
 FWING = cx.low(fw, 'fwing', 50, lo=1, hi=2, region=('wing', [('arm', lambda C, N: np.linalg.norm(C - mid, axis=1) < 2.4)]))
 pole = tk.cyl('pole', 0.55, POLE_Z[0], POLE_Z[1], n=8, at=POLE, axis='Z', bevel=0.15, segs=1)
-flag = tk.slab('flag', [(0.0, 0.0), (7.4, 0.0), (7.4, 5.6), (0.0, 5.6)], 0.6, plane='XZ', at=POLE[1], bevel=0.2, segs=1)
-tk.move(flag, (POLE[0] - 7.6, 0, POLE_Z[1] - 6.0))
+flag = tk.slab('flag', [(0.0, 0.0), (6.0, 0.0), (6.0, 5.0), (0.0, 5.0)], 0.6, plane='XZ', at=POLE[1], bevel=0.2, segs=1)
+tk.move(flag, (POLE[0] - 6.2, 0, POLE_Z[1] - 5.4))
 tk.subsurf(flag, 1, keep_corners=True)
 tk.deform(flag, lambda V: V + np.stack([0 * V[:, 0], 0.5 * np.sin((V[:, 0] - POLE[0]) * 0.7), 0 * V[:, 0]], 1))
 FLAG = [cx.low(pole, 'pole', 16, lo=0, hi=1, region='wood'),
@@ -141,8 +141,8 @@ def make_rig():
         # red to green: the flag flips round its pole
         k('flag', 30)
         k('flag', 38, rot=('Z', 180), ease='BACK')
-        k('flag', 58, rot=('Z', 180))
-        k('flag', 66, rot=('Z', 360))
+        k('flag', 50, rot=('Z', 180))
+        k('flag', 58, rot=('Z', 360))
         # the tucked leg kicks out and folds back (a little dance of the signal post)
         k('tuck', 40)
         k('tuck', 45, rot=('X', 34), ease='BACK')
