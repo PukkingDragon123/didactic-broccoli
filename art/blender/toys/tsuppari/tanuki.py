@@ -17,6 +17,7 @@ import numpy as np  # noqa: E402
 import tk  # noqa: E402
 import tt  # noqa: E402
 import ak  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gl  # noqa: E402
 
 F = bk.start('tsuppari', 'tanuki')
