@@ -145,7 +145,7 @@ function build(R) {
     const slot = ti * NK + kindOf(o, R.entry.mats || {});
     const src = o.geometry, g = new THREE.BufferGeometry();
     g.setAttribute('position', toFloat(src.attributes.position));
-    if (src.attributes.normal) g.setAttribute('normal', toFloat(src.attributes.normal));
+    if (src.attributes.normal) g.setAttribute('normal', toFloat(src.attributes.normal)); // (as exported: faceted figures carry per-face normals, never smooth them)
     g.setAttribute('uv', src.attributes.uv ? toFloat(src.attributes.uv) : new THREE.Float32BufferAttribute(new Float32Array(src.attributes.position.count * 2), 2));
     if (tangents) g.setAttribute('tangent', toFloat(src.attributes.tangent));
     if (src.index) g.setIndex(src.index.clone());

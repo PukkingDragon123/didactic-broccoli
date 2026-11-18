@@ -313,7 +313,7 @@ def paint(P):
     BLACK = pt.ramp('#2c2a30', 7, dark=0.45, light=0.38, shift=0.0, sat=0.0)
     BLACK = np.array([pt.mix(c, pt.hexrgb('#4a5878'), 0.35 * max(0, i - 3) / 3) for i, c in enumerate(BLACK)])
     top = np.clip(on[:, :, 2], 0, 1)
-    P.fill('black', BLACK, tone=sh, base=-0.05 + 0.1 * top)
+    P.fill('black', BLACK, tone=sh, base=-0.05 + 0.1 * top, brush='lacquer')
     P.fill('inner', pt.ramp('#3a3638', 5, shift=0.03), tone=sh, base=-0.2)
     P.fill('under', pt.ramp('#43322a', 6, shift=0.05), tone=sh, base=0.0)
     P.fill('chrome', pt.ramp('#b3bbc4', 7, dark=0.75, light=0.75, shift=0.05), tone=sh * 1.5, base=0.1)

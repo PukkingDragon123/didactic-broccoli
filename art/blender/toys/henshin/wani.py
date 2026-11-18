@@ -501,8 +501,12 @@ def paint(P):
     bands = tk.smoothstep(0.35, 0.8, np.sin(Yc * 2 * math.pi / 7.6 + 0.6)) * tk.smoothstep(0.45, 0.85, top) * (Yc > -20)
     air = -0.32 * tk.smoothstep(0.3, 0.95, top) + 0.12 * tk.smoothstep(0.7, 0.1, top) - 0.42 * bands
     # the legs' and tail's pebbled scales: rounded clusters a tone darker (painted, like the factory's spray mask)
-    sc = np.sin(X * 2.1 + np.sin(Yc * 1.3) * 1.4) * np.sin(Yc * 2.0 + np.sin(Z * 1.7) * 1.2) * np.sin(Z * 2.3 + X * 0.7)
-    pebbles = -0.3 * (sc > 0.32)
+    # (hand-dabbed: each pebble its own lumpy dab, a lit top edge on the bigger ones)
+    skin = P.region('leg') | P.region('skin')
+    who, dd = P.dabs(skin, size=1.5, spacing=1.6, seed=3)
+    pebbles = -0.3 * (who >= 0) + 0.25 * ((who >= 0) & (dd < 0.55) & (on[:, :, 2] > 0.2))
+    bwho, bdd = P.dabs(P.region('green'), size=2.6, spacing=2.4, seed=4)  # the back's big scutes
+    air = air - 0.22 * ((bwho >= 0) & (bdd > 0.72)) * tk.smoothstep(0.3, 0.7, top)
     for r in ('green', 'eye'):
         P.fill(r, GREEN, tone=sh, base=air)
     for r in ('leg', 'skin'):

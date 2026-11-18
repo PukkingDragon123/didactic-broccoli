@@ -3,6 +3,10 @@
 
     python3 -I art/blender/toys/sheet.py series <looks.png> <out.png> [--card card.webp] [--refs a.jpg:x0,y0,x1,y1 ...]
     python3 -I art/blender/toys/sheet.py gimmick <frames.png> <out.png> [--shots a.png:x0,y0,x1,y1 ...]
+    python3 -I art/blender/toys/sheet.py facet <series> <old.png> <new.png> <zoom.png> <out.png> --old-tris '{"id": n}'
+        [--crop id:fx0,fy0,fx1,fy1 ...]   the faceted conversion (FACET.md): per figure the old front 3/4 beside the
+        new front 3/4, back 3/4 and gimmick mid-pose (<new.png>: 3 columns), and a texture close-up cropped from
+        <zoom.png> (one big front render per figure; the crop box in fractions of the tile, default the centre half)
 
 <looks.png> / <frames.png> are grids from art/blender/toys/look.mjs (one row per figure); the labels come from the
 series data (src/data/series/<series>.js, read as text) and the manifest (tris, atlas).
@@ -42,7 +46,58 @@ def crop_arg(a):
     return Image.open(path).convert('RGB').crop(tuple(int(v) for v in box.split(',')))
 
 
+def facet_sheet(argv):
+    sid, old_p, new_p, zoom_p, out = argv[:5]
+    rest = argv[5:]
+    old_tris = json.loads(rest[rest.index('--old-tris') + 1]) if '--old-tris' in rest else {}
+    crops = {}
+    if '--crop' in rest:
+        i = rest.index('--crop') + 1
+        while i < len(rest) and not rest[i].startswith('--'):
+            k, box = rest[i].split(':')
+            crops[k] = tuple(float(v) for v in box.split(','))
+            i += 1
+    items, (sname, sjp) = series_items(sid)
+    man = json.load(open(os.path.join(ROOT, 'src', 'figures', 'lowpix.manifest.json')))
+    old, new, zoom = (Image.open(p).convert('RGB') for p in (old_p, new_p, zoom_p))
+    rows = len(items)
+    T = new.height // rows
+    zt = zoom.height // rows
+    label_w, head = 300, 150
+    W = label_w + 5 * (T + 12) + 30
+    H = head + rows * (T + 12) + 30
+    S = Image.new('RGB', (W, H), PAPER)
+    D = ImageDraw.Draw(S)
+    D.text((24, 22), f'{sjp}  {sname}  — faceted low-poly: old (smooth) beside new (facet)', font=font(40), fill=INK)
+    for c, cap in enumerate(('OLD front 3/4', 'NEW front 3/4', 'NEW back 3/4', 'NEW gimmick mid-pose', 'NEW close-up (1:1 of a 1000 px render)')):
+        D.text((label_w + c * (T + 12) + 8, head - 34), cap, font=font(20), fill=(150, 60, 40) if c == 0 else ACC)
+    D.text((26, 74), 'in the game renderer (look.mjs, catalogue light); flat-shaded facets, 1024 px hand-painted atlas, no normal map',
+           font=font(19), fill=(90, 80, 70))
+    for r, it in enumerate(items):
+        y = head + r * (T + 12)
+        e = man.get(f"{sid}/{it['id']}", {})
+        D.rectangle((24, y + 4, label_w - 10, y + T - 4), fill=(246, 242, 232), outline=(200, 190, 175))
+        D.text((40, y + 20), it['jp'], font=font(28), fill=INK)
+        D.text((40, y + 58), it['name'], font=font(22), fill=ACC)
+        D.text((40, y + 90), it['rarity'], font=font(17), fill=(150, 60, 40) if it['rarity'] == 'secret' else (110, 100, 90))
+        D.text((40, y + T - 96), f"tris {old_tris.get(it['id'], '?')} -> {e.get('tris', '?')}", font=font(22), fill=INK)
+        D.text((40, y + T - 64), f"atlas 512+normal -> {'x'.join(map(str, e.get('atlas') or ['?']))}", font=font(16), fill=(110, 100, 90))
+        D.text((40, y + T - 40), f"{'x'.join(str(round(v)) for v in e.get('size', []))} mm · {e.get('kb', '?')} KB", font=font(16), fill=(110, 100, 90))
+        ot = old.height // rows
+        S.paste(old.crop((0, r * ot, ot, (r + 1) * ot)).resize((T, T), Image.LANCZOS), (label_w, y))
+        for c in range(3):
+            S.paste(new.crop((c * T, r * T, (c + 1) * T, (r + 1) * T)), (label_w + (c + 1) * (T + 12), y))
+        fx0, fy0, fx1, fy1 = crops.get(it['id'], (0.25, 0.25, 0.75, 0.75))
+        z = zoom.crop((int(fx0 * zt), int(r * zt + fy0 * zt), int(fx1 * zt), int(r * zt + fy1 * zt)))
+        S.paste(z.resize((T, T), Image.NEAREST), (label_w + 4 * (T + 12), y))
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    S.save(out)
+    print('wrote', out, S.size)
+
+
 def main():
+    if sys.argv[1] == 'facet':
+        return facet_sheet(sys.argv[2:])
     mode, sid, grid_path, out = sys.argv[1:5]
     rest = sys.argv[5:]
     card = rest[rest.index('--card') + 1] if '--card' in rest else None

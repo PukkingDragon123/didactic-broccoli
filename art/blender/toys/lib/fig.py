@@ -35,6 +35,8 @@ class Part:
 class Fig:
     def __init__(s, series, fid, size=512, budget=1500):
         s.facet = facet.ON = facet.enabled(series)  # the faceted low-poly style (lib/facet.py, FACET.md)
+        facet.FIG = s if s.facet else None
+        s._trimmed = False
         if s.facet and size == 512:
             size = facet.SIZE
         s.series, s.id, s.size, s.budget = series, fid, size, budget
@@ -73,6 +75,12 @@ class Fig:
     def tris(s):
         return sum(tk.tri_count(p.low) for p in s.parts)
 
+    def facet_trim(s):
+        """Facet mode: bring the figure under its budget once every part is in (unwrap and the clip check call it)."""
+        if s.facet and not s._trimmed:
+            s._trimmed = True
+            facet.trim(s.parts, log=s.log)
+
     # -------------------------------------------------------------- UVs
     def unwrap(s, angle=None, margin=None):
         """One atlas for every part: islands cut where the surface turns more than `angle` (smart project), then
@@ -81,6 +89,7 @@ class Fig:
         (Part.uvw), packed tight (1.5 px gutters: the paint is bled into them)."""
         angle = angle or float(os.environ.get('UV_ANGLE', 66))
         margin = margin or float(os.environ.get('UV_MARGIN', 0.002))
+        s.facet_trim()
         bpy.ops.object.select_all(action='DESELECT')
         lows = [p.low for p in s.parts]
         for o in lows:
@@ -154,45 +163,63 @@ class Fig:
         if os.environ.get('UVONLY'):
             raise SystemExit(0)
 
-    def _geo_key(s, lows):
-        import hashlib
-        h = hashlib.sha1()
-        for o in lows:
-            h.update(o.name.encode())
-            h.update(np.round(tk.verts(o), 3).tobytes())
-            L = np.zeros(len(o.data.loops), np.int64)
-            o.data.loops.foreach_get('vertex_index', L)
-            h.update(L.tobytes())
-        return h.hexdigest()
+    @staticmethod
+    def _loop_keys(o):
+        """Each loop's (vertex position, face centre), rounded: matches the loops of the same geometry built again,
+        whatever order subdivision and collapse left the vertices and faces in."""
+        me = o.data
+        V = tk.verts(o)
+        L = np.zeros(len(me.loops), np.int64)
+        me.loops.foreach_get('vertex_index', L)
+        C = np.zeros(len(me.polygons) * 3)
+        me.polygons.foreach_get('center', C)
+        S = np.zeros(len(me.polygons), np.int64)
+        me.polygons.foreach_get('loop_start', S)
+        T = np.zeros(len(me.polygons), np.int64)
+        me.polygons.foreach_get('loop_total', T)
+        fc = np.repeat(C.reshape(-1, 3), T, axis=0)
+        return np.round(np.concatenate([V[L], fc], 1), 2)
 
     def _uv_save(s, lows):
-        d = {'key': np.array(s._geo_key(lows)), 'density': np.array([s.density_seen, s.density])}
+        d = {'density': np.array([s.density_seen, s.density])}
         for o in lows:
             a = np.zeros(len(o.data.uv_layers.active.data) * 2, np.float32)
             o.data.uv_layers.active.data.foreach_get('uv', a)
             d['uv:' + o.name] = a
+            d['k:' + o.name] = s._loop_keys(o).astype(np.float32)
         np.savez_compressed(os.path.join(s.out, s.id + '_uv.npz'), **d)
 
     def _uv_cached(s, lows):
-        """--repaint: the last unwrap of this exact geometry (UV packing is slow and not repeatable, so without this
+        """--repaint: the last unwrap of the same geometry (UV packing is slow and not repeatable, so without this
         the bake cache could never be reused)."""
         import sys
         path = os.path.join(s.out, s.id + '_uv.npz')
         if '--repaint' not in sys.argv or not os.path.exists(path):
             return False
         z = np.load(path)
-        if str(z['key']) != s._geo_key(lows) or any('uv:' + o.name not in z.files for o in lows):
-            s.log('the geometry changed since the last unwrap: unwrapping again')
-            return False
+        got = {}
         for o in lows:
-            if not o.data.uv_layers:
-                o.data.uv_layers.new()
-            o.data.uv_layers.active.data.foreach_set('uv', z['uv:' + o.name])
-            if s.facet:
-                facet.flat(o)
-        s.density_seen, s.density = (float(v) for v in z['density'])
-        s.log('reused the last unwrap')
-        return True
+            if 'k:' + o.name not in z.files:
+                break
+            old = {}
+            for i, k in enumerate(np.round(z['k:' + o.name].astype(np.float64), 2)):
+                old.setdefault(tuple(k), []).append(i)
+            idx = [old[k].pop(0) if old.get(k) else None for k in map(tuple, s._loop_keys(o))]
+            if None in idx or any(old.values()):
+                break
+            got[o.name] = z['uv:' + o.name].reshape(-1, 2)[idx]
+        else:
+            for o in lows:
+                if not o.data.uv_layers:
+                    o.data.uv_layers.new()
+                o.data.uv_layers.active.data.foreach_set('uv', got[o.name].reshape(-1))
+                if s.facet:
+                    facet.flat(o)
+            s.density_seen, s.density = (float(v) for v in z['density'])
+            s.log('reused the last unwrap')
+            return True
+        s.log('the geometry changed since the last unwrap: unwrapping again')
+        return False
 
     # -------------------------------------------------------------- bakes
     def _img(s, name, float_buf=True):
@@ -297,7 +324,7 @@ class Fig:
         if not sc.world:
             sc.world = bpy.data.worlds.new('w')
         sc.world.light_settings.distance = ao_dist
-        s.extrusion = max(extrusion, 2.0) if s.facet else extrusion  # (a coarse facet mesh strays further from the sculpt)
+        s.extrusion = max(extrusion, 3.0) if s.facet else extrusion  # (a coarse facet mesh strays further from the sculpt)
         s.regions = s._region_ids()
         allh = [h for p in s.parts for h in p.highs]
         V = np.concatenate([tk.verts(h) for h in allh])
@@ -306,6 +333,9 @@ class Fig:
         acc = {k: np.zeros((n, n, c), np.float32) for k, c in (('nrm', 3), ('onrm', 3), ('ao', 1), ('pos', 3), ('reg', 1), ('cav', 1))}
         part = np.full((n, n), -1, np.int32)
         lows = [p.low for p in s.parts]
+        if s.facet:  # (bake through a smooth cage: flat normals split the cage at every facet edge and rays miss)
+            for o in lows:
+                o.data.shade_smooth()
         for i, p in enumerate(s.parts):
             # only this part's game mesh renders (the other game meshes would shadow the AO); every sculpt stays
             for o in lows:
@@ -361,6 +391,8 @@ class Fig:
             s.log(f'baked {p.name}: {mask.sum()} px, {miss.sum()} missed rays')
         for o in lows:
             o.hide_render = False
+            if s.facet:
+                facet.flat(o)
         lo, hi = s.bbox
         s.maps = {
             'part': part,
@@ -375,7 +407,7 @@ class Fig:
         # texels the rays missed (a gap between game mesh and sculpt): fill from their neighbours in the island
         bad = s.maps['mask'] & ((s.maps['reg'] < 0) | (np.linalg.norm(s.maps['on'], axis=2) < 0.5))
         s.maps['missed'] = bad
-        if bad.any():
+        if bad.any() and not s.facet:  # (facet: refilled from their 3D neighbours, _facet_maps)
             s.log(f'filling {bad.sum()} missed texels')
             for k in ('nrm', 'on', 'pos', 'reg', 'cav', 'ao'):
                 s.maps[k] = fill(s.maps[k], s.maps['mask'] & ~bad, s.maps['mask'])
@@ -401,7 +433,13 @@ class Fig:
         if missed is not None:
             s.maps['lpos'] = fm['lpos']
             k = facet.refill(s.maps, missed, got)
-            s.log(f'facet: {k} missed texels refilled from their 3D neighbours')
+            rest = missed & ~got  # (a few edge texels off every triangle's centre: from their island neighbours)
+            if rest.any():
+                for key in ('on', 'pos', 'reg', 'cav', 'ao'):
+                    s.maps[key] = fill(s.maps[key], mask & ~rest, mask)
+            on = s.maps['on']
+            s.maps['on'] = on / np.maximum(np.linalg.norm(on, axis=2), 1e-6)[:, :, None]
+            s.log(f'facet: {k} missed texels refilled from their 3D neighbours, {int(rest.sum())} from the island')
         fm.pop('lpos', None)
         part = s.maps['part']
         fm['metal'] = np.isin(part, [i for i, p in enumerate(s.parts) if p.kind == 'metal']) & mask

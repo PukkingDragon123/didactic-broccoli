@@ -3,7 +3,8 @@
 // writes public/models/lowpix/figures/<series>/<id>.glb + its entry in src/figures/lowpix.manifest.json, the same
 // contract as art/lowpix/figures/pack.mjs: { size [x,y,z] mm, min, tris, atlas, kb, clips, mats, pts }.
 // Keeps only the clips the game plays, drops channels that never move, keeps normals + tangents (normal-mapped PVC),
-// quantizes and meshopt-compresses.
+// quantizes and meshopt-compresses. Faceted figures (FACET.md) come with split per-face normals, no tangents and no
+// normal map: nothing here welds vertices or recomputes normals, so the flat shading survives as exported.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
 import { dedup, prune, quantize, reorder, resample, getBounds } from '@gltf-transform/functions';

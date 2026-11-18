@@ -96,7 +96,9 @@ def leg(nm, sx):
     return tk.join(lows, nm), highs, top
 
 
-LEGS = {nm: leg(nm, sx) for nm, sx in (('leg_l', 1), ('leg_r', -1))}
+import facet  # noqa: E402
+with facet.keeping():  # (the thin compass legs swing past the body: faceted further they crumple into it)
+    LEGS = {nm: leg(nm, sx) for nm, sx in (('leg_l', 1), ('leg_r', -1))}
 
 # ------------------------------------------------------------------ the neck: the black knurled handle, in two joints
 N1 = [NECK0, (0, -7.4, 39.0), (0, -8.2, 44.0)]
@@ -273,7 +275,8 @@ def make_rig():
 if '--clip' in ARGS:
     from rig import check_clip
     R = make_rig()
-    res = check_clip(R, F.parts, range(1, 91), skip=[('pivot', 'body'), ('neck1', 'body'), ('neck2', 'neck1'), ('head', 'neck2'), ('beak', 'head')], tol=0.35)
+    res = check_clip(R, F.parts, range(1, 91), skip=[('pivot', 'body'), ('neck1', 'body'), ('neck2', 'neck1'), ('head', 'neck2'), ('beak', 'head'),
+                                                ('leg_l', 'pivot'), ('leg_r', 'pivot')], tol=0.35)  # (the legs are pinned through the hinge)
     for f, L in sorted(res.items()):
         print('CLIP', f, L)
     print('CLIP frames', len(res))
@@ -310,10 +313,10 @@ def paint(P):
     on, X, Yc, Z = P.on, P.X, P.Y, P.Z
     sh = P.shade(light=0.0, ao=0.8, cav=1.1)
     WHITE = pt.ramp('#f1ede2', 7, dark=0.42, shift=0.07)
-    P.fill('white', WHITE, tone=sh, base=0.12)
+    P.fill('white', WHITE, tone=sh, base=0.12, brush='feather')
     BLACK = pt.ramp('#26232a', 6, dark=0.4, light=0.45, shift=0.05)
-    P.fill('tail', BLACK, tone=sh, base=0.05)
-    P.fill('black', BLACK, tone=sh, base=0.1)
+    P.fill('tail', BLACK, tone=sh, base=0.05, brush='feather')
+    P.fill('black', BLACK, tone=sh, base=0.1, brush='feather')
     P.fill('red', pt.ramp('#d2342c', 6, shift=0.06), tone=sh, base=0.1)
     P.fill('beak', pt.ramp('#b9a86c', 6, shift=0.07), tone=sh, base=0.05)
     P.fill('steel', pt.ramp('#565a66', 7, dark=0.6, light=0.6, shift=0.05), tone=sh * 1.3, base=0.0)

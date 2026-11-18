@@ -139,6 +139,7 @@ def join(obs, name=None):
     obs = [o for o in obs if o]
     base = obs[0]
     flag = any(o.get('facet') for o in obs)  # (facet mode: already reduced, lib/facet.py)
+    keep = any(o.get('facet_keep') for o in obs)
     if len(obs) > 1:
         bm = bmesh.new()
         for o in obs:
@@ -169,6 +170,8 @@ def join(obs, name=None):
             bpy.data.meshes.remove(old)
     if flag:
         base['facet'] = 1
+    if keep:
+        base['facet_keep'] = 1
     if name:
         base.name = name
         base.data.name = name

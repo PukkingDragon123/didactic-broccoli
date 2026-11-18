@@ -161,6 +161,9 @@ def check_clip(R, parts, frames, action='gimmick', skip=(), tol=0.25):
     """Report parts passing through each other during a clip: for every frame, the vertices of each part's game mesh
     that sit more than `tol` mm inside another part, beyond those already inside it at rest (joints are sleeved).
     skip: pairs (a, b) never compared. Returns {frame: [(a, b, count, depth)]}."""
+    import facet  # (facet mode: check the figure as it ships, after its budget trim)
+    if facet.FIG is not None:
+        facet.FIG.facet_trim()
     import numpy as np
     from mathutils.bvhtree import BVHTree
     R.arm.animation_data.action = bpy.data.actions[action]

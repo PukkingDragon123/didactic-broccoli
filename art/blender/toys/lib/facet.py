@@ -62,7 +62,13 @@ def reduce(ob, tris):
     coplanar slivers that collapse leaves into clean planes and re-triangulate them (beauty)."""
     me = ob.data
     n = sum(len(p.vertices) - 2 for p in me.polygons)
+    canon(ob)
+    me = ob.data
     if n > tris:
+        from mathutils.bvhtree import BVHTree
+        bm0 = bmesh.new()
+        bm0.from_mesh(me)
+        bvh = BVHTree.FromBMesh(bm0)  # (the form before the collapse)
         m = ob.modifiers.new('fdec', 'DECIMATE')
         m.decimate_type = 'COLLAPSE'
         m.ratio = max(0.01, tris / n)
@@ -70,7 +76,27 @@ def reduce(ob, tris):
         if _symmetric(ob):
             m.use_symmetry = True
             m.symmetry_axis = 'X'
+        V = np.zeros(len(me.vertices) * 3)
+        ob.data.vertices.foreach_get('co', V)
+        Z = V[2::3]
+        if Z.min() < 0.3 and n > 80 and (Z < 0.6).mean() < 0.25:  # (it stands on the shelf: the collapse keeps the footprint, so it stands as well as before)
+            g = ob.vertex_groups.new(name='facet_keep')
+            g.add([int(i) for i in np.nonzero(Z >= 0.6)[0]], 1.0, 'REPLACE')
+            m.vertex_group = g.name
+            m.vertex_group_factor = 25.0
         _apply(ob)
+        for g in list(ob.vertex_groups):
+            if g.name == 'facet_keep':
+                ob.vertex_groups.remove(g)
+        # the collapse places merged vertices where the planes fit best (a little outside a curve, so the facets keep
+        # the volume); one that overshoots further is pulled back to OUT mm off the form (clips keep working)
+        OUT = 0.5
+        for v in ob.data.vertices:
+            loc, nrm, _, dist = bvh.find_nearest(v.co)
+            if loc is not None and dist > OUT and (v.co - loc).dot(nrm) > 0:
+                v.co = loc + (v.co - loc).normalized() * OUT
+        bm0.free()
+        ob.data.update()
     bm = bmesh.new()
     bm.from_mesh(ob.data)
     bmesh.ops.dissolve_degenerate(bm, dist=0.01, edges=bm.edges[:])
@@ -80,12 +106,86 @@ def reduce(ob, tris):
     bm.free()
     ob.data.update()
     ob['facet'] = 1
+    if KEEP:
+        ob['facet_keep'] = 1
     return ob
 
 
+def canon(ob):
+    """Rebuild the mesh with its vertices and faces in a canonical order (sorted by position, snapped to 0.1 um):
+    subdivision and bevels are not repeatable from run to run, and the collapse breaks its ties by order, so without
+    this the facets, the UVs and the bake cache would change every build."""
+    me = ob.data
+    V = np.zeros(len(me.vertices) * 3)
+    me.vertices.foreach_get('co', V)
+    V = np.round(V.reshape(-1, 3), 4)
+    order = np.lexsort((V[:, 2], V[:, 1], V[:, 0]))
+    rank = np.empty(len(order), np.int64)
+    rank[order] = np.arange(len(order))
+    F = []
+    for p in me.polygons:
+        f = [int(rank[i]) for i in p.vertices]
+        k = f.index(min(f))
+        F.append(f[k:] + f[:k])
+    F.sort()
+    mats = list(me.materials)
+    new = bpy.data.meshes.new(me.name)
+    new.from_pydata([tuple(v) for v in V[order]], [], F)
+    new.validate()
+    for m in mats:
+        new.materials.append(m)
+    ob.data = new
+    if me.users == 0:
+        bpy.data.meshes.remove(me)
+    new.name = ob.name
+    return ob
+
+
+SMALL = 16                      # a piece asked for this few triangles is low-poly already: it keeps them
+FIG = None                      # the figure being built (Fig sets it; rig.check_clip trims through it)
+
+
 def budget(tris):
-    """The facet target for a mesh the smooth line gave `tris` triangles."""
-    return max(int(round(tris * RATIO)), min(int(tris), 12))
+    """The facet target for a mesh the smooth line gave `tris` triangles (toes, tabs and pins keep theirs: cut further
+    they only crumple)."""
+    if tris <= SMALL or KEEP:
+        return int(tris)
+    return max(int(round(tris * RATIO)), SMALL)
+
+
+KEEP = False
+
+
+class keeping:
+    """with facet.keeping(): ... -- the pieces built inside keep their smooth-line triangle counts (thin moving parts
+    that would crumple: a compass's legs, a hinge pin), and the figure trim leaves them alone."""
+
+    def __enter__(s):
+        global KEEP
+        KEEP = True
+
+    def __exit__(s, *a):
+        global KEEP
+        KEEP = False
+
+
+def trim(parts, top=None, log=print):
+    """The figure's budget: when the parts still add up to more than TRIS[1] (many small pieces kept whole), reduce
+    the bigger parts further, in proportion, to land just under it. Returns the new total."""
+    top = top or TRIS[1]
+    count = lambda o: sum(len(p.vertices) - 2 for p in o.data.polygons)  # noqa: E731
+    tot = sum(count(p.low) for p in parts)
+    if tot <= top:
+        return tot
+    big = [p for p in parts if count(p.low) > 3 * SMALL and not p.low.get('facet_keep')]
+    fixed = tot - sum(count(p.low) for p in big)
+    k = max(0.3, (top * 0.97 - fixed) / max(1, tot - fixed))
+    for p in big:
+        reduce(p.low, max(3 * SMALL, int(count(p.low) * k)))
+        flat(p.low)
+    new = sum(count(p.low) for p in parts)
+    log(f'facet: trimmed the figure from {tot} to {new} tris (bigger parts x{k:.2f})')
+    return new
 
 
 def flat(ob):
@@ -228,14 +328,14 @@ def refill(maps, missed, got, keys=('ao', 'cav', 'on', 'reg', 'nrm')):
 PRESETS = {
     # flow: the stroke direction on the surface; L / W: stroke length / width (mm); cover: how many layers of strokes;
     # p: the share of strokes that move the tone a step lighter (and as many darker); the rest only drag tone along
-    'pvc': dict(flow='around', L=3.4, W=1.35, cover=1.05, p=0.11, tilt=18),
-    'gloss': dict(flow='around', L=4.2, W=1.3, cover=1.0, p=0.1, tilt=12),
+    'pvc': dict(flow='around', L=4.6, W=0.95, cover=1.2, p=0.1, tilt=12),
+    'gloss': dict(flow='around', L=5.2, W=1.0, cover=1.1, p=0.09, tilt=10),
     'metal': dict(flow='down', L=4.5, W=0.45, cover=1.3, p=0.16, tilt=5),
     'fur': dict(flow='down', L=1.7, W=0.45, cover=1.8, p=0.32, tilt=28),
     'feather': dict(flow='down', L=2.4, W=0.5, cover=1.5, p=0.28, tilt=10),
     'wood': dict(flow='along', L=7.0, W=0.28, cover=1.5, p=0.3, tilt=3),
     'cloth': dict(flow='around', L=1.3, W=0.35, cover=1.7, p=0.3, tilt=4, cross=True),
-    'lacquer': dict(flow='around', L=6.0, W=0.7, cover=1.0, p=0.12, tilt=8),
+    'lacquer': dict(flow='around', L=6.0, W=0.7, cover=1.0, p=0.12, tilt=8, shine=0.5),
 }
 
 
@@ -286,18 +386,21 @@ class Grid:
 
 
 def strokes(pos, nrm, tone, step, flow='around', L=2.8, W=0.8, cover=1.3, p=0.2, tilt=20, axis=None, ppmm=10.0,
-            seed=0, cross=False, **_):
+            seed=0, cross=False, glaze=0.3, **_):
     """Lay brush strokes over the texels (pos (k,3), sculpt normals (k,3), tone (k,)). Each stroke picks up the tone
     where it starts and drags it along (some a ramp step lighter or darker), tapered at both ends, its tail breaking
-    into dry bristle streaks; later strokes lie over earlier ones. Returns the new tone (k,)."""
+    into dry bristle streaks; later strokes lie over earlier ones. `glaze`: the share of strokes laid half a step
+    lighter or darker (a thin glaze: painted as the colour between two ramp tones). Returns the new tone (k,) and the
+    glaze (k,) (-1, 0, +1)."""
     k = len(pos)
+    gl = np.zeros(k, np.int8)
     if k < 20:
-        return tone
+        return tone, gl
     rng = np.random.default_rng(seed)
     area = k / max(ppmm, 1e-6) ** 2
     ns = int(cover * area / (L * W * 0.62))
     if ns < 1:
-        return tone
+        return tone, gl
     out = tone.copy()
     grid = Grid(pos, max(L, W) * 0.52 + 0.05)
     cs = rng.integers(0, k, ns)
@@ -332,9 +435,12 @@ def strokes(pos, nrm, tone, step, flow='around', L=2.8, W=0.8, cover=1.3, p=0.2,
             if not ok.any():
                 continue
             r = rng.random()
-            dv = step if r < p else (-step if r < 2 * p else 0.0)
+            up = 0.6 * nc[2]  # (painted light: lighter strokes on the faces that look up, darker ones underneath)
+            dv = step if r < p * (1 + up) else (-step if r < 2 * p else 0.0)
             out[idx[ok]] = tone[ci] + dv
-    return out
+            r2 = rng.random()
+            gl[idx[ok]] = 1 if r2 < glaze * 0.5 * (1 + up) else (-1 if r2 < glaze else 0)
+    return out, gl
 
 
 def dabs(pos, nrm, ppmm, size=0.6, spacing=1.0, jitter=0.35, seed=0, lumpy=0.18):

@@ -438,10 +438,10 @@ def paint(P):
     RED = pt.ramp('#a8261d', 7, dark=0.55, light=0.4, shift=0.06)
     GOLD = pt.ramp('#d6a640', 7, dark=0.6, light=0.6, shift=0.08)
     BLACK = pt.ramp('#25201f', 6, dark=0.4, light=0.45, shift=0.05)
-    P.fill('red', RED, tone=sh, base=0.05)
+    P.fill('red', RED, tone=sh, base=0.05, brush='lacquer')
     P.fill('belly', pt.ramp('#d8b25a', 6, shift=0.06), tone=sh, base=0.05)  # a gold belly
     P.fill('gold', GOLD, tone=sh * 1.3, base=0.1)
-    P.fill('black', BLACK, tone=sh, base=0.1)
+    P.fill('black', BLACK, tone=sh, base=0.1, brush='lacquer')
     P.fill('mouth', pt.ramp('#5a1418', 5, shift=0.05), tone=sh, base=0.0)
     P.fill('feed', BLACK, tone=sh, base=0.0)
     P.fill('tongue', pt.ramp('#c8404a', 5, shift=0.05), tone=sh, base=0.1)

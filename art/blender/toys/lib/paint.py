@@ -104,6 +104,7 @@ class Painter:
         n = len(rmp)
         mid = (n - 1) * 0.55
         k = (levels or n * 0.62)
+        s._glaze = None
         if s.facet and brush is not False:
             t = s.brushed(m, t, 1.0 / k, brush, name)
         i = np.clip(np.rint(mid + t * k), 0, n - 1).astype(np.int32)
@@ -111,6 +112,10 @@ class Painter:
         s.ramps[rid] = rmp
         s.idx[m] = i[m] + rid * 64
         s.rgb[m] = rmp[i[m]]
+        if s._glaze is not None:  # the half-step strokes: the colour between this tone and the next one
+            g = m & (s._glaze != 0)
+            j = np.clip(i + s._glaze, 0, n - 1)
+            s.rgb[g] = 0.5 * (rmp[i[g]] + rmp[j[g]])
         return m
 
     def brushed(s, m, t, step, brush=None, name=None):
@@ -127,13 +132,20 @@ class Painter:
             if brush is None:
                 metal = s.m['metal'][m].mean() > 0.5 if m.any() else False
                 nm = name if isinstance(name, str) else ''
-                brush = 'metal' if metal or any(w in nm for w in ('chrome', 'steel', 'metal', 'gold', 'brass', 'pin')) else 'pvc'
+                words = set(nm.replace('-', '_').split('_'))
+                brush = 'metal' if metal or words & {'chrome', 'steel', 'metal', 'gold', 'brass', 'pin', 'nickel', 'tin'} else 'pvc'
             opt = dict(facet.PRESETS[brush])
         s.nfill += 1
         ys, xs = np.nonzero(m)
+        if os.environ.get('GG_FACET_BRUSH') == 'only':  # (debug: the strokes alone, on a flat tone)
+            t[ys, xs] = 0.0
         if brush == 'metal' or opt.get('chrome'):  # painted chrome: the sky above the horizon, the dark floor below
             t[ys, xs] += 0.32 * np.tanh(s.on[ys, xs, 2] * 5 + 0.4)
-        t[ys, xs] = facet.strokes(s.pos[ys, xs], s.on[ys, xs], t[ys, xs], step, ppmm=s.ppmm, seed=s.nfill * 7919 + 13, **opt)
+        if opt.get('shine'):  # a lacquer's shine: a hard highlight where the form turns to the key light
+            t[ys, xs] += opt['shine'] * np.clip((s.on[ys, xs] @ KEY - 0.78) * 8, 0, 1)
+        t[ys, xs], g = facet.strokes(s.pos[ys, xs], s.on[ys, xs], t[ys, xs], step, ppmm=s.ppmm, seed=s.nfill * 7919 + 13, **opt)
+        s._glaze = np.zeros(m.shape, np.int32)
+        s._glaze[ys, xs] = g
         return t
 
     def dabs(s, m, size=0.6, spacing=1.0, seed=0, **kw):
