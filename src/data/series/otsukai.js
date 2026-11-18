@@ -31,14 +31,14 @@ export default {
       gimmick: { text: 'Spread wings', sfx: [[0.35, 'flap'], [0.5, 'flutter'], [0.75, 'toyTap'], [1.0, 'flap'], [1.65, 'toyClick', { f: 1500 }]] },
     },
     {
-      id: 'ookami', name: 'Mitsumine Wolf', jp: '三峯オオカミ', rarity: 'rare',
-      desc: 'The mountain shrine\'s guardian wolf, chest thrown out, the sacred shimenawa rope round its neck hung with paper shide and its tail curled round its paws. Press it and it lifts its head and howls.',
-      gimmick: { text: 'Howl', sfx: [[0.2, 'toyTap'], [0.55, 'toyClick', { f: 1200 }], [0.6, 'whoosh', { dur: 1.0, v: 0.05 }], [1.7, 'toySnap', { v: 0.4 }], [1.85, 'paper'], [2.0, 'toyTap']] },
-    },
-    {
       id: 'saru', name: 'Hie Monkey', jp: '日吉ザル', rarity: 'uncommon',
       desc: 'The mountain king\'s monkey in a tall court cap, its red-lacquer face round and wise, holding up a gohei wand with two white paper streamers. Press it and it purifies you: left, right, left, and a bow.',
       gimmick: { text: 'Purify', sfx: [[0.2, 'paper'], [0.45, 'whoosh', { dur: 0.25, v: 0.07 }], [0.75, 'paper'], [1.0, 'whoosh', { dur: 0.25, v: 0.07 }], [1.3, 'paper'], [1.75, 'toyTap'], [2.15, 'toyClick', { f: 1500 }]] },
+    },
+    {
+      id: 'ookami', name: 'Mitsumine Wolf', jp: '三峯オオカミ', rarity: 'rare',
+      desc: 'The mountain shrine\'s guardian wolf, chest thrown out, the sacred shimenawa rope round its neck hung with paper shide and its tail curled round its paws. Press it and it lifts its head and howls.',
+      gimmick: { text: 'Howl', sfx: [[0.2, 'toyTap'], [0.55, 'toyClick', { f: 1200 }], [0.6, 'whoosh', { dur: 1.0, v: 0.05 }], [1.7, 'toySnap', { v: 0.4 }], [1.85, 'paper'], [2.0, 'toyTap']] },
     },
     {
       id: 'hebi', name: 'White Snake of Benzaiten', jp: '白蛇', rarity: 'secret',

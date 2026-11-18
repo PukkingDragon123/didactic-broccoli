@@ -20,8 +20,9 @@ F = bk.start('otsukai', 'karasu')
 base_lo, base_hi, PZ = ak.plinth('plinth', [(24.0, 28.0, 3.2), (20.0, 23.5, 2.6)])
 LZ = PZ + 4.2  # the body sits this high on its legs
 
-BODY = [(LZ, 0.6, 7.0, 3.6, 3.6, 2.2), (LZ + 2.4, 0.4, 12.6, 6.2, 6.4, 2.2), (LZ + 7.0, 0.0, 15.0, 7.4, 7.4, 2.2),
-        (LZ + 12.0, -0.4, 13.8, 6.8, 6.6, 2.2), (LZ + 16.0, -0.6, 10.6, 5.4, 5.2, 2.2), (LZ + 18.6, -0.6, 7.6, 4.0, 4.0, 2.1)]
+# a crow's build: a deep heavy chest thrust forward, broad shoulders where the wings meet, a short thick neck
+BODY = [(LZ, 1.0, 7.0, 3.2, 4.0, 2.2), (LZ + 2.4, 0.9, 12.2, 5.8, 6.8, 2.2), (LZ + 7.0, 0.2, 14.4, 8.6, 7.0, 2.2),
+        (LZ + 11.4, -0.6, 14.4, 8.6, 6.2, 2.3), (LZ + 15.0, -1.2, 13.0, 6.8, 5.6, 2.4), (LZ + 17.6, -2.2, 8.4, 4.6, 3.8, 2.1)]
 
 
 def sc_body(h):
@@ -30,12 +31,15 @@ def sc_body(h):
         front = tk.smoothstep(-0.2, -0.7, N[:, 1])
         row = np.mod(V[:, 2] * 0.9, 1.0)
         sc = np.cos((V[:, 0] * 1.1 + np.floor(V[:, 2] * 0.9) * 1.6)) * 0.5 + 0.5
-        return 0.22 * front * (row - 0.5) * sc
+        d = 0.22 * front * (row - 0.5) * sc
+        # the shoulder line: a ridge round the back and sides where the wings meet the body
+        d += 0.55 * np.exp(-((V[:, 2] - (LZ + 15.2)) / 0.9) ** 2) * tk.smoothstep(-0.2, 0.4, N[:, 1])
+        return d
     tk.push(h, f)
 
 
 body_lo, body_hi = ak.stack('body', BODY, n=16, tris=330, sculpt=sc_body, cap0='round', cap1='round')
-HC = (0.0, -1.4, LZ + 22.4)
+HC = (0.0, -3.8, LZ + 21.2)  # (set forward on the short neck)
 head_hi = tk.lathe('head_hi', [(0, -6.4), (4.0, -5.2), (6.0, -2.0), (6.2, 0.6), (5.0, 3.8), (2.6, 5.8), (0, 6.3)], n=20, centre=HC)
 tk.subsurf(head_hi, 1)
 head_lo = tk.lathe('head', [(0, -6.4), (4.0, -5.2), (6.0, -2.0), (6.2, 0.6), (5.0, 3.8), (2.6, 5.8), (0, 6.3)], n=10, centre=HC)
@@ -134,7 +138,7 @@ def make_rig():
     R = Rig()
     R.bone('root', (0, 0, 0))
     R.bone('body', (0, 0, LZ), parent='root')
-    R.bone('head', (0, -0.8, LZ + 17.0), parent='body')
+    R.bone('head', (0, -2.2, LZ + 17.2), parent='body')
     for nm, (lo, hi, sh_) in WINGS.items():
         R.bone(nm, sh_, parent='body')
     R.bone('sun', tuple(SUN), parent='root')
@@ -178,8 +182,8 @@ def paint(P):
     VERM = pt.ramp('#cc4a32', 7, shift=0.06)
     ak.lacquer(P, ('body', 'wing'))
     # gold leaf as bold bands: a broad two-band collar, bands along the wings' feather rows, the tail fan's tips
-    ak.gold_bands(P, P.region('body'), Z - (LZ + 17.8), 1.2)
-    ak.gold_bands(P, P.region('body'), Z - (LZ + 15.9), 0.8)
+    ak.gold_bands(P, P.region('body'), Z - (LZ + 17.4) - 0.25 * (Yc + 2.0), 1.2)
+    ak.gold_bands(P, P.region('body'), Z - (LZ + 15.8) - 0.25 * (Yc + 2.0), 0.8)
     ak.gold_bands(P, P.region('wing'), Z * 0.9 + Yc * 0.35, 0.8, period=3.2)
     P.fill('gold', GOLD, tone=sh, base=0.12)
     P.fill('sun', GOLD, tone=sh * 1.2, base=0.12)
