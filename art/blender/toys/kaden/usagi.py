@@ -29,7 +29,6 @@ FRONT = -L / 2 - 1.0        # the face (the domed front cap)
 SLOT_X, SLOT_Y, SLOT_L = 6.2, -5.0, 12.4   # the two toast slots (along y), their centre and length
 SINK = 11.2                 # how far the toast goes down
 EAR_Z = 16.6                # a slice's bottom at rest (it stands 22.5 tall)
-EYE = {sx: (sx * 6.6, FRONT + 1.2, ZC + 4.2) for sx in (1, -1)}
 
 
 # ------------------------------------------------------------------ the housing
@@ -44,11 +43,9 @@ def rings():
 def sc_house(h):
     def f(V, N):
         d = np.zeros(len(V))
-        # chubby cheeks either side of the nose, eye sockets, a brow over each eye (eager, raised)
+        # chubby cheeks either side of the nose (the face itself is drawn on, not sculpted)
         for sx in (1, -1):
             d += tk.bump(V, (sx * 7.0, FRONT + 2.4, ZC - 2.4), 6.4, 1.5, sharp=1.6)
-            d -= tk.bump(V, (sx * 6.6, FRONT + 2.0, ZC + 4.2), 4.2, 0.8)
-            d += tk.bump(V, (sx * 6.9, FRONT + 2.1, ZC + 8.4), 2.8, 0.55)
         # the bakelite skirt's seam and the chrome body's raised side ribs (three on each flank)
         d -= 0.3 * tk.smoothstep(0.4, 0.0, np.abs(V[:, 2] - (Z0 + 3.4)))
         side = np.abs(N[:, 0]) > 0.7
@@ -97,7 +94,6 @@ def sc_teeth(h):
 
 teeth_lo, teeth_hi = cx.low(teeth, 'teeth', 40, lo=0, hi=2, sculpt=sc_teeth, region='teeth')
 
-EYES = [cx.bead('eye', EYE[sx], (sx * 0.34, -1.0, 0.1), r=3.2, depth=1.6) for sx in (1, -1)]
 
 # ------------------------------------------------------------------ paws: four bakelite feet (long hind feet)
 PAWS = []
@@ -167,8 +163,8 @@ for sx, nm in ((1, 'ear_l'), (-1, 'ear_r')):
     EARS[nm] = (lo, hi, (sx * SLOT_X, SLOT_Y, Z1))
 
 # ------------------------------------------------------------------ parts
-F.part('house', tk.join([house_lo, teeth_lo] + [e[0] for e in EYES] + [p[0] for p in PAWS], 'house'),
-       [house_hi, teeth_hi] + [e[1] for e in EYES] + [p[1] for p in PAWS], bone='root', kind='gloss')
+F.part('house', tk.join([house_lo, teeth_lo] + [p[0] for p in PAWS], 'house'),
+       [house_hi, teeth_hi] + [p[1] for p in PAWS], bone='root', kind='gloss')
 F.part('nose', nose_lo, [nose_hi], bone='nose')
 F.part('lever', tk.join([l[0] for l in lever], 'lever'), [l[1] for l in lever], bone='lever')
 F.part('tail', tk.join([t[0] for t in tail], 'tail'), [t[1] for t in tail], bone='tail')
@@ -272,13 +268,8 @@ def paint(P):
     P.fill('teeth', pt.ramp('#f6efe0', 6, shift=0.05), tone=sh, base=0.15)
     P.lines(['teeth'], None, col='#9a8c80')
     P.flat(P.region('teeth') & (np.abs(X) < 0.3) & (Yc < FRONT + 0.5), '#9a8c80')
-    # the eyes: ruby (a white rabbit's), wide open and looking up (it can smell the toast)
-    for sx in (1, -1):
-        c = np.array(EYE[sx])
-        ax = np.array((sx * 0.34, -1.0, 0.1))
-        ax /= np.linalg.norm(ax)
-        P.eye(tuple(c + ax * 1.5), tuple(ax), 3.05, iris='#c8243c', pupil='#2a0a10', ring='#3a1418', look=(-sx * 0.05, 0.16),
-              where=P.region('eye'), facing=-0.4)
+    # the face, drawn on by hand: two ink dots set wide apart either side of the nose knob (the buck teeth are its mouth)
+    cx.face(P, (0, FRONT, ZC), (0, -1, 0), eyes=[(6.9, 0.6), (-6.6, 0.3)], eye_r=1.05, where=face, facing=0.1)
     # the toast: golden, paler in the middle, the crust brown, a stripe of toasting from the element
     TOAST = pt.ramp('#e2ac5c', 7, shift=0.07)
     tz = Z - EAR_Z
@@ -300,7 +291,7 @@ def paint(P):
     badge = P.region('chrome') & (X > 0) & ((Yc - 4.0) ** 2 / 10 + (Z - (ZC + 4.6)) ** 2 / 2.2 < 1)
     P.flat(badge, '#c8323a')
     P.flat(badge & ((Yc - 4.0) ** 2 / 4 + (Z - (ZC + 4.6)) ** 2 / 0.6 < 1), '#f1e3bf')
-    P.lines(['chrome'], ['skirt', 'nose', 'teeth', 'eye', 'slotin'], step=2)
+    P.lines(['chrome'], ['skirt', 'nose', 'teeth', 'slotin'], step=2)
     P.lines(['toast'], ['crust'], step=1)
     P.clusters()
     return P.done()

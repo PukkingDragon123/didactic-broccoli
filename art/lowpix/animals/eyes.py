@@ -110,10 +110,7 @@ def paint_iris(size, iris, pupil, seed=3):
     pupil, whites or lashes). `pupil` is ignored: every frame is the same bead (the lids carry the expressions)."""
     col = lambda h: np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)], np.uint8)
     out = np.zeros((size, size, 3), np.uint8) + col(iris.get('bead', '#141010'))
-    k = max(2, size // 16)
-    hx, hy = int(size * 0.36), int(size * 0.3)
-    out[hy:hy + k, hx:hx + k] = col(iris.get('glint', '#e8e2d6'))
-    return out
+    return out                     # (no highlight: the owner wants plain hand-drawn dots)
 
 
 def majority(a, K, keep=()):

@@ -16,6 +16,7 @@ import bk  # noqa: E402  (lib on the path, bpy first)
 import numpy as np  # noqa: E402
 import tk  # noqa: E402
 import tt  # noqa: E402
+import kit  # noqa: E402  (lib/kit.py: the keychain screw eye)
 
 F = bk.start('teruteru', 'goro')
 
@@ -24,26 +25,10 @@ RINGS = [(0.0, 6.2, 0.0), (0.8, 9.0, 0.0), (3.0, 11.4, 0.0), (7.2, 12.6, 0.0), (
          (31.2, 2.8, 0.0), (32.2, 2.3, 0.0)]
 NECK_Z = 18.5
 KNOT = (0.0, 0.3, 33.2)
-FACE = (0.0, -11.4, 10.4)  # the face's centre on the head
-MOUTH = [(-4.4, -1.2), (-2.4, -3.3), (0.0, -3.9), (2.4, -3.3), (4.4, -1.2), (2.6, -1.6), (0.0, -1.75), (-2.6, -1.6)]
+FACE = (0.0, -12.4, 8.6)  # the face's centre on the head (low)
 
 
-def mouth_sculpt(V, N, th):
-    """The grin pressed into the cloth and the two fangs raised on its top lip."""
-    front = tk.smoothstep(-0.2, -0.7, N[:, 1])
-    u, v = V[:, 0] - FACE[0], V[:, 2] - FACE[2]
-    # (the grin's outline as an ellipse band: wide, deep in the middle)
-    inside = ((u / 4.5) ** 2 + ((v + 1.9) / 2.1) ** 2 < 1) & (v < -1.45 - 0.02 * u * u)
-    d = -0.55 * inside * front
-    for su in (-1, 1):
-        d += tk.bump(V, (su * 2.6, -12.6, FACE[2] - 2.0), 0.9, 0.35) * front
-    for su in (-1, 1):  # brows: two cocky ridges
-        d += tk.bump(V, (su * 3.9, -12.0, FACE[2] + 4.1), 1.6, 0.35) * front
-    return d
-
-
-body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=7, fold_amp=0.5, cheeks=((-5.8, 7.6), (5.8, 7.6)), tris=430,
-               extra=mouth_sculpt)
+body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=7, fold_amp=0.5, cheeks=((-5.8, 7.0), (5.8, 7.0)), tris=430)
 knot = tt.knot('knot', KNOT, r=2.8, h=3.4, tris=50)
 
 # ------------------------------------------------------------------ the corners: short, stiff, flaring up like flames
@@ -114,15 +99,14 @@ for a in DRUM_A:
 ring_lo = tk.join([cord[0], hoop_lo] + spokes_lo + drums_lo, 'ring')
 tk.decimate(ring_lo, 470)
 
-eye_lo, eye_hi, PIN = bk.screw_eye((KNOT[0], KNOT[1] + 1.6, KNOT[2] + 1.0))
 
 # ------------------------------------------------------------------ parts
 F.part('body', tk.join([body[0], knot[0]], 'body'), body[1] + knot[1])
+kit.eyepin(F, at=(KNOT[0], KNOT[1] + 1.4, KNOT[2] + 1.2), bone='root')
 F.part('ring', ring_lo, cord[1] + [hoop_hi] + spokes_hi + drums_hi, bone='ring')
 for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
 F.part('bolt', bolt_lo, [bolt_hi], bone='bolt', kind='gloss', sharp=50)
-F.part('eye', eye_lo, eye_hi, kind='metal', uvw=0.5)
 
 
 def make_rig():
@@ -135,7 +119,7 @@ def make_rig():
     R.bone('bolt', BROOT, parent='root')
     for p in F.parts:
         R.attach(p.low, p.bone)
-    R.point('chain', PIN, bone='root')
+    kit.points(R)
     k = R.key
     with R.action('gimmick'):
         bones = ['root', 'ring', 'bolt'] + list(CORNERS)
@@ -195,7 +179,7 @@ def paint(P):
     P.fill('cord', pt.ramp('#d8463a', 6, shift=0.06), tone=sh, base=0.05)
     P.fill('drum', pt.ramp('#c8352c', 7, shift=0.06), tone=sh, base=0.05)
     P.fill('head', pt.ramp('#efe2c4', 6, shift=0.05), tone=sh, base=0.1)
-    P.fill('metal', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
+    P.fill('pin', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
     # gold tacks round each drum head, a black three-comma (tomoe) on each head
     drum = P.region('drum')
     P.flat(drum & (P.cav > 0.56), '#e6c35a')
@@ -213,21 +197,11 @@ def paint(P):
             tom |= (ph < 1.7) & (r > 0.25) & (r < 1.55) & (np.abs(W) < 0.6)
         P.flat(head & tom, '#231c1e')
         P.flat(head & (r < 0.28) & (np.abs(W) < 0.6), '#231c1e')
-    # the face
-    f = bk.Face(P, FACE, (0, -1, 0), depth=5, where=P.region('cloth'))
-    P.flat(f.ell(-5.6, -1.5, 2.3, 1.4), '#ef7f5c')
-    P.flat(f.ell(5.6, -1.5, 2.3, 1.4), '#ef7f5c')
-    for su in (-1, 1):  # bead eyes (one tiny highlight); the mischief is in the cocked brows and the grin
-        P.flat(f.ell(su * 3.6, 1.5, 1.25, 1.45), '#231c1e')
-        P.flat(f.ell(su * 3.6 - 0.45, 1.95, 0.34), '#fffaf0')
-        P.flat(f.stroke([(su * 5.5, 3.3), (su * 3.8, 3.55), (su * 2.1, 4.4)], 0.75, taper=True), '#231c1e')
-    m = f.poly(MOUTH)
-    P.flat(m, '#5a1a22')
-    P.flat(m & (f.V < -3.0) & (np.abs(f.U) < 1.6), '#d9545e')  # the tongue
-    for su in (-1, 1):
-        P.flat(f.poly([(su * 3.2, -1.55), (su * 2.0, -1.65), (su * 2.6, -2.9)]), '#fbf5ea')
-    P.flat(f.stroke(MOUTH[:5], 0.35), '#231c1e')
-    P.flat(f.stroke(MOUTH[4:] + [MOUTH[0]], 0.35), '#231c1e')
+    # the face: dots wide apart and one big grin with three tooth strokes
+    fb = bk.Face(P, FACE, (0, -1, 0), depth=5, where=P.region('cloth'))
+    P.flat(fb.ell(-5.6, -0.9, 1.9, 1.15) | fb.ell(5.5, -1.0, 1.9, 1.1), '#ef8b68')
+    bk.hand_face(P, FACE, eyes=(4.1, 1.5), eye=(1.0, 1.3), mouth='grin', mouth_at=(0.0, -0.4), mouth_w=5.4, teeth=3, seed=5,
+                 where=P.region('cloth'), line=0.44)
     P.lines(['cloth', 'corner'], ['cord'], step=2)
     P.lines(['bolt'], step=2)
     P.lines(['drum'], ['head'], step=2)
@@ -236,5 +210,5 @@ def paint(P):
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'eye'), ('body', 'ring'), ('bolt', 'body'), ('bolt', 'eye')] + [(c, 'body') for c in CORNERS],
+bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('body', 'ring'), ('bolt', 'body'), ('bolt', 'pin')] + [(c, 'body') for c in CORNERS],
        cam=((60, -84, 52), (0, 0, 22)), fold=(0, 14, 26, 44), frames=86)

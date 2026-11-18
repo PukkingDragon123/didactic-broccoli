@@ -120,17 +120,10 @@ def paint(coat):
     ex = ax - 2.65; ey = y - (46.9 + ex * 0.15)
     q = (ex / 1.02) ** 2 + (ey / 0.74) ** 2
     # the eyes: simple solid dark beads with one tiny highlight (the owner's rule: no iris, rims or whites)
-    q = (ex / 0.78) ** 2 + (ey / 0.66) ** 2
-    out[hf & (q < 1.0)] = hexes(['#120e0c'])[0]
-    out[hf & (np.hypot(ex + 0.22, ey - 0.22) < 0.13)] = hexes(['#d8d0c4'])[0]
+    rr = np.where(x > 0, 0.46, 0.41)                     # two small dots, not quite a pair
+    out[hf & (np.hypot(ex, (ey - np.where(x > 0, 0.05, 0)) * 1.1) < rr)] = hexes(['#140f0d'])[0]
     dots = hf & (((ax - 2.2) / 0.65) ** 2 + ((y - 48.35) / 0.4) ** 2 < 1)
-    if coat in ('pochi', 'goma', 'shiro', 'chibi'): out[dots] = creamR[6]
-    if 'tan' in C: out[dots] = ramp(C['tan'])[5]
     lipY = 41.65 + np.maximum(0, 31 - z) * 0.35
-    out[is_('head') & (z > 29.2) & (ax > 0.6) & (np.abs(y - lipY) < 0.16) & (Ns[..., 1] < 0.2)] = hexes(['#241818'])[0]
-    for r in range(2):
-        for k in range(3):
-            out[is_('head') & (ax > 1.1) & (np.hypot(z - (30.8 + k * 0.9), y - (42.4 + r * 0.4)) < 0.12)] = creamR[2]
     tex = np.clip(out, 0, 255).astype(np.uint8)
     S = 0.01
     J = {'body': [0, .33, -.08], 'chest': [0, .335, .07], 'neck': [0, .37, .165], 'head': [0, .445, .235], 'jaw': [0, .425, .272]}

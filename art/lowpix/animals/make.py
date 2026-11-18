@@ -214,21 +214,22 @@ def rig_cat(gid, P, F, UV, N, body, J, iris, eye_y, eye_x, eye_r, eye_in=0.74, c
     eyes, parts = {}, []
     Pc = P.copy()
     for sx, side in ((1, 'L'), (-1, 'R')):
-        S = np.array([sx * eye_x, eye_y, ray_z(sx * eye_x, eye_y)])
+        er = eye_r * (1.0 if sx > 0 else 0.9); ey_ = eye_y + (0.05 if sx > 0 else -0.02)   # hand-drawn: not quite a pair
+        S = np.array([sx * eye_x, ey_, ray_z(sx * eye_x, ey_)])
         ax = np.array([0.27 * sx, 0.06, 1.0]); ax /= np.linalg.norm(ax)
-        c = S - ax * (eye_r * eye_in)                              # the cornea proud of the socket, as a cat's is
+        c = S - ax * (er * eye_in)                              # the cornea proud of the socket, as a cat's is
         tilt = 0.16 * sx                                           # outer corner up
         fb = frame_basis(ax, tilt)
-        Pc = carve_eye2(Pc, c, fb[0], fb[1], fb[2], eye_r, OPEN_EYE[0], OPEN_EYE[1])
+        Pc = carve_eye2(Pc, c, fb[0], fb[1], fb[2], er, OPEN_EYE[0], OPEN_EYE[1])
         eyes[side] = dict(c=c, ax=ax, tilt=tilt, s=fb[2])
-        bp, bn, buv, bt = eyeball(c, ax, eye_r, fuv['normal'])
+        bp, bn, buv, bt = eyeball(c, ax, er, fuv['normal'])
         parts.append(('eye' + side, bp, bn, buv, bt))
         for k, up in enumerate((True, False)):
             # each lid its own patch in the strip (64 x 24 px): rim, then the fur round the eye
             rx = 420 + (0 if sx > 0 else 140) + k * 70
             rect = (rx, H0 + 40, 64, 24)
-            lid_texels(tex, rect, c, ax, eye_r * 1.02, up, tilt, colour_at, hexes([MOUTH['rim'], '#3a2c26']), seed=k + 3 * (sx > 0))
-            lp, ln, luv, lt = lid(c, ax, eye_r * 1.02, up, tilt, (rx / W, (H0 + 40) / H, 64 / W, 24 / H), az=1.5, rim=0.1)
+            lid_texels(tex, rect, c, ax, er * 1.02, up, tilt, colour_at, hexes([MOUTH['rim'], '#3a2c26']), seed=k + 3 * (sx > 0))
+            lp, ln, luv, lt = lid(c, ax, er * 1.02, up, tilt, (rx / W, (H0 + 40) / H, 64 / W, 24 / H), az=1.5, rim=0.1)
             parts.append(('lid' + ('U' if up else 'D') + side, lp, ln, luv, lt))
     # --- the mouth: lips cut apart, the jaw weights, the inside of the mouth
     # the sculpt has a lip crease at y 23.63 (source units) from the nose to the corners (z 26): cut along it
@@ -524,11 +525,18 @@ def make_mikan(coat='calico'):
     out[inner_ear & (y < 28.3) & (np.abs(x - ex) < 0.3)] = hexes(CAL['white'])[6]          # the pale tuft at the base
     pads = ok & (y < 0.6) & (Ns[..., 1] < -0.3)
     out[pads] = hexes(['#7a5f5c', '#8c6e69', '#9b7b74'])[np.clip((hash2(xx_, yy_, 5) * 3).astype(int), 0, 2)[pads]]
+    mz = ok & (z > 24.3) & (ax < 1.9) & (y > 21.7) & (y < 23.3) & (lum < 0.62)
+    put(mz & ~pink, 'white', 8, 0.74)
+    ink = hexes(['#3a2a26'])[0]
+    for sx in (-1, 1):                                    # two short strokes, a little uneven, like a pen sketch
+        cx, cy, rr = sx * 0.27, 23.05 + (0.02 if sx > 0 else 0), 0.26
+        d = np.hypot(x - cx, (y - cy) * 1.15)
+        out[ok & (z > 25.0) & (np.abs(d - rr) < 0.055) & (y < cy) & (ax < 0.62)] = ink
     body = np.clip(out, 0, 255).astype(np.uint8)
     global OPEN_EYE
     OPEN_EYE = (0.74, -0.66)
     lip = lambda X: 22.55 - 0.35 * (np.asarray(X) / 1.5) ** 2
-    return rig_cat('mikan' if coat == 'calico' else 'stray', P, F, UV, N, body, fri_joints(J, O), MIKAN_EYE if coat == 'calico' else STRAY_EYE, eye_y=25.24, eye_x=1.6, eye_r=0.72, eye_in=0.62, cut=dict(
+    return rig_cat('mikan' if coat == 'calico' else 'stray', P, F, UV, N, body, fri_joints(J, O), MIKAN_EYE if coat == 'calico' else STRAY_EYE, eye_y=25.24, eye_x=1.6, eye_r=0.36, eye_in=0.86, cut=dict(
         zone=lambda C: np.zeros(len(C), bool),
         lower=lambda C: (C[:, 1] < lip(C[:, 0]) - 0.02) & (C[:, 2] > 21.0) & (np.abs(C[:, 0]) < 2.6) & (C[:, 1] > 19.8),
         fall=lambda Q: np.clip((Q[:, 2] - 21.0) / 1.6, 0, 1) * np.clip((2.6 - np.abs(Q[:, 0])) / 0.9, 0, 1) * np.clip((Q[:, 1] - 19.8) / 0.8, 0, 1),

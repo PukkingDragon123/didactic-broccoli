@@ -11,7 +11,7 @@
   export), so each figure script is only its sculpt, its paint and its clip.
 - Face: painted strokes, dots and shapes on a surface seen from one direction (mouths, brows, stitches, marker
   lines), in figure space so they wrap across UV seams.
-- screw_eye(): the keychain screw eye (the game's ball chain hangs from its pt_chain point: src/game/keychains.js).
+- hand_face(): the owner's hand-drawn face: two uneven ink dots and one brush-stroke mouth (docs/ref/faces_owner.png).
 """
 import math
 import os
@@ -122,26 +122,84 @@ def drop(name, tip, r, length, region='drop', n=10, axis=(0, 0, -1)):
     return ob
 
 
-def screw_eye(top, eye_r=2.0, wire=0.55, yaw=0.0):
-    """The keychain screw eye (the game hangs its ball chain from it: src/game/keychains.js, pt_chain): a wire ring
-    on a short threaded shank screwed into the figure at `top`. Returns (low, [sculpt...], pin) where pin is the inside
-    top of the ring (where the chain's clasp hangs). yaw: turn of the ring's plane (degrees about Z)."""
-    t = np.array(top, float)
-    c = t + np.array((0, 0, 1.0 + eye_r))
-    ring = [tuple(c + np.array((eye_r * math.cos(a), 0, eye_r * math.sin(a)))) for a in np.linspace(0, 2 * math.pi, 24, endpoint=False)]
-    lo = tk.tube('eye', ring[::4], wire, n=4, closed=True)
-    hi = tk.tube('eye_hi', ring, wire * 1.05, n=10, closed=True)
-    tk.subsurf(hi, 1)
-    sh_lo = tk.cyl('shank', 0.72, t[2] - 2.5, t[2] + 1.3, n=6, at=(t[0], t[1]), bevel=0, segs=0)
-    sh_hi = tk.lathe('shank_hi', [(0, t[2] - 2.5)] + [(0.78 if k % 2 else 0.6, t[2] - 2.3 + 0.32 * k) for k in range(6)] +
-                     [(0.95, t[2] + 0.2), (0.95, t[2] + 0.75), (0.7, t[2] + 1.3), (0, t[2] + 1.3)], n=12, centre=(t[0], t[1], 0))
-    for o in (lo, hi):
-        tk.rotate(o, yaw, 'Z', pivot=tuple(t))
-    for o in (hi, sh_hi):
-        tk.set_region(o, 'metal')
-    low = tk.join([lo, sh_lo], 'eye')
-    pin = tuple(c + np.array((0, 0, eye_r - wire)))
-    return low, [hi, sh_hi], pin
+# ------------------------------------------------------------------ hand-drawn faces (the owner's rule, docs/ref/faces_owner.png)
+INK = '#1f1a1d'
+
+
+def _wob(t, seed, k=1.0):
+    """A smooth seeded wobble (-1..1) along a parameter t: a quick marker hand."""
+    r = np.random.default_rng(seed)
+    a, b, c = r.uniform(0, 6.3, 3)
+    return k * (0.55 * np.sin(t * 5.1 + a) + 0.3 * np.sin(t * 11.3 + b) + 0.15 * np.sin(t * 23.0 + c))
+
+
+def ink_dot(f, cu, cv, w, h, rot=0.0, seed=0):
+    """A solid ink dot: a slightly lumpy, slightly tilted oval (never a perfect circle). w, h: full size (mm)."""
+    u, v = f.U - cu, f.V - cv
+    cr, sr = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+    u, v = u * cr + v * sr, -u * sr + v * cr
+    th = np.arctan2(v / h, u / w)
+    rr = 1 + 0.09 * _wob(th / 2, seed) + 0.06 * np.cos(2 * th + seed)
+    return f.m & ((u / (w / 2)) ** 2 + (v / (h / 2)) ** 2 <= rr * rr)
+
+
+def ink_line(f, pts, w, seed=0, press=(0.75, 1.0, 0.8), jitter=0.06, n=24):
+    """One brush stroke along a polyline [(u, v), ...]: pressure (width factor at start, middle, end) and a slight
+    sideways wobble, like a quick marker line. w: the widest width (mm)."""
+    P = np.asarray(pts, float)
+    seg = np.linalg.norm(np.diff(P, axis=0), axis=1)
+    cum = np.concatenate([[0], np.cumsum(seg)])
+    ts = np.linspace(0, 1, n)
+    Q = np.stack([np.interp(ts * cum[-1], cum, P[:, 0]), np.interp(ts * cum[-1], cum, P[:, 1])], 1)
+    d = np.gradient(Q, axis=0)
+    nrm = np.stack([-d[:, 1], d[:, 0]], 1) / (np.linalg.norm(d, axis=1)[:, None] + 1e-9)
+    Q = Q + nrm * (_wob(ts * 3, seed, jitter))[:, None]
+    wid = np.interp(ts, [0, 0.5, 1], press) * w * (1 + 0.12 * _wob(ts * 2, seed + 7))
+    out = np.zeros_like(f.m)
+    for i in range(n - 1):
+        out |= f.dist(Q[i:i + 2]) <= (wid[i] + wid[i + 1]) / 4
+    return f.m & out
+
+
+def hand_face(P, c, axis=(0, -1, 0), up=(0, 0, 1), eyes=(4.0, 0.0), eye=(0.95, 1.2), mouth='smile', mouth_at=(0.0, -2.2),
+              mouth_w=4.0, seed=1, ink=INK, where=None, depth=6.0, tilt=0.0, line=0.42, teeth=3, flip=False):
+    """A face as the owner draws them: two small solid ink dots (uneven), one brush-stroke mouth.
+    eyes: (half the spacing, height of the eye line above c); eye: dot (width, height);
+    mouth: 'smile' (a flat line with a little upturn at one end), 'dash' (a short slanted dash), 'grin' (a big grin
+    with `teeth` vertical tooth strokes), 'flat' (a plain wobbly line), or None. flip: mirror the mouth's asymmetry.
+    Returns the Face (its frame, for anything else drawn on the same face)."""
+    f = Face(P, c, axis, up=up, depth=depth, where=where)
+    g, ey = eyes
+    r = np.random.default_rng(seed)
+    for k, su in enumerate((-1, 1)):
+        sz = 1.0 if k == 0 else r.uniform(0.82, 0.92)
+        P.flat(ink_dot(f, su * g + r.uniform(-0.12, 0.12), ey + (tilt * su) + r.uniform(-0.1, 0.1), eye[0] * sz, eye[1] * sz,
+                       rot=r.uniform(-12, 12), seed=seed + k), ink)
+    mu, mv = mouth_at
+    sx = -1 if flip else 1
+    W = mouth_w
+    if mouth == 'smile':
+        pts = [(mu - sx * W / 2, mv + 0.05), (mu - sx * W / 6, mv - 0.08), (mu + sx * W / 4, mv - 0.05), (mu + sx * W * 0.43, mv + 0.12),
+               (mu + sx * W / 2, mv + 0.42)]
+        P.flat(ink_line(f, pts, line, seed=seed + 3, press=(0.8, 1.0, 1.15)), ink)
+    elif mouth == 'dash':
+        pts = [(mu - W / 2, mv - sx * W * 0.08), (mu + W / 2, mv + sx * W * 0.1)]
+        P.flat(ink_line(f, pts, line, seed=seed + 3, press=(0.7, 1.0, 1.1), n=12), ink)
+    elif mouth == 'flat':
+        pts = [(mu - W / 2, mv), (mu, mv - 0.06), (mu + W / 2, mv + 0.04)]
+        P.flat(ink_line(f, pts, line, seed=seed + 3, press=(0.8, 1.0, 0.85)), ink)
+    elif mouth == 'grin':
+        H = W * 0.42
+        top = [(mu - W * 0.44, mv + 0.15), (mu, mv + 0.32), (mu + W * 0.42, mv + 0.12)]
+        bot = bezier((mu - W * 0.52, mv + 0.55), (mu - W * 0.05, mv - H * 1.9), (mu + W * 0.52, mv + 0.35), 14)
+        P.flat(ink_line(f, top, line * 1.05, seed=seed + 3, press=(0.9, 1.0, 0.85)), ink)
+        P.flat(ink_line(f, [(p[0], p[1]) for p in bot], line, seed=seed + 4, press=(0.6, 1.0, 1.1)), ink)
+        for i in range(teeth):
+            x = mu + W * (-0.24 + 0.48 * i / max(1, teeth - 1))
+            yb = np.interp(x, [p[0] for p in bot], [p[1] for p in bot])
+            yt = mv + 0.3 - 0.0 * x
+            P.flat(ink_line(f, [(x - 0.05, yt - 0.1), (x + 0.12 * (i - 1), yb + 0.25)], line * 0.7, seed=seed + 9 + i, press=(1.0, 0.9, 0.7), n=8), ink)
+    return f
 
 
 # ------------------------------------------------------------------ AO only from what moves with the part

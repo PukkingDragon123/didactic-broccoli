@@ -18,6 +18,7 @@ import bk  # noqa: E402  (lib on the path, bpy first)
 import numpy as np  # noqa: E402
 import tk  # noqa: E402
 import tt  # noqa: E402
+import kit  # noqa: E402  (lib/kit.py: the keychain screw eye)
 
 F = bk.start('teruteru', 'shito')
 
@@ -53,16 +54,14 @@ for nm, cn, r in (('drop_a', 'c_fr', 1.75), ('drop_b', 'c_fl', 1.5), ('drop_c', 
     tk.decimate(lo, 30)
     DROPS[nm] = (lo, [hi], tuple(tip), cn)
 
-# ------------------------------------------------------------------ the keychain
-eye_lo, eye_hi, PIN = bk.screw_eye((KNOT[0], KNOT[1], KNOT[2] + 1.4))
 
 # ------------------------------------------------------------------ parts
+kit.eyepin(F, at=(KNOT[0], KNOT[1], KNOT[2] + 1.6), bone='root')
 F.part('body', tk.join([body[0], knot[0], cord[0]], 'body'), body[1] + knot[1] + cord[1])
 for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
 for nm, (lo, his, tip, cn) in DROPS.items():
     F.part(nm, lo, his, bone=nm, kind='gloss', uvw=0.7)
-F.part('eye', eye_lo, eye_hi, kind='metal', uvw=0.5)
 
 
 # ------------------------------------------------------------------ rig and the gimmick
@@ -90,7 +89,7 @@ def make_rig():
         R.bone(nm, tip, parent='root')
     for p in F.parts:
         R.attach(p.low, p.bone)
-    R.point('chain', PIN, bone='root')
+    kit.points(R)
     k = R.key
     with R.action('gimmick'):
         bones = ['root'] + list(CORNERS) + list(DROPS)
@@ -135,7 +134,7 @@ def make_rig():
 # ------------------------------------------------------------------ paint
 import paint as pt  # noqa: E402
 
-FACE_C = (0.0, -11.0, 10.6)
+FACE_C = (0.0, -12.2, 8.4)
 
 
 def paint(P):
@@ -151,23 +150,15 @@ def paint(P):
     P.fill('corner', CLOTH, tone=sh, base=0.12 - 0.3 * tk.smoothstep(31, 24, Z))
     P.fill('cord', pt.ramp('#b9564a', 6, shift=0.06), tone=sh, base=0.05)
     P.fill('drop', pt.ramp('#8cc3e6', 6, shift=0.05, light=0.6), tone=sh * 0.6, base=0.1)
-    P.fill('metal', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
+    P.fill('pin', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
     tt.drop_gloss(P, 'drop')
-    # the face, drawn the right way up on the upside-down head
-    f = bk.Face(P, FACE_C, (0, -1, 0), depth=5, where=P.region('cloth'))
-    P.flat(f.ell(-5.0, -1.6, 2.8, 1.8) & (f.V < -1.0), '#e9a3a6')  # (blush, painted under everything else)
-    P.flat(f.ell(5.2, -1.8, 2.6, 1.7) & (f.V < -1.1), '#e9a3a6')
-    # the painted eye (left): a plain dark bead, a little flattened (sleepy), one tiny highlight; a worried brow
-    P.flat(f.ell(-4.0, 1.2, 1.5, 1.15), '#1d1a22')
-    P.flat(f.ell(-4.5, 1.55, 0.36), '#f6f2ea')
-    P.flat(f.stroke([(-6.1, 3.5), (-4.3, 3.95), (-2.5, 4.5)], 0.5, taper=True), '#2b2830')
-    # the marker eye (right): a dot drawn in marker with the pen's tail, and the ink running down in the rain
-    P.flat(f.ell(4.2, 1.2, 1.45, 1.35, rot=12) | f.stroke([(3.4, 0.5), (5.6, 1.9)], 0.5, taper=True), '#262330')
-    for u0, L, w in ((3.4, 5.6, 0.5), (4.8, 3.9, 0.42), (2.6, 2.6, 0.36)):
-        pts = [(u0 + 0.25 * math.sin(i * 1.7), -0.5 - L * i / 6) for i in range(7)]
-        P.flat(f.stroke(pts, w, taper=True), '#3a3f58')
-    # a small wobbly pout
-    P.flat(f.stroke([(-1.5, -2.9), (-0.7, -2.45), (0.1, -2.8), (0.9, -2.5), (1.5, -2.85)], 0.5), '#2a2328')
+    # the face, drawn the right way up on the upside-down head, low and small: two tiny dots close together and a
+    # short slanted dash (glum); the rain has made one eye's ink run
+    fb = bk.Face(P, FACE_C, (0, -1, 0), depth=5, where=P.region('cloth'))
+    P.flat(fb.ell(-3.9, -1.2, 1.7, 1.0) | fb.ell(4.1, -1.3, 1.6, 0.95), '#e5aeb0')
+    f = bk.hand_face(P, FACE_C, eyes=(1.55, 0.7), eye=(0.9, 1.15), mouth='dash', mouth_at=(0.35, -1.5), mouth_w=1.8, seed=11,
+                     where=P.region('cloth'), line=0.4)
+    P.flat(bk.ink_line(f, [(1.62, 0.2), (1.8, -1.0), (1.55, -2.4), (1.75, -3.6)], 0.26, seed=4, press=(1.0, 0.6, 0.35)), '#3d4560')
     P.lines(['cloth', 'corner'], ['cord'], step=2)
     P.lines(['cord'], step=1)
     P.lines(['drop'], step=1)
@@ -175,5 +166,5 @@ def paint(P):
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'eye')] + [(c, 'body') for c in CORNERS], cam=((60, -84, 52), (0, 0, 24)),
+bk.run(F, make_rig, paint, skip=[('body', 'pin')] + [(c, 'body') for c in CORNERS], cam=((60, -84, 52), (0, 0, 24)),
        fold=(0, 12, 36, 92), frames=100)

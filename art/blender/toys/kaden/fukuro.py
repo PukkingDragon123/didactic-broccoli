@@ -1,9 +1,9 @@
 """くびふりフクロウ Swivel Owl: a Shōwa mint-green desk fan that is an owl (series kaden, concepts_C.md).
 
-The wire guard is the owl's facial disc (its radial wires are the disc's feathers, two wire rings ring the eyes like
-an owl's face), the maker's badge is the beak, the two pull-knobs on the motor are the ear tufts, the column is the
-plump body with its folded wings and the switch feet grip the base. The vent cover at the back is painted with the
-false eyes a pygmy owl has on the back of its head, so it still looks at you when it turns round.
+The wire guard is the owl's facial disc (its radial wires are the disc's feathers), the enamel hub plate in the middle
+is its face (two hand-drawn dots), the maker's badge is the beak, the two pull-knobs on the motor are the ear tufts, the column is the
+plump body with its folded wings and the switch feet grip the base. The vent cover at the back carries the false face
+a pygmy owl has on the back of its head, so it still looks at you when it turns round.
 Gimmick: a toe-key goes down, the fan oscillates, then turns its head right round to look behind it, tilts it and
 swings back with a flick of the tufts.
 
@@ -27,7 +27,7 @@ F = Fig('kaden', 'fukuro')
 BH = 6.2                 # the base's height
 HZ = 40.0                # the head's centre (the fan's motor axis)
 GF = -12.6               # the guard's front (y)
-EYE_X, EYE_Z = 6.3, HZ + 2.4
+PLATE_R = 9.4            # the face plate in the middle of the guard (the owl's face)
 KNUCKLE = (0, 0.0, 25.2)  # the tilt joint (axis x)
 
 # ------------------------------------------------------------------ the base: a domed Shōwa fan foot
@@ -184,13 +184,7 @@ def sc_guard(h):
         front = (N[:, 1] < -0.25) & (r < 14.9)
         wires = (np.abs(np.mod(a + 6.0, 360 / 28) - 360 / 56) < 1.5 + 6.0 / np.maximum(r, 1)) & (r > 3.0)
         rings = (np.abs(r - 11.8) < 0.45) | (np.abs(r - 14.6) < 0.5)
-        d = np.where(front, np.where(wires | rings, 0.3, -0.55), 0.0)
-        # the owl's face: a raised wire ring round each eye, joined in a frowning V over the badge
-        for sx in (1, -1):
-            re = np.hypot(V[:, 0] - sx * EYE_X, V[:, 2] - EYE_Z)
-            d = np.where(front & (np.abs(re - 6.0) < 0.6), 0.75, d)
-        brow = front & (np.abs((V[:, 2] - (HZ + 6.2)) + 0.55 * np.abs(V[:, 0])) < 0.7) & (np.abs(V[:, 0]) < 4.5)
-        d = np.where(brow, 0.8, d)
+        d = np.where(front & (r > PLATE_R - 0.3), np.where(wires | rings, 0.3, -0.55), 0.0)
         rim = (r > 15.0) & (r < 16.4)
         return d + 0.25 * rim
     tk.push(h, f)
@@ -198,24 +192,15 @@ def sc_guard(h):
 
 guard_lo, guard_hi = cx.low(guard, 'guard', 230, lo=0, hi=3, sculpt=sc_guard, region='wire')
 
-# eye cups (chrome rims) and bead eyes, set on the guard
+# the face plate (cream enamel: the owl's face, painted by hand) and the maker's badge on it: the beak
 FACE = []
-for sx in (1, -1):
-    c = np.array((sx * EYE_X, 0, EYE_Z))
-    c[1] = guard_front(c[None, :])[0] - 0.9
-    ax = np.array((sx * 0.22, -1.0, 0.06))
-    cup = tk.lathe('cup', [(4.0, -1.2), (5.0, -1.0), (5.3, 0.3), (4.6, 0.9), (4.0, 0.4)], n=16)
-    from mathutils import Vector
-    q = Vector((0, 0, 1)).rotation_difference(Vector(tuple(ax / np.linalg.norm(ax))))
-    tk.transform(cup, q.to_matrix().to_4x4())
-    tk.move(cup, tuple(c))
-    FACE.append(cx.low(cup, 'cup', 32, lo=0, hi=1, region='chrome'))
-    FACE.append(cx.bead('eye', tuple(c + ax / np.linalg.norm(ax) * 0.2), ax, r=4.3, depth=1.7, n_lo=10))
-# the maker's badge: the beak
-bk = tk.slab('badge', [(-2.7, 2.0), (2.7, 2.0), (2.3, -1.0), (0.0, -5.2), (-2.3, -1.0)], 2.4, plane='XZ', at=0.0, bevel=0.7, segs=2)
-tk.move(bk, (0, GF - 0.6, HZ - 1.6))
-tk.deform(bk, lambda V: V + np.stack([0 * V[:, 0], 0.07 * (V[:, 2] - HZ + 1.6) ** 2 * 0 - 0.18 * (HZ + 2.0 - V[:, 2]), 0 * V[:, 0]], 1))
-FACE.append(cx.low(bk, 'badge', 40, lo=0, hi=2, region='badge'))
+plate = tk.lathe('plate', [(0, GF - 1.7), (4.8, GF - 1.5), (8.0, GF - 0.9), (PLATE_R, GF + 0.1), (PLATE_R - 0.3, GF + 1.3), (0, GF + 1.3)],
+                 n=24, axis='Y', centre=(0, 0, HZ))
+FACE.append(cx.low(plate, 'plate', 70, lo=0, hi=2, region='plate'))
+bk = tk.slab('badge', [(-1.9, 1.2), (1.9, 1.2), (1.6, -0.9), (0.0, -3.7), (-1.6, -0.9)], 2.0, plane='XZ', at=0.0, bevel=0.6, segs=2)
+tk.move(bk, (0, GF - 2.0, HZ - 2.2))
+tk.deform(bk, lambda V: V + np.stack([0 * V[:, 0], -0.16 * (HZ - 1.0 - V[:, 2]), 0 * V[:, 0]], 1))
+FACE.append(cx.low(bk, 'badge', 36, lo=0, hi=2, region='badge'))
 
 # ------------------------------------------------------------------ ear tufts: the oscillation pull-knobs
 TUFTS = {}
@@ -353,41 +338,31 @@ def paint(P):
     front = gd & (on[:, :, 1] < -0.25) & (r < 14.9)
     wires = (np.abs(np.mod(a + 6.0, 360 / 28) - 360 / 56) < 1.5 + 6.0 / np.maximum(r, 1)) & (r > 3.0)
     rings = (np.abs(r - 11.8) < 0.45) | (np.abs(r - 14.6) < 0.5)
-    face = np.zeros_like(gd)
-    for sx in (1, -1):
-        re = np.hypot(X - sx * EYE_X, Z - EYE_Z)
-        face |= np.abs(re - 6.0) < 0.6
-    brow = (np.abs((Z - (HZ + 6.2)) + 0.55 * np.abs(X)) < 0.7) & (np.abs(X) < 4.5)
-    metal = gd & (~front | wires | rings | face | brow)
+    metal = gd & (~front | wires | rings)
     P.fill(metal, CHROME, tone=sh * 1.5, base=0.15)
-    gap = gd & front & ~(wires | rings | face | brow)
+    gap = gd & front & ~(wires | rings)
     blade = np.zeros_like(gd)
     for a0 in (20, 140, 260):
         da = np.abs((a - a0 + 180) % 360 - 180)
         blade |= (da < 30 - r * 0.6) & (r < 13.6) & (r > 3.2)
     P.fill(gap & blade, pt.ramp('#88b4c4', 5, shift=0.05), tone=sh * 0.5, base=-0.3)
     P.fill(gap & ~blade, pt.ramp('#384448', 5, shift=0.05), tone=sh * 0.5, base=0.0)
-    # the back cover: a pygmy owl's false eyes painted round the vents
+    # the face plate: cream enamel, a soft airbrushed blush, and the face drawn on by hand: two ink dots set wide
+    P.fill('plate', CREAM, tone=sh, base=0.12)
+    pl = P.region('plate')
+    for sx in (1, -1):
+        P.tint(pl & ((X - sx * 5.6) ** 2 / 5.0 + (Z - (HZ - 2.4)) ** 2 / 2.2 < 1), pt.ramp('#efb4a0', 6, shift=0.05), sh + 0.15)
+    cx.face(P, (0, GF - 1.7, HZ), (0, -1, 0), eyes=[(4.7, 0.3), (-4.5, 0.1)], eye_r=0.95, where=pl, facing=-0.2)
+    # the back cover: the false face a pygmy owl has on the back of its head (it still looks at you when it turns)
     back = P.region('mint') & (Yc > 6.6)
-    for sx in (1, -1):
-        rb = np.hypot(X - sx * 5.0, Z - (HZ + 2.0))
-        P.flat(back & (rb < 2.6), '#2c2a2a')
-        P.flat(back & (rb < 1.7), '#f0e4c4')
-        P.flat(back & (rb < 0.9), '#2c2a2a')
-    # the eyes: big amber owl eyes, a sleepy upper lid
-    for sx in (1, -1):
-        c = np.array((sx * EYE_X, 0, EYE_Z))
-        c[1] = guard_front(c[None, :])[0] - 0.9
-        ax = np.array((sx * 0.22, -1.0, 0.06))
-        ax /= np.linalg.norm(ax)
-        P.eye(tuple(c + ax * 1.9), tuple(ax), 4.15, iris='#f0a321', pupil='#1a1210', ring='#2b1e1a', look=(-sx * 0.08, -0.04),
-              lid=0.42, lidcol='#6d9f8f', where=P.region('eye'), facing=-0.4)
+    cx.face(P, (0, 11.9, HZ), (0, 1, 0), eyes=[(4.4, 1.4), (-4.6, 1.6)], eye_r=0.9, mouth=[cx.dash(2.2, slant=0.25)], where=back, facing=0.2)
     # the badge-beak: orange enamel, a chrome edge, a darker hooked tip
     P.fill('badge', pt.ramp('#e99a34', 6, shift=0.06), tone=sh, base=0.1)
     bd = P.region('badge')
-    P.tint(bd & (Z < HZ - 4.6), pt.ramp('#b8641e', 6, shift=0.06), sh)
+    P.tint(bd & (Z < HZ - 4.9), pt.ramp('#b8641e', 6, shift=0.06), sh)
     P.lines(['badge'], None, col='#8c4a18')
-    P.lines(['mint', 'wing', 'bib'], ['chrome', 'wire', 'tuft', 'eye', 'badge', 'foot'], step=2)
+    P.lines(['mint', 'wing', 'bib'], ['chrome', 'wire', 'tuft', 'badge', 'foot'], step=2)
+    P.lines(['plate'], ['wire'], step=2)
     P.lines(['bib'], ['mint'], step=1)
     P.clusters()
     return P.done()
