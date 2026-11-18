@@ -61,13 +61,14 @@ DECOR = {  # series -> real-photo cut-outs (tools/cardref/cutouts.py: Open Image
     'minato': ['lighthouse_0', 'fish_2', 'canoe_1', 'lighthouse_2', 'fish_0'],
     'datesha': ['fedora_2', 'rose_2', 'tie_1', 'tie_0', 'cocktail_2'],
 }
-SLOTS = {  # template -> cut-out places (cx, cy, size, degrees, layer 'back' behind the toys / 'front' over them)
-    'crabcan': [(34, 108, 44, -20, 'back'), (184, 102, 42, 25, 'back'), (194, 186, 34, -30, 'front'), (18, 188, 30, 15, 'front'), (296, 52, 24, 20, 'front')],
-    'pipeotter': [(212, 40, 38, -15, 'back'), (300, 30, 34, 20, 'back'), (16, 116, 34, 10, 'back'), (204, 150, 30, -10, 'front'), (308, 146, 28, 15, 'front')],
-    'fruitdragon': [(10, 124, 52, -25, 'back'), (312, 118, 50, 25, 'back'), (164, 124, 34, -15, 'back'), (10, 200, 32, 20, 'front'), (312, 200, 30, -20, 'front')],
-    'tamakero': [(300, 74, 40, 20, 'back'), (20, 70, 38, -15, 'back'), (226, 184, 30, 10, 'front'), (136, 186, 28, -10, 'front'), (180, 150, 26, 15, 'back')],
-    'birdphone': [(138, 44, 34, 20, 'back'), (140, 192, 36, -10, 'front'), (10, 196, 34, 15, 'front'), (306, 200, 32, -15, 'front'), (262, 130, 26, 10, 'back')],
-    'mandrake': [(24, 34, 40, -20, 'back'), (178, 40, 36, 20, 'back'), (186, 158, 44, 15, 'back'), (310, 176, 40, -15, 'front'), (150, 236, 26, 10, 'front')],
+SLOTS = {  # template -> cut-out frame (cx, cy, size, degrees, layer): one big anchor, two medium, one small; they hug
+    # the hero and the logo, overlap panel edges and bleed off the card, all lit from the top left (shadow down-right)
+    'crabcan': [(174, 106, 54, 20, 'back'), (70, 104, 42, -20, 'back'), (26, 186, 40, -15, 'front'), (262, 64, 28, 15, 'front')],
+    'pipeotter': [(304, 92, 62, 15, 'back'), (18, 118, 44, 10, 'back'), (214, 148, 36, -10, 'front')],
+    'fruitdragon': [(8, 128, 70, -25, 'back'), (314, 106, 64, 25, 'back'), (10, 180, 36, 20, 'front'), (306, 186, 34, -20, 'front')],
+    'tamakero': [(150, 164, 52, 10, 'back'), (14, 92, 50, -15, 'back'), (302, 72, 44, 20, 'back'), (228, 186, 34, 10, 'front')],
+    'birdphone': [(26, 62, 66, -15, 'back'), (132, 196, 44, -10, 'front'), (312, 118, 46, 15, 'back'), (150, 36, 30, 20, 'back')],
+    'mandrake': [(194, 140, 66, 15, 'back'), (306, 178, 44, -15, 'front'), (22, 38, 42, -20, 'back'), (10, 232, 34, 10, 'front')],
 }
 
 
@@ -231,10 +232,38 @@ class Card:
         L.im.alpha_composite(t, (max(X, 0), max(Y, 0)), (max(-X, 0), max(-Y, 0)))
 
     def decor(self, ref, only=None):
+        if self.sid in WATER: return WATER[self.sid](self)
         keys = DECOR.get(self.sid, [])
         for k, sl in enumerate(SLOTS[ref]):
             if only and sl[4] != only or not keys: continue
             self.cut(keys[k % len(keys)], *sl)
+
+    def wave(self, x0, x1, crest, bot, amp=4, period=26, layer='front', clip=None, tint=None, foam=True):
+        """A band of real sea (tools/cardref/cutouts.py sea_water + sea_foam) with a hard, pixel-stepped scalloped crest
+        and a ragged line of real whitewater along it. clip: (x, y, w, h, r) a rounded panel it stays inside."""
+        gw, gh = x1 - x0, bot - crest + amp + 1
+        def tex(key, w, h):
+            t = Image.open(os.path.join(self.ctx['cuts'], key + '.png')).convert('RGB')
+            k = max(w / t.width, h / t.height); t = t.resize((int(t.width * k) + 1, int(t.height * k) + 1), Image.LANCZOS)
+            return t.crop(((t.width - w) // 2, (t.height - h) // 2, (t.width - w) // 2 + w, (t.height - h) // 2 + h))
+        water = np.asarray(tex('sea_water', 2 * gw, 2 * gh)).astype(np.float32)
+        if tint is not None: water = water * 0.7 + np.array(rgb(tint), np.float32) * 0.3 * water / 160
+        fo = np.asarray(tex('sea_foam', 2 * gw, 2 * gh)).astype(np.float32)
+        m = np.zeros((gh, gw), bool); f = np.zeros((gh, gw), bool)
+        for gx in range(gw):
+            u = ((gx + x0) % period) / period
+            top = int(round(amp * (1 - (1 - (2 * u - 1) ** 2)) + (1 if 0.78 < u < 0.92 else 0)))  # scallops with a curl
+            m[top:, gx] = True
+            if foam: f[top:top + 2 + (gx * 7 + gx // 3) % 3, gx] = True
+        M2 = np.repeat(np.repeat(m, 2, 0), 2, 1); F2 = np.repeat(np.repeat(f, 2, 0), 2, 1)
+        rgbv = np.where(F2[..., None], np.maximum(fo, 200), water)
+        a = (M2 * 255).astype(np.uint8)
+        if clip is not None:
+            cx, cy, cw, ch, cr = clip
+            cm = Image.new('L', (2 * W, 2 * H), 0); ImageDraw.Draw(cm).rounded_rectangle((2 * cx, 2 * cy, 2 * (cx + cw) - 1, 2 * (cy + ch) - 1), 2 * cr, fill=255)
+            a = np.minimum(a, np.asarray(cm.crop((2 * x0, 2 * (crest - amp), 2 * x1, 2 * (crest - amp + gh)))))
+        im = Image.fromarray(np.dstack([rgbv.clip(0, 255).astype(np.uint8), a]), 'RGBA')
+        (self.FC if layer == 'front' else self.P).im.alpha_composite(im, (2 * x0, 2 * (crest - amp)))
 
     def ground(self, S, box, bg, t=0.82):
         pattern(S, box, GROUND.get(self.sid, 'dots'), mixc(bg, self.ac if lum(bg) > 0.4 else WH, 1 - t), bg)
@@ -396,7 +425,6 @@ def prop_obakebaito(K, M, F):  # a haunted-house gate: dark posts, a beam, torn 
 
 def prop_sento(K, M, F):  # the bathtub: tiled walls of the tub in front, water inside
     tile, grout = 0xe8f0f2, 0x9ab8c8
-    M.rect(24, 112, 176, 12, 0x5aa0d0)
     F.rect(20, 118, 184, 36, tile)
     for y in range(118, 154, 9): F.rect(20, y, 184, 1, grout)
     for k, y in enumerate(range(118, 154, 9)):
@@ -576,6 +604,43 @@ def t_mandrake(K):
         F.d.arc((int(cx - d / 2 - 2), 190, int(cx + d / 2 + 1), 190 + d + 3), 20, 160, fill=rgb(WH) + (255,), width=2)
         K.names(F, it, cx, 240, cw - 4, col=WH, outline=[(1, INK)])
     K.strip(262, K.ac2)
+
+
+# ---------------------------------------------------------------- the water series: real sea, splashes, coral, kelp
+def w_kanikan(K):  # the tins bob in a real wave across the window; a burst behind, a fish in the swell, lemon afloat
+    K.cut('sea_splash', 128, 120, 104, 0, 'back')
+    K.cut('fish_0', 40, 168, 44, -12, 'back')
+    K.wave(8, 204, 176, 196, amp=4, period=28, clip=(8, 80, 196, 116, 7))
+    K.cut('lemon_1', 92, 186, 30, 15, 'front'); K.cut('oyster_2', 262, 64, 28, 15, 'front')
+
+
+def w_kasabuki(K):  # rain: a puddle across the window floor, the splash of a drop behind the hero, the cluster of blades
+    K.cut('sword_0', 186, 104, 60, 20, 'back'); K.cut('sea_splash', 140, 150, 60, 0, 'back')
+    K.wave(8, 204, 186, 196, amp=2, period=34, clip=(8, 80, 196, 116, 7), tint=0x8aa0b0)
+    K.cut('rose_2', 26, 186, 40, -15, 'front'); K.cut('rose_0', 262, 64, 28, 15, 'front')
+
+
+def w_yomise(K):  # the stalls on the sea floor: real coral and kelp framing them, drops rising, a starfish on the counter
+    K.wave(0, W, 0, 166, amp=0, layer='back', tint=0x0c1840, foam=False)  # real sea water, graded to the deep
+    K.cut('sea_kelp', 312, 96, 90, 0, 'back'); K.cut('sea_kelp', 8, 104, 70, 0, 'back')
+    K.cut('sea_coral', 28, 150, 64, 0, 'back'); K.cut('sea_coral', 222, 150, 48, 0, 'back')
+    K.cut('sea_spray', 262, 34, 56, 0, 'back'); K.cut('fish_1', 214, 62, 40, 8, 'back')
+    K.cut('starfish_1', 150, 134, 26, 10, 'front')
+
+
+def w_sento(K):  # real bath water in the tub, splashes over the rim, bath milk and a towel on the edge
+    K.cut('sea_splash', 70, 100, 56, 0, 'back'); K.cut('sea_splash', 160, 98, 50, 0, 'back')
+    K.wave(22, 202, 112, 124, amp=3, period=22, layer='back', tint=0x9ad0f0)
+    K.cut('milk_0', 198, 106, 30, 0, 'front'); K.cut('towel_1', 22, 112, 36, -10, 'front')
+
+
+def w_minato(K):  # the harbour: a lighthouse behind the hero, a real sea along the foot of the card, a fish leaping
+    K.cut('lighthouse_0', 302, 116, 92, 0, 'back'); K.cut('sea_splash', 196, 146, 72, 0, 'back')
+    K.wave(0, W, 168, 262, amp=5, period=30, layer='back')
+    K.cut('fish_2', 160, 172, 36, -35, 'front'); K.cut('canoe_1', 22, 40, 44, -10, 'back')
+
+
+WATER = {'kanikan': w_kanikan, 'kasabuki': w_kasabuki, 'yomise': w_yomise, 'sento': w_sento, 'minato': w_minato}
 
 
 TEMPLATES = {'crabcan': t_crabcan, 'pipeotter': t_pipeotter, 'fruitdragon': t_fruitdragon,

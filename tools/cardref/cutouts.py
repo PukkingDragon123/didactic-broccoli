@@ -84,6 +84,49 @@ def contact():
     o.save(os.path.join(os.path.dirname(CACHE), 'clone', 'cutouts.png'))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and 'sea' not in sys.argv:
     if 'contact' not in sys.argv: build()
     contact()
+
+
+# ------------------------------------------------------------------------------ water: real sea photos cut to shapes
+SEA = {  # piece: (Open Images id, crop box (fractions), mask rule)
+    'sea_water': ('0d76fa17adca869d', (0.0, 0.2, 1.0, 0.75), 'all'),       # turquoise sea surface (the wave bands)
+    'sea_foam': ('ae858f00bc05acce', (0.08, 0.45, 0.95, 0.86), 'all'),     # storm whitewater (the crest foam)
+    'sea_splash': ('15fb215666bb5782', (0.28, 0.18, 0.70, 0.62), 'white'), # a wave bursting on rock
+    'sea_spray': ('87c1fa1f66f7468a', (0.0, 0.36, 0.48, 0.84), 'bright'),  # drops and bubbles thrown up by a duck
+    'sea_coral': ('6f9e0d490b2122df', (0.04, 0.04, 0.80, 0.96), 'teal'),   # a coral head
+    'sea_kelp': ('89c168e6544ae65c', (0.22, 0.22, 0.92, 0.95), 'green'),   # kelp fronds
+}
+
+
+def sea():
+    meta = {}
+    for sub in ('test',):
+        for r in csv.DictReader(open(os.path.join(SEG, sub + '-images-with-rotation.csv'))): meta[r['ImageID']] = r
+    C = json.load(open(os.path.join(OUT, 'cuts.json')))
+    for key, (iid, (x0, y0, x1, y1), rule) in SEA.items():
+        a = np.asarray(source('oi:%s@test' % iid), np.float32); a = a * 255 if a.max() <= 1 else a
+        H, W = a.shape[:2]; a = a[int(y0 * H):int(y1 * H), int(x0 * W):int(x1 * W)]
+        r, g, b = a[..., 0], a[..., 1], a[..., 2]; L = 0.3 * r + 0.59 * g + 0.11 * b
+        m = {'all': np.ones(L.shape, bool), 'white': (L > 196) & (np.ptp(a, axis=2) < 46), 'bright': L > 96,
+             'teal': (b > 80) & (g > 70) & (b - r > 18), 'green': (g - b > 45) & (g > 60)}[rule]
+        if rule != 'all':  # open (drop specks) then close (fill pinholes), with PIL min / max filters
+            from PIL import ImageFilter
+            mi = Image.fromarray((m * 255).astype(np.uint8))
+            mi = mi.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3))
+            mi = mi.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.MinFilter(5))
+            if rule == 'teal': mi = mi.filter(ImageFilter.MaxFilter(11)).filter(ImageFilter.MinFilter(11))
+            if rule == 'bright': mi = mi.filter(ImageFilter.MaxFilter(3))
+            m = np.asarray(mi) > 127
+        out = np.dstack([a.clip(0, 255).astype(np.uint8), (m * 255).astype(np.uint8)])
+        im = Image.fromarray(out, 'RGBA'); bb = im.getchannel('A').getbbox(); im = im.crop(bb); im.thumbnail((900, 900), Image.LANCZOS)
+        im.save(os.path.join(OUT, key + '.png'))
+        mm = meta[iid]
+        C[key] = dict(cls=key[4:], mask='colour key', id=iid, author=mm['Author'], title=mm['Title'], source=mm['OriginalLandingURL'], licence='CC BY 2.0')
+        print(key, im.size)
+    json.dump(C, open(os.path.join(OUT, 'cuts.json'), 'w'), indent=1)
+
+
+if __name__ == '__main__' and 'sea' in sys.argv:
+    sea()

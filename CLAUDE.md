@@ -60,8 +60,10 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - **All printed 2D art uses real images**: posters, flyers, packaging, product and drink labels, boxes, menus,
   magazines, signs with pictures, website product shots and gacha display cards are built from real photographs
   (toy cards: a render of the actual in-game toy on a real photo backdrop). Never drawn, procedural or AI-generated
-  imagery. **Gacha cards and toy posters (owner, latest): no real photo needed; the toys in several action poses, comic-style
-  action (speed lines, impact panels, English sound words), lots of themed patterns (ocean waves for sea series, etc.).**
+  imagery. **Gacha cards and toy posters (owner, latest): built ONLY from real-photo cut-outs of themed things (ocean water,
+  waves, splashes, bubbles, fruit, leaves, stationery…; never photos of Japan scenes), real-photo backgrounds, our toy
+  renders and pixel-font text. ZERO 2D art drawn by us (no drawn props, patterns, wavy lines, stripes, screen tone,
+  drawn water), no generic "AI" backgrounds, no hanging confetti / bunting / pennants.**
   **Posters and cards copy the owner's gashapon boards (scratchpad/ref_gacha) closely, ALL TEXT IN ENGLISH, ALL
   TEXT IN PIXEL-ART FONTS** (Alagard, the 5x7 bitmap font, OFL pixel fonts), crisp at the pixel grid; only hard pixel
   outlines and hard offset shadows, no glow, gradient, bevel or slick AI-style effects; every poster a unique layout. Real public-domain / CC0 vintage posters are welcome (brands retouched out); the rest is designed to a
