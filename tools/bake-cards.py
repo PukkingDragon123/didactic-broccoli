@@ -107,7 +107,7 @@ KIND_EN = {  # the card's catch ribbon (series data card.kind is the Japanese pr
     'sento': 'BATHHOUSE REGULARS FIGURE', 'teruteru': 'BALL-CHAIN MASCOT', 'tsuppari': 'TOUGH-GUY ANIMAL FIGURE',
     'yomise': 'DEEP-SEA NIGHT STALL FIGURE',
 }
-BURST = {  # the sticker slapped on the stage
+BURST = {  # the round sticker on the stage
     'henshin': ('TRANS-', 'FORMS!'), 'kasabuki': ('TRANS-', 'FORMS!'), 'hashigo': ('PLAY', 'SET!'), 'obakebaito': ('PLAY', 'SET!'),
     'teruteru': ('BALL', 'CHAIN!'), 'karakuri': ('WIND', 'IT UP!'), 'nakanohito': ('WHO', 'INSIDE?'), 'kaden': ('IT', 'MOVES!'),
     'yomise': ('LIGHTS', 'UP!'), 'otsukai': ('GOLD', 'LEAF!'), 'kabuki': ('MIE!',), 'sabaku': ('POSE!',), 'minato': ('POSE!',),
@@ -154,13 +154,9 @@ def split_title(name, face, maxw):
 
 def pattern(S, region, kind, col, seed=0):
     if kind == 'stripes': S.stripes(region, col, w=3, gap=5, slope=1)
-    elif kind == 'grid':
-        S.stripes(region, col, w=1, gap=7, slope=None); S.stripes(region, col, w=1, gap=7, slope=0)
-    elif kind == 'waves':  # seigaiha: rows of nested arcs
-        R = S._region(region); yy, xx = np.mgrid[0:S.h, 0:S.w]
-        cx = (xx + ((yy // 8) % 2) * 8) % 16 - 8; cy = yy % 8
-        d = np.sqrt(cx * cx + (cy - 8.0) ** 2)
-        S._paint(R & (((d.astype(int) % 3) == 0) & (d < 9)), col)
+    elif kind == 'grid':  # ruled lines (never crossed: no cross shapes on the print)
+        S.stripes(region, col, w=1, gap=5, slope=None)
+    elif kind == 'waves': S.stripes(region, col, w=2, gap=6, slope=None)  # (as the boards: dots and stripes only)
     else: S.dots(region, col, step=8, size=3)
 
 
@@ -309,8 +305,8 @@ def card(s):
     # the sticker
     bw = BURST.get(sid, ('NEW!',))
     bx, byy = LW - 38, 54
-    br = max(19, max(text_size(l, 'silkb')[0] for l in bw) // 2 + 9 + 3 * (len(bw) > 1))
-    F.burst(bx, byy, br, n=13, fill=YEL if acc != YEL else 0xfbf8f1, line=ink, t=2, inner=0.76, shadow=(2, 2, ink), seed=seed)
+    br = max(15, max(text_size(l, 'silkb')[0] for l in bw) // 2 + 5 + 2 * (len(bw) > 1))
+    F.roundel(bx, byy, br, fill=YEL if acc != YEL else 0xfbf8f1, line=ink, t=2, shadow=(2, 2, ink))
     for j, l in enumerate(bw):
         F.text(l, bx, byy + (j - (len(bw) - 1) / 2) * 9, 'silkb', 1, RED, anchor='mm')
     # the hero's caption: its name on a tag, its gimmick, an arrow to it, and a size bar

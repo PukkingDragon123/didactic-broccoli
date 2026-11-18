@@ -2060,6 +2060,10 @@ Real vintage posters, public domain (Wikimedia Commons; Japanese Government Rail
 Real paper and grime scans, CC0 (ambientCG, https://ambientcg.com): Paper001, Paper002, Paper003, Paper004, Paper005,
 Cardboard002, SurfaceImperfections003, SurfaceImperfections005, SurfaceImperfections007.
 
+Pixel typefaces used in baked posters and display cards (SIL Open Font License 1.1, Google Fonts): Press Start 2P
+(CodeMan38), Silkscreen (Jason Kottke), Jersey 10 / 15 / 20 / 25, Micro 5, Jacquard 12 / 24 (Sarah Cadigan-Fried).
+Used only at bake time; the game ships the baked images, not the fonts.
+
 Typefaces used in baked print (SIL Open Font License 1.1, Google Fonts): Zen Old Mincho, Shippori Mincho B1, Dela Gothic One,
 Zen Kaku Gothic New, Zen Maru Gothic, M PLUS 1p, BIZ UDPGothic, Kaisei Tokumin, Mochiy Pop One, DotGothic16, Bebas Neue,
 Archivo Black, Barlow Condensed, Playfair Display, Oswald.

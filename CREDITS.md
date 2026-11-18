@@ -346,6 +346,14 @@ Gothic New, Zen Maru Gothic (Yoshimichi Ohira), Shippori Mincho B1 (FONTDASU), K
 Adams), Archivo Black (Omnibus-Type), Barlow Condensed (Jeremy Tribby), Oswald (Vernon Adams), Playfair Display (Claus
 Eggers Sørensen). The fonts are only used by the bake tools; the game ships the baked images, not the fonts.
 
+### Pixel fonts used at bake time (posters, flyers, gacha display cards)
+
+The remade posters and display cards (`tools/pixprint.py`, `tools/posters_px.py`, `tools/bake-cards.py`) are set in
+pixel typefaces at their native grid, all under the SIL Open Font License 1.1 (https://openfontlicense.org), from the
+Google Fonts repository: Press Start 2P (CodeMan38), Silkscreen and Silkscreen Bold (Jason Kottke), Jersey 10, 15, 20 and
+25, Micro 5, Jacquard 12 and 24 (Sarah Cadigan-Fried); plus the game's own Alagard and 5 x 7 bitmap font (above). Only
+the bake tools use them; the game ships the baked images, not the fonts.
+
 ## Photos (CC BY 2.0, attribution required)
 
 The pixel-art shop flyers and promo posters (`src/gfx/flyers.js`) are made from real stock photos from Google's Open Images

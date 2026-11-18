@@ -379,21 +379,14 @@ class Sheet:
         return y
 
     # ------------------------------------------------------------ stickers and badges
-    def burst(self, cx, cy, r, n=14, fill=0xffd23f, line=0x1c1816, t=2, inner=0.78, shadow=None, rot=0.0, jag=0.0, seed=0):
-        """A starburst sticker (NEW! / SECRET!): n spikes, inner radius ratio, hard outline t px, flat shadow."""
-        rn = random.Random(seed)
-        def pts(rr, k):
-            out = []
-            for i in range(2 * n):
-                a = math.pi * i / n + rot
-                q = rr * (1.0 if i % 2 == 0 else inner) * (1 + (rn.uniform(-jag, jag) if jag else 0)) + (k if i % 2 == 0 else k * 0.8)
-                out.append((cx + math.cos(a) * q, cy + math.sin(a) * q))
-            return out
-        st = rn.getstate()
+    def roundel(self, cx, cy, r, fill=0xffd23f, line=0x1c1816, t=2, shadow=None, **_):
+        """A round sticker (the boards' NEW! / ALL 6 TYPES / price discs): a flat pixel disc, a hard outline t px,
+        a flat offset shadow. (No starbursts, crosses, sparkles or glints: the owner's rule.)"""
+        R = int(round(r)); x, y = int(round(cx)) - R, int(round(cy)) - R
         if shadow:
-            dx, dy, col = shadow; rn.setstate(st); self.poly([(px + dx, py + dy) for px, py in pts(r, t)], col)
-        rn.setstate(st); self.poly(pts(r, t), line)
-        rn.setstate(st); self.poly(pts(r, 0), fill)
+            dx, dy, col = shadow; self.ellipse(x - t + dx, y - t + dy, 2 * (R + t), 2 * (R + t), col)
+        self.ellipse(x - t, y - t, 2 * (R + t), 2 * (R + t), line)
+        self.ellipse(x, y, 2 * R, 2 * R, fill)
 
     def ribbon(self, x, y, w, h, c, line=None, notch=None, t=1, tail=0):
         """A flat banner strip; notch: cut V tails ('l', 'r', 'lr'); tail: px the ends drop behind (folded)."""

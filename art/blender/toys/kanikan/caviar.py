@@ -71,7 +71,7 @@ def paint(P, pt):
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     GOLD = pt.ramp('#d8b040', 7, shift=0.07, light=0.7, dark=0.65)
     tn = P.fill('tin', pt.ramp('#1e1c22', 6, shift=0.04, light=0.5), tone=sh, base=0.15, brush='gloss')
-    U = np.arctan2(X, -Y) * R0
+    U = np.arctan2(X, -Y) * R0 - 0.6 * R0      # (the label's centre turned towards the three-quarter view)
     P.fill(tn & ((np.abs(Z - 0.9) < 0.3) | (np.abs(Z - TH + 0.9) < 0.3)), GOLD, tone=sh, base=0.1, brush=False)
     P.flat(tn & kn.text(U, Z, 'ROYAL ROE', 0.3, 0.0, 3.4, bold=True), '#e8c050')
     P.flat(tn & kn.text(U, Z, 'CAVIAR', 0.22, 0.0, 1.8), '#e8c050')

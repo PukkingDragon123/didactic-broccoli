@@ -58,12 +58,17 @@ class Face:
         dx = np.linalg.norm(p[:, 1:] - p[:, :-1], axis=2)
         ok = s.m[:, 1:] & s.m[:, :-1]
         s.px = float(np.median(dx[ok])) if ok.sum() > 8 else 0.2
+        s._used = False  # (a fresh face whose first mark is a dot() is an eye on its own knob: drawn as the species' eye)
         s.sp = None  # the species style (STYLE) the face is drawn in; set from the figure (SPECIES) when the kit is on
         if V3:
             try:
                 import facet
                 f = facet.FIG
                 s.sp = STYLE.get(SPECIES.get(f'{f.series}/{f.id}', SPECIES.get(f.id))) if f is not None else None
+                if s.sp:  # each figure its own take on its species: the slant and lids vary a little
+                    import zlib
+                    h = zlib.crc32(f'{f.series}/{f.id}'.encode())
+                    s.sp = dict(s.sp, tilt=s.sp.get('tilt', 0) + (h % 9) - 4, lid=s.sp.get('lid', bool(h & 16)))
             except Exception:  # noqa: BLE001
                 s.sp = None
 
@@ -110,6 +115,10 @@ class Face:
     def dot(s, u, v, rx, ry=None, rot=0.0):
         """One solid ink dot, a slightly lumpy ellipse."""
         ry = ry or rx
+        first, s._used = not s._used, True
+        if first and s.sp and s.sp.get('eye') in ('bar', 'slit', 'round', 'pin'):
+            k = s.sp.get('eyek', 1.5) * 1.15
+            return s.eye(u, v, 2 * rx * k, 2 * ry * k, s.sp['eye'], sx=1 if u >= 0 else -1, rot=rot)
         rx, ry = max(rx, 1.1 * s.px), max(ry, 1.4 * s.px)
         cr, sr = math.cos(math.radians(rot)), math.sin(math.radians(rot))
         du, dv = s.U - u, s.V - v
@@ -370,6 +379,19 @@ class Face:
             pts = [R(rx * math.cos(a), min(ry * math.sin(a), 0.2 * ry)) for a in t]
         else:
             pts = s._lumpy(u, v, rx, ry, 0.03, rot)
+        if shape in ('bar', 'slit', 'round', 'pin'):  # a real animal eye: a coloured iris, an ink rim, the species' pupil
+            iris = (s.sp or {}).get('iris', '#d9a43a')
+            m = s.fill(pts, iris)
+            s.stroke(pts + [pts[0]], max(0.1, 0.16 * w), taper=(1, 1), wobble=0.005)
+            if shape == 'bar':    # octopus, goat, toad: a horizontal bar
+                s.fill(s._lumpy(u, v, rx * 0.72, ry * 0.2, 0.04, rot), s.ink)
+            elif shape == 'slit':  # cat, croc, snake, gecko: a vertical slit
+                s.fill(s._lumpy(u, v, rx * 0.17, ry * 0.85, 0.04, rot), s.ink)
+            elif shape == 'round':  # owl, fish, bird: a big round pupil
+                s.fill(s._lumpy(u, v, rx * 0.5, ry * 0.5, 0.04, rot), s.ink)
+            else:                  # pin: a small pupil (fish, frog)
+                s.fill(s._lumpy(u, v, rx * 0.3, ry * 0.3, 0.04, rot), s.ink)
+            return m
         m = s.fill(pts, s.ink)
         big = w / s.px >= 12
         if shape == 'lid' or (lid if lid is not None else big):  # the upper lid: a brush stroke over the top
@@ -420,6 +442,7 @@ class Face:
         v3 kit (V3): oval, bean, halfmoon, lid (sleepy lid) are inked eye shapes with a dabbed catchlight (catch), an
         upper-lid stroke on big eyes (lid), lash ticks (lashes = n) and lower-lid marks (lower); with V3 on, dot / big /
         side / teary eyes are drawn as ovals (style: the shape to use instead)."""
+        s._used = True
         if close:
             kind = 'squeeze'
         sp = s.sp if (s.sp and not only) else None
@@ -449,8 +472,22 @@ class Face:
                 kk = 'dot' if sx < 0 else 'happy'
             if V3 and kk in ('dot', 'big', 'side', 'teary') and not (style is None and size * 2 / s.px < 5):
                 kk = style or 'oval'
-            if kk in ('oval', 'bean', 'halfmoon', 'lid'):
+            if kk in ('oval', 'bean', 'halfmoon', 'lid', 'bar', 'slit', 'round', 'pin'):
                 f = 1.15  # (the kit: bold, graphic eye shapes)
+                if kk in ('bar', 'slit', 'round', 'pin'):
+                    f *= (sp or {}).get('eyek', 1.5)
+                    for feat in (sp or {}).get('around', ()):  # what the species has round each eye
+                        R_ = size * f * 1.25
+                        if feat == 'bulge':   # a raised eye bulge (octopus, frog)
+                            s.stroke([(u + R_ * 1.35 * math.cos(a), v + R_ * 1.25 * math.sin(a)) for a in np.linspace(0.15, math.pi - 0.15, 9)], max(0.12, size * 0.3), taper=(0.4, 0.4))
+                        elif feat == 'disc':  # an owl's facial disc
+                            s.stroke([(u + R_ * 2.0 * math.cos(a), v + R_ * 1.9 * math.sin(a) - 0.2 * R_) for a in np.linspace(-0.7 if sx > 0 else math.pi * 0.35, math.pi * 0.65 if sx > 0 else math.pi + 0.7, 12)], max(0.12, size * 0.28), taper=(0.3, 0.3))
+                        elif feat == 'patch':  # dark eye patches (tanuki, raccoon dog, panda-ish dogs)
+                            s.patch(u, v - 0.1 * R_, R_ * 1.6, R_ * 1.1, (sp or {}).get('patch', '#3a2c24'), rot=-sx * 16)
+                        elif feat == 'stalk':  # crab eyes on stalks
+                            s.stroke([(u, v - R_ * 1.0), (u - sx * 0.1 * R_, v - R_ * 2.6)], max(0.14, size * 0.45), taper=(1, 1))
+                        elif feat == 'ring':  # a fish's or bird's eye ring
+                            s.stroke([(u + R_ * 1.35 * math.cos(a), v + R_ * 1.35 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 14)], max(0.08, size * 0.18), taper=(1, 1))
                 du = 0.25 * size * look if kind == 'side' else 0.0
                 s.eye(u + du, v, 2 * f * size * k * (1 + r.normal() * 0.05), 2 * f * size * shape * k * (1 + r.normal() * 0.06), kk, sx=sx,
                       catch=False, lid=lid, lashes=lashes, lower=lower, rot=r.normal() * 5 + sx * tilt)
@@ -497,7 +534,7 @@ class Face:
     def mouth(s, kind='upturn', w=4.0, dy=-1.5, weight=0.42, h=None, side=1, teeth=3, slant=10.0, du=0.0, ticks=None):
         sp = s.sp
         if sp:
-            if sp.get('mouth') and kind in ('upturn', 'line', 'dash', 'smug', 'w', 'o', 'frown', 'wobble', 'pout', 'grin'):
+            if sp.get('mouth') and (kind in ('upturn', 'line', 'dash', 'smug', 'w', 'o', 'frown', 'wobble', 'pout') or sp['mouth'] in ANATOMY):
                 kind = sp['mouth']
                 w *= sp.get('mw', 1.0)
             for x in sp.get('extras', ()):
@@ -515,8 +552,30 @@ class Face:
                     s.freckles(du, dy + 0.5 * w, w * 2.0)
                 elif x == 'tufts':
                     s.tufts(du, dy + 0.4 * w, w * 2.6, w * 0.35)
+                elif x == 'gill':
+                    for sg in (-1, 1):
+                        s.stroke([(du + sg * 1.2 * w, dy + 0.6 * w), (du + sg * 1.35 * w, dy + 0.1 * w), (du + sg * 1.2 * w, dy - 0.4 * w)], weight * 0.8, taper=(0.5, 0.5))
                 elif x == 'sweat':
                     s.sweat(du + w * 1.1, dy + w * 1.3, w * 0.14)
+        if kind == 'siphon':  # an octopus has no mouth on its face: a siphon tube at the side
+            x = du + side * 0.35 * w
+            tube = s._lumpy(x, dy, 0.18 * w, 0.26 * w, 0.05, rot=side * 25)
+            s.fill(tube, (s.sp or {}).get('skin2', '#c25a4a'))
+            s.stroke(tube + [tube[0]], weight * 0.8, taper=(1, 1), wobble=0.005)
+            return s.dab(x + side * 0.03 * w, dy + 0.02 * w, 0.07 * w, s.ink)
+        if kind == 'lips':  # a fish's pouty lips (two thick arcs) and a gill line behind
+            for sg in (1, -1):
+                s.stroke([(du - 0.3 * w, dy + sg * 0.02 * w), (du, dy + sg * 0.14 * w), (du + 0.3 * w, dy + sg * 0.02 * w)], weight * 1.2, taper=(0.6, 0.6))
+            return None
+        if kind == 'beakline':  # a bird's beak seam, a short hooked line
+            return s.stroke([(du - 0.4 * w, dy + 0.05 * w), (du + 0.1 * w, dy), (du + 0.4 * w, dy - 0.12 * w)], weight, taper=(0.9, 0.4))
+        if kind == 'muzzle':  # dog / tanuki / bear: a pale muzzle, a nose leather and a Y mouth
+            s.patch(du, dy + 0.15 * w, 0.55 * w, 0.38 * w, (s.sp or {}).get('muzzle', '#efe2c8'))
+            s.nose('button', du, dy + 0.32 * w, 0.22 * w)
+            return s.snout_mouth('Y', du, dy + 0.2 * w, 0.55 * w, weight)
+        if kind == 'catnose':  # a cat's nose leather and its split upper lip
+            s.nose('tri', du, dy + 0.3 * w, 0.18 * w, col=(s.sp or {}).get('nose', '#d88a8a'))
+            return s.snout_mouth('cat', du, dy + 0.18 * w, 0.5 * w, weight)
         if kind == 'smirk':  # a villain's / toothy smirk: a long side curve, one corner tucked up, a tooth showing
             x0, x1 = du - 0.45 * w * side, du + 0.5 * w * side
             pts = [(x0 + (x1 - x0) * q, dy - 0.05 * w * math.sin(math.pi * q) + 0.12 * w * q ** 3) for q in np.linspace(0, 1, 9)]
@@ -757,7 +816,7 @@ STYLE.update({  # one face design per animal
     'lion': dict(eye='oval', brows=('angry', 1.4), mouth='line', extras=('fangs',)),
 })
 SPECIES = {  # figure (series/id or id) -> species
-    'henshin/buta': 'pig', 'henshin/tsuru': 'crane',
+    'henshin/buta': 'pig', 'henshin/tsuru': 'crane', 'henshin/wani': 'croc', 'henshin/ryu': 'dragon',
     'nakanohito/mogura': 'mole', 'nakanohito/entotsu': 'lizard',
     'otsukai/kitsune': 'fox', 'otsukai/shika': 'deer', 'otsukai/karasu': 'crow', 'otsukai/saru': 'monkey',
     'otsukai/ookami': 'wolf', 'otsukai/hebi': 'snake',
@@ -796,3 +855,68 @@ STYLE.update({
     'peacock': dict(eye='bean', tilt=14, lid=True, lashes=2, mouth=None),              # vain
     'pug': dict(eye='oval', spread=1.4, uneven=0.45, brows=('worried', 1.2), mouth='frown'),  # the bowl-cut pug
 })
+
+
+ANATOMY = ('siphon', 'lips', 'beakline', 'muzzle', 'catnose')
+STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): these replace the generic faces
+    'octopus': dict(eye='bar', iris='#e8c25a', around=('bulge',), mouth='siphon', eyek=1.4),
+    'squid': dict(eye='bar', iris='#9fe0ff', around=('bulge',), mouth='siphon', skin2='#e07aa8'),
+    'frog': dict(eye='pin', iris='#e2c14a', around=('bulge',), spread=1.35, mouth='long', mw=1.5, eyek=1.6),
+    'toad': dict(eye='bar', iris='#c99a3a', around=('bulge',), spread=1.3, mouth='long', mw=1.4),
+    'croc': dict(eye='slit', iris='#d9b23a', lid=True, tilt=10, mouth='smirk', eyek=1.1),
+    'owl': dict(eye='round', iris='#f0a020', around=('disc',), eyek=1.9, brows=('angry', 1.3)),
+    'bird': dict(eye='round', iris='#3a2a20', around=('ring',), eyek=1.0, mouth='beakline'),
+    'crow': dict(eye='round', iris='#2a2420', around=('ring',), brows=('angry', 1.1), mouth='beakline'),
+    'rooster': dict(eye='round', iris='#e08a20', around=('ring',), brows=('angry', 1.3), mouth='beakline'),
+    'crane': dict(eye='round', iris='#d8b040', around=('ring',), eyek=1.0, mouth='beakline'),
+    'woodpecker': dict(eye='round', iris='#2a2420', around=('ring',), brows=('angry', 1.1), mouth='beakline'),
+    'pelican': dict(eye='pin', iris='#f0e0a0', around=('ring',), mouth='beakline'),
+    'duck': dict(eye='round', iris='#3a2a20', around=('ring',), mouth='beakline'),
+    'ptarmigan': dict(eye='round', iris='#2a2420', around=('ring',)),
+    'phoenix': dict(eye='slit', iris='#f2c230', lid=True, lashes=2, tilt=18),
+    'penguin': dict(eye='round', iris='#3a2a20', around=('ring',), brows=('angry', 1.0), mouth='beakline'),
+    'peacock': dict(eye='round', iris='#3a2a20', around=('ring',), lashes=2, mouth='beakline'),
+    'fish': dict(eye='pin', iris='#e8d070', around=('ring',), spread=1.3, mouth='lips', extras=('gill',)),
+    'puffer': dict(eye='round', iris='#e8c040', around=('ring',), mouth='lips', extras=('gill',), eyek=1.6),
+    'angler': dict(eye='pin', iris='#c8d870', around=('ring',), mouth='line', extras=('fangs',)),
+    'barreleye': dict(eye='round', iris='#7fe0a0', around=('ring',), mouth='lips', eyek=1.8),
+    'eel': dict(eye='pin', iris='#d8c060', mouth='smirk', extras=('gill',)),
+    'crab': dict(eye='round', iris='#2a2420', around=('stalk',), mouth='smirk', eyek=1.0),
+    'cat': dict(eye='slit', iris='#c8d040', tilt=12, mouth='catnose', extras=('whiskers',), eyek=1.4),
+    'nekomata': dict(eye='slit', iris='#f0b030', tilt=20, lid=True, mouth='catnose', extras=('fang',), eyek=1.4),
+    'fox': dict(eye='slit', iris='#e0a030', tilt=22, lid=True, mouth='muzzle', muzzle='#f4ead8', eyek=1.2),
+    'tanuki': dict(eye='round', iris='#3a2a20', around=('patch',), mouth='muzzle', muzzle='#f0e2c4', eyek=1.1),
+    'dog': dict(eye='round', iris='#5a3a20', around=('patch',), mouth='muzzle'),
+    'pug': dict(eye='round', iris='#4a3020', around=('patch',), spread=1.4, mouth='muzzle', muzzle='#3a2e28', eyek=1.5),
+    'wolf': dict(eye='slit', iris='#e8c040', tilt=14, brows=('angry', 1.2), mouth='muzzle', muzzle='#e8e0d0', eyek=1.1),
+    'hyena': dict(eye='round', iris='#e0b030', tilt=18, brows=('angry', 1.3), mouth='muzzle', muzzle='#d8c8a0'),
+    'bear': dict(eye='round', iris='#3a2418', brows=('angry', 1.4), mouth='muzzle', muzzle='#d8b890', eyek=0.9),
+    'snake': dict(eye='slit', iris='#d8e040', tilt=18, lid=True, mouth='smirk', extras=('fang',), eyek=1.2),
+    'gecko': dict(eye='slit', iris='#c8b060', spread=1.3, mouth='long', eyek=1.7),
+    'chameleon': dict(eye='pin', iris='#90c060', around=('bulge',), look=1, mouth='long', eyek=1.5),
+    'lizard': dict(eye='slit', iris='#d0b050', mouth='long'),
+    'salamander': dict(eye='pin', iris='#c0b080', spread=1.5, mouth='long', mw=1.3),
+    'turtle': dict(eye='round', iris='#5a4020', lid=True, tilt=-8, mouth='beakline'),
+    'goat': dict(eye='bar', iris='#e0b040', tilt=-4, mouth='flat'),
+    'camel': dict(eye='round', iris='#4a3020', lid=True, lashes=3, tilt=-10, mouth='muzzle', muzzle='#e0c49a'),
+    'rabbit': dict(eye='round', iris='#5a2a20', lashes=2, mouth='catnose', nose='#e89aa8'),
+    'deer': dict(eye='round', iris='#3a2418', lashes=2, mouth='muzzle', muzzle='#f0e6d8'),
+    'giraffe': dict(eye='round', iris='#3a2418', lid=True, lashes=3, mouth='muzzle', muzzle='#e8d0a8'),
+    'otter': dict(eye='round', iris='#2a1e18', mouth='muzzle', muzzle='#e8dcc8', extras=('whiskers',)),
+    'seal': dict(eye='round', iris='#2a1e18', spread=1.3, eyek=1.7, mouth='muzzle', muzzle='#e8e8e0', extras=('whiskers',)),
+    'monkey': dict(eye='round', iris='#5a3420', brows=('raised', 1.0), mouth='muzzle', muzzle='#e8b8a0'),
+    'hippo': dict(eye='round', iris='#4a3020', around=('bulge',), spread=1.4, mouth='long', mw=1.3),
+    'elephant': dict(eye='round', iris='#4a3020', lid=True, lashes=2),
+    'mole': dict(eye='pin', iris='#2a2420', spread=0.7, mouth='muzzle', muzzle='#e8b0b0', eyek=0.7),
+    'hedgehog': dict(eye='round', iris='#2a1e18', mouth='muzzle', muzzle='#e8d8c0'),
+    'meerkat': dict(eye='round', iris='#2a1e18', around=('patch',), mouth='muzzle', muzzle='#e8d8b8', patch='#4a3a2a'),
+    'bat': dict(eye='slit', iris='#e05030', tilt=24, lid=True, mouth='smirk', extras=('fang',)),
+    'lion': dict(eye='slit', iris='#e0a030', brows=('angry', 1.4), mouth='muzzle', muzzle='#f0dcb0'),
+    'weasel': dict(eye='round', iris='#2a1e18', tilt=16, brows=('angry', 1.3), mouth='muzzle', muzzle='#f0e6d0'),
+    'calf': dict(eye='round', iris='#3a2418', spread=1.25, uneven=0.4, mouth='muzzle', muzzle='#f0c8c0'),
+    'squirrel': dict(eye='round', iris='#2a1e18', eyek=1.5, mouth='muzzle', muzzle='#f0e2c8'),
+    'pig': dict(eye='round', iris='#3a2418', spread=0.85, eyek=0.8, lid=True),
+    'isopod': dict(eye='pin', iris='#504858', spread=1.4, mouth='flat'),
+    'ladybird': dict(eye='round', iris='#2a2420', mouth='w'),
+})
+STYLE['dragon'] = dict(eye='slit', iris='#f2c230', tilt=16, eyek=1.2)

@@ -82,8 +82,11 @@ export function printRegionTexture(name, key, { mips = true } = {}) {
 export function drawPrint(ctx, name, key, x = 0, y = 0, w = null, h = null) {
   const img = printImage(name), r = printRegions(name)[key];
   if (!img || !r) return false;
-  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(img, r[0], r[1], r[2], r[3], x, y, w ?? ctx.canvas.width, h ?? ctx.canvas.height);
+  const dw = w ?? ctx.canvas.width, dh = h ?? ctx.canvas.height;
+  // 1:1 (or a whole-number enlargement) copies pixel type as it is; only a true resize is smoothed
+  const exact = dw % r[2] === 0 && dh % r[3] === 0;
+  ctx.imageSmoothingEnabled = !exact; ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, r[0], r[1], r[2], r[3], x, y, dw, dh);
   return true;
 }
 /** The same into a Pix (src/gfx/pix.js): drawn on its canvas, then pulled back into its pixel buffer. */

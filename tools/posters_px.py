@@ -51,7 +51,7 @@ def _(S):
         for x in range(32, b[0] - 3, 3): S.rect(x, y + 4, 1, 1, mixc(INDIGO, 0xffffff, 0.45))
         y += 9
     # the sticker and the caption with its arrow, on the photo
-    S.burst(126, 27, 27, n=13, fill=YEL, line=INK, t=2, inner=0.74, shadow=(2, 2, INK), seed=3)
+    S.roundel(127, 25, 21, fill=YEL, line=INK, t=2, shadow=(2, 2, INK))
     S.text('FREE', 127, 21, 'silkb', 1, RED, anchor='mm'); S.text('ENTRY!', 127, 30, 'silkb', 1, RED, anchor='mm')
     S.rrect(4, 4, 62, 11, PAPER, r=2, line=INK)
     S.text('DANCE WITH US!', 8, 7, 'micro5', 1, INK)
@@ -87,7 +87,7 @@ def _(S):
     S.arrow([(26, 118), (22, 108), (24, 98)], INK, t=1, head=3, outline=PAPER)
     tag(112, 124, '6 TONNES', PAPER)
     S.arrow([(118, 122), (112, 110), (106, 100)], INK, t=1, head=3, outline=PAPER)
-    S.burst(132, 64, 18, n=11, fill=YEL, line=INK, t=2, inner=0.72, shadow=(2, 2, INK), seed=5)
+    S.roundel(132, 64, 16, fill=YEL, line=INK, t=2, shadow=(2, 2, INK))
     S.text('LIFE', 132, 60, 'silkb', 1, RED, anchor='mm'); S.text('SIZE!', 132, 69, 'silkb', 1, RED, anchor='mm')
     # the line-up: the other halls, round photo insets on a dotted field
     S.dots((0, 143, w, 50), mixc(CREAM, INK, 0.12), step=5, size=1)
@@ -129,7 +129,7 @@ def _(S):
     S.text('MONSTER SUIT FIGURE', 4, 67, 'micro5', 1, PAPER)
     # the hero and his shouts
     hb = S.toy('nakanohito', 'tanbo', 106, 146, h=86, w=84)
-    S.burst(129, 74, 15, n=10, fill=RED, line=INK, t=2, inner=0.7, shadow=(2, 2, INK), seed=2)
+    S.roundel(129, 74, 12, fill=RED, line=INK, t=2, shadow=(2, 2, INK))
     S.text('NEW!', 129, 74, 'silkb', 1, PAPER, anchor='mm')
     def shout(x, y, s, col=PAPER):
         tw, th = text_size(s, 'micro5'); S.rrect(x - 3, y - 2, tw + 6, th + 5, col, r=2, line=INK); S.text(s, x, y + 1, 'micro5', 1, INK)
@@ -154,12 +154,12 @@ def _(S):
     S.rrect(4, 185, pw, 24, RED, r=3, line=PAPER)
     b = S.text('300', 8, 190, 'jersey15', 1, PAPER); S.text('YEN', b[2] + 2, b[3], 'micro5', 1, PAPER, anchor='lb')
     x = 4 + pw + 3
-    S.rrect(x, 185, 36, 24, YEL, r=3, line=PAPER)
-    b = S.text('6', x + 4, 190, 'jersey15', 1, INK); S.text('ALL', b[2] + 3, 191, 'micro5', 1, INK); S.text('TYPES', b[2] + 3, 198, 'micro5', 1, INK)
-    x += 40
-    S.capsule(x, 186, 11, top=RED, bot=PAPER, line=PAPER)
-    S.text('GACHA', x + 14, 186, 'silkb', 1, PAPER); S.text('GARAGE', x + 14, 195, 'silkb', 1, YEL)
-    S.text('BACK LANE', x + 14, 204, 'micro5', 1, PAPER)
+    S.rrect(x, 185, 34, 24, YEL, r=3, line=PAPER)
+    b = S.text('6', x + 3, 190, 'jersey15', 1, INK); S.text('ALL', b[2] + 2, 191, 'micro5', 1, INK); S.text('TYPES', b[2] + 2, 198, 'micro5', 1, INK)
+    x += 37
+    S.capsule(x, 186, 10, top=RED, bot=PAPER, line=PAPER)
+    S.text('GACHA', x + 12, 186, 'silkb', 1, PAPER); S.text('GARAGE', x + 12, 195, 'silkb', 1, YEL)
+    S.text('BACK LANE', x, 204, 'micro5', 1, PAPER)
 
 
 # ================================================================== promo: the secret figures
@@ -178,7 +178,7 @@ def _(S):
     S.text('ONE IN EVERY SERIES', 4, 65, 'micro5', 1, PAPER)
     # the revealed one: a real secret, in its gold-leaf finish? no: as it is, under a spotlight ring
     hb = S.toy('henshin', 'ryu', 114, 112, h=58, w=66)
-    S.burst(30, 100, 21, n=12, fill=GOLD, line=INK, t=2, inner=0.72, shadow=(2, 2, 0x6a4410), seed=4)
+    S.roundel(30, 100, 18, fill=GOLD, line=INK, t=2, shadow=(2, 2, 0x6a4410))
     S.text('1 IN', 30, 95, 'silkb', 1, INK, anchor='mm'); S.text('500!', 30, 104, 'silkb', 1, RED, anchor='mm')
     S.tag(52, 80, 'PEN DRAGON', PAPER)
     S.arrow([(92, 91), (94, 98), (100, 96)], PAPER, t=1, head=3, outline=INK)

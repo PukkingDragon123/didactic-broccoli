@@ -148,7 +148,7 @@ async function draw(id) {
     const img = await whenPrint('promo'), r = printRegions('promo')['promo:' + id];
     if (img && r) {
       const g = sheet(id).canvas.getContext('2d');
-      g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+      g.imageSmoothingEnabled = r[2] !== W || r[3] !== H; g.imageSmoothingQuality = 'high';
       g.clearRect(0, 0, W, H); g.drawImage(img, r[0], r[1], r[2], r[3], 0, 0, W, H);
       return;
     }

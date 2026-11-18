@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { detailize } from './surfaces.js';
 import { FLYER_W, FLYER_H, flyerTexture } from '../gfx/flyers.js';
 import { GARAGE } from './Garage.js';
-import { printHas, drawPrint } from '../gfx/printAtlas.js';
+import { printHas, printRegions, drawPrint } from '../gfx/printAtlas.js';
 
 const TAPE = detailize(new THREE.MeshStandardMaterial({ color: 0xf2ead2, roughness: 0.55, transparent: true, opacity: 0.8, depthWrite: false }), 'paint'); // masking tape, paper grain
 
@@ -16,7 +16,9 @@ export function posterMesh(id, w = 0.42) {
   // the baked print (real photos, the actual toys, real paper: tools/bake-posters.py 'promo'), else the flyer art
   let map = null;
   if (printHas('promo', 'promo:' + id)) { // its own small canvas (the promo sheet itself is never uploaded whole)
-    const c = document.createElement('canvas'); c.width = 240; c.height = 340;
+    // drawn 1:1 at the region's own size: the pixel type is set at its native grid and must never be resampled
+    const r = printRegions('promo')['promo:' + id];
+    const c = document.createElement('canvas'); c.width = r[2]; c.height = r[3];
     if (drawPrint(c.getContext('2d'), 'promo', 'promo:' + id)) {
       map = new THREE.CanvasTexture(c); map.colorSpace = THREE.SRGBColorSpace; map.magFilter = THREE.NearestFilter; map.anisotropy = 4;
     }

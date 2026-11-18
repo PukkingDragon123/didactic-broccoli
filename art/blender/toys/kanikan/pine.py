@@ -71,7 +71,7 @@ def paint(P, pt):
     PI = {p.name: i for i, p in enumerate(F.parts)}
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     tn = P.fill('tin', pt.ramp('#f2c838', 6, shift=0.06), tone=sh, base=0.1, brush='gloss')
-    U = np.arctan2(X, -Y) * R0
+    U = np.arctan2(X, -Y) * R0 - 0.6 * R0      # (the label's centre turned towards the three-quarter view)
     P.fill(tn & (np.abs(Z - 2.4) < 1.0), pt.ramp('#2a8a4a', 5, shift=0.06), tone=sh, base=0.1, brush=False)
     P.fill(tn & (np.abs(Z - 10.0) < 0.5), pt.ramp('#2a8a4a', 5, shift=0.06), tone=sh, base=0.1, brush=False)
     P.flat(tn & kn.text(U, Z, 'ISLE SUN', 0.36, 0.0, 8.0, bold=True), '#2a6a3a')

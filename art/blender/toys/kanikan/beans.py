@@ -69,7 +69,7 @@ def paint(P, pt):
     PI = {p.name: i for i, p in enumerate(F.parts)}
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     tn = P.fill('tin', pt.ramp('#2a9a9a', 6, shift=0.06), tone=sh, base=0.1, brush='gloss')
-    U = np.arctan2(X, -Y) * R0
+    U = np.arctan2(X, -Y) * R0 - 0.6 * R0      # (the label's centre turned towards the three-quarter view)
     P.fill(tn & (np.abs(Z - 4.0) < 1.6), pt.ramp('#f08a30', 5, shift=0.06), tone=sh, base=0.1, brush=False)
     P.flat(tn & kn.text(U, Z, 'HAPPY HILL', 0.34, 0.0, 14.0, bold=True), '#f6f0e4')
     P.flat(tn & kn.text(U, Z, 'BAKED', 0.42, 0.0, 10.6, bold=True), '#f2c040')
