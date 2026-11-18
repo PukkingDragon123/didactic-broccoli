@@ -113,19 +113,19 @@ class Card7(Card):
         maker mark, capsule size, barcode, part number."""
         self.photo('acg:Paper002', (0, y, W, H - y), tint=CREAM, k=0.25, bright=1.04)
         F = self.F; F.rect(0, y, W, 1, INK)
-        n = len(entries); rows = 3; cw = 64
+        rows = 3; cw = 60
         for i, (num, name, col) in enumerate(entries):
-            cx = 5 + (i // rows) * cw; cy = y + 4 + (i % rows) * 8
-            F.rect(cx, cy, 5, 5, INK); F.rect(cx + 1, cy + 1, 3, 3, col)
-            F.text('%02d %s' % (num, name), cx + 8, cy, 'micro5', 1, INK)
-        sx = 5 + ((n + rows - 1) // rows) * cw + 2
-        F.rect(sx - 3, y + 3, 1, H - y - 6, INK)
-        F.para('SMALL PARTS: NOT FOR CHILDREN UNDER 3. DO NOT PUT THE CAPSULE IN THE MOUTH OR OVER THE HEAD. '
-               'PICTURES ARE FOR ILLUSTRATION. PVC / ABS. CAPSULE 50 MM.', sx, y + 3, 312 - 106 - sx, 'micro5', 1, INK, lh=6, maxy=H - 3)
-        bx = W - 104; F.barcode(bx + 6, y + 4, '4970%08d' % (sum(map(ord, self.sid)) * 7919 % 10 ** 8), h=9, ink=INK, bg=None if False else 0xf3ead6)
-        age_mark(F, bx - 12, y + 12, paper=0xf3ead6)
-        emblem(F, self.em, bx + 6, H - 10, mark_col, ink=INK, paper=0xf3ead6)
-        F.text(self.maker, bx + 20, H - 9, 'micro5', 1, red)
+            cx = 5 + (i // rows) * cw; cy = y + 5 + (i % rows) * 9
+            while line_mask(name, 'micro5')[0].shape[1] > cw - 22 and ' ' in name: name = name.split(' ', 1)[1]
+            F.rect(cx, cy, 6, 6, INK); F.rect(cx + 1, cy + 1, 4, 4, col)
+            F.text('%02d %s' % (num, name), cx + 9, cy + 1, 'micro5', 1, INK)
+        sx = 128; F.rect(sx - 4, y + 4, 1, H - y - 8, INK)
+        for j, l in enumerate(['SMALL PARTS.', 'NOT FOR UNDER 3.', 'KEEP FROM MOUTH.', 'PVC/ABS. 50MM', 'FOR ILLUSTRATION']):
+            F.text(l, sx, y + 4 + 6 * j, 'micro5', 1, INK)
+        age_mark(F, 208, y + 13, paper=0xf3ead6)
+        bx = W - 98; F.barcode(bx, y + 4, '4970%08d' % (sum(map(ord, self.sid)) * 7919 % 10 ** 8), h=9, ink=INK, bg=0xf3ead6)
+        mb = F.text(self.maker, W - 6, H - 8, 'micro5', 1, red, anchor='rt')
+        emblem(F, self.em, mb[0] - 14, H - 11, mark_col, ink=INK, paper=0xf3ead6)
 
 
 # ================================================================================ CRABS IN FOOD CANS: out at sea
@@ -134,7 +134,7 @@ def c_kanikan(K):
     red, navy = 0xc8302a, 0x1c3a6a
     K.photo('oi:0d76fa17adca869d@test', (0, 0, W, 246), focus=(0.5, 0.7, 1.0), tint=0x1d5f8a, k=0.3, con=1.05)
     # the cast at sea: a burst of real surf behind the leader, the tins bobbing in a real wave
-    K.cut('sea_splash', 222, 108, 128, 0, 'back'); K.cut('sea_spray', 150, 96, 70, 0, 'back')
+    K.cut('sea_splash', 230, 112, 120, 0, 'back')
     K.cut('fish_0', 30, 150, 52, -28, 'back')
     hb = K.toy(K.hero['id'], 222, 178, 118, 132)
     K.wave(0, W, 162, 186, amp=5, period=30)
@@ -147,11 +147,11 @@ def c_kanikan(K):
         cx = 12 + cw * (k_ + .5)
         F.rect(int(cx) - 7, 236, 14, 9, INK); F.text('%02d' % (K.items.index(it) + 1), cx, 238, 'micro5', 1, YEL if it['secret'] else WH, anchor='mt')
     # logo: CRABS IN / FOOD CANS, gold letters, ink - red - ink, bouncing like they float
-    logo7(F, 'CRABS IN', 10, 10, 'jersey15', [2, 2, 2, 2, 2, 2, 2, 2], GOLD, [(1, INK), (2, red), (1, INK)], bounce=[0, -2, 1, -1, 2, 0, -2, 1], track=-1)
-    bb = logo7(F, 'FOOD CANS', 6, 40, 'jersey15', [3, 2, 2, 2, 2, 3, 2, 2, 2], GOLD, [(1, INK), (2, red), (1, INK)], bounce=[0, 3, -2, 2, 0, -3, 1, -2, 3], track=-1)
-    F.rect(150, 14, 34, 11, INK); F.text('VOL.1', 167, 16, 'b5', 1, YEL, anchor='mt')
-    burst(F, 186, 46, 19, 10, red, lines=('NEW', 'CATCH!'), col=WH, rot=0.2)
-    F.text('EVERY CRAB HAS FOUND A TIN TO ITS TASTE.', 10, bb[3] + 4, 'b5', 1, WH, outline=[(1, INK)])
+    logo7(F, 'CRABS IN', 10, 8, 'jersey10', [2, 2, 2, 2, 2, 2, 2, 2], GOLD, [(1, INK), (2, red), (1, INK)], bounce=[0, -2, 1, -1, 2, 0, -2, 1], track=1)
+    bb = logo7(F, 'FOOD CANS', 6, 32, 'jersey10', [4, 3, 3, 3, 3, 4, 3, 3, 3], GOLD, [(1, INK), (2, red), (1, INK)], bounce=[0, 3, -2, 2, 0, -3, 1, -2, 3], track=-1)
+    F.rect(112, 10, 34, 11, INK); F.text('VOL.1', 129, 12, 'b5', 1, YEL, anchor='mt')
+    burst(F, bb[2] + 8, bb[1] + 4, 21, 10, red, lines=('NEW', 'CATCH!'), col=WH, face='micro5', rot=0.2)
+    for j, l in enumerate(['EVERY CRAB HAS FOUND', 'A TIN TO ITS TASTE.']): F.text(l, 10, bb[3] + 4 + 9 * j, 'b5', 1, WH, outline=[(1, INK)])
     # price coin + capsule badge + maker tab, top right
     coin(F, 294, 26, 21, K.s['price'])
     capsule(F, 246, 54, 68, 15, red, WH, '%d TYPES' % len(K.items))
@@ -159,10 +159,9 @@ def c_kanikan(K):
     # callouts on the leader
     if hb:
         x0, y0, x1, y1 = hb; w_, h_ = x1 - x0, y1 - y0
-        callout(F, 'PULL-TAB LID OPENS', 156, 92, x0 + w_ * 0.45, y0 + h_ * 0.12, anchor='rm')
-        callout(F, 'THE CRAB LIVES INSIDE', 156, 114, x0 + w_ * 0.38, y0 + h_ * 0.42, anchor='rm')
-        callout(F, 'REAL PRINTED TIN LABEL', 156, 136, x0 + w_ * 0.3, y0 + h_ * 0.72, anchor='rm')
-        F.text(K.hero['name'].upper(), x1 - 2, y0 - 2, 'b5', 1, WH, anchor='rb', outline=[(1, INK)])
+        callout(F, 'PULL-TAB LID OPENS', 146, 134, x0 + w_ * 0.42, y0 + h_ * 0.14, anchor='rm')
+        callout(F, 'THE CRAB LIVES INSIDE', 146, 150, x0 + w_ * 0.36, y0 + h_ * 0.42, anchor='rm')
+        callout(F, 'A REAL PRINTED TIN', 146, 166, x0 + w_ * 0.3, y0 + h_ * 0.74, anchor='rm')
     sw = [0x3a6ab0, 0x6a8a9a, 0xb83a2a, 0xc87a3a, 0xe8c040, 0x2a2a30]
     K.legal(246, [(i + 1, it['name'].upper().split(' ')[-2] if len(it['name'].split(' ')) > 2 else it['name'].upper(), sw[i % 6]) for i, it in enumerate(K.items)], red, red)
 
@@ -186,10 +185,10 @@ def c_nakanohito(K):
     for it, cx in zip(rest, [58, 96, 170, 252, 294]):
         K.toy(it['id'], cx, 242, 44, 40, sil=it['secret'])
     # logo: WHO'S IN / THE SUIT?, monster-movie letters, yellow, ink - red - ink, stomping bounce
-    logo7(F, "WHO'S IN", 8, 8, 'jersey15', [2, 2, 2, 2, 2, 2, 2, 2], 0xf4d640, [(1, INK), (2, red), (1, INK)], bounce=[0, 2, -1, 0, 1, 0, 2, -1], track=-1)
+    logo7(F, "WHO'S IN", 8, 8, 'jersey15', [2, 2, 2, 2, 2, 2, 2, 2], 0xf4d640, [(1, INK), (2, red), (1, INK)], bounce=[0, 2, -1, 0, 1, 0, 2, -1], track=1)
     bb = logo7(F, 'THE SUIT?', 4, 40, 'jersey15', [2, 2, 2, 1, 3, 3, 3, 3, 3], 0xf4d640, [(1, INK), (2, red), (1, INK)], bounce=[0, -2, 1, 0, 3, -2, 2, -3, 1], track=-1)
     F.rect(10, bb[3] + 3, 112, 11, INK); F.text('MONSTER SUIT FIGURE', 66, bb[3] + 5, 'b5', 1, WH, anchor='mt')
-    burst(F, 150, 30, 18, 9, YEL, lines=('TAKE', '1!'), rot=0.3)
+    burst(F, 170, 28, 17, 9, YEL, lines=('TAKE', '1!'), face='micro5', rot=0.3)
     # the clapperboard: production, scene (price), take (types)
     x, y = 244, 6; F.rect(x - 1, y - 1, 72, 52, INK); F.rect(x, y, 70, 50, 0x26221f)
     for i in range(7): F.poly([(x + i * 10, y), (x + i * 10 + 6, y), (x + i * 10 + 2, y + 7), (x - 4 + i * 10, y + 7)], WH)
@@ -199,10 +198,9 @@ def c_nakanohito(K):
     F.text('DIR. ??? (SECRET)', x + 4, y + 40, 'micro5', 1, WH)
     if hb:
         x0, y0, x1, y1 = hb; w_, h_ = x1 - x0, y1 - y0
-        callout(F, 'AN ACTOR INSIDE!', 170, 78, x0 + w_ * 0.52, y0 + h_ * 0.12, anchor='rm')
-        callout(F, 'ZIP UP THE BACK', 170, 96, x0 + w_ * 0.4, y0 + h_ * 0.4, anchor='rm')
-        callout(F, 'RUBBER SUIT TAIL', 316, 168, x0 + w_ * 0.86, y0 + h_ * 0.78, anchor='rm')
-        F.text(K.hero['name'].upper(), 252, 64, 'b5', 1, WH, outline=[(1, INK)])
+        callout(F, 'AN ACTOR INSIDE!', 112, 138, x0 + w_ * 0.5, y0 + h_ * 0.14, anchor='rm')
+        callout(F, 'ZIP UP THE BACK', 112, 154, x0 + w_ * 0.36, y0 + h_ * 0.42, anchor='rm')
+        callout(F, 'RUBBER SUIT TAIL', 316, 176, x0 + w_ * 0.86, y0 + h_ * 0.8, anchor='rm')
     for it, cx in zip(rest, [58, 96, 170, 252, 294]):
         F.text('%02d' % (K.items.index(it) + 1), cx, 236, 'micro5', 1, WH, anchor='mt', outline=[(1, INK)])
     sw = [0x8a6a4a, 0x5a7a4a, 0xc8a840, 0x9aa0a8, 0x6a9a3a, 0x2a2a30]
@@ -226,7 +224,7 @@ def c_kasabuki(K):
     bb = logo7(F, 'ARMS', 14, 52, 'ala', [5, 4, 4, 5], gold, [(1, INK), (2, red), (1, INK)], bounce=[0, 2, -1, 1], track=-1)
     F.text('RAIN OR SHINE,', 12, 10, 'b5', 1, WH, outline=[(1, INK)]); F.text('ALWAYS ARMED.', 12, 18, 'b5', 1, gold, outline=[(1, INK)])
     F.rect(bb[2] - 4, bb[1] + 4, 30, 11, INK); F.text('VOL.1', bb[2] + 11, bb[1] + 6, 'b5', 1, gold, anchor='mt')
-    burst(F, 150, 118, 22, 11, gold, lines=('OPENS', 'INTO A', 'BLADE!'), rot=0.1)
+    burst(F, 52, 142, 24, 11, gold, lines=('OPENS', 'INTO A', 'BLADE!'), face='micro5', rot=0.1)
     # the tsuba-shaped price plate and the capsule
     cx, cy, r = 292, 30, 22
     oct_ = [(cx + math.cos(math.pi / 8 + i * math.pi / 4) * r, cy + math.sin(math.pi / 8 + i * math.pi / 4) * r) for i in range(8)]
@@ -236,10 +234,9 @@ def c_kasabuki(K):
     capsule(F, 248, 58, 66, 15, red, WH, '%d TYPES' % len(K.items))
     if hb:
         x0, y0, x1, y1 = hb; w_, h_ = x1 - x0, y1 - y0
-        callout(F, 'OILED-PAPER CANOPY', 196, 132, x0 + w_ * 0.18, y0 + h_ * 0.35, anchor='rm')
-        callout(F, 'FOLDS IN THREE', 316, 116, x0 + w_ * 0.62, y0 + h_ * 0.4, anchor='rm')
-        callout(F, 'BLADE IN THE SHAFT', 316, 186, x0 + w_ * 0.84, y0 + h_ * 0.62, anchor='rm')
-        F.text(K.hero['name'].upper(), 130, 150, 'b5', 1, WH, outline=[(1, INK)])
+        callout(F, 'CLOSED: AN UMBRELLA', 200, 112, x0 + w_ * 0.2, y0 + h_ * 0.4, anchor='rm')
+        callout(F, 'FOLDS IN THREE', 316, 104, x0 + w_ * 0.62, y0 + h_ * 0.4, anchor='rm')
+        callout(F, 'OPEN: A WEAPON', 316, 190, x0 + w_ * 0.84, y0 + h_ * 0.62, anchor='rm')
     for k_, it in enumerate(rest):
         cx = 12 + cw * (k_ + .5); F.text('%02d' % (K.items.index(it) + 1), cx, 241, 'micro5', 1, gold, anchor='mt', outline=[(1, INK)])
     sw = [0xc8342a, 0x2a2a30, 0xe8c060, 0x3a5a8a, 0x8a3a5a, 0x2a2224]
