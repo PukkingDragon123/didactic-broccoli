@@ -18,6 +18,7 @@ import bpy  # (first: it provides bmesh and mathutils)
 import bmesh  # noqa: F401
 import numpy as np
 
+import facet
 import tk
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -33,6 +34,9 @@ class Part:
 
 class Fig:
     def __init__(s, series, fid, size=512, budget=1500):
+        s.facet = facet.ON = facet.enabled(series)  # the faceted low-poly style (lib/facet.py, FACET.md)
+        if s.facet and size == 512:
+            size = facet.SIZE
         s.series, s.id, s.size, s.budget = series, fid, size, budget
         s.parts = []
         s.out = os.path.join(BUILD, series)
@@ -49,7 +53,12 @@ class Fig:
         """A part: its game mesh `low` (named `name`), its sculpt objects `highs` (any number, overlapping is fine)."""
         low.name = name
         low.data.name = name
-        tk.smooth(low, sharp)
+        if s.facet:  # a deliberate low-poly, flat shaded (each face its own normal: crisp facets)
+            if not low.get('facet'):
+                facet.reduce(low, facet.budget(tk.tri_count(low)))
+            facet.flat(low)
+        else:
+            tk.smooth(low, sharp)
         for h in highs:
             tk.smooth(h)
             tk.clean_slots(h)
@@ -57,7 +66,8 @@ class Fig:
                 tk.set_region(h, name)
         s.parts.append(Part(name, low, highs, bone, kind))
         s.parts[-1].uvw = uvw  # texel density weight (small hidden mechanics get less)
-        s.meta['mats'][name] = kind
+        s.meta['mats'][name] = 'gloss' if (s.facet and kind == 'metal') else kind  # (facet: metal is painted chrome;
+        # a mirror finish on flat facets would only flash black and white)
         return low
 
     def tris(s):
@@ -76,6 +86,8 @@ class Fig:
         for o in lows:
             tk.triangulate(o)
             o.select_set(True)
+        if s._uv_cached(lows):
+            return
         bpy.context.view_layer.objects.active = lows[0]
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='SELECT')
@@ -92,6 +104,8 @@ class Fig:
         bpy.ops.object.mode_set(mode='OBJECT')
         for p in s.parts:
             _weight_islands(p.low, p.uvw)
+            if s.facet:
+                facet.flat(p.low)
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.uv.select_all(action='SELECT')
@@ -116,9 +130,10 @@ class Fig:
                     vis_uv += ua
         s.density = s.size * math.sqrt(tot_uv / max(tot_a, 1e-9))
         s.density_seen = s.size * math.sqrt(vis_uv / max(vis_a, 1e-9))
-        if s.density_seen > DENS_MAX:  # one texel density across the line: a small figure does not get finer pixels
-            k = DENS_MAX / s.density_seen
-            s.density_seen = DENS_MAX
+        dmax = DENS_MAX * s.size / 512  # (the faceted style's 1024 atlas: double the density)
+        if s.density_seen > dmax:  # one texel density across the line: a small figure does not get finer pixels
+            k = dmax / s.density_seen
+            s.density_seen = dmax
             for o in lows:
                 uv = o.data.uv_layers.active.data
                 a = np.zeros(len(uv) * 2)
@@ -134,9 +149,50 @@ class Fig:
             areas[o.name] = f'{ar:.0f}mm2 {s.size * math.sqrt(ua / max(ar, 1e-9)):.1f}px/mm'
         us = np.array([l.uv for o in lows for l in o.data.uv_layers.active.data])
         s.log('uv bounds', us.min(0), us.max(0))
+        s._uv_save(lows)
         s.log(f'UV texel density {s.density_seen:.2f} px/mm on what you see ({s.density:.2f} overall), UV coverage {tot_uv:.2f}, area {tot_a:.0f} mm2', areas)
         if os.environ.get('UVONLY'):
             raise SystemExit(0)
+
+    def _geo_key(s, lows):
+        import hashlib
+        h = hashlib.sha1()
+        for o in lows:
+            h.update(o.name.encode())
+            h.update(np.round(tk.verts(o), 3).tobytes())
+            L = np.zeros(len(o.data.loops), np.int64)
+            o.data.loops.foreach_get('vertex_index', L)
+            h.update(L.tobytes())
+        return h.hexdigest()
+
+    def _uv_save(s, lows):
+        d = {'key': np.array(s._geo_key(lows)), 'density': np.array([s.density_seen, s.density])}
+        for o in lows:
+            a = np.zeros(len(o.data.uv_layers.active.data) * 2, np.float32)
+            o.data.uv_layers.active.data.foreach_get('uv', a)
+            d['uv:' + o.name] = a
+        np.savez_compressed(os.path.join(s.out, s.id + '_uv.npz'), **d)
+
+    def _uv_cached(s, lows):
+        """--repaint: the last unwrap of this exact geometry (UV packing is slow and not repeatable, so without this
+        the bake cache could never be reused)."""
+        import sys
+        path = os.path.join(s.out, s.id + '_uv.npz')
+        if '--repaint' not in sys.argv or not os.path.exists(path):
+            return False
+        z = np.load(path)
+        if str(z['key']) != s._geo_key(lows) or any('uv:' + o.name not in z.files for o in lows):
+            s.log('the geometry changed since the last unwrap: unwrapping again')
+            return False
+        for o in lows:
+            if not o.data.uv_layers:
+                o.data.uv_layers.new()
+            o.data.uv_layers.active.data.foreach_set('uv', z['uv:' + o.name])
+            if s.facet:
+                facet.flat(o)
+        s.density_seen, s.density = (float(v) for v in z['density'])
+        s.log('reused the last unwrap')
+        return True
 
     # -------------------------------------------------------------- bakes
     def _img(s, name, float_buf=True):
@@ -232,6 +288,7 @@ class Fig:
             s.regions = list(z['regions'])
             s.region_index = {nm: i for i, nm in enumerate(s.regions)}
             s.log('reused the bake', cache)
+            s._facet_maps()
             return
         sc = bpy.context.scene
         sc.render.engine = 'CYCLES'
@@ -240,7 +297,7 @@ class Fig:
         if not sc.world:
             sc.world = bpy.data.worlds.new('w')
         sc.world.light_settings.distance = ao_dist
-        s.extrusion = extrusion
+        s.extrusion = max(extrusion, 2.0) if s.facet else extrusion  # (a coarse facet mesh strays further from the sculpt)
         s.regions = s._region_ids()
         allh = [h for p in s.parts for h in p.highs]
         V = np.concatenate([tk.verts(h) for h in allh])
@@ -274,8 +331,9 @@ class Fig:
 
             mask = run('EMIT', 'white', s2a=False)[:, :, 0] > 0.5  # (the game mesh's own coverage)
             part[mask] = i
-            got = run('NORMAL', space='TANGENT')
-            acc['nrm'][mask] = got[mask][:, :3]
+            if not s.facet:  # (facet: no normal map, it would smooth the facets away)
+                got = run('NORMAL', space='TANGENT')
+                acc['nrm'][mask] = got[mask][:, :3]
             got = run('NORMAL', space='OBJECT')
             acc['onrm'][mask] = got[mask][:, :3]
             got = run('EMIT', 'pos')
@@ -316,6 +374,7 @@ class Fig:
         }
         # texels the rays missed (a gap between game mesh and sculpt): fill from their neighbours in the island
         bad = s.maps['mask'] & ((s.maps['reg'] < 0) | (np.linalg.norm(s.maps['on'], axis=2) < 0.5))
+        s.maps['missed'] = bad
         if bad.any():
             s.log(f'filling {bad.sum()} missed texels')
             for k in ('nrm', 'on', 'pos', 'reg', 'cav', 'ao'):
@@ -324,6 +383,32 @@ class Fig:
         s.maps['on'] = on / np.maximum(np.linalg.norm(on, axis=2), 1e-6)[:, :, None]
         s.region_index = {nm: i for i, nm in enumerate(s.regions)}
         np.savez_compressed(cache, regions=np.array(s.regions), uvkey=np.array(uvkey), **s.maps)
+        s._facet_maps()
+
+    def _facet_maps(s):
+        """Facet mode: per texel the facet, its rim along facet edges, the distance to a hard edge, the texel density
+        and whether it is metal (lib/facet.py maps; the paint's brushwork and rims use them)."""
+        if not s.facet:
+            return
+        fm = facet.maps(s.parts, s.size)
+        mask = s.maps['mask']
+        got = fm['fid'] >= 0
+        for k in ('fid', 'ppmm'):
+            fm[k] = fill(fm[k], got & mask, mask, iters=8)
+        fm['rim'][~got] = 0
+        fm['hard'][~got] = 99.0
+        missed = s.maps.get('missed')
+        if missed is not None:
+            s.maps['lpos'] = fm['lpos']
+            k = facet.refill(s.maps, missed, got)
+            s.log(f'facet: {k} missed texels refilled from their 3D neighbours')
+        fm.pop('lpos', None)
+        part = s.maps['part']
+        fm['metal'] = np.isin(part, [i for i, p in enumerate(s.parts) if p.kind == 'metal']) & mask
+        med = float(np.median(fm['ppmm'][mask & (fm['ppmm'] > 0)])) if (mask & (fm['ppmm'] > 0)).any() else 10.0
+        fm['ppmm'] = np.where(fm['ppmm'] > 0, fm['ppmm'], med).astype(np.float32)
+        s.maps.update(fm)
+        s.log(f'facet maps: {int(got.sum())} texels on {int(fm["fid"].max()) + 1} facets, rims {int((fm["rim"] > 0).sum())} lit / {int((fm["rim"] < 0).sum())} dark')
 
     # -------------------------------------------------------------- paint, materials
     def finish(s, rgb, roughness=0.42):
@@ -331,11 +416,13 @@ class Fig:
         n = s.size
         mask = s.maps['mask']
         col = dilate(np.clip(rgb, 0, 1), mask, 10)
-        nrm = dilate(s.maps['nrm'], mask, 10)
-        nrm[~dilate_mask(mask, 10)] = (0.5, 0.5, 1.0)
         base = os.path.join(s.out, s.id)
         s.albedo = save_png(col, base + '_col.png', 'sRGB', n)
-        s.normal = save_png(nrm, base + '_nrm.png', 'Non-Color', n)
+        s.normal = None
+        if not s.facet:  # (facet: no normal map)
+            nrm = dilate(s.maps['nrm'], mask, 10)
+            nrm[~dilate_mask(mask, 10)] = (0.5, 0.5, 1.0)
+            s.normal = save_png(nrm, base + '_nrm.png', 'Non-Color', n)
         m = bpy.data.materials.get('toy_' + s.id) or bpy.data.materials.new('toy_' + s.id)
         m.use_nodes = True
         m.use_backface_culling = True  # (glTF doubleSided false: the game adds no back faces)
@@ -349,12 +436,13 @@ class Fig:
         t.image = s.albedo
         t.interpolation = 'Closest'
         nt.links.new(t.outputs['Color'], bsdf.inputs['Base Color'])
-        tn = nt.nodes.new('ShaderNodeTexImage')
-        tn.image = s.normal
-        tn.interpolation = 'Closest'
-        nm = nt.nodes.new('ShaderNodeNormalMap')
-        nt.links.new(tn.outputs['Color'], nm.inputs['Color'])
-        nt.links.new(nm.outputs['Normal'], bsdf.inputs['Normal'])
+        if s.normal:
+            tn = nt.nodes.new('ShaderNodeTexImage')
+            tn.image = s.normal
+            tn.interpolation = 'Closest'
+            nm = nt.nodes.new('ShaderNodeNormalMap')
+            nt.links.new(tn.outputs['Color'], nm.inputs['Color'])
+            nt.links.new(nm.outputs['Normal'], bsdf.inputs['Normal'])
         for p in s.parts:
             p.low.data.materials.clear()
             p.low.data.materials.append(m)
@@ -412,6 +500,8 @@ class Fig:
         bpy.ops.object.select_all(action='DESELECT')
         for p in s.parts:
             p.low.select_set(True)
+            if s.facet:
+                facet.flat(p.low)
         if rig:
             rig.arm.select_set(True)
             for e in rig.points:
@@ -420,7 +510,7 @@ class Fig:
         glb = os.path.join(s.out, s.id + '.glb')
         bpy.context.scene.frame_set(0)
         bpy.ops.export_scene.gltf(filepath=glb, export_format='GLB', use_selection=True, export_apply=True,
-                                  export_yup=True, export_tangents=True, export_normals=True, export_texcoords=True,
+                                  export_yup=True, export_tangents=not s.facet, export_normals=True, export_texcoords=True,
                                   export_materials='EXPORT', export_image_format='AUTO', export_animations=bool(rig and rig.actions),
                                   export_animation_mode='ACTIONS', export_force_sampling=True, export_frame_step=1,
                                   export_anim_slide_to_zero=True, export_reset_pose_bones=True, export_def_bones=False,
@@ -429,6 +519,11 @@ class Fig:
                                   export_rest_position_armature=True)
         meta = dict(s.meta)
         meta['tris'] = s.tris()
+        if s.facet:
+            meta['facet'] = 1
+            lo, hi, cap = facet.TRIS
+            if not lo <= meta['tris'] <= hi:
+                s.log(f'facet: {meta["tris"]} tris, outside {lo}-{hi}' + ('  << OVER THE CAP' if meta['tris'] > cap else ''))
         st, com = s.stability()
         meta['stand'] = round(st, 2)
         tip = math.degrees(math.atan2(st, max(com[2], 1e-3)))  # (art/lowpix/figures/audit.py wants >= 8 degrees)

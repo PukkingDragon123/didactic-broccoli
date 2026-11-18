@@ -9,6 +9,11 @@ a person (docs/STYLE_GUIDE.md of the lowpix repo) applied to a capsule toy's fin
 - Printed details (eyes, pupils, catchlights, markings) are shapes evaluated in figure space, so they wrap across
   UV seams; they sit on top in flat ink colours.
 Everything is sRGB 0..1. Figure space: mm, Z up, the figure faces -Y.
+
+Facet mode (lib/facet.py, FACET.md): fill() lays the ramp as hand-painted brush strokes that follow the form (a preset
+per material: brush='pvc' | 'gloss' | 'metal' | 'fur' | 'feather' | 'wood' | 'cloth' | 'lacquer', a dict of stroke
+settings, or False), dabs() paints hand-dabbed patterns (pebbles, scales, spots), and done() adds the facet-edge rims
+and the soft rubbed wear on hard corners.
 """
 import colorsys
 import math
@@ -65,6 +70,10 @@ class Painter:
         s.pos, s.on, s.ao, s.cav = maps['pos'], maps['on'], maps['ao'], maps['cav']
         s.reg, s.mask, s.part = maps['reg'], maps['mask'], maps['part']
         s.X, s.Y, s.Z = s.pos[:, :, 0], s.pos[:, :, 1], s.pos[:, :, 2]
+        s.facet = 'fid' in maps  # (the faceted style: brushwork, rims, wear)
+        s.nfill = 0
+        if s.facet:
+            s.ppmm = float(np.median(maps['ppmm'][s.mask]))
 
     def region(s, name):
         return s.mask & (s.reg == s.ri.get(name, -99))
@@ -78,9 +87,11 @@ class Painter:
         v += cav * np.clip((s.cav - 0.5) * 2, -0.5, 0.5)
         return v
 
-    def fill(s, name, rmp, tone=None, base=0.0, levels=None, extra=None, where=None):
+    def fill(s, name, rmp, tone=None, base=0.0, levels=None, extra=None, where=None, brush=None):
         """Paint a region with a ramp. tone: the tone field (default shade()); base: offset (airbrush, a float or a
-        field); levels: how many ramp tones per unit of tone (default the ramp's length); extra: a field added."""
+        field); levels: how many ramp tones per unit of tone (default the ramp's length); extra: a field added.
+        brush (facet mode): a stroke preset name (facet.PRESETS), a dict (a preset's settings, 'preset' to start from
+        one), or False for none; default: 'metal' on metal parts, 'pvc' elsewhere."""
         m = s.region(name) if isinstance(name, str) else name
         if where is not None:
             m = m & where
@@ -93,12 +104,85 @@ class Painter:
         n = len(rmp)
         mid = (n - 1) * 0.55
         k = (levels or n * 0.62)
+        if s.facet and brush is not False:
+            t = s.brushed(m, t, 1.0 / k, brush, name)
         i = np.clip(np.rint(mid + t * k), 0, n - 1).astype(np.int32)
         rid = len(s.ramps)
         s.ramps[rid] = rmp
         s.idx[m] = i[m] + rid * 64
         s.rgb[m] = rmp[i[m]]
         return m
+
+    def brushed(s, m, t, step, brush=None, name=None):
+        """The tone field t with brush strokes laid over the texels of m (facet mode)."""
+        import facet
+        import os
+        if os.environ.get('GG_FACET_BRUSH') == '0':  # (debug: the paint without brushwork)
+            return t
+        t = np.broadcast_to(np.asarray(t, np.float32), m.shape).copy() if np.ndim(t) < 2 else np.array(t, np.float32)
+        if isinstance(brush, dict):
+            opt = dict(facet.PRESETS[brush.get('preset', 'pvc')])
+            opt.update({k: v for k, v in brush.items() if k != 'preset'})
+        else:
+            if brush is None:
+                metal = s.m['metal'][m].mean() > 0.5 if m.any() else False
+                nm = name if isinstance(name, str) else ''
+                brush = 'metal' if metal or any(w in nm for w in ('chrome', 'steel', 'metal', 'gold', 'brass', 'pin')) else 'pvc'
+            opt = dict(facet.PRESETS[brush])
+        s.nfill += 1
+        ys, xs = np.nonzero(m)
+        if brush == 'metal' or opt.get('chrome'):  # painted chrome: the sky above the horizon, the dark floor below
+            t[ys, xs] += 0.32 * np.tanh(s.on[ys, xs, 2] * 5 + 0.4)
+        t[ys, xs] = facet.strokes(s.pos[ys, xs], s.on[ys, xs], t[ys, xs], step, ppmm=s.ppmm, seed=s.nfill * 7919 + 13, **opt)
+        return t
+
+    def dabs(s, m, size=0.6, spacing=1.0, seed=0, **kw):
+        """Facet mode: a hand-dabbed pattern over mask m (pebbled skin, scales, spots): returns (dab id per texel, -1
+        none; radial distance 0..1 inside the dab). Paint with it, e.g. a tone offset: base=-0.3 * (who >= 0)."""
+        import facet
+        who = np.full(m.shape, -1, np.int64)
+        dist = np.full(m.shape, 9.0)
+        ys, xs = np.nonzero(m)
+        if len(ys) < 20:
+            return who, dist
+        w, d = facet.dabs(s.pos[ys, xs], s.on[ys, xs], s.ppmm, size=size, spacing=spacing, seed=seed, **kw)
+        who[ys, xs] = w
+        dist[ys, xs] = d
+        return who, dist
+
+    def shift(s, m, d):
+        """Move the shaded texels of m d ramp steps (+ lighter) within their own ramps."""
+        m = m & (s.idx >= 0)
+        if not m.any():
+            return
+        code = s.idx[m]
+        rid, i = code // 64, code % 64
+        out = np.empty((len(code), 3), np.float32)
+        newi = i.copy()
+        for r in np.unique(rid):
+            sel = rid == r
+            rm = s.ramps[int(r)]
+            newi[sel] = np.clip(i[sel] + d, 0, len(rm) - 1)
+            out[sel] = rm[newi[sel]]
+        s.idx[m] = rid * 64 + newi
+        s.rgb[m] = out
+
+    def facets(s, rims=True, wear=0.35, seed=5):
+        """Facet mode finish: a lit rim (a ramp step up) along the facet edges that face the light and a shadow line
+        (a step down) along the ones that face away and in creases (facet.maps), then soft rubbed wear: sparse chips a
+        step lighter on hard convex corners. Printed ink (flat texels) is left alone."""
+        if not s.facet:
+            return
+        if rims:
+            s.shift(s.m['rim'] > 0, 1)
+            s.shift(s.m['rim'] < 0, -1)
+        if wear:
+            near = s.mask & (s.m['hard'] < 2.6) & (s.idx >= 0)
+            who, d = s.dabs(near, size=0.55, spacing=1.5, seed=seed)
+            rng = np.random.default_rng(seed)
+            keep = rng.random(max(int(who.max()) + 1, 1)) < wear
+            chip = (who >= 0) & keep[np.maximum(who, 0)]
+            s.shift(chip, 1)
 
     def flat(s, m, col):
         """Flat ink (printed details): no shading."""
@@ -229,6 +313,9 @@ class Painter:
                 s.rgb[y, x] = s.ramps[rid][v % 64]
 
     def done(s):
+        if s.facet and not getattr(s, '_faceted', False):
+            s._faceted = True
+            s.facets()
         return s.rgb
 
 

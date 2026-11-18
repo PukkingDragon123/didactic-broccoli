@@ -100,7 +100,11 @@ def subsurf(ob, levels, keep_corners=False):
 
 
 def decimate(ob, tris):
-    """Collapse-decimate to about `tris` triangles (a smooth subdivided mesh keeps its form)."""
+    """Collapse-decimate to about `tris` triangles (a smooth subdivided mesh keeps its form). In facet mode (lib/facet.py)
+    the target is the faceted budget instead (about facet.RATIO of it, symmetric, slivers merged)."""
+    import facet
+    if facet.ON:
+        return facet.reduce(ob, facet.budget(tris))
     n = tri_count(ob)
     if n <= tris:
         return ob
@@ -134,6 +138,7 @@ def join(obs, name=None):
     """Join objects into the first one."""
     obs = [o for o in obs if o]
     base = obs[0]
+    flag = any(o.get('facet') for o in obs)  # (facet mode: already reduced, lib/facet.py)
     if len(obs) > 1:
         bm = bmesh.new()
         for o in obs:
@@ -162,6 +167,8 @@ def join(obs, name=None):
             delete(o)
         if old.users == 0:
             bpy.data.meshes.remove(old)
+    if flag:
+        base['facet'] = 1
     if name:
         base.name = name
         base.data.name = name

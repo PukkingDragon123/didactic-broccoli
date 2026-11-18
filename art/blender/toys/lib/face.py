@@ -16,6 +16,9 @@ facing `axis` through `c` (u to the viewer's right, v up), projected onto the su
     fc.mouth('upturn', w=6.0, dy=-1.6)                   # or 'line', 'dash', 'grin', 'w', 'o', 'frown'
     fc.stroke([(-3, 3), (-1.5, 3.4)], weight=0.35)      # anything else: a brow, a '>' closed eye, a sweat line
     fc.blush(4.6, -0.6)                                  # an airbrushed blush patch, in two stepped tones
+
+In facet mode (lib/facet.py) the same calls paint real brushwork: uneven ink density with bristle streaks, a tapered
+dry-brush edge, ink pooled darker where a stroke lands and lifts (and low in a dot), and blush dabbed on as stipple.
 """
 import math
 
@@ -45,6 +48,32 @@ class Face:
         ok = s.m[:, 1:] & s.m[:, :-1]
         s.px = float(np.median(dx[ok])) if ok.sum() > 8 else 0.2
 
+    # ------------------------------------------------------------------ brushwork (facet mode)
+    def _brush(s, m, cov, pool=None, thin=None):
+        """Lay ink by coverage: full ink where cov >= 1, a thin glaze of ink (uneven density, the dry edge) where
+        0 < cov < 1, pooled darker ink on `pool`."""
+        P = s.P
+        ink = _hex(s.ink)
+        lum = float(ink @ np.array([0.3, 0.59, 0.11]))
+        dark = ink * 0.62 if lum < 0.5 else ink * 0.86
+        full = m & (cov >= 1)
+        part = m & (cov > 0) & (cov < 1)
+        P.rgb[part] = P.rgb[part] * 0.42 + ink * 0.58
+        P.idx[part] = -2
+        P.flat(full, ink)
+        if thin is not None:
+            tm = full & thin
+            P.rgb[tm] = P.rgb[tm] * 0.22 + ink * 0.78
+        if pool is not None:
+            P.flat(full & pool, dark)
+        return full | part
+
+    def _bristles(s, x, nb=9):
+        """Per-texel bristle value 0..1 from a coordinate across the stroke (streaks run along it)."""
+        r = s.rng.random(nb + 1)
+        i = np.clip((x * 0.5 + 0.5) * nb, 0, nb).astype(int)
+        return r[i]
+
     # ------------------------------------------------------------------ primitives
     def _noise(s, n, k=3):
         """A smooth random curve over t in [0, 1] (n samples), amplitude about 1."""
@@ -64,6 +93,12 @@ class Face:
         th = np.arctan2(vv / ry, uu / rx)
         ph = s.rng.random(3) * 2 * math.pi
         rr = 1 + 0.09 * np.sin(2 * th + ph[0]) + 0.06 * np.sin(3 * th + ph[1]) + 0.04 * np.sin(5 * th + ph[2])
+        if getattr(s.P, 'facet', False):  # a brush dab: dry ragged rim, ink pooled low in the dot
+            d = np.sqrt((uu / rx) ** 2 + (vv / ry) ** 2) / rr
+            cand = s.m & (d <= 1.12)
+            br = s._bristles(np.cos(th * 2 + ph[0]), 12)
+            cov = np.where(d <= 0.8, 1.0, np.where(br > 0.5, 1.0, np.where(br > 0.22, 0.5, 0.0)))
+            return s._brush(cand, cov, pool=(vv / ry < -0.38) & (d < 0.85))
         m = s.m & ((uu / rx) ** 2 + (vv / ry) ** 2 <= rr ** 2)
         s.P.flat(m, s.ink)
         return m
@@ -102,6 +137,26 @@ class Face:
         d = np.linalg.norm(X[:, None, :] - Pp, axis=2)
         k = d.argmin(1)
         wk = w[:-1][k] * (1 - h[np.arange(len(k)), k]) + w[1:][k] * h[np.arange(len(k)), k]
+        if getattr(s.P, 'facet', False) and col is None:  # brushwork: bristle streaks, a dry edge, pooled ends
+            hk = h[np.arange(len(k)), k]
+            tt = (k + hk) / (n - 1)
+            AB_k = AB[k]
+            side = np.sign(AB_k[:, 0] * (X[:, 1] - A[k][:, 1]) - AB_k[:, 1] * (X[:, 0] - A[k][:, 0]))
+            dn = side * d[np.arange(len(k)), k] / np.maximum(wk / 2, 1e-6)
+            br = s._bristles(np.clip(dn, -1, 1), 9)
+            a = np.abs(dn)
+            cov = np.where(a <= 0.72, 1.0, np.where(a <= 1.12, np.where(br > 0.45, 1.0, np.where(br > 0.2, 0.5, 0.0)), 0.0))
+            ends = (np.minimum(tt, 1 - tt) * L < 0.6 * weight) & (a < 0.8)
+            thin = (br < 0.2) & (tt > 0.25) & (tt < 0.75)
+            m = np.zeros_like(cand)
+            cv = np.zeros(cand.shape)
+            pl = np.zeros_like(cand)
+            th_ = np.zeros_like(cand)
+            m[iy, ix] = cov > 0
+            cv[iy, ix] = cov
+            pl[iy, ix] = ends
+            th_[iy, ix] = thin
+            return s._brush(m, cv, pool=pl, thin=th_)
         hit = d[np.arange(len(k)), k] <= wk / 2
         m = np.zeros_like(cand)
         m[iy[hit], ix[hit]] = True
@@ -399,6 +454,30 @@ class Face:
     def blush(s, spread, dy, rx=1.6, ry=0.9, col='#f08a86', base=None):
         """Two airbrushed blush patches (cheeks), as two stepped tones of `col` over the paint (pixel art: no blur)."""
         c = _hex(col)
+        if getattr(s.P, 'facet', False):  # hand-dabbed stipple: dense in the middle, scattered dabs at the edge
+            for sx in (-1, 1):
+                cu, cv = sx * spread / 2, dy
+                cand = s.m & (np.abs(s.U - cu) < rx * 1.3) & (np.abs(s.V - cv) < ry * 1.3)
+                if not cand.any():
+                    continue
+                iy, ix = np.nonzero(cand)
+                U, V = s.U[iy, ix], s.V[iy, ix]
+                rd = max(0.11, 0.075 * (rx + ry))
+                nd = int(2.4 * rx * ry / (rd * rd))
+                pu = s.rng.normal(0, rx * 0.48, nd)
+                pv = s.rng.normal(0, ry * 0.48, nd)
+                ok = (pu / rx) ** 2 + (pv / ry) ** 2 < 1.15
+                pu, pv = pu[ok] + cu, pv[ok] + cv
+                rr = rd * (0.7 + 0.6 * s.rng.random(len(pu)))
+                cnt = np.zeros(len(U), int)
+                for a, b, r in zip(pu, pv, rr):
+                    cnt += ((U - a) ** 2 + (V - b) ** 2 < r * r)
+                for lim, k in ((1, 0.3), (3, 0.56)):
+                    sel = cnt >= lim
+                    y_, x_ = iy[sel], ix[sel]
+                    s.P.rgb[y_, x_] = s.P.rgb[y_, x_] * (1 - k) + c * k
+                    s.P.idx[y_, x_] = np.where(s.P.idx[y_, x_] >= 0, -3, s.P.idx[y_, x_])  # (rims leave it alone)
+            return
         for sx in (-1, 1):
             du, dv = s.U - sx * spread / 2, s.V - dy
             d = np.sqrt((du / rx) ** 2 + (dv / ry) ** 2)
