@@ -59,7 +59,7 @@ DECOR = {  # series -> real-photo cut-outs (tools/cardref/cutouts.py: Open Image
     'meijin': ['kite_2', 'dice_1', 'ball_0', 'kite_0', 'dice_0'],
     'sabaku': ['skull_1', 'snake_1', 'cowboy_hat_1', 'lizard_2', 'skull_0'],
     'minato': ['lighthouse_0', 'fish_2', 'canoe_1', 'lighthouse_2', 'fish_0'],
-    'datesha': ['fedora_2', 'rose_2', 'tie_1', 'watch_1', 'cocktail_2'],
+    'datesha': ['fedora_2', 'rose_2', 'tie_1', 'tie_0', 'cocktail_2'],
 }
 SLOTS = {  # template -> cut-out places (cx, cy, size, degrees, layer 'back' behind the toys / 'front' over them)
     'crabcan': [(34, 108, 44, -20, 'back'), (184, 102, 42, 25, 'back'), (194, 186, 34, -30, 'front'), (18, 188, 30, 15, 'front'), (296, 52, 24, 20, 'front')],
@@ -112,11 +112,14 @@ GROUND = {  # series -> (pattern, pattern colour mix toward the accent) for the 
 
 # ------------------------------------------------------------------------------------------------------------ type
 def _wrap(text, face, w, maxl=2):
-    words = text.upper().replace('’', "'").split(' ')
+    words = []
+    for wd in text.upper().replace('’', "'").split(' '):  # a word too wide for the cell breaks after its hyphen
+        if '-' in wd and line_mask(wd, face)[0].shape[1] > w: words += [p + '-' for p in wd.split('-')[:-1]] + [wd.split('-')[-1]]
+        else: words.append(wd)
     if words[0] == 'THE' and len(words) > 2: words = words[1:]
     lines, cur = [], ''
     for wd in words:
-        t = (cur + ' ' + wd).strip()
+        t = (cur + ('' if cur.endswith('-') else ' ') + wd).strip()
         if cur and line_mask(t, face)[0].shape[1] > w: lines.append(cur); cur = wd
         else: cur = t
     lines.append(cur)
@@ -344,9 +347,9 @@ def t_crabcan(K):
     cw = 222 / len(K.rest)
     for k, it in enumerate(K.rest):
         cx = 10 + cw * (k + .5)
-        nl = len(['S'] if it['secret'] else _wrap(it['name'], 'micro5', cw - 2))
-        K.toy(it['id'], cx, 258 - 6 * nl, 38 - 6 * nl, cw - 4, sil=it['secret'], shadow=not it['secret'])
-        K.names(F, it, cx, 259 - 6 * nl, cw - 2, col=INK)
+        nl = len(['S'] if it['secret'] else _wrap(it['name'], 'micro5', cw - 4, 3))
+        K.toy(it['id'], cx, 258 - 6 * nl, 40 - 6 * nl, cw - 4, sil=it['secret'], shadow=not it['secret'])
+        K.names(F, it, cx, 259 - 6 * nl, cw - 4, col=INK, maxl=3)
     # the safety tile
     B.rrect(242, 204, 72, 58, WH, r=6)
     F.text('AGES 15+', 278, 209, 'b5', 1, lab, anchor='mt')

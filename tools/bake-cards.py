@@ -112,7 +112,7 @@ BURST = {  # the round sticker on the stage
     'henshin': ('TRANS-', 'FORMS!'), 'kasabuki': ('TRANS-', 'FORMS!'), 'hashigo': ('PLAY', 'SET!'), 'obakebaito': ('PLAY', 'SET!'),
     'teruteru': ('BALL', 'CHAIN!'), 'karakuri': ('WIND', 'IT UP!'), 'nakanohito': ('WHO', 'INSIDE?'), 'kaden': ('IT', 'MOVES!'),
     'yomise': ('LIGHTS', 'UP!'), 'otsukai': ('GOLD', 'LEAF!'), 'kabuki': ('MIE!',), 'sabaku': ('POSE!',), 'minato': ('POSE!',),
-    'datesha': ('POSE!',), 'kanikan': ('OPEN', 'THE TIN!'), 'janru': ('BIG', 'MOMENT!'),
+    'datesha': ('POSE!',), 'kanikan': ('OPEN', 'THE TIN!'), 'janru': ('BIG', 'MOMENT!'), 'sento': ('BATH', 'TIME!'),
 }
 LOGO = {  # series -> the hand-lettered logotype (tools/lettering.py alphabet, lines, style); one effect only
     'henshin': ('ruler', [('STATIONERY', 1), ('BEASTS', 2)], dict(outline=(1, 0x1c1816), track=1, bounce=[0, 0, 1, 0, -1, 0, 0, 1, 0, 0])),

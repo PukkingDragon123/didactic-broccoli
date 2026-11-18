@@ -43,6 +43,25 @@ SPEC = {
         sample=dict(bg=(.30, .40, .45, .46), leaf=(.0, .55, .06, .75), logo=(.08, .14, .38, .24), catch=(.05, .03, .45, .08),
                     sub=(.08, .375, .50, .425), band=(.0, .78, 1, .79), price_red=(.03, .86, .18, .88), warn_head=(.20, .79, .61, .81),
                     names=(.10, .735, .90, .76))),
+    'tamakero': dict(
+        aspect=432 / 367, bg='plain white', logo=dict(style='heavy rounded', fill='logo', outline=(2, 'white'), shadow=None, angle=0),
+        box=dict(price=(.02, .02, .14, .12), logo=(.18, .02, .76, .15), maker=(.84, .02, .97, .10), date=(.84, .11, .97, .17),
+                 hero=(.02, .25, .55, .68), hero2=(.58, .33, .97, .57), mode_badge=(.38, .18, .55, .33), qr=(.62, .20, .77, .33),
+                 lineup=(0, .67, 1, .86), pills=(.05, .80, .95, .83), slogan=(.05, .86, .95, .91), footer=(0, .92, 1, 1)),
+        sample=dict(bg=(.30, .40, .40, .45), logo=(.25, .04, .55, .13), price=(.03, .03, .13, .11), band=(.0, .70, .05, .78),
+                    pills=(.10, .80, .30, .83), mode=(.40, .20, .53, .31))),
+    'birdphone': dict(
+        aspect=425 / 368, bg='parchment map', logo=dict(style='brush', fill='logo', outline=None, shadow=None, angle=0),
+        box=dict(logo=(.45, .04, .80, .15), sub=(.48, .16, .75, .19), maker=(.86, .03, .97, .20), catch=(.07, .10, .17, .40),
+                 hero=(.02, .12, .48, .80), grid=(.48, .22, .97, .80), footer=(0, .80, 1, 1), price=(.02, .81, .15, .90),
+                 age=(.02, .90, .15, .98), warn=(.17, .81, .60, .98), makerblk=(.60, .81, .98, .98)),
+        sample=dict(bg=(.55, .60, .65, .70), logo=(.47, .05, .78, .13), footer=(.0, .80, .02, .99), price=(.03, .82, .14, .89))),
+    'mandrake': dict(
+        aspect=335 / 367, bg='bokeh photo', logo=dict(style='rounded gothic', fill='white', outline=None, shadow=(1, 2, 'logo_shadow'), angle=0),
+        box=dict(bunting=(0, 0, 1, .15), maker=(.88, 0, .98, .15), catch=(.07, .25, .45, .30), logo=(.05, .30, .55, .48),
+                 types=(.12, .53, .38, .58), hero=(.55, .12, .85, .68), lineup=(0, .70, 1, .95), names=(0, .93, 1, .99)),
+        sample=dict(bg=(.30, .60, .45, .68), logo_shadow=(.05, .33, .50, .45), types=(.13, .54, .37, .57), bunting=(.0, .0, .6, .12),
+                    rings=(.0, .72, 1, .90))),
 }
 
 

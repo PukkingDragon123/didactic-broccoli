@@ -2850,3 +2850,94 @@ toys over a photograph, cropped and graded like print. Photos from Wikimedia Com
 
 Shippori Mincho B1 by FONTDASU, SIL Open Font License 1.1 (https://openfontlicense.org), Google Fonts: the kanji on the
 Tsuppari Zoo figures' printed coats and card. Used only at bake time; the game ships the baked images, not the font.
+
+## Gacha card cut-outs (Open Images: photos CC BY 2.0, segmentation masks CC BY 4.0)
+
+The real-photo cut-outs layered on the gacha display cards (`public/img/print/cards/*.webp`, tools/card6.py) are cut from
+Google Open Images photos with the dataset's hand-made segmentation masks (masks: Google LLC, CC BY 4.0,
+https://storage.googleapis.com/openimages/web/index.html), shrunk, colour-graded and given hard pixel edges. Photos:
+
+- "Packaging-Tape-Brown-Parcel-Tape_286011-480x360" by Emilian Robert Vicol, https://www.flickr.com/photos/free-stock/4817475710, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 609540391663c2d8: the adhesive tape cut-out
+- "Clocks For Dennis" by Rob and Stephanie Levy, https://www.flickr.com/photos/robandstephanielevy/3332053536, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 1ab693e1f5b627f9: the alarm clock cut-out
+- "Alarm clock" by John Christian Fjellestad, https://www.flickr.com/photos/jkfjellestad/8063839208, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 640bc6dff7a52ecc: the alarm clock cut-out
+- "Native American Pottery 2" by Tony Hisgett, https://www.flickr.com/photos/hisgett/15430810840, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 3bf6cf4f524e67e9: the ball cut-out
+- "Thick Soled Shoes" by Timothy Takemoto, https://www.flickr.com/photos/nihonbunka/371951099, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8826bd678bf37e07: the boot cut-out
+- "Olympus OM-30 (front)" by Tim Williams, https://www.flickr.com/photos/timmythesuk/195779313, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 20d50fc921fe8829: the camera cut-out
+- "Mi vela" by Diego Correa, https://www.flickr.com/photos/pitzyper/1806236351, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 245c5ee3d6b6610f: the candle cut-out
+- "AA2015 091" by Montclair Film Festival, https://www.flickr.com/photos/montclairfilmfest/15990754114, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 5cfa99467f691e8c: the candle cut-out
+- "Boston - Waterfront Lagoon Gondola &quot;A toast to us&quot;" by David Ohmer, https://www.flickr.com/photos/the-o/2868177411, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e0ce7226fab905fc: the canoe cut-out
+- "Test Lumix GF1 & Jupiter 8 lens" by Wanderlinse, https://www.flickr.com/photos/wanderlinse/4359886869, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 3469ddbcf88563b7: the clock cut-out
+- "IMG_1818" by get directly down, https://www.flickr.com/photos/65172294@N00/4725799574, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 01a249386ca6971c: the cocktail cut-out
+- "Green-bodied Bee" by John Hritz, https://www.flickr.com/photos/jhritz/3733307870, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 0917b025f15b6816: the common sunflower cut-out
+- "Desert Botanical Garden" by trnitz, https://www.flickr.com/photos/trnitz/7193337160, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 5c54ce45b8eb3211: the common sunflower cut-out
+- "Time to go!" by Jacky W., https://www.flickr.com/photos/mediatejack/5138928015, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 5a09fa6e44c76aa4: the corded phone cut-out
+- "Prepared to Walk on Sun Day" by Justin Hall, https://www.flickr.com/photos/justin/5180733543, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 33c4e2293efaf36e: the cowboy hat cut-out
+- "Sword" by francois schnell, https://www.flickr.com/photos/frenchy/4547456855, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e5f925f9f31c1728: the dagger cut-out
+- "Goodwood wheels cube" by Brian Snelson, https://www.flickr.com/photos/exfordy/1555758745, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 531c1e4611e3ecf1: the dice cut-out
+- "rusty dice" by Marcus Vinicius, https://www.flickr.com/photos/marviniz/60387567/, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 694a7bea5ed6e7ba: the dice cut-out
+- "IMG_1907" by Peter Alfred Hess, https://www.flickr.com/photos/peterhess/4171468852, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID c061486c8336e40b: the dice cut-out
+- "Goldeneye Duck on Lake Estes in CO" by defendersenews, https://www.flickr.com/photos/defendersenews/3381919247, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8605276bc8175e01: the duck cut-out
+- "Hat Black & White" by Joshua Kehn, https://www.flickr.com/photos/joshkehn/6562690481, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 032804e8b0b7c298: the fedora cut-out
+- "Lepomis macrochirus" by Jon Nelson, https://www.flickr.com/photos/jondavidnelson/14705869840, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID eb4b15107609b729: the fish cut-out
+- "Florida Aquarium - 9/30/13  - Tampa, Fl." by Kathy, https://www.flickr.com/photos/44603071@N00/10106407016, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b24e0e660cd9a9b6: the fish cut-out
+- "Dorade im Ganzen gebraten" by Oliver Hallmann, https://www.flickr.com/photos/ohallmann/6789236480, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e33e11de4da6807c: the fish cut-out
+- "Yellow and Pink Dahlia" by Jonathan Kershaw, https://www.flickr.com/photos/tattooed-hippy/5927472931, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 495efe7c8ca69b0d: the flower cut-out
+- "Ocean Blue Morning Glory (Ipomoea indica var. acuminata)" by Bob Peterson, https://www.flickr.com/photos/pondapple/8320413721, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID d9010cd519a5f329: the flower cut-out
+- "Wild Flowers" by Dziunka DBK, https://www.flickr.com/photos/dziunka/15252774716, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 929347697a5994ab: the flower cut-out
+- "Poison Dart Frog Sitting on a Leaf" by GrrlScientist, https://www.flickr.com/photos/30540563@N08/10948601813, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 44e8e2cc400050a9: the frog cut-out
+- "Red Eyed Frog" by LaRaGamboa Fotografía, https://www.flickr.com/photos/laragamboa/1355870479, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID c525f1fe33ff57d8: the frog cut-out
+- "French Press Frieling Ultimo" by Yara Tucek, https://www.flickr.com/photos/doubleshot_cz/6147531178, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 89c672151bc7a75d: the kettle cut-out
+- "Niel Hora" by Mark Barry, https://www.flickr.com/photos/markart/355045240, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID daf93dc98a925e36: the kettle cut-out
+- "Spinny, Spiney Kite" by Jeff Rozema, https://www.flickr.com/photos/yerffej9/154405408, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID a7e842dcb520f2c8: the kite cut-out
+- "dreamers" by Steve Jurvetson, https://www.flickr.com/photos/jurvetson/164007007, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID cac159395d6a2e16: the kite cut-out
+- "Colorful Kite" by wsilver, https://www.flickr.com/photos/psycho-pics/3024112296, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 0e67272f228ba0c5: the kite cut-out
+- "| pareja cítrica |" by Emi Yañez, https://www.flickr.com/photos/puntodevista/526560284, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 75e0688103f10177: the lemon cut-out
+- "Sweet, sweet lime" by Kaushik Narasimhan, https://www.flickr.com/photos/kaushiknarasimhan/4567240117, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID dff74fde6ddfc42a: the lemon cut-out
+- "Covehead lighthouse" by Andrea Schaffer, https://www.flickr.com/photos/aschaf/7618357174, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 69abafd1450b5203: the lighthouse cut-out
+- "Lighthouse / 灯台(とうだい)" by TANAKA Juuyoh (田中十洋), https://www.flickr.com/photos/tanaka_juuyoh/3965531654, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 6d6ecdf31cf2fbe7: the lighthouse cut-out
+- "Lizard at Manchester Museum" by Gidzy, https://www.flickr.com/photos/gidzy/20694739329, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 67dd52b7190e9f19: the lizard cut-out
+- "book4 060" by jules, https://www.flickr.com/photos/stone-soup/3241939979, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8a4bbe37ab2718d3: the milk cut-out
+- "Avocado Smoothie with honey and pistachio" by insatiablemunch, https://www.flickr.com/photos/insatiablemunchies/16284456897, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 1cd1629d3ced1559: the milk cut-out
+- "turbomonster" by johnny1978, https://www.flickr.com/photos/11966142@N08/3367175662, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 38b899565f598adc: the motorcycle cut-out
+- "Goggo 200" by Ivan Dub, who never materialized, https://www.flickr.com/photos/elenchos-seattle/3549896125, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 340d186a0d54424b: the motorcycle cut-out
+- "Mushrooms of Kuipto (8)" by blathlean, https://www.flickr.com/photos/blathlean/5656448825, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID fecdc179a0a116b1: the mushroom cut-out
+- "2839 Bracket fungus at Stoke Lodge" by crabchick, https://www.flickr.com/photos/crabchick/8027811368, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e7b1139df710e541: the mushroom cut-out
+- "Not a pie" by Ken Bosma, https://www.flickr.com/photos/kretyen/15110854920, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 611a811da0d9fec8: the mushroom cut-out
+- "Cross.jpg" by Mark Overell, https://www.flickr.com/photos/markoverell/8086503374, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e391d7de9d4c8561: the oyster cut-out
+- "Oyster (cipi)" by adil113, https://www.flickr.com/photos/64884898@N04/5957185688, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 6e6497a9fb37f10d: the oyster cut-out
+- "Конвертер Lamy Z24" by Dmitry Dzhus, https://www.flickr.com/photos/nothingpersonal/5118080330, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b753cc4c7a0f5e01: the pen cut-out
+- "Special Pen!" by Matt Seppings, https://www.flickr.com/photos/chumpolo/5326919558, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 7a8dc12ccec45d77: the pen cut-out
+- "Silver ballpen / ballpoint pen close up on white background" by photosteve101, https://www.flickr.com/photos/42931449@N07/5417786279, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID f8652b85348da057: the pen cut-out
+- "Hallo...." by sunshinecity, https://www.flickr.com/photos/sunshinecity/1809052647, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 47b5d5ac38d3c714: the pumpkin cut-out
+- "Polystyrene pumpkin" by Newtown grafitti, https://www.flickr.com/photos/newtown_grafitti/6294619522, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 059108da497d5b23: the pumpkin cut-out
+- "halloween_citrouille" by jean pierre gallot, https://www.flickr.com/photos/jean_pierre_gallot_69009/8127999230, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID f7dc8018e618b5d7: the pumpkin cut-out
+- "Space Shuttle Model" by terren in Virginia, https://www.flickr.com/photos/8136496@N05/2196368746, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8b74c2b18f7e2646: the rocket cut-out
+- "Space Shuttle" by mrgarethm, https://www.flickr.com/photos/mrgarethm/14612514664, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID c1df8890e1cc42c8: the rocket cut-out
+- "double colored rose" by ~Pawsitive~Candie_N, https://www.flickr.com/photos/scjn/3463975749, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 0cb90d8abc0f52b0: the rose cut-out
+- "1576-Rosa blanca" by Jose Luis Cernadas Iglesias, https://www.flickr.com/photos/jlcernadas/5002203420, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 7889bbe3a0cc6a6d: the rose cut-out
+- "Happy Valentine's Day" by Evonne, https://www.flickr.com/photos/evoo73/3282592819, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 2a0386d02423dee5: the rose cut-out
+- "Steel Rule" by Luke Milburn, https://www.flickr.com/photos/129209751@N07/15765166372, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8f645490bc17fe56: the ruler cut-out
+- "It still bleeds (68/385)" by Cirofono, https://www.flickr.com/photos/ciroduran/2320353398, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b825b5d6df659de2: the scissors cut-out
+- "Hawksbill turtle at Elphinstone Reef, Red Sea, Egypt #SCUBA" by Derek Keats, https://www.flickr.com/photos/dkeats/6192803976, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 238adf8f7c8c2216: the sea turtle cut-out
+- "Tyrannosaurus rex" by Danny Chapman, https://www.flickr.com/photos/11152520@N03/5769111941, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 802df4cae08b081a: the skull cut-out
+- "Hoy nos hemos traído al peque a ver dinosaurios al Museo de Ciencias Naturales. Roaaaaar! 🐊" by Viviendo Madrid, https://www.flickr.com/photos/viviendomadrid/16406134507, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e68890c2fe85192c: the skull cut-out
+- "img_5289" by Leonid Mamchenkov, https://www.flickr.com/photos/mamchenkov/134641837, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 3f52f738494f2de6: the skyscraper cut-out
+- "IMG_0338" by John Mitchell, https://www.flickr.com/photos/johnny_d_mitchell/1393089899, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID bcf41daacc0db093: the skyscraper cut-out
+- "Grass Snake" by Mick Talbot, https://www.flickr.com/photos/micks-wildlife-macros/2673036784, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 58abb67ba32052bf: the snake cut-out
+- "Seestern" by Alex Onkelix, https://www.flickr.com/photos/onkelix/19126531205, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 0077f8de643853ca: the starfish cut-out
+- "Sea Star" by Chris Lott, https://www.flickr.com/photos/fncll/170985394, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 0a5132b5298cf774: the starfish cut-out
+- "Briefcase" by Robert  Sheie, https://www.flickr.com/photos/85546319@N04/8154258737, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 69799c722209d221: the suitcase cut-out
+- "This is a suitcase" by Emma, https://www.flickr.com/photos/tomandemma/3957263843, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8793fe454df06c02: the suitcase cut-out
+- "CHAPEU COOLGARDIE" by CLUBE TREKKING SANTA MARIA RS BRASIL, https://www.flickr.com/photos/hikingsantamaria/5353490834, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 8a58079fdef85997: the sun hat cut-out
+- "Sword" by francois schnell, https://www.flickr.com/photos/frenchy/4547456855, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e5f925f9f31c1728: the sword cut-out
+- "Tanks" by @sage_solar, https://www.flickr.com/photos/sagesolar/7040212763, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID da3d7db1e573f504: the tank cut-out
+- "APC" by Matt, https://www.flickr.com/photos/matchity/22758097, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID eb4b8cf3eeece17b: the tank cut-out
+- "DSCN0150 - Highlighting seam between vanity and back wall" by David Metzener, https://www.flickr.com/photos/vesperdem/9990281853, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID cbdc8e992e9100d9: the tap cut-out
+- "Niel Hora" by Mark Barry, https://www.flickr.com/photos/markart/355045240, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID daf93dc98a925e36: the teapot cut-out
+- "Teapot  2014" by Frank Martin, https://www.flickr.com/photos/frank_martin/14651225018, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID cb3c9f1cfe3d5961: the teapot cut-out
+- "knotty neck ties" by amber, https://www.flickr.com/photos/32634834@N07/3472675088, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 1ad9b1deae45d64c: the tie cut-out
+- "大きなひざ掛け（無印良品）" by Tatsuo Yamashita, https://www.flickr.com/photos/yto/3979530685, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 66f986c9f314332c: the towel cut-out
+- "St. Charles Avenue Streetcar" by Sharon Mollerus, https://www.flickr.com/photos/clairity/3024939244, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b6e63837537facc3: the train cut-out
+- "Train" by Tim Green, https://www.flickr.com/photos/atoach/4523892040, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 2698ca98439ea03a: the train cut-out
+- "Benchmark Black - 11072/1218" by Infinity Instruments, https://www.flickr.com/photos/75680924@N08/6976338187, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 3f9fe9eab60d654d: the watch cut-out
+- "Glad this is off and the jeans and t-shirt are on #friday #tie #fashion #waytoomuchhumidityoutthere" by Cameron Norman, https://www.flickr.com/photos/censemaking/9844321054, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 24c8d27927ad937b: the tie cut-out

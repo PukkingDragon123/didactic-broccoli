@@ -152,3 +152,22 @@ One fictional printer, **Ito Press**, prints everything. Its imprint sits in the
 | Super Secret (`promo:secret`) | vault | plum `#2c2335`, gold `#cf9f45` + paper (two inks only) | **crate stencil**: tall condensed stencil with 1 px ties (cap 21) | 4, 6, 8 |
 | Stationery Beasts card (`henshin`) | schoolroom | cobalt `#2f4478`, pencil `#e4ad3e` (stage as a tint), red pen `#c9472f` + paper | **drafting template**: square monoline, the I a pencil (cap 13) | 9, 10, 17, 18 |
 | Deep-Sea Night Stalls card (`yomise`) | night-stall | deep teal `#173a44`, lantern `#e9845a`, aqua `#9fcfc2` + paper | **lantern wire**: 2 px monoline on a bobbing baseline, the I a paper lantern (cap 12) | 2, 17, 18, 19 |
+
+## Gacha card checklist (card6: tools/card6.py, on the reference structures in tools/cardref/)
+
+Every card is checked against this before it ships (shots/clone/compare.png puts each one next to its reference):
+1. **Structure**: the reference's skeleton (logo / hero / line-up / badges / warning / maker blocks in the same places
+   and proportions), reflowed to the in-game 320 x 280 card. It is a sibling of the reference, not a copy of it.
+2. **Theme**: palette, ground pattern, prop or motif band and logo face all come from the series' world. No Japan scene
+   photos; real images are themed photo cut-outs (Open Images masks, credited), hard-edged, graded to the card, with a
+   hard offset shadow, some behind the toys and some in front of them.
+3. **Type**: pixel faces only, at one integer scale per logo, never stretched. Outlines 1–2 px, one hard shadow at most.
+   Small print is ink on paper, not outlined micro type. Every string fits its box (no clipping and no fallback blobs).
+4. **Toys**: no render cut off by the card edge or a panel. The hero is the most substantial figure. The secret is an
+   ink silhouette. Each toy has a hard contact shadow and a slight grade toward the card colour.
+5. **Spacing**: 6 px outer margin, badges on a shared baseline, no element colliding with another unless it is a
+   deliberate overlap for depth (a sill, fence, tub wall, motif band or front cut-out).
+6. **Nothing left over**: no empty slot, Japanese-only device or badge that means nothing for this series.
+7. **Badges**: white or ink tiles with a 1 px rule and a 2–3 px radius. Price, types and ages appear exactly once.
+   The warning block keeps the reference layout (yellow header, red text, yellow WARNING bar).
+8. **Legal**: original maker names and logos, no real brand legible on any cut-out, all text in English.
