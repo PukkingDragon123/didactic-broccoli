@@ -13,6 +13,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image
 from printkit import Panel, ROOT, CACHE, cover, printed, mixc
 import paperkit as PK
+import posters_px as PX  # the gashapon-board remake: pixel type, all English, drawn at the final size
+from pixprint import Sheet
 import importlib.util
 _bp = importlib.util.spec_from_file_location('bake_print', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bake-print.py'))
 BP = importlib.util.module_from_spec(_bp); _bp.loader.exec_module(BP)
@@ -206,6 +208,10 @@ def vintage(key, w, h, **age):
 
 # ------------------------------------------------------------------ bake
 def render(key, w, h, fn, age):
+    if key in PX.DESIGNS:  # pixel designs: drawn at their final size, never resampled after the type is set
+        w, h, fn, age = PX.DESIGNS[key]
+        S = Sheet(w, h, 0xffffff); fn(S)
+        return PK.age(S.image(), **age)
     P = Panel(w, h, 0xffffff); fn(P)
     im = P.image()
     if callable(getattr(P, 'post', None)): im = P.post(im)
@@ -253,6 +259,7 @@ if __name__ == '__main__':
         bg = Image.new('RGBA', out.size, (90, 84, 78, 255)); bg.alpha_composite(out); bg.convert('RGB').save(p)
         print('sheet', p, out.size)
     else:
-        BP.save_sheet('lane', out, idx)
+        BP.save_sheet('lane', out, idx, near=True)
         pr = {k: render(k, w, h, fn, age) for k, (w, h, fn, age) in PROMO.items()}
-        o2, i2 = BP.pack(pr, 1024, alpha=True); BP.save_sheet('promo', o2, i2)
+        pr.update({k: render(k, *PX.DESIGNS[k]) for k in PX.DESIGNS if k.startswith('promo:') and k not in pr})
+        o2, i2 = BP.pack(pr, 1024, alpha=True); BP.save_sheet('promo', o2, i2, near=True)

@@ -668,9 +668,12 @@ def pack(ims, width=1024, gutter=GUTTER, alpha=False):
     return out, idx
 
 
-def save_sheet(name, out, idx, quality=92):
+def save_sheet(name, out, idx, quality=92, near=False):
     os.makedirs(OUT, exist_ok=True); os.makedirs(REGIONS, exist_ok=True)
-    out.save(os.path.join(OUT, name + '.webp'), quality=quality, method=6, alpha_quality=90)
+    if near:  # sheets with 1 px pixel type: near-lossless (tools/pixprint.py save_webp)
+        from pixprint import save_webp
+        save_webp(out, os.path.join(OUT, name + '.webp'))
+    else: out.save(os.path.join(OUT, name + '.webp'), quality=quality, method=6, alpha_quality=90)
     json.dump(idx, open(os.path.join(REGIONS, name + '.json'), 'w'), separators=(',', ':'))
     print(name, out.size, os.path.getsize(os.path.join(OUT, name + '.webp')) // 1024, 'KB')
 

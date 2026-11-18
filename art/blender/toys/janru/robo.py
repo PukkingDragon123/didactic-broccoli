@@ -1,5 +1,5 @@
 """ロボパイロットハムスター Robot-Pilot Hamster (series janru, concepts_E.md): the giant-robot genre, our own: a squat
-red-and-cream super robot with round shoulder pauldrons, a porthole chest and two round ear-fins on its head, planted
+red-and-cream super robot with round shoulder pauldrons, a porthole chest and two swept-back blade fins on its head, planted
 on a hangar deck plate; its pilot, a hamster in a flight suit and helmet, rides its shoulder pointing ahead.
 Gimmick: the robot's left fist fires forward on its rocket, spinning, and flies back to its wrist.
 
@@ -16,7 +16,7 @@ tk.reset()
 F = Fig('janru', 'robo')
 B = Build()
 GZ = 2.6
-B.add('body', plinth(r=14.0, n=8, region='deck'))
+B.add('body', plinth(r=14.0, n=8, region='deck', tris=70))
 # ------------------------------------------------------------------ the robot: blocky legs and feet, the chest, pauldrons, the right arm
 for sx in (1, -1):
     B.add('body', low(tk.rbox('foot', (5.6, 8.0, 2.6), centre=(sx * 4.4, -1.0, GZ + 1.3), bevel=0.5, segs=1), 'foot', 24, lo=0, hi=2, region='steel'))
@@ -26,10 +26,10 @@ for sx in (1, -1):
     B.add('body', blob('knee', (sx * 4.3, -2.0, 8.0), 1.6, tris=12, region='red', squash=(1.1, 0.8, 1.0)))
 TORSO = [dict(c=(0, 0.4, 11.0), w=10.0, h=4.4, e=3.2), dict(c=(0, 0.2, 15.0), w=12.6, h=5.4, e=3.2), dict(c=(0, 0.0, 19.6), w=15.2, ht=6.0, hb=5.4, e=3.4),
          dict(c=(0, 0.0, 22.0), w=10.0, h=4.0, e=3.0)]
-B.add('body', low(tk.loft('torso', TORSO, n=12, up=(0, -1, 0), cap0='flat', cap1='flat'), 'torso', 120, lo=1, hi=3, region=('red', [('cream', lambda C, N: C[:, 2] < 14.0)]),
+B.add('body', low(tk.loft('torso', TORSO, n=12, up=(0, -1, 0), cap0='flat', cap1='flat'), 'torso', 170, lo=1, hi=3, region=('red', [('cream', lambda C, N: C[:, 2] < 14.0)]),
                   sculpt=lambda h: tk.push(h, lambda V, N: -0.35 * (np.hypot(V[:, 0], V[:, 2] - 18.0) < 2.8) * (np.hypot(V[:, 0], V[:, 2] - 18.0) > 2.2) * (N[:, 1] < -0.5))))
 for sx in (1, -1):
-    B.add('body', blob('pauldron', (sx * 9.4, 0.0, 21.0), 3.8, tris=36, region='red', squash=(1.0, 1.0, 0.8)))
+    B.add('body', blob('pauldron', (sx * 9.8, 0.4, 19.8), 3.4, tris=44, region='red', squash=(1.0, 1.0, 0.72)))
 B.add('body', limb('arm_r', [(-9.6, 0.0, 18.6), (-10.4, -1.4, 13.6), (-10.0, -4.6, 11.4)], [2.2, 2.0, 1.9], tris=24, region='steel', n=8))
 B.add('body', low(tk.rbox('fist_r', (3.8, 4.0, 3.8), centre=(-10.0, -6.8, 11.2), bevel=0.7, segs=1), 'fist_r', 20, lo=0, hi=2, region='cream'))
 # the left upper arm stays; its forearm and fist are the rocket
@@ -38,14 +38,16 @@ W0 = V3(10.6, -1.6, 14.6)
 B.add('rocket', limb('fore_l', [W0, W0 + (0, -5.6, 0)], [2.4, 2.6], tris=18, region='red', n=8, e=3.0),
       low(tk.rbox('fist_l', (4.2, 4.2, 4.2), centre=tuple(W0 + (0, -8.0, 0)), bevel=0.8, segs=1), 'fist_l', 20, lo=0, hi=2, region='cream'))
 # ------------------------------------------------------------------ the robot head: visor, round ear-fins, a crest
-HP = [low(tk.loft('rhead', [dict(c=(0, 1.0, 22.6), w=6.4, h=3.0, e=3.0), dict(c=(0, -0.6, 25.4), w=6.0, h=3.2, e=3.0), dict(c=(0, -0.4, 27.4), w=4.4, h=2.4, e=2.6)],
-                        n=10, up=(0, -1, 0), cap0='flat', cap1='round'), 'rhead', 50, lo=1, hi=2, region=('cream', [('visor', lambda C, N: (N[:, 1] < -0.6) & (np.abs(C[:, 2] - 25.2) < 0.9))]))]
+# (it rides up on a neck, forward of the pauldrons, so it reads over them from every side)
+HP = [limb('neck', [(0, 0.2, 21.4), (0, -0.4, 24.2)], [2.2, 2.0], tris=10, region='steel', n=8),
+      low(tk.loft('rhead', [dict(c=(0, -0.2, 23.8), w=6.8, h=2.8, e=3.0), dict(c=(0, -0.8, 26.8), w=7.4, h=3.2, e=3.0), dict(c=(0, -0.6, 29.6), w=5.6, h=2.6, e=2.6)],
+                        n=10, up=(0, -1, 0), cap0='flat', cap1='round'), 'rhead', 80, lo=1, hi=2, region=('cream', [('visor', lambda C, N: (N[:, 1] < -0.6) & (np.abs(C[:, 2] - 26.9) < 0.9))]))]
 for sx in (1, -1):
-    HP.append(blob('fin', (sx * 3.8, -0.2, 28.2), 1.9, tris=16, region='red', squash=(0.5, 1.0, 1.0)))
-HP.append(limb('crest', [(0, -2.6, 27.0), (0, -3.4, 29.0), (0, -2.4, 30.4)], [0.8, 0.6, 0.2], tris=8, region='gold', n=5, cap1='point'))
+    HP.append(ear('fin', (sx * 3.2, -0.2, 28.0), (sx * 6.2, 1.4, 32.0), 2.8, th=0.9, region='red', tris=16, cup=(sx, 0, 0)))   # swept-back blade fins
+HP.append(limb('crest', [(0, -3.6, 28.8), (0, -4.2, 31.0), (0, -3.0, 32.6)], [0.8, 0.6, 0.2], tris=10, region='gold', n=5, cap1='point'))
 B.add('rhead', *HP)
 # ------------------------------------------------------------------ the pilot on the right pauldron: hamster, flight suit, helmet, pointing
-PC = V3(-9.4, 0.4, 24.0)
+PC = V3(-9.8, 0.8, 23.0)
 B.add('pilot', low(tk.loft('suit', [dict(c=tuple(PC + (0, 0.4, 0.4)), w=4.0, h=2.2), dict(c=tuple(PC + (0, 0.2, 2.6)), w=4.0, h=2.0), dict(c=tuple(PC + (0, 0, 4.0)), w=3.0, h=1.6)],
                             n=10, up=(0, -1, 0), cap0='round', cap1='round'), 'suit', 30, lo=1, hi=2, region='flight'),
       blob('phead', PC + (0, -0.6, 6.4), 2.4, tris=24, region='fur', squash=(1.1, 1.0, 0.95)),
@@ -64,7 +66,7 @@ def make_rig():
     R.bone('root', (0, 0, 0.5))
     R.bone('body', (0, 0, GZ), parent='root')
     R.bone('rocket', tuple(W0), parent='body')
-    R.bone('rhead', (0, 0.2, 22.4), parent='body')
+    R.bone('rhead', (0, 0.2, 21.6), parent='body')
     R.bone('pilot', tuple(PC), parent='body')
     for p in F.parts:
         R.attach(p.low, p.bone)
@@ -120,4 +122,4 @@ def paint(P, pt):
     return P.done()
 
 
-run(F, make_rig, paint, frames=70, skip=[('rocket', 'body'), ('rhead', 'body'), ('pilot', 'body'), ('pilot', 'rhead')], fold=(0, 18, 30, 50))
+run(F, make_rig, paint, frames=70, skip=[('rocket', 'body'), ('rhead', 'body'), ('pilot', 'body'), ('pilot', 'rhead')], fold=(0, 18, 30, 50), cams=[((40, -52, 38), (0, -1, 18)), ((-40, 48, 34), (0, 1, 18))])

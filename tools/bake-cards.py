@@ -88,98 +88,268 @@ def toy(sid, iid):
     return im.crop(bb) if bb else None
 
 
-MAKER = ('ガチャガレージ玩具', 'GACHA GARAGE TOYS')
-WARN = '小さな部品があります。3才未満のお子様には絶対に与えないでください。窒息などの危険があります。カプセルを口に入れたり、かぶったりしないでください。'
+# ================================================================== the card (the owner's gashapon boards, all English, pixel type)
+# Laid out on a 320 x 280 pixel grid and printed 2x (640 x 560): every rule, badge, sticker and letter is a whole 2 x 2
+# block; only the real photo backdrop and the real toy renders are at the full resolution.
+from pixprint import Sheet, text_size, upscale, save_webp
+import re
+
+LW, LH = W // 2, H // 2
+PH = 168          # the stage (photo + logo field) is y 0..PH; the line-up band PH..BY; the small print BY..LH
+BY = 238
+YEL = 0xffd23f; GOLD_ = 0xf2b42a
+KIND_EN = {  # the card's catch ribbon (series data card.kind is the Japanese print)
+    'datesha': 'STRANGE POSE ANIMAL FIGURE', 'minato': 'STRANGE POSE ANIMAL FIGURE', 'sabaku': 'STRANGE POSE ANIMAL FIGURE',
+    'ekiin': 'STATION STAFF FIGURE', 'hashigo': 'STACKING PLAYSET', 'henshin': 'COMPLETE TRANSFORMATION FIGURE',
+    'kabuki': 'YOKAI KABUKI FIGURE', 'kaden': 'APPLIANCE ANIMAL FIGURE', 'karakuri': 'WIND-UP AUTOMATON FIGURE',
+    'kasabuki': 'TRANSFORMING UMBRELLA ARMS', 'meijin': 'PLAYGROUND MASTER FIGURE', 'nakanohito': 'MONSTER SUIT FIGURE',
+    'obakebaito': 'HAUNTED HOUSE PLAYSET', 'otenki': 'WEATHER DELIVERY FIGURE', 'otsukai': 'LACQUER & GOLD LEAF FIGURE',
+    'sento': 'BATHHOUSE REGULARS FIGURE', 'teruteru': 'BALL-CHAIN MASCOT', 'tsuppari': 'TOUGH-GUY ANIMAL FIGURE',
+    'yomise': 'DEEP-SEA NIGHT STALL FIGURE',
+}
+BURST = {  # the sticker slapped on the stage
+    'henshin': ('TRANS-', 'FORMS!'), 'kasabuki': ('TRANS-', 'FORMS!'), 'hashigo': ('PLAY', 'SET!'), 'obakebaito': ('PLAY', 'SET!'),
+    'teruteru': ('BALL', 'CHAIN!'), 'karakuri': ('WIND', 'IT UP!'), 'nakanohito': ('WHO', 'INSIDE?'), 'kaden': ('IT', 'MOVES!'),
+    'yomise': ('LIGHTS', 'UP!'), 'otsukai': ('GOLD', 'LEAF!'), 'kabuki': ('MIE!',), 'sabaku': ('POSE!',), 'minato': ('POSE!',),
+    'datesha': ('POSE!',),
+}
+TITLE_FACE = {'obakebaito': 'jacq24', 'kabuki': 'jacq24', 'otsukai': 'ala', 'karakuri': 'ps2p', 'otenki': 'ps2p'}
+MAKERS = [  # original makers (no real brand): name, mark colour, initials ('' = the capsule mark)
+    ('GACHA GARAGE TOYS', 0xd8402a, ''), ('KOROKORO CAPSULE', 0x2f8a4a, 'KC'), ('TOY HUTCH', 0x2a5aa8, 'TH'),
+    ('POKKE WORKS', 0xe08a1a, 'PW'), ('MARUMARU TOYS', 0x8a3a8a, 'MM'),
+]
+MAKER_OF = {'henshin': 0, 'nakanohito': 0, 'teruteru': 0, 'kaden': 1, 'otsukai': 3, 'yomise': 2, 'obakebaito': 4,
+            'tsuppari': 2, 'ekiin': 1, 'kabuki': 4, 'meijin': 3, 'hashigo': 1, 'sento': 2, 'otenki': 3, 'sabaku': 4,
+            'minato': 4, 'datesha': 4, 'karakuri': 0, 'kasabuki': 2}
+WARN_EN = ('SMALL PARTS. NOT FOR CHILDREN UNDER 3 YEARS. DO NOT PUT THE CAPSULE IN YOUR MOUTH OR OVER YOUR HEAD. '
+           'THE PICTURE MAY DIFFER FROM THE PRODUCT.')
 
 
 def light(c, t=0.55): return mixc(c, 0xffffff, t)
+def lum(v): return (0.3 * ((v >> 16) & 255) + 0.59 * ((v >> 8) & 255) + 0.11 * (v & 255)) / 255
 
 
-def qr(P, x, y, s, seed):
-    """A printed 2D code (21 x 21 modules with its three finder squares), laid in on whole pixels."""
-    import random; rn = random.Random(seed); m = s / 21
-    P.rect(x - 3, y - 3, s + 6, s + 6, 0xffffff)
-    for j in range(21):
-        for i in range(21):
-            f = (i < 7 and j < 7) or (i > 13 and j < 7) or (i < 7 and j > 13)
-            if f:
-                ii, jj = i % 14 if i > 13 else i, j % 14 if j > 13 else j
-                on = ii in (0, 6) or jj in (0, 6) or (2 <= ii <= 4 and 2 <= jj <= 4)
-            else: on = rn.random() < 0.5
-            if on: P.rect(x + i * m, y + j * m, m + 0.3, m + 0.3, INK)
+def meta(sid):
+    """The series' English tagline and each figure's gimmick word, read from src/data/series/<sid>.js."""
+    try: src = open(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js'), encoding='utf-8').read()
+    except OSError: return '', {}
+    m = re.search(r"tagline:\s*(['\"])(.*?)\1,", src)
+    gim, ids = {}, [(mm.start(), mm.group(1)) for mm in re.finditer(r"\bid:\s*'([^']+)',\s*name:", src)]
+    for k, (pos, iid) in enumerate(ids):
+        end = ids[k + 1][0] if k + 1 < len(ids) else len(src)
+        g = re.search(r"gimmick:\s*\{\s*text:\s*(['\"])(.*?)\1", src[pos:end])
+        if g: gim[iid] = g.group(2)
+    return (m.group(2) if m else ''), gim
 
 
-def logo(P, text, x, y, size, fill, shadow, maxw):
-    """The chunky series logo: a heavy face, a thick white die-line round it and a flat offset shadow (no glow)."""
-    P.text(text, 'mochiy', size, x + size * 0.07, y + size * 0.08, shadow, anchor='lm', stroke=(size * 0.11, shadow), maxw=maxw)
-    P.text(text, 'mochiy', size, x, y, fill, anchor='lm', stroke=(size * 0.11, 0xffffff), maxw=maxw)
+def split_title(name, face, maxw):
+    """The series name in capitals, in one or two lines (at a colon, else at the most even word break)."""
+    t = name.upper().replace('’', "'")
+    if ':' in t: a, b = t.split(':', 1); return [a.strip(), b.strip()]
+    if text_size(t, face)[0] <= maxw or ' ' not in t: return [t]
+    words = t.split(' ')
+    best = min(range(1, len(words)), key=lambda i: max(text_size(' '.join(words[:i]), face)[0], text_size(' '.join(words[i:]), face)[0]))
+    return [' '.join(words[:best]), ' '.join(words[best:])]
+
+
+def pattern(S, region, kind, col, seed=0):
+    if kind == 'stripes': S.stripes(region, col, w=3, gap=5, slope=1)
+    elif kind == 'grid':
+        S.stripes(region, col, w=1, gap=7, slope=None); S.stripes(region, col, w=1, gap=7, slope=0)
+    elif kind == 'waves':  # seigaiha: rows of nested arcs
+        R = S._region(region); yy, xx = np.mgrid[0:S.h, 0:S.w]
+        cx = (xx + ((yy // 8) % 2) * 8) % 16 - 8; cy = yy % 8
+        d = np.sqrt(cx * cx + (cy - 8.0) ** 2)
+        S._paint(R & (((d.astype(int) % 3) == 0) & (d < 9)), col)
+    else: S.dots(region, col, step=8, size=3)
+
+
+def maker_mark(S, x, y, k, s=16):
+    name, col, ini = MAKERS[k]
+    S.rrect(x, y, s, s, col, r=3)
+    if ini: S.text(ini, x + s // 2, y + s // 2, 'silkb', 1, 0xfbf8f1, anchor='mm')
+    else: S.capsule(x + 2, y + 2, s - 4, top=0xfbf8f1, bot=col, line=0xfbf8f1)
+    return name
+
+
+def wrap2(name, w, face='micro5'):
+    """A figure's name in at most two lines of w px (long names keep their last words)."""
+    words = name.upper().replace('’', "'").split(' ')
+    if words[0] == 'THE' and len(words) > 1: words = words[1:]
+    lines, cur = [], ''
+    for wd in words:
+        t = (cur + ' ' + wd).strip()
+        if cur and text_size(t, face)[0] > w: lines.append(cur); cur = wd
+        else: cur = t
+    lines.append(cur)
+    return lines if len(lines) <= 2 else lines[-2:]
 
 
 def card(s):
-    c = s.get('card') or {}
+    sid = s['id']; c = s.get('card') or {}
     bg, acc, txt, acc2 = hexc(c.get('bg')), hexc(c.get('accent'), RED), hexc(c.get('text'), INK), hexc(c.get('accent2'), 0x2a5aa8)
-    lum = lambda v: (0.3 * ((v >> 16) & 255) + 0.59 * ((v >> 8) & 255) + 0.11 * (v & 255)) / 255
     dark = lum(bg) < 0.45  # a night theme (yomise's navy, obakebaito's plum): the logo field and the line-up band print dark
     ltxt = txt if lum(txt) > 0.45 else 0xf2efe6  # (the light ink on a dark field)
     if lum(txt) > 0.45: txt = mixc(bg, 0, 0.55) if dark else INK  # the ink must read on the light print
-    field, dots = (bg, mixc(bg, 0xffffff, 0.14)) if dark else (light(acc, 0.78), light(acc, 0.6))
+    field, dots = (bg, mixc(bg, 0xffffff, 0.14)) if dark else (light(acc, 0.78), light(acc, 0.62))
     band, btxt = (bg, ltxt) if dark else (light(bg, 0.25), txt)
+    ink = mixc(bg, 0, 0.7) if dark else INK
+    tagline, gim = meta(sid)
     items = s['items']; n = len(items)
-    rendered = [i for i in items if not i['secret'] and toy(s['id'], i['id']) is not None]
-    # the hero: the rarest figure that stands up well (a tall render), so the card leads with something that reads
-    hero = max(rendered, key=lambda i: RANK.get(i['rarity'], 0) * 0.6 + min(1.4, toy(s['id'], i['id']).height / max(1, toy(s['id'], i['id']).width))) if rendered else None
-    P = Panel(W, H, WHITE)
-    # --- the stage: a real photo, bright as print; a colour field with a dot screen down the left for the logo
-    ref, f = BACK.get(s['id'], ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
-    P.photo(photo_ref(ref), 0, 0, W, 360, f=f, sat=1.05, con=1.04, bright=1.06)
-    P.poly([(0, 0), (330, 0), (250, 360), (0, 360)], field)
-    for yy in range(8, 360, 14):
-        for xx in range(8, 330 - int(yy * 80 / 360) - 6, 14): P.ellipse(xx, yy, 4, 4, dots)
-    # --- logo + subtitle
-    title = s['jp']
-    parts = [title] if len(title) <= 6 else [title[:len(title) // 2 + len(title) % 2], title[len(title) // 2 + len(title) % 2:]]
-    for k, t in enumerate(parts): logo(P, t, 22, 70 + k * 74, 62 if len(parts) > 1 else 70, acc, mixc(bg, 0, 0.5) if dark else txt, 290)
-    yb = 70 + len(parts) * 74 - 22
-    P.rect(22, yb, 210, 30, acc2 if dark else txt); P.text((s.get('card') or {}).get('kind') or 'マスコットフィギュア', 'kakub', 16, 127, yb + 15, 0xffffff)
-    P.text(s['name'].upper(), 'bebas', 18, 24, yb + 50, ltxt if dark else txt, anchor='lm', track=1)
-    # --- price and count badges, the age box
-    P.rect(22, 268, 74, 56, 0xffd23f); P.rect(22, 268, 74, 56, txt, line=2)
-    P.text('%d' % s['price'], 'bebas', 34, 52, 292, RED, anchor='mm'); P.text('円', 'kakub', 14, 84, 300, RED)
-    P.text('1回', 'kakub', 10, 59, 316, txt)
-    P.rect(102, 268, 64, 56, RED); P.text('全%d種' % n, 'kaku', 20, 134, 296, 0xffffff)
-    P.rect(172, 268, 70, 56, 0xffffff); P.rect(172, 268, 70, 56, txt, line=2)
-    P.text('対象年齢', 'kakub', 11, 207, 284, txt); P.text('15才以上', 'kakub', 14, 207, 306, txt)
-    # --- line-up band with each figure's name
-    P.rect(0, 360, W, 112, band); P.rect(0, 360, W, 4, acc)
-    cw = (W - 20) / max(1, n)
+    rendered = [i for i in items if not i['secret'] and toy(sid, i['id']) is not None]
+    hero = max(rendered, key=lambda i: RANK.get(i['rarity'], 0) * 0.6 + min(1.4, toy(sid, i['id']).height / max(1, toy(sid, i['id']).width))) if rendered else None
+    seed = sum(map(ord, sid))
+
+    # --- the photo stage, full resolution
+    base = Image.new('RGB', (W, H), rgb(WHITE))
+    ref, f = BACK.get(sid, ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
+    from printkit import source, cover, printed
+    base.paste(printed(cover(source(photo_ref(ref)), W, PH * 2, f), 1.05, 1.04, 1.04), (0, 0))
+
+    # --- the print under the toys (pixel grid)
+    B = Sheet(LW, LH, None)
+    edge = [(150, 0), (164, 0), (118, PH), (104, PH)]
+    fieldp = [(0, 0), (157, 0), (111, PH), (0, PH)]
+    B.poly(fieldp, field); pattern(B, fieldp, c.get('pattern', 'dots'), dots, seed)
+    B.poly(edge, acc2 if not dark else acc)
+    B.poly([(164, 0), (167, 0), (121, PH), (118, PH)], ink)
+    B.rect(0, PH, LW, BY - PH, band); B.rect(0, PH, LW, 2, ink); B.rect(0, PH + 2, LW, 2, acc)
+    B.rect(0, BY, LW, LH - BY, 0xfbf8f1); B.rect(0, BY, LW, 1, ink)
+    # line-up cells: a numbered disc and a name tag each
+    cw = (LW - 8) / max(1, n)
     for k, it in enumerate(items):
-        nm = 'シークレット' if it['secret'] else (it.get('jp') or it['name'])
-        P.text(nm, 'kakub', 10 if len(nm) <= 8 else 8.5, 10 + cw * (k + 0.5), 460, btxt, maxw=cw - 6)
-    # --- the small print: warning block, maker, code, barcode
-    P.rect(0, 472, W, 88, 0xffffff); P.rect(0, 472, W, 2, txt)
-    P.rect(10, 480, 300, 72, 0xffe14a); P.rect(10, 480, 300, 72, txt, line=1.5)
-    P.rect(16, 485, 64, 18, txt); P.text('注意', 'kakub', 11, 48, 494, 0xffe14a)
-    P.text('WARNING', 'bebas', 13, 90, 494, txt, anchor='lm', track=1)
-    P.lines(WARN, 'kakum', 7.5, 16, 507, 288, txt, lh=10, maxy=550)
-    P.text(MAKER[0], 'kaku', 14, 326, 494, txt, anchor='lm'); P.text(MAKER[1], 'bebas', 12, 326, 512, txt, anchor='lm', track=1)
-    P.text('汐見市本町2-14  お客様相談室 0120-00-1999', 'kakum', 7, 326, 530, txt, anchor='lm')
-    qr(P, 590, 484, 40, hash(s['id']) % 9973)
-    P.barcode(470, 524, '4970' + str(abs(hash(s['id'])) % 10**8).zfill(8), h=16)
-    im = P.image().convert('RGBA')
-    # --- the toys: the hero big on the photo, the full line-up in the band (secret: a flat ink silhouette)
+        cx = 4 + cw * (k + 0.5)
+        lines = ['SECRET'] if it['secret'] else wrap2(it['name'], int(cw) - 6)
+        th = 3 + 6 * len(lines)
+        tagc = (YEL if not dark else acc) if it['secret'] else (acc if not dark else acc2)
+        B.rrect(cx - cw / 2 + 2, BY - th - 2, cw - 4, th, tagc, r=2)
+        for j, l in enumerate(lines):
+            B.text(l, cx, BY - th + 1 + 6 * j, 'micro5', 1, ink if it['secret'] else 0xfbf8f1, anchor='mt')
+    # the small print: warning block, maker, address, code, barcode
+    B.warning(4, BY + 3, 148, LH - BY - 6, ink=INK, paper=0xffe14a, text=WARN_EN)
+    mk = MAKER_OF.get(sid, seed % len(MAKERS))
+    mname = maker_mark(B, 157, BY + 4, mk, 14)
+    B.text(mname, 175, BY + 5, 'silkb', 1, INK)
+    B.text('TOY LINE 0120-00-1999', 175, BY + 13, 'micro5', 1, INK)
+    B.qr(LW - 25, BY + 4, 1, seed, INK)
+    B.barcode(162, BY + 25, '4970' + str(seed * 7919 % 10 ** 8).zfill(8), h=7, ink=INK, bg=0xfbf8f1)
+    B.text('MADE IN JAPAN', LW - 4, LH - 4, 'micro5', 1, INK, anchor='rb')
+
+    im = base.convert('RGBA'); im.alpha_composite(upscale(B.im, 2))
+
+    # --- the toys (full resolution): the hero on the stage, the line-up in the band
+    T = Sheet(W, H, None)
+    hb = None
     if hero is not None:
-        t = toy(s['id'], hero['id']); k_ = min(290 / t.height, 300 / t.width, 1.15)  # never blown up past the render
-        t = t.resize((max(1, int(t.width * k_)), max(1, int(t.height * k_))), Image.LANCZOS)
-        sh = Image.new('RGBA', t.size, (20, 14, 10, 0)); sh.putalpha(t.getchannel('A').point(lambda v: int(v * 0.4))); sh = sh.filter(ImageFilter.GaussianBlur(5))
-        cx = 470; im.alpha_composite(sh, (cx - t.width // 2 + 8, 352 - t.height + 4)); im.alpha_composite(t, (cx - t.width // 2, 352 - t.height))
+        hb = T.toy(sid, hero['id'], 2 * 238, 2 * (PH + 4), h=2 * 150, w=2 * 128)
     for k, it in enumerate(items):
-        t = toy(s['id'], it['id'])
-        if t is None: continue
-        k_ = min(80 / t.height, (cw - 8) / t.width); t = t.resize((max(1, int(t.width * k_)), max(1, int(t.height * k_))), Image.LANCZOS)
+        cx = 4 + cw * (k + 0.5)
+        lines = 1 if it['secret'] else len(wrap2(it['name'], int(cw) - 6))
+        foot = BY - (3 + 6 * lines) - 4
+        hh = foot - PH - 8
         if it['secret']:
-            a = t.getchannel('A'); t = Image.new('RGBA', t.size, rgb(mixc(btxt, band, 0.25) if dark else txt) + (0,)); t.putalpha(a)
-        im.alpha_composite(t, (int(10 + cw * (k + 0.5) - t.width / 2), 448 - t.height))
-    return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.35, fade=0.03, seed=abs(hash(s['id'])) % 997).convert('RGB')
+            T.toy(sid, it['id'], 2 * cx, 2 * foot, h=2 * hh, w=2 * (cw - 10), silhouette=mixc(btxt, band, 0.25) if dark else txt)
+        else:
+            T.toy(sid, it['id'], 2 * cx, 2 * foot, h=2 * hh, w=2 * (cw - 10))
+    im.alpha_composite(T.im)
+
+    # --- the print over the toys: the logo, badges, sticker, captions and arrows (pixel grid)
+    F = Sheet(LW, LH, None)
+    kind = KIND_EN.get(sid, 'MASCOT FIGURE')
+    kw = text_size(kind, 'silkb')[0]
+    F.ribbon(5, 6, kw + 16, 11, ink, notch='r')
+    F.text(kind, 9, 9, 'silkb', 1, 0xfbf8f1)
+    face = TITLE_FACE.get(sid, 'jersey25')
+    lines = split_title(s['name'], face, 150)
+    if face == 'jersey25' and max(text_size(l, face)[0] for l in lines) > 196: face = 'jersey20'
+    if face == 'jersey20' and max(text_size(l, face)[0] for l in lines) > 196: face = 'jersey15'
+    sc = 2 if face in ('ala', 'ps2p') else 1
+    if face == 'ps2p': sc = 3 if max(text_size(l, face)[0] for l in lines) * 3 <= 190 else 2
+    y = 24
+    ol = [(1, ink), (2, 0xfbf8f1), (1, ink)]
+    busy = []  # boxes already printed on the stage (the hero's caption keeps clear of them)
+    for l in lines:
+        b = F.text(l, 8, y, face, sc, acc if not dark else YEL, outline=ol, shadow=(3, 3, ink), maxw=200)
+        busy.append((b[0] - 4, b[1] - 4, b[2] + 7, b[3] + 7))
+        y = b[3] + 9
+    tag = re.split(r'[:.!?]\s', tagline.upper().replace('’', "'"))[0].strip(' .')
+    if tag and tag.split(' ')[0] not in kind and text_size(tag, 'silkb')[0] < 236:
+        y += 3
+        words, rows, cur = tag.split(' '), [], ''
+        for wd in words:
+            t = (cur + ' ' + wd).strip()
+            if cur and text_size(t, 'silkb')[0] > 118: rows.append(cur); cur = wd
+            else: cur = t
+        rows.append(cur)
+        rw = max(text_size(r, 'silkb')[0] for r in rows)
+        F.rect(6, y - 3, rw + 8, 9 * len(rows) + 3, 0xfbf8f1 if not dark else ink); F.frame(6, y - 3, rw + 8, 9 * len(rows) + 3, ink)
+        F.rect(8, y - 3 + 9 * len(rows) + 3, rw + 8, 2, ink)
+        for j, r in enumerate(rows): F.text(r, 10, y + 9 * j, 'silkb', 1, ink if not dark else ltxt)
+        busy.append((6, y - 3, rw + 16, y + 9 * len(rows) + 2))
+    # price / types / age, the Qualia stack
+    by = PH - 37
+    pw_ = text_size('%d' % s['price'], 'jersey20')[0]
+    F.rrect(6, by, pw_ + 30, 32, YEL, r=3, line=ink)
+    pb = F.text('%d' % s['price'], 11, by + 4, 'jersey20', 1, RED)
+    F.text('YEN', pb[2] + 3, pb[3], 'silkb', 1, RED, anchor='lb')
+    F.text('PER TURN', 6 + (pw_ + 30) // 2, by + 28, 'micro5', 1, ink, anchor='mb')
+    x_ = 6 + pw_ + 33
+    F.rrect(x_, by, 44, 32, RED, r=3, line=ink)
+    nb = F.text(str(n), x_ + 5, by + 6, 'jersey20', 1, 0xfbf8f1)
+    F.text('ALL', nb[2] + 3, by + 9, 'micro5', 1, 0xfbf8f1)
+    F.text('TYPES', nb[2] + 3, by + 16, 'micro5', 1, 0xfbf8f1)
+    x_ += 47
+    F.rrect(x_, by, 26, 32, 0xfbf8f1, r=3, line=ink)
+    F.text('AGES', x_ + 13, by + 5, 'micro5', 1, ink, anchor='mt')
+    F.text('15+', x_ + 13, by + 14, 'jersey10', 1, ink, anchor='mt')
+    busy.append((0, by - 2, x_ + 30, by + 34))
+    # the maker's mark, top right (as the boards carry theirs)
+    F.rrect(LW - 25, 4, 21, 21, 0xfbf8f1, r=3, line=ink)
+    maker_mark(F, LW - 22, 7, mk, 15)
+    # the sticker
+    bw = BURST.get(sid, ('NEW!',))
+    bx, byy = LW - 38, 54
+    br = max(19, max(text_size(l, 'silkb')[0] for l in bw) // 2 + 9 + 3 * (len(bw) > 1))
+    F.burst(bx, byy, br, n=13, fill=YEL if acc != YEL else 0xfbf8f1, line=ink, t=2, inner=0.76, shadow=(2, 2, ink), seed=seed)
+    for j, l in enumerate(bw):
+        F.text(l, bx, byy + (j - (len(bw) - 1) / 2) * 9, 'silkb', 1, RED, anchor='mm')
+    # the hero's caption: its name on a tag, its gimmick, an arrow to it, and a size bar
+    if hb:
+        x0, y0, x1, y1 = [v // 2 for v in hb]
+        rows = wrap2(hero['name'], 92, 'silkb')
+        g = (gim.get(hero['id']) or '').upper().replace('’', "'")
+        tw = max(text_size(r, 'silkb')[0] for r in rows); th = 9 * len(rows) + 3
+        tx = max(124, min(LW - tw - 10, x0 + 8 - tw))
+        hit = lambda yy: any(not (tx + tw + 4 < a or tx - 4 > c_ or yy + th + 9 < b_ or yy - 3 > d_) for a, b_, c_, d_ in busy)
+        cands = [int(y0 + (y1 - y0) * f_) for f_ in (0.42, 0.3, 0.55, 0.2, 0.66)] + list(range(30, PH - 20, 6))
+        ty = next((yy for yy in cands if 26 <= yy <= PH - 12 - th and not hit(yy)), cands[0])
+        F.rrect(tx - 4, ty - 3, tw + 8, th, 0xfbf8f1, r=2, line=ink)
+        for j, r in enumerate(rows): F.text(r, tx, ty + 9 * j, 'silkb', 1, ink)
+        if g:
+            gw = text_size(g, 'micro5')[0]
+            F.rrect(tx - 2, ty + th - 2, gw + 6, 9, RED, r=2, line=ink)
+            F.text(g, tx + 1, ty + th, 'micro5', 1, 0xfbf8f1)
+        ax, ay = tx + tw - 2, ty + th // 2 - 2
+        hx, hy = x0 + (x1 - x0) * 0.42, y0 + (y1 - y0) * 0.5
+        F.arrow([(ax + 4, ay), ((ax + hx) / 2 + 2, ay - 12), (hx, hy)], ink, t=1, head=3, outline=0xfbf8f1)
+        # size bar (skipped where the sticker sits)
+        sx = min(LW - 6, x1 + 4)
+        if not (abs(sx - bx) < br + 4 and y0 < byy + br):
+            F.rect(sx, y0, 1, y1 - y0, ink); F.rect(sx - 2, y0, 5, 1, ink); F.rect(sx - 2, y1 - 1, 5, 1, ink)
+            F.rrect(sx - 9, (y0 + y1) // 2 - 5, 19, 10, 0xfbf8f1, r=2, line=ink)
+            F.text('5CM', sx + 1, (y0 + y1) // 2, 'micro5', 1, ink, anchor='mm')
+    # line-up: numbered discs, the gimmick words, the secret's '?'
+    for k, it in enumerate(items):
+        cx = 4 + cw * (k + 0.5); x = int(cx - cw / 2) + 3
+        F.ellipse(x, PH + 7, 9, 9, ink); F.text(str(k + 1), x + 5, PH + 12, 'micro5', 1, 0xfbf8f1, anchor='mm')
+        if it['secret']:
+            F.text('?', cx, PH + 26, 'ps2p', 2, 0xfbf8f1 if not dark else YEL, anchor='mm', outline=[(1, ink)])
+        else:
+            g = (gim.get(it['id']) or '').upper().replace('’', "'")
+            if g and text_size(g, 'micro5')[0] < cw - 18 and list(gim.values()).count(gim.get(it['id'])) == 1:
+                F.text(g, int(cx + cw / 2) - 3, PH + 8, 'micro5', 1, acc2 if not dark else YEL, anchor='rt', outline=[(1, 0xfbf8f1 if not dark else ink, 'plus')])
+    im.alpha_composite(upscale(F.im, 2))
+    return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.3, fade=0.03, seed=seed % 997).convert('RGB')
 
 
 if __name__ == '__main__':
@@ -189,5 +359,5 @@ if __name__ == '__main__':
     for sid, s in L.items():
         if only and sid not in only: continue
         if not os.path.exists(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js')): continue  # a retired series
-        im = card(s); im.save(os.path.join(OUT, sid + '.webp'), quality=92, method=6)
+        im = card(s); save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
         print('card', sid, len(s['items']))

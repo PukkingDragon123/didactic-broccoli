@@ -101,3 +101,26 @@ holds the weapon pose and folds back into the umbrella. At rest it always reads 
 | S | ちょうちんリュウトウ Lantern Dragon Glaive | a lantern umbrella: the lantern opens into a dragon's jaws, a broad curved blade fans out of its mouth and its heart glows (light-up) | secret |
 
 Card: a dark dojo-board card. Backdrop request: a real photo of a rack of oiled-paper umbrellas (wagasa) drying.
+
+---
+
+## D5. カニ缶 Kani-kan: "Crabs in Food Cans" (pop-up, printed tins) · id `kanikan`
+
+**Hook:** カニ缶 is canned crab. Ours turn it round: each crab has moved into somebody else's tin and is eating the
+contents.
+**Twist:** every crab picked the tin that suits it: the blue crab with its paddle legs in a sardine tin, the hermit
+crab using a mackerel tin as its shell, the furry mitten crab in a corned-beef tin, the fiddler crab scooping baked
+beans with its one huge claw, the coconut crab stealing pineapple rings. Each tin has a proper printed label in the
+5x7 pixel font with an original brand.
+**Gimmick:** press: the lid peels back, the crab pops up and munches (claw to mouth, crumbs flying), then ducks back in.
+
+| # | Figure | The tin | Rarity |
+|---|--------|---------|--------|
+| 1 | イワシ缶ワタリガニ Sardine-Tin Blue Crab | a flat sardine tin with a roll-back key lid ("PORTO MARU SARDINES") | common |
+| 2 | サバ缶ヤドカリ Mackerel-Tin Hermit Crab | a round mackerel tin lying on its side as its shell ("SABA STAR MACKEREL") | common |
+| 3 | コンビーフモクズガニ Corned-Beef Mitten Crab | the tapered corned-beef tin with its key strip ("BIG RANCH CORNED BEEF") | uncommon |
+| 4 | ベイクドビーンズシオマネキ Baked-Bean Fiddler Crab | a tall ring-pull can of beans ("HAPPY HILL BAKED BEANS") | uncommon |
+| 5 | パインかんヤシガニ Pineapple-Ring Coconut Crab | a ring-pull can of pineapple rings, one worn like a ring ("ISLE SUN PINEAPPLE") | rare |
+| S | キャビアきんのカニ Caviar Golden Crab | a gold crab in a flat caviar tin, a mother-of-pearl spoon ("ROYAL ROE CAVIAR") | secret |
+
+Card: a grocer's shelf. Backdrop request: a real photo of a shelf of tinned food in a Shōwa-style grocery.
