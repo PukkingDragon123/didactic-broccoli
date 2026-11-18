@@ -37,5 +37,15 @@ export default {
       light: { part: 'lamp', color: '#ff5a46', mode: 'press', dur: 2.4, blink: [0.18, 0.18] },
       gimmick: { text: 'Who’s inside?', sfx: [[0.18, 'toyClick', { f: 1700 }], [0.55, 'toySnap', { f: 1500, v: 0.6 }], [0.8, 'ledClick', { on: true }], [1.0, 'toyRatchet', { n: 4, gap: 0.06 }], [2.6, 'toySnap', { f: 1900 }]] },
     },
+    {
+      id: 'tanbo', name: 'Paddy Hydra', jp: 'タンボヒドラ', rarity: 'rare',
+      desc: 'A mud-green three-headed hydra kaijū, terraced rice paddies stepping up its back with a tiny scarecrow in the top one and golden rice ears for a crest. Only the middle head is real: the other two are puppets on the actor’s arms. Press it: the head tips back on a panting shiba pup and the puppets bob hello.',
+      gimmick: { text: 'Who’s inside?', sfx: [[0.18, 'toyClick', { f: 1500 }], [0.55, 'toySnap', { f: 1300, v: 0.6 }], [0.85, 'toyTap', { v: 0.5 }], [1.05, 'toyTap', { v: 0.4 }], [1.3, 'toyTap', { v: 0.5 }], [2.6, 'toySnap', { f: 1700 }]] },
+    },
+    {
+      id: 'kantoku', name: 'The Director', jp: '監督', rarity: 'secret',
+      desc: 'The studio’s king kaijū: a red-and-white ranchu goldfish monster with a bumpy wen, a little gold crown and a great double tail, a megaphone in one fin. Press it: the head tips back on … nobody. Then up comes the director, an old tortoise in a green sun visor, who had only pulled its head in. Cut!',
+      gimmick: { text: 'Who’s inside?', sfx: [[0.18, 'toyClick', { f: 1500 }], [0.55, 'toySnap', { f: 1300, v: 0.6 }], [1.25, 'toyFold', { n: 3 }], [1.4, 'toyTap'], [2.75, 'toySnap', { f: 1700 }]] },
+    },
   ],
 };

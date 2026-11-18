@@ -1,4 +1,4 @@
-"""Kanji from glyphs.npz (glyphs.py) laid out on a bk.Decal plane: embroidery, printed flags and labels."""
+"""Kanji from glyphs.npz (_glyphs.py) laid out on a bk.Decal plane: embroidery, printed flags and labels."""
 import os
 
 import numpy as np

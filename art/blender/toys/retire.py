@@ -4,7 +4,7 @@
 
 For each series: its items (id and rarity) go into RETIRED in src/data/series/legacy.js and the series is mapped to
 the new series in THEME, so a save that holds them gets a figure of the same rarity from the new series
-(migrateLineup). The series file is then removed, along with its shipped GLBs, its manifest entries (under
+(migrateLineup); items cut from it earlier are merged in, and capsule-exclusive cosmetics follow it. The series file is then removed, along with its shipped GLBs, its manifest entries (under
 flock /tmp/gg-manifest.lock), its card and its rendered toy shots. The art/lowpix/figures/<series> sources stay in
 git history only; they are removed too.
 """
@@ -41,17 +41,26 @@ def main():
             print('no series', sid)
             continue
         its = items_of(sid)
-        entry = '  ' + sid + ': { ' + ', '.join(f"{k}: '{v}'" for k, v in its.items()) + ' },\n'
         print(sid, len(its), 'items ->', to)
         a = leg.index('export const RETIRED = {')
         b = leg.index('\n};', a)
-        if re.search(r'\n  ' + sid + r': \{', leg[a:b]):
-            print('  (already in RETIRED)')
-        else:
-            leg = leg[:b + 1] + entry + leg[b + 1:]
+        m = re.search(r'(?<![\w.])' + sid + r': \{([^{}]*)\}', leg[a:b])
+        if m:  # (some of its items were cut earlier: merge, keeping those)
+            old = dict(re.findall(r"(\w+): '(\w)'", m.group(1)))
+            its = {**old, **its}
+            leg = leg[:a] + leg[a:b][:m.start()] + leg[a:b][m.end():].replace(', ,', ',') + leg[b:]
+            leg = re.sub(r'\{\s*,\s*', '{ ', leg)
+            leg = re.sub(r'\n  ,\s*', '\n  ', leg)
+            leg = re.sub(r',\s*,', ',', leg)
+            b = leg.index('\n};', a)
+        entry = '  ' + sid + ': { ' + ', '.join(f"{k}: '{v}'" for k, v in its.items()) + ' },\n'
+        leg = leg[:b + 1] + entry + leg[b + 1:]
         a = leg.index('const THEME = {')
         b = leg.index('\n};', a)
-        leg = leg[:b + 1] + f"  {sid}: '{to}', // (retired: the Blender line)\n" + leg[b + 1:]
+        if re.search(r'(?<![\w.])' + sid + r": '", leg[a:b]):
+            leg = leg[:a] + re.sub(r'(?<![\w.])' + sid + r": '\w+'", f"{sid}: '{to}'", leg[a:b]) + leg[b:]
+        else:
+            leg = leg[:b + 1] + f"  {sid}: '{to}', // (retired: the Blender line)\n" + leg[b + 1:]
         if dry:
             continue
         os.remove(p)
@@ -62,9 +71,18 @@ def main():
             if os.path.exists(f):
                 os.remove(f)
     if dry:
-        print(leg[leg.index('export const RETIRED'):][:400])
+        a = leg.index('export const RETIRED')
+        print(leg[a:leg.index('\n};', a) + 3])
+        a = leg.index('const THEME = {')
+        print('...', leg[leg.index('\n};', a) - 300:leg.index('\n};', a) + 3])
         return
     open(LEG, 'w').write(leg)
+    cat = os.path.join(ROOT, 'src/cosmetics/catalog.js')  # (capsule-exclusive cosmetics follow the series' stock)
+    src = open(cat).read()
+    new = re.sub(r"capsule: '(" + '|'.join(sids) + r")'", f"capsule: '{to}'", src)
+    if new != src:
+        open(cat, 'w').write(new)
+        print('cosmetics: capsule ->', to)
     with open('/tmp/gg-manifest.lock', 'w') as lk:
         fcntl.flock(lk, fcntl.LOCK_EX)
         man = json.load(open(MAN))

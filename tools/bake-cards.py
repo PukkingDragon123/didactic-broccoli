@@ -29,7 +29,7 @@ BACK = {  # series -> photo backdrop (focus x, y, zoom)
     'shinkai': ('oi:f5cb8e5bda89bf5c@test', (0.5, 0.5, 1.1)), 'yacho': ('oi:ab7b7786ca8649a8@test', (0.5, 0.5, 1.0)),
     'hikidashi': ('oi:8cf0d90fadf83514@test', (0.5, 0.5, 1.1)), 'henshin': ('oi:8cf0d90fadf83514@test', (0.7, 0.35, 1.5)), 'hashigo': ('local:skyline.jpg', (0.5, 0.35, 1.2)),
     'teruteru': ('local:rain_window.jpg', (0.5, 0.5, 1.1)), 'kaden': ('oi:a15e83bbe9f87d4f@test', (0.4, 0.5, 1.15)),
-    'otsukai': ('oi:34f24d2374c50c25@test', (0.5, 0.42, 1.2)), 'kaiun': ('oi:808e21f5b9632bab@test', (0.5, 0.5, 1.1)),
+    'otsukai': ('oi:34f24d2374c50c25@test', (0.5, 0.42, 1.2)), 'nakanohito': ('local:skyline.jpg', (0.72, 0.72, 1.6)), 'kaiun': ('oi:808e21f5b9632bab@test', (0.5, 0.5, 1.1)),
     'shugorei': ('oi:34f24d2374c50c25@test', (0.5, 0.5, 1.1)), 'machikado': ('oi:ae8ffd814db5ce63@test', (0.5, 0.5, 1.1)),
     'norimono': ('oi:43ef0d9ecd6dd4be@test', (0.5, 0.5, 1.1)), 'daikaiju': ('local:skyline.jpg', (0.5, 0.5, 1.0)), 'asobi': ('local:toy_shop.jpg', (0.5, 0.5, 1.1)),
 }

@@ -235,11 +235,11 @@ def paint(P, pt):
     P.fill('smoke', pt.ramp('#dcd8d0', 6, shift=0.03), tone=sh * 0.8, base=0.1)
     # the newt: near-black back, a fire-orange belly and throat with black blotches; the towel white with a blue stripe
     nm = P.region('newt')
-    P.fill('newt', pt.ramp('#7a6244', 7, shift=0.06), tone=sh, base=0.1)
+    P.fill('newt', pt.ramp('#7c6a48', 7, shift=0.06), tone=sh * 0.8, base=0.12)
     throat = nm & (Z < AC[2] - 2.6 + 0.2 * np.abs(X))
     P.tint(throat, pt.ramp('#e8642c', 6, shift=0.06), sh + 0.1)
-    P.flat(throat & (np.sin(X * 2.1 + 1) * np.sin(Yc * 2.4) > 0.8), '#3a2a22')
-    P.tint(nm & ~throat & (np.sin(X * 1.7 + Yc * 2.3) * np.sin(Yc * 1.9 - X) > 0.7), pt.ramp('#4e3e2c', 5, shift=0.04), sh)  # (darker mottling)
+    for c_, r_ in (((2.2, AC[1] - 4.0, AC[2] - 3.2), 0.7), ((-2.8, AC[1] - 3.0, AC[2] - 3.4), 0.55), ((0.4, AC[1] - 5.0, AC[2] - 3.0), 0.45)):
+        P.flat(throat & (np.linalg.norm(P.pos - np.array(c_), axis=2) < r_), '#3a2a22')  # (a few black spots on the red belly)
     P.fill('towel', pt.ramp('#f2eee4', 6, shift=0.04), tone=sh * 0.8, base=0.1)
     P.tint(P.region('towel') & (np.abs(np.sin(np.arctan2(Yc + 0.8, X) * 3.0)) > 0.92), pt.ramp('#3a62a8', 5, shift=0.04), sh)
     nf = face.Face(P, c=(AC[0], AC[1] - 6.4, AC[2] + 0.6), axis=(0, -1, 0.15), where=nm, seed=31)

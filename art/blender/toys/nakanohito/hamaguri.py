@@ -225,9 +225,9 @@ def paint(P, pt):
     P.fill('nacre', pt.ramp('#cfc6d6', 6, shift=0.03), tone=sh * 0.6, base=0.1)
     P.fill('aerial', pt.ramp('#c8342c', 6, shift=0.05), tone=sh, base=0.1)
     # the robot's face on the top valve: two big round eyes and a gritted grin along the lips
-    rf = face.Face(P, c=(0, -9.0, CZ + 4.2), axis=(0, -1, 0.7), where=shell, seed=51)
-    rf.eyes('big', spread=8.4, size=0.8, dy=0.6, uneven=0.15)
-    rf.brows('angry', spread=8.6, dy=2.6, w=2.6, weight=0.5)
+    rf = face.Face(P, c=(0, -9.8, CZ + 3.4), axis=(0, -1, 0.45), where=shell, seed=51)
+    rf.eyes('dot', spread=8.0, size=0.62, dy=0.4, uneven=0.15)
+    rf.brows('angry', spread=8.2, dy=2.0, w=2.4, weight=0.45)
     mf = face.Face(P, c=(0, -10.8, CZ + 1.6), axis=(0, -1, 0.1), where=shell, seed=52)
     mf.mouth('gritted', w=11.0, dy=0.0, teeth=5)
     # the kitten: white, an orange patch over one ear and eye, a black patch on the other side of the head

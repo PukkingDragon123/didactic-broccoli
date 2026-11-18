@@ -366,6 +366,46 @@ class Fig:
                 tk.delete(h)
             p.highs = []
 
+    # -------------------------------------------------------------- does it stand?
+    def stability(s, contact=0.4):
+        """How securely the figure stands at rest: the margin (mm) from its centre of mass (area-weighted over the game
+        meshes) to the edge of its footprint (the convex hull of everything within `contact` mm of the floor), seen from
+        above. Positive: inside, it stands; under ~1.5 mm it rocks; negative: it falls over."""
+        T, A = [], []
+        for p in s.parts:
+            M = np.array(p.low.matrix_world)
+            V = tk.verts(p.low) @ M[:3, :3].T + M[:3, 3]
+            F = [list(f.vertices) for f in p.low.data.polygons]
+            for f in F:
+                for k in range(1, len(f) - 1):
+                    a, b, c = V[f[0]], V[f[k]], V[f[k + 1]]
+                    T.append((a + b + c) / 3)
+                    A.append(np.linalg.norm(np.cross(b - a, c - a)) / 2)
+        T, A = np.array(T), np.array(A)
+        com = (T * A[:, None]).sum(0) / A.sum()
+        allv = np.concatenate([tk.verts(p.low) @ np.array(p.low.matrix_world)[:3, :3].T + np.array(p.low.matrix_world)[:3, 3] for p in s.parts])
+        z0 = allv[:, 2].min()
+        P = allv[allv[:, 2] < z0 + contact][:, :2]
+        P = np.unique(np.round(P, 3), axis=0)
+        if len(P) < 3:
+            return -99.0, com
+        P = P[np.lexsort((P[:, 1], P[:, 0]))]
+
+        def cr(u, v):
+            return u[0] * v[1] - u[1] * v[0]
+
+        def half(pts):
+            h = []
+            for q in pts:
+                while len(h) >= 2 and cr(h[-1] - h[-2], q - h[-2]) <= 0:
+                    h.pop()
+                h.append(q)
+            return h
+        hull = half(P)[:-1] + half(P[::-1])[:-1]  # counter-clockwise
+        c = com[:2]
+        d = min(cr(b - a, c - a) / max(np.linalg.norm(b - a), 1e-9) for a, b in zip(hull, hull[1:] + hull[:1]))
+        return float(d), com
+
     # -------------------------------------------------------------- export
     def export(s, rig=None, extra_meta=None):
         bpy.ops.object.select_all(action='DESELECT')
@@ -388,6 +428,9 @@ class Fig:
                                   export_rest_position_armature=True)
         meta = dict(s.meta)
         meta['tris'] = s.tris()
+        st, com = s.stability()
+        meta['stand'] = round(st, 2)
+        s.log(f'stands: centre of mass {np.round(com, 1)}, {st:.1f} mm inside its footprint' + ('' if st > 1.5 else '  << NOT SECURE'))
         meta['density'] = [round(getattr(s, 'density_seen', 0), 2), round(getattr(s, 'density', 0), 2)]
         if rig:
             meta['clips'] = {a: a for a in rig.actions}

@@ -48,6 +48,21 @@ quail, a shiba pup, a newt, a kitten); press again and it is back in character. 
 monster: a drill-horned mole beast, a smokestack lizard, a radio-tower moth, a clam robot, a rice-paddy hydra.
 Secret: the director, a tortoise in a sun visor, wearing the one suit that has no one inside.
 
+| # | Figure | The suit | Who's inside | Gimmick | Rarity |
+|---|--------|----------|--------------|---------|--------|
+| 1 | ドリモグラ Drill Mole | velvet mole kaijū, steel drill on its snout, pink spade claws up | a golden hamster, cheeks stuffed | the drill spins, a spade hand waves | common |
+| 2 | エントツトカゲ Smokestack Lizard | olive lizard up on its long tail, three factory smokestacks on its back | a fire-bellied newt with a towel round its neck | the tall stack puffs cotton-wool smoke | common |
+| 3 | デンパガ Radio Moth | fluffy silk moth, a red-and-white lattice radio mast on its head, wings printed with radio waves | a Japanese quail | the wings flutter, the mast's beacon blinks (light-up) | uncommon |
+| 4 | ハマグリロボ Clam Robot | silver tin-toy robot on bellows legs, pincers, a chest of dials; its head a hamaguri clam | a calico kitten, paws on the rim, like a pearl | the clam opens, arms up, the chest lamp blinks (light-up) | uncommon |
+| 5 | タンボヒドラ Paddy Hydra | three-headed hydra, terraced rice paddies (and a scarecrow) up its back, rice-ear crests; the side heads are hand puppets | a shiba pup | the puppet heads bob hello | rare |
+| S | 監督 The Director | the king kaijū: a ranchu goldfish with a wen, a gold crown and a fanned double tail, a megaphone in its fin | nobody ... then the tortoise director in a green visor, who had pulled its head in | "Cut!": the megaphone goes up | secret |
+
+Every suit has the same give-aways: a zip and pull tab down the back, a rolled neck, sweat on the actor's brow, and a
+hood lined with grey foam when it tips back. Card: tokusatsu dusk over a model city.
+
+Status: modelled (art/blender/toys/nakanohito/*.py, shared parts in _suit.py), in the game as series `nakanohito`
+(src/data/series/nakanohito.js).
+
 ---
 
 ## 3. はしご乗り Hashigo Nori: "New Year Ladder Frogs" (playset with action)

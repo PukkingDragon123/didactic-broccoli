@@ -2,7 +2,7 @@
 """Rasterise the few kanji the B series embroider or paint on their figures into glyphs.npz (1 = ink), so the Blender
 paint step (no PIL there) can lay them out in figure space with bk.Decal.
 
-    python3 -I art/blender/toys/tsuppari/glyphs.py <font.ttf>     (Shippori Mincho B1 Bold, SIL OFL)
+    python3 -I art/blender/toys/tsuppari/_glyphs.py <font.ttf>     (Shippori Mincho B1 Bold, SIL OFL)
 """
 import os
 import sys
@@ -10,7 +10,7 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-TEXT = {'ban': '番', 'bosou': '暴走', 'oudan': '横断中', 'kotobuki': '寿', 'kusuri': '薬', 'yoroshiku': '夜露死苦', 'anzen': '安全運転'}
+TEXT = {'ban': '番', 'bosou': '暴走', 'oudan': '横断中', 'kotobuki': '寿', 'kusuri': '薬', 'yoroshiku': '夜露死苦', 'anzen': '安全運転', 'koutsuu': '交通安全', 'bake': '化', 'kyuukei': '休憩中'}
 font = ImageFont.truetype(sys.argv[1], 96)
 out = {}
 for k, t in TEXT.items():

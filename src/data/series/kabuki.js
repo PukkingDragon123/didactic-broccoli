@@ -35,5 +35,15 @@ export default {
       desc: 'The fight scene: a weasel with sickles for forearms, cross-straps tied for action, riding its own little whirlwind. It spins a full turn with both blades out and freezes, glaring, before you have seen it move.',
       gimmick: { text: 'Mie!', sfx: [[0.1, 'toyFold', { n: 2 }], [0.3, 'whoosh'], [0.55, 'whoosh'], [0.82, 'toySnap', { f: 2600, v: 0.7 }], [0.95, 'toyClick', { f: 1500 }]] },
     },
+    {
+      id: 'azukiarai', name: 'Comic Azukiarai', jp: 'さんまいめアズキアライ', rarity: 'rare',
+      desc: 'The comic servant: an old river otter on a stone, washing red beans in a bamboo sieve, a polka-dot towel tied under his chin. Shoki-shoki. He looks up to check you are watching, grins, and shakes faster.',
+      gimmick: { text: 'Shoki-shoki', sfx: [[0.05, 'toyRatchet', { n: 8, gap: 0.1 }], [0.95, 'toyClick', { f: 1500 }], [1.6, 'toyRatchet', { n: 6, gap: 0.1 }]] },
+    },
+    {
+      id: 'jishi', name: 'Mirror Lion', jp: 'かがみジシ', rarity: 'secret',
+      desc: 'The lion spirit of the lion dance: a white lion-dog in red kumadori, gold curls for brows, a peony in his paw and a mane that reaches the floor. He crouches, and the mane whirls a full circle round his head.',
+      gimmick: { text: 'Kegurui!', sfx: [[0.1, 'toyFold', { n: 2 }], [0.4, 'whoosh'], [0.8, 'whoosh'], [1.2, 'whoosh'], [1.6, 'toySnap', { f: 1300, v: 0.9 }], [1.75, 'thud'], [2.1, 'toyTap']] },
+    },
   ],
 };

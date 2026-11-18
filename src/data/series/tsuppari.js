@@ -35,5 +35,17 @@ export default {
       desc: 'A green frog in the yankī squat outside the shop, a wooden sword over his shoulder, a grass stalk in his mouth and 夜露死苦 embroidered across the back of his satin jacket. The duckling at his toes has decided he is its mother.',
       gimmick: { text: 'Stand up', sfx: [[0.15, 'toyFold', { n: 2 }], [0.4, 'whoosh', { dur: 0.3, v: 0.07 }], [0.6, 'toySnap', { v: 0.5 }], [0.75, 'toyTap', { v: 0.4 }], [0.9, 'toyTap', { v: 0.4 }], [1.05, 'toyTap', { v: 0.4 }], [1.2, 'toyTap', { v: 0.4 }], [1.35, 'toyTap', { v: 0.4 }], [2.05, 'toyFold', { n: 2 }]] },
     },
+    {
+      id: 'tanuki', name: 'Bōsōzoku Tanuki', jp: '暴走タヌキ', rarity: 'rare',
+      desc: 'A tanuki in a white tokkōfuku and hachimaki on a candy-purple scooter: three-tier backrest, takeyari exhausts and a team flag on a long pole that says 安全運転, drive safely. He is taking granny her medicine.',
+      gimmick: { text: 'Wheelie', sfx: [[0.1, 'motor', { dur: 0.7 }], [0.35, 'toyRatchet', { n: 4, gap: 0.04 }], [0.65, 'toySnap', { v: 0.5 }], [1.0, 'toyRatchet', { n: 6, gap: 0.05 }], [1.75, 'toyTap'], [1.85, 'toyTap', { v: 0.5 }]] },
+      light: { part: 'lamp', color: '#fff0c0', mode: 'press', dur: 1.9 },
+      pullback: { clip: 'run', speed: 0.9, dist: 1.1, wind: 0.45, text: 'Pull it back and let go', sfx: 'toyRatchet' },
+    },
+    {
+      id: 'mimizuku', name: 'Old Boss Eagle-Owl', jp: '元総長ミミズク', rarity: 'secret',
+      desc: 'The founder, long retired: a barred eagle-owl in square shades with his old embroidered coat over his shoulders like a cape, now a school crossing guard with a yellow sash and a 横断中 flag. He looks both ways. Properly.',
+      gimmick: { text: 'Look both ways', sfx: [[0.4, 'toyClick', { f: 1100 }], [0.63, 'toyClick', { f: 1100 }], [0.87, 'toyClick', { f: 1100 }], [1.1, 'toyClick', { f: 1100 }], [1.3, 'coo'], [1.45, 'whoosh', { dur: 0.25, v: 0.07 }], [1.6, 'paper'], [1.85, 'paper'], [2.5, 'toyTap']] },
+    },
   ],
 };

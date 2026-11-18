@@ -18,7 +18,7 @@ import tk  # noqa: E402
 import tt  # noqa: E402
 import ak  # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import gl  # noqa: E402
+import _gl as gl  # noqa: E402
 
 F = bk.start('tsuppari', 'tanuki')
 bike_lo, bike_hi = [], []
@@ -27,13 +27,14 @@ bike_lo, bike_hi = [], []
 WR = 5.2
 WF, WB = (0, -15.0, WR), (0, 13.0, WR)
 tire = [(0, -1.7), (3.4, -1.7), (4.5, -1.5), (5.0, -0.9), (WR, 0.0), (5.0, 0.9), (4.5, 1.5), (3.4, 1.7), (0, 1.7)]
+tire_lo = [(0, -1.7), (3.6, -1.7), (4.8, -1.2), (WR, 0.0), (4.8, 1.2), (3.6, 1.7), (0, 1.7)]
 WHEELS = {}
 for nm, c in (('wf', WF), ('wb', WB)):
     hi = tk.lathe(nm + '_hi', tire, n=24, axis='X', centre=c)
     tk.subsurf(hi, 1)
     tk.push(hi, lambda V, N, c=c: -0.18 * (np.abs(np.sin(np.arctan2(V[:, 2] - c[2], V[:, 1] - c[1]) * 12)) < 0.3) * (np.hypot(V[:, 1] - c[1], V[:, 2] - c[2]) > 4.6))  # tread
     tk.regions(hi, 'tire', [('hub', lambda C, N, c=c: np.hypot(C[:, 1] - c[1], C[:, 2] - c[2]) < 3.3)])
-    lo = tk.lathe(nm, tire, n=10, axis='X', centre=c)
+    lo = tk.lathe(nm, tire_lo, n=9, axis='X', centre=c)
     WHEELS[nm] = (lo, [hi], c)
 
 # ------------------------------------------------------------------ the scooter: floorboard, leg shield, fork, rear body
@@ -54,13 +55,13 @@ tk.set_region(bike_hi[-1], 'paint')
 fk_lo, fk_hi = ak.spine('fork', [(0, -12.6, 20.6), (0, -14.0, 13.0), (0, -15.0, WR)], [2.4, 2.2, 2.0], 1.2, n=8, up=(0, -1, 0), tris=24,
                         region='chrome', cap0='round', cap1='round')
 fen = [(0, -15.0 + 6.6 * math.cos(a), WR + 6.6 * math.sin(a)) for a in np.linspace(math.radians(20), math.radians(160), 6)]
-fe_lo, fe_hi = ak.spine('fender', fen, 4.6, 0.5, n=8, up=(1, 0, 0), tris=40, region='paint', cap0='flat', cap1='flat')
+fe_lo, fe_hi = ak.spine('fender', fen, 4.6, 0.5, n=8, up=(1, 0, 0), tris=30, region='paint', cap0='flat', cap1='flat')
 bike_lo += [fk_lo, fe_lo]
 bike_hi += fk_hi + fe_hi
 # the rear body: the bulging cowl over the engine and back wheel, the seat on top
 RB = [(0, 1.8, 10.4), (0, 6.0, 11.4), (0, 11.0, 11.8), (0, 16.0, 11.2), (0, 19.6, 10.0)]
 rb_lo, rb_hi = ak.spine('cowl', RB, [8.0, 11.6, 12.4, 11.2, 7.4], [3.6, 4.6, 4.8, 4.4, 3.0], [3.4, 4.2, 4.6, 4.2, 2.8], e=2.2, n=14,
-                        up=(0, 0, 1), tris=140, region='paint', cap0='round', cap1='round')
+                        up=(0, 0, 1), tris=118, region='paint', cap0='round', cap1='round')
 tk.push(rb_hi[0], lambda V, N: -0.3 * np.exp(-((V[:, 2] - 9.6) / 0.25) ** 2) * (np.abs(V[:, 0]) > 4.0)
         - 0.3 * np.exp(-((np.hypot(V[:, 1] - 10.0, V[:, 2] - 11.6) - 3.0) / 0.25) ** 2) * (np.abs(V[:, 0]) > 5.4))  # panel lines, a side vent
 st_lo, st_hi = ak.spine('seat', [(0, 3.0, 15.4), (0, 8.0, 16.2), (0, 13.6, 16.0)], [8.4, 9.6, 8.4], [1.6, 1.8, 1.6], [1.4, 1.6, 1.4],
@@ -72,7 +73,7 @@ bike_hi += rb_hi + st_hi
 for i, (y, z) in enumerate(((15.0, 20.2), (16.8, 26.4), (18.6, 32.6))):
     w = 9.0 - i * 0.8
     bike_hi.append(tk.rbox('rest_hi', (w, 2.6, 5.2), centre=(0, y, z), bevel=1.0, segs=2))
-    bike_lo.append(tk.rbox('rest', (w, 2.6, 5.2), centre=(0, y, z), bevel=0.6, segs=1))
+    bike_lo.append(tk.rbox('rest', (w, 2.6, 5.2), centre=(0, y, z), bevel=0, segs=0))
     tk.push(bike_hi[-1], lambda V, N, z=z: -0.2 * (np.abs(V[:, 2] - z) < 0.2))
     tk.set_region(bike_hi[-1], 'seat')
 for sx in (1, -1):
@@ -81,8 +82,8 @@ for sx in (1, -1):
     bike_lo.append(lo)
     bike_hi += hi
     # a takeyari exhaust each side, pointing at the sky
-    pts = [(sx * 5.0, 15.0, 8.4), (sx * 5.6, 20.4, 11.6), (sx * 6.0, 23.0, 18.6), (sx * 6.0, 23.6, 23.0)]
-    lo, hi = ak.spine('pipe', pts, 1.7, 0.85, n=8, up=(1, 0, 0), tris=30, region='chrome', cap0='round', cap1='flat')
+    pts = [(sx * 5.0, 14.0, 8.0), (sx * 5.6, 18.2, 10.4), (sx * 6.0, 20.2, 16.4), (sx * 6.0, 20.8, 24.6)]
+    lo, hi = ak.spine('pipe', pts, 1.7, 0.85, n=8, up=(1, 0, 0), tris=24, region='chrome', cap0='round', cap1='flat')
     bike_lo.append(lo)
     bike_hi += hi
 # the handlebar, grips, and the headlamp (a light-up part)
@@ -129,7 +130,7 @@ def sc_body(h):
     tk.push(h, f)
 
 
-bd_lo, bd_hi = ak.stack('body', BODY, n=14, tris=150, sculpt=sc_body, region='coat', cap0='round', cap1='round')
+bd_lo, bd_hi = ak.stack('body', BODY, n=14, tris=130, sculpt=sc_body, region='coat', cap0='round', cap1='round')
 skirt_lo, skirt_hi = ak.stack('skirt', [(12.6, 6.4, 15.0, 5.8, 6.8, 2.2), (15.8, 6.0, 13.0, 5.8, 5.8, 2.2)], n=12, tris=40,
                               region='coat', cap0=None, cap1=None)
 la_lo, la_hi, _ = tt.arm('arm_l', [(-6.0, 4.2, 26.4), (-8.0, -2.6, 23.6), (-6.8, -11.0, 22.6)], r=2.2, hand=1.9, tris=44, region='coat', hand_region='fur')
@@ -150,7 +151,7 @@ for sx, nm in ((1, 'leg_r'), (-1, 'leg_l')):
     hip = (sx * 3.6, 5.0, 15.0)
     lo, hi = ak.spine(nm, [hip, (sx * 6.6, 3.4, 8.4), (sx * 8.4, 2.2, 2.4)], [5.2, 4.6, 4.0], 2.3, n=10, up=(0, -1, 0), tris=36,
                       region='pants', cap0='round', cap1='round')
-    foot = tk.lathe('boot', [(0, 0), (2.0, 0.0), (2.2, 1.0), (1.8, 2.0), (0, 2.4)], n=8, centre=(sx * 8.6, 1.4, 0.0))
+    foot = tk.lathe('boot', [(0, 0), (2.0, 0.0), (2.2, 1.0), (1.8, 2.0), (0, 2.4)], n=6, centre=(sx * 8.6, 1.4, 0.0))
     tk.scale(foot, (1.0, 1.5, 1.0), pivot=(sx * 8.6, 1.4, 0.0))
     fh = tk.copy(foot, 'boot_hi')
     tk.subsurf(fh, 2)
@@ -161,7 +162,7 @@ for sx, nm in ((1, 'leg_r'), (-1, 'leg_l')):
 HZ = 35.0
 HEAD = [(0, 8.2, HZ), (0, 5.4, HZ + 0.4), (0, 2.0, HZ), (0, -0.8, HZ - 1.4), (0, -2.4, HZ - 1.8)]
 hd_lo, hd_hi = ak.spine('head', HEAD, [8.6, 15.0, 15.0, 7.4, 4.4], [5.0, 6.8, 6.4, 3.2, 2.2], [5.0, 6.6, 6.2, 3.2, 2.2], e=2.2, n=14,
-                        up=(0, 0, 1), tris=170, region='fur')
+                        up=(0, 0, 1), tris=150, region='fur')
 
 
 def sc_head(V, N):
@@ -176,20 +177,30 @@ tk.push(hd_hi[0], sc_head)
 ear_lo, ear_hi = [], []
 for sx in (1, -1):
     c = (sx * 5.0, 6.2, HZ + 5.6)
-    for nm_, n_, lst in (('ear', 6, ear_lo), ('ear_hi', 14, ear_hi)):
+    for nm_, n_, lst in (('ear', 5, ear_lo), ('ear_hi', 14, ear_hi)):
         o = tk.lathe(nm_, [(0, -0.7), (1.8, -0.5), (2.1, 0.0), (1.8, 0.5), (0, 0.7)], n=n_, axis='Y', centre=c)
         tk.rotate(o, sx * -24, 'Y', pivot=c)
         lst.append(o)
     tk.subsurf(ear_hi[-1], 1)
     tk.set_region(ear_hi[-1], 'fur')
-band = [(6.9 * math.cos(a), 5.0 + 7.1 * math.sin(a), HZ + 2.4 + 0.5 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 18, endpoint=False)]
-bd2_hi = tk.tube('band_hi', band, 0.9, n=8, closed=True, squash=0.6)
+from mathutils import Vector  # noqa: E402
+from mathutils.bvhtree import BVHTree  # noqa: E402
+import bpy  # noqa: E402
+_dg = bpy.context.evaluated_depsgraph_get()
+_bvh = BVHTree.FromObject(hd_hi[0], _dg)
+BC = Vector((0, 3.8, HZ + 4.4))
+band = []
+for a in np.linspace(0, 2 * math.pi, 16, endpoint=False):
+    dv = Vector((math.cos(a), math.sin(a), 0.12 * math.sin(a)))
+    hit = _bvh.ray_cast(BC + dv * 12.0, -dv)[0]
+    band.append(tuple(hit + dv * 0.35) if hit is not None else tuple(BC + dv * 6.8))
+bd2_hi = tk.loft('band_hi', [{'c': p_, 'w': 1.0, 'h': 1.5, 'e': 2.6} for p_ in band], n=8, closed=True)
 tk.subsurf(bd2_hi, 1)
 tk.set_region(bd2_hi, 'band')
-bd2_lo = tk.tube('band', band[::2], 0.9, n=4, closed=True, squash=0.6)
+bd2_lo = tk.loft('band', [{'c': p_, 'w': 1.0, 'h': 1.5, 'e': 2.6} for p_ in band[::2]], n=4, closed=True)
 TAILS = []
 for sx in (1, -1):
-    pts = [(sx * 0.6, 12.2, HZ + 2.9), (sx * 2.0, 15.0, HZ + 2.0), (sx * 3.0, 17.6, HZ + 1.4)]
+    pts = [(sx * 0.6, band[4][1] - 0.4, HZ + 5.2), (sx * 2.0, band[4][1] + 2.6, HZ + 4.2), (sx * 3.0, band[4][1] + 5.0, HZ + 3.4)]
     lo, hi = ak.spine('btail', pts, [1.8, 1.6, 1.4], 0.3, n=6, up=(0, 0, 1), tris=14, region='band', cap0='round', cap1='flat')
     TAILS.append((lo, hi))
 
@@ -290,7 +301,9 @@ def paint(P):
         P.fill(gl.text(d, 'anzen', 4, 0.0, 0.0, 2.9, vertical=True, mirror=False) | (d.m & ((np.abs(d.V) > 6.6) | (np.abs(d.U) > 2.6))),
                pt.ramp('#c2302a', 5), tone=sh, base=0.05)
     P.fill('coat', pt.ramp('#efeae0', 6, shift=0.04), tone=sh, base=0.15)
-    P.fill(P.region('coat') & (np.abs(X) < 1.6) & (Yc < 2) & (np.abs(Z - 21) < 5), GOLD, tone=sh, base=0.0, where=(np.mod(Z * 1.3 + X, 1.0) < 0.35))
+    # 交通安全 embroidered in gold down the right front of his coat
+    cd = bk.Decal(P, (3.2, -2.0, 21.4), (0, -1, 0), where=P.region('coat'))
+    P.fill(gl.text(cd, 'koutsuu', 4, 0.0, 0.0, 2.3, vertical=True), GOLD, tone=sh, base=0.1)
     P.fill('pants', pt.ramp('#efeae0', 6, shift=0.04), tone=sh, base=0.1)
     P.fill('boot', pt.ramp('#26252a', 5, shift=0.05), tone=sh, base=0.0)
     P.fill('fur', pt.ramp('#8a6a48', 7, shift=0.06), tone=sh, base=0.05)
@@ -305,7 +318,8 @@ def paint(P):
     import face
     fc = face.Face(P, c=(0.0, -1.6, HZ + 1.0), axis=(0, -1, 0.2), where=P.region('fur'), seed=641)
     fc.marks('tanuki', dy=0.4, size=1.1)
-    fc.eyes('dot', spread=5.6, size=0.6, dy=0.4, )
+    fe = face.Face(P, c=(0.0, -1.6, HZ + 1.0), axis=(0, -1, 0.2), where=P.region('fur'), seed=643, ink='#f1e8d4')
+    fe.eyes('dot', spread=5.6, size=0.6, dy=0.4)    # (cream dots on the dark mask)
     fc.brows('angry', spread=6.0, dy=2.4, w=2.0, weight=0.45)
     sn = face.Face(P, c=(0.0, -3.2, HZ - 1.2), axis=(0, -1, 0.1), where=P.region('fur'), seed=642)
     sn.nose('button', dy=0.2, size=0.75)
