@@ -107,3 +107,33 @@ def plinth(name, steps, region='plinth', tris=120, edge='gold'):
     lo = tk.join(los, name)
     tk.decimate(lo, tris)
     return lo, his, z
+
+
+def lacquer(P, regs, where=None, base=0.06):
+    """Black urushi: a deep near-black ramp kept tight (no speckle), and crisp painted specular highlights (two
+    stepped tones, short and sharp) where the form faces the painted key light. Returns the lacquer mask."""
+    import paint as pt
+    LAC = pt.ramp('#1b1920', 7, shift=0.08, dark=0.45, light=0.45)
+    m = np.zeros_like(P.mask)
+    for r in regs:
+        m |= P.region(r)
+    if where is not None:
+        m &= where
+    sh = P.shade(light=0.0, ao=0.8, cav=0.6)
+    P.fill(m, LAC, tone=sh * 0.5, base=base)
+    key = np.array((-0.45, -0.62, 0.64))
+    key /= np.linalg.norm(key)
+    l = np.einsum('ijk,k->ij', P.on, key)
+    P.flat(m & (l > 0.9), '#5c5866')
+    P.flat(m & (l > 0.965), '#a7a3b0')
+    return m
+
+
+def gold_bands(P, m, field, width, period=None):
+    """Bold gold-leaf bands on mask m where |field| < width/2 (or, with period, a band every `period`)."""
+    import paint as pt
+    GOLD = pt.ramp('#d9a640', 7, dark=0.6, light=0.6, shift=0.08)
+    f = np.mod(field, period) - period / 2 if period else field
+    band = m & (np.abs(f) < width / 2)
+    P.fill(band, GOLD, tone=P.shade(light=0.0, ao=0.8, cav=0.8), base=0.12)
+    return band

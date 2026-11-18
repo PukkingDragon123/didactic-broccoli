@@ -209,8 +209,10 @@ class Fig:
         img.pixels.foreach_get(a)
         return a.reshape(s.size, s.size, 4)[:, :, :ch].copy()
 
-    def bake(s, ao_samples=96, ao_dist=7.0, extrusion=1.2, reuse=False):
-        """Bake every part. reuse: load the last bake of this figure (same geometry and UVs: paint iteration)."""
+    def bake(s, ao_samples=96, ao_dist=7.0, extrusion=1.2, reuse=False, ao_by_bone=False, ao_also=None):
+        """Bake every part. reuse: load the last bake of this figure (same geometry and UVs: paint iteration).
+        ao_by_bone: a part's AO sees only the sculpts of the parts on its own bone (plus ao_also {part: [parts]}), so
+        nothing that moves carries another part's baked shadow (from B's teruteru kit)."""
         cache = os.path.join(s.out, s.id + '_maps.npz')
         s.regions = s._region_ids()
         import hashlib
@@ -283,7 +285,19 @@ class Fig:
             acc['reg'][mask] = got[mask][:, :1]
             got = run('EMIT', 'cav')
             acc['cav'][mask] = got[mask][:, :1]
-            got = run('AO', samples=ao_samples)
+            hid = []
+            if ao_by_bone:  # (only the sculpts that move with this part cast its AO)
+                friends = {q.name for q in s.parts if q.bone == p.bone} | set((ao_also or {}).get(p.name, ()))
+                for q in s.parts:
+                    if q.name not in friends:
+                        for h in q.highs:
+                            hid.append((h, h.hide_render))
+                            h.hide_render = True
+            try:
+                got = run('AO', samples=ao_samples)
+            finally:
+                for h, v in hid:
+                    h.hide_render = v
             acc['ao'][mask] = got[mask][:, :1]
             miss = mask & ~hit
             s.log(f'baked {p.name}: {mask.sum()} px, {miss.sum()} missed rays')

@@ -158,10 +158,10 @@ tk.set_region(sad_hi, 'saddle')
 
 # ------------------------------------------------------------------ parts
 F.part('plinth', base_lo, base_hi)
-F.part('body', tk.join([body_lo, sad_lo] + legs_lo, 'body'), body_hi + [sad_hi] + legs_hi)
-F.part('neck', neck_lo, neck_hi, bone='neck')
+F.part('body', tk.join([body_lo, sad_lo] + legs_lo, 'body'), body_hi + [sad_hi] + legs_hi, kind='gloss')
+F.part('neck', neck_lo, neck_hi, bone='neck', kind='gloss')
 F.part('head', tk.decimate(tk.join([head_lo] + ant_lo + [br_lo] + lf_lo + SHIDE[0::2], 'head'), 500), head_hi + ant_hi + [br_hi] + lf_hi + SHIDE[1::2],
-       bone='head', sharp=70)
+       bone='head', sharp=70, kind='gloss')
 HP = (0.0, -9.8, HZ - 2.0)  # the nod: where the head sits on the neck
 for nm, (lo, hi, root) in EARS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
@@ -216,18 +216,16 @@ def paint(P):
     LAC = pt.ramp('#26222b', 7, shift=0.08, light=0.55)
     GOLD = pt.ramp('#d9a640', 7, dark=0.6, light=0.6, shift=0.08)
     VERM = pt.ramp('#cc4a32', 7, shift=0.06)
-    P.fill('body', LAC, tone=sh * 0.55, base=0.08)
-    P.fill('head', LAC, tone=sh * 0.55, base=0.08)
-    P.fill('neck', LAC, tone=sh * 0.55, base=0.08)
-    P.fill('leg', LAC, tone=sh * 0.55, base=0.08)
-    P.fill('ear', LAC, tone=sh * 0.55, base=0.08)
-    P.fill(P.region('ear') & (P.on[:, :, 2] > 0.3), GOLD, tone=sh, base=0.08)
-    P.fill('hoof', pt.ramp('#141215', 5, shift=0.05), tone=sh, base=0.15)
+    ak.lacquer(P, ('body', 'ear'))
+    # gold leaf as bold bands: a collar at the base of the neck, the ear rims, bold coat spots
+    ak.gold_bands(P, P.region('body'), Z - (ZC + 6.8) + 0.35 * (Yc + 9.0), 1.5)
+    P.fill(P.region('ear') & ((P.on[:, :, 2] > 0.3) | (P.cav > 0.53)), GOLD, tone=sh, base=0.08)
+    P.fill('hoof', GOLD, tone=sh, base=0.1)
     # the coat's spots in gold leaf: two rows along each flank (the saddle cloth covers the middle)
     spots = np.zeros_like(P.mask)
     for sx in (1, -1):
         for y0, z0 in ((10.5, ZC + 3.0), (8.0, ZC + 4.4), (5.0, ZC + 3.6), (11.0, ZC + 0.6), (-8.6, ZC + 3.2), (-9.6, ZC + 0.8)):
-            spots |= (np.hypot(Yc - y0, Z - z0) < 0.9) & (X * sx > 2.5)
+            spots |= (np.hypot(Yc - y0, Z - z0) < 1.35) & (X * sx > 2.5)
     P.fill(P.region('body') & spots, GOLD, tone=sh, base=0.1)
     P.fill('gold', GOLD, tone=sh * 1.2, base=0.12)
     P.fill('saddle', VERM, tone=sh, base=0.05)
@@ -249,8 +247,9 @@ def paint(P):
     import face
     fc = face.Face(P, c=(0.0, -12.2, HZ + 0.6), axis=(0, -1, 0.35), where=P.region('body'), seed=71, ink='#efe4c8')
     fc.eyes('dot', spread=7.6, size=0.62, dy=0.9)
-    fc2 = face.Face(P, c=(0.0, -16.4, HZ - 2.0), axis=(0, -1, -0.2), where=P.region('body'), seed=72, ink='#efe4c8')
-    fc2.mouth('w', w=1.6, dy=-0.8)
+    fc2 = face.Face(P, c=(0.0, -16.6, HZ - 1.8), axis=(0, -1, 0.1), where=P.region('body'), seed=72, ink='#efe4c8')
+    fc2.nose('button', dy=0.2, size=0.8)
+    fc2.snout_mouth('Y', dy=-0.5, w=1.6)
     P.lines(['saddle'], step=2)
     P.lines(['shide', 'sleaf', 'gold'], step=1)
     P.clusters()

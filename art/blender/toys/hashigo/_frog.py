@@ -341,7 +341,7 @@ def run(F, ARGS, make_rig, paint_fn, cam=((70, -110, 52), (0, -2, 23)), back=((-
         sys.exit(0)
     import paint as pt
     F.unwrap()
-    F.bake(ao_samples=24 if '--fast' in ARGS else 128, ao_dist=5.0, reuse='--repaint' in ARGS)
+    F.bake(ao_samples=24 if '--fast' in ARGS else 128, ao_dist=5.0, reuse='--repaint' in ARGS, ao_by_bone=True)
     P = pt.Painter(F.maps, F.region_index, F.size)
     F.finish(paint_fn(P, pt))
     F.drop_highs()
@@ -369,6 +369,7 @@ def frog_face(P, M, eyes='dot', mouth='upturn', seed=1, head_k=1.0, brows=None, 
         if brows:
             fc.brows(brows, spread=0.0, dy=2.1, w=2.4, only=sx)
     fc = face.Face(P, W(M, (0, -6.6 * head_k, MOUTH_Z * zf)), tuple(fwd), up=tuple(up), where=skin, seed=seed + 7)
+    fc.nose('nostrils', dy=2.4, size=0.9)  # (the animal set: a frog's two little nostrils above the mouth)
     fc.mouth(mouth, w=mouth_w * head_k, dy=0.0, **mk)
     if blush:
         fc.blush(16.0 * head_k, 1.6, rx=1.8, ry=0.95, col='#e88c6c')

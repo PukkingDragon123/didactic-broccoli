@@ -170,7 +170,7 @@ class Face:
             return s.stroke(top + [top[0]], 0.3 * k, taper=(1, 1), wobble=0.02)
         raise ValueError(kind)
 
-    def patch(s, du, dy, rx, ry, col, rot=0.0, lumpy=0.12):
+    def patch(s, du, dy, rx, ry, col, rot=0.0, lumpy=0.06):
         """A painted patch (a muzzle, panda eye patches, a tanuki mask, a belly blaze): a lumpy filled oval."""
         ph = s.rng.random(2) * 6.3
         pts = []

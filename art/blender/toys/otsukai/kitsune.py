@@ -146,10 +146,10 @@ jewel_lo = tk.lathe('jewel', jw_prof, n=8, centre=JEWEL)
 
 # ------------------------------------------------------------------ parts
 F.part('plinth', base_lo, base_hi)
-F.part('body', tk.join([body_lo] + legs_lo + [bib_lo], 'body'), body_hi + legs_hi + bib_hi)
-F.part('head', tk.join([head_lo] + [e[0] for e in EARS], 'head'), head_hi + [e[1] for e in EARS], bone='head')
+F.part('body', tk.join([body_lo] + legs_lo + [bib_lo], 'body'), body_hi + legs_hi + bib_hi, kind='gloss')
+F.part('head', tk.join([head_lo] + [e[0] for e in EARS], 'head'), head_hi + [e[1] for e in EARS], bone='head', kind='gloss')
 F.part('key', key_lo, [key_hi], bone='key', kind='metal', uvw=0.7)
-F.part('tail', tk.join([tail_lo, jewel_lo], 'tail'), tail_hi + [jewel_hi], bone='tail')
+F.part('tail', tk.join([tail_lo, jewel_lo], 'tail'), tail_hi + [jewel_hi], bone='tail', kind='gloss')
 
 
 def make_rig():
@@ -202,13 +202,14 @@ def paint(P):
     LAC = pt.ramp('#26222b', 7, shift=0.08, light=0.55)
     GOLD = pt.ramp('#d9a640', 7, dark=0.6, light=0.6, shift=0.08)
     VERM = pt.ramp('#cc4a32', 7, shift=0.06)
-    for r in ('body', 'tail'):
-        P.fill(r, LAC, tone=sh * 0.55, base=0.08)
-    P.fill('ear', LAC, tone=sh * 0.55, base=0.08)
-    # gold leaf: the ear linings, the chest ruff's tufts, the tail's flame-tip, the paws' toes
-    ear_in = P.region('ear') & (P.on[:, :, 1] < -0.2)
-    P.fill(ear_in, GOLD, tone=sh, base=0.1)
+    lac = ak.lacquer(P, ('body', 'tail', 'ear'))
+    # gold leaf as bold graphic bands: a collar, the ear rims and linings, a band round the tail, the toes, the flame tip
+    ak.gold_bands(P, P.region('body'), Z - (PZ + 21.6), 1.4)
+    ear = P.region('ear')
+    P.fill(ear & ((P.on[:, :, 1] < -0.2) | (P.cav > 0.53)), GOLD, tone=sh, base=0.1)
+    ak.gold_bands(P, P.region('tail'), Z - (PZ + 15.5), 1.6)
     P.fill(P.region('tail') & (Z > PZ + 20.5 + 1.2 * np.sin(X * 1.7 + Yc)), GOLD, tone=sh, base=0.1)
+    ak.gold_bands(P, P.region('body'), Z - (PZ + 0.7), 1.4)
     P.fill('gold', GOLD, tone=sh * 1.2, base=0.15)
     P.fill('jewel', GOLD, tone=sh, base=0.15)
     P.fill(P.region('jewel') & (Z > JEWEL[2] + 0.4), pt.ramp('#d4463a', 6, shift=0.06), tone=sh, base=0.1)
@@ -219,7 +220,6 @@ def paint(P):
     P.fill(bib & (Z > PZ + 20.5), GOLD, tone=sh, base=0.1)
     P.fill(bib & (np.hypot(X, Z - (PZ + 16.5)) < 1.6), GOLD, tone=sh, base=0.1)
     # the head: a lacquer head with red markings round the eyes (the Inari make-up), the face itself left for last
-    P.fill('head', LAC, tone=sh * 0.55, base=0.08)
     # the face in cream ink on the lacquer: narrow fox eyes (calm slits, tilted up at the corners) with the Inari
     # shrine's red flicks at their outer ends; no mouth (it is busy holding the key)
     import face
@@ -227,6 +227,9 @@ def paint(P):
     fc.eyes('sleepy', spread=7.4, size=0.7, dy=0.6, tilt=-8.0)
     for sx in (-1, 1):
         fc.stroke([(sx * 4.6, 1.0), (sx * 5.8, 1.9)], weight=0.45, col='#d4463a')
+    sn = face.Face(P, c=(0.0, -11.0, HZ - 1.4), axis=(0, -1, 0.25), where=P.region('body'), seed=62, ink='#efe4c8')
+    sn.nose('tri', dy=0.0, size=0.75, col='#d9a640')
+    sn.whiskers(dy=-0.6, spread=2.0, n=2, length=2.2, dots=True)
     P.lines(['bib'], step=2)
     P.lines(['jewel', 'gold'], step=1)
     P.clusters()

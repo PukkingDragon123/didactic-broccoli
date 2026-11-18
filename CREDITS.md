@@ -2766,6 +2766,7 @@ Photographs from Google Open Images (CC BY 2.0, https://creativecommons.org/lice
 - "Snow monkeys in hot spring Japan" by Chi Tranter, CC BY 2.0, https://www.flickr.com/photos/chitranter/14212780326 (Open Images ID 2a1c261ad12e6f62)
 - "Tokyo Bay Fireworks Festival 2010 #7" by megawheel360, CC BY 2.0, https://www.flickr.com/photos/megawheel360/4892677310 (Open Images ID 3273e580b71afeef)
 - "20131014 02 Kyoto - Higashiyama - Yasaka Shrine 京都市 東山区 八坂神社" by Sjaak Kempe, CC BY 2.0, https://www.flickr.com/photos/22991060@N04/10512529846 (Open Images ID 34f24d2374c50c25)
+- "drawers" by Jo Guldi, CC BY 2.0, https://www.flickr.com/photos/landschaft/2342923854 (Open Images ID a15e83bbe9f87d4f) (backdrop of the display card for the kaden series)
 - "Dragonfly" by Isabelle Acatauassú Alves Almeida, CC BY 2.0, https://www.flickr.com/photos/96386958@N07/17635262609 (Open Images ID 42d6b48cf68049b9)
 - "uma chuva de balas para Elisa" by Mauren Veras, CC BY 2.0, https://www.flickr.com/photos/mauren/2429240906 (Open Images ID 436ed2d6e9cd8ca4)
 - "Japan-Kyoto-Train Station-Shinkansen-Bullet-Train-April-2004" by tiarescott, CC BY 2.0, https://www.flickr.com/photos/tiarescott/33754698 (Open Images ID 43ef0d9ecd6dd4be)

@@ -42,15 +42,15 @@ head_lo = tk.lathe('head', [(0, -6.4), (4.0, -5.2), (6.0, -2.0), (6.2, 0.6), (5.
 for o in (head_hi, head_lo):
     tk.scale(o, 1.22, pivot=HC)
 tk.push(head_hi, lambda V, N: tk.bump(V, (0, -1.4, HC[2] + 6.0), 2.4, 0.6))  # a little crest of feathers
-beak_pts = [(0, HC[1] - 6.0, HC[2] - 1.0), (0, HC[1] - 8.6, HC[2] - 1.6), (0, HC[1] - 10.8, HC[2] - 2.6)]
-beak_lo, beak_hi_ = ak.spine('beak', beak_pts, [4.2, 2.8, 0.6], [2.0, 1.4, 0.3], [1.8, 1.2, 0.3], n=8, up=(0, 0, 1), tris=40,
+beak_pts = [(0, HC[1] - 6.2, HC[2] - 1.0), (0, HC[1] - 9.4, HC[2] - 1.7), (0, HC[1] - 12.6, HC[2] - 2.9)]
+beak_lo, beak_hi_ = ak.spine('beak', beak_pts, [4.0, 2.2, 0.25], [2.0, 1.0, 0.15], [1.6, 0.8, 0.15], n=8, up=(0, 0, 1), tris=40,
                              region='gold', cap0='round', cap1='point')
 for o in [head_hi]:
     tk.set_region(o, 'body')
 
 # three legs, gold, with forward toes and a back toe
 legs_lo, legs_hi = [], []
-for x, y in ((-3.2, -0.4), (3.2, -0.4), (0.0, 2.4)):
+for x, y in ((-3.6, -0.2), (3.6, -0.2), (0.0, -1.6)):
     pts = [(x, y, LZ + 3.0), (x * 1.1, y - 0.6, PZ + 1.6), (x * 1.1, y - 0.8, PZ + 0.5)]
     lo, hi = ak.spine('leg', pts, 1.6, 0.8, n=6, up=(0, -1, 0), tris=20, region='gold', cap0='round', cap1='round')
     legs_lo.append(lo)
@@ -62,8 +62,25 @@ for x, y in ((-3.2, -0.4), (3.2, -0.4), (0.0, 2.4)):
         lo, hi = ak.spine('toe', tp, 0.9, 0.45, n=5, up=(0, 0, 1), tris=10, region='gold', cap0='round', cap1='point')
         legs_lo.append(lo)
         legs_hi += hi
-tail_lo, tail_hi = ak.spine('tail', [(0, 5.2, LZ + 3.0), (0, 9.0, LZ + 0.8), (0, 11.6, PZ + 1.4)], [5.0, 6.4, 7.0], [1.2, 1.0, 0.7],
-                            n=8, up=(0, 0, 1), tris=40, region='body', cap0='round', cap1='flat')
+FAN = [(0.0, 0.0)]
+for i in range(15):
+    a = math.radians(58 + 64 * i / 14)
+    r = 9.6 if i % 2 == 0 else 8.4
+    FAN.append((r * math.cos(a), r * math.sin(a)))
+
+
+def place_fan(o):
+    tk.rotate(o, -42, 'X')
+    tk.move(o, (0.0, 4.4, LZ + 4.4))
+    return o
+
+
+tail_lo = place_fan(tk.slab('tail', FAN, 1.1, plane='XY', bevel=0, segs=0))
+th_ = tk.slab('tail_hi', FAN, 1.1, plane='XY', bevel=0.35, segs=2)
+tk.subsurf(th_, 1)
+tk.push(th_, lambda V, N: -0.22 * (np.abs(np.sin(np.arctan2(V[:, 0], V[:, 1]) * 13.5)) < 0.16) * (np.hypot(V[:, 0], V[:, 1]) > 2.0))
+tail_hi = [place_fan(th_)]
+tk.set_region(tail_hi[0], 'wing')
 
 # ------------------------------------------------------------------ the wings: folded round it like a cloak
 WINGS = {}
@@ -76,7 +93,7 @@ for nm, sx in (('wing_l', -1), ('wing_r', 1)):
         o = tk.slab(nm_, OUT, 1.4, plane='YZ', bevel=0.35 if segs else 0, segs=1 if segs else 0)
         if segs:
             tk.subsurf(o, 1)
-            tk.push(o, lambda V, N: -0.2 * (np.abs(np.mod(V[:, 1] * 0.55, 1.0) - 0.5) < 0.06))  # the primaries' lines
+            tk.push(o, lambda V, N: 0.38 * np.mod((V[:, 2] + 0.9 * np.abs(np.sin(V[:, 1] * math.pi / 2.3))) / 2.6, 1.0) * np.sign(V[:, 0] + 1e-6))  # layered feather rows
         # the outline is (y along the wing, z) at x = 0: lay it down the body's side, tip to the back, curved round
         tk.deform(o, lambda V, sx=sx: np.c_[V[:, 0] + sx * 0.03 * (V[:, 2] + 3.0) ** 2 * (V[:, 2] < -3), V[:, 1], V[:, 2]])
         tk.scale(o, 0.95)
@@ -105,10 +122,10 @@ post_lo = tk.cyl('post', 1.1, PZ - 0.5, SUN[2] + 0.6, n=6, at=(0, SUN[1] + 1.9),
 tk.set_region(post_hi, 'sunpost')
 
 F.part('plinth', tk.join([base_lo, post_lo], 'plinth'), base_hi + [post_hi])
-F.part('body', tk.join([body_lo, tail_lo] + legs_lo, 'body'), body_hi + tail_hi + legs_hi)
-F.part('head', tk.join([head_lo, beak_lo], 'head'), [head_hi] + beak_hi_, bone='head')
+F.part('body', tk.join([body_lo, tail_lo] + legs_lo, 'body'), body_hi + tail_hi + legs_hi, kind='gloss')
+F.part('head', tk.join([head_lo, beak_lo], 'head'), [head_hi] + beak_hi_, bone='head', kind='gloss')
 for nm, (lo, hi, sh_) in WINGS.items():
-    F.part(nm, lo, [hi], bone=nm, sharp=60)
+    F.part(nm, lo, [hi], bone=nm, sharp=60, kind='gloss')
 F.part('sun', sun_lo, [sun_hi], bone='sun', kind='metal', sharp=50)
 
 
@@ -159,10 +176,11 @@ def paint(P):
     LAC = pt.ramp('#26222b', 7, shift=0.08, light=0.55)
     GOLD = pt.ramp('#d9a640', 7, dark=0.6, light=0.6, shift=0.08)
     VERM = pt.ramp('#cc4a32', 7, shift=0.06)
-    P.fill('body', LAC, tone=sh * 0.55, base=0.08)
-    P.fill('wing', LAC, tone=sh * 0.55, base=0.1)
-    # gold leaf on the wings' feathered edges
-    P.fill(P.region('wing') & (P.cav > 0.53), GOLD, tone=sh, base=0.08)
+    ak.lacquer(P, ('body', 'wing'))
+    # gold leaf as bold bands: a broad two-band collar, bands along the wings' feather rows, the tail fan's tips
+    ak.gold_bands(P, P.region('body'), Z - (LZ + 17.8), 1.2)
+    ak.gold_bands(P, P.region('body'), Z - (LZ + 15.9), 0.8)
+    ak.gold_bands(P, P.region('wing'), Z * 0.9 + Yc * 0.35, 0.8, period=3.2)
     P.fill('gold', GOLD, tone=sh, base=0.12)
     P.fill('sun', GOLD, tone=sh * 1.2, base=0.12)
     P.fill(P.region('sun') & (np.hypot(X - SUN[0], Z - SUN[2]) < 5.6) & (Yc < SUN[1]), VERM, tone=sh, base=0.08)

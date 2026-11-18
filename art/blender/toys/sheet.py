@@ -29,10 +29,12 @@ def font(n):
 def series_items(sid):
     src = open(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js'), encoding='utf8').read()
     out = []
-    for m in re.finditer(r"id: '(\w+)', name: '([^']+)', jp: '([^']+)', rarity: '(\w+)'", src):
-        out.append({'id': m.group(1), 'name': m.group(2), 'jp': m.group(3), 'rarity': m.group(4)})
-    name = re.search(r"name: '([^']+)',\n  jp: '([^']+)'", src)
-    return out, (name.group(1), name.group(2)) if name else (sid, sid)
+    Q = r"""(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")"""  # a single- or double-quoted JS string
+    for m in re.finditer(r"id: '(\w+)', name: " + Q + r", jp: " + Q + r", rarity: '(\w+)'", src):
+        g = m.groups()
+        out.append({'id': g[0], 'name': g[1] or g[2] or '', 'jp': g[3] or g[4] or '', 'rarity': g[5]})
+    name = re.search(r"\n  name: " + Q + r",\n  jp: " + Q, src)
+    return out, ((name.group(1) or name.group(2), name.group(3) or name.group(4)) if name else (sid, sid))
 
 
 def crop_arg(a):
@@ -72,7 +74,10 @@ def main():
     S = Image.new('RGB', (W, H), PAPER)
     D = ImageDraw.Draw(S)
     title = f'{sjp}  {sname}' + ('  — the gimmicks in the game renderer' if mode == 'gimmick' else f'  — {sid}, modelled in Blender')
-    D.text((24, 24), title, font=font(44), fill=INK)
+    fs = 44  # (a long title shrinks to fit the sheet)
+    while fs > 22 and D.textlength(title, font=font(fs)) > W - 48:
+        fs -= 2
+    D.text((24, 24 + (44 - fs) // 2), title, font=font(fs), fill=INK)
     if mode == 'series':
         cap = 'front 3/4 · back 3/4 · inside the gimmick (the object) · the signature move   (the in-game mesh, materials and baked normal maps)'
     else:

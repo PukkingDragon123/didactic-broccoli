@@ -38,7 +38,7 @@ def sc_body(h):
         # the chest ruff: carved flame-tufts down the front
         front = tk.smoothstep(-0.3, -0.8, N[:, 1])
         tuft = np.cos(V[:, 0] * 1.5) ** 2 * tk.smoothstep(PZ + 9, PZ + 13, V[:, 2]) * tk.smoothstep(PZ + 21, PZ + 18, V[:, 2])
-        d += 0.45 * front * tuft
+        d += 0.95 * front * tuft * (0.55 + 0.45 * np.cos(V[:, 2] * 1.7 + V[:, 0] * 0.8)) ** 2  # carved fur tufts
         d -= 0.3 * np.exp(-(V[:, 0] / 0.5) ** 2) * tk.smoothstep(0.3, 0.8, N[:, 1])   # the spine groove down the back
         return d
     tk.push(h, f)
@@ -67,8 +67,8 @@ for sx in (1, -1):
 HZ = PZ + 27.6
 NECK = (0.0, -1.8, PZ + 24.4)
 HZ = PZ + 28.6
-HEAD = [(0, 2.8, HZ + 0.3), (0, 0.5, HZ + 0.3), (0, -2.8, HZ), (0, -5.8, HZ - 0.8), (0, -8.4, HZ - 1.1), (0, -10.6, HZ - 1.3),
-        (0, -12.2, HZ - 1.4)]
+HEAD = [(0, 2.8, HZ + 0.3), (0, 0.5, HZ + 0.3), (0, -2.8, HZ), (0, -6.0, HZ - 0.9), (0, -9.0, HZ - 1.3), (0, -12.0, HZ - 1.6),
+        (0, -14.2, HZ - 1.7)]
 
 
 def sc_head(h):
@@ -77,15 +77,19 @@ def sc_head(h):
         for sx in (1, -1):
             d += tk.bump(V, (sx * 7.0, -1.5, HZ - 3.2), 4.0, 1.0)       # cheek ruffs
             d += tk.bump(V, (sx * 3.0, -5.0, HZ + 3.0), 2.4, 0.35)      # brows
-        d += tk.bump(V, (0, -12.4, HZ - 1.2), 1.5, 0.5)                  # the nose
+        d += tk.bump(V, (0, -14.4, HZ - 1.4), 1.6, 0.5)                  # the nose
+        # the upper lip: a ridge along the snout's lower edge, a groove under it where the jaw meets it
+        lipz = HZ - 2.7 - 0.05 * (V[:, 1] + 6)
+        sn = (V[:, 1] < -5.5) & (np.abs(V[:, 0]) > 0.8)
+        d += 0.4 * np.exp(-((V[:, 2] - lipz - 0.35) / 0.35) ** 2) * sn - 0.35 * np.exp(-((V[:, 2] - lipz + 0.3) / 0.25) ** 2) * sn
         # the mouth line along each side of the snout
         d -= 0.3 * np.exp(-((V[:, 2] - (HZ - 2.7 + 0.1 * (V[:, 1] + 8))) / 0.3) ** 2) * (V[:, 1] < -6.0) * (np.abs(V[:, 0]) > 1.0)
         return d
     tk.push(h, f)
 
 
-head_lo, head_hi = ak.spine('head', HEAD, [8.6, 14.0, 14.0, 9.4, 6.6, 5.2, 3.4], [4.9, 6.6, 6.2, 3.6, 2.4, 1.8, 1.3],
-                            [4.6, 5.2, 4.0, 2.0, 1.4, 1.1, 0.9], e=2.2, n=14, up=(0, 0, 1), tris=300, sculpt=sc_head)
+head_lo, head_hi = ak.spine('head', HEAD, [8.6, 14.0, 13.6, 8.6, 6.2, 5.0, 3.4], [4.9, 6.6, 6.0, 3.4, 2.4, 1.9, 1.4],
+                            [4.6, 5.2, 4.0, 2.2, 1.7, 1.4, 1.0], e=2.2, n=14, up=(0, 0, 1), tris=300, sculpt=sc_head)
 EARS = []
 for sx in (1, -1):
     root = (sx * 4.4, -0.2, HZ + 4.6)
@@ -97,8 +101,8 @@ for sx in (1, -1):
 
 # the lower jaw (it opens to howl), with a row of small teeth sculpted along it
 JAW = (0.0, -3.8, HZ - 2.6)
-jaw_lo, jaw_hi = ak.spine('jaw', [(0, -3.6, HZ - 2.9), (0, -7.0, HZ - 3.2), (0, -10.6, HZ - 3.0)], [8.0, 5.6, 3.4], [1.3, 1.0, 0.8],
-                          [1.8, 1.4, 1.0], n=10, up=(0, 0, 1), tris=60, cap0='round', cap1='round')
+jaw_lo, jaw_hi = ak.spine('jaw', [(0, -3.6, HZ - 3.0), (0, -8.2, HZ - 3.4), (0, -12.8, HZ - 3.3)], [8.0, 5.0, 3.0], [1.2, 0.9, 0.7],
+                          [1.7, 1.3, 0.9], n=10, up=(0, 0, 1), tris=60, cap0='round', cap1='round')
 # the shimenawa: a thick twisted straw rope round its neck, and four zig-zag paper shide hanging from it
 NR = []
 for t in np.linspace(0, 2 * math.pi, 40, endpoint=False):
@@ -139,10 +143,10 @@ tail_lo, tail_hi = ak.spine('tail', tpts, [3.6, 5.2, 5.8, 5.4, 4.4, 1.8], [1.6, 
                             up=(0, 0, 1), tris=150, sculpt=sc_tail, region='tail', cap0='round', cap1='point')
 # ------------------------------------------------------------------ parts
 F.part('plinth', base_lo, base_hi)
-F.part('body', tk.decimate(tk.join([body_lo] + legs_lo + [rope_lo] + SH_LO, 'body'), 800), body_hi + legs_hi + [rope_hi] + SH_HI, sharp=70)
-F.part('head', tk.join([head_lo] + [e[0] for e in EARS], 'head'), head_hi + [e[1] for e in EARS], bone='head')
-F.part('jaw', jaw_lo, jaw_hi, bone='jaw')
-F.part('tail', tail_lo, tail_hi, bone='tail')
+F.part('body', tk.decimate(tk.join([body_lo] + legs_lo + [rope_lo] + SH_LO, 'body'), 800), body_hi + legs_hi + [rope_hi] + SH_HI, sharp=70, kind='gloss')
+F.part('head', tk.join([head_lo] + [e[0] for e in EARS], 'head'), head_hi + [e[1] for e in EARS], bone='head', kind='gloss')
+F.part('jaw', jaw_lo, jaw_hi, bone='jaw', kind='gloss')
+F.part('tail', tail_lo, tail_hi, bone='tail', kind='gloss')
 
 
 def make_rig():
@@ -189,26 +193,27 @@ def paint(P):
     LAC = pt.ramp('#26222b', 7, shift=0.08, light=0.55)
     GOLD = pt.ramp('#d9a640', 7, dark=0.6, light=0.6, shift=0.08)
     VERM = pt.ramp('#cc4a32', 7, shift=0.06)
-    for r in ('body', 'tail'):
-        P.fill(r, LAC, tone=sh * 0.55, base=0.08)
-    P.fill('ear', LAC, tone=sh * 0.55, base=0.08)
-    # gold leaf: the ear linings, the chest ruff's tufts, the tail's tip
-    ear_in = P.region('ear') & (P.on[:, :, 1] < -0.2)
-    P.fill(ear_in, GOLD, tone=sh, base=0.1)
-    ruff = P.region('body') & (Yc < -3.0) & (Z > PZ + 10.0) & (Z < PZ + 19.6) & (np.abs(X) < 4.6 - 0.15 * (Z - PZ - 10))
-    P.fill(ruff, GOLD, tone=sh, base=0.08)
-    P.fill(P.region('tail') & (Yc < -5.0), GOLD, tone=sh, base=0.1)
+    ak.lacquer(P, ('body', 'tail', 'ear'))
+    # gold leaf: the ear rims and linings, the ruff's carved tufts (their crests only), a band round the tail's tip
+    P.fill(P.region('ear') & ((P.on[:, :, 1] < -0.2) | (P.cav > 0.53)), GOLD, tone=sh, base=0.1)
+    ruff = P.region('body') & (Yc < -2.0) & (Z > PZ + 9.0) & (Z < PZ + 20.0)
+    P.fill(ruff & (P.cav > 0.53), GOLD, tone=sh, base=0.1)
+    ak.gold_bands(P, P.region('tail'), Yc + 7.0, 1.6)
+    P.fill(P.region('tail') & (Yc < -8.5), GOLD, tone=sh, base=0.1)
     P.fill('rope', pt.ramp('#d8c48a', 6, shift=0.06), tone=sh, base=0.05)
     P.fill('shide', pt.ramp('#f3efe6', 5, shift=0.04), tone=sh, base=0.2)
     P.fill('plinth', VERM, tone=sh, base=0.0)
-    P.fill('head', LAC, tone=sh * 0.55, base=0.08)
-    P.fill('jaw', LAC, tone=sh * 0.55, base=0.08)
+    ak.lacquer(P, ('jaw',))
     P.fill(P.region('jaw') & (P.on[:, :, 2] > 0.5), pt.ramp('#b8484a', 5, shift=0.05), tone=sh, base=0.05)
     # the face in cream ink: small fierce dots under angry brows
     import face
     fc = face.Face(P, c=(0.0, -6.8, HZ + 0.7), axis=(0, -1, 0.5), where=P.region('body'), seed=91, ink='#efe4c8')
     fc.eyes('tiny', spread=6.6, size=0.75, dy=0.5)
     fc.brows('angry', spread=7.0, dy=2.2, w=2.4, weight=0.45)
+    sn = face.Face(P, c=(0.0, -14.4, HZ - 1.6), axis=(0, -1, 0.15), where=P.region('body'), seed=92, ink='#efe4c8')
+    sn.nose('button', dy=0.3, size=0.85, col='#d9a640')
+    sn.snout_mouth('Y', dy=-0.6, w=1.8)
+    sn.fangs(dy=-1.25, gap=1.8, size=0.55)
     P.lines(['rope', 'shide'], step=1)
     P.clusters()
     return P.done()
