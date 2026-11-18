@@ -139,10 +139,13 @@ class Painter:
         face = np.einsum('ijk,k->ij', s.on, a) > facing
         return s.mask & (d <= 1) & face & (np.abs(W) < max(rx, ry) * 1.5)
 
-    def eye(s, c, axis, r, up=(0, 0, 1), iris='#e8b830', pupil='#140f12', white=None, slit=0.0, ring='#1a1214',
-            ry=None, look=(0.0, 0.0), lid=None, lidcol=None, rot=0.0, facing=0.1, hi=True, where=None):
-        """A painted bead eye: dark ring, iris (or white), pupil (round, or a slit `slit` wide), a catchlight up-left.
-        lid: a heavy upper lid line height (-1..1 in the eye's v) painted in lidcol."""
+    def eye(s, c, axis, r, up=(0, 0, 1), ry=None, where=None, full=False, scale=0.62, bead='#16100e', rim=None,
+            facing=0.1, hi=True, rot=0.0, **_old):
+        """A bead eye (the owner's rule: animal eyes are simple beads or dots): a solid dark bead with at most one
+        tiny highlight, never an iris, pupil ring, white, lid or lashes. Expression comes from brows, mouth and pose.
+        full: the whole `where` region is the bead (a modelled eyeball); else a painted dot of radius r * scale.
+        rim: an optional surround in a body tone (a dark bead on a dark face needs it to read).
+        (Old keyword arguments such as iris, white, lid, look are accepted and ignored.)"""
         ry = ry or r
         U, V, W, a = s.frame(c, axis, up)
         if rot:
@@ -151,35 +154,17 @@ class Painter:
         face = (np.einsum('ijk,k->ij', s.on, a) > facing) & (np.abs(W) < r * 2) & s.mask
         if where is not None:
             face &= where
-        d = np.sqrt((U / r) ** 2 + (V / ry) ** 2)
-        out = face & (d <= 1.0)
-        s.flat(out, ring)
-        inner = face & (d <= 0.84)
-        s.flat(inner, white or iris)
-        pu, pv = U / r - look[0], V / ry - look[1]
-        if slit:
-            pm = inner & (np.abs(pu) <= slit) & (np.sqrt(pu ** 2 * 0.15 + pv ** 2) <= 0.74)
-        else:
-            pm = inner & (np.sqrt(pu ** 2 + pv ** 2) <= 0.5)
-        if white:
-            im = inner & (np.sqrt(pu ** 2 + pv ** 2) <= 0.62)
-            s.flat(im, iris)
-            pm = inner & (np.sqrt(pu ** 2 + pv ** 2) <= 0.36)
-        s.flat(pm, pupil)
-        # lower iris glow: a lighter crescent at the bottom of the iris
-        if not white:
-            gl = inner & ~pm & (V / ry < -0.35) & (d <= 0.8)
-            s.flat(gl, _lighter(iris, 0.28))
-        if lid is not None:
-            lm = out & (V / ry > lid)
-            s.flat(lm, ring if lidcol is None else lidcol)
-            lline = out & (np.abs(V / ry - lid) < 0.13)
-            s.flat(lline, ring)
-        if hi:
-            hm = face & (np.sqrt(((U / r) + 0.32) ** 2 + ((V / ry) - 0.34) ** 2) <= 0.2)
-            s.flat(hm & out, '#fffaf0')
-            hm2 = face & (np.sqrt(((U / r) - 0.3) ** 2 + ((V / ry) + 0.36) ** 2) <= 0.09)
-            s.flat(hm2 & out, '#f4efe6')
+        rb, rby = (r, ry) if full else (r * scale, ry * scale)
+        d = np.sqrt((U / rb) ** 2 + (V / rby) ** 2)
+        out = (where & s.mask) if (full and where is not None) else (face & (d <= 1.0))
+        if rim:
+            s.flat(face & (d <= 1.4) & ~out, rim)
+        s.flat(out, bead)
+        if hi:  # one tiny catchlight, up and to the left (at least a texel)
+            px = 1.0 / max(1e-6, getattr(s, 'ppmm', 5.0))
+            hr = max(0.17 * rb, 0.55 * px)
+            hm = face & (np.sqrt((U + 0.36 * rb) ** 2 + (V - 0.38 * rby) ** 2) <= hr)
+            s.flat(hm & out, '#f6f0e4')
         return out
 
     # ---------------------------------------------------------- finishing passes
