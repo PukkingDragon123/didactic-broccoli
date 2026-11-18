@@ -150,12 +150,12 @@ def promo(key, photo, f, series, ids, title, tface, sub, ground, ink, accent, fo
         P.text(foot, 'bebas', 11, w - 12, h - 15, ground, anchor='rm', track=1)
         P.post = lambda im: toys_on(im.convert('RGBA'), series, ids, (14, 70, w - 28, 158)).convert('RGB')
     PROMO['promo:' + key] = (240, 340, fn, dict(paper='Paper001', fade=0.08, crease=0.4, tape=('tl', 'tr'), seed=len(key)))
-promo('reopen', 'local:garage.jpg', (0.5, 0.5, 1.0), 'nuigurumi', ['teddy', 'owl', 'bunny'], '祝 再開店', 'oldmincho', 'おじいちゃんのガチャ屋、また開きます。', 0xf6efe0, INK, RED, 'OPEN 10:00-20:00')
-promo('kaiju', 'oi:6324262554f184ab@test', (0.5, 0.75, 1.7), 'sampuru', ['ramen', 'sundae', 'katsu'], 'サンプル食堂', 'mochiy', '本物そっくり、食品サンプル 全7種', 0xfbf6ee, INK, 0xd8402a, '300 YEN')
-promo('space', 'oi:f4200fadef07c329@test', (0.5, 0.55, 1.2), 'denka', ['radio', 'sewing', 'tv'], '昭和の家電', 'oldmincho', 'あの頃のおうち、ミニチュアで。全8種', 0xf3ecdc, INK, 0x2a7a6a, '300 YEN')
-promo('sakura', 'oi:f291d677045b5a38@test', (0.5, 0.6, 1.1), 'okashi', ['dango', 'matcha', 'taiyaki'], '和菓子処', 'oldmincho', 'ちいさな和菓子、ひとつどうぞ。全7種', 0xf8efe4, INK, 0xb8506a, '200 YEN')
-promo('secret', 'local:milky_way.jpg', (0.5, 0.5, 1.0), 'shinkai', ['angler', 'nautilus', 'jelly'], 'シークレット', 'mochiy', '各シリーズにひとつ。きみは引けるか？', 0x15182a, 0xf4e6c0, 0xe8b838, 'SECRET')
-promo('glow', 'local:rain_window.jpg', (0.5, 0.5, 1.0), 'shinkai', ['jelly', 'angler', 'dumbo'], '夜光る', 'mochiy', '暗いところで光る、蓄光フィニッシュ', 0x101820, 0xd8f0e0, 0x58c08a, 'GLOW')
+promo('reopen', 'local:garage.jpg', (0.5, 0.5, 1.0), 'teruteru', ['para', 'goro', 'niji'], '祝 再開店', 'oldmincho', 'おじいちゃんのガチャ屋、また開きます。', 0xf6efe0, INK, RED, 'OPEN 10:00-20:00')
+promo('kaiju', 'local:skyline.jpg', (0.72, 0.72, 1.6), 'nakanohito', ['mogura', 'tanbo', 'entotsu'], '着ぐるみ怪獣', 'mochiy', 'なかのひと、みーつけた！ 全6種', 0xf2e8d4, INK, 0xc8342c, '300 YEN')
+promo('space', 'oi:f4200fadef07c329@test', (0.5, 0.55, 1.2), 'kaden', ['fukuro', 'zou', 'usagi'], 'でんきどうぶつ', 'oldmincho', 'スイッチを入れると、どうぶつに。全6種', 0xf3ecdc, INK, 0x2a7a6a, '300 YEN')
+promo('sakura', 'oi:f291d677045b5a38@test', (0.5, 0.6, 1.1), 'otsukai', ['kitsune', 'hebi', 'shika'], 'かみのおつかい', 'oldmincho', '神さまのおつかい、ただいま参上。全6種', 0xf8efe4, INK, 0xb8506a, '400 YEN')
+promo('secret', 'local:milky_way.jpg', (0.5, 0.5, 1.0), 'henshin', ['ryu'], 'シークレット', 'mochiy', '各シリーズにひとつ。きみは引けるか？', 0x15182a, 0xf4e6c0, 0xe8b838, 'SECRET')
+promo('glow', 'local:rain_window.jpg', (0.5, 0.5, 1.0), 'teruteru', ['moya', 'shito', 'byu'], '夜光る', 'mochiy', '暗いところで光る、蓄光フィニッシュ', 0x101820, 0xd8f0e0, 0x58c08a, 'GLOW')
 
 # the handed-out joke flyers (src/gfx/flyers.js 'meme' designs): real photos, two-line captions on plain ink bands
 MEMES = {
