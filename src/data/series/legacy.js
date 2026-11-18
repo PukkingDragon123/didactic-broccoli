@@ -57,6 +57,10 @@ export const RETIRED = {
   yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's', karasu: 'c', kiji: 's' }, yatai: { wataame: 'u', yoyo: 'u', kingyo: 'c', omen: 'c', takoyaki: 'c', taiko: 'r', stall: 'x', golden: 's' },
   yudono: { capy: 'c', penguin: 'c', family: 'r', rotenburo: 'x', kinkapi: 's', frog: 'c', otter: 'u', duck: 'u' }, kaiun: { jinja: 'x', goldneko: 's' },
   konchu: { tento: 'c', semi: 'c', larva: 'r' }, okashi: { kagami: 'x', dorayaki: 'c', matcha: 'r', momo: 's' },
+  gohan: { onigiri: 'c', gyoza: 'c', ebi: 'u', dango: 'r', purin: 's' },
+  yokaiya: { karakasa: 'c', chochin: 'c', zori: 'u', nurikabe: 'u', kappa: 'r', kitsune: 's' },
+  tanukibin: { soba: 'c', parcel: 'c', milk: 'u', news: 'r', night: 's' },
+  furoba: { coffee: 'c', oke: 'c', scrub: 'u', frog: 'u', hippo: 'r', steam: 's' },
 };
 /** The new series each old one hands its stock to (if it exists). */
 const THEME = {
@@ -69,6 +73,10 @@ const THEME = {
   tsukumo: 'yokaiya',
   yatai: 'yokaiya',
   yudono: 'furoba',
+  gohan: 'henshin', // (retired: the Blender line)
+  yokaiya: 'henshin', // (retired: the Blender line)
+  tanukibin: 'hashigo', // (retired: the Blender line)
+  furoba: 'hashigo', // (retired: the Blender line)
 };
 const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 const live = () => SERIES.filter((s) => !s.hidden);

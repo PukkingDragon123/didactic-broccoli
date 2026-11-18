@@ -23,12 +23,12 @@ RUNG = (12.0, 27.0)       # rung heights (the frogs perform in front of the ladd
 BOARD = (26.0, 19.0, 3.0)  # the foot board (x, y, z), centred at (0, LY - 3, 1.5)
 
 # the frog's body, local: spine up +Z from the pelvis, the front -Y: (z, width, front half-depth, back half-depth)
-BODY = [(-1.2, 7.0, 3.4, 3.4), (0.6, 11.5, 5.6, 5.0), (3.4, 13.4, 6.2, 5.2), (6.4, 12.4, 5.6, 4.8), (8.6, 12.6, 5.2, 4.6),
-        (10.4, 15.6, 6.2, 4.8), (13.0, 16.4, 6.4, 4.8), (15.4, 15.0, 5.8, 4.4), (17.2, 11.8, 4.6, 3.6), (18.4, 6.0, 2.4, 1.8)]
-SHOULDER = (5.8, -0.6, 7.6)  # (x mirrored)
-HIP = (4.2, 0.4, 0.8)
-EYE_BUMP = (4.7, -2.4, 16.9)  # the eye bumps on top of the head
-MOUTH_Z = 11.6               # the mouth line on the front of the head (local)
+BODY = [(-1.0, 8.0, 3.6, 3.6), (0.8, 12.6, 5.8, 5.2), (3.2, 14.2, 6.2, 5.4), (5.6, 13.8, 5.6, 5.0), (7.4, 15.6, 5.8, 4.8),
+        (9.4, 18.2, 6.6, 5.0), (11.8, 18.6, 6.4, 4.8), (13.8, 16.4, 5.4, 4.0), (15.2, 11.6, 3.6, 2.8), (16.0, 5.0, 1.6, 1.2)]
+SHOULDER = (6.4, -1.0, 6.2)  # (x mirrored)
+HIP = (4.8, 0.6, 0.8)
+EYE_BUMP = (6.3, -2.2, 15.0)  # the eye bumps at the top corners of the wide flat head
+MOUTH_Z = 9.6                # the mouth line, right across the front of the head (local)
 
 
 def body_matrix(rot=(0, 0, 0), at=(0, 0, 0)):
@@ -125,8 +125,8 @@ def body(F, M, name='body', seed=1, belly=1.0, head_k=1.0, happi=True, hachimaki
             x, y, z = V[:, 0], V[:, 1], V[:, 2]
             d = 0.0
             for sx in (1, -1):  # the eye bumps, and a soft cheek pouch under each
-                d = d + tk.bump(V, (sx * EYE_BUMP[0] * head_k, EYE_BUMP[1], EYE_BUMP[2] * (1 + (head_k - 1) * 0.5)), 3.0, 2.3, sharp=1.5)
-                d = d + tk.bump(V, (sx * 6.2 * head_k, -4.2, 10.8), 2.8, 0.5)
+                d = d + tk.bump(V, (sx * EYE_BUMP[0] * head_k, EYE_BUMP[1], EYE_BUMP[2] * (1 + (head_k - 1) * 0.5)), 3.2, 2.8, sharp=1.4)
+                d = d + tk.bump(V, (sx * 7.6 * head_k, -4.4, 8.4), 3.0, 0.45)  # the throat pouch corners
             back = y > -1.0
             ang = np.arctan2(x, np.maximum(y, 1e-3) + 3.0)
             for wz, wa, wh in W_:  # warts on the back and the head top (none on the belly)
@@ -135,32 +135,32 @@ def body(F, M, name='body', seed=1, belly=1.0, head_k=1.0, happi=True, hachimaki
             # (the mouth is painted: lib/face.py)
             return d + (sculpt_more(V, N) if sculpt_more else 0)
         tk.push(h, f)
-    lo, hi = tk.lowhigh(cage, name, lo=1, hi=3, tris=330, sculpt=sc, region=('skin', [('belly', lambda C, N: (C[:, 1] < -2.6) & (C[:, 2] < 10.8))]))
+    lo, hi = tk.lowhigh(cage, name, lo=1, hi=3, tris=330, sculpt=sc, region=('skin', [('belly', lambda C, N: (C[:, 1] < -2.8) & (C[:, 2] < MOUTH_Z - 0.4))]))  # (belly and throat)
     los, his = [lo], [hi]
     if happi:  # the happi coat: a shell over the torso, short wide sleeves are on the arms
-        hr = [{'c': (0, 0, z), 'w': w + 1.3, 'ht': hf + 0.75, 'hb': hb + 0.75, 'e': 2.1} for z, w, hf, hb in BODY if 0.3 < z < 9.0]
+        hr = [{'c': (0, 0, z), 'w': w + 1.3, 'ht': hf + 0.75, 'hb': hb + 0.75, 'e': 2.1} for z, w, hf, hb in BODY if 0.3 < z < 7.0]
         hr = [{'c': (0, 0, -0.3), 'w': BODY[1][1] + 1.6, 'ht': BODY[1][2] + 0.9, 'hb': BODY[1][3] + 0.9, 'e': 2.1}] + hr
-        hr.append({'c': (0, 0, 9.5), 'w': 12.0, 'ht': 4.6, 'hb': 4.4, 'e': 2.1})
+        hr.append({'c': (0, 0, 7.6), 'w': 15.0, 'ht': 5.4, 'hb': 4.6, 'e': 2.1})
         hc = tk.loft('happi', hr, n=14, up=(0, -1, 0), cap0=None, cap1=None)
         hlo, hhi = tk.lowhigh(hc, 'happi', lo=1, hi=2, tris=130, region='happi')
         tk.push(hhi, lambda V, N: 0.18 * np.sin(np.arctan2(V[:, 0], V[:, 1]) * 9 + V[:, 2] * 0.4) * (V[:, 2] < 4))  # folds at the hem
         los.append(hlo)
         his.append(hhi)
     if hachimaki:  # the twisted headband round the head, the knot at the back with two short tails
-        zc = 15.4 * (1 + (head_k - 1) * 0.5)  # round the head under the eye bumps, over the face
-        ring = [(math.sin(a) * (7.85 * head_k), -math.cos(a) * (6.1 * head_k) * (1.0 if math.cos(a) > 0 else 0.76), zc + 0.4 * math.cos(a))
+        zc = 12.4 * (1 + (head_k - 1) * 0.5)  # round the head between the mouth and the eye bumps
+        ring = [(math.sin(a) * (9.45 * head_k), -math.cos(a) * (6.55 * head_k) * (1.0 if math.cos(a) > 0 else 0.76), zc + 0.3 * math.cos(a))
                 for a in np.linspace(0, 2 * math.pi, 18, endpoint=False)]
         band_hi = tk.tube('band_hi', ring, 0.6, n=8, closed=True, squash=1.8)
         tk.push(band_hi, lambda V, N: 0.22 * np.sin(np.arctan2(V[:, 0], V[:, 1]) * 22 + V[:, 2] * 3))  # the twist
         band_lo = tk.tube('band', ring[::2], 0.6, n=4, closed=True, squash=1.8)
-        knot_hi = tk.loft('knot_hi', [{'c': (0, 4.0 * head_k, zc - 0.6), 'w': 1.0, 'h': 0.8}, {'c': (0, 5.0 * head_k, zc - 0.4), 'w': 2.4, 'h': 1.4},
-                                      {'c': (0, 5.7 * head_k, zc - 0.5), 'w': 1.4, 'h': 0.9}], n=8)
-        tails = [tk.tube('tail_hi', [(0, 5.4 * head_k, zc - 0.6), (sx * 1.6, 6.6 * head_k, zc - 2.0), (sx * 2.4, 6.9 * head_k, zc - 3.6)], [0.7, 0.6, 0.45], n=6, squash=0.45)
+        knot_hi = tk.loft('knot_hi', [{'c': (0, 4.9 * head_k, zc - 0.6), 'w': 1.0, 'h': 0.8}, {'c': (0, 5.8 * head_k, zc - 0.4), 'w': 2.4, 'h': 1.4},
+                                      {'c': (0, 6.4 * head_k, zc - 0.5), 'w': 1.4, 'h': 0.9}], n=8)
+        tails = [tk.tube('tail_hi', [(0, 6.2 * head_k, zc - 0.6), (sx * 1.6, 7.3 * head_k, zc - 2.0), (sx * 2.4, 7.6 * head_k, zc - 3.6)], [0.7, 0.6, 0.45], n=6, squash=0.45)
                  for sx in (1, -1)]
         bh = tk.join([band_hi, knot_hi] + tails, 'band_hi')
         tk.set_region(bh, 'band')
-        knot_lo = tk.loft('knot', [{'c': (0, 4.4 * head_k, zc - 0.6), 'w': 1.6, 'h': 1.0}, {'c': (0, 5.6 * head_k, zc - 0.5), 'w': 1.6, 'h': 1.0}], n=4)
-        tails_lo = [tk.tube('tail', [(0, 5.4 * head_k, zc - 0.6), (sx * 2.4, 6.9 * head_k, zc - 3.6)], 0.6, n=3, squash=0.45) for sx in (1, -1)]
+        knot_lo = tk.loft('knot', [{'c': (0, 5.2 * head_k, zc - 0.6), 'w': 1.6, 'h': 1.0}, {'c': (0, 6.3 * head_k, zc - 0.5), 'w': 1.6, 'h': 1.0}], n=4)
+        tails_lo = [tk.tube('tail', [(0, 6.2 * head_k, zc - 0.6), (sx * 2.4, 7.6 * head_k, zc - 3.6)], 0.6, n=3, squash=0.45) for sx in (1, -1)]
         los.append(tk.join([band_lo, knot_lo] + tails_lo, 'band'))
         his.append(bh)
     los += list(extra_lows)
@@ -199,6 +199,7 @@ def limb(F, name, pts, radii, end, end_dir, end_up, fingers=4, splay=1.0, pad=0.
         f_hi = tk.tube(name + '_f_hi', [tuple(p0), tuple((p0 + p1) / 2), tuple(p1)], [0.42, 0.36, 0.34], n=6, squash=0.7, up=tuple(up))
         pad_hi = tk.loft(name + '_pad', [{'c': tuple(p1 - fd * 0.2), 'w': pad * 1.6, 'h': pad * 0.8}, {'c': tuple(p1 + fd * 0.35), 'w': pad * 1.7, 'h': pad * 0.85},
                                         {'c': tuple(p1 + fd * 0.8), 'w': pad * 0.7, 'h': pad * 0.4}], n=8, up=tuple(up))
+        tk.set_region(pad_hi, 'pad')
         his += [f_hi, pad_hi]
         los.append(tk.tube(name + '_f', [tuple(p0), tuple(p1 + fd * 0.6)], [0.42, 0.5], n=3, squash=0.7, up=tuple(up)))
     if sleeve:  # the happi's short wide sleeve round the upper arm
@@ -220,14 +221,16 @@ def limb(F, name, pts, radii, end, end_dir, end_up, fingers=4, splay=1.0, pad=0.
 
 def arm(F, M, sx, elbow, wrist, hand_dir, hand_up, name=None, tris=118, **kw):
     sh = W(M, (sx * SHOULDER[0], SHOULDER[1], SHOULDER[2]))
-    return limb(F, name or ('arm_l' if sx > 0 else 'arm_r'), [sh, elbow, wrist], [2.1, 1.75, 1.4], wrist, hand_dir, hand_up,
-                fingers=4, splay=1.15, pad=0.65, length=2.6, sleeve=0.5, tris=tris, **kw), sh
+    return limb(F, name or ('arm_l' if sx > 0 else 'arm_r'), [sh, elbow, wrist], [2.0, 1.6, 1.25], wrist, hand_dir, hand_up,
+                fingers=4, splay=1.7, pad=0.85, length=2.8, sleeve=0.5, tris=tris, **kw), sh
 
 
-def leg(F, M, sx, knee, ankle, foot_dir, foot_up, name=None, tris=128, **kw):
+def leg(F, M, sx, knee, heel, ankle, foot_dir, foot_up, name=None, tris=132, **kw):
+    """A frog's back leg folded like a Z: a fat thigh to the knee, the shin back to the heel, the long foot forward
+    to the toes' base (`ankle`), then five long toes with round pads."""
     hp = W(M, (sx * HIP[0], HIP[1], HIP[2]))
-    return limb(F, name or ('leg_l' if sx > 0 else 'leg_r'), [hp, knee, ankle], [3.3, 2.3, 1.5], ankle, foot_dir, foot_up,
-                fingers=5, splay=1.3, pad=0.62, length=3.6, tris=tris, **kw), hp
+    return limb(F, name or ('leg_l' if sx > 0 else 'leg_r'), [hp, knee, heel, ankle], [3.4, 2.1, 1.35, 1.05], ankle, foot_dir, foot_up,
+                fingers=5, splay=1.5, pad=0.75, length=4.2, tris=tris, **kw), hp
 
 
 # ------------------------------------------------------------------ paint
@@ -258,14 +261,21 @@ def paint_frog(P, pt, sh, skin='#6faa3c', belly='#e6dd9c', happi='#2c3c6a', spot
     SK = pt.ramp(skin, 7, shift=0.08)
     P.fill('skin', SK, tone=sh, base=0.05)
     P.fill('belly', pt.ramp(belly, 6, shift=0.06), tone=sh, base=0.15)
-    if spots:  # darker spots on the back and limbs
+    P.fill('pad', pt.ramp(belly, 6, shift=0.06), tone=sh, base=0.1)
+    if spots:  # uneven spots on the back and limbs, each a lumpy blob with a brushy lighter edge
         rng = np.random.default_rng(seed)
-        m = P.region('skin')
-        acc = np.zeros(m.shape, bool)
-        for _ in range(60):
-            c = rng.uniform((-14, -12, 2), (14, 12, 46))
-            acc |= (np.sqrt(((X - c[0]) ** 2 + (Yc - c[1]) ** 2 + (Z - c[2]) ** 2)) < rng.uniform(0.7, 1.4))
-        P.tint(m & acc, pt.ramp(spots, 6, shift=0.06), sh)
+        m = P.region('skin') & (P.on[:, :, 1] > -0.75)
+        core, edge = np.zeros(m.shape, bool), np.zeros(m.shape, bool)
+        for _ in range(70):
+            c = rng.uniform((-16, -12, 2), (16, 12, 46))
+            r0 = rng.uniform(0.6, 1.5)
+            d = np.sqrt((X - c[0]) ** 2 + (Yc - c[1]) ** 2 + (Z - c[2]) ** 2)
+            ang = np.arctan2(Z - c[2], X - c[0])
+            rr = r0 * (1 + 0.22 * np.sin(3 * ang + rng.uniform(0, 6)) + 0.12 * np.sin(5 * ang + rng.uniform(0, 6)))
+            core |= d < rr
+            edge |= (d < rr + 0.35) & ((np.sin(X * 7.3 + Z * 5.1) + np.sin(Yc * 6.1 - Z * 4.4)) > 0.2)  # (a dry-brush edge)
+        P.tint(m & edge & ~core, pt.ramp(spots, 6, shift=0.06), sh + 0.35)
+        P.tint(m & core, pt.ramp(spots, 6, shift=0.06), sh)
     HP = pt.ramp(happi, 7, dark=0.5, shift=0.06)
     P.fill('happi', HP, tone=sh, base=0.0)
     P.fill('band', pt.ramp('#f1ece0', 6, shift=0.05), tone=sh * 0.7, base=0.15)
@@ -336,3 +346,27 @@ def run(F, ARGS, make_rig, paint_fn, cam=((70, -110, 52), (0, -2, 23)), back=((-
     R = make_rig()
     kit.points(R)
     F.export(R)
+
+
+def frog_face(P, M, eyes='dot', mouth='upturn', seed=1, head_k=1.0, brows=None, blush=False, mouth_w=15.0, look=1, **mk):
+    """The frog's face, painted like a quick marker drawing: a dot (or line) eye on the front of each eye bump and ONE
+    mouth stroke right across the front of the head (or another mouth, still wide). The toe pads and the mouth get
+    their ink outline from paint_frog / P.lines."""
+    import face
+    o = np.array(W(M, (0, 0, 0)))
+    fwd = np.array(W(M, (0, -1, 0))) - o
+    up = np.array(W(M, (0, 0, 1))) - o
+    skin = P.region('skin') | P.region('belly')
+    zf = 1 + (head_k - 1) * 0.5
+    for sx in (-1, 1):  # one Face per bump, looking out of the bump's front
+        bump = np.array(W(M, (sx * EYE_BUMP[0] * head_k, EYE_BUMP[1] - 2.6, EYE_BUMP[2] * zf + 0.9)))
+        ax = fwd + up * 0.45 + (np.array(W(M, (sx, 0, 0))) - o) * 0.15
+        fc = face.Face(P, tuple(bump), tuple(ax), up=tuple(up), where=skin, seed=seed + sx, depth=2.5)
+        kind = ('dot' if sx < 0 else 'happy') if eyes == 'wink' else eyes
+        fc.eyes(kind, spread=0.0, size=0.62, dy=0.0, look=look, only=sx)
+        if brows:
+            fc.brows(brows, spread=0.0, dy=2.1, w=2.4, only=sx)
+    fc = face.Face(P, W(M, (0, -6.6 * head_k, MOUTH_Z * zf)), tuple(fwd), up=tuple(up), where=skin, seed=seed + 7)
+    fc.mouth(mouth, w=mouth_w * head_k, dy=0.0, **mk)
+    if blush:
+        fc.blush(13.0 * head_k, 1.6, rx=1.6, ry=0.85, col='#e88c6c')

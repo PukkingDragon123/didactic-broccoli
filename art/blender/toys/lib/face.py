@@ -22,6 +22,10 @@ import math
 import numpy as np
 
 INK = '#1b1513'
+WHITE = '#f6f2ea'      # teeth
+SHADE = '#cfc8be'      # the shade under the top lip
+INSIDE = '#6e2a2c'     # a mouth's dark inside
+TONGUE = '#e47c7c'
 
 
 def _hex(h):
@@ -104,26 +108,95 @@ class Face:
         s.P.flat(m, col or s.ink)
         return m
 
+    def fill(s, poly, col):
+        """Fill a closed polygon (u, v) in mm with flat paint (mouth insides, tongues, drops)."""
+        poly = np.asarray(poly, float)
+        lo, hi = poly.min(0), poly.max(0)
+        cand = s.m & (s.U >= lo[0]) & (s.U <= hi[0]) & (s.V >= lo[1]) & (s.V <= hi[1])
+        if not cand.any():
+            return cand
+        iy, ix = np.nonzero(cand)
+        x, y = s.U[iy, ix], s.V[iy, ix]
+        inside = np.zeros(len(x), bool)
+        j = len(poly) - 1
+        for i in range(len(poly)):  # even-odd ray casting
+            xi, yi = poly[i]
+            xj, yj = poly[j]
+            hit = ((yi > y) != (yj > y)) & (x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi)
+            inside ^= hit
+            j = i
+        m = np.zeros_like(cand)
+        m[iy[inside], ix[inside]] = True
+        s.P.flat(m, col)
+        return m
+
+    def drop(s, u, v, r=0.5, col='#bfe3f2', weight=0.3):
+        """A tear / sweat / drool drop: a pointed top, a round bottom, pale blue with an ink outline."""
+        pts = [(u + r * math.sin(a), v - r * 0.2 - r * math.cos(a) * 0.95) for a in np.linspace(-math.pi * 0.8, math.pi * 0.8, 11)]
+        poly = [(u, v + r * 1.4)] + pts + [(u, v + r * 1.4)]
+        s.fill(poly, col)
+        s.stroke(poly, weight, taper=(0.9, 0.9), wobble=0.02)
+
     # ------------------------------------------------------------------ the face
-    def eyes(s, spread=4.0, size=0.5, dy=0.0, uneven=0.2, shape=1.35, tilt=0.0, close=None):
-        """Two solid dots `spread` mm apart (centre to centre), `size` mm half-wide and `shape` times taller, at height
-        dy; one is a little bigger and they lean a touch differently (never a matched pair). close: '>' and '<'
-        closed-eye strokes instead (a happy squint)."""
+    EYES = ('dot', 'big', 'tiny', 'happy', 'squeeze', 'sleepy', 'dizzy', 'swirl', 'wink', 'side', 'teary', 'shock')
+
+    def eyes(s, kind='dot', spread=4.0, size=0.5, dy=0.0, uneven=0.2, shape=1.35, tilt=0.0, look=1, close=None, only=None):
+        """Two eyes `spread` mm apart at height dy, in the quick-marker hand. kind:
+        dot (two solid dots, never a matched pair), big, tiny, happy (^ ^ arcs), squeeze (> <), sleepy (- - lines),
+        dizzy (x x), swirl (@ @), wink (a dot and a ^), side (dots glancing to `look` side), teary (dots, a drop
+        under one), shock (two small rings). size: a dot's half-width (mm)."""
+        if close:
+            kind = 'squeeze'
         r = s.rng
-        for sx in (-1, 1):
+        w = size * 0.75  # marker weight for the line eyes
+        for sx in ((only,) if only else (-1, 1)):  # (only: one eye, the left (-1) or right (+1) one, e.g. on its own bump)
             k = 1 + (uneven * (0.5 + 0.5 * r.random()) if sx == (1 if r.random() < 0.5 else -1) else 0.0)
             u, v = sx * spread / 2 + r.normal() * 0.06, dy + r.normal() * 0.07 + sx * math.tan(math.radians(tilt)) * spread / 2
-            if close:
-                a = size * 2.2
-                s.stroke([(u - sx * a * 0.6, v + a * 0.55), (u + sx * a * 0.5, v), (u - sx * a * 0.6, v - a * 0.5)], weight=size * 0.7, wobble=0.03)
-            else:
-                s.dot(u, v, size * k * (1 + r.normal() * 0.05), size * shape * k * (1 + r.normal() * 0.06), rot=r.normal() * 9)
+            a = size * 2.2
+            kk = kind
+            if kind == 'wink':
+                kk = 'dot' if sx < 0 else 'happy'
+            if kk in ('dot', 'big', 'tiny', 'side', 'teary'):
+                f = {'big': 1.7, 'tiny': 0.62}.get(kk, 1.0)
+                du = 0.32 * size * look if kk == 'side' else 0.0
+                s.dot(u + du, v, size * f * k * (1 + r.normal() * 0.05), size * f * shape * k * (1 + r.normal() * 0.06), rot=r.normal() * 9)
+                if kk == 'teary' and sx == look:
+                    s.drop(u + 0.3 * size, v - size * 3.2, r=size * 0.9)
+            elif kk == 'happy':
+                s.stroke([(u - a * 0.6, v - a * 0.25), (u - a * 0.15, v + a * 0.32), (u + a * 0.15, v + a * 0.32), (u + a * 0.6, v - a * 0.25)], w, wobble=0.03)
+            elif kk == 'squeeze':
+                s.stroke([(u - sx * a * 0.6, v + a * 0.55), (u + sx * a * 0.5, v), (u - sx * a * 0.6, v - a * 0.5)], w, wobble=0.03)
+            elif kk == 'sleepy':
+                s.stroke([(u - a * 0.65, v + a * 0.05), (u, v - a * 0.08), (u + a * 0.65, v + a * 0.02)], w, wobble=0.03)
+            elif kk == 'dizzy':
+                s.stroke([(u - a * 0.5, v + a * 0.5), (u + a * 0.5, v - a * 0.5)], w, wobble=0.02)
+                s.stroke([(u - a * 0.5, v - a * 0.5), (u + a * 0.5, v + a * 0.5)], w, wobble=0.02)
+            elif kk == 'swirl':
+                t = np.linspace(0, 4.2 * math.pi, 28)
+                rr = a * 0.95 * t / t[-1]
+                s.stroke([(u + rr[i] * math.cos(t[i]) * sx, v + rr[i] * math.sin(t[i])) for i in range(len(t))], w * 0.8, wobble=0.015, taper=(0.9, 0.7))
+            elif kk == 'shock':
+                t = np.linspace(0, 2 * math.pi, 14)
+                s.stroke([(u + a * 0.42 * math.cos(q), v + a * 0.5 * math.sin(q)) for q in t], w * 0.8, wobble=0.02, taper=(1, 1))
+                s.dot(u, v, size * 0.32)
+
+    def brows(s, kind='angry', spread=4.0, dy=1.6, w=1.8, weight=0.38, only=None):
+        """Brow strokes: angry (slanting down to the middle), worried (up in the middle), raised (one up), flat."""
+        for sx in ((only,) if only else (-1, 1)):
+            u = sx * spread / 2
+            inner, outer = {'angry': (-0.45, 0.25), 'worried': (0.4, -0.3), 'flat': (0, 0),
+                            'raised': ((0.5, 0.45) if sx > 0 else (0, 0))}.get(kind, (0, 0))
+            s.stroke([(u - sx * w / 2, dy + inner * w / 2), (u + sx * w / 2, dy + outer * w / 2)], weight, wobble=0.03)
+
+    MOUTHS = ('upturn', 'line', 'dash', 'frown', 'grin', 'gritted', 'shout', 'tongue', 'smug', 'wobble', 'pout', 'drool', 'w', 'o')
 
     def mouth(s, kind='upturn', w=4.0, dy=-1.5, weight=0.42, h=None, side=1, teeth=3, slant=10.0, du=0.0):
         """ONE mouth stroke centred (du, dy), w mm wide.
         upturn: a flat line, the `side` end flicking up (+1 the viewer's right); line: flat, a hint of a smile;
         dash: a short slanted dash (slant degrees); grin: a big open grin, an arched top lip, a U below and `teeth`
-        tooth strokes; w: a little cat 'ω'; o: a small round 'oh'; frown: a flat line drooping at one end."""
+        tooth strokes; w: a little cat 'ω'; o: a small round 'oh'; frown: a flat line drooping at one end;
+        gritted: clenched white teeth; shout: a big open mouth; tongue: a smile with the tongue out; smug: a side smile;
+        wobble: a wavy ~; pout: a '3'; drool: a flat line with a drop at a corner. Grins fill the teeth white."""
         r = s.rng
         x0, x1 = du - w / 2, du + w / 2
         if kind in ('upturn', 'line', 'frown'):
@@ -140,25 +213,72 @@ class Face:
             a = math.radians(slant)
             return s.stroke([(du - w / 2 * math.cos(a), dy - w / 2 * math.sin(a)), (du + w / 2 * math.cos(a), dy + w / 2 * math.sin(a))],
                             weight, taper=(0.8, 0.6))
-        if kind == 'grin':
+        if kind in ('grin', 'gritted'):  # the owner's grin: an ink outline, the teeth WHITE, ink separators
             h = h or w * 0.42
             top = [(x, dy + 0.08 * h * math.sin(math.pi * (x - x0) / w)) for x in np.linspace(x0 + 0.04 * w, x1 - 0.05 * w, 9)]
+            if kind == 'grin':
+                bot = [(x0 - 0.06 * w + (w * 1.12) * q, dy + 0.12 * h - h * math.sin(math.pi * q) ** 0.85) for q in np.linspace(0, 1, 13)]
+            else:  # gritted: a squarer box of clenched teeth
+                bot = [(x0 + 0.02 * w + (w * 0.92) * q, dy - h * 0.62 * min(1, 4 * q, 4 * (1 - q)) ** 0.5) for q in np.linspace(0, 1, 11)]
+            poly = top + bot[::-1]
+            s.fill(poly, WHITE)
+            # a light grey shade under the top lip
+            s.fill(top + [(x, y - 0.18 * h) for x, y in top[::-1]], SHADE)
             s.stroke(top, weight, taper=(0.7, 0.8))
-            bot = [(x0 - 0.06 * w + (w * 1.12) * q, dy + 0.12 * h - h * math.sin(math.pi * q) ** 0.85) for q in np.linspace(0, 1, 13)]
             s.stroke(bot, weight * 0.85, taper=(0.5, 0.9))
             for i in range(teeth):
                 q = (i + 1) / (teeth + 1)
                 x = x0 + w * (0.08 + 0.84 * q) + r.normal() * 0.04 * w
-                depth = h * math.sin(math.pi * q) ** 0.85 * (0.82 + 0.1 * r.random())
-                lean = 0.18 * h + 0.1 * h * (q - 0.5)  # (a quick hand: the strokes all lean the same way)
-                s.stroke([(x - lean * 0.4, dy + 0.0 * h), (x + lean * 0.6, dy - depth * 0.86 + 0.12 * h)], weight * 0.7, taper=(0.9, 0.7), wobble=0.02)
+                if kind == 'grin':
+                    depth = h * math.sin(math.pi * q) ** 0.85 * (0.82 + 0.1 * r.random())
+                    lean = 0.18 * h + 0.1 * h * (q - 0.5)  # (a quick hand: the strokes all lean the same way)
+                    s.stroke([(x - lean * 0.4, dy), (x + lean * 0.6, dy - depth * 0.86 + 0.12 * h)], weight * 0.7, taper=(0.9, 0.7), wobble=0.02)
+                else:
+                    s.stroke([(x, dy), (x + 0.05 * h, dy - h * 0.5)], weight * 0.6, taper=(0.9, 0.8), wobble=0.015)
+            if kind == 'gritted':
+                s.stroke([(x0 + 0.1 * w, dy - h * 0.3), (x1 - 0.1 * w, dy - h * 0.3)], weight * 0.55, wobble=0.02)
             return None
+        if kind == 'shout':  # a big open shout: dark inside, a pink tongue, white top teeth, the ink rim
+            h = h or w * 0.8
+            ring = [(du + w / 2 * math.sin(a) * (1 - 0.15 * math.cos(a)), dy - h / 2 + h / 2 * math.cos(a)) for a in np.linspace(0, 2 * math.pi, 18)]
+            s.fill(ring, INSIDE)
+            s.fill([(du + w / 2 * 0.7 * math.sin(a), dy - h * 0.82 + h * 0.22 * math.cos(a)) for a in np.linspace(-1.6, 1.6, 9)], TONGUE)
+            s.fill([(du - w * 0.32, dy - 0.02 * h), (du + w * 0.32, dy - 0.02 * h), (du + w * 0.3, dy - 0.2 * h), (du - w * 0.3, dy - 0.2 * h)], WHITE)
+            return s.stroke(ring, weight, taper=(1, 1), wobble=0.03)
+        if kind == 'tongue':  # a smile with the tongue poking out under it
+            xs = np.linspace(x0, x1, 9)
+            sm = [(x, dy - 0.12 * w * math.sin(math.pi * (x - x0) / w)) for x in xs]
+            tu = du + 0.12 * w * side
+            lobe = [(tu - 0.2 * w, dy - 0.1 * w)] + [(tu + 0.2 * w * math.cos(a), dy - 0.14 * w - 0.22 * w * math.sin(a)) for a in np.linspace(math.pi, 2 * math.pi, 9)][1:] + [(tu + 0.2 * w, dy - 0.1 * w)]
+            lobe = [(x, y) for x, y in lobe]
+            s.fill(lobe, TONGUE)
+            s.stroke(lobe, weight * 0.75, taper=(0.9, 0.9), wobble=0.02)
+            s.stroke([(tu, dy - 0.13 * w), (tu, dy - 0.24 * w)], weight * 0.5, wobble=0.01)
+            return s.stroke(sm, weight)
+        if kind == 'smug':  # a short side smile, off-centre, one corner tucked up
+            x0, x1 = du + side * 0.05 * w, du + side * 0.5 * w
+            pts = [(x0 + (x1 - x0) * q, dy + 0.02 * w * math.sin(math.pi * q) - (0.0 if q < 0.7 else 0.0)) for q in np.linspace(0, 1, 7)]
+            pts += [(x1 + side * 0.06 * w, dy + 0.1 * w), (x1 + side * 0.05 * w, dy + 0.16 * w)]
+            return s.stroke(pts, weight, taper=(0.6, 0.6))
+        if kind == 'wobble':  # a wavy ~ (nervous, queasy)
+            xs = np.linspace(x0, x1, 15)
+            return s.stroke([(x, dy + 0.07 * w * math.sin((x - x0) / w * 4 * math.pi)) for x in xs], weight, taper=(0.7, 0.7))
+        if kind == 'pout':  # a little '3' on its side: two bumps pushed forward
+            k = w / 3.2
+            pts = [(du - 0.1 * k, dy + 0.9 * k), (du + 0.45 * k, dy + 0.55 * k), (du + 0.05 * k, dy + 0.05 * k), (du + 0.45 * k, dy - 0.45 * k), (du - 0.1 * k, dy - 0.85 * k)]
+            return s.stroke(pts, weight, taper=(0.8, 0.7), wobble=0.02)
+        if kind == 'drool':  # a flat line, a drop hanging from one corner
+            s.stroke([(x0, dy), (x1, dy - 0.03 * w)], weight, taper=(0.7, 0.7))
+            return s.drop(x1 - 0.08 * w if side > 0 else x0 + 0.08 * w, dy - 0.32 * w, r=0.09 * w)
         if kind == 'w':
             k = w / 4
             return s.stroke([(du - 2 * k, dy + 0.3 * k), (du - k, dy - 0.6 * k), (du, dy + 0.15 * k), (du + k, dy - 0.6 * k), (du + 2 * k, dy + 0.3 * k)],
                             weight, taper=(0.7, 0.7), wobble=0.03)
-        if kind == 'o':
-            return s.dot(du, dy, w / 2, w / 2 * 1.15, rot=r.normal() * 8)
+        if kind == 'o':  # a small round 'oh': an ink ring, dark inside
+            t = np.linspace(0, 2 * math.pi, 14)
+            ring = [(du + w * 0.24 * math.cos(q), dy + w * 0.29 * math.sin(q)) for q in t]
+            s.fill(ring, INSIDE)
+            return s.stroke(ring, weight * 0.9, taper=(1, 1), wobble=0.02)
         raise ValueError(kind)
 
     def blush(s, spread, dy, rx=1.6, ry=0.9, col='#f08a86', base=None):

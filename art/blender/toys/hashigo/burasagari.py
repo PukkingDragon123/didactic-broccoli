@@ -10,8 +10,8 @@ fr.ladder(F, seed=3)
 lo, his = fr.body(F, M, seed=31, belly=0.95)
 F.part('body', lo, his, bone='body')
 # the knees hooked over the top rung, the shins hanging down behind it
-leg_l, HIP_L = fr.leg(F, M, 1, knee=(-4.6, 1.6, 30.8), ankle=(-4.4, 5.8, 26.6), foot_dir=(0, 0.3, -1), foot_up=(0, 1, 0.2))
-leg_r, HIP_R = fr.leg(F, M, -1, knee=(4.6, 1.6, 30.8), ankle=(4.4, 5.8, 26.6), foot_dir=(0, 0.3, -1), foot_up=(0, 1, 0.2))
+leg_l, HIP_L = fr.leg(F, M, 1, knee=(-5.0, 1.4, 30.8), heel=(-4.6, 5.6, 27.0), ankle=(-4.6, 4.8, 23.6), foot_dir=(0, -0.2, -1), foot_up=(0, 1, 0))
+leg_r, HIP_R = fr.leg(F, M, -1, knee=(5.0, 1.4, 30.8), heel=(4.6, 5.6, 27.0), ankle=(4.6, 4.8, 23.6), foot_dir=(0, -0.2, -1), foot_up=(0, 1, 0))
 # one arm dangling, one waving
 arm_l, SH_L = fr.arm(F, M, 1, elbow=(-8.6, -7.6, 12.4), wrist=(-9.0, -8.2, 8.2), hand_dir=(0, -0.2, -1), hand_up=(-1, 0, 0))
 arm_r, SH_R = fr.arm(F, M, -1, elbow=(10.6, -7.4, 18.6), wrist=(14.4, -8.0, 21.6), hand_dir=(0.6, -0.2, 0.75), hand_up=(0, -1, 0))
@@ -53,12 +53,9 @@ def paint(P, pt):
     fr.paint_ladder(P, pt, sh)
     fr.paint_frog(P, pt, sh, skin='#c9c78a', belly='#f0ead0', happi='#2c4a3a', spots='#7a8a44', seed=7)
     fr.happi_marks(P, M, pt, sh)
-    c, ax, up = fr.W(M, (0, -6.4, 12.4)), np.array(fr.W(M, (0, -1, 0))) - np.array(fr.W(M, (0, 0, 0))), np.array(fr.W(M, (0, 0, 1))) - np.array(fr.W(M, (0, 0, 0)))
-    fc = face.Face(P, c, tuple(ax), up=tuple(up), where=P.region('skin') | P.region('belly'), seed=36)
-    fc.eyes(spread=3.2, size=0.42, dy=0.9, uneven=0.3)   # tiny and close together
-    fc.mouth('o', w=1.2, dy=-1.1)
-    fc.blush(8.4, 0.6, rx=1.3, ry=0.75, col='#e8907a')
+    fr.frog_face(P, M, eyes='wink', mouth='tongue', seed=36, blush=True, mouth_w=9.0, weight=0.48, side=1)
     P.lines(['skin', 'belly'], ['happi', 'band'], step=1)
+    P.lines(['pad'], ['skin', 'belly'], col='#1b1513', step=1)  # (marker outlines round the toe pads)
     P.clusters()
     return P.done()
 

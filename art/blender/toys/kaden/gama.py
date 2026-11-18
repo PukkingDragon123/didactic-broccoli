@@ -28,7 +28,7 @@ Z0 = 3.0                       # the body's bottom (it sits on its feet)
 TOP = 19.6                     # the top of the body (the handset rests on it)
 HS_Y, HS_Z = 2.6, TOP + 3.0    # the handset's handle axis (along x)
 HINGE = (0, 9.2, TOP + 0.6)    # the jaw's hinge at the back of the cradle (axis x)
-DIAL_C = np.array((0, -13.2, 10.6))
+DIAL_C = np.array((0, -13.9, 9.4))
 DIAL_N = np.array((0, -math.cos(math.radians(38)), math.sin(math.radians(38))))
 HORN = {sx: (sx * 10.8, -6.4, TOP + 2.2) for sx in (1, -1)}
 
@@ -73,13 +73,13 @@ body_lo, body_hi = tk.lowhigh(body, 'body', lo=1, hi=3, sculpt=sc_body, region=(
     ('mouth', lambda C, N: (N[:, 2] > 0.75) & (np.abs(C[:, 0]) < 10.5) & (C[:, 1] > -4.5) & (C[:, 1] < 6.4))]))
 # the dial's seat: a round well in the front slope
 for o in (body_lo, body_hi):
-    well = tk.cyl('well', 9.4, -3.0, 3.0, n=24, at=(0, 0), axis='Z', bevel=0.4, segs=1)
+    well = tk.cyl('well', 8.3, -3.0, 3.0, n=24, at=(0, 0), axis='Z', bevel=0.4, segs=1)
     q = Vector((0, 0, 1)).rotation_difference(Vector(tuple(DIAL_N)))
     tk.transform(well, q.to_matrix().to_4x4())
     tk.move(well, tuple(DIAL_C - DIAL_N * 1.2))
     tk.boolean(o, well)
 tk.regions(body_hi, 'green', [('mouth', lambda C, N: (N[:, 2] > 0.75) & (np.abs(C[:, 0]) < 10.5) & (C[:, 1] > -4.5) & (C[:, 1] < 6.4)),
-                              ('belly', lambda C, N: np.linalg.norm(C - (DIAL_C - DIAL_N * 1.2), axis=1) < 10.4)])
+                              ('belly', lambda C, N: np.linalg.norm(np.cross(C - DIAL_C, DIAL_N), axis=1) < 8.2)])
 tk.decimate(body_lo, 470)
 
 # the cradle horns: the eye bumps
@@ -104,7 +104,7 @@ for sx in (1, -1):
     tk.scale(hand, (1.4, 1.4, 1.0))
     tk.rotate(hand, sx * 18, 'Z')
     tk.move(hand, (sx * 18.8, -12.4, 0))
-    LEGS.append(cx.low(hand, 'hand', 40, lo=1, hi=1, region='belly'))
+    LEGS.append(cx.low(hand, 'hand', 40, lo=1, hi=1, region='toes'))
     thigh = tk.loft('thigh', [{'c': (sx * 15.0, 3.0, Z0 + 5.5), 'w': 7.0, 'h': 4.6, 'e': 2.2},
                               {'c': (sx * 18.4, 4.6, Z0 + 4.4), 'w': 8.4, 'h': 5.8, 'e': 2.2},
                               {'c': (sx * 20.6, 6.6, Z0 + 2.2), 'w': 7.4, 'h': 5.0, 'e': 2.2}], n=10, up=(0, -1, 0), cap0='round', cap1='round', capd=1.8)
@@ -117,7 +117,7 @@ for sx in (1, -1):
     tk.scale(foot, (1.3, 1.3, 1.0))
     tk.rotate(foot, sx * 40, 'Z')
     tk.move(foot, (sx * 21.6, 3.4, 0))
-    LEGS.append(cx.low(foot, 'foot', 40, lo=1, hi=1, region='belly'))
+    LEGS.append(cx.low(foot, 'foot', 40, lo=1, hi=1, region='toes'))
 
 # ------------------------------------------------------------------ the handset: the upper jaw
 hs = tk.loft('handset', [{'c': (-19.0, HS_Y, HS_Z - 0.6), 'w': 9.6, 'ht': 2.6, 'hb': 3.2, 'e': 2.4},
@@ -149,7 +149,7 @@ tongue = tk.loft('tongue', [{'c': (0, 6.4, TOP - 0.3), 'w': 5.6, 'ht': 0.5, 'hb'
 tongue_lo, tongue_hi = cx.low(tongue, 'tongue', 40, lo=1, hi=2, region='tongue')
 
 # the dial: the finger wheel over a cream number card
-dial = tk.lathe('dial', [(0, -0.4), (8.6, -0.4), (8.8, 0.6), (8.2, 1.4), (3.4, 1.4), (3.0, 1.9), (0, 2.0)], n=24)
+dial = tk.lathe('dial', [(0, -0.4), (7.5, -0.4), (7.7, 0.6), (7.2, 1.4), (3.0, 1.4), (2.7, 1.9), (0, 2.0)], n=24)
 
 
 def sc_dial(h):
@@ -157,8 +157,8 @@ def sc_dial(h):
         d = np.zeros(len(V))
         for i in range(10):
             a = math.radians(60 + i * 26)
-            c = np.array((5.7 * math.cos(a), 5.7 * math.sin(a), 1.4))
-            d -= 0.9 * np.clip(1 - (np.linalg.norm(V - c, axis=1) / 1.45) ** 2, 0, 1) ** 0.5
+            c = np.array((5.0 * math.cos(a), 5.0 * math.sin(a), 1.4))
+            d -= 0.9 * np.clip(1 - (np.linalg.norm(V - c, axis=1) / 1.25) ** 2, 0, 1) ** 0.5
         return d
     tk.push(h, f)
 
@@ -236,6 +236,7 @@ def paint(P):
     # back stripes: a toad's darker bands on the handset
     P.tint(P.region('green') & hsm & (on[:, :, 2] > 0.3) & (np.abs(np.mod(X + 2.0, 8.0) - 4.0) < 1.2) & (np.abs(X) < 12), pt.ramp('#5e7434', 6, shift=0.06), free + 0.05)
     P.fill('belly', pt.ramp('#ece0b8', 7, shift=0.06), tone=sh, base=0.1)
+    P.fill('toes', GREEN, tone=sh, base=0.15)
     P.fill('mouth', pt.ramp('#c8484e', 6, shift=0.06), tone=sh, base=-0.05)
     P.fill('tongue', pt.ramp('#ec8a94', 6, shift=0.06), tone=free, base=0.1)
     # the dial: a clear-grey finger wheel, the cream number card in the middle with its hand-printed digits round it
@@ -243,18 +244,18 @@ def paint(P):
     P.fill('dial', pt.ramp('#c4c8c4', 7, dark=0.6, light=0.6, shift=0.05), tone=free * 1.3, base=0.1)
     U, V, W, a = P.frame(tuple(DIAL_C), tuple(DIAL_N))
     rr = np.hypot(U, V)
-    P.flat(dm & (rr < 3.2) & (W > 0.6), '#efe6cc')
+    P.flat(dm & (rr < 2.8) & (W > 0.6), '#efe6cc')
     for i in range(10):
         ang = math.radians(60 + i * 26)
-        hc = np.hypot(U - 5.7 * math.cos(ang), V - 5.7 * math.sin(ang))
-        P.flat(dm & (hc < 1.2), '#2c3026')
-        P.flat(dm & (hc < 0.42), '#efe6cc')
+        hc = np.hypot(U - 5.0 * math.cos(ang), V - 5.0 * math.sin(ang))
+        P.flat(dm & (hc < 1.05), '#2c3026')
+        P.flat(dm & (hc < 0.38), '#efe6cc')
     # the face, drawn on by hand: an ink dot on the front of each eye bump (set wide apart), a wide toad grin under them
     for sx in (1, -1):
         hx, hy, hz = HORN[sx]
         fc = face.Face(P, c=(hx, hy - 2.6, hz + 1.2), axis=(sx * 0.2, -1, 0.35), where=P.region('green') & (P.part == 0) & (Z > TOP - 1), seed=31 + sx)
         fc.dot(0.0, 0.0, 0.78, 1.0, rot=10 * sx)
-    fm = face.Face(P, c=(0, -9.0, TOP - 2.6), axis=(0, -1, 0.3), where=P.region('green') & (P.part == 0), seed=37)
+    fm = face.Face(P, c=(0, -8.2, TOP - 1.3), axis=(0, -1, 0.45), where=P.region('green') & (P.part == 0), seed=37)
     fm.mouth('upturn', w=15.0, dy=-0.2, side=-1, weight=0.5)
     fm.blush(17.0, -1.6, rx=1.8, ry=0.9)
     P.lines(['green'], ['belly', 'mouth', 'dial'], step=2)
