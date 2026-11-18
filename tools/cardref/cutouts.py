@@ -15,7 +15,7 @@ WANT = ['Pen', 'Ruler', 'Scissors', 'Pencil case', 'Adhesive tape', 'Sword', 'Da
         'Corded phone', 'Alarm clock', 'Starfish', 'Sea turtle', 'Flag', 'Balloon', 'Pumpkin', 'Candle', 'Skull', 'Milk', 'Towel',
         'Duck', 'Tap', 'Skyscraper', 'Tank', 'Camera', 'Flower', 'Rose', 'Clock', 'Teapot', 'Watch', 'Rocket', 'Dice', 'Boot',
         'Kite', 'Sun hat', 'Common sunflower', 'Train', 'Suitcase', 'Coin', 'Motorcycle', 'Ball', 'Cowboy hat', 'Snake',
-        'Lighthouse', 'Canoe', 'Fedora', 'Tie', 'Cocktail', 'Mushroom', 'Frog', 'Strawberry', 'Lizard']
+        'Lighthouse', 'Canoe', 'Fedora', 'Tie', 'Cocktail', 'Mushroom', 'Frog', 'Strawberry', 'Lizard', 'Flashlight', 'Toy']
 PER = 3
 SKIP = set()  # mask files rejected on review (cut badly / other things in the cut)
 
@@ -93,7 +93,8 @@ if __name__ == '__main__' and 'sea' not in sys.argv:
 SEA = {  # piece: (Open Images id, crop box (fractions), mask rule)
     'sea_water': ('0d76fa17adca869d', (0.0, 0.2, 1.0, 0.75), 'all'),       # turquoise sea surface (the wave bands)
     'sea_foam': ('ae858f00bc05acce', (0.08, 0.45, 0.95, 0.86), 'all'),     # storm whitewater (the crest foam)
-    'sea_splash': ('15fb215666bb5782', (0.28, 0.18, 0.70, 0.62), 'white'), # a wave bursting on rock
+    'sea_splash': ('15fb215666bb5782', (0.28, 0.16, 0.70, 0.50), 'white'), # a wave bursting on rock
+    'sea_crest': ('ae858f00bc05acce', (0.04, 0.50, 0.96, 0.92), 'crest'),  # a real breaking-wave crest, cut on its foam line
     'sea_spray': ('87c1fa1f66f7468a', (0.0, 0.36, 0.48, 0.84), 'bright'),  # drops and bubbles thrown up by a duck
     'sea_coral': ('6f9e0d490b2122df', (0.04, 0.04, 0.80, 0.96), 'teal'),   # a coral head
     'sea_kelp': ('89c168e6544ae65c', (0.22, 0.22, 0.92, 0.95), 'green'),   # kelp fronds
@@ -109,9 +110,14 @@ def sea():
         a = np.asarray(source('oi:%s@test' % iid), np.float32); a = a * 255 if a.max() <= 1 else a
         H, W = a.shape[:2]; a = a[int(y0 * H):int(y1 * H), int(x0 * W):int(x1 * W)]
         r, g, b = a[..., 0], a[..., 1], a[..., 2]; L = 0.3 * r + 0.59 * g + 0.11 * b
-        m = {'all': np.ones(L.shape, bool), 'white': (L > 196) & (np.ptp(a, axis=2) < 46), 'bright': L > 96,
+        if rule == 'crest':  # everything below the first foam pixel of each column: the wave's own edge, hard cut
+            Ls = np.asarray(Image.fromarray(L.astype(np.uint8)).filter(__import__('PIL.ImageFilter', fromlist=['x']).BoxBlur(2)), np.float32)
+            top = np.argmax(Ls > 172, axis=0); top[(Ls > 172).sum(0) == 0] = L.shape[0] - 1
+            m = np.arange(L.shape[0])[:, None] >= top[None, :]
+            rule = 'all_'
+        m = m if rule == 'all_' else {'all': np.ones(L.shape, bool), 'white': (L > 196) & (np.ptp(a, axis=2) < 46), 'bright': L > 96,
              'teal': (b > 80) & (g > 70) & (b - r > 18), 'green': (g - b > 45) & (g > 60)}[rule]
-        if rule != 'all':  # open (drop specks) then close (fill pinholes), with PIL min / max filters
+        if rule not in ('all', 'all_'):  # open (drop specks) then close (fill pinholes), with PIL min / max filters
             from PIL import ImageFilter
             mi = Image.fromarray((m * 255).astype(np.uint8))
             mi = mi.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3))

@@ -673,7 +673,8 @@ if __name__ == '__main__':
     for sid, s in L.items():
         if only and sid not in only: continue
         if not os.path.exists(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js')): continue  # a retired series
-        im = card6(s, REF_OF[sid], ctx(sid)) if sid in REF_OF else card5(s) if sid in CARD5 else card(s)
-        im.save(os.path.join(ROOT, 'shots', 'clone', 'clone_%s.png' % sid)) if sid in REF_OF else None
+        from card7 import card7, CARDS
+        im = card7(s, ctx(sid)) if sid in CARDS else card6(s, REF_OF[sid], ctx(sid)) if sid in REF_OF else card5(s) if sid in CARD5 else card(s)
+        im.save(os.path.join(ROOT, 'shots', 'clone', 'card7_%s.png' % sid)) if sid in CARDS else None
         save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
         print('card', sid, len(s['items']))
