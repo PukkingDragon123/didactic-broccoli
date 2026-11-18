@@ -16,17 +16,18 @@ four handkerchief corners stick out like ears.
 **Twist:** cute and slightly wrong. The child who made them drew the faces the right way up for an upside-down
 doll; the cloth is soggy, a stitched smile, one eye in marker, ink running in the rain, and each one brings its
 own weather with its own prop.
-**Gimmick:** every figure is a keychain (screw eye, ball chain and clasp modelled on, `pt_hang` at the top of the
-loop). Press: the charm shivers and does its weather.
+**Gimmick:** every figure is a keychain (a screw eye in its knot, `kit.eyepin`; the game hangs the ball chain from
+`pt_chain`). Each has stubby cloth arms with mitten hands and two little feet, and a prop of its own. Press: the charm
+shivers and does its weather.
 
 | # | Figure | Look | Press | Rarity |
 |---|--------|------|-------|--------|
-| 1 | しとしと Shito-shito (Drizzle) | grey-blue soggy cloth, the corners hanging limp, sleepy half-shut eyes, one drawn in marker, ink running, three fat drops clinging to the corners | shivers, the drops let go one by one and splash | common |
-| 2 | ゴロゴロ Goro-goro (Thunder) | a tiger-stripe furoshiki, the knot twisted into one horn, a hoop of six tiny taiko round its middle, a fanged grin | the drum hoop spins (goro-goro) and a zig-zag bolt jumps out of the knot | common |
-| 3 | パラパラ Para-para (Hail) | crumpled newsprint washi with hailstones stuck in the folds, puffed cheeks, cross brows | it puffs up and spits three hailstones that bounce off the shelf | uncommon |
-| 4 | もやもや Moya-moya (Fog) | a long gauze cloth that hangs over its face like a veil, one shy eye showing, wisps trailing at the back | the veil lifts and both eyes peek, then it hides again | uncommon |
-| 5 | ビュービュー Byū-byū (Typhoon) | cloth wrung into a spiral, the knot unravelling into a streamer, dizzy swirl eyes, tongue out | spins like a top twice and wobbles to a stop | rare |
-| S | にじくい Niji-kui (Rainbow Eater) | a black cloth charm with a too-wide stitched grin, slurping a rainbow like a noodle; the rainbow's far end props it up | slurp: the rainbow is sucked in, a cheek bulges, a small burp cloud | secret |
+| 1 | しとしと Shito-shito (Drizzle) | grey-blue soggy cloth, limp corners with three fat drops, a taro-leaf umbrella held up in one stubby hand, teary eyes under worried brows | shivers, the drops run down its cloth and splash, it tips the water off its leaf | common |
+| 2 | ゴロゴロ Goro-goro (Thunder) | a tiger-stripe furoshiki, the knot twisted into a lightning bolt, the god's ring of six taiko on its neck string, a drumstick in each hand, a big white-toothed grin | the drum ring spins round its neck while it beats the drums, the bolt crackles | common |
+| 3 | パラパラ Para-para (Hail) | crumpled newsprint washi with hailstones frozen into the creases, little fists up in a huff, cheeks puffed (> < eyes, pouting) | it puffs up and spits three hailstones that bounce off the shelf, fists flying | uncommon |
+| 4 | もやもや Moya-moya (Fog) | pale lilac gauze printed with haze bands, one long corner hanging over an eye like a fringe, a wispy cloud scarf, a fidgeting hand, a sideways glance | it lifts the veil, peeks at you with both eyes and gives a shy little wave, then hides again | uncommon |
+| 5 | ビュービュー Byū-byū (Typhoon) | storm-teal cloth wrung into a spiral, a streamer tail whipping round it, a paper pinwheel held up into the wind, swirl eyes | spins like a top twice, the pinwheel whirring, and wobbles to a dizzy stop | rare |
+| S | にじくい Niji-kui (Rainbow Eater) | a black cloth charm with a fat round belly, hands on it, a chalk face (^ ^) and drippy rainbow lips, slurping a rainbow whose far end lies on the shelf | slurp: the rainbow is sucked in, it pats its belly, burps a little cloud, a new rainbow creeps out | secret |
 
 Card: wet grey-blue sky paper with run ink, a big 逆さ! stamp, each charm hanging from a line of string.
 

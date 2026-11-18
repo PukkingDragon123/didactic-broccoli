@@ -8,9 +8,11 @@ modelling side uses `art/blender/toys/lib/` (`kit.py` for the shared hardware an
 Every gimmick works in the three places a figure lives: in your hand (LMB, or a click while inspecting), on a display
 shelf (RMB with empty hands, not on price-tagged sale displays) and lying loose (RMB).
 
-Faces follow the owner's drawing (docs/ref/faces_owner.png): paint them with `lib/face.py`. Eyes are two small solid
-ink dots, a little uneven. The mouth is ONE marker stroke: `upturn`, `line`, `dash`, `grin` with tooth strokes, `w`
-or `o`. The face sits low on the head. There are no modelled eyeballs, whites, irises, highlights or lids. On a dark
+Faces follow the owner's drawing (docs/ref/faces_owner.png): paint them with `lib/face.py` (the expression set is shown in
+shots/blender_toys/faces.png; give each figure in a series its own face). Eyes are two small solid
+ink dots, a little uneven. The mouth is ONE marker stroke: `upturn`, `line`, `dash`, `frown`, `grin` / `gritted` (teeth filled white,
+ink separators), `shout`, `tongue`, `smug`, `wobble`, `pout`, `drool`, `w` or `o`. Eyes: `dot`, `big`, `tiny`, `happy`, `squeeze`,
+`sleepy`, `dizzy`, `swirl`, `wink`, `side`, `teary`, `shock`; `brows('angry' | 'worried' | 'raised')`. The face sits low on the head. There are no modelled eyeballs, whites, irises, highlights or lids. On a dark
 body, dot in a light ink (`ink='#efe4c8'`).
 
 ## 1. Press clip (`gimmick`)

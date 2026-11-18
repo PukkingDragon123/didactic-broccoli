@@ -130,3 +130,33 @@ def chevrons(X, Z, x0, z0, period, w, spread=0.45):
     """Printed feather chevrons (rows of V marks) on a front: a mask."""
     v = Z - z0 + np.abs(X - x0) * spread
     return stripes(v, period, w)
+
+
+# ------------------------------------------------------------------ uniform kit (series ekiin): the station cap
+def station_cap(at, r=5.6, h=4.6, tilt=-8.0, yaw=0.0, visor=1.0, scale=(1.0, 1.0, 1.0)):
+    """A Shōwa railway peaked cap sitting on a head at `at` (the crown's bottom centre), facing -y: a crown flaring a
+    little to its flat top (region 'cap'), the band (region 'band'), a glossy visor (region 'visor') and the badge
+    (region 'badge'). tilt: degrees about x (negative tips it back). Returns [(low, high), ...]."""
+    out = []
+    crown = tk.lathe('cap', [(0, 0.0), (r, 0.0), (r * 1.02, h * 0.42), (r * 1.13, h * 0.82), (r * 1.17, h * 0.97), (r * 1.08, h * 1.04), (0, h * 1.08)], n=18)
+    out.append(low(crown, 'cap', 90, lo=0, hi=2, region=('cap', [('band', lambda C, N: (C[:, 2] < h * 0.42) & (np.abs(N[:, 2]) < 0.6))])))
+    vz = h * 0.12
+    pts = [(-r * 0.95, -r * 0.35), (-r * 0.7, -r * 1.05), (0.0, -r * 1.55 * visor), (r * 0.7, -r * 1.05), (r * 0.95, -r * 0.35), (0.0, -r * 0.75)]
+    v = tk.slab('visor', pts, 0.8, plane='XY', at=vz, bevel=0.3, segs=1)
+    tk.deform(v, lambda V: V + np.stack([0 * V[:, 0], 0 * V[:, 0], -0.16 * np.clip(-V[:, 1] - r * 0.6, 0, None) ** 1.3], 1))
+    out.append(low(v, 'visor', 40, lo=0, hi=1, region='visor'))
+    b = tk.slab('badge', circle_pts(1.1, 10), 0.6, plane='XZ', at=0.0, bevel=0.2, segs=1)
+    tk.move(b, (0, -r * 1.03 - 0.15, h * 0.62))
+    out.append(low(b, 'badge', 20, lo=0, hi=1, region='badge'))
+    for lo_, hi_ in out:
+        for o in (lo_, hi_):
+            tk.scale(o, scale)
+            tk.rotate(o, tilt, 'X')
+            if yaw:
+                tk.rotate(o, yaw, 'Z')
+            tk.move(o, at)
+    return out
+
+
+def circle_pts(r, n, c=(0, 0)):
+    return [(c[0] + r * math.cos(2 * math.pi * k / n), c[1] + r * math.sin(2 * math.pi * k / n)) for k in range(n)]

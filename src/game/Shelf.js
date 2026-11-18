@@ -54,9 +54,10 @@ export class GarageShelf {
         this.root.add(led);
       }
     }
-    // soft light spill on the shelf
-    const pl = new THREE.PointLight(0xffd8a0, 0.7, 1.4, 1.8);
-    pl.position.set(0, h * 0.5, d + 0.18);
+    // the shelf's own warm light, in front of it at mid height: bright enough that the figures read on every board
+    // (one light per shelf; the LED strips above are only their glow)
+    const pl = new THREE.PointLight(0xffd8a0, 2.6, 1.9, 1.6);
+    pl.position.set(0, h * 0.5, d + 0.22);
     this.root.add(pl);
   }
 

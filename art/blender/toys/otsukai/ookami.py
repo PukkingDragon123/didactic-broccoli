@@ -65,7 +65,7 @@ for sx in (1, -1):
 
 # ------------------------------------------------------------------ the head: cheeks, long snout, tall ears
 HZ = PZ + 27.6
-NECK = (0.0, -2.4, PZ + 22.6)
+NECK = (0.0, -1.8, PZ + 24.4)
 HZ = PZ + 28.6
 HEAD = [(0, 2.8, HZ + 0.3), (0, 0.5, HZ + 0.3), (0, -2.8, HZ), (0, -5.8, HZ - 0.8), (0, -8.4, HZ - 1.1), (0, -10.6, HZ - 1.3),
         (0, -12.2, HZ - 1.4)]
@@ -89,8 +89,8 @@ head_lo, head_hi = ak.spine('head', HEAD, [8.6, 14.0, 14.0, 9.4, 6.6, 5.2, 3.4],
 EARS = []
 for sx in (1, -1):
     root = (sx * 4.4, -0.2, HZ + 4.6)
-    lo, hi, r_, tip = tt.corner('ear', root, -90, L=6.8, W=7.0, a0=88, a1=72, cup=1.1, ripple=0.0, tris=40, thick=1.3,
-                                root_r=0.0, root_z=0.0, shape=0.7, power=1.3, region='ear')
+    lo, hi, r_, tip = tt.corner('ear', root, -90, L=8.2, W=6.6, a0=88, a1=72, cup=1.1, ripple=0.0, tris=40, thick=1.3,
+                                root_r=0.0, root_z=0.0, shape=0.95, power=1.3, region='ear')
     for o in (lo, hi):
         tk.rotate(o, sx * 14, 'Y', pivot=root)
     EARS.append((lo, hi))
@@ -111,7 +111,7 @@ tk.set_region(rope_hi, 'rope')
 SH_LO, SH_HI = [], []
 ZZ = [(0.0, 0.0), (1.8, 0.0), (1.8, -2.0), (0.4, -2.0), (0.4, -4.0), (2.0, -4.0), (2.0, -6.0), (0.9, -6.0), (0.9, -7.6),
       (-0.4, -7.6), (-0.4, -5.6), (0.8, -5.6), (0.8, -4.4), (-0.8, -4.4), (-0.8, -2.4), (0.4, -2.4), (0.4, -0.6), (0.0, -0.6)]
-for t in (-2.2, -1.0, 1.0, 2.2):
+for t in (-1.7, 1.7):
     cy, w, ht, hb = ak.stack_at(BODY, PZ + 20.0)
     x = t * 1.9
     y = cy - ht * math.sqrt(max(0.0, 1 - (x / (w / 2 + 0.5)) ** 2)) - 1.4
@@ -124,7 +124,7 @@ for o in SH_HI:
     tk.set_region(o, 'shide')
 # ------------------------------------------------------------------ the tail: raised behind it like a flame, the jewel on its tip
 TAIL0 = (2.0, 9.6, PZ + 2.4)
-tpts = [TAIL0, (6.4, 10.4, PZ + 2.2), (9.4, 6.0, PZ + 2.2), (9.8, 0.0, PZ + 2.2), (8.2, -6.4, PZ + 2.2), (5.8, -10.0, PZ + 2.0)]
+tpts = [TAIL0, (7.8, 11.6, PZ + 2.4), (11.6, 6.6, PZ + 2.3), (12.2, 0.0, PZ + 2.2), (10.8, -6.6, PZ + 2.2), (8.0, -11.0, PZ + 2.0)]
 
 
 def sc_tail(h):
@@ -139,7 +139,7 @@ tail_lo, tail_hi = ak.spine('tail', tpts, [3.6, 5.2, 5.8, 5.4, 4.4, 1.8], [1.6, 
                             up=(0, 0, 1), tris=150, sculpt=sc_tail, region='tail', cap0='round', cap1='point')
 # ------------------------------------------------------------------ parts
 F.part('plinth', base_lo, base_hi)
-F.part('body', tk.join([body_lo] + legs_lo + [rope_lo] + SH_LO, 'body'), body_hi + legs_hi + [rope_hi] + SH_HI, sharp=70)
+F.part('body', tk.decimate(tk.join([body_lo] + legs_lo + [rope_lo] + SH_LO, 'body'), 800), body_hi + legs_hi + [rope_hi] + SH_HI, sharp=70)
 F.part('head', tk.join([head_lo] + [e[0] for e in EARS], 'head'), head_hi + [e[1] for e in EARS], bone='head')
 F.part('jaw', jaw_lo, jaw_hi, bone='jaw')
 F.part('tail', tail_lo, tail_hi, bone='tail')
@@ -151,7 +151,7 @@ def make_rig():
     R.bone('root', (0, 0, 0))
     R.bone('head', NECK, parent='root')
     R.bone('jaw', JAW, parent='head')
-    R.bone('tail', TAIL0, parent='root')
+    R.bone('tail', (0.0, 1.5, PZ + 2.2), parent='root')  # (it wags round the body's curve)
     for p in F.parts:
         R.attach(p.low, p.bone)
     k = R.key
@@ -161,19 +161,19 @@ def make_rig():
             k(b, 0)
         # 0-8 it draws a breath (head down a touch), then lifts its head and howls: the jaw drops, holds, wavers
         k('head', 6, rot=('X', 6))
-        k('head', 16, rot=('X', -26), ease='BACK')
+        k('head', 16, rot=('X', -15), ease='BACK')
         k('jaw', 12)
         k('jaw', 18, rot=('X', 24))
         for i, f in enumerate((24, 30, 36, 42)):
             k('jaw', f, rot=('X', 24 - (4 if i % 2 else 0)))
-            k('head', f, rot=[('X', -26 - (2 if i % 2 else 0)), ('Y', 3 if i % 2 else -3)])
+            k('head', f, rot=[('X', -15 - (2 if i % 2 else 0)), ('Y', 3 if i % 2 else -3)])
         k('jaw', 50, rot=('X', 0), ease='BACK')
-        k('head', 50, rot=('X', -24))
+        k('head', 50, rot=('X', -14))
         k('head', 60, rot=('X', 0), ease='BACK')
         # one wag of the tail as it settles
         k('tail', 50)
-        k('tail', 55, rot=('Z', 7))
-        k('tail', 60, rot=('Z', -4))
+        k('tail', 55, rot=('Z', -6))
+        k('tail', 60, rot=('Z', 3))
         k('tail', 66)
         for b in bones:
             k(b, 72)
@@ -214,5 +214,5 @@ def paint(P):
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'plinth'), ('jaw', 'head'), ('tail', 'body')],
+bk.run(F, make_rig, paint, skip=[('body', 'plinth'), ('jaw', 'head')],
        cam=((70, -96, 62), (0, 0, 20)), fold=(0, 15, 25, 52), frames=74)

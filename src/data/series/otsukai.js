@@ -30,5 +30,10 @@ export default {
       desc: 'The three-legged crow that shows the way, a chubby black-lacquer bird on three gold legs with its wings folded like a cloak and the sun standing behind it.',
       gimmick: { text: 'Spread wings', sfx: [[0.35, 'flap'], [0.5, 'flutter'], [0.75, 'toyTap'], [1.0, 'flap'], [1.65, 'toyClick', { f: 1500 }]] },
     },
+    {
+      id: 'ookami', name: 'Mitsumine Wolf', jp: '三峯オオカミ', rarity: 'rare',
+      desc: 'The mountain shrine\'s guardian wolf, chest thrown out, the sacred shimenawa rope round its neck hung with paper shide and its tail curled round its paws. Press it and it lifts its head and howls.',
+      gimmick: { text: 'Howl', sfx: [[0.2, 'toyTap'], [0.55, 'toyClick', { f: 1200 }], [0.6, 'whoosh', { dur: 1.0, v: 0.05 }], [1.7, 'toySnap', { v: 0.4 }], [1.85, 'paper'], [2.0, 'toyTap']] },
+    },
   ],
 };
