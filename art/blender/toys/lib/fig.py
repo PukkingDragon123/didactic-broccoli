@@ -46,13 +46,17 @@ class Fig:
         s.maps = {}
         s.meta = {'clips': {}, 'mats': {}, 'pts': {}}
         s.t0 = time.time()
-        # a figure variant's repaint (GIMMICKS.md, "Variants"): make.sh --variants passes the series item's variant as
-        # GG_VARIANT (JSON: texture, face, recolor); the figure paints as usual with that face expression, the recolour
-        # is applied on top, and finish() writes only <id>.<texture>_col.png (same unwrap: --repaint), no GLB
+        # a figure variant's repaint (GIMMICKS.md, "Variants"): make.sh --faces sets GG_VARIANT (JSON: texture, face);
+        # the figure paints as usual with that face expression ('auto': one picked per figure) and finish() writes
+        # only <id>.<texture>_col.png (same unwrap: --repaint), no GLB
         s.variant = json.loads(os.environ['GG_VARIANT']) if os.environ.get('GG_VARIANT') else None
         if s.variant:
             import face
-            face.EXPR = s.variant.get('face')
+            import zlib
+            e = s.variant.get('face')
+            face.EXPR = ('happy', 'sleepy', 'wink')[zlib.crc32(f'{series}/{fid}'.encode()) % 3] if e == 'auto' else e
+            s.variant['face'] = face.EXPR
+            s.log('variant face', face.EXPR)
 
     def log(s, *a):
         print(f'[{s.series}/{s.id} {time.time() - s.t0:6.1f}s]', *a, flush=True)
@@ -470,11 +474,8 @@ class Fig:
         """Write the painted albedo and the normal map, and give every game mesh the one figure material."""
         n = s.size
         mask = s.maps['mask']
-        if s.variant:  # a variant's repaint: recolour, write its atlas and stop (the GLB stays the standard figure's)
+        if s.variant:  # a variant's repaint: write its atlas and stop (the GLB stays the standard figure's)
             import sys
-            for regions, target in s.variant.get('recolor') or []:
-                ri = [s.region_index[r] for r in ([regions] if isinstance(regions, str) else regions) if r in s.region_index]
-                recolor(rgb, mask & np.isin(s.maps['reg'], ri), target)
             out = os.path.join(s.out, f"{s.id}.{s.variant['texture']}_col.png")
             save_png(dilate(np.clip(rgb, 0, 1), mask, 10), out, 'sRGB', n)
             s.log('variant', s.variant['texture'], '->', out)
@@ -653,53 +654,6 @@ def mathutils_vec2():
 
 
 # ------------------------------------------------------------------ image helpers
-def _hsv(c):
-    r, g, b = c[..., 0], c[..., 1], c[..., 2]
-    mx, mn = c.max(-1), c.min(-1)
-    d = mx - mn
-    h = np.zeros_like(mx)
-    k = d > 1e-6
-    rr, gg, bb = (k & (mx == r)), (k & (mx == g) & (mx != r)), (k & (mx == b) & (mx != r) & (mx != g))
-    h[rr] = ((g - b)[rr] / d[rr]) % 6
-    h[gg] = (b - r)[gg] / d[gg] + 2
-    h[bb] = (r - g)[bb] / d[bb] + 4
-    return h / 6.0, np.where(mx > 1e-6, d / np.maximum(mx, 1e-6), 0), mx
-
-
-def _rgb(h, s, v):
-    i = np.floor(h * 6) % 6
-    f = h * 6 - np.floor(h * 6)
-    p, q, t = v * (1 - s), v * (1 - f * s), v * (1 - (1 - f) * s)
-    out = np.zeros(h.shape + (3,), np.float32)
-    for j, (a, b, c) in enumerate(((v, t, p), (q, v, p), (p, v, t), (p, q, v), (t, p, v), (v, p, q))):
-        m = i == j
-        out[m] = np.stack([a[m], b[m], c[m]], -1)
-    return out
-
-
-def recolor(rgb, region, target):
-    """A variant's colourway: move the paint of `region` to the `target` colour, keeping the hand-painted ramp, the
-    brushwork and the shading (each texel keeps its offset in hue, and its saturation and value relative to the
-    region's median). Texels far from the region's own paint (face ink, decals, painted lines) are left alone."""
-    if not region.any():
-        return
-    h, s, v = _hsv(rgb[region])
-    mh, ms, mv = float(np.median(h)), float(np.median(s)), float(np.median(v))
-    if ms > 0.12:  # (a circular median: the hue that most texels sit around)
-        ang = h * 2 * np.pi
-        mh = float((np.arctan2(np.median(np.sin(ang)), np.median(np.cos(ang))) / (2 * np.pi)) % 1.0)
-    dh = (h - mh + 0.5) % 1.0 - 0.5
-    keep = (np.abs(v - mv) < 0.4) & (np.abs(s - ms) < 0.3) & ((np.abs(dh) < 0.09) | (ms < 0.12) | (s < 0.08))
-    th, ts, tv = (float(x[0]) for x in _hsv(np.array([[int(target.lstrip('#')[i:i + 2], 16) / 255 for i in (0, 2, 4)]], np.float32)))
-    nh = (th + (dh if ms > 0.12 else 0)) % 1.0
-    ns = np.clip(s * ts / max(ms, 0.05), 0, 1) if ms > 0.05 else np.clip(ts + (s - ms), 0, 1)
-    nv = np.clip(v * tv / max(mv, 0.05), 0, 1)
-    new = _rgb(nh.astype(np.float32), ns.astype(np.float32), nv.astype(np.float32))
-    sub = rgb[region]
-    sub[keep] = new[keep]
-    rgb[region] = sub
-
-
 def save_png(arr, path, space, n):
     im = bpy.data.images.get(os.path.basename(path))
     if im:

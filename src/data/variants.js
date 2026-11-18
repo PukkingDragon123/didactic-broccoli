@@ -1,17 +1,18 @@
-// Figure variants (art/blender/toys/GIMMICKS.md, "Variants"): a catalogue item can come in 2–3 versions of the same
-// sculpt with a small change (an alternate colourway, an extra or swapped accessory, a different face), pulled at
-// random by weight. On the series item:
-//   variants: [{ id, name, weight, texture?, tint?, show?: [node], hide?: [node], face? }, ...]
+// Figure variants (art/blender/toys/GIMMICKS.md, "Variants"): every figure comes in 2–3 versions of the same sculpt
+// (the standard one, an alternate colourway, an alternate face), mass-produced with no per-figure work
+// (src/figures/lowpix.js figureVariants), pulled at random by weight. A series item may override them:
+//   variants: [{ id, name, weight, texture?, tint?, hue?, show?: [node], hide?: [node] }, ...]
 // variants[0] is the standard figure. A pulled figure's records carry `variant: '<id>'` next to `finish` (only for a
 // non-standard one: old saves and plain records read as variants[0]). The loader (src/figures/lowpix.js) does the
-// swap: texture = a repainted atlas (make.sh <series> <id> --repaint --variant <texture>), tint = a colour multiplied
-// over the paint, show / hide = GLB nodes, face = the face the repaint draws (art/blender/toys/lib/face.py EXPR).
+// swap: texture = a repainted atlas (make.sh --faces), hue = the runtime colourway, tint = a colour multiplied over
+// the paint, show / hide = GLB nodes.
 import { getItem } from './series/index.js';
+import { figureVariants } from '../figures/lowpix.js';
 
 /** The item's variants (null without). */
 export function variantsOf(keyOrItem) {
   const it = typeof keyOrItem === 'string' ? getItem(keyOrItem) : keyOrItem;
-  return it?.variants?.length ? it.variants : null;
+  return figureVariants(it); // (item.variants, or every figure's mass-produced defaults)
 }
 
 /** The variant record for an id (the standard one for none or an unknown id); null for an item without variants. */

@@ -9,15 +9,18 @@
 //   playFigureClip(mesh, role) / stopFigureClip(mesh)          gimmicks: the GLB's own joints and clips, live
 //   figurePoint(item, name) / figurePartMesh(item, name)        toys.js: named points (pt_<name> joints), moving parts
 // Finishes are material variants: each figure's atlases on clones of the shared finish materials (src/voxel/materials.js).
-// Figure variants (item.variants, art/blender/toys/GIMMICKS.md): a variant swaps the atlas for a repainted one (texture:
-// public/models/lowpix/figures/<key>.<texture>.png, loaded lazily), tints the materials (tint) and shows / hides GLB
-// nodes (show, hide: nodes any variant shows are hidden on the others). lowpixMesh(item, finish, variantId).
+// Figure variants (art/blender/toys/GIMMICKS.md "Variants"), mass-produced: every figure gets figureVariants(item) =
+// [standard, an alternate colourway (hue: a runtime hue shift of its main body colour, ink and small details left
+// alone), an alternate face (texture 'face': public/models/lowpix/figures/<key>.face.png, batch-painted by
+// make.sh --faces, listed in variants.manifest.json)]. item.variants overrides (fields texture, tint, hue, show, hide).
+// lowpixMesh(item, finish, variantId).
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import MAN from './lowpix.manifest.json';
+import FACES from './variants.manifest.json'; // figure key -> the expression its face texture was painted with
 
 export const FIG_UNIT = 0.001; // metres per model unit (mm)
 const ITEM_MAX = 0.088; // the largest dimension a figure may have (a shelf slot)
@@ -177,8 +180,17 @@ function build(R, hide = new Set()) {
 
 // ------------------------------------------------------------------ figure variants
 /** The item's variant with this id (variants[0], the standard figure, for none or an unknown id); null without variants. */
+const FACE_NAMES = { happy: 'Happy Face', sleepy: 'Sleepy Face', wink: 'Winking' };
+/** The figure's variants: item.variants, or the mass-produced defaults (variants[0] is the standard figure). */
+export function figureVariants(item) {
+  if (item?.variants?.length) return item.variants;
+  if (!isLowpix(item)) return null;
+  const vs = [{ id: 'std', name: 'Standard', weight: 6 }, { id: 'alt', name: 'Alt Colour', weight: 3, hue: true }];
+  if (FACES[item.key]) vs.push({ id: 'face', name: FACE_NAMES[FACES[item.key]] || 'Alt Face', weight: 2, texture: 'face' });
+  return vs;
+}
 function variantOf(R, id) {
-  const vs = R.item.variants;
+  const vs = figureVariants(R.item);
   if (!vs?.length) return null;
   return (id && vs.find((v) => v.id === id)) || vs[0];
 }
@@ -186,7 +198,7 @@ function variantOf(R, id) {
 function hiddenOf(R, v) {
   const out = new Set();
   if (!v) return out;
-  for (const o of R.item.variants) for (const n of o.show || []) out.add(n);
+  for (const o of figureVariants(R.item)) for (const n of o.show || []) out.add(n);
   for (const n of v.show || []) out.delete(n);
   for (const n of v.hide || []) out.add(n);
   return out;
@@ -198,6 +210,48 @@ function geoFor(R, v) {
   let g = R.geos.get(k);
   if (!g) { g = build(R, hide); R.geos.set(k, g); }
   return g;
+}
+/** The alternate colourway: the atlas with its main body colour (the strongest chromatic hue) turned round the colour
+ *  wheel, a per-figure amount; dark ink, greys and other hues (eyes, details) stay. Made once, on the CPU. */
+function hueTex(R) {
+  if (R.hueTex !== undefined) return R.hueTex;
+  R.hueTex = null;
+  const src = R.texs[0]?.image;
+  if (!src?.width) return null;
+  const W = src.width, H = src.height, cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const cx = cv.getContext('2d', { willReadFrequently: true });
+  cx.drawImage(src, 0, 0);
+  const img = cx.getImageData(0, 0, W, H), d = img.data, n = W * H;
+  const hue = new Float32Array(n), sat = new Float32Array(n), val = new Float32Array(n), bins = new Float32Array(36);
+  for (let i = 0; i < n; i++) {
+    const r = d[i * 4] / 255, g = d[i * 4 + 1] / 255, b = d[i * 4 + 2] / 255, mx = Math.max(r, g, b), c = mx - Math.min(r, g, b);
+    let h = 0;
+    if (c > 1e-4) h = (mx === r ? ((g - b) / c + 6) % 6 : mx === g ? (b - r) / c + 2 : (r - g) / c + 4) / 6;
+    hue[i] = h; sat[i] = mx > 0 ? c / mx : 0; val[i] = mx;
+    if (sat[i] > 0.2 && mx > 0.2) bins[Math.min(35, Math.floor(h * 36))] += sat[i] * mx;
+  }
+  let bi = 0;
+  for (let i = 1; i < 36; i++) if (bins[i] > bins[bi]) bi = i;
+  const hc = (bi + 0.5) / 36;
+  let k = 0;
+  for (const ch of R.item.key) k = (k * 31 + ch.charCodeAt(0)) >>> 0;
+  const shift = [0.5, 0.36, -0.36, 0.22, -0.22][k % 5]; // (each figure its own colourway)
+  for (let i = 0; i < n; i++) {
+    if (sat[i] < 0.16 || val[i] < 0.14) continue; // ink, greys, whites
+    const dh = Math.abs(((hue[i] - hc + 1.5) % 1) - 0.5);
+    const w = dh < 0.07 ? 1 : dh < 0.11 ? (0.11 - dh) / 0.04 : 0;
+    if (!w) continue;
+    const h = (hue[i] + shift * w + 1) % 1, s = sat[i], v = val[i];
+    const f = (x) => { const kk = (x + h * 6) % 6; return v - v * s * Math.max(0, Math.min(kk, 4 - kk, 1)); };
+    d[i * 4] = f(5) * 255; d[i * 4 + 1] = f(3) * 255; d[i * 4 + 2] = f(1) * 255;
+  }
+  cx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(cv);
+  t.flipY = R.texs[0].flipY;
+  tidy(t);
+  R.hueTex = t;
+  return t;
 }
 /** A variant's repainted atlas (loads once; meshes waiting for it get their materials when it arrives). */
 function variantTex(R, name, mesh) {
@@ -251,6 +305,7 @@ function materials(R, finish = 'normal', variant = null, mesh = null) {
   const v = variantOf(R, variant);
   let vtex = null;
   if (v?.texture) { vtex = variantTex(R, v.texture, mesh); if (!vtex && !v.tint) return materials(R, finish); } // (the standard paint until it is in)
+  else if (v?.hue) vtex = hueTex(R);
   const mk = (vtex || v?.tint) ? `${finish}|${v.id}${vtex ? '' : '|t'}` : finish;
   let mats = R.mats.get(mk);
   if (mats) return mats;
