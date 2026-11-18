@@ -81,29 +81,7 @@ night-stall street with lanterns (Wikimedia Commons), shown deep blue.
 
 ---
 
-## D4. ぷにぷにようかい Puni-puni Yōkai: "Yōkai Squishies" (squeeze, some keychains) · id `punipuni`
-
-**Hook:** the stranger yōkai of the old scroll books, as soft squishy mascots: plump forms in a sugary matte finish (a
-fine sugar-grain of painted speckle over soft pastel and neon colours), each with a strong silhouette and attitude.
-**Twist:** the yōkai nobody puts on merchandise (a lump of sagging flesh, a fat cryptid snake, the bath-scum licker,
-a sulking sea monk) are the cutest ones when you squeeze them. Not the cast of kabuki, obakebaito or otsukai.
-**Gimmick:** press: the squeeze. It squashes down and spreads, its face changing mid-squish (something pops out:
-a tongue, a spout, flames, a dream), then it rises slowly back. Three of them come on a ball chain.
-
-| # | Figure | The squishy | Mid-squish | Rarity |
-|---|--------|-------------|-----------|--------|
-| 1 | ぬっぺっぽう Nuppeppō | a sagging peach lump of dough-flesh with fat folds and stubby arms crossed, very smug | the folds spread and a tongue pokes out | common |
-| 2 | ツチノコ Tsuchinoko | the fat cryptid snake: a beer-belly body, stubby tail, head up with a sly grin, neon lime with a diamond back (keychain) | the belly balloons, the forked tongue flicks | common |
-| 3 | あかなめ Akaname | the bath-scum licker: a squat neon-pink imp, one clawed hand up, a huge tongue lolling (keychain) | the tongue stretches right out | uncommon |
-| 4 | うみぼうず Umibōzu | the sea monk: a big sulking dark-teal dome rising out of its own curl of wave, neon foam | it sinks into the wave and a spout of water pops off its head | uncommon |
-| 5 | おにび Onibi | a will-o'-wisp: a fat lilac-blue flame with a curling tail and a big grin (keychain) | its flame tips flare out | rare |
-| S | ゆめくいバク Dream-Eater Baku | the dream-eating chimera: a plump lavender tapir with a curly mane, a trunk and tiger-striped legs, sleepy and pleased | the trunk curls up and puffs out a dream bubble | secret |
-
-Card: candy-pink with a soft-focus photo. Backdrop request: a real photo of a Shōwa dagashi (penny-candy) shop shelf.
-
----
-
-## D5. ヘンシン傘ぶき Henshin Kasabuki: "Umbrella Arms" (mechanical transformation, display stands) · id `kasabuki`
+## D4. ヘンシン傘ぶき Henshin Kasabuki: "Umbrella Arms" (mechanical transformation, display stands) · id `kasabuki`
 
 **Hook:** umbrellas that are secretly weapons, each laid on its own black-lacquer sword stand (katana-kake).
 **Twist:** the umbrella's own parts become the weapon's: the closed wagasa's canopy is the katana's scabbard, the
