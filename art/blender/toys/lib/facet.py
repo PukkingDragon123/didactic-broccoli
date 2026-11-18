@@ -20,11 +20,11 @@ import numpy as np
 
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
           'ekiin', 'kabuki', 'meijin', 'sento', 'otenki', 'yomise'}            # the series built in the faceted style (add a series here to convert it on rebuild)
-RATIO = float(os.environ.get('GG_FACET_RATIO', 0.5))  # where a piece's collapse starts, from its old (smooth) budget
+RATIO = float(os.environ.get('GG_FACET_RATIO', 0.6))  # where a piece's collapse starts, from its old (smooth) budget
 TOL = float(os.environ.get('GG_FACET_TOL', 1.5))      # ...and keeps more triangles while 95 % of its form is not within this
 TOL_MAX = float(os.environ.get('GG_FACET_TOL_MAX', 0.9))  # (mm) or any point is further than this: a feature (ear, toe, tooth, fold) was erased
 SIZE = 1024                     # atlas size (px): double the smooth line's 512
-TRIS = (550, 900, 1000)         # a simple figure lands near 550-650, a detailed one up to 900, a secret up to 1000
+TRIS = (700, 1100, 1200)        # a simple figure lands near 700-800, a detailed one up to 1100, a secret up to 1200
 RIM_PX = 1.15                   # facet-edge rim width (texels)
 RIM_DEG = 16.0                  # an edge turning more than this is a facet edge that gets a rim
 ON = False                      # set by Fig() for the figure being built (tk.decimate reads it)
