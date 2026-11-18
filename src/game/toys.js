@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
-import { isLowpix, figurePartMesh, figurePoint } from '../figures/lowpix.js';
+import { isLowpix, figurePartMesh, figurePoint, playFigureClip, stopFigureClip } from '../figures/lowpix.js';
 import { hasFigureGimmick, playFigureGimmick } from './figureGimmicks.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
@@ -145,6 +145,8 @@ export class Toys {
   kind(it) { return it?.kind === 'toy' ? toyKind(it.data.key) : null; }
 
   hint(it) {
+    const pb = this.pullbackOf(it);
+    if (pb && !this.game.held.busy) return { key: 'LMB', text: pb.text || 'Pull it back and let go', sub: 'RMB inspect · Q put down' };
     const k = this.kind(it);
     if (!k || this.game.held.busy) return null;
     const h = { ...HINTS[k] };
@@ -156,6 +158,7 @@ export class Toys {
   /** Left click with a toy in hand. Returns true when the toy did something. */
   use(it) {
     const k = this.kind(it), g = this.game;
+    if (this.pullbackOf(it) && !g.held.busy && !g.held.inspecting) { this.pullBack(it); return true; }
     if (!k || g.held.busy || g.held.inspecting) return false;
     if (k === 'squishy') { this.squeezing = true; audio.play('squeak', { pitch: 1 }); return true; }
     if (k === 'ball') { this.throwBall(it); return true; }
@@ -250,6 +253,53 @@ export class Toys {
     } });
   }
 
+  // ---------------------------------------------------------------- pull-back / wind-up figures (item.pullback)
+  pullbackOf(it) { return it?.kind === 'toy' ? getItem(it.data.key)?.pullback || null : null; }
+  /** Set it down on the surface you aim at, facing away from you, then it winds back and runs off. */
+  pullBack(it) {
+    const g = this.game, cfg = this.pullbackOf(it);
+    if (this.winding) return;
+    const hit = g.placement?.surfaceHit?.(2.4);
+    const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(g.camera.quaternion).setY(0).normalize();
+    const target = hit && hit.point.y < 1.4 ? hit.point.clone() : g.player.pos.clone().addScaledVector(fwd, 0.6).setY(0);
+    const yaw = Math.atan2(fwd.x, fwd.z), data = it.data;
+    this.winding = true;
+    g.held.putTo(target, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw), (obj) => {
+      this.winding = false;
+      obj.scale.setScalar(1);
+      const inner = obj.children.find((c) => c.userData.itemKey);
+      if (inner) { inner.scale.setScalar(1); inner.position.set(0, 0, 0); inner.rotation.set(0, 0, 0); }
+      obj.position.copy(target); obj.rotation.set(0, yaw, 0);
+      this.startRun(obj, inner, data, cfg, target.y);
+    }, { dur: 0.3, arc: 0.06, scale: 1 });
+  }
+  /** A figure standing in the world starts its pull-back run (from your hand, or lying loose: RMB). */
+  startRun(obj, inner, data, cfg, y) {
+    const wind = cfg.wind ?? 0.45, dist = cfg.dist ?? 1.0, speed = cfg.speed ?? 0.8;
+    audio.play(cfg.sfx || 'toyRatchet', { pos: obj.position, n: Math.round(wind / 0.04), gap: 0.04 });
+    if (inner) playFigureClip(inner, cfg.clip || 'run', { loop: true, reverse: true });
+    this.world.push({ kind: 'pull', obj, inner, data, cfg, t: 0, y, wind, speed, dur: wind + (2 * dist) / speed, back: 0, gone: 0 });
+  }
+  updatePull(w, i, dt) {
+    const g = this.game, o = w.obj;
+    const dir = _v.set(Math.sin(o.rotation.y), 0, Math.cos(o.rotation.y));
+    let v = 0;
+    if (w.t < w.wind) v = -0.06; // pulled back along the surface, the spring winding
+    else {
+      if (!w.go) { w.go = true; if (w.inner) playFigureClip(w.inner, w.cfg.clip || 'run', { loop: true }); audio.play(w.cfg.go || 'whoosh', { pos: o.position, vol: 0.35, v: 0.06 }); }
+      const k = Math.min(1, (w.t - w.wind) / (w.dur - w.wind));
+      v = w.speed * (1 - k) * (1 - k * 0.3);
+    }
+    const nx = o.position.x + dir.x * v * dt, nz = o.position.z + dir.z * v * dt;
+    const ground = g.groundAt ? g.groundAt(nx, nz, w.y + 0.02) : w.y;
+    const ahead = g.groundAt ? g.groundAt(o.position.x + dir.x * 0.04 * Math.sign(v || 1), o.position.z + dir.z * 0.04 * Math.sign(v || 1), w.y + 0.02) : w.y;
+    if (Math.abs(ahead - w.y) > 0.02 || Math.abs(nx) > 3.8 || nz > 4.7 || nz < -4.8) { // a table edge or a wall: it stops dead
+      if (w.go && !w.hit) { w.hit = true; audio.play('toyTap', { pos: o.position }); w.t = Math.max(w.t, w.dur - 0.05); }
+    } else { o.position.x = nx; o.position.z = nz; o.position.y = ground; w.y = ground; }
+    if (w.inner && w.go) w.inner.rotation.x = -Math.min(0.08, v * 0.06); // nose up a touch under power
+    if (w.t >= w.dur) { if (w.inner) { stopFigureClip(w.inner); w.inner.rotation.x = 0; } this.settle(w, i, 0); }
+  }
+
   updateWorld(dt) {
     const g = this.game;
     for (let i = this.world.length - 1; i >= 0; i--) {
@@ -264,6 +314,7 @@ export class Toys {
         if (w.inner) { w.inner.rotation.x = Math.sin(ph) * tilt; w.inner.rotation.z = Math.cos(ph) * tilt; }
         o.position.addScaledVector(w.drift, dt * (1 - k));
         if (w.t >= w.dur) this.settle(w, i, 1.2);
+      } else if (w.kind === 'pull') { this.updatePull(w, i, dt);
       } else if (w.kind === 'robot') {
         const k = Math.min(1, w.t / w.dur), speed = 0.07 * (1 - k * k);
         const dir = _v.set(Math.sin(o.rotation.y), 0, Math.cos(o.rotation.y));

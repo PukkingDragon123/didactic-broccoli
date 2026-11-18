@@ -18,7 +18,7 @@ import MAN from './lowpix.manifest.json';
 
 export const FIG_UNIT = 0.001; // metres per model unit (mm)
 const ITEM_MAX = 0.088; // the largest dimension a figure may have (a shelf slot)
-const KINDS = { matte: 0, gloss: 1, metal: 2, glow: 3, glass: 4 };
+const KINDS = { matte: 0, gloss: 1, metal: 2, glow: 3, glass: 4, led: 0 }; // (led: a light-up part, matte until lit: src/game/lightup.js)
 const NK = 6; // material kinds per texture in a material array
 
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
@@ -231,6 +231,11 @@ function adopt(mesh, R) {
   if (redo) { delete mesh.userData.redecorate; try { redo(); } catch (e) { console.warn('figure variant', e); } }
 }
 
+const meshHooks = new Set();
+/** Called with (mesh, item) for every figure mesh made (keychains, light-up parts: src/plugins/toyKit.js). */
+export function onFigureMesh(fn) { meshHooks.add(fn); return () => meshHooks.delete(fn); }
+/** A loaded figure's texture atlases (the light-up overlay paints with them). */
+export function figureTextures(key) { return F.get(key)?.texs || []; }
 /** A mesh of a figure in a finish (the stand-in until the GLB is in; it loads now, its series after it). */
 export function lowpixMesh(item, finish = 'normal') {
   const R = rec(item);
@@ -239,6 +244,7 @@ export function lowpixMesh(item, finish = 'normal') {
   mesh.castShadow = true; mesh.receiveShadow = true;
   mesh.userData.itemKey = item.key; mesh.userData.finish = finish;
   if (item.gimmick || R.entry.clips?.gimmick) mesh.userData.gimmick = item.gimmick || { text: 'Work the gimmick' };
+  for (const fn of meshHooks) { try { fn(mesh, item); } catch (e) { console.warn('figure mesh hook', e); } }
   if (!ready) {
     mesh.userData.pending = true;
     R.waiting.add(new WeakRef(mesh));

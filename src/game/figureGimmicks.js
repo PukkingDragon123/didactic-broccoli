@@ -4,6 +4,9 @@
 //   hasFigureGimmick(key)            the item is a figure with a playable clip
 //   playFigureGimmick(mesh)          play it (once; a press while it plays is ignored); returns the clip length
 //   updateFigureGimmicks(dt)         per frame: the timed sounds
+//   onFigurePress(fn)                more press behaviour (light-up parts, pull-back runs: src/plugins/toyKit.js):
+//                                    fn(mesh, item) returns a duration (> 0) when it did something
+// The data API of every gimmick (keychain, playset, light, pullback) is in art/blender/toys/GIMMICKS.md.
 import { audio, SOUNDS } from '../core/audio.js';
 import { getItem } from '../data/series/index.js';
 import { isLowpix, lowpixManifest, playFigureClip, figureClipPlaying } from '../figures/lowpix.js';
@@ -50,21 +53,26 @@ Object.assign(SOUNDS, {
 /** The item is a figure with a playable gimmick clip (and not one of toys.js's playable toys). */
 export function hasFigureGimmick(key) {
   const it = getItem(key);
-  return !!(it && !it.toy && isLowpix(it) && lowpixManifest[key]?.clips?.gimmick);
+  return !!(it && !it.toy && isLowpix(it) && (lowpixManifest[key]?.clips?.gimmick || it.light || it.pullback));
 }
+const pressFns = [];
+export function onFigurePress(fn) { pressFns.push(fn); }
 
 const timed = []; // { mesh, t, events }
 /** Play a figure's gimmick on its mesh (in a hand, on a shelf, on the floor). Returns the clip length (0: nothing). */
 export function playFigureGimmick(mesh) {
   if (!mesh || figureClipPlaying(mesh)) return 0;
-  const d = playFigureClip(mesh, 'gimmick');
-  if (!d) return 0;
   const it = getItem(mesh.userData.itemKey);
+  let extra = 0;
+  for (const fn of pressFns) { try { extra = Math.max(extra, fn(mesh, it) || 0); } catch (e) { console.warn('figure press', e); } }
+  if (it?.pullback && extra) return extra; // (it ran off: no clip on the mesh it left behind)
+  const d = lowpixManifest[mesh.userData.itemKey]?.clips?.gimmick ? playFigureClip(mesh, 'gimmick') : 0;
+  if (!d) return extra;
   const ev = it?.gimmick?.sfx;
   if (ev?.length) timed.push({ mesh, t: 0, next: 0, events: ev });
   else if (lowpixManifest[mesh.userData.itemKey]?.blender) { try { audio.play('toyFold', { pos: mesh.getWorldPosition(mesh.position.clone()) }); } catch { /* no sound */ } }
   else { try { audio.play('flap', { vol: 0.3 }); } catch { /* no such sound */ } } // (the older figures' wobble)
-  return d;
+  return Math.max(d, extra);
 }
 
 /** Per frame: fire each playing gimmick's timed sounds. */
