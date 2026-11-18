@@ -46,7 +46,7 @@ export default {
       light: { part: 'lanterns', color: '#ffd8a0', mode: 'press', dur: 2.5 },
     },
     {
-      id: 'ryuuguu', name: 'The Dragon Palace\'s Messenger', jp: 'リュウグウノツカイ', rarity: 'secret',
+      id: 'ryuuguu', name: "The Dragon Palace's Messenger", jp: 'リュウグウノツカイ', rarity: 'secret',
       desc: 'The oarfish, the "messenger of the Dragon Palace", as the night market\'s festival float: a long silver ribbon of a fish coiled round a red coral stand, a red fin down its back and the red plumes of its crest streaming back. It ripples like a festival dragon.',
       gimmick: { text: 'Matsuri', sfx: [[0.13, 'ledClick', { on: true }], [0.3, 'whoosh'], [0.9, 'whoosh'], [1.5, 'whoosh']] },
       light: { part: 'crest', color: '#ff6a52', mode: 'press', dur: 2.6 },

@@ -141,7 +141,7 @@ def paint(P, pt):
     # the face: the big squid eyes as two dots set wide on the head, a tiny smiling mouth, blush
     hd = P.region('head')
     fc = face.Face(P, c=tuple(SQ + (0, -3.4, HZ - SZ + 0.4)), axis=(0, -1, 0.1), where=hd, seed=691)
-    fc.eyes('big', spread=5.2, size=0.85, dy=0.4, uneven=0.15)
+    fc.eyes('dot', spread=5.4, size=0.6, dy=0.4, uneven=0.15)
     fc.mouth('upturn', w=1.4, dy=-1.2, weight=0.3)
     fc.blush(spread=5.6, dy=-0.8, rx=0.9, ry=0.5)
     P.lines(['mantle', 'bamboo'], step=1)

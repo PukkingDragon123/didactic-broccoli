@@ -125,7 +125,7 @@ def HX(p, d=False):
 
 # ------------------------------------------------------------------ the spirit: a ghostly baboon in a long scarf, taped fists
 G = 2.8                                   # how much it swells
-Q_FULL = V3(6.4, 9.0, 36.0)              # its waist when out, behind him
+Q_FULL = V3(7.6, 9.0, 31.6)              # its waist when out, behind him
 Q_REST = V3(6.8, 3.4, 31.2)              # ...and riding on his right shoulder, small
 
 
@@ -247,13 +247,14 @@ def paint(P, pt):
         for u in (-3.6, -2.0, -0.4, 1.2):
             sd.stroke([(-sx * u, -0.25), (-sx * u + 0.25, -0.85)], weight=0.2, col='#efe4c8')
     # the spirit: pale jade, the scarf a deeper teal, the fists taped white
-    ghost(P, pt, 'spirit', '#58b8a4', sh)
+    ghost(P, pt, 'spirit', '#3f9f8c', sh)
     ghost(P, pt, 'scarf', '#2f6f8a', sh)
     ghost(P, pt, 'tape', '#e8efe0', sh)
     sp = face.Face(P, c=tuple(np.asarray(shrunk(HC_ + (0, -6.4, 0.6)))), axis=(0, -1, 0.1), where=P.region('spirit'), seed=905, ink='#2f5f5a')
     sp.eyes('dot', spread=1.6, size=0.22, dy=0.4)
     sp.brows('angry', spread=1.8, dy=0.9, w=0.8, weight=0.18)
     P.lines(['coat'], ['skin', 'gold', 'collar'], step=1)
+    P.lines(['spirit'], ['scarf', 'tape'], col='#1f4a44', step=1)
     P.clusters()
     return P.done()
 

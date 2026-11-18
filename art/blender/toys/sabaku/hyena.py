@@ -40,7 +40,7 @@ B.add('body', low(tk.loft('torso', TORSO, n=16, up=(0, -1, 0), cap0='round', cap
                   sculpt=lambda h: tk.push(h, lambda V, N: 0.3 * tk.smoothstep(0.8, 0.2, np.abs(V[:, 2] - 14.8))),
                   region=('vest', [('pants', lambda C, N: C[:, 2] < 13.6), ('sash', lambda C, N: (C[:, 2] >= 13.6) & (C[:, 2] < 16.0)),
                                    ('fur', lambda C, N: C[:, 2] > 24.6)])))
-B.add('body', limb('sash_end', [(4.4, -3.0, 14.6), (5.6, -4.2, 11.6), (5.2, -4.6, 8.8)], [1.2, 1.1, 0.6], tris=14, region='sash', n=6, cap1='point'))
+B.add('body', limb('sash_end', [(4.6, -3.4, 14.8), (6.4, -3.6, 12.6), (7.2, -3.2, 11.0)], [1.2, 1.0, 0.5], tris=14, region='sash', n=6, cap1='point'))
 B.add('body', limb('tail', [(0, 4.8, 13.4), (0, 7.6, 11.8), (0.6, 8.8, 9.0)], [1.4, 1.5, 0.6], tris=18, region='mane', n=6, cap1='point'))
 B.add('body', limb('mane', [(0, 2.2, 23.6), (0, 0.4, 27.2), (0, -1.6, 29.2)], [1.3, 1.2, 0.5], tris=14, region='mane', n=6, cap1='point',
                    sculpt=lambda h: tk.push(h, lambda V, N: 0.3 * (np.sin(V[:, 2] * 5.0) > 0.4))))
@@ -79,7 +79,7 @@ B.add('head', *HP)
 
 # ------------------------------------------------------------------ the spirit: a ghostly cobra, coiled small on his back
 G = 2.5
-Q_FULL = V3(-4.0, 9.6, 20.0)
+Q_FULL = V3(6.0, 9.6, 20.0)
 Q_REST = V3(0.0, 4.6, 20.6)
 
 
