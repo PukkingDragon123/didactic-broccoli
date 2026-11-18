@@ -20,9 +20,11 @@ import numpy as np
 
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
           'ekiin', 'kabuki', 'meijin'}            # the series built in the faceted style (add a series here to convert it on rebuild)
-RATIO = float(os.environ.get('GG_FACET_RATIO', 0.42))  # game-mesh triangles kept from the old (smooth) budget
+RATIO = float(os.environ.get('GG_FACET_RATIO', 0.5))  # where a piece's collapse starts, from its old (smooth) budget
+TOL = float(os.environ.get('GG_FACET_TOL', 0.36))      # ...and it keeps more triangles until 95 % of its form is this
+TOL_MAX = 0.6                   # close (mm), and all of it this close: no ear, toe, tooth or fold is erased
 SIZE = 1024                     # atlas size (px): double the smooth line's 512
-TRIS = (300, 700, 900)          # the figure's target range and the hard cap (a complex secret)
+TRIS = (800, 1100, 1300)        # a simple figure lands near 800, a detailed one up to 1100, the hard cap 1300
 RIM_PX = 1.15                   # facet-edge rim width (texels)
 RIM_DEG = 16.0                  # an edge turning more than this is a facet edge that gets a rim
 ON = False                      # set by Fig() for the figure being built (tk.decimate reads it)
@@ -58,11 +60,49 @@ def _symmetric(ob, tol=0.03):
     return ok >= 0.92 * n
 
 
-def reduce(ob, tris):
-    """Collapse the mesh to about `tris` triangles (symmetric across x = 0 when the part is), then merge the near-
-    coplanar slivers that collapse leaves into clean planes and re-triangulate them (beauty)."""
+def _collapse(ob, tris, n, sym):
+    """One symmetric quadric collapse of ob's mesh to about `tris` triangles (the footprint kept)."""
+    me = ob.data
+    m = ob.modifiers.new('fdec', 'DECIMATE')
+    m.decimate_type = 'COLLAPSE'
+    m.ratio = max(0.01, min(1.0, tris / n))
+    m.use_collapse_triangulate = True
+    if sym:
+        m.use_symmetry = True
+        m.symmetry_axis = 'X'
+    V = np.zeros(len(me.vertices) * 3)
+    me.vertices.foreach_get('co', V)
+    Z = V[2::3]
+    if Z.min() < 0.3 and n > 80 and (Z < 0.6).mean() < 0.25:  # (it stands on the shelf: the collapse keeps the footprint, so it stands as well as before)
+        g = ob.vertex_groups.new(name='facet_keep')
+        g.add([int(i) for i in np.nonzero(Z >= 0.6)[0]], 1.0, 'REPLACE')
+        m.vertex_group = g.name
+        m.vertex_group_factor = 25.0
+    _apply(ob)
+    for g in list(ob.vertex_groups):
+        if g.name == 'facet_keep':
+            ob.vertex_groups.remove(g)
+
+
+def _deviation(V0, me):
+    """How far the form's vertices V0 lie from the reduced mesh: (95th percentile, max) in mm."""
+    from mathutils.bvhtree import BVHTree
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bvh = BVHTree.FromBMesh(bm)
+    d = np.array([bvh.find_nearest(v)[3] or 0.0 for v in V0])
+    bm.free()
+    return (float(np.percentile(d, 95)), float(d.max())) if len(d) else (0.0, 0.0)
+
+
+def reduce(ob, tris, cap=None):
+    """Collapse the mesh toward `tris` triangles, keeping as many more (up to `cap`) as the form needs: the budget
+    grows until the faceted surface lies within TOL (95 % of the form's points) and TOL_MAX (every point) of the
+    form, so an ear, a toe, a tooth or a fold is never collapsed away, while a plain round form stays near `tris`.
+    Symmetric across x = 0 when the part is; the near-coplanar slivers merged into clean planes (beauty)."""
     me = ob.data
     n = sum(len(p.vertices) - 2 for p in me.polygons)
+    cap = int(min(n, cap if cap else n))
     canon(ob)
     me = ob.data
     if n > tris:
@@ -70,28 +110,28 @@ def reduce(ob, tris):
         bm0 = bmesh.new()
         bm0.from_mesh(me)
         bvh = BVHTree.FromBMesh(bm0)  # (the form before the collapse)
-        m = ob.modifiers.new('fdec', 'DECIMATE')
-        m.decimate_type = 'COLLAPSE'
-        m.ratio = max(0.01, tris / n)
-        m.use_collapse_triangulate = True
-        if _symmetric(ob):
-            m.use_symmetry = True
-            m.symmetry_axis = 'X'
-        V = np.zeros(len(me.vertices) * 3)
-        ob.data.vertices.foreach_get('co', V)
-        Z = V[2::3]
-        if Z.min() < 0.3 and n > 80 and (Z < 0.6).mean() < 0.25:  # (it stands on the shelf: the collapse keeps the footprint, so it stands as well as before)
-            g = ob.vertex_groups.new(name='facet_keep')
-            g.add([int(i) for i in np.nonzero(Z >= 0.6)[0]], 1.0, 'REPLACE')
-            m.vertex_group = g.name
-            m.vertex_group_factor = 25.0
-        _apply(ob)
-        for g in list(ob.vertex_groups):
-            if g.name == 'facet_keep':
-                ob.vertex_groups.remove(g)
+        V0 = [v.co.copy() for v in bm0.verts]
+        sym = _symmetric(ob)
+        src = me
+        t = max(4, int(tris))
+        while True:
+            ob.data = src.copy()
+            _collapse(ob, t, n, sym)
+            p95, mx = _deviation(V0, ob.data)
+            if os.environ.get('GG_FACET_DEBUG'):
+                print(f'[facet] {ob.name}: {n} -> {t} (cap {cap}): deviation p95 {p95:.3f} max {mx:.3f}', flush=True)
+            if (p95 <= TOL and mx <= TOL_MAX) or t >= cap:
+                break
+            old = ob.data
+            ob.data = src
+            bpy.data.meshes.remove(old)
+            t = min(cap, int(t * 1.3) + 2)
+        if src.users == 0:
+            bpy.data.meshes.remove(src)
+        ob.data.name = ob.name
         # the collapse places merged vertices where the planes fit best (a little outside a curve, so the facets keep
         # the volume); one that overshoots further is pulled back to OUT mm off the form (clips keep working)
-        OUT = 0.5
+        OUT = 0.25
         for v in ob.data.vertices:
             loc, nrm, _, dist = bvh.find_nearest(v.co)
             if loc is not None and dist > OUT and (v.co - loc).dot(nrm) > 0:
@@ -142,13 +182,14 @@ def canon(ob):
     return ob
 
 
-SMALL = 16                      # a piece asked for this few triangles is low-poly already: it keeps them
+CLIP_SLACK = 0.12               # extra mm the gimmick clip check allows a faceted figure (rig.check_clip)
+SMALL = 40                      # a piece asked for this few triangles (an ear, a toe, a tooth) keeps them all
 FIG = None                      # the figure being built (Fig sets it; rig.check_clip trims through it)
 
 
 def budget(tris):
-    """The facet target for a mesh the smooth line gave `tris` triangles (toes, tabs and pins keep theirs: cut further
-    they only crumple)."""
+    """Where the collapse of a mesh the smooth line gave `tris` triangles starts (reduce() adds what its detail needs;
+    small pieces and facet.keeping() keep them all)."""
     if tris <= SMALL or KEEP:
         return int(tris)
     return max(int(round(tris * RATIO)), SMALL)
@@ -173,16 +214,16 @@ class keeping:
 def trim(parts, top=None, log=print):
     """The figure's budget: when the parts still add up to more than TRIS[1] (many small pieces kept whole), reduce
     the bigger parts further, in proportion, to land just under it. Returns the new total."""
-    top = top or TRIS[1]
+    top = top or TRIS[2]
     count = lambda o: sum(len(p.vertices) - 2 for p in o.data.polygons)  # noqa: E731
     tot = sum(count(p.low) for p in parts)
     if tot <= top:
         return tot
-    big = [p for p in parts if count(p.low) > 3 * SMALL and not p.low.get('facet_keep')]
+    big = [p for p in parts if count(p.low) > 2 * SMALL and not p.low.get('facet_keep')]
     fixed = tot - sum(count(p.low) for p in big)
     k = max(0.3, (top * 0.97 - fixed) / max(1, tot - fixed))
     for p in big:
-        reduce(p.low, max(3 * SMALL, int(count(p.low) * k)))
+        reduce(p.low, max(2 * SMALL, int(count(p.low) * k)), cap=max(2 * SMALL, int(count(p.low) * k)))
         flat(p.low)
     new = sum(count(p.low) for p in parts)
     log(f'facet: trimmed the figure from {tot} to {new} tris (bigger parts x{k:.2f})')

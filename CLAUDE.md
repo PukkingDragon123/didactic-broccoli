@@ -15,9 +15,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   realistic hand-painted pixel-art textures, built as lowpix specs (art/lowpix/) or converted from CC0 / CC BY Poly
   Haven and Sketchfab models; almost no voxel art. Never chibi, never stuck-together primitives, never cartoon.
   First-person arms are blocky but connected and flexible.
-- **Toy look = faceted low-poly, hand-painted** (owner-approved): flat-shaded planes with visible but not chunky facets,
-  about 800–1300 tris per toy depending on its detail (simple forms ~800, detailed figures up to ~1300; never
-  decimate away a shape detail that reads at shelf distance; the 300–700 sample was too low), one 1024 px brush-stroke atlas (no normal map), facet-edge rims, painted wear, brushwork faces. Built with the
+- **Toy look = faceted low-poly, hand-painted** (owner-approved): flat-shaded chunky planes, still clearly low poly:
+  simple figures ~550–650 tris, detailed figures (fingers, beaks, props, mechanisms) up to ~900, secrets ≤1000
+  (just a little above the approved 480–680 sample; never decimate away a detail that reads at shelf distance), one 1024 px brush-stroke atlas (no normal map), facet-edge rims, painted wear, brushwork faces. Built with the
   lib facet mode (art/blender/toys/FACET.md); every series uses it.
 - **Toys are modelled in Blender** (`tools/blender.sh script.py`, headless bpy): real subdivision / poly modelling
   with edge loops and creases, a detailed high-poly sculpt baked (normal, AO, colour) onto a clean low-poly game

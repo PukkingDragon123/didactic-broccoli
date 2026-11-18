@@ -57,7 +57,7 @@ class Fig:
         low.data.name = name
         if s.facet:  # a deliberate low-poly, flat shaded (each face its own normal: crisp facets)
             if not low.get('facet'):
-                facet.reduce(low, facet.budget(tk.tri_count(low)))
+                facet.reduce(low, facet.budget(tk.tri_count(low)), cap=tk.tri_count(low))
             facet.flat(low)
         else:
             tk.smooth(low, sharp)
@@ -560,8 +560,8 @@ class Fig:
         if s.facet:
             meta['facet'] = 1
             lo, hi, cap = facet.TRIS
-            if not lo <= meta['tris'] <= hi:
-                s.log(f'facet: {meta["tris"]} tris, outside {lo}-{hi}' + ('  << OVER THE CAP' if meta['tris'] > cap else ''))
+            if meta['tris'] > cap or meta['tris'] < lo * 0.75:
+                s.log(f'facet: {meta["tris"]} tris (simple ~{lo}, detailed up to {hi}, cap {cap})' + ('  << OVER THE CAP' if meta['tris'] > cap else '  (low)'))
         st, com = s.stability()
         meta['stand'] = round(st, 2)
         tip = math.degrees(math.atan2(st, max(com[2], 1e-3)))  # (art/lowpix/figures/audit.py wants >= 8 degrees)

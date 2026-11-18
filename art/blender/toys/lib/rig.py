@@ -164,6 +164,7 @@ def check_clip(R, parts, frames, action='gimmick', skip=(), tol=0.25):
     import facet  # (facet mode: check the figure as it ships, after its budget trim)
     if facet.FIG is not None:
         facet.FIG.facet_trim()
+        tol += facet.CLIP_SLACK  # (faceted surfaces sit up to a few tenths of a mm off the smooth form at the joints)
     import numpy as np
     from mathutils.bvhtree import BVHTree
     R.arm.animation_data.action = bpy.data.actions[action]
