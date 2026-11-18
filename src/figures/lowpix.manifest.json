@@ -344,7 +344,7 @@
 "mats":{"plinth":"matte","biwa":"metal","coil":"gloss","sneck":"gloss","stail":"gloss"},
 "pts":{},
 "blender":true},
-"otsukai/karasu":{"size":[24,40.09,28.1],"min":[-12,0,-14],"tris":1038,"atlas":[512,512],"kb":222,"clips":{"gimmick":"gimmick"},
+"otsukai/karasu":{"size":[24,38.89,30.5],"min":[-12,0,-14],"tris":1038,"atlas":[512,512],"kb":220,"clips":{"gimmick":"gimmick"},
 "mats":{"plinth":"matte","body":"gloss","head":"gloss","wing_l":"gloss","wing_r":"gloss","sun":"metal"},
 "pts":{},
 "blender":true},

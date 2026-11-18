@@ -141,14 +141,11 @@ def hollow(lo, hi, centre, r, bottom, top=None, region='inside', n_lo=10, n_hi=2
     faces become region `inside` (the dark foam lining you see when the hood tips back)."""
     cx, cy, cz = centre
     rx, ry, rz = r
-    top = top or cz + rz
-    prof = [(0, bottom - 6), (1.0, bottom - 6), (1.0, cz - 0.55 * rz)]
-    for a in np.linspace(-0.9, 1.0, 9):
-        z = cz + a * rz
-        if a < -0.55:
-            continue
-        prof.append((max(0.0, math.cos(math.asin(min(1, max(-1, a))))), z))
-    prof[-1] = (0.0, top)
+    k = 0.92  # (the shaft out of the bottom: a touch narrower than the egg)
+    th0 = -math.acos(k)
+    prof = [(0, bottom - 6), (k, bottom - 6)]
+    prof += [(math.cos(t), cz + rz * math.sin(t)) for t in np.linspace(th0, math.pi / 2, 10)]
+    prof[-1] = (0.0, top or cz + rz)
     for o, n in ((lo, n_lo), (hi, n_hi)):
         c = tk.lathe('cav', prof, n=n)
         tk.transform(c, Matrix.Translation((cx, cy, 0)) @ Matrix.Diagonal((rx, ry, 1, 1)))

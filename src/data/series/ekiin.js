@@ -35,5 +35,10 @@ export default {
       desc: 'The porter in the red cap, hugging a tower of luggage with his bill on top to steady it. Something a passenger forgot is in his pouch: you can see the crook of an umbrella.',
       gimmick: { text: 'Steady!', sfx: [[0.12, 'toyTap'], [0.3, 'toyTap'], [0.45, 'toyTap'], [0.85, 'toyFold', { n: 3 }], [1.6, 'toySnap', { f: 1100, v: 0.6 }], [1.72, 'gulp'], [2.05, 'toyTap']] },
     },
+    {
+      id: 'flamingo', name: 'Signal Flamingo', jp: 'しんごうフラミンゴ', rarity: 'rare',
+      desc: 'The dispatcher, standing on one leg like a signal post, in the red-banded cap. Her flag is red on one side and green on the other, and the whistle never leaves her bill.',
+      gimmick: { text: 'Send it off', sfx: [[0.1, 'toyFold', { n: 3 }], [0.75, 'policeWhistle'], [1.05, 'flapFold'], [1.3, 'toyClick'], [1.45, 'toyTap'], [1.6, 'toyTap']] },
+    },
   ],
 };
