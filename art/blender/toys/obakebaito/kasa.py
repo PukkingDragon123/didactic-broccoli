@@ -205,7 +205,7 @@ def paint(P):
     fc.mouth('line', w=1.0, dy=-1.3, weight=0.25)
     # the umbrella's single eye, big, and a few painted brush strokes for brows
     ue = face.Face(P, c=(UX, UY - 6.0, SZ + 18.2), axis=(0, -1, 0.0), where=pa, seed=702)
-    ue.eyes('big', spread=0.01, size=1.6, only=0)
+    ue.eyes('dot', spread=0.01, size=0.95, only=0)
     ue.stroke([(-2.6, 2.8), (-0.6, 3.6), (1.8, 3.2)], weight=0.55)
     P.lines(['tongue', 'hanao', 'string', 'cup'], step=1)
     P.clusters()

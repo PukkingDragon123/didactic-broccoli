@@ -169,7 +169,7 @@ def paint(P):
     import face
     # the lantern's face: one big eye, one squinting, above the torn grin
     lf = face.Face(P, c=(LC[0], LC[1] - 6.0, MZ + 4.0), axis=(0, -1, 0.0), where=pa, seed=721)
-    lf.eyes('big', spread=0.01, size=1.3, dy=0.0, only=0)
+    lf.eyes('dot', spread=0.01, size=0.85, dy=0.0, only=0)
     lf.stroke([(1.4, 0.4), (3.4, 0.0), (1.6, -0.6)], weight=0.55)
     fdir = np.array((math.sin(math.radians(205)), -math.cos(math.radians(205)), 0.0))
     hc = np.array(w['head'])

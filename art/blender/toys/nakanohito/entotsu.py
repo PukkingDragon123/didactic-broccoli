@@ -132,14 +132,14 @@ SQ = 0.05
 
 # ------------------------------------------------------------------ the actor: a fire-bellied newt with a towel round its neck
 AC = (0, -1.2, 37.4)
-nw = ball('actor', AC, 5.8, squash=(1.2, 1.08, 0.9), n=12, rings=7)
+nw = ball('actor', AC, 5.8, squash=(1.3, 1.08, 0.76), n=12, rings=7)
 
 
 def sc_newt(h):
     def f(V, N):
         d = 0.0
         for sx in (1, -1):
-            d = d + tk.bump(V, (sx * 4.2, -4.4, 41.0), 1.7, 0.8)  # the eye bumps
+            d = d + tk.bump(V, (sx * 4.6, AC[1] - 3.0, AC[2] + 3.4), 1.9, 1.1)  # the eye bumps
         return d + 0.04 * np.sin(V[:, 0] * 7 + V[:, 1] * 5)
     tk.push(h, f)
 
@@ -235,7 +235,7 @@ def paint(P, pt):
     P.fill('smoke', pt.ramp('#dcd8d0', 6, shift=0.03), tone=sh * 0.8, base=0.1)
     # the newt: near-black back, a fire-orange belly and throat with black blotches; the towel white with a blue stripe
     nm = P.region('newt')
-    P.fill('newt', pt.ramp('#7c6a48', 7, shift=0.06), tone=sh * 0.8, base=0.12)
+    P.fill('newt', pt.ramp('#6c6842', 7, shift=0.06), tone=sh * 0.8, base=0.12)
     throat = nm & (Z < AC[2] - 2.6 + 0.2 * np.abs(X))
     P.tint(throat, pt.ramp('#e8642c', 6, shift=0.06), sh + 0.1)
     for c_, r_ in (((2.2, AC[1] - 4.0, AC[2] - 3.2), 0.7), ((-2.8, AC[1] - 3.0, AC[2] - 3.4), 0.55), ((0.4, AC[1] - 5.0, AC[2] - 3.0), 0.45)):
@@ -243,8 +243,8 @@ def paint(P, pt):
     P.fill('towel', pt.ramp('#f2eee4', 6, shift=0.04), tone=sh * 0.8, base=0.1)
     P.tint(P.region('towel') & (np.abs(np.sin(np.arctan2(Yc + 0.8, X) * 3.0)) > 0.92), pt.ramp('#3a62a8', 5, shift=0.04), sh)
     nf = face.Face(P, c=(AC[0], AC[1] - 6.4, AC[2] + 0.6), axis=(0, -1, 0.15), where=nm, seed=31)
-    nf.eyes('sleepy', spread=8.4, size=0.85, dy=2.2)
-    nf.mouth('wobble', w=7.0, dy=-1.2, weight=0.48)
+    nf.eyes('sleepy', spread=9.0, size=0.85, dy=2.4)
+    nf.mouth('line', w=10.0, dy=-1.4, weight=0.5)
     nf.nose('nostrils', dy=0.6, size=0.75)
     sweat(nf, [(-5.0, 4.0), (5.4, 3.0)], r=0.55)
     # the lizard's face: dot eyes under the brow ridges, a gritted grin right across the blunt snout

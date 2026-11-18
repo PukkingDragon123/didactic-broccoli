@@ -56,6 +56,10 @@ cute tell (a blush, a tongue, a too-big ribbon).
 
 **Hook:** an 80s yankī gang of animals: pompadours, long embroidered coats, flat school caps, geta.
 **Twist:** tough on the outside, soft at heart: each is caught doing something kind.
+**As built** (art/blender/toys/tsuppari, ids niwatori, kuma, neko, kaeru, tanuki, mimizuku): the rooster has a lost
+chick asleep in his pompadour; the frog wears a satin sukajan with 夜露死苦 embroidered down the back and squats on a
+scrap of pavement (the duckling needs the base); the tanuki's flag and coat say 安全運転 / 交通安全 and the scooter is a
+pull-back with a light-up headlamp; the owl wears his old coat as a cape. Kanji: tsuppari/_glyphs.py → glyphs.npz.
 
 | # | Figure | Look | Press | Rarity |
 |---|--------|------|-------|--------|
@@ -76,6 +80,11 @@ on the well's crank, the tanuki on the lantern pole, the hamster on the umbrella
 tired little worker on minimum wage.
 **Gimmick:** press: the scare springs and the part-timer works it in sync (the crank turns, the pole jiggles, the
 string is yanked). The props are the playset; the secret is a light-up one.
+**As built** (art/blender/toys/obakebaito, ids kasa, ido, chochin, rokuro, nuri, honmono; shared parts in _ob.py):
+every scare stands in front of a black flat on a plum stage block (pt_in / pt_out with dowels: the blocks join side by
+side into one corridor); the back of the flat is raw plywood with a 休憩中 note. The lantern ghost's part-timer is a
+tanuki on a fishing-rod pole; the long-neck lady kneels and the weasel works a push rod through the flat; the wall
+stands in the flat's place, held up by two rabbits; the secret's back is empty (a crate, cold tea, a coat on a nail).
 
 | # | Figure | Scare (front) | Part-timer (back) | Press | Rarity |
 |---|--------|---------------|-------------------|-------|--------|

@@ -38,5 +38,16 @@ export default {
       desc: 'A lady doll kneeling in a plum furisode, gofun-white face, glossy shimada hair and a red comb, hands folded in her lap. Round the back, a weasel in a happi coat braced against the push rod.',
       gimmick: { text: 'Stretch', sfx: [[0.1, 'toyTap'], [0.2, 'toyClick', { f: 1400 }], [0.3, 'toyClick', { f: 1700 }], [0.4, 'toyClick', { f: 2000 }], [0.8, 'whoosh', { dur: 0.5, v: 0.04 }], [1.6, 'toyFold', { n: 3 }], [1.85, 'toyTap', { v: 0.5 }]] },
     },
+    {
+      id: 'nuri', name: 'The Wall', jp: 'ぬりかべ屋', rarity: 'rare', playset: PS,
+      desc: 'A stretch of old plastered wall under a ridge of roof tiles, cracked and rain-stained, with two small eyes and two stubby feet. Round the back, two rabbits in happi coats hold it up; one of them is watching you.',
+      gimmick: { text: 'Lurch', sfx: [[0.15, 'toyTap', { v: 0.5 }], [0.3, 'thud'], [0.55, 'toyTap', { v: 0.6 }], [0.85, 'toyTap', { v: 0.5 }], [1.0, 'thud'], [1.3, 'toyTap', { v: 0.6 }]] },
+    },
+    {
+      id: 'honmono', name: 'The Real One', jp: 'ほんもの', rarity: 'secret', playset: PS,
+      desc: 'A little ghost child in a white burial kimono, hands limp at the wrists, a will-o-the-wisp at its sleeve. Round the back there is nobody: a crate, a cold cup of tea and a happi coat on a nail.',
+      gimmick: { text: '...', sfx: [[0.2, 'whoosh', { dur: 0.8, v: 0.04 }], [0.9, 'furin'], [1.8, 'whoosh', { dur: 0.6, v: 0.03 }]] },
+      light: { part: ['ghost', 'flame'], color: '#d8f4ff', mode: 'press', dur: 2.6 },
+    },
   ],
 };

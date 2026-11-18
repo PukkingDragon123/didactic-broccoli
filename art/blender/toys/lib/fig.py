@@ -370,7 +370,8 @@ class Fig:
     def stability(s, contact=0.4):
         """How securely the figure stands at rest: the margin (mm) from its centre of mass (area-weighted over the game
         meshes) to the edge of its footprint (the convex hull of everything within `contact` mm of the floor), seen from
-        above. Positive: inside, it stands; under ~1.5 mm it rocks; negative: it falls over."""
+        above. Positive: inside, it stands; negative: it falls over. export() logs it with the tipping angle (the audit,
+        art/lowpix/figures/audit.py, wants the figure to lean 8 degrees before it tips)."""
         T, A = [], []
         for p in s.parts:
             M = np.array(p.low.matrix_world)
@@ -430,7 +431,9 @@ class Fig:
         meta['tris'] = s.tris()
         st, com = s.stability()
         meta['stand'] = round(st, 2)
-        s.log(f'stands: centre of mass {np.round(com, 1)}, {st:.1f} mm inside its footprint' + ('' if st > 1.5 else '  << NOT SECURE'))
+        tip = math.degrees(math.atan2(st, max(com[2], 1e-3)))  # (art/lowpix/figures/audit.py wants >= 8 degrees)
+        meta['tip'] = round(tip, 1)
+        s.log(f'stands: centre of mass {np.round(com, 1)}, {st:.1f} mm inside its footprint, tips at {tip:.0f} deg' + ('' if tip >= 8.5 else '  << NOT SECURE (audit: >= 8 deg)'))
         meta['density'] = [round(getattr(s, 'density_seen', 0), 2), round(getattr(s, 'density', 0), 2)]
         if rig:
             meta['clips'] = {a: a for a in rig.actions}

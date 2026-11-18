@@ -124,8 +124,8 @@ def make_rig():
         for f0, deg in ((4, 11.0), (24, 14.0)):
             k('rab1', f0 + 1)
             k('rab1', f0 + 6, move=(0, -0.4, 0), rot=('X', 6))
-            k('wall', f0 + 1)
-            k('wall', f0 + 6, rot=('X', deg), ease='BACK')
+            k('wall', f0 + 1, ease='BACK')
+            k('wall', f0 + 6, rot=('X', deg))
             k('wall', f0 + 12)
             k('rab1', f0 + 9)
             k('rab2', f0 + 2)

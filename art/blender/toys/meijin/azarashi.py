@@ -78,7 +78,7 @@ def sc_head(h):
 head_lo, head_hi = cx.low(head, 'head', 180, lo=1, hi=3, sculpt=sc_head, region='coat')
 band = tk.lathe('band', [(5.8, -0.7), (6.7, -0.7), (6.8, 0.7), (5.8, 0.7)], n=18, centre=(HC[0], HC[1] + 0.4, HC[2] + 3.0))
 tk.rotate(band, -10, 'X', (HC[0], HC[1] + 0.4, HC[2] + 3.0))
-bt = tk.tube('knot', [(HC[0] + 4.6, HC[1] + 4.6, HC[2] + 3.4), (HC[0] + 6.0, HC[1] + 6.6, HC[2] + 4.6), (HC[0] + 7.4, HC[1] + 7.6, HC[2] + 3.6)], [0.8, 0.7, 0.5], n=5)
+bt = tk.tube('knot', [(HC[0] + 4.4, HC[1] + 4.8, HC[2] + 3.0), (HC[0] + 5.4, HC[1] + 6.4, HC[2] + 1.6), (HC[0] + 6.0, HC[1] + 7.2, HC[2] - 0.6)], [0.8, 0.7, 0.5], n=5)
 HEADP = [(head_lo, head_hi), cx.low(band, 'band', 40, lo=0, hi=1, region='band'), cx.low(bt, 'knot', 16, lo=0, hi=1, region='band')]
 
 # ------------------------------------------------------------------ parts
@@ -143,7 +143,7 @@ def paint(P):
     P.fill('coat', pt.ramp('#b4b8bc', 7, shift=0.06), tone=np.where(P.part == PI['body'], sh, free), base=0.1 - 0.15 * (on[:, :, 2] < -0.3))
     cm = P.region('coat')
     sp = (np.sin(X * 1.7 + Yc * 0.4) * np.sin(Yc * 1.5 - Z * 0.6) * np.sin(Z * 1.3 + X * 0.5) > 0.35) & (Z > 3.0)
-    P.tint(cm & sp & (np.hypot(X - HC[0], Yc - HC[1] + 4.0) > 5.5), pt.ramp('#5a5e66', 6, shift=0.06), free)
+    P.tint(cm & sp & (Yc > HC[1] + 4.6), pt.ramp('#5a5e66', 6, shift=0.06), free)
     P.fill('band', pt.ramp('#f2ece2', 6, shift=0.05), tone=free, base=0.1)
     P.flat(P.region('band') & (np.abs(Yc - (HC[1] - 6.6)) < 0.9), '#c8303a')
     # the menko: his card (a red sun burst behind a printed kabuto) and the rival's (blue, a printed rocket), plain backs
@@ -163,7 +163,7 @@ def paint(P):
     # the face, drawn on: a determined little seal: dots, a confident brow, the dark nose, a Y mouth, whiskers with dots
     hd = cm & (P.part == PI['body']) & (Yc < HC[1] + 2.0) & (Z > HC[2] - 6.0)
     fc = face.Face(P, c=(HC[0], HC[1] - 5.8, HC[2] + 0.6), axis=(0, -1, 0.15), where=hd, seed=181)
-    fc.eyes('big', spread=7.6, size=0.62, dy=0.8)
+    fc.eyes('dot', spread=7.6, size=0.6, dy=0.8)
     fc.brows('angry', spread=7.6, dy=2.8, w=1.8, weight=0.32)
     fn = face.Face(P, c=(HC[0], HC[1] - 7.4, HC[2] - 2.0), axis=(0, -1, 0.1), where=hd, seed=182)
     fn.nose('button', 0.0, 0.7, size=0.9)

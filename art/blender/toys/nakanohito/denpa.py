@@ -37,7 +37,7 @@ los, his = [trunk_lo], [trunk_hi]
 for sx in (1, -1):
     lg, lgh = limb('leg', [(sx * 7.0, 1.0, 11.5), (sx * 8.0, -0.6, 7.0), (sx * 7.8, 0.4, 3.6)], [4.6, 4.2, 3.7], tris=50)
     tk.push(lgh, lambda V, N: fluff(V))
-    ft, fth = foot('foot', (sx * 8.0, 3.8), (sx * 0.12, -1), L=10.6, W=7.8, H=5.2, toes=0, tris=56)
+    ft, fth = foot('foot', (sx * 8.0, 5.8), (sx * 0.12, -1), L=12.4, W=8.0, H=5.2, toes=0, tris=56)
     tk.push(fth[0], lambda V, N: fluff(V, 0.1))
     los += [lg, ft]
     his += [lgh] + fth
