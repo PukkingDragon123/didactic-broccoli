@@ -35,15 +35,15 @@ def make_rig():
         # weight onto the left hand, the right hand lets go and waves, the legs scissor
         k('body', 8, rot=('Y', -9))
         k('arm_r', 6)
-        k('arm_r', 14, rot=[('Y', 40), ('X', -25)])
+        k('arm_r', 14, rot=[('Y', -40), ('X', -25)])
         for i, f_ in enumerate((18, 23, 28, 33)):
-            k('arm_r', f_, rot=[('Y', 40 + (12 if i % 2 else -6)), ('X', -25)])
+            k('arm_r', f_, rot=[('Y', -40 - (12 if i % 2 else -6)), ('X', -25)])
         for i, f_ in enumerate((10, 17, 24, 31)):
             k('leg_l', f_, rot=('X', 16 if i % 2 else -16))
             k('leg_r', f_, rot=('X', -16 if i % 2 else 16))
         k('leg_l', 38)
         k('leg_r', 38)
-        k('arm_r', 40, rot=[('Y', 40), ('X', -25)])
+        k('arm_r', 40, rot=[('Y', -40), ('X', -25)])
         k('arm_r', 48)
         k('body', 40, rot=('Y', -9))
         k('body', 50, rot=('Y', 2))

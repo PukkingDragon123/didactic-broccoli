@@ -25,10 +25,10 @@ RINGS = [(0.0, 6.2, 0.0), (0.8, 9.0, 0.0), (3.0, 11.4, 0.0), (7.2, 12.6, 0.0), (
          (31.2, 2.8, 0.0), (32.2, 2.3, 0.0)]
 NECK_Z = 18.5
 KNOT = (0.0, 0.3, 33.2)
-FACE = (0.0, -12.4, 8.6)  # the face's centre on the head (low)
+FACE = (0.0, -12.5, 7.9)  # the face's centre on the head (low)
 
 
-body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=7, fold_amp=0.5, cheeks=((-5.8, 7.0), (5.8, 7.0)), tris=430)
+body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=7, fold_amp=0.5, cheeks=((-5.8, 7.0), (5.8, 7.0)), tris=380)
 knot = tt.knot('knot', KNOT, r=2.8, h=3.4, tris=50)
 
 # ------------------------------------------------------------------ the corners: short, stiff, flaring up like flames
@@ -97,11 +97,25 @@ for a in DRUM_A:
     drums_lo.append(lo)
     drums_hi.append(hi)
 ring_lo = tk.join([cord[0], hoop_lo] + spokes_lo + drums_lo, 'ring')
-tk.decimate(ring_lo, 470)
+tk.decimate(ring_lo, 430)
 
 
 # ------------------------------------------------------------------ parts
-F.part('body', tk.join([body[0], knot[0]], 'body'), body[1] + knot[1])
+# ------------------------------------------------------------------ arms with drumsticks (bachi) over the front drums, feet
+ARMS = {}
+for nm, sx in (('arm_r', 1), ('arm_l', -1)):
+    a_lo, a_hi, hc = tt.arm(nm, [(sx * 6.2, -1.2, 22.8), (sx * 8.4, -3.2, 23.8), (sx * 9.6, -4.8, 24.9)], mitt=(-sx * 0.4, -0.8, 0.4))
+    tipc = np.array((sx * 12.4, -7.9, 23.6))
+    st = [hc, tuple(tipc)]
+    s_lo = tk.tube('bachi', [tuple(np.array(hc) - (tipc - np.array(hc)) * 0.25)] + st, [0.55, 0.55, 0.62], n=5, cap0='round', cap1='round')
+    s_hi = tk.tube('bachi_hi', [tuple(np.array(hc) - (tipc - np.array(hc)) * 0.25)] + st, [0.55, 0.55, 0.62], n=10, cap0='round', cap1='round')
+    tk.subsurf(s_hi, 1)
+    tk.set_region(s_hi, 'stick')
+    ARMS[nm] = (tk.join([a_lo, s_lo], nm), a_hi + [s_hi], (sx * 6.2, -1.2, 22.8))
+feet = tt.feet('feet', RINGS)
+F.part('body', tk.join([body[0], knot[0], feet[0]], 'body'), body[1] + knot[1] + feet[1])
+for nm, (lo, his, sh_) in ARMS.items():
+    F.part(nm, lo, his, bone=nm)
 kit.eyepin(F, at=(KNOT[0], KNOT[1] + 1.4, KNOT[2] + 1.2), bone='root')
 F.part('ring', ring_lo, cord[1] + [hoop_hi] + spokes_hi + drums_hi, bone='ring')
 for nm, (lo, hi, root) in CORNERS.items():
@@ -114,6 +128,8 @@ def make_rig():
     R = Rig()
     R.bone('root', (0, 0, 0))
     R.bone('ring', (0, 0, HZ), parent='root')
+    for nm, (lo, his, sh_) in ARMS.items():
+        R.bone(nm, sh_, parent='root')
     for nm, (lo, hi, root) in CORNERS.items():
         R.bone(nm, root, parent='root')
     R.bone('bolt', BROOT, parent='root')
@@ -122,7 +138,16 @@ def make_rig():
     kit.points(R)
     k = R.key
     with R.action('gimmick'):
-        bones = ['root', 'ring', 'bolt'] + list(CORNERS)
+        bones = ['root', 'ring', 'bolt', 'arm_r', 'arm_l'] + list(CORNERS)
+        # the drumsticks beat on the drums as they go by, left, right
+        for i, f in enumerate(range(12, 58, 4)):
+            nm = 'arm_r' if i % 2 else 'arm_l'
+            other = 'arm_l' if i % 2 else 'arm_r'
+            sx = 1 if nm == 'arm_r' else -1
+            k(nm, f, rot=('Y', sx * 4.0), ease='LINEAR')
+            k(other, f, rot=('Y', -sx * 2.5 * -1), ease='LINEAR')
+        k('arm_r', 60)
+        k('arm_l', 60)
         for b in bones:
             k(b, 0)
         # 0-8 it winds up: squash, the bolt leans back, the ring turns back a little (anticipation)
@@ -179,6 +204,8 @@ def paint(P):
     P.fill('cord', pt.ramp('#d8463a', 6, shift=0.06), tone=sh, base=0.05)
     P.fill('drum', pt.ramp('#c8352c', 7, shift=0.06), tone=sh, base=0.05)
     P.fill('head', pt.ramp('#efe2c4', 6, shift=0.05), tone=sh, base=0.1)
+    P.fill('hand', TIGER, tone=sh, base=0.14)
+    P.fill('stick', pt.ramp('#d9b98a', 6, shift=0.05), tone=sh, base=0.1)
     P.fill('pin', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
     # gold tacks round each drum head, a black three-comma (tomoe) on each head
     drum = P.region('drum')
@@ -200,9 +227,10 @@ def paint(P):
     # the face: dots wide apart and one big grin with three tooth strokes
     import face
     fc = face.Face(P, c=FACE, axis=(0, -1, 0.1), where=P.region('cloth'), seed=5)
-    fc.blush(11.0, -0.9, rx=1.9, ry=1.1, col='#ef8b68')
-    fc.eyes(8.2, 0.5, dy=1.5)
-    fc.mouth('grin', w=5.4, dy=-0.6, teeth=3)
+    fc.blush(12.0, -0.9, rx=2.0, ry=1.1, col='#ef8b68')
+    fc.eyes('big', spread=8.6, size=0.62, dy=1.7)
+    fc.brows('angry', spread=8.8, dy=3.6, w=2.6, weight=0.5)
+    fc.mouth('grin', w=6.6, dy=-0.9, teeth=3)
     P.lines(['cloth', 'corner'], ['cord'], step=2)
     P.lines(['bolt'], step=2)
     P.lines(['drum'], ['head'], step=2)
@@ -211,5 +239,5 @@ def paint(P):
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('body', 'ring'), ('bolt', 'body'), ('bolt', 'pin')] + [(c, 'body') for c in CORNERS],
+bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('body', 'ring'), ('bolt', 'body'), ('bolt', 'pin'), ('arm_r', 'body'), ('arm_l', 'body')] + [(c, 'body') for c in CORNERS],
        cam=((60, -84, 52), (0, 0, 22)), fold=(0, 14, 26, 44), frames=86)

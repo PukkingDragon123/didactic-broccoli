@@ -25,7 +25,7 @@ RINGS = [(0.0, 5.8, 0.0), (0.8, 8.8, 0.0), (3.0, 11.3, 0.0), (7.2, 12.6, 0.0), (
          (32.2, 3.2, -0.6), (33.4, 2.5, -0.6)]
 NECK_Z = 18.5
 KNOT = (-0.6, 0.0, 34.4)
-FACE = (0.0, -12.4, 8.2)
+FACE = (0.0, -12.5, 7.7)
 MOUTH = (FACE[0] + 0.6, FACE[1], FACE[2] - 1.9)
 
 rng = np.random.default_rng(7)
@@ -53,7 +53,7 @@ def crumple(V, N, th):
     return d
 
 
-body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=6, fold_amp=0.4, cheeks=((-5.6, 7.2), (5.6, 7.2)), tris=520,
+body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=6, fold_amp=0.4, cheeks=((-5.6, 7.2), (5.6, 7.2)), tris=440,
                extra=crumple)
 # (puffed cheeks: more than the others)
 tk.push(body[1][0], lambda V, N: sum(tk.bump(V, (sx * 5.9, -11.8, 7.0), 5.0, 0.55, sharp=1.6) for sx in (-1, 1)))
@@ -94,7 +94,14 @@ for nm, off, r in (('hail_a', (-1.4, 4.2, 0.6), 1.45), ('hail_b', (1.3, 4.6, -0.
     SPIT[nm] = (lo, hi, c, r)
 
 # ------------------------------------------------------------------ parts
-F.part('body', tk.join([body[0], knot[0], cord[0]], 'body'), body[1] + knot[1] + cord[1])
+ARMS = {}
+for nm, sx in (('arm_r', 1), ('arm_l', -1)):  # little fists up by its sides, in a huff
+    lo_, hi_, hc_ = tt.arm(nm, [(sx * 6.4, -0.6, 22.6), (sx * 8.9, -1.8, 23.5), (sx * 10.1, -3.0, 25.6)], hand=2.2)
+    ARMS[nm] = (lo_, hi_, (sx * 6.4, -0.6, 22.6))
+feet = tt.feet('feet', RINGS)
+F.part('body', tk.join([body[0], knot[0], cord[0], feet[0]], 'body'), body[1] + knot[1] + cord[1] + feet[1])
+for nm, (lo_, hi_, sh_) in ARMS.items():
+    F.part(nm, lo_, hi_, bone=nm)
 F.part('ice', tk.decimate(tk.join(ice_lo, 'ice'), 170), ice_hi, kind='gloss', uvw=0.8)
 for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=55)
@@ -107,6 +114,8 @@ def make_rig():
     from rig import Rig
     R = Rig()
     R.bone('root', (0, 0, 0))
+    for nm, (lo_, hi_, sh_) in ARMS.items():
+        R.bone(nm, sh_, parent='root')
     for nm, (lo, hi, root) in CORNERS.items():
         R.bone(nm, root, parent='root')
     for nm, (lo, hi, c, r) in SPIT.items():
@@ -116,7 +125,14 @@ def make_rig():
     kit.points(R)
     k = R.key
     with R.action('gimmick'):
-        bones = ['root'] + list(CORNERS) + list(SPIT)
+        bones = ['root', 'arm_r', 'arm_l'] + list(CORNERS) + list(SPIT)
+        # the fists: pulled in while it puffs up, thrown up and out with each spit
+        for nm, sx in (('arm_r', 1), ('arm_l', -1)):
+            k(nm, 12, rot=('Y', sx * 10))
+            for i in range(3):
+                k(nm, 18 + i * 7, rot=('Y', -sx * 22), ease='BACK')
+                k(nm, 22 + i * 7, rot=('Y', sx * 4))
+            k(nm, 46)
         for b in bones:
             k(b, 0)
         # 0-14 it breathes in and puffs up (the corners bristle), holds it...
@@ -203,18 +219,19 @@ def paint(P):
     P.fill('ice', pt.ramp('#cfe6f2', 6, shift=0.05, light=0.6), tone=sh * 0.6, base=0.12)
     tt.drop_gloss(P, 'ice')
     P.fill('cord', pt.ramp('#46607c', 6, shift=0.06), tone=sh, base=0.05)
+    P.fill('hand', PAPER, tone=sh, base=0.12)
     P.fill('pin', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
     # the face: puffed cheeks (rosy), dots wide apart, a short slanted dash of a mouth (cross, cheeks full)
     import face
     fc = face.Face(P, c=FACE, axis=(0, -1, 0.1), where=P.region('cloth'), seed=21)
-    fc.blush(11.6, -1.2, rx=2.2, ry=1.5, col='#eba09a')
-    fc.eyes(7.2, 0.48, dy=1.2)
-    fc.mouth('dash', w=1.6, dy=-1.9, du=0.6, slant=-14)
+    fc.blush(11.8, -1.0, rx=2.4, ry=1.6, col='#eba09a')
+    fc.eyes('squeeze', spread=7.0, size=0.8, dy=1.3)
+    fc.mouth('pout', w=2.2, dy=-1.8, du=0.3)
     P.lines(['cloth', 'corner'], ['cord', 'ice'], step=2)
     P.lines(['ice'], step=1)
     P.clusters()
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('body', 'ice')] + [(c, 'body') for c in CORNERS] + [(s_, 'body') for s_ in SPIT],
+bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('body', 'ice'), ('arm_r', 'body'), ('arm_l', 'body')] + [(c, 'body') for c in CORNERS] + [(s_, 'body') for s_ in SPIT],
        cam=((60, -84, 52), (0, 0, 20)), fold=(0, 16, 26, 40), frames=86)

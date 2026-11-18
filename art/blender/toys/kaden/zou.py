@@ -240,7 +240,7 @@ def paint(P):
     # the face, drawn on by hand: two little ink dots set wide above the trunk, a small upturned smile beside it
     fc = face.Face(P, c=(0, -16.6, 13.6), axis=(0, -1, 0.15), where=P.region('enamel') & (P.part == 0), seed=11)
     fc.blush(13.0, -2.4, rx=2.0, ry=1.1)
-    fc.eyes(spread=12.0, size=0.85, dy=1.4)
+    fc.eyes(spread=15.0, size=0.85, dy=2.6)
     fc.mouth('upturn', w=2.8, dy=-3.6, du=5.6, side=1)
     P.lines(['enamel'], ['rim', 'dark', 'cap', 'metal', 'grip', 'inner'], step=2)
     P.clusters()

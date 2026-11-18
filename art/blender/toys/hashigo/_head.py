@@ -1,4 +1,4 @@
-# (shared preamble of the hashigo figure scripts: exec'd with the figure's id in FID)
+# (the shared preamble of the hashigo figure scripts; helper modules start with _ so make.sh skips them)
 import math
 import os
 import sys
@@ -9,7 +9,7 @@ import numpy as np  # noqa: E402,F401
 
 import tk  # noqa: E402
 import face  # noqa: E402
-import frog as fr  # noqa: E402
+import _frog as fr  # noqa: E402
 from fig import Fig  # noqa: E402
 
 ARGS = sys.argv[1:]

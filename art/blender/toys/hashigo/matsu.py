@@ -31,7 +31,7 @@ def make_rig():
         B = ('body', 'arm_l', 'arm_r')
         for b in B:
             k(b, 0)
-        for f_, dz in ((6, -1.4), (12, 0.6), (18, -1.2), (24, 0.5), (30, -0.8), (36, 0.0)):
+        for f_, dz in ((6, -0.5), (12, 0.4), (18, -0.45), (24, 0.3), (30, -0.3), (36, 0.0)):
             k('body', f_, move=(0, 0, dz))
         for i, f_ in enumerate(range(4, 46, 6)):
             k('arm_l', f_, rot=('Y', -12 if i % 2 else 6))

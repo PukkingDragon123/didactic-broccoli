@@ -14,7 +14,7 @@ import numpy as np  # noqa: E402
 
 import tk  # noqa: E402
 import face  # noqa: E402
-import frog as fr  # noqa: E402
+import _frog as fr  # noqa: E402
 from fig import Fig  # noqa: E402
 
 ARGS = sys.argv[1:]

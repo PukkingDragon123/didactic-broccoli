@@ -25,7 +25,7 @@ RINGS = [(0.0, 5.8, 0.0), (0.8, 8.8, 0.0), (3.0, 11.2, 0.0), (7.2, 12.4, 0.0), (
          (32.0, 3.1, 3.6), (33.0, 2.5, 4.0)]
 NECK_Z = 18.5
 KNOT = (4.5, 0.0, 33.8)
-FACE = (0.0, -12.3, 8.4)
+FACE = (0.0, -12.5, 7.7)
 
 body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=6, fold_amp=0.6, twist=9.0, cheeks=((-5.6, 7.2), (5.6, 7.2)),
                tris=480)
@@ -56,7 +56,36 @@ for nm, ang, L, a0, a1, tw in (('c_a', -40, 12.0, 18, -12, 35), ('c_b', -8, 14.5
                                   root_r=1.6, shape=0.55, power=1.0, twist=tw)
     CORNERS[nm] = (lo, hi, root)
 
-F.part('body', tk.join([body[0], knot[0], cord[0], str_lo], 'body'), body[1] + knot[1] + cord[1] + [str_hi])
+arm_r = tt.arm('arm_r', [(6.8, -0.8, 22.4), (9.8, -2.2, 23.0), (12.0, -3.4, 24.8)], hand=2.0, mitt=(-0.5, -0.6, 0.5))
+arm_l = tt.arm('arm_l', [(-5.8, 0.6, 22.4), (-8.2, 2.6, 23.2), (-9.4, 4.8, 23.6)], hand=1.9)
+feet = tt.feet('feet', RINGS)
+# the pinwheel (kazaguruma): a bamboo stick up from the right hand, four curled paper blades on a pin
+WHEEL = np.array((15.4, -5.2, 34.0))
+st_pts = [tuple(np.array(arm_r[2]) + np.array((-0.25, 0.3, -1.6))), tuple(WHEEL + np.array((-0.4, 1.2, -1.2))), tuple(WHEEL + np.array((0, 1.3, 0)))]
+stick_lo = tk.tube('stick', st_pts, 0.5, n=5, cap0='round', cap1='round')
+stick_hi = tk.tube('stick_hi', st_pts, 0.5, n=10, cap0='round', cap1='round')
+tk.subsurf(stick_hi, 1)
+tk.set_region(stick_hi, 'stick')
+bl_lo, bl_hi = [], []
+for i in range(4):
+    blade = [(0.0, 0.0), (6.6, 0.4), (6.0, 3.1), (0.8, 1.2)]
+    for nm_, segs, lst in (('blade', 0, bl_lo), ('blade_hi', 2, bl_hi)):
+        b_ = tk.slab(nm_, blade, 0.5, plane='XZ', bevel=0.12 if segs else 0, segs=1 if segs else 0)
+        if segs:
+            tk.subsurf(b_, 1)
+        tk.deform(b_, lambda V: np.c_[V[:, 0], V[:, 1] - 0.16 * V[:, 2] ** 2 - 0.05 * V[:, 0] * V[:, 2], V[:, 2]])  # (the curl)
+        tk.rotate(b_, 90 * i + 10, 'Y')
+        tk.move(b_, tuple(WHEEL))
+        lst.append(b_)
+pin_hi = tk.lathe('wpin_hi', [(0, -0.4), (0.9, -0.3), (1.0, 0.3), (0.6, 0.7), (0, 0.8)], n=12, axis='Y', centre=tuple(WHEEL + np.array((0, -0.5, 0))))
+tk.set_region(pin_hi, 'wpin')
+for b_ in bl_hi:
+    tk.set_region(b_, 'blade')
+wheel_lo = tk.join(bl_lo + [tk.lathe('wpin', [(0, -0.4), (1.0, 0.0), (0, 0.8)], n=5, axis='Y', centre=tuple(WHEEL + np.array((0, -0.5, 0))))], 'wheel')
+F.part('body', tk.join([body[0], knot[0], cord[0], str_lo, feet[0]], 'body'), body[1] + knot[1] + cord[1] + [str_hi] + feet[1])
+F.part('arm_r', tk.join([arm_r[0], stick_lo], 'arm_r'), arm_r[1] + [stick_hi], bone='arm_r')
+F.part('arm_l', arm_l[0], arm_l[1], bone='arm_l')
+F.part('wheel', wheel_lo, bl_hi + [pin_hi], bone='wheel', sharp=60)
 for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
 kit.eyepin(F, at=(KNOT[0] - 0.4, KNOT[1], KNOT[2] + 1.4), bone='root')
@@ -66,6 +95,9 @@ def make_rig():
     from rig import Rig
     R = Rig()
     R.bone('root', (0, 0, 0))
+    R.bone('arm_r', (6.8, -0.8, 22.4), parent='root')
+    R.bone('arm_l', (-5.8, 0.6, 22.4), parent='root')
+    R.bone('wheel', tuple(WHEEL), parent='arm_r')
     for nm, (lo, hi, root) in CORNERS.items():
         R.bone(nm, root, parent='root')
     for p in F.parts:
@@ -73,7 +105,14 @@ def make_rig():
     kit.points(R)
     k = R.key
     with R.action('gimmick'):
-        bones = ['root'] + list(CORNERS)
+        bones = ['root', 'arm_r', 'arm_l', 'wheel'] + list(CORNERS)
+        # the pinwheel whirs the whole time it spins (and a bit after), the blown-back arm flaps
+        for i, f in enumerate(range(4, 64, 3)):
+            k('wheel', f, rot=('Y', -(i + 1) * 70.0 * min(1.0, 0.4 + i / 6)), ease='LINEAR')
+        k('wheel', 70, rot=('Y', -1440), ease=('QUAD', 'EASE_OUT'))
+        for i, f in enumerate(range(10, 50, 4)):
+            k('arm_l', f, rot=('X', 12 if i % 2 else -4), ease='LINEAR')
+        k('arm_l', 54)
         for b in bones:
             k(b, 0)
         # 0-8 it winds back (anticipation), then spins twice like a top, leaning into a precessing wobble
@@ -130,17 +169,24 @@ def paint(P):
     for r in ('cloth', 'corner'):
         P.fill(P.region(r) & curl & ~face_zone, pt.ramp('#e2efe9', 6, shift=0.05), tone=sh * 0.6, base=0.1)
     P.fill('cord', pt.ramp('#e7c64a', 6, shift=0.06), tone=sh, base=0.05)
+    P.fill('hand', STORM, tone=sh, base=0.14)
+    P.fill('stick', pt.ramp('#cdb07a', 6, shift=0.05), tone=sh, base=0.1)
+    P.fill('wpin', pt.ramp('#e0b84a', 6, shift=0.05), tone=sh, base=0.1)
+    bl = P.region('blade')
+    ang = np.arctan2(P.Z - WHEEL[2], P.X - WHEEL[0])
+    for j, col in enumerate(('#e2503f', '#f2c64a', '#4b8fd0', '#f4efe6')):
+        P.fill(bl & (np.floor(np.mod(ang - math.radians(10), 2 * math.pi) / (math.pi / 2)) == j), pt.ramp(col, 6, shift=0.05), tone=sh, base=0.1)
     P.fill('pin', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
     # the face: blown about: the dots at two heights, a small round 'oh'
     import face
     fc = face.Face(P, c=FACE, axis=(0, -1, 0.1), where=P.region('cloth'), seed=41)
-    fc.blush(9.6, -1.1, rx=1.7, ry=1.0, col='#e98f8c')
-    fc.eyes(5.4, 0.48, dy=1.1, tilt=10.0)
-    fc.mouth('o', w=1.3, dy=-1.6, du=-0.3)
+    fc.blush(10.4, -1.0, rx=2.0, ry=1.1, col='#e98f8c')
+    fc.eyes('swirl', spread=7.0, size=0.8, dy=1.3, tilt=6.0)
+    fc.mouth('wobble', w=3.0, dy=-1.7, du=-0.2)
     P.lines(['cloth', 'corner'], ['cord'], step=2)
     P.clusters()
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'pin')] + [(c, 'body') for c in CORNERS], cam=((60, -84, 52), (2, 0, 20)),
+bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('arm_r', 'body'), ('arm_l', 'body')] + [(c, 'body') for c in CORNERS], cam=((60, -84, 52), (2, 0, 20)),
        fold=(0, 16, 30, 56), frames=78)

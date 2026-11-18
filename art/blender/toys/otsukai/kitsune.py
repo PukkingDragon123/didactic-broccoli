@@ -203,8 +203,8 @@ def paint(P):
     GOLD = pt.ramp('#d9a640', 7, dark=0.6, light=0.6, shift=0.08)
     VERM = pt.ramp('#cc4a32', 7, shift=0.06)
     for r in ('body', 'tail'):
-        P.fill(r, LAC, tone=sh, base=0.05)
-    P.fill('ear', LAC, tone=sh, base=0.05)
+        P.fill(r, LAC, tone=sh * 0.55, base=0.08)
+    P.fill('ear', LAC, tone=sh * 0.55, base=0.08)
     # gold leaf: the ear linings, the chest ruff's tufts, the tail's flame-tip, the paws' toes
     ear_in = P.region('ear') & (P.on[:, :, 1] < -0.2)
     P.fill(ear_in, GOLD, tone=sh, base=0.1)
@@ -219,7 +219,14 @@ def paint(P):
     P.fill(bib & (Z > PZ + 20.5), GOLD, tone=sh, base=0.1)
     P.fill(bib & (np.hypot(X, Z - (PZ + 16.5)) < 1.6), GOLD, tone=sh, base=0.1)
     # the head: a lacquer head with red markings round the eyes (the Inari make-up), the face itself left for last
-    P.fill('head', LAC, tone=sh, base=0.05)
+    P.fill('head', LAC, tone=sh * 0.55, base=0.08)
+    # the face in cream ink on the lacquer: narrow fox eyes (calm slits, tilted up at the corners) with the Inari
+    # shrine's red flicks at their outer ends; no mouth (it is busy holding the key)
+    import face
+    fc = face.Face(P, c=(0.0, -6.6, HZ + 0.9), axis=(0, -1, 0.5), where=P.region('body'), seed=61, ink='#efe4c8')
+    fc.eyes('sleepy', spread=7.4, size=0.7, dy=0.6, tilt=-8.0)
+    for sx in (-1, 1):
+        fc.stroke([(sx * 4.6, 1.0), (sx * 5.8, 1.9)], weight=0.45, col='#d4463a')
     P.lines(['bib'], step=2)
     P.lines(['jewel', 'gold'], step=1)
     P.clusters()

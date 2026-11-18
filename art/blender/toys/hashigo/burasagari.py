@@ -36,7 +36,7 @@ def make_rig():
         for b in B:
             k(b, 0)
         # a push off: it swings out over you and back, three times smaller, the right arm waving all the while
-        for f_, a in ((8, -12), (18, 6), (27, -5), (35, 3), (42, -1), (48, 0)):
+        for f_, a in ((8, -12), (18, 3), (27, -5), (35, 2), (42, -1), (48, 0)):
             k('hang', f_, rot=('X', a))
         for i, f_ in enumerate(range(4, 44, 5)):
             k('arm_r', f_, rot=('Y', 22 if i % 2 else -10))

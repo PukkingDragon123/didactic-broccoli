@@ -20,15 +20,15 @@ import kit  # noqa: E402
 
 F = bk.start('teruteru', 'niji')
 
-RINGS = [(0.0, 6.2, 0.0), (0.8, 9.2, 0.0), (3.0, 11.6, 0.0), (7.2, 12.9, 0.0), (11.4, 12.3, 0.0), (15.2, 9.9, 0.0),
+RINGS = [(0.0, 7.2, 0.0), (0.8, 10.4, 0.0), (3.0, 13.0, 0.0), (7.2, 14.3, 0.0), (11.4, 13.4, 0.0), (15.2, 10.4, 0.0),
          (17.9, 7.2, 0.0), (19.2, 7.0, 0.0), (21.2, 8.0, 0.0), (24.0, 7.8, 0.0), (26.8, 6.3, 0.0), (29.4, 4.3, 0.0),
          (31.4, 2.9, 0.0), (32.4, 2.4, 0.0)]
 NECK_Z = 18.5
 KNOT = (0.0, 0.0, 33.4)
-FACE = (0.0, -12.6, 8.6)
-MOUTH = (0.0, -12.2, 6.9)
+FACE = (0.0, -13.8, 8.0)
+MOUTH = (0.0, -13.4, 6.4)
 
-body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=7, fold_amp=0.5, cheeks=((-5.8, 7.0), (5.8, 7.0)), tris=500)
+body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=7, fold_amp=0.5, cheeks=((-6.2, 7.0), (6.2, 7.0)), tris=440, depth=0.96)
 knot = tt.knot('knot', KNOT, r=2.8, h=3.4, tris=50)
 cord = tt.neck_cord('cord', NECK_Z, RINGS, bow_at=-20, ends=((-0.5, -5.5), (0.7, -6.8)), thick=0.75, tris=110)
 
@@ -68,7 +68,14 @@ for dx, dz, r in ((-1.6, -0.3, 1.6), (0.3, 0.5, 2.0), (2.0, -0.2, 1.4)):
     tk.set_region(h, 'cloud')
     cl_hi.append(h)
 
-F.part('body', tk.join([body[0], knot[0], cord[0]], 'body'), body[1] + knot[1] + cord[1])
+ARMS = {}
+for nm, sx in (('arm_r', 1), ('arm_l', -1)):  # both hands on its full round belly
+    lo_, hi_, hc_ = tt.arm(nm, [(sx * 6.7, -1.2, 21.4), (sx * 9.6, -3.9, 19.6), (sx * 11.2, -6.4, 16.6)], hand=2.1, mitt=(-sx * 0.3, -0.5, 0.8))
+    ARMS[nm] = (lo_, hi_, (sx * 6.7, -1.2, 21.4))
+feet = tt.feet('feet', RINGS, x=4.8)
+F.part('body', tk.join([body[0], knot[0], cord[0], feet[0]], 'body'), body[1] + knot[1] + cord[1] + feet[1])
+for nm, (lo_, hi_, sh_) in ARMS.items():
+    F.part(nm, lo_, hi_, bone=nm)
 for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
 F.part('rainbow', rb_lo, [rb_hi], bone='rainbow', kind='gloss')
@@ -80,6 +87,8 @@ def make_rig():
     from rig import Rig
     R = Rig()
     R.bone('root', (0, 0, 0))
+    for nm, (lo_, hi_, sh_) in ARMS.items():
+        R.bone(nm, sh_, parent='root')
     R.bone('rainbow', (RB_X0, MOUTH[1], MOUTH[2]), parent='root')
     R.bone('cloud', CLOUD_C, parent='root')
     for nm, (lo, hi, root) in CORNERS.items():
@@ -89,7 +98,14 @@ def make_rig():
     kit.points(R)
     k = R.key
     with R.action('gimmick'):
-        bones = ['root', 'rainbow', 'cloud'] + list(CORNERS)
+        bones = ['root', 'rainbow', 'cloud', 'arm_r', 'arm_l'] + list(CORNERS)
+        # after the gulp it pats its belly (a little rub, one hand then the other)
+        for nm, sx, t0 in (('arm_r', 1, 34), ('arm_l', -1, 38)):
+            k(nm, t0)
+            k(nm, t0 + 3, rot=('X', -6))
+            k(nm, t0 + 6, rot=('X', 2))
+            k(nm, t0 + 9, rot=('X', -5))
+            k(nm, t0 + 13)
         for b in bones:
             k(b, 0)
         # 0-6 it leans back to get a grip on it; 6-26 sluuurp: the rainbow shrinks away into its mouth
@@ -137,6 +153,7 @@ def paint(P):
     P.fill('cloth', INKBLACK, tone=sh, base=0.05 * tk.smoothstep(20, 33, Z))
     P.fill('corner', INKBLACK, tone=sh, base=0.1)
     P.fill('cord', pt.ramp('#d9cfb6', 6, shift=0.05), tone=sh, base=0.05)
+    P.fill('hand', INKBLACK, tone=sh, base=0.14)
     P.fill('pin', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
     P.fill('cloud', pt.ramp('#f2efe8', 6, shift=0.05), tone=sh, base=0.15)
     # the rainbow: seven bands along it (across its width), each its own ramp, with a paint line between bands
@@ -148,13 +165,18 @@ def paint(P):
     # the face in white chalk: dots wide apart, one long flat mouth the rainbow comes out of
     import face
     fc = face.Face(P, c=FACE, axis=(0, -1, 0.1), where=P.region('cloth'), seed=51, ink='#efe4c8')
-    fc.eyes(8.6, 0.55, dy=1.6)
-    fc.mouth('line', w=7.0, dy=-1.7)
-    fc.blush(12.4, -0.9, rx=1.6, ry=0.9, col='#7a5d74')
+    fc.eyes('happy', spread=9.0, size=0.8, dy=1.8)
+    fc.mouth('pout', w=2.8, dy=-1.7, du=1.4)
+    fc.blush(13.0, -0.6, rx=2.0, ry=1.1, col='#7a5d74')
+    # the drippy rainbow lips: drips of every colour running down from its mouth
+    for i, (du, L_) in enumerate(((-0.6, 2.0), (0.4, 3.1), (1.3, 1.6), (2.1, 2.6), (2.9, 1.9))):
+        col = RAINBOW[(i * 2) % 7]
+        fc.stroke([(du, -2.2), (du + 0.05, -2.2 - L_)], weight=0.45, taper=(1.0, 0.6), col=col)
+        fc.stroke([(du + 0.05, -2.3 - L_), (du + 0.06, -2.6 - L_)], weight=0.95, taper=(1.0, 1.0), col=col)
     P.lines(['cloth', 'corner'], ['cord'], step=1)
     P.clusters()
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('cloud', 'body'), ('rainbow', 'body')] + [(c, 'body') for c in CORNERS],
+bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('cloud', 'body'), ('rainbow', 'body'), ('rainbow', 'cloud'), ('arm_r', 'body'), ('arm_l', 'body')] + [(c, 'body') for c in CORNERS],
        cam=((66, -96, 54), (0, -6, 18)), fold=(0, 18, 42, 64), frames=80)

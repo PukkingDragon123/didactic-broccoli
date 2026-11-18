@@ -52,7 +52,7 @@ for o in (cab_lo, cab_hi):
     tk.boolean(o, tk.rbox('scr', (SW + 1.0, 6.0, SH + 1.0), centre=(0, FY, SZ), bevel=2.2, segs=2))
 tk.regions(cab_hi, 'walnut', [('bezel', lambda C, N: (np.abs(C[:, 0]) < SW / 2 + 1.0) & (np.abs(C[:, 2] - SZ) < SH / 2 + 1.0) & (C[:, 1] > FY - 0.5) & (C[:, 1] < FY + 3.2)),
                               ('panel', lambda C, N: (N[:, 1] < -0.8) & (C[:, 2] < SZ - SH / 2 - 2.6) & (np.abs(C[:, 0]) < CW / 2 - 3))])
-tk.decimate(cab_lo, 300)
+tk.decimate(cab_lo, 380)
 
 # the picture tube (a light-up part): a domed glass face set back in the opening
 scr = tk.rbox('screen', (SW + 0.6, 2.4, SH + 0.6), centre=(0, FY + 3.0, SZ), bevel=2.0, segs=2)
@@ -62,13 +62,13 @@ scr_lo, scr_hi = cx.low(scr, 'screen', 70, lo=0, hi=2, region='screen')
 # the control strip under the screen: two knobs (channel and volume) and a speaker grille
 KNOBS = []
 for x in (-10.5, 10.5):
-    kb = tk.lathe('knob', [(0, 0.6), (2.0, 0.6), (2.2, -0.6), (1.8, -1.8), (0, -2.0)], n=12, axis='Y', centre=(x, FY, LZ + 4.0))
+    kb = tk.lathe('knob', [(0, 0.6), (1.8, 0.6), (1.95, -0.6), (1.6, -1.8), (0, -2.0)], n=12, axis='Y', centre=(x, FY, LZ + 3.0))
     KNOBS.append(cx.low(kb, 'knob', 30, lo=0, hi=1, region='brass'))
 
 # ------------------------------------------------------------------ the doors (eyelids), open to the sides of the screen
 DOORS = {}
 for sx, nm in ((1, 'door_l'), (-1, 'door_r')):
-    d = tk.rbox(nm, (DW, 1.1, SH + 3.6), centre=(sx * (SW / 2 + DW / 2 + 0.3), FY - 0.75, SZ), bevel=0.45, segs=1)
+    d = tk.rbox(nm, (DW, 1.1, SH + 3.6), centre=(sx * (SW / 2 + DW / 2 + 0.3), FY - 1.2, SZ), bevel=0.45, segs=1)
 
     def sc_door(h, sx=sx):
         def f(V, N):  # tambour slats
@@ -139,7 +139,7 @@ def make_rig():
     R = Rig()
     R.bone('root', (0, 0, 0.5))
     for nm, (lo, hi, sx) in DOORS.items():
-        R.bone(nm, (sx * (SW / 2 + DW / 2), FY - 0.75, SZ), parent='root')
+        R.bone(nm, (sx * (SW / 2 + DW / 2), FY - 1.2, SZ), parent='root')
     for nm, (lo, up, root, dirv) in RODS.items():
         R.bone(nm, root, parent='root')
         R.bone(nm + '_tip', tuple(np.array(root) + dirv * 6.0), parent=nm)
@@ -210,7 +210,7 @@ def paint(P):
     P.fill('bezel', pt.ramp('#d2b06a', 7, shift=0.06), tone=sh * 1.2, base=0.1)
     P.fill('panel', pt.ramp('#5a3a26', 6, shift=0.06), tone=sh, base=0.1)
     pnl = P.region('panel')
-    P.flat(pnl & (np.abs(np.mod(X, 1.4) - 0.7) < 0.25) & (np.abs(X) < 7.0) & (np.abs(Z - (LZ + 4.0)) < 2.0), '#2e1e16')
+    P.flat(pnl & (np.abs(np.mod(X, 1.4) - 0.7) < 0.25) & (np.abs(X) < 7.0) & (np.abs(Z - (LZ + 3.0)) < 1.6), '#2e1e16')
     P.fill('brass', pt.ramp('#d2a64a', 7, dark=0.6, light=0.6, shift=0.06), tone=sh * 1.3, base=0.1)
     P.fill('gold', pt.ramp('#dcb050', 7, dark=0.6, light=0.6, shift=0.06), tone=free * 1.3, base=0.15)
     P.fill('cream', pt.ramp('#f1e4c6', 6, shift=0.05), tone=sh, base=0.1)

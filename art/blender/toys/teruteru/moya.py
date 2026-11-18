@@ -24,12 +24,26 @@ RINGS = [(0.0, 5.6, 0.0), (0.8, 8.6, 0.0), (3.0, 11.0, 0.0), (7.2, 12.2, 0.0), (
          (34.6, 2.8, 0.0), (35.8, 2.3, 0.0)]
 NECK_Z = 18.5
 KNOT = (0.0, 0.0, 36.8)
-FACE = (0.0, -12.0, 8.6)
+FACE = (0.0, -12.2, 7.8)
 VEIL_A = -113.0   # the veil's azimuth (degrees: -90 is the front)
 
-body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=8, fold_amp=0.45, cheeks=((-5.4, 7.4), (5.4, 7.4)), tris=500)
+body = tt.body(RINGS, n=18, neck_z=NECK_Z, knot=KNOT, folds=8, fold_amp=0.45, cheeks=((-5.4, 7.4), (5.4, 7.4)), tris=440)
 knot = tt.knot('knot', KNOT, r=2.7, h=3.4, tris=50)
-cord = tt.neck_cord('cord', NECK_Z, RINGS, bow_at=-62, ends=((0.5, -5.5), (1.3, -6.6)), thick=0.6, tris=100)
+# a wispy cloud scarf round its neck (puffs of mist), its end trailing off behind
+sc_lo, sc_hi = [], []
+r_neck = tt.ring_r(RINGS, NECK_Z)[0]
+PUFFS = [(r_neck + 1.1 + 0.4 * math.sin(a * 2), a, NECK_Z + 0.6 * math.sin(a * 3), 2.6 + 0.5 * math.cos(a * 5)) for a in np.linspace(0, 2 * math.pi, 13, endpoint=False)]
+PUFFS += [(r_neck + 3.6, math.radians(52), NECK_Z - 0.6, 2.1), (r_neck + 6.4, math.radians(60), NECK_Z - 1.4, 1.7), (r_neck + 8.8, math.radians(64), NECK_Z - 2.6, 1.25)]
+for rr, a, z, pr in PUFFS:
+    c = (rr * math.cos(a), rr * math.sin(a), z)
+    sc_lo.append(tk.lathe('puff', [(0, -pr), (pr * 0.85, -pr * 0.5), (pr * 0.85, pr * 0.5), (0, pr)], n=6, centre=c))
+    h_ = tk.lathe('puff_hi', [(0, -pr)] + [(pr * math.sin(q), -pr * math.cos(q)) for q in np.linspace(0.25, math.pi - 0.25, 8)] + [(0, pr)], n=14, centre=c)
+    tk.subsurf(h_, 1)
+    tk.push(h_, lambda V, N, c=c: 0.18 * np.cos((V[:, 0] - c[0]) * 2.2 + (V[:, 2] - c[2]) * 1.7) ** 2)
+    tk.set_region(h_, 'scarf')
+    sc_hi.append(h_)
+scarf_lo = tk.decimate(tk.join(sc_lo, 'scarf'), 200)
+cord = (scarf_lo, sc_hi)
 
 
 # ------------------------------------------------------------------ the veil: a long corner hanging over the face
@@ -83,7 +97,12 @@ for nm, ang, L, W, a0, a1 in (('c_fr', -38, 8.5, 7.5, 40, -40), ('c_bl', 128, 19
                                   root_r=1.4, shape=0.5, power=1.1, curl=0.4)
     CORNERS[nm] = (lo, hi, root)
 
-F.part('body', tk.join([body[0], knot[0], cord[0]], 'body'), body[1] + knot[1] + cord[1])
+arm_r = tt.arm('arm_r', [(6.0, -0.8, 22.4), (6.9, -4.8, 21.9), (3.6, -8.3, 21.6)], hand=1.9, mitt=(0.3, -0.4, 0.8))
+arm_l = tt.arm('arm_l', [(-6.1, 0.2, 22.4), (-8.4, -0.3, 21.0), (-9.4, -0.9, 18.6)], hand=1.9)
+feet = tt.feet('feet', RINGS, size=(4.2, 5.2, 2.4))
+F.part('body', tk.join([body[0], knot[0], cord[0], feet[0]], 'body'), body[1] + knot[1] + cord[1] + feet[1])
+F.part('arm_r', arm_r[0], arm_r[1], bone='arm_r')
+F.part('arm_l', arm_l[0], arm_l[1], bone='arm_l')
 F.part('veil', veil_lo, [veil_hi], bone='veil', sharp=60)
 for nm, (lo, hi, root) in CORNERS.items():
     F.part(nm, lo, [hi], bone=nm, sharp=60)
@@ -94,6 +113,8 @@ def make_rig():
     from rig import Rig
     R = Rig()
     R.bone('root', (0, 0, 0))
+    R.bone('arm_r', (6.0, -0.8, 22.4), parent='root')
+    R.bone('arm_l', (-6.1, 0.2, 22.4), parent='root')
     R.bone('veil', VPIV, parent='root')
     for nm, (lo, hi, root) in CORNERS.items():
         R.bone(nm, root, parent='root')
@@ -104,7 +125,14 @@ def make_rig():
     a = math.radians(VEIL_A)
     vax = (-math.sin(a), math.cos(a), 0.0)   # the veil lifts about the knot's tangent (out and up)
     with R.action('gimmick'):
-        bones = ['root', 'veil'] + list(CORNERS)
+        bones = ['root', 'veil', 'arm_r', 'arm_l'] + list(CORNERS)
+        # the fidgeting hand comes up in a shy little wave while it peeks
+        k('arm_r', 18)
+        k('arm_r', 24, rot=('X', -16), ease='BACK')
+        for i, f in enumerate((28, 32, 36, 40)):
+            k('arm_r', f, rot=[('X', -16), ('Z', 10 if i % 2 else -6)])
+        k('arm_r', 48, rot=('X', -12))
+        k('arm_r', 56)
         for b in bones:
             k(b, 0)
         # 0-10 a shy wriggle
@@ -156,19 +184,20 @@ def paint(P):
         band |= (t <= 1) & (np.abs(Z - z0 - 0.5 * np.sin(t * 6)) < h * step)
     for r in ('cloth', 'corner', 'veil'):
         P.fill(P.region(r) & band & ~face_zone, pt.ramp('#aaa2c6', 6, shift=0.06), tone=sh * 0.7, base=0.05)
-    P.fill('cord', pt.ramp('#8a7fb0', 6, shift=0.06), tone=sh, base=0.05)
+    P.fill('scarf', pt.ramp('#eef0f6', 6, shift=0.06), tone=sh, base=0.16 + 0.1 * tk.smoothstep(NECK_Z - 3, NECK_Z + 2, Z))
+    P.fill('hand', GAUZE, tone=sh, base=0.16)
     P.fill('pin', pt.ramp('#b9c0c6', 7, dark=0.7, light=0.7, shift=0.04), tone=sh * 1.4, base=0.15)
     # the face: dots wide apart (the left one under the veil), a small upturned mouth, a shy blush
     import face
     fc = face.Face(P, c=FACE, axis=(0, -1, 0.1), where=P.region('cloth'), seed=31)
-    fc.blush(9.4, -1.1, rx=1.7, ry=1.0, col='#eca6b6')
-    fc.eyes(6.2, 0.45, dy=1.0)
-    fc.mouth('upturn', w=2.2, dy=-1.4, du=0.6)
-    P.lines(['cloth', 'corner', 'veil'], ['cord'], step=2)
+    fc.blush(9.8, -1.0, rx=2.1, ry=1.25, col='#eca6b6')
+    fc.eyes('side', spread=6.6, size=0.72, dy=1.1, look=1)
+    fc.mouth('upturn', w=2.4, dy=-1.5, du=0.7)
+    P.lines(['cloth', 'corner', 'veil'], ['scarf'], step=1)
     P.lines(['veil'], step=1)
     P.clusters()
     return P.done()
 
 
-bk.run(F, make_rig, paint, skip=[('body', 'pin')] + [(c, 'body') for c in CORNERS],
+bk.run(F, make_rig, paint, skip=[('body', 'pin'), ('arm_r', 'body'), ('arm_l', 'body')] + [(c, 'body') for c in CORNERS],
        cam=((60, -84, 52), (0, 0, 21)), fold=(0, 20, 34, 56), frames=72)
