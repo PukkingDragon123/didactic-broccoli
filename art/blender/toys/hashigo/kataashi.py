@@ -22,7 +22,7 @@ tk.reset()
 F = Fig('hashigo', 'kataashi')
 
 PELVIS = (0.6, -5.4, 20.6)
-M = fr.body_matrix(rot=(-4, 7, 0), at=PELVIS)
+M = fr.body_matrix(rot=(-9, 7, 0), at=PELVIS)
 fr.ladder(F, seed=1)
 lo, his = fr.body(F, M, seed=11)
 F.part('body', lo, his, bone='body')
@@ -45,6 +45,11 @@ for o in (fan_hi, fan_lo):
 tk.set_region(fan_hi, 'fan')
 F.part('fan', fan_lo, [fan_hi], bone='fan', kind='gloss')
 FOOT_L = (3.8, -3.2, 13.6)
+
+# the frog grown 15% about its standing foot (the rung moved up 1 mm)
+T, M = fr.grow(F, M, FOOT_L, shift=(0, 0, 1.0))
+FOOT_L, HIP_L, HIP_R, SH_L, SH_R = [T(p) for p in (FOOT_L, HIP_L, HIP_R, SH_L, SH_R)]
+FAN0 = np.array(T(FAN0))
 
 
 def make_rig():
@@ -97,7 +102,7 @@ def paint(P, pt):
     P.flat(P.region('fan') & (np.abs(r - 3.9) < 1.05) & (P.Z > FAN0[2] + 1.2) & (np.abs(P.X - FAN0[0] + 0.6) < 2.2), '#e9b83c')
     P.flat(P.region('fan') & (r < 1.3), '#221a18')
     # the face: a dot eye on each bump, one upturned marker stroke right across the head, a blush
-    fr.frog_face(P, M, eyes='dot', mouth='upturn', seed=14, blush=True, mouth_w=15.0, weight=0.5, side=1)
+    fr.frog_face(P, M, eyes='dot', mouth='upturn', seed=14, blush=True, mouth_w=19.0, weight=0.6, side=1)
     P.lines(['skin', 'belly'], ['happi', 'band'], step=1)
     P.lines(['pad'], ['skin', 'belly'], col='#1b1513', step=1)  # (marker outlines round the toe pads)
     P.clusters()

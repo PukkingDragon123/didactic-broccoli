@@ -9,7 +9,7 @@ from mathutils import Vector  # noqa: E402
 
 F = Fig('hashigo', 'matoi')
 PELVIS = (0.6, -6.4, 11.2)
-M = fr.body_matrix(rot=(0, -4, 0), at=PELVIS)
+M = fr.body_matrix(rot=(-8, -4, 0), at=PELVIS)
 fr.ladder(F, seed=5)
 lo, his = fr.body(F, M, seed=51, belly=1.05)
 F.part('body', lo, his, bone='body')
@@ -53,6 +53,11 @@ for o in (box_hi, g_hi, box_lo, g_lo, bar_hi, bar_lo):
 tk.set_region(box_hi, 'dashi')
 F.part('pole', tk.join([pole_lo, box_lo, g_lo], 'pole'), [pole_hi, box_hi, g_hi], bone='matoi', kind='gloss')
 F.part('baren', bar_lo, [bar_hi], bone='baren')
+
+# the frog (and its matoi) grown 15% about its feet on the board
+T, M = fr.grow(F, M, (0.8, -8.6, 4.4))
+PELVIS, SH_L, SH_R, HIP_L, HIP_R = [T(p) for p in (PELVIS, SH_L, SH_R, HIP_L, HIP_R)]
+B0, B1 = Vector(T(B0)), Vector(T(B1))
 
 
 def make_rig():
@@ -106,7 +111,7 @@ def paint(P, pt):
     Q = (P.pos - np.array(B1)) @ np.array(D)
     P.flat(P.region('baren') & ((np.abs(Q + 5.2) < 0.45) | (np.abs(Q + 6.6) < 0.3)), '#2a2220')
     P.flat(P.region('dashi') & (np.abs(Q - 1.4) < 0.3), '#c8342c')
-    fr.frog_face(P, M, eyes='big', mouth='shout', seed=55, mouth_w=7.0, h=4.4, weight=0.5)
+    fr.frog_face(P, M, eyes='big', mouth='shout', seed=55, mouth_w=9.0, h=5.6, weight=0.6)
     P.lines(['skin', 'belly'], ['happi', 'band'], step=1)
     P.lines(['pad'], ['skin', 'belly'], col='#1b1513', step=1)  # (marker outlines round the toe pads)
     P.clusters()

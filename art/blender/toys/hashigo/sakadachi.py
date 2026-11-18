@@ -5,7 +5,7 @@ grinning at you upside down. Gimmick: it lets go with one hand, waves, scissors 
 """
 exec(open(__file__.replace('sakadachi.py', '_head.py')).read())
 F = Fig('hashigo', 'sakadachi')
-M = fr.body_matrix(rot=(0, 180, 4), at=(0, -5.6, 31.0))  # upside down, still facing you
+M = fr.body_matrix(rot=(12, 180, 4), at=(0, -5.6, 31.0))  # upside down, still facing you
 fr.ladder(F, seed=2)
 lo, his = fr.body(F, M, seed=21, belly=1.08)
 F.part('body', lo, his, bone='body')
@@ -16,6 +16,10 @@ arm_r, SH_R = fr.arm(F, M, -1, elbow=(8.2, -5.8, 18.8), wrist=(5.6, -0.6, 14.2),
 leg_l, HIP_L = fr.leg(F, M, 1, knee=(-9.6, -7.6, 34.6), heel=(-8.4, -4.4, 38.4), ankle=(-11.4, -5.6, 40.6), foot_dir=(-0.8, -0.2, 0.45), foot_up=(-0.4, -0.5, -0.7))
 leg_r, HIP_R = fr.leg(F, M, -1, knee=(9.6, -7.6, 34.6), heel=(8.4, -4.4, 38.4), ankle=(11.4, -5.6, 40.6), foot_dir=(0.8, -0.2, 0.45), foot_up=(0.4, -0.5, -0.7))
 HAND_L = (-5.6, -0.6, 14.2)
+
+# the frog grown 15% about the hand on the rung (the rung moved up 1 mm)
+T, M = fr.grow(F, M, HAND_L, shift=(0, 0, 1.0))
+HAND_L, SH_L, SH_R, HIP_L, HIP_R = [T(p) for p in (HAND_L, SH_L, SH_R, HIP_L, HIP_R)]
 
 
 def make_rig():
@@ -55,9 +59,9 @@ def make_rig():
 def paint(P, pt):
     sh = P.shade(light=0.0, ao=0.8, cav=1.1)
     fr.paint_ladder(P, pt, sh)
-    fr.paint_frog(P, pt, sh, skin='#9a6e3e', belly='#e3d0a0', happi='#5a2a2a', spots='#6e4a2a', seed=5)
+    fr.paint_frog(P, pt, sh, skin='#8a7a3e', belly='#ece2b8', happi='#5a2a2a', spots='#6e4a2a', seed=5)
     fr.happi_marks(P, M, pt, sh)
-    fr.frog_face(P, M, eyes='happy', mouth='grin', seed=24, mouth_w=10.0, h=3.0, weight=0.46, teeth=3)
+    fr.frog_face(P, M, eyes='happy', mouth='grin', seed=24, mouth_w=13.0, h=3.8, weight=0.55, teeth=3)
     P.lines(['skin', 'belly'], ['happi', 'band'], step=1)
     P.lines(['pad'], ['skin', 'belly'], col='#1b1513', step=1)  # (marker outlines round the toe pads)
     P.clusters()

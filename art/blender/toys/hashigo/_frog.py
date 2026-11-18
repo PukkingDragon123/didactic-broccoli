@@ -18,16 +18,16 @@ from mathutils import Euler, Matrix, Vector
 LY = 2.0                  # the ladder's plane (rails, rungs)
 RX = 11.0                 # rail centres
 RR = 1.75                 # rail radius
-TOP = 45.0                # the rail tops (where the next section's board sits)
-RUNG = (12.0, 27.0)       # rung heights (the frogs perform in front of the ladder, the rungs pass behind them)
+TOP = 50.0                # the rail tops (where the next section's board sits)
+RUNG = (13.0, 30.0)       # rung heights (the frogs perform in front of the ladder, the rungs pass behind them)
 BOARD = (26.0, 19.0, 3.0)  # the foot board (x, y, z), centred at (0, LY - 3, 1.5)
 
 # the frog's body, local: spine up +Z from the pelvis, the front -Y: (z, width, front half-depth, back half-depth)
-BODY = [(-1.0, 8.0, 3.6, 3.6), (0.8, 12.6, 5.8, 5.2), (3.2, 14.2, 6.2, 5.4), (5.6, 13.8, 5.6, 5.0), (7.4, 15.6, 5.8, 4.8),
-        (9.4, 18.2, 6.6, 5.0), (11.8, 18.6, 6.4, 4.8), (13.8, 16.4, 5.4, 4.0), (15.2, 11.6, 3.6, 2.8), (16.0, 5.0, 1.6, 1.2)]
+BODY = [(-1.0, 8.0, 3.6, 3.6), (0.8, 12.6, 5.8, 5.2), (3.2, 14.2, 6.2, 5.4), (5.6, 14.6, 5.6, 5.0), (7.4, 18.0, 6.0, 4.8),
+        (9.4, 22.0, 6.8, 5.0), (11.8, 22.4, 6.4, 4.8), (13.6, 19.6, 5.2, 4.0), (15.0, 13.6, 3.4, 2.6), (15.8, 6.0, 1.5, 1.1)]
 SHOULDER = (6.4, -1.0, 6.2)  # (x mirrored)
 HIP = (4.8, 0.6, 0.8)
-EYE_BUMP = (6.3, -2.2, 15.0)  # the eye bumps at the top corners of the wide flat head
+EYE_BUMP = (7.7, -2.4, 14.6)  # the eye bumps, proud on the top corners of the wide flat head
 MOUTH_Z = 9.6                # the mouth line, right across the front of the head (local)
 
 
@@ -41,7 +41,7 @@ def W(M, p):
 
 
 # ------------------------------------------------------------------ the ladder section
-def ladder(F, seed=1, nodes=(7.5, 20.0, 34.0, 41.5)):
+def ladder(F, seed=1, nodes=(7.5, 21.0, 36.0, 46.0)):
     """The bamboo section: rails with nodes, two rope-lashed rungs, the foot board with peg sockets, pegs on top."""
     rng = np.random.default_rng(seed)
     his, los = [], []
@@ -125,8 +125,8 @@ def body(F, M, name='body', seed=1, belly=1.0, head_k=1.0, happi=True, hachimaki
             x, y, z = V[:, 0], V[:, 1], V[:, 2]
             d = 0.0
             for sx in (1, -1):  # the eye bumps, and a soft cheek pouch under each
-                d = d + tk.bump(V, (sx * EYE_BUMP[0] * head_k, EYE_BUMP[1], EYE_BUMP[2] * (1 + (head_k - 1) * 0.5)), 3.2, 2.8, sharp=1.4)
-                d = d + tk.bump(V, (sx * 7.6 * head_k, -4.4, 8.4), 3.0, 0.45)  # the throat pouch corners
+                d = d + tk.bump(V, (sx * EYE_BUMP[0] * head_k, EYE_BUMP[1], EYE_BUMP[2] * (1 + (head_k - 1) * 0.5)), 3.7, 3.9, sharp=1.3)
+                d = d + tk.bump(V, (sx * 9.4 * head_k, -4.4, 8.6), 3.2, 0.45)  # the jaw corners
             back = y > -1.0
             ang = np.arctan2(x, np.maximum(y, 1e-3) + 3.0)
             for wz, wa, wh in W_:  # warts on the back and the head top (none on the belly)
@@ -147,8 +147,8 @@ def body(F, M, name='body', seed=1, belly=1.0, head_k=1.0, happi=True, hachimaki
         los.append(hlo)
         his.append(hhi)
     if hachimaki:  # the twisted headband round the head, the knot at the back with two short tails
-        zc = 12.4 * (1 + (head_k - 1) * 0.5)  # round the head between the mouth and the eye bumps
-        ring = [(math.sin(a) * (9.45 * head_k), -math.cos(a) * (6.55 * head_k) * (1.0 if math.cos(a) > 0 else 0.76), zc + 0.3 * math.cos(a))
+        zc = 12.2 * (1 + (head_k - 1) * 0.5)  # round the head between the mouth and the eye bumps
+        ring = [(math.sin(a) * (11.25 * head_k), -math.cos(a) * (6.55 * head_k) * (1.0 if math.cos(a) > 0 else 0.76), zc + 0.3 * math.cos(a))
                 for a in np.linspace(0, 2 * math.pi, 18, endpoint=False)]
         band_hi = tk.tube('band_hi', ring, 0.6, n=8, closed=True, squash=1.8)
         tk.push(band_hi, lambda V, N: 0.22 * np.sin(np.arctan2(V[:, 0], V[:, 1]) * 22 + V[:, 2] * 3))  # the twist
@@ -196,7 +196,7 @@ def limb(F, name, pts, radii, end, end_dir, end_up, fingers=4, splay=1.0, pad=0.
         fd = (d * math.cos(a) + side * math.sin(a)).normalized()
         L = length * (0.85 + 0.3 * (1 - abs(i / max(1, fingers - 1) - 0.6)))
         p0, p1 = e + d * 1.0, e + d * 1.0 + fd * L
-        f_hi = tk.tube(name + '_f_hi', [tuple(p0), tuple((p0 + p1) / 2), tuple(p1)], [0.42, 0.36, 0.34], n=6, squash=0.7, up=tuple(up))
+        f_hi = tk.tube(name + '_f_hi', [tuple(p0), tuple((p0 + p1) / 2), tuple(p1)], [0.55, 0.45, 0.42], n=6, squash=0.7, up=tuple(up))
         pad_hi = tk.loft(name + '_pad', [{'c': tuple(p1 - fd * 0.2), 'w': pad * 1.6, 'h': pad * 0.8}, {'c': tuple(p1 + fd * 0.35), 'w': pad * 1.7, 'h': pad * 0.85},
                                         {'c': tuple(p1 + fd * 0.8), 'w': pad * 0.7, 'h': pad * 0.4}], n=8, up=tuple(up))
         tk.set_region(pad_hi, 'pad')
@@ -221,8 +221,10 @@ def limb(F, name, pts, radii, end, end_dir, end_up, fingers=4, splay=1.0, pad=0.
 
 def arm(F, M, sx, elbow, wrist, hand_dir, hand_up, name=None, tris=118, **kw):
     sh = W(M, (sx * SHOULDER[0], SHOULDER[1], SHOULDER[2]))
-    return limb(F, name or ('arm_l' if sx > 0 else 'arm_r'), [sh, elbow, wrist], [2.0, 1.6, 1.25], wrist, hand_dir, hand_up,
-                fingers=4, splay=1.7, pad=0.85, length=2.8, sleeve=0.5, tris=tris, **kw), sh
+    a, e, w = Vector(sh), Vector(elbow), Vector(wrist)
+    pts = [tuple(a), tuple(a.lerp(e, 0.45)), tuple(e), tuple(e.lerp(w, 0.4)), tuple(w)]
+    return limb(F, name or ('arm_l' if sx > 0 else 'arm_r'), pts, [2.1, 2.25, 1.5, 1.7, 1.05], wrist, hand_dir, hand_up,
+                fingers=4, splay=1.9, pad=1.05, length=3.3, sleeve=0.22, tris=tris, **kw), sh
 
 
 def leg(F, M, sx, knee, heel, ankle, foot_dir, foot_up, name=None, tris=132, **kw):
@@ -239,7 +241,7 @@ def paint_ladder(P, pt, sh, seed=1):
     BAMBOO = pt.ramp('#c9b46a', 7, shift=0.07)
     P.fill('bamboo', BAMBOO, tone=sh, base=0.05)
     rail = P.region('bamboo')
-    node = rail & np.any([np.abs(Z - zn) < 0.45 for zn in (7.5, 20.0, 34.0, 41.5)], axis=0)
+    node = rail & np.any([np.abs(Z - zn) < 0.45 for zn in (7.5, 21.0, 36.0, 46.0)], axis=0)
     P.tint(node, pt.ramp('#8f8a4a', 6, shift=0.06), sh - 0.05)
     P.tint(rail & (np.sin(Z * 0.5 + X * 2.0) > 0.93), pt.ramp('#a89650', 6, shift=0.05), sh)  # streaks in the cane
     P.fill('rope', pt.ramp('#3a3330', 6, shift=0.04), tone=sh, base=0.0)
@@ -348,7 +350,7 @@ def run(F, ARGS, make_rig, paint_fn, cam=((70, -110, 52), (0, -2, 23)), back=((-
     F.export(R)
 
 
-def frog_face(P, M, eyes='dot', mouth='upturn', seed=1, head_k=1.0, brows=None, blush=False, mouth_w=15.0, look=1, **mk):
+def frog_face(P, M, eyes='dot', mouth='upturn', seed=1, head_k=1.0, brows=None, blush=False, mouth_w=19.0, look=1, **mk):
     """The frog's face, painted like a quick marker drawing: a dot (or line) eye on the front of each eye bump and ONE
     mouth stroke right across the front of the head (or another mouth, still wide). The toe pads and the mouth get
     their ink outline from paint_frog / P.lines."""
@@ -363,10 +365,25 @@ def frog_face(P, M, eyes='dot', mouth='upturn', seed=1, head_k=1.0, brows=None, 
         ax = fwd + up * 0.45 + (np.array(W(M, (sx, 0, 0))) - o) * 0.15
         fc = face.Face(P, tuple(bump), tuple(ax), up=tuple(up), where=skin, seed=seed + sx, depth=2.5)
         kind = ('dot' if sx < 0 else 'happy') if eyes == 'wink' else eyes
-        fc.eyes(kind, spread=0.0, size=0.62, dy=0.0, look=look, only=sx)
+        fc.eyes(kind, spread=0.0, size=0.85, dy=0.0, look=look, only=sx)
         if brows:
             fc.brows(brows, spread=0.0, dy=2.1, w=2.4, only=sx)
     fc = face.Face(P, W(M, (0, -6.6 * head_k, MOUTH_Z * zf)), tuple(fwd), up=tuple(up), where=skin, seed=seed + 7)
     fc.mouth(mouth, w=mouth_w * head_k, dy=0.0, **mk)
     if blush:
-        fc.blush(13.0 * head_k, 1.6, rx=1.6, ry=0.85, col='#e88c6c')
+        fc.blush(16.0 * head_k, 1.6, rx=1.8, ry=0.95, col='#e88c6c')
+
+
+def grow(F, M, pivot, k=1.15, shift=(0, 0, 0)):
+    """Scale the frog (every part but the ladder) by k about `pivot` (its contact with the ladder or the board), then
+    shift it (the rungs moved). Returns T (a point map for the rig's pivots) and the new body matrix."""
+    pv, sh = Vector(pivot), Vector(shift)
+    G = Matrix.Translation(pv + sh) @ Matrix.Diagonal((k, k, k, 1)) @ Matrix.Translation(-pv)
+    for p in F.parts:
+        if p.name == 'ladder':
+            continue
+        tk.transform(p.low, G)
+        for h in p.highs:
+            tk.transform(h, G)
+    T = lambda q: tuple(G @ Vector(q))  # noqa: E731
+    return T, G @ M

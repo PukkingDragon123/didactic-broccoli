@@ -184,9 +184,17 @@ def paint(P):
     BLACK = pt.ramp('#33323a', 7, shift=0.06)
     WHITE = pt.ramp('#efebe2', 7, shift=0.06)
     tone = np.where(P.part == 0, sh, free)
-    P.fill('black', BLACK, tone=tone, base=0.2)
-    P.fill('white', WHITE, tone=tone, base=0.05)
-    P.fill('red', pt.ramp('#d2343c', 6, shift=0.06), tone=tone, base=0.1)
+    # the plumage as smooth painted masks (the sculpt's region faces would step): black, the white front and cheeks, red
+    plum = P.region('black') | P.region('white') | P.region('red')
+    P.fill(plum, BLACK, tone=tone, base=0.2)
+    bodym = plum & (P.part == 0)
+    hd0 = plum & (P.part == 1)
+    white = (bodym & (on[:, :, 1] < -0.32) & (Z > 4.4) & (Z < 24.5)) | \
+            (hd0 & (((Z < HC[2] + 3.2 - 0.25 * np.clip(Yc - HC[1], 0, None)) & (np.abs(on[:, :, 0]) > 0.3) & (Yc < HC[1] + 4.2)) | ((on[:, :, 1] < -0.5) & (Z < HC[2] + 2.4))))
+    P.fill(white, WHITE, tone=tone, base=0.05)
+    RED = pt.ramp('#d2343c', 6, shift=0.06)
+    P.fill(bodym & (Z < 4.6) & (on[:, :, 1] < 0.4), RED, tone=tone, base=0.1)
+    P.fill(hd0 & ((Yc - (HC[1] + 6.6)) ** 2 / 4.0 + (Z - (HC[2] + 0.8)) ** 2 / 6.0 < 1) & (on[:, :, 1] > 0.3), RED, tone=free, base=0.1)
     P.fill('beak', pt.ramp('#5a5a62', 6, shift=0.05), tone=free, base=0.2)
     P.fill('foot', pt.ramp('#7a6e70', 6, shift=0.05), tone=sh, base=0.1)
     # the wings' white bars and the big white shoulder patch of a great spotted woodpecker
@@ -198,10 +206,7 @@ def paint(P):
     P.fill('arm', pt.ramp('#c8303a', 6, shift=0.06), tone=free, base=0.1)
     arm = P.region('arm')
     P.flat(arm & (np.abs(Z - (SH[-1][2] - 3.6)) < 0.35), '#f2dc8a')
-    # the black moustache stripe from the beak back under the cheek
     hd = P.part == 1
-    must = P.region('white') & hd & (np.abs(Z - (HC[2] - 2.4 + 0.3 * (Yc - HC[1] + 4.0))) < 0.36) & (Yc > HC[1] - 5.4) & (Yc < HC[1] + 1.6)
-    P.tint(must, BLACK, free + 0.2)
     # the cap: railway navy, a gold band stripe, a black glossy visor, the gold badge
     NAVY = pt.ramp('#2c3a5c', 7, shift=0.06)
     P.fill('cap', NAVY, tone=free, base=0.15)
@@ -216,10 +221,10 @@ def paint(P):
     P.fill('steel', pt.ramp('#b8c0c8', 7, dark=0.7, light=0.7, shift=0.05), tone=free * 1.4, base=0.15)
     # the face, drawn on: stern little dots under the cap, a determined brow, beak-side mouth line
     for sx in (1, -1):
-        fc = face.Face(P, c=(sx * 6.0, HC[1] - 2.6, HC[2] + 0.6), axis=(sx * 0.75, -0.65, 0.05), where=P.region('white') & hd, seed=51 + sx)
+        fc = face.Face(P, c=(sx * 6.0, HC[1] - 2.6, HC[2] + 0.6), axis=(sx * 0.75, -0.65, 0.05), where=hd & ~P.region('beak') & ~P.region('cap') & ~P.region('visor') & ~P.region('band'), seed=51 + sx)
         fc.dot(0.0, 0.0, 0.62, 0.82, rot=6 * sx)
         fc.stroke([(-sx * 0.8, 1.6), (sx * 1.0, 1.25)], weight=0.42)
-    P.lines(['black'], ['white', 'red', 'beak', 'arm'], step=1)
+    P.lines(['black', 'white', 'red'], ['beak', 'arm', 'cap', 'visor'], step=1)
     P.lines(['cap'], ['visor', 'band'], step=1)
     P.clusters()
     return P.done()

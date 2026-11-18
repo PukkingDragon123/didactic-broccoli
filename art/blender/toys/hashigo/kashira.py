@@ -9,7 +9,7 @@ from mathutils import Matrix, Vector  # noqa: E402
 
 F = Fig('hashigo', 'kashira')
 PELVIS = (0.0, -7.2, 11.0)
-M = fr.body_matrix(rot=(4, 0, 0), at=PELVIS)
+M = fr.body_matrix(rot=(-6, 0, 0), at=PELVIS)
 fr.ladder(F, seed=6)
 HK = 1.08
 # the helmet: a low dome with a brim, perched on the back of the head (behind the eye bumps), tipped back
@@ -61,6 +61,11 @@ for o in (w_hi, w_lo):
     tk.transform(o, SQM)
 F.part('water', w_lo, [w_hi], bone='water', kind='gloss', uvw=0.6)
 
+# the old chief grown 15% about its feet on the board
+T, M = fr.grow(F, M, (0, -9.4, 4.4))
+PELVIS, SH_L, SH_R, HIP_L, HIP_R = [T(p) for p in (PELVIS, SH_L, SH_R, HIP_L, HIP_R)]
+N0, N1 = Vector(T(N0)), Vector(T(N1))
+
 
 def make_rig():
     from rig import Rig
@@ -105,7 +110,7 @@ def paint(P, pt):
     P.fill('hose', pt.ramp('#d8cfb4', 6, shift=0.05), tone=sh, base=0.05)
     P.fill('water', pt.ramp('#9fd0ea', 5, shift=0.04), tone=sh * 0.5, base=0.3)
     P.flat(P.region('water') & (np.sin(P.Y * 2.4 + P.Z * 1.1) > 0.8), '#eef8fc')
-    fr.frog_face(P, M, eyes='dot', brows='angry', mouth='frown', seed=66, head_k=HK, mouth_w=14.0, weight=0.5, side=-1)
+    fr.frog_face(P, M, eyes='dot', brows='angry', mouth='frown', seed=66, head_k=HK, mouth_w=18.0, weight=0.6, side=-1)
     P.lines(['skin', 'belly'], ['happi', 'helmet'], step=1)
     P.lines(['pad'], ['skin', 'belly'], col='#1b1513', step=1)  # (marker outlines round the toe pads)
     P.clusters()
