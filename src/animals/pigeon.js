@@ -103,7 +103,8 @@ function paint(part) {
     if (part === 'head') {
       // the eye: orange iris ring round a black pupil, a pale lid ring, a catchlight
       const ex = Math.abs(P.x) - 0.0135, ey = P.y - 0.1905, ez = P.z - 0.081, d = Math.hypot(ey, ez);
-      if (ex > -0.006 && d < 0.0052) return d < 0.0018 ? (Math.hypot(ey - 0.0009, ez - 0.0006) < 0.0007 ? 0xfdfaf2 : 0x0e0c0c) : d < 0.0042 ? C.iris : 0xb8b0b4;
+      // the eye: a simple dark bead with one tiny highlight
+      if (ex > -0.006 && d < 0.0034) return Math.hypot(ey - 0.0011, ez - 0.0008) < 0.0008 ? 0xe8e2d6 : 0x141012;
       c = C.head;
     } else if (part === 'neck') {
       // the iridescent neck: green above, purple toward the breast, catching the light on the sides

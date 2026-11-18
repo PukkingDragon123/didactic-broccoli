@@ -119,10 +119,10 @@ def paint(coat):
     hf = is_('head') & (z > 26.5) & (Ns[..., 2] > 0.15)
     ex = ax - 2.65; ey = y - (46.9 + ex * 0.15)
     q = (ex / 1.02) ** 2 + (ey / 0.74) ** 2
-    out[hf & (q < 1.45)] = hexes(['#1a1210'])[0]
-    out[hf & (q < 1.0)] = hexes(['#3a2416'])[0]
-    out[hf & (q < 0.42)] = hexes(['#0e0a08'])[0]
-    out[hf & (np.hypot(ex + 0.25, ey - 0.25) < 0.2)] = hexes(['#f2ece2'])[0]
+    # the eyes: simple solid dark beads with one tiny highlight (the owner's rule: no iris, rims or whites)
+    q = (ex / 0.78) ** 2 + (ey / 0.66) ** 2
+    out[hf & (q < 1.0)] = hexes(['#120e0c'])[0]
+    out[hf & (np.hypot(ex + 0.22, ey - 0.22) < 0.13)] = hexes(['#d8d0c4'])[0]
     dots = hf & (((ax - 2.2) / 0.65) ** 2 + ((y - 48.35) / 0.4) ** 2 < 1)
     if coat in ('pochi', 'goma', 'shiro', 'chibi'): out[dots] = creamR[6]
     if 'tan' in C: out[dots] = ramp(C['tan'])[5]
