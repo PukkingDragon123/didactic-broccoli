@@ -130,7 +130,7 @@
 "mats":{"base":"gloss","key":"metal","monkey":"matte"},
 "pts":{"in":"pt_in","out":"pt_out"},
 "blender":true},
-"meijin/azarashi":{"size":[27.04,23.14,39.17],"min":[-15.09,-0.08,-20.22],"tris":648,"atlas":[512,512],"kb":102,"clips":{"gimmick":"gimmick"},
+"meijin/azarashi":{"size":[27.04,23.14,39.19],"min":[-15.09,-0.08,-20.24],"tris":648,"atlas":[512,512],"kb":102,"clips":{"gimmick":"gimmick"},
 "mats":{"body":"matte","slap":"matte","card":"matte"},
 "pts":{},
 "blender":true},

@@ -146,19 +146,28 @@ def paint(P):
     P.tint(cm & sp & (Yc > HC[1] + 4.6), pt.ramp('#5a5e66', 6, shift=0.06), free)
     P.fill('band', pt.ramp('#f2ece2', 6, shift=0.05), tone=free, base=0.1)
     P.flat(P.region('band') & (np.abs(Yc - (HC[1] - 6.6)) < 0.9), '#c8303a')
-    # the menko: his card (a red sun burst behind a printed kabuto) and the rival's (blue, a printed rocket), plain backs
-    P.fill('card', pt.ramp('#f2e2b4', 6, shift=0.05), tone=free * 0.5, base=0.15)
+    # the menko: classic bold three-colour print. His card: a red sumo wrestler on yellow in a blue frame, a white star
+    # and his number; the rival's: a yellow plane on red in a blue frame, a white star. Plain card backs.
+    def star(U, V, cu, cv, R):
+        th = np.arctan2(U - cu, V - cv)
+        return np.hypot(U - cu, V - cv) <= R * (0.45 + 0.55 * np.abs(np.cos(2.5 * th)) ** 3)
+    P.fill('card', pt.ramp('#f2c84a', 6, shift=0.05), tone=free * 0.5, base=0.15)
     cdm = P.region('card')
     U, V = X + 11.6, Z - 19.0
-    P.flat(cdm & (np.abs(np.mod(np.degrees(np.arctan2(V, U)) + 360, 30) - 15) < 6) & (np.hypot(U, V) < 4.0), '#d8402e')
-    P.flat(cdm & (np.hypot(U, V + 0.6) < 1.8), '#2a2a2e')
-    P.flat(cdm & (np.abs(np.abs(U) - 3.2) < 0.25), '#2a2a2e')
-    P.fill('front', pt.ramp('#5a8ac8', 6, shift=0.06), tone=sh * 0.5, base=0.15)
+    P.flat(cdm & ((np.abs(U) > 2.8) | (np.abs(V) > 3.7)), '#2c4a9a')
+    sumo = (np.hypot(U, V - 1.5) < 0.95) | ((U / 2.1) ** 2 + ((V + 0.5) / 1.6) ** 2 < 1) | \
+           ((np.abs(np.abs(U) - 1.3) < 0.45) & (V < -1.4) & (V > -3.0)) | ((np.abs(np.abs(U) - 2.0) < 0.35) & (np.abs(V - 0.3) < 0.9))
+    P.flat(cdm & sumo, '#d03a2e')
+    P.flat(cdm & (np.abs(V + 1.2) < 0.32) & (np.abs(U) < 1.9), '#2a2a2e')    # the mawashi
+    P.flat(cdm & star(U, V, -1.9, 2.8, 0.75), '#f6f2e8')
+    P.flat(cdm & (np.abs(U - 2.0) < 0.22) & (np.abs(V - 2.8) < 0.65), '#f6f2e8')   # his number: 1
     fm = P.region('front')
     U2, V2 = X - CARD_EDGE[0], Yc - (CARD_EDGE[1] + 3.5)
-    P.flat(fm & (np.abs(U2) < 1.0) & (np.abs(V2) < 2.6), '#f2ece2')
-    P.flat(fm & (np.abs(U2) < 2.4) & (np.abs(V2 - 2.0) < 0.6), '#d8402e')
-    P.flat(fm & ((np.abs(np.abs(U2) - 4.0) < 0.25) | (np.abs(np.abs(V2) - 3.0) < 0.25)), '#f2e2b4')
+    P.fill('front', pt.ramp('#d03a2e', 6, shift=0.06), tone=sh * 0.5, base=0.15)
+    P.flat(fm & ((np.abs(U2) > 3.8) | (np.abs(V2) > 2.8)), '#2c4a9a')
+    plane = ((np.abs(V2) < 0.5) & (np.abs(U2) < 2.9)) | ((np.abs(U2 - 0.3) < 0.6) & (np.abs(V2) < 2.5)) | ((np.abs(U2 + 2.4) < 0.35) & (np.abs(V2) < 1.2))
+    P.flat(fm & plane, '#f2c84a')
+    P.flat(fm & star(U2, V2, 2.7, -1.7, 0.6), '#f6f2e8')
     P.fill('back', pt.ramp('#d8c8a0', 6, shift=0.05), tone=free * 0.5, base=0.1)
     # the face, drawn on: a determined little seal: dots, a confident brow, the dark nose, a Y mouth, whiskers with dots
     hd = cm & (P.part == PI['body']) & (Yc < HC[1] + 2.0) & (Z > HC[2] - 6.0)
