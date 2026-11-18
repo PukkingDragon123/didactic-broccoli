@@ -25,8 +25,8 @@ BACK = {  # series -> photo backdrop (focus x, y, zoom)
     'tsuppari': ('commons:Nighttime_on_the_shotengai_(238464174).jpg', (0.55, 0.45, 1.2)), 'obakebaito': ('commons:Obake_Yashiki.jpg', (0.3, 0.36, 1.45)),
 }
 COMMONS = {  # photos from Wikimedia Commons (credited in CREDITS.md / public/CREDITS.txt), fetched once into the cache
-    'commons:Nighttime_on_the_shotengai_(238464174).jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Nighttime_on_the_shotengai_%28238464174%29.jpg/1920px-Nighttime_on_the_shotengai_%28238464174%29.jpg',
-    'commons:Obake_Yashiki.jpg': 'https://upload.wikimedia.org/wikipedia/commons/0/05/Obake_Yashiki.jpg',
+    'commons:Nighttime_on_the_shotengai_(238464174).jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Nighttime_on_the_shotengai_%28238464174%29.jpg/1280px-Nighttime_on_the_shotengai_%28238464174%29.jpg',
+    'commons:Obake_Yashiki.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Obake_Yashiki.jpg/960px-Obake_Yashiki.jpg',
 }
 
 

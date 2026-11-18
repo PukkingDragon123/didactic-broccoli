@@ -2809,3 +2809,16 @@ Typefaces used in baked print (SIL Open Font License 1.1, Google Fonts): Zen Old
 Zen Kaku Gothic New, Zen Maru Gothic, M PLUS 1p, BIZ UDPGothic, Kaisei Tokumin, Mochiy Pop One, DotGothic16, Bebas Neue,
 Archivo Black, Barlow Condensed, Playfair Display, Oswald.
 [print15:end]
+
+### Gacha display cards of the Blender toy line: backdrop photos and type
+
+The display cards (`img/print/cards/<series>.webp`, baked by `tools/bake-cards.py`) set a render of the real in-game
+toys over a photograph, cropped and graded like print. Photos from Wikimedia Commons:
+
+- Tsuppari Zoo card: "Nighttime on the shotengai" by Ryan McBride, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0),
+  https://commons.wikimedia.org/wiki/File:Nighttime_on_the_shotengai_(238464174).jpg (cropped, resized, colour-graded)
+- Haunted House Part-Timers card: "Obake Yashiki" by Tomomarusan, CC BY 2.5 (https://creativecommons.org/licenses/by/2.5),
+  https://commons.wikimedia.org/wiki/File:Obake_Yashiki.jpg (cropped, resized, colour-graded)
+
+Shippori Mincho B1 by FONTDASU, SIL Open Font License 1.1 (https://openfontlicense.org), Google Fonts: the kanji on the
+Tsuppari Zoo figures' printed coats and card. Used only at bake time; the game ships the baked images, not the font.
