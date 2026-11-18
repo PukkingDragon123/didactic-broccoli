@@ -78,3 +78,48 @@ the deep-sea gloom, and they are all trying very hard to make a sale.
 
 Card: a night-stall paper sign on a deep blue photo. Backdrop request: a real photo of a Japanese summer festival
 night-stall street with lanterns (Wikimedia Commons), shown deep blue.
+
+---
+
+## D4. ぷにぷにようかい Puni-puni Yōkai: "Yōkai Squishies" (squeeze, some keychains) · id `punipuni`
+
+**Hook:** the stranger yōkai of the old scroll books, as soft squishy mascots: plump forms in a sugary matte finish (a
+fine sugar-grain of painted speckle over soft pastel and neon colours), each with a strong silhouette and attitude.
+**Twist:** the yōkai nobody puts on merchandise (a lump of sagging flesh, a fat cryptid snake, the bath-scum licker,
+a sulking sea monk) are the cutest ones when you squeeze them. Not the cast of kabuki, obakebaito or otsukai.
+**Gimmick:** press: the squeeze. It squashes down and spreads, its face changing mid-squish (something pops out:
+a tongue, a spout, flames, a dream), then it rises slowly back. Three of them come on a ball chain.
+
+| # | Figure | The squishy | Mid-squish | Rarity |
+|---|--------|-------------|-----------|--------|
+| 1 | ぬっぺっぽう Nuppeppō | a sagging peach lump of dough-flesh with fat folds and stubby arms crossed, very smug | the folds spread and a tongue pokes out | common |
+| 2 | ツチノコ Tsuchinoko | the fat cryptid snake: a beer-belly body, stubby tail, head up with a sly grin, neon lime with a diamond back (keychain) | the belly balloons, the forked tongue flicks | common |
+| 3 | あかなめ Akaname | the bath-scum licker: a squat neon-pink imp, one clawed hand up, a huge tongue lolling (keychain) | the tongue stretches right out | uncommon |
+| 4 | うみぼうず Umibōzu | the sea monk: a big sulking dark-teal dome rising out of its own curl of wave, neon foam | it sinks into the wave and a spout of water pops off its head | uncommon |
+| 5 | おにび Onibi | a will-o'-wisp: a fat lilac-blue flame with a curling tail and a big grin (keychain) | its flame tips flare out | rare |
+| S | ゆめくいバク Dream-Eater Baku | the dream-eating chimera: a plump lavender tapir with a curly mane, a trunk and tiger-striped legs, sleepy and pleased | the trunk curls up and puffs out a dream bubble | secret |
+
+Card: candy-pink with a soft-focus photo. Backdrop request: a real photo of a Shōwa dagashi (penny-candy) shop shelf.
+
+---
+
+## D5. ヘンシン傘ぶき Henshin Kasabuki: "Umbrella Arms" (mechanical transformation, display stands) · id `kasabuki`
+
+**Hook:** umbrellas that are secretly weapons, each laid on its own black-lacquer sword stand (katana-kake).
+**Twist:** the umbrella's own parts become the weapon's: the closed wagasa's canopy is the katana's scabbard, the
+bat-umbrella's (kōmori-gasa's) panels fan out into a bat-wing axe blade, the parasol splits into the two limbs of a
+bow, the folding umbrella's sections come apart on chains into a three-section staff, the bull's-eye umbrella's canopy
+becomes a spearhead, and the secret lantern umbrella opens into a dragon's head.
+**Gimmick:** press: the transformation, as a mechanical clip (parts slide, fold, fan and lock with clicks), then it
+holds the weapon pose and folds back into the umbrella. At rest it always reads as an umbrella.
+
+| # | Figure | Umbrella → weapon | Rarity |
+|---|--------|-------------------|--------|
+| 1 | ばんがさカタナ Wagasa Katana | a red oiled-paper wagasa: the canopy slides off as the scabbard, the tsuba clicks out, the blade is drawn | common |
+| 2 | こうもりハルバード Bat-Umbrella Halberd | a black Western umbrella with a crook handle: the tip spikes out and three panels fan into a bat-wing axe blade with a back hook | common |
+| 3 | ひがさボウ Parasol Bow | a pink lace parasol: the canopy splits into two limbs that swing up and down, the string draws out, the shaft is the arrow | uncommon |
+| 4 | おりたたみサンセツコン Folding Three-Section Staff | a folding umbrella in its sleeve: it comes apart into three sections on chains, swinging into a zig-zag | uncommon |
+| 5 | じゃのめヤリ Janome Spear | a navy bull's-eye umbrella: the shaft telescopes, the canopy closes up into a spearhead socket, the blade slides out, a red tassel flicks | rare |
+| S | ちょうちんリュウトウ Lantern Dragon Glaive | a lantern umbrella: the lantern opens into a dragon's jaws, a broad curved blade fans out of its mouth and its heart glows (light-up) | secret |
+
+Card: a dark dojo-board card. Backdrop request: a real photo of a rack of oiled-paper umbrellas (wagasa) drying.

@@ -33,7 +33,7 @@ TONGUE = '#e47c7c'
 # the richer hand-drawn kit (faces_v3: inked eye shapes with a dabbed catchlight, lid strokes, lash ticks, tapered
 # brows, hatched or dabbed cheeks, corner ticks, open mouths, sweat / anger marks, freckles): GG_FACE_V3=1 turns it
 # on for a build; it becomes the default once the owner approves the sheet (art/blender/toys/faces.py)
-V3 = os.environ.get('GG_FACE_V3', '0') == '1'
+V3 = os.environ.get('GG_FACE_V3', '1') == '1'  # (the owner approved the kit: on by default; GG_FACE_V3=0 for the old marker dots)
 CATCH = '#f3ede0'      # the off-white dab of a catchlight
 HATCH = '#d9505c'      # cheek hatching
 ANGER = '#cf3b2e'      # an anger mark
@@ -56,6 +56,19 @@ class Face:
         dx = np.linalg.norm(p[:, 1:] - p[:, :-1], axis=2)
         ok = s.m[:, 1:] & s.m[:, :-1]
         s.px = float(np.median(dx[ok])) if ok.sum() > 8 else 0.2
+        s.sp = None  # the species style (STYLE) the face is drawn in; set from the figure (SPECIES) when the kit is on
+        if V3:
+            try:
+                import facet
+                f = facet.FIG
+                s.sp = STYLE.get(SPECIES.get(f'{f.series}/{f.id}', SPECIES.get(f.id))) if f is not None else None
+            except Exception:  # noqa: BLE001
+                s.sp = None
+
+    def species(s, name):
+        """Draw this face in a species' style (STYLE): eye shape and slant, lids, lashes, brows, its mouth, extras."""
+        s.sp = STYLE.get(name)
+        return s
 
     # ------------------------------------------------------------------ brushwork (facet mode)
     def _brush(s, m, cov, pool=None, thin=None):
@@ -367,10 +380,7 @@ class Face:
         if lower:  # a lower-lid mark
             s.stroke([R(rx * 0.95 * math.cos(a), -ry * 1.35 * abs(math.sin(a)) - 0.1 * ry) for a in np.linspace(math.pi * 1.2, math.pi * 1.8, 5)],
                      max(0.07, 0.08 * w), taper=(0.6, 0.6), wobble=0.01)
-        light_ink = float(_hex(s.ink) @ np.array([0.3, 0.59, 0.11])) > 0.5
-        if catch and min(w, h) / s.px >= 4.5 and shape != 'lid' and not light_ink:  # a dabbed catchlight, up and outside
-            s.dab(*R(sx * 0.2 * rx, 0.32 * ry), max(0.3 * min(rx, ry), 1.0 * s.px), CATCH)
-        return m
+        return m  # (solid ink: no catchlight, white or highlight inside an eye, the owner's rule)
 
     def anger(s, du, dy, size=1.0, col=ANGER):
         """An anger mark: four short curved strokes popping out of a corner (the manga vein cross)."""
@@ -407,11 +417,27 @@ class Face:
         side / teary eyes are drawn as ovals (style: the shape to use instead)."""
         if close:
             kind = 'squeeze'
+        sp = s.sp if (s.sp and not only) else None
+        if sp and kind in ('dot', 'big', 'side', 'teary', 'tiny', 'oval', 'bean', 'halfmoon', 'lid'):
+            style = sp.get('eye', style)
+            kind = 'tiny' if style == 'tiny' else ('side' if kind == 'side' else 'dot')
+            size *= sp.get('size', 1.0)
+            spread *= sp.get('spread', 1.0)
+            tilt = sp.get('tilt', tilt)
+            lid = sp.get('lid', lid)
+            lashes = sp.get('lashes', lashes)
+            lower = sp.get('lower', lower)
+            uneven = sp.get('uneven', uneven)
+            if sp.get('look'):
+                kind, look = 'side', sp['look']
+            if sp.get('brows'):
+                bk, bw = sp['brows'] if isinstance(sp['brows'], tuple) else (sp['brows'], 1.0)
+                s.brows(bk, spread * 1.02, dy + size * shape * 1.9 + 0.25, size * 2.7, max(0.16, size * 0.42) * bw)
         r = s.rng
         w = size * 0.75  # marker weight for the line eyes
         for sx in ((only,) if only else (-1, 1)):  # (only: one eye, the left (-1) or right (+1) one, e.g. on its own bump)
             k = 1 + (uneven * (0.5 + 0.5 * r.random()) if sx == (1 if r.random() < 0.5 else -1) else 0.0)
-            u, v = sx * spread / 2 + r.normal() * 0.06, dy + r.normal() * 0.07 + sx * math.tan(math.radians(tilt)) * spread / 2
+            u, v = sx * spread / 2 + r.normal() * 0.06, dy + r.normal() * 0.07
             a = size * 2.2
             kk = kind
             if kind == 'wink':
@@ -422,7 +448,7 @@ class Face:
                 f = 1.0
                 du = 0.25 * size * look if kind == 'side' else 0.0
                 s.eye(u + du, v, 2 * size * k * (1 + r.normal() * 0.05), 2 * size * shape * k * (1 + r.normal() * 0.06), kk, sx=sx,
-                      catch=catch, lid=lid, lashes=lashes, lower=lower, rot=r.normal() * 6 + sx * tilt * 0.3)
+                      catch=False, lid=lid, lashes=lashes, lower=lower, rot=r.normal() * 5 + sx * tilt)
                 if kind == 'teary' and sx == look:
                     s.drop(u + 0.3 * size, v - size * 3.4, r=size * 0.9)
             elif kk in ('dot', 'big', 'tiny', 'side', 'teary'):
@@ -464,6 +490,41 @@ class Face:
     MOUTHS = ('upturn', 'line', 'dash', 'frown', 'grin', 'gritted', 'shout', 'tongue', 'smug', 'wobble', 'pout', 'drool', 'w', 'o')
 
     def mouth(s, kind='upturn', w=4.0, dy=-1.5, weight=0.42, h=None, side=1, teeth=3, slant=10.0, du=0.0, ticks=None):
+        sp = s.sp
+        if sp:
+            if sp.get('mouth') and kind in ('upturn', 'line', 'dash', 'smug', 'w', 'o', 'frown', 'wobble', 'pout', 'grin'):
+                kind = sp['mouth']
+                w *= sp.get('mw', 1.0)
+            for x in sp.get('extras', ()):
+                if x == 'whiskers':
+                    s.whiskers(du, dy + 0.35 * w, w * 1.5, 3, w * 0.75, max(0.12, weight * 0.5))
+                elif x == 'fangs':
+                    s.fangs(du + (0.15 * w if kind == 'smug' else 0), dy - 0.02 * w, w * 0.32, 2, w * 0.13)
+                elif x == 'fang':
+                    s.fangs(du + side * 0.22 * w, dy - 0.02 * w, w, 1, w * 0.14)
+                elif x == 'blush':
+                    s.blush(w * 2.0, dy + 0.45 * w, rx=w * 0.32, ry=w * 0.18)
+                elif x == 'hatch':
+                    s.blush(w * 2.0, dy + 0.45 * w, rx=w * 0.32, ry=w * 0.2, style='hatch')
+                elif x == 'freckles':
+                    s.freckles(du, dy + 0.5 * w, w * 2.0)
+                elif x == 'tufts':
+                    s.tufts(du, dy + 0.4 * w, w * 2.6, w * 0.35)
+                elif x == 'sweat':
+                    s.sweat(du + w * 1.1, dy + w * 1.3, w * 0.14)
+        if kind == 'smirk':  # a villain's / toothy smirk: a long side curve, one corner tucked up, a tooth showing
+            x0, x1 = du - 0.45 * w * side, du + 0.5 * w * side
+            pts = [(x0 + (x1 - x0) * q, dy - 0.05 * w * math.sin(math.pi * q) + 0.12 * w * q ** 3) for q in np.linspace(0, 1, 9)]
+            s.stroke(pts, weight, taper=(0.5, 0.8) if side > 0 else (0.8, 0.5))
+            tx = du + side * 0.18 * w
+            s.fill([(tx - 0.07 * w, dy - 0.01 * w), (tx + 0.07 * w, dy - 0.0 * w), (tx + 0.01 * w, dy - 0.16 * w)], WHITE)
+            return s.stroke([(tx - 0.07 * w, dy - 0.01 * w), (tx + 0.01 * w, dy - 0.16 * w), (tx + 0.07 * w, dy)], weight * 0.45, taper=(1, 1), wobble=0.004)
+        if kind == 'flat':  # deadpan: one dead-straight line, tiny corner ticks
+            s.stroke([(du - w / 2, dy), (du + w / 2, dy + 0.01 * w)], weight, taper=(0.85, 0.85), wobble=0.01)
+            return s.ticks(du - w / 2, du + w / 2, dy, w, weight)
+        if kind == 'long':  # a frog's long thin mouth line, curling up at the very ends
+            pts = [(du + w / 2 * x, dy - 0.04 * w * (1 - x * x) + 0.05 * w * max(0.0, abs(x) - 0.85) * 8) for x in np.linspace(-1, 1, 13)]
+            return s.stroke(pts, weight * 0.8, taper=(0.7, 0.7), wobble=0.015)
         if V3 and (ticks or (ticks is None and kind in ('line', 'upturn', 'smug') and w / s.px >= 22)):
             s.ticks(du - w / 2, du + w / 2, dy, w, weight)
         if kind == 'open':  # an open mouth: dark inside, a tongue at the bottom, two top teeth, the ink rim
@@ -610,3 +671,106 @@ class Face:
             for lim, k in ((1.0, 0.35), (0.62, 0.6)):
                 m = s.m & (d <= lim)
                 s.P.rgb[m] = s.P.rgb[m] * (1 - k) + c * k
+
+
+# ------------------------------------------------------------------ face styles: attitudes and species (the v3/v4 kit)
+# A style restyles a face drawn with the ordinary calls (fc.eyes('dot', ...), fc.mouth('upturn', ...)): the eye shape
+# and slant (tilt: degrees, + = the outer corners up), lids, lash ticks, brows (kind, weight), the mouth (it replaces the
+# plain kinds; expressive ones such as grin, shout, squeeze stay), extras (whiskers, fangs, fang, blush, hatch,
+# freckles, tufts, sweat). Every animal figure gets its species' style automatically (SPECIES), or fc.species(name).
+ATTITUDE = {
+    'smug': dict(eye='lid', tilt=-4, mouth='smug'),
+    'determined': dict(eye='bean', tilt=12, brows=('angry', 1.2), mouth='flat'),
+    'side_eye': dict(eye='oval', lid=True, look=1, mouth='dash'),
+    'sly': dict(eye='bean', tilt=22, lid=True, mouth='smug', extras=('fang',)),
+    'grumpy': dict(eye='lid', brows=('flat', 1.3), mouth='frown'),
+    'derpy': dict(eye='oval', spread=1.35, uneven=0.5, mouth='o'),
+    'bored': dict(eye='tiny', mouth='flat'),
+    'intense': dict(eye='oval', lid=True, brows=('angry', 1.6), mouth='gritted'),
+    'toothy_smirk': dict(eye='halfmoon', mouth='smirk'),
+    'fangy': dict(eye='oval', brows=('raised', 1.0), mouth='line', extras=('fangs',)),
+    'deadpan': dict(eye='oval', size=0.8, mouth='flat'),
+    'mischief': dict(eye='halfmoon', tilt=10, mouth='w', extras=('blush',)),
+    'sleepy_cool': dict(eye='lid', tilt=-8, lashes=1, mouth='dash'),
+    'villain': dict(eye='bean', tilt=24, lid=True, brows=('angry', 1.4), mouth='smirk'),
+    'worried': dict(eye='oval', brows=('worried', 1.1), mouth='wobble', extras=('sweat',)),
+    'cheeky': dict(eye='bean', tilt=6, mouth='tongue', extras=('hatch',)),
+}
+STYLE = dict(ATTITUDE)
+STYLE.update({  # one face design per animal
+    'owl': dict(eye='oval', size=1.25, lid=True, brows=('angry', 1.4)),              # a stern old owl under heavy brows
+    'frog': dict(eye='halfmoon', spread=1.25, mouth='long', mw=1.4),                  # deadpan, wide-set, a long thin mouth
+    'toad': dict(eye='lid', spread=1.2, brows=('flat', 1.1), mouth='long', mw=1.3),   # a grumpy toad
+    'tanuki': dict(eye='halfmoon', tilt=-8, mouth='w', extras=('blush',)),            # mischievous
+    'fox': dict(eye='bean', tilt=22, lid=True, mouth='smug', extras=('fang',)),       # sly
+    'pig': dict(eye='tiny', spread=0.85, mouth='smug'),                               # bored and smug
+    'bear': dict(eye='tiny', spread=1.2, brows=('angry', 1.4), mouth='frown'),        # a gruff banchō
+    'cat': dict(eye='lid', tilt=10, brows=('flat', 1.1), mouth='w', extras=('whiskers',)),  # grumpy cat
+    'nekomata': dict(eye='bean', tilt=18, lid=True, lashes=2, mouth='smug', extras=('fang',)),
+    'wolf': dict(eye='bean', tilt=12, brows=('angry', 1.2), mouth='line', extras=('fangs',)),
+    'monkey': dict(eye='oval', spread=0.8, brows=('raised', 1.0), mouth='tongue'),   # mischief
+    'bird': dict(eye='oval', size=0.9, lid=True, look=1),                             # a sharp side-eye
+    'rooster': dict(eye='bean', tilt=10, lid=True, brows=('angry', 1.3)),
+    'crow': dict(eye='bean', tilt=16, lid=True, brows=('angry', 1.1)),
+    'crane': dict(eye='oval', size=0.9, lid=True, lashes=2),                          # elegant, sleepy-cool
+    'pelican': dict(eye='lid', tilt=-6),                                              # deadpan
+    'woodpecker': dict(eye='oval', brows=('angry', 1.1)),                             # intense
+    'duck': dict(eye='oval', spread=1.15, uneven=0.45),                               # derpy
+    'ptarmigan': dict(eye='oval', lashes=1),
+    'phoenix': dict(eye='bean', tilt=18, lid=True, lashes=2),                         # proud
+    'penguin': dict(eye='bean', tilt=8, brows=('angry', 1.0)),                        # determined
+    'fish': dict(eye='oval', spread=1.3, uneven=0.45, mouth='o'),
+    'puffer': dict(eye='oval', size=1.2, uneven=0.3, mouth='pout'),
+    'angler': dict(eye='tiny', mouth='line', extras=('fangs',)),
+    'barreleye': dict(eye='oval', lid=True, look=1, mouth='dash'),                    # a fortune teller's side-eye
+    'eel': dict(eye='tiny', mouth='smirk'),                                           # a villain smirk
+    'squid': dict(eye='lid', tilt=-8, mouth='pout', extras=('blush',)),               # sleepy-cool
+    'octopus': dict(eye='lid', tilt=-6, mouth='pout', extras=('hatch',)),
+    'isopod': dict(eye='tiny', mouth='flat'),                                         # deadpan
+    'crab': dict(eye='oval', brows=('angry', 1.2), mouth='smirk'),
+    'turtle': dict(eye='lid', tilt=-6, mouth='flat'),                                 # sleepy deadpan
+    'rabbit': dict(eye='oval', lashes=2, mouth='w', extras=('blush',)),
+    'giraffe': dict(eye='lid', lashes=3, mouth='smug'),                               # sleepy-cool
+    'deer': dict(eye='oval', lashes=2, extras=('blush',)),
+    'elephant': dict(eye='tiny', mouth='upturn'),
+    'hippo': dict(eye='tiny', spread=1.4, mouth='long', mw=1.2),                      # derpy
+    'mole': dict(eye='tiny', spread=0.7, mouth='smirk'),                              # a toothy squint
+    'seal': dict(eye='oval', spread=1.3, size=1.15, mouth='w'),                       # derpy, wide-set
+    'hedgehog': dict(eye='lid', brows=('flat', 1.2), mouth='frown'),                  # grumpy
+    'chameleon': dict(eye='oval', lid=True, look=1, mouth='flat'),                    # side-eye
+    'otter': dict(eye='halfmoon', mouth='smug'),                                      # smug
+    'salamander': dict(eye='tiny', spread=1.5, mouth='long', mw=1.3),                 # derpy
+    'snake': dict(eye='bean', tilt=20, lid=True, mouth='smirk', extras=('fang',)),    # sly villain
+    'lizard': dict(eye='oval', look=1, mouth='flat'),
+    'calf': dict(eye='oval', spread=1.2, uneven=0.4, mouth='o'),
+    'squirrel': dict(eye='oval', size=1.3, mouth='w'),
+    'ladybird': dict(eye='halfmoon', mouth='w', extras=('blush',)),
+    'kappa': dict(eye='oval', brows=('angry', 1.1), mouth='line', extras=('fangs',)),
+    'tengu': dict(eye='bean', tilt=20, brows=('angry', 1.5), mouth='smirk'),          # the villain
+    'weasel': dict(eye='bean', tilt=15, brows=('angry', 1.3), mouth='gritted'),       # intense
+    'azukiarai': dict(eye='oval', spread=1.3, uneven=0.5, mouth='o'),                 # comic, derpy
+    'lion': dict(eye='oval', brows=('angry', 1.4), mouth='line', extras=('fangs',)),
+})
+SPECIES = {  # figure (series/id or id) -> species
+    'henshin/buta': 'pig', 'henshin/tsuru': 'crane',
+    'nakanohito/mogura': 'mole', 'nakanohito/entotsu': 'lizard',
+    'otsukai/kitsune': 'fox', 'otsukai/shika': 'deer', 'otsukai/karasu': 'crow', 'otsukai/saru': 'monkey',
+    'otsukai/ookami': 'wolf', 'otsukai/hebi': 'snake',
+    'tsuppari/niwatori': 'rooster', 'tsuppari/kuma': 'bear', 'tsuppari/neko': 'cat', 'tsuppari/kaeru': 'frog',
+    'tsuppari/tanuki': 'tanuki', 'tsuppari/mimizuku': 'owl',
+    'karakuri/chahakobi': 'tanuki', 'karakuri/dangaeri': 'monkey', 'karakuri/yumihiki': 'rabbit', 'karakuri/mojikaki': 'owl',
+    'karakuri/kasamawashi': 'cat', 'karakuri/houou': 'phoenix',
+    'kaden/fukuro': 'owl', 'kaden/usagi': 'rabbit', 'kaden/zou': 'elephant', 'kaden/sagi': 'crane', 'kaden/gama': 'toad',
+    'kaden/shika': 'deer',
+    'ekiin/kitsutsuki': 'woodpecker', 'ekiin/kaba': 'hippo', 'ekiin/tako': 'octopus', 'ekiin/perikan': 'pelican',
+    'ekiin/flamingo': 'crane', 'ekiin/mogura': 'mole',
+    'kabuki/kappa': 'kappa', 'kabuki/tengu': 'tengu', 'kabuki/nekomata': 'nekomata', 'kabuki/kamaitachi': 'weasel',
+    'kabuki/azukiarai': 'azukiarai', 'kabuki/jishi': 'lion',
+    'meijin/hari': 'hedgehog', 'meijin/azarashi': 'seal', 'meijin/kamereon': 'chameleon', 'meijin/pengin': 'penguin',
+    'sento/kame': 'turtle', 'sento/kani': 'crab', 'sento/fugu': 'puffer', 'sento/kirin': 'giraffe', 'sento/rakko': 'otter',
+    'sento/sanshou': 'salamander',
+    'otenki/ushi': 'calf', 'otenki/momonga': 'squirrel', 'otenki/kamo': 'duck', 'otenki/raichou': 'ptarmigan',
+    'otenki/kamereon': 'chameleon', 'otenki/tentou': 'ladybird',
+    'yomise/ankou': 'angler', 'yomise/demenigisu': 'barreleye', 'yomise/hotaruika': 'squid', 'yomise/fukurounagi': 'eel',
+    'yomise/gusokumushi': 'isopod',
+}
