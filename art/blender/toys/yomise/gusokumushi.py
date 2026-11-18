@@ -151,12 +151,13 @@ def paint(P, pt):
     P.fill(pa & (lz > 1.5) & (lz < 2.2), pt.ramp('#c8302a', 5, shift=0.05), tone=sh * 0.5, base=0.15, brush=False)
     P.shift(pa & (np.abs(np.mod(Z - FT + 4.6 + 0.4, 0.8) - 0.4) < 0.08), -1)     # the ribs
     P.fill('lcap', pt.ramp('#2a2624', 5), tone=sh, base=0.1)
-    # the face: tiny dots set wide on the front of the head, a small shy mouth, blush
+    # the face: a real giant isopod's dark kidney-shaped compound eyes (face.py 'compound': solid ink, a fine facet
+    # hatch, no pupil or white), set wide and low on the sides of the head shield; a small shy mouth line under it
     hd = sl & (P.part == PI['head'])
     fc = face.Face(P, c=(0, -11.4, BZ + 0.6), axis=(0, -1, 0.35), where=hd, seed=711)
-    fc.eyes('dot', spread=4.2, size=0.42, dy=0.6, uneven=0.25)
-    fc.mouth('dash', w=1.2, dy=-0.6, weight=0.3, slant=-10)
-    fc.blush(spread=5.0, dy=-0.2, rx=0.9, ry=0.5)
+    fc.eyes('dot', spread=4.2, size=0.38, dy=0.55, uneven=0.12)
+    fc.mouth('dash', w=1.0, dy=-1.0, weight=0.26, slant=-6)
+    fc.blush(spread=7.0, dy=-0.6, rx=0.55, ry=0.3)
     P.lines(['paper', 'strap', 'frame'], step=1)
     P.clusters()
     return P.done()

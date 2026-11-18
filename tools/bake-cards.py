@@ -544,6 +544,110 @@ def card4(s):
     return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.25, fade=0.0, seed=seed % 997).convert('RGB')
 
 
+# ================================================================== the action cards (POSTER-5: the owner's "toy in action")
+# No photo: a themed pattern per series (tools/comickit.py), a comic panel split with focus and speed lines, the hero
+# in 2-3 of its own gimmick poses (tools/render-poses.mjs: the clip frozen mid-move and at its end), big hand-pixelled
+# sound words, the HUGE die-cut logo, badges, the line-up in action poses with name tags, the secret silhouette, the
+# warning / maker strip.
+import comickit as CK
+CARD5 = {
+    'henshin': dict(board='morokoshi', pattern=('graph', [0xfbfbf0, 0xc6dceb, 0x8db8d8, 0xe86a5a]),
+                    pa=(0xfae90c, 0xf08a1c), pb=(0x579d44, 0xffffff), logo=('chochin20', ['STATIONERY', 'BEASTS']),
+                    logo_c=(0x579d44, 0xe23929), sfx=('SNAP!', 'CLICK!'), sfx_c=(0xe23929, 0xfae90c), tag=0x579d44,
+                    hero_ids=None, kind='TRANSFORMING ANIMAL FIGURE'),
+    'yomise': dict(board='kaju-dragon', pattern=('seigaiha', [0x2a7fb0, 0x43a7d0, 0xffffff]),
+                   pa=(0x1d2a52, 0x43a7d0), pb=(0xe23929, 0xffffff), logo=('chochin20', ['DEEP-SEA', 'NIGHT', 'STALLS']),
+                   logo_c=(0xfae90c, 0xf6a03a), sfx=('BLOOP!', 'GLOW!'), sfx_c=(0xfae90c, 0xffffff), tag=0x1d2a52,
+                   hero_ids=None, kind='DEEP-SEA NIGHT STALL FIGURE'),
+}
+
+
+def _pose(sid, iid, n):
+    p = os.path.join(TOYS, sid, 'pose', '%s_%d.png' % (iid, n))
+    return 'pose/%s_%d' % (iid, n) if os.path.exists(p) else iid
+
+
+def card5(s):
+    sid = s['id']; st = CARD5[sid]; P = PW.BOARD[st['board']]
+    WH = 0xffffff; ink = 0x2a262d; hot = 0xe23929; yel = 0xfae90c
+    items = s['items']; n = len(items)
+    rendered = [i for i in items if not i['secret'] and toy(sid, i['id']) is not None]
+    hero = max(rendered, key=lambda i: RANK.get(i['rarity'], 0)) if rendered else None
+    seed = sum(map(ord, sid))
+    M = 5; LY = 162; BY = 238
+    B = Sheet(LW, LH, WH)
+    kind, cols = st['pattern']; CK.pattern(B, kind, (0, 0, LW, LH), cols)
+    # the comic panel split
+    pa = [(132, 8), (LW - 8, 8), (LW - 8, 64), (132, 92)]
+    pb = [(132, 100), (LW - 8, 72), (LW - 8, 150), (132, 150)]
+    CK.panel(B, pa, st['pa'][0], ink); CK.focus(B, pa, 250, 52, st['pa'][1], n=46, seed=seed)
+    CK.panel(B, pb, st['pb'][0], ink); CK.speed(B, pb, st['pb'][1], seed=seed)
+    # the line-up panel
+    CK.panel(B, [(M + 3, LY), (LW - M - 3, LY), (LW - M - 3, BY - 3), (M + 3, BY - 3)], WH, ink, g=2)
+    B.dots([(M + 3, LY), (LW - M - 3, LY), (LW - M - 3, BY - 3), (M + 3, BY - 3)], PW.tint(st['tag'], 0.12, WH), step=6, size=2)
+    # badges under the logo
+    x = M + 4; by = 126
+    B.rrect(x, by, 62, 28, WH, r=2, line=ink)
+    pb_ = LFm.word(B, 'figs', '%d' % s['price'], x + 4, by + 5, hot)
+    B.text('YEN', pb_[2] + 2, pb_[1], 'b5', 1, hot); B.text('A TURN', pb_[2] + 2, pb_[1] + 10, 'micro5', 1, ink)
+    tx = x + 65; B.rrect(tx, by, 40, 28, hot, r=2, line=ink)
+    nb = LFm.word(B, 'figs', str(n), tx + 4, by + 5, WH)
+    B.text('ALL', nb[2] + 3, by + 7, 'micro5', 1, WH); B.text('TYPES', nb[2] + 3, by + 15, 'micro5', 1, WH)
+    ax = tx + 43; B.rrect(ax, by, 24, 28, WH, r=2, line=ink)
+    B.text('AGES', ax + 12, by + 6, 'micro5', 1, ink, anchor='mt'); B.text('15+', ax + 12, by + 15, 'b5', 1, ink, anchor='mt')
+    # line-up name tags
+    cw = (LW - 2 * M - 6) / n
+    for k, it in enumerate(items):
+        cx = M + 3 + cw * (k + 0.5)
+        lines_ = ['SECRET'] if it['secret'] else wrap3(it['name'], int(cw) - 6)
+        th = 3 + 6 * len(lines_)
+        B.rrect(cx - cw / 2 + 2, BY - th - 6, cw - 4, th, hot if it['secret'] else st['tag'], r=2)
+        for j, l in enumerate(lines_): B.text(l, cx, BY - th - 4 + 6 * j, 'micro5', 1, WH, anchor='mt')
+        B.text(str(k + 1), M + 3 + cw * k + 4, LY + 4, 'b5', 1, hot)
+    # the warning / maker strip
+    wy = BY + 2; ww = 150
+    B.rrect(M, wy, ww, LH - wy - M, WH, r=1, line=hot); B.rect(M + 1, wy + 1, ww - 2, 8, hot)
+    t0 = M + 4
+    B.poly([(t0 + 3, wy + 2), (t0 + 6, wy + 8), (t0, wy + 8)], yel); B.rect(t0 + 3, wy + 4, 1, 2, ink); B.rect(t0 + 3, wy + 7, 1, 1, ink)
+    B.text('WARNING', t0 + 10, wy + 3, 'micro5', 1, WH); B.text('CHOKING HAZARD', M + ww - 3, wy + 3, 'micro5', 1, WH, anchor='rt')
+    B.para('SMALL PARTS. NOT FOR CHILDREN UNDER 3. DO NOT PUT THE CAPSULE IN YOUR MOUTH OR OVER YOUR HEAD.', M + 3, wy + 12, ww - 6, 'micro5', 1, ink, lh=6, maxy=LH - M - 2)
+    mk = MAKER_OF.get(sid, seed % len(MAKERS)); name, mcol, em = MAKERS[mk]
+    B.rrect(M + ww + 3, wy, LW - 2 * M - ww - 3, LH - wy - M, WH, r=1, line=ink)
+    emblem(B, em, M + ww + 7, wy + 3, mcol, ink=ink, paper=WH)
+    B.text(name, M + ww + 21, wy + 4, 'b5', 1, ink)
+    B.qr(LW - M - 23, wy + 4, 1, seed, ink, bg=WH)
+    B.barcode(M + ww + 13, wy + 18, '4970' + str(seed * 7919 % 10 ** 8).zfill(8), h=8, ink=ink, bg=WH)
+    im = upscale(B.im, 2).convert('RGBA')
+    # the toys in action: the hero three times (wind-up across the split, mid-move in panel A, end pose in panel B)
+    T = Sheet(W, H, None)
+    if hero is not None:
+        hid = hero['id']
+        T.toy(sid, _pose(sid, hid, 2), 2 * 278, 2 * 152, h=2 * 84, w=2 * 80, outline=(3, WH))
+        T.toy(sid, _pose(sid, hid, 1), 2 * 196, 2 * 92, h=2 * 92, w=2 * 90, outline=(3, WH))
+    for k, it in enumerate(items):
+        cx = M + 3 + cw * (k + 0.5)
+        nl = 1 if it['secret'] else len(wrap3(it['name'], int(cw) - 6))
+        foot = BY - 6 - 6 * nl - 7
+        T.toy(sid, _pose(sid, it['id'], 1 if k % 2 else 2), 2 * cx, 2 * foot, h=2 * (foot - LY - 4), w=2 * (cw - 4), silhouette=ink if it['secret'] else None)
+    im.alpha_composite(T.im)
+    # over everything: kind tag, the huge die-cut logo, the sound words, the secret's ?, the hero name
+    F = Sheet(LW, LH, None)
+    F.tag(M + 3, M + 3, st['kind'], fill=hot, ink=WH, line=WH, face='micro5', pad=2)
+    al, lines = st['logo']; y = M + 17
+    for j, l in enumerate(lines):
+        bb = LFm.word(F, al, l, M + 5 + (j % 2) * 8, y, st['logo_c'][j % 2], border=(3, WH), bounce=[0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, -1], track=1)
+        F._stamp(np.zeros((1, 1), bool), 0, 0, WH)
+        y = bb[3] + 6
+    LFm.word(F, 'boom', st['sfx'][0], LW - 14, 14, st['sfx_c'][0], anchor='rt', border=(2, ink), lean=3, bounce=[0, -2, 1, -1, 2, 0])
+    LFm.word(F, 'boom', st['sfx'][1], 150, 116, st['sfx_c'][1], border=(2, ink), lean=3, bounce=[1, -1, 0, 2, -1, 0])
+    for k, it in enumerate(items):
+        if it['secret']: LFm.word(F, 'figs', '?', M + 3 + cw * (k + 0.5), (LY + BY) / 2 - 10, yel, anchor='mm', border=(1, ink))
+    if hero is not None:
+        F.tag(LW - 12, 140, hero['name'].upper(), fill=WH, ink=ink, line=ink, face='micro5', anchor='rb', pad=2)
+    im.alpha_composite(upscale(F.im, 2))
+    return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.2, fade=0.0, seed=seed % 997).convert('RGB')
+
+
 if __name__ == '__main__':
     L = json.load(open(os.path.join(TOYS, 'lineup.json')))
     only = sys.argv[1].split(',') if len(sys.argv) > 1 else None
@@ -551,5 +655,5 @@ if __name__ == '__main__':
     for sid, s in L.items():
         if only and sid not in only: continue
         if not os.path.exists(os.path.join(ROOT, 'src', 'data', 'series', sid + '.js')): continue  # a retired series
-        im = card4(s) if sid in CARD4 else card(s); save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
+        im = card5(s) if sid in CARD5 else card(s); save_webp(im, os.path.join(OUT, sid + '.webp'), near=False, quality=92)
         print('card', sid, len(s['items']))

@@ -116,7 +116,7 @@ class Face:
         """One solid ink dot, a slightly lumpy ellipse."""
         ry = ry or rx
         first, s._used = not s._used, True
-        if first and s.sp and s.sp.get('eye') in ('bar', 'slit', 'round', 'pin'):
+        if first and s.sp and s.sp.get('eye') in ('bar', 'slit', 'round', 'pin', 'compound'):
             k = s.sp.get('eyek', 1.5) * 1.15
             return s.eye(u, v, 2 * rx * k, 2 * ry * k, s.sp['eye'], sx=1 if u >= 0 else -1, rot=rot)
         rx, ry = max(rx, 1.1 * s.px), max(ry, 1.4 * s.px)
@@ -202,6 +202,13 @@ class Face:
 
     def fill(s, poly, col):
         """Fill a closed polygon (u, v) in mm with flat paint (mouth insides, tongues, drops)."""
+        m = s._inside(poly)
+        if m.any():
+            s.P.flat(m, col)
+        return m
+
+    def _inside(s, poly):
+        """The face texels inside a closed polygon (u, v) in mm."""
         poly = np.asarray(poly, float)
         lo, hi = poly.min(0), poly.max(0)
         cand = s.m & (s.U >= lo[0]) & (s.U <= hi[0]) & (s.V >= lo[1]) & (s.V <= hi[1])
@@ -219,7 +226,6 @@ class Face:
             j = i
         m = np.zeros_like(cand)
         m[iy[inside], ix[inside]] = True
-        s.P.flat(m, col)
         return m
 
     def drop(s, u, v, r=0.5, col='#bfe3f2', weight=0.3):
@@ -379,7 +385,9 @@ class Face:
             pts = [R(rx * math.cos(a), min(ry * math.sin(a), 0.2 * ry)) for a in t]
         else:
             pts = s._lumpy(u, v, rx, ry, 0.03, rot)
-        if shape in ('bar', 'slit', 'round', 'pin'):  # a real animal eye: a coloured iris, an ink rim, the species' pupil
+        if shape == 'compound':  # an isopod's / insect's compound eye: a solid dark kidney, a fine facet hatch, no pupil
+            return s._compound(u, v, w, h, sx, rot)
+        if shape in ('bar', 'slit', 'round', 'pin', 'compound'):  # a real animal eye: a coloured iris, an ink rim, the species' pupil
             iris = (s.sp or {}).get('iris', '#d9a43a')
             m = s.fill(pts, iris)
             s.stroke(pts + [pts[0]], max(0.1, 0.16 * w), taper=(1, 1), wobble=0.005)
@@ -408,6 +416,41 @@ class Face:
             s.stroke([R(rx * 0.95 * math.cos(a), -ry * 1.35 * abs(math.sin(a)) - 0.1 * ry) for a in np.linspace(math.pi * 1.2, math.pi * 1.8, 5)],
                      max(0.07, 0.08 * w), taper=(0.6, 0.6), wobble=0.01)
         return m  # (solid ink: no catchlight, white or highlight inside an eye, the owner's rule)
+
+    def _compound(s, u, v, w, h, sx, rot):
+        """A compound eye (giant isopod, insects) in ink: a dark kidney lying along the head's edge, its outer end up
+        and its hollow facing up and in; inside it a fine facet hatch (two crossing line sets, a honeycomb-ish net) a
+        step lighter than the ink, and a solid ink rim. No pupil, no catchlight, no white."""
+        rx = 0.5 * max(w, h) * 1.05
+        ry = rx * 0.56
+        c, sn = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+        R = lambda x, y: (u + x * c - y * sn, v + x * sn + y * c)  # noqa: E731
+
+        def kidney(kx, ky):
+            pts = []
+            for a in np.linspace(0, 2 * math.pi, 40, endpoint=False):
+                x, y = kx * math.cos(a), ky * math.sin(a)
+                if y > 0:  # the hollow on the upper long side (the kidney's hilum), a little towards the inner end
+                    y -= 0.5 * ky * math.exp(-((x / kx + 0.12 * sx) ** 2) / 0.16) * math.sin(a)
+                y *= 1 + 0.1 * (x / kx) * sx  # the outer end a touch fuller
+                pts.append(R(x, y))
+            return pts
+        iris = (s.sp or {}).get('iris', '#2c2832')
+        m = s.fill(kidney(rx, ry), iris)
+        inner = s._inside(kidney(rx * 0.8, ry * 0.68)) & m
+        if inner.any():  # the facets: two line sets 60 degrees apart, a texel wide, a step lighter
+            du, dv = s.U - u, s.V - v
+            sp = max(4.6 * s.px, 0.3 * ry)
+            lw = min(0.4, 1.0 * s.px / sp)
+            hit = np.zeros_like(inner)
+            for ang in (rot + 58, rot + 122):  # (a diamond net: at this texel size a third set turns to speckle)
+                ca, sa = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+                d = (du * ca + dv * sa) / sp + 0.5
+                hit |= np.abs(np.mod(d, 1.0) - 0.5) > 0.5 - lw / 2
+            s.P.flat(inner & hit, (s.sp or {}).get('facet', '#4e4858'))
+        pts = kidney(rx, ry)
+        s.stroke(pts + [pts[0]], max(0.1, 0.12 * w), taper=(1, 1), wobble=0.005)
+        return m
 
     def anger(s, du, dy, size=1.0, col=ANGER):
         """An anger mark: four short curved strokes popping out of a corner (the manga vein cross)."""
@@ -460,7 +503,7 @@ class Face:
                 kind, look = 'side', sp['look']
             if sp.get('brows') and size / s.px >= 5:  # (a small face gets no brows: they merge with the eyes into a mask)
                 bk, bw = sp['brows'] if isinstance(sp['brows'], tuple) else (sp['brows'], 1.0)
-                ek = 1.15 * (sp.get('eyek', 1.5) if sp.get('eye') in ('bar', 'slit', 'round', 'pin') else 1.0)
+                ek = 1.15 * (sp.get('eyek', 1.5) if sp.get('eye') in ('bar', 'slit', 'round', 'pin', 'compound') else 1.0)
                 s.brows(bk, spread * 1.02, dy + size * shape * ek * 1.15 + max(0.45, 4 * s.px), size * 2.4, max(0.14, size * 0.34) * bw)
         r = s.rng
         w = size * 0.75  # marker weight for the line eyes
@@ -473,9 +516,9 @@ class Face:
                 kk = 'dot' if sx < 0 else 'happy'
             if V3 and kk in ('dot', 'big', 'side', 'teary') and not (style is None and size * 2 / s.px < 5):
                 kk = style or 'oval'
-            if kk in ('oval', 'bean', 'halfmoon', 'lid', 'bar', 'slit', 'round', 'pin'):
+            if kk in ('oval', 'bean', 'halfmoon', 'lid', 'bar', 'slit', 'round', 'pin', 'compound'):
                 f = 1.15  # (the kit: bold, graphic eye shapes)
-                if kk in ('bar', 'slit', 'round', 'pin'):
+                if kk in ('bar', 'slit', 'round', 'pin', 'compound'):
                     f *= (sp or {}).get('eyek', 1.5)
                     for feat in (sp or {}).get('around', ()):  # what the species has round each eye
                         R_ = size * f * 1.25
@@ -917,7 +960,7 @@ STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): 
     'calf': dict(eye='round', iris='#3a2418', spread=1.25, uneven=0.4, mouth='muzzle', muzzle='#f0c8c0'),
     'squirrel': dict(eye='round', iris='#2a1e18', eyek=1.5, mouth='muzzle', muzzle='#f0e2c8'),
     'pig': dict(eye='round', iris='#3a2418', spread=0.85, eyek=0.8, lid=True),
-    'isopod': dict(eye='pin', iris='#504858', spread=1.4, mouth='flat'),
+    'isopod': dict(eye='compound', iris='#2c2832', facet='#55505e', tilt=26, spread=1.5, eyek=1.7, lid=False),  # wide-set kidney compound eyes
     'ladybird': dict(eye='round', iris='#2a2420', mouth='w'),
 })
 STYLE['dragon'] = dict(eye='slit', iris='#f2c230', tilt=16, eyek=1.2)

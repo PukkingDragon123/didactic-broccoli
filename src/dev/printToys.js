@@ -8,6 +8,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { SERIES } from '../data/series/index.js';
 import { makeItemMesh, whenItemReady } from '../game/collectibles.js';
 import { RARITIES } from '../data/rarity.js';
+import { playFigureClip, stopFigureClip } from '../figures/lowpix.js';
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(1);
@@ -32,9 +33,15 @@ window.toyList = () => SERIES.filter((s) => !s.hidden).map((s) => ({
 window.rarities = () => RARITIES;
 
 /** Render one toy: the mesh framed by its bounding box from a 3/4 view, size x size px, transparent. */
-window.renderToy = async (k, { size = 384, yaw = -0.45, pitch = 0.16, finish = 'normal' } = {}) => {
+window.renderToy = async (k, { size = 384, yaw = -0.45, pitch = 0.16, finish = 'normal', clip = null, t = 0.5 } = {}) => {
   await whenItemReady(k);
   const m = makeItemMesh(k, finish);
+  // an action pose: the figure's own gimmick clip, frozen at fraction t of its length
+  if (clip) {
+    const len = playFigureClip(m, clip);
+    const L = m.userData.figLive;
+    if (len && L) { L.mixer.setTime(Math.max(0, Math.min(1, t)) * len); }
+  }
   const holder = new THREE.Group(); holder.add(m); scene.add(holder);
   m.rotation.y = yaw;
   holder.updateMatrixWorld(true);
@@ -47,6 +54,7 @@ window.renderToy = async (k, { size = 384, yaw = -0.45, pitch = 0.16, finish = '
   renderer.setSize(size, size, false);
   renderer.render(scene, cam);
   const url = renderer.domElement.toDataURL('image/png');
+  if (clip) stopFigureClip(m);
   scene.remove(holder);
   return url;
 };

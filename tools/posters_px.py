@@ -84,38 +84,51 @@ def _(S):
     S.text('CLOSED MONDAYS', 8, h - 10, 'micro5', 1, lem)
 
 
-# ================================================================== promo: the kaiju-suit series (board: TAKO WINNER yellow card)
-# Lemon field, an orange leaning title-card logo in a white border, the hero figure big on a real photo of the city,
-# breaking out of its frame; the line-up with names on orange tags; price, types and age badges.
+# ================================================================== promo: the kaiju-suit series (POSTER-5: the toys in action)
+# Comic Ben-Day dots for a theme, a two-panel split: the suit unzipped to show who's inside (focus lines, ZIP!), the
+# monster stomping (speed lines, STOMP!), the leaning title-card logo in a white die-cut border, the line-up in
+# action poses, the badges.
+import comickit as CK
+def _pose(sid, iid, n):
+    import os
+    from pixprint import TOYS
+    return 'pose/%s_%d' % (iid, n) if os.path.exists(os.path.join(TOYS, sid, 'pose', '%s_%d.png' % (iid, n))) else iid
+
+
 @design('promo:kaiju', 150, 212, paper='Paper001', fade=0.03, crease=0.3, tape=('tl', 'tr'), seed=7)
 def _(S):
-    P = PW.BOARD['tako-winner']; lem, org, red, cr, ink = P['lemon'], P['orange'], P['red'], P['cream'], P['ink']
-    w, h = S.w, S.h
-    S.rect(0, 0, w, h, 0xffffff); S.rect(3, 3, w - 6, h - 6, lem)
-    LF.word(S, 'kaiju', "WHO'S IN", 8, 7, org, border=(2, 0xffffff), lean=3, track=1)
-    LF.word(S, 'kaiju', 'THE SUIT?', 8, 24, org, border=(2, 0xffffff), lean=3, track=1)
-    S.text('MONSTER SUIT FIGURES', 9, 45, 'micro5', 1, ink)
-    framed(S, 'local:skyline.jpg', 8, 58, w - 16, 66, f=(0.6, 0.45, 1.25))
-    S.toy('nakanohito', 'tanbo', w * 0.64, 122, h=82, w=72)
-    tag(S, 'ZIP AT THE BACK!', 12, 62, 0xffffff, ink, line=ink, face='micro5')
-    by = 130
-    S.rect(3, by, w - 6, 44, cr)
+    P = PW.BOARD['tako-winner']; lem, org, red, cr, ink = P['lemon'], P['orange'], P['red'], P['cream'], 0x2a262d
+    WH = 0xffffff; w, h = S.w, S.h
+    S.rect(0, 0, w, h, WH)
+    CK.pattern(S, 'bendots', (3, 3, w - 6, h - 6), [lem, 0xf6c21a])
+    pa = [(8, 44), (w - 8, 44), (w - 8, 76), (8, 104)]
+    pb = [(8, 110), (w - 8, 82), (w - 8, 132), (8, 132)]
+    CK.panel(S, pa, 0x43a7d0, ink); CK.focus(S, pa, 46, 82, WH, n=40, r0=16, seed=3)
+    CK.panel(S, pb, red, ink); CK.speed(S, pb, org, seed=4)
+    S.toy('nakanohito', _pose('nakanohito', 'tanbo', 0), 44, 106, h=60, w=56, outline=(2, WH))
+    S.toy('nakanohito', _pose('nakanohito', 'tanbo', 2), 106, 134, h=66, w=60, outline=(2, WH))
+    LF.word(S, 'kaiju', "WHO'S IN", 7, 6, org, border=(2, WH), lean=3, track=1)
+    LF.word(S, 'kaiju', 'THE SUIT?', 7, 23, red, border=(2, WH), lean=3, track=1)
+    LF.word(S, 'boom', 'ZIP!', w - 10, 50, lem, anchor='rt', border=(1, ink), lean=3, bounce=[0, -1, 1, 0])
+    LF.word(S, 'boom', 'STOMP!', 12, 112, lem, border=(1, ink), lean=3, bounce=[0, 1, -1, 0, 1, -1])
+    by = 138
+    CK.panel(S, [(7, by), (w - 7, by), (w - 7, by + 40), (7, by + 40)], WH, ink, g=1, t=1)
     names = [('mogura', 'MOLE'), ('entotsu', 'LIZARD'), ('denpa', 'MOTH'), ('hamaguri', 'CLAM'), ('tanbo', 'HYDRA'), ('kantoku', 'SECRET')]
-    cw = (w - 8) / 6
+    cw = (w - 14) / 6
     for k, (iid, nm) in enumerate(names):
-        cx = 4 + cw * (k + 0.5)
-        S.toy('nakanohito', iid, cx, by + 31, h=27, w=cw - 2, silhouette=ink if nm == 'SECRET' else None)
-        if nm == 'SECRET': LF.word(S, 'figs', '?', cx, by + 9, lem, anchor='mt')
-        tag(S, nm, cx, by + 34, red if nm == 'SECRET' else org, 0xffffff, face='micro5', anchor='mt')
-    fy = by + 48
-    badge(S, 6, fy, 57, 27, 0xffffff, ink)
-    b = LF.word(S, 'figs', '300', 10, fy + 5, red)
+        cx = 7 + cw * (k + 0.5)
+        S.toy('nakanohito', _pose('nakanohito', iid, 1 if k % 2 else 0), cx, by + 31, h=28, w=cw - 1, silhouette=ink if nm == 'SECRET' else None)
+        if nm == 'SECRET': LF.word(S, 'figs', '?', cx, by + 6, lem, anchor='mt', border=(1, ink))
+        tag(S, '???' if nm == 'SECRET' else nm, cx, by + 32, red if nm == 'SECRET' else org, WH, face='micro5', anchor='mt')
+    fy = by + 45
+    badge(S, 6, fy, 61, 24, WH, ink)
+    b = LF.word(S, 'figs', '300', 10, fy + 4, red)
     S.text('YEN', b[2] + 2, b[1], 'b5', 1, red); S.text('A TURN', b[2] + 2, b[1] + 10, 'micro5', 1, ink)
-    badge(S, 66, fy, 47, 27, red, ink)
-    n = LF.word(S, 'figs', '6', 70, fy + 5, 0xffffff)
-    S.text('ALL', n[2] + 3, fy + 6, 'micro5', 1, 0xffffff); S.text('TYPES', n[2] + 3, fy + 14, 'b5', 1, 0xffffff)
-    badge(S, 116, fy, 28, 27, 0xffffff, ink)
-    S.text('AGES', 130, fy + 5, 'micro5', 1, ink, anchor='mt'); S.text('15+', 130, fy + 14, 'b5', 1, ink, anchor='mt')
+    badge(S, 70, fy, 40, 24, red, ink)
+    n = LF.word(S, 'figs', '6', 74, fy + 4, WH)
+    S.text('ALL', n[2] + 3, fy + 5, 'micro5', 1, WH); S.text('TYPES', n[2] + 3, fy + 13, 'micro5', 1, WH)
+    badge(S, 113, fy, 31, 24, WH, ink)
+    S.text('AGES', 128, fy + 4, 'micro5', 1, ink, anchor='mt'); S.text('15+', 128, fy + 13, 'b5', 1, ink, anchor='mt')
 
 
 # ================================================================== promo: the secret figures (board: LIVING DEAD PUDDING teal card)

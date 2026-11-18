@@ -25,7 +25,7 @@ const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=sw
 const pg = await (await browser.newContext({ viewport: { width: 600, height: 600 } })).newPage();
 pg.on('pageerror', (e) => console.log('[pageerror]', e.message));
 pg.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log('[console]', m.text()); });
-const V = { front: { yaw: -0.65, pitch: 0.24 }, back: { yaw: Math.PI - 0.65, pitch: 0.3 }, side: { yaw: -Math.PI / 2, pitch: 0.06 }, top: { yaw: -0.3, pitch: 1.2 }, front2: { yaw: 0.65, pitch: 0.24 } };
+const V = { front: { yaw: -0.65, pitch: 0.24 }, back: { yaw: Math.PI - 0.65, pitch: 0.3 }, side: { yaw: -Math.PI / 2, pitch: 0.06 }, top: { yaw: -0.3, pitch: 1.2 }, front2: { yaw: 0.65, pitch: 0.24 }, face: { yaw: 0, pitch: 0.42 } };
 try {
   await pg.goto(`http://127.0.0.1:${server.httpServer.address().port}/toylook.html`, { waitUntil: 'load', timeout: 120000 });
   await pg.waitForFunction(() => window.__ready === true, null, { timeout: 120000 });
