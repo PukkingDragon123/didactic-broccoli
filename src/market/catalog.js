@@ -58,7 +58,7 @@ export const CHARM_DEFS = {
   maneki_black: { name: 'Black Maneki-neko', jp: '黒招き猫', prop: 'manekineko', tint: 0x2a2428, price: 3800, luck: { ward: 0.5 }, desc: 'Wards off bad luck. Scammers find you less often.' },
   maneki_red: { name: 'Red Maneki-neko', jp: '赤招き猫', prop: 'manekineko', tint: 0xc8302a, price: 3200, luck: { rare: 0.05 }, desc: 'Good health and rare pulls.' },
   daruma: { name: 'Daruma', jp: 'だるま', prop: 'daruma', price: 1800, luck: { rare: 0.07 }, desc: 'Make a wish, paint an eye. Rare pulls come more often.' },
-  omamori: { name: 'Kin-un Omamori', jp: '金運守', item: 'kaiun/koi', price: 1500, luck: { finish: 0.05, rare: 0.04 }, desc: 'A shrine charm for money luck.' },
+  omamori: { name: 'Kin-un Omamori', jp: '金運守', item: 'otsukai/hebi', price: 1500, luck: { finish: 0.05, rare: 0.04 }, desc: 'A shrine charm for money luck.' },
   kumade: { name: 'Kumade Rake', jp: '熊手', prop: 'mk_kumade', price: 4200, luck: { foot: 0.08 }, desc: 'A bamboo rake that rakes in customers.' },
   hamaya: { name: 'Hamaya Arrow', jp: '破魔矢', prop: 'mk_hamaya', price: 2200, luck: { ward: 0.6 }, desc: 'A demon-breaking arrow. Scams bounce off.' },
   ema: { name: 'Ema Plaque', jp: '絵馬', prop: 'mk_ema', price: 900, luck: { rare: 0.04 }, desc: 'Somebody already wrote a wish on it. It says "more capsules".' },

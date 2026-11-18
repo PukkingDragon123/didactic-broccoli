@@ -49,7 +49,7 @@ export class PopDisplays {
   styles() { return STYLES; }
   /** A display model filled with a few sample figures (the shop page's picture). */
   preview(style) {
-    const b = buildDisplay(style, 'nuigurumi', { w: 0.34, d: 0.31 }, this.game.thumbs);
+    const b = buildDisplay(style, 'teruteru', { w: 0.34, d: 0.31 }, this.game.thumbs);
     const S = SERIES_BY_ID.nuigurumi;
     b.slots.forEach((s, i) => {
       const fig = makeItemMesh(S.items[i % S.items.length].key, 'normal');
@@ -62,7 +62,7 @@ export class PopDisplays {
   }
   idOf(m) { if (!m.data.id) m.data.id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); return m.data.id; }
   of(m) { return this.s.fitted[this.idOf(m)] || null; }
-  seriesOf(m) { return m.data.series || m.cardSeries || 'nuigurumi'; }
+  seriesOf(m) { return m.data.series || m.cardSeries || 'teruteru'; }
   /** The sum of every display's draw (sim footfall: src/sim/sim.js). */
   totalDraw() { let t = 0; for (const L of this.live.values()) t += this.draw(L.m); return t; }
   /** How well the display sells this machine: the share of its spots holding figures of the machine's series. */

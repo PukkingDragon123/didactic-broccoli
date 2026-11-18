@@ -232,7 +232,7 @@ export class GachaMachine {
 
   /** The display card inside the window + the sample figures in the topper. */
   buildBanner() {
-    const series = this.data.series || 'nuigurumi';
+    const series = this.data.series || 'teruteru';
     this.cardSeries = series;
     const tex = bannerTexture(series, this.game.thumbs, { faded: this.data.type === 'retro' });
     const m = this.bannerMesh.material;

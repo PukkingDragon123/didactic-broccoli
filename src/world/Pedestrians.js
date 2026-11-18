@@ -750,7 +750,7 @@ export class Pedestrians {
     const m = p.machine || ms[0];
     const Q = [
       { q: 'Is the secret one in there?', a: [['Maybe! It\'s 1 in 500.', 'honest'], ['Definitely, any minute now!', 'lie'], ['Ask the cat.', 'joke']] },
-      { q: 'Do you have the plushie series?', a: has('nuigurumi') ? [['Yes! Right over there.', 'honest'], ['Only for good customers.', 'joke']] : [['Not yet, soon!', 'honest'], ['Plushies? No. Look at this one though!', 'sell']] },
+      { q: 'Do you have the rain charm series?', a: has('teruteru') ? [['Yes! Right over there.', 'honest'], ['Only for good customers.', 'joke']] : [['Not yet, soon!', 'honest'], ['Plushies? No. Look at this one though!', 'sell']] },
       { q: m ? `How much is one turn on the ${SERIES_BY_ID[m.data.series]?.name || 'red'} one?` : 'How much is one turn?', a: [[m ? `${formatYen(g.sim?.priceOf?.(m) ?? m.data.price ?? 200)}. A fair price!` : 'Depends on the machine!', 'honest'], ['Cheaper than a train ticket!', 'sell']] },
       { q: 'Which machine is the luckiest?', a: [['The one I just refilled.', 'sell'], ['They\'re all the same, honestly.', 'honest'], ['The one with the cat sleeping on it.', 'joke']] },
       { q: 'Are you Grandpa\'s grandkid? He gave me my first capsule!', a: [['That\'s me!', 'honest'], ['Did he? Tell me about it!', 'honest']] },

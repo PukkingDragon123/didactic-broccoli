@@ -323,23 +323,23 @@ const JOSUKE = {
     return { start: [
       ...opener(L, n, { first, firstHello: ['Yo. Josuke. I live right over there.', "You're Grandpa's grandkid, right? He used to give me free turns."], hello: ['Yo.', 'Hey. What\'s up?', 'Oh, it\'s you.'] }),
       { if: () => q?.isActive('crew') && q.step('crew')?.talk === 'josuke', then: 'crew' },
-      { if: () => q?.isActive('bizarre_hero') && heldFigure(g, 'shugorei'), then: 'hero' },
+      { if: () => q?.isActive('bizarre_hero') && heldFigure(g, 'nakanohito'), then: 'hero' },
       { choose: [
         { text: 'Your hair looks amazing.', rel: 1, then: [{ gesture: 'comb', say: 'Heh. Finally, someone with taste.' }] },
         { text: 'What is with your hair?', then: [{ do: (c) => rage(L, c.npc, 'say'), say: 'WHAT DID YOU SAY ABOUT MY HAIR?!', style: 'shout' }, { rel: -2, set: { hairInsult: true } }, '...Hah... hah... NOBODY insults this hair.'] },
         { text: 'Can you fix a machine?', if: () => !!broken, then: fixScript(L).start },
-        { text: 'Want a quest... I mean, a favour?', if: () => !q?.isActive('bizarre_hero') && !q?.isDone('bizarre_hero'), then: ['A favour? Hm. Actually...', 'There\'s a capsule series with those cool heroes. Bizarre ones. Pull me one and I\'ll make it worth your while.', { quest: 'bizarre_hero' }] },
+        { text: 'Want a quest... I mean, a favour?', if: () => !q?.isActive('bizarre_hero') && !q?.isDone('bizarre_hero'), then: ['A favour? Hm. Actually...', 'There\'s a capsule series with monster suits. Bizarre ones. Pull me one and I\'ll make it worth your while.', { quest: 'bizarre_hero' }] },
         { text: 'See you.', then: ['Later.'] },
       ], time: 9, timeout: 4 },
     ],
-    hero: ['Wait. Is that... from the Guardian Spirits series?', { choose: [{ text: 'It\'s yours.', do: () => giveHeld(g, n), advance: 'bizarre_hero', rel: 2, then: [{ gesture: 'pose_point', say: 'GREAT! This must be the work of fate!' }] }, { text: 'Just showing off.', then: ['...Mean.'] }] }],
+    hero: ['Wait. Is that... from the monster suit series?', { choose: [{ text: 'It\'s yours.', do: () => giveHeld(g, n), advance: 'bizarre_hero', rel: 2, then: [{ gesture: 'pose_point', say: 'GREAT! This must be the work of fate!' }] }, { text: 'Just showing off.', then: ['...Mean.'] }] }],
     crew: ['Join a PIRATE crew? That straw hat guy?', { choose: [{ text: 'He says you get free meat.', then: ['...Tempting. But no. Tell him I said "maybe".', { advance: 'crew' }] }, { text: 'Think about it.', then: ['I thought about it. No. ...Maybe.', { advance: 'crew' }] }] }],
     };
   },
   quests: [{
     id: 'bizarre_hero', title: 'A bizarre hero', giver: 'josuke', giverName: 'Josuke', color: '#ff6fb0',
     steps: [
-      { text: 'Pull a figure from the Guardian Spirits series', sub: 'Stock a machine with it, or order capsules', check: (g) => SERIES_BY_ID.shugorei?.items.some((it) => g.state.discovered[it.key]) },
+      { text: 'Pull a figure from the Who\'s in the Suit? series', sub: 'Stock a machine with it, or order capsules', check: (g) => SERIES_BY_ID.nakanohito?.items.some((it) => g.state.discovered[it.key]) },
       { text: 'Bring it to Josuke', sub: 'Hold it in your hands and talk to him', talk: 'josuke' },
     ],
     reward: { money: 2500, text: 'Josuke owes you one' },
@@ -433,14 +433,14 @@ const OKUYASU = {
       { if: () => !q?.isActive('snacks') && !q?.isDone('snacks'), then: snackScript.start },
       { choose: [{ text: 'Want a snack?', if: () => FOODS.some((id) => L.game.held.holding?.(id)), then: [{ do: () => giveHeld(L.game, n), rel: 2, gesture: 'eat' }, 'SNAAAACK! You\'re the BEST! Josuke, look! A SNACK!'] }, { text: 'Are you hungry?', then: ['Always. Why? Do you have food? Do you?', { me: 'No.' }, '...Why would you ask then...'] }, { text: 'What\'s Josuke like?', then: ['Josuke? He\'s the best! Don\'t talk about his hair though. Seriously.'] }, { text: 'Bye!', then: ['Byeee!'] }], time: 10, timeout: 2 },
     ],
-    snackDone: ['You did it?! The FOOD capsules?!', { advance: 'snacks', rel: 2 }, 'I\'m gonna play them ALL. ...Tomorrow. When I have money.'],
+    snackDone: ['You did it?! The TOASTER one?!', { advance: 'snacks', rel: 2 }, 'I\'m gonna play them ALL. ...Tomorrow. When I have money.'],
     crew: ['A pirate? With a hat? ...Is there food on the ship?', { choose: [{ text: 'So much meat.', then: ['I\'M IN! ...Wait, Josuke has to come too.', { advance: 'crew' }] }, { text: 'Probably not.', then: ['Then NO. ...Okay maybe.', { advance: 'crew' }] }] }],
     };
   },
   quests: [{
     id: 'snacks', title: 'Snack attack', giver: 'okuyasu', giverName: 'Okuyasu', color: '#ff9a4a',
     steps: [
-      { text: 'Stock a machine with food capsules', sub: 'The Fake Food Window series', check: (g) => g.machines.some((m) => m.data.series === 'sampuru' || m.data.stock?.includes?.('sampuru')) },
+      { text: 'Stock a machine with toaster capsules', sub: 'The Appliance Animals series', check: (g) => g.machines.some((m) => m.data.series === 'kaden' || m.data.stock?.includes?.('kaden')) },
       { text: 'Tell Okuyasu', sub: 'He hangs out by the vending machines after school', talk: 'okuyasu' },
     ],
     reward: { money: 1500, text: 'Okuyasu is your biggest fan' },
@@ -448,7 +448,7 @@ const OKUYASU = {
 };
 const snackScript = { start: [
   'Okay okay okay. Listen. What if... your machines had FOOD capsules?',
-  { choose: [{ text: 'There is a diner series...', quest: 'snacks', rel: 1, then: ['THERE IS?! PUT IT IN A MACHINE! PLEASE!'] }, { text: 'Capsules aren\'t food.', then: ['...They could be.', { quest: 'snacks' }] }], time: 8, timeout: 0 },
+  { choose: [{ text: 'There is a toaster series...', quest: 'snacks', rel: 1, then: ['A TOASTER?! TOAST?! PUT IT IN A MACHINE! PLEASE!'] }, { text: 'Capsules aren\'t food.', then: ['...They could be.', { quest: 'snacks' }] }], time: 8, timeout: 0 },
 ] };
 
 export const ROSTER = [ROHAN, JOSUKE, OKUYASU, ...MORE];

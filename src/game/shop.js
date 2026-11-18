@@ -57,7 +57,7 @@ export function buyMachine(g, type) {
   const slot = MACHINE_SLOTS.findIndex((_, i) => !used.has(i));
   if (slot < 0) return fail('No free machine slot in the garage');
   if (!payOnline(g, price, `machine:${type}`)) return fail('Not enough money');
-  const series = g.state.licenses[g.state.licenses.length - 1] || 'nuigurumi';
+  const series = g.state.licenses[g.state.licenses.length - 1] || 'teruteru';
   // machines arrive empty: order a capsule box and pour it in. `up` stays at zero (upgrades are gone; older code
   // still reads it). price = the coin price on the machine's price plate.
   const data = { id: 'm' + Date.now().toString(36), type, slot, up: { speed: 0, cap: 0, coins: 0 }, stock: [], series, price: Math.max(100, Math.round(SERIES_BY_ID[series].price / 100) * 100) };
@@ -260,7 +260,7 @@ export function placeCharms(g, newId = null) {
     if (id === 'maneki') m = propMesh('manekineko', { fallbackSize: [0.15, 0.22, 0.13] });
     else if (id === 'daruma') m = propMesh('daruma', { fallbackSize: [0.16, 0.18, 0.15] });
     else if (id === 'goldneko') { m = propMesh('manekineko', { fallbackSize: [0.15, 0.22, 0.13] }); m.material = voxelMaterials('gold'); m.scale.setScalar(1.25); }
-    else { m = makeItemMesh('kaiun/koi'); m.scale.setScalar(2.6); }
+    else { m = makeItemMesh('otsukai/hebi'); m.scale.setScalar(2.6); }
     m.position.set(-0.32 + order.indexOf(id) * 0.21, 0.015, 0.12);
     g._kamidana.add(m);
     g._charmMeshes[id] = m;

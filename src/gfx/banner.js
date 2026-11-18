@@ -233,7 +233,7 @@ export function bannerCanvas(seriesId, thumbs, opts = {}) {
     g.drawImage(img, 0, 0, c.width, c.height); g.filter = 'none'; done();
   };
   img.onerror = () => { try { g.imageSmoothingEnabled = false; g.drawImage(paintedBanner(seriesId, thumbs, opts), 0, 0, c.width, c.height); } catch (e) { console.warn('banner', e); } done(); };
-  img.src = `${import.meta.env?.BASE_URL ?? '/'}img/print/cards/${(SERIES_BY_ID[seriesId] ? seriesId : 'nuigurumi')}.webp`;
+  img.src = `${import.meta.env?.BASE_URL ?? '/'}img/print/cards/${(SERIES_BY_ID[seriesId] ? seriesId : 'teruteru')}.webp`;
   return c;
 }
 function paintedBanner(seriesId, thumbs, opts = {}) {

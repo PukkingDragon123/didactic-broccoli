@@ -28,9 +28,9 @@ export function learn(g, names) {
   return fresh;
 }
 
-// the figures worth measuring: the Guardian Spirits series (or, while that series isn't in the line-up, anything rare
+// the figures worth measuring: the monster suits of Who's in the Suit? (or, while that series isn't in the line-up, anything rare
 // or better: the best sculpts strike the best poses)
-const worthIt = (key) => { const it = getItem(key); return !!it && (SERIES_BY_ID.shugorei ? it.series === 'shugorei' : ['rare', 'ultra', 'secret'].includes(it.rarity)); };
+const worthIt = (key) => { const it = getItem(key); return !!it && (SERIES_BY_ID.nakanohito ? it.series === 'nakanohito' : ['rare', 'ultra', 'secret'].includes(it.rarity)); };
 const holdingBizarre = (g) => { const it = g.held?.item; return it?.kind === 'toy' && worthIt(it.data?.key); };
 const hasBizarre = (g) => Object.keys(g.state.discovered || {}).some(worthIt);
 

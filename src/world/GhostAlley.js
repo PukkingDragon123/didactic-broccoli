@@ -553,7 +553,7 @@ export class GhostAlley {
     menace({ kind: 'don', at: [innerWidth * 0.5 - 140, innerHeight * 0.16], dur: 2.2 });
     h.gesture?.('wave');
     this.dog.bark(this.dog.root.position.clone().setY(0.6));
-    const sid = SERIES_BY_ID.shugorei ? 'shugorei' : pick(SERIES.filter((s) => !s.hidden)).id;
+    const sid = SERIES_BY_ID.kabuki ? 'kabuki' : pick(SERIES.filter((s) => !s.hidden)).id;
     let roll = rollCapsule(sid, Math.random, { rareLuck: 1.5 });
     for (let i = 0; i < 6 && (roll.rarity === 'common' || roll.rarity === 'uncommon'); i++) roll = rollCapsule(sid, Math.random, { rareLuck: 1.5 });
     const first = !f.ghostAlley;

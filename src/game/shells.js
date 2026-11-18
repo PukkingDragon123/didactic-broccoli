@@ -18,7 +18,7 @@ export function installInto(game) {
 
   /** A loose empty shell (physics litter). data: { series, color } */
   g.items.spawnShell = (pos, data = {}, vel = null) => {
-    const d = { series: data.series || 'nuigurumi', color: data.color ?? capsuleColor(data.series || 'nuigurumi') };
+    const d = { series: data.series || 'teruteru', color: data.color ?? capsuleColor(data.series || 'teruteru') };
     const cap = makeShell(d.series, d.color);
     cap.group.position.copy(pos);
     cap.group.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
