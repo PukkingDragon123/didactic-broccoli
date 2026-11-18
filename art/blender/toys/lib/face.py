@@ -277,7 +277,7 @@ class Face:
         """Animal mouths hung under a nose at (du, dy): Y (dog, bear: a stroke down, two curves out), cat (a small
         omega), rabbit (a little x under a Y)."""
         if kind == 'cat':
-            return s.mouth('w', w=w, dy=dy - 0.3 * w, du=du, weight=weight)
+            return s._mouth('w', w=w, dy=dy - 0.3 * w, du=du, weight=weight)
         s.stroke([(du, dy), (du + 0.02 * w, dy - 0.35 * w)], weight, wobble=0.015)
         for sx in (-1, 1):
             s.stroke([(du, dy - 0.35 * w), (du + sx * 0.25 * w, dy - 0.55 * w), (du + sx * 0.5 * w, dy - 0.42 * w)], weight, taper=(0.9, 0.6), wobble=0.02)
@@ -554,7 +554,7 @@ class Face:
                     s.tufts(du, dy + 0.4 * w, w * 2.6, w * 0.35)
                 elif x == 'gill':
                     for sg in (-1, 1):
-                        s.stroke([(du + sg * 1.2 * w, dy + 0.6 * w), (du + sg * 1.35 * w, dy + 0.1 * w), (du + sg * 1.2 * w, dy - 0.4 * w)], weight * 0.8, taper=(0.5, 0.5))
+                        s.stroke([(du + sg * 2.1 * w, dy + 0.5 * w), (du + sg * 2.3 * w, dy - 0.1 * w), (du + sg * 2.1 * w, dy - 0.7 * w)], weight * 0.8, taper=(0.5, 0.5))
                 elif x == 'sweat':
                     s.sweat(du + w * 1.1, dy + w * 1.3, w * 0.14)
         if kind == 'siphon':  # an octopus has no mouth on its face: a siphon tube at the side

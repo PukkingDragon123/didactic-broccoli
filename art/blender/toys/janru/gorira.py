@@ -147,8 +147,8 @@ def paint(P, pt):
     P.fill(P.region('cap') & (np.abs(Z - CAPC[2] - 1.0) < 0.35), pt.ramp('#efe8da', 5), tone=sh, base=0.1)            # the white cap band
     P.fill('capbill', pt.ramp('#1a1a20', 5, light=0.6), tone=sh, base=0.1, brush='gloss')
     P.fill('grass', pt.ramp('#8aa040', 5), tone=sh, base=0.2)
-    fc = face.Face(P, c=tuple(HC + (0, -3.6, -0.4)), axis=(0, -1, 0.1), where=P.region('skin'), seed=1241, ink='#121012')
-    fc.eyes('dot', spread=3.6, size=0.42, dy=0.6, uneven=0.25)
+    fc = face.Face(P, c=tuple(HC + (0, -3.6, -0.4)), axis=(0, -1, 0.1), where=P.region('skin'), seed=1241, ink='#efe4c8')
+    fc.eyes('dot', spread=3.2, size=0.3, dy=0.6, uneven=0.25)
     fc.mouth('smug', w=2.2, dy=-1.4, weight=0.26)
     P.lines(['coat', 'pants', 'wrap', 'cap'], step=1)
     P.clusters()

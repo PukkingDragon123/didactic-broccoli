@@ -84,12 +84,27 @@ tin, `pvc` elsewhere. Pick per region what the material is (fur, feather, cloth 
 
 Flat ink (`P.flat`, face.py, printed details) is never brushed, rimmed or worn: prints stay crisp.
 
-## Faces
+## Faces (the face kit, lib/face.py)
 
-Unchanged API (`lib/face.py`). In facet mode a big mark (14 texels or more across: a big dot, a wide grin stroke)
-paints as brushwork (bristle streaks, dry edge, ink pooled inside the mark); a smaller one stays solid ink with only
-its hand-drawn edge wobble, so small faces keep two crisp uneven dots and one stroke. `blush` is hand-dabbed stipple.
-Keep faces simple: dots and one stroke.
+Hand-drawn, solid ink, graphic (bold confident strokes, a steady hand), never glossy: no catchlight, white or
+highlight inside an eye. Small marks (under 14 texels) stay crisp solid ink.
+
+- **Every animal's face is built from that real animal's features, stylised** (`face.STYLE`, chosen per figure by
+  `face.SPECIES` = `'series/id': species`, or `fc.species(name)` in a script): coloured eyes with the species' pupil
+  (`bar`: octopus, squid, goat, toad; `slit`: cat, fox, wolf, croc, snake, gecko, dragon; `round`: owls, birds, most
+  mammals; `pin`: frogs, fish), what sits round the eye (`bulge`, owl `disc`, `ring`, dark `patch`, crab `stalk`)
+  and the mouth parts (`siphon` instead of a mouth on an octopus, fish `lips` + `gill`, a bird's `beakline`, a
+  `muzzle` with nose leather and a Y mouth, a cat's `catnose` + whiskers). Look at photos of the real animal before
+  adding a species. Each figure varies its species' slant and lids a little (seeded by its id).
+- The plain calls keep working: `fc.eyes('dot', ...)`, `fc.mouth('upturn', ...)` are drawn in the figure's species
+  style; a fresh face whose first mark is `fc.dot(...)` (an eye on its own knob) becomes the species' eye.
+- Non-animal figures (dolls, ghosts, robots) use the attitude styles (`face.ATTITUDE`: smug, determined, side_eye,
+  sly, grumpy, derpy, bored, intense, toothy_smirk, fangy, deadpan, mischief, sleepy_cool, villain, worried,
+  cheeky) via `fc.species('<attitude>')`, or the plain expressions (eyes: oval, bean, halfmoon, lid, happy,
+  squeeze, sleepy, dizzy, swirl, wink, side, teary, shock; mouths: upturn, line, dash, frown, grin, gritted, shout,
+  tongue, smug, smirk, flat, long, open, wobble, pout, drool, w, o; brows; blush dab / hatch; sweat, anger,
+  freckles).
+- Review: `tools/blender.sh art/blender/toys/faces.py <out_dir>` paints every attitude and species on a test head.
 
 ## Iterating
 

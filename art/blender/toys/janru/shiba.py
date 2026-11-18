@@ -145,8 +145,7 @@ def paint(P, pt):
     bl = P.region('ball')
     P.flat(bl & (np.abs(np.hypot(X - BALL[0] - 0.9, Z - BALL[2]) - 1.1) < 0.09), '#c8343a')                    # the seam
     fc = face.Face(P, c=tuple(HC + (0, -4.2, 0.0)), axis=(0, -1, 0.15), where=P.region('fur') | P.region('cream'), seed=1231)
-    fc.eyes('dot', spread=4.0, size=0.42, dy=0.8, uneven=0.2)
-    fc.brows('angry', spread=4.4, dy=1.7, w=1.4, weight=0.32)
+    fc.eyes('dot', spread=3.6, size=0.3, dy=0.8, uneven=0.2)
     fc.mouth('smug', w=1.6, dy=-1.3, weight=0.24)
     P.lines(['uni', 'belt', 'sock', 'cap'], step=1)
     P.clusters()
