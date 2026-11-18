@@ -271,6 +271,7 @@ body.paper-ui #caption .name { line-height: 46px; color: var(--pp-ink); text-sha
 body.paper-ui #caption .meta { margin-top: 0; color: var(--pp-ink2); text-shadow: none; }
 body.paper-ui #caption .meta span[style] { display: inline-block; padding: 0 8px 2px; background: var(--pp-ink); }
 body.paper-ui #caption .meta .dot { color: var(--pp-ink2); opacity: 1; }
+body.paper-ui #caption .meta .variant { display: inline-block; padding: 0 8px 2px; color: var(--pp-ink); text-shadow: none; box-shadow: inset 0 0 0 2px var(--pp-ink); } /* the variant tag: an inked outline label */
 body.paper-ui #caption .new { color: var(--pp-red); background: none; box-shadow: inset 0 0 0 2px var(--pp-red); transform: rotate(-6deg); vertical-align: 12px; }
 
 /* ---------------------------------------------------------------- touch buttons: card tags you press flat */

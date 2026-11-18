@@ -7,6 +7,7 @@ import { makeItemMesh } from './collectibles.js';
 import { getItem } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
+import { variantsOf, variantName, withVariant } from '../data/variants.js';
 import { iconHTML } from '../gfx/icons.js';
 import { menace } from '../ui/menacing.js';
 
@@ -143,7 +144,7 @@ export class Reveal {
     // the capsule group itself is now empty
     held.release()?.obj.parent?.remove(item.obj);
     // the collectible
-    const mesh = makeItemMesh(data.key, data.finish);
+    const mesh = makeItemMesh(data.key, data.finish, { variant: data.variant });
     const holder = new THREE.Group();
     holder.add(mesh);
     const size = mesh.geometry?.userData?.size || new THREE.Box3().setFromObject(mesh).getSize(new THREE.Vector3()); // (a figure built as a group has no geometry size)
@@ -151,7 +152,7 @@ export class Reveal {
     g.scene.add(holder);
     holder.position.copy(capWorld);
     holder.quaternion.copy(camQ);
-    held.take('toy', { key: data.key, finish: data.finish }, holder, { pose: 'reveal', dur: 0.5 });
+    held.take('toy', { key: data.key, finish: data.finish, ...withVariant(data.variant) }, holder, { pose: 'reveal', dur: 0.5 });
     held.busy = true;
     held.removeTag();
     mesh.position.y = -size.y * 0.5;
@@ -169,7 +170,7 @@ export class Reveal {
         mesh.position.y = 0;
         held.busy = false;
         held.startTrans('toy', 0.45);
-        held.attachTag({ key: data.key, finish: data.finish }, isNew);
+        held.attachTag({ key: data.key, finish: data.finish, ...withVariant(data.variant) }, isNew);
         g.lighting.dim(false, 2.5);
         g.save();
       },
@@ -320,8 +321,10 @@ export class Reveal {
     const F = FINISHES[data.finish];
     const stars = Array.from({ length: 5 }, (_, i) => iconHTML('star', 2, i < R.stars ? '' : 'off')).join('');
     const finish = data.finish !== 'normal' ? `<span class="dot">&middot;</span><span style="color:${F.color}">${F.name}</span>` : '';
+    const vn = variantsOf(data.key) ? variantName(data.key, data.variant) : ''; // the figure variant's tag
+    const variant = vn ? `<span class="dot">&middot;</span><span class="variant">${vn}</span>` : '';
     const el = this.captionEl;
-    el.innerHTML = `<div class="stars">${stars}</div><div class="name">${it.name}${isNew ? '<span class="new">NEW</span>' : ''}</div><div class="meta"><span style="color:${R.color}">${R.name}</span>${finish}</div>`;
+    el.innerHTML = `<div class="stars">${stars}</div><div class="name">${it.name}${isNew ? '<span class="new">NEW</span>' : ''}</div><div class="meta"><span style="color:${R.color}">${R.name}</span>${finish}${variant}</div>`;
     el.classList.add('show');
     clearTimeout(this._capT);
     this._capT = setTimeout(() => el.classList.remove('show'), (DUR[data.rarity] || 1) * 1000 + 1600);

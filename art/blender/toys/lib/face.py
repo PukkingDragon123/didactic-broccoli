@@ -33,6 +33,8 @@ TONGUE = '#e47c7c'
 # the richer hand-drawn kit (faces_v3: inked eye shapes with a dabbed catchlight, lid strokes, lash ticks, tapered
 # brows, hatched or dabbed cheeks, corner ticks, open mouths, sweat / anger marks, freckles): GG_FACE_V3=1 turns it
 # on for a build; it becomes the default once the owner approves the sheet (art/blender/toys/faces.py)
+EXPR = None  # a figure variant's face (fig.py, GG_VARIANT 'face'): 'happy' (^ ^), 'sleepy' (closed), 'wink' (one shut)
+_WINK = [0]  # (wink on eyes drawn one Face at a time: every second eye drawn shuts)
 V3 = os.environ.get('GG_FACE_V3', '1') == '1'  # (the owner approved the kit: on by default; GG_FACE_V3=0 for the old marker dots)
 CATCH = '#f3ede0'      # the off-white dab of a catchlight
 HATCH = '#d9505c'      # cheek hatching
@@ -116,6 +118,11 @@ class Face:
         """One solid ink dot, a slightly lumpy ellipse."""
         ry = ry or rx
         first, s._used = not s._used, True
+        if first and EXPR in ('happy', 'sleepy', 'wink'):  # a variant's expression: this eye drawn shut
+            k = s.sp.get('eyek', 1.5) * 1.15 if (s.sp and s.sp.get('eye') in ('bar', 'slit', 'round', 'pin', 'compound')) else 1.0
+            _WINK[0] += 1
+            if EXPR != 'wink' or _WINK[0] % 2 == 0:
+                return s.shut(u, v, rx * k, ry * k, 'sleepy' if EXPR == 'sleepy' else 'happy', rot)
         if first and s.sp and s.sp.get('eye') in ('bar', 'slit', 'round', 'pin', 'compound'):
             k = s.sp.get('eyek', 1.5) * 1.15
             return s.eye(u, v, 2 * rx * k, 2 * ry * k, s.sp['eye'], sx=1 if u >= 0 else -1, rot=rot)
@@ -361,6 +368,17 @@ class Face:
             pts.append((u + x * c - y * sn, v + x * sn + y * c))
         return pts
 
+    def shut(s, u, v, rx, ry, kind='happy', rot=0.0):
+        """One eye drawn shut in a single brush stroke: happy (a ^ arc, the cheek pushing it up) or sleepy (a soft
+        downward curve)."""
+        c, sn = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+        R = lambda x, y: (u + x * c - y * sn, v + x * sn + y * c)  # noqa: E731
+        if kind == 'happy':
+            pts = [R(-1.15 * rx, -0.35 * ry), R(-0.55 * rx, 0.3 * ry), R(0.0, 0.48 * ry), R(0.55 * rx, 0.3 * ry), R(1.15 * rx, -0.35 * ry)]
+        else:
+            pts = [R(-1.2 * rx, 0.15 * ry), R(-0.6 * rx, -0.28 * ry), R(0.0, -0.4 * ry), R(0.6 * rx, -0.28 * ry), R(1.2 * rx, 0.15 * ry)]
+        return s.stroke(pts, max(0.12, 0.55 * rx, 2.2 * s.px), taper=(0.6, 0.6), wobble=0.02)
+
     def dab(s, u, v, r, col, lumpy=0.22):
         """A small hand-dabbed spot of paint (a catchlight, a freckle): an uneven blob, never a perfect circle."""
         r = max(r, 0.9 * s.px)
@@ -516,6 +534,11 @@ class Face:
                 kk = 'dot' if sx < 0 else 'happy'
             if V3 and kk in ('dot', 'big', 'side', 'teary') and not (style is None and size * 2 / s.px < 5):
                 kk = style or 'oval'
+            if EXPR in ('happy', 'sleepy') or (EXPR == 'wink' and sx == 1):  # a variant's expression
+                kk = 'sleepy' if EXPR == 'sleepy' else 'happy'
+                if sp and sp.get('eye') in ('bar', 'slit', 'round', 'pin', 'compound'):
+                    a *= sp.get('eyek', 1.5) * 0.8
+                    w = max(w, a * 0.24)
             if kk in ('oval', 'bean', 'halfmoon', 'lid', 'bar', 'slit', 'round', 'pin', 'compound'):
                 f = 1.15  # (the kit: bold, graphic eye shapes)
                 if kk in ('bar', 'slit', 'round', 'pin', 'compound'):

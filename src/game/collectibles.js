@@ -61,10 +61,11 @@ export function itemReady(key) { const it = getItem(key); return !isLowpix(it) |
 /** Resolves once an item's geometry has loaded (at once for built-in items). */
 export function whenItemReady(key) { const it = getItem(key); return isLowpix(it) ? loadFigure(it) : Promise.resolve(); }
 
-/** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels. */
+/** Create a mesh for an item key ("series/item") with a finish. opts.lowres: the original coarse voxels; opts.variant:
+ *  the figure variant's id (item.variants, src/data/variants.js). */
 export function makeItemMesh(key, finish = 'normal', opts = {}) {
   const it = getItem(key);
-  if (isLowpix(it)) return lowpixMesh(it, finish); // a lowpix figure GLB (src/figures/lowpix.js)
+  if (isLowpix(it)) return lowpixMesh(it, finish, opts.variant || null); // a lowpix figure GLB (src/figures/lowpix.js)
   if (it && !it.build) return missingMesh(key, finish); // a figure whose model has not been built yet
   let geo;
   const lod = LOD.on && !opts.lowres && !opts.hires && UPRES && wantsUpres(getItem(key));

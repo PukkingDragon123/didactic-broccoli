@@ -23,16 +23,16 @@ export class Thumbs {
     this.rt.texture.colorSpace = THREE.SRGBColorSpace;
   }
 
-  /** Canvas thumbnail of a collectible. opts: size, finish, silhouette (black shape), bg */
+  /** Canvas thumbnail of a collectible. opts: size, finish, variant (a figure variant's id), silhouette (black shape), bg */
   item(key, opts = {}) {
     const size = opts.size || 96;
     const finish = opts.finish || 'normal';
-    const ck = `${key}|${finish}|${size}|${opts.silhouette ? 1 : 0}`;
+    const ck = `${key}|${finish}|${size}|${opts.silhouette ? 1 : 0}${opts.variant ? '|' + opts.variant : ''}`;
     if (this.cache.has(ck)) return this.cache.get(ck);
     let canvas;
     if (opts.silhouette) {
       // derived from the coloured render: no second GPU pass
-      const base = this.item(key, { size, finish });
+      const base = this.item(key, { size, finish, variant: opts.variant });
       canvas = document.createElement('canvas');
       canvas.width = canvas.height = size;
       const ctx = canvas.getContext('2d');
@@ -41,10 +41,10 @@ export class Thumbs {
       ctx.fillStyle = '#3a2e36';
       ctx.fillRect(0, 0, size, size);
     } else {
-      const mesh = makeItemMesh(key, finish, size <= 64 ? { lowres: true } : { hires: true });
+      const mesh = makeItemMesh(key, finish, { ...(size <= 64 ? { lowres: true } : { hires: true }), variant: opts.variant });
       canvas = this.renderObject(mesh, size, opts);
       // a lowpix figure still loading: draw it again next time (game.events 'figureReady' tells the UI)
-      if (mesh.userData.pending) return canvas;
+      if (mesh.userData.pending || mesh.userData.vpending) return canvas;
     }
     this.cache.set(ck, canvas);
     return canvas;

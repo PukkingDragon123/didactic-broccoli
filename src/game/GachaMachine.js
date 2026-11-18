@@ -812,7 +812,7 @@ export class GachaMachine {
     const color = this.lastColor;
     const luck = g.luck();
     const roll = rollCapsule(seriesId, Math.random, { finishLuck: luck.finish + (MACHINE_TYPES[this.data.type]?.luck || 0), rareLuck: luck.rare });
-    const data = { series: seriesId, key: roll.key, finish: roll.finish, rarity: roll.rarity, color: color ?? capsuleColor(seriesId) };
+    const data = { series: seriesId, key: roll.key, finish: roll.finish, ...(roll.variant ? { variant: roll.variant } : {}), rarity: roll.rarity, color: color ?? capsuleColor(seriesId) };
     const O = this.L.outlet;
     const r = capsuleRadius(seriesId);
     const spawn = this.local(0, O.y0 + r + 0.035, this.L.front - 0.12);

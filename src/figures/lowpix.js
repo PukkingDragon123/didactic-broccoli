@@ -9,6 +9,9 @@
 //   playFigureClip(mesh, role) / stopFigureClip(mesh)          gimmicks: the GLB's own joints and clips, live
 //   figurePoint(item, name) / figurePartMesh(item, name)        toys.js: named points (pt_<name> joints), moving parts
 // Finishes are material variants: each figure's atlases on clones of the shared finish materials (src/voxel/materials.js).
+// Figure variants (item.variants, art/blender/toys/GIMMICKS.md): a variant swaps the atlas for a repainted one (texture:
+// public/models/lowpix/figures/<key>.<texture>.png, loaded lazily), tints the materials (tint) and shows / hides GLB
+// nodes (show, hide: nodes any variant shows are hidden on the others). lowpixMesh(item, finish, variantId).
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
@@ -22,6 +25,7 @@ const KINDS = { matte: 0, gloss: 1, metal: 2, glow: 3, glass: 4, led: 0 }; // (l
 const NK = 6; // material kinds per texture in a material array
 
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+const texLoader = new THREE.TextureLoader();
 const F = new Map(); // key -> { state, entry, gltf, geo, stand, texs, mats: Map(finish -> []), waiting: Set<WeakRef<Mesh>>, frame }
 const listeners = new Set();
 let events = null;
@@ -54,7 +58,7 @@ function rec(item) {
     stand.boundingBox = new THREE.Box3(new THREE.Vector3(-size.x / 2, 0, -size.z / 2), new THREE.Vector3(size.x / 2, size.y, size.z / 2));
     stand.boundingSphere = stand.boundingBox.getBoundingSphere(new THREE.Sphere());
     stand.userData = { size, fig: fr, pending: true, lowpix: true };
-    R = { state: 'idle', item, entry: e, frame: fr, stand, geo: null, texs: [], mats: new Map(), waiting: new Set(), promise: null };
+    R = { state: 'idle', item, entry: e, frame: fr, stand, geo: null, geos: new Map(), vtex: new Map(), texs: [], mats: new Map(), waiting: new Set(), promise: null };
     F.set(item.key, R);
   }
   return R;
@@ -73,7 +77,7 @@ export function loadFigure(item) {
     active++;
     R.promise = loader.loadAsync(urlOf(item.key)).then((gltf) => {
       R.gltf = gltf;
-      build(R);
+      R.geo = geoFor(R, variantOf(R, null));
       R.state = 'ready';
       for (const w of R.waiting) { const m = w.deref(); if (m) adopt(m, R); }
       R.waiting.clear();
@@ -121,7 +125,7 @@ function kindOf(o, mats) {
   return 0;
 }
 
-function build(R) {
+function build(R, hide = new Set()) {
   const { gltf, frame } = R;
   const scene = gltf.scene;
   scene.userData.figRoot = true;
@@ -132,12 +136,13 @@ function build(R) {
   const W = new THREE.Matrix4(), N = new THREE.Matrix3();
   const sep = new Set(R.entry.separate || []); // moving parts the game shows on their own (a wind-up key, a dart)
   const separated = (o) => { for (let n = o; n && n !== scene; n = n.parent) if (sep.has(n.name)) return true; return false; };
+  const hidden = (o) => { for (let n = o; n && n !== scene; n = n.parent) if (hide.has(n.name)) return true; return false; }; // (a variant's nodes)
   // Blender-modelled figures (art/blender/toys) carry a baked normal map per atlas and vertex tangents for it
   let tangents = true;
   scene.traverse((o) => { if (o.isMesh && !o.userData.figPart && !(sep.size && separated(o)) && !o.geometry.attributes.tangent) tangents = false; });
   R.normals = new Map(); // atlas -> normal map
   scene.traverse((o) => {
-    if (!o.isMesh || o.userData.figPart || (sep.size && separated(o))) return;
+    if (!o.isMesh || o.userData.figPart || (sep.size && separated(o)) || (hide.size && hidden(o))) return;
     const map = o.material?.map || null;
     if (map && !texIndex.has(map)) { texIndex.set(map, texIndex.size); tidy(map); }
     if (map && o.material.normalMap && !R.normals.has(map)) { R.normals.set(map, o.material.normalMap); tidy(o.material.normalMap, false); }
@@ -165,9 +170,58 @@ function build(R) {
   geo.groups.forEach((gr, i) => { gr.materialIndex = slots[i]; });
   geo.computeBoundingBox(); geo.computeBoundingSphere();
   geo.userData = { size: geo.boundingBox.getSize(new THREE.Vector3()), fig: frame, lowpix: true };
-  R.geo = geo;
   R.tangents = tangents;
-  R.tris = geo.index.count / 3;
+  if (!hide.size || !R.tris) R.tris = geo.index.count / 3;
+  return geo;
+}
+
+// ------------------------------------------------------------------ figure variants
+/** The item's variant with this id (variants[0], the standard figure, for none or an unknown id); null without variants. */
+function variantOf(R, id) {
+  const vs = R.item.variants;
+  if (!vs?.length) return null;
+  return (id && vs.find((v) => v.id === id)) || vs[0];
+}
+/** The GLB nodes a variant hides: what other variants show (and it does not), plus its own hide list. */
+function hiddenOf(R, v) {
+  const out = new Set();
+  if (!v) return out;
+  for (const o of R.item.variants) for (const n of o.show || []) out.add(n);
+  for (const n of v.show || []) out.delete(n);
+  for (const n of v.hide || []) out.add(n);
+  return out;
+}
+/** The merged rest-pose geometry for a variant (shared by every variant that hides the same nodes). */
+function geoFor(R, v) {
+  const hide = hiddenOf(R, v);
+  const k = [...hide].sort().join(',');
+  let g = R.geos.get(k);
+  if (!g) { g = build(R, hide); R.geos.set(k, g); }
+  return g;
+}
+/** A variant's repainted atlas (loads once; meshes waiting for it get their materials when it arrives). */
+function variantTex(R, name, mesh) {
+  let T = R.vtex.get(name);
+  if (!T) {
+    T = { tex: null, waiting: new Set() };
+    R.vtex.set(name, T);
+    const url = new URL(`${import.meta.env.BASE_URL}models/lowpix/figures/${R.item.key}.${name}.png`, document.baseURI).href;
+    texLoader.loadAsync(url).then((t) => {
+      t.flipY = false; // (as glTF images)
+      tidy(t);
+      T.tex = t;
+      for (const w of T.waiting) {
+        const m = w.deref();
+        if (!m) continue;
+        delete m.userData.vpending;
+        if (!m.userData.figLive && m.geometry !== R.stand) m.material = materials(R, m.userData.finish || 'normal', m.userData.variant);
+      }
+      T.waiting.clear();
+      events?.emit('figureReady', R.item.key); // (thumbnails drawn with the standard paint meanwhile redraw)
+    }).catch((e) => console.warn('figure variant texture', R.item.key, name, e?.message || e));
+  }
+  if (!T.tex && mesh) { T.waiting.add(new WeakRef(mesh)); mesh.userData.vpending = true; }
+  return T.tex;
 }
 function indexed(g) { const n = g.attributes.position.count, idx = new Uint32Array(n); for (let i = 0; i < n; i++) idx[i] = i; g.setIndex(new THREE.BufferAttribute(idx, 1)); return g; }
 function addBackFaces(g) {
@@ -193,12 +247,18 @@ function tidy(t, colour = true) {
 
 // ------------------------------------------------------------------ finishes (material variants)
 /** The material array of a loaded figure in a finish: NK kinds (matte, gloss, metal, glow, glass, card) per atlas. */
-function materials(R, finish = 'normal') {
-  let mats = R.mats.get(finish);
+function materials(R, finish = 'normal', variant = null, mesh = null) {
+  const v = variantOf(R, variant);
+  let vtex = null;
+  if (v?.texture) { vtex = variantTex(R, v.texture, mesh); if (!vtex && !v.tint) return materials(R, finish); } // (the standard paint until it is in)
+  const mk = (vtex || v?.tint) ? `${finish}|${v.id}${vtex ? '' : '|t'}` : finish;
+  let mats = R.mats.get(mk);
   if (mats) return mats;
   const base = voxelMaterials(finish);
+  const tint = v?.tint ? new THREE.Color(v.tint) : null;
   mats = [];
-  for (const tex of R.texs.length ? R.texs : [null]) {
+  for (const [ti, atlas] of (R.texs.length ? R.texs : [null]).entries()) {
+    const tex = ti === 0 && vtex ? vtex : atlas;
     const made = new Map();
     for (let k = 0; k < NK; k++) {
       const b = base[k] || base[0];
@@ -207,7 +267,8 @@ function materials(R, finish = 'normal') {
         m = b.clone();
         m.vertexColors = false;
         m.map = tex;
-        const nm = tex && R.normals?.get(tex);
+        if (tint && m.color) m.color = m.color.clone().multiply(tint);
+        const nm = atlas && R.normals?.get(atlas);
         if (nm && 'normalMap' in m) { m.normalMap = nm; m.normalScale.set(1, R.tangents ? 1 : -1); } // (no tangents: three's derivative frame flips green)
         if (!m.transparent) m.alphaTest = 0.5;
         if (R.entry.facet && !m.transparent) { // faceted figures: a soft sheen (a sharp gloss flashes whole flat faces white; the shine is painted)
@@ -222,16 +283,16 @@ function materials(R, finish = 'normal') {
       mats.push(m);
     }
   }
-  R.mats.set(finish, mats);
+  R.mats.set(mk, mats);
   return mats;
 }
 const STAND_MATS = [new THREE.MeshBasicMaterial({ visible: false })];
 
 function adopt(mesh, R) {
   if (mesh.userData.figLive) return; // posed by a clip: it swaps back when the clip ends
-  mesh.geometry = R.geo;
+  mesh.geometry = geoFor(R, variantOf(R, mesh.userData.variant));
   if (mesh.userData.mat0) mesh.userData.mat0 = null; // (a variant was painted over the stand-in: redone below)
-  mesh.material = materials(R, mesh.userData.finish || 'normal');
+  mesh.material = materials(R, mesh.userData.finish || 'normal', mesh.userData.variant, mesh);
   const redo = mesh.userData.redecorate;
   if (redo) { delete mesh.userData.redecorate; try { redo(); } catch (e) { console.warn('figure variant', e); } }
 }
@@ -241,13 +302,15 @@ const meshHooks = new Set();
 export function onFigureMesh(fn) { meshHooks.add(fn); return () => meshHooks.delete(fn); }
 /** A loaded figure's texture atlases (the light-up overlay paints with them). */
 export function figureTextures(key) { return F.get(key)?.texs || []; }
-/** A mesh of a figure in a finish (the stand-in until the GLB is in; it loads now, its series after it). */
-export function lowpixMesh(item, finish = 'normal') {
+/** A mesh of a figure in a finish and variant (the stand-in until the GLB is in; it loads now, its series after it). */
+export function lowpixMesh(item, finish = 'normal', variant = null) {
   const R = rec(item);
   const ready = R.state === 'ready';
-  const mesh = new THREE.Mesh(ready ? R.geo : R.stand, ready ? materials(R, finish) : STAND_MATS);
+  const mesh = new THREE.Mesh(ready ? geoFor(R, variantOf(R, variant)) : R.stand, STAND_MATS);
   mesh.castShadow = true; mesh.receiveShadow = true;
   mesh.userData.itemKey = item.key; mesh.userData.finish = finish;
+  if (variant) mesh.userData.variant = variant;
+  if (ready) mesh.material = materials(R, finish, variant, mesh);
   if (item.gimmick || R.entry.clips?.gimmick) mesh.userData.gimmick = item.gimmick || { text: 'Work the gimmick' };
   for (const fn of meshHooks) { try { fn(mesh, item); } catch (e) { console.warn('figure mesh hook', e); } }
   if (!ready) {
@@ -281,8 +344,10 @@ export function playFigureClip(mesh, role = 'gimmick', { loop = false, reverse =
   let L = mesh.userData.figLive;
   if (!L) {
     const rig = R.gltf.scene.clone(true);
-    const mats = materials(R, mesh.userData.finish || 'normal');
+    const mats = materials(R, mesh.userData.finish || 'normal', mesh.userData.variant);
+    const hide = hiddenOf(R, variantOf(R, mesh.userData.variant));
     rig.traverse((o) => {
+      if (hide.has(o.name)) o.visible = false;
       if (!o.isMesh) return;
       const ti = Math.max(0, R.texs.indexOf(o.material?.map));
       o.material = mats[ti * NK + kindOf(o, R.entry.mats || {})];
@@ -320,7 +385,8 @@ export function stopFigureClip(mesh) {
   L.mixer.stopAllAction();
   mesh.remove(L.rig);
   const R = F.get(mesh.userData.itemKey);
-  mesh.geometry = R?.geo || L.was;
+  mesh.geometry = R?.geo ? geoFor(R, variantOf(R, mesh.userData.variant)) : L.was;
+  if (R?.geo && mesh.userData.variant) mesh.material = materials(R, mesh.userData.finish || 'normal', mesh.userData.variant); // (its repaint may have come in meanwhile)
   delete mesh.userData.figLive;
   live.delete(mesh);
 }
@@ -351,9 +417,9 @@ export function figurePoint(item, name, out = new THREE.Vector3()) {
 }
 const partGeos = new Map();
 /** A moving part (a node subtree of the GLB) as its own mesh: in the figure's frame, or around its own pivot (own). */
-export function figurePartMesh(item, name, { own = false, finish = 'normal' } = {}) {
+export function figurePartMesh(item, name, { own = false, finish = 'normal', variant = null } = {}) {
   const R = F.get(item.key);
-  const m = new THREE.Mesh(undefined, R?.state === 'ready' ? materials(R, finish) : STAND_MATS);
+  const m = new THREE.Mesh(undefined, R?.state === 'ready' ? materials(R, finish, variant) : STAND_MATS);
   m.castShadow = true;
   if (!R || R.state !== 'ready') { m.geometry = new THREE.BufferGeometry(); return m; }
   const ck = item.key + ':' + name + (own ? ':own' : '');

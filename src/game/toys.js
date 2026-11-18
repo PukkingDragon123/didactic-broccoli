@@ -8,6 +8,7 @@
 //  clip (the Blender toy line, src/game/figureGimmicks.js): a press plays the clip where they stand.
 // game.toys.use(item) / hint(item) are wired into game.held here (instance wrappers, Held.js is untouched).
 import * as THREE from 'three';
+import { withVariant } from '../data/variants.js';
 import { audio } from '../core/audio.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { isLowpix, figurePartMesh, figurePoint, playFigureClip, stopFigureClip } from '../figures/lowpix.js';
@@ -204,7 +205,7 @@ export class Toys {
   /** A bouncy ball loose in the world (a pick-up-able toy with a lively physics body). */
   spawnBall(data, pos, vel) {
     const g = this.game;
-    const ent = g.items.spawnToy({ key: data.key, finish: data.finish }, pos, { physics: false });
+    const ent = g.items.spawnToy({ key: data.key, finish: data.finish, ...withVariant(data.variant) }, pos, { physics: false });
     const size = ent.mesh.geometry.userData.size, r = Math.max(0.012, size.y * 0.5);
     ent.mesh.position.y = -r;
     ent.body = g.physics.addBody({
@@ -336,7 +337,7 @@ export class Toys {
     const g = this.game;
     this.world.splice(i, 1);
     const p = w.obj.position.clone(), yaw = w.obj.rotation.y;
-    const finish = () => { w.obj.parent?.remove(w.obj); g.items.spawnToy({ key: w.data.key, finish: w.data.finish }, p, { rotY: yaw, physics: false }); };
+    const finish = () => { w.obj.parent?.remove(w.obj); g.items.spawnToy({ key: w.data.key, finish: w.data.finish, ...withVariant(w.data.variant) }, p, { rotY: yaw, physics: false }); };
     if (!topple) { finish(); return; }
     audio.play('place', { pos: p, vol: 0.6 });
     const x0 = w.inner?.rotation.x || 0;

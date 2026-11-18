@@ -35,7 +35,7 @@ export class Hotbar {
     const g = this.game;
     if (!it) return null;
     if (it.kind === 'tool') return iconURL(TOOLS[it.data.id]?.icon || 'box', 2);
-    if (it.kind === 'toy') return g.thumbs.item(it.data.key, { size: 64, finish: it.data.finish }).toDataURL();
+    if (it.kind === 'toy') return g.thumbs.item(it.data.key, { size: 64, finish: it.data.finish, variant: it.data.variant }).toDataURL();
     if (it.kind === 'capsule') {
       // never a picture of the ball itself (owner's rule): the slot shows the series' display card in miniature
       const k = it.data.series;
@@ -81,7 +81,7 @@ export class Hotbar {
 
   refresh(announce) {
     const h = this.game.held;
-    const sig = h.slots.map((it) => (it ? `${it.kind}:${it.data?.id || it.data?.key || it.data?.series || it.data?.type}:${it.data?.uses ?? ''}:${it.data?.finish || ''}` : '-')).join('|') + '#' + h.sel;
+    const sig = h.slots.map((it) => (it ? `${it.kind}:${it.data?.id || it.data?.key || it.data?.series || it.data?.type}:${it.data?.uses ?? ''}:${it.data?.finish || ''}${it.data?.variant || ''}` : '-')).join('|') + '#' + h.sel;
     if (sig === this.sig && !announce) return;
     this.sig = sig;
     h.slots.forEach((it, i) => {

@@ -229,3 +229,4 @@ body.touchmode #news { top: max(72px, calc(env(safe-area-inset-top) + 60px)); }
   .panel .x { top: 10px; right: 8px; }
   .panel input[type=range] { width: 46%; }
 }
+#caption .meta .variant { color: #ffe7a8; } /* a figure variant's tag (src/data/variants.js) */

@@ -2,6 +2,7 @@
 // every museum exhibit. Each slot shows a dark, shadow-like stand-in of the figure while you aim with a toy in hand
 // (lit, never bright: no white ghosts or glows).
 import * as THREE from 'three';
+import { withVariant } from '../data/variants.js';
 import { audio } from '../core/audio.js';
 import { makeItemMesh } from './collectibles.js';
 import { plaque } from './labels.js';
@@ -103,7 +104,7 @@ export class DisplaySlots {
     const cur = this.items[slot.i];
     if (held) {
       if (held.kind !== 'toy') return false;
-      const data = { k: held.data.key, f: held.data.finish };
+      const data = { k: held.data.key, f: held.data.finish, ...(held.data.variant ? { v: held.data.variant } : {}) }; // (v: the figure variant)
       const wpos = this.owner.localToWorld(slot.def.pos.clone());
       const wq = this.owner.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), slot.def.rotY || 0));
       // swap: take the current one into the hand afterwards
@@ -117,10 +118,10 @@ export class DisplaySlots {
         g.effects.sparks({ pos: wpos.clone().add(new THREE.Vector3(0, 0.03, 0)), count: 8, colors: [0xfff4d8], speed: 0.25, size: 0.006, life: 0.5 });
         g.onDisplayChanged(data.k, this, slot);
         if (prev) {
-          const m = makeItemMesh(prev.k, prev.f);
+          const m = makeItemMesh(prev.k, prev.f, { variant: prev.v });
           const holder = new THREE.Group(); holder.add(m);
           holder.position.copy(wpos); g.scene.add(holder);
-          g.held.take('toy', { key: prev.k, finish: prev.f }, holder);
+          g.held.take('toy', { key: prev.k, finish: prev.f, ...withVariant(prev.v) }, holder);
         }
       }, { dur: 0.32, arc: 0.04 });
       return false;
@@ -130,12 +131,12 @@ export class DisplaySlots {
     const m = slot.mesh;
     const wpos = m.getWorldPosition(new THREE.Vector3());
     this.clearItem(slot.i);
-    const mesh = makeItemMesh(cur.k, cur.f);
+    const mesh = makeItemMesh(cur.k, cur.f, { variant: cur.v });
     const holder = new THREE.Group(); holder.add(mesh);
     holder.position.copy(wpos);
     holder.quaternion.copy(this.owner.getWorldQuaternion(new THREE.Quaternion()));
     g.scene.add(holder);
-    g.held.take('toy', { key: cur.k, finish: cur.f }, holder);
+    g.held.take('toy', { key: cur.k, finish: cur.f, ...withVariant(cur.v) }, holder);
     audio.play('pickup', { vol: 0.7 });
     g.onDisplayChanged(cur.k, this, slot);
     return false;
@@ -144,7 +145,7 @@ export class DisplaySlots {
   showItem(i, data, pop) {
     const slot = this.slots[i];
     if (slot.mesh) this.owner.remove(slot.mesh);
-    const m = makeItemMesh(data.k, data.f);
+    const m = makeItemMesh(data.k, data.f, { variant: data.v });
     m.position.copy(slot.def.pos);
     m.rotation.y = slot.def.rotY || 0;
     m.castShadow = this.opts.shadows ?? true;
@@ -152,7 +153,7 @@ export class DisplaySlots {
     slot.mesh = m;
     if (this.opts.plaques !== false && slot.def.plaque !== false) {
       if (slot.plaque) this.owner.remove(slot.plaque);
-      const p = plaque(data.k, data.f);
+      const p = plaque(data.k, data.f, data.v);
       const off = new THREE.Vector3(0, 0.008, (slot.def.plaqueZ ?? 0.05)).applyAxisAngle(new THREE.Vector3(0, 1, 0), slot.def.rotY || 0);
       p.position.copy(slot.def.pos).add(off);
       p.rotation.set(-0.35, slot.def.rotY || 0, 0, 'YXZ');

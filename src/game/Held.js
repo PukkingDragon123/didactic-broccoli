@@ -196,7 +196,7 @@ export class Held {
 
   attachTag(data, isNew = false) {
     this.removeTag();
-    const t = tagCard(data.key, data.finish, isNew);
+    const t = tagCard(data.key, data.finish, isNew, data.variant);
     t.position.set(0.035, -0.105, -0.3);
     t.rotation.set(-0.05, 0.3, 0.06);
     this.anchor.add(t);

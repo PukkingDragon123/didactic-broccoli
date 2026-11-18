@@ -6,6 +6,7 @@ import { iconCanvas } from '../gfx/icons.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
+import { variantsOf, variantName } from '../data/variants.js';
 
 const hex = (s) => parseInt(s.slice(1), 16);
 const cache = new Map();
@@ -47,8 +48,9 @@ export function capBox(p, size, font = FONT_EN) {
 }
 
 /** A hanging paper tag shown next to the item you are holding. */
-export function tagCard(key, finish = 'normal', isNew = false) {
-  const ck = `tag|${key}|${finish}|${isNew}`;
+export function tagCard(key, finish = 'normal', isNew = false, variant = null) {
+  const vn = variantsOf(key) ? variantName(key, variant) : ''; // the figure variant's tag (src/data/variants.js)
+  const ck = `tag|${key}|${finish}|${isNew}|${vn}`;
   if (cache.has(ck)) return cache.get(ck).clone();
   const it = getItem(key);
   const s = SERIES_BY_ID[it.series];
@@ -82,6 +84,14 @@ export function tagCard(key, finish = 'normal', isNew = false) {
   for (let i = 0; i < 5; i++) p.sprite(['..X..', '.XXX.', 'XXXXX', '.XXX.', '.X.X.'], { X: i < R.stars ? hex(R.color) : 0xd8d0c0 }, 10 + i * 14, y0, 2);
   const c16 = capBox(p, 16);
   p.text(R.name.toUpperCase(), 86, y0 - c16.off, { size: 16, color: rc, font: FONT_EN });
+  if (vn) { // the variant: a little inked tag at the right of the stars row
+    const t = fitText(p, vn.toUpperCase(), 92, 16);
+    const tw = Math.min(92, Math.ceil(p.measure(t, 16, FONT_EN)));
+    const x1 = W - 8, x0 = x1 - tw - 12, ty = y0 - 4;
+    p.rect(x0, ty, x1 - x0, 20, 0x2a2220);
+    p.rect(x0 + 2, ty + 2, x1 - x0 - 4, 16, 0xf3e9d2);
+    p.text(t, x1 - 6, ty + 2 - c16.off + 1, { size: 16, color: 0x2a2220, align: 'right', font: FONT_EN });
+  }
   if (finish !== 'normal') {
     p.rect(6, H - 32, W - 12, 26, hex(F.color));
     p.rect(6, H - 8, W - 12, 2, 0x000000, 40);
@@ -105,8 +115,9 @@ export function tagCard(key, finish = 'normal', isNew = false) {
 }
 
 /** Tiny museum-style plaque under a displayed item. */
-export function plaque(key, finish = 'normal') {
-  const ck = `plq|${key}|${finish}`;
+export function plaque(key, finish = 'normal', variant = null) {
+  const vn = variantsOf(key) ? variantName(key, variant) : '';
+  const ck = `plq|${key}|${finish}|${vn}`;
   if (cache.has(ck)) return cache.get(ck).clone();
   const it = getItem(key);
   const R = RARITIES[it.rarity];
@@ -114,7 +125,9 @@ export function plaque(key, finish = 'normal') {
   p.fill(finish === 'normal' ? 0x2a2220 : 0x3a2a10);
   p.frame(0, 0, 96, 32, finish === 'normal' ? 0x8a7a6a : hex(FINISHES[finish].color));
   p.text(fitText(p, it.name.toUpperCase(), 88, 8), 48, 6, { size: 8, color: 0xf3e9d2, align: 'center', font: FONT_EN });
-  for (let i = 0; i < R.stars; i++) p.sprite(['.X.', 'XXX', '.X.'], { X: hex(R.color) }, 48 - R.stars * 3 + i * 6, 21, 1);
+  const sx0 = vn ? 6 : 48 - R.stars * 3; // (with a variant: the stars at the left, the variant's name at the right)
+  for (let i = 0; i < R.stars; i++) p.sprite(['.X.', 'XXX', '.X.'], { X: hex(R.color) }, sx0 + i * 6, 21, 1);
+  if (vn) p.text(fitText(p, vn.toUpperCase(), 88 - R.stars * 6 - 8, 8), 90, 18, { size: 8, color: 0xe8c878, align: 'right', font: FONT_EN });
   const mat = new THREE.MeshStandardMaterial({ map: p.texture(), roughness: 0.6, metalness: 0.2 });
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.016, 0.002), [null, null, null, null, mat, null].map((m) => m || new THREE.MeshStandardMaterial({ color: 0x2a2220 })));
   mesh.userData.noRim = true;

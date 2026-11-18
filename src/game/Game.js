@@ -1,5 +1,6 @@
 // The game hub: owns every system, the world, the save state and the main update loop.
 import * as THREE from 'three';
+import { withVariant } from '../data/variants.js';
 import { Renderer } from '../core/renderer.js';
 import { Input } from '../core/input.js';
 import { Physics } from '../core/physics.js';
@@ -279,7 +280,7 @@ export class Game {
   storeHeld() {
     const held = this.held.item;
     const target = this.garage.storageBox.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.3, 0));
-    const k = `${held.data.key}|${held.data.finish}`;
+    const k = `${held.data.key}|${held.data.finish}${held.data.variant ? '|' + held.data.variant : ''}`; // (key|finish[|variant])
     this.held.putTo(target, new THREE.Quaternion(), (obj) => {
       obj.parent?.remove(obj);
       this.state.storage[k] = (this.state.storage[k] || 0) + 1;
@@ -294,14 +295,14 @@ export class Game {
     const pick = k && this.state.storage[k] ? k : keys[keys.length - 1];
     this.state.storage[pick]--;
     if (this.state.storage[pick] <= 0) delete this.state.storage[pick];
-    const [key, finish] = pick.split('|');
-    if (!this.held.canTake()) { this.delivery.order({ type: 'single', key, finish, label: getItem(key)?.name }, { delay: 0.5 }); return true; }
+    const [key, finish, variant] = pick.split('|');
+    if (!this.held.canTake()) { this.delivery.order({ type: 'single', key, finish, ...withVariant(variant), label: getItem(key)?.name }, { delay: 0.5 }); return true; }
     const p = this.garage.storageBox.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.3, 0));
     const holder = new THREE.Group();
-    holder.add(makeItemMeshLazy(key, finish));
+    holder.add(makeItemMeshLazy(key, finish, variant));
     holder.position.copy(p);
     this.scene.add(holder);
-    this.held.take('toy', { key, finish }, holder);
+    this.held.take('toy', { key, finish, ...withVariant(variant) }, holder);
     audio.play('pickup');
     return true;
   }
@@ -461,7 +462,7 @@ export class Game {
       if (l.d?.type === 'roller') continue; // the museum remodel roller was retired (walls are fixed now)
       const p = new THREE.Vector3(...l.p);
       if (l.kind === 'capsule') this.items.spawnCapsule(l.d, p);
-      else if (l.kind === 'toy') this.items.spawnToy({ key: l.d.key, finish: l.d.finish }, p, { physics: false, rotY: l.r || 0 });
+      else if (l.kind === 'toy') this.items.spawnToy({ key: l.d.key, finish: l.d.finish, ...withVariant(l.d.variant) }, p, { physics: false, rotY: l.r || 0 });
       else if (l.kind === 'box') this.items.spawnBox(l.d, p, this.delivery.meshFor(l.d));
       else if (l.kind === 'tool' && TOOLS[l.d?.id]) this.items.spawnTool(l.d, p, l.r || 0); // put down anywhere, even the key
     }
@@ -478,7 +479,7 @@ export class Game {
       let obj = null;
       if (it.kind === 'tool' && TOOLS[it.d.id]) obj = makeToolMesh(it.d.id);
       else if (it.kind === 'capsule') { const cap = makeCapsule(it.d.series, it.d.color); obj = cap.group; obj.userData.capRef = cap; }
-      else if (it.kind === 'toy') { obj = new THREE.Group(); obj.add(makeItemMeshLazy(it.d.key, it.d.finish)); }
+      else if (it.kind === 'toy') { obj = new THREE.Group(); obj.add(makeItemMeshLazy(it.d.key, it.d.finish, it.d.variant)); }
       else if (it.kind === 'box') obj = this.delivery.meshFor(it.d);
       if (!obj) return;
       H.anchor.add(obj);
@@ -627,5 +628,5 @@ Game.updaters = [];
 Game.late = []; // installers that need the whole game built (src/plugins/*.js, registered in main.js)
 
 import { makeItemMesh } from './collectibles.js';
-function makeItemMeshLazy(k, f) { return makeItemMesh(k, f); }
+function makeItemMeshLazy(k, f, v) { return makeItemMesh(k, f, { variant: v }); }
 export { SERIES, RARITIES };

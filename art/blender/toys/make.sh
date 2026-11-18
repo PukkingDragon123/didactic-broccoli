@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build the Blender toy figures and pack them for the game:
-#   art/blender/toys/make.sh <series> [<id> ...] [--fast] [--repaint] [--card | --card-only]
+#   art/blender/toys/make.sh <series> [<id> ...] [--fast] [--repaint] [--card | --card-only] [--variants | --variants-only]
 # Each figure script (art/blender/toys/<series>/<id>.py) models, bakes, paints, rigs and exports its GLB into
 # art/blender/toys/_build/<series>/; pack.mjs then writes public/models/lowpix/figures/<series>/<id>.glb and the
 # figure's entry in src/figures/lowpix.manifest.json. Run from the repository root.
@@ -24,8 +24,25 @@ S=$1; shift
 ids=(); flags=()
 card=0
 only=0
-for a in "$@"; do case $a in --card) card=1;; --card-only) card=1; only=1;; --*) flags+=("$a");; *) ids+=("$a");; esac; done
+var=0
+for a in "$@"; do case $a in --card) card=1;; --card-only) card=1; only=1;; --variants) var=1;; --variants-only) var=2;; --*) flags+=("$a");; *) ids+=("$a");; esac; done
 [ $only = 1 ] && ids=() || { [ ${#ids[@]} -eq 0 ] && ids=($(ls art/blender/toys/$S/[!_]*.py | xargs -n1 basename | sed 's/\.py$//')); }
+# --variants: also repaint each figure's texture variants (src/data/series/<series>.js item.variants with a `texture`,
+# GIMMICKS.md "Variants") on the same unwrap: public/models/lowpix/figures/<series>/<id>.<texture>.png;
+# --variants-only: just those (the figure's last build stays)
+variants() {
+  local id=$1 v tex
+  node --input-type=module -e "const m = await import('./src/data/series/$S.js'); const it = m.default.items.find((i) => i.id === '$id'); for (const v of it?.variants || []) if (v.texture) console.log(JSON.stringify(v));" | while read -r v; do
+    tex=$(node -e "console.log(JSON.parse(process.argv[1]).texture)" "$v")
+    echo "== $S/$id variant $tex"
+    rm -f art/blender/toys/_build/$S/$id.$tex"_col.png"
+    GG_VARIANT="$v" slot tools/blender.sh art/blender/toys/$S/$id.py --repaint 2>&1 | grep -E "^\[|Error|Traceback|error" || true
+    [ -f art/blender/toys/_build/$S/$id.$tex"_col.png" ] || { echo "no variant texture for $S/$id $tex"; exit 1; }
+    node -e "require('sharp')(process.argv[1]).png({ compressionLevel: 9, effort: 10 }).toFile(process.argv[2]).then((i) => console.log('variant', process.argv[2], Math.round(i.size / 1024) + ' KB'))" \
+      art/blender/toys/_build/$S/$id.$tex"_col.png" public/models/lowpix/figures/$S/$id.$tex.png
+  done
+}
+if [ $var = 2 ]; then for id in "${ids[@]}"; do variants "$id"; done; exit 0; fi
 for id in "${ids[@]}"; do
   echo "== $S/$id"
   rm -f art/blender/toys/_build/$S/$id.glb
@@ -42,6 +59,7 @@ for id in "${ids[@]}"; do
   fi
 done
 [ $only = 1 ] || node art/blender/toys/pack.mjs "$S" "${ids[@]}"
+if [ $var = 1 ]; then for id in "${ids[@]}"; do variants "$id"; done; fi
 # --card: re-render the series' toys and bake its display card (public/img/print/cards/<series>.webp), serialized
 # machine-wide (the toy renders share shots/.art-cache/toys/lineup.json)
 if [ $card = 1 ]; then

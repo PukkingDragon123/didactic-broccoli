@@ -42,7 +42,7 @@ export class Items {
   /** Spawn a loose collectible standing on a surface (or dropped). */
   spawnToy(data, pos, opts = {}) {
     const g = this.game;
-    const mesh = makeItemMesh(data.key, data.finish);
+    const mesh = makeItemMesh(data.key, data.finish, { variant: data.variant });
     const holder = new THREE.Group();
     holder.add(mesh);
     holder.position.copy(pos);

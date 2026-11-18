@@ -1,5 +1,6 @@
 // Surfaces you can set things down on + held-box behaviour (refills, second-hand singles).
 import * as THREE from 'three';
+import { withVariant } from '../data/variants.js';
 import { audio } from '../core/audio.js';
 import { makeItemMesh } from './collectibles.js';
 import { boxLabel } from './Delivery.js';
@@ -40,12 +41,12 @@ export class Placement {
       obj.parent?.remove(obj);
       audio.play('boxOpen', { vol: 0.8 });
       g.effects.sparks({ pos: wp, count: 20, colors: [0xffffff, 0xffe9a0], speed: 0.5, size: 0.008 });
-      const mesh = makeItemMesh(d.key, d.finish);
+      const mesh = makeItemMesh(d.key, d.finish, { variant: d.variant });
       const holder = new THREE.Group(); holder.add(mesh);
       holder.position.copy(wp);
       g.scene.add(holder);
       const isNew = g.discover(d.key, d.finish);
-      g.held.take('toy', { key: d.key, finish: d.finish }, holder, { isNew });
+      g.held.take('toy', { key: d.key, finish: d.finish, ...withVariant(d.variant) }, holder, { isNew });
       return;
     }
     g.museum?.boxSecondary?.(it);

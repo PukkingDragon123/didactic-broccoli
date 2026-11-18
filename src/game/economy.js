@@ -7,6 +7,7 @@
 import { SERIES, SERIES_BY_ID, getItem } from '../data/series/index.js';
 import { RARITIES, RARITY_ORDER } from '../data/rarity.js';
 import { FINISHES, rollFinish } from '../data/finishes.js';
+import { rollVariant } from '../data/variants.js';
 import { unlockLevel, machineSlotsAt } from '../data/unlocks.js';
 
 /** Cash in your pocket on a brand-new save (the drive ate the rest). Grandpa's tin adds ¥2,000 for supplies during the
@@ -124,7 +125,8 @@ export function rollCapsule(seriesId, rnd, { finishLuck = 0, rareLuck = 0 } = {}
   const pool = byRarity[rarity];
   const item = pool[Math.floor(rnd() * pool.length)];
   const finish = rollFinish(rnd, 1 + finishLuck);
-  return { key: item.key, rarity, finish };
+  const variant = rollVariant(item, rnd); // (a figure variant: src/data/variants.js; undefined = the standard one)
+  return { key: item.key, rarity, finish, ...(variant ? { variant } : {}) };
 }
 
 export function seriesList() { return SERIES; }
