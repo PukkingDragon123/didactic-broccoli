@@ -449,41 +449,43 @@ def card3(s):
 # colour with a white print border, the hero toy big and breaking out of it, a pixel logotype in one colour with a
 # white die-cut border, badge row (price / N types / age), the line-up on name tags, the warning block, maker, codes.
 CARD4 = {
-    'henshin': dict(board='morokoshi', field='yellow', logo_c='leaf', tagc='leaf', hot='red', ink='ink', paper='cream',
-                    logo=('draft', ['STATiONERY', 'BEASTS'], {}), kind='TRANSFORMING ANIMAL FIGURE',
+    'henshin': dict(board='morokoshi', field='yellow', logo_c2='red', logo_c='leaf', tagc='leaf', hot='red', ink='ink', paper='cream',
+                    logo=('chochin20', ['STATIONERY', 'BEASTS'], dict(bounce=[0, -1, 1, 0, -1, 1, 0, -1, 1, 0])), kind='TRANSFORMING ANIMAL FIGURE', pattern='stripes',
                     blurb='STAPLERS, SHARPENERS AND PENS THAT UNFOLD INTO ANIMALS!'),
-    'yomise': dict(board='kaju-dragon', field='white', logo_c='forest', tagc='forest', hot='red', ink='ink', paper='white',
-                   logo=('wire', ['DEEP-SEA', 'NiGHT STALLS'], dict(bounce=[0, 1, 0, -1, 0, 1, -1, 0])), kind='DEEP-SEA NIGHT STALL FIGURE',
+    'yomise': dict(board='kaju-dragon', field='sky', logo_c2='red', logo_c='forest', tagc='forest', hot='red', ink='ink', paper='white',
+                   logo=('chochin20', ['DEEP-SEA', 'NIGHT', 'STALLS'], dict(bounce=[0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1, -1], track=1)), kind='DEEP-SEA NIGHT STALL FIGURE', pattern='dots',
                    blurb='NO ELECTRICITY DOWN HERE: EVERY STALL BRINGS ITS OWN LIGHT!'),
 }
 
 
 def card4(s):
+    """The board card: white stock with a playful pattern, the photo stage right, the hero toy big and breaking out of
+    it, a HUGE two-line logo in one colour with a fat white die-cut border overlapping stage and figure, the badge
+    row, the line-up on name tags, the small print."""
     from printkit import source, cover, printed
+    from PIL import ImageDraw
     sid = s['id']; st = CARD4[sid]; P = PW.BOARD[st['board']]
-    fld = P[st['field']]; lc = P[st['logo_c']]; tc = P[st['tagc']]; hot = P[st['hot']]; ink = P[st['ink']]; pap = P[st['paper']]
+    fld = P[st['field']]; lc = P[st['logo_c']]; tc = P[st['tagc']]; hot = P[st['hot']]; ink = P[st['ink']]
     WH = 0xffffff
     items = s['items']; n = len(items)
     rendered = [i for i in items if not i['secret'] and toy(sid, i['id']) is not None]
     hero = max(rendered, key=lambda i: RANK.get(i['rarity'], 0)) if rendered else None
     seed = sum(map(ord, sid))
-    M = 5; SX = 146; SY = 150; LY = 156; BY = 232
-    # base: the field, the stage photo at full resolution in a white print border
-    base = Image.new('RGB', (W, H), rgb(fld))
+    M = 5; SX = 150; SY0 = 22; SY = 158; BY = 238
+    # the stock: white with the pattern in a light tint of the field colour
+    Bg = Sheet(LW, LH, WH)
+    light = PW.tint(fld, 0.28, WH)
+    if st['pattern'] == 'stripes': Bg.stripes((0, 0, LW, LH), light, w=4, gap=6, slope=1)
+    else: Bg.dots((0, 0, LW, LH), light, step=8, size=3)
+    base = upscale(Bg.im, 2).convert('RGB')
+    sw, sh = LW - M - SX - 2, SY - SY0
+    ImageDraw.Draw(base).rectangle((2 * (SX - 3), 2 * (SY0 - 3), 2 * (SX + sw + 3) - 1, 2 * (SY0 + sh + 3) - 1), fill=rgb(fld))
+    ImageDraw.Draw(base).rectangle((2 * (SX - 2), 2 * (SY0 - 2), 2 * (SX + sw + 2) - 1, 2 * (SY0 + sh + 2) - 1), fill=rgb(WH))
     ref, f = BACK.get(sid, ('oi:9a73ee8933d93045@test', (0.5, 0.5, 1.0)))
-    sw, sh = LW - M - SX - 2, SY - M - 2
-    from PIL import ImageDraw
-    ImageDraw.Draw(base).rectangle((2 * (SX - 2), 2 * (M - 2), 2 * (SX + sw + 2) - 1, 2 * (M + sh + 2) - 1), fill=rgb(WH))
-    base.paste(printed(cover(source(photo_ref(ref)), 2 * sw, 2 * sh, f), 1.18, 1.08, 1.08), (2 * SX, 2 * M))
+    base.paste(printed(cover(source(photo_ref(ref)), 2 * sw, 2 * sh, f), 1.18, 1.08, 1.08), (2 * SX, 2 * SY0))
     B = Sheet(LW, LH, None)
-    x = M + 4; y = M + 4
-    B.tag(x, y, st['kind'], fill=hot, ink=WH, line=hot, face='micro5', pad=2)
-    al, lines, kw = st['logo']; y += 15
-    for l in lines:
-        bb = LFm.word(B, al, l, x + 1, y, lc, accent=hot, accent2=P.get('yellow', P.get('mustard')), border=(2, WH), **kw); y = bb[3] + 5
-    B.para(st['blurb'], x, y + 1, SX - M - 12, 'micro5', 1, ink, lh=7, maxy=SY - 38)
-    # the badge row: price / N types / age
-    by = SY - 32
+    # the badge row
+    x = M + 3; by = SY - 30
     B.rrect(x, by, 62, 28, WH, r=2, line=ink)
     pb = LFm.word(B, 'figs', '%d' % s['price'], x + 4, by + 5, hot)
     B.text('YEN', pb[2] + 2, pb[1], 'b5', 1, hot); B.text('A TURN', pb[2] + 2, pb[1] + 10, 'micro5', 1, ink)
@@ -494,48 +496,50 @@ def card4(s):
     ax = tx + 43
     B.rrect(ax, by, 26, 28, WH, r=2, line=ink)
     B.text('AGES', ax + 13, by + 6, 'micro5', 1, ink, anchor='mt'); B.text('15+', ax + 13, by + 15, 'b5', 1, ink, anchor='mt')
-    # the line-up band: white, numbered name tags
-    B.rect(M, LY, LW - 2 * M, BY - LY, WH)
+    # the line-up on name tags, straight on the patterned stock
+    LY = SY + 6
     cw = (LW - 2 * M) / n
     for k, it in enumerate(items):
         cx = M + cw * (k + 0.5)
         lines_ = ['SECRET'] if it['secret'] else wrap3(it['name'], int(cw) - 8)
         th = 3 + 6 * len(lines_)
-        B.rrect(cx - cw / 2 + 2, BY - th - 3, cw - 4, th, hot if it['secret'] else tc, r=2)
-        for j, l in enumerate(lines_):
-            B.text(l, cx, BY - th - 1 + 6 * j, 'micro5', 1, WH, anchor='mt')
-        B.text(str(k + 1), M + cw * k + 4, LY + 4, 'b5', 1, hot)
-    # the small print: warning, maker, codes
-    wy = BY + 4; ww = 150
-    B.rect(M, wy, LW - 2 * M, LH - wy - M + 2, pap)
-    B.rrect(M + 2, wy + 1, ww, LH - wy - M - 1, WH, r=1, line=hot)
-    B.rect(M + 3, wy + 2, ww - 2, 8, hot)
-    t0 = M + 6
-    B.poly([(t0 + 3, wy + 3), (t0 + 6, wy + 9), (t0, wy + 9)], P.get('yellow', P.get('mustard'))); B.rect(t0 + 3, wy + 5, 1, 2, ink); B.rect(t0 + 3, wy + 8, 1, 1, ink)
-    B.text('WARNING', t0 + 10, wy + 4, 'micro5', 1, WH); B.text('CHOKING HAZARD', M + ww - 2, wy + 4, 'micro5', 1, WH, anchor='rt')
-    B.para('SMALL PARTS. NOT FOR CHILDREN UNDER 3. DO NOT PUT THE CAPSULE IN YOUR MOUTH OR OVER YOUR HEAD.', M + 6, wy + 13, ww - 8, 'micro5', 1, ink, lh=6, maxy=LH - M - 2)
+        B.rrect(cx - cw / 2 + 3, BY - th - 3, cw - 6, th, hot if it['secret'] else tc, r=2, line=WH)
+        for j, l in enumerate(lines_): B.text(l, cx, BY - th - 1 + 6 * j, 'micro5', 1, WH, anchor='mt')
+    # the small print
+    wy = BY + 2; ww = 150
+    B.rrect(M, wy, ww, LH - wy - M, WH, r=1, line=hot)
+    B.rect(M + 1, wy + 1, ww - 2, 8, hot)
+    t0 = M + 4; yel = P.get('yellow', P.get('mustard'))
+    B.poly([(t0 + 3, wy + 2), (t0 + 6, wy + 8), (t0, wy + 8)], yel); B.rect(t0 + 3, wy + 4, 1, 2, ink); B.rect(t0 + 3, wy + 7, 1, 1, ink)
+    B.text('WARNING', t0 + 10, wy + 3, 'micro5', 1, WH); B.text('CHOKING HAZARD', M + ww - 3, wy + 3, 'micro5', 1, WH, anchor='rt')
+    B.para('SMALL PARTS. NOT FOR CHILDREN UNDER 3. DO NOT PUT THE CAPSULE IN YOUR MOUTH OR OVER YOUR HEAD.', M + 3, wy + 12, ww - 6, 'micro5', 1, ink, lh=6, maxy=LH - M - 2)
     mk = MAKER_OF.get(sid, seed % len(MAKERS)); name, mcol, em = MAKERS[mk]
-    emblem(B, em, M + ww + 7, wy + 2, mcol, ink=ink, paper=WH)
-    B.text(name, M + ww + 21, wy + 3, 'b5', 1, ink)
-    B.text('TOY LINE 0120-00-1999', M + ww + 21, wy + 12, 'micro5', 1, ink)
-    B.qr(LW - M - 22, wy + 3, 1, seed, ink, bg=WH)
-    B.barcode(M + ww + 13, wy + 21, '4970' + str(seed * 7919 % 10 ** 8).zfill(8), h=8, ink=ink, bg=WH)
+    B.rrect(M + ww + 3, wy, LW - 2 * M - ww - 3, LH - wy - M, WH, r=1, line=ink)
+    emblem(B, em, M + ww + 7, wy + 3, mcol, ink=ink, paper=WH)
+    B.text(name, M + ww + 21, wy + 4, 'b5', 1, ink)
+    B.qr(LW - M - 23, wy + 4, 1, seed, ink, bg=WH)
+    B.barcode(M + ww + 13, wy + 18, '4970' + str(seed * 7919 % 10 ** 8).zfill(8), h=8, ink=ink, bg=WH)
     im = base.convert('RGBA'); im.alpha_composite(upscale(B.im, 2))
-    T = Sheet(W, H, None); hb = None
+    # the toys: the hero big, breaking out of the stage at the top and the foot
+    T = Sheet(W, H, None)
     if hero is not None:
-        hb = T.toy(sid, hero['id'], 2 * (SX + sw * 0.55), 2 * (SY + 6), h=2 * (sh + 4), w=2 * (sw - 12))
+        T.toy(sid, hero['id'], 2 * (SX + sw * 0.56), 2 * (SY + 14), h=2 * (sh + 34), w=2 * (sw + 10))
     for k, it in enumerate(items):
         cx = M + cw * (k + 0.5)
         nl = 1 if it['secret'] else len(wrap3(it['name'], int(cw) - 8))
         foot = BY - 6 - 6 * nl - 3
-        T.toy(sid, it['id'], 2 * cx, 2 * foot, h=2 * (foot - LY - 6), w=2 * (cw - 8), silhouette=ink if it['secret'] else None)
+        T.toy(sid, it['id'], 2 * cx, 2 * foot, h=2 * (foot - LY - 2), w=2 * (cw - 6), silhouette=ink if it['secret'] else None)
     im.alpha_composite(T.im)
+    # over everything: the kind tag, the HUGE logo (fat white die-cut border), the secret's ?, the hero's name
     F = Sheet(LW, LH, None)
+    F.tag(M + 3, M + 3, st['kind'], fill=hot, ink=WH, line=WH, face='micro5', pad=2)
+    al, lines, kw = st['logo']; y = M + 18
+    for j, l in enumerate(lines):
+        bb = LFm.word(F, al, l, M + 6 + (j % 2) * 10, y, lc if j % 2 == 0 else P[st['logo_c2']], border=(3, WH), **kw); y = bb[3] + 7
     for k, it in enumerate(items):
-        if it['secret']: LFm.word(F, 'figs', '?', M + cw * (k + 0.5), (LY + BY) / 2 - 10, P.get('yellow', P.get('mustard')), anchor='mm', border=(1, WH))
-    if hb:
-        nm = hero['name'].upper(); tw = text_size(nm, 'micro5')[0]
-        F.tag(LW - M - 6, M + 4, nm, fill=WH, ink=ink, line=ink, face='micro5', anchor='rt', pad=2)
+        if it['secret']: LFm.word(F, 'figs', '?', M + cw * (k + 0.5), (LY + BY) / 2 - 10, yel, anchor='mm', border=(1, WH))
+    if hero is not None:
+        F.tag(LW - M - 4, SY0 + 4, hero['name'].upper(), fill=WH, ink=ink, line=ink, face='micro5', anchor='rt', pad=2)
     im.alpha_composite(upscale(F.im, 2))
     return PK.age(im.convert('RGB'), paper='Paper001', grain_k=0.25, fade=0.0, seed=seed % 997).convert('RGB')
 
