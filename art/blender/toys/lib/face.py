@@ -458,9 +458,10 @@ class Face:
             uneven = sp.get('uneven', uneven)
             if sp.get('look'):
                 kind, look = 'side', sp['look']
-            if sp.get('brows'):
+            if sp.get('brows') and size / s.px >= 5:  # (a small face gets no brows: they merge with the eyes into a mask)
                 bk, bw = sp['brows'] if isinstance(sp['brows'], tuple) else (sp['brows'], 1.0)
-                s.brows(bk, spread * 1.02, dy + size * shape * 1.9 + 0.25, size * 2.7, max(0.16, size * 0.42) * bw)
+                ek = 1.15 * (sp.get('eyek', 1.5) if sp.get('eye') in ('bar', 'slit', 'round', 'pin') else 1.0)
+                s.brows(bk, spread * 1.02, dy + size * shape * ek * 1.15 + max(0.45, 4 * s.px), size * 2.4, max(0.14, size * 0.34) * bw)
         r = s.rng
         w = size * 0.75  # marker weight for the line eyes
         for sx in ((only,) if only else (-1, 1)):  # (only: one eye, the left (-1) or right (+1) one, e.g. on its own bump)
@@ -920,3 +921,11 @@ STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): 
     'ladybird': dict(eye='round', iris='#2a2420', mouth='w'),
 })
 STYLE['dragon'] = dict(eye='slit', iris='#f2c230', tilt=16, eyek=1.2)
+SPECIES.update({f'kanikan/{i}': 'crab' for i in ('iwashi', 'saba', 'konbi', 'beans', 'pine', 'caviar')})
+SPECIES.update({'janru/robo': 'hamster', 'janru/usagi': 'rabbit', 'janru/mangusu': 'mongoose', 'janru/shiba': 'dog',
+                'janru/gorira': 'gorilla', 'janru/musasabi': 'squirrel'})
+STYLE.update({
+    'hamster': dict(eye='round', iris='#2a1e18', eyek=1.4, mouth='catnose', nose='#e8a0a8', extras=('blush',)),
+    'mongoose': dict(eye='round', iris='#3a2418', tilt=12, brows=('angry', 1.1), mouth='muzzle', muzzle='#d8c4a0'),
+    'gorilla': dict(eye='round', iris='#3a2418', brows=('flat', 1.5), mouth='muzzle', muzzle='#6a5a52', eyek=0.9),
+})
