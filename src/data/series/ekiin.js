@@ -25,5 +25,10 @@ export default {
       desc: 'The rush-hour pusher, in white gloves. The carriage is full and there is still a briefcase in the doorway, so he backs up, wiggles, and applies the biggest backside on the line.',
       gimmick: { text: 'Push', sfx: [[0.15, 'footstep'], [0.4, 'toyFold', { n: 4, gap: 0.09 }], [0.9, 'thud'], [1.0, 'toyTap'], [1.3, 'footstep'], [1.35, 'slideDoor'], [1.55, 'toySnap', { f: 900 }], [1.65, 'toyClick'], [1.75, 'toyClick'], [1.9, 'toyClick'], [2.0, 'toyClick']] },
     },
+    {
+      id: 'tako', name: 'Ekiben Octopus', jp: 'べんとうダコ', rarity: 'uncommon',
+      desc: 'The platform lunchbox seller: a tray of station bentō and clay tea pots on a strap, five arms to stand on and three to work with. "Bentō, bentō! O-cha!" Nobody on the platform is quicker with the change.',
+      gimmick: { text: 'Sell a bentō', sfx: [[0.1, 'toyTap'], [0.3, 'toyTap'], [0.5, 'toyFold', { n: 3 }], [0.95, 'coinClink'], [1.1, 'toyClick'], [1.3, 'dishClink'], [1.5, 'dishClink'], [1.9, 'toyTap']] },
+    },
   ],
 };
