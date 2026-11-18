@@ -51,16 +51,32 @@ export const OLD_ITEMS = {
  *  same-rarity figure, from the same series while it still exists. */
 export const RETIRED = {
   rojineko: { postbox: 'c', wall: 'c', box: 'c', laundry: 'u', kittens: 'u', boss: 'r', stalker: 'x', moon: 's' },
-  asobi: { robot: 'u' }, sampuru: { soda: 'u' }, daikaiju: { anky: 'c', tetsujin: 'x', golden: 's' }, hikidashi: { soroban: 'u', randoseru: 'x' },
-  inusanpo: { pug: 'u', corgi: 'u', terrier: 'r' }, machikado: { gaito: 'r', busstop: 'x' }, norimono: { van: 'c', golden: 's' },
-  shinkai: { goblin: 'r', oarfish: 'x', isopod: 'c', angler: 'u', coela: 's' }, shugorei: { golden: 's' }, tsukumo: { parade: 'x', golden: 's', chochin: 'c', kasa: 'c', geta: 'c', kettle: 'u', broom: 'u', mon: 's' },
-  yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's', karasu: 'c', kiji: 's' }, yatai: { wataame: 'u', yoyo: 'u', kingyo: 'c', omen: 'c', takoyaki: 'c', taiko: 'r', stall: 'x', golden: 's' },
-  yudono: { capy: 'c', penguin: 'c', family: 'r', rotenburo: 'x', kinkapi: 's', frog: 'c', otter: 'u', duck: 'u' }, kaiun: { jinja: 'x', goldneko: 's' },
-  konchu: { tento: 'c', semi: 'c', larva: 'r' }, okashi: { kagami: 'x', dorayaki: 'c', matcha: 'r', momo: 's' },
+  tsukumo: { parade: 'x', golden: 's', chochin: 'c', kasa: 'c', geta: 'c', kettle: 'u', broom: 'u', mon: 's' },
+  yatai: { wataame: 'u', yoyo: 'u', kingyo: 'c', omen: 'c', takoyaki: 'c', taiko: 'r', stall: 'x', golden: 's' },
+  yudono: { capy: 'c', penguin: 'c', family: 'r', rotenburo: 'x', kinkapi: 's', frog: 'c', otter: 'u', duck: 'u' },
   gohan: { onigiri: 'c', gyoza: 'c', ebi: 'u', dango: 'r', purin: 's' },
   yokaiya: { karakasa: 'c', chochin: 'c', zori: 'u', nurikabe: 'u', kappa: 'r', kitsune: 's' },
   tanukibin: { soba: 'c', parcel: 'c', milk: 'u', news: 'r', night: 's' },
   furoba: { coffee: 'c', oke: 'c', scrub: 'u', frog: 'u', hippo: 'r', steam: 's' },
+  daikaiju: { anky: 'c', tetsujin: 'x', golden: 's', gyaosaur: 'c', kanigon: 'c', iwagame: 'u', gamagon: 'u', okami: 'r' },
+  shinkai: { goblin: 'r', oarfish: 'x', isopod: 'c', angler: 'u', coela: 's', dumbo: 'c', jelly: 'u', nautilus: 's' },
+  shugorei: { golden: 's', tetsu: 'c', kage: 'c', kishi: 'c', ou: 'u', raijin: 'u', yoroi: 'r', mecha: 'x' },
+  hikidashi: { soroban: 'u', randoseru: 'x', fudebako: 'c', cup: 'c', stapler: 'c', kezuri: 'u', pen: 'r', golden: 's' },
+  konchu: { tento: 'c', semi: 'c', larva: 'r', kabuto: 'c', miyama: 'c', tonbo: 'u', kamakiri: 'u', ageha: 'x', golden: 's' },
+  kogu: { hammer: 'c', plane: 'c', wrench: 'c', drill: 'u', oilcan: 'u', vice: 'r', torch: 'x', toolbox: 's' },
+  denka: { phone: 'c', fan: 'c', cooker: 'c', radio: 'u', tv: 'u', boombox: 'r', sewing: 'x', valve: 's' },
+  daidokoro: { nabe: 'c', jug: 'c', bowl: 'c', milk: 'u', board: 'u', brasspot: 'r', teaset: 's' },
+  sampuru: { soda: 'u', ramen: 'c', katsu: 'c', udon: 'c', ebifry: 'u', pudding: 'r', sundae: 'x', fork: 's' },
+  yaoya: { apple: 'c', nashi: 'c', lemon: 'c', imo: 'u', ginger: 'u', banana: 'r', pomegranate: 'x', lychee: 's' },
+  machikado: { gaito: 'r', busstop: 'x', posuto: 'c', jihanki: 'c', shokasen: 'c', cone: 'u', denwa: 'r', golden: 's' },
+  norimono: { van: 'c', golden: 's', scooter: 'c', keitruck: 'c', bus: 'u', patrol: 'u', fire: 'r', tram: 'x' },
+  inusanpo: { pug: 'u', corgi: 'u', terrier: 'r', shiba: 'c', sitshiba: 'c', dachs: 'c', hachi: 'x', netsuke: 's' },
+  kaiun: { jinja: 'x', goldneko: 's', maneki: 'c', daruma: 'c', torii: 'u', toro: 'u', koi: 'r', kitsune: 's' },
+  yacho: { menfukuro: 'r', uzura: 'c', kinkei: 's', karasu: 'c', kiji: 's', suzume: 'c', kawasemi: 'u', fukuro: 's' },
+  okashi: { kagami: 'x', dorayaki: 'c', matcha: 'r', momo: 's', dango: 'c', taiyaki: 'c', sakura: 'u', manju: 's' },
+  nuigurumi: { teddy: 'c', bunny: 'c', penguin: 'c', lamb: 'u', fox: 'u', elephant: 'u', whale: 'r', owl: 'x', narwhal: 's' },
+  asobi: { robot: 'u', squishy: 'c', superball: 'c', koma: 'u', yoyo: 'u', kendama: 'r', dartgun: 'x', lcdgame: 's' },
+  undou: { baseball: 'c', rugby: 'c', bat: 'u', megaphone: 'r', dartboard: 's' },
 };
 /** The new series each old one hands its stock to (if it exists). */
 const THEME = {
@@ -77,6 +93,25 @@ const THEME = {
   yokaiya: 'henshin', // (retired: the Blender line)
   tanukibin: 'hashigo', // (retired: the Blender line)
   furoba: 'hashigo', // (retired: the Blender line)
+  daikaiju: 'nakanohito', // (retired: the Blender line)
+  shinkai: 'nakanohito', // (retired: the Blender line)
+  shugorei: 'nakanohito', // (retired: the Blender line)
+  hikidashi: 'henshin', // (retired: the Blender line)
+  konchu: 'henshin', // (retired: the Blender line)
+  kogu: 'henshin', // (retired: the Blender line)
+  denka: 'kaden', // (retired: the Blender line)
+  daidokoro: 'kaden', // (retired: the Blender line)
+  sampuru: 'kaden', // (retired: the Blender line)
+  yaoya: 'kaden', // (retired: the Blender line)
+  machikado: 'ekiin', // (retired: the Blender line)
+  norimono: 'ekiin', // (retired: the Blender line)
+  inusanpo: 'ekiin', // (retired: the Blender line)
+  kaiun: 'otsukai', // (retired: the Blender line)
+  yacho: 'otsukai', // (retired: the Blender line)
+  okashi: 'otsukai', // (retired: the Blender line)
+  nuigurumi: 'teruteru', // (retired: the Blender line)
+  asobi: 'hashigo', // (retired: the Blender line)
+  undou: 'hashigo', // (retired: the Blender line)
 };
 const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 const live = () => SERIES.filter((s) => !s.hidden);
