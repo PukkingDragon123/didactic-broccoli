@@ -239,26 +239,100 @@ def purse_sprite():
     return [hard_shadow(img, img.shape[1] / 2 - 1, img.shape[0] - 2, 14)]
 
 
-def capsule_sprites(job='capsule', n=6):
+CAP_R = {
+    'glass': ramp('#3c4a5a', '#62788c', '#8ba3b6', '#b2c9d6', '#d2e4ec', '#eaf4f6', '#ffffff'),
+    'base': ramp('#14284a', '#1c3d6c', '#255892', '#3075b4', '#4f95cc', '#7cb6de', '#b4d8ee'),
+    'toy': ramp('#4a1e12', '#7a3418', '#a8521e', '#cf7426', '#e89a3c', '#f4c06a', '#fde3a4'),
+    'insert': R7['cream'],
+    'pulp': ramp('#4e3f2e', '#6e5a42', '#8e7656', '#ab936c', '#c4ad86', '#d8c6a2', '#e9dcbf'),
+}
+
+
+def capsule_sprites(job='capsule', n=6, paper=False):
+    """The pixel capsule: a real gashapon capsule (docs/ref/capsule). The clear dome is composited from two renders:
+    the full one and one without the dome, so the figure and the folded insert show through it a step paler, with
+    the dome's own rim, glints and the empty top in a cool glass ramp. Coloured base, knurled twist band (flat-shaded
+    ribs), hinge knuckle + thumb tab, an original moulded 'GG' maker mark. paper=True: the matte pulp eco capsule."""
     frames = []
+    try:
+        an = json.load(open(os.path.join(WORK, job, 'anchors.json')))
+    except FileNotFoundError:
+        an = [{}] * n
+    ol = OL['cap']
     for fi in range(n):
         a, nv, mid, pat, dep = load(job, fi)
-        st = np.where(mid == 4, shade(nv, 'cloth'), shade(nv, 'glaze'))
-        st = np.where(mid == 3, np.clip(st - 1, 0, 6), st)
-        A, K, D = downsample(a, mid * 100 + st, dep)
-        img = colourise(A, K, lambda m, s: {1: R7['capred'], 2: R7['white'], 3: R7['white'], 4: R7['paper']}[m])
-        img = depth_lines(img, A, D, OL['cap'], 0.3)
+        rim = (mid == 1) & (np.abs(nv[..., 2]) < 0.42)
+        kind = np.where(np.isin(mid, (4, 7)) | paper, 'cloth', 'glaze')
+        st = np.where(kind == 'cloth', shade(nv, 'cloth'), shade(nv, 'glaze'))
+        A, K, D = downsample(a, mid * 100 + rim * 10 + st, dep)
+        b, nvb, midb, _, depb = load(job + '_in', fi)
+        stb = np.where(np.isin(midb, (4, 7)) | paper, shade(nvb, 'cloth'), shade(nvb, 'glaze'))
+        B, KB, DB = downsample(b, midb * 100 + stb, depb)
+
+        def col(m, s):
+            if paper and m in (1, 2, 3, 6, 7):
+                rp = CAP_R['pulp']; s = s - 2 * (m == 3) - (m == 7)
+            else:
+                rp = {1: CAP_R['glass'], 2: CAP_R['base'], 3: CAP_R['base'], 4: CAP_R['insert'], 5: CAP_R['toy'], 6: CAP_R['base'],
+                      7: CAP_R['base']}[m]
+                s = s - (m == 3) - (m == 7) + (m == 6)
+            return rp[int(np.clip(s, 0, len(rp) - 1))]
+        H, Wd = A.shape
+        img = blank(Wd, H)
+        seen = np.zeros((H, Wd), int)  # the mid that shows (through the dome too), for the insert print
+        haze = np.zeros((H, Wd), bool)
+        for y, x in zip(*np.nonzero(A)):
+            m, r, s_ = K[y, x] // 100, (K[y, x] // 10) % 10, K[y, x] % 10
+            if m != 1 or paper:
+                if m == 3:  # the twist band's ribs: alternate columns a step apart (paper: one dark pressed seam)
+                    s_ = 0 if paper else s_ + (x % 2)
+                img[y, x] = col(m, s_); seen[y, x] = m
+                continue
+            g = CAP_R['glass']
+            if r:
+                img[y, x] = g[2 if s_ < 3 else 3]
+            elif s_ >= 6:
+                img[y, x] = g[6]
+            elif B[y, x] and KB[y, x] // 100 != 1:
+                mb, sb = KB[y, x] // 100, KB[y, x] % 10
+                img[y, x] = col(mb, sb + 1); seen[y, x] = mb; haze[y, x] = True
+            else:  # clear glass with nothing behind it: see-through (the only part of the kit with partial alpha)
+                c = g[int(np.clip(s_, 3, 5))].copy(); c[3] = 150 if s_ < 5 else 190
+                img[y, x] = c
+        # lines: the solid silhouette edges, and paler ones for what sits behind the glass
+        img = depth_lines(img, A & ~(K // 100 == 1) & (img[..., 3] == 255), D, ol, 0.3)
+        if not paper:
+            m2 = np.zeros_like(A)
+            for dy, dx in ((0, 1), (1, 0), (0, -1), (-1, 0)):
+                nb = np.roll(np.roll(DB, dy, 0), dx, 1); na = np.roll(np.roll(B, dy, 0), dx, 1)
+                m2 |= B & ~na | (B & na & (DB > nb + 0.3))
+            img[haze & m2] = C('#5d6a86')
         img = clean_singles(img, A)
-        if fi >= 3:  # the folded slip: printed lines + a question mark
-            ys, xs = np.nonzero((K // 100 == 4) & A)
-            if len(xs):
-                x0, y0 = xs.min() + 2, ys.min() + 2
-                for j in range(0, min(6, ys.max() - ys.min() - 3), 2):
-                    for x in range(x0, min(xs.max() - 1, x0 + 9)):
-                        if A[y0 + j, x] and K[y0 + j, x] // 100 == 4 and (x + j) % 4 != 3:
-                            put(img, x, y0 + j, C('#6a5a8c'))
-        img = outline(img, OL['cap'])
-        frames.append(hard_shadow(img, img.shape[1] / 2 - 1, img.shape[0] - 2, 12) if n > 1 else img)
+        # the insert's print (a little catalogue: lines of text), paler behind the glass
+        ys, xs = np.nonzero(seen == 4)
+        if len(xs) > 6:
+            y0, x0 = ys.min() + 2, xs.min() + 1
+            for y, x in zip(ys, xs):
+                if (y - y0) % 2 == 0 and y >= y0 and x >= x0 and seen[y, x - 1] == 4 and seen[min(y + 1, H - 1), x] == 4 and (x * 3 + y) % 7:
+                    img[y, x] = C('#8a8aa8') if haze[y, x] else C('#6a5a8c')
+        # the figure's face: two ink eyes (paler through the dome)
+        f = an[fi].get('face') if fi < len(an) else None
+        if f and not paper:
+            fx, fy = int(f[0]), int(f[1])
+            for ex in (fx - 2, fx + 1):
+                if 0 <= fy < H and 0 <= ex < Wd and seen[fy, ex] == 5:
+                    img[fy, ex] = C('#6a4a52') if haze[fy, ex] else C('#2a1418')
+        # the moulded maker mark on the base: a small embossed oval (light top-left, shadow bottom-right)
+        mk = an[fi].get('mark') if fi < len(an) else None
+        if mk and (n > 1 or paper):
+            mx, my = int(mk[0]), int(mk[1])
+            base = CAP_R['pulp'] if paper else CAP_R['base']
+            hi, lo = base[5], base[1]
+            for dx, dy, c in ((-1, -1, hi), (0, -1, hi), (1, -1, hi), (-2, 0, hi), (2, 0, lo), (-1, 1, lo), (0, 1, lo), (1, 1, lo)):
+                if 0 <= my + dy < H and 0 <= mx + dx < Wd and K[my + dy, mx + dx] // 100 == 2:
+                    img[my + dy, mx + dx] = c
+        img = outline(img, ol)
+        frames.append(hard_shadow(img, img.shape[1] / 2 - 2, img.shape[0] - 2, 13) if n > 1 or paper else img)
     return frames
 
 
@@ -344,6 +418,7 @@ def main():
     S['purse'] = dict(frames=purse_sprite())
     S['capsule'] = dict(frames=capsule_sprites(), fps=8, loop=False)
     S['capsule_s'] = dict(frames=capsule_sprites('capsule_s', 1))
+    S['capsule_paper'] = dict(frames=capsule_sprites('capsule_p', 1, paper=True))
     S.update(flat.all_flat())
     pack(S, os.path.join(OUT, 'kit.png'), os.path.join(OUT, 'kit.json'))
     if '--sheet' in args:

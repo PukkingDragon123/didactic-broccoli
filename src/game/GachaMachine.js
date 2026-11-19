@@ -356,7 +356,7 @@ export class GachaMachine {
 
   pileSet(series) {
     const size = capsuleSize(series), kind = capsuleStyle(series);
-    const key = kind === 'paper' ? `${kind}|${size}|${series}` : `${kind}|${size}`;
+    const key = `${kind}|${size}|${series}`; // per series: the contents seen through the tops are in its colours
     let set = this.pileSets.get(key);
     if (!set) {
       const pg = pileGeometries(size, kind, series);
@@ -365,7 +365,13 @@ export class GachaMachine {
       for (const im of [bot, top]) { im.count = 0; im.frustumCulled = false; im.userData.noRim = true; im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); this.root.add(im); }
       bot.castShadow = true;
       top.renderOrder = 2;
-      set = { bot, top, paper: kind === 'paper' };
+      let mid = null;
+      if (pg.contents) {
+        mid = new THREE.InstancedMesh(pg.contents, pg.contentsMat, N);
+        mid.count = 0; mid.frustumCulled = false; mid.userData.noRim = true; mid.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        mid.renderOrder = 1; this.root.add(mid);
+      }
+      set = { bot, top, mid, paper: kind === 'paper' };
       this.pileSets.set(key, set);
     }
     return set;
@@ -398,11 +404,13 @@ export class GachaMachine {
       const set = b.userData.set, i = set.n++;
       set.bot.setMatrixAt(i, _m);
       set.top.setMatrixAt(i, _m);
+      set.mid?.setMatrixAt(i, _m);
       if (!set.paper) set.bot.setColorAt(i, col.set(b.userData.color));
       if (!set.paper && set.top.material === set.bot.material) set.top.setColorAt(i, col.set(b.userData.color));
     }
     for (const set of this.pileSets.values()) {
       set.bot.count = set.top.count = set.n;
+      if (set.mid) { set.mid.count = set.n; set.mid.instanceMatrix.needsUpdate = true; }
       set.bot.instanceMatrix.needsUpdate = true;
       set.top.instanceMatrix.needsUpdate = true;
       if (set.bot.instanceColor) set.bot.instanceColor.needsUpdate = true;

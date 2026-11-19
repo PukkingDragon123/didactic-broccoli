@@ -42,6 +42,13 @@ def half(s, pid, top, sides, n, style, ramp, tone, lo=False, caps=False):
         s.loft(pid + "_rim", [((0, 0, 0), 2 * R * 1.016), ((0, 2.6, 0), 2 * R * 1.012), ((0, 3.4, 0), 2 * R * 0.996)], (0, 0, 0), parent=pid,
                sides=sides, rnd=2.0, subdiv=0, caps=(False, False), col=ramp, style=style, tone=tone + (0.3 if ramp == "clear" else -0.3),
                double_sided=not lo, up=[0, 0, 1])
+        # the twist-lock ribs moulded round the skirt (docs/ref/capsule): fine vertical ridges you grip to turn it
+        s.layer(pid + "_rim", id="ribs", op="stripes", axis="around", period=1 / 40, width=0.5, shift=-0.9 if ramp == "plastic" else -1.3)
+    if not top and not lo and ramp == "plastic":
+        # the base's ribbed grip band just under the seam (the other half of the twist lock), proud of the sphere
+        s.loft(pid + "_grip", [((0, 0, 0), 2 * R * 1.012), ((0, -3.2, 0), 2 * R * 1.010), ((0, -4.2, 0), 2 * R * 0.992)], (0, 0, 0),
+               parent=pid, sides=sides, rnd=2.0, subdiv=0, caps=(False, False), col=ramp, style=style, tone=tone - 0.2, double_sided=False, up=[0, 0, 1])
+        s.layer(pid + "_grip", id="ribs", op="stripes", axis="around", period=1 / 40, width=0.5, shift=-0.8)
     if not top and not lo:
         # the lip (the inside of the seam ring) and the inner wall, a shade darker: seen once the capsule is open
         s.loft(pid + "_lip", [((0, 0, 0), 2 * R * 0.955), ((0, 4.5, 0), 2 * R * 0.955)], (0, 0, 0), parent=pid, sides=sides,
@@ -115,6 +122,17 @@ def build_all():
             s.box("bag", [R * 0.84, R * 0.86, R * 0.64], (0, -R * 0.3, R * 0.1), ch=3.0, parent="contents", col="clear", style="clear", tone=4.6, mat="glass")
             s.box("crimp", [R * 0.86, 3.2, R * 0.2], (0, R * 0.14, R * 0.1), ch=0.6, parent="contents", col="clear", style="abs", tone=5.2)
             s.layer("crimp", id="teeth", op="stripes", axis="x", period=1.4, width=0.5, shift=-1.0)
+        if lo:
+            # the window piles' contents (seen through the clear tops: a pile of capsules is a pile of toys, not balls):
+            # the folded insert and the bagged figure, coarse
+            s.joint("contents_lo", (0, 0, 0))
+            s.box("insert_lo", [R * 1.0, R * 0.95, 0.8], (0, -R * 0.12, -R * 0.45), ch=0, parent="contents_lo", col="maskA", style="paper", tone=5.0)
+            s.layer("insert_lo", id="head", op="band", axis="y", **{"from": 0.6, "to": 1.0}, ramp="maskB", tone=4.0)
+            s.layer("insert_lo", id="pic", op="rect", rect=[0.15, 0.25, 0.85, 0.55], ramp="maskC", tone=3.6, faces=["front"])
+            s.loft("fig_lo", [((0, -R * 0.6, R * 0.1), [R * 0.5, R * 0.42]), ((0, -R * 0.3, R * 0.12), [R * 0.62, R * 0.5]),
+                             ((0, R * 0.05, R * 0.08), [R * 0.4, R * 0.34]), ((0, R * 0.25, R * 0.06), [R * 0.12, R * 0.1])], (0, 0, 0),
+                   parent="contents_lo", sides=7, rnd=2.4, subdiv=0, col="maskB", style="abs", tone=3.8, up=[0, 0, 1])
+            s.layer("fig_lo", id="spots", op="spots", count=3, radius=[2.5, 4], ramp="maskC", tone=3.8)
         for j in list(s.meta["joints"]):
             s.meta["mats"].pop(j, None)
         out[key] = s

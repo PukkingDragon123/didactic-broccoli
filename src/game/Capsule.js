@@ -37,7 +37,9 @@ const STYLE_BY_SERIES = {
   onsen: 'clear', dajare: 'tab', kaiju: 'clear', uchu: 'clear', omamori: 'paper', neko_cafe: 'clear', wagashi: 'paper',
   matsuri: 'tab', sentai: 'clear', densha: 'tab', umi: 'clear', obake_yashiki: 'opaque', bizarre: 'opaque',
 };
-export function capsuleStyle(seriesId) { return SERIES_BY_ID[seriesId]?.capsule?.style || STYLE_BY_SERIES[seriesId] || 'clear'; }
+// (the current line-up: most ship in the hinged clear-top capsule, a few in the other makers' capsules)
+Object.assign(STYLE_BY_SERIES, { kanikan: 'clear', minato: 'clear', sabaku: 'clear', obakebaito: 'opaque', otenki: 'paper', sento: 'paper' });
+export function capsuleStyle(seriesId) { return SERIES_BY_ID[seriesId]?.capsule?.style || STYLE_BY_SERIES[seriesId] || 'tab'; }
 
 /** Pick a capsule colour for a series. */
 export function capsuleColor(seriesId, rnd = Math.random) {
@@ -292,7 +294,15 @@ export function makeCapsule(seriesId, color, opts = {}) {
   const topColor = kind === 'opaque' ? tintHex(color, 0.62) : 0xffffff; // Kitan-style: a pale top over the coloured half
   const lp = lpOK(), lid = res === 'lo' ? 'capsule_lo' : 'capsule';
   const mats = (k, c) => (lp ? lpMats(k, c, seriesId, lid) : capMats(k, c));
-  const tm = mk(halfGeo(size, 'top', kind, res, seriesId), mats(topKind, topColor), top);
+  // the hinged capsule (docs/ref/capsule): the dome swings up on the knuckle at the back of the base (z = -r) instead
+  // of twisting off; `lid` keeps it in the base's frame while the caller turns top / bottom (see installTwist)
+  let lidYaw = null, hinge = null;
+  if (kind === 'tab') {
+    lidYaw = new THREE.Group(); hinge = new THREE.Group(); hinge.position.z = -r;
+    top.add(lidYaw); lidYaw.add(hinge);
+  }
+  const tm = mk(halfGeo(size, 'top', kind, res, seriesId), mats(topKind, topColor), hinge || top);
+  if (hinge) tm.position.z = r;
   if (topKind === 'clearTop') { tm.renderOrder = 2; tm.castShadow = false; }
   mk(halfGeo(size, 'bottom', kind, res, seriesId), mats(kind === 'paper' ? 'paper' : 'color', color), bottom);
   // contents (also there in opaque / paper capsules: you see them once it opens)
@@ -308,7 +318,7 @@ export function makeCapsule(seriesId, color, opts = {}) {
     bottom.add(paper);
   }
   group.userData.capsule = true;
-  const cap = { group, top, bottom, r, paper, style: kind, size, N, lowpix: lp };
+  const cap = { group, top, bottom, r, paper, style: kind, size, N, lowpix: lp, lid: hinge, lidYaw };
   installTwist(cap);
   return cap;
 }
@@ -321,11 +331,27 @@ function tintHex(hex, t) {
 // Held.js twists the halves by writing top.rotation.y (0 -> 1.4 rad as it opens). The top half here turns in
 // ratchet clicks (15° steps, like the real seam detents), the seam pops a hair apart near the end, and the lid
 // tilts off its last detent: tactile without changing the caller.
+// A hinged capsule doesn't unscrew: a short click as the latch lets go, then the dome swings back on its hinge
+// (up to ~110°), the contents facing you. Same caller inputs (top.rotation.y), the base's counter-turn undone.
 function installTwist(cap) {
   const top = cap.top;
   const rot = top.rotation, q = top.quaternion;
   const STEP = Math.PI / 12;
   const e = new THREE.Euler();
+  if (cap.lid) {
+    rot._onChange(() => {
+      const k = Math.min(1, Math.max(0, rot.y / 1.4));
+      const click = Math.min(k / 0.2, 1);
+      const sw = k < 0.25 ? 0 : (k - 0.25) / 0.75;
+      e.set(rot.x, -k * 0.6, rot.z, rot.order); // turn with the base (callers counter-turn it by -0.6 k): the hinge stays put
+      q.setFromEuler(e, false);
+      cap.lidYaw.rotation.y = k > 0 ? Math.sin(click * Math.PI) * 0.05 : 0; // the latch's little give
+      cap.lid.rotation.x = -(0.06 * click + 1.85 * sw * sw * (3 - 2 * sw));
+      cap.twistK = k;
+    });
+    cap.setTwist = (k) => { rot.y = k * 1.4; top.position.y = 0; };
+    return;
+  }
   rot._onChange(() => {
     const k = Math.min(1, Math.max(0, rot.y / 1.4));
     const stepped = Math.round(rot.y / STEP) * STEP;
@@ -343,8 +369,11 @@ export function makeShell(seriesId, color, opts = {}) {
   const cap = makeCapsule(seriesId, color, { ...opts, res: opts.res || 'hi' });
   if (cap.paper) { cap.paper.parent.remove(cap.paper); cap.paper = null; }
   // the top half nests into the bottom one, tipped a little: the way people hand back empty capsules
-  cap.top.rotation.set(Math.PI + 0.25, 0.6, 0.1);
-  cap.top.position.set(cap.r * 0.08, -cap.r * 0.12, 0);
+  if (cap.lid) cap.setTwist(1); // the hinged kind stays in one piece: lid swung open
+  else {
+    cap.top.rotation.set(Math.PI + 0.25, 0.6, 0.1);
+    cap.top.position.set(cap.r * 0.08, -cap.r * 0.12, 0);
+  }
   cap.group.userData.shell = true;
   return cap;
 }
@@ -362,7 +391,15 @@ export function pileGeometries(size = 'M', kind = 'clear', seriesId = null) {
   if (lpOK()) {
     const paperM = paper ? lpMats('paper', 0, seriesId, 'capsule_lo')[0] : null;
     const topMat = paper ? paperM : kind === 'opaque' ? pileTint() : lpMats('clearTop', 0, null, 'capsule_lo')[0];
-    return { top, bottom, topMat, bottomMat: paper ? paperM : pileTint(), r };
+    // what shows through the clear tops: the folded insert and the bagged figure (series colours)
+    let contents = null, contentsMat = null;
+    if (kind !== 'paper' && kind !== 'opaque' && lpPart('capsule_lo', 'contents_lo')) {
+      contents = lpScaled('capsule_lo', 'contents_lo', size);
+      const ck = `lp|pilecontents|${seriesId}`;
+      if (!matCache.has(ck)) matCache.set(ck, new THREE.MeshStandardMaterial({ map: seriesAtlas(seriesId, 'capsule_lo'), roughness: 0.8 }));
+      contentsMat = matCache.get(ck);
+    }
+    return { top, bottom, topMat, bottomMat: paper ? paperM : pileTint(), r, contents, contentsMat };
   }
   const topMat = paper ? capMats('paper', 0)[0] : kind === 'opaque' ? pileTint() : capMats('clearTop', 0)[0];
   const bottomMat = paper ? capMats('paper', 0)[0] : pileTint();

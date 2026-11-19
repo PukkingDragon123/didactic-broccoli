@@ -418,46 +418,96 @@ def job_purse():
 
 # ======================= capsule (closed -> opening) ====================================
 def job_capsule():
+    """A real gashapon capsule (refs: docs/ref/capsule): a clear, faintly tinted dome over a coloured opaque base, a
+    ridged twist-lock band at the seam, a hinge knuckle on the right and a thumb tab with a nub at the front left, the
+    folded paper insert and a little figure inside. Two passes per frame: 'capsule' (everything) and 'capsule_in'
+    (dome hidden) so build.py can show the contents through the clear dome. The dome opens on its hinge."""
     sc = reset()
-    W, H, S = 36, 40, 15
-    camera(sc, W, H, S, -15, 18, target=(0, 0, 0.18))
-    parts = []
+    W, H, S = 52, 48, 14
+    camera(sc, W, H, S, -15, 22, target=(0.52, 0, 0.47))
+    hp = Vector((0.94, -0.34, 0.0))            # the hinge point (right side, a little to the front)
+    ax = Vector((0.34, 0.94, 0.0)).normalized()  # hinge axis: the seam's tangent there
+    hinge = bpy.data.objects.new('hinge', None); sc.collection.objects.link(hinge)
+    hinge.location = hp; hinge.rotation_mode = 'QUATERNION'
 
-    def shell(top):
-        bm = uvsphere(1.0, (1, 1, 1), 40, 24)
+    def half(top, mid, r=1.0, sz=1.0):
+        bm = uvsphere(r, (1, 1, sz), 48, 28)
         kill = [v for v in bm.verts if (v.co.z < -1e-4 if top else v.co.z > 1e-4)]
         bmesh.ops.delete(bm, geom=kill, context='VERTS')
-        ob = mesh_obj(sc, 'top' if top else 'bot', bm, 1 if top else 2)
-        so = ob.modifiers.new('sol', 'SOLIDIFY'); so.thickness = 0.06
-        mods(ob, 1)
-        return ob
-    top, bot = shell(True), shell(False)
-    bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=False, segments=40, radius1=1.015, radius2=1.015, depth=0.09)
-    seam = mesh_obj(sc, 'seam', bm, 3); place(seam, (0, 0, -0.03), parent=bot); mods(seam, 0)
+        return mesh_obj(sc, f'h{mid}', bm, mid)
+    dome = half(True, 1, 1.0, 1.06); place(dome, tuple(-hp), parent=hinge)
+    bot = half(False, 2, 1.0, 0.95)
+    inner = half(False, 7, 0.95, 0.9)  # the bottom's inner wall, a shade darker (seen through the dome / once open)
+    # the twist-lock band: a knurled ring on the base's lip (alternate ribs proud), flat-shaded so the ribs read
+    bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=False, segments=56, radius1=1.0, radius2=1.0, depth=0.15)
+    for v in bm.verts:
+        k = round(math.atan2(v.co.y, v.co.x) / (2 * math.pi / 56)) % 2
+        f = 1.045 if k else 1.012
+        v.co.x *= f; v.co.y *= f
+    band = mesh_obj(sc, 'band', bm, 3, smooth=False); band.location = (0, 0, -0.06)
+    # the hinge knuckle (a short barrel along the axis) and its two leaves
+    bm = cyl(0.085, 0.085, 0.3, 12)
+    q = Vector((0, 0, 1)).rotation_difference(ax)
+    bmesh.ops.rotate(bm, verts=bm.verts, cent=(0, 0, 0), matrix=q.to_matrix())
+    knuck = mesh_obj(sc, 'knuckle', bm, 6); knuck.location = hp * 1.07
     bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1)
-    bmesh.ops.scale(bm, vec=(0.12, 0.05, 0.08), verts=bm.verts)
-    tab = mesh_obj(sc, 'tab', bm, 3); place(tab, (0, -1.0, -0.02), parent=bot); mods(tab, 0)
+    bmesh.ops.scale(bm, vec=(0.16, 0.22, 0.12), verts=bm.verts)
+    leaf = mesh_obj(sc, 'leaf', bm, 6, smooth=False); leaf.location = hp * 1.0 + Vector((0, 0, -0.11))
+    leaf.rotation_euler = (0, 0, math.atan2(hp.y, hp.x))
+    # the thumb tab with its nub, front left, on the base just under the seam
+    tp = Vector((-0.86, -0.5, 0)).normalized()
     bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1)
-    bmesh.ops.scale(bm, vec=(0.9, 0.06, 0.55), verts=bm.verts)
-    slip = mesh_obj(sc, 'slip', bm, 4); mods(slip, 0)
-    parts = [top, bot, seam, tab, slip]
-    nm = normal_mat(); im = ids({1: None, 2: None, 3: None, 4: None})
-    seq = [  # top (z lift, tilt deg, x shift, twist deg), slip lift
-        (0, 0, 0, 0, None), (0, 0, 0, 25, None), (0.18, -8, 0, 25, None), (0.75, -38, -0.25, 25, 0.25),
-        (1.1, -75, -0.75, 25, 0.75), (0.95, -88, -1.05, 25, 1.0)]
-    for fi, (lz, tilt, sx, tw, sl) in enumerate(seq):
-        top.location = (sx, 0, lz)
-        top.rotation_euler = (0, math.radians(tilt), math.radians(tw))
-        slip.hide_render = sl is None
-        slip.location = (0.05, 0.1, -0.35 + (sl or 0))
-        slip.rotation_euler = (0, math.radians(12), 0)
+    bmesh.ops.scale(bm, vec=(0.2, 0.3, 0.1), verts=bm.verts)
+    tab = mesh_obj(sc, 'tab', bm, 6, smooth=False); tab.location = tp * 1.06 + Vector((0, 0, -0.1))
+    tab.rotation_euler = (0, 0, math.atan2(tp.y, tp.x))
+    bm = uvsphere(0.055, (1, 1, 1), 10, 6)
+    nub = mesh_obj(sc, 'nub', bm, 6); nub.location = tp * 1.17 + Vector((0, 0, -0.1))
+    # the contents: a folded leaflet (two leaves in a V) standing at the back, a little sitting figure in front
+    leaves = []
+    for sgn in (-1, 1):
+        bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1)
+        bmesh.ops.scale(bm, vec=(0.62, 0.025, 0.95), verts=bm.verts)
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(sgn * 0.31, 0, 0))
+        lf = mesh_obj(sc, f'leaf{sgn}', bm, 4, smooth=False)
+        lf.rotation_euler = (0, 0, math.radians(-sgn * 22))
+        leaves.append(lf)
+    slip = bpy.data.objects.new('slip', None); sc.collection.objects.link(slip)
+    for lf in leaves:
+        lf.parent = slip
+    fig = []
+    for nm_, r, sc_, loc in (('body', 0.36, (1, 0.85, 0.85), (0.05, -0.12, -0.42)), ('head', 0.3, (1.08, 0.95, 0.9), (0.05, -0.16, 0.0)),
+                             ('earL', 0.11, (1, 0.7, 1.3), (-0.17, -0.12, 0.25)), ('earR', 0.11, (1, 0.7, 1.3), (0.27, -0.12, 0.25))):
+        bm = uvsphere(r, sc_, 20, 12)
+        o = mesh_obj(sc, nm_, bm, 5); o.location = loc; fig.append(o)
+    parts = [dome, bot, inner, band, knuck, leaf, tab, nub, *leaves, *fig]
+    nm = normal_mat()
+    im = ids({1: None, 2: None, 3: None, 4: None, 5: None, 6: None, 7: None})
+    an_mark = (bot, (0.18, -0.9, -0.42))
+    an_face = (fig[1], (0.0, -0.3, 0.0))
+
+    def shot(name, fi, ang, lift):
+        hinge.rotation_quaternion = Quaternion(ax, math.radians(ang))
+        slip.location = (0.0, 0.42, -0.42 + lift); slip.rotation_euler = (math.radians(-8), 0, math.radians(8))
         bpy.context.view_layer.update()
-        render_frame(sc, os.path.join(WORK, 'capsule'), fi, [p for p in parts if not p.hide_render], im, nm)
+        vis = [p for p in parts if not p.hide_render]
+        res = render_frame(sc, os.path.join(WORK, name), fi, vis, im, nm, {'mark': an_mark, 'face': an_face})
+        dome.hide_render = True
+        render_frame(sc, os.path.join(WORK, name + '_in'), fi, [p for p in vis if p is not dome], im, nm)
+        dome.hide_render = False
+        return res
+
+    seq = [(0, 0), (5, 0), (20, 0.02), (48, 0.06), (80, 0.14), (100, 0.22)]  # hinge angle, leaflet lift
+    an = [shot('capsule', fi, a, l) for fi, (a, l) in enumerate(seq)]
+    json.dump(an, open(os.path.join(WORK, 'capsule', 'anchors.json'), 'w'))
+    # the eco paper capsule (pulp, press-fit: no hinge, no tab), closed
+    for p in (knuck, leaf, tab, nub):
+        p.hide_render = True
+    json.dump([shot('capsule_p', 0, 0, 0)], open(os.path.join(WORK, 'capsule_p', 'anchors.json'), 'w'))
+    for p in (knuck, leaf, tab, nub):
+        p.hide_render = False
     # a small closed capsule (badges, card printing)
-    top.location = (0, 0, 0); top.rotation_euler = (0, 0, 0); slip.hide_render = True
-    camera(sc, 18, 18, 7.4, -15, 18, target=(0, 0, 0.05))
-    bpy.context.view_layer.update()
-    render_frame(sc, os.path.join(WORK, 'capsule_s'), 0, [p for p in parts if not p.hide_render], im, nm)
+    camera(sc, 18, 18, 7.4, -15, 22, target=(0.05, 0, 0.05))
+    json.dump([shot('capsule_s', 0, 0, 0)], open(os.path.join(WORK, 'capsule_s', 'anchors.json'), 'w'))
 
 
 for j in JOBS:

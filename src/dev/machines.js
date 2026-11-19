@@ -32,17 +32,19 @@ export async function viewerEntries(params) {
     const size = capsuleSize(series), kind = capsuleStyle(series), pg = pileGeometries(size, kind, series), rr = CAPSULE_R[size];
     const W = L.window, n = +(params.get('fill') || 40);
     const bot = new THREE.InstancedMesh(pg.bottom, pg.bottomMat, n), top = new THREE.InstancedMesh(pg.top, pg.topMat, n);
+    const mid = pg.contents ? new THREE.InstancedMesh(pg.contents, pg.contentsMat, n) : null;
     let seed = 3 + ti;
     const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
     const nx = Math.floor((W.x1 - W.x0) / (2 * rr)), nz = Math.floor((W.z1 - W.z0) / (2 * rr));
     for (let i = 0; i < n; i++) {
       const ix = i % nx, iz = Math.floor(i / nx) % nz, iy = Math.floor(i / (nx * nz));
       const m = new THREE.Matrix4().compose(new THREE.Vector3(W.x0 + rr + ix * 2 * rr + (iy % 2) * rr * 0.5, W.y0 + rr + iy * rr * 1.7, W.z0 + rr + iz * 2 * rr), new THREE.Quaternion().setFromEuler(new THREE.Euler(rnd() * 6, rnd() * 6, rnd() * 6)), new THREE.Vector3(1, 1, 1));
-      bot.setMatrixAt(i, m); top.setMatrixAt(i, m);
+      bot.setMatrixAt(i, m); top.setMatrixAt(i, m); mid?.setMatrixAt(i, m);
       if (kind !== 'paper') bot.setColorAt(i, new THREE.Color(capsuleColor(series, rnd)));
     }
     top.renderOrder = 2;
     group.add(bot, top);
+    if (mid) { mid.renderOrder = 1; group.add(mid); }
     if (params.get('lid')) b.lidPivot.rotation.x = -1.85;
     if (params.get('drawer')) b.drawer.position.z += L.coinBox.depth - 0.012;
     void layout;

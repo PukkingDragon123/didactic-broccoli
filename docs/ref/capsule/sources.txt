@@ -1,0 +1,28 @@
+Reference photos for the gacha capsule and the gacha machines (reference only, never shipped in the game).
+All CC0 / public domain / CC BY; brands visible in them are reference only and never copied.
+
+capsules_window_macro.jpg       "Toy vending machines (Unsplash)" by Jackson Jost, CC0
+                                https://commons.wikimedia.org/wiki/File:Toy_vending_machines_(Unsplash).jpg
+capsules_halves_closeup.jpg     "キティボール 2010 (4467908446)" by ZoAmichi Kai, CC BY 2.0
+                                https://commons.wikimedia.org/wiki/File:%E3%82%AD%E3%83%86%E3%82%A3%E3%83%9C%E3%83%BC%E3%83%AB_2010_(4467908446).jpg
+machine_front_card_handle.jpg   "Gachapon in Tokyo" by PanierAvide, CC BY 4.0
+                                https://commons.wikimedia.org/wiki/File:Gachapon_in_Tokyo.jpg
+machines_stacked_rows.jpg       "Gashapon machine" by fukhops, public domain
+                                https://commons.wikimedia.org/wiki/File:Gashapon_machine.jpg
+machines_two_high.jpg           "Capsule toys near Todai-ji" by decade_null, CC BY 2.0
+                                https://www.flickr.com/photos/39952962@N00/9800420906
+machine_window_handle_macro.jpg "Gachapon Kaikan @ Akihabara" by *_*, CC BY 2.0
+                                https://www.flickr.com/photos/22539273@N00/14179880823
+
+Real details noted (from these photos and general knowledge of Japanese capsules):
+- Top half: clear, faintly tinted dome; the toy and the folded paper insert show through it.
+- Bottom half: coloured, opaque (glossy); some capsules are clear/tinted on both halves, some opaque on both.
+- Join: a ridged twist-lock band at the seam; many capsules have a hinge knuckle on one side and a thumb tab with a
+  small nub on the other.
+- Shape: near-spherical, slightly egg-like (top dome a touch taller), about 50-75 mm (Ø55 / 65 / 75 sizes).
+- Surface: a small moulded maker mark on the coloured half (ours: an original "GG" mark, never a real logo); gloss
+  plastic with a frosted ring band. Eco capsules: matte moulded pulp/paper halves, press-fit, no hinge.
+- Machines: white or coloured moulded bodies stacked two high on a stand; a clear window full of capsules with the
+  display card in the top part of the window; a big round coin handle that turns; a coin slot plate with price; a
+  capsule exit with a flap below.
+No openable-capsule close-up under a free licence was found on Wikimedia Commons / Openverse (rate-limited search).

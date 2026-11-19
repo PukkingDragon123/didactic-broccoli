@@ -19,12 +19,18 @@
    0,
    0,
    0
+  ],
+  "contents_lo": [
+   0,
+   0,
+   0
   ]
  },
  "mats": {
   "top_lo_s": "gloss",
   "top_lo_rim": "gloss",
-  "bottom_lo_s": "gloss"
+  "bottom_lo_s": "gloss",
+  "fig_lo": "gloss"
  },
  "key": "capsule_lo",
  "density": 1.0

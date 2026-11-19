@@ -69,7 +69,7 @@
      0,
      0
     ],
-    "tris": 320
+    "tris": 400
    },
    "bottom_tab": {
     "pivot": [
@@ -77,7 +77,7 @@
      0,
      0
     ],
-    "tris": 376
+    "tris": 456
    },
    "top_paper": {
     "pivot": [
@@ -118,10 +118,10 @@
    [
     "capsule",
     1024,
-    592
+    608
    ]
   ],
-  "bytes": 50164
+  "bytes": 59320
  },
  "capsule_lo": {
   "nodes": {
@@ -156,6 +156,14 @@
      0
     ],
     "tris": 140
+   },
+   "contents_lo": {
+    "pivot": [
+     0,
+     0,
+     0
+    ],
+    "tris": 64
    }
   },
   "size": [
@@ -172,10 +180,10 @@
    [
     "capsule_lo",
     256,
-    208
+    240
    ]
   ],
-  "bytes": 14824
+  "bytes": 20356
  },
  "carton": {
   "nodes": {
