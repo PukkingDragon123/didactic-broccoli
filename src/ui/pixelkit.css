@@ -6,7 +6,7 @@
 
 /* the piggy bank pop-up: a receipt-paper card by the wallet counter */
 .pk-piggy {
-  position: fixed; left: 26px; bottom: 96px; z-index: 40; pointer-events: none; padding: 4px 10px 2px;
+  position: fixed; left: 26px; bottom: 150px; z-index: 40; pointer-events: none; padding: 4px 10px 2px;
   background: var(--pp-grain-receipt, #f2ece0) 0 0 / 96px; image-rendering: pixelated;
   border: 12px solid transparent; border-width: 12px 0; border-image: var(--pp-zig-receipt) 6 / 12px 0 round;
   filter: drop-shadow(4px 4px 0 rgba(26, 18, 22, .45));

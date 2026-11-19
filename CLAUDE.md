@@ -9,6 +9,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   round glows, no smooth gradients, no additive blobs.
 - 2D art is pixel art: no text effects (glows, gradients, bevels), no "AI-looking" slick posters, no circles-and-
   sparkles filler. Fonts: Alagard (UI), the 5x7 bitmap font for tiny text, DotGothic16 for kana.
+- The pixel-art kit (public/img/pixelkit via src/ui/pixelkit.js; built by tools/pixelkit/build.py, hand-pixelled or
+  pixelised Blender renders to the docs/ref/pixel refs) is the standard for coins, notes, banks, tickets, receipts,
+  stamp cards and capsules in the UI and on posters / cards: use it, never redraw them.
 - UI is paper, in detailed pixel art: notes, tickets, receipts, tags, notebook pages (src/ui/paper.js + paper.css: grain,
   torn / zig-zag edges, masking tape, hanko stamps), ink-coloured text, hard pixel shadows. New UI uses this kit.
 - 3D art uses the owner's lowpix technique (docs/ART.md, last Update): properly proportioned models with detailed,

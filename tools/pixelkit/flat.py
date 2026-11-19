@@ -235,22 +235,16 @@ def prize_ticket():
     text3(a, 'PRIZE', 12, 3, CREAM[5])
     # capsule emblem
     cap = ["..ooooo..", ".oRRRRro.", "oRWRRRRro", "oRRRRRrro", "okkkkkkko", "oWWWWWWuo", "oWWWWWuuo", ".oWWWuuo.", "..ooooo.."]
-    stamp(cap, None, None, 0, 0) if False else None
     stamp(a, cap, {'o': C('#40180f'), 'R': ORANGE[3], 'r': ORANGE[1], 'W': CREAM[5], 'u': CREAM[2], 'k': C('#40180f')}, 3, 10)
-    kana(a, ['ga', 'shi', 'ya', 'ko'] if False else ['ka', 'na', 'to'], 14, 11, INK2)
+    kana(a, ['ka', 'na', 'to'], 14, 11, INK2)
     text3(a, '1', 27, 11, ORANGE[1]); stamp(a, KANA['ki'], {'X': INK2}, 29, 11)
     hline(a, 14, 31, 16, INK2)
-    text3(a, 'No', 14, 18 - 1, INK) if False else None
     for x in range(14, 32, 2):
         put(a, x, 18, INK2)
     # perforation + stub
     for y in range(2, H - 2, 2):
         a[y, 34] = 0
-    for y in range(2, H - 2):
-        if (a[y, 33, 3] and not (a[y, 33] == PAPER_OL).all()):
-            pass
     text3(a, '0', 36, 3, ORANGE[1]); text3(a, '8', 36, 9, ORANGE[1]); text3(a, '1', 36, 15, ORANGE[1])
-    stamp(a, ['X.X', '.X.', 'X.X'], {'X': PURP2}, 39, 10) if False else None
     return a
 
 
@@ -273,7 +267,6 @@ def raffle_strip():
             if x % 7 != 5:
                 put(a, x, y0 + 2, red2); put(a, x, y0 + 12, red2)
         vline(a, 2, y0 + 2, y0 + 12, red2); vline(a, W - 3, y0 + 2, y0 + 12, red2)
-        text3(a, 'No', 4, y0 + 4, red) if False else None
         kana(a, ['ki', 'to'], 4, y0 + 4, INK2)
         text3(a, num, 12, y0 + 4, red)
         hline(a, 4, 19, y0 + 10, INK2)
@@ -305,7 +298,7 @@ def receipt():
     kana(a, ['ko', 'na', 'shi'], 9, 9, ink2)
     for x in range(3, W - 3, 2):
         put(a, x, 14, ink2)
-    items = ((['ka', 'ra'] if False else ['ka', 'ki'], '120'), (['ga', 'mi'], '80'), (['to', 'wa', 'ji'], '60'), (['yo', 're'], '40'))
+    items = ((['ka', 'ki'], '120'), (['ga', 'mi'], '80'), (['to', 'wa', 'ji'], '60'), (['yo', 're'], '40'))
     y = 17
     for ks, p in items:
         kana(a, ks, 3, y, ink2)
@@ -340,7 +333,7 @@ def stamp_card(n=7):
         if x % 9 != 4:
             put(a, x, 2, red2); put(a, x, H - 3, red2)
     text3(a, 'STAMPS', 4, 4, red)
-    kana(a, ['mi', 'ka', 'wa', 'ya'] if False else ['mi', 'ka', 'wa'], 30, 5, INK2)
+    kana(a, ['mi', 'ka', 'wa'], 30, 5, INK2)
     for i in range(10):
         x, y = 4 + (i % 5) * 9, 11 + (i // 5) * 9
         if i < n:
@@ -409,11 +402,9 @@ def banknote(v):
     text3(a, s, 4, 7, ink)
     text3(a, s, W - 4 - text3_w(s) - 0, H - 11, ink) if v < 10000 else text3(a, s, 4, H - 9, ink2)
     kana(a, ['na', 'to'], 4, 13, ink2)
-    text3(a, 'G', 4, 17, ink2) if False else None
     for x, y in ((31, 7), (32, 7), (31, 8), (32, 8)):  # red seal
         put(a, x, y, C('#b8423a'))
     put(a, 31, 7, C('#d8705a'))
-    text3(a, 'A7', 37, 3 + 0, C('#a8463a')) if False else None
     return a
 
 

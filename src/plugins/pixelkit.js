@@ -9,6 +9,7 @@ import '../ui/pixelkit.css';
 
 export async function install(game) {
   const g = game;
+  const hold = () => window.__pkHold; // tests / screenshots: freeze the effects on screen
   if (!(await loadPixelKit())) return;
   // the old hand-drawn 'coin' icon -> the kit's 100-yen coin, everywhere icons are drawn
   defineIcon('coin', { canvas: pkCanvas('coin100', 0, 1) });
@@ -38,6 +39,7 @@ export async function install(game) {
         const k = Math.min(1, (now - t0) / dur);
         const px = Math.round((dx * k) / 2) * 2, py = Math.round((dy * k - up * 4 * k * (1 - k)) / 2) * 2;
         el.style.transform = `translate(${px}px, ${py}px)`;
+        if (hold() && k > 0.45) return;
         if (k < 1) requestAnimationFrame(step); else el.remove();
       };
       requestAnimationFrame(step);
@@ -54,8 +56,8 @@ export async function install(game) {
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     pieces.forEach((name, i) => {
       const note = name.startsWith('note');
-      const sp = (i - (pieces.length - 1) / 2) * 18;
-      if (delta > 0) fly(note ? name + (i % 2 ? '_crumpled' : '') : name, { x: cx - 24 + sp * 2, y: cy - 150, dx: -sp * 2, dy: 140, up: 30, delay: i * 90, spin: !note, scale: note ? 1 : 2 });
+      const sp = i * 18;
+      if (delta > 0) { const x = cx + 40 + i * 26; fly(note ? name + (i % 2 ? '_crumpled' : '') : name, { x, y: cy - 140, dx: cx - 24 - x, dy: 130, up: 40, delay: i * 90, spin: !note, scale: note ? 1 : 2 }); }
       else fly(note ? name + '_crumpled' : name, { x: cx - 20, y: cy - 20, dx: sp * 3 + 40, dy: 110, up: 70, delay: i * 80, spin: !note, scale: note ? 1 : 2 });
     });
     hudCoin?.play({ cycles: 2, end: 0 });
@@ -83,7 +85,7 @@ export async function install(game) {
     document.body.appendChild(card);
     requestAnimationFrame(() => card.classList.add('show'));
     pig.play({ loop: false, done: () => { if (delta < 0) pig.play({ loop: false }); } });
-    setTimeout(() => { card.classList.remove('show'); setTimeout(() => card.remove(), 300); }, 2200);
+    if (!hold()) setTimeout(() => { card.classList.remove('show'); setTimeout(() => card.remove(), 300); }, 2200);
   }
 
   // coin tray strip: coins dropped into the vending machine slot / counted out of the Mikawa-ya till
@@ -106,6 +108,6 @@ export async function install(game) {
     }
     tray.classList.add('show');
     clearTimeout(trayT);
-    trayT = setTimeout(() => { tray.classList.remove('show'); setTimeout(() => { tray?.remove(); tray = null; }, 300); }, 2600);
+    if (!hold()) trayT = setTimeout(() => { tray.classList.remove('show'); setTimeout(() => { tray?.remove(); tray = null; }, 300); }, 2600);
   });
 }
