@@ -41,7 +41,8 @@ faces() {
   local id=$1 out=art/blender/toys/_build/$S/$id.face_col.png log
   echo "== $S/$id face"
   rm -f "$out"
-  log=$(GG_VARIANT='{"texture":"face","face":"auto"}' slot tools/blender.sh art/blender/toys/$S/$id.py --repaint 2>&1 | grep -E "^\[|Error|Traceback|error" || true)
+  local rf=art/blender/toys/_build/$S/$id.ratio  # (the collapse start its shipped build used: the same mesh, the same UVs)
+  log=$( ( [ -f $rf ] && export GG_FACET_RATIO=$(cat $rf); GG_VARIANT='{"texture":"face","face":"auto"}' slot tools/blender.sh art/blender/toys/$S/$id.py --repaint 2>&1 ) | grep -E "^\[|Error|Traceback|error" || true)
   echo "$log" | grep -E "variant face|Error|Traceback" || true
   [ -f "$out" ] || { echo "no face texture for $S/$id"; return 0; }
   python3 -I - "$out" art/blender/toys/_build/$S/${id}_col.png "public/models/lowpix/figures/$S/$id.face.png" "$S/$id" "$(echo "$log" | sed -n 's/.*variant face //p' | head -1)" <<'PY'
@@ -70,6 +71,12 @@ if [ $var = 2 ]; then for id in "${ids[@]}"; do faces "$id"; done; exit 0; fi
 for id in "${ids[@]}"; do
   echo "== $S/$id"
   rm -f art/blender/toys/_build/$S/$id.glb
+  rf=art/blender/toys/_build/$S/$id.ratio
+  if [ -f $rf ] && [ -z "$GG_FACET_RATIO" ]; then  # (built again with the collapse start it shipped with)
+    GG_FACET_RATIO=$(cat $rf) slot tools/blender.sh art/blender/toys/$S/$id.py "${flags[@]}" 2>&1 | grep -E "^\[|Error|Traceback|error" || true
+    [ -f art/blender/toys/_build/$S/$id.glb ] || { echo "no glb for $S/$id"; exit 1; }
+    continue
+  fi
   slot tools/blender.sh art/blender/toys/$S/$id.py "${flags[@]}" 2>&1 | grep -E "^\[|Error|Traceback|error" || true
   [ -f art/blender/toys/_build/$S/$id.glb ] || { echo "no glb for $S/$id"; exit 1; }
   # facet (FACET.md): a simple figure should not land far under ~1000 tris; one that did is built again with its
@@ -79,6 +86,7 @@ for id in "${ids[@]}"; do
     echo "[$S/$id] facet: too few tris, building again with GG_FACET_RATIO=$r"
     rm -f art/blender/toys/_build/$S/$id.glb
     GG_FACET_RATIO=$r slot tools/blender.sh art/blender/toys/$S/$id.py "${flags[@]}" 2>&1 | grep -E "^\[|Error|Traceback|error" || true
+    echo $r > $rf
     [ -f art/blender/toys/_build/$S/$id.glb ] || { echo "no glb for $S/$id"; exit 1; }
   fi
 done
