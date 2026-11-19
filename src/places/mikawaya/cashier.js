@@ -300,6 +300,7 @@ export class Cashier {
     if (!this.active || !c || c.state !== 'change') return;
     c.give += v;
     audio.play(v >= 1000 ? 'notePaper' : 'coinClink', { vol: 0.5 });
+    this.game.events.emit('pk:coins', { coins: [v], label: `Change ${yen(c.give)} of ${yen(c.change)}` });
     this.drawDisplay();
   }
 

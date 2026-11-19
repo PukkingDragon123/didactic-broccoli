@@ -1,0 +1,31 @@
+/* Pixel-art kit sprites in the HUD (src/plugins/pixelkit.js). Integer scales, stepped motion, paper UI kit. */
+.pk-sprite { image-rendering: pixelated; vertical-align: middle; }
+#money .coin .pk-hudcoin { margin-top: -2px; }
+#pk-layer { position: fixed; inset: 0; pointer-events: none; z-index: 41; overflow: hidden; }
+#pk-layer .pk-fly { position: absolute; will-change: transform; }
+
+/* the piggy bank pop-up: a receipt-paper card by the wallet counter */
+.pk-piggy {
+  position: fixed; left: 26px; bottom: 96px; z-index: 40; pointer-events: none; padding: 4px 10px 2px;
+  background: var(--pp-grain-receipt, #f2ece0) 0 0 / 96px; image-rendering: pixelated;
+  border: 12px solid transparent; border-width: 12px 0; border-image: var(--pp-zig-receipt) 6 / 12px 0 round;
+  filter: drop-shadow(4px 4px 0 rgba(26, 18, 22, .45));
+  opacity: 0; transform: translateY(12px); transition: opacity .2s steps(3), transform .2s steps(3);
+}
+.pk-piggy.show { opacity: 1; transform: translateY(0); }
+.pk-piggy .pk-drop { position: absolute; left: 50%; top: -18px; margin-left: -6px; animation: pk-drop .6s steps(6) forwards; }
+@keyframes pk-drop { from { transform: translateY(-24px); } to { transform: translateY(18px); opacity: 0; } }
+
+/* the coin tray: vending machine slot / the Mikawa-ya till, on a kraft-paper slip */
+.pk-tray {
+  position: fixed; left: 50%; bottom: 150px; z-index: 40; pointer-events: none; translate: -50% 0;
+  padding: 4px 12px 6px; background: var(--pp-grain-kraft, #cfae84) 0 0 / 96px; image-rendering: pixelated;
+  border: 12px solid transparent; border-image: var(--pp-edge-kraft) 6 / 12px round;
+  filter: drop-shadow(4px 4px 0 rgba(26, 18, 22, .45));
+  opacity: 0; transition: opacity .2s steps(3);
+  font-family: 'Alagard', 'DotGothic16', sans-serif; color: #2a1c14; text-align: center;
+}
+.pk-tray.show { opacity: 1; }
+.pk-tray-row { display: flex; gap: 4px; align-items: flex-end; justify-content: center; min-height: 52px; }
+.pk-tray-lbl { font-size: 16px; line-height: 16px; margin-top: 2px; }
+body.touchmode .pk-piggy { left: 50%; translate: -50% 0; bottom: auto; top: 90px; }

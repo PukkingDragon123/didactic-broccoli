@@ -17,6 +17,7 @@ import { drawSample, drawLabel, kanji, loadLabelFonts } from './canArt.js';
 import { PanelMode } from './panel.js';
 import { pixCanvas, hitBox, paperFill, tapeStrip } from '../util.js';
 import { payCash, yen } from '../money.js';
+import { coinSplit } from '../../ui/pixelkit.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
@@ -295,6 +296,7 @@ export class Vending {
     const slot = this.local(m, 0.36, 1.18, 0.38);
     if (!payCash(g, f.price, `Vending: ${f.name}`, slot)) { audio.play('vendNo', { vol: 0.5 }); this.draw(m); return; }
     m.busy = true;
+    g.events.emit('pk:coins', { coins: coinSplit(f.price, 6), label: `${f.name}  ${yen(f.price)}` }); // the coin tray strip (src/plugins/pixelkit.js)
     const n = Math.min(4, Math.ceil(f.price / 100));
     for (let i = 0; i < n; i++) g.tweens.wait(0.15 + i * 0.16, () => audio.play('coinInsert', { pos: slot, vol: 0.6 }));
     g.tweens.wait(0.25 + n * 0.16, () => audio.play('vendBeep', { pos: slot, vol: 0.5, f: 1568 }));

@@ -53,23 +53,33 @@ def burst(S, cx, cy, r, n, fill, line=INK, lines=(), col=INK, face='b5', rot=0.0
     for j, l in enumerate(lines): S.text(l, cx, cy - 4 * len(lines) + 9 * j + 1, face, 1, col, anchor='mt')
 
 
+_KIT = {}
+
+
+def kit_sprite(name, frame=0, scale=1):
+    """A sprite from the pixel-art kit (public/img/pixelkit, tools/pixelkit/build.py), at an integer scale."""
+    if not _KIT:
+        import json
+        d = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'public', 'img', 'pixelkit')
+        _KIT['meta'] = json.load(open(os.path.join(d, 'kit.json')))
+        _KIT['im'] = Image.open(os.path.join(d, 'kit.png')).convert('RGBA')
+    sp = _KIT['meta']['sprites'][name]
+    im = _KIT['im'].crop((sp['x'] + frame * sp['w'], sp['y'], sp['x'] + (frame + 1) * sp['w'], sp['y'] + sp['h']))
+    return im.resize((sp['w'] * scale, sp['h'] * scale), Image.NEAREST) if scale != 1 else im
+
+
 def coin(S, cx, cy, r, price, fill=GOLD, ink=INK):
-    """The price coin: a flat disc, inner ring, the price and YEN."""
-    S.ellipse(cx - r - 1, cy - r - 1, 2 * r + 2, 2 * r + 2, ink); S.ellipse(cx - r, cy - r, 2 * r, 2 * r, fill)
-    S.ellipse(cx - r + 3, cy - r + 3, 2 * r - 6, 2 * r - 6, fill, line=deep(fill, 0.35))
-    S.text('%d' % price, cx, cy - 9, 'b5', 2, ink, anchor='mt'); S.text('YEN', cx, cy + 7, 'micro5', 1, ink, anchor='mt')
+    """The price coin: the kit's pixel 500-yen coin at 2x, the price and YEN printed across it."""
+    sp = kit_sprite('coin500', 0, 2)
+    S.im.alpha_composite(sp, (int(cx - sp.width // 2), int(cy - sp.height // 2)))
+    S.text('%d' % price, cx, cy - 8, 'b5', 2, ink, anchor='mt', outline=[(1, WH)]); S.text('YEN', cx, cy + 8, 'micro5', 1, ink, anchor='mt', outline=[(1, WH)])
 
 
 def capsule(S, x, y, w, h, top, bot, words, ink=INK):
-    """A two-tone capsule badge (the gacha ball), words across the seam."""
-    S.rrect(x - 1, y - 1, w + 2, h + 2, ink, r=h // 2 + 1)
-    S.rrect(x, y, w, h, bot, r=h // 2); S.rect(x + h // 2, y, w - h, h // 2, top)
-    S.d.pieslice((x, y, x + h - 1, y + h - 1), 90, 270, fill=rgb(top)); S.d.pieslice((x + w - h, y, x + w - 1, y + h - 1), 270, 90, fill=rgb(top))
-    S.d.pieslice((x, y, x + h - 1, y + h - 1), 180, 270, fill=rgb(top)); S.rect(x, y + h // 2, h // 2, h // 2, bot)
-    S.d.pieslice((x, y, x + h - 1, y + h - 1), 90, 180, fill=rgb(bot)); S.rect(x + w - h // 2, y + h // 2, h // 2, h // 2, bot)
-    S.d.pieslice((x + w - h, y, x + w - 1, y + h - 1), 0, 90, fill=rgb(bot))
-    S.rect(x + 2, y + h // 2, w - 4, 1, ink)
-    S.text(words, x + w // 2, y + h // 2 - 3, 'b5', 1, ink, anchor='mt', outline=[(1, WH)])
+    """The capsule badge: the kit's pixel capsule, words beside it."""
+    sp = kit_sprite('capsule_s')
+    S.im.alpha_composite(sp, (int(x), int(y + h // 2 - sp.height // 2)))
+    S.text(words, x + sp.width + 2, y + h // 2 - 3, 'b5', 1, ink, anchor='lt', outline=[(1, WH)])
 
 
 def callout(S, text, tx, ty, px, py, anchor='rm', fill=WH, ink=INK, face='micro5'):

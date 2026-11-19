@@ -1884,6 +1884,7 @@ function hexToRgb(h) {
 /** Rasterise an icon (with outline + shadow) at 1x into an ImageData-backed canvas. */
 function raster(name) {
   const def = ICONS[name] || FALLBACK;
+  if (def.canvas) return def.canvas; // a ready-made sprite (the pixel kit, src/ui/pixelkit.js): already outlined
   const rows = def.rows;
   const h = rows.length, w = Math.max(...rows.map((r) => r.length));
   const legend = { ...BASE, ...(def.legend || {}) };

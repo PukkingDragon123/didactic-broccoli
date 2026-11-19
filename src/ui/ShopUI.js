@@ -9,6 +9,7 @@
 // (GACHA-MART itself closed: machines and capsules come from Daikoku Toys and Off-Hobby, see src/market/.)
 import './shopui.css';
 import { iconHTML } from '../gfx/icons.js';
+import { pkReady, pkURL } from './pixelkit.js';
 import { audio } from '../core/audio.js';
 import { SERIES, SERIES_BY_ID, ITEMS, getItem, MINI_SERIES } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
@@ -799,7 +800,7 @@ export class ShopUI {
       <button class="cn-x" data-act="close" aria-label="Leave the shop" title="Leave (Esc)">${ic('door', 2)}<span>Leave</span></button>
       <div class="cn-board">
         <header class="cn-head"><div><h1>Price List</h1><p>MIKAWA-YA General Store &middot; odds and ends since 1962</p></div>
-          <div class="sui-wallet cn-wallet">${ic('wallet', 2)}<span class="v" data-money>${yen(this.game.state.money)}</span></div></header>
+          <div class="sui-wallet cn-wallet">${pkReady() ? `<img class="px-icon pk-purse" src="${pkURL('purse')}" width="40" height="36" alt="" draggable="false">` : ic('wallet', 2)}<span class="v" data-money>${yen(this.game.state.money)}</span></div></header>
         <div class="cn-items"></div>
         <p class="cn-note">"Take your time, dear. Everything is cash only." <span>- Mrs. Mikawa</span></p>
       </div>
