@@ -27,6 +27,8 @@ ARGS = sys.argv[1:]
 
 
 def start(series, fid, budget=1500):
+    import facet
+    facet.OVERFLOW = True  # (the sack bodies: at the hi-res budget's cap the collapse crushed them to stems)
     tk.reset()
     return Fig(series, fid, budget=budget)
 

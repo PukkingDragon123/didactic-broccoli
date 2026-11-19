@@ -128,8 +128,8 @@ def reduce(ob, tris, cap=None):
                 print(f'[facet] {ob.name}: {n} -> {t} (cap {cap}): deviation p95 {p95:.3f} max {mx:.3f}', flush=True)
             if (p95 <= TOL and mx <= TOL_MAX) or not grow:
                 break
-            if t >= cap and (mx <= 4 * TOL_MAX or t >= 3 * cap):  # (past the cap only while the form is badly broken:
-                break                                              #  a crushed head or a body gone to a stem)
+            if t >= cap and (not OVERFLOW or mx <= 4 * TOL_MAX or t >= 3 * cap):  # (OVERFLOW: past the cap while the
+                break                                                              #  form is badly broken, a body gone to a stem)
             old = ob.data
             ob.data = src
             bpy.data.meshes.remove(old)
@@ -209,6 +209,8 @@ def cap(tris):
 
 
 KEEP = False
+OVERFLOW = False  # a series whose big sacks collapse to stems at the cap sets it (teruteru/kit/bk.py); off elsewhere so
+#                   every other figure keeps the exact mesh it shipped with (its bake cache and variants stay valid)
 
 
 class keeping:
