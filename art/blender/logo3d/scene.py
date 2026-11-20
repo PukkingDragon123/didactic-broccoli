@@ -383,7 +383,8 @@ def build(S):
         R = toy(T, i); lo, hi = bbox(R); hw = (hi.x - lo.x) / 2; hd = (hi.y - lo.y) / 2
         A = obs[T['at']]; alo, ahi = bbox(A)
         if T['role'] == 'sit':
-            R.location = ((alo.x + ahi.x) / 2 + T.get('dx', 0) * (ahi.x - alo.x), (alo.y + ahi.y) / 2 + 0.04, 0)
+            back = max(0.0, hd - (ahi.y - alo.y) / 2)  # a deep base sits back, its front flush with the letter's face
+            R.location = ((alo.x + ahi.x) / 2 + T.get('dx', 0) * (ahi.x - alo.x), (alo.y + ahi.y) / 2 + 0.04 + back, 0)
         elif T['role'] == 'peek':
             R.location = ((alo.x + ahi.x) / 2 + (ahi.x - alo.x) * (0.22 if T['side'] == 'r' else -0.22), ahi.y + hd + 0.03, 0)
         elif T['role'] == 'push':

@@ -77,7 +77,7 @@ THEMES = {
         P(0x4aa8a8, dict(k='checker', sc=5.5, c=0xe8f0ec, a=1.0), dict(k='grid', sc=5.5, thr=0.09, c=0x8a9a9e, w=0.01),
           s=0x2a6a6e, sL=[dict(k='grid', sc=5.5, thr=0.09, c=0x5a6a72)], chip=0xffffff)],
         bits=[B('puff', 'top', 3, paint=0xeef0f0, gap=0.16)]),
-    # Umbrella Arms: oiled wagasa paper, red and indigo, radiating ribs, a janome ring; bamboo ribs fanning out
+    # Umbrella Arms: oiled wagasa paper, red and indigo, radiating ribs and paper fibres; bamboo ribs fanning out
     'kasabuki': dict(v=[
         P(0xc4302a, dict(k='radial', p=(0, 0.5), n=12, thr=0.07, c=0x7a1a16, w=0.02),
           stripes(30, 0.12, 0xd4483a, ax=(1, 0, 0.2), w=0.4), s=0x7a4a22, sL=[stripes(10, 0.1, 0x4a2c14)], chip=0xe8b088),
@@ -128,7 +128,7 @@ THEMES = {
     'karakuri': dict(v=[
         P(0xa8683a, stripes(11, 0.3, 0x7a4422, ax=(0.15, 0, 1), w=0.5), spots(3, 0.06, 0x6a3a1c), s=0x6a3a1e, chip=0xe0b080),
         P(0xb4382a, stripes(11, 0.08, 0x8a2a20, ax=(0.15, 0, 1), w=0.5), s=0x241a18, sL=[], chip=0xe0a080)],
-        bits=[B('key', 'last', paint=0xa8843c)]),
+        bits=[B('key', 'last', paint=0xa8843c, s=1.7)]),
     # Anime Genre Club: cel paint, each letter a flat colour with one hard shadow shape and a hard light band
     'janru': dict(v=[
         P(0xd8346a, stripes(1.1, 0.42, 0x9a1e4a, ax=(0.7, 0, -0.7), w=0.05), below(1.2, 0xf27aa0, gt=0.84, w=0.03), s=0x1e1e3a, sL=[]),
