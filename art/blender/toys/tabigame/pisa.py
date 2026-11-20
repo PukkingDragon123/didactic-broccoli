@@ -14,7 +14,7 @@ from _kame import *  # noqa: E402,F401,F403
 tk.reset()
 F = Fig('tabigame', 'pisa')
 B = Build()
-T = Turtle(B, L=27.0, W=22.0, clr=2.6, dome=6.4, neck=1.1, head=1.1, legs='webbed', flat_top=0.5)
+T = Turtle(B, L=27.0, W=22.0, clr=2.6, dome=6.4, neck=1.1, head=1.35, legs='webbed', flat_top=0.5)
 for a, b in B.p['head']:   # a nervous glance back at the tower
     for o in (a, b):
         tk.rotate(o, 22, 'Z', pivot=T.NECK)
