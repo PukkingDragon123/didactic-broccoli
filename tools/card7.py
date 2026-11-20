@@ -232,8 +232,9 @@ def designer(K, c):
     if c.get('flow'):  # right-hand logos: the price and the capsule flow under the kicker
         ky = ty + 9 * len(c['kick']) + 20; c['price_at'] = (tx + 31, ky); c['caps'] = (tx + 70, ky - 7)
     px, py = c['price_at']; st = c.get('price', 'coin'); pr = G3('_price')
-    if not c.get('flow') and px - 32 < kb[2] and px + 32 > kb[0] and py - 22 < kb[3]:  # the bigger logo pushed the kicker down
-        d_ = min(178, kb[3] + 24) - py; py += d_; c = dict(c, caps=(c['caps'][0], c['caps'][1] + d_))
+    over = [b_ for b_ in (bb, kb) if px - 32 < b_[2] and px + 32 > b_[0] and py - 22 < b_[3]]
+    if not c.get('flow') and over:  # the bigger logo (or the kicker it pushed down) would cover the price: move it below
+        d_ = max(0, min(178, max(b_[3] for b_ in over) + 24) - py); py += d_; c = dict(c, caps=(c['caps'][0], c['caps'][1] + d_))
     price_piece(F, st, px, py, K.s['price'], c.get('pricecol', GOLD), num=pr is None)
     if pr is not None:  # the 3D price stands on the piece where the printed number was
         qx, qy = {'coin': (px, py - 2), 'tsuba': (px, py + 4), 'ticket': (px - 9, py - 4)}[st]

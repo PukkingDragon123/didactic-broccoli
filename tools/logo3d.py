@@ -67,10 +67,10 @@ def spec(sid, c, items, hero, box, name=None):
     # sizes: first letter of each line a step bigger, one more letter a little bigger; the lines balanced in width
     def width(row, s):
         return sum((g['w'] * s * g['k'] + 0.03 * s) if g else 0.34 * s for g in row)
-    for row in rows:
+    for j, row in enumerate(rows):  # the big first letter only on the bottom line (a big one on top reads as a stray)
         big = rn.randrange(1, max(2, len(row)))
         for i, g in enumerate(row):
-            if g: g['k'] = 1.24 if i == 0 and len(row) > 3 else 1.1 if i == big else 1.0
+            if g: g['k'] = 1.24 if i == 0 and len(row) > 3 and j == len(rows) - 1 else 1.1 if i == big else 1.0
     sl = [1.0] * n
     if two:
         wb = width(rows[-1], 1); wt = max(width(r, 1) for r in rows[:-1])
@@ -86,18 +86,21 @@ def spec(sid, c, items, hero, box, name=None):
         x += rn.uniform(-0.08, 0.08) if top else 0
         for i, g in enumerate(row):
             if not g: x += 0.34 * s; continue
+            if g['punct']: x += 0.1 * s  # punctuation stands clear of the word (never hides a letter)
             sk = s * g['k']; w = g['w'] * sk; sgn = -sgn
             tilt = sgn * rn.choice([2, 3, 5, 6]) if not g['punct'] else 0
             if j == 0 and i == lean: tilt = rn.choice([-1, 1]) * 10
-            fc = (pop if i % 2 else fill) if scheme == 'alt' else (pop if top else fill) if scheme == 'line' else (pop if i == 0 else fill)
+            fc = (pop if i % 2 else fill) if scheme == 'alt' else (pop if top else fill) if scheme == 'line' else (pop if i == 0 and j == 0 else fill)
             fc = mixc(fc, 0xffffff if rn.random() < 0.5 else 0x000000, rn.uniform(0.0, 0.06))  # each letter its own pot
             sd = mixc(deep(fc, 0.5), side, 0.3)  # the extruded side: a darker shade of the face, toward the series colour
-            g.update(s=sk, x=x + w / 2, y=(0.05 * (bot_line - j) + rn.uniform(-0.02, 0.04)) if top else (0.15 if i % 2 else 0.0),
+            g.update(s=sk, x=x + w / 2, y=(0.05 * (bot_line - j) + rn.uniform(-0.02, 0.04)) if top else (0.08 if i % 2 else 0.0),
                      line=j, depth=0.4, cham=min(0.22 * p, 0.035), tilt=tilt, yaw=rn.uniform(-8, 8) if not g['punct'] else 0,
                      pitch=rn.uniform(-4, 5), front=tones(fc), rim=tones(mixc(fc, 0xfff8e8, 0.45), (3, 5, 6)), side=tones(sd, (1, 3, 4)),
                      chip_f=_rgb(mixc(fc, 0xf4ecdc, 0.55)), chip_r=_rgb(deep(sd, 0.5)), chip_s=_rgb(mixc(sd, 0xf4ecdc, 0.45)),
                      stroke=(rn.uniform(-1.4, 1.4), rn.uniform(2.6, 4.0), rn.uniform(0.7, 1.0)), idx=i)
-            L.append(g); x += w + 0.03 * s
+            nx = row[i + 1] if i + 1 < len(row) else None
+            thin = g['w'] < 0.4 or (nx is not None and (nx['punct'] or nx['w'] < 0.4))  # air around I and punctuation
+            L.append(g); x += w + (0.1 if thin else 0.03) * s
     # toys: two or three of the series' own figures, each in a different role (never the card's hero)
     pool = [it['id'] for it in items if not it['secret'] and it['id'] != hero and os.path.exists(os.path.join(BUILD, sid, it['id'] + '.glb'))]
     rn.shuffle(pool); hs = min(sl[-1], 1.3)
@@ -126,8 +129,10 @@ def spec(sid, c, items, hero, box, name=None):
             at = max(cand, key=far) if used else rn.choice(cand)
             h = 1.35 * hs
         elif role in ('push', 'peek'):
-            at = bot[-1] if where == 'r' else bot[0]; h = (1.25 if role == 'push' else 1.45) * hs
-            if role == 'push': L[at]['tilt'] = (-12 if where == 'r' else 12)
+            ends = [k for k, g in enumerate(L) if g['line'] == bot_line]  # the true end glyph, punctuation too
+            at = (ends[-1] if role == 'push' else bot[-1]) if where == 'r' else (ends[0] if role == 'push' else bot[0])
+            h = (1.25 if role == 'push' else 1.45) * hs
+            if role == 'push' and not L[at]['punct']: L[at]['tilt'] = (-7 if where == 'r' else 7)
         else:
             at = bot[0] if free == 'r' else bot[-1]; h = 1.1 * hs  # hugging the outer corner of an end letter
         used.append(at)
