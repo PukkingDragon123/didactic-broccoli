@@ -40,14 +40,15 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   eyes, many cool face types with attitude, a unique species-specific face per animal, tapered brush brows, hatch or dabbed blush, inner-mouth colour, tongue and teeth detail, animal noses. Always
   ink and brush, slightly uneven between the two eyes; never glossy rendered "AI" eyes, irises with gradients,
   modelled eyeballs or vector-perfect shapes. Painted onto the texture with lib/face.py.
-- **Toy animals are realistic in anatomy and hand-painted texture** (owner, latest: "more hand-painted and textured,
-  more realistic animals, like the turtles"): real proportions and species features at gashapon scale (a turtle's real
-  carapace scutes, plastron, scaly clawed legs and head; real beaks and feathers; fur in clumps; crab / beetle
-  segments), painted with the natural brush presets (lib/paint.py NATURAL: fur, feather, scale, skin, shell, chitin,
-  frog): fur clumps, feathers, scales and scutes laid over a photo-bash of real CC0 / CC BY animal photos
-  (art/blender/toys/lib/photos, credited), then brushed over, with colour variation and painted shading and wear; no
-  flat-colour areas, no noise, the same texel density. Still gashapon mascots with hand-drawn ink faces; the World
-  Tour Turtles (tabigame) are the benchmark.
+- **Toy animals are realistic: the whole model and the face, not just the texture** (owner, latest: "more realistic
+  animals, like the turtles"): each animal is sculpted from its real anatomy (proper skull shape and jaw, neck, jointed
+  limbs with claws, correct proportions, clean edge flow and silhouette; a turtle's carapace modelled scute by scute
+  with its plastron and bridges, real beaks and feathers, fur in clumps, crab / beetle segments), and its face redone
+  species-correct (where the eyes really sit, the species' iris, lids, nostrils, the mouth's real line), still
+  hand-inked per the face rules. The painting follows the model: natural brush presets (lib/paint.py NATURAL: fur,
+  feather, scale, skin, shell, chitin, frog) over a photo-bash of real CC0 / CC BY animal photos
+  (art/blender/toys/lib/photos, credited); no flat-colour areas, no noise. Still gashapon mascots in budget; the World
+  Tour Turtles (tabigame/_kame.py Turtle) are the benchmark.
 - **Toy style = real Japanese capsule-toy (gashapon) mascot figures** (owner's reference boards): original pun and
   fusion concepts (animal × food or object, little creatures with a job or a pose, transforming toys), chunky
   readable silhouettes, clean factory PVC paint with soft airbrushed blush and simple painted faces (bead eyes), about

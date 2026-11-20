@@ -88,9 +88,7 @@ def paint(P, pt):
     paint_turtle(P, pt, sh, T, '#3e342c', '#4a3420', scute='#6a4a26', plast='#d8b860', beak='#4a3a2e', vest=('#f2efe6', '#2a4a8a'))
     who, d = P.dabs(P.region('shell'), size=1.2, spacing=2.2, seed=4)   # the box turtle's yellow-orange flecks
     P.fill(P.region('shell') & (who >= 0) & (d < 0.55), pt.ramp('#d8962a', 5, shift=0.05), tone=sh, base=0.1)
-    sk = P.region('skin') | P.region('face')
-    who, d = P.dabs(sk, size=0.7, spacing=1.6, seed=9)
-    P.fill(sk & (who >= 0) & (d < 0.5), pt.ramp('#d8782a', 5, shift=0.05), tone=sh, base=0.1)
+    # (the skin's scales, wrinkles and markings: paint_turtle, from the real animal)
     P.fill('stone', pt.ramp('#8a867c', 6, shift=0.04), tone=sh, base=0.05)
     sr = P.region('sand')
     P.fill(sr, pt.ramp('#d6be86', 7, shift=0.05), tone=sh, base=0.15, brush={'preset': 'pvc', 'flow': 'down'})

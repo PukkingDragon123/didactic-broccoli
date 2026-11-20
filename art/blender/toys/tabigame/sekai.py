@@ -74,11 +74,8 @@ def paint(P, pt):
     X, Y, Z = P.X, P.Y, P.Z
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     paint_turtle(P, pt, sh, T, '#6a7a58', '#2e4a3a', scute='#3e5e48', plast='#e2d6a8', beak='#5a6a4a', vest=('#f2efe6', '#2a5aa8'), dabs=False)
-    sk = P.region('skin') | P.region('face')
-    who, d = P.dabs(sk, size=1.1, spacing=1.4, seed=6)   # the sea turtle's big pale-edged scales
-    P.fill(sk & (who >= 0) & (d > 0.72), pt.ramp('#c8c8a0', 5, shift=0.04), tone=sh, base=0.1)
+    # (the skin's scales, wrinkles and markings: paint_turtle, from the real animal)
     sr = P.region('shell') | P.region('marginal')
-    P.fill(sr & (P.cav > 0.56), pt.ramp('#e0b040', 6, shift=0.08, light=0.6), tone=sh, base=0.2, brush=False)   # gold leaf in the seams
     P.fill('gilt', pt.ramp('#e0b040', 7, shift=0.08, light=0.6), tone=sh, base=0.15, brush='metal')
     gm = P.region('sea')
     P.fill(gm, pt.ramp('#2a64a8', 7, shift=0.06), tone=sh, base=0.15, brush={'preset': 'gloss', 'flow': 'around'})

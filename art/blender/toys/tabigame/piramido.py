@@ -47,8 +47,7 @@ def paint(P, pt):
     X, Y, Z = P.X, P.Y, P.Z
     sh = P.shade(light=0.0, ao=0.85, cav=1.1)
     paint_turtle(P, pt, sh, T, '#c4a272', '#a8844e', scute='#c8a466', plast='#e0c890', beak='#9a7c50', vest=('#f2efe6', '#2a7a5a'))
-    sk = P.region('skin') | P.region('face')
-    P.shift(sk & (np.abs(np.mod(Z * 2.2 + np.sin(X * 1.3) * 0.6, 1.0) - 0.5) < 0.1), -1)     # wrinkles
+    # (the skin's scales, wrinkles and markings: paint_turtle, from the real animal)
     st = P.region('stone')
     P.fill(st, pt.ramp('#d4b07a', 7, shift=0.06), tone=sh, base=0.1, brush={'preset': 'pvc', 'flow': 'down'})
     P.fill(st & (P.cav > 0.58), pt.ramp('#8a6a42', 5, shift=0.05), tone=sh, base=0.0, brush=False)
