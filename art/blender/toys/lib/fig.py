@@ -490,6 +490,8 @@ class Fig:
             save_png(dilate(np.clip(rgb, 0, 1), mask, 10), out, 'sRGB', n)
             s.log('variant', s.variant['texture'], '->', out)
             sys.exit(0)
+        if os.environ.get('GG_FACE_ALSO'):
+            s._face_also(mask, n)
         col = dilate(np.clip(rgb, 0, 1), mask, 10)
         base = os.path.join(s.out, s.id)
         s.albedo = save_png(col, base + '_col.png', 'sRGB', n)
@@ -624,6 +626,36 @@ class Fig:
             os.makedirs(d, exist_ok=True)
             s.face_close(os.path.join(d, f'{s.series}__{s.id}.png'))
         return glb
+
+    def _face_also(s, mask, n):
+        """make.sh --faces: the alternate-face atlas painted in this same run (same mesh, UVs and bake as the figure
+        it ships with: a separate --repaint run of a figure whose build is not repeatable would not line up). The
+        figure's paint function is found in the caller (paint_fn / paint) and run again with face.EXPR set."""
+        import inspect
+        import zlib
+        import face
+        import paint as pt
+        fr = inspect.currentframe().f_back.f_back
+        fn = None
+        for k in ('paint_fn', 'paint'):
+            fn = fr.f_locals.get(k) or fr.f_globals.get(k)
+            if callable(fn):
+                break
+        if not callable(fn):
+            s.log('face also: no paint function found')
+            return
+        expr = ('happy', 'sleepy', 'wink')[zlib.crc32(f'{s.series}/{s.id}'.encode()) % 3]
+        keep_mark = list(face.MARK)
+        face.EXPR, face._WINK[0] = expr, 0
+        try:
+            P2 = pt.Painter(s.maps, s.region_index, s.size)
+            rgb2 = fn(P2, pt) if len(inspect.signature(fn).parameters) >= 2 else fn(P2)
+            save_png(dilate(np.clip(rgb2, 0, 1), mask, 10), os.path.join(s.out, f'{s.id}.face_col.png'), 'sRGB', n)
+            open(os.path.join(s.out, f'{s.id}.face_expr'), 'w').write(expr)
+            s.log('variant face', expr, '(painted with the figure)')
+        finally:
+            face.EXPR = None
+            face.MARK[:] = keep_mark
 
     def face_close(s, path, res=320):
         """A head-on close-up of the painted face (the face audit sheet, faces_audit.py): framed on every texel

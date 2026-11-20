@@ -40,10 +40,15 @@ fi
 faces() {
   local id=$1 out=art/blender/toys/_build/$S/$id.face_col.png log
   echo "== $S/$id face"
+  local fx=art/blender/toys/_build/$S/$id.face_expr
+  if [ -f "$fx" ] && [ -f "$out" ]; then  # (painted in the figure's own build run: GG_FACE_ALSO)
+    log="variant face $(cat $fx)"
+  else
   rm -f "$out"
   local rf=art/blender/toys/_build/$S/$id.ratio  # (the collapse start its shipped build used: the same mesh, the same UVs)
   log=$( ( [ -f $rf ] && export GG_FACET_RATIO=$(cat $rf); GG_VARIANT='{"texture":"face","face":"auto"}' slot tools/blender.sh art/blender/toys/$S/$id.py --repaint 2>&1 ) | grep -E "^\[|Error|Traceback|error" || true)
   echo "$log" | grep -E "variant face|Error|Traceback" || true
+  fi
   [ -f "$out" ] || { echo "no face texture for $S/$id"; return 0; }
   python3 -I - "$out" art/blender/toys/_build/$S/${id}_col.png "public/models/lowpix/figures/$S/$id.face.png" "$S/$id" "$(echo "$log" | sed -n 's/.*variant face //p' | head -1)" <<'PY'
 import json, os, shutil, subprocess, sys, fcntl
@@ -68,9 +73,10 @@ with open('/tmp/gg-variants.lock', 'w') as lk:
 PY
 }
 if [ $var = 2 ]; then for id in "${ids[@]}"; do faces "$id"; done; exit 0; fi
+[ $var = 1 ] && export GG_FACE_ALSO=1  # (--faces: each build run also paints its alternate face, lib/fig.py)
 for id in "${ids[@]}"; do
   echo "== $S/$id"
-  rm -f art/blender/toys/_build/$S/$id.glb
+  rm -f art/blender/toys/_build/$S/$id.glb art/blender/toys/_build/$S/$id.face_expr art/blender/toys/_build/$S/$id.face_col.png
   rf=art/blender/toys/_build/$S/$id.ratio
   if [ -f $rf ] && [ -z "$GG_FACET_RATIO" ]; then  # (built again with the collapse start it shipped with)
     GG_FACET_RATIO=$(cat $rf) slot tools/blender.sh art/blender/toys/$S/$id.py "${flags[@]}" 2>&1 | grep -E "^\[|Error|Traceback|error" || true
