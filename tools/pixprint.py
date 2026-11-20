@@ -92,6 +92,11 @@ def glyph(face, ch):
     """One character at the face's native grid -> (bool mask rows x cols, advance px, baseline row)."""
     k = (face, ch)
     if k in _G: return _G[k]
+    if face == 'ggd':  # our own hand-pixelled display face (tools/fonts/gg_display.py)
+        from fonts.gg_display import glyph as ggd
+        rows, adv, base = ggd(ch)
+        _G[k] = (np.array([[c == '#' for c in r] for r in rows], bool), adv, base)
+        return _G[k]
     if face == 'b5':
         g = _b5().get(ch.upper()) or _b5().get('?')
         m = np.array([[c == '#' for c in row] for row in g], bool)
@@ -130,7 +135,7 @@ ALIAS = {'’': "'", '‘': "'", '“': '"', '”': '"', '–': '-', '—': '-',
 def line_mask(s, face, track=0, bold=0, bounce=None):
     """A line of type at the native grid -> (bool mask, cap_top row, baseline row, [per-letter column spans])."""
     s = ''.join(ALIAS.get(c, c) for c in s)
-    if face == 'b5': s = s.upper()
+    if face in ('b5', 'ggd'): s = s.upper()
     parts, x, spans = [], 0, []
     base = max((glyph(face, c)[2] for c in s), default=0) if s else 0
     for i, c in enumerate(s):

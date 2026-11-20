@@ -14,7 +14,7 @@ from _kame import *  # noqa: E402,F401,F403
 tk.reset()
 F = Fig('tabigame', 'tokei')
 B = Build()
-T = Turtle(B, L=24.0, W=19.5, clr=2.6, dome=9.6, neck=0.9, head=1.3, legs='stump', flat_top=0.42, rim=0.8)
+T = Turtle(B, L=24.0, W=19.5, clr=2.6, dome=9.6, neck=0.9, head=1.3, legs='stump', flat_top=0.42, rim=0.8, sp='box')
 z = T.top - 1.3
 B.add('shell', box('footing', (10.6, 10.6, 2.0), (0, 0, z + 1.0), 'stone', tris=12))
 z += 2.0

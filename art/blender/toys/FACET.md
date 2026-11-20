@@ -84,6 +84,15 @@ tin, `pvc` elsewhere. Pick per region what the material is (fur, feather, cloth 
 
 Flat ink (`P.flat`, face.py, printed details) is never brushed, rimmed or worn: prints stay crisp.
 
+**Realism pass (natural presets).** `brush='fur' | 'feather' | 'scale' | 'skin' | 'shell' | 'chitin' | 'frog'` also
+lays the animal's own surface under the strokes (`paint.NATURAL`, override with `tex=dict(...)` or turn off with
+`tex=False`): fur clumps (lit tips, dark partings, strands), overlapping feathers (shaft, fringe, barbs), shingled
+scales or pebbled skin, each photo-bashed from a real photo (`P.photo(name, m, mm)`: lib/photos/<name>.npz, built by
+lib/photos/make.py from credited CC0 / CC BY crops) and broken into warmer / cooler patches by the photo's mottling
+(`P.mottle`). `P.plates(m, centres)` gives Voronoi plates (scutes, crab / beetle segments, head scales: plate id,
+distance to the seam, to the centre) for seams and growth rings; tabigame/_kame.py `scute_map` is the real carapace
+layout (5 vertebrals, 4 costals a side, 24 marginals).
+
 ## Faces (the face kit, lib/face.py)
 
 Hand-drawn, solid ink, graphic (bold confident strokes, a steady hand), never glossy: no catchlight, white or

@@ -14,9 +14,18 @@ Facet mode (lib/facet.py, FACET.md): fill() lays the ramp as hand-painted brush 
 per material: brush='pvc' | 'gloss' | 'metal' | 'fur' | 'feather' | 'wood' | 'cloth' | 'lacquer', a dict of stroke
 settings, or False), dabs() paints hand-dabbed patterns (pebbles, scales, spots), and done() adds the facet-edge rims
 and the soft rubbed wear on hard corners.
+
+Realism pass (the owner: "more hand-painted and textured, more realistic animals"): the natural presets (brush='fur' |
+'feather' | 'scale' | 'skin' | 'shell' | 'chitin' | 'frog') first lay the animal's own surface under the strokes
+(NATURAL: fur clumps with lit tips and dark partings, overlapping feathers with shaft and fringe, shingled scales,
+pebbled skin), photo-bashed from a real photo of that surface (photo(): lib/photos, CC0 / CC BY crops, credited), with
+the photo's mottling breaking the ramp into warmer / cooler patches; the strokes then paint over all of it. plates()
+gives Voronoi plates (a tortoise's scutes, a crab's or beetle's segments) to paint seams and growth rings with.
 """
 import colorsys
 import math
+import os
+import zlib
 
 import numpy as np
 
@@ -87,11 +96,13 @@ class Painter:
         v += cav * np.clip((s.cav - 0.5) * 2, -0.5, 0.5)
         return v
 
-    def fill(s, name, rmp, tone=None, base=0.0, levels=None, extra=None, where=None, brush=None):
+    def fill(s, name, rmp, tone=None, base=0.0, levels=None, extra=None, where=None, brush=None, tex=None):
         """Paint a region with a ramp. tone: the tone field (default shade()); base: offset (airbrush, a float or a
         field); levels: how many ramp tones per unit of tone (default the ramp's length); extra: a field added.
         brush (facet mode): a stroke preset name (facet.PRESETS), a dict (a preset's settings, 'preset' to start from
-        one), or False for none; default: 'metal' on metal parts, 'pvc' elsewhere."""
+        one), or False for none; default: 'metal' on metal parts, 'pvc' elsewhere.
+        tex (facet mode): the natural surface laid under the strokes (a NATURAL entry's settings, or its name); by
+        default the brush preset's own NATURAL entry (fur, feather, scale, skin, shell, chitin, frog); False: none."""
         m = s.region(name) if isinstance(name, str) else name
         if where is not None:
             m = m & where
@@ -105,6 +116,15 @@ class Painter:
         mid = (n - 1) * 0.55
         k = (levels or n * 0.62)
         s._glaze = None
+        tx = None
+        if s.facet and tex is not False:
+            pre = brush.get('preset') if isinstance(brush, dict) else brush
+            tx = NATURAL.get(tex) if isinstance(tex, str) else (tex if isinstance(tex, dict) else NATURAL.get(pre))
+            if tx and os.environ.get('GG_NATURAL') != '0':
+                t = np.broadcast_to(np.asarray(t, np.float32), m.shape).copy() if np.ndim(t) < 2 else np.array(t, np.float32)
+                t = t + s.natural(m, step=1.0 / k, **tx)
+            else:
+                tx = None
         if s.facet and brush is not False:
             t = s.brushed(m, t, 1.0 / k, brush, name)
         i = np.clip(np.rint(mid + t * k), 0, n - 1).astype(np.int32)
@@ -116,6 +136,8 @@ class Painter:
             g = m & (s._glaze != 0)
             j = np.clip(i + s._glaze, 0, n - 1)
             s.rgb[g] = 0.5 * (rmp[i[g]] + rmp[j[g]])
+        if tx and tx.get('vary'):  # the photo's mottling: warmer / cooler patches of the same paint
+            s.mottle(m, tx.get('photo') or 'fur', rmp, thr=tx['vary'], mm=tx.get('mm', 8.0) * 2.6)
         return m
 
     def brushed(s, m, t, step, brush=None, name=None):
@@ -154,12 +176,17 @@ class Painter:
         import facet
         who = np.full(m.shape, -1, np.int64)
         dist = np.full(m.shape, 9.0)
+        fr = kw.get('frame')
+        al, ac = np.zeros(m.shape, np.float32), np.zeros(m.shape, np.float32)
         ys, xs = np.nonzero(m)
         if len(ys) < 20:
-            return who, dist
-        w, d = facet.dabs(s.pos[ys, xs], s.on[ys, xs], s.ppmm, size=size, spacing=spacing, seed=seed, **kw)
-        who[ys, xs] = w
-        dist[ys, xs] = d
+            return (who, dist, al, ac) if fr else (who, dist)
+        r = facet.dabs(s.pos[ys, xs], s.on[ys, xs], s.ppmm, size=size, spacing=spacing, seed=seed, **kw)
+        who[ys, xs] = r[0]
+        dist[ys, xs] = r[1]
+        if fr:  # (flow / stretch dabs: their own along / across coordinates)
+            al[ys, xs], ac[ys, xs] = r[2], r[3]
+            return who, dist, al, ac
         return who, dist
 
     def shift(s, m, d):
@@ -178,6 +205,144 @@ class Painter:
             out[sel] = rm[newi[sel]]
         s.idx[m] = rid * 64 + newi
         s.rgb[m] = out
+
+    # -------------------------------------------------------------- realism pass: photo-bash and natural surfaces
+    def photo(s, name, m=None, mm=8.0, kind='det', seed=0):
+        """Photo-bash: a real photo's surface (lib/photos/<name>.npz, 'det' fine detail or 'mot' mottling: zero mean,
+        unit spread) projected tri-planar onto the texels of m in figure space, one photo tile per `mm` millimetres
+        (mirror-tiled, each axis turned and offset its own way, so no repeat lines up); 0 off m. Add it to a fill's
+        tone (base=...): the ramp quantises it and the brush strokes paint over it."""
+        f = _photo(name)[0 if kind == 'det' else 1]
+        H = f.shape[0]
+        m = s.mask if m is None else m
+        out = np.zeros(m.shape, np.float32)
+        ys, xs = np.nonzero(m)
+        if not len(ys):
+            return out
+        p = s.pos[ys, xs] / mm
+        w = np.abs(s.on[ys, xs]) ** 4
+        w /= np.maximum(w.sum(1, keepdims=True), 1e-6)
+        rng = np.random.default_rng(seed + zlib.crc32(name.encode()) % 997)
+        acc = np.zeros(len(ys), np.float32)
+        for ax, (a, b) in enumerate(((1, 2), (0, 2), (0, 1))):
+            th, o0, o1 = rng.random() * 6.283, rng.random() * 9, rng.random() * 9
+            u = p[:, a] * math.cos(th) - p[:, b] * math.sin(th) + o0
+            v = p[:, a] * math.sin(th) + p[:, b] * math.cos(th) + o1
+            iu = ((1 - np.abs(np.mod(u, 2.0) - 1)) * (H - 1)).astype(np.int32)
+            iv = ((1 - np.abs(np.mod(v, 2.0) - 1)) * (H - 1)).astype(np.int32)
+            acc += w[:, ax] * f[iv, iu]
+        out[ys, xs] = acc / np.maximum(np.sqrt((w ** 2).sum(1)), 1e-6)  # (keep the spread where projections blend)
+        return out
+
+    def recolour(s, m, rmp):
+        """Repaint the shaded texels of m with ramp rmp at the same tones (a patch of another hue of the same paint)."""
+        m = m & (s.idx >= 0)
+        if not m.any():
+            return
+        rid = len(s.ramps)
+        s.ramps[rid] = rmp
+        i = np.clip(s.idx[m] % 64, 0, len(rmp) - 1)
+        s.idx[m] = rid * 64 + i
+        s.rgb[m] = rmp[i]
+
+    def mottle(s, m, photo, rmp, thr=0.9, mm=20.0, seed=3):
+        """Natural colour variation: where the photo's mottling runs high the paint goes a little warmer and deeper,
+        where it runs low a little cooler and paler (whole patches, never single texels)."""
+        f = s.photo(photo, m, mm=mm, kind='mot', seed=seed)
+        s.recolour(m & (f > thr), shade_ramp(rmp, dh=0.015, ds=1.08, dv=0.96))
+        s.recolour(m & (f < -thr), shade_ramp(rmp, dh=-0.012, ds=0.9, dv=1.03))
+
+    def natural(s, m, step=0.2, kind=None, photo=None, mm=8.0, k=0.15, mot=0.12, seed=0, vary=None, **kw):
+        """The tone field of a natural surface on m (in ramp steps of `step`): its pattern (kind: 'fur' clumps,
+        'feathers', 'scales', 'pebbles', or None) plus the photo-bash (detail k, mottling mot)."""
+        t = np.zeros(m.shape, np.float32)
+        if not m.any():
+            return t
+        sd = seed + s.nfill * 31
+        if kind == 'fur':
+            t += s.fur(m, step=step, seed=sd, **kw)
+        elif kind == 'feathers':
+            t += s.feathers(m, step=step, seed=sd, **kw)
+        elif kind in ('scales', 'pebbles'):
+            t += s.scales(m, step=step, seed=sd, overlap=kind == 'scales', **kw)
+        if photo:
+            t += step * 3.0 * (k * s.photo(photo, m, mm=mm, seed=sd) + mot * s.photo(photo, m, mm=mm * 2.6, kind='mot', seed=sd + 1))
+        return t
+
+    def fur(s, m, step=0.2, size=1.4, stretch=3.0, spacing=0.7, flow='down', axis=None, tip=1.0, part=1.0, strands=0.35,
+            seed=0):
+        """Fur clumps (tone field): locks drawn out along the fur's lie, each lit toward its tip and darker at its
+        root, dark partings between them, a few hair strands drawn down each lock, every lock its own tone."""
+        who, d, al, ac = s.dabs(m, size=size, spacing=spacing, seed=seed, flow=flow, stretch=stretch, axis=axis,
+                                overlap=True, frame=True, lumpy=0.22)
+        t = np.zeros(m.shape, np.float32)
+        on = m & (who >= 0)
+        jit = np.random.default_rng(seed).normal(0, 0.22, max(int(who.max()) + 1, 1))
+        t[on] = step * (tip * 0.7 * np.clip(al[on], 0, 1) - 0.45 * np.clip(-al[on], 0, 1) + jit[who[on]])
+        t[on] -= step * part * (d[on] > 0.85)
+        t[on] -= step * strands * (np.abs(np.sin(ac[on] * 7.5 + who[on])) < 0.16)
+        t[m & (who < 0)] = -step * part
+        return t
+
+    def feathers(s, m, step=0.2, size=1.9, stretch=1.45, spacing=1.15, flow='down', axis=None, fringe=1.0, shaft=0.8,
+                 seed=0):
+        """Overlapping feathers (tone field): each a rounded vane drawn along the plumage's lie, lit at its middle, a
+        fringe a step lighter (fringe < 0: darker) round its tip, the shaft down its centre and the faint barbs."""
+        who, d, al, ac = s.dabs(m, size=size, spacing=spacing, seed=seed, flow=flow, stretch=stretch, axis=axis,
+                                overlap=True, frame=True, lumpy=0.08)
+        t = np.zeros(m.shape, np.float32)
+        on = m & (who >= 0)
+        jit = np.random.default_rng(seed).normal(0, 0.2, max(int(who.max()) + 1, 1))
+        t[on] = step * (0.5 * (1 - d[on]) - 0.45 * np.clip(-al[on], 0, 1) + jit[who[on]])
+        t[on] += step * fringe * ((d[on] > 0.8) & (al[on] > -0.2))
+        t[on] -= step * 0.7 * ((d[on] > 0.93) & (al[on] > -0.2))
+        t[on] += step * shaft * ((np.abs(ac[on]) < 0.07) & (al[on] < 0.75))
+        t[on] -= step * 0.35 * (np.abs(np.sin((al[on] * 2.2 + np.abs(ac[on]) * 3.4) * math.pi * 2)) < 0.3)
+        t[m & (who < 0)] = -step
+        return t
+
+    def scales(s, m, step=0.2, size=0.8, stretch=1.25, spacing=0.62, flow='down', axis=None, overlap=True, rim=1.0,
+               seed=0):
+        """Scales (overlap: shingled, drawn along the lie) or pebbled skin (rounded, side by side) (tone field): each
+        lit at its crown, a dark rim and the crevices between, every scale its own tone."""
+        if overlap:
+            who, d, al, ac = s.dabs(m, size=size, spacing=spacing, seed=seed, flow=flow, stretch=stretch, axis=axis,
+                                    overlap=True, frame=True, lumpy=0.12)
+        else:
+            who, d = s.dabs(m, size=size, spacing=spacing, seed=seed, lumpy=0.25)
+            al = np.zeros(m.shape, np.float32)
+        t = np.zeros(m.shape, np.float32)
+        on = m & (who >= 0)
+        jit = np.random.default_rng(seed).normal(0, 0.22, max(int(who.max()) + 1, 1))
+        t[on] = step * (0.8 * (1 - d[on]) ** 0.7 - 0.3 - 0.4 * np.clip(-al[on], 0, 1) + jit[who[on]])
+        t[on] -= step * rim * (d[on] > 0.8)
+        t[m & (who < 0)] = -step * rim * 1.4
+        return t
+
+    def plates(s, m, centres, flat=None):
+        """Voronoi plates over m (a tortoise's scutes, a crab's or beetle's segments, head scales): per texel the
+        plate number (-1 off m), the distance (mm) to the plate's seam and to its centre. flat: an axis (0, 1, 2) left
+        out of the distance (plates laid out in plan)."""
+        C = np.asarray(centres, np.float32)
+        pid = np.full(m.shape, -1, np.int32)
+        edge = np.full(m.shape, 99.0, np.float32)
+        rad = np.full(m.shape, 99.0, np.float32)
+        ys, xs = np.nonzero(m)
+        if not len(ys) or len(C) < 2:
+            return pid, edge, rad
+        P3 = s.pos[ys, xs].astype(np.float32)
+        if flat is not None:
+            keep = [a for a in range(3) if a != flat]
+            P3, C = P3[:, keep], C[:, keep]
+        D2 = ((P3[:, None, :] - C[None, :, :]) ** 2).sum(2)
+        o = np.argsort(D2, axis=1)[:, :2]
+        i1, i2 = o[:, 0], o[:, 1]
+        r = np.arange(len(ys))
+        sep = np.linalg.norm(C[i2] - C[i1], axis=1)
+        pid[ys, xs] = i1
+        edge[ys, xs] = (D2[r, i2] - D2[r, i1]) / np.maximum(2 * sep, 1e-6)
+        rad[ys, xs] = np.sqrt(D2[r, i1])
+        return pid, edge, rad
 
     def facets(s, rims=True, wear=0.35, seed=5):
         """Facet mode finish: a lit rim (a ramp step up) along the facet edges that face the light and a shadow line
@@ -329,6 +494,39 @@ class Painter:
             s._faceted = True
             s.facets()
         return s.rgb
+
+
+PHOTOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'photos')
+_PH = {}
+
+
+def _photo(name):
+    """lib/photos/<name>.npz (lib/photos/make.py): (fine detail, mottling) fields, zero mean, unit spread."""
+    if name not in _PH:
+        z = np.load(os.path.join(PHOTOS, name + '.npz'))
+        _PH[name] = tuple((z[k].astype(np.float32) - 128.0) / 42.0 for k in ('det', 'mot'))
+    return _PH[name]
+
+
+# the natural surfaces the realism presets lay under their strokes (Painter.natural settings): pattern, photo, scale
+NATURAL = {  # (mm: one photo tile per ~16-20 mm keeps the photo's own features a few texels wide: no speckle)
+    'fur': dict(kind='fur', photo='fur', mm=18.0, k=0.1, mot=0.1, vary=1.25),
+    'feather': dict(kind='feathers', photo='feather', mm=20.0, k=0.1, mot=0.08, vary=1.3),
+    'scale': dict(kind='scales', photo='scales', mm=16.0, k=0.14, mot=0.1, vary=1.2),
+    'skin': dict(kind='pebbles', photo='tortoise', mm=16.0, k=0.16, mot=0.1, vary=1.2, size=0.7, spacing=0.75),
+    'shell': dict(kind=None, photo='scute', mm=14.0, k=0.2, mot=0.1, vary=1.2),
+    'chitin': dict(kind=None, photo='crab', mm=16.0, k=0.12, mot=0.14, vary=1.1),
+    'frog': dict(kind='pebbles', photo='frog', mm=18.0, k=0.08, mot=0.24, vary=1.0, size=0.5, spacing=0.8),
+}
+
+
+def shade_ramp(rmp, dh=0.0, ds=1.0, dv=1.0):
+    """The same ramp turned in hue (dh, of a turn), saturation (x ds) and value (x dv): a patch of the same paint."""
+    out = []
+    for r, g, b in np.asarray(rmp):
+        h, sa, v = colorsys.rgb_to_hsv(r, g, b)
+        out.append(colorsys.hsv_to_rgb((h + dh) % 1.0, min(1.0, sa * ds), min(1.0, v * dv)))
+    return np.array(out)
 
 
 def _lighter(col, k):

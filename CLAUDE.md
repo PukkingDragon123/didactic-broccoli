@@ -40,6 +40,14 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   eyes, many cool face types with attitude, a unique species-specific face per animal, tapered brush brows, hatch or dabbed blush, inner-mouth colour, tongue and teeth detail, animal noses. Always
   ink and brush, slightly uneven between the two eyes; never glossy rendered "AI" eyes, irises with gradients,
   modelled eyeballs or vector-perfect shapes. Painted onto the texture with lib/face.py.
+- **Toy animals are realistic in anatomy and hand-painted texture** (owner, latest: "more hand-painted and textured,
+  more realistic animals, like the turtles"): real proportions and species features at gashapon scale (a turtle's real
+  carapace scutes, plastron, scaly clawed legs and head; real beaks and feathers; fur in clumps; crab / beetle
+  segments), painted with the natural brush presets (lib/paint.py NATURAL: fur, feather, scale, skin, shell, chitin,
+  frog): fur clumps, feathers, scales and scutes laid over a photo-bash of real CC0 / CC BY animal photos
+  (art/blender/toys/lib/photos, credited), then brushed over, with colour variation and painted shading and wear; no
+  flat-colour areas, no noise, the same texel density. Still gashapon mascots with hand-drawn ink faces; the World
+  Tour Turtles (tabigame) are the benchmark.
 - **Toy style = real Japanese capsule-toy (gashapon) mascot figures** (owner's reference boards): original pun and
   fusion concepts (animal × food or object, little creatures with a job or a pose, transforming toys), chunky
   readable silhouettes, clean factory PVC paint with soft airbrushed blush and simple painted faces (bead eyes), about
@@ -71,12 +79,17 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   TEXT IN PIXEL-ART FONTS** (Alagard, the 5x7 bitmap font, OFL pixel fonts), crisp at the pixel grid; only hard pixel
   outlines and hard offset shadows, no glow, gradient, bevel or slick AI-style effects; every poster a unique layout.
   **Titles are 3D, hand-painted and interactive (owner, latest; overrides "flat" for titles only):** series names and
-  big call-outs are chunky extruded blocks built from our pixel fonts' glyphs, modelled and rendered in Blender
-  (tools/logo3d.py + art/blender/logo3d/scene.py), painted like the toys (brush-stroke colour per letter, facet-edge
-  rim, painted side colour, chipped wear) under the toy key light; letters tilt, bounce, stack, overlap and lean, and
-  the series' own toys sit on, peek behind, hold or push them in the same scene (real contact shadows); each logo in
-  its series' colours, every layout different; pixel-snapped at card scale with an ink / cream die-cut keyline. Small
-  text (legend, warnings, barcode, kickers) stays flat crisp pixel font. Still no glow, gradient, chrome, Word-Art
+  big call-outs are chunky extruded blocks built from the glyphs of our own hand-pixelled display face GG Display
+  (tools/fonts/gg_display.py: bitmap source, 16 px caps, specimen shots/cards/font_specimen.png; served flat as the
+  pixprint face 'ggd'), modelled and rendered in Blender (tools/logo3d.py + art/blender/logo3d/scene.py), painted like
+  the toys (brush-stroke colour per letter, facet-edge rim, painted side colour, chipped wear) under the toy key light;
+  letters tilt, bounce, stack, overlap and lean, and the series' own toys sit on, peek behind, hold or push them in the
+  same scene (real contact shadows); every layout different; pixel-snapped at card scale with an ink die-cut keyline.
+  **Every series title has its own themed colours and hand-painted themed texture, never a default yellow / cream**
+  (tools/logo3d_themes.py: crab shell with a cream underside, turtle scutes, sushi toppings on rice, bath tiles, oiled
+  wagasa paper with ribs, beetle carapace bands...), with small sculpted themed bits growing off the letters (claws,
+  legs, flippers, drips, steam puffs, umbrella ribs, a skewer...); painted brushwork only, no CG gradients, chrome or
+  glow. Kickers are flat GG Display; small text (legend, warnings, barcode) stays the flat 5x7 font. Still no glow, gradient, chrome, Word-Art
   bevel or "AI" 3D text presets. Real public-domain / CC0 vintage posters are welcome (brands retouched out); the rest is designed to a
   graphic-designer standard with free (OFL) print fonts (mincho, gothic, retro display), on real scanned paper
   (folds, fade, tape, wear). Typography stays flat (no glows, gradients, bevels). All names and brands are original

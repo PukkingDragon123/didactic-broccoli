@@ -394,6 +394,13 @@ PRESETS = {
     'wood': dict(flow='along', L=7.0, W=0.28, cover=1.5, p=0.3, tilt=3),
     'cloth': dict(flow='around', L=1.3, W=0.35, cover=1.7, p=0.3, tilt=4, cross=True),
     'lacquer': dict(flow='around', L=6.0, W=0.7, cover=1.0, p=0.12, tilt=8, shine=0.5),
+    # natural surfaces (the realism pass): short strokes that follow the animal's own lie; each also lays its
+    # pattern and photo-bash under the strokes (paint.NATURAL: fur clumps, feathers, scales, pebbled skin, scutes)
+    'scale': dict(flow='down', L=1.3, W=0.5, cover=1.3, p=0.24, glaze=0.3, tilt=16),
+    'skin': dict(flow='around', L=2.2, W=0.6, cover=1.2, p=0.2, glaze=0.32, tilt=22),
+    'shell': dict(flow='around', L=3.2, W=0.42, cover=1.4, p=0.22, glaze=0.3, tilt=10),
+    'chitin': dict(flow='around', L=3.6, W=0.6, cover=1.1, p=0.16, glaze=0.32, tilt=10, shine=0.3),
+    'frog': dict(flow='around', L=2.4, W=0.7, cover=1.1, p=0.16, glaze=0.32, tilt=18, shine=0.25),
 }
 
 
@@ -502,9 +509,14 @@ def strokes(pos, nrm, tone, step, flow='around', L=2.8, W=0.8, cover=1.3, p=0.2,
     return out, gl
 
 
-def dabs(pos, nrm, ppmm, size=0.6, spacing=1.0, jitter=0.35, seed=0, lumpy=0.18):
+def dabs(pos, nrm, ppmm, size=0.6, spacing=1.0, jitter=0.35, seed=0, lumpy=0.18, flow=None, stretch=1.0, axis=None,
+         overlap=False, frame=False):
     """A hand-dabbed pattern (pebbles, scales, spots, stipple): blobs on a jittered 3D lattice (spacing mm), each its
-    own slightly lumpy size; returns per texel the dab number (-1 none) and the dab's radial distance (0 centre..1)."""
+    own slightly lumpy size; returns per texel the dab number (-1 none) and the dab's radial distance (0 centre..1).
+    flow / stretch: each dab drawn out `stretch` times along the flow (fur clumps, feathers, scales); overlap: laid as
+    shingles (the dabs upstream of the flow lie over the ones below them, as scales and feathers do) instead of the
+    nearest dab winning; frame: also return per texel the dab-local coordinates (along: -1 root .. 1 tip; across:
+    -1 .. 1)."""
     k = len(pos)
     rng = np.random.default_rng(seed)
     lo = pos.min(0)
@@ -521,20 +533,44 @@ def dabs(pos, nrm, ppmm, size=0.6, spacing=1.0, jitter=0.35, seed=0, lumpy=0.18)
     R = size / 2 * (0.75 + 0.5 * rng.random(len(pick)))
     best = np.full(k, 9.0)
     who = np.full(k, -1, np.int64)
-    grid = Grid(pos, max(spacing, size) * 0.75 + 0.05)
+    fa = np.zeros(k, np.float32)
+    fx = np.zeros(k, np.float32)
+    st = max(float(stretch), 1.0)
+    grid = Grid(pos, max(spacing, size * st) * 0.75 + 0.05)
     ph = rng.random((len(pick), 2)) * 6.283
-    for j, c in enumerate(C):
+    A = flow_dir(flow, C, nrm[pick], axis) if flow is not None else None
+    order = np.arange(len(C))
+    if overlap:  # shingles: lay the dabs from downstream up, so the upstream ones end on top
+        g = np.array((0.0, 0.0, -1.0)) if flow == 'down' else (np.asarray(axis, float) if flow == 'along' and axis is not None else None)
+        order = np.argsort(-(C @ g)) if g is not None else rng.permutation(len(C))
+    for j in order:
+        c = C[j]
         idx = grid.near(c)
         if not len(idx):
             continue
+        nj = nrm[pick[j]]
         q = pos[idx] - c
-        dn = q @ nrm[pick[j]]
-        q = q - np.outer(dn, nrm[pick[j]])
-        r = np.linalg.norm(q, axis=1)
-        ang = np.arctan2(q[:, 0] + q[:, 2], q[:, 1] + 1e-9)
+        dn = q @ nj
+        q = q - np.outer(dn, nj)
+        if A is not None:
+            a = A[j]
+            b = np.cross(nj, a)
+            ua, ub = q @ a, q @ b
+            r = np.hypot(ua / stretch, ub)
+            ang = np.arctan2(ub, ua / stretch + 1e-9)
+        else:
+            r = np.linalg.norm(q, axis=1)
+            ang = np.arctan2(q[:, 0] + q[:, 2], q[:, 1] + 1e-9)
         rr = R[j] * (1 + lumpy * np.sin(3 * ang + ph[j, 0]) + lumpy * 0.6 * np.sin(5 * ang + ph[j, 1]))
         d = r / rr
-        sel = (d < 1) & (d < best[idx]) & (np.abs(dn) < R[j]) & ((nrm[idx] @ nrm[pick[j]]) > 0.4)
+        sel = (d < 1) & (np.abs(dn) < R[j] * st) & ((nrm[idx] @ nj) > 0.4)
+        if not overlap:
+            sel &= d < best[idx]
         best[idx[sel]] = d[sel]
         who[idx[sel]] = j
+        if frame and A is not None:
+            fa[idx[sel]] = np.clip(ua[sel] / (R[j] * stretch), -1, 1)
+            fx[idx[sel]] = np.clip(ub[sel] / R[j], -1, 1)
+    if frame:
+        return who, best, fa, fx
     return who, best

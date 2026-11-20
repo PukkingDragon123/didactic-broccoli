@@ -321,18 +321,26 @@ class Fig:
         s.regions = s._region_ids()
         import hashlib
         h = hashlib.sha1()
+        VV = []
         for p in s.parts:
             a = np.zeros(len(p.low.data.uv_layers.active.data) * 2, np.float32)
             p.low.data.uv_layers.active.data.foreach_get('uv', a)
             h.update(np.round(a, 5).tobytes())
-            h.update(np.round(tk.verts(p.low), 3).tobytes())
+            VV.append(tk.verts(p.low))
+        VV = np.concatenate(VV).astype(np.float32)
+        h.update(str(VV.shape).encode())
         uvkey = h.hexdigest()
-        if reuse and os.path.exists(cache) and str(np.load(cache, allow_pickle=True).get('uvkey', '')) != uvkey:
-            s.log('the bake cache is for other UVs or geometry: baking again')
-            reuse = False
+        if reuse and os.path.exists(cache):
+            # (the same UVs, and the same geometry to 0.02 mm: a rebuild's float noise in the collapse must not force a
+            # new bake, so the vertices are compared with a tolerance, not hashed)
+            z = np.load(cache, allow_pickle=True)
+            same = str(z.get('uvkey', '')) == uvkey and 'verts' in z.files and z['verts'].shape == VV.shape
+            if not (same and float(np.abs(z['verts'] - VV).max()) < 0.02):
+                s.log('the bake cache is for other UVs or geometry: baking again')
+                reuse = False
         if reuse and os.path.exists(cache):
             z = np.load(cache, allow_pickle=True)
-            s.maps = {k: z[k] for k in z.files if k not in ('regions', 'uvkey')}
+            s.maps = {k: z[k] for k in z.files if k not in ('regions', 'uvkey', 'verts')}
             pz = s.maps['pos']  # (cached as int16 5 um steps (float32 in older caches): see the save below)
             s.maps['pos'] = pz / 200.0 if pz.dtype == np.int16 else pz.astype(np.float64)
             for k in ('on', 'nrm', 'cav', 'ao'):
@@ -445,7 +453,7 @@ class Fig:
             s.maps[k] = s.maps[k].astype(np.float16).astype(np.float32)
         s.maps['pos'] = np.round(s.maps['pos'] * 200.0) / 200.0  # (positions to 5 um: int16 in the cache)
         small = {k: (v.astype(np.float16) if k in ('on', 'nrm', 'cav', 'ao') else np.round(v * 200.0).astype(np.int16) if k == 'pos' else v) for k, v in s.maps.items()}
-        np.savez_compressed(cache, regions=np.array(s.regions), uvkey=np.array(uvkey), **small)
+        np.savez_compressed(cache, regions=np.array(s.regions), uvkey=np.array(uvkey), verts=VV, **small)
         s._facet_maps()
 
     def _facet_maps(s):

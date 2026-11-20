@@ -226,11 +226,19 @@ def designer(K, c):
             y = bb[3] - 3
     tx, ty = c.get('kick_at', (lx + 2, bb[3] + 4))
     if ty > ly: ty = max(ty, bb[3] + 4)  # a kicker under the logo never collides with it
-    for j, l in enumerate(c['kick']): F.text(l, tx, ty + 9 * j, 'b5', 1, WH if j == 0 else fill, outline=[(1, ink)])
-    kb = (tx, ty, tx + max(line_mask(l, 'b5')[0].shape[1] for l in c['kick']) + 2, ty + 9 * len(c['kick']))
+    # kickers: flat, in the titles' own hand-pixelled face (tools/fonts/gg_display.py) on the 2x layer, the second line
+    # in the series' theme colour (tools/logo3d_themes.py); the 5x7 face only where a line would run off the card
+    kw = max(line_mask(l, 'ggd')[0].shape[1] for l in c['kick']) / 2 + 2
+    if tx + kw <= W - 4:
+        tc = logo3d.THEMES.get(K.sid, {}).get('v', [{'f': fill}])[0]['f']; tc = mixc(tc, WH, 0.4) if lum(tc) < 0.55 else tc
+        for j, l in enumerate(c['kick']): K.FC.text(l, 2 * tx, 2 * ty + 22 * j, 'ggd', 1, WH if j == 0 else tc, outline=[(2, ink)])
+        kb = (tx, ty, int(tx + kw), ty + 11 * len(c['kick']))
+    else:
+        for j, l in enumerate(c['kick']): F.text(l, tx, ty + 9 * j, 'b5', 1, WH if j == 0 else fill, outline=[(1, ink)])
+        kb = (tx, ty, tx + max(line_mask(l, 'b5')[0].shape[1] for l in c['kick']) + 2, ty + 9 * len(c['kick']))
     if c.get('vol'): vx, vy = c['vol']; F.rect(vx, vy, 34, 11, ink); F.text('VOL.1', vx + 17, vy + 2, 'b5', 1, fill, anchor='mt')
     if c.get('flow'):  # right-hand logos: the price and the capsule flow under the kicker
-        ky = ty + 9 * len(c['kick']) + 20; c['price_at'] = (tx + 31, ky); c['caps'] = (tx + 70, ky - 7)
+        ky = kb[3] + 20; c['price_at'] = (tx + 31, ky); c['caps'] = (tx + 70, ky - 7)
     px, py = c['price_at']; st = c.get('price', 'coin'); pr = G3('_price')
     over = [b_ for b_ in (bb, kb) if px - 32 < b_[2] and px + 32 > b_[0] and py - 22 < b_[3]]
     if not c.get('flow') and over:  # the bigger logo (or the kicker it pushed down) would cover the price: move it below

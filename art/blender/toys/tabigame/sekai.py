@@ -15,7 +15,7 @@ from _kame import *  # noqa: E402,F401,F403
 tk.reset()
 F = Fig('tabigame', 'sekai')
 B = Build()
-T = Turtle(B, L=30.0, W=24.0, clr=0.6, dome=6.8, neck=0.7, head=1.4, legs='flipper', flat_top=0.5)
+T = Turtle(B, L=30.0, W=24.0, clr=0.6, dome=6.8, neck=0.7, head=1.4, legs='flipper', flat_top=0.5, sp='seaturtle')
 for a, b in B.p['body'][:1] + B.p['legs']:
     tk.flat_bottom(a, 0.7)
     tk.flat_bottom(b, 0.7)

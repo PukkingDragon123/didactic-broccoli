@@ -13,7 +13,7 @@ from _kame import *  # noqa: E402,F401,F403
 tk.reset()
 F = Fig('tabigame', 'piramido')
 B = Build()
-T = Turtle(B, L=29.0, W=24.0, clr=3.2, dome=8.6, neck=0.8, head=1.45, legs='stump', spurs=True, flat_top=0.55)
+T = Turtle(B, L=29.0, W=24.0, clr=3.2, dome=8.6, neck=0.8, head=1.45, legs='stump', spurs=True, flat_top=0.55, sp='sulcata')
 zt = T.top - 0.8
 
 
