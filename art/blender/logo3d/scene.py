@@ -165,18 +165,24 @@ def build(S):
         bpy.context.view_layer.update()
         if T['role'] == 'sit': drop(R)
         else: R.location.z = -min(q.z for q in world_verts(R, 3000)); bpy.context.view_layer.update()
+    # backdrop: a second shadow catcher standing behind the logo, so the letters cast a real shadow on the card
+    ys = [q.y for o in sc.objects if o.type == 'MESH' and o is not g for q in world_verts(o, 300)]
+    me = bpy.data.meshes.new('back'); bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60); bm.to_mesh(me); bm.free()
+    bd = bpy.data.objects.new('back', me); sc.collection.objects.link(bd); bd.is_shadow_catcher = True
+    g.visible_shadow = False; bd.visible_shadow = False  # catchers take shadows, never cast them
+    bd.rotation_euler = (math.radians(90), 0, 0); bd.location = (0, max(ys) + S.get('gap', 0.12), 0)
     # lights: the toy key from the upper front-left (hard sun), a cool soft fill, a pale sky
     k = bpy.data.objects.new('key', bpy.data.lights.new('key', 'SUN')); sc.collection.objects.link(k)
-    k.data.energy = S.get('key', 3.6); k.data.angle = math.radians(3); k.rotation_euler = KEY.to_track_quat('Z', 'Y').to_euler()
+    k.data.energy = S.get('key', 4.4); k.data.angle = math.radians(3); k.rotation_euler = KEY.to_track_quat('Z', 'Y').to_euler()
     f = bpy.data.objects.new('fill', bpy.data.lights.new('fill', 'SUN')); sc.collection.objects.link(f)
     f.data.energy = 0.7; f.data.angle = math.radians(40); f.data.color = (0.86, 0.9, 1.0)
     f.rotation_euler = Vector((0.7, -0.5, 0.35)).normalized().to_track_quat('Z', 'Y').to_euler()
     w = bpy.data.worlds.new('w'); sc.world = w; w.use_nodes = True
-    bg = w.node_tree.nodes['Background']; bg.inputs[0].default_value = (0.78, 0.8, 0.86, 1); bg.inputs[1].default_value = 0.75
+    bg = w.node_tree.nodes['Background']; bg.inputs[0].default_value = (0.78, 0.8, 0.86, 1); bg.inputs[1].default_value = 0.55
     # camera: look at the logo from a little above and to one side, framed tight (perspective)
     allp = []
     for o in sc.objects:
-        if o.type == 'MESH' and o is not g: allp += world_verts(o, 600)
+        if o.type == 'MESH' and o not in (g, bd): allp += world_verts(o, 600)
     lo = Vector([min(q[k] for q in allp) for k in range(3)]); hi = Vector([max(q[k] for q in allp) for k in range(3)])
     ctr = (lo + hi) / 2; e, a = math.radians(S['cam']['elev']), math.radians(S['cam']['azim'])
     dist = S['cam'].get('dist', 3.2) * max(hi.x - lo.x, hi.z - lo.z)

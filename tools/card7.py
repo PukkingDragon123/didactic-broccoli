@@ -212,8 +212,8 @@ def designer(K, c):
     cc = dict(c, _price=K.s['price']); G3 = lambda key: logo3d.get(K.sid + key, K.sid, cc, K.items, K.hero['id'])
     lx, ly, lw, lhh = c['logo']; lg = G3('')
     if lg is not None:
-        gx = 2 * lx + (2 * lw - lg.width + 10 if c.get('align', 'l') == 'r' else -10); gy = 2 * ly - 10
-        K.FC.im.alpha_composite(lg, (gx, gy)); bb = (gx // 2, gy // 2, (gx + lg.width) // 2, (gy + lg.height) // 2 - 5)
+        gx = min(2 * lx + (2 * lw - lg.width + 6 if c.get('align', 'l') == 'r' else -6), 2 * W - lg.width); gy = 2 * ly - 6
+        K.FC.im.alpha_composite(lg, (gx, gy)); bb = (gx // 2, gy // 2, (gx + lg.width) // 2, (gy + lg.height) // 2 - 3)
     else:
         face = c['face']; lines = c['lines']
         k = fit_logo(lines, face, lw, lhh, c.get('big', True)); y = ly; bb = None; rn = sum(map(ord, K.sid))
@@ -232,6 +232,8 @@ def designer(K, c):
     if c.get('flow'):  # right-hand logos: the price and the capsule flow under the kicker
         ky = ty + 9 * len(c['kick']) + 20; c['price_at'] = (tx + 31, ky); c['caps'] = (tx + 70, ky - 7)
     px, py = c['price_at']; st = c.get('price', 'coin'); pr = G3('_price')
+    if not c.get('flow') and px - 32 < kb[2] and px + 32 > kb[0] and py - 22 < kb[3]:  # the bigger logo pushed the kicker down
+        d_ = min(178, kb[3] + 24) - py; py += d_; c = dict(c, caps=(c['caps'][0], c['caps'][1] + d_))
     price_piece(F, st, px, py, K.s['price'], c.get('pricecol', GOLD), num=pr is None)
     if pr is not None:  # the 3D price stands on the piece where the printed number was
         qx, qy = {'coin': (px, py - 2), 'tsuba': (px, py + 4), 'ticket': (px - 9, py - 4)}[st]
