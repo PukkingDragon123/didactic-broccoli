@@ -16,7 +16,7 @@ tk.reset()
 F = Fig('kouchuu', 'kuwagata')
 B = Build()
 GO, GR = V3(-1.6, -5.6, 11.4), 55.0     # the guitar's body centre, its tilt
-M = Beetle(B, hand_r=(-0.6, -6.9, 11.8), hand_l=(4.6, -6.0, 15.8), hk=1.05)
+M = Beetle(B, hand_r=(-0.6, -6.9, 11.8), hand_l=(4.6, -6.0, 15.8), hk=1.05, stance=(3.1, 7.8, 3.8))   # (a wider stance: it stands steady with its guitar)
 M.antennae(club=False)
 for sx in (1, -1):   # the mandibles, each with its inner tooth
     p = [(sx * 2.4, -3.8, 21.0), (sx * 5.2, -6.0, 21.2), (sx * 5.6, -8.8, 22.0), (sx * 3.2, -10.6, 22.8)]

@@ -16,7 +16,7 @@ tk.reset()
 F = Fig('kouchuu', 'tentou')
 B = Build()
 GO, GR = V3(-1.4, -5.8, 10.0), 60.0
-M = Beetle(B, hand_r=(-0.4, -7.0, 10.6), hand_l=(5.0, -6.2, 14.6), hk=1.08, wings=True, trousers='pants', fringe=22.6)
+M = Beetle(B, hand_r=(-0.4, -7.0, 10.6), hand_l=(5.0, -6.2, 14.6), hk=1.08, wings=True, trousers='pants', fringe=22.6, stance=(3.1, 7.8, 3.8))   # (a wider stance: it stands steady with its guitar)
 M.antennae(club=True)
 gp, tip = guitar('bass', neck=12.0, k=0.95)
 B.add('body', *place(gp, [(GR, 'Y'), (-10, 'Z')], GO))
