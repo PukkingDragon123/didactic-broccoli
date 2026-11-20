@@ -98,7 +98,9 @@ export function buildHair(spec, P, J, B, sw, lod) {
   const S = STYLES[st] || (st === 'none' ? null : STYLES.short);
   if (!S) return null;
   const hu = P.hu, far = lod === 'far', vol = spec.hair.volume || 1;
-  const hat = spec.hat?.kind, gearHat = hat && GEAR_HATS.has(hat), band = hat === 'headband';
+  // every hat but the headband is a painted shell (src/people/hair.js): the hair is trimmed under its band; the headband
+  // is a painted ring there too (not the vertex-coloured band below)
+  const hat = spec.hat?.kind, gearHat = !!hat && (GEAR_HATS.has(hat) || hat !== 'headband'), band = false;
   const seed = (spec.seed || 1) * 7.3 + st.length;
   const M = new Mesh();
   // ---- the skull as a radius map round C (from the fitted head's own vertices, ears and face left out)

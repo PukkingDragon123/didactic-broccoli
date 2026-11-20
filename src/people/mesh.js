@@ -18,9 +18,12 @@ import { buildHair, SWATCH, Mesh } from './hairMesh.js';
 // the face block (about 430 px a metre) and the extras pack into the strips around it
 export const ATLAS = 512;
 export const BODY_PX = 416;
-// The level of detail of the base body, garments and hair every person is built at: the light one keeps a person
+// The level of detail of the garments and hair every person is built at: the light one keeps a person
 // inside the triangle budget (person <= 2.5k tris, CLAUDE.md), so there is a single mesh and no far swap.
 const MAIN_LOD = 'far';
+// ...with the base body's own 'near' level (src/people/base/data.js, decimated to about 1.5k triangles: face and hands
+// weighted up) under them
+const BODY_LOD = 'near';
 const FACE_DENS = 430;
 const PAD = 2;
 
@@ -161,7 +164,7 @@ function weldNormals(pos, idx, weld, nWeld, out) {
 /** The fitted, dressed base body at one level of detail: arrays (+ atlas px per vertex), its triangles, the hair. */
 function fittedBody(plan, lod, block, swatch) {
   const { P, J, spec } = plan;
-  const m = baseBody(spec.sex, lod), fit = fitter(m, P, J);
+  const m = baseBody(spec.sex, lod === MAIN_LOD ? BODY_LOD : lod), fit = fitter(m, P, J);
   const n = m.nv, pos = new Float32Array(n * 3), o = [0, 0, 0];
   for (let i = 0; i < n; i++) { fit.map(i, o); pos[i * 3] = o[0]; pos[i * 3 + 1] = o[1]; pos[i * 3 + 2] = o[2]; }
   let idx = m.idx;
@@ -211,7 +214,9 @@ function hideUnderSkirt(B, P, topHem) {
   };
   const tl = B.tlay ? [] : null;
   for (let t = 0; t < B.idx.length; t += 3) {
-    if (hidden(B.idx[t]) && hidden(B.idx[t + 1]) && hidden(B.idx[t + 2])) continue;
+    const a = B.idx[t], b = B.idx[t + 1], c = B.idx[t + 2], nh = hidden(a) + hidden(b) + hidden(c);
+    // (also those mostly under it with the rest still above the hem: the light body's big triangles poke through)
+    if (nh === 3 || (nh === 2 && Math.min(B.pos[a * 3 + 1], B.pos[b * 3 + 1], B.pos[c * 3 + 1]) > P.skirtHem + 0.004 * P.H)) continue;
     keep.push(B.idx[t], B.idx[t + 1], B.idx[t + 2]);
     if (tl) tl.push(B.tlay[t / 3]);
   }
@@ -303,7 +308,7 @@ export function* buildMeshJob(plan, { gear = true, far = true } = {}) {
   const swJob = { seg: { part: 'swatch', mat: 'hairSwatch' }, kind: 'side', N: [0, 0, 1], dens: 1, rect: { x: swatch.x - PAD, y: swatch.y - PAD, w: swatch.w + PAD * 2, h: swatch.h + PAD * 2 },
     s0: -PAD, s1: swatch.w + PAD, r0: -PAD, r1: swatch.h + PAD, o: [0, 0, 0], U: [1, 0, 0], V: [0, -1, 0] };
   // ---- the body (near and far)
-  // (no modelled shoes: the feet are painted segments, src/people/gear.js)
+  // no modelled shoes (src/people/gear.js): the base body's own feet are painted as the shoes
   plan.closedShoe = false;
   const near = fittedBody(plan, MAIN_LOD, block, swatch);
   yield;

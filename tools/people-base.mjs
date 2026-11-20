@@ -17,8 +17,8 @@ import { MeshoptSimplifier } from 'meshoptimizer';
 const SRC = process.argv[2];
 const OUT = path.resolve(import.meta.dirname, '../src/people/base/data.js');
 const OUR = ['hips', 'spine', 'chest', 'neck', 'head', 'armL', 'foreL', 'handL', 'armR', 'foreR', 'handR', 'thighL', 'shinL', 'footL', 'thighR', 'shinR', 'footR', 'skirt', 'tailL', 'tailR', 'bag', 'prop', 'box'];
-const TARGET = { near: 4700, far: 1000 }; // body triangles
-const EYE_TRIS = { near: 110, far: 24 }; // a side
+const TARGET = { near: 1000, far: 1000 }; // body triangles (near: the one people are built with, person <= 2.5k tris; head and face weighted up)
+const EYE_TRIS = { near: 30, far: 24 }; // a side
 
 function mapBone(n) {
   const s = /_l$/.test(n) ? 'L' : /_r$/.test(n) ? 'R' : '';

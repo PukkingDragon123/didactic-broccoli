@@ -19,8 +19,36 @@ function enclose(P, c, m = 0.01 * P.hu, ch = 0.3) {
 }
 
 export function hairSegments(spec, P, J) {
-  // the hair itself is modelled now (src/people/hairMesh.js), hats are gear (src/people/gear.js): only outfit extras
-  return spec.garb && !spec.garb.coat ? garbSegments(spec, P, J) : []; // (a coat's tails are lofted: garments.js)
+  // the hair itself is modelled (src/people/hairMesh.js, trimmed under a hat band): here the outfit extras and the hats
+  const S = spec.garb && !spec.garb.coat ? garbSegments(spec, P, J) : []; // (a coat's tails are lofted: garments.js)
+  const hat = spec.hat?.kind, hu = P.hu, st = spec.hair.style;
+  if (!hat) return S;
+  const add = (part, bone, mat, y0, y1, b, t, o) => { const x = seg(part, bone, mat, y0, y1, b, t, o); S.push(x); return x; };
+  if (hat === 'headband') {
+    // tenugui headband just above the brows
+    add('headband', 'head', 'hat', P.browY + 0.1 * hu, P.browY + 0.2 * hu, cs(P, P.browY + 0.1 * hu, 0.014 * hu, 0.014 * hu), cs(P, P.browY + 0.2 * hu, 0.014 * hu, 0.014 * hu), { ch: 0.42, caps: 'none' });
+    return S;
+  }
+  const th = st === 'perm' ? 0.08 * hu : 0.035 * hu;
+  // (the band sits where hairMesh.js trims the hair: no scalp shows between them)
+  const y0 = P.browY + (hat === 'schoolhat' || hat === 'bucket' || hat === 'sunhat' ? 0.13 : 0.18) * hu;
+  if (hat === 'cap') {
+    add('hatCrown', 'head', 'hat', y0, P.crown + 0.05 * hu, cs(P, y0, th + 0.012 * hu, th + 0.01 * hu), (() => { const c = cs(P, P.crown, th * 0.6, th * 0.6, -0.02 * hu); c[2] *= 0.82; c[3] *= 0.84; return enclose(P, c, 0.01 * hu, 0.46); })(), { ch: 0.46, caps: 'top' });
+    add('visor', 'head', 'hat2', y0 - 0.005 * hu, y0 + 0.022 * hu, [0, P.zf + 0.2 * hu, P.hw * 0.78, 0.2 * hu], [0, P.zf + 0.2 * hu, P.hw * 0.78, 0.2 * hu], { ch: 0.5, rot: { p: [0, y0, P.zf], e: [0.18, 0, 0] } });
+  } else if (hat === 'flatcap') {
+    add('hatCrown', 'head', 'hat', y0, P.crown + 0.01 * hu, cs(P, y0, th + 0.015 * hu, th + 0.02 * hu), (() => { const c = cs(P, P.crown, th, th, 0.06 * hu); c[2] *= 0.95; c[3] *= 0.85; return enclose(P, c, 0.01 * hu, 0.44); })(), { ch: 0.44, caps: 'top' });
+    add('visor', 'head', 'hat2', y0 - 0.01 * hu, y0 + 0.02 * hu, [0, P.zf + 0.1 * hu, P.hw * 0.86, 0.1 * hu], null, { ch: 0.5, rot: { p: [0, y0, P.zf], e: [0.22, 0, 0] } });
+  } else if (hat === 'schoolhat' || hat === 'bucket' || hat === 'sunhat') {
+    const brim = hat === 'sunhat' ? 0.36 * hu : hat === 'schoolhat' ? 0.24 * hu : 0.2 * hu;
+    add('hatCrown', 'head', 'hat', y0, P.crown + 0.07 * hu, cs(P, y0, th + 0.02 * hu, th + 0.02 * hu, -0.01 * hu), (() => { const c = cs(P, P.crown, th, th, -0.02 * hu); c[2] *= 0.86; c[3] *= 0.86; return enclose(P, c, 0.01 * hu, 0.5); })(), { ch: 0.5, caps: 'top' });
+    const c = cs(P, y0, th + brim, th + brim, -0.01 * hu);
+    add('brim', 'head', 'hat2', y0 - 0.025 * hu, y0 + 0.004 * hu, [c[0], c[1], c[2] * 1.02, c[3] * 1.02], c, { ch: 0.46, dens: 0.8 });
+  } else if (hat === 'hardhat') {
+    add('hatCrown', 'head', 'hat', y0, P.crown + 0.1 * hu, cs(P, y0, th + 0.035 * hu, th + 0.04 * hu), (() => { const c = cs(P, P.crown, th, th, -0.01 * hu); c[2] *= 0.78; c[3] *= 0.8; return enclose(P, c, 0.01 * hu, 0.5); })(), { ch: 0.5, caps: 'top' });
+    const c = cs(P, y0, th + 0.07 * hu, th + 0.09 * hu, 0.03 * hu);
+    add('brim', 'head', 'hat2', y0 - 0.02 * hu, y0 + 0.008 * hu, c, c, { ch: 0.46, dens: 0.8 });
+  }
+  return S;
 }
 // (the old box-shell hair builder below is kept for reference by nothing; see hairMesh.js)
 export function legacyHairSegments(spec, P, J) {

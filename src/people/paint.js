@@ -705,8 +705,10 @@ export function makePainters(spec, P) {
   }
   function shoePx(c, o) {
     const S = spec.shoes, k = S.kind, toe = c.part === 'toe';
+    // a base-body triangle reaching up from the foot: above the shoe it is the leg (trousers / legwear / skin)
+    if (c.seg?.base && !toe && c.y > P.ankleY + 0.014 * H) { bodyPx({ ...c, part: 'shin' }, o); return; }
     // the shoes themselves are modelled (src/people/gear.js): what shows of the foot is the ankle / the foot in a sandal
-    if (CLOSED_SHOES.has(k) || k === 'pumps') { legwearPx({ ...c, part: 'shin' }, o); return; }
+    if (CLOSED_SHOES.has(k)) { legwearPx({ ...c, part: 'shin' }, o); return; }
     if (k === 'sandal') { shadeInto(o, spec.socks?.col || skin, bodyK(c) * (c.i % 2 ? 0.94 : 1)); return; }
     const sole = k === 'platform' ? 0.032 * H : k === 'sneaker' || k === 'comfort' || k === 'boots' || k === 'tabi' ? 0.014 * H : k === 'sandal' ? 0.012 * H : 0.007 * H;
     const soleCol = k === 'sneaker' || k === 'platform' ? [238, 236, 230] : k === 'tabi' ? [40, 40, 44] : k === 'comfort' ? [210, 200, 186] : k === 'sandal' ? S.col : [40, 30, 26];
