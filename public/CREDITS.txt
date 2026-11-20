@@ -2284,3 +2284,5 @@ into the detail and mottling fields lib/photos/<name>.npz; the shipped figures c
 - feather: "Black Swan" by Marko Knuutila, https://www.flickr.com/photos/markoknuutila/14395362290, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 2343212ab72aafb2
 - frog: "Ghatixalus asterops" by Harsimran 'Dino' Singh Aulakh, https://www.flickr.com/photos/dinotude/18517953052, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID e022ed892f8b1e0e
 - flipper: "Hawksbill turtle at Elphinstone Reef, Red Sea, Egypt #SCUBA" by Derek Keats, https://www.flickr.com/photos/dkeats/6192803976, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 238adf8f7c8c2216
+- shinigami card: "Moon.  Dog.  Face.  ??" by Carl Milner, https://www.flickr.com/photos/62766743@N07/11620413786, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 19ceb7c03c626f0f (cropped, colour-graded)
+- yuubin card: "BC's Botanical Beach" by Kyle Simourd, https://www.flickr.com/photos/89241789@N00/3955859061, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 10b0c3ab42c591b3 (cropped, colour-graded)

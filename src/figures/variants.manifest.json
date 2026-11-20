@@ -123,6 +123,12 @@
 "sento/kirin": "wink",
 "sento/rakko": "wink",
 "sento/sanshou": "wink",
+"shinigami/fukurou": "wink",
+"shinigami/karasu": "sleepy",
+"shinigami/koi": "wink",
+"shinigami/kuroneko": "sleepy",
+"shinigami/mogura": "happy",
+"shinigami/usagi": "wink",
 "tabigame/pagoda": "happy",
 "tabigame/piramido": "sleepy",
 "tabigame/pisa": "sleepy",
@@ -144,5 +150,11 @@
 "yomise/fukurounagi": "happy",
 "yomise/gusokumushi": "happy",
 "yomise/hotaruika": "wink",
-"yomise/ryuuguu": "happy"
+"yomise/ryuuguu": "happy",
+"yuubin/fugu": "sleepy",
+"yuubin/kamome": "wink",
+"yuubin/rakko": "wink",
+"yuubin/shiomaneki": "sleepy",
+"yuubin/tatsu": "happy",
+"yuubin/yadokari": "happy"
 }

@@ -509,6 +509,13 @@ CFG = {
         calls=[('MOP-TOPS SHAKE', 232, 136, 0.45, 0.2)],
         sw=[0x8a8c92, 0x2a2a30, 0xc8302a, 0x6a7a8c, 0x3a5a8a, 0x2a8a5a]),
 }
+try:  # the mass-produced series (tools/newseries.py): their cards from their spec files (a hand-written entry wins)
+    import series_specs as _SS
+    for _sid, (_cfg, _scene, _pool) in _SS.cards().items():
+        CFG.setdefault(_sid, _cfg)
+        if _scene: SCENE.setdefault(_sid, _scene)
+        POOL.setdefault(_sid, _pool)
+except Exception as _e: print('card7: series specs skipped:', _e)
 CARDS = {sid: (lambda K, c=c: designer(K, c)) for sid, c in CFG.items()}
 
 

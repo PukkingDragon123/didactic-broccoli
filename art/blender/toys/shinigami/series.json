@@ -1,0 +1,1295 @@
+{
+ "id": "shinigami",
+ "order": 73,
+ "name": "Reapers' Day Off",
+ "jp": "しにがみのきゅうじつ",
+ "tagline": "Even the reaper takes Sundays off.",
+ "taglineJp": "きょうは おやすみ です。",
+ "concept": "Dark-cute: little animal grim reapers in hooded cloaks with their scythes, spending their day off on a cosy hobby (fishing, a nap with tea, gardening, digging, reading). The twist: press one and its hood flips back to show the soft face under it, and the scythe turns out to be its fishing rod / hoe / pick. Secret: a ghost koi reaper floating on a will-o'-the-wisp.",
+ "price": 300,
+ "themes": [
+  "spooky",
+  "cute",
+  "retro"
+ ],
+ "card": {
+  "bg": "#2a2432",
+  "accent": "#7a5aa8",
+  "text": "#f2ecdc",
+  "accent2": "#e8c040",
+  "pattern": "dots",
+  "kind": "しにがみのきゅうじつ",
+  "layout": "left",
+  "col": "#5a3a8a",
+  "fill": "#e8e0f0",
+  "lines": [
+   "REAPERS'",
+   "DAY OFF"
+  ],
+  "kick": [
+   "EVEN DEATH TAKES",
+   "SUNDAYS OFF."
+  ],
+  "burst": [
+   "HOOD",
+   "OFF!"
+  ],
+  "burst_col": "#e8c040",
+  "price": "ticket",
+  "pricecol": "#efe6d6",
+  "hero_id": "karasu",
+  "calls": [
+   [
+    "THE HOOD FLIPS BACK",
+    0.45,
+    0.25
+   ]
+  ],
+  "scene_query": [
+   "Moonlight",
+   "Night"
+  ],
+  "cutouts": [
+   "raven_0",
+   "candle_0",
+   "pumpkin_1",
+   "skull_0",
+   "owl_1",
+   "candle_2",
+   "mushroom_0",
+   "raven_1"
+  ],
+  "sw": [
+   "#26242c",
+   "#1e1a24",
+   "#3a3244",
+   "#3a2c24",
+   "#4a4652",
+   "#e8e4ec"
+  ],
+  "scene": "19ceb7c03c626f0f",
+  "price_at": [
+   152,
+   158
+  ],
+  "caps": [
+   112,
+   182
+  ]
+ },
+ "capsule": [
+  "#3a2a52",
+  "#f2ecdc",
+  "#7a5aa8",
+  "#e8c040"
+ ],
+ "title": {
+  "v": [
+   {
+    "f": "#2e2838",
+    "L": [
+     {
+      "k": "blot",
+      "sc": 5,
+      "thr": 0.62,
+      "c": "#46405a"
+     },
+     {
+      "k": "below",
+      "thr": 0.14,
+      "c": "#7a6a9a",
+      "w": 0.12
+     }
+    ],
+    "s": "#16121c",
+    "chip": "#b8a8d8"
+   },
+   {
+    "f": "#4a3a6a",
+    "L": [
+     {
+      "k": "blot",
+      "sc": 6,
+      "thr": 0.6,
+      "c": "#5e4a84"
+     },
+     {
+      "k": "below",
+      "thr": 0.14,
+      "c": "#9a8ac0",
+      "w": 0.12
+     }
+    ],
+    "s": "#221a32",
+    "chip": "#d0c4ec"
+   },
+   {
+    "f": "#e8e2d4",
+    "L": [
+     {
+      "k": "blot",
+      "sc": 5,
+      "thr": 0.66,
+      "c": "#cfc6b4"
+     },
+     {
+      "k": "spots",
+      "sc": 14,
+      "thr": 0.06,
+      "c": "#8a8070"
+     }
+    ],
+    "s": "#6a6254",
+    "chip": "#ffffff"
+   }
+  ],
+  "pick": "rand",
+  "bits": [
+   {
+    "k": "puff",
+    "on": "top",
+    "n": 2,
+    "paint": "#cfe4ec"
+   },
+   {
+    "k": "drip",
+    "on": "bot",
+    "n": 1,
+    "paint": "#2e2838"
+   }
+  ]
+ },
+ "defaults": {
+  "frames": 60
+ },
+ "figures": [
+  {
+   "id": "karasu",
+   "name": "Fishing Crow Reaper",
+   "jp": "カラス",
+   "rarity": "common",
+   "species": "crow",
+   "desc": "A crow reaper standing in a puddle in its tattered cloak, the scythe held out as a fishing rod, the line down in the water. Press: the hood flips back and up comes the catch.",
+   "gimmick": {
+    "text": "Catch!",
+    "sfx": [
+     [
+      0.25,
+      "whoosh",
+      {
+       "dur": 0.25,
+       "v": 0.06
+      }
+     ],
+     [
+      0.6,
+      "toySnap",
+      {
+       "f": 1300
+      }
+     ],
+     [
+      0.75,
+      "pop"
+     ],
+     [
+      1.6,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "cloak": "#2a2634",
+    "feather": "#26242c",
+    "feather2": "#34303c",
+    "beak": "#2e2a2c",
+    "leg": "#3a3434",
+    "talon": "#1e1a1c",
+    "stone": "#6e6a66",
+    "water": "#3a5a6a"
+   },
+   "face": {
+    "spread": 0.95,
+    "size": 0.1
+   },
+   "build": [
+    [
+     "bird",
+     {
+      "sp": "crow",
+      "head": 1.1,
+      "beak": "crow",
+      "wings": "arms",
+      "hands": [
+       [
+        -3.0,
+        -5.8,
+        13.6
+       ],
+       [
+        2.4,
+        -6.4,
+        12.6
+       ]
+      ],
+      "tail": "wedge",
+      "torso": false,
+      "z0": 1.6
+     }
+    ],
+    [
+     "cloak",
+     {
+      "z_hem": 4.6,
+      "r_hem": 7.0,
+      "rag": 0.7
+     }
+    ],
+    [
+     "hood",
+     {
+      "k": 1.16,
+      "peak": 1.1
+     }
+    ],
+    [
+     "xform",
+     {
+      "deg": 0,
+      "axis": "Z",
+      "move": [
+       0,
+       3.2,
+       0
+      ]
+     }
+    ],
+    [
+     "scythe",
+     {
+      "part": "wing_r",
+      "grip": "HAND_R",
+      "top": [
+       0,
+       -0.55,
+       0.83
+      ],
+      "L": 18,
+      "blade": 7,
+      "side": 1,
+      "below": 4,
+      "droop": 0.3
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "puddle",
+      "r": 14.5,
+      "h": 2.6
+     }
+    ],
+    [
+     "gim",
+     "hood_back",
+     {
+      "f0": 4
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "wing_r",
+      "keys": [
+       [
+        12,
+        {}
+       ],
+       [
+        16,
+        {
+         "rot": [
+          "X",
+          -18
+         ]
+        }
+       ],
+       [
+        24,
+        {
+         "rot": [
+          "X",
+          -14
+         ]
+        }
+       ],
+       [
+        34,
+        {}
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "wing_l",
+      "f0": 18,
+      "f1": 34,
+      "axis": "Y",
+      "amp": 14,
+      "step": 4
+     }
+    ]
+   ]
+  },
+  {
+   "id": "kuroneko",
+   "name": "Napping Cat Reaper",
+   "jp": "クロネコ",
+   "rarity": "common",
+   "species": "cat",
+   "desc": "A black cat reaper sitting with its feet out, a cup of green tea in one paw and the scythe leant on its shoulder, ears poking through the hood. Press: the hood falls back, a big stretch and a sip.",
+   "gimmick": {
+    "text": "Stretch",
+    "sfx": [
+     [
+      0.2,
+      "toyFold",
+      {
+       "n": 1
+      }
+     ],
+     [
+      0.7,
+      "whoosh",
+      {
+       "dur": 0.4,
+       "v": 0.04
+      }
+     ],
+     [
+      1.4,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "cloak": "#1e1c2a",
+    "fur": "#24222a",
+    "fur2": "#5a5460",
+    "nose": "#d88a90",
+    "pad": "#c87a80",
+    "cup": "#5a7a6a"
+   },
+   "face": {
+    "eyes": "dot",
+    "spread": 0.8,
+    "size": 0.09,
+    "dy": 0.12,
+    "bcol": "#d86a7a"
+   },
+   "build": [
+    [
+     "mammal",
+     {
+      "sp": "cat",
+      "pose": "sit",
+      "head": 1.1,
+      "snout": 0.12,
+      "ears": "point",
+      "ear_k": 1.05,
+      "tail": "thin",
+      "torso": false,
+      "hands": [
+       [
+        -3.2,
+        -7.4,
+        10.4
+       ],
+       [
+        5.0,
+        -4.6,
+        12.4
+       ]
+      ]
+     }
+    ],
+    [
+     "cloak",
+     {
+      "r_hem": 8.8,
+      "rag": 0.5
+     }
+    ],
+    [
+     "sleeves",
+     {
+      "bell": 1.8
+     }
+    ],
+    [
+     "hood",
+     {
+      "k": 1.17,
+      "peak": 1.2
+     }
+    ],
+    [
+     "cup",
+     {
+      "part": "arm_r",
+      "c": "HAND_R+0.4,-0.6,-1.6",
+      "r": 1.5,
+      "h": 2.2
+     }
+    ],
+    [
+     "scythe",
+     {
+      "part": "arm_l",
+      "grip": "HAND_L",
+      "top": [
+       0.12,
+       0.3,
+       1.0
+      ],
+      "L": 30,
+      "blade": 9,
+      "side": 1,
+      "below": 10,
+      "droop": 0.35
+     }
+    ],
+    [
+     "gim",
+     "hood_back",
+     {
+      "f0": 6
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "head",
+      "keys": [
+       [
+        14,
+        {}
+       ],
+       [
+        22,
+        {
+         "rot": [
+          [
+           "Y",
+           14
+          ],
+          [
+           "X",
+           -12
+          ]
+         ]
+        }
+       ],
+       [
+        34,
+        {
+         "rot": [
+          [
+           "Y",
+           10
+          ],
+          [
+           "X",
+           -10
+          ]
+         ]
+        }
+       ],
+       [
+        42,
+        {}
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "arm_r",
+      "keys": [
+       [
+        30,
+        {}
+       ],
+       [
+        38,
+        {
+         "rot": [
+          "X",
+          -26
+         ],
+         "move": [
+          0,
+          0,
+          1.2
+         ]
+        }
+       ],
+       [
+        46,
+        {}
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "tail",
+      "f0": 10,
+      "f1": 40,
+      "axis": "Z",
+      "amp": 16,
+      "step": 6
+     }
+    ]
+   ]
+  },
+  {
+   "id": "usagi",
+   "name": "Gardener Rabbit Reaper",
+   "jp": "ウサギ",
+   "rarity": "uncommon",
+   "species": "rabbit",
+   "desc": "A rabbit reaper in the carrot patch, long ears through the slits of its hood, the scythe turned down as a hoe and a little watering can in the other paw. Press: off with the hood, the ears spring up and it waters the carrots.",
+   "gimmick": {
+    "text": "Water",
+    "sfx": [
+     [
+      0.2,
+      "toyFold",
+      {
+       "n": 1
+      }
+     ],
+     [
+      0.5,
+      "pop"
+     ],
+     [
+      0.9,
+      "whoosh",
+      {
+       "dur": 0.6,
+       "v": 0.03
+      }
+     ]
+    ]
+   },
+   "palette": {
+    "cloak": "#2c2a22",
+    "fur": "#e8e2d6",
+    "fur2": "#f6f2ea",
+    "inner": "#e8a0a8",
+    "nose": "#d87a88",
+    "dirt": "#5a4030",
+    "tin": "#5a8a8a"
+   },
+   "face": {
+    "spread": 0.8,
+    "size": 0.08,
+    "dy": 0.14
+   },
+   "build": [
+    [
+     "mammal",
+     {
+      "sp": "rabbit",
+      "pose": "stand",
+      "head": 1.04,
+      "snout": 0.16,
+      "ears": "long",
+      "ear_k": 1.0,
+      "tail": "puff",
+      "torso": false,
+      "z0": 2.2,
+      "hands": [
+       [
+        -5.4,
+        -4.6,
+        12.6
+       ],
+       [
+        5.2,
+        -5.4,
+        13.0
+       ]
+      ]
+     }
+    ],
+    [
+     "cloak",
+     {
+      "z_hem": 3.6,
+      "r_hem": 7.4,
+      "rag": 0.6
+     }
+    ],
+    [
+     "sleeves",
+     {
+      "bell": 1.7
+     }
+    ],
+    [
+     "hood",
+     {
+      "k": 1.17,
+      "peak": 0.9
+     }
+    ],
+    [
+     "can",
+     {
+      "part": "arm_l",
+      "c": "HAND_L+0,0.2,-5.4",
+      "r": 1.8,
+      "h": 2.8
+     }
+    ],
+    [
+     "scythe",
+     {
+      "part": "arm_r",
+      "grip": "HAND_R",
+      "top": [
+       0.1,
+       -0.45,
+       -0.89
+      ],
+      "L": 14,
+      "blade": 6.5,
+      "side": -1,
+      "below": 6,
+      "droop": 0.1,
+      "grip2": false
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "mound",
+      "r": 13.0,
+      "h": 2.6
+     }
+    ],
+    [
+     "gim",
+     "hood_back",
+     {
+      "f0": 4
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "ears",
+      "f0": 12,
+      "f1": 30,
+      "axis": "X",
+      "amp": 14,
+      "step": 4
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "arm_l",
+      "keys": [
+       [
+        20,
+        {}
+       ],
+       [
+        27,
+        {
+         "rot": [
+          "X",
+          30
+         ]
+        }
+       ],
+       [
+        40,
+        {
+         "rot": [
+          "X",
+          34
+         ]
+        }
+       ],
+       [
+        48,
+        {}
+       ]
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "mogura",
+   "name": "Digging Mole Reaper",
+   "jp": "モグラ",
+   "rarity": "uncommon",
+   "species": "mole",
+   "desc": "A mole reaper half out of its molehill, digging claws round the scythe it uses as a pick, pink star of a nose sniffing the air. Press: it ducks down the hole, pops up with its hood off and swings the pick.",
+   "gimmick": {
+    "text": "Dig",
+    "sfx": [
+     [
+      0.15,
+      "thud"
+     ],
+     [
+      0.55,
+      "pop"
+     ],
+     [
+      1.0,
+      "toyTap"
+     ],
+     [
+      1.3,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "cloak": "#3a2e2a",
+    "fur": "#3a3438",
+    "fur2": "#5a4e54",
+    "nose": "#e88a98",
+    "dirt": "#6a4a30"
+   },
+   "face": {
+    "spread": 0.7,
+    "size": 0.06,
+    "dy": 0.2
+   },
+   "build": [
+    [
+     "mammal",
+     {
+      "sp": "mole",
+      "pose": "pop",
+      "z0": 3.2,
+      "head": 0.95,
+      "bw": 1.1,
+      "snout": 0.62,
+      "snoutw": 0.5,
+      "ears": "none",
+      "tail": "none",
+      "torso": false,
+      "hands": [
+       [
+        -3.0,
+        -7.2,
+        10.6
+       ],
+       [
+        3.2,
+        -7.0,
+        12.2
+       ]
+      ]
+     }
+    ],
+    [
+     "cloak",
+     {
+      "z_hem": 1.8,
+      "r_hem": 6.6,
+      "rag": 0.3
+     }
+    ],
+    [
+     "sleeves",
+     {
+      "bell": 1.6,
+      "kind": "claw"
+     }
+    ],
+    [
+     "hood",
+     {
+      "k": 1.18,
+      "peak": 0.8,
+      "depth": 0.5
+     }
+    ],
+    [
+     "scythe",
+     {
+      "part": "arm_r",
+      "grip": "HAND_R",
+      "top": [
+       0.0,
+       -0.35,
+       0.94
+      ],
+      "L": 17,
+      "blade": 7.5,
+      "side": 1,
+      "below": 5,
+      "droop": 0.7
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "mound",
+      "r": 12.5,
+      "h": 3.4,
+      "part": "hill"
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "body",
+      "keys": [
+       [
+        4,
+        {}
+       ],
+       [
+        10,
+        {
+         "move": [
+          0,
+          0,
+          -5.0
+         ]
+        }
+       ],
+       [
+        16,
+        {
+         "move": [
+          0,
+          0,
+          -5.0
+         ]
+        }
+       ],
+       [
+        22,
+        {
+         "ease": "BACK"
+        }
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "hood_back",
+     {
+      "f0": 14,
+      "hold": 34
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "arm_r",
+      "keys": [
+       [
+        26,
+        {}
+       ],
+       [
+        31,
+        {
+         "rot": [
+          "X",
+          28
+         ]
+        }
+       ],
+       [
+        35,
+        {}
+       ],
+       [
+        40,
+        {
+         "rot": [
+          "X",
+          28
+         ]
+        }
+       ],
+       [
+        44,
+        {}
+       ]
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "fukurou",
+   "name": "Bookworm Owl Reaper",
+   "jp": "フクロウ",
+   "rarity": "rare",
+   "species": "owl",
+   "desc": "A big-eyed owl reaper reading a picture book held open in its wings, ear tufts through the hood, the scythe slung across its back. Press: the hood flips back and its head turns right round to see who's there.",
+   "gimmick": {
+    "text": "Who?",
+    "sfx": [
+     [
+      0.2,
+      "toyFold",
+      {
+       "n": 1
+      }
+     ],
+     [
+      0.55,
+      "toyClick",
+      {
+       "f": 700
+      }
+     ],
+     [
+      1.2,
+      "toyClick",
+      {
+       "f": 800
+      }
+     ],
+     [
+      1.6,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "cloak": "#3a3a48",
+    "feather": "#7a5a3c",
+    "feather2": "#c8a878",
+    "disc": "#e2cca4",
+    "beak": "#4a3a30",
+    "leg": "#c8a878",
+    "cover": "#7a2a2a"
+   },
+   "face": {
+    "spread": 0.82,
+    "size": 0.12,
+    "dy": 0.1
+   },
+   "build": [
+    [
+     "bird",
+     {
+      "sp": "owl",
+      "head": 1.3,
+      "bw": 1.15,
+      "beak": "hook",
+      "beak_k": 0.8,
+      "wings": "arms",
+      "hands": [
+       [
+        -3.6,
+        -6.0,
+        15.0
+       ],
+       [
+        3.6,
+        -6.0,
+        15.0
+       ]
+      ],
+      "tail": "short",
+      "disc": true,
+      "tufts": 0.8,
+      "torso": false,
+      "upright": 0.9,
+      "z0": 2.0
+     }
+    ],
+    [
+     "cloak",
+     {
+      "z_hem": 5.8,
+      "r_hem": 8.6,
+      "rag": 0.7
+     }
+    ],
+    [
+     "hood",
+     {
+      "k": 1.14,
+      "peak": 0.7
+     }
+    ],
+    [
+     "book",
+     {
+      "part": "body",
+      "c": [
+       0,
+       -7.6,
+       15.0
+      ],
+      "w": 4.4,
+      "h": 5.8,
+      "open_deg": 130,
+      "rot": [
+       [
+        -28,
+        "X"
+       ]
+      ]
+     }
+    ],
+    [
+     "scythe",
+     {
+      "part": "body",
+      "grip": [
+       4.6,
+       5.0,
+       9.0
+      ],
+      "top": [
+       -0.4,
+       0.2,
+       0.9
+      ],
+      "L": 28,
+      "blade": 9,
+      "side": -1,
+      "below": 6,
+      "droop": 0.3,
+      "grip2": false
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "disc",
+      "r": 10.5,
+      "h": 2.0
+     }
+    ],
+    [
+     "gim",
+     "hood_back",
+     {
+      "f0": 4
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "head",
+      "keys": [
+       [
+        14,
+        {}
+       ],
+       [
+        22,
+        {
+         "rot": [
+          "Z",
+          170
+         ]
+        }
+       ],
+       [
+        34,
+        {
+         "rot": [
+          "Z",
+          175
+         ]
+        }
+       ],
+       [
+        42,
+        {
+         "rot": [
+          "Z",
+          0
+         ]
+        }
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "wing_l",
+      "f0": 40,
+      "f1": 52,
+      "axis": "Y",
+      "amp": 10,
+      "step": 4
+     }
+    ]
+   ]
+  },
+  {
+   "id": "koi",
+   "name": "Ghost Koi Reaper",
+   "jp": "ユウレイゴイ",
+   "rarity": "secret",
+   "species": "fish",
+   "desc": "The secret: a pale ghost koi in a little reaper's hood, red-and-white patches faded like old silk, whiskers drifting, a tiny scythe held in one fin, swimming on a curl of will-o'-the-wisp. Press: hood off and it swims a lap of its flame.",
+   "gimmick": {
+    "text": "Swim",
+    "sfx": [
+     [
+      0.2,
+      "toyFold",
+      {
+       "n": 1
+      }
+     ],
+     [
+      0.6,
+      "whoosh",
+      {
+       "dur": 0.9,
+       "v": 0.05
+      }
+     ],
+     [
+      1.7,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "cloak": "#3a3a52",
+    "scale": "#f2eee6",
+    "belly": "#f6f4ee",
+    "fin": "#dce6ee",
+    "lip": "#e8b0a8",
+    "flame": "#9ad8e8",
+    "plinth": "#2a2630"
+   },
+   "face": {
+    "spread": 0.7,
+    "size": 0.12,
+    "dy": 0.25
+   },
+   "build": [
+    [
+     "fish",
+     {
+      "kind": "koi",
+      "L": 24,
+      "H": 9.0,
+      "zc": 15.0,
+      "whisk": 2,
+      "tail_k": 0.85,
+      "fins": 1.1
+     }
+    ],
+    [
+     "hood",
+     {
+      "k": 1.0,
+      "th": 0.4,
+      "peak": 1.2,
+      "depth": 0.2,
+      "drop": 1.0
+     }
+    ],
+    [
+     "scythe",
+     {
+      "part": "fins",
+      "grip": [
+       -4.6,
+       -6.0,
+       12.6
+      ],
+      "top": [
+       -0.15,
+       -0.1,
+       1.0
+      ],
+      "L": 13,
+      "blade": 5.5,
+      "side": -1,
+      "below": 3,
+      "droop": 0.3,
+      "r": 0.35,
+      "grip2": false
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "wisp",
+      "r": 13.0,
+      "h": 2.4,
+      "part": "stand"
+     }
+    ],
+    [
+     "gim",
+     "hood_back",
+     {
+      "f0": 4,
+      "hold": 40
+     }
+    ],
+    [
+     "gim",
+     "spin",
+     {
+      "bone": "body",
+      "f0": 12,
+      "f1": 44,
+      "deg": 360
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "tail",
+      "f0": 10,
+      "f1": 48,
+      "axis": "Z",
+      "amp": 18,
+      "step": 4
+     }
+    ]
+   ],
+   "detail": 1.7
+  }
+ ]
+}

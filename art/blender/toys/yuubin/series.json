@@ -1,0 +1,1214 @@
+{
+ "id": "yuubin",
+ "order": 74,
+ "name": "Tide Pool Post",
+ "jp": "しおだまりゆうびん",
+ "tagline": "Signed, sealed, delivered. Slightly damp.",
+ "taglineJp": "しおだまりから おとどけします！",
+ "concept": "Animals with a job: the seashore's own post office, run by the tide-pool regulars. A hermit crab lives in a red pillar postbox, a pufferfish couriers parcels, a gull flies the airmail, a sea otter postmaster stamps letters on its belly, a fiddler crab waves the mail through. Each one's body is part of the job (the crab's shell IS the postbox, the otter's belly is the desk). Secret: the seahorse express rider.",
+ "price": 300,
+ "themes": [
+  "retro",
+  "cute",
+  "animals"
+ ],
+ "card": {
+  "bg": "#eef2ec",
+  "accent": "#c8281e",
+  "text": "#1e2a3a",
+  "accent2": "#2a6a9a",
+  "pattern": "dots",
+  "kind": "しおだまりゆうびん",
+  "layout": "right",
+  "col": "#c8281e",
+  "fill": "#f6eedc",
+  "lines": [
+   "TIDE POOL",
+   "POST"
+  ],
+  "kick": [
+   "SIGNED, SEALED,",
+   "DELIVERED. DAMP."
+  ],
+  "burst": [
+   "FIRST",
+   "CLASS!"
+  ],
+  "burst_col": "#2a6a9a",
+  "price": "coin",
+  "hero_id": "yadokari",
+  "scene_query": [
+   "Rock",
+   "Tide pool"
+  ],
+  "cutouts": [
+   "starfish_0",
+   "oyster_1",
+   "fish_1",
+   "starfish_2",
+   "sea_kelp",
+   "oyster_0",
+   "lighthouse_2",
+   "fish_0"
+  ],
+  "sw": [
+   "#c8281e",
+   "#d8c070",
+   "#9aa2ac",
+   "#6a4a34",
+   "#3a4a72",
+   "#e89a3a"
+  ],
+  "scene": "10b0c3ab42c591b3"
+ },
+ "capsule": [
+  "#c8281e",
+  "#f6eedc",
+  "#2a6a9a",
+  "#e8c040"
+ ],
+ "title": {
+  "v": [
+   {
+    "f": "#c8281e",
+    "L": [
+     {
+      "k": "dab",
+      "p": [
+       -0.2,
+       0.76
+      ],
+      "r": 0.085,
+      "c": "#f08a80",
+      "w": 0.05
+     },
+     {
+      "k": "below",
+      "thr": 0.14,
+      "c": "#8a1a14",
+      "w": 0.1
+     }
+    ],
+    "s": "#7a160e",
+    "chip": "#f2b0a0"
+   },
+   {
+    "f": "#f2ece0",
+    "L": [
+     {
+      "k": "stripes",
+      "sc": 6,
+      "thr": 0.16,
+      "c": "#c8281e",
+      "ax": [
+       1,
+       0,
+       1
+      ],
+      "w": 0.02
+     },
+     {
+      "k": "stripes",
+      "sc": 6,
+      "thr": 0.16,
+      "c": "#2a5a9a",
+      "ax": [
+       1,
+       0,
+       -1
+      ],
+      "w": 0.02
+     }
+    ],
+    "s": "#9a9080",
+    "chip": "#ffffff"
+   },
+   {
+    "f": "#2a5a9a",
+    "L": [
+     {
+      "k": "dab",
+      "p": [
+       -0.2,
+       0.76
+      ],
+      "r": 0.08,
+      "c": "#8ab4e0",
+      "w": 0.05
+     },
+     {
+      "k": "below",
+      "thr": 0.14,
+      "c": "#1a3a6a",
+      "w": 0.1
+     }
+    ],
+    "s": "#14284a",
+    "chip": "#b8d0f0"
+   }
+  ],
+  "pick": "cycle",
+  "bits": [
+   {
+    "k": "rivet",
+    "on": "all",
+    "n": 3,
+    "paint": "#e8c040"
+   },
+   {
+    "k": "bubble",
+    "on": "top",
+    "n": 2,
+    "paint": "#cfe8f0"
+   }
+  ]
+ },
+ "defaults": {
+  "frames": 60
+ },
+ "figures": [
+  {
+   "id": "yadokari",
+   "name": "Postbox Hermit Crab",
+   "jp": "ヤドカリ",
+   "rarity": "common",
+   "species": "crab",
+   "desc": "A hermit crab who moved into a red pillar postbox: it carries the box around on its back, claws out front, a letter waiting in the slot. Press: it ducks inside and the letter pops up out of the slot.",
+   "gimmick": {
+    "text": "Post it",
+    "sfx": [
+     [
+      0.2,
+      "toyTap"
+     ],
+     [
+      0.45,
+      "pop"
+     ],
+     [
+      1.0,
+      "toyClick",
+      {
+       "f": 1200
+      }
+     ],
+     [
+      1.4,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "shell": "#d8783a",
+    "under": "#f2dcc0",
+    "tip": "#5a2a1e",
+    "pillar": "#c8281e",
+    "envelope": "#f2ebdc"
+   },
+   "build": [
+    [
+     "crab",
+     {
+      "sp": "crab",
+      "w": 9.0,
+      "d": 7.5,
+      "h": 4.2,
+      "claws": [
+       1.5,
+       1.0
+      ],
+      "legs": 7.0,
+      "stalk": 2.4,
+      "lift": 2.0,
+      "hermit": true
+     }
+    ],
+    [
+     "postbox",
+     {
+      "part": "house",
+      "c": [
+       0,
+       4.6,
+       0
+      ],
+      "r": 4.6,
+      "h": 13.0,
+      "door": true
+     }
+    ],
+    [
+     "letter",
+     {
+      "part": "mail",
+      "c": "SLOT+0,0.4,0.9",
+      "w": 3.6,
+      "h": 2.6
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "body",
+      "keys": [
+       [
+        6,
+        {}
+       ],
+       [
+        12,
+        {
+         "move": [
+          0,
+          3.0,
+          0.3
+         ]
+        }
+       ],
+       [
+        26,
+        {
+         "move": [
+          0,
+          3.0,
+          0.3
+         ]
+        }
+       ],
+       [
+        33,
+        {
+         "ease": "BACK"
+        }
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "pop",
+     {
+      "bone": "mail",
+      "f0": 14,
+      "f1": 40,
+      "dz": 4.0,
+      "hold": 14
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "claw_r",
+      "f0": 36,
+      "f1": 54,
+      "axis": "X",
+      "amp": 14,
+      "step": 6
+     }
+    ]
+   ]
+  },
+  {
+   "id": "fugu",
+   "name": "Parcel Puffer",
+   "jp": "フグ",
+   "rarity": "common",
+   "species": "puffer",
+   "desc": "A pufferfish courier in a postman's cap with a parcel tied on its back, riding a little swell of water. Press: it puffs up round, spines out, and the cap pops off.",
+   "gimmick": {
+    "text": "Puff",
+    "sfx": [
+     [
+      0.2,
+      "toyTap"
+     ],
+     [
+      0.35,
+      "whoosh",
+      {
+       "dur": 0.3,
+       "v": 0.06
+      }
+     ],
+     [
+      0.5,
+      "pop"
+     ],
+     [
+      1.5,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "scale": "#d8c070",
+    "belly": "#f6f0e2",
+    "fin": "#e8cc80",
+    "lip": "#e8a080",
+    "capcloth": "#2a3a6a",
+    "sea": "#2a6a8a"
+   },
+   "build": [
+    [
+     "fish",
+     {
+      "sp": "puffer",
+      "kind": "puffer",
+      "H": 6.6,
+      "zc": 12.0,
+      "spines": 40
+     }
+    ],
+    [
+     "cap",
+     {
+      "kind": "post",
+      "part": "cap",
+      "at": [
+       0,
+       0.8,
+       17.8
+      ],
+      "k": 0.8,
+      "tilt": -10
+     }
+    ],
+    [
+     "parcel",
+     {
+      "part": "body",
+      "c": [
+       0,
+       5.0,
+       15.6
+      ],
+      "size": [
+       4.0,
+       3.2,
+       2.8
+      ],
+      "rz": 12
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "wave",
+      "r": 12.0,
+      "h": 3.0,
+      "column": true,
+      "part": "stand"
+     }
+    ],
+    [
+     "gim",
+     "inflate",
+     {
+      "bone": "body",
+      "f0": 8,
+      "f1": 40,
+      "s": 1.38,
+      "hold": 16
+     }
+    ],
+    [
+     "gim",
+     "pop",
+     {
+      "bone": "cap",
+      "f0": 9,
+      "f1": 38,
+      "dz": 7.0,
+      "hold": 14,
+      "rot": [
+       "X",
+       -40
+      ]
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "tail",
+      "f0": 30,
+      "f1": 54,
+      "axis": "Z",
+      "amp": 18,
+      "step": 4
+     }
+    ]
+   ],
+   "face": {
+    "spread": 0.72,
+    "size": 0.055,
+    "dy": 0.22
+   }
+  },
+  {
+   "id": "kamome",
+   "name": "Airmail Gull",
+   "jp": "カモメ",
+   "rarity": "uncommon",
+   "species": "gull",
+   "desc": "A herring gull on airmail duty, standing on a rock in a peaked cap with the mailbag over its shoulder and a letter held in its beak. Press: a hop and a big flap of the wings, ready for take-off.",
+   "gimmick": {
+    "text": "Take off",
+    "sfx": [
+     [
+      0.2,
+      "whoosh",
+      {
+       "dur": 0.2,
+       "v": 0.05
+      }
+     ],
+     [
+      0.45,
+      "whoosh",
+      {
+       "dur": 0.2,
+       "v": 0.05
+      }
+     ],
+     [
+      0.7,
+      "thud"
+     ],
+     [
+      1.0,
+      "toyTap"
+     ]
+    ]
+   },
+   "palette": {
+    "feather": "#f2f0ea",
+    "feather2": "#f8f6f2",
+    "wing": "#9aa2ac",
+    "beak": "#e8c040",
+    "leg": "#e8b8a0",
+    "talon": "#6a5a50",
+    "bag": "#7a4a2a",
+    "stone": "#7a766e",
+    "capcloth": "#2a3a6a"
+   },
+   "face_style": {
+    "eye": "round",
+    "iris": "#e8d470",
+    "around": [
+     "ring"
+    ],
+    "brows": [
+     "angry",
+     1.0
+    ],
+    "mouth": "beakline",
+    "eyek": 1.0
+   },
+   "build": [
+    [
+     "bird",
+     {
+      "sp": "gull",
+      "head": 1.05,
+      "beak": "short",
+      "beak_k": 1.05,
+      "wings": "fold",
+      "tail": "wedge",
+      "z0": 2.4,
+      "wingr": "wing"
+     }
+    ],
+    [
+     "cap",
+     {
+      "kind": "post",
+      "part": "head",
+      "k": 0.85,
+      "tilt": -4
+     }
+    ],
+    [
+     "bag",
+     {
+      "part": "body",
+      "size": [
+       4.6,
+       2.0,
+       4.0
+      ]
+     }
+    ],
+    [
+     "letter",
+     {
+      "part": "head",
+      "c": "BEAK+0,0.8,-0.3",
+      "w": 4.2,
+      "h": 3.0,
+      "rx": 72
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "rock",
+      "r": 11.0,
+      "h": 2.4,
+      "part": "stand"
+     }
+    ],
+    [
+     "gim",
+     "flap",
+     {
+      "f0": 6,
+      "f1": 34,
+      "amp": 48,
+      "step": 4
+     }
+    ],
+    [
+     "gim",
+     "hop",
+     {
+      "f0": 8,
+      "n": 2,
+      "h": 3.0,
+      "step": 10
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "head",
+      "keys": [
+       [
+        30,
+        {}
+       ],
+       [
+        36,
+        {
+         "rot": [
+          "X",
+          14
+         ]
+        }
+       ],
+       [
+        44,
+        {}
+       ]
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "rakko",
+   "name": "Postmaster Sea Otter",
+   "jp": "ラッコ",
+   "rarity": "uncommon",
+   "species": "otter",
+   "desc": "A sea otter postmaster floating on its back, a letter laid on its tummy and a hanko stamp in its paw, the official desk being its own belly. Press: stamp, stamp, stamp.",
+   "gimmick": {
+    "text": "Stamp",
+    "sfx": [
+     [
+      0.35,
+      "toyTap"
+     ],
+     [
+      0.7,
+      "toyTap"
+     ],
+     [
+      1.05,
+      "toyTap"
+     ],
+     [
+      1.5,
+      "toyClick",
+      {
+       "f": 1100
+      }
+     ]
+    ]
+   },
+   "palette": {
+    "fur": "#6a4a34",
+    "fur2": "#d8c8b0",
+    "nose": "#2a2224",
+    "tailskin": "#5a3e2c",
+    "sea": "#2a6a8a"
+   },
+   "face": {
+    "eyes": "dot",
+    "spread": 0.9,
+    "size": 0.08,
+    "dy": 0.12
+   },
+   "build": [
+    [
+     "mammal",
+     {
+      "sp": "otter",
+      "pose": "sit",
+      "head": 1.0,
+      "bw": 1.05,
+      "snout": 0.22,
+      "snoutw": 0.6,
+      "ears": "tiny",
+      "tail": "none",
+      "hands": [
+       [
+        -2.6,
+        -9.8,
+        12.2
+       ],
+       [
+        3.6,
+        -8.4,
+        8.4
+       ]
+      ]
+     }
+    ],
+    [
+     "hanko",
+     {
+      "part": "arm_r",
+      "c": "HAND_R+0,1.0,0",
+      "r": 0.9,
+      "h": 3.0,
+      "rx": 90
+     }
+    ],
+    [
+     "letter",
+     {
+      "part": "body",
+      "c": "BELLY+0,0.5,1.4",
+      "w": 4.6,
+      "h": 3.4
+     }
+    ],
+    [
+     "xform",
+     {
+      "deg": -62,
+      "axis": "X",
+      "pivot": [
+       0,
+       0,
+       0
+      ],
+      "move": [
+       0,
+       -6.0,
+       1.2
+      ],
+      "floor": 1.4
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "wave",
+      "r": 13.0,
+      "h": 2.6,
+      "part": "sea"
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "arm_r",
+      "keys": [
+       [
+        8,
+        {}
+       ],
+       [
+        13,
+        {
+         "move": [
+          0,
+          1.4,
+          -2.6
+         ]
+        }
+       ],
+       [
+        16,
+        {}
+       ],
+       [
+        20,
+        {
+         "move": [
+          0,
+          1.4,
+          -2.6
+         ]
+        }
+       ],
+       [
+        23,
+        {}
+       ],
+       [
+        27,
+        {
+         "move": [
+          0,
+          1.4,
+          -2.6
+         ]
+        }
+       ],
+       [
+        31,
+        {}
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "head",
+      "keys": [
+       [
+        10,
+        {}
+       ],
+       [
+        13,
+        {
+         "rot": [
+          "X",
+          8
+         ]
+        }
+       ],
+       [
+        17,
+        {}
+       ],
+       [
+        20,
+        {
+         "rot": [
+          "X",
+          8
+         ]
+        }
+       ],
+       [
+        24,
+        {}
+       ],
+       [
+        27,
+        {
+         "rot": [
+          "X",
+          8
+         ]
+        }
+       ],
+       [
+        33,
+        {}
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "body",
+      "keys": [
+       [
+        34,
+        {}
+       ],
+       [
+        42,
+        {
+         "rot": [
+          "Y",
+          8
+         ]
+        }
+       ],
+       [
+        50,
+        {
+         "rot": [
+          "Y",
+          -6
+         ]
+        }
+       ],
+       [
+        58,
+        {}
+       ]
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "shiomaneki",
+   "name": "Fiddler Crab Mail Sorter",
+   "jp": "シオマネキ",
+   "rarity": "rare",
+   "species": "crab",
+   "desc": "A fiddler crab in a postman's cap, holding a letter in its little claw and waving the mail through with its one enormous orange claw. Press: the big claw beckons, wave after wave.",
+   "gimmick": {
+    "text": "Wave",
+    "sfx": [
+     [
+      0.25,
+      "toyClick",
+      {
+       "f": 900
+      }
+     ],
+     [
+      0.6,
+      "toyClick",
+      {
+       "f": 1000
+      }
+     ],
+     [
+      0.95,
+      "toyClick",
+      {
+       "f": 900
+      }
+     ],
+     [
+      1.4,
+      "toySnap",
+      {
+       "f": 1200
+      }
+     ]
+    ]
+   },
+   "palette": {
+    "shell": "#3a4a72",
+    "under": "#d8d0c0",
+    "tip": "#f2ece0",
+    "bigclaw": "#e8903a",
+    "capcloth": "#2a3a6a"
+   },
+   "build": [
+    [
+     "crab",
+     {
+      "sp": "crab",
+      "w": 11.0,
+      "d": 8.0,
+      "h": 4.6,
+      "claws": [
+       2.4,
+       0.6
+      ],
+      "legs": 8.5,
+      "stalk": 3.6,
+      "lift": 2.6,
+      "claw_regions": [
+       "bigclaw",
+       "shell"
+      ]
+     }
+    ],
+    [
+     "cap",
+     {
+      "kind": "post",
+      "part": "body",
+      "at": [
+       0,
+       -0.4,
+       7.4
+      ],
+      "k": 0.75,
+      "tilt": -6
+     }
+    ],
+    [
+     "letter",
+     {
+      "part": "claw_l",
+      "c": "CLAW_L+0,-0.4,1.0",
+      "w": 3.0,
+      "h": 2.2,
+      "rz": 20
+     }
+    ],
+    [
+     "xform",
+     {
+      "deg": 0,
+      "axis": "Z",
+      "move": [
+       0.6,
+       1.4,
+       2.4
+      ]
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "rock",
+      "r": 12.0,
+      "h": 2.4,
+      "part": "stand"
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "claw_r",
+      "f0": 6,
+      "f1": 48,
+      "axis": "X",
+      "amp": 22,
+      "step": 7,
+      "base": [
+       "X",
+       -12
+      ]
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "claw_r_f",
+      "f0": 44,
+      "f1": 56,
+      "axis": "Y",
+      "amp": 16,
+      "step": 3
+     }
+    ],
+    [
+     "gim",
+     "hop",
+     {
+      "f0": 8,
+      "n": 1,
+      "h": 1.2,
+      "step": 12
+     }
+    ]
+   ]
+  },
+  {
+   "id": "tatsu",
+   "name": "Seahorse Express",
+   "jp": "タツノオトシゴ",
+   "rarity": "secret",
+   "species": "fish",
+   "desc": "The secret: the seahorse express rider, curled round a branch of coral with saddlebags of special-delivery post and a tiny peaked cap. Press: it gallops, bobbing up and down like a carousel horse.",
+   "gimmick": {
+    "text": "Gallop",
+    "sfx": [
+     [
+      0.25,
+      "toyTap"
+     ],
+     [
+      0.5,
+      "toyTap"
+     ],
+     [
+      0.8,
+      "toyTap"
+     ],
+     [
+      1.05,
+      "toyTap"
+     ],
+     [
+      1.5,
+      "pop"
+     ]
+    ]
+   },
+   "detail": 1.5,
+   "palette": {
+    "scale": "#e89a3a",
+    "belly": "#f2d49a",
+    "fin": "#f6e0b0",
+    "coral": "#e86a6a",
+    "bag": "#3a5a8a",
+    "capcloth": "#c8281e",
+    "capband": "#2a3a6a"
+   },
+   "build": [
+    [
+     "fish",
+     {
+      "kind": "seahorse",
+      "L": 30
+     }
+    ],
+    [
+     "xform",
+     {
+      "deg": 0,
+      "axis": "Z",
+      "move": [
+       0,
+       0,
+       5.0
+      ]
+     }
+    ],
+    [
+     "cap",
+     {
+      "kind": "post",
+      "part": "body",
+      "at": "HEAD+0,0.8,2.4",
+      "k": 0.62,
+      "tilt": -12
+     }
+    ],
+    [
+     "bag",
+     {
+      "part": "body",
+      "at": "BACK+-3.2,-0.6,-1.0",
+      "size": [
+       3.2,
+       1.6,
+       3.4
+      ],
+      "strap_from": "BACK+3.0,-0.6,1.6",
+      "col": "#3a5a8a"
+     }
+    ],
+    [
+     "base",
+     {
+      "kind": "coral",
+      "r": 10.0,
+      "h": 2.4,
+      "part": "stand",
+      "top": "CURL"
+     }
+    ],
+    [
+     "gim",
+     "seq",
+     {
+      "bone": "body",
+      "keys": [
+       [
+        6,
+        {}
+       ],
+       [
+        12,
+        {
+         "move": [
+          0,
+          0,
+          2.4
+         ],
+         "rot": [
+          "X",
+          -6
+         ]
+        }
+       ],
+       [
+        18,
+        {
+         "move": [
+          0,
+          0,
+          0.2
+         ]
+        }
+       ],
+       [
+        24,
+        {
+         "move": [
+          0,
+          0,
+          2.4
+         ],
+         "rot": [
+          "X",
+          -6
+         ]
+        }
+       ],
+       [
+        30,
+        {
+         "move": [
+          0,
+          0,
+          0.2
+         ]
+        }
+       ],
+       [
+        36,
+        {
+         "move": [
+          0,
+          0,
+          2.4
+         ],
+         "rot": [
+          "X",
+          -6
+         ]
+        }
+       ],
+       [
+        44,
+        {}
+       ]
+      ]
+     }
+    ],
+    [
+     "gim",
+     "wave",
+     {
+      "bone": "tail",
+      "f0": 10,
+      "f1": 46,
+      "axis": "X",
+      "amp": 8,
+      "step": 6
+     }
+    ]
+   ]
+  }
+ ]
+}

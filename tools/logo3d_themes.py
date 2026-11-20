@@ -189,3 +189,11 @@ THEMES = {
                         (0xe8702a, 0xf8b888, 0xa8481a), (0x7a4ab0, 0xc0a0e8, 0x4e2e7a))],
         bits=[B('knot', 'all', paint='front')]),
 }
+
+
+try:  # the mass-produced series' title themes, from their spec files (tools/newseries.py; a hand-written entry wins)
+    import series_specs as _SS
+    for _sid, _t in _SS.themes().items():
+        THEMES.setdefault(_sid, _t)
+except Exception as _e:
+    print('logo3d_themes: series specs skipped:', _e)
