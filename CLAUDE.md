@@ -69,7 +69,15 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   drawn water), no generic "AI" backgrounds, no hanging confetti / bunting / pennants.**
   **Posters and cards copy the owner's gashapon boards (scratchpad/ref_gacha) closely, ALL TEXT IN ENGLISH, ALL
   TEXT IN PIXEL-ART FONTS** (Alagard, the 5x7 bitmap font, OFL pixel fonts), crisp at the pixel grid; only hard pixel
-  outlines and hard offset shadows, no glow, gradient, bevel or slick AI-style effects; every poster a unique layout. Real public-domain / CC0 vintage posters are welcome (brands retouched out); the rest is designed to a
+  outlines and hard offset shadows, no glow, gradient, bevel or slick AI-style effects; every poster a unique layout.
+  **Titles are 3D, hand-painted and interactive (owner, latest; overrides "flat" for titles only):** series names and
+  big call-outs are chunky extruded blocks built from our pixel fonts' glyphs, modelled and rendered in Blender
+  (tools/logo3d.py + art/blender/logo3d/scene.py), painted like the toys (brush-stroke colour per letter, facet-edge
+  rim, painted side colour, chipped wear) under the toy key light; letters tilt, bounce, stack, overlap and lean, and
+  the series' own toys sit on, peek behind, hold or push them in the same scene (real contact shadows); each logo in
+  its series' colours, every layout different; pixel-snapped at card scale with an ink / cream die-cut keyline. Small
+  text (legend, warnings, barcode, kickers) stays flat crisp pixel font. Still no glow, gradient, chrome, Word-Art
+  bevel or "AI" 3D text presets. Real public-domain / CC0 vintage posters are welcome (brands retouched out); the rest is designed to a
   graphic-designer standard with free (OFL) print fonts (mincho, gothic, retro display), on real scanned paper
   (folds, fade, tape, wear). Typography stays flat (no glows, gradients, bevels). All names and brands are original
   (real ones are genre reference only). Paper UI uses real paper scans too.

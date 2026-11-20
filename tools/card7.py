@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw
 from printkit import source, rgb
 from pixprint import Sheet, line_mask, _dilate, upscale
 from lettering import emblem
+import logo3d
 import paperkit as PK
 from card6 import Card, mixc, deep, lum, W, H, WH, INK, PAPER, GREY, YEL
 
@@ -68,11 +69,12 @@ def kit_sprite(name, frame=0, scale=1):
     return im.resize((sp['w'] * scale, sp['h'] * scale), Image.NEAREST) if scale != 1 else im
 
 
-def coin(S, cx, cy, r, price, fill=GOLD, ink=INK):
+def coin(S, cx, cy, r, price, fill=GOLD, ink=INK, num=True):
     """The price coin: the kit's pixel 500-yen coin at 2x, the price and YEN printed across it."""
     sp = kit_sprite('coin500', 0, 2)
     S.im.alpha_composite(sp, (int(cx - sp.width // 2), int(cy - sp.height // 2)))
-    S.text('%d' % price, cx, cy - 8, 'b5', 2, ink, anchor='mt', outline=[(1, WH)]); S.text('YEN', cx, cy + 8, 'micro5', 1, ink, anchor='mt', outline=[(1, WH)])
+    if num: S.text('%d' % price, cx, cy - 8, 'b5', 2, ink, anchor='mt', outline=[(1, WH)])
+    S.text('YEN', cx, cy + 8, 'micro5', 1, ink, anchor='mt', outline=[(1, WH)])
 
 
 def capsule(S, x, y, w, h, top, bot, words, ink=INK):
@@ -98,7 +100,7 @@ class Card7(Card):
     """Card plus G: a 2x layer of real photo grounds under everything."""
     def __init__(self, s, ctx):
         super().__init__(s, ctx)
-        self.G = Sheet(2 * W, 2 * H, PAPER); self.B = Sheet(W, H, None)
+        self.G = Sheet(2 * W, 2 * H, PAPER); self.B = Sheet(W, H, None); self.TOP = Sheet(2 * W, 2 * H, None)
 
     def photo(self, ref, box, focus=(0.5, 0.5, 1.0), tint=None, k=0.35, bright=1.0, con=1.0, layer=None, rep=1):
         """A real photo ground cropped to box, colour-graded toward tint (k: how far), hard-edged."""
@@ -157,17 +159,21 @@ def crest(K, x0, x1, top, bot, layer='front', tint=None, k=0.3):
     (K.FC if layer == 'front' else K.P).im.alpha_composite(Image.fromarray(a.clip(0, 255).astype(np.uint8), 'RGBA'), (2 * x0, 2 * top))
 
 
-def price_piece(F, style, x, y, price, col, ink=INK):
-    if style == 'coin': coin(F, x, y, 21, price, fill=col)
+def price_piece(F, style, x, y, price, col, ink=INK, num=True):
+    """The price piece; num=False leaves the number off for the 3D price (tools/logo3d.py) on top."""
+    if style == 'coin': coin(F, x, y, 21, price, fill=col, num=num)
     elif style == 'tsuba':
         r = 22; o = [(x + math.cos(math.pi / 8 + i * math.pi / 4) * r, y + math.sin(math.pi / 8 + i * math.pi / 4) * r) for i in range(8)]
         F.poly([(px + (px - x) / r * 1.5, py + (py - y) / r * 1.5) for px, py in o], ink); F.poly(o, 0x2a2224)
-        F.rect(x - 3, y - r + 6, 6, 9, col); F.text('%d' % price, x, y - 2, 'b5', 2, col, anchor='mt'); F.text('YEN', x, y + 13, 'micro5', 1, WH, anchor='mt')
+        F.rect(x - 3, y - r + 6, 6, 9, col)
+        if num: F.text('%d' % price, x, y - 2, 'b5', 2, col, anchor='mt')
+        F.text('YEN', x, y + 13, 'micro5', 1, WH, anchor='mt')
     else:  # ticket: a stub with punched corners
         F.rect(x - 31, y - 15, 62, 30, ink); F.rect(x - 30, y - 14, 60, 28, col)
         for cx_, cy_ in ((x - 30, y - 14), (x + 27, y - 14), (x - 30, y + 11), (x + 27, y + 11)): F.rect(cx_, cy_, 3, 3, ink)
         F.rect(x + 12, y - 13, 1, 26, ink)
-        F.text('%d' % price, x - 9, y - 10, 'b5', 2, ink, anchor='mt'); F.text('YEN', x - 9, y + 5, 'micro5', 1, ink, anchor='mt')
+        if num: F.text('%d' % price, x - 9, y - 10, 'b5', 2, ink, anchor='mt')
+        F.text('YEN', x - 9, y + 5, 'micro5', 1, ink, anchor='mt')
         F.text('ADMIT', x + 21, y - 9, 'micro5', 1, ink, anchor='mt'); F.text('ONE', x + 21, y - 2, 'micro5', 1, ink, anchor='mt')
 
 
@@ -200,32 +206,68 @@ def designer(K, c):
         cx = x0 + cw * (i + .5); F.rect(int(cx) - 7, foot - 1, 14, 9, ink)
         F.text('%02d' % (i + 1), cx, foot + 1, 'micro5', 1, c.get('numcol', YEL) if it['secret'] else WH, anchor='mt')
         if it['secret']: F.text('?', cx, foot - lh // 2 - 4, 'b5', 2, c.get('numcol', YEL), anchor='mt', outline=[(1, ink)])
-    # logo
-    lx, ly, lw, lhh = c['logo']; face = c['face']; lines = c['lines']
-    k = fit_logo(lines, face, lw, lhh, c.get('big', True)); y = ly; bb = None; rn = sum(map(ord, K.sid))
-    for j, l in enumerate(lines):
-        ks = [k + (1 if (i == 0 and c.get('big', True)) else 0) for i in range(len(l))]
-        bnc = [((rn * (i + 3) * 7) % 5 - 2) * max(1, k // 2) for i in range(len(l))]
-        lyr = [(1, ink), (2, col), (1, ink)]
-        ax = lx + (c.get('indent', 6) * j if c.get('align', 'l') == 'l' else 0)
-        bb = logo7(F, l, ax, y, face, ks, fill, lyr, drop=(3, 3, ink), track=c.get('track', 0), bounce=bnc, space=c.get('space'))
-        y = bb[3] - 3
+    # logo: the 3D hand-painted title (tools/logo3d.py: pixel-font glyphs as painted blocks with the series' toys,
+    # rendered in Blender at card scale), placed 1:1 on the 2x layer in front of the scene; the flat pixel logotype
+    # only if the render is missing
+    cc = dict(c, _price=K.s['price']); G3 = lambda key: logo3d.get(K.sid + key, K.sid, cc, K.items, K.hero['id'])
+    lx, ly, lw, lhh = c['logo']; lg = G3('')
+    if lg is not None:
+        gx = 2 * lx + (2 * lw - lg.width + 10 if c.get('align', 'l') == 'r' else -10); gy = 2 * ly - 10
+        K.FC.im.alpha_composite(lg, (gx, gy)); bb = (gx // 2, gy // 2, (gx + lg.width) // 2, (gy + lg.height) // 2 - 5)
+    else:
+        face = c['face']; lines = c['lines']
+        k = fit_logo(lines, face, lw, lhh, c.get('big', True)); y = ly; bb = None; rn = sum(map(ord, K.sid))
+        for j, l in enumerate(lines):
+            ks = [k + (1 if (i == 0 and c.get('big', True)) else 0) for i in range(len(l))]
+            bnc = [((rn * (i + 3) * 7) % 5 - 2) * max(1, k // 2) for i in range(len(l))]
+            lyr = [(1, ink), (2, col), (1, ink)]
+            ax = lx + (c.get('indent', 6) * j if c.get('align', 'l') == 'l' else 0)
+            bb = logo7(F, l, ax, y, face, ks, fill, lyr, drop=(3, 3, ink), track=c.get('track', 0), bounce=bnc, space=c.get('space'))
+            y = bb[3] - 3
     tx, ty = c.get('kick_at', (lx + 2, bb[3] + 4))
     if ty > ly: ty = max(ty, bb[3] + 4)  # a kicker under the logo never collides with it
     for j, l in enumerate(c['kick']): F.text(l, tx, ty + 9 * j, 'b5', 1, WH if j == 0 else fill, outline=[(1, ink)])
+    kb = (tx, ty, tx + max(line_mask(l, 'b5')[0].shape[1] for l in c['kick']) + 2, ty + 9 * len(c['kick']))
     if c.get('vol'): vx, vy = c['vol']; F.rect(vx, vy, 34, 11, ink); F.text('VOL.1', vx + 17, vy + 2, 'b5', 1, fill, anchor='mt')
-    if c.get('burst'): bx, by, br, bl, bf = c['burst']; burst(F, bx, by, br, 10, bf, lines=bl, col=ink if lum(bf) > 0.5 else WH, face='micro5', rot=0.25)
     if c.get('flow'):  # right-hand logos: the price and the capsule flow under the kicker
         ky = ty + 9 * len(c['kick']) + 20; c['price_at'] = (tx + 31, ky); c['caps'] = (tx + 70, ky - 7)
-    px, py = c['price_at']; price_piece(F, c.get('price', 'coin'), px, py, K.s['price'], c.get('pricecol', GOLD))
+    px, py = c['price_at']; st = c.get('price', 'coin'); pr = G3('_price')
+    price_piece(F, st, px, py, K.s['price'], c.get('pricecol', GOLD), num=pr is None)
+    if pr is not None:  # the 3D price stands on the piece where the printed number was
+        qx, qy = {'coin': (px, py - 2), 'tsuba': (px, py + 4), 'ticket': (px - 9, py - 4)}[st]
+        K.TOP.im.alpha_composite(pr, (int(2 * qx - pr.width / 2), int(2 * qy - pr.height / 2)))
     cx_, cy_ = c['caps']; capsule(F, cx_, cy_, 66, 15, col, WH, '%d TYPES' % n)
+    tags = []
     if hb:
         X0, Y0, X1, Y1 = hb; w_, h_ = X1 - X0, Y1 - Y0
-        for t, tx_, ty_, fx, fy in c.get('calls', []):
-            callout(F, t, tx_, ty_, X0 + w_ * fx, Y0 + h_ * fy, anchor='rm')
+        calls = c.get('calls', []); dy = 0
+        for t, tx_, ty_, fx, fy in calls:  # tags the taller 3D logo would cover move down under it, together
+            tw = line_mask(t, 'micro5')[0].shape[1] + 6
+            for b_ in (bb, kb):
+                if tx_ - tw < b_[2] and tx_ > b_[0] and ty_ + dy - 6 < b_[3] and ty_ + dy + 6 > b_[1]: dy = max(dy, b_[3] + 7 - ty_)
+        for t, tx_, ty_, fx, fy in calls:
+            callout(F, t, tx_, ty_ + dy, X0 + w_ * fx, Y0 + h_ * fy, anchor='rm')
+            tags.append((tx_ - line_mask(t, 'micro5')[0].shape[1] - 7, ty_ + dy - 6, tx_ + 1, ty_ + dy + 6))
+    if c.get('burst'):  # the call-out: 3D painted words (tools/logo3d.py) clear of the logo; the flat sticker if missing
+        bx, by, br, bl, bf = c['burst']; cl = G3('_call')
+        if cl is not None:
+            bx, by = clear_of(tags + [bb, kb, (px - 32, py - 22, px + 32, py + 22), (cx_, cy_, cx_ + 66, cy_ + 15)], bx, by, cl.width / 4, cl.height / 4)
+            K.TOP.im.alpha_composite(cl, (int(2 * bx - cl.width / 2), int(2 * by - cl.height / 2)))
+        else: burst(F, bx, by, br, 10, bf, lines=bl, col=ink if lum(bf) > 0.5 else WH, face='micro5', rot=0.25)
     fill_space(K, POOL.get(K.sid, []))
     sw = c.get('sw', [col, fill, 0x3a6ab0, 0x5a8a3a, 0xc87a3a, 0x2a2a30, 0x8a5a9a])
     K.legal(246, [(i + 1, it['name'].upper().replace('THE ', ''), sw[i % len(sw)]) for i, it in enumerate(K.items)], col, col)
+
+
+def clear_of(boxes, x, y, hw, hh):
+    """A spot for a call-out centred near (x, y) whose box (half-size hw x hh) stays off the given boxes (logo,
+    kicker, price, capsule) and on the card: the nearest free one on a ring search."""
+    hit = lambda X, Y: any(X - hw < b[2] and X + hw > b[0] and Y - hh < b[3] and Y + hh > b[1] for b in boxes)
+    for r in range(0, 160, 6):
+        for k in range(max(1, r // 3)):
+            a = 2 * math.pi * k / max(1, r // 3); X, Y = x + r * math.cos(a), y + r * math.sin(a)
+            if hw <= X <= W - hw and hh <= Y <= 236 - hh and not hit(X, Y): return X, Y
+    return x, y
 
 
 def fill_space(K, pool, top=246, cell=8):
@@ -464,5 +506,5 @@ def card7(s, ctx):
     CARDS[s['id']](K)
     im = upscale(K.B.im, 2)
     out = K.G.im.convert('RGBA'); out.alpha_composite(im); out.alpha_composite(K.P.im); out.alpha_composite(upscale(K.M.im, 2))
-    out.alpha_composite(K.T.im); out.alpha_composite(K.FC.im); out.alpha_composite(upscale(K.F.im, 2))
+    out.alpha_composite(K.T.im); out.alpha_composite(K.FC.im); out.alpha_composite(upscale(K.F.im, 2)); out.alpha_composite(K.TOP.im)
     return PK.age(out.convert('RGB'), paper='Paper001', grain_k=0.14, fade=0.0, seed=sum(map(ord, s['id']))).convert('RGB')
