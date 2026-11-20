@@ -13,7 +13,7 @@
 import * as THREE from 'three';
 import { bakedVoxelMesh } from '../people/voxbake.js';
 import { createHuman } from '../people/index.js';
-import { walkTexels, cursor } from '../people/mesh.js';
+import { walkAtlas } from '../people/paint.js';
 import { dressHuman } from '../people/cosmetics.js';
 import { shadeInto, over, h2, mixc, G } from '../people/paintlib.js';
 import { VoxelModel, metal, gloss } from '../voxel/VoxelModel.js';
@@ -31,16 +31,8 @@ const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1
  */
 export function retouch(h, fn) {
   h.finishPaint?.();
-  const d = h.pix.d, W = h.pix.w, o = new Float32Array(4), c = cursor();
-  for (const f of h.faces) {
-    const it = walkTexels(f, c, (c) => {
-      const p = (c.j * W + c.i) * 4;
-      o[0] = d[p]; o[1] = d[p + 1]; o[2] = d[p + 2]; o[3] = d[p + 3];
-      if (!fn(c, o)) return;
-      d[p] = Math.max(0, Math.min(255, o[0])); d[p + 1] = Math.max(0, Math.min(255, o[1])); d[p + 2] = Math.max(0, Math.min(255, o[2])); d[p + 3] = o[3];
-    });
-    while (!it.next().done);
-  }
+  // the person's own atlas layout (src/people/mesh.js faces): every texel once, with its rest-pose point, normal, part
+  walkAtlas(h.faces.filter((f) => f.seg.mat !== 'hairSwatch'), h.P, h.pix, fn);
   h.pix.dirty = true;
   h.pix.flush();
   h.tex.needsUpdate = true;

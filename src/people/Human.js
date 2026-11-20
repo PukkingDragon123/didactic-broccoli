@@ -109,6 +109,8 @@ export class Human {
     this.face = new FacePainter(spec, this.P, m.block, this.pix);
     this.E = exprParams('neutral');
     this.tex = this.pix.texture();
+    // high-resolution pixel art: crisp texels up close, mipmapped far away (the atlas islands are grown for it)
+    this.tex.magFilter = THREE.NearestFilter;
     if (opts.lazy === false) {
       paintAtlas(spec, this.P, m.faces, this.pix); this.face.paint(this.E); this.pix.flush();
       this.painted();
@@ -257,6 +259,7 @@ export class Human {
     const P = this.P, sp = this.spec;
     this.style = { ...STYLE.normal, ...(STYLE[sp.walk?.style] || {}) };
     if (sp.walk?.hunch) this.style.hunch += sp.walk.hunch * 0.15;
+    if (P.armClear) this.style.spread = Math.max(this.style.spread, P.armClear); // hands clear the hips / a skirt
     this.t = Math.random() * 100;
     this.phase = 0.05;
     this.spd = 0; this.walkW = 0; this.walkV = 0;
@@ -687,7 +690,7 @@ export class Human {
 
   flushFace(r) {
     const B = this.face.B;
-    const [x, y, w, h] = r || [B.x - 1, B.y - 1, B.w + 2, B.h + 2];
+    const [x, y, w, h] = r || [B.x - 2, B.y - 2, B.w + 4, B.h + 4];
     this.pix.ctx.putImageData(this.pix.img, 0, 0, x, y, w, h);
     this.pix.dirty = false;
     this.tex.needsUpdate = true;
