@@ -20,12 +20,12 @@ import face  # noqa: E402
 face.SPECIES.update({'tabigame/pagoda': 'pondturtle', 'tabigame/pisa': 'slider', 'tabigame/tokei': 'boxturtle',
                      'tabigame/piramido': 'sulcata', 'tabigame/tamanegi': 'steppe', 'tabigame/sekai': 'seaturtle'})
 face.STYLE.update({
-    'pondturtle': dict(eye='round', iris='#7a5a20', lid=True, tilt=-6, mouth='beakline'),                 # calm
-    'slider': dict(eye='round', iris='#5a7a30', brows=('worried', 1.1), mouth='beakline', extras=('sweat',)),  # nervous
-    'boxturtle': dict(eye='round', iris='#d8602a', eyek=1.3, tilt=4, mouth='beakline'),                   # red-eyed, prim
-    'sulcata': dict(eye='round', iris='#4a3018', lid=True, tilt=-10, brows=('flat', 1.2), mouth='beakline'),  # grumpy elder
-    'steppe': dict(eye='round', iris='#3a2a18', eyek=1.2, tilt=8, mouth='beakline', extras=('blush',)),  # cheeky
-    'seaturtle': dict(eye='round', iris='#2a3a30', lid=True, lashes=2, tilt=-4, mouth='beakline'),      # wise
+    'pondturtle': dict(eye='round', iris='#7a5a20', lid=True, tilt=-6, mouth='beakline', eyek=1.0),                 # calm
+    'slider': dict(eye='round', iris='#5a7a30', brows=('worried', 1.1), mouth='beakline', extras=('sweat',), eyek=1.0),  # nervous
+    'boxturtle': dict(eye='round', iris='#d8602a', eyek=1.1, tilt=4, mouth='beakline'),                   # red-eyed, prim
+    'sulcata': dict(eye='round', iris='#4a3018', lid=True, tilt=-10, brows=('flat', 1.2), mouth='beakline', eyek=0.95),  # grumpy elder
+    'steppe': dict(eye='round', iris='#3a2a18', eyek=1.05, tilt=8, mouth='beakline', extras=('blush',)),  # cheeky
+    'seaturtle': dict(eye='round', iris='#2a3a30', lid=True, lashes=2, tilt=-4, mouth='beakline', eyek=1.0),      # wise
 })
 
 
@@ -238,7 +238,7 @@ def paint_turtle(P, pt, sh, T, skin, shell, scute=None, plast='#d8c28a', claw='#
         P.fill(mr & (np.abs(np.mod(ang + np.pi / 12, np.pi / 6) - np.pi / 12) < 0.12), pt.ramp(scute, 6, shift=0.06), tone=sh, base=0.0)
 
 
-def turtle_face(P, T, seed, eyes=('dot', 0.55), mouth='upturn', blush=None, ink=None, yaw=0.0):
+def turtle_face(P, T, seed, eyes=('dot', 0.36), mouth='upturn', blush=None, ink=None, yaw=0.0):
     """The turtle's face on the front of its head (yaw: degrees the head was turned about the neck, +: toward +x)."""
     hk, HC = T.hk, T.HC
     c = np.array((0, HC[1] - 3.0 * hk, HC[2] + 0.6 * hk))
@@ -251,7 +251,7 @@ def turtle_face(P, T, seed, eyes=('dot', 0.55), mouth='upturn', blush=None, ink=
     where = P.region('face') | P.region('skin') | P.region('beak')
     kw = dict(ink=ink) if ink else {}
     fc = face.Face(P, c=tuple(c), axis=tuple(ax), where=where, seed=seed, **kw)
-    fc.eyes(eyes[0], spread=4.0 * hk, size=eyes[1] * hk, dy=0.5 * hk)
+    fc.eyes(eyes[0], spread=3.5 * hk, size=eyes[1] * hk, dy=0.5 * hk)
     fc.mouth(mouth, w=2.6 * hk, dy=-1.2 * hk, weight=0.32)
     if blush:
         fc.blush(4.6 * hk, -0.6 * hk, rx=0.8 * hk, ry=0.45 * hk, col=blush)

@@ -16,12 +16,12 @@ import face  # noqa: E402
 face.SPECIES.update({'okuni/kangaru': 'kangaroo', 'okuni/panda': 'panda', 'okuni/washi': 'eagle', 'okuni/kiwi': 'kiwi',
                      'okuni/biba': 'beaver', 'okuni/yunikon': 'unicorn'})
 face.STYLE.update({
-    'kangaroo': dict(eye='round', iris='#3a2418', lashes=2, tilt=-4, mouth='muzzle', muzzle='#ecd8b8'),          # easy-going
-    'panda': dict(eye='round', iris='#3a2a20', around=('patch',), patch='#221e22', eyek=1.15, mouth='muzzle', muzzle='#f2efe8'),  # placid
-    'eagle': dict(eye='round', iris='#e8c030', around=('ring',), tilt=14, brows=('angry', 1.5), mouth='beakline', eyek=1.1),   # fierce
+    'kangaroo': dict(eye='round', iris='#3a2418', lashes=2, tilt=-4, mouth='muzzle', muzzle='#ecd8b8', eyek=1.1),          # easy-going
+    'panda': dict(eye='round', iris='#3a2a20', around=('patch',), patch='#221e22', eyek=1.05, mouth='muzzle', muzzle='#f2efe8'),  # placid
+    'eagle': dict(eye='round', iris='#e8c030', around=('ring',), tilt=14, brows=('angry', 1.5), mouth='beakline', eyek=1.05),   # fierce
     'kiwi': dict(eye='round', iris='#2a1e18', eyek=0.9, spread=1.1, mouth=None),                                  # shy, tiny-eyed
-    'beaver': dict(eye='round', iris='#2a1e18', tilt=8, brows=('raised', 1.0), mouth='muzzle', muzzle='#c8a88a'),  # keen
-    'unicorn': dict(eye='round', iris='#6a4aa0', lid=True, lashes=3, tilt=6, mouth='muzzle', muzzle='#f4eef0'),   # proud
+    'beaver': dict(eye='round', iris='#2a1e18', tilt=8, brows=('raised', 1.0), mouth='muzzle', muzzle='#c8a88a', eyek=1.1),  # keen
+    'unicorn': dict(eye='round', iris='#6a4aa0', lid=True, lashes=3, tilt=6, mouth='muzzle', muzzle='#f4eef0', eyek=1.1),   # proud
 })
 
 

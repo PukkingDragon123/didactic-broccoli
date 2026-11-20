@@ -120,7 +120,7 @@ def paint(P, pt):
     P.fill('chrome', pt.ramp('#c0c4cc', 6, light=0.6), tone=sh, base=0.2, brush='metal')
     P.fill('grille', pt.ramp('#b8bcc4', 6, light=0.6), tone=sh, base=0.2, brush='metal')
     P.shift(P.region('grille') & (bands(Z, 0.5, 0.12) | bands(X + Y, 0.5, 0.12)), -1)
-    face_at(P, M, 306, size=0.6, mouth='open', dy_m=-2.2)
+    face_at(P, M, 306, size=0.46, mouth='open', dy_m=-2.2)
     P.lines(['coat', 'fur', 'deck'], step=1)
     P.clusters()
     return P.done()

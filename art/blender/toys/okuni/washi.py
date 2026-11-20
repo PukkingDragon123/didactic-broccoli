@@ -131,7 +131,7 @@ def paint(P, pt):
     P.fill('bat', pt.ramp('#d0a060', 6, shift=0.06), tone=sh, base=0.15, brush={'preset': 'wood', 'flow': 'along', 'axis': (-0.5, 0.6, 0.6), 'L': 6})
     P.fill(P.region('bat') & (Z < 16.4), pt.ramp('#2a2426', 4), tone=sh, base=0.1)   # grip tape
     fc = face.Face(P, c=G((0, -4.2, 27.0)), axis=(0, -1, 0.15), where=P.region('white') & (Z > 24.5), seed=133)
-    fc.eyes('dot', spread=4.8, size=0.62, dy=0.2)
+    fc.eyes('dot', spread=4.6, size=0.4, dy=0.2)
     P.lines(['jersey', 'navy'], step=1)
     P.lines(['beak'], ['white'], step=1)
     P.clusters()

@@ -208,7 +208,7 @@ def designer(K, c):
         bnc = [((rn * (i + 3) * 7) % 5 - 2) * max(1, k // 2) for i in range(len(l))]
         lyr = [(1, ink), (2, col), (1, ink)]
         ax = lx + (c.get('indent', 6) * j if c.get('align', 'l') == 'l' else 0)
-        bb = logo7(F, l, ax, y, face, ks, fill, lyr, drop=(3, 3, ink), track=c.get('track', 0), bounce=bnc)
+        bb = logo7(F, l, ax, y, face, ks, fill, lyr, drop=(3, 3, ink), track=c.get('track', 0), bounce=bnc, space=c.get('space'))
         y = bb[3] - 3
     tx, ty = c.get('kick_at', (lx + 2, bb[3] + 4))
     if ty > ly: ty = max(ty, bb[3] + 4)  # a kicker under the logo never collides with it
@@ -427,34 +427,13 @@ CFG = {
         price='ticket', pricecol=0xf6eedc, price_at=(38, 158), caps=(74, 180),
         calls=[('THE DUVET FLIPS BACK', 160, 128, 0.4, 0.3), ('PLATE COLOUR = RARITY', 160, 144, 0.25, 0.9)],
         sw=[0x2a5a9a, 0x3f8a4a, 0xc8302a, 0xe8b030, 0x26242a, 0xd8a840]),
-    'dango': dict(col=0x3f8a3a, fill=0xf8e6ea, face='jersey15', lines=['DANGO', 'SKEWER PALS'], logo=(130, 6, 186, 92), align='r', hero_id='hanami',
-        bg=[], back=[('peach_1', 30, 186, 46, -10), ('flower_1', 296, 70, 44, 0)], hero=(84, 206, 150, 110),
-        front=[('strawberry_0', 160, 210, 30, 12), ('saucer_2', 300, 214, 40, 0)], kick_at=(150, 92),
-        kick=['THREE BALLS,', 'ONE ANIMAL. SPIN THEM!'], burst=(292, 150, 21, ('IT', 'SPINS!'), 0xe07a8e),
-        price='coin', price_at=(190, 150), caps=(232, 140), flow=True,
-        calls=[('EACH BALL SPINS', 160, 126, 0.55, 0.45), ('HEAD HOPS OFF', 160, 142, 0.5, 0.15)],
+    'dango': dict(col=0x3f8a3a, fill=0xf8e6ea, face='jersey15', lines=['DANGO', 'SKEWER PALS'], logo=(6, 6, 156, 74), space=7, hero_id='hanami',
+        bg=[], back=[('flower_1', 300, 40, 44, 0), ('peach_1', 156, 186, 38, -10)], hero=(238, 204, 168, 110),
+        front=[('strawberry_0', 304, 210, 28, 12)],
+        kick=['THREE BALLS, ONE ANIMAL.', 'SPIN THEM ROUND!'], burst=(186, 28, 21, ('IT', 'SPINS!'), 0xe07a8e),
+        price='coin', price_at=(34, 156), caps=(70, 176),
+        calls=[('EACH BALL SPINS', 176, 126, 0.45, 0.5), ('THE HEAD HOPS OFF', 176, 142, 0.4, 0.15)],
         sw=[0xe07a8e, 0xa86224, 0x5e8c3c, 0x1e2a24, 0xd6ac68, 0xf6f3ea]),
-    'tabigame': dict(col=0x2a7a5a, fill=0xf2d040, face='jersey15', lines=['WORLD TOUR', 'TURTLES'], logo=(6, 6, 186, 92), hero_id='pagoda',
-        bg=[], back=[('sea_turtle_1', 290, 68, 56, -12), ('suitcase_2', 34, 190, 46, -8)], hero=(234, 208, 132, 156),
-        front=[('sun_hat_1', 130, 208, 34, 10), ('lighthouse_2', 306, 196, 40, 6)],
-        kick=['SLOW TRAVELLERS.', 'THEY BRING THE SIGHTS.'], burst=(170, 118, 21, ('LIFT', 'IT!'), 0xf2d040),
-        price='ticket', pricecol=0xf2ead6, price_at=(38, 150), caps=(70, 168),
-        calls=[('THE SHELL LIFTS OFF', 184, 104, 0.45, 0.3), ('HEAD AND LEGS PULL IN', 184, 120, 0.3, 0.8)],
-        sw=[0xc8402a, 0xefe9dc, 0xd6be86, 0xd4b07a, 0x3a8a4a, 0x2a64a8]),
-    'okuni': dict(col=0x2a5aa8, fill=0xf6eedc, face='jersey15', lines=['NATIONAL', 'ANIMAL PARADE'], logo=(124, 6, 192, 92), align='r', hero_id='kangaru',
-        bg=[], back=[('kite_1', 34, 60, 50, 20), ('balloon_2', 300, 150, 40, 0)], hero=(84, 208, 150, 130),
-        front=[('cowboy_hat_0', 158, 214, 34, -8), ('football_1', 302, 214, 28, 0)], kick_at=(150, 92),
-        kick=['EVERY COUNTRY SENDS', 'ITS BEST. IN COSTUME.'], burst=(292, 150, 21, ('IN', 'COSTUME!'), 0xe8443a),
-        price='coin', price_at=(190, 150), caps=(232, 140), flow=True,
-        calls=[('THE JOEY POPS UP', 164, 120, 0.55, 0.5), ('A BIG HOP', 164, 136, 0.5, 0.95)],
-        sw=[0xb4643a, 0xc8302e, 0x26345e, 0x26242a, 0xc0302a, 0xa88ad0]),
-    'kouchuu': dict(col=0xd8342e, fill=0xf2c230, face='ala', lines=['THE', 'HARDWINGS'], logo=(6, 6, 190, 92), hero_id='kuwagata',
-        bg=[], back=[('guitar_2', 294, 84, 54, 14), ('rose_1', 32, 192, 40, 0)], hero=(232, 208, 132, 152),
-        front=[('tie_1', 128, 208, 36, 20), ('watch_0', 304, 202, 32, 0)],
-        kick=['MOP-TOP BEETLE BEAT GROUP.', 'FOUR BEETLES, SIX LEGS EACH.'], burst=(170, 116, 21, ('SHAKE', 'IT!'), 0xf2c230),
-        price='ticket', pricecol=0xefe8d6, price_at=(38, 150), caps=(70, 168),
-        calls=[('MOP-TOPS SHAKE', 184, 104, 0.45, 0.2), ('WING-CASE TAILS', 184, 120, 0.6, 0.6)],
-        sw=[0x8a8c92, 0x2a2a30, 0xc8302a, 0x6a7a8c, 0x3a5a8a, 0x2a8a5a]),
 }
 CARDS = {sid: (lambda K, c=c: designer(K, c)) for sid, c in CFG.items()}
 

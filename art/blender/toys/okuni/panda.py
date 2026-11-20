@@ -112,7 +112,7 @@ def paint(P, pt):
     P.fill('leaf', pt.ramp('#5a9a3a', 6, shift=0.07), tone=sh, base=0.1)
     hd = P.region('white') & (Z > 20)
     fc = face.Face(P, c=(0, -6.0, 25.4), axis=(0, -1, 0.15), where=hd | P.region('nose'), seed=411)
-    fc.eyes('dot', spread=5.2, size=0.62, dy=0.6)
+    fc.eyes('dot', spread=5.0, size=0.4, dy=0.6)
     fc.mouth('upturn', w=2.4, dy=-2.4, weight=0.32)
     fc.blush(6.2, -1.4, rx=1.0, ry=0.55, col='#e8a0a0')
     P.lines(['jacket', 'sleeve'], ['black', 'white', 'trim'], step=1)

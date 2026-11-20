@@ -128,7 +128,7 @@ def paint(P, pt):
     P.shift(P.region('pipe') & bands(Z, 2.2, 0.35), 2)
     P.fill('ivory', pt.ramp('#efe6d0', 5, shift=0.04), tone=sh, base=0.2)
     fc = face.Face(P, c=G((0, -5.6, 26.4)), axis=(0, -1, 0.35), where=P.region('coat') | P.region('muzzle'), seed=1707)
-    fc.eyes('dot', spread=4.4, size=0.6, dy=0.9)
+    fc.eyes('dot', spread=4.2, size=0.38, dy=0.9)
     fc.blush(5.0, -0.4, rx=0.9, ry=0.5, col='#f0a0b8')
     P.lines(['kilt', 'sash', 'bagcover'], step=1)
     P.clusters()

@@ -22,12 +22,13 @@ for a, b in B.p['head']:   # a nervous glance back at the tower
 z0 = T.top - 1.2
 B.add('shell', turn('footing', [(0, 0), (7.6, 0), (7.8, 0.8), (7.2, 1.8), (0, 1.8)], (0, 0, z0), 'stone', tris=40, n=16))
 TB = (0, 0, z0 + 1.8)   # the tower's foot (the lean's pivot)
+LEAN = 6.5
 prof = [(0, 0), (5.0, 0)]
 z = 0.0
 ZS = []
-for k_ in range(6):
-    h = 3.6 if k_ == 0 else 2.5
-    prof += [(5.0, z + 0.05), (5.0, z + h - 0.55), (5.5, z + h - 0.4), (5.5, z + h - 0.05)]
+for k_ in range(5):
+    h = 4.0 if k_ == 0 else 3.0
+    prof += [(5.0, z + h - 0.5), (5.45, z + h - 0.4), (5.45, z + h)]
     ZS.append((z, h))
     z += h
 prof += [(3.9, z), (3.9, z + 2.8), (4.3, z + 3.0), (4.2, z + 3.4), (3.0, z + 3.9), (0, z + 4.3)]
@@ -39,24 +40,26 @@ def arcades(h):
         x, y, zz = V[:, 0], V[:, 1], V[:, 2] - TB[2]
         r = np.hypot(x, y)
         a = np.arctan2(y, x)
-        col = np.abs(np.mod(a * 14 / (2 * np.pi), 1.0) - 0.5) * 2   # 0 mid-arch .. 1 at a column
+        col = np.abs(np.mod(a * 12 / (2 * np.pi), 1.0) - 0.5) * 2   # 0 mid-arch .. 1 at a column
         d = np.zeros(len(V))
         for z_, h_ in ZS:
             lz = zz - z_
             top = h_ - 0.9 - 0.55 * col ** 2
-            inside = (col < 0.62) & (lz > 0.35) & (lz < top) & (r > 4.6) & (r < 5.2)
-            d -= 0.45 * inside
-        bz = zz - ZT   # the belfry's arches
-        bc = np.abs(np.mod(a * 8 / (2 * np.pi), 1.0) - 0.5) * 2
-        d -= 0.4 * ((bc < 0.55) & (bz > 0.4) & (bz < 2.2 - 0.4 * bc ** 2) & (r > 3.5) & (r < 4.1))
+            d -= 0.4 * ((col < 0.62) & (lz > 0.35) & (lz < top) & (r > 4.6) & (r < 5.2))
         return d
     tk.push(h, f)
 
 
-tw = turn('tower', prof, TB, ('marble', [('belfry', lambda C, N: C[:, 2] > TB[2] + ZT + 2.7)]), tris=230, n=20, sculpt=arcades, hi=3)
-for o in tw:
-    tk.rotate(o, 6.5, 'Y', pivot=TB)
-B.add('shell', tw)
+# the game mesh: the turned tower as it is, twelve crisp sides (a decimated cylinder crumples); the sculpt: its arcades
+tw_lo = tk.lathe('tower', prof, n=12, centre=TB)
+tw_lo['facet'] = 1
+tw_hi = tk.lathe('tower_hi', prof, n=24, centre=TB)
+tk.subsurf(tw_hi, 2)
+arcades(tw_hi)
+tk.regions(tw_hi, 'marble', [('belfry', lambda C, N: C[:, 2] > TB[2] + ZT + 2.7)])
+for o in (tw_lo, tw_hi):
+    tk.rotate(o, LEAN, 'Y', pivot=TB)
+B.add('shell', (tw_lo, tw_hi))
 T.commit(F)
 
 
@@ -87,9 +90,18 @@ def paint(P, pt):
     P.fill('stone', pt.ramp('#b8b2a4', 6, shift=0.04), tone=sh, base=0.05)
     mr = P.region('marble')
     P.fill(mr, pt.ramp('#efe9dc', 7, shift=0.04), tone=sh, base=0.2, brush={'preset': 'pvc', 'flow': 'down'})
-    P.fill(mr & (P.cav > 0.6), pt.ramp('#9a948a', 5, shift=0.04), tone=sh, base=0.0, brush=False)   # the arcades' shade
-    vein = np.abs(np.sin(X * 2.1 + Z * 0.9 + np.sin(Y * 1.7) * 1.5)) < 0.06
-    P.shift(mr & vein, -1)
+    d = P.pos - np.asarray(TB)
+    ca, sa = np.cos(np.radians(-LEAN)), np.sin(np.radians(-LEAN))
+    lx, lz0 = d[:, :, 0] * ca + d[:, :, 2] * sa, -d[:, :, 0] * sa + d[:, :, 2] * ca   # (tower space: the lean undone)
+    r = np.hypot(lx, d[:, :, 1])
+    col = np.abs(np.mod(np.arctan2(d[:, :, 1], lx) * 12 / (2 * np.pi), 1.0) - 0.5) * 2
+    niche = np.zeros(r.shape, bool)
+    for z_, h_ in ZS:
+        lz = lz0 - z_
+        niche |= (col < 0.6) & (lz > 0.35) & (lz < h_ - 0.9 - 0.55 * col ** 2) & (r < 5.3)
+    P.fill(mr & niche, pt.ramp('#a8a296', 5, shift=0.04), tone=sh, base=-0.1, brush=False)   # the arcades' shade
+    vein = np.abs(np.sin(X * 2.1 + Z * 0.9 + np.sin(Y * 1.7) * 1.5)) < 0.05
+    P.shift(mr & vein & ~niche, -1)
     P.fill('belfry', pt.ramp('#c8b48a', 6, shift=0.05), tone=sh, base=0.1)
     turtle_face(P, T, 917, yaw=22)
     P.lines(['marble'], ['stone', 'shell', 'marginal'], step=1)

@@ -116,7 +116,7 @@ def paint(P, pt):
     seam = br & (np.abs(d[:, :, 2] - 0.0) < 0.12) & (d[:, :, 2] > -2) & (P.on[:, :, 2] > -0.2)
     P.flat(seam & (np.abs(d[:, :, 0]) < 1.2), '#3a3230')
     fc = face.Face(P, c=(0, -9.6, 14.4), axis=(0, -1, 0.3), where=P.region('fur'), seed=219)
-    fc.eyes('dot', spread=3.4, size=0.45, dy=0.3)
+    fc.eyes('dot', spread=3.2, size=0.3, dy=0.3)
     fc.blush(4.2, -0.6, rx=0.7, ry=0.4, col='#d88a70')
     P.lines(['jersey', 'shorts', 'collar'], step=1)
     P.clusters()

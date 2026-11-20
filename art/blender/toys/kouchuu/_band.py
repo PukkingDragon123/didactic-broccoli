@@ -236,7 +236,7 @@ def paint_guitar(P, pt, sh, body='#b02a2a', burst=None, guard='#efe6d0', neck='#
     P.lines(['gbody'], step=1)
 
 
-def face_at(P, M, seed, where=None, size=0.62, spread=4.4, mouth='upturn', dy_m=-2.0):
+def face_at(P, M, seed, where=None, size=0.46, spread=4.2, mouth='upturn', dy_m=-2.0):
     """The member's face below the fringe."""
     k = M.hk
     o = getattr(M, 'off', V3(0, 0, 0))

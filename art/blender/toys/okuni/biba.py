@@ -129,7 +129,7 @@ def paint(P, pt):
     P.fill('cuff', pt.ramp('#f2efe6', 5, shift=0.04), tone=sh, base=0.15, brush='cloth')
     P.fill('pom', pt.ramp('#f2efe6', 5, shift=0.04), tone=sh, base=0.15, brush='fur')
     fc = face.Face(P, c=G((0, -4.4, 24.4)), axis=(0, -1, 0.15), where=P.region('fur') | P.region('muzzle') | P.region('nose'), seed=707)
-    fc.eyes('dot', spread=4.6, size=0.58, dy=0.6)
+    fc.eyes('dot', spread=4.4, size=0.36, dy=0.6)
     fc.mouth('upturn', w=2.0, dy=-2.2, weight=0.3)
     P.lines(['shirt', 'knit', 'cuff'], step=1)
     P.clusters()

@@ -103,7 +103,7 @@ def paint(P, pt):
     P.fill(dh & (Y < BD[1] - 1.5) & (np.abs(d - 3.3) < 0.45), pt.ramp('#c8302a', 5), tone=sh, base=0.2, brush=False)
     P.fill('brass', pt.ramp('#d8b048', 7, shift=0.08, light=0.6), tone=sh, base=0.2, brush={'preset': 'metal', 'flow': 'around'})
     P.shift(P.region('brass') & bands(np.hypot(X - CY[0], Y - CY[1]), 0.6, 0.12), -1)   # the lathing rings
-    face_at(P, M, 304, size=0.58)
+    face_at(P, M, 304, size=0.46)
     P.lines(['shell'], ['dhead', 'rim', 'rimc'], step=1)
     P.clusters()
     return P.done()

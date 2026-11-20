@@ -108,7 +108,7 @@ def paint(P, pt):
         P.fill(m, pt.ramp(col, 6, shift=0.05), tone=sh, base=0.2, brush='gloss')
     P.fill('lead', pt.ramp('#2a2628', 5, light=0.6), tone=sh, base=0.2)
     P.fill('plug', pt.ramp('#c0c4cc', 6, light=0.6), tone=sh, base=0.2, brush='metal')
-    face_at(P, M, 305, size=0.6)
+    face_at(P, M, 305, size=0.46)
     P.lines(['tweed'], step=1)
     P.clusters()
     return P.done()

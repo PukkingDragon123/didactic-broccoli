@@ -62,7 +62,7 @@ def paint(P, pt):
     for sx in (1, -1):   # the white cheek patches
         P.fill(P.region('chitin') & (np.linalg.norm(P.pos - np.array((sx * 4.4, -1.6, 21.4)), axis=2) < 1.5), pt.ramp('#f2efe6', 5), tone=sh, base=0.25)
     paint_guitar(P, pt, sh, body='#efe6cc', guard='#6a3a1e', neck='#5a3a24')
-    fc = face_at(P, M, 303, size=0.6)
+    fc = face_at(P, M, 303, size=0.46)
     P.clusters()
     return P.done()
 

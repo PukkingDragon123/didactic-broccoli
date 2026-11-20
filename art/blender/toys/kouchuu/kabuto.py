@@ -53,7 +53,7 @@ def paint(P, pt):
     paint_member(P, pt, sh, chitin='#4a2618', suit='#2a2a30', hair='#221a18')
     P.fill('horn', pt.ramp('#4a2618', 7, shift=0.07, light=0.6), tone=sh, base=0.25, brush={'preset': 'gloss', 'flow': 'along', 'axis': (0, -0.3, 1), 'shine': 0.5})
     paint_guitar(P, pt, sh, body='#e0a030', burst='#3a1e14', guard='#efe6d0', neck='#6a4428')
-    face_at(P, M, 302, size=0.6)
+    face_at(P, M, 302, size=0.46)
     P.clusters()
     return P.done()
 
