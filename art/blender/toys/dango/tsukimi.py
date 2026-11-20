@@ -37,16 +37,16 @@ for i in (-1, 1):
 
 # ------------------------------------------------------------------ the paws and the pampas grass
 for sx in (1, -1):
-    B.add('bed', blob('paw', (sx * 1.6, -5.9, Z2_ + 1.2), 1.2, tris=12, region='mochi', squash=(0.9, 0.8, 1.1)))
-ST = [(0.0, -6.6, Z2_ - 2.0), (0.4, -6.9, Z2_ + 3.0), (1.6, -6.6, Z2_ + 10.0), (3.4, -6.0, Z2_ + 15.0)]
+    B.add('bed', blob('paw', (2.6 + sx * 1.3, -5.9, Z2_ + 1.2), 1.2, tris=12, region='mochi', squash=(0.9, 0.8, 1.1)))
+ST = [(2.6, -6.6, Z2_ - 2.0), (3.4, -6.9, Z2_ + 3.0), (5.4, -6.6, Z2_ + 9.0), (7.6, -6.0, Z2_ + 13.0)]   # (held to its right: clear of the face)
 B.add('bed', limb('stem', ST, [0.35, 0.32, 0.28, 0.22], tris=18, region='stem', n=5))
-for k, (a, L) in enumerate(((10, 6.0), (36, 5.0), (-14, 5.4))):                  # the silvery plumes
+for k, (a, L) in enumerate(((24, 6.0), (50, 5.0), (6, 5.4))):                  # the silvery plumes
     p0 = np.array(ST[2]) + np.array((0.6 * k, 0, 1.2 * k))
     d = np.array((math.sin(math.radians(a)), -0.15, math.cos(math.radians(a))))
     B.add('bed', limb('plume', [p0, p0 + d * L * 0.5 + (0.6, 0, 0), p0 + d * L + (1.4, 0, -0.8)], [0.5, 0.75, 0.25], tris=20, region='plume', n=6,
                       cap1='point', sculpt=lambda h: tk.push(h, lambda V, N: 0.1 * np.sin(V[:, 2] * 9.0 + V[:, 0] * 5.0))))
 for sx in (1, -1):                                                                  # two long leaves
-    B.add('bed', limb('blade', [(0.2, -6.7, Z2_ + 2.0), (sx * 2.0, -7.6, Z2_ + 6.0), (sx * 4.6, -8.0, Z2_ + 8.0)], [0.4, 0.35, 0.05], tris=12,
+    B.add('bed', limb('blade', [(3.0, -6.7, Z2_ + 2.0), (3.0 + sx * 1.6 + 1.0, -7.6, Z2_ + 6.0), (3.0 + sx * 3.4 + 2.0, -8.0, Z2_ + 8.0)], [0.4, 0.35, 0.05], tris=12,
                       region='stem', n=4, cap1='point'))
 
 # ------------------------------------------------------------------ the moon rabbit: the top ball, its long ears
