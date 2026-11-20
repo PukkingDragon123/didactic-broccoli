@@ -95,7 +95,7 @@ class Beetle:
         s.SR, s.SL = V3(-4.3, 0.6, 17.0), V3(4.3, 0.6, 17.0)
         if seat is None:
             for sx in (1, -1):   # Chelsea boots and drainpipe trousers
-                B.add('body', shoe('boot', (sx * stance[0], 1.8, 0.0), (sx * 0.06, -1, 0), L=stance[1], W=stance[2], H=2.8, region='boot', tris=36, toe_up=0.3))
+                B.add('body', shoe('boot', (sx * stance[0], stance[3] if len(stance) > 3 else 1.8, 0.0), (sx * 0.06, -1, 0), L=stance[1], W=stance[2], H=2.8, region='boot', tris=36, toe_up=0.3))
                 B.add('body', limb('trouser', [(sx * 2.2, 0.6, 9.8), (sx * 2.5, 0.4, 5.4), (sx * 2.6, 0.9, 2.2)], [1.8, 1.6, 1.45], tris=26,
                                    region=trousers, n=8))
         else:   # sitting: thighs forward along the seat, shins down to the boots
