@@ -46,6 +46,22 @@ def slabp(name, outline, depth, region, plane='XZ', move=(0, 0, 0), rot=()):
     return a, b
 
 
+def box(name, size, c, region, bev=0.15):
+    """A small bevelled block (game mesh, sculpt)."""
+    a = tk.rbox(name, size, centre=c, bevel=bev, segs=1)
+    b = tk.rbox(name + '_hi', size, centre=c, bevel=bev, segs=2)
+    tk.set_region(b, region)
+    return a, b
+
+
+def grow(B, part, k, pivot):
+    """Scale a part's pieces about pivot (the mascot's big head); returns the point map for the face's centre."""
+    for a, b in B.p[part]:
+        for o in (a, b):
+            tk.scale(o, k, pivot=pivot)
+    return lambda c: tuple(np.asarray(pivot, float) + k * (np.asarray(c, float) - np.asarray(pivot, float)))
+
+
 def bands(u, period, width):
     return np.abs(np.mod(u, period) - period / 2) < width / 2
 

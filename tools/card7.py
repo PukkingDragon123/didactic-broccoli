@@ -258,7 +258,7 @@ def fill_space(K, pool, top=246, cell=8):
         o = occ()
 
 
-SCENE = {"ekiin": "5ae14ddecd96d964", "kaden": "01681d52ad599ab4", "sento": "7bf02f84d9e7e793", "obakebaito": "1c618757d7fbe472", "kabuki": "c53e9e5ce002345f", "minato": "b32ff2eda0976748", "sabaku": "3429ee539afa4b6b", "meijin": "6ba33481bde04590", "otenki": "5ad31e2a209ce02e", "kanikan": "d886a2ce6734eefe", "yomise": "fe304f3a84e56aa6", "henshin": "3da8d61c1402ad41", "janru": "d498ff3de2bb80da", "karakuri": "e1cd3f6c8713b840", "otsukai": "3e32e7bab925c99f", "datesha": "ee5961ef538e122c", "tsuppari": "4341168486bcf6f2", "hashigo": "68a9c1b45c6b1603", "nakanohito": "d4ddcc06cc2b1f9b", "kasabuki": "09c51578bda20b16", "teruteru": "d83ad91bc283b22c", "nedoko": "2fa42aee03a40a34", "dango": "343d79160871cf9e"}  # series -> its full-card scene photo (Open Images, CC BY 2.0, CREDITS.md)
+SCENE = {"ekiin": "5ae14ddecd96d964", "kaden": "01681d52ad599ab4", "sento": "7bf02f84d9e7e793", "obakebaito": "1c618757d7fbe472", "kabuki": "c53e9e5ce002345f", "minato": "b32ff2eda0976748", "sabaku": "3429ee539afa4b6b", "meijin": "6ba33481bde04590", "otenki": "5ad31e2a209ce02e", "kanikan": "d886a2ce6734eefe", "yomise": "fe304f3a84e56aa6", "henshin": "3da8d61c1402ad41", "janru": "d498ff3de2bb80da", "karakuri": "e1cd3f6c8713b840", "otsukai": "3e32e7bab925c99f", "datesha": "ee5961ef538e122c", "tsuppari": "4341168486bcf6f2", "hashigo": "68a9c1b45c6b1603", "nakanohito": "d4ddcc06cc2b1f9b", "kasabuki": "09c51578bda20b16", "teruteru": "d83ad91bc283b22c", "nedoko": "2fa42aee03a40a34", "dango": "343d79160871cf9e", "tabigame": "045a11743e13d784", "okuni": "2cb490f905c817c7", "kouchuu": "f75ebe13615cad9d"}  # series -> its full-card scene photo (Open Images, CC BY 2.0, CREDITS.md)
 
 
 POOL = {  # series -> real cut-outs that belong in its scene (Open Images masks, credited)
@@ -285,6 +285,9 @@ POOL = {  # series -> real cut-outs that belong in its scene (Open Images masks,
     'datesha': ['wine_0', 'briefcase_1', 'fedora_0', 'rose_0', 'cocktail_0', 'tie_0', 'wine_1', 'fedora_1'],
     'nedoko': ['cucumber_0', 'lemon_1', 'pillow_0', 'alarm_clock_1', 'cucumber_2', 'radish_0', 'lemon_2', 'fish_1', 'cucumber_1'],
     'dango': ['strawberry_0', 'peach_1', 'flower_1', 'saucer_2', 'strawberry_2', 'teapot_1', 'peach_2', 'flower_0', 'strawberry_1'],
+    'tabigame': ['sea_turtle_0', 'suitcase_0', 'sun_hat_0', 'clock_1', 'sea_turtle_2', 'backpack_1', 'train_2', 'lighthouse_0'],
+    'okuni': ['kite_0', 'flower_0', 'sun_hat_0', 'rose_0', 'kite_1', 'football_1', 'flower_2', 'teddy_bear_1'],
+    'kouchuu': ['guitar_1', 'tie_0', 'rose_0', 'corded_phone_0', 'mushroom_0', 'strawberry_1', 'flower_1', 'watch_1'],
 }
 
 
@@ -431,6 +434,27 @@ CFG = {
         price='coin', price_at=(190, 150), caps=(232, 140), flow=True,
         calls=[('EACH BALL SPINS', 160, 126, 0.55, 0.45), ('HEAD HOPS OFF', 160, 142, 0.5, 0.15)],
         sw=[0xe07a8e, 0xa86224, 0x5e8c3c, 0x1e2a24, 0xd6ac68, 0xf6f3ea]),
+    'tabigame': dict(col=0x2a7a5a, fill=0xf2d040, face='jersey15', lines=['WORLD TOUR', 'TURTLES'], logo=(6, 6, 186, 92), hero_id='pagoda',
+        bg=[], back=[('sea_turtle_1', 290, 68, 56, -12), ('suitcase_2', 34, 190, 46, -8)], hero=(234, 208, 132, 156),
+        front=[('sun_hat_1', 130, 208, 34, 10), ('lighthouse_2', 306, 196, 40, 6)],
+        kick=['SLOW TRAVELLERS.', 'THEY BRING THE SIGHTS.'], burst=(170, 118, 21, ('LIFT', 'IT!'), 0xf2d040),
+        price='ticket', pricecol=0xf2ead6, price_at=(38, 150), caps=(70, 168),
+        calls=[('THE SHELL LIFTS OFF', 184, 104, 0.45, 0.3), ('HEAD AND LEGS PULL IN', 184, 120, 0.3, 0.8)],
+        sw=[0xc8402a, 0xefe9dc, 0xd6be86, 0xd4b07a, 0x3a8a4a, 0x2a64a8]),
+    'okuni': dict(col=0x2a5aa8, fill=0xf6eedc, face='jersey15', lines=['NATIONAL', 'ANIMAL PARADE'], logo=(124, 6, 192, 92), align='r', hero_id='kangaru',
+        bg=[], back=[('kite_1', 34, 60, 50, 20), ('balloon_2', 300, 150, 40, 0)], hero=(84, 208, 150, 130),
+        front=[('cowboy_hat_0', 158, 214, 34, -8), ('football_1', 302, 214, 28, 0)], kick_at=(150, 92),
+        kick=['EVERY COUNTRY SENDS', 'ITS BEST. IN COSTUME.'], burst=(292, 150, 21, ('IN', 'COSTUME!'), 0xe8443a),
+        price='coin', price_at=(190, 150), caps=(232, 140), flow=True,
+        calls=[('THE JOEY POPS UP', 164, 120, 0.55, 0.5), ('A BIG HOP', 164, 136, 0.5, 0.95)],
+        sw=[0xb4643a, 0xc8302e, 0x26345e, 0x26242a, 0xc0302a, 0xa88ad0]),
+    'kouchuu': dict(col=0xd8342e, fill=0xf2c230, face='ala', lines=['THE', 'HARDWINGS'], logo=(6, 6, 190, 92), hero_id='kuwagata',
+        bg=[], back=[('guitar_2', 294, 84, 54, 14), ('rose_1', 32, 192, 40, 0)], hero=(232, 208, 132, 152),
+        front=[('tie_1', 128, 208, 36, 20), ('watch_0', 304, 202, 32, 0)],
+        kick=['MOP-TOP BEETLE BEAT GROUP.', 'FOUR BEETLES, SIX LEGS EACH.'], burst=(170, 116, 21, ('SHAKE', 'IT!'), 0xf2c230),
+        price='ticket', pricecol=0xefe8d6, price_at=(38, 150), caps=(70, 168),
+        calls=[('MOP-TOPS SHAKE', 184, 104, 0.45, 0.2), ('WING-CASE TAILS', 184, 120, 0.6, 0.6)],
+        sw=[0x8a8c92, 0x2a2a30, 0xc8302a, 0x6a7a8c, 0x3a5a8a, 0x2a8a5a]),
 }
 CARDS = {sid: (lambda K, c=c: designer(K, c)) for sid, c in CFG.items()}
 

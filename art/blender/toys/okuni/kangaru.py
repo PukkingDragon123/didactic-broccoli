@@ -9,6 +9,7 @@ import math
 import os
 import sys
 
+os.environ.setdefault('GG_BZ_K', '1.3')   # (this figure's detail: the pieces' budgets times this)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _okuni import *  # noqa: E402,F401,F403
 
@@ -73,6 +74,7 @@ for a in (-150, -115, -65, -30):
     bot = (top[0], top[1], top[2] - 2.4)
     B.add('head', limb('string', [top, bot], 0.16, tris=8, region='string', n=4))
     B.add('head', blob('cork', (bot[0], bot[1], bot[2] - 0.5), 0.55, tris=12, region='cork', squash=(0.85, 0.85, 1.25)))
+G = grow(B, 'head', 1.35, NECK)
 B.commit(F, bones={'body': 'body', 'joey': 'joey', 'arm_r': 'arm_r', 'arm_l': 'arm_l', 'head': 'head'})
 
 
@@ -132,7 +134,7 @@ def paint(P, pt):
     P.fill('string', pt.ramp('#3a3020', 4), tone=sh, base=0.1, brush=False)
     P.fill('wood', pt.ramp('#9a5a2a', 6, shift=0.06), tone=sh, base=0.1, brush={'preset': 'wood', 'flow': 'along', 'axis': (1, 0, 0), 'L': 4})
     P.fill(P.region('wood') & bands(X + Z, 1.6, 0.35), pt.ramp('#e8d2a0', 5), tone=sh, base=0.1, brush=False)
-    fc = face.Face(P, c=(0, -4.6, 25.2), axis=(0, -1, 0.25), where=P.region('fur') | P.region('muzzle') | P.region('nose'), seed=611)
+    fc = face.Face(P, c=G((0, -4.6, 25.2)), axis=(0, -1, 0.25), where=P.region('fur') | P.region('muzzle') | P.region('nose'), seed=611)
     fc.eyes('dot', spread=3.6, size=0.55, dy=0.5)
     fc.mouth('upturn', w=2.0, dy=-1.8, weight=0.3)
     fj = face.Face(P, c=(0, -6.2, 12.6), axis=(0, -1, 0.1), where=P.region('joey'), seed=612)

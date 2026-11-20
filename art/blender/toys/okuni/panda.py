@@ -8,6 +8,7 @@ Gimmick: munch: the bamboo comes up to its mouth three times, the head nodding w
 import os
 import sys
 
+os.environ.setdefault('GG_BZ_K', '1.15')   # (this figure's detail: the pieces' budgets times this)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _okuni import *  # noqa: E402,F401,F403
 

@@ -8,6 +8,7 @@ Gimmick: it boots the ball up; the ball spins up over its head and drops back in
 import os
 import sys
 
+os.environ.setdefault('GG_BZ_K', '1.9')   # (this figure's detail: the pieces' budgets times this)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _okuni import *  # noqa: E402,F401,F403
 

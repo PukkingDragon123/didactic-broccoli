@@ -9,7 +9,7 @@ export default {
   order: 72,
   name: 'The Hardwings',
   jp: 'ハードウィングス',
-  tagline: 'Mop-top beetle beat group. Yeah, yeah, yeah!',
+  tagline: 'Mop-top beetle beat group. Shake it!',
   taglineJp: 'こうちゅうバンド、ただいま参上！',
   price: 400,
   themes: ['retro', 'weird'],

@@ -9,6 +9,7 @@ import math
 import os
 import sys
 
+os.environ.setdefault('GG_BZ_K', '1.6')   # (this figure's detail: the pieces' budgets times this)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _okuni import *  # noqa: E402,F401,F403
 
@@ -47,7 +48,7 @@ B.add('head', limb('neck', [(0, -0.2, 20.6), (0, -0.8, 24.0)], 2.8, tris=16, reg
 hd = tk.loft('head', [dict(c=(0, 1.4, 26.2), w=6.8, h=3.2), dict(c=(0, -1.0, 26.6), w=8.4, ht=4.0, hb=3.6), dict(c=(0, -3.6, 26.0), w=6.4, ht=2.9, hb=2.8)],
              n=12, up=(0, 0, 1), cap0='round', cap1='round', capd=1.0)
 B.add('head', low(hd, 'head', 90, region='white', sculpt=lambda h: tk.push(h, lambda V, N: sum(tk.bump(V, (sx * 1.7, -4.4, 27.8), 1.8, 0.5) for sx in (1, -1)))))
-B.add('head', limb('beak', [(0, -4.4, 26.0), (0, -6.8, 25.8), (0, -8.2, 24.8), (0, -7.9, 23.4)], [1.7, 1.25, 0.65, 0.12], tris=28, region='beak', n=8,
+B.add('head', limb('beak', [(0, -4.0, 26.0), (0, -6.2, 26.0), (0, -7.4, 25.2), (0, -7.3, 24.2)], [1.9, 1.4, 0.8, 0.15], tris=28, region='beak', n=8,
                    cap1='point'))
 CAP = (0, -0.6, 28.4)
 crown = tk.lathe('cap', [(0, 0), (4.5, 0), (4.4, 1.5), (3.5, 2.7), (0, 3.1)], n=12, centre=CAP)
@@ -62,11 +63,12 @@ cp = low(crown, 'cap', 40, region='navy')
 for o in (cp[0], cp[1], brim, brim_hi):
     tk.rotate(o, -6, 'X', pivot=CAP)
 B.add('head', cp, (brim, brim_hi), blob('button', (0, -0.3, 31.4), 0.5, tris=10, region='navy'))
+G = grow(B, 'head', 1.3, (0, -0.4, 21.6))
 # ------------------------------------------------------------------ the wings (short jersey sleeves) gripping the bat over the right shoulder
 CH = V3(0, -0.6, 17.0)
 for sx in (1, -1):
     hand = (sx * 0.9 - 0.4, -7.0, 15.4 + (0.0 if sx > 0 else 1.6))
-    B.add('swing', limb('wing', [(sx * 5.4, 0.2, 19.0), (sx * 7.2, -2.2, 15.8), hand], [2.2, 1.7, 1.1], tris=36, region='feather', n=8))
+    B.add('swing', limb('wing', [(sx * 5.4, 0.2, 19.0), (sx * 7.4, -2.2, 15.8), hand], [2.7, 2.2, 1.4], tris=36, region='feather', n=8))
     B.add('swing', limb('sleeve', [(sx * 5.0, 0.2, 19.4), (sx * 6.4, -0.8, 17.6)], [2.5, 2.3], tris=16, region='jersey', n=8, cap0=None))
     for j in (-1, 1):
         B.add('swing', limb('prim', [hand, (hand[0] + j * 0.5, hand[1] - 1.2, hand[2] - 0.6 + j * 0.4)], [0.5, 0.25], tris=8, region='feather', n=5,
@@ -128,7 +130,7 @@ def paint(P, pt):
     P.fill('navy', pt.ramp('#26345e', 6, shift=0.05), tone=sh, base=0.15, brush='cloth')
     P.fill('bat', pt.ramp('#d0a060', 6, shift=0.06), tone=sh, base=0.15, brush={'preset': 'wood', 'flow': 'along', 'axis': (-0.5, 0.6, 0.6), 'L': 6})
     P.fill(P.region('bat') & (Z < 16.4), pt.ramp('#2a2426', 4), tone=sh, base=0.1)   # grip tape
-    fc = face.Face(P, c=(0, -4.2, 27.0), axis=(0, -1, 0.15), where=P.region('white') & (Z > 23.5), seed=133)
+    fc = face.Face(P, c=G((0, -4.2, 27.0)), axis=(0, -1, 0.15), where=P.region('white') & (Z > 24.5), seed=133)
     fc.eyes('dot', spread=4.8, size=0.62, dy=0.2)
     P.lines(['jersey', 'navy'], step=1)
     P.lines(['beak'], ['white'], step=1)

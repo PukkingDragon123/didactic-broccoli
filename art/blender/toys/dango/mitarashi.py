@@ -59,8 +59,9 @@ def paint(P, pt):
     mochi_fill(P, pt, sh, 'mochi', '#e2c08a')
     P.fill('glaze', pt.ramp('#a86224', 7, shift=0.07, light=0.55), tone=sh, base=0.2, brush={'preset': 'gloss', 'flow': 'down'})
     g = P.region('glaze') | P.region('mochi')
-    scorch = g & (np.sin(X * 1.9 + Yc * 0.7) * np.sin(Z * 1.7 + Yc * 1.1) > 0.7)
-    P.tint(scorch, pt.ramp('#5a2e14', 6, shift=0.05), sh)                                   # grill scorch marks
+    grill = np.abs(np.mod(np.arctan2(Yc, X) * 4.0 / np.pi, 1.0) - 0.5) < 0.09                  # where the grill bars touched: lines down each ball
+    scorch = g & grill & (np.abs(P.on[:, :, 2]) < 0.6)
+    P.tint(scorch, pt.ramp('#7a4420', 6, shift=0.05), sh)                                   # grill scorch marks
     P.fill('fur', pt.ramp('#8a6440', 7, shift=0.06), tone=sh, base=0.1, brush='fur')
     P.fill('cream', pt.ramp('#f0e0c0', 6, shift=0.04), tone=sh, base=0.2, brush='fur')
     P.fill('ink', pt.ramp('#1e1a1c', 5, light=0.5), tone=sh, base=0.3, brush='gloss')
