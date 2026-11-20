@@ -173,7 +173,7 @@ export function buildMachineModel(type, opts = {}) {
   const plane = (w, h, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.userData.noRim = true; m.castShadow = false; m.receiveShadow = true; return m; };
   // everything that never moves: the stand, the lower unit, the window's frame, the tray, the fine chrome parts
   let body;
-  if (lp) { body = new THREE.Group(); body.name = 'machine-body'; body.add(lpMesh(type, 'body'), lpMesh(type, 'stand')); } else body = mesh(Gm.body);
+  if (lp) { body = new THREE.Group(); body.name = 'machine-body'; body.add(lpMesh(type, 'body')); if (!opts.noStand) body.add(lpMesh(type, 'stand')); } else body = mesh(Gm.body);
   group.add(body, print(Gm.bodyPrint));
   // the maker's side print, one quad on each flank (UVs 0..1: public/img/machines/side_<type>.png, a slot for print art)
   const SQ = lp && LP_MANIFEST[type].sideQuad;

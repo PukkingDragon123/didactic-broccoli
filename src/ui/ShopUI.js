@@ -555,7 +555,7 @@ export class ShopUI {
 
   p_machines() {
     const g = this.game, s = g.state;
-    const used = s.machines.length, full = used >= MAX_MACHINES;
+    const used = s.machines.filter((d) => d.stack?.tier !== 1).length, full = used >= MAX_MACHINES;
     let out = this.head('Gacha Machines', 'Brand-new machines are installed in your garage right away and come half full of capsules.',
       `<div class="sui-slots"><small>Machine slots</small><b>${used} / ${MAX_MACHINES}</b>${this.pips(used, MAX_MACHINES, full ? 'full' : '')}</div>`);
     out += '<div class="sui-list">';
@@ -570,9 +570,13 @@ export class ShopUI {
       const action = T.price === 0
         ? `<div class="sui-na">${this.tag('Not for sale', 'heart', 'soft')}<small>Grandpa's original machine</small></div>`
         : this.buy(() => shop.buyMachine(g, type), { price, label: 'Buy & install', block: full ? 'No free machine slot' : null, blockLabel: 'Garage full', text: { ok: `${T.name} installed in your garage!`, icon: 'machine' } });
+      // a stacking rack round one of your machines, this type on its shelf (src/plugins/stackRack.js)
+      const SR = g.stackRack, stack = SR && SR.RACK.types.includes(type)
+        ? this.buy(() => SR.buy(type), { price: SR.price(type), label: 'Stack on rack', block: SR.canStack() ? null : 'Needs a Retro or Gacha Station to stack on', blockLabel: 'Nothing to stack on', text: { ok: `${T.name} stacked on a rack!`, icon: 'machine' } })
+        : '';
       out += `<article class="sui-card row" style="--ac:${T.color}"><div class="row-art">${thumb(`m|${type}|64`, 128, 128)}</div>
         <div class="row-body"><h2>${esc(T.name)}</h2><p>${esc(T.desc)}</p><div class="sui-specs">${specs}</div></div>
-        <div class="row-buy">${action}</div></article>`;
+        <div class="row-buy">${action}${stack}</div></article>`;
     }
     return out + '</div>';
   }

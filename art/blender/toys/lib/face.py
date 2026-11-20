@@ -1046,6 +1046,9 @@ STYLE.update({  # the real animals' features, stylised (solid ink, hand-drawn): 
 STYLE['dragon'] = dict(eye='slit', iris='#f2c230', tilt=16, eyek=1.2)
 SPECIES['henshin/kuwagata'] = 'beetle'
 STYLE['beetle'] = dict(eye='compound', iris='#4a3220', facet='#9a7440', tilt=10, eyek=1.5, lid=False)  # amber-brown compound eyes that read on the black head
+SPECIES.update({'nedoko/maguro': 'cat', 'nedoko/tamago': 'hamster', 'nedoko/sake': 'seal', 'nedoko/inari': 'fox', 'nedoko/ikura': 'otter',
+                'nedoko/uni': 'hedgehog', 'dango/hanami': 'pig', 'dango/mitarashi': 'tanuki', 'dango/kusa': 'frog',
+                'dango/isobe': 'penguin', 'dango/kinako': 'bear', 'dango/tsukimi': 'rabbit'})
 SPECIES.update({f'kanikan/{i}': 'crab' for i in ('iwashi', 'saba', 'konbi', 'beans', 'pine', 'caviar')})
 SPECIES.update({'janru/robo': 'hamster', 'janru/usagi': 'rabbit', 'janru/mangusu': 'mongoose', 'janru/shiba': 'dog',
                 'janru/gorira': 'gorilla', 'janru/musasabi': 'squirrel'})

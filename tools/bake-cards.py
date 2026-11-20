@@ -107,12 +107,14 @@ KIND_EN = {  # the card's catch ribbon (series data card.kind is the Japanese pr
     'obakebaito': 'HAUNTED HOUSE PLAYSET', 'otenki': 'WEATHER DELIVERY FIGURE', 'otsukai': 'LACQUER & GOLD LEAF FIGURE',
     'sento': 'BATHHOUSE REGULARS FIGURE', 'teruteru': 'BALL-CHAIN MASCOT', 'tsuppari': 'TOUGH-GUY ANIMAL FIGURE',
     'yomise': 'DEEP-SEA NIGHT STALL FIGURE', 'kanikan': 'CRAB IN A TIN FIGURE', 'janru': 'ANIME GENRE FIGURE',
+    'nedoko': 'SUSHI BEDTIME FIGURE', 'dango': 'DANGO SKEWER FIGURE',
 }
 BURST = {  # the round sticker on the stage
     'henshin': ('TRANS-', 'FORMS!'), 'kasabuki': ('TRANS-', 'FORMS!'), 'hashigo': ('PLAY', 'SET!'), 'obakebaito': ('PLAY', 'SET!'),
     'teruteru': ('BALL', 'CHAIN!'), 'karakuri': ('WIND', 'IT UP!'), 'nakanohito': ('WHO', 'INSIDE?'), 'kaden': ('IT', 'MOVES!'),
     'yomise': ('LIGHTS', 'UP!'), 'otsukai': ('GOLD', 'LEAF!'), 'kabuki': ('MIE!',), 'sabaku': ('POSE!',), 'minato': ('POSE!',),
     'datesha': ('POSE!',), 'kanikan': ('OPEN', 'THE TIN!'), 'janru': ('BIG', 'MOMENT!'), 'sento': ('BATH', 'TIME!'),
+    'nedoko': ('WAKE', 'UP!'), 'dango': ('IT', 'SPINS!'),
 }
 LOGO = {  # series -> the hand-lettered logotype (tools/lettering.py alphabet, lines, style); one effect only
     'henshin': ('ruler', [('STATIONERY', 1), ('BEASTS', 2)], dict(outline=(1, 0x1c1816), track=1, bounce=[0, 0, 1, 0, -1, 0, 0, 1, 0, 0])),
@@ -125,7 +127,7 @@ MAKERS = [  # original makers (no real brand): name, mark colour, emblem (tools/
 ]
 MAKER_OF = {'henshin': 0, 'nakanohito': 0, 'teruteru': 0, 'kaden': 1, 'otsukai': 3, 'yomise': 2, 'obakebaito': 4,
             'tsuppari': 2, 'ekiin': 1, 'kabuki': 4, 'meijin': 3, 'hashigo': 1, 'sento': 2, 'otenki': 3, 'sabaku': 4,
-            'minato': 4, 'datesha': 4, 'karakuri': 0, 'kasabuki': 2}
+            'minato': 4, 'datesha': 4, 'karakuri': 0, 'kasabuki': 2, 'nedoko': 1, 'dango': 3}
 WARN_EN = ('SMALL PARTS. NOT FOR CHILDREN UNDER 3 YEARS. DO NOT PUT THE CAPSULE IN YOUR MOUTH OR OVER YOUR HEAD. '
            'THE PICTURE MAY DIFFER FROM THE PRODUCT.')
 

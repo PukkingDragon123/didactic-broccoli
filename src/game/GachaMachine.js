@@ -72,12 +72,15 @@ export class GachaMachine {
     // data.at = { x, z, rotY }: a machine standing outside the garage (the annex, the Kaikan: src/growth/machines.js)
     const slot = data.at || MACHINE_SLOTS[data.slot];
     this.root = new THREE.Group();
-    this.root.position.set(slot.x, 0, slot.z);
+    // data.stack = { tier, y }: standing in a stacking rack (src/plugins/stackRack.js) without its own stand, its unit's
+    // floor at y (the rack's tray or shelf): the whole machine is lifted so its layout's y0 lands there
+    const stack = !data.at && data.stack ? data.stack : null;
+    this.root.position.set(slot.x, stack ? stack.y - MACHINE_SPECS[data.type].y0 : 0, slot.z);
     this.root.rotation.y = slot.rotY;
     game.scene.add(this.root);
     this.root.updateMatrixWorld(true);
     this.ext = 0;
-    const built = buildMachineModel(data.type, { no: data.no ?? (data.slot || 0) + 1 });
+    const built = buildMachineModel(data.type, { no: data.no ?? (data.slot || 0) + 1, noStand: !!stack });
     this.parts = built;
     this.model = built.group;
     this.L = built.L;
@@ -469,7 +472,7 @@ export class GachaMachine {
     box(-hw, O.x0, L.y0, O.y1 + 0.004, -hd, hd);
     box(O.x1, hw, L.y0, O.y1 + 0.004, -hd, hd);
     box(O.x0, O.x1, L.y0, O.y1, -hd, L.front - 0.14);
-    box(-hw - 0.02, hw + 0.02, 0, L.y0, -hd - 0.02, hd + 0.02, 'wood');
+    if (!this.data.stack || this.data.at) box(-hw - 0.02, hw + 0.02, 0, L.y0, -hd - 0.02, hd + 0.02, 'wood');
     const D = L.dome;
     box(-D.w / 2, D.w / 2, L.top, L.domeTop, D.z - D.d / 2, D.z + D.d / 2, 'glass');
     const rampQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.32);
@@ -487,7 +490,7 @@ export class GachaMachine {
   buildRope() {
     const H = this.L.hook;
     const anchor = this.local(H.x, H.y, H.z);
-    this.rope = new Rope(this.game.scene, anchor, 0.46, 16);
+    this.rope = new Rope(this.game.scene, anchor, Math.min(0.46, anchor.y - 0.04), 16); // (shorter low in a rack)
     // the rope keeps out of the machine's own blocks: the unit and its window, the tray, the stand (one box round the
     // whole model would swallow the hook, and the rope would be flung to its faces)
     const L = this.L, sp = this.spec, S = this.parts.standBox, T = L.tray;
@@ -495,7 +498,7 @@ export class GachaMachine {
     const mk = (x0, y0, z0, x1, y1, z1) => new THREE.Box3(new THREE.Vector3(x0, y0, z0), new THREE.Vector3(x1, y1, z1)).applyMatrix4(this.root.matrixWorld).expandByScalar(0.005);
     this.rope.boxes.push(mk(-sp.w / 2, L.y0, -sp.d / 2, sp.w / 2, L.top, sp.d / 2));
     this.rope.boxes.push(mk(T.x0 - 0.006, T.y - 0.012, T.z0, T.x1 + 0.006, T.y + T.wall, T.z1 + 0.006));
-    if (S) this.rope.boxes.push(mk(S.x0, 0, S.z0, S.x1, L.y0, S.z1));
+    if (S && !(this.data.stack && !this.data.at)) this.rope.boxes.push(mk(S.x0, 0, S.z0, S.x1, L.y0, S.z1));
     for (let i = 0; i < 60; i++) this.rope.update(1 / 60);
   }
 

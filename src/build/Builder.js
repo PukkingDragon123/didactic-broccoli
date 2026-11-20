@@ -386,6 +386,7 @@ export class Builder {
     }
     const m = g.machines.find((q) => q.root === o);
     if (m) {
+      if (m.data.stack && !m.data.at) { g.news('It sits in a stacking rack'); return; }
       if (m.lidOpen || m.drawer?.open || m.state !== 'idle' || m.spin || m.data.fallen) { g.news('Close it up and let it stop first'); return; }
       this.startMove({ kind: 'machine', m });
       m.root.visible = false;

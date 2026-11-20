@@ -258,7 +258,7 @@ def fill_space(K, pool, top=246, cell=8):
         o = occ()
 
 
-SCENE = {"ekiin": "5ae14ddecd96d964", "kaden": "01681d52ad599ab4", "sento": "7bf02f84d9e7e793", "obakebaito": "1c618757d7fbe472", "kabuki": "c53e9e5ce002345f", "minato": "b32ff2eda0976748", "sabaku": "3429ee539afa4b6b", "meijin": "6ba33481bde04590", "otenki": "5ad31e2a209ce02e", "kanikan": "d886a2ce6734eefe", "yomise": "fe304f3a84e56aa6", "henshin": "3da8d61c1402ad41", "janru": "d498ff3de2bb80da", "karakuri": "e1cd3f6c8713b840", "otsukai": "3e32e7bab925c99f", "datesha": "ee5961ef538e122c", "tsuppari": "4341168486bcf6f2", "hashigo": "68a9c1b45c6b1603", "nakanohito": "d4ddcc06cc2b1f9b", "kasabuki": "09c51578bda20b16", "teruteru": "d83ad91bc283b22c"}  # series -> its full-card scene photo (Open Images, CC BY 2.0, CREDITS.md)
+SCENE = {"ekiin": "5ae14ddecd96d964", "kaden": "01681d52ad599ab4", "sento": "7bf02f84d9e7e793", "obakebaito": "1c618757d7fbe472", "kabuki": "c53e9e5ce002345f", "minato": "b32ff2eda0976748", "sabaku": "3429ee539afa4b6b", "meijin": "6ba33481bde04590", "otenki": "5ad31e2a209ce02e", "kanikan": "d886a2ce6734eefe", "yomise": "fe304f3a84e56aa6", "henshin": "3da8d61c1402ad41", "janru": "d498ff3de2bb80da", "karakuri": "e1cd3f6c8713b840", "otsukai": "3e32e7bab925c99f", "datesha": "ee5961ef538e122c", "tsuppari": "4341168486bcf6f2", "hashigo": "68a9c1b45c6b1603", "nakanohito": "d4ddcc06cc2b1f9b", "kasabuki": "09c51578bda20b16", "teruteru": "d83ad91bc283b22c", "nedoko": "2fa42aee03a40a34", "dango": "343d79160871cf9e"}  # series -> its full-card scene photo (Open Images, CC BY 2.0, CREDITS.md)
 
 
 POOL = {  # series -> real cut-outs that belong in its scene (Open Images masks, credited)
@@ -283,6 +283,8 @@ POOL = {  # series -> real cut-outs that belong in its scene (Open Images masks,
     'sabaku': ['lizard_2', 'snake_0', 'skull_0', 'cowboy_hat_0', 'lizard_0', 'snake_2', 'skull_2', 'cowboy_hat_2'],
     'minato': ['harbor_seal_0', 'canoe_0', 'fish_0', 'lighthouse_2', 'harbor_seal_1', 'oyster_2', 'canoe_1', 'fish_1'],
     'datesha': ['wine_0', 'briefcase_1', 'fedora_0', 'rose_0', 'cocktail_0', 'tie_0', 'wine_1', 'fedora_1'],
+    'nedoko': ['cucumber_0', 'lemon_1', 'pillow_0', 'alarm_clock_1', 'cucumber_2', 'radish_0', 'lemon_2', 'fish_1', 'cucumber_1'],
+    'dango': ['strawberry_0', 'peach_1', 'flower_1', 'saucer_2', 'strawberry_2', 'teapot_1', 'peach_2', 'flower_0', 'strawberry_1'],
 }
 
 
@@ -415,6 +417,20 @@ CFG = {
         front=[('tie_1', 140, 206, 40, 20), ('cocktail_2', 304, 200, 40, 0)], kick_at=(10, 4), kick=['POSE BEASTS III', 'STRIKE THE POSE. HOLD IT.'],
         burst=(160, 100, 20, ('POSE!',), 0xc89a30), price='tsuba', pricecol=0xc89a30, price_at=(36, 128), caps=(64, 146),
         calls=[('SHARP SUIT', 196, 120, 0.4, 0.4)]),
+    'nedoko': dict(col=0xc8302a, fill=0xf6eedc, face='jersey15', lines=['SUSHI', 'BEDTIME'], logo=(6, 6, 180, 92), hero_id='maguro',
+        bg=[], back=[('pillow_0', 292, 92, 58, 12), ('cucumber_1', 150, 176, 34, 0)], hero=(232, 204, 132, 150),
+        front=[('lemon_1', 124, 204, 32, -14), ('alarm_clock_1', 304, 196, 40, 14)],
+        kick=['THE RICE IS THE FUTON.', 'THE TOPPING IS THE DUVET.'], burst=(168, 116, 21, ('WAKE', 'UP!'), 0xf2c230),
+        price='ticket', pricecol=0xf6eedc, price_at=(38, 150), caps=(70, 168),
+        calls=[('THE DUVET FLIPS BACK', 182, 112, 0.45, 0.35), ('PLATE COLOUR = RARITY', 182, 128, 0.3, 0.9)],
+        sw=[0x2a5a9a, 0x3f8a4a, 0xc8302a, 0xe8b030, 0x26242a, 0xd8a840]),
+    'dango': dict(col=0x3f8a3a, fill=0xf8e6ea, face='jersey15', lines=['DANGO', 'SKEWER PALS'], logo=(130, 6, 186, 92), align='r', hero_id='hanami',
+        bg=[], back=[('peach_1', 30, 186, 46, -10), ('flower_1', 296, 70, 44, 0)], hero=(84, 206, 150, 110),
+        front=[('strawberry_0', 160, 210, 30, 12), ('saucer_2', 300, 214, 40, 0)], kick_at=(150, 92),
+        kick=['THREE BALLS,', 'ONE ANIMAL. SPIN THEM!'], burst=(292, 150, 21, ('IT', 'SPINS!'), 0xe07a8e),
+        price='coin', price_at=(190, 150), caps=(232, 140), flow=True,
+        calls=[('EACH BALL SPINS', 160, 126, 0.55, 0.45), ('HEAD HOPS OFF', 160, 142, 0.5, 0.15)],
+        sw=[0xe07a8e, 0xa86224, 0x5e8c3c, 0x1e2a24, 0xd6ac68, 0xf6f3ea]),
 }
 CARDS = {sid: (lambda K, c=c: designer(K, c)) for sid, c in CFG.items()}
 

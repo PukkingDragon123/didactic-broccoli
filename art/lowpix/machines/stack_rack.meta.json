@@ -1,0 +1,18 @@
+{
+ "joints": {},
+ "mats": {
+  "base": "metal",
+  "shelf": "metal",
+  "bolt_-241_44": "metal",
+  "bolt_241_44": "metal",
+  "bolt_-241_994": "metal",
+  "bolt_241_994": "metal",
+  "bolt_-241_432": "metal",
+  "bolt_241_432": "metal",
+  "bolt_-241_772": "metal",
+  "bolt_241_772": "metal",
+  "tag": "gloss"
+ },
+ "key": "stack_rack",
+ "density": 0.4
+}

@@ -52,7 +52,8 @@ export function buyMachine(g, type) {
   const owned = g.state.machines.filter((m) => m.type === type).length;
   const price = machinePrice(type, owned);
   const room = machineRoom(g);
-  if (g.state.machines.length >= room) return fail(room < MACHINE_SLOTS.length ? `Room for ${room} machines at this level` : 'No free machine slot in the garage');
+  // (a machine on a stacking rack's shelf shares its slot with the one below: src/plugins/stackRack.js)
+  if (g.state.machines.filter((d) => d.stack?.tier !== 1).length >= room) return fail(room < MACHINE_SLOTS.length ? `Room for ${room} machines at this level` : 'No free machine slot in the garage');
   const used = new Set(g.state.machines.map((m) => m.slot));
   const slot = MACHINE_SLOTS.findIndex((_, i) => !used.has(i));
   if (slot < 0) return fail('No free machine slot in the garage');

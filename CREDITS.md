@@ -2987,6 +2987,17 @@ Planks012, Tatami001, Tiles032, Concrete034, PavingStones070, Asphalt025A, Grave
 - "Train" by Tim Green, https://www.flickr.com/photos/atoach/4523892040, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 2698ca98439ea03a: the train cut-out
 - "92742750 copy" by Sean Naber, https://www.flickr.com/photos/seannaber/3953232214, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 758de2f0c9fda72a: the wine cut-out
 - "_IGP4497" by lifelikeapps, https://www.flickr.com/photos/56532794@N02/5352636041, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b9472e4a7f1a02a6: the wine cut-out
+- "Cucumber Shine" by Derek Gavey, https://www.flickr.com/photos/derekgavey/4242554303, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b0ae8a766b4ef7ed: the cucumber cut-out
+- "rayela pillow  5" by Rayela Art, https://www.flickr.com/photos/rayela/4745725491, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID fdbe948fdb1ffa29: the pillow cut-out
+- "Alarm clock" by John Christian Fjellestad, https://www.flickr.com/photos/jkfjellestad/8063839208, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 640bc6dff7a52ecc: the alarm clock cut-out
+- "cucumber" by viZZZual.com, https://www.flickr.com/photos/vizzzual-dot-com/2738586453, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 63801ea9e6ff6f48: the cucumber cut-out
+- "Days..." by m4tik - 128db, https://www.flickr.com/photos/m4tik/4556961567, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 34fa3bb169727d06: the radish cut-out
+- "homemade pickles" by Stacy Spensley, https://www.flickr.com/photos/notahipster/4749930875, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 447b1a9c78dd6e8b: the cucumber cut-out
+- "Fuzzy peach" by Bob Doran, https://www.flickr.com/photos/humblog/9603393898, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 93a65ad209801d34: the peach cut-out
+- "Rijksmuseum, Amsterdam" by Dvemp, https://www.flickr.com/photos/dvemp/8817448104, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID c618aa3ab3aec434: the saucer cut-out
+- "vegan strawberry pie" by Suzette - www.suzette.nu, https://www.flickr.com/photos/suzettesuzette/17472811864, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID b903183b2f804772: the strawberry cut-out
+- "Peaches through the netting" by Paul Long, https://www.flickr.com/photos/plong/5723401279, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 343f92a2a2ed25b4: the peach cut-out
+- "Bouchon Bistro - Vegas" by blackeiffel, https://www.flickr.com/photos/blackeiffel/5737929998/, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID db2628b64415d323: the strawberry cut-out
 
 ### Gacha card scenes (Open Images, CC BY 2.0): one full photo behind each card
 
@@ -3011,3 +3022,5 @@ Planks012, Tatami001, Tiles032, Concrete034, PavingStones070, Asphalt025A, Grave
 - nakanohito card: "Downtown Nashville, winter" by RecoilRick, https://www.flickr.com/photos/magneticmediafed/16433223577, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID d4ddcc06cc2b1f9b (cropped, colour-graded)
 - kasabuki card: "Cardiff Castle" by Anna-Maria Oléhn, https://www.flickr.com/photos/agrajag42/16583051821, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 09c51578bda20b16 (cropped, colour-graded)
 - teruteru card: "Shot out Rick Smolan's window" by Robert Scoble, https://www.flickr.com/photos/scobleizer/2780327497, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID d83ad91bc283b22c (cropped, colour-graded)
+- nedoko card: "sushi & sashimi" by Tristan Kenney, https://www.flickr.com/photos/tristankenney/5170592821, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 2fa42aee03a40a34 (cropped, colour-graded)
+- dango card: "Cherry Blossoms" by tenaciousme, https://www.flickr.com/photos/tenaciousme/437395026, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/), Open Images ID 343d79160871cf9e (cropped, colour-graded)
