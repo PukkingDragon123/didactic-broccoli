@@ -211,6 +211,31 @@ export function makeHairPainters(spec, P, fabricK) {
         const cx = Math.abs(c.x) / (0.035 * hu), cy = Math.abs(c.lt - 0.43) / 0.17;
         if ((cx < 1 && cy < 0.3) || (cx < 0.3 && cy < 1)) base = [40, 150, 60];
       }
+    } else if (k === 'fedora') {
+      // brushed felt, a grosgrain ribbon above the brim, the pinch down the middle of the crown
+      kk *= 0.97 + 0.05 * h2(c.i >> 1, c.j, 71);
+      if (c.seg.part === 'hatCrown') {
+        if (c.lt < 0.2) { base = H0.col2 || mixT(base, INK, 0.5); if ((u + v * 2) % 4 === 0) kk *= 0.92; if (Math.abs(c.lt - 0.2) < 0.03) kk *= 0.78; }
+        if (c.lt > 0.7 && Math.abs(c.x) < 0.012 * hu) kk *= 0.8 - 0.1 * (c.lt - 0.7);
+      }
+      if (c.seg.part === 'brim') { if (c.ny < 0) kk *= 0.7; if (c.lt > 0.85) kk *= 0.9; }
+    } else if (k === 'gakubo') {
+      // black serge, a gold school badge on the front, a lacquered peak with a shine line
+      kk *= ((u + v) % 3 === 0) ? 0.95 : 1.02;
+      if (c.seg.part === 'hatCrown') {
+        if (c.lt < 0.3) kk *= 0.88;
+        if (Math.abs(c.lt - 0.3) < 0.025) kk *= 0.7;
+        if (c.ny > 0.9) kk *= 1.06;
+        if (c.nz > 0.8 && c.lt > 0.32 && c.lt < 0.62 && Math.abs(c.x) < 0.022 * hu) { base = [206, 166, 70]; if (Math.abs(c.x) < 0.006 * hu || Math.abs(c.lt - 0.47) < 0.03) base = [150, 110, 40]; }
+      }
+      if (c.seg.part === 'visor') { base = [26, 24, 28]; kk = c.ny > 0.3 ? (Math.abs(((u / 4) % 1) - 0.5) < 0.1 ? 1.6 : 1.0) : 0.6; }
+    } else if (k === 'scarf') {
+      // printed cotton: small dots or a check in col2, a knot shadow at the nape
+      const dot = H0.col2 && (((u >> 2) + (v >> 2)) % 2 === 0) && (u % 4 === 1) && (v % 4 === 1);
+      if (dot) base = H0.col2;
+      kk *= 0.95 + 0.06 * (((u >> 1) + v) % 2);
+      if (c.nz < -0.7 && c.lt < 0.3) kk *= 0.85;
+      if (c.lt < 0.04) kk *= 0.82;
     } else if (k === 'headband') {
       // tenugui: printed cotton
       const pat = ((Math.floor(u / 4) + Math.floor(v / 4)) % 2);

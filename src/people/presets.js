@@ -50,108 +50,123 @@ function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) h =
 
 const japaneseSkin = (pick) => pick([SKIN.fair, SKIN.light, SKIN.light, SKIN.medium, SKIN.medium, SKIN.warm]);
 
+// The street cast dresses like the back lanes of the late 1960s-70s (Shōwa 40s; period street photos as reference):
+// pomaded 7:3 partings, felt trilbies, horn-rims and pencil ties on the salarymen; set perms, headscarves, shirtwaist
+// dresses, aprons and kappōgi on the women; gakuran with peaked caps, sailor suits below the knee, school satchels;
+// grandpas in open-collar shirts with braces, or a vest and haramaki, flat caps and geta.
 const BUILD = {
   salaryman: ({ pick, ch, rr, jit }) => {
-    const suit = pick([0x2a3448, 0x30343a, 0x46484e, 0x1f2228, 0x3a3630, 0x283040]);
+    const suit = pick([0x2a3042, 0x34363a, 0x4a4a4c, 0x3e3a32, 0x2c3438, 0x4a4236]);
     return {
-      sex: 'm', age: 'adult', H: rr(1.66, 1.8), build: rr(0.94, 1.1), belly: ch(0.35) ? rr(0.3, 1) : 0,
+      sex: 'm', age: 'adult', H: rr(1.62, 1.74), build: rr(0.92, 1.06), belly: ch(0.3) ? rr(0.3, 0.9) : 0,
       skin: japaneseSkin(pick),
-      hair: { style: pick(['sidepart', 'sidepart', 'short', 'buzz']), col: pick([HAIR.black, HAIR.black, HAIR.soft, HAIR.dbrown]), part: ch(0.5) ? 1 : -1 },
-      face: { stubble: rr(0.15, 0.55), browW: rr(0.9, 1.2) },
-      glasses: ch(0.35) ? { kind: pick(['rect', 'rect', 'round']), col: pick([[30, 26, 26], [120, 120, 126], [150, 120, 70]]), thick: 1 } : null,
-      top: { kind: 'suit', col: jit(suit, 0.05), shirt: jit(pick([0xf4f4f0, 0xf4f4f0, 0xdce8f4, 0xf2e4e4]), 0.02), tie: jit(pick([0x8a2a2a, 0x2a3a6a, 0x3a5a3a, 0x6a2a4a, 0x8a6a2a, 0x2a2a2e]), 0.1), tieKind: pick(['stripe', 'solid', 'dots']) },
+      hair: { style: pick(['sidepart', 'sidepart', 'sidepart', 'short']), col: pick([HAIR.black, HAIR.black, HAIR.soft]), part: ch(0.7) ? 1 : -1 },
+      face: { stubble: rr(0.05, 0.35), browW: rr(1.0, 1.25) },
+      glasses: ch(0.45) ? { kind: pick(['horn', 'horn', 'rect']), col: pick([[28, 24, 24], [28, 24, 24], [70, 44, 30]]), thick: 1.2 } : null,
+      hat: ch(0.35) ? { kind: 'fedora', col: jit(pick([0x5a564e, 0x3e3c3a, 0x6a5a46, 0x4a4e52]), 0.05), col2: [30, 28, 28] } : null,
+      top: { kind: 'suit', col: jit(suit, 0.05), shirt: jit(pick([0xf2f0e8, 0xf2f0e8, 0xf2f0e8, 0xe4e8ec]), 0.02), tie: jit(pick([0x6a2226, 0x2a3450, 0x2a2a2e, 0x3a4632, 0x5a3a2a]), 0.08), tieKind: pick(['solid', 'solid', 'stripe']), thinTie: true },
       bottom: { kind: 'slacks', col: jit(suit, 0.05), belt: [26, 22, 20] },
-      shoes: { kind: 'oxford', col: jit(pick([0x1e1a18, 0x1e1a18, 0x4a2c1c]), 0.05) }, socks: { col: [30, 30, 36] },
-      acc: [ch(0.7) ? { kind: 'briefcase', col: jit(pick([0x1e1c1c, 0x3a2418, 0x2a2a2e])) } : { kind: 'shoulderbag', col: jit(0x2a2622), side: 1 }],
+      shoes: { kind: 'oxford', col: jit(pick([0x1e1a18, 0x1e1a18, 0x3a2418]), 0.05) }, socks: { col: [30, 30, 36] },
+      acc: [{ kind: 'briefcase', col: jit(pick([0x3a2418, 0x4a2c1a, 0x1e1c1c])) }],
       walk: { style: 'brisk' },
     };
   },
   office_lady: ({ pick, ch, rr, jit }) => {
-    const jacket = pick([0x1e1e24, 0x2a3048, 0xc8b496, 0x5a5a60, 0xe8e0d4]);
-    const blazer = ch(0.6);
+    const uni = ch(0.4), c = pick([0x2a3048, 0x5a4a3e, 0x6a6a70, 0x3a4a5a, 0x7a3a3a]);
     return {
-      sex: 'f', age: 'adult', H: rr(1.54, 1.66), build: rr(0.92, 1.02), bust: rr(0.7, 1.1),
+      sex: 'f', age: 'adult', H: rr(1.5, 1.6), build: rr(0.92, 1.02), bust: rr(0.7, 1.0),
       skin: japaneseSkin(pick),
-      hair: { style: pick(['bun', 'long', 'bob', 'ponytail', 'long']), col: pick([HAIR.black, HAIR.soft, HAIR.dbrown, HAIR.brown]), part: ch(0.5) ? 1 : -1 },
-      face: { makeup: { liner: 0.3, lash: 0.6, shadow: pick([[180, 130, 120], [160, 120, 110], null]), blush: [230, 130, 130] }, lipstick: jit(pick([0xc0505a, 0xb86060, 0xd07070, 0xa84850])), blush: 0.35 },
-      top: blazer ? { kind: 'blazer', col: jit(jacket, 0.05), shirt: jit(pick([0xf6f4ee, 0xf0e8e0, 0xe8eef6]), 0.02) } : { kind: 'blouse', col: jit(pick([0xf6f2ea, 0xe8d8e0, 0xd8e4ee, 0xf0e4d0]), 0.03), sleeve: pick(['long', 'short']) },
-      bottom: { kind: 'skirt', cut: 'pencil', col: blazer ? jit(jacket, 0.05) : jit(pick([0x2a2a30, 0x3a3a44, 0x6a5a4a, 0x1e2230])) },
-      legs: 'tights', tights: jit(pick([0xc8a088, 0xb8907a, 0x3a3236]), 0.04),
-      shoes: { kind: 'pumps', col: jit(pick([0x1e1a1a, 0x1e1a1a, 0xc8a888, 0x6a2a2a])) },
-      acc: [{ kind: ch(0.6) ? 'tote' : 'shoulderbag', col: jit(pick([0x6a4a30, 0x1e1a1a, 0xc8a888, 0x8a2a2a])), side: 1 }],
+      hair: { style: pick(['bob', 'bob', 'perm', 'bun', 'ponytail']), col: pick([HAIR.black, HAIR.black, HAIR.soft, HAIR.dbrown]), part: ch(0.5) ? 1 : -1 },
+      face: { makeup: { liner: 0.35, lash: 0.5, shadow: pick([[150, 140, 160], [170, 130, 120], null]), blush: [230, 140, 130] }, lipstick: jit(pick([0xb84a50, 0xc05860, 0xa84448])), blush: 0.3 },
+      glasses: ch(0.15) ? { kind: 'horn', col: [60, 36, 30], thick: 1 } : null,
+      top: uni ? { kind: 'blazer', col: jit(c, 0.05), shirt: jit(pick([0xf4f2ea, 0xf0e8dc]), 0.02) } : { kind: 'blouse', col: jit(pick([0xf4f0e6, 0xe8dcc8, 0xd8e2e8, 0xf0dcd8, 0xe8e0b8]), 0.03), sleeve: pick(['short', 'long']), cardigan: ch(0.35) ? jit(pick([0xb8a888, 0x8a9aa8, 0xc8a0a0])) : null },
+      bottom: { kind: 'skirt', cut: uni ? 'pencil' : 'aline', col: uni ? jit(c, 0.05) : jit(pick([0x3a3a48, 0x5a4a3a, 0x7a6a50, 0x6a3a3a, 0x3a4a3a])) },
+      legs: 'tights', tights: jit(pick([0xd0a890, 0xc49a82]), 0.04),
+      shoes: { kind: 'pumps', col: jit(pick([0x1e1a1a, 0x3a2418, 0x6a2a2a, 0xc8b49a])) },
+      acc: [{ kind: 'handbag', col: jit(pick([0x3a2418, 0x1e1a1a, 0x6a2a2a, 0xc8b49a])) }],
       walk: { style: 'dainty' },
     };
   },
   schoolgirl: ({ pick, ch, rr, jit }) => {
-    const winter = ch(0.5);
+    const winter = ch(0.55);
     const navy = jit(pick([0x1e2438, 0x22283e, 0x1a1e2c]), 0.03);
     return {
-      sex: 'f', age: 'teen', H: rr(1.5, 1.62), build: rr(0.92, 1.0), bust: rr(0.4, 0.7),
+      sex: 'f', age: 'teen', H: rr(1.48, 1.58), build: rr(0.92, 1.0), bust: rr(0.4, 0.6),
       skin: japaneseSkin(pick),
-      hair: { style: pick(['long', 'ponytail', 'twintails', 'bob', 'long', 'ponytail']), col: pick([HAIR.black, HAIR.black, HAIR.soft, HAIR.dbrown]), part: ch(0.5) ? 1 : -1 },
-      face: { blush: 0.45, eyeH: 1.08, lipFull: 0.9 },
-      top: { kind: 'sailor', col: winter ? navy : [244, 244, 240], collar: navy, stripe: [240, 240, 236], scarf: jit(pick([0xb02a30, 0xb02a30, 0x2a3a6a, 0x2a5a4a]), 0.06), sleeve: winter ? 'long' : 'short' },
-      bottom: { kind: 'skirt', cut: 'pleated', col: pick([navy, navy, jit(0x3a3a50)]), plaid: ch(0.3) ? [120, 40, 50] : null },
-      legs: ch(0.25) ? 'loosesocks' : 'kneesocks', socks: { col: ch(0.25) ? [246, 246, 244] : navy },
-      shoes: { kind: 'loafer', col: jit(pick([0x3a2418, 0x1e1a18])) },
-      acc: [ch(0.6) ? { kind: 'shoulderbag', col: navy, side: -1, school: true } : { kind: 'backpack', col: jit(pick([0x1e1e24, 0x2a3048, 0x6a3a3a])) }],
+      hair: { style: pick(['bob', 'bob', 'pigtails', 'long', 'ponytail', 'twintails']), col: pick([HAIR.black, HAIR.black, HAIR.soft]), part: ch(0.5) ? 1 : -1 },
+      face: { blush: 0.45, eyeH: 1.05, lipFull: 0.85 },
+      top: { kind: 'sailor', col: winter ? navy : [244, 244, 240], collar: navy, stripe: [240, 240, 236], scarf: jit(pick([0xa02a30, 0x1e2232, 0x2a3a6a, 0xf0f0ec]), 0.06), sleeve: winter ? 'long' : 'short' },
+      bottom: { kind: 'skirt', cut: 'kneepleat', col: navy },
+      legs: ch(0.5) ? 'kneesocks' : 'socks', socks: { col: ch(0.6) ? [246, 246, 244] : navy },
+      shoes: { kind: 'loafer', col: jit(pick([0x2a1a14, 0x1e1a18])) },
+      acc: [ch(0.6) ? { kind: 'briefcase', col: jit(pick([0x2a1a14, 0x3a2418])) } : { kind: 'shoulderbag', col: jit(0x8a7a5a), side: -1, school: true }],
       walk: { style: 'young' },
     };
   },
   schoolboy: ({ pick, ch, rr, jit }) => {
-    const gaku = jit(pick([0x16161a, 0x16161a, 0x1a1e2c]), 0.03);
+    const gaku = jit(pick([0x16161a, 0x16161a, 0x1a1e2c]), 0.03), summer = ch(0.2);
     return {
-      sex: 'm', age: 'teen', H: rr(1.62, 1.76), build: rr(0.9, 1.02),
+      sex: 'm', age: 'teen', H: rr(1.58, 1.72), build: rr(0.9, 1.02),
       skin: japaneseSkin(pick),
-      hair: { style: pick(['short', 'short', 'buzz', 'sidepart', 'messy']), col: pick([HAIR.black, HAIR.black, HAIR.soft]), part: ch(0.5) ? 1 : -1 },
+      hair: { style: pick(['buzz', 'buzz', 'short', 'sidepart']), col: pick([HAIR.black, HAIR.black, HAIR.soft]), part: ch(0.5) ? 1 : -1 },
       face: { browW: rr(1, 1.25) },
-      top: ch(0.75) ? { kind: 'gakuran', col: gaku } : { kind: 'shirt', col: [244, 244, 240], sleeve: 'short', tuck: true },
+      hat: ch(0.7) ? { kind: 'gakubo', col: [24, 24, 28] } : null,
+      top: summer ? { kind: 'shirt', col: [244, 244, 240], sleeve: 'short', tuck: true } : { kind: 'gakuran', col: gaku },
       bottom: { kind: 'slacks', col: gaku, belt: [24, 22, 20], noCrease: true },
-      shoes: { kind: 'sneaker', col: jit(pick([0xf0f0ec, 0x1e1e22, 0xf0f0ec])), col2: jit(pick([0x2a3a6a, 0x1e1e22, 0xb02a30])) }, socks: { col: [240, 240, 240] },
-      acc: [ch(0.5) ? { kind: 'backpack', col: jit(pick([0x1e1e24, 0x2a3048, 0x3a3a3a])) } : { kind: 'shoulderbag', col: jit(0x1e1e24), side: 1, school: true }],
+      shoes: ch(0.6) ? { kind: 'loafer', col: jit(0x1e1a18) } : { kind: 'sneaker', col: [236, 234, 226], col2: [236, 234, 226] }, socks: { col: ch(0.5) ? [30, 30, 36] : [240, 240, 240] },
+      acc: [ch(0.6) ? { kind: 'briefcase', col: jit(pick([0x2a1a14, 0x1e1a18])) } : { kind: 'shoulderbag', col: jit(0x8a7a5a), side: 1, school: true }],
       walk: { style: 'young' },
     };
   },
-  grandma: ({ pick, ch, rr, jit }) => ({
-    sex: 'f', age: 'elder', H: rr(1.44, 1.56), build: rr(0.96, 1.08), bust: 0.8,
-    skin: pick([SKIN.fair, SKIN.light, SKIN.medium]),
-    hair: { style: pick(['perm', 'perm', 'bun']), col: pick([HAIR.grey, HAIR.silver, HAIR.white, HAIR.lavgrey, HAIR.dbrown]), grey: 1 },
-    face: { wrinkles: 1, spots: 1, lipFull: 0.75, blush: 0.2 },
-    glasses: ch(0.45) ? { kind: pick(['round', 'rect']), col: pick([[160, 130, 90], [120, 110, 110], [60, 40, 40]]), thick: 1 } : null,
-    hat: ch(0.25) ? { kind: 'sunhat', col: jit(pick([0xd8c49a, 0xe8e0d0, 0x8a7a6a])), col2: jit(pick([0x6a3a3a, 0x3a4a6a])) } : null,
-    top: { kind: 'cardigan', col: jit(pick([0xb89a8a, 0x8a7a9a, 0x9aa088, 0x8a3a3a, 0xc8b89a, 0x6a6a74])), shirt: jit(pick([0xf0ece4, 0xe8dce4, 0xdce4e8])), pattern: ch(0.5) ? 'floral' : null },
-    bottom: ch(0.6) ? { kind: 'skirt', cut: 'long', col: jit(pick([0x4a4040, 0x3a3a48, 0x5a4a3a, 0x6a6a6a])) } : { kind: 'slacks', col: jit(pick([0x5a5048, 0x3a3a44, 0x7a6a5a])), noCrease: true },
-    legs: 'socks', socks: { col: jit(pick([0xb8a898, 0x8a8a8a])) },
-    shoes: { kind: 'comfort', col: jit(pick([0x8a7a6a, 0x5a5050, 0xb8a890])) },
-    acc: [ch(0.6) ? { kind: 'ecobag', col: jit(pick([0xd8c8a8, 0x8a9a7a, 0x6a7a9a])), leek: ch(0.6) } : { kind: 'handbag', col: jit(pick([0x5a3a2a, 0x2a2622, 0x6a2a3a])) }],
-    walk: { style: 'elder', hunch: rr(0.5, 1) },
-  }),
-  grandpa: ({ pick, ch, rr, jit }) => ({
-    sex: 'm', age: 'elder', H: rr(1.54, 1.68), build: rr(0.92, 1.05), belly: ch(0.4) ? rr(0.2, 0.7) : 0,
-    skin: pick([SKIN.light, SKIN.medium, SKIN.warm]),
-    hair: { style: pick(['bald', 'bald', 'short', 'buzz']), col: pick([HAIR.grey, HAIR.silver, HAIR.white]), grey: 1 },
-    face: { wrinkles: 1, spots: 1, mustache: ch(0.25), stubble: rr(0, 0.3), browW: 1.2, lipFull: 0.75 },
-    glasses: ch(0.5) ? { kind: pick(['rect', 'round']), col: pick([[150, 120, 70], [40, 34, 30], [140, 140, 146]]), thick: 1 } : null,
-    hat: ch(0.6) ? { kind: 'flatcap', col: jit(pick([0x6a5a48, 0x4a4a4e, 0x7a6a4a, 0x3a3430])) } : null,
-    top: ch(0.5) ? { kind: 'polo', col: jit(pick([0xc8c0a8, 0x8a9aa8, 0xe8e4dc, 0x6a7a6a])), vest: ch(0.5) ? jit(pick([0x5a4a3a, 0x3a3a48, 0x6a6a5a])) : null, sleeve: 'long' } : { kind: 'jacket', col: jit(pick([0xc8b890, 0x8a8a7a, 0x5a5a64])), shirt: jit(pick([0xe8e4dc, 0xc8d0d8])) },
-    bottom: { kind: 'slacks', col: jit(pick([0x5a5a5a, 0x7a6a58, 0x4a4a54, 0x8a8070])), belt: [50, 36, 26] },
-    shoes: ch(0.4) ? { kind: 'sandal', col: jit(0x4a3a2a) } : { kind: 'comfort', col: jit(pick([0x3a2a20, 0x5a5048])) }, socks: { col: ch(0.5) ? [236, 236, 232] : [90, 90, 96] },
-    acc: ch(0.4) ? [{ kind: 'cane', col: jit(0x5a3a22) }] : [],
-    walk: { style: 'elder', hunch: rr(0.4, 0.9) },
-  }),
+  grandma: ({ pick, ch, rr, jit }) => {
+    const kappogi = ch(0.4);
+    return {
+      sex: 'f', age: 'elder', H: rr(1.4, 1.52), build: rr(0.96, 1.08), bust: 0.8,
+      skin: pick([SKIN.fair, SKIN.light, SKIN.medium]),
+      hair: { style: pick(['perm', 'perm', 'bun', 'bun']), col: pick([HAIR.grey, HAIR.silver, HAIR.white, HAIR.lavgrey, HAIR.dbrown]), grey: 1 },
+      face: { wrinkles: 1, spots: 1, lipFull: 0.75, blush: 0.2 },
+      glasses: ch(0.4) ? { kind: pick(['round', 'horn']), col: pick([[160, 130, 90], [120, 110, 110], [60, 40, 40]]), thick: 1 } : null,
+      hat: ch(0.25) ? { kind: 'scarf', col: jit(pick([0x6a5a7a, 0x8a4a3a, 0x4a5a6a, 0xd8ccb0])), col2: [236, 230, 216] } : null,
+      top: kappogi ? { kind: 'blouse', col: [242, 240, 232], sleeve: 'long' } : { kind: 'cardigan', col: jit(pick([0x8a7a6a, 0x6a5a6a, 0x7a8a7a, 0x8a3a3a, 0xa8987a, 0x5a5a64])), shirt: jit(pick([0xf0ece4, 0xe8dce4, 0xdce4e8])) },
+      bottom: ch(0.55) ? { kind: 'skirt', cut: 'long', col: jit(pick([0x4a4040, 0x3a3a48, 0x5a4a3a, 0x4a4a42])) } : { kind: 'slacks', col: jit(pick([0x2a3048, 0x3a3a44, 0x4a3e36])), wide: true, noCrease: true }, // or monpe
+      legs: 'socks', socks: { col: jit(pick([0xf0eee8, 0xb8a898])) },
+      shoes: ch(0.6) ? { kind: 'sandal', col: jit(pick([0x8a5a32, 0xc8a878])) } : { kind: 'comfort', col: jit(pick([0x3a2a20, 0x5a5050])) },
+      acc: [...(kappogi ? [{ kind: 'apron', col: [242, 240, 232], col2: [236, 232, 220] }] : []), ch(0.6) ? { kind: 'ecobag', col: jit(pick([0xc8b48a, 0x8a7a5a, 0x6a7a9a])), leek: ch(0.6) } : { kind: 'handbag', col: jit(pick([0x5a3a2a, 0x2a2622, 0x6a2a3a])) }],
+      walk: { style: 'elder', hunch: rr(0.5, 1) },
+    };
+  },
+  grandpa: ({ pick, ch, rr, jit }) => {
+    const look = pick(['shirt', 'shirt', 'haramaki', 'jacket']);
+    const hat = ch(0.6) ? { kind: look === 'jacket' && ch(0.4) ? 'fedora' : 'flatcap', col: jit(pick([0x6a5a48, 0x4a4a4e, 0x7a6a4a, 0x3a3430])), col2: [40, 34, 30] } : null;
+    return {
+      sex: 'm', age: 'elder', H: rr(1.52, 1.64), build: rr(0.92, 1.05), belly: ch(0.45) ? rr(0.2, 0.7) : 0,
+      skin: pick([SKIN.light, SKIN.medium, SKIN.warm]),
+      hair: { style: pick(['bald', 'bald', 'short', 'buzz', 'sidepart']), col: pick([HAIR.grey, HAIR.silver, HAIR.white]), grey: 1, part: 1 },
+      face: { wrinkles: 1, spots: 1, mustache: ch(0.3), stubble: rr(0, 0.3), browW: 1.2, lipFull: 0.75 },
+      glasses: ch(0.55) ? { kind: pick(['horn', 'round', 'round']), col: pick([[150, 120, 70], [40, 34, 30], [70, 44, 30]]), thick: 1.2 } : null,
+      hat,
+      top: look === 'haramaki' ? { kind: 'tee', col: [240, 238, 230], print: 'none', tuck: true, haramaki: jit(pick([0xb89a6a, 0x8a3a30, 0x6a6a4a, 0x8a8a84])) }
+        : look === 'jacket' ? { kind: 'jacket', col: jit(pick([0x8a7a5a, 0x6a6a5e, 0x5a5a64, 0x6a5440])), shirt: jit(pick([0xe8e4dc, 0xc8d0d8])) }
+        : { kind: 'shirt', col: jit(pick([0xe8e4d6, 0xc8d4dc, 0xd8ccb0, 0xb8c0a8, 0xe0d8d0])), sleeve: 'short', tuck: true, braces: ch(0.6) ? jit(pick([0x3a3a40, 0x5a3a2a, 0x6a2a2a])) : null },
+      bottom: { kind: 'slacks', col: look === 'haramaki' ? jit(pick([0xd8d0bc, 0x8a8070])) : jit(pick([0x5a5a5a, 0x6a5e4e, 0x4a4a54, 0x7a7060])), belt: [50, 36, 26], wide: true },
+      shoes: ch(0.55) ? { kind: 'sandal', col: jit(pick([0x8a5a32, 0x7a5030])) } : { kind: 'comfort', col: jit(pick([0x3a2a20, 0x2a2420])) }, socks: { col: ch(0.5) ? [236, 236, 232] : [90, 90, 96] },
+      acc: !hat && ch(0.6) ? [{ kind: 'cane', col: jit(0x5a3a22) }] : [], // (cap + cane together go over the 2.5k budget)
+      walk: { style: 'elder', hunch: rr(0.4, 0.9) },
+    };
+  },
   kid: ({ pick, ch, rr, jit }) => {
     const girl = ch(0.45);
     return {
-      sex: girl ? 'f' : 'm', age: 'kid', H: rr(1.12, 1.3), build: rr(0.95, 1.08),
+      sex: girl ? 'f' : 'm', age: 'kid', H: rr(1.1, 1.28), build: rr(0.95, 1.08),
       skin: japaneseSkin(pick),
-      hair: { style: girl ? pick(['pigtails', 'bob', 'ponytail']) : pick(['bowl', 'short', 'buzz']), col: pick([HAIR.black, HAIR.soft, HAIR.dbrown]) },
+      hair: { style: girl ? pick(['bob', 'bob', 'pigtails']) : pick(['bowl', 'buzz', 'buzz', 'short']), col: pick([HAIR.black, HAIR.soft, HAIR.black]) },
       face: { blush: 0.6 },
-      hat: ch(0.5) ? { kind: 'schoolhat', col: [246, 206, 40] } : ch(0.3) ? { kind: 'cap', col: jit(pick([0xb02a30, 0x2a4a8a, 0x2a6a3a, 0x1e1e22])), col2: [240, 240, 236] } : null,
-      top: { kind: 'tee', col: jit(pick([0xe85a4a, 0x4a8ad8, 0xf0c040, 0x5ab06a, 0xf0f0ec, 0xe890b0, 0x8a6ad0])), print: pick(['stripes', 'star', 'circle', 'border']), col2: jit(pick([0xf0f0ec, 0x1e2a4a, 0xf0c040])) },
-      bottom: girl && ch(0.6) ? { kind: 'skirt', cut: 'mini', col: jit(pick([0x2a3a6a, 0xd85a6a, 0x5a4a3a])) } : { kind: 'shorts', col: jit(pick([0x2a3a6a, 0x8a7a5a, 0x4a6a9a, 0x3a3a3a])) },
-      legs: 'socks', socks: { col: [246, 246, 244] },
-      shoes: { kind: 'sneaker', col: jit(pick([0xf0f0ec, 0x4a8ad8, 0xe85a4a, 0xf0c040])), col2: jit(pick([0x1e2a4a, 0xf0f0ec, 0xe85a4a])) },
-      acc: ch(0.8) ? [{ kind: 'randoseru', col: jit(girl ? pick([0xc02a3a, 0xd86a8a, 0x8a3a6a, 0x6a3a2a]) : pick([0x1e1a1a, 0x3a2418, 0x2a3a6a])) }] : [],
+      hat: ch(0.5) ? { kind: 'schoolhat', col: [246, 206, 40] } : !girl && ch(0.3) ? { kind: 'cap', col: jit(pick([0x2a3a6a, 0xa02a2a, 0x1e1e22])), col2: [240, 240, 236] } : null,
+      top: girl && ch(0.5) ? { kind: 'blouse', col: jit(pick([0xf4f0e6, 0xe8d0d0, 0xd8e4e8])), sleeve: 'short' } : { kind: 'tee', col: jit(pick([0xf0ece0, 0xc84a3a, 0x4a6a9a, 0xd8b04a, 0x6a8a5a])), print: pick(['border', 'border', 'stripes', 'none']), col2: jit(pick([0x2a3a6a, 0xa02a2a, 0xf0ece0])) },
+      bottom: girl ? { kind: 'skirt', cut: 'aline', col: jit(pick([0x2a3a6a, 0x8a3a3a, 0x5a4a3a])) } : { kind: 'shorts', col: jit(pick([0x2a3a6a, 0x5a4a3a, 0x3a3a3a, 0x6a6a5a])) },
+      legs: ch(0.5) ? 'kneesocks' : 'socks', socks: { col: [246, 246, 244] },
+      shoes: { kind: 'sneaker', col: jit(pick([0xf0ece0, 0x3a4a6a, 0xd8d0c0])), col2: jit(pick([0x2a3a6a, 0xa02a2a, 0xf0ece0])) },
+      acc: ch(0.8) ? [{ kind: 'randoseru', col: jit(girl ? pick([0xb02a2a, 0xa02a30]) : pick([0x1e1a1a, 0x1e1a1a, 0x3a2418])) }] : [],
       walk: { style: 'kid' },
     };
   },
@@ -159,96 +174,105 @@ const BUILD = {
     const f = ch(0.45);
     const fair = ch(0.7);
     return {
-      sex: f ? 'f' : 'm', age: 'adult', H: f ? rr(1.6, 1.75) : rr(1.72, 1.9), build: rr(0.95, 1.12), belly: !f && ch(0.3) ? rr(0.3, 0.9) : 0, bust: 1,
+      sex: f ? 'f' : 'm', age: 'adult', H: f ? rr(1.6, 1.74) : rr(1.72, 1.88), build: rr(0.95, 1.12), belly: !f && ch(0.3) ? rr(0.3, 0.9) : 0, bust: 1,
       skin: fair ? pick([SKIN.pale, SKIN.pale, SKIN.fair, SKIN.light]) : pick([SKIN.tan, SKIN.brown, SKIN.dark, SKIN.deep]),
-      hair: { style: f ? pick(['ponytail', 'long', 'bob']) : pick(['short', 'messy', 'sidepart']), col: fair ? pick([HAIR.blonde, HAIR.chestnut, HAIR.brown, HAIR.ginger, HAIR.ash]) : pick([HAIR.black, HAIR.dbrown]), part: 1 },
-      face: { iris: fair ? pick([IRIS.blue, IRIS.green, IRIS.grey, IRIS.hazel, IRIS.brown]) : IRIS.dbrown, lid: 'double', tilt: 0, eyeH: 1.15, freckles: fair && ch(0.4) ? 0.8 : 0, stubble: f ? 0 : rr(0, 0.5), blush: fair ? 0.45 : 0.15, browW: f ? 1 : 1.2 },
-      glasses: ch(0.3) ? { kind: 'sun', col: [24, 22, 24], thick: 1.2 } : null,
-      hat: ch(0.6) ? (ch(0.5) ? { kind: 'bucket', col: jit(pick([0xd8c8a0, 0x6a7a5a, 0xe8e4dc])) } : { kind: 'cap', col: jit(pick([0xe8e4dc, 0x2a4a8a, 0xb02a30])), col2: [30, 30, 34] }) : null,
-      top: ch(0.5) ? { kind: 'aloha', col: jit(pick([0x2a8ab0, 0xe86a4a, 0x2a6a4a, 0xf0d8a0, 0x4a3a8a])), col2: jit(pick([0xf0f0e8, 0xf0c040, 0xe85a7a])) } : { kind: 'tee', col: jit(pick([0xf0f0ec, 0x8ab0d8, 0xe8c8a0, 0x3a3a3e, 0x6a8a5a])), print: pick(['circle', 'border', 'none']), col2: jit(pick([0xb02a30, 0x2a4a8a, 0xf0c040])) },
-      bottom: { kind: ch(0.6) ? 'shorts' : 'cargo', col: jit(pick([0xc8b48a, 0x8a8a6a, 0x6a6a5a, 0x3a4a6a])) },
+      hair: { style: f ? pick(['long', 'long', 'bob', 'perm']) : pick(['messy', 'sidepart', 'short']), col: fair ? pick([HAIR.blonde, HAIR.chestnut, HAIR.brown, HAIR.ginger, HAIR.ash]) : pick([HAIR.black, HAIR.dbrown]), part: 1 },
+      face: { iris: fair ? pick([IRIS.blue, IRIS.green, IRIS.grey, IRIS.hazel, IRIS.brown]) : IRIS.dbrown, lid: 'double', tilt: 0, eyeH: 1.15, freckles: fair && ch(0.4) ? 0.8 : 0, stubble: f ? 0 : rr(0.1, 0.6), mustache: !f && ch(0.3), blush: fair ? 0.45 : 0.15, browW: f ? 1 : 1.2 },
+      glasses: ch(0.35) ? { kind: 'sun', col: [150, 120, 70], thick: 1 } : null,
+      hat: ch(0.5) ? { kind: 'bucket', col: jit(pick([0xd8c8a0, 0x8a7a5a, 0xe8e4dc])), col2: jit(pick([0x8a3a2a, 0x3a4a6a])) } : null,
+      top: ch(0.5) ? { kind: 'aloha', col: jit(pick([0x2a6a8a, 0xc86a3a, 0x3a5a3a, 0xe0c890, 0x6a3a2a])), col2: jit(pick([0xf0f0e8, 0xf0c040, 0xe8a070])) } : f ? { kind: 'blouse', col: jit(pick([0xf0e8d0, 0xd8a070, 0xc8d8c0])), sleeve: 'short' } : { kind: 'shirt', col: jit(pick([0xe8dcc0, 0xa8b8c8, 0xc8a878])), sleeve: 'short', tuck: true },
+      bottom: f && ch(0.5) ? { kind: 'skirt', cut: 'long', col: jit(pick([0x8a5a3a, 0x5a6a3a, 0x3a3a5a])) } : ch(0.5) ? { kind: 'shorts', col: jit(pick([0xc8b48a, 0x8a8a6a, 0x6a6a5a])) } : { kind: 'jeans', col: jit(pick([0x3a4a6a, 0x4a5a7a])), wide: true, belt: [60, 40, 28] },
       legs: 'socks', socks: { col: [244, 244, 242] },
-      shoes: ch(0.6) ? { kind: 'sneaker', col: jit(pick([0xf0f0ec, 0x8a8a8a, 0x3a3a3e])), col2: jit(pick([0xe85a4a, 0x2a4a8a, 0x8a8a8a])) } : { kind: 'sandal', col: jit(0x3a3028) },
-      acc: [{ kind: 'camera', col: [26, 26, 28] }, ...(ch(0.5) ? [{ kind: 'backpack', col: jit(pick([0x3a5a8a, 0x6a6a5a, 0xb05a3a, 0x2a2a2e])) }] : [])],
+      shoes: ch(0.5) ? { kind: 'sneaker', col: jit(pick([0xf0ece0, 0x8a6a4a, 0x3a3a3e])), col2: jit(pick([0x2a4a8a, 0x8a3a2a, 0xf0ece0])) } : { kind: 'sandal', col: jit(0x5a3a24) },
+      acc: [{ kind: 'camera', col: [26, 26, 28] }, ...(ch(0.5) ? [{ kind: 'backpack', col: jit(pick([0x6a5a3a, 0x8a3a2a, 0x3a4a3a, 0x3a4a6a])) }] : [])],
       walk: { style: 'normal', look: 1 },
     };
   },
-  otaku: ({ pick, ch, rr, jit }) => ({
-    sex: 'm', age: 'adult', H: rr(1.64, 1.76), build: rr(0.92, 1.12), belly: ch(0.5) ? rr(0.4, 1.1) : 0,
+  otaku: ({ pick, ch, rr, jit }) => ({ // the lane's bookish manga-and-model-kit lodger
+    sex: 'm', age: 'adult', H: rr(1.62, 1.74), build: rr(0.9, 1.08), belly: ch(0.4) ? rr(0.3, 1.0) : 0,
     skin: pick([SKIN.fair, SKIN.light, SKIN.fair]),
-    hair: { style: pick(['mushroom', 'messy', 'mushroom']), col: pick([HAIR.black, HAIR.soft]) },
+    hair: { style: pick(['mushroom', 'messy', 'bowl']), col: pick([HAIR.black, HAIR.soft]) },
     face: { stubble: rr(0, 0.35), browW: rr(0.9, 1.15) },
-    glasses: { kind: pick(['rect', 'rect', 'round']), col: pick([[24, 22, 24], [150, 150, 156], [60, 30, 30]]), thick: pick([1, 1.4]) },
-    top: { kind: 'flannel', col: jit(pick([0x8a2a2a, 0x2a4a7a, 0x2a5a3a, 0x5a3a6a])), col2: jit(pick([0x1e1e22, 0xe8e4dc, 0x1e2a1e])), tuck: ch(0.6) },
-    bottom: { kind: 'jeans', col: jit(pick([0x3a4a6a, 0x2a3450, 0x4a5a7a]), 0.04), belt: [40, 30, 24] },
-    shoes: { kind: 'sneaker', col: jit(pick([0xe8e4dc, 0x6a6a6a, 0x2a2a2e])), col2: jit(pick([0x2a2a2e, 0xb02a30])) }, socks: { col: [220, 220, 220] },
-    acc: [{ kind: 'backpack', col: jit(pick([0x1e1e22, 0x3a3a40, 0x2a3a2a])), poster: ch(0.6) }],
+    glasses: { kind: pick(['horn', 'horn', 'round']), col: pick([[24, 22, 24], [60, 36, 28]]), thick: pick([1.2, 1.6]) },
+    top: ch(0.5) ? { kind: 'flannel', col: jit(pick([0x7a3a2a, 0x3a4a6a, 0x4a5a3a, 0x6a5a3a])), col2: jit(pick([0x2a2422, 0xe0d8c0])), tuck: true } : { kind: 'shirt', col: jit(pick([0xe0d8c0, 0xc8d0c8, 0xd8c8a8])), sleeve: 'short', tuck: true },
+    bottom: { kind: 'slacks', col: jit(pick([0x5a4e3e, 0x3a3a40, 0x6a6450])), belt: [40, 30, 24], wide: true, noCrease: true },
+    shoes: { kind: 'sneaker', col: jit(pick([0xe8e4dc, 0x6a5a4a])), col2: jit(pick([0x2a2a2e, 0x6a3a2a])) }, socks: { col: [220, 220, 220] },
+    acc: [{ kind: 'shoulderbag', col: jit(pick([0x6a5a3a, 0x3a3a30])), side: 1, school: true }],
     walk: { style: 'slouch' },
   }),
-  gyaru: ({ pick, rr, jit }) => ({
-    sex: 'f', age: 'adult', H: rr(1.54, 1.66), build: rr(0.9, 1.0), bust: rr(0.8, 1.2),
-    skin: pick([SKIN.tan, SKIN.warm, SKIN.deep, SKIN.tan]),
-    hair: { style: pick(['long', 'long', 'twintails', 'ponytail']), col: pick([HAIR.blonde, HAIR.caramel, HAIR.ash, HAIR.blonde]), volume: 1.3, part: 1 },
-    face: { makeup: { liner: 0.8, lash: 1, lower: true, shadow: pick([[190, 140, 110], [220, 160, 170]]), highlight: 0.5, blush: [240, 140, 150] }, lipstick: jit(pick([0xe8b0a0, 0xf0a8b0, 0xd89088])), eyeH: 1.15, blush: 0.3, browW: 0.8, browCol: [90, 64, 44] },
-    top: { kind: 'tee', col: jit(pick([0xf0a0c0, 0xf0f0ec, 0x1e1e22, 0xf0e0a0])), fitted: true, print: pick(['heart', 'none', 'circle']), col2: jit(pick([0xe8508a, 0xf0c040, 0x1e1e22])), sleeve: 'short' },
-    bottom: { kind: 'skirt', cut: 'mini', col: jit(pick([0x4a6a9a, 0x1e1e22, 0xe8e4dc, 0x8a3a4a])) },
-    legs: 'loosesocks', socks: { col: [248, 248, 246] },
-    shoes: { kind: 'platform', col: jit(pick([0xf0f0ec, 0x1e1e22, 0xf0a0c0])) },
-    acc: [{ kind: 'shoulderbag', col: jit(pick([0xf0a0c0, 0xf0f0ec, 0x1e1e22])), side: 1 }],
+  gyaru: ({ pick, rr, ch, jit }) => ({ // the lane's fashionable young woman, 70s: long centre-parted hair, flares, platforms
+    sex: 'f', age: 'adult', H: rr(1.54, 1.64), build: rr(0.9, 1.0), bust: rr(0.8, 1.1),
+    skin: japaneseSkin(pick),
+    hair: { style: pick(['long', 'long', 'bob']), col: pick([HAIR.black, HAIR.soft, HAIR.dbrown]), part: 0 },
+    face: { makeup: { liner: 0.5, lash: 0.8, shadow: pick([[150, 160, 190], [190, 150, 120]]), blush: [230, 140, 130] }, lipstick: jit(pick([0xc06a5a, 0xb85a60, 0xd08a78])), eyeH: 1.1, blush: 0.3, browW: 0.75 },
+    hat: ch(0.3) ? { kind: 'scarf', col: jit(pick([0xd8a048, 0xe8e0d0, 0x8a4a3a])), col2: [240, 232, 210] } : null,
+    top: ch(0.5) ? { kind: 'knit', col: jit(pick([0xd8a048, 0x8a4a3a, 0xe8dcc0, 0x6a7a4a])), sleeve: 'long', tuck: true } : { kind: 'blouse', col: jit(pick([0xf0e4c8, 0xe0a890, 0xc8d8b8])), sleeve: 'long' },
+    bottom: ch(0.55) ? { kind: 'jeans', col: jit(pick([0x3a4a6a, 0x4a5a7a]), 0.04), wide: true, belt: [80, 50, 30] } : { kind: 'skirt', cut: 'long', col: jit(pick([0x8a4a2a, 0x5a3a2a, 0x3a4a3a, 0x6a3a4a])) },
+    legs: 'socks', socks: { col: [220, 200, 180] },
+    shoes: { kind: 'platform', col: jit(pick([0x5a3a24, 0x2a2220, 0xc8a878])) },
+    acc: [{ kind: 'shoulderbag', col: jit(pick([0x8a5a32, 0x5a3a24, 0xc8a878])), side: 1 }],
     walk: { style: 'dainty' },
   }),
-  mom: ({ pick, ch, rr, jit }) => ({
-    sex: 'f', age: 'adult', H: rr(1.54, 1.66), build: rr(0.94, 1.06), bust: rr(0.8, 1.1),
-    skin: japaneseSkin(pick),
-    hair: { style: pick(['ponytail', 'bob', 'bun', 'long']), col: pick([HAIR.dbrown, HAIR.brown, HAIR.black, HAIR.chestnut]), part: ch(0.5) ? 1 : -1 },
-    face: { makeup: { liner: 0.15, lash: 0.4, blush: [230, 140, 130] }, lipstick: jit(pick([0xc87a7a, 0xd08a80])), blush: 0.35 },
-    top: ch(0.5) ? { kind: 'knit', col: jit(pick([0xe8d8c0, 0xc8a0a0, 0xa0b0c8, 0xd8d0b0, 0x9a8a7a])), sleeve: 'long' } : { kind: 'blouse', col: jit(pick([0xf0ece0, 0xe0e8d8, 0xe8d8e0])), sleeve: 'short', cardigan: ch(0.5) ? jit(pick([0xa08a70, 0x6a7a8a, 0xd8c8b0])) : null },
-    bottom: ch(0.6) ? { kind: 'skirt', cut: 'long', col: jit(pick([0x6a6a5a, 0x3a3a48, 0xb8a888, 0x5a4a5a])) } : { kind: 'slacks', col: jit(pick([0xd8d0c0, 0x3a3a44, 0x6a7a8a])), wide: true, noCrease: true },
-    legs: 'socks', socks: { col: jit(pick([0xe8e4dc, 0x8a8a8a])) },
-    shoes: { kind: ch(0.5) ? 'sneaker' : 'comfort', col: jit(pick([0xf0f0ec, 0xd8c8b0, 0x5a4a3a])), col2: jit(pick([0xd8c8b0, 0x8a8a8a])) },
-    acc: [ch(0.5) ? { kind: 'ecobag', col: jit(pick([0xd8c8a8, 0x8a9a7a, 0xe8e4dc])), leek: ch(0.7) } : { kind: 'tote', col: jit(pick([0xd8c8a8, 0x2a3048, 0x8a6a4a])), side: 1 }],
-    walk: { style: 'normal' },
-  }),
-  delivery: ({ pick, rr, jit }) => {
-    const c = pick([[0x2a6a3a, 0xe8e4dc], [0x2a3a6a, 0xf0c040], [0xb02a30, 0xf0f0ec], [0x3a3a40, 0xf08a30]]);
+  mom: ({ pick, ch, rr, jit }) => {
+    const dress = ch(0.5), dc = jit(pick([0xc8a890, 0x8aa0b0, 0xa8b088, 0xd8c8a0, 0xb08080, 0x7a8aa0]));
     return {
-      sex: 'm', age: 'adult', H: rr(1.66, 1.8), build: rr(0.96, 1.1),
+      sex: 'f', age: 'adult', H: rr(1.5, 1.6), build: rr(0.94, 1.06), bust: rr(0.8, 1.1),
+      skin: japaneseSkin(pick),
+      hair: { style: pick(['perm', 'perm', 'bob', 'bun']), col: pick([HAIR.black, HAIR.soft, HAIR.dbrown]), part: ch(0.5) ? 1 : -1 },
+      face: { makeup: { liner: 0.15, lash: 0.4, blush: [230, 140, 130] }, lipstick: jit(pick([0xb86a6a, 0xc07a70])), blush: 0.35 },
+      hat: ch(0.25) ? { kind: 'scarf', col: jit(pick([0xe8dcc0, 0xb04a3a, 0x4a6a8a, 0xd8b84a])), col2: [240, 236, 226] } : null,
+      // a shirtwaist dress (blouse + A-line in one cloth), or a cardigan over a blouse and skirt
+      top: dress ? { kind: 'blouse', col: dc, sleeve: 'short' } : { kind: 'blouse', col: jit(pick([0xf0ece0, 0xe0e8d8, 0xe8d8e0])), sleeve: 'short', cardigan: ch(0.6) ? jit(pick([0xa08a70, 0x6a7a8a, 0xd8c8b0, 0x8a4a3a])) : null },
+      bottom: { kind: 'skirt', cut: 'aline', col: dress ? dc : jit(pick([0x6a6a5a, 0x3a3a48, 0x8a7a5a, 0x5a4a5a])) },
+      legs: 'socks', socks: { col: jit(pick([0xe8e4dc, 0xd8c8b0])) },
+      shoes: ch(0.5) ? { kind: 'sandal', col: jit(pick([0x8a5a32, 0xc8a878])) } : { kind: 'comfort', col: jit(pick([0xd8c8b0, 0x5a4a3a])) },
+      acc: [...(ch(0.55) ? [{ kind: 'apron', col: jit(pick([0xf0ece4, 0xe8d8c0, 0xd8e0e8])), col2: [236, 232, 220] }] : []), { kind: 'ecobag', col: jit(pick([0xc8b48a, 0x9a8a5a, 0xd8c8a8])), leek: ch(0.7) }],
+      walk: { style: 'normal' },
+    };
+  },
+  delivery: ({ pick, ch, rr, jit }) => {
+    const soba = ch(0.5), c = pick([[0x2a4a3a, 0xe8e4dc], [0x2a3a6a, 0xe8e4dc], [0x8a2a2a, 0xf0f0ec]]);
+    return {
+      sex: 'm', age: 'adult', H: rr(1.62, 1.74), build: rr(0.94, 1.06),
       skin: pick([SKIN.medium, SKIN.warm, SKIN.light]),
-      hair: { style: pick(['short', 'buzz']), col: pick([HAIR.black, HAIR.dbrown, HAIR.brown]) },
+      hair: { style: pick(['short', 'buzz']), col: pick([HAIR.black, HAIR.soft]) },
       face: { stubble: rr(0.1, 0.4), browW: 1.15 },
-      hat: { kind: 'cap', col: jit(c[0], 0.03), col2: hex(c[1]) },
-      top: { kind: 'polo', col: jit(c[0], 0.03), band: hex(c[1]), sleeve: 'short', uniform: true },
-      bottom: { kind: 'cargo', col: jit(pick([0x2a2e36, 0x3a3a34, 0x2a3424])) },
-      shoes: { kind: 'boots', col: jit(0x1e1c1c) }, socks: { col: [40, 40, 44] },
-      acc: [{ kind: 'pouch', col: jit(0x2a2622) }],
+      hat: soba ? { kind: 'headband', col: [240, 240, 236] } : { kind: 'cap', col: jit(c[0], 0.03), col2: hex(c[1]) },
+      top: soba ? { kind: 'shirt', col: [242, 240, 232], sleeve: 'short', tuck: true } : { kind: 'workjacket', col: jit(c[0], 0.03), sleeve: 'long' },
+      bottom: { kind: 'slacks', col: jit(pick([0x2a2e36, 0x3a3a34, 0x4a4438])), noCrease: true },
+      shoes: soba ? { kind: 'sandal', col: jit(0x7a5030) } : { kind: 'sneaker', col: [220, 214, 200], col2: [60, 50, 40] }, socks: { col: [40, 40, 44] },
+      acc: soba ? [{ kind: 'apron', col: jit(0x23304a), col2: [236, 232, 220] }] : [{ kind: 'pouch', col: jit(0x3a2a20) }],
       walk: { style: 'brisk' },
     };
   },
-  construction: ({ pick, ch, rr, jit }) => ({
-    sex: 'm', age: 'adult', H: rr(1.64, 1.8), build: rr(1.0, 1.15), belly: ch(0.3) ? rr(0.2, 0.6) : 0,
-    skin: pick([SKIN.warm, SKIN.tan, SKIN.tan, SKIN.medium]),
-    hair: { style: pick(['short', 'buzz']), col: pick([HAIR.black, HAIR.dbrown, HAIR.brown]) },
-    face: { stubble: rr(0.3, 0.8), browW: 1.25 },
-    hat: { kind: 'hardhat', col: jit(pick([0xf0f0ec, 0xf0c838, 0xf0f0ec, 0x3a6ab0]), 0.03) },
-    top: { kind: 'workjacket', col: jit(pick([0x8a8060, 0x3a4458, 0x6a6a68, 0x4a5a3a])), sleeve: 'long' },
-    bottom: { kind: 'tobi', col: jit(pick([0x2a3048, 0x8a8060, 0x4a4a4e, 0x1e1e22, 0x6a5a7a])) },
-    shoes: { kind: 'tabi', col: jit(pick([0x1e2230, 0x1e1e1e, 0x3a3a40])) },
-    acc: [{ kind: 'towel', col: [240, 240, 236] }],
-    walk: { style: 'heavy' },
-  }),
+  construction: ({ pick, ch, rr, jit }) => {
+    const vest = ch(0.35);
+    return {
+      sex: 'm', age: 'adult', H: rr(1.62, 1.76), build: rr(1.0, 1.15), belly: ch(0.3) ? rr(0.2, 0.6) : 0,
+      skin: pick([SKIN.warm, SKIN.tan, SKIN.tan, SKIN.medium]),
+      hair: { style: pick(['short', 'buzz', 'buzz']), col: pick([HAIR.black, HAIR.soft]) },
+      face: { stubble: rr(0.3, 0.8), browW: 1.25 },
+      hat: !vest && ch(0.7) ? { kind: 'hardhat', col: jit(pick([0xf0f0ec, 0xf0c838, 0xf0f0ec]), 0.03) } : { kind: 'headband', col: [240, 240, 236] },
+      top: vest ? { kind: 'tee', col: [236, 234, 226], print: 'none', tuck: true, haramaki: jit(pick([0xb89a6a, 0x8a8a7a, 0x6a6a4a])) } : { kind: 'workjacket', col: jit(pick([0x8a8060, 0x3a4458, 0x6a6a68, 0x4a5a3a])), sleeve: 'long' },
+      bottom: { kind: 'tobi', col: jit(pick([0x2a3048, 0x8a8060, 0x4a4a4e, 0x1e1e22, 0x6a5a4a])) },
+      shoes: { kind: 'tabi', col: jit(pick([0x1e2230, 0x1e1e1e, 0x3a3a40])) },
+      acc: [{ kind: 'towel', col: [240, 240, 236] }],
+      walk: { style: 'heavy' },
+    };
+  },
   shopkeeper: ({ pick, ch, rr, jit }) => {
     const f = ch(0.6);
     return {
-      sex: f ? 'f' : 'm', age: 'elder', H: f ? rr(1.46, 1.56) : rr(1.56, 1.66), build: rr(0.96, 1.06), bust: 0.8,
+      sex: f ? 'f' : 'm', age: 'elder', H: f ? rr(1.44, 1.54) : rr(1.54, 1.64), build: rr(0.96, 1.06), bust: 0.8,
       skin: pick([SKIN.light, SKIN.medium, SKIN.warm]),
-      hair: f ? { style: pick(['bun', 'perm']), col: pick([HAIR.grey, HAIR.silver, HAIR.dbrown]), grey: 1 } : { style: pick(['bald', 'short']), col: pick([HAIR.grey, HAIR.silver]), grey: 1 },
+      hair: f ? { style: pick(['bun', 'perm']), col: pick([HAIR.grey, HAIR.silver, HAIR.dbrown]), grey: 1 } : { style: pick(['bald', 'short', 'buzz']), col: pick([HAIR.grey, HAIR.silver]), grey: 1 },
       face: { wrinkles: 1, spots: 1, lipFull: 0.8, blush: 0.3, mustache: !f && ch(0.3) },
-      glasses: ch(0.5) ? { kind: 'round', col: pick([[150, 120, 70], [60, 40, 30]]), thick: 1 } : null,
-      hat: !f && ch(0.4) ? { kind: 'headband', col: [240, 240, 236] } : null,
-      top: f ? { kind: 'cardigan', col: jit(pick([0x8a7a6a, 0x6a5a6a, 0x7a8a7a])), shirt: jit(0xf0ece4) } : { kind: 'polo', col: jit(pick([0xe8e4dc, 0xc8c0a8])), sleeve: 'long' },
-      bottom: { kind: 'slacks', col: jit(pick([0x3a3a40, 0x4a4038])), noCrease: true },
-      shoes: { kind: 'sandal', col: jit(0x3a2c22) }, socks: { col: [236, 236, 232] },
-      acc: [{ kind: 'apron', col: jit(pick([0x2a3450, 0x5a3a2a, 0x6a2a2a, 0x3a4a3a])), col2: [236, 232, 220] }],
+      glasses: ch(0.5) ? { kind: pick(['round', 'horn']), col: pick([[150, 120, 70], [60, 40, 30]]), thick: 1 } : null,
+      hat: f ? (ch(0.4) ? { kind: 'scarf', col: jit(pick([0xe8e0d0, 0x4a5a7a])), col2: [236, 232, 220] } : null) : ch(0.5) ? { kind: 'headband', col: [240, 240, 236] } : null,
+      top: f ? { kind: 'blouse', col: [242, 240, 232], sleeve: 'long' } : { kind: 'shirt', col: jit(pick([0xe8e4dc, 0xc8c0a8])), sleeve: 'short', tuck: true },
+      bottom: { kind: 'slacks', col: jit(pick([0x3a3a40, 0x4a4038])), noCrease: true, wide: true },
+      shoes: { kind: 'sandal', col: jit(pick([0x8a5a32, 0x3a2c22])) }, socks: { col: [236, 236, 232] },
+      acc: [{ kind: 'apron', col: f ? [242, 240, 232] : jit(pick([0x2a3450, 0x5a3a2a, 0x3a4a3a])), col2: [236, 232, 220] }],
       walk: { style: 'elder', hunch: rr(0.3, 0.7) },
     };
   },
@@ -308,8 +332,8 @@ Object.assign(BUILD, {
     glasses: { kind: 'round', col: [70, 50, 34], thick: 1 },
     hat: { kind: 'flatcap', col: hex(0x6a6a52) },
     top: { kind: 'jacket', col: hex(0x9a8a6a), shirt: hex(0xe8e0d0) },
-    bottom: { kind: 'slacks', col: hex(0x5a5448), belt: [50, 36, 26] },
-    shoes: { kind: 'sandal', col: hex(0x4a3a2a) }, socks: { col: [236, 236, 232] },
+    bottom: { kind: 'slacks', col: hex(0x5a5448), belt: [50, 36, 26], wide: true },
+    shoes: { kind: 'sandal', col: hex(0x8a5a32) }, socks: { col: [236, 236, 232] },
     acc: [{ kind: 'ecobag', col: hex(0xd8c8a8), leek: false }],
     walk: { style: 'elder', hunch: 0.5 },
   }),
@@ -320,9 +344,9 @@ Object.assign(BUILD, {
     hair: { style: 'messy', col: HAIR.soft },
     face: { blush: 0.5, browW: 1.15, browArch: 1.2 },
     hat: { kind: 'cap', col: hex(0xe85a2a), col2: [240, 240, 236] },
-    top: { kind: 'tee', col: hex(0xf0c040), print: 'star', col2: hex(0xd83a2a) },
-    bottom: { kind: 'shorts', col: hex(0x3a4a7a) },
-    legs: 'socks', socks: { col: [246, 246, 244] },
+    top: { kind: 'tee', col: hex(0xe8c048), print: 'border', col2: hex(0xb83a2a) },
+    bottom: { kind: 'shorts', col: hex(0x2e3a5e) },
+    legs: 'kneesocks', socks: { col: [246, 246, 244] },
     shoes: { kind: 'sneaker', col: hex(0xf0f0ec), col2: hex(0xd83a2a) },
     acc: [{ kind: 'backpack', col: hex(0x2a6a3a) }],
     walk: { style: 'kid' },
@@ -335,8 +359,8 @@ Object.assign(BUILD, {
     face: { iris: [120, 40, 60], lid: 'double', tilt: 1.1, browW: 0.9, browArch: 1.6, makeup: { liner: 0.7, lash: 0.2 }, lipFull: 0.8 },
     hat: { kind: 'hood' },
     top: { kind: 'knit', col: [40, 34, 52], sleeve: 'long' },
-    bottom: { kind: 'jeans', col: [34, 32, 40], belt: [24, 22, 20] },
-    shoes: { kind: 'sneaker', col: hex(0x1e1e22), col2: hex(0xf0f0ec) }, socks: { col: [30, 30, 36] },
+    bottom: { kind: 'slacks', col: [34, 32, 40], belt: [24, 22, 20], wide: true, noCrease: true },
+    shoes: { kind: 'loafer', col: hex(0x1e1a18) }, socks: { col: [30, 30, 36] },
     acc: [],
     walk: { style: 'slouch' },
   }),
@@ -349,7 +373,7 @@ Object.assign(BUILD, {
     hat: { kind: 'sunhat', col: hex(0xe8c878), col2: hex(0xc02a2a) },
     top: { kind: 'shirt', col: hex(0xc8282a), sleeve: 'short', open: true },
     bottom: { kind: 'shorts', col: hex(0x3a5a9a) },
-    shoes: { kind: 'sandal', col: hex(0x6a4a2a) },
+    shoes: { kind: 'sandal', col: hex(0x8a5a32) }, // geta
     acc: [],
     walk: { style: 'young' },
   }),
@@ -374,7 +398,7 @@ Object.assign(BUILD, {
     face: { makeup: { liner: 0.2, lash: 0.5, blush: [230, 150, 140] }, lipstick: hex(0xc07a70), blush: 0.3, browW: 1.0 },
     glasses: { kind: 'round', col: [120, 90, 60], thick: 1 },
     top: { kind: 'polo', col: hex(0xcadab8), vest: hex(0x9a8a5e), sleeve: 'long' },
-    bottom: { kind: 'cargo', col: hex(0x7a6e52) },
+    bottom: { kind: 'slacks', col: hex(0x7a6e52), noCrease: true, wide: true },
     shoes: { kind: 'boots', col: hex(0x5a3a24) }, socks: { col: [120, 110, 90] },
     acc: [{ kind: 'shoulderbag', col: hex(0x6a4a2a), side: 1 }],
     walk: { style: 'normal' },

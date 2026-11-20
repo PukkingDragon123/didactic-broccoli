@@ -138,12 +138,13 @@ async function renderTiles() {
 // ------------------------------------------------------------------ views
 const presetIds = Q.get('presets') ? Q.get('presets').split(',') : HUMAN_PRESETS.map((p) => p.id);
 const seed = num('seed', 1);
+const seedOf = (i) => (Q.get('seeds') ? +(Q.get('seeds').split(',')[i] ?? seed + i * 7) : seed + i * 7); // &seeds=1,8,3 per tile
 
 if (show === 'all') {
   const cols = num('cols', 7), w = num('w', 220), h = num('h', 360);
   grid.style.gridTemplateColumns = `repeat(${cols}, ${w}px)`;
   presetIds.forEach((id, i) => {
-    const hm = place(createHuman({ preset: id, seed: seed + i * 7, lazy: false }), i * 3);
+    const hm = place(createHuman({ preset: id, seed: seedOf(i), lazy: false }), i * 3);
     const walk = Q.has('walk');
     settle(hm, walk ? 2 + num('t', 0) : 1.5, { speed: walk ? num('speed', 1.25) : 0 });
     tile(w, h, hm.spec.name, `${hm.height.toFixed(2)} m · ${hm.tris} tris`, () => { only([hm]); frameBody(hm, num('yaw', 0.55)); });
@@ -154,7 +155,7 @@ if (show === 'all') {
   const angs = Q.get('angs') ? Q.get('angs').split(',').map(Number) : [0, 0.75, 1.57, 2.4, 3.14, -1.57];
   grid.style.gridTemplateColumns = `repeat(${num('cols', angs.length)}, ${w}px)`;
   ids.forEach((id, i) => {
-    const hm = place(createHuman({ preset: id, seed: seed + i * 7, lazy: false }), i * 3);
+    const hm = place(createHuman({ preset: id, seed: seedOf(i), lazy: false }), i * 3);
     settle(hm, 1.5);
     for (const a of angs) tile(w, h, hm.spec.name, `yaw ${a}`, () => { only([hm]); frameBody(hm, a, num('pitch', 0.05)); });
   });
@@ -165,7 +166,7 @@ else if (show === 'faces') {
   const w = num('w', 180), h = num('h', 200);
   grid.style.gridTemplateColumns = `repeat(${num('cols', exprs.length)}, ${w}px)`;
   presetIds.forEach((id, i) => exprs.forEach((ex, k) => {
-    const hm = place(createHuman({ preset: id, seed: seed + i * 7, lazy: false }), i * 3, k * 3);
+    const hm = place(createHuman({ preset: id, seed: seedOf(i), lazy: false }), i * 3, k * 3);
     settle(hm, 0.5);
     hm.setExpression?.(ex);
     settle(hm, 0.5);
@@ -251,7 +252,7 @@ else if (show === 'atlas') {
   const sc = num('scale', 3);
   grid.style.gridTemplateColumns = `repeat(${num('cols', 2)}, ${Q.has('face') ? 64 * sc : 256 * sc}px)`;
   presetIds.forEach((id, i) => {
-    const hm = createHuman({ preset: id, seed: seed + i * 7, lazy: false });
+    const hm = createHuman({ preset: id, seed: seedOf(i), lazy: false });
     if (Q.get('expr')) { hm.setExpression?.(Q.get('expr')); settle(hm, 0.5); }
     hm.pix.flush();
     const cell = document.createElement('div'); cell.className = 'cell';

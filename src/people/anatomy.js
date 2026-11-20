@@ -495,12 +495,12 @@ function shoeTubes(spec, P) {
 // ------------------------------------------------------------------ skirts
 function skirtTube(spec, P) {
   const H = P.H, cut = spec.bottom.cut;
-  const hem = { pleated: P.kneeY + 0.075 * H, pencil: P.kneeY - 0.02 * H, long: P.kneeY - 0.13 * H, mini: P.hipY - 0.085 * H }[cut] ?? P.kneeY;
-  const flare = { pleated: 1.32, pencil: 0.98, long: 1.32, mini: 1.24 }[cut] ?? 1.2;
+  const hem = { pleated: P.kneeY + 0.075 * H, pencil: P.kneeY - 0.02 * H, long: P.kneeY - 0.13 * H, mini: P.hipY - 0.085 * H, aline: P.kneeY - 0.025 * H, kneepleat: P.kneeY - 0.045 * H }[cut] ?? P.kneeY;
+  const flare = { pleated: 1.32, pencil: 0.98, long: 1.32, mini: 1.24, aline: 1.34, kneepleat: 1.36 }[cut] ?? 1.2;
   const yh = P.hipY - 0.01 * H, yt0 = P.pelvisY + 0.016 * H, topHem0 = garmentLines(spec, P).topHem;
   // an untucked top hangs over the skirt: the skirt then starts just under its hem (no facets poking through)
   const yt = topHem0 < yt0 ? Math.max(yh + 0.006 * H, topHem0 - 0.004 * H) : yt0;
-  const pleats = cut === 'pleated' ? 8 : cut === 'long' ? 5 : 0;
+  const pleats = cut === 'pleated' || cut === 'kneepleat' ? 8 : cut === 'long' ? 5 : 0;
   const N = pleats ? 16 : 10;
   // an untucked top hangs over the skirt's waistband: the skirt then hugs the body under it (no poke-through at the hem)
   const g = garmentLines(spec, P), under = g.topHem < yt, k1 = under ? 0.94 : 1.08, k2 = under ? 0.95 : 1.1;

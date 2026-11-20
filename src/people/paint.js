@@ -243,7 +243,7 @@ export function makePainters(spec, P) {
     if (k === 'gakuran' && c.y > top - c.px * 1.6) over(o, WHITE, 0.9); // white inner collar
     if (k === 'gakuran' && front(c) && Math.abs(c.x) < c.px * 0.6) over(o, INK, 0.6);
     if (tie && front(c)) {
-      const kw = 0.012 * H - (top - c.y) * 0.1;
+      const kw = (T.thinTie ? 0.0085 : 0.012) * H - (top - c.y) * 0.1;
       if (Math.abs(c.x) < kw) { shadeInto(o, T.tie, 0.95 * fabricK(c, 'cotton')); if (Math.abs(Math.abs(c.x) - kw) < c.px) over(o, INK, 0.4); }
       else if (Math.abs(c.x) < kw + 0.018 * H) { if (Math.abs(c.y - (top - (Math.abs(c.x) - kw) * 1.2)) < c.px * 0.7) over(o, INK, 0.3); }
     }
@@ -508,7 +508,7 @@ export function makePainters(spec, P) {
     if (L.kind === 'skin') { skinPx(c, o, 0.92); return; }
     shadeInto(o, L.col, bodyK(c) * fabricK(c, 'cotton') * 0.98);
     if (L.tie) {
-      const tw = 0.01 * H + (P.neckBase - c.y) * 0.06;
+      const tw = T.thinTie ? 0.0062 * H + (P.neckBase - c.y) * 0.022 : 0.01 * H + (P.neckBase - c.y) * 0.06; // a 60s pencil tie
       if (ax < tw) {
         let tc = L.tie;
         if (T.tieKind === 'stripe' && Math.floor((c.y - c.x) / 0.012) % 2) tc = mixT(tc, [230, 220, 200], 0.35);
@@ -762,8 +762,34 @@ export function makePainters(spec, P) {
     // torso
     if (y > topHem - (c.tube ? 0.0017 * H : 0)) { topPx(c, o); if (under && y < topHem + 0.001 * H) scaleO(o, 0.66); }
     else bottomPx(c, o);
+    if (T.haramaki || T.braces) periodPx(c, o);
     if (apron) apronBib(c, o);
     straps(c, o);
+  }
+  /** Shōwa wardrobe over the top: a knitted haramaki belly band, trouser braces (suspenders) clipped to the waistband. */
+  function periodPx(c, o) {
+    const ax = Math.abs(c.x), fr = front(c), bk = back(c);
+    if (T.haramaki) {
+      const y0 = waist - 0.014 * H, y1 = waist + 0.085 * H;
+      if (c.y > y0 && c.y < y1) {
+        const rib = Math.floor((Math.atan2(c.x, c.z) + Math.PI) * 26) % 2;
+        shadeInto(o, T.haramaki, bodyK(c) * fabricK(c, 'knit') * (rib ? 1.04 : 0.9));
+        const dE = Math.min(c.y - y0, y1 - c.y);
+        if (dE < 0.009 * H) scaleO(o, 0.93);
+        if (dE < c.px * 0.8) over(o, INK, 0.35);
+        return;
+      }
+    }
+    if (T.braces && c.y > waist - 0.012 * H && c.y < P.shoulderY + 0.03 * H) {
+      const w = 0.0065 * H, yX = P.bustY - 0.045 * H;
+      const sx = bk ? (c.y > yX ? 0.052 * H * clamp01((c.y - yX) / (P.shoulderY - yX)) : 0) : 0.04 * H + 0.012 * H * clamp01((c.y - waist) / (P.neckBase - waist));
+      const d = Math.abs(ax - sx);
+      if (d < w && (fr || bk || c.y > P.bustY)) {
+        shadeInto(o, T.braces, bodyK(c) * fabricK(c, 'cotton') * (Math.floor(c.y / (0.006 * H)) % 2 ? 1.03 : 0.95));
+        if (Math.abs(d - w) < c.px * 0.9) over(o, INK, 0.45);
+        if (fr && Math.abs(c.y - (waist + 0.012 * H)) < 0.007 * H) shadeInto(o, SILVER, bodyK(c) * 0.9); // the clip
+      }
+    }
   }
   function apronLeg() {}
   function apronBib(c, o) {
@@ -938,7 +964,7 @@ export function makePainters(spec, P) {
     if (p === 'skirt' || p === 'skirtUp') {
       let col = Bt.plaid ? plaid(around(c), c.y * 0.9, Bt.col, Bt.plaid, 1.2) : Bt.col;
       let kk = (c.kind === 'bot' ? 0.45 : 0.9 + 0.1 * (c.y - P.kneeY) / H * 2) * fabricK(c, 'wool');
-      if (Bt.cut === 'pleated' || Bt.cut === 'long') { const a2 = Math.atan2(c.x, c.z) * (Bt.cut === 'pleated' ? 18 : 10) / Math.PI; const q = a2 - Math.floor(a2); kk *= q < 0.5 ? 1.05 : 0.88; if (q < 0.08) kk *= 0.8; }
+      if (Bt.cut === 'pleated' || Bt.cut === 'kneepleat' || Bt.cut === 'long') { const a2 = Math.atan2(c.x, c.z) * (Bt.cut === 'long' ? 10 : 18) / Math.PI; const q = a2 - Math.floor(a2); kk *= q < 0.5 ? 1.05 : 0.88; if (q < 0.08) kk *= 0.8; }
       if (Bt.cut === 'pencil' && back(c) && Math.abs(c.x) < c.px && c.rb < 0.06 * H) { o[0] = 30; o[1] = 24; o[2] = 24; return; }
       if (c.kind === 'side') kk *= 1 - 0.06 * c.e * c.e;
       shadeInto(o, col, kk);

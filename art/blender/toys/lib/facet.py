@@ -21,7 +21,7 @@ import numpy as np
 
 SERIES = {'henshin', 'hashigo', 'nakanohito', 'teruteru', 'otsukai', 'tsuppari', 'obakebaito', 'karakuri', 'kaden',
           'ekiin', 'kabuki', 'meijin', 'sento', 'otenki', 'yomise',
-          'sabaku', 'minato', 'datesha', 'janru', 'kasabuki', 'kanikan', 'nedoko', 'dango'}            # the series built in the faceted style (add a series here to convert it on rebuild)
+          'sabaku', 'minato', 'datesha', 'janru', 'kasabuki', 'kanikan', 'nedoko', 'dango', 'tabigame', 'okuni', 'kouchuu'}            # the series built in the faceted style (add a series here to convert it on rebuild)
 RATIO = float(os.environ.get('GG_FACET_RATIO', 0.6))  # where a piece's collapse starts, from its old (smooth) budget (a figure may set its own)
 HIRES = 1.5                     # x RATIO: the owner's higher-resolution pass (every figure, its own RATIO included)
 GROW = 1.6                      # ...and how far past that start it may grow to keep a feature (the cap)

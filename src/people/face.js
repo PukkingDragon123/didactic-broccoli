@@ -383,6 +383,7 @@ export class FacePainter {
       if (g.kind === 'sun') { put([26, 24, 30], 0.86); put([120, 110, 140], 0.25 * clamp01(1 - (y - gy + hhG) / (hhG * 1.2))); }
       else { put([190, 215, 230], 0.08); if (Math.abs((x - gx) + (y - gy) * 0.9 + hwG * 0.3) < 0.7 && dy < 0.2) put([255, 255, 255], 0.22); }
     } else if (r < 1 + th * 0.4) put(fc, 0.95);
+    else if (g.kind === 'horn' && dy < -0.15 && r < 1 + th * (0.4 + 2.2 * clamp01(-dy - 0.15))) put(fc, 0.95); // the heavy browline of a horn-rim
     if (Math.abs(y - (gy - hhG * 0.45)) < 0.6 && Math.abs(x - L.cx) < L.eyeX - hwG + 0.5) put(fc, 0.9);
     if (Math.abs(y - (gy - hhG * 0.55)) < 0.6 && Math.abs(x - L.cx) > L.eyeX + hwG - 0.3) put(fc, 0.9);
     return c[3];

@@ -87,7 +87,7 @@ export function hairSegments(spec, P, J) {
   const add = (part, bone, mat, y0, y1, b, t, o) => { const x = seg(part, bone, mat, y0, y1, b, t, o); S.push(x); return x; };
   void add;
   const covered = hat && hat !== 'headband'; // a hat / hood: only the hair under the band
-  const yBand = P.browY + (hat === 'schoolhat' || hat === 'bucket' || hat === 'sunhat' ? 0.15 : 0.2) * hu;
+  const yBand = P.browY + (hat === 'schoolhat' || hat === 'bucket' || hat === 'sunhat' || hat === 'fedora' ? 0.15 : hat === 'scarf' ? 0.1 : 0.2) * hu;
   const sty = styleOf(spec, P);
   const seed = (spec.seed || 1) * 31 + st.length;
   // ---------------- the shell
@@ -325,6 +325,14 @@ function hatTubes(spec, P, head, hairTh, yBand) {
     out.push(crown('hatCrown', 0.06 * hu, hat === 'schoolhat' ? 0.5 : 0.75, 0));
     const w = hat === 'sunhat' ? 0.38 * hu : hat === 'schoolhat' ? 0.24 * hu : 0.2 * hu;
     out.push(brim(w, w, hat === 'sunhat' ? 0.07 * hu : 0.05 * hu));
+  } else if (hat === 'fedora') { // a salaryman's felt trilby: tall pinched crown, short brim snapped down at the front
+    out.push(crown('hatCrown', 0.1 * hu, 0.3, 0));
+    out.push(brim(0.15 * hu, 0.19 * hu, 0.05 * hu));
+  } else if (hat === 'gakubo') { // the student's peaked cap: a stiff flat-topped crown and a lacquered peak
+    out.push(crown('hatCrown', 0.08 * hu, 0.02, 0.02, 14));
+    out.push(visor(0.34, 0.84, 0.1));
+  } else if (hat === 'scarf') { // a cotton headscarf tied at the nape, hair showing at the front
+    out.push(crown('hatCrown', 0.016 * hu, 0.9, -0.01));
   } else if (hat === 'hardhat') {
     out.push(crown('hatCrown', 0.05 * hu, 0.85, 0));
     out.push(brim(0.06 * hu, 0.16 * hu, 0.02 * hu));
