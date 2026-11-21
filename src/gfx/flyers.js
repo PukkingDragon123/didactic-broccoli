@@ -75,9 +75,11 @@ const queue = [];
 function sheet(id) {
   let s = sheets.get(id);
   if (!s) {
-    const canvas = canvas2d(W, H);
+    // a baked design (tools/bake-postersets.py) gets a canvas of its own print size, so it is copied 1:1 (crisp pixel type)
+    const r = printRegions('promo')['promo:' + id];
+    const canvas = r ? canvas2d(r[2], r[3]) : canvas2d(W, H);
     const g = canvas.getContext('2d', { willReadFrequently: true });
-    g.fillStyle = C.paper; g.fillRect(0, 0, W, H);
+    g.fillStyle = C.paper; g.fillRect(0, 0, canvas.width, canvas.height);
     s = { canvas, tex: null, done: false, waiters: [] };
     sheets.set(id, s);
   }
@@ -147,9 +149,9 @@ async function draw(id) {
   if (printHas('promo', 'promo:' + id)) {
     const img = await whenPrint('promo'), r = printRegions('promo')['promo:' + id];
     if (img && r) {
-      const g = sheet(id).canvas.getContext('2d');
-      g.imageSmoothingEnabled = r[2] !== W || r[3] !== H; g.imageSmoothingQuality = 'high';
-      g.clearRect(0, 0, W, H); g.drawImage(img, r[0], r[1], r[2], r[3], 0, 0, W, H);
+      const cv = sheet(id).canvas, g = cv.getContext('2d');
+      g.imageSmoothingEnabled = r[2] !== cv.width || r[3] !== cv.height; g.imageSmoothingQuality = 'high';
+      g.clearRect(0, 0, cv.width, cv.height); g.drawImage(img, r[0], r[1], r[2], r[3], 0, 0, cv.width, cv.height);
       return;
     }
   }

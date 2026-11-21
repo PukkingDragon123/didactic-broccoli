@@ -3269,16 +3269,15 @@ Real photographs from Wikimedia Commons, cropped to 4:3 and resized to 1024 x 76
 - Licence: CC0 1.0 (public domain dedication)
 - Shipped as: `img/wallpapers/sea.jpg`
 
-## Lane notices from Canva templates; the lane's shop signs
+## The lane's posters and notices, the shop's promo posters and flyers; the lane's shop signs
 
-The lost-pet notices on the lane (`img/print/lane.webp`, keys `lane:lost:*`; source exports in `art/print/canva/`,
-baked by `tools/bake-canva.py`) were laid out in Canva from human-designed Canva templates, used under the Canva
-Content License: "Brown Vintage Missing Cat Poster" (EAFW8vNJs-4), "Beige and Brown Modern Aesthetic Missing Cat
-Poster" (EAFu39Od7ao) and "Blue and Orange Organic Shapes Lost Cat Flyer" (EAFSHeSX8FQ). No Canva AI imagery is used;
-the photos are the game's own lane photos credited above (`img/photos/lane/cat_black.jpg`, `cat_grey.jpg`,
-`shiba.jpg`, full-size Open Images originals, CC BY 2.0). Names, phone numbers and text are the game's own.
+The promo posters and handout flyers (`img/print/promo.webp`) and the lane's posters, notices and photo-calendar pages
+(`img/print/lane.webp`) are laid out by `tools/bake-postersets.py` (`tools/posterkit.py`) in OFL pixel fonts only
+(Silkscreen, Jersey 10/15/20/25, Micro 5, Press Start 2P, Alagard, DotGothic16, the game's own GG Display and 5 x 7
+font), with renders of the game's own toys, the photographs credited above (`img/photos/*.jpg` and the full-size
+Open Images originals of the credited lane photos, CC BY 2.0) and ambientCG CC0 paper scans (Paper001-005).
+Names, phone numbers and text are the game's own.
 
 The shop signs (`img/print/signs.webp`, `tools/bake-signs.py`: Mikawa-ya, the tobacco shop, the warehouse, Sakura
-Heights, Ramen Yamada) are set in OFL fonts from Google Fonts (Alfa Slab One, Playfair Display, Oswald, Barlow
-Condensed, Zen Old Mincho, Zen Kaku Gothic New) on ambientCG CC0 surface scans (Planks012, Wood051, Paper004,
+Heights, Ramen Yamada) are set in the same pixel fonts on ambientCG CC0 surface scans (Planks012, Wood051, Paper004,
 SurfaceImperfections003, credited above); the two bowls on Ramen Yamada's board are its Open Images photos credited above.
