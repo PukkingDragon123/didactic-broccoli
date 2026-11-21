@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import { propMesh } from '../world/props.js';
 import { pixMat, boxMesh } from '../gfx/geo.js';
-import { draw5 } from '../gfx/font5x7.js';
+import { drawPx } from '../gfx/pixfont.js';
 import { GLYPHS } from '../data/props/garage.js';
 import { printCanvas } from './photos.js';
 import { assetSlot, preloadAssets, assetReady } from '../kit/assets.js';
@@ -222,10 +222,10 @@ export function drawCalendar(c, game) {
   if (!cal) return;
   const d = cal.dateOf(day);
   R(0, 0, 48, 12, '#c8302a');
-  draw5(g, d.monthName.slice(0, 3).toUpperCase() + ' ' + String(d.year).slice(2), 24, 3, { col: '#fff4e8', align: 'center' });
+  drawPx(g, d.monthName.slice(0, 3).toUpperCase() + ' ' + String(d.year).slice(2), 24, 3, { col: '#fff4e8', align: 'center' });
   const list = cal.list(d.month, d.year);
   const first = list[0] ? cal.dateOf(list[0].day).weekday : 0;
-  ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach((ch, i) => draw5(g, ch, 4 + i * 6.6, 14, { col: i === 0 ? '#c8302a' : '#6a6460' }));
+  ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach((ch, i) => drawPx(g, ch, 4 + i * 6.6, 14, { col: i === 0 ? '#c8302a' : '#6a6460' }));
   list.forEach((it, i) => {
     const k = i + first, col = k % 7, row = Math.floor(k / 7);
     const x = 2 + col * 6.6, y = 24 + row * 7;
@@ -278,7 +278,7 @@ function neonCanvas(design, lit) {
   } else {
     frame('#7ae8a0', '#1e3a26');
     const word = 'CAPSULE';
-    draw5(g, word, NEON_W / 2, 9, { col: tube('#7ae8a0', '#1e3a26'), align: 'center', s: 2 });
+    drawPx(g, word, NEON_W / 2, 9, { col: tube('#7ae8a0', '#1e3a26'), align: 'center', s: 2 });
     for (let x = 18; x < 78; x += 6) { g.fillStyle = tube('#ff9ad8', '#3a2234'); g.fillRect(x, 31, 3, 2); }
   }
   return c;
@@ -363,7 +363,7 @@ export function boxLabelCanvas(text) {
   for (const w of t.split(/\s+/)) { if ((cur + ' ' + w).trim().length > 7) { if (cur) lines.push(cur); cur = w.slice(0, 7); } else cur = (cur + ' ' + w).trim(); }
   if (cur) lines.push(cur);
   if (!lines.length) { g.fillStyle = '#c8b898'; g.fillRect(6, 8, 36, 1); }
-  lines.slice(0, 2).forEach((l, i) => draw5(g, l, 24, lines.length > 1 ? 1 + i * 9 : 5, { col: '#1e2a6a', align: 'center' }));
+  lines.slice(0, 2).forEach((l, i) => drawPx(g, l, 24, lines.length > 1 ? 1 + i * 9 : 5, { col: '#1e2a6a', align: 'center' }));
   return c;
 }
 function storageBox(root, parts, st) {

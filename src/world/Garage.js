@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { worldBox, worldPlane, pixMat, boxMesh, colMat as plainMat } from '../gfx/geo.js';
 import { detailize, surfaceTex } from './surfaces.js';
 import { posterTexture, Pix } from '../gfx/textures.js';
+import { FONT_EN } from '../gfx/pix.js';
 import { propMesh, hasProp } from './props.js';
 import { SHOP_ART } from '../gfx/shopArt.js';
 import { hash2 } from '../core/util.js';
@@ -518,15 +519,13 @@ export class Garage {
 
   /** Lit "ガチャコーナー" light-box sign + a string of paper lanterns over the machine row. */
   buildGachaSign(x, y, z) {
-    const p = new Pix(160, 40, 8);
+    // 192 x 48 texels on the 1.6 x 0.4 m face (120 px/m); every line in a high-res pixel font on its own grid: the kana
+    // in DotGothic16 and GACHA CORNER in Alagard, both at their native 16 px
+    const p = new Pix(192, 48, 8);
     p.fill(0xfff4e0);
-    p.rect(0, 0, 160, 4, 0xe5383b); p.rect(0, 36, 160, 4, 0xe5383b);
-    // pixel fonts on their own grid only: the kana in DotGothic16 at 16 px, the English line in the 5x7 bitmap font,
-    // its stars hand-pixelled
-    p.text('ガチャガチャ', 80, 6, { size: 16, color: 0xe5383b, outline: 0xffffff, align: 'center' });
-    const w5 = p.tinyText('GACHA CORNER', 80, 26, { color: 0x2a2220, align: 'center' });
-    const star = (cx, cy) => { p.px(cx, cy - 2, 0xe5383b); p.rect(cx - 2, cy - 1, 5, 1, 0xe5383b); p.rect(cx - 1, cy, 3, 1, 0xe5383b); p.px(cx - 1, cy + 1, 0xe5383b); p.px(cx + 1, cy + 1, 0xe5383b); };
-    star(80 - Math.ceil(w5 / 2) - 6, 30); star(80 + Math.ceil(w5 / 2) + 5, 30);
+    p.rect(0, 0, 192, 4, 0xe5383b); p.rect(0, 44, 192, 4, 0xe5383b);
+    p.text('ガチャガチャ', 96, 5, { size: 16, color: 0xe5383b, outline: 0xffffff, align: 'center' });
+    p.text('GACHA CORNER', 96, 24, { font: FONT_EN, size: 16, color: 0x2a2220, align: 'center' });
     const t = p.texture();
     const box = boxMesh(0.1, 0.42, 1.65, colMat(0x2a2220, { roughness: 0.5 }));
     box.position.set(x + 0.05, y, z);

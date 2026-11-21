@@ -3,15 +3,15 @@
 import { shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glass, glow } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, dust } from './garage.js';
-import { mask5, textW5 } from '../../gfx/font5x7.js';
+import { maskPx, textWPx } from '../../gfx/pixfont.js';
 import street2 from './street2.js';
 
 const pick = (a, r) => a[Math.floor(r * a.length) % a.length];
 
 /** 5x7 capitals on the +z face: centred on cx, top row at y, at depth z. */
 function stamp5(v, str, cx, y, z, col) {
-  const x0 = cx - (textW5(str) >> 1);
-  for (const [i, j] of mask5(str)) v.set(x0 + i, y - j, z, col);
+  const x0 = cx - (textWPx(str) >> 1);
+  for (const [i, j] of maskPx(str)) v.set(x0 + i, y - j, z, col);
 }
 
 /** Stamp a string set in a canvas font as voxels on the +z face (x right, y up), centred on (cx, cy). */

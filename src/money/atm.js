@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { propMesh } from '../world/props.js';
-import { draw5 } from '../gfx/font5x7.js';
+import { drawPx } from '../gfx/pixfont.js';
 import { formatYen } from '../core/util.js';
 import { noteStack, cashInHand, payOut, splitCash } from './cashfx.js';
 import './sfx.js';
@@ -36,7 +36,7 @@ function cardTexture() {
   g.fillStyle = '#58c06c'; g.fillRect(0, 13, 32, 3);
   g.fillStyle = '#e8c860'; g.fillRect(4, 5, 6, 5);
   g.fillStyle = '#b8902a'; g.fillRect(4, 7, 6, 1); g.fillRect(6, 5, 1, 5);
-  draw5(g, 'ATM', 14, 4, { col: '#f4f0e0' });
+  drawPx(g, 'ATM', 14, 4, { col: '#f4f0e0' });
   g.fillStyle = '#f4f0e0'; for (let i = 0; i < 4; i++) g.fillRect(3 + i * 7, 17, 5, 1);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
@@ -55,8 +55,8 @@ function keyTexture(label, bg = '#d8dce0', ink = '#2a2c30') {
   g.fillStyle = sh(1.12); g.fillRect(2, 2, W - 4, 2); g.fillRect(2, 2, 2, H - 4); // lit edges
   g.fillStyle = sh(0.88); g.fillRect(2, H - 4, W - 4, 2); g.fillRect(W - 4, 2, 2, H - 4); // shaded edges
   g.fillStyle = sh(1.06); g.fillRect(12, 8, 10, 3); g.fillRect(10, 11, 4, 2); // a worn shine where fingers press
-  if (label.length <= 2) draw5(g, label, W / 2, 8, { col: ink, align: 'center', s: 3 });
-  else draw5(g, label, W / 2, 14, { col: ink, align: 'center' });
+  if (label.length <= 2) drawPx(g, label, W / 2, 8, { col: ink, align: 'center', s: 3 });
+  else drawPx(g, label, W / 2, 14, { col: ink, align: 'center' });
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
   return t;
@@ -564,11 +564,11 @@ export class Atm {
     const x = c.getContext('2d');
     x.fillStyle = '#f6f2e8'; x.fillRect(0, 0, 40, 64);
     x.fillStyle = '#2a5aa8'; x.fillRect(0, 0, 40, 6);
-    draw5(x, 'SHINKIN', 20, 9, { col: '#2a2c30', align: 'center' });
-    draw5(x, rec.title.slice(0, 7), 20, 19, { col: '#2a2c30', align: 'center' });
+    drawPx(x, 'SHINKIN', 20, 9, { col: '#2a2c30', align: 'center' });
+    drawPx(x, rec.title.slice(0, 7), 20, 19, { col: '#2a2c30', align: 'center' });
     let y = 30;
-    for (const [k, v] of rec.lines.slice(0, 3)) { x.fillStyle = '#8a8e92'; x.fillRect(2, y - 2, 36, 1); draw5(x, v.replace('¥', '¥'), 38, y, { col: '#2a2c30', align: 'right' }); y += 11; void k; }
-    draw5(x, (g.calendar?.format?.() || '').toUpperCase().slice(0, 7), 20, 56, { col: '#8a8e92', align: 'center' });
+    for (const [k, v] of rec.lines.slice(0, 3)) { x.fillStyle = '#8a8e92'; x.fillRect(2, y - 2, 36, 1); drawPx(x, v.replace('¥', '¥'), 38, y, { col: '#2a2c30', align: 'right' }); y += 11; void k; }
+    drawPx(x, (g.calendar?.format?.() || '').toUpperCase().slice(0, 7), 20, 56, { col: '#8a8e92', align: 'center' });
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.08), new THREE.MeshStandardMaterial({ map: t, roughness: 0.9, side: THREE.DoubleSide }));
@@ -668,7 +668,7 @@ export class Atm {
     this.dirty = false;
     const x = this.ctx, m = this.mode, S = this.S, o = this.options();
     const R = (a, b, w, h, c) => { x.fillStyle = c; x.fillRect(a, b, w, h); };
-    const T = (s, a, b, c = COL.ink, al = 'left') => draw5(x, s, a, b, { col: c, align: al });
+    const T = (s, a, b, c = COL.ink, al = 'left') => drawPx(x, s, a, b, { col: c, align: al });
     R(0, 0, SW, SH, COL.bg);
     for (let yy = 12; yy < SH; yy += 4) R(0, yy, SW, 1, COL.bg2); // scanline stripes
     R(0, 0, SW, 11, COL.bar);

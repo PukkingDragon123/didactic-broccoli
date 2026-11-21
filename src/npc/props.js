@@ -8,7 +8,7 @@ import { bakedVoxelMesh } from '../people/voxbake.js';
 import { VoxelModel, gloss, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { draw5, textW5 } from '../gfx/font5x7.js';
+import { drawPx, textWPx } from '../gfx/pixfont.js';
 
 const _geo = new Map();
 const hash = (x, y, z, s = 0) => { let h = (x * 374761393 + y * 668265263 + z * 2147483647 + s * 1013904223) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
@@ -130,8 +130,8 @@ export function bushCamp() {
   const x = cv.getContext('2d');
   x.fillStyle = '#c8a670'; x.fillRect(0, 0, 64, 22);
   x.fillStyle = '#a8864e'; for (let i = 0; i < 18; i++) x.fillRect((i * 23) % 64, (i * 7) % 22, 3, 1);
-  draw5(x, 'NOT A', 32 - textW5('NOT A', 1) / 2, 2, { s: 1, col: '#2a1e18' });
-  draw5(x, 'BUSH', 32 - textW5('BUSH', 1) / 2, 12, { s: 1, col: '#b8322e' });
+  drawPx(x, 'NOT A', 32 - textWPx('NOT A', 1) / 2, 2, { s: 1, col: '#2a1e18' });
+  drawPx(x, 'BUSH', 32 - textWPx('BUSH', 1) / 2, 12, { s: 1, col: '#b8322e' });
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
   const sign = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.14, 0.012), [new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ color: 0xa8864e }), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.95 }), new THREE.MeshStandardMaterial({ color: 0xa8864e })]);
   sign.position.set(-0.85, 0.55, 0.45); sign.rotation.set(-0.05, 0.25, 0.04);

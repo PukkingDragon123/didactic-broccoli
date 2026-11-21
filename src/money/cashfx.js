@@ -6,7 +6,7 @@
 //   payOut(game, amount, to)     a quick visual of you handing cash over (notes / coins fly from your hand to `to`)
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
-import { draw5 } from '../gfx/font5x7.js';
+import { drawPx } from '../gfx/pixfont.js';
 import { yenCoinGeometry, yenCoinMaterial } from '../world/machineModels.js';
 import './sfx.js';
 
@@ -40,10 +40,10 @@ export function noteTexture(denom) {
   bust.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '#') R(44 + i, 12 + j, 1, 1, C.dark); }));
   // denomination
   const n = String(denom);
-  draw5(g, n, 22, 5, { col: C.ink });
-  draw5(g, n, 60 - (n.length * 6 - 1) - 20, 22, { col: C.dark });
+  drawPx(g, n, 22, 5, { col: C.ink });
+  drawPx(g, n, 60 - (n.length * 6 - 1) - 20, 22, { col: C.dark });
   g.fillStyle = C.ink; g.fillRect(22, 14, 16, 1);
-  draw5(g, 'YEN', 23, 16, { col: C.mid });
+  drawPx(g, 'YEN', 23, 16, { col: C.mid });
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter;

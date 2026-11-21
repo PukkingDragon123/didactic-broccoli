@@ -31,7 +31,7 @@ const save = (name, url) => { const b = Buffer.from(url.split(',')[1], 'base64')
 // ------------------------------------------------------------------ the lane (painted in the page: it needs the fonts)
 /* eslint-disable no-undef */
 async function paintLane() {
-  const { mask5, textW5 } = await import('/src/gfx/font5x7.js');
+  const { maskPx: mask5, textWPx: textW5 } = await import('/src/gfx/pixfont.js'); // high-res pixel type (Alagard 16 px)
   await import('/node_modules/@fontsource/dotgothic16/400.css');
   await document.fonts.load('16px "DotGothic16"', 'よみこみちゅう読み込み中…杜王町');
   const T = 480, LANE = { skyline: [0, 96], far: [96, 176], near: [272, 212], road: [484, 40], misc: [524, 64] };

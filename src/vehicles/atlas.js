@@ -8,7 +8,7 @@
 //   A.swatch(0x2a2a2c, ROUGH.rubber) -> uv function    A.texture() / A.roughTexture()
 //   Ink: A.ink(rough) sets the roughness written with every pixel painted after it (0..1).
 import * as THREE from 'three';
-import { mask5, textW5 } from '../gfx/font5x7.js';
+import { maskPx, textWPx } from '../gfx/pixfont.js';
 
 /** Roughness by material: what the paint under each pixel is made of. */
 export const ROUGH = { paint: 0.42, chrome: 0.18, glass: 0.05, rubber: 0.92, plastic: 0.68, fabric: 0.97, metal: 0.5, lens: 0.12, matte: 0.85, tarp: 0.62 };
@@ -176,8 +176,8 @@ export class View {
   ring(ci, cj, r0, r1, c, a) { for (let j = Math.floor(cj - r1); j <= Math.ceil(cj + r1); j++) for (let i = Math.floor(ci - r1); i <= Math.ceil(ci + r1); i++) { const d = (i + 0.5 - ci) ** 2 + (j + 0.5 - cj) ** 2; if (d <= r1 * r1 && d >= r0 * r0) this.px(i, j, typeof c === 'function' ? c(i, j) : c, a); } return this; }
   /** 5 x 7 bitmap text, (i, j) = top-left of the caps in pixel coordinates (j from the bottom: the top row). */
   text5(str, i, j, c, { align = 'left', s = 1 } = {}) {
-    const w = textW5(str, s), x0 = align === 'center' ? i - Math.round(w / 2) : align === 'right' ? i - w : i;
-    for (const [x, y] of mask5(str)) for (let a = 0; a < s; a++) for (let b = 0; b < s; b++) this.px(x0 + x * s + a, j - y * s - b, c);
+    const w = textWPx(str, s), x0 = align === 'center' ? i - Math.round(w / 2) : align === 'right' ? i - w : i;
+    for (const [x, y] of maskPx(str)) for (let a = 0; a < s; a++) for (let b = 0; b < s; b++) this.px(x0 + x * s + a, j - y * s - b, c);
     return w;
   }
   /** A pixel sprite: rows top to bottom, legend char -> colour ('.' or ' ' transparent); (i, j) = top-left. */

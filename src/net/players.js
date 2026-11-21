@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { createAvatarHuman } from '../people/avatar.js';
 import { GESTURES, EXTRA_POSES } from '../people/gestures.js';
 import '../people/bizarre.js';
-import { draw5, textW5 } from '../gfx/font5x7.js';
+import { drawPx, textWPx } from '../gfx/pixfont.js';
 import { makeCapsule, makeShell } from '../game/Capsule.js';
 import { makeItemMesh } from '../game/collectibles.js';
 import { makeToolMesh } from '../game/Held.js';
@@ -101,7 +101,7 @@ export function localState(g) {
 // ------------------------------------------------------------------ name tags: a little paper tag (5x7 pixel text)
 function nameTag(name, color) {
   const s = 2, text = String(name).toUpperCase().slice(0, 16);
-  const tw = textW5(text, s), w = tw + 22, h = 7 * s + 10;
+  const tw = textWPx(text, s), w = tw + 22, h = 7 * s + 10;
   const c = document.createElement('canvas');
   c.width = w + 3; c.height = h + 3;
   const x = c.getContext('2d');
@@ -122,7 +122,7 @@ function nameTag(name, color) {
   // the player's colour as an ink-outlined swatch, then the name in ink
   x.fillStyle = '#241a1e'; x.fillRect(4, 4, 10, h - 8);
   x.fillStyle = color; x.fillRect(6, 6, 6, h - 12);
-  draw5(x, text, 18, 5, { s, col: '#241a1e' });
+  drawPx(x, text, 18, 5, { s, col: '#241a1e' });
   const tex = new THREE.CanvasTexture(c);
   tex.magFilter = tex.minFilter = THREE.NearestFilter;
   tex.generateMipmaps = false;

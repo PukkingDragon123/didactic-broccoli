@@ -1,22 +1,21 @@
 // Pixel-art painter on a canvas: per-pixel ops + crisp (alpha-thresholded) pixel-font text.
 import * as THREE from 'three';
 import { rng } from '../core/util.js';
-import { textW5, mask5 } from './font5x7.js';
+import { textWPx, maskPx } from './pixfont.js';
 
 // Pixel fonts are only crisp at their grid sizes (other sizes come out with uneven strokes once thresholded):
 //   FONT_EN / FONT_KEY / FONT_DISPLAY: Alagard (src/ui/fonts.css), crisp at 16 / 32 / 48 / 64 px; text() and
-//   measure() snap Alagard to the nearest of those, and anything asked for under 12 px is set in the 5 x 7 bitmap
-//   font (src/gfx/font5x7.js) instead. FONT_JP (DotGothic16, 16 px) for Japanese decorative art.
+//   measure() snap Alagard to the nearest of those, and anything asked for smaller is set at Alagard's native 16 px
+//   (src/gfx/pixfont.js; no tiny bitmap faces). FONT_JP (DotGothic16, 16 px) for Japanese decorative art.
 // English text should use FONT_EN / FONT_DISPLAY; Japanese is kept for in-world decorative art only.
 export const FONT_JP = '"DotGothic16", "Pixelify Sans"';
 export const FONT_EN = '"Alagard", "DotGothic16", "Pixelify Sans"';
 export const FONT_DISPLAY = '"Alagard", "DotGothic16", "Pixelify Sans"';
 export const FONT_KEY = '"Alagard", "Pixelify Sans", "DotGothic16"';
 const ALAGARD = /Alagard|GG Display|GG Bold/;
-/** Alagard's crisp size for a requested size (0 = too small: use the 5 x 7 bitmap font). */
+/** Alagard's crisp size for a requested size (never under its native 16 px). */
 export function crispSize(size, font) {
   if (!ALAGARD.test(font)) return size;
-  if (size < 12) return 0;
   return 16 * Math.max(1, Math.round((size - 1) / 16));
 }
 
@@ -162,14 +161,14 @@ export class Pix {
   }
   measure(str, size = 16, font = FONT_JP) {
     const cs = crispSize(size, font);
-    if (!cs) return textW5(str);
+    if (!cs) return textWPx(str);
     this.ctx.font = `${cs}px ${font}`;
     return this.ctx.measureText(str).width;
   }
 
-  /** Tiny labels in the 5 x 7 bitmap font (same options as text(); y = top of the caps). */
+  /** Small labels in Alagard at its native 16 px via src/gfx/pixfont.js (same options as text(); y = top of the caps). */
   tinyText(str, x, y, opts = {}) {
-    const w = textW5(str), mask = mask5(str), col = toRGB(opts.color ?? 0xffffff);
+    const w = textWPx(str), mask = maskPx(str), col = toRGB(opts.color ?? 0xffffff);
     const ox = opts.align === 'center' ? x - Math.round(w / 2) : opts.align === 'right' ? x - w : x, oy = y + 1;
     const put = (dx, dy, c) => { for (const [i, j] of mask) this.px(ox + i + dx, oy + j + dy, c); };
     if (opts.outline !== undefined) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, 1], [-1, 1], [1, -1]]) put(dx, dy, opts.outline);

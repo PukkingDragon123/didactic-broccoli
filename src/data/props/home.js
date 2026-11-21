@@ -36,7 +36,6 @@ export default {
   hm_tape: M('tape_recorder', 0.09),
   hm_cassette: M('cassette_player', 0.2),
   hm_alarm_clock: M('clock_alarm', 0.16),
-  hm_wall_clock: M('park_clock', 0.42),
   hm_phone_rotary: M('phone_rotary', 0.12),
   hm_lamp_pendant: M('lamp_pendant', 0.55),
   hm_lamp_dome: M('lamp_dome', 0.22),
@@ -46,9 +45,10 @@ export default {
   hm_iron: M('iron_antique', 0.14),
   hm_ironing_board: M('ironing_board', 0.85),
   // ---------------------------------------------------------------- bedding, cloth, shoes
-  hm_futon_folded: M('futon_set', 0.3),
   hm_blanket: M('blanket_pillows', 0.25),
   hm_futon: M('futon_set', 0.28),
+  // the spare futon folded away: the same futon model squeezed into a folded stack's box (closet shelf, spare room)
+  hm_futon_stack: { asset: { id: 'lowpix/world/futon_set', size: [0.62, 0.3, 0.78], fit: 'stretch' } },
   hm_laundry: M('laundry_basket', 0.42),
   hm_hanger_shirt: M('hanger_shirt', 0.8),
   hm_hanger_tee: M('hanger_tee', 0.7),

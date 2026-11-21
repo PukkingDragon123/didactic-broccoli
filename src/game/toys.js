@@ -19,7 +19,7 @@ import { voxelMaterials } from '../voxel/materials.js';
 import { upres2x } from '../voxel/upres.js';
 import { buildItemModel, ITEM_VOXEL } from './collectibles.js';
 import { DisplaySlots } from './Display.js';
-import { draw5 } from '../gfx/font5x7.js';
+import { drawPx } from '../gfx/pixfont.js';
 import './gachaSfx.js';
 
 const HINTS = {
@@ -116,14 +116,14 @@ class LcdGame {
     g.fillRect(6, 14, 5, 7);
     g.fillStyle = on;
     g.fillRect(0, 27, 48, 1);
-    draw5(g, String(Math.floor(this.score)).padStart(4, '0'), 47, 1, { col: on, align: 'right' });
-    if (!this.on) { draw5(g, 'CAPSULE', 24, 9, { col: on, align: 'center' }); draw5(g, 'DASH', 24, 18, { col: on, align: 'center' }); return; }
+    drawPx(g, String(Math.floor(this.score)).padStart(4, '0'), 47, 1, { col: on, align: 'right' });
+    if (!this.on) { drawPx(g, 'CAPSULE', 24, 9, { col: on, align: 'center' }); drawPx(g, 'DASH', 24, 18, { col: on, align: 'center' }); return; }
     // the runner: a capsule with legs
     const ry = Math.round(26 - this.y);
     g.fillRect(6, ry - 7, 5, 3); g.fillStyle = '#4a5a3a'; g.fillRect(6, ry - 4, 5, 2); g.fillStyle = on;
     if (Math.floor(this.t * 8) % 2 || this.y > 0) { g.fillRect(7, ry - 2, 1, 2); g.fillRect(9, ry - 2, 1, 2); } else { g.fillRect(6, ry - 2, 1, 2); g.fillRect(10, ry - 2, 1, 2); }
     for (const o of this.obs) { const x = Math.round(o.x); g.fillRect(x, o.big ? 20 : 22, 4, o.big ? 7 : 5); }
-    if (this.over) draw5(g, 'GAME OVER', 24, 9, { col: on, align: 'center' });
+    if (this.over) drawPx(g, 'GAME OVER', 24, 9, { col: on, align: 'center' });
     this.tex.needsUpdate = true;
   }
 }

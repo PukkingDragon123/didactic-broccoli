@@ -11,7 +11,7 @@ import { Geo, triplanar, boxMap } from './geom.js';
 import { shell, slab } from './shell.js';
 import { ramp, mix, seamLoop, seal, glassPane, rust, dent, lamp, plate, grow, seeded, carPaint } from './paint.js';
 import { wheelPatches, wheelGeometry, wiper, rods, vehicleMaterials } from './parts.js';
-import { mask5, textW5 } from '../gfx/font5x7.js';
+import { maskPx, textWPx } from '../gfx/pixfont.js';
 
 // dimensions (metres, +z forward, -x the driver's side)
 const W = 0.795, RND = 0.07, YB = 0.3, WR = 0.29, ARCH = 0.36, AXF = 1.16, AXR = -1.12;
@@ -53,11 +53,11 @@ const IN = { trim: 0x3a3632, card: 0x5a4a3e, head: 0x8a8070, metal: mix(CREAM, 0
 
 /** Sign-writer letters: the 5 x 7 font at scale s, a dark outline, a lighter top (pixels; (i, j) = top-left). */
 function signText(V, str, i, j, s, col, out, hi) {
-  const set = new Set(), m = mask5(str);
+  const set = new Set(), m = maskPx(str);
   for (const [x, y] of m) for (let a = 0; a < s; a++) for (let b = 0; b < s; b++) set.add(`${i + x * s + a},${j - y * s - b}`);
   for (const k of set) { const [x, y] = k.split(',').map(Number); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, -1], [2, -2], [1, -2]]) if (!set.has(`${x + dx},${y + dy}`)) V.px(x + dx, y + dy, out); }
   for (const k of set) { const [x, y] = k.split(',').map(Number); V.px(x, y, (j - y) % (7 * s) < s ? hi : col); }
-  return textW5(str, s);
+  return textWPx(str, s);
 }
 
 function paintAtlas() {

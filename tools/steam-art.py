@@ -10,35 +10,22 @@ import sys
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageEnhance, ImageFont
 
-# the game's own 5x7 bitmap font (src/gfx/font5x7.js), so small type sits on the same pixel grid as the art
-_SRC = (Path(__file__).resolve().parent.parent / 'src/gfx/font5x7.js').read_text(encoding='utf-8')
-FONT5 = {}
-for m in re.finditer(r"(?:'(.)'|\b([A-Z0-9]))\s*:\s*'([.#|]+)'", _SRC):
-    FONT5[m.group(1) or m.group(2)] = m.group(3).split('|')
+# small type in Alagard (the game's high-res pixel face, via tools/pixprint.py), on the same pixel grid as the art
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+import pixprint as _PX
 
 
 def text5_w(s):
-    return sum(len(FONT5.get(c, FONT5['?'])[0]) + 1 for c in s.upper()) - 1
+    return _PX.text_size(s, 'ala')[0]
 
 
 def draw5(img, s, x, y, col, k=1):
-    """The 5x7 font at k small pixels per font pixel."""
-    d = ImageDraw.Draw(img)
-    for c in s.upper():
-        rows = FONT5.get(c, FONT5['?'])
-        for ry, row in enumerate(rows):
-            for rx, ch in enumerate(row):
-                if ch == '#':
-                    d.rectangle([x + rx * k, y + ry * k, x + rx * k + k - 1, y + ry * k + k - 1], fill=col)
-        x += (len(rows[0]) + 1) * k
-
-
-BAYER4 = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
-INK = (26, 18, 22)
-CREAM = (255, 244, 214)
-GOLD = (255, 210, 63)
-RED = (200, 50, 44)
-
+    """A line of Alagard (native 16 px grid) at k small pixels per font pixel; (x, y) = top-left of the caps."""
+    m, _, _, _ = _PX.line_mask(s, 'ala')
+    lay = Image.fromarray((m * 255).astype('uint8')).resize((m.shape[1] * k, m.shape[0] * k), Image.NEAREST)
+    img.paste(Image.new(img.mode, lay.size, col), (int(x), int(y)), lay)
+    return m.shape[1] * k
 
 def pixelate(img, scale, colors=96, amp=11, sat=1.15):
     """Box-downscale, ordered dither to an adaptive (octree) palette, return the small image. Octree keeps the

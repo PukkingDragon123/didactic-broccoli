@@ -1,6 +1,6 @@
 // Shared bits for the PC mini-games: a crisp integer-scaled canvas in the window, keyboard/pointer/touch input,
 // pixel text, high-score tables (Gramps left a record on every game) and the 'pcGame' hook.
-import { draw5, textW5 } from '../../../gfx/font5x7.js';
+import { drawPx, textWPx } from '../../../gfx/pixfont.js';
 import { sfx } from '../../sfx.js';
 
 export const DEFAULT_HI = {
@@ -76,13 +76,13 @@ export function gameCanvas(win, W, H, { pad = [] } = {}) {
   return io;
 }
 
-/** 5x7 pixel text. o: { s (scale), col, align, shadow } */
+/** Pixel text (Alagard, native 16 px: src/gfx/pixfont.js). o: { s (scale), col, align, shadow } */
 export function txt(g, s, x, y, o = {}) {
   const sc = o.s || 1;
-  if (o.shadow) draw5(g, s, x + sc, y + sc, { s: sc, col: o.shadow, align: o.align });
-  draw5(g, s, x, y, { s: sc, col: o.col || '#fff', align: o.align });
+  if (o.shadow) drawPx(g, s, x + sc, y + sc, { s: sc, col: o.shadow, align: o.align });
+  drawPx(g, s, x, y, { s: sc, col: o.col || '#fff', align: o.align });
 }
-export const tw = (s, sc = 1) => textW5(s, sc);
+export const tw = (s, sc = 1) => textWPx(s, sc);
 
 /** A centred panel with a title, lines and a blinking prompt (title / pause / game over screens). */
 export function panel(g, W, H, t, { title, lines = [], prompt = 'PRESS SPACE', col = '#ffd23f', y = null, w = 170 } = {}) {

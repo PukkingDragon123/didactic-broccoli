@@ -245,7 +245,6 @@ export const PROP_MODELS = {
   fertiliser: { id: 'lowpix/world/fertiliser_bag' },
   ladle: { id: 'lowpix/world/ladle' },
   bonsai: { id: 'lowpix/world/bonsai' },
-  park_clock: { id: 'lowpix/world/park_clock' },
   wall_shelf_jars: { id: 'lowpix/world/wall_shelf_jars' },
   screw_jars: { id: 'lowpix/world/screw_jars' },
   capsule_jar: { id: 'lowpix/world/pickle_jar' },

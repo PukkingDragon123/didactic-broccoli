@@ -4056,25 +4056,6 @@
   ],
   "bytes": 125968
  },
- "park_clock": {
-  "id": "park_clock",
-  "name": "Old Vintage Street Clock",
-  "src": "sketchfab:2acf560d9d7c45de916fd18e2812e3f9",
-  "title": "Old Vintage Street Clock",
-  "author": "bluesassassins",
-  "authorUrl": "https://sketchfab.com/bluesassassins",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/old-vintage-street-clock-2acf560d9d7c45de916fd18e2812e3f9",
-  "site": "Sketchfab",
-  "tris": 2979,
-  "tex": 512,
-  "size": [
-   2.68,
-   3.68,
-   1.018
-  ],
-  "bytes": 139236
- },
  "park_lamp": {
   "id": "park_lamp",
   "name": "Classic Street Lamp Post",
@@ -6764,25 +6745,6 @@
   ],
   "bytes": 99884
  },
- "wear_bandana": {
-  "id": "wear_bandana",
-  "name": "Bandana Mask",
-  "src": "sketchfab:1d39e7ae6b5748acb2ffddf420893f5a",
-  "title": "Bandana Mask",
-  "author": "Tactical_Beard",
-  "authorUrl": "https://sketchfab.com/Tactical_Beard",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/bandana-mask-1d39e7ae6b5748acb2ffddf420893f5a",
-  "site": "Sketchfab",
-  "tris": 586,
-  "tex": 256,
-  "size": [
-   0.137,
-   0.15,
-   0.231
-  ],
-  "bytes": 18296
- },
  "wear_beanie": {
   "id": "wear_beanie",
   "name": "Beanie",
@@ -6801,25 +6763,6 @@
    0.179
   ],
   "bytes": 81856
- },
- "wear_beanie2": {
-  "id": "wear_beanie2",
-  "name": "Beanie",
-  "src": "sketchfab:24c96b6714b14d98953bcf72ddcbe3e2",
-  "title": "Beanie",
-  "author": "r4ulp3rcy",
-  "authorUrl": "https://sketchfab.com/r4ulp3rcy",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/beanie-24c96b6714b14d98953bcf72ddcbe3e2",
-  "site": "Sketchfab",
-  "tris": 1999,
-  "tex": 300,
-  "size": [
-   0.666,
-   0.16,
-   0.71
-  ],
-  "bytes": 71916
  },
  "wear_beanie_pom": {
   "id": "wear_beanie_pom",
@@ -7428,25 +7371,6 @@
    0.322
   ],
   "bytes": 74896
- },
- "wear_kabuto2": {
-  "id": "wear_kabuto2",
-  "name": "Killer's Kabuto",
-  "src": "sketchfab:ab8515f3af6d41098443d7e8dfcfa42e",
-  "title": "Killer's Kabuto",
-  "author": "~Drift~",
-  "authorUrl": "https://sketchfab.com/QuickDriftVR",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/killers-kabuto-ab8515f3af6d41098443d7e8dfcfa42e",
-  "site": "Sketchfab",
-  "tris": 1520,
-  "tex": 272,
-  "size": [
-   0.207,
-   0.2,
-   0.232
-  ],
-  "bytes": 72148
  },
  "wear_kagami": {
   "id": "wear_kagami",

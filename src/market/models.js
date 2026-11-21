@@ -12,7 +12,7 @@ import { voxelMaterials } from '../voxel/materials.js';
 import { VoxelModel } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { Pix } from '../gfx/pix.js';
-import { textW5 } from '../gfx/font5x7.js';
+import { textWPx } from '../gfx/pixfont.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
 import { COSMETIC_BY_ID, cosmeticPreview } from '../people/cosmetics.js';
 import { CHARM_DEFS, TIPJAR_DEFS, itemTitle, BUILD } from './catalog.js';
@@ -58,7 +58,7 @@ function slabLabel(d) {
   let cur = '';
   for (const w of parts) {
     const next = cur ? (cur.endsWith('-') ? cur + w : cur + ' ' + w) : w;
-    if (textW5(next) <= MAXW) { cur = next; continue; }
+    if (textWPx(next) <= MAXW) { cur = next; continue; }
     if (cur) lines.push(cur);
     cur = w;
   }
@@ -66,7 +66,7 @@ function slabLabel(d) {
   const shown = lines.slice(0, 2).map((l, i, a) => {
     let t = l;
     const more = i === a.length - 1 && lines.length > 2;
-    while (t.length > 1 && textW5(t + (more ? '.' : '')) > MAXW) t = t.slice(0, -1);
+    while (t.length > 1 && textWPx(t + (more ? '.' : '')) > MAXW) t = t.slice(0, -1);
     return t + (more || t !== l ? '.' : '');
   });
   shown.forEach((l, i) => p.tinyText(l, 3, 7 + i * 8, { color: 0x2a2220 }));

@@ -8,6 +8,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 from printkit import source, rgb
 from pixprint import Sheet, line_mask, _dilate, upscale
+from pixprint import text_size as PX_text_size, FACES as _PXF
+_PXF.setdefault('dot', ('dotgothic16/DotGothic16-Regular.ttf', 16))
 from lettering import emblem
 import logo3d
 import paperkit as PK
@@ -44,6 +46,27 @@ def logo7(S, text, x, y, face, ks, fill, layers, drop=(3, 3, INK), track=-1, bou
         X, Y = x + P + px - x0 + pad, y + P + py - y0 + pad
         S._stamp(_dilate(M, 1, 'sq'), X - 1, Y - 1, inner); S._stamp(M, X, Y, fills[i % len(fills)])
     return (x, y, x + sil.shape[1], y + sil.shape[0])
+
+
+
+# ---- small print in high-res pixel faces (owner: no 5x7 / tiny bitmap faces, no blown-up chunky glyphs)
+TINY = {'micro5': 'ala', 'b5': 'ala', 'silk': 'ala', 'silkb': 'ala', 'ps2p': 'ala'}
+def _is_cjk(s): return any(ord(c) > 0x2e7f for c in s)
+_orig_text = Sheet.text
+def _hires_text(self, s, x, y, face='silk', scale=1, fill=0x1c1816, anchor='lt', outline=None, **kw):
+    if face not in TINY: return _orig_text(self, s, x, y, face, scale, fill, anchor, outline, **kw)
+    f = 'dot' if _is_cjk(s) else TINY[face]
+    hr = getattr(self, '_hr', None)
+    if hr is None:  # a full-res layer: the same place, the high-res face at its native size
+        return _orig_text(self, s, x, y, f, max(1, scale - 1) if face == 'b5' and scale > 1 else 1, fill, anchor, outline, **kw)
+    sc = 2 if face == 'b5' and scale >= 2 else 1
+    if kw.get('maxw'): kw['maxw'] = kw['maxw'] * 2
+    sh = kw.pop('shadow', None)
+    if sh: kw['shadow'] = (sh[0], sh[1], sh[2])
+    x0, y0, x1, y1 = _orig_text(hr, s, 2 * x, 2 * y, f, sc, fill, anchor, outline, **kw)
+    return (x0 / 2, y0 / 2, x1 / 2, y1 / 2)
+Sheet.text = _hires_text
+def tw_hr(s, face='micro5'): return PX_text_size(s, 'dot' if _is_cjk(s) else TINY.get(face, face))[0] / 2
 
 
 def burst(S, cx, cy, r, n, fill, line=INK, lines=(), col=INK, face='b5', rot=0.0, jag=0.72):
@@ -86,7 +109,7 @@ def capsule(S, x, y, w, h, top, bot, words, ink=INK):
 
 def callout(S, text, tx, ty, px, py, anchor='rm', fill=WH, ink=INK, face='micro5'):
     """A printed callout: a label tag with a leader line to the point on the figure (a dot at the end)."""
-    tw = line_mask(text, face)[0].shape[1] + 6; th = 9
+    tw = int(tw_hr(text, face)) + 7 if face in TINY else line_mask(text, face)[0].shape[1] + 6; th = 9
     X = {'l': tx, 'm': tx - tw // 2, 'r': tx - tw}[anchor[0]]; Y = ty - th // 2
     S.rect(X - 1, Y - 1, tw + 2, th + 2, ink); S.rect(X, Y, tw, th, fill); S.text(text, X + 3, Y + 2, face, 1, ink)
 
@@ -101,6 +124,9 @@ class Card7(Card):
     def __init__(self, s, ctx):
         super().__init__(s, ctx)
         self.G = Sheet(2 * W, 2 * H, PAPER); self.B = Sheet(W, H, None); self.TOP = Sheet(2 * W, 2 * H, None)
+        # small print is never set in a tiny bitmap face blown up 2x: the half-res layers hand it to the full-res
+        # top layer, at twice the coordinates, in a high-res pixel face (see _hires_text)
+        for L in (self.B, self.M, self.F): L._hr = self.TOP
 
     def photo(self, ref, box, focus=(0.5, 0.5, 1.0), tint=None, k=0.35, bright=1.0, con=1.0, layer=None, rep=1):
         """A real photo ground cropped to box, colour-graded toward tint (k: how far), hard-edged."""
@@ -132,13 +158,13 @@ class Card7(Card):
         for i, (num, name, col) in enumerate(entries):
             cx = 5 + (i // rows) * cw; cy = y + 5 + (i % rows) * 9
             name = name.replace('-', ' ').replace("'S", '')
-            while line_mask(name, 'micro5')[0].shape[1] > cw - 14 and ' ' in name: name = name.rsplit(' ', 1)[0]
+            while tw_hr(name) > cw - 14 and ' ' in name: name = name.rsplit(' ', 1)[0]
             F.rect(cx, cy, 11, 7, col if lum(col) < 0.55 else INK); F.text('%02d' % num, cx + 6, cy + 1, 'micro5', 1, WH, anchor='mt')
             F.text(name, cx + 13, cy + 1, 'micro5', 1, INK)
         sx = 128; F.rect(sx - 4, y + 4, 1, H - y - 8, INK)
-        for j, l in enumerate(['SMALL PARTS.', 'NOT FOR UNDER 3.', 'KEEP FROM MOUTH.', 'PVC/ABS. 50MM', 'FOR ILLUSTRATION']):
-            F.text(l, sx, y + 4 + 6 * j, 'micro5', 1, INK)
-        age_mark(F, 208, y + 13, paper=0xf3ead6)
+        for j, l in enumerate(['SMALL PARTS.', 'AGES 3 AND UP.', 'PVC/ABS, 50MM.', 'ILLUSTRATIVE.']):
+            F.text(l, sx, y + 4 + 7 * j, 'micro5', 1, INK)
+        age_mark(F, 203, y + 13, paper=0xf3ead6)
         bx = W - 98; F.barcode(bx, y + 4, '4970%08d' % (sum(map(ord, self.sid)) * 7919 % 10 ** 8), h=9, ink=INK, bg=0xf3ead6)
         mb = F.text(self.maker, W - 6, H - 8, 'micro5', 1, red, anchor='rt')
         emblem(F, self.em, mb[0] - 14, H - 11, mark_col, ink=INK, paper=0xf3ead6)
@@ -235,7 +261,7 @@ def designer(K, c):
         kb = (tx, ty, int(tx + kw), ty + 11 * len(c['kick']))
     else:
         for j, l in enumerate(c['kick']): F.text(l, tx, ty + 9 * j, 'b5', 1, WH if j == 0 else fill, outline=[(1, ink)])
-        kb = (tx, ty, tx + max(line_mask(l, 'b5')[0].shape[1] for l in c['kick']) + 2, ty + 9 * len(c['kick']))
+        kb = (tx, ty, tx + max(tw_hr(l, 'b5') for l in c['kick']) + 2, ty + 9 * len(c['kick']))
     if c.get('vol'): vx, vy = c['vol']; F.rect(vx, vy, 34, 11, ink); F.text('VOL.1', vx + 17, vy + 2, 'b5', 1, fill, anchor='mt')
     if c.get('flow'):  # right-hand logos: the price and the capsule flow under the kicker
         ky = kb[3] + 20; c['price_at'] = (tx + 31, ky); c['caps'] = (tx + 70, ky - 7)

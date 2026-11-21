@@ -1,6 +1,6 @@
 /* The opening's title (src/arrival/title.js): the game's 3D title hanging over the lane at a whole-number scale, the
    place line and the name seal under it, hard pixel shadows. It steps in and out: no smooth fades, no glows.
-   Alagard and the 5x7 line are only ever drawn at whole multiples of their pixel size. */
+   Alagard is only ever drawn at its native 16 px and shown at whole multiples of it. */
 #arrival-title {
   position: absolute; left: 50%; top: calc(11vh + 3.5vh); translate: -50% 0; pointer-events: none;
   opacity: 0; transform: translateY(-12px); transition: opacity .4s steps(4), transform .4s steps(3);
@@ -16,7 +16,7 @@
   text-shadow: 3px 0 0 #1a0f14, -3px 0 0 #1a0f14, 0 3px 0 #1a0f14, 0 -3px 0 #1a0f14, 3px 3px 0 #1a0f14, -3px 3px 0 #1a0f14, 3px -3px 0 #1a0f14, -3px -3px 0 #1a0f14, 6px 8px 0 rgba(18, 10, 14, .55);
 }
 #arrival-title .row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; }
-#arrival-title .s { width: calc(var(--w) * 3); height: calc(var(--h) * 3); background-size: 100% 100%; image-rendering: pixelated; filter: drop-shadow(3px 3px 0 rgba(18, 10, 14, .5)); }
+#arrival-title .s { width: calc(var(--w) * 2); height: calc(var(--h) * 2); background-size: 100% 100%; image-rendering: pixelated; filter: drop-shadow(3px 3px 0 rgba(18, 10, 14, .5)); }
 #arrival-title .seal { width: 40px; height: 72px; background-size: 100% 100%; image-rendering: pixelated; filter: drop-shadow(3px 3px 0 rgba(18, 10, 14, .5)); }
 @media (max-width: 760px) {
   #arrival-title .t { font-size: 32px; line-height: 30px; letter-spacing: 2px; }
@@ -24,6 +24,6 @@
   #arrival-title .seal { width: 20px; height: 36px; }
 }
 @media (min-width: 1800px) {
-  #arrival-title .s { width: calc(var(--w) * 4); height: calc(var(--h) * 4); }
+  #arrival-title .s { width: calc(var(--w) * 3); height: calc(var(--h) * 3); }
   #arrival-title .seal { width: 60px; height: 108px; }
 }

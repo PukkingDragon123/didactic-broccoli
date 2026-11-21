@@ -17,7 +17,7 @@ import { menace } from '../ui/menacing.js';
 import { audio } from '../core/audio.js';
 import { archPlace } from './archModels.js';
 import { surfaceTex } from './surfaces.js';
-import { draw5 } from '../gfx/font5x7.js';
+import { drawPx } from '../gfx/pixfont.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { rollCapsule } from '../game/economy.js';
 import { formatYen, hash2 } from '../core/util.js';
@@ -75,7 +75,7 @@ function plaque() {
     g.fillStyle = '#c8b8a0'; g.fillRect(4, 4, 2, 2); g.fillRect(W - 6, 4, 2, 2);
     g.fillStyle = '#efe4cc'; g.font = '16px "DotGothic16", "Pixelify Sans"'; g.textAlign = 'center'; g.textBaseline = 'top';
     g.fillText('振り返るな', W / 2, 7);
-    draw5(g, 'DON\'T LOOK BACK', W / 2, 31, { col: '#e04a3a', align: 'center' });
+    drawPx(g, 'DON\'T LOOK BACK', W / 2, 31, { col: '#e04a3a', align: 'center' });
     tex.needsUpdate = true;
   };
   draw();

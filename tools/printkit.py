@@ -467,6 +467,7 @@ def _mask_ttf(s, face, size, track=0, vert=False):
 
 
 def pmask(s, size=16, face='dot', track=0, vert=False, bold=False):
+    if face == 'b5': face = 'ala'  # the old 5x7 face is gone (owner: high-res pixel fonts only)
     if face == 'b5':
         m = _mask_b5(s, max(1, int(size)), 1 + int(track))
         return m.rotate(-90, expand=True) if vert else m

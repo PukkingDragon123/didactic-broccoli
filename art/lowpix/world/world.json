@@ -1612,15 +1612,6 @@
    "keep": "^(Jar|Lid)"
   },
   {
-   "id": "park_clock",
-   "src": "sketchfab:2acf560d9d7c45de916fd18e2812e3f9",
-   "h": 3.68,
-   "ppm": 100,
-   "tris": 3000,
-   "name": "Old Vintage Street Clock",
-   "prop": "park_clock"
-  },
-  {
    "id": "ladle",
    "src": "sketchfab:a234707b21b340e0a544276e215e2bae",
    "h": 0.248,
@@ -2267,15 +2258,6 @@
    "name": "Beanie"
   },
   {
-   "id": "wear_beanie2",
-   "src": "sketchfab:24c96b6714b14d98953bcf72ddcbe3e2",
-   "h": 0.16,
-   "ppm": 600,
-   "tris": 2000,
-   "cap": 512,
-   "name": "Beanie"
-  },
-  {
    "id": "wear_reindeer",
    "src": "sketchfab:60b0f5bad10749208e9cb8e80082fbba",
    "h": 0.2,
@@ -2834,15 +2816,6 @@
    "tris": 1200,
    "cap": 512,
    "name": "Sweat Band For Gorilla Tag Fan Game NO T"
-  },
-  {
-   "id": "wear_bandana",
-   "src": "sketchfab:1d39e7ae6b5748acb2ffddf420893f5a",
-   "h": 0.15,
-   "ppm": 600,
-   "tris": 800,
-   "cap": 512,
-   "name": "Bandana Mask"
   },
   {
    "id": "wear_kitsune",
@@ -3545,15 +3518,6 @@
    "tris": 3000,
    "cap": 512,
    "name": "Traditional Samurai Helmet (Kabuto)"
-  },
-  {
-   "id": "wear_kabuto2",
-   "src": "sketchfab:ab8515f3af6d41098443d7e8dfcfa42e",
-   "h": 0.2,
-   "ppm": 600,
-   "tris": 2000,
-   "cap": 512,
-   "name": "Killer's Kabuto"
   },
   {
    "id": "wear_flowerclip",

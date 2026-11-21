@@ -1,37 +1,46 @@
 // The opening's title: the game's own 3D title (the chunky hand-painted GACHA GARAGE blocks rendered for the title
 // screen, public/img/menu/title*.png from tools/menulogo.py) hanging over the lane, shown at a whole-number scale so
-// its pixels stay crisp, with "Morio-chō · spring 1999" under it in the 5x7 bitmap font (drawn pixel by pixel, the
+// its pixels stay crisp, with "Morio-chō · Spring 1999" under it in Alagard at its native 16 px (shown 2x / 3x, the
 // macron put on by hand, a hard ink outline) and a red 杜王 name seal stamped beside it (DotGothic16). No paper card:
 // titles are 3D now. If the logo can't load, GACHA GARAGE is set in Alagard instead. It drops in and leaves in steps,
 // never fades smoothly. Lives in the cutscene layer (#cutscene), above the letterbox.
 //   const t = new TitleCard(parentEl)   t.show()   t.hide()   t.dispose()
-import { draw5, textW5 } from '../gfx/font5x7.js';
 import './arrival.css';
 
-const INK2 = '#fff2dc', RED = [200, 50, 44];
+const RED = [200, 50, 44];
 const LOGO = (import.meta.env?.BASE_URL || '/') + 'img/menu/';
 
-/** "MORIO-CHŌ · SPRING 1999" in the 5x7 font as a data URL (1 texel = 1 px; shown at 3x). */
+/**
+ * "Morio-chō · Spring 1999" in Alagard at its native 16 px (thresholded: every texel hard), the ō's macron put on by
+ * hand over the o, and a hard one-texel ink outline; a data URL shown at a whole multiple (2x / 3x).
+ */
 function placeLine() {
-  const word = 'MORIO-CH', line = `${word}O  ·  SPRING 1999`;
-  const W = textW5(line) + 2, H = 10;
+  const head = 'Morio-ch', line = `${head}o  ·  Spring 1999`, F = '16px "Alagard"';
+  const m = document.createElement('canvas').getContext('2d');
+  m.font = F;
+  const W = Math.ceil(m.measureText(line).width) + 4, H = 22;
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
-  const g = c.getContext('2d');
-  draw5(g, line, 1, 3, { col: INK2 });
-  g.fillStyle = INK2;
-  g.fillRect(1 + textW5(word) + 1 + 1, 1, 3, 1); // the ō's macron, over the O's three middle columns
-  // a hard one-texel ink outline round every lit texel (no blur, no glow)
-  const src = g.getImageData(0, 0, W, H), out = g.createImageData(W, H);
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.font = F; g.textBaseline = 'alphabetic'; g.fillStyle = '#fff';
+  g.fillText(line, 2, 17);
+  // the macron: a bar of lit texels one row over the o's x-height (found from the o's own top row)
+  const ox = 2 + Math.round(m.measureText(head).width), ow = Math.round(m.measureText('o').width);
+  const px = g.getImageData(0, 0, W, H);
+  let top = H;
+  for (let y = 0; y < H && top === H; y++) for (let x = ox; x < ox + ow; x++) if (px.data[(y * W + x) * 4 + 3] > 110) { top = y; break; }
+  const src = px.data, lit = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) lit[i] = src[i * 4 + 3] > 110 ? 1 : 0;
+  if (top < H) for (let x = ox + 1; x < ox + ow - 2; x++) lit[Math.max(0, top - 3) * W + x] = 1;
+  const out = g.createImageData(W, H), ink = [26, 15, 20], cream = [255, 242, 220];
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const i = (y * W + x) * 4;
-    if (src.data[i + 3] > 127) { out.data.set(src.data.subarray(i, i + 4), i); continue; }
-    let n = false;
-    for (let dy = -1; dy <= 1 && !n; dy++) for (let dx = -1; dx <= 1; dx++) {
+    const i = y * W + x;
+    let col = lit[i] ? cream : null;
+    if (!col) for (let dy = -1; dy <= 1 && !col; dy++) for (let dx = -1; dx <= 1; dx++) {
       const xx = x + dx, yy = y + dy;
-      if (xx >= 0 && yy >= 0 && xx < W && yy < H && src.data[(yy * W + xx) * 4 + 3] > 127) { n = true; break; }
+      if (xx >= 0 && yy >= 0 && xx < W && yy < H && lit[yy * W + xx]) { col = ink; break; }
     }
-    if (n) { out.data[i] = 26; out.data[i + 1] = 15; out.data[i + 2] = 20; out.data[i + 3] = 255; }
+    if (col) { out.data[i * 4] = col[0]; out.data[i * 4 + 1] = col[1]; out.data[i * 4 + 2] = col[2]; out.data[i * 4 + 3] = 255; }
   }
   g.putImageData(out, 0, 0);
   return { url: c.toDataURL(), w: W, h: H };

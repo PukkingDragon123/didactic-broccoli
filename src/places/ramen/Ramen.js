@@ -23,7 +23,7 @@ import { ensureState } from '../../game/stateExt.js';
 import { Human } from '../../people/Human.js';
 import { makeSpec } from '../../people/presets.js';
 import { hex } from '../../people/paintlib.js';
-import { draw5 } from '../../gfx/font5x7.js';
+import { drawPx } from '../../gfx/pixfont.js';
 import { makeToolMesh } from '../../game/Held.js';
 import { FOODS } from '../../needs/foods.js';
 import { kanji } from '../vending/canArt.js';
@@ -253,7 +253,7 @@ export class Ramen {
       c.fillStyle = '#f4e8c8'; c.fillRect(0, 0, w, h);
       c.fillStyle = '#c8302a'; c.fillRect(0, 0, w, 10);
       c.fillStyle = '#e8b830'; c.fillRect(9, 16, 14, 20); c.fillStyle = '#ffffff'; c.fillRect(9, 13, 14, 5); c.fillStyle = '#e8b830'; c.fillRect(23, 20, 4, 10); c.fillStyle = '#f4e8c8'; c.fillRect(24, 22, 2, 6);
-      draw5(c, 'BEER', w / 2, 40, { s: 1, col: '#1a1a1a', align: 'center' });
+      drawPx(c, 'BEER', w / 2, 40, { s: 1, col: '#1a1a1a', align: 'center' });
     });
     const pm = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.63), P.mat(new THREE.MeshStandardMaterial({ map: poster.tex, roughness: 0.8 })));
     pm.position.copy(L(-2.96, 1.6, 1.4)); pm.rotation.y = Math.PI / 2;

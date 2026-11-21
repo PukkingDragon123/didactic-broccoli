@@ -2,14 +2,14 @@
 //   decalAtlas()  alpha-tested grime: oil stains, tyre tracks, water stains, cracks, scuffs, paint, hazard tape,
 //                 dust and wall-foot grime (painted in light neutrals and tinted per placement by vertex colour).
 //   cardAtlas()   little handwritten shop cards, signs, kids' drawings, a clock face and a tear-off calendar.
-//                 Japanese uses tiny hand-made glyphs and Latin the 5 x 7 bitmap font, so nothing depends on a
-//                 web font being loaded.
+//                 Painted at twice the decal density (the card art in 2 x 2 texel blocks) so that every word on
+//                 them is set in a high-res pixel font at its native size (house rule: no 5x7 / tiny bitmap fonts):
+//                 Japanese in DotGothic16, Latin in Alagard, at 16 px (or a clean 2x / 3x for the big ones).
 // Each atlas returns { tex, size: [w, h], rect(name) -> [u0, v0, u1, v1] } (UVs with v up, three.js style).
 import * as THREE from 'three';
 import { drawPrint } from './printAtlas.js';
 import { Pix } from './pix.js';
 import { hash2 } from '../core/util.js';
-import { mask5, textW5 } from './font5x7.js';
 
 const B4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 const bayer = (x, y) => (B4[((y & 3) << 2) + (x & 3)] + 0.5) / 16;
@@ -251,74 +251,76 @@ export function decalAtlas() {
 }
 
 // ---------------------------------------------------------------------------------------------- glyphs
-// 7-row hand-drawn kana/kanji for in-world cards (rows top to bottom; '#' = ink).
-const JP = {
-  '回': ['#######', '#.....#', '#.###.#', '#.#.#.#', '#.###.#', '#.....#', '#######'],
-  '円': ['#######', '#..#..#', '#..#..#', '#######', '#.....#', '#.....#', '#....##'],
-  'カ': ['..#....', '#######', '..#...#', '..#...#', '.#....#', '.#....#', '#...##.'],
-  'プ': ['.....#.#', '######.#', '.....#..', '....#...', '...#....', '..#.....', '##......'],
-  'セ': ['.#.....', '.#..###', '######.', '.#...#.', '.#..#..', '.#.....', '..####.'],
-  'ル': ['.#..#..', '.#..#..', '.#..#..', '.#..#..', '.#..#.#', '#...##.', '#...#..'],
-  'は': ['#..#...', '#.#####', '#..#...', '#..#...', '#.###..', '#.#.#..', '#..###.'],
-  'こ': ['.......', '.#####.', '.......', '.......', '.......', '#......', '.######'],
-  'へ': ['.......', '.......', '..#....', '.#.#...', '#...#..', '.....#.', '......#'],
-  '安': ['...#...', '#######', '#..#..#', '..#....', '#######', '.#..#..', '#..#.##'],
-  '全': ['...#...', '..#.#..', '.#...#.', '#######', '...#...', '.#####.', '#######'],
-  '第': ['#.#.#.#', '.#...#.', '#######', '...#..#', '#######', '.#.#...', '#..#.##'],
-  '一': ['.......', '.......', '.......', '#######', '.......', '.......', '.......'],
-  '火': ['...#...', '#..#..#', '.#.#.#.', '...#...', '..#.#..', '.#...#.', '#.....#'],
-  'の': ['..###..', '.#.#.#.', '#..#..#', '#..#..#', '#.#...#', '.#...#.', '....#..'],
-  '用': ['.######', '.#..#.#', '.######', '.#..#.#', '.######', '#...#.#', '#...###'],
-  '心': ['...#...', '....#..', '.#.....', '.#..#.#', '#...#.#', '#...#..', '..###..'],
-  'ガ': ['..#..#.#', '######..', '..#..#..', '..#..#..', '.#...#..', '.#...#..', '#..##...'],
-  'チ': ['....##.', '.###...', '...#...', '#######', '...#...', '..#....', '##.....'],
-  'ャ': ['......', '......', '.#....', '.#####', '.#..#.', '..#...', '..#...'],
-  '収': ['..#.#..', '#.#.##.', '#.#.#.#', '#.#..#.', '###.#.#', '..#.#.#', '..##...'],
-  '両': ['#######', '...#...', '#######', '#.#.#.#', '#.#.#.#', '#.....#', '#....##'],
-  '替': ['.#..#..', '###.###', '.#..#..', '#.#.#.#', '.#####.', '.#####.', '.#...#.', '.#####.'],
-  '入': ['..#....', '...#...', '...#...', '...#...', '..#.#..', '.#...#.', '#.....#'],
-  '荷': ['.#...#.', '#######', '.#...#.', '..#####', '.##..#.', '#.#.##.', '..#..#.'],
-  '新': ['.#..#..', '###.#..', '#.#.###', '###.#.#', '.#..#.#', '###.#.#', '.#.#..#'],
-  '月': ['.#####.', '.#...#.', '.#####.', '.#...#.', '.#####.', '.#...#.', '#...##.'],
-  '大': ['...#...', '...#...', '#######', '...#...', '..#.#..', '.#...#.', '#.....#'],
-  '日': ['#####', '#...#', '#...#', '#####', '#...#', '#...#', '#####'],
-  '土': ['...#...', '...#...', '.#####.', '...#...', '...#...', '...#...', '#######'],
-  '!': ['#', '#', '#', '#', '#', '.', '#'],
-  '↓': ['..#..', '..#..', '..#..', '#.#.#', '.###.', '..#..', '.....'],
-  '→': ['.......', '....#..', '.....#.', '#######', '.....#.', '....#..', '.......'],
-  ' ': ['...', '...', '...', '...', '...', '...', '...'],
-};
-/** Ink pixels of a mixed string: JP glyphs from the table above, everything else from the 5 x 7 font. */
-function inkMask(str) {
-  const out = []; let xx = 0;
-  for (const ch of str) {
-    const g = JP[ch];
-    if (g) {
-      const off = 7 - g.length; // taller glyphs (8 rows) rise one pixel above the line
-      g.forEach((row, ry) => { for (let rx = 0; rx < row.length; rx++) if (row[rx] === '#') out.push([xx + rx, ry + off]); });
-      xx += g[0].length + 1;
-    } else {
-      for (const [x, y] of mask5(ch)) out.push([xx + x, y]);
-      xx += textW5(ch) + 1;
-    }
-  }
-  return { px: out, w: Math.max(0, xx - 1) };
+// ---- the cards' lettering: high-res pixel fonts at their native 16 px (x s), thresholded so every texel is hard
+const FONT_JP = '"DotGothic16"', FONT_LAT = '"Alagard"';
+const GLYPHS = new Map();
+// every character the cards use, so their font files are fetched early (the JP font comes in unicode-range parts);
+// cardAtlas() repaints itself once they are in if it had to draw before
+const CARD_JP = '1回円カプセルはここへ↓両替新入荷安全第一火の用心回収ガチャ!日', CARD_LAT = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!:-x ';
+const cardFonts = typeof document !== 'undefined' && document.fonts?.load
+  ? Promise.all([16, 32, 48].flatMap((z) => [document.fonts.load(`${z}px ${FONT_JP}`, CARD_JP), document.fonts.load(`${z}px ${FONT_LAT}`, CARD_LAT)])).catch(() => {})
+  : Promise.resolve();
+const fontsReady = () => { try { return document.fonts.check(`16px ${FONT_JP}`, CARD_JP) && document.fonts.check(`16px ${FONT_LAT}`, CARD_LAT); } catch { return true; } };
+/** The lit texels of one character at `size` px ([[x, y]...], advance). */
+function glyph(ch, size) {
+  const key = ch + '|' + size;
+  if (GLYPHS.has(key)) return GLYPHS.get(key);
+  const f = /^[\x20-\x7e]$/.test(ch) ? FONT_LAT : FONT_JP;
+  const c = document.createElement('canvas'), W = Math.ceil(size * 1.6), H = Math.ceil(size * 1.5);
+  c.width = W; c.height = H;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.font = `${size}px ${f}`; g.textBaseline = 'top'; g.fillStyle = '#fff';
+  g.fillText(ch, 0, 0);
+  const d = g.getImageData(0, 0, W, H).data, px = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 110) px.push([x, y]);
+  const out = { px, adv: Math.round(g.measureText(ch).width) };
+  GLYPHS.set(key, out);
+  return out;
 }
-/** Draw ink text; (x, y) = top-left (centre x when align = 'center'). s = pixel scale; marker = slightly wobbly strokes. */
+/**
+ * Draw lettering; (x, y) = top-left in card units (centre x when align = 'center'). s = 1 (16 px), 2 or 3 (a clean
+ * multiple); bold doubles the strokes a texel over; wob = a marker's unsteady baseline. A line too wide for its cell
+ * is tracked in a texel per letter, and nothing is drawn outside the cell. Returns the width in card units.
+ */
 function ink(p, str, x, y, col, { s = 1, align = 'left', bold = false, wob = 0 } = {}) {
-  const m = inkMask(str);
-  const ox = align === 'center' ? Math.round(x - (m.w * s) / 2) : x;
-  for (const [mx, my] of m.px) {
-    const dy = wob ? Math.round(Math.sin((mx + my * 0.5) * 0.7 + wob) * 0.6) : 0;
-    p.rect(ox + mx * s, y + my * s + dy, s, s, col);
-    if (bold) p.rect(ox + mx * s + 1, y + my * s + dy, s, s, col);
-  }
-  return m.w * s;
+  const P = p.hi || p, k = p.k || 1, size = 16 * s, cell = p.cellBox;
+  const gs = [...str].map((ch) => glyph(ch, size));
+  let track = 0, W = gs.reduce((a, gl) => a + gl.adv, 0);
+  if (cell) { const room = cell[2] * k - 4; while (W + track * (gs.length - 1) > room && track > -2) track--; W += track * (gs.length - 1); }
+  let X = Math.round(x * k - (align === 'center' ? W / 2 : 0));
+  const Y = Math.round(y * k);
+  const inside = (xx, yy) => !cell || (xx >= cell[0] * k && yy >= cell[1] * k && xx < (cell[0] + cell[2]) * k && yy < (cell[1] + cell[3]) * k);
+  gs.forEach((gl, i) => {
+    const dy = wob ? Math.round(Math.sin(i * 1.3 + wob) * 0.8) : 0;
+    for (const [gx, gy] of gl.px) {
+      if (inside(X + gx, Y + gy + dy)) P.px(X + gx, Y + gy + dy, col);
+      if (bold && inside(X + gx + 1, Y + gy + dy)) P.px(X + gx + 1, Y + gy + dy, col);
+    }
+    X += gl.adv + track;
+  });
+  return W / k;
 }
 /** Vertical JP text (one glyph per line), centred on x. */
 function inkV(p, str, cx, y, col, s = 1, gap = 2) {
   let yy = y;
-  for (const ch of str) { ink(p, ch, cx, yy, col, { s, align: 'center' }); yy += (JP[ch]?.length || 7) * s + gap; }
+  for (const ch of str) { ink(p, ch, cx, yy, col, { s, align: 'center' }); yy += (16 * s) / (p.k || 1) + gap; }
+}
+
+/**
+ * The card painter: the same calls as a Pix (px, rect, frame, circle, get) in card units, each texel painted as a
+ * k x k block of the real, denser atlas (p.hi), so the art keeps its look while the lettering gets the fine grid.
+ */
+function blockPainter(P, k) {
+  const q = {
+    hi: P, k, cellBox: null, get ctx() { return P.ctx; },
+    px(x, y, c, a = 255) { x |= 0; y |= 0; for (let j = 0; j < k; j++) for (let i = 0; i < k; i++) P.px(x * k + i, y * k + j, c, a); return q; },
+    rect(x, y, w, h, c, a = 255) { for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) q.px(i, j, c, a); return q; },
+    frame(x, y, w, h, c) { for (let i = x; i < x + w; i++) { q.px(i, y, c); q.px(i, y + h - 1, c); } for (let j = y; j < y + h; j++) { q.px(x, j, c); q.px(x + w - 1, j, c); } return q; },
+    circle(cx, cy, r, c, a = 255) { for (let y = -r; y <= r; y++) for (let x = -r; x <= r; x++) if (x * x + y * y <= r * r + r * 0.6) q.px(cx + x, cy + y, c, a); return q; },
+    get(x, y) { return P.get(x * k, y * k); },
+    flush() { P.flush(); }, pull() { P.pull(); },
+  };
+  return q;
 }
 
 /** Card paper with a soft shadowed edge, optional tape strips and a punched corner. */
@@ -334,7 +336,17 @@ function card(p, x, y, w, h, paper, { edge = null, tape = false, torn = false } 
 let CARDS = null;
 export function cardAtlas() {
   if (CARDS) return CARDS;
-  const A = new Atlas(512, 256, 91), p = A.p;
+  const ready = fontsReady();
+  CARDS = paintCards().done();
+  if (!ready) cardFonts.then(() => { GLYPHS.clear(); const B = paintCards(); CARDS.tex.image = B.p.flush().canvas; CARDS.tex.needsUpdate = true; });
+  return CARDS;
+}
+
+function paintCards() {
+  const K = 2, A = new Atlas(512 * K, 256 * K, 91), p = blockPainter(A.p, K);
+  // cells are laid out in card units; the atlas stores them K times denser
+  const cell = A.cell.bind(A);
+  A.cell = (name, x, y, w, h, fn) => { p.cellBox = [x, y, w, h]; cell(name, x * K, y * K, w * K, h * K, () => fn(x, y, w, h)); p.cellBox = null; };
   const RED = 0xd8342a, INK = 0x2a2428, BLUE = 0x2a52a8, GREEN = 0x2a8a4a, PAPER = 0xf6f0e0;
 
   // price cards for the machine wall: "1回 ¥100" etc. with a red underline
@@ -437,9 +449,7 @@ export function cardAtlas() {
     p.rect(x, y, w, h, 0xfbf8f0);
     p.rect(x, y, w, 9, 0x2a2428); p.rect(x + 4, y + 3, 4, 3, 0xd8c890); p.rect(x + w - 8, y + 3, 4, 3, 0xd8c890);
     ink(p, 'AUG', x + w / 2, y + 12, INK, { align: 'center' });
-    const m = inkMask('15');
-    const s = 3;
-    for (const [mx, my] of m.px) p.rect(x + w / 2 - (m.w * s) / 2 + mx * s, y + 22 + my * s, s, s, RED);
+    ink(p, '15', x + w / 2, y + 20, RED, { s: 3, align: 'center' }); // (Alagard at a clean 3x)
     ink(p, '日', x + w / 2, y + h - 10, RED, { align: 'center' });
     for (let i = 0; i < w; i++) if (hash2(i, 99) < 0.6) p.px(x + i, y + 9, 0xd8d0c0);
     p.rect(x, y + h - 1, w, 1, 0xd8d0c0);
@@ -460,8 +470,7 @@ export function cardAtlas() {
     hand((52 / 60) * Math.PI * 2, 20, INK, 2);
     hand((17 / 60) * Math.PI * 2, 22, RED, 1);
     p.circle(cx, cy, 1, RED);
-    const tm = inkMask('SEIKO');
-    for (const [mx, my] of tm.px) if (my % 1 === 0) p.px(Math.round(cx - tm.w / 2 + mx), y + 18 + my, 0x6a6a70);
+    ink(p, 'MORIO', cx, y + 15, 0x6a6a70, { align: 'center' }); // (the maker's name: our own, never a real brand)
   });
   // breaker panel door face: grey steel, a vent grille and a sticker
   A.cell('breaker', 336, 48, 40, 56, (x, y, w, h) => {
@@ -512,8 +521,7 @@ export function cardAtlas() {
   p.flush?.();
   for (const k of ['drawCat', 'drawGacha', 'photo']) { const r = A.rects[k]; if (r) drawPrint(p.ctx, 'misc', 'gcard:' + k, r[0], r[1], r[2], r[3]); }
   p.pull?.();
-  CARDS = A.done();
-  return CARDS;
+  return A;
 }
 
 /** Banded ambient-occlusion gradient (alpha only): opaque edge on the left/bottom fading out, a few crisp steps. */

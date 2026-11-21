@@ -24,7 +24,7 @@ import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { vanDecalPix } from './art.js';
-import { mask5, textW5 } from '../gfx/font5x7.js';
+import { maskPx, textWPx } from '../gfx/pixfont.js';
 import { Atlas, ROUGH } from '../vehicles/atlas.js';
 import { Geo, triplanar, boxMap } from '../vehicles/geom.js';
 import { shell, slab } from '../vehicles/shell.js';
@@ -791,7 +791,7 @@ const SWEEP0 = (210 / 180) * Math.PI, SWEEP = (240 / 180) * Math.PI; // 0 km/h a
 /** Paint the binnacle face: speedometer (0-120), odometer, fuel and temperature gauges, warning lamps. */
 function paintDial(ctx, lamps = {}) {
   const P = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); };
-  const num = (str, x, y, col) => { ctx.fillStyle = col; for (const [i, j] of mask5(str)) ctx.fillRect(x - (textW5(str) >> 1) + i, y + j, 1, 1); };
+  const num = (str, x, y, col) => { ctx.fillStyle = col; for (const [i, j] of maskPx(str)) ctx.fillRect(x - (textWPx(str) >> 1) + i, y + j, 1, 1); };
   const arcPx = (cx, cy, r, a, col) => P(Math.round(cx + Math.cos(a) * r - 0.5), Math.round(cy - Math.sin(a) * r - 0.5), 1, 1, col);
   P(0, 0, DIAL_W, DIAL_H, '#0b0c0d');
   P(1, 1, DIAL_W - 2, DIAL_H - 2, '#141618');
@@ -809,8 +809,8 @@ function paintDial(ctx, lamps = {}) {
   P(cx - 19, cy + 17, 38, 10, '#030303');
   ctx.fillStyle = '#e8e4d8';
   let ox = cx - 18;
-  for (const ch of '08476') { for (const [i, j] of mask5(ch)) ctx.fillRect(ox + i, cy + 18 + j, 1, 1); ox += 6; }
-  P(ox - 1, cy + 17, 7, 10, '#d8d4c8'); ctx.fillStyle = '#101010'; for (const [i, j] of mask5('3')) ctx.fillRect(ox + i, cy + 18 + j, 1, 1);
+  for (const ch of '08476') { for (const [i, j] of maskPx(ch)) ctx.fillRect(ox + i, cy + 18 + j, 1, 1); ox += 6; }
+  P(ox - 1, cy + 17, 7, 10, '#d8d4c8'); ctx.fillStyle = '#101010'; for (const [i, j] of maskPx('3')) ctx.fillRect(ox + i, cy + 18 + j, 1, 1);
   // fuel (E . . F, just over a quarter) and temperature (C . H, the middle)
   const small = (gx, gy, lo, hi, loC, hiC, k) => {
     for (let a = 0; a < 360; a += 3) { const r = a * Math.PI / 180; if (a > 200 && a < 340) continue; arcPx(gx, gy, 14.5, r, a > 30 && a < 150 ? '#7a8084' : '#3a3e42'); }

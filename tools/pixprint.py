@@ -90,6 +90,7 @@ def _phase(face):
 _G = {}
 def glyph(face, ch):
     """One character at the face's native grid -> (bool mask rows x cols, advance px, baseline row)."""
+    if face == 'b5': face = 'ala'  # the old 5x7 face is gone (owner: high-res pixel fonts only)
     k = (face, ch)
     if k in _G: return _G[k]
     if face == 'ggd':  # our own hand-pixelled display face (tools/fonts/gg_display.py)
@@ -135,7 +136,7 @@ ALIAS = {'’': "'", '‘': "'", '“': '"', '”': '"', '–': '-', '—': '-',
 def line_mask(s, face, track=0, bold=0, bounce=None):
     """A line of type at the native grid -> (bool mask, cap_top row, baseline row, [per-letter column spans])."""
     s = ''.join(ALIAS.get(c, c) for c in s)
-    if face in ('b5', 'ggd'): s = s.upper()
+    if face == 'ggd': s = s.upper()
     parts, x, spans = [], 0, []
     base = max((glyph(face, c)[2] for c in s), default=0) if s else 0
     for i, c in enumerate(s):

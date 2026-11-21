@@ -2,7 +2,7 @@
 // a miniature of the Capsule 98 desktop just after you stand up (with a blinking envelope when something came
 // in), then the "Flying Capsules" screen saver. Only redrawn a few times a second, and only when you're nearby.
 import { wallpaperImage, iconURL } from '../os/art.js';
-import { draw5 } from '../gfx/font5x7.js';
+import { drawPx } from '../gfx/pixfont.js';
 
 export const IW = 320, IH = 240;
 const CAPS = ['#ff6f91', '#5cc4ff', '#ffd23f', '#58c06c', '#d94fb0', '#ff8c2e'];
@@ -26,8 +26,8 @@ export class IdleScreen {
     const g = this.g, os = this.os;
     g.fillStyle = '#030304'; g.fillRect(0, 0, IW, IH);
     if (os.power === 'off') return;
-    if (os.power === 'boot') { draw5(g, 'CAPSULE BIOS V4.51PG', 8, 8, { col: '#a8a8a8' }); draw5(g, 'MEMORY TEST : 65536K OK', 8, 20, { col: '#a8a8a8' }); return; }
-    if (os.power === 'halt') { g.fillStyle = '#14204a'; g.fillRect(0, 0, IW, IH); draw5(g, 'CAPSULE 98', IW / 2, IH / 2 - 4, { col: '#fbf6ea', align: 'center', s: 2 }); return; }
+    if (os.power === 'boot') { drawPx(g, 'CAPSULE BIOS V4.51PG', 8, 8, { col: '#a8a8a8' }); drawPx(g, 'MEMORY TEST : 65536K OK', 8, 20, { col: '#a8a8a8' }); return; }
+    if (os.power === 'halt') { g.fillStyle = '#14204a'; g.fillRect(0, 0, IW, IH); drawPx(g, 'CAPSULE 98', IW / 2, IH / 2 - 4, { col: '#fbf6ea', align: 'center', s: 2 }); return; }
     if (this.away > 30 && os.st.saver !== 'none') { this.saver(dt); return; }
     this.desktop();
   }
@@ -61,9 +61,9 @@ export class IdleScreen {
     g.fillStyle = '#d4ccbb'; g.fillRect(0, dh, IW, bar);
     g.fillStyle = '#fbf6ea'; g.fillRect(0, dh, IW, 1);
     g.fillStyle = '#e5383b'; g.fillRect(2, dh + 2, 24, 8);
-    draw5(g, 'START', 4, dh + 3, { col: '#fbf6ea', s: 1, lh: 0 });
+    drawPx(g, 'START', 4, dh + 3, { col: '#fbf6ea', s: 1, lh: 0 });
     const t = os._clock || '';
-    draw5(g, t, IW - 4, dh + 3, { col: '#1a1416', align: 'right' });
+    drawPx(g, t, IW - 4, dh + 3, { col: '#1a1416', align: 'right' });
     // something new? blink an envelope
     if (os.pending.length && Math.floor(this.t * 2) % 2 === 0) {
       const x = IW - 46, y = dh - 26;
@@ -86,6 +86,6 @@ export class IdleScreen {
       g.fillStyle = c.c; g.fillRect(x, y + 3 * s, 5 * s, s); g.fillRect(x + s, y + 4 * s, 3 * s, s);
     }
     const bob = Math.round(Math.sin(this.t * 0.7) * 30);
-    draw5(g, 'CAPSULE 98', IW / 2, IH / 2 - 7 + bob, { col: '#3a4a7a', align: 'center', s: 2 });
+    drawPx(g, 'CAPSULE 98', IW / 2, IH / 2 - 7 + bob, { col: '#3a4a7a', align: 'center', s: 2 });
   }
 }

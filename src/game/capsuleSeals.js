@@ -7,7 +7,7 @@
 // dressSeals(cap, data) adds them to a capsule from makeCapsule (Capsule.js) once; data.seal (steps done) leaves off
 // whatever was already opened. Textures are hand-pixelled here at 0.5 mm a texel, nearest filtered.
 import * as THREE from 'three';
-import { mask5, textW5 } from '../gfx/font5x7.js';
+import { maskPx, textWPx } from '../gfx/pixfont.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { activeLogo, logoCanvas } from '../logo/logo.js'; // (your own logo and name print on the seal and tape)
 
@@ -91,11 +91,11 @@ function tapeTex(seriesId, len) {
     for (let i = 0; i < W * 2; i++) { g.fillStyle = rnd() < 0.5 ? '#e6dcc4' : '#f8f2e4'; g.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * H), 1, 1); } // paper fibre
     g.fillStyle = hex(col); g.fillRect(0, 1, W, 1); g.fillRect(0, H - 2, W, 1);
     g.fillStyle = 'rgba(40,24,20,.35)'; g.fillRect(0, 0, W, 1); g.fillRect(0, H - 1, W, 1); // the cut edges
-    const ww = textW5(word) + 9;
+    const ww = textWPx(word) + 9;
     g.fillStyle = '#b8282c';
     // (the tape's u runs the way it peels, against the reading direction: the print is laid down mirrored)
     for (let x = 3; x + ww < W; x += ww + 6) {
-      for (const [i, j] of mask5(word)) g.fillRect(W - 1 - (x + i), 3 + j - 1, 1, 1);
+      for (const [i, j] of maskPx(word)) g.fillRect(W - 1 - (x + i), 3 + j - 1, 1, 1);
       // a little diamond between the words
       const dx = W - 1 - (x + ww + 1); g.fillRect(dx - 1, 4, 1, 1); g.fillRect(dx - 2, 5, 3, 1); g.fillRect(dx - 1, 6, 1, 1);
     }

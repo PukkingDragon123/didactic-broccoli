@@ -6,7 +6,7 @@
 // is out, the watch rides on the wrist bone (re-fitted whenever your avatar changes).
 //   installCheck(game) -> { get k() }      (game.check)
 import * as THREE from 'three';
-import { draw5, textW5 } from '../gfx/font5x7.js';
+import { drawPx, textWPx } from '../gfx/pixfont.js';
 import { audio } from '../core/audio.js';
 
 const W = 0.094, H = 0.126; // one half of the open wallet (m)
@@ -62,14 +62,14 @@ export function installCheck(game) {
     for (let i = 2; i < TW - 2; i += 3) { rect(x, i, 2, 1, 1, '#b88a5a'); rect(x, i, TH - 3, 1, 1, '#b88a5a'); }
     for (let i = 2; i < TH - 2; i += 3) { rect(x, 2, i, 1, 1, '#b88a5a'); rect(x, TW - 3, i, 1, 1, '#b88a5a'); }
     rect(x, 5, 5, 38, 19, '#9aa080'); rect(x, 6, 6, 36, 17, '#e2dec6');
-    draw5(x, '1000', 8, 8, { col: '#6a7a56' });
+    drawPx(x, '1000', 8, 8, { col: '#6a7a56' });
     rect(x, 34, 9, 6, 6, '#c8322c'); rect(x, 35, 10, 4, 4, '#e8a0a0'); rect(x, 8, 17, 22, 1, '#b8bca0'); rect(x, 8, 19, 16, 1, '#b8bca0');
     rect(x, 4, 28, 40, 32, '#f6f3ea');
     for (let i = 4; i < 44; i += 2) rect(x, i, 59, 1, 1, '#6a3e24');
-    draw5(x, 'CASH', 12, 31, { col: '#c8322c' });
+    drawPx(x, 'CASH', 12, 31, { col: '#c8322c' });
     const cash = yenS(g.wallet?.cash ?? g.state.money ?? 0);
-    const amt = textW5('¥' + cash) <= 36 ? '¥' + cash : textW5(cash) <= 36 ? cash : Math.floor((g.wallet?.cash ?? 0) / 1000) + 'K';
-    draw5(x, amt, 44 - textW5(amt), 42, { col: '#241a1e' });
+    const amt = textWPx('¥' + cash) <= 36 ? '¥' + cash : textWPx(cash) <= 36 ? cash : Math.floor((g.wallet?.cash ?? 0) / 1000) + 'K';
+    drawPx(x, amt, 44 - textWPx(amt), 42, { col: '#241a1e' });
     rect(x, 7, 51, 34, 1, '#c9bca6');
     P[0].t.needsUpdate = true;
     // card side: the clock ticket's red band, date, level, energy
@@ -78,14 +78,14 @@ export function installCheck(game) {
     rect(x, 0, 0, TW, 1, '#d8ccb0'); rect(x, 0, TH - 1, TW, 1, '#d8ccb0');
     rect(x, 2, 3, TW - 4, 12, '#c8322c');
     const time = c?.time || '--:--';
-    draw5(x, time, Math.round((TW - textW5(time)) / 2), 5, { col: '#fff4e0' });
+    drawPx(x, time, Math.round((TW - textWPx(time)) / 2), 5, { col: '#fff4e0' });
     const dateS = d ? `${d.wd || WD[d.weekday] || ''} ${d.month}/${d.date}` : '';
-    draw5(x, dateS, Math.round((TW - textW5(dateS)) / 2), 18, { col: '#5e5046' });
+    drawPx(x, dateS, Math.round((TW - textWPx(dateS)) / 2), 18, { col: '#5e5046' });
     const Pg = g.progress;
-    draw5(x, `LV ${Pg?.level ?? 1}`, 4, 29, { col: '#2f5a9a' });
+    drawPx(x, `LV ${Pg?.level ?? 1}`, 4, 29, { col: '#2f5a9a' });
     rect(x, 4, 38, 40, 5, '#241a1e'); rect(x, 5, 39, 38, 3, '#e6dcc4'); rect(x, 5, 39, Math.round(38 * Math.max(0, Math.min(1, Pg?.frac ?? 0))), 3, '#58c06c');
     const N = g.needs, e = N ? Math.max(0, Math.min(1, N.s.energy / (N.max || 100))) : 1;
-    draw5(x, 'EN', 4, 48, { col: '#5e5046' });
+    drawPx(x, 'EN', 4, 48, { col: '#5e5046' });
     rect(x, 18, 47, 24, 9, '#241a1e'); rect(x, 42, 49, 2, 5, '#241a1e'); rect(x, 19, 48, 22, 7, '#e6dcc4');
     const segs = Math.ceil(e * 5), col = e > 0.5 ? '#58c06c' : e > 0.2 ? '#ffd23f' : '#e5383b';
     for (let i = 0; i < segs; i++) rect(x, 20 + i * 4, 49, 3, 5, col);

@@ -13,7 +13,8 @@ const cache = new Map();
 const BASE = ['body', 'skin', 'hair', 'hairCol', 'top', 'topCol', 'bottom', 'botCol', 'eyes', 'brows', 'cheeks', 'eyeCol'];
 
 /** A hat / glasses piece that is painted on the body (no voxel model): pictured on you instead of the display head. */
-const painted = (c) => (c.slot === 'hat' || c.slot === 'face') && typeof c.spec === 'function' && !c.preview;
+const painted = (c) => (c.slot === 'hat' || c.slot === 'face') && ((typeof c.spec === 'function' && !c.preview) || !!c.wear);
+// (real-model pieces, src/cosmetics/wear.js, are pictured on you too: no blocky display head)
 
 export function thumbKey(id, look, size, outline = false) {
   const c = COSMETIC_BY_ID[id];

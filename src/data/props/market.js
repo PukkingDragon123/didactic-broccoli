@@ -4,13 +4,13 @@
 import { shade } from '../../voxel/palette.js';
 import { gloss, metal, glass } from '../../voxel/VoxelModel.js';
 import { hash } from './garage.js';
-import { mask5, textW5 } from '../../gfx/font5x7.js';
+import { maskPx, textWPx } from '../../gfx/pixfont.js';
 
 const INK = 0x1a1416, GOLD = 0xf2c14e, GOLD_D = 0xb8862a, RED = 0xc8221e, BAMBOO = 0xd8b46a, BAMBOO_D = 0xa8844a, WOOD = 0x8a5a32;
 /** 5x7 capitals on the +z face, centred on cx with the top row at y, at depth z. */
 function stamp5(v, str, cx, y, z, col) {
-  const x0 = cx - (textW5(str) >> 1);
-  for (const [i, j] of mask5(str)) v.set(x0 + i, y - j, z, col);
+  const x0 = cx - (textWPx(str) >> 1);
+  for (const [i, j] of maskPx(str)) v.set(x0 + i, y - j, z, col);
 }
 /** A small wooden display stand (a block with a groove) the charms sit or stand in. */
 function standBase(v, w, d, h = 2) {

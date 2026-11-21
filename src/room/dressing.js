@@ -41,7 +41,7 @@ export function dressRoom(prop, R, ROOM, block) {
 
   // ---- a game of shogi abandoned on the tatami, playing cards (menko) by the zabuton, the kendama
   at('hm_shogi', 0.88, 0, -0.95, 0.15, 1);
-  at('hm_mahjong', 0.6, 0, -0.2, 0.7, 0.8);
+  at('hm_mahjong', 0.62, 0, -0.22, 0.7, 0.32);
   at('hm_kendama', 0.62, 0, -0.42, 2.1);
   at('hm_teapot', 0.38, 0.32, -0.56, 0.8, 0.95);
   at('hm_taiyaki', -0.05, 0.32, -0.5, 0.4, 1);
@@ -64,7 +64,7 @@ export function dressRoom(prop, R, ROOM, block) {
 
   // ---- the closet (oshiire, west wall): the spare futon folded on the shelf, the toy box and old books below
   const cx = x0 - 0.45, cz = -0.86;
-  at('hm_futon_folded', cx, 0.86, cz, Math.PI / 2, 0.95);
+  at('hm_futon_stack', cx, 0.86, cz, Math.PI / 2, 0.95);
   at('hm_toybox_small', cx, 0.0, cz, Math.PI / 2, 1.1);
   at('hm_books_old', cx + 0.05, 0.0, cz - 0.42, 0.3, 0.9);
   at('room_boxes', cx, 1.2, cz - 0.05, 0.2, 0.75);

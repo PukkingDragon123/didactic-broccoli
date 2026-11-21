@@ -13,7 +13,7 @@ import { VoxelModel, gloss, metal } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { Pix } from '../gfx/pix.js';
-import { draw5, textW5 } from '../gfx/font5x7.js';
+import { drawPx, textWPx } from '../gfx/pixfont.js';
 import { bannerTexture } from '../gfx/banner.js';
 import { SERIES_BY_ID } from '../data/series/index.js';
 import { preloadLP, lpPart } from '../gachakit/lowpix.js';
@@ -70,8 +70,8 @@ function riserStrip(series, k, w) {
   p.rect(0, 0, p.w, 1, accent); p.rect(0, p.h - 1, p.w, 1, shade(accent, 0.7));
   p.flush();
   const t = (k === 0 ? (S.name || 'GACHA') : k === 1 ? 'COLLECT THEM ALL' : 'SECRET INSIDE').toUpperCase();
-  const tw = textW5(t);
-  for (let x = 2; x < p.w; x += tw + 10) draw5(p.ctx, t, x, 1, { s: 1, col: '#3a2a20' });
+  const tw = textWPx(t);
+  for (let x = 2; x < p.w; x += tw + 10) drawPx(p.ctx, t, x, 1, { s: 1, col: '#3a2a20' });
   p.pull();
   p.noise(0.04);
   return p.texture();
@@ -90,7 +90,7 @@ function headerStrip(series, w) {
   const cx = 14, cy = H / 2;
   for (let y = 0; y < H; y++) for (let x = 0; x < 30; x++) { const a = Math.atan2(y - cy, x - cx), r = Math.hypot(x - cx, y - cy); if (r < 9 + (Math.cos(a * 8) > 0 ? 2 : 0)) p.px(x, y, r > 8 ? 0x5a2a1a : (x + y) % 5 ? 0xdcb456 : 0xc8a048); }
   p.flush();
-  draw5(p.ctx, 'NEW', cx - Math.floor(textW5('NEW') / 2), cy - 3, { s: 1, col: '#8a2a20' });
+  drawPx(p.ctx, 'NEW', cx - Math.floor(textWPx('NEW') / 2), cy - 3, { s: 1, col: '#8a2a20' });
   // the series in kana (DotGothic16, hard texels) and its name in 5x7
   const jp = S.jp || '';
   if (jp) {
@@ -105,9 +105,9 @@ function headerStrip(series, w) {
     for (let j = 0; j < 18; j++) for (let i = 0; i < t.width; i++) if (d[(j * t.width + i) * 4 + 3] > 110) { p.px(x0 + i + 1, 5 + j, 0x5a0a0a); p.px(x0 + i, 4 + j, 0xfff4d8); }
     p.flush();
   }
-  const en = (S.name || '').toUpperCase(), ew = textW5(en);
+  const en = (S.name || '').toUpperCase(), ew = textWPx(en);
   p.ctx.fillStyle = hex(accent);
-  draw5(p.ctx, en, W - ew - 6, cy - 3, { s: 1, col: '#f0e4c8' });
+  drawPx(p.ctx, en, W - ew - 6, cy - 3, { s: 1, col: '#f0e4c8' });
   p.pull();
   p.noise(0.05); // ink and paper unevenness
   for (let i = 0; i < W / 6; i++) p.px(Math.floor(p.r() * W), p.r() < 0.5 ? 0 : H - 1, 0xd8c8a8); // scuffed edges

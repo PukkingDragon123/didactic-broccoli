@@ -11,7 +11,7 @@ import { createHuman } from '../../people/index.js';
 import { propMesh } from '../../world/props.js';
 import { noteMesh } from '../../money/cashfx.js';
 import { yenCoinGeometry, yenCoinMaterial } from '../../world/machineModels.js';
-import { draw5 } from '../../gfx/font5x7.js';
+import { drawPx } from '../../gfx/pixfont.js';
 import { pixCanvas, hitBox, walkStep, turnTo, paperFill } from '../util.js';
 import { earnCash, yen } from '../money.js';
 
@@ -202,15 +202,15 @@ export class Cashier {
     G.disp.redraw((ctx, w, h) => {
       ctx.fillStyle = '#0e1410'; ctx.fillRect(0, 0, w, h);
       const green = '#7aff8a', dim = '#2a5a32', amber = '#ffd23f';
-      if (!c || c.state === 'walk') { draw5(ctx, 'MIKAWA-YA', w / 2, 10, { s: 1, col: dim, align: 'center' }); return; }
+      if (!c || c.state === 'walk') { drawPx(ctx, 'MIKAWA-YA', w / 2, 10, { s: 1, col: dim, align: 'center' }); return; }
       if (c.state === 'change' || c.state === 'paid') {
-        draw5(ctx, `CHANGE ${c.change}`, 3, 3, { s: 1, col: amber });
-        draw5(ctx, `${c.give}`, w - 3, 13, { s: 2, col: c.give === c.change ? green : '#ff8a6a', align: 'right' });
+        drawPx(ctx, `CHANGE ${c.change}`, 3, 3, { s: 1, col: amber });
+        drawPx(ctx, `${c.give}`, w - 3, 13, { s: 2, col: c.give === c.change ? green : '#ff8a6a', align: 'right' });
         return;
       }
-      draw5(ctx, `TOTAL ${c.total}`, 3, 3, { s: 1, col: dim });
-      draw5(ctx, `${this.entry}`, w - 3, 13, { s: 2, col: green, align: 'right' });
-      draw5(ctx, '¥', 3, 13, { s: 2, col: green });
+      drawPx(ctx, `TOTAL ${c.total}`, 3, 3, { s: 1, col: dim });
+      drawPx(ctx, `${this.entry}`, w - 3, 13, { s: 2, col: green, align: 'right' });
+      drawPx(ctx, '¥', 3, 13, { s: 2, col: green });
     });
   }
 
@@ -334,12 +334,12 @@ export class Cashier {
     G.rc.redraw((ctx, w, h) => {
       paperFill(ctx, 0, 0, w, h, { base: '#f6f1e4', seed: (c.total + c.paid) % 97 });
       ctx.fillStyle = '#d8cfba'; for (let x = 0; x < w; x += 4) ctx.fillRect(x, h - 2, 2, 2); // the torn edge
-      draw5(ctx, 'MIKAWA', w / 2, 2, { s: 1, col: '#241a1e', align: 'center' });
+      drawPx(ctx, 'MIKAWA', w / 2, 2, { s: 1, col: '#241a1e', align: 'center' });
       let y = 12;
-      for (const it of c.items.slice(0, 4)) { draw5(ctx, `${it.price}`, w - 2, y, { s: 1, col: '#5e5046', align: 'right' }); ctx.fillStyle = '#5e5046'; ctx.fillRect(2, y + 3, 10, 1); y += 9; }
+      for (const it of c.items.slice(0, 4)) { drawPx(ctx, `${it.price}`, w - 2, y, { s: 1, col: '#5e5046', align: 'right' }); ctx.fillStyle = '#5e5046'; ctx.fillRect(2, y + 3, 10, 1); y += 9; }
       ctx.fillStyle = '#241a1e'; ctx.fillRect(2, y, w - 4, 1); y += 3;
-      draw5(ctx, `${c.total}`, w - 2, y, { s: 1, col: '#c8322c', align: 'right' });
-      draw5(ctx, `${c.paid - c.total}`, w - 2, y + 9, { s: 1, col: '#241a1e', align: 'right' });
+      drawPx(ctx, `${c.total}`, w - 2, y, { s: 1, col: '#c8322c', align: 'right' });
+      drawPx(ctx, `${c.paid - c.total}`, w - 2, y + 9, { s: 1, col: '#241a1e', align: 'right' });
     });
   }
 

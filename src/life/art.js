@@ -4,7 +4,7 @@
 // breaks up pixel by pixel under alphaTest, no blending, no soft fades).
 import * as THREE from 'three';
 import { Pix, FONT_EN, FONT_JP } from '../gfx/pix.js';
-import { mask5, textW5 } from '../gfx/font5x7.js';
+import { maskPx, textWPx } from '../gfx/pixfont.js';
 import { rng } from '../core/util.js';
 import { pixPrint } from '../gfx/printAtlas.js';
 
@@ -17,7 +17,7 @@ export function handText(p, str, x, y, { color = INK, seed = 1, slant = true, bo
   let xx = x;
   for (const ch of String(str)) {
     if (ch === ' ') { xx += 3 + (r() < 0.3 ? 1 : 0); continue; }
-    const m = mask5(ch), w = textW5(ch);
+    const m = maskPx(ch), w = textWPx(ch);
     const dy = r() < 0.18 ? (r() < 0.5 ? -1 : 1) : 0;
     for (const [i, j] of m) {
       const sx = slant ? Math.floor((6 - j) / 3) : 0; // the top of each letter leans forward
@@ -29,7 +29,7 @@ export function handText(p, str, x, y, { color = INK, seed = 1, slant = true, bo
   }
   return xx - x;
 }
-export const handW = (str, bold = false) => [...String(str)].reduce((a, ch) => a + (ch === ' ' ? 3 : textW5(ch) + 1 + (bold ? 1 : 0)), 0);
+export const handW = (str, bold = false) => [...String(str)].reduce((a, ch) => a + (ch === ' ' ? 3 : textWPx(ch) + 1 + (bold ? 1 : 0)), 0);
 
 /** Word-wrap a string into lines that fit `max` pixels of handwriting. */
 export function wrapHand(str, max) {

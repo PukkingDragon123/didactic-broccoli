@@ -6,7 +6,7 @@
 //   arrows move the cursor, Space paints (line / rectangle: Space twice), Esc saves and closes. Right button erases.
 //   openLogoEditor(game, { from }) -> Promise<boolean saved>
 import { defineIcon, iconHTML } from '../gfx/icons.js';
-import { mask5, textW5 } from '../gfx/font5x7.js';
+import { maskPx, textWPx } from '../gfx/pixfont.js';
 import { audio } from '../core/audio.js';
 import { INKS, INK_NAMES, LOGO_SIZES, NAME_MAX, DEFAULT_NAME, readLogo, writeLogo, crestPixels, nameJP, nameEN, logoCanvas } from './logo.js';
 import { signPreview, norenPreview } from './shopArt.js';
@@ -248,8 +248,8 @@ class Editor {
     if (!t) return { pts: [], w: 0, h: 0 };
     if (this.stamp.font === '5x7') {
       const k = this.size >= 64 ? 2 : 1, pts = [];
-      for (const [x, y] of mask5(t)) for (let j = 0; j < k; j++) for (let i = 0; i < k; i++) pts.push([x * k + i, y * k + j]);
-      return { pts, w: textW5(t) * k, h: 7 * k };
+      for (const [x, y] of maskPx(t)) for (let j = 0; j < k; j++) for (let i = 0; i < k; i++) pts.push([x * k + i, y * k + j]);
+      return { pts, w: textWPx(t) * k, h: 7 * k };
     }
     const key = t + '|' + (this.kanaOK ? 1 : 0);
     if (this.kanaKey === key) return this.kanaMask;

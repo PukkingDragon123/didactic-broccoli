@@ -1,8 +1,8 @@
 // Shop flyers and promo posters as low-res pixel art (150 x 212 px, shown with nearest-neighbour scaling): real stock
 // photos (Google Open Images, CC BY 2.0: see CREDITS.md and public/img/photos) shrunk and ordered-dithered to a few
 // colour levels, the game's own 3D models rendered as aliased sprites with a 1 px outline, flat colour blocks and a
-// hand-made 5 x 7 bitmap font (src/gfx/font5x7.js). Two kinds:
-//   meme   ORIGINAL parodies of well-known meme formats starring the game's cast (handed out in the lane)
+// high-res pixel type (src/gfx/pixfont.js). Two kinds:
+//   notice the shop's own notices: stamp card, summer hours, swap meet, gift wrapping... (handed out in the lane)
 //   promo  shop posters: the reopening, new series, the secret figures, special finishes (handed out and on the walls)
 // Each design is drawn once into its own canvas (lazily, one at a time) and cached; textures update in place.
 //   initFlyers(renderer, { thumbs })      the WebGLRenderer used for the 3D shots (+ Thumbs for machine banners)
@@ -24,7 +24,7 @@ import { makeItemMesh, whenItemReady } from '../game/collectibles.js';
 import { SERIES, SERIES_BY_ID } from '../data/series/index.js';
 import { RARITIES } from '../data/rarity.js';
 import { FINISHES } from '../data/finishes.js';
-import { draw5, textW5 } from './font5x7.js';
+import { drawPx, textWPx } from './pixfont.js';
 import { partsBox } from '../voxel/merge.js';
 
 export const FLYER_W = 150, FLYER_H = 212; // pixels (A-series proportions)
@@ -45,23 +45,23 @@ const GLOW_ODDS = Math.round(1 / FINISHES.glow.chance);
 const FIGURES = SERIES.reduce((a, s) => a + s.items.length, 0);
 const MIN_PRICE = Math.min(...SERIES.map((s) => s.price));
 
-/** The designs (order = the order the stack cycles through: promos and memes alternate). */
+/** The designs (order = the order the stack cycles through: promos and notices alternate). */
 export const FLYERS = [
-  { id: 'reopen', kind: 'promo', name: 'Grand Reopening', lines: ['Grandpa\'s gacha garage is back!', 'I used to come here as a kid!', 'A shop cat too? I am going.'] },
-  { id: 'much', kind: 'meme', name: 'Such Capsule', lines: ['Wow. Such flyer. Much want.', 'Very gacha... okay, I am in.', 'Haha, that cat is so smug!'] },
-  { id: 'kaiju', kind: 'promo', name: 'Who\'s in the Suit?', lines: ['A monster with a hamster inside? I need it.', 'There\'s a zip down its back, haha!', 'My dad loves the kaiju ones...'] },
-  { id: 'nope', kind: 'meme', name: 'Nope / Yep', lines: ['Ha! That is me with online shopping.', 'One turn at a time? Okay, I will come.', 'The dino suit, haha!'] },
-  { id: 'space', kind: 'promo', name: 'Appliance Animals', lines: ['Grandma had that exact fan!', 'A toaster rabbit, haha.', 'I want the kettle one.'] },
-  { id: 'distracted', kind: 'meme', name: 'Distracted Customer', lines: ['That is literally me at lunch.', 'My salary is crying already.', 'Ha! Sorry, wallet.'] },
-  { id: 'sakura', kind: 'promo', name: 'The Gods\' Messengers', lines: ['A little lacquer fox? Lovely.', 'The white snake looks lucky.', 'I will bring my grandma.'] },
-  { id: 'brain', kind: 'meme', name: 'Galaxy Collector', lines: ['Inherit the garage... galaxy brain.', 'I am at step two. Help.', 'Haha, step four is the dream.'] },
-  { id: 'secret', kind: 'promo', name: 'Super Secret', lines: [`One in ${SECRET_ODDS}? I feel lucky.`, 'A golden one... I must try.', 'Every series has a secret?'] },
-  { id: 'simply', kind: 'meme', name: 'One Does Not Simply', lines: ['So true. Nobody stops at one turn.', 'Just one more. Just one.', 'Haha, he looks so serious!'] },
-  { id: 'glow', kind: 'promo', name: 'Glow in the Dark', lines: ['They glow? Like, really glow?', 'That looks amazing at night.', 'Okay, that one is pretty cool.'] },
-  { id: 'nobody', kind: 'meme', name: 'Me at 3am', lines: ['Haha, that is my kid.', 'Me at 3am, every night.', 'A chicken hat? I love it.'] },
-  { id: 'expect', kind: 'meme', name: 'Expectation / Reality', lines: ['Six duplicates. I felt that.', 'Ha! The secret one never comes.', 'The same hamster, again...'] },
-  { id: 'manager', kind: 'meme', name: 'New Manager', lines: ['A cat manager? I must meet her.', 'Paid in snacks, so cute!', 'I would work for snacks too.'] },
-  { id: 'itwasme', kind: 'meme', name: 'But It Was Me', lines: ['Haha! The cat was in the capsule!', 'Is that a reference? It is.', 'Mikan, you menace.'] },
+  { id: 'reopen', kind: 'promo', name: 'Grand Reopening', lines: ['The old garage on the back lane is open again.', 'I used to buy capsules there after school.', 'Ten till eight. I\'ll go on Saturday.'] },
+  { id: 'much', kind: 'notice', name: 'Stamp Card', lines: ['Ten turns and the next one is free? I\'ll take a card.', 'My son will fill that in a week.', 'A stamp card, like the shops when I was small.'] },
+  { id: 'kaiju', kind: 'promo', name: 'Who\'s in the Suit?', lines: ['A monster suit with a mole inside. My kid will want it.', 'My dad still talks about the old monster films.', 'The clam robot looks well made.'] },
+  { id: 'nope', kind: 'notice', name: 'Complete the Set', lines: ['I only need the rabbit now.', 'Six of them all lined up does look nice.', 'They give you a list to tick off? Handy.'] },
+  { id: 'space', kind: 'promo', name: 'Appliance Animals', lines: ['My grandmother had that exact electric fan.', 'A toaster that turns into a rabbit.', 'I want the kettle one.'] },
+  { id: 'distracted', kind: 'notice', name: 'Open Late on Fridays', lines: ['Open till nine on Fridays? I can go after work.', 'The lane is nice and quiet in the evening.', 'Good, I always miss it during the week.'] },
+  { id: 'sakura', kind: 'promo', name: 'The Gods\' Messengers', lines: ['A little lacquer fox. Lovely work.', 'The white snake is meant to be lucky.', 'I\'ll bring my grandmother to see these.'] },
+  { id: 'brain', kind: 'notice', name: 'World Tour Turtles', lines: ['A turtle carrying the Leaning Tower on its shell.', 'My father would like the pagoda one.', 'Six landmarks. I want the globe.'] },
+  { id: 'secret', kind: 'promo', name: 'Super Secret', lines: [`One in ${SECRET_ODDS}. I'll try my luck once.`, 'Every series has a hidden one?', 'My nephew pulled a secret last week.'] },
+  { id: 'simply', kind: 'notice', name: 'Summer Hours', lines: ['Open from nine all of August. Good to know.', 'The children will spend the whole holiday there.', 'I\'ll go in the morning before it gets hot.'] },
+  { id: 'glow', kind: 'promo', name: 'Glow in the Dark', lines: ['They glow when the light is off?', 'That would look nice on a shelf at night.', 'One in two hundred. Not easy.'] },
+  { id: 'nobody', kind: 'notice', name: 'Rainy Days', lines: ['Free barley tea when it rains. That\'s kind of them.', 'I\'ll wait out the rain there.', 'A dry seat and a cup of tea. Fine by me.'] },
+  { id: 'expect', kind: 'notice', name: 'Capsule Swap Meet', lines: ['I have three of the same frog to swap.', 'A swap meet on Sunday. I\'ll bring my doubles.', 'Good idea. Nobody wants five of one.'] },
+  { id: 'manager', kind: 'notice', name: 'Our Shop Cat', lines: ['Mikan. What a sweet name.', 'She\'s on a diet? She does look round.', 'I\'ll say hello to her next time.'] },
+  { id: 'itwasme', kind: 'notice', name: 'Gift Wrapping', lines: ['Wrapped for fifty yen. Nice for a present.', 'I\'ll get one for my niece\'s birthday.', 'A capsule toy as a gift. Why not.'] },
 ];
 export const FLYER_BY_ID = Object.fromEntries(FLYERS.map((f, i) => [f.id, { ...f, index: i }]));
 export const POSTERS = FLYERS.filter((f) => f.kind === 'promo');
@@ -156,6 +156,7 @@ async function draw(id) {
     }
   }
   const d = DESIGNS[id];
+  if (!d) return; // no hand-drawn fallback: the baked print (tools/bake-postersets.py) is the design
   await Promise.all((d.photos || []).map(loadPhoto));
   // drawn off-screen and copied onto the sheet at the end: the 3D shots now finish asynchronously, over several idle
   // moments, and the sheet should never show half a design
@@ -170,10 +171,10 @@ async function draw(id) {
 // the rest of a design waits for the browser's next idle moment (performance: a design is drawn a piece at a time)
 const idleTurn = () => new Promise((res) => (window.requestIdleCallback ? requestIdleCallback(() => res(), { timeout: 600 }) : setTimeout(res, 30)));
 
-// ------------------------------------------------------------------ text: the hand-made 5 x 7 bitmap font (src/gfx/font5x7.js)
-const textW = textW5;
-/** Bitmap text (see draw5); ink colour by default. */
-const px = (g, str, x, y, o = {}) => draw5(g, str, x, y, { col: C.ink, ...o });
+// ------------------------------------------------------------------ text: high-res pixel type (src/gfx/pixfont.js)
+const textW = textWPx;
+/** Bitmap text (see drawPx); ink colour by default. */
+const px = (g, str, x, y, o = {}) => drawPx(g, str, x, y, { col: C.ink, ...o });
 
 // ------------------------------------------------------------------ pixel helpers
 function canvas2d(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
@@ -571,194 +572,4 @@ const DESIGNS = {
     foot: { bg: C.ink },
   },
 
-  // ================================================================ meme flyers
-  // "such capsule": colourful words around a smug cat, in front of a wall of machines
-  much: {
-    photos: ['gacha_wall'],
-    async draw(g) {
-      photoBg(g, 'gacha_wall', M, M, W - M * 2, PH - M * 2, { fx: 0.45, sat: 0.5, wash: ['#fff8ec', 0.7], levels: 4, dither: 0.4 });
-      const c = cat({ yaw: 0.3, lookAt: [0.25, 0.3, 1.4] });
-      const img = await shot([c.root], fit([c.root], { w: 110, h: 120, yaw: 0.15, pitch: 0.1, margin: 0.92 }));
-      c.root.removeFromParent();
-      oval(g, W / 2, PH - M - 8, 36, 4, 'rgba(20,12,18,0.3)');
-      put(g, img, W / 2 - 55, PH - M - 124);
-      const words = [['WOW', 12, 12, '#d0186e'], ['SUCH CAPSULE', 60, 28, '#1a5fc0'], ['VERY GACHA', 10, 64, '#1f7a1a'], ['MUCH TOY', 92, 52, '#c04a00'], [`SO ¥${MIN_PRICE}`, 10, 120, '#6a2fb0'], ['AMAZE', 104, 104, '#b8161c'], ['MANY SERIES', 80, 168, '#0d6a5e'], ['WOW', 118, 12, '#8a5a00']];
-      for (const [s, x, y, col] of words) px(g, s, x, y, { col });
-    },
-  },
-
-  // two-panel "nope / yep" with the dino onesie
-  nope: {
-    photos: ['parcels', 'gacha_rows'],
-    async draw(g) {
-      const cw = 66, rh = Math.round((PH - M * 2) / 2), y0 = M;
-      const dino = { v: 1, seed: 11, body: 'm', skin: 'warm', hair: 'messy', hairCol: 'black', top: 'tee', topCol: 'mustard', bottom: 'jeans', outfit: 'dino', owned: [] };
-      photoBg(g, 'parcels', M, y0, cw, rh, { fx: 0.5, fy: 0.45, sat: 0.4, tint: ['#6a8ac0', 0.3], levels: 4 });
-      photoBg(g, 'gacha_rows', M, y0 + rh, cw, rh, { fx: 0.4, fy: 0.5, tint: ['#ffb060', 0.25], levels: 4 });
-      const shotOf = async (gesture, expr, yaw) => {
-        const p = await person(null, 0, { avatar: dino, gesture, expr, yaw, t: 1.6 });
-        const img = await shot([p.root], { w: cw, h: rh, ...orbit([0.02, 1.4, 0], 0.15, 0.04, 1.75), fov: 30 });
-        p.dispose();
-        return img;
-      };
-      put(g, await shotOf('nope', 'angry', -0.25), M, y0);
-      put(g, await shotOf('yep', 'grin', 0.2), M, y0 + rh);
-      const tx = M + cw + (W - M * 2 - cw) / 2;
-      px(g, 'BUYING\nTOYS\nONLINE', tx, y0 + 26, { align: 'center' });
-      px(g, `GACHA\nGARAGE\n¥${MIN_PRICE} A TURN`, tx, y0 + rh + 26, { align: 'center', col: C.red });
-      rect(g, M, y0 + rh, W - M * 2, 1, C.ink); rect(g, M + cw, y0, 1, rh * 2, C.ink);
-    },
-  },
-
-  // "distracted customer": walking down the back street with your salary, eyes on the gacha machine
-  distracted: {
-    photos: ['back_street'],
-    async draw(g) {
-      const w = W - M * 2, h = PH - M * 2;
-      photoBg(g, 'back_street', M, M, w, h, { fx: 0.5, fy: 0.62, zoom: 1.05, tint: ['#ff9a50', 0.3] });
-      const mach = machine('deluxe', 'kaden');
-      fillMachine(mach, 'kaden');
-      mach.position.set(0.95, 0, -0.9); mach.rotation.y = -0.55;
-      const head = new THREE.Vector3(0.95, 1.35, -0.6);
-      const her = await person('office_lady', 5, { at: [-0.62, 0, -0.35], yaw: 0.55, expr: 'angry', lookAt: [0.1, 1.5, 0.35], noBag: true, t: 1.2 });
-      const me = await person('salaryman', 3, { at: [0.05, 0, 0.35], yaw: -0.75, expr: 'surprised', lookAt: head.toArray(), speed: 1.1, noBag: true, t: 1.35 });
-      const img = await shot([mach, her.root, me.root], { w, h, ...orbit([0.12, 0.95, -0.1], 0.02, 0.06, 4.7), fov: 34, key: [-2.2, 1.8, 1.2], keyCol: 0xffd8a8, rimCol: 0xffc090, rimI: 1.6 });
-      her.dispose(); me.dispose();
-      for (const [x, z, r] of [[-0.62, -0.35, 0.28], [0.05, 0.35, 0.3], [0.95, -0.9, 0.34]]) contact(g, img, M, M, x, z, r);
-      put(g, img, M, M);
-      tag(g, 'MY SALARY', 34, 50);
-      tag(g, 'ME', 76, 30);
-      tag(g, 'GACHA', 118, 42);
-    },
-  },
-
-  // galaxy-brain escalation: four rows, the last one in deep space
-  brain: {
-    photos: ['shutters', 'toy_shop', 'gacha_kaikan', 'galaxy'],
-    async draw(g) {
-      const rh = Math.floor((PH - M * 2) / 4), tw = 70, iw = W - M * 2 - tw;
-      const rows = [
-        ['BUYING ONE\nFIGURE', 'shutters', { fx: 0.5, fy: 0.5, zoom: 1.3, sat: 0.2, levels: 4 }],
-        ['COLLECTING\nTHE WHOLE\nSERIES', 'toy_shop', { fx: 0.5, fy: 0.62, zoom: 1.25, levels: 4 }],
-        ['BUYING THE\nMACHINE', 'gacha_kaikan', { fx: 0.4, fy: 0.5, levels: 4 }],
-        ['INHERITING\nGRANDPA\'S\nGARAGE', 'galaxy', { fx: 0.5, fy: 0.5, zoom: 1.5, levels: 4 }],
-      ];
-      const shots = [];
-      { const f = makeItemMesh('teruteru/para'); shots.push(await shot([f], fit([f], { w: iw, h: rh, yaw: 0.4, pitch: 0.2, margin: 1.15 }))); }
-      {
-        const ids = ['teruteru/para', 'teruteru/niji', 'teruteru/goro', 'teruteru/byu', 'teruteru/moya'];
-        const objs = ids.map((k, i) => { const m = makeItemMesh(k); const back = i < 3; m.position.set(back ? (i - 1) * 0.036 : (i - 3.5) * 0.036, 0, back ? -0.03 : 0); m.rotation.y = (i - 2) * -0.2; return m; });
-        shots.push(await shot(objs, fit(objs, { w: iw, h: rh, yaw: 0.15, pitch: 0.2, margin: 1.0 })));
-      }
-      { const m = machine('standard', 'teruteru'); fillMachine(m); shots.push(await shot([m], fit([m], { w: iw, h: rh, yaw: 0.45, pitch: 0.12, margin: 1.05 }))); }
-      { const gp = await person('grandpa', 4, { gesture: 'cheer', expr: 'happy', t: 1.1, noBag: true }); shots.push(await shot([gp.root], { w: iw, h: rh, ...orbit([0, 1.3, 0], 0.15, 0.05, 2.3), fov: 30, rimCol: 0xe0a0ff, rimI: 2.4 })); gp.dispose(); }
-      rows.forEach(([lab, ph, po], i) => {
-        const ry = M + i * rh;
-        const n = lab.split('\n').length;
-        px(g, lab, M + tw / 2, ry + Math.round((rh - n * 10 + 3) / 2), { align: 'center' });
-        photoBg(g, ph, M + tw, ry, iw, rh, po);
-        put(g, shots[i], M + tw, ry);
-        if (i) rect(g, M, ry, W - M * 2, 1, C.ink);
-      });
-      rect(g, M + tw, M, 1, rh * 4, C.ink);
-    },
-  },
-
-  // "one does not simply" with Grandpa in his garage
-  simply: {
-    photos: ['garage'],
-    async draw(g) {
-      const bh = 26, ih = PH - M * 2 - bh * 2;
-      photoBg(g, 'garage', M, M + bh, W - M * 2, ih, { fx: 0.5, fy: 0.45, zoom: 1.1, tint: ['#ff9a40', 0.35], dark: 0.3, levels: 4 });
-      const gp = await person('grandpa', 4, { gesture: 'shrug', expr: 'sad', yaw: 0.2, t: 1.4, noBag: true, lookAt: [0.7, 1.55, 3] });
-      put(g, await shot([gp.root], { w: W - M * 2, h: ih, ...orbit([-0.04, 1.22, 0], 0.18, 0.04, 1.85), fov: 34, key: [-1.4, 2.2, 1.8], keyCol: 0xffe0b8, rimCol: 0xffb070, rimI: 2 }), M, M + bh);
-      gp.dispose();
-      px(g, 'ONE DOES NOT SIMPLY', W / 2, M + 10, { align: 'center' });
-      px(g, 'TURN THE HANDLE ONCE', W / 2, PH - M - 17, { align: 'center' });
-    },
-  },
-
-  // "nobody: / me at 3am:" with the chicken-hat kid hugging a capsule in the rainy lane
-  nobody: {
-    photos: ['rainy_lane'],
-    async draw(g) {
-      const th = 46, iy = M + th, ih = PH - M - iy;
-      px(g, 'NOBODY:\nABSOLUTELY NOBODY:\nME AT 3AM:', M + 4, M + 6, {});
-      photoBg(g, 'rainy_lane', M, iy, W - M * 2, ih, { fx: 0.38, fy: 0.45, tint: ['#3050c0', 0.35], dark: 0.3, levels: 4 });
-      const kid = await person('kid', 2, { look: { hat: 'chicken' }, gesture: 'hug', expr: 'happy', yaw: 0.25, t: 1.4, noHat: true, noBag: true, lookAt: [0.4, 0.9, 2] });
-      // a giant capsule in their arms
-      const P = kid.P, cp = capsule('teruteru', 0xff6f91, 0.19);
-      cp.traverse((o) => { if (o.isMesh && o.material?.transparent) { o.material = new THREE.MeshStandardMaterial({ color: 0xfff6f0, roughness: 0.25 }); o.renderOrder = 0; } });
-      kid.b.chest.updateWorldMatrix(true, false);
-      cp.position.copy(new THREE.Vector3(0, 0.03 * P.H, 0.32 * P.H / 1.72 + 0.04).applyMatrix4(kid.b.chest.matrixWorld)); cp.rotation.set(-0.35, 0.6, 0.2);
-      const img = await shot([kid.root, cp], { w: W - M * 2, h: ih, ...orbit([0.02, 0.86, 0], 0.32, 0.12, 1.85), fov: 32, key: [-0.6, 2.4, 1.6], keyCol: 0xffe6b8, rimCol: 0x7090ff, rimI: 2.2 });
-      kid.dispose();
-      contact(g, img, M, iy, 0, 0, 0.3);
-      put(g, img, M, iy);
-    },
-  },
-
-  // expectation (the secret gold one, fireworks) vs reality (the 6th duplicate, rain)
-  expect: {
-    photos: ['fireworks', 'rain_window'],
-    async draw(g) {
-      const hw = Math.floor((W - M * 2) / 2), iy = M + 16, ih = PH - M - iy;
-      px(g, 'EXPECT', M + hw / 2, M + 5, { align: 'center' });
-      px(g, 'REALITY', M + hw + hw / 2, M + 5, { align: 'center' });
-      photoBg(g, 'fireworks', M, iy, hw, ih, { fx: 0.5, fy: 0.4, tint: ['#ffc040', 0.25], levels: 4 });
-      photoBg(g, 'rain_window', M + hw, iy, hw, ih, { fx: 0.5, sat: 0.2, levels: 4 });
-      put(g, await figure('teruteru/niji', 'gold', { w: hw, h: 90, yaw: 0.2, pitch: 0.15, margin: 1.0, env: 0.9, keyI: 2.4, keyCol: 0xfff0d8, rimCol: 0xffd090, rimI: 2.6, hemi: 0.35, grade: goldGrade }), M, iy + 30);
-      const dups = [];
-      for (let i = 0; i < 6; i++) { const m = makeItemMesh('teruteru/goro'); const row = i < 3 ? 0 : 1; m.position.set((i % 3 - 1) * 0.05 + row * 0.022, row * 0.024, row * -0.04 + (i % 2) * 0.01); m.rotation.y = (i * 1.7) % 1 - 0.5; dups.push(m); }
-      put(g, await shot(dups, fit(dups, { w: hw, h: 80, yaw: 0.3, pitch: 0.35, margin: 0.85, keyCol: 0xdde4f0, keyI: 1.8, rimCol: 0xa0b0c8 })), M + hw, iy + 40);
-      px(g, '×6', M + hw * 2 - 4, iy + 6, { s: 2, col: C.red, align: 'right' });
-      tag(g, 'SECRET!', M + hw / 2, PH - M - 16, C.yellow, C.ink);
-      tag(g, 'AGAIN.', M + hw + hw / 2, PH - M - 16, C.white, C.ink);
-      rect(g, M + hw, M, 1, PH - M * 2, C.ink); rect(g, M, iy - 1, W - M * 2, 1, C.ink);
-    },
-  },
-
-  // Mikan, the new manager, on top of a machine under a big summer sky
-  manager: {
-    photos: ['cumulus'],
-    async draw(g) {
-      const bh = 26, ih = PH - M * 2 - bh * 2;
-      photoBg(g, 'cumulus', M, M + bh, W - M * 2, ih, { fx: 0.55, fy: 0.4, zoom: 1.05, tint: ['#5aa0ff', 0.15], levels: 4 });
-      const m = machine('standard', 'teruteru');
-      m.rotation.y = 0.32;
-      const b = bbox(m);
-      const c = cat({ at: [0, b.max.y - 0.005, -0.02], yaw: 0.3, lookAt: [0.6, b.max.y + 0.3, 2.4], mood: 'happy' });
-      fillMachine(m);
-      const box = bbox(c.root).union(new THREE.Box3(new THREE.Vector3(b.min.x * 0.7, b.max.y - 0.45, b.min.z * 0.7), new THREE.Vector3(b.max.x * 0.7, b.max.y, b.max.z * 0.7)));
-      put(g, await shot([m, c.root], fit([], { box, w: W - M * 2, h: ih, yaw: 0.3, pitch: 0.16, margin: 0.95, fov: 32 })), M, M + bh + 4);
-      c.root.removeFromParent();
-      rect(g, M, PH - M - bh, W - M * 2, bh, C.paper);
-      px(g, 'NEW MANAGER', W / 2, M + 10, { align: 'center' });
-      px(g, 'PAID IN SNACKS', W / 2, PH - M - 17, { align: 'center' });
-    },
-  },
-
-  // "you expected a normal capsule? but it was me!": Mikan sitting in a split-open capsule, menacing ゴゴゴ
-  itwasme: {
-    photos: ['neon_night'],
-    async draw(g) {
-      const bh = 26, ih = PH - M * 2 - bh * 2;
-      photoBg(g, 'neon_night', M, M + bh, W - M * 2, ih, { fx: 0.5, fy: 0.45, tint: ['#7a30d0', 0.45], dark: 0.42, levels: 4 });
-      // a big capsule split open: the coloured half as a cup she sits in, the clear lid tipped over beside it
-      const r = 0.15, cp = makeCapsule('teruteru', 0xb070ff, { radius: r });
-      cp.paper.visible = false;
-      cp.bottom.children.forEach((o, i) => { if (i > 2) o.visible = false; });
-      cp.group.position.set(0, r, 0);
-      cp.top.position.set(-r * 2.1, -r * 0.55, -r * 0.5); cp.top.rotation.set(0.3, 0, 2.5);
-      const c = cat({ at: [0.01, r * 0.62, 0.02], yaw: 0.2, lookAt: [0.4, 0.45, 2.4], mood: 'happy' });
-      const objs = [cp.group, c.root];
-      put(g, await shot(objs, fit(objs, { w: W - M * 2, h: ih, yaw: 0.25, pitch: 0.16, margin: 0.88, dy: 0.06, fov: 30, key: [-1.2, 1.6, 2.2], keyCol: 0xffd8f0, rimCol: 0xa070ff, rimI: 2.6 })), M, M + bh);
-      c.root.removeFromParent();
-      for (const [x, y, s] of [[M + 3, M + bh + 98, 2], [M + 9, M + bh + 72, 2], [M + 15, M + bh + 48, 1], [W - M - 27, M + bh + 34, 2], [W - M - 21, M + bh + 8, 2]]) goGlyph(g, x, y, s, C.purple);
-      rect(g, M, PH - M - bh, W - M * 2, bh, C.paper);
-      px(g, 'YOU EXPECTED A\nNORMAL CAPSULE?', W / 2, M + 4, { align: 'center', lh: 3 });
-      px(g, 'BUT IT WAS ME,', W / 2, PH - M - bh + 3, { align: 'center' });
-      px(g, 'MIKAN!', W / 2, PH - M - bh + 12, { align: 'center', col: C.red });
-    },
-  },
 };

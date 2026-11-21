@@ -3,9 +3,9 @@
 // pixel is a crisp square. Text comes from the pixel fonts as hard masks (Alagard and DotGothic16 at their native 16 px,
 // thresholded: no anti-aliasing), the 5x7 bitmap font, or the hand-pixelled katakana below.
 //   const a = art(w, h);  a.px(x, y, rgb);  a.mask(m, x, y, rgb);  a.canvas(scale) -> <canvas>
-//   textMask(str, font = 'Alagard', size = 16) -> { w, h, base, at(x, y) }      mask5(str)
+//   textMask(str, font = 'Alagard', size = 16) -> { w, h, base, at(x, y) }      maskPx(str)
 //   kanaMask(str)  (ガチャガレージ and friends, 7 px tall)
-import { mask5 as mask5raw, textW5 } from '../gfx/font5x7.js';
+import { maskPx as mask5raw, textWPx } from '../gfx/pixfont.js';
 
 export const INK = [26, 18, 22];
 export const hex = (h) => [(h >> 16) & 255, (h >> 8) & 255, h & 255];
@@ -87,9 +87,9 @@ export function textMask(str, font = 'Alagard', size = 16) {
   return m;
 }
 
-/** The 5x7 bitmap font as a mask. */
-export function mask5(str) {
-  const pts = mask5raw(str), w = Math.max(1, textW5(str, 1)), h = 7, lit = new Uint8Array(w * h);
+/** Pixel type as a mask (Alagard at its native 16 px: src/gfx/pixfont.js). */
+export function maskPx(str) {
+  const pts = mask5raw(str), w = Math.max(1, textWPx(str, 1)), h = 7, lit = new Uint8Array(w * h);
   for (const [x, y] of pts) if (x < w) lit[y * w + x] = 1;
   return maskOf(w, h, lit);
 }

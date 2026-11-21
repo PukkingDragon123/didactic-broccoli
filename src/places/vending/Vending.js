@@ -11,7 +11,7 @@ import { audio } from '../../core/audio.js';
 import { ensureState } from '../../game/stateExt.js';
 import { makeToolMesh } from '../../game/Held.js';
 import { propMesh } from '../../world/props.js';
-import { draw5, textW5 } from '../../gfx/font5x7.js';
+import { drawPx, textWPx } from '../../gfx/pixfont.js';
 import { FOODS, MACHINES, isAlcohol } from '../../needs/foods.js';
 import { drawSample, drawLabel, kanji, loadLabelFonts } from './canArt.js';
 import { PanelMode } from './panel.js';
@@ -157,7 +157,7 @@ export class Vending {
       // header strip: the machine's name
       ctx.fillStyle = m.night ? '#c8302a' : m.menu === 'odd' ? '#5a3a8a' : '#2a6ad8';
       ctx.fillRect(0, 0, W, 20);
-      draw5(ctx, m.name.toUpperCase(), 6, 7, { s: 1, col: '#ffffff' });
+      drawPx(ctx, m.name.toUpperCase(), 6, 7, { s: 1, col: '#ffffff' });
       kanji(ctx, m.jp, W - 6, 4, 12, 0xffffff, { align: 'right' });
       if (mode === 'detail' || mode === 'age') { this.drawDetail(ctx, m, W, H, mode); return; }
       m.items.forEach((f, i) => {
@@ -172,9 +172,9 @@ export class Vending {
         else { ctx.fillStyle = '#4a4e56'; ctx.fillRect(x + Math.round((CELL_W - 8 - sw) / 2), y + CELL_H - 24 - shh, sw, shh); }
         // the hot / cold strip, the price, the push button with its lamp
         ctx.fillStyle = f.hot ? '#e8402a' : '#2a7ae0'; ctx.fillRect(x, y + CELL_H - 21, CELL_W - 12, 9);
-        draw5(ctx, f.hot ? 'HOT' : 'COLD', x + 2, y + CELL_H - 20, { s: 1, col: '#ffffff' });
+        drawPx(ctx, f.hot ? 'HOT' : 'COLD', x + 2, y + CELL_H - 20, { s: 1, col: '#ffffff' });
         paperFill(ctx, x + 15, y + CELL_H - 10, CELL_W - 27, 9, { seed: i + 11 });
-        draw5(ctx, `${f.price}`, x + CELL_W - 14, y + CELL_H - 9, { s: 1, col: '#241a1e', align: 'right' });
+        drawPx(ctx, `${f.price}`, x + CELL_W - 14, y + CELL_H - 9, { s: 1, col: '#241a1e', align: 'right' });
         const on = i === sel;
         ctx.fillStyle = on ? (blink ? '#ff3a2a' : '#8a1a12') : '#f4f6f4'; ctx.fillRect(x + 1, y + CELL_H - 9, 12, 7);
         ctx.fillStyle = '#5a5e64'; ctx.fillRect(x + 1, y + CELL_H - 2, 12, 1);
@@ -186,7 +186,7 @@ export class Vending {
           ctx.fillStyle = '#1a1216'; ctx.fillRect(ax - 4, ay + 4, 9, 1);
         }
       });
-      if (closed) { ctx.fillStyle = '#c8302a'; ctx.fillRect(W / 2 - 60, H / 2 - 24, 120, 48); kanji(ctx, '準備中', W / 2, H / 2 - 18, 16, 0xffffff, { align: 'center' }); draw5(ctx, 'FROM 16:00', W / 2, H / 2 + 6, { s: 1, col: '#ffffff', align: 'center' }); }
+      if (closed) { ctx.fillStyle = '#c8302a'; ctx.fillRect(W / 2 - 60, H / 2 - 24, 120, 48); kanji(ctx, '準備中', W / 2, H / 2 - 18, 16, 0xffffff, { align: 'center' }); drawPx(ctx, 'FROM 16:00', W / 2, H / 2 + 6, { s: 1, col: '#ffffff', align: 'center' }); }
     });
   }
 
@@ -196,10 +196,10 @@ export class Vending {
     if (mode === 'age') {
       ctx.fillStyle = '#c8302a'; ctx.fillRect(10, 40, W - 20, 30);
       kanji(ctx, '年齢確認', W / 2, 46, 16, 0xffffff, { align: 'center' });
-      draw5(ctx, 'AGE CHECK', W / 2, 84, { s: 2, col: '#1a1a1a', align: 'center' });
-      draw5(ctx, 'ARE YOU 20 OR OVER?', W / 2, 112, { s: 1, col: '#1a1a1a', align: 'center' });
-      for (const [i, x] of [[0, 40], [1, 150]]) { ctx.fillStyle = '#2a8a3a'; ctx.fillRect(x, 140, 90, 34); draw5(ctx, 'YES', x + 45, 150, { s: 2, col: '#ffffff', align: 'center' }); void i; }
-      draw5(ctx, 'PRESS ANY BUTTON', W / 2, 200, { s: 1, col: '#5a5a5a', align: 'center' });
+      drawPx(ctx, 'AGE CHECK', W / 2, 84, { s: 2, col: '#1a1a1a', align: 'center' });
+      drawPx(ctx, 'ARE YOU 20 OR OVER?', W / 2, 112, { s: 1, col: '#1a1a1a', align: 'center' });
+      for (const [i, x] of [[0, 40], [1, 150]]) { ctx.fillStyle = '#2a8a3a'; ctx.fillRect(x, 140, 90, 34); drawPx(ctx, 'YES', x + 45, 150, { s: 2, col: '#ffffff', align: 'center' }); void i; }
+      drawPx(ctx, 'PRESS ANY BUTTON', W / 2, 200, { s: 1, col: '#5a5a5a', align: 'center' });
       return;
     }
     // the label unrolled on the left, the facts on a paper POP card taped up on the right
@@ -208,7 +208,7 @@ export class Vending {
     tapeStrip(ctx, 132 + (W - 138) / 2 - 18, 22, 36, 8);
     const x = 138;
     let y = 30;
-    const line = (t, col = '#1a1a1a', s = 1) => { draw5(ctx, t, x, y, { s, col }); y += 7 * s + 4; };
+    const line = (t, col = '#1a1a1a', s = 1) => { drawPx(ctx, t, x, y, { s, col }); y += 7 * s + 4; };
     const wrap = (t, col, max = 23) => {
       const words = String(t).toUpperCase().split(' ');
       let cur = '';
@@ -219,11 +219,11 @@ export class Vending {
     wrap(f.name, '#1a1a1a', 22);
     y += 2;
     ctx.fillStyle = f.hot ? '#e8402a' : '#2a7ae0'; ctx.fillRect(x, y, 40, 10);
-    draw5(ctx, f.hot ? 'HOT' : 'COLD', x + 4, y + 2, { s: 1, col: '#ffffff' });
-    draw5(ctx, yen(f.price), W - 8, y, { s: 2, col: '#1a1a1a', align: 'right' });
+    drawPx(ctx, f.hot ? 'HOT' : 'COLD', x + 4, y + 2, { s: 1, col: '#ffffff' });
+    drawPx(ctx, yen(f.price), W - 8, y, { s: 2, col: '#1a1a1a', align: 'right' });
     y += 22;
-    ctx.fillStyle = '#2f8a48'; draw5(ctx, '+', x, y, { s: 1, col: '#2f8a48' }); const y0 = y; x0wrap(ctx, f.pros, x + 8, y0, '#2f8a48'); y = y0 + 11 * lines(f.pros) + 4;
-    draw5(ctx, '-', x, y, { s: 1, col: '#c8302a' }); x0wrap(ctx, f.cons, x + 8, y, '#c8302a'); y += 11 * lines(f.cons) + 6;
+    ctx.fillStyle = '#2f8a48'; drawPx(ctx, '+', x, y, { s: 1, col: '#2f8a48' }); const y0 = y; x0wrap(ctx, f.pros, x + 8, y0, '#2f8a48'); y = y0 + 11 * lines(f.pros) + 4;
+    drawPx(ctx, '-', x, y, { s: 1, col: '#c8302a' }); x0wrap(ctx, f.cons, x + 8, y, '#c8302a'); y += 11 * lines(f.cons) + 6;
     const st = [];
     if (f.energy) st.push(`ENERGY ${f.energy > 0 ? '+' : ''}${f.energy}`);
     if (f.full) st.push(`FILLING +${f.full}`);
@@ -232,16 +232,16 @@ export class Vending {
     // the bottom: the button
     const cash = this.game.wallet ? this.game.wallet.cash : 0;
     ctx.fillStyle = cash >= f.price ? '#2a8a3a' : '#8a8a8a'; ctx.fillRect(10, H - 54, W - 20, 30);
-    draw5(ctx, cash >= f.price ? `INSERT ${yen(f.price)}` : 'NOT ENOUGH CASH', W / 2, H - 45, { s: 2, col: '#ffffff', align: 'center' });
-    draw5(ctx, `WALLET ${yen(cash)}`, W / 2, H - 16, { s: 1, col: '#5a5a5a', align: 'center' });
+    drawPx(ctx, cash >= f.price ? `INSERT ${yen(f.price)}` : 'NOT ENOUGH CASH', W / 2, H - 45, { s: 2, col: '#ffffff', align: 'center' });
+    drawPx(ctx, `WALLET ${yen(cash)}`, W / 2, H - 16, { s: 1, col: '#5a5a5a', align: 'center' });
     function lines(t) { return Math.max(1, Math.ceil(String(t || '').length / 20)); }
     function x0wrap(c, t, xx, yy, col) {
       const words = String(t || '').toUpperCase().split(' ');
       let cur = '', n = 0;
-      for (const w of words) { if ((cur + ' ' + w).trim().length > 20) { draw5(c, cur, xx, yy + n * 11, { s: 1, col }); n++; cur = w; } else cur = (cur + ' ' + w).trim(); }
-      if (cur) draw5(c, cur, xx, yy + n * 11, { s: 1, col });
+      for (const w of words) { if ((cur + ' ' + w).trim().length > 20) { drawPx(c, cur, xx, yy + n * 11, { s: 1, col }); n++; cur = w; } else cur = (cur + ' ' + w).trim(); }
+      if (cur) drawPx(c, cur, xx, yy + n * 11, { s: 1, col });
     }
-    void textW5;
+    void textWPx;
   }
 
   // ------------------------------------------------------------------ operating it

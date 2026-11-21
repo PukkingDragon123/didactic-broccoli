@@ -18,7 +18,7 @@ import { VoxelModel, enc, gloss, metal, glass, glow, MAT } from '../voxel/VoxelM
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { mergeByMaterial } from '../voxel/merge.js';
-import { mask5, textW5 } from '../gfx/font5x7.js';
+import { maskPx, textWPx } from '../gfx/pixfont.js';
 import { Pix, FONT_JP } from '../gfx/pix.js';
 
 export const VB = 0.005; // the big voxel
@@ -108,8 +108,8 @@ function disc(v, cx, cy, z, r, c, r0 = -1) {
 }
 /** 5x7 bitmap text stamped on the voxels of an xy plane (y up: row 0 of the font is the top). */
 function stamp(v, str, x0, yTop, z, c, align = 'left') {
-  const w = textW5(str), ox = align === 'center' ? Math.round(x0 - w / 2) : align === 'right' ? x0 - w : x0;
-  for (const [i, j] of mask5(str)) v.set(ox + i, yTop - j, z, c);
+  const w = textWPx(str), ox = align === 'center' ? Math.round(x0 - w / 2) : align === 'right' ? x0 - w : x0;
+  for (const [i, j] of maskPx(str)) v.set(ox + i, yTop - j, z, c);
   return w;
 }
 /** Two vertical screws heads (2x2 fine look on a 5 mm face: one voxel, cross-slot by colour). */

@@ -373,7 +373,7 @@ export class Extension {
     Z.prop('hm_ironing_board', X1 - 0.25, 0, -1.1, -Math.PI / 2, 1, spare);
     Z.prop('hm_tanuki', X0 + 0.35, 0, -1.4, 0.6, 1, spare);
     Z.prop('hm_toybox_small', X0 + 0.45, 0, -0.45, 0.3, 1, spare);
-    Z.prop('hm_futon_folded', X1 - 0.55, 0, -0.35, Math.PI / 2, 1, spare);
+    Z.prop('hm_futon_stack', X1 - 0.55, 0, -0.35, Math.PI / 2, 1, spare);
     // tier 2: the hobby room (boards, the cabinet, the showcase, an armchair, a rug, spotlights)
     const hobby = this.hobby = new THREE.Group();
     const Hb = new Batch(); Hb.off.copy(Z.o);

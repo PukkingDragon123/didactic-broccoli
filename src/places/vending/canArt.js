@@ -5,7 +5,7 @@
 //   drawSample(ctx, food, x, y, w, h)     drawLabel(ctx, food, x, y, w, h)     kanji(ctx, text, x, y, size, col)
 // Once the pixel-art wraps from real labels are in (src/drinks/drinks.js), samples and close-ups show those instead:
 // the front half of the wrap on the can's body, the drawing above only while they load (or for a drink without one).
-import { draw5, textW5 } from '../../gfx/font5x7.js';
+import { drawPx, textWPx } from '../../gfx/pixfont.js';
 import { drinkWrapImage, whenDrinksReady } from '../../drinks/drinks.js';
 
 const css = (n) => '#' + (n >>> 0).toString(16).padStart(6, '0');
@@ -176,15 +176,15 @@ function labelBody(ctx, f, x, y, w, h, big) {
   ctx.fillStyle = css(band); ctx.fillRect(x, by, w, bandH);
   ctx.fillStyle = css(band2); ctx.fillRect(x, by - s, w, s); ctx.fillRect(x, by + bandH, w, s);
   const logo = a.logo || f.name.toUpperCase();
-  const ls = big ? (textW5(logo, 3) < w - 8 ? 3 : 2) : 1;
-  const lw = textW5(logo, ls);
+  const ls = big ? (textWPx(logo, 3) < w - 8 ? 3 : 2) : 1;
+  const lw = textWPx(logo, ls);
   const inkOnBand = lum(band) > 0.55 ? ink : 0xffffff;
-  if (lw <= w - 2) draw5(ctx, logo, x + Math.round((w - lw) / 2), by + Math.round((bandH - 7 * ls) / 2), { s: ls, col: css(inkOnBand) });
-  else draw5(ctx, logo.slice(0, Math.max(1, Math.floor((w - 2) / (6 * ls)))), x + 1, by + Math.round((bandH - 7 * ls) / 2), { s: ls, col: css(inkOnBand) });
+  if (lw <= w - 2) drawPx(ctx, logo, x + Math.round((w - lw) / 2), by + Math.round((bandH - 7 * ls) / 2), { s: ls, col: css(inkOnBand) });
+  else drawPx(ctx, logo.slice(0, Math.max(1, Math.floor((w - 2) / (6 * ls)))), x + 1, by + Math.round((bandH - 7 * ls) / 2), { s: ls, col: css(inkOnBand) });
   // sub text under the band
   const sub = a.sub || '';
   const subCol = lum(body) > 0.55 ? ink : 0xffffff;
-  if (sub) { const ss = big ? 2 : 1, sw = textW5(sub, ss); if (sw <= w - 2) draw5(ctx, sub, x + Math.round((w - sw) / 2), by + bandH + (big ? 6 : 3), { s: ss, col: css(subCol) }); }
+  if (sub) { const ss = big ? 2 : 1, sw = textWPx(sub, ss); if (sw <= w - 2) drawPx(ctx, sub, x + Math.round((w - sw) / 2), by + bandH + (big ? 6 : 3), { s: ss, col: css(subCol) }); }
   // emblem in the upper part, kanji down the side
   if (a.emblem && a.emblem !== 'dots' && a.emblem !== 'stripes') {
     const es = big ? 4 : (w >= 26 ? 2 : 1);
@@ -200,7 +200,7 @@ function labelBody(ctx, f, x, y, w, h, big) {
     ctx.fillStyle = '#ffffff'; ctx.fillRect(bx0 - 2, by0 - 2, 44, 24);
     ctx.fillStyle = '#141014';
     for (let i = 0; i < 40; i++) if ((i * 7 + 3) % 5 < 3 || i % 9 === 0) ctx.fillRect(bx0 + i, by0, 1, 16);
-    draw5(ctx, f.art?.shape === 'pet' ? '500ML' : f.art?.shape === 'mini' ? '120ML' : f.art?.shape === 'tall' ? '500ML' : f.art?.shape === 'cup' ? '180ML' : '350ML', x + w - 50, y + h - 16, { s: 1, col: css(subCol) });
+    drawPx(ctx, f.art?.shape === 'pet' ? '500ML' : f.art?.shape === 'mini' ? '120ML' : f.art?.shape === 'tall' ? '500ML' : f.art?.shape === 'cup' ? '180ML' : '350ML', x + w - 50, y + h - 16, { s: 1, col: css(subCol) });
     ctx.fillStyle = css(subCol);
     for (let r = 0; r < 4; r++) for (let i = 0; i < 9; i++) if ((i + r) % 4) ctx.fillRect(x + w - 70 + i * 6, y + h - 52 + r * 6, 4, 1);
   }
