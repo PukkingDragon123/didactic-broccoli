@@ -45,11 +45,7 @@ def build_all():
     for x in (40, 70):
         s.disc(f"m_knob{x}", 7, 6, (x, 75, 183), parent=P, sides=10, col=beiged, style="abs")
     s.box("m_power", [26, 14, 6], (150, 75, 182), ch=2, parent=P, col=beiged, style="abs")
-    # sticky notes on the bezel, a capsule toy sitting on top
-    s.boxr("m_note1", 162, 270, 180, 196, 310, 181, ch=0, parent=P, col=s.c("#ffe866", k=0.1), style="paper", tone=4.0, rot=[0, 0, -4])
-    s.layer("m_note1", id="lines", op="stripes", axis="y", period=6, width=0.25, shift=-1.4, faces=["front"])
-    s.boxr("m_note2", -198, 300, 180, -166, 336, 181, ch=0, parent=P, col=s.c("#ff9fd0", k=0.1), style="paper", tone=4.0, rot=[0, 0, 5])
-    s.layer("m_note2", id="lines", op="stripes", axis="y", period=6, width=0.25, shift=-1.4, faces=["front"])
+    # a capsule toy sitting on top (no notes on the bezel: the owner wants no notes anywhere)
     s.disc("m_cap_b", 24, 24, (100, 392, 100), axis="y", parent=P, sides=12, top=0.55, col=s.c("#ff6f91"), style="abs")
     s.disc("m_cap_t", 24, 20, (100, 414, 100), axis="y", parent=P, sides=12, top=0.4, col="chrome", style="clear", tone=5.0)
     # ------------------------------------------------------------------ the keyboard

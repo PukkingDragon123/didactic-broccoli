@@ -151,24 +151,6 @@
     "#f8f4e9",
     "#fcfaf6"
    ],
-   "cffe866_k0p1": [
-    "#482d00",
-    "#a67402",
-    "#fbc30d",
-    "#fbe36c",
-    "#fbf194",
-    "#fcfabc",
-    "#fdfde2"
-   ],
-   "cff9fd0_k0p1": [
-    "#540038",
-    "#c30075",
-    "#fe34a0",
-    "#fea4ce",
-    "#febdd7",
-    "#fed5e3",
-    "#feedf2"
-   ],
    "cff6f91": [
     "#4a001f",
     "#ac013d",
@@ -903,82 +885,6 @@
    "paint": {
     "ramp": "cc6bea8_hue10_k0p0",
     "tone": 3.0
-   }
-  },
-  {
-   "id": "m_note1",
-   "shape": "box",
-   "parent": "monitor",
-   "pivot": [
-    179.0,
-    290.0,
-    180.5
-   ],
-   "rotation": [
-    0,
-    0,
-    -4
-   ],
-   "size": [
-    34,
-    40,
-    1
-   ],
-   "style": "paper",
-   "paint": {
-    "ramp": "cffe866_k0p1",
-    "tone": 4.0,
-    "layers": [
-     {
-      "id": "lines",
-      "op": "stripes",
-      "axis": "y",
-      "period": 6,
-      "width": 0.25,
-      "shift": -1.4,
-      "faces": [
-       "front"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "id": "m_note2",
-   "shape": "box",
-   "parent": "monitor",
-   "pivot": [
-    -182.0,
-    318.0,
-    180.5
-   ],
-   "rotation": [
-    0,
-    0,
-    5
-   ],
-   "size": [
-    32,
-    36,
-    1
-   ],
-   "style": "paper",
-   "paint": {
-    "ramp": "cff9fd0_k0p1",
-    "tone": 4.0,
-    "layers": [
-     {
-      "id": "lines",
-      "op": "stripes",
-      "axis": "y",
-      "period": 6,
-      "width": 0.25,
-      "shift": -1.4,
-      "faces": [
-       "front"
-      ]
-     }
-    ]
    }
   },
   {

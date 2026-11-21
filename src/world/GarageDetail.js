@@ -605,7 +605,7 @@ export class GarageDetail {
       B.box(m.steel, 0.012, 0.22, 0.012, G.maxX - 0.09, sy - 0.15, z, { rz: 0.72, tint: 0x5a6066 });
     }
     // (the shelf starts empty: it is an attach point for small things, src/build/)
-    // PC corner: shelf with binders, a photo and a memo
+    // PC corner: shelf with binders and a photo (no memo cards: the owner wants no notes anywhere)
     const D = this.garage.pcDesk;
     B.box(m.ply, 0.22, 0.02, 1.2, G.maxX - 0.11, 1.78, D.z + 0.05, { tint: 0xd8c8b0 });
     for (const z of [D.z - 0.45, D.z + 0.55]) B.box(m.steel, 0.18, 0.02, 0.02, G.maxX - 0.09, 1.76, z, { tint: 0x5a6066 });
@@ -613,7 +613,6 @@ export class GarageDetail {
     binders.forEach((c, i) => B.box(m.gloss, 0.2, 0.26 - (i % 3) * 0.02, 0.045, G.maxX - 0.12, 1.8, D.z - 0.5 + i * 0.05, { tint: c }));
     for (let i = 0; i < 7; i++) B.box(m.paint, 0.002, 0.08, 0.025, G.maxX - 0.221, 1.88, D.z - 0.5 + i * 0.05, { tint: 0xf4f0e6, ao: false });
     this.card('photo', '-x', G.maxX - 0.002, 1.42, D.z - 0.55, 0.12, 0.15, { rot: 0.06 });
-    this.card('memo', '-x', G.maxX - 0.002, 1.45, D.z + 0.1, 0.14, 0.14, { rot: -0.08 });
     // the back wall: a safety-first board above the racks (the clock and calendar are yours to buy and hang)
     this.card('anzen', '+z', -2.65, 2.55, G.minZ + 0.012, 0.6, 0.45, { rot: 0.01 });
     this.card('hinoyojin', '-z', -3.55, 1.75, G.maxZ - 0.012, 0.12, 0.36);
