@@ -521,9 +521,12 @@ export class Garage {
     const p = new Pix(160, 40, 8);
     p.fill(0xfff4e0);
     p.rect(0, 0, 160, 4, 0xe5383b); p.rect(0, 36, 160, 4, 0xe5383b);
-    p.text('ガチャガチャ', 80, 6, { size: 20, color: 0xe5383b, outline: 0xffffff, align: 'center' });
-    p.text('★ GACHA CORNER ★', 80, 26, { size: 9, color: 0x2a2220, align: 'center' });
-    for (let i = 0; i < 6; i++) { const cx = 12 + i * 27.2; p.circle(Math.round(i % 2 ? 150 : 10), 20, 0, 0xffffff); void cx; }
+    // pixel fonts on their own grid only: the kana in DotGothic16 at 16 px, the English line in the 5x7 bitmap font,
+    // its stars hand-pixelled
+    p.text('ガチャガチャ', 80, 6, { size: 16, color: 0xe5383b, outline: 0xffffff, align: 'center' });
+    const w5 = p.tinyText('GACHA CORNER', 80, 26, { color: 0x2a2220, align: 'center' });
+    const star = (cx, cy) => { p.px(cx, cy - 2, 0xe5383b); p.rect(cx - 2, cy - 1, 5, 1, 0xe5383b); p.rect(cx - 1, cy, 3, 1, 0xe5383b); p.px(cx - 1, cy + 1, 0xe5383b); p.px(cx + 1, cy + 1, 0xe5383b); };
+    star(80 - Math.ceil(w5 / 2) - 6, 30); star(80 + Math.ceil(w5 / 2) + 5, 30);
     const t = p.texture();
     const box = boxMesh(0.1, 0.42, 1.65, colMat(0x2a2220, { roughness: 0.5 }));
     box.position.set(x + 0.05, y, z);
