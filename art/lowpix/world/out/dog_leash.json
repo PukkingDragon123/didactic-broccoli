@@ -1,0 +1,67 @@
+{
+ "id": "dog_leash",
+ "src": "sketchfab:53f12d5df3914567a0fb08ded8cfc8e8",
+ "credit": {
+  "title": "Dog leash",
+  "author": "Wilin_Amaurea",
+  "authorUrl": "https://sketchfab.com/wilinamaurea",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/dog-leash-53f12d5df3914567a0fb08ded8cfc8e8",
+  "site": "Sketchfab"
+ },
+ "tris": 2497,
+ "tex": 256,
+ "size": [
+  0.16,
+  0.15,
+  0.04
+ ],
+ "colours": 26,
+ "palette": {
+  "m0": [
+   "#030202",
+   "#030303",
+   "#040303",
+   "#040404",
+   "#050505",
+   "#272727",
+   "#4a4a4a",
+   "#6c6c6c",
+   "#8e8e8e"
+  ],
+  "m1": [
+   "#0e3e04",
+   "#194f07",
+   "#27600a",
+   "#38700e",
+   "#4a8012",
+   "#6fa91b",
+   "#99d026",
+   "#b9db4d",
+   "#d1e179"
+  ],
+  "m2": [
+   "#26000d",
+   "#31010d",
+   "#3b030c",
+   "#45040a",
+   "#4f0606",
+   "#83160c",
+   "#b62f14",
+   "#e25222",
+   "#e68859"
+  ],
+  "m3": [
+   "#1e5fa6",
+   "#2b8bd4",
+   "#60b0db",
+   "#93cee4",
+   "#c4e7ef",
+   "#cdedf0",
+   "#d6f1f2",
+   "#def4f2",
+   "#e6f6f4"
+  ]
+ },
+ "warnings": []
+}

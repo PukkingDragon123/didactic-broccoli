@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """bake-postersets.py: the shop's promo posters and handout flyers, and the lane's posters and notices, laid out with
-tools/posterkit.py (OFL print faces properly set, real photographs and Open Images cut-outs, renders of the actual
+tools/posterkit.py (pixel type only, set on the texture grid, real photographs and Open Images cut-outs, renders of the actual
 in-game toys, real paper scans and wear; English text, original names; no drawn filler, no glow or gradient).
 Every design is its own layout. Output sheets (WebP + region JSON, via bake-print.py's packer):
   promo  promo:<id>  (224 x 317)  the six promo posters and nine meme flyers of src/gfx/flyers.js (FLYERS): on the
@@ -14,10 +14,9 @@ import os, sys, importlib.util
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image
 from posterkit import Sheet
+import pixprint as PX
 _bp = importlib.util.spec_from_file_location('bake_print', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bake-print.py'))
 BP = importlib.util.module_from_spec(_bp); _bp.loader.exec_module(BP)
-_bc = importlib.util.spec_from_file_location('bake_canva', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bake-canva.py'))
-BC = importlib.util.module_from_spec(_bc); _bc.loader.exec_module(BC)
 
 INK = 0x1c1816; CREAM = 0xf3ecdc; PAPER = 0xf6f1e4; RED = 0xc4291e; VERM = 0xd4442c; TEAL = 0x23756a; GOLD = 0xe2b23c
 NAVY = 0x1b2a4a; MINT = 0xbfeccc; YEL = 0xf2c230; SKY = 0x2f6fa8
@@ -25,7 +24,7 @@ OI = {'shiba_puppy': 'a21093132630d7a2', 'cat_black': '4d2786e4d0239451', 'cat_g
       'fuji': '6e1e87bb95452e41', 'monkeys': '2a1c261ad12e6f62', 'sailboat': '934ee278c3b493ca', 'hydrangea': 'e5572ed148dc0b76',
       'shinkansen': '842fcd9c97854956', 'sumo': '0deee1bb956b2216', 'baseball': '6c906fe112f15285', 'giraffe': '7222bd0a37b46602',
       'elephant': '3546e315dd033322', 'aquarium': '12b1f929640f1227', 'kakigori': 'b27664c9ed82adff', 'bonodori': '99d0d046afd231c4',
-      'fireworks': '3273e580b71afeef', 'tatami': 'f4200fadef07c329', 'gumballs': '9a73ee8933d93045', 'fuji_izu': '78539e8d9556eb55'}
+      'fireworks': '3273e580b71afeef', 'shiba': '318cacc523658be4', 'tatami': 'f4200fadef07c329', 'gumballs': '9a73ee8933d93045', 'fuji_izu': '78539e8d9556eb55'}
 def oi(k): return 'oi:' + OI[k]
 FOOT = 'GACHA GARAGE  ·  BACK LANE, SHOWA-CHO 2-CHOME'
 
@@ -36,219 +35,490 @@ def design(reg, key, size, **age):
 P = (224, 317)  # promo / flyer: 0.42 m on the piers (~530 px/m), the same in the hand
 
 
-# ==================================================================== promo posters
+# ==================================================================== promo posters (224 x 317 px; coordinates are texture px)
+def tag(S, s, cx, cy, bg, ink=CREAM, face='silkb', scale=1, pad=3):
+    """A flat label: a block of ink with pixel type knocked out of it."""
+    w, h = S.tw(s, face, scale) + 2 * pad + 1, PX.text_size('AH', face, scale)[1] + 2 * pad
+    S.rect(round(cx - w / 2), round(cy - h / 2), w, h, bg)
+    S.text(s, round(cx - w / 2) + pad + 1, round(cy - h / 2) + pad, face, scale, ink)
+
 @design(PROMO, 'promo:reopen', P, paper='Paper001', fade=0.06, tape=('tl', 'tr'), seed=1)
 def _(S):
     S.paper('Paper001', 0.35)
-    S.photo('ph:garage', 30, 30, 540, 420, f=(0.5, 0.6, 1.08), sat=0.82, warm=0.05)
-    S.rect(30, 30, 540, 420, INK, line=3)
-    S.rect(0, 476, 600, 156, RED)
-    for ref, cx, h in [('teruteru/para', 96, 150), ('dango/hanami', 204, 160), ('tabigame/pagoda', 318, 150), ('sento/kani', 438, 112), ('kaden/usagi', 528, 128)]:
-        S.toy(ref, cx, 490, h, shade=(0x7a140e, 5, 0))
-    S.text('GRAND', 'alfa', 34, 300, 548, CREAM, track=0.42, anchor='c')
-    S.text('RE-OPENING', 'alfa', 58, 300, 616, CREAM, track=0.05, anchor='c', shade=(0x6e120c, 4, 4))
-    S.text('GACHA GARAGE', 'archivo', 36, 300, 694, INK, track=0.1, anchor='c')
-    S.rect(170, 710, 260, 3, RED)
-    S.text('Grandpa’s capsule-toy garage is open again', 'barlows', 18, 300, 748, INK, track=0.03, anchor='c')
-    S.text('OPEN 10:00 – 20:00   ·   300 YEN A TURN', 'barlowx', 22, 300, 790, RED, track=0.1, anchor='c')
-    S.text('BACK LANE, SHOWA-CHO 2-CHOME', 'barlows', 14, 300, 824, INK, track=0.3, anchor='c')
+    S.photo('ph:garage', 10, 10, 204, 152, f=(0.5, 0.6, 1.08), sat=0.82, warm=0.05)
+    S.rect(10, 10, 204, 152, INK, line=1)
+    S.rect(0, 174, 224, 60, RED)
+    for ref, cx, h in [('teruteru/para', 34, 56), ('dango/hanami', 76, 60), ('tabigame/pagoda', 120, 54), ('sento/kani', 164, 42), ('kaden/usagi', 198, 48)]:
+        S.toy(ref, cx, 180, h, shade=(0x7a140e, 2, 0))
+    S.text('GRAND', 'silkb', 2, 112, 186, CREAM, anchor='mt', track=2)
+    S.text('RE-OPENING', 'ggd', 1, 112, 204, CREAM, anchor='mt', shadow=(1, 1, 0x6e120c))
+    S.text('GACHA GARAGE', 'jersey20', 1, 112, 242, INK, anchor='mt', track=1)
+    S.rect(72, 266, 80, 1, RED)
+    S.text("Grandpa's capsule-toy garage is open again", 'micro5', 1, 112, 272, INK, anchor='mt')
+    S.text('OPEN 10:00-20:00 - 300 YEN A TURN', 'b5', 1, 112, 284, RED, anchor='mt')
+    S.text('BACK LANE, SHOWA-CHO 2-CHOME', 'micro5', 1, 112, 300, INK, anchor='mt', track=1)
 
 
 @design(PROMO, 'promo:space', P, paper='Paper001', fade=0.08, tape=('tl', 'tr'), seed=2)
 def _(S):
     S.paper('Paper001', 0.35)
-    S.rect(0, 0, 92, 848, TEAL)
-    S.text('NEW SERIES   ·   6 FIGURES + 1 SECRET', 'barlows', 20, 58, 808, CREAM, track=0.28, rot=90)
-    S.photo(oi('tatami'), 122, 40, 448, 320, f=(0.5, 0.55, 1.15), sat=0.85, warm=0.04)
-    S.rect(450, 300, 120, 120, TEAL)
-    S.text('300', 'bebas', 50, 510, 368, CREAM, anchor='c'); S.text('YEN A TURN', 'barlows', 12, 510, 396, CREAM, track=0.2, anchor='c')
-    S.text('Appliance', 'serif', 64, 120, 470, INK, track=-0.01)
-    S.text('Animals', 'serif', 64, 120, 548, TEAL, track=-0.01)
-    S.text('Switch them on and they turn into animals.', 'barlows', 20, 122, 594, INK, track=0.02)
-    S.rect(122, 792, 448, 2, INK)
-    for ref, cx, h in [('kaden/fukuro', 196, 180), ('kaden/zou', 342, 140), ('kaden/usagi', 486, 150)]:
-        S.toy(ref, cx, 790, h)
-    S.text(FOOT, 'barlows', 13, 122, 822, INK, track=0.22)
+    S.rect(0, 0, 34, 317, TEAL)
+    S.text('NEW SERIES - 6 FIGURES + 1 SECRET', 'silkb', 1, 17, 304, CREAM, anchor='mb', rot=90, track=1)
+    S.photo(oi('tatami'), 46, 14, 168, 120, f=(0.5, 0.55, 1.15), sat=0.85, warm=0.04)
+    S.rect(168, 112, 46, 40, TEAL)
+    S.text('300', 'jersey20', 1, 191, 117, CREAM, anchor='mt'); S.text('YEN A TURN', 'micro5', 1, 191, 141, CREAM, anchor='mt')
+    S.text('Appliance', 'ala', 2, 46, 160, INK)
+    S.text('Animals', 'ala', 2, 46, 188, TEAL)
+    S.para('Switch them on and they turn into animals.', 46, 220, 168, 'b5', 1, INK)
+    S.rect(46, 292, 168, 1, INK)
+    for ref, cx, h in [('kaden/fukuro', 74, 66), ('kaden/zou', 128, 50), ('kaden/usagi', 182, 54)]:
+        S.toy(ref, cx, 292, h)
+    S.text('GACHA GARAGE - BACK LANE, SHOWA-CHO 2-CHOME', 'micro5', 1, 46, 300, INK)
 
 
 @design(PROMO, 'promo:sakura', P, paper='Paper001', fade=0.07, tape=('tl', 'tr'), seed=3)
 def _(S):
     S.paper('Paper001', 0.35)
-    S.photo('ph:sakura', 0, 0, 600, 380, f=(0.5, 0.42, 1.1), sat=0.88)
-    S.rect(64, 318, 472, 132, VERM)
-    S.rect(72, 326, 456, 116, CREAM, line=2)
-    S.text('A NEW SERIES OF SIX', 'barlows', 14, 300, 360, CREAM, track=0.4, anchor='c')
-    S.text('THE GODS’ MESSENGERS', 'oldmincho', S.fit('THE GODS’ MESSENGERS', 'oldmincho', 40, 420, 0.06), 300, 420, CREAM, track=0.06, anchor='c')
-    S.text('Fox, white snake, deer and crow, sent down from the shrine.', 'barlows', 18, 300, 500, INK, anchor='c')
-    S.rect(0, 716, 600, 12, VERM)
-    for ref, cx, h in [('otsukai/kitsune', 110, 190), ('otsukai/hebi', 240, 150), ('otsukai/shika', 372, 196), ('otsukai/karasu', 500, 176)]:
-        S.toy(ref, cx, 720, h)
-    S.text('400 YEN A TURN', 'bebas', 40, 300, 784, VERM, track=0.08, anchor='c')
-    S.text(FOOT, 'barlows', 13, 300, 822, INK, track=0.22, anchor='c')
+    S.photo('ph:sakura', 0, 0, 224, 142, f=(0.5, 0.42, 1.1), sat=0.88)
+    S.rect(24, 116, 176, 54, VERM)
+    S.rect(27, 119, 170, 48, CREAM, line=1)
+    S.text('A NEW SERIES OF SIX', 'silk', 1, 112, 124, CREAM, anchor='mt', track=1)
+    S.text("THE GODS'", 'ala', 1, 112, 135, CREAM, anchor='mt', track=1)
+    S.text('MESSENGERS', 'ala', 1, 112, 150, CREAM, anchor='mt', track=1)
+    S.para('Fox, white snake, deer and crow, sent down from the shrine.', 22, 180, 180, 'b5', 1, INK, align='m')
+    S.rect(0, 266, 224, 5, VERM)
+    for ref, cx, h in [('otsukai/kitsune', 40, 70), ('otsukai/hebi', 90, 56), ('otsukai/shika', 139, 72), ('otsukai/karasu', 188, 66)]:
+        S.toy(ref, cx, 268, h)
+    S.text('400 YEN A TURN', 'jersey15', 1, 112, 279, VERM, anchor='mt', track=1)
+    S.text('GACHA GARAGE - BACK LANE', 'micro5', 1, 112, 302, INK, anchor='mt', track=1)
 
 
 @design(PROMO, 'promo:glow', P, paper='Paper005', fade=0.04, tape=('tl', 'tr'), seed=4)
 def _(S):
-    S.rect(0, 0, 600, 848, 0x0d131b)
-    S.photo('ph:rain_window', 0, 0, 600, 700, f=(0.5, 0.5, 1.1), sat=0.55, bright=0.42, con=1.1)
-    S.text('GLOW', 'bebas', 200, 300, 250, MINT, track=0.04, anchor='c')
-    S.text('IN THE DARK', 'barlowx', 40, 300, 318, MINT, track=0.42, anchor='c')
-    for ref, cx, h in [('yomise/hotaruika', 150, 230), ('obakebaito/chochin', 312, 200), ('teruteru/niji', 466, 200)]:
-        S.toy(ref, cx, 704, h)
-    S.rect(0, 700, 600, 148, MINT)
-    S.text('A SPECIAL FINISH  ·  1 IN 200 PULLS', 'barlowx', 24, 300, 752, 0x0d131b, track=0.08, anchor='c')
-    S.text('Take it home, switch the light off, and look.', 'barlows', 18, 300, 788, 0x0d131b, anchor='c')
-    S.text(FOOT, 'barlows', 12, 300, 824, 0x0d131b, track=0.24, anchor='c')
+    S.rect(0, 0, 224, 317, 0x0d131b)
+    S.photo('ph:rain_window', 0, 0, 224, 262, f=(0.5, 0.5, 1.1), sat=0.55, bright=0.42, con=1.1)
+    S.text('GLOW', 'ggd', 3, 112, 26, MINT, anchor='mt')
+    S.text('IN THE DARK', 'silkb', 2, 112, 84, MINT, anchor='mt', track=1)
+    for ref, cx, h in [('yomise/hotaruika', 56, 86), ('obakebaito/chochin', 116, 76), ('teruteru/niji', 174, 76)]:
+        S.toy(ref, cx, 264, h)
+    S.rect(0, 262, 224, 55, MINT)
+    S.text('A SPECIAL FINISH - 1 IN 200 PULLS', 'b5', 1, 112, 271, 0x0d131b, anchor='mt')
+    S.text('Take it home and switch the light off.', 'micro5', 1, 112, 286, 0x0d131b, anchor='mt')
+    S.text('GACHA GARAGE - BACK LANE', 'micro5', 1, 112, 301, 0x0d131b, anchor='mt', track=1)
 
 
 @design(PROMO, 'promo:kaiju', P, paper='Paper001', fade=0.1, tape=('tl', 'tr'), seed=5)
 def _(S):
-    S.rect(0, 0, 600, 848, 0x14120f)
-    S.photo('ph:skyline', 0, 0, 600, 540, f=(0.6, 0.62, 1.25), sat=0.9, con=1.12, bright=0.95)
-    S.toy('nakanohito/entotsu', 110, 548, 210, flip=True)
-    S.toy('nakanohito/mogura', 360, 560, 470)
-    S.poly([(0, 488), (600, 420), (600, 520), (0, 588)], YEL)
-    S.text('WHO’S IN THE SUIT?', 'anton', 54, 300, 530, 0x14120f, track=0.03, anchor='c', rot=6.5)
-    S.text('GACHA GARAGE PRESENTS', 'barlows', 15, 300, 636, CREAM, track=0.42, anchor='c')
-    S.text('MONSTERS WITH A LITTLE SOMEONE INSIDE', 'barlowx', 25, 300, 676, YEL, track=0.04, anchor='c')
-    S.para('DRILL MOLE  ·  SMOKESTACK LIZARD  ·  RADIO MOTH  ·  CLAM ROBOT  ·  PADDY HYDRA  ·  AND ONE SECRET IN THE DIRECTOR’S CHAIR',
-           'barlows', 12, 60, 712, 480, CREAM, track=0.16, align='c', lead=1.2)
-    S.text('300 YEN  ·  NOW SHOWING IN THE BACK LANE', 'bebas', 30, 300, 806, YEL, track=0.06, anchor='c')
+    S.rect(0, 0, 224, 317, 0x14120f)
+    S.photo('ph:skyline', 0, 0, 224, 196, f=(0.6, 0.62, 1.25), sat=0.9, con=1.12, bright=0.95)
+    S.toy('nakanohito/entotsu', 38, 200, 76, flip=True)
+    S.toy('nakanohito/mogura', 136, 204, 172)
+    S.rect(0, 184, 224, 30, YEL)
+    t = "WHO'S IN THE SUIT?"
+    face = 'jersey20' if S.tw(t, 'jersey20') <= 216 else 'jersey15'
+    S.text(t, face, 1, 112, 199, 0x14120f, anchor='mm')
+    S.text('GACHA GARAGE PRESENTS', 'silk', 1, 112, 224, CREAM, anchor='mt', track=2)
+    S.text('MONSTERS WITH A LITTLE SOMEONE INSIDE', 'micro5' if S.tw('MONSTERS WITH A LITTLE SOMEONE INSIDE', 'b5') > 214 else 'b5', 1, 112, 236, YEL, anchor='mt')
+    S.para("DRILL MOLE - SMOKESTACK LIZARD - RADIO MOTH - CLAM ROBOT - PADDY HYDRA - AND ONE SECRET IN THE DIRECTOR'S CHAIR",
+           16, 252, 192, 'micro5', 1, CREAM, align='m')
+    S.text('300 YEN', 'jersey15', 1, 112, 278, YEL, anchor='mt', track=1)
+    S.text('NOW SHOWING IN THE BACK LANE', 'micro5', 1, 112, 299, CREAM, anchor='mt', track=1)
 
 
 @design(PROMO, 'promo:secret', P, paper='Paper005', fade=0.04, tape=('tl', 'tr'), seed=6)
 def _(S):
-    S.photo('ph:milky_way', 0, 0, 600, 848, f=(0.5, 0.5, 1.0), sat=0.8, bright=0.85)
-    S.rect(34, 34, 532, 780, GOLD, line=2)
-    S.text('ONE IN EVERY SERIES', 'barlows', 16, 300, 88, GOLD, track=0.45, anchor='c')
-    S.text('SUPER', 'limelight', 64, 300, 176, GOLD, track=0.2, anchor='c')
-    S.text('SECRET', 'limelight', 92, 300, 286, GOLD, track=0.06, anchor='c', shade=(0x4a3208, 4, 4))
-    S.toy('tabigame/sekai', 300, 650, 300)
-    S.text('1 IN 500 PULLS.  CAN YOU PULL ONE?', 'barlowx', 24, 300, 714, CREAM, track=0.08, anchor='c')
-    S.text('GACHA GARAGE', 'archivo', 26, 300, 770, GOLD, track=0.14, anchor='c')
+    S.photo('ph:milky_way', 0, 0, 224, 317, f=(0.5, 0.5, 1.0), sat=0.8, bright=0.85)
+    S.rect(12, 12, 200, 293, GOLD, line=1)
+    S.text('ONE IN EVERY SERIES', 'silk', 1, 112, 24, GOLD, anchor='mt', track=2)
+    S.text('SUPER', 'ggd', 1, 112, 38, GOLD, anchor='mt')
+    S.text('SECRET', 'ggd', 2, 112, 60, GOLD, anchor='mt', shadow=(2, 2, 0x4a3208))
+    S.toy('tabigame/sekai', 112, 244, 120)
+    S.text('1 IN 500 PULLS. CAN YOU PULL ONE?', 'b5', 1, 112, 256, CREAM, anchor='mt')
+    S.text('GACHA GARAGE', 'jersey15', 1, 112, 274, GOLD, anchor='mt', track=1)
 
 
 # ==================================================================== meme flyers (original parodies, the game's cast)
 @design(PROMO, 'promo:much', P, paper='Paper001', fade=0.05, seed=7)
 def _(S):
-    S.photo(oi('shiba_puppy'), 0, 0, 600, 790, f=(0.5, 0.42, 1.0), sat=0.95)
-    for s, x, y, cap, c in [('wow', 64, 120, 46, YEL), ('such capsule', 300, 210, 32, 0xe8488e), ('very gacha', 40, 470, 30, 0x37c0e0),
-                            ('much want', 330, 600, 34, 0x8ee05a), ('so 300 yen', 70, 712, 30, 0xff7a3a)]:
-        S.text(s, 'yusei', cap, x, y, c, shade=(0x1a1410, 2, 2))
-    S.rect(0, 790, 600, 58, INK)
-    S.text('WOW.  GACHA GARAGE, BACK LANE.', 'barlowx', 22, 300, 828, CREAM, track=0.12, anchor='c')
+    S.photo(oi('shiba_puppy'), 0, 0, 224, 294, f=(0.5, 0.42, 1.0), sat=0.95)
+    for s, x, y, sc, c in [('wow', 18, 26, 2, YEL), ('such capsule', 104, 70, 1, 0xff5a9e), ('very gacha', 12, 160, 1, 0x48d0f0),
+                           ('much want', 118, 214, 1, 0x9ae860), ('so 300 yen', 22, 258, 1, 0xff8a3a)]:
+        S.text(s, x, y, 'ala', sc, c, outline=[(1, 0x1a1410)])
+    S.rect(0, 294, 224, 23, INK)
+    S.text('WOW. GACHA GARAGE, BACK LANE.', 'b5', 1, 112, 302, CREAM, anchor='mt')
 
 
 @design(PROMO, 'promo:nope', P, paper='Paper001', fade=0.05, seed=8)
 def _(S):
     S.paper('Paper002', 0.3)
-    S.photo(oi('cat_black'), 24, 24, 276, 366, f=(0.42, 0.5, 1.2), sat=0.9)
-    S.photo(oi('cat_grey'), 24, 412, 276, 366, f=(0.55, 0.45, 1.25), sat=0.9)
-    S.rect(312, 24, 264, 366, INK, line=2); S.rect(312, 412, 264, 366, INK, line=2)
-    S.rect(332, 48, 92, 38, RED); S.text('NOPE', 'barlowx', 26, 378, 77, CREAM, track=0.1, anchor='c')
-    S.para('Ordering toys online and waiting a week', 'barlowx', 30, 334, 150, 224, INK, lead=1.0)
-    S.rect(332, 436, 82, 38, TEAL); S.text('YEP', 'barlowx', 26, 373, 465, CREAM, track=0.1, anchor='c')
-    S.para('One turn at the garage in the back lane', 'barlowx', 30, 334, 538, 224, INK, lead=1.0)
-    S.toy('teruteru/para', 520, 770, 110)
-    S.text(FOOT, 'barlows', 13, 300, 824, INK, track=0.22, anchor='c')
+    S.photo(oi('cat_black'), 8, 8, 102, 138, f=(0.42, 0.5, 1.2), sat=0.9)
+    S.photo(oi('cat_grey'), 8, 154, 102, 138, f=(0.55, 0.45, 1.25), sat=0.9)
+    S.rect(116, 8, 100, 138, INK, line=1); S.rect(116, 154, 100, 138, INK, line=1)
+    tag(S, 'NOPE', 140, 22, RED, scale=2)
+    S.para('Ordering toys online and waiting a week', 124, 42, 86, 'jersey10', 1, INK)
+    tag(S, 'YEP', 136, 168, TEAL, scale=2)
+    S.para('One turn at the garage in the back lane', 124, 188, 86, 'jersey10', 1, INK)
+    S.toy('teruteru/para', 194, 288, 44)
+    S.text('GACHA GARAGE - BACK LANE', 'micro5', 1, 112, 302, INK, anchor='mt', track=1)
 
 
 @design(PROMO, 'promo:distracted', P, paper='Paper001', fade=0.06, seed=9)
 def _(S):
     S.paper('Paper001', 0.3)
-    S.photo('ph:back_street', 0, 0, 600, 560, f=(0.5, 0.55, 1.15), sat=0.85)
-    def tag(s, x, y, c):
-        w = S.textw(s, 'barlowx', 20, 0.08) + 28
-        S.rect(x - w / 2, y - 30, w, 42, c); S.text(s, 'barlowx', 20, x, y, CREAM, track=0.08, anchor='c')
-    tag('MY LUNCH BREAK', 150, 230, INK); tag('ME, ON PAYDAY', 330, 420, RED); tag('THE GACHA GARAGE', 440, 120, TEAL)
-    S.text('Distracted', 'serif', 56, 40, 646, INK)
-    S.text('Customer', 'serif', 56, 40, 712, RED)
-    S.para('Payday lunch break. My feet already know the way to the back lane.', 'barlows', 18, 40, 760, 360, INK, lead=1.0)
-    S.toy('tsuppari/neko', 500, 800, 230)
+    S.photo('ph:back_street', 0, 0, 224, 210, f=(0.5, 0.55, 1.15), sat=0.85)
+    tag(S, 'MY LUNCH BREAK', 56, 88, INK); tag(S, 'ME, ON PAYDAY', 120, 158, RED); tag(S, 'THE GACHA GARAGE', 160, 44, TEAL)
+    S.text('Distracted', 'ala', 2, 12, 220, INK)
+    S.text('Customer', 'ala', 2, 12, 246, RED)
+    S.para('Payday lunch break. My feet already know the way to the back lane.', 12, 276, 128, 'micro5', 1, INK)
+    S.toy('tsuppari/neko', 186, 304, 88)
 
 
 @design(PROMO, 'promo:brain', P, paper='Paper001', fade=0.05, seed=10)
 def _(S):
-    rows = [('One turn.', PAPER, INK, [('dango/hanami', 0.5, 150)]),
-            ('Ten turns.', 0xe9e1cc, INK, [('dango/hanami', 0.25, 120), ('dango/kusa', 0.5, 130), ('dango/kinako', 0.75, 120)]),
-            ('The whole series, secret and all.', 0x2a3248, CREAM, [('tabigame/pagoda', 0.16, 100), ('tabigame/pisa', 0.38, 110), ('tabigame/tokei', 0.6, 112), ('tabigame/sekai', 0.84, 120)]),
+    rows = [('One turn.', PAPER, INK, [('dango/hanami', 0.5, 58)]),
+            ('Ten turns.', 0xe9e1cc, INK, [('dango/hanami', 0.22, 46), ('dango/kusa', 0.5, 50), ('dango/kinako', 0.78, 46)]),
+            ('The whole series, secret and all.', 0x2a3248, CREAM, [('tabigame/pagoda', 0.14, 38), ('tabigame/pisa', 0.38, 42), ('tabigame/tokei', 0.62, 42), ('tabigame/sekai', 0.86, 44)]),
             ('Inheriting the garage.', 0x0c0e1a, CREAM, None)]
     y = 0
     for i, (txt, bg, ink, toys) in enumerate(rows):
-        S.rect(0, y, 600, 200, bg)
+        S.rect(0, y, 224, 75, bg)
         if toys is None:
-            S.photo('ph:galaxy', 300, y + 12, 288, 176, f=(0.5, 0.5, 1.1), sat=0.9)
-            S.toy('teruteru/niji', 444, y + 186, 150)
+            S.photo('ph:galaxy', 112, y + 5, 106, 65, f=(0.5, 0.5, 1.1), sat=0.9)
+            S.toy('teruteru/niji', 166, y + 70, 56)
         else:
-            for ref, fx, h in toys: S.toy(ref, 300 + 288 * fx, y + 190, h)
-        S.para(txt, 'barlowx', 30 if i < 3 else 34, 26, y + 72, 250, ink, lead=1.0)
-        S.rect(0, y + 199, 600, 2, INK)
-        y += 202
-    S.rect(0, 808, 600, 40, INK)
-    S.text('GALAXY COLLECTOR  ·  ' + FOOT, 'barlows', 12, 300, 834, CREAM, track=0.18, anchor='c')
+            for ref, fx, h in toys: S.toy(ref, 112 + 106 * fx, y + 71, h)
+        S.para(txt, 8, y + 12, 96, 'jersey10', 1, ink)
+        S.rect(0, y + 75, 224, 1, INK)
+        y += 76
+    S.rect(0, 304, 224, 13, INK)
+    S.text('GALAXY COLLECTOR - GACHA GARAGE', 'micro5', 1, 112, 308, CREAM, anchor='mt', track=1)
 
 
 @design(PROMO, 'promo:simply', P, paper='Paper001', fade=0.06, seed=11)
 def _(S):
-    S.photo(oi('fuji'), 0, 0, 600, 848, f=(0.5, 0.5, 1.2), sat=0.95)
-    S.text('ONE DOES NOT SIMPLY', 'anton', S.fit('ONE DOES NOT SIMPLY', 'anton', 54, 560, 0.02), 300, 118, 0xffffff, track=0.02, anchor='c', stroke=(INK, 4))
-    S.text('TURN THE HANDLE', 'anton', 54, 300, 704, 0xffffff, track=0.02, anchor='c', stroke=(INK, 4))
-    S.text('ONLY ONCE', 'anton', 54, 300, 776, 0xffffff, track=0.02, anchor='c', stroke=(INK, 4))
-    S.text(FOOT, 'barlows', 12, 300, 830, 0xffffff, track=0.22, anchor='c', stroke=(INK, 2))
+    S.photo(oi('fuji'), 0, 0, 224, 317, f=(0.5, 0.5, 1.2), sat=0.95)
+    for s, y in [('ONE DOES', 14), ('NOT SIMPLY', 34)]: S.text(s, 'ggd', 1, 112, y, 0xffffff, anchor='mt', outline=[(1, INK)])
+    for s, y in [('TURN THE HANDLE', 244), ('ONLY ONCE', 264)]: S.text(s, 'ggd', 1, 112, y, 0xffffff, anchor='mt', outline=[(1, INK)], maxw=214)
+    S.text('GACHA GARAGE - BACK LANE', 'micro5', 1, 112, 300, 0xffffff, anchor='mt', outline=[(1, INK)], track=1)
 
 
 @design(PROMO, 'promo:nobody', P, paper='Paper002', fade=0.05, seed=12)
 def _(S):
     S.paper('Paper002', 0.35)
-    S.text('Nobody:', 'barlowx', 34, 40, 84, INK)
-    S.text('Me at 3 a.m. in the back lane:', 'barlowx', 34, 40, 140, INK)
-    S.photo('ph:rainy_lane', 40, 172, 520, 380, f=(0.5, 0.55, 1.05), sat=0.85)
-    S.text('“Just one more turn.”', 'serif', 46, 300, 640, INK, anchor='c')
-    S.rect(40, 672, 300, 2, INK)
-    S.para('Rain, no umbrella, last coin in hand. The capsule machines never close.', 'barlows', 18, 40, 712, 300, INK, lead=1.0)
-    S.toy('tsuppari/niwatori', 470, 800, 230)
-    S.text(FOOT, 'barlows', 12, 40, 830, INK, track=0.2)
+    S.text('Nobody:', 'jersey15', 1, 14, 14, INK)
+    S.text('Me at 3 a.m. in the back lane:', 'b5', 1, 14, 38, INK)
+    S.photo('ph:rainy_lane', 14, 52, 196, 142, f=(0.5, 0.55, 1.05), sat=0.85)
+    S.text('"Just one more turn."', 'ala', 1, 112, 204, INK, anchor='mt')
+    S.rect(14, 222, 110, 1, INK)
+    S.para('Rain, no umbrella, last coin in hand. The capsule machines never close.', 14, 230, 112, 'micro5', 1, INK)
+    S.toy('tsuppari/niwatori', 176, 300, 88)
+    S.text('GACHA GARAGE - BACK LANE', 'micro5', 1, 14, 304, INK, track=1)
 
 
 @design(PROMO, 'promo:expect', P, paper='Paper001', fade=0.05, seed=13)
 def _(S):
-    S.rect(0, 0, 600, 54, INK); S.text('EXPECTATION', 'barlowx', 26, 300, 38, CREAM, track=0.42, anchor='c')
-    S.photo(oi('gumballs'), 0, 54, 600, 352, f=(0.5, 0.5, 1.1), sat=0.95, bright=0.9)
-    S.toy('teruteru/niji', 300, 400, 300)
-    S.rect(0, 406, 600, 54, RED); S.text('REALITY', 'barlowx', 26, 300, 444, CREAM, track=0.42, anchor='c')
-    S.paper('Paper001', 0.3, 0, 460, 600, 388)
-    for cx in (130, 300, 470): S.toy('teruteru/shito', cx, 760, 230)
-    S.text('Drizzle. Again. Sixth time.', 'serif', 30, 300, 808, INK, anchor='c')
-    S.text(FOOT, 'barlows', 11, 300, 836, INK, track=0.22, anchor='c')
+    S.rect(0, 0, 224, 20, INK); S.text('EXPECTATION', 'silkb', 2, 112, 5, CREAM, anchor='mt', track=1)
+    S.photo(oi('gumballs'), 0, 20, 224, 132, f=(0.5, 0.5, 1.1), sat=0.95, bright=0.9)
+    S.toy('teruteru/niji', 112, 150, 112)
+    S.rect(0, 152, 224, 20, RED); S.text('REALITY', 'silkb', 2, 112, 157, CREAM, anchor='mt', track=1)
+    S.paper('Paper001', 0.3, 0, 172, 224, 145)
+    for cx in (48, 112, 176): S.toy('teruteru/shito', cx, 280, 86)
+    S.text('Drizzle. Again. Sixth time.', 'ala', 1, 112, 287, INK, anchor='mt')
+    S.text('GACHA GARAGE - BACK LANE', 'micro5', 1, 112, 306, INK, anchor='mt', track=1)
 
 
 @design(PROMO, 'promo:manager', P, paper='Paper001', fade=0.05, tape=('tl',), seed=14)
 def _(S):
     S.paper('Paper001', 0.35)
-    S.rect(0, 0, 600, 96, INK)
-    S.text('STAFF NOTICE', 'barlowx', 34, 40, 62, CREAM, track=0.3)
-    S.text('No. 1', 'barlowx', 22, 560, 60, GOLD, anchor='r')
-    S.text('MEET OUR NEW', 'barlows', 22, 40, 156, INK, track=0.35)
-    S.text('Store Manager', 'serif', 58, 38, 228, INK)
-    S.rect(40, 262, 230, 300, INK); S.photo(oi('cat_grey'), 48, 270, 214, 284, f=(0.5, 0.42, 1.35), sat=0.9)
-    rows = [('NAME', 'Mikan'), ('AGE', 'Nobody knows'), ('DUTIES', 'Naps on the counter. Checks every capsule.'), ('PAY', 'Snacks'), ('HOURS', 'Whenever she likes')]
-    y = 290
-    for k, v in rows:
-        S.text(k, 'barlowx', 15, 296, y, RED, track=0.3)
-        y = S.para(v, 'barlowx', 22, 296, y + 34, 270, INK, lead=1.0) - 4
-        S.rect(296, y - 22, 264, 1.5, INK); y += 18
-    S.para('Please be polite to the manager. She was here first.', 'serif', 26, 40, 636, 520, INK, lead=1.0)
-    S.text(FOOT, 'barlows', 13, 40, 820, INK, track=0.22)
+    S.rect(0, 0, 224, 34, INK)
+    S.text('STAFF NOTICE', 'jersey15', 1, 12, 10, CREAM, track=1)
+    S.text('No. 1', 'silkb', 1, 212, 15, GOLD, anchor='rt')
+    S.text('MEET OUR NEW', 'silk', 1, 12, 44, INK, track=2)
+    S.text('Store Manager', 'ala', S.fit('Store Manager', 'ala', 2, 200), 12, 56, INK)
+    S.rect(12, 92, 88, 114, INK); S.photo(oi('cat_grey'), 15, 95, 82, 108, f=(0.5, 0.42, 1.35), sat=0.9)
+    y = 94
+    for k, v in [('NAME', 'Mikan'), ('AGE', 'Nobody knows'), ('DUTIES', 'Naps on the counter, checks every capsule'), ('PAY', 'Snacks'), ('HOURS', 'Whenever she likes')]:
+        S.text(k, 'silkb', 1, 108, y, RED, track=1)
+        y = S.para(v, 108, y + 8, 104, 'b5', 1, INK) + 1
+        S.rect(108, y, 104, 1, INK); y += 4
+    S.para('Please be polite to the manager. She was here first.', 12, 236, 200, 'ala', 1, INK)
+    S.text('GACHA GARAGE - BACK LANE', 'micro5', 1, 12, 304, INK, track=1)
 
 
 @design(PROMO, 'promo:itwasme', P, paper='Paper001', fade=0.05, seed=15)
 def _(S):
-    S.rect(0, 0, 600, 848, 0x0a0a0a)
-    S.photo(oi('cat_fluffy'), 0, 110, 600, 628, f=(0.5, 0.45, 1.15), sat=0.85)
-    S.text('GACHA GARAGE PRESENTS', 'barlows', 14, 300, 66, CREAM, track=0.5, anchor='c')
-    S.text('What was in the capsule all along?', 'barlows', 24, 300, 618, 0xffffff, anchor='c', stroke=(0x0a0a0a, 2.5))
-    S.text('It was me. Mikan.', 'barlowx', 40, 300, 690, YEL, anchor='c', stroke=(0x0a0a0a, 3))
-    S.text('BUT IT WAS ME', 'bebas', 40, 300, 796, CREAM, track=0.3, anchor='c')
+    S.rect(0, 0, 224, 317, 0x0a0a0a)
+    S.photo(oi('cat_fluffy'), 0, 40, 224, 236, f=(0.5, 0.45, 1.15), sat=0.85)
+    S.text('GACHA GARAGE PRESENTS', 'silk', 1, 112, 18, CREAM, anchor='mt', track=2)
+    S.text('What was in the capsule all along?', 'b5', 1, 112, 226, 0xffffff, anchor='mt', outline=[(1, 0x0a0a0a)])
+    S.text('It was me. Mikan.', 'ala', 1, 112, 244, YEL, anchor='mt', outline=[(1, 0x0a0a0a)])
+    S.text('BUT IT WAS ME', 'jersey15', 1, 112, 289, CREAM, anchor='mt', track=3)
+
+
+# ==================================================================== lane posters (184 x 260), notices (164 x 232), photo-calendar pages (230 x 181)
+LP, LN, LC, LL = (184, 260), (164, 232), (230, 181), (180, 255)
+OUT = dict(paper='Paper001', streak=0.45, crease=0.5, tape=('tl', 'tr'))
+def age(**kw): d = dict(OUT); d.update(kw); return d
+
+
+@design(LANE, 'lane:travel:0', LP, **age(fade=0.22, seed=21))
+def _(S):
+    S.photo(oi('fuji'), 0, 0, 184, 196, f=(0.5, 0.48, 1.05), sat=0.9)
+    tag(S, 'KAMIYAMA RAILWAY', 66, 14, NAVY)
+    S.text('FUJI', 'ggd', 2, 92, 30, CREAM, anchor='mt', shadow=(2, 2, NAVY))
+    S.rect(0, 196, 184, 64, CREAM); S.paper('Paper001', 0.4, 0, 196, 184, 64)
+    S.text('SEE IT BY RAIL', 'jersey15', 1, 92, 203, NAVY, anchor='mt', track=1)
+    S.text('WEEKEND EXCURSION RETURN 3,800 YEN', 'micro5', 1, 92, 223, INK, anchor='mt')
+    S.rect(10, 236, 164, 2, RED)
+    S.text('KAMIYAMA RAILWAY', 'silkb', 1, 92, 244, RED, anchor='mt', track=2)
+
+
+@design(LANE, 'lane:travel:1', LP, **age(fade=0.3, seed=22))
+def _(S):
+    G = 0x2c4636
+    S.rect(0, 0, 184, 260, G); S.paper('Paper001', 0.3)
+    S.text('HOT SPRING', 'jersey15', 1, 92, 10, CREAM, anchor='mt', track=2)
+    S.text('VALLEY', 'ggd', 1, 92, 28, GOLD, anchor='mt')
+    S.photo(oi('monkeys'), 10, 52, 164, 112, f=(0.5, 0.45, 1.15), sat=0.9)
+    S.rect(10, 52, 164, 112, CREAM, line=1)
+    for i, (d, t) in enumerate([('DAY 1', 'Express to the hills'), ('DAY 2', 'Snow monkey park'), ('DAY 3', 'Inn breakfast, home')]):
+        x = 10 + i * 56
+        S.text(d, 'silkb', 1, x, 172, GOLD, track=1)
+        S.para(t, x, 181, 50, 'micro5', 1, CREAM)
+    S.rect(10, 212, 164, 1, GOLD)
+    S.text('TWO NIGHTS, RAIL AND INN', 'b5', 1, 92, 219, CREAM, anchor='mt')
+    S.text('18,000 YEN', 'jersey15', 1, 92, 230, GOLD, anchor='mt', track=1)
+    S.text('KAMIYAMA RAILWAY TRAVEL DESK', 'micro5', 1, 92, 249, CREAM, anchor='mt', track=1)
+
+
+@design(LANE, 'lane:travel:2', LP, **age(fade=0.25, seed=23))
+def _(S):
+    S.photo(oi('sailboat'), 0, 0, 184, 260, f=(0.55, 0.5, 1.0), sat=0.92)
+    S.rect(0, 0, 34, 260, SKY)
+    S.text('SUMMER SEA LINE', 'ggd', 1, 17, 246, CREAM, anchor='mb', rot=90)
+    S.rect(44, 206, 132, 46, CREAM)
+    S.text('SEASIDE EXPRESS', 'silkb', 1, 50, 212, NAVY, track=1)
+    S.text('Every Saturday in July and August', 'micro5', 1, 50, 223, INK)
+    S.text('FROM 1,200 YEN', 'jersey10', 1, 50, 234, RED, track=1)
+
+
+@design(LANE, 'lane:travel:3', LP, **age(fade=0.18, seed=24))
+def _(S):
+    S.paper('Paper001', 0.35)
+    S.photo(oi('hydrangea'), 22, 20, 140, 140, f=(0.5, 0.45, 1.2), sat=0.95)
+    S.text('Hydrangea', 'ala', 2, 92, 172, INK, anchor='mt')
+    S.text('S E A S O N', 'silk', 1, 92, 200, 0x5a4a8a, anchor='mt')
+    S.text('June weekends at Kita-Kamiyama Temple', 'micro5', 1, 92, 212, INK, anchor='mt')
+    S.rect(60, 226, 64, 1, INK)
+    S.rect(48, 236, 7, 7, RED)
+    S.text('KAMIYAMA RAILWAY', 'b5', 1, 60, 236, INK)
+
+
+@design(LANE, 'lane:festival:0', LP, **age(fade=0.2, seed=25))
+def _(S):
+    S.rect(0, 0, 184, 260, NAVY)
+    S.photo(oi('bonodori'), 0, 0, 184, 118, f=(0.5, 0.45, 1.1), sat=0.95)
+    S.photo(oi('fireworks'), 112, 82, 62, 62, f=(0.5, 0.5, 1.2), shape='circle')
+    S.ellipse(112, 82, 62, 62, CREAM, line=2)
+    S.text('SUMMER', 'ggd', 1, 10, 124, GOLD)
+    S.text('FESTIVAL', 'ggd', 1, 10, 143, CREAM)
+    S.text('SAT 8.14 - FROM 17:00', 'b5', 1, 10, 166, GOLD)
+    y = 184
+    for t, ev in [('17:00', 'NIGHT STALLS'), ('18:30', 'BON DANCE'), ('19:30', "KIDS' MIKOSHI"), ('20:30', 'FIREWORKS')]:
+        S.rect(10, y - 2, 164, 1, 0x4a5a80)
+        S.text(t, 'b5', 1, 10, y + 1, GOLD); S.text(ev, 'b5', 1, 48, y + 1, CREAM); y += 11
+    S.rect(0, 238, 184, 22, 0x121a30)
+    S.text('KAMIYAMA CENTRAL PARK - FREE ENTRY', 'micro5', 1, 92, 246, CREAM, anchor='mt')
+
+
+@design(LANE, 'lane:festival:1', LN, **age(fade=0.25, seed=26, folds=(1, 0)))
+def _(S):
+    S.photo(oi('fireworks'), 0, 0, 164, 232, f=(0.5, 0.45, 1.05), sat=0.95)
+    S.text('FIREWORKS', 'jersey20', 1, 82, 12, CREAM, anchor='mt', track=1)
+    S.text('ON THE RIVER', 'silkb', 1, 82, 36, GOLD, anchor='mt', track=2)
+    S.rect(0, 196, 164, 36, 0x0b0b10)
+    S.text('SAT 21 AUGUST - 19:30', 'b5', 1, 82, 203, CREAM, anchor='mt')
+    S.text('KAMIYAMA RIVERBANK', 'micro5', 1, 82, 217, GOLD, anchor='mt', track=1)
+
+
+@design(LANE, 'lane:event:0', LP, **age(fade=0.3, seed=27))
+def _(S):
+    S.paper('Paper001', 0.4)
+    S.rect(0, 0, 184, 58, INK)
+    S.text('GRAND', 'silkb', 1, 10, 10, CREAM, track=3)
+    S.text('SUMO', 'ggd', 2, 10, 20, CREAM)
+    S.rect(150, 0, 34, 58, RED)
+    S.text('AUTUMN', 'silkb', 1, 167, 52, CREAM, anchor='mb', rot=90, track=1)
+    S.photo(oi('sumo'), 8, 64, 168, 108, f=(0.5, 0.55, 1.25), sat=0.88)
+    S.text('KAMIYAMA AUTUMN TOUR', 'jersey10', 1, 92, 180, INK, anchor='mt', track=1)
+    S.text('15-20 AUGUST - CITY GYMNASIUM', 'b5', 1, 92, 198, RED, anchor='mt')
+    y = 212
+    for k, v in [('RINGSIDE', '6,000 YEN'), ('BOX SEAT', '3,500 YEN'), ('GALLERY', '1,500 YEN')]:
+        S.text(k, 'b5', 1, 16, y, INK); S.text(v, 'b5', 1, 168, y, INK, anchor='rt')
+        S.rect(16, y + 10, 152, 1, 0x8a8070); y += 14
+
+
+@design(LANE, 'lane:event:1', LP, **age(fade=0.22, seed=28))
+def _(S):
+    S.paper('Paper001', 0.35)
+    S.rect(0, 0, 184, 40, SKY)
+    S.text('JUNIOR BASEBALL', 'jersey15', 1, 92, 7, CREAM, anchor='mt', track=1)
+    S.text('SUMMER CUP', 'silkb', 1, 92, 27, GOLD, anchor='mt', track=2)
+    S.photo(oi('baseball'), 0, 40, 184, 124, f=(0.5, 0.5, 1.1), sat=0.85)
+    S.text('7.27', 'jersey25', 1, 10, 172, NAVY)
+    S.text('SUNDAY', 'silkb', 1, 10, 200, RED, track=1)
+    S.para('RIVERSIDE GROUND, KAMIYAMA. 8 TEAMS, FIRST PITCH 9:00. COME AND CHEER!', 72, 174, 104, 'b5', 1, INK)
+    S.rect(0, 236, 184, 24, NAVY)
+    S.text('KAMIYAMA LITTLE LEAGUE', 'micro5', 1, 92, 245, CREAM, anchor='mt', track=1)
+
+
+@design(LANE, 'lane:zoo:0', LP, **age(fade=0.25, seed=29))
+def _(S):
+    Z = 0x2f6a3a
+    S.paper('Paper001', 0.35)
+    S.photo(oi('giraffe'), 0, 0, 90, 260, f=(0.7, 0.45, 1.08), sat=0.92)
+    S.text('SHIOMI', 'jersey15', 1, 98, 10, Z, track=1)
+    S.text('ZOO', 'ggd', 2, 98, 28, Z)
+    S.para('Meet the giraffes', 98, 66, 80, 'ala', 1, INK)
+    S.photo(oi('elephant'), 104, 100, 70, 70, f=(0.5, 0.5, 1.2), shape='circle')
+    S.ellipse(104, 100, 70, 70, Z, line=2)
+    y = 180
+    for t in ['OPEN 9:00-17:00', 'CLOSED MONDAYS', 'ADULTS 600 YEN', 'CHILDREN 200 YEN']:
+        S.text(t, 'micro5', 1, 98, y, INK); y += 9
+    S.rect(90, 226, 94, 34, Z)
+    S.text('NEW THIS SUMMER:', 'micro5', 1, 98, 232, CREAM)
+    S.text('SAVANNA WALK', 'b5', 1, 98, 244, GOLD)
+
+
+@design(LANE, 'lane:zoo:1', LP, **age(fade=0.2, seed=30))
+def _(S):
+    B = 0x14385a
+    S.rect(0, 0, 184, 260, B)
+    S.photo(oi('aquarium'), 0, 0, 184, 170, f=(0.5, 0.5, 1.2), sat=0.95)
+    S.text('SHIOMI AQUARIUM', 'jersey15', 1, 92, 178, CREAM, anchor='mt', track=1)
+    S.text('SUMMER NIGHTS', 'silkb', 1, 92, 198, 0x7fd8e8, anchor='mt', track=2)
+    S.para('OPEN LATE UNTIL 21:00 EVERY SATURDAY IN AUGUST', 14, 210, 156, 'micro5', 1, CREAM, align='m')
+    S.rect(14, 232, 156, 1, 0x7fd8e8)
+    S.text('ADULTS 900  CHILDREN 400', 'b5', 1, 92, 240, CREAM, anchor='mt')
+
+
+@design(LANE, 'lane:kakigori:0', LN, **age(fade=0.15, seed=31, paper='Paper002'))
+def _(S):
+    S.paper('Paper002', 0.4)
+    S.text('KAKIGORI', 'jersey20', 1, 82, 10, RED, anchor='mt', track=1)
+    S.text('SHAVED ICE NOW SERVING', 'silkb', 1, 82, 34, SKY, anchor='mt')
+    S.photo(oi('kakigori'), 12, 46, 140, 90, f=(0.5, 0.45, 1.2), sat=0.95)
+    y = 144
+    for k, v in [('STRAWBERRY', '150'), ('MELON', '150'), ('LEMON', '150'), ('BLUE HAWAII', '150'), ('UJI KINTOKI', '250')]:
+        S.text(k, 'b5', 1, 14, y, INK); S.text(v + ' YEN', 'b5', 1, 150, y, RED, anchor='rt')
+        S.rect(14, y + 9, 136, 1, 0xc0b8a8); y += 13
+    S.text('MIKAWA-YA, CORNER OF THE LANE', 'micro5', 1, 82, 214, INK, anchor='mt')
+
+
+@design(LANE, 'lane:rent:0', LN, **age(fade=0.3, seed=32, paper='Paper002', folds=(1, 1)))
+def _(S):
+    S.paper('Paper002', 0.4)
+    S.rect(0, 0, 164, 26, 0x1f4a9a)
+    S.text('ROOM FOR RENT', 'jersey15', 1, 82, 6, CREAM, anchor='mt', track=1)
+    S.photo('oi:f291d677045b5a38', 10, 32, 144, 66, f=(0.5, 0.5, 1.1), sat=0.85)
+    y = 104
+    for k, v in [('LAYOUT', '2DK'), ('RENT', '45,000 YEN'), ('STATION', '8 MIN WALK'), ('FLOOR', '2ND, SOUTH'), ('GAS', 'INCLUDED')]:
+        S.text(k, 'silkb', 1, 12, y + 1, 0x1f4a9a); S.text(v, 'b5', 1, 152, y, INK, anchor='rt')
+        S.rect(12, y + 9, 140, 1, 0xb8b0a0); y += 12
+    S.text('OTA REALTY  3-2711', 'b5', 1, 82, 168, RED, anchor='mt')
+    for i in range(10):  # tear-off phone tabs (two already taken)
+        x = 2 + i * 16
+        if i in (3, 7): S.rect(x, 182, 16, 50, 0x5a544e, a=0); continue
+        S.rect(x, 182, 1, 50, 0x9a9080)
+        S.text('OTA 3-2711', 'micro5', 1, x + 9, 228, INK, anchor='mb', rot=90)
+
+
+def calendar(S, y0, x0, w, year, month, fs='micro5'):
+    import calendar as C
+    first, n = C.monthrange(year, month); first = (first + 1) % 7  # weeks start on Sunday
+    cw = w / 7
+    for i, d in enumerate('SMTWTFS'): S.text(d, 'b5', 1, round(x0 + cw * i + cw / 2), y0, RED if i == 0 else INK, anchor='mt')
+    for d in range(1, n + 1):
+        c = (first + d - 1) % 7; r = (first + d - 1) // 7
+        S.text(str(d), fs, 1, round(x0 + cw * c + cw / 2), y0 + 12 + r * 9, RED if c == 0 else INK, anchor='mt')
+
+
+@design(LANE, 'lane:print:0', LC, **age(fade=0.3, seed=33, paper='Paper003'))
+def _(S):
+    S.paper('Paper001', 0.35)
+    S.photo('ph:sakura', 0, 0, 120, 181, f=(0.5, 0.4, 1.1), sat=0.9)
+    S.text('APRIL', 'jersey20', 1, 176, 10, INK, anchor='mt', track=1)
+    S.text('SHOWA 62 - 1987', 'silk', 1, 176, 34, RED, anchor='mt', track=1)
+    calendar(S, 50, 126, 100, 1987, 4)
+    S.text('KAMIYAMA SHINKIN BANK', 'micro5', 1, 176, 168, INK, anchor='mt')
+
+
+@design(LANE, 'lane:print:1', LC, **age(fade=0.25, seed=34, paper='Paper003'))
+def _(S):
+    S.paper('Paper001', 0.35)
+    S.photo('ph:cumulus', 0, 0, 230, 112, f=(0.5, 0.45, 1.05), sat=0.95)
+    S.text('AUGUST', 'ggd', 1, 8, 120)
+    S.text('1987', 'silk', 1, 8, 142, SKY, track=2)
+    calendar(S, 118, 92, 132, 1987, 8)
+    S.text('OTA REALTY - 3-2711', 'micro5', 1, 8, 166, INK)
+
+
+@design(LANE, 'lane:print:2', LC, **age(fade=0.35, seed=35, paper='Paper003'))
+def _(S):
+    S.photo('ph:rainy_lane', 0, 0, 230, 181, f=(0.5, 0.5, 1.0), sat=0.85)
+    S.rect(120, 22, 100, 138, CREAM); S.paper('Paper001', 0.35, 120, 22, 100, 138)
+    S.text('June', 'ala', 2, 170, 30, INK, anchor='mt')
+    S.text('SHOWA 62', 'silk', 1, 170, 56, SKY, anchor='mt', track=1)
+    calendar(S, 70, 124, 92, 1987, 6)
+
+
+# ---- the three lost-pet notices, rebuilt in pixel type from their Canva layouts (photos and paper as before)
+@design(LANE, 'lane:lost:cat0', LL, **age(paper='Paper002', fade=0.18, streak=0.5, crease=0.6, folds=(1, 1), seed=41))
+def _(S):
+    BR, PA = 0x492809, 0xe2c899
+    S.rect(0, 0, 180, 255, BR)
+    S.rect(7, 7, 166, 241, PA); S.paper('Paper003', 0.9, 7, 7, 166, 241)
+    S.rect(11, 11, 158, 233, BR, line=1)
+    S.text('MISSING CAT', 'jersey20', 1, 90, 18, BR, anchor='mt', track=1)
+    S.rect(16, 48, 72, 52, BR)
+    S.text('REWARD', 'silkb', 1, 52, 60, PA, anchor='mt', track=2)
+    S.text('5,000 YEN', 'b5', 1, 52, 76, PA, anchor='mt')
+    S.text('KURO', 'ggd', 1, 16, 110, BR)
+    S.rect(16, 130, 72, 2, BR)
+    S.para('Black female cat, 2 years old, red collar with a little bell. Very shy.', 16, 137, 72, 'micro5', 1, BR)
+    S.rect(94, 46, 72, 110, BR); S.photo(oi('cat_black'), 97, 49, 66, 98, f=(0.42, 0.5, 1.1), sat=0.9)
+    S.para('LAST SEEN: SHOWA-CHO 2-CHOME BACK LANE, NEAR THE GACHA GARAGE', 16, 186, 150, 'micro5', 1, BR)
+    S.rect(16, 206, 150, 2, BR)
+    S.text('IF YOU SEE HER PLEASE CALL', 'micro5', 1, 166, 213, BR, anchor='rt')
+    S.text('23-4567 (TANAKA)', 'jersey10', 1, 166, 224, BR, anchor='rt', track=1)
+
+
+@design(LANE, 'lane:lost:cat1', LL, **age(paper='Paper002', fade=0.1, streak=0.35, crease=0.4, folds=(1, 1), torn=('br',), seed=42))
+def _(S):
+    BRN, SAND = 0x6b5645, 0xf2e1c6
+    S.rect(0, 0, 180, 255, 0xfffbf6); S.paper('Paper002', 0.3)
+    S.rect(16, 12, 148, 46, SAND, r=8)
+    S.text('MISSING CAT', 'jersey20', 1, 90, 18, BRN, anchor='mt', track=1)
+    S.text('PLEASE HELP US FIND "TAMA"', 'micro5', 1, 90, 44, BRN, anchor='mt')
+    S.rect(14, 68, 152, 124, 0xfff3e6, r=8)
+    S.photo(oi('cat_grey'), 22, 76, 136, 80, f=(0.55, 0.45, 1.25), sat=0.9)
+    S.poly([(146, 76), (158, 76), (158, 88)], BRN)
+    S.para('Grey tabby, female, 4 years old. Very friendly, answers to her name. Last seen: Sakura Heights car park.', 22, 162, 136, 'micro5', 1, BRN, align='m')
+    S.text('IF YOU HAVE ANY INFORMATION', 'micro5', 1, 90, 206, BRN, anchor='mt')
+    S.text('CALL 23-8812 ANY TIME', 'jersey10', 1, 90, 218, BRN, anchor='mt', track=1)
+
+
+@design(LANE, 'lane:lost:dog0', LL, **age(paper='Paper002', fade=0.25, streak=0.6, crease=0.7, folds=(1, 1), seed=43))
+def _(S):
+    DK, BL, OR = 0x2a2e30, 0x345c72, 0xd17d5d
+    S.rect(0, 0, 180, 255, 0xffffff); S.paper('Paper002', 0.3)
+    S.rect(0, 0, 180, 6, OR); S.rect(0, 249, 180, 6, BL)
+    S.text('LOST DOG', 'ggd', 1, 90, 16, DK, anchor='mt')
+    S.photo(oi('shiba'), 38, 42, 104, 100, f=(0.5, 0.42, 1.25), shape='circle', sat=0.9)
+    S.text('HACHI', 'jersey20', 1, 90, 150, BL, anchor='mt', track=2)
+    S.para('Shiba inu, male, 3 years old, red collar. Friendly but runs if chased.', 16, 176, 148, 'b5', 1, BL, align='m')
+    S.para('Last seen near the Kamiyama Underpass, evening of 3 August.', 16, 206, 148, 'micro5', 1, DK, align='m')
+    S.text('PLEASE CALL 23-4567', 'silkb', 1, 90, 230, OR, anchor='mt', track=1)
 
 
 # ==================================================================== bake
@@ -256,9 +526,9 @@ def render(reg, only=None):
     out = {}
     for k, (size, fn, age) in reg.items():
         if only and k not in only: continue
-        S = Sheet(600, round(600 * size[1] / size[0]), PAPER)
+        S = Sheet(size[0], size[1], PAPER)
         fn(S)
-        out[k] = S.finish(size, **age)
+        out[k] = S.finish(**age)
         print(' ', k)
     return out
 
@@ -269,11 +539,13 @@ if __name__ == '__main__':
     for name in sheets:
         reg = PROMO if name == 'promo' else LANE
         ims = render(reg, only)
-        if name == 'lane' and not only:
-            for k, (src, size, age) in BC.LANE.items(): ims[k] = BC.panel(src, size, age)
         out, idx = BP.pack(ims, 1024, alpha=True)
         if '--sheet' in sys.argv:
             p = sys.argv[sys.argv.index('--sheet') + 1].replace('.png', '_' + name + '.png')
             bg = Image.new('RGBA', out.size, (90, 84, 78, 255)); bg.alpha_composite(out); bg.convert('RGB').save(p); print('sheet', p, out.size)
         else:
-            BP.save_sheet(name, out, idx, quality=88)
+            # lossy WebP with sharp's smart chroma subsampling: photos stay small, the pixel type keeps its colour edges
+            import json
+            PX.save_webp(out, os.path.join(BP.OUT, name + '.webp'), near=False, quality=90)
+            json.dump(idx, open(os.path.join(BP.REGIONS, name + '.json'), 'w'), separators=(',', ':'))
+            print(name, out.size, os.path.getsize(os.path.join(BP.OUT, name + '.webp')) // 1024, 'KB')

@@ -1,0 +1,34 @@
+{
+ "id": "paper_crumpled",
+ "src": "sketchfab:f461c50d16e8446b8f58a02d67edd99a",
+ "credit": {
+  "title": "Crumpled Up Paper",
+  "author": "Dean Satine",
+  "authorUrl": "https://sketchfab.com/satinedean",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/crumpled-up-paper-f461c50d16e8446b8f58a02d67edd99a",
+  "site": "Sketchfab"
+ },
+ "tris": 512,
+ "tex": 160,
+ "size": [
+  0.055,
+  0.06,
+  0.059
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#7d5876",
+   "#9b7a93",
+   "#b5a2ae",
+   "#d0c7cc",
+   "#edebec",
+   "#efeeef",
+   "#f1f1f1",
+   "#f4f4f4",
+   "#f6f6f6"
+  ]
+ },
+ "warnings": []
+}

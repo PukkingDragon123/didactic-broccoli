@@ -100,7 +100,11 @@ class Sheet:
         return tw / self.k, th / self.k
 
     # ---------------------------------------------------------------- type (pixel faces only, set after the reduction)
-    def text(self, s, x, y, face='b5', scale=1, fill=0x1c1816, anchor='lt', rot=0, **kw):
+    def text(self, s, *a, anchor='lt', rot=0, **kw):
+        # text(s, x, y, face, scale, fill) or text(s, face, scale, x, y, fill)
+        a = list(a) + [None] * (5 - len(a))
+        x, y, face, scale, fill = (a[2], a[3], a[0], a[1], a[4]) if isinstance(a[0], str) else (a[0], a[1], a[2], a[3], a[4])
+        face = face or 'b5'; scale = scale or 1; fill = 0x1c1816 if fill is None else fill
         """A line of pixel type (tools/pixprint.py faces: ggd, jersey10-25, ala, jacq12/24, ps2p, silk/silkb, micro5,
         b5, dot for kana), laid on the final texture grid after the art is reduced: one font pixel = scale texels,
         nearest only. (x, y) in final px is the anchor of the letters' ink box ('lt', 'mb', 'rm'...). kw: track, bold,

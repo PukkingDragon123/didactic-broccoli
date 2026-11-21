@@ -3608,6 +3608,51 @@
    "tris": 1000,
    "cap": 512,
    "name": "Practice_Fire extinguisher box"
+  },
+  {
+   "id": "dog_leash",
+   "src": "sketchfab:53f12d5df3914567a0fb08ded8cfc8e8",
+   "h": 0.15,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Dog leash"
+  },
+  {
+   "id": "old_notebook",
+   "src": "sketchfab:0f48bdbda70d4fe89fa0477e731dcadc",
+   "h": 0.03,
+   "ppm": 700,
+   "tris": 1400,
+   "cap": 512,
+   "name": "My own old notebook"
+  },
+  {
+   "id": "sink_round",
+   "src": "sketchfab:a1066b6594a04531ad63d5386998e2bb",
+   "h": 0.3,
+   "ppm": 400,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Round Steel Sink"
+  },
+  {
+   "id": "paper_crumpled",
+   "src": "sketchfab:f461c50d16e8446b8f58a02d67edd99a",
+   "h": 0.06,
+   "ppm": 700,
+   "tris": 512,
+   "cap": 512,
+   "name": "Crumpled Up Paper"
+  },
+  {
+   "id": "plastic_bag",
+   "src": "sketchfab:b91fdb59320d48189c9d6047a1411836",
+   "h": 0.25,
+   "ppm": 500,
+   "tris": 1647,
+   "cap": 512,
+   "name": "plastic Bag"
   }
  ]
 }

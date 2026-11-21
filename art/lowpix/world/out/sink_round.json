@@ -1,0 +1,34 @@
+{
+ "id": "sink_round",
+ "src": "sketchfab:a1066b6594a04531ad63d5386998e2bb",
+ "credit": {
+  "title": "Round Steel Sink",
+  "author": "rickmaolly",
+  "authorUrl": "https://sketchfab.com/rickmaolly",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/round-steel-sink-a1066b6594a04531ad63d5386998e2bb",
+  "site": "Sketchfab"
+ },
+ "tris": 2487,
+ "tex": 512,
+ "size": [
+  0.555,
+  0.3,
+  0.555
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#435e7d",
+   "#5b819f",
+   "#83a1b3",
+   "#a9bfc7",
+   "#cedadd",
+   "#d6dfe1",
+   "#dde4e5",
+   "#e4e9e9",
+   "#ebeded"
+  ]
+ },
+ "warnings": []
+}

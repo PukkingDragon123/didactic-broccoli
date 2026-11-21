@@ -1754,6 +1754,25 @@
   ],
   "bytes": 101764
  },
+ "dog_leash": {
+  "id": "dog_leash",
+  "name": "Dog leash",
+  "src": "sketchfab:53f12d5df3914567a0fb08ded8cfc8e8",
+  "title": "Dog leash",
+  "author": "Wilin_Amaurea",
+  "authorUrl": "https://sketchfab.com/wilinamaurea",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/dog-leash-53f12d5df3914567a0fb08ded8cfc8e8",
+  "site": "Sketchfab",
+  "tris": 2497,
+  "tex": 256,
+  "size": [
+   0.16,
+   0.15,
+   0.04
+  ],
+  "bytes": 41104
+ },
  "drinking_fountain": {
   "id": "drinking_fountain",
   "name": "Drinking Fountain",
@@ -3943,6 +3962,25 @@
   ],
   "bytes": 97852
  },
+ "old_notebook": {
+  "id": "old_notebook",
+  "name": "My own old notebook",
+  "src": "sketchfab:0f48bdbda70d4fe89fa0477e731dcadc",
+  "title": "My own old notebook",
+  "author": "Neo_minigan",
+  "authorUrl": "https://sketchfab.com/neominigan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/my-own-old-notebook-0f48bdbda70d4fe89fa0477e731dcadc",
+  "site": "Sketchfab",
+  "tris": 1398,
+  "tex": 476,
+  "size": [
+   2.788,
+   0.03,
+   1.896
+  ],
+  "bytes": 54500
+ },
  "ottoman": {
   "id": "ottoman",
   "name": "Ottoman 01",
@@ -3979,6 +4017,25 @@
    0.718
   ],
   "bytes": 58500
+ },
+ "paper_crumpled": {
+  "id": "paper_crumpled",
+  "name": "Crumpled Up Paper",
+  "src": "sketchfab:f461c50d16e8446b8f58a02d67edd99a",
+  "title": "Crumpled Up Paper",
+  "author": "Dean Satine",
+  "authorUrl": "https://sketchfab.com/satinedean",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/crumpled-up-paper-f461c50d16e8446b8f58a02d67edd99a",
+  "site": "Sketchfab",
+  "tris": 512,
+  "tex": 160,
+  "size": [
+   0.055,
+   0.06,
+   0.059
+  ],
+  "bytes": 16844
  },
  "park_bench": {
   "id": "park_bench",
@@ -4353,6 +4410,25 @@
    0.256
   ],
   "bytes": 23808
+ },
+ "plastic_bag": {
+  "id": "plastic_bag",
+  "name": "plastic Bag",
+  "src": "sketchfab:b91fdb59320d48189c9d6047a1411836",
+  "title": "plastic Bag",
+  "author": "saruedaacevedo",
+  "authorUrl": "https://sketchfab.com/saruedaacevedo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/plastic-bag-b91fdb59320d48189c9d6047a1411836",
+  "site": "Sketchfab",
+  "tris": 1646,
+  "tex": 352,
+  "size": [
+   0.212,
+   0.25,
+   0.213
+  ],
+  "bytes": 30816
  },
  "post_box": {
   "id": "post_box",
@@ -5328,6 +5404,25 @@
    0.56
   ],
   "bytes": 52688
+ },
+ "sink_round": {
+  "id": "sink_round",
+  "name": "Round Steel Sink",
+  "src": "sketchfab:a1066b6594a04531ad63d5386998e2bb",
+  "title": "Round Steel Sink",
+  "author": "rickmaolly",
+  "authorUrl": "https://sketchfab.com/rickmaolly",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/round-steel-sink-a1066b6594a04531ad63d5386998e2bb",
+  "site": "Sketchfab",
+  "tris": 2487,
+  "tex": 512,
+  "size": [
+   0.555,
+   0.3,
+   0.555
+  ],
+  "bytes": 108440
  },
  "slippers": {
   "id": "slippers",
