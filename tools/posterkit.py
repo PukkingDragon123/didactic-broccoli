@@ -1,10 +1,11 @@
 """posterkit.py: a small layout kit for the game's printed posters and flyers, set like a print designer would:
-OFL faces (tools/printkit.py FONTS) sized by cap height, kerned pairs (raqm) plus open tracking, optical anchors,
+pixel type only (tools/pixprint.py's OFL pixel faces, Alagard, GG Display, the 5x7 font, DotGothic16 for kana) laid
+on the final texture grid at whole-number scales,
 real photographs cover-cropped like offset print (printkit.printed), cut-outs of the actual in-game toy renders
 (tools/render-toys.mjs cache), flat ink only (hard offset shades and keylines; no glow, no gradient), on real paper
-scans (tools/paperkit.py). Everything is laid out in design units (a 600 px wide sheet), drawn k x larger and reduced
-once at the end, so the type is clean at the texel grid.
-  S = Sheet(600, 848, bg); S.photo('ph:garage', ...); S.toy('teruteru/para', cx, base_y, h); S.text(...); S.finish((w, h), age)
+scans (tools/paperkit.py). Coordinates are final texture px; the art is drawn k x larger and reduced once, then the
+pixel type is set on the grid (never resampled), then the sheet is aged.
+  S = Sheet(224, 317, bg); S.photo('ph:garage', ...); S.toy('teruteru/para', cx, base_y, h); S.text(...); S.finish(**age)
 Photo refs: 'ph:<name>' public/img/photos/<name>.jpg, 'oi:<id>' Open Images original in the art cache, 'cut:<name>'
 an Open Images cut-out (art cache/cuts), 'toy:<series>/<id>' a toy render. All credited in CREDITS.md."""
 import os
@@ -12,6 +13,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 from printkit import font, cover, printed, CACHE, ROOT
 import paperkit as PK
+import pixprint as PX
+PX.FACES.setdefault('dot', ('dotgothic16/DotGothic16-Regular.ttf', 16))  # DotGothic16 for kana
 
 OI = os.path.join(CACHE, 'oi'); TOYS = os.path.join(CACHE, 'toys'); CUTS = os.path.join(CACHE, 'cuts'); ACG = os.path.join(CACHE, 'acg')
 PHOTOS = os.path.join(ROOT, 'public', 'img', 'photos')
@@ -35,9 +38,11 @@ def rgba(c, a=255): return ((c >> 16) & 255, (c >> 8) & 255, c & 255, a)
 
 
 class Sheet:
-    def __init__(self, w=600, h=848, bg=0xf3ecdc, k=2):
+    def __init__(self, w, h, bg=0xf3ecdc, k=5):
+        """w x h: the final texture size in px (all coordinates are in these px); the art is drawn k x larger."""
         self.w, self.h, self.k = w, h, k
         self.im = Image.new('RGBA', (int(w * k), int(h * k)), rgba(bg))
+        self.late = []
 
     def B(self, x, y, w, h): k = self.k; return [int(round(x * k)), int(round(y * k)), int(round((x + w) * k)) - 1, int(round((y + h) * k)) - 1]
 
@@ -94,91 +99,58 @@ class Sheet:
         self.im.alpha_composite(t, (ox, oy))
         return tw / self.k, th / self.k
 
-    # ---------------------------------------------------------------- type
-    def _font(self, face, cap):
-        probe = font(face, 200); bb = probe.getbbox('H')
-        px = 200 * cap * self.k / max(1, bb[3] - bb[1])
-        return font(face, px), px
+    # ---------------------------------------------------------------- type (pixel faces only, set after the reduction)
+    def text(self, s, x, y, face='b5', scale=1, fill=0x1c1816, anchor='lt', rot=0, **kw):
+        """A line of pixel type (tools/pixprint.py faces: ggd, jersey10-25, ala, jacq12/24, ps2p, silk/silkb, micro5,
+        b5, dot for kana), laid on the final texture grid after the art is reduced: one font pixel = scale texels,
+        nearest only. (x, y) in final px is the anchor of the letters' ink box ('lt', 'mb', 'rm'...). kw: track, bold,
+        outline=[(r, col)], shadow=(dx, dy, col), extrude, maxw. rot 90: reads bottom to top. Returns the ink (w, h)."""
+        self.late.append(('text', s, x, y, face, scale, fill, anchor, rot, kw))
+        w, h = PX.text_size(s, face, scale, kw.get('track', 0), kw.get('bold', 0))
+        return w, h
 
-    def textw(self, s, face, cap, track=0.0):
-        f, px = self._font(face, cap)
-        return sum(self._adv(s, f, px, track)) / self.k
+    def tw(self, s, face='b5', scale=1, track=0): return PX.text_size(s, face, scale, track)[0]
 
-    def _adv(self, s, f, px, track):
-        out = []
-        for i, ch in enumerate(s):
-            nxt = s[i + 1] if i + 1 < len(s) else ''
-            a = (f.getlength(ch + nxt) - f.getlength(nxt)) if nxt else f.getlength(ch)
-            out.append(a + (track * px if nxt else 0))
-        return out
+    def fit(self, s, face, scale, maxw, track=0):
+        """The largest whole scale <= scale at which s fits maxw px."""
+        while scale > 1 and PX.text_size(s, face, scale, track)[0] > maxw: scale -= 1
+        return scale
 
-    def fit(self, s, face, cap, maxw, track=0.0):
-        """The cap height at which s fits maxw (never larger than cap)."""
-        w = self.textw(s, face, cap, track)
-        return cap if w <= maxw else cap * maxw / w
-
-    def text(self, s, face, cap, x, y, fill, track=0.0, anchor='l', shade=None, stroke=None, sx=1.0, rot=0, alpha=255):
-        """s with cap height cap, baseline y, anchored 'l' / 'c' / 'r' on x. shade = (colour, dx, dy) hard offset;
-        stroke = (colour, width) a hard ink outline (meme captions). rot: degrees (90 = reads bottom to top).
-        Returns the set width in design units."""
-        f, px = self._font(face, cap)
-        adv = self._adv(s, f, px, track); tw = sum(adv)
-        asc, desc = f.getmetrics()
-        sw = int(round((stroke[1] if stroke else 0) * self.k))
-        pad = int(8 * self.k) + sw
-        layer = Image.new('L', (int(tw + 2 * pad), int(asc + desc + 2 * pad)), 0)
-        dl = ImageDraw.Draw(layer); cx = pad
-        for ch, a in zip(s, adv): dl.text((cx, pad), ch, font=f, fill=255); cx += a
-        out = None
-        if stroke:
-            out = Image.new('L', layer.size, 0); do = ImageDraw.Draw(out); cx = pad
-            for ch, a in zip(s, adv): do.text((cx, pad), ch, font=f, fill=255, stroke_width=sw, stroke_fill=255); cx += a
-        if sx != 1.0:
-            nw = max(1, int(layer.width * sx)); layer = layer.resize((nw, layer.height), Image.LANCZOS)
-            if out: out = out.resize((nw, out.height), Image.LANCZOS)
-            tw *= sx; pad_x = pad * sx
-        else: pad_x = pad
-        ox = {'l': 0, 'c': -tw / 2, 'r': -tw}[anchor] - pad_x
-        oy = -asc - pad
-        layers = []
-        if shade: layers.append((out or layer, shade[0], shade[1], shade[2]))
-        if stroke: layers.append((out, stroke[0], 0, 0))
-        layers.append((layer, fill, 0, 0))
-        for m, col, dx, dy in layers:
-            solid = Image.new('RGBA', m.size, rgba(col)); solid.putalpha(m.point(lambda v: v * alpha // 255))
-            if rot:
-                solid = solid.rotate(rot, expand=True, resample=Image.BICUBIC)
-                # rotate about the anchor point (x, y): for 90 the layer's left-baseline maps to its bottom
-                import math
-                r = math.radians(rot); W0, H0 = m.size
-                px0, py0 = -ox, -oy  # anchor inside the unrotated layer
-                cxl, cyl = W0 / 2, H0 / 2
-                rx = (px0 - cxl) * math.cos(r) + (py0 - cyl) * math.sin(r) + solid.width / 2
-                ry = -(px0 - cxl) * math.sin(r) + (py0 - cyl) * math.cos(r) + solid.height / 2
-                self.im.alpha_composite(solid, (int(x * self.k - rx + dx * self.k), int(y * self.k - ry + dy * self.k)))
-            else:
-                self.im.alpha_composite(solid, (int(x * self.k + ox + dx * self.k), int(y * self.k + oy + dy * self.k)))
-        return tw / self.k
-
-    def para(self, s, face, cap, x, y, w, fill, lead=1.55, track=0.0, align='l'):
-        """Wrapped text from baseline y; returns the baseline after the last line."""
-        for line in s.split('\n'):
-            words, cur = line.split(' '), ''
+    def para(self, text, x, y, w, face='b5', scale=1, fill=0x1c1816, lh=None, align='l', track=0):
+        """Word-wrapped pixel type in a column w px wide from top y; returns the y under the last line."""
+        _, hh = PX.text_size('AH', face, scale)
+        lh = lh or hh + 2 * scale + (1 if face in ('b5', 'micro5', 'silk', 'silkb') else 0)
+        for part in text.split('\n'):
+            cur = ''
             rows = []
-            for wd in words:
-                t = (cur + ' ' + wd).strip()
-                if self.textw(t, face, cap, track) > w and cur: rows.append(cur); cur = wd
+            for word in part.split(' '):
+                t = (cur + ' ' + word).strip()
+                if cur and PX.text_size(t, face, scale, track)[0] > w: rows.append(cur); cur = word
                 else: cur = t
             rows.append(cur)
             for r in rows:
-                ax = {'l': x, 'c': x + w / 2, 'r': x + w}[align]
-                self.text(r, face, cap, ax, y, fill, track=track, anchor=align); y += cap * lead * 1.45
+                if r: self.text(r, {'l': x, 'm': x + w / 2, 'r': x + w}[align], y, face, scale, fill, anchor=align + 't', track=track)
+                y += lh
         return y
 
+    def _late(self, im):
+        P = PX.Sheet(self.w, self.h, 0xffffff); P.im = im; P.d = ImageDraw.Draw(im)
+        for job in self.late:
+            _, s, x, y, face, scale, fill, anchor, rot, kw = job
+            if not rot:
+                P.text(s, x, y, face, scale, fill, anchor=anchor, **kw); continue
+            w, h = PX.text_size(s, face, scale, kw.get('track', 0), kw.get('bold', 0))
+            pad = 8 * scale
+            T = PX.Sheet(w + 2 * pad, h + 2 * pad, None); T.text(s, pad, pad, face, scale, fill, anchor='lt', **kw)
+            r = T.im.rotate(rot, expand=True, resample=Image.NEAREST)
+            bb = r.getbbox() or (0, 0, 1, 1); r = r.crop(bb)
+            X = x - {'l': 0, 'm': r.width / 2, 'r': r.width}[anchor[0]]; Y = y - {'t': 0, 'm': r.height / 2, 'b': r.height}[anchor[1]]
+            im.paste(r, (int(round(X)), int(round(Y))), r)
+        return im
+
     # ---------------------------------------------------------------- out
-    def finish(self, size, **age):
-        """Aged on real paper (paperkit.age) at print scale, then reduced once to the texture size."""
-        im = self.im.convert('RGB')
-        im = im.resize((size[0] * 2, size[1] * 2), Image.LANCZOS)
-        out = PK.age(im, **age) if age else im.convert('RGBA')
-        return out.resize(size, Image.LANCZOS)
+    def finish(self, size=None, **age):
+        """Art reduced once to the texture size, the pixel type laid on its grid, then aged on real paper (paperkit)."""
+        im = self.im.convert('RGB').resize((self.w, self.h), Image.LANCZOS)
+        im = self._late(im)
+        return PK.age(im, **age) if age else im.convert('RGBA')

@@ -2,7 +2,7 @@
 .cos {
   --chrome: #d8d2c4; --hi: #fbf8f0; --lo: #847c6c; --dark: #3a3430; --ink: #1e1a18;
   --title-a: #b82a2a; --title-b: #ff6f91; --sel: #2a5aa8;
-  --f: 'Alagard', 'DotGothic16', monospace;
+  --f: 'Alagard', 'DotGothic16', 'Pixelify Sans';
   position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center;
   font: 16px/1.25 var(--f); color: var(--ink); user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
 }
@@ -116,7 +116,7 @@ body.cos-on #guide, body.cos-on #waypoint, body.in-room #waypoint { opacity: 0 !
 .cos-logo-bar { width: 220px; height: 16px; padding: 2px; border: 2px solid #8a8a8a; }
 .cos-logo-bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, #ff6f91 0 10px, transparent 10px 14px); }
 
-.cos-resume { position: fixed; inset: 0; z-index: 45; display: flex; align-items: center; justify-content: center; background: rgba(10, 8, 6, .35); border: 0; cursor: pointer; font: 32px 'Alagard', monospace; color: #fff; }
+.cos-resume { position: fixed; inset: 0; z-index: 45; display: flex; align-items: center; justify-content: center; background: rgba(10, 8, 6, .35); border: 0; cursor: pointer; font: 32px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #fff; }
 .cos-resume span { display: flex; align-items: center; gap: 12px; padding: 14px 26px; background: #2a2220; border: 3px solid #ffd23f; text-shadow: 2px 2px 0 #000; }
 
 /* ------------------------------------------------------------------ apps */

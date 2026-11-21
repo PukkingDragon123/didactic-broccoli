@@ -8,10 +8,10 @@ import { textW5, mask5 } from './font5x7.js';
 //   measure() snap Alagard to the nearest of those, and anything asked for under 12 px is set in the 5 x 7 bitmap
 //   font (src/gfx/font5x7.js) instead. FONT_JP (DotGothic16, 16 px) for Japanese decorative art.
 // English text should use FONT_EN / FONT_DISPLAY; Japanese is kept for in-world decorative art only.
-export const FONT_JP = '"DotGothic16", "Pixelify Sans", monospace';
-export const FONT_EN = '"Alagard", "DotGothic16", sans-serif';
-export const FONT_DISPLAY = '"Alagard", "DotGothic16", sans-serif';
-export const FONT_KEY = '"Alagard", sans-serif';
+export const FONT_JP = '"DotGothic16", "Pixelify Sans"';
+export const FONT_EN = '"Alagard", "DotGothic16", "Pixelify Sans"';
+export const FONT_DISPLAY = '"Alagard", "DotGothic16", "Pixelify Sans"';
+export const FONT_KEY = '"Alagard", "Pixelify Sans", "DotGothic16"';
 const ALAGARD = /Alagard|GG Display|GG Bold/;
 /** Alagard's crisp size for a requested size (0 = too small: use the 5 x 7 bitmap font). */
 export function crispSize(size, font) {

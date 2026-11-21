@@ -14,9 +14,9 @@
   --red: #e5383b;
   --green: #58c06c;
   --muted: #d8c49c;
-  --font-ui: 'Alagard', 'DotGothic16', sans-serif;
-  --font-display: 'Alagard', 'DotGothic16', sans-serif;
-  --font-key: 'Alagard', sans-serif;
+  --font-ui: 'Alagard', 'DotGothic16', 'Pixelify Sans';
+  --font-display: 'Alagard', 'DotGothic16', 'Pixelify Sans';
+  --font-key: 'Alagard', 'Pixelify Sans', 'DotGothic16';
   --font-jp: var(--font-ui); /* legacy aliases */
   --font-en: var(--font-ui);
 }

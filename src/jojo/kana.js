@@ -57,7 +57,7 @@ export function bake(ch, palName) {
   const src = document.createElement('canvas');
   src.width = CELL + 4; src.height = CELL + 6;
   const sg = src.getContext('2d', { willReadFrequently: true });
-  sg.font = '16px "DotGothic16", monospace';
+  sg.font = '16px "DotGothic16", "Pixelify Sans"';
   sg.textBaseline = 'alphabetic';
   sg.textAlign = 'left';
   sg.fillStyle = '#000';

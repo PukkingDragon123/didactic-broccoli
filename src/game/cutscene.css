@@ -5,7 +5,7 @@
 html body #cutscene.on .sub {
   background: none; border: 0; border-image: none; outline: 0; box-shadow: none; filter: none; padding: 0 12px;
   width: min(980px, 92vw); text-align: center; bottom: calc(11vh + 22px);
-  font: 32px/40px 'Alagard', monospace; color: #fff8ec; letter-spacing: 1px;
+  font: 32px/40px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #fff8ec; letter-spacing: 1px;
   text-shadow: 2px 0 0 #120a0e, -2px 0 0 #120a0e, 0 2px 0 #120a0e, 0 -2px 0 #120a0e,
     2px 2px 0 #120a0e, -2px 2px 0 #120a0e, 2px -2px 0 #120a0e, -2px -2px 0 #120a0e, 4px 5px 0 rgba(18, 10, 14, .55);
   transition: opacity .24s steps(3), transform .24s steps(3);
@@ -13,7 +13,7 @@ html body #cutscene.on .sub {
 html body #cutscene.on .sub::before { content: none; display: none; }
 html body #cutscene.on .sub .who {
   display: block; background: none; padding: 0; margin-bottom: 6px;
-  font: 16px/20px 'Alagard', monospace; color: #ffd23f; letter-spacing: 2px;
+  font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #ffd23f; letter-spacing: 2px;
   text-shadow: 2px 0 0 #120a0e, -2px 0 0 #120a0e, 0 2px 0 #120a0e, 0 -2px 0 #120a0e, 2px 2px 0 #120a0e, -2px 2px 0 #120a0e, 2px -2px 0 #120a0e, -2px -2px 0 #120a0e;
 }
 html body #cutscene.on .sub .txt::after { display: none; }
@@ -26,7 +26,7 @@ html body #cutscene.on .skip {
 html body #cutscene.on .skip.show { opacity: 1; }
 html body #cutscene.on .skip.hint { opacity: .85; }
 html body #cutscene.on .skip .lbl {
-  font: 16px/18px 'Alagard', monospace; color: #fff8ec; letter-spacing: 1px; white-space: nowrap;
+  font: 16px/18px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #fff8ec; letter-spacing: 1px; white-space: nowrap;
   text-shadow: 2px 0 0 #120a0e, -2px 0 0 #120a0e, 0 2px 0 #120a0e, 0 -2px 0 #120a0e, 2px 2px 0 #120a0e, -2px -2px 0 #120a0e, 2px -2px 0 #120a0e, -2px 2px 0 #120a0e;
 }
 html body #cutscene.on .skip .fill {

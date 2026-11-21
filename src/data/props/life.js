@@ -15,7 +15,7 @@ function stamp5(v, str, cx, y, z, col) {
 }
 
 /** Stamp a string set in a canvas font as voxels on the +z face (x right, y up), centred on (cx, cy). */
-function stampFont(v, str, cx, cy, z, col, font = '"DotGothic16", monospace', size = 16) {
+function stampFont(v, str, cx, cy, z, col, font = '"DotGothic16", "Pixelify Sans"', size = 16) {
   const c = document.createElement('canvas');
   c.width = size * str.length + 8; c.height = size + 8;
   const g = c.getContext('2d');

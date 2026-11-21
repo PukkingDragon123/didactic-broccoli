@@ -42,9 +42,9 @@ function cardTexture(key, finish) {
       g.fillStyle = s.card?.accent || '#e5383b'; g.fillRect(0, 0, 128, 32);
       g.fillStyle = '#f4efe4'; g.beginPath(); g.arc(64, 12, 6, 0, 7); g.fill();
       g.fillStyle = s.card?.bg || '#fff6e8'; g.fillRect(0, 140, 128, 40);
-      g.fillStyle = s.card?.text || '#2a2220'; g.textAlign = 'center'; g.font = '16px "DotGothic16", sans-serif';
+      g.fillStyle = s.card?.text || '#2a2220'; g.textAlign = 'center'; g.font = '16px "DotGothic16", "Pixelify Sans"';
       g.fillText((it?.jp || it?.name || '').slice(0, 9), 64, 158);
-      g.font = '16px "Alagard", sans-serif'; g.fillText(finish && finish !== 'normal' ? finish.toUpperCase() : (s.name || '').toUpperCase().slice(0, 14), 64, 175);
+      g.font = '16px "Alagard", "Pixelify Sans", "DotGothic16"'; g.fillText(finish && finish !== 'normal' ? finish.toUpperCase() : (s.name || '').toUpperCase().slice(0, 14), 64, 175);
       q.pull?.(); const t = q.texture(); cardTex.set(k, t); return t;
     }
   }

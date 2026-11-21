@@ -2,7 +2,7 @@
    the kraft staff card, the wage slip (a till receipt). Pixel art: 2x texels, ink text, hard shadows, steps() motion. */
 #staff-paper { position: fixed; inset: 0; pointer-events: none; z-index: 24; }
 #staff-paper .sp-paper {
-  position: absolute; color: var(--pp-ink, #241a1e); font: 16px/18px 'Alagard', 'DotGothic16', monospace; image-rendering: pixelated;
+  position: absolute; color: var(--pp-ink, #241a1e); font: 16px/18px 'Alagard', 'DotGothic16', 'Pixelify Sans'; image-rendering: pixelated;
   border: 12px solid transparent; border-image: var(--pp-edge-cream) 6 / 12px round;
   background: var(--pp-grain-cream) 0 0 / 96px padding-box; background-color: #eee4ca;
   filter: var(--pp-shadow, drop-shadow(3px 4px 0 rgba(26, 18, 22, .45)));
@@ -28,7 +28,7 @@
 #staff-paper .sp-tape { position: absolute; left: calc(50% - 40px); top: -20px; width: 80px; height: 24px; background: var(--pp-tape) 0 0 / 80px 24px; image-rendering: pixelated; }
 #staff-paper .sp-cvh { display: flex; align-items: baseline; gap: 8px; padding-bottom: 2px; border-bottom: 2px solid var(--pp-ink, #241a1e); }
 #staff-paper .sp-cvh b { font-size: 32px; line-height: 32px; font-weight: normal; }
-#staff-paper .sp-cvh span { font-family: 'DotGothic16', monospace; }
+#staff-paper .sp-cvh span { font-family: 'DotGothic16', 'Pixelify Sans'; }
 #staff-paper .sp-cvh small { margin-left: auto; }
 #staff-paper .sp-cvtop { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0 2px; }
 #staff-paper .sp-photo { position: relative; flex: none; display: block; width: 96px; height: 96px; outline: 2px solid var(--pp-ink, #241a1e); }

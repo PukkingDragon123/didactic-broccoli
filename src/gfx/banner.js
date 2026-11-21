@@ -66,7 +66,7 @@ export function bannerGlyphs() {
 
 // ------------------------------------------------------------------------------------ helpers
 /** Rasterise text into a boolean mask (pixel font at 16px, scaled by an integer factor for chunky letters). */
-function textMask(str, size = 16, scale = 2, font = '"DotGothic16", monospace') {
+function textMask(str, size = 16, scale = 2, font = '"DotGothic16", "Pixelify Sans"') {
   const c = document.createElement('canvas');
   const ctx = c.getContext('2d', { willReadFrequently: true });
   ctx.font = `${size}px ${font}`;

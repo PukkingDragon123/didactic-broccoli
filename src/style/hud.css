@@ -28,7 +28,7 @@ body.hud-min:not(.pk-hotbar) #hotbar .slot .ico, body.hud-min:not(.pk-hotbar) #h
 #hm-pops { position: absolute; left: max(26px, env(safe-area-inset-left)); bottom: calc(max(18px, env(safe-area-inset-bottom)) + 120px); display: flex; flex-direction: column; align-items: flex-start; pointer-events: none; }
 body:not(.hud-min) #hm-pops { display: none; }
 .hm-pop {
-  font: 16px/20px 'Alagard', monospace; color: #b6ee8c;
+  font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #b6ee8c;
   text-shadow: 2px 0 0 #1a1216, -2px 0 0 #1a1216, 0 2px 0 #1a1216, 0 -2px 0 #1a1216;
   animation: hm-pop 1.5s steps(8) forwards;
 }

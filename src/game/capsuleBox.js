@@ -71,7 +71,7 @@ function labelTexture(series, count) {
   { // the baked label: the series' real toys on a real photo (tools/bake-misc.py 'carton:<series>'), the count stamped on
     const q = new Pix(384, 224, 6);
     if (pixPrint(q, 'misc', 'carton:' + series)) {
-      q.flush?.(); const g = q.ctx; g.fillStyle = '#c62a1f'; g.font = 'bold 40px "Alagard", sans-serif'; g.textAlign = 'right'; g.fillText('x' + count, 372, 212); q.pull?.();
+      q.flush?.(); const g = q.ctx; g.fillStyle = '#c62a1f'; g.font = 'bold 40px "Alagard", "Pixelify Sans", "DotGothic16"'; g.textAlign = 'right'; g.fillText('x' + count, 372, 212); q.pull?.();
       const t = q.texture(); labelCache.set(k, t); return t;
     }
   }

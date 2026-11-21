@@ -2,7 +2,7 @@
 #simclock {
   position: absolute; left: max(22px, env(safe-area-inset-left)); bottom: calc(max(18px, env(safe-area-inset-bottom)) + 66px);
   display: flex; flex-direction: column; gap: 2px; padding: 5px 12px 6px 8px; min-width: 170px;
-  font: 16px/18px 'Alagard', monospace; color: #fff4d6; image-rendering: pixelated;
+  font: 16px/18px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #fff4d6; image-rendering: pixelated;
   background: var(--tex-dark, none) 0 0 / 64px, rgba(26, 18, 22, .8);
   box-shadow: inset 0 2px 0 rgba(255, 244, 214, .12), 0 -3px 0 var(--ink, #1a1216), 0 3px 0 var(--ink, #1a1216), -3px 0 0 var(--ink, #1a1216), 3px 0 0 var(--ink, #1a1216), 5px 6px 0 rgba(0, 0, 0, .3);
   pointer-events: none;
@@ -32,7 +32,7 @@ body.touchmode #simclock { bottom: auto; top: calc(max(14px, env(safe-area-inset
 }
 #levelup.show { opacity: 1; transform: translate(-50%, 0); }
 #levelup .lu-card {
-  min-width: 280px; max-width: min(420px, 90vw); padding: 12px 18px 14px; font: 16px/20px 'Alagard', monospace; color: #fff4d6; image-rendering: pixelated;
+  min-width: 280px; max-width: min(420px, 90vw); padding: 12px 18px 14px; font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #fff4d6; image-rendering: pixelated;
   background: var(--tex-dark, none) 0 0 / 64px, rgba(26, 18, 22, .92);
   box-shadow: inset 0 3px 0 #ffd23f, 0 -4px 0 #1a1216, 0 4px 0 #1a1216, -4px 0 0 #1a1216, 4px 0 0 #1a1216, 6px 8px 0 rgba(0, 0, 0, .35);
 }
@@ -48,7 +48,7 @@ body.touchmode #simclock { bottom: auto; top: calc(max(14px, env(safe-area-inset
 #daysum { position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; pointer-events: none; }
 #daysum.on { display: flex; }
 #daysum .ds-card {
-  pointer-events: auto; width: min(520px, 92vw); padding: 14px 20px 16px; font: 16px/20px 'Alagard', monospace; color: #fff4d6; image-rendering: pixelated;
+  pointer-events: auto; width: min(520px, 92vw); padding: 14px 20px 16px; font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #fff4d6; image-rendering: pixelated;
   background: var(--tex-dark, none) 0 0 / 64px, rgba(26, 18, 22, .9);
   box-shadow: inset 0 3px 0 #ff9a48, 0 -4px 0 #1a1216, 0 4px 0 #1a1216, -4px 0 0 #1a1216, 4px 0 0 #1a1216, 8px 10px 0 rgba(0, 0, 0, .35);
   opacity: 0; transform: translateY(18px); transition: opacity .35s, transform .45s steps(6);
@@ -68,7 +68,7 @@ body.touchmode #simclock { bottom: auto; top: calc(max(14px, env(safe-area-inset
 #daysum .ds-sec .gold { color: #ffd23f; }
 #daysum .ds-btns { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }
 #daysum button {
-  font: 16px/18px 'Alagard', monospace; color: #1a1216; background: #ffd23f; border: 0; padding: 7px 14px 8px; cursor: pointer;
+  font: 16px/18px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #1a1216; background: #ffd23f; border: 0; padding: 7px 14px 8px; cursor: pointer;
   box-shadow: inset 0 -3px 0 #d0930f, 0 -2px 0 #1a1216, 0 2px 0 #1a1216, -2px 0 0 #1a1216, 2px 0 0 #1a1216;
 }
 #daysum button.alt { background: #c9bca6; box-shadow: inset 0 -3px 0 #8e8070, 0 -2px 0 #1a1216, 0 2px 0 #1a1216, -2px 0 0 #1a1216, 2px 0 0 #1a1216; }

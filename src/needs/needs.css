@@ -14,7 +14,7 @@
 .nd-buffs { display: inline-flex; gap: 1px; }
 .nd-buffs .px-icon { width: 18px; height: 18px; image-rendering: pixelated; }
 /* a number pencilled in above the battery, then gone */
-.nd-pop { position: absolute; left: 2px; bottom: 100%; font: 16px/16px 'Alagard', monospace; white-space: nowrap; opacity: 0; pointer-events: none; }
+.nd-pop { position: absolute; left: 2px; bottom: 100%; font: 16px/16px 'Alagard', 'Pixelify Sans', 'DotGothic16'; white-space: nowrap; opacity: 0; pointer-events: none; }
 .nd-pop.up { color: #3a7a3e; }
 .nd-pop.down { color: var(--pp-red, #c8322c); }
 .nd-pop.show { animation: ndpop 1.5s steps(8) forwards; }

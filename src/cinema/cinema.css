@@ -12,10 +12,10 @@
   filter: drop-shadow(6px 8px 0 rgba(0, 0, 0, .5)); transform: rotate(-1.5deg);
 }
 #cine-card .cc::before { content: ''; position: absolute; left: calc(50% - 40px); top: -26px; width: 80px; height: 24px; background: var(--pp-tape) 0 0 / 80px 24px; image-rendering: pixelated; }
-#cine-card .cc b { font: 64px/60px 'Alagard', monospace; font-weight: normal; letter-spacing: 2px; white-space: nowrap; }
-#cine-card .cc span { font: 16px/20px 'Alagard', monospace; color: var(--cc-ink2); padding-bottom: 6px; background: var(--pp-pencil-red) 0 100% / 64px 6px repeat-x; image-rendering: pixelated; }
+#cine-card .cc b { font: 64px/60px 'Alagard', 'Pixelify Sans', 'DotGothic16'; font-weight: normal; letter-spacing: 2px; white-space: nowrap; }
+#cine-card .cc span { font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: var(--cc-ink2); padding-bottom: 6px; background: var(--pp-pencil-red) 0 100% / 64px 6px repeat-x; image-rendering: pixelated; }
 #cine-card .cc .hk {
-  position: absolute; right: -22px; top: -18px; width: 52px; height: 52px; box-sizing: border-box; font: 32px/44px 'DotGothic16', monospace; font-style: normal; text-align: center;
+  position: absolute; right: -22px; top: -18px; width: 52px; height: 52px; box-sizing: border-box; font: 32px/44px 'DotGothic16', 'Pixelify Sans'; font-style: normal; text-align: center;
   color: var(--cc-red); border: 4px solid var(--cc-red); background: rgba(255, 240, 224, .35); transform: rotate(12deg); animation: cc-stamp .3s steps(3) .3s both;
 }
 #cine-card .cc.long b { font-size: 32px; line-height: 32px; }
@@ -40,18 +40,18 @@ body.photo-mode #cutscene, body.photo-mode .ft-layer { display: none; }
   border: 12px solid transparent; border-image: var(--pp-edge-manila) 6 / 12px round; background: var(--pp-grain-manila) 0 0 / 96px padding-box;
   filter: drop-shadow(3px 4px 0 rgba(0, 0, 0, .5)); transform: rotate(-2deg);
 }
-#photo-hud .ph-tag small, #photo-hud .ph-tag span { font: 16px/18px 'Alagard', monospace; color: var(--cc-ink2); }
-#photo-hud .ph-tag b { font: 32px/32px 'Alagard', monospace; font-weight: normal; }
+#photo-hud .ph-tag small, #photo-hud .ph-tag span { font: 16px/18px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: var(--cc-ink2); }
+#photo-hud .ph-tag b { font: 32px/32px 'Alagard', 'Pixelify Sans', 'DotGothic16'; font-weight: normal; }
 #photo-hud .ph-note {
   position: absolute; left: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 2px; padding: 2px 12px 6px 14px; color: var(--cc-ink);
-  font: 16px/22px 'Alagard', monospace; image-rendering: pixelated;
+  font: 16px/22px 'Alagard', 'Pixelify Sans', 'DotGothic16'; image-rendering: pixelated;
   border: 12px solid transparent; border-image: var(--pp-edge-note) 6 / 12px round;
   background: repeating-linear-gradient(to bottom, transparent 0 20px, rgba(47, 90, 154, .16) 20px 22px) padding-box, var(--pp-grain-note) 0 0 / 96px padding-box;
   filter: drop-shadow(3px 4px 0 rgba(0, 0, 0, .5)); transform: rotate(1deg); opacity: .94;
 }
 #photo-hud .ph-note::before { content: ''; position: absolute; left: calc(50% - 30px); top: -20px; width: 60px; height: 18px; background: var(--pp-tape) 0 0 / 60px 18px; image-rendering: pixelated; }
-#photo-hud .ph-note b { font: 16px/22px 'Alagard', monospace; font-weight: normal; color: var(--cc-red); }
-#photo-hud kbd { display: inline-block; padding: 0 4px; margin: 0 2px; font: 16px/18px 'Alagard', monospace; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--cc-ink); image-rendering: pixelated; }
+#photo-hud .ph-note b { font: 16px/22px 'Alagard', 'Pixelify Sans', 'DotGothic16'; font-weight: normal; color: var(--cc-red); }
+#photo-hud kbd { display: inline-block; padding: 0 4px; margin: 0 2px; font: 16px/18px 'Alagard', 'Pixelify Sans', 'DotGothic16'; background: var(--pp-grain-receipt) 0 0 / 96px; box-shadow: inset 0 0 0 2px var(--cc-ink); image-rendering: pixelated; }
 #photo-hud .pose { font-style: normal; color: var(--cc-ink2); padding-top: 4px; }
 /* after a few seconds the help folds down to one line */
 #photo-hud.mini .ph-note span { display: none; }
@@ -65,8 +65,8 @@ body.photo-mode #cutscene, body.photo-mode .ft-layer { display: none; }
 #photo-print.show { animation: pp-out 3.2s steps(1) forwards; }
 #photo-print .pp { position: relative; width: min(360px, 44vw); padding: 12px 12px 34px; background: var(--pp-grain-cream) 0 0 / 96px; image-rendering: pixelated; box-shadow: 6px 8px 0 rgba(0, 0, 0, .5), inset 0 0 0 2px rgba(36, 26, 30, .25); }
 #photo-print img { display: block; width: 100%; image-rendering: pixelated; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .4); }
-#photo-print .date { position: absolute; right: 22px; bottom: 44px; font: 16px/16px 'DotGothic16', monospace; color: #ff8a2a; text-shadow: 2px 2px 0 rgba(60, 20, 0, .6); letter-spacing: 1px; }
-#photo-print small { position: absolute; left: 14px; bottom: 8px; font: 16px/18px 'Alagard', monospace; color: var(--cc-ink2); }
+#photo-print .date { position: absolute; right: 22px; bottom: 44px; font: 16px/16px 'DotGothic16', 'Pixelify Sans'; color: #ff8a2a; text-shadow: 2px 2px 0 rgba(60, 20, 0, .6); letter-spacing: 1px; }
+#photo-print small { position: absolute; left: 14px; bottom: 8px; font: 16px/18px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: var(--cc-ink2); }
 @keyframes pp-out {
   0% { transform: translateY(130%) rotate(4deg); } 4% { transform: translateY(80%) rotate(4deg); } 8% { transform: translateY(30%) rotate(4deg); } 12% { transform: translateY(0) rotate(4deg); }
   88% { transform: translateY(0) rotate(4deg); } 92% { transform: translateY(40%) rotate(4deg); } 96% { transform: translateY(90%) rotate(4deg); } 100% { transform: translateY(130%) rotate(4deg); }

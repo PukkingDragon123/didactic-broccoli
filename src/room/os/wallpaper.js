@@ -36,8 +36,8 @@ function dusk(p) {
   while (x < w) { const bw = 30 + Math.floor(hash2(k, 2) * 30), top = Math.round(h * (0.62 + hash2(k, 3) * 0.1)); for (let xx = x; xx < x + bw; xx++) { const t = Math.abs(xx - x - bw / 2) / (bw / 2); for (let y = Math.round(top + t * 6); y < h; y++) p.px(xx, y, 0x2a2238); } if (hash2(k, 4) < 0.6) p.rect(x + 6, top + 12, 5, 4, 0xffd890); x += bw; k++; }
   for (const px of [Math.round(w * 0.22), Math.round(w * 0.85)]) { p.rect(px, Math.round(h * 0.25), 2, h, 0x1a1424); p.rect(px - 8, Math.round(h * 0.3), 18, 1, 0x1a1424); }
   for (let xx = 0; xx < w; xx++) p.px(xx, Math.round(h * 0.33 + Math.sin(xx / w * Math.PI * 2) * 6), 0x1a1424);
-  p.text('Capsule', 12, 10, { size: 16, font: '"Alagard", monospace', color: 0xfff4e0, shadow: 0x2a1a3a });
-  p.text('OS 98', 12, 26, { size: 16, font: '"Alagard", monospace', color: 0xffd23f, shadow: 0x2a1a3a });
+  p.text('Capsule', 12, 10, { size: 16, font: '"Alagard", "Pixelify Sans", "DotGothic16"', color: 0xfff4e0, shadow: 0x2a1a3a });
+  p.text('OS 98', 12, 26, { size: 16, font: '"Alagard", "Pixelify Sans", "DotGothic16"', color: 0xffd23f, shadow: 0x2a1a3a });
 }
 
 function teal(p) {
@@ -47,7 +47,7 @@ function teal(p) {
   const cols = [0xff6f91, 0x5cc4ff, 0xffd23f, 0x58c06c, 0xd94fb0, 0xff8c2e];
   for (let y = 8, r = 0; y < h; y += 26, r++) for (let xx = (r % 2) * 18 + 8; xx < w; xx += 36) capsule(p, xx, y, cols[(xx / 18 + r) % cols.length | 0]);
   p.rect(Math.round(w / 2) - 60, Math.round(h / 2) - 22, 120, 44, 0x1f6a6a);
-  p.text('Capsule OS 98', Math.round(w / 2), Math.round(h / 2) - 8, { size: 16, font: '"Alagard", monospace', color: 0xffffff, align: 'center', shadow: 0x0a3a3a });
+  p.text('Capsule OS 98', Math.round(w / 2), Math.round(h / 2) - 8, { size: 16, font: '"Alagard", "Pixelify Sans", "DotGothic16"', color: 0xffffff, align: 'center', shadow: 0x0a3a3a });
 }
 
 function mikan(p) {
@@ -66,8 +66,8 @@ function mikan(p) {
   for (let y = -10; y <= 6; y++) for (let x = -14; x <= 14; x++) if ((x / 14) ** 2 + (y / 10) ** 2 <= 1) p.px(cx + 30 + x, cy - 4 + y, x < 0 ? 0xfbf6ec : 0xf08a3a);
   p.rect(cx + 22, cy - 18, 4, 5, 0xf08a3a); p.rect(cx + 36, cy - 18, 4, 5, 0x3a2e2a);
   p.rect(cx + 24, cy - 4, 4, 1, 0x3a2e2a); p.rect(cx + 33, cy - 4, 4, 1, 0x3a2e2a);
-  p.text('z', cx + 48, cy - 34, { size: 16, font: '"Alagard", monospace', color: 0x8a5a3a });
-  p.text('Z', cx + 58, cy - 50, { size: 16, font: '"Alagard", monospace', color: 0x8a5a3a });
+  p.text('z', cx + 48, cy - 34, { size: 16, font: '"Alagard", "Pixelify Sans", "DotGothic16"', color: 0x8a5a3a });
+  p.text('Z', cx + 58, cy - 50, { size: 16, font: '"Alagard", "Pixelify Sans", "DotGothic16"', color: 0x8a5a3a });
 }
 
 function stars(p) {

@@ -35,21 +35,21 @@ function draw(cv) {
   px(40 * s, 60 * s, 2 * s, 30 * s, '#6a3a8a'); px(45 * s, 44 * s, 2 * s, 6 * s, '#6a3a8a');
   px(56 * s, 46 * s, 2 * s, 2 * s, hi);
   // ゴゴゴ
-  g.font = `${Math.round(14 * s)}px "DotGothic16", monospace`; g.textBaseline = 'top';
+  g.font = `${Math.round(14 * s)}px "DotGothic16", "Pixelify Sans"`; g.textBaseline = 'top';
   for (let i = 0; i < 4; i++) { g.fillStyle = '#120a16'; g.fillText('ゴ', (70 + (i % 2) * 6) * s + 1, (20 + i * 15) * s + 1); g.fillStyle = '#ff4f9a'; g.fillText('ゴ', (70 + (i % 2) * 6) * s, (20 + i * 15) * s); }
   // title band
   px(0, H - 34 * s, W, 34 * s, '#f4e6c8');
   px(0, H - 35 * s, W, 2 * s, ink);
-  g.fillStyle = '#c0242e'; g.font = `${Math.round(13 * s)}px "Alagard", "GG Display", monospace`; g.textAlign = 'center';
+  g.fillStyle = '#c0242e'; g.font = `${Math.round(13 * s)}px "Alagard", "GG Display", "Pixelify Sans", "DotGothic16"`; g.textAlign = 'center';
   g.fillText('GACHA GARAGE', W / 2, H - 31 * s);
-  g.fillStyle = '#2a1238'; g.font = `${Math.round(8 * s)}px "Alagard", monospace`;
+  g.fillStyle = '#2a1238'; g.font = `${Math.round(8 * s)}px "Alagard", "Pixelify Sans", "DotGothic16"`;
   g.fillText('A BIZARRE CAPSULE ADVENTURE', W / 2, H - 17 * s);
-  g.fillStyle = '#6a5a52'; g.font = `${Math.round(7 * s)}px "Alagard", monospace`;
+  g.fillStyle = '#6a5a52'; g.font = `${Math.round(7 * s)}px "Alagard", "Pixelify Sans", "DotGothic16"`;
   g.fillText('art: Kishibe Rohan', W / 2, H - 8 * s);
   // top banner
-  g.fillStyle = '#ffd23f'; g.font = `${Math.round(9 * s)}px "Alagard", monospace`; g.textAlign = 'left';
+  g.fillStyle = '#ffd23f'; g.font = `${Math.round(9 * s)}px "Alagard", "Pixelify Sans", "DotGothic16"`; g.textAlign = 'left';
   g.fillText('NOW OPEN!', 4 * s, 4 * s);
-  g.fillStyle = '#f4e6c8'; g.font = `${Math.round(7 * s)}px "Alagard", monospace`;
+  g.fillStyle = '#f4e6c8'; g.font = `${Math.round(7 * s)}px "Alagard", "Pixelify Sans", "DotGothic16"`;
   g.fillText('Vol. 1', 4 * s, 15 * s);
 }
 

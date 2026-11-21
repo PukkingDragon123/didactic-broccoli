@@ -873,6 +873,33 @@
    ],
    "chamfer": 0.03,
    "style": "body",
+   "paint": {
+    "stamps": [
+     {
+      "faces": [
+       "left",
+       "right"
+      ],
+      "at": "bottom-left",
+      "offset": [
+       40,
+       -22
+      ],
+      "art": [
+       "t...t.tttt.......t...ttt...ttt...t.",
+       "t..t..t...t.....tt..t...t.t...t.tt.",
+       "t.t...t...t......t..t..tt.....t..t.",
+       "tt....t...t......t..t.t.t....t...t.",
+       "t.t...t...t......t..tt..t...t....t.",
+       "t..t..t...t......t..t...t..t.....t.",
+       "t...t.tttt......ttt..ttt..ttttt.ttt"
+      ],
+      "key": {
+       "t": "white:3"
+      }
+     }
+    ]
+   },
    "hide": [
     "top"
    ]
@@ -2788,8 +2815,8 @@
     0.1
    ],
    "pivot": [
-    -0.55,
-    3.13,
+    -0.98,
+    3.1,
     9.052
    ],
    "style": "alu",
@@ -2973,8 +3000,8 @@
     0.1
    ],
    "pivot": [
-    0.55,
-    3.13,
+    0.98,
+    3.1,
     9.052
    ],
    "style": "alu",
@@ -3132,13 +3159,13 @@
    "id": "destination",
    "shape": "box",
    "size": [
-    0.66,
-    0.2,
+    0.92,
+    0.27,
     0.04
    ],
    "pivot": [
     0.0,
-    3.14,
+    3.135,
     9.022
    ],
    "style": "alu",
@@ -3151,30 +3178,31 @@
        "front"
       ],
       "rect": [
-       0.06,
-       0.12,
-       0.94,
-       0.88
+       0.04,
+       0.08,
+       0.96,
+       0.92
       ],
       "ramp": "white",
-      "tone": 4.0,
-      "bevel": true
-     },
+      "tone": 4.0
+     }
+    ],
+    "stamps": [
      {
-      "id": "kana",
-      "op": "stripes",
-      "faces": [
-       "front"
+      "face": "front",
+      "at": "center",
+      "art": [
+       ".ttt..t...t.t...t.t...t..ttt.",
+       "t...t.t..t..t...t.tt..t.t...t",
+       "t...t.t.t...t...t.t.t.t.t...t",
+       "t...t.tt....t...t.t..tt.t...t",
+       "t...t.t.t...t...t.t...t.t...t",
+       "t...t.t..t..t...t.t...t.t...t",
+       ".ttt..t...t..ttt..t...t..ttt."
       ],
-      "axis": "x",
-      "period": 0.07,
-      "width": 0.55,
-      "ramp": "ink",
-      "tone": 1.4,
-      "range": [
-       0.18,
-       0.82
-      ]
+      "key": {
+       "t": "ink:1"
+      }
      }
     ]
    }
@@ -3183,14 +3211,14 @@
    "id": "runboard",
    "shape": "box",
    "size": [
-    0.3,
-    0.14,
+    0.36,
+    0.24,
     0.03
    ],
    "pivot": [
-    -0.88,
-    2.99,
-    9.022
+    -1.0,
+    2.7,
+    9.042
    ],
    "style": "alu",
    "paint": {
@@ -3202,29 +3230,31 @@
        "front"
       ],
       "rect": [
-       0.1,
-       0.15,
-       0.9,
-       0.85
+       0.06,
+       0.08,
+       0.94,
+       0.92
       ],
       "ramp": "ink",
       "tone": 1.4
-     },
+     }
+    ],
+    "stamps": [
      {
-      "id": "digits",
-      "op": "stripes",
-      "faces": [
-       "front"
+      "face": "front",
+      "at": "center",
+      "art": [
+       ".ttt...t.",
+       "t...t.tt.",
+       "....t..t.",
+       "...t...t.",
+       "..t....t.",
+       ".t.....t.",
+       "ttttt.ttt"
       ],
-      "axis": "x",
-      "period": 0.07,
-      "width": 0.45,
-      "ramp": "white",
-      "tone": 3.8,
-      "range": [
-       0.25,
-       0.75
-      ]
+      "key": {
+       "t": "white:4"
+      }
      }
     ]
    }

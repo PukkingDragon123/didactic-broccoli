@@ -1,8 +1,8 @@
 /* Hirano Kagu, the furniture store web page (src/build/shopSite.js), in the 1999 look of the other sites. */
-.hk { background: #f6efdc; color: #2a2016; font: 13px/1.35 "Pixelify Sans", "DotGothic16", sans-serif; padding: 0 0 12px; min-height: 100%; }
+.hk { background: #f6efdc; color: #2a2016; font: 13px/1.35 "Pixelify Sans", "DotGothic16"; padding: 0 0 12px; min-height: 100%; }
 .hk-head { background: #6a3e1e; color: #f6e6c4; padding: 8px 12px; display: flex; gap: 10px; align-items: baseline; border-bottom: 4px solid #c8902a; }
-.hk-head b { font-family: "DotGothic16", monospace; font-size: 22px; }
-.hk-head span { font-family: "Alagard", serif; font-size: 16px; letter-spacing: 2px; }
+.hk-head b { font-family: "DotGothic16", "Pixelify Sans"; font-size: 22px; }
+.hk-head span { font-family: "Alagard", "Pixelify Sans", "DotGothic16"; font-size: 16px; letter-spacing: 2px; }
 .hk-head i { margin-left: auto; font-size: 11px; opacity: .8; }
 .hk-tabs { padding: 6px 12px; background: #ead8b0; border-bottom: 1px solid #c8b088; }
 .hk-tabs a { color: #6a3e1e; }

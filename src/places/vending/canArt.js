@@ -63,7 +63,7 @@ function kmask(text, size, vert = false) {
   if (kcache.has(key)) return kcache.get(key);
   kx.clearRect(0, 0, 128, 128);
   kx.fillStyle = '#fff';
-  kx.font = `${size}px "DotGothic16", monospace`;
+  kx.font = `${size}px "DotGothic16", "Pixelify Sans"`;
   kx.textBaseline = 'top';
   const chars = [...text];
   let w, h;

@@ -9,7 +9,7 @@ body.pc-on > :not(#app):not(.c98-layer):not(.overlay):not(.sui-resume):not(scrip
   --face: #d4ccbb; --hi: #fbf6ea; --lt: #e8e1d1; --sh: #8a8272; --dk: #1a1416;
   --title: #1f3a7a; --title-off: #8a8272; --sel: #1f3a7a; --selt: #fbf6ea; --field: #fffdf6; --ink: #1a1416; --dim: #6e6656;
   --desk: #2b7d7a; --link: #1a3fd6; --visited: #6a2a9a; --tip: #fff4c0;
-  --f-ui: 'DotGothic16', 'Pixelify Sans', monospace; --f-title: 'Alagard', 'DotGothic16', monospace;
+  --f-ui: 'DotGothic16', 'Pixelify Sans'; --f-title: 'Alagard', 'DotGothic16', 'Pixelify Sans';
   --raised: inset -1px -1px var(--dk), inset 1px 1px var(--hi), inset -2px -2px var(--sh), inset 2px 2px var(--lt);
   --sunken: inset 1px 1px var(--sh), inset -1px -1px var(--hi), inset 2px 2px var(--dk), inset -2px -2px var(--lt);
   --pressed: inset 1px 1px var(--dk), inset -1px -1px var(--hi), inset 2px 2px var(--sh), inset -2px -2px var(--lt);

@@ -202,7 +202,7 @@ export const PROP_MODELS = {
   room_lamp: { id: 'lowpix/world/lamp_pendant', own: true, h: 0.55 },
   room_hanger: { id: 'lowpix/world/hanger_shirt' },
   room_laundry: { id: 'lowpix/world/laundry_basket' },
-  manga_stack: { id: 'lowpix/world/manga_stack' },
+  manga_stack: { id: 'lowpix/world/books_stack' }, // (the magazine model's covers carried real titles in print type)
   sandals: { id: 'lowpix/world/sandals' },
   tin_robot: { id: 'lowpix/world/toy_robot3' },
   straw_hat: { id: 'lowpix/world/wear_strawhat' },

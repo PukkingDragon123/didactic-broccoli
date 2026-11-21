@@ -1,7 +1,7 @@
 /* Manga SFX and the freeze-frame ending (src/ui/menacing.js). Kana in DotGothic16 at its crisp 16 px grid. */
 #menace { position: fixed; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; }
 #menace .mn {
-  position: absolute; font: 64px 'DotGothic16', monospace; line-height: 1; white-space: nowrap;
+  position: absolute; font: 64px 'DotGothic16', 'Pixelify Sans'; line-height: 1; white-space: nowrap;
   text-shadow: 4px 0 0 #1a1020, -4px 0 0 #1a1020, 0 4px 0 #1a1020, 0 -4px 0 #1a1020, 4px 4px 0 #1a1020, -4px 4px 0 #1a1020, 4px -4px 0 #1a1020, -4px -4px 0 #1a1020, 0 8px 0 rgba(0, 0, 0, .35);
   opacity: 0; transform: rotate(var(--r)) scale(0.2);
   animation: mn-in 0.28s steps(4) forwards, mn-out 0.3s steps(3) calc(var(--d) - 0.3s) forwards;
@@ -21,7 +21,7 @@ body.tbc #app canvas { filter: sepia(0.92) saturate(1.5) contrast(1.06) brightne
 #tbc .tbc-arrow { width: 0; height: 0; border-top: 34px solid transparent; border-bottom: 34px solid transparent; border-right: 40px solid #3a2416; filter: drop-shadow(0 6px 0 rgba(0, 0, 0, .4)); }
 #tbc .tbc-txt {
   height: 52px; padding: 0 26px 0 14px; display: flex; align-items: center; background: #3a2416; color: #f6e2b8;
-  font: 32px 'Alagard', monospace; letter-spacing: 2px; box-shadow: 0 6px 0 rgba(0, 0, 0, .4), inset 0 -4px 0 #24160c;
+  font: 32px 'Alagard', 'Pixelify Sans', 'DotGothic16'; letter-spacing: 2px; box-shadow: 0 6px 0 rgba(0, 0, 0, .4), inset 0 -4px 0 #24160c;
 }
 @keyframes tbc-in { to { transform: translateX(6vw); } }
 @keyframes tbc-out { from { transform: translateX(6vw); opacity: 1; } to { transform: translateX(6vw); opacity: 0; } }

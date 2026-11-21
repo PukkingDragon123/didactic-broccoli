@@ -73,7 +73,7 @@ function plaque() {
     g.fillStyle = '#5c3c26'; for (let y = 3; y < H; y += 6) g.fillRect(0, y, W, 2);
     g.fillStyle = '#2a1a10'; g.fillRect(0, 0, W, 2); g.fillRect(0, H - 2, W, 2); g.fillRect(0, 0, 2, H); g.fillRect(W - 2, 0, 2, H);
     g.fillStyle = '#c8b8a0'; g.fillRect(4, 4, 2, 2); g.fillRect(W - 6, 4, 2, 2);
-    g.fillStyle = '#efe4cc'; g.font = '16px "DotGothic16", monospace'; g.textAlign = 'center'; g.textBaseline = 'top';
+    g.fillStyle = '#efe4cc'; g.font = '16px "DotGothic16", "Pixelify Sans"'; g.textAlign = 'center'; g.textBaseline = 'top';
     g.fillText('振り返るな', W / 2, 7);
     draw5(g, 'DON\'T LOOK BACK', W / 2, 31, { col: '#e04a3a', align: 'center' });
     tex.needsUpdate = true;

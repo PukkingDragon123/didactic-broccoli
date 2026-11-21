@@ -12,7 +12,7 @@
 #arrival-title .logo img { display: block; image-rendering: pixelated; filter: drop-shadow(6px 8px 0 rgba(18, 10, 14, .55)); }
 /* the fallback while (or if) the 3D title can't load: Alagard, hard ink outline */
 #arrival-title .t {
-  display: inline-block; font: 64px/58px 'Alagard', monospace; letter-spacing: 4px; color: #fff2dc; white-space: nowrap;
+  display: inline-block; font: 64px/58px 'Alagard', 'Pixelify Sans', 'DotGothic16'; letter-spacing: 4px; color: #fff2dc; white-space: nowrap;
   text-shadow: 3px 0 0 #1a0f14, -3px 0 0 #1a0f14, 0 3px 0 #1a0f14, 0 -3px 0 #1a0f14, 3px 3px 0 #1a0f14, -3px 3px 0 #1a0f14, 3px -3px 0 #1a0f14, -3px -3px 0 #1a0f14, 6px 8px 0 rgba(18, 10, 14, .55);
 }
 #arrival-title .row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; }

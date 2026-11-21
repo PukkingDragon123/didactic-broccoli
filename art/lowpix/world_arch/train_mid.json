@@ -873,6 +873,33 @@
    ],
    "chamfer": 0.03,
    "style": "body",
+   "paint": {
+    "stamps": [
+     {
+      "faces": [
+       "left",
+       "right"
+      ],
+      "at": "bottom-left",
+      "offset": [
+       40,
+       -22
+      ],
+      "art": [
+       "t...t.tttt.......t...t...ttt...t.",
+       "t..t..t...t.....tt..tt..t...t.tt.",
+       "t.t...t...t......t...t......t..t.",
+       "tt....t...t......t...t.....t...t.",
+       "t.t...t...t......t...t....t....t.",
+       "t..t..t...t......t...t...t.....t.",
+       "t...t.tttt......ttt.ttt.ttttt.ttt"
+      ],
+      "key": {
+       "t": "white:3"
+      }
+     }
+    ]
+   },
    "hide": [
     "top"
    ]

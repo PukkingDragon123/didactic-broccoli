@@ -134,7 +134,7 @@ html body.phys-ui #hotbar .slots {
 }
 html body.phys-ui #hotbar .slot {
   box-sizing: content-box; width: 44px; height: 44px; border: 8px solid transparent; border-radius: 0;
-  border-image: var(--ph-cell) 4 fill / 8px stretch; background: none; box-shadow: none; image-rendering: pixelated;
+  border-image: var(--ph-cell) 4 fill / 8px round; background: none; box-shadow: none; image-rendering: pixelated;
   transition: translate .12s steps(3);
 }
 html body.phys-ui #hotbar .slot::after { display: none; }

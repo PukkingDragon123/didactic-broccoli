@@ -124,7 +124,7 @@ export function install(game) {
             const L = readLogo(game);
             win.body.innerHTML = `<div style="padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
               <img src="${logoURL(L, L.custom && L.size === 64 ? 2 : 4, L.custom ? L.size : 32)}" width="128" height="128" style="image-rendering:pixelated;background:#f6efdc;box-shadow:inset 0 0 0 2px #808080">
-              <b style="font-family:'DotGothic16',monospace;font-size:16px">${esc(L.jp)}</b><span>${esc(L.en)}</span>
+              <b style="font-family:"DotGothic16", "Pixelify Sans";font-size:16px">${esc(L.jp)}</b><span>${esc(L.en)}</span>
               <button class="c98-btn" data-open>Open the sketchbook...</button>
               <small class="c98-dim">${L.custom ? 'Your own logo is on the noren, the sign, capsule seals and receipts.' : 'Using Grandpa\'s crest. Draw your own!'}</small></div>`;
             win.body.querySelector('[data-open]').onclick = () => openLogoEditor(game, { from: 'pc' }).then(draw);

@@ -1937,7 +1937,7 @@
    0.35,
    0.225
   ],
-  "bytes": 79516
+  "bytes": 83164
  },
  "fire_alarm": {
   "id": "fire_alarm",
@@ -1974,7 +1974,7 @@
    0.6,
    0.231
   ],
-  "bytes": 41640
+  "bytes": 43832
  },
  "firebuckets": {
   "id": "firebuckets",
@@ -3190,7 +3190,7 @@
    0.4,
    0.184
   ],
-  "bytes": 42764
+  "bytes": 45076
  },
  "lantern_wood": {
   "id": "lantern_wood",
@@ -3360,25 +3360,6 @@
    0.161
   ],
   "bytes": 23856
- },
- "manga_stack": {
-  "id": "manga_stack",
-  "name": "Books and magazines",
-  "src": "sketchfab:d0b76eada5bd495abcdfb2b20e6f7ee6",
-  "title": "Books and magazines",
-  "author": "Naira",
-  "authorUrl": "https://sketchfab.com/naira001",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/books-and-magazines-d0b76eada5bd495abcdfb2b20e6f7ee6",
-  "site": "Sketchfab",
-  "tris": 2188,
-  "tex": 512,
-  "size": [
-   0.693,
-   0.336,
-   0.288
-  ],
-  "bytes": 60980
  },
  "manhole": {
   "id": "manhole",

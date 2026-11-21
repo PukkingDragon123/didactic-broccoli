@@ -2,7 +2,7 @@
    Pixel art only: 2x texels, ink text, hard shadows, steps() motion, never a glow. */
 #logo-ed {
   position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
-  font: 16px/18px 'Alagard', 'DotGothic16', monospace; color: var(--pp-ink, #241a1e); image-rendering: pixelated;
+  font: 16px/18px 'Alagard', 'DotGothic16', 'Pixelify Sans'; color: var(--pp-ink, #241a1e); image-rendering: pixelated;
   --le-ink: #241a1e; --le-ink2: #5e5046; --le-red: #c8322c; --le-blue: #2f5a9a; --le-hard: 3px 4px 0 rgba(26, 18, 22, .45);
 }
 #logo-ed .le-dim { position: absolute; inset: 0; background: rgba(26, 18, 22, .55); }
@@ -34,7 +34,7 @@
 }
 #logo-ed header { display: flex; align-items: baseline; gap: 12px; height: 34px; border-bottom: 2px solid var(--le-ink); margin-bottom: 10px; }
 #logo-ed header b { font-size: 32px; line-height: 32px; font-weight: normal; }
-#logo-ed header span { font-family: 'DotGothic16', monospace; color: var(--le-red); }
+#logo-ed header span { font-family: 'DotGothic16', 'Pixelify Sans'; color: var(--le-red); }
 #logo-ed header small { color: var(--le-ink2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #logo-ed button { font: inherit; color: var(--le-ink); cursor: pointer; border: 0; border-radius: 0; background: none; padding: 0; image-rendering: pixelated; }
 #logo-ed .le-x { width: 28px; height: 28px; flex: none; align-self: center; background: var(--pp-x) center / 24px 24px no-repeat; }
@@ -78,15 +78,15 @@
 #logo-ed .le-ink.on { transform: translate(1px, 2px); box-shadow: inset 0 0 0 2px var(--le-ink), inset 0 0 0 4px #f6f0dc, 0 0 0 0 transparent; }
 #logo-ed .le-row { display: flex; gap: 8px; align-items: center; }
 #logo-ed input {
-  font: 16px 'Alagard', 'DotGothic16', monospace; color: var(--le-ink); background: transparent; border: 0; outline: 0; padding: 2px 4px; height: 24px;
+  font: 16px 'Alagard', 'DotGothic16', 'Pixelify Sans'; color: var(--le-ink); background: transparent; border: 0; outline: 0; padding: 2px 4px; height: 24px;
   box-shadow: inset 0 -2px 0 var(--le-ink); border-radius: 0; min-width: 0;
 }
 #logo-ed input:focus { box-shadow: inset 0 -2px 0 var(--le-red); background: rgba(246, 226, 132, .45); }
-#logo-ed .le-stxt { flex: 1; font-family: 'DotGothic16', monospace; }
+#logo-ed .le-stxt { flex: 1; font-family: 'DotGothic16', 'Pixelify Sans'; }
 #logo-ed .le-name label { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 #logo-ed .le-name span { width: 52px; flex: none; color: var(--le-ink2); }
 #logo-ed .le-name input { flex: 1; }
-#logo-ed .le-jp { font-family: 'DotGothic16', monospace !important; }
+#logo-ed .le-jp { font-family: 'DotGothic16', 'Pixelify Sans' !important; }
 /* the bottom of the page: how it will look out front, and the buttons */
 #logo-ed footer { display: flex; align-items: flex-end; gap: 12px; margin-top: 10px; padding-top: 8px; border-top: 2px dashed rgba(36, 26, 30, .35); height: 104px; }
 #logo-ed .le-prev { display: flex; align-items: flex-end; gap: 10px; flex: 1; min-width: 0; }
@@ -102,5 +102,5 @@
 /* the shop's header on the day's receipt (src/sim/summary.js) */
 #daysum .ds-shop { display: flex; align-items: center; gap: 10px; padding: 2px 0 6px; margin-bottom: 4px; border-bottom: 2px dashed currentColor; }
 #daysum .ds-shop img { width: 48px; height: 48px; image-rendering: pixelated; flex: none; }
-#daysum .ds-shop b { font-family: 'DotGothic16', monospace; font-weight: normal; font-size: 32px; line-height: 32px; color: #c8322c; }
+#daysum .ds-shop b { font-family: 'DotGothic16', 'Pixelify Sans'; font-weight: normal; font-size: 32px; line-height: 32px; color: #c8322c; }
 #daysum .ds-shop small { display: block; letter-spacing: 1px; }

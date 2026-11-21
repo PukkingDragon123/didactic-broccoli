@@ -255,14 +255,21 @@ function tray() {
   return a;
 }
 function cell(sel) {
+  // a sunken compartment: shadowed top / left walls, a lit bottom / right lip, a quiet floor with a grain line every few
+  // texels (so the 9-slice centre tiles cleanly at 2 px a texel); picked: a brass rim
   const S = 16, a = art(S, S);
-  grainWood(a, 0, 0, S, S, sel ? 33 : 31, 'x', () => true, sel ? { hi: hex(0x9a6434), mid: hex(0x7e5030), lo: hex(0x6a4024), deep: hex(0x4e2c16) } : { hi: hex(0x6e4424), mid: hex(0x5a3620), lo: hex(0x4a2c18), deep: hex(0x341e10) });
+  const floor = sel ? hex(0x7e5030) : hex(0x4e2e18), grainC = sel ? hex(0x6a4024) : hex(0x42260f), knot = sel ? hex(0x8a5a34) : hex(0x5a3820);
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-    if (x === 0 || y === 0 || x === S - 1 || y === S - 1) a.px(x, y, sel ? BRASS.mid : INK);
-    else if (x === 1 || y === 1) a.px(x, y, sel ? BRASS.lo : hex(0x24140a)); // the sunken edge, in shadow
-    else if (x === S - 2 || y === S - 2) a.px(x, y, sel ? BRASS.hi : W.lo);
+    let c = floor;
+    if (y % 4 === 1 && (x * 3 + y) % 7 !== 0) c = grainC;
+    if (y % 8 === 3 && x % 8 === 5) c = knot;
+    if (x === 0 || y === 0 || x === S - 1 || y === S - 1) c = sel ? BRASS.mid : INK;
+    else if (x === 1 || y === 1) c = sel ? BRASS.lo : hex(0x1e1008);
+    else if (x === 2 || y === 2) c = sel ? shade(floor, 0.8) : hex(0x341c0c);
+    else if (x === S - 2 || y === S - 2) c = sel ? BRASS.hi : W.lo;
+    a.px(x, y, c);
   }
-  if (sel) for (const [x, y] of [[0, 0], [S - 1, 0], [0, S - 1], [S - 1, S - 1]]) a.px(x, y, INK);
+  if (sel) { a.px(0, 0, INK); a.px(S - 1, 0, INK); a.px(0, S - 1, INK); a.px(S - 1, S - 1, INK); }
   return a;
 }
 

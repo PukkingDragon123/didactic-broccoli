@@ -3,7 +3,7 @@
 #note-ui {
   position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 12;
   display: none; align-items: center; gap: 8px; padding: 4px 12px 5px;
-  font: 16px 'Alagard', monospace; color: #fff6e0; text-shadow: 2px 2px 0 #1a1216;
+  font: 16px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #fff6e0; text-shadow: 2px 2px 0 #1a1216;
   background: #2a1f17; border: 2px solid #120c09; border-radius: 2px; box-shadow: 0 3px 0 #120c09; pointer-events: auto; cursor: pointer;
 }
 #note-ui.on { display: flex; }

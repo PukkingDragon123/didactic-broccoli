@@ -1593,15 +1593,6 @@
    "prop": "call_bell"
   },
   {
-   "id": "manga_stack",
-   "src": "sketchfab:d0b76eada5bd495abcdfb2b20e6f7ee6",
-   "h": 0.336,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Books and magazines",
-   "prop": "manga_stack"
-  },
-  {
    "id": "sandals",
    "src": "sketchfab:70e95901d171405092883675660419cc",
    "h": 0.048,

@@ -337,6 +337,15 @@ Background music, menu, intro and party themes by Kevin MacLeod.
   speech bubbles, subtitles, PC store and in-world labels. Tiny labels and the flyers use a hand-made 5 x 7
   bitmap font (`src/gfx/font5x7.js`) drawn for this game.
 
+### DotGothic16 and Pixelify Sans
+
+- DotGothic16: Copyright 2020 The DotGothic16 Project Authors (Fontworks), https://github.com/fontworks-fonts/DotGothic16
+- Pixelify Sans: Copyright 2021 The Pixelify Sans Project Authors (Stefie Justprince), https://github.com/eifetx/Pixelify-Sans
+- Licence: SIL Open Font License 1.1 (https://openfontlicense.org); the licence text ships beside the fonts
+- Shipped as: the Fontsource packages `@fontsource/dotgothic16` and `@fontsource/pixelify-sans` (unmodified woff2,
+  bundled by Vite); every kana / kanji in the UI and the pixel fallback for any Latin glyph Alagard lacks (the game
+  uses pixel fonts only, never a system font).
+
 ### Fonts used at bake time (printed matter)
 
 The printed things baked from photographs (`tools/printkit.py`) are set in typefaces from the Google Fonts repository,
@@ -2519,7 +2528,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Blanket and Pillows - Low Poly by Antipov Alexsander (https://sketchfab.com/3d-models/blanket-and-pillows-low-poly-65d0993e7b1741e9ab061d5f97504c31), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/blanket_pillows.glb`
 - Blind spot traffic mirror by Insane Ninja (https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mirror_pole.glb`
 - Bonsai by Vermos (https://sketchfab.com/3d-models/bonsai-8b73fd97545b468288cd9ba03c93d358), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bonsai.glb`
-- Books and magazines by Naira (https://sketchfab.com/3d-models/books-and-magazines-d0b76eada5bd495abcdfb2b20e6f7ee6), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/manga_stack.glb`
 - Bowl by cloud (https://sketchfab.com/3d-models/bowl-6c6d124baca54d09871af6bc77738b81), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bowl_empty.glb`
 - Brick by Rigsters (https://sketchfab.com/3d-models/brick-504a59ef14a148809cec657d7c99367c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_brick.glb`
 - Bucket hat by landout (https://sketchfab.com/3d-models/bucket-hat-68c6eda73171436b911c77f8e16bdd2d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_boonie.glb`

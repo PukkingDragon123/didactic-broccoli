@@ -23,7 +23,7 @@
   border: 12px solid transparent; border-image: var(--pp-edge-kraft) 6 / 12px round;
   filter: drop-shadow(4px 4px 0 rgba(26, 18, 22, .45));
   opacity: 0; transition: opacity .2s steps(3);
-  font-family: 'Alagard', 'DotGothic16', sans-serif; color: #2a1c14; text-align: center;
+  font-family: 'Alagard', 'DotGothic16', 'Pixelify Sans'; color: #2a1c14; text-align: center;
 }
 .pk-tray.show { opacity: 1; }
 .pk-tray-row { display: flex; gap: 4px; align-items: flex-end; justify-content: center; min-height: 52px; }

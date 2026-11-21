@@ -19,7 +19,7 @@ export default {
   hm_maneki: M('manekineko', 0.17),
   hm_books_stack: M('books_stack', 0.15),
   hm_books_old: M('books_old', 0.1),
-  hm_books_mags: M('manga_stack', 0.22),
+  hm_books_mags: M('books_old', 0.12),
   hm_shogi: M('shogi', 0.06),
   hm_mahjong: M('mahjong', 0.05),
   hm_tanuki: M('tanuki_statue', 0.32),

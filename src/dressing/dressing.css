@@ -6,7 +6,7 @@
   --ink: #241a1e; --ink2: #5e5046; --red: #c8322c; --blue: #2f5a9a; --cream: #fff0d0;
   --hard: drop-shadow(3px 4px 0 rgba(26, 18, 22, .45));
   position: fixed; inset: 0; z-index: 44; overflow: clip;
-  font-family: 'Alagard', 'DotGothic16', sans-serif; font-size: 16px; line-height: 20px; color: var(--ink);
+  font-family: 'Alagard', 'DotGothic16', 'Pixelify Sans'; font-size: 16px; line-height: 20px; color: var(--ink);
   background: #e8d6b6; user-select: none; -webkit-user-select: none;
 }
 .dr.hidden { display: none; }
@@ -36,7 +36,7 @@ body.dressing-on #crosshair, body.dressing-on #hint { visibility: hidden; }
   filter: var(--hard); image-rendering: pixelated; rotate: -1deg;
 }
 .dr-title b { font-weight: normal; font-size: 32px; line-height: 24px; }
-.dr-title i { font-style: normal; font-family: 'DotGothic16', sans-serif; font-size: 16px; color: var(--red); }
+.dr-title i { font-style: normal; font-family: 'DotGothic16', 'Pixelify Sans'; font-size: 16px; color: var(--red); }
 
 /* ------------------------------------------------------------------ the zoom tags + hint under the stage */
 .dr-zoom { position: absolute; left: 0; width: var(--stage-w, 60vw); bottom: max(14px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }

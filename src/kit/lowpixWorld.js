@@ -184,7 +184,6 @@ export const LP_WORLD = {
   mahjong: { size: [1.35, 0.05, 2.4], credit: "Japanese mahjong tiles by shosha (CC BY 4.0)" },
   mamachari: { size: [0.657, 1.188, 1.954], credit: "City bike low poly by guillaumemariette156 (CC BY 4.0)" },
   manekineko: { size: [0.14, 0.19, 0.161], credit: "Maneki neko by Ramujiro (CC BY 4.0)" },
-  manga_stack: { size: [0.693, 0.336, 0.288], credit: "Books and magazines by Naira (CC BY 4.0)" },
   manhole: { size: [0.685, 0.068, 0.685], credit: "Water Manhole Cover by Raunox (CC0 1.0)" },
   microwave: { size: [1.075, 0.526, 0.743], credit: "Vintage Microwave by Adam Nekola (CC0 1.0)" },
   milk_fridge: { size: [1.216, 1.86, 1.108], credit: "Beverages refrigerator by Palmart Productions (CC BY 4.0)" },

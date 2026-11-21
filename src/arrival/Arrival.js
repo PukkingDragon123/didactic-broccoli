@@ -1,18 +1,18 @@
 // The new game's opening (Story.newGame; src/plugins/arrival.js installs it as game.arrival). There is no drive: you
 // have just pulled up in Grandpa's old van across the lane from his shut-up garage, and the opening is shot like a
-// film's: letterboxed, to Senbazuru, about 57 seconds, hold to skip. The world first (the steel pylon, a train, the
+// film's: letterboxed, to Senbazuru, about 54 seconds, hold to skip. The world first (the steel pylon, a train, the
 // lane and its people), then the van, then you in it:
 //   1 pylon    fade up on the steel tower and the wires against the late sun; a slow crane down to the railway bridge
 //              (crows; a crossing bell far off; the train's rumble arrives before the cut)
 //   2 train    low under the bridge: the rumble builds, then the train thunders across overhead
 //   3 lane     the lane, wide and long: the pigeons on the road burst up at the noise; the title card drops in
 //   4 mikawa   Mikawa-san in his doorway lights a cigar (the flame lights his face), puffs, squints down the lane
-//   5 mikan    close and low: Mikan asleep in the sun by Grandpa's stool
-//   6 grandpa  Grandpa nodding off on his stool, the fan going slack, his chin sinking
-//   7 van      cut on the engine's rumble: the van just pulled up, idling, its dust settling round the wheels
-//   8 key      in the cab: your hand turns the key back, the engine dies (the van shudders), the key comes out
-//   9 charm    Grandpa's omamori on the mirror swinging to a stop; the hot engine ticks
-//  10 mirror   the door mirror: in it, Grandpa jolts awake, gets up and shuffles over to the van
+//   5 grandpa  Grandpa nodding off on his stool, the fan going slack, his chin sinking (Mikan purrs at his feet, off
+//              screen: her low close-up was cut, the cat read as broken that close)
+//   6 van      cut on the engine's rumble: the van just pulled up, idling, its dust settling round the wheels
+//   7 key      in the cab: your hand turns the key back, the engine dies (the van shudders), the key comes out
+//   8 charm    Grandpa's omamori on the mirror swinging to a stop; the hot engine ticks
+//   9 mirror   the door mirror: in it, Grandpa jolts awake, gets up and shuffles over to the van
 // It ends on the first frame of Grandpa's window tap (src/grandpa/scenes.js tapScene: the driver's eye looking out at
 // the lane, fov 56, the cab glass on), which Grandpa's meeting plays straight after in the same cutscene.
 // The lens (src/core/lens.js): every shot sets its focus and aperture (LENS below; 'look': the camera's look point, so
@@ -53,8 +53,7 @@ const LIST = [
   { id: 'train', dur: 6.0, what: 'Low under the bridge: the rumble builds, then the train thunders across overhead' },
   { id: 'lane', dur: 9.5, what: 'The lane, wide: the pigeons burst up off the road; the title card drops in' },
   { id: 'mikawa', dur: 6.5, what: 'Mikawa-san in his doorway lights a cigar, puffs, squints down the lane' },
-  { id: 'mikan', dur: 3.5, what: 'Mikan asleep in the sun by the stool' },
-  { id: 'grandpa', dur: 5.0, what: 'Grandpa nodding off on his stool, the fan going slack' },
+  { id: 'grandpa', dur: 6.0, what: 'Grandpa nodding off on his stool, the fan going slack; Mikan purring at his feet' },
   { id: 'van', dur: 5.5, what: 'Cut on the engine: the van just pulled up, idling, its dust settling' },
   { id: 'key', dur: 4.0, what: 'In the cab: your hand turns the key, the engine dies, the key comes out' },
   { id: 'charm', dur: 3.0, what: "Grandpa's omamori swinging to a stop; the hot engine ticks" },
@@ -67,7 +66,6 @@ const LENS = {
   train: { focus: 'look', aperture: 0.75 },
   lane: { focus: 9.2, aperture: 0.95 },
   mikawa: { focus: 'look', aperture: 1.35 },
-  mikan: { focus: 'look', aperture: 1.6 },
   grandpa: { focus: 'look', aperture: 1.35 },
   van: { focus: 'look', aperture: 1.0 },
   key: { focus: 'look', aperture: 1.25 },
@@ -335,19 +333,7 @@ export class Arrival {
     };
   }
 
-  // ------------------------------------------------------------------ 5. Mikan asleep in the sun
-  shotMikan(c) {
-    const cat = this.game.street?.cat;
-    const at = cat ? cat.pos : V(STOOL.x + 0.5, 0, STOOL.z + 0.42);
-    const A = { pos: V(at.x - 0.32, 0.3, at.z + 1.72), look: V(at.x + 0.02, 0.14, at.z), fov: 23 };
-    const B = { pos: V(at.x - 0.2, 0.28, at.z + 1.5), look: V(at.x + 0.02, 0.13, at.z), fov: 23 };
-    return {
-      tick: (t) => move(c, A, B, drift(t / 3.5)),
-      cues: [[0.4, () => this.sfx('purr', { pos: V(at.x, 0.2, at.z), vol: 0.7 })]],
-    };
-  }
-
-  // ------------------------------------------------------------------ 6. Grandpa nodding off
+  // ------------------------------------------------------------------ 5. Grandpa nodding off (Mikan purring)
   shotGrandpa(c) {
     const g = this.game, gp = g.grandpa?.gp;
     const A = { pos: V(3.75, 0.86, 7.85), look: V(2.75, 0.98, 5.86), fov: 30 };
@@ -362,12 +348,13 @@ export class Arrival {
       fan.onAfterRender = () => { if (this.shot?.id === 'grandpa') this.fanAt = disc.clone().applyMatrix4(fan.matrixWorld).project(g.camera); };
     }
     return {
-      tick: (t) => move(c, A, B, drift(t / 5)),
-      cues: [[0.5, zz], [1.2, () => this.sfx('snore', { pos: gp ? gp.pos.clone().setY(1.2) : V(2.75, 1.2, 5.8), vol: 0.9 })], [2.4, zz], [4.2, zz]],
+      tick: (t) => move(c, A, B, drift(t / 6)),
+      cues: [[0.3, () => { const cat = g.street?.cat?.pos; this.sfx('purr', { pos: cat ? V(cat.x, 0.2, cat.z) : V(STOOL.x + 0.5, 0.2, STOOL.z + 0.42), vol: 0.75 }); }],
+        [0.5, zz], [1.2, () => this.sfx('snore', { pos: gp ? gp.pos.clone().setY(1.2) : V(2.75, 1.2, 5.8), vol: 0.9 })], [2.4, zz], [4.2, zz], [5.4, zz]],
     };
   }
 
-  // ------------------------------------------------------------------ 7. the van, just pulled up, idling
+  // ------------------------------------------------------------------ 6. the van, just pulled up, idling
   shotVan(c) {
     const g = this.game, van = this.van, gp = g.grandpa?.gp;
     const A = { pos: V(1.35, 0.3, 10.2), look: V(3.6, 0.65, 12.0), fov: 38 };
@@ -398,7 +385,7 @@ export class Arrival {
     };
   }
 
-  // ------------------------------------------------------------------ 8. the key: the engine dies, the key comes out
+  // ------------------------------------------------------------------ 7. the key: the engine dies, the key comes out
   shotKey(c) {
     const g = this.game, van = this.van, arms = this.arms;
     if (!van?.cab) return { cues: [] };
@@ -468,7 +455,7 @@ export class Arrival {
     bgm.duck(true, 0.45, 'arrival');
   }
 
-  // ------------------------------------------------------------------ 9. the omamori swinging to a stop
+  // ------------------------------------------------------------------ 8. the omamori swinging to a stop
   shotCharm(c) {
     const van = this.van;
     this.pocketKey();
@@ -482,7 +469,7 @@ export class Arrival {
     };
   }
 
-  // ------------------------------------------------------------------ 10. the door mirror: Grandpa wakes, comes over
+  // ------------------------------------------------------------------ 9. the door mirror: Grandpa wakes, comes over
   shotMirror(c) {
     const g = this.game, van = this.van;
     if (!van) return { cues: [[0.6, () => g.events.emit('arrival:wake', {})]] };

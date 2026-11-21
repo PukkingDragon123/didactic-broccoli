@@ -17,8 +17,33 @@ Frame: x across (+x the right-hand side looking forward), y up from the rail top
 car centred on its middle. 18 m over the body; the game couples three (src/world/Town.js makeTrain).
 """
 import math
+import os
+import re
 
 from arch import Spec, ramp, photo
+
+FONT_JS = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'src', 'gfx', 'font5x7.js'))
+
+
+def _glyphs():
+    src = open(FONT_JS, encoding='utf8').read()
+    out = {}
+    for m in re.finditer(r"(?:'(.)'|([A-Z0-9])): '([.#|]+)'", src):
+        out[m.group(1) or m.group(2)] = m.group(3).split('|')
+    return out
+
+
+GLYPHS = _glyphs()
+
+
+def text5(s, ch='t', gap=1):
+    """The game's own 5x7 pixel font (src/gfx/font5x7.js) as stamp art rows."""
+    rows = [''] * 7
+    for i, c in enumerate(s.upper()):
+        g = GLYPHS.get(c) or GLYPHS['?']
+        for r in range(7):
+            rows[r] += g[r].replace('#', ch) + ('.' * gap if i < len(s) - 1 else '')
+    return rows
 
 L = 18.0          # body length
 HW = 1.4          # half width
@@ -128,7 +153,10 @@ def base(name, desc):
 
 def shell(S, cab):
     """Body, roof, gutters, ventilators, walkway, windows, doors, underfloor gear, bogies, the inner-end gangway."""
-    S.box('body', 2 * HW, Y1 - Y0, L, 0, Y0, 0, style='body', chamfer=0.03, hide=['top'])
+    # the car number in the 5x7 pixel font, white on the green below the sill at each end of both sides
+    num = text5(('KD 1021' if cab else 'KD 1121'), gap=1)
+    S.box('body', 2 * HW, Y1 - Y0, L, 0, Y0, 0, style='body', chamfer=0.03, hide=['top'],
+          paint={'stamps': [{'faces': ['left', 'right'], 'at': 'bottom-left', 'offset': [40, -22], 'art': num, 'key': {'t': 'white:3'}}]})
     # the shallow arched roof (the lower half of the elliptic prism sits inside the body)
     S.prism('roof', 2 * HW + 0.02, 0.74, L + 0.02, [0, Y1, 0], sides=16, style='roof')
     for s in (-1, 1):
@@ -211,7 +239,7 @@ def cab_front(S):
         S.box('windscreen', 0.82, 0.86, 0.024, s * 0.88, SILL + 0.02, zf, style='screen')
         S.rod('wiper', [s * 0.62, SILL + 0.1, zf + 0.03], [s * 0.86, SILL + 0.62, zf + 0.03], 0.012, sides=4, style='rubber')
         # twin headlights under the roof arc, tail + marker lamps low on the corners
-        S.prism('headlight', 0.24, 0.24, 0.1, [s * 0.55, 3.13, zf + 0.04], sides=12, style='alu',
+        S.prism('headlight', 0.24, 0.24, 0.1, [s * 0.98, 3.1, zf + 0.04], sides=12, style='alu',
                 paint={'layers': [{'id': 'lens', 'op': 'spots', 'faces': ['front'], 'centers': [[0, 0, 0, 0.1]], 'ramp': 'lamp', 'tone': 4.2, 'bevel': True}]})
         S.prism('taillight', 0.17, 0.17, 0.08, [s * 1.02, 1.42, zf + 0.03], sides=10, style='alu',
                 paint={'layers': [{'id': 'lens', 'op': 'spots', 'faces': ['front'], 'centers': [[0, 0, 0, 0.07]], 'ramp': 'red', 'tone': 3.4, 'bevel': True}]})
@@ -221,12 +249,13 @@ def cab_front(S):
         S.box('footstep', 0.3, 0.04, 0.16, s * 0.95, 0.98, zf + 0.08, style='alu')
     S.box('gangway', 0.7, 1.85, 0.026, 0, 1.15, zf, style='gangdoor')
     # the roll destination sign above the gangway door and the run-number board beside it
-    S.box('destination', 0.66, 0.2, 0.04, 0, 3.04, zf + 0.01, style='alu',
-          paint={'layers': [{'id': 'roll', 'op': 'rect', 'faces': ['front'], 'rect': [0.06, 0.12, 0.94, 0.88], 'ramp': 'white', 'tone': 4.0, 'bevel': True},
-                            {'id': 'kana', 'op': 'stripes', 'faces': ['front'], 'axis': 'x', 'period': 0.07, 'width': 0.55, 'ramp': 'ink', 'tone': 1.4, 'range': [0.18, 0.82]}]})
-    S.box('runboard', 0.3, 0.14, 0.03, -0.88, 2.92, zf + 0.01, style='alu',
-          paint={'layers': [{'id': 'num', 'op': 'rect', 'faces': ['front'], 'rect': [0.1, 0.15, 0.9, 0.85], 'ramp': 'ink', 'tone': 1.4},
-                            {'id': 'digits', 'op': 'stripes', 'faces': ['front'], 'axis': 'x', 'period': 0.07, 'width': 0.45, 'ramp': 'white', 'tone': 3.8, 'range': [0.25, 0.75]}]})
+    # (the line's own termini, in the game's 5x7 pixel font: black on the white roll, the run number white on black)
+    S.box('destination', 0.92, 0.27, 0.04, 0, 3.0, zf + 0.01, style='alu',
+          paint={'layers': [{'id': 'roll', 'op': 'rect', 'faces': ['front'], 'rect': [0.04, 0.08, 0.96, 0.92], 'ramp': 'white', 'tone': 4.0}],
+                 'stamps': [{'face': 'front', 'at': 'center', 'art': text5('OKUNO'), 'key': {'t': 'ink:1'}}]})
+    S.box('runboard', 0.36, 0.24, 0.03, -1.0, 2.58, zf + 0.03, style='alu',
+          paint={'layers': [{'id': 'num', 'op': 'rect', 'faces': ['front'], 'rect': [0.06, 0.08, 0.94, 0.92], 'ramp': 'ink', 'tone': 1.4}],
+                 'stamps': [{'face': 'front', 'at': 'center', 'art': text5('21'), 'key': {'t': 'white:4'}}]})
     # the skirt under the buffer beam and the front coupler with its hoses
     S.taper('skirt', [2.3, 0.45, 0.1], [0, 0.66, zf + 0.02], style='under', front_scale=[0.86, 1.0])
     coupler(S, 1, inner=False)

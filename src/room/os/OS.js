@@ -394,7 +394,7 @@ export class CapsuleOS {
       const x = 16 + Math.floor(i / 6) * 84, y = 14 + (i % 6) * 70;
       const ico = iconImage(a.icon);
       if (ico?.complete) g.drawImage(ico, x + 16, y, 52, 52); else { g.fillStyle = '#ffd23f'; g.fillRect(x + 22, y + 4, 40, 40); }
-      g.fillStyle = '#fff'; g.font = '16px Alagard, monospace'; g.textAlign = 'center'; g.textBaseline = 'top';
+      g.fillStyle = '#fff'; g.font = '16px "Alagard", "Pixelify Sans", "DotGothic16"'; g.textAlign = 'center'; g.textBaseline = 'top';
       g.fillText((a.label || a.title).slice(0, 10), x + 42, y + 52);
       i++;
     }
