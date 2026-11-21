@@ -21,7 +21,7 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   are paper (notes, tickets, receipts, tags). **Never the 2D gacha capsule icon anywhere in the UI.**
 - 3D art uses the owner's lowpix technique (docs/ART.md, last Update): properly proportioned models with detailed,
   realistic hand-painted pixel-art textures, built as lowpix specs (art/lowpix/) or converted from CC0 / CC BY Poly
-  Haven and Sketchfab models; almost no voxel art. Never chibi, never stuck-together primitives, never cartoon.
+  Haven and Sketchfab models. **No voxel assets at all, ever** (owner, latest); any left are bugs to replace. Never chibi, never stuck-together primitives, never cartoon.
   First-person arms are blocky but connected and flexible.
 - **Toy look = faceted low-poly, hand-painted** (owner-approved): flat-shaded chunky planes, still clearly low poly:
   simple figures ~1000–1200 tris, detailed figures (fingers, beaks, props, mechanisms) ~1500–1700, secrets ≤1900
@@ -32,12 +32,16 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   mesh, rigged clips for gimmicks, exported as glb. Never toys built from code primitives (balls, tubes, boxes).
   Each series has a strong original idea with a twist (transformations, costumes, playsets, dark-cute, mythic) and
   real gimmicks (press to animate, transform, keychain version, playset parts), like the owner's gashapon boards.
-- **We model it ourselves**: low-poly lowpix models textured by photo-bashing real photos, per docs/LOWPOLY.md
-  (reference → silhouette → refine in budget → photo-bash + hand paint → check against the photo). Downloads are
-  reference only.
-- **Low poly, stylised**: models use low triangle counts with clean, deliberate silhouettes (bevels and edge flow
-  where they read, no noisy scan geometry); the hand-painted pixel-art texture carries the detail. Real proportions,
-  not cartoon. Budgets: toy ≤2k tris, small prop ≤1k, furniture ≤3k, animal ≤3k, person ≤2.5k, machine ≤3k.
+- **Props, world, cosmetics: mostly imported, detailed** (owner, latest: "more poly-heavy detailed assets, mostly find from
+  Sketchfab and free websites, some by yourself"): hand-made CC0 / CC BY models from Sketchfab, Poly Haven and other
+  free sites (ai-check, never AI, never scans, credited), restyled to fit (texel density, palette, wear); the rest we
+  model ourselves per docs/LOWPOLY.md. No lazy blocky / primitive-built props anywhere. Toys stay modelled by us.
+- **Detailed, clean geometry**: real proportions, clean silhouettes, no noisy scan meshes; detail where it reads.
+  Budgets (use LODs): toy ≤2k tris, small prop ≤6k, furniture ≤12k, animal ≤8k, person ≤10k, machine / vehicle ≤20k.
+- Story / UI (owner, latest): no Grandpa mail or paper notes stuck everywhere; no customer guest book. The PC starts
+  with only 2 apps (more unlock later), uses real-photo wallpapers; message-app faces are renders of the real 3D
+  models. Dialogue and the objective are floating text that looks great, with 3D transitions; scene transitions are
+  cool and varied. The tutorial is forced, with Grandpa scolding.
 - **Toy faces are hand-drawn, with some detail** (gacha toys only; the in-game cats, dogs and other animals keep
   their own realistic look). Base: the owner's sketch docs/ref/faces_owner.png (uneven ink eyes, one brush-stroke
   mouth, wobbly marker line weight). Newer direction: "better eyes and face, more detail, but hand-drawn": solid-ink
