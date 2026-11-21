@@ -1,0 +1,34 @@
+{
+ "id": "cig_butt",
+ "src": "sketchfab:72bd63eb0024404aa8e72c6ae15cebd9",
+ "credit": {
+  "title": "cigarette butt",
+  "author": "gbraithwaite",
+  "authorUrl": "https://sketchfab.com/gbraithwaite",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cigarette-butt-72bd63eb0024404aa8e72c6ae15cebd9",
+  "site": "Sketchfab"
+ },
+ "tris": 252,
+ "tex": 112,
+ "size": [
+  0.01,
+  0.01,
+  0.038
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#7c1100",
+   "#a22300",
+   "#c63d03",
+   "#e75d07",
+   "#f5831f",
+   "#f3a341",
+   "#f3be62",
+   "#f3d382",
+   "#f4e4a1"
+  ]
+ },
+ "warnings": []
+}

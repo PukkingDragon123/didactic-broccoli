@@ -556,8 +556,8 @@ export function dressHuman(h, look = {}) {
   const eyes = new THREE.Group(); eyes.position.y = eyeY; head.add(eyes);
   const add = (parent, key, build, pivot = [0, 0, 0]) => { const m = mesh(cached(key, build, pivot)); const g = pivotGroup(pivot, m); parent.add(g); return g; };
 
-  // ---- outfit
-  if (out?.id === 'dino') {
+  // ---- outfit (entries redrawn with real models, src/cosmetics/wearCatalog.js, bring their own dress or none)
+  if (out?.wear) { /* (no voxel hood, spikes, tail, band or box) */ } else if (out?.id === 'dino') {
     if (hoodOn) add(head, 'dinoHood', H.dinoHood);
     // spikes down the back + the tail
     const V = P.H / 140;
@@ -800,7 +800,7 @@ export function cosmeticPreview(id) {
   const add = (key, build, pos, rot) => { const m = mesh(cached(key, build)); if (pos) m.position.set(...pos); if (rot) m.rotation.set(...rot); g.add(m); return m; };
   const lift = 1.2;
   if (!c) return root;
-  if (c.wear && c.preview) { c.preview(add, g, lift); g.scale.setScalar(0.0117); return root; }
+  if (c.wear && c.preview) { hm.visible = false; c.preview(add, g, lift); g.scale.setScalar(0.0117); return root; }
   switch (id) {
     case 'shark': add('sharkHood', H.sharkHood); break;
     case 'bear': add('bearHood', H.bearHood); for (const sx of [-1, 1]) add('bearEar' + sx, () => H.bearEar(sx), [sx * 6.4, 16.2, 0.6], [0, 0, -sx * 0.25]); break;

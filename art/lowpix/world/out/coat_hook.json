@@ -1,0 +1,34 @@
+{
+ "id": "coat_hook",
+ "src": "sketchfab:0ef075a7dc1b40f583a2d7c0e676fdea",
+ "credit": {
+  "title": "CC0 - Coat Hook 4",
+  "author": "plaggy",
+  "authorUrl": "https://sketchfab.com/plaggy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cc0-coat-hook-4-0ef075a7dc1b40f583a2d7c0e676fdea",
+  "site": "Sketchfab"
+ },
+ "tris": 1280,
+ "tex": 192,
+ "size": [
+  0.099,
+  0.08,
+  0.062
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3e498f",
+   "#5a6db2",
+   "#8799c3",
+   "#b2c0d6",
+   "#dce3eb",
+   "#e2e8ed",
+   "#e7ecef",
+   "#ecf0f2",
+   "#f1f4f5"
+  ]
+ },
+ "warnings": []
+}

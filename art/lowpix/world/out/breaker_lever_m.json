@@ -1,0 +1,45 @@
+{
+ "id": "breaker_lever_m",
+ "src": "sketchfab:48dae899a38c4b04a7b6f7c017c9d95a",
+ "credit": {
+  "title": "Old Circiut Breaker Lever",
+  "author": "Serkan ÇINAR",
+  "authorUrl": "https://sketchfab.com/mr.cserkan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-circiut-breaker-lever-48dae899a38c4b04a7b6f7c017c9d95a",
+  "site": "Sketchfab"
+ },
+ "tris": 2493,
+ "tex": 512,
+ "size": [
+  0.142,
+  0.3,
+  0.522
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#4d2f1d",
+   "#624328",
+   "#765833",
+   "#8a6f40",
+   "#9c864e",
+   "#ac9e64",
+   "#b6b080",
+   "#c2c09a",
+   "#ceceb4"
+  ],
+  "m1": [
+   "#142120",
+   "#1b2a28",
+   "#22322f",
+   "#2a3a35",
+   "#33423c",
+   "#4d5e56",
+   "#697870",
+   "#87908a",
+   "#a6a7a6"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,111 @@
+{
+ "id": "gumball_machine",
+ "src": "sketchfab:4fccac6257d64c3680bd81fc8f34675d",
+ "credit": {
+  "title": "Vintage Gum Ball Machine",
+  "author": "gozdemrl",
+  "authorUrl": "https://sketchfab.com/gozdemrl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/vintage-gum-ball-machine-4fccac6257d64c3680bd81fc8f34675d",
+  "site": "Sketchfab"
+ },
+ "tris": 2928,
+ "tex": 512,
+ "size": [
+  0.197,
+  0.4,
+  0.209
+ ],
+ "colours": 58,
+ "palette": {
+  "m0": [
+   "#93294e",
+   "#bc395d",
+   "#cc6276",
+   "#d78f97",
+   "#e5bbbc",
+   "#e7c8c6",
+   "#ead4d0",
+   "#eddeda",
+   "#f1e7e3"
+  ],
+  "m1": [
+   "#007320",
+   "#00961d",
+   "#00b915",
+   "#00dc06",
+   "#0eff00",
+   "#44fc26",
+   "#72f94c",
+   "#99f870",
+   "#baf893"
+  ],
+  "m2": [
+   "#720026",
+   "#950025",
+   "#b8001f",
+   "#db0012",
+   "#fe0000",
+   "#fc3726",
+   "#f9684b",
+   "#f8926f",
+   "#f8b593"
+  ],
+  "m3": [
+   "#733b00",
+   "#965a00",
+   "#ba7e00",
+   "#dda800",
+   "#ffd801",
+   "#fced27",
+   "#f9f94c",
+   "#f8f870",
+   "#f8f894"
+  ],
+  "m4": [
+   "#003873",
+   "#005696",
+   "#0079b9",
+   "#00a3dc",
+   "#00d2ff",
+   "#26e8fc",
+   "#4cf8f9",
+   "#70f8ee",
+   "#93f8e8"
+  ],
+  "m5": [
+   "#440073",
+   "#660096",
+   "#8d00b9",
+   "#ba00dc",
+   "#ed00ff",
+   "#fc26f9",
+   "#f94ce9",
+   "#f870e0",
+   "#f893de"
+  ],
+  "m6": [
+   "#6f1501",
+   "#8f2903",
+   "#ae4107",
+   "#cb5f0b",
+   "#e88011",
+   "#eca131",
+   "#ecbc54",
+   "#eed277",
+   "#f0e399"
+  ],
+  "m7": [
+   "#271011",
+   "#321816",
+   "#3c211d",
+   "#462b24",
+   "#4f362b",
+   "#6f5340",
+   "#8d7157",
+   "#a49076",
+   "#b7ac98"
+  ]
+ },
+ "warnings": []
+}

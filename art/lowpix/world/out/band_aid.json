@@ -1,0 +1,34 @@
+{
+ "id": "band_aid",
+ "src": "sketchfab:1728a97697d94d2f8c5cb910c5f213ce",
+ "credit": {
+  "title": "Band Aid",
+  "author": "way2mind",
+  "authorUrl": "https://sketchfab.com/way2mind",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/band-aid-1728a97697d94d2f8c5cb910c5f213ce",
+  "site": "Sketchfab"
+ },
+ "tris": 200,
+ "tex": 496,
+ "size": [
+  0.62,
+  0.01,
+  0.18
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#962d15",
+   "#c04a1f",
+   "#db7138",
+   "#e09c67",
+   "#e7bf94",
+   "#e9cda4",
+   "#ebdab4",
+   "#ede4c4",
+   "#f1ecd2"
+  ]
+ },
+ "warnings": []
+}

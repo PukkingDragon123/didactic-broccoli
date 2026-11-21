@@ -1,0 +1,67 @@
+{
+ "id": "pigeon_lp2",
+ "src": "sketchfab:38eb847b4cf441bcae044605d0562e77",
+ "credit": {
+  "title": "Pigeon - Low poly",
+  "author": "Patryk Chowratowicz",
+  "authorUrl": "https://sketchfab.com/Zszywacz",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pigeon-low-poly-38eb847b4cf441bcae044605d0562e77",
+  "site": "Sketchfab"
+ },
+ "tris": 752,
+ "tex": 512,
+ "size": [
+  0.375,
+  0.25,
+  0.135
+ ],
+ "colours": 25,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m1": [
+   "#082e27",
+   "#0b3b2f",
+   "#0f4734",
+   "#135338",
+   "#185f3b",
+   "#25874e",
+   "#34ae5c",
+   "#52c66e",
+   "#7dd18a"
+  ],
+  "m2": [
+   "#4f0812",
+   "#650c12",
+   "#7a1311",
+   "#8f2317",
+   "#a3361d",
+   "#c55227",
+   "#d57642",
+   "#da9a69",
+   "#e1b98e"
+  ],
+  "m3": [
+   "#0c090a",
+   "#0f0c0d",
+   "#121010",
+   "#141313",
+   "#171717",
+   "#373737",
+   "#575757",
+   "#777777",
+   "#979797"
+  ]
+ },
+ "warnings": []
+}

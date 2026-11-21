@@ -197,20 +197,21 @@ export class Ramen {
     // condiment caddies along the counter: soy sauce, vinegar, chilli oil, pepper, a box of chopsticks
     for (const x of [-1.72, -0.38, 0.95]) {
       B.box(wood, 0.2, 0.02, 0.1, x, 1.0, -0.63, { tint: 0x5a3a22 });
-      [[0x2a1408, 0.11], [0xc89a3a, 0.1], [0xc8302a, 0.08], [0xf4f0e8, 0.07]].forEach(([c, h], i) => B.box(paint, 0.03, h, 0.03, x - 0.07 + i * 0.045, 1.02, -0.63, { tint: c }));
       B.box(wood, 0.06, 0.1, 0.14, x + 0.15, 1.0, -0.6, { tint: 0xc8a06a });
-      B.box(paint, 0.05, 0.08, 0.02, x - 0.17, 1.0, -0.58, { tint: 0xf4f4f0 }); // napkins
     }
     B.box(wood, 0.48, 0.04, 0.52, -2.74, 1.94, 1.9, { tint: 0x5a3a22 }); // the TV shelf
     // a shelf over the door to the back (sake bottles), the back room's noren
     B.box(wood, 1.2, 0.03, 0.22, 2.2, 1.95, -2.38, { tint: 0x6a4428 });
-    for (let i = 0; i < 6; i++) B.box(paint, 0.07, 0.28 + (i % 2) * 0.05, 0.07, 1.75 + i * 0.18, 1.98, -2.38, { tint: [0x2a5a2a, 0xe8e0c8, 0x6a3a10, 0x1e3a6a][i % 4] });
+    // (the bottles on it, the condiment caddies' bottles and the pendant lamps are imported models: below)
     // the stools are props; the pendant lamps' cords + shades
-    for (const x of [-1.6, 0, 1.4]) { B.box(paint, 0.01, 0.5, 0.01, x, 2.1, 0.2, { tint: 0x1e1e1e }); B.box(M(t.P(0.5)), 0.3, 0.16, 0.3, x, 1.94, 0.2, { tint: 0xd8402a }); }
     B.pop();
     B.build(this.group);
-    // lit bulbs under the shades
-    for (const x of [-1.6, 0, 1.4]) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.03, 0.12), new THREE.MeshBasicMaterial({ color: 0xfff0c8 })); b.position.copy(L(x, 1.93, 0.2)); this.group.add(b); }
+    // imported models instead of tinted boxes: the pendant lamps over the counter, the bottles on the shelf over the
+    // door, a condiment set on each caddy (src/data/props/home.js)
+    const deco = (id, x, y, z, ry = 0, sc = 1) => { const m = prop(id, P.voxel(), ...L(x, y, z).toArray(), ry, sc); this.group.add(m); return m; };
+    for (const x of [-1.6, 0, 1.4]) deco('hm_lamp_pendant', x, 2.6 - 0.55, 0.2, 0, 1);
+    ['hm_sake', 'hm_beer', 'hm_sake_set', 'hm_beer', 'hm_sake'].forEach((id, i) => deco(id, 1.78 + i * 0.21, 1.965, -2.38, 0.3 * i, id === 'hm_beer' ? 1.05 : 1.1));
+    for (const x of [-1.72, -0.38, 0.95]) deco('hm_condiments', x - 0.03, 1.02, -0.63, 0, 1);
     // stools
     this.stools = SEATS.map((x) => { const s = prop('rm_stool', P.voxel(), O.x + x, 0, O.z + SEAT_Z); this.group.add(s); return s; });
     // walls and the counter block you

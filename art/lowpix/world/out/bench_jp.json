@@ -1,0 +1,34 @@
+{
+ "id": "bench_jp",
+ "src": "sketchfab:df71b965d0ba4a9596375133ac785e21",
+ "credit": {
+  "title": "Japanese Garden Bench",
+  "author": "Anastasiia Shevchenko",
+  "authorUrl": "https://sketchfab.com/chertpaderi",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-garden-bench-df71b965d0ba4a9596375133ac785e21",
+  "site": "Sketchfab"
+ },
+ "tris": 969,
+ "tex": 512,
+ "size": [
+  0.85,
+  0.45,
+  0.299
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1c0f0b",
+   "#24150f",
+   "#2c1d14",
+   "#332519",
+   "#3a2d1e",
+   "#5e4e34",
+   "#80714c",
+   "#9f9367",
+   "#b3ae8d"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,45 @@
+{
+ "id": "band_aid2",
+ "src": "sketchfab:68fac0e06ece412098eaae249c5e2639",
+ "credit": {
+  "title": "Bandaid",
+  "author": "PolyDavid",
+  "authorUrl": "https://sketchfab.com/PolyDavid",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bandaid-68fac0e06ece412098eaae249c5e2639",
+  "site": "Sketchfab"
+ },
+ "tris": 172,
+ "tex": 512,
+ "size": [
+  0.246,
+  0.01,
+  0.673
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#1f0703",
+   "#280c05",
+   "#301307",
+   "#381b09",
+   "#40240c",
+   "#704817",
+   "#9f7125",
+   "#cba034",
+   "#d4be66"
+  ],
+  "m1": [
+   "#4d6470",
+   "#68858f",
+   "#8ba1a5",
+   "#aebbbc",
+   "#cfd5d5",
+   "#d7dad9",
+   "#dedfdf",
+   "#e5e5e5",
+   "#ebebeb"
+  ]
+ },
+ "warnings": []
+}

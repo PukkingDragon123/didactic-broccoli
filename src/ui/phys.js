@@ -274,6 +274,17 @@ function cell(sel) {
   return a;
 }
 
+/** Speaker cloth for the cabinet's grille: a woven saran weave, warm brown, the holes dark (tiles at 8 texels). */
+function grille() {
+  const a = art(8, 8), A = hex(0x8a6a44), B = hex(0x6e5234), D = hex(0x2e2016), L = hex(0xa4825a);
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+    const hole = (x % 4 === 3) && (y % 4 === 3);
+    const warp = ((x >> 2) + (y >> 2)) % 2;
+    a.px(x, y, hole ? D : (x % 4 === 0 || y % 4 === 0) ? (warp ? L : A) : warp ? A : B);
+  }
+  return a;
+}
+
 let installed = false;
 function textures() {
   const r = document.documentElement.style;
@@ -289,6 +300,7 @@ function textures() {
   set('--ph-tray', tray());
   set('--ph-cell', cell(false));
   set('--ph-cell-sel', cell(true));
+  set('--ph-grille', grille());
 }
 
 // ------------------------------------------------------------------ press feedback (delegated)
@@ -401,6 +413,7 @@ function groupPause() {
     let k = SECTIONS.findIndex(([, ids]) => ids.includes(id));
     if (k < 0) k = SECTIONS.length - 1;
     const tip = l.nextElementSibling?.classList.contains('hm-tip') ? l.nextElementSibling : null;
+    if (tip && !l.title) l.title = tip.textContent;
     const order = SECTIONS[k][1].indexOf(id);
     l.style.order = order < 0 ? 50 : order * 2; if (tip) tip.style.order = (order < 0 ? 50 : order * 2) + 1;
     if (l.parentNode !== secs[k]) { secs[k].appendChild(l); if (tip) secs[k].appendChild(tip); }
@@ -414,6 +427,13 @@ function groupPause() {
     b.innerHTML = `${iconHTML('book', 2)}<span>Credits</span>`;
     b.addEventListener('click', (e) => { e.stopPropagation(); import('../menu/credits.js').then((m) => m.openCredits()); });
     (document.getElementById('reset-btn') || P.lastChild).before(b);
+  }
+  // the cabinet's speaker grille under the plates, with its maker's badge (decoration: it fills the control column)
+  if (P && !P.querySelector('.ph-grille')) {
+    const gr = document.createElement('div');
+    gr.className = 'ph-grille'; gr.setAttribute('aria-hidden', 'true');
+    gr.innerHTML = '<span>Gacha-Tone</span>';
+    P.appendChild(gr);
   }
 }
 

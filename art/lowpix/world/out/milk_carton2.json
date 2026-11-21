@@ -1,0 +1,100 @@
+{
+ "id": "milk_carton2",
+ "src": "sketchfab:24373fdaccb94e2faa494d046ccde627",
+ "credit": {
+  "title": "Milk Carton",
+  "author": "mootiff",
+  "authorUrl": "https://sketchfab.com/mootiff",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/milk-carton-24373fdaccb94e2faa494d046ccde627",
+  "site": "Sketchfab"
+ },
+ "tris": 2497,
+ "tex": 256,
+ "size": [
+  0.092,
+  0.2,
+  0.091
+ ],
+ "colours": 40,
+ "palette": {
+  "m0": [
+   "#001891",
+   "#002fbe",
+   "#004dea",
+   "#1877ff",
+   "#47a1fc",
+   "#63bbfa",
+   "#7ecff9",
+   "#98e0f8",
+   "#b1edf9"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m2": [
+   "#0d1644",
+   "#132357",
+   "#193369",
+   "#20457b",
+   "#28598c",
+   "#3579ac",
+   "#4c9ac3",
+   "#71b4cb",
+   "#94cad5"
+  ],
+  "m3": [
+   "#001ba2",
+   "#0035d3",
+   "#0659ff",
+   "#3a8bfd",
+   "#6db4fb",
+   "#83c8fa",
+   "#98d9f9",
+   "#ade6f9",
+   "#c1f0f9"
+  ],
+  "m4": [
+   "#221b1d",
+   "#2c2426",
+   "#342e2f",
+   "#3c3939",
+   "#444444",
+   "#5e5e5e",
+   "#777777",
+   "#919191",
+   "#ababab"
+  ],
+  "m5": [
+   "#255c17",
+   "#397620",
+   "#508f2a",
+   "#6aa636",
+   "#85bd42",
+   "#9ec35f",
+   "#b3ca7c",
+   "#c5d197",
+   "#d5dab1"
+  ],
+  "m6": [
+   "#0121bb",
+   "#0542f1",
+   "#3879f8",
+   "#72aaf7",
+   "#aad2f9",
+   "#b7def9",
+   "#c3e7f9",
+   "#cfeff9",
+   "#dbf5fa"
+  ]
+ },
+ "warnings": []
+}

@@ -6,23 +6,22 @@ import { defineIcon, iconHTML, iconURL, iconCanvas } from '../gfx/icons.js';
 
 // ------------------------------------------------------------------ icons (16 x 16, shared palette letters)
 const ICONS = {
-  // the Capsule 98 logo: a capsule whose lower half is four coloured panels
+  // the Capsule 98 logo: a little isometric cube in three colours (never a gacha capsule: owner's rule)
   os_logo: { rows: [
-    '.....WWWWWW.....',
-    '...WWWWWWWWWW...',
-    '..WWWWWWWWWWuW..',
-    '.WWWWWWWWWWWWuW.',
-    '.WWWWWWWWWWWWWu.',
-    'WWWWWWWWWWWWWWWu',
-    'kkkkkkkkkkkkkkkk',
-    'RRRRYYYYEEEEBBBB',
-    'RQRRYZYYEFEEBCBB',
-    'RRRrYYYyEEEeBBBb',
-    '.RRrYYYyEEEeBBb.',
-    '.RRrYYYyEEEeBBb.',
-    '..RrYYYyEEEeBb..',
-    '...rrYYyEEebb...',
-    '.....yyyeeee....',
+    '......kkkk......',
+    '....kkRRRRkk....',
+    '..kkRRRQRRRRkk..',
+    'kkRRRRRRRRRRRRkk',
+    'kYkkRRRRRRRRkkBk',
+    'kYYYkkRRRRkkBBBk',
+    'kYYYYYkkkkBBBBBk',
+    'kYYYYYYkBBBBBBbk',
+    'kYZYYYYkBBCBBBbk',
+    'kYYYYYYkBBBBBBbk',
+    'kYYYYYykBBBBBbbk',
+    '.kkYYYykBBBbbkk.',
+    '...kkYykBBbkk...',
+    '.....kkkkkk.....',
   ] },
   os_globe: { rows: [
     '.....bBBBBb.....',

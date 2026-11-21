@@ -97,9 +97,9 @@ export class MenuUI {
   layout() {
     const W = innerWidth, H = innerHeight, portrait = H > W * 1.15;
     const pad = Math.max(16, Math.round(Math.min(W, H) * 0.03));
-    const tagS = W >= 1800 && H >= 1000 ? 3 : 2;
+    const tagS = W >= 2200 && H >= 1300 ? 3 : 2; // 1440p and up: 3 px a texel
     // the title: as big as fits about a third of the height (portrait: most of the width)
-    const P = pickTitle(this.meta, portrait ? W * 0.9 : Math.min(W * 0.42, 760), portrait ? H * 0.24 : H * (H < 560 ? 0.3 : 0.34));
+    const P = pickTitle(this.meta, portrait ? W * 0.9 : Math.min(W * 0.42, 760), portrait ? H * 0.24 : H * 0.3);
     const s = P?.s || 2, size = P?.size;
     const tw = size ? size.w * s : 300, th = size ? size.h * s : 120;
     const left = portrait ? Math.round((W - tw) / 2) : pad;
@@ -120,7 +120,7 @@ export class MenuUI {
       });
     }
     // the kana plate hangs on two S-hooks from GARAGE, toward the right
-    const ks = Math.max(1, Math.min(3, s)), K = this.kana, kw = K.art.w * ks, kh = K.art.h * ks;
+    const ks = Math.max(2, Math.min(4, s + 1)), K = this.kana, kw = K.art.w * ks, kh = K.art.h * ks;
     if (this.kanaS !== ks) { this.kanaS = ks; K.art.canvas(ks, this.kanaEl.firstChild); }
     const kx = Math.round(tw * (portrait ? 0.5 : 0.7) - kw / 2), ky = top + th - Math.round(4 * s);
     this.kanaEl.style.cssText = `left:${kx}px;top:${ky}px;width:${kw}px;height:${kh}px;transform-origin:${Math.round(kw / 2)}px 0`;
@@ -130,7 +130,7 @@ export class MenuUI {
     // the strand of fuda: from an eyelet under the title's left, or two strands side by side when one won't fit
     const M = tagMetrics(this.items);
     const tagH = M.h * tagS, gap = Math.round(tagS * 5);
-    let top0 = ky + kh + gap * 2;
+    let top0 = ky + kh + gap * 3;
     const n = this.tags.length;
     const colH = (k) => k * (tagH + DEPTH * tagS + gap) - gap;
     const cols = colH(n) > H - top0 - pad && n > 3 && !portrait ? 2 : 1;

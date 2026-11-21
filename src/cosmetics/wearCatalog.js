@@ -60,6 +60,10 @@ const F = {
   kokeshi: { m: 'kokeshi2', h: 9, y: 15.6, z: 2 },
   daruma: { m: 'daruma', w: 10, y: 15.6, z: 2 },
   robot: { m: 'toy_robot2', h: 10, y: 15.6, z: 2 },
+  pigeon: { m: 'pigeon_lp', w: 12, y: 15.4, z: 1.5 },
+  bandaid: { m: 'band_aid', w: 4.5, cy: -2, x: 4.2, zf: 11.6, ry: 0.5 },
+  oniUp: { m: 'wear_onimask2', w: 11, y: 14.2, z: 3.5, rx: -1.1 },
+  box: { m: 'box_cardboard', w: 0.58, z: 0.0 },
   kappaDish: { m: 'bowl_empty', w: 10, y: 15.4, z: 2 },
   bonsai: { m: 'bonsai', h: 13, y: 15, z: 1.5 },
   sprout: { m: 'aloe_pot', h: 6.5, y: 15.6, z: 2 },
@@ -106,6 +110,11 @@ const eyes = (k) => wearItem('eyes', F[k]);
 const side = (k) => wearItem('side', F[k]);
 const back = (k) => wearItem('back', F[k]);
 const neck = (k) => wearItem('neck', F[k]);
+const torso = (k) => wearItem('torso', F[k]);
+// outfits keep their painted clothes (spec); a hooded one loses the voxel hood, an extra piece rides on top
+const outfitPiece = (item, bareHead = false) => (item
+  ? { keepSpec: true, hood: false, wear: item.wear, dress: (c) => { if (!bareHead || !c.hat) item.dress(c); } } // (a head band only when no hat is on)
+  : { keepSpec: true, hood: false, wear: [], dress: undefined });
 
 // ------------------------------------------------------------------ the old voxel pieces, redrawn (same ids)
 // (name / desc only change where the new model is a different thing)
@@ -123,12 +132,28 @@ const RESTYLE = {
   stars: eyes('stars'),
   groucho: eyes('groucho'),
   kitsune: side('kitsune'),
+  dino: { ...outfitPiece(), desc: 'Rawr. A soft green onesie with a pale belly.' },
+  banana: { ...outfitPiece(), desc: 'A-peel-ing in every way. Ripe, spotty, unforgettable.' },
+  happi: outfitPiece(hat('sweatband', false), true),
+  box: { ...outfitPiece(torso('box')), desc: "Grandpa's old delivery box, worn round the middle. Beep boop." },
   // src/cosmetics/catalog.js
   cx_strawhat: hat('strawhat'),
   cx_beret: hat('beret'),
   cx_onigiri: crown('onigiri'),
   cx_explorer: hat('pith'),
   cx_crown: crown('crown'),
+  cx_pigeon: { ...crown('pigeon'), desc: "Poppo's cousin. Sits on your head and looks around. Probably house-trained." },
+  cx_pompadour: { ...hat('flatcap'), name: 'Legendary Newsboy', desc: 'You touched the hair. Now it lives under this cap, for its own safety.' },
+  cx_curlers: { ...crown('towel'), name: 'Curlers Under a Towel', desc: "Mrs. Ota's curlers, wrapped up in a towel. For when you can't be bothered." },
+  cx_oni: { ...crown('oniUp'), name: 'Oni Mask (Pushed Up)', desc: 'Setsubun oni, worn on top of the head. Beans not included.' },
+  cx_bandaid: eyes('bandaid'),
+  cx_kaiser: { ...eyes('groucho'), name: 'Kaiser Disguise', desc: 'Big moustache, round specs, an air of command.' },
+  cx_raincoat: outfitPiece(),
+  cx_cow: outfitPiece(),
+  cx_shiba: outfitPiece(),
+  cx_calico: outfitPiece(),
+  cx_tanuki: outfitPiece(),
+  cx_ramenchef: outfitPiece(hat('sweatband', false), true),
   cx_kappa: { ...crown('kappaDish'), desc: 'A glazed dish for the top of your head. Keep the water in it. Bow carefully.' },
   cx_shrub: { ...crown('bonsai'), cover: false, name: 'Bonsai Hat', desc: "Mr. Yabuki's spare bonsai. You are the neighbourhood watch now." },
   cx_sprout: { ...crown('sprout'), name: 'Little Aloe', desc: 'A potted aloe riding on your head. Water daily. Talk to it.' },
@@ -224,8 +249,10 @@ export function applyWear(list, byId) {
   for (const [id, r] of Object.entries(RESTYLE)) {
     const c = byId[id];
     if (!c) continue;
-    delete c.spec; // (a painted hat / glasses: the model replaces it)
+    if (!r.keepSpec) delete c.spec; // (a painted hat / glasses: the model replaces it; outfits keep their clothes)
     Object.assign(c, r);
+    if ('dress' in r && r.dress === undefined) delete c.dress;
+    if (r.keepSpec) delete c.preview;
   }
   // the models load in the background now, so thumbnails and the mirror have them when first asked
   const ids = new Set();

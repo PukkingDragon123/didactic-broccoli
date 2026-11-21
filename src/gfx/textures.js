@@ -1683,10 +1683,17 @@ function skyline(p, emissive) {
 
 const townCache = new Map();
 /** Cached Pix for a town texture key at the given pixel size. */
+// the small town signs whose lettering is set in pixel type: painted at 2 texels per pixel, so the type sits at
+// Alagard's native 16 px where the art asked for 8 (the owner's rule: high-res pixel fonts only, never tiny ones)
+const TYPE_2X = new Set(['nobori', 'openPlate', 'clearance', 'clearancePlate', 'tomare', 'speed30', 'underpassName', 'lidHydrant',
+  'signSnatch', 'enamelSoap', 'enamelRamune', 'enamelUniform', 'signDog', 'tobidashi', 'signGarage', 'noticeBoard', 'signPiano',
+  'signMilk', 'parkName', 'parkArrow', 'wcSign', 'parkRules', 'kishibe', 'forSale', 'danger', 'pylonPlate', 'closedSign',
+  'villaNo', 'chalk', 'tobaccoWin', 'otaFudosan', 'aptRecruit', 'forRent', 'babySign', 'patrolNote', 'aptNos', 'closedNotice',
+  'pigeonBoard']);
 export function townPix(key, w, h) {
   const ck = key + w + 'x' + h;
   if (!townCache.has(ck)) {
-    const p = new Pix(w, h, 7 + w);
+    const p = new Pix(w, h, 7 + w, TYPE_2X.has(key) ? 2 : 1);
     TOWN[key](p);
     townCache.set(ck, p);
   }

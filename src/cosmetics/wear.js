@@ -63,7 +63,7 @@ export function wearItem(anchor, ...fits) {
     wear: fits.map((f) => modelId(f.m)),
     dress: (c) => {
       for (const f of fits) {
-        if (anchor === 'neck' || anchor === 'back') { bodyPiece(c, anchor, f); continue; }
+        if (anchor === 'neck' || anchor === 'back' || anchor === 'torso') { bodyPiece(c, anchor, f); continue; }
         const p = wearPiece(f);
         if (anchor === 'side') { // a festival mask pushed to the side of the head
           const off = c.hoodOn || c.hat?.cover;
@@ -77,7 +77,7 @@ export function wearItem(anchor, ...fits) {
     },
     preview: (add, g, lift) => {
       for (const f of fits) {
-        if (anchor === 'neck' || anchor === 'back') continue;
+        if (anchor === 'neck' || anchor === 'back' || anchor === 'torso') continue;
         const p = wearPiece(f);
         if (anchor === 'side') { g.add(sideWrap(p)); continue; }
         if (anchor === 'crown') p.position.y += lift;
@@ -105,6 +105,10 @@ function bodyPiece(c, anchor, f) {
     delete fit.y;
     fit.z = (f.z ?? 0.01) * k;
     delete fit.zf; delete fit.zb;
+  } else if (anchor === 'torso') { // worn round the body (the cardboard box costume), centred on the chest
+    fit.cy = (f.y ?? 0) * k + P.bustY - J.chest[1];
+    fit.z = (f.z ?? 0) * k;
+    delete fit.y; delete fit.zf; delete fit.zb;
   } else {
     fit.y = (f.y ?? 0) * k + P.bustY - J.chest[1] - 0.12 * k;
     fit.zf = -P.chestZ - 0.01 * k + (f.z ?? 0) * k;

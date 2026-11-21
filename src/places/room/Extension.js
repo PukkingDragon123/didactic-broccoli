@@ -192,6 +192,9 @@ export class Extension {
     Z.prop('hm_radio', -2.0, 0.78, 0.4, 0.15, 0.7);
     Z.prop('hm_dango_tea', -1.42, 0.78, 0.44, -0.3, 0.9);
     Z.prop('hm_rice_sack', -1.95, 0, 1.75, 0.4, 1);
+    // the stove's kettle, a rice bowl by the dining shelf
+    Z.prop('hm_kettle', 0.12, 0.98, z1 - 0.3, Math.PI + 0.5, 0.85);
+    Z.prop('hm_rice_bowl', -1.18, 0.78, 0.44, 0.4, 0.8);
     Z.block(-2.1, -1.1, 0.25, 0.6);
     // the stove: hold to cook
     this.stoveHit = Z.hit(0.6, 0.3, 0.45, 0.3, 1.0, z1 - 0.32, {
@@ -277,7 +280,14 @@ export class Extension {
     Z.prop('gr_oke', X1 - 0.45, 0, 2.35, 0);
     B.box(M.metal, 0.04, 0.9, 0.04, X1 - 0.03, 0.9, 2.2, { tint: 0xc8ccd2 }); // shower bar
     B.box(M.metal, 0.06, 0.14, 0.06, X1 - 0.06, 1.75, 2.2, { tint: 0xd8dce0 });
-    B.box(M.paint, 0.02, 0.5, 0.36, X1 - 0.01, 1.1, 2.0, { tint: 0xc8d8e4, k: 1.15 }); // mirror
+    // the wash place: a real mirror, shampoo bottles, a sponge and a bath basket with a folded towel
+    Z.prop('hm_mirror', X1 - 0.015, 0.95, 2.0, -Math.PI / 2, 1);
+    Z.prop('hm_bottle', X1 - 0.12, 0.0, 1.62, -0.4, 1);
+    Z.prop('hm_bottle', X1 - 0.2, 0.0, 1.55, 0.3, 0.9);
+    Z.prop('hm_sponge', X1 - 0.3, 0.0, 1.7, 0.8, 1);
+    Z.prop('hm_basket', 1.15, 0.0, 2.5, 0.2, 1);
+    Z.prop('hm_towel', 1.15, 0.12, 2.5, 0.1, 0.9);
+    Z.prop('hm_bottle', 1.05, 0.12, 2.42, 0, 0.8);
     B.box(M.metal, 0.12, 0.08, 0.2, X1 - 0.06, 0.6, 2.0, { tint: 0xc8ccd2 }); // taps
     // a frosted sliding door, half open, onto the kitchen (x 0.8)
     B.quad(M.paint, 0.36, 1.85, 0.8 - 0.06, 0, 1.62, { ry: Math.PI / 2, tint: 0xd8e0e6 });
@@ -374,6 +384,25 @@ export class Extension {
     Z.prop('hm_tanuki', X0 + 0.35, 0, -1.4, 0.6, 1, spare);
     Z.prop('hm_toybox_small', X0 + 0.45, 0, -0.45, 0.3, 1, spare);
     Z.prop('hm_futon_stack', X1 - 0.55, 0, -0.35, Math.PI / 2, 1, spare);
+    // furnished like a lived-in room: a tansu with a radio, a kokeshi and a vase on it, a cube shelf of books and toys,
+    // a dartboard and a clock on the walls, a pothos, an old oil lamp, a folding screen in the corner
+    Z.prop('hm_tansu', -1.0, 0, Z0 + 0.38, 0, 1, spare);
+    Z.prop('hm_radio_ussr', -1.2, 0.95, Z0 + 0.36, 0.2, 0.8, spare);
+    Z.prop('hm_kokeshi', -0.7, 0.95, Z0 + 0.38, -0.3, 1, spare);
+    Z.prop('hm_vase', -0.48, 0.95, Z0 + 0.4, 0, 0.6, spare);
+    Z.prop('hm_cube_shelf', 0.6, 0, Z0 + 0.14, 0, 1, spare);
+    Z.prop('hm_books_stack', 0.32, 0.035, Z0 + 0.14, 0.2, 0.9, spare);
+    Z.prop('hm_robot_teal', 0.62, 0.335, Z0 + 0.12, 0.3, 0.9, spare);
+    Z.prop('hm_books_old', 0.9, 0.335, Z0 + 0.14, 0, 0.8, spare);
+    Z.prop('hm_train', 0.6, 0.035, Z0 + 0.14, 1.4, 1, spare);
+    Z.prop('hm_camera', 0.9, 0.635, Z0 + 0.12, -0.3, 1, spare);
+    Z.prop('hm_dartboard', X1 - 0.02, 1.35, -2.0, -Math.PI / 2, 1, spare);
+    Z.prop('hm_clock', 1.9, 1.75, Z0 + 0.025, 0, 1, spare);
+    Z.prop('hm_pothos', X0 + 0.45, 0, Z0 + 0.45, 0.6, 1, spare);
+    Z.prop('hm_oil_lamp', X0 + 0.3, 0, -0.95, 0.3, 1, spare);
+    Z.prop('hm_screen', X1 - 0.35, 0, Z0 + 1.0, -Math.PI / 2 + 0.4, 1, spare);
+    Z.prop('hm_laundry', 1.5, 0, -0.35, 0.4, 1, spare);
+    Z.prop('hm_boombox', -1.85, 0, -0.3, 0.5, 0.55, spare);
     // tier 2: the hobby room (boards, the cabinet, the showcase, an armchair, a rug, spotlights)
     const hobby = this.hobby = new THREE.Group();
     const Hb = new Batch(); Hb.off.copy(Z.o);

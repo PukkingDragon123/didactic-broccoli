@@ -6,6 +6,7 @@
 import { shade, mix } from '../../voxel/palette.js';
 import { VoxelModel, gloss, metal, glass, decColor } from '../../voxel/VoxelModel.js';
 import { hash, vnoise, fill, grime, dust, speckle, blotch, edgeWear, path, text } from './garage.js';
+import { maskPx } from '../../gfx/pixfont.js';
 
 // ------------------------------------------------------------------ helpers
 const R = Math.round;
@@ -59,33 +60,16 @@ function shell(v, x0, y0, z0, x1, y1, z1, c, t = 1, open = []) {
     (y < y0 + t && !open.includes('bottom')) || (y > y1 - t && !open.includes('top')) || (z < z0 + t && !open.includes('back')) || (z > z1 - t && !open.includes('front')), c);
 }
 
-// tiny pixel fonts: 3x5 latin/digits and 5x7 latin for signs
-const F3 = {
-  A: ['.#.', '#.#', '###', '#.#', '#.#'], B: ['##.', '#.#', '##.', '#.#', '##.'], C: ['.##', '#..', '#..', '#..', '.##'],
-  D: ['##.', '#.#', '#.#', '#.#', '##.'], E: ['###', '#..', '##.', '#..', '###'], F: ['###', '#..', '##.', '#..', '#..'],
-  G: ['.##', '#..', '#.#', '#.#', '.##'], H: ['#.#', '#.#', '###', '#.#', '#.#'], I: ['###', '.#.', '.#.', '.#.', '###'],
-  K: ['#.#', '#.#', '##.', '#.#', '#.#'], L: ['#..', '#..', '#..', '#..', '###'], M: ['#.#', '###', '###', '#.#', '#.#'],
-  N: ['##.', '#.#', '#.#', '#.#', '#.#'], O: ['.#.', '#.#', '#.#', '#.#', '.#.'], P: ['##.', '#.#', '##.', '#..', '#..'],
-  R: ['##.', '#.#', '##.', '#.#', '#.#'], S: ['.##', '#..', '.#.', '..#', '##.'], T: ['###', '.#.', '.#.', '.#.', '.#.'],
-  U: ['#.#', '#.#', '#.#', '#.#', '.#.'], V: ['#.#', '#.#', '#.#', '.#.', '.#.'], W: ['#.#', '#.#', '#.#', '###', '#.#'],
-  X: ['#.#', '#.#', '.#.', '#.#', '#.#'], Y: ['#.#', '#.#', '.#.', '.#.', '.#.'],
-  0: ['###', '#.#', '#.#', '#.#', '###'], 1: ['.#.', '##.', '.#.', '.#.', '###'], 2: ['##.', '..#', '.#.', '#..', '###'],
-  3: ['##.', '..#', '.#.', '..#', '##.'], 4: ['..#', '.##', '#.#', '###', '..#'], 5: ['###', '#..', '##.', '..#', '##.'],
-  6: ['.##', '#..', '###', '#.#', '###'], 7: ['###', '..#', '.#.', '.#.', '.#.'], 8: ['###', '#.#', '###', '#.#', '###'],
-  9: ['###', '#.#', '###', '..#', '##.'], '!': ['#', '#', '#', '.', '#'], '-': ['...', '...', '###', '...', '...'],
-  ' ': ['.', '.', '.', '.', '.'],
-};
-const F5 = {
-  O: ['.###.', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'], U: ['#...#', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
-  T: ['#####', '..#..', '..#..', '..#..', '..#..', '..#..', '..#..'], F: ['#####', '#....', '#....', '####.', '#....', '#....', '#....'],
-  R: ['####.', '#...#', '#...#', '####.', '#.#..', '#..#.', '#...#'], D: ['####.', '#...#', '#...#', '#...#', '#...#', '#...#', '####.'],
-  E: ['#####', '#....', '#....', '####.', '#....', '#....', '#####'], ' ': ['..', '..', '..', '..', '..', '..', '..'],
-};
-/** Pixel rows for a string in a font (glyphs separated by `gap` columns). */
-function fontRows(str, font = F3, gap = 1) {
-  const gl = [...str].map((ch) => font[ch] || font[' ']);
-  const h = gl[0].length;
-  return Array.from({ length: h }, (_, r) => gl.map((g) => g[r]).join('.'.repeat(gap)));
+/** Pixel rows for a string in the game's pixel type (Alagard at its native 16 px, src/gfx/pixfont.js: the owner's
+ *  rule, high-res pixel fonts only). Labels too small to hold it carry no lettering. */
+function fontRows(str) {
+  const m = maskPx(str);
+  if (!m.length) return ['.'];
+  let x1 = 0, y0 = 1e9, y1 = -1e9;
+  for (const [x, y] of m) { x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  const rows = Array.from({ length: y1 - y0 + 1 }, () => Array(x1 + 1).fill('.'));
+  for (const [x, y] of m) rows[y - y0][x] = '#';
+  return rows.map((r) => r.join(''));
 }
 /** Stamp rows onto a plane. plane 'xy' at z (rows go -y), 'xz' at y (rows go +z). Scale >1 enlarges pixels. */
 function stampRows(v, rows, col, x0, y0, z0, plane = 'xy', scale = 1) {
@@ -135,7 +119,6 @@ function garbageBag(v, { seed = 1, w = 25, d = 21, h = 46, print = 0x2f9a4a, tin
   const by = R(h * 0.26);
   for (let x = -10; x <= 10; x++) { paint(x, by, print); paint(x, by + 8, print); }
   for (let y = by; y <= by + 8; y++) { paint(-10, y, print); paint(10, y, print); }
-  fontRows('45L').forEach((row, r) => [...row].forEach((ch, c) => { if (ch === '#') { paint(-1 + c, by + 6 - r, print); } }));
   ['.###.', '#.#.#', '#####', '#.#.#', '.###.'].forEach((row, r) => [...row].forEach((ch, c) => { if (ch === '#') paint(-8 + c, by + 6 - r, print); }));
   // gathered neck, knot and two short ears
   const pl = (x, y, z, f = 1) => gloss(shade(tint, f * (0.9 + hash(x, y, z, seed) * 0.12)));
@@ -337,9 +320,6 @@ const quest = {
       const NYU = ['.###.#.', '...#.#.', '.##..#.', '#####..', '..#..#.', '..#..#.', '.##...#'];
       for (const [x0, rows] of [[-9, GYU], [1, NYU]]) rows.forEach((r, i) => [...r].forEach((ch, j) => { if (ch === '#') { v.set(x0 + j, 36 - i, 9, gloss(BLUE)); v.set(x0 + j, 35 - i, 9, gloss(BLUE)); } }));
       for (let x = -8; x <= 7; x++) if (x % 3 !== 1) v.set(x, 41, 9, gloss(WHITE));
-      v.paint(() => stampRows(v, fontRows('1000'), gloss(WHITE), -9, 6, 9));
-      v.paint(() => stampRows(v, ['##.#', '###.', '#.#.'], gloss(0xffd23f), 6, 4, 9)); // tiny 'ml'
-      v.paint(() => stampRows(v, fontRows('MILK'), gloss(BLUE), -7, 26, 9));
       // sides: blue with a white nutrition panel on +x, a milk-drop logo on -x
       v.paint(() => v.shape(9, 0, -10, 9, H - 1, 8, () => true, (x, y, z) => gloss(y >= 14 && y <= 32 && z >= -7 && z <= 6 ? (y % 3 === 0 && y < 31 && z > -6 && z < 5 ? 0x9aa2b0 : WHITE) : (y <= 6 ? BLUE : y >= 44 ? BLUE : SKY))));
       v.paint(() => v.shape(-10, 0, -10, -10, H - 1, 8, () => true, (x, y, z) => {
@@ -369,11 +349,8 @@ const quest = {
       // euro hang slot
       for (let x = -5; x <= 4; x++) for (let y = 55; y <= 57; y++) if (!((x === -5 || x === 4) && y !== 56)) { v.remove(x, y, -1); v.remove(x, y, 0); }
       // header text: AA x4 + white bolt
-      stampRows(v, fontRows('AA'), gloss(0xffffff), -17, 54, 1, 'xy', 2);
       v.shape(5, 48, 1, 18, 60, 1, (x, y) => Math.hypot(x - 11.5, y - 54) <= 6.3, gloss(0xffd23f));
-      stampRows(v, fontRows('4'), gloss(0xd8242a), 10, 56, 2, 'xy', 1);
       stampRows(v, ['#.#', '.#.', '#.#'], gloss(0x2a2226), 9, 51, 2);
-      stampRows(v, fontRows('ALKALINE'), gloss(0xffffff), -15, 3, 1);
       // four cells (r 3.6 = 14.4 mm, 50 mm long) under a clear blister
       const cx = [-13.5, -4.5, 4.5, 13.5];
       for (const x0 of cx) {
@@ -401,7 +378,6 @@ const quest = {
       }, glass(0xe4f2f8));
       // a price sticker
       fill(v, 10, 41, 1, 18, 45, 1, (x, y) => gloss(y === 45 ? 0xe0302c : 0xffffff));
-      stampRows(v, fontRows('300'), gloss(0x2a2226), 11, 44, 2);
     },
   },
 
@@ -445,7 +421,6 @@ const quest = {
       // rivets + a maker sticker
       for (const x of [-34, -12, 12, 34]) v.set(x, 20, 17, metal(0xd8dde2));
       fill(v, -9, 8, 17, 9, 15, 17, (x, y) => gloss(y === 15 || y === 8 ? 0x2a2226 : 0xf2d84a));
-      stampRows(v, fontRows('TOOLS'), gloss(0x2a2226), -9, 13, 18);
       blotch(v, -37, 0, -17, 37, 22, 17, gloss(0x7a2a1c), 0.82, 3, 9);
       grime(v, 0, 6, 0.82);
       dust(v, 0xb0a288, 0.18, 4, 3);
@@ -479,9 +454,6 @@ const quest = {
       // pins at the ends of the printed tube
       for (const x of [-L + 15, L - 17]) { v.set(x, 3, 4, gloss(0x9aa4ae)); v.set(x, 5, 4, null); }
       // brand + wattage on the top
-      stampRows(v, fontRows('FL40SS'), gloss(0xffffff), -L + 10, 7, -3, 'xz');
-      stampRows(v, fontRows('40W'), gloss(0xffd23f), 40, 7, -3, 'xz');
-      stampRows(v, fontRows('DAYLIGHT'), gloss(0xffffff), -20, 7, -3, 'xz');
       // a squashed corner from the trip home
       for (const [x, y, z] of [[L - 1, 7, 3], [L - 1, 6, 3], [L - 2, 7, 3], [L - 1, 7, 2]]) v.remove(x, y, z);
       dust(v, 0xc0b49c, 0.1, 5, 2);
@@ -650,8 +622,8 @@ const quest = {
         return m;
       };
       const arrows = (m, x0, z0) => { for (const dx of [0, 7]) stampRows(m, ['..#..', '.###.', '#####', '..#..', '..#..', '..#..'], 0x3a3a3a, x0 + dx, m.bounds().maxY, z0, 'xz'); };
-      drop(v, flat(62, 40, 0xc49a62, 1, (m) => { arrows(m, 6, 10); stampRows(m, fontRows('FRAGILE'), 0xc8302a, 34, 0, 24, 'xz'); m.box(38, 0, 10, 54, 0, 12, 0xd9c58e); }), { dx: -10, dz: -4, ry: 0.18 });
-      drop(v, flat(52, 34, 0xb88c56, 2, (m) => { stampRows(m, fontRows('THIS SIDE UP'), 0x2a4a90, 6, 0, 14, 'xz'); fill(m, 30, 0, 20, 44, 0, 28, (x, y, z) => (z === 20 || z === 28 ? 0xc8c8c8 : 0xffffff)); for (const x of [32, 34, 37, 39, 42]) m.box(x, 0, 25, x, 0, 27, 0x2a2626); }), { dx: 6, dz: 4, ry: -0.42 });
+      drop(v, flat(62, 40, 0xc49a62, 1, (m) => { arrows(m, 6, 10); m.box(38, 0, 10, 54, 0, 12, 0xd9c58e); }), { dx: -10, dz: -4, ry: 0.18 });
+      drop(v, flat(52, 34, 0xb88c56, 2, (m) => { fill(m, 30, 0, 20, 44, 0, 28, (x, y, z) => (z === 20 || z === 28 ? 0xc8c8c8 : 0xffffff)); for (const x of [32, 34, 37, 39, 42]) m.box(x, 0, 25, x, 0, 27, 0x2a2626); }), { dx: 6, dz: 4, ry: -0.42 });
       drop(v, flat(44, 30, 0xc8a26c, 3, null, 5), { dx: -16, dz: 12, ry: 0.9 });
       // an emptied box with its flaps folded open
       const box = new VoxelModel();
@@ -894,8 +866,6 @@ const quest = {
       const P = (rows, col, x0, z0, scale = 1) => v.paint(() => stampRows(v, rows, col, x0, y, z0, 'xz', scale));
       // header band + title
       v.paint(() => v.shape(-W - 3, y, -D - 3, W + 3, y, -D + 11, () => true, () => 0xd8302a));
-      P(fontRows('CAPSULE TOYS'), 0xffffff, -23, -D + 3);
-      P(fontRows('GRAND OPENING'), 0x2a2226, -25, -D + 15);
       // capsule illustration
       v.paint(() => v.shape(-W, y, -D, W, y, D, (x, yy, z) => Math.hypot(x + 13, z + 12) <= 13, (x, yy, z) => {
         const d = Math.hypot(x + 13, z + 12);
@@ -912,10 +882,9 @@ const quest = {
       }));
       // NEW burst
       v.paint(() => v.shape(-W, y, -D, W, y, D, (x, yy, z) => Math.hypot(x - 22, z + 32) < 7 + Math.sin(Math.atan2(z + 32, x - 22) * 8) * 1.4, () => 0xffd23f));
-      P(fontRows('NEW'), 0xd8302a, 17, -34);
+      P(fontRows('NEW'), 0xd8302a, 4, -34);
       // details text, hours and a little map in the footer
       for (const z of [12, 15, 18, 21]) v.paint(() => v.shape(-W + 6, y, z, W - 8, y, z, (x) => hash(x >> 1, 0, z, 5) < 0.85, () => 0x8a8a8a));
-      P(fontRows('OPEN 10-18'), 0x2a2226, -W + 6, 25);
       v.paint(() => v.shape(10, y, D - 20, W - 5, y, D - 10, () => true, (x, yy, z) => (x === 10 || x === W - 5 || z === D - 20 || z === D - 10 ? INK : (x - z) % 6 === 0 || z === D - 15 ? 0xffffff : 0x9fd8b0)));
       v.paint(() => v.shape(22, y, D - 16, 23, y, D - 15, () => true, () => 0xd8302a));
       v.paint(() => v.shape(-W - 3, y, D - 6, W + 3, y, D + 3, () => true, (x) => (x % 4 === 0 ? 0xffffff : 0x3f86e8)));
@@ -939,7 +908,7 @@ const quest = {
       for (const [x, y, val] of curl) { v.remove(x, y, 0); v.set(x, y, 1 + (x - 40 > y + 4 ? 1 : 0), val); }
       // hand-lettered marker text
       const ink = 0x1e1a1a;
-      const line = (str, yTop) => { const rows = fontRows(str, F5); stampRows(v, rows, ink, -rows[0].length, yTop, 1, 'xy', 2); };
+      const line = (str, yTop) => { const rows = fontRows(str); stampRows(v, rows, ink, -(rows[0].length >> 1), yTop, 1, 'xy', 1); };
       line('OUT OF', 65);
       line('ORDER', 45);
       const KO = ['.#...#..', '####.#..', '.#..####', '####.#.#', '#..#.#.#', '#..#..#.', '####.#.#', '....#..#'];

@@ -1,0 +1,67 @@
+{
+ "id": "milk_carton_jp",
+ "src": "sketchfab:3e86155513ca4bc0b213e6debc19f9d8",
+ "credit": {
+  "title": "Milk Carton",
+  "author": "Melon Polygons",
+  "authorUrl": "https://sketchfab.com/Melonpolygons",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/milk-carton-3e86155513ca4bc0b213e6debc19f9d8",
+  "site": "Sketchfab"
+ },
+ "tris": 1166,
+ "tex": 256,
+ "size": [
+  0.084,
+  0.2,
+  0.08
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#33455b",
+   "#455e74",
+   "#58788b",
+   "#70919f",
+   "#8da6ad",
+   "#9fb3b6",
+   "#b1bfbf",
+   "#c1cac9",
+   "#d1d5d4"
+  ],
+  "m1": [
+   "#3d1209",
+   "#4e1e0d",
+   "#5f2d12",
+   "#6f3d17",
+   "#7e4f1d",
+   "#a37229",
+   "#c69837",
+   "#cfb45f",
+   "#d8cb87"
+  ],
+  "m2": [
+   "#0d0f3f",
+   "#121a50",
+   "#182761",
+   "#1f3771",
+   "#264881",
+   "#3466a2",
+   "#4688bf",
+   "#6ca6c8",
+   "#91bfd3"
+  ],
+  "m3": [
+   "#161a43",
+   "#1f2856",
+   "#283868",
+   "#324a7a",
+   "#3d5d8a",
+   "#4e79a4",
+   "#6994b3",
+   "#89adbf",
+   "#a6c2cc"
+  ]
+ },
+ "warnings": []
+}

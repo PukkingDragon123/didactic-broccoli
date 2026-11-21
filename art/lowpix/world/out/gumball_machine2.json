@@ -1,0 +1,67 @@
+{
+ "id": "gumball_machine2",
+ "src": "sketchfab:bc3fcd22766d4f7d9c9d12145093ab95",
+ "credit": {
+  "title": "Gum Ball Machine",
+  "author": "Iris-Jase",
+  "authorUrl": "https://sketchfab.com/Iris-Jase",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/gum-ball-machine-bc3fcd22766d4f7d9c9d12145093ab95",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 464,
+ "size": [
+  0.214,
+  0.4,
+  0.214
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#1c0a27",
+   "#270e32",
+   "#33123d",
+   "#401747",
+   "#4e1c51",
+   "#782d76",
+   "#9c3f92",
+   "#b85ba6",
+   "#c684b4"
+  ],
+  "m1": [
+   "#4a193b",
+   "#5f2248",
+   "#722d52",
+   "#85385b",
+   "#974463",
+   "#ad566f",
+   "#b77482",
+   "#c29197",
+   "#ceadae"
+  ],
+  "m2": [
+   "#3a1b4d",
+   "#502663",
+   "#683178",
+   "#803e8b",
+   "#994b9e",
+   "#af61ad",
+   "#b87db2",
+   "#c398bb",
+   "#cfb2c7"
+  ],
+  "m3": [
+   "#23164a",
+   "#2e1e5f",
+   "#3a2873",
+   "#4d3286",
+   "#623d98",
+   "#7e4db1",
+   "#996cbb",
+   "#b18ac5",
+   "#c6a8d1"
+  ]
+ },
+ "warnings": []
+}

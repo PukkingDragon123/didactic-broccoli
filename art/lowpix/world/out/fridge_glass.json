@@ -1,0 +1,45 @@
+{
+ "id": "fridge_glass",
+ "src": "sketchfab:d95f763a79d94ba38caf1190d6b4d969",
+ "credit": {
+  "title": "Beer Fridge",
+  "author": "xJDHNx",
+  "authorUrl": "https://sketchfab.com/Carole.Anne.Omari",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/beer-fridge-d95f763a79d94ba38caf1190d6b4d969",
+  "site": "Sketchfab"
+ },
+ "tris": 2994,
+ "tex": 512,
+ "size": [
+  0.844,
+  0.9,
+  0.909
+ ],
+ "colours": 11,
+ "palette": {
+  "m0": [
+   "#302629",
+   "#3d3336",
+   "#4a4143",
+   "#555051",
+   "#606060",
+   "#767676",
+   "#8c8c8c",
+   "#a2a2a2",
+   "#b7b7b7"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

@@ -229,7 +229,6 @@ html body.phys-ui #pause .panel > .rows { grid-column: 2; grid-row: 2 / span 6; 
 html body.phys-ui #pause .panel > .foot.credits { display: none; }
 html body.phys-ui #pause #credits-btn { color: var(--ph-cream-t); border-image-source: var(--ph-green); --side: #1c3a2c; text-shadow: 0 2px 0 #1c3a2c; }
 html body.phys-ui #pause #credits-btn:hover { color: #ffe39a; }
-html body.phys-ui #pause #credits-btn .px-icon { filter: brightness(0) invert(.92) sepia(.3); }
 html body.phys-ui #pause .panel > button.danger { margin-top: 18px; }
 /* the dial window: a station scale on top, then the sections */
 html body.phys-ui #pause .panel .rows { position: relative; padding: 34px 14px 12px; gap: 14px; }
@@ -302,4 +301,34 @@ html body.phys-ui #pause .panel input[type=range] { width: 52%; }
   html body #hint { font-size: 32px; line-height: 38px; }
   html body #hint .sub { font-size: 16px; line-height: 22px; }
   html body #news .item { font-size: 32px; line-height: 36px; }
+}
+
+/* the speaker grille in the control column (a pixel saran weave behind a wooden bezel) and its brass maker's badge */
+html body.phys-ui #pause .ph-grille {
+  grid-column: 1; align-self: stretch; min-height: 140px; margin-top: 8px; position: relative;
+  background: var(--ph-grille) 0 0 / 16px 16px; image-rendering: pixelated;
+  box-shadow: inset 4px 4px 0 rgba(30, 20, 14, .55), 0 0 0 4px #7a4a26, 0 0 0 6px var(--ph-ink), 0 6px 0 6px #34200f;
+}
+html body.phys-ui #pause .ph-grille span {
+  position: absolute; left: 50%; bottom: 14px; translate: -50% 0; padding: 0 8px 2px; white-space: nowrap;
+  font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; letter-spacing: 2px; color: #3a2410; background: #e2b44e;
+  box-shadow: inset 0 2px 0 #f6d886, inset 0 -2px 0 #a8782a, 0 0 0 2px var(--ph-ink), 2px 4px 0 2px rgba(10, 6, 8, .4);
+}
+@media (max-width: 760px), (max-height: 560px) { html body.phys-ui #pause .ph-grille { display: none; } }
+@media (min-height: 900px) and (min-width: 1200px) {
+  html body.phys-ui #pause .ph-grille { background-size: 24px 24px; }
+  html body.phys-ui #pause .ph-grille span { font-size: 32px; line-height: 34px; }
+}
+/* (polish 2) icons beside the labels double with the text at 1080p+; the grille fills its column; the HUD tip moves into
+   the label's tooltip there (so the cabinet fits 1080 without scrolling) */
+html body.phys-ui #pause .ph-grille { min-height: 160px; }
+@media (min-height: 900px) and (min-width: 1200px) {
+  html body.phys-ui #pause .panel label .lbl[data-icon]::before, html body.phys-ui #pause .panel button[data-icon]::before { width: calc(var(--icon-w, 16px) * 2); height: calc(var(--icon-h, 16px) * 2); }
+  html body.phys-ui #pause .panel label .lbl { gap: 12px; }
+  html body.phys-ui #pause .hm-tip { display: none; }
+  html body.phys-ui #pause .ph-grille { min-height: 300px; }
+}
+@media (min-height: 1000px) and (min-width: 1200px) {
+  html body.phys-ui #simclock .sc-time { font-size: 48px; line-height: 48px; }
+  html body.phys-ui #simclock .sc-date, html body.phys-ui #simclock .sc-day { font-size: 32px; line-height: 34px; }
 }

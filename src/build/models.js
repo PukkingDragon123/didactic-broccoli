@@ -128,23 +128,18 @@ export function tintGhost(root, ok) {
 
 // ------------------------------------------------------------------ gumball machine
 function gumball(root, parts) {
-  const base = propMesh('gumball_base', { fallbackSize: [0.3, 0.8, 0.3] });
-  root.add(base);
+  // the whole machine is an imported model (glass globe full of gumballs, the coin mechanism); the feature code's
+  // parts stay as empty pivots (globe, fill levels, the handle), so nothing voxel or primitive is drawn
   const vs = 0.012;
+  const m = propMesh('hm_gumball_machine', { fallbackSize: [0.3, 0.9, 0.3] });
+  root.add(m);
   const globe = new THREE.Group();
   globe.position.set(0, (68 + 12.4) * vs, 0);
   root.add(globe);
-  const glassM = propMesh('gumball_globe');
-  glassM.renderOrder = 2;
-  globe.add(glassM);
   parts.globe = globe;
-  parts.fills = [1, 2, 3, 4].map((k) => { const f = propMesh('gumball_fill_' + k); f.visible = false; globe.add(f); return f; });
-  // the turning handle (a chrome bar on its hub)
+  parts.fills = [1, 2, 3, 4].map(() => { const f = new THREE.Group(); f.visible = false; globe.add(f); return f; });
   const knob = new THREE.Group();
   knob.position.set(0, 59.5 * vs, 13 * vs);
-  const bar = boxMesh(0.1, 0.022, 0.02, mat('chrome', () => new THREE.MeshStandardMaterial({ color: 0xd8dce0, metalness: 0.9, roughness: 0.25 })));
-  bar.position.y = -0.011;
-  knob.add(bar);
   root.add(knob);
   parts.knob = knob;
   parts.trayPos = V(0, 53.5 * vs, 13.5 * vs);
@@ -334,17 +329,14 @@ function rug(root, parts, kind) {
 
 // ------------------------------------------------------------------ electric fan (head swings, blades spin)
 function fan(root, parts) {
+  // an imported electric fan model (src/data/props/home.js); the head / blade pivots stay for the feature code
   const vs = 0.01;
-  root.add(propMesh('fan_stand'));
-  const head = propMesh('fan_head');
+  root.add(propMesh('hm_fan', { fallbackSize: [0.4, 0.85, 0.35] }));
   const hg = new THREE.Group();
   hg.position.set(0, 55 * vs, -2 * vs);
-  hg.add(head);
   root.add(hg);
-  const blades = propMesh('fan_blades');
   const bg = new THREE.Group();
   bg.position.set(0, 15 * vs, 2 * vs);
-  bg.add(blades);
   hg.add(bg);
   parts.head = hg; parts.blades = bg;
 }

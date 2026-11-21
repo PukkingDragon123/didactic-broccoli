@@ -22,13 +22,15 @@ export function crispSize(size, font) {
 const toRGB = (c) => (Array.isArray(c) ? c : [(c >> 16) & 255, (c >> 8) & 255, c & 255]);
 
 export class Pix {
-  constructor(w, h, seed = 1) {
-    this.w = w; this.h = h;
+  /** w x h logical pixels; k: texels per logical pixel (k = 2 gives the pixel type room to sit at its native size
+   *  in a small sign: the art keeps its k x k blocks, the type is set on the finer grid). */
+  constructor(w, h, seed = 1, k = 1) {
+    this.w = w; this.h = h; this.k = k; this.W = w * k; this.H = h * k;
     this.canvas = document.createElement('canvas');
-    this.canvas.width = w; this.canvas.height = h;
+    this.canvas.width = this.W; this.canvas.height = this.H;
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     this.ctx.imageSmoothingEnabled = false;
-    this.img = this.ctx.getImageData(0, 0, w, h);
+    this.img = this.ctx.getImageData(0, 0, this.W, this.H);
     this.d = this.img.data;
     this.dirty = false; // pixel buffer newer than canvas
     this.r = rng(seed);
@@ -36,13 +38,21 @@ export class Pix {
 
   // keep canvas and pixel buffer in sync when mixing APIs
   flush() { if (this.dirty) { this.ctx.putImageData(this.img, 0, 0); this.dirty = false; } return this; }
-  pull() { this.img = this.ctx.getImageData(0, 0, this.w, this.h); this.d = this.img.data; return this; }
+  pull() { this.img = this.ctx.getImageData(0, 0, this.W, this.H); this.d = this.img.data; return this; }
 
   px(x, y, c, a = 255) {
     x |= 0; y |= 0;
     if (x < 0 || y < 0 || x >= this.w || y >= this.h) return this;
+    if (this.k === 1) return this.pp(x, y, c, a);
+    for (let j = 0; j < this.k; j++) for (let i = 0; i < this.k; i++) this.pp(x * this.k + i, y * this.k + j, c, a);
+    return this;
+  }
+  /** One texel (physical pixel), for the type. */
+  pp(x, y, c, a = 255) {
+    x |= 0; y |= 0;
+    if (x < 0 || y < 0 || x >= this.W || y >= this.H) return this;
     const [r, g, b] = toRGB(c);
-    const i = (y * this.w + x) * 4;
+    const i = (y * this.W + x) * 4;
     if (a >= 255) { this.d[i] = r; this.d[i + 1] = g; this.d[i + 2] = b; this.d[i + 3] = 255; }
     else {
       const k = a / 255;
@@ -54,7 +64,7 @@ export class Pix {
   }
   get(x, y) {
     x = ((x % this.w) + this.w) % this.w; y = ((y % this.h) + this.h) % this.h;
-    const i = (y * this.w + x) * 4;
+    const i = (y * this.k * this.W + x * this.k) * 4;
     return [this.d[i], this.d[i + 1], this.d[i + 2]];
   }
   fill(c) { return this.rect(0, 0, this.w, this.h, c); }
@@ -80,8 +90,10 @@ export class Pix {
   noise(amt = 0.08, x = 0, y = 0, w = this.w, h = this.h) {
     for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) {
       const k = 1 + (this.r() * 2 - 1) * amt;
-      const p = (j * this.w + i) * 4;
-      this.d[p] = Math.min(255, this.d[p] * k); this.d[p + 1] = Math.min(255, this.d[p + 1] * k); this.d[p + 2] = Math.min(255, this.d[p + 2] * k);
+      for (let b = 0; b < this.k; b++) for (let a = 0; a < this.k; a++) {
+        const p = ((j * this.k + b) * this.W + i * this.k + a) * 4;
+        this.d[p] = Math.min(255, this.d[p] * k); this.d[p + 1] = Math.min(255, this.d[p + 1] * k); this.d[p + 2] = Math.min(255, this.d[p + 2] * k);
+      }
     }
     this.dirty = true;
     return this;
@@ -132,9 +144,8 @@ export class Pix {
    */
   text(str, x, y, opts = {}) {
     this.flush();
-    const font = opts.font || FONT_JP;
-    const size = crispSize(opts.size || 16, font);
-    if (!size) return this.tinyText(str, x, y, opts);
+    const font = opts.font || FONT_JP, K = this.k;
+    const size = crispSize((opts.size || 16) * K, font);
     const tmp = document.createElement('canvas');
     const tctx = tmp.getContext('2d', { willReadFrequently: true });
     tctx.font = `${opts.weight || ''} ${size}px ${font}`;
@@ -146,36 +157,37 @@ export class Pix {
     tctx.fillStyle = '#fff';
     tctx.fillText(str, 2, 2);
     const td = tctx.getImageData(0, 0, tw, th).data;
-    let ox = x;
-    if (opts.align === 'center') ox = x - Math.round(m.width / 2);
-    else if (opts.align === 'right') ox = x - Math.round(m.width);
+    let ox = Math.round(x * K);
+    if (opts.align === 'center') ox -= Math.round(m.width / 2);
+    else if (opts.align === 'right') ox -= Math.round(m.width);
+    const oy = Math.round(y * K);
     const col = toRGB(opts.color ?? 0xffffff);
     const mask = [];
     for (let j = 0; j < th; j++) for (let i = 0; i < tw; i++) if (td[(j * tw + i) * 4 + 3] > 110) mask.push([i, j]);
-    const put = (dx, dy, c) => { for (const [i, j] of mask) this.px(ox + i - 2 + dx, y + j - 2 + dy, c); };
+    const put = (dx, dy, c) => { for (const [i, j] of mask) this.pp(ox + i - 2 + dx, oy + j - 2 + dy, c); };
     if (opts.outline !== undefined) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, 1], [-1, 1], [1, -1]]) put(dx, dy, opts.outline);
     if (opts.shadow !== undefined) put(1, 1, opts.shadow);
     put(0, 0, col);
     this.flush();
-    return m.width;
+    return m.width / K;
   }
+  /** Width of a line in logical pixels. */
   measure(str, size = 16, font = FONT_JP) {
-    const cs = crispSize(size, font);
-    if (!cs) return textWPx(str);
+    const cs = crispSize(size * this.k, font);
     this.ctx.font = `${cs}px ${font}`;
-    return this.ctx.measureText(str).width;
+    return this.ctx.measureText(str).width / this.k;
   }
 
   /** Small labels in Alagard at its native 16 px via src/gfx/pixfont.js (same options as text(); y = top of the caps). */
   tinyText(str, x, y, opts = {}) {
-    const w = textWPx(str), mask = maskPx(str), col = toRGB(opts.color ?? 0xffffff);
-    const ox = opts.align === 'center' ? x - Math.round(w / 2) : opts.align === 'right' ? x - w : x, oy = y + 1;
-    const put = (dx, dy, c) => { for (const [i, j] of mask) this.px(ox + i + dx, oy + j + dy, c); };
+    const K = this.k, w = textWPx(str), mask = maskPx(str), col = toRGB(opts.color ?? 0xffffff);
+    const X = Math.round(x * K), ox = opts.align === 'center' ? X - Math.round(w / 2) : opts.align === 'right' ? X - w : X, oy = Math.round(y * K) + 1;
+    const put = (dx, dy, c) => { for (const [i, j] of mask) this.pp(ox + i + dx, oy + j + dy, c); };
     if (opts.outline !== undefined) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, 1], [-1, 1], [1, -1]]) put(dx, dy, opts.outline);
     if (opts.shadow !== undefined) put(1, 1, opts.shadow);
     put(0, 0, col);
     this.flush();
-    return w;
+    return w / K;
   }
 
   texture({ repeat = null, nearest = true, srgb = true } = {}) {
@@ -192,7 +204,7 @@ export class Pix {
 /** Grey-scale height map from a Pix (for bumpMap). */
 export function bumpFrom(pix, invert = false) {
   pix.flush();
-  const b = new Pix(pix.w, pix.h);
+  const b = new Pix(pix.w, pix.h, 1, pix.k);
   for (let i = 0; i < pix.d.length; i += 4) {
     let l = (pix.d[i] * 0.3 + pix.d[i + 1] * 0.59 + pix.d[i + 2] * 0.11);
     if (invert) l = 255 - l;

@@ -1,0 +1,34 @@
+{
+ "id": "shelf_wall4",
+ "src": "sketchfab:8732f5e14a30461f83bcb34a9101cbc0",
+ "credit": {
+  "title": "CC0 - Wall Shelf 4",
+  "author": "plaggy",
+  "authorUrl": "https://sketchfab.com/plaggy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cc0-wall-shelf-4-8732f5e14a30461f83bcb34a9101cbc0",
+  "site": "Sketchfab"
+ },
+ "tris": 352,
+ "tex": 128,
+ "size": [
+  0.105,
+  0.12,
+  0.043
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#592c25",
+   "#714133",
+   "#895842",
+   "#9f7052",
+   "#ad8a6a",
+   "#b59f81",
+   "#bfb198",
+   "#c9c1ae",
+   "#d4d1c2"
+  ]
+ },
+ "warnings": []
+}

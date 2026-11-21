@@ -363,7 +363,10 @@ export function buildRoom(game, group) {
   prop('sofa_retro', sofaAt.x, 0, sofaAt.z, -Math.PI / 2, 0.8, 'sofa');
   block(sofaAt.x - 0.24, x1, sofaAt.z - 0.42, sofaAt.z + 0.42);
   out.sofaAt = sofaAt;
-  const fs = prop('room_figshelf', x1 - 0.1, 1.18, dk.z, -Math.PI / 2, 1, 'figShelf');
+  // the figure shelf: three wooden wall shelves (an imported model) at the three ledge heights
+  const shelves = [1.2, 1.44, 1.68].map((ly) => prop('hm_shelf_ledge', x1 - 0.09, ly - 0.06, dk.z, -Math.PI / 2, 1));
+  const fs = shelves[1];
+  if (fs) out.props.figShelf = fs;
   out.targets.figShelf = fs;
   // figure slots on the three ledges (room-local positions; figures face -x into the room)
   for (const [ly, n] of [[1.2, 6], [1.44, 6], [1.68, 6]]) for (let i = 0; i < n; i++) out.figSlots.push(new THREE.Vector3(x1 - 0.1, ly + 0.003, dk.z - 0.28 + i * 0.112));

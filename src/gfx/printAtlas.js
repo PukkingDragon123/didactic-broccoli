@@ -92,7 +92,7 @@ export function drawPrint(ctx, name, key, x = 0, y = 0, w = null, h = null) {
 /** The same into a Pix (src/gfx/pix.js): drawn on its canvas, then pulled back into its pixel buffer. */
 export function pixPrint(p, name, key) {
   p.flush?.();
-  if (!drawPrint(p.ctx, name, key, 0, 0, p.w, p.h)) return false;
+  if (!drawPrint(p.ctx, name, key, 0, 0, p.canvas.width, p.canvas.height)) return false;
   p.pull?.();
   return true;
 }

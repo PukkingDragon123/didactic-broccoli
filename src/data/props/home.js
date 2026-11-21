@@ -98,4 +98,28 @@ export default {
   hm_stool_red: M('stool_retro', 0.68),
   // (loaded with the prop library, so Mikawa-san's fedora is on his head from the first frame: src/places/mikawaya/oldman.js)
   hm_fedora: M('wear_fedora', 0.13),
+  // the furniture catalogue's gumball machine and fan (src/build/models.js), the closet's wall shelves
+  hm_gumball_machine: M('gumball_machine', 0.9),
+  hm_fan: M('fan_floor', 0.85),
+  hm_shelf_wall: M('shelf_wall4', 0.12),
+  hm_shelf_ledge: { asset: { id: 'lowpix/world/shelf_wall4', size: [0.74, 0.06, 0.17], fit: 'stretch' } }, // (the figure shelf's ledges, #102)
+  hm_pigeon: M('pigeon_lp', 0.25),
+  hm_tomato: M('tomato_plant', 0.5),
+  // flat #103: the spare room's chest of drawers, shelves and wall things, the bath's mirror, bottles and basket
+  hm_tansu: M('tansu', 0.95),
+  hm_cube_shelf: M('room_bookshelf', 0.91),
+  hm_dartboard: M('dartboard', 0.45),
+  hm_clock: M('clock_wall', 0.3),
+  hm_pothos: M('plant_pothos', 0.8),
+  hm_oil_lamp: M('lamp_oil', 0.7),
+  hm_mirror: M('mirror', 0.6),
+  hm_basket: M('basket', 0.12),
+  hm_bottle: M('spray_bottle', 0.19),
+  hm_sponge: M('sponge', 0.05),
+  hm_vase: M('vase_ceramic', 0.38),
+  hm_boombox: M('boombox', 0.4),
+  hm_screen: M('screen_folding', 1.5),
+  hm_towel: M('wear_towel', 0.1),
+  hm_side_table: M('table_side', 0.5),
+  hm_nightstand: M('nightstand', 0.6),
 };
