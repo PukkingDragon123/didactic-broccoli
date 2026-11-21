@@ -188,6 +188,17 @@ THEMES = {
         for c, h, d in ((0xd8342e, 0xf49a8a, 0x8a1e1a), (0x2a5ab8, 0x8ab4ec, 0x1a3a7a), (0x3a9a4a, 0x9ad8a0, 0x226a30),
                         (0xe8702a, 0xf8b888, 0xa8481a), (0x7a4ab0, 0xc0a0e8, 0x4e2e7a))],
         bits=[B('knot', 'all', paint='front')]),
+    # The game's own title (tools/menulogo.py, the title screen): GACHA in Shōwa enamel-sign tin, vermilion over navy
+    # pin-bands, chipped to black iron with rust bleeding out; GARAGE in the lane's green corrugated shutter steel, ribbed,
+    # rust running down from the foot; galvanised tin sides; screw heads in the faces, the shutter key in the last E
+    'garage': dict(pick='line', v=[
+        P(0xc0302a, below(0.14, 0x22306a, w=0.03), below(0.95, 0x22306a, gt=0.88, w=0.02),
+          blot(8, 0.74, 0x7a3a1e, w=0.05, c2=0xa45a2c), spots(24, 0.028, 0x241c22),
+          s=0x5a5e66, sL=[stripes(9, 0.18, 0x44474e, w=0.02), blot(7, 0.72, 0x7a3a1e, w=0.05)], chip=0x2a2428),
+        P(0x5a8a74, stripes(9, 0.34, 0x3e6a58, ax=(1, 0, 0), w=0.02), stripes(9, 0.08, 0x8ab4a0, ax=(1, 0, 0), w=0.02),
+          below(0.2, 0x8a4a24, w=0.14, c2=0x6a3418), blot(10, 0.76, 0x9a5a2c, w=0.05),
+          s=0x5a5e66, sL=[stripes(9, 0.18, 0x44474e, w=0.02), below(0.22, 0x6a3418, w=0.1)], chip=0x2e3432)],
+        bits=[B('rivet', 'all', paint=0xb8bcc4), B('key', 'last', paint=0xb08a3a, s=1.6)]),
 }
 
 
