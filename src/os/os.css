@@ -1,5 +1,6 @@
 /* Capsule 98: shell + standard controls. Late-90s desktop: bevelled warm-grey chrome, flat navy title bars,
-   pixel fonts on their grid (Alagard 16 for titles, DotGothic16 16 for text), hard pixel edges, no glows.
+   high-res pixel fonts on their grid (Alagard 16 for titles and text, DotGothic16 only for kana), hard pixel edges,
+   no glows (the old DotGothic16 Latin text read as a small low-res face).
    Everything sits inside .c98-layer, which the PC warps onto the monitor's screen. */
 .c98-layer { position: fixed; left: 0; top: 0; z-index: 8; transform-origin: 0 0; contain: layout style; }
 .c98-layer.hidden { display: none !important; }
@@ -9,7 +10,7 @@ body.pc-on > :not(#app):not(.c98-layer):not(.overlay):not(.sui-resume):not(scrip
   --face: #d4ccbb; --hi: #fbf6ea; --lt: #e8e1d1; --sh: #8a8272; --dk: #1a1416;
   --title: #1f3a7a; --title-off: #8a8272; --sel: #1f3a7a; --selt: #fbf6ea; --field: #fffdf6; --ink: #1a1416; --dim: #6e6656;
   --desk: #2b7d7a; --link: #1a3fd6; --visited: #6a2a9a; --tip: #fff4c0;
-  --f-ui: 'DotGothic16', 'Pixelify Sans'; --f-title: 'Alagard', 'DotGothic16', 'Pixelify Sans';
+  --f-ui: 'Alagard', 'DotGothic16', 'Pixelify Sans'; --f-title: 'Alagard', 'DotGothic16', 'Pixelify Sans';
   --raised: inset -1px -1px var(--dk), inset 1px 1px var(--hi), inset -2px -2px var(--sh), inset 2px 2px var(--lt);
   --sunken: inset 1px 1px var(--sh), inset -1px -1px var(--hi), inset 2px 2px var(--dk), inset -2px -2px var(--lt);
   --pressed: inset 1px 1px var(--dk), inset -1px -1px var(--hi), inset 2px 2px var(--sh), inset -2px -2px var(--lt);
