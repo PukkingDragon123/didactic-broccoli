@@ -5,7 +5,7 @@ const M = (id, o = {}) => ({ asset: { id: 'lowpix/world/' + id, ...o } });
 
 export default {
   // Grandpa's workbench in the front-left corner, and what lives on, under and over it
-  gg_workbench: M('table_wood', { size: [1.25, 0.8, 0.56], fit: 'stretch' }),
+  gg_workbench: M('table_wood', { size: [1.25, 0.8, 0.56], fit: 'stretch', tint: 0xb89a74 }), // (aged: forty years of oil)
   gg_toolbox: M('toolbox', { h: 0.3 }),
   gg_tool_chest: M('tool_chest', { h: 0.62 }),
   gg_screw_jars: M('screw_jars', { h: 0.15 }),
@@ -20,6 +20,7 @@ export default {
   gg_toy_box: M('toy_box2', { h: 0.34 }),
   gg_crate: M('crate_plastic', { h: 0.26 }),
   gg_bundle: M('cardboard_bundle', { h: 0.15 }),
-  // by the sink
+  // by the sink; the old electric fan and spare stock along the right wall, between the slots for the wall shelves
   gg_bucket: M('bucket', { h: 0.29 }),
+  gg_fan: M('fan_floor', { h: 0.75 }),
 };

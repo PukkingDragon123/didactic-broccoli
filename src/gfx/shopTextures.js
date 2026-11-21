@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { Pix, bumpFrom } from './pix.js';
 import { hash2 } from '../core/util.js';
+import { hasHD, hdSize, hdTexture } from './hdtex.js';
 
 export const SHOP_PPM = 64;
 const sh = (c, f) => {
@@ -366,6 +367,14 @@ export function shopPix(key) {
 export function shopMat(key, opts = {}) {
   const ck = key + JSON.stringify(opts);
   if (matCache.has(ck)) return matCache.get(ck);
+  if (hasHD(key)) { // the HD version (src/gfx/hdtex.js, 256 px/m); its colour map doubles as a gentle bump
+    const map = hdTexture(key), [w, h] = hdSize(key);
+    map.repeat.set(1 / w, 1 / h);
+    const m = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: (opts.bump ?? 0.8) * 0.4, roughness: opts.roughness ?? 0.8, color: opts.color ?? 0xffffff });
+    if (opts.emissive) { m.emissive = new THREE.Color(opts.emissive); m.emissiveMap = map; m.emissiveIntensity = opts.emissiveIntensity ?? 1; }
+    matCache.set(ck, m);
+    return m;
+  }
   const p = shopPix(key);
   const map = p.texture();
   map.wrapS = map.wrapT = THREE.RepeatWrapping;

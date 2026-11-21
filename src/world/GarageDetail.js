@@ -12,6 +12,8 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox } from '../gfx/geo.js';
 import { tex } from '../gfx/textures.js';
+import { hasHD, hdSize, hdTexture } from '../gfx/hdtex.js';
+import { HD_BUMP } from '../gfx/geo.js';
 import { decalAtlas, cardAtlas } from '../gfx/garageArt.js';
 import { propGeometry, propSize, hasProp } from './props.js';
 import { voxelMaterials } from '../voxel/materials.js';
@@ -30,6 +32,13 @@ const surfCache = new Map();
 export function surfMat(key, { ppm = 64, roughness = 0.85, metalness = 0, bump = 0.4, color = 0xffffff, env = 1, vertexColors = false } = {}) {
   const ck = [key, ppm, roughness, metalness, bump, color, env, vertexColors].join('|');
   if (surfCache.has(ck)) return surfCache.get(ck);
+  if (hasHD(key)) { // the HD version (src/gfx/hdtex.js, 256 px/m) at its own size, whatever ppm asked of the old one
+    const map = hdTexture(key), [w, h] = hdSize(key);
+    map.repeat.set(1 / w, 1 / h);
+    const m = new THREE.MeshStandardMaterial({ map, bumpMap: bump ? map : null, bumpScale: bump * HD_BUMP, roughness, metalness, color, envMapIntensity: env, vertexColors });
+    surfCache.set(ck, m);
+    return m;
+  }
   const t = tex(key);
   const pw = t.size[0] * 32, ph = t.size[1] * 32;
   const map = t.map.clone();

@@ -1,0 +1,47 @@
+{
+ "ash_veneer": {
+  "source": "https://polyhaven.com/a/ash_veneer",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ },
+ "beige_wall_001": {
+  "source": "https://polyhaven.com/a/beige_wall_001",
+  "license": "CC0-1.0",
+  "metres": 3.0
+ },
+ "black_walnut_veneer_01": {
+  "source": "https://polyhaven.com/a/black_walnut_veneer_01",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ },
+ "cherry_veneer": {
+  "source": "https://polyhaven.com/a/cherry_veneer",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ },
+ "clay_floor_001": {
+  "source": "https://polyhaven.com/a/clay_floor_001",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "concrete_floor_worn_001": {
+  "source": "https://polyhaven.com/a/concrete_floor_worn_001",
+  "license": "CC0-1.0",
+  "metres": 3.0
+ },
+ "hinoki_planks": {
+  "source": "https://polyhaven.com/a/hinoki_planks",
+  "license": "CC0-1.0",
+  "metres": 1.89
+ },
+ "japanese_cedar_planks": {
+  "source": "https://polyhaven.com/a/japanese_cedar_planks",
+  "license": "CC0-1.0",
+  "metres": 1.13
+ },
+ "oak_veneer_02": {
+  "source": "https://polyhaven.com/a/oak_veneer_02",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ }
+}

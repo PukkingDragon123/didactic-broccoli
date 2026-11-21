@@ -5,6 +5,7 @@ import './ui/fonts.css';
 import './style.css';
 import * as THREE from 'three';
 import { whenPrint } from './gfx/printAtlas.js';
+import { whenHD } from './gfx/hdtex.js';
 import { Game } from './game/Game.js';
 import { audio } from './core/audio.js';
 import { bgm } from './core/bgm.js';
@@ -49,7 +50,8 @@ async function boot() {
   const netBoot = await prepareNet((t) => loading.msg(t));
   if (netBoot) loading.msg('');
   // the baked print sheets that synchronous painters copy from (src/gfx/printAtlas.js) are in before the world builds
-  await Promise.all([loadFonts(), whenPrint('misc'), whenPrint('promo'), whenPrint('toycut'), whenPrint('signs')]);
+  // and so are the HD surface textures (src/gfx/hdtex.js), so no material is made with an empty texture
+  await Promise.all([loadFonts(), whenPrint('misc'), whenPrint('promo'), whenPrint('toycut'), whenPrint('signs'), whenHD()]);
   loading.set(0.04);
   const game = new Game($('app'));
   window.__game = game;

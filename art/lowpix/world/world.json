@@ -688,20 +688,21 @@
   },
   {
    "id": "mk_cigar_box",
-   "src": "sketchfab:bf5152c1f1fc44f4a81dbca1d502304c",
-   "h": 0.21,
-   "ppm": 180,
-   "tris": 1000,
-   "name": "Red Dot Cigar Box",
+   "src": "sketchfab:06349eb24202462ba553dbbe23766100",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 500,
+   "cap": 256,
+   "name": "Cigar Box",
    "prop": "mk_cigar_box"
   },
   {
    "id": "cupcake",
-   "src": "sketchfab:43b8a378e7a74898855fe0075215aa48",
+   "src": "sketchfab:d48216d6294648a49e92463a18f62e70",
    "h": 0.96,
    "ppm": 180,
-   "tris": 3000,
-   "name": "Extra Chocolate Marshmallow Cupcake",
+   "tris": 2500,
+   "name": "Hand painted cupcake",
    "prop": "cupcake"
   },
   {
@@ -1020,15 +1021,6 @@
    "prop": "cactus_pot"
   },
   {
-   "id": "aloe_pot",
-   "src": "sketchfab:98b96bd41a1c4ab7af10c938e280c8c8",
-   "h": 0.12,
-   "ppm": 240,
-   "tris": 1000,
-   "name": "Potted Aloe Vera",
-   "prop": "aloe_pot"
-  },
-  {
    "id": "furin",
    "src": "sketchfab:e5667a6a6cb241b19d90fd17269d2983",
    "h": 0.27,
@@ -1133,11 +1125,12 @@
   },
   {
    "id": "litter_can",
-   "src": "sketchfab:05fc9a5628d64b5cb89f38a855eeb6fb",
+   "src": "sketchfab:5ad17d589a6a41fc8905a576871e77ba",
    "h": 0.056,
-   "ppm": 240,
-   "tris": 1000,
-   "name": "Crushed Can",
+   "ppm": 600,
+   "tris": 400,
+   "cap": 256,
+   "name": "Soda Can crushed trash Low-poly",
    "prop": "litter_can"
   },
   {
@@ -1202,15 +1195,6 @@
    "tris": 1000,
    "name": "RAMEN BOWL",
    "prop": "mk_jar_ramen"
-  },
-  {
-   "id": "mk_brick",
-   "src": "sketchfab:504a59ef14a148809cec657d7c99367c",
-   "h": 0.08,
-   "ppm": 240,
-   "tris": 1000,
-   "name": "Brick",
-   "prop": "mk_brick"
   },
   {
    "id": "mk_trinket_cassette",
@@ -1497,11 +1481,11 @@
   },
   {
    "id": "jizo_shrine",
-   "src": "sketchfab:08f07b04c4384f8fa9b75e8203d9f26f",
+   "src": "sketchfab:a5b25c6de844459ba118fe54e880fde6",
    "h": 1.305,
-   "ppm": 140,
+   "ppm": 160,
    "tris": 3000,
-   "name": "Jizo statue in Kyoto - MTSU Animation",
+   "name": "Jizo Shrine",
    "prop": "jizo_shrine"
   },
   {
@@ -3628,15 +3612,6 @@
    "name": "cigarette butt"
   },
   {
-   "id": "coat_hook",
-   "src": "sketchfab:0ef075a7dc1b40f583a2d7c0e676fdea",
-   "h": 0.08,
-   "ppm": 700,
-   "tris": 1280,
-   "cap": 512,
-   "name": "CC0 - Coat Hook 4"
-  },
-  {
    "id": "shelf_wall4",
    "src": "sketchfab:8732f5e14a30461f83bcb34a9101cbc0",
    "h": 0.12,
@@ -3844,15 +3819,6 @@
    "name": "2x Battteryes AA Package"
   },
   {
-   "id": "ramune_m",
-   "src": "sketchfab:6422866cbdb3492ca50be35108f625f9",
-   "h": 0.2,
-   "ppm": 900,
-   "tris": 1200,
-   "cap": 512,
-   "name": "Ramune Bottle"
-  },
-  {
    "id": "squeegee_m",
    "src": "sketchfab:ddbcdaed4b8f403586fe92a0cd5195e4",
    "h": 0.12,
@@ -3896,6 +3862,42 @@
    "tris": 2400,
    "cap": 512,
    "name": "Sanctuary"
+  },
+  {
+   "id": "ashtray_bin",
+   "src": "sketchfab:fd8b772552444e4e8b2afe2254f4ed20",
+   "h": 0.9,
+   "ppm": 300,
+   "tris": 1500,
+   "cap": 512,
+   "name": "UM-16-3 Metal Litter Bin"
+  },
+  {
+   "id": "candy_display",
+   "src": "sketchfab:b78cd4d26e164ef0ba11b0d11985a1a0",
+   "h": 0.9,
+   "ppm": 300,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Candy Display"
+  },
+  {
+   "id": "candy_sweet",
+   "src": "sketchfab:6b3f5b44f4f54e0ab29bf88690603e0d",
+   "h": 0.025,
+   "ppm": 1500,
+   "tris": 600,
+   "cap": 256,
+   "name": "Candy"
+  },
+  {
+   "id": "gumball_m",
+   "src": "art/lowpix/world/made/gumball.glb",
+   "h": 0.022,
+   "ppm": 2000,
+   "tris": 200,
+   "cap": 128,
+   "name": "Gumball (our own model, hand-painted)"
   }
  ]
 }

@@ -6,6 +6,7 @@
 //                       wall over it, a hanging work lamp, a stool, the tool chest underneath, and three of his figures
 //   the work table      boxes of toys and a crate of capsules on its low shelf
 //   the back wall       his kamidana (the shelf your lucky charms stand on, src/game/shop.js), a bucket by the sink
+//   the right wall      the old electric fan and crates of capsule stock in the gaps between the wall shelves' slots
 // Drawn through the town's prop instancer (one InstancedMesh per model, culled to the view), like src/plugins/worldDressing.js.
 // Debug (with ?debug / ?autotest): dbg.garage.charms(['maneki', 'daruma', ...]) puts charms on the kamidana.
 import { hasProp, maskPropMaterials } from '../world/props.js';
@@ -36,6 +37,11 @@ const PIECES = [
   ['gg_crate', 0.15, T, 0.1, H],
   ['gg_bundle', 0.65, T, 0.12, 0.1],
   ['gg_bucket', 1.85, 0, -4.72, 0.4, { block: true }],
+  // along the right wall in the gaps between the wall shelves' slots (src/world/Garage.js SHELF_SLOTS, 1.3 m each):
+  // the old electric fan, and two crates of capsule stock
+  ['gg_fan', 3.72, 0, 2.15, -H + 0.25, { block: true, shadow: true }],
+  ['gg_crate', 3.83, 0, 0.35, 0.04, { block: true }],
+  ['gg_crate', 3.83, 0.264, 0.36, -0.06],
 ];
 // three of his figures on the front of the bench (real figure models: the first lowpix one of each series)
 const FIGURE_SERIES = ['tabigame', 'kanikan', 'sento'];

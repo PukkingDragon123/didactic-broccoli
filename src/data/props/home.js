@@ -105,6 +105,7 @@ export default {
   hm_shelf_ledge: { asset: { id: 'lowpix/world/shelf_wall4', size: [0.74, 0.06, 0.17], fit: 'stretch' } }, // (the figure shelf's ledges, #102)
   hm_pigeon: M('pigeon_lp2', 0.25),
   hm_tomato: M('tomato_plant', 0.5),
+  hm_condiments: M('condiments', 0.15),
   // flat #103: the spare room's chest of drawers, shelves and wall things, the bath's mirror, bottles and basket
   hm_tansu: M('tansu', 0.95),
   hm_cube_shelf: M('room_bookshelf', 0.91),

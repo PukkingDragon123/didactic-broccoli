@@ -145,7 +145,9 @@ export class Pix {
   text(str, x, y, opts = {}) {
     this.flush();
     const font = opts.font || FONT_JP, K = this.k;
-    const size = crispSize((opts.size || 16) * K, font);
+    // on a finer grid (k > 1) the type is set at twice the asked size in texels (8 -> Alagard's native 16), never
+    // more: a k = 4 retry keeps that size and so gains room
+    const size = crispSize((opts.size || 16) * (K > 1 ? 2 : 1), font);
     const tmp = document.createElement('canvas');
     const tctx = tmp.getContext('2d', { willReadFrequently: true });
     tctx.font = `${opts.weight || ''} ${size}px ${font}`;

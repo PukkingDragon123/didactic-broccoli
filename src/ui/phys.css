@@ -323,7 +323,9 @@ html body.phys-ui #pause .ph-grille span {
    the label's tooltip there (so the cabinet fits 1080 without scrolling) */
 html body.phys-ui #pause .ph-grille { min-height: 160px; }
 @media (min-height: 900px) and (min-width: 1200px) {
-  html body.phys-ui #pause .panel label .lbl[data-icon]::before, html body.phys-ui #pause .panel button[data-icon]::before { width: calc(var(--icon-w, 16px) * 2); height: calc(var(--icon-h, 16px) * 2); }
+  html body.phys-ui #pause .panel label .lbl[data-icon]::before, html body.phys-ui #pause .panel button:not(.x)[data-icon]::before { width: calc(var(--icon-w, 16px) * 2); height: calc(var(--icon-h, 16px) * 2); }
+  html body.phys-ui #pause #credits-btn .px-icon { zoom: 2; }
+  html body.phys-ui #pause .panel button.x, html body.phys-ui #share .panel button.x { width: 56px; height: 56px; min-height: 0; }
   html body.phys-ui #pause .panel label .lbl { gap: 12px; }
   html body.phys-ui #pause .hm-tip { display: none; }
   html body.phys-ui #pause .ph-grille { min-height: 300px; }

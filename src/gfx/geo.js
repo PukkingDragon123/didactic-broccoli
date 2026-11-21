@@ -1,6 +1,7 @@
 // Geometry/material helpers for architecture: world-scaled UV boxes with pixel-art materials.
 import * as THREE from 'three';
 import { tex } from './textures.js';
+import { hasHD, hdSize, hdTexture } from './hdtex.js';
 import { patchTextureDetail } from '../voxel/materials.js';
 import { SURF } from '../voxel/VoxelModel.js';
 
@@ -43,6 +44,8 @@ export function worldPlane(w, h) {
 }
 
 const matCache = new Map();
+/** Bump strength of an HD texture's colour map, relative to the old procedural height maps. */
+export const HD_BUMP = 0.4;
 /**
  * Pixel-art PBR material from a texture recipe. The texture repeats once per its natural size in metres.
  * opts: roughness, metalness, bump (scale), color tint, emissive...
@@ -50,6 +53,18 @@ const matCache = new Map();
 export function pixMat(key, opts = {}) {
   const ck = key + JSON.stringify(opts);
   if (matCache.has(ck)) return matCache.get(ck);
+  if (hasHD(key)) {
+    // the HD version (src/gfx/hdtex.js, 256 px/m): one repeat per its own size in metres, whatever opts.ppm said; its
+    // colour map doubles as a gentle bump (the painted grout and seams read as relief)
+    const map = hdTexture(key), [w, h] = hdSize(key);
+    map.repeat.set(1 / w, 1 / h);
+    const m = new THREE.MeshStandardMaterial({
+      map, bumpMap: opts.bump === 0 ? null : map, bumpScale: (opts.bump ?? 1.2) * HD_BUMP,
+      roughness: opts.roughness ?? 0.85, metalness: opts.metalness ?? 0, color: opts.color ?? 0xffffff, envMapIntensity: opts.env ?? 1,
+    });
+    matCache.set(ck, m);
+    return m;
+  }
   const t = tex(key);
   const map = t.map.clone();
   map.needsUpdate = true;

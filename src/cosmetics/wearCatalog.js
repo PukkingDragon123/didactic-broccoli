@@ -66,7 +66,7 @@ const F = {
   box: { m: 'box_cardboard', w: 0.58, z: 0.0 },
   kappaDish: { m: 'bowl_empty', w: 10, y: 15.4, z: 2 },
   bonsai: { m: 'bonsai', h: 13, y: 15, z: 1.5 },
-  sprout: { m: 'aloe_pot', h: 6.5, y: 15.6, z: 2 },
+  sprout: { m: 'pot_small3', h: 6.5, y: 15.6, z: 2 },
   kabuto: { m: 'wear_kabuto', w: 24, y: 9.6, z: 2.2 },
   flowerclip: { m: 'wear_flowerclip', w: 4.5, cy: 12.2, x: 6.6, z: 5.6, ry: 1.2 },
   kagami: { m: 'wear_kagami', w: 11, y: 15.4, z: 2 },
