@@ -5,6 +5,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 ## Look and feel (the owner's explicit rules)
 - **Never use a white hover highlight / rim / outline glow** on interactables or anything else. Hover feedback is the
   crosshair hint text only.
+- **Never use the gacha capsule as a generic button / menu icon** (Continue, New Game…): each button gets its own
+  fitting, detailed pixel icon. No itch.io "follow" call-to-action in the menu. Menu UI is physical, kinda-3D and
+  interactive (signs / tags with depth that tilt, swing and press), never flat.
 - **All particles are 2D pixel-art sprites** (hand-pixelled frames, nearest filtering, stepped animation). No soft
   round glows, no smooth gradients, no additive blobs.
 - 2D art is pixel art: no text effects (glows, gradients, bevels), no "AI-looking" slick posters, no circles-and-
