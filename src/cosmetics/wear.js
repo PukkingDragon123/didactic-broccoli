@@ -3,7 +3,7 @@
 // tools/lowpix-world.mjs; credits in CREDITS.md). Each piece is fitted onto the wearer once its model is in:
 //   wearPiece(fit)  -> THREE.Group  (head units for head pieces, metres for body pieces; empty until the model loads)
 //   fit = { m: model id under lowpix/world/, w | h: size (x width | y height, in the anchor's units),
-//           y: bottom | cy: centre (y), z: centre | zf: front | zb: back (z), x, rx, ry, rz: turn the model first }
+//           y: bottom | cy: centre | yt: top (y), z: centre | zf: front | zb: back (z), x, rx, ry, rz: turn the model first }
 // Head units (src/people/cosmetics.js): 1 = a twentieth of the head's height, head bone at the origin, +z = the face,
 // crown y 16, hairline 13.2, brows 8, eyes 6, cranium centre z 2.4, face plane z 10.8.
 //   wearDress(fit, anchor) / wearPreview(fit, anchor): the { dress, preview } pair a catalogue entry spreads in;
@@ -35,8 +35,8 @@ export function wearPiece(fit) {
     _b.getSize(_s); _b.getCenter(_c);
     const k = fit.w ? fit.w / _s.x : fit.h ? fit.h / _s.y : 1;
     wrap.scale.setScalar(k);
-    const ax = _c.x, ay = fit.cy != null ? _c.y : _b.min.y, az = fit.zf != null ? _b.max.z : fit.zb != null ? _b.min.z : _c.z;
-    wrap.position.set((fit.x || 0) - ax * k, (fit.cy ?? fit.y ?? 0) - ay * k, (fit.zf ?? fit.zb ?? fit.z ?? 0) - az * k);
+    const ax = _c.x, ay = fit.cy != null ? _c.y : fit.yt != null ? _b.max.y : _b.min.y, az = fit.zf != null ? _b.max.z : fit.zb != null ? _b.min.z : _c.z;
+    wrap.position.set((fit.x || 0) - ax * k, (fit.cy ?? fit.yt ?? fit.y ?? 0) - ay * k, (fit.zf ?? fit.zb ?? fit.z ?? 0) - az * k);
     wrap.traverse((o) => { if (o.isMesh) { o.raycast = noRay; o.castShadow = true; o.receiveShadow = true; } });
     g.add(wrap);
     g.userData.ready = true;
@@ -101,7 +101,8 @@ function bodyPiece(c, anchor, f) {
   const P = c.P, J = c.J, k = (P.H || 1.7) / 1.7;
   const fit = { ...f, w: f.w ? f.w * k : undefined, h: f.h ? f.h * k : undefined };
   if (anchor === 'neck') {
-    fit.y = (f.y ?? 0) * k + P.neckBase - J.chest[1] - (f.drop ?? 0.06) * k;
+    fit.yt = (f.y ?? 0) * k + P.neckBase - J.chest[1] + (f.lift ?? 0.02) * k; // the knot / collar at the base of the neck
+    delete fit.y;
     fit.z = (f.z ?? 0.01) * k;
     delete fit.zf; delete fit.zb;
   } else {

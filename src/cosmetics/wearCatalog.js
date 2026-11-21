@@ -54,7 +54,7 @@ const F = {
   octopus: { m: 'wear_octopus', w: 15, y: 15.2, z: 2 },
   shark: { m: 'wear_shark', w: 22, y: 15.4, z: 2, ry: Math.PI / 2 },
   frog: { m: 'wear_frog', w: 11, y: 15.6, z: 2 },
-  rubberchicken: { m: 'wear_rubberchicken', w: 20, y: 15.4, z: 2, ry: Math.PI / 2 },
+  rubberchicken: { m: 'wear_rubberchicken', w: 19, y: 15.2, z: 2, rz: Math.PI / 2 },
   woodchicken: { m: 'wear_woodchicken', w: 11, y: 15.4, z: 2 },
   duck: { m: 'wear_duck', w: 11, y: 15.6, z: 2 },
   teddy: { m: 'teddy', w: 12, y: 15.2, z: 2 },
@@ -92,7 +92,7 @@ const F = {
   oni2: { m: 'wear_onimask2', w: 11.5, cy: 0, zb: 0 },
   oni3: { m: 'wear_onimask3', w: 11.5, cy: 0, zb: 0 },
   // round the neck / on the back (metres, for a 1.7 m wearer)
-  neckerchief: { m: 'wear_neckerchief', w: 0.26, drop: 0.07, z: 0.015 },
+  neckerchief: { m: 'wear_neckerchief', w: 0.24, lift: 0.025, z: 0.02 },
   backpack: { m: 'wear_backpack', h: 0.42, ry: Math.PI },
   satchel: { m: 'wear_satchel', h: 0.4, ry: Math.PI },
   rucksack: { m: 'wear_rucksack', h: 0.46, ry: Math.PI },
