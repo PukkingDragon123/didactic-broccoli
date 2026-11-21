@@ -10,9 +10,9 @@
 #simclock.pre .sc-lv { display: none; }
 #simclock .sc-row { display: flex; align-items: center; gap: 6px; }
 #simclock .sc-ic { display: flex; width: 34px; justify-content: center; }
-#simclock .sc-time { font-size: 28px; line-height: 26px; letter-spacing: 1px; text-shadow: 0 2px 0 var(--ink, #1a1216); }
+#simclock .sc-time { font-size: 32px; line-height: 34px; letter-spacing: 1px; text-shadow: 0 2px 0 var(--ink, #1a1216); }
 #simclock .sc-date { margin-left: auto; padding-left: 8px; color: var(--muted, #c9bca6); }
-#simclock .sc-day { color: var(--muted, #c9bca6); font-size: 14px; line-height: 16px; white-space: nowrap; }
+#simclock .sc-day { color: var(--muted, #c9bca6); font-size: 16px; line-height: 16px; white-space: nowrap; }
 #simclock .sc-day:empty { display: none; }
 #simclock.special .sc-day { color: #ffd23f; }
 #simclock.off .sc-time { color: #ff9c9c; }
@@ -41,7 +41,7 @@ body.touchmode #simclock { bottom: auto; top: calc(max(14px, env(safe-area-inset
 #levelup .lu-h span { color: #c9bca6; }
 #levelup ul { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 #levelup li { display: flex; align-items: center; gap: 10px; }
-#levelup li small { display: block; color: #8e99a6; font-size: 12px; line-height: 12px; }
+#levelup li small { display: block; color: #8e99a6; font-size: 16px; line-height: 18px; }
 #levelup p { margin: 8px 0 0; color: #c9bca6; }
 
 /* ------------------------------------------------------------------ the end-of-day summary card */
@@ -55,7 +55,7 @@ body.touchmode #simclock { bottom: auto; top: calc(max(14px, env(safe-area-inset
 }
 #daysum.show .ds-card { opacity: 1; transform: none; }
 #daysum .ds-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 2px solid #4a3a3e; padding-bottom: 6px; }
-#daysum .ds-h b { font-weight: normal; font-size: 28px; line-height: 28px; color: #ffd23f; text-shadow: 0 3px 0 #1a1216; }
+#daysum .ds-h b { font-weight: normal; font-size: 32px; line-height: 34px; color: #ffd23f; text-shadow: 0 3px 0 #1a1216; }
 #daysum .ds-h span { color: #c9bca6; }
 #daysum .ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; margin: 10px 0 8px; }
 #daysum .ds-grid div { display: flex; align-items: center; gap: 8px; }
@@ -63,7 +63,7 @@ body.touchmode #simclock { bottom: auto; top: calc(max(14px, env(safe-area-inset
 #daysum .ds-grid .neg em { color: #ff9c9c; }
 #daysum .ds-grid .pos em { color: #9cff9c; }
 #daysum .ds-sec { margin-top: 8px; padding-top: 6px; border-top: 2px solid #4a3a3e; }
-#daysum .ds-sec small { display: block; color: #8e99a6; font-size: 12px; line-height: 14px; margin-bottom: 2px; }
+#daysum .ds-sec small { display: block; color: #8e99a6; font-size: 16px; line-height: 18px; margin-bottom: 2px; }
 #daysum .ds-sec .warn { color: #ff9c9c; }
 #daysum .ds-sec .gold { color: #ffd23f; }
 #daysum .ds-btns { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }

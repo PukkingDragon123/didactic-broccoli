@@ -19,9 +19,9 @@
   font-family: 'Alagard', 'DotGothic16', 'Pixelify Sans'; color: #1a1216; display: flex; gap: 8px; align-items: center;
 }
 .box-label input {
-  font: 18px 'DotGothic16', 'Pixelify Sans'; width: 220px; border: 2px solid #1a1216; background: #fffaf0; color: #1a1216; padding: 2px 6px; outline: none;
+  font: 16px 'DotGothic16', 'Pixelify Sans'; width: 220px; border: 2px solid #1a1216; background: #fffaf0; color: #1a1216; padding: 2px 6px; outline: none;
 }
-.box-label small { font-size: 12px; opacity: .7; }
+.box-label small { font-size: 16px; opacity: .7; }
 
 /* ---- on paper (src/ui/paper.js + paper.css): the slip loses its dark frame and gets torn zig-zag ends and a hard
    shadow; the box label is a strip of kraft tape with a white sticker you write on in marker. */

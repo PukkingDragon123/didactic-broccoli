@@ -6,12 +6,11 @@
   <title>Gacha Garage</title>
   <meta name="description" content="A cozy first-person voxel gachapon shop game set in Grandpa's old garage on a quiet back street." />
   <link rel="icon" type="image/png" href="/img/ui/favicon.png" />
-  <link rel="preload" as="image" href="/img/ui/loading-lane.png" />
   <link rel="preload" as="image" href="/img/ui/loading-van.png" />
   <!-- The loading screen (#loading), styled here so it is on screen from the first frame, before any script or 3D:
        just Grandpa's van driving along in pixel art, a puff of exhaust behind it, and a small "loading" line with the
        percentage under it. The van (8 frames from the real model, and its exhaust puff) is baked by
-       tools/bake-loading.mjs into loading-van.png; the 5x7 digits come from loading-lane.png. Everything is whole
+       tools/bake-loading.mjs into loading-van.png; the percentage is live Alagard text. Everything is whole
        texels at a whole-number scale (--s) and moves in steps; only transforms animate, so it keeps going while the
        game builds (window.__loading.set(0..1), below). -->
   <style>
@@ -38,13 +37,14 @@
     .ld-road i { display: block; width: calc(264 * var(--u)); height: 100%; will-change: transform; animation: ld-r .4s steps(12) infinite;
       background: repeating-linear-gradient(to right, #4a4664 0 calc(14 * var(--u)), transparent calc(14 * var(--u)) calc(24 * var(--u))); }
     @keyframes ld-r { to { transform: translate3d(calc(-24 * var(--u)), 0, 0); } }
-    /* "loading" and the percentage, in the 5x7 digits */
+    /* "loading" and the percentage, in Alagard at 16 / 32 / 48 px */
     .ld-txt { position: absolute; left: 0; right: 0; top: calc(var(--ry) + 44 * var(--u)); display: flex; justify-content: center; align-items: center; gap: calc(6 * var(--u));
-      font: calc(8 * var(--u))/1 'Alagard', 'Pixelify Sans', 'DotGothic16'; letter-spacing: var(--u); color: #d9d2e8; }
-    .ld-pc { position: relative; width: calc(24 * var(--u)); height: calc(7 * var(--u)); }
-    .ld-pc i { position: absolute; top: 0; width: calc(5 * var(--u)); height: calc(7 * var(--u)); --d: 0; filter: brightness(0) invert(.86);
-      background: url(/img/ui/loading-lane.png) calc((-172 - var(--d) * 6) * var(--u)) calc(-574 * var(--u)) / calc(480 * var(--u)) calc(588 * var(--u)); }
-    .ld-pc i:nth-child(2) { left: calc(6 * var(--u)); } .ld-pc i:nth-child(3) { left: calc(12 * var(--u)); } .ld-pc i:nth-child(4) { left: calc(19 * var(--u)); --d: 11; }
+      font: calc(8 * var(--u))/1 'Alagard', 'Pixelify Sans', 'DotGothic16'; letter-spacing: 1px; color: #d9d2e8; }
+    @media (max-height: 639px), (max-width: 899px) { .ld-txt { font-size: 16px; } }
+    @media (min-height: 640px) and (min-width: 900px) { .ld-txt { font-size: 32px; } }
+    @media (min-height: 1400px) and (min-width: 2100px) { .ld-txt { font-size: 48px; } }
+    /* the percentage in Alagard (live text at its crisp 16 px grid, scaled with the screen in whole steps) */
+    .ld-pc { min-width: calc(24 * var(--u)); font: inherit; color: #ffd23f; text-align: left; }
     .ld-msg { position: absolute; left: 0; right: 0; top: calc(var(--ry) + 60 * var(--u)); text-align: center; font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; color: #b8b0cc; }
     .ld-msg:empty { display: none; }
   </style>
@@ -67,17 +67,16 @@
     <div class="ld-puff ld-p4"><i></i></div><div class="ld-puff ld-p3"><i></i></div><div class="ld-puff ld-p2"><i></i></div>
     <div class="ld-puff"><i></i></div>
     <div class="ld-van"><i></i></div>
-    <div class="ld-txt"><span>Loading</span><div class="ld-pc"><i></i><i></i><i></i><i></i></div></div>
+    <div class="ld-txt"><span>Loading</span><span class="ld-pc">0%</span></div>
     <div class="ld-msg" id="load-msg"></div>
   </div>
   <script>
     // the loading screen's progress: the percentage under the van; msg(text) puts a line under it; done() fades it out
     (function () {
-      var L = document.getElementById('loading'), T = L.querySelectorAll('.ld-pc i'), M = document.getElementById('load-msg');
+      var L = document.getElementById('loading'), T = L.querySelector('.ld-pc'), M = document.getElementById('load-msg');
       function set(p) {
         p = Math.max(0, Math.min(1, +p || 0));
-        var pc = ('  ' + Math.round(p * 100)).slice(-3), i;
-        for (i = 0; i < 3; i++) T[i].style.setProperty('--d', pc[i] === ' ' ? 10 : pc[i]);
+        T.textContent = Math.round(p * 100) + '%';
         L.setAttribute('aria-valuenow', Math.round(p * 100));
       }
       window.__loading = {

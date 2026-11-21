@@ -293,7 +293,7 @@ export class GarageDetail {
     card.name = 'cards';
     const glowM = new THREE.MeshBasicMaterial({ vertexColors: true }); glowM.color.setScalar(1.6); glowM.name = 'glow';
     this.m = {
-      decal: decal(0.85), oil: decal(0.5, 0.02, 1), card, ao, halo, glow: glowM,
+      decal: decal(0.85), oil: decal(0.66, 0.02, 1), card, ao, halo, glow: glowM,
       wood: surfMat('woodDark', { ppm: 48, roughness: 0.75, bump: 0.3, vertexColors: true }),
       woodL: surfMat('woodLight', { ppm: 48, roughness: 0.7, bump: 0.3, vertexColors: true }),
       ply: new THREE.MeshStandardMaterial({ map: surfaceTex('plywood', 3.64), roughness: 0.78, vertexColors: true }),
@@ -340,11 +340,12 @@ export class GarageDetail {
   floor() {
     const G = this.G, B = this.B, m = this.m;
     const F = (n, x, z, w, h, o = {}) => this.decal(n, '+y', x, 0.0015 + (o.lift || 0), z, w, h, o);
-    // where Grandpa's car used to stand: oil, drips and faded tyre tracks running in from the shutter
-    F('oilBig', 0.35, -1.75, 1.6, 1.2, { rot: 0.25, oil: true, tint: 0xb4ada2 });
-    F('oilSmall', -0.15, 3.05, 0.9, 0.68, { rot: -0.4, oil: true, tint: 0xb8b1a6 });
-    F('oilDrips', 0.9, -0.95, 0.5, 0.5, { oil: true, tint: 0xbab4aa });
-    F('oilDrips', -0.55, 2.35, 0.45, 0.45, { rot: 1.2, oil: true, tint: 0xbab4aa });
+    // where Grandpa's car used to stand: oil, drips and faded tyre tracks running in from the shutter (oil soaks in
+    // dark: tinted pale, with the oil's sheen, they read as light puddles of water on the slab)
+    F('oilBig', 0.35, -1.75, 1.6, 1.2, { rot: 0.25, oil: true, tint: 0x7c766c });
+    F('oilSmall', -0.15, 3.05, 0.9, 0.68, { rot: -0.4, oil: true, tint: 0x807a70 });
+    F('oilDrips', 0.9, -0.95, 0.5, 0.5, { oil: true, tint: 0x7a746a });
+    F('oilDrips', -0.55, 2.35, 0.45, 0.45, { rot: 1.2, oil: true, tint: 0x7a746a });
     for (const x of [-0.78, 0.82]) for (let k = 0; k < 2; k++) F('tyre', x + k * 0.04, 3.3 - k * 1.9, 0.2, 1.9, { rot: 0.02 * (k ? -1 : 1), tint: 0x9a958c, lift: 0.0002 });
     // cracks, a mortar patch, scuffs and spilt paint
     F('crack', 2.1, 1.85, 1.6, 0.8, { rot: 0.6, tint: 0xd0cac0 });

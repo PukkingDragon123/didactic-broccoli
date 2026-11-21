@@ -44,7 +44,7 @@ body.cine #hm-pops, body.dressing #hm-pops { opacity: 0; }
 body.dressing #hud, body.dressing #touch { opacity: 0 !important; pointer-events: none !important; transition: opacity .3s; }
 
 /* settings: a one-line tip under the checkbox */
-.hm-tip { margin: -4px 0 8px 34px; font-size: 14px; line-height: 16px; color: var(--pp-ink2, #8a7a6a); }
+.hm-tip { margin: -4px 0 8px 34px; font-size: 16px; line-height: 16px; color: var(--pp-ink2, #8a7a6a); }
 
 /* touch: the wallet button (hold to check) */
 #t-check { position: absolute; left: calc(max(14px, env(safe-area-inset-left)) + 6px); top: calc(max(14px, env(safe-area-inset-top)) + 4px); }

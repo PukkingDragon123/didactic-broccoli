@@ -38,10 +38,12 @@ def rgba(c, a=255): return ((c >> 16) & 255, (c >> 8) & 255, c & 255, a)
 
 
 class Sheet:
-    def __init__(self, w, h, bg=0xf3ecdc, k=5):
-        """w x h: the final texture size in px (all coordinates are in these px); the art is drawn k x larger."""
-        self.w, self.h, self.k = w, h, k
-        self.im = Image.new('RGBA', (int(w * k), int(h * k)), rgba(bg))
+    def __init__(self, w, h, bg=0xf3ecdc, k=4, u=1.0):
+        """w x h: the layout size; the texture is u x that (u: texels per layout unit, so the pixel type, which is
+        always set at its native size, gets room), the art is drawn k x larger still and reduced once."""
+        self.u = u
+        self.w, self.h, self.k = int(round(w * u)), int(round(h * u)), k * u
+        self.im = Image.new('RGBA', (int(round(self.w * k)), int(round(self.h * k))), rgba(bg))
         self.late = []
 
     def B(self, x, y, w, h): k = self.k; return [int(round(x * k)), int(round(y * k)), int(round((x + w) * k)) - 1, int(round((y + h) * k)) - 1]
@@ -49,7 +51,7 @@ class Sheet:
     # ---------------------------------------------------------------- surfaces
     def paper(self, name='Paper001', k=0.45, x=0, y=0, w=None, h=None):
         """Multiply a real paper (or board) scan's lightness over a region: the stock the ink sits on."""
-        w = w or self.w; h = h or self.h
+        w = w or self.w / self.u; h = h or self.h / self.u
         bx = self.B(x, y, w, h); W, H = bx[2] - bx[0] + 1, bx[3] - bx[1] + 1
         s = cover(load('acg:' + name), W, H).convert('L')
         L = np.asarray(s, np.float32) / 255; L = L / max(1e-3, L.mean())
@@ -67,7 +69,7 @@ class Sheet:
         if line: d.ellipse(b, outline=rgba(c), width=max(1, int(round(line * self.k))))
         else: d.ellipse(b, fill=rgba(c))
 
-    def poly(self, pts, c):
+    def poly(self, pts, c):  # (layout units)
         ImageDraw.Draw(self.im, 'RGBA').polygon([(px * self.k, py * self.k) for px, py in pts], fill=rgba(c))
 
     def photo(self, ref, x, y, w, h, f=(0.5, 0.5, 1.0), sat=0.92, con=1.04, bright=1.0, warm=0.0, shape=None, mono=None):
@@ -104,32 +106,36 @@ class Sheet:
         # text(s, x, y, face, scale, fill) or text(s, face, scale, x, y, fill)
         a = list(a) + [None] * (5 - len(a))
         x, y, face, scale, fill = (a[2], a[3], a[0], a[1], a[4]) if isinstance(a[0], str) else (a[0], a[1], a[2], a[3], a[4])
-        face = face or 'b5'; scale = scale or 1; fill = 0x1c1816 if fill is None else fill
+        face = face or 'dot'; scale = scale or 1; fill = 0x1c1816 if fill is None else fill
+        x, y = round(x * self.u), round(y * self.u)
         """A line of pixel type (tools/pixprint.py faces: ggd, jersey10-25, ala, jacq12/24, ps2p, silk/silkb, micro5,
         b5, dot for kana), laid on the final texture grid after the art is reduced: one font pixel = scale texels,
         nearest only. (x, y) in final px is the anchor of the letters' ink box ('lt', 'mb', 'rm'...). kw: track, bold,
         outline=[(r, col)], shadow=(dx, dy, col), extrude, maxw. rot 90: reads bottom to top. Returns the ink (w, h)."""
+        if 'maxw' in kw: kw['maxw'] = kw['maxw'] * self.u
         self.late.append(('text', s, x, y, face, scale, fill, anchor, rot, kw))
         w, h = PX.text_size(s, face, scale, kw.get('track', 0), kw.get('bold', 0))
-        return w, h
+        return w / self.u, h / self.u
 
-    def tw(self, s, face='b5', scale=1, track=0): return PX.text_size(s, face, scale, track)[0]
+    def tw(self, s, face='dot', scale=1, track=0): return PX.text_size(s, face, scale, track)[0] / self.u
+    def th(self, face='dot', scale=1): return PX.text_size('AH', face, scale)[1] / self.u
 
     def fit(self, s, face, scale, maxw, track=0):
         """The largest whole scale <= scale at which s fits maxw px."""
-        while scale > 1 and PX.text_size(s, face, scale, track)[0] > maxw: scale -= 1
+        while scale > 1 and PX.text_size(s, face, scale, track)[0] > maxw * self.u: scale -= 1
         return scale
 
-    def para(self, text, x, y, w, face='b5', scale=1, fill=0x1c1816, lh=None, align='l', track=0):
-        """Word-wrapped pixel type in a column w px wide from top y; returns the y under the last line."""
+    def para(self, text, x, y, w, face='dot', scale=1, fill=0x1c1816, lh=None, align='l', track=0):
+        """Word-wrapped pixel type in a column w layout units wide from top y; returns the y under the last line."""
         _, hh = PX.text_size('AH', face, scale)
-        lh = lh or hh + 2 * scale + (1 if face in ('b5', 'micro5', 'silk', 'silkb') else 0)
+        lh = (lh * self.u if lh else hh + 3 * scale) / self.u
+        W = w * self.u
         for part in text.split('\n'):
             cur = ''
             rows = []
             for word in part.split(' '):
                 t = (cur + ' ' + word).strip()
-                if cur and PX.text_size(t, face, scale, track)[0] > w: rows.append(cur); cur = word
+                if cur and PX.text_size(t, face, scale, track)[0] > W: rows.append(cur); cur = word
                 else: cur = t
             rows.append(cur)
             for r in rows:

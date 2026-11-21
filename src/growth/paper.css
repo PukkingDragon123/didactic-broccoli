@@ -39,7 +39,7 @@
 #growth-paper .gp-seal { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 120px; }
 #growth-paper .gp-seal small { color: var(--pp-ink2, #5e5046); }
 #growth-paper .gp-box { position: relative; width: 64px; height: 64px; box-shadow: inset 0 0 0 2px rgba(36, 26, 30, .35); }
-#growth-paper .gp-box.empty::after { content: '印'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DotGothic16', 'Pixelify Sans'; color: rgba(36, 26, 30, .3); font-size: 24px; }
+#growth-paper .gp-box.empty::after { content: '印'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DotGothic16', 'Pixelify Sans'; color: rgba(36, 26, 30, .3); font-size: 32px; }
 #growth-paper .gp-box .gp-theirs { position: absolute; left: 8px; top: 8px; width: 48px; height: 48px; background: var(--pp-hanko) 0 0 / 48px 48px; image-rendering: pixelated; opacity: .9; }
 #growth-paper .gp-box img { position: absolute; left: 4px; top: 4px; width: 56px; height: 56px; image-rendering: pixelated; animation: gp-stamp 0.36s steps(3) both; }
 @keyframes gp-stamp { from { transform: scale(1.8); opacity: 0; } 60% { transform: scale(0.92); opacity: 1; } to { transform: scale(1); opacity: .92; } }

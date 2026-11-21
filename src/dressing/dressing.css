@@ -248,3 +248,4 @@ button.dr-act:hover span { background: var(--pp-pencil) repeat-x 0 100% / 64px 6
   .dr-stamp { left: 10px; top: calc(var(--stage-h, 44vh) - 116px); transform-origin: 0 100%; }
 }
 @media (hover: none) { .dr-keys { display: none; } }
+.dr-pxt { display: inline-block; vertical-align: middle; }

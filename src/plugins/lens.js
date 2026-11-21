@@ -87,7 +87,8 @@ export function install(game) {
     pick(x = 0.5, y = 0.5, n = 3) {
       const ray = new THREE.Raycaster();
       ray.setFromCamera(new THREE.Vector2(x * 2 - 1, 1 - y * 2), game.camera);
-      return ray.intersectObject(game.scene, true).filter((h) => h.object.visible).slice(0, n).map((h) => {
+      const shown = (o) => { for (let p = o; p; p = p.parent) { if (!p.visible || p === game.camera) return false; } return true; };
+      return ray.intersectObject(game.scene, true).filter((h) => shown(h.object)).slice(0, n).map((h) => {
         const path = []; for (let p = h.object; p && path.length < 5; p = p.parent) path.push(p.name || p.type);
         return { path: path.join(' < '), d: +h.distance.toFixed(2), mat: h.object.material?.name || h.object.material?.type || null, at: h.point.toArray().map((v) => +v.toFixed(2)) };
       });

@@ -36,7 +36,7 @@
 @keyframes rb-blink { 50% { opacity: 0; } }
 #rb .rb-stamp { position: absolute; right: 7%; top: 6%; padding: 2px 8px; font: 16px var(--font-key); color: #c0242e; box-shadow: 0 0 0 3px #c0242e; transform: rotate(8deg); opacity: .8; }
 #rb .rb-foot { position: absolute; left: 5%; right: 5%; bottom: 3%; font-size: 16px; color: #8a7a70; display: flex; justify-content: space-between; }
-@media (max-width: 700px) { #rb .rb-page { font-size: 16px; line-height: 19px; padding: 3%; } #rb .rb-write { font-size: 22px; line-height: 24px; } }
+@media (max-width: 700px) { #rb .rb-page { font-size: 16px; line-height: 19px; padding: 3%; } #rb .rb-write { font-size: 16px; line-height: 24px; } }
 
 /* ---- on paper (src/ui/paper.js + paper.css): the pages get real grain, the portrait a paper clip, the secret a
    pink carbon slip, PRIVATE a rubber stamp and a coffee ring where someone put their cup down. Stepped motion. */

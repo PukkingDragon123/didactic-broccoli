@@ -67,7 +67,7 @@ body.has-sq.has-goal #news { top: calc(max(20px, env(safe-area-inset-top)) + var
 #sq-marks { position: fixed; left: 0; top: 0; width: 0; height: 0; pointer-events: none; z-index: 4; }
 #sq-marks .mk {
   position: absolute; left: 0; top: 0; width: 26px; height: 30px; margin: -30px 0 0 -13px; display: none;
-  font: 24px/28px var(--font-key); text-align: center; color: #2a1a10; background: var(--gold);
+  font: 32px/34px var(--font-key); text-align: center; color: #2a1a10; background: var(--gold);
   box-shadow: 0 -3px 0 var(--ink), 0 3px 0 var(--ink), -3px 0 0 var(--ink), 3px 0 0 var(--ink), inset -3px -3px 0 var(--gold-lo), 3px 5px 0 rgba(0, 0, 0, .3);
   animation: sq-bob 1.2s ease-in-out infinite;
 }

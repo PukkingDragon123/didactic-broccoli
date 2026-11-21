@@ -1,13 +1,17 @@
 // The title menu's buttons: wooden fuda (shop plaques) threaded on the twine, painted texel by texel (src/menu/pixel.js).
 // A plank cut with a stepped point at the left end, a brass grommet in the punched hole (the twine runs through it),
 // grain along the board, end grain on the cut, dings; the label carved into the face (ink letters with a lit groove edge
-// under them), a hand-pixelled icon of its own (src/menu/tagicons.js, never the gacha capsule) and a red-pen note. The
+// under them), a hand-pixelled icon of its own (src/menu/tagicons.js, never the gacha capsule) and a red-pen note
+// (both in Alagard, a high-res pixel font). The
 // first item is a red-lacquered plank with cream letters. Three layers, so the menu can move them apart for depth:
 // the face (plain / hot: the lettering turns red-ink or warm cream and the wood warms; never a glow), the plank's
 // thick side (the face's silhouette extruded down, end grain) and its hard shadow (silhouette).
 //   paintTag({ label, note, icon, w, h, seed, primary, wood, hot }) -> art     paintSide(o) -> art     paintShadow(o)
 //   tagMetrics(items, bare) -> { w, h }      HOLE, DEPTH
-import { art, textMask, mask5, rng, hex, shade, INK } from './pixel.js';
+import { art, textMask, rng, hex, shade, INK } from './pixel.js';
+
+// the price-style note: Alagard too (Pixelify Sans for a glyph Alagard lacks, like ¥), never the tiny 5 x 7 face
+const noteMask = (s) => textMask(s, 'Alagard", "Pixelify Sans');
 import { iconPx } from './tagicons.js';
 
 export const HOLE = { x: 7, r: 2 }; // the punched hole's centre column (texels)
@@ -26,7 +30,7 @@ const BRASS = [hex(0xf2d27a), hex(0xc8962e), hex(0x8a5e1c)];
 /** Uniform tag size for a set of items (so the strand reads as one set). */
 export function tagMetrics(items, bare = false) {
   let lw = 0, nw = 0;
-  for (const it of items) { lw = Math.max(lw, textMask(it.label).w); nw = Math.max(nw, it.note ? mask5(it.note).w : 0); }
+  for (const it of items) { lw = Math.max(lw, textMask(it.label).w); nw = Math.max(nw, it.note ? noteMask(it.note).w : 0); }
   return { w: (bare ? 18 : 42) + lw + 12 + (nw ? nw + 4 : 0) + 6, h: TAG_H, lw, nw };
 }
 
@@ -83,9 +87,9 @@ export function paintTag(o) {
   a.mask(m, lx, ly, o.primary ? (o.hot ? WARM : CREAM) : o.hot ? RED : INK);
   // the note, pencilled like a price on the right (cream on the lacquered plank)
   if (o.note) {
-    const n = mask5(o.note), nx = w - 7 - n.w, ny = Math.floor((h - 7) / 2);
+    const n = noteMask(o.note), nx = w - 7 - n.w, ny = Math.round((h - n.base) / 2) - 1;
     a.mask(n, nx, ny, o.primary ? CREAM : RED);
-    for (let x = nx - 1; x <= nx + n.w; x++) if (r() < 0.85) a.px(x, ny + 9, o.primary ? CREAM : RED);
+    for (let x = nx - 1; x <= nx + n.w; x++) if (r() < 0.85) a.px(x, ny + n.base + 2, o.primary ? CREAM : RED);
   }
   return a;
 }

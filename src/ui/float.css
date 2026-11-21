@@ -106,3 +106,17 @@ html body.phys-ui #guide .g-s { color: #d8ccb4; text-shadow: var(--fl-out); }
 html body.phys-ui #guide .g-card.done .g-t { color: #9ce89c; text-decoration-color: #c8322c; }
 html body.phys-ui #guide .g-bar { height: 8px; background: #3a2e30; box-shadow: 0 0 0 2px var(--fl-ink), 2px 4px 0 2px rgba(18, 10, 14, .4); }
 html body.phys-ui #guide .g-bar i { background: #ffd23f; box-shadow: inset 0 -2px 0 #c8962e; }
+
+/* ---------------------------------------------------------------- sizes: Alagard at its crisp 16 px grid, doubled once the view
+   is tall enough to read it comfortably (never an odd size, never a tiny bitmap face) */
+@media (min-height: 700px) {
+  html body.phys-ui .ft-in { font-size: 32px; line-height: 34px; max-width: min(460px, 40vw); }
+  html body.phys-ui .ft-big .ft-in { max-width: min(600px, 42vw); }
+  html body.phys-ui .tk-opt, html body.phys-ui .tk-choices .tk-prompt, html body.phys-ui #sq-choice button { font-size: 32px; line-height: 36px; }
+  html body.phys-ui .tk-choices { max-width: min(680px, 46vw); }
+  html body.phys-ui #tk-self span { font-size: 32px; line-height: 36px; }
+}
+@media (min-height: 900px) {
+  html body.phys-ui #guide { width: min(460px, 46vw); }
+  html body.phys-ui #guide .g-t { font-size: 32px; line-height: 34px; }
+}
