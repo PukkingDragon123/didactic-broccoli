@@ -237,3 +237,12 @@
 .c98 .ac-a .ac-bar i { display: block; height: 100%; background: repeating-linear-gradient(90deg, #8ea0c0 0 6px, transparent 6px 8px); }
 .c98 .ac-a.got .ac-bar i { background: #ffd23f; }
 .c98 .ac-a .ac-n { color: #8ea0c0; }
+
+/* Navigator's dial-up card (shown in the view while the first page connects; never a blank white page) */
+.br-dial { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 100%; min-height: 200px; background: #2b7d7a; color: #fbf6ea; text-align: center; }
+.br-dial b { font: 32px/34px var(--f-title); font-weight: normal; text-shadow: 2px 2px 0 #1a1416; }
+.br-dial span { font: 16px/20px var(--f-ui); }
+.br-dial small { font: 16px/20px var(--f-ui); color: #bfe8e0; }
+.br-dial .br-dial-bar { display: block; width: 220px; height: 14px; background: #1a1416; box-shadow: 0 0 0 2px #fbf6ea; }
+.br-dial .br-dial-bar i { display: block; height: 100%; width: 30%; background: #ffd23f; animation: br-dial 1.2s steps(8) infinite; }
+@keyframes br-dial { from { transform: translateX(-100%); } to { transform: translateX(333%); } }

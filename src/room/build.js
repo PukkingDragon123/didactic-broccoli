@@ -143,8 +143,14 @@ export function buildRoom(game, group) {
   B.box(M.genkan, 0.02, 0.12, z1 - gk.z0, gk.x1 + 0.01, R.door.y, (gk.z0 + z1) / 2);
   // ---------------------------------------------------------------- walls (shell boxes outside the interior)
   // west + east walls: tatami part (plaster) and kitchen part (wallpaper)
+  // (the west wall leaves the oshiire's opening, z -2.05..-0.45 under 1.78 m, open: a full wall there sat in the fusuma's
+  // plane and z-fought with it, the dark jagged streaks on the wall)
+  const CZ0 = -2.05, CZ1 = -0.45;
   for (const [xa, side] of [[x0 - t / 2, -1], [x1 + t / 2, 1]]) {
-    B.box(M.juraku, t, H, zPart - z0, xa, 0, (z0 + zPart) / 2);
+    if (side < 0) {
+      B.box(M.juraku, t, H, CZ0 - z0, xa, 0, (z0 + CZ0) / 2);
+      B.box(M.juraku, t, H, zPart - CZ1, xa, 0, (CZ1 + zPart) / 2);
+    } else B.box(M.juraku, t, H, zPart - z0, xa, 0, (z0 + zPart) / 2);
     B.box(M.paper, t, H - R.door.y, z1 - zPart, xa, R.door.y, (zPart + z1) / 2);
   }
   // back wall with the window opening

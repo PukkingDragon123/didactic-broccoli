@@ -286,3 +286,20 @@ html body.phys-ui #pause .panel input[type=range] { width: 52%; }
   html body.phys-ui #pause .panel input[type=range] { width: 46%; }
   html body.phys-ui #pause .ph-sec label { min-height: 32px; gap: 8px; }
 }
+
+/* ---------------------------------------------------------------- HUD text at 1080p and up (polish 2): the hotbar's numbers,
+   the wallet, the crosshair hint and the toasts step up to the next clean size, the tray's compartments grow with them */
+@media (min-height: 1000px) and (min-width: 1200px) {
+  html body.phys-ui #hotbar .slot { width: 64px; height: 64px; border-width: 10px; border-image-width: 10px; }
+  html body.phys-ui #hotbar .slot .ico { width: 64px; height: 64px; }
+  html body.phys-ui #hotbar .slot .key, html body.phys-ui #hotbar .slot .count { font-size: 32px; line-height: 32px; }
+  html body.phys-ui #hotbar .slot .key { left: -6px; top: -12px; }
+  html body.phys-ui #hotbar .slot .count { right: -6px; bottom: -10px; }
+  html body.phys-ui #hotbar .label { font-size: 32px; line-height: 34px; }
+  html body.phys-ui #money { font-size: 64px; line-height: 58px; }
+  html body.phys-ui #money .yen { font-size: 48px; line-height: 44px; }
+  html body.phys-ui #money-delta { font-size: 48px; line-height: 44px; }
+  html body #hint { font-size: 32px; line-height: 38px; }
+  html body #hint .sub { font-size: 16px; line-height: 22px; }
+  html body #news .item { font-size: 32px; line-height: 36px; }
+}

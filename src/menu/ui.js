@@ -141,7 +141,6 @@ export class MenuUI {
     if (compact && cols === 2 && 2 * M2.w * tagS > W * 0.5) { bare = true; M2 = tagMetrics(this.items.map((it) => ({ ...it, note: '', icon: null })), true); }
     const tagW = M2.w * tagS;
     if (portrait) top0 = Math.max(top0, H - pad - colH(per) - Math.round(H * 0.02));
-    if (cols === 2) top0 = Math.min(top0, top + th + gap * 2);
     this.cols = cols;
     for (const t of this.tags) {
       const note = compact ? '' : t.it.note, icon = bare ? null : t.it.icon;

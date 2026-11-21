@@ -217,7 +217,16 @@ class BrowserWin {
     if (!this.st.dialed) {
       this.st.dialed = true;
       this.os.sound('modem', { vol: 0.8 });
-      steps.push(['Dialing CapsuleNet (03-5555-0198)...', 900], ['Verifying user name and password...', 500], ['Logging on to network...', 400]);
+      steps.push(['Dialing CapsuleNet (03-5555-0198)...', 450], ['Verifying user name and password...', 250], ['Logging on to network...', 200]);
+      // never a blank white page while the modem sings: the CapsuleNet dialer card fills the view until the site renders
+      if (!this.page) {
+        this.view.textContent = '';
+        this.view.append(h('div', { class: 'br-dial' },
+          h('b', null, 'CapsuleNet'),
+          h('span', null, 'Connecting you to the Internet...'),
+          h('i', { class: 'br-dial-bar' }, h('i')),
+          h('small', null, 'Dial-up 03-5555-0198 · 28.8 kbps')));
+      }
     }
     steps.push([`Looking up host: ${u.host}...`, 120 + Math.random() * 120]);
     if (site) steps.push([`Connecting to host ${u.host}...`, 150 + Math.random() * 200], [`Host contacted. Waiting for reply...`, site.slow ? 700 : 160 + Math.random() * 260]);
