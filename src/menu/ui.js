@@ -37,6 +37,7 @@ export class MenuUI {
     this.chains = [...this.el.querySelectorAll('.tm-chain')];
     this.nav = this.el.querySelector('.tm-tags');
     this.kana = paintKanaPlate();
+    try { document.fonts?.load('16px "DotGothic16"', 'ガチャ・ガレージ').then(() => { this.kana = paintKanaPlate(); this.kanaS = 0; this.layout(); }, () => {}); } catch { /* no font loading API */ }
     this.meta = { sizes: [] };
     loadTitle().then((m) => { this.meta = m; this.layout(); });
     this.items = [];
@@ -119,7 +120,7 @@ export class MenuUI {
       });
     }
     // the kana plate hangs on two S-hooks from GARAGE, toward the right
-    const ks = Math.max(2, Math.min(4, s + 1)), K = this.kana, kw = K.art.w * ks, kh = K.art.h * ks;
+    const ks = Math.max(1, Math.min(3, s)), K = this.kana, kw = K.art.w * ks, kh = K.art.h * ks;
     if (this.kanaS !== ks) { this.kanaS = ks; K.art.canvas(ks, this.kanaEl.firstChild); }
     const kx = Math.round(tw * (portrait ? 0.5 : 0.7) - kw / 2), ky = top + th - Math.round(4 * s);
     this.kanaEl.style.cssText = `left:${kx}px;top:${ky}px;width:${kw}px;height:${kh}px;transform-origin:${Math.round(kw / 2)}px 0`;

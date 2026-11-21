@@ -393,38 +393,8 @@ def _pfont(face, px):
     return _pfonts[k]
 
 
-_B5 = None
-def _b5():
-    """The 5 x 7 bitmap glyphs, read from src/gfx/font5x7.js (one source of truth)."""
-    global _B5
-    if _B5 is None:
-        import re
-        src = open(os.path.join(ROOT, 'src', 'gfx', 'font5x7.js'), encoding='utf-8').read()
-        body = src[src.index('const GLYPHS'):src.index('};', src.index('const GLYPHS'))]
-        _B5 = {}
-        for m in re.finditer(r"(?:'((?:\\'|[^'])+)'|\"([^\"]+)\"|([A-Za-z0-9]))\s*:\s*'([.#|]+)'", body):
-            ch = (m.group(1) or m.group(2) or m.group(3)).replace("\\'", "'")
-            _B5[ch] = m.group(4).split('|')
-    return _B5
-
-
 def _is_cjk(s):
     return any(ord(c) > 0x2e7f for c in s)
-
-
-def _mask_b5(s, scale=1, track=1):
-    G = _b5(); s = s.upper()
-    al = {'’': "'", '‘': "'", '“': '"', '”': '"', '–': '-', '—': '-', '…': '...', 'É': 'E', '〜': '-', '～': '-'}
-    s = ''.join(al.get(c, c) for c in s)
-    rows = [G.get(c) or G.get('?') for c in s]
-    w = sum(len(r[0]) + track for r in rows) - track if rows else 1
-    m = Image.new('L', (max(1, w * scale), 7 * scale), 0); d = ImageDraw.Draw(m); x = 0
-    for r in rows:
-        for j, row in enumerate(r):
-            for i, c in enumerate(row):
-                if c == '#': d.rectangle((x + i * scale, j * scale, x + (i + 1) * scale - 1, (j + 1) * scale - 1), fill=255)
-        x += (len(r[0]) + track) * scale
-    return m
 
 
 def _mask_ttf(s, face, size, track=0, vert=False):
@@ -468,9 +438,6 @@ def _mask_ttf(s, face, size, track=0, vert=False):
 
 def pmask(s, size=16, face='dot', track=0, vert=False, bold=False):
     if face == 'b5': face = 'ala'  # the old 5x7 face is gone (owner: high-res pixel fonts only)
-    if face == 'b5':
-        m = _mask_b5(s, max(1, int(size)), 1 + int(track))
-        return m.rotate(-90, expand=True) if vert else m
     if bold:  # the pixel-font bold: every stroke one font pixel wider to the right
         m = _mask_ttf(s, face, size, track, vert)
         k = max(1, int(size) // 16)

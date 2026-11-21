@@ -25,7 +25,7 @@ const F = {
   cowboy: { m: 'wear_cowboy', w: 30, y: 11.6, z: 2.3 },
   cowboy2: { m: 'wear_cowboy2', w: 30, y: 11.6, z: 2.3 },
   hardhat: { m: 'wear_hardhat', w: 19.5, y: 10.6, z: 2.6 },
-  pith: { m: 'wear_pith', w: 22, y: 9.4, z: 2.3 },
+  pith: { m: 'wear_pith', w: 22, yt: 19.6, z: 2.3 }, // (top: a strap hangs under the brim)
   fedora: { m: 'wear_fedora', w: 25, y: 11.8, z: 2.3 },
   fedora2: { m: 'wear_fedora2', w: 25, y: 11.8, z: 2.3 },
   fedora3: { m: 'wear_fedora3', w: 25, y: 11.8, z: 2.3 },

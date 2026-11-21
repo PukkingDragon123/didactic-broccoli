@@ -15,7 +15,7 @@ Faces (OFL, Google Fonts repo, fetched into shots/.art-cache/fonts/px at bake ti
   micro5 Micro 5 (Sarah Cadigan-Fried)      cap 5: the small print
   jacq12 / jacq24  Jacquard 12 / 24 (Sarah Cadigan-Fried)  pixel blackletter: old shop signs, vintage bills
   ala    Alagard (the game's UI face)       16 px em
-  b5     the game's own 5 x 7 bitmap font (src/gfx/font5x7.js)
+  b5     (retired: an alias of ala; the game's 5 x 7 bitmap font is gone)
 
   S = Sheet(w, h, bg)                                       an output-size RGB print
   S.photo(ref, x, y, w, h, f=(fx, fy, zoom), clip=None)     a real photo (printkit refs), clip: polygon points
@@ -98,11 +98,6 @@ def glyph(face, ch):
         rows, adv, base = ggd(ch)
         _G[k] = (np.array([[c == '#' for c in r] for r in rows], bool), adv, base)
         return _G[k]
-    if face == 'b5':
-        g = _b5().get(ch.upper()) or _b5().get('?')
-        m = np.array([[c == '#' for c in row] for row in g], bool)
-        _G[k] = (m, m.shape[1] + 1, 7)
-        return _G[k]
     F = _font(face); f = F['f']; px, py = F['phase']
     a = _raster(face, ch)
     a = a[py:, px:]
@@ -115,19 +110,6 @@ def glyph(face, ch):
     adv = int(round(f.getlength(ch) / K))
     _G[k] = (m[:, x0:x0 + max(adv, 1) + 4], adv, int(round(base)))
     return _G[k]
-
-
-_B5 = None
-def _b5():
-    global _B5
-    if _B5 is None:
-        src = open(os.path.join(ROOT, 'src', 'gfx', 'font5x7.js'), encoding='utf-8').read()
-        body = src[src.index('const GLYPHS'):src.index('};', src.index('const GLYPHS'))]
-        _B5 = {}
-        for mm in re.finditer(r"(?:'((?:\\'|[^'])+)'|\"([^\"]+)\"|([A-Za-z0-9]))\s*:\s*'([.#|]+)'", body):
-            ch = (mm.group(1) or mm.group(2) or mm.group(3)).replace("\\'", "'")
-            _B5[ch] = mm.group(4).split('|')
-    return _B5
 
 
 ALIAS = {'’': "'", '‘': "'", '“': '"', '”': '"', '–': '-', '—': '-', '…': '...', 'é': 'e', 'É': 'E', 'ō': 'o', 'ū': 'u', 'Ō': 'O', 'Ū': 'U'}

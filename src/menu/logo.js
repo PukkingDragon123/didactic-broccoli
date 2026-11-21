@@ -5,7 +5,7 @@
 // hooked into its top line; under GARAGE a small navy enamel plate with ガチャ・ガレージ hangs on two S-hooks.
 //   loadTitle() -> Promise<{ sizes: [{ w, h, src, hooks: [[x, y], [x, y]] }] }>
 //   pickTitle(meta, maxW, maxH) -> { size, s }      paintChain(len) -> art      paintKanaPlate() -> { art, hooks }
-import { art, kanaMask, rng, hex, shade, INK } from './pixel.js';
+import { art, textMask, kanaMask, rng, hex, shade, INK } from './pixel.js';
 
 const BASE = (import.meta.env?.BASE_URL || '/') + 'img/menu/';
 let meta = null;
@@ -46,10 +46,12 @@ export function paintChain(len) {
   return a;
 }
 
-/** The kana plate: navy enamel, a cream pin-line, screws, chips to black iron, ガチャ・ガレージ in cream (the hand-pixelled
- *  7 px kana at 2 texels a pixel), two S-hooks above it. -> { art, hooks: [x, x] } */
+/** The kana plate: navy enamel, a cream pin-line, screws, chips to black iron, ガチャ・ガレージ in cream (DotGothic16 at its
+ *  native 16 px, one texel a font pixel: high-res, never blown up), two S-hooks above it. -> { art, hooks: [x, x] } */
 export function paintKanaPlate() {
-  const kana = kanaMask('ガチャ・ガレージ'), K = 2;
+  let kana = textMask('ガチャ・ガレージ', 'DotGothic16', 16);
+  if (!kana.w) kana = kanaMask('ガチャ・ガレージ'); // (the font not there yet: the hand-pixelled 7 px set)
+  const K = 1;
   const PW = kana.w * K + 18, PH = kana.h * K + 12, HOOK = 7;
   const a = art(PW, PH + HOOK), r = rng(77);
   const NAVY = hex(0x26346e), NAVY_HI = hex(0x3a4c8e), NAVY_LO = hex(0x18224e), CREAM = hex(0xf2e6c6), IRON = hex(0x2a2428), RUST = hex(0x8a4a24);
