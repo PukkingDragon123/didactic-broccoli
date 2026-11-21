@@ -11,8 +11,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - **All particles are 2D pixel-art sprites** (hand-pixelled frames, nearest filtering, stepped animation). No soft
   round glows, no smooth gradients, no additive blobs.
 - 2D art is pixel art: no text effects (glows, gradients, bevels), no "AI-looking" slick posters, no circles-and-
-  sparkles filler. **Every font in the game is pixel art** (owner, latest): Alagard, Pixelify Sans, GG Display, the 5x7 bitmap font,
-  DotGothic16 for kana, or another OFL pixel font; on UI, signs, posters, flyers, notices, labels, subtitles, everywhere.
+  sparkles filler. **Every font in the game is pixel art AND high resolution** (owner, latest): Alagard, Pixelify Sans, GG Display,
+  DotGothic16 for kana, or another high-res OFL pixel font, drawn at native pixel size or clean integer multiples;
+  never a low-res font (no 5x7 / tiny bitmap fonts, no blown-up chunky glyphs); on UI, signs, posters, flyers, notices, labels, subtitles, everywhere.
   No smooth / vector / print fonts anywhere.
 - The pixel-art kit (public/img/pixelkit via src/ui/pixelkit.js; built by tools/pixelkit/build.py, hand-pixelled or
   pixelised Blender renders to the docs/ref/pixel refs) is the standard for coins, notes, banks, tickets, receipts,
@@ -88,7 +89,7 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   renders and pixel-font text. ZERO 2D art drawn by us (no drawn props, patterns, wavy lines, stripes, screen tone,
   drawn water), no generic "AI" backgrounds, no hanging confetti / bunting / pennants.**
   **Posters and cards copy the owner's gashapon boards (scratchpad/ref_gacha) closely, ALL TEXT IN ENGLISH, ALL
-  TEXT IN PIXEL-ART FONTS** (Alagard, the 5x7 bitmap font, OFL pixel fonts), crisp at the pixel grid; only hard pixel
+  TEXT IN PIXEL-ART FONTS** (Alagard, Pixelify Sans, high-res OFL pixel fonts), crisp at the pixel grid; only hard pixel
   outlines and hard offset shadows, no glow, gradient, bevel or slick AI-style effects; every poster a unique layout.
   **Titles are 3D, hand-painted and interactive (owner, latest; overrides "flat" for titles only):** series names and
   big call-outs are chunky extruded blocks built from the glyphs of our own hand-pixelled display face GG Display
@@ -101,7 +102,7 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   (tools/logo3d_themes.py: crab shell with a cream underside, turtle scutes, sushi toppings on rice, bath tiles, oiled
   wagasa paper with ribs, beetle carapace bands...), with small sculpted themed bits growing off the letters (claws,
   legs, flippers, drips, steam puffs, umbrella ribs, a skewer...); painted brushwork only, no CG gradients, chrome or
-  glow. Kickers are flat GG Display; small text (legend, warnings, barcode) stays the flat 5x7 font. Still no glow, gradient, chrome, Word-Art
+  glow. Kickers are flat GG Display; small text (legend, warnings, barcode) uses a high-res pixel font (never 5x7). Still no glow, gradient, chrome, Word-Art
   bevel or "AI" 3D text presets. Real public-domain / CC0 vintage posters are welcome (brands retouched out); the rest is designed to a
   graphic-designer standard with pixel fonts only (see the font rule), on real scanned paper
   (folds, fade, tape, wear). Typography stays flat (no glows, gradients, bevels). All names and brands are original

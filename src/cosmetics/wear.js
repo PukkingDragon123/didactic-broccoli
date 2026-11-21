@@ -43,7 +43,7 @@ export function wearPiece(fit) {
   };
   const now = assetNow(id);
   if (now) place(now);
-  else asset(id).then(place).catch(() => {});
+  else asset(id).then(place).catch((e) => console.warn('wear piece failed:', id, e?.message || e));
   return g;
 }
 

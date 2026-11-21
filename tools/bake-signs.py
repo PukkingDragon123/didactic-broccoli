@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""bake-signs.py: the lane's shop signs, set like real sign-painters' work: proper sign faces (OFL, tools/printkit.py
-FONTS), kerned pairs plus open tracking for caps, optical centring, a painted keyline and hard drop shade only (no
-glow, no gradient), on real board surfaces (ambientCG CC0 scans in the art cache) with light, real wear. Drawn 4x and
-reduced once, so the letters are clean at the texel grid (no jaggies, no blur), at ~200-400 px per metre of sign.
+"""bake-signs.py: the lane's shop signs, laid out like real sign-painters' work in pixel type only (tools/pixprint.py
+faces: GG Display, Alagard, Jersey, Silkscreen, the 5x7 font, DotGothic16 for kana and kanji), set on the texture
+grid at whole-number scales (one font pixel = a block of texels, nearest only: no blur, no smoothing), with a painted
+keyline and hard pixel drop shade only (no glow, no gradient), on real board surfaces (ambientCG CC0 scans in the art
+cache) with light, real wear. The boards are drawn 4x and reduced once, then the type is laid, then the wear goes over
+both. ~200-400 px per metre of sign.
   sign:mikawaya   Mikawa-ya's fascia (src/world/CornerShop.js, 6.15 x 0.78 m)
   sign:tobacco    the closed tobacco shop's faded board (src/world/Neighbours.js, 3.9 x 0.55 m)
   sign:warehouse  the warehouse lettering by the park (src/world/Park.js, 4.6 x 1.34 m)
@@ -18,6 +20,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from printkit import font, CACHE, ROOT, cover, printed
 import paperkit as PK
+import pixprint as PX
+PX.FACES.setdefault('dot', ('dotgothic16/DotGothic16-Regular.ttf', 16))
 _bp = importlib.util.spec_from_file_location('bake_print', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bake-print.py'))
 BP = importlib.util.module_from_spec(_bp); _bp.loader.exec_module(BP)
 
@@ -35,6 +39,7 @@ class Sign:
         self.w, self.h = w, h
         self.im = Image.new('RGBA', (w * SS, h * SS), hexc(base))
         self.d = ImageDraw.Draw(self.im)
+        self.late = []
 
     def surface(self, name, tint, k=1.0, scale=1.0):
         """Multiply a real surface scan (lightness only, normalised) over the face: paint over planks, enamel over steel."""
@@ -64,45 +69,19 @@ class Sign:
         self.im.paste(ph, (int((cx - r) * SS), int((cy - r) * SS)), m)
         if ring: self.circle(cx, cy, r, ring[0], line=ring[1])
 
-    def text(self, s, face, cap, x, y, fill, track=0.0, anchor='c', shade=None, sx=1.0, vert=False):
-        """Set s with its cap height = cap px, baseline at y (final px). Pair kerning from the font (raqm), plus
-        track (em fraction) of open letter-spacing; anchor 'l' / 'c' / 'r' on x. shade = (colour, dx, dy): a hard
-        sign-painter's drop shade. sx: horizontal scale (condensing for a long name). Returns the set width."""
-        # size the font so its cap height (from 'H') matches cap
-        probe = font(face, 200); bb = probe.getbbox('H'); px = 200 * cap * SS / max(1, bb[3] - bb[1])
-        f = font(face, px)
-        if vert:
-            y0 = y * SS
-            for ch in s:
-                gb = f.getbbox(ch)
-                g = Image.new('RGBA', (gb[2] - gb[0] + 4, gb[3] - gb[1] + 4), (0, 0, 0, 0))
-                ImageDraw.Draw(g).text((-gb[0] + 2, -gb[1] + 2), ch, font=f, fill=hexc(fill))
-                self.im.alpha_composite(g, (int(x * SS - g.width / 2), int(y0)))
-                y0 += g.height + track * px
-            return 0
-        adv = []
-        for i, ch in enumerate(s):
-            nxt = s[i + 1] if i + 1 < len(s) else ''
-            a = (f.getlength(ch + nxt) - f.getlength(nxt)) if nxt else f.getlength(ch)
-            adv.append(a + (track * px if nxt else 0))
-        tw = sum(adv)
-        asc = f.getmetrics()[0]
-        layer = Image.new('RGBA', (int(tw + 8 * SS), int(asc + px)), (0, 0, 0, 0))
-        dl = ImageDraw.Draw(layer)
-        cx = 4 * SS
-        for ch, a in zip(s, adv): dl.text((cx, 0), ch, font=f, fill=(255, 255, 255, 255)); cx += a
-        if sx != 1.0: layer = layer.resize((max(1, int(layer.width * sx)), layer.height), Image.LANCZOS); tw *= sx
-        ox = {'l': x * SS, 'c': x * SS - tw / 2, 'r': x * SS - tw}[anchor] - 4 * SS * sx
-        oy = y * SS - asc
-        mask = layer.split()[3]
-        for col, dx, dy in ([shade] if shade else []) + [(fill, 0, 0)]:
-            solid = Image.new('RGBA', layer.size, hexc(col)); solid.putalpha(mask)
-            self.im.alpha_composite(solid, (int(ox + dx * SS), int(oy + dy * SS)))
-        return tw / SS
+    def text(self, s, x, y, face, scale, fill, anchor='mt', **kw):
+        """Pixel type laid after the board is reduced: (x, y) final px of the ink box anchor; kw: track, shadow, outline."""
+        self.late.append((s, x, y, face, scale, fill, anchor, kw))
+
+    def _type(self, im):
+        P = PX.Sheet(self.w, self.h, 0xffffff); P.im = im; P.d = ImageDraw.Draw(im)
+        for s, x, y, face, scale, fill, anchor, kw in self.late:
+            P.text(s, x, y, face, scale, fill, anchor=anchor, **kw)
+        return im
 
     def wear(self, k=0.25, seed=0, fade=0.0, grime='SurfaceImperfections009'):
         """Real-scan grime and a little sun fade (the paint's own age), then the one reduction to final size."""
-        im = self.im.resize((self.w, self.h), Image.LANCZOS)
+        im = self._type(self.im.convert('RGB').resize((self.w, self.h), Image.LANCZOS)).convert('RGBA')
         a = np.asarray(im, np.float32) / 255
         if fade: a[..., :3] = np.clip(PK.fade_cmy(a[..., :3], fade), 0, 1)
         if k:
@@ -124,15 +103,15 @@ def mikawaya():
     S.rect(15, 15, W - 30, H - 30, 0x123a26, r=3, line=1.2)
     # the shop's crest: a red disc with a cream ring and 三 (three bars: Mikawa)
     S.circle(88, H / 2, 54, 0xc33a2a); S.circle(88, H / 2, 46, 0xefe6cf, line=4)
-    S.text('三', 'oldmincho', 40, 88, H / 2 + 22, 0xf6eedb, anchor='c')
-    # the name: a slab-serif wordmark, open tracking, hard drop shade
-    S.text('MIKAWA-YA', 'alfa', 66, 600, 98, 0xf3ead2, track=0.075, anchor='c', shade=(0x0b2216, 4, 4))
-    S.rect(258, 113, 684, 2.5, 0xd9b44a)
-    S.text('GENERAL STORE  ·  SAKE  ·  RICE  ·  GROCERIES', 'barlows', 15, 600, 142, 0xe2bd55, track=0.2, anchor='c')
+    S.text('三', 88, H // 2, 'dot', 4, 0xf6eedb, anchor='mm', bold=1)
+    # the name: GG Display at 5x, a hard pixel drop shade
+    S.text('MIKAWA-YA', 600, 20, 'ggd', 5, 0xf3ead2, shadow=(1, 1, 0x0b2216))
+    S.rect(258, 112, 684, 3, 0xd9b44a)
+    S.text('GENERAL STORE - SAKE - RICE - GROCERIES', 600, 124, 'b5', 2, 0xe2bd55, track=1)
     # right panel: the name in kanji and the phone
     S.rect(1034, 26, 2, H - 52, 0xd9b44a)
-    S.text('三河屋', 'oldmincho', 34, 1146, 86, 0xf3ead2, track=0.12, anchor='c', shade=(0x0b2216, 3, 3))
-    S.text('TEL  2-1048', 'barlows', 14, 1146, 128, 0xe2bd55, track=0.18, anchor='c')
+    S.text('三河屋', 1146, 30, 'dot', 3, 0xf3ead2, shadow=(1, 1, 0x0b2216), bold=1)
+    S.text('TEL 2-1048', 1146, 108, 'b5', 2, 0xe2bd55)
     return S.wear(k=0.12, seed=3, grime='SurfaceImperfections003')
 
 
@@ -143,10 +122,10 @@ def tobacco():
     S.surface('Paper004', None, k=0.2)
     S.rect(5, 5, W - 10, H - 10, 0x6a2a20, r=10, line=6)
     S.rect(17, 17, W - 34, H - 34, 0x6a2a20, r=6, line=1.5)
-    S.circle(84, H / 2, 46, 0xb02a22); S.text('たばこ', 'kaku', 15, 84, H / 2 + 8, 0xf4ead2, anchor='c')
-    S.circle(W - 84, H / 2, 46, 0x2a4f8a); S.text('塩', 'oldmincho', 34, W - 84, H / 2 + 17, 0xf4ead2, anchor='c')
-    S.text('TOBACCO', 'serif', 64, W / 2, 88, 0xa22a20, track=0.16, anchor='c')
-    S.text('SALT  ·  STAMPS  ·  POSTCARDS', 'barlows', 14, W / 2, 122, 0x2a3f6a, track=0.24, anchor='c')
+    S.circle(80, H / 2, 54, 0xb02a22); S.text('たばこ', 80, H // 2, 'dot', 2, 0xf4ead2, anchor='mm', bold=1)
+    S.circle(W - 80, H / 2, 54, 0x2a4f8a); S.text('塩', W - 80, H // 2, 'dot', 4, 0xf4ead2, anchor='mm', bold=1)
+    S.text('TOBACCO', W // 2, 22, 'ala', 6, 0xa22a20, track=2)
+    S.text('SALT - STAMPS - POSTCARDS', W // 2, 106, 'silkb', 2, 0x2a3f6a, track=2)
     return S.wear(k=0.3, seed=11, fade=0.34, grime='SurfaceImperfections003')
 
 
@@ -156,10 +135,10 @@ def warehouse():
     S = Sign(W, H, 0xe6dfcd)
     S.surface('Planks012', None, k=0.35, scale=0.8)
     S.rect(26, 28, W - 52, H - 56, 0x2c4a78, line=5)
-    S.text('KAMIYAMA', 'oswald', 74, W / 2, 132, 0x2c4a78, track=0.22, anchor='c')
-    S.text('WAREHOUSE CO.', 'oswald', 46, W / 2, 202, 0x2c4a78, track=0.3, anchor='c')
-    S.rect(W / 2 - 150, 226, 300, 3, 0xa8352a)
-    S.text('No. 3   ·   上山倉庫', 'kakub', 20, W / 2, 258, 0xa8352a, track=0.18, anchor='c')
+    S.text('KAMIYAMA', W // 2, 50, 'jersey25', 3, 0x2c4a78, track=3)
+    S.text('WAREHOUSE CO.', W // 2, 142, 'jersey15', 3, 0x2c4a78, track=3)
+    S.rect(W / 2 - 150, 202, 300, 3, 0xa8352a)
+    S.text('No. 3 - 上山倉庫', W // 2, 214, 'dot', 2, 0xa8352a, bold=1)
     return S.wear(k=0.25, seed=21, fade=0.25, grime='SurfaceImperfections003')
 
 
@@ -170,9 +149,9 @@ def apt():
     S.surface('Paper004', None, k=0.12)
     S.rect(4, 4, W - 8, H - 8, 0x6e4a32, r=8, line=5)
     S.rect(14, 14, W - 28, H - 28, 0x6e4a32, r=4, line=1.2)
-    S.text('SAKURA', 'serif', 40, W / 2, 70, 0x7a2e4a, track=0.14, anchor='c')
-    S.text('HEIGHTS', 'barlows', 17, W / 2, 98, 0x7a2e4a, track=0.42, anchor='c')
-    S.text('さくら荘', 'oldmincho', 17, W / 2, 132, 0x3a2a1c, track=0.3, anchor='c')
+    S.text('SAKURA', W // 2, 26, 'ala', 3, 0x7a2e4a, track=1)
+    S.text('HEIGHTS', W // 2, 70, 'silkb', 2, 0x7a2e4a, track=3)
+    S.text('さくら荘', W // 2, 92, 'dot', 2, 0x3a2a1c, bold=1)
     return S.wear(k=0.12, seed=31, fade=0.1, grime='SurfaceImperfections003')
 
 
@@ -184,9 +163,9 @@ def ramen():
     S.rect(6, 6, W - 12, H - 12, 0xd8b26a, r=4, line=3)
     S.photo(os.path.join(OI, '02866b5332267a21.jpg'), 82, H / 2, 56, ring=(0xd8b26a, 3))
     S.photo(os.path.join(OI, '5b1c17cb6d748fa0.jpg'), W - 82, H / 2, 56, ring=(0xd8b26a, 3))
-    S.text('RAMEN', 'alfa', 54, W / 2, 92, 0xf1e6cc, track=0.12, anchor='c', shade=(0x140a06, 3, 3))
-    S.rect(W / 2 - 170, 106, 340, 2, 0xc8402e)
-    S.text('YAMADA  ·  らーめん山田', 'kakub', 15, W / 2, 136, 0xe25a40, track=0.16, anchor='c')
+    S.text('RAMEN', W // 2, 22, 'ggd', 4, 0xf1e6cc, shadow=(1, 1, 0x140a06))
+    S.rect(W / 2 - 170, 100, 340, 2, 0xc8402e)
+    S.text('YAMADA - らーめん山田', W // 2, 110, 'dot', 2, 0xe25a40, bold=1)
     return S.wear(k=0.1, seed=41, grime='SurfaceImperfections003')
 
 
@@ -198,4 +177,7 @@ if __name__ == '__main__':
     if '--sheet' in sys.argv:
         p = sys.argv[sys.argv.index('--sheet') + 1]; out.convert('RGB').save(p); print('sheet', p, out.size)
     else:
-        BP.save_sheet('signs', out.convert('RGB'), idx, quality=92)
+        import json  # lossy WebP with smart chroma subsampling (the pixel type keeps its colour edges)
+        PX.save_webp(out.convert('RGB'), os.path.join(BP.OUT, 'signs.webp'), near=False, quality=92)
+        json.dump(idx, open(os.path.join(BP.REGIONS, 'signs.json'), 'w'), separators=(',', ':'))
+        print('signs', out.size, os.path.getsize(os.path.join(BP.OUT, 'signs.webp')) // 1024, 'KB')

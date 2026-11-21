@@ -97,4 +97,6 @@ export default {
   hm_kotatsu: M('kotatsu2', 0.42),
   hm_stool_red: M('stool_retro', 0.68),
   hm_payphone: M('payphone_red2', 0.45),
+  // (loaded with the prop library, so Mikawa-san's fedora is on his head from the first frame: src/places/mikawaya/oldman.js)
+  hm_fedora: M('wear_fedora', 0.13),
 };
