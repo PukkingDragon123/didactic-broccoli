@@ -104,8 +104,19 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   graphic-designer standard with free (OFL) print fonts (mincho, gothic, retro display), on real scanned paper
   (folds, fade, tape, wear). Typography stays flat (no glows, gradients, bevels). All names and brands are original
   (real ones are genre reference only). Paper UI uses real paper scans too.
+- **Posters (owner, latest; overrides the poster rules above, gacha display cards keep the 3D-title card pipeline):**
+  redesigned from Canva templates (human-designed layouts; never Canva's AI image generation), filled with renders of
+  our real in-game models, real photos and English text, exported and baked as in-game textures. In-world sign text
+  is crisp, well-set and polished (real sign typography, proper kerning, no blur or jaggies).
+- Dialogue and all game text sound human: natural, specific, in-character; no "AI" jokes, quips, puns-for-puns'-sake
+  or filler. Features, apps, machines and areas unlock one by one through play.
+- No overlapping / interpenetrating parts (fingertips through palms, props through shelves, z-fighting); no models
+  made of stacked blocks or primitives; nothing untextured. Hunt them down, every pass.
 - Real photos come from Google Open Images (CC BY), Wikimedia Commons (PD / CC0 / CC BY) or other CC0 sources, never
   AI images, each credited in CREDITS.md and public/CREDITS.txt.
+- **People (owner, final word):** the blocky human version from before commit dbbc66b, made a little more detailed
+  (slightly more polys, better textures). Never change the rig (skeleton, bone names, bind pose, clips, attach points)
+  and never swap the human model generation again without the owner asking.
 - People talk in 8-bit voices (src/people/voice.js).
 
 ## Code

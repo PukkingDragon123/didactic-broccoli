@@ -2,7 +2,7 @@
 gacha cards' titles (tools/logo3d.py + art/blender/logo3d/scene.py): our own GG Display glyphs extruded into chunky
 blocks, painted in the game's own theme (tools/logo3d_themes.py 'garage': enamel-sign tin with rust chips over the lane's
 green corrugated shutter steel, screw heads, the shutter key), under the toy key light with real contact shadows; then
-pixel-snapped (hard alpha, quantised palette, ink die-cut keyline, hard ink ground shadow). One scene, rendered at a few
+pixel-snapped (hard alpha, quantised palette, ink die-cut keyline; the baked ground shadow dropped: it hangs). One scene, rendered at a few
 pixel grids so the menu can always show it at a whole-number scale (crisp at 1080p, 1440p and 4K):
   python3 -I tools/menulogo.py            -> public/img/menu/title_<w>.png (+ title.json: sizes, hanging points)"""
 import os, sys, json, shutil, subprocess
@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import logo3d
 from printkit import ROOT
 
-WIDTHS = (300, 400, 540)  # texel grids (the menu picks size x integer scale for the viewport)
+WIDTHS = (300, 400, 540, 700)  # texel grids (the menu picks size x integer scale for the viewport)
 DST = os.path.join(ROOT, 'public', 'img', 'menu')
 
 
@@ -31,7 +31,9 @@ def main():
     for w in WIDTHS:
         name = 'garage_title_%d' % w
         logo3d.finish(name)
-        im = Image.open(os.path.join(logo3d.OUT, name + '.png'))
+        im = Image.open(os.path.join(logo3d.OUT, name + '.png')).convert('RGBA')
+        # it hangs in the air: no baked ground / backdrop shadow (the menu casts its own hard shadow, with parallax)
+        a = np.asarray(im).copy(); a[a[..., 3] < 255] = 0; im = Image.fromarray(a, 'RGBA')
         # crop to the drawn pixels (+1 for the keyline), then find where the chains hook on: the top of the top line at
         # about a fifth in from each end
         bb = im.getchannel('A').getbbox(); im = im.crop(bb)
