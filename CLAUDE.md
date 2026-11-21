@@ -11,7 +11,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - **All particles are 2D pixel-art sprites** (hand-pixelled frames, nearest filtering, stepped animation). No soft
   round glows, no smooth gradients, no additive blobs.
 - 2D art is pixel art: no text effects (glows, gradients, bevels), no "AI-looking" slick posters, no circles-and-
-  sparkles filler. Fonts: Alagard (UI), the 5x7 bitmap font for tiny text, DotGothic16 for kana.
+  sparkles filler. **Every font in the game is pixel art** (owner, latest): Alagard, Pixelify Sans, GG Display, the 5x7 bitmap font,
+  DotGothic16 for kana, or another OFL pixel font; on UI, signs, posters, flyers, notices, labels, subtitles, everywhere.
+  No smooth / vector / print fonts anywhere.
 - The pixel-art kit (public/img/pixelkit via src/ui/pixelkit.js; built by tools/pixelkit/build.py, hand-pixelled or
   pixelised Blender renders to the docs/ref/pixel refs) is the standard for coins, notes, banks, tickets, receipts,
   stamp cards and capsules in the UI and on posters / cards: use it, never redraw them.
@@ -101,13 +103,13 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   legs, flippers, drips, steam puffs, umbrella ribs, a skewer...); painted brushwork only, no CG gradients, chrome or
   glow. Kickers are flat GG Display; small text (legend, warnings, barcode) stays the flat 5x7 font. Still no glow, gradient, chrome, Word-Art
   bevel or "AI" 3D text presets. Real public-domain / CC0 vintage posters are welcome (brands retouched out); the rest is designed to a
-  graphic-designer standard with free (OFL) print fonts (mincho, gothic, retro display), on real scanned paper
+  graphic-designer standard with pixel fonts only (see the font rule), on real scanned paper
   (folds, fade, tape, wear). Typography stays flat (no glows, gradients, bevels). All names and brands are original
   (real ones are genre reference only). Paper UI uses real paper scans too.
 - **Posters (owner, latest; overrides the poster rules above, gacha display cards keep the 3D-title card pipeline):**
   redesigned from Canva templates (human-designed layouts; never Canva's AI image generation), filled with renders of
   our real in-game models, real photos and English text, exported and baked as in-game textures. In-world sign text
-  is crisp, well-set and polished (real sign typography, proper kerning, no blur or jaggies).
+  is crisp, well-set and polished, in pixel fonts set like real signs (good layout and spacing, pixel-snapped, no blur).
 - Dialogue and all game text sound human: natural, specific, in-character; no "AI" jokes, quips, puns-for-puns'-sake
   or filler. Features, apps, machines and areas unlock one by one through play.
 - No overlapping / interpenetrating parts (fingertips through palms, props through shelves, z-fighting); no models

@@ -19,11 +19,11 @@
 @keyframes ph-fall { 0% { translate: 0 0; opacity: 1; } 30% { translate: calc(var(--dx) * .4) calc(var(--u) * -4); } 100% { translate: var(--dx) var(--dy); opacity: 0; } }
 
 /* ---------------------------------------------------------------- panels (settings, host / join): a wooden radio cabinet */
-body.phys-ui #pause, body.phys-ui #share { background: rgba(14, 10, 12, .6); animation: ph-dim .24s steps(3) both; }
-body.phys-ui #pause.ph-closing, body.phys-ui #share.ph-closing { pointer-events: none; animation: ph-undim .22s steps(3) both; }
+html body.phys-ui #pause, html body.phys-ui #share { background: rgba(14, 10, 12, .6); animation: ph-dim .24s steps(3) both; }
+html body.phys-ui #pause.ph-closing, html body.phys-ui #share.ph-closing { pointer-events: none; animation: ph-undim .22s steps(3) both; }
 @keyframes ph-dim { from { background-color: rgba(14, 10, 12, 0); } }
 @keyframes ph-undim { to { background-color: rgba(14, 10, 12, 0); } }
-body.phys-ui #pause .panel, body.phys-ui #share .panel {
+html body.phys-ui #pause .panel, html body.phys-ui #share .panel {
   padding: 0 14px 12px; gap: 10px; color: var(--ph-ink);
   border: 24px solid transparent; border-image: var(--ph-cab) 12 / 24px round;
   background: var(--ph-face) 0 0 / 128px padding-box; box-shadow: none; image-rendering: pixelated;
@@ -31,7 +31,7 @@ body.phys-ui #pause .panel, body.phys-ui #share .panel {
   translate: calc(var(--mx) * 3px) calc(var(--my) * 2px);
   transform-origin: 50% 0; animation: ph-swing-in .62s steps(9) both;
 }
-body.phys-ui #pause.ph-closing .panel, body.phys-ui #share.ph-closing .panel { animation: ph-swing-out .22s steps(4) both; }
+html body.phys-ui #pause.ph-closing .panel, html body.phys-ui #share.ph-closing .panel { animation: ph-swing-out .22s steps(4) both; }
 /* it drops in on its hinge at the top: swings toward you, back, settles (a stepped 3D pendulum) */
 @keyframes ph-swing-in {
   0% { opacity: 0; transform: perspective(1000px) translateY(-40px) rotateX(-80deg); }
@@ -41,137 +41,137 @@ body.phys-ui #pause.ph-closing .panel, body.phys-ui #share.ph-closing .panel { a
   100% { transform: none; }
 }
 @keyframes ph-swing-out { to { opacity: 0; transform: perspective(1000px) translateY(30px) rotateX(55deg) scale(.96); } }
-body.phys-ui #pause .panel::before, body.phys-ui #share .panel::before, body.phys-ui #pause .panel::after, body.phys-ui #share .panel::after { display: none; }
+html body.phys-ui #pause .panel::before, html body.phys-ui #share .panel::before, html body.phys-ui #pause .panel::after, html body.phys-ui #share .panel::after { display: none; }
 /* the nameplate: navy enamel, cream pin-line, screws */
-body.phys-ui #pause .panel-title, body.phys-ui #share .panel-title {
+html body.phys-ui #pause .panel-title, html body.phys-ui #share .panel-title {
   margin: 6px 40px 2px 0; padding: 0 12px 2px; align-self: flex-start; gap: 8px;
   font-size: 32px; line-height: 34px; color: var(--ph-cream-t); text-shadow: 0 2px 0 var(--ph-ink);
   border: 10px solid transparent; border-image: var(--ph-plate) 5 fill / 10px round; background: none; box-shadow: none;
   filter: drop-shadow(0 4px 0 #0e1430) drop-shadow(3px 4px 0 rgba(10, 6, 8, .35)); rotate: -1deg;
 }
 /* buttons: enamel push-plates with a thick side */
-body.phys-ui #pause .panel button, body.phys-ui #share .panel button {
+html body.phys-ui #pause .panel button, html body.phys-ui #share .panel button {
   --side: #8a7650; color: var(--ph-ink); text-shadow: none;
   min-height: 40px; padding: 0 10px 2px; border: 10px solid transparent; border-image: var(--ph-cream) 5 fill / 10px round;
   background: none; box-shadow: none; image-rendering: pixelated;
   filter: drop-shadow(0 4px 0 var(--side)) drop-shadow(calc(4px - var(--mx) * 3px) calc(5px - var(--my) * 2px) 0 rgba(10, 6, 8, .38));
   transform: none; transition: transform .1s steps(2), translate .1s steps(2);
 }
-body.phys-ui #pause .panel button:hover, body.phys-ui #share .panel button:hover, body.phys-ui #pause .panel button:focus-visible, body.phys-ui #share .panel button:focus-visible {
+html body.phys-ui #pause .panel button:hover, html body.phys-ui #share .panel button:hover, html body.phys-ui #pause .panel button:focus-visible, html body.phys-ui #share .panel button:focus-visible {
   outline: none; translate: 0 -3px; transform: rotate(calc(var(--mx) * -1.2deg - .4deg));
   filter: drop-shadow(0 7px 0 var(--side)) drop-shadow(calc(6px - var(--mx) * 4px) calc(9px - var(--my) * 3px) 0 rgba(10, 6, 8, .38));
   color: #a8201c;
 }
-body.phys-ui #pause .panel button:active, body.phys-ui #share .panel button:active, body.phys-ui #pause .panel button.ph-down, body.phys-ui #share .panel button.ph-down {
+html body.phys-ui #pause .panel button:active, html body.phys-ui #share .panel button:active, html body.phys-ui #pause .panel button.ph-down, html body.phys-ui #share .panel button.ph-down {
   translate: 0 3px; transform: none; filter: drop-shadow(0 1px 0 var(--side)) drop-shadow(1px 2px 0 rgba(10, 6, 8, .38));
 }
-body.phys-ui #pause .panel button.big, body.phys-ui #share .panel button.big {
+html body.phys-ui #pause .panel button.big, html body.phys-ui #share .panel button.big {
   --side: #5e1416; color: var(--ph-cream-t); border-image-source: var(--ph-red); text-shadow: 0 2px 0 #5e1416; font-size: 32px; min-height: 52px;
 }
-body.phys-ui #pause .panel button.big:hover, body.phys-ui #share .panel button.big:hover,
-body.phys-ui #pause .panel button.big:focus-visible, body.phys-ui #share .panel button.big:focus-visible { color: #ffe39a; }
-body.phys-ui #pause #leave-btn { --side: #1c3a2c; color: var(--ph-cream-t); border-image-source: var(--ph-green); text-shadow: 0 2px 0 #1c3a2c; }
-body.phys-ui #pause #leave-btn:hover { color: #ffe39a; }
-body.phys-ui #pause .panel button.danger { --side: #0e1430; color: #f2b8a8; border-image-source: var(--ph-navy); }
-body.phys-ui #pause .panel button.danger:hover { color: #ff8a72; }
+html body.phys-ui #pause .panel button.big:hover, html body.phys-ui #share .panel button.big:hover,
+html body.phys-ui #pause .panel button.big:focus-visible, html body.phys-ui #share .panel button.big:focus-visible { color: #ffe39a; }
+html body.phys-ui #pause #leave-btn { --side: #1c3a2c; color: var(--ph-cream-t); border-image-source: var(--ph-green); text-shadow: 0 2px 0 #1c3a2c; }
+html body.phys-ui #pause #leave-btn:hover { color: #ffe39a; }
+html body.phys-ui #pause .panel button.danger { --side: #0e1430; color: #f2b8a8; border-image-source: var(--ph-navy); }
+html body.phys-ui #pause .panel button.danger:hover { color: #ff8a72; }
 /* the close knob: a small red enamel plate in the cabinet's corner */
-body.phys-ui #pause .panel button.x, body.phys-ui #share .panel button.x {
+html body.phys-ui #pause .panel button.x, html body.phys-ui #share .panel button.x {
   --side: #5e1416; position: absolute; right: 4px; top: 6px; width: 44px; height: 44px; min-height: 0; padding: 0;
   border-image-source: var(--ph-red); background: none;
 }
-body.phys-ui #pause .panel button.x::before, body.phys-ui #pause .panel button.x .px-icon,
-body.phys-ui #share .panel button.x::before, body.phys-ui #share .panel button.x .px-icon { visibility: visible; filter: brightness(0) invert(.92) sepia(.3); }
-body.phys-ui #pause .panel button.x:hover, body.phys-ui #share .panel button.x:hover { transform: rotate(10deg); }
+html body.phys-ui #pause .panel button.x::before, html body.phys-ui #pause .panel button.x .px-icon,
+html body.phys-ui #share .panel button.x::before, html body.phys-ui #share .panel button.x .px-icon { visibility: visible; filter: brightness(0) invert(.92) sepia(.3); }
+html body.phys-ui #pause .panel button.x:hover, html body.phys-ui #share .panel button.x:hover { transform: rotate(10deg); }
 /* the control window: a sunken cream face behind glass, ink frame, a lit lower edge */
-body.phys-ui #pause .panel .rows {
+html body.phys-ui #pause .panel .rows {
   padding: 8px 12px; gap: 2px; background: #e6d8b4;
   box-shadow: inset 4px 4px 0 #b8a47e, inset -2px -2px 0 #fbf3dc, 0 0 0 2px var(--ph-ink), 0 4px 0 2px #8a7650;
 }
-body.phys-ui #pause .panel label, body.phys-ui #pause .panel .foot { color: var(--ph-ink); }
-body.phys-ui #pause .panel .foot.credits { color: #5e5046; }
+html body.phys-ui #pause .panel label, html body.phys-ui #pause .panel .foot { color: var(--ph-ink); }
+html body.phys-ui #pause .panel .foot.credits { color: #5e5046; }
 /* sliders: a tuning scale, a brass knob with a red needle */
-body.phys-ui .panel input[type=range] { height: 26px; }
-body.phys-ui .panel input[type=range]::-webkit-slider-runnable-track {
+html body.phys-ui .panel input[type=range] { height: 26px; }
+html body.phys-ui .panel input[type=range]::-webkit-slider-runnable-track {
   height: 20px; image-rendering: pixelated;
   background: linear-gradient(#b3262a, #b3262a) 0 100% / var(--fill, 50%) 4px no-repeat, var(--ph-dial) 0 0 / 64px 20px repeat-x;
   box-shadow: 0 0 0 2px var(--ph-ink), 0 4px 0 2px #8a7650;
 }
-body.phys-ui .panel input[type=range]::-webkit-slider-thumb {
+html body.phys-ui .panel input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; width: 18px; height: 22px; margin-top: -1px; border: 0;
   background: var(--ph-knob) 0 0 / 18px 22px no-repeat; image-rendering: pixelated; box-shadow: none;
   filter: drop-shadow(2px 3px 0 rgba(10, 6, 8, .45)); transition: translate .08s steps(2);
 }
-body.phys-ui .panel input[type=range]:hover::-webkit-slider-thumb, body.phys-ui .panel input[type=range]:focus-visible::-webkit-slider-thumb { translate: 0 -2px; filter: drop-shadow(3px 5px 0 rgba(10, 6, 8, .45)); }
-body.phys-ui .panel input[type=range]:active::-webkit-slider-thumb { translate: 0 1px; filter: drop-shadow(1px 1px 0 rgba(10, 6, 8, .45)); }
-body.phys-ui .panel input[type=range]::-moz-range-track { height: 20px; background: var(--ph-dial) 0 0 / 64px 20px repeat-x; box-shadow: 0 0 0 2px var(--ph-ink); }
-body.phys-ui .panel input[type=range]::-moz-range-thumb { width: 18px; height: 22px; border: 0; border-radius: 0; background: var(--ph-knob) 0 0 / 18px 22px no-repeat; }
-body.phys-ui .panel input[type=range]:focus-visible { outline: none; }
+html body.phys-ui .panel input[type=range]:hover::-webkit-slider-thumb, html body.phys-ui .panel input[type=range]:focus-visible::-webkit-slider-thumb { translate: 0 -2px; filter: drop-shadow(3px 5px 0 rgba(10, 6, 8, .45)); }
+html body.phys-ui .panel input[type=range]:active::-webkit-slider-thumb { translate: 0 1px; filter: drop-shadow(1px 1px 0 rgba(10, 6, 8, .45)); }
+html body.phys-ui .panel input[type=range]::-moz-range-track { height: 20px; background: var(--ph-dial) 0 0 / 64px 20px repeat-x; box-shadow: 0 0 0 2px var(--ph-ink); }
+html body.phys-ui .panel input[type=range]::-moz-range-thumb { width: 18px; height: 22px; border: 0; border-radius: 0; background: var(--ph-knob) 0 0 / 18px 22px no-repeat; }
+html body.phys-ui .panel input[type=range]:focus-visible { outline: none; }
 /* checkboxes: bakelite toggle switches (the lever flips, the red lamp lights) */
-body.phys-ui .panel input[type=checkbox] {
+html body.phys-ui .panel input[type=checkbox] {
   width: 32px; height: 24px; background: var(--ph-tog-off) 0 0 / 32px 24px no-repeat; box-shadow: none; image-rendering: pixelated;
   filter: drop-shadow(2px 3px 0 rgba(10, 6, 8, .4));
 }
-body.phys-ui .panel input[type=checkbox]:checked { background: var(--ph-tog-on) 0 0 / 32px 24px no-repeat; }
-body.phys-ui .panel input[type=checkbox]:hover { translate: 0 -1px; }
-body.phys-ui .panel input[type=checkbox]:focus-visible { outline: none; translate: 0 -2px; filter: drop-shadow(2px 5px 0 rgba(10, 6, 8, .4)); }
+html body.phys-ui .panel input[type=checkbox]:checked { background: var(--ph-tog-on) 0 0 / 32px 24px no-repeat; }
+html body.phys-ui .panel input[type=checkbox]:hover { translate: 0 -1px; }
+html body.phys-ui .panel input[type=checkbox]:focus-visible { outline: none; translate: 0 -2px; filter: drop-shadow(2px 5px 0 rgba(10, 6, 8, .4)); }
 /* the quality selector: a cream enamel plate with its arrow */
-body.phys-ui .panel select {
+html body.phys-ui .panel select {
   height: 34px; color: var(--ph-ink); padding: 0 30px 0 6px;
   border: 8px solid transparent; border-image: var(--ph-cream) 5 fill / 8px round;
   background: var(--ic-down, none) right 0 center / 20px 20px no-repeat; box-shadow: none;
   filter: drop-shadow(0 3px 0 #8a7650) drop-shadow(2px 3px 0 rgba(10, 6, 8, .35));
 }
-body.phys-ui .panel select:hover, body.phys-ui .panel select:focus-visible { outline: none; translate: 0 -2px; }
-body.phys-ui #share textarea {
+html body.phys-ui .panel select:hover, html body.phys-ui .panel select:focus-visible { outline: none; translate: 0 -2px; }
+html body.phys-ui #share textarea {
   color: var(--ph-ink); background: #f6eed6; box-shadow: inset 4px 4px 0 #cdb88e, 0 0 0 2px var(--ph-ink), 0 4px 0 2px #8a7650;
 }
 
 /* ---------------------------------------------------------------- the hotbar: a wooden tool tray with sunken compartments */
-body.phys-ui #hotbar .slots {
+html body.phys-ui #hotbar .slots {
   gap: 4px; padding: 2px; border: 12px solid transparent; border-image: var(--ph-tray) 6 fill / 12px round;
   background: none; box-shadow: none; image-rendering: pixelated;
   filter: drop-shadow(0 6px 0 #34200f) drop-shadow(calc(6px - var(--mx) * 5px) calc(8px - var(--my) * 3px) 0 rgba(10, 6, 8, .4));
 }
-body.phys-ui #hotbar .slot {
+html body.phys-ui #hotbar .slot {
   box-sizing: content-box; width: 44px; height: 44px; border: 8px solid transparent; border-radius: 0;
   border-image: var(--ph-cell) 4 fill / 8px stretch; background: none; box-shadow: none; image-rendering: pixelated;
   transition: translate .12s steps(3);
 }
-body.phys-ui #hotbar .slot::after { display: none; }
-body.phys-ui #hotbar .slot .ico { width: 44px; height: 44px; filter: drop-shadow(2px 3px 0 rgba(10, 6, 8, .45)); }
-body.phys-ui #hotbar .slot:hover { translate: 0 -2px; }
-body.phys-ui #hotbar .slot.sel { translate: 0 -8px; border-image-source: var(--ph-cell-sel); border-color: transparent; box-shadow: none; background: none; }
-body.phys-ui #hotbar .slot.sel .ico { animation: ph-lift 1.8s steps(6) infinite; filter: drop-shadow(3px 6px 0 rgba(10, 6, 8, .45)); }
-body.phys-ui #hotbar .slot.ph-down { translate: 0 2px; }
+html body.phys-ui #hotbar .slot::after { display: none; }
+html body.phys-ui #hotbar .slot .ico { width: 44px; height: 44px; filter: drop-shadow(2px 3px 0 rgba(10, 6, 8, .45)); }
+html body.phys-ui #hotbar .slot:hover { translate: 0 -2px; }
+html body.phys-ui #hotbar .slot.sel { translate: 0 -8px; border-image-source: var(--ph-cell-sel); border-color: transparent; box-shadow: none; background: none; }
+html body.phys-ui #hotbar .slot.sel .ico { animation: ph-lift 1.8s steps(6) infinite; filter: drop-shadow(3px 6px 0 rgba(10, 6, 8, .45)); }
+html body.phys-ui #hotbar .slot.ph-down { translate: 0 2px; }
 @keyframes ph-lift { 0%, 100% { transform: translateY(-2px) rotate(-3deg); } 50% { transform: translateY(-4px) rotate(2deg); } }
-body.phys-ui #hotbar .slot .key { left: -4px; top: -6px; color: var(--ph-cream-t); text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink); }
-body.phys-ui #hotbar .slot.sel .key { color: #ffd56a; }
-body.phys-ui #hotbar .slot .count { right: -4px; bottom: -6px; color: var(--ph-cream-t); text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink); }
-body.phys-ui #hotbar .label {
+html body.phys-ui #hotbar .slot .key { left: -4px; top: -6px; color: var(--ph-cream-t); text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink); }
+html body.phys-ui #hotbar .slot.sel .key { color: #ffd56a; }
+html body.phys-ui #hotbar .slot .count { right: -4px; bottom: -6px; color: var(--ph-cream-t); text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink); }
+html body.phys-ui #hotbar .label {
   padding: 0 8px 2px; color: var(--ph-cream-t); border: 10px solid transparent; border-image: var(--ph-plate) 5 fill / 10px round;
   background: none; text-shadow: 0 2px 0 var(--ph-ink); filter: drop-shadow(0 3px 0 #0e1430);
   transform: perspective(500px) rotateX(70deg) translateY(8px); transform-origin: 50% 100%; transition: opacity .18s steps(3), transform .26s steps(5);
 }
-body.phys-ui #hotbar .label.show { transform: none; }
+html body.phys-ui #hotbar .label.show { transform: none; }
 
 /* ---------------------------------------------------------------- the wallet: an enamel price plate */
-body.phys-ui #money {
+html body.phys-ui #money {
   color: var(--ph-cream-t); padding: 0 10px 0 2px; border: 10px solid transparent; border-image: var(--ph-plate) 5 fill / 10px round;
   background: none; box-shadow: none; image-rendering: pixelated;
   filter: drop-shadow(0 5px 0 #0e1430) drop-shadow(calc(6px - var(--mx) * 4px) calc(7px - var(--my) * 3px) 0 rgba(10, 6, 8, .38));
 }
-body.phys-ui #money .yen { color: #f2cf62; text-shadow: 0 2px 0 var(--ph-ink); }
-body.phys-ui #money .val { text-shadow: 0 3px 0 var(--ph-ink); }
+html body.phys-ui #money .yen { color: #f2cf62; text-shadow: 0 2px 0 var(--ph-ink); }
+html body.phys-ui #money .val { text-shadow: 0 3px 0 var(--ph-ink); }
 /* the change: floating pixel figures with a hard ink outline that pop up and drop away */
-body.phys-ui #money-delta {
+html body.phys-ui #money-delta {
   border: 0; background: none; filter: none; padding: 0; color: #9ce89c;
   text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink), 0 4px 0 var(--ph-ink);
   transform: perspective(400px) rotateX(-60deg) translateY(8px); transform-origin: 50% 100%;
   transition: opacity .2s steps(2), transform .32s steps(5);
 }
-body.phys-ui #money-delta.show { transform: translateY(-6px); }
-body.phys-ui #money-delta.neg { color: #ff9a86; }
-body.phys-ui.touchmode #money-delta.show { transform: translate(-50%, 4px); }
+html body.phys-ui #money-delta.show { transform: translateY(-6px); }
+html body.phys-ui #money-delta.neg { color: #ff9a86; }
+html body.phys-ui.touchmode #money-delta.show { transform: translate(-50%, 4px); }
 
 /* ---------------------------------------------------------------- scene transitions (src/ui/trans.js), stepped (--f: 0..1 in 1/8ths) */
 body.ph-trans-on #fade { background: transparent; }

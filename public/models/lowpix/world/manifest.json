@@ -1809,6 +1809,25 @@
   ],
   "bytes": 43572
  },
+ "elec_meter": {
+  "id": "elec_meter",
+  "name": "Electric Meter with fuse boxes",
+  "src": "sketchfab:33c41e0176cd41d8bbc40185683ee441",
+  "title": "Electric Meter with fuse boxes",
+  "author": "BarrySArt",
+  "authorUrl": "https://sketchfab.com/BarrySArt",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/electric-meter-with-fuse-boxes-33c41e0176cd41d8bbc40185683ee441",
+  "site": "Sketchfab",
+  "tris": 2497,
+  "tex": 416,
+  "size": [
+   0.671,
+   0.6,
+   0.077
+  ],
+  "bytes": 45692
+ },
  "elephant": {
   "id": "elephant",
   "name": "Carved Wooden Elephant",
@@ -1938,6 +1957,25 @@
   ],
   "bytes": 24808
  },
+ "fire_box": {
+  "id": "fire_box",
+  "name": "Practice_Fire extinguisher box",
+  "src": "sketchfab:9ba65abc96bd40db93ac8e2653990aa3",
+  "title": "Practice_Fire extinguisher box",
+  "author": "Kai",
+  "authorUrl": "https://sketchfab.com/wk.chewie",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/practice-fire-extinguisher-box-9ba65abc96bd40db93ac8e2653990aa3",
+  "site": "Sketchfab",
+  "tris": 840,
+  "tex": 512,
+  "size": [
+   0.431,
+   0.6,
+   0.231
+  ],
+  "bytes": 41640
+ },
  "firebuckets": {
   "id": "firebuckets",
   "name": "Fire buckets (消火用)",
@@ -2051,25 +2089,6 @@
   ],
   "bytes": 21536
  },
- "food_dumplings": {
-  "id": "food_dumplings",
-  "name": "Dumplings",
-  "src": "sketchfab:73f0ea5fdd654a8b9b4c55f79fa11191",
-  "title": "Dumplings",
-  "author": "zekeyspaceylizard",
-  "authorUrl": "https://sketchfab.com/zekeyspaceylizard",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/dumplings-73f0ea5fdd654a8b9b4c55f79fa11191",
-  "site": "Sketchfab",
-  "tris": 464,
-  "tex": 480,
-  "size": [
-   0.22,
-   0.04,
-   0.171
-  ],
-  "bytes": 26608
- },
  "food_gyoza": {
   "id": "food_gyoza",
   "name": "Free lowpoly gyoza composition",
@@ -2088,25 +2107,6 @@
    0.48
   ],
   "bytes": 128556
- },
- "food_gyoza2": {
-  "id": "food_gyoza2",
-  "name": "Gyoza",
-  "src": "sketchfab:914c90667e0d419fa71577294bb4dd1a",
-  "title": "Gyoza",
-  "author": "mRiot",
-  "authorUrl": "https://sketchfab.com/malgorzatariot",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/gyoza-914c90667e0d419fa71577294bb4dd1a",
-  "site": "Sketchfab",
-  "tris": 1096,
-  "tex": 512,
-  "size": [
-   0.547,
-   0.04,
-   0.49
-  ],
-  "bytes": 48756
  },
  "food_melonpan2": {
   "id": "food_melonpan2",
@@ -2334,25 +2334,6 @@
    0.233
   ],
   "bytes": 28488
- },
- "gas_stove2": {
-  "id": "gas_stove2",
-  "name": "Low poly - Double Burner Gas Stove",
-  "src": "sketchfab:b32f8f3669284823b00d1d35c0d55d89",
-  "title": "Low poly - Double Burner Gas Stove",
-  "author": "JJangdol",
-  "authorUrl": "https://sketchfab.com/Hambugi_jjangdol",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/low-poly-double-burner-gas-stove-b32f8f3669284823b00d1d35c0d55d89",
-  "site": "Sketchfab",
-  "tris": 2494,
-  "tex": 512,
-  "size": [
-   0.647,
-   0.8,
-   0.414
-  ],
-  "bytes": 101720
  },
  "gas_stove_top": {
   "id": "gas_stove_top",
@@ -3416,25 +3397,6 @@
    0.685
   ],
   "bytes": 28260
- },
- "mannequin_head": {
-  "id": "mannequin_head",
-  "name": "Mannequin head",
-  "src": "sketchfab:d465a1f697b54136b65288ce9c23b16f",
-  "title": "Mannequin head",
-  "author": "scbenoit",
-  "authorUrl": "https://sketchfab.com/scbenoit",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/mannequin-head-d465a1f697b54136b65288ce9c23b16f",
-  "site": "Sketchfab",
-  "tris": 2500,
-  "tex": 512,
-  "size": [
-   0.225,
-   0.3,
-   0.184
-  ],
-  "bytes": 64972
  },
  "microwave": {
   "id": "microwave",
@@ -6440,13 +6402,13 @@
   "url": "https://polyhaven.com/a/utility_box_01",
   "site": "Poly Haven",
   "tris": 2920,
-  "tex": 512,
+  "tex": 1000,
   "size": [
    0.52,
    1.12,
    0.432
   ],
-  "bytes": 64760
+  "bytes": 136688
  },
  "utility_box2": {
   "id": "utility_box2",

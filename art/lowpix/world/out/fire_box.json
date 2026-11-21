@@ -1,0 +1,78 @@
+{
+ "id": "fire_box",
+ "src": "sketchfab:9ba65abc96bd40db93ac8e2653990aa3",
+ "credit": {
+  "title": "Practice_Fire extinguisher box",
+  "author": "Kai",
+  "authorUrl": "https://sketchfab.com/wk.chewie",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/practice-fire-extinguisher-box-9ba65abc96bd40db93ac8e2653990aa3",
+  "site": "Sketchfab"
+ },
+ "tris": 840,
+ "tex": 512,
+ "size": [
+  0.431,
+  0.6,
+  0.231
+ ],
+ "colours": 33,
+ "palette": {
+  "m0": [
+   "#3c081f",
+   "#4d0b24",
+   "#5d1026",
+   "#6d1427",
+   "#7c1a26",
+   "#a2262a",
+   "#c63933",
+   "#d1695a",
+   "#d99583"
+  ],
+  "m1": [
+   "#29121a",
+   "#351920",
+   "#402025",
+   "#4a282b",
+   "#543030",
+   "#724946",
+   "#8f655d",
+   "#a4867c",
+   "#b7a69d"
+  ],
+  "m2": [
+   "#442a00",
+   "#593f00",
+   "#6e5700",
+   "#837200",
+   "#968f02",
+   "#c4c406",
+   "#f0f00b",
+   "#f3f339",
+   "#f3f36a"
+  ],
+  "m3": [
+   "#3e061e",
+   "#500922",
+   "#610d23",
+   "#711223",
+   "#811721",
+   "#a82123",
+   "#cd392d",
+   "#d66a56",
+   "#dd9680"
+  ],
+  "m4": [
+   "#452c12",
+   "#583f19",
+   "#6a5421",
+   "#7c692a",
+   "#8d8033",
+   "#aaa342",
+   "#bbbb5d",
+   "#c5c57e",
+   "#d0d09e"
+  ]
+ },
+ "warnings": []
+}

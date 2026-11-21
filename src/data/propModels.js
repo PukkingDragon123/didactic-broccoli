@@ -255,4 +255,5 @@ export const PROP_MODELS = {
   wall_clock: { id: 'lowpix/world/clock_wall' },
   cat_bowl_milk: { id: 'lowpix/world/cat_bowl' },
   manhole: { id: 'lowpix/world/manhole' },
+  fire_ext_box: { id: 'lowpix/world/fire_box', own: true, h: 0.62 }, // the red extinguisher box by the house fronts (was a voxel box on a pole)
 };

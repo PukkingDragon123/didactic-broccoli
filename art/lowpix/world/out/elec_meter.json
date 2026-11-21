@@ -1,0 +1,67 @@
+{
+ "id": "elec_meter",
+ "src": "sketchfab:33c41e0176cd41d8bbc40185683ee441",
+ "credit": {
+  "title": "Electric Meter with fuse boxes",
+  "author": "BarrySArt",
+  "authorUrl": "https://sketchfab.com/BarrySArt",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/electric-meter-with-fuse-boxes-33c41e0176cd41d8bbc40185683ee441",
+  "site": "Sketchfab"
+ },
+ "tris": 2497,
+ "tex": 416,
+ "size": [
+  0.671,
+  0.6,
+  0.077
+ ],
+ "colours": 26,
+ "palette": {
+  "m0": [
+   "#4a383a",
+   "#5e4c4c",
+   "#716261",
+   "#837977",
+   "#93908f",
+   "#a0a0a0",
+   "#afafaf",
+   "#bebebe",
+   "#cecece"
+  ],
+  "m1": [
+   "#020101",
+   "#020202",
+   "#020202",
+   "#030303",
+   "#030303",
+   "#262626",
+   "#484848",
+   "#6b6b6b",
+   "#8e8e8e"
+  ],
+  "m2": [
+   "#733d00",
+   "#965c00",
+   "#b98100",
+   "#dcac00",
+   "#ffdd00",
+   "#fcf126",
+   "#f9f94c",
+   "#f8f870",
+   "#f8f893"
+  ],
+  "m3": [
+   "#281b00",
+   "#342700",
+   "#403600",
+   "#4c4600",
+   "#575800",
+   "#909002",
+   "#c6c606",
+   "#f4f412",
+   "#f4f44c"
+  ]
+ },
+ "warnings": []
+}

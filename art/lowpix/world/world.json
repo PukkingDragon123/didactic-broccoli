@@ -213,7 +213,10 @@
   },
   {
    "id": "utility_box",
-   "src": "polyhaven:utility_box_01"
+   "src": "polyhaven:utility_box_01",
+   "ppm": 320,
+   "tris": 3000,
+   "cap": 1024
   },
   {
    "id": "utility_box2",
@@ -3596,6 +3599,24 @@
    "tris": 2500,
    "cap": 512,
    "name": "Burner Gas Stove"
+  },
+  {
+   "id": "elec_meter",
+   "src": "sketchfab:33c41e0176cd41d8bbc40185683ee441",
+   "h": 0.6,
+   "ppm": 300,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Electric Meter with fuse boxes"
+  },
+  {
+   "id": "fire_box",
+   "src": "sketchfab:9ba65abc96bd40db93ac8e2653990aa3",
+   "h": 0.6,
+   "ppm": 300,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Practice_Fire extinguisher box"
   }
  ]
 }
