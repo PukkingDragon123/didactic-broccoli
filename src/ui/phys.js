@@ -15,6 +15,7 @@ import './phys.css';
 import './float.css';
 import { audio } from '../core/audio.js';
 import { art, rng, shade, hex, INK } from '../menu/pixel.js';
+import { iconHTML } from '../gfx/icons.js';
 
 const play = (n, o = {}) => { try { audio.init(); audio.play(n, o); } catch { /* audio not ready */ } };
 
@@ -377,6 +378,45 @@ function closeSwing(id) {
   el.dataset.phWas = el.classList.contains('hidden') ? '0' : '1';
 }
 
+// ------------------------------------------------------------------ the settings cabinet: rows sorted into labelled sections
+// (rows are added by several systems, some late: re-sorted every time the panel opens; unknown rows land in MORE)
+const SECTIONS = [
+  ['Sound', ['vol-master', 'vol-music', 'vol-amb', 'voice-tts']],
+  ['Picture', ['quality', 'fov', 'hands', 'cine-on']],
+  ['Controls', ['sens']],
+  ['Help', ['hints', 'hud-min', 'skip-tut']],
+  ['More', []],
+];
+function groupPause() {
+  const rows = document.querySelector('#pause .rows');
+  if (!rows) return;
+  const secs = SECTIONS.map(([name]) => {
+    let el = rows.querySelector(`.ph-sec[data-sec="${name}"]`);
+    if (!el) { el = document.createElement('div'); el.className = 'ph-sec'; el.dataset.sec = name; el.innerHTML = `<div class="ph-sec-h">${name}</div>`; rows.appendChild(el); }
+    return el;
+  });
+  const labels = [...rows.querySelectorAll('label')];
+  for (const l of labels) {
+    const id = l.querySelector('input, select')?.id || '';
+    let k = SECTIONS.findIndex(([, ids]) => ids.includes(id));
+    if (k < 0) k = SECTIONS.length - 1;
+    const tip = l.nextElementSibling?.classList.contains('hm-tip') ? l.nextElementSibling : null;
+    const order = SECTIONS[k][1].indexOf(id);
+    l.style.order = order < 0 ? 50 : order * 2; if (tip) tip.style.order = (order < 0 ? 50 : order * 2) + 1;
+    if (l.parentNode !== secs[k]) { secs[k].appendChild(l); if (tip) secs[k].appendChild(tip); }
+  }
+  for (const el of secs) el.hidden = !el.querySelector('label');
+  // a Credits plate (the music and every other credit live on the credits receipt, not in this panel)
+  const P = document.querySelector('#pause .panel');
+  if (P && !document.getElementById('credits-btn')) {
+    const b = document.createElement('button');
+    b.id = 'credits-btn'; b.type = 'button';
+    b.innerHTML = `${iconHTML('book', 2)}<span>Credits</span>`;
+    b.addEventListener('click', (e) => { e.stopPropagation(); import('../menu/credits.js').then((m) => m.openCredits()); });
+    (document.getElementById('reset-btn') || P.lastChild).before(b);
+  }
+}
+
 /** Once: the textures, the parallax, the press feedback and the focus helpers. */
 export function installPhys() {
   if (installed) return;
@@ -388,5 +428,10 @@ export function installPhys() {
   addEventListener('keydown', onKey);
   document.body.classList.add('phys-ui');
   closeSwing('pause'); closeSwing('share');
+  const pz = document.getElementById('pause');
+  if (pz) {
+    groupPause();
+    new MutationObserver(() => { if (!pz.classList.contains('hidden')) groupPause(); }).observe(pz, { attributes: true, attributeFilter: ['class'] });
+  }
   requestAnimationFrame(pollPad);
 }

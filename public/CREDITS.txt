@@ -1947,7 +1947,6 @@ by `tools/pixelart.py`.
 - Old Oil Heater_Gas stove_24_MB by Mehdi Shahsavan, CC BY 4.0: https://sketchfab.com/3d-models/old-oil-heater-gas-stove-24-mb-a4a78d37b6ff4834a7fa6e897f2e592c (models/lowpix/world/heater.glb)
 - Old Paper & Cardboard Boxes by TooManyDemons, CC BY 4.0: https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f (models/lowpix/world/cardboard_bundle.glb)
 - Old Paper & Cardboard Boxes by TooManyDemons, CC BY 4.0: https://sketchfab.com/3d-models/old-paper-cardboard-boxes-72a4804f8a4d4de18e59abb60b81c54f (models/lowpix/world/cardboard_flat.glb)
-- Old red payphone by dashkilya, CC BY 4.0: https://sketchfab.com/3d-models/old-red-payphone-60a624c1a9044cc48eba96bcfcbe2278 (models/lowpix/world/payphone_red2.glb)
 - Old Rusty Rice Cooker | Crafted by jerovdl by Jerovdl, CC BY 4.0: https://sketchfab.com/3d-models/old-rusty-rice-cooker-crafted-by-jerovdl-44c181d1d71c49399ae23f65198b94e4 (models/lowpix/world/ricecooker_old.glb)
 - Old serving trolley by PNLACARA, CC BY 4.0: https://sketchfab.com/3d-models/old-serving-trolley-83de0775ba294d268e227c5364e06522 (models/lowpix/world/wagon_trolley.glb)
 - Old Soviet Backpack by TwilightFox, CC BY 4.0: https://sketchfab.com/3d-models/old-soviet-backpack-bb89dfa7ec13478e85645497dfeafdcd (models/lowpix/world/wear_rucksack.glb)

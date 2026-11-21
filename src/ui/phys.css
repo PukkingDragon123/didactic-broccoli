@@ -215,3 +215,74 @@ html body #tm-fade.off { opacity: 1; animation: tm-wipe-out .62s steps(8) both; 
 /* ---------------------------------------------------------------- the day's calendar page flips down from its pad, and back up */
 html body.phys-ui #cutscene .titlecard { transform-origin: 50% -24px; transform: perspective(900px) rotateX(-96deg); transition: opacity .3s steps(3), transform .7s steps(7); }
 html body.phys-ui #cutscene .titlecard.show { transform: none; }
+
+/* ================================================================ settings cabinet, laid out (polish 2): a control column of
+   big enamel plates on the left, the dial window on the right with its settings in labelled sections, a station scale
+   across its top whose red needle follows the cursor. The music credits moved to the Credits receipt. */
+html body.phys-ui #pause .panel {
+  display: grid; grid-template-columns: minmax(220px, 260px) minmax(0, 1fr); grid-auto-rows: min-content; align-content: start;
+  column-gap: 18px; row-gap: 12px; width: min(860px, 94vw); padding: 0 16px 16px;
+}
+html body.phys-ui #pause .panel > .panel-title { grid-column: 1 / -1; }
+html body.phys-ui #pause .panel > button:not(.x) { grid-column: 1; margin: 0; }
+html body.phys-ui #pause .panel > .rows { grid-column: 2; grid-row: 2 / span 6; margin: 0; }
+html body.phys-ui #pause .panel > .foot.credits { display: none; }
+html body.phys-ui #pause #credits-btn { color: var(--ph-cream-t); border-image-source: var(--ph-green); --side: #1c3a2c; text-shadow: 0 2px 0 #1c3a2c; }
+html body.phys-ui #pause #credits-btn:hover { color: #ffe39a; }
+html body.phys-ui #pause #credits-btn .px-icon { filter: brightness(0) invert(.92) sepia(.3); }
+html body.phys-ui #pause .panel > button.danger { margin-top: 18px; }
+/* the dial window: a station scale on top, then the sections */
+html body.phys-ui #pause .panel .rows { position: relative; padding: 34px 14px 12px; gap: 14px; }
+html body.phys-ui #pause .panel .rows::before {
+  content: ''; position: absolute; left: 10px; right: 10px; top: 8px; height: 20px; background: var(--ph-dial) 0 0 / 64px 20px repeat-x;
+  image-rendering: pixelated; box-shadow: 0 0 0 2px var(--ph-ink);
+}
+html body.phys-ui #pause .panel .rows::after {
+  content: ''; position: absolute; top: 4px; height: 28px; width: 4px; left: calc(50% + var(--mx) * 44%); background: #d83a2e;
+  box-shadow: 0 0 0 2px var(--ph-ink), 2px 2px 0 2px rgba(10, 6, 8, .3); transition: left .2s steps(4);
+}
+html body.phys-ui #pause .ph-sec { display: flex; flex-direction: column; gap: 2px; }
+html body.phys-ui #pause .ph-sec[hidden] { display: none; }
+html body.phys-ui #pause .ph-sec-h {
+  align-self: flex-start; margin: 0 0 4px; padding: 0 8px 2px; font: 16px/20px 'Alagard', 'Pixelify Sans', 'DotGothic16'; letter-spacing: 2px;
+  color: var(--ph-cream-t); text-transform: uppercase; background: #26346e; text-shadow: 0 2px 0 var(--ph-ink);
+  box-shadow: inset 0 2px 0 #3a4c8e, 0 0 0 2px var(--ph-ink), 0 4px 0 2px #0e1430;
+}
+html body.phys-ui #pause .ph-sec label { min-height: 36px; }
+html body.phys-ui #pause .hm-tip { margin: -4px 0 4px 28px; font-size: 16px; line-height: 20px; color: #5e5046; }
+html body.phys-ui #pause .panel input[type=range] { width: 52%; }
+
+/* small screens: one column, the plates on top */
+@media (max-width: 760px), (max-height: 560px) {
+  html body.phys-ui #pause .panel { grid-template-columns: minmax(0, 1fr); width: min(460px, 94vw); }
+  html body.phys-ui #pause .panel > button:not(.x), html body.phys-ui #pause .panel > .rows { grid-column: 1; grid-row: auto; }
+}
+/* 1080p and up: everything at 32 px (Alagard doubled on its grid), bigger dials, knobs and switches */
+@media (min-height: 900px) and (min-width: 1200px) {
+  html body.phys-ui #pause .panel { width: min(1080px, 94vw); grid-template-columns: 300px minmax(0, 1fr); font-size: 32px; line-height: 34px; }
+  html body.phys-ui #pause .panel button { font-size: 32px; line-height: 34px; min-height: 56px; }
+  html body.phys-ui #pause .panel button.big { font-size: 48px; line-height: 48px; min-height: 76px; }
+  html body.phys-ui #pause .panel label { font-size: 32px; line-height: 34px; min-height: 46px; }
+  html body.phys-ui #pause .ph-sec-h { font-size: 32px; line-height: 34px; padding: 0 10px 2px; }
+  html body.phys-ui #pause .hm-tip { font-size: 16px; line-height: 20px; margin-left: 36px; }
+  html body.phys-ui #pause .panel .rows { padding: 46px 18px 16px; gap: 18px; }
+  html body.phys-ui #pause .panel .rows::before { height: 30px; background-size: 96px 30px; }
+  html body.phys-ui #pause .panel .rows::after { height: 40px; }
+  html body.phys-ui #pause .panel select { height: 48px; font-size: 32px; padding: 0 34px 0 8px; }
+  html body.phys-ui .panel input[type=range] { height: 36px; }
+  html body.phys-ui .panel input[type=range]::-webkit-slider-runnable-track { height: 30px; background-size: var(--fill, 50%) 6px, 96px 30px; }
+  html body.phys-ui .panel input[type=range]::-webkit-slider-thumb { width: 27px; height: 33px; margin-top: -1px; background-size: 27px 33px; }
+  html body.phys-ui .panel input[type=checkbox] { width: 48px; height: 36px; background-size: 48px 36px; }
+  html body.phys-ui .panel input[type=checkbox]:checked { background-size: 48px 36px; }
+  html body.phys-ui #pause .panel-title, html body.phys-ui #share .panel-title { font-size: 48px; line-height: 50px; }
+  html body.phys-ui #share .panel { width: min(640px, 94vw); font-size: 32px; line-height: 34px; }
+  html body.phys-ui #share .panel button { font-size: 32px; line-height: 34px; min-height: 56px; }
+  html body.phys-ui #share textarea { font-size: 16px; line-height: 20px; }
+}
+/* 720p-ish: the four sections two by two, so the cabinet fits without scrolling */
+@media (min-width: 761px) and (min-height: 561px) and (max-height: 899px), (min-width: 761px) and (max-width: 1199px) and (min-height: 561px) {
+  html body.phys-ui #pause .panel { width: min(980px, 94vw); }
+  html body.phys-ui #pause .panel .rows { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 18px; align-items: start; }
+  html body.phys-ui #pause .panel input[type=range] { width: 46%; }
+  html body.phys-ui #pause .ph-sec label { min-height: 32px; gap: 8px; }
+}

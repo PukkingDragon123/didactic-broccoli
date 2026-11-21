@@ -4094,25 +4094,6 @@
   ],
   "bytes": 81112
  },
- "payphone_red2": {
-  "id": "payphone_red2",
-  "name": "Old red payphone",
-  "src": "sketchfab:60a624c1a9044cc48eba96bcfcbe2278",
-  "title": "Old red payphone",
-  "author": "dashkilya",
-  "authorUrl": "https://sketchfab.com/dashkilya",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/old-red-payphone-60a624c1a9044cc48eba96bcfcbe2278",
-  "site": "Sketchfab",
-  "tris": 2500,
-  "tex": 352,
-  "size": [
-   0.137,
-   0.45,
-   0.185
-  ],
-  "bytes": 67348
- },
  "pencil_case": {
   "id": "pencil_case",
   "name": "pencil case Model",

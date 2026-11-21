@@ -2538,15 +2538,6 @@
    "name": "Vintage retro payphone"
   },
   {
-   "id": "payphone_red2",
-   "src": "sketchfab:60a624c1a9044cc48eba96bcfcbe2278",
-   "h": 0.45,
-   "ppm": 400,
-   "tris": 2500,
-   "cap": 512,
-   "name": "Old red payphone"
-  },
-  {
    "id": "kokeshi",
    "src": "sketchfab:d3c152a1c4154f279cb590b6643e1640",
    "h": 0.2,

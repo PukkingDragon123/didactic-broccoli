@@ -223,7 +223,6 @@ export const LP_WORLD = {
   park_bench: { size: [3.172, 0.93, 0.727], credit: "Park Bench by RBG_illustrations (CC BY 4.0)" },
   park_lamp: { size: [0.669, 4.75, 0.745], credit: "Classic Street Lamp Post by sacapuntas (CC BY 4.0)" },
   payphone_red: { size: [0.219, 0.3, 0.246], credit: "Vintage retro payphone by patrakeevasveta (CC BY 4.0)" },
-  payphone_red2: { size: [0.137, 0.45, 0.185], credit: "Old red payphone by dashkilya (CC BY 4.0)" },
   pencil_case: { size: [0.034, 0.05, 0.033], credit: "pencil case Model by daand (CC BY 4.0)" },
   pendulum_clock: { size: [0.351, 0.64, 0.1], credit: "Antique Wall Pendulum Clock by Odin Branigan (CC BY 4.0)" },
   phone_booth: { size: [1.175, 1.55, 0.926], credit: "Old Green Payphone by Yevhen Avramenko (CC BY 4.0)" },
