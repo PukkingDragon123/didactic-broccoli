@@ -17,25 +17,6 @@
   ],
   "bytes": 73592
  },
- "aloe_pot": {
-  "id": "aloe_pot",
-  "name": "Potted Aloe Vera",
-  "src": "sketchfab:98b96bd41a1c4ab7af10c938e280c8c8",
-  "title": "Potted Aloe Vera",
-  "author": "Jubbies",
-  "authorUrl": "https://sketchfab.com/Jubbies",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/potted-aloe-vera-98b96bd41a1c4ab7af10c938e280c8c8",
-  "site": "Sketchfab",
-  "tris": 999,
-  "tex": 112,
-  "size": [
-   0.058,
-   0.12,
-   0.114
-  ],
-  "bytes": 25184
- },
  "anchor": {
   "id": "anchor",
   "name": "Old Anchor",
@@ -2502,6 +2483,24 @@
   ],
   "bytes": 116952
  },
+ "gumball_m": {
+  "id": "gumball_m",
+  "name": "Gumball (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/gumball.glb",
+  "title": "Gumball (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/gumball.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 198,
+  "tex": 128,
+  "size": [
+   0.022,
+   0.022,
+   0.022
+  ],
+  "bytes": 7516
+ },
  "hair_dryer": {
   "id": "hair_dryer",
   "name": "Hair Dryer",
@@ -3545,25 +3544,6 @@
    0.23
   ],
   "bytes": 25608
- },
- "mk_brick": {
-  "id": "mk_brick",
-  "name": "Brick",
-  "src": "sketchfab:504a59ef14a148809cec657d7c99367c",
-  "title": "Brick",
-  "author": "Rigsters",
-  "authorUrl": "https://sketchfab.com/rigsters",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/brick-504a59ef14a148809cec657d7c99367c",
-  "site": "Sketchfab",
-  "tris": 999,
-  "tex": 160,
-  "size": [
-   0.193,
-   0.08,
-   0.291
-  ],
-  "bytes": 18664
  },
  "mk_cigar_box": {
   "id": "mk_cigar_box",

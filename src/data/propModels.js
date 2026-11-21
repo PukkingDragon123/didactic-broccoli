@@ -195,6 +195,7 @@ export const PROP_MODELS = {
   gr_stack_green: { id: 'lowpix/machines/stack_rack', tint: 0xc8ffc8 },
   gr_stack_black: { id: 'lowpix/machines/stack_rack', tint: 0x9a9aa0 },
   candy_piece: { id: 'lowpix/world/candy_wrap' },
+  gumball: { id: 'lowpix/world/gumball_m' },
   rm_chashu: { id: 'lowpix/world/rice_bowl2' },
   mk_trinket_spoon: { id: 'lowpix/world/spoon_old' },
   mk_trinket_keychain: { id: 'lowpix/world/keychain_m' },

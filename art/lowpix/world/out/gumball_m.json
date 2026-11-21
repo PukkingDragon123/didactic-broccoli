@@ -1,0 +1,55 @@
+{
+ "id": "gumball_m",
+ "src": "art/lowpix/world/made/gumball.glb",
+ "credit": {
+  "title": "Gumball (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/gumball.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 198,
+ "tex": 128,
+ "size": [
+  0.022,
+  0.022,
+  0.022
+ ],
+ "colours": 17,
+ "palette": {
+  "m0": [
+   "#6d0f4d",
+   "#8c1659",
+   "#aa1e62",
+   "#c72768",
+   "#d53f6f",
+   "#d85c7a",
+   "#db7988",
+   "#e0949a",
+   "#e6b0af"
+  ],
+  "m1": [
+   "#d80093",
+   "#ff1ca3",
+   "#ff5eb0",
+   "#ffa0c9",
+   "#ffe2ec",
+   "#ffe6ed",
+   "#feebee",
+   "#feeff0",
+   "#fef3f3"
+  ],
+  "m2": [
+   "#b5077c",
+   "#e80c8e",
+   "#f13c98",
+   "#f374aa",
+   "#f6aac4",
+   "#f6b7c7",
+   "#f6c3cc",
+   "#f7d0d3",
+   "#f8dbdc"
+  ]
+ },
+ "warnings": []
+}

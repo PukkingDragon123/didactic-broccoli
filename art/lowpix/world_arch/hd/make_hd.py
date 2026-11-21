@@ -137,7 +137,7 @@ def grain_along_x(img):
 
 
 def planks(W, H, rows, src, rng, tones, length=(0.9, 2.0), seam=(0.55, 1.12), joint=0.6, nails=0.0, contrast=1.0,
-           vertical=False, knots=0, gap=1):
+           vertical=False, knots=0, gap=1, streak=4):
     """Boards: `rows` planks across the H (or W, vertical=True) axis, each a run of boards cut from the grain photo
     `src` (grain along x, 256 px/m) at random spots, toned to one of `tones` with its own jitter. Returns
     (float image, strokes) where strokes() lays the seams, butt joints and nail heads after the pixel-art pass."""
@@ -158,6 +158,9 @@ def planks(W, H, rows, src, rng, tones, length=(0.9, 2.0), seam=(0.55, 1.12), jo
             pl = L.lum(p)
             col = np.array(L.hexrgb(tones[int(rng.integers(len(tones)))]), np.float32) * (1 + rng.normal(0, 0.05))
             d = (pl - pl.mean()) / max(pl.std(), 1e-3)  # the grain at a set strength, whatever the photo's contrast
+            if streak:  # painted along the grain: long strokes, not blobs
+                d = sum(np.roll(d, k, axis=1) for k in range(-streak, streak + 1)) / (2 * streak + 1)
+                d = d / max(d.std(), 1e-3)
             p = col * (1 + np.clip(d, -2.5, 2.5) * 0.09 * contrast)[..., None]
             xs_ = (np.arange(x, x + ln)) % W
             a[y0:y1, xs_] = np.clip(p, 0, 1)
@@ -195,7 +198,7 @@ def wood_src(asset, mean=None, sat=1.0):
     return grain_along_x(L.flatten(L.at_ppm(L.photo(asset), PPM), 0.3))
 
 
-def finish(a, strokes, mean, k=28, seed=1, paint=1, contrast=1.0, sat=1.0):
+def finish(a, strokes, mean, k=28, seed=1, paint=0, contrast=1.0, sat=1.0):
     """Grade to the old texture's mean colour, pixel-art pass, hand strokes, snap to the palette."""
     a = L.grade(a, mean=mean, contrast=contrast, sat=sat)
     img, pal = L.pixel_art(a, k=k, seed=seed, paint=paint)
@@ -303,7 +306,7 @@ def shikkui():
                         L.wpx(a, cx + np.cos(t) * (r + dr), cy + np.sin(t) * (r + dr) * 0.6, f=0.97 if dr else 1.03)
         for _ in range(2):
             L.crack(a, rng.integers(0, W), rng.integers(0, H), rng.integers(30, 90), rng, f=0.85, dx=rng.normal(0, 1), dy=1)
-    return plaster('beige_wall_001', W, H, rng, '#e9e2d6', std=0.035, k=18, extra=extra)
+    return plaster('beige_wall_001', W, H, rng, '#e9e2d6', std=0.05, k=18, extra=extra)
 
 
 # ------------------------------------------------------------------ main

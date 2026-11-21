@@ -2376,6 +2376,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0. Shipped as `models/lowpix/world/firebuckets.glb`
 - Garbage station (ごみ集積所) by Gacha Garage (made for the game, art/lowpix/world/made/garbagestation.glb), CC0 1.0. Shipped as `models/lowpix/world/garbagestation.glb`
 - Gas water heater (瞬間湯沸器) by Gacha Garage (made for the game, art/lowpix/world/made/waterheater.glb), CC0 1.0. Shipped as `models/lowpix/world/waterheater.glb`
+- Gumball (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball.glb), CC0 1.0. Shipped as `models/lowpix/world/gumball_m.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsmilk.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb), CC0 1.0. Shipped as `models/lowpix/world/milkcarton.glb`
 - Mini fridge by Gacha Garage (made for the game, art/lowpix/world/made/minifridge.glb), CC0 1.0. Shipped as `models/lowpix/world/minifridge.glb`
@@ -2527,7 +2528,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Blind spot traffic mirror by Insane Ninja (https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mirror_pole.glb`
 - Bonsai by Vermos (https://sketchfab.com/3d-models/bonsai-8b73fd97545b468288cd9ba03c93d358), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bonsai.glb`
 - Bowl by cloud (https://sketchfab.com/3d-models/bowl-6c6d124baca54d09871af6bc77738b81), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bowl_empty.glb`
-- Brick by Rigsters (https://sketchfab.com/3d-models/brick-504a59ef14a148809cec657d7c99367c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_brick.glb`
 - Bucket hat by landout (https://sketchfab.com/3d-models/bucket-hat-68c6eda73171436b911c77f8e16bdd2d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_boonie.glb`
 - Bucket Hat by shimtimultimedia (https://sketchfab.com/3d-models/bucket-hat-24985764343240ecbc680545c13c28d1), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_bucket.glb`
 - Bun (Low Poly, Game Ready) by LiveToWin34 (https://sketchfab.com/3d-models/bun-low-poly-game-ready-a8184583411b43d7b2ab42b625bd40dd), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/food_anpan.glb`
@@ -2716,7 +2716,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - plastic Bag by saruedaacevedo (https://sketchfab.com/3d-models/plastic-bag-b91fdb59320d48189c9d6047a1411836), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/plastic_bag.glb`
 - Plastic Waste Bin by LightSwitch (https://sketchfab.com/3d-models/plastic-waste-bin-cb278948a28a440d8e26573bbc8483df), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_trash.glb`
 - Pothos Plant by Blizzy (https://sketchfab.com/3d-models/pothos-plant-175142c4942b42169455eb20c4033c9d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/plant_pothos.glb`
-- Potted Aloe Vera by Jubbies (https://sketchfab.com/3d-models/potted-aloe-vera-98b96bd41a1c4ab7af10c938e280c8c8), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/aloe_pot.glb`
 - Potted Plant(small) by kyuukonneko (https://sketchfab.com/3d-models/potted-plantsmall-62fd35b2f0fc4dad81f1b217d1c4a761), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pot_small2.glb`
 - Potted Plant(small) by kyuukonneko (https://sketchfab.com/3d-models/potted-plantsmall-43d1fcc9f5eb44f494f57ca70400572d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pot_small3.glb`
 - Practice_Fire extinguisher box by Kai (https://sketchfab.com/3d-models/practice-fire-extinguisher-box-9ba65abc96bd40db93ac8e2653990aa3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/fire_box.glb`

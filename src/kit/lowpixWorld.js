@@ -4,7 +4,6 @@
 // asset id to pass to asset() / assetSlot().
 export const LP_WORLD = {
   ac_unit: { size: [0.804, 0.928, 0.376], credit: "Exterior Aircon Unit by Monsta3D (CC0 1.0)" },
-  aloe_pot: { size: [0.058, 0.12, 0.114], credit: "Potted Aloe Vera by Jubbies (CC BY 4.0)" },
   anchor: { size: [1.311, 1.225, 0.151], credit: "Old Anchor by marvelmaster (CC BY 4.0)" },
   arcade_cabinet: { size: [0.584, 1.675, 0.668], credit: "Arcade Cabinet by joshtmc (CC BY 4.0)" },
   armchair: { size: [0.85, 1.065, 0.768], credit: "Arm Chair 01 by Kirill Sannikov (CC0 1.0)" },
@@ -138,6 +137,7 @@ export const LP_WORLD = {
   goodspuff: { size: [0.21, 0.23, 0.141], credit: "mk puff box by Gacha Garage (made for the game, art/lowpix/world/made/goodspuff.glb) (CC0 1.0)" },
   gramophone: { size: [0.314, 0.5, 0.33], credit: "Old Gramophone by KIFIR (CC BY 4.0)" },
   grass_tuft: { size: [5.712, 0.35, 0.293], credit: "Grass Medium 01 by Rob Tuytel, Rico Cilliers (CC0 1.0)" },
+  gumball_m: { size: [0.022, 0.022, 0.022], credit: "Gumball (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball.glb) (CC0 1.0)" },
   hair_dryer: { size: [0.247, 0.25, 0.089], credit: "Hair Dryer by Atilla Kutluay Erdoğay (CC BY 4.0)" },
   hand_truck: { size: [0.591, 1.403, 0.692], credit: "Hand Truck by Mutanzom3D (CC0 1.0)" },
   hanger_shirt: { size: [0.483, 0.8, 0.354], credit: "Hangers and Long Sleeve Shirt by dudecon (CC BY 4.0)" },
@@ -194,7 +194,6 @@ export const LP_WORLD = {
   mirror: { size: [0.487, 0.744, 0.026], credit: "Ornate Mirror 01 by James Ray Cock (CC0 1.0)" },
   mirror_pole: { size: [1.048, 3.104, 0.502], credit: "Blind spot traffic mirror by Insane Ninja (CC BY 4.0)" },
   mk_ashtray: { size: [0.182, 0.048, 0.23], credit: "Ashtray with Cigarettes by YJ_ (CC BY 4.0)" },
-  mk_brick: { size: [0.193, 0.08, 0.291], credit: "Brick by Rigsters (CC BY 4.0)" },
   mk_cigar_box: { size: [0.694, 0.21, 0.445], credit: "Red Dot Cigar Box by IU Indianapolis University Library (CC BY 4.0)" },
   mk_ema: { size: [0.129, 0.135, 0.062], credit: "Ema Wish board from Japan by DRTX_QING (CC BY 4.0)" },
   mk_hyotan: { size: [0.105, 0.164, 0.067], credit: "Gourd Bottle by Akio (CC BY 4.0)" },
