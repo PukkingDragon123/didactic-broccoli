@@ -1,0 +1,34 @@
+{
+ "id": "ladle_steel",
+ "src": "sketchfab:73673eb6a1624470836ba02673b5ceb4",
+ "credit": {
+  "title": "Steel Soup Ladle",
+  "author": "Dr_Kryzel",
+  "authorUrl": "https://sketchfab.com/Dr_Kryzel",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/steel-soup-ladle-73673eb6a1624470836ba02673b5ceb4",
+  "site": "Sketchfab"
+ },
+ "tris": 1120,
+ "tex": 512,
+ "size": [
+  0.218,
+  0.3,
+  0.534
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#4a5267",
+   "#656f84",
+   "#848e9b",
+   "#a4abb1",
+   "#c3c6c8",
+   "#cdcece",
+   "#d5d5d5",
+   "#dddddd",
+   "#e5e5e5"
+  ]
+ },
+ "warnings": []
+}

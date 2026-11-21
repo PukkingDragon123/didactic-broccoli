@@ -9,7 +9,7 @@ import { ease } from '../core/util.js';
 import { propMesh } from '../world/props.js';
 import { GARAGE, MACHINE_SLOTS } from '../world/Garage.js';
 import { Pix } from '../gfx/pix.js';
-import { dustPatch, dissolveMat } from './art.js';
+import { dustPatch, dustMat } from './art.js';
 import { talk } from '../people/voice.js';
 
 const DRIVER = talk(null, { base: 165, duty: 0.5 }); // the delivery man's 8-bit voice
@@ -250,7 +250,7 @@ export class Chores {
     const g = this.game, f = this.f, T = g.garage.table;
     PATCHES.forEach(([dx, dz], i) => {
       if (f.wiped.includes(i)) return;
-      const mat = dissolveMat(dustPatch(31 + i).texture({ nearest: true }));
+      const mat = dustMat(dustPatch(31 + i).texture({ nearest: true }));
       const m = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.34), mat);
       m.rotation.set(-Math.PI / 2, 0, i * 1.3);
       m.position.set(T.x + dx, T.h + 0.0062, T.z + dz);
@@ -276,7 +276,7 @@ export class Chores {
   wipe(pt, dt) {
     const g = this.game, it = g.held.item;
     pt.k = Math.min(1, pt.k + dt / 1.5);
-    pt.m.material.opacity = 1 - 0.52 * pt.k;
+    pt.m.material.opacity = 1 - 0.9 * pt.k; // (a film of dust: it thins out as you wipe)
     pt.next = (pt.next || 0) - dt;
     if (pt.next <= 0) {
       pt.next = 0.3;
@@ -387,7 +387,6 @@ export class Chores {
         hint: () => ({ key: 'LMB', text: 'Look inside', sub: 'PARTS, in his marker' }),
         use: () => { this.openJunk(st); return false; },
       });
-      if (J.id === 'j2') this.junkNote = this.life.notes.place('junk', { pos: V(J.x + 0.02, 0.402, J.z + 0.06), flat: true, rotY: -Math.PI / 2, size: 0.14 });
     }
     // the sign: lying where it was found, not yet in your hands
     if (f.junkOpen.includes('j1') && !this.life.s.sign.found && !carried.has('sign')) this.spawnSign(V(JUNK[0].x + 0.35, 0, JUNK[0].z));
@@ -402,12 +401,6 @@ export class Chores {
     st.m.parent?.remove(st.m);
     g.player.removeObstacle(st.ob);
     this.junk.delete(J.id);
-    if (J.id === 'j2') {
-      // the note that was taped on top: read it as you lift the flaps
-      const unread = !this.life.notes.isRead('junk');
-      this.life.notes.remove('junk');
-      if (unread) g.tweens.wait(0.7, () => this.life.notes.open('junk'));
-    }
     f.junkOpen.push(J.id);
     // the opened box, ready to carry out
     const P = st.m.position; // (where it stands now: shoved aside if a machine came first)
@@ -435,8 +428,7 @@ export class Chores {
     const g = this.game;
     if (ent?.kind === 'tool' && ent.data?.id === 'open_sign' && !this.life.s.sign.found) {
       this.life.s.sign.found = true;
-      // tucked in the frame, a card in his hand
-      g.tweens.wait(0.5, () => this.life.notes.open('sign'));
+      g.events.emit('signFound', {});
     }
   }
 
@@ -511,7 +503,6 @@ export class Chores {
       st.m.position.set(-1.6, 0, nz);
       g.player.removeObstacle(st.ob);
       st.ob = g.player.addObstacle(-1.81, -1.39, nz - 0.25, nz + 0.25);
-      if (st.J.id === 'j2') { this.life.notes.remove('junk'); this.junkNote = this.life.notes.place('junk', { pos: V(-1.58, 0.402, nz), flat: true, rotY: -Math.PI / 2, size: 0.14 }); }
     }
     for (const e of g.items.list) {
       if (!e.data?.junk || !inSlot(e.obj.position.x, e.obj.position.z)) continue;

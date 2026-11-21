@@ -1,0 +1,100 @@
+{
+ "id": "kendama",
+ "src": "sketchfab:3670748a8f5f4bdb9bb4778e964c8647",
+ "credit": {
+  "title": "Kendama",
+  "author": "Alexander-W",
+  "authorUrl": "https://sketchfab.com/Alexander-Williams",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kendama-3670748a8f5f4bdb9bb4778e964c8647",
+  "site": "Sketchfab"
+ },
+ "tris": 1500,
+ "tex": 256,
+ "size": [
+  0.065,
+  0.18,
+  0.06
+ ],
+ "colours": 45,
+ "palette": {
+  "m0": [
+   "#76022d",
+   "#97042f",
+   "#b8082c",
+   "#d70d26",
+   "#ed1c24",
+   "#ec463e",
+   "#ed7260",
+   "#ee9780",
+   "#f0b79f"
+  ],
+  "m1": [
+   "#665d4a",
+   "#827a64",
+   "#999582",
+   "#afaea2",
+   "#c6c6c1",
+   "#cccccb",
+   "#d4d4d4",
+   "#dcdcdc",
+   "#e4e4e4"
+  ],
+  "m2": [
+   "#1d0073",
+   "#250096",
+   "#1f00b9",
+   "#1200dc",
+   "#0000ff",
+   "#2638fc",
+   "#4c69f9",
+   "#7092f8",
+   "#93b5f8"
+  ],
+  "m3": [
+   "#923f25",
+   "#bb5f34",
+   "#cd895a",
+   "#d8af87",
+   "#e4cfb3",
+   "#e6d9bf",
+   "#e9e1ca",
+   "#ece8d5",
+   "#f0eee0"
+  ],
+  "m4": [
+   "#692318",
+   "#873822",
+   "#a3512d",
+   "#bf6c3a",
+   "#c88c58",
+   "#cda472",
+   "#d2b88b",
+   "#d9c9a3",
+   "#e0d8ba"
+  ],
+  "m5": [
+   "#3b0346",
+   "#540659",
+   "#6d096b",
+   "#7f0d74",
+   "#91117a",
+   "#b9198f",
+   "#dd259d",
+   "#e051a3",
+   "#e57caf"
+  ],
+  "m6": [
+   "#180060",
+   "#1f007d",
+   "#27009a",
+   "#2f02b5",
+   "#3506cf",
+   "#550bf3",
+   "#8034f2",
+   "#a55df2",
+   "#c485f3"
+  ]
+ },
+ "warnings": []
+}

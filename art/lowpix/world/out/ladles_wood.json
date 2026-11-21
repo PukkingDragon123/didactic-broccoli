@@ -1,0 +1,45 @@
+{
+ "id": "ladles_wood",
+ "src": "sketchfab:8f40e348779749fdbaa599f2c6226beb",
+ "credit": {
+  "title": "Wooden ladles and spoons",
+  "author": "Enkarra",
+  "authorUrl": "https://sketchfab.com/Enkarra",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-ladles-and-spoons-8f40e348779749fdbaa599f2c6226beb",
+  "site": "Sketchfab"
+ },
+ "tris": 2499,
+ "tex": 368,
+ "size": [
+  0.216,
+  0.3,
+  0.102
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#56251e",
+   "#6e3829",
+   "#854e36",
+   "#9b6543",
+   "#af7e53",
+   "#b7966e",
+   "#c0ab88",
+   "#c9bea1",
+   "#d4cfb8"
+  ],
+  "m1": [
+   "#2b2225",
+   "#372e30",
+   "#423b3c",
+   "#4c4848",
+   "#565656",
+   "#6d6d6d",
+   "#848484",
+   "#9c9c9c",
+   "#b3b3b3"
+  ]
+ },
+ "warnings": []
+}

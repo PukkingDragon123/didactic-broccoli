@@ -62,6 +62,9 @@ export const ATTACH = {
     { face: '+x', u0: 0.95, u1: 2.75, y0: 1.6, y1: 2.75 }, // the window
     { face: '+x', u0: -1.48, u1: 0.28, y0: 2.12, y1: 2.7 }, // the GACHA CORNER light box
     { face: '+x', u0: -4.9, u1: 4.9, y0: 2.7, y1: 3.3 }, // lanterns and wiring
+    { face: '+z', u0: -0.3, u1: 0.3, y0: 2.25, y1: 3.0 }, // the wall clock over the back door
+    { face: '-x', u0: -2.85, u1: -2.05, y0: 2.3, y1: 3.2 }, // the kamidana
+    { face: '-x', u0: -3.35, u1: -2.95, y0: 2.3, y1: 2.9 }, // the lucky rake
   ],
   keepClear: [
     { a: [0.4, 5.2], b: [0.4, 4.2], r: 0.45 }, // in under the shutter
@@ -73,6 +76,27 @@ export const ATTACH = {
     { a: [3.05, -2.45], b: [3.05, -2.45], r: 0.3 }, // in front of the sell box and bin
   ],
 };
+
+/** A chōchin's turned body (0.2 m tall, ~0.15 m across): black rims top and bottom, the paper bulging between. */
+function chochinGeometry() {
+  const P = [[0, -0.1], [0.026, -0.1], [0.034, -0.097], [0.034, -0.087], [0.047, -0.081], [0.063, -0.06], [0.071, -0.031],
+    [0.073, 0], [0.071, 0.031], [0.063, 0.06], [0.047, 0.081], [0.034, 0.087], [0.034, 0.097], [0.026, 0.1], [0, 0.1]];
+  return new THREE.LatheGeometry(P.map(([r, y]) => new THREE.Vector2(r, y)), 10);
+}
+
+/** Its paper, hand-pixelled: warm lit paper with the bamboo ribs showing through, a seam, a darker band by each rim. */
+function chochinTex() {
+  const p = new Pix(32, 28, 21);
+  // rows follow the lathe profile: 4 points of rim (rows 0-7), 7 of paper (rows 8-19), 4 of rim (rows 20-27)
+  p.fill(0xf0c898);
+  for (let y = 9; y < 20; y += 2) p.rect(0, y, 32, 1, 0xdca676);
+  p.rect(0, 8, 32, 1, 0xd49a68); p.rect(0, 19, 32, 1, 0xd49a68);
+  p.rect(0, 0, 32, 8, 0x2a2220); p.rect(0, 20, 32, 8, 0x2a2220);
+  for (let x = 3; x < 32; x += 8) { p.rect(x, 1, 1, 6, 0x4a3a34); p.rect(x, 21, 1, 6, 0x4a3a34); } // the rims' lacquer catching the light
+  p.rect(0, 8, 1, 12, 0xc8905e); // the paper's glued seam
+  for (let x = 12; x < 20; x++) if (x % 3) p.px(x, 13, 0xe6b07e); // a faint brush mark on the paper
+  return p.texture();
+}
 
 export class Garage {
   constructor(game) {
@@ -508,8 +532,9 @@ export class Garage {
     face.rotation.y = Math.PI / 2;
     face.position.set(x + 0.105, y, z);
     this.bake(face);
-    // paper lanterns strung along the wall
-    const lanternMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb070).multiplyScalar(1.5) });
+    // paper lanterns (chōchin) strung along the wall: a turned paper body on bamboo ribs between black lacquer rims,
+    // hung on short wires from the cord; the paper is lit from inside (unlit material, bright enough to bloom softly)
+    const lanternMat = new THREE.MeshBasicMaterial({ map: chochinTex(), color: new THREE.Color(1.45, 1.38, 1.3) });
     const capMat = colMat(0x2a2220);
     const pts = [];
     for (let i = 0; i <= 8; i++) {
@@ -519,14 +544,16 @@ export class Garage {
     }
     const cord = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.004, 4), capMat);
     this.bake(cord);
+    const body = chochinGeometry();
     for (let i = 1; i < 8; i++) {
       const pt = new THREE.CatmullRomCurve3(pts).getPoint(i / 8);
-      // blocky paper lantern: a fat middle, slimmer top and bottom tiers, black caps
       const l = new THREE.Group();
-      l.position.copy(pt).add(new THREE.Vector3(0, -0.12, 0));
-      for (const [w, h, y] of [[0.13, 0.1, 0], [0.105, 0.035, 0.065], [0.105, 0.035, -0.065]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), lanternMat); b.position.y = y; l.add(b); }
-      for (const dy of [0.09, -0.09]) { const c = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.02, 0.06), capMat); c.position.y = dy; l.add(c); }
-      l.rotation.y = i * 0.3;
+      l.position.copy(pt).add(new THREE.Vector3(0, -0.135, 0));
+      l.add(new THREE.Mesh(body, lanternMat));
+      const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.035, 4), capMat);
+      wire.position.y = 0.1175;
+      l.add(wire);
+      l.rotation.y = i * 0.7;
       this.bake(l);
     }
     const pl = new THREE.PointLight(0xffa860, 1.6, 4, 1.6);
@@ -579,7 +606,8 @@ export class Garage {
 
     // desk lamp spot over the work table
     const T = this.table;
-    const spot = new THREE.SpotLight(0xffd8a0, 9, 4.5, 0.75, 0.55, 1.4);
+    // (soft: at 9 it burnt anything pale on the table out to a glowing white card)
+    const spot = new THREE.SpotLight(0xffd8a0, 4.2, 4.5, 0.8, 0.85, 1.4);
     spot.position.set(T.x + 0.55, T.h + 0.5, T.z - 0.25);
     spot.target.position.set(T.x - 0.1, T.h, T.z + 0.1);
     spot.castShadow = true;

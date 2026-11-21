@@ -1,0 +1,34 @@
+{
+ "id": "wear_sweatband",
+ "src": "sketchfab:99178c593c12413fab594caa2056b17c",
+ "credit": {
+  "title": "Sweat Band For Gorilla Tag Fan Game NO TEXTURES",
+  "author": "bluemonkez",
+  "authorUrl": "https://sketchfab.com/bluemonke10",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/sweat-band-for-gorilla-tag-fan-game-no-textures-99178c593c12413fab594caa2056b17c",
+  "site": "Sketchfab"
+ },
+ "tris": 1152,
+ "tex": 304,
+ "size": [
+  0.184,
+  0.06,
+  0.179
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

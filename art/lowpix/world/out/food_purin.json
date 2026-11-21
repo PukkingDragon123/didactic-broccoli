@@ -1,0 +1,89 @@
+{
+ "id": "food_purin",
+ "src": "sketchfab:2fe0451867b5422980b02064ed3efdb0",
+ "credit": {
+  "title": "Japanese Pudding",
+  "author": "Citrus",
+  "authorUrl": "https://sketchfab.com/citrusfriendd",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-pudding-2fe0451867b5422980b02064ed3efdb0",
+  "site": "Sketchfab"
+ },
+ "tris": 556,
+ "tex": 512,
+ "size": [
+  0.156,
+  0.05,
+  0.147
+ ],
+ "colours": 44,
+ "palette": {
+  "m0": [
+   "#51100a",
+   "#671d0f",
+   "#7d2e14",
+   "#93421b",
+   "#a75922",
+   "#c7792d",
+   "#d29a4c",
+   "#d8b570",
+   "#dfcc94"
+  ],
+  "m1": [
+   "#6a2304",
+   "#883907",
+   "#a6540b",
+   "#c27311",
+   "#dd9517",
+   "#e6b433",
+   "#e7ca56",
+   "#e9dc78",
+   "#edea9a"
+  ],
+  "m2": [
+   "#803709",
+   "#a5550f",
+   "#c87816",
+   "#e39d25",
+   "#e5ba4d",
+   "#e6cd68",
+   "#e8dc82",
+   "#eae89c",
+   "#eeeeb4"
+  ],
+  "m3": [
+   "#460d11",
+   "#591313",
+   "#6c2119",
+   "#7f3120",
+   "#904328",
+   "#b05f35",
+   "#c5804d",
+   "#cda072",
+   "#d6bc95"
+  ],
+  "m4": [
+   "#414575",
+   "#596395",
+   "#7b87ab",
+   "#9fa9be",
+   "#c2c9d3",
+   "#ccd2d8",
+   "#d5dadd",
+   "#dee1e2",
+   "#e6e8e8"
+  ],
+  "m5": [
+   "#5c2423",
+   "#763730",
+   "#8e4d3e",
+   "#a6654d",
+   "#b38267",
+   "#bb997f",
+   "#c3ad96",
+   "#ccbfac",
+   "#d7d0c1"
+  ]
+ },
+ "warnings": []
+}

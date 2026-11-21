@@ -1,5 +1,10 @@
 // Renderer + post-processing stack with quality presets: ink outlines + screen-space god rays from the low sun,
-// GTAO, bloom, colour grade, neutral tone mapping, FXAA, then a light sharpen and dither (no banding).
+// GTAO, the lens (depth of field + camera motion blur, src/core/lens.js), bloom, colour grade, neutral tone mapping,
+// FXAA, then a light sharpen and dither (no banding).
+// Black-frame guard: a NaN or Inf from any one material (a zero-length normal, an over-bright emissive overflowing the
+// half-float target) is caught where the frame enters the post chain (the outline pass), at the bloom's bright-pass and
+// in the grade: left alone, the bloom's blur spread it into black squares and, through its smallest mip, black flashes
+// over the whole screen.
 // Viewmodel: whatever hangs off the camera (hands + held items, see vmRoots) is drawn in its own pass on top of the
 // scene so it never pokes into walls.
 import * as THREE from 'three';
@@ -12,6 +17,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { LightPool } from '../gfx/lightPool.js';
+import { LensPass } from './lens.js';
 import '../gfx/sunMask.js'; // shared light patch at import: no sun inside Mikawa-ya, lilac shadows, the soft toon ramp
 
 // The look: a bright picture-book afternoon. Gentle pastel saturation, a soft contrast curve in log space (it never
@@ -59,6 +65,7 @@ const GradeShader = {
         vec2 d2 = vec2(sin(uTime * 0.7), cos(uTime * 0.53) * 0.35) * 0.018 * uDouble;
         col = mix(col, texture2D(tDiffuse, uv + d2).rgb, 0.42 * min(1.0, uDouble * 1.6));
       }
+      if (any(isnan(col)) || any(isinf(col))) col = vec3(0.0); // (never a NaN into the frame: see the black-frame guard)
       col *= uExposure;
       // pastel: saturation down (tired: duller still)
       float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
@@ -138,6 +145,13 @@ const OutlineShader = {
     float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
     void main() {
       vec4 col = texture2D(tDiffuse, vUv);
+      // the black-frame guard: a NaN / Inf pixel from a material becomes a neighbour's colour (or black), and nothing
+      // brighter than the bloom can use goes on down the chain
+      if (any(isnan(col.rgb)) || any(isinf(col.rgb))) {
+        col.rgb = texture2D(tDiffuse, vUv + vec2(0.0, 1.0) / uRes).rgb;
+        if (any(isnan(col.rgb)) || any(isinf(col.rgb))) col.rgb = vec3(0.0);
+      }
+      col.rgb = min(col.rgb, vec3(256.0));
       vec2 o = uWidth / uRes;
       float d = lin(vUv);
       float dl = lin(vUv - vec2(o.x, 0.0)), dr = lin(vUv + vec2(o.x, 0.0));
@@ -222,7 +236,8 @@ const FinishShader = {
 
 // Performance: ambient occlusion at a reduced resolution (QUALITY.aoScale), brought back up by a depth-aware upsample:
 // each pixel blends the four nearest AO texels like a bilinear lookup, but weighted by how close each texel's depth is to
-// its own, so the AO of a wall behind never bleeds onto the edge of something in front (no halos). It also multiplies
+// its own, so the AO of a wall behind never bleeds onto the edge of something in front (no halos). It runs at full
+// resolution too (ultra), in place of GTAOPass's own copy + blend (one pass, and the depth kept in alpha). It also multiplies
 // the AO into the scene in the same pass (GTAOPass did a full-screen copy and then a multiply blend). The depths come
 // from the alpha channel of its input: the outline pass just before it leaves each pixel's linear depth there
 // (OutlineShader uDepthAlpha), because this pass writes into the target that holds the scene's depth buffer.
@@ -240,7 +255,7 @@ const AOUpsampleShader = {
       float z = col.a;
       // open sky (nothing drawn: the far plane) never takes AO; a wire or a twig's dark AO texel would otherwise print a
       // dark square on it (the AO pass and this upsample can pick different full-res pixels for a texel's depth)
-      if (z >= uFar * 0.98) { gl_FragColor = vec4(col.rgb, 1.0); return; }
+      if (z >= uFar * 0.98) { gl_FragColor = vec4(col.rgb, z); return; }
       vec2 p = vUv * aoSize - 0.5, b = floor(p), f = p - b;
       vec3 ao = vec3(0.0);
       float ws = 0.0;
@@ -254,7 +269,7 @@ const AOUpsampleShader = {
       ao /= max(ws, 1e-6);
       if (any(isnan(ao)) || any(isinf(ao))) ao = vec3(1.0); // (never let a bad AO texel through)
       ao = clamp(ao, 0.0, 1.0);
-      gl_FragColor = vec4(col.rgb * mix(vec3(1.0), ao, intensity), 1.0);
+      gl_FragColor = vec4(col.rgb * mix(vec3(1.0), ao, intensity), z); // (the depth stays in alpha for the lens)
     }`,
 };
 
@@ -315,12 +330,15 @@ function casterState(o) {
 // maxPx: the most pixels a frame is drawn at (performance: a 4K / high-DPI screen on the cheaper presets renders at
 // about this many and is scaled up, instead of four times the fill of a 1080p frame).
 // verylow: the hard FPS-friendly preset for weak integrated GPUs (fewer lit point lights, no bloom, ~1000x560 pixels).
+// lens (src/core/lens.js; none: off): dof = background blur taps (half resolution), near = foreground blur taps in
+// cutscenes (0: none), mb = motion blur taps (full resolution, 0: none), mbScale = its exposure, farPx = the widest
+// background blur (pixels at 1080 lines, cutscene aperture; play uses about 60% of it).
 export const QUALITY = {
-  verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45 },
-  low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6 },
-  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8 },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1 },
-  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1 },
+  verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45, lens: null },
+  low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6, lens: { dof: 8, near: 0, mb: 5, mbScale: 0.55, farPx: 6 } },
+  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8, lens: { dof: 12, near: 10, mb: 7, mbScale: 0.65, farPx: 7, nearPx: 6 } },
+  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1, lens: { dof: 16, near: 12, mb: 9, mbScale: 0.7, farPx: 8, nearPx: 7 } },
+  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, aoScale: 1, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1, lens: { dof: 20, near: 16, mb: 12, mbScale: 0.7, farPx: 8, nearPx: 7 } },
 };
 
 export class Renderer {
@@ -345,6 +363,10 @@ export class Renderer {
     this.aoCam = new THREE.PerspectiveCamera(); // GTAO sees the scene + the viewmodel
     this.fx = { tired: 0, lid: 0, double: 0, wobble: 0 }; // body-state look, written by src/needs (survives quality changes)
     this.vignette = GradeShader.uniforms.uVignette.value; // the grade's resting vignette (Held's inspect view darkens it, then returns here)
+    // the lens's options (src/core/lens.js; they survive quality changes): dof / motionBlur 0..1 (Settings), mode 'game'
+    // or 'cine', focus (m, null: auto-focus on the centre of the screen), aperture (null: the mode's)
+    this.lensOpts = { dof: 1, motionBlur: 1, mode: 'game', focus: null, aperture: null };
+    this.lens = null;
     this.lightPool = new LightPool(VM_LAYER);
     this.casters = []; this.prevCasters = new Set(); this.moved = []; // shadow casters seen by this frame's walk
     this.shadowStats = { casters: 0, moved: 0, updates: 0, movers: [] };
@@ -371,6 +393,10 @@ export class Renderer {
     const q = this.quality;
     r.setPixelRatio(this._pr = this.pixelRatioFor());
     if (this.composer) this.composer.dispose?.();
+    // (a quality change: free the last build's own passes, their render targets and materials; passes other modules
+    // attached, such as src/jojo's impact pass, are theirs to keep and re-attach)
+    for (const p of this.ownPasses || []) { try { p.dispose?.(); } catch { /* already gone */ } }
+    this.lens = null;
     const size = new THREE.Vector2(window.innerWidth, window.innerHeight);
     const rt = new THREE.WebGLRenderTarget(size.x * r.getPixelRatio(), size.y * r.getPixelRatio(), { type: THREE.HalfFloatType, samples: 0 });
     rt.depthTexture = new THREE.DepthTexture(rt.width, rt.height);
@@ -392,7 +418,9 @@ export class Renderer {
       gtao.setGBuffer(composer.renderTarget2.depthTexture);
       const gtaoRender = gtao.render.bind(gtao);
       const k = q.aoScale && q.aoScale < 1 ? q.aoScale : 1;
-      const up = this.aoUp = k < 1 ? new ShaderPass(AOUpsampleShader) : null;
+      // (the upsample also runs at full resolution: one pass instead of GTAOPass's copy + blend, NaN-safe, and it keeps
+      // the depth in alpha for the lens)
+      const up = this.aoUp = new ShaderPass(AOUpsampleShader);
       gtao.render = (rr, wb, rb, dt, mask) => {
         const d = this.vmPass.target?.depthTexture;
         if (d && gtao.depthTexture !== d) { gtao.depthTexture = d; gtao.gtaoMaterial.uniforms.tDepth.value = d; gtao.pdMaterial.uniforms.tDepth.value = d; }
@@ -403,13 +431,13 @@ export class Renderer {
           up.render(rr, wb, rb);
         }
       };
-      if (up) {
+      {
         // AO and its denoise at k x the resolution; the upsample writes the frame (GTAOPass itself outputs nothing)
         const setSize = gtao.setSize.bind(gtao);
         gtao.setSize = (w, h) => { setSize(Math.max(1, Math.round(w * k)), Math.max(1, Math.round(h * k))); up.uniforms.aoSize.value.set(gtao.width, gtao.height); };
         gtao.output = GTAOPass.OUTPUT.Off;
         this.outline.uniforms.uDepthAlpha.value = 1;
-      } else gtao.output = GTAOPass.OUTPUT.Default;
+      }
       gtao.blendIntensity = 0.7; // (soft: the cartoon look keeps contact shadows light, and high stays close to low, which has none)
       gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
       // (the denoise radius is in AO pixels: the same footprint on screen at any scale)
@@ -417,13 +445,20 @@ export class Renderer {
       composer.addPass(gtao);
       this.gtao = gtao;
     }
+    // the lens: depth of field + motion blur, on the HDR frame before the bloom (the depth is in alpha from here)
+    if (q.lens) {
+      this.outline.uniforms.uDepthAlpha.value = 1;
+      this.lens = new LensPass(this.camera, q.lens, this.lensOpts);
+      composer.addPass(this.lens);
+    }
     this.bloom = null;
     if (q.bloom) {
       this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.24, 0.2, 1.15);
       // a sun glint on glass or chrome is many times brighter than a lit sign: capped before the blur, it can't bloom into
       // a white glowy halo (owner rule); lanterns, signs and the tubes (about 1.2 to 2.2) bloom as before
       const hp = this.bloom.materialHighPassFilter, MIX = 'gl_FragColor = mix( outputColor, texel, alpha );';
-      if (hp.fragmentShader.includes(MIX)) { hp.fragmentShader = hp.fragmentShader.replace(MIX, `texel.rgb *= min( 1.0, 2.2 / max( v, 1e-4 ) );\n${MIX}`); hp.needsUpdate = true; }
+      // (and the black-frame guard: a NaN / Inf texel here would be blurred over the whole screen)
+      if (hp.fragmentShader.includes(MIX)) { hp.fragmentShader = hp.fragmentShader.replace(MIX, `if ( any( isnan( texel.rgb ) ) || any( isinf( texel.rgb ) ) ) { texel = vec4( 0.0 ); v = 0.0; alpha = 0.0; }\ntexel.rgb *= min( 1.0, 2.2 / max( v, 1e-4 ) );\n${MIX}`); hp.needsUpdate = true; }
       composer.addPass(this.bloom);
     }
     // (the grade folds in the output transform when it is the standard one: Neutral tone mapping to sRGB)
@@ -442,6 +477,7 @@ export class Renderer {
     r.shadowMap.type = q.shadowType || THREE.PCFShadowMap;
     if (this.lightPool.size !== (q.lights || 6)) this.lightPool.setSize(q.lights || 6);
     this.composer = composer;
+    this.ownPasses = composer.passes.slice();
     for (const l of this.shadowLights || []) this.applyShadowSize(l);
   }
 

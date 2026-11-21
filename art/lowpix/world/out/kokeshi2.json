@@ -1,0 +1,67 @@
+{
+ "id": "kokeshi2",
+ "src": "sketchfab:bc4e76728dc54f00b2a5ddb8dc90e575",
+ "credit": {
+  "title": "kokeshi",
+  "author": "DynAis",
+  "authorUrl": "https://sketchfab.com/DynAis",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kokeshi-bc4e76728dc54f00b2a5ddb8dc90e575",
+  "site": "Sketchfab"
+ },
+ "tris": 1486,
+ "tex": 192,
+ "size": [
+  0.081,
+  0.18,
+  0.058
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#9b4b21",
+   "#c6702e",
+   "#d49859",
+   "#debc89",
+   "#e9d9b7",
+   "#ebe1c2",
+   "#ede8cd",
+   "#f0eed7",
+   "#f3f3e1"
+  ],
+  "m1": [
+   "#8b1d3a",
+   "#b22942",
+   "#ce3f4d",
+   "#d66b6d",
+   "#df9a95",
+   "#e2aea5",
+   "#e5c0b5",
+   "#e9d0c4",
+   "#edddd3"
+  ],
+  "m2": [
+   "#2d2420",
+   "#39312c",
+   "#453e38",
+   "#504b44",
+   "#5a5752",
+   "#6f6e6b",
+   "#848484",
+   "#9c9c9c",
+   "#b3b3b3"
+  ],
+  "m3": [
+   "#209033",
+   "#2db839",
+   "#4ccf4d",
+   "#80d879",
+   "#aee2a4",
+   "#bee4b2",
+   "#cde7c0",
+   "#d9ebcd",
+   "#e4efd9"
+  ]
+ },
+ "warnings": []
+}

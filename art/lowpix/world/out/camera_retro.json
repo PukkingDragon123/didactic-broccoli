@@ -1,0 +1,34 @@
+{
+ "id": "camera_retro",
+ "src": "sketchfab:ac8af9a9330346d2a1b1436476bd9010",
+ "credit": {
+  "title": "Retro Camera",
+  "author": "Tom Seddon",
+  "authorUrl": "https://sketchfab.com/bloodmeat08",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/retro-camera-ac8af9a9330346d2a1b1436476bd9010",
+  "site": "Sketchfab"
+ },
+ "tris": 2497,
+ "tex": 256,
+ "size": [
+  0.045,
+  0.1,
+  0.128
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#241a15",
+   "#2e241d",
+   "#372e25",
+   "#40382e",
+   "#484237",
+   "#635e51",
+   "#7d7a6c",
+   "#93928a",
+   "#aaaaa8"
+  ]
+ },
+ "warnings": []
+}

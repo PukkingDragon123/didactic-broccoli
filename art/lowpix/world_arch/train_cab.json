@@ -1,0 +1,3430 @@
+{
+ "name": "train_cab",
+ "description": "Kamiyama Electric Railway commuter EMU, driving car (original livery)",
+ "license": "CC0-1.0",
+ "density": 36,
+ "budget": {
+  "tris": 60000,
+  "colors": 400
+ },
+ "light": {
+  "dir": [
+   -0.45,
+   1.0,
+   0.6
+  ],
+  "strength": 0.4,
+  "gradient": 0.2,
+  "ao": 0.45,
+  "ao_height": 1.4
+ },
+ "render": {
+  "background": "#20242a",
+  "hero": [
+   -32,
+   16
+  ],
+  "shadow": 0.4
+ },
+ "palette": {
+  "ramps": {
+   "ivory": {
+    "base": "#e6dec6",
+    "steps": 8,
+    "hue_shift": 8,
+    "sat_shift": 0.03,
+    "spread": 0.72
+   },
+   "green": {
+    "base": "#2f5c48",
+    "steps": 8,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.78
+   },
+   "verm": {
+    "base": "#c4462c",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.04,
+    "spread": 0.7
+   },
+   "alu": {
+    "base": "#aeb4b6",
+    "steps": 7,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   },
+   "glass": {
+    "base": "#3c4c5c",
+    "steps": 8,
+    "hue_shift": 14,
+    "sat_shift": 0.05,
+    "spread": 0.85
+   },
+   "seat": {
+    "base": "#6a8a6a",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "roof": {
+    "base": "#5e6062",
+    "steps": 8,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.8
+   },
+   "under": {
+    "base": "#323436",
+    "steps": 8,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.8
+   },
+   "rust": {
+    "base": "#6e4a34",
+    "steps": 6,
+    "hue_shift": 12,
+    "sat_shift": 0.03,
+    "spread": 0.75
+   },
+   "rubber": {
+    "base": "#1e1f21",
+    "steps": 5,
+    "hue_shift": 6,
+    "sat_shift": 0.01,
+    "spread": 0.6
+   },
+   "lamp": {
+    "base": "#f2ecd0",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.6
+   },
+   "red": {
+    "base": "#a82a24",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "white": {
+    "base": "#eeece4",
+    "steps": 6,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.6
+   },
+   "ink": {
+    "base": "#1c1c1e",
+    "steps": 5,
+    "hue_shift": 6,
+    "sat_shift": 0.01,
+    "spread": 0.5
+   },
+   "porc": {
+    "base": "#8a5a3a",
+    "steps": 6,
+    "hue_shift": 10,
+    "sat_shift": 0.03,
+    "spread": 0.7
+   },
+   "steel": {
+    "base": "#7a8084",
+    "steps": 7,
+    "hue_shift": 8,
+    "sat_shift": 0.02,
+    "spread": 0.75
+   }
+  }
+ },
+ "styles": {
+  "body": {
+   "ramp": "ivory",
+   "tone": 4.4,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/painted_metal_shutter",
+     "scale": 1.6,
+     "amount": 0.16
+    },
+    {
+     "id": "lower",
+     "op": "band",
+     "axis": "y",
+     "from": -1.0,
+     "to": -0.12340425531914898,
+     "ramp": "green",
+     "tone": 3.6
+    },
+    {
+     "id": "stripe",
+     "op": "band",
+     "axis": "y",
+     "from": -0.12340425531914898,
+     "to": -0.07840425531914898,
+     "ramp": "verm",
+     "tone": 3.4
+    },
+    {
+     "id": "grime",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.7
+    },
+    {
+     "id": "dust",
+     "op": "band",
+     "axis": "y",
+     "from": -1.0,
+     "to": -0.88,
+     "shift": -0.8,
+     "wobble": 0.04
+    },
+    {
+     "id": "streaks",
+     "op": "spots",
+     "count": 46,
+     "radius": [
+      0.012,
+      0.03
+     ],
+     "stretch": [
+      0.35,
+      9,
+      0.35
+     ],
+     "shift": -0.5,
+     "where": {
+      "y": [
+       -0.25,
+       0.55
+      ]
+     },
+     "faces": [
+      "left",
+      "right"
+     ]
+    },
+    {
+     "id": "seams",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.62,
+     "width": 0.025,
+     "shift": -0.6,
+     "faces": [
+      "front",
+      "back"
+     ]
+    },
+    {
+     "id": "wear",
+     "op": "wear",
+     "width": 1,
+     "density": 0.25,
+     "ramp": "under",
+     "tone": 2.4
+    },
+    {
+     "id": "under",
+     "op": "fill",
+     "faces": [
+      "bottom"
+     ],
+     "ramp": "under",
+     "tone": 2.0
+    }
+   ]
+  },
+  "door": {
+   "ramp": "ivory",
+   "tone": 4.2,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "layers": [
+    {
+     "id": "lower",
+     "op": "band",
+     "axis": "y",
+     "from": -1.0,
+     "to": -0.12631578947368433,
+     "ramp": "green",
+     "tone": 3.6
+    },
+    {
+     "id": "stripe",
+     "op": "band",
+     "axis": "y",
+     "from": -0.12631578947368433,
+     "to": -0.06631578947368433,
+     "ramp": "verm",
+     "tone": 3.4
+    },
+    {
+     "id": "gap",
+     "op": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "rect": [
+      0.49,
+      0.0,
+      0.51,
+      1.0
+     ],
+     "ramp": "ink",
+     "tone": 1.2
+    },
+    {
+     "id": "winL",
+     "op": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "rect": [
+      0.1,
+      0.5,
+      0.42,
+      0.9
+     ],
+     "ramp": "glass",
+     "tone": 2.6,
+     "bevel": true
+    },
+    {
+     "id": "winR",
+     "op": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "rect": [
+      0.58,
+      0.5,
+      0.9,
+      0.9
+     ],
+     "ramp": "glass",
+     "tone": 2.6,
+     "bevel": true
+    },
+    {
+     "id": "sky",
+     "op": "stripes",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "axis": [
+      0,
+      1,
+      0.6
+     ],
+     "period": 0.34,
+     "width": 0.12,
+     "shift": 0.9,
+     "range": [
+      0.18,
+      0.85
+     ]
+    },
+    {
+     "id": "grime",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.6
+    },
+    {
+     "id": "rubber",
+     "op": "panel",
+     "inset": 1,
+     "shift": -1.2,
+     "highlight": 0.4,
+     "shadow": 1
+    }
+   ]
+  },
+  "window": {
+   "ramp": "alu",
+   "tone": 4.0,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -0.9
+   },
+   "brush": {
+    "off": true
+   },
+   "layers": [
+    {
+     "id": "lo",
+     "op": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "rect": [
+      0.05,
+      0.07,
+      0.95,
+      0.5
+     ],
+     "ramp": "glass",
+     "tone": 2.4,
+     "bevel": true
+    },
+    {
+     "id": "hi",
+     "op": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "rect": [
+      0.05,
+      0.54,
+      0.95,
+      0.93
+     ],
+     "ramp": "glass",
+     "tone": 3.2,
+     "bevel": true
+    },
+    {
+     "id": "seats",
+     "op": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "rect": [
+      0.08,
+      0.08,
+      0.92,
+      0.2
+     ],
+     "ramp": "seat",
+     "tone": 2.0
+    },
+    {
+     "id": "sky",
+     "op": "stripes",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "axis": [
+      0,
+      1,
+      0.7
+     ],
+     "period": 0.42,
+     "width": 0.1,
+     "shift": 1.0,
+     "range": [
+      0.1,
+      0.9
+     ]
+    },
+    {
+     "id": "straps",
+     "op": "stripes",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "axis": "z",
+     "period": 0.24,
+     "width": 0.05,
+     "shift": -0.7,
+     "range": [
+      0.75,
+      0.88
+     ]
+    }
+   ]
+  },
+  "roof": {
+   "ramp": "roof",
+   "tone": 3.6,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "brush": {
+    "flow": "x",
+    "length": 0.5,
+    "rough": 0.25
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/rusty_painted_metal",
+     "scale": 1.2,
+     "amount": 0.14
+    },
+    {
+     "id": "sheets",
+     "op": "stripes",
+     "axis": "z",
+     "period": 0.92,
+     "width": 0.03,
+     "shift": -0.8
+    },
+    {
+     "id": "soot",
+     "op": "patches",
+     "scale": 0.6,
+     "threshold": 0.62,
+     "shift": -0.7
+    },
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.25,
+     "threshold": 0.78,
+     "ramp": "rust",
+     "tone": 2.6
+    }
+   ]
+  },
+  "under": {
+   "ramp": "under",
+   "tone": 2.8,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "brush": {
+    "flow": "long"
+   },
+   "layers": [
+    {
+     "op": "photo",
+     "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/metal_plate",
+     "scale": 0.8,
+     "amount": 0.3
+    },
+    {
+     "id": "ribs",
+     "op": "stripes",
+     "axis": "z",
+     "period": 0.2,
+     "width": 0.12,
+     "shift": -0.5,
+     "faces": [
+      "left",
+      "right"
+     ]
+    },
+    {
+     "id": "dust",
+     "op": "patches",
+     "scale": 0.2,
+     "threshold": 0.72,
+     "ramp": "rust",
+     "tone": 2.2
+    },
+    {
+     "id": "bolts",
+     "op": "rivets",
+     "inset": 2,
+     "spacing": 10,
+     "highlight": 0.8,
+     "shadow": 1
+    }
+   ]
+  },
+  "grid": {
+   "ramp": "under",
+   "tone": 2.6,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "layers": [
+    {
+     "id": "slits",
+     "op": "grille",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "rect": [
+      0.06,
+      0.12,
+      0.94,
+      0.88
+     ],
+     "period": 3,
+     "dir": "v",
+     "slit_tone": 0.8
+    },
+    {
+     "id": "heat",
+     "op": "patches",
+     "scale": 0.15,
+     "threshold": 0.66,
+     "ramp": "rust",
+     "tone": 2.4
+    }
+   ]
+  },
+  "bogie": {
+   "ramp": "under",
+   "tone": 2.4,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "layers": [
+    {
+     "id": "dust",
+     "op": "patches",
+     "scale": 0.12,
+     "threshold": 0.62,
+     "ramp": "rust",
+     "tone": 2.2
+    },
+    {
+     "id": "bolts",
+     "op": "rivets",
+     "inset": 2,
+     "spacing": 8,
+     "highlight": 0.7,
+     "shadow": 1
+    }
+   ]
+  },
+  "wheel": {
+   "ramp": "steel",
+   "tone": 3.0,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "brush": {
+    "off": true
+   },
+   "layers": [
+    {
+     "id": "rust",
+     "op": "patches",
+     "scale": 0.08,
+     "threshold": 0.4,
+     "ramp": "rust",
+     "tone": 2.6,
+     "faces": [
+      "front",
+      "back"
+     ]
+    },
+    {
+     "id": "hub",
+     "op": "spots",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "centers": [
+      [
+       0,
+       0,
+       0,
+       0.12
+      ]
+     ],
+     "ramp": "under",
+     "tone": 2.0,
+     "bevel": true
+    }
+   ]
+  },
+  "screen": {
+   "ramp": "alu",
+   "tone": 3.8,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -0.9
+   },
+   "brush": {
+    "off": true
+   },
+   "layers": [
+    {
+     "id": "glass",
+     "op": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "rect": [
+      0.05,
+      0.06,
+      0.95,
+      0.94
+     ],
+     "ramp": "glass",
+     "tone": 2.8,
+     "bevel": true
+    },
+    {
+     "id": "sky",
+     "op": "stripes",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "axis": [
+      1,
+      1,
+      0
+     ],
+     "period": 0.38,
+     "width": 0.12,
+     "shift": 1.0,
+     "range": [
+      0.08,
+      0.92
+     ]
+    },
+    {
+     "id": "dash",
+     "op": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "rect": [
+      0.08,
+      0.07,
+      0.92,
+      0.2
+     ],
+     "ramp": "under",
+     "tone": 2.2
+    }
+   ]
+  },
+  "gangdoor": {
+   "ramp": "ivory",
+   "tone": 4.2,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "layers": [
+    {
+     "id": "lower",
+     "op": "band",
+     "axis": "y",
+     "from": -1.0,
+     "to": -0.1027027027027029,
+     "ramp": "green",
+     "tone": 3.6
+    },
+    {
+     "id": "stripe",
+     "op": "band",
+     "axis": "y",
+     "from": -0.1027027027027029,
+     "to": -0.042702702702702905,
+     "ramp": "verm",
+     "tone": 3.4
+    },
+    {
+     "id": "win",
+     "op": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "rect": [
+      0.14,
+      0.46,
+      0.86,
+      0.9
+     ],
+     "ramp": "glass",
+     "tone": 2.6,
+     "bevel": true
+    },
+    {
+     "id": "sky",
+     "op": "stripes",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "axis": [
+      1,
+      1,
+      0
+     ],
+     "period": 0.3,
+     "width": 0.1,
+     "shift": 0.9,
+     "range": [
+      0.45,
+      0.9
+     ]
+    },
+    {
+     "id": "grime",
+     "op": "gradient",
+     "axis": "y",
+     "amount": 0.6
+    },
+    {
+     "id": "rubber",
+     "op": "panel",
+     "inset": 1,
+     "shift": -1.2,
+     "highlight": 0.4,
+     "shadow": 1
+    }
+   ]
+  },
+  "alu": {
+   "ramp": "alu",
+   "tone": 3.8,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   },
+   "brush": {
+    "off": true
+   }
+  },
+  "rubber": {
+   "ramp": "rubber",
+   "tone": 2.4,
+   "rim": {
+    "light_shift": 0.6,
+    "dark_shift": -0.4
+   },
+   "layers": [
+    {
+     "id": "folds",
+     "op": "stripes",
+     "axis": "y",
+     "period": 0.09,
+     "width": 0.35,
+     "shift": -0.9
+    }
+   ]
+  },
+  "steel": {
+   "ramp": "steel",
+   "tone": 3.2,
+   "rim": {
+    "light_shift": 0.8,
+    "dark_shift": -0.8
+   }
+  },
+  "porc": {
+   "ramp": "porc",
+   "tone": 3.6,
+   "rim": {
+    "light_shift": 1.0,
+    "dark_shift": -0.8
+   },
+   "brush": {
+    "off": true
+   },
+   "layers": [
+    {
+     "id": "sheds",
+     "op": "stripes",
+     "axis": "z",
+     "period": 0.05,
+     "width": 0.35,
+     "shift": -1.1
+    }
+   ]
+  }
+ },
+ "parts": [
+  {
+   "id": "body",
+   "shape": "box",
+   "size": [
+    2.8,
+    2.35,
+    18.0
+   ],
+   "pivot": [
+    0.0,
+    2.125,
+    0.0
+   ],
+   "chamfer": 0.03,
+   "style": "body",
+   "hide": [
+    "top"
+   ]
+  },
+  {
+   "id": "roof",
+   "shape": "prism",
+   "size": [
+    2.82,
+    0.74,
+    18.02
+   ],
+   "pivot": [
+    0.0,
+    3.3,
+    0.0
+   ],
+   "style": "roof",
+   "sides": 16
+  },
+  {
+   "id": "gutter",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.06,
+    18.02
+   ],
+   "pivot": [
+    -1.42,
+    3.31,
+    0.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "gutter_1",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.06,
+    18.02
+   ],
+   "pivot": [
+    1.42,
+    3.31,
+    0.0
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "walkway",
+   "shape": "box",
+   "size": [
+    0.42,
+    0.03,
+    16.0
+   ],
+   "pivot": [
+    0.0,
+    3.665,
+    0.0
+   ],
+   "style": "roof",
+   "paint": {
+    "layers": [
+     {
+      "id": "slats",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.12,
+      "width": 0.3,
+      "shift": -1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "vent",
+   "shape": "taper",
+   "size": [
+    0.86,
+    0.24,
+    0.62
+   ],
+   "pivot": [
+    0.0,
+    3.72,
+    -7.2
+   ],
+   "style": "roof",
+   "paint": {
+    "layers": [
+     {
+      "id": "louvre",
+      "op": "grille",
+      "faces": [
+       "left",
+       "right"
+      ],
+      "rect": [
+       0.1,
+       0.15,
+       0.9,
+       0.85
+      ],
+      "period": 2,
+      "dir": "h",
+      "slit_tone": 1.0
+     }
+    ]
+   },
+   "front_scale": [
+    0.82,
+    0.7
+   ],
+   "back_scale": [
+    0.82,
+    0.7
+   ]
+  },
+  {
+   "id": "vent_1",
+   "shape": "taper",
+   "size": [
+    0.86,
+    0.24,
+    0.62
+   ],
+   "pivot": [
+    0.0,
+    3.72,
+    -4.6
+   ],
+   "style": "roof",
+   "paint": {
+    "layers": [
+     {
+      "id": "louvre",
+      "op": "grille",
+      "faces": [
+       "left",
+       "right"
+      ],
+      "rect": [
+       0.1,
+       0.15,
+       0.9,
+       0.85
+      ],
+      "period": 2,
+      "dir": "h",
+      "slit_tone": 1.0
+     }
+    ]
+   },
+   "front_scale": [
+    0.82,
+    0.7
+   ],
+   "back_scale": [
+    0.82,
+    0.7
+   ]
+  },
+  {
+   "id": "vent_2",
+   "shape": "taper",
+   "size": [
+    0.86,
+    0.24,
+    0.62
+   ],
+   "pivot": [
+    0.0,
+    3.72,
+    -2.0
+   ],
+   "style": "roof",
+   "paint": {
+    "layers": [
+     {
+      "id": "louvre",
+      "op": "grille",
+      "faces": [
+       "left",
+       "right"
+      ],
+      "rect": [
+       0.1,
+       0.15,
+       0.9,
+       0.85
+      ],
+      "period": 2,
+      "dir": "h",
+      "slit_tone": 1.0
+     }
+    ]
+   },
+   "front_scale": [
+    0.82,
+    0.7
+   ],
+   "back_scale": [
+    0.82,
+    0.7
+   ]
+  },
+  {
+   "id": "vent_3",
+   "shape": "taper",
+   "size": [
+    0.86,
+    0.24,
+    0.62
+   ],
+   "pivot": [
+    0.0,
+    3.72,
+    2.0
+   ],
+   "style": "roof",
+   "paint": {
+    "layers": [
+     {
+      "id": "louvre",
+      "op": "grille",
+      "faces": [
+       "left",
+       "right"
+      ],
+      "rect": [
+       0.1,
+       0.15,
+       0.9,
+       0.85
+      ],
+      "period": 2,
+      "dir": "h",
+      "slit_tone": 1.0
+     }
+    ]
+   },
+   "front_scale": [
+    0.82,
+    0.7
+   ],
+   "back_scale": [
+    0.82,
+    0.7
+   ]
+  },
+  {
+   "id": "vent_4",
+   "shape": "taper",
+   "size": [
+    0.86,
+    0.24,
+    0.62
+   ],
+   "pivot": [
+    0.0,
+    3.72,
+    4.6
+   ],
+   "style": "roof",
+   "paint": {
+    "layers": [
+     {
+      "id": "louvre",
+      "op": "grille",
+      "faces": [
+       "left",
+       "right"
+      ],
+      "rect": [
+       0.1,
+       0.15,
+       0.9,
+       0.85
+      ],
+      "period": 2,
+      "dir": "h",
+      "slit_tone": 1.0
+     }
+    ]
+   },
+   "front_scale": [
+    0.82,
+    0.7
+   ],
+   "back_scale": [
+    0.82,
+    0.7
+   ]
+  },
+  {
+   "id": "vent_5",
+   "shape": "taper",
+   "size": [
+    0.86,
+    0.24,
+    0.62
+   ],
+   "pivot": [
+    0.0,
+    3.72,
+    7.2
+   ],
+   "style": "roof",
+   "paint": {
+    "layers": [
+     {
+      "id": "louvre",
+      "op": "grille",
+      "faces": [
+       "left",
+       "right"
+      ],
+      "rect": [
+       0.1,
+       0.15,
+       0.9,
+       0.85
+      ],
+      "period": 2,
+      "dir": "h",
+      "slit_tone": 1.0
+     }
+    ]
+   },
+   "front_scale": [
+    0.82,
+    0.7
+   ],
+   "back_scale": [
+    0.82,
+    0.7
+   ]
+  },
+  {
+   "id": "door",
+   "shape": "box",
+   "size": [
+    0.024,
+    1.9,
+    1.3
+   ],
+   "pivot": [
+    1.406,
+    2.1,
+    -6.0
+   ],
+   "style": "door",
+   "mirror": true
+  },
+  {
+   "id": "door_rail",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.05,
+    1.5
+   ],
+   "pivot": [
+    1.42,
+    3.095,
+    -6.0
+   ],
+   "style": "alu",
+   "mirror": true
+  },
+  {
+   "id": "step",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.05,
+    1.3
+   ],
+   "pivot": [
+    1.45,
+    1.105,
+    -6.0
+   ],
+   "style": "alu",
+   "mirror": true
+  },
+  {
+   "id": "door_1",
+   "shape": "box",
+   "size": [
+    0.024,
+    1.9,
+    1.3
+   ],
+   "pivot": [
+    1.406,
+    2.1,
+    0.0
+   ],
+   "style": "door",
+   "mirror": true
+  },
+  {
+   "id": "door_rail_1",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.05,
+    1.5
+   ],
+   "pivot": [
+    1.42,
+    3.095,
+    0.0
+   ],
+   "style": "alu",
+   "mirror": true
+  },
+  {
+   "id": "step_1",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.05,
+    1.3
+   ],
+   "pivot": [
+    1.45,
+    1.105,
+    0.0
+   ],
+   "style": "alu",
+   "mirror": true
+  },
+  {
+   "id": "door_2",
+   "shape": "box",
+   "size": [
+    0.024,
+    1.9,
+    1.3
+   ],
+   "pivot": [
+    1.406,
+    2.1,
+    6.0
+   ],
+   "style": "door",
+   "mirror": true
+  },
+  {
+   "id": "door_rail_2",
+   "shape": "box",
+   "size": [
+    0.05,
+    0.05,
+    1.5
+   ],
+   "pivot": [
+    1.42,
+    3.095,
+    6.0
+   ],
+   "style": "alu",
+   "mirror": true
+  },
+  {
+   "id": "step_2",
+   "shape": "box",
+   "size": [
+    0.12,
+    0.05,
+    1.3
+   ],
+   "pivot": [
+    1.45,
+    1.105,
+    6.0
+   ],
+   "style": "alu",
+   "mirror": true
+  },
+  {
+   "id": "crew_door",
+   "shape": "box",
+   "size": [
+    0.024,
+    1.85,
+    0.62
+   ],
+   "pivot": [
+    1.406,
+    2.075,
+    8.45
+   ],
+   "style": "gangdoor",
+   "paint": {
+    "layers": [
+     {
+      "id": "win",
+      "op": "rect",
+      "faces": [
+       "left",
+       "right"
+      ],
+      "rect": [
+       0.14,
+       0.5,
+       0.86,
+       0.9
+      ],
+      "ramp": "glass",
+      "tone": 2.6,
+      "bevel": true
+     }
+    ]
+   },
+   "mirror": true
+  },
+  {
+   "id": "crew_grab",
+   "shape": "prism",
+   "size": [
+    0.032,
+    0.032,
+    1.3
+   ],
+   "pivot": [
+    1.45,
+    1.95,
+    8.85
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "alu",
+   "sides": 4,
+   "mirror": true
+  },
+  {
+   "id": "window",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    1.18
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    -4.47
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "window_1",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    1.18
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    -3.0
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "window_2",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    1.18
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    -1.53
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "window_3",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    1.18
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    1.53
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "window_4",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    1.18
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    3.0
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "window_5",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    1.18
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    4.47
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "window_6",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    1.2
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    -7.45
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "window_7",
+   "shape": "box",
+   "size": [
+    0.02,
+    1.03,
+    0.8
+   ],
+   "pivot": [
+    1.404,
+    2.465,
+    7.25
+   ],
+   "style": "window",
+   "mirror": true
+  },
+  {
+   "id": "gear",
+   "shape": "box",
+   "size": [
+    0.55,
+    0.5,
+    1.2
+   ],
+   "pivot": [
+    -1.075,
+    0.7,
+    3.6
+   ],
+   "style": "under"
+  },
+  {
+   "id": "gear_1",
+   "shape": "box",
+   "size": [
+    0.55,
+    0.5,
+    1.2
+   ],
+   "pivot": [
+    1.075,
+    0.7,
+    -3.6
+   ],
+   "style": "under"
+  },
+  {
+   "id": "gear_2",
+   "shape": "box",
+   "size": [
+    0.7,
+    0.42,
+    1.4
+   ],
+   "pivot": [
+    -1.0,
+    0.74,
+    2.0
+   ],
+   "style": "grid"
+  },
+  {
+   "id": "gear_3",
+   "shape": "box",
+   "size": [
+    0.7,
+    0.42,
+    1.4
+   ],
+   "pivot": [
+    1.0,
+    0.74,
+    -2.0
+   ],
+   "style": "grid"
+  },
+  {
+   "id": "gear_4",
+   "shape": "box",
+   "size": [
+    0.6,
+    0.48,
+    1.6
+   ],
+   "pivot": [
+    -1.05,
+    0.71,
+    0.2
+   ],
+   "style": "under"
+  },
+  {
+   "id": "gear_5",
+   "shape": "box",
+   "size": [
+    0.6,
+    0.48,
+    1.6
+   ],
+   "pivot": [
+    1.05,
+    0.71,
+    -0.2
+   ],
+   "style": "under"
+  },
+  {
+   "id": "gear_6",
+   "shape": "box",
+   "size": [
+    0.75,
+    0.38,
+    1.3
+   ],
+   "pivot": [
+    -0.975,
+    0.76,
+    -1.6
+   ],
+   "style": "grid"
+  },
+  {
+   "id": "gear_7",
+   "shape": "box",
+   "size": [
+    0.75,
+    0.38,
+    1.3
+   ],
+   "pivot": [
+    0.975,
+    0.76,
+    1.6
+   ],
+   "style": "grid"
+  },
+  {
+   "id": "gear_8",
+   "shape": "box",
+   "size": [
+    0.6,
+    0.45,
+    1.0
+   ],
+   "pivot": [
+    -1.05,
+    0.725,
+    -3.4
+   ],
+   "style": "under"
+  },
+  {
+   "id": "gear_9",
+   "shape": "box",
+   "size": [
+    0.6,
+    0.45,
+    1.0
+   ],
+   "pivot": [
+    1.05,
+    0.725,
+    3.4
+   ],
+   "style": "under"
+  },
+  {
+   "id": "tank",
+   "shape": "prism",
+   "size": [
+    0.36,
+    0.36,
+    2.2
+   ],
+   "pivot": [
+    -0.3,
+    0.69,
+    -0.4
+   ],
+   "style": "under",
+   "sides": 10
+  },
+  {
+   "id": "tank_1",
+   "shape": "prism",
+   "size": [
+    0.36,
+    0.36,
+    2.2
+   ],
+   "pivot": [
+    0.3,
+    0.69,
+    0.4
+   ],
+   "style": "under",
+   "sides": 10
+  },
+  {
+   "id": "sill",
+   "shape": "box",
+   "size": [
+    2.5,
+    0.12,
+    17.6
+   ],
+   "pivot": [
+    0.0,
+    0.89,
+    0.0
+   ],
+   "style": "under"
+  },
+  {
+   "id": "frame",
+   "shape": "taper",
+   "size": [
+    0.16,
+    0.3,
+    2.9
+   ],
+   "pivot": [
+    -0.86,
+    0.6,
+    -6.25
+   ],
+   "style": "bogie",
+   "front_scale": [
+    1.0,
+    0.6
+   ],
+   "back_scale": [
+    1.0,
+    0.6
+   ]
+  },
+  {
+   "id": "axlebox",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    -0.82,
+    0.43,
+    -7.3
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    -0.82,
+    0.73,
+    -7.006
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    -0.68,
+    0.55,
+    -6.88
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "axlebox_1",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    -0.82,
+    0.43,
+    -5.2
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring_1",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    -0.82,
+    0.73,
+    -5.494
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake_1",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    -0.68,
+    0.55,
+    -5.62
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "frame_1",
+   "shape": "taper",
+   "size": [
+    0.16,
+    0.3,
+    2.9
+   ],
+   "pivot": [
+    0.86,
+    0.6,
+    -6.25
+   ],
+   "style": "bogie",
+   "front_scale": [
+    1.0,
+    0.6
+   ],
+   "back_scale": [
+    1.0,
+    0.6
+   ]
+  },
+  {
+   "id": "axlebox_2",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    0.82,
+    0.43,
+    -7.3
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring_2",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    0.82,
+    0.73,
+    -7.006
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake_2",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    0.68,
+    0.55,
+    -6.88
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "axlebox_3",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    0.82,
+    0.43,
+    -5.2
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring_3",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    0.82,
+    0.73,
+    -5.494
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake_3",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    0.68,
+    0.55,
+    -5.62
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "bolster",
+   "shape": "box",
+   "size": [
+    2.1,
+    0.22,
+    0.5
+   ],
+   "pivot": [
+    0.0,
+    0.77,
+    -6.25
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "motor",
+   "shape": "box",
+   "size": [
+    0.9,
+    0.42,
+    0.5
+   ],
+   "pivot": [
+    0.0,
+    0.47,
+    -6.25
+   ],
+   "style": "under"
+  },
+  {
+   "id": "axle",
+   "shape": "prism",
+   "size": [
+    0.14,
+    0.14,
+    1.44
+   ],
+   "pivot": [
+    0.0,
+    0.43,
+    -7.3
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "wheel",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    -0.5635,
+    0.43,
+    -7.3
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "wheel_1",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    0.5635,
+    0.43,
+    -7.3
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "axle_1",
+   "shape": "prism",
+   "size": [
+    0.14,
+    0.14,
+    1.44
+   ],
+   "pivot": [
+    0.0,
+    0.43,
+    -5.2
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "wheel_2",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    -0.5635,
+    0.43,
+    -5.2
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "wheel_3",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    0.5635,
+    0.43,
+    -5.2
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "frame_2",
+   "shape": "taper",
+   "size": [
+    0.16,
+    0.3,
+    2.9
+   ],
+   "pivot": [
+    -0.86,
+    0.6,
+    6.25
+   ],
+   "style": "bogie",
+   "front_scale": [
+    1.0,
+    0.6
+   ],
+   "back_scale": [
+    1.0,
+    0.6
+   ]
+  },
+  {
+   "id": "axlebox_4",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    -0.82,
+    0.43,
+    5.2
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring_4",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    -0.82,
+    0.73,
+    5.494
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake_4",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    -0.68,
+    0.55,
+    5.62
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "axlebox_5",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    -0.82,
+    0.43,
+    7.3
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring_5",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    -0.82,
+    0.73,
+    7.006
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake_5",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    -0.68,
+    0.55,
+    6.88
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "frame_3",
+   "shape": "taper",
+   "size": [
+    0.16,
+    0.3,
+    2.9
+   ],
+   "pivot": [
+    0.86,
+    0.6,
+    6.25
+   ],
+   "style": "bogie",
+   "front_scale": [
+    1.0,
+    0.6
+   ],
+   "back_scale": [
+    1.0,
+    0.6
+   ]
+  },
+  {
+   "id": "axlebox_6",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    0.82,
+    0.43,
+    5.2
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring_6",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    0.82,
+    0.73,
+    5.494
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake_6",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    0.68,
+    0.55,
+    5.62
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "axlebox_7",
+   "shape": "box",
+   "size": [
+    0.22,
+    0.28,
+    0.32
+   ],
+   "pivot": [
+    0.82,
+    0.43,
+    7.3
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "spring_7",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.26
+   ],
+   "pivot": [
+    0.82,
+    0.73,
+    7.006
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "steel",
+   "paint": {
+    "layers": [
+     {
+      "id": "coils",
+      "op": "stripes",
+      "axis": "z",
+      "period": 0.05,
+      "width": 0.4,
+      "shift": -1.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "brake_7",
+   "shape": "prism",
+   "size": [
+    0.16,
+    0.16,
+    0.22
+   ],
+   "pivot": [
+    0.68,
+    0.55,
+    6.88
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "bogie",
+   "sides": 8
+  },
+  {
+   "id": "bolster_1",
+   "shape": "box",
+   "size": [
+    2.1,
+    0.22,
+    0.5
+   ],
+   "pivot": [
+    0.0,
+    0.77,
+    6.25
+   ],
+   "style": "bogie"
+  },
+  {
+   "id": "motor_1",
+   "shape": "box",
+   "size": [
+    0.9,
+    0.42,
+    0.5
+   ],
+   "pivot": [
+    0.0,
+    0.47,
+    6.25
+   ],
+   "style": "under"
+  },
+  {
+   "id": "axle_2",
+   "shape": "prism",
+   "size": [
+    0.14,
+    0.14,
+    1.44
+   ],
+   "pivot": [
+    0.0,
+    0.43,
+    5.2
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "wheel_4",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    -0.5635,
+    0.43,
+    5.2
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "wheel_5",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    0.5635,
+    0.43,
+    5.2
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "axle_3",
+   "shape": "prism",
+   "size": [
+    0.14,
+    0.14,
+    1.44
+   ],
+   "pivot": [
+    0.0,
+    0.43,
+    7.3
+   ],
+   "rotation": [
+    -0.0,
+    90.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 6
+  },
+  {
+   "id": "wheel_6",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    -0.5635,
+    0.43,
+    7.3
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "wheel_7",
+   "shape": "prism",
+   "size": [
+    0.86,
+    0.86,
+    0.13
+   ],
+   "pivot": [
+    0.5635,
+    0.43,
+    7.3
+   ],
+   "rotation": [
+    0.0,
+    90.0,
+    0.0
+   ],
+   "style": "wheel",
+   "sides": 14
+  },
+  {
+   "id": "bellows",
+   "shape": "box",
+   "size": [
+    1.05,
+    2.05,
+    0.28
+   ],
+   "pivot": [
+    0.0,
+    2.125,
+    -9.12
+   ],
+   "style": "rubber"
+  },
+  {
+   "id": "draft",
+   "shape": "box",
+   "size": [
+    0.3,
+    0.22,
+    0.5
+   ],
+   "pivot": [
+    0.0,
+    0.83,
+    -9.1
+   ],
+   "style": "under"
+  },
+  {
+   "id": "coupler",
+   "shape": "box",
+   "size": [
+    0.32,
+    0.26,
+    0.24
+   ],
+   "pivot": [
+    0.0,
+    0.83,
+    -9.42
+   ],
+   "style": "steel"
+  },
+  {
+   "id": "windscreen",
+   "shape": "box",
+   "size": [
+    0.82,
+    0.86,
+    0.024
+   ],
+   "pivot": [
+    -0.88,
+    2.43,
+    9.012
+   ],
+   "style": "screen"
+  },
+  {
+   "id": "wiper",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.5727
+   ],
+   "pivot": [
+    -0.74,
+    2.34,
+    9.042
+   ],
+   "rotation": [
+    -65.2249,
+    -90.0,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 4
+  },
+  {
+   "id": "headlight",
+   "shape": "prism",
+   "size": [
+    0.24,
+    0.24,
+    0.1
+   ],
+   "pivot": [
+    -0.55,
+    3.13,
+    9.052
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "lens",
+      "op": "spots",
+      "faces": [
+       "front"
+      ],
+      "centers": [
+       [
+        0,
+        0,
+        0,
+        0.1
+       ]
+      ],
+      "ramp": "lamp",
+      "tone": 4.2,
+      "bevel": true
+     }
+    ]
+   },
+   "sides": 12
+  },
+  {
+   "id": "taillight",
+   "shape": "prism",
+   "size": [
+    0.17,
+    0.17,
+    0.08
+   ],
+   "pivot": [
+    -1.02,
+    1.42,
+    9.042
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "lens",
+      "op": "spots",
+      "faces": [
+       "front"
+      ],
+      "centers": [
+       [
+        0,
+        0,
+        0,
+        0.07
+       ]
+      ],
+      "ramp": "red",
+      "tone": 3.4,
+      "bevel": true
+     }
+    ]
+   },
+   "sides": 10
+  },
+  {
+   "id": "marker",
+   "shape": "prism",
+   "size": [
+    0.12,
+    0.12,
+    0.06
+   ],
+   "pivot": [
+    -1.02,
+    1.66,
+    9.037
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "lens",
+      "op": "spots",
+      "faces": [
+       "front"
+      ],
+      "centers": [
+       [
+        0,
+        0,
+        0,
+        0.05
+       ]
+      ],
+      "ramp": "lamp",
+      "tone": 3.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "grab",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    1.3
+   ],
+   "pivot": [
+    -1.25,
+    1.95,
+    9.072
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "alu",
+   "sides": 5
+  },
+  {
+   "id": "footstep",
+   "shape": "box",
+   "size": [
+    0.3,
+    0.04,
+    0.16
+   ],
+   "pivot": [
+    -0.95,
+    1.0,
+    9.092
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "windscreen_1",
+   "shape": "box",
+   "size": [
+    0.82,
+    0.86,
+    0.024
+   ],
+   "pivot": [
+    0.88,
+    2.43,
+    9.012
+   ],
+   "style": "screen"
+  },
+  {
+   "id": "wiper_1",
+   "shape": "prism",
+   "size": [
+    0.024,
+    0.024,
+    0.5727
+   ],
+   "pivot": [
+    0.74,
+    2.34,
+    9.042
+   ],
+   "rotation": [
+    -65.2249,
+    90.0,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 4
+  },
+  {
+   "id": "headlight_1",
+   "shape": "prism",
+   "size": [
+    0.24,
+    0.24,
+    0.1
+   ],
+   "pivot": [
+    0.55,
+    3.13,
+    9.052
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "lens",
+      "op": "spots",
+      "faces": [
+       "front"
+      ],
+      "centers": [
+       [
+        0,
+        0,
+        0,
+        0.1
+       ]
+      ],
+      "ramp": "lamp",
+      "tone": 4.2,
+      "bevel": true
+     }
+    ]
+   },
+   "sides": 12
+  },
+  {
+   "id": "taillight_1",
+   "shape": "prism",
+   "size": [
+    0.17,
+    0.17,
+    0.08
+   ],
+   "pivot": [
+    1.02,
+    1.42,
+    9.042
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "lens",
+      "op": "spots",
+      "faces": [
+       "front"
+      ],
+      "centers": [
+       [
+        0,
+        0,
+        0,
+        0.07
+       ]
+      ],
+      "ramp": "red",
+      "tone": 3.4,
+      "bevel": true
+     }
+    ]
+   },
+   "sides": 10
+  },
+  {
+   "id": "marker_1",
+   "shape": "prism",
+   "size": [
+    0.12,
+    0.12,
+    0.06
+   ],
+   "pivot": [
+    1.02,
+    1.66,
+    9.037
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "lens",
+      "op": "spots",
+      "faces": [
+       "front"
+      ],
+      "centers": [
+       [
+        0,
+        0,
+        0,
+        0.05
+       ]
+      ],
+      "ramp": "lamp",
+      "tone": 3.2
+     }
+    ]
+   },
+   "sides": 8
+  },
+  {
+   "id": "grab_1",
+   "shape": "prism",
+   "size": [
+    0.036,
+    0.036,
+    1.3
+   ],
+   "pivot": [
+    1.25,
+    1.95,
+    9.072
+   ],
+   "rotation": [
+    -90.0,
+    0.0,
+    0.0
+   ],
+   "style": "alu",
+   "sides": 5
+  },
+  {
+   "id": "footstep_1",
+   "shape": "box",
+   "size": [
+    0.3,
+    0.04,
+    0.16
+   ],
+   "pivot": [
+    0.95,
+    1.0,
+    9.092
+   ],
+   "style": "alu"
+  },
+  {
+   "id": "gangway",
+   "shape": "box",
+   "size": [
+    0.7,
+    1.85,
+    0.026
+   ],
+   "pivot": [
+    0.0,
+    2.075,
+    9.012
+   ],
+   "style": "gangdoor"
+  },
+  {
+   "id": "destination",
+   "shape": "box",
+   "size": [
+    0.66,
+    0.2,
+    0.04
+   ],
+   "pivot": [
+    0.0,
+    3.14,
+    9.022
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "roll",
+      "op": "rect",
+      "faces": [
+       "front"
+      ],
+      "rect": [
+       0.06,
+       0.12,
+       0.94,
+       0.88
+      ],
+      "ramp": "white",
+      "tone": 4.0,
+      "bevel": true
+     },
+     {
+      "id": "kana",
+      "op": "stripes",
+      "faces": [
+       "front"
+      ],
+      "axis": "x",
+      "period": 0.07,
+      "width": 0.55,
+      "ramp": "ink",
+      "tone": 1.4,
+      "range": [
+       0.18,
+       0.82
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "runboard",
+   "shape": "box",
+   "size": [
+    0.3,
+    0.14,
+    0.03
+   ],
+   "pivot": [
+    -0.88,
+    2.99,
+    9.022
+   ],
+   "style": "alu",
+   "paint": {
+    "layers": [
+     {
+      "id": "num",
+      "op": "rect",
+      "faces": [
+       "front"
+      ],
+      "rect": [
+       0.1,
+       0.15,
+       0.9,
+       0.85
+      ],
+      "ramp": "ink",
+      "tone": 1.4
+     },
+     {
+      "id": "digits",
+      "op": "stripes",
+      "faces": [
+       "front"
+      ],
+      "axis": "x",
+      "period": 0.07,
+      "width": 0.45,
+      "ramp": "white",
+      "tone": 3.8,
+      "range": [
+       0.25,
+       0.75
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "skirt",
+   "shape": "taper",
+   "size": [
+    2.3,
+    0.45,
+    0.1
+   ],
+   "pivot": [
+    0.0,
+    0.66,
+    9.032
+   ],
+   "style": "under",
+   "front_scale": [
+    0.86,
+    1.0
+   ]
+  },
+  {
+   "id": "draft_1",
+   "shape": "box",
+   "size": [
+    0.3,
+    0.22,
+    0.5
+   ],
+   "pivot": [
+    0.0,
+    0.83,
+    9.1
+   ],
+   "style": "under"
+  },
+  {
+   "id": "coupler_1",
+   "shape": "box",
+   "size": [
+    0.32,
+    0.26,
+    0.24
+   ],
+   "pivot": [
+    0.0,
+    0.83,
+    9.48
+   ],
+   "style": "steel"
+  },
+  {
+   "id": "hose",
+   "shape": "prism",
+   "size": [
+    0.05,
+    0.05,
+    0.4475
+   ],
+   "pivot": [
+    -0.385,
+    0.725,
+    9.185
+   ],
+   "rotation": [
+    51.4475,
+    -14.5345,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 5
+  },
+  {
+   "id": "jumper",
+   "shape": "prism",
+   "size": [
+    0.06,
+    0.06,
+    0.3716
+   ],
+   "pivot": [
+    -0.825,
+    0.9,
+    9.12
+   ],
+   "rotation": [
+    53.8311,
+    43.1524,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 5
+  },
+  {
+   "id": "hose_1",
+   "shape": "prism",
+   "size": [
+    0.05,
+    0.05,
+    0.4475
+   ],
+   "pivot": [
+    0.385,
+    0.725,
+    9.185
+   ],
+   "rotation": [
+    51.4475,
+    14.5345,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 5
+  },
+  {
+   "id": "jumper_1",
+   "shape": "prism",
+   "size": [
+    0.06,
+    0.06,
+    0.3716
+   ],
+   "pivot": [
+    0.825,
+    0.9,
+    9.12
+   ],
+   "rotation": [
+    53.8311,
+    -43.1524,
+    0.0
+   ],
+   "style": "rubber",
+   "sides": 5
+  },
+  {
+   "id": "horn",
+   "shape": "prism",
+   "size": [
+    0.12,
+    0.12,
+    0.34
+   ],
+   "pivot": [
+    0.45,
+    3.66,
+    8.0
+   ],
+   "style": "steel",
+   "sides": 8
+  },
+  {
+   "id": "antenna",
+   "shape": "prism",
+   "size": [
+    0.04,
+    0.04,
+    0.559
+   ],
+   "pivot": [
+    -0.5,
+    3.725,
+    7.35
+   ],
+   "rotation": [
+    -26.5651,
+    180.0,
+    0.0
+   ],
+   "style": "steel",
+   "sides": 4
+  },
+  {
+   "id": "antenna_bar",
+   "shape": "box",
+   "size": [
+    0.03,
+    0.03,
+    0.7
+   ],
+   "pivot": [
+    -0.5,
+    3.845,
+    7.0
+   ],
+   "style": "steel"
+  }
+ ],
+ "brush": {
+  "length": 0.3,
+  "width": 0.04,
+  "rough": 0.35,
+  "flow": "horizontal",
+  "textures": {
+   "under": "metal",
+   "roof": "metal",
+   "steel": "metal",
+   "rust": "metal"
+  }
+ }
+}

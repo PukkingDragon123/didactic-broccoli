@@ -1,0 +1,67 @@
+{
+ "id": "radio_old",
+ "src": "sketchfab:bb832f8973ad40af8321fb90854be3b6",
+ "credit": {
+  "title": "Radio",
+  "author": "ion_omat",
+  "authorUrl": "https://sketchfab.com/ion_omat",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/radio-bb832f8973ad40af8321fb90854be3b6",
+  "site": "Sketchfab"
+ },
+ "tris": 1996,
+ "tex": 512,
+ "size": [
+  0.338,
+  0.2,
+  0.14
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#0d0a0b",
+   "#100d0e",
+   "#131111",
+   "#161515",
+   "#191919",
+   "#393939",
+   "#585858",
+   "#787878",
+   "#989898"
+  ],
+  "m1": [
+   "#260002",
+   "#320200",
+   "#3d0801",
+   "#471002",
+   "#511a04",
+   "#873709",
+   "#ba5d10",
+   "#e8891c",
+   "#ebb154"
+  ],
+  "m2": [
+   "#382e24",
+   "#473e31",
+   "#564e3e",
+   "#635e4d",
+   "#706d5c",
+   "#838273",
+   "#94948c",
+   "#a6a6a4",
+   "#bababa"
+  ],
+  "m3": [
+   "#b0700f",
+   "#e2a218",
+   "#e9c44b",
+   "#eddd81",
+   "#f3efb5",
+   "#f4f4c0",
+   "#f4f4cb",
+   "#f6f6d6",
+   "#f7f7e0"
+  ]
+ },
+ "warnings": []
+}

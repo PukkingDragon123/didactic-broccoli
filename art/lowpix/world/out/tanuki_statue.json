@@ -1,0 +1,34 @@
+{
+ "id": "tanuki_statue",
+ "src": "sketchfab:dbe0fb672a024f4b8e23764fe4de7a87",
+ "credit": {
+  "title": "Statue Tanuki",
+  "author": "Sonkiam",
+  "authorUrl": "https://sketchfab.com/sonkiam",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/statue-tanuki-dbe0fb672a024f4b8e23764fe4de7a87",
+  "site": "Sketchfab"
+ },
+ "tris": 2357,
+ "tex": 328,
+ "size": [
+  0.424,
+  0.4,
+  0.405
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0e1e09",
+   "#14260d",
+   "#1c2e11",
+   "#243615",
+   "#2d3d1a",
+   "#4f642e",
+   "#748843",
+   "#99aa5c",
+   "#b4bb85"
+  ]
+ },
+ "warnings": []
+}

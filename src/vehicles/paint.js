@@ -13,6 +13,30 @@ const COOL = 0x1c2238, WARM = 0xfffbea;
 /** Five-step ramp: [darkest, dark, base, light, lightest]: darks lean cool, lights warm. */
 export function ramp(c, k = 1) { return [mix(c, COOL, 0.42 * k), mix(c, COOL, 0.2 * k), c, mix(c, WARM, 0.32 * k), mix(c, WARM, 0.6 * k)]; }
 
+/**
+ * Car paint on a body panel at height y (metres) and pixel (i, j): the ground's dark reflection low on the doors, a
+ * crisp light horizon line where the reflected sky meets the reflected street, the sky brightening up the panel to a
+ * highlight along the shoulder, road grime dithered up from the sills. R is a ramp(); o = { sill, horizon, shoulder,
+ * top, ppm, dirt, grime } in metres (dirt: the road-dust colour). Ordered dithering between ramp steps, no noise.
+ */
+export function carPaint(i, j, y, R, o = {}) {
+  const sill = o.sill ?? 0.42, hz = o.horizon ?? 0.74, sh = o.shoulder ?? 0.95, top = o.top ?? 1.5, px = 1 / (o.ppm ?? 60);
+  let tv;
+  if (y < hz - px * 1.5) {
+    const t = Math.max(0, (y - sill) / Math.max(0.05, hz - sill));
+    tv = t > 0.82 ? 1.35 : 1.25 + t * 0.8; // the darker band of the reflected street just under the horizon
+  } else if (y < hz + px * 0.5) tv = 3.3; // the horizon line
+  else if (y < sh) tv = 2.15 + 0.9 * Math.min(1, (y - hz) / Math.max(0.05, sh - hz));
+  else if (y < sh + px * 2) tv = 3.6; // the shoulder crease catching the light
+  else tv = 2.6 + 0.3 * Math.min(1, (y - sh) / Math.max(0.05, top - sh));
+  const k = Math.min(3.999, Math.max(0, tv)), lo = Math.floor(k);
+  let c = dith(i, j, k - lo) ? R[Math.min(4, lo + 1)] : R[lo];
+  // road grime up from the sills
+  const gh = o.grime ?? 0.16;
+  if (y < sill + gh) { const g = 1 - (y - sill) / gh; if (dith(i + 2, j + 1, g * 0.7)) c = mix(c, o.dirt ?? 0x5a4c3e, 0.45); }
+  return c;
+}
+
 /** A small seeded random (for placement decisions, never per-pixel noise). */
 export function seeded(seed) {
   let a = seed >>> 0;

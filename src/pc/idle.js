@@ -38,7 +38,7 @@ export class IdleScreen {
     g.fillStyle = '#2b7d7a'; g.fillRect(0, 0, IW, dh);
     if (st.wallpaper !== 'plain') { const w = wallpaperImage(st.wallpaper); if (w.complete && w.naturalWidth) g.drawImage(w, 0, 0, IW, dh); }
     // icons (miniature, column-major like the real desktop)
-    const ids = os.order.filter((id) => { const a = os.apps.get(id); return a.desktop && (!a.unlocked || a.unlocked()); });
+    const ids = os.order.filter((id) => { const a = os.apps.get(id); return a.desktop && os.installed(id) && (!a.unlocked || a.unlocked()); });
     const rows = Math.max(1, Math.floor((dh - 4) / 30));
     ids.forEach((id, i) => {
       const a = os.apps.get(id), x = 4 + Math.floor(i / rows) * 30, y = 4 + (i % rows) * 30;

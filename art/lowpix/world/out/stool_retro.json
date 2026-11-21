@@ -1,0 +1,45 @@
+{
+ "id": "stool_retro",
+ "src": "sketchfab:bdf0efe2af1a42dcb08b81634831578c",
+ "credit": {
+  "title": "Retro bar stool",
+  "author": "jafar200124",
+  "authorUrl": "https://sketchfab.com/jafar200620",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/retro-bar-stool-bdf0efe2af1a42dcb08b81634831578c",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 512,
+ "size": [
+  0.329,
+  0.7,
+  0.329
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#38394b",
+   "#4c4f5f",
+   "#616572",
+   "#777b84",
+   "#8f9194",
+   "#a1a1a1",
+   "#b0b0b0",
+   "#bfbfbf",
+   "#cecece"
+  ],
+  "m1": [
+   "#5d112a",
+   "#771830",
+   "#902033",
+   "#a82a34",
+   "#bf3434",
+   "#ca584d",
+   "#d07d6d",
+   "#d69e8b",
+   "#debaa8"
+  ]
+ },
+ "warnings": []
+}

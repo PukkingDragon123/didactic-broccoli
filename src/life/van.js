@@ -28,7 +28,7 @@ import { mask5, textW5 } from '../gfx/font5x7.js';
 import { Atlas, ROUGH } from '../vehicles/atlas.js';
 import { Geo, triplanar, boxMap } from '../vehicles/geom.js';
 import { shell, slab } from '../vehicles/shell.js';
-import { ramp, mix, seamLoop, seal, glassPane, rust, dent, lamp, lampLit, plate, grow, seeded } from '../vehicles/paint.js';
+import { ramp, mix, seamLoop, seal, glassPane, rust, dent, lamp, lampLit, plate, grow, seeded, carPaint } from '../vehicles/paint.js';
 import { wheelPatches, wheelGeometry, doorMirror, wiper, rods, vehicleMaterials } from '../vehicles/parts.js';
 
 export const PARK = { x: 3.4, z: 12.5, heading: -Math.PI / 2 }; // across the lane from the shutter, nose pointing west
@@ -139,7 +139,7 @@ function paintSide(S, sx) {
     const y = S.o.v0 + (j + 0.5) / S.ppm;
     if (y > 1.79) return PR[3];
     if (y < 0.34) return y < 0.285 ? PR[0] : PR[1];
-    return PR[2];
+    return carPaint(i, j, y, PR, { sill: 0.34, horizon: 0.72, shoulder: 0.98, top: 1.79, ppm: S.ppm });
   });
   S.hline(0, S.W, J(0.34), PR[1]);
   S.hline(0, S.W, J(1.808), PR[4]);
@@ -228,7 +228,7 @@ function paintSide(S, sx) {
 function paintFront(F) {
   const A = F.A, J = (y) => F.j(y), I = (x) => F.i(x);
   A.ink(ROUGH.paint);
-  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y > 0.975 ? PR[3] : y < 0.46 ? PR[1] : PR[2]; });
+  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y > 0.975 ? PR[3] : y < 0.46 ? PR[1] : carPaint(i, j, y, PR, { sill: 0.46, horizon: 0.66, shoulder: 0.95, top: 0.975, ppm: F.ppm }); });
   // a pressed crease across the nose, the bonnet-less front's only line
   F.hline(0, F.W, J(0.865), PR[1]); F.hline(0, F.W, J(0.875), PR[4]);
   // the cowl: black plastic with intake slots
@@ -269,7 +269,7 @@ function paintRear(B) {
   const A = B.A, I = (x) => B.i(-x), J = (y) => B.j(y);
   const R = (x0, y0, x1, y1, c) => B.rect(-x0, y0, -x1, y1, c);
   A.ink(ROUGH.paint);
-  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y > 1.8 ? PR[3] : y < 0.45 ? PR[1] : PR[2]; });
+  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y > 1.8 ? PR[3] : y < 0.45 ? PR[1] : carPaint(i, j, y, PR, { sill: 0.45, horizon: 0.75, shoulder: 1.6, top: 1.8, ppm: B.ppm }); });
   // the hatch: its seam, the window and its rubber, the handle bar, the plate recess and lamp
   seamLoop(B, [[-0.6, 0.445], [0.6, 0.445], [0.6, 1.8], [-0.6, 1.8]], PR[0], PR[3], 0, -1);
   const rw = [[-REAR_WIN.hx, REAR_WIN.y0], [REAR_WIN.hx, REAR_WIN.y0], [REAR_WIN.hx, REAR_WIN.y1], [-REAR_WIN.hx, REAR_WIN.y1]];

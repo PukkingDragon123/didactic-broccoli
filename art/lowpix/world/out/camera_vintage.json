@@ -1,0 +1,34 @@
+{
+ "id": "camera_vintage",
+ "src": "sketchfab:dd2608dcbd3e4944b4614b2f2de4c73b",
+ "credit": {
+  "title": "Vintage  Camera",
+  "author": "EricKos",
+  "authorUrl": "https://sketchfab.com/Ledger9o9",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/vintage-camera-dd2608dcbd3e4944b4614b2f2de4c73b",
+  "site": "Sketchfab"
+ },
+ "tris": 2496,
+ "tex": 336,
+ "size": [
+  0.093,
+  0.1,
+  0.131
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#371410",
+   "#462017",
+   "#552d1e",
+   "#633b26",
+   "#704b2e",
+   "#8f693f",
+   "#ad8952",
+   "#b9a476",
+   "#c7bd98"
+  ]
+ },
+ "warnings": []
+}

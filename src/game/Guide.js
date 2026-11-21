@@ -1,7 +1,7 @@
 // The guide: one clear goal at a time in the top-left card, and a marker floating over the place to go (pinned to the
-// screen edge with an arrow when it's off-screen). During the opening the card is Grandpa's to-do list: each goal comes
-// from one of his notes and quotes him (src/game/Story.js goal()); while he's there in person (src/grandpa/) the card is
-// headed "Grandpa" and carries his own short line under the job (goal.say). A side job you've taken (src/life/jobs.js) comes
+// screen edge with an arrow when it's off-screen). During the opening the card walks the first day's jobs
+// (src/game/Story.js goal()); while Grandpa's there in person (src/grandpa/) the card is headed "Grandpa" and carries his
+// own short line under the job (goal.say). A side job you've taken (src/life/jobs.js) comes
 // first while it runs; once the shop is open, the daily routine (open up in the morning, close up at night,
 // src/life/routine.js) and a few first steps of running the shop.
 import * as THREE from 'three';
@@ -62,7 +62,7 @@ export class Guide {
     if (!S) return null;
     const job = L?.jobs?.goal();
     if (job) { this.label = 'Odd job'; return job; }
-    if (!S.done) { const goal = S.goal(); this.label = goal?.say ? 'Grandpa' : "Grandpa's list"; return goal; }
+    if (!S.done) { const goal = S.goal(); this.label = goal?.say ? 'Grandpa' : 'First day'; return goal; }
     const day = L?.routine?.goal();
     if (day) { this.label = 'Today'; return day; }
     this.label = 'Goal';
@@ -79,7 +79,7 @@ export class Guide {
     const pc = D ? () => V(D.x, D.h + 0.55, D.z) : null;
     // a machine sold out: order more capsules
     const empty = g.machines.find((m) => !m.data.stock.length);
-    if (empty && !g.delivery.queue?.length && ![...g.items.list].some((e) => e.kind === 'box' && e.data?.type === 'refill')) return { id: 'restock', icon: 'capsule', text: 'A machine is sold out', sub: 'Order capsules on the computer: Daikoku Toys or Off-Hobby', at: pc };
+    if (empty && !g.delivery.queue?.length && ![...g.items.list].some((e) => e.kind === 'box' && e.data?.type === 'refill')) return { id: 'restock', icon: 'box', text: 'A machine is sold out', sub: 'Order capsules on the computer: Daikoku Toys or Off-Hobby', at: pc };
     const flyers = s.promo?.flyers || 0;
     if (flyers < 3) {
       if (!H.has('flyers')) return { id: 'buyflyers', icon: 'flyer', text: 'Spread the word', sub: 'Buy flyers at Mikawa-ya', at: counter };
@@ -87,7 +87,7 @@ export class Guide {
       return { id: 'flyers', icon: 'flyer', text: `Hand out flyers (${flyers}/3)`, sub: H.holding('flyers') ? `${cap(c)} people walking in the lane` : `Hold the flyers${this.pick('flyers')}, ${c} a passer-by`, at: peds.length ? () => this.nearest(peds, (p) => p.h.root.position.clone().setY(p.h.height + 0.35)) : null };
     }
     const m = g.machines.find((x) => !x.data.broken && x.data.stock.length);
-    if (!(s.stats.opened > 0) && m) return { id: 'pull', icon: 'capsule', text: 'Try a machine yourself', sub: `Hold ${this.touch ? 'the use button' : 'left click'} on the handle, then twist the capsule open`, at: () => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, 1.0, 0)) };
+    if (!(s.stats.opened > 0) && m) return { id: 'pull', icon: 'machine', text: 'Try a machine yourself', sub: `Hold ${this.touch ? 'the use button' : 'left click'} on the handle, then twist the capsule open`, at: () => m.root.getWorldPosition(new THREE.Vector3()).add(V(0, 1.0, 0)) };
     const shelved = s.shelves.some((sh) => sh.items.some(Boolean));
     if (!g.shelves.length && !F.guideShelf) {
       if (s.money >= SHELF_PRICES[0]) return { id: 'buyshelf', icon: 'shelf', text: 'Buy a wall shelf', sub: 'For showing off your figures: Daikoku Toys, Shelves', at: pc };
@@ -102,7 +102,7 @@ export class Guide {
 
   doneTotal() {
     const S = this.game.story;
-    if (!S || S.done || (this.label !== "Grandpa's list" && this.label !== 'Grandpa')) return [0, 0];
+    if (!S || S.done || (this.label !== 'First day' && this.label !== 'Grandpa')) return [0, 0];
     const t = S.todo();
     return [t.filter((x) => x.done).length, t.length];
   }

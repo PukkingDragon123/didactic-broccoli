@@ -1,11 +1,13 @@
 // Cutscenes: letterbox bars, fades, typewriter subtitles, title cards and scripted camera moves, written as
 // generator scripts that yield "waiters":
 //   game.cutscene.play(function* (c) { yield c.fade(0, 1); yield c.cam({ pos, look, dur: 3 }); c.say('Hello'); yield c.wait(2); });
-// Hold Space / Enter / click to skip: every waiter then finishes at once, so the script's side effects still run.
+// Hold Space / Enter / click to skip: every waiter then finishes at once, so the script's side effects still run. A
+// skippable cutscene says so for its first few seconds (the label over the skip bar).
 import * as THREE from 'three';
 import { talk } from '../people/voice.js';
 import { toBeContinued } from '../ui/menacing.js';
 import { audio } from '../core/audio.js';
+import './cutscene.css';
 
 const smooth = (k) => k * k * (3 - 2 * k);
 const smoother = (k) => k * k * k * (k * (k * 6 - 15) + 10);
@@ -23,6 +25,10 @@ export class Cutscene {
     this.hand = 0; // handheld drift amplitude (metres); a touch of it makes every shot feel filmed
     this.handT = 0;
     this.fov = null;
+    // the lens (src/core/lens.js via src/plugins/lens.js): focus distance in metres (null: auto-focus on the centre of
+    // the screen), aperture (null: the cutscene default, 1), how fast a focus change is pulled, and snapFocus (true:
+    // the next frame cuts straight to the focus, for a cut between shots)
+    this.focus = null; this.aperture = null; this.focusRate = null; this.snapFocus = false;
     this.skipT = 0;
     this.skipping = false;
     const el = document.createElement('div');
@@ -63,10 +69,13 @@ export class Cutscene {
     this.skippable = skippable;
     this.skipping = false;
     this.skipT = 0;
+    this.age = 0;
+    this.skipEl.querySelector('.lbl').textContent = g.input?.touch ? 'Hold to skip' : 'Hold SPACE to skip';
     this.hand = 0.006;
     this.gen = script(this);
     this.waiter = null;
     this.camOn = false;
+    this.focus = null; this.aperture = null; this.focusRate = null; this.snapFocus = false;
     this.pos.copy(g.camera.position);
     g.camera.getWorldDirection(this.look).add(g.camera.position);
     g.player.frozen = true;
@@ -86,6 +95,7 @@ export class Cutscene {
     this.waiter = null;
     this.camOn = false;
     this.fov = null;
+    this.focus = null; this.aperture = null; this.focusRate = null; this.snapFocus = false;
     g.player.frozen = false;
     g.interaction.enabled = true;
     g.held.anchor.visible = true;
@@ -94,7 +104,7 @@ export class Cutscene {
     this.el.classList.remove('on', 'letterbox');
     this.subEl.classList.remove('show');
     this.titleEl.classList.remove('show');
-    this.skipEl.classList.remove('show');
+    this.skipEl.classList.remove('show', 'hint');
     this.setFade(0);
     this.typing = null;
     this.ticks = [];
@@ -110,12 +120,14 @@ export class Cutscene {
     if (!this.active) return;
     const inp = this.game.input;
     // hold to skip
+    this.age = (this.age || 0) + dt;
     if (this.skippable && !this.skipping) {
       const hold = inp.key('Space') || inp.key('Enter') || inp.button(0) || (inp.touch && this.ptr);
       this.skipT = hold ? this.skipT + dt : Math.max(0, this.skipT - dt * 2);
       this.skipEl.classList.toggle('show', this.skipT > 0.05);
+      this.skipEl.classList.toggle('hint', this.skipT <= 0.05 && this.age > 1.2 && this.age < 5.5);
       this.skipEl.querySelector('.fill').style.transform = `scaleX(${Math.min(1, this.skipT / 0.9)})`;
-      if (this.skipT > 0.9) { this.skipping = true; this.skipEl.classList.remove('show'); }
+      if (this.skipT > 0.9) { this.skipping = true; this.skipEl.classList.remove('show', 'hint'); }
     }
     // advance the script; while skipping, run it to the end this frame
     for (let guard = 0; guard < (this.skipping ? 400 : 8); guard++) {
@@ -177,7 +189,7 @@ export class Cutscene {
     const p0 = this.pos.clone(), l0 = this.look.clone(), f0 = this.fov ?? this.game.camera.fov;
     const pts = path ? [p0, ...path, pos] : null;
     const curve = pts ? new THREE.CatmullRomCurve3(pts, false, 'centripetal') : null;
-    if (!dur) { this.pos.copy(pos); this.look.copy(look); if (fov) this.fov = fov; return null; }
+    if (!dur) { this.pos.copy(pos); this.look.copy(look); if (fov) this.fov = fov; this.snapFocus = true; return null; } // (a cut)
     let t = 0;
     return {
       update: (dt) => {

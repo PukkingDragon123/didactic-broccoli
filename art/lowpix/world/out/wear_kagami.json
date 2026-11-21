@@ -1,0 +1,78 @@
+{
+ "id": "wear_kagami",
+ "src": "sketchfab:a9c0b6ab4cb146d8a003d6c894af3fd4",
+ "credit": {
+  "title": "Kagami-mochi💮📷",
+  "author": "ayumi ikeda",
+  "authorUrl": "https://sketchfab.com/rxf10240",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kagami-mochi-a9c0b6ab4cb146d8a003d6c894af3fd4",
+  "site": "Sketchfab"
+ },
+ "tris": 2356,
+ "tex": 352,
+ "size": [
+  0.11,
+  0.1,
+  0.119
+ ],
+ "colours": 33,
+ "palette": {
+  "m0": [
+   "#a88135",
+   "#c6ab5a",
+   "#d5c98e",
+   "#e6e3c1",
+   "#f9f9f1",
+   "#fafaf3",
+   "#fafaf5",
+   "#fbfbf7",
+   "#fcfcf9"
+  ],
+  "m1": [
+   "#6f3400",
+   "#914f00",
+   "#b37100",
+   "#d59800",
+   "#f7c500",
+   "#fce120",
+   "#f9f346",
+   "#f8f86b",
+   "#f8f890"
+  ],
+  "m2": [
+   "#720026",
+   "#950025",
+   "#b8001f",
+   "#db0012",
+   "#fe0000",
+   "#fc3726",
+   "#f9684b",
+   "#f8926f",
+   "#f8b593"
+  ],
+  "m3": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ],
+  "m4": [
+   "#005a28",
+   "#00752b",
+   "#009029",
+   "#00ac22",
+   "#00c717",
+   "#04ee0b",
+   "#2ff824",
+   "#67f751",
+   "#96f77b"
+  ]
+ },
+ "warnings": []
+}

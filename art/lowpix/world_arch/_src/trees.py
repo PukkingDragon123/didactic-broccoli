@@ -28,11 +28,11 @@ def _mats(S, bark, bark_photo, leaf, moss='#5d6a3e'):
     S.d['light'] = {'dir': [-0.45, 1.0, 0.6], 'strength': 0.6, 'gradient': 0.35, 'ao': 0.6, 'ao_height': 1.2}
     S.style('bark', ramp='bark', tone=3.6, rim={'light_shift': 0.6, 'dark_shift': -0.8},
             brush={'flow': 'path', 'length': 0.25, 'rough': 0.6}, layers=[
-                photo(bark_photo, scale=0.9, amount=0.85, mode='colour'),
+                photo(bark_photo, scale=0.9, amount=0.7, mode='colour'),
                 {'id': 'base', 'op': 'gradient', 'axis': 'y', 'amount': 0.5},
                 {'id': 'moss', 'op': 'patches', 'scale': 0.25, 'threshold': 0.7, 'ramp': 'moss', 'tone': 2.8}])
     # the inner crown: shaded leaf mass seen through the gaps between the sprig cards (dark, mottled, never flat)
-    S.style('core', ramp='core', tone=1.9, rim={'light_shift': 0.4, 'dark_shift': -0.6},
+    S.style('core', ramp='core', tone=1.5, rim={'light_shift': 0.3, 'dark_shift': -0.6},
             brush={'flow': 'vertical', 'length': 0.14, 'rough': 0.8}, layers=[
                 {'id': 'clusters', 'op': 'spots', 'count': 70, 'radius': [0.07, 0.18], 'shift': 0.8, 'roughness': 0.6},
                 {'id': 'holes', 'op': 'spots', 'count': 40, 'radius': [0.05, 0.12], 'shift': -1.0},

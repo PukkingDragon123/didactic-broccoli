@@ -1,0 +1,111 @@
+{
+ "id": "wear_wagasa2",
+ "src": "sketchfab:68cafe0c54314121adef259078788143",
+ "credit": {
+  "title": "Fenshui Oil‑Paper Umbrella (Luzhou, China)",
+  "author": "hualin",
+  "authorUrl": "https://sketchfab.com/HuskyWaves9441",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fenshui-oilpaper-umbrella-luzhou-china-68cafe0c54314121adef259078788143",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 284,
+ "size": [
+  0.494,
+  0.5,
+  0.526
+ ],
+ "colours": 38,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m1": [
+   "#591b5f",
+   "#79257a",
+   "#93318c",
+   "#ac3e9b",
+   "#bc53a3",
+   "#c26ea7",
+   "#c987af",
+   "#d1a0b9",
+   "#dab8c7"
+  ],
+  "m2": [
+   "#911881",
+   "#ba2399",
+   "#d63ba7",
+   "#dc69b0",
+   "#e495bf",
+   "#e6a5c2",
+   "#e9b5c8",
+   "#ecc4cf",
+   "#efd3d9"
+  ],
+  "m3": [
+   "#8c1040",
+   "#b31948",
+   "#d9224b",
+   "#df4c60",
+   "#e4777d",
+   "#e68e8c",
+   "#e8a8a0",
+   "#ebbeb3",
+   "#eed1c6"
+  ],
+  "m4": [
+   "#a44c00",
+   "#d67600",
+   "#ffa509",
+   "#fec73c",
+   "#fce070",
+   "#fbed86",
+   "#faf69b",
+   "#f9f9af",
+   "#fafac3"
+  ],
+  "m5": [
+   "#3607c2",
+   "#3e13f3",
+   "#6250f3",
+   "#8e8cf5",
+   "#c5c8f9",
+   "#ced4f9",
+   "#d6def9",
+   "#dfe7fa",
+   "#e7eefb"
+  ],
+  "m6": [
+   "#bc0029",
+   "#f60021",
+   "#fe313b",
+   "#fc716c",
+   "#fcb0a6",
+   "#fbc2b3",
+   "#fbd1c0",
+   "#fbdecd",
+   "#fbe9d9"
+  ],
+  "m7": [
+   "#8b0b53",
+   "#b2125e",
+   "#d81a65",
+   "#e43c70",
+   "#e76784",
+   "#e87e8d",
+   "#ea959a",
+   "#ecacaa",
+   "#efc4bf"
+  ]
+ },
+ "warnings": []
+}

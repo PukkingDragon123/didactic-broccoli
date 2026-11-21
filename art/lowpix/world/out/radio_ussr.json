@@ -1,0 +1,34 @@
+{
+ "id": "radio_ussr",
+ "src": "sketchfab:9435f5d7891640c2845d691d78f8ad84",
+ "credit": {
+  "title": "Radio from the USSR 1967",
+  "author": "Whostea",
+  "authorUrl": "https://sketchfab.com/Whostea",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/radio-from-the-ussr-1967-9435f5d7891640c2845d691d78f8ad84",
+  "site": "Sketchfab"
+ },
+ "tris": 2126,
+ "tex": 512,
+ "size": [
+  0.323,
+  0.25,
+  0.098
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#291b17",
+   "#35251f",
+   "#3f3128",
+   "#493c32",
+   "#53483c",
+   "#6d6354",
+   "#867f6e",
+   "#9b978c",
+   "#b0afa9"
+  ]
+ },
+ "warnings": []
+}

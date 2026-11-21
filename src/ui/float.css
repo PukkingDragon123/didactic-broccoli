@@ -1,0 +1,108 @@
+/* Floating text (owner: dialogue, subtitles, chat choices and the objective are floating text that looks great, with
+   3D transitions): pixel fonts at whole multiples of 16 px with a hard 2 px ink outline and a hard drop, no box, no
+   paper, no glow, no gradient. Lines drop in with depth (perspective), letters flip up one by one as they are typed,
+   choices swing in like cards, the objective flips over like a station departure board.
+   Wins over the paper kit (src/ui/paper.css) and the base layouts (src/people/bubbles.css, src/talk/talk.css,
+   src/ui/hud.css, src/ui/sidequests.css) on specificity: html body.phys-ui ... */
+
+:root {
+  --fl-ink: #120a0e;
+  --fl-out: 2px 0 0 var(--fl-ink), -2px 0 0 var(--fl-ink), 0 2px 0 var(--fl-ink), 0 -2px 0 var(--fl-ink),
+    2px 2px 0 var(--fl-ink), -2px 2px 0 var(--fl-ink), 2px -2px 0 var(--fl-ink), -2px -2px 0 var(--fl-ink);
+  --fl-drop: var(--fl-out), 3px 4px 0 rgba(18, 10, 14, .5);
+}
+
+/* ---------------------------------------------------------------- speech over people (src/people/Bubbles.js) */
+html body.phys-ui .ft-in {
+  background: none; box-shadow: none; border: 0; padding: 0 4px 2px; color: #fff6e4; text-shadow: var(--fl-drop);
+  transform-origin: 50% 100%; animation: fl-drop .34s steps(5) both;
+}
+html body.phys-ui .ft-big .ft-in { background: none; padding: 0 4px 4px; }
+html body.phys-ui .ft-think .ft-in { color: #d4c8ee; background: none; animation-name: fl-float; }
+html body.phys-ui .ft-shout .ft-in { color: #ffd23f; background: none; animation-name: fl-slam; }
+html body.phys-ui .ft-me .ft-in { color: #bfe8ff; }
+/* the speaker: a small gold kicker with a red pixel flag before it and an ink rule under it */
+html body.phys-ui .ft-name {
+  display: inline-block; position: relative; margin: 0 0 4px; padding: 0 2px 2px 12px; color: #ffd23f; letter-spacing: 2px;
+  text-shadow: var(--fl-out); box-shadow: 0 2px 0 #c8322c, 0 4px 0 var(--fl-ink);
+  transform-origin: 0 100%; animation: fl-tab .3s steps(4) both;
+}
+html body.phys-ui .ft-name::before {
+  content: ''; position: absolute; left: 0; top: calc(50% - 5px); width: 6px; height: 8px; background: #c8322c;
+  box-shadow: 0 0 0 2px var(--fl-ink); clip-path: none;
+}
+html body.phys-ui .ft-arrow { background: #ffd23f; filter: drop-shadow(2px 0 0 var(--fl-ink)) drop-shadow(-2px 0 0 var(--fl-ink)); }
+/* letters flip up onto the line as they are typed */
+html body.phys-ui .ft-c { display: inline-block; }
+html body.phys-ui .ft-c.on { animation: fl-letter .16s steps(3) both; }
+@keyframes fl-letter { 0% { transform: perspective(120px) rotateX(-88deg) translateY(-3px); } 60% { transform: perspective(120px) rotateX(18deg); } 100% { transform: none; } }
+@keyframes fl-drop { 0% { transform: perspective(500px) translateZ(140px) rotateX(34deg) translateY(-18px); } 55% { transform: perspective(500px) translateZ(-10px) rotateX(-6deg) translateY(2px); } 100% { transform: none; } }
+@keyframes fl-float { 0% { transform: perspective(500px) translateZ(-80px) translateY(10px) rotateY(-12deg); } 100% { transform: none; } }
+@keyframes fl-slam { 0% { transform: perspective(500px) translateZ(220px) rotate(-6deg); } 40% { transform: perspective(500px) translateZ(-20px) rotate(3deg); } 70% { transform: rotate(-1deg) translateX(2px); } 100% { transform: none; } }
+@keyframes fl-tab { 0% { transform: perspective(300px) rotateY(80deg); } 100% { transform: none; } }
+
+/* ---------------------------------------------------------------- the chat choices (src/talk/Talk.js) */
+html body.phys-ui .tk-choices { gap: 6px; perspective: 700px; }
+html body.phys-ui .tk-choices .tk-prompt { background: none; box-shadow: none; padding: 0 2px 4px; color: #ffd23f; text-shadow: var(--fl-out); animation: fl-tab .3s steps(4) both; transform-origin: 0 50%; }
+html body.phys-ui .tk-opt, html body.phys-ui .tk-choices.quick .tk-opt {
+  position: relative; background: none; box-shadow: none; padding: 0 6px 2px 0; gap: 10px; color: #fff6e4; text-shadow: var(--fl-drop);
+  transform-origin: 0 50%; animation: fl-card .38s steps(5) both; transition: translate .1s steps(2), color .1s steps(1);
+}
+html body.phys-ui .tk-opt:nth-of-type(2) { animation-delay: 60ms; } html body.phys-ui .tk-opt:nth-of-type(3) { animation-delay: 120ms; }
+html body.phys-ui .tk-opt:nth-of-type(4) { animation-delay: 180ms; } html body.phys-ui .tk-opt:nth-of-type(5) { animation-delay: 240ms; }
+/* the number: a small navy enamel key cap with a thick side (it presses in when you pick) */
+html body.phys-ui .tk-opt .n {
+  min-width: 0; padding: 0 6px; color: #f2e6c6; text-shadow: 0 2px 0 var(--fl-ink); background: #26346e; align-self: center;
+  box-shadow: inset 0 2px 0 #3a4c8e, 0 0 0 2px var(--fl-ink), 0 4px 0 2px #0e1430, 3px 6px 0 2px rgba(18, 10, 14, .45);
+}
+html body.phys-ui .tk-opt.sel { background: none; color: #ffd23f; translate: 10px 0; box-shadow: none; }
+html body.phys-ui .tk-opt.sel .n { background: #c0302a; color: #fff2c8; box-shadow: inset 0 2px 0 #d8503e, 0 0 0 2px var(--fl-ink), 0 4px 0 2px #5e1416, 3px 6px 0 2px rgba(18, 10, 14, .45); }
+html body.phys-ui .tk-opt:hover { color: #ffe39a; }
+html body.phys-ui .tk-opt.picked { background: none; color: #ffd23f; animation: fl-picked .4s steps(5) both; }
+html body.phys-ui .tk-opt.picked .n { translate: 0 3px; box-shadow: inset 0 2px 0 #d8503e, 0 0 0 2px var(--fl-ink), 0 1px 0 2px #5e1416; background: #c0302a; }
+@keyframes fl-card { 0% { opacity: 0; transform: rotateY(-75deg) translateX(-30px); } 60% { opacity: 1; transform: rotateY(8deg); } 100% { opacity: 1; transform: none; } }
+@keyframes fl-picked { 0% { transform: none; } 30% { transform: translateX(14px) scale(1.06); } 100% { transform: translateX(14px) rotateX(0deg); } }
+html body.phys-ui .tk-timer { background: none; box-shadow: none; padding: 2px 0; gap: 4px; }
+html body.phys-ui .tk-timer i { width: 12px; height: 8px; background: #3a2e30; box-shadow: 0 0 0 2px var(--fl-ink); }
+html body.phys-ui .tk-timer i.on { background: #ffd23f; box-shadow: inset 0 -2px 0 #c8962e, 0 0 0 2px var(--fl-ink); }
+html body.phys-ui .tk-timer.low i.on { background: #e5383b; box-shadow: inset 0 -2px 0 #8c1e20, 0 0 0 2px var(--fl-ink); animation: fl-shake .2s steps(2) infinite; }
+@keyframes fl-shake { 50% { translate: 0 -2px; } }
+/* talking to yourself: pale blue floating murmur, it rises up out of the floor of the view */
+html body.phys-ui #tk-self span { background: none; padding: 0 2px; color: #bfe8ff; text-shadow: var(--fl-drop); }
+html body.phys-ui #tk-self { transform-origin: 50% 100%; }
+
+/* ---------------------------------------------------------------- the small choice box (src/ui/choice.js) */
+html body.phys-ui #sq-choice { perspective: 700px; }
+html body.phys-ui #sq-choice button {
+  background: none; box-shadow: none; border: 0; color: #fff6e4; text-shadow: var(--fl-drop); transform-origin: 0 50%;
+  animation: fl-card .36s steps(5) both;
+}
+html body.phys-ui #sq-choice button:nth-of-type(2) { animation-delay: 60ms; } html body.phys-ui #sq-choice button:nth-of-type(3) { animation-delay: 120ms; }
+html body.phys-ui #sq-choice button .n {
+  padding: 0 6px; margin-right: 8px; color: #f2e6c6; text-shadow: 0 2px 0 var(--fl-ink); background: #26346e;
+  box-shadow: inset 0 2px 0 #3a4c8e, 0 0 0 2px var(--fl-ink), 0 4px 0 2px #0e1430;
+}
+html body.phys-ui #sq-choice button.sel { background: none; box-shadow: none; color: #ffd23f; translate: 10px 0; }
+html body.phys-ui #sq-choice button.sel .n { background: #c0302a; box-shadow: inset 0 2px 0 #d8503e, 0 0 0 2px var(--fl-ink), 0 4px 0 2px #5e1416; color: #fff2c8; }
+html body.phys-ui #sq-choice .hint { background: none; box-shadow: none; color: #d8ccb4; text-shadow: var(--fl-out); }
+
+/* ---------------------------------------------------------------- the objective (src/game/Guide.js): a departure-board flip */
+html body.phys-ui #guide { perspective: 600px; }
+html body.phys-ui #guide .g-card {
+  padding: 0 4px; background: none; box-shadow: none; border: 0; border-image: none; color: #fff6e4;
+  transform-origin: 50% 0;
+}
+html body.phys-ui #guide .g-card::before, html body.phys-ui #guide .g-card::after { display: none; }
+html body.phys-ui #guide .g-card.in { animation: fl-board .6s steps(7) both; }
+html body.phys-ui #guide .g-card.pulse { animation: fl-nudge .5s steps(4) 2; }
+@keyframes fl-board { 0% { opacity: 0; transform: rotateX(-90deg); } 35% { opacity: 1; transform: rotateX(25deg); } 60% { transform: rotateX(-10deg); } 80% { transform: rotateX(4deg); } 100% { transform: none; } }
+@keyframes fl-nudge { 50% { transform: translateX(6px) rotate(-1deg); } }
+html body.phys-ui #guide .g-head { color: #ffd23f; text-shadow: var(--fl-out); margin-bottom: 6px; justify-content: flex-start; gap: 12px; }
+html body.phys-ui #guide .g-lbl { padding: 0 6px; background: #c0302a; color: #fff2c8; text-shadow: 0 2px 0 #5e1416; box-shadow: inset 0 2px 0 #d8503e, 0 0 0 2px var(--fl-ink), 0 4px 0 2px #5e1416; }
+html body.phys-ui #guide .g-n { color: #d8ccb4; text-shadow: var(--fl-out); }
+html body.phys-ui #guide .g-ico { background: none; box-shadow: none; filter: drop-shadow(2px 0 0 var(--fl-ink)) drop-shadow(-2px 0 0 var(--fl-ink)) drop-shadow(0 2px 0 var(--fl-ink)) drop-shadow(0 -2px 0 var(--fl-ink)); }
+html body.phys-ui #guide .g-t { color: #fff6e4; text-shadow: var(--fl-drop); }
+html body.phys-ui #guide .g-s { color: #d8ccb4; text-shadow: var(--fl-out); }
+html body.phys-ui #guide .g-card.done .g-t { color: #9ce89c; text-decoration-color: #c8322c; }
+html body.phys-ui #guide .g-bar { height: 8px; background: #3a2e30; box-shadow: 0 0 0 2px var(--fl-ink), 2px 4px 0 2px rgba(18, 10, 14, .4); }
+html body.phys-ui #guide .g-bar i { background: #ffd23f; box-shadow: inset 0 -2px 0 #c8962e; }

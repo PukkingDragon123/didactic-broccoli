@@ -16,6 +16,7 @@
 //   orderFurniture(game, id, { pay = 'bank' | 'cash' | 'free' }) -> { ok, msg }  (charges the bank by default)
 
 import { LP_WORLD } from '../kit/lowpixWorld.js';
+import { addUnlock, furnLevel } from '../data/unlocks.js';
 
 export const CATEGORIES = { money: 'Money', fun: 'Fun', decor: 'Decor', signs: 'Signs & lights', furniture: 'Furniture', electric: 'Electronics', storage: 'Storage', cleaning: 'Cleaning' };
 
@@ -235,6 +236,10 @@ export const CATALOGUE = [
 
 // real-model pieces: their credit (title, author, licence) in the hint, and in the shop listing
 for (const f of CATALOGUE) if (f.model?.lp && LP_WORLD[f.model.lp]) f.credit = LP_WORLD[f.model.lp].credit;
+
+// pieces without a gate of their own come in by price as the shop levels up (the rule and the hand-set levels:
+// src/data/unlocks.js FURN_LEVEL / furnLevel)
+CATALOGUE.filter((f) => !f.unlock).sort((a, b) => a.price - b.price).forEach((f, i) => { f.unlock = `furn:${f.id}`; addUnlock(f.unlock, furnLevel(f, i), 'furn', f.name); });
 
 export const FURNITURE = Object.fromEntries(CATALOGUE.map((f) => [f.id, f]));
 

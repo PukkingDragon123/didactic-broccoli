@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Pix, bumpFrom, FONT_JP, FONT_EN, FONT_DISPLAY } from './pix.js';
 import { hash2 } from '../core/util.js';
 import { shopPix } from './shopTextures.js';
+import { pixPrint } from './printAtlas.js';
 
 const cache = new Map();
 const bumpCache = new Map();
@@ -961,6 +962,7 @@ const TOWN = {
   },
   /** Closed shop's shutter with a faded old sign board above (tobacco shop). */
   oldSign: (p) => {
+    if (pixPrint(p, 'signs', 'sign:tobacco')) return; // the set sign face (tools/bake-signs.py)
     const { w, h } = p;
     p.fill(0xe8dcc0);
     p.frame(0, 0, w, h, 0x5a4a3a);
@@ -1011,6 +1013,7 @@ const TOWN = {
   },
   /** Corner shop signboard. */
   mikawaya: (p) => {
+    if (pixPrint(p, 'signs', 'sign:mikawaya')) return; // the set sign face (tools/bake-signs.py)
     const { w, h } = p;
     p.fill(0x1f5a3a);
     p.frame(0, 0, w, h, 0x0f2a1c); p.frame(2, 2, w - 4, h - 4, 0xf4ecd8);
@@ -1061,6 +1064,7 @@ const TOWN = {
   },
   /** Apartment name plate. */
   aptName: (p) => {
+    if (pixPrint(p, 'signs', 'sign:apt')) return; // the set sign face (tools/bake-signs.py)
     const { w, h } = p;
     p.fill(0xf4ecd8); p.frame(0, 0, w, h, 0x8a6a4a);
     p.text('SAKURA HEIGHTS', w / 2, 2, { size: 8, color: 0x8a3a5a, align: 'center', font: FONT_EN });
@@ -1420,6 +1424,7 @@ const TOWN = {
   },
   /** Old warehouse wall sign (painted straight onto corrugated steel, faded). */
   warehouseSign: (p) => {
+    if (pixPrint(p, 'signs', 'sign:warehouse')) return; // the set sign face (tools/bake-signs.py)
     const { w, h } = p;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) p.px(x, y, hash2(x >> 1, y * 3) < 0.1 ? 0xd8d0b8 : 0xe8e0c8, 230);
     p.text('上山倉庫', w / 2, 2, { size: 16, color: 0x2a4a7a, align: 'center' });

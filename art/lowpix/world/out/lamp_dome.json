@@ -1,0 +1,45 @@
+{
+ "id": "lamp_dome",
+ "src": "sketchfab:14e5f136ee154fe783f78f8e38d185c3",
+ "credit": {
+  "title": "Ceiling Lamp",
+  "author": "neverfollow81",
+  "authorUrl": "https://sketchfab.com/neverfollow81",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ceiling-lamp-14e5f136ee154fe783f78f8e38d185c3",
+  "site": "Sketchfab"
+ },
+ "tris": 1980,
+ "tex": 512,
+ "size": [
+  0.509,
+  0.25,
+  0.509
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#614c53",
+   "#7b676c",
+   "#928487",
+   "#a8a3a3",
+   "#c0c0c0",
+   "#c9c9c9",
+   "#d1d1d1",
+   "#dadada",
+   "#e3e3e3"
+  ],
+  "m1": [
+   "#1f0f0c",
+   "#281610",
+   "#301e15",
+   "#38261a",
+   "#3f2f20",
+   "#634f36",
+   "#84714d",
+   "#a29368",
+   "#b5ae8e"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,45 @@
+{
+ "id": "pot_a",
+ "src": "sketchfab:2d609d3adf9e49ac945b62b5ce98573e",
+ "credit": {
+  "title": "a pot",
+  "author": "bikutoria258",
+  "authorUrl": "https://sketchfab.com/bikutoria258",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/a-pot-2d609d3adf9e49ac945b62b5ce98573e",
+  "site": "Sketchfab"
+ },
+ "tris": 1499,
+ "tex": 512,
+ "size": [
+  0.314,
+  0.2,
+  0.22
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#080606",
+   "#0a0808",
+   "#0c0a0a",
+   "#0d0d0d",
+   "#0f0f0f",
+   "#303030",
+   "#515151",
+   "#727272",
+   "#939393"
+  ],
+  "m1": [
+   "#475d59",
+   "#607670",
+   "#7b8d87",
+   "#99a19e",
+   "#b5b7b6",
+   "#c0c0c0",
+   "#cacaca",
+   "#d4d4d4",
+   "#dedede"
+  ]
+ },
+ "warnings": []
+}

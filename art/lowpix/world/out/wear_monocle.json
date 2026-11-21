@@ -1,0 +1,45 @@
+{
+ "id": "wear_monocle",
+ "src": "sketchfab:834a918e7da34659b19fea04a359d69b",
+ "credit": {
+  "title": "Monocle",
+  "author": "neutralize",
+  "authorUrl": "https://sketchfab.com/neutralize",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/monocle-834a918e7da34659b19fea04a359d69b",
+  "site": "Sketchfab"
+ },
+ "tris": 1499,
+ "tex": 512,
+ "size": [
+  1.922,
+  0.06,
+  3.118
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#38474e",
+   "#4c5e64",
+   "#607478",
+   "#77898a",
+   "#909a9a",
+   "#a2a5a5",
+   "#b2b2b2",
+   "#c1c1c1",
+   "#cfcfcf"
+  ],
+  "m1": [
+   "#050404",
+   "#060506",
+   "#080707",
+   "#090808",
+   "#0a0a0a",
+   "#2c2c2c",
+   "#4d4d4d",
+   "#6f6f6f",
+   "#919191"
+  ]
+ },
+ "warnings": []
+}

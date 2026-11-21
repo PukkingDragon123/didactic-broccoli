@@ -1,0 +1,56 @@
+{
+ "id": "wear_woodchicken",
+ "src": "sketchfab:874d78d8b3d74cda8cf8e8da680b2220",
+ "credit": {
+  "title": "Pecking Chicken Wooden Toy",
+  "author": "trinityscsp",
+  "authorUrl": "https://sketchfab.com/trinityscsp",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pecking-chicken-wooden-toy-874d78d8b3d74cda8cf8e8da680b2220",
+  "site": "Sketchfab"
+ },
+ "tris": 2499,
+ "tex": 256,
+ "size": [
+  0.27,
+  0.2,
+  0.039
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#302125",
+   "#3d2d30",
+   "#4a3a3b",
+   "#554747",
+   "#605655",
+   "#756f6e",
+   "#888888",
+   "#9e9e9e",
+   "#b5b5b5"
+  ],
+  "m1": [
+   "#3f140c",
+   "#512111",
+   "#633017",
+   "#73401e",
+   "#835325",
+   "#a47433",
+   "#c19645",
+   "#cab16b",
+   "#d4c890"
+  ],
+  "m2": [
+   "#65001f",
+   "#84001e",
+   "#a20017",
+   "#c0010d",
+   "#db0a05",
+   "#f62a12",
+   "#f45e3a",
+   "#f48a62",
+   "#f4af89"
+  ]
+ },
+ "warnings": []
+}

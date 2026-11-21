@@ -1,0 +1,34 @@
+{
+ "id": "slippers",
+ "src": "sketchfab:ac25fc96e7ff4c138d8503b1072b7ea3",
+ "credit": {
+  "title": "house slippers",
+  "author": "headless_christ",
+  "authorUrl": "https://sketchfab.com/headless_christ",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/house-slippers-ac25fc96e7ff4c138d8503b1072b7ea3",
+  "site": "Sketchfab"
+ },
+ "tris": 1499,
+ "tex": 512,
+ "size": [
+  0.322,
+  0.08,
+  0.401
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0a0709",
+   "#0c090b",
+   "#0f0c0e",
+   "#110e10",
+   "#131112",
+   "#343132",
+   "#535353",
+   "#747474",
+   "#949494"
+  ]
+ },
+ "warnings": []
+}

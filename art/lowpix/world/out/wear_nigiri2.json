@@ -1,0 +1,78 @@
+{
+ "id": "wear_nigiri2",
+ "src": "sketchfab:71656228538740be8a9d8779eb109c49",
+ "credit": {
+  "title": "Salmon Nigiri",
+  "author": "Nakajima2500",
+  "authorUrl": "https://sketchfab.com/Nakajima2500",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/salmon-nigiri-71656228538740be8a9d8779eb109c49",
+  "site": "Sketchfab"
+ },
+ "tris": 228,
+ "tex": 176,
+ "size": [
+  0.052,
+  0.05,
+  0.122
+ ],
+ "colours": 36,
+ "palette": {
+  "m0": [
+   "#85604e",
+   "#a5856e",
+   "#bbaa98",
+   "#d3cbc1",
+   "#edebe7",
+   "#efeeeb",
+   "#f1f1ef",
+   "#f3f3f2",
+   "#f6f6f5"
+  ],
+  "m1": [
+   "#731b00",
+   "#962f00",
+   "#b94a00",
+   "#dc6a00",
+   "#ff9000",
+   "#fcb126",
+   "#f9cb4c",
+   "#f8df70",
+   "#f8ee93"
+  ],
+  "m2": [
+   "#a50e00",
+   "#d72400",
+   "#ff480a",
+   "#ff7d3d",
+   "#ffab6f",
+   "#fdc185",
+   "#fcd39a",
+   "#fbe2ae",
+   "#fbedc2"
+  ],
+  "m3": [
+   "#bf0100",
+   "#f91600",
+   "#ff5734",
+   "#ff936f",
+   "#ffc6a9",
+   "#fed4b6",
+   "#fde0c3",
+   "#fdeacf",
+   "#fdf1db"
+  ],
+  "m4": [
+   "#931100",
+   "#c02700",
+   "#ec4300",
+   "#ff6e1a",
+   "#ff9a47",
+   "#fdb563",
+   "#fbcb7e",
+   "#fadd98",
+   "#faeab1"
+  ]
+ },
+ "warnings": []
+}

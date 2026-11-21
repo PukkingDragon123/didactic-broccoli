@@ -1,0 +1,45 @@
+{
+ "id": "geta",
+ "src": "sketchfab:357cc98173c347ee9ecb89ddb1755133",
+ "credit": {
+  "title": "Wood Geta",
+  "author": "3ddans",
+  "authorUrl": "https://sketchfab.com/3ddans",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wood-geta-357cc98173c347ee9ecb89ddb1755133",
+  "site": "Sketchfab"
+ },
+ "tris": 924,
+ "tex": 320,
+ "size": [
+  0.195,
+  0.07,
+  0.097
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#170303",
+   "#1e0704",
+   "#240b05",
+   "#2a1107",
+   "#301709",
+   "#633715",
+   "#935e22",
+   "#c28a31",
+   "#d3af60"
+  ],
+  "m1": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ]
+ },
+ "warnings": []
+}

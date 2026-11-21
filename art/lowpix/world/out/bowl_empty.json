@@ -1,0 +1,34 @@
+{
+ "id": "bowl_empty",
+ "src": "sketchfab:6c6d124baca54d09871af6bc77738b81",
+ "credit": {
+  "title": "Bowl",
+  "author": "cloud",
+  "authorUrl": "https://sketchfab.com/cloudstormchnl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bowl-6c6d124baca54d09871af6bc77738b81",
+  "site": "Sketchfab"
+ },
+ "tris": 998,
+ "tex": 416,
+ "size": [
+  0.214,
+  0.08,
+  0.214
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#1c4357",
+   "#275d6f",
+   "#337886",
+   "#40949c",
+   "#4eb1b1",
+   "#6ab8b2",
+   "#84c1b7",
+   "#9ecabf",
+   "#b6d5cb"
+  ]
+ },
+ "warnings": []
+}

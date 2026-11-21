@@ -1,0 +1,45 @@
+{
+ "id": "books_old",
+ "src": "sketchfab:c6ca6667fd7d4381bd184874dcf44075",
+ "credit": {
+  "title": "Stack Of Old Books",
+  "author": "Arjun Perayil",
+  "authorUrl": "https://sketchfab.com/inzanebeast",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/stack-of-old-books-c6ca6667fd7d4381bd184874dcf44075",
+  "site": "Sketchfab"
+ },
+ "tris": 876,
+ "tex": 512,
+ "size": [
+  0.392,
+  0.12,
+  0.242
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#360a17",
+   "#460e1a",
+   "#54131b",
+   "#62181c",
+   "#70211e",
+   "#95382c",
+   "#b9543b",
+   "#c87c5e",
+   "#d2a286"
+  ],
+  "m1": [
+   "#1b1419",
+   "#231b1f",
+   "#292326",
+   "#302b2d",
+   "#363334",
+   "#505050",
+   "#6c6c6c",
+   "#888888",
+   "#a4a4a4"
+  ]
+ },
+ "warnings": []
+}

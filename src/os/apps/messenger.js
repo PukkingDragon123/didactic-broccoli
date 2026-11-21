@@ -1,6 +1,7 @@
 // Pichat: the instant messenger (suppliers, neighbours, sellers, spam bots). Conversations persist in the save.
 //   const t = game.os.messenger.thread({ id, name, avatar, kind: 'supplier'|'npc'|'seller'|'spam', status?, about? })
-//       avatar: a portrait look object (see portraitURL in src/os/art.js) or a data URL. Calling thread() again with the
+//       avatar: a data URL, { person: { character | preset, seed } }, or an old portrait look object; every contact's
+//       picture is a render of a real in-game 3D person (src/os/avatars.js). Calling thread() again with the
 //       same id returns the same conversation (with its saved messages), so register handlers at start-up every time.
 //   t.post({ from: 'them'|'me'|'system', text, choices?: [{ label, value }], delay? (s), qte?: { seconds, timeout } })
 //       choices show as reply buttons; qte makes them a timed choice (os.qte) when you read it: the value
@@ -10,7 +11,7 @@
 //   t.choose(value), t.messages, t.unread, t.markRead(), t.setStatus('online'|'away'|'offline'), t.block(), t.pending()
 //   game.os.messenger.open(id), .threads(), .unread()
 import { h, esc, ic, btn } from './ui.js';
-import { portraitURL } from '../art.js';
+import { avatarFor } from '../avatars.js';
 import { now, stampText } from '../time.js';
 import { Game } from '../../game/Game.js';
 
@@ -123,7 +124,12 @@ export function installMessenger(game, os) {
   // count what was still queued in the save
   for (const d of Object.values(st.threads)) for (const m of d.msgs) if (!m.shown) pendingN++;
 
-  const avaURL = (a) => (typeof a === 'string' ? a : portraitURL(a || {}));
+  // contact pictures: renders of the real 3D people, swapped in wherever they show once they're ready
+  const AVA = 48;
+  const avaURL = (d) => avatarFor(game, d.id, d.avatar, (url) => {
+    for (const img of os.root.querySelectorAll('img[data-ava]')) if (img.dataset.ava === d.id) img.src = url;
+  }, AVA);
+  const avaImg = (d, px) => h('img', { class: 'c98-ava', src: avaURL(d), width: px, height: px, 'data-ava': d.id, alt: '' });
   const STATUS = { online: 'Online', away: 'Away', offline: 'Offline' };
 
   os.registerApp({
@@ -162,7 +168,7 @@ export function installMessenger(game, os) {
           list.append(h('div', { class: 'pi-g', text: `${g} (${items.length})` }));
           for (const d of items) {
             const row = h('div', { class: `pi-c${d.id === v.cur ? ' sel' : ''}${d.unread ? ' new' : ''}` },
-              h('i', { class: `pi-dot ${d.status || 'online'}` }), h('img', { class: 'c98-ava', src: avaURL(d.avatar), width: 24, height: 24 }),
+              h('i', { class: `pi-dot ${d.status || 'online'}` }), avaImg(d, 24),
               h('span', { class: 'pi-n', text: d.name }), d.unread ? h('b', { class: 'pi-u', text: d.unread }) : null);
             row.addEventListener('click', () => select(d.id));
             row.addEventListener('contextmenu', (e) => { e.preventDefault(); const t = get(d.id); os.menu([{ label: 'Send Message', bold: true, action: () => select(d.id) }, { label: 'View Profile', action: () => profile(t) }, { sep: true }, { label: d.blocked ? 'Unblock' : 'Block', action: () => { if (d.blocked) { d.blocked = false; redraw(t); } else block(t); } }], os.local(e)); });
@@ -178,7 +184,7 @@ export function installMessenger(game, os) {
         const t = get(v.cur), d = t.d;
         t.markRead();
         win.setTitle(`${d.name} - Pichat`);
-        const head = h('div', { class: 'pi-head' }, h('img', { class: 'c98-ava', src: avaURL(d.avatar), width: 48, height: 48 }),
+        const head = h('div', { class: 'pi-head' }, avaImg(d, 48),
           h('div', { class: 'pi-hn', html: `<b>${esc(d.name)}</b><small><i class="pi-dot ${d.status}"></i>${esc(STATUS[d.status] || 'Online')}${d.kind === 'spam' ? ' - not in your contact list' : ''}</small>` }),
           d.blocked ? null : btn('Block', () => block(t), { cls: 'small' }));
         const log = h('div', { class: 'pi-log c98-list' });
@@ -216,7 +222,7 @@ export function installMessenger(game, os) {
         log.scrollTop = log.scrollHeight;
         v.typing();
       };
-      const profile = (t) => os.dialog({ title: `${t.name} - Profile`, icon: 'os_user', html: `<p><img class="c98-ava" src="${avaURL(t.d.avatar)}" width="72" height="72" style="float:right;margin-left:10px"><b>${esc(t.name)}</b></p><p>${esc(t.d.about || 'No profile information.')}</p><p class="c98-dim">Pichat ID: ${esc(t.id)}<br>In your list since ${esc(stampText(game, t.d.since || 0))}</p>` });
+      const profile = (t) => os.dialog({ title: `${t.name} - Profile`, icon: 'os_user', html: `<p><img class="c98-ava" src="${avaURL(t.d)}" data-ava="${esc(t.id)}" width="96" height="96" style="float:right;margin-left:10px"><b>${esc(t.name)}</b></p><p>${esc(t.d.about || 'No profile information.')}</p><p class="c98-dim">Pichat ID: ${esc(t.id)}<br>In your list since ${esc(stampText(game, t.d.since || 0))}</p>` });
       const block = async (t) => { if (await os.confirm(`Block ${t.name}? You will no longer receive messages from them.`, 'Block contact')) { t.block(); if (t.kind === 'spam') os.achievements?.unlock('os_spam_spotter'); } };
       win.onArgs = (a) => { if (a?.thread) select(a.thread); };
       if (!v.cur) v.cur = Object.values(st.threads).sort((a, b) => (b.unread || 0) - (a.unread || 0) || (b.last || 0) - (a.last || 0))[0]?.id || null;

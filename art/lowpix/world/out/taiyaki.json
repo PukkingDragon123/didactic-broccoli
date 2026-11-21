@@ -1,0 +1,34 @@
+{
+ "id": "taiyaki",
+ "src": "sketchfab:a8ca187f40504b9084b9052c569e5122",
+ "credit": {
+  "title": "Taiyaki",
+  "author": "patrakeevasveta",
+  "authorUrl": "https://sketchfab.com/patrakeevasveta",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/taiyaki-a8ca187f40504b9084b9052c569e5122",
+  "site": "Sketchfab"
+ },
+ "tris": 2600,
+ "tex": 128,
+ "size": [
+  0.067,
+  0.04,
+  0.01
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#6d1a0a",
+   "#8c2e0f",
+   "#a94715",
+   "#c6641d",
+   "#dc842b",
+   "#dea14b",
+   "#e0b96b",
+   "#e4cd89",
+   "#e9dea6"
+  ]
+ },
+ "warnings": []
+}

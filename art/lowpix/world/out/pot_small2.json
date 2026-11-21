@@ -1,0 +1,67 @@
+{
+ "id": "pot_small2",
+ "src": "sketchfab:62fd35b2f0fc4dad81f1b217d1c4a761",
+ "credit": {
+  "title": "Potted Plant(small)",
+  "author": "kyuukonneko",
+  "authorUrl": "https://sketchfab.com/kyuukonneko",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/potted-plantsmall-62fd35b2f0fc4dad81f1b217d1c4a761",
+  "site": "Sketchfab"
+ },
+ "tris": 2498,
+ "tex": 256,
+ "size": [
+  0.108,
+  0.2,
+  0.108
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#251f69",
+   "#2c2c86",
+   "#3942a3",
+   "#4b5ebb",
+   "#6c82c3",
+   "#839ac9",
+   "#99b0cf",
+   "#aec2d6",
+   "#c2d3de"
+  ],
+  "m1": [
+   "#19391d",
+   "#234924",
+   "#2f582d",
+   "#3e6637",
+   "#4e7443",
+   "#688d57",
+   "#83a170",
+   "#9eb08e",
+   "#b7c0ab"
+  ],
+  "m2": [
+   "#47383d",
+   "#5a4b4f",
+   "#6c6062",
+   "#7d7677",
+   "#8d8d8d",
+   "#9d9d9d",
+   "#acacac",
+   "#bcbcbc",
+   "#cccccc"
+  ],
+  "m3": [
+   "#210c0b",
+   "#2b1210",
+   "#331a14",
+   "#3c2319",
+   "#442c1f",
+   "#684a33",
+   "#8b6b49",
+   "#a98d64",
+   "#baab8b"
+  ]
+ },
+ "warnings": []
+}

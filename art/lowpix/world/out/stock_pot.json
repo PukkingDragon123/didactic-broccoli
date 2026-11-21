@@ -1,0 +1,34 @@
+{
+ "id": "stock_pot",
+ "src": "sketchfab:7a495d8d87c244579367235754679903",
+ "credit": {
+  "title": "Indonesian Style Meatball Pot / Stock Pot",
+  "author": "Poligonik",
+  "authorUrl": "https://sketchfab.com/Poligonik",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/indonesian-style-meatball-pot-stock-pot-7a495d8d87c244579367235754679903",
+  "site": "Sketchfab"
+ },
+ "tris": 2677,
+ "tex": 296,
+ "size": [
+  0.325,
+  0.4,
+  0.264
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3d3034",
+   "#4d4144",
+   "#5d5254",
+   "#6b6566",
+   "#797979",
+   "#8b8b8b",
+   "#9e9e9e",
+   "#b0b0b0",
+   "#c3c3c3"
+  ]
+ },
+ "warnings": []
+}

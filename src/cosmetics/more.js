@@ -1,6 +1,6 @@
 // The 1999 closet: 46 more pieces for the dressing room, all things you'd see on a Tokyo back lane that spring (school
 // uniforms and a kogal's loose socks, a yukata, a school jersey, a salaryman's loosened tie, hay-fever goggles, a folded
-// newspaper kabuto for Children's Day...), plus the free Duck Head for following the game on itch.io. Each says how you
+// newspaper kabuto for Children's Day...), plus the free Duck Head (a thank-you gift). Each says how you
 // get it, in the catalogue's terms (src/cosmetics/catalog.js): shop (the closet, maybe from a shop level), web
 // (kirakira-closet.jp), ach (an achievement: rewards.js hands it over), quest (a lane side quest), capsule (a rare bonus in
 // a gacha series), secondhand (only at Off-Hobby, the junk market), itch (src/cosmetics/itch.js).
@@ -72,7 +72,7 @@ export function moreCosmetics(K) {
 
   return [
     // ================================================================== hats
-    { id: 'cx_duck', slot: 'hat', name: 'Duck Head', price: 0, rarity: 'rare', itch: true, cover: true, desc: 'A whole duck, for your whole head. Free, with our thanks for following the game.', ...onHead('cx_duck', V99.duck) },
+    { id: 'cx_duck', slot: 'hat', name: 'Duck Head', price: 0, rarity: 'rare', itch: true, cover: true, desc: 'A whole duck, for your whole head. Free, with our thanks for playing.', ...onHead('cx_duck', V99.duck) },
     { id: 'cx_hachimaki', slot: 'hat', name: 'Hisshō Hachimaki', price: 300, rarity: 'common', shop: true, desc: 'Certain Victory! For exams, festivals and very hard gacha pulls.', ...onHead('cx_hachimaki', V99.hachimaki) },
     { id: 'cx_kabuto', slot: 'hat', name: 'Newspaper Kabuto', price: 100, rarity: 'common', shop: true, desc: "Folded from yesterday's Asahi for Children's Day. Still smells of ink.", ...onCrown('cx_kabuto', V99.kabuto, [0, -1.2, 0]) },
     { id: 'cx_sakuraclip', slot: 'hat', name: 'Sakura Hair Clip', price: 300, rarity: 'common', shop: true, desc: 'One blossom, clipped on for hanami season.', ...onCrown('cx_sakuraclip', V99.sakuraClip, [7.4, 10.5, 5.2], [0, 1.15, 0.15]) },

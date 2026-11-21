@@ -1,0 +1,45 @@
+{
+ "id": "wear_groucho",
+ "src": "sketchfab:1151241545284140994ea6a5b2b8d2dd",
+ "credit": {
+  "title": "groucho glasses",
+  "author": "selefthe",
+  "authorUrl": "https://sketchfab.com/selefthe",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/groucho-glasses-1151241545284140994ea6a5b2b8d2dd",
+  "site": "Sketchfab"
+ },
+ "tris": 900,
+ "tex": 176,
+ "size": [
+  0.152,
+  0.08,
+  0.066
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#0c090a",
+   "#0f0c0d",
+   "#121010",
+   "#141313",
+   "#171717",
+   "#373737",
+   "#575757",
+   "#777777",
+   "#979797"
+  ],
+  "m1": [
+   "#5c001f",
+   "#78001f",
+   "#95001a",
+   "#b10010",
+   "#cc0102",
+   "#f21805",
+   "#f74b2a",
+   "#f67c55",
+   "#f6a67f"
+  ]
+ },
+ "warnings": []
+}

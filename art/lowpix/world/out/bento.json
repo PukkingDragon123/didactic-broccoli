@@ -1,0 +1,100 @@
+{
+ "id": "bento",
+ "src": "sketchfab:f27d78a4526a4fe685b5ae2f75f60c11",
+ "credit": {
+  "title": "Low Poly Bento | 弁当",
+  "author": "SaltySaveState",
+  "authorUrl": "https://sketchfab.com/SaltySaveState",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-bento-f27d78a4526a4fe685b5ae2f75f60c11",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 352,
+ "size": [
+  0.127,
+  0.06,
+  0.126
+ ],
+ "colours": 38,
+ "palette": {
+  "m0": [
+   "#150003",
+   "#1b0103",
+   "#210101",
+   "#270502",
+   "#2c0a03",
+   "#662009",
+   "#9e4010",
+   "#d4681a",
+   "#e59748"
+  ],
+  "m1": [
+   "#035511",
+   "#066e0f",
+   "#09850a",
+   "#199c0e",
+   "#2db213",
+   "#49d51b",
+   "#71e239",
+   "#98e561",
+   "#b8e988"
+  ],
+  "m2": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m3": [
+   "#5c0020",
+   "#780020",
+   "#95001b",
+   "#b10011",
+   "#cc0104",
+   "#f21505",
+   "#f7492a",
+   "#f67b55",
+   "#f6a57f"
+  ],
+  "m4": [
+   "#621d0d",
+   "#7e3013",
+   "#99471a",
+   "#b36222",
+   "#cc7f2b",
+   "#d49c47",
+   "#d8b567",
+   "#ddc986",
+   "#e3daa4"
+  ],
+  "m5": [
+   "#8c4300",
+   "#b76600",
+   "#e19100",
+   "#ffbd0d",
+   "#ffd938",
+   "#fceb56",
+   "#fbf773",
+   "#fafa8f",
+   "#fafaab"
+  ],
+  "m6": [
+   "#050404",
+   "#060506",
+   "#080707",
+   "#090808",
+   "#0a0a0a",
+   "#2c2c2c",
+   "#4d4d4d",
+   "#6f6f6f",
+   "#919191"
+  ]
+ },
+ "warnings": []
+}

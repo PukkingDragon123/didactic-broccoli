@@ -2,7 +2,7 @@
  "name": "lane_far",
  "description": "Lane houses hf-2325_1630, hf-1810_1590, hf-1242_1490, hf-450_1650, hf140_1660, hf725_1600, hf1270_1840, hf1820_1600",
  "license": "CC0-1.0",
- "density": 16,
+ "density": 32,
  "budget": {
   "tris": 90000,
   "colors": 900

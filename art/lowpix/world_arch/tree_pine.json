@@ -69,7 +69,7 @@
      "op": "photo",
      "src": "/home/user/didactic-broccoli/art/lowpix/world_arch/photos/pine_bark",
      "scale": 0.9,
-     "amount": 0.85,
+     "amount": 0.7,
      "mode": "colour"
     },
     {
@@ -90,9 +90,9 @@
   },
   "core": {
    "ramp": "core",
-   "tone": 1.9,
+   "tone": 1.5,
    "rim": {
-    "light_shift": 0.4,
+    "light_shift": 0.3,
     "dark_shift": -0.6
    },
    "brush": {

@@ -32,7 +32,7 @@ export function summaryHTML(game, d) {
   const note = d.tomorrow?.find((s) => s.note)?.note || '';
   return `<div class="ds-card">${game.logo?.receiptHead?.() || ''}<div class="ds-h"><b>Closing time</b><span>Day ${d.day} - ${esc(cal.format(d.day, true))}</span></div>
     <div class="ds-grid">
-      ${row('people', 'Customers', d.customers)}${row('capsule', 'Turns played', d.plays)}
+      ${row('people', 'Customers', d.customers)}${row('machine', 'Turns played', d.plays)}
       ${row('coin', 'Coins collected', formatYen(d.coins))}${row('sell', 'Figures sold', d.sold)}
       ${row('yen', 'Money in', formatYen(d.earned), d.earned > 0 ? 'pos' : '')}${row('wallet', 'Money out', formatYen(d.spent), d.spent > 0 ? 'neg' : '')}
       ${row('chat', 'Complaints', d.complaints, d.complaints > 0 ? 'neg' : '')}${row('star', 'XP gained', `+${d.xp} (Lv ${d.level})`)}

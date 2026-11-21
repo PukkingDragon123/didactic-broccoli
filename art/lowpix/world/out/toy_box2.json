@@ -1,0 +1,45 @@
+{
+ "id": "toy_box2",
+ "src": "sketchfab:e12493a7481548129179d926b9a15b35",
+ "credit": {
+  "title": "Toy box",
+  "author": "Wyme",
+  "authorUrl": "https://sketchfab.com/Wyme",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/toy-box-e12493a7481548129179d926b9a15b35",
+  "site": "Sketchfab"
+ },
+ "tris": 880,
+ "tex": 512,
+ "size": [
+  0.389,
+  0.4,
+  0.226
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#34262b",
+   "#423337",
+   "#504144",
+   "#5c5051",
+   "#686060",
+   "#7b7878",
+   "#8f8f8f",
+   "#a4a4a4",
+   "#b9b9b9"
+  ],
+  "m1": [
+   "#4b1b14",
+   "#5f2a1c",
+   "#743c25",
+   "#87502f",
+   "#99653a",
+   "#b38249",
+   "#bd9d68",
+   "#c7b488",
+   "#d2c8a6"
+  ]
+ },
+ "warnings": []
+}

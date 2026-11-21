@@ -11,6 +11,8 @@
 //   dust(x, y, { n, s, spread, up })   pixel-art dust puffs and wood chips at a screen point
 //   knock(kind, vol)         'wood' | 'press' | 'tin' | 'chain' | 'hover'
 //   pointer                  { x, y, vx, vy } (screen px, px/s)
+import './phys.css';
+import './float.css';
 import { audio } from '../core/audio.js';
 import { art, rng, shade, hex, INK } from '../menu/pixel.js';
 
@@ -29,8 +31,10 @@ export function knock(kind = 'wood', vol = 1) {
 export class Spring {
   constructor(k = 90, c = 10, x = 0) { this.k = k; this.c = c; this.x = x; this.v = 0; this.to = x; }
   step(dt) {
+    if (!(dt > 0)) return this.x;
     dt = Math.min(dt, 0.05);
     for (let i = 0; i < 2; i++) { this.v += (-(this.x - this.to) * this.k - this.v * this.c) * dt / 2; this.x += this.v * dt / 2; }
+    if (!Number.isFinite(this.x) || Math.abs(this.x - this.to) > 400) { this.x = this.to; this.v = 0; }
     return this.x;
   }
   get still() { return Math.abs(this.v) < 0.002 && Math.abs(this.x - this.to) < 0.002; }
@@ -350,6 +354,22 @@ function pollPad(t) {
   }
 }
 
+// ------------------------------------------------------------------ panels swing shut instead of vanishing
+// (#pause / #share are hidden by a class from many places: when it goes on, it's held off for the closing swing)
+function closeSwing(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let busy = false;
+  new MutationObserver(() => {
+    if (busy || !el.classList.contains('hidden') || el.dataset.phWas !== '1') { el.dataset.phWas = el.classList.contains('hidden') ? '0' : '1'; return; }
+    busy = true;
+    el.classList.remove('hidden'); el.classList.add('ph-closing');
+    knock('wood', 0.5);
+    setTimeout(() => { el.classList.remove('ph-closing'); el.classList.add('hidden'); el.dataset.phWas = '0'; busy = false; }, 220);
+  }).observe(el, { attributes: true, attributeFilter: ['class'] });
+  el.dataset.phWas = el.classList.contains('hidden') ? '0' : '1';
+}
+
 /** Once: the textures, the parallax, the press feedback and the focus helpers. */
 export function installPhys() {
   if (installed) return;
@@ -360,5 +380,6 @@ export function installPhys() {
   addEventListener('pointerover', onOver, { passive: true });
   addEventListener('keydown', onKey);
   document.body.classList.add('phys-ui');
+  closeSwing('pause'); closeSwing('share');
   requestAnimationFrame(pollPad);
 }

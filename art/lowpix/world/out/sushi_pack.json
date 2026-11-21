@@ -1,0 +1,78 @@
+{
+ "id": "sushi_pack",
+ "src": "sketchfab:fd2598a0b5f44e9abf9ff01fc7cb930c",
+ "credit": {
+  "title": "Japanese food pack sushi - FREE",
+  "author": "Brushzim",
+  "authorUrl": "https://sketchfab.com/brushzim",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-food-pack-sushi-free-fd2598a0b5f44e9abf9ff01fc7cb930c",
+  "site": "Sketchfab"
+ },
+ "tris": 2900,
+ "tex": 512,
+ "size": [
+  0.178,
+  0.05,
+  0.23
+ ],
+ "colours": 39,
+ "palette": {
+  "m0": [
+   "#010b3a",
+   "#03144a",
+   "#05215a",
+   "#083069",
+   "#0b4178",
+   "#1267a5",
+   "#1b93d0",
+   "#3db8e2",
+   "#6dd2e6"
+  ],
+  "m1": [
+   "#680f1a",
+   "#86151a",
+   "#a2221d",
+   "#bd3926",
+   "#d25636",
+   "#d57a55",
+   "#d99973",
+   "#deb38f",
+   "#e4caab"
+  ],
+  "m2": [
+   "#371e18",
+   "#462b22",
+   "#553a2b",
+   "#634936",
+   "#705941",
+   "#8a7455",
+   "#9f8f6d",
+   "#aea68c",
+   "#bfbca9"
+  ],
+  "m3": [
+   "#a20c00",
+   "#d32100",
+   "#ff4206",
+   "#ff7837",
+   "#ffa669",
+   "#fdbd80",
+   "#fcd096",
+   "#fbe0ab",
+   "#fbecc0"
+  ],
+  "m4": [
+   "#264119",
+   "#375323",
+   "#49652d",
+   "#5b7538",
+   "#6f8544",
+   "#8b9d56",
+   "#a2ac71",
+   "#b6b98f",
+   "#c7c8ab"
+  ]
+ },
+ "warnings": []
+}

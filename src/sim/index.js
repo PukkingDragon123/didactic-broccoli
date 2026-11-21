@@ -1,5 +1,5 @@
 // The shop simulation core: time, calendar, bills, levels, pricing and demand, loans, the day summary.
-//   createSim(game)   -> game.calendar, game.clock, game.bills, game.progress, game.sim (+ game.sim.loans); called by
+//   createSim(game)   -> game.calendar, game.clock, game.bills, game.progress, game.unlocks, game.sim (+ game.sim.loans); called by
 //                        src/game/Lighting.js as soon as the world exists, so everything later can rely on them
 //   installSim(game)  -> the per-frame update, the HUD clock / level bar, the summary card and the customer hooks;
 //                        run from src/plugins/sim.js once the whole game is built
@@ -7,6 +7,7 @@ import { Calendar } from './calendar.js';
 import { Clock } from './clock.js';
 import { Bills } from './bills.js';
 import { Progress } from './progress.js';
+import { Unlocks } from './unlocks.js';
 import { Sim } from './sim.js';
 import { SimAchievements } from './achievements.js';
 import { SimHud } from './hud.js';
@@ -19,6 +20,7 @@ export function createSim(game) {
   game.clock = new Clock(game);
   game.bills = new Bills(game);
   game.progress = new Progress(game);
+  game.unlocks = new Unlocks(game);
   game.sim = new Sim(game);
   game.simAchievements = new SimAchievements(game);
   const ev = game.events;
@@ -57,6 +59,7 @@ export function installSim(game) {
     if (dm > 0 && dm < 5 * 1440) acc += dm;
     if (acc >= 2) { g.bills.meter(acc); acc = 0; }
     g.progress.update();
+    g.unlocks.update(dt);
     g.sim.update();
     g.simAchievements.update(dt);
     g.simHud.update(dt);

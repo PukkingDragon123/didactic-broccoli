@@ -1,0 +1,56 @@
+{
+ "id": "lantern_paper",
+ "src": "sketchfab:99a3c92192d04d088c9241d1cab3e765",
+ "credit": {
+  "title": "Japanese paper lantern",
+  "author": "patrakeevasveta",
+  "authorUrl": "https://sketchfab.com/patrakeevasveta",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-paper-lantern-99a3c92192d04d088c9241d1cab3e765",
+  "site": "Sketchfab"
+ },
+ "tris": 2468,
+ "tex": 304,
+ "size": [
+  0.184,
+  0.4,
+  0.184
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#543f33",
+   "#6b5645",
+   "#816e58",
+   "#95866d",
+   "#a39b88",
+   "#ada99b",
+   "#b8b6ad",
+   "#c3c3bf",
+   "#d0d0cf"
+  ],
+  "m1": [
+   "#36160e",
+   "#452114",
+   "#532e1a",
+   "#613d21",
+   "#6e4d28",
+   "#8f6d38",
+   "#af904a",
+   "#bdab6d",
+   "#cac292"
+  ],
+  "m2": [
+   "#0d0a08",
+   "#110e0b",
+   "#14120e",
+   "#171512",
+   "#1a1915",
+   "#3c3b33",
+   "#5b5b53",
+   "#797975",
+   "#979797"
+  ]
+ },
+ "warnings": []
+}

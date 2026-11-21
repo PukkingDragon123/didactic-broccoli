@@ -1,0 +1,89 @@
+{
+ "id": "wear_backpack",
+ "src": "sketchfab:d7225bdd1d6c42d992485d72438cab28",
+ "credit": {
+  "title": "Backpack low-poly",
+  "author": "dimaponomar2019",
+  "authorUrl": "https://sketchfab.com/dimaponomar2019",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/backpack-low-poly-d7225bdd1d6c42d992485d72438cab28",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 360,
+ "size": [
+  0.349,
+  0.45,
+  0.346
+ ],
+ "colours": 45,
+ "palette": {
+  "m0": [
+   "#34181c",
+   "#432122",
+   "#512d2b",
+   "#5e3a35",
+   "#6a4940",
+   "#846355",
+   "#9b7e6d",
+   "#ab9a8b",
+   "#bcb3a9"
+  ],
+  "m1": [
+   "#1b1b25",
+   "#24252f",
+   "#2e3039",
+   "#393b42",
+   "#44464a",
+   "#5f6061",
+   "#7a7a7a",
+   "#939393",
+   "#acacac"
+  ],
+  "m2": [
+   "#501d2e",
+   "#672838",
+   "#7c3440",
+   "#914148",
+   "#a44f4f",
+   "#b16d67",
+   "#ba8c82",
+   "#c5a69c",
+   "#d1beb5"
+  ],
+  "m3": [
+   "#232742",
+   "#303755",
+   "#3e4966",
+   "#4c5c76",
+   "#5c6f86",
+   "#718698",
+   "#8b9ba5",
+   "#a4afb4",
+   "#bbc2c3"
+  ],
+  "m4": [
+   "#255218",
+   "#386a22",
+   "#4d802c",
+   "#649538",
+   "#7ca944",
+   "#96b85b",
+   "#acc078",
+   "#bfca94",
+   "#d0d4af"
+  ],
+  "m5": [
+   "#48310a",
+   "#5d470f",
+   "#715e14",
+   "#84771a",
+   "#969221",
+   "#b7b72d",
+   "#cdcd44",
+   "#d4d46a",
+   "#dcdc8f"
+  ]
+ },
+ "warnings": []
+}

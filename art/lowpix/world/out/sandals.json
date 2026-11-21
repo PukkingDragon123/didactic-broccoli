@@ -1,0 +1,34 @@
+{
+ "id": "sandals",
+ "src": "sketchfab:70e95901d171405092883675660419cc",
+ "credit": {
+  "title": "Geta",
+  "author": "Akio",
+  "authorUrl": "https://sketchfab.com/akio_illu",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/geta-70e95901d171405092883675660419cc",
+  "site": "Sketchfab"
+ },
+ "tris": 1498,
+ "tex": 128,
+ "size": [
+  0.08,
+  0.048,
+  0.167
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#130808",
+   "#190d0b",
+   "#1e110f",
+   "#221712",
+   "#271c16",
+   "#4d3b2e",
+   "#705d48",
+   "#928064",
+   "#aaa08a"
+  ]
+ },
+ "warnings": []
+}

@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell } from './shell.js';
-import { ramp, mix, seamLoop, seal, glassPane, rust, lamp, plate, seeded } from './paint.js';
+import { ramp, mix, seamLoop, seal, glassPane, rust, lamp, plate, seeded, carPaint } from './paint.js';
 import { wheelPatches, wheelGeometry, rods, vehicleMaterials, wiper } from './parts.js';
 import { Pix, FONT_JP } from '../gfx/pix.js';
 
@@ -65,7 +65,7 @@ function kanji(V, str, i, j, col, outline) {
 function paintSide(S, sx) {
   const A = S.A, U = (z) => (sx > 0 ? -z : z), I = (z) => S.i(U(z)), J = (y) => S.j(y), P = (pts) => pts.map(([z, y]) => [U(z), y]);
   A.ink(ROUGH.paint);
-  S.fill(WHITE[2]);
+  S.box(0, 0, S.W, S.H, (i, j) => carPaint(i, j, S.o.v0 + (j + 0.5) / S.ppm, WHITE, { sill: 0.5, horizon: 0.86, shoulder: 1.9, top: 2.3, ppm: S.ppm }));
   // the packer body: a deep blue band, the 清掃車 lettering, the town's name, a panel seam grid
   S.rect(U(BODY.z0), 1.08, U(BODY.z1), 1.34, BLUE[2]); S.hline(I(BODY.z0), I(BODY.z1), J(1.34) - 1, BLUE[3]); S.hline(I(BODY.z0), I(BODY.z1), J(1.08), BLUE[1]);
   S.rect(U(BODY.z0), 1.37, U(BODY.z1), 1.39, BLUE[2]);
@@ -97,7 +97,7 @@ function paintSide(S, sx) {
 function paintFront(F) {
   const A = F.A, I = (x) => F.i(x), J = (y) => F.j(y);
   A.ink(ROUGH.paint);
-  F.fill(WHITE[2]);
+  F.box(0, 0, F.W, F.H, (i, j) => carPaint(i, j, F.o.v0 + (j + 0.5) / F.ppm, WHITE, { sill: 0.45, horizon: 0.7, shoulder: 1.0, top: 1.1, ppm: F.ppm }));
   F.rect(-0.9, 1.02, 0.9, 1.08, BLUE[2]);
   const ws = [[-0.72, WS0[1] + 0.02], [0.72, WS0[1] + 0.02], [0.72, WS1[1] - 0.02], [-0.72, WS1[1] - 0.02]];
   glassPane(F, ws, { seed: 2, alpha: 140, slope: 0.4 }); seal(F, ws, RUBBER, 2);

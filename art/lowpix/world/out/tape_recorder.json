@@ -1,0 +1,45 @@
+{
+ "id": "tape_recorder",
+ "src": "sketchfab:b03cbb7090da4f8f8cd0b3e6d602117c",
+ "credit": {
+  "title": "70s Tape Recorder",
+  "author": "3DKoraX",
+  "authorUrl": "https://sketchfab.com/3DKoraX",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/70s-tape-recorder-b03cbb7090da4f8f8cd0b3e6d602117c",
+  "site": "Sketchfab"
+ },
+ "tris": 656,
+ "tex": 320,
+ "size": [
+  0.443,
+  0.1,
+  0.815
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#281f22",
+   "#332a2c",
+   "#3d3537",
+   "#474142",
+   "#504e4e",
+   "#676767",
+   "#7f7f7f",
+   "#989898",
+   "#b0b0b0"
+  ],
+  "m1": [
+   "#700025",
+   "#930025",
+   "#b5001e",
+   "#d80012",
+   "#fa0000",
+   "#fc3422",
+   "#f96648",
+   "#f8906d",
+   "#f8b391"
+  ]
+ },
+ "warnings": []
+}

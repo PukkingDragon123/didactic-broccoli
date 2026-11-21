@@ -1,0 +1,45 @@
+{
+ "id": "music_box",
+ "src": "sketchfab:a2f9d3e31f5045579881b3d671a1120f",
+ "credit": {
+  "title": "Old Music Box",
+  "author": "Friendly Ninja 27",
+  "authorUrl": "https://sketchfab.com/Starovoytovm.20",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-music-box-a2f9d3e31f5045579881b3d671a1120f",
+  "site": "Sketchfab"
+ },
+ "tris": 1900,
+ "tex": 256,
+ "size": [
+  0.108,
+  0.1,
+  0.078
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#351815",
+   "#44241d",
+   "#523125",
+   "#5f402e",
+   "#6c4f38",
+   "#886b4b",
+   "#a28961",
+   "#b0a282",
+   "#c0baa2"
+  ],
+  "m1": [
+   "#47280d",
+   "#5b3a13",
+   "#6e4e1a",
+   "#806421",
+   "#927c29",
+   "#b1a236",
+   "#c5c04f",
+   "#cdcd73",
+   "#d6d696"
+  ]
+ },
+ "warnings": []
+}

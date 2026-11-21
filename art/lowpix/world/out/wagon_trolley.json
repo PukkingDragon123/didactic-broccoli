@@ -1,0 +1,67 @@
+{
+ "id": "wagon_trolley",
+ "src": "sketchfab:83de0775ba294d268e227c5364e06522",
+ "credit": {
+  "title": "Old serving trolley",
+  "author": "PNLACARA",
+  "authorUrl": "https://sketchfab.com/TheRobber95",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-serving-trolley-83de0775ba294d268e227c5364e06522",
+  "site": "Sketchfab"
+ },
+ "tris": 2473,
+ "tex": 512,
+ "size": [
+  1.122,
+  0.8,
+  0.611
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#3c3f51",
+   "#515667",
+   "#676e7b",
+   "#7f858e",
+   "#999c9f",
+   "#aaaaaa",
+   "#b7b7b7",
+   "#c5c5c5",
+   "#d2d2d2"
+  ],
+  "m1": [
+   "#351d19",
+   "#442a23",
+   "#52382d",
+   "#5f4738",
+   "#6c5643",
+   "#857158",
+   "#9b8b70",
+   "#aba38e",
+   "#bcb9ab"
+  ],
+  "m2": [
+   "#0e0608",
+   "#12090a",
+   "#150b0c",
+   "#190e0e",
+   "#1c1211",
+   "#422f2b",
+   "#664f46",
+   "#897164",
+   "#a39489"
+  ],
+  "m3": [
+   "#360c07",
+   "#45160a",
+   "#54220e",
+   "#622f12",
+   "#703f17",
+   "#986123",
+   "#be8830",
+   "#d0aa52",
+   "#d8c47d"
+  ]
+ },
+ "warnings": []
+}

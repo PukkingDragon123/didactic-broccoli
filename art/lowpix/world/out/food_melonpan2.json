@@ -1,0 +1,56 @@
+{
+ "id": "food_melonpan2",
+ "src": "sketchfab:3b8974956355439a8ebff8ed4036e588",
+ "credit": {
+  "title": "Pan",
+  "author": "cameronzavala",
+  "authorUrl": "https://sketchfab.com/cameronzavala",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pan-3b8974956355439a8ebff8ed4036e588",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 512,
+ "size": [
+  0.295,
+  0.05,
+  0.136
+ ],
+ "colours": 20,
+ "palette": {
+  "m0": [
+   "#330703",
+   "#420f04",
+   "#501907",
+   "#5e260a",
+   "#6b340d",
+   "#985715",
+   "#c47f1f",
+   "#dca73d",
+   "#e1c46d"
+  ],
+  "m1": [
+   "#302622",
+   "#3d342e",
+   "#49413b",
+   "#544f49",
+   "#5f5c57",
+   "#737270",
+   "#888888",
+   "#9f9f9f",
+   "#b5b5b5"
+  ],
+  "m2": [
+   "#4c3c1f",
+   "#61522a",
+   "#766937",
+   "#898145",
+   "#9b9953",
+   "#aaaa6a",
+   "#b4b484",
+   "#c0c09e",
+   "#cdcdb7"
+  ]
+ },
+ "warnings": []
+}

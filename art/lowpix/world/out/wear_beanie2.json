@@ -1,0 +1,34 @@
+{
+ "id": "wear_beanie2",
+ "src": "sketchfab:24c96b6714b14d98953bcf72ddcbe3e2",
+ "credit": {
+  "title": "Beanie",
+  "author": "r4ulp3rcy",
+  "authorUrl": "https://sketchfab.com/r4ulp3rcy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/beanie-24c96b6714b14d98953bcf72ddcbe3e2",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 300,
+ "size": [
+  0.666,
+  0.16,
+  0.71
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#072252",
+   "#0b346a",
+   "#0f4a80",
+   "#156396",
+   "#1b7eab",
+   "#24a6cc",
+   "#42c3d9",
+   "#69d6de",
+   "#8ee3e2"
+  ]
+ },
+ "warnings": []
+}

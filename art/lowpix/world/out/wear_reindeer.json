@@ -1,0 +1,67 @@
+{
+ "id": "wear_reindeer",
+ "src": "sketchfab:60b0f5bad10749208e9cb8e80082fbba",
+ "credit": {
+  "title": "Christmas Reindeer Headband",
+  "author": "Veicoo",
+  "authorUrl": "https://sketchfab.com/Veicoo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/christmas-reindeer-headband-60b0f5bad10749208e9cb8e80082fbba",
+  "site": "Sketchfab"
+ },
+ "tris": 1998,
+ "tex": 288,
+ "size": [
+  0.289,
+  0.2,
+  0.014
+ ],
+ "colours": 26,
+ "palette": {
+  "m0": [
+   "#410117",
+   "#540217",
+   "#660415",
+   "#770711",
+   "#880a0b",
+   "#b41d10",
+   "#de3818",
+   "#e76941",
+   "#ea9870"
+  ],
+  "m1": [
+   "#261e20",
+   "#30282a",
+   "#3a3334",
+   "#433f3f",
+   "#4b4b4b",
+   "#646464",
+   "#7d7d7d",
+   "#959595",
+   "#aeaeae"
+  ],
+  "m2": [
+   "#600017",
+   "#7e0014",
+   "#9b000b",
+   "#b60402",
+   "#d01906",
+   "#f4340b",
+   "#f36635",
+   "#f2915e",
+   "#f3b486"
+  ],
+  "m3": [
+   "#004f16",
+   "#006715",
+   "#027d10",
+   "#059209",
+   "#10a708",
+   "#27d00d",
+   "#4bed1f",
+   "#7ced4c",
+   "#a6ef78"
+  ]
+ },
+ "warnings": []
+}

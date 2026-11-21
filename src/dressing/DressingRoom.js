@@ -7,7 +7,7 @@
 // (state.avatar, game.events 'avatar'), with a little puff of cloth dust, a hop and a rustle (a rare piece adds a few
 // sparkles and a soft note). Pieces you don't own yet are ink silhouettes under a hanko padlock; you can still try them on
 // ("not yours yet") and the slip says how to get them, with progress where it can be counted. Shop pieces are bought
-// right here with yen; the Duck Head's slip has a "Follow on itch.io" button (src/cosmetics/itch.js). New arrivals wear a
+// right here with yen; the Duck Head's slip has a "Take it" button (a free gift, src/cosmetics/itch.js). New arrivals wear a
 // NEW sticker until you've looked at them (save: 'dressing').
 //   const room = new DressingRoom(game);  room.open({ from: 'menu' | 'mirror' }) -> Promise (resolves on close)
 import './dressing.css';
@@ -41,7 +41,7 @@ const LINES = ['Ooh!', 'Hmm, nice.', 'Fits!', 'Looking good.', 'Is this too much
 const ITEM_LINES = { dino: 'Rawr!', chicken: 'Bawk!', frog: 'Ribbit.', shark: 'Chomp chomp.', banana: 'I am bananas.', cone: 'Road work ahead.', box: 'Beep boop.', groucho: 'Nobody will know.', happi: 'Wasshoi!', bear: 'Grr. Cute grr.', nigiri: 'Fresh!', kitsune: 'Festival time!', stars: 'Superstar!', cx_crown: 'Bow, lane!', cx_pigeon: 'Poppo.', cx_cow: 'Moo.', cx_shiba: 'Wan!', cx_calico: 'Nya.', cx_pompadour: 'Nobody touch it.', cx_goldkicks: 'Shiny!', cx_paperbag: "Don't look at me.", cx_ranger: 'Henshin!', cx_astro: 'One small step...',
   cx_duck: 'Quack.', cx_tengu: 'My nose!', cx_daruma: 'Wish granted.', cx_kabuto: 'Banzai!', cx_hachimaki: 'Hisshō!', cx_tanuki: 'Pon-poko!', cx_tanukitail: 'Pon-poko!', cx_chonmage: 'Gozaru.', cx_kagami: 'Akemashite!', cx_santa: 'Cake! Cake for sale!', cx_kogal: 'Cho-kawaii!', cx_overtime: 'One more beer.', cx_toilet: 'Un ga tsuku.', cx_capsulehat: 'Gacha gacha!', cx_kaiser: 'Hmm. Quite.', cx_jersey: 'Gym class.', cx_furoshiki: 'Not a thief. Promise.' };
 const KEY_HELP = 'Arrows · Enter wear · Q/E tabs · Z/X zoom · Esc';
-const HOW_ICON = { ach: 'os_trophy', quest: 'star', capsule: 'capsule', web: 'cart', level: 'upgrade', itch: 'heart' };
+const HOW_ICON = { ach: 'os_trophy', quest: 'star', capsule: 'figure', web: 'cart', level: 'upgrade', itch: 'heart' };
 
 export class DressingRoom {
   constructor(game) {
@@ -318,7 +318,7 @@ export class DressingRoom {
         act = `<button class="dr-act buy${short ? ' off' : ''}" data-act="buy">${ic('cart', 2)}<span>Buy ${esc(yen(c.price))}</span></button>`;
       } else if (h.kind === 'itch') {
         how = `<div class="dr-how-slip itch"><b>${pixText(h.label.toUpperCase(), { s: 1, col: '#c8322c' })}</b><span class="dr-how-t">${esc(h.text)}</span><small>${esc(h.sub)}</small></div>`;
-        act = `<button class="dr-act itch" data-act="itch">${ic('heart', 2)}<span>Follow on itch.io</span></button>`;
+        act = `<button class="dr-act itch" data-act="itch">${ic('heart', 2)}<span>Take it</span></button>`;
       } else {
         how = `<div class="dr-how-slip"><b>${pixText(h.label.toUpperCase(), { s: 1, col: '#c8322c' })}</b><span class="dr-how-t">${esc(h.text)}</span>${h.sub ? `<small>${esc(h.sub)}</small>` : ''}${bar}</div>`;
         act = '<span class="dr-act no">Not yours yet</span>';
@@ -407,7 +407,7 @@ export class DressingRoom {
     this.stampShow(false);
   }
 
-  /** The Duck Head's slip: the itch.io page opens in a new tab and the duck is yours (we can't check: honour system). */
+  /** The Duck Head's slip: the duck is yours, a free gift. */
   followItch() {
     const got = claimItch(this.game);
     if (!got) return;

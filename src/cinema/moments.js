@@ -152,8 +152,9 @@ export class Moments {
     const pos = () => holder.getWorldPosition(_v);
     if (r === 'rare' && isNew) J.kana.spawn({ kind: 'go', at: pos, n: 2, dur: 1.6, size: 0.45, sound: false });
     if (r === 'ultra') {
+      // (the lettering only: a full-screen impact frame on every ultra read as the screen glitching to black)
       sting('reveal', { delay: 0.4 });
-      g.tweens.wait(0.45, () => J.impact.frame({ at: holder.getWorldPosition(new THREE.Vector3()), palette: ['ice', 'violet'], dur: 0.45, clear: 0.12, freeze: false }));
+      g.tweens.wait(0.45, () => J.kana.spawn({ kind: 'go', at: pos, n: 3, dur: 1.6, size: 0.5, sound: false }));
     }
     if (r !== 'secret') return;
     sting('secret');

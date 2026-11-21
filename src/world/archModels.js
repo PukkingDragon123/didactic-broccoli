@@ -21,8 +21,11 @@ if (!ARCH_OFF && typeof document !== 'undefined') {
 
 export const archReady = (id) => !ARCH_OFF && !!LP_ARCH[id] && assetReady(archAsset(id));
 
-/** The lowpix atlases are pixel art seen with nearest filtering: no mip chain (keeps world_arch under ~25 MB of GPU). */
-function noMips(g) {
+/** The lowpix atlases are pixel art seen with nearest filtering: no mip chain (keeps world_arch's GPU memory down),
+ *  except the big house blocks (32 px/m walls seen down the whole lane would shimmer without one). */
+const MIPPED = new Set(['lane_near', 'lane_far']);
+function noMips(g, id = '') {
+  if (MIPPED.has(id)) return g;
   g.traverse((o) => {
     if (!o.isMesh) return;
     for (const m of [].concat(o.material)) {
@@ -34,7 +37,7 @@ function noMips(g) {
 }
 
 function put(g, parent, { x = 0, y = 0, z = 0, ry = 0, cast = true, receive = true, name } = {}) {
-  noMips(g);
+  noMips(g, (name || '').replace(/^arch:/, ''));
   g.position.set(x, y, z);
   g.rotation.y = ry;
   g.name = name || g.name;

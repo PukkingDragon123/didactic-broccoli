@@ -1,0 +1,45 @@
+{
+ "id": "pots_pans",
+ "src": "sketchfab:851f78fc9a994cd5a1c392ce28c9e414",
+ "credit": {
+  "title": "3DDecember 2021 - Copper Pots and Pans",
+  "author": "Jack Kelly",
+  "authorUrl": "https://sketchfab.com/SecretImbecile",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/3ddecember-2021-copper-pots-and-pans-851f78fc9a994cd5a1c392ce28c9e414",
+  "site": "Sketchfab"
+ },
+ "tris": 2950,
+ "tex": 512,
+ "size": [
+  1.063,
+  0.25,
+  0.932
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#ae0006",
+   "#e30b00",
+   "#ff3719",
+   "#ff744e",
+   "#ffa883",
+   "#fdbd96",
+   "#fccfa8",
+   "#fcdeb9",
+   "#fceacb"
+  ],
+  "m1": [
+   "#413337",
+   "#524448",
+   "#625759",
+   "#726b6c",
+   "#808080",
+   "#919191",
+   "#a3a3a3",
+   "#b4b4b4",
+   "#c6c6c6"
+  ]
+ },
+ "warnings": []
+}

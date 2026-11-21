@@ -26,11 +26,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DUMP = os.path.join(HERE, '..', 'houses.json')
 
 # block id -> house ids (side + x, z in cm; see houseId in Town.js) and its texel density
-BLOCKS = {  # two shared atlases (near side, far side), 16 px/m
-    'lane_near': (['hn-705_340', 'hn-1255_370', 'hn-1800_528', 'hn-2325_200', 'hn705_140', 'hn1395_390', 'hn1935_220', 'hn2420_260'], 16),
-    'lane_far': (['hf-2325_1630', 'hf-1810_1590', 'hf-1242_1490', 'hf-450_1650', 'hf140_1660', 'hf725_1600', 'hf1270_1840', 'hf1820_1600'], 16),
+BLOCKS = {  # two shared atlases (near side, far side), 32 px/m (crisp walls up close)
+    'lane_near': (['hn-705_340', 'hn-1255_370', 'hn-1800_528', 'hn-2325_200', 'hn705_140', 'hn1395_390', 'hn1935_220', 'hn2420_260'], 32),
+    'lane_far': (['hf-2325_1630', 'hf-1810_1590', 'hf-1242_1490', 'hf-450_1650', 'hf140_1660', 'hf725_1600', 'hf1270_1840', 'hf1820_1600'], 32),
 }
-LITE_PPM = 8  # the second rows behind (background, seen over the roofs): one atlas for all of them
+LITE_PPM = 12  # the second rows behind (background, seen over the roofs): one atlas for all of them
 
 # ------------------------------------------------------------------ materials -> paint
 WALLS = {  # name: (base colour, kind)

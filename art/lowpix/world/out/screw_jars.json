@@ -1,0 +1,56 @@
+{
+ "id": "screw_jars",
+ "src": "sketchfab:ca59b0f7ccd940939dac845de4ac486e",
+ "credit": {
+  "title": "Mason Jars",
+  "author": "Kenetics",
+  "authorUrl": "https://sketchfab.com/Kenetics",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/mason-jars-ca59b0f7ccd940939dac845de4ac486e",
+  "site": "Sketchfab"
+ },
+ "tris": 1500,
+ "tex": 208,
+ "size": [
+  0.137,
+  0.144,
+  0.192
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#00d262",
+   "#13ff6e",
+   "#53ff87",
+   "#93ffab",
+   "#d3ffd9",
+   "#dafedc",
+   "#e1fee0",
+   "#e9fee6",
+   "#f0feec"
+  ],
+  "m1": [
+   "#4e3d43",
+   "#635256",
+   "#76696b",
+   "#888182",
+   "#9a9a9a",
+   "#a8a8a8",
+   "#b6b6b6",
+   "#c4c4c4",
+   "#d2d2d2"
+  ],
+  "m2": [
+   "#38210a",
+   "#47300e",
+   "#574013",
+   "#655219",
+   "#73651f",
+   "#978f2d",
+   "#baba3c",
+   "#c8c860",
+   "#d2d288"
+  ]
+ },
+ "warnings": []
+}

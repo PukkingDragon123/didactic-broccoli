@@ -1,0 +1,78 @@
+{
+ "id": "wear_kabuto",
+ "src": "sketchfab:2d236d44a2024e5896b401904b79cec5",
+ "credit": {
+  "title": "Traditional Samurai Helmet (Kabuto)",
+  "author": "varunpatel899",
+  "authorUrl": "https://sketchfab.com/varunpatel899",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/traditional-samurai-helmet-kabuto-2d236d44a2024e5896b401904b79cec5",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 464,
+ "size": [
+  0.317,
+  0.2,
+  0.322
+ ],
+ "colours": 30,
+ "palette": {
+  "m0": [
+   "#040020",
+   "#01002a",
+   "#000334",
+   "#00093e",
+   "#001048",
+   "#022982",
+   "#064cbb",
+   "#0b78f1",
+   "#46a6f3"
+  ],
+  "m1": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ],
+  "m2": [
+   "#2f0907",
+   "#3c110a",
+   "#491a0d",
+   "#552611",
+   "#613316",
+   "#8a5323",
+   "#b27831",
+   "#ca9d4e",
+   "#d4bb7a"
+  ],
+  "m3": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ],
+  "m4": [
+   "#00731e",
+   "#00961a",
+   "#00b911",
+   "#00dc02",
+   "#13ff00",
+   "#48fc26",
+   "#76f94c",
+   "#9cf870",
+   "#bcf893"
+  ]
+ },
+ "warnings": []
+}

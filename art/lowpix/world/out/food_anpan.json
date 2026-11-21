@@ -1,0 +1,34 @@
+{
+ "id": "food_anpan",
+ "src": "sketchfab:a8184583411b43d7b2ab42b625bd40dd",
+ "credit": {
+  "title": "Bun (Low Poly, Game Ready)",
+  "author": "LiveToWin34",
+  "authorUrl": "https://sketchfab.com/LiveToWin34",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bun-low-poly-game-ready-a8184583411b43d7b2ab42b625bd40dd",
+  "site": "Sketchfab"
+ },
+ "tris": 200,
+ "tex": 432,
+ "size": [
+  0.102,
+  0.045,
+  0.188
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3f0a09",
+   "#51150d",
+   "#622112",
+   "#733117",
+   "#83421d",
+   "#a76129",
+   "#c98437",
+   "#d0a560",
+   "#d9c087"
+  ]
+ },
+ "warnings": []
+}

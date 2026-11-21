@@ -1,0 +1,34 @@
+{
+ "id": "wear_beret",
+ "src": "sketchfab:b174a13ed4b048828919006fe489440f",
+ "credit": {
+  "title": "Headwear",
+  "author": "noyou",
+  "authorUrl": "https://sketchfab.com/799105734",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/headwear-b174a13ed4b048828919006fe489440f",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 272,
+ "size": [
+  0.121,
+  0.08,
+  0.162
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

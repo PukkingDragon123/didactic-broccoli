@@ -44,8 +44,7 @@ function monitorModel() {
   // knobs + power button
   v.box(4, 6, 18, 5, 7, 18, 0xbfb398); v.box(7, 6, 18, 8, 7, 18, 0xbfb398);
   v.box(13, 6, 18, 16, 8, 18, BEIGE_D);
-  // sticky notes on the bezel + a capsule toy sitting on top
-  v.box(16, 27, 18, 19, 31, 18, 0xffe866); v.box(-20, 31, 18, -17, 35, 18, 0xff9fd0);
+  // a capsule toy sitting on top (no sticky notes: nothing is left written down for you)
   v.ellipsoid(10, 40, 10, 2.2, 2.2, 2.2, 0xfbf6ea); v.box(8, 37, 8, 12, 39, 12, 0xff6f91); v.box(8, 38, 8, 12, 38, 12, 0x9a9aa8);
   return v;
 }

@@ -1,10 +1,10 @@
 // Credits: a long till receipt that feeds up the screen, printed from CREDITS.md (every song, sound, photo and the font,
-// with its author and licence as the "price"), headed with the shop's sign, totalled THANK YOU and stamped 済.
+// with its author and licence as the "price"), headed with the 3D title, totalled THANK YOU and stamped 済.
 // It scrolls by itself; the wheel, a drag or the arrow keys take over for a moment. Esc / the red-pen X / a click
 // beside it closes it.   openCredits() -> Promise (resolves on close)
 import raw from '../../CREDITS.md?raw';
 import { audio } from '../core/audio.js';
-import { paintLogo } from './logo.js';
+import { loadTitle } from './logo.js';
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
@@ -61,8 +61,13 @@ export function openCredits() {
     </div></div>
     <button class="tm-x" aria-label="Close"></button>`;
     document.body.appendChild(wrap);
-    const logo = paintLogo().art.canvas(2);
-    wrap.querySelector('.rc-logo').appendChild(logo);
+    loadTitle().then((m) => {
+      const t = m.sizes[0];
+      if (!t) return;
+      const im = new Image(); im.src = t.url; im.alt = 'Gacha Garage'; im.width = t.w; im.height = t.h;
+      im.style.cssText = 'display:block;margin:0 auto;image-rendering:pixelated;max-width:100%;height:auto';
+      wrap.querySelector('.rc-logo')?.appendChild(im);
+    });
     const roll = wrap.querySelector('.tm-roll'), rec = wrap.querySelector('.tm-receipt');
     sfx('paper', { vol: 0.6 });
     let y = innerHeight * 0.55, hold = 0.8, drag = null, last = performance.now(), raf = 0, closed = false;

@@ -1,0 +1,78 @@
+{
+ "id": "wear_shades",
+ "src": "sketchfab:eeec9fbb427246959acee4e4266b0f0a",
+ "credit": {
+  "title": "Mustang Sunglasses - MU 1683",
+  "author": "Berk Gedik",
+  "authorUrl": "https://sketchfab.com/berkgedik",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/mustang-sunglasses-mu-1683-eeec9fbb427246959acee4e4266b0f0a",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 256,
+ "size": [
+  0.153,
+  0.05,
+  0.177
+ ],
+ "colours": 30,
+ "palette": {
+  "m0": [
+   "#160016",
+   "#1d001c",
+   "#24001f",
+   "#2b0022",
+   "#320023",
+   "#700245",
+   "#ab055e",
+   "#e50b6d",
+   "#f33c7f"
+  ],
+  "m1": [
+   "#0a090f",
+   "#0d0d13",
+   "#101017",
+   "#14151b",
+   "#18191e",
+   "#36383f",
+   "#55585e",
+   "#76797c",
+   "#989898"
+  ],
+  "m2": [
+   "#b94500",
+   "#f16e00",
+   "#ff9e2b",
+   "#ffc463",
+   "#ffe29c",
+   "#feecab",
+   "#fdf4b9",
+   "#fcfac7",
+   "#fcfcd5"
+  ],
+  "m3": [
+   "#49435a",
+   "#605a73",
+   "#79738a",
+   "#93909d",
+   "#adacb1",
+   "#bab9ba",
+   "#c5c5c5",
+   "#d0d0d0",
+   "#dbdbdb"
+  ],
+  "m4": [
+   "#3f2814",
+   "#51381b",
+   "#624b24",
+   "#735e2d",
+   "#827237",
+   "#9e9348",
+   "#b2ae60",
+   "#bebe81",
+   "#cbcba1"
+  ]
+ },
+ "warnings": []
+}

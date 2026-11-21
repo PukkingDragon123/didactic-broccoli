@@ -75,14 +75,14 @@ export class Extension {
   mats() {
     const tex = (pix, { repeat = 1, rough = 0.85 } = {}) => { const map = RT.texOf(pix); map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(1 / repeat, 1 / repeat); return new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough }); };
     const Z = this.zone, M = (m) => Z.mat(m);
-    const std = (o) => M(new THREE.MeshStandardMaterial({ vertexColors: true, ...o }));
+    const tinted = (m) => { const t = m.clone(); t.vertexColors = true; return t; };
     const wood = pixMat('woodDark', { roughness: 0.6, bump: 0.3 }).clone(); wood.vertexColors = true;
     const woodL = pixMat('woodLight', { roughness: 0.6, bump: 0.3 }).clone(); woodL.vertexColors = true;
     const tileP = (() => { const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d'); x.fillStyle = '#d4e6ec'; x.fillRect(0, 0, 32, 32); x.fillStyle = '#9ab8c4'; for (let i = 0; i < 32; i += 8) { x.fillRect(i, 0, 1, 32); x.fillRect(0, i, 32, 1); } grain(x, 0, 0, 32, 32, ['#c8dce4', '#e0eef2'], 0.06, 5); const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); t.colorSpace = THREE.SRGBColorSpace; return t; })();
     this.M = {
       paper: M(tex(RT.wallpaper(), { rough: 0.9 })), ceil: M(tex(RT.ceilingBoards(), { repeat: 0.9, rough: 0.8 })), floor: M(tex(RT.flooring(), { rough: 0.55 })),
       genkan: M(tex(RT.genkanTile(), { rough: 0.7 })), tatami: M(new THREE.MeshStandardMaterial({ map: RT.texOf(RT.tatamiFloor()), vertexColors: true, roughness: 0.9 })),
-      wood: M(wood), woodL: M(woodL), paint: std({ roughness: 0.7 }), metal: std({ roughness: 0.35, metalness: 0.6 }),
+      wood: M(wood), woodL: M(woodL), paint: M(tinted(pixMat('plaster', { roughness: 0.7, bump: 0.25 }))), metal: M(tinted(pixMat('steel', { roughness: 0.35, metalness: 0.6, bump: 0.2 }))), // (textured, tinted per part: no flat colours)
       tile: M(new THREE.MeshStandardMaterial({ map: tileP, vertexColors: true, roughness: 0.35 })),
       glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
       glass: M(new THREE.MeshStandardMaterial({ color: 0xeaf2f8, transparent: true, opacity: 0.1, roughness: 0.2, envMapIntensity: 0.1, depthWrite: false })),
@@ -176,11 +176,22 @@ export class Extension {
     this.pan = Z.prop('gr_pan', 0.44, 0.99, z1 - 0.34, Math.PI - 0.4);
     Z.prop('gr_ricecooker', -1.12, 0.86, z1 - 0.3, Math.PI);
     Z.prop('room_mug', -1.25, 0.86, z1 - 0.48, 0.4);
+    // the rest of a used kitchen: the dish rack by the sink, a chopping board, the enamel teapot, pots on the shelf
+    Z.prop('hm_dish_rack', -0.32, 0.86, z1 - 0.3, Math.PI);
+    Z.prop('hm_board', -1.0, 0.86, z1 - 0.42, Math.PI + 0.15);
+    Z.prop('hm_teapot_enamel', 0.0, 0.86, z1 - 0.24, Math.PI - 0.5, 0.9);
+    Z.prop('hm_toaster_red', -1.42, 0.86, z1 - 0.26, Math.PI + 0.3, 0.85);
+    Z.prop('hm_pots', 0.1, 2.1, z1 - 0.2, Math.PI, 0.8);
     Z.block(-1.3, 0.6, z1 - 0.62, z1);
     // a little dining spot by the partition: a stool and a narrow shelf-table
     B.box(M.woodL, 1.0, 0.04, 0.32, -1.6, 0.74, 0.42, { tint: 0xc8a070 });
     for (const x of [-2.05, -1.15]) B.box(M.wood, 0.04, 0.74, 0.04, x, 0, 0.5, { tint: 0x7a5030 });
     Z.prop('stool', -1.25, 0, 0.7, 0.2);
+    Z.prop('hm_sake_set', -1.75, 0.78, 0.42, 0.2, 0.9);
+    Z.prop('hm_thermos', -1.3, 0.78, 0.36, -0.4, 0.8);
+    Z.prop('hm_radio', -2.0, 0.78, 0.4, 0.15, 0.7);
+    Z.prop('hm_dango_tea', -1.42, 0.78, 0.44, -0.3, 0.9);
+    Z.prop('hm_rice_sack', -1.95, 0, 1.75, 0.4, 1);
     Z.block(-2.1, -1.1, 0.25, 0.6);
     // the stove: hold to cook
     this.stoveHit = Z.hit(0.6, 0.3, 0.45, 0.3, 1.0, z1 - 0.32, {
@@ -356,6 +367,13 @@ export class Extension {
     Z.prop('room_zabuton', 0.25, 0, -0.55, 0.1, 1, spare);
     Z.prop('room_boxes', X1 - 0.5, 0, Z0 + 0.5, 0.2, 1, spare);
     Z.prop('cardboard_bundle', X0 + 0.5, 0, Z0 + 0.45, -0.3, 1, spare);
+    // what came over from the old flat: the sewing machine on the table, the ironing board, a tanuki, a box of toys
+    Z.prop('hm_sewing', 0.15, 0.32, -1.25, 0.4, 0.9, spare);
+    Z.prop('hm_typewriter', 0.58, 0.32, -1.12, 0.1, 0.9, spare);
+    Z.prop('hm_ironing_board', X1 - 0.25, 0, -1.1, -Math.PI / 2, 1, spare);
+    Z.prop('hm_tanuki', X0 + 0.35, 0, -1.4, 0.6, 1, spare);
+    Z.prop('hm_toybox_small', X0 + 0.45, 0, -0.45, 0.3, 1, spare);
+    Z.prop('hm_futon_folded', X1 - 0.55, 0, -0.35, Math.PI / 2, 1, spare);
     // tier 2: the hobby room (boards, the cabinet, the showcase, an armchair, a rug, spotlights)
     const hobby = this.hobby = new THREE.Group();
     const Hb = new Batch(); Hb.off.copy(Z.o);
@@ -389,6 +407,8 @@ export class Extension {
     Z.prop('armchair', X1 - 0.6, 0, -0.6, -Math.PI + 0.5, 1, hobby); // turned to face the cabinet
     Z.prop('floor_lamp', X1 - 0.35, 0, -1.6, 0, 1, hobby);
     Z.prop('plant_monstera', X0 + 0.4, 0, -0.25, 0.3, 0.9, hobby);
+    Z.prop('hm_gramophone', X1 - 0.35, 0, -2.25, -Math.PI / 2 - 0.4, 0.9, hobby);
+    Z.prop('hm_robot_red', X1 - 0.9, 0, -0.25, Math.PI + 0.5, 1.2, hobby);
     Z.group.add(hobby);
     this.figGroup = new THREE.Group(); hobby.add(this.figGroup);
     this.showGroup = new THREE.Group(); hobby.add(this.showGroup);

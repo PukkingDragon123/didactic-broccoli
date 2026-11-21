@@ -78,14 +78,10 @@ function pillar(t, x, z, { h = 1.45, mat = null, tint = 0xffffff, w = 0.32 } = {
   t.game.player.addObstacle(x - w / 2, x + w / 2, z - w / 2, z + w / 2);
 }
 
-/** A potted plant (local frame): pot + leaves (+ flowers). */
+/** A potted plant (local frame): a lathe pot and a bush of sprig cards (+ flowers). */
+const FLOWER = { 0xff8fb2: 'azalea', 0xe5383b: 'pelargonium', 0xffd23f: 'pansy', 0xfbf8f0: 'pansy' };
 function pot(t, x, y, z, s = 1, leaf = 0x4a8a3a, flower = null) {
-  const B = t.B, m = t.m;
-  B.box(m.pv, 0.22 * s, 0.2 * s, 0.22 * s, x, y, z, { tint: 0xb4603a });
-  B.box(m.pv, 0.26 * s, 0.03 * s, 0.26 * s, x, y + 0.2 * s, z, { tint: 0x9a4e2e });
-  B.box(m.pv, 0.3 * s, 0.24 * s, 0.3 * s, x, y + 0.22 * s, z, { tint: leaf });
-  B.box(m.pv, 0.2 * s, 0.14 * s, 0.2 * s, x + 0.02, y + 0.44 * s, z, { tint: leaf, k: 1.12 });
-  if (flower) for (const [dx, dz] of [[-0.08, 0.06], [0.07, -0.05], [0.04, 0.1]]) B.box(m.pv, 0.06 * s, 0.05 * s, 0.06 * s, x + dx * s, y + 0.46 * s, z + dz * s, { tint: flower });
+  t.potPlant(x, y, z, s * 1.2, { flower: flower ? FLOWER[flower] || 'pansy' : null, seed: Math.round(x * 41 + z * 13 + leaf % 97) });
 }
 
 /** 朝顔のグリーンカーテン: morning glory on strings from a planter up to the eave (local frame, on the wall plane z). */
@@ -98,11 +94,10 @@ function morningGlory(t, x0, x1, y1, z, seed = 1) {
   for (let i = 0; i <= n; i++) {
     const x = x0 + i * (x1 - x0) / n;
     B.box(m.pv, 0.008, y1 - 0.22, 0.008, x, 0.22, z + 0.22, { tint: 0x8a9a6a });
-    const top = 0.5 + hash2(i, seed) * (y1 - 0.6);
-    for (let y = 0.3; y < top; y += 0.14) {
-      const k = hash2(i * 13 + Math.round(y * 10), seed);
-      B.box(m.pv, 0.1 + k * 0.08, 0.1, 0.05, x + (k - 0.5) * 0.06, y, z + 0.22 + (k - 0.5) * 0.04, { tint: k < 0.5 ? 0x3e7a34 : 0x4f8a3a });
-      if (k > 0.78) B.box(m.pv, 0.06, 0.06, 0.03, x + 0.04, y + 0.03, z + 0.26, { tint: k > 0.9 ? 0x6a5ad8 : 0x4a7ae8 });
+    // the vines climb each string to a different height (sprig cards with their blue trumpets)
+    if (i % 2 === 0) {
+      const top = 0.7 + hash2(i, seed) * (y1 - 0.75);
+      t.leaves.climber(B.top, x, 0.2, top, z + 0.24, { kind: 'asagao', mix: ['pothos', 0.15], size: 0.36, density: 1.4, reach: 0.12, seed: seed * 31 + i });
     }
   }
 }
@@ -137,8 +132,9 @@ function bonsaiShelf(t, x, z, len = 1.6) {
     const tier = i % 2, px = x - len / 2 + 0.2 + i * (len - 0.4) / 4, py = tier ? 0.66 : 0.4, pz = z + (tier ? -0.08 : 0.1), k = hash2(i, 31);
     B.box(m.pv, 0.2, 0.06, 0.13, px, py, pz, { tint: [0x4a3a5a, 0x8a3a2a, 0x2a4a5a][i % 3] });
     B.box(m.wood, 0.03, 0.12 + k * 0.08, 0.03, px + 0.02, py + 0.06, pz, { tint: 0x5a4030, rz: (k - 0.5) * 0.6 });
-    B.box(m.pv, 0.22 + k * 0.08, 0.06, 0.14, px + (k - 0.5) * 0.1, py + 0.17 + k * 0.08, pz, { tint: k < 0.5 ? 0x3e6a2e : 0x4a7a34 });
-    B.box(m.pv, 0.14, 0.05, 0.1, px - (k - 0.5) * 0.06, py + 0.24 + k * 0.08, pz, { tint: 0x4f8a3a });
+    // the trained foliage pads (pine and juniper sprigs, pruned flat)
+    t.leaves.bush(B.top, null, null, { clumps: [[px + (k - 0.5) * 0.1, py + 0.2 + k * 0.08, pz, 0.12 + k * 0.04, 0.045, 0.08], [px - (k - 0.5) * 0.06, py + 0.27 + k * 0.08, pz, 0.08, 0.04, 0.06]],
+      kind: i % 2 ? 'pine' : 'pineTop', mix: ['moss', 0.1], size: 0.13, density: 2.2, flat: true, seed: i * 7 + 3 });
   }
 }
 
@@ -248,13 +244,17 @@ function nearSide(t) {
       // specimen jars and seedling trays on the engawa, pots along the front
       for (let i = 0; i < 4; i++) { Bq.box(m.gloss, 0.1, 0.16, 0.1, 0.05 + i * 0.16, f.base, 0.25, { tint: [0xb8d8c8, 0xc8d8b0, 0xd8e8e0, 0xa8c8b8][i] }); Bq.box(m.pv, 0.11, 0.03, 0.11, 0.05 + i * 0.16, f.base + 0.16, 0.25, { tint: 0x8a6a48 }); }
       Bq.box(m.pv, 0.5, 0.06, 0.32, 1.0, f.base, 0.3, { tint: 0x2a2a2a });
-      for (let i = 0; i < 6; i++) Bq.box(m.pv, 0.06, 0.05, 0.06, 0.82 + (i % 3) * 0.17, f.base + 0.06, 0.22 + Math.floor(i / 3) * 0.15, { tint: 0x5aa84a });
+      t.leaves.bush(Bq.top, [1.0, f.base + 0.1, 0.3], [0.22, 0.04, 0.13], { kind: 'sprout', size: 0.12, density: 2.4, seed: 5 });
       pot(t, -0.3, 0, 0.9, 1.1, 0x3e7a34);
       pot(t, 1.25, 0, 1.15, 0.8, 0x4f8a3a, 0xffd23f);
       // a loofah trellis (へちま棚) along the west side
       for (const dz of [0.2, 1.5]) Bq.box(m.wood, 0.05, 2.0, 0.05, -1.75, 0, dz, { tint: 0x8a7a5a });
       Bq.box(m.wood, 0.05, 0.05, 1.4, -1.75, 2.0, 0.85, { tint: 0x8a7a5a });
-      for (let i = 0; i < 9; i++) { const k = hash2(i, 77); Bq.box(m.pv, 0.08, 0.2 + k * 0.2, 0.18, -1.75, 1.0 + k * 0.9, 0.25 + i * 0.15, { tint: k < 0.5 ? 0x3e7a34 : 0x5a9a42 }); if (k > 0.7) Bq.box(m.pv, 0.07, 0.3, 0.07, -1.72, 1.4 + k * 0.3, 0.3 + i * 0.15, { tint: 0x7aa84a }); }
+      // the loofah vines up both posts and over the top bar, leaves and tendrils hanging down the sides
+      const lo = new THREE.Matrix4().makeRotationY(-Math.PI / 2).setPosition(-1.75, 0, 0.85).premultiply(Bq.top);
+      for (const dz of [-0.65, 0.65]) t.leaves.climber(lo, dz, 0.1, 2.0, 0.03, { kind: 'broad', mix: ['pothos', 0.3], size: 0.38, density: 1.2, reach: 0.18, seed: 77 + dz * 10 });
+      t.leaves.bush(lo, null, null, { clumps: [[0, 2.05, 0, 0.8, 0.14, 0.22]], kind: 'broad', mix: ['pothos', 0.35], size: 0.36, density: 1.6, seed: 78 });
+      t.leaves.hang(lo, -0.7, 0.7, 2.0, 0.05, { kind: 'pothos', mix: ['broad', 0.4], size: 0.32, drop: 0.9, density: 0.7, seed: 79 });
     } });
   t.yard(22.75, 25.7, 2.6, ZB - 0.15, m.ground);
   // a bamboo garden gate (枝折戸) beside the little post, bamboo fences
@@ -277,7 +277,7 @@ function nearSide(t) {
   t.yard(-9.75, -4.35, 3.4, ZB - 0.15, m.strip);
   t.blockWall(-9.75, -4.35, ZB, s, { gaps: [[-5.35, -4.6]], deco: true });
   pillarKit(t, -5.47, s, { name: N('木村'), y: 0.95, lamp: true, top: 1.63 });
-  t.prop('plant_pots', -8.6, 0, 4.85, Math.PI, { scale: 0.75 });
+  t.potRow(-8.6, 0, 4.85, Math.PI, 0.8, { n: 4 });
   addDoor(t, 'kimura', 'NW1', 'Kimura', [-6.45, 3.7], [-4.97, ZB], [-5.47, ZB + 0.08, 0.95], s);
 
   // ---- NW2: old Mrs. Tanaka. A 1960s wooden two-storey (mortar below, grey siding above, rafters) behind the hedge
@@ -295,7 +295,7 @@ function nearSide(t) {
     } });
   t.yard(-15.2, -9.9, 3.7, ZB - 0.15, m.ground);
   t.blockWall(-15.2, -9.9, ZB, s, { h: 0.5, gaps: [[-10.95, -10.1]] });
-  for (const x of [-14.15, -12.15]) t.prop('hedge', x, 0.5, ZB - 0.32, 0);
+  for (const x of [-14.15, -12.15]) t.hedge(x, 0.5, ZB - 0.32, 0);
   pillar(t, -11.12, ZB - 0.15, { h: 1.3 });
   pillarKit(t, -11.12, s, { name: N('田中'), y: 0.85, z: ZB + 0.012 });
   t.prop('stray_cat_sit', -13.4, 1.1, ZB - 0.25, 0.3);
@@ -305,13 +305,15 @@ function nearSide(t) {
   t.house({ x: -18.0, z: ZB - 0.02, w: 5.15, d: 7.0, wallA: m.siding, wallB: m.board, roofM: m.roofGrey, trim: 0x3a2a20, rafters: true, soffit: 0x6a5a48,
     win: [[1, -1.3, 1.4, 1.0, 'lit2', { tobukuro: 1, room: ROOM.washitsu, curtain: 1, cc: 6, frame: 0x6a5a48 }], [1, 1.3, 1.4, 1.0, 'dark', { grille: true, frame: 0x6a5a48 }], [0, 3.0, 1.0, 0.9, 'dark', { face: 'r' }], [1, 3.4, 1.0, 0.9, 'lit', { face: 'r' }]],
     extra: (Bq, f) => {
+      // the shop's been shut for years: ivy up the east end of the front and over the tobacco sign's bracket
+      t.leaves.ivy(Bq.top, 1.95, 2.58, 0, f.fy[1] + 1.2, { kind: 'ivy', size: 0.38, density: 1.4, seed: 31 });
       // a drying pole (物干し竿) sticking out of the upstairs window with a towel on it
       Bq.box(m.metal, 0.04, 0.04, 1.4, 1.3, f.fy[1] + 1.2, 0.6, { tint: 0x7ab0d8 });
       Bq.box(m.pv, 0.4, 0.5, 0.02, 1.3, f.fy[1] + 0.72, 0.95, { tint: 0xf4f0e6, ry: 0.1 });
     } });
   B.box(m.shutterM, 2.53, 2.1, 0.06, -18.715, 0.4, ZB + 0.01, { uv: [0, 0.3] });
   B.box(m.metal, 2.75, 0.3, 0.32, -18.715, 2.5, ZB + 0.1, { tint: 0x7a7e7a });
-  B.box(t.T('oldSign', 96, 24, { rough: 0.9 }), 3.9, 0.55, 0.06, -18.2, 2.85, ZB + 0.04, { unit: true });
+  B.box(t.T('oldSign', 1024, 144, { rough: 0.9 }), 3.9, 0.55, 0.06, -18.2, 2.85, ZB + 0.04, { unit: true });
   t.sign('closedNotice', 0.32, 0.42, -18.4, 1.25, ZB + 0.045);
   // the tobacco window: red plate, sliding glass, a tiled counter ledge
   B.box(t.T('tobaccoWin', 24, 36, { glow: 0.25, rough: 0.4 }), 0.7, 1.05, 0.06, -16.9, 0.85, ZB + 0.01, { unit: true });
@@ -341,6 +343,7 @@ function nearSide(t) {
   // second row behind (skyline over the roofs). The east half is the park now (src/world/Park.js); the west half stays
   // clear of the museum behind the garage
   for (const [x, w, h] of [[-23, 6, 6.2], [-17, 5.5, 7.4], [-13.2, 3.4, 5.8]]) t.backHouse(x, -6.3, w, 7, h, 1);
+  for (const [x, w, h] of [[-23.4, 5.4, 7.2], [-17.8, 5.2, 6.0], [-12.4, 5.0, 7.6]]) t.backHouse(x, -14.6, w, 6, h, 1);
 }
 
 /** SAKURA HEIGHTS: six flats (101-103, 201-203), an open corridor with a railing, steel stairs, meters, washing
@@ -378,7 +381,7 @@ function apartment(t, x, z) {
   B.box(m.metal, W + 0.9, 0.05, 0.07, 0.45, fy[1] + 1.05, 1.16, { tint: 0x8a9096 });
   for (let u = -W / 2; u <= W / 2 + 0.9; u += 0.12) B.box(m.metal, 0.022, 0.85, 0.022, u, fy[1] + 0.2, 1.16, { tint: 0x9aa0a6 });
   for (const cx of [-W / 2 + 0.05, 0, W / 2 + 0.85]) B.box(m.metal, 0.1, fy[1], 0.1, cx, 0, 1.15, { tint: 0x8a9096 });
-  B.box(t.T('aptName', 48, 20), 0.9, 0.36, 0.04, -1.4, fy[1] + 0.35, 1.21, { unit: true });
+  B.box(t.T('aptName', 384, 154), 0.9, 0.36, 0.04, -1.4, fy[1] + 0.35, 1.21, { unit: true });
   t.sign('aptRecruit', 0.4, 0.26, 1.2, fy[1] + 0.4, 1.205);
   // futons and towels hung over the corridor railing
   B.box(m.pv, 1.1, 0.5, 0.06, 2.35, fy[1] + 0.6, 1.23, { tint: 0xd8e8f0 });
@@ -428,11 +431,19 @@ function farSide(t) {
   t.house({ x: -23.25, z: 16.3, w: 4.8, d: 7, side: s, wallA: m.wallGrey, wallB: m.wallGrey, roofM: m.roofBlue, pent: true, antenna: -1,
     win: [[0, 1.0, 1.6, 1.1, 'lit', { cc: 3, curtain: 4 }], [1, 1.0, 1.6, 1.1, 'lace', { amado: true, tobukuro: 1 }], [1, -1.4, 0.9, 0.9, 'dark', { amado: true, tobukuro: -1 }], [0, 2.5, 1.0, 1.0, 'kitchen', { face: 'r' }], [1, 2.8, 1.0, 0.9, 'dark', { face: 'r' }]],
     door: { x: -1.1, kind: 'genkan', w: 1.2, name: N('矢吹'), milk: false }, ac: [[1, -0.35]],
-    extra: (Bq, f) => { for (let i = 0; i < 5; i++) lp(t, 'weeds', -2.0 + i * 0.9, 0, 0.5 + hash2(i, 5) * 0.6, i, { scale: 1.2 + hash2(i, 6) * 0.6 }); } });
+    extra: (Bq, f) => {
+      for (let i = 0; i < 5; i++) lp(t, 'weeds', -2.0 + i * 0.9, 0, 0.5 + hash2(i, 5) * 0.6, i, { scale: 1.2 + hash2(i, 6) * 0.6 });
+      // ivy has taken the west corner up to the eaves and creeps round the side; a vine over the porch roof
+      t.leaves.ivy(Bq.top, -2.45, -1.75, 0, f.top - 0.1, { kind: 'ivy', mix: ['pothos', 0.1], size: 0.4, density: 1.6, seed: 11 });
+      const side = new THREE.Matrix4().makeRotationY(-Math.PI / 2).setPosition(-2.4, 0, 0).premultiply(Bq.top);
+      t.leaves.ivy(side, -3.2, 0.0, 0, f.top - 0.6, { kind: 'ivy', size: 0.4, density: 1.4, seed: 12 });
+      t.leaves.ivy(Bq.top, 1.85, 2.42, 0, 2.6, { kind: 'ivy', size: 0.36, density: 1.2, seed: 13 });
+      t.leaves.hang(Bq.top, -2.4, -1.2, f.fy[1] + 0.05, 0.12, { kind: 'ivy', size: 0.34, drop: 0.9, density: 0.8, seed: 14 });
+    } });
   t.yard(-25.7, -20.85, ZF + 0.15, 16.3, m.ground);
   t.woodFence(-25.7, -20.85, ZF, s, { gaps: [[-22.15, -21.3]] });
   t.gate(-22.15, -21.3, ZF, s, 0.5);
-  t.prop('hedge', -24.5, 0.9, ZF + 0.25, Math.PI + 0.3, { scale: 1.2 });
+  t.hedge(-24.5, 0.9, ZF + 0.25, Math.PI + 0.3, 1.2);
   pillarKit(t, -21.18, s, { name: N('矢吹'), y: 1.0, z: ZF - 0.04 });
   t.sign('patrolNote', 0.22, 0.2, -22.05, 1.35, ZF - 0.07, { ry: Math.PI });
   addDoor(t, 'yabuki', 'FW1', 'Yabuki', [-22.15, 16.0], [-21.72, ZF], [-21.18, ZF - 0.1, 1.0], s);
@@ -447,7 +458,7 @@ function farSide(t) {
   t.prop('vending', -17.0, 0, 14.45, Math.PI, { dim: true, block: true });
   t.prop('vending', -16.0, 0, 14.45, Math.PI, { dim: true, block: true });
   t.prop('drink_cans', -16.5, 0, 13.9, 0.6);
-  t.prop('bonsai', -19.9, 0, 15.3, 0.4, { scale: 1.4 });
+  t.potPlant(-19.9, 0, 15.3, 1.3, { kind: 'pine', pot: 0x4a3a5a, h: 0.8 });
   addDoor(t, 'mori', 'FW2', 'Mori', [-19.0, 15.6], [-18.15, ZF], [-18.72, ZF - 0.08, 0.95], s);
 
   // (corner shop x∈[-15.45,-9.4] is built separately; alley A1 x∈[-9.4,-7.45] is the ghost alley, src/world/GhostAlley.js)
@@ -488,12 +499,14 @@ function farSide(t) {
     door: { x: 0.4, kind: 'genkan', w: 1.2, name: N('虹村'), milk: false }, ac: [[1, 0.05]],
     extra: (Bq, f) => {
       boards(t, -1.3, f.fy[1] + 0.85, 1.5, 1.1);
+      // creeper up the east corner and over the downstairs window hood
+      t.leaves.ivy(Bq.top, 2.0, 2.65, 0, f.fy[1] + 1.6, { kind: 'ivy', mix: ['pothos', 0.15], size: 0.38, density: 1.4, seed: 21 });
       for (let i = 0; i < 6; i++) Bq.quad(t.decal('stainDrip', 16, 48), 0.6, 1.4 + hash2(i, 9), -2.2 + i * 0.85, f.fy[1] - 1.2 - hash2(i, 8) * 0.6, 0.013, { tint: 0x9a968c, flipU: i % 2 === 1 });
       for (let i = 0; i < 4; i++) lp(t, 'weeds', -2.0 + i * 1.3, 0, 0.45, i * 1.7, { scale: 1.3 });
     } });
   t.yard(4.55, 9.95, ZF + 0.15, 16.0, m.ground);
   t.blockWall(4.55, 9.95, ZF, s, { h: 0.55, gaps: [[6.9, 7.8]] });
-  for (const x of [5.6, 8.85]) t.prop('hedge', x, 0.55, ZF + 0.3, Math.PI, { scale: 1.1 });
+  for (const x of [5.6, 8.85]) t.hedge(x, 0.55, ZF + 0.3, Math.PI, 1.1);
   t.gate(6.9, 7.8, ZF, s, 0.08);
   pillar(t, 7.92, ZF + 0.15, { h: 1.25 });
   pillarKit(t, 7.92, s, { name: N('虹村'), y: 0.85, z: ZF - 0.012 });
@@ -524,7 +537,7 @@ function farSide(t) {
   t.blockWall(15.5, 20.9, ZF, s, { gaps: [[16.4, 17.3]] });
   t.gate(16.4, 17.3, ZF, s, 0.0);
   pillarKit(t, 17.42, s, { y: 0.95, plate: { key: 'forRent', w: 0.28, h: 0.36, y: 0.55 } });
-  t.prop('plant_pots', 19.6, 0, 14.53, Math.PI, { scale: 0.8 });
+  t.potRow(19.6, 0, 14.53, Math.PI, 0.85, { n: 5 });
   for (let i = 0; i < 4; i++) t.prop('weeds', 16.0 + i * 1.3, 0, 15.4 + hash2(i, 3) * 0.4, i, { scale: 1.1 });
   addDoor(t, 'forrent', 'FE5', 'For rent', [16.8, 15.7], [16.85, ZF], [17.42, ZF - 0.08, 0.95], s);
 
@@ -552,6 +565,8 @@ function farSide(t) {
 
   // second row and mid-rise blocks over the roofs
   for (const [x, w, h] of [[-23, 5.5, 7.6], [-17.2, 5, 6.2], [-11.6, 5.6, 7.2], [-5.4, 5.4, 6.0], [0.6, 5.6, 7.8], [6.6, 5.2, 6.4], [12.6, 5.8, 7.4], [18.6, 5.2, 6.1], [24.0, 4.6, 7.0]]) t.backHouse(x, 24.6 + hash2(x, 3) * 1.2, w, 7, h, -1);
+  // a third row in front of the mid-rises: more roofs stepping away over the lane's skyline
+  for (const [x, w, h] of [[-22, 5.2, 6.8], [-16.4, 5.0, 7.6], [-10.8, 5.4, 6.0], [-5.2, 5.0, 7.2], [0.4, 5.4, 6.4], [6.0, 5.0, 7.8], [11.6, 5.4, 6.2], [17.2, 5.2, 7.0], [22.6, 4.8, 6.6]]) t.backHouse(x, 30.4 + hash2(x, 7) * 0.6, w, 5, h, -1);
   t.midrise(-6, 36, 16, 12.5);
   t.midrise(14, 38, 12, 15.5);
 }

@@ -1,0 +1,100 @@
+{
+ "id": "wear_rubberchicken",
+ "src": "sketchfab:e072aa44508442fca3bef3f19c01ab1d",
+ "credit": {
+  "title": "Funny Rubber Chicken - Lowpoly",
+  "author": "Vyacheslav",
+  "authorUrl": "https://sketchfab.com/borovikmotion",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/funny-rubber-chicken-lowpoly-e072aa44508442fca3bef3f19c01ab1d",
+  "site": "Sketchfab"
+ },
+ "tris": 1426,
+ "tex": 256,
+ "size": [
+  0.061,
+  0.3,
+  0.069
+ ],
+ "colours": 50,
+ "palette": {
+  "m0": [
+   "#6d3d00",
+   "#8e5c00",
+   "#af8000",
+   "#d0aa00",
+   "#eed604",
+   "#f8f41f",
+   "#f6f646",
+   "#f5f56b",
+   "#f6f690"
+  ],
+  "m1": [
+   "#6c0024",
+   "#8d0023",
+   "#ae001d",
+   "#cf0011",
+   "#f00000",
+   "#fc2c1a",
+   "#f96041",
+   "#f88c68",
+   "#f8b08d"
+  ],
+  "m2": [
+   "#6c1d00",
+   "#8d3200",
+   "#ae4c00",
+   "#cf6b00",
+   "#ee9002",
+   "#fab41c",
+   "#f7ce43",
+   "#f7e269",
+   "#f7f08e"
+  ],
+  "m3": [
+   "#b7882b",
+   "#d3b354",
+   "#dfd18d",
+   "#ede9c4",
+   "#fdfdf9",
+   "#fdfdfa",
+   "#fdfdfb",
+   "#fefefc",
+   "#fefefd"
+  ],
+  "m4": [
+   "#ad6505",
+   "#df950a",
+   "#f2be2d",
+   "#f3d963",
+   "#f5ec97",
+   "#f5f4a7",
+   "#f5f5b6",
+   "#f6f6c5",
+   "#f7f7d3"
+  ],
+  "m5": [
+   "#683200",
+   "#884c00",
+   "#a86c00",
+   "#c89100",
+   "#e8bc00",
+   "#fbe313",
+   "#f9f53b",
+   "#f8f863",
+   "#f7f789"
+  ],
+  "m6": [
+   "#6c0a00",
+   "#8c1900",
+   "#ad2e00",
+   "#ce4800",
+   "#ef6700",
+   "#fb8d19",
+   "#f9af40",
+   "#f8ca67",
+   "#f8de8c"
+  ]
+ },
+ "warnings": []
+}

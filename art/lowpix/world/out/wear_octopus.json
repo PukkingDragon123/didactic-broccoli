@@ -1,0 +1,56 @@
+{
+ "id": "wear_octopus",
+ "src": "sketchfab:4c09ccc190e442c1a22f6cdf9991fdb9",
+ "credit": {
+  "title": "Low Poly Octopus Plush (free)",
+  "author": "Morky",
+  "authorUrl": "https://sketchfab.com/Rekrovoire",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-octopus-plush-free-4c09ccc190e442c1a22f6cdf9991fdb9",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 512,
+ "size": [
+  0.299,
+  0.2,
+  0.289
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#401f7c",
+   "#5e2c9f",
+   "#7f3ac1",
+   "#9f60cb",
+   "#bb86d4",
+   "#c999d8",
+   "#d5abdc",
+   "#dfbce1",
+   "#e7cde7"
+  ],
+  "m1": [
+   "#624665",
+   "#815f81",
+   "#987b96",
+   "#ac9ca9",
+   "#c2bac0",
+   "#c9c5c8",
+   "#d0d0d0",
+   "#d9d9d9",
+   "#e2e2e2"
+  ],
+  "m2": [
+   "#040704",
+   "#060905",
+   "#080b07",
+   "#0a0c08",
+   "#0c0e0a",
+   "#2e3427",
+   "#525746",
+   "#757968",
+   "#95978d"
+  ]
+ },
+ "warnings": []
+}

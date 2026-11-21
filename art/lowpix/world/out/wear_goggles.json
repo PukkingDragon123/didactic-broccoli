@@ -1,0 +1,34 @@
+{
+ "id": "wear_goggles",
+ "src": "sketchfab:841202d9bbe440648184305d9680b108",
+ "credit": {
+  "title": "Steampunk Glasses",
+  "author": "Loïc",
+  "authorUrl": "https://sketchfab.com/loichuet1",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/steampunk-glasses-841202d9bbe440648184305d9680b108",
+  "site": "Sketchfab"
+ },
+ "tris": 1895,
+ "tex": 256,
+ "size": [
+  0.201,
+  0.06,
+  0.19
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#482922",
+   "#5b3a2e",
+   "#6e4d3b",
+   "#80614a",
+   "#917659",
+   "#a18d6f",
+   "#ada289",
+   "#bab4a2",
+   "#c8c6b9"
+  ]
+ },
+ "warnings": []
+}

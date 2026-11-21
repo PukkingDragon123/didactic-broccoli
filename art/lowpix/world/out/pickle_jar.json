@@ -1,0 +1,67 @@
+{
+ "id": "pickle_jar",
+ "src": "sketchfab:4b8c7e8412fb409285528e79b70d1891",
+ "credit": {
+  "title": "pickles",
+  "author": "Etman",
+  "authorUrl": "https://sketchfab.com/Etman",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pickles-4b8c7e8412fb409285528e79b70d1891",
+  "site": "Sketchfab"
+ },
+ "tris": 1928,
+ "tex": 512,
+ "size": [
+  0.103,
+  0.2,
+  0.103
+ ],
+ "colours": 25,
+ "palette": {
+  "m0": [
+   "#2b631a",
+   "#417f25",
+   "#5a9a30",
+   "#76b43d",
+   "#92c156",
+   "#a8c770",
+   "#bbcd89",
+   "#cbd4a2",
+   "#d9ddb9"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m2": [
+   "#621a06",
+   "#7e2c0a",
+   "#99430f",
+   "#b35e15",
+   "#cc7c1c",
+   "#de9e30",
+   "#e1b854",
+   "#e4ce77",
+   "#e8df99"
+  ],
+  "m3": [
+   "#2b1e13",
+   "#372a1a",
+   "#433622",
+   "#4e432a",
+   "#585033",
+   "#756f49",
+   "#918f60",
+   "#a5a57f",
+   "#b8b89f"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,78 @@
+{
+ "id": "dango2",
+ "src": "sketchfab:db1627c3cd4f4e08b3fb964db186dd20",
+ "credit": {
+  "title": "Dango",
+  "author": "Citrus",
+  "authorUrl": "https://sketchfab.com/citrusfriendd",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/dango-db1627c3cd4f4e08b3fb964db186dd20",
+  "site": "Sketchfab"
+ },
+ "tris": 2100,
+ "tex": 512,
+ "size": [
+  0.433,
+  0.12,
+  0.433
+ ],
+ "colours": 36,
+ "palette": {
+  "m0": [
+   "#12080a",
+   "#170b0d",
+   "#1c0f0f",
+   "#211312",
+   "#251816",
+   "#4a352f",
+   "#6d544a",
+   "#8f7666",
+   "#a7998c"
+  ],
+  "m1": [
+   "#00c008",
+   "#0afb00",
+   "#4fff37",
+   "#8eff71",
+   "#c4ffac",
+   "#d2feb8",
+   "#defdc5",
+   "#e8fdd0",
+   "#f0fddc"
+  ],
+  "m2": [
+   "#6d3420",
+   "#8c4d2c",
+   "#a96a3a",
+   "#be8951",
+   "#c7a573",
+   "#ccb789",
+   "#d2c69e",
+   "#d9d3b2",
+   "#e1dfc5"
+  ],
+  "m3": [
+   "#a70e2e",
+   "#d6162e",
+   "#e73c43",
+   "#eb7570",
+   "#f0aca2",
+   "#f1beb0",
+   "#f2cdbe",
+   "#f3dacb",
+   "#f5e6d8"
+  ],
+  "m4": [
+   "#a62948",
+   "#cb435a",
+   "#d6777f",
+   "#e3a9a9",
+   "#f2dcda",
+   "#f3e3e0",
+   "#f4e9e5",
+   "#f6eeeb",
+   "#f8f3f0"
+  ]
+ },
+ "warnings": []
+}

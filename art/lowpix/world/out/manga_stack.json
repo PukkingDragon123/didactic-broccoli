@@ -1,0 +1,100 @@
+{
+ "id": "manga_stack",
+ "src": "sketchfab:d0b76eada5bd495abcdfb2b20e6f7ee6",
+ "credit": {
+  "title": "Books and magazines",
+  "author": "Naira",
+  "authorUrl": "https://sketchfab.com/naira001",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/books-and-magazines-d0b76eada5bd495abcdfb2b20e6f7ee6",
+  "site": "Sketchfab"
+ },
+ "tris": 2188,
+ "tex": 512,
+ "size": [
+  0.693,
+  0.336,
+  0.288
+ ],
+ "colours": 53,
+ "palette": {
+  "m0": [
+   "#110302",
+   "#160602",
+   "#1b0a03",
+   "#200e05",
+   "#241306",
+   "#5a3611",
+   "#8d611e",
+   "#bf902c",
+   "#d4b757"
+  ],
+  "m1": [
+   "#5f250e",
+   "#7a3a15",
+   "#94521c",
+   "#ad6d25",
+   "#c58b2e",
+   "#d0a748",
+   "#d5bd68",
+   "#dacf87",
+   "#e1dea5"
+  ],
+  "m2": [
+   "#653c20",
+   "#82552c",
+   "#9d7239",
+   "#b79048",
+   "#bfa868",
+   "#c5b880",
+   "#ccc796",
+   "#d4d3ac",
+   "#dcdcc1"
+  ],
+  "m3": [
+   "#624d54",
+   "#7d686d",
+   "#948789",
+   "#aba6a6",
+   "#c3c3c3",
+   "#cbcbcb",
+   "#d3d3d3",
+   "#dcdcdc",
+   "#e4e4e4"
+  ],
+  "m4": [
+   "#685413",
+   "#85751b",
+   "#a19925",
+   "#babc2f",
+   "#bfcc45",
+   "#cfd062",
+   "#d5d57d",
+   "#dbdb98",
+   "#e2e2b2"
+  ],
+  "m5": [
+   "#01282e",
+   "#02393b",
+   "#044845",
+   "#06544b",
+   "#08604e",
+   "#0f916c",
+   "#17c182",
+   "#2ee290",
+   "#61e69f"
+  ],
+  "m6": [
+   "#4e0e26",
+   "#64142c",
+   "#791b2f",
+   "#8e2231",
+   "#a12b31",
+   "#bf3c38",
+   "#ca6457",
+   "#d18b79",
+   "#daac9b"
+  ]
+ },
+ "warnings": []
+}

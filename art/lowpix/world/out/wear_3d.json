@@ -1,0 +1,56 @@
+{
+ "id": "wear_3d",
+ "src": "sketchfab:5cb2d8563fd3457c9ff3b585aeabfedb",
+ "credit": {
+  "title": "3D Glasses",
+  "author": "seodoaa",
+  "authorUrl": "https://sketchfab.com/seodoaa",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/3d-glasses-5cb2d8563fd3457c9ff3b585aeabfedb",
+  "site": "Sketchfab"
+ },
+ "tris": 356,
+ "tex": 256,
+ "size": [
+  0.218,
+  0.05,
+  0.153
+ ],
+ "colours": 20,
+ "palette": {
+  "m0": [
+   "#566c77",
+   "#778e95",
+   "#9dabae",
+   "#c1c8c9",
+   "#e3e5e5",
+   "#e8e8e8",
+   "#ebebeb",
+   "#efefef",
+   "#f3f3f3"
+  ],
+  "m1": [
+   "#0a003a",
+   "#07004c",
+   "#01005e",
+   "#01096e",
+   "#03167e",
+   "#072fae",
+   "#0c50dd",
+   "#2e7df0",
+   "#62a8f1"
+  ],
+  "m2": [
+   "#410015",
+   "#550014",
+   "#690010",
+   "#7d0009",
+   "#8f0402",
+   "#be1806",
+   "#eb330b",
+   "#f26735",
+   "#f39867"
+  ]
+ },
+ "warnings": []
+}

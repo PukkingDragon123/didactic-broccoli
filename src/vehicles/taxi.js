@@ -8,7 +8,7 @@
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell, slab } from './shell.js';
-import { ramp, mix, seamLoop, seal, glassPane, lamp, lampLit, plate, grow, rust } from './paint.js';
+import { ramp, mix, seamLoop, seal, glassPane, lamp, lampLit, plate, grow, rust, carPaint } from './paint.js';
 import { wheelPatches, wheelGeometry, wiper, rods, vehicleMaterials } from './parts.js';
 import { Pix, FONT_JP } from '../gfx/pix.js';
 import * as THREE from 'three';
@@ -99,7 +99,7 @@ function paintSide(S, sx) {
   const A = S.A, U = (z) => (sx > 0 ? -z : z), I = (z) => S.i(U(z)), J = (y) => S.j(y), P = (pts) => pts.map(([z, y]) => [U(z), y]);
   A.ink(ROUGH.paint);
   // yellow over green, a white pinstripe at the waist
-  S.box(0, 0, S.W, S.H, (i, j) => { const y = S.o.v0 + (j + 0.5) / S.ppm; return y > 0.95 ? (y > 1.42 ? YEL[3] : YEL[2]) : y < 0.33 ? GRN[1] : GRN[2]; });
+  S.box(0, 0, S.W, S.H, (i, j) => { const y = S.o.v0 + (j + 0.5) / S.ppm; return y > 0.95 ? (y > 1.42 ? YEL[3] : carPaint(i, j, y, YEL, { sill: 0.95, horizon: 0.95, shoulder: 1.0, top: 1.42, ppm: S.ppm, grime: 0 })) : y < 0.33 ? GRN[1] : carPaint(i, j, y, GRN, { sill: 0.33, horizon: 0.62, shoulder: 0.9, top: 0.95, ppm: S.ppm }); });
   S.hline(0, S.W, J(0.94), WHITE); S.hline(0, S.W, J(0.93), GRN[0]);
   S.hline(0, S.W, J(0.7), GRN[3]); S.hline(0, S.W, J(0.69), GRN[1]);
   for (const zc of [-AX, AX]) for (let j = J(YB); j < J(YB + ARCH + 0.04); j++) for (let i = I(zc) - 50; i <= I(zc) + 50; i++) {
@@ -132,7 +132,7 @@ function paintSide(S, sx) {
 function paintFront(F) {
   const A = F.A, I = (x) => F.i(x), J = (y) => F.j(y);
   A.ink(ROUGH.paint);
-  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y > 0.9 ? YEL[2] : GRN[2]; });
+  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y > 0.9 ? YEL[2] : carPaint(i, j, y, GRN, { sill: 0.3, horizon: 0.55, shoulder: 0.86, top: 0.9, ppm: F.ppm }); });
   const ws = [[-(W - RND - 0.01), WS0[1] + 0.02], [W - RND - 0.01, WS0[1] + 0.02], [W - RND - 0.01, WS1[1] - 0.02], [-(W - RND - 0.01), WS1[1] - 0.02]];
   glassPane(F, ws, { seed: 3, alpha: 110, slope: 0.4 }); seal(F, ws, RUBBER, 2);
   // the chrome grille between square headlights, amber corner lamps, the chrome bumper
@@ -149,7 +149,7 @@ function paintFront(F) {
 function paintRear(B) {
   const A = B.A, I = (x) => B.i(-x), J = (y) => B.j(y);
   A.ink(ROUGH.paint);
-  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y > 1.0 ? YEL[2] : GRN[2]; });
+  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y > 1.0 ? YEL[2] : carPaint(i, j, y, GRN, { sill: 0.3, horizon: 0.58, shoulder: 0.95, top: 1.0, ppm: B.ppm }); });
   const rw = [[-(W - RND - 0.02), 1.0], [W - RND - 0.02, 1.0], [W - RND - 0.02, 1.4], [-(W - RND - 0.02), 1.4]];
   glassPane(B, rw, { seed: 6, alpha: 120 }); seal(B, rw, RUBBER, 2);
   seamLoop(B, [[-0.72, 0.5], [0.72, 0.5], [0.72, 0.93], [-0.72, 0.93]], GRN[0], GRN[3], 0, -1); // the boot lid

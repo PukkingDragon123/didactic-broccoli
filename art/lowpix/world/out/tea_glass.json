@@ -1,0 +1,56 @@
+{
+ "id": "tea_glass",
+ "src": "sketchfab:7669b27d4e634e7b9cd114d50c33af97",
+ "credit": {
+  "title": "Glass of Tea",
+  "author": "Tiago Lopes",
+  "authorUrl": "https://sketchfab.com/drobluda",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/glass-of-tea-7669b27d4e634e7b9cd114d50c33af97",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 256,
+ "size": [
+  0.086,
+  0.11,
+  0.053
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#730004",
+   "#960800",
+   "#b91900",
+   "#dc3000",
+   "#ff4d00",
+   "#fc7926",
+   "#f99d4c",
+   "#f8bb70",
+   "#f8d393"
+  ],
+  "m1": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ],
+  "m2": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

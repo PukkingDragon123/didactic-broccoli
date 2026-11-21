@@ -6,8 +6,10 @@
 //   game.jojo.rival     Gōda Tetsuzan and the pose-off (src/jojo/rival.js)
 //   the Sanchōme Pose Society on the lane (src/jojo/society.js)
 // Tense moments get their lettering here too: a customer haggling (ゴゴゴ over them), a timed question, a slap on
-// someone (a sideways impact frame), a big sale (ドン!). The old screen-edge lettering (src/ui/menacing.js) is
-// redrawn as the same pixel sprites. Save: game.state.jojo = { learned, seen, posed, rival }.
+// someone, a big sale (ドン!). The old screen-edge lettering (src/ui/menacing.js) is redrawn as the same pixel sprites.
+// The full-screen impact frame (dark, inverted, flickering) is kept for the staged moments only (a secret's reveal,
+// the pose-off): fired by an everyday slap or sale, out of nowhere, it read as a black glitch of the screen.
+// Save: game.state.jojo = { learned, seen, posed, rival }.
 import './jojo.css';
 import * as THREE from 'three';
 import { ensureState } from '../game/stateExt.js';
@@ -39,12 +41,12 @@ export class JoJo {
 
   hook() {
     const g = this.game, ev = g.events;
-    // a slap that lands on someone: a sideways impact frame (not every time: it's a punchline, not a filter)
+    // a slap that lands on someone: ドン! over them (not every time: it's a punchline, not a filter)
     ev.on('slap', (e) => {
       if (!e?.human || this.cool.slap > 0 || g.cutscene?.active) return;
       this.cool.slap = 40;
-      const at = e.point?.isVector3 ? e.point.clone() : null;
-      setTimeout(() => this.impact.frame({ at, lines: 'side', dir: Math.random() < 0.5 ? 1 : -1, palette: ['blood', 'violet'], dur: 0.34, pix: 3, clear: 0 }), 60);
+      const h = e.human?.h || e.human;
+      if (h?.root || h?.headTop) this.kana.spawn({ kind: 'don', at: h, n: 1, dur: 1.2, size: 0.6, sound: false });
     });
     // a timed answer in a chat: the pressure is on
     ev.on('talk:timed', (e) => {
@@ -57,7 +59,6 @@ export class JoJo {
     ev.on('figureSold', (e) => {
       if (e?.staff || !(e?.price >= 3000) || this.cool.sale > 0) return;
       this.cool.sale = 60;
-      this.impact.frame({ at: [0.5, 0.45], palette: ['acid', 'violet'], dur: 0.6, freeze: true });
       this.kana.spawn({ kind: 'don', screen: [0.5, 0.24], dur: 1.8, sound: false });
       sting('impact');
     });

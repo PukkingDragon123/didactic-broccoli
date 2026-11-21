@@ -152,7 +152,7 @@ export function howTo(game, c) {
     return { kind: 'web', label: 'Web shop', text: `kirakira-closet.jp ${yen(c.price)}`, sub: o ? 'Ordered! Gen-san brings the parcel.' : "Order it on Grandpa's computer. Gen-san delivers.", prog: null, price: c.price, ordered: !!o };
   }
   if (s.kind === 'thrift') return { kind: 'thrift', label: 'Thrift find', text: c.secondhand ? 'Off-Hobby, second-hand' : 'Off-Hobby', sub: c.secondhand ? 'Nobody sells these new any more. Keep an eye on the junk market.' : 'Second-hand, one of a kind.', prog: null };
-  if (s.kind === 'itch') return { kind: 'itch', label: 'Follow us on itch.io', text: 'Free, for following the game', sub: "We can't check, so it's on your honour. Thank you!", prog: null };
+  if (s.kind === 'itch') return { kind: 'itch', label: 'A gift from us', text: 'Free, with our thanks', sub: "Take it, it's yours.", prog: null };
   if (s.level && (g.progress?.level ?? 1) < s.level) {
     const now = g.progress?.level ?? 1;
     return { kind: 'level', label: 'Shop level', text: `Reach level ${s.level}`, sub: `The closet stocks it once the shop grows. ${yen(c.price)} then.`, prog: { n: now, max: s.level, unit: 'level' }, price: c.price };

@@ -1,0 +1,45 @@
+{
+ "id": "wear_stars",
+ "src": "sketchfab:a2442e6b6c874fc28a5b20fe5902db6e",
+ "credit": {
+  "title": "PartyResidentsExtraLargeSunglasses_Star",
+  "author": "ayumi ikeda",
+  "authorUrl": "https://sketchfab.com/rxf10240",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/partyresidentsextralargesunglasses-star-a2442e6b6c874fc28a5b20fe5902db6e",
+  "site": "Sketchfab"
+ },
+ "tris": 1272,
+ "tex": 240,
+ "size": [
+  0.145,
+  0.07,
+  0.091
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#050014",
+   "#07001a",
+   "#050021",
+   "#030027",
+   "#00002d",
+   "#020a6b",
+   "#0520a8",
+   "#0b41e2",
+   "#3a78f2"
+  ],
+  "m1": [
+   "#4f0073",
+   "#740096",
+   "#9e00b9",
+   "#cf00dc",
+   "#ff00f9",
+   "#fc26e5",
+   "#f94cd8",
+   "#f870d3",
+   "#f893d4"
+  ]
+ },
+ "warnings": []
+}

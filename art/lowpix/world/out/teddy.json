@@ -1,0 +1,45 @@
+{
+ "id": "teddy",
+ "src": "sketchfab:dae9249342744328ad6da4182e6010f7",
+ "credit": {
+  "title": "Teddy Bear",
+  "author": "theacidrose",
+  "authorUrl": "https://sketchfab.com/theacidrose",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/teddy-bear-dae9249342744328ad6da4182e6010f7",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 384,
+ "size": [
+  0.305,
+  0.3,
+  0.163
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#3c1714",
+   "#4c241c",
+   "#5c3225",
+   "#6c422e",
+   "#7a5338",
+   "#966f4a",
+   "#ac8c61",
+   "#b9a682",
+   "#c7bda2"
+  ],
+  "m1": [
+   "#1e1011",
+   "#261616",
+   "#2e1e1c",
+   "#352623",
+   "#3c2f2a",
+   "#5b4c43",
+   "#786a5f",
+   "#92887d",
+   "#a8a49e"
+  ]
+ },
+ "warnings": []
+}

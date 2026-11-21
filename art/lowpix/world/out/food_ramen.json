@@ -1,0 +1,78 @@
+{
+ "id": "food_ramen",
+ "src": "sketchfab:f65a8eab51794fbc8c7941101a354a54",
+ "credit": {
+  "title": "Japanese Ramen",
+  "author": "Senkinsky",
+  "authorUrl": "https://sketchfab.com/senkinsky",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-ramen-f65a8eab51794fbc8c7941101a354a54",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 312,
+ "size": [
+  0.226,
+  0.12,
+  0.223
+ ],
+ "colours": 39,
+ "palette": {
+  "m0": [
+   "#190e0f",
+   "#201313",
+   "#271a18",
+   "#2d211e",
+   "#332824",
+   "#53453e",
+   "#71645a",
+   "#8d8379",
+   "#a5a19b"
+  ],
+  "m1": [
+   "#481d14",
+   "#5c2d1c",
+   "#6f3e25",
+   "#81522f",
+   "#936739",
+   "#ae8548",
+   "#ba9f66",
+   "#c5b686",
+   "#d0c9a4"
+  ],
+  "m2": [
+   "#603b26",
+   "#7b5434",
+   "#946e44",
+   "#ac8a55",
+   "#b6a274",
+   "#bdb28a",
+   "#c5c09f",
+   "#cfcdb3",
+   "#d8d8c6"
+  ],
+  "m3": [
+   "#14280e",
+   "#1e3314",
+   "#283d1a",
+   "#334720",
+   "#3f5127",
+   "#5f733b",
+   "#819351",
+   "#a0aa6f",
+   "#b8bb93"
+  ],
+  "m4": [
+   "#4f2c2c",
+   "#653f3c",
+   "#7a544d",
+   "#8e6a5f",
+   "#9d8275",
+   "#a7978b",
+   "#b3a9a0",
+   "#bfbbb4",
+   "#cdcbc7"
+  ]
+ },
+ "warnings": []
+}

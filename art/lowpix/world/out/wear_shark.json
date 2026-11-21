@@ -1,0 +1,67 @@
+{
+ "id": "wear_shark",
+ "src": "sketchfab:ec56e06c502a4cf2adf1b6beea43dc28",
+ "credit": {
+  "title": "Stuffed animal of Shark (サメのぬいぐるみ)",
+  "author": "horse_water",
+  "authorUrl": "https://sketchfab.com/horse_water",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/stuffed-animal-of-shark-ec56e06c502a4cf2adf1b6beea43dc28",
+  "site": "Sketchfab"
+ },
+ "tris": 2498,
+ "tex": 344,
+ "size": [
+  0.323,
+  0.25,
+  0.527
+ ],
+ "colours": 30,
+ "palette": {
+  "m0": [
+   "#262331",
+   "#332f3e",
+   "#3f3c4a",
+   "#4b4a56",
+   "#595961",
+   "#727275",
+   "#8a8a8a",
+   "#a0a0a0",
+   "#b6b6b6"
+  ],
+  "m1": [
+   "#b50050",
+   "#ec0055",
+   "#ff2461",
+   "#ff5c7b",
+   "#ff939f",
+   "#fea3a6",
+   "#fdb7b3",
+   "#fccac2",
+   "#fcdbd1"
+  ],
+  "m2": [
+   "#8c0037",
+   "#b70039",
+   "#e10033",
+   "#ff0d30",
+   "#ff3844",
+   "#fc5a56",
+   "#fb8173",
+   "#faa48f",
+   "#fac0ab"
+  ],
+  "m3": [
+   "#94003a",
+   "#c0013d",
+   "#ea0539",
+   "#f72543",
+   "#f6535d",
+   "#f5706d",
+   "#f59286",
+   "#f5af9f",
+   "#f6c8b6"
+  ]
+ },
+ "warnings": []
+}

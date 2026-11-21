@@ -1,0 +1,34 @@
+{
+ "id": "wear_peaked",
+ "src": "sketchfab:70a949de921345c183204528adc5c4b7",
+ "credit": {
+  "title": "The cap is leather. peaked visor",
+  "author": "ToxaGrom",
+  "authorUrl": "https://sketchfab.com/3dAssatsForGames",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/the-cap-is-leather-peaked-visor-70a949de921345c183204528adc5c4b7",
+  "site": "Sketchfab"
+ },
+ "tris": 408,
+ "tex": 512,
+ "size": [
+  0.218,
+  0.12,
+  0.296
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#140f11",
+   "#191516",
+   "#1e1b1b",
+   "#232121",
+   "#272727",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ]
+ },
+ "warnings": []
+}

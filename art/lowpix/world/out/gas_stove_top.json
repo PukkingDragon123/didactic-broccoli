@@ -1,0 +1,56 @@
+{
+ "id": "gas_stove_top",
+ "src": "sketchfab:4a4328072601478baec28dfdc71d8e3a",
+ "credit": {
+  "title": "Burner Gas Stove",
+  "author": "XaaH",
+  "authorUrl": "https://sketchfab.com/XaaH",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/burner-gas-stove-4a4328072601478baec28dfdc71d8e3a",
+  "site": "Sketchfab"
+ },
+ "tris": 2498,
+ "tex": 512,
+ "size": [
+  0.896,
+  0.12,
+  0.502
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#241a30",
+   "#31233d",
+   "#3f2d49",
+   "#4c3855",
+   "#5a4360",
+   "#755a79",
+   "#8f7290",
+   "#a290a1",
+   "#b5acb4"
+  ],
+  "m1": [
+   "#1b1821",
+   "#23212a",
+   "#2c2a33",
+   "#36343b",
+   "#3f3e42",
+   "#5a5a5a",
+   "#757575",
+   "#8f8f8f",
+   "#a9a9a9"
+  ],
+  "m2": [
+   "#6c341c",
+   "#8b4d28",
+   "#a86934",
+   "#c18846",
+   "#c8a468",
+   "#cdb67f",
+   "#d3c696",
+   "#d9d4ac",
+   "#e1dfc1"
+  ]
+ },
+ "warnings": []
+}

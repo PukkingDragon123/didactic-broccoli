@@ -1,9 +1,11 @@
 // game.grandpa: Grandpa in person on your first day. A fresh game: he's out front of the shutter on his stool with
 // Mikan, dozing in the sun while the opening plays (src/arrival/: 'arrival:start'); the engine dies across the lane, he
 // wakes and shuffles over ('arrival:wake'), taps on the window and meets you in a cinematic chat
-// (src/grandpa/scenes.js); then he walks you through the opening jobs himself (src/grandpa/director.js) until the
-// place is clean, says goodbye at a taxi and leaves you his notebook. Afterwards he phones now and then and sends a
-// postcard (src/grandpa/phone.js). Save data: game.state.grandpa (ensureState).
+// (src/grandpa/scenes.js); then he walks you through the opening jobs himself (src/grandpa/director.js), in person
+// and strictly (he leads you to each job, won't let you skip ahead, fetches you back if you wander off, and tells you
+// off), until the place is clean and you've sat down at the computer; then he says goodbye at a taxi. Afterwards he
+// phones now and then (src/grandpa/phone.js). Settings > Skip tutorial (game.state.settings.skipTutorial, for
+// returning players) does the clean-up for you and sends him off quietly. Save data: game.state.grandpa.
 //
 //   grandpa.present            he's in the lane today (met, not gone)
 //   grandpa.meet({ opening }) -> Promise   the meeting, from the cab to the stool (Story.newGame awaits it); opening:
@@ -14,6 +16,7 @@
 //   grandpa.hideCrowd(on, r)   passers-by within r metres of the van step out of shot (and stay out) until off
 //   grandpa.cardLine(stepId)   his short line for the objective card (null when he isn't here)
 //   grandpa.goalOverride()     the objective while he wants you for something (the goodbye)
+//   grandpa.skipTutorial()     the opening's clean-up done at once, him gone to Atami (the phone calls carry on)
 //   grandpa.gp                 the character (src/grandpa/Grandpa.js)   grandpa.nav (src/grandpa/nav.js)
 // Events: 'grandpa:met', 'grandpa:left', 'grandpa:call' { id }.
 import * as THREE from 'three';
@@ -26,6 +29,7 @@ import { Director } from './director.js';
 import { GrandpaPhone } from './phone.js';
 import { STEPS } from './data.js';
 import * as scenes from './scenes.js';
+import { forceTutorial } from './skip.js';
 import './sfx.js';
 import './grandpa.css';
 
@@ -56,8 +60,8 @@ export class GrandpaSystem {
     this.phone.install();
     if (s.left || g.story.done || g.visiting || g.mp?.isGuest) {
       this.mode = 'gone';
-      // his empty stool out front and his notebook on the desk, until the shop reopens
-      if (s.met && s.left && !g.visiting) { if (!g.story.done) this.buildStool(); this.placeNotebook(); }
+      // his empty stool out front, until the shop reopens
+      if (s.met && s.left && !g.visiting && !g.story.done) this.buildStool();
       Game.updaters.push((gg, dt) => this.update(dt));
       return;
     }
@@ -184,6 +188,7 @@ export class GrandpaSystem {
     this.s.met = true;
     this.mode = 'guide';
     g.events.emit('grandpa:met', {});
+    if (g.state.settings?.skipTutorial) { this.skipTutorial(); return; }
     this.director.start();
     g.save();
   }
@@ -225,11 +230,9 @@ export class GrandpaSystem {
     await g.cutscene.play((c) => scenes.taxiLeaveScene(c, this), { skippable: true });
     this.hideCrowd(false);
     this.leave();
-    // his notebook, read in your hands
-    setTimeout(() => g.life?.notes?.open('book'), 400);
   }
 
-  /** Gone for good (the taxi took him): the notebook stays on the desk, the notes carry on. */
+  /** Gone for good (the taxi took him): the objective carries on, and he rings now and then. */
   leave() {
     const g = this.game, s = this.s;
     s.left = true;
@@ -237,22 +240,24 @@ export class GrandpaSystem {
     this.mode = 'gone';
     this.director?.stop();
     if (this.gp) { this.gp.setVisible(false); g.interaction.remove(this.gp.hit); }
-    this.placeNotebook();
     g.events.emit('grandpa:left', {});
     g.guide?.pulse();
     g.save();
   }
 
-  /** His notebook on the computer desk, for good: click to read (a note in src/life/notes.js). */
-  placeNotebook() {
-    const g = this.game, D = g.garage.pcDesk;
-    if (this.book || !g.life?.notes) return;
-    const m = propMesh('grandpa_notebook', { fallbackSize: [0.15, 0.03, 0.2], fallbackColor: 0x5a3420 });
-    m.position.set(D.x - 0.12, D.h + 0.002, D.z + 0.12);
-    m.rotation.y = -Math.PI / 2 + 0.25;
-    g.scene.add(m);
-    g.interaction.add(m, { reach: 2.4, hint: () => (g.held.busy ? null : { key: 'LMB', text: "Read Grandpa's notebook", sub: 'Everything, written down twice' }), use: () => { g.life.notes.open('book'); return false; } });
-    this.book = m;
+  /** Settings > Skip tutorial: the clean-up done in a blink, him off to Atami without the goodbye scene. */
+  skipTutorial() {
+    const g = this.game;
+    if (this.mode === 'gone' || this.leaving || g.story.done) return false;
+    this.leaving = true;
+    this.director?.stop();
+    this.s.met = true;
+    this.s.skipped = true;
+    forceTutorial(g);
+    if (g.held.find('key') < 0 && !g.story.flags.shutter) g.held.giveTool('key');
+    this.leave();
+    g.news('Tutorial skipped', 'The garage is clean. Earn money with odd jobs, then buy a machine on the computer', 6500);
+    return true;
   }
 
   /** The objective while he wants you for something. */

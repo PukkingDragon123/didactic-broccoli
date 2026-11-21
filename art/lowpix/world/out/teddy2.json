@@ -1,0 +1,45 @@
+{
+ "id": "teddy2",
+ "src": "sketchfab:cee94954353d4e19a388e3ed4c8e64a7",
+ "credit": {
+  "title": "Teddy bear",
+  "author": "Etman",
+  "authorUrl": "https://sketchfab.com/Etman",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/teddy-bear-cee94954353d4e19a388e3ed4c8e64a7",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 352,
+ "size": [
+  0.109,
+  0.25,
+  0.296
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#402523",
+   "#52352f",
+   "#63463c",
+   "#73594b",
+   "#826b5a",
+   "#95826f",
+   "#a39889",
+   "#b2ada2",
+   "#c2c0ba"
+  ],
+  "m1": [
+   "#130005",
+   "#190004",
+   "#1f0002",
+   "#250000",
+   "#2b0400",
+   "#6a1402",
+   "#a62f05",
+   "#e1540b",
+   "#f28839"
+  ]
+ },
+ "warnings": []
+}

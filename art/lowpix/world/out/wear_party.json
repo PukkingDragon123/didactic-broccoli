@@ -1,0 +1,67 @@
+{
+ "id": "wear_party",
+ "src": "sketchfab:286b99f778754c45ba3cd0616b838d03",
+ "credit": {
+  "title": "Party Hat",
+  "author": "the milkwayster",
+  "authorUrl": "https://sketchfab.com/kirarm2005",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/party-hat-286b99f778754c45ba3cd0616b838d03",
+  "site": "Sketchfab"
+ },
+ "tris": 1614,
+ "tex": 512,
+ "size": [
+  0.247,
+  0.2,
+  0.311
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#660827",
+   "#840c2a",
+   "#a0122a",
+   "#bb1826",
+   "#d52020",
+   "#de493c",
+   "#e0735e",
+   "#e4987f",
+   "#e8b79e"
+  ],
+  "m1": [
+   "#310613",
+   "#3f0915",
+   "#4c0d16",
+   "#591115",
+   "#651715",
+   "#8f2d21",
+   "#b6482e",
+   "#ce704d",
+   "#d69a79"
+  ],
+  "m2": [
+   "#4f3e43",
+   "#655358",
+   "#796a6d",
+   "#8b8383",
+   "#9d9c9c",
+   "#aaaaaa",
+   "#b8b8b8",
+   "#c5c5c5",
+   "#d3d3d3"
+  ],
+  "m3": [
+   "#1d1716",
+   "#241f1d",
+   "#2c2825",
+   "#33302e",
+   "#393837",
+   "#535353",
+   "#6f6f6f",
+   "#8a8a8a",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

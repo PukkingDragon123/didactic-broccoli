@@ -24,6 +24,7 @@ import { q8 } from '../people/paintlib.js';
 import { createAvatarHuman } from '../people/avatar.js';
 import { audio } from '../core/audio.js';
 import { talk } from '../people/voice.js';
+import { separateThumb } from './handFit.js';
 import './sfx.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -52,12 +53,16 @@ const HIDE = ['neck', 'head', 'tailL', 'tailR', 'armL', 'foreL', 'handL', 'armR'
 // Rest frame (rig space, metres; a left arm hanging at the side): +x lateral / the back of the hand, -x towards the body /
 // the palm, +z forward / the thumb side, the arm runs down -y. Hand space: origin at the wrist joint, same axes.
 // Sizes are for a 1.72 m man and scale with the avatar (k: hand size, ar: arm girth).
+// (the knuckles sit far enough apart for the fingers' own widths: side by side they touch, never pass into each other,
+// however the cascade curls them; FW below is the width factor the fingers are built with. The index stays where the
+// pinch was fitted, the others make room towards the little-finger side)
 const FING = [ // knuckle [x, y, z], phalanx lengths, half width (z), half thickness (x)
   { k: [-0.001, -0.088, 0.0258], len: [0.04, 0.024, 0.0195], w: 0.0096, t: 0.0089 },
-  { k: [-0.0005, -0.0915, 0.0087], len: [0.044, 0.027, 0.0205], w: 0.0099, t: 0.0092 },
-  { k: [-0.001, -0.0885, -0.0085], len: [0.041, 0.026, 0.0195], w: 0.0094, t: 0.0087 },
-  { k: [-0.0015, -0.0815, -0.0246], len: [0.032, 0.0205, 0.0175], w: 0.0084, t: 0.0079 },
+  { k: [-0.0005, -0.0915, 0.0071], len: [0.044, 0.027, 0.0205], w: 0.0099, t: 0.0092 },
+  { k: [-0.001, -0.0885, -0.0114], len: [0.041, 0.026, 0.0195], w: 0.0094, t: 0.0087 },
+  { k: [-0.0015, -0.0815, -0.0285], len: [0.032, 0.0205, 0.0175], w: 0.0084, t: 0.0079 },
 ];
+const FW = 0.95;
 const THUMB = { base: [-0.0075, -0.017, 0.0205], len: [0.043, 0.031, 0.026], w: 0.0108, t: 0.0096 };
 // thumb orientations (left hand): where it points, which way its nail faces
 const T_RELAX = [[-0.44, -0.76, 0.48], [0.4, 0.1, 1]];
@@ -304,6 +309,12 @@ export class FPBody {
     for (const b of bones) if (!b.parent) root.add(b);
     const tex = this.armTexture(h);
     this.tex = tex;
+    // capsules for keeping the thumb out of the fingers (src/game/handFit.js): segment radii from the blocks' sizes
+    const rad = (w, t, j, dw, dt) => 0.5 * (w * (1 - j * dw) + t * (1 - j * dt)) * 0.97;
+    this.fit = [0, 1].map((hi) => ({
+      fingers: FING.map((F, fi) => ({ b: [0, 1, 2].map((j) => bones[fingBone(hi, fi, j)]), tip: F.len[2] * k, r: [0, 1, 2].map((j) => rad(F.w * k * FW, F.t * k * 1.06, j, 0.06, 0.07)) })),
+      thumb: { b: [0, 1, 2].map((j) => bones[fingBone(hi, 4, j)]), tip: THUMB.len[2] * k, r: [0, 1, 2].map((j) => rad(THUMB.w * k * 1.06, THUMB.t * k * 1.06, j, 0.06, 0.07)) },
+    }));
     const geo = this.limbGeometry();
     // a little fill light of their own (emissive) so your hands always read, even in the dark garage
     const mat = new THREE.MeshStandardMaterial({ map: tex.map, vertexColors: true, roughness: 0.78, metalness: 0, emissive: 0xffffff, emissiveMap: tex.map, emissiveIntensity: 0.13 });
@@ -490,7 +501,7 @@ export class FPBody {
         o = o.clone().addScaledVector(ey, -L);
       });
     };
-    FING.forEach((F, fi) => digit(new THREE.Vector3(shX + F.k[0] * k, wr + F.k[1] * k, F.k[2] * k), { ex: X, ey: Y, ez: Z }, fingBone(0, fi, 0), F.len.map((x) => x * k), F.w * k * 1.08, F.t * k * 1.06, false, fi));
+    FING.forEach((F, fi) => digit(new THREE.Vector3(shX + F.k[0] * k, wr + F.k[1] * k, F.k[2] * k), { ex: X, ey: Y, ez: Z }, fingBone(0, fi, 0), F.len.map((x) => x * k), F.w * k * FW, F.t * k * 1.06, false, fi));
     const tq = this.thumbQ[0].relax;
     digit(new THREE.Vector3(shX + THUMB.base[0] * k, wr + THUMB.base[1] * k, THUMB.base[2] * k), { ex: X.clone().applyQuaternion(tq), ey: Y.clone().applyQuaternion(tq), ez: Z.clone().applyQuaternion(tq) },
       fingBone(0, 4, 0), THUMB.len.map((x) => x * k), THUMB.w * k * 1.06, THUMB.t * k * 1.06, true, 4);
@@ -1618,6 +1629,8 @@ export class FPBody {
     bones[fingBone(h, 4, 0)].quaternion.slerpQuaternions(T.relax, T.oppose, clamp(thumb, 0, 1));
     bones[fingBone(h, 4, 1)].quaternion.setFromAxisAngle(Z, -sd * (0.12 + tcurl * 0.62));
     bones[fingBone(h, 4, 2)].quaternion.setFromAxisAngle(Z, -sd * (0.14 + tcurl * 0.9));
+    // the thumb only ever touches the fingers (a pinch meets pad to pad, a fist folds it over them, never through)
+    if (this.fit) separateThumb(this.fit[h].fingers, this.fit[h].thumb);
   }
 
   /** The sheet being handed out: pinched at its lower corner, standing up and facing them (you see its back). */

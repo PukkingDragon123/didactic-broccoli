@@ -1,0 +1,100 @@
+{
+ "id": "wear_duck",
+ "src": "sketchfab:886b9a0dfbc34cf2bea40cfb724457a6",
+ "credit": {
+  "title": "Duck Plush",
+  "author": "SunnyBuns",
+  "authorUrl": "https://sketchfab.com/SunnyBuns",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/duck-plush-886b9a0dfbc34cf2bea40cfb724457a6",
+  "site": "Sketchfab"
+ },
+ "tris": 948,
+ "tex": 272,
+ "size": [
+  0.105,
+  0.2,
+  0.186
+ ],
+ "colours": 55,
+ "palette": {
+  "m0": [
+   "#5f4a51",
+   "#786569",
+   "#8f8184",
+   "#a59fa0",
+   "#bcbcbc",
+   "#c5c5c5",
+   "#cecece",
+   "#d8d8d8",
+   "#e1e1e1"
+  ],
+  "m1": [
+   "#822e05",
+   "#a74b09",
+   "#cb6c0e",
+   "#eb9317",
+   "#ebb240",
+   "#ebc85d",
+   "#ecd979",
+   "#eee694",
+   "#f0f0af"
+  ],
+  "m2": [
+   "#8b043b",
+   "#b3083f",
+   "#da0e3e",
+   "#ee2644",
+   "#ee515c",
+   "#ee6d6b",
+   "#ef8f85",
+   "#f0ad9e",
+   "#f2c6b6"
+  ],
+  "m3": [
+   "#07051f",
+   "#080828",
+   "#0b0f31",
+   "#0e1639",
+   "#111e41",
+   "#1f3b6e",
+   "#2f5d98",
+   "#4384c0",
+   "#72a8cc"
+  ],
+  "m4": [
+   "#002c2e",
+   "#013b39",
+   "#03483f",
+   "#055444",
+   "#076046",
+   "#0d9260",
+   "#15c273",
+   "#2be480",
+   "#5fe892"
+  ],
+  "m5": [
+   "#231a1d",
+   "#2d2326",
+   "#362d2e",
+   "#3e3738",
+   "#464242",
+   "#5e5e5e",
+   "#777777",
+   "#919191",
+   "#ababab"
+  ],
+  "m6": [
+   "#221953",
+   "#27236a",
+   "#2e3080",
+   "#3a4496",
+   "#475aaa",
+   "#5f77b7",
+   "#7b94c0",
+   "#97adc9",
+   "#b1c3d4"
+  ]
+ },
+ "warnings": []
+}

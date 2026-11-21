@@ -1,0 +1,100 @@
+{
+ "id": "udon_meal",
+ "src": "sketchfab:aeadafce557445df8d852109f2794f6a",
+ "credit": {
+  "title": "Udon Meal",
+  "author": "Wesai",
+  "authorUrl": "https://sketchfab.com/Wesai",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/udon-meal-aeadafce557445df8d852109f2794f6a",
+  "site": "Sketchfab"
+ },
+ "tris": 2998,
+ "tex": 480,
+ "size": [
+  0.432,
+  0.08,
+  0.239
+ ],
+ "colours": 56,
+ "palette": {
+  "m0": [
+   "#715961",
+   "#8f787e",
+   "#a89d9f",
+   "#c3bfc0",
+   "#e0e0e0",
+   "#e4e4e4",
+   "#e9e9e9",
+   "#ededed",
+   "#f1f1f1"
+  ],
+  "m1": [
+   "#803c08",
+   "#a55b0d",
+   "#c87f14",
+   "#e5a621",
+   "#e6c149",
+   "#e7d365",
+   "#e8e180",
+   "#ebeb9a",
+   "#eeeeb3"
+  ],
+  "m2": [
+   "#760521",
+   "#980820",
+   "#b90d1b",
+   "#d81313",
+   "#e83929",
+   "#e86449",
+   "#e98969",
+   "#eba988",
+   "#eec4a5"
+  ],
+  "m3": [
+   "#12510c",
+   "#206811",
+   "#327e18",
+   "#46931f",
+   "#5da727",
+   "#7dc533",
+   "#9ccf53",
+   "#b6d576",
+   "#ccdd98"
+  ],
+  "m4": [
+   "#0a0517",
+   "#0d081e",
+   "#110a24",
+   "#140d2a",
+   "#171030",
+   "#33215c",
+   "#543486",
+   "#7949af",
+   "#9f75c1"
+  ],
+  "m5": [
+   "#741103",
+   "#952406",
+   "#b53d0b",
+   "#d45a10",
+   "#ea7c1e",
+   "#ea9c40",
+   "#eab761",
+   "#eccd81",
+   "#efdfa0"
+  ],
+  "m6": [
+   "#881b1f",
+   "#af2c26",
+   "#cf4a37",
+   "#d67b62",
+   "#dea48c",
+   "#e1b79e",
+   "#e4c7af",
+   "#e8d5bf",
+   "#ece1cf"
+  ]
+ },
+ "warnings": []
+}

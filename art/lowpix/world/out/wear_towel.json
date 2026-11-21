@@ -1,0 +1,34 @@
+{
+ "id": "wear_towel",
+ "src": "sketchfab:e19a76c4c94a4412be6e858fa8e14716",
+ "credit": {
+  "title": "Folded Towel Set",
+  "author": "paikfest",
+  "authorUrl": "https://sketchfab.com/paikfest",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/folded-towel-set-e19a76c4c94a4412be6e858fa8e14716",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 472,
+ "size": [
+  0.278,
+  0.1,
+  0.297
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#481b26",
+   "#5c252e",
+   "#6f3035",
+   "#823d3c",
+   "#935049",
+   "#a8695c",
+   "#b38879",
+   "#bfa395",
+   "#ccbcb0"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,34 @@
+{
+ "id": "wear_flatcap2",
+ "src": "sketchfab:651e93d7d7a64a418c03e6187b38ad7b",
+ "credit": {
+  "title": "Flat_cap",
+  "author": "NorrisDesigns",
+  "authorUrl": "https://sketchfab.com/Brian.Norris",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/flat-cap-651e93d7d7a64a418c03e6187b38ad7b",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 400,
+ "size": [
+  0.16,
+  0.1,
+  0.184
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1a120f",
+   "#221914",
+   "#28201a",
+   "#2f2820",
+   "#352f27",
+   "#544e42",
+   "#716c5e",
+   "#8c897d",
+   "#a4a39e"
+  ]
+ },
+ "warnings": []
+}

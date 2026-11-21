@@ -1,0 +1,34 @@
+{
+ "id": "bath_stool_set",
+ "src": "sketchfab:b4f82bd4620a49a0a981ba108eba4632",
+ "credit": {
+  "title": "Japanese Bath Stool and Bucket",
+  "author": "Shorty_Digitan",
+  "authorUrl": "https://sketchfab.com/Shorty_Digitan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-bath-stool-and-bucket-b4f82bd4620a49a0a981ba108eba4632",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 384,
+ "size": [
+  0.361,
+  0.3,
+  0.776
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#bd2a02",
+   "#f34d06",
+   "#f7843d",
+   "#f7b378",
+   "#f9d8b0",
+   "#f9e2bc",
+   "#f9ebc8",
+   "#f9f1d3",
+   "#faf7de"
+  ]
+ },
+ "warnings": []
+}

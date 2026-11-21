@@ -1,0 +1,34 @@
+{
+ "id": "fridge_old",
+ "src": "sketchfab:68d173f205344455933f861042b99fe3",
+ "credit": {
+  "title": "Old Fridge",
+  "author": "dylanheyes",
+  "authorUrl": "https://sketchfab.com/dylanheyes",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-fridge-68d173f205344455933f861042b99fe3",
+  "site": "Sketchfab"
+ },
+ "tris": 2848,
+ "tex": 396,
+ "size": [
+  0.695,
+  1.5,
+  0.707
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#503d3b",
+   "#66534f",
+   "#7b6b65",
+   "#8d837d",
+   "#9e9a97",
+   "#a9a8a8",
+   "#b6b6b6",
+   "#c4c4c4",
+   "#d2d2d2"
+  ]
+ },
+ "warnings": []
+}

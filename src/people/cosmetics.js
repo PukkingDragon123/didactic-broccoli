@@ -590,8 +590,8 @@ export function dressHuman(h, look = {}) {
     g.scale.setScalar(V);
     rig.parts.push(g);
   }
-  // ---- hat
-  if (hat) {
+  // ---- hat (entries redrawn with real models bring their own dress: src/cosmetics/wear.js)
+  if (hat && !hat.wear) {
     const id = hat.id;
     if (id === 'shark') add(head, 'sharkHood', H.sharkHood);
     else if (id === 'bear') {
@@ -616,7 +616,7 @@ export function dressHuman(h, look = {}) {
     }
   }
   // ---- face
-  if (face) {
+  if (face && !face.wear) {
     if (face.id === 'kitsune') {
       const k = add(head, 'kitsune', H.kitsune);
       k.position.set(hoodOn || hat?.cover ? 9.6 : 7.4, 10.5, 1.2);
@@ -800,6 +800,7 @@ export function cosmeticPreview(id) {
   const add = (key, build, pos, rot) => { const m = mesh(cached(key, build)); if (pos) m.position.set(...pos); if (rot) m.rotation.set(...rot); g.add(m); return m; };
   const lift = 1.2;
   if (!c) return root;
+  if (c.wear && c.preview) { c.preview(add, g, lift); g.scale.setScalar(0.0117); return root; }
   switch (id) {
     case 'shark': add('sharkHood', H.sharkHood); break;
     case 'bear': add('bearHood', H.bearHood); for (const sx of [-1, 1]) add('bearEar' + sx, () => H.bearEar(sx), [sx * 6.4, 16.2, 0.6], [0, 0, -sx * 0.25]); break;

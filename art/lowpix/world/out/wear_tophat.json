@@ -1,0 +1,34 @@
+{
+ "id": "wear_tophat",
+ "src": "sketchfab:4fdf3ad3c88d4bb58ea7aabb9bfcffae",
+ "credit": {
+  "title": "Top Hat | FREE Download",
+  "author": "Robin Butler",
+  "authorUrl": "https://sketchfab.com/StarTrekGuy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/top-hat-free-download-4fdf3ad3c88d4bb58ea7aabb9bfcffae",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 464,
+ "size": [
+  0.311,
+  0.18,
+  0.337
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

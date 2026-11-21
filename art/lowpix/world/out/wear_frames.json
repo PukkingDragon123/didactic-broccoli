@@ -1,0 +1,45 @@
+{
+ "id": "wear_frames",
+ "src": "sketchfab:8425ebedb9334fc3a1e6d7a72f5612b4",
+ "credit": {
+  "title": "Black Glasses",
+  "author": "nazarchi091",
+  "authorUrl": "https://sketchfab.com/nazarchi091",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/black-glasses-8425ebedb9334fc3a1e6d7a72f5612b4",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 192,
+ "size": [
+  0.147,
+  0.05,
+  0.14
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m1": [
+   "#010000",
+   "#010101",
+   "#010101",
+   "#010101",
+   "#010101",
+   "#242424",
+   "#474747",
+   "#6a6a6a",
+   "#8d8d8d"
+  ]
+ },
+ "warnings": []
+}

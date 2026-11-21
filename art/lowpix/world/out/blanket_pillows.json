@@ -1,0 +1,89 @@
+{
+ "id": "blanket_pillows",
+ "src": "sketchfab:65d0993e7b1741e9ab061d5f97504c31",
+ "credit": {
+  "title": "Blanket and Pillows - Low Poly",
+  "author": "Antipov Alexsander",
+  "authorUrl": "https://sketchfab.com/antipovsoft",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/blanket-and-pillows-low-poly-65d0993e7b1741e9ab061d5f97504c31",
+  "site": "Sketchfab"
+ },
+ "tris": 2699,
+ "tex": 308,
+ "size": [
+  2.913,
+  0.3,
+  2.788
+ ],
+ "colours": 47,
+ "palette": {
+  "m0": [
+   "#191f24",
+   "#22292e",
+   "#2b3437",
+   "#353e40",
+   "#404748",
+   "#5b6060",
+   "#777777",
+   "#919191",
+   "#ababab"
+  ],
+  "m1": [
+   "#3c0014",
+   "#4e0014",
+   "#600010",
+   "#73000a",
+   "#850000",
+   "#b61203",
+   "#e62c07",
+   "#f55e2b",
+   "#f59160"
+  ],
+  "m2": [
+   "#675159",
+   "#836e73",
+   "#9b8e90",
+   "#b3aeaf",
+   "#cdcdcd",
+   "#d4d4d4",
+   "#dbdbdb",
+   "#e2e2e2",
+   "#e8e8e8"
+  ],
+  "m3": [
+   "#440d1f",
+   "#581224",
+   "#6a1826",
+   "#7c1f27",
+   "#8d2727",
+   "#ad3e34",
+   "#c45f4b",
+   "#cc8770",
+   "#d6aa94"
+  ],
+  "m4": [
+   "#4a212f",
+   "#5f2d39",
+   "#733a43",
+   "#85484d",
+   "#975757",
+   "#a6726e",
+   "#b18f88",
+   "#bda8a1",
+   "#cbbfb9"
+  ],
+  "m5": [
+   "#5a3340",
+   "#734551",
+   "#8a5961",
+   "#9d7074",
+   "#ac8d8d",
+   "#b5a19f",
+   "#bfb3b1",
+   "#c9c3c1",
+   "#d4d2d1"
+  ]
+ },
+ "warnings": []
+}

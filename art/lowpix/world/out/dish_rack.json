@@ -1,0 +1,45 @@
+{
+ "id": "dish_rack",
+ "src": "sketchfab:ce69014964624fbb808a028e5c55d88b",
+ "credit": {
+  "title": "Dish Rack with Dishes",
+  "author": "HippoStance",
+  "authorUrl": "https://sketchfab.com/hippostance",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/dish-rack-with-dishes-ce69014964624fbb808a028e5c55d88b",
+  "site": "Sketchfab"
+ },
+ "tris": 2483,
+ "tex": 384,
+ "size": [
+  0.44,
+  0.3,
+  0.35
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#705860",
+   "#8e787d",
+   "#a79c9e",
+   "#c2bebf",
+   "#dfdfdf",
+   "#e3e3e3",
+   "#e8e8e8",
+   "#ececec",
+   "#f1f1f1"
+  ],
+  "m1": [
+   "#1c1618",
+   "#231d1f",
+   "#2a2526",
+   "#312e2e",
+   "#373737",
+   "#525252",
+   "#6e6e6e",
+   "#8a8a8a",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

@@ -309,15 +309,59 @@ export function dissolveMat(tex, opts = {}) {
   return new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, roughness: opts.roughness ?? 0.95, polygonOffset: true, polygonOffsetFactor: -2, side: opts.side ?? THREE.FrontSide, ...opts.extra });
 }
 
-/** Dust / grease patch for the counter (wiped with the rag). */
+/**
+ * Dust on the counter (wiped with the rag), pixel art with real alpha (dustMat): a thin film of dust with an organic,
+ * stepped edge that thins out into the wood, a few fluffier clumps, a tea cup's ring left in it, a finger drawn through
+ * it on some, a few crumbs. Hand-placed shapes from smooth value noise, never per-pixel random speckle.
+ */
 export function dustPatch(seed) {
-  return dissolvePix(24, 24, seed, (p, r) => {
-    for (let y = 0; y < 24; y++) for (let x = 0; x < 24; x++) {
-      const d = Math.hypot(x - 12, y - 12) / 12 + (r() - 0.5) * 0.35;
-      if (d < 0.95) p.px(x, y, [0x9a8c76, 0x8a7c66, 0xae9e86, 0x786a58][Math.floor(r() * 4)]);
+  const W = 24, p = new Pix(W, W, seed), r = rng(seed + 1), d = p.d;
+  d.fill(0);
+  // smooth value noise on a coarse lattice (the blob's edge, the clumps)
+  const lattice = (n) => { const g = []; for (let i = 0; i < (n + 1) * (n + 1); i++) g.push(r()); return (x, y) => {
+    const fx = x * n, fy = y * n, ix = Math.min(n - 1, Math.floor(fx)), iy = Math.min(n - 1, Math.floor(fy)), tx = fx - ix, ty = fy - iy;
+    const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty), at = (a, b) => g[b * (n + 1) + a];
+    return (at(ix, iy) * (1 - sx) + at(ix + 1, iy) * sx) * (1 - sy) + (at(ix, iy + 1) * (1 - sx) + at(ix + 1, iy + 1) * sx) * sy;
+  }; };
+  const edge = lattice(3), clump = lattice(5);
+  const put = (x, y, c, a) => { if (x < 0 || y < 0 || x >= W || y >= W) return; const i = (y * W + x) * 4; d[i] = (c >> 16) & 255; d[i + 1] = (c >> 8) & 255; d[i + 2] = c & 255; d[i + 3] = a; };
+  // a finger drawn through some of them: a gently curved stripe left almost clean
+  const swipe = r() < 0.5 ? { a: r() * Math.PI, o: (r() - 0.5) * 6 } : null;
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+    const u = (x + 0.5) / W, v = (y + 0.5) / W;
+    const dd = Math.hypot(u - 0.5, v - 0.5) * 2 + (edge(u, v) - 0.5) * 0.55;
+    if (dd > 0.94) continue;
+    // stepped falloff into the wood (three levels), a little heavier in the clumps
+    let a = dd < 0.62 ? 112 : dd < 0.8 ? 78 : 44, c = 0xc4b8a4;
+    const k = clump(u, v);
+    if (k > 0.68 && dd < 0.8) { c = 0xd6ccba; a += 40; } else if (k < 0.24) { c = 0xb6a994; a -= 18; }
+    if (swipe) {
+      const cx = x - W / 2, cy = y - W / 2, along = cx * Math.cos(swipe.a) + cy * Math.sin(swipe.a), across = -cx * Math.sin(swipe.a) + cy * Math.cos(swipe.a);
+      if (Math.abs(across - swipe.o - along * along * 0.025) < 1.3) { a = Math.min(a, 26); c = 0xb2a690; }
     }
-    for (let i = 0; i < 3; i++) { const cx = 4 + r() * 16, cy = 4 + r() * 16; p.circle(Math.round(cx), Math.round(cy), 2, 0x6a5a44); } // ring stains
-  });
+    put(x, y, c, a);
+  }
+  // a tea cup's ring (a broken circle, darker where the tea pooled) and a fainter second one on some
+  const ring = (cx, cy, rad, a0) => {
+    const gap = r() * Math.PI * 2;
+    for (let t = 0; t < 64; t++) {
+      const th = t / 64 * Math.PI * 2, off = Math.abs(((th - gap + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+      if (off < 0.5) continue;
+      const heavy = off > 2.2;
+      put(Math.round(cx + Math.cos(th) * rad), Math.round(cy + Math.sin(th) * rad), heavy ? 0x7c5a3a : 0x96764e, heavy ? a0 + 30 : a0);
+    }
+  };
+  ring(7 + Math.round(r() * 10), 7 + Math.round(r() * 10), 3.5, 150);
+  if (r() < 0.5) ring(6 + Math.round(r() * 12), 6 + Math.round(r() * 12), 3, 90);
+  // crumbs
+  for (let i = 0, n = 2 + Math.floor(r() * 3); i < n; i++) put(4 + Math.floor(r() * 16), 4 + Math.floor(r() * 16), i % 2 ? 0x6a5640 : 0x8a7050, 225);
+  p.dirty = true;
+  return p;
+}
+
+/** The counter dust's material: real alpha (a film over the wood), fades as it is wiped (opacity). */
+export function dustMat(tex) {
+  return new THREE.MeshStandardMaterial({ map: tex, transparent: true, depthWrite: false, alphaTest: 0.02, roughness: 0.98, polygonOffset: true, polygonOffsetFactor: -2 });
 }
 
 /** Road grime and bird mess for a car panel. */

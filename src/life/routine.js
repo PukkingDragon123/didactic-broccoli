@@ -37,7 +37,7 @@ export class Routine {
     g.interaction.add(G.shutterMesh, {
       reach: 2.6,
       hint: (held) => (this.done ? this.hint() : g.story.shutterHint(held)),
-      use: (held) => (this.done ? this.use() : this.life.notes.isRead('letter') ? g.story.useShutter(held) : false),
+      use: (held) => (this.done ? this.use() : g.story.useShutter(held)),
       hold: {
         canStart: () => this.done && !!this.holdDir(),
         start: () => { this.roll = { dir: this.holdDir(), t: 0, snd: false }; },

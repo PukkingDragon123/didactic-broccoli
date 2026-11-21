@@ -1,0 +1,34 @@
+{
+ "id": "senbei",
+ "src": "sketchfab:a759034b3abd4d19b41d0fc1dff8d07d",
+ "credit": {
+  "title": "japanese sweets",
+  "author": "ediacara",
+  "authorUrl": "https://sketchfab.com/ediacara",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-sweets-a759034b3abd4d19b41d0fc1dff8d07d",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 256,
+ "size": [
+  0.137,
+  0.06,
+  0.121
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#6c2e1e",
+   "#8b4629",
+   "#a86136",
+   "#bf7f49",
+   "#c79d6b",
+   "#ccb082",
+   "#d2c198",
+   "#d9d0ad",
+   "#e0ddc2"
+  ]
+ },
+ "warnings": []
+}

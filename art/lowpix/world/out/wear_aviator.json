@@ -1,0 +1,56 @@
+{
+ "id": "wear_aviator",
+ "src": "sketchfab:00d1cb5aa82745228a3b764c97f867de",
+ "credit": {
+  "title": "Aviator sunglasses",
+  "author": "Kimppo",
+  "authorUrl": "https://sketchfab.com/Kimppo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/aviator-sunglasses-00d1cb5aa82745228a3b764c97f867de",
+  "site": "Sketchfab"
+ },
+ "tris": 1997,
+ "tex": 128,
+ "size": [
+  0.132,
+  0.05,
+  0.137
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#0e130c",
+   "#141910",
+   "#191e15",
+   "#1f231a",
+   "#24271f",
+   "#44473c",
+   "#63655a",
+   "#80817b",
+   "#9c9c9c"
+  ],
+  "m1": [
+   "#69190a",
+   "#872c10",
+   "#a44416",
+   "#c05f1e",
+   "#d97e28",
+   "#db9c49",
+   "#deb569",
+   "#e2ca87",
+   "#e7dba5"
+  ],
+  "m2": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ]
+ },
+ "warnings": []
+}

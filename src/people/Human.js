@@ -30,15 +30,7 @@ const STYLE = {
 // body language per expression: head pitch, chest pitch, bounce
 const MOOD = { neutral: [0, 0, 0], smile: [0, 0, 0], sad: [0.16, 0.06, 0], sleepy: [0.12, 0.04, 0], surprised: [-0.1, -0.05, 0], angry: [0.06, 0.03, 0], happy: [-0.06, -0.03, 1] };
 
-// the painted atlas everywhere except the few vertex-coloured bits (hair ties: vertices with a `gear` attribute)
-const MAP_FRAG = THREE.ShaderChunk.map_fragment.replace('diffuseColor *= sampledDiffuseColor;', 'diffuseColor *= mix( sampledDiffuseColor, vec4( vGearCol, 1.0 ), vGearOn );');
-const PEOPLE_MARK = (sh) => {
-  sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec3 gear;\nattribute vec3 color;\nvarying float vGearOn;\nvarying vec3 vGearCol;')
-    .replace('#include <begin_vertex>', '#include <begin_vertex>\n\tvGearOn = step( 0.001, gear.x );\n\tvGearCol = color;');
-  sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vGearOn;\nvarying vec3 vGearCol;')
-    .replace('#include <map_fragment>', MAP_FRAG)
-    .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  gl_FragColor.a = 0.5;');
-};
+const PEOPLE_MARK = (sh) => { sh.fragmentShader = sh.fragmentShader.replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  gl_FragColor.a = 0.5;'); };
 const LOD_FAR = 11; // metres: beyond this people use their far mesh (about a third of the triangles)
 
 // time-sliced texture painting shared by all humans: ~3 ms of painting per frame in total
@@ -117,8 +109,6 @@ export class Human {
     this.face = new FacePainter(spec, this.P, m.block, this.pix);
     this.E = exprParams('neutral');
     this.tex = this.pix.texture();
-    // high-resolution pixel art: crisp texels up close, mipmapped far away (the atlas islands are grown for it)
-    this.tex.magFilter = THREE.NearestFilter;
     if (opts.lazy === false) {
       paintAtlas(spec, this.P, m.faces, this.pix); this.face.paint(this.E); this.pix.flush();
       this.painted();
@@ -267,7 +257,6 @@ export class Human {
     const P = this.P, sp = this.spec;
     this.style = { ...STYLE.normal, ...(STYLE[sp.walk?.style] || {}) };
     if (sp.walk?.hunch) this.style.hunch += sp.walk.hunch * 0.15;
-    if (P.armClear) this.style.spread = Math.max(this.style.spread, P.armClear); // hands clear the hips / a skirt
     this.t = Math.random() * 100;
     this.phase = 0.05;
     this.spd = 0; this.walkW = 0; this.walkV = 0;
@@ -698,7 +687,7 @@ export class Human {
 
   flushFace(r) {
     const B = this.face.B;
-    const [x, y, w, h] = r || [B.x - 2, B.y - 2, B.w + 4, B.h + 4];
+    const [x, y, w, h] = r || [B.x - 1, B.y - 1, B.w + 2, B.h + 2];
     this.pix.ctx.putImageData(this.pix.img, 0, 0, x, y, w, h);
     this.pix.dirty = false;
     this.tex.needsUpdate = true;

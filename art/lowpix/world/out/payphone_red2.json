@@ -1,0 +1,67 @@
+{
+ "id": "payphone_red2",
+ "src": "sketchfab:60a624c1a9044cc48eba96bcfcbe2278",
+ "credit": {
+  "title": "Old red payphone",
+  "author": "dashkilya",
+  "authorUrl": "https://sketchfab.com/dashkilya",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-red-payphone-60a624c1a9044cc48eba96bcfcbe2278",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 352,
+ "size": [
+  0.137,
+  0.45,
+  0.185
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#480c21",
+   "#5d1225",
+   "#701828",
+   "#831f28",
+   "#952728",
+   "#b53d34",
+   "#c8604d",
+   "#cf8872",
+   "#d8ab95"
+  ],
+  "m1": [
+   "#391321",
+   "#491a27",
+   "#58222d",
+   "#662b31",
+   "#743436",
+   "#914a46",
+   "#ab665b",
+   "#b88a7d",
+   "#c6aa9e"
+  ],
+  "m2": [
+   "#3c2a3a",
+   "#4d3948",
+   "#5c4956",
+   "#6a5964",
+   "#786b72",
+   "#888285",
+   "#989898",
+   "#acacac",
+   "#bfbfbf"
+  ],
+  "m3": [
+   "#40202d",
+   "#522b38",
+   "#633842",
+   "#73454d",
+   "#825357",
+   "#976767",
+   "#a58582",
+   "#b3a09c",
+   "#c3b9b5"
+  ]
+ },
+ "warnings": []
+}

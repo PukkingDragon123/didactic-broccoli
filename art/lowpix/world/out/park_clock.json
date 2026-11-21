@@ -1,0 +1,45 @@
+{
+ "id": "park_clock",
+ "src": "sketchfab:2acf560d9d7c45de916fd18e2812e3f9",
+ "credit": {
+  "title": "Old Vintage Street Clock",
+  "author": "bluesassassins",
+  "authorUrl": "https://sketchfab.com/bluesassassins",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-vintage-street-clock-2acf560d9d7c45de916fd18e2812e3f9",
+  "site": "Sketchfab"
+ },
+ "tris": 2979,
+ "tex": 512,
+ "size": [
+  2.68,
+  3.68,
+  1.018
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#41251b",
+   "#543625",
+   "#654730",
+   "#755a3b",
+   "#856d48",
+   "#9d885a",
+   "#ab9f76",
+   "#b8b393",
+   "#c7c5ae"
+  ],
+  "m1": [
+   "#2d0d08",
+   "#3a150c",
+   "#461f10",
+   "#522b14",
+   "#5d3819",
+   "#855a27",
+   "#ab7f37",
+   "#c4a354",
+   "#cfbe7f"
+  ]
+ },
+ "warnings": []
+}

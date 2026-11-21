@@ -9,17 +9,14 @@
 //
 // The base painters (paint.js) know nothing about crops, open jackets or coat seams, so after the atlas is painted
 // `retouch` walks every texel again (the mesh layout is deterministic: same spec -> same faces and rects) and lets a
-// character painter repaint the ones it cares about. Voxel props ride on the bones like the closet cosmetics.
+// character painter repaint the ones it cares about. Modelled, painted props (src/people/wornParts.js) ride on the bones.
 import * as THREE from 'three';
-import { bakedVoxelMesh } from '../people/voxbake.js';
-import { createHuman } from '../people/index.js';
-import { walkAtlas } from '../people/paint.js';
+import { Human } from '../people/Human.js';
+import { makeSpec } from '../people/presets.js';
+import { nib, pin, hood, eyepatch, wand, binoculars, meat, gpen as gpenPart } from '../people/wornParts.js';
+import { walkTexels, cursor } from '../people/mesh.js';
 import { dressHuman } from '../people/cosmetics.js';
 import { shadeInto, over, h2, mixc, G } from '../people/paintlib.js';
-import { VoxelModel, metal, gloss } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
-import { voxelMaterials } from '../voxel/materials.js';
-import { MODELS as PROPS, vmesh as vmeshP } from './props.js';
 
 const INK = [28, 22, 22], GOLD = [214, 170, 70];
 const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1 };
@@ -31,8 +28,16 @@ const TORSO = { spine: 1, chestLo: 1, chestHi: 1, traps: 1, hipsUp: 1, hipsLo: 1
  */
 export function retouch(h, fn) {
   h.finishPaint?.();
-  // the person's own atlas layout (src/people/mesh.js faces): every texel once, with its rest-pose point, normal, part
-  walkAtlas(h.faces.filter((f) => f.seg.mat !== 'hairSwatch'), h.P, h.pix, fn);
+  const d = h.pix.d, W = h.pix.w, o = new Float32Array(4), c = cursor();
+  for (const f of h.faces) {
+    const it = walkTexels(f, c, (c) => {
+      const p = (c.j * W + c.i) * 4;
+      o[0] = d[p]; o[1] = d[p + 1]; o[2] = d[p + 2]; o[3] = d[p + 3];
+      if (!fn(c, o)) return;
+      d[p] = Math.max(0, Math.min(255, o[0])); d[p + 1] = Math.max(0, Math.min(255, o[1])); d[p + 2] = Math.max(0, Math.min(255, o[2])); d[p + 3] = o[3];
+    });
+    while (!it.next().done);
+  }
   h.pix.dirty = true;
   h.pix.flush();
   h.tex.needsUpdate = true;
@@ -230,87 +235,7 @@ function faceScar(h, a, b, jumpEye = false) {
   h.faceExprKey = null;
 }
 
-// ------------------------------------------------------------------ voxel props
-const _geo = new Map();
-const vmesh = (key, build, res = 1) => {
-  let g = _geo.get(key);
-  if (!g) {
-    const v = build();
-    g = meshVoxels(v, { voxelSize: 1, origin: 'none' });
-    g.translate(-0.5, -0.5, -0.5);
-    g.scale(1 / res, 1 / res, 1 / res);
-    g.computeBoundingSphere();
-    _geo.set(key, g);
-  }
-  const m = bakedVoxelMesh(g, voxelMaterials('normal'));
-  m.castShadow = true; m.receiveShadow = true; m.raycast = () => {};
-  return m;
-};
-const vm = (j = 0.02) => { const v = new VoxelModel(); v.jitter = j; return v; };
-function rbox(x, y, z, c, a, r) {
-  const qx = Math.abs(x - c[0]) - a[0] + r, qy = Math.abs(y - c[1]) - a[1] + r, qz = Math.abs(z - c[2]) - a[2] + r;
-  return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - r;
-}
-
-const MODELS = {
-  /** Rohan's headband in head units (res 2): a band around the hair with zig-zag (sawtooth) edges. */
-  headband() {
-    const v = vm(0.015), R = 2, BAND = 0x2f6a58, EDGE = 0xd8b45a, DARK = 0x1d3a30;
-    for (let i = -11 * R; i <= 11 * R; i++) for (let j = 9 * R; j <= 17 * R; j++) for (let k = -10 * R; k <= 13 * R; k++) {
-      const x = i / R, y = j / R, z = k / R;
-      const d = rbox(x, y, z, [0, 6.4, 2.4], [7.6, 10.4, 9.1], 3.7);
-      if (d < 0.3 || d > 1.0) continue;
-      const a = Math.atan2(x, z - 2.4), u = (a / (Math.PI * 2)) * 26, tri = Math.abs(u - Math.floor(u) - 0.5) * 2;
-      const top = 12.3 + tri * 1.1, bot = 10.5 - (1 - tri) * 0.9;
-      if (y > top || y < bot) continue;
-      const edge = y > top - 0.55 || y < bot + 0.55;
-      v.set(i, j, k, edge ? EDGE : Math.abs(y - 11.4) < 0.3 ? DARK : BAND);
-    }
-    return v;
-  },
-  /** A G-pen nib earring (res 4, head units): a little hoop and the split nib. */
-  nib() {
-    const v = vm(0.01), M = metal(0xd9b25c), D = metal(0x6a5426), R = 4;
-    for (let y = -14; y <= 0; y++) {
-      const w = y > -9 ? 2 : Math.max(0, Math.round((y + 14) * 0.45));
-      for (let x = -w; x <= w; x++) v.set(x, y, 0, x === 0 && y < -5 ? D : M);
-    }
-    v.set(0, -7, 0, D).set(0, -6, 0, D);
-    for (const [x, y] of [[-1, 1], [1, 1], [-1, 2], [1, 2], [0, 3], [-1, 0], [1, 0]]) v.set(x, y, 0, M);
-    void R;
-    return v;
-  },
-  /** Heart pin (metric, res 1 => scaled by the caller). */
-  heart() {
-    const v = vm(0.01), C = metal(0xe8c050), D = metal(0x9a7426);
-    const rows = ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...'];
-    rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch === '#') { v.set(x - 3, 5 - y, 0, C); v.set(x - 3, 5 - y, -1, D); } }));
-    v.set(-2, 4, 1, gloss(0xfff4c0));
-    return v;
-  },
-  /** Peace sign pin. */
-  peace() {
-    const v = vm(0.01), C = metal(0xe8c050), D = metal(0x9a7426);
-    for (let y = -4; y <= 4; y++) for (let x = -4; x <= 4; x++) {
-      const r = Math.hypot(x, y);
-      const ring = r > 3.2 && r < 4.6;
-      const bar = x === 0 && r < 3.6;
-      const legs = y < 0 && Math.abs(Math.abs(x) + y) < 0.6 && r < 3.6;
-      if (ring || bar || legs) { v.set(x, y, 0, C); v.set(x, y, -1, D); }
-    }
-    return v;
-  },
-  /** Dollar / yen glyph pins (Okuyasu). */
-  glyph(kind) {
-    const v = vm(0.01), C = kind === 'yen' ? metal(0xd8dce4) : metal(0xe8c050), D = kind === 'yen' ? metal(0x7a7e88) : metal(0x9a7426);
-    const G = kind === 'yen'
-      ? ['#...#', '.#.#.', '..#..', '#####', '..#..', '#####', '..#..']
-      : ['..#..', '.####', '#.#..', '.###.', '..#.#', '####.', '..#..'];
-    G.forEach((r, y) => [...r].forEach((ch, x) => { if (ch === '#') { v.set(x - 2, 6 - y, 0, C); v.set(x - 2, 6 - y, -1, D); } }));
-    return v;
-  },
-};
-
+// ------------------------------------------------------------------ props (modelled: src/people/wornParts.js)
 /** A sketch on the open page (canvas, pixel style): a scratchy face study, hatching, a signature squiggle. */
 let _pageTex = null;
 function pageTexture() {
@@ -376,21 +301,9 @@ function sketchbook() {
   return g;
 }
 
-/** The G-pen (hand-local): a slim dark wooden holder with a gold nib. */
-function gpen() {
-  const g = new THREE.Group();
-  const wood = ptex('gpen-holder', 8, 64, (i, j) => { const k = 0.85 + 0.25 * hh(i, j >> 2, 3) + (j > 54 ? 0.25 : 0); return j > 54 ? [150 * k, 150 * k, 156 * k] : [70 * k, 46 * k, 36 * k]; });
-  const holder = new THREE.Mesh(new THREE.BoxGeometry(0.009, 0.13, 0.009), new THREE.MeshStandardMaterial({ map: wood, roughness: 0.6 }));
-  holder.position.y = 0.035;
-  const nibT = ptex('gpen-nib', 16, 32, (i, j) => { const slit = i === 7 && j > 13; const k = (i < 2 ? 1.2 : i > 13 ? 0.7 : 1) * (j < 5 ? 0.8 : 1); return slit ? [60, 46, 20] : [217 * k, 178 * k, 92 * k]; });
-  const nib = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.022, 0.004), new THREE.MeshStandardMaterial({ map: nibT, roughness: 0.3, metalness: 0.9 }));
-  nib.position.y = -0.04;
-  g.add(holder, nib);
-  g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.raycast = () => {}; } });
-  return g;
-}
+/** The G-pen (hand-local): src/people/wornParts.js gpen. */
+const gpen = () => gpenPart();
 
-// ------------------------------------------------------------------ dressing
 function headGroup(h) {
   const P = h.P, U = P.hu / 20;
   const g = new THREE.Group();
@@ -398,25 +311,29 @@ function headGroup(h) {
   h.b.head.add(g);
   return g;
 }
-/** A metric pin on a bone at an absolute rest-pose point (x, y, z), facing +z, `vox` metres per voxel. */
-function pin(h, bone, key, build, p, vox, rot = [0, 0, 0]) {
-  const m = vmesh(key, build);
+/** A metric piece on a bone at an absolute rest-pose point (x, y, z). */
+function onBone(h, bone, m, p, rot = [0, 0, 0]) {
   const J = h.J[bone];
   m.position.set(p[0] - J[0], p[1] - J[1], p[2] - J[2]);
   m.rotation.set(...rot);
-  m.scale.setScalar(vox);
   h.b[bone].add(m);
   return m;
 }
 
+// Spec touches before the person is built (worn things modelled into the person itself)
+const SPEC = {
+  // Rohan's zig-zag headband: a painted cotton band round the hair (src/people/hair.js headband, paintHair.js zig)
+  rohan(spec) { spec.hat = { kind: 'headband', col: [47, 106, 88], col2: [216, 180, 90], col3: [29, 58, 48], zig: true }; },
+};
+
 const DRESS = {
   rohan(h) {
     const hg = headGroup(h);
-    hg.add(vmesh('rohan:headband', MODELS.headband, 2));
     for (const sx of [1, -1]) {
-      const e = vmesh('rohan:nib', MODELS.nib, 4);
-      e.position.set(sx * 7.5, 1.6, 0.7);
+      const e = nib();
+      e.position.set(sx * 7.5, 0.4, 0.7);
       e.rotation.y = sx * 1.2;
+      e.scale.setScalar(0.9);
       hg.add(e);
       h.npcProps.earrings = (h.npcProps.earrings || []).concat(e);
     }
@@ -432,15 +349,15 @@ const DRESS = {
   },
   josuke(h) {
     const P = h.P, H = P.H, hu = P.hu;
-    const y = P.neckBase + 0.02 * H, nz = -0.011 * H + hu * 0.205;
-    pin(h, 'neck', 'pin:heart', MODELS.heart, [hu * 0.15, y, nz], 0.005, [0, 0.45, 0]);
-    pin(h, 'neck', 'pin:peace', MODELS.peace, [-hu * 0.15, y, nz], 0.0044, [0, -0.45, 0]);
+    const y = P.neckBase + 0.02 * H, nz = -0.011 * H + hu * 0.205 + 0.012; // (on the stand collar's face)
+    onBone(h, 'neck', pin('heart'), [hu * 0.15, y, nz], [0, 0.45, 0]);
+    onBone(h, 'neck', pin('peace'), [-hu * 0.15, y, nz], [0, -0.45, 0]);
   },
   okuyasu(h) {
     const P = h.P, H = P.H, hu = P.hu;
-    const y = P.neckBase + 0.018 * H, nz = -0.011 * H + hu * 0.205;
-    pin(h, 'neck', 'pin:dollar', () => MODELS.glyph('dollar'), [hu * 0.15, y, nz], 0.0042, [0, 0.45, 0]);
-    pin(h, 'neck', 'pin:yen', () => MODELS.glyph('yen'), [-hu * 0.15, y, nz], 0.0042, [0, -0.45, 0]);
+    const y = P.neckBase + 0.018 * H, nz = -0.011 * H + hu * 0.205 + 0.012; // (on the stand collar's face)
+    onBone(h, 'neck', pin('dollar'), [hu * 0.15, y, nz], [0, 0.45, 0]);
+    onBone(h, 'neck', pin('yen'), [-hu * 0.15, y, nz], [0, -0.45, 0]);
   },
 };
 
@@ -448,22 +365,18 @@ Object.assign(DRESS, {
   // the sorcerer: hood up, an eyepatch, a lacquered chopstick for a wand
   kuromaru(h) {
     const hg = headGroup(h);
-    hg.add(vmeshP('kuro:hood', PROPS.hood));
-    const patch = vmeshP('kuro:patch', PROPS.eyepatch);
-    patch.scale.setScalar(0.5);
-    hg.add(patch);
-    const wand = vmeshP('kuro:wand', PROPS.wand);
-    wand.scale.setScalar(0.005);
-    wand.position.set(-0.004, -0.075, 0.03);
-    wand.rotation.set(1.3, 0, 0);
-    h.b.handR.add(wand);
-    h.npcProps.wand = wand;
+    hg.add(hood([44, 36, 56]));
+    hg.add(eyepatch());
+    const w = wand();
+    w.position.set(-0.004, -0.075, 0.03);
+    w.rotation.set(1.3, 0, 0);
+    h.b.handR.add(w);
+    h.npcProps.wand = w;
   },
   // the bush guy: binoculars at his eyes (shown while he spies)
   yabuki(h) {
     const P = h.P, J = h.J;
-    const bino = vmeshP('yab:bino', PROPS.binoculars);
-    bino.scale.setScalar(0.01);
+    const bino = binoculars();
     bino.position.set(0, P.eyeY - J.head[1], P.zf - J.head[2] + 0.075);
     bino.visible = false;
     h.b.head.add(bino);
@@ -471,19 +384,20 @@ Object.assign(DRESS, {
   },
   // the pirate: a manga steak in the right hand (shown while he eats)
   gomuzo(h) {
-    const meat = vmeshP('gomu:meat', PROPS.meat);
-    meat.scale.setScalar(0.012);
-    meat.position.set(-0.01, -0.09, 0.05);
-    meat.rotation.set(0, 0, 1.2);
-    meat.visible = false;
-    h.b.handR.add(meat);
-    h.npcProps.meat = meat;
+    const m = meat();
+    m.position.set(-0.01, -0.09, 0.05);
+    m.rotation.set(0, 0, 1.2);
+    m.visible = false;
+    h.b.handR.add(m);
+    h.npcProps.meat = m;
   },
 });
 
 /** Build a character: preset look, retouched atlas, props, hand-pose support. People without a retouch paint lazily. */
 export function createCharacter(id, { seed = 7, height } = {}) {
-  const h = createHuman({ preset: id, seed, height, lazy: !PAINT[id] });
+  const spec = makeSpec(id, seed, height);
+  SPEC[id]?.(spec);
+  const h = new Human(spec, { lazy: !PAINT[id] });
   h.npcProps = {};
   PAINT[id]?.(h);
   DRESS[id]?.(h);

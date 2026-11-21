@@ -1,0 +1,45 @@
+{
+ "id": "wear_bow",
+ "src": "sketchfab:388dc49d323d42fdbd08e53021c10e82",
+ "credit": {
+  "title": "Hair Bow, Hair Ribbon",
+  "author": "Rauschkugel",
+  "authorUrl": "https://sketchfab.com/rauschkugel",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/hair-bow-hair-ribbon-388dc49d323d42fdbd08e53021c10e82",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 352,
+ "size": [
+  0.232,
+  0.1,
+  0.205
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#0d0006",
+   "#110007",
+   "#150007",
+   "#190006",
+   "#1c0105",
+   "#5a050a",
+   "#970d0a",
+   "#d12612",
+   "#eb5c3b"
+  ],
+  "m1": [
+   "#05021a",
+   "#040421",
+   "#050729",
+   "#070d2f",
+   "#091336",
+   "#142e69",
+   "#204f9a",
+   "#2e77c9",
+   "#5fa1d6"
+  ]
+ },
+ "warnings": []
+}

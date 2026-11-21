@@ -18,6 +18,8 @@ export function installMail(game, os) {
       const m = { id: st.nextId++, from: String(from), addr: addr || addrOf(from), subject: String(subject), body: String(body), html: !!html, kind, t: now(game).stamp, read: false, folder: spam ? 'spam' : 'inbox', attachments: (attachments || []).map((a) => ({ name: a.name || 'attachment.dat', icon: a.icon || null, kind: a.kind || 'file', data: a.data ?? null, claimed: false })) };
       st.list.push(m);
       if (st.list.length > 150) st.list.splice(0, st.list.length - 150);
+      // the first real letter installs the Mailbox (a new game's PC doesn't have it yet)
+      if (!spam && !quiet && !os.installed('mail')) game.unlocks?.grant('mail', 'mail');
       if (!spam && !quiet) {
         os.notify({ app: 'mail', title: 'You have new mail', body: `${m.from}: ${m.subject}`, icon: 'os_mail', sound: 'osMail', news: true, onClick: () => api.open(m.id) });
       }

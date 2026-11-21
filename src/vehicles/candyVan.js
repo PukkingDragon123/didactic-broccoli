@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell, slab } from './shell.js';
-import { ramp, mix, seamLoop, seal, glassPane, rust, dent, lamp, plate, grow, seeded } from './paint.js';
+import { ramp, mix, seamLoop, seal, glassPane, rust, dent, lamp, plate, grow, seeded, carPaint } from './paint.js';
 import { wheelPatches, wheelGeometry, wiper, rods, vehicleMaterials } from './parts.js';
 import { mask5, textW5 } from '../gfx/font5x7.js';
 
@@ -87,7 +87,7 @@ function paintAtlas() {
 function paintSide(S, sx) {
   const A = S.A, U = (z) => (sx > 0 ? -z : z), I = (z) => S.i(U(z)), J = (y) => S.j(y), P = (pts) => pts.map(([z, y]) => [U(z), y]);
   A.ink(ROUGH.paint);
-  S.box(0, 0, S.W, S.H, (i, j) => { const y = S.o.v0 + (j + 0.5) / S.ppm; return y > 1.765 ? CR[3] : y < 0.37 ? (y < 0.32 ? CR[0] : CR[1]) : CR[2]; });
+  S.box(0, 0, S.W, S.H, (i, j) => { const y = S.o.v0 + (j + 0.5) / S.ppm; return y > 1.765 ? CR[3] : y < 0.37 ? (y < 0.32 ? CR[0] : CR[1]) : carPaint(i, j, y, CR, { sill: 0.37, horizon: 0.8, shoulder: 1.6, top: 1.765, ppm: S.ppm }); });
   // the replacement passenger door, a shade off
   if (sx > 0) S.poly(P(DOOR), DOORC[2]);
   // the red waist stripe and its pinstripe
@@ -148,7 +148,7 @@ function paintSide(S, sx) {
 function paintFront(F) {
   const A = F.A, I = (x) => F.i(x), J = (y) => F.j(y);
   A.ink(ROUGH.paint);
-  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y > 0.96 ? CR[3] : CR[2]; });
+  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y > 0.96 ? CR[3] : carPaint(i, j, y, CR, { sill: 0.3, horizon: 0.62, shoulder: 0.92, top: 0.96, ppm: F.ppm }); });
   F.rect(-0.82, 0.86, 0.82, 0.9, STRIPE[2]); F.hline(0, F.W, J(0.9) - 1, STRIPE[3]);
   A.ink(ROUGH.plastic); F.rect(-0.82, 0.98, 0.82, 1.025, TRIM);
   const ws = [[-(W - RND - 0.008), zToY(0.025)], [W - RND - 0.008, zToY(0.025)], [W - RND - 0.008, zToY(0.975)], [-(W - RND - 0.008), zToY(0.975)]];
@@ -175,7 +175,7 @@ const zToY = (u) => WS0[1] + (WS1[1] - WS0[1]) * u;
 function paintRear(B) {
   const A = B.A, I = (x) => B.i(-x), J = (y) => B.j(y);
   A.ink(ROUGH.paint);
-  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y > 1.78 ? CR[3] : CR[2]; });
+  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y > 1.78 ? CR[3] : carPaint(i, j, y, CR, { sill: 0.3, horizon: 0.72, shoulder: 1.6, top: 1.78, ppm: B.ppm }); });
   B.rect(-0.82, 0.86, 0.82, 0.9, STRIPE[2]);
   // the hatch (its own panel, painted here): window, FREE CANDY in small, plate recess and lamp, handle
   const hw = HATCH_WIN.map(([x, y]) => [-x, y]);

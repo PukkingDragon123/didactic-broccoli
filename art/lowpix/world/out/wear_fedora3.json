@@ -1,0 +1,45 @@
+{
+ "id": "wear_fedora3",
+ "src": "sketchfab:dd6f170358b544e99d8a96b3e65108bb",
+ "credit": {
+  "title": "Fedora Hat",
+  "author": "Siba Santosh Das",
+  "authorUrl": "https://sketchfab.com/shivadas",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fedora-hat-dd6f170358b544e99d8a96b3e65108bb",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 336,
+ "size": [
+  0.378,
+  0.13,
+  0.306
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#351f19",
+   "#432c22",
+   "#513b2b",
+   "#5f4a36",
+   "#6b5941",
+   "#857456",
+   "#9b8f6e",
+   "#aba68c",
+   "#bcbbaa"
+  ],
+  "m1": [
+   "#260f1b",
+   "#301421",
+   "#3a1a27",
+   "#44212b",
+   "#4d2830",
+   "#6e3d44",
+   "#8d5457",
+   "#a67371",
+   "#b89995"
+  ]
+ },
+ "warnings": []
+}

@@ -10,7 +10,7 @@
 //   buildPylon(town) -> { group, main: { x, z, base } }
 import * as THREE from 'three';
 import { detailize, boxUV } from './surfaces.js';
-import { archInstances } from './archModels.js';
+import { treeInstances } from './foliage.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { hash2 } from '../core/util.js';
 
@@ -246,8 +246,12 @@ function buildHill(group) {
   tm.computeBoundingSphere();
   tm.receiveShadow = false;
   // the lowpix trees (art/lowpix/world_arch/_src/trees.py) instead of the cone trees when they are loaded
-  const lp = ['keyaki', 'pine'].map((k) => spots.filter((_, i) => (i % 3 === 0) === (k === 'pine')).map(([x, z, k2]) => ({ x, y: hillHeight(x, z) - 0.1, z, ry: hash2(x, z) * 6, s: k2 * (k === 'pine' ? 1.1 : 0.85) })));
-  if (archInstances('tree_keyaki', group, lp[0]) && archInstances('tree_pine', group, lp[1])) return;
+  // the lowpix trees under sprig crowns (src/world/foliage.js; far LOD: fewer, bigger sprigs) instead of the cone trees
+  const KINDS = ['keyaki', 'sakura', 'pine', 'kaki', 'keyaki', 'pine', 'sakura'], SC = { keyaki: 0.8, sakura: 0.85, pine: 1.15, kaki: 0.95 };
+  const lp = {};
+  spots.forEach(([x, z, k2], i) => { const k = KINDS[Math.floor(hash2(x * 3, z * 5) * KINDS.length)]; (lp[k] ||= []).push({ x, y: hillHeight(x, z) - 0.15, z, ry: hash2(x, z) * 6, s: k2 * SC[k] }); });
+  const kinds = Object.keys(lp);
+  if (kinds.every((k) => treeInstances(k, group, lp[k], { lod: 1 }))) return;
   group.add(tm);
 }
 

@@ -13,6 +13,7 @@ import { Pix } from '../gfx/pix.js';
 import { hash2 } from '../core/util.js';
 import * as T from './textures.js';
 import { buildPC } from './pcModel.js';
+import { dressRoom } from './dressing.js';
 
 // ------------------------------------------------------------------ layout (metres, room-local)
 export const ROOM = {
@@ -82,6 +83,8 @@ class Batch {
 }
 
 const std = (o) => new THREE.MeshStandardMaterial({ vertexColors: true, ...o });
+/** A textured surface (src/gfx/geo.js pixMat) tinted per part by vertex colour (the Batch's tint). */
+function tinted(m, color = null) { const t = m.clone(); t.vertexColors = color == null; if (color != null) t.color.set(color); return t; }
 function texMat(pix, { repeat = 1, rough = 0.85, ...o } = {}) {
   const map = T.texOf(pix);
   map.wrapS = map.wrapT = THREE.RepeatWrapping;
@@ -115,9 +118,10 @@ export function buildRoom(game, group) {
     tatami: unitMat(T.tatamiFloor(), { roughness: 0.9 }),
     wood: pixMat('woodDark', { roughness: 0.6, bump: 0.3 }).clone(),
     woodL: pixMat('woodLight', { roughness: 0.6, bump: 0.3 }).clone(),
-    paint: std({ roughness: 0.7 }),
-    edge: new THREE.MeshStandardMaterial({ color: 0x6a5446, roughness: 0.7 }),
-    metal: std({ roughness: 0.35, metalness: 0.6 }),
+    // (painted and metal parts carry a real surface texture, tinted per part: nothing in the room is a flat colour)
+    paint: tinted(pixMat('plaster', { roughness: 0.7, bump: 0.25 })),
+    edge: tinted(pixMat('woodDark', { roughness: 0.7, bump: 0.3 }), 0x8a7466),
+    metal: tinted(pixMat('steel', { roughness: 0.35, metalness: 0.6, bump: 0.2 })),
     glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
     out: new THREE.MeshBasicMaterial({ vertexColors: true, fog: false }),
     glass: new THREE.MeshPhysicalMaterial({ color: 0xeaf2f8, transparent: true, opacity: 0.12, roughness: 0.05, clearcoat: 1, depthWrite: false }),
@@ -268,14 +272,7 @@ export function buildRoom(game, group) {
   const leaf = (m, z, dx) => { const g = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1.74, fw), [m, m, M.edge, M.edge, M.edge, M.edge]); g.position.set(x0 + dx, 0.87, z); group.add(g); return g; };
   leaf(fus[0], cz0 + fw / 2, -0.015);
   leaf(fus[1], cz0 + fw / 2 + 0.12, -0.05);
-  // what's inside: a folded spare futon, clear drawer bins, a box from Grandpa and a paper bag of capsules
-  for (const [y, h, c] of [[0.85, 0.14, 0xf0e6d0], [0.99, 0.12, 0x8ab0d8], [1.11, 0.13, 0xf4d8b8]]) B.box(M.paint, 0.7, h, 0.75, x0 - 0.45, y, cz1 - 0.42, { tint: c });
-  for (let i = 0; i < 2; i++) for (let j = 0; j < 3; j++) {
-    B.box(M.paint, 0.38, 0.24, 0.36, x0 - 0.4, 0.02 + j * 0.26, cz1 - 0.22 - i * 0.39, { tint: 0xe8ecf0 });
-    B.box(M.paint, 0.3, 0.16, 0.01, x0 - 0.2, 0.06 + j * 0.26, cz1 - 0.22 - i * 0.39, { tint: [0xd8463a, 0x3a5288, 0xf4f0e6, 0x6a8a5a, 0xffd23f, 0x8a5bd6][i * 3 + j], ry: Math.PI / 2 });
-  }
-  B.box(M.paint, 0.5, 0.3, 0.42, x0 - 0.45, 1.25, cz1 - 0.38, { tint: 0xc8a070 });
-  B.box(M.paint, 0.3, 0.06, 0.005, x0 - 0.2, 1.42, cz1 - 0.38, { tint: 0x2a2a3a, ry: Math.PI / 2 });
+  // (what's inside, the folded spare futon, a toy box, old books and boxes: real models, src/room/dressing.js)
 
   // ---------------------------------------------------------------- the front door (inside face) + genkan bits
   const doorMat = unitMat(T.doorInside(40, 88), { roughness: 0.5, metalness: 0.2 });
@@ -386,11 +383,13 @@ export function buildRoom(game, group) {
   prop('room_hanger', x0 + 0.04, 1.08, -0.05, Math.PI / 2, 1);
   // kitchen
   prop('room_kitchen', 0.6, 0, z1 - 0.3, Math.PI, 1, 'kitchen');
-  prop('fridge', 1.52, 0, z1 - 0.28, Math.PI, 0.95, 'fridge');
+  prop('fridge', x1 - 0.34, 0, z1 - 0.36, Math.PI, 0.95, 'fridge');
   block(-0.02, x1, z1 - 0.62, z1);
-  prop('room_shoes', -1.48, d.y, z1 - 0.38, 0.2);
+  prop('room_shoes', -1.18, d.y, z1 - 0.38, 0.2);
   prop('sandals', -1.05, d.y, z1 - 0.3, -0.3, 0.9);
   prop('umbrella_stand', -0.95, 0, gk.z0 - 0.12, 0, 0.8);
+  // the clutter of a lived-in room: old toys, books, the radio, the kitchen counter, the genkan (src/room/dressing.js)
+  dressRoom(prop, R, R, block);
   // the genkan is a step down: you stay on the wooden floor
   block(x0, gk.x1, gk.z0 + 0.04, z1);
   block(-0.98 - 0.12, -0.98 + 0.12, gk.z0 - 0.24, gk.z0 + 0.0);

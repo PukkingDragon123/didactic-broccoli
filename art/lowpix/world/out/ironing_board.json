@@ -1,0 +1,111 @@
+{
+ "id": "ironing_board",
+ "src": "sketchfab:ac252426fcca40adad87893d158df7a7",
+ "credit": {
+  "title": "Ironing Board with Iron",
+  "author": "GeniusPilot2016",
+  "authorUrl": "https://sketchfab.com/GeniusPilot2016",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/ironing-board-with-iron-ac252426fcca40adad87893d158df7a7",
+  "site": "Sketchfab"
+ },
+ "tris": 2444,
+ "tex": 512,
+ "size": [
+  1.272,
+  0.9,
+  0.399
+ ],
+ "colours": 54,
+ "palette": {
+  "m0": [
+   "#10131a",
+   "#161b22",
+   "#1c2228",
+   "#232a2f",
+   "#2a3135",
+   "#464f53",
+   "#636c6e",
+   "#828888",
+   "#a2a2a2"
+  ],
+  "m1": [
+   "#001e73",
+   "#003496",
+   "#004fb9",
+   "#0071dc",
+   "#0098ff",
+   "#26b7fc",
+   "#4cd0f9",
+   "#70e3f8",
+   "#93f1f8"
+  ],
+  "m2": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ],
+  "m3": [
+   "#1d0073",
+   "#190096",
+   "#1000b9",
+   "#0000dc",
+   "#0015ff",
+   "#264afc",
+   "#4c77f9",
+   "#709df8",
+   "#93bdf8"
+  ],
+  "m4": [
+   "#072e8b",
+   "#0c4bb3",
+   "#126ed9",
+   "#2f94ea",
+   "#5ab5eb",
+   "#73c9eb",
+   "#8bd9ec",
+   "#a3e5ee",
+   "#baeff1"
+  ],
+  "m5": [
+   "#1d115d",
+   "#201977",
+   "#212290",
+   "#2b36a8",
+   "#354dbf",
+   "#4f6eca",
+   "#6e8fcf",
+   "#8cabd6",
+   "#a8c4de"
+  ],
+  "m6": [
+   "#730026",
+   "#960025",
+   "#b9001f",
+   "#dc0012",
+   "#ff0000",
+   "#fc3826",
+   "#f9694c",
+   "#f89270",
+   "#f8b593"
+  ],
+  "m7": [
+   "#073b57",
+   "#0c556f",
+   "#107287",
+   "#16919e",
+   "#1db2b4",
+   "#26d4c8",
+   "#4adac4",
+   "#6fdfc4",
+   "#92e4ca"
+  ]
+ },
+ "warnings": []
+}

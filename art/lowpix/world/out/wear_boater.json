@@ -1,0 +1,56 @@
+{
+ "id": "wear_boater",
+ "src": "sketchfab:cd78d72dca1748048c7badfbb2f4e06c",
+ "credit": {
+  "title": "straw boater hat w/ black silk ribbon",
+  "author": "clairenicole22",
+  "authorUrl": "https://sketchfab.com/clairenicole22",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/straw-boater-hat-w-black-silk-ribbon-cd78d72dca1748048c7badfbb2f4e06c",
+  "site": "Sketchfab"
+ },
+ "tris": 700,
+ "tex": 512,
+ "size": [
+  0.524,
+  0.1,
+  0.524
+ ],
+ "colours": 20,
+ "palette": {
+  "m0": [
+   "#161113",
+   "#1c1819",
+   "#221e1f",
+   "#272525",
+   "#2c2c2c",
+   "#494949",
+   "#666666",
+   "#838383",
+   "#a0a0a0"
+  ],
+  "m1": [
+   "#984126",
+   "#c26336",
+   "#d08f62",
+   "#dbb591",
+   "#e8d6be",
+   "#eadec8",
+   "#ece5d2",
+   "#efecdb",
+   "#f2f1e4"
+  ],
+  "m2": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

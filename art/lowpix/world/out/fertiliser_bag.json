@@ -1,0 +1,78 @@
+{
+ "id": "fertiliser_bag",
+ "src": "sketchfab:a7ec96ac6e2c4f31b6d0341724e4715c",
+ "credit": {
+  "title": "Fertilizer",
+  "author": "DutchTheWood",
+  "authorUrl": "https://sketchfab.com/anrico.opperman",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fertilizer-a7ec96ac6e2c4f31b6d0341724e4715c",
+  "site": "Sketchfab"
+ },
+ "tris": 1996,
+ "tex": 512,
+ "size": [
+  0.135,
+  0.35,
+  0.225
+ ],
+ "colours": 37,
+ "palette": {
+  "m0": [
+   "#3e1f18",
+   "#502e22",
+   "#603e2c",
+   "#704f36",
+   "#7f6142",
+   "#987c54",
+   "#aa966f",
+   "#b7ad8d",
+   "#c6c1aa"
+  ],
+  "m1": [
+   "#785e67",
+   "#968187",
+   "#b1a8a9",
+   "#cfcccc",
+   "#eeeeee",
+   "#f0f0f0",
+   "#f3f3f3",
+   "#f5f5f5",
+   "#f7f7f7"
+  ],
+  "m2": [
+   "#133315",
+   "#1b421a",
+   "#275022",
+   "#345d2b",
+   "#426934",
+   "#5d8647",
+   "#7aa25c",
+   "#98b17e",
+   "#b3c19e"
+  ],
+  "m3": [
+   "#18100d",
+   "#1e1712",
+   "#251d17",
+   "#2a241c",
+   "#302b22",
+   "#504b3d",
+   "#6f6b59",
+   "#8b8977",
+   "#a4a39a"
+  ],
+  "m4": [
+   "#205918",
+   "#327222",
+   "#488a2d",
+   "#5fa138",
+   "#79b745",
+   "#93bf61",
+   "#aac67d",
+   "#bfcf98",
+   "#d0d8b2"
+  ]
+ },
+ "warnings": []
+}

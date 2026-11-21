@@ -8,7 +8,12 @@
 //   museum, museum:expand<n>                            the warehouse museum and its expansions
 //   estate:<what>      property on Ota Real Estate's site (src/growth): home103 (the flat next door), hobby (its hobby
 //                      room), annex (the old tobacco shop), mall (the Gacha Kaikan building), mall2..mall4 (its floors)
-// Ids that are not in the table are never locked.
+//   furn:<id>          a piece of furniture without its own gate (src/build/catalogue.js), by price: FURN_LEVEL / furnLevel
+//   wear:<id>          a closet (wardrobe shop) piece, by price and rarity: WEAR_LEVEL / closetLevel
+//   app:<id>           a Capsule 98 program on the garage PC: not by level but by play (APPS: tutorial steps, days the
+//                      shop has been open, customers, Grandpa leaving); game.unlocks (src/sim/unlocks.js) checks them
+// Ids that are not in the table are never locked. This module is the one place to tune the pacing: something new every
+// short while early on (the first levels come in minutes, each with a series and a few small things), slower later.
 import { SERIES } from './series/index.js';
 
 const NAMES = {
@@ -29,7 +34,7 @@ const NAMES = {
   museum: 'Museum licence (back warehouse)', 'museum:expand1': 'Museum expansion I', 'museum:expand2': 'Museum expansion II', 'museum:expand3': 'Museum expansion III',
 };
 
-const KINDS = { machine: 'Machine', slots: 'Space', shelf: 'Furniture', opener: 'Tool', charm: 'Charm', goods: 'Goods', decor: 'Decor', market: 'Market', staff: 'Staff', museum: 'Museum', series: 'Series', estate: 'Property' };
+const KINDS = { furn: 'Furniture', wear: 'Wardrobe', app: 'Program', machine: 'Machine', slots: 'Space', shelf: 'Furniture', opener: 'Tool', charm: 'Charm', goods: 'Goods', decor: 'Decor', market: 'Market', staff: 'Staff', museum: 'Museum', series: 'Series', estate: 'Property' };
 
 // level -> ids (series licences are added below: a series' `order` is its level)
 const TABLE = {
@@ -61,9 +66,70 @@ const TABLE = {
 
 export const UNLOCKS = [];
 for (const [lv, ids] of Object.entries(TABLE)) for (const id of ids) UNLOCKS.push({ id, level: +lv, kind: id.split(':')[0], name: NAMES[id] || id });
-for (const s of SERIES) UNLOCKS.push({ id: `series:${s.id}`, level: Math.max(1, s.order), kind: 'series', name: `${s.name} licence` });
+// series licences: one a level, in catalogue order (the series' `order` is a sort key, not a level); the starter
+// licence (state.licenses) is owned from the start whatever its place here
+const STARTER = 'teruteru';
+SERIES.filter((s) => !s.hidden && s.id !== STARTER).forEach((s, i) => UNLOCKS.push({ id: `series:${s.id}`, level: 2 + i, kind: 'series', name: `${s.name} licence` }));
+for (const s of SERIES) if (s.hidden) UNLOCKS.push({ id: `series:${s.id}`, level: 30, kind: 'series', name: `${s.name} licence` });
+{ const st = SERIES.find((s) => s.id === STARTER); if (st) UNLOCKS.push({ id: `series:${STARTER}`, level: 1, kind: 'series', name: `${st.name} licence` }); }
 UNLOCKS.sort((a, b) => a.level - b.level);
 export const UNLOCK_BY_ID = Object.fromEntries(UNLOCKS.map((u) => [u.id, u]));
+
+/** Add a gated id at run time (furniture and closet pieces register themselves from their catalogues). */
+export function addUnlock(id, level, kind, name) {
+  if (UNLOCK_BY_ID[id]) return UNLOCK_BY_ID[id];
+  const u = { id, level, kind, name };
+  let i = UNLOCKS.findIndex((x) => x.level > level);
+  if (i < 0) i = UNLOCKS.length;
+  UNLOCKS.splice(i, 0, u);
+  UNLOCK_BY_ID[id] = u;
+  return u;
+}
+
+// ------------------------------------------------------------------ furniture and the closet, by price
+/** Furniture levels set by hand (the rest: furnLevel, cheapest first, three a level). */
+export const FURN_LEVEL = { counter_bell: 1, wall_calendar: 1, storage_box: 1, cash_tray: 1, lp_chair_folding: 1, shop_bench: 2, wall_clock: 2, piggy_bank: 3, robot_vacuum: 14 };
+/** A gate level for furniture with no gate of its own: rank among them by price (cheapest first), three a level. */
+export function furnLevel(f, rank) { return FURN_LEVEL[f.id] ?? Math.min(24, 2 + Math.floor(rank / 3)); }
+/** Wardrobe pieces set by hand (the rest: closetLevel). */
+export const WEAR_LEVEL = { dino: 5, shark: 6, cx_suit: 3, cx_randoseru: 4, cx_shiba: 8 };
+/** A closet piece's stocking level: six cheap commons from the start, then about two new pieces a level. */
+export function closetLevel(c, rank) {
+  if (WEAR_LEVEL[c.id]) return WEAR_LEVEL[c.id];
+  if (rank < 6 && (c.rarity || 'common') === 'common') return 1;
+  const floor = { common: 2, uncommon: 2, rare: 4, ultra: 8, secret: 12 }[c.rarity] || 2;
+  return Math.min(30, Math.max(floor, 2 + Math.floor((rank - 6) / 2)));
+}
+
+// ------------------------------------------------------------------ Capsule 98 programs: unlocked by play
+// A new game's PC has just the two the first jobs need (the Navigator for shopping, Pichat for messages); the rest
+// install themselves as you go (a "new program installed" moment on the PC). Conditions (all must hold):
+//   step: '<story step>'   that step of the opening has come up (or the opening is over)
+//   done: '<story step>'   that step is done
+//   open: true             the shop has reopened;  days: n   ...and been open n days (in-game days since)
+//   customers: n           that many customers served;  level: n   shop level;  left: true   Grandpa has gone to Atami
+// Old saves keep every program they had. System pieces (Control Panel, dialogs) are never gated.
+export const SYSTEM_APPS = new Set(['settings', 'compose', 'popup']);
+export const START_APPS = ['browser', 'messenger'];
+export const APPS = {
+  browser: {}, messenger: {},
+  // the opening: the bank when it's time to buy a machine, the phone when Grandpa leaves (he rings)
+  bank: { step: 'buymachine' }, offhobby: { step: 'buymachine' },
+  phone: { left: true },
+  // then about one a day once the shop is open
+  mail: { open: true },
+  calendar: { open: true, days: 1 },
+  notepad: { open: true, days: 2 }, recycle: { open: true, days: 2 },
+  achievements: { open: true, days: 3 },
+  codex: { open: true, days: 4 },
+  guestbook: { open: true, customers: 25 },
+  signstudio: { open: true, days: 5 },
+  kirakira: { open: true, days: 6 },
+  inspired: { open: true, days: 7 }, rota: { open: true, days: 7 },
+};
+/** Unknown programs (registered by later features): a while after the reopening. */
+export const APP_DEFAULT = { open: true, days: 5 };
+export const appRule = (id) => APPS[id] || APP_DEFAULT;
 export const kindLabel = (kind) => KINDS[kind] || kind;
 
 /** Level an id needs (1 when it is not gated). */

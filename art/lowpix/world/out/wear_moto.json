@@ -1,0 +1,34 @@
+{
+ "id": "wear_moto",
+ "src": "sketchfab:a4d4ef2f17c843828cf24d538a9edbd3",
+ "credit": {
+  "title": "motorcycle helmet classic",
+  "author": "zeleniy89",
+  "authorUrl": "https://sketchfab.com/zeleniy89",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/motorcycle-helmet-classic-a4d4ef2f17c843828cf24d538a9edbd3",
+  "site": "Sketchfab"
+ },
+ "tris": 1998,
+ "tex": 264,
+ "size": [
+  0.245,
+  0.27,
+  0.25
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1a0107",
+   "#220106",
+   "#290205",
+   "#300404",
+   "#370a05",
+   "#6e1e0c",
+   "#a33b15",
+   "#d65f20",
+   "#e29052"
+  ]
+ },
+ "warnings": []
+}

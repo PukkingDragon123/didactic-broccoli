@@ -1,0 +1,45 @@
+{
+ "id": "typewriter",
+ "src": "sketchfab:1d6009449fe84fd79454c4081eb743bf",
+ "credit": {
+  "title": "1930s style typewriter - w/o branding",
+  "author": "Kuba \"Volant\" Wójcik",
+  "authorUrl": "https://sketchfab.com/KWojcik",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/1930s-style-typewriter-wo-branding-1d6009449fe84fd79454c4081eb743bf",
+  "site": "Sketchfab"
+ },
+ "tris": 2802,
+ "tex": 392,
+ "size": [
+  0.336,
+  0.15,
+  0.312
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#120e0f",
+   "#161314",
+   "#1b1818",
+   "#1f1d1d",
+   "#232323",
+   "#414141",
+   "#606060",
+   "#7e7e7e",
+   "#9c9c9c"
+  ],
+  "m1": [
+   "#2f140f",
+   "#3c1f14",
+   "#492a1b",
+   "#553722",
+   "#604529",
+   "#81653b",
+   "#a1864f",
+   "#b4a36f",
+   "#c3bb93"
+  ]
+ },
+ "warnings": []
+}

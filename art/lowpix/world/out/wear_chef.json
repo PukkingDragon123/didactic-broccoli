@@ -1,0 +1,34 @@
+{
+ "id": "wear_chef",
+ "src": "sketchfab:091c781e2d1941d68bf67d9ab2b6019f",
+ "credit": {
+  "title": "Chef's Hat - Free Model",
+  "author": "Enrique Poppe",
+  "authorUrl": "https://sketchfab.com/depa_96",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/chefs-hat-free-model-091c781e2d1941d68bf67d9ab2b6019f",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 512,
+ "size": [
+  0.4,
+  0.25,
+  0.424
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#46373c",
+   "#594a4e",
+   "#6b5f61",
+   "#7b7475",
+   "#8b8b8b",
+   "#9b9b9b",
+   "#ababab",
+   "#bbbbbb",
+   "#cbcbcb"
+  ]
+ },
+ "warnings": []
+}

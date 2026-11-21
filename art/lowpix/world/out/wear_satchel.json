@@ -1,0 +1,45 @@
+{
+ "id": "wear_satchel",
+ "src": "sketchfab:2ad86321197a49feb54b7726743d7fd0",
+ "credit": {
+  "title": "A Backpack For An Adventure",
+  "author": "Thomas Lean",
+  "authorUrl": "https://sketchfab.com/thomaslean",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/a-backpack-for-an-adventure-2ad86321197a49feb54b7726743d7fd0",
+  "site": "Sketchfab"
+ },
+ "tris": 1532,
+ "tex": 272,
+ "size": [
+  0.433,
+  0.42,
+  0.384
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#2a0f17",
+   "#36151c",
+   "#411b20",
+   "#4c2224",
+   "#562a29",
+   "#77433d",
+   "#965f52",
+   "#ac8171",
+   "#bda395"
+  ],
+  "m1": [
+   "#2c4d4a",
+   "#3c625b",
+   "#4d766b",
+   "#5f897a",
+   "#759989",
+   "#8ba497",
+   "#a0b0a6",
+   "#b4bdb7",
+   "#c7cbc8"
+  ]
+ },
+ "warnings": []
+}

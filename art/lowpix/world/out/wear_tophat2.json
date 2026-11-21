@@ -1,0 +1,34 @@
+{
+ "id": "wear_tophat2",
+ "src": "sketchfab:ac38adfa2df844cd9ade46e9e0ee8a26",
+ "credit": {
+  "title": "Top-Hat",
+  "author": "7thFlare",
+  "authorUrl": "https://sketchfab.com/7thFlare",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/top-hat-ac38adfa2df844cd9ade46e9e0ee8a26",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 512,
+ "size": [
+  0.245,
+  0.18,
+  0.287
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#080405",
+   "#0b0507",
+   "#0d0708",
+   "#0f0809",
+   "#110a0a",
+   "#392624",
+   "#604540",
+   "#84685e",
+   "#a18d83"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,56 @@
+{
+ "id": "wear_strawhat",
+ "src": "sketchfab:9748427930a246fd93d306fb73b62d73",
+ "credit": {
+  "title": "Fun Cowboy Straw Hat",
+  "author": "The Elliseran Modeller",
+  "authorUrl": "https://sketchfab.com/kenlong",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fun-cowboy-straw-hat-9748427930a246fd93d306fb73b62d73",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 416,
+ "size": [
+  0.45,
+  0.14,
+  0.556
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#813b14",
+   "#a5591e",
+   "#c97b28",
+   "#d69e48",
+   "#dcba70",
+   "#dfca86",
+   "#e2d79b",
+   "#e6e2b0",
+   "#eaeac3"
+  ],
+  "m1": [
+   "#730300",
+   "#961100",
+   "#b92400",
+   "#dc3d00",
+   "#ff5c00",
+   "#fc8526",
+   "#f9a74c",
+   "#f8c370",
+   "#f8d993"
+  ],
+  "m2": [
+   "#831506",
+   "#a82a0a",
+   "#cc4610",
+   "#ea681c",
+   "#ea9045",
+   "#eaab61",
+   "#ebc17d",
+   "#edd497",
+   "#f0e3b1"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,34 @@
+{
+ "id": "pot_cooking",
+ "src": "sketchfab:38f0889da545459093cdc411a0e7ae99",
+ "credit": {
+  "title": "Cooking Pot (Game-Ready)",
+  "author": "Levi Giovani",
+  "authorUrl": "https://sketchfab.com/levigiovani",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cooking-pot-game-ready-38f0889da545459093cdc411a0e7ae99",
+  "site": "Sketchfab"
+ },
+ "tris": 452,
+ "tex": 320,
+ "size": [
+  0.332,
+  0.15,
+  0.379
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3d3034",
+   "#4d4144",
+   "#5d5254",
+   "#6b6566",
+   "#797979",
+   "#8b8b8b",
+   "#9e9e9e",
+   "#b0b0b0",
+   "#c3c3c3"
+  ]
+ },
+ "warnings": []
+}

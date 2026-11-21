@@ -1,0 +1,45 @@
+{
+ "id": "wear_bandana",
+ "src": "sketchfab:1d39e7ae6b5748acb2ffddf420893f5a",
+ "credit": {
+  "title": "Bandana Mask",
+  "author": "Tactical_Beard",
+  "authorUrl": "https://sketchfab.com/Tactical_Beard",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bandana-mask-1d39e7ae6b5748acb2ffddf420893f5a",
+  "site": "Sketchfab"
+ },
+ "tris": 586,
+ "tex": 256,
+ "size": [
+  0.137,
+  0.15,
+  0.231
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#2e000f",
+   "#3c000e",
+   "#49010c",
+   "#560208",
+   "#620504",
+   "#961609",
+   "#c7300f",
+   "#eb5723",
+   "#ed8c5a"
+  ],
+  "m1": [
+   "#533541",
+   "#6a4852",
+   "#805c64",
+   "#937277",
+   "#a28d8e",
+   "#aca09f",
+   "#b7b2b1",
+   "#c3c2c1",
+   "#d0d0d0"
+  ]
+ },
+ "warnings": []
+}

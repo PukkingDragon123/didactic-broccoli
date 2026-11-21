@@ -317,6 +317,72 @@ if (show === 'avatar') {
   });
 }
 
+if (show === 'hands') {
+  // the first-person viewmodel hands (src/game/FPBody.js) in finger poses, close up from a few angles
+  //   &poses=0.3:0.2:0.2:0.2:0:0.3,... (curl:spread:thumb:thumbCurl:point:cascade) &angs=-0.4,0.9,2.2 &dist=0.3
+  const { FPBody } = await import('../game/FPBody.js');
+  const { AVATAR_DEFAULT } = await import('../people/avatar.js');
+  const anchor = new THREE.Group();
+  scene.add(anchor);
+  const game = { state: { settings: {}, avatar: { ...AVATAR_DEFAULT } }, held: { anchor }, events: { on() {} }, scene, player: { eye: 1.6 } };
+  const fp = new FPBody(game);
+  fp.rig.visible = true;
+  fp.human.root.visible = false;
+  const poses = (Q.get('poses') || '0.3:0.2:0.2:0.2:0:0.3,0.62:0.05:0.97:0.15:0:0.5,0.9:0:0.72:0.5:0:0,0.85:0:0.6:0.4:1:0,0.6:0.12:0.55:0.35:0:0.25,0.04:0.5:0.05:0.05:0:0,0.42:0.1:0.9:0.5:0.2:0.4')
+    .split(',').map((s) => s.split(':').map(Number));
+  const angs = Q.get('angs') ? Q.get('angs').split(',').map(Number) : [-0.5, 0.9, 2.3];
+  const w = num('w', 200), h = num('h', 200), side = num('side', 0);
+  grid.style.gridTemplateColumns = `repeat(${poses.length}, ${w}px)`;
+  const hand = fp.hb[side].hand, v = new THREE.Vector3();
+  for (const a of angs) poses.forEach((f) => tile(w, h, f.join(' '), `yaw ${a}`, () => {
+    fp.fingers(side, f);
+    fp.rig.updateMatrixWorld(true);
+    // frame the posed hand: the centre of its skinned vertices (palm + fingers)
+    const g = fp.arms.geometry, si = g.attributes.skinIndex, pos = g.attributes.position, box = new THREE.Box3(), p = new THREE.Vector3();
+    const hb = new Set([fp.bones.indexOf(hand), ...fp.bones.filter((b) => { let q = b; while (q && q !== hand) q = q.parent; return q === hand; }).map((b) => fp.bones.indexOf(b))]);
+    for (let i = 0; i < pos.count; i++) if (hb.has(si.getX(i))) { fp.arms.getVertexPosition(i, p); fp.arms.localToWorld(p); box.expandByPoint(p); }
+    box.getCenter(v);
+    const d = num('dist', 0.26);
+    camera.position.set(v.x + Math.sin(a) * d, v.y + 0.05, v.z + Math.cos(a) * d); camera.lookAt(v); camTarget.copy(v);
+  }));
+}
+
+if (show === 'cast') {
+  // the special NPCs with their modelled extras: lane regulars (src/npc/looks.js) and staff kinds (src/staff/looks.js)
+  //   &ids=rohan,josuke,okuyasu,kuromaru,yabuki,gomuzo &kinds=kappa,tanuki,ghost,ninja,robokid &zoom=upper &yaw=0.5
+  const { createCharacter } = await import('../npc/looks.js');
+  const { buildPerson } = await import('../staff/looks.js');
+  const BASE = { kappa: 'kappa', tanuki: 'tanuki', ghost: 'yurei', ninja: 'ninja', robokid: 'schoolboy' };
+  const ids = (Q.get('ids') ?? 'rohan,josuke,okuyasu,kuromaru,yabuki,gomuzo').split(',').filter(Boolean);
+  const kinds = (Q.get('kinds') ?? 'kappa,tanuki,ghost,ninja,robokid').split(',').filter(Boolean);
+  const w = num('w', 200), h = num('h', 300);
+  grid.style.gridTemplateColumns = `repeat(${num('cols', ids.length + kinds.length)}, ${w}px)`;
+  let i = 0;
+  const show1 = (hm, label) => {
+    place(hm, i++ * 3);
+    hm.finishPaint?.();
+    for (const k of ['bino', 'meat']) if (hm.npcProps?.[k]) hm.npcProps[k].visible = true;
+    settle(hm, 1.5);
+    tile(w, h, label, '', () => { only([hm]); frameBody(hm, num('yaw', 0.5), 0.05); });
+  };
+  for (const id of ids) show1(createCharacter(id, { seed: 7 }), id);
+  for (const k of kinds) show1(buildPerson({ base: BASE[k], seed: 11, kind: k, o: {} }, { lazy: false }), k);
+}
+
+if (show === 'oldman') {
+  // Mikawa-ya's old man (src/places/mikawaya/oldman.js): full body and head from a few angles (&angs=0,0.7 &zoom=head)
+  const { makeOldMan } = await import('../places/mikawaya/oldman.js');
+  const angs = Q.get('angs') ? Q.get('angs').split(',').map(Number) : [0, 0.7, 1.57];
+  const w = num('w', 220), h = num('h', 360);
+  grid.style.gridTemplateColumns = `repeat(${angs.length * 2}, ${w}px)`;
+  const om = makeOldMan();
+  const hm = place(om.h, 0);
+  hm.finishPaint?.();
+  settle(hm, 1.5);
+  for (const a of angs) tile(w, h, 'Mikawa-san', `yaw ${a}`, () => { only([hm]); frameBody(hm, a, 0.05); });
+  for (const a of angs) tile(w, h, 'Mikawa-san', `head ${a}`, () => { only([hm]); frameHead(hm, a, num('dist', 0.8)); });
+}
+
 await renderTiles();
 document.getElementById('info').textContent = `${people.length} humans`;
 window.__ready = true;

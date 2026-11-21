@@ -1,0 +1,34 @@
+{
+ "id": "wear_octopus2",
+ "src": "sketchfab:caa4cac496bd488eac62ed03dcacc6fa",
+ "credit": {
+  "title": "Octopus Plush",
+  "author": "Surgdan",
+  "authorUrl": "https://sketchfab.com/bogdan.g",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/octopus-plush-caa4cac496bd488eac62ed03dcacc6fa",
+  "site": "Sketchfab"
+ },
+ "tris": 1592,
+ "tex": 304,
+ "size": [
+  0.421,
+  0.2,
+  0.421
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#00cd6e",
+   "#0dff7b",
+   "#4cff8e",
+   "#8affac",
+   "#c9ffd4",
+   "#d1fed7",
+   "#d9feda",
+   "#e2fee1",
+   "#ebfee8"
+  ]
+ },
+ "warnings": []
+}

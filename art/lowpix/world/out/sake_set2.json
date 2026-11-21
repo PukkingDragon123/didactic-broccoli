@@ -1,0 +1,56 @@
+{
+ "id": "sake_set2",
+ "src": "sketchfab:bccaf8335a534afca80878cd46b1b243",
+ "credit": {
+  "title": "Sake Set",
+  "author": "Mrs. Chief",
+  "authorUrl": "https://sketchfab.com/benji.summerskies",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/sake-set-bccaf8335a534afca80878cd46b1b243",
+  "site": "Sketchfab"
+ },
+ "tris": 1978,
+ "tex": 256,
+ "size": [
+  0.12,
+  0.15,
+  0.131
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#171432",
+   "#1c1b3f",
+   "#23264d",
+   "#2c3259",
+   "#354065",
+   "#495b82",
+   "#5e779e",
+   "#7f95ae",
+   "#a0b1be"
+  ],
+  "m1": [
+   "#27232f",
+   "#342f3c",
+   "#423c48",
+   "#4f4a53",
+   "#5c585e",
+   "#727172",
+   "#888888",
+   "#9f9f9f",
+   "#b5b5b5"
+  ],
+  "m2": [
+   "#b84500",
+   "#f16f00",
+   "#ff9e2a",
+   "#ffc563",
+   "#ffe29b",
+   "#feecaa",
+   "#fdf4b9",
+   "#fcfac7",
+   "#fcfcd5"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,45 @@
+{
+ "id": "wear_fedora2",
+ "src": "sketchfab:008a0b9867c241a190eb5941f5b4dffb",
+ "credit": {
+  "title": "Fedora Hat",
+  "author": "alexnoiseless",
+  "authorUrl": "https://sketchfab.com/alexnoiseless",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fedora-hat-008a0b9867c241a190eb5941f5b4dffb",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 512,
+ "size": [
+  0.265,
+  0.13,
+  0.305
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#030202",
+   "#030303",
+   "#040303",
+   "#040404",
+   "#050505",
+   "#272727",
+   "#4a4a4a",
+   "#6c6c6c",
+   "#8e8e8e"
+  ],
+  "m1": [
+   "#834008",
+   "#a8610e",
+   "#cd8714",
+   "#e6ad26",
+   "#e7c74f",
+   "#e8d86a",
+   "#e9e584",
+   "#ecec9d",
+   "#efefb5"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,67 @@
+{
+ "id": "wear_usagi_mask",
+ "src": "sketchfab:7ef13932521b49d9b7e79544b9b98bd5",
+ "credit": {
+  "title": "Japanese rabit Mask 07",
+  "author": "Delzaar Studio",
+  "authorUrl": "https://sketchfab.com/DelzaarStudio",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-rabit-mask-07-7ef13932521b49d9b7e79544b9b98bd5",
+  "site": "Sketchfab"
+ },
+ "tris": 2499,
+ "tex": 256,
+ "size": [
+  0.13,
+  0.22,
+  0.072
+ ],
+ "colours": 30,
+ "palette": {
+  "m0": [
+   "#785b47",
+   "#997d60",
+   "#ae9d85",
+   "#c3bbab",
+   "#dad7ce",
+   "#deddd6",
+   "#e2e2dd",
+   "#e7e7e4",
+   "#ececeb"
+  ],
+  "m1": [
+   "#4f001c",
+   "#67001c",
+   "#800018",
+   "#960211",
+   "#ab0508",
+   "#d4170a",
+   "#f13b1b",
+   "#f17049",
+   "#f29d76"
+  ],
+  "m2": [
+   "#501024",
+   "#661729",
+   "#7c1f2d",
+   "#90282e",
+   "#a43331",
+   "#c04b3e",
+   "#c77360",
+   "#cf9581",
+   "#d8b4a0"
+  ],
+  "m3": [
+   "#682134",
+   "#852e3e",
+   "#a13c47",
+   "#b84f51",
+   "#c17570",
+   "#c79086",
+   "#cea79c",
+   "#d5bcb0",
+   "#decec4"
+  ]
+ },
+ "warnings": []
+}

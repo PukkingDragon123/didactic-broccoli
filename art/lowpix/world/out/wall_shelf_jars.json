@@ -1,0 +1,45 @@
+{
+ "id": "wall_shelf_jars",
+ "src": "sketchfab:373ad4d8e5bb4783b6e76dbdf7732788",
+ "credit": {
+  "title": "Jar Shelf",
+  "author": "djcarson",
+  "authorUrl": "https://sketchfab.com/djcarson",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/jar-shelf-373ad4d8e5bb4783b6e76dbdf7732788",
+  "site": "Sketchfab"
+ },
+ "tris": 1256,
+ "tex": 256,
+ "size": [
+  0.548,
+  0.56,
+  0.204
+ ],
+ "colours": 11,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m1": [
+   "#22008a",
+   "#2d00b4",
+   "#2500de",
+   "#1d09ff",
+   "#3333ff",
+   "#5260fc",
+   "#7087fb",
+   "#8da8fa",
+   "#a9c4f9"
+  ]
+ },
+ "warnings": []
+}

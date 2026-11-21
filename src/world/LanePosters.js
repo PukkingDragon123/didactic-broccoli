@@ -30,7 +30,7 @@ function spots() {
   return [
     // near side walls
     ['travel', 'travel', 48, 68, 0.36, 12.75, 0.62, nB, 0, 0.02],
-    ['lost', 'cats', 40, 58, 0.26, 16.05, 0.72, nB, 0, -0.03],
+    ['lost', 'cats', 180, 255, 0.26, 16.05, 0.72, nB, 0, -0.03],
     ['festival', 'fest', 48, 68, 0.36, -9.05, 0.6, nB, 0, -0.015],
     ['event', 'event', 48, 68, 0.36, -7.75, 0.58, nB, 0, 0.02],
     ['print', 'any', 56, 44, 0.4, -24.6, 0.72, nB, 0, 0.01],
@@ -40,26 +40,26 @@ function spots() {
     // far side walls and fences
     ['kakigori', 'ice', 40, 58, 0.3, -24.4, 0.85, ZF + 0.012, Math.PI, 0.02],
     ['travel', 'travel', 48, 68, 0.36, -20.3, 0.7, nF, Math.PI, -0.02],
-    ['lost', 'dogs', 40, 58, 0.26, -1.95, 0.75, nF, Math.PI, 0.03],
+    ['lost', 'dogs', 180, 255, 0.26, -1.95, 0.75, nF, Math.PI, 0.03],
     ['print', 'any', 56, 44, 0.38, 2.25, 0.85, nF, Math.PI, -0.01],
     ['rent', null, 40, 58, 0.26, 18.45, 0.72, nF, Math.PI, 0.02],
     ['zoo', 'zoo', 48, 68, 0.36, 19.15, 0.6, nF, Math.PI, -0.02],
     // utility poles (notices tied at eye height, facing the lane)
-    ['lost', 'cats', 40, 58, 0.22, -22.4, 1.25, 14.32 - 0.24, Math.PI, 0.0],
+    ['lost', 'cats', 180, 255, 0.22, -22.4, 1.25, 14.32 - 0.24, Math.PI, 0.0],
     ['festival', 'fest', 40, 58, 0.24, 10.0, 1.2, 14.32 - 0.24, Math.PI, 0.0],
-    ['lost', 'cats', 40, 58, 0.22, -16.3, 1.3, 14.32 - 0.24, Math.PI, 0.0],
+    ['lost', 'cats', 180, 255, 0.22, -16.3, 1.3, 14.32 - 0.24, Math.PI, 0.0],
     ['rent', null, 40, 58, 0.22, 17.6, 1.25, 14.32 - 0.24, Math.PI, 0.0],
     // the underpass piers (guerrilla posters on the brick, facing the lane)
     ['event', 'event', 48, 68, 0.38, -(XT - 0.4), 1.15, 13.25, Math.PI / 2, 0.02],
     ['travel', 'travel', 48, 68, 0.38, XT - 0.4, 1.12, 13.3, -Math.PI / 2, -0.02],
     ['print', 'any', 56, 44, 0.38, -(XT - 0.4), 0.62, 5.45, Math.PI / 2, -0.01],
     // the community notice board by Sakura Heights
-    ['lost', 'cats', 40, 58, 0.2, 17.2, 1.02, 5.536, 0, 0.03],
+    ['lost', 'cats', 180, 255, 0.2, 17.2, 1.02, 5.536, 0, 0.03],
     ['festival', 'fest', 40, 58, 0.22, 17.66, 1.03, 5.536, 0, -0.02],
     // the passage and the park (warehouse wall by the entrance)
     ['travel', 'travel', 48, 68, 0.34, 9.812, 0.55, 3.0, Math.PI / 2, 0.02],
     ['zoo', 'zoo', 48, 68, 0.38, 11.462, 1.15, -8.4, Math.PI / 2, -0.02],
-    ['lost', 'dogs', 40, 58, 0.24, 11.462, 1.2, -9.2, Math.PI / 2, 0.03],
+    ['lost', 'dogs', 180, 255, 0.24, 11.462, 1.2, -9.2, Math.PI / 2, 0.03],
   ];
 }
 

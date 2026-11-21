@@ -1,0 +1,111 @@
+{
+ "id": "wear_flowerclip",
+ "src": "sketchfab:2c3e3299e0ca41af924a23b7c46f90fb",
+ "credit": {
+  "title": "Flower Hair Clip",
+  "author": "leman0312",
+  "authorUrl": "https://sketchfab.com/leman0312",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/flower-hair-clip-2c3e3299e0ca41af924a23b7c46f90fb",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 512,
+ "size": [
+  0.26,
+  0.05,
+  0.261
+ ],
+ "colours": 58,
+ "palette": {
+  "m0": [
+   "#895b00",
+   "#b38600",
+   "#dcb800",
+   "#ffea07",
+   "#ffff31",
+   "#fcfc50",
+   "#fbfb6e",
+   "#fafa8b",
+   "#f9f9a8"
+  ],
+  "m1": [
+   "#0d0a0b",
+   "#100d0e",
+   "#131111",
+   "#161515",
+   "#191919",
+   "#393939",
+   "#585858",
+   "#787878",
+   "#989898"
+  ],
+  "m2": [
+   "#2d00ab",
+   "#4d00df",
+   "#7914ff",
+   "#a648ff",
+   "#ca7cff",
+   "#da90fd",
+   "#e7a3fc",
+   "#f1b6fc",
+   "#f8c8fb"
+  ],
+  "m3": [
+   "#ca8700",
+   "#ffc109",
+   "#ffe047",
+   "#fff584",
+   "#ffffc2",
+   "#fefecb",
+   "#fefed4",
+   "#fdfddd",
+   "#fdfde5"
+  ],
+  "m4": [
+   "#ae7400",
+   "#e3aa00",
+   "#ffd919",
+   "#fff04e",
+   "#ffff83",
+   "#fdfd96",
+   "#fcfca8",
+   "#fcfcb9",
+   "#fcfccb"
+  ],
+  "m5": [
+   "#240088",
+   "#3d00b1",
+   "#5e00db",
+   "#8505ff",
+   "#ab2fff",
+   "#c54efc",
+   "#d96dfa",
+   "#e88afa",
+   "#f4a7f9"
+  ],
+  "m6": [
+   "#e39700",
+   "#ffca2a",
+   "#ffe76f",
+   "#fff9b5",
+   "#fffffa",
+   "#fffffb",
+   "#fffffb",
+   "#fffffc",
+   "#fffffd"
+  ],
+  "m7": [
+   "#3300c8",
+   "#5b06ff",
+   "#9343ff",
+   "#c080ff",
+   "#e4bdff",
+   "#ecc7fe",
+   "#f3d1fe",
+   "#f8dafd",
+   "#fbe3fd"
+  ]
+ },
+ "warnings": []
+}

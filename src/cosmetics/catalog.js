@@ -8,7 +8,7 @@
 //   capsule: 'series'   a rare bonus inside that gacha series' capsules (src/cosmetics/capsules.js)
 //   level: n            (with shop) the closet only stocks it from shop level n (game.progress.level)
 //   secondhand: true    only ever found second-hand at Off-Hobby, the junk market (src/market)
-//   itch: true          free for following the game on itch.io (src/cosmetics/itch.js)
+//   itch: true          a free thank-you gift, taken in the dressing room (src/cosmetics/itch.js)
 // rarity: common | uncommon | rare | ultra | secret (the gacha's tiers and colours, src/data/rarity.js).
 // Painted pieces use spec(spec, look) (hats, glasses, tops, bags, shoes the low-poly body already has); voxel pieces use
 // dress(ctx) + preview(add, group, lift) with the models in src/cosmetics/voxels.js. Photo prints: src/cosmetics/prints.js.
@@ -18,6 +18,8 @@ import { defineIcon } from '../gfx/icons.js';
 import { VX } from './voxels.js';
 import { registerPrint, printOf } from './prints.js';
 import { moreCosmetics } from './more.js';
+import { applyWear, WEAR_NEW } from './wearCatalog.js';
+import { closetLevel, addUnlock } from '../data/unlocks.js';
 
 // ------------------------------------------------------------------ placement helpers (head units, see voxels.js)
 const onCrown = (key, build, pos = [0, 0, 0], rot = [0, 0, 0]) => ({
@@ -273,22 +275,26 @@ const OLD = {
   cone: 'common', party: 'common', bow: 'common', nigiri: 'uncommon', shades: 'common', stars: 'uncommon', groucho: 'common', kitsune: 'rare',
 };
 for (const c of COSMETICS) if (OLD[c.id]) { c.rarity ||= OLD[c.id]; c.shop = true; }
-// the closet's fancier stock comes in as the shop grows (shop level; pieces you already own stay yours)
-const LEVEL = { dino: 5, shark: 6, cx_suit: 3, cx_randoseru: 4, cx_shiba: 8 };
+// the closet's stock comes in a couple of pieces at a time as the shop grows (shop level; pieces you already own stay
+// yours). The levels live with every other unlock in src/data/unlocks.js (WEAR_LEVEL / closetLevel).
 
-for (const c of [...EXTRA, ...MORE]) {
+for (const c of [...EXTRA, ...MORE, ...WEAR_NEW]) {
   if (COSMETIC_BY_ID[c.id]) continue;
   c.exclusive = !!(c.ach || c.quest || c.capsule || c.itch);
   if (c.print) registerPrint(c.id, c.print);
   COSMETICS.push(c);
   COSMETIC_BY_ID[c.id] = c;
 }
-for (const [id, lv] of Object.entries(LEVEL)) if (COSMETIC_BY_ID[id]) COSMETIC_BY_ID[id].level = lv;
+// every voxel-era piece redrawn with a real model (src/cosmetics/wearCatalog.js), same ids
+applyWear(COSMETICS, COSMETIC_BY_ID);
+COSMETICS.filter((c) => !c.exclusive && !c.web && !c.thrift && !c.secondhand && !c.ach && !c.quest && !c.capsule && !c.itch)
+  .sort((a, b) => (a.price || 0) - (b.price || 0))
+  .forEach((c, i) => { c.level = closetLevel(c, i); if (c.level > 1) addUnlock(`wear:${c.id}`, c.level, 'wear', c.name); });
 
 /** How you get a cosmetic, for the closet / shop cards. */
 export function sourceOf(c) {
   if (!c) return null;
-  if (c.itch) return { kind: 'itch', text: 'Follow us on itch.io' };
+  if (c.itch) return { kind: 'itch', text: 'A free gift' };
   if (c.thrift || c.secondhand) return { kind: 'thrift', text: 'Thrift find on Off-Hobby' };
   if (c.ach) return { kind: 'ach', text: 'Achievement reward', id: c.ach };
   if (c.quest) return { kind: 'quest', text: 'Side quest reward', id: c.quest };

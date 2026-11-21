@@ -1,0 +1,67 @@
+{
+ "id": "wear_frog_mask",
+ "src": "sketchfab:63c008bf999441f29fd532c69b3eaa10",
+ "credit": {
+  "title": "Japanese frog Mask 06",
+  "author": "Delzaar Studio",
+  "authorUrl": "https://sketchfab.com/DelzaarStudio",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-frog-mask-06-63c008bf999441f29fd532c69b3eaa10",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 512,
+ "size": [
+  0.25,
+  0.22,
+  0.195
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#4d473c",
+   "#625e51",
+   "#767367",
+   "#88877f",
+   "#999998",
+   "#a7a7a7",
+   "#b5b5b5",
+   "#c3c3c3",
+   "#d1d1d1"
+  ],
+  "m1": [
+   "#420b1e",
+   "#541022",
+   "#661625",
+   "#781c25",
+   "#882325",
+   "#aa3830",
+   "#c55643",
+   "#cd816a",
+   "#d7a58f"
+  ],
+  "m2": [
+   "#121528",
+   "#181f33",
+   "#1f293e",
+   "#273448",
+   "#2f4051",
+   "#455e70",
+   "#5d7d8c",
+   "#7b99a2",
+   "#9db1b6"
+  ],
+  "m3": [
+   "#563908",
+   "#6f520d",
+   "#866e12",
+   "#9d8d18",
+   "#b3ad1f",
+   "#d2d229",
+   "#d8d84c",
+   "#dddd71",
+   "#e3e394"
+  ]
+ },
+ "warnings": []
+}

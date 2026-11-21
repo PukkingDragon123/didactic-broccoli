@@ -1,0 +1,78 @@
+{
+ "id": "toy_robot",
+ "src": "sketchfab:1bde35f80c854c858541d090efd24bd8",
+ "credit": {
+  "title": "Smoking Robot",
+  "author": "Javier Villar",
+  "authorUrl": "https://sketchfab.com/javiervillar",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/smoking-robot-1bde35f80c854c858541d090efd24bd8",
+  "site": "Sketchfab"
+ },
+ "tris": 2499,
+ "tex": 304,
+ "size": [
+  0.119,
+  0.22,
+  0.097
+ ],
+ "colours": 35,
+ "palette": {
+  "m0": [
+   "#430016",
+   "#570016",
+   "#6b0012",
+   "#80000b",
+   "#920202",
+   "#c01506",
+   "#ed300b",
+   "#f36637",
+   "#f39668"
+  ],
+  "m1": [
+   "#132348",
+   "#1b345c",
+   "#234770",
+   "#2d5c82",
+   "#377294",
+   "#4691af",
+   "#63aabc",
+   "#84bec6",
+   "#a3d0d1"
+  ],
+  "m2": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m3": [
+   "#3d0819",
+   "#4e0c1c",
+   "#5f101d",
+   "#6f151c",
+   "#7e1c1b",
+   "#a33227",
+   "#c74e34",
+   "#d17a5c",
+   "#d9a184"
+  ],
+  "m4": [
+   "#281119",
+   "#34181f",
+   "#3e1f24",
+   "#482629",
+   "#522e2e",
+   "#714744",
+   "#8e635b",
+   "#a48479",
+   "#b7a49b"
+  ]
+ },
+ "warnings": []
+}

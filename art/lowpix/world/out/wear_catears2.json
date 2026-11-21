@@ -1,0 +1,34 @@
+{
+ "id": "wear_catears2",
+ "src": "sketchfab:6960f5f2d76c440f95f89e053f1175c8",
+ "credit": {
+  "title": "Cat Ears",
+  "author": "chadathip_9",
+  "authorUrl": "https://sketchfab.com/chadathip_9",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cat-ears-6960f5f2d76c440f95f89e053f1175c8",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 256,
+ "size": [
+  0.232,
+  0.1,
+  0.067
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

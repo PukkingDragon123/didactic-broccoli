@@ -1,7 +1,7 @@
-// The free Duck Head for following the game on itch.io. We can't check a follow, so it's the honour system: the
-// "Follow on itch.io" button (the Duck Head's slip in the dressing room, the little tag on the title screen) opens the
-// itch page in a new tab and hands the duck over at once, with the normal unlock card (src/cosmetics/grant.js) and a NEW
-// sticker in the closet. Saved once per save file (ensureState 'itch'); the page can be opened again any time.
+// The free Duck Head: a thank-you gift (the owner: no "follow on itch" call-to-action anywhere). The Duck Head's slip in
+// the dressing room has a "Take it" button that hands the duck over at once, with the normal unlock card
+// (src/cosmetics/grant.js) and a NEW sticker in the closet; no page is opened. Saved once per save file (ensureState
+// 'itch', kept under its old key so old saves load and a duck already claimed stays claimed).
 //   claimItch(game) -> true when the duck was given now       itchClaimed(game) -> bool
 //   DUCK_ID, ITCH_URL (src/data/links.js: the owner sets the real page there)
 import { ITCH_URL } from '../data/links.js';
@@ -14,14 +14,12 @@ const state = (game) => ensureState(game, 'itch', { followed: false, day: null }
 export const itchClaimed = (game) => !!(game.state?.itch?.followed || (game.state?.avatar?.owned || []).includes(DUCK_ID));
 
 export function claimItch(game) {
-  // (straight from the click, so the browser lets the tab open)
-  try { window.open(ITCH_URL, '_blank', 'noopener'); } catch { /* no window (tests) */ }
-  if (game.visiting) { game.news?.('Thanks for following!', 'Claim your Duck Head from your own shop.', 4500); return false; }
+  if (game.visiting) { game.news?.('A gift for you!', 'Claim your Duck Head from your own shop.', 4500); return false; }
   const S = state(game);
   S.followed = true;
   S.day ??= game.clock?.day ?? null;
   let got = false;
-  if (game.cosmetics) got = game.cosmetics.grant(DUCK_ID, { from: 'Thanks for following us on itch.io!', kind: 'itch' });
+  if (game.cosmetics) got = game.cosmetics.grant(DUCK_ID, { from: 'A little thank-you gift from us!', kind: 'itch' });
   else { // (no closet system yet: put it in the wardrobe quietly)
     const A = game.state.avatar;
     if (A && Array.isArray(A.owned) && !A.owned.includes(DUCK_ID)) { A.owned.push(DUCK_ID); got = true; game.events?.emit('cosmetic', { id: DUCK_ID, kind: 'itch' }); }

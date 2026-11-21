@@ -1,0 +1,34 @@
+{
+ "id": "wear_chef2",
+ "src": "sketchfab:cacfc7474a604ed4b0275b8a3293eff6",
+ "credit": {
+  "title": "Chef Hat",
+  "author": "Awesopossum",
+  "authorUrl": "https://sketchfab.com/awesopossum",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/chef-hat-cacfc7474a604ed4b0275b8a3293eff6",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 264,
+ "size": [
+  0.287,
+  0.25,
+  0.311
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

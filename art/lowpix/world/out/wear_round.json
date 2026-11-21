@@ -1,0 +1,45 @@
+{
+ "id": "wear_round",
+ "src": "sketchfab:5d4ef7145b1b426cb129e3d661f7c2e6",
+ "credit": {
+  "title": "Glasses 09",
+  "author": "Dokono Kinokoda",
+  "authorUrl": "https://sketchfab.com/JunkWren",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/glasses-09-5d4ef7145b1b426cb129e3d661f7c2e6",
+  "site": "Sketchfab"
+ },
+ "tris": 1998,
+ "tex": 224,
+ "size": [
+  0.159,
+  0.05,
+  0.185
+ ],
+ "colours": 11,
+ "palette": {
+  "m0": [
+   "#003ca7",
+   "#0060da",
+   "#0e8cff",
+   "#41b4ff",
+   "#74d4ff",
+   "#89e3fd",
+   "#9deefc",
+   "#b1f7fb",
+   "#c4fbfa"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

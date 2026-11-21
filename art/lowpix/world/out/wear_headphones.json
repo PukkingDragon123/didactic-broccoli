@@ -1,0 +1,45 @@
+{
+ "id": "wear_headphones",
+ "src": "sketchfab:2f54d1c5d3c943bfadc72ab656587c90",
+ "credit": {
+  "title": "Headphones",
+  "author": "~Drift~",
+  "authorUrl": "https://sketchfab.com/QuickDriftVR",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/headphones-2f54d1c5d3c943bfadc72ab656587c90",
+  "site": "Sketchfab"
+ },
+ "tris": 2482,
+ "tex": 392,
+ "size": [
+  0.398,
+  0.2,
+  0.413
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ],
+  "m1": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}

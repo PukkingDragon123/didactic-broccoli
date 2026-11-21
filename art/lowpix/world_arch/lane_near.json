@@ -2,7 +2,7 @@
  "name": "lane_near",
  "description": "Lane houses hn-705_340, hn-1255_370, hn-1800_528, hn-2325_200, hn705_140, hn1395_390, hn1935_220, hn2420_260",
  "license": "CC0-1.0",
- "density": 16,
+ "density": 32,
  "budget": {
   "tris": 90000,
   "colors": 900

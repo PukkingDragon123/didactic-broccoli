@@ -1,0 +1,45 @@
+{
+ "id": "wear_pith",
+ "src": "sketchfab:7ccc0bdff4ba4af8afcde410758e017d",
+ "credit": {
+  "title": "NVA PITH HELMET - Mũ Cối Sao Vàng",
+  "author": "Long Nguyễn",
+  "authorUrl": "https://sketchfab.com/LongNguyen89",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/nva-pith-helmet-mu-coi-sao-vang-7ccc0bdff4ba4af8afcde410758e017d",
+  "site": "Sketchfab"
+ },
+ "tris": 378,
+ "tex": 256,
+ "size": [
+  0.135,
+  0.15,
+  0.069
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#14120b",
+   "#1a180f",
+   "#1f1e13",
+   "#242417",
+   "#28291c",
+   "#4b4b37",
+   "#6b6b53",
+   "#8a8a71",
+   "#a3a395"
+  ],
+  "m1": [
+   "#334238",
+   "#455449",
+   "#58655a",
+   "#6c746d",
+   "#818381",
+   "#939393",
+   "#a4a4a4",
+   "#b6b6b6",
+   "#c7c7c7"
+  ]
+ },
+ "warnings": []
+}

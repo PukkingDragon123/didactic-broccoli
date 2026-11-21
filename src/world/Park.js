@@ -53,6 +53,7 @@ export function buildPark(t) {
 
   // second row beyond the back street (roofs over the villa from the park)
   for (const [x, w, h] of [[13.4, 5.6, 7.2], [18.9, 5.0, 6.2], [23.6, 4.4, 7.4]]) t.backHouse(x, -30.2, w, 7, h, 1);
+  for (const [x, w, h] of [[12.8, 5.0, 6.4], [18.2, 5.4, 7.8], [23.8, 4.6, 6.0]]) t.backHouse(x, -38.0, w, 6, h, 1);
 
   // ---------------------------------------------------------------- bounds (player) and walls for thrown things
   ob(9.6, P.x0, -60, -4.93); // passage end + warehouse (the museum lot beyond)
@@ -131,7 +132,7 @@ function passage(t, mats) {
   // passage clutter: the old twin-tub against NE1, an AC unit on NE2's side, pots, a hose reel, bamboo laundry pole overhead
   t.prop('twin_tub', 10.13, 0, -1.55, Math.PI / 2, { block: true, pad: 0 });
   t.prop('ac_unit', 11.12, 0, -0.35, -Math.PI / 2, { block: true, pad: 0 });
-  t.prop('plant_pots', 10.0, 0, 3.55, Math.PI / 2, { scale: 0.6 });
+  t.potRow(10.0, 0, 3.55, Math.PI / 2, 0.7, { n: 4 });
   t.prop('weeds', 11.15, 0, -3.3, 0.8, { scale: 0.7 });
   t.prop('weeds', 9.95, 0, -4.6, 2.2, { scale: 0.8 });
   t.prop('stray_cat_sit', 11.0, 1.4, 2.62, -Math.PI / 2 + 0.4);
@@ -166,7 +167,7 @@ function warehouse(t, mats) {
   B.box(m.pv, 0.12, 0.12, z1 - z0 + 0.3, P.wx + 0.32, H - 0.05, zc, { tint: 0x6a6a68 });
   for (const z of [-6.0, -14.6, -22.4]) { B.box(m.pv, 0.1, H - 0.1, 0.1, P.wx + 0.06, 0, z, { tint: 0x6a6a68 }); B.box(m.pv, 0.14, 0.08, 0.2, P.wx + 0.1, 0.02, z, { tint: 0x6a6a68 }); }
   // faded painted name, a row of small high windows, rust streaks
-  B.quad(t.T('warehouseSign', 96, 28, { rough: 0.85 }), 4.6, 1.34, P.wx + 0.012, 4.15, -11.6, { ry: Math.PI / 2 });
+  B.quad(t.T('warehouseSign', 1024, 298, { rough: 0.85 }), 4.6, 1.34, P.wx + 0.012, 4.15, -11.6, { ry: Math.PI / 2 });
   for (let z = -6.8; z > -22; z -= 2.6) {
     if (Math.abs(z + 11.6) < 2.4) continue;
     B.box(t.win[hash2(z, 3) < 0.3 ? 'frost' : 'dark'], 0.9, 0.55, 0.06, P.wx + 0.01, 4.7, z, { unit: true, ry: Math.PI / 2 });
@@ -182,8 +183,9 @@ function warehouse(t, mats) {
   B.box(m.metal, 0.34, 0.3, 2.1, P.wx + 0.17, 2.6, -18.85, { tint: 0x7a7e7a });
   B.box(m.pv, 0.05, 0.42, 0.3, P.wx + 0.03, 1.3, -17.2, { tint: 0xc8c8c0 });
   // ivy creeping up the wall by the plaza and at the far end
-  const ivy = (z, w, h) => { for (let i = 0; i < 18; i++) { const k = hash2(i, z * 3), kk = hash2(z, i); B.box(m.pv, 0.08, 0.2 + kk * 0.25, 0.22 + k * 0.3, P.wx + 0.04, Math.min(h, kk * h * 1.1), z + (k - 0.5) * w, { tint: [0x3f6a2e, 0x4f7a34, 0x5a8a3a][i % 3] }); } };
-  ivy(-7.2, 1.6, 2.6); ivy(-16.0, 1.2, 3.4); ivy(-21.6, 1.8, 2.2);
+  // (sprig cards climbing the wall face, src/world/foliage.js: a ragged top edge, runners reaching sideways)
+  const ivy = (z, w, h) => t.leaves.ivy(new THREE.Matrix4().makeRotationY(Math.PI / 2).setPosition(P.wx, 0, z), -w / 2, w / 2, 0, h, { kind: 'ivy', mix: ['pothos', 0.12], size: 0.34, density: 1.5, seed: z });
+  ivy(-7.2, 1.9, 2.8); ivy(-16.0, 1.6, 3.6); ivy(-21.6, 2.2, 2.4);
 }
 
 // ------------------------------------------------------------------ fences round the park
@@ -327,14 +329,14 @@ function furniture(t, mats) {
   B.box(m.pv, 0.38, 0.7, 0.38, 13.3, 0, -3.75, { tint: 0x2a6ad8 });
   B.box(m.pv, 0.4, 0.05, 0.4, 13.3, 0.7, -3.75, { tint: 0x1a4aa8 });
   t.game.player.addObstacle(13.05, 13.55, -4.0, -3.5);
-  // trees: the big zelkova shading the SW corner, a smaller one by the slide, hedges along the north fence
-  t.tree('keyaki', 12.75, -15.9, 0.3, 1);
+  // trees: the big zelkova shading the SW corner, a cherry by the slide, hedges along the north fence
+  t.tree('keyaki', 12.75, -15.9, 0.3, 0.85);
   t.game.player.addObstacle(12.4, 13.1, -16.25, -15.55);
-  t.tree('keyaki', 25.05, -15.6, 2.1, 0.72);
+  t.tree('sakura', 25.05, -15.6, 2.1, 0.62);
   t.game.player.addObstacle(24.8, 25.6, -15.85, -15.35);
-  for (const x of [17.7, 19.8]) t.prop('hedge', x, 0, -6.25, 0, { scale: 0.85 });
+  for (const x of [17.7, 19.8]) t.hedge(x, 0, -6.25, 0, 0.85);
   t.game.player.addObstacle(16.6, 20.7, -6.6, -5.8);
-  for (const [x, z] of [[25.3, -10.0], [25.3, -12.2]]) t.prop('hedge', x, 0, z, Math.PI / 2, { scale: 0.6 });
+  for (const [x, z] of [[25.3, -10.0], [25.3, -12.2]]) t.hedge(x, 0, z, Math.PI / 2, 0.6);
   // small finds: a kid's bicycle by the sandbox, a lost glove on a fence post, an umbrella hooked on the rail
   t.prop('bicycle', 13.2, 0, -11.3, 0.25, { scale: 0.62, block: true });
   B.box(m.pv, 0.08, 0.12, 0.04, 14.8, 1.25, PARK.zS - 0.02, { tint: 0xe86a7a });
@@ -513,10 +515,7 @@ function villa(t, mats) {
   }
   for (const u of [-0.36, 0.36]) if (lp) B.box(t.win.lit4, 0.66, 2.1, 0.1, 15.85 + u, by + 0.02, ZF, { unit: true });
   if (!lp) B.box(m.pv, 1.5, 0.08, 0.08, 15.85, by + 2.12, ZF + 0.04, { tint: ink });
-  for (const [x, c] of [[bx0 + 0.3, 0x4a8a3a], [bx1 - 0.3, 0x5a9a42], [bx0 + 1.0, 0xd84a6a]]) {
-    B.box(m.pv, 0.32, 0.3, 0.32, x, by, ZF + bd - 0.32, { tint: 0xb85a3a });
-    B.box(m.pv, 0.4, 0.42, 0.4, x, by + 0.3, ZF + bd - 0.32, { tint: c });
-  }
+  for (const [x, f] of [[bx0 + 0.3, null], [bx1 - 0.3, null], [bx0 + 1.0, 'azalea']]) t.potPlant(x, by, ZF + bd - 0.32, 1.45, { flower: f, kind: f ? 'small' : null, h: 1.3 });
   // a little round bistro table and a chair on the balcony
   B.box(m.metal, 0.04, 0.7, 0.04, 17.0, by, ZF + 0.4, { tint: 0x1e2024 });
   B.box(m.pv, 0.5, 0.04, 0.5, 17.0, by + 0.7, ZF + 0.4, { tint: 0xf4f2ec });
@@ -534,16 +533,12 @@ function villa(t, mats) {
   // ---- the front garden: lawn, stepping stones, pots, a rose hedge, a small tree, a garden lamp
   B.plane(m.grass, X1 + 0.6 - X0, P.sz1 - 0.15 - ZF, (X0 + X1 + 0.6) / 2, 0.01, (ZF + P.sz1 - 0.15) / 2, { k: 1.05, uv: [1, 1] });
   for (const [z, r] of [[-20.55, 0.1], [-21.05, -0.2]]) B.box(m.found, 0.55, 0.05, 0.4, dx + (hash2(z * 9, 1) - 0.5) * 0.1, 0, z, { ry: r, tint: 0xc8c4bc });
-  for (const [x, c] of [[15.25, 0x4a8a3a], [17.75, 0x3e7a34]]) {
-    B.box(m.pv, 0.42, 0.42, 0.42, x, 0, -21.35, { tint: 0xb4603a });
-    B.box(m.pv, 0.5, 0.06, 0.5, x, 0.42, -21.35, { tint: 0xa4502e });
-    B.box(m.pv, 0.52, 0.5, 0.52, x, 0.48, -21.35, { tint: c });
-    B.box(m.pv, 0.36, 0.35, 0.36, x, 0.95, -21.35, { tint: c, k: 1.1 });
-  }
-  t.prop('hedge', 13.6, 0, -20.45, 0, { scale: 0.62 });
-  t.prop('hedge', 19.0, 0, -20.45, 0, { scale: 0.48 });
-  for (const [x, c] of [[13.0, 0xe5383b], [13.5, 0xff8fb2], [14.1, 0xfbf8f0], [18.7, 0xe5383b], [19.3, 0xff8fb2]]) B.box(m.pv, 0.1, 0.08, 0.1, x, 0.6, -20.35 - hash2(x, 4) * 0.15, { tint: c });
-  t.tree('keyaki', 12.95, -21.4, 1.2, 0.38);
+  for (const [x, k] of [[15.25, 'kaname'], [17.75, 'camellia']]) t.potPlant(x, 0, -21.35, 2.1, { kind: k, pot: 0xa8582e, h: 1.5 });
+  t.hedge(13.6, 0, -20.45, 0, 0.62);
+  t.hedge(19.0, 0, -20.45, 0, 0.48);
+  // roses along the front of the hedges
+  for (const [x, w] of [[13.6, 0.9], [19.0, 0.6]]) t.leaves.bush(null, [x, 0.62, -20.38], [w, 0.16, 0.14], { kind: 'pelargonium', mix: ['camellia', 0.4], size: 0.24, density: 1.0, seed: x });
+  t.tree('kaki', 12.95, -21.4, 1.2, 0.5);
   B.box(m.pv, 0.08, 0.9, 0.08, 18.9, 0, -21.6, { tint: ink });
   B.box(t.G, 0.16, 0.2, 0.16, 18.9, 0.9, -21.6, { tint: 0xffe0a0 });
   // ---- the low front wall: white render, dark coping, iron railing on top, gate pillars with lamps, iron gate

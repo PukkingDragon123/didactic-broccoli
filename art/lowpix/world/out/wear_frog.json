@@ -1,0 +1,78 @@
+{
+ "id": "wear_frog",
+ "src": "sketchfab:472d646ce4a8402695ce79ae5cfff82a",
+ "credit": {
+  "title": "Frog Plush",
+  "author": "Ida Ailes",
+  "authorUrl": "https://sketchfab.com/gentledownpour",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/frog-plush-472d646ce4a8402695ce79ae5cfff82a",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 464,
+ "size": [
+  0.218,
+  0.2,
+  0.188
+ ],
+ "colours": 29,
+ "palette": {
+  "m0": [
+   "#134a50",
+   "#1b6566",
+   "#237c75",
+   "#2d9081",
+   "#37a48a",
+   "#47bc96",
+   "#67c49e",
+   "#87ccaa",
+   "#a5d6ba"
+  ],
+  "m1": [
+   "#3f1e2a",
+   "#512834",
+   "#61343d",
+   "#714147",
+   "#804e50",
+   "#966462",
+   "#a5827d",
+   "#b39e98",
+   "#c3b7b2"
+  ],
+  "m2": [
+   "#503c2e",
+   "#67523e",
+   "#7c6950",
+   "#8f8063",
+   "#9e957b",
+   "#a8a490",
+   "#b4b2a4",
+   "#c0c0b8",
+   "#cdcdca"
+  ],
+  "m3": [
+   "#44142a",
+   "#571c32",
+   "#692438",
+   "#7a2e3d",
+   "#8b3842",
+   "#a6484c",
+   "#b76763",
+   "#c28b83",
+   "#ceaca2"
+  ],
+  "m4": [
+   "#0a1010",
+   "#0e1514",
+   "#121917",
+   "#161d1b",
+   "#1a211e",
+   "#37423c",
+   "#56615a",
+   "#777e79",
+   "#9a9a9a"
+  ]
+ },
+ "warnings": []
+}

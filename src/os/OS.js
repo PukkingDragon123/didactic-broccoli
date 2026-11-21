@@ -8,6 +8,9 @@
 //       busy(on), close(), focus(), onClose(fn), onResize(fn), onArgs = fn(args) (re-open of a single-instance app),
 //       flash() (taskbar blink), el, body, w, h.
 //   game.os.open(id, args)                      -> win | null   (powers the PC's desktop only while it is on)
+//   game.os.installed(id)                       is the program on this computer yet? A new game's PC has two (the
+//       Navigator and Pichat); the rest install themselves through play (game.unlocks, the table in
+//       src/data/unlocks.js APPS) with a little "Setup" moment the next time you sit down
 //   game.os.notify({ app, title, body, icon, onClick, sound, news })   tray balloon (queued while you're away from
 //       the PC; news: true also posts a HUD toast then)
 //   game.os.dialog({ title, icon: 'info'|'warn'|'error'|'question', text | html, buttons: [{ label, value, default,
@@ -30,7 +33,7 @@
 // Save data: game.state.os (ensureState), one sub-key per app.
 import './os.css';
 import { ensureState } from '../game/stateExt.js';
-import { registerOSIcons, ic, glyph, glyphURL, wallpaperURL, WALLPAPERS } from './art.js';
+import { registerOSIcons, ic, glyph, glyphURL, wallpaperURL, wallpaperId, WALLPAPERS, DEFAULT_WALLPAPER, setPortraitGame } from './art.js';
 import { registerOSSounds, osSound } from './sounds.js';
 import { now, clockText, dateText } from './time.js';
 
@@ -57,7 +60,7 @@ export const yen = (n) => (n < 0 ? '-' : '') + '¥' + Math.abs(Math.round(n)).to
 
 export const TASKBAR_H = 30;
 const DEFAULTS = {
-  v: 1, wallpaper: 'teal', saver: 'capsules', scanlines: true, sounds: true, volume: 1, h24: true, keyclicks: true,
+  v: 1, wallpaper: DEFAULT_WALLPAPER, saver: 'capsules', scanlines: true, sounds: true, volume: 1, h24: true, keyclicks: true,
   icons: {}, flags: {},
 };
 
@@ -91,6 +94,7 @@ function cursorCSS(name, s) {
 export class CapsuleOS {
   constructor(game) {
     this.game = game;
+    setPortraitGame(game);
     registerOSIcons();
     registerOSSounds();
     this.st = ensureState(game, 'os', DEFAULTS);
@@ -112,6 +116,7 @@ export class CapsuleOS {
     this.applyWallpaper();
     this.installInput();
     this.mirrorNews();
+    game.events.on('unlock', (e) => this.onUnlock(e));
   }
 
   // ------------------------------------------------------------------ events
@@ -200,10 +205,11 @@ export class CapsuleOS {
   }
 
   applyWallpaper() {
-    const id = this.st.wallpaper;
-    const k = Math.max(1, Math.ceil(Math.max(this.W / 320, this.deskH / 240)));
+    const id = this.st.wallpaper = wallpaperId(this.st.wallpaper);
+    // a photograph, filling the desktop (smooth scaling: it's a photo, not pixel art)
     this.deskEl.style.backgroundImage = id === 'plain' ? 'none' : `url(${wallpaperURL(id)})`;
-    this.deskEl.style.backgroundSize = `${320 * k}px ${240 * k}px`;
+    this.deskEl.style.backgroundSize = 'cover';
+    this.deskEl.style.imageRendering = 'auto';
   }
 
   // ------------------------------------------------------------------ apps + desktop icons
@@ -216,8 +222,70 @@ export class CapsuleOS {
     return app;
   }
 
+  /** Is the program on this computer yet (game.unlocks; system pieces always are)? */
+  installed(id) { return this.game.unlocks ? this.game.unlocks.has(id) : true; }
+
+  /** A program just unlocked (the 'unlock' event): set it up now if you're sitting here, else the next time you are. */
+  onUnlock({ id, kind }) {
+    if (kind !== 'app') return;
+    const app = id.slice(4);
+    if (!this.apps.has(app)) return;
+    (this.st.setup ||= []).includes(app) || this.st.setup.push(app);
+    if (this.seated && this.power === 'on') this.runSetup();
+    else if (!this.game.cutscene?.active) this.game.news?.(`New on the computer: ${this.apps.get(app).name}`, 'It installs itself the next time you sit down', 4500);
+  }
+
+  /** The "Setup" moment: a little installer window per new program, then its icon appears on the desktop marked NEW. */
+  async runSetup() {
+    if (this._setupBusy || !this.st.setup?.length) return;
+    this._setupBusy = true;
+    try {
+      while (this.st.setup.length && this.seated && this.power === 'on') {
+        const id = this.st.setup[0];
+        const a = this.apps.get(id);
+        if (a) await this.setupWindow(a);
+        this.st.setup.shift();
+        (this.fresh ||= new Set()).add(id);
+        this.renderIcons(); this.renderQuick(); this.renderTray();
+        this.sound('osNotify');
+        if (a) this.balloon({ title: `${a.name} is ready`, body: a.setupText || `Double-click its new desktop icon to start it.`, icon: a.icon, sound: null, onClick: () => this.open(id) });
+        await new Promise((r) => setTimeout(r, 500));
+      }
+    } finally { this._setupBusy = false; }
+  }
+
+  setupWindow(a) {
+    return new Promise((resolve) => {
+      const win = h('div', { class: 'c98-win c98-dlg c98-setup active', role: 'dialog' });
+      const bar = h('div', { class: 'c98-prog' }, h('i'));
+      const file = h('div', { class: 'c98-dim c98-setup-f' });
+      win.append(h('div', { class: 'c98-tb' }, h('span', { class: 't', text: `${a.name} Setup` })),
+        h('div', { class: 'c98-dlg-c' }, h('div', { class: 'c98-dlg-m' }, h('span', { class: 'c98-dlg-i', html: ic(a.icon, 2) }),
+          h('div', { class: 'c98-dlg-t', html: `<b>${esc(a.name)}</b><br>Setup is copying files to your computer.` })), file, bar));
+      this.modalEl.append(win);
+      this.modalEl.classList.remove('hidden');
+      (this.dialogs ||= []).push(win);
+      win._cancel = () => {};
+      win.style.left = `${Math.round((this.W - win.offsetWidth) / 2)}px`; win.style.top = `${Math.round((this.deskH - win.offsetHeight) / 2.4)}px`;
+      const files = ['SETUP.INF', `${a.id.toUpperCase().slice(0, 8)}.EXE`, `${a.id.toUpperCase().slice(0, 6)}32.DLL`, 'README.TXT', 'Updating the Start menu...'];
+      const t0 = performance.now(), dur = 1800;
+      this.sound('hddSeek', { vol: 0.5 });
+      const tick = () => {
+        const k = Math.min(1, (performance.now() - t0) / dur);
+        bar.firstChild.style.width = `${Math.ceil(k * 20) * 5}%`;
+        file.textContent = files[Math.min(files.length - 1, Math.floor(k * files.length))];
+        if (k < 1 && this.seated) { requestAnimationFrame(tick); return; }
+        win.remove();
+        this.dialogs = this.dialogs.filter((d) => d !== win);
+        if (!this.dialogs.length) this.modalEl.classList.add('hidden');
+        resolve();
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
   renderIcons() {
-    const ids = this.order.filter((id) => { const a = this.apps.get(id); return a.desktop && (!a.unlocked || a.unlocked() || a.showLocked); });
+    const ids = this.order.filter((id) => { const a = this.apps.get(id); return a.desktop && this.installed(id) && (!a.unlocked || a.unlocked() || a.showLocked); });
     const rowH = 74, colW = 78, rows = Math.max(1, Math.floor((this.deskH - 8) / rowH));
     this.iconsEl.textContent = '';
     ids.forEach((id, i) => {
@@ -226,9 +294,10 @@ export class CapsuleOS {
       const b = h('div', { class: 'c98-ico', tabindex: '0', 'data-app': id, style: { left: `${pos[0]}px`, top: `${pos[1]}px` } },
         h('span', { class: 'c98-ico-i', html: ic(typeof a.deskIcon === 'function' ? a.deskIcon() : a.icon, 2) }),
         h('span', { class: 'c98-ico-l', text: a.label || a.name }),
+        this.fresh?.has(id) ? h('i', { class: 'c98-new', text: 'NEW' }) : null,
         a.badge ? h('i', { class: 'c98-badge hidden', 'data-badge': id }) : null);
       b.addEventListener('pointerdown', (e) => this.iconDown(e, b, id));
-      b.addEventListener('dblclick', () => { this.selectIcon(null); this.open(id); });
+      b.addEventListener('dblclick', () => { this.selectIcon(null); if (this.fresh?.delete(id)) b.querySelector('.c98-new')?.remove(); this.open(id); });
       b.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.open(id); });
       b.addEventListener('contextmenu', (e) => {
         e.preventDefault(); e.stopPropagation();
@@ -293,6 +362,7 @@ export class CapsuleOS {
     const app = this.apps.get(id);
     if (this.power !== 'on') return null;
     if (!app) { this.alert(`Cannot find '${id}'. Make sure you typed the name correctly, and then try again.`, 'Run', 'error'); return null; }
+    if (!this.installed(id)) { this.alert(`${app.name} is not installed on this computer.`, app.name, 'warn'); return null; }
     if (app.unlocked && !app.unlocked()) { this.alert(app.lockedText || `${app.name} is not installed on this computer yet.`, app.name, 'warn'); return null; }
     this.closeMenus();
     if (!app.multi) {
@@ -362,7 +432,7 @@ export class CapsuleOS {
     this.quickEl.textContent = '';
     for (const id of ['browser', 'messenger', 'mail']) {
       const a = this.apps.get(id);
-      if (!a) continue;
+      if (!a || !this.installed(id)) continue;
       const b = h('button', { class: 'c98-qb', title: a.name, html: ic(a.icon, 1) });
       b.addEventListener('click', () => this.open(id));
       this.quickEl.append(b);
@@ -374,6 +444,7 @@ export class CapsuleOS {
     const items = [];
     for (const id of this.order) {
       const a = this.apps.get(id);
+      if (!this.installed(id)) continue;
       const n = a.tray?.();
       if (n) items.push({ id, icon: a.trayIcon || a.icon, tip: typeof n === 'string' ? n : `${a.name}: ${n} new` });
     }
@@ -464,7 +535,7 @@ export class CapsuleOS {
     const groups = {};
     for (const id of this.order) {
       const a = this.apps.get(id);
-      if (a.hidden || (a.unlocked && !a.unlocked())) continue;
+      if (a.hidden || !this.installed(id) || (a.unlocked && !a.unlocked())) continue;
       (groups[a.group] ||= []).push({ label: a.name, icon: a.icon, action: () => this.open(id) });
     }
     const progs = [];
@@ -750,8 +821,9 @@ export class CapsuleOS {
     list.forEach((n, i) => setTimeout(() => this.balloon(n), 400 + i * 700));
     if (!this.st.flags.welcomed) {
       this.st.flags.welcomed = true;
-      setTimeout(() => this.balloon({ title: 'Welcome to Capsule 98', body: 'Double-click an icon to start a program. Press Esc or the power button on the taskbar to stand up.', icon: 'os_logo', sound: 'osNotify' }), 600 + list.length * 700);
+      setTimeout(() => this.balloon({ title: 'Welcome to Capsule 98', body: 'Double-click an icon to start a program. Press Esc to get up from the desk.', icon: 'os_logo', sound: 'osNotify' }), 600 + list.length * 700);
     }
+    if (this.st.setup?.length) setTimeout(() => this.runSetup(), 1200 + list.length * 700);
     this.emit('ready');
   }
 

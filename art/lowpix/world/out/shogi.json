@@ -1,0 +1,34 @@
+{
+ "id": "shogi",
+ "src": "sketchfab:c3f58532473d4796a9b0de9c0136a0bd",
+ "credit": {
+  "title": "Japan Retro \"Shogi\" Free / 日本 レトロ \"将棋\" 無料",
+  "author": "Murasaki Penguin",
+  "authorUrl": "https://sketchfab.com/Murasaki_Penguin",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japan-retro-shogi-free-c3f58532473d4796a9b0de9c0136a0bd",
+  "site": "Sketchfab"
+ },
+ "tris": 180,
+ "tex": 176,
+ "size": [
+  0.247,
+  0.05,
+  0.119
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#37252c",
+   "#463238",
+   "#544044",
+   "#624e51",
+   "#6e5e5f",
+   "#817575",
+   "#928e8e",
+   "#a5a5a5",
+   "#bababa"
+  ]
+ },
+ "warnings": []
+}

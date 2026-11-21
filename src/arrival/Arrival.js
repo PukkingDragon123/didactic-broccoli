@@ -15,6 +15,10 @@
 //  10 mirror   the door mirror: in it, Grandpa jolts awake, gets up and shuffles over to the van
 // It ends on the first frame of Grandpa's window tap (src/grandpa/scenes.js tapScene: the driver's eye looking out at
 // the lane, fov 56, the cab glass on), which Grandpa's meeting plays straight after in the same cutscene.
+// The lens (src/core/lens.js): every shot sets its focus and aperture (LENS below; 'look': the camera's look point, so
+// a move keeps its subject sharp) and cuts straight to it; the lane racks from the pigeons to the far end, the cab shots
+// go shallow on the key, the omamori and the mirror. The moves cut in motion (glide: they never come to rest before a
+// cut), the train shakes the camera as it thunders over, and a tofu seller's horn drifts down the lane.
 //   game.arrival.scene(c)   the script (a generator for src/game/Cutscene.js)
 //   game.arrival.play()     the opening on its own, as its own cutscene (Story's fallback without Grandpa) -> Promise
 //   game.arrival.active / .shot / .t   while it plays: the shot ({ id, at, dur, what }) and seconds into the opening
@@ -38,6 +42,10 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const clamp01 = (t) => (t < 0 ? 0 : t > 1 ? 1 : t);
 const smooth = (t) => { t = clamp01(t); return t * t * (3 - 2 * t); };
 const smoother = (t) => { t = clamp01(t); return t * t * t * (t * (t * 6 - 15) + 10); };
+/** An eased move that is still travelling at the cut (a film cut lands in motion): eases in, leaves at ~60% speed. */
+const glide = (t) => { t = clamp01(t); return smooth(t * 0.78) / smooth(0.78); };
+/** Eases in and out but never quite stops at either end (a move between two moving cuts). */
+const drift = (t) => { t = clamp01(t); return 0.55 * t + 0.45 * smooth(t); };
 const _v = new THREE.Vector3(), _w = new THREE.Vector3();
 
 const LIST = [
@@ -52,6 +60,20 @@ const LIST = [
   { id: 'charm', dur: 3.0, what: "Grandpa's omamori swinging to a stop; the hot engine ticks" },
   { id: 'mirror', dur: 5.0, what: 'The door mirror: Grandpa jolts awake, gets up, shuffles over' },
 ];
+// each shot's lens: focus (metres, or 'look': the distance to the camera's look point, every frame) and aperture (1: the
+// cutscene default; under 1 deeper focus, over 1 shallower); a shot may pull focus itself (see shotLane)
+const LENS = {
+  pylon: { focus: 65, aperture: 0.3 }, // (deep: the tower 75 m off; the focus follows the crane down to the bridge)
+  train: { focus: 'look', aperture: 0.75 },
+  lane: { focus: 9.2, aperture: 0.95 },
+  mikawa: { focus: 'look', aperture: 1.35 },
+  mikan: { focus: 'look', aperture: 1.6 },
+  grandpa: { focus: 'look', aperture: 1.35 },
+  van: { focus: 'look', aperture: 1.0 },
+  key: { focus: 'look', aperture: 1.25 },
+  charm: { focus: 'look', aperture: 1.1 },
+  mirror: { focus: 'look', aperture: 1.15 },
+};
 let at = 0;
 export const SHOTS = LIST.map((s) => { const o = { ...s, at }; at += s.dur; return o; });
 export const LENGTH = at;
@@ -114,6 +136,10 @@ export class Arrival {
     this.begin(c);
     for (const S of SHOTS) {
       this.shot = S;
+      // a cut: the new shot's lens at once (no focus pull across the cut)
+      const L = LENS[S.id] || {};
+      c.focus = L.focus ?? null; c.aperture = L.aperture ?? null; c.focusRate = null; c.snapFocus = true;
+      c.offset.set(0, 0, 0);
       yield* this.run(c, S, this['shot' + S.id[0].toUpperCase() + S.id.slice(1)](c));
     }
     this.handoff(c);
@@ -211,7 +237,8 @@ export class Arrival {
     return {
       tick: (t) => {
         c.setFade(1 - smooth((t - 0.4) / 3.2));
-        move(c, A, B, smoother(t / 8.6));
+        move(c, A, B, glide(t / 9.0));
+        c.focus = 65 + (c.pos.distanceTo(c.look) - 65) * smooth((t - 2.5) / 5.5);
       },
       cues: [
         [1.4, () => this.sfx('crow', { pos: V(30, 14, -6), vol: 0.9 })],
@@ -234,9 +261,17 @@ export class Arrival {
 
   // ------------------------------------------------------------------ 2. under the bridge: the train overhead
   shotTrain(c) {
-    const A = { pos: V(19.0, 1.5, 7.3), look: V(31, 6.7, 11.0), fov: 35 };
-    const B = { pos: V(19.6, 1.45, 7.2), look: V(31, 6.8, 10.9), fov: 34 };
-    return { tick: (t) => move(c, A, B, smooth(t / 6)) };
+    const A = { pos: V(19.0, 1.5, 7.3), look: V(31, 6.6, 11.0), fov: 35 };
+    const B = { pos: V(19.9, 1.42, 7.15), look: V(31, 7.1, 10.9), fov: 33 };
+    // the bridge rumbles as the train thunders over: a fine shake that swells and dies away (it rides on c.offset)
+    return {
+      tick: (t) => {
+        move(c, A, B, drift(t / 6));
+        const k = smooth((t - 1.6) / 1.2) * (1 - smooth((t - 4.6) / 1.3)) * 0.0045;
+        c.offset.set(Math.sin(t * 61) * k + Math.sin(t * 37) * k * 0.6, Math.sin(t * 53 + 1) * k * 1.2, Math.sin(t * 47 + 2) * k * 0.5);
+      },
+      cues: [[5.9, () => c.offset.set(0, 0, 0)]],
+    };
   }
 
   // ------------------------------------------------------------------ 3. the lane, wide: pigeons, the title
@@ -253,10 +288,13 @@ export class Arrival {
       if (p.state !== 'walk') { p.state = 'land'; p.target = p.pos.clone(); p.g.visible = true; } // (lands this frame)
     });
     return {
-      tick: (t) => move(c, A, B, smooth(t / 9.5)),
+      tick: (t) => move(c, A, B, drift(t / 9.5)),
       cues: [
         [1.0, () => { const from = V(5.5, 0, 10.6); for (const p of flock) st.flyOff(p, from); }],
+        // a slow rack focus off the pigeons, down the lane to its far end, as they scatter
+        [1.5, () => { c.focus = 'look'; c.focusRate = 0.9; }],
         [1.9, () => { this.title?.show(); this.sfx('paper', { vol: 0.8 }); }],
+        [3.4, () => this.sfx('arrTofu', { pos: V(-14, 1.6, 9.5), vol: 1.1, ref: 9, rolloff: 0.6 })],
         [7.6, () => this.title?.hide()],
       ],
     };
@@ -273,7 +311,7 @@ export class Arrival {
     let flame = null;
     return {
       tick: (t) => {
-        move(c, A, B, smooth(t / 6.5));
+        move(c, A, B, drift(t / 6.5));
         if (flame) {
           const on = t > 1.12 && t < 2.35;
           flame.position.copy(tip()).add(_v.set(0.01, -0.035, -0.02));
@@ -304,7 +342,7 @@ export class Arrival {
     const A = { pos: V(at.x - 0.32, 0.3, at.z + 1.72), look: V(at.x + 0.02, 0.14, at.z), fov: 23 };
     const B = { pos: V(at.x - 0.2, 0.28, at.z + 1.5), look: V(at.x + 0.02, 0.13, at.z), fov: 23 };
     return {
-      tick: (t) => move(c, A, B, smooth(t / 3.5)),
+      tick: (t) => move(c, A, B, drift(t / 3.5)),
       cues: [[0.4, () => this.sfx('purr', { pos: V(at.x, 0.2, at.z), vol: 0.7 })]],
     };
   }
@@ -324,7 +362,7 @@ export class Arrival {
       fan.onAfterRender = () => { if (this.shot?.id === 'grandpa') this.fanAt = disc.clone().applyMatrix4(fan.matrixWorld).project(g.camera); };
     }
     return {
-      tick: (t) => move(c, A, B, smooth(t / 5)),
+      tick: (t) => move(c, A, B, drift(t / 5)),
       cues: [[0.5, zz], [1.2, () => this.sfx('snore', { pos: gp ? gp.pos.clone().setY(1.2) : V(2.75, 1.2, 5.8), vol: 0.9 })], [2.4, zz], [4.2, zz]],
     };
   }
@@ -347,7 +385,7 @@ export class Arrival {
     let exhaust = 0;
     return {
       tick: (t, dt) => {
-        move(c, A, B, smooth(t / 5.5));
+        move(c, A, B, glide(t / 5.5));
         if (van && this.engineOn && (exhaust -= dt) <= 0) {
           exhaust = 0.55;
           g.effects.puff({ pos: van.local(0.42, 0.22, -1.8), count: 2, colors: [0x8e8e96, 0xa6a6ae], size: 0.05, speed: 0.12, up: 0.1, gravity: -0.04, drag: 1.5, life: 1.8, radius: 0.02 });
@@ -439,7 +477,7 @@ export class Arrival {
     const B = { pos: van.local(0.068, 1.505, 1.16), look: van.local(0.0, 1.605, 1.414), fov: 27 };
     const tick = () => this.sfx('engineTick', { pos: van.local(0, 0.6, 1.3), vol: 2.4 });
     return {
-      tick: (t) => { c.hand = 0.001; move(c, A, B, smooth(t / 3)); },
+      tick: (t) => { c.hand = 0.001; move(c, A, B, drift(t / 3)); },
       cues: [[0.45, tick], [1.5, tick], [2.7, tick]],
     };
   }
@@ -466,6 +504,8 @@ export class Arrival {
   handoff(c) {
     const g = this.game, van = this.van;
     this.tidy();
+    c.offset.set(0, 0, 0);
+    c.focus = null; c.aperture = null; c.focusRate = null; c.snapFocus = true; // (Grandpa's scenes: the auto-focus)
     if (van) { van.eye(c.pos); van.cabGlass(true); }
     else c.pos.set(2.4, 1.42, 12.16);
     c.look.copy(HANDOFF.look);
@@ -487,10 +527,13 @@ export class Arrival {
     const g = this.game, u = g.renderer.grade?.uniforms, B = this.gradeBase;
     if (!u || !B) return;
     const k = this.active ? smooth(this.t / 3) * (1 - smooth((this.t - (LENGTH - 4.5)) / 4)) : 0;
-    u.uWarm.value = (g.lighting?.look?.warm ?? 0.004) + 0.03 * k;
-    u.uSaturation.value = B.sat + 0.05 * k;
-    u.uContrast.value = B.con + 0.04 * k;
-    u.uVignette.value = B.vig + 0.08 * k;
+    u.uWarm.value = (g.lighting?.look?.warm ?? 0.004) + 0.045 * k;
+    u.uSaturation.value = B.sat + 0.06 * k;
+    u.uContrast.value = B.con + 0.05 * k;
+    u.uVignette.value = B.vig + 0.1 * k;
+    // the low sun's rays through the wires and the bridge read stronger in the exterior shots
+    const out = g.renderer.outline;
+    if (out && this.active && ['pylon', 'train', 'lane'].includes(this.shot?.id)) out.uniforms.uShaft.value *= 1.5;
   }
 
   /** Put back everything the opening moved or added (idempotent): it runs at the hand-off, or when cut short. */

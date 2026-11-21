@@ -7,8 +7,7 @@ export function installMisc(game, os) {
   // ================================================================== Notepad
   const nst = os.st.notes ||= { docs: null, nextId: 1 };
   nst.docs ||= [
-    { id: nst.nextId++, name: 'README.TXT', text: "Kiddo,\r\n\r\nIf you're reading this, you found the computer. Good. It's older than you, so be gentle with it.\r\n\r\nCapsules and machines are ordered on the Internet now. Double-click Navigator: Daikoku Toys for new, Off-Hobby for second-hand. The bank is in Shinkin Online. Mr. Daikoku sends deals on Pichat - always ask for a better price, he expects it.\r\n\r\nPay the rent on time. Mrs. Ota is kind, but she remembers everything.\r\n\r\nFeed the cat. Officially I never fed the cat.\r\n\r\n- Grandpa\r\n" },
-    { id: nst.nextId++, name: 'todo.txt', text: '- clean the garage\r\n- fix the shutter\r\n- order capsules\r\n- \r\n' },
+    { id: nst.nextId++, name: 'todo.txt', text: 'order capsules (Daikoku, 40 a box)\r\nelectric bill - due the 25th\r\noil the red machine\r\n' },
   ];
   os.registerApp({
     id: 'notepad', name: 'Notepad', icon: 'os_note', group: 'Accessories', w: 520, h: 380, multi: true,
@@ -75,11 +74,12 @@ export function installMisc(game, os) {
   // ================================================================== Recycle Bin
   const bin = os.st.bin ||= { items: null };
   bin.items ||= [
-    { name: 'taxes_1987.txt', from: 'C:\\GRANDPA', text: 'Income: some coins.\nExpenses: more coins.\n' },
-    { name: 'my_poems.txt', from: 'C:\\GRANDPA\\SECRET', text: 'Little capsule, round and bright,\nwhat is in you? Not in sight.\nTurn the handle, hear the clack,\nno, I will not give you back.\n' },
-    { name: 'machine_manual_chewed.doc', from: 'C:\\GRANDPA', text: '[most of this page has been chewed by a cat]' },
-    { name: 'DO_NOT_DELETE.TXT', from: 'C:\\', text: 'do not delete', sticky: true },
+    { name: 'accounts_1987.txt', from: 'C:\\GRANDPA', text: 'MARCH 1987\nTakings: 41,300\nCapsules (Daikoku): 22,000\nElectric: 3,180\nNew dome, red machine: 4,500\n' },
+    { name: 'orders_old.txt', from: 'C:\\GRANDPA', text: 'Daikoku - 2 boxes animal series\nDaikoku - 1 box robots (the kids want robots)\nAsk about the Neko Cafe secret\n' },
+    { name: 'red_machine_manual.doc', from: 'C:\\GRANDPA', text: 'SHOWA RETRO 100 - SERVICE NOTES\n\nIf the handle sticks, check the coin slot first.\nOil the crank every season.\n' },
+    { name: 'DO_NOT_DELETE.TXT', from: 'C:\\', text: 'Shop phone: 0193-62-4410\nShinkin account: 0042-1999-0777\n', sticky: true },
   ];
+
   os.registerApp({
     id: 'recycle', name: 'Recycle Bin', icon: 'os_bin', deskIcon: () => (bin.items.length ? 'os_bin_full' : 'os_bin'), group: 'Accessories', w: 520, h: 330, hidden: true,
     about: 'Contains files you have deleted.',
@@ -126,7 +126,7 @@ export function installMisc(game, os) {
     const keep = bin.items.filter((f) => f.sticky);
     bin.items = keep;
     os.sound('osTrash');
-    if (keep.length) setTimeout(() => os.alert(`Cannot delete ${keep[0].name}: It is being used by another person or program.\n\nClose any programs that might be using the file and try again. (Grandpa?)`, 'Error Deleting File', 'error'), 500);
+    if (keep.length) setTimeout(() => os.alert(`Cannot delete ${keep[0].name}: It is being used by another person or program.\n\nClose any programs that might be using the file and try again.`, 'Error Deleting File', 'error'), 500);
     redraw?.();
     os.renderIcons();
   }
@@ -134,7 +134,7 @@ export function installMisc(game, os) {
   // ================================================================== Control Panel (display properties style)
   const st = os.st;
   os.registerApp({
-    id: 'settings', name: 'Control Panel', icon: 'gear', group: 'Programs', w: 430, h: 470, resizable: false, label: 'Control Panel',
+    id: 'settings', name: 'Control Panel', icon: 'gear', group: 'Programs', w: 430, h: 470, resizable: false, label: 'Control Panel', desktop: false, hidden: true, // (Start > Settings, or right-click the desktop)
     about: 'Change the look and sound of Capsule 98.',
     open(win, args) {
       win.body.classList.add('cp');
@@ -146,7 +146,7 @@ export function installMisc(game, os) {
         os.renderTray();
         os.tickClock(); os._clock = null; os.tickClock();
       };
-      const preview = (id) => `<div class="cp-mon"><div class="cp-scr" style="background-image:${id === 'plain' ? 'none' : `url(${wallpaperURL(id)})`}"></div></div>`;
+      const preview = (id) => `<div class="cp-mon"><div class="cp-scr" style="image-rendering:auto;background-image:${id === 'plain' ? 'none' : `url(${wallpaperURL(id)})`}"></div></div>`;
       const t = tabs(win.body, [
         { id: 'display', label: 'Background', render: (p) => {
           const pv = h('div', { class: 'cp-pv', html: preview(draft.wallpaper) });

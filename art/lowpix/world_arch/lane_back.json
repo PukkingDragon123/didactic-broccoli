@@ -2,7 +2,7 @@
  "name": "lane_back",
  "description": "The second rows behind the lane (background)",
  "license": "CC0-1.0",
- "density": 8,
+ "density": 12,
  "budget": {
   "tris": 60000,
   "colors": 600

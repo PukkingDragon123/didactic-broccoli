@@ -1,0 +1,56 @@
+{
+ "id": "rice_bowl2",
+ "src": "sketchfab:3b26397a93cb4fbea998b2d3d9706dcb",
+ "credit": {
+  "title": "Sakura set Japanese (bowl and chopstick)",
+  "author": "Juan Carlos",
+  "authorUrl": "https://sketchfab.com/grove4069",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/sakura-set-japanese-bowl-and-chopstick-3b26397a93cb4fbea998b2d3d9706dcb",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 512,
+ "size": [
+  0.284,
+  0.08,
+  0.205
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#613408",
+   "#7d4e0d",
+   "#986b12",
+   "#b18a19",
+   "#caad20",
+   "#dbcc35",
+   "#dedd58",
+   "#e2e27a",
+   "#e7e79b"
+  ],
+  "m1": [
+   "#4c0d27",
+   "#61132d",
+   "#761931",
+   "#8a2133",
+   "#9d2933",
+   "#bb3536",
+   "#c95c52",
+   "#d18576",
+   "#daa898"
+  ],
+  "m2": [
+   "#5d1e18",
+   "#773021",
+   "#90462c",
+   "#a85e37",
+   "#bd7946",
+   "#c39463",
+   "#caab7e",
+   "#d2bf99",
+   "#dbd1b3"
+  ]
+ },
+ "warnings": []
+}

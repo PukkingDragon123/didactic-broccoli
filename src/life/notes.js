@@ -1,3 +1,5 @@
+// NOTE: no longer placed in the world (the owner wants no notes lying about: Grandpa guides you in person, and the
+// objective says what's next). Kept for the reading pose and old saves' `life.s.notes`. Originally:
 // Grandpa's notes: paper notes taped around the garage (and an envelope on the shutter), written before you arrived
 // (he walks you through the first ones in person, src/grandpa/, and they carry on after he's gone; the last one is a
 // page of the notebook he gives you at the taxi, kept on the computer desk). Click one and you pick it up

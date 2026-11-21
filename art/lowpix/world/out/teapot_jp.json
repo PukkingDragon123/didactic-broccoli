@@ -1,0 +1,34 @@
+{
+ "id": "teapot_jp",
+ "src": "sketchfab:252c28595d3c45fb87095faf71466113",
+ "credit": {
+  "title": "Japanese teapot",
+  "author": "James.Harness",
+  "authorUrl": "https://sketchfab.com/James.Harness",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-teapot-252c28595d3c45fb87095faf71466113",
+  "site": "Sketchfab"
+ },
+ "tris": 1992,
+ "tex": 256,
+ "size": [
+  0.137,
+  0.13,
+  0.121
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#16141d",
+   "#1c1c24",
+   "#23242c",
+   "#2b2c33",
+   "#343539",
+   "#515253",
+   "#6e6e6e",
+   "#898989",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

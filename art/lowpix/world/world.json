@@ -774,15 +774,6 @@
    "prop": "phone_booth"
   },
   {
-   "id": "street_lamp",
-   "src": "sketchfab:ef61dfd2d891411a846ed352e8752489",
-   "h": 2.43,
-   "ppm": 100,
-   "tris": 4000,
-   "name": "old street lamp kit",
-   "prop": "street_lamp"
-  },
-  {
    "id": "anchor",
    "src": "sketchfab:826db1334b3243f48b39b0415ed9a0be",
    "h": 1.225,
@@ -1608,15 +1599,6 @@
    "prop": "manga_stack"
   },
   {
-   "id": "cord_reel",
-   "src": "sketchfab:0858cb3a1c584157814bad97a8216bf8",
-   "h": 0.34,
-   "ppm": 180,
-   "tris": 3000,
-   "name": "Cable reel",
-   "prop": "cord_reel"
-  },
-  {
    "id": "sandals",
    "src": "sketchfab:70e95901d171405092883675660419cc",
    "h": 0.048,
@@ -1632,7 +1614,8 @@
    "ppm": 240,
    "tris": 1500,
    "name": "Mason Jars",
-   "prop": "screw_jars"
+   "prop": "screw_jars",
+   "keep": "^(Jar|Lid)"
   },
   {
    "id": "park_clock",
@@ -1653,15 +1636,6 @@
    "prop": "ladle"
   },
   {
-   "id": "lollipop",
-   "src": "sketchfab:4130b2aa4c0a483798d23e05ced9ec6f",
-   "h": 1.825,
-   "ppm": 140,
-   "tris": 3000,
-   "name": "Spiral Lollipop",
-   "prop": "lollipop"
-  },
-  {
    "id": "wall_shelf_jars",
    "src": "sketchfab:373ad4d8e5bb4783b6e76dbdf7732788",
    "h": 0.56,
@@ -1671,39 +1645,12 @@
    "prop": "wall_shelf_jars"
   },
   {
-   "id": "piggy_bank2",
-   "src": "sketchfab:c042b0ebfe064b56a9f032260a49e474",
-   "h": 0.144,
-   "ppm": 240,
-   "tris": 1500,
-   "prop": "piggy_bank",
-   "alpha": false
-  },
-  {
-   "id": "candy_jar",
-   "src": "sketchfab:1e5534d5bd2d4e60ba18201b895c2704",
-   "h": 0.23,
-   "ppm": 240,
-   "tris": 1500,
-   "prop": "mk_candy_jar_a",
-   "alpha": false
-  },
-  {
    "id": "bonsai",
    "src": "sketchfab:8b73fd97545b468288cd9ba03c93d358",
    "h": 0.763,
    "ppm": 180,
    "tris": 3000,
    "prop": "bonsai",
-   "alpha": true
-  },
-  {
-   "id": "momiji_tree",
-   "src": "sketchfab:b6eb627413ed40fdb8b0a1e1c9038fa9",
-   "h": 2.45,
-   "ppm": 100,
-   "tris": 4000,
-   "prop": "momiji_tree",
    "alpha": true
   },
   {
@@ -1800,24 +1747,6 @@
    "cap": 512,
    "grain": 0.0,
    "smooth": 1.0
-  },
-  {
-   "id": "keyaki_tree",
-   "src": "sketchfab:024e8b42dd2a4657aec9d4c872337ab1",
-   "h": 8.36,
-   "ppm": 50,
-   "tris": 6000,
-   "prop": "keyaki_tree",
-   "cap": 1024
-  },
-  {
-   "id": "weeds",
-   "src": "sketchfab:7e2b98aab6064d63bb2fc3fda8450c27",
-   "h": 0.21,
-   "ppm": 300,
-   "tris": 1500,
-   "prop": "weeds",
-   "alpha": true
   },
   {
    "id": "minifridge",
@@ -2106,6 +2035,1567 @@
    "grain": 0.0,
    "smooth": 0.5,
    "detail": 1.0
+  },
+  {
+   "id": "food_anpan",
+   "src": "sketchfab:a8184583411b43d7b2ab42b625bd40dd",
+   "h": 0.045,
+   "ppm": 1000,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Bun"
+  },
+  {
+   "id": "food_onigiri2",
+   "src": "sketchfab:2e91a361342f42fd967c91717e17ec69",
+   "h": 0.07,
+   "ppm": 1000,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Onigiri"
+  },
+  {
+   "id": "food_purin",
+   "src": "sketchfab:2fe0451867b5422980b02064ed3efdb0",
+   "h": 0.05,
+   "ppm": 1000,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Japanese Pudding"
+  },
+  {
+   "id": "food_ramen",
+   "src": "sketchfab:f65a8eab51794fbc8c7941101a354a54",
+   "h": 0.12,
+   "ppm": 700,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Japanese Ramen"
+  },
+  {
+   "id": "food_ramen3",
+   "src": "sketchfab:3d04380080ff4c269fe0ddd9b6924a3f",
+   "h": 0.1,
+   "ppm": 700,
+   "tris": 2500,
+   "cap": 512,
+   "name": "RAMEN BOWL"
+  },
+  {
+   "id": "bowl_empty",
+   "src": "sketchfab:6c6d124baca54d09871af6bc77738b81",
+   "h": 0.08,
+   "ppm": 700,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Bowl"
+  },
+  {
+   "id": "food_gyoza",
+   "src": "sketchfab:90553f5804064a87a00c837674800a99",
+   "h": 0.05,
+   "ppm": 700,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Free lowpoly gyoza composition",
+   "keep": "Plate|Sauce|Gyoza"
+  },
+  {
+   "id": "food_curry",
+   "src": "sketchfab:b3430485dd474c2ba1f86222695a3396",
+   "h": 0.05,
+   "ppm": 700,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Curry Rice"
+  },
+  {
+   "id": "beer_bottle",
+   "src": "sketchfab:03d9062085214988b2e984470c7c0d28",
+   "h": 0.25,
+   "ppm": 500,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Dusty Beer Bottle"
+  },
+  {
+   "id": "piggy_bank_c",
+   "src": "sketchfab:4cedb14ba59a49498696468e38de982b",
+   "h": 0.16,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Piggy Bank"
+  },
+  {
+   "id": "fridge_old",
+   "src": "sketchfab:68d173f205344455933f861042b99fe3",
+   "h": 1.5,
+   "ppm": 220,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Old Fridge"
+  },
+  {
+   "id": "ricecooker_old",
+   "src": "sketchfab:44c181d1d71c49399ae23f65198b94e4",
+   "h": 0.25,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Old Rusty Rice Cooker"
+  },
+  {
+   "id": "frying_pan",
+   "src": "sketchfab:dbac7c1a1a5f4b79a1cb8bdacdd42aff",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Old Frying Pan"
+  },
+  {
+   "id": "kendama",
+   "src": "sketchfab:3670748a8f5f4bdb9bb4778e964c8647",
+   "h": 0.18,
+   "ppm": 600,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Kendama"
+  },
+  {
+   "id": "teddy",
+   "src": "sketchfab:dae9249342744328ad6da4182e6010f7",
+   "h": 0.3,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Teddy Bear"
+  },
+  {
+   "id": "teddy2",
+   "src": "sketchfab:cee94954353d4e19a388e3ed4c8e64a7",
+   "h": 0.25,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Teddy bear"
+  },
+  {
+   "id": "toy_train",
+   "src": "sketchfab:3078ed18f3c444f3aadb9f7b48f1e1b5",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Wooden Train Toy"
+  },
+  {
+   "id": "radio_old",
+   "src": "sketchfab:bb832f8973ad40af8321fb90854be3b6",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Radio"
+  },
+  {
+   "id": "radio_ussr",
+   "src": "sketchfab:9435f5d7891640c2845d691d78f8ad84",
+   "h": 0.25,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Radio from the USSR 1967"
+  },
+  {
+   "id": "wear_cap",
+   "src": "sketchfab:53effc8d26434c6da8bf1a9a921e1e52",
+   "h": 0.13,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Baseball Cap"
+  },
+  {
+   "id": "wear_boater",
+   "src": "sketchfab:cd78d72dca1748048c7badfbb2f4e06c",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "straw boater hat w/ black silk ribbon"
+  },
+  {
+   "id": "wear_strawhat",
+   "src": "sketchfab:9748427930a246fd93d306fb73b62d73",
+   "h": 0.14,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Fun Cowboy Straw Hat"
+  },
+  {
+   "id": "wear_bucket",
+   "src": "sketchfab:24985764343240ecbc680545c13c28d1",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Bucket Hat"
+  },
+  {
+   "id": "wear_boonie",
+   "src": "sketchfab:68c6eda73171436b911c77f8e16bdd2d",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Bucket hat",
+   "keep": "LOD0"
+  },
+  {
+   "id": "wear_beanie_pom",
+   "src": "sketchfab:16569f9d12da457aa20884fb8ea97080",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Beanie With Pom-Pom"
+  },
+  {
+   "id": "wear_beanie",
+   "src": "sketchfab:ff6dc83c818c4e2aa722cb89e6ada577",
+   "h": 0.16,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Beanie"
+  },
+  {
+   "id": "wear_beanie2",
+   "src": "sketchfab:24c96b6714b14d98953bcf72ddcbe3e2",
+   "h": 0.16,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Beanie"
+  },
+  {
+   "id": "wear_reindeer",
+   "src": "sketchfab:60b0f5bad10749208e9cb8e80082fbba",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Christmas Reindeer Headband"
+  },
+  {
+   "id": "wear_flatcap",
+   "src": "sketchfab:bd196ab9e2d8441798177839b9e66e09",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Flat Cap"
+  },
+  {
+   "id": "wear_flatcap2",
+   "src": "sketchfab:651e93d7d7a64a418c03e6187b38ad7b",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Flat_cap"
+  },
+  {
+   "id": "wear_sailor",
+   "src": "sketchfab:e23c5ef88f724760a9c462be1252bfa3",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Sailor hat"
+  },
+  {
+   "id": "wear_round",
+   "src": "sketchfab:5d4ef7145b1b426cb129e3d661f7c2e6",
+   "h": 0.05,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Glasses 09"
+  },
+  {
+   "id": "wear_frames",
+   "src": "sketchfab:8425ebedb9334fc3a1e6d7a72f5612b4",
+   "h": 0.05,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Black Glasses"
+  },
+  {
+   "id": "wear_aviator",
+   "src": "sketchfab:00d1cb5aa82745228a3b764c97f867de",
+   "h": 0.05,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Aviator sunglasses"
+  },
+  {
+   "id": "wear_goggles",
+   "src": "sketchfab:841202d9bbe440648184305d9680b108",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Steampunk Glasses"
+  },
+  {
+   "id": "wear_shades",
+   "src": "sketchfab:eeec9fbb427246959acee4e4266b0f0a",
+   "h": 0.05,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Mustang Sunglasses"
+  },
+  {
+   "id": "wear_heartpink",
+   "src": "sketchfab:ef812c7e7dc14f6b8783ccb516b3495c",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Heart Glasses"
+  },
+  {
+   "id": "wear_neckerchief",
+   "src": "sketchfab:d5c94ab29a3342b1bde11702c5b8e968",
+   "h": 0.3,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Neckerchief",
+   "keep": "[Ss]hawl"
+  },
+  {
+   "id": "wear_backpack",
+   "src": "sketchfab:d7225bdd1d6c42d992485d72438cab28",
+   "h": 0.45,
+   "ppm": 400,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Backpack low-poly"
+  },
+  {
+   "id": "wear_satchel",
+   "src": "sketchfab:2ad86321197a49feb54b7726743d7fd0",
+   "h": 0.42,
+   "ppm": 400,
+   "tris": 2000,
+   "cap": 512,
+   "name": "A Backpack For An Adventure"
+  },
+  {
+   "id": "wear_rucksack",
+   "src": "sketchfab:bb89dfa7ec13478e85645497dfeafdcd",
+   "h": 0.5,
+   "ppm": 400,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Old Soviet Backpack"
+  },
+  {
+   "id": "wear_beret",
+   "src": "sketchfab:b174a13ed4b048828919006fe489440f",
+   "h": 0.08,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Headwear"
+  },
+  {
+   "id": "wear_chef",
+   "src": "sketchfab:091c781e2d1941d68bf67d9ab2b6019f",
+   "h": 0.25,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Chef's Hat"
+  },
+  {
+   "id": "wear_chef2",
+   "src": "sketchfab:cacfc7474a604ed4b0275b8a3293eff6",
+   "h": 0.25,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Chef Hat"
+  },
+  {
+   "id": "wear_crown",
+   "src": "sketchfab:a01505c752944647956037757a1a93f7",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Crown rich (gold)"
+  },
+  {
+   "id": "wear_tophat",
+   "src": "sketchfab:4fdf3ad3c88d4bb58ea7aabb9bfcffae",
+   "h": 0.18,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Top Hat"
+  },
+  {
+   "id": "wear_tophat2",
+   "src": "sketchfab:ac38adfa2df844cd9ade46e9e0ee8a26",
+   "h": 0.18,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Top-Hat"
+  },
+  {
+   "id": "wear_cowboy",
+   "src": "sketchfab:bd968c68d7b74629a7e062af0842082b",
+   "h": 0.14,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Cowboy Hat"
+  },
+  {
+   "id": "wear_cowboy2",
+   "src": "sketchfab:aea2cbc8684c45cf885af4eb3b26ea9c",
+   "h": 0.14,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Hat"
+  },
+  {
+   "id": "wear_hardhat",
+   "src": "sketchfab:a1328e74b0f44b4284af05eb2aa5cfb6",
+   "h": 0.15,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Hard hat"
+  },
+  {
+   "id": "wear_fedora",
+   "src": "sketchfab:eb46b3407c67491f98a13df1b86950fa",
+   "h": 0.13,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Fedora"
+  },
+  {
+   "id": "wear_fedora2",
+   "src": "sketchfab:008a0b9867c241a190eb5941f5b4dffb",
+   "h": 0.13,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Fedora Hat"
+  },
+  {
+   "id": "wear_trilby",
+   "src": "sketchfab:771a9b875a1b4baa91aff1d3ef4afabd",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Fedora"
+  },
+  {
+   "id": "wear_fedora3",
+   "src": "sketchfab:dd6f170358b544e99d8a96b3e65108bb",
+   "h": 0.13,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Fedora Hat"
+  },
+  {
+   "id": "toy_robot",
+   "src": "sketchfab:1bde35f80c854c858541d090efd24bd8",
+   "h": 0.22,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Smoking Robot"
+  },
+  {
+   "id": "toy_robot2",
+   "src": "sketchfab:a9f8e051488a4d04948281b982241815",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "classic_robot"
+  },
+  {
+   "id": "toy_robot3",
+   "src": "sketchfab:93fa5726f25d412088569a82da59420d",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Vintage Toy Robot"
+  },
+  {
+   "id": "payphone_red",
+   "src": "sketchfab:ef9c3fbe009e403092bece69c8557c9f",
+   "h": 0.3,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Vintage retro payphone"
+  },
+  {
+   "id": "payphone_red2",
+   "src": "sketchfab:60a624c1a9044cc48eba96bcfcbe2278",
+   "h": 0.45,
+   "ppm": 400,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Old red payphone"
+  },
+  {
+   "id": "kokeshi",
+   "src": "sketchfab:d3c152a1c4154f279cb590b6643e1640",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Akira and Tetsuko's Celebration Kokeshi "
+  },
+  {
+   "id": "kokeshi2",
+   "src": "sketchfab:bc4e76728dc54f00b2a5ddb8dc90e575",
+   "h": 0.18,
+   "ppm": 600,
+   "tris": 1500,
+   "cap": 512,
+   "name": "kokeshi",
+   "rotx": 90
+  },
+  {
+   "id": "books_stack",
+   "src": "sketchfab:83d623341f164753b825d1050be009d9",
+   "h": 0.15,
+   "ppm": 400,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Stack of Books"
+  },
+  {
+   "id": "books_old",
+   "src": "sketchfab:c6ca6667fd7d4381bd184874dcf44075",
+   "h": 0.12,
+   "ppm": 400,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Stack Of Old Books"
+  },
+  {
+   "id": "lamp_pendant",
+   "src": "sketchfab:0f5519beb6644e5ea714055382c20d5f",
+   "h": 0.5,
+   "ppm": 300,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Lamp_02 lowpoly"
+  },
+  {
+   "id": "lamp_dome",
+   "src": "sketchfab:14e5f136ee154fe783f78f8e38d185c3",
+   "h": 0.25,
+   "ppm": 400,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Ceiling Lamp"
+  },
+  {
+   "id": "hanger_shirt",
+   "src": "sketchfab:14cc81980a06473a820f811596418fae",
+   "h": 0.8,
+   "ppm": 300,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Hangers and Long Sleeve Shirt"
+  },
+  {
+   "id": "hanger_tee",
+   "src": "sketchfab:44e260855c7f4c1ca611af8d2370195a",
+   "h": 0.7,
+   "ppm": 300,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Hangers and Tee-shirt"
+  },
+  {
+   "id": "hanger_wood",
+   "src": "sketchfab:3b5ada364d634aa18007f9c8d8dc79ce",
+   "h": 0.25,
+   "ppm": 400,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Wood Clothes Hanger"
+  },
+  {
+   "id": "laundry_basket",
+   "src": "sketchfab:2049ca95ca424b66a8e1948660c68b7e",
+   "h": 0.45,
+   "ppm": 300,
+   "tris": 3000,
+   "cap": 512,
+   "name": "laundry basket"
+  },
+  {
+   "id": "geta",
+   "src": "sketchfab:357cc98173c347ee9ecb89ddb1755133",
+   "h": 0.07,
+   "ppm": 600,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Wood Geta"
+  },
+  {
+   "id": "slippers",
+   "src": "sketchfab:ac25fc96e7ff4c138d8503b1072b7ea3",
+   "h": 0.08,
+   "ppm": 500,
+   "tris": 1500,
+   "cap": 512,
+   "name": "house slippers"
+  },
+  {
+   "id": "toaster",
+   "src": "sketchfab:f1d04726212f4bfea15fa57fd45420bf",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Vintage Toaster"
+  },
+  {
+   "id": "toaster_deco",
+   "src": "sketchfab:1864f9b3e9e74993b2e9b735dc488a9e",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Art Deco Toaster"
+  },
+  {
+   "id": "teapot_jp",
+   "src": "sketchfab:252c28595d3c45fb87095faf71466113",
+   "h": 0.13,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Japanese teapot"
+  },
+  {
+   "id": "teapot_enamel",
+   "src": "sketchfab:9b087673052446299e6decda222a42da",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Old Soviet teapot"
+  },
+  {
+   "id": "dish_rack",
+   "src": "sketchfab:ce69014964624fbb808a028e5c55d88b",
+   "h": 0.3,
+   "ppm": 400,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Dish Rack with Dishes"
+  },
+  {
+   "id": "cutting_board",
+   "src": "sketchfab:5a1c3385222a4f35b208faad2837c5c9",
+   "h": 0.03,
+   "ppm": 500,
+   "tris": 400,
+   "cap": 512,
+   "name": "Wooden Cutting Board"
+  },
+  {
+   "id": "pots_pans",
+   "src": "sketchfab:851f78fc9a994cd5a1c392ce28c9e414",
+   "h": 0.25,
+   "ppm": 400,
+   "tris": 3000,
+   "cap": 512,
+   "name": "3DDecember 2021 - Copper Pots and Pans"
+  },
+  {
+   "id": "pot_cooking",
+   "src": "sketchfab:38f0889da545459093cdc411a0e7ae99",
+   "h": 0.15,
+   "ppm": 500,
+   "tris": 800,
+   "cap": 512,
+   "name": "Cooking Pot (Game-Ready)"
+  },
+  {
+   "id": "pot_a",
+   "src": "sketchfab:2d609d3adf9e49ac945b62b5ce98573e",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 1500,
+   "cap": 512,
+   "name": "a pot"
+  },
+  {
+   "id": "ofuro_wood",
+   "src": "sketchfab:137881949bb14f78a0ac1fb4d6f3d2f1",
+   "h": 0.6,
+   "ppm": 250,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Wooden Bathtub (game ready asset)"
+  },
+  {
+   "id": "bath_stool_set",
+   "src": "sketchfab:b4f82bd4620a49a0a981ba108eba4632",
+   "h": 0.3,
+   "ppm": 400,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Japanese Bath Stool and Bucket"
+  },
+  {
+   "id": "jam_jar",
+   "src": "sketchfab:61bc4a8ef3184b169ab368946fcf2135",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Casual Jar of Raspberry Jam"
+  },
+  {
+   "id": "pickle_jar",
+   "src": "sketchfab:4b8c7e8412fb409285528e79b70d1891",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "pickles"
+  },
+  {
+   "id": "stock_pot",
+   "src": "sketchfab:7a495d8d87c244579367235754679903",
+   "h": 0.4,
+   "ppm": 400,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Indonesian Style Meatball Pot / Stock Po"
+  },
+  {
+   "id": "ladle_steel",
+   "src": "sketchfab:73673eb6a1624470836ba02673b5ceb4",
+   "h": 0.3,
+   "ppm": 500,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Steel Soup Ladle"
+  },
+  {
+   "id": "ladles_wood",
+   "src": "sketchfab:8f40e348779749fdbaa599f2c6226beb",
+   "h": 0.3,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Wooden ladles and spoons"
+  },
+  {
+   "id": "stool_retro",
+   "src": "sketchfab:bdf0efe2af1a42dcb08b81634831578c",
+   "h": 0.7,
+   "ppm": 300,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Retro bar stool"
+  },
+  {
+   "id": "wear_sweatband",
+   "src": "sketchfab:99178c593c12413fab594caa2056b17c",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Sweat Band For Gorilla Tag Fan Game NO T"
+  },
+  {
+   "id": "wear_bandana",
+   "src": "sketchfab:1d39e7ae6b5748acb2ffddf420893f5a",
+   "h": 0.15,
+   "ppm": 600,
+   "tris": 800,
+   "cap": 512,
+   "name": "Bandana Mask"
+  },
+  {
+   "id": "wear_kitsune",
+   "src": "sketchfab:7f6ff38174ac4c0b9f297926a301ff9c",
+   "h": 0.22,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Inari Fox Mask"
+  },
+  {
+   "id": "wear_kitsune2",
+   "src": "sketchfab:a64ac9b6044243f5ba83b007c6d90b04",
+   "h": 0.22,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Japanese Fox Mask 02 (Kitsune)"
+  },
+  {
+   "id": "wear_usagi_mask",
+   "src": "sketchfab:7ef13932521b49d9b7e79544b9b98bd5",
+   "h": 0.22,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Japanese rabit Mask 07"
+  },
+  {
+   "id": "wear_frog_mask",
+   "src": "sketchfab:63c008bf999441f29fd532c69b3eaa10",
+   "h": 0.22,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Japanese frog Mask 06"
+  },
+  {
+   "id": "wear_onimask2",
+   "src": "sketchfab:e4f4bdea1c3744e4baf27e15d80cb5d5",
+   "h": 0.22,
+   "ppm": 600,
+   "tris": 1600,
+   "cap": 512,
+   "name": "Oni Mask Low Poly"
+  },
+  {
+   "id": "wear_onimask3",
+   "src": "sketchfab:73385f62e966493ab23d17bdf2180f33",
+   "h": 0.22,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Oni Mask"
+  },
+  {
+   "id": "wear_facemask",
+   "src": "sketchfab:2a25fd6b8652450fb4e2d22711148088",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 800,
+   "cap": 512,
+   "name": "Generic Face Mask"
+  },
+  {
+   "id": "wear_monocle",
+   "src": "sketchfab:834a918e7da34659b19fea04a359d69b",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Monocle"
+  },
+  {
+   "id": "wear_headphones",
+   "src": "sketchfab:2f54d1c5d3c943bfadc72ab656587c90",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Headphones"
+  },
+  {
+   "id": "wear_catears",
+   "src": "sketchfab:5911b20f4604472fba0fcbf4974c10ae",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Cat Ears"
+  },
+  {
+   "id": "wear_catears2",
+   "src": "sketchfab:6960f5f2d76c440f95f89e053f1175c8",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Cat Ears"
+  },
+  {
+   "id": "gramophone",
+   "src": "sketchfab:5e892fc786db4ca1b36738ab5e40e64d",
+   "h": 0.5,
+   "ppm": 400,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Old Gramophone"
+  },
+  {
+   "id": "music_box",
+   "src": "sketchfab:a2f9d3e31f5045579881b3d671a1120f",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 1900,
+   "cap": 512,
+   "name": "Old Music Box"
+  },
+  {
+   "id": "tape_recorder",
+   "src": "sketchfab:b03cbb7090da4f8f8cd0b3e6d602117c",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 700,
+   "cap": 512,
+   "name": "70s Tape Recorder"
+  },
+  {
+   "id": "sewing_machine2",
+   "src": "sketchfab:5afe6ca7cf9e4bdea2b85e56537a044c",
+   "h": 0.3,
+   "ppm": 400,
+   "tris": 2500,
+   "cap": 512,
+   "name": "grandma's sewing machine"
+  },
+  {
+   "id": "toy_box2",
+   "src": "sketchfab:e12493a7481548129179d926b9a15b35",
+   "h": 0.4,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 512,
+   "name": "Toy box"
+  },
+  {
+   "id": "wear_wagasa2",
+   "src": "sketchfab:68cafe0c54314121adef259078788143",
+   "h": 0.5,
+   "ppm": 400,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Fenshui Oil\u2011Paper Umbrella (Luzhou, Chin"
+  },
+  {
+   "id": "wear_paperbag",
+   "src": "sketchfab:c37a9fc90d354aeaaa402658b29db18c",
+   "h": 0.3,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Paper Bag Sack Lunch"
+  },
+  {
+   "id": "wear_paperbag2",
+   "src": "sketchfab:9ccf2fce68ea45e0b0861038d5aa035d",
+   "h": 0.3,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Paper bag"
+  },
+  {
+   "id": "wear_towel",
+   "src": "sketchfab:e19a76c4c94a4412be6e858fa8e14716",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Folded Towel Set"
+  },
+  {
+   "id": "wear_octopus",
+   "src": "sketchfab:4c09ccc190e442c1a22f6cdf9991fdb9",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Low Poly Octopus Plush (free)"
+  },
+  {
+   "id": "wear_octopus2",
+   "src": "sketchfab:caa4cac496bd488eac62ed03dcacc6fa",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Octopus Plush"
+  },
+  {
+   "id": "wear_moto",
+   "src": "sketchfab:a4d4ef2f17c843828cf24d538a9edbd3",
+   "h": 0.27,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "motorcycle helmet classic"
+  },
+  {
+   "id": "wear_moto2",
+   "src": "sketchfab:539728553e314ede87d9c4e9fa129641",
+   "h": 0.27,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Vintage Motorcycle Helmet"
+  },
+  {
+   "id": "wear_astro2",
+   "src": "sketchfab:315605194a474c7b95cd2a9083985d22",
+   "h": 0.32,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Astronaut Helmet"
+  },
+  {
+   "id": "wear_propeller",
+   "src": "sketchfab:ac50695f2ab24b2382ab7ebb8ba89d2d",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Propeller Hat"
+  },
+  {
+   "id": "wear_propeller2",
+   "src": "sketchfab:39bf95ca02654177bcb82d2c63e27f7e",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "propeller cap"
+  },
+  {
+   "id": "wear_propeller3",
+   "src": "sketchfab:8d8d54678f0442ff977001bac1959615",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Propeller Hat"
+  },
+  {
+   "id": "wear_3d",
+   "src": "sketchfab:5cb2d8563fd3457c9ff3b585aeabfedb",
+   "h": 0.05,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "3D Glasses"
+  },
+  {
+   "id": "wear_party",
+   "src": "sketchfab:286b99f778754c45ba3cd0616b838d03",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Party Hat"
+  },
+  {
+   "id": "wear_bow",
+   "src": "sketchfab:388dc49d323d42fdbd08e53021c10e82",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Hair Bow, Hair Ribbon"
+  },
+  {
+   "id": "wear_nigiri2",
+   "src": "sketchfab:71656228538740be8a9d8779eb109c49",
+   "h": 0.05,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Salmon Nigiri"
+  },
+  {
+   "id": "wear_stars",
+   "src": "sketchfab:a2442e6b6c874fc28a5b20fe5902db6e",
+   "h": 0.07,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "PartyResidentsExtraLargeSunglasses_Star"
+  },
+  {
+   "id": "wear_groucho",
+   "src": "sketchfab:1151241545284140994ea6a5b2b8d2dd",
+   "h": 0.08,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "groucho glasses"
+  },
+  {
+   "id": "wear_rubberchicken",
+   "src": "sketchfab:e072aa44508442fca3bef3f19c01ab1d",
+   "h": 0.3,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Funny Rubber Chicken - Lowpoly"
+  },
+  {
+   "id": "wear_woodchicken",
+   "src": "sketchfab:874d78d8b3d74cda8cf8e8da680b2220",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Pecking Chicken Wooden Toy"
+  },
+  {
+   "id": "wear_duck",
+   "src": "sketchfab:886b9a0dfbc34cf2bea40cfb724457a6",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Duck Plush"
+  },
+  {
+   "id": "wear_shark",
+   "src": "sketchfab:ec56e06c502a4cf2adf1b6beea43dc28",
+   "h": 0.25,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Stuffed animal of Shark (\u30b5\u30e1\u306e\u306c\u3044\u3050\u308b\u307f)"
+  },
+  {
+   "id": "wear_frog",
+   "src": "sketchfab:472d646ce4a8402695ce79ae5cfff82a",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Frog Plush"
+  },
+  {
+   "id": "food_melonpan2",
+   "src": "sketchfab:3b8974956355439a8ebff8ed4036e588",
+   "h": 0.05,
+   "ppm": 1000,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Pan"
+  },
+  {
+   "id": "sake_set2",
+   "src": "sketchfab:bccaf8335a534afca80878cd46b1b243",
+   "h": 0.15,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Sake Set"
+  },
+  {
+   "id": "tokkuri",
+   "src": "sketchfab:db39173abbfc4fe78eeaca4687c07a9a",
+   "h": 0.15,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Tokkuri"
+  },
+  {
+   "id": "cup_noodle2",
+   "src": "sketchfab:74399ab3073d47d196621eecee0bfad3",
+   "h": 0.11,
+   "ppm": 900,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Tau Noodle Cup"
+  },
+  {
+   "id": "fertiliser_bag",
+   "src": "sketchfab:a7ec96ac6e2c4f31b6d0341724e4715c",
+   "h": 0.35,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Fertilizer"
+  },
+  {
+   "id": "futon_set",
+   "src": "sketchfab:0d5590d1d2184aa98797c3d6382afd7e",
+   "h": 0.3,
+   "ppm": 200,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Japanese futon/bed"
+  },
+  {
+   "id": "blanket_pillows",
+   "src": "sketchfab:65d0993e7b1741e9ab061d5f97504c31",
+   "h": 0.3,
+   "ppm": 200,
+   "tris": 2700,
+   "cap": 512,
+   "name": "Blanket and Pillows - Low Poly"
+  },
+  {
+   "id": "hair_dryer",
+   "src": "sketchfab:a7df0a65670940ee805608e049ab5b2e",
+   "h": 0.25,
+   "ppm": 500,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Hair Dryer"
+  },
+  {
+   "id": "shogi",
+   "src": "sketchfab:c3f58532473d4796a9b0de9c0136a0bd",
+   "h": 0.05,
+   "ppm": 500,
+   "tris": 200,
+   "cap": 512,
+   "name": "Japan Retro \"Shogi\" Free / \u65e5\u672c \u30ec\u30c8\u30ed \"\u5c06\u68cb\" \u7121"
+  },
+  {
+   "id": "mahjong",
+   "src": "sketchfab:80cee44ddba640d4bf77ccc2c99d2e7e",
+   "h": 0.05,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Japanese mahjong tiles"
+  },
+  {
+   "id": "tanuki_statue",
+   "src": "sketchfab:dbe0fb672a024f4b8e23764fe4de7a87",
+   "h": 0.4,
+   "ppm": 400,
+   "tris": 2400,
+   "cap": 512,
+   "name": "Statue Tanuki"
+  },
+  {
+   "id": "typewriter",
+   "src": "sketchfab:1d6009449fe84fd79454c4081eb743bf",
+   "h": 0.15,
+   "ppm": 500,
+   "tris": 3000,
+   "cap": 512,
+   "name": "1930s style typewriter - w/o branding"
+  },
+  {
+   "id": "camera_retro",
+   "src": "sketchfab:ac8af9a9330346d2a1b1436476bd9010",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Retro Camera"
+  },
+  {
+   "id": "camera_vintage",
+   "src": "sketchfab:dd2608dcbd3e4944b4614b2f2de4c73b",
+   "h": 0.1,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Vintage  Camera"
+  },
+  {
+   "id": "iron_antique",
+   "src": "sketchfab:d7020887e0b54a06845627e41dfe3622",
+   "h": 0.15,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Antique Iron"
+  },
+  {
+   "id": "ironing_board",
+   "src": "sketchfab:ac252426fcca40adad87893d158df7a7",
+   "h": 0.9,
+   "ppm": 300,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Ironing Board with Iron"
+  },
+  {
+   "id": "bento",
+   "src": "sketchfab:f27d78a4526a4fe685b5ae2f75f60c11",
+   "h": 0.06,
+   "ppm": 700,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Low Poly Bento | \u5f01\u5f53"
+  },
+  {
+   "id": "bento_sushi",
+   "src": "sketchfab:9c5be993b98544fa822ccee121a13d31",
+   "h": 0.06,
+   "ppm": 700,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Simple Bento Box With Sushi"
+  },
+  {
+   "id": "kotatsu2",
+   "src": "sketchfab:1e976c78d1eb4d2faa590316b0d38e24",
+   "h": 0.45,
+   "ppm": 200,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Kotatsu"
+  },
+  {
+   "id": "lantern_paper",
+   "src": "sketchfab:99a3c92192d04d088c9241d1cab3e765",
+   "h": 0.4,
+   "ppm": 400,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Japanese paper lantern"
+  },
+  {
+   "id": "pencil_case",
+   "src": "sketchfab:fa72296b31164928b45b7732fb5bf9ae",
+   "h": 0.05,
+   "ppm": 600,
+   "tris": 2500,
+   "cap": 512,
+   "name": "pencil case Model"
+  },
+  {
+   "id": "umbrella",
+   "src": "sketchfab:ca9bb8c8ffc640c6a9be8ad5f341c9c4",
+   "h": 0.9,
+   "ppm": 300,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Elegant umbrella"
+  },
+  {
+   "id": "shoe_rack",
+   "src": "sketchfab:ad7870072cae41a6a6359433caa88369",
+   "h": 0.9,
+   "ppm": 250,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Shoe Rack with Shoes | Crafted by jerovd"
+  },
+  {
+   "id": "wear_peaked",
+   "src": "sketchfab:70a949de921345c183204528adc5c4b7",
+   "h": 0.12,
+   "ppm": 600,
+   "tris": 1000,
+   "cap": 512,
+   "name": "The cap is leather. peaked visor"
+  },
+  {
+   "id": "wear_pith",
+   "src": "sketchfab:7ccc0bdff4ba4af8afcde410758e017d",
+   "h": 0.15,
+   "ppm": 600,
+   "tris": 1000,
+   "cap": 512,
+   "name": "NVA PITH HELMET - M\u0169 C\u1ed1i Sao V\u00e0ng"
+  },
+  {
+   "id": "wagon_trolley",
+   "src": "sketchfab:83de0775ba294d268e227c5364e06522",
+   "h": 0.8,
+   "ppm": 250,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Old serving trolley"
+  },
+  {
+   "id": "rice_bowl2",
+   "src": "sketchfab:3b26397a93cb4fbea998b2d3d9706dcb",
+   "h": 0.08,
+   "ppm": 700,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Sakura set Japanese (bowl and chopstick)"
+  },
+  {
+   "id": "udon_meal",
+   "src": "sketchfab:aeadafce557445df8d852109f2794f6a",
+   "h": 0.08,
+   "ppm": 600,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Udon Meal"
+  },
+  {
+   "id": "tea_glass",
+   "src": "sketchfab:7669b27d4e634e7b9cd114d50c33af97",
+   "h": 0.11,
+   "ppm": 700,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Glass of Tea"
+  },
+  {
+   "id": "seed_bag",
+   "src": "sketchfab:16ca06c1305c4e7c82efea60ec05a1ab",
+   "h": 0.15,
+   "ppm": 700,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Bag of Seeds"
+  },
+  {
+   "id": "seed_bag2",
+   "src": "sketchfab:d8a1cd61a5b44c7da119b0a5cf439676",
+   "h": 0.12,
+   "ppm": 700,
+   "tris": 800,
+   "cap": 512,
+   "name": "Bag of carrot seeds"
+  },
+  {
+   "id": "pot_small2",
+   "src": "sketchfab:62fd35b2f0fc4dad81f1b217d1c4a761",
+   "h": 0.2,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Potted Plant(small)"
+  },
+  {
+   "id": "pot_small3",
+   "src": "sketchfab:43d1fcc9f5eb44f494f57ca70400572d",
+   "h": 0.15,
+   "ppm": 500,
+   "tris": 1300,
+   "cap": 512,
+   "name": "Potted Plant(small)"
+  },
+  {
+   "id": "sushi_pack",
+   "src": "sketchfab:fd2598a0b5f44e9abf9ff01fc7cb930c",
+   "h": 0.05,
+   "ppm": 700,
+   "tris": 2900,
+   "cap": 512,
+   "name": "Japanese food pack sushi - FREE"
+  },
+  {
+   "id": "dango",
+   "src": "sketchfab:69adfebb75c3409c99e4d3a914b27764",
+   "h": 0.12,
+   "ppm": 700,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Japanese snack Dango handpainted"
+  },
+  {
+   "id": "dango2",
+   "src": "sketchfab:db1627c3cd4f4e08b3fb964db186dd20",
+   "h": 0.12,
+   "ppm": 700,
+   "tris": 2100,
+   "cap": 512,
+   "name": "Dango"
+  },
+  {
+   "id": "taiyaki",
+   "src": "sketchfab:a8ca187f40504b9084b9052c569e5122",
+   "h": 0.04,
+   "ppm": 800,
+   "tris": 2600,
+   "cap": 512,
+   "name": "Taiyaki"
+  },
+  {
+   "id": "senbei",
+   "src": "sketchfab:a759034b3abd4d19b41d0fc1dff8d07d",
+   "h": 0.06,
+   "ppm": 700,
+   "tris": 3000,
+   "cap": 512,
+   "name": "japanese sweets"
+  },
+  {
+   "id": "wear_kabuto",
+   "src": "sketchfab:2d236d44a2024e5896b401904b79cec5",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Traditional Samurai Helmet (Kabuto)"
+  },
+  {
+   "id": "wear_kabuto2",
+   "src": "sketchfab:ab8515f3af6d41098443d7e8dfcfa42e",
+   "h": 0.2,
+   "ppm": 600,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Killer's Kabuto"
+  },
+  {
+   "id": "wear_flowerclip",
+   "src": "sketchfab:2c3e3299e0ca41af924a23b7c46f90fb",
+   "h": 0.05,
+   "ppm": 800,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Flower Hair Clip"
+  },
+  {
+   "id": "wear_kagami",
+   "src": "sketchfab:a9c0b6ab4cb146d8a003d6c894af3fd4",
+   "h": 0.1,
+   "ppm": 700,
+   "tris": 2400,
+   "cap": 512,
+   "name": "Kagami-mochi\ud83d\udcae\ud83d\udcf7"
+  },
+  {
+   "id": "wear_eyepatch",
+   "src": "sketchfab:652814cc53fc4c0191b4d52e3240cc33",
+   "h": 0.08,
+   "ppm": 600,
+   "tris": 1500,
+   "cap": 512,
+   "name": "EyePatch"
+  },
+  {
+   "id": "gas_stove_top",
+   "src": "sketchfab:4a4328072601478baec28dfdc71d8e3a",
+   "h": 0.12,
+   "ppm": 500,
+   "tris": 2500,
+   "cap": 512,
+   "name": "Burner Gas Stove"
   }
  ]
 }

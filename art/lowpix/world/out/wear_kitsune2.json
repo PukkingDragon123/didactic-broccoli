@@ -1,0 +1,100 @@
+{
+ "id": "wear_kitsune2",
+ "src": "sketchfab:a64ac9b6044243f5ba83b007c6d90b04",
+ "credit": {
+  "title": "Japanese Fox Mask 02 (Kitsune)",
+  "author": "Delzaar Studio",
+  "authorUrl": "https://sketchfab.com/DelzaarStudio",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-fox-mask-02-kitsune-a64ac9b6044243f5ba83b007c6d90b04",
+  "site": "Sketchfab"
+ },
+ "tris": 2498,
+ "tex": 416,
+ "size": [
+  0.154,
+  0.22,
+  0.115
+ ],
+ "colours": 51,
+ "palette": {
+  "m0": [
+   "#524046",
+   "#68565a",
+   "#7d6d70",
+   "#8f8788",
+   "#a2a1a1",
+   "#aeaeae",
+   "#bbbbbb",
+   "#c8c8c8",
+   "#d5d5d5"
+  ],
+  "m1": [
+   "#3f0015",
+   "#510115",
+   "#620313",
+   "#73050e",
+   "#830808",
+   "#b01b0e",
+   "#dc3615",
+   "#e9673b",
+   "#eb966c"
+  ],
+  "m2": [
+   "#5e1a02",
+   "#792d05",
+   "#934408",
+   "#ac5e0d",
+   "#c47c12",
+   "#e5a419",
+   "#e7bf41",
+   "#e9d568",
+   "#ece58d"
+  ],
+  "m3": [
+   "#5c2918",
+   "#763e22",
+   "#8f552c",
+   "#a76f38",
+   "#bc8b47",
+   "#c2a264",
+   "#c9b67f",
+   "#d1c89a",
+   "#dad7b3"
+  ],
+  "m4": [
+   "#3f0d1e",
+   "#511222",
+   "#621925",
+   "#721f26",
+   "#822727",
+   "#a33e35",
+   "#bf5c48",
+   "#c8846e",
+   "#d2a892"
+  ],
+  "m5": [
+   "#0d0606",
+   "#100909",
+   "#140d0b",
+   "#17100e",
+   "#1a1411",
+   "#3f342c",
+   "#635649",
+   "#847868",
+   "#9f998d"
+  ],
+  "m6": [
+   "#471e2a",
+   "#5b2933",
+   "#6e353c",
+   "#804244",
+   "#915350",
+   "#a46d64",
+   "#af8a80",
+   "#bca49b",
+   "#cabcb4"
+  ]
+ },
+ "warnings": []
+}

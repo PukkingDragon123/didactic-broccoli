@@ -1,0 +1,56 @@
+{
+ "id": "toaster_deco",
+ "src": "sketchfab:1864f9b3e9e74993b2e9b735dc488a9e",
+ "credit": {
+  "title": "Art Deco Toaster",
+  "author": "Léonard_Doye / Leoskateman",
+  "authorUrl": "https://sketchfab.com/leoskateman",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/art-deco-toaster-1864f9b3e9e74993b2e9b735dc488a9e",
+  "site": "Sketchfab"
+ },
+ "tris": 1147,
+ "tex": 512,
+ "size": [
+  0.323,
+  0.2,
+  0.22
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#191d2e",
+   "#21293b",
+   "#2b3647",
+   "#354352",
+   "#40505d",
+   "#576b77",
+   "#6f868f",
+   "#8d9da1",
+   "#aab4b5"
+  ],
+  "m1": [
+   "#4b001d",
+   "#62001d",
+   "#79001a",
+   "#900013",
+   "#a70008",
+   "#d30b03",
+   "#f82a0e",
+   "#f6643f",
+   "#f6956e"
+  ],
+  "m2": [
+   "#391222",
+   "#491828",
+   "#58202d",
+   "#672832",
+   "#753136",
+   "#934342",
+   "#ae5f57",
+   "#ba857a",
+   "#c8a79b"
+  ]
+ },
+ "warnings": []
+}

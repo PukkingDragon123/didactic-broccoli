@@ -1,0 +1,56 @@
+{
+ "id": "kokeshi",
+ "src": "sketchfab:d3c152a1c4154f279cb590b6643e1640",
+ "credit": {
+  "title": "Akira and Tetsuko's Celebration Kokeshi doll",
+  "author": "ShadowAssetsStore",
+  "authorUrl": "https://sketchfab.com/ShadowAssetStore",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/akira-and-tetsukos-celebration-kokeshi-doll-d3c152a1c4154f279cb590b6643e1640",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 256,
+ "size": [
+  0.058,
+  0.2,
+  0.062
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#522313",
+   "#69351b",
+   "#7f4a24",
+   "#95612d",
+   "#a97a38",
+   "#be984a",
+   "#c5af6a",
+   "#cec289",
+   "#d7d3a6"
+  ],
+  "m1": [
+   "#1d150e",
+   "#251d13",
+   "#2c2519",
+   "#332e1f",
+   "#3a3625",
+   "#5b573e",
+   "#797958",
+   "#959575",
+   "#abab98"
+  ],
+  "m2": [
+   "#540b10",
+   "#6b1211",
+   "#822217",
+   "#98341e",
+   "#ad4a26",
+   "#cb6731",
+   "#d18a54",
+   "#d7a977",
+   "#dfc399"
+  ]
+ },
+ "warnings": []
+}

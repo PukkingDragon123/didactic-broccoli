@@ -1,0 +1,45 @@
+{
+ "id": "ricecooker_old",
+ "src": "sketchfab:44c181d1d71c49399ae23f65198b94e4",
+ "credit": {
+  "title": "Old Rusty Rice Cooker | Crafted by jerovdl",
+  "author": "Jerovdl",
+  "authorUrl": "https://sketchfab.com/Jerovdl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-rusty-rice-cooker-crafted-by-jerovdl-44c181d1d71c49399ae23f65198b94e4",
+  "site": "Sketchfab"
+ },
+ "tris": 1978,
+ "tex": 512,
+ "size": [
+  0.29,
+  0.25,
+  0.262
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#594f3c",
+   "#716951",
+   "#888367",
+   "#9a9882",
+   "#acac9e",
+   "#b5b5ae",
+   "#bfbfbd",
+   "#cacaca",
+   "#d6d6d6"
+  ],
+  "m1": [
+   "#0c0d11",
+   "#101116",
+   "#14161a",
+   "#191b1e",
+   "#1e2022",
+   "#3d3f41",
+   "#5d5d5e",
+   "#7c7c7c",
+   "#9b9b9b"
+  ]
+ },
+ "warnings": []
+}

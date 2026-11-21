@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { COSMETIC_BY_ID, cosmeticPreview } from '../people/cosmetics.js';
 import { createAvatarHuman, normalizeAvatar } from '../people/avatar.js';
 import { hasPrint, printOf, loadPrint } from './prints.js';
+import { assetReady, preloadAssets } from '../kit/assets.js';
 
 const cache = new Map();
 const BASE = ['body', 'skin', 'hair', 'hairCol', 'top', 'topCol', 'bottom', 'botCol', 'eyes', 'brows', 'cheeks', 'eyeCol'];
@@ -29,6 +30,7 @@ export function cosmeticThumb(game, id, { size = 160, look = game.state.avatar, 
   const key = thumbKey(id, look, size, outline);
   if (cache.has(key)) return cache.get(key);
   if (hasPrint(id) && !printOf(id)) return '';
+  if (c.wear && !c.wear.every(assetReady)) { preloadAssets(c.wear); return ''; } // (a real-model piece still loading)
   let url = '';
   try {
     const T = game.thumbs;
@@ -75,5 +77,7 @@ export function ink(canvas, on = true, col = [36, 24, 34]) {
 
 export async function cosmeticThumbAsync(game, id, opts = {}) {
   if (hasPrint(id) && !printOf(id)) await loadPrint(id);
+  const c = COSMETIC_BY_ID[id];
+  if (c?.wear) await preloadAssets(c.wear);
   return cosmeticThumb(game, id, opts);
 }

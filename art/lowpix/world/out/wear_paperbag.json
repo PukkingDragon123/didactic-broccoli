@@ -1,0 +1,34 @@
+{
+ "id": "wear_paperbag",
+ "src": "sketchfab:c37a9fc90d354aeaaa402658b29db18c",
+ "credit": {
+  "title": "Paper Bag Sack Lunch",
+  "author": "Laurie Annis",
+  "authorUrl": "https://sketchfab.com/laurieannis",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/paper-bag-sack-lunch-c37a9fc90d354aeaaa402658b29db18c",
+  "site": "Sketchfab"
+ },
+ "tris": 1224,
+ "tex": 440,
+ "size": [
+  0.322,
+  0.3,
+  0.204
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#42271f",
+   "#54382a",
+   "#654936",
+   "#755c43",
+   "#856f51",
+   "#9a8864",
+   "#a79d80",
+   "#b5b19b",
+   "#c5c3b4"
+  ]
+ },
+ "warnings": []
+}

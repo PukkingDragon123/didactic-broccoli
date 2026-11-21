@@ -1,0 +1,34 @@
+{
+ "id": "wear_bucket",
+ "src": "sketchfab:24985764343240ecbc680545c13c28d1",
+ "credit": {
+  "title": "Bucket Hat",
+  "author": "shimtimultimedia",
+  "authorUrl": "https://sketchfab.com/shimtimultimedia",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bucket-hat-24985764343240ecbc680545c13c28d1",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 256,
+ "size": [
+  0.161,
+  0.12,
+  0.211
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#0c0a08",
+   "#0f0e0b",
+   "#12110e",
+   "#141412",
+   "#171715",
+   "#373735",
+   "#565656",
+   "#767676",
+   "#969696"
+  ]
+ },
+ "warnings": []
+}

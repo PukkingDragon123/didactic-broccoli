@@ -1,0 +1,45 @@
+{
+ "id": "payphone_red",
+ "src": "sketchfab:ef9c3fbe009e403092bece69c8557c9f",
+ "credit": {
+  "title": "Vintage retro payphone",
+  "author": "patrakeevasveta",
+  "authorUrl": "https://sketchfab.com/patrakeevasveta",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/vintage-retro-payphone-ef9c3fbe009e403092bece69c8557c9f",
+  "site": "Sketchfab"
+ },
+ "tris": 2498,
+ "tex": 512,
+ "size": [
+  0.219,
+  0.3,
+  0.246
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#480b1f",
+   "#5c1023",
+   "#701624",
+   "#831d24",
+   "#952524",
+   "#b63c30",
+   "#ca5f48",
+   "#d1886e",
+   "#daab92"
+  ],
+  "m1": [
+   "#253427",
+   "#334233",
+   "#424f41",
+   "#515b4f",
+   "#61675f",
+   "#787a77",
+   "#8e8e8e",
+   "#a3a3a3",
+   "#b9b9b9"
+  ]
+ },
+ "warnings": []
+}

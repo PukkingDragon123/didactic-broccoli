@@ -1,0 +1,45 @@
+{
+ "id": "frying_pan",
+ "src": "sketchfab:dbac7c1a1a5f4b79a1cb8bdacdd42aff",
+ "credit": {
+  "title": "Old Frying Pan",
+  "author": "Coozy",
+  "authorUrl": "https://sketchfab.com/GameDevNick",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-frying-pan-dbac7c1a1a5f4b79a1cb8bdacdd42aff",
+  "site": "Sketchfab"
+ },
+ "tris": 1498,
+ "tex": 256,
+ "size": [
+  0.247,
+  0.06,
+  0.146
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#15131a",
+   "#1c1a21",
+   "#232127",
+   "#2b292d",
+   "#323133",
+   "#4e4e4e",
+   "#6a6a6a",
+   "#878787",
+   "#a3a3a3"
+  ],
+  "m1": [
+   "#341916",
+   "#42251e",
+   "#503227",
+   "#5d4030",
+   "#694f3a",
+   "#856b4e",
+   "#9e8864",
+   "#ada185",
+   "#beb8a4"
+  ]
+ },
+ "warnings": []
+}

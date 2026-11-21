@@ -1,0 +1,34 @@
+{
+ "id": "wear_beanie",
+ "src": "sketchfab:ff6dc83c818c4e2aa722cb89e6ada577",
+ "credit": {
+  "title": "Beanie",
+  "author": "oluwaphemi",
+  "authorUrl": "https://sketchfab.com/oluwaphemi",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/beanie-ff6dc83c818c4e2aa722cb89e6ada577",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 512,
+ "size": [
+  0.165,
+  0.16,
+  0.179
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#453633",
+   "#584945",
+   "#695d57",
+   "#7a726c",
+   "#898581",
+   "#969695",
+   "#a7a7a7",
+   "#b7b7b7",
+   "#c8c8c8"
+  ]
+ },
+ "warnings": []
+}

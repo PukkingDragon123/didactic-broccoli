@@ -1,0 +1,67 @@
+{
+ "id": "food_gyoza",
+ "src": "sketchfab:90553f5804064a87a00c837674800a99",
+ "credit": {
+  "title": "Free lowpoly gyoza composition",
+  "author": "KapetS",
+  "authorUrl": "https://sketchfab.com/sleeepy_owl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/free-lowpoly-gyoza-composition-90553f5804064a87a00c837674800a99",
+  "site": "Sketchfab"
+ },
+ "tris": 1998,
+ "tex": 512,
+ "size": [
+  0.479,
+  0.05,
+  0.48
+ ],
+ "colours": 29,
+ "palette": {
+  "m0": [
+   "#6b6252",
+   "#88816f",
+   "#9f9d91",
+   "#b8b7b2",
+   "#d2d2d1",
+   "#d8d8d8",
+   "#dedede",
+   "#e4e4e4",
+   "#ebebeb"
+  ],
+  "m1": [
+   "#180109",
+   "#1f0109",
+   "#260208",
+   "#2d0407",
+   "#330505",
+   "#6a140c",
+   "#9f2d16",
+   "#d34d21",
+   "#e18151"
+  ],
+  "m2": [
+   "#510f0e",
+   "#681d14",
+   "#7e2e1b",
+   "#944222",
+   "#a8582b",
+   "#c57637",
+   "#cc9659",
+   "#d3b17b",
+   "#dcc89c"
+  ],
+  "m3": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ]
+ },
+ "warnings": []
+}

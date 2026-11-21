@@ -1,0 +1,45 @@
+{
+ "id": "hair_dryer",
+ "src": "sketchfab:a7df0a65670940ee805608e049ab5b2e",
+ "credit": {
+  "title": "Hair Dryer",
+  "author": "Atilla Kutluay Erdoğay",
+  "authorUrl": "https://sketchfab.com/akerdogay",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/hair-dryer-a7df0a65670940ee805608e049ab5b2e",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 304,
+ "size": [
+  0.247,
+  0.25,
+  0.089
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#1a1416",
+   "#211b1d",
+   "#272323",
+   "#2d2b2b",
+   "#333333",
+   "#4f4f4f",
+   "#6b6b6b",
+   "#878787",
+   "#a3a3a3"
+  ],
+  "m1": [
+   "#94001f",
+   "#c10019",
+   "#ef000b",
+   "#ff251d",
+   "#ff604a",
+   "#fd8465",
+   "#fba380",
+   "#fabd99",
+   "#fad3b2"
+  ]
+ },
+ "warnings": []
+}

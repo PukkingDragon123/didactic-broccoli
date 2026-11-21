@@ -1,0 +1,45 @@
+{
+ "id": "hanger_wood",
+ "src": "sketchfab:3b5ada364d634aa18007f9c8d8dc79ce",
+ "credit": {
+  "title": "Wood Clothes Hanger",
+  "author": "ROH3D",
+  "authorUrl": "https://sketchfab.com/roh3d",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wood-clothes-hanger-3b5ada364d634aa18007f9c8d8dc79ce",
+  "site": "Sketchfab"
+ },
+ "tris": 1000,
+ "tex": 256,
+ "size": [
+  0.456,
+  0.25,
+  0.014
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#582b20",
+   "#703f2c",
+   "#875539",
+   "#9e6e48",
+   "#af875b",
+   "#b79d75",
+   "#c0b08d",
+   "#cac1a5",
+   "#d4d1bc"
+  ],
+  "m1": [
+   "#38394b",
+   "#4c4f5f",
+   "#616572",
+   "#777b84",
+   "#8f9194",
+   "#a1a1a1",
+   "#b0b0b0",
+   "#bfbfbf",
+   "#cecece"
+  ]
+ },
+ "warnings": []
+}

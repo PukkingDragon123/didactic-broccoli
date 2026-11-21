@@ -6,6 +6,10 @@ export const clamp01 = (t) => (t < 0 ? 0 : t > 1 ? 1 : t);
 export const sstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+// mixc into a ring of scratch arrays (no garbage in the per-texel painters; use the result right away)
+const _ring = Array.from({ length: 64 }, () => [0, 0, 0]);
+let _ri = 0;
+export const mixT = (a, b, t) => { const o = _ring[_ri = (_ri + 1) & 63]; o[0] = a[0] + (b[0] - a[0]) * t; o[1] = a[1] + (b[1] - a[1]) * t; o[2] = a[2] + (b[2] - a[2]) * t; return o; };
 export const mulc = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
 export const G = (x, y, sx, sy) => { const e = (x * x) / (2 * sx * sx) + (y * y) / (2 * sy * sy); return e > 9 ? 0 : Math.exp(-e); };
 
@@ -25,8 +29,6 @@ export function vnoise(x, y, s = 0) {
 
 /** out = colour c * k (with a warm shadow shift so skin / fabric shadows don't go grey). */
 export function shadeInto(o, c, k, warm = 0.12) {
-  // high-resolution pixel art: shading comes in deliberate steps (a limited palette per material), never a smooth ramp
-  k = Math.round(k * 22) / 22;
   const d = 1 - k;
   o[0] = c[0] * k * (1 + d * warm); o[1] = c[1] * k * (1 + d * warm * 0.2); o[2] = c[2] * k * (1 - d * warm * 0.9);
   return o;
@@ -69,11 +71,7 @@ export function scaleO(o, k, warm = 0.12) {
 
 export const SKIN_SHADOW = [150, 70, 60];
 
-// mixc into a ring of scratch arrays (no garbage in the per-texel painters; use the result right away)
-const _ring = Array.from({ length: 64 }, () => [0, 0, 0]);
-let _ri = 0;
-export const mixT = (a, b, t) => { const o = _ring[_ri = (_ri + 1) & 63]; o[0] = a[0] + (b[0] - a[0]) * t; o[1] = a[1] + (b[1] - a[1]) * t; o[2] = a[2] + (b[2] - a[2]) * t; return o; };
-/** Pixel-art posterize: snap a channel to a few clean tones. */
+/** Pixel-art posterize: snap a channel to a few clean tones (smooth shading becomes crisp bands, no gradients). */
 export const POST = 14;
 /** Pixel-art quantise: clean steps (no smooth gradients), closer together in the darks like a hand-made ramp. */
 export const q8 = (v) => { const st = v < 70 ? 4 : v < 150 ? 6 : 8; v = Math.round(v / st) * st; return v < 0 ? 0 : v > 255 ? 255 : v; };

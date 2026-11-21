@@ -1,182 +1,115 @@
-// The menu's paper tags: manila price tags cut with a stepped point, a punched hole with its reinforcement ring (the twine
-// runs through it), a pixel icon, the label in Alagard (ink), and a price-style note pencilled in red on the right.
-// Painted texel by texel (src/menu/pixel.js) in two states: plain, and "picked" (a red-pen tick after the label and a
-// wobbly graphite underline). Hover feedback is never a glow: the tag swings, lifts a texel, gets the pencil marks.
-//   paintTag({ label, note, icon, w, h, stock, seed, hot, ring }) -> art     tagMetrics(items) -> { w, h }
-import { iconCanvas } from '../gfx/icons.js';
-import { art, textMask, mask5, grain, rng, hex, shade } from './pixel.js';
+// The title menu's buttons: wooden fuda (shop plaques) threaded on the twine, painted texel by texel (src/menu/pixel.js).
+// A plank cut with a stepped point at the left end, a brass grommet in the punched hole (the twine runs through it),
+// grain along the board, end grain on the cut, dings; the label carved into the face (ink letters with a lit groove edge
+// under them), a hand-pixelled icon of its own (src/menu/tagicons.js, never the gacha capsule) and a red-pen note. The
+// first item is a red-lacquered plank with cream letters. Three layers, so the menu can move them apart for depth:
+// the face (plain / hot: the lettering turns red-ink or warm cream and the wood warms; never a glow), the plank's
+// thick side (the face's silhouette extruded down, end grain) and its hard shadow (silhouette).
+//   paintTag({ label, note, icon, w, h, seed, primary, wood, hot }) -> art     paintSide(o) -> art     paintShadow(o)
+//   tagMetrics(items, bare) -> { w, h }      HOLE, DEPTH
+import { art, textMask, mask5, rng, hex, shade, INK } from './pixel.js';
+import { iconPx } from './tagicons.js';
 
-export const STOCK = {
-  manila: { base: [226, 200, 140], edge: [92, 64, 38], ring: [242, 224, 178] },
-  note: { base: [246, 226, 132], edge: [96, 74, 30], ring: [252, 240, 186] },
-  cream: { base: [238, 228, 202], edge: [80, 64, 52], ring: [250, 244, 226] },
-  pink: { base: [240, 212, 208], edge: [120, 60, 58], ring: [250, 232, 228] },
+export const HOLE = { x: 7, r: 2 }; // the punched hole's centre column (texels)
+export const DEPTH = 4; // the plank's thickness, in texels
+export const TAG_H = 30;
+const CUT = 8;
+const WOODS = {
+  hinoki: { hi: hex(0xe2bc84), mid: hex(0xcca06a), lo: hex(0xae8252), deep: hex(0x7e5632), side: hex(0x6a4428), sideLo: hex(0x4e301a) },
+  keyaki: { hi: hex(0xd09a5e), mid: hex(0xb47c44), lo: hex(0x946034), deep: hex(0x6a4022), side: hex(0x58361c), sideLo: hex(0x3e2412) },
+  sugi: { hi: hex(0xd8a274), mid: hex(0xbe8458), lo: hex(0x9c6440), deep: hex(0x6e4228), side: hex(0x5e3820), sideLo: hex(0x422614) },
+  red: { hi: hex(0xd8503e), mid: hex(0xc0302a), lo: hex(0xa22824), deep: hex(0x701a18), side: hex(0x5a1616), sideLo: hex(0x3e0e10) },
 };
-const RED = hex(0xc8322c), INKC = hex(0x241a1e), GRAPHITE = [86, 84, 92];
-export const HOLE = { x: 6, r: 2 }; // the punched hole's centre column (texels) and radius
-
-// a few icons of our own (the game's set has no capsule this small, nor a shirt): '#' ink, letters from PAL
-const PAL = { p: 0xff6f91, P: 0xc8406a, g: 0xcfeef4, G: 0x9cc8d4, Y: 0xd89a1c, r: 0xe5383b, R: 0xa8242a, w: 0xfffcf4, c: 0xf6eedc, C: 0xcabba0, b: 0x3f74c8, B: 0x27508e, s: 0xf2f0ea, y: 0xffd23f };
-const OWN = {
-  capsule: [
-    '......#####......',
-    '....##ggggw##....',
-    '...#ggggggwwg#...',
-    '..#ggggggggggw#..',
-    '.#gggggggggggwg#.',
-    '#GGGGGGGGGGGGGGG#',
-    '#################',
-    '#ppppppppppppppp#',
-    '#pppppppppppppPP#',
-    '.#pppppppppppPP#.',
-    '.#ppppppppppPPP#.',
-    '..##pppppppPP##..',
-    '....###PPP###....',
-    '.......###.......',
-  ],
-  shirt: [
-    '...###..###...',
-    '.##bbb##bbb##.',
-    '#bbbbbbbbbbbb#',
-    '#bbbbbbbbbbbb#',
-    '#bbbbbbbbbbbb#',
-    '.###bbbbbb###.',
-    '...#ssssss#...',
-    '...#bbbbbb#...',
-    '...#bbbbbb#...',
-    '...#bbbbbb#...',
-    '...#BBBBBB#...',
-    '...########...',
-  ],
-};
-const iconCache = new Map();
-function iconPixels(name) {
-  if (iconCache.has(name)) return iconCache.get(name);
-  let px = null;
-  if (OWN[name]) {
-    const rows = OWN[name], w = rows[0].length, h = rows.length, d = new Uint8ClampedArray(w * h * 4);
-    rows.forEach((row, y) => [...row].forEach((ch, x) => {
-      if (ch === '.') return;
-      const c = ch === '#' ? 0x241a1e : PAL[ch], i = (y * w + x) * 4;
-      d[i] = (c >> 16) & 255; d[i + 1] = (c >> 8) & 255; d[i + 2] = c & 255; d[i + 3] = 255;
-    }));
-    px = { w, h, d };
-    iconCache.set(name, px);
-    return px;
-  }
-  try {
-    const c = iconCanvas(name, 1);
-    const g = c.getContext('2d', { willReadFrequently: true });
-    px = { w: c.width, h: c.height, d: g.getImageData(0, 0, c.width, c.height).data };
-  } catch { px = null; }
-  iconCache.set(name, px);
-  return px;
-}
+const RED = hex(0xc8322c), CREAM = hex(0xf8efd8), WARM = hex(0xffe39a);
+const BRASS = [hex(0xf2d27a), hex(0xc8962e), hex(0x8a5e1c)];
 
 /** Uniform tag size for a set of items (so the strand reads as one set). */
 export function tagMetrics(items, bare = false) {
   let lw = 0, nw = 0;
   for (const it of items) { lw = Math.max(lw, textMask(it.label).w); nw = Math.max(nw, it.note ? mask5(it.note).w : 0); }
-  return { w: (bare ? 16 : 33) + lw + 13 + nw + 7, h: 22, lw, nw };
+  return { w: (bare ? 18 : 42) + lw + 12 + (nw ? nw + 4 : 0) + 6, h: TAG_H, lw, nw };
 }
 
+const shapeOf = (w, h) => (x, y) => x >= 0 && y >= 0 && x < w && y < h && x >= CUT - y && x >= CUT - (h - 1 - y)
+  && !(x >= w - 2 && (y === 0 || y === h - 1)) && !(x === w - 1 && (y === 1 || y === h - 2));
+
 export function paintTag(o) {
-  const st = STOCK[o.stock || 'manila'];
-  const w = o.w, h = o.h || 22, cut = 6;
-  const a = art(w, h);
-  const r = rng(o.seed || 7);
-  const inside = (x, y) => x >= 0 && y >= 0 && x < w && y < h && x >= cut - y && x >= cut - (h - 1 - y) && !((x === w - 1) && (y === 0 || y === h - 1));
-  grain(a, 0, 0, w, h, st.base, o.seed || 7, inside);
-  // the cut edge in a darker shade of the stock (scissor-cut fibres), then the ink rim
+  const w = o.w, h = o.h || TAG_H, T = WOODS[o.primary ? 'red' : o.wood || 'hinoki'];
+  const a = art(w, h), r = rng(o.seed || 7), inside = shapeOf(w, h);
+  const warm = o.hot ? 1.06 : 1;
+  // grain: hard bands along the board, a wavy dark figure, a knot or two (lacquer: a quieter figure)
+  const bands = []; let v = 0;
+  for (let y = 0; y < h; y++) { if (r() < 0.4) v = Math.floor(r() * 4); bands.push(v); }
+  const knots = o.primary ? [] : [[Math.floor(w * (0.55 + r() * 0.35)), 4 + Math.floor(r() * (h - 8))]];
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     if (!inside(x, y)) continue;
-    const rim = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1);
-    if (rim) a.px(x, y, st.edge);
-    else if (!inside(x - 1, y - 1) || !inside(x + 1, y + 1) || !inside(x + 1, y - 1) || !inside(x - 1, y + 1)) a.px(x, y, shade(st.base, 0.88));
+    let c = [T.mid, T.hi, T.mid, T.lo][bands[y]];
+    if (Math.sin(x * (o.primary ? 0.09 : 0.17) + bands[y] * 2.1 + y * 0.6) > (o.primary ? 0.95 : 0.84)) c = T.lo;
+    for (const [kx, ky] of knots) { const d = Math.hypot((x - kx) * 0.45, y - ky); if (d < 1.3) c = T.deep; else if (d < 2.4) c = T.lo; }
+    if (r() < 0.015) c = T.lo;
+    a.px(x, y, shade(c, warm));
   }
-  // the card's thickness: a lighter texel row under the top edge, a darker one over the bottom edge
-  for (let x = 0; x < w; x++) {
-    let top = -1, bot = -1;
-    for (let y = 0; y < h; y++) if (inside(x, y)) { if (top < 0) top = y; bot = y; }
-    if (top >= 0 && inside(x - 1, top + 1) && inside(x + 1, top + 1)) a.px(x, top + 1, shade(st.base, 1.06));
-    if (bot >= 0 && inside(x - 1, bot - 1) && inside(x + 1, bot - 1)) a.px(x, bot - 1, shade(st.base, 0.86));
+  // the edges: ink rim, a lit top / left bevel, a dark bottom / right bevel, end grain along the cut
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!inside(x, y)) continue;
+    if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) { a.px(x, y, INK); continue; }
+    if (!inside(x, y - 2) || (!inside(x - 2, y) && y < h / 2)) a.px(x, y, shade(T.hi, 1.08 * warm));
+    else if (!inside(x, y + 2) || !inside(x + 2, y)) a.px(x, y, T.deep);
+    else if (x < CUT + 2 && (!inside(x - 2, y) || !inside(x - 3, y)) && (x + y) % 3 === 0) a.px(x, y, T.lo);
   }
-  // a bent corner on the right end, and a crease across the tag near the hole
-  if (o.dog) { a.px(w - 2, h - 2, shade(st.base, 0.75)); a.px(w - 3, h - 2, shade(st.base, 0.82)); a.px(w - 2, h - 3, shade(st.base, 0.82)); }
-  for (let y = 2; y < h - 2; y++) if (r() < 0.55) a.px(13, y, shade(st.base, 0.93));
-  // the punched hole: a round hole (see-through) with its paper reinforcement ring
+  // dings and a nail-scratch (wear)
+  for (let i = 0; i < 3; i++) { const x = CUT + 4 + Math.floor(r() * (w - CUT - 8)), y = 3 + Math.floor(r() * (h - 6)); if (inside(x, y)) a.px(x, y, T.deep); }
+  // the punched hole and its brass grommet
   const hx = HOLE.x, hy = Math.floor(h / 2);
   for (let y = -4; y <= 4; y++) for (let x = -4; x <= 4; x++) {
     const d = Math.hypot(x, y);
     if (d <= 1.6) a.clear(hx + x, hy + y);
-    else if (d <= 2.4) a.px(hx + x, hy + y, x + y > 0 ? shade(st.edge, 1.3) : st.edge);
-    else if (d <= 3.7) a.px(hx + x, hy + y, d > 3.2 && x + y > 1 ? shade(st.ring, 0.9) : st.ring);
+    else if (d <= 2.3) a.px(hx + x, hy + y, INK);
+    else if (d <= 3.3) a.px(hx + x, hy + y, x + y < 0 ? BRASS[0] : x + y > 1 ? BRASS[2] : BRASS[1]);
+    else if (d <= 3.9) a.px(hx + x, hy + y, INK);
   }
-  // the icon (the game's own pixel icons), sitting on the paper
-  const ic = o.icon && iconPixels(o.icon);
+  // the icon
+  const ic = o.icon && iconPx(o.icon);
+  const ix = 16;
   if (ic) {
-    const ix = 15 + Math.floor((16 - ic.w) / 2), iy = Math.floor((h - ic.h) / 2);
+    const iy = Math.floor((h - ic.h) / 2);
     for (let y = 0; y < ic.h; y++) for (let x = 0; x < ic.w; x++) { const i = (y * ic.w + x) * 4; if (ic.d[i + 3] > 128) a.px(ix + x, iy + y, [ic.d[i], ic.d[i + 1], ic.d[i + 2]]); }
   }
-  // the label, in ink
+  // the label, carved: the letters in ink (red ink / warm cream when hot), the groove's lower lip lit
   const m = textMask(o.label);
-  const lx = ic ? 35 : 17, ly = Math.round((h - m.base) / 2) - 1 + (m.h - m.base > 2 ? 0 : 1);
-  a.mask(m, lx, ly, INKC);
-  // the note, pencilled in red pen on the right like a price (a red loop round it on the first tag)
+  const lx = ic ? ix + 24 : 18, ly = Math.round((h - m.base) / 2) - 1 + (m.h - m.base > 2 ? 0 : 1);
+  const lip = shade(T.hi, 1.12 * warm);
+  for (let j = 0; j < m.h; j++) for (let i = 0; i < m.w; i++) if (m.at(i, j) && !m.at(i, j + 1) && inside(lx + i, ly + j + 1)) a.px(lx + i, ly + j + 1, lip);
+  a.mask(m, lx, ly, o.primary ? (o.hot ? WARM : CREAM) : o.hot ? RED : INK);
+  // the note, pencilled like a price on the right (cream on the lacquered plank)
   if (o.note) {
-    const n = mask5(o.note), nx = w - 6 - n.w, ny = Math.floor((h - 7) / 2);
-    a.mask(n, nx, ny, RED);
-    if (o.ring) {
-      for (let x = nx - 2; x <= nx + n.w + 1; x++) { if (r() < 0.92) a.px(x, ny - 3, RED); if (r() < 0.92) a.px(x, ny + 9, RED); }
-      for (let y = ny - 2; y <= ny + 8; y++) { a.px(nx - 3, y, RED); if (y > ny - 2) a.px(nx + n.w + 2, y, RED); }
-      a.px(nx + n.w + 2, ny - 3, RED); a.px(nx + n.w + 3, ny - 4, RED); // the pen overshoots where it closed the loop
-    }
-  }
-  // picked: a red-pen tick after the label and a graphite underline that wobbles
-  if (o.hot) {
-    const tx = lx + m.w + 4, ty = ly + m.base - 7;
-    const tick = [[0, 3], [1, 4], [1, 3], [2, 5], [2, 4], [3, 4], [3, 3], [4, 2], [4, 1], [5, 0], [5, 1], [6, -1], [6, 0], [7, -2]];
-    for (const [x, y] of tick) a.px(tx + x, ty + y + 2, RED);
-    let y = ly + m.base + 2;
-    for (let x = lx - 1; x <= lx + m.w + 1; x++) {
-      if (x > lx + 2 && r() < 0.16) y += r() < 0.5 && y > ly + m.base + 1 ? -1 : y < ly + m.base + 3 ? 1 : 0;
-      if (r() < 0.07) continue;
-      a.px(x, Math.min(h - 2, y), GRAPHITE, r() < 0.3 ? 150 : 220);
-    }
+    const n = mask5(o.note), nx = w - 7 - n.w, ny = Math.floor((h - 7) / 2);
+    a.mask(n, nx, ny, o.primary ? CREAM : RED);
+    for (let x = nx - 1; x <= nx + n.w; x++) if (r() < 0.85) a.px(x, ny + 9, o.primary ? CREAM : RED);
   }
   return a;
 }
 
-// ------------------------------------------------------------------ the itch.io sticker tag
-// A small pink tag hung off the Wardrobe tag: a pixel duck and two lines in the 5x7 font, "FOLLOW ON ITCH.IO" in ink and
-// "FREE DUCK HEAD" in red pen. Same texel scale as the strand, half its height (it's an aside, not a menu item).
-const DUCK = [
-  '...yyy....',
-  '..yYYYy...',
-  '..YYKYYoo.',
-  '..YYYYYoOo',
-  '...YYYYo..',
-  '.yYYYYYy..',
-  'yYYYYYYYy.',
-  '.yYYYYYy..',
-  '..yyyyy...',
-];
-const DUCKPAL = { Y: [248, 214, 74], y: [216, 168, 44], o: [245, 154, 44], O: [200, 110, 30], K: [36, 26, 30] };
-export function paintItchTag({ hot = false, seed = 99 } = {}) {
-  const l1 = mask5('FOLLOW ON ITCH.IO'), l2 = mask5('FREE DUCK HEAD');
-  const w = 6 + 12 + Math.max(l1.w, l2.w) + 6, h = 22, st = STOCK.pink, cut = 5;
-  const a = art(w, h);
-  const inside = (x, y) => x >= 0 && y >= 0 && x < w && y < h && x >= cut - y && x >= cut - (h - 1 - y);
-  grain(a, 0, 0, w, h, st.base, seed, inside);
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    if (!inside(x, y)) continue;
-    if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) a.px(x, y, st.edge);
+/** The plank's thick side: its silhouette extruded straight down DEPTH texels, end grain, an ink foot. */
+export function paintSide(o) {
+  const w = o.w, h = o.h || TAG_H, T = WOODS[o.primary ? 'red' : o.wood || 'hinoki'];
+  const a = art(w, h + DEPTH), inside = shapeOf(w, h);
+  const ext = (x, y) => { for (let d = 0; d <= DEPTH; d++) if (inside(x, y - d)) return true; return false; };
+  for (let y = 0; y < h + DEPTH; y++) for (let x = 0; x < w; x++) {
+    if (!ext(x, y)) continue;
+    const e = !ext(x - 1, y) || !ext(x + 1, y) || !ext(x, y + 1);
+    a.px(x, y, e ? INK : x % 4 === 0 || (x + y) % 7 === 0 ? T.sideLo : T.side);
   }
-  // the punched hole the thread goes through
-  for (let y = -2; y <= 2; y++) for (let x = -2; x <= 2; x++) { const d = Math.hypot(x, y); if (d <= 1.1) a.clear(4 + x, 3 + y); else if (d <= 2) a.px(4 + x, 3 + y, st.ring); }
-  DUCK.forEach((row, y) => [...row].forEach((ch, x) => { if (DUCKPAL[ch]) a.px(6 + x, 7 + y, DUCKPAL[ch]); }));
-  a.mask(l1, 18, 3, INKC);
-  a.mask(l2, 18, 12, RED);
-  if (hot) for (let x = 17; x < 18 + l2.w + 1; x++) a.px(x, 20, GRAPHITE, x % 5 ? 220 : 120);
+  return a;
+}
+
+/** The hard shadow: the plank and its side as one ink silhouette. */
+export function paintShadow(o) {
+  const w = o.w, h = o.h || TAG_H, a = art(w, h + DEPTH), inside = shapeOf(w, h);
+  for (let y = 0; y < h + DEPTH; y++) for (let x = 0; x < w; x++) {
+    for (let d = 0; d <= DEPTH; d++) if (inside(x, y - d)) { a.px(x, y, INK); break; }
+  }
+  const hx = HOLE.x, hy = Math.floor(h / 2);
+  for (let y = -1; y <= 1; y++) for (let x = -1; x <= 1; x++) a.clear(hx + x, hy + y);
   return a;
 }

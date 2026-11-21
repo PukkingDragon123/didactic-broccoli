@@ -1,0 +1,45 @@
+{
+ "id": "wear_fedora",
+ "src": "sketchfab:eb46b3407c67491f98a13df1b86950fa",
+ "credit": {
+  "title": "Fedora",
+  "author": "Marko Korbun",
+  "authorUrl": "https://sketchfab.com/Marko.Korbun",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/fedora-eb46b3407c67491f98a13df1b86950fa",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 288,
+ "size": [
+  0.376,
+  0.13,
+  0.304
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#442218",
+   "#573121",
+   "#69432b",
+   "#7b5636",
+   "#8b6a42",
+   "#a48653",
+   "#b19e70",
+   "#bdb48e",
+   "#cbc7aa"
+  ],
+  "m1": [
+   "#0f1016",
+   "#15161b",
+   "#1a1d21",
+   "#212326",
+   "#27292b",
+   "#454748",
+   "#646464",
+   "#818181",
+   "#9f9f9f"
+  ]
+ },
+ "warnings": []
+}

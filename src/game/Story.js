@@ -1,12 +1,12 @@
 // The new-game story. You've just pulled up in Grandpa's old van across the lane from his shut-up capsule-toy garage
 // (the opening, src/arrival/); he's dozing out front, wakes, taps on the window and meets you (src/grandpa/), then walks
-// you through the first jobs himself before he leaves; his notes, taped up all round the garage (src/life/notes.js),
-// tick off as you go and carry on the guidance after he's gone, one small physical job at a time: his letter on the
-// shutter, unlock the shutter, flip the main breaker, lights, air the place out,
-// wipe the counter, the cash tin and the change float, his junk boxes (one hides the old OPEN sign), milk for Mikan,
-// a broom and a new tube from Mikawa-ya, sweep, bag the rubbish and take it all out to the garbage station; then odd
-// jobs for the neighbours until you can afford a used machine, its delivery crate to unbox, plug in, stock and price,
-// and finally the sign on its hook, flipped to OPEN: the grand reopening.
+// you through the first jobs himself, in person, one small physical job at a time (no notes: he tells you, and the
+// objective says what's next): unlock the shutter, flip the main breaker, lights, air the place out, wipe the
+// counter, the cash tin and the change float, his junk boxes (one hides the old OPEN sign), milk for Mikan, a broom
+// and a new tube from Mikawa-ya, sweep, bag the rubbish and take it all out to the garbage station, then sit down at
+// the computer. He says goodbye and leaves for Atami; then odd jobs for the neighbours until you can afford a used
+// machine, its delivery crate to unbox, plug in, stock and price, and finally the sign on its hook, flipped to OPEN:
+// the grand reopening.
 //   story.done   story.isDone(taskId)   story.goal() -> { id, icon, text, sub, at } for the objective card
 //   story.todo() -> [{ text, done }]   story.task(text) (a ticked-off chore: jingle, toast, save)
 //   story.step() -> the current to-do id (the first one not done; 'shop' while Mikawa-ya has something you need)
@@ -86,15 +86,9 @@ export class Story {
     const g = this.game, f = this.flags, G = g.garage;
     life.chores.setup();
     if (this.done) return;
-    // Grandpa's notes, where you'll need them
-    const N = life.notes, T = G.table, D = G.pcDesk;
-    if (!f.shutter) N.place('letter', { pos: V(0.85, 1.32, GARAGE.maxZ + 0.095), envelope: true, tilt: -0.06 });
-    N.place('power', { pos: V(T.x, T.h + 0.008, T.z + 0.32), flat: true, rotY: 0.08, size: 0.17 });
-    N.place('clean', { pos: V(SINK.x - 0.1, 0.715, SINK.z + 0.226), size: 0.15, tilt: 0.04 });
-    N.place('tin', { pos: V(-1.18, 1.43, -4.452), size: 0.13, tilt: -0.05 });
-    N.place('cat', { pos: V(-0.95, 0.566, 1.55), flat: true, rotY: 0.3, size: 0.13 });
-    N.place('pc', { pos: V(D.x - 0.2, D.h + 0.003, D.z + 0.55), flat: true, rotY: -Math.PI / 2 + 0.1, size: 0.13 });
-    N.place('machine', { pos: V(GARAGE.minX + 0.012, 1.3, 0.35), rotY: Math.PI / 2, size: 0.17, tilt: 0.03 });
+    // (no notes in the world: Grandpa explains each job himself, src/grandpa/director.js)
+    // sitting down at the computer is a job of its own (the desktop has to come up)
+    g.os?.on?.('ready', () => { if (!f.pc && !this.done) { f.pc = true; g.save(); } });
     // the mess
     for (const p of PILES) if (DUST_PILES.includes(p.id) && !f.swept.includes(p.id)) this.addPile(p);
     const carried = new Set(g.held.slots.filter((s) => s?.data?.bag).map((s) => s.data.bag));
@@ -123,7 +117,7 @@ export class Story {
       if (!f.bags.includes(tag)) f.bags.push(tag);
       if (item.junk && !f.junkOut.includes(item.junk)) f.junkOut.push(item.junk);
       const left = TRASH.filter((t) => !f.bags.includes(t)).length;
-      if (TRASH.includes(tag)) this.task(left ? `Out it goes. ${left} more to take out.` : 'All the junk is out!');
+      if (TRASH.includes(tag)) this.task(left ? `Out it goes. ${left} more to take out.` : 'All the rubbish is out.');
     });
     g.events.on('machinePrice', () => { if (!this.done && g.machines.length) this.markPriced(); });
     g.events.on('noteRead', ({ first }) => { if (first) { audio.play('task', { vol: 0.35 }); g.guide?.pulse(); } });
@@ -133,7 +127,7 @@ export class Story {
   markPriced() {
     if (this.flags.priced) return;
     this.flags.priced = true;
-    this.task('Price set. Kids pay with their pocket money, remember.');
+    this.task('Price set.');
   }
 
   // ------------------------------------------------------------------ the to-do list
@@ -144,35 +138,29 @@ export class Story {
   }
   totalMoney() { const W = this.game.wallet; return W ? W.cash + W.bank : this.game.state.money; }
 
-  /** Is a to-do (a box on one of Grandpa's notes) done? */
+  /** Is a to-do done? (The old note-reading steps of earlier saves count as done: there are no notes any more.) */
   isDone(id) {
-    const g = this.game, f = this.flags, L = this.life, N = L?.notes;
+    const g = this.game, f = this.flags, L = this.life;
     const m = this.machine();
     switch (id) {
-      case 'letter': return !!N?.isRead('letter') || f.shutter;
+      case 'letter': case 'read_power': case 'read_clean': case 'read_tin': case 'read_junk': case 'read_cat': case 'read_pc': case 'read_machine': return true;
       case 'shutter': return !!f.shutter;
-      case 'read_power': return !!N?.isRead('power');
       case 'breaker': return !!L?.power;
       case 'lights': return !!L?.power && g.garage.lightsOn;
       case 'window': return !!f.windowDone;
       case 'tube': return !!f.tube;
-      case 'read_clean': return !!N?.isRead('clean');
       case 'wipe': return f.wiped.length >= 4;
       case 'sweep': return DUST_PILES.every((p) => f.swept.includes(p));
       case 'bag': return [...RUBBISH, ...CARDBOARD].every((p) => f.bagged.includes(p) || f.swept.includes(p));
       case 'trashout': return TRASH.every((t) => f.bags.includes(t) || (t.startsWith('r_') || t.startsWith('c_')) && f.swept.includes(t.slice(2)));
-      case 'read_tin': return !!N?.isRead('tin');
       case 'tin': return !!f.cash;
       case 'tray': return !!f.tray;
-      case 'read_junk': return !!N?.isRead('junk') || f.junkOpen.length > 0;
       case 'junk': return f.junkOpen.length >= JUNK.length;
-      case 'read_cat': return !!N?.isRead('cat');
       case 'feed': return !!f.fed;
-      case 'read_pc': return !!N?.isRead('pc');
+      case 'pc': return !!f.pc || !!g.state.os?.flags?.welcomed || g.machines.length > 0;
       case 'job': return (L?.jobs?.s.count || 0) > 0 || g.machines.length > 0 || this.totalMoney() >= machinePrice('retro', 0) + 300;
       case 'buymachine': return g.machines.length > 0;
       case 'delivery': return !!m && (!f.crate || !['wait', 'arriving'].includes(f.crate.stage));
-      case 'read_machine': return !!N?.isRead('machine');
       case 'unbox': return !!m && (!f.crate || ['plug', 'done'].includes(f.crate.stage));
       case 'plug': return !!m && (!f.crate || f.crate.stage === 'done');
       case 'restock': return !!m && m.data.stock.length > 0 && !m.lidOpen;
@@ -184,20 +172,21 @@ export class Story {
     }
   }
 
-  /** The order the objective card walks you through (some of them come from notes you haven't read yet). */
-  static ORDER = ['letter', 'shutter', 'read_power', 'breaker', 'lights', 'window', 'read_clean', 'wipe', 'read_tin', 'tin', 'tray', 'read_junk', 'junk', 'read_cat', 'shop', 'feed', 'tube', 'sweep', 'bag', 'trashout', 'read_pc', 'job', 'buymachine', 'delivery', 'read_machine', 'unbox', 'plug', 'restock', 'price', 'read_sign', 'hang', 'open'];
+  /** The order the objective walks you through ('shop' only while Mikawa-ya has something you need). */
+  static ORDER = ['shutter', 'breaker', 'lights', 'window', 'wipe', 'tin', 'tray', 'junk', 'shop', 'feed', 'tube', 'sweep', 'bag', 'trashout', 'pc', 'job', 'buymachine', 'delivery', 'unbox', 'plug', 'restock', 'price', 'read_sign', 'hang', 'open'];
 
   todo() {
     return Story.ORDER.filter((id) => id !== 'shop').map((id) => ({ id, done: this.isDone(id) }));
   }
 
-  /** Mikawa-ya shopping list for what the notes you've read ask for. */
+  /** Mikawa-ya shopping list, once the jobs in the garage that don't need anything are done (Grandpa sends you). */
   shopping() {
-    const g = this.game, f = this.flags, H = g.held, N = this.life?.notes;
+    const g = this.game, f = this.flags, H = g.held;
     const need = [];
-    if (N?.isRead('cat') && !f.fed && !H.has('milk')) need.push('milk');
-    if (N?.isRead('clean') && !this.isDone('sweep') && !H.has('broom')) need.push('a broom');
-    if (N?.isRead('power') && !f.tube && !H.has('tube')) need.push('a fluorescent tube');
+    if (!this.isDone('junk')) return need;
+    if (!f.fed && !H.has('milk')) need.push('milk');
+    if (!this.isDone('sweep') && !H.has('broom')) need.push('a broom');
+    if (!f.tube && !H.has('tube')) need.push('a fluorescent tube');
     return need;
   }
 
@@ -235,8 +224,6 @@ export class Story {
     const g = this.game, H = g.held, f = this.flags, G = g.garage, L = this.life;
     const touch = document.body.classList.contains('touchmode'), c = touch ? 'tap' : 'click', hold = touch ? 'hold the use button' : 'hold left click';
     const pick = (t) => { const i = H.find(t); return i < 0 ? '' : touch ? ` (slot ${i + 1})` : ` (press ${i + 1})`; };
-    const note = (n) => () => L.notes.world.get(n)?.getWorldPosition(V(0, 0, 0));
-    const read = (n, where) => ({ id: 'read:' + n, icon: 'note', text: `Read Grandpa's note ${where}`, sub: 'His handwriting: one job at a time', at: note(n) });
     const gp = (s) => `Grandpa: "${s}"`;
     const m = this.machine();
     const mTop = () => m.root.getWorldPosition(V(0, 0, 0)).add(V(0, 1.2, 0));
@@ -244,28 +231,22 @@ export class Story {
     const pc = () => V(G.pcDesk.x, G.pcDesk.h + 0.55, G.pcDesk.z);
     const near = (list, at) => { const p = g.player.pos; let best = null, bd = Infinity; for (const o of list) { const q = at(o); const d = (q.x - p.x) ** 2 + (q.z - p.z) ** 2; if (d < bd) { bd = d; best = q; } } return best; };
     switch (id) {
-      case 'letter': return { id, icon: 'note', text: "Read Grandpa's letter", sub: 'An envelope taped to the shutter', at: note('letter') };
       case 'shutter': return { id, icon: 'key', text: 'Unlock the shutter', sub: H.holding('key') ? `${c[0].toUpperCase() + c.slice(1)} the shutter` : `${gp("My key's on your ring.")} Hold it${pick('key')}`, at: () => V(0, 1.15, GARAGE.maxZ + 0.05) };
-      case 'read_power': return read('power', 'on the counter');
       case 'breaker': return { id, icon: 'breaker', text: 'Flip the main breaker', sub: gp('Grey box by the back door. Flip it up.'), at: () => V(BREAKER.x, 2.0, BREAKER.z) };
       case 'lights': return { id, icon: 'bulb', text: 'Switch the lights on', sub: gp('Light switch, same wall.'), at: () => G.lightSwitch.getWorldPosition(V(0, 0, 0)) };
       case 'window': return { id, icon: 'window', text: 'Open the window', sub: gp('It stinks of cardboard in here.'), at: () => V(WINDOW.x + 0.1, 2.1, (WINDOW.z0 + WINDOW.z1) / 2) };
-      case 'read_clean': return read('clean', 'on the sink');
       case 'wipe': {
         const it = H.slots.find((s) => s?.data?.id === 'rag');
         if (!it) return { id, icon: 'rag', text: 'Wipe the dusty counter', sub: gp("Rag's by the tap. Wet it, wipe the counter."), at: () => V(SINK.x - 0.18, 1.0, SINK.z + 0.18) };
         if (!it.data.wet) return { id: 'wipe:wet', icon: 'rag', text: 'Wet the rag', sub: H.holding('rag') ? `${c[0].toUpperCase() + c.slice(1)} the sink` : `Hold the rag${pick('rag')}, ${c} the sink`, at: () => V(SINK.x, 1.0, SINK.z) };
         return { id: 'wipe:go', icon: 'rag', text: `Wipe the counter (${4 - f.wiped.length} spots)`, sub: H.holding('rag') ? `Point at the dust and ${hold}` : `Hold the rag${pick('rag')}`, at: () => V(G.table.x, G.table.h + 0.2, G.table.z) };
       }
-      case 'read_tin': return read('tin', 'on the steel rack');
       case 'tin': return { id, icon: 'cash_tin', text: "Open Grandpa's cash tin", sub: gp('Savings. For brooms and milk.'), at: () => this.tin?.getWorldPosition(V(0, 0, 0)).add(V(0, 0.15, 0)) };
       case 'tray': return { id, icon: 'coin_float', text: 'Fill the cash tray', sub: H.holding('coin_float') ? `${c[0].toUpperCase() + c.slice(1)} the tray on the counter` : `${gp('Coin bag = change float.')} Hold it${pick('coin_float')}`, at: () => V(TRAY.x, TRAY.y + 0.15, TRAY.z) };
-      case 'read_junk': return read('junk', 'on the boxes');
       case 'junk': {
         const left = JUNK.filter((j) => !f.junkOpen.includes(j.id));
         return { id, icon: 'junk_box', text: `Look in Grandpa's junk boxes (${left.length})`, sub: gp('Keep anything that says OPEN!'), at: () => near(left, (j) => V(j.x, 0.6, j.z)) };
       }
-      case 'read_cat': return read('cat', 'on the heater');
       case 'shop': return { id: 'shop:' + extra.join(), icon: 'shop', text: 'Shop at Mikawa-ya', sub: `Buy ${extra.length < 2 ? extra[0] : `${extra.slice(0, -1).join(', ')} and ${extra[extra.length - 1]}`} at the little store across the lane`, at: counter };
       case 'feed': return { id, icon: 'bowl', text: 'Feed Mikan', sub: H.holding('milk') ? `Tip it over the bowl: ${hold}` : `${gp('Bowl by the heater.')} Hold the milk${pick('milk')}`, at: () => this.bowl?.getWorldPosition(V(0, 0, 0)).add(V(0, 0.3, 0)) };
       case 'tube': return { id, icon: 'tube', text: 'Replace the dead tube', sub: H.holding('tube') ? `${c[0].toUpperCase() + c.slice(1)} the dark light` : `Hold the tube${pick('tube')}`, at: () => G.lights.tubes[1]?.light.position.clone() };
@@ -282,7 +263,7 @@ export class Story {
         const left = TRASH.filter((t) => !f.bags.includes(t)).length;
         return { id, icon: 'trash_bag', text: `Take out the trash (${left} left)`, sub: 'Pick it up (you can carry several), out to the garbage station', at: lying.length ? () => near(lying, (e) => e.obj.position.clone().setY(0.6)) : () => V(-6.6, 1.2, 5.8) };
       }
-      case 'read_pc': return read('pc', 'on the computer desk');
+      case 'pc': return { id, icon: 'os_pc', text: 'Sit down at the computer', sub: `${c[0].toUpperCase() + c.slice(1)} the computer on the desk`, at: pc };
       case 'job': {
         const jg = L?.jobs.goal();
         if (jg) return jg;
@@ -297,7 +278,6 @@ export class Story {
         return this.bankGoal(price, 'machine') || { id, icon: 'machine', text: 'Buy your first machine', sub: `${c[0].toUpperCase() + c.slice(1)} the computer: Off-Hobby (used) or Daikoku Toys (new). ${gp('A used one is fine.')}`, at: pc };
       }
       case 'delivery': return { id, icon: 'truck', text: 'Wait for the delivery', sub: 'Gen-san brings it in the FREE CANDY van, to the shutter', at: () => V(0, 1.2, GARAGE.maxZ + 0.2) };
-      case 'read_machine': return read('machine', 'on the machine wall');
       case 'unbox': {
         const st = f.crate?.stage;
         const text = st === 'straps' ? 'Cut the straps' : st === 'sleeve' ? 'Lift off the carton' : 'Pull out the foam blocks';
@@ -309,13 +289,12 @@ export class Story {
         if (H.item?.kind === 'box' && H.item.data?.type === 'refill') return { id: 'restock:fill', icon: 'box', text: 'Fill your machine', sub: m.lidOpen ? `Put the capsules in one by one (${c}), then lock the lid` : `${c[0].toUpperCase() + c.slice(1)} the machine: unlock the lid`, at: mTop };
         if (box) return { id: 'restock:box', icon: 'box', text: 'Your capsules arrived', sub: 'Pick up the carton by the shutter', at: () => box.obj.position.clone().setY(0.7) };
         if (m.lidOpen) return { id: 'restock:lid', icon: 'machine', text: 'Close and lock the lid', sub: `${c[0].toUpperCase() + c.slice(1)} the machine`, at: mTop };
-        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'teruteru') * 10, 'capsules') || { id: 'restock:order', icon: 'capsule', text: 'Order a box of capsules', sub: `On the computer: Daikoku Toys, Capsules. ${gp('Fill it up.')}`, at: pc };
+        if (!g.delivery.queue?.length) return this.bankGoal(capsuleCost(m.data.series || 'teruteru') * 10, 'capsules') || { id: 'restock:order', icon: 'box', text: 'Order a box of capsules', sub: `On the computer: Daikoku Toys, Capsules. ${gp('Fill it up.')}`, at: pc };
         return { id: 'restock:wait', icon: 'box', text: 'Wait for the capsules', sub: 'The box comes to the shutter', at: () => V(0, 0.8, GARAGE.maxZ - 0.6) };
       }
       case 'price': return { id, icon: 'yen', text: 'Set the price', sub: `The plate on the machine: - and +. ${gp('Kids pay 100.')}`, at: () => m.local(0, m.L.slot.y - 0.1, m.L.front + 0.05) };
       case 'read_sign': {
-        if (!L?.s.sign.found) return { id: 'sign:find', icon: 'open_sign', text: 'Pick up the old OPEN sign', sub: 'By the junk boxes', at: () => [...g.items.list].find((e) => e.data?.id === 'open_sign')?.obj.position.clone().setY(0.5) };
-        return { id, icon: 'note', text: "Read Grandpa's card", sub: 'It came with the sign', at: null };
+        return { id: 'sign:find', icon: 'open_sign', text: 'Pick up the old OPEN sign', sub: 'By the junk boxes', at: () => [...g.items.list].find((e) => e.data?.id === 'open_sign')?.obj.position.clone().setY(0.5) };
       }
       case 'hang': return { id, icon: 'open_sign', text: 'Hang the OPEN sign', sub: H.holding('open_sign') ? `On the hook right of the shutter: ${c} it` : `Hold the sign${pick('open_sign')}, the hook right of the shutter`, at: () => V(HOOK.x, HOOK.y - 0.2, HOOK.z + 0.1) };
       case 'open': return { id, icon: 'open_sign', text: this.machineReady() ? 'Flip the sign to OPEN!' : 'Get the machine ready', sub: this.machineReady() ? gp("Flip it to OPEN when the machine's ready.") : 'Stocked, lid locked', at: () => L.sign.board.getWorldPosition(V(0, 0, 0)) };
@@ -368,26 +347,24 @@ export class Story {
   // ------------------------------------------------------------------ shutter (until the reopening; then src/life/routine.js)
   shutterHint() {
     if (this.flags.shutter) return null;
-    if (!this.life?.notes.isRead('letter')) return { key: '', text: 'Locked', sub: "There's a letter taped to it" };
     if (this.game.held.holding('key')) return { key: 'LMB', text: 'Unlock the shutter' };
     const i = this.game.held.find('key');
     return { key: '', text: 'Locked', sub: i >= 0 ? `Select Grandpa's key (${i + 1}) and click` : 'It needs a key' };
   }
 
   useShutter() {
-    if (this.flags.shutter || !this.game.held.holding('key') || !this.life?.notes.isRead('letter')) return false;
+    if (this.flags.shutter || !this.game.held.holding('key')) return false;
     this.game.cutscene.play((c) => this.openShutterScene(c));
     return false;
   }
 
   *openShutterScene(c) {
     const g = this.game, G = g.garage, z = GARAGE.maxZ;
-    this.life?.notes.remove('letter');
     // the key in the old padlock
     yield c.cam({ pos: V(0.9, 1.45, z + 1.1), look: V(0.2, 0.7, z), dur: 0.7, fov: 50 });
     audio.play('keyTurn', { pos: V(0, 0.6, z), vol: 1 });
     const gpHere = !!g.grandpa?.present;
-    yield c.all(c.wait(1.0), c.say(gpHere ? 'Stiff... come on... there.' : "It's been years since anyone opened this.", 0.6));
+    yield c.all(c.wait(1.0), c.say(gpHere ? 'Stiff... come on... there.' : "Nobody's opened this in years.", 0.6));
     // from inside the dark garage: the shutter rolls up and the evening pours in
     yield c.fade(1, 0.25);
     c.hideSay();
@@ -497,7 +474,7 @@ export class Story {
     audio.play('purr', { pos: BOWL, vol: 0.8 });
     yield c.cam({ pos: V(BOWL.x + 0.75, 0.42, BOWL.z + 0.55), look: V(BOWL.x - 0.1, 0.12, BOWL.z - 0.05), dur: 2.2 });
     g.effects.hearts({ pos: BOWL.clone().add(V(0, 0.35, 0)), count: 3, size: 0.04, spread: 0.12 });
-    c.say("Mikan. Grandpa's note was right: she's staying.", 2);
+    c.say("Mikan. Grandpa was right: she's staying.", 2);
     yield c.wait(3.4);
     this.flags.fed = true;
     st?.befriendCat?.();
@@ -773,7 +750,7 @@ export class Story {
   /**
    * The new-game flow: the opening (src/arrival/: the lane at golden hour, the neighbours, Grandpa asleep on his stool,
    * the van just pulled up and you in it) cut straight into meeting Grandpa (src/grandpa/), in one cutscene; without
-   * him, the opening and then the old memory-and-letter ending. Resolves once you're on your feet with control.
+   * him, the opening and then the old memory ending. Resolves once you're on your feet with control.
    */
   async newGame() {
     const g = this.game, A = g.arrival;
@@ -792,7 +769,7 @@ export class Story {
     }
   }
 
-  /** Without Grandpa: out of the van, a memory of the shop in his day, then his envelope on the shutter. */
+  /** Without Grandpa: out of the van, a memory of the shop in his day, then the locked shutter. */
   *letterScene(c) {
     const g = this.game, z = GARAGE.maxZ, van = this.life?.van;
     const actors = [];
@@ -830,7 +807,7 @@ export class Story {
     k4.h.gesture('wave');
     g.pedestrians?.say(gp.h, 'One coin, one turn. Good luck!', 3.2);
     yield c.cam({ pos: V(1.6, 1.55, z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.4 });
-    // 3. back to now: a locked shutter, and a letter taped to it
+    // 3. back to now: a locked shutter
     yield c.flash(() => {
       c.memory(false);
       c.hideSay();
@@ -839,13 +816,13 @@ export class Story {
       c.pos.set(1.4, 1.35, z + 1.5); c.look.set(0.85, 1.3, z);
     });
     audio.play('meow', { pos: V(-0.3, 0.3, z - 0.6), vol: 0.6, pitch: 1.15 });
-    yield c.all(c.cam({ pos: V(1.1, 1.38, z + 0.75), look: V(0.85, 1.32, z), dur: 2.4, fov: 44 }), c.say('...an envelope. KIDDO. His handwriting.', 0.9));
+    yield c.all(c.cam({ pos: V(1.1, 1.38, z + 0.75), look: V(0.85, 1.32, z), dur: 2.4, fov: 44 }), c.say('The same padlock. His key is still on my ring.', 0.9));
     c.hideSay();
     // your own eyes, by the van, the shutter across the lane
     if (van) { van.setPose(PARK.x, PARK.z, PARK.heading); van.setDoor(1); van.setLights(false); van.setBrake(false); van.suspend(0, 0); }
     const st = out.clone().setY(0);
     g.player.pos.set(st.x, 0, st.z);
-    g.player.yaw = Math.atan2(-(0.85 - st.x), -(GARAGE.maxZ - st.z)); // facing the envelope on the shutter
+    g.player.yaw = Math.atan2(-(0.85 - st.x), -(GARAGE.maxZ - st.z)); // facing the shutter
     g.player.pitch = -0.02;
     yield c.tbc(3.0);
     bgm.play('garage', { fade: 4 });

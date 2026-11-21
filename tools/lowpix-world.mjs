@@ -14,7 +14,7 @@
 // --post: redo only the game-ready step from the cached conversions.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
-import { quantize, reorder, getBounds } from '@gltf-transform/functions';
+import { quantize, reorder, getBounds, metalRough } from '@gltf-transform/functions';
 import { MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
 import { spawn, execFileSync } from 'node:child_process';
@@ -84,7 +84,7 @@ async function convert(it) {
     const cached = find(join(dir, '_source'));
     if (cached) src = cached;
   }
-  if (it.keep || it.rotx || it.roty || it.rotz) src = await keepNodes(it, dir);
+  if (it.keep || it.rotx || it.roty || it.rotz || it.specgloss || usesSpecGloss(src)) src = await keepNodes(it, dir);
   const args = ['-m', 'lowpix', 'convert', src, '--style', o.style || 'pixel-hd', '-o', dir, '--height', (h * ppm / PX_PER_UNIT).toFixed(2), '--name', it.name || it.id];
   if (o.yaw) args.push('--yaw', String(o.yaw));
   for (const k of LP_KEYS) if (o[k] != null) args.push('--' + k.replace('_', '-'), String(o[k]));
@@ -94,8 +94,24 @@ async function convert(it) {
     try { await run('python3', args, { cwd: LOWPIX, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1', LOWPIX_SKETCHFAB_TOKEN: process.env.LOWPIX_SKETCHFAB_TOKEN || 'proxy-injected' } }); break; }
     catch (e) { if (!/429|Too Many Requests/.test(e.message) || tryN >= 8) throw e; const w = 45 + tryN * 30; console.log(`rate-limited on ${it.id}, waiting ${w} s`); await new Promise((r) => setTimeout(r, w * 1000)); }
   }
+  // a fresh download in the specular-glossiness workflow came out white: prepare it (metal-rough) and convert again
+  if (/^sketchfab:/.test(src) && !it.specgloss) {
+    const find = (d) => { if (!existsSync(d)) return null; for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) { const r = find(p); if (r) return r; } else if (/\.gltf$/.test(f)) return p; } return null; };
+    const got = find(join(dir, '_source'));
+    if (got && usesSpecGloss(got)) {
+      for (const f of readdirSync(dir)) if (f !== '_source') rmSync(join(dir, f), { recursive: true, force: true });
+      return convert({ ...it, specgloss: true });
+    }
+  }
   console.log(`converted ${it.id} (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
   return dir;
+}
+
+/** A downloaded glTF in the old specular-glossiness workflow (its colour lives in diffuseTexture, which lowpix does not
+ *  read: the conversion came out white): prepared through keepNodes, which turns it into metal-rough first. */
+function usesSpecGloss(src) {
+  if (!/\.gltf$/.test(src) || !existsSync(src)) return false;
+  try { return /KHR_materials_pbrSpecularGlossiness/.test(readFileSync(src, 'utf8').slice(0, 200000)); } catch { return false; }
 }
 
 /** `keep: '<regex>'`: one object out of a set (a Poly Haven file with several variants), and/or `rotx` (degrees): a model
@@ -112,6 +128,7 @@ async function keepNodes(it, dir) {
   const find = (d) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) { const r = find(p); if (r) return r; } else if (/\.(gltf|glb)$/.test(f)) return p; } return null; };
   const file = find(srcDir);
   const doc = await new NodeIO().registerExtensions(ALL_EXTENSIONS).read(file);
+  if (doc.getRoot().listExtensionsUsed().some((e) => e.extensionName === 'KHR_materials_pbrSpecularGlossiness')) await doc.transform(metalRough());
   if (it.keep) { const re = new RegExp(it.keep); for (const n of doc.getRoot().listNodes()) if (n.getMesh() && !re.test(n.getName())) n.dispose(); }
   if (it.rotx || it.roty || it.rotz) { // stand up a model that lies on its side (degrees: about y first, then x, then z)
     const q = (ax, deg) => { const a = (deg || 0) * Math.PI / 360, s = Math.sin(a); return [ax === 0 ? s : 0, ax === 1 ? s : 0, ax === 2 ? s : 0, Math.cos(a)]; };

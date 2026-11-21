@@ -1,0 +1,56 @@
+{
+ "id": "hanger_shirt",
+ "src": "sketchfab:14cc81980a06473a820f811596418fae",
+ "credit": {
+  "title": "Hangers and Long Sleeve Shirt",
+  "author": "dudecon",
+  "authorUrl": "https://sketchfab.com/dudecon",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/hangers-and-long-sleeve-shirt-14cc81980a06473a820f811596418fae",
+  "site": "Sketchfab"
+ },
+ "tris": 2465,
+ "tex": 400,
+ "size": [
+  0.483,
+  0.8,
+  0.354
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#604148",
+   "#7a585d",
+   "#927173",
+   "#a49090",
+   "#b8aead",
+   "#c0bbba",
+   "#c8c7c7",
+   "#d2d2d2",
+   "#dddddd"
+  ],
+  "m1": [
+   "#1a0107",
+   "#210107",
+   "#280206",
+   "#2f0404",
+   "#360905",
+   "#6d1c0c",
+   "#a23815",
+   "#d55c20",
+   "#e28d51"
+  ],
+  "m2": [
+   "#1b1517",
+   "#221c1e",
+   "#292425",
+   "#2f2c2d",
+   "#353535",
+   "#515151",
+   "#6d6d6d",
+   "#888888",
+   "#a4a4a4"
+  ]
+ },
+ "warnings": []
+}

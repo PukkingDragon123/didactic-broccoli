@@ -3,6 +3,7 @@
 //   arrKeys      the key drawn out and the ring swinging: a few small metallic tinks
 //   arrSettle    the van settling on its springs as the engine dies: a low creak and a body knock
 //   lighter      a lighter's flick (the smokers' one from src/plugins/streetlife.js, if that hasn't registered it)
+//   arrTofu      the tofu seller's horn down the lane at dusk (豆腐屋のラッパ): two reedy notes, the second bent and held
 import { SOUNDS } from '../core/audio.js';
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -20,6 +21,14 @@ Object.assign(SOUNDS, {
       a.tone(o, tt, { type: 'sine', f: f * 2.7, dur: 0.05, vol: 0.012 });
     }
     a.burst(o, t, { dur: 0.05, vol: 0.06, type: 'highpass', f: 3000 });
+  },
+  arrTofu(a, t, o) {
+    // a brass toy horn: a buzzy sawtooth through a nasal band, with breath and a little vibrato; "pa-puu"
+    for (const [dt, f, f2, dur, v] of [[0, 740, 732, 0.42, 0.05], [0.5, 830, 790, 1.05, 0.055]]) {
+      a.tone(o, t + dt, { type: 'sawtooth', f, f2, dur, vol: v * 0.55, attack: 0.04 });
+      a.tone(o, t + dt, { type: 'square', f: f * 1.002, f2: f2 * 1.004, dur, vol: v * 0.25, attack: 0.05 });
+      a.burst(o, t + dt, { dur: dur * 0.9, vol: v * 0.35, type: 'bandpass', f: f * 2, q: 6, attack: 0.03 });
+    }
   },
   arrSettle(a, t, o) {
     a.tone(o, t, { f: 95, f2: 60, dur: 0.18, vol: 0.18 });

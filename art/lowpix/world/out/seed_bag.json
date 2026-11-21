@@ -1,0 +1,56 @@
+{
+ "id": "seed_bag",
+ "src": "sketchfab:16ca06c1305c4e7c82efea60ec05a1ab",
+ "credit": {
+  "title": "Bag of Seeds",
+  "author": "CrownOfThorns",
+  "authorUrl": "https://sketchfab.com/CrownOfThorns",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bag-of-seeds-16ca06c1305c4e7c82efea60ec05a1ab",
+  "site": "Sketchfab"
+ },
+ "tris": 2497,
+ "tex": 512,
+ "size": [
+  0.151,
+  0.15,
+  0.153
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#17100f",
+   "#1e1614",
+   "#241d1a",
+   "#2a2320",
+   "#2f2a26",
+   "#4d4842",
+   "#6a6660",
+   "#848380",
+   "#9f9f9f"
+  ],
+  "m1": [
+   "#a3340e",
+   "#d25515",
+   "#e78136",
+   "#eaaa69",
+   "#efcc9a",
+   "#f0d9a9",
+   "#f1e3b8",
+   "#f3ebc7",
+   "#f5f2d5"
+  ],
+  "m2": [
+   "#612018",
+   "#7c3321",
+   "#96492c",
+   "#af6338",
+   "#c17f4b",
+   "#c69967",
+   "#cdaf82",
+   "#d4c39c",
+   "#ddd4b5"
+  ]
+ },
+ "warnings": []
+}

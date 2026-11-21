@@ -1,0 +1,111 @@
+{
+ "id": "mahjong",
+ "src": "sketchfab:80cee44ddba640d4bf77ccc2c99d2e7e",
+ "credit": {
+  "title": "Japanese mahjong tiles",
+  "author": "shosha",
+  "authorUrl": "https://sketchfab.com/purplated3D",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-mahjong-tiles-80cee44ddba640d4bf77ccc2c99d2e7e",
+  "site": "Sketchfab"
+ },
+ "tris": 2476,
+ "tex": 396,
+ "size": [
+  1.35,
+  0.05,
+  2.4
+ ],
+ "colours": 57,
+ "palette": {
+  "m0": [
+   "#001b09",
+   "#002408",
+   "#002c07",
+   "#003504",
+   "#013d00",
+   "#0e7902",
+   "#25b306",
+   "#47eb0b",
+   "#7ff341"
+  ],
+  "m1": [
+   "#675158",
+   "#836d72",
+   "#9a8d90",
+   "#b2aeae",
+   "#cccccc",
+   "#d3d3d3",
+   "#dadada",
+   "#e1e1e1",
+   "#e8e8e8"
+  ],
+  "m2": [
+   "#5e182f",
+   "#782137",
+   "#922c3d",
+   "#aa3741",
+   "#be4747",
+   "#c46c64",
+   "#ca8c7f",
+   "#d2a899",
+   "#dbc0b3"
+  ],
+  "m3": [
+   "#98103d",
+   "#c31843",
+   "#e12d4b",
+   "#e55d68",
+   "#ea8b8b",
+   "#eba39d",
+   "#edb8ae",
+   "#efcbbe",
+   "#f2dace"
+  ],
+  "m4": [
+   "#0e0744",
+   "#0d0b57",
+   "#0f146a",
+   "#14227c",
+   "#1a338d",
+   "#254fb2",
+   "#3571d1",
+   "#5e96d7",
+   "#86b6de"
+  ],
+  "m5": [
+   "#2f533b",
+   "#40694a",
+   "#527f5a",
+   "#659369",
+   "#7fa17f",
+   "#95ab93",
+   "#aab6a7",
+   "#bcc2ba",
+   "#cccfcb"
+  ],
+  "m6": [
+   "#680928",
+   "#860d2b",
+   "#a2132b",
+   "#be1a28",
+   "#d82222",
+   "#dd4e41",
+   "#e07762",
+   "#e39a82",
+   "#e8b9a1"
+  ],
+  "m7": [
+   "#1d172e",
+   "#26203a",
+   "#2e2946",
+   "#353351",
+   "#3d3d5c",
+   "#545776",
+   "#6c728f",
+   "#8a90a2",
+   "#a8acb5"
+  ]
+ },
+ "warnings": []
+}

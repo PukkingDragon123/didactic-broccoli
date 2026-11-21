@@ -1,0 +1,217 @@
+/* The physical UI kit (src/ui/phys.js paints the --ph-* textures): Shōwa objects in pixel art with real depth. A thick
+   pixel side (a hard drop of the object's own darker colour) plus a hard ink shadow that slides away from the cursor
+   (--mx / --my, -1..1, set on <html>); hover lifts, tilts and warms; a press sinks the object into its side (.ph-down,
+   or :active). Whole-number texel scales (2 px), nearest filtering, stepped motion. Never a glow, a white outline or a
+   gradient. Paper stays only where a thing really is paper (notes, receipts, slips). */
+
+:root { --mx: 0; --my: 0; --ph-ink: #1e1418; --ph-cream-t: #f2e6c6; }
+
+/* ---------------------------------------------------------------- pixel dust (src/ui/phys.js dust()) */
+#ph-fx { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+.ph-dust {
+  position: absolute; width: calc(var(--u) * 8); height: calc(var(--u) * 8); margin: calc(var(--u) * -4) 0 0 calc(var(--u) * -4);
+  background-size: calc(var(--u) * 40) calc(var(--u) * 8); background-repeat: no-repeat; image-rendering: pixelated;
+  animation: ph-puff .42s steps(4) both, ph-drift .42s steps(5) both;
+}
+.ph-dust.chip { background-position: calc(var(--u) * -32) 0; animation: ph-fall .5s steps(6) both; }
+@keyframes ph-puff { from { background-position: 0 0; } to { background-position: calc(var(--u) * -32) 0; } }
+@keyframes ph-drift { from { translate: 0 0; } to { translate: var(--dx) var(--dy); } }
+@keyframes ph-fall { 0% { translate: 0 0; opacity: 1; } 30% { translate: calc(var(--dx) * .4) calc(var(--u) * -4); } 100% { translate: var(--dx) var(--dy); opacity: 0; } }
+
+/* ---------------------------------------------------------------- panels (settings, host / join): a wooden radio cabinet */
+body.phys-ui #pause, body.phys-ui #share { background: rgba(14, 10, 12, .6); animation: ph-dim .24s steps(3) both; }
+body.phys-ui #pause.ph-closing, body.phys-ui #share.ph-closing { pointer-events: none; animation: ph-undim .22s steps(3) both; }
+@keyframes ph-dim { from { background-color: rgba(14, 10, 12, 0); } }
+@keyframes ph-undim { to { background-color: rgba(14, 10, 12, 0); } }
+body.phys-ui #pause .panel, body.phys-ui #share .panel {
+  padding: 0 14px 12px; gap: 10px; color: var(--ph-ink);
+  border: 24px solid transparent; border-image: var(--ph-cab) 12 / 24px round;
+  background: var(--ph-face) 0 0 / 128px padding-box; box-shadow: none; image-rendering: pixelated;
+  filter: drop-shadow(0 8px 0 #34200f) drop-shadow(calc(10px - var(--mx) * 8px) calc(12px - var(--my) * 6px) 0 rgba(10, 6, 8, .5));
+  translate: calc(var(--mx) * 3px) calc(var(--my) * 2px);
+  transform-origin: 50% 0; animation: ph-swing-in .62s steps(9) both;
+}
+body.phys-ui #pause.ph-closing .panel, body.phys-ui #share.ph-closing .panel { animation: ph-swing-out .22s steps(4) both; }
+/* it drops in on its hinge at the top: swings toward you, back, settles (a stepped 3D pendulum) */
+@keyframes ph-swing-in {
+  0% { opacity: 0; transform: perspective(1000px) translateY(-40px) rotateX(-80deg); }
+  30% { opacity: 1; transform: perspective(1000px) rotateX(18deg); }
+  55% { transform: perspective(1000px) rotateX(-8deg); }
+  78% { transform: perspective(1000px) rotateX(3deg); }
+  100% { transform: none; }
+}
+@keyframes ph-swing-out { to { opacity: 0; transform: perspective(1000px) translateY(30px) rotateX(55deg) scale(.96); } }
+body.phys-ui #pause .panel::before, body.phys-ui #share .panel::before, body.phys-ui #pause .panel::after, body.phys-ui #share .panel::after { display: none; }
+/* the nameplate: navy enamel, cream pin-line, screws */
+body.phys-ui #pause .panel-title, body.phys-ui #share .panel-title {
+  margin: 6px 40px 2px 0; padding: 0 12px 2px; align-self: flex-start; gap: 8px;
+  font-size: 32px; line-height: 34px; color: var(--ph-cream-t); text-shadow: 0 2px 0 var(--ph-ink);
+  border: 10px solid transparent; border-image: var(--ph-plate) 5 fill / 10px round; background: none; box-shadow: none;
+  filter: drop-shadow(0 4px 0 #0e1430) drop-shadow(3px 4px 0 rgba(10, 6, 8, .35)); rotate: -1deg;
+}
+/* buttons: enamel push-plates with a thick side */
+body.phys-ui #pause .panel button, body.phys-ui #share .panel button {
+  --side: #8a7650; color: var(--ph-ink); text-shadow: none;
+  min-height: 40px; padding: 0 10px 2px; border: 10px solid transparent; border-image: var(--ph-cream) 5 fill / 10px round;
+  background: none; box-shadow: none; image-rendering: pixelated;
+  filter: drop-shadow(0 4px 0 var(--side)) drop-shadow(calc(4px - var(--mx) * 3px) calc(5px - var(--my) * 2px) 0 rgba(10, 6, 8, .38));
+  transform: none; transition: transform .1s steps(2), translate .1s steps(2);
+}
+body.phys-ui #pause .panel button:hover, body.phys-ui #share .panel button:hover, body.phys-ui #pause .panel button:focus-visible, body.phys-ui #share .panel button:focus-visible {
+  outline: none; translate: 0 -3px; transform: rotate(calc(var(--mx) * -1.2deg - .4deg));
+  filter: drop-shadow(0 7px 0 var(--side)) drop-shadow(calc(6px - var(--mx) * 4px) calc(9px - var(--my) * 3px) 0 rgba(10, 6, 8, .38));
+  color: #a8201c;
+}
+body.phys-ui #pause .panel button:active, body.phys-ui #share .panel button:active, body.phys-ui #pause .panel button.ph-down, body.phys-ui #share .panel button.ph-down {
+  translate: 0 3px; transform: none; filter: drop-shadow(0 1px 0 var(--side)) drop-shadow(1px 2px 0 rgba(10, 6, 8, .38));
+}
+body.phys-ui #pause .panel button.big, body.phys-ui #share .panel button.big {
+  --side: #5e1416; color: var(--ph-cream-t); border-image-source: var(--ph-red); text-shadow: 0 2px 0 #5e1416; font-size: 32px; min-height: 52px;
+}
+body.phys-ui #pause .panel button.big:hover, body.phys-ui #share .panel button.big:hover,
+body.phys-ui #pause .panel button.big:focus-visible, body.phys-ui #share .panel button.big:focus-visible { color: #ffe39a; }
+body.phys-ui #pause #leave-btn { --side: #1c3a2c; color: var(--ph-cream-t); border-image-source: var(--ph-green); text-shadow: 0 2px 0 #1c3a2c; }
+body.phys-ui #pause #leave-btn:hover { color: #ffe39a; }
+body.phys-ui #pause .panel button.danger { --side: #0e1430; color: #f2b8a8; border-image-source: var(--ph-navy); }
+body.phys-ui #pause .panel button.danger:hover { color: #ff8a72; }
+/* the close knob: a small red enamel plate in the cabinet's corner */
+body.phys-ui #pause .panel button.x, body.phys-ui #share .panel button.x {
+  --side: #5e1416; position: absolute; right: 4px; top: 6px; width: 44px; height: 44px; min-height: 0; padding: 0;
+  border-image-source: var(--ph-red); background: none;
+}
+body.phys-ui #pause .panel button.x::before, body.phys-ui #pause .panel button.x .px-icon,
+body.phys-ui #share .panel button.x::before, body.phys-ui #share .panel button.x .px-icon { visibility: visible; filter: brightness(0) invert(.92) sepia(.3); }
+body.phys-ui #pause .panel button.x:hover, body.phys-ui #share .panel button.x:hover { transform: rotate(10deg); }
+/* the control window: a sunken cream face behind glass, ink frame, a lit lower edge */
+body.phys-ui #pause .panel .rows {
+  padding: 8px 12px; gap: 2px; background: #e6d8b4;
+  box-shadow: inset 4px 4px 0 #b8a47e, inset -2px -2px 0 #fbf3dc, 0 0 0 2px var(--ph-ink), 0 4px 0 2px #8a7650;
+}
+body.phys-ui #pause .panel label, body.phys-ui #pause .panel .foot { color: var(--ph-ink); }
+body.phys-ui #pause .panel .foot.credits { color: #5e5046; }
+/* sliders: a tuning scale, a brass knob with a red needle */
+body.phys-ui .panel input[type=range] { height: 26px; }
+body.phys-ui .panel input[type=range]::-webkit-slider-runnable-track {
+  height: 20px; image-rendering: pixelated;
+  background: linear-gradient(#b3262a, #b3262a) 0 100% / var(--fill, 50%) 4px no-repeat, var(--ph-dial) 0 0 / 64px 20px repeat-x;
+  box-shadow: 0 0 0 2px var(--ph-ink), 0 4px 0 2px #8a7650;
+}
+body.phys-ui .panel input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 22px; margin-top: -1px; border: 0;
+  background: var(--ph-knob) 0 0 / 18px 22px no-repeat; image-rendering: pixelated; box-shadow: none;
+  filter: drop-shadow(2px 3px 0 rgba(10, 6, 8, .45)); transition: translate .08s steps(2);
+}
+body.phys-ui .panel input[type=range]:hover::-webkit-slider-thumb, body.phys-ui .panel input[type=range]:focus-visible::-webkit-slider-thumb { translate: 0 -2px; filter: drop-shadow(3px 5px 0 rgba(10, 6, 8, .45)); }
+body.phys-ui .panel input[type=range]:active::-webkit-slider-thumb { translate: 0 1px; filter: drop-shadow(1px 1px 0 rgba(10, 6, 8, .45)); }
+body.phys-ui .panel input[type=range]::-moz-range-track { height: 20px; background: var(--ph-dial) 0 0 / 64px 20px repeat-x; box-shadow: 0 0 0 2px var(--ph-ink); }
+body.phys-ui .panel input[type=range]::-moz-range-thumb { width: 18px; height: 22px; border: 0; border-radius: 0; background: var(--ph-knob) 0 0 / 18px 22px no-repeat; }
+body.phys-ui .panel input[type=range]:focus-visible { outline: none; }
+/* checkboxes: bakelite toggle switches (the lever flips, the red lamp lights) */
+body.phys-ui .panel input[type=checkbox] {
+  width: 32px; height: 24px; background: var(--ph-tog-off) 0 0 / 32px 24px no-repeat; box-shadow: none; image-rendering: pixelated;
+  filter: drop-shadow(2px 3px 0 rgba(10, 6, 8, .4));
+}
+body.phys-ui .panel input[type=checkbox]:checked { background: var(--ph-tog-on) 0 0 / 32px 24px no-repeat; }
+body.phys-ui .panel input[type=checkbox]:hover { translate: 0 -1px; }
+body.phys-ui .panel input[type=checkbox]:focus-visible { outline: none; translate: 0 -2px; filter: drop-shadow(2px 5px 0 rgba(10, 6, 8, .4)); }
+/* the quality selector: a cream enamel plate with its arrow */
+body.phys-ui .panel select {
+  height: 34px; color: var(--ph-ink); padding: 0 30px 0 6px;
+  border: 8px solid transparent; border-image: var(--ph-cream) 5 fill / 8px round;
+  background: var(--ic-down, none) right 0 center / 20px 20px no-repeat; box-shadow: none;
+  filter: drop-shadow(0 3px 0 #8a7650) drop-shadow(2px 3px 0 rgba(10, 6, 8, .35));
+}
+body.phys-ui .panel select:hover, body.phys-ui .panel select:focus-visible { outline: none; translate: 0 -2px; }
+body.phys-ui #share textarea {
+  color: var(--ph-ink); background: #f6eed6; box-shadow: inset 4px 4px 0 #cdb88e, 0 0 0 2px var(--ph-ink), 0 4px 0 2px #8a7650;
+}
+
+/* ---------------------------------------------------------------- the hotbar: a wooden tool tray with sunken compartments */
+body.phys-ui #hotbar .slots {
+  gap: 4px; padding: 2px; border: 12px solid transparent; border-image: var(--ph-tray) 6 fill / 12px round;
+  background: none; box-shadow: none; image-rendering: pixelated;
+  filter: drop-shadow(0 6px 0 #34200f) drop-shadow(calc(6px - var(--mx) * 5px) calc(8px - var(--my) * 3px) 0 rgba(10, 6, 8, .4));
+}
+body.phys-ui #hotbar .slot {
+  box-sizing: content-box; width: 44px; height: 44px; border: 8px solid transparent; border-radius: 0;
+  border-image: var(--ph-cell) 4 fill / 8px stretch; background: none; box-shadow: none; image-rendering: pixelated;
+  transition: translate .12s steps(3);
+}
+body.phys-ui #hotbar .slot::after { display: none; }
+body.phys-ui #hotbar .slot .ico { width: 44px; height: 44px; filter: drop-shadow(2px 3px 0 rgba(10, 6, 8, .45)); }
+body.phys-ui #hotbar .slot:hover { translate: 0 -2px; }
+body.phys-ui #hotbar .slot.sel { translate: 0 -8px; border-image-source: var(--ph-cell-sel); border-color: transparent; box-shadow: none; background: none; }
+body.phys-ui #hotbar .slot.sel .ico { animation: ph-lift 1.8s steps(6) infinite; filter: drop-shadow(3px 6px 0 rgba(10, 6, 8, .45)); }
+body.phys-ui #hotbar .slot.ph-down { translate: 0 2px; }
+@keyframes ph-lift { 0%, 100% { transform: translateY(-2px) rotate(-3deg); } 50% { transform: translateY(-4px) rotate(2deg); } }
+body.phys-ui #hotbar .slot .key { left: -4px; top: -6px; color: var(--ph-cream-t); text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink); }
+body.phys-ui #hotbar .slot.sel .key { color: #ffd56a; }
+body.phys-ui #hotbar .slot .count { right: -4px; bottom: -6px; color: var(--ph-cream-t); text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink); }
+body.phys-ui #hotbar .label {
+  padding: 0 8px 2px; color: var(--ph-cream-t); border: 10px solid transparent; border-image: var(--ph-plate) 5 fill / 10px round;
+  background: none; text-shadow: 0 2px 0 var(--ph-ink); filter: drop-shadow(0 3px 0 #0e1430);
+  transform: perspective(500px) rotateX(70deg) translateY(8px); transform-origin: 50% 100%; transition: opacity .18s steps(3), transform .26s steps(5);
+}
+body.phys-ui #hotbar .label.show { transform: none; }
+
+/* ---------------------------------------------------------------- the wallet: an enamel price plate */
+body.phys-ui #money {
+  color: var(--ph-cream-t); padding: 0 10px 0 2px; border: 10px solid transparent; border-image: var(--ph-plate) 5 fill / 10px round;
+  background: none; box-shadow: none; image-rendering: pixelated;
+  filter: drop-shadow(0 5px 0 #0e1430) drop-shadow(calc(6px - var(--mx) * 4px) calc(7px - var(--my) * 3px) 0 rgba(10, 6, 8, .38));
+}
+body.phys-ui #money .yen { color: #f2cf62; text-shadow: 0 2px 0 var(--ph-ink); }
+body.phys-ui #money .val { text-shadow: 0 3px 0 var(--ph-ink); }
+/* the change: floating pixel figures with a hard ink outline that pop up and drop away */
+body.phys-ui #money-delta {
+  border: 0; background: none; filter: none; padding: 0; color: #9ce89c;
+  text-shadow: 2px 0 0 var(--ph-ink), -2px 0 0 var(--ph-ink), 0 2px 0 var(--ph-ink), 0 -2px 0 var(--ph-ink), 0 4px 0 var(--ph-ink);
+  transform: perspective(400px) rotateX(-60deg) translateY(8px); transform-origin: 50% 100%;
+  transition: opacity .2s steps(2), transform .32s steps(5);
+}
+body.phys-ui #money-delta.show { transform: translateY(-6px); }
+body.phys-ui #money-delta.neg { color: #ff9a86; }
+body.phys-ui.touchmode #money-delta.show { transform: translate(-50%, 4px); }
+
+/* ---------------------------------------------------------------- scene transitions (src/ui/trans.js), stepped (--f: 0..1 in 1/8ths) */
+body.ph-trans-on #fade { background: transparent; }
+#ph-trans { position: fixed; inset: 0; z-index: 29; display: none; pointer-events: none; overflow: hidden; --f: 0; }
+#ph-trans > * { display: none; position: absolute; inset: 0; }
+#ph-trans[data-s='shutter'] .t-shutter, #ph-trans[data-s='noren'] .t-noren, #ph-trans[data-s='iris'] .t-iris, #ph-trans[data-s='blocks'] .t-blocks { display: block; }
+/* the shop's shutter rolls down over the view (a day ends, you go to sleep) */
+#ph-trans .t-shutter { transform: translateY(calc((var(--f) - 1) * 104%)); }
+#ph-trans .t-shutter .slats { position: absolute; inset: 0 0 26px; background: var(--shutter) 0 0 / 64px 32px repeat; image-rendering: pixelated; box-shadow: inset 8px 0 0 #3a4046, inset -8px 0 0 #3a4046; }
+#ph-trans .t-shutter .bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: #5a6268;
+  box-shadow: inset 0 4px 0 #9aa2a8, inset 0 -6px 0 #2a2e34, 0 -2px 0 #120a0e, 0 6px 0 rgba(18, 10, 14, .5);
+}
+#ph-trans .t-shutter .bar::after { content: ''; position: absolute; left: calc(50% - 30px); top: 8px; width: 60px; height: 8px; background: #c8962e; box-shadow: inset 0 2px 0 #f2d27a, 0 0 0 2px #120a0e; }
+/* noren: six indigo strips drop in one after another (doors, shops, rooms) */
+#ph-trans .t-noren { display: none; }
+#ph-trans[data-s='noren'] .t-noren { display: flex; }
+#ph-trans .t-noren i {
+  flex: 1; height: 100%; background: var(--noren) 0 0 / 32px 32px repeat; image-rendering: pixelated;
+  box-shadow: inset 2px 0 0 #120a0e, inset -2px 0 0 #3a4c8e, 0 6px 0 #120a0e;
+  transform: translateY(calc((min(1, max(0, var(--f) * 1.6 - var(--k) * 0.12)) - 1) * 104%));
+}
+#ph-trans .t-noren i:nth-child(1) { --k: 0; } #ph-trans .t-noren i:nth-child(2) { --k: 2; } #ph-trans .t-noren i:nth-child(3) { --k: 4; }
+#ph-trans .t-noren i:nth-child(4) { --k: 5; } #ph-trans .t-noren i:nth-child(5) { --k: 3; } #ph-trans .t-noren i:nth-child(6) { --k: 1; }
+/* a stepped iris closing on the middle of the view, hard-edged */
+#ph-trans .t-iris {
+  background: #120a0e;
+  -webkit-mask: radial-gradient(circle at 50% 46%, transparent calc((1 - var(--f)) * 78vmax), #000 calc((1 - var(--f)) * 78vmax + 1px));
+  mask: radial-gradient(circle at 50% 46%, transparent calc((1 - var(--f)) * 78vmax), #000 calc((1 - var(--f)) * 78vmax + 1px));
+}
+/* big pixel blocks dissolving in from the top left */
+#ph-trans .t-blocks { width: 100%; height: 100%; image-rendering: pixelated; }
+
+/* ---------------------------------------------------------------- title screen into the game: a stepped diagonal wipe */
+html body #tm-fade { opacity: 0; transition: none; }
+html body #tm-fade.on { opacity: 1; animation: tm-wipe-in .44s steps(7) both; }
+html body #tm-fade.off { opacity: 1; animation: tm-wipe-out .62s steps(8) both; }
+@keyframes tm-wipe-in { from { clip-path: polygon(0 0, 0 0, -40% 100%, -40% 100%); } to { clip-path: polygon(0 0, 140% 0, 100% 100%, -40% 100%); } }
+@keyframes tm-wipe-out { from { clip-path: polygon(0 0, 140% 0, 100% 100%, -40% 100%); } to { clip-path: polygon(140% 0, 140% 0, 100% 100%, 100% 100%); } }
+
+/* ---------------------------------------------------------------- the day's calendar page flips down from its pad, and back up */
+html body.phys-ui #cutscene .titlecard { transform-origin: 50% -24px; transform: perspective(900px) rotateX(-96deg); transition: opacity .3s steps(3), transform .7s steps(7); }
+html body.phys-ui #cutscene .titlecard.show { transform: none; }

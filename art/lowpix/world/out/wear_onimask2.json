@@ -1,0 +1,45 @@
+{
+ "id": "wear_onimask2",
+ "src": "sketchfab:e4f4bdea1c3744e4baf27e15d80cb5d5",
+ "credit": {
+  "title": "Oni Mask Low Poly",
+  "author": "thanoskt",
+  "authorUrl": "https://sketchfab.com/thanoskt",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/oni-mask-low-poly-e4f4bdea1c3744e4baf27e15d80cb5d5",
+  "site": "Sketchfab"
+ },
+ "tris": 1530,
+ "tex": 304,
+ "size": [
+  0.147,
+  0.22,
+  0.094
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#0b0202",
+   "#0e0403",
+   "#110604",
+   "#130905",
+   "#160c06",
+   "#492d16",
+   "#795427",
+   "#a87f3b",
+   "#c4a762"
+  ],
+  "m1": [
+   "#5f351b",
+   "#794d26",
+   "#926732",
+   "#ab833f",
+   "#bb9e54",
+   "#c1b16f",
+   "#c9c188",
+   "#d1cfa1",
+   "#dadab9"
+  ]
+ },
+ "warnings": []
+}

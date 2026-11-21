@@ -45,7 +45,7 @@ export function installDressing(game) {
     /** Lock someone out of a piece again (for screenshots of a locked slip). */
     lose: (id) => { const A = g.state.avatar; A.owned = A.owned.filter((x) => x !== id); for (const s of ['hat', 'outfit', 'face', 'bag', 'shoes']) if (A[s] === id) A[s] = null; if (g.state.itch && id === 'cx_duck') g.state.itch.followed = false; const r = get(); if (r.isOpen) { r.lastLook = null; r.render(); r.refreshModel(); } return true; },
     poof: (rarity = 'common', at = 0.6) => { const st = get().stage; if (st) { equipPoof(st, at, rarity); st.hop(); } return true; },
-    /** Press the Duck Head slip's "Follow on itch.io" button (opens the itch page, grants the duck once). */
+    /** Press the Duck Head slip's "Take it" button (grants the duck once). */
     itch: () => { const r = get(); r.setTab('hats'); r.choose(item(r, 'cos:cx_duck')); r.slipEl?.querySelector('[data-act="itch"]')?.click(); return g.state.avatar.owned.includes('cx_duck'); },
     /** Turn to a yaw (0 = facing you) and stop there. */
     face: (yaw = 0) => { const st = get().stage; if (st) { st.yaw = yaw; st.yawVel = 0; st.poseYaw = null; st.idleT = 0; } return true; },

@@ -1,0 +1,67 @@
+{
+ "id": "seed_bag2",
+ "src": "sketchfab:d8a1cd61a5b44c7da119b0a5cf439676",
+ "credit": {
+  "title": "Bag of carrot seeds",
+  "author": "KingArnaud2",
+  "authorUrl": "https://sketchfab.com/KingArnaud2",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/bag-of-carrot-seeds-d8a1cd61a5b44c7da119b0a5cf439676",
+  "site": "Sketchfab"
+ },
+ "tris": 768,
+ "tex": 240,
+ "size": [
+  0.094,
+  0.12,
+  0.039
+ ],
+ "colours": 29,
+ "palette": {
+  "m0": [
+   "#880e09",
+   "#ae220e",
+   "#d33c15",
+   "#e6632f",
+   "#e88e59",
+   "#e9a872",
+   "#eabe8b",
+   "#ecd0a2",
+   "#f0e0b9"
+  ],
+  "m1": [
+   "#0b2600",
+   "#123200",
+   "#1c3d00",
+   "#274801",
+   "#345203",
+   "#628807",
+   "#97bd0d",
+   "#d0eb19",
+   "#e6ed52"
+  ],
+  "m2": [
+   "#810007",
+   "#a60803",
+   "#c91d07",
+   "#ec380c",
+   "#f1652e",
+   "#f0894e",
+   "#f0a76c",
+   "#f1c18a",
+   "#f3d6a7"
+  ],
+  "m3": [
+   "#af1500",
+   "#e52f00",
+   "#ff5d1b",
+   "#ff9151",
+   "#ffbd86",
+   "#fdcf98",
+   "#fcddaa",
+   "#fce9bb",
+   "#fcf2cc"
+  ]
+ },
+ "warnings": []
+}

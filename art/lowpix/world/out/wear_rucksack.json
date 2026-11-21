@@ -1,0 +1,34 @@
+{
+ "id": "wear_rucksack",
+ "src": "sketchfab:bb89dfa7ec13478e85645497dfeafdcd",
+ "credit": {
+  "title": "Old Soviet Backpack",
+  "author": "TwilightFox",
+  "authorUrl": "https://sketchfab.com/twilightfox",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-soviet-backpack-bb89dfa7ec13478e85645497dfeafdcd",
+  "site": "Sketchfab"
+ },
+ "tris": 2000,
+ "tex": 304,
+ "size": [
+  0.387,
+  0.5,
+  0.404
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#23150a",
+   "#2d1d0e",
+   "#362713",
+   "#3f3218",
+   "#483d1d",
+   "#6e6330",
+   "#928b44",
+   "#afaf5f",
+   "#bfbf87"
+  ]
+ },
+ "warnings": []
+}

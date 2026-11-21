@@ -1,4 +1,4 @@
-// The customer guestbook (お客様ノート): a little lectern with a notebook outside the shop where customers write what
+// REMOVED by the owner's request (the constructor below is a stub). The customer guestbook (お客様ノート): a little lectern with a notebook outside the shop where customers write what
 // they think: complaints (prices, sold-out machines, litter, being slapped...), questions they asked, haggles, and the
 // odd compliment. Read it in the world (click the book) or on the PC ("Customer Voice").
 //   game.guestbook.add({ kind: 'complaint' | 'question' | 'praise' | 'haggle', who, text })
@@ -14,16 +14,17 @@ export const GUESTBOOK_POS = { x: -1.55, z: 5.55, rotY: 0 }; // on the apron, be
 
 export class Guestbook {
   constructor(game) {
+    // REMOVED (owner): no customer guestbook. No lectern, no reader, no PC app; game.guestbook.add() is a no-op so the
+    // people / staff code that writes to it keeps working, and old saves (state.guestbook) still load untouched.
     this.game = game;
-    this.s = ensureState(game, 'guestbook', { entries: [], read: 0 });
-    if (!Array.isArray(this.s.entries)) this.s.entries = [];
-    this.build();
-    this.overlay();
-    this.registerApp();
-    game.events.on('complaint', (e) => { if (!e?.logged) this.add({ kind: 'complaint', who: e?.who?.spec?.name || 'A customer', text: e?.text || 'Too expensive.' }); });
+    this.removed = true;
+    this.s = { entries: [], read: 0 };
   }
 
-  add({ kind = 'complaint', who = 'A customer', text = '' }) {
+  add() { /* the guestbook is gone */ }
+
+  /** (The old feature, kept for reference; not called.) */
+  addOld({ kind = 'complaint', who = 'A customer', text = '' }) {
     const g = this.game;
     this.s.entries.push({ day: g.clock?.day ?? 1, time: g.clock?.time || '', kind, who, text: String(text) });
     if (this.s.entries.length > 60) this.s.entries.splice(0, this.s.entries.length - 60);
@@ -120,6 +121,7 @@ export class Guestbook {
   }
 
   update() {
+    if (this.removed) return;
     if (this.dirty) this.drawPage();
     if (this.isOpen && this.game.frame > this.openedAt + 2 && this.game.input.buttonDown?.(0)) this.close();
   }

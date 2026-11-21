@@ -1,0 +1,34 @@
+{
+ "id": "wear_paperbag2",
+ "src": "sketchfab:9ccf2fce68ea45e0b0861038d5aa035d",
+ "credit": {
+  "title": "Paper bag",
+  "author": "Jarad Fraser",
+  "authorUrl": "https://sketchfab.com/JaradFraser",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/paper-bag-9ccf2fce68ea45e0b0861038d5aa035d",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 480,
+ "size": [
+  0.209,
+  0.3,
+  0.209
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#842e1b",
+   "#a94926",
+   "#cc6934",
+   "#d3915e",
+   "#dbb286",
+   "#dec299",
+   "#e1d0ab",
+   "#e6dcbc",
+   "#ebe6cd"
+  ]
+ },
+ "warnings": []
+}

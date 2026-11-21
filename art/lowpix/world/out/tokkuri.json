@@ -1,0 +1,34 @@
+{
+ "id": "tokkuri",
+ "src": "sketchfab:db39173abbfc4fe78eeaca4687c07a9a",
+ "credit": {
+  "title": "Tokkuri",
+  "author": "ColorfulPlanet",
+  "authorUrl": "https://sketchfab.com/ColorfulPlanet",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/tokkuri-db39173abbfc4fe78eeaca4687c07a9a",
+  "site": "Sketchfab"
+ },
+ "tris": 1976,
+ "tex": 256,
+ "size": [
+  0.144,
+  0.15,
+  0.065
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#3b292c",
+   "#4b3839",
+   "#5a4747",
+   "#685958",
+   "#756b69",
+   "#868180",
+   "#979797",
+   "#aaaaaa",
+   "#bebebe"
+  ]
+ },
+ "warnings": []
+}

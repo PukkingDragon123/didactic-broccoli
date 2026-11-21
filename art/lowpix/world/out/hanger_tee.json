@@ -1,0 +1,45 @@
+{
+ "id": "hanger_tee",
+ "src": "sketchfab:44e260855c7f4c1ca611af8d2370195a",
+ "credit": {
+  "title": "Hangers and Tee-shirt",
+  "author": "dudecon",
+  "authorUrl": "https://sketchfab.com/dudecon",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/hangers-and-tee-shirt-44e260855c7f4c1ca611af8d2370195a",
+  "site": "Sketchfab"
+ },
+ "tris": 2499,
+ "tex": 512,
+ "size": [
+  0.424,
+  0.7,
+  0.306
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#1a0107",
+   "#210107",
+   "#280206",
+   "#2f0404",
+   "#360905",
+   "#6d1c0c",
+   "#a23815",
+   "#d55c20",
+   "#e28d51"
+  ],
+  "m1": [
+   "#191513",
+   "#201c19",
+   "#262320",
+   "#2c2a27",
+   "#32312f",
+   "#4d4d4d",
+   "#696969",
+   "#868686",
+   "#a2a2a2"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,67 @@
+{
+ "id": "wear_onimask3",
+ "src": "sketchfab:73385f62e966493ab23d17bdf2180f33",
+ "credit": {
+  "title": "Oni Mask",
+  "author": "MadeByYeshe",
+  "authorUrl": "https://sketchfab.com/MadeByYeshe",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/oni-mask-73385f62e966493ab23d17bdf2180f33",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 512,
+ "size": [
+  0.191,
+  0.22,
+  0.209
+ ],
+ "colours": 30,
+ "palette": {
+  "m0": [
+   "#020101",
+   "#020202",
+   "#020202",
+   "#030303",
+   "#030303",
+   "#262626",
+   "#484848",
+   "#6b6b6b",
+   "#8e8e8e"
+  ],
+  "m1": [
+   "#23050d",
+   "#2d080e",
+   "#360a0e",
+   "#3f0e0e",
+   "#481511",
+   "#752c1e",
+   "#a0492d",
+   "#c56c42",
+   "#cf9771"
+  ],
+  "m2": [
+   "#311303",
+   "#3e1e05",
+   "#4c2a07",
+   "#59390a",
+   "#65490d",
+   "#937516",
+   "#bfa720",
+   "#dacf3b",
+   "#e0e06c"
+  ],
+  "m3": [
+   "#2c2226",
+   "#382f31",
+   "#433b3d",
+   "#4d4949",
+   "#575757",
+   "#6e6e6e",
+   "#858585",
+   "#9c9c9c",
+   "#b3b3b3"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,45 @@
+{
+ "id": "wear_heartpink",
+ "src": "sketchfab:ef812c7e7dc14f6b8783ccb516b3495c",
+ "credit": {
+  "title": "Heart Glasses",
+  "author": "maximkuzlin",
+  "authorUrl": "https://sketchfab.com/maximkuzlin",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/heart-glasses-ef812c7e7dc14f6b8783ccb516b3495c",
+  "site": "Sketchfab"
+ },
+ "tris": 1999,
+ "tex": 256,
+ "size": [
+  0.159,
+  0.06,
+  0.157
+ ],
+ "colours": 12,
+ "palette": {
+  "m0": [
+   "#520090",
+   "#7a00bd",
+   "#ab00e9",
+   "#d416ff",
+   "#ec42ff",
+   "#fa5efd",
+   "#fb7af2",
+   "#fa95eb",
+   "#faafe8"
+  ],
+  "m1": [
+   "#680060",
+   "#880072",
+   "#a7007f",
+   "#c70086",
+   "#e70088",
+   "#fb1288",
+   "#f93b8b",
+   "#f86295",
+   "#f789a5"
+  ]
+ },
+ "warnings": []
+}

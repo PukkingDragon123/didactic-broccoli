@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell } from './shell.js';
-import { ramp, seamLoop, seal, glassPane, lamp, plate, dent } from './paint.js';
+import { ramp, seamLoop, seal, glassPane, lamp, plate, dent, carPaint } from './paint.js';
 import { wheelPatches, wheelGeometry, doorMirror, wiper, vehicleMaterials } from './parts.js';
 
 const W = 0.735, RND = 0.07, YB = 0.3, WR = 0.27, ARCH = 0.325, AXF = 1.12, AXR = -1.22;
@@ -52,7 +52,7 @@ function paintAtlas() {
 function paintSide(S, sx) {
   const A = S.A, U = (z) => (sx > 0 ? -z : z), I = (z) => S.i(U(z)), J = (y) => S.j(y), P = (pts) => pts.map(([z, y]) => [U(z), y]);
   A.ink(ROUGH.paint);
-  S.box(0, 0, S.W, S.H, (i, j) => { const y = S.o.v0 + (j + 0.5) / S.ppm; return y > 1.55 ? (ROOF ? ROOF[2] : RED[3]) : y < 0.42 ? TRIM : y < 0.47 ? RED[1] : RED[2]; });
+  S.box(0, 0, S.W, S.H, (i, j) => { const y = S.o.v0 + (j + 0.5) / S.ppm; return y > 1.55 ? (ROOF ? ROOF[2] : RED[3]) : y < 0.42 ? TRIM : carPaint(i, j, y, RED, { sill: 0.42, horizon: 0.7, shoulder: 0.88, top: 1.55, ppm: S.ppm }); });
   S.hline(0, S.W, J(0.9), RED[3]); S.hline(0, S.W, J(0.89), RED[1]);
   // arches
   for (const zc of [AXR, AXF]) for (let j = J(YB); j < J(YB + ARCH + 0.04); j++) for (let i = I(zc) - 45; i <= I(zc) + 45; i++) {
@@ -77,7 +77,7 @@ function paintSide(S, sx) {
 function paintFront(F) {
   const A = F.A, I = (x) => F.i(x), J = (y) => F.j(y);
   A.ink(ROUGH.paint);
-  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y < 0.42 ? TRIM : y > 0.84 ? RED[3] : RED[2]; });
+  F.box(0, 0, F.W, F.H, (i, j) => { const y = F.o.v0 + (j + 0.5) / F.ppm; return y < 0.42 ? TRIM : carPaint(i, j, y, RED, { sill: 0.42, horizon: 0.6, shoulder: 0.84, top: 1.6, ppm: F.ppm }); });
   const ws = [[-(W - RND - 0.01), 0.96], [W - RND - 0.01, 0.96], [W - RND - 0.01, 1.53], [-(W - RND - 0.01), 1.53]];
   glassPane(F, ws, { seed: 3, alpha: 112, slope: 0.4 }); seal(F, ws, RUBBER, 2);
   for (const s of [-1, 1]) lamp(F, I(s > 0 ? 0.38 : -0.66), J(0.65), I(s > 0 ? 0.66 : -0.38), J(0.77), 'head');
@@ -88,7 +88,7 @@ function paintFront(F) {
 function paintRear(B) {
   const A = B.A, I = (x) => B.i(-x), J = (y) => B.j(y);
   A.ink(ROUGH.paint);
-  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y < 0.4 ? TRIM : y > 1.56 && ROOF ? ROOF[2] : RED[2]; });
+  B.box(0, 0, B.W, B.H, (i, j) => { const y = B.o.v0 + (j + 0.5) / B.ppm; return y < 0.4 ? TRIM : y > 1.56 && ROOF ? ROOF[2] : carPaint(i, j, y, RED, { sill: 0.4, horizon: 0.66, shoulder: 0.94, top: 1.56, ppm: B.ppm }); });
   const hw = [[-0.56, 1.0], [0.56, 1.0], [0.56, 1.4], [-0.56, 1.4]];
   glassPane(B, hw, { seed: 6, alpha: 130 }); seal(B, hw, RUBBER, 2);
   seamLoop(B, [[-0.62, 0.42], [0.62, 0.42], [0.62, 1.56], [-0.62, 1.56]], RED[0], RED[3], 0, -1);

@@ -486,7 +486,7 @@ function buildShell(t, B, m, I, cx) {
   const poster = (key, w, h, x, y) => B.quad(t.T2(key), w, h, x, y, z0 + 0.13, { ry: Math.PI });
   poster('matsuri', 0.42, 0.64, -14.6, 1.0); poster('idol', 0.42, 0.64, -10.4, 1.0);
   // signboard, awning and the dwelling upstairs
-  const sign = t.vmesh(new THREE.BoxGeometry(x1 - x0 + 0.1, 0.78, 0.12), [t.P(0.5), t.P(0.5), t.P(0.5), t.P(0.5), t.T('mikawaya', 240, 36, { glow: 0.55, rough: 0.4 }), t.P(0.5)]);
+  const sign = t.vmesh(new THREE.BoxGeometry(x1 - x0 + 0.1, 0.78, 0.12), [t.P(0.5), t.P(0.5), t.P(0.5), t.P(0.5), t.T('mikawaya', 1280, 162, { glow: 0.55, rough: 0.4 }), t.P(0.5)]);
   sign.position.set(cx, H1 + 0.6, z0 - 0.16); sign.rotation.y = Math.PI;
   t.add(sign);
   if (!lp) {

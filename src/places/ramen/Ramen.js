@@ -10,7 +10,7 @@
 // master also pays cash for washing dishes in the back (pick a bowl, scrub it with the sponge, rinse, rack it).
 //   game.places.ramen = { enter(), seat, served, washing, ... }      save: game.state.ramen
 import * as THREE from 'three';
-import { printImage, printRegions, whenPrint } from '../../gfx/printAtlas.js';
+import { printImage, printRegions, whenPrint, drawPrint } from '../../gfx/printAtlas.js';
 /** Draw a region of the baked ramen sheet into a 2D canvas; false until the sheet has loaded. */
 function rmDraw(c, key, x, y, w, h) {
   const img = printImage('ramen'), r = printRegions('ramen')[key];
@@ -106,7 +106,8 @@ export class Ramen {
     this.frontGlass.rotation.y = Math.PI;
     grp.add(this.frontGlass);
     // signboard, noren, lantern, the standing menu, a nobori flag
-    this.sign = pixCanvas(320, 64);
+    this.sign = pixCanvas(800, 160);
+    this.sign.tex.minFilter = THREE.LinearMipmapLinearFilter; this.sign.tex.generateMipmaps = true; this.sign.tex.anisotropy = 4;
     const sign = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.46, 0.06), [t.P(0.7), t.P(0.7), t.P(0.7), t.P(0.7), new THREE.MeshStandardMaterial({ map: this.sign.tex, roughness: 0.6 }), t.P(0.7)]);
     sign.position.set(dx - 0.3, 2.68, z - 0.06); sign.rotation.y = Math.PI;
     grp.add(sign);
@@ -153,7 +154,9 @@ export class Ramen {
   redrawArt() {
     // Ramen Yamada's print, baked from real dish photos (tools/bake-print.py -> ramen.webp); repainted once it loads
     const rm = (pc, key) => pc?.redraw((c, w, h) => { if (!rmDraw(c, key, 0, 0, w, h)) { c.fillStyle = '#2a1a12'; c.fillRect(0, 0, w, h); } });
-    rm(this.sign, 'rm:sign'); rm(this.noren, 'rm:noren'); rm(this.board, 'rm:board'); rm(this.flag, 'rm:flag');
+    // the signboard is the set sign face (tools/bake-signs.py), else the older print
+    this.sign?.redraw((c, w, h) => { if (!drawPrint(c, 'signs', 'sign:ramen', 0, 0, w, h) && !rmDraw(c, 'rm:sign', 0, 0, w, h)) { c.fillStyle = '#2a1a12'; c.fillRect(0, 0, w, h); } });
+    rm(this.noren, 'rm:noren'); rm(this.board, 'rm:board'); rm(this.flag, 'rm:flag');
     this.redrawPlaques?.();
     this.drawTickets?.();
     this.drawMenuCard?.();

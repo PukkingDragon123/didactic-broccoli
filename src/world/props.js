@@ -72,7 +72,7 @@ function modelBox(A) {
 function assetGeometry(def, voxGeo) {
   const A = def.asset;
   if (!A || (FORCE_VOXEL && voxGeo)) return null;
-  const v = voxGeo ? voxGeo.userData.size : modelBox(A);
+  const v = voxGeo && !A.own ? voxGeo.userData.size : modelBox(A); // own: the model's own size (asset.h / size), not the voxel box
   if (!v) return null;
   const r = assetMerged(A.id, { box: [-v.x / 2, 0, -v.z / 2, v.x / 2, v.y, v.z / 2], fit: A.fit || 'contain', ry: A.ry || 0 });
   if (!r) return null;
@@ -110,7 +110,7 @@ export function propGeometry(id) {
   let geo = null;
   if (def) {
     try {
-      geo = def.build ? buildProp(def) : null; // model-only props (src/data/props/lowpix.js) have no voxel build
+      geo = def.build && !(def.asset?.own && !FORCE_VOXEL) ? buildProp(def) : null; // model-only props (src/data/props/lowpix.js, home.js) have no voxel build
       if (def.asset) geo = assetGeometry(def, geo) || geo;
     } catch (e) {
       console.warn('prop build failed', id, e);

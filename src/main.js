@@ -49,7 +49,7 @@ async function boot() {
   const netBoot = await prepareNet((t) => loading.msg(t));
   if (netBoot) loading.msg('');
   // the baked print sheets that synchronous painters copy from (src/gfx/printAtlas.js) are in before the world builds
-  await Promise.all([loadFonts(), whenPrint('misc'), whenPrint('promo'), whenPrint('toycut')]);
+  await Promise.all([loadFonts(), whenPrint('misc'), whenPrint('promo'), whenPrint('toycut'), whenPrint('signs')]);
   loading.set(0.04);
   const game = new Game($('app'));
   window.__game = game;

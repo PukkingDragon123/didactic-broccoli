@@ -1,0 +1,56 @@
+{
+ "id": "sewing_machine2",
+ "src": "sketchfab:5afe6ca7cf9e4bdea2b85e56537a044c",
+ "credit": {
+  "title": "grandma's sewing machine",
+  "author": "iamgleb",
+  "authorUrl": "https://sketchfab.com/iamgleb",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/grandmas-sewing-machine-5afe6ca7cf9e4bdea2b85e56537a044c",
+  "site": "Sketchfab"
+ },
+ "tris": 2497,
+ "tex": 512,
+ "size": [
+  0.197,
+  0.3,
+  0.497
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#030309",
+   "#05050c",
+   "#06070e",
+   "#070911",
+   "#090c13",
+   "#202c3f",
+   "#384f68",
+   "#537490",
+   "#7999ac"
+  ],
+  "m1": [
+   "#5b3117",
+   "#754820",
+   "#8e622a",
+   "#a57d36",
+   "#bc9a42",
+   "#c2af5f",
+   "#c9c07b",
+   "#d1cf96",
+   "#dadab1"
+  ],
+  "m2": [
+   "#4b1c1a",
+   "#602b24",
+   "#743c2f",
+   "#87503b",
+   "#996548",
+   "#ad7f5c",
+   "#b79979",
+   "#c2b095",
+   "#cec5af"
+  ]
+ },
+ "warnings": []
+}

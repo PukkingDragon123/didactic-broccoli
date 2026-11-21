@@ -3,7 +3,7 @@
 // shading; eyes (sclera, iris, pupil, catchlight, lids, lashes), brows, lips, hairline, stubble, wrinkles,
 // make-up and glasses are drawn on top. Expressions move the features and the relief; only the region that
 // changed is repainted (blinks touch the eye band, talking the mouth band).
-import { clamp01, sstep, lerp, mixc, G, h2, shadeInto, over, hairPx } from './paintlib.js';
+import { clamp01, sstep, lerp, mixc, G, h2, vnoise, shadeInto, over, hairPx, q8 } from './paintlib.js';
 
 /** Expression parameters (all optional, 0 = neutral). Units: face pixels. */
 export const EXPRESSIONS = {
@@ -23,10 +23,8 @@ export function exprParams(name, out = {}) {
   return out;
 }
 
-const LIGHT = (() => { const l = [0.12, 0.6, 0.79]; const n = Math.hypot(...l); return l.map((v) => v / n); })();
-const INK = [26, 18, 18], LASH = [44, 30, 28];
-// the face is modelled now (src/people/base.js): the painted relief only adds a touch of shading on top
-const RELIEF = 0.14;
+const LIGHT = (() => { const l = [0.38, 0.66, 0.66]; const n = Math.hypot(...l); return l.map((v) => v / n); })();
+const INK = [26, 18, 18];
 
 export class FacePainter {
   /** block: { x, y, w, h, x0, y1, dens } (atlas px), pix: the atlas Pix */
@@ -41,21 +39,20 @@ export class FacePainter {
       earTopY: Y(P.earTop), earBotY: Y(P.earBot),
     };
     L.eyeX = L.hw * (kid ? 0.4 : 0.385);
-    if (P.face) L.eyeX = P.face.eyeX * d; // the modelled eye sockets (src/people/base.js)
-    L.ew = L.hw * (kid ? 0.225 : 0.185) * (F.eyeW || 1);
-    L.eh = s * (kid ? 2.7 : f ? 2.2 : 2.0) * (F.eyeH || 1) * (F.lid === 'mono' && !kid ? 0.9 : 1);
+    L.ew = L.hw * (kid ? 0.235 : 0.205) * (F.eyeW || 1);
+    L.eh = s * (kid ? 3.2 : f ? 2.9 : 2.6) * (F.eyeH || 1) * (F.lid === 'mono' && !kid ? 0.92 : 1);
     L.tilt = s * (F.tilt ?? 0.7);
-    L.ir = L.ew * (kid ? 0.5 : 0.44);
+    L.ir = L.ew * (kid ? 0.52 : 0.47);
     L.browIn = L.hw * 0.15; L.browOut = L.hw * 0.66;
-    L.browTh = s * (F.browW || 1) * (kid ? 1.35 : f ? 1.7 : 2.4);
+    L.browTh = s * (F.browW || 1) * (kid ? 1.7 : f ? 2.1 : 2.9);
     L.browArch = s * (F.browArch ?? (f || kid ? 1.6 : 0.9));
     L.noseW = s * (kid ? 4.2 : f ? 4.8 : 5.4);
     L.mouthW = s * (kid ? 6.6 : f ? 7.8 : 8.6);
-    L.lipU = s * (kid ? 1.5 : f ? 2.0 : 1.7) * (F.lipFull || 1);
-    L.lipL = s * (kid ? 2.2 : f ? 2.8 : 2.4) * (F.lipFull || 1);
+    L.lipU = s * (kid ? 1.9 : f ? 2.5 : 2.2) * (F.lipFull || 1);
+    L.lipL = s * (kid ? 2.6 : f ? 3.3 : 2.9) * (F.lipFull || 1);
     this.skin = spec.skin;
-    this.lip = F.lipstick || mixc(mixc(spec.skin, [188, 86, 86], f ? 0.5 : 0.36), [120, 60, 60], 0.12);
-    this.brow = F.browCol || mixc(mixc(spec.hair.col, spec.hair.grey ? [74, 68, 64] : [30, 22, 20], spec.hair.grey ? 0.4 : 0.25), spec.skin, spec.hair.grey ? 0.1 : kid ? 0.3 : 0.08); // grey brows keep some dark hairs
+    this.lip = F.lipstick || mixc(mixc(spec.skin, [176, 82, 80], f ? 0.62 : 0.5), [110, 54, 54], 0.15);
+    this.brow = F.browCol || mixc(mixc(spec.hair.col, [30, 22, 20], spec.hair.grey ? 0 : 0.25), spec.skin, spec.hair.grey ? 0.25 : kid ? 0.3 : 0.08);
     this.iris = F.iris || [72, 44, 30];
     this.age = spec.age === 'elder' ? 1 : spec.age === 'adult' ? 0.25 : 0;
     this.hair = spec.hair;
@@ -80,7 +77,7 @@ export class FacePainter {
   heightStatic(x, y) {
     const L = this.L, s = this.s, dx = x - L.cx, ax = Math.abs(dx), hw = L.hw, kid = this.P.kid;
     const low = sstep(L.eyeY, L.chinY, y);
-    let h = -(dx * dx) / (hw * hw) * (13 + (kid ? 5 : 12) * low) * s;
+    let h = -(dx * dx) / (hw * hw) * (6 + (kid ? 3 : 6) * low) * s;
     const top = clamp01((L.browY - y) / (L.browY - L.hairY + 6 * s));
     h -= top * top * 6 * s;
     h += 0.7 * s * G(dx, y - L.browY - 1.5 * s, 2.6 * s, 3 * s); // glabella
@@ -88,10 +85,10 @@ export class FacePainter {
     h += 1.5 * s * G(ax - L.eyeX, y - L.eyeY, L.ew * 0.95, L.eh * 1.9); // eyeballs
     // nose: bridge ridge widening to the tip, wings, tip ball, nostrils
     const tn = clamp01((y - (L.eyeY - 2 * s)) / (L.noseY - L.eyeY + 2 * s));
-    if (y > L.browY && y < L.noseY + 2 * s) h += (1.6 + 2.6 * tn) * s * Math.exp(-(dx * dx) / (2 * (lerp(1.3, 2.6, tn) * s) ** 2)) * sstep(L.browY, L.eyeY, y);
-    h += 2.6 * s * G(dx, y - (L.noseY - 2 * s), 2.4 * s, 2.1 * s);
-    h += 1.8 * s * G(ax - L.noseW * 0.72, y - (L.noseY - 1.2 * s), 1.4 * s, 1.6 * s);
-    h -= 1.6 * s * G(ax - L.noseW * 0.4, y - (L.noseY + 0.1 * s), 0.9 * s, 0.55 * s);
+    if (y > L.eyeY - 1 * s && y < L.noseY + 2 * s) h += (0.3 + 0.9 * tn) * s * Math.exp(-(dx * dx) / (2 * (lerp(1.6, 2.6, tn) * s) ** 2)) * sstep(L.eyeY - 1 * s, L.eyeY + 3 * s, y);
+    h += 1.5 * s * G(dx, y - (L.noseY - 2 * s), 2.6 * s, 2.3 * s);
+    h += 1.0 * s * G(ax - L.noseW * 0.72, y - (L.noseY - 1.2 * s), 1.8 * s, 1.8 * s);
+    h -= 1.0 * s * G(ax - L.noseW * 0.4, y - (L.noseY + 0.1 * s), 0.9 * s, 0.55 * s);
     if (!kid) h -= (1.1 + this.age * 0.6) * s * G(ax - hw * 0.66, y - (L.noseY + 2.5 * s), 2.6 * s, 4.5 * s); // under the cheekbones
     // philtrum, chin, temples
     h -= 0.6 * s * G(dx, y - (L.noseY + L.mouthY) / 2, 0.9 * s, 2.2 * s);
@@ -114,13 +111,13 @@ export class FacePainter {
     if (Math.abs(y - cy) < 20 * s) h += (2.2 + ch * 0.8 + (kid ? 1.4 : 0)) * s * G(ax - hw * 0.56, y - cy, (kid ? 7.5 : 6) * s, (kid ? 6.5 : 5) * s);
     const mw = L.mouthW * (E.mouthW || 1);
     if (y > L.noseY - 8 * s) {
-      h += 2.2 * s * G(dx, y - (L.mouthY - 1.5 * s), mw * 1.3, 6.5 * s); // muzzle
+      h += 1.1 * s * G(dx, y - (L.mouthY - 1.5 * s), mw * 1.5, 7 * s); // muzzle
       const lipB = L.mouthY + (E.open || 0) * 0.7 + L.lipL;
       if (Math.abs(y - lipB - 1.6 * s) < 4 * s) h -= 1.3 * s * G(dx, y - (lipB + 1.6 * s), mw * 0.7, 1.2 * s); // mentolabial sulcus
-      const nl = (0.35 + this.age * 1.4 + ch * 1.3) * s;
+      const nl = (0.12 + this.age * 1.2 + ch * 1.0) * s;
       if (y > L.noseY - 3 * s && y < L.mouthY + 5 * s) {
         const ty = clamp01((y - (L.noseY - 2 * s)) / (L.mouthY + 4 * s - L.noseY));
-        h -= nl * G(ax - lerp(L.noseW + 1.2 * s, mw + 2.4 * s + ch * s, ty), 0, 1.0 * s, 1); // nasolabial folds
+        h -= nl * G(ax - lerp(L.noseW + 1.4 * s, mw + 2.2 * s + ch * s, ty ** 0.8), 0, 1.5 * s, 1) * sstep(0, 0.25, ty); // nasolabial folds
       }
     }
     const lines = (E.lines || 0) + this.age * 0.8;
@@ -152,7 +149,7 @@ export class FacePainter {
       if (i === 0 && (j & 7) === 7) yield;
       const x = i + 0.5, y = j + 0.5, dx = x - L.cx, ax = Math.abs(dx), q = j * B.w + i;
       let k = 1 - 0.16 * sstep(L.chinY - 3 * s, L.chinY + 0.5, y) * (0.6 + 0.4 * ax / L.hw);
-      k *= 1 + (h2(i, j, 31) - 0.5) * (F.makeup ? 0.02 : 0.045);
+      k *= 1 + (vnoise(i * 0.32, j * 0.32, 31) - 0.5) * (F.makeup ? 0.035 : 0.07) + (h2(i, j, 31) - 0.5) * 0.015;
       // soft shadow of the hair mass on the forehead
       const hy = hl[i];
       if (y > hy + 2.5 * s && y < hy + 5 * s) k *= 1 - 0.13 * (1 - (y - hy - 2.5 * s) / (2.5 * s));
@@ -160,16 +157,16 @@ export class FacePainter {
       // tints as one affine map: start from 'identity' (A = 1, B = 0) and fold each over() into it
       let A = 1; const Bc = [0, 0, 0];
       const tint = (col, t) => { if (t <= 0.001) return; t = Math.min(1, t); A *= 1 - t; for (let m = 0; m < 3; m++) Bc[m] = Bc[m] * (1 - t) + col[m] * t; };
-      tint([204, 110, 100], (F.blush ?? 0.25) * 0.1 * G(ax - L.hw * 0.56, y - (L.eyeY + 7 * s), 5 * s, 4 * s) + 0.07 * G(dx, y - L.noseY + 2 * s, 3 * s, 2.5 * s));
+      tint([214, 104, 98], (F.blush ?? 0.25) * 0.22 * G(ax - L.hw * 0.56, y - (L.eyeY + 7 * s), 5 * s, 4 * s) + 0.07 * G(dx, y - L.noseY + 2 * s, 3 * s, 2.5 * s));
       tint([96, 66, 80], 0.1 * G(ax - L.eyeX + 1.2 * s, y - L.eyeY + 0.5 * s, 6 * s, 3.6 * s) * (0.7 + this.age));
       if (F.stubble) {
         const z = G(dx, y - (L.mouthY + 2 * s), L.mouthW * 1.5, 7 * s) * sstep(L.noseY + 0.5 * s, L.noseY + 2.2 * s, y) + 0.8 * sstep(L.hw * 0.62, L.hw * 0.86, ax) * sstep(L.noseY, L.mouthY, y);
         if (z > 0.05) tint([70, 72, 84], F.stubble * clamp01(z) * (0.18 + h2(i, j, 77) * 0.22));
       }
-      if (F.spots && this.age > 0.5 && h2(i, j, 91) > 0.994 && (y < L.browY - 2 * s || ax > L.hw * 0.5)) tint([150, 104, 80], 0.14);
+      if (F.spots && this.age > 0.5 && h2(i, j, 91) > 0.988 && (y < L.browY - 2 * s || ax > L.hw * 0.5)) tint([150, 100, 72], 0.28);
       if (F.freckles && y > L.eyeY + 2 * s && y < L.noseY + 2 * s && ax < L.hw * 0.7 && h2(i, j, 92) > 0.93) tint([168, 102, 70], 0.4 * F.freckles);
       const mk = F.makeup;
-      if (mk?.blush) tint(mk.blush, 0.09 * G(ax - L.hw * 0.55, y - (L.eyeY + 6 * s), 5 * s, 3.5 * s));
+      if (mk?.blush) tint(mk.blush, 0.22 * G(ax - L.hw * 0.55, y - (L.eyeY + 6 * s), 5 * s, 3.5 * s));
       if (mk?.highlight) tint([255, 246, 236], mk.highlight * (0.5 * G(dx, y - (L.eyeY + 1 * s), 1.2 * s, 5 * s) + 0.6 * G(ax - L.eyeX, y - (L.eyeY + L.eh + 2.2 * s), L.ew * 0.7, 1 * s)));
       this.tA[q] = A; this.tB[q * 3] = Bc[0]; this.tB[q * 3 + 1] = Bc[1]; this.tB[q * 3 + 2] = Bc[2];
       // hair + glasses layer (premultiplied by painting over transparent black, alpha tracked separately)
@@ -178,13 +175,19 @@ export class FacePainter {
         const edge = (hy - y) / (2.5 * s) + 0.5 + (h2(i, j, 13) - 0.5) * 0.9;
         if (edge >= 0.35) {
           a = clamp01((edge - 0.35) * 2.2);
-          hairPx(c, this.hair, i + Math.round(dx * 0.15 * (y - hy) / s), j, 0.95, 0.15 * G(dx, y - L.hairY + 10 * s, 14 * s, 6 * s));
+          if (this.hair.style === 'buzz' || this.hair.style === 'spiky' || this.hair.style === 'bald') {
+            // cropped: the scalp shows through short dark hair
+            const sk = this.skin, hc = this.hair.col, d = h2(i, j, 71);
+            const t = d < 0.6 ? 0.85 : 0.6;
+            c[0] = sk[0] + (hc[0] * 0.8 - sk[0]) * t; c[1] = sk[1] + (hc[1] * 0.8 - sk[1]) * t; c[2] = sk[2] + (hc[2] * 0.8 - sk[2]) * t;
+            if (this.hair.style === 'bald') a = 0;
+          } else hairPx(c, this.hair, i + Math.round(dx * 0.15 * (y - hy) / s), j, 0.95, 0.15 * G(dx, y - L.hairY + 10 * s, 14 * s, 6 * s));
           o[0] = c[0]; o[1] = c[1]; o[2] = c[2];
         }
       }
       if (F.mustache) {
         const mw = L.mouthW + 1.5 * s, u = dx / mw;
-        if (Math.abs(u) < 1.05 && y > L.noseY + 1.2 * s && y < L.mouthY - 0.4 * s + Math.abs(u) * 1.5 * s) {
+        if (Math.abs(u) < 1.05 && y > L.noseY + 1.4 * s + u * u * 2.2 * s && y < L.mouthY - 0.6 * s + Math.abs(u) * 2.4 * s - (Math.abs(u) < 0.12 ? 0.8 * s : 0)) {
           hairPx(c, this.hair, i, j, 0.85, 0.1);
           const t = 0.85 * sstep(1.05, 0.8, Math.abs(u)) * (h2(i, j, 61) > 0.15 ? 1 : 0.4);
           o[0] = o[0] * (1 - t) + c[0] * t; o[1] = o[1] * (1 - t) + c[1] * t; o[2] = o[2] * (1 - t) + c[2] * t; a = a + (1 - a) * t;
@@ -212,11 +215,11 @@ export class FacePainter {
     for (let j = y0; j < y1; j++) for (let i = x0; i < x1; i++) {
       const x = i + 0.5, y = j + 0.5, q = j * B.w + i;
       const k0 = (j - y0 + 1) * hw + (i - x0 + 1);
-      const gx = (hb[k0 + 1] - hb[k0 - 1]) * RELIEF, gy = (hb[k0 + hw] - hb[k0 - hw]) * RELIEF;
+      const gx = (hb[k0 + 1] - hb[k0 - 1]) * 0.5, gy = (hb[k0 + hw] - hb[k0 - hw]) * 0.5;
       const nl = 1 / Math.sqrt(gx * gx + gy * gy + 1);
       const dif = Math.max(0, (-gx * LIGHT[0] + gy * LIGHT[1] + LIGHT[2]) * nl);
       const cav = (hb[k0 - 1] + hb[k0 + 1] + hb[k0 - hw] + hb[k0 + hw]) * 0.25 - hb[k0];
-      shadeInto(o, skin, (0.54 + 0.5 * dif - Math.max(0, cav) * 0.05) * kk[q], 0.26);
+      shadeInto(o, skin, (0.42 + 0.66 * dif - Math.max(0, cav) * 0.08) * kk[q], 0.3);
       o[3] = 255;
       const A = tA[q];
       if (A < 0.999) { o[0] = o[0] * A + tB[q * 3]; o[1] = o[1] * A + tB[q * 3 + 1]; o[2] = o[2] * A + tB[q * 3 + 2]; }
@@ -226,7 +229,7 @@ export class FacePainter {
       const a = lay[q * 4 + 3];
       if (a > 0) { o[0] += (lay[q * 4] - o[0]) * a; o[1] += (lay[q * 4 + 1] - o[1]) * a; o[2] += (lay[q * 4 + 2] - o[2]) * a; }
       const p = ((B.y + j) * W + B.x + i) * 4;
-      d[p] = o[0] < 0 ? 0 : o[0] > 255 ? 255 : o[0]; d[p + 1] = o[1] < 0 ? 0 : o[1] > 255 ? 255 : o[1]; d[p + 2] = o[2] < 0 ? 0 : o[2] > 255 ? 255 : o[2]; d[p + 3] = 255;
+      d[p] = q8(o[0]); d[p + 1] = q8(o[1]); d[p + 2] = q8(o[2]); d[p + 3] = 255;
     }
     // the 1px gutter around the block repeats the edge
     if (!r || x0 === 0 || y0 === 0 || x1 === B.w || y1 === B.h) this.gutter();
@@ -237,10 +240,8 @@ export class FacePainter {
   gutter() {
     const B = this.B, d = this.pix.d, W = this.pix.w;
     const cp = (sx, sy, dx, dy) => { const a = ((B.y + sy) * W + B.x + sx) * 4, b = ((B.y + dy) * W + B.x + dx) * 4; d[b] = d[a]; d[b + 1] = d[a + 1]; d[b + 2] = d[a + 2]; d[b + 3] = d[a + 3]; };
-    for (let g = 1; g <= 2; g++) {
-      for (let i = -g; i < B.w + g; i++) { const c = Math.max(0, Math.min(B.w - 1, i)); cp(c, 0, i, -g); cp(c, B.h - 1, i, B.h - 1 + g); }
-      for (let j = 0; j < B.h; j++) { cp(0, j, -g, j); cp(B.w - 1, j, B.w - 1 + g, j); }
-    }
+    for (let i = -1; i <= B.w; i++) { const c = Math.max(0, Math.min(B.w - 1, i)); cp(c, 0, i, -1); cp(c, B.h - 1, i, B.h); }
+    for (let j = 0; j < B.h; j++) { cp(0, j, -1, j); cp(B.w - 1, j, B.w, j); }
   }
 
   brows(o, x, y, i, j, E) {
@@ -259,10 +260,8 @@ export class FacePainter {
     const dist = Math.abs(y - yc + (tc < 0.25 ? (0.25 - tc) * 1.5 * s : 0));
     let a = sstep(th / 2 + 0.7, th / 2 - 0.3, dist) * sstep(-0.08, 0.14, t) * sstep(1.08, 0.86, t);
     if (a <= 0) return;
-    // pixel art: a solid brow in two tones (no per-texel speckle), soft only at the inner start
-    a = (a > 0.45 ? 0.8 : a > 0.15 ? 0.42 : 0) * (1 - 0.35 * tc);
-    if (tc < 0.12) a *= 0.6;
-    const k = dist < th * 0.25 ? 0.82 : 1;
+    a *= 0.62 + h2(i, j, 41) * 0.5 - (tc < 0.15 ? 0.25 : 0);
+    const k = 0.75 + h2(i, j + 3, 42) * 0.4;
     const c = this.brow, bc = this.bc || (this.bc = [0, 0, 0]);
     bc[0] = c[0] * k; bc[1] = c[1] * k; bc[2] = c[2] * k;
     over(o, bc, Math.min(1, a));
@@ -305,14 +304,14 @@ export class FacePainter {
       if (y - top < 1) { o[0] *= 0.75; o[1] *= 0.72; o[2] *= 0.72; }
     }
     // upper lash line (thicker at the outer half), closed-lid line
-    const lw = (open < 0.08 ? 1.1 : 0.9 + 0.7 * sstep(-0.3, 0.8, t)) * s + liner;
-    if (t > -1.02 && t < 1.04 && y <= top + 0.45 && y > top - lw) over(o, LASH, t < -0.75 ? 0.5 : 0.85);
+    const lw = (open < 0.08 ? 1.3 : 1.25 + 0.8 * sstep(-0.3, 0.8, t)) * s + liner;
+    if (t > -1.02 && t < 1.04 && y <= top + 0.45 && y > top - lw) over(o, INK, t < -0.75 ? 0.6 : 0.95);
     // winged liner / lashes beyond the outer corner
-    if (liner > 0.5 * s && t >= 0.85 && t < 1.05 + liner * 0.08) {
-      const yw = yC - L.eh * 0.1 - (t - 0.85) * 1.2 * s;
-      if (Math.abs(y - yw) < 0.5) over(o, LASH, 0.8);
+    if ((lash > 0 || liner > 0) && t >= 0.85 && t < 1.15 + lash * 0.35) {
+      const yw = yC - L.eh * 0.1 - (t - 0.85) * (1.2 + lash) * s;
+      if (Math.abs(y - yw) < 0.55 + liner * 0.3) over(o, INK, 0.9);
     }
-    if (lash > 0 && t > -0.2 && t < 1 && y < top - lw + 0.2 && y > top - lw - 0.6 * s) over(o, LASH, 0.25 * lash);
+    if (lash > 0 && t > 0.1 && t < 0.95 && y < top - lw + 0.2 && y > top - lw - 1.0 * s && h2(Math.floor(x), Math.floor(y), 55) < lash * 0.6) over(o, INK, 0.8);
     // lower lid: soft lash line + light rim below
     if (t > -0.85 && t < 1 && open > 0.08) {
       if (y > bot && y < bot + 1) over(o, mk.lower ? INK : [96, 58, 54], mk.lower ? 0.85 : 0.22 + 0.18 * sstep(0, 1, t));
@@ -380,11 +379,11 @@ export class FacePainter {
     const r = g.kind === 'round' ? Math.sqrt(dx * dx + dy * dy) : Math.pow(Math.pow(Math.abs(dx), 4) + Math.pow(Math.abs(dy), 4), 0.25);
     const th = (g.thick || 1) / Math.min(hwG, hhG), fc = g.col;
     const put = (col, t) => { c[0] += (col[0] - c[0]) * t; c[1] += (col[1] - c[1]) * t; c[2] += (col[2] - c[2]) * t; c[3] = c[3] + (1 - c[3]) * t; };
-    // painted frames, bridge and temples (no modelled gear, src/people/gear.js); lenses: a faint tint and a glint, or dark
     if (r < 1 - th) {
       if (g.kind === 'sun') { put([26, 24, 30], 0.86); put([120, 110, 140], 0.25 * clamp01(1 - (y - gy + hhG) / (hhG * 1.2))); }
       else { put([190, 215, 230], 0.08); if (Math.abs((x - gx) + (y - gy) * 0.9 + hwG * 0.3) < 0.7 && dy < 0.2) put([255, 255, 255], 0.22); }
     } else if (r < 1 + th * 0.4) put(fc, 0.95);
+    else if (g.kind === 'horn' && dy < -0.15 && r < 1 + th * (0.4 + 2.2 * clamp01(-dy - 0.15))) put(fc, 0.95); // the heavy browline of a horn-rim
     if (Math.abs(y - (gy - hhG * 0.45)) < 0.6 && Math.abs(x - L.cx) < L.eyeX - hwG + 0.5) put(fc, 0.9);
     if (Math.abs(y - (gy - hhG * 0.55)) < 0.6 && Math.abs(x - L.cx) > L.eyeX + hwG - 0.3) put(fc, 0.9);
     return c[3];

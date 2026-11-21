@@ -5,8 +5,7 @@ import * as THREE from 'three';
 import { Game } from '../game/Game.js';
 import { GrandpaSystem, STOOL } from '../grandpa/index.js';
 import * as scenes from '../grandpa/scenes.js';
-import { Story } from '../game/Story.js';
-import { postcardArt } from '../grandpa/phone.js';
+import { forceUpTo } from '../grandpa/skip.js';
 import { PARK } from '../life/van.js';
 
 export function install(game) {
@@ -40,17 +39,14 @@ function debugGrandpa(g, sys) {
     skipMeet() { if (!sys.gp) return 'he is gone in this save'; sys.s.met = true; sys.mode = 'guide'; sys.seatAt(); if (g.held.find('key') < 0) g.held.giveTool('key'); sys.director.start({ quiet: false }); return true; },
     /** Force story steps done up to (not including) `id`, e.g. dbg.grandpa.upTo('breaker'). */
     upTo(id) { forceUpTo(g, id); return g.story.step(); },
-    /** Straight to the goodbye (everything up to the computer note done, you by the shutter). */
-    bye(auto = true) { if (!sys.s.met) this.skipMeet(); forceUpTo(g, 'read_pc'); g.player.pos.set(0.6, 0, 6.6); sys.director.onStep(g.story.step(), null); if (auto) this.autoPick(true); return true; },
+    /** Straight to the goodbye (everything up to sitting at the computer done, you by the shutter). */
+    bye(auto = true) { if (!sys.s.met) this.skipMeet(); forceUpTo(g, 'job'); g.player.pos.set(0.6, 0, 6.6); sys.director.onStep(g.story.step(), null); if (auto) this.autoPick(true); return true; },
     arrive() { g.cutscene.play((c) => scenes.taxiArriveScene(c, sys)); return true; },
     leave() { g.cutscene.play((c) => scenes.taxiLeaveScene(c, sys)); return true; },
     /** A phone call from him right now (answer it with dbg.grandpa.answer()). */
     ring(id = 'arrived') { sys.phone.ring(id); return true; },
     /** Run a call's cinematic straight away (no PC). */
     call(id = 'arrived') { const fake = { ended: false, say: () => Promise.resolve(true), hangup() { this.ended = true; } }; sys.phone.cinematic(fake, sys.phone.script(id)); return true; },
-    postcard() { sys.phone.postcard(); return true; },
-    /** The postcard's pixel art as a data URL (2x). */
-    postcardArt: () => postcardArt(),
     /** Keep picking the first floating choice whenever one shows (on: false stops). */
     autoPick(on = true, i = 0) { clearInterval(this._auto); if (on) this._auto = setInterval(() => pickChoice(i), 250); return on; },
     pick: pickChoice,
@@ -61,32 +57,4 @@ function debugGrandpa(g, sys) {
   };
 }
 
-/** Do the opening's jobs up to `id` (cheat: flags straight in the save, the world tidied to match). */
-export function forceUpTo(g, id) {
-  const S = g.story, f = S.flags, L = g.life, G = g.garage;
-  const order = Story.ORDER, stop = order.indexOf(id);
-  for (let i = 0; i < stop; i++) {
-    const k = order[i];
-    if (S.isDone(k) && k !== 'shop') continue;
-    switch (k) {
-      case 'letter': if (!L.notes.isRead('letter')) L.s.notes.push('letter'); L.notes.remove('letter'); break;
-      case 'shutter': f.shutter = true; G.setShutter(1, true); if (g.held.find('key') < 0) g.held.giveTool('key'); break;
-      case 'read_power': case 'read_clean': case 'read_tin': case 'read_junk': case 'read_cat': case 'read_pc': case 'read_machine': { const n = k.slice(5); if (!L.notes.isRead(n)) L.s.notes.push(n); break; }
-      case 'breaker': L.setPower(true); break;
-      case 'lights': g.state.lightsOn = true; G.setLights(true); break;
-      case 'window': f.windowDone = true; break;
-      case 'wipe': while (f.wiped.length < 4) f.wiped.push('w' + f.wiped.length); break;
-      case 'tin': if (!f.cash) S.takeCash(); break;
-      case 'tray': f.tray = true; break;
-      case 'junk': for (const st of [...L.chores.junk.values()]) L.chores.openJunk(st); for (const j of ['j1', 'j2']) if (!f.junkOpen.includes(j)) f.junkOpen.push(j); break;
-      case 'feed': f.fed = true; g.street?.befriendCat?.(); break;
-      case 'tube': if (!f.tube) { f.tube = true; const t = G.lights.tubes[1]; if (t) { t.dead = false; g.interaction.remove(t.fix); G.setLights(G.lightsOn); } } break;
-      case 'sweep': for (const [pid, p] of S.piles) { g.interaction.remove(p.mesh); p.mesh.parent?.remove(p.mesh); S.piles.delete(pid); if (!f.swept.includes(pid)) f.swept.push(pid); } for (const p of ['p1', 'p4', 'p6']) if (!f.swept.includes(p)) f.swept.push(p); break;
-      case 'bag': for (const p of ['p2', 'p3', 'p5']) if (!f.bagged.includes(p)) f.bagged.push(p); for (const [pid, st] of L.chores.piles) { g.interaction.remove(st.m); st.m.parent?.remove(st.m); L.chores.piles.delete(pid); } break;
-      case 'trashout': for (const t of ['b1', 'b3', 'r_p2', 'r_p5', 'c_p3', 'j1', 'j2']) if (!f.bags.includes(t)) f.bags.push(t); for (const e of [...g.items.list]) if (e.data?.bag || e.data?.junk) g.items.destroy(e); for (let i = 0; i < g.held.slots.length; i++) { const it = g.held.slots[i]; if (it?.data?.bag || it?.data?.junk) g.held.consume(i); } break;
-      default: break;
-    }
-  }
-  L.notes.refreshAll();
-  return S.step();
-}
+export { forceUpTo };

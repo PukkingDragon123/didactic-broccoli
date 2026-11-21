@@ -3,9 +3,9 @@
 //                the opening's last shot, src/arrival/: the camera in the driver's seat, him on his way over)
 //   meetScript   the meeting (a chat): you got tall / short, a bow or an awkward hug, the van's clutch, why he's
 //                leaving, and the key ring into your hands
-//   storyScene   across the lane together; he pats the shutter, the shop in its heyday (the flashback), then his
-//                stool: "Letter first. I'll supervise."
-//   taxiArriveScene / byeScript / taxiLeaveScene   the goodbye: the taxi, his notebook, off down the lane
+//   storyScene   across the lane together; he pats the shutter, the shop in its heyday (the flashback), then the
+//                plan: "Shutter first. I'll be right here."
+//   taxiArriveScene / byeScript / taxiLeaveScene   the goodbye: the taxi, the last of his advice, off down the lane
 import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
@@ -104,12 +104,12 @@ export function meetScript(sys) {
   const g = sys.game, gp = sys.gp;
   return async (t) => {
     const me = t.session.me.h;
-    await t.say('Kiddo! Look at you.', { gesture: 'wave', expr: 'happy' });
-    await t.say('You got tall.');
-    const a = await t.choose(['You got short.', 'Hi, Grandpa.', 'You look... the same.']);
-    if (a === 0) { gp.act('laugh', 1.6); await t.say("Ha! I'm shrinking. Doctor says it's my back."); await t.say("I say it's the lane. Everything round here settles."); }
-    else if (a === 1) await t.say("Hi yourself. All day in that van and that's all I get?");
-    else { gp.act('shrug', 1.6); await t.say('Liar. I look like a walnut.'); }
+    await t.say('Kiddo. Look at you.', { gesture: 'wave', expr: 'happy' });
+    await t.say("You were this high the last time you were here.");
+    const a = await t.choose(['You got shorter.', 'Hi, Grandpa.', "You haven't changed."]);
+    if (a === 0) { gp.act('laugh', 1.6); await t.say("I did. It's the back. It folds me up a bit more every winter."); }
+    else if (a === 1) await t.say("Hi. Six hours in that van. You must be stiff.");
+    else { gp.act('shrug', 1.6); await t.say("Yes I have. Don't be polite with me."); }
     // a bow, or a hug
     const b = await t.choose([{ text: 'Bow politely', silent: true }, { text: 'Hug him', silent: true }]);
     if (b === 0) {
@@ -118,32 +118,31 @@ export function meetScript(sys) {
       gp.act('bow', 2.4);
       await t.wait(2.2);
       gp.act('back', 2.2); gp.expr('sad', 2);
-      await t.say('Oof. ...No more bowing.');
-      await t.say("We're family. Family nods.", { gesture: 'nod' });
+      await t.say("Ow. ...Don't make me bow, kiddo. Not with this back.");
+      await t.say('A nod is fine between us.', { gesture: 'nod' });
     } else {
       await hug(sys, me, t);
     }
     // the van
     gp.lookAt = g.life?.van ? g.life.van.local(0, 1.0, 0) : null;
     gp.act('point', 1.8, g.life?.van?.local(0, 1.0, 0));
-    await t.say('And you got my van here in one piece.');
+    await t.say('And you brought the van back in one piece.');
     gp.lookAt = 'player';
-    await t.say('Does the clutch still bite?');
-    const c = await t.choose(['It bit me twice.', 'What clutch?', 'I stalled at every light.']);
-    if (c === 0) await t.say('Only twice? It likes you. It bit me for thirty years.');
-    else if (c === 1) { gp.act('scratch', 2); await t.say('...That explains the noise I heard from the station.'); }
-    else { gp.act('laugh', 1.6); await t.say('Good. Means you stopped at the lights. I never did.'); }
+    await t.say('The clutch give you trouble?');
+    const c = await t.choose(['It stalled twice.', 'It was fine.', 'I stalled at every light.']);
+    if (c === 0) await t.say("Only twice. It takes high up, that clutch. You'll get used to it.");
+    else if (c === 1) { gp.act('nod', 1.6); await t.say('Good. I had it serviced in March. Mikawa-san\'s nephew did it.'); }
+    else { gp.act('laugh', 1.6); await t.say('Everyone does in that van. Let it come up slow.'); }
     // why he's going
     await t.say("Right. Listen. Today's my last day in the lane.");
     gp.act('back', 2.4); gp.expr('sad', 3);
     await t.say("My back's finished. No more crouching for capsules. No more lifting machines.");
-    await t.say(`My sister ${SISTER}'s got a spare room in ${TOWN}. By the sea. Hot springs every morning.`);
+    await t.say(`My sister ${SISTER} has a spare room in ${TOWN}. By the sea. The doctor says the hot springs will help.`);
     gp.expr('smile', 2);
-    await t.say('Terrible.');
-    const d = await t.choose(["I'll miss you.", 'Hot springs every morning sounds terrible.', "Who's going to feed the cat?"]);
-    if (d === 0) { await t.say("Course you will. I'm wonderful."); gp.expr('sad', 2); await t.say("...I'll miss you too, kiddo. Don't tell anyone."); }
-    else if (d === 1) { gp.act('nod', 1.4); await t.say("I know. I'll suffer through it. For my back."); }
-    else { await t.say("You are. She doesn't know that yet."); await t.say('Neither did you. Surprise.'); }
+    const d = await t.choose(["I'll miss you.", 'Are you sure about this?', "Who's going to feed the cat?"]);
+    if (d === 0) { gp.expr('sad', 2); await t.say("I'll miss you too. And the lane. Forty-one years is a long time in one place."); }
+    else if (d === 1) { gp.act('nod', 1.4); await t.say("I'm sure. I couldn't lift the capsule boxes this spring. A shopkeeper who can't lift boxes is just a man sitting on a stool."); }
+    else { await t.say("You are. Mikan. She's under the table most days."); await t.say("Milk, not too much. I'll show you."); }
     // the keys
     profile(t, true);
     gp.hold(keyRing(), { pos: [0.01, -0.09, 0.03], rot: [0.3, 0, 0] });
@@ -157,11 +156,10 @@ export function meetScript(sys) {
     profile(t, false);
     audio.play('pickup', { vol: 0.6 });
     if (g.held.find('key') < 0) g.held.giveTool('key');
-    g.news("Grandpa's key ring", 'Shutter, padlock, back door... and one mystery key', 5000);
-    await t.say("Shutter, padlock, back door, and one I've never figured out.");
-    await t.say("Forty-one years. Never figured it out.", { gesture: 'shrug' });
-    await t.say("Don't lose them. I did. Twice. That's why there are three.");
-    await t.say("Come on. Let me show you the old girl. Before my back changes its mind.", { gesture: 'beckon' });
+    g.news("Grandpa's key ring", 'Shutter padlock, back door, the machine locks', 5000);
+    await t.say('Shutter padlock, back door, and the small one opens the machine locks.');
+    await t.say("I'm not leaving until the place is ready. Today we do the work together, properly.", { gesture: 'nod' });
+    await t.say('Come on. Across the lane.', { gesture: 'beckon' });
   };
 }
 
@@ -186,8 +184,8 @@ async function hug(sys, me, t) {
   gp.act('hug', 3.6);
   gp.expr('happy', 4);
   await t.wait(1.4);
-  await t.say('Okay. Okay. ...Okay.');
-  await t.say("That's enough. People will talk.");
+  await t.say('All right. All right.');
+  await t.say("That's enough now. Mrs. Tanaka is watching from her window.");
   me.clearGesture();
   k = 0;
   await sys.until((dt) => { k = Math.min(1, k + dt / 0.6); me.root.position.lerpVectors(to, from, ease.inOutQuad(k)); return k >= 1; });
@@ -212,7 +210,7 @@ export function* storyScene(c, sys) {
   gp.lookAt = null;
   if (me) { me.to = V(0.95, 0, 6.65); me.speed = 0.62; me.look = 'gp'; }
   yield c.cam({ pos: V(-1.9, 1.2, 9.9), look: V(1.8, 1.0, 8.6), fov: 46 });
-  yield c.all(c.cam({ pos: V(-1.5, 1.3, 9.2), look: V(1.4, 1.1, 7.6), dur: 4.4 }), line(c, sys, "Mind the cat. She's shy. She's also everywhere.", 1.6));
+  yield c.all(c.cam({ pos: V(-1.5, 1.3, 9.2), look: V(1.4, 1.1, 7.6), dur: 4.4 }), line(c, sys, "Mind the cat. That's Mikan. She lives here, more or less.", 1.6));
   // Mikan scoots off round the side
   if (cat && cat.wild) { cat.target = V(3.4, 0, 6.2); st.setCatState('flee', 6); }
   yield c.wait(1.2);
@@ -229,8 +227,8 @@ export function* storyScene(c, sys) {
   // looking up at the old front
   gp.lookAt = V(0.2, 3.0, Z);
   yield c.cam({ pos: V(0.5, 0.65, 8.7), look: V(0.4, 2.4, Z), fov: 58 });
-  yield c.all(c.cam({ pos: V(0.6, 0.75, 8.2), look: V(0.4, 2.6, Z), dur: 4 }), line(c, sys, "In '78 we had the space monster series. The line went round the block.", 0.4));
-  yield line(c, sys, 'Twice.', 0.9);
+  yield c.all(c.cam({ pos: V(0.6, 0.75, 8.2), look: V(0.4, 2.6, Z), dur: 4 }), line(c, sys, "In '78 we had the space monster series. The queue went past Mikawa-ya.", 0.4));
+  yield line(c, sys, 'Every day for a month.', 0.9);
   // the flashback: the shop in his day
   const actors = [];
   const hidden = [gp.h.root, gp.cane, sys.stool, me?.h.root].filter(Boolean);
@@ -261,7 +259,7 @@ export function* storyScene(c, sys) {
   k4.h.gesture('wave'); k5.h.gesture('cheer');
   g.bubbles?.say(ya.h, 'One coin, one turn. Good luck!', { dur: 3.2, onChar: sys.gp.voice });
   yield c.cam({ pos: V(1.6, 1.55, Z + 1.4), look: V(0.85, 1.5, 3.7), dur: 2.6 });
-  yield c.all(c.wait(1.4), c.say('Grown-ups pretended they weren\'t excited. They were.', 0.8, 'Grandpa', sys.gp.voice));
+  yield c.all(c.wait(1.4), c.say('The parents stood at the back and watched the dome.', 0.8, 'Grandpa', sys.gp.voice));
   c.hideSay();
   // back to now
   yield c.flash(() => {
@@ -275,16 +273,16 @@ export function* storyScene(c, sys) {
     c.pos.set(0.35, 1.5, 7.3); c.look.set(1.75, 1.35, 6.3);
   });
   gp.expr('sad', 3.5);
-  yield c.all(c.cam({ pos: V(0.4, 1.5, 7.15), look: V(1.75, 1.4, 6.3), dur: 3.4, fov: 40 }), line(c, sys, "...Anyway. That was then. Now it's dust and a cat.", 1.0));
+  yield c.all(c.cam({ pos: V(0.4, 1.5, 7.15), look: V(1.75, 1.4, 6.3), dur: 3.4, fov: 40 }), line(c, sys, "...Anyway. That was then. It's been shut three years.", 1.0));
   // to you: the plan
   gp.lookAt = V(0.95, 1.55, 6.65); // (you, standing beside him)
   gp.faceTo(V(0.95, 0, 6.65));
   gp.expr('smile', 3);
   if (me) { me.face = Math.atan2(1.75 - 0.95, 6.3 - 6.65); me.look = 'gp'; }
   yield c.cam({ pos: V(1.25, 1.5, 8.55), look: V(1.4, 1.3, 6.4), fov: 50 });
-  yield line(c, sys, 'Right. My letter first. Then the shutter.', 0.6);
-  gp.act('point', 2.2, V(0.85, 1.32, Z + 0.1));
-  yield line(c, sys, "I'll supervise. Supervising's good for the back.", 0.8);
+  yield line(c, sys, "Right. We open it up and clean it out today. You do the work, I'll show you how.", 0.6);
+  gp.act('point', 2.2, V(0.2, 0.7, Z + 0.1));
+  yield line(c, sys, 'Shutter first. The key is on your ring. I\'m right here watching.', 0.8);
   // off to his stool
   sys.sitOnStool();
   yield c.all(c.cam({ pos: V(-0.4, 1.6, 8.6), look: V(2.4, 0.9, 5.9), dur: 3.6, fov: 54 }), c.wait(3.6));
@@ -347,47 +345,37 @@ export function* taxiArriveScene(c, sys) {
   gp.lookAt = 'player';
   gp.faceTo(V(0.15, 0, 6.5));
   yield c.cam({ pos: V(-0.6, 1.4, 7.7), look: V(1.3, 1.25, 6.3), fov: 46 });
-  yield line(c, sys, 'Booked it this morning, in case today went badly.', 0.8);
+  yield line(c, sys, 'I booked it this morning. Fumiko is expecting me for dinner.', 0.8);
   gp.expr('smile', 2);
-  yield line(c, sys, "It went fine. I'm still taking it.", 0.9);
+  yield line(c, sys, "You did well today. Better than I thought, to be honest.", 0.9);
   g.bubbles?.clear(gp.h);
   yield c.toPlayer(0.6);
 }
 
-/** The goodbye chat: his notebook, the last bits of advice, a wave or a hug. */
+/** The goodbye chat: the last of his advice (the computer, the money, the machine), a wave or a hug. */
 export function byeScript(sys) {
   const g = sys.game, gp = sys.gp;
   return async (t) => {
     const me = t.session.me.h;
-    const book = propMesh('grandpa_notebook', { fallbackSize: [0.15, 0.03, 0.2], fallbackColor: 0x5a3420 });
-    book.scale.setScalar(0.85); book.castShadow = false;
-    profile(t, true);
-    gp.hold(book, { pos: [0.02, -0.1, 0.05], rot: [0.2, 0, 1.3] });
-    gp.act('give', Infinity);
-    await t.say('Here. I wrote everything down.');
-    await t.say('Twice. Once in pencil, once in pen. The pen one\'s for when the pencil fades.');
-    await t.choose([{ text: 'Take the notebook', silent: true }]);
-    me.gesture('point', { dur: 1.0 });
-    await t.wait(0.5);
-    gp.hold(null); gp.act(null);
-    profile(t, false);
-    audio.play('page', { vol: 0.7 });
-    g.news("Grandpa's notebook", "I'll keep it on the computer desk", 4500);
-    await t.say("Machines are on the computer now. Odd jobs on the board by the station, for the money.");
-    await t.say("The rest is on my notes. You'll be fine.", { gesture: 'nod' });
+    await t.say("Right. The rest you do on your own. Listen, because I'm not writing it down.");
+    gp.act('point', 2.2, V(-6.2, 1.5, 5.6));
+    await t.say('You need money for a machine. The neighbours pin odd jobs on the board by the station. Do a few.');
+    gp.lookAt = 'player';
+    await t.say('Then the computer. A used machine from Off-Hobby is plenty to start. Put your cash in the bank first, the shops online only take the bank.');
+    await t.say('Unbox it, plug it in, fill it, price it. Kids pay a hundred yen. Then hang my sign and flip it to OPEN.', { gesture: 'nod' });
     const a = await t.choose(['Thank you, Grandpa.', 'Stay one more day?', 'Can I call you?']);
-    if (a === 0) await t.say("Don't thank me. I'm leaving you a garage full of work and a cat that bites.");
-    else if (a === 1) { gp.act('no', 1.4); await t.say("One more day and I'd start rearranging things. Then you'd want me gone."); await t.say('Better like this.'); }
-    else { await t.say("Sundays. Not after eight. I'm in the bath."); await t.say("Number's in the notebook. Or I'll ring you. I'll probably ring you."); }
+    if (a === 0) await t.say("Thank me when the kids come back. That's what this was all for.");
+    else if (a === 1) { gp.act('no', 1.4); await t.say("If I stay one more day I'll stay ten. Fumiko has the bath running."); await t.say('Better like this.'); }
+    else { await t.say("Of course. Not after eight, I'm in the bath."); await t.say("I'll ring you too. The computer has a phone on it now. Daikoku's nephew set it up."); }
     gp.expr('sad', 3);
     await t.say('Look after the lane, kiddo. The kids, the neighbours, the cat.');
     gp.expr('smile', 3);
-    await t.say('The toys are just the excuse.');
+    await t.say('The toys are how you get to know them.');
     const b = await t.choose(['Bye, Grandpa.', { text: 'Hug him', silent: true }]);
     if (b === 1) await hug(sys, me, t);
     else { gp.act('cap', 1.8); await t.say('Bye, kiddo.'); }
     gp.act('back', 1.6);
-    await t.say("...Right. Before I get soppy. My back's had enough of standing anyway.");
+    await t.say("...Right. In I get, before I change my mind.");
   };
 }
 

@@ -1,0 +1,34 @@
+{
+ "id": "wear_cap",
+ "src": "sketchfab:53effc8d26434c6da8bf1a9a921e1e52",
+ "credit": {
+  "title": "Baseball Cap",
+  "author": "FLO_wav",
+  "authorUrl": "https://sketchfab.com/flokapokaa",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/baseball-cap-53effc8d26434c6da8bf1a9a921e1e52",
+  "site": "Sketchfab"
+ },
+ "tris": 1704,
+ "tex": 512,
+ "size": [
+  0.131,
+  0.13,
+  0.196
+ ],
+ "colours": 5,
+ "palette": {
+  "m0": [
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#000000",
+   "#232323",
+   "#464646",
+   "#696969",
+   "#8c8c8c"
+  ]
+ },
+ "warnings": []
+}

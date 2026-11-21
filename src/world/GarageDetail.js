@@ -641,6 +641,25 @@ export class GarageDetail {
     if (hasProp('cobweb')) {
       this.prop('cobweb', G.minX + 0.194, G.height - 0.1 - 0.392, G.minZ + 0.012, 0);
     }
+    // ---- Grandpa's garage, lived in for forty years (kept off the attach zones: high on the walls and in the front
+    // corners, each listed in ATTACH.wallBlock or standing as a player obstacle so the builder never places into them)
+    /** A model prop flat against a wall: face '+z' (the back wall), '-x' (the right wall); u = along it, y = its bottom. */
+    const onWall = (id, face, u, y, { w = null, h = null } = {}) => {
+      if (!hasProp(id)) return null;
+      const sz = propSize(id);
+      const k = Math.min(w ? w / sz.x : 1, h ? h / sz.y : 1);
+      const d = sz.z * k / 2 + 0.006;
+      if (face === '+z') return this.prop(id, u, y, G.minZ + d, 0, { scale: k });
+      return this.prop(id, G.maxX - d, y, u, -Math.PI / 2, { scale: k });
+    };
+    // the household shrine (kamidana) high on the right wall at the back, the New Year's lucky rake beside it
+    onWall('mk_kamidana', '-x', -2.45, 2.44, { w: 0.86, h: 0.7 });
+    onWall('mk_kumade', '-x', -3.15, 2.36, { w: 0.34, h: 0.5 });
+    // the old wall clock over the back door
+    onWall('wall_clock', '+z', 0, 2.36, { w: 0.42, h: 0.5 });
+    // the front corners inside the shutter: a stack of old tyres, the umbrella stand by the way in
+    if (hasProp('tires')) { const s = propSize('tires'), k = Math.min(1, 0.62 / Math.max(s.x, s.z)); this.prop('tires', 3.48, 0, G.maxZ - 0.48, 0.4, { scale: k, block: true, phys: true, material: 'rubber' }); }
+    if (hasProp('umbrella_stand')) { const s = propSize('umbrella_stand'), k = Math.min(1, 0.36 / Math.max(s.x, s.z)); this.prop('umbrella_stand', -3.62, 0, G.maxZ - 0.38, 0.3, { scale: k, block: true, phys: true }); }
     void B; void m;
   }
 
@@ -701,9 +720,9 @@ export class GarageDetail {
     const cool = 0xd8e4ff, warm = 0xffb070;
     const fx = [[0, -2.0, 0], [0, 0.8, 1], ...this.extraFix.map(([x, z]) => [x, z, 0])];
     for (const [x, z, src] of fx) {
-      // light splashed on the ceiling boards around the fixture, and a soft pool on the floor below
-      H2(V3(x, H - 0.004, z), X, Z, 1.5, 2.6, cool, 0.55, src);
-      H2(V3(x, 0.006, z), X, Z, 2.6, 3.6, cool, 0.1, src);
+      // light splashed on the ceiling boards around the fixture (no pool on the floor: those read as pale stains on the
+      // slab by day, and the real lights already light it)
+      H2(V3(x, H - 0.004, z), X, Z, 1.5, 2.6, cool, 0.42, src);
     }
     // warm wash on the wall behind the lit sign and each paper lantern
     H2(V3(G.minX + 0.012, 2.4, -0.6), Z, Y, 2.6, 1.2, warm, 0.35, 2);

@@ -61,6 +61,8 @@ import { detailize, surfaceTex } from './surfaces.js';
 import { archPlace, archReady, archInstances } from './archModels.js';
 import { assetNow } from '../kit/assets.js';
 import { LP_HOUSES, archAsset } from '../kit/lowpixArch.js';
+import { treeInstances, foliageTick, Leaves, potGeometry } from './foliage.js';
+import { trainCars } from './trainModel.js';
 
 // ------------------------------------------------------------------ layout
 const ZB = 5.3, ZG0 = 5.75, ZG1 = 6.1, ZR1 = 13.35, ZG3 = 13.7, ZF = 14.9;
@@ -69,7 +71,7 @@ const TZ0 = 6.6, TZ1 = 12.6, TH = 3.4, WALK = 11.65; // opening, clearance, walk
 const YE = 4.25, YR = 4.72; // embankment top, rail top
 const TRACKS = [30, 33];
 const LANE_Z = [7.3, 11.2];
-const TRAIN_CAR = 13.6, TRAIN_GAP = 0.5, TRAIN_N = 3;
+const TRAIN_CAR = 18, TRAIN_GAP = 0.5, TRAIN_N = 3; // 18 m three-door cars (src/world/trainModel.js)
 const TRAIN_LEN = TRAIN_N * TRAIN_CAR + (TRAIN_N - 1) * TRAIN_GAP;
 
 // pitch-black underpasses: everything inside fades to black a few metres past the portal (see tunnelDark.js);
@@ -458,6 +460,7 @@ export class Town {
   build() {
     this.initMats();
     this.B = new Batch(shadeAt);
+    this.leaves = new Leaves(3); // every bush, climber and potted plant of the lane: one mesh of sprig cards
     this.buildSky();
     this.buildGround();
     this.buildShopFront();
@@ -476,6 +479,7 @@ export class Town {
     this.buildBounds();
     try { buildLanePosters(this); } catch (e) { console.error('Town: lane posters failed', e); }
     this.B.build(this.group);
+    this.leaves.build(this.group, { cast: true, name: 'leaves:lane' });
     this.flushTrees();
     this.flushProps();
     this.buildTrains();
@@ -1047,12 +1051,11 @@ export class Town {
     // a window box of flowers on the sill
     if (opt.flowers) {
       B.box(m.pv, w * 0.9, 0.15, 0.2, x + nx * 0.16, y - 0.2, z + nz * 0.16, { ry, tint: 0x5a4030 });
-      const n = Math.max(3, Math.round(w * 5)), cols = [0xe5383b, 0xff8fb2, 0xffd23f, 0xfbf8f0, 0x9a6ad8];
-      for (let i = 0; i < n; i++) {
-        const t = -w * 0.4 + (i + 0.5) * (w * 0.8 / n), fx = x + tx * t + nx * 0.16, fz = z + tz * t + nz * 0.16;
-        B.box(m.pv, 0.13, 0.1, 0.14, fx, y - 0.06, fz, { ry, tint: hash2(i, wp.x) < 0.5 ? 0x3f7a32 : 0x4f8a3a });
-        B.box(m.pv, 0.06, 0.05, 0.06, fx + tx * 0.02, y + 0.03 + hash2(i, 3) * 0.04, fz + tz * 0.02, { ry, tint: cols[Math.floor(hash2(i + wp.z, 5) * cols.length)] });
-      }
+      // geraniums and pansies spilling over the box (sprig cards, src/world/foliage.js)
+      const m4 = new THREE.Matrix4().makeRotationY(ry).setPosition(x + nx * 0.16, y - 0.06, z + nz * 0.16).premultiply(B.top);
+      const kinds = ['pelargonium', 'pansy', 'azalea'], k0 = kinds[Math.floor(hash2(wp.x, wp.z) * 3)];
+      this.leaves.bush(m4, [0, 0.12, 0], [w * 0.42, 0.13, 0.11], { kind: k0, mix: ['small', 0.35], size: 0.26, density: 1.3, seed: wp.x });
+      this.leaves.hang(m4, -w * 0.4, w * 0.4, 0.05, 0.1, { kind: 'pothos', size: 0.2, drop: 0.25, density: 0.5, seed: wp.z });
     }
   }
 
@@ -1157,11 +1160,66 @@ export class Town {
       for (const s of [-1, 1]) B.box(m.pv, 0.06, 0.14, 0.22, fx + s * fw * 0.35, fy1 + 0.98, d - 0.03, { tint: 0x2a8ae8 });
     }
     if (b.dish) { B.box(m.metal, 0.03, 0.4, 0.03, b.x1 - 0.15, fy1 + 1.0, d - 0.03, { tint: 0x8a8a88 }); B.box(m.pv, 0.42, 0.42, 0.05, b.x1 - 0.15, fy1 + 1.3, d + 0.05, { rx: -0.3, tint: 0xe8e8e0 }); B.box(m.metal, 0.03, 0.03, 0.3, b.x1 - 0.15, fy1 + 1.5, d + 0.2, { tint: 0x5a5a58 }); }
-    if (b.pots) for (let i = 0; i < b.pots; i++) {
-      const px = b.x1 - 0.25 - i * 0.32;
-      B.box(m.pv, 0.22, 0.2, 0.22, px, fy1, d - 0.2, { tint: 0xb4603a });
-      B.box(m.pv, 0.28, 0.25 + hash2(i, seed) * 0.2, 0.28, px, fy1 + 0.2, d - 0.2, { tint: hash2(seed, i) < 0.5 ? 0x4a8a3a : 0x3e7a34 });
+    if (b.pots) for (let i = 0; i < b.pots; i++) this.potPlant(b.x1 - 0.25 - i * 0.32, fy1, d - 0.2, 0.9 + hash2(i, seed) * 0.3, { seed: seed * 7 + i });
+  }
+
+  /** A potted plant (in the current batch frame): a lathe pot (terracotta, glazed or plastic) and a bush of sprig cards.
+   *  o: { kind, flower (a sprig kind with flowers), pot (tint), h (bush height factor), seed }. */
+  potPlant(x, y, z, s = 1, o = {}) {
+    const B = this.B, m = this.m, seed = o.seed ?? Math.round(x * 31 + z * 17);
+    const r = 0.11 * s, h = 0.19 * s, pots = [0xb4603a, 0xa8582e, 0x3a5a8a, 0x6a4a5a, 0xd8d4c8];
+    const g = potGeometry(r, h, 10); g.translate(x, y, z);
+    B.geo(m.pv, g, { tint: o.pot ?? pots[Math.floor(hash2(seed, 3) * 2.6)] });
+    const kinds = ['small', 'kaname', 'aloe', 'fern', 'pothos', 'pelargonium', 'hydrangea'];
+    const kind = o.kind || kinds[Math.floor(hash2(seed, 5) * kinds.length)];
+    const bh = (0.16 + hash2(seed, 7) * 0.08) * s * (o.h ?? 1);
+    this.leaves.bush(B.top, [x, y + h * 0.9 + bh * 0.55, z], [r * 1.35, bh, r * 1.35],
+      { kind: o.flower || kind, mix: o.flower ? [kind, 0.5] : null, size: Math.min(0.34, 0.2 + 0.1 * s), density: 1.5, seed });
+  }
+
+  /** Pots along a house front (軒先の鉢植え): a cluster of potted plants of different sizes, local x across; block =
+   *  keep walkers out of its footprint. */
+  potRow(x, y, z, ry = 0, s = 1, { n = 5, block = false, seed = 0 } = {}) {
+    const B = this.B, k0 = Math.round(x * 13 + z * 7) + seed;
+    B.push(x, y, z, ry);
+    let u = -0.45 * s * (n / 5) * 1.8 / 2;
+    for (let i = 0; i < n; i++) {
+      const k = hash2(k0, i), sz = (0.75 + k * 0.7) * s;
+      const fl = k > 0.66 ? ['pelargonium', 'azalea', 'pansy'][i % 3] : null;
+      this.potPlant(u + 0.12 * sz, 0, (hash2(i, k0) - 0.5) * 0.18 * s, sz * 1.15, { flower: fl, seed: k0 * 3 + i, h: 0.9 + k * 0.6 });
+      u += 0.27 * sz + 0.05 * s;
     }
+    B.pop();
+    if (block) { const r = 0.5 * s * Math.max(1, n / 4); this.game.player.addObstacle(x - r, x + r, z - 0.25 * s, z + 0.25 * s); }
+  }
+
+  /** A styrofoam fish box turned vegetable bed (発泡スチロールの家庭菜園): tomatoes or herbs on a sheltered doorstep. */
+  styroPlanter(x, y, z, ry = 0, s = 1, kind = 'tomato') {
+    const B = this.B, m = this.m;
+    B.push(x, y, z, ry);
+    B.box(m.pv, 0.6 * s, 0.3 * s, 0.4 * s, 0, 0, 0, { tint: 0xeeeee8 });
+    B.box(m.pv, 0.62 * s, 0.03 * s, 0.42 * s, 0, 0.3 * s, 0, { tint: 0xe2e2da });
+    B.box(m.pv, 0.56 * s, 0.02, 0.36 * s, 0, 0.29 * s, 0, { tint: 0x4a3426 });
+    this.leaves.bush(B.top, null, null, { clumps: [[-0.14 * s, 0.52 * s, 0, 0.17 * s, 0.24 * s, 0.15 * s], [0.14 * s, 0.48 * s, 0, 0.16 * s, 0.2 * s, 0.15 * s]], kind, mix: ['sprout', 0.25], size: 0.26 * s, density: 1.8, seed: x + z });
+    for (const dx of [-0.14, 0.14]) B.box(m.wood, 0.015, 0.6 * s, 0.015, dx * s, 0.3 * s, 0, { tint: 0x9a8a60 });
+    B.pop();
+  }
+
+  /** A trimmed hedge (kaname with a few azaleas) in a concrete kerb: 2 m x 0.6 m x 1 m at s = 1, along local x; the
+   *  leaf mass is sprig cards (src/world/foliage.js) over a dark core, so it reads dense from any side. */
+  hedge(x, y, z, ry = 0, s = 1, o = {}) {
+    const B = this.B, m = this.m, L = 2.0 * s, D = 0.6 * s, H = 1.0 * s;
+    B.push(x, y, z, ry);
+    B.box(m.found, L + 0.04, 0.075 * s, D + 0.04, 0, 0, 0, { tint: 0xb4b0a6 });
+    B.box(m.pv, L - 0.04, 0.02, D - 0.04, 0, 0.075 * s, 0, { tint: 0x4a3828 });
+    B.box(m.pv, L - 0.2 * s, H * 0.8, D - 0.16 * s, 0, 0.12 * s, 0, { tint: 0x1c3220 });
+    const n = Math.max(2, Math.round(L / (0.55 * s))), clumps = [];
+    for (let i = 0; i < n; i++) {
+      const cx = -L / 2 + (i + 0.5) * L / n, k = hash2(Math.round(x * 10) + i, Math.round(z * 10));
+      clumps.push([cx, 0.56 * H + k * 0.04 * s, 0, L / n * 0.72, 0.46 * H, D * 0.56]);
+    }
+    this.leaves.bush(B.top, null, null, { clumps, kind: o.kind || 'kaname', mix: o.mix || ['azalea', 0.18], size: 0.36 * Math.max(0.8, s), density: 1.7, seed: x * 3 + z });
+    B.pop();
   }
 
   /** Block wall along a building line with gaps; z is the wall's lane-side face. Options: mat (e.g. Ōya stone), deco
@@ -1540,15 +1598,15 @@ export class Town {
     if (!archInstances('utility_pole', this.group, list)) for (const p of list) this.prop('utility_pole', p.x, 0, p.z, p.ry);
   }
 
-  /** A lowpix tree ('keyaki' | 'pine', art/lowpix/world_arch/_src/trees.py), queued and drawn instanced by flushTrees();
-   *  falls back to the voxel prop. */
+  /** A tree ('keyaki' | 'sakura' | 'pine' | 'kaki': the lowpix wood, art/lowpix/world_arch/_src/trees.py, under a crown
+   *  of sprig cards, src/world/foliage.js), queued and drawn instanced by flushTrees(); falls back to the old prop. */
   tree(kind, x, z, ry = 0, s = 1) { (this._trees ||= []).push({ kind, x, y: 0, z, ry, s }); }
   flushTrees() {
     const list = this._trees || [];
     this._trees = [];
-    for (const kind of ['keyaki', 'pine']) {
+    for (const kind of ['keyaki', 'sakura', 'pine', 'kaki']) {
       const L = list.filter((t) => t.kind === kind);
-      if (L.length && !archInstances('tree_' + kind, this.group, L, { cast: true })) for (const t of L) this.prop(kind === 'pine' ? 'pine_tree' : 'keyaki_tree', t.x, 0, t.z, t.ry, { scale: t.s });
+      if (L.length && !treeInstances(kind, this.group, L, { cast: true })) for (const t of L) this.prop(kind === 'pine' ? 'pine_tree' : 'keyaki_tree', t.x, 0, t.z, t.ry, { scale: t.s });
     }
   }
 
@@ -1718,12 +1776,13 @@ export class Town {
     }
 
     // ---- house-front clutter: pots, planters, fire buckets, bicycles, an extinguisher box, a reed screen
-    this.prop('pot_cluster', 12.45, 0, 5.5, 0, { block: true, scale: 0.8 });
+    this.potRow(12.45, 0, 5.5, 0, 0.9, { n: 5, block: true });
     this.prop('fire_ext_box', 15.7, 0, 5.5, 0, { block: true });
-    this.prop('styro_planter', 15.85, 0, 4.6, 0);
-    this.prop('pot_cluster', -19.75, 0, 14.65, Math.PI, { block: true, scale: 0.85 });
+    this.styroPlanter(15.85, 0, 4.6, 0, 1.2);
+    this.potRow(-19.75, 0, 14.65, Math.PI, 0.95, { n: 5, block: true });
     this.prop('fire_buckets', 15.8, 0, 14.62, Math.PI, { block: true });
-    this.prop('styro_planter', -24.9, 0, 14.6, Math.PI, { block: true, scale: 0.85 });
+    this.styroPlanter(-24.9, 0, 14.6, Math.PI, 1.05, 'pelargonium');
+    this.game.player.addObstacle(-25.25, -24.55, 14.35, 14.85);
     this.prop('fire_ext_box', -20.75, 0, 14.72, Math.PI, { block: true });
     this.prop('mamachari', 22.35, 0, 14.5, -Math.PI / 2 + 0.05, { block: true });
     this.prop('mamachari', -14.55, 0, 5.62, Math.PI / 2 - 0.06, { block: true });
@@ -1733,7 +1792,7 @@ export class Town {
       B.geo(this.T('yoshizu', 30, 60, { alpha: true, rough: 0.9 }), g, {});
       B.box(m.pv, 0.12, 0.12, 1.0, 25.71, 1.76, 1.6, { tint: 0xb89a5a });
     }
-    this.prop('pot_cluster', -21.2, 0, 2.45, 0, { scale: 0.7 });
+    this.potRow(-21.2, 0, 2.45, 0, 0.8, { n: 4 });
     // stepping stones from the gate to the door in the garden of NW4
     for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.box(m.found, 0.46, 0.05, 0.38, x, 0, z, { ry: r, tint: 0xb8b4ac, k: 0.95 });
     P.addObstacle(11.3, 11.66, 5.38, 5.56);
@@ -2011,6 +2070,13 @@ export class Town {
 
   // ---------------------------------------------------------------- trains
   makeTrain() {
+    // the lowpix EMU (src/world/trainModel.js); the old painted boxes only if its models failed to load
+    const lp = trainCars(TRAIN_N, TRAIN_CAR, TRAIN_GAP);
+    if (lp) {
+      this.nightGlow ||= [];
+      for (const m of lp.mats) if (!this.nightGlow.some((e) => e[0] === m)) this.nightGlow.push([m, 0, 1.25]);
+      return lp.group;
+    }
     const g = new THREE.Group();
     const side = townPix('trainSide', 448, 104).texture(), sideE = townPix('trainSideE', 448, 104).texture();
     const front = townPix('trainFront', 90, 104).texture(), frontE = townPix('trainFrontE', 90, 104).texture();
@@ -2072,6 +2138,7 @@ export class Town {
 
   update(dt, t) {
     void t;
+    foliageTick(dt);
     if (this.interiorM) this.interiorM.uniforms.uTime.value += dt;
     this.updateZones();
     this.cull?.update(this.game.camera, this.game.renderer?.quality?.view ?? 1);

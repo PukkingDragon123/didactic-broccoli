@@ -1,0 +1,67 @@
+{
+ "id": "beer_bottle",
+ "src": "sketchfab:03d9062085214988b2e984470c7c0d28",
+ "credit": {
+  "title": "Dusty Beer Bottle",
+  "author": "Coozy",
+  "authorUrl": "https://sketchfab.com/GameDevNick",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/dusty-beer-bottle-03d9062085214988b2e984470c7c0d28",
+  "site": "Sketchfab"
+ },
+ "tris": 1200,
+ "tex": 288,
+ "size": [
+  0.082,
+  0.25,
+  0.106
+ ],
+ "colours": 27,
+ "palette": {
+  "m0": [
+   "#1e0b08",
+   "#27110c",
+   "#2f1810",
+   "#372014",
+   "#3e2918",
+   "#664a2a",
+   "#8c6e3f",
+   "#ae9457",
+   "#beb181"
+  ],
+  "m1": [
+   "#510c17",
+   "#681218",
+   "#7e1a18",
+   "#942b20",
+   "#a83f28",
+   "#c65a34",
+   "#ce7f55",
+   "#d5a078",
+   "#ddbc99"
+  ],
+  "m2": [
+   "#643620",
+   "#804f2d",
+   "#9a693a",
+   "#b48649",
+   "#bda068",
+   "#c3b280",
+   "#cac196",
+   "#d2cfac",
+   "#dbdbc1"
+  ],
+  "m3": [
+   "#69493a",
+   "#86654f",
+   "#a08267",
+   "#b09f89",
+   "#c2b9a9",
+   "#c8c4b7",
+   "#d0cdc4",
+   "#d7d7d0",
+   "#e0dfdc"
+  ]
+ },
+ "warnings": []
+}

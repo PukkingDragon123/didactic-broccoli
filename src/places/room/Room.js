@@ -76,7 +76,8 @@ export class Room {
   // ------------------------------------------------------------------ the futon
   buildBed() {
     const f = this.R.futonAt, mats = this.places.voxel();
-    this.bed = { base: prop('bed_base', mats, f.x, 0, f.z), made: prop('bed_duvet_made', mats, f.x, 0, f.z), messy: prop('bed_duvet_messy', mats, f.x, 0, f.z) };
+    // (the futon model is made up already: the comforter heap shows on top of it until you make the bed)
+    this.bed = { base: prop('bed_base', mats, f.x, 0, f.z), made: new THREE.Group(), messy: prop('bed_duvet_messy', mats, f.x, 0.04, f.z) };
     for (const m of Object.values(this.bed)) this.group.add(m);
     this.showBed();
     const hb = hitBox(1.0, 0.3, 2.0, f.x, 0.15, f.z);
@@ -97,7 +98,7 @@ export class Room {
   showBed() {
     const B = this.bed;
     B.made.visible = this.s.made; B.messy.visible = !this.s.made;
-    B.messy.position.set(this.R.futonAt.x, 0, this.R.futonAt.z); B.messy.scale.setScalar(1);
+    B.messy.position.set(this.R.futonAt.x, 0.04, this.R.futonAt.z); B.messy.scale.setScalar(1);
   }
   night() { const h = this.game.clock?.hours ?? 12; return h >= 20 || h < 5; }
   bedHint() {

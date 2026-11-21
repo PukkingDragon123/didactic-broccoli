@@ -3,7 +3,7 @@
 //   game.os.codex.person({ id, name, role, look, desc, met() })   add someone to the People page
 //   game.os.codex.yokai({ id, name, desc, rumor, look })            add a yokai;  game.os.codex.see(id) records a sighting
 import { h, esc, ic } from './ui.js';
-import { portraitURL } from '../art.js';
+import { portraitURL, blankTile } from '../art.js';
 import { SERIES } from '../../data/series/index.js';
 import { RARITIES } from '../../data/rarity.js';
 import { FINISHES } from '../../data/finishes.js';
@@ -129,14 +129,14 @@ export function installCodex(game, os) {
         for (const p of people) {
           const ok = !!p.met?.();
           if (ok) n++;
-          grid.append(h('div', { class: `cx-pc${ok ? '' : ' unk'}` }, h('img', { class: 'c98-ava', src: portraitURL(ok ? p.look : p.look.cat ? { bg: 0xd8d0c0, robot: false, hair: 'bald', sil: true, shirt: 0x3a3236 } : { ...p.look, bg: 0xd8d0c0, sil: true, shirt: 0x3a3236, hairCol: 0x3a3236, band: null, cap: false, glasses: null, beard: null }), width: 72, height: 72 }),
+          grid.append(h('div', { class: `cx-pc${ok ? '' : ' unk'}` }, h('img', { class: 'c98-ava', src: ok ? portraitURL(p.look, p.id) : blankTile(0x3a3236), 'data-ava': ok ? p.id : null, width: 72, height: 72 }),
             h('div', { html: ok ? `<b>${esc(p.name)}</b><small>${esc(p.role || '')}</small><p>${esc(p.desc || '')}</p>` : '<b>???</b><small>Not met yet</small><p>Someone on the lane you haven\'t met.</p>' })));
         }
         panel.append(grid);
         win.status(`${n} of ${people.length} people met`);
       };
       const yk = () => {
-        panel.append(h('p', { class: 'cx-yh', html: `${ic('os_yokai', 1)} Grandpa's notes on the strange things of Morio-cho. Sightings: ${Object.keys(st.seen).length} / ${yokai.length}` }));
+        panel.append(h('p', { class: 'cx-yh', html: `${ic('os_yokai', 1)} Strange things seen around Morio-cho. Sightings: ${Object.keys(st.seen).length} / ${yokai.length}` }));
         const grid = h('div', { class: 'cx-ppl' });
         for (const y of yokai) {
           const seen = st.seen[y.id];

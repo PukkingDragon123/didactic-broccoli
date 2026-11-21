@@ -1,0 +1,89 @@
+{
+ "id": "shoe_rack",
+ "src": "sketchfab:ad7870072cae41a6a6359433caa88369",
+ "credit": {
+  "title": "Shoe Rack with Shoes | Crafted by jerovdl",
+  "author": "Jerovdl",
+  "authorUrl": "https://sketchfab.com/Jerovdl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/shoe-rack-with-shoes-crafted-by-jerovdl-ad7870072cae41a6a6359433caa88369",
+  "site": "Sketchfab"
+ },
+ "tris": 2995,
+ "tex": 512,
+ "size": [
+  0.359,
+  0.9,
+  1.051
+ ],
+ "colours": 41,
+ "palette": {
+  "m0": [
+   "#010000",
+   "#010101",
+   "#010101",
+   "#010101",
+   "#010101",
+   "#242424",
+   "#474747",
+   "#6a6a6a",
+   "#8d8d8d"
+  ],
+  "m1": [
+   "#5c2030",
+   "#762c39",
+   "#8f3941",
+   "#a64748",
+   "#b5645e",
+   "#bc8277",
+   "#c49c8f",
+   "#cdb3a7",
+   "#d7c8bd"
+  ],
+  "m2": [
+   "#6f533b",
+   "#8e7250",
+   "#a6906b",
+   "#b7ab8e",
+   "#c9c4b0",
+   "#cfcdbd",
+   "#d5d5c9",
+   "#dcdcd4",
+   "#e3e3df"
+  ],
+  "m3": [
+   "#270806",
+   "#320f09",
+   "#3d170c",
+   "#472110",
+   "#512c14",
+   "#7c4d21",
+   "#a57231",
+   "#c59949",
+   "#d0b776"
+  ],
+  "m4": [
+   "#083800",
+   "#104900",
+   "#1c5b00",
+   "#2a6b01",
+   "#3b7a03",
+   "#62ab07",
+   "#90da0c",
+   "#b9ef2c",
+   "#d4f060"
+  ],
+  "m5": [
+   "#160007",
+   "#1c0007",
+   "#220006",
+   "#280104",
+   "#2e0202",
+   "#690f06",
+   "#a3260d",
+   "#da4615",
+   "#ea7b44"
+  ]
+ },
+ "warnings": []
+}

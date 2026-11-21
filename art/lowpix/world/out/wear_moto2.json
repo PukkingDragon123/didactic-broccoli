@@ -1,0 +1,78 @@
+{
+ "id": "wear_moto2",
+ "src": "sketchfab:539728553e314ede87d9c4e9fa129641",
+ "credit": {
+  "title": "Vintage Motorcycle Helmet",
+  "author": "gozdemrl",
+  "authorUrl": "https://sketchfab.com/gozdemrl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/vintage-motorcycle-helmet-539728553e314ede87d9c4e9fa129641",
+  "site": "Sketchfab"
+ },
+ "tris": 2500,
+ "tex": 288,
+ "size": [
+  0.179,
+  0.27,
+  0.224
+ ],
+ "colours": 38,
+ "palette": {
+  "m0": [
+   "#521b00",
+   "#6a2d01",
+   "#814203",
+   "#975b06",
+   "#ac760a",
+   "#d3a210",
+   "#ebca25",
+   "#ecdf52",
+   "#eeee7c"
+  ],
+  "m1": [
+   "#031a31",
+   "#05273f",
+   "#08354c",
+   "#0b4559",
+   "#0e5766",
+   "#178893",
+   "#22bebf",
+   "#3ed9cc",
+   "#6edfcd"
+  ],
+  "m2": [
+   "#432118",
+   "#563121",
+   "#68432b",
+   "#795536",
+   "#896942",
+   "#a28553",
+   "#b09e6f",
+   "#bcb38d",
+   "#cac6aa"
+  ],
+  "m3": [
+   "#101218",
+   "#15191f",
+   "#1b1f25",
+   "#21262b",
+   "#282d30",
+   "#454b4d",
+   "#636869",
+   "#838383",
+   "#a0a0a0"
+  ],
+  "m4": [
+   "#5b231a",
+   "#753724",
+   "#8d4d2f",
+   "#a5653b",
+   "#b9804b",
+   "#bf9967",
+   "#c7af82",
+   "#cfc19c",
+   "#d9d2b5"
+  ]
+ },
+ "warnings": []
+}

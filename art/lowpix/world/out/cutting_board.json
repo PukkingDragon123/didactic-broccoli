@@ -1,0 +1,34 @@
+{
+ "id": "cutting_board",
+ "src": "sketchfab:5a1c3385222a4f35b208faad2837c5c9",
+ "credit": {
+  "title": "Wooden Cutting Board",
+  "author": "Coozy",
+  "authorUrl": "https://sketchfab.com/GameDevNick",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-cutting-board-5a1c3385222a4f35b208faad2837c5c9",
+  "site": "Sketchfab"
+ },
+ "tris": 216,
+ "tex": 128,
+ "size": [
+  0.09,
+  0.03,
+  0.108
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#3f1e1a",
+   "#512c24",
+   "#623d2e",
+   "#724e3a",
+   "#816046",
+   "#997a59",
+   "#a99474",
+   "#b7ab91",
+   "#c5c0ad"
+  ]
+ },
+ "warnings": []
+}
