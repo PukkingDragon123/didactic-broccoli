@@ -15,8 +15,10 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
 - The pixel-art kit (public/img/pixelkit via src/ui/pixelkit.js; built by tools/pixelkit/build.py, hand-pixelled or
   pixelised Blender renders to the docs/ref/pixel refs) is the standard for coins, notes, banks, tickets, receipts,
   stamp cards and capsules in the UI and on posters / cards: use it, never redraw them.
-- UI is paper, in detailed pixel art: notes, tickets, receipts, tags, notebook pages (src/ui/paper.js + paper.css: grain,
-  torn / zig-zag edges, masking tape, hanko stamps), ink-coloured text, hard pixel shadows. New UI uses this kit.
+- UI is detailed pixel art that feels physical, kinda-3D and interactive (owner, latest: "not always paper"):
+  inventory, pause, settings, HUD are cool objects (tin box, wooden drawer, enamel sign, radio dial…) with depth,
+  tilt, press and swing, hard pixel shadows. The paper kit (src/ui/paper.js + paper.css) is only for things that really
+  are paper (notes, tickets, receipts, tags). **Never the 2D gacha capsule icon anywhere in the UI.**
 - 3D art uses the owner's lowpix technique (docs/ART.md, last Update): properly proportioned models with detailed,
   realistic hand-painted pixel-art textures, built as lowpix specs (art/lowpix/) or converted from CC0 / CC BY Poly
   Haven and Sketchfab models; almost no voxel art. Never chibi, never stuck-together primitives, never cartoon.
