@@ -1,0 +1,89 @@
+{
+ "id": "candy_wrap",
+ "src": "sketchfab:4c4641cae8544bb38488778548da34ed",
+ "credit": {
+  "title": "Candy Wrapper",
+  "author": "_GStep_",
+  "authorUrl": "https://sketchfab.com/golovstepa",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/candy-wrapper-4c4641cae8544bb38488778548da34ed",
+  "site": "Sketchfab"
+ },
+ "tris": 960,
+ "tex": 512,
+ "size": [
+  0.639,
+  0.03,
+  0.559
+ ],
+ "colours": 48,
+ "palette": {
+  "m0": [
+   "#440921",
+   "#570e25",
+   "#6a1327",
+   "#7c1927",
+   "#8d1f26",
+   "#b02d2b",
+   "#cb4c3d",
+   "#d27965",
+   "#daa18b"
+  ],
+  "m1": [
+   "#435f49",
+   "#5b795e",
+   "#749176",
+   "#94a493",
+   "#b1b8b0",
+   "#bdc0bd",
+   "#c9c9c9",
+   "#d3d3d3",
+   "#dddddd"
+  ],
+  "m2": [
+   "#05251e",
+   "#082f24",
+   "#0a3928",
+   "#0d432a",
+   "#114c2c",
+   "#1e7940",
+   "#2ca34f",
+   "#42c75e",
+   "#71d17d"
+  ],
+  "m3": [
+   "#652033",
+   "#822c3d",
+   "#9d3a44",
+   "#b7494b",
+   "#bf6e69",
+   "#c58a80",
+   "#cca397",
+   "#d4b9ad",
+   "#dcccc1"
+  ],
+  "m4": [
+   "#5a0e31",
+   "#741438",
+   "#8d1b3c",
+   "#a4233e",
+   "#bb2c3e",
+   "#ce4046",
+   "#d26661",
+   "#d88c82",
+   "#e0aea1"
+  ],
+  "m5": [
+   "#3f3611",
+   "#504a18",
+   "#615f20",
+   "#6e7228",
+   "#768131",
+   "#9a9f41",
+   "#b6b658",
+   "#c1c17a",
+   "#cdcd9c"
+  ]
+ },
+ "warnings": []
+}

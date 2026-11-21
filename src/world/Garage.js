@@ -64,8 +64,9 @@ export const ATTACH = {
     { face: '+x', u0: -1.48, u1: 0.28, y0: 2.12, y1: 2.7 }, // the GACHA CORNER light box
     { face: '+x', u0: -4.9, u1: 4.9, y0: 2.7, y1: 3.3 }, // lanterns and wiring
     { face: '+z', u0: -0.3, u1: 0.3, y0: 2.25, y1: 3.0 }, // the wall clock over the back door
-    { face: '-x', u0: -2.85, u1: -2.05, y0: 2.3, y1: 3.2 }, // the kamidana
-    { face: '-x', u0: -3.35, u1: -2.95, y0: 2.3, y1: 2.9 }, // the lucky rake
+    { face: '+z', u0: -1.52, u1: -0.58, y0: 2.22, y1: 2.9 }, // Grandpa's kamidana (the charm shelf)
+    { face: '+z', u0: -1.98, u1: -1.58, y0: 2.2, y1: 2.8 }, // the lucky rake
+    { face: '+x', u0: 2.9, u1: 4.35, y0: 0, y1: 2.1 }, // Grandpa's workbench and the jar shelf over it
   ],
   keepClear: [
     { a: [0.4, 5.2], b: [0.4, 4.2], r: 0.45 }, // in under the shutter

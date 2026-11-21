@@ -652,13 +652,10 @@ export class GarageDetail {
       if (face === '+z') return this.prop(id, u, y, G.minZ + d, 0, { scale: k });
       return this.prop(id, G.maxX - d, y, u, -Math.PI / 2, { scale: k });
     };
-    // the household shrine (kamidana) high on the right wall at the back, the New Year's lucky rake beside it
-    onWall('mk_kamidana', '-x', -2.45, 2.44, { w: 0.86, h: 0.7 });
-    onWall('mk_kumade', '-x', -3.15, 2.36, { w: 0.34, h: 0.5 });
-    // the old wall clock over the back door
+    // the old wall clock over the back door; the New Year's lucky rake beside Grandpa's kamidana (the charm shelf,
+    // src/game/shop.js ensureKamidana); the umbrella stand by the way in (the rest: src/plugins/garageDressing.js)
     onWall('wall_clock', '+z', 0, 2.36, { w: 0.42, h: 0.5 });
-    // the front corners inside the shutter: a stack of old tyres, the umbrella stand by the way in
-    if (hasProp('tires')) { const s = propSize('tires'), k = Math.min(1, 0.62 / Math.max(s.x, s.z)); this.prop('tires', 3.48, 0, G.maxZ - 0.48, 0.4, { scale: k, block: true, phys: true, material: 'rubber' }); }
+    onWall('mk_kumade', '+z', -1.78, 2.24, { w: 0.34, h: 0.52 });
     if (hasProp('umbrella_stand')) { const s = propSize('umbrella_stand'), k = Math.min(1, 0.36 / Math.max(s.x, s.z)); this.prop('umbrella_stand', -3.62, 0, G.maxZ - 0.38, 0.3, { scale: k, block: true, phys: true }); }
     void B; void m;
   }

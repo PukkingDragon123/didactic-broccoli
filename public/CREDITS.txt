@@ -1924,6 +1924,7 @@ by `tools/pixelart.py`.
 - Metal bucket by Kozlov Maksim, CC BY 4.0: https://sketchfab.com/3d-models/metal-bucket-0a7a3ccfdb624369b54dc7e06a5f2486 (models/lowpix/world/bucket.glb)
 - Metal Folding Chair by Chen CheHsuan, CC BY 4.0: https://sketchfab.com/3d-models/metal-folding-chair-7a99fce4bdbd40e1b2949cdeb39a8fba (models/lowpix/world/chair_folding.glb)
 - Metal Gas Cylinder by TheoClarke, CC BY 4.0: https://sketchfab.com/3d-models/metal-gas-cylinder-8faeab51bf604cd092e827dc1eb88ff4 (models/lowpix/world/gas_cylinder.glb)
+- Milk Carton by mootiff, CC BY 4.0: https://sketchfab.com/3d-models/milk-carton-24373fdaccb94e2faa494d046ccde627 (models/lowpix/world/milk_carton2.glb)
 - Monocle by neutralize, CC BY 4.0: https://sketchfab.com/3d-models/monocle-834a918e7da34659b19fea04a359d69b (models/lowpix/world/wear_monocle.glb)
 - Monstera Deliciosa Potted Mid-Century plant by Giora, CC BY 4.0: https://sketchfab.com/3d-models/monstera-deliciosa-potted-mid-century-plant-1ab9bf841df04c07b1819be596327629 (models/lowpix/world/plant_monstera.glb)
 - motorcycle helmet classic by zeleniy89, CC BY 4.0: https://sketchfab.com/3d-models/motorcycle-helmet-classic-a4d4ef2f17c843828cf24d538a9edbd3 (models/lowpix/world/wear_moto.glb)

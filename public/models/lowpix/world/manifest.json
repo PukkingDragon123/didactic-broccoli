@@ -3416,6 +3416,25 @@
   ],
   "bytes": 120072
  },
+ "milk_carton2": {
+  "id": "milk_carton2",
+  "name": "Milk Carton",
+  "src": "sketchfab:24373fdaccb94e2faa494d046ccde627",
+  "title": "Milk Carton",
+  "author": "mootiff",
+  "authorUrl": "https://sketchfab.com/mootiff",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/milk-carton-24373fdaccb94e2faa494d046ccde627",
+  "site": "Sketchfab",
+  "tris": 2497,
+  "tex": 256,
+  "size": [
+   0.092,
+   0.2,
+   0.091
+  ],
+  "bytes": 37248
+ },
  "milk_fridge": {
   "id": "milk_fridge",
   "name": "Beverages refrigerator",

@@ -187,6 +187,7 @@ export const LP_WORLD = {
   manekineko: { size: [0.14, 0.19, 0.161], credit: "Maneki neko by Ramujiro (CC BY 4.0)" },
   manhole: { size: [0.685, 0.068, 0.685], credit: "Water Manhole Cover by Raunox (CC0 1.0)" },
   microwave: { size: [1.075, 0.526, 0.743], credit: "Vintage Microwave by Adam Nekola (CC0 1.0)" },
+  milk_carton2: { size: [0.092, 0.2, 0.091], credit: "Milk Carton by mootiff (CC BY 4.0)" },
   milk_fridge: { size: [1.216, 1.86, 1.108], credit: "Beverages refrigerator by Palmart Productions (CC BY 4.0)" },
   milkcarton: { size: [0.072, 0.21, 0.077], credit: "milk carton by Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb) (CC0 1.0)" },
   minifridge: { size: [0.49, 0.85, 0.54], credit: "Mini fridge by Gacha Garage (made for the game, art/lowpix/world/made/minifridge.glb) (CC0 1.0)" },

@@ -41,7 +41,7 @@ const LANE = [
 ];
 // the shop: only the dead corners and the back wall, never a build spot or a machine slot
 const SHOP = [
-  ['lp_tool_chest', -1.55, 0, -4.68, 0, { block: true, shadow: true }],
+  // (the tool chest moved under Grandpa's workbench, src/plugins/garageDressing.js: here it stood inside the steel rack)
   ['lp_box_cardboard', -0.95, 0, -4.72, 0.15, { shadow: true }],
   ['lp_box_cardboard', -0.95, 0.27, -4.74, -0.2, { shadow: true }],
   ['lp_jerrycan_metal', 3.62, 0, 4.55, -0.4, { shadow: true }],

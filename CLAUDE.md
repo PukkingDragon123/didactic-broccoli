@@ -77,6 +77,9 @@ First-person gacha-shop sim (Three.js + Vite). Shōwa-era Japanese back lane, vo
   AI mass uploaders): only models hand-made by real artists. **Never use scans** (photogrammetry, LiDAR, Object
   Capture, Polycam, Scaniverse… anything scanned). Check every
   Sketchfab source with `python3 tools/ai-check.py` (zero REJECT; look at every REVIEW yourself).
+- **High-res pixel art textures only** (owner, latest): fine pixels at a high texel density (standard in docs/ART.md),
+  never chunky or blurry low-res surfaces, above all floors and walls up close. Interiors are lit to look beautiful
+  and realistic (indirect light, AO, soft shadows, plausible materials and reflections), scaled by quality preset.
 - Nothing visible may be untextured, a flat single colour, voxel-era vertex colours, speckle noise, a blown-up blurry
   painting or an obvious tiling repeat; texel density stays consistent across the game. Check with
   `tools/slot.sh node tools/look-audit.mjs [filter]` (shots/audit/AUDIT.txt).

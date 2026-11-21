@@ -2,7 +2,8 @@
 // Alagard (src/ui/fonts.css) for Latin, DotGothic16 for kana and kanji, both set at their native 16 px grid (or whole
 // multiples of it), rasterised once per glyph and alpha-thresholded, so every edge is a hard pixel step: never
 // smoothed, never a tiny bitmap face, never a blown-up chunky glyph. (It replaces the old 5 x 7 bitmap font.)
-//   textWPx(str, s = 1)          width in px of one line at scale s (s: whole multiples of the 16 px grid)
+//   textWPx(str, s = 1)          width in px of one line at scale s (s: whole multiples of the 16 px grid, or 1 / k in
+//                                a canvas context scaled by k, which keeps the type native on a finer texel grid)
 //   drawPx(g, str, x, y, o)      o: { s, col, align: 'left'|'center'|'right', lh (gap between lines), max (steps s
 //                                down to fit, never below 1) }; y = the top of the capitals. Returns { w, h, s }.
 //   maskPx(str) -> [[x, y]...]   the lit pixels of one line at scale 1, relative to its cap top-left
@@ -42,7 +43,7 @@ export function textWPx(str, s = 1) {
 /** Draw pixel text (see the header). */
 export function drawPx(g, str, x, y, o = {}) {
   const lines = String(str).split('\n');
-  let s = Math.max(1, Math.round(o.s || 1));
+  let s = o.s || 1; // s < 1 only in a context scaled up by 1 / s (the type then lands on whole texels)
   if (o.max) while (s > 1 && Math.max(...lines.map((l) => textWPx(l, s))) > o.max) s--;
   const gap = o.lh ?? (PX_LINE - PX_CAP) * s;
   g.save(); g.fillStyle = o.col || '#1a1420';

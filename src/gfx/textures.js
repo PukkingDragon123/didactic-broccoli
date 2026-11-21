@@ -1693,8 +1693,9 @@ const TYPE_2X = new Set(['nobori', 'openPlate', 'clearance', 'clearancePlate', '
 export function townPix(key, w, h) {
   const ck = key + w + 'x' + h;
   if (!townCache.has(ck)) {
-    const p = new Pix(w, h, 7 + w, TYPE_2X.has(key) ? 2 : 1);
+    let p = new Pix(w, h, 7 + w, TYPE_2X.has(key) ? 2 : 1);
     TOWN[key](p);
+    if (p.overflow && p.k === 2) { p = new Pix(w, h, 7 + w, 4); TOWN[key](p); } // the type still too wide: a finer grid
     townCache.set(ck, p);
   }
   return townCache.get(ck);

@@ -24,8 +24,8 @@ export function noteTexture(denom) {
   if (texCache.has(denom)) return texCache.get(denom);
   const C = NOTE_COL[denom] || NOTE_COL[1000];
   const c = document.createElement('canvas');
-  c.width = 64; c.height = 32;
-  const g = c.getContext('2d');
+  c.width = 128; c.height = 64; // 2 texels a pixel: the denomination in native-size pixel type
+  const g = c.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0);
   const R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
   R(0, 0, 64, 32, C.base);
   // guilloche-ish rows of dots and a darker frame
@@ -40,8 +40,8 @@ export function noteTexture(denom) {
   bust.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '#') R(44 + i, 12 + j, 1, 1, C.dark); }));
   // denomination
   const n = String(denom);
-  drawPx(g, n, 22, 5, { col: C.ink });
-  drawPx(g, n, 60 - (n.length * 6 - 1) - 20, 22, { col: C.dark });
+  drawPx(g, n, 21, 4, { col: C.ink, s: 0.5 });
+  drawPx(g, n, 38, 20, { col: C.dark, s: 0.5, align: 'right' });
   g.fillStyle = C.ink; g.fillRect(22, 14, 16, 1);
   drawPx(g, 'YEN', 23, 16, { col: C.mid });
   const t = new THREE.CanvasTexture(c);

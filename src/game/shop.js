@@ -235,25 +235,37 @@ export function placeOpenerTool(g, animate) {
   }
 }
 
-/** A little kamidana (household shrine shelf) on the back wall holds the lucky charms. */
+/** Where Grandpa's kamidana (household shrine shelf) hangs on the back wall: bottom centre against the wall. */
+export const KAMIDANA = { x: -1.05, y: 2.3, z: -4.995, w: 0.86 };
+
+/**
+ * Grandpa's kamidana on the back wall (the real model, src/data/props mk_kamidana): always there, and the lucky charms
+ * you buy stand along the front of its board. Built at boot (src/plugins/garageDressing.js) or with the first charm.
+ */
+export function ensureKamidana(g) {
+  if (g._kamidana) return g._kamidana;
+  const grp = new THREE.Group();
+  grp.name = 'kamidana';
+  const m = propMesh('mk_kamidana', { castShadow: true, receiveShadow: true });
+  const box = new THREE.Box3().setFromObject(m), size = box.getSize(new THREE.Vector3());
+  const k = KAMIDANA.w / Math.max(1e-3, size.x);
+  m.scale.setScalar(k);
+  m.position.set(0, -box.min.y * k, size.z * k / 2 + 0.006);
+  grp.add(m);
+  grp.position.set(KAMIDANA.x, KAMIDANA.y, KAMIDANA.z);
+  // the board's top (its lowest tenth) and its front edge, where the charms stand
+  grp.userData.board = { y: size.y * k * 0.1 + 0.004, z: size.z * k - 0.035 };
+  g.scene.add(grp);
+  g._kamidana = grp;
+  g._charmMeshes ||= {};
+  return grp;
+}
+
+/** The lucky charms you own, standing on Grandpa's kamidana. */
 export function placeCharms(g, newId = null) {
   const charms = g.state.charms;
   if (!charms.length) return;
-  if (!g._kamidana) {
-    const grp = new THREE.Group();
-    grp.position.set(-0.95, 2.25, -4.86);
-    const wood = new THREE.MeshStandardMaterial({ color: 0xe8d4a8, roughness: 0.6 });
-    const shelf = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.03, 0.26), wood);
-    shelf.position.z = 0.13; shelf.castShadow = true; grp.add(shelf);
-    for (const sx of [-0.4, 0.4]) { const br = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.12, 0.2), wood); br.position.set(sx, -0.07, 0.1); grp.add(br); }
-    // shimenawa rope with shide paper
-    const rope = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.92, 8), new THREE.MeshStandardMaterial({ color: 0xd8c080, roughness: 0.9 }));
-    rope.rotation.z = Math.PI / 2; rope.position.set(0, 0.03, 0.26); grp.add(rope);
-    for (let i = 0; i < 4; i++) { const sh = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.09), new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide })); sh.position.set(-0.3 + i * 0.2, -0.02, 0.265); grp.add(sh); }
-    g.scene.add(grp);
-    g._kamidana = grp;
-    g._charmMeshes = {};
-  }
+  const shelf = ensureKamidana(g), board = shelf.userData.board;
   const order = ['maneki', 'daruma', 'omamori', 'goldneko'];
   for (const id of charms) {
     if (g._charmMeshes[id]) continue;
@@ -262,8 +274,8 @@ export function placeCharms(g, newId = null) {
     else if (id === 'daruma') m = propMesh('daruma', { fallbackSize: [0.16, 0.18, 0.15] });
     else if (id === 'goldneko') { m = propMesh('manekineko', { fallbackSize: [0.15, 0.22, 0.13] }); m.material = voxelMaterials('gold'); m.scale.setScalar(1.25); }
     else { m = makeItemMesh('otsukai/hebi'); m.scale.setScalar(2.6); }
-    m.position.set(-0.32 + order.indexOf(id) * 0.21, 0.015, 0.12);
-    g._kamidana.add(m);
+    m.position.set(-0.3 + order.indexOf(id) * 0.2, board.y, board.z);
+    shelf.add(m);
     g._charmMeshes[id] = m;
     if (id === newId) {
       const wp = m.getWorldPosition(new THREE.Vector3());

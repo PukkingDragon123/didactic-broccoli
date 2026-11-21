@@ -3646,15 +3646,6 @@
    "name": "CC0 - Wall Shelf 4"
   },
   {
-   "id": "paint_roller",
-   "src": "sketchfab:cfcc24319e5e41e984af99dd0a48db05",
-   "h": 0.25,
-   "ppm": 500,
-   "tris": 2500,
-   "cap": 512,
-   "name": "Paint Roller"
-  },
-  {
    "id": "band_aid",
    "src": "sketchfab:1728a97697d94d2f8c5cb910c5f213ce",
    "h": 0.01,
@@ -3673,15 +3664,6 @@
    "name": "Bandaid"
   },
   {
-   "id": "pigeon_lp",
-   "src": "sketchfab:5884a0f5200c44ceaa7d0399bea577f9",
-   "h": 0.25,
-   "ppm": 600,
-   "tris": 1482,
-   "cap": 512,
-   "name": "Pigeon"
-  },
-  {
    "id": "pigeon_lp2",
    "src": "sketchfab:38eb847b4cf441bcae044605d0562e77",
    "h": 0.25,
@@ -3689,15 +3671,6 @@
    "tris": 752,
    "cap": 512,
    "name": "Pigeon - Low poly"
-  },
-  {
-   "id": "noodle_cup",
-   "src": "sketchfab:60b5fae8d55e48f5bc3a554652d5d9ad",
-   "h": 0.11,
-   "ppm": 900,
-   "tris": 252,
-   "cap": 512,
-   "name": "Noodle Cup"
   },
   {
    "id": "candy_wrap",
@@ -3727,24 +3700,6 @@
    "name": "Gum Ball Machine"
   },
   {
-   "id": "fridge_glass",
-   "src": "sketchfab:d95f763a79d94ba38caf1190d6b4d969",
-   "h": 0.9,
-   "ppm": 250,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Beer Fridge"
-  },
-  {
-   "id": "milk_carton_jp",
-   "src": "sketchfab:3e86155513ca4bc0b213e6debc19f9d8",
-   "h": 0.2,
-   "ppm": 600,
-   "tris": 1166,
-   "cap": 512,
-   "name": "Milk Carton"
-  },
-  {
    "id": "milk_carton2",
    "src": "sketchfab:24373fdaccb94e2faa494d046ccde627",
    "h": 0.2,
@@ -3752,15 +3707,6 @@
    "tris": 2500,
    "cap": 512,
    "name": "Milk Carton"
-  },
-  {
-   "id": "brooms_bin",
-   "src": "sketchfab:0b049255562349ad8072afb9c33acfea",
-   "h": 1.2,
-   "ppm": 250,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Simple Outdoor Brooms Type A"
   },
   {
    "id": "bench_jp",
@@ -3790,15 +3736,6 @@
    "name": "Store Counter With Glass Display"
   },
   {
-   "id": "cardboard_tube",
-   "src": "sketchfab:c7673ec131d14daebc199129394db2af",
-   "h": 0.5,
-   "ppm": 400,
-   "tris": 1588,
-   "cap": 512,
-   "name": "Cardboard Tube"
-  },
-  {
    "id": "tomato_plant",
    "src": "sketchfab:e0b559690e384fc0a9f3a05913f609c4",
    "h": 0.5,
@@ -3815,24 +3752,6 @@
    "tris": 3000,
    "cap": 512,
    "name": "Tomato plant"
-  },
-  {
-   "id": "aquarium",
-   "src": "sketchfab:e954de85f1f64c7eb5657c8f644fc066",
-   "h": 0.5,
-   "ppm": 300,
-   "tris": 1956,
-   "cap": 512,
-   "name": "Aquarium"
-  },
-  {
-   "id": "jack_lantern_m",
-   "src": "sketchfab:e27d527b9d234911ba8dbaa04ee9f0c7",
-   "h": 0.3,
-   "ppm": 500,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Jack-o'-Lantern low-poly"
   },
   {
    "id": "softserve_m",
@@ -3914,6 +3833,69 @@
    "tris": 3000,
    "cap": 512,
    "name": "Blender Three Rendering Two:morning glor"
+  },
+  {
+   "id": "aa_pack",
+   "src": "sketchfab:748312706f3444488cb5f66e43f3f364",
+   "h": 0.1,
+   "ppm": 700,
+   "tris": 800,
+   "cap": 512,
+   "name": "2x Battteryes AA Package"
+  },
+  {
+   "id": "ramune_m",
+   "src": "sketchfab:6422866cbdb3492ca50be35108f625f9",
+   "h": 0.2,
+   "ppm": 900,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Ramune Bottle"
+  },
+  {
+   "id": "squeegee_m",
+   "src": "sketchfab:ddbcdaed4b8f403586fe92a0cd5195e4",
+   "h": 0.12,
+   "ppm": 800,
+   "tris": 800,
+   "cap": 512,
+   "name": "IKEA shower squeegee (Low Poly)"
+  },
+  {
+   "id": "heater_gas",
+   "src": "sketchfab:63221a93315c4e4e9b3ed8234ff026e7",
+   "h": 0.62,
+   "ppm": 400,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Soviet gas water heater KGI-56"
+  },
+  {
+   "id": "ash_pile",
+   "src": "sketchfab:a9318535ca594af7b32247f11720298e",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 200,
+   "cap": 512,
+   "name": "Pile of ash decal"
+  },
+  {
+   "id": "trash_pile",
+   "src": "sketchfab:a441c0d002bc49a59237f8003b5a7eb8",
+   "h": 0.08,
+   "ppm": 500,
+   "tris": 600,
+   "cap": 512,
+   "name": "Pile of Trash and Garbage - 3 Piece Set"
+  },
+  {
+   "id": "sanctuary",
+   "src": "sketchfab:4aff26245c8043f583701a3130af91ba",
+   "h": 0.42,
+   "ppm": 600,
+   "tris": 2400,
+   "cap": 512,
+   "name": "Sanctuary"
   }
  ]
 }

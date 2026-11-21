@@ -1678,10 +1678,10 @@ export class Town {
       parkName: [0, 152, 72, 18], parkArrow: [72, 152, 48, 16], wcSign: [120, 152, 48, 16], pylonPlate: [168, 152, 48, 14], closedSign: [216, 152, 40, 16],
       pigeonBoard: [0, 176, 40, 12],
     };
-    const atlas = new Pix(W, H, 1, 2); // 2 texels a pixel: the signs' pixel type at its native size (src/gfx/textures.js)
+    const atlas = new Pix(W, H, 1, 4); // 4 texels a pixel: the signs' pixel type at its native size (src/gfx/textures.js)
     atlas.flush();
     for (const [k, [x, y, w, h]] of Object.entries(layout)) {
-      try { atlas.ctx.drawImage(townPix(k, w, h).flush().canvas, x * 2, y * 2, w * 2, h * 2); } catch (e) { console.warn('town sign atlas: no painter for', k, e); }
+      try { atlas.ctx.drawImage(townPix(k, w, h).flush().canvas, x * 4, y * 4, w * 4, h * 4); } catch (e) { console.warn('town sign atlas: no painter for', k, e); }
     }
     atlas.pull();
     const mat = new THREE.MeshStandardMaterial({ map: atlas.texture(), vertexColors: true, roughness: 0.55 });

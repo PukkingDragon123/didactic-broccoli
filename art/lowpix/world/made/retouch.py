@@ -30,6 +30,9 @@ JOBS = {
     # the paper chochin (Ramen Yamada's lantern): its brushed そば redrawn in DotGothic16, stacked vertically
     'lantern_paper': [('clear', 80, 8, 100, 106), ('clear', 48, 104, 88, 212),
                       ('dotv', 'そば', 67, 118, 2, (34, 28, 30))],
+    # the milk carton: its smooth-font REAL MILK becomes MILK in the 5x7 font, on both faces
+    'milk_carton2': [('clear', 83, 58, 121, 82), ('clear', 123, 58, 162, 82),
+                     ('b5', 'MILK', 85, 64, 1, (60, 130, 230)), ('b5', 'MILK', 125, 64, 1, (60, 130, 230))],
 }
 
 

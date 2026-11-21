@@ -60,7 +60,7 @@ const F = {
   kokeshi: { m: 'kokeshi2', h: 9, y: 15.6, z: 2 },
   daruma: { m: 'daruma', w: 10, y: 15.6, z: 2 },
   robot: { m: 'toy_robot2', h: 10, y: 15.6, z: 2 },
-  pigeon: { m: 'pigeon_lp', w: 12, y: 15.4, z: 1.5 },
+  pigeon: { m: 'pigeon_lp2', w: 12, y: 15.4, z: 1.5 },
   bandaid: { m: 'band_aid', w: 4.5, cy: -2, x: 4.2, zf: 11.6, ry: 0.5 },
   oniUp: { m: 'wear_onimask2', w: 11, y: 14.2, z: 3.5, rx: -1.1 },
   box: { m: 'box_cardboard', w: 0.58, z: 0.0 },

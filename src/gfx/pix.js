@@ -161,6 +161,7 @@ export class Pix {
     if (opts.align === 'center') ox -= Math.round(m.width / 2);
     else if (opts.align === 'right') ox -= Math.round(m.width);
     const oy = Math.round(y * K);
+    if (ox < 0 || ox + m.width > this.W + 1) this.overflow = true; // the caller may retry with a finer grid (k)
     const col = toRGB(opts.color ?? 0xffffff);
     const mask = [];
     for (let j = 0; j < th; j++) for (let i = 0; i < tw; i++) if (td[(j * tw + i) * 4 + 3] > 110) mask.push([i, j]);
@@ -182,6 +183,7 @@ export class Pix {
   tinyText(str, x, y, opts = {}) {
     const K = this.k, w = textWPx(str), mask = maskPx(str), col = toRGB(opts.color ?? 0xffffff);
     const X = Math.round(x * K), ox = opts.align === 'center' ? X - Math.round(w / 2) : opts.align === 'right' ? X - w : X, oy = Math.round(y * K) + 1;
+    if (ox < 0 || ox + w > this.W + 1) this.overflow = true;
     const put = (dx, dy, c) => { for (const [i, j] of mask) this.pp(ox + i + dx, oy + j + dy, c); };
     if (opts.outline !== undefined) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, 1], [-1, 1], [1, -1]]) put(dx, dy, opts.outline);
     if (opts.shadow !== undefined) put(1, 1, opts.shadow);

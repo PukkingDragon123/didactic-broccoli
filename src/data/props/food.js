@@ -2,10 +2,12 @@
 // bottles (one prop per drink, generated from its label colours in src/needs/foods.js), potted plants at every growth
 // stage, the watering can / seeds / fertiliser, and the ramen shop's pots, bowls, stools, lantern and sink.
 // Each entry: { name, jp, voxel, build(v) }. Facing +z, bottom-centre origin, deterministic (hashed noise only).
+import * as THREE from 'three';
 import { shade, mix } from '../../voxel/palette.js';
 import { gloss, metal, glow, glass } from '../../voxel/VoxelModel.js';
 import { hash, fill } from './garage.js';
 import { FOODS, DRINK_IDS } from '../../needs/foods.js';
+import { loadPixelKit, pkCanvas } from '../../ui/pixelkit.js';
 
 const R = Math.round;
 const P = {};
@@ -360,6 +362,25 @@ P.rm_sponge = {
 P.rm_ticket = {
   name: 'Meal Ticket', jp: '食券', voxel: 0.003,
   build(v) { fill(v, -9, 0, 0, 9, 13, 0, (x, y) => (y > 9 ? 0x2a6ad8 : (x + y) % 9 === 0 ? 0x8a8a8a : 0xf4f0e4)); },
+  // drawn as a thin card printed with the pixel-art kit's numbered ticket (the top stub of its 'raffle' strip, 24 x 15
+  // px; CLAUDE.md: tickets come from the kit), lying flat; the voxel build stays its stand-in size
+  mesh() {
+    if (!ticketMats) {
+      const cv = document.createElement('canvas'); cv.width = 24; cv.height = 15;
+      const x = cv.getContext('2d'); x.fillStyle = '#efe6d2'; x.fillRect(0, 0, 24, 15);
+      const t = new THREE.CanvasTexture(cv);
+      t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+      loadPixelKit().then((kit) => { if (!kit) return; x.drawImage(pkCanvas('raffle'), 0, 0, 24, 15, 0, 0, 24, 15); t.needsUpdate = true; });
+      const art = new THREE.MeshStandardMaterial({ map: t, roughness: 0.85 }), edge = new THREE.MeshStandardMaterial({ color: 0xe6dcc6, roughness: 0.9 });
+      ticketMats = [edge, edge, art, art, edge, edge];
+    }
+    const g = new THREE.BoxGeometry(0.056, 0.0005, 0.035);
+    g.translate(0, 0.00025, 0);
+    const m = new THREE.Mesh(g, ticketMats);
+    m.castShadow = m.receiveShadow = true;
+    return m;
+  },
 };
+let ticketMats = null;
 
 export default P;

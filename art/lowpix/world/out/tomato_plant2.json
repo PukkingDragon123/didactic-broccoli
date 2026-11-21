@@ -1,0 +1,100 @@
+{
+ "id": "tomato_plant2",
+ "src": "sketchfab:60d3cb49e21d46cf81f1e7e295793102",
+ "credit": {
+  "title": "Tomato plant",
+  "author": "ellievaskali",
+  "authorUrl": "https://sketchfab.com/ellievaskali",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/tomato-plant-60d3cb49e21d46cf81f1e7e295793102",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 512,
+ "size": [
+  0.377,
+  0.5,
+  0.374
+ ],
+ "colours": 56,
+ "palette": {
+  "m0": [
+   "#1a100e",
+   "#211613",
+   "#281d18",
+   "#2e251e",
+   "#342c24",
+   "#544b3e",
+   "#726a5a",
+   "#8e8978",
+   "#a6a49a"
+  ],
+  "m1": [
+   "#5e5315",
+   "#78721d",
+   "#909127",
+   "#9eaa31",
+   "#a9c13d",
+   "#bcc75b",
+   "#cccd78",
+   "#d4d493",
+   "#dcdcae"
+  ],
+  "m2": [
+   "#72602d",
+   "#91833d",
+   "#b0a750",
+   "#bcbb74",
+   "#c5c997",
+   "#cecea7",
+   "#d4d4b7",
+   "#dbdbc6",
+   "#e2e2d4"
+  ],
+  "m3": [
+   "#5f0008",
+   "#7c0101",
+   "#961003",
+   "#b02307",
+   "#c93b0b",
+   "#ec5b11",
+   "#ed8439",
+   "#eea861",
+   "#f0c588"
+  ],
+  "m4": [
+   "#390d09",
+   "#49170d",
+   "#592312",
+   "#683217",
+   "#76421d",
+   "#9b622a",
+   "#bf8738",
+   "#cba75d",
+   "#d5c186"
+  ],
+  "m5": [
+   "#3d3313",
+   "#4e461a",
+   "#5e5a22",
+   "#6c6d2b",
+   "#757c34",
+   "#989945",
+   "#b0b05c",
+   "#bcbc7e",
+   "#caca9e"
+  ],
+  "m6": [
+   "#a8281d",
+   "#d6472a",
+   "#dd7f60",
+   "#e6af93",
+   "#f0d7c5",
+   "#f1e0ce",
+   "#f3e7d7",
+   "#f4eddf",
+   "#f6f2e7"
+  ]
+ },
+ "warnings": []
+}
