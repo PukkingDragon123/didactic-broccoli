@@ -122,7 +122,7 @@ random next to the finish (src/data/variants.js `rollVariant`, called by `rollCa
 |---|---|---|---|
 | `std` | Standard | 6 | the figure as built |
 | `alt` | Alt Colour | 3 | runtime: the atlas's main body colour (its strongest chromatic hue) turned round the colour wheel by a per-figure amount; ink, greys, whites and other hues (eyes, details) stay (src/figures/lowpix.js `hueTex`) |
-| `face` | Happy Face / Sleepy Face / Winking | 2 | a repainted atlas `public/models/lowpix/figures/<series>/<id>.face.png` with an expression picked per figure from the face kit; only figures listed in src/figures/variants.manifest.json |
+| `face` | Happy Face / Sleepy Face / Winking | 2 | a repainted atlas `public/models/lowpix/figures/<series>/<id>.face.webp` (lossless; shipped as a sparse patch over the GLB atlas, tools/webp-glb.mjs) with an expression picked per figure from the face kit; only figures listed in src/figures/variants.manifest.json |
 
 - **Batch the faces:** `art/blender/toys/make.sh all --faces-only` (every series; or `make.sh <series> [ids] --faces`
   / `--faces-only`). Each figure script runs again on its last unwrap (`--repaint`) with `GG_VARIANT`

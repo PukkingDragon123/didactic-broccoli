@@ -12,6 +12,7 @@ import { MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, renameSync, rmSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { webpTextures } from '../../../tools/webp-glb.mjs';
 import { resolve, join } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '../../..');
@@ -57,13 +58,14 @@ for (const id of ids) {
   for (const m of root.listMeshes()) for (const p of m.listPrimitives()) tris += (p.getIndices()?.getCount() || p.getAttribute('POSITION').getCount()) / 3;
   const base = root.listMaterials()[0]?.getBaseColorTexture();
   const atlas = base ? base.getSize() : null;
-  // the baked normal map as a high-quality JPEG (smooth data; a PNG of it is most of the file), the paint stays PNG
+  // the baked normal map as a high-quality JPEG (smooth data; a PNG of it is most of the file), the paint stays lossless
   const nmaps = new Set(root.listMaterials().map((m) => m.getNormalTexture()).filter(Boolean));
   for (const t of nmaps) {
     const buf = await sharp(Buffer.from(t.getImage())).removeAlpha().jpeg({ quality: 92, chromaSubsampling: '4:4:4' }).toBuffer();
     t.setImage(new Uint8Array(buf)).setMimeType('image/jpeg').setURI(t.getURI().replace(/\.png$/i, '.jpg'));
   }
   await doc.transform(dedup(), prune({ keepAttributes: true, keepLeaves: true }), reorder({ encoder: MeshoptEncoder }), quantize());
+  await webpTextures(doc); // the paint as lossless WebP: the same pixels as the PNG, about half the size (tools/webp-glb.mjs)
   doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
   const out = join(outDir, id + '.glb');
   await io.write(out, doc);

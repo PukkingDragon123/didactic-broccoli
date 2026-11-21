@@ -155,6 +155,12 @@ export class Game {
     this.scene.add(cc);
     const hidden = [];
     this.scene.traverse((o) => { if (o.isPoints) { hidden.push(o); o.visible = false; } });
+    // Performance: the point lights go through the light pool first (as in every frame after), so the bake compiles the
+    // same shaders the game then draws with; drawn with the raw lights, every lit material compiled twice (once per
+    // light count) during boot. The pool's proxies carry every lit lamp in reach of the probe (the 6 on High).
+    this.scene.updateMatrixWorld();
+    this.renderer.scan();
+    this.renderer.lightPool.update(this.scene, cc, 0, { all: true });
     cc.update(r, this.scene);
     hidden.forEach((o) => { o.visible = true; });
     const pm = new THREE.PMREMGenerator(r);

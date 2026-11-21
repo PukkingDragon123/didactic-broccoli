@@ -151,8 +151,8 @@ a time-stopping pocket watch and the Bizarre Pose Club series. These are affecti
 
 ## Tech
 
-- **Engine:** Three.js (WebGL) and Vite, in plain ES modules. Quality presets go from Low to Ultra, with an
-  auto-suggest.
+- **Engine:** Three.js (WebGL) and Vite, in plain ES modules. Quality presets go from Very Low (weak integrated GPUs) to
+  Ultra; the first boot guesses one from the GPU's name, then steps down if the frame rate is low.
 - **Rendering:**
   - a greedy voxel mesher with baked AO;
   - procedural pixel-art textures;

@@ -10,6 +10,7 @@
 //   pool.setSize(n)          number of proxies (rebuilds them; one shader recompile, only on a quality change)
 //   pool.offer(light, visible)      each PointLight found by the renderer's per-frame scene walk
 //   pool.update(scene, camera, dt)   then once per frame before rendering (Renderer.render)
+//   pool.update(scene, obj, 0, { all: true })   every direction at once (a cube-map bake from obj's position)
 //   pool.stats               { candidates, inView, used } of the last frame (tools/perf.mjs)
 import * as THREE from 'three';
 
@@ -61,7 +62,7 @@ export class LightPool {
   }
 
   /** After the walk: pick and fade. The candidate list is cleared for the next frame. */
-  update(scene, camera, dt) {
+  update(scene, camera, dt, { all = false } = {}) {
     const cands = this.cands;
     if (!this.size) { cands.length = 0; return; }
     if (!this.attached || this.scene !== scene) { this.setSize(this.size); this.makeSlots(scene); }
@@ -69,15 +70,14 @@ export class LightPool {
     camera.getWorldPosition(_v);
     const jump = _v.distanceToSquared(this.camPos) > 4;
     this.camPos.copy(_v);
-    _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-    _f.setFromProjectionMatrix(_pm);
+    if (!all) { _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _f.setFromProjectionMatrix(_pm); }
     // score the lights that can reach something in view
     let inView = 0;
     for (const L of cands) {
       L.updateWorldMatrix(true, false);
       _s.center.setFromMatrixPosition(L.matrixWorld);
       _s.radius = L.distance > 0 ? L.distance : 60;
-      if (!_f.intersectsSphere(_s)) { SCORE.set(L, -1); continue; }
+      if (!all && !_f.intersectsSphere(_s)) { SCORE.set(L, -1); continue; }
       inView++;
       const d = _s.center.distanceTo(this.camPos) / _s.radius;
       SCORE.set(L, L.intensity / (1 + d * d));

@@ -34,7 +34,7 @@ if [ "$S" = all ] && [ $var = 2 ]; then
 fi
 [ $only = 1 ] && ids=() || { [ ${#ids[@]} -eq 0 ] && ids=($(ls art/blender/toys/$S/[!_]*.py | xargs -n1 basename | sed 's/\.py$//')); }
 # --faces: also paint each figure's alternate face (GIMMICKS.md "Variants": an expression picked per figure from the
-# face kit) on the same unwrap: public/models/lowpix/figures/<series>/<id>.face.png, listed (with the expression) in
+# face kit) on the same unwrap: public/models/lowpix/figures/<series>/<id>.face.webp (lossless), listed (with the expression) in
 # src/figures/variants.manifest.json; --faces-only: just those (the figure's last build stays). A repaint that
 # changes nothing (a face not drawn with lib/face.py) or does not match the GLB's atlas (stale unwrap) is dropped.
 faces() {
@@ -50,7 +50,7 @@ faces() {
   echo "$log" | grep -E "variant face|Error|Traceback" || true
   fi
   [ -f "$out" ] || { echo "no face texture for $S/$id"; return 0; }
-  python3 -I - "$out" art/blender/toys/_build/$S/${id}_col.png "public/models/lowpix/figures/$S/$id.face.png" "$S/$id" "$(echo "$log" | sed -n 's/.*variant face //p' | head -1)" <<'PY'
+  python3 -I - "$out" art/blender/toys/_build/$S/${id}_col.png "public/models/lowpix/figures/$S/$id.face.webp" "$S/$id" "$(echo "$log" | sed -n 's/.*variant face //p' | head -1)" <<'PY'
 import json, os, shutil, subprocess, sys, fcntl
 import numpy as np
 from PIL import Image
@@ -62,15 +62,20 @@ with open('/tmp/gg-variants.lock', 'w') as lk:
     fcntl.flock(lk, fcntl.LOCK_EX)
     m = json.load(open(man)) if os.path.exists(man) else {}
     if 1e-5 < diff < 0.03 and expr:
-        Image.open(new).save(dst, optimize=True)
+        Image.open(new).save(dst, 'WEBP', lossless=True, quality=100, method=6, exact=True)  # (the same pixels, half a PNG)
         m[key] = expr
         print('face', key, expr, f'{diff:.4%} changed ->', dst)
     else:
         m.pop(key, None)
         if os.path.exists(dst): os.remove(dst)
+    old = dst[:-5] + '.png'  # (an older PNG of it)
+    if os.path.exists(old): os.remove(old)
         print('face', key, 'dropped', f'({diff:.4%} changed)')
     open(man, 'w').write(json.dumps(dict(sorted(m.items())), indent=0) + '\n')
 PY
+  # shipped as a sparse patch over the packed GLB's atlas (tools/webp-glb.mjs: ~3 KB instead of ~250 KB, same pixels)
+  local f=public/models/lowpix/figures/$S/$id.face.webp
+  if [ -f "$f" ] && [ -f "public/models/lowpix/figures/$S/$id.glb" ]; then node tools/webp-glb.mjs --face-patches "$f" || true; fi
 }
 if [ $var = 2 ]; then for id in "${ids[@]}"; do faces "$id"; done; exit 0; fi
 [ $var = 1 ] && export GG_FACE_ALSO=1  # (--faces: each build run also paints its alternate face, lib/fig.py)

@@ -11,7 +11,7 @@
 // Finishes are material variants: each figure's atlases on clones of the shared finish materials (src/voxel/materials.js).
 // Figure variants (art/blender/toys/GIMMICKS.md "Variants"), mass-produced: every figure gets figureVariants(item) =
 // [standard, an alternate colourway (hue: a runtime hue shift of its main body colour, ink and small details left
-// alone), an alternate face (texture 'face': public/models/lowpix/figures/<key>.face.png, batch-painted by
+// alone), an alternate face (texture 'face': public/models/lowpix/figures/<key>.face.webp, batch-painted by
 // make.sh --faces, listed in variants.manifest.json)]. item.variants overrides (fields texture, tint, hue, show, hide).
 // lowpixMesh(item, finish, variantId).
 import * as THREE from 'three';
@@ -259,8 +259,20 @@ function variantTex(R, name, mesh) {
   if (!T) {
     T = { tex: null, waiting: new Set() };
     R.vtex.set(name, T);
-    const url = new URL(`${import.meta.env.BASE_URL}models/lowpix/figures/${R.item.key}.${name}.png`, document.baseURI).href;
-    texLoader.loadAsync(url).then((t) => {
+    // lossless WebP (tools/webp-glb.mjs), usually a sparse patch: only the repainted pixels, the rest transparent, drawn
+    // over the figure's own atlas (which gives back the whole repainted atlas exactly; a whole atlas works the same way).
+    // A PNG painted since is the fallback.
+    const url = (ext) => new URL(`${import.meta.env.BASE_URL}models/lowpix/figures/${R.item.key}.${name}.${ext}`, document.baseURI).href;
+    Promise.all([texLoader.loadAsync(url('webp')).catch(() => texLoader.loadAsync(url('png'))), loadFigure(R.item)]).then(([t]) => {
+      const base = R.texs[0]?.image, img = t.image;
+      if (base?.width === img.width && base.height === img.height) {
+        const cv = document.createElement('canvas');
+        cv.width = img.width; cv.height = img.height;
+        const cx = cv.getContext('2d');
+        cx.drawImage(base, 0, 0); cx.drawImage(img, 0, 0);
+        t.dispose();
+        t = new THREE.CanvasTexture(cv);
+      }
       t.flipY = false; // (as glTF images)
       tidy(t);
       T.tex = t;

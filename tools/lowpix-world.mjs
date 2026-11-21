@@ -20,6 +20,7 @@ import sharp from 'sharp';
 import { spawn, execFileSync } from 'node:child_process';
 import { mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync } from 'node:fs';
 import { resolve, join } from 'node:path';
+import { webpTextures } from './webp-glb.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const LOWPIX = process.env.LOWPIX_HOME || '/home/user/pukkingdragon123/symmetrical-goggles';
@@ -225,6 +226,7 @@ async function gameReady(it, dir) {
   for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) tris += (p.getIndices()?.getCount() ?? p.getAttribute('POSITION').getCount()) / 3;
   await doc.transform(reorder({ encoder: MeshoptEncoder }), quantize());
   doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  await webpTextures(doc); // (lossless WebP: the same pixels, smaller: tools/webp-glb.mjs)
   const outPath = join(OUT_GLB, it.id + '.glb');
   await io.write(outPath, doc);
   const b = getBounds(doc.getRoot().getDefaultScene() || doc.getRoot().listScenes()[0]);

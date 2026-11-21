@@ -10,6 +10,7 @@ import sharp from 'sharp';
 import { MeshoptEncoder } from 'meshoptimizer';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
+import { webpTextures } from '../../../tools/webp-glb.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../../..');
 const [buildDir, ...seriesList] = process.argv.slice(2);
@@ -214,6 +215,7 @@ for (const series of seriesList) {
     // prune() would otherwise drop NORMAL as unused by the unlit material
     await doc.transform(dedup(), prune({ keepAttributes: !!meta.mascot }), reorder({ encoder: MeshoptEncoder }), quantize());
     doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+    await webpTextures(doc); // (lossless WebP: the same pixels, smaller: tools/webp-glb.mjs)
     const out = join(outDir, id + '.glb');
     await io.write(out, doc);
     const key = `${series}/${id}`;

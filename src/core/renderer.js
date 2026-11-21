@@ -33,6 +33,7 @@ const GradeShader = {
     // body state (src/needs/Needs.js through renderer.fx): tired (a darker, duller edge), lid (eyelids closing from top and
     // bottom), double (drunk double vision: a second, offset copy), wobble (drunk: the picture sways)
     uTired: { value: 0 }, uLid: { value: 0 }, uDouble: { value: 0 }, uWobble: { value: 0 },
+    uToneExposure: { value: 1 },
   },
   vertexShader: /* glsl */`
     varying vec2 vUv;
@@ -78,8 +79,31 @@ const GradeShader = {
       float g = hash(vUv * vec2(1920.0, 1080.0) + fract(uTime * 7.13) * 100.0) - 0.5;
       col += g * uGrain * (0.35 + l * 0.5);
       gl_FragColor = vec4(col, 1.0);
+    #ifdef GG_OUTPUT
+      gl_FragColor = sRGBTransferOETF(vec4(ggNeutral(gl_FragColor.rgb), 1.0));
+    #endif
     }`,
 };
+// Performance: the grade also does OutputPass's work (Khronos PBR Neutral tone mapping, then the sRGB transfer), the
+// same maths in the same order, so the frame skips one full-screen pass and one half-float target round trip.
+const NEUTRAL_GLSL = /* glsl */`
+    uniform float uToneExposure;
+    vec3 ggNeutral(vec3 color) { // (three's NeutralToneMapping, tonemapping_pars_fragment)
+      const float StartCompression = 0.8 - 0.04;
+      const float Desaturation = 0.15;
+      color *= uToneExposure;
+      float x = min(color.r, min(color.g, color.b));
+      float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+      color -= offset;
+      float peak = max(color.r, max(color.g, color.b));
+      if (peak < StartCompression) return color;
+      float d = 1. - StartCompression;
+      float newPeak = 1. - d * d / (peak + d - StartCompression);
+      color *= newPeak / peak;
+      float g = 1. - 1. / (Desaturation * (peak - newPeak) + 1.);
+      return mix(color, vec3(newPeak), g);
+    }`;
+const GradeOutputShader = { ...GradeShader, defines: { GG_OUTPUT: '' }, fragmentShader: GradeShader.fragmentShader.replace('varying vec2 vUv;', 'varying vec2 vUv;' + NEUTRAL_GLSL) };
 
 // Anime-style ink outlines: edges where depth jumps (silhouettes and creases), drawn on the lit image.
 const OutlineShader = {
@@ -288,9 +312,13 @@ function casterState(o) {
 // shadowMinR: casters smaller than this (bounding radius, m) don't trigger a redraw by moving.
 // view: draw distance of small props (src/world/propCull.js). crowd: how many passers-by the lane holds (Pedestrians).
 // aoScale: the resolution ambient occlusion is computed at (AOUpsampleShader brings it back up).
+// maxPx: the most pixels a frame is drawn at (performance: a 4K / high-DPI screen on the cheaper presets renders at
+// about this many and is scaled up, instead of four times the fill of a 1080p frame).
+// verylow: the hard FPS-friendly preset for weak integrated GPUs (fewer lit point lights, no bloom, ~1000x560 pixels).
 export const QUALITY = {
-  low: { pixelRatio: 0.75, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6 },
-  medium: { pixelRatio: 1.0, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8 },
+  verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45 },
+  low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6 },
+  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8 },
   high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1 },
   ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1 },
 };
@@ -330,10 +358,18 @@ export class Renderer {
     this.resize();
   }
 
+  /** The drawing-buffer scale for this window: the preset's share of the screen's pixels, capped at q.maxPx. */
+  pixelRatioFor(w = window.innerWidth, h = window.innerHeight) {
+    const q = this.quality;
+    let pr = Math.min(window.devicePixelRatio || 1, 2) * q.pixelRatio;
+    if (q.maxPx && w * h * pr * pr > q.maxPx) pr = Math.sqrt(q.maxPx / Math.max(1, w * h));
+    return pr;
+  }
+
   buildComposer() {
     const r = this.renderer;
     const q = this.quality;
-    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2) * q.pixelRatio);
+    r.setPixelRatio(this._pr = this.pixelRatioFor());
     if (this.composer) this.composer.dispose?.();
     const size = new THREE.Vector2(window.innerWidth, window.innerHeight);
     const rt = new THREE.WebGLRenderTarget(size.x * r.getPixelRatio(), size.y * r.getPixelRatio(), { type: THREE.HalfFloatType, samples: 0 });
@@ -390,9 +426,13 @@ export class Renderer {
       if (hp.fragmentShader.includes(MIX)) { hp.fragmentShader = hp.fragmentShader.replace(MIX, `texel.rgb *= min( 1.0, 2.2 / max( v, 1e-4 ) );\n${MIX}`); hp.needsUpdate = true; }
       composer.addPass(this.bloom);
     }
-    this.grade = new ShaderPass(GradeShader);
+    // (the grade folds in the output transform when it is the standard one: Neutral tone mapping to sRGB)
+    const fold = r.toneMapping === THREE.NeutralToneMapping && r.outputColorSpace === THREE.SRGBColorSpace;
+    this.grade = new ShaderPass(fold ? GradeOutputShader : GradeShader);
+    this.grade.material.toneMapped = false;
+    this.gradeOutput = fold;
     composer.addPass(this.grade);
-    composer.addPass(new OutputPass());
+    if (!fold) composer.addPass(new OutputPass());
     if (q.aa) composer.addPass(new FXAAPass());
     this.finish = null;
     if (q.sharp) {
@@ -430,6 +470,13 @@ export class Renderer {
 
   resize() {
     const w = window.innerWidth, h = window.innerHeight;
+    const pr = this.pixelRatioFor(w, h);
+    // (a capped preset: the window grew or shrank; a ratio someone else set, such as tools/perf.mjs, is left alone)
+    if (this.composer && this.renderer.getPixelRatio() === this._pr && Math.abs(pr - this._pr) > 1e-3) {
+      this.renderer.setPixelRatio(this._pr = pr);
+      this.composer.setPixelRatio(pr);
+      this.outline.uniforms.uWidth.value = Math.max(1, pr);
+    }
     this.renderer.setSize(w, h);
     if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); }
     if (this.composer) this.composer.setSize(w, h);
@@ -546,6 +593,7 @@ export class Renderer {
     this.updateShadows();
     const gu = this.grade.uniforms, fx = this.fx;
     gu.uTime.value = time;
+    gu.uToneExposure.value = this.renderer.toneMappingExposure;
     gu.uTired.value = fx.tired; gu.uLid.value = fx.lid; gu.uDouble.value = fx.double; gu.uWobble.value = fx.wobble;
     // the sun for the god rays: the scene's shadow-casting directional light
     if (!this.outline.sun && this.frameN % 30 === 1) this.scene.traverse((o) => { if (!this.outline.sun && o.isDirectionalLight && o.castShadow) this.outline.sun = o; });

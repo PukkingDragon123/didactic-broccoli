@@ -15,6 +15,7 @@ import { MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
+import { webpTextures } from '../../../tools/webp-glb.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../../..');
 const ART = resolve(ROOT, 'art/lowpix/machines');
@@ -154,6 +155,7 @@ for (const [pack, specs] of Object.entries(PACKS)) {
   }
   await out.transform(reorder({ encoder: MeshoptEncoder }), quantize());
   out.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  await webpTextures(out); // (lossless WebP: the same pixels, smaller: tools/webp-glb.mjs)
   const path = join(OUT, pack + '.glb');
   await io.write(path, out);
   const b = getBounds(scene);

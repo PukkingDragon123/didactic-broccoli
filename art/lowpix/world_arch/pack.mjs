@@ -12,6 +12,7 @@ import { MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
 import { mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { resolve, join as pjoin } from 'node:path';
+import { webpTextures } from '../../../tools/webp-glb.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../../..');
 const OUT = resolve(ROOT, 'public/models/lowpix/world_arch');
@@ -174,6 +175,7 @@ for (const id of ids) {
   const b = getBounds(root.getDefaultScene() || root.listScenes()[0]);
   await doc.transform(reorder({ encoder: MeshoptEncoder }), quantize());
   doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  await webpTextures(doc); // (lossless WebP: the same pixels, smaller: tools/webp-glb.mjs)
   const outPath = pjoin(OUT, id + '.glb');
   await io.write(outPath, doc);
   let credit;
