@@ -3,21 +3,21 @@
 // surface (texture px / m, from each triangle's UV area x texture size x repeat vs its world area) and the GPU memory
 // of all the textures in use. Surfaces the player can walk up to (within 6 m of a walkable spot and below 3.5 m) are
 // "close", the rest "far"; each is checked against the standard in docs/ART.md (Texel density).
-// Usage: tools/slot.sh node tools/texel-audit.mjs [out=shots/textures] [close=256] [far=128] [scope=all|lane|rooms|mall]
+// Usage: tools/slot.sh node tools/texel-audit.mjs [out=shots/textures] [close=256] [far=128] [scope=all|lane|rooms|mall] [quality=high]
 // Writes <out>/lowres_list.txt (everything under the standard, worst first), <out>/texel_all.txt and texel.json.
 import { createServer } from 'vite';
 import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const [outDir = 'shots/textures', CLOSE = '256', FAR = '128', SCOPE = 'all'] = process.argv.slice(2);
+const [outDir = 'shots/textures', CLOSE = '256', FAR = '128', SCOPE = 'all', Q = 'high'] = process.argv.slice(2);
 // SCOPE (to keep a headless run small): all | lane (no interiors) | rooms (room, ramen, flat 103, annex) | mall
 let chromium;
 try { ({ chromium } = await import('playwright')); } catch { ({ chromium } = createRequire('/opt/node-tools/node_modules/')('playwright')); }
 const root = resolve(import.meta.dirname, '..');
 const server = await createServer({ root, configFile: resolve(root, 'vite.config.js'), server: { port: 0, host: '127.0.0.1', hmr: false, watch: { ignored: ['**/*'] } }, logLevel: 'error' });
 await server.listen();
-const url = `http://127.0.0.1:${server.httpServer.address().port}/index.html?autotest&q=high`;
+const url = `http://127.0.0.1:${server.httpServer.address().port}/index.html?autotest&q=${Q}`;
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const ctx = await browser.newContext({ viewport: { width: 640, height: 360 } });
 // remember where every canvas was painted (the recipe / function that drew it) so procedural textures get a name
@@ -68,7 +68,7 @@ function measure([CLOSE, FAR, SCOPE]) {
   const label = (o) => {
     const chain = []; let asset = null;
     for (let p = o; p && p !== scene; p = p.parent) {
-      if (!asset && p.userData?.asset) asset = p.userData.asset;
+      if (!asset && (p.userData?.asset || p.geometry?.userData?.asset)) asset = p.userData?.asset || p.geometry.userData.asset;
       if (p.name && !/^(Group|Scene|mesh|Object3D)$/i.test(p.name)) chain.unshift(p.name);
     }
     const top = chain.slice(0, 2).join(' > ') || '(unnamed)';
@@ -202,7 +202,7 @@ try {
   }
   bad.sort((x, y) => x.d / x.need - y.d / y.need || y.area - x.area);
   const fmt = (r) => `${String(r.d).padStart(6)} px/m  (need ${r.need})  ${r.zone.padEnd(5)} ${String(r.area).padStart(8)} m²  tex ${r.px.join('x').padEnd(9)} rep ${r.rep.join(',').padEnd(14)} ${short(r.place ? '[' + r.place + '] ' : '', 18)}${short(r.who, 46).padEnd(46)}  ${r.tex}`;
-  const head = [`TEXEL DENSITY AUDIT ${new Date().toISOString()}  scope ${SCOPE}  standard: close >= ${C} px/m, far >= min(${F}, 768 / distance) px/m (docs/ART.md)`,
+  const head = [`TEXEL DENSITY AUDIT ${new Date().toISOString()}  scope ${SCOPE}  quality ${Q}  standard: close >= ${C} px/m, far >= min(${F}, 768 / distance) px/m (docs/ART.md)`,
     `UNDER STANDARD: ${bad.length} surface groups (texture x mesh); close ${bad.filter((b) => b.zone === 'close').length}, far ${bad.filter((b) => b.zone === 'far').length}`,
     `GPU TEXTURE MEMORY (all textures on meshes, RGBA8 + mips): ${res.mem.mb} MB in ${res.mem.textures} textures`, ''];
   writeFileSync(resolve(root, outDir, 'lowres_list.txt'), [...head, 'density (area-weighted median), zone, area, texture size, repeat, where, texture source', ...bad.map(fmt), '', `BLACK SURFACES (${res.black.length}):`, ...res.black.map((b) => '  ' + b), '', 'BACKDROPS AND LIGHT OVERLAYS (views behind windows, far impostors, AO maps; not surface art, not listed above):',

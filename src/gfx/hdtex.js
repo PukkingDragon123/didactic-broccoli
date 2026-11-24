@@ -14,8 +14,26 @@
 //                   material is ever made with an empty texture)
 import * as THREE from 'three';
 import MANIFEST from './hdtex.manifest.json';
+import { isTouchDevice } from '../core/touch.js';
 
 const imgs = new Map();
+
+// The Very Low and Low presets never load the HD set (GPU memory): the quality is read before the world builds, from
+// the page's ?q=, else the save's chosen or auto-picked preset, else low on a touch device (as src/main.js does). A
+// change in Settings takes effect after a restart.
+const LOW = new Set(['verylow', 'low']);
+function bootPreset() {
+  try {
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) return q;
+    const s = JSON.parse(localStorage.getItem('gacha-garage-save-v2') || 'null')?.settings;
+    if (s?.quality) return s.quality;
+    if (s?.autoQuality) return s.autoQuality;
+    if (isTouchDevice()) return 'low';
+  } catch { /* no storage */ }
+  return 'high';
+}
+export const HD_ON = typeof window === 'undefined' ? true : !LOW.has(bootPreset());
 const url = (k) => new URL(`${import.meta.env.BASE_URL}textures/hd/${k}.webp`, document.baseURI).href;
 
 function image(key) {
@@ -30,11 +48,11 @@ function image(key) {
   return e;
 }
 
-export const hasHD = (key) => Object.prototype.hasOwnProperty.call(MANIFEST, key);
+export const hasHD = (key) => HD_ON && Object.prototype.hasOwnProperty.call(MANIFEST, key);
 export const hdSize = (key) => MANIFEST[key].m;
 export const hdKeys = () => Object.keys(MANIFEST);
 
-export function whenHD() { return Promise.all(Object.keys(MANIFEST).map((k) => image(k).ready)); }
+export function whenHD() { return HD_ON ? Promise.all(Object.keys(MANIFEST).map((k) => image(k).ready)) : Promise.resolve(); }
 
 const bases = new Map();
 export function hdTexture(key) {
