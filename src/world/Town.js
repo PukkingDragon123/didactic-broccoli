@@ -762,17 +762,20 @@ export class Town {
     // services); the town keeps what glows, changes or is dressing (windows, doors, signs, lamps, balconies, extra)
     const lp = this.archHouse(o);
     this._lp = !!lp;
+    // the lowpix shell's walls are painted at 32 px/m: cover them with the HD wall surfaces (256 px/m, src/gfx/hdtex.js),
+    // drawn as the code-built house would (pulled forward a hair so they win over the model's own wall faces)
+    const hw = !lp || o.hdWalls !== false, cv = (mat) => (lp ? this.coverMat(mat) : mat);
     B.push(o.x, o.y0 || 0, o.z, side > 0 ? 0 : Math.PI);
     const base = o.y0 ? 0 : (o.base ?? 0.4);
     if (base && !lp) B.box(m.found, W + 0.08, base, D + 0.08, 0, 0, -D / 2, { uv: [seed, 0] });
     const h1 = o.h1 ?? 2.65, h2 = (o.floors ?? 2) > 1 ? (o.h2 ?? 2.55) : 0;
     const fy = [base, base + h1];
     const wallA = o.wallA || m.wallCream, wallB = o.wallB || wallA;
-    if (!lp) B.box(wallA, W, h1, D, 0, base, -D / 2, { uv: [seed % 3, 0], ao: o.y0 ? 0 : 0.22 });
+    if (hw) B.box(cv(wallA), W, h1, D, 0, base, -D / 2, { uv: [seed % 3, 0], ao: o.y0 ? 0 : 0.22 });
     let top = base + h1;
     if (h2) {
       if (!lp) B.box(m.pv, W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, { tint: o.trim ?? 0x6a5a4a });
-      if (!lp) B.box(wallB, W, h2, D, 0, top, -D / 2, { uv: [seed % 5, 0.4] });
+      if (hw) B.box(cv(wallB), W, h2, D, 0, top, -D / 2, { uv: [seed % 5, 0.4] });
       top += h2;
     }
     if (lp) this._ridgeY = lp.ridge; else this.roof(W, D, top, o, wallB);
@@ -787,7 +790,7 @@ export class Town {
       }
     }
     // the lane face: tile skirt (腰壁), corner boards, foundation vents (床下換気口)
-    if (o.skirt && !lp) B.box(o.skirt.mat || m.skirt, W + 0.02, o.skirt.h ?? 0.9, 0.03, 0, base, 0.012, { uv: [seed, 0] });
+    if (o.skirt && hw) B.box(cv(o.skirt.mat || m.skirt), W + 0.02, o.skirt.h ?? 0.9, 0.03, 0, base, 0.012, { uv: [seed, 0] });
     if (o.corner !== undefined && !lp) for (const sx of [-1, 1]) B.box(m.pv, 0.07, top - base, 0.07, sx * (W / 2 - 0.02), base, 0.02, { tint: o.corner });
     if (base && o.vents !== false && !o.lite && !lp) for (const vx of [-W * 0.3, W * 0.3]) {
       if (o.door && Math.abs(vx - o.door.x) < (o.door.w ?? 1.4) / 2 + 0.4) continue;
@@ -853,6 +856,18 @@ export class Town {
   }
 
   /** The lowpix model drawing this house's shell (placing its block model the first time), or null: { block, ridge }. */
+  /** A wall material that draws over a coplanar lowpix wall face (polygon offset), cached per material. */
+  coverMat(mat) {
+    if (!this._cover) this._cover = new Map();
+    let c = this._cover.get(mat);
+    if (!c) {
+      c = mat.clone();
+      c.onBeforeCompile = mat.onBeforeCompile; c.customProgramCacheKey = mat.customProgramCacheKey;
+      c.polygonOffset = true; c.polygonOffsetFactor = -1; c.polygonOffsetUnits = -2;
+      this._cover.set(mat, c);
+    }
+    return c;
+  }
   archHouse(o) {
     const h = LP_HOUSES[houseId(o)];
     if (!h || !archReady(h.block)) return null;

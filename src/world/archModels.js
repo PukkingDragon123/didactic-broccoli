@@ -12,7 +12,7 @@ import { LP_ARCH, archAsset } from '../kit/lowpixArch.js';
 
 export const ARCH_OFF = typeof location !== 'undefined' && /[?&]voxelarch\b/.test(location.search);
 // every model is preloaded at boot (the town builds them synchronously) except the lazy ones (interiors: archSlot)
-export const ARCH_LAZY = new Set(['scooter', 'wagasa_parasol', 'rope_coil', 'astronaut', 'slide', 'rice_cooker']); // props (src/data/propModels.js loads them)
+export const ARCH_LAZY = new Set(['scooter', 'wagasa_parasol', 'rope_coil', 'astronaut', 'slide', 'rice_cooker', 'mini_truck', 'kei_van', 'taxi_sedan']); // props (src/data/propModels.js loads them)
 const BOOT = Object.keys(LP_ARCH).filter((id) => !ARCH_LAZY.has(id));
 if (!ARCH_OFF && typeof document !== 'undefined') {
   const ids = BOOT.filter((id) => LP_ARCH[id]).map(archAsset);
@@ -23,7 +23,7 @@ export const archReady = (id) => !ARCH_OFF && !!LP_ARCH[id] && assetReady(archAs
 
 /** The lowpix atlases are pixel art seen with nearest filtering: no mip chain (keeps world_arch's GPU memory down),
  *  except the big house blocks (32 px/m walls seen down the whole lane would shimmer without one). */
-const MIPPED = new Set(['lane_near', 'lane_far']);
+const MIPPED = new Set(['lane_near', 'lane_far', 'mini_truck', 'kei_van', 'taxi_sedan']); // + the imported vehicles (normal-mapped, seen close)
 function noMips(g, id = '') {
   if (MIPPED.has(id)) return g;
   g.traverse((o) => {
@@ -57,7 +57,7 @@ export function archPlace(id, parent, o = {}) {
 /** The model placed lazily: an empty group now, the model in it once loaded. */
 export function archSlot(id, parent, o = {}) {
   const g = assetSlot(archAsset(id), { cast: o.cast ?? true, receive: o.receive ?? true });
-  g.addEventListener?.('assetloaded', () => { noMips(g); g.traverse((m) => { if (m.isMesh) { m.castShadow = o.cast ?? true; m.receiveShadow = o.receive ?? true; } }); g.updateMatrixWorld(true); });
+  g.addEventListener?.('assetloaded', () => { noMips(g, id); g.traverse((m) => { if (m.isMesh) { m.castShadow = o.cast ?? true; m.receiveShadow = o.receive ?? true; } }); g.updateMatrixWorld(true); });
   return put(g, parent, { name: 'arch:' + id, ...o, cast: o.cast ?? true });
 }
 

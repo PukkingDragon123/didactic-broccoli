@@ -4080,6 +4080,15 @@
    "tris": 500,
    "cap": 512,
    "name": "Broombin (our own model, hand-painted)"
+  },
+  {
+   "id": "bath_mirror",
+   "src": "art/lowpix/world/made/bath_mirror.glb",
+   "h": 0.6,
+   "ppm": 600,
+   "tris": 200,
+   "cap": 256,
+   "name": "Bath mirror (our own model, hand-painted)"
   }
  ]
 }

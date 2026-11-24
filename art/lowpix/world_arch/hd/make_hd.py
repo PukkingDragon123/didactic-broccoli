@@ -572,10 +572,10 @@ def block_hd():
     return cblocks(px(2), px(2), px(0.4), px(0.2), rng, '#9c988f')
 
 
-def corrugated(W, H, ribs, asset, rng, mean, ramp=(0.78, 0.92, 1.08, 1.16, 1.1, 0.96, 0.82, 0.72), k=26, seed=6, bolts=(), rust=8, ppm=PPM, courses=0):
+def corrugated(W, H, ribs, asset, rng, mean, ramp=(0.78, 0.92, 1.08, 1.16, 1.1, 0.96, 0.82, 0.72), k=26, seed=6, bolts=(), rust=8, ppm=PPM, courses=0, fade=0, std=0.06):
     """Corrugated sheet: rib shading (a lit / shaded ramp across each rib, bent by dents), the photo's paint and rust
     mottling, fastener rows with washers and rust tears, rust runs down the valleys, an overlap seam."""
-    a = surface(asset, W, H, rng, std=0.06, sat=0.6, ppm=ppm)
+    a = surface(asset, W, H, rng, std=std, sat=0.6, ppm=ppm)
     x = np.arange(W)
     xs = grid(W, ribs)
     phase = np.zeros(W, np.float32)
@@ -587,6 +587,17 @@ def corrugated(W, H, ribs, asset, rng, mean, ramp=(0.78, 0.92, 1.08, 1.16, 1.1, 
     rp = np.array(ramp, np.float32)
     shade = rp[(ph * len(rp)).astype(int) % len(rp)]
     a = a * shade[..., None]
+    if fade:  # chalky, sun-faded enamel: soft lighter patches (the palette steps them into clean clusters, no dither)
+        from PIL import Image as _I, ImageFilter as _F
+        fm = np.zeros((H, W), np.float32)
+        for _ in range(fade):
+            cx, cy, rx, ry = rng.integers(0, W), rng.integers(0, H), rng.integers(30, 110), rng.integers(40, 150)
+            yy, xx = np.ogrid[0:H, 0:W]
+            dx = np.minimum(np.abs(xx - cx), W - np.abs(xx - cx)) / rx
+            dy = np.minimum(np.abs(yy - cy), H - np.abs(yy - cy)) / ry
+            fm = np.maximum(fm, np.clip(1 - np.sqrt(dx ** 2 + dy ** 2), 0, 1))
+        fm = np.asarray(_I.fromarray((fm * 255).astype(np.uint8)).filter(_F.GaussianBlur(10)), np.float32) / 255
+        a = a * (1 + fm * 0.08)[..., None]
     if courses:  # roof-tile courses: a shadow under each overlapping row, a lit lip on it
         for y in grid(H, courses)[:-1]:
             a[y:y + 3] *= 0.6
@@ -601,21 +612,25 @@ def corrugated(W, H, ribs, asset, rng, mean, ramp=(0.78, 0.92, 1.08, 1.16, 1.1, 
             for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                 L.wpx(b, cx + dx, y + dy, f=0.5)
             L.wpx(b, cx, y, f=1.35)
-            if rng.random() < 0.5:
-                for j in range(int(rng.integers(10, 60))):
-                    if L.B4[(y + j) % 4, cx % 4] < 1 - j / 60:
-                        L.wpx(b, cx, y + 2 + j, c=rustc, alpha=0.6)
-    for _ in range(rust):
+            if rng.random() < 0.5:  # a rust tear under the washer: solid, fading in steps
+                n = int(rng.integers(10, 60))
+                for j in range(n):
+                    L.wpx(b, cx, y + 2 + j, c=rustc, alpha=0.6 * (1 - int(3 * j / n) / 3))
+    for _ in range(rust):  # rust runs down a valley: a 2-texel run, strong at the top, fading in steps, wobbling
         cx = xs[int(rng.integers(0, ribs))] + int((xs[1] - xs[0]) * 0.8)
         y = int(rng.integers(0, H))
         n = int(rng.integers(60, 260))
+        x = cx
         for j in range(n):
-            if L.B4[(y + j) % 4, cx % 4] < (1 - j / n) * 0.8:
-                L.wpx(b, cx, y + j, c=rustc * 1.1, alpha=0.55)
-                L.wpx(b, cx + 1, y + j, c=rustc, alpha=0.3)
+            al = 0.6 * (1 - int(4 * j / n) / 4)
+            for dx in (0, 1):
+                L.wpx(b, x + dx, y + j, c=rustc * (1.1 if dx == 0 else 0.95), alpha=al)
+            if rng.random() < 0.03:
+                x += rng.choice([-1, 1])
     b[:, 0] *= 0.45
     b[:, 1] *= 1.25
-    return L.snap(to8(np.clip(b, 0, 1)), pal)
+    b = np.clip(b, 0, 1)
+    return L.snap(to8(b), L.palette(b, k + 6, seed + 1))
 
 
 @recipe('corrugatedHD', (2, 2))
@@ -969,23 +984,11 @@ def tunnel_wall():
 
 @recipe('prefabPanel', (2, 2))
 def prefab_panel():
-    """Prefab steel wall panels (cream): 50 cm panels with a folded seam, a shallow rib, rust at the screw heads."""
+    """Light-steel prefab walls (ribbed enamel panels, the Suzukis' house): 11 cm ribs with a lit crest and a shaded
+    valley, the cream enamel chalked and faded in patches, rust runs down from the fixings, an overlap seam."""
     rng = np.random.default_rng(495)
-    W = H = px(2)
-    a = surface('beige_wall_001', W, H, rng, std=0.04, sat=0.4)
-    streaks(a, rng, 12, length=(40, 220), f=(0.88, 0.94))
-    a = L.grade(a, mean='#dcd4c1')
-    img, pal = L.pixel_art(a, k=18, seed=12, paint=1)
-    b = f32(img)
-    for x in grid(W, 4)[:-1]:
-        b[:, x] *= 0.55
-        b[:, (x + 1) % W] *= 1.12
-        b[:, (x + 64) % W] *= 0.9  # the rib
-        b[:, (x + 65) % W] *= 1.06
-        for y in range(20, H, 128):
-            L.wpx(b, x + 4, y, f=0.6)
-            L.streak(b, x + 4, y + 1, rng.integers(4, 30), f=0.85)
-    return L.snap(to8(np.clip(b, 0, 1)), pal)
+    return corrugated(px(2), px(2), 18, 'beige_wall_001', rng, '#d6cfbe',
+                      ramp=(0.86, 0.95, 1.04, 1.09, 1.07, 1.0, 0.93, 0.86, 0.82), bolts=(px(0.2), px(1.2)), rust=6, fade=8, std=0.025, k=24)
 
 
 @recipe('brickHD', (2, 2))

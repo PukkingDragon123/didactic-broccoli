@@ -16,6 +16,7 @@ export const LP_WORLD = {
   bamboo_fence: { size: [1.456, 1.22, 0.236], credit: "BFBBR - Bamboo Fence 01 by SMF Features Developed From Cheryl Hill (CC BY 4.0)" },
   band_aid: { size: [0.62, 0.01, 0.18], credit: "Band Aid by way2mind (CC BY 4.0)" },
   basket: { size: [0.403, 0.117, 0.306], credit: "Wicker Basket 01 by Kuutti Siitonen (CC0 1.0)" },
+  bath_mirror: { size: [0.4, 0.6, 0.094], credit: "Bath mirror (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/bath_mirror.glb) (CC0 1.0)" },
   bath_stool_set: { size: [0.361, 0.3, 0.776], credit: "Japanese Bath Stool and Bucket by Shorty_Digitan (CC BY 4.0)" },
   batterypack: { size: [0.086, 0.126, 0.022], credit: "AA batteries by Gacha Garage (made for the game, art/lowpix/world/made/batterypack.glb) (CC0 1.0)" },
   beach_parasol: { size: [1.546, 1.975, 1.779], credit: "Beach Umbrella by stealth86 (CC BY 4.0)" },

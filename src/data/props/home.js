@@ -114,7 +114,7 @@ export default {
   hm_clock: M('clock_wall', 0.3),
   hm_pothos: M('plant_pothos', 0.8),
   hm_oil_lamp: M('lamp_oil', 0.7),
-  hm_mirror: M('mirror', 0.6),
+  hm_mirror: M('bath_mirror', 0.6),
   hm_basket: M('basket', 0.12),
   hm_bottle: M('spray_bottle', 0.19),
   hm_sponge: M('sponge', 0.05),

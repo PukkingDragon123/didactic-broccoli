@@ -2666,6 +2666,7 @@ by `tools/pixelart.py`.
 Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert --style pixel-hd`), then scaled, re-textured and compressed by tools/lowpix-world.mjs. Shipped in `models/lowpix/world/`.
 
 - AA batteries by Gacha Garage (made for the game, art/lowpix/world/made/batterypack.glb), CC0 1.0. Shipped as `models/lowpix/world/batterypack.glb`
+- Bath mirror (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/bath_mirror.glb), CC0 1.0. Shipped as `models/lowpix/world/bath_mirror.glb`
 - Bin fill (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/binfill.glb), CC0 1.0. Shipped as `models/lowpix/world/binfill_own.glb`
 - Broombin (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/broombin_own.glb), CC0 1.0. Shipped as `models/lowpix/world/broombin_own.glb`
 - Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0. Shipped as `models/lowpix/world/busstop.glb`
@@ -3292,8 +3293,9 @@ Modelled for the game as lowpix specs (art/lowpix/world_arch/, CC0) and built wi
 
 Converted from these models (`lowpix convert --style pixel-hd`), shipped in `models/lowpix/world_arch/`:
 
-- 1984 Suzuki Kei Truck by untitled.vvti, CC BY 4.0: https://sketchfab.com/3d-models/1984-suzuki-kei-truck-c08fd6d5410b4a4099043033907616bd (kei_truck_a)
-- 1984 Suzuki Kei Truck by untitled.vvti, CC BY 4.0: https://sketchfab.com/3d-models/1984-suzuki-kei-truck-c08fd6d5410b4a4099043033907616bd (kei_truck_b)
+- Asia Towner / Daihatsu HiJet by Red Fox / nokillnando, CC BY 4.0: https://sketchfab.com/3d-models/asia-towner-daihatsu-hijet-05af2473934e4bc68975fa89f842481c (kei_van)
+- Asian Mini Truck by Evan Hiltz, CC BY 4.0: https://sketchfab.com/3d-models/asian-mini-truck-b5a40b838b414d248db2d2fab6a2bb56 (mini_truck)
+- 2001 Toyota Crown Comfort [S10] by untitled.vvti, CC BY 4.0: https://sketchfab.com/3d-models/2001-toyota-crown-comfort-s10-3ef4527459f5406fb4599864800ab1fa (taxi_sedan)
 
 <!-- lowpix-world-arch:end -->
 

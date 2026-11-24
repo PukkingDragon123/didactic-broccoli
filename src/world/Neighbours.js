@@ -195,9 +195,9 @@ function nearSide(t) {
   // the Suzukis' kei wagon in the carport: pastel blue under a white roof, an older (pre-1998, 3.3 m) one than Mr.
   // Tanaka's, so a touch smaller (src/vehicles/keiWagon.js); it blocks the footprint the voxel prop did
   {
-    // the Suzukis' cream kei truck (a real hand-made model, repainted in the house style, badges painted out, our own
-    // plates: src/world/carModels.js); the vehicle kit's kei wagon if it failed to load
-    const car = parkedCar('kei_truck_a', t.group, { x: 6.05, z: 3.15, plate: { cls: '480', kana: 'さ', num: '21-08' } }) || keiWagonMesh({ paint: 0x7a9ec2, roof: 0xece8dc, dent: false, static: true });
+    // the Suzukis' white kei mini truck (an imported hand-made model with real glass, chrome and its cab; badges
+    // painted out, our own plates: src/world/carModels.js); the vehicle kit's kei wagon if it failed to load
+    const car = parkedCar('mini_truck', t.group, { x: 6.05, z: 3.1, plate: { cls: '480', kana: 'さ', num: '21-08' } }) || keiWagonMesh({ paint: 0x7a9ec2, roof: 0xece8dc, dent: false, static: true });
     if (!car.parent) {
       car.scale.setScalar(0.936);
       car.position.set(6.05, 0, 3.15);
@@ -560,8 +560,8 @@ function farSide(t) {
   B.box(m.pv, 0.26, 0.04, 0.025, 2.2, 4.2, -0.8, { tint: 0xe8c860 });
   B.pop();
   t.yard(21.05, 25.7, ZF, 15.2, m.strip);
-  // a neighbour's faded green kei truck pulled up on the garages' apron
-  if (parkedCar('kei_truck_b', t.group, { x: 24.15, z: 13.8, ry: Math.PI / 2 + 0.04, plate: { cls: '41', kana: 'す', num: '3-86' } })) t.game.player.addObstacle(22.5, 25.8, 13.05, 14.55);
+  // a neighbour's blue-and-white 1980s kei van pulled up on the garages' apron
+  if (parkedCar('kei_van', t.group, { x: 24.15, z: 13.85, ry: Math.PI / 2 + 0.04, plate: { cls: '41', kana: 'す', num: '3-86' } })) t.game.player.addObstacle(22.45, 25.85, 13.0, 14.7);
   t.weeds(22.1, 0, 15.0, 2);
   t.weeds(25.2, 0, 14.95, 0.6);
   addDoor(t, 'garage6', 'FE6', 'Rental garage', [22.25, 15.4], [22.25, ZF], [22.25, 15.12, 1.2], s, { knockOnly: true });

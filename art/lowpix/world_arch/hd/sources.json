@@ -156,10 +156,7 @@
  "corrugated_iron_02": {
   "source": "https://polyhaven.com/a/corrugated_iron_02",
   "license": "CC0-1.0",
-  "metres": 2.7,
-  "used_for": [
-   "corrugatedHD"
-  ]
+  "metres": 2.7
  },
  "dirt": {
   "source": "https://polyhaven.com/a/dirt",
@@ -190,10 +187,7 @@
  "grey_roof_tiles": {
   "source": "https://polyhaven.com/a/grey_roof_tiles",
   "license": "CC0-1.0",
-  "metres": 3.0,
-  "used_for": [
-   "roofTile"
-  ]
+  "metres": 3.0
  },
  "grey_roof_tiles_02": {
   "source": "https://polyhaven.com/a/grey_roof_tiles_02",
@@ -301,10 +295,7 @@
  "rusty_corrugated_iron": {
   "source": "https://polyhaven.com/a/rusty_corrugated_iron",
   "license": "CC0-1.0",
-  "metres": 2.0,
-  "used_for": [
-   "metalRoof"
-  ]
+  "metres": 2.0
  },
  "rusty_metal_02": {
   "source": "https://polyhaven.com/a/rusty_metal_02",

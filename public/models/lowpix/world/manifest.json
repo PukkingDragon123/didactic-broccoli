@@ -238,6 +238,24 @@
   ],
   "bytes": 26432
  },
+ "bath_mirror": {
+  "id": "bath_mirror",
+  "name": "Bath mirror (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/bath_mirror.glb",
+  "title": "Bath mirror (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/bath_mirror.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 48,
+  "tex": 256,
+  "size": [
+   0.4,
+   0.6,
+   0.094
+  ],
+  "bytes": 25356
+ },
  "bath_stool_set": {
   "id": "bath_stool_set",
   "name": "Japanese Bath Stool and Bucket",

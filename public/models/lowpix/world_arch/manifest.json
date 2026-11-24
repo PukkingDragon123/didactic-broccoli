@@ -62,62 +62,33 @@
   "bytes": 44136,
   "ppm": 64
  },
- "kei_truck_a": {
-  "id": "kei_truck_a",
-  "name": "1980s kei truck (1984 Suzuki Kei Truck by iwak.rebus, CC BY 4.0, converted, badges painted out)",
+ "kei_van": {
+  "id": "kei_van",
+  "name": "1980s kei van (Asia Towner / Daihatsu HiJet by Red Fox / nokillnando, CC BY 4.0, imported, badges painted out)",
   "credit": {
-   "title": "1984 Suzuki Kei Truck",
-   "author": "untitled.vvti",
-   "authorUrl": "https://sketchfab.com/iwak.rebus",
+   "title": "Asia Towner / Daihatsu HiJet",
+   "author": "Red Fox / nokillnando",
+   "authorUrl": "https://sketchfab.com/nokillnando",
    "license": "CC BY 4.0",
-   "url": "https://sketchfab.com/3d-models/1984-suzuki-kei-truck-c08fd6d5410b4a4099043033907616bd",
+   "url": "https://sketchfab.com/3d-models/asia-towner-daihatsu-hijet-05af2473934e4bc68975fa89f842481c",
    "site": "sketchfab"
   },
   "min": [
-   -0.708,
+   -0.794,
    0,
-   -1.601
+   -1.645
   ],
   "max": [
-   0.708,
-   1.47,
-   1.601
+   0.794,
+   1.788,
+   1.645
   ],
-  "tris": 7854,
+  "tris": 18448,
   "tex": [
-   2048,
-   2048
+   1024,
+   1024
   ],
-  "bytes": 324696,
-  "ppm": 256
- },
- "kei_truck_b": {
-  "id": "kei_truck_b",
-  "name": "1980s kei truck (1984 Suzuki Kei Truck by iwak.rebus, CC BY 4.0, converted, badges painted out)",
-  "credit": {
-   "title": "1984 Suzuki Kei Truck",
-   "author": "untitled.vvti",
-   "authorUrl": "https://sketchfab.com/iwak.rebus",
-   "license": "CC BY 4.0",
-   "url": "https://sketchfab.com/3d-models/1984-suzuki-kei-truck-c08fd6d5410b4a4099043033907616bd",
-   "site": "sketchfab"
-  },
-  "min": [
-   -0.708,
-   0,
-   -1.601
-  ],
-  "max": [
-   0.708,
-   1.47,
-   1.601
-  ],
-  "tris": 7854,
-  "tex": [
-   2048,
-   2048
-  ],
-  "bytes": 323608,
+  "bytes": 5375512,
   "ppm": 256
  },
  "lane_back": {
@@ -369,6 +340,35 @@
   "bytes": 37736,
   "ppm": 32
  },
+ "mini_truck": {
+  "id": "mini_truck",
+  "name": "1990s kei mini truck (Asian Mini Truck by Evan Hiltz, CC BY 4.0, imported, badges painted out)",
+  "credit": {
+   "title": "Asian Mini Truck",
+   "author": "Evan Hiltz",
+   "authorUrl": "https://sketchfab.com/evan.hiltz",
+   "license": "CC BY 4.0",
+   "url": "https://sketchfab.com/3d-models/asian-mini-truck-b5a40b838b414d248db2d2fab6a2bb56",
+   "site": "sketchfab"
+  },
+  "min": [
+   -0.842,
+   0,
+   -1.695
+  ],
+  "max": [
+   0.842,
+   1.78,
+   1.695
+  ],
+  "tris": 14428,
+  "tex": [
+   2048,
+   2048
+  ],
+  "bytes": 3199452,
+  "ppm": 256
+ },
  "park_toilet": {
   "id": "park_toilet",
   "name": "park_toilet",
@@ -599,6 +599,35 @@
   ],
   "bytes": 18820,
   "ppm": 64
+ },
+ "taxi_sedan": {
+  "id": "taxi_sedan",
+  "name": "1990s taxi saloon (2001 Toyota Crown Comfort by untitled.vvti, CC BY 4.0, imported, badges and plates removed, taxi livery)",
+  "credit": {
+   "title": "2001 Toyota Crown Comfort [S10]",
+   "author": "untitled.vvti",
+   "authorUrl": "https://sketchfab.com/iwak.rebus",
+   "license": "CC BY 4.0",
+   "url": "https://sketchfab.com/3d-models/2001-toyota-crown-comfort-s10-3ef4527459f5406fb4599864800ab1fa",
+   "site": "sketchfab"
+  },
+  "min": [
+   -0.873,
+   0,
+   -2.345
+  ],
+  "max": [
+   0.872,
+   1.53,
+   2.345
+  ],
+  "tris": 19713,
+  "tex": [
+   1024,
+   1024
+  ],
+  "bytes": 1566260,
+  "ppm": 256
  },
  "train_cab": {
   "id": "train_cab",

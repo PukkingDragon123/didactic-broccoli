@@ -24,6 +24,8 @@ import * as THREE from 'three';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { vanDecalPix } from './art.js';
+import { assetSlot } from '../kit/assets.js';
+import { lpAsset } from '../kit/lowpixWorld.js';
 import { maskPx, textWPx } from '../gfx/pixfont.js';
 import { Atlas, ROUGH } from '../vehicles/atlas.js';
 import { Geo, triplanar, boxMap } from '../vehicles/geom.js';
@@ -681,14 +683,10 @@ function interior(G, V, A) {
   G.pop();
   // a pipe guard behind the seats, the moving boxes in the back
   G.with(sw(0x2a2c30, ROUGH.metal), 0, () => rods(G, [[-0.65, 0.62, 0.6], [-0.65, 1.3, 0.6], [0.65, 1.3, 0.6], [0.65, 0.62, 0.6]], 0.014, 6));
-  const boxes = [[-0.6, 0.64, -1.6, -0.06, 1.06, -1.05, 0.1], [0.02, 0.64, -1.6, 0.58, 0.99, -1.1, -0.06], [-0.5, 1.06, -1.55, -0.12, 1.34, -1.12, 0.12], [-0.62, 0.64, -0.9, -0.08, 0.9, -0.3, -0.05], [0.06, 0.64, -0.95, 0.6, 1.14, -0.35, 0.04]];
-  for (const [x0, y0, z0, x1, y1, z1, ry] of boxes) {
-    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
-    G.push(new THREE.Matrix4().makeRotationY(ry).setPosition(cx, 0, cz));
-    G.with(boxMap(V.card, [x0 - cx, y0, z0 - cz, x1 - cx, y1, z1 - cz]), 0, () => G.box(x0 - cx, y0, z0 - cz, x1 - cx, y1, z1 - cz, { bevel: 0.008 }));
-    G.pop();
-  }
+  // (the moving boxes themselves are the printed cardboard model, added by the Van: CARGO)
 }
+/** The moving boxes in the back (x0, y0, z0, x1, y1, z1, ry), drawn with the printed cardboard box model. */
+const CARGO = [[-0.6, 0.64, -1.6, -0.06, 1.06, -1.05, 0.1], [0.02, 0.64, -1.6, 0.58, 0.99, -1.1, -0.06], [-0.5, 1.06, -1.55, -0.12, 1.34, -1.12, 0.12], [-0.62, 0.64, -0.9, -0.08, 0.9, -0.3, -0.05], [0.06, 0.64, -0.95, 0.6, 1.14, -0.35, 0.04]];
 
 /** Armrest, window crank, door handle and lock knob on a door card (sx: the door's side, -1 the driver's). */
 function doorFittings(G, A, sx) {
@@ -892,6 +890,13 @@ export class Van {
     this.doorGlassMesh = dgl;
     this.body.add(this.doorPivot);
     this.doorMesh = door;
+    // the moving boxes in the back: the printed cardboard box model (src/data/propModels.js mk_tube_box), fitted to each
+    for (const [x0, y0, z0, x1, y1, z1, ry] of CARGO) {
+      const bx = assetSlot(lpAsset('box_cardboard'), { size: [x1 - x0, y1 - y0, z1 - z0], fit: 'stretch', cast: false });
+      bx.position.set((x0 + x1) / 2, y0, (z0 + z1) / 2); bx.rotation.y = ry;
+      bx.traverse((o) => { o.raycast = () => {}; });
+      this.body.add(bx);
+    }
     this.door = 0;
     // wheels (outside the bobbing body)
     this.wheels = [];

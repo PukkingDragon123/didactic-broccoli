@@ -74,10 +74,12 @@ const MAPS_GI = /* glsl */`
 #if defined( GG_GI ) && defined( RE_IndirectDiffuse )
 	if ( ggPVOn > 0.0 || ggEnvBox > 0.0 ) {
 		vec3 ggW = cameraPosition + ( vec4( geometryPosition, 0.0 ) * viewMatrix ).xyz;
-		float ggIn = ggBoxW( ggW );
+		vec3 ggN = normalize( ( vec4( geometryNormal, 0.0 ) * viewMatrix ).xyz );
+		// (weighed a little off the surface, along its normal: a wall's room side is in, its outside face is not, so the
+		// room's light never shows on the building's exterior)
+		float ggIn = ggBoxW( ggW + ggN * ggPVBias );
 		float ggK = ggPVOn * ggIn;
 		if ( ggK > 0.0 ) {
-			vec3 ggN = normalize( ( vec4( geometryNormal, 0.0 ) * viewMatrix ).xyz );
 			vec3 ggE = ggIrradiance( ggW + ggN * ggPVBias, ggN );
 			iblIrradiance = mix( iblIrradiance, ggE, ggK );
 			irradiance *= 1.0 - ggK;

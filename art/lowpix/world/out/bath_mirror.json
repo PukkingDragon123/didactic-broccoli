@@ -1,0 +1,33 @@
+{
+ "id": "bath_mirror",
+ "src": "art/lowpix/world/made/bath_mirror.glb",
+ "credit": {
+  "title": "Bath mirror (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/bath_mirror.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 48,
+ "tex": 256,
+ "size": [
+  0.4,
+  0.6,
+  0.094
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#7e7053",
+   "#9d9373",
+   "#b5b19b",
+   "#cfcdc2",
+   "#eaeae6",
+   "#ececea",
+   "#efefee",
+   "#f1f1f1",
+   "#f5f5f5"
+  ]
+ },
+ "warnings": []
+}

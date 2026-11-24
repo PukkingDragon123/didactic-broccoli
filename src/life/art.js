@@ -266,16 +266,17 @@ export function boardPix() {
 // ------------------------------------------------------------------ the van's faded shop decal (160 x 44)
 export function vanDecalPix() {
   const p = new Pix(160, 44, 77); // starts transparent: only the painted letters and logo show
-  // the capsule logo: red top, cream bottom, a dark seam and a highlight
-  for (let y = 7; y <= 37; y++) for (let x = 5; x <= 35; x++) {
-    const d = (x - 20) ** 2 + (y - 22) ** 2;
-    if (d > 15 * 15 + 9) continue;
-    p.px(x, y, d > 13 * 13 + 9 ? 0x3a2a24 : y < 22 ? 0xc8302a : y === 22 ? 0x3a2a24 : 0xf2ead8);
+  // the shop's mark: an enamel-sign plate with "GG" in the pixel display face (navy enamel, a cream keyline, two
+  // screw heads), then the name in kana and in Latin (no capsule icon: the owner's rule)
+  for (let y = 6; y <= 37; y++) for (let x = 3; x <= 36; x++) {
+    const edge = x === 3 || x === 36 || y === 6 || y === 37, corner = (x - 3 < 2 || 36 - x < 2) && (y - 6 < 2 || 37 - y < 2);
+    if (corner && edge) continue;
+    p.px(x, y, edge ? 0x14243e : (x === 5 || x === 34 || y === 8 || y === 35) ? 0xf2ead8 : 0x1e3a6a);
   }
-  p.circle(14, 15, 2, 0xf4a8a0);
-  p.text('ガチャガレージ', 42, 2, { font: FONT_JP, size: 16, color: 0xc8302a });
-  p.text('Gacha Garage', 43, 20, { font: FONT_EN, size: 16, color: 0x2a4a7a });
-  p.tinyText('CAPSULE TOYS SINCE 1971  TEL 03-3814-0271', 42, 36, { color: 0x2a4a7a });
+  for (const [sx, sy] of [[7, 10], [32, 33]]) { p.px(sx, sy, 0xc8c4b8); p.px(sx + 1, sy, 0x8a8678); }
+  p.text('GG', 20, 13, { font: FONT_EN, size: 16, color: 0xf2ead8, align: 'center' });
+  p.text('ガチャガレージ', 42, 4, { font: FONT_JP, size: 16, color: 0xc8302a });
+  p.text('Gacha Garage', 43, 22, { font: FONT_EN, size: 16, color: 0x2a4a7a });
   // weathered: chips and sun fade
   const r = rng(9);
   for (let i = 0; i < p.d.length; i += 4) {

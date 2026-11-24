@@ -32,7 +32,7 @@ const PERF = args.includes('--perf');
 let chromium;
 try { ({ chromium } = await import('playwright')); } catch { ({ chromium } = createRequire('/opt/node-tools/node_modules/')('playwright')); }
 const root = resolve(import.meta.dirname, '..');
-const server = await createServer({ root, configFile: resolve(root, 'vite.config.js'), server: { port: 0, host: '127.0.0.1', hmr: false, watch: { ignored: ['**/*'] } }, logLevel: 'error' });
+const server = await createServer({ root, configFile: resolve(root, 'vite.config.js'), server: { port: 0, host: '127.0.0.1', hmr: false, watch: { ignored: ['**/*'] }, fs: { strict: false } }, logLevel: 'error' });
 await server.listen();
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
 const errors = [];
@@ -63,8 +63,11 @@ try {
         dbg.time(hour);
         // eslint-disable-next-line no-new-func
         new Function('game', 'dbg', setup)(g, dbg);
+        // (setting a view up can start a cutscene, such as moving into a flat: end it and place the camera again)
+        for (let k = 0; k < 3 && g.cutscene?.active; k++) { g.cutscene.finish(); dbg.step(0.2); new Function('game', 'dbg', setup)(g, dbg); }
         dbg.time(hour);
         dbg.step(1.5);
+        if (g.cutscene?.active) { g.cutscene.finish(); new Function('game', 'dbg', setup)(g, dbg); }
         for (let i = 0; i < 2; i++) { g.update(1 / 30); R.render(1 / 30, g.time); }
       }, { setup, hour: HOURS[when] ?? 13 });
       for (let k = 0; k < 400; k++) {
