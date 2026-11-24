@@ -101,6 +101,7 @@ export class Ramen {
     }
     // the eave and the signboard above
     B.box(m.wood, 2.6, 0.06, 0.55, dx - 0.3, 2.32, z - 0.27, { tint: 0x4a3020, rx: 0.08 });
+    B.box(m.metal, 0.03, 0.03, 0.36, dx - 0.78, 2.11, z - 0.16); // the lantern's wall bracket (it hangs from it)
     B.build(grp);
     this.frontGlass = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.28), new THREE.MeshBasicMaterial({ color: 0x6a5238 }));
     this.frontGlass.position.set(dx, 0.74 + 0.64, z - 0.1);
@@ -213,12 +214,20 @@ export class Ramen {
     // door, a condiment set on each caddy (src/data/props/home.js)
     const deco = (id, x, y, z, ry = 0, sc = 1) => { const m = prop(id, P.voxel(), ...L(x, y, z).toArray(), ry, sc); this.group.add(m); return m; };
     for (const x of [-1.6, 0, 1.4]) deco('hm_lamp_pendant', x, 2.6 - 0.55, 0.2, 0, 1);
-    ['hm_sake', 'hm_beer', 'hm_sake_set', 'hm_beer', 'hm_sake'].forEach((id, i) => deco(id, 1.78 + i * 0.21, 1.965, -2.38, 0.3 * i, id === 'hm_beer' ? 1.05 : 1.1));
+    ['hm_sake', 'hm_beer', 'hm_sake_set', 'hm_beer', 'hm_sake'].forEach((id, i) => deco(id, 1.9 + i * 0.18, 1.98, -2.38, 0.3 * i, id === 'hm_beer' ? 1.05 : 1.1));
     for (const x of [-1.72, -0.38, 0.95]) deco('hm_condiments', x - 0.03, 1.02, -0.63, 0, 1);
     // stools
     this.stools = SEATS.map((x) => { const s = prop('rm_stool', P.voxel(), O.x + x, 0, O.z + SEAT_Z); this.group.add(s); return s; });
+    // a lived-in shop: leafy plants in the front corners and by the left wall, beer crates under the TV shelf, a small
+    // pot at the counter's end (all standing on the floor or the counter top)
+    deco('lp_plant_pot4', -2.62, 0, 2.15, 0.4);
+    deco('lp_plant_pot1', -2.66, 0, 0.8, 1.2);
+    deco('lp_beer_crates', -2.64, 0, 1.45, Math.PI / 2);
+    deco('lp_plant_pot2', 2.7, 0, 2.12, -0.5);
+    deco('gg_plant_small', -2.38, TOP_Y, -0.55, 0.3);
     // walls and the counter block you
     const pl = g.player, ob = (a, b, c, d) => pl.addObstacle(O.x + a, O.x + b, O.z + c, O.z + d);
+    ob(-3.4, -2.3, 0.55, 2.45); ob(2.4, 3.4, 1.8, 2.45); // (the plants and crates along the walls)
     ob(-3.4, -2.95, -3, 3); ob(2.95, 3.4, -3, 3); ob(-3.4, 3.4, -2.95, -2.45); ob(-3.4, 1.45, 2.45, 2.95); ob(2.35, 3.4, 2.45, 2.95);
     ob(-2.6, 1.5, -2.45, -0.2); // the counter and everything behind it
     // the exit door (inside)

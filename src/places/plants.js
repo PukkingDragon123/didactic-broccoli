@@ -39,7 +39,7 @@ export class Plants {
     // where the pots stand: the window sill (bright), the desk (half shade), the corridor by your door (full sun)
     this.SPOTS = {
       sill: { parent: room?.group, x: -0.62, y: 0.765, z: -2.18, sun: 1.0, label: 'on your windowsill' },
-      desk: { parent: room?.group, x: 1.56, y: 0.72, z: -2.0, sun: 0.45, label: 'on your desk' },
+      desk: { parent: room?.group, x: 1.45, y: 0.72, z: -1.92, sun: 0.45, label: 'on your desk' },
       yard: { parent: null, x: 19.32, y: 0, z: 2.62, sun: 1.0, label: 'by your door', world: true },
     };
     for (const d of this.s.pots) this.makePot(d);

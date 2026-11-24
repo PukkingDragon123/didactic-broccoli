@@ -19,9 +19,7 @@
    "src": "polyhaven:Television_01",
    "cap": 1024,
    "tris": 1000,
-   "ppm": 240,
-   "style": "realistic",
-   "atlas": 1024
+   "ppm": 240
   },
   {
    "id": "boombox",
@@ -148,17 +146,13 @@
    "ppm": 240,
    "yaw": 180,
    "cap": 512,
-   "tris": 1000,
-   "style": "realistic",
-   "atlas": 1024
+   "tris": 1000
   },
   {
    "id": "clock_alarm",
    "src": "polyhaven:alarm_clock_01",
    "ppm": 260,
-   "tris": 1000,
-   "style": "realistic",
-   "atlas": 1024
+   "tris": 1000
   },
   {
    "id": "lamp_hanging",
@@ -201,9 +195,7 @@
   {
    "id": "crate_plastic",
    "src": "polyhaven:plastic_crate_01",
-   "tris": 1000,
-   "style": "realistic",
-   "atlas": 1024
+   "tris": 1000
   },
   {
    "id": "crate_plastic2",
@@ -856,9 +848,7 @@
    "id": "clock_mantel",
    "src": "polyhaven:mantel_clock_01",
    "ppm": 240,
-   "tris": 1000,
-   "style": "realistic",
-   "atlas": 1024
+   "tris": 1000
   },
   {
    "id": "clock_grandfather",
@@ -1374,13 +1364,14 @@
   {
    "id": "utility_sink",
    "src": "sketchfab:69eacffafcfe40378bf4de7822eaf0f5",
-   "h": 0.97,
+   "h": 0.62,
    "ppm": 180,
    "tris": 3000,
    "name": "Utility Sink",
    "prop": "utility_sink",
    "style": "realistic",
-   "atlas": 1024
+   "atlas": 1024,
+   "keep": "^Object_[34]$"
   },
   {
    "id": "paint_tins",
@@ -1717,9 +1708,7 @@
    "ppm": 180,
    "tris": 3000,
    "name": "[CC0] Newspaper Stack - Ready to Unity H",
-   "prop": "newspaper_stack",
-   "style": "realistic",
-   "atlas": 1024
+   "prop": "newspaper_stack"
   },
   {
    "id": "cat_bowl",
@@ -1894,9 +1883,7 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Noodle Cup",
-   "prop": "room_cupnoodle",
-   "style": "realistic",
-   "atlas": 1024
+   "prop": "room_cupnoodle"
   },
   {
    "id": "room_phone",

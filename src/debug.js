@@ -76,6 +76,7 @@ export function installDebug(game, params) {
     xp(n) { game.progress?.addXP(n, 'debug'); return [game.progress.level, game.progress.xp, game.progress.next]; },
     state() { return JSON.parse(JSON.stringify({ money: game.state.money, pulls: game.state.pulls, held: game.held.item?.kind, machines: game.machines.map((m) => [m.state, m.data.stock.length]) })); },
   };
+  d.THREE = THREE; // (headless audits: tools/float-audit.mjs)
   game.debug = d;
   window.dbg = d;
 }

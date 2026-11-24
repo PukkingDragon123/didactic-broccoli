@@ -640,7 +640,7 @@ export class GarageDetail {
     // the pink public phone (ピンク電話) at the end of the machine row, under the window
     this.prop('pink_phone', -3.72, 0, 2.62, Math.PI / 2, { block: true, phys: true });
     // utility sink with the gas water heater above it
-    this.prop('utility_sink', 2.62, 0, G.minZ + 0.24, 0, { block: true, phys: true });
+    this.prop('utility_sink', 2.62, 0.5, G.minZ + 0.24, 0, { block: true, phys: true }); // (wall-hung: the basin at hip height, its tap up to the heater)
     this.prop('water_heater', 2.8, 1.36 - 0.24, G.minZ + 0.2, 0);
     // the long hooked pole for pulling the shutter down, leaning by the left pier
     const hp = V3(-3.12, 0, G.maxZ - 0.09), ht = V3(-3.16, 2.05, G.maxZ - 0.04);

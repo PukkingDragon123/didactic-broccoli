@@ -201,19 +201,19 @@ export function buildCornerShop(t) {
   // the old man's spot: his ashtray full of cigar stubs, the cigar box, the fan pointed at him
   vox('mk_ashtray', -11.32, YP, 18.42, 0.4, { big: false });
   vox('mk_tv_cabinet', -14.55, YP, 18.78, 2.2, { big: true });
-  vox('crt_tv', -14.55, YP + 0.38, 18.78, 2.2, { big: true });
+  vox('crt_tv', -14.55, YP + 0.338, 18.78, 2.2, { big: true });
   vox('fan', -10.85, YP, 18.62, -1.9, { big: true });
   vox('mk_chabudai', -13.15, YP, 19.12, 0.2, { big: true });
-  vox('mk_tea_set', -13.0, YP + 0.32, 19.02, 0.6);
-  vox('mk_ashtray', -13.38, YP + 0.32, 19.2, 1.3, { k: 0.9 });
-  prod('news', 0.3, 0.012, 0.4, -12.85, YP + 0.32, 19.3, 0.5, { k: 0.95 });
+  vox('mk_tea_set', -13.0, YP + 0.236, 19.02, 0.6);
+  vox('mk_ashtray', -13.38, YP + 0.231, 19.2, 1.3, { k: 0.9 });
+  prod('news', 0.3, 0.012, 0.4, -12.85, YP + 0.236, 19.3, 0.5, { k: 0.95 });
   vox('mk_zabuton', -12.25, YP, 19.2, 0.15, { big: true });
   vox('mk_zabuton', -13.85, YP, 19.4, -0.3, { big: true, k: 0.92 });
   vox('mk_tansu', -10.3, YP, 19.46, Math.PI, { big: true });
-  vox('radio', -10.45, YP + 0.96, 19.5, Math.PI + 0.1);
-  vox('mk_phone', -9.98, YP + 0.96, 19.42, Math.PI - 0.3);
-  vox('daruma', -10.72, YP + 0.96, 19.33, Math.PI + 0.3);
-  decal('photo', 0.13, 0.16, -10.12, YP + 0.96, 19.6, Math.PI - 0.25, { rx: 0.15 });
+  vox('radio', -10.45, YP + 0.652, 19.5, Math.PI + 0.1);
+  vox('mk_phone', -9.98, YP + 0.652, 19.42, Math.PI - 0.3);
+  vox('daruma', -10.22, YP + 0.652, 19.36, Math.PI + 0.3);
+  decal('photo', 0.13, 0.16, -10.12, YP + 0.652, 19.6, Math.PI - 0.25, { rx: 0.15 });
   vox('mk_kamidana', -12.9, 2.28, ZI1 - 0.14, Math.PI, { big: true });
   vox('pendulum_clock', -11.4, 1.62, ZI1 - 0.07, Math.PI, { big: true });
   decal('calendar', 0.34, 0.5, XI0 + 0.03, 1.3, 19.25, Math.PI / 2);
