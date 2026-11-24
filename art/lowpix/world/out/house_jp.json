@@ -1,0 +1,34 @@
+{
+ "id": "house_jp",
+ "src": "sketchfab:58a9edfc71ab4adc869061d4e5e862d1",
+ "credit": {
+  "title": "[DAE] Final Assignment Milestone: House",
+  "author": "Joan Tieu",
+  "authorUrl": "https://sketchfab.com/JoanTieu",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/dae-final-assignment-milestone-house-58a9edfc71ab4adc869061d4e5e862d1",
+  "site": "Sketchfab"
+ },
+ "tris": 5411,
+ "tex": 716,
+ "size": [
+  12.843,
+  7.001,
+  9.048
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#171c1f",
+   "#1f2527",
+   "#272e2f",
+   "#303636",
+   "#3a3d3d",
+   "#565656",
+   "#717171",
+   "#8c8c8c",
+   "#a7a7a7"
+  ]
+ },
+ "warnings": []
+}

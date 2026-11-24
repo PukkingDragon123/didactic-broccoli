@@ -1,0 +1,33 @@
+{
+ "id": "hatbox_own",
+ "src": "art/lowpix/world/made/hatbox.glb",
+ "credit": {
+  "title": "Hat box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hatbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 398,
+ "tex": 244,
+ "size": [
+  0.352,
+  0.221,
+  0.372
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#a44723",
+   "#cf6c34",
+   "#d89a68",
+   "#e3c19b",
+   "#efe1cb",
+   "#f0e7d3",
+   "#f2eddb",
+   "#f4f1e2",
+   "#f6f5e9"
+  ]
+ },
+ "warnings": []
+}

@@ -2713,15 +2713,6 @@
    "name": "a pot"
   },
   {
-   "id": "ofuro_wood",
-   "src": "sketchfab:137881949bb14f78a0ac1fb4d6f3d2f1",
-   "h": 0.6,
-   "ppm": 250,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Wooden Bathtub (game ready asset)"
-  },
-  {
    "id": "bath_stool_set",
    "src": "sketchfab:b4f82bd4620a49a0a981ba108eba4632",
    "h": 0.3,
@@ -3559,15 +3550,6 @@
    "name": "Dog leash"
   },
   {
-   "id": "old_notebook",
-   "src": "sketchfab:0f48bdbda70d4fe89fa0477e731dcadc",
-   "h": 0.03,
-   "ppm": 700,
-   "tris": 1400,
-   "cap": 512,
-   "name": "My own old notebook"
-  },
-  {
    "id": "sink_round",
    "src": "sketchfab:a1066b6594a04531ad63d5386998e2bb",
    "h": 0.3,
@@ -3976,9 +3958,9 @@
   {
    "id": "twin_tub_own",
    "src": "art/lowpix/world/made/twin_tub.glb",
-   "h": 0.92,
+   "h": 1.032,
    "ppm": 400,
-   "tris": 1500,
+   "tris": 1600,
    "cap": 512,
    "name": "Twin tub (our own model, hand-painted)"
   },
@@ -4021,11 +4003,12 @@
   {
    "id": "recycle_cage_own",
    "src": "art/lowpix/world/made/recycle_cage.glb",
-   "h": 0.92,
-   "ppm": 300,
-   "tris": 300,
-   "cap": 512,
-   "name": "Recycle cage (our own model, hand-painted)"
+   "h": 0.891,
+   "ppm": 320,
+   "tris": 8000,
+   "cap": 1024,
+   "alpha": true,
+   "name": "Recycle cage with cans and PET bottles (our own model, hand-painted)"
   },
   {
    "id": "puff_stick_own",
@@ -4097,7 +4080,8 @@
    "ppm": 320,
    "tris": 4000,
    "cap": 512,
-   "name": "kitsune"
+   "name": "kitsune",
+   "keep": "^(?!Sphere\\.007)"
   },
   {
    "id": "yokai_kasa",
@@ -4106,16 +4090,25 @@
    "ppm": 260,
    "tris": 4000,
    "cap": 512,
-   "name": "Kasa-obake"
+   "name": "Kasa-obake",
+   "keep": "^(?!Object_15$)"
   },
   {
    "id": "yokai_kappa",
-   "src": "sketchfab:136cd1ad671c4b208cdf64aab42ea172",
+   "src": "art/lowpix/world/made/kappa_posed.glb",
    "h": 0.95,
    "ppm": 300,
    "tris": 3500,
    "cap": 512,
-   "name": "Kappa"
+   "name": "Kappa (arms lowered)",
+   "credit": {
+    "title": "Kappa",
+    "author": "samnorwoodgo",
+    "authorUrl": "https://sketchfab.com/samnorwoodgo",
+    "license": "CC BY 4.0",
+    "url": "https://sketchfab.com/3d-models/kappa-136cd1ad671c4b208cdf64aab42ea172",
+    "site": "Sketchfab"
+   }
   },
   {
    "id": "house_jp",
@@ -4161,6 +4154,114 @@
    "tris": 2000,
    "cap": 512,
    "name": "Stack of Folded Clothes"
+  },
+  {
+   "id": "cig_own",
+   "src": "art/lowpix/world/made/cig_own.glb",
+   "h": 0.0084,
+   "ppm": 1500,
+   "tris": 60,
+   "cap": 128,
+   "name": "Cigarette (our own model, hand-painted)"
+  },
+  {
+   "id": "cart_own",
+   "src": "art/lowpix/world/made/cart_own.glb",
+   "h": 0.995,
+   "ppm": 320,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Granny's shopping cart (our own model, hand-painted)"
+  },
+  {
+   "id": "notebook_own",
+   "src": "art/lowpix/world/made/notebook_own.glb",
+   "h": 0.016,
+   "ppm": 1200,
+   "tris": 170,
+   "cap": 256,
+   "name": "Grandpa's notebook (our own model, hand-painted)"
+  },
+  {
+   "id": "bush_sign",
+   "src": "art/lowpix/world/made/bush_sign.glb",
+   "h": 0.741,
+   "ppm": 400,
+   "tris": 80,
+   "cap": 256,
+   "name": "Cardboard sign on a stick (our own model, hand-painted)"
+  },
+  {
+   "id": "hatbox_own",
+   "src": "art/lowpix/world/made/hatbox.glb",
+   "h": 0.221,
+   "ppm": 600,
+   "tris": 400,
+   "cap": 256,
+   "name": "Hat box (our own model, hand-painted)"
+  },
+  {
+   "id": "byobu_own",
+   "src": "art/lowpix/world/made/byobu.glb",
+   "h": 0.6,
+   "ppm": 400,
+   "tris": 400,
+   "cap": 512,
+   "name": "Gold-leaf byobu screen (our own model, hand-painted)"
+  },
+  {
+   "id": "shrine_roof_own",
+   "src": "art/lowpix/world/made/shrine_roof.glb",
+   "h": 0.336,
+   "ppm": 320,
+   "tris": 200,
+   "cap": 512,
+   "name": "Shrine case roof (our own model, hand-painted)"
+  },
+  {
+   "id": "pod_base_own",
+   "src": "art/lowpix/world/made/pod_base.glb",
+   "h": 0.3,
+   "ppm": 320,
+   "tris": 500,
+   "cap": 512,
+   "name": "Space pod display base (our own model, hand-painted)"
+  },
+  {
+   "id": "diorama_own",
+   "src": "art/lowpix/world/made/diorama.glb",
+   "h": 0.11,
+   "ppm": 500,
+   "tris": 4000,
+   "cap": 1024,
+   "name": "Diorama landscape (our own model, hand-painted)"
+  },
+  {
+   "id": "yokai_tanuki",
+   "src": "sketchfab:dbe0fb672a024f4b8e23764fe4de7a87",
+   "h": 0.95,
+   "ppm": 300,
+   "tris": 2400,
+   "cap": 512,
+   "name": "Statue Tanuki"
+  },
+  {
+   "id": "shopbag_own",
+   "src": "art/lowpix/world/made/shopbag.glb",
+   "h": 0.387,
+   "ppm": 500,
+   "tris": 800,
+   "cap": 512,
+   "name": "Corner-shop carrier bag (our own model, hand-painted)"
+  },
+  {
+   "id": "ofuro_own",
+   "src": "art/lowpix/world/made/ofuro_own.glb",
+   "h": 0.6,
+   "ppm": 400,
+   "tris": 600,
+   "cap": 1024,
+   "name": "Tiled ofuro with a hinoki rim (our own model, hand-painted)"
   }
  ]
 }

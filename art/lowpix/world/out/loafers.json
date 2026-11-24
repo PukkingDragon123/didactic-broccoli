@@ -1,0 +1,67 @@
+{
+ "id": "loafers",
+ "src": "sketchfab:50b7cf68173541c1a16b0dfaf39911af",
+ "credit": {
+  "title": "Shoes loafers",
+  "author": "Root_3D",
+  "authorUrl": "https://sketchfab.com/Root_3D",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/shoes-loafers-50b7cf68173541c1a16b0dfaf39911af",
+  "site": "Sketchfab"
+ },
+ "tris": 1796,
+ "tex": 368,
+ "size": [
+  0.18,
+  0.08,
+  0.266
+ ],
+ "colours": 28,
+ "palette": {
+  "m0": [
+   "#0a090d",
+   "#0d0c10",
+   "#100f13",
+   "#131216",
+   "#171619",
+   "#373539",
+   "#575757",
+   "#777777",
+   "#979797"
+  ],
+  "m1": [
+   "#6a4b28",
+   "#876937",
+   "#a48847",
+   "#b6a462",
+   "#c1b983",
+   "#c7c596",
+   "#cecea9",
+   "#d6d6bb",
+   "#dedecc"
+  ],
+  "m2": [
+   "#1c0c06",
+   "#241209",
+   "#2c190c",
+   "#33210f",
+   "#3a2a13",
+   "#655024",
+   "#8e7836",
+   "#b5a44b",
+   "#c3bd78"
+  ],
+  "m3": [
+   "#6e5132",
+   "#8c6f44",
+   "#a88f58",
+   "#b6a87b",
+   "#c5bf9d",
+   "#cbc9ac",
+   "#d2d2bb",
+   "#d9d9ca",
+   "#e1e1d7"
+  ]
+ },
+ "warnings": []
+}

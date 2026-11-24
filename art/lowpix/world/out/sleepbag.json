@@ -1,0 +1,34 @@
+{
+ "id": "sleepbag",
+ "src": "sketchfab:d2ab6e8a8ffc472e9fca8b920662dafe",
+ "credit": {
+  "title": "Camping sleeping bag",
+  "author": "Fochdog",
+  "authorUrl": "https://sketchfab.com/bazyaev08",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/camping-sleeping-bag-d2ab6e8a8ffc472e9fca8b920662dafe",
+  "site": "Sketchfab"
+ },
+ "tris": 1498,
+ "tex": 432,
+ "size": [
+  0.245,
+  0.24,
+  0.597
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1f120b",
+   "#271a10",
+   "#302314",
+   "#382c1a",
+   "#3f351f",
+   "#635834",
+   "#857d4b",
+   "#a3a066",
+   "#b6b68d"
+  ]
+ },
+ "warnings": []
+}

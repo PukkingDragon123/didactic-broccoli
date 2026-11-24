@@ -5,7 +5,6 @@
 // Saved in game.state.guestbook = { entries: [{ day, time, kind, who, text }] } (last 60).
 import * as THREE from 'three';
 import { ensureState } from '../game/stateExt.js';
-import { guestbookStand } from '../npc/props.js';
 import { audio } from '../core/audio.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -39,7 +38,6 @@ export class Guestbook {
     const root = new THREE.Group();
     root.position.set(P.x, 0, P.z);
     root.rotation.y = P.rotY;
-    root.add(guestbookStand());
     // the open book on the slanted top: a page texture we redraw when entries change
     const cv = document.createElement('canvas'); cv.width = 64; cv.height = 40;
     this.pageCv = cv;

@@ -778,6 +778,24 @@
   ],
   "bytes": 34112
  },
+ "bush_sign": {
+  "id": "bush_sign",
+  "name": "Cardboard sign on a stick (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/bush_sign.glb",
+  "title": "Cardboard sign on a stick (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/bush_sign.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 74,
+  "tex": 256,
+  "size": [
+   0.451,
+   0.741,
+   0.032
+  ],
+  "bytes": 16708
+ },
  "busstop": {
   "id": "busstop",
   "name": "Bus stop sign (バス停)",
@@ -832,6 +850,24 @@
    0.142
   ],
   "bytes": 51424
+ },
+ "byobu_own": {
+  "id": "byobu_own",
+  "name": "Gold-leaf byobu screen (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/byobu.glb",
+  "title": "Gold-leaf byobu screen (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/byobu.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 356,
+  "tex": 512,
+  "size": [
+   1.408,
+   0.6,
+   0.102
+  ],
+  "bytes": 138060
  },
  "cabinet_cn": {
   "id": "cabinet_cn",
@@ -1091,6 +1127,24 @@
    0.653
   ],
   "bytes": 70748
+ },
+ "cart_own": {
+  "id": "cart_own",
+  "name": "Granny's shopping cart (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/cart_own.glb",
+  "title": "Granny's shopping cart (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cart_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 986,
+  "tex": 432,
+  "size": [
+   0.344,
+   0.995,
+   0.235
+  ],
+  "bytes": 46964
  },
  "cash_register": {
   "id": "cash_register",
@@ -1479,6 +1533,24 @@
   ],
   "bytes": 5772
  },
+ "cig_own": {
+  "id": "cig_own",
+  "name": "Cigarette (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/cig_own.glb",
+  "title": "Cigarette (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cig_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 57,
+  "tex": 128,
+  "size": [
+   0.009,
+   0.008,
+   0.089
+  ],
+  "bytes": 6032
+ },
  "clock_alarm": {
   "id": "clock_alarm",
   "name": "Alarm Clock 01",
@@ -1550,6 +1622,25 @@
    0.047
   ],
   "bytes": 24472
+ },
+ "clothes_folded": {
+  "id": "clothes_folded",
+  "name": "Stack of Folded Clothes",
+  "src": "sketchfab:ac31c5ae6eb0449091c371556bb63e00",
+  "title": "Stack of Folded Clothes | Crafted by jerovdl",
+  "author": "Jerovdl",
+  "authorUrl": "https://sketchfab.com/Jerovdl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/stack-of-folded-clothes-crafted-by-jerovdl-ac31c5ae6eb0449091c371556bb63e00",
+  "site": "Sketchfab",
+  "tris": 1995,
+  "tex": 288,
+  "size": [
+   0.244,
+   0.18,
+   0.205
+  ],
+  "bytes": 57428
  },
  "cobwebcard": {
   "id": "cobwebcard",
@@ -1973,6 +2064,24 @@
    0.546
   ],
   "bytes": 68424
+ },
+ "diorama_own": {
+  "id": "diorama_own",
+  "name": "Diorama landscape (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/diorama.glb",
+  "title": "Diorama landscape (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/diorama.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 3974,
+  "tex": 560,
+  "size": [
+   1.426,
+   0.11,
+   0.904
+  ],
+  "bytes": 202356
  },
  "dish_rack": {
   "id": "dish_rack",
@@ -2943,6 +3052,24 @@
   ],
   "bytes": 21624
  },
+ "hatbox_own": {
+  "id": "hatbox_own",
+  "name": "Hat box (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/hatbox.glb",
+  "title": "Hat box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hatbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 398,
+  "tex": 244,
+  "size": [
+   0.352,
+   0.221,
+   0.372
+  ],
+  "bytes": 24444
+ },
  "haunted_well": {
   "id": "haunted_well",
   "name": "Old Stone Well",
@@ -3017,6 +3144,25 @@
    0.045
   ],
   "bytes": 8940
+ },
+ "house_jp": {
+  "id": "house_jp",
+  "name": "Japanese two-storey house",
+  "src": "sketchfab:58a9edfc71ab4adc869061d4e5e862d1",
+  "title": "[DAE] Final Assignment Milestone: House",
+  "author": "Joan Tieu",
+  "authorUrl": "https://sketchfab.com/JoanTieu",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/dae-final-assignment-milestone-house-58a9edfc71ab4adc869061d4e5e862d1",
+  "site": "Sketchfab",
+  "tris": 5411,
+  "tex": 716,
+  "size": [
+   12.843,
+   7.001,
+   9.048
+  ],
+  "bytes": 289028
  },
  "iron_antique": {
   "id": "iron_antique",
@@ -3685,6 +3831,25 @@
    0.062
   ],
   "bytes": 14148
+ },
+ "loafers": {
+  "id": "loafers",
+  "name": "Shoes loafers",
+  "src": "sketchfab:50b7cf68173541c1a16b0dfaf39911af",
+  "title": "Shoes loafers",
+  "author": "Root_3D",
+  "authorUrl": "https://sketchfab.com/Root_3D",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/shoes-loafers-50b7cf68173541c1a16b0dfaf39911af",
+  "site": "Sketchfab",
+  "tris": 1796,
+  "tex": 368,
+  "size": [
+   0.18,
+   0.08,
+   0.266
+  ],
+  "bytes": 40520
  },
  "lollipop_m": {
   "id": "lollipop_m",
@@ -4416,6 +4581,24 @@
   ],
   "bytes": 28336
  },
+ "notebook_own": {
+  "id": "notebook_own",
+  "name": "Grandpa's notebook (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/notebook_own.glb",
+  "title": "Grandpa's notebook (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/notebook_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 168,
+  "tex": 256,
+  "size": [
+   0.152,
+   0.016,
+   0.21
+  ],
+  "bytes": 29464
+ },
  "ofuro_wood": {
   "id": "ofuro_wood",
   "name": "Wooden Bathtub (game ready asset)",
@@ -4938,6 +5121,24 @@
   ],
   "bytes": 30816
  },
+ "pod_base_own": {
+  "id": "pod_base_own",
+  "name": "Space pod display base (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/pod_base.glb",
+  "title": "Space pod display base (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pod_base.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 476,
+  "tex": 512,
+  "size": [
+   0.959,
+   0.3,
+   0.959
+  ],
+  "bytes": 106264
+ },
  "post_box": {
   "id": "post_box",
   "name": "Old Japanese Post Box",
@@ -5221,21 +5422,21 @@
  },
  "recycle_cage_own": {
   "id": "recycle_cage_own",
-  "name": "Recycle cage (our own model, hand-painted)",
+  "name": "Recycle cage with cans and PET bottles (our own model, hand-painted)",
   "src": "art/lowpix/world/made/recycle_cage.glb",
-  "title": "Recycle cage (our own model, hand-painted)",
+  "title": "Recycle cage with cans and PET bottles (our own model, hand-painted)",
   "author": "Gacha Garage (made for the game, art/lowpix/world/made/recycle_cage.glb)",
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 132,
-  "tex": 512,
+  "tris": 7998,
+  "tex": 848,
   "size": [
-   1.247,
-   0.92,
-   0.644
+   0.922,
+   0.891,
+   0.63
   ],
-  "bytes": 85984
+  "bytes": 446928
  },
  "rice_bowl2": {
   "id": "rice_bowl2",
@@ -6131,6 +6332,24 @@
   ],
   "bytes": 26648
  },
+ "shrine_roof_own": {
+  "id": "shrine_roof_own",
+  "name": "Shrine case roof (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/shrine_roof.glb",
+  "title": "Shrine case roof (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shrine_roof.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 196,
+  "tex": 512,
+  "size": [
+   1.132,
+   0.336,
+   0.661
+  ],
+  "bytes": 56044
+ },
  "sink_round": {
   "id": "sink_round",
   "name": "Round Steel Sink",
@@ -6149,6 +6368,25 @@
    0.555
   ],
   "bytes": 108440
+ },
+ "sleepbag": {
+  "id": "sleepbag",
+  "name": "Camping sleeping bag",
+  "src": "sketchfab:d2ab6e8a8ffc472e9fca8b920662dafe",
+  "title": "Camping sleeping bag",
+  "author": "Fochdog",
+  "authorUrl": "https://sketchfab.com/bazyaev08",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/camping-sleeping-bag-d2ab6e8a8ffc472e9fca8b920662dafe",
+  "site": "Sketchfab",
+  "tris": 1498,
+  "tex": 432,
+  "size": [
+   0.245,
+   0.24,
+   0.597
+  ],
+  "bytes": 107104
  },
  "slippers": {
   "id": "slippers",
@@ -7260,14 +7498,14 @@
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 1360,
+  "tris": 1586,
   "tex": 512,
   "size": [
-   0.898,
-   0.92,
-   0.442
+   1.02,
+   1.032,
+   0.756
   ],
-  "bytes": 78700
+  "bytes": 91456
  },
  "typewriter": {
   "id": "typewriter",
@@ -9073,14 +9311,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/kasa-obake-95eae9bdbd1147a1b7ceae594e4ea6fd",
   "site": "Sketchfab",
-  "tris": 3996,
-  "tex": 512,
+  "tris": 3999,
+  "tex": 360,
   "size": [
-   2.032,
+   0.498,
    1.15,
-   2.032
+   0.55
   ],
-  "bytes": 92116
+  "bytes": 91824
  },
  "yokai_kitsune": {
   "id": "yokai_kitsune",
@@ -9093,12 +9331,31 @@
   "url": "https://sketchfab.com/3d-models/kitsune-92e7c87ace4b4dd986e85a1e184d2b85",
   "site": "Sketchfab",
   "tris": 3999,
-  "tex": 456,
+  "tex": 512,
   "size": [
-   0.646,
+   0.623,
    0.65,
-   1.112
+   0.965
   ],
-  "bytes": 116572
+  "bytes": 133176
+ },
+ "yokai_tanuki": {
+  "id": "yokai_tanuki",
+  "name": "Statue Tanuki",
+  "src": "sketchfab:dbe0fb672a024f4b8e23764fe4de7a87",
+  "title": "Statue Tanuki",
+  "author": "Sonkiam",
+  "authorUrl": "https://sketchfab.com/sonkiam",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/statue-tanuki-dbe0fb672a024f4b8e23764fe4de7a87",
+  "site": "Sketchfab",
+  "tris": 2357,
+  "tex": 300,
+  "size": [
+   1.007,
+   0.95,
+   0.961
+  ],
+  "bytes": 91932
  }
 }

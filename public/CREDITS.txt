@@ -1872,6 +1872,27 @@ and finished with hand-placed pixel strokes (grout, seams, nail heads, cracks, s
 - Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
 - Used for: `public/textures/hd/` sf_detail_wood, siding
 
+#### Concrete Floor 03
+
+- Author: Rob Tuytel, Matterfield (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_floor_03
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` surface detail
+
+#### Grass Ground
+
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/grass_ground
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` surface detail
+
+#### Rough Linen
+
+- Author: colormass, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/rough_linen
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` surface detail
+
 ### Window views (the views out of the annex shutter and the Kaikan windows)
 
 Made by `tools/make-views.py` (`src/growth/views.js`): cropped to the window and turned into high-resolution pixel art
@@ -1883,7 +1904,7 @@ by `tools/pixelart.py`.
 - Source: https://www.flickr.com/photos/120167116@N06/13104875775 (Open Images ID 50d546d006457f9a)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Tokyo street green light" by Raphael Desrosiers, licensed under CC BY 2.0
-- Shipped as: `img/views/lane.png` (the lane seen through the annex's open shutter)
+- Shipped as: `img/views/lane.png` and `textures/hd/view_lane.webp` (the lane seen through the annex's open shutter)
 
 #### Osaka Street View
 
@@ -1891,7 +1912,7 @@ by `tools/pixelart.py`.
 - Source: https://www.flickr.com/photos/azchael/16480642130 (Open Images ID 1c50a2d9bb44696e)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Osaka Street View" by Azchael, licensed under CC BY 2.0
-- Shipped as: `img/views/plaza.png` (the street outside the Kaikan's ground-floor windows)
+- Shipped as: `img/views/plaza.png` and `textures/hd/view_plaza.webp` (the street outside the Kaikan's ground-floor windows)
 
 #### Tokyo Yamanote Line
 
@@ -1899,7 +1920,7 @@ by `tools/pixelart.py`.
 - Source: https://www.flickr.com/photos/hikosaemon/15421896486 (Open Images ID 2ab37fb75e9ecd33)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Tokyo Yamanote Line" by Hikosaemon, licensed under CC BY 2.0
-- Shipped as: `img/views/tracks.png` (the tracks below the Kaikan's upper windows)
+- Shipped as: `img/views/tracks.png` and `textures/hd/view_tracks.webp` (the tracks below the Kaikan's upper windows)
 
 
 ## Licences
@@ -1934,6 +1955,8 @@ by `tools/pixelart.py`.
 - capsule return by Gacha Garage (made for the game, art/lowpix/world/made/capsulereturn.glb), CC0 1.0 (models/lowpix/world/capsulereturn.glb)
 - Capsule statue (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/capsule_statue_own.glb), CC0 1.0 (models/lowpix/world/capsule_statue_own.glb)
 - Cardboard mess by Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb), CC0 1.0 (models/lowpix/world/cardboardmess.glb)
+- Cardboard sign on a stick (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/bush_sign.glb), CC0 1.0 (models/lowpix/world/bush_sign.glb)
+- Cigarette (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/cig_own.glb), CC0 1.0 (models/lowpix/world/cig_own.glb)
 - Cobweb by Gacha Garage (made for the game, art/lowpix/world/made/cobwebcard.glb), CC0 1.0 (models/lowpix/world/cobwebcard.glb)
 - coin changer by Gacha Garage (made for the game, art/lowpix/world/made/coinchanger.glb), CC0 1.0 (models/lowpix/world/coinchanger.glb)
 - Coin tray (カルトン) by Gacha Garage (made for the game, art/lowpix/world/made/cointray.glb), CC0 1.0 (models/lowpix/world/cointray.glb)
@@ -1941,6 +1964,7 @@ by `tools/pixelart.py`.
 - Crushed can (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/can_crushed.glb), CC0 1.0 (models/lowpix/world/litter_can.glb)
 - Curve mirror (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/mirror_pole.glb), CC0 1.0 (models/lowpix/world/mirror_pole.glb)
 - dagashi rack by Gacha Garage (made for the game, art/lowpix/world/made/dagashirack.glb), CC0 1.0 (models/lowpix/world/dagashirack.glb)
+- Diorama landscape (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/diorama.glb), CC0 1.0 (models/lowpix/world/diorama_own.glb)
 - Drink cans (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/drink_cans.glb), CC0 1.0 (models/lowpix/world/drink_cans_own.glb)
 - Dust pile by Gacha Garage (made for the game, art/lowpix/world/made/dustpile.glb), CC0 1.0 (models/lowpix/world/dustpile.glb)
 - Dust pile (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/dustpile_own.glb), CC0 1.0 (models/lowpix/world/dustpile_own.glb)
@@ -1949,9 +1973,13 @@ by `tools/pixelart.py`.
 - Gas water heater (瞬間湯沸器) by Gacha Garage (made for the game, art/lowpix/world/made/waterheater.glb), CC0 1.0 (models/lowpix/world/waterheater.glb)
 - Giant donut seat (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/donut_seat.glb), CC0 1.0 (models/lowpix/world/donut_seat_own.glb)
 - Glass marble (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/marble.glb), CC0 1.0 (models/lowpix/world/marble_m.glb)
+- Gold-leaf byobu screen (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/byobu.glb), CC0 1.0 (models/lowpix/world/byobu_own.glb)
+- Grandpa's notebook (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/notebook_own.glb), CC0 1.0 (models/lowpix/world/notebook_own.glb)
+- Granny's shopping cart (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/cart_own.glb), CC0 1.0 (models/lowpix/world/cart_own.glb)
 - Gumball (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball.glb), CC0 1.0 (models/lowpix/world/gumball_m.glb)
 - Gumball machine (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball_machine_own.glb), CC0 1.0 (models/lowpix/world/gumball_own.glb)
 - Hamaya (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hamaya_own.glb), CC0 1.0 (models/lowpix/world/hamaya_own.glb)
+- Hat box (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hatbox.glb), CC0 1.0 (models/lowpix/world/hatbox_own.glb)
 - Kamidana (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/kamidana_own.glb), CC0 1.0 (models/lowpix/world/kamidana_own.glb)
 - Laundry pole (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/laundry_pole.glb), CC0 1.0 (models/lowpix/world/laundry_pole_own.glb)
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb), CC0 1.0 (models/lowpix/world/goodsmilk.glb)
@@ -1971,7 +1999,7 @@ by `tools/pixelart.py`.
 - Park litter (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/park_litter.glb), CC0 1.0 (models/lowpix/world/park_litter_own.glb)
 - Petal drift (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/petal_drift_own.glb), CC0 1.0 (models/lowpix/world/petal_drift_own.glb)
 - Pink phone (ピンク電話) by Gacha Garage (made for the game, art/lowpix/world/made/pinkphone.glb), CC0 1.0 (models/lowpix/world/pinkphone.glb)
-- Recycle cage (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/recycle_cage.glb), CC0 1.0 (models/lowpix/world/recycle_cage_own.glb)
+- Recycle cage with cans and PET bottles (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/recycle_cage.glb), CC0 1.0 (models/lowpix/world/recycle_cage_own.glb)
 - Robot vacuum dock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb), CC0 1.0 (models/lowpix/world/vacuum_dock_m.glb)
 - room cupnoodle by Gacha Garage (made for the game, art/lowpix/world/made/goodsnoodle.glb), CC0 1.0 (models/lowpix/world/goodsnoodle.glb)
 - Route machines, black (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_black.glb), CC0 1.0 (models/lowpix/world/route_black.glb)
@@ -1984,7 +2012,9 @@ by `tools/pixelart.py`.
 - Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb), CC0 1.0 (models/lowpix/world/kakigori.glb)
 - shop counter by Gacha Garage (made for the game, art/lowpix/world/made/showcase.glb), CC0 1.0 (models/lowpix/world/showcase.glb)
 - Shopfront bench (縁台) by Gacha Garage (made for the game, art/lowpix/world/made/engawabench.glb), CC0 1.0 (models/lowpix/world/engawabench.glb)
+- Shrine case roof (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/shrine_roof.glb), CC0 1.0 (models/lowpix/world/shrine_roof_own.glb)
 - Sign hook (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hook.glb), CC0 1.0 (models/lowpix/world/hook_m.glb)
+- Space pod display base (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/pod_base.glb), CC0 1.0 (models/lowpix/world/pod_base_own.glb)
 - Stacked tyres (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/tyres.glb), CC0 1.0 (models/lowpix/world/tires.glb)
 - Standing ashtray (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray_own.glb), CC0 1.0 (models/lowpix/world/ashtray_own.glb)
 - Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb), CC0 1.0 (models/lowpix/world/ashtray_stand.glb)
@@ -2097,6 +2127,7 @@ by `tools/pixelart.py`.
 - Wooden Table 01 by Ethan Place, CC0 1.0: https://polyhaven.com/a/WoodenTable_01 (models/lowpix/world/table_wood.glb)
 - Worn Metal Rack by Luca B, CC0 1.0: https://polyhaven.com/a/worn_metal_rack (models/lowpix/world/rack_worn.glb)
 - [CC0] Newspaper Stack - Ready to Unity HDRP by karlwirbelwind, CC BY 4.0: https://sketchfab.com/3d-models/cc0-newspaper-stack-ready-to-unity-hdrp-c4311a0b918643af97904e10c7a34efc (models/lowpix/world/newspaper_stack.glb)
+- [DAE] Final Assignment Milestone: House by Joan Tieu, CC BY 4.0: https://sketchfab.com/3d-models/dae-final-assignment-milestone-house-58a9edfc71ab4adc869061d4e5e862d1 (models/lowpix/world/house_jp.glb)
 - 1930s style typewriter - w/o branding by Kuba "Volant" Wójcik, CC BY 4.0: https://sketchfab.com/3d-models/1930s-style-typewriter-wo-branding-1d6009449fe84fd79454c4081eb743bf (models/lowpix/world/typewriter.glb)
 - 3D Glasses by seodoaa, CC BY 4.0: https://sketchfab.com/3d-models/3d-glasses-5cb2d8563fd3457c9ff3b585aeabfedb (models/lowpix/world/wear_3d.glb)
 - 3DDecember 2021 - Copper Pots and Pans by Jack Kelly, CC BY 4.0: https://sketchfab.com/3d-models/3ddecember-2021-copper-pots-and-pans-851f78fc9a994cd5a1c392ce28c9e414 (models/lowpix/world/pots_pans.glb)
@@ -2134,6 +2165,7 @@ by `tools/pixelart.py`.
 - Bun (Low Poly, Game Ready) by LiveToWin34, CC BY 4.0: https://sketchfab.com/3d-models/bun-low-poly-game-ready-a8184583411b43d7b2ab42b625bd40dd (models/lowpix/world/food_anpan.glb)
 - Burner Gas Stove by XaaH, CC BY 4.0: https://sketchfab.com/3d-models/burner-gas-stove-4a4328072601478baec28dfdc71d8e3a (models/lowpix/world/gas_stove_top.glb)
 - Cactus Concrete Pot by 3DWALKABOUT, CC BY 4.0: https://sketchfab.com/3d-models/cactus-concrete-pot-8bd83c9adb8640628ff4f69689d358ac (models/lowpix/world/cactus_pot.glb)
+- Camping sleeping bag by Fochdog, CC BY 4.0: https://sketchfab.com/3d-models/camping-sleeping-bag-d2ab6e8a8ffc472e9fca8b920662dafe (models/lowpix/world/sleepbag.glb)
 - Candy Cane by Ariss, CC BY 4.0: https://sketchfab.com/3d-models/candy-cane-a0367b22841e45268492c4f22f263c15 (models/lowpix/world/candy_cane.glb)
 - Car Barricade 2　車止めポール バリカー by shimodatombo, CC BY 4.0: https://sketchfab.com/3d-models/car-barricade-2-7b4abf46987448168fa58e66f786c0f4 (models/lowpix/world/bollard_u.glb)
 - Cardboard Box by Andrew.Mischenko, CC BY 4.0: https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d (models/lowpix/world/cat_bed.glb)
@@ -2352,6 +2384,7 @@ by `tools/pixelart.py`.
 - Salmon Nigiri by Nakajima2500, CC BY 4.0: https://sketchfab.com/3d-models/salmon-nigiri-71656228538740be8a9d8779eb109c49 (models/lowpix/world/wear_nigiri2.glb)
 - Shishi Odoshi by LucasT11, CC BY 4.0: https://sketchfab.com/3d-models/shishi-odoshi-dd236c21ee9b4fefac684c93f4aa803e (models/lowpix/world/shishi_odoshi.glb)
 - Shoe Rack with Shoes | Crafted by jerovdl by Jerovdl, CC BY 4.0: https://sketchfab.com/3d-models/shoe-rack-with-shoes-crafted-by-jerovdl-ad7870072cae41a6a6359433caa88369 (models/lowpix/world/shoe_rack.glb)
+- Shoes loafers by Root_3D, CC BY 4.0: https://sketchfab.com/3d-models/shoes-loafers-50b7cf68173541c1a16b0dfaf39911af (models/lowpix/world/loafers.glb)
 - Simple Bento Box With Sushi by natalia, CC BY 4.0: https://sketchfab.com/3d-models/simple-bento-box-with-sushi-9c5be993b98544fa822ccee121a13d31 (models/lowpix/world/bento_sushi.glb)
 - Simple Button by Blender3D, CC BY 4.0: https://sketchfab.com/3d-models/simple-button-c43d7365730c4d15ad20181b31d4d363 (models/lowpix/world/button_m.glb)
 - Small Tv Stand by Andrej Grave, CC BY 4.0: https://sketchfab.com/3d-models/small-tv-stand-4768d6fef8734c7aa99321f6b6b3c520 (models/lowpix/world/room_tvrack.glb)
@@ -2361,10 +2394,12 @@ by `tools/pixelart.py`.
 - Spray Bottle by Yanez Designs, CC BY 4.0: https://sketchfab.com/3d-models/spray-bottle-1611833f3eaa41bbba2b6944269429ab (models/lowpix/world/spray_bottle.glb)
 - Spray Paint Can by Isuk, CC BY 4.0: https://sketchfab.com/3d-models/spray-paint-can-7223f972a1b44194abdc8f84b896086d (models/lowpix/world/paint_tins.glb)
 - Stack of Books by AJH2, CC BY 4.0: https://sketchfab.com/3d-models/stack-of-books-83d623341f164753b825d1050be009d9 (models/lowpix/world/books_stack.glb)
+- Stack of Folded Clothes | Crafted by jerovdl by Jerovdl, CC BY 4.0: https://sketchfab.com/3d-models/stack-of-folded-clothes-crafted-by-jerovdl-ac31c5ae6eb0449091c371556bb63e00 (models/lowpix/world/clothes_folded.glb)
 - Stack Of Old Books by Arjun Perayil, CC BY 4.0: https://sketchfab.com/3d-models/stack-of-old-books-c6ca6667fd7d4381bd184874dcf44075 (models/lowpix/world/books_old.glb)
 - Stacked Cardboard Boxes | Crafted by jerovdl by Jerovdl, CC BY 4.0: https://sketchfab.com/3d-models/stacked-cardboard-boxes-crafted-by-jerovdl-f93cacf5a0e4444898e30b40e43ad669 (models/lowpix/world/room_boxes.glb)
 - Star Lamp by dm3V, CC BY 4.0: https://sketchfab.com/3d-models/star-lamp-acd19b5bd50d4cf3b179c222b0d29449 (models/lowpix/world/star_lamp.glb)
 - Statue Tanuki by Sonkiam, CC BY 4.0: https://sketchfab.com/3d-models/statue-tanuki-dbe0fb672a024f4b8e23764fe4de7a87 (models/lowpix/world/tanuki_statue.glb)
+- Statue Tanuki by Sonkiam, CC BY 4.0: https://sketchfab.com/3d-models/statue-tanuki-dbe0fb672a024f4b8e23764fe4de7a87 (models/lowpix/world/yokai_tanuki.glb)
 - Steampunk Glasses by Loïc, CC BY 4.0: https://sketchfab.com/3d-models/steampunk-glasses-841202d9bbe440648184305d9680b108 (models/lowpix/world/wear_goggles.glb)
 - Steel Soup Ladle by Dr_Kryzel, CC BY 4.0: https://sketchfab.com/3d-models/steel-soup-ladle-73673eb6a1624470836ba02673b5ceb4 (models/lowpix/world/ladle_steel.glb)
 - straw boater hat w/ black silk ribbon by clairenicole22, CC BY 4.0: https://sketchfab.com/3d-models/straw-boater-hat-w-black-silk-ribbon-cd78d72dca1748048c7badfbb2f4e06c (models/lowpix/world/wear_boater.glb)

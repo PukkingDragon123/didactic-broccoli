@@ -8,9 +8,9 @@ import { makeItemMesh } from '../game/collectibles.js';
 import { buildMachineModel, MACHINE_SPECS, layout } from '../world/machineModels.js';
 import { makeCapsuleBox } from '../game/capsuleBox.js';
 import { propMesh } from '../world/props.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { VoxelModel } from '../voxel/VoxelModel.js';
-import { meshVoxels } from '../voxel/mesher.js';
+import { pixMat, worldBox } from '../gfx/geo.js';
 import { Pix } from '../gfx/pix.js';
 import { textWPx } from '../gfx/pixfont.js';
 import { getItem, SERIES_BY_ID } from '../data/series/index.js';
@@ -191,22 +191,22 @@ export function decorateMachine(group, L, v) {
 }
 
 // ------------------------------------------------------------------ sealed parcels (opened in steps)
-const PVS = 0.01;
+// corrugated cardboard (the painted HD 'cardboard' texture, UVs in metres): an open box with 4 mm walls and four flaps
+const PVS = 0.01; // (sizes are in cm)
 const PSIZES = { S: [22, 12, 16], M: [32, 18, 24], L: [44, 26, 32] };
+const CARD_T = 0.004;
 const pgeo = new Map();
-const pg = (key, build) => { if (!pgeo.has(key)) pgeo.set(key, meshVoxels(build(), { voxelSize: PVS, origin: 'none' })); return pgeo.get(key); };
-const CB = 0xc89a5f, CB2 = 0xb68850, CB3 = 0xd8b07a;
+const pg = (key, build) => { if (!pgeo.has(key)) pgeo.set(key, build()); return pgeo.get(key); };
+const cardMat = () => pixMat('cardboard', { roughness: 0.9 });
+const box3 = (w, h, d, x, y, z) => worldBox(w, h, d).translate(x, y, z);
 function pShell(W, H, D) {
-  const v = new VoxelModel(); v.jitter = 0.03;
-  v.hollowBox(-W / 2, 0, -D / 2, W / 2 - 1, H - 1, D / 2 - 1, CB, 1, ['top']);
-  v.recolor((x, y, z) => ((x === -W / 2 || x === W / 2 - 1) && (z === -D / 2 || z === D / 2 - 1) ? CB2 : undefined));
-  return v;
+  const w = W * PVS, h = H * PVS, d = D * PVS, t = CARD_T;
+  return mergeGeometries([box3(w, t, d, 0, t / 2, 0), box3(w, h, t, 0, h / 2, -d / 2 + t / 2), box3(w, h, t, 0, h / 2, d / 2 - t / 2),
+    box3(t, h, d - 2 * t, -w / 2 + t / 2, h / 2, 0), box3(t, h, d - 2 * t, w / 2 - t / 2, h / 2, 0)]);
 }
 function pFlap(W, D, long) {
-  const v = new VoxelModel(); v.jitter = 0.03;
-  if (long) v.box(-W / 2, 0, 0, W / 2 - 1, 0, Math.floor(D / 2) - 1, CB3);
-  else v.box(0, 0, -D / 2, Math.floor(W / 2) - 1, 0, D / 2 - 1, CB);
-  return v;
+  const w = W * PVS, d = D * PVS, t = CARD_T;
+  return long ? box3(w, t, d / 2, 0, t / 2, d / 4) : box3(w / 2, t, d, w / 4, t / 2, 0);
 }
 const labelTexes = new Map();
 function parcelLabel(from, to, kind) {
@@ -234,7 +234,7 @@ const tapeM = new THREE.MeshStandardMaterial({ color: 0xc8a878, roughness: 0.35,
 export function makeParcelMesh(game, data) {
   data.stage ??= 0;
   const [W, H, D] = PSIZES[data.size] || PSIZES.M;
-  const mats = voxelMaterials('normal');
+  const mats = cardMat();
   const group = new THREE.Group();
   const shell = new THREE.Mesh(pg(`sh${data.size}`, () => pShell(W, H, D)), mats);
   shell.castShadow = shell.receiveShadow = true;
@@ -250,14 +250,14 @@ export function makeParcelMesh(game, data) {
     const piv = new THREE.Group();
     const m = new THREE.Mesh(pg(`f${data.size}${long ? 'L' : 'S'}`, () => pFlap(W, D, long)), mats);
     m.castShadow = true;
-    if (long) { piv.position.set(0, H * PVS, sign * (D / 2) * PVS); m.position.y = PVS; } else piv.position.set(sign * (W / 2) * PVS, H * PVS, 0);
+    if (long) { piv.position.set(0, H * PVS, sign * (D / 2) * PVS); m.position.y = CARD_T; } else piv.position.set(sign * (W / 2) * PVS, H * PVS, 0);
     if (sign > 0) m.rotation.y = Math.PI;
     piv.add(m); group.add(piv);
     flaps.push({ piv, long, sign, k: data.stage >= 2 ? 1 : 0 });
   };
   mk(false, -1); mk(false, 1); mk(true, -1); mk(true, 1);
   const tape = new THREE.Group();
-  const t1 = new THREE.Mesh(new THREE.BoxGeometry(W * PVS + 0.004, 0.002, 0.05), tapeM); t1.position.y = H * PVS + 2 * PVS + 0.001; tape.add(t1);
+  const t1 = new THREE.Mesh(new THREE.BoxGeometry(W * PVS + 0.004, 0.002, 0.05), tapeM); t1.position.y = H * PVS + 2 * CARD_T + 0.001; tape.add(t1);
   for (const s of [-1, 1]) { const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.002, 0.07, 0.05), tapeM); t2.position.set(s * (W * PVS / 2 + 0.002), H * PVS - 0.03, 0); tape.add(t2); }
   group.add(tape);
   const inside = new THREE.Group();

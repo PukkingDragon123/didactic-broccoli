@@ -1,0 +1,88 @@
+{
+ "id": "diorama_own",
+ "src": "art/lowpix/world/made/diorama.glb",
+ "credit": {
+  "title": "Diorama landscape (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/diorama.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 3974,
+ "tex": 560,
+ "size": [
+  1.426,
+  0.11,
+  0.904
+ ],
+ "colours": 45,
+ "palette": {
+  "m0": [
+   "#1c521d",
+   "#2a6926",
+   "#3c7f32",
+   "#51943e",
+   "#68a84c",
+   "#83b464",
+   "#9dbd80",
+   "#b3c79a",
+   "#c7d3b4"
+  ],
+  "m1": [
+   "#152565",
+   "#1d3a81",
+   "#27539d",
+   "#326eb7",
+   "#468cc8",
+   "#63a4cc",
+   "#7eb9d2",
+   "#99cbd8",
+   "#b2dae0"
+  ],
+  "m2": [
+   "#3d1f19",
+   "#4e2e22",
+   "#5e3d2c",
+   "#6d4e36",
+   "#7c6042",
+   "#957b55",
+   "#a7956f",
+   "#b5ac8d",
+   "#c4c0aa"
+  ],
+  "m3": [
+   "#162e7e",
+   "#2048a1",
+   "#2b67c4",
+   "#498bd3",
+   "#70abd9",
+   "#86bddc",
+   "#9bcde0",
+   "#b0dae4",
+   "#c4e5e9"
+  ],
+  "m4": [
+   "#6b3c23",
+   "#8a5730",
+   "#a6743f",
+   "#ba9256",
+   "#c4ac78",
+   "#cabc8d",
+   "#d0c9a1",
+   "#d7d5b5",
+   "#dfdfc7"
+  ],
+  "m5": [
+   "#423a2e",
+   "#544d3e",
+   "#65604f",
+   "#757262",
+   "#848375",
+   "#92928b",
+   "#a0a0a0",
+   "#b2b2b2",
+   "#c4c4c4"
+  ]
+ },
+ "warnings": []
+}

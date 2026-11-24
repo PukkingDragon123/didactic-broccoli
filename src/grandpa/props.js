@@ -9,7 +9,7 @@ import { VoxelModel, gloss, metal, glow } from '../voxel/VoxelModel.js';
 import { meshVoxels } from '../voxel/mesher.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { taxiParts, TAXI } from '../vehicles/taxi.js';
-import { carBody } from '../world/carModels.js';
+import { carBody, lettering } from '../world/carModels.js';
 import { assetSlot } from '../kit/assets.js';
 import { LP_WORLD, lpAsset } from '../kit/lowpixWorld.js';
 
@@ -148,13 +148,21 @@ export class Taxi {
     // the imported taxi saloon (src/world/carModels.js: a hand-made model in our taxi yellow, real glass, its cab and
     // seats, our plates); once it has loaded it replaces the code-built body (the door then stays shut, its wheels
     // still), the roof lamp and meter are kept, lifted to its roof
-    const model = carBody('taxi_sedan', { plate: { town: '上山', cls: '500', kana: 'あ', num: '37-15' }, onLoad: () => {
+    // (a taxi's green commercial plate; the company's name and number on both front doors: 上山交通, an original firm)
+    const model = carBody('taxi_sedan', { plate: { town: '上山', cls: '500', kana: 'あ', num: '37-15', bg: '#1d5a35', ink: '#f2f0e6', rim: '#0f3a20', hi: '#3a7a52' }, onLoad: () => {
       for (const o of [b, gl, d, dg, ...this.heads, ...this.brakes, ...this.wheels]) o.visible = false;
       this.heads = []; this.brakes = [];
       signs.position.y = 0.07;
       model.visible = true;
     } });
-    if (model) { model.visible = false; this.body.add(model); }
+    if (model) {
+      model.visible = false; this.body.add(model);
+      for (const sx of [-1, 1]) {
+        const L = lettering(['上山交通', 'TEL 3-0101'], 0.62, 0.24, { ink: '#1e3a24' });
+        L.position.set(sx * 0.876, 0.74, 0.55); L.rotation.y = sx * Math.PI / 2;
+        model.add(L);
+      }
+    }
     this.setLights(true); this.setBrake(false);
     this.dist = 0;
     this.door = 0;

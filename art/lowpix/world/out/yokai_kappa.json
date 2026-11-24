@@ -1,6 +1,6 @@
 {
  "id": "yokai_kappa",
- "src": "sketchfab:136cd1ad671c4b208cdf64aab42ea172",
+ "src": "art/lowpix/world/made/kappa_posed.glb",
  "credit": {
   "title": "Kappa",
   "author": "samnorwoodgo",
@@ -12,33 +12,22 @@
  "tris": 3499,
  "tex": 512,
  "size": [
-  0.758,
+  0.531,
   0.95,
   0.383
  ],
- "colours": 16,
+ "colours": 8,
  "palette": {
   "m0": [
-   "#1d190e",
-   "#252113",
-   "#2d2a18",
-   "#34331e",
-   "#3a3b24",
-   "#5c5c3c",
-   "#7c7c56",
-   "#989873",
-   "#adad96"
-  ],
-  "m1": [
-   "#1e080d",
-   "#260b0f",
-   "#2e0e10",
-   "#361312",
-   "#3d1a16",
-   "#663328",
-   "#8d513b",
-   "#b17452",
-   "#c19b7d"
+   "#1d170c",
+   "#252010",
+   "#2d2915",
+   "#34321a",
+   "#3b3b20",
+   "#5e5e36",
+   "#80804f",
+   "#9d9d6a",
+   "#b1b190"
   ]
  },
  "warnings": []

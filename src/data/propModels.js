@@ -281,7 +281,7 @@ export const PROP_MODELS = {
   gr_pan: { id: 'lowpix/world/frying_pan' },
   gr_ricecooker: { id: 'lowpix/world/ricecooker_old' },
   gr_dish_curry: { id: 'lowpix/world/food_curry' },
-  gr_ofuro: { id: 'lowpix/world/ofuro_wood' },
+  gr_ofuro: { id: 'lowpix/world/ofuro_own', own: true, h: 0.6 },
   gr_bath_stool: { id: 'lowpix/world/bath_stool_set', own: true, h: 0.3 },
   gr_oke: { id: 'lowpix/world/bucket_wood', own: true, h: 0.24 },
   fertiliser: { id: 'lowpix/world/fertiliser_bag' },
@@ -300,7 +300,7 @@ export const PROP_MODELS = {
   poop_bags: { id: 'lowpix/world/plastic_bag' },
   poop_bag_full: { id: 'lowpix/world/plastic_bag' },
   litter_paper: { id: 'lowpix/world/paper_crumpled' },
-  grandpa_notebook: { id: 'lowpix/world/old_notebook' },
+  grandpa_notebook: { id: 'lowpix/world/notebook_own' },
   rm_sink: { id: 'lowpix/world/sink_round' },
   fire_ext_box: { id: 'lowpix/world/fire_box', own: true, h: 0.62 }, // the red extinguisher box by the house fronts (was a voxel box on a pole)
 };

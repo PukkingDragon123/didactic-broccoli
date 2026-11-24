@@ -1,0 +1,66 @@
+{
+ "id": "bush_sign",
+ "src": "art/lowpix/world/made/bush_sign.glb",
+ "credit": {
+  "title": "Cardboard sign on a stick (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/bush_sign.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 74,
+ "tex": 256,
+ "size": [
+  0.451,
+  0.741,
+  0.032
+ ],
+ "colours": 25,
+ "palette": {
+  "m0": [
+   "#643220",
+   "#81492c",
+   "#9b633a",
+   "#b58049",
+   "#be9b68",
+   "#c4ae80",
+   "#cbbe96",
+   "#d3cdac",
+   "#dcdac1"
+  ],
+  "m1": [
+   "#120b0b",
+   "#170f0f",
+   "#1b1413",
+   "#201917",
+   "#241e1c",
+   "#453d39",
+   "#635c57",
+   "#807c78",
+   "#9b9b9a"
+  ],
+  "m2": [
+   "#590a22",
+   "#720f25",
+   "#8a1526",
+   "#a21c24",
+   "#b82824",
+   "#d24332",
+   "#d66e55",
+   "#db9478",
+   "#e2b49a"
+  ],
+  "m3": [
+   "#5b1a1e",
+   "#752524",
+   "#8d392f",
+   "#a44f3b",
+   "#b9684a",
+   "#bf8666",
+   "#c7a081",
+   "#cfb69b",
+   "#d9cab4"
+  ]
+ },
+ "warnings": []
+}

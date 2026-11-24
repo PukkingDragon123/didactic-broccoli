@@ -11,6 +11,9 @@ import { audio } from '../core/audio.js';
 import { ease, hash2 } from '../core/util.js';
 import { DisplaySlots } from '../game/Display.js';
 import { buildDisplay } from './displays.js';
+import { assetSlot } from '../kit/assets.js';
+import { lpAsset } from '../kit/lowpixWorld.js';
+import { treeInstances } from '../world/foliage.js';
 import { DISPLAYS, decorPrice, THEME_NAMES } from './catalog.js';
 import { DISPLAY_STYLES, STYLE_ORDER, sheetMesh } from './styles.js';
 import { PROPS, propMesh, hasProp } from '../world/props.js';
@@ -28,6 +31,8 @@ export const SHOP_TEXT = Object.values(artMods)[0]?.SHOP_TEXT || '';
 
 const ZN = GARAGE.minZ - 0.2; // museum north wall (back of the garage wall)
 const WALL_H = 3.6;
+// the houses seen across the street through the entrance: [world model, x, z from the entrance, turn]
+const HOUSES_ACROSS = [['house_jp', -6.2, -13.0, 0], ['house_modern', 4.6, -11.5, 0]];
 const CELL = 0.5;
 const ENTRANCE = { x0: -1.0, x1: 1.0, h: 2.35 };
 const DOOR = { x0: -GARAGE.doorHalf, x1: GARAGE.doorHalf, h: GARAGE.doorH };
@@ -366,17 +371,16 @@ export class Museum {
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(40, 16), new THREE.MeshBasicMaterial({ color: 0xffb88a, fog: false }));
     sky.position.set(0, 6, zS - 12);
     g.add(sky);
-    // houses across the street + trees
-    for (let i = 0; i < 5; i++) {
-      const h = hasProp('house_front') ? propMesh('house_front') : null;
-      if (h) { h.position.set(-8 + i * 4, 0, zS - 8.5); g.add(h); }
+    // houses across the street (imported hand-made models, lazily loaded): an old tiled two-storey house and a 1990s one
+    for (const [id, x, z, ry] of HOUSES_ACROSS) {
+      const h = assetSlot(lpAsset(id), { cast: false });
+      h.position.set(x, 0, zS + z); h.rotation.y = ry;
+      g.add(h);
     }
-    for (let i = 0; i < 4; i++) {
-      const tr = propMesh(i % 2 ? 'sakura_tree' : 'pine_tree', { fallbackSize: [1.6, 3, 1.6], fallbackColor: 0x4a8a4a });
-      tr.position.set(-7 + i * 4.6 + hash2(i, 1), 0, zS - 5.5 - hash2(i, 2));
-      tr.scale.setScalar(0.8 + hash2(i, 3) * 0.3);
-      g.add(tr);
-    }
+    // street trees: the lane's lowpix pine and cherry (wood + sprig crowns)
+    const trees = { pine: [], sakura: [] };
+    for (let i = 0; i < 4; i++) trees[i % 2 ? 'sakura' : 'pine'].push({ x: -7 + i * 4.6 + hash2(i, 1), y: 0, z: zS - 5.5 - hash2(i, 2), ry: hash2(i, 4) * 6.283, s: (i % 2 ? 0.55 : 0.8) + hash2(i, 3) * 0.2 });
+    for (const k of Object.keys(trees)) treeInstances(k, g, trees[k], { cast: true });
     if (hasProp('utility_pole')) { const pole = propMesh('utility_pole'); pole.position.set(3.2, 0, zS - 3.2); g.add(pole); }
     const sunOut = new THREE.PointLight(0xffc890, 3, 10, 1.5);
     sunOut.position.set(0, 3, zS - 3);

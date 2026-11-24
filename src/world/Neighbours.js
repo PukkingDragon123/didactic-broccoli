@@ -560,8 +560,9 @@ function farSide(t) {
   B.box(m.pv, 0.26, 0.04, 0.025, 2.2, 4.2, -0.8, { tint: 0xe8c860 });
   B.pop();
   t.yard(21.05, 25.7, ZF, 15.2, m.strip);
-  // a neighbour's blue-and-white 1980s kei van pulled up on the garages' apron
-  if (parkedCar('kei_van', t.group, { x: 24.15, z: 13.85, ry: Math.PI / 2 + 0.04, plate: { cls: '41', kana: 'す', num: '3-86' } })) t.game.player.addObstacle(22.45, 25.85, 13.0, 14.7);
+  // a neighbour's blue-and-white 1980s kei van pulled up by the rental garages
+  // (on the road along the kerb, all four tyres on the asphalt)
+  if (parkedCar('kei_van', t.group, { x: 23.9, z: 12.45, ry: Math.PI / 2 + 0.02, plate: { cls: '41', kana: 'す', num: '3-86' } })) t.game.player.addObstacle(22.2, 25.6, 11.62, 13.28);
   t.weeds(22.1, 0, 15.0, 2);
   t.weeds(25.2, 0, 14.95, 0.6);
   addDoor(t, 'garage6', 'FE6', 'Rental garage', [22.25, 15.4], [22.25, ZF], [22.25, 15.12, 1.2], s, { knockOnly: true });

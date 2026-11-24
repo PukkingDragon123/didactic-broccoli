@@ -92,7 +92,7 @@ export default {
   hm_bento: M('bento', 0.06),
   hm_gyoza: M('food_gyoza', 0.04),
   hm_tea_glass2: M('tea_glass', 0.1),
-  hm_ofuro: M('ofuro_wood', 0.6),
+  hm_ofuro: M('ofuro_own', 0.6),
   hm_bath_set: M('bath_stool_set', 0.3),
   hm_kotatsu: M('kotatsu2', 0.42),
   hm_stool_red: M('stool_retro', 0.68),

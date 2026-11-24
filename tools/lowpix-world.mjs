@@ -4,7 +4,8 @@
 //   node tools/lowpix-world.mjs [id ...] [--force] [--jobs 3] [--post]   (wrap in tools/slot.sh on a shared machine)
 // Spec: art/lowpix/world/world.json  { defaults: {...}, items: [{ id, src: 'polyhaven:<id>' | 'sketchfab:<uid>', h (m,
 //   optional for Poly Haven: its real height), ppm (texels per metre, default 160), tris, yaw, alpha (keep cut-outs),
-//   name, any lowpix convert option (light, detail, smooth, grain, crease, spread, ramps, steps) }] }
+//   name, credit ({ title, author, authorUrl, license, url, site }: a local src prepared from someone else's model),
+//   any lowpix convert option (light, detail, smooth, grain, crease, spread, ramps, steps) }] }
 // Steps per item: `python3 -m lowpix convert <src> --style pixel-hd --height <h * ppm / 6>` (6 px per lowpix unit, so
 // every model gets the same texel density in metres) into node_modules/.cache/lowpix-world/<id>, then: scaled to
 // metres, origin at the bottom centre, unlit -> lit (roughness 0.9), the atlas cropped to its used rows and dilated
@@ -253,6 +254,8 @@ async function gameReady(it, dir) {
   if (it.src.startsWith('polyhaven:')) {
     const pid = it.src.slice(10), info = polyhavenInfo(pid);
     credit = { title: info.name, author: Object.keys(info.authors || {}).join(', '), license: 'CC0 1.0', url: 'https://polyhaven.com/a/' + pid, site: 'Poly Haven' };
+  } else if (it.credit) { // a local file prepared from someone else's model (e.g. reposed in Blender): credited to its author
+    credit = { ...it.credit, title: it.credit.title || it.name || it.id };
   } else if (!/^sketchfab:/.test(it.src)) {
     credit = { title: it.name || it.id, author: 'Gacha Garage (made for the game, ' + it.src + ')', license: 'CC0 1.0', url: '', site: 'Original' };
   } else {

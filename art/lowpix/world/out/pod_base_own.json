@@ -1,0 +1,55 @@
+{
+ "id": "pod_base_own",
+ "src": "art/lowpix/world/made/pod_base.glb",
+ "credit": {
+  "title": "Space pod display base (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pod_base.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 476,
+ "tex": 512,
+ "size": [
+  0.959,
+  0.3,
+  0.959
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#0a0519",
+   "#0b0820",
+   "#0c0a27",
+   "#0d0e2e",
+   "#101434",
+   "#202d61",
+   "#324b8b",
+   "#466eb4",
+   "#7397c4"
+  ],
+  "m1": [
+   "#3b3b6b",
+   "#505588",
+   "#6a73a1",
+   "#8c95b2",
+   "#acb4c4",
+   "#b9c0ca",
+   "#c6ccd1",
+   "#d2d6d9",
+   "#dde0e1"
+  ],
+  "m2": [
+   "#0046a4",
+   "#006dd6",
+   "#0a9bff",
+   "#3cc0ff",
+   "#6edcff",
+   "#84eafd",
+   "#99f4fc",
+   "#aefbfa",
+   "#c2fbf6"
+  ]
+ },
+ "warnings": []
+}

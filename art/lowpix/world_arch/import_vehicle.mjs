@@ -90,49 +90,117 @@ const tris0 = count();
 if (tris0 > CFG.tris) await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: CFG.tris / tris0, error: CFG.err ?? 0.002, lockBorder: !CFG.err }));
 await doc.transform(prune());
 
-// textures: pixel art at about 256 px/m, posterised; badges painted out; paint colours swapped where asked
+// ---- textures: restyled to the house pixel art (the lowpix standard), from the model's own geometry ----
+// every colour texture is resampled to 256 px per metre of the surface it covers (measured from the uv and world
+// areas of its triangles), posterised to a small palette with no dithering (clean even paint, hard steps), and gets
+// light painted wear where the model really has it: road grime up from the sills, mud round the wheel arches, a
+// worn lighter lip on the edges of the panels (the uv island borders). Normal and metal/roughness maps are dropped:
+// the painted texture carries the detail, as on every lowpix model.
 b = getBounds(scene);
-const sizeM = Math.max(b.max[0] - b.min[0], b.max[1] - b.min[1], b.max[2] - b.min[2]);
+const wheelC = [];
+for (const m of root.listMeshes()) for (const p of m.listPrimitives()) {
+  if (!/wheel|tire|tyre/i.test(p.getMaterial()?.getName() || '')) continue;
+  const P = p.getAttribute('POSITION'), v = [0, 0, 0];
+  for (let i = 0; i < P.getCount(); i += 7) { P.getElement(i, v); wheelC.push([v[0], v[1], v[2]]); }
+}
+// the wheel centres: the four quadrants of the wheel vertices
+const wheels = [];
+for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+  const q = wheelC.filter((w) => Math.sign(w[0]) === sx && Math.sign(w[2]) === sz);
+  if (q.length) wheels.push([0, 1, 2].map((k) => q.reduce((t, w) => t + w[k], 0) / q.length));
+}
+const WR = wheels.length ? Math.max(0.2, Math.min(0.45, wheels[0][1])) : 0.3;
+const byTex = new Map();
+for (const m of root.listMeshes()) for (const p of m.listPrimitives()) {
+  const mat = p.getMaterial(), t = mat?.getBaseColorTexture();
+  if (!t) continue;
+  const P = p.getAttribute('POSITION'), UV = p.getAttribute('TEXCOORD_0'), I = p.getIndices();
+  if (!UV || !I) continue;
+  const L = byTex.get(t) || { tris: [], mats: new Set() };
+  L.mats.add(mat.getName());
+  const v = [0, 0, 0], u = [0, 0];
+  for (let k = 0; k < I.getCount(); k += 3) {
+    const tri = [];
+    for (let j = 0; j < 3; j++) { const i = I.getScalar(k + j); P.getElement(i, v); UV.getElement(i, u); tri.push({ p: [v[0], v[1], v[2]], uv: [u[0], u[1]] }); }
+    L.tris.push(tri);
+  }
+  byTex.set(t, L);
+}
+const area3 = (a, b2, c) => { const e1 = [b2[0] - a[0], b2[1] - a[1], b2[2] - a[2]], e2 = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]; return Math.hypot(e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]) / 2; };
+const area2 = (a, b2, c) => Math.abs((b2[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b2[1] - a[1])) / 2;
+const frac = (x) => x - Math.floor(x);
+for (const m of root.listMaterials()) {
+  for (const t of [m.getNormalTexture(), m.getMetallicRoughnessTexture(), m.getOcclusionTexture()]) if (t) t.dispose();
+  m.setNormalTexture(null); m.setMetallicRoughnessTexture(null); m.setOcclusionTexture(null);
+}
 for (const tex of root.listTextures()) {
-  const name = tex.getName() || tex.getURI();
   const img = tex.getImage();
   if (!img) continue;
-  const slots = root.listMaterials().flatMap((m) => [['base', m.getBaseColorTexture()], ['normal', m.getNormalTexture()], ['mr', m.getMetallicRoughnessTexture()]].filter(([, t]) => t === tex).map(([k2]) => [k2, m.getName()]));
-  const isColour = slots.some(([k2]) => k2 === 'base');
+  const L = byTex.get(tex);
   const meta = await sharp(Buffer.from(img)).metadata();
-  // colour at the source's full resolution up to 2048 px (a body atlas spreads ~25 m² of panels: 2048 px is the
-  // 256 px/m standard), normal maps up to 1024, metal/roughness up to 512
-  void sizeM;
-  const cap = isColour ? 2048 : slots.some(([k2]) => k2 === 'normal') ? 1024 : 512;
-  const target = Math.min(cap, 2 ** Math.round(Math.log2(Math.max(meta.width, meta.height))));
-  let pipe = sharp(Buffer.from(img)).resize(target, target, { fit: 'fill', kernel: 'lanczos3' });
-  let raw = await pipe.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  // 256 px per metre of the surface this texture covers
+  let uvA = 0, wA = 0;
+  for (const tri of L?.tris || []) { uvA += area2(...tri.map((v) => [frac(v.uv[0]), frac(v.uv[1])])); wA += area3(...tri.map((v) => v.p)); }
+  const want = wA > 0 && uvA > 0 ? 256 * Math.sqrt(wA / uvA) : Math.max(meta.width, meta.height); // texture size giving 256 px/m
+  const size = Math.max(64, Math.min(2048, 2 ** Math.round(Math.log2(Math.min(want, Math.max(meta.width, meta.height) * 2)))));
+  const raw = await sharp(Buffer.from(img)).resize(size, size, { fit: 'fill', kernel: size < meta.width ? 'lanczos3' : 'nearest' }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const px = new Uint8ClampedArray(raw.data), W = raw.info.width, H = raw.info.height;
-  if (isColour) {
-    const mats = slots.map(([, n]) => n);
-    for (const [x0, y0, x1, y1, col] of mats.flatMap((n) => CFG.retouch?.[n] || [])) {
-      // 'auto': the average of the ring of texels just outside the rectangle (the panel the badge sits on)
-      let rgb = col === 'auto' ? null : [1, 3, 5].map((i) => parseInt(col.slice(i, i + 2), 16));
-      if (!rgb) {
-        const X0 = Math.max(0, Math.floor(x0 * W) - 2), X1 = Math.min(W - 1, Math.ceil(x1 * W) + 1), Y0 = Math.max(0, Math.floor(y0 * H) - 2), Y1 = Math.min(H - 1, Math.ceil(y1 * H) + 1);
-        const acc = [0, 0, 0]; let n = 0;
-        for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
-          if (x > X0 && x < X1 && y > Y0 && y < Y1) continue;
-          const o = (y * W + x) * 4; acc[0] += px[o]; acc[1] += px[o + 1]; acc[2] += px[o + 2]; n++;
-        }
-        rgb = acc.map((v) => v / Math.max(1, n));
+  const mats = [...(L?.mats || [])];
+  // badges and plates painted out (rectangles in 0..1 of the image): a colour, 'auto' (the panel round it) or
+  // 'slats' (the dark horizontal slats of a grille)
+  for (const [x0, y0, x1, y1, col] of mats.flatMap((n) => CFG.retouch?.[n] || [])) {
+    const X0 = Math.max(0, Math.floor(x0 * W)), X1 = Math.min(W - 1, Math.ceil(x1 * W)), Y0 = Math.max(0, Math.floor(y0 * H)), Y1 = Math.min(H - 1, Math.ceil(y1 * H));
+    let rgb = /^#/.test(col) ? [1, 3, 5].map((i) => parseInt(col.slice(i, i + 2), 16)) : null;
+    if (col === 'auto') {
+      const acc = [0, 0, 0]; let n = 0;
+      for (let y = Math.max(0, Y0 - 2); y <= Math.min(H - 1, Y1 + 2); y++) for (let x = Math.max(0, X0 - 2); x <= Math.min(W - 1, X1 + 2); x++) {
+        if (x >= X0 && x <= X1 && y >= Y0 && y <= Y1) continue;
+        const o = (y * W + x) * 4; acc[0] += px[o]; acc[1] += px[o + 1]; acc[2] += px[o + 2]; n++;
       }
-      for (let y = Math.floor(y0 * H); y < Math.ceil(y1 * H); y++) for (let x = Math.floor(x0 * W); x < Math.ceil(x1 * W); x++) {
-        const o = (y * W + x) * 4; px[o] = rgb[0]; px[o + 1] = rgb[1]; px[o + 2] = rgb[2];
-      }
+      rgb = acc.map((v) => v / Math.max(1, n));
+    }
+    for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+      const o = (y * W + x) * 4;
+      const c = col === 'slats' ? ((Math.floor((y - Y0) / Math.max(2, (Y1 - Y0) / 7)) % 2) ? [34, 36, 40] : (y - Y0) % Math.max(2, Math.round((Y1 - Y0) / 7)) === 0 ? [150, 154, 158] : [96, 100, 104]) : rgb;
+      px[o] = c[0]; px[o + 1] = c[1]; px[o + 2] = c[2];
     }
   }
-  const out = sharp(Buffer.from(px.buffer), { raw: { width: W, height: H, channels: 4 } });
-  const png = isColour ? await out.png({ palette: true, colours: 96, dither: 0, effort: 10 }).toBuffer() : await out.png({ compressionLevel: 9 }).toBuffer();
+  // painted wear from the geometry: rasterise every triangle in uv space with its world position
+  const done = new Uint8Array(W * H);
+  const isWheel = mats.some((n) => /wheel|tire|tyre|rim|hub/i.test(n));
+  for (const tri of (isWheel ? [] : L?.tris || [])) {
+    const P2 = tri.map((v) => [frac(v.uv[0]) * W - 0.5, frac(v.uv[1]) * H - 0.5]), w3 = tri.map((v) => v.p);
+    const d = (P2[1][1] - P2[2][1]) * (P2[0][0] - P2[2][0]) + (P2[2][0] - P2[1][0]) * (P2[0][1] - P2[2][1]);
+    if (Math.abs(d) < 1e-6) continue;
+    const xa = Math.max(0, Math.floor(Math.min(P2[0][0], P2[1][0], P2[2][0]))), xb = Math.min(W - 1, Math.ceil(Math.max(P2[0][0], P2[1][0], P2[2][0])));
+    const ya = Math.max(0, Math.floor(Math.min(P2[0][1], P2[1][1], P2[2][1]))), yb = Math.min(H - 1, Math.ceil(Math.max(P2[0][1], P2[1][1], P2[2][1])));
+    if ((xb - xa) * (yb - ya) > W * H * 0.25) continue; // wrapped / tiling uvs: no wear
+    for (let y = ya; y <= yb; y++) for (let x = xa; x <= xb; x++) {
+      const l0 = ((P2[1][1] - P2[2][1]) * (x - P2[2][0]) + (P2[2][0] - P2[1][0]) * (y - P2[2][1])) / d;
+      const l1 = ((P2[2][1] - P2[0][1]) * (x - P2[2][0]) + (P2[0][0] - P2[2][0]) * (y - P2[2][1])) / d, l2 = 1 - l0 - l1;
+      if (l0 < 0 || l1 < 0 || l2 < 0) continue;
+      const o = y * W + x;
+      if (done[o]) continue;
+      done[o] = 1;
+      const wy = w3[0][1] * l0 + w3[1][1] * l1 + w3[2][1] * l2, wz = w3[0][2] * l0 + w3[1][2] * l1 + w3[2][2] * l2, wx = w3[0][0] * l0 + w3[1][0] * l1 + w3[2][0] * l2;
+      const k = o * 4;
+      let g = 0;
+      if (wy < 0.38) g = Math.max(g, (0.38 - wy) / 0.38 * 0.38); // road grime up the sills and bumpers
+      for (const c of wheels) { const r = Math.hypot(wy - c[1], wz - c[2]); if (Math.abs(wx) > 0.3 && r > WR && r < WR + 0.12) g = Math.max(g, 0.42 * (1 - (r - WR) / 0.12)); } // mud round the arches
+      const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
+      if (g > 0 && ((h % 1000) / 1000) < 0.55 + g) { px[k] = px[k] * (1 - g) + 88 * g; px[k + 1] = px[k + 1] * (1 - g) + 74 * g; px[k + 2] = px[k + 2] * (1 - g) + 58 * g; }
+    }
+  }
+  // a worn, lighter lip on the edge of each panel (a texel on the border of a painted island)
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const o = y * W + x;
+    if (done[o] !== 1 || (done[o - 1] && done[o + 1] && done[o - W] && done[o + W])) continue;
+    const k = o * 4; px[k] = Math.min(255, px[k] * 1.08 + 6); px[k + 1] = Math.min(255, px[k + 1] * 1.08 + 6); px[k + 2] = Math.min(255, px[k + 2] * 1.08 + 6);
+  }
+  const png = await sharp(Buffer.from(px.buffer), { raw: { width: W, height: H, channels: 4 } }).png({ palette: true, colours: CFG.colours || 40, dither: 0, effort: 10 }).toBuffer();
   tex.setImage(png); tex.setMimeType('image/png');
-  console.log('texture', name, meta.width + 'px ->', target + 'px', isColour ? '(colour, posterised)' : '');
+  console.log('texture', tex.getName() || tex.getURI(), meta.width + 'px ->', W + 'px', '(' + Math.round(Math.sqrt(uvA / Math.max(1e-9, wA)) * W) + ' px/m)', mats.join(','));
 }
-
 await doc.transform(dedup(), prune(), reorder({ encoder: MeshoptEncoder }), quantize());
 doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
 await webpTextures(doc);

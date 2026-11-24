@@ -1,0 +1,77 @@
+{
+ "id": "cig_own",
+ "src": "art/lowpix/world/made/cig_own.glb",
+ "credit": {
+  "title": "Cigarette (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cig_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 57,
+ "tex": 128,
+ "size": [
+  0.009,
+  0.008,
+  0.089
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#966542",
+   "#b68d64",
+   "#c8b294",
+   "#ddd4c1",
+   "#f4f2ec",
+   "#f5f4ef",
+   "#f6f6f2",
+   "#f8f8f5",
+   "#f9f9f7"
+  ],
+  "m1": [
+   "#740513",
+   "#95090f",
+   "#b5160f",
+   "#d42d15",
+   "#e65028",
+   "#e67749",
+   "#e89868",
+   "#eab587",
+   "#edcca5"
+  ],
+  "m2": [
+   "#924c1b",
+   "#bc7127",
+   "#d49743",
+   "#dbb771",
+   "#e4d29d",
+   "#e6dcac",
+   "#e9e5bb",
+   "#ececc9",
+   "#efefd6"
+  ],
+  "m3": [
+   "#6a2413",
+   "#87391b",
+   "#a45224",
+   "#c06f2e",
+   "#ce8e46",
+   "#d2a762",
+   "#d6bc7e",
+   "#dccd98",
+   "#e3dcb2"
+  ],
+  "m4": [
+   "#8e2100",
+   "#b93a00",
+   "#e45b00",
+   "#ff8311",
+   "#ffaa3c",
+   "#fcc359",
+   "#fbd776",
+   "#fae692",
+   "#faf2ad"
+  ]
+ },
+ "warnings": []
+}

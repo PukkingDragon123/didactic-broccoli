@@ -1,0 +1,88 @@
+{
+ "id": "cart_own",
+ "src": "art/lowpix/world/made/cart_own.glb",
+ "credit": {
+  "title": "Granny's shopping cart (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/cart_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 986,
+ "tex": 432,
+ "size": [
+  0.344,
+  0.995,
+  0.235
+ ],
+ "colours": 46,
+ "palette": {
+  "m0": [
+   "#454767",
+   "#5d6383",
+   "#7a829b",
+   "#9ba1ae",
+   "#babec4",
+   "#c5c8ca",
+   "#d0d1d1",
+   "#d9d9d9",
+   "#e2e2e2"
+  ],
+  "m1": [
+   "#0e1d19",
+   "#13251f",
+   "#182c25",
+   "#1e3329",
+   "#243a2e",
+   "#3c5b48",
+   "#567a61",
+   "#73967a",
+   "#97ac99"
+  ],
+  "m2": [
+   "#550c28",
+   "#6d122d",
+   "#84182f",
+   "#9b202f",
+   "#b0282e",
+   "#cc3a34",
+   "#d16758",
+   "#d78d7a",
+   "#dfaf9b"
+  ],
+  "m3": [
+   "#34111b",
+   "#431720",
+   "#511e24",
+   "#5e2628",
+   "#6b312e",
+   "#8a4a40",
+   "#a86553",
+   "#b78976",
+   "#c5a998"
+  ],
+  "m4": [
+   "#111016",
+   "#17151c",
+   "#1c1b22",
+   "#222127",
+   "#28282c",
+   "#464649",
+   "#656565",
+   "#828282",
+   "#9f9f9f"
+  ],
+  "m5": [
+   "#573a22",
+   "#6f512f",
+   "#866a3d",
+   "#9c844c",
+   "#ac9c61",
+   "#b4ad7a",
+   "#bebc92",
+   "#c8c8a9",
+   "#d3d3be"
+  ]
+ },
+ "warnings": []
+}

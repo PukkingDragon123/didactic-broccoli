@@ -1,0 +1,55 @@
+{
+ "id": "shrine_roof_own",
+ "src": "art/lowpix/world/made/shrine_roof.glb",
+ "credit": {
+  "title": "Shrine case roof (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shrine_roof.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 196,
+ "tex": 512,
+ "size": [
+  1.132,
+  0.336,
+  0.661
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#204643",
+   "#2b5a52",
+   "#386d5f",
+   "#467e6b",
+   "#548f76",
+   "#69a185",
+   "#84ad95",
+   "#9ebaa7",
+   "#b6c8bb"
+  ],
+  "m1": [
+   "#6a3414",
+   "#874d1d",
+   "#a46a27",
+   "#c08a32",
+   "#cca64c",
+   "#d0ba68",
+   "#d5ca82",
+   "#dbd89c",
+   "#e2e2b5"
+  ],
+  "m2": [
+   "#2d110e",
+   "#3a1b14",
+   "#46251a",
+   "#513121",
+   "#5c3e28",
+   "#7d5c3b",
+   "#9d7d4f",
+   "#b29c6e",
+   "#c1b693"
+  ]
+ },
+ "warnings": []
+}

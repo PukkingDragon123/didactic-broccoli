@@ -1,0 +1,56 @@
+{
+ "id": "clothes_folded",
+ "src": "sketchfab:ac31c5ae6eb0449091c371556bb63e00",
+ "credit": {
+  "title": "Stack of Folded Clothes | Crafted by jerovdl",
+  "author": "Jerovdl",
+  "authorUrl": "https://sketchfab.com/Jerovdl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/stack-of-folded-clothes-crafted-by-jerovdl-ac31c5ae6eb0449091c371556bb63e00",
+  "site": "Sketchfab"
+ },
+ "tris": 1995,
+ "tex": 288,
+ "size": [
+  0.244,
+  0.18,
+  0.205
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#03030f",
+   "#040513",
+   "#050817",
+   "#060c1a",
+   "#08101e",
+   "#173050",
+   "#28577f",
+   "#3b81ad",
+   "#64a8c6"
+  ],
+  "m1": [
+   "#625947",
+   "#7d7661",
+   "#94907d",
+   "#a9a89c",
+   "#bfbfba",
+   "#c6c6c5",
+   "#cfcfcf",
+   "#d8d8d8",
+   "#e1e1e1"
+  ],
+  "m2": [
+   "#3f1a13",
+   "#51271a",
+   "#613722",
+   "#72482b",
+   "#815a34",
+   "#9e7844",
+   "#b3965c",
+   "#bfae7e",
+   "#ccc49e"
+  ]
+ },
+ "warnings": []
+}

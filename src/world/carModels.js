@@ -14,19 +14,19 @@ if (typeof document !== 'undefined' && document.fonts) {
 }
 
 /** A kei number plate (yellow, dark green ink, a pressed rim and two bolts) as a quad 0.33 x 0.165 m facing +z. */
-function plate({ town = '上山', cls = '480', kana = 'さ', num = '12-34' } = {}) {
+function plate({ town = '上山', cls = '480', kana = 'さ', num = '12-34', bg = '#e8c93c', ink = '#1e2a1e', rim = '#b89a2a', hi = '#f4e27a' } = {}) {
   const ph = PX_LINE * 2 + 8, pw = Math.round(ph * 2);
   const c = document.createElement('canvas'); c.width = pw; c.height = ph;
   const g = c.getContext('2d');
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearMipmapLinearFilter;
   const draw = () => {
-    g.fillStyle = '#e8c93c'; g.fillRect(0, 0, pw, ph);
-    g.fillStyle = '#b89a2a'; g.fillRect(0, 0, pw, 1); g.fillRect(0, ph - 1, pw, 1); g.fillRect(0, 0, 1, ph); g.fillRect(pw - 1, 0, 1, ph);
-    g.fillStyle = '#f4e27a'; g.fillRect(1, 1, pw - 2, 1);
+    g.fillStyle = bg; g.fillRect(0, 0, pw, ph);
+    g.fillStyle = rim; g.fillRect(0, 0, pw, 1); g.fillRect(0, ph - 1, pw, 1); g.fillRect(0, 0, 1, ph); g.fillRect(pw - 1, 0, 1, ph);
+    g.fillStyle = hi; g.fillRect(1, 1, pw - 2, 1);
     for (const bx of [Math.round(pw * 0.2), Math.round(pw * 0.8)]) { g.fillStyle = '#8a8a80'; g.fillRect(bx, 3, 2, 2); }
-    drawPx(g, `${town} ${cls}`, Math.round(pw / 2), 4, { col: '#1e2a1e', align: 'center', max: pw - 4 });
-    drawPx(g, `${kana} ${num}`, Math.round(pw / 2), 4 + PX_LINE, { col: '#1e2a1e', align: 'center', max: pw - 4 });
+    drawPx(g, `${town} ${cls}`, Math.round(pw / 2), 4, { col: ink, align: 'center', max: pw - 4 });
+    drawPx(g, `${kana} ${num}`, Math.round(pw / 2), 4 + PX_LINE, { col: ink, align: 'center', max: pw - 4 });
     tex.needsUpdate = true;
   };
   draw();
@@ -57,7 +57,8 @@ function dress(g) {
         return GLASS_M.get(n);
       }
       if (CHROME.test(n)) { m.metalness = 0.85; m.roughness = 0.22; m.envMapIntensity = 1.3; }
-      else if (PAINT.test(n)) { m.roughness = 0.36; m.metalness = 0.05; m.envMapIntensity = 1.0; }
+      else if (PAINT.test(n)) { m.roughness = 0.42; m.metalness = 0.05; m.envMapIntensity = 0.9; }
+      else { m.metalness = Math.min(m.metalness, 0.25); m.roughness = Math.max(m.roughness, 0.5); } // painted pixel art, not CG metal
       return m;
     });
     if (o.material.length === 1) o.material = o.material[0];
@@ -92,4 +93,22 @@ export function parkedCar(id, parent, { x = 0, z = 0, ry = 0, plate: pl = {}, ca
   wrap.updateMatrixWorld(true);
   parent.add(wrap);
   return wrap;
+}
+
+/** Lettering painted on a body panel (a cut-out quad facing +z, w x h metres): lines in the game's pixel font at its
+ *  native 16 px grid, e.g. a taxi company's name and number on the doors. */
+export function lettering(lines, w, h, { ink = '#1e3a24' } = {}) {
+  const ph = PX_LINE * lines.length + 4, pw = Math.max(16, Math.round(ph * w / h));
+  const c = document.createElement('canvas'); c.width = pw; c.height = ph;
+  const g = c.getContext('2d');
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearMipmapLinearFilter;
+  const draw = () => { g.clearRect(0, 0, pw, ph); lines.forEach((t, k) => drawPx(g, t, Math.round(pw / 2), 3 + k * PX_LINE, { col: ink, align: 'center', max: pw - 2 })); tex.needsUpdate = true; };
+  draw();
+  PLATES.push(draw);
+  const m = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+  m.name = 'carLettering';
+  const q = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+  q.userData.noRim = true;
+  return q;
 }

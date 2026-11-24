@@ -1,0 +1,66 @@
+{
+ "id": "notebook_own",
+ "src": "art/lowpix/world/made/notebook_own.glb",
+ "credit": {
+  "title": "Grandpa's notebook (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/notebook_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 168,
+ "tex": 256,
+ "size": [
+  0.152,
+  0.016,
+  0.21
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#14142d",
+   "#1b1c3a",
+   "#232746",
+   "#2b3351",
+   "#34405c",
+   "#495c79",
+   "#607995",
+   "#7f96a8",
+   "#a0b0ba"
+  ],
+  "m1": [
+   "#9c5323",
+   "#c77932",
+   "#d4a160",
+   "#dec290",
+   "#eadebe",
+   "#ece5c8",
+   "#eeebd2",
+   "#f0f0db",
+   "#f3f3e4"
+  ],
+  "m2": [
+   "#3b201a",
+   "#4c2f24",
+   "#5b3e2f",
+   "#6a4f3a",
+   "#786046",
+   "#907b5a",
+   "#a39473",
+   "#b1aa91",
+   "#c1bead"
+  ],
+  "m3": [
+   "#272430",
+   "#35313d",
+   "#433e4a",
+   "#514c55",
+   "#5e5b60",
+   "#747474",
+   "#8a8a8a",
+   "#a0a0a0",
+   "#b6b6b6"
+  ]
+ },
+ "warnings": []
+}

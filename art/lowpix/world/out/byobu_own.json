@@ -1,0 +1,44 @@
+{
+ "id": "byobu_own",
+ "src": "art/lowpix/world/made/byobu.glb",
+ "credit": {
+  "title": "Gold-leaf byobu screen (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/byobu.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 356,
+ "tex": 512,
+ "size": [
+  1.408,
+  0.6,
+  0.102
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#76360f",
+   "#985116",
+   "#b8721f",
+   "#d79529",
+   "#dab14e",
+   "#dcc469",
+   "#e0d483",
+   "#e4e19d",
+   "#e9e9b5"
+  ],
+  "m1": [
+   "#0f0809",
+   "#130a0b",
+   "#170e0d",
+   "#1b1211",
+   "#1e1614",
+   "#42342f",
+   "#65554c",
+   "#85776b",
+   "#a0988f"
+  ]
+ },
+ "warnings": []
+}
