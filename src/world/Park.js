@@ -13,6 +13,7 @@ import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { townPix } from '../gfx/textures.js';
 import { archPlace } from './archModels.js';
+import { detailize } from './surfaces.js';
 import { tiled4 } from './Town.js';
 
 export const PARK = {
@@ -92,8 +93,8 @@ function parkMats(t) {
   const map = tiled4(townPix('fenceMesh', 16, 16).texture());
   const fence = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.35, side: THREE.DoubleSide });
   // unlit, vertex-coloured paint for the lamp-lit studio seen through the villa's window
-  const flat = new THREE.MeshBasicMaterial({ vertexColors: true });
-  const flatBack = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide });
+  const flat = detailize(new THREE.MeshBasicMaterial({ vertexColors: true }), 'paint');
+  const flatBack = detailize(new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide }), 'paint');
   return (t._parkMats = {
     fence, flat, flatBack,
     // the park's masa-do, the sandbox sand and the plaza slabs: photo-bashed lowpix textures at 128 px/m
@@ -133,8 +134,8 @@ function passage(t, mats) {
   t.prop('twin_tub', 10.13, 0, -1.55, Math.PI / 2, { block: true, pad: 0 });
   t.prop('ac_unit', 11.12, 0, -0.35, -Math.PI / 2, { block: true, pad: 0 });
   t.potRow(10.0, 0, 3.55, Math.PI / 2, 0.7, { n: 4 });
-  t.prop('weeds', 11.15, 0, -3.3, 0.8, { scale: 0.7 });
-  t.prop('weeds', 9.95, 0, -4.6, 2.2, { scale: 0.8 });
+  t.weeds(11.15, 0, -3.3, 0.8, 0.7);
+  t.weeds(9.95, 0, -4.6, 2.2, 0.8);
   t.prop('stray_cat_sit', 11.0, 1.4, 2.62, -Math.PI / 2 + 0.4);
   {
     const y = 4.35, z = 0.35;
@@ -342,9 +343,9 @@ function furniture(t, mats) {
   B.box(m.pv, 0.08, 0.12, 0.04, 14.8, 1.25, PARK.zS - 0.02, { tint: 0xe86a7a });
   B.box(m.pv, 0.02, 0.8, 0.02, 19.3, 0.05, -14.45, { rz: 0.35, tint: 0x2a52a8 });
   B.box(m.pv, 0.16, 0.06, 0.16, 19.55, 0.68, -14.45, { tint: 0x2a52a8 });
-  t.prop('weeds', 25.4, 0, -17.2, 1.0);
-  t.prop('weeds', 11.85, 0, -17.3, 0.3);
-  t.prop('weeds', 22.9, 0, -5.95, 2.0, { scale: 0.8 });
+  t.weeds(25.4, 0, -17.2, 1.0);
+  t.weeds(11.85, 0, -17.3, 0.3);
+  t.weeds(22.9, 0, -5.95, 2.0, 0.8);
 }
 
 // ------------------------------------------------------------------ the backs of NE2 / Sakura Heights / NE4, facing the park
@@ -399,7 +400,7 @@ function backStreet(t, mats) {
   B.box(m.hazard, 0.04, 0.22, 1.3, 25.6, 0.7, -18.85, {});
   B.box(m.hazard, 0.04, 0.22, 1.3, 25.6, 0.28, -18.85, {});
   t.sign('closedSign', 0.6, 0.25, 25.56, 1.0, -18.85, { ry: -Math.PI / 2 });
-  t.prop('weeds', 25.7, 0, -19.6, 0.3, { scale: 0.9 });
+  t.weeds(25.7, 0, -19.6, 0.3, 0.9);
   t.game.player.addObstacle(25.45, 26.2, -19.95, -17.75);
   // a street light on the park side, a utility pole between the villa and the vacant lot, its wires
   t.prop('street_light', 13.3, 0, P.sz0 - 0.15, Math.PI / 2, { block: true });
@@ -670,7 +671,7 @@ function vacantLot(t, mats) {
   for (let i = 0; i < 16; i++) {
     const x = x0 + 0.4 + hash2(i, 61) * (x1 - x0 - 0.8), z = z0 + 0.6 + hash2(i, 62) * (z1 - z0 - 1.0);
     if (x > 22.1 && x < 24.7 && z > -25 && z < -22.4) continue;
-    t.prop('weeds', x, 0, z, hash2(i, 63) * 6, { scale: 1.1 + hash2(i, 64) * 0.7 });
+    t.weeds(x, 0, z, hash2(i, 63) * 6, 1.1 + hash2(i, 64) * 0.7);
   }
   t.prop('tires', 21.3, 0, -24.8, 0.4, { scale: 0.8 });
   t.prop('crt_tv', 25.2, 0, -22.4, -0.8, { scale: 0.9 });

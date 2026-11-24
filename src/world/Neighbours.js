@@ -321,7 +321,7 @@ function nearSide(t) {
   B.box(m.pv, 0.84, 0.42, 0.06, -16.9, 0.4, ZB + 0.04, { tint: 0x8a3a2a });
   B.box(m.pv, 0.6, 0.1, 0.25, -16.9, 0.9, ZB + 0.14, { tint: 0x2a2a2a });
   t.prop('vending', -16.05, 0, 5.68, 0, { dim: true, block: true });
-  t.prop('weeds', -19.6, 0, 5.45, 0.2);
+  t.weeds(-19.6, 0, 5.45, 0.2);
   addDoor(t, 'tobacco', 'NW3', 'the old tobacco shop', null, [-18.7, ZB], [-16.9, ZB + 0.2, 1.1], s);
 
   // ---- NW4: Mr. Hatoda, the pigeon man: a garden house with the loft on the roof
@@ -432,7 +432,7 @@ function farSide(t) {
     win: [[0, 1.0, 1.6, 1.1, 'lit', { cc: 3, curtain: 4 }], [1, 1.0, 1.6, 1.1, 'lace', { amado: true, tobukuro: 1 }], [1, -1.4, 0.9, 0.9, 'dark', { amado: true, tobukuro: -1 }], [0, 2.5, 1.0, 1.0, 'kitchen', { face: 'r' }], [1, 2.8, 1.0, 0.9, 'dark', { face: 'r' }]],
     door: { x: -1.1, kind: 'genkan', w: 1.2, name: N('矢吹'), milk: false }, ac: [[1, -0.35]],
     extra: (Bq, f) => {
-      for (let i = 0; i < 5; i++) lp(t, 'weeds', -2.0 + i * 0.9, 0, 0.5 + hash2(i, 5) * 0.6, i, { scale: 1.2 + hash2(i, 6) * 0.6 });
+      for (let i = 0; i < 5; i++) t.weeds(-2.0 + i * 0.9, 0, 0.5 + hash2(i, 5) * 0.6, i, 1.2 + hash2(i, 6) * 0.6);
       // ivy has taken the west corner up to the eaves and creeps round the side; a vine over the porch roof
       t.leaves.ivy(Bq.top, -2.45, -1.75, 0, f.top - 0.1, { kind: 'ivy', mix: ['pothos', 0.1], size: 0.4, density: 1.6, seed: 11 });
       const side = new THREE.Matrix4().makeRotationY(-Math.PI / 2).setPosition(-2.4, 0, 0).premultiply(Bq.top);
@@ -502,7 +502,7 @@ function farSide(t) {
       // creeper up the east corner and over the downstairs window hood
       t.leaves.ivy(Bq.top, 2.0, 2.65, 0, f.fy[1] + 1.6, { kind: 'ivy', mix: ['pothos', 0.15], size: 0.38, density: 1.4, seed: 21 });
       for (let i = 0; i < 6; i++) Bq.quad(t.decal('stainDrip', 48, 144), 0.6, 1.4 + hash2(i, 9), -2.2 + i * 0.85, f.fy[1] - 1.2 - hash2(i, 8) * 0.6, 0.013, { tint: 0x9a968c, flipU: i % 2 === 1 });
-      for (let i = 0; i < 4; i++) lp(t, 'weeds', -2.0 + i * 1.3, 0, 0.45, i * 1.7, { scale: 1.3 });
+      for (let i = 0; i < 4; i++) t.weeds(-2.0 + i * 1.3, 0, 0.45, i * 1.7, 1.3);
     } });
   t.yard(4.55, 9.95, ZF + 0.15, 16.0, m.ground);
   t.blockWall(4.55, 9.95, ZF, s, { h: 0.55, gaps: [[6.9, 7.8]] });
@@ -538,7 +538,7 @@ function farSide(t) {
   t.gate(16.4, 17.3, ZF, s, 0.0);
   pillarKit(t, 17.42, s, { y: 0.95, plate: { key: 'forRent', w: 0.28, h: 0.36, y: 0.55 } });
   t.potRow(19.6, 0, 14.53, Math.PI, 0.85, { n: 5 });
-  for (let i = 0; i < 4; i++) t.prop('weeds', 16.0 + i * 1.3, 0, 15.4 + hash2(i, 3) * 0.4, i, { scale: 1.1 });
+  for (let i = 0; i < 4; i++) t.weeds(16.0 + i * 1.3, 0, 15.4 + hash2(i, 3) * 0.4, i, 1.1);
   addDoor(t, 'forrent', 'FE5', 'For rent', [16.8, 15.7], [16.85, ZF], [17.42, ZF - 0.08, 0.95], s);
 
   // ---- FE6: rental garages (貸しガレージ); the pirate's flag on the roof of the left one
@@ -559,8 +559,8 @@ function farSide(t) {
   B.box(m.pv, 0.26, 0.04, 0.025, 2.2, 4.2, -0.8, { tint: 0xe8c860 });
   B.pop();
   t.yard(21.05, 25.7, ZF, 15.2, m.strip);
-  t.prop('weeds', 22.1, 0, 15.0, 2);
-  t.prop('weeds', 25.2, 0, 14.95, 0.6);
+  t.weeds(22.1, 0, 15.0, 2);
+  t.weeds(25.2, 0, 14.95, 0.6);
   addDoor(t, 'garage6', 'FE6', 'Rental garage', [22.25, 15.4], [22.25, ZF], [22.25, 15.12, 1.2], s, { knockOnly: true });
 
   // second row and mid-rise blocks over the roofs

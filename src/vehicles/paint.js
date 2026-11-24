@@ -36,9 +36,31 @@ export function carPaint(i, j, y, R, o = {}) {
   // clean bands of the ramp, dithered only in a narrow seam where two steps meet (no all-over speckle)
   const k = Math.min(3.999, Math.max(0, tv)), lo = Math.floor(k), f = k - lo;
   let c = f > 0.62 ? R[Math.min(4, lo + 1)] : f < 0.38 ? R[lo] : (dith(i, j, (f - 0.38) / 0.24) ? R[Math.min(4, lo + 1)] : R[lo]);
-  // road grime up from the sills
-  const gh = o.grime ?? 0.16;
-  if (y < sill + gh) { const g = 1 - (y - sill) / gh; if (dith(i + 2, j + 1, g * 0.7)) c = mix(c, o.dirt ?? 0x5a4c3e, 0.45); }
+  return weather(i, j, y, c, R, { ...o, sill, px });
+}
+
+const hashI = (a, b) => { let h = (a * 374761393 + b * 668265263) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
+/**
+ * Hand-painted wear on a painted panel pixel c (ramp R): short horizontal brush dabs a step lighter or darker (rows of
+ * 4-9 px, never single-pixel noise), soft sun-faded patches on the upper panels, road grime and dried drip streaks up
+ * from the sill. o = { sill, px (metres per pixel), fade (0..1, default 0.5), grime (metres), dirt }.
+ */
+export function weather(i, j, y, c, R, o = {}) {
+  const px = o.px ?? 1 / 60, u = i * px, v = j * px, sill = o.sill ?? 0.4;
+  // brush dabs: staggered segments along each row
+  const seg = Math.floor((i + Math.floor(hashI(j, 7) * 9)) / (4 + Math.floor(hashI(j, 3) * 6))), sv = hashI(seg, j);
+  if (sv < 0.14) c = mix(c, R[0], 0.22); else if (sv > 0.88) c = mix(c, R[4], 0.2);
+  // sun fade: big soft patches, stronger higher up (chalky, a little greyer)
+  const fade = o.fade ?? 0.5;
+  if (fade > 0) {
+    const n = Math.sin(u * 2.3 + Math.sin(v * 1.9) * 1.4) * 0.5 + Math.sin(v * 3.1 + u * 0.9 + 1.7) * 0.5;
+    const k = Math.min(1, Math.max(0, (n - 0.35) / 0.3)) * Math.min(1, Math.max(0, (y - sill) / 0.6));
+    if (k > 0 && dith(i, j, k)) c = mix(c, mix(R[3], 0xc8c4b8, 0.35), 0.35 * fade);
+  }
+  // road grime and drip streaks up from the sill
+  const gh = o.grime ?? 0.16, dirt = o.dirt ?? 0x5a4c3e;
+  if (gh > 0 && y < sill + gh) { const g = 1 - (y - sill) / gh; if (dith(i + 2, j + 1, g * 0.75)) c = mix(c, dirt, 0.45); }
+  if (gh > 0 && hashI(i >> 1, 11) < 0.1 && y < sill + gh * (1.4 + hashI(i >> 1, 12) * 1.6)) c = mix(c, dirt, 0.28);
   return c;
 }
 

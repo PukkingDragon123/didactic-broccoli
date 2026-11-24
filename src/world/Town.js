@@ -280,7 +280,7 @@ export class Town {
   }
   /** Self-lit paint (lamps, LEDs). */
   get G() {
-    if (!this.mats.has('glow')) { const m = new THREE.MeshBasicMaterial({ vertexColors: true }); m.color.setScalar(1.5); this.mats.set('glow', m); }
+    if (!this.mats.has('glow')) { const m = detailize(new THREE.MeshBasicMaterial({ vertexColors: true }), 'paint'); m.color.multiplyScalar(1.5); this.mats.set('glow', m); } // lamp glass with a fine grain, not a flat fill
     return this.mats.get('glow');
   }
   /** Unit-mapped town texture (windows, doors, signs). */
@@ -612,7 +612,9 @@ export class Town {
     plate.name = 'openPlate';
     this.openPlate = plate; // the painted OPEN plate on the right pier (hide it if something else hangs there)
     const cord = this.vmesh(new THREE.BoxGeometry(0.3, 0.01, 0.01), this.P(0.8)); cord.position.set(3.62, 2.12, 5.28); O.add(cord);
-    for (const [x, z] of [[-4.2, 5.45], [4.25, 5.4], [-1.2, 5.32]]) this.single('weeds', x, 0, z, hash2(x, z) * 3, { scale: 0.9 }, C);
+    const CL = new Leaves(9);
+    for (const [x, z] of [[-4.2, 5.45], [4.25, 5.4], [-1.2, 5.32]]) this.weeds(x, 0, z, hash2(x, z) * 3, 0.9, CL);
+    CL.build(C, { name: 'leaves:closed' });
     const notice = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshStandardMaterial({ map: posterTexture('museumSign', 48, 64), roughness: 0.95, color: 0xc8c0b0 }));
     notice.position.set(-3.5, 1.45, 5.27); notice.rotation.z = 0.04; C.add(notice);
   }
@@ -997,8 +999,11 @@ export class Town {
    */
   window(W, spec, fy) {
     const B = this.B, m = this.m;
-    const [fl, u, w, h, kind, opt = {}] = spec;
-    const face = opt.face || 'f';
+    const [fl, u, w, h, kind, opt0 = {}] = spec;
+    const face = opt0.face || 'f';
+    // the street fronts are lived in: a window box of geraniums on some upstairs sills (placed by rule, not by hand)
+    const wk = B.world(u, fy[fl] ?? 0, 0), lived = !this._lite && fl === 1 && face === 'f' && w >= 0.9 && !opt0.amado && !opt0.grille && !opt0.sudare && !['dark', 'empty', 'stair'].includes(kind);
+    const opt = opt0.flowers === undefined && lived && hash2(Math.round(wk.x * 7), Math.round(wk.z * 3)) < 0.4 ? { ...opt0, flowers: true } : opt0;
     let x, z, ry;
     if (face === 'f') { x = u; z = 0; ry = 0; } else if (face === 'l') { x = -W / 2; z = -u; ry = -Math.PI / 2; } else { x = W / 2; z = -u; ry = Math.PI / 2; }
     const nx = Math.sin(ry), nz = Math.cos(ry), tx = Math.cos(ry), tz = -Math.sin(ry);
@@ -1095,6 +1100,11 @@ export class Town {
       this.sign('signMilk', 0.15, 0.09, mx, y + 1.1, 0.152);
     }
     if (d.umbrella !== false && kind !== 'apt') this.umbrellaStand(x - (w / 2 + 0.2) * (d.lamp ?? 1), 0.0, 0.3, nk);
+    // potted plants by the step on the lamp side (鉢植え: geraniums, a rubber plant, aloe in old pots)
+    if (d.pots !== false && kind !== 'apt' && !this._lite) {
+      const n = 1 + Math.floor(hash2(nk + 3, Math.round(dp.z * 7 + dp.x)) * 3), side = d.lamp ?? 1;
+      for (let i = 0; i < n; i++) this.potPlant(x + side * (w / 2 + 0.34 + i * 0.3), 0, 0.3 + (i % 2) * 0.14, 0.95 + hash2(nk, i + Math.round(dp.x)) * 0.55, { seed: nk * 13 + i + Math.round(dp.x * 10) });
+    }
   }
 
   /** 傘立て: a little stand by the door with two or three umbrellas (local frame of the current batch). */
@@ -1203,6 +1213,14 @@ export class Town {
     this.leaves.bush(B.top, null, null, { clumps: [[-0.14 * s, 0.52 * s, 0, 0.17 * s, 0.24 * s, 0.15 * s], [0.14 * s, 0.48 * s, 0, 0.16 * s, 0.2 * s, 0.15 * s]], kind, mix: ['sprout', 0.25], size: 0.26 * s, density: 1.8, seed: x + z });
     for (const dx of [-0.14, 0.14]) B.box(m.wood, 0.015, 0.6 * s, 0.015, dx * s, 0.3 * s, 0, { tint: 0x9a8a60 });
     B.pop();
+  }
+
+  /** A tuft of roadside weeds (雑草: crabgrass, plantain, a dandelion) in the current batch frame: sprig cards. */
+  weeds(x, y, z, ry = 0, s = 1, into = this.leaves) {
+    const k = hash2(Math.round(x * 17), Math.round(z * 13));
+    const c = [[0, 0.1 * s, 0, 0.2 * s, 0.12 * s, 0.17 * s]];
+    if (k > 0.4) c.push([Math.cos(ry) * 0.16 * s, 0.08 * s, -Math.sin(ry) * 0.12 * s, 0.13 * s, 0.09 * s, 0.12 * s]);
+    into.bush(this.B.top, null, null, { clumps: c, kind: 'weeds', mix: ['grass', 0.45], size: 0.3 * Math.max(0.7, s), density: 1.6, seed: x * 5 + z * 3 });
   }
 
   /** A trimmed hedge (kaname with a few azaleas) in a concrete kerb: 2 m x 0.6 m x 1 m at s = 1, along local x; the
@@ -1628,12 +1646,12 @@ export class Town {
     this.prop('drink_cans', -1.5, 0, 13.95, 0.3);
     // the garbage station by the shop (contract)
     this.garbageStation = this.single('garbage_station', -6.6, 0, 5.82, 0, { block: true });
-    this.prop('weeds', -5.4, 0, 5.42, 0);
+    this.weeds(-5.4, 0, 5.42, 0);
     // manholes, a power box, weeds along the walls and under the embankment
     for (const [x, z] of [[3.6, 9.4], [-14.8, 10.1]]) this.prop('manhole', x, 0.001, z, hash2(x, z) * 6);
     this.prop('power_box', 16.7, 0, 5.62, 0, { block: true });
-    for (const [x, z] of [[-25.4, 5.45], [25.3, 5.45], [-25.2, 14.75], [25.3, 14.8], [-11.6, 5.45], [12.6, 5.4], [-3.0, 14.75], [9.2, 14.8], [21.2, 14.78], [-24.0, 14.78]]) this.prop('weeds', x, 0, z, hash2(x, z) * 6, { scale: 0.8 + hash2(z, x) * 0.4 });
-    for (const s of [-1, 1]) for (const z of [5.7, 13.95]) this.prop('weeds', s * 25.6, 0, z, s, { scale: 1.1 });
+    for (const [x, z] of [[-25.4, 5.45], [25.3, 5.45], [-25.2, 14.75], [25.3, 14.8], [-11.6, 5.45], [12.6, 5.4], [-3.0, 14.75], [9.2, 14.8], [21.2, 14.78], [-24.0, 14.78]]) this.weeds(x, 0, z, hash2(x, z) * 6, 0.8 + hash2(z, x) * 0.4);
+    for (const s of [-1, 1]) for (const z of [5.7, 13.95]) this.weeds(s * 25.6, 0, z, s, 1.1);
     this.flushPools();
   }
 
@@ -1837,7 +1855,7 @@ export class Town {
       if (z > 10 && x > -15.6 && x < -7.2) continue; // Mikawa-ya's front and the mouth of alley A1
       if (z > 10 && x > 10.1 && x < 15.4) continue; // the open driveway
       if (z < 10 && x > -7.6 && x < -5.6) continue; // garbage station
-      this.prop('weeds', x, 0, z, r + hash2(z, x) * 2, { scale: 0.55 + hash2(x, 3) * 0.4 });
+      this.weeds(x, 0, z, r + hash2(z, x) * 2, 0.55 + hash2(x, 3) * 0.4);
     }
   }
 

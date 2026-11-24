@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell } from './shell.js';
-import { ramp, seamLoop, seal, glassPane, lamp, plate, dent, carPaint, dith } from './paint.js';
+import { ramp, seamLoop, seal, glassPane, lamp, plate, dent, carPaint, dith, rust, weather } from './paint.js';
 import { wheelPatches, wheelGeometry, doorMirror, wiper, vehicleMaterials } from './parts.js';
 
 const W = 0.735, RND = 0.07, YB = 0.3, WR = 0.27, ARCH = 0.325, AXF = 1.12, AXR = -1.22;
@@ -45,7 +45,7 @@ function paintAtlas() {
   V.plate = A.patch('plate', 66, 33); plate(V.plate, { top: 'MORIO 580', num: '21-08', kana: 'sa' });
   for (const [S, sx] of [[V.L, 1], [V.R, -1]]) paintSide(S, sx);
   paintFront(V.F); paintRear(V.B);
-  V.T.A.ink(ROUGH.paint); V.T.box(0, 0, V.T.W, V.T.H, (i, j) => { const R = ROOF || RED, c = Math.abs(i / V.T.W - 0.5); return c < 0.16 ? R[3] : c < 0.19 ? (dith(i, j, 0.5) ? R[3] : R[2]) : R[2]; }); V.T.rect(-0.62, -1.4, 0.62, 0.25, (ROOF || RED)[3]); if (ROOF) V.T.rect(-0.74, 0.32, 0.74, 1.78, RED[2]);
+  V.T.A.ink(ROUGH.paint); V.T.box(0, 0, V.T.W, V.T.H, (i, j) => { const R = ROOF || RED, c = Math.abs(i / V.T.W - 0.5); return weather(i, j, 1.2, c < 0.16 ? R[3] : c < 0.19 ? (dith(i, j, 0.5) ? R[3] : R[2]) : R[2], R, { px: 1 / V.T.ppm, sill: 0.4, fade: 0.9, grime: 0 }); }); V.T.rect(-0.62, -1.4, 0.62, 0.25, (ROOF || RED)[3]); if (ROOF) V.T.rect(-0.74, 0.32, 0.74, 1.78, RED[2]);
   V.I.A.ink(ROUGH.fabric); V.I.fill(0x3a3c42); V.I.rect(-1.72, 1.45, 1.72, 1.64, 0x8a8880); V.IT.fill(0x8a8880); V.IT.rect(-0.74, -1.72, 0.74, 1.0, 0x34363a);
   return { A, V };
 }
@@ -73,6 +73,10 @@ function paintSide(S, sx) {
   A.ink(ROUGH.lens); S.rect(U(1.58), 0.68, U(1.68), 0.76, 0xf4f4f0); S.rect(U(-1.75), 0.86, U(-1.66), 1.1, 0xc82a28);
   A.ink(ROUGH.paint);
   if (sx > 0 && DENT) dent(S, I(-0.5), J(0.62), 8, 5, RED);
+  // age: rust blistering out of the arch lips and along the sills, a stone chip or two
+  for (const [zc, a] of [[AXR, 0.7], [AXF, 2.4]]) rust(S, I(zc + Math.cos(a) * (ARCH + 0.03)), J(YB + Math.sin(a) * (ARCH + 0.03)), 6, 3, sx > 0 ? 3 : 9, { freckles: 2 });
+  rust(S, I(-0.45), J(0.43) + 1, 9, 2, sx > 0 ? 21 : 27, { freckles: 1 });
+  for (const [z, y] of [[0.7, 0.78], [-1.1, 0.66]]) { S.px(I(z), J(y), RED[0]); S.px(I(z) + 1, J(y), RED[4]); }
 }
 function paintFront(F) {
   const A = F.A, I = (x) => F.i(x), J = (y) => F.j(y);
