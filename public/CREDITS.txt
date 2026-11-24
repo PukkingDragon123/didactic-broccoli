@@ -2283,7 +2283,7 @@ by `tools/pixelart.py`.
 - Jizo Shrine by cornylope, CC BY 4.0: https://sketchfab.com/3d-models/jizo-shrine-a5b25c6de844459ba118fe54e880fde6 (models/lowpix/world/jizo_shrine.glb)
 - Junk Box by Phantasm8732, CC BY 4.0: https://sketchfab.com/3d-models/junk-box-ab5e036dd0244ad2afbd907d4a151b23 (models/lowpix/world/junk_box.glb)
 - Kagami-mochi💮📷 by ayumi ikeda, CC BY 4.0: https://sketchfab.com/3d-models/kagami-mochi-a9c0b6ab4cb146d8a003d6c894af3fd4 (models/lowpix/world/wear_kagami.glb)
-- Kappa by samnorwoodgo, CC BY 4.0: https://sketchfab.com/3d-models/kappa-136cd1ad671c4b208cdf64aab42ea172 (models/lowpix/world/yokai_kappa.glb)
+- Kappa (arms lowered for the game) by samnorwoodgo, CC BY 4.0: https://sketchfab.com/3d-models/kappa-136cd1ad671c4b208cdf64aab42ea172 (models/lowpix/world/yokai_kappa.glb)
 - Kasa-obake by B.imed, CC BY 4.0: https://sketchfab.com/3d-models/kasa-obake-95eae9bdbd1147a1b7ceae594e4ea6fd (models/lowpix/world/yokai_kasa.glb)
 - Kendama by Alexander-W, CC BY 4.0: https://sketchfab.com/3d-models/kendama-3670748a8f5f4bdb9bb4778e964c8647 (models/lowpix/world/kendama.glb)
 - Key & Keychain by tonken, CC BY 4.0: https://sketchfab.com/3d-models/key-keychain-a552734ef6834a74b3084a89c6dab17d (models/lowpix/world/keychain_m.glb)

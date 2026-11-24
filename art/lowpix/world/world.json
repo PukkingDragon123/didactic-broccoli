@@ -4101,9 +4101,9 @@
    "ppm": 300,
    "tris": 3500,
    "cap": 512,
-   "name": "Kappa (arms lowered)",
+   "name": "Kappa (arms lowered in Blender for the game)",
    "credit": {
-    "title": "Kappa",
+    "title": "Kappa (arms lowered for the game)",
     "author": "samnorwoodgo",
     "authorUrl": "https://sketchfab.com/samnorwoodgo",
     "license": "CC BY 4.0",
