@@ -33,7 +33,8 @@ function bootPreset() {
   } catch { /* no storage */ }
   return 'high';
 }
-export const HD_ON = typeof window === 'undefined' ? true : !LOW.has(bootPreset());
+// (owner: never low-res surfaces, on any preset: the HD set loads everywhere; only touch devices skip it, for memory)
+export const HD_ON = typeof window === 'undefined' ? true : !(isTouchDevice() && LOW.has(bootPreset()));
 const url = (k) => new URL(`${import.meta.env.BASE_URL}textures/hd/${k}.webp`, document.baseURI).href;
 
 function image(key) {
