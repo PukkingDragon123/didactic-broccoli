@@ -73,7 +73,8 @@ for i in range(6): d.rectangle([150 + i * 36, 404, 172 + i * 36, 410], fill=(150
 scuffs(d, 512, 512, 26, (206, 200, 186), 0.6, 0.86)
 for x, y in ((24, 436), (488, 432), (470, 440)): dab(d, x, y, 5, 3, (168, 120, 84))  # three pin-points of rust
 save(im, 'tt_front')
-im, d = paint(512, 512, ENAMEL, k=(0.99, 1.01), w=(20, 40), h=(6, 12))   # (calm: a big plain enamel side)
+im = Image.new('RGB', (512, 512), ENAMEL); d = ImageDraw.Draw(im)   # (a big plain enamel side: brush dabs here land between two ramp steps and speckle)
+for y in (40, 470): d.line([0, y, 511, y], fill=(226, 222, 210), width=2)   # the pressed panel ribs
 d.rectangle([0, 448, 511, 511], fill=(176, 196, 204)); d.line([0, 447, 511, 447], fill=(150, 150, 146), width=3)
 for y in range(300, 412, 16): d.rectangle([360, y, 472, y + 6], fill=(150, 152, 150))     # the motor vent
 save(im, 'tt_side')

@@ -113,7 +113,8 @@ export function buildEscalators(zone, gap, yo, { open = () => true } = {}) {
   // a chain barrier at the bottom of the UP lane while the floor above isn't open yet
   const barrier = new THREE.Group();
   const bz = pathZ(G, 0.25);
-  for (const dx of [-0.42, 0.42]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.9, 6), paint); p.position.set(Z.o.x + G.up + dx, yo + 0.45, Z.o.z + bz); barrier.add(p); }
+  const postM = Z.mat(new THREE.MeshStandardMaterial({ color: 0xd8c040, roughness: 0.6 })); // plain meshes: no vertex colours (else black)
+  for (const dx of [-0.42, 0.42]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.9, 6), postM); p.position.set(Z.o.x + G.up + dx, yo + 0.45, Z.o.z + bz); barrier.add(p); }
   const chain = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.04, 0.02), Z.mat(new THREE.MeshStandardMaterial({ color: 0xf2c230, roughness: 0.5 })));
   chain.position.set(Z.o.x + G.up, yo + 0.75, Z.o.z + bz); barrier.add(chain);
   Z.group.add(barrier);

@@ -133,6 +133,7 @@ export class RoomGI {
     const r = this.enabled ? this.pick(_v) : null;
     if (r !== this.cur) {
       this.cur = r;
+      if (r?.active && r.group) castShadows(r.group); // (an interior's own things throw the lamp's shadows while you're in it)
       this.on = r?.vol?.has ? 1 : 0;
       this.burst = r?.active ? 1.2 : 0; // (behind a door's fade: bake fast for a moment; walking into one: at the usual pace)
       this.rigK = r?.active ? 1 : 0; // (teleported in behind a fade: at once; walked in: fades up)
@@ -339,6 +340,17 @@ export class RoomGI {
     this.on = 1;
     return did;
   }
+}
+
+/** Every solid mesh of an interior casts shadows (glass, glows and decals don't): the places build their props with
+ *  shadows off, as the sun never reaches them; the rig's key light does. */
+function castShadows(group) {
+  group.traverse((o) => {
+    if (!o.isMesh || o.castShadow || o.userData.noShadow) return;
+    const m = Array.isArray(o.material) ? o.material[0] : o.material;
+    if (!m || m.transparent || m.visible === false || !(m.isMeshStandardMaterial || m.isMeshLambertMaterial || m.isMeshPhongMaterial)) return;
+    o.castShadow = true;
+  });
 }
 
 const LIT = new WeakMap();

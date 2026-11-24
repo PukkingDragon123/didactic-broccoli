@@ -4,13 +4,16 @@
 // space pod's base, the diorama landscape) and the wrapped candies (candy_own), loaded lazily.
 import * as THREE from 'three';
 import { pixMat, boxMesh } from '../gfx/geo.js';
-import { assetSlot, assetNow, loadAsset } from '../kit/assets.js';
+import { assetSlot, assetNow, loadAsset, preloadAssets } from '../kit/assets.js';
 import { lpAsset } from '../kit/lowpixWorld.js';
 import { treeInstances } from '../world/foliage.js';
 import { hash2 } from '../core/util.js';
 
 const glassMat = () => new THREE.MeshPhysicalMaterial({ color: 0xf4fbff, transparent: true, opacity: 0.13, roughness: 0.03, clearcoat: 1, envMapIntensity: 2, depthWrite: false, side: THREE.DoubleSide });
 const ledMat = (c = 0xfff0d8, k = 1.8) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k) });
+
+// the sculpted parts start loading with the museum (so the shop's previews have them); built lazily either way
+if (typeof document !== 'undefined') preloadAssets(['byobu_own', 'diorama_own', 'shrine_roof_own', 'pod_base_own', 'candy_own'].map(lpAsset));
 
 function add(group, mesh, x, y, z) { mesh.position.set(x, y, z); group.add(mesh); return mesh; }
 // the metals, the plaster and the cords, all painted textures

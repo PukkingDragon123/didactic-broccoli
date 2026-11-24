@@ -28,7 +28,7 @@ export function bushCamp() {
     [0, 0.45, -0.34, 0.55, 0.44, 0.3], [-0.3, 0.86, -0.1, 0.34, 0.26, 0.32], [0.3, 0.88, 0.12, 0.34, 0.26, 0.3],
   ];
   const L = new Leaves(17);
-  L.bush(null, null, null, { clumps, kind: 'kaname', mix: ['azalea', 0.25], size: 0.32, density: 2.6, seed: 31 });
+  L.bush(null, null, null, { clumps, kind: 'camellia', mix: ['broad', 0.3], size: 0.32, density: 2.6, seed: 31 }); // glossy evergreen, no flowers
   L.build(g, { cast: true, name: 'bush' });
   const bag = model('sleepbag', { size: 0.22, fit: 'y' });
   bag.position.set(0.95, 0, 0.15); bag.rotation.y = 0.4;

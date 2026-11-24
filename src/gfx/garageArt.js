@@ -51,201 +51,202 @@ class Atlas {
 let DECALS = null;
 export function decalAtlas() {
   if (DECALS) return DECALS;
-  const A = new Atlas(512, 512, 77), p = A.p;
+  // re-rasterised at K x the old cell grid (~258 px/m on the garage floor, docs/ART.md): every shape is drawn at the fine
+  // grid from the same rules (never a blow-up), with clean stepped edges instead of an ordered dither (no speckle)
+  const K = 3, A = new Atlas(512 * K, 512 * K, 77), p = A.p;
   const put = (x, y, c) => p.px(x, y, c);
+  const cell = (n, x, y, w, h, fn) => A.cell(n, x * K, y * K, w * K, h * K, fn);
+  const vk = (x, y, sc, s) => vn(x, y, sc * K, s); // the noise at the same size in metres as before
+  const flat = () => 0.5; // a threshold where the old art dithered
 
   /** Lobed blob: inside where noise-warped radius < R. layers: [[rFrac, colour], ...] from outside in. */
-  const blob = (x0, y0, w, h, s, layers, { lobes = 5, warp = 0.28, dither = true } = {}) => {
-    const cx = x0 + w / 2, cy = y0 + h / 2, rx = w / 2 - 2, ry = h / 2 - 2;
+  const blob = (x0, y0, w, h, s, layers, { lobes = 5, warp = 0.28 } = {}) => {
+    const cx = x0 + w / 2, cy = y0 + h / 2, rx = w / 2 - 2 * K, ry = h / 2 - 2 * K;
     const ph = [hash2(s, 1) * 6.28, hash2(s, 2) * 6.28, hash2(s, 3) * 6.28];
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
       const dx = (x - cx) / rx, dy = (y - cy) / ry, a = Math.atan2(dy, dx);
-      const R = 1 - warp * (0.5 + 0.5 * Math.sin(a * lobes + ph[0])) * 0.6 - warp * 0.4 * (0.5 + 0.5 * Math.sin(a * (lobes + 3) + ph[1])) - (vn(x, y, 5, s) - 0.5) * warp;
+      const R = 1 - warp * (0.5 + 0.5 * Math.sin(a * lobes + ph[0])) * 0.6 - warp * 0.4 * (0.5 + 0.5 * Math.sin(a * (lobes + 3) + ph[1])) - (vk(x, y, 5, s) - 0.5) * warp;
       const d = Math.hypot(dx, dy) / Math.max(0.2, R);
-      for (const [rf, c] of layers) {
-        const edge = dither ? (d - rf) * 10 : -1;
-        if (d < rf && (edge < -1 || edge < bayer(x, y) - 1)) { put(x, y, c); }
-      }
+      for (const [rf, c] of layers) if (d < rf) put(x, y, c);
     }
   };
+  const dot = (x, y, r, c) => { for (let yy = -r; yy <= r; yy++) for (let xx = -r; xx <= r; xx++) if (xx * xx + yy * yy <= r * r + 0.5) put(x + xx, y + yy, c); };
 
   // big oil stain under where Grandpa's car used to stand: soft outer halo, darker core, drip satellites
-  A.cell('oilBig', 0, 0, 128, 96, (x0, y0, w, h) => {
+  cell('oilBig', 0, 0, 128, 96, (x0, y0, w, h) => {
     blob(x0, y0, w, h, 3, [[1.0, 0xc4beb4], [0.82, 0xaca69c], [0.55, 0x938d84], [0.3, 0x7e7870]], { lobes: 4, warp: 0.34 });
     for (let i = 0; i < 9; i++) {
       const a = hash2(i, 31) * 6.28, r = 0.62 + hash2(i, 32) * 0.3;
       const x = Math.round(x0 + w / 2 + Math.cos(a) * r * w / 2), y = Math.round(y0 + h / 2 + Math.sin(a) * r * h / 2);
-      const rr = 1 + Math.floor(hash2(i, 33) * 3);
-      for (let yy = -rr; yy <= rr; yy++) for (let xx = -rr; xx <= rr; xx++) if (xx * xx + yy * yy <= rr * rr + 1) put(x + xx, y + yy, rr > 2 ? 0x938d84 : 0xaca69c);
+      const rr = (1 + Math.floor(hash2(i, 33) * 3)) * K;
+      dot(x, y, rr, rr > 2 * K ? 0x938d84 : 0xaca69c);
     }
   });
-  A.cell('oilSmall', 128, 0, 64, 48, (x0, y0, w, h) => blob(x0, y0, w, h, 5, [[1.0, 0xbcb6ac], [0.65, 0x9c968c], [0.32, 0x847e76]], { lobes: 3, warp: 0.3 }));
-  A.cell('oilDrips', 192, 0, 32, 32, (x0, y0) => {
+  cell('oilSmall', 128, 0, 64, 48, (x0, y0, w, h) => blob(x0, y0, w, h, 5, [[1.0, 0xbcb6ac], [0.65, 0x9c968c], [0.32, 0x847e76]], { lobes: 3, warp: 0.3 }));
+  cell('oilDrips', 192, 0, 32, 32, (x0, y0, w, h) => {
     for (let i = 0; i < 7; i++) {
-      const x = x0 + 4 + Math.floor(hash2(i, 41) * 24), y = y0 + 4 + Math.floor(hash2(i, 42) * 24), r = hash2(i, 43) < 0.4 ? 2 : 1;
-      for (let yy = -r; yy <= r; yy++) for (let xx = -r; xx <= r; xx++) if (xx * xx + yy * yy <= r * r + 0.5) put(x + xx, y + yy, r > 1 ? 0x8e8880 : 0xa29c92);
+      const x = x0 + Math.round(w * (0.12 + hash2(i, 41) * 0.75)), y = y0 + Math.round(h * (0.12 + hash2(i, 42) * 0.75)), r = (hash2(i, 43) < 0.4 ? 2 : 1) * K;
+      dot(x, y, r, r > K ? 0x8e8880 : 0xa29c92);
+      if (r > K) dot(x + Math.round(r * 0.4), y + Math.round(r * 0.4), Math.round(r * 0.45), 0x7e7870); // the wet middle
     }
   });
   // tyre track: a worn band with tread blocks, broken where the rubber didn't take
-  A.cell('tyre', 224, 0, 16, 160, (x0, y0, w, h) => {
-    for (let y = y0; y < y0 + h; y++) for (let x = x0 + 2; x < x0 + w - 2; x++) {
+  cell('tyre', 224, 0, 16, 160, (x0, y0, w, h) => {
+    for (let y = y0; y < y0 + h; y++) for (let x = x0 + 2 * K; x < x0 + w - 2 * K; x++) {
       const along = (y - y0) / h, fade = Math.sin(along * Math.PI);
-      const tread = ((y >> 1) + (x - x0 > 7 ? 1 : 0)) % 3 !== 0;
-      const n = vn(x, y, 6, 9);
-      if (n * fade > 0.28 + bayer(x, y) * 0.3) put(x, y, tread ? 0x8a867e : 0x9c978e);
+      const tread = (Math.floor(y / (2 * K)) + (x - x0 > w / 2 ? 1 : 0)) % 3 !== 0;
+      if (vk(x, y, 6, 9) * fade > 0.28 + 0.15) put(x, y, tread ? 0x8a867e : 0x9c978e);
     }
   });
   // water stain running down a wall from the top: tide lines and a darker damp body
-  A.cell('wallWater', 256, 0, 96, 128, (x0, y0, w, h) => {
+  cell('wallWater', 256, 0, 96, 128, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
       const u = (x - x0) / w - 0.5, t = (y - y0) / h;
-      const width = 0.48 - t * 0.32 + (vn(x, y, 10, 4) - 0.5) * 0.18;
+      const width = 0.48 - t * 0.32 + (vk(x, y, 10, 4) - 0.5) * 0.18;
       const d = Math.abs(u) / Math.max(0.02, width);
       if (d > 1 || t > 0.95) continue;
       const tide = Math.abs(d - 0.92) < 0.06 || (Math.abs(d - 0.7) < 0.035 && t < 0.7);
       const runs = Math.abs(Math.sin(u * 37 + Math.floor(t * 3))) > 0.94 && t > 0.3;
       if (tide) put(x, y, 0xb0a594);
       else if (runs) put(x, y, 0xbcb3a4);
-      else if (bayer(x, y) < (1 - t) * 0.3 + 0.04) put(x, y, 0xd0c8ba);
+      else if (t < 0.45 && d < 0.85) put(x, y, 0xd0c8ba); // the damp body, upper part, a clean step
     }
   });
-  A.cell('rust', 352, 0, 24, 128, (x0, y0, w, h) => {
+  cell('rust', 352, 0, 24, 128, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) {
-      const t = (y - y0) / h, hw = Math.max(0.6, (1 - t) * 4 + Math.sin(y * 0.3) * 0.6);
-      const cx = x0 + w / 2 + Math.sin(y * 0.07) * 1.5;
+      const t = (y - y0) / h, yy = y / K, hw = Math.max(0.6, (1 - t) * 4 + Math.sin(yy * 0.3) * 0.6) * K;
+      const cx = x0 + w / 2 + Math.sin(yy * 0.07) * 1.5 * K;
       for (let x = x0; x < x0 + w; x++) {
         const d = Math.abs(x - cx) / hw;
-        if (d < 1 && bayer(x, y) < 1.05 - t * 0.8 - d * 0.3) put(x, y, d < 0.4 ? 0x9a5a34 : 0xb47a52);
+        if (d < 1 && flat() < 1.05 - t * 0.8 - d * 0.3) put(x, y, d < 0.4 ? 0x9a5a34 : 0xb47a52);
       }
     }
   });
   // ring-shaped leak stain on the ceiling board
-  A.cell('ceilStain', 384, 0, 128, 96, (x0, y0, w, h) => {
+  cell('ceilStain', 384, 0, 128, 96, (x0, y0, w, h) => {
     blob(x0, y0, w, h, 11, [[1.0, 0x9a8a72], [0.94, 0xc2b6a2], [0.66, 0xa49480], [0.6, 0xc8bca8], [0.3, 0xb0a28c]], { lobes: 6, warp: 0.3 });
   });
-  A.cell('ceilStain2', 400, 288, 112, 80, (x0, y0, w, h) => {
+  cell('ceilStain2', 400, 288, 112, 80, (x0, y0, w, h) => {
     blob(x0, y0, w, h, 13, [[1.0, 0x9a8a72], [0.92, 0xc4b8a4], [0.5, 0xa49480], [0.44, 0xc8bca8]], { lobes: 5, warp: 0.36 });
   });
-  // hairline crack network with a chipped branch
-  A.cell('crack', 0, 96, 128, 64, (x0, y0, w, h) => {
+  // hairline crack network with a chipped branch (1-texel lines at the fine grid: hairlines)
+  cell('crack', 0, 96, 128, 64, (x0, y0, w, h) => {
     const walk = (x, y, dx, dy, n, s) => {
-      for (let i = 0; i < n; i++) {
+      for (let i = 0; i < n * K; i++) {
         put(Math.round(x), Math.round(y), 0x5e5a54);
         if (hash2(i, s) < 0.1) put(Math.round(x), Math.round(y) + 1, 0x77726a);
         x += dx + (hash2(i, s + 1) - 0.5) * 1.4; y += dy + (hash2(i, s + 2) - 0.5) * 1.4;
         if (x < x0 + 1 || x > x0 + w - 2 || y < y0 + 1 || y > y0 + h - 2) break;
       }
     };
-    walk(x0 + 2, y0 + 30, 1, 0.12, 120, 5);
-    walk(x0 + 46, y0 + 35, 0.5, 0.8, 30, 6);
-    walk(x0 + 80, y0 + 40, 0.7, -0.75, 34, 7);
-    walk(x0 + 20, y0 + 32, 0.3, -0.9, 20, 8);
+    walk(x0 + 2 * K, y0 + 30 * K, 1, 0.12, 120, 5);
+    walk(x0 + 46 * K, y0 + 35 * K, 0.5, 0.8, 30, 6);
+    walk(x0 + 80 * K, y0 + 40 * K, 0.7, -0.75, 34, 7);
+    walk(x0 + 20 * K, y0 + 32 * K, 0.3, -0.9, 20, 8);
   });
-  A.cell('scuffs', 128, 48, 96, 48, (x0, y0, w, h) => {
+  cell('scuffs', 128, 48, 96, 48, (x0, y0, w, h) => {
     for (let i = 0; i < 26; i++) {
-      const x = x0 + 4 + hash2(i, 51) * (w - 20), y = y0 + 4 + hash2(i, 52) * (h - 8), a = (hash2(i, 53) - 0.5) * 0.9, len = 4 + hash2(i, 54) * 12;
-      for (let k = 0; k < len; k++) put(Math.round(x + Math.cos(a) * k), Math.round(y + Math.sin(a) * k), hash2(i, 55) < 0.5 ? 0x77736c : 0x8a857c);
+      const x = x0 + 4 * K + hash2(i, 51) * (w - 20 * K), y = y0 + 4 * K + hash2(i, 52) * (h - 8 * K), a = (hash2(i, 53) - 0.5) * 0.9, len = (4 + hash2(i, 54) * 12) * K;
+      const c = hash2(i, 55) < 0.5 ? 0x77736c : 0x8a857c;
+      for (let k = 0; k < len; k++) { const px = Math.round(x + Math.cos(a) * k), py = Math.round(y + Math.sin(a) * k); put(px, py, c); if (k > 2 && k < len - 3) put(px, py + 1, c); }
     }
   });
   // spilt paint: a blue puddle and white drips
-  A.cell('paintBlue', 384, 96, 64, 64, (x0, y0, w, h) => {
-    blob(x0 + 8, y0 + 8, 44, 40, 21, [[1.0, 0x4a7ab0], [0.6, 0x3a6aa0]], { lobes: 5, warp: 0.4, dither: false });
-    for (let i = 0; i < 12; i++) { const x = x0 + Math.floor(hash2(i, 61) * 60), y = y0 + Math.floor(hash2(i, 62) * 60); put(x, y, 0x4a7ab0); if (i % 3 === 0) put(x + 1, y, 0x4a7ab0); }
+  cell('paintBlue', 384, 96, 64, 64, (x0, y0, w, h) => {
+    blob(x0 + 8 * K, y0 + 8 * K, 44 * K, 40 * K, 21, [[1.0, 0x4a7ab0], [0.6, 0x3a6aa0]], { lobes: 5, warp: 0.4 });
+    for (let i = 0; i < 12; i++) dot(x0 + Math.floor(hash2(i, 61) * 60 * K), y0 + Math.floor(hash2(i, 62) * 60 * K), i % 3 === 0 ? K : Math.ceil(K / 2), 0x4a7ab0);
   });
-  A.cell('paintWhite', 448, 96, 64, 64, (x0, y0, w, h) => {
-    for (let i = 0; i < 18; i++) {
-      const x = x0 + 4 + Math.floor(hash2(i, 71) * 56), y = y0 + 4 + Math.floor(hash2(i, 72) * 56), r = hash2(i, 73) < 0.3 ? 2 : 1;
-      for (let yy = -r; yy <= r; yy++) for (let xx = -r; xx <= r; xx++) if (xx * xx + yy * yy <= r * r) put(x + xx, y + yy, 0xeeeae2);
-    }
-    blob(x0 + 20, y0 + 20, 24, 20, 23, [[1.0, 0xeeeae2]], { lobes: 4, warp: 0.4, dither: false });
+  cell('paintWhite', 448, 96, 64, 64, (x0, y0, w, h) => {
+    for (let i = 0; i < 18; i++) dot(x0 + (4 + Math.floor(hash2(i, 71) * 56)) * K, y0 + (4 + Math.floor(hash2(i, 72) * 56)) * K, (hash2(i, 73) < 0.3 ? 2 : 1) * K, 0xeeeae2);
+    blob(x0 + 20 * K, y0 + 20 * K, 24 * K, 20 * K, 23, [[1.0, 0xeeeae2]], { lobes: 4, warp: 0.4 });
   });
   // worn yellow/black hazard stripes and a worn yellow line
-  A.cell('hazard', 0, 160, 256, 16, (x0, y0, w, h) => {
+  cell('hazard', 0, 160, 256, 16, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
-      const band = Math.floor(((x - x0) + (y - y0)) / 12) % 2;
-      const wear = vn(x, y, 4, 33) + (y === y0 || y === y0 + h - 1 ? 0.2 : 0);
+      const band = Math.floor(((x - x0) + (y - y0)) / (12 * K)) % 2;
+      const wear = vk(x, y, 4, 33) + (y - y0 < K || y0 + h - 1 - y < K ? 0.2 : 0);
       if (wear > 0.72) continue;
       put(x, y, band ? 0x2a2826 : (wear > 0.6 ? 0xc8a838 : 0xe8c43a));
     }
   });
-  A.cell('yline', 0, 176, 256, 8, (x0, y0, w, h) => {
-    for (let y = y0 + 1; y < y0 + h - 1; y++) for (let x = x0; x < x0 + w; x++) {
-      const wear = vn(x, y, 5, 41);
-      if (wear > 0.68 || (wear > 0.6 && bayer(x, y) > 0.5)) continue;
+  cell('yline', 0, 176, 256, 8, (x0, y0, w, h) => {
+    for (let y = y0 + K; y < y0 + h - K; y++) for (let x = x0; x < x0 + w; x++) {
+      const wear = vk(x, y, 5, 41);
+      if (wear > 0.64) continue;
       put(x, y, wear > 0.5 ? 0xd8c890 : 0xf0d860);
     }
   });
-  // dithered grime band rising from the floor (tileable across): wall feet
-  A.cell('grime', 0, 192, 128, 48, (x0, y0, w, h) => {
+  // grime band rising from the floor (tileable across): wall feet, in clean steps
+  cell('grime', 0, 192, 128, 48, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
       const t = 1 - (y - y0) / h; // 1 at the floor (bottom row)
-      const n = vn(x - x0, y, 9, 51) * 0.35 + vn(x - x0, y, 3, 52) * 0.15;
+      const n = vk(x - x0, y, 9, 51) * 0.35 + vk(x - x0, y, 3, 52) * 0.15;
       const k = t * t * 0.95 + n * t - 0.12;
-      if (k > bayer(x, y)) put(x, y, t > 0.8 && hash2(x, y) < 0.5 ? 0x8e8a82 : 0xa29e96);
+      if (k > 0.5) put(x, y, k > 0.78 ? 0x8e8a82 : 0xa29e96);
     }
-    // splash specks
-    for (let i = 0; i < 70; i++) put(x0 + Math.floor(hash2(i, 53) * w), y0 + h - 1 - Math.floor(Math.pow(hash2(i, 54), 2) * h * 0.8), 0x8a867e);
   });
   // dust drifted against the wall foot on the floor (tileable across; the wall side is the top row)
-  A.cell('dustEdge', 128, 192, 128, 48, (x0, y0, w, h) => {
+  cell('dustEdge', 128, 192, 128, 48, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
       const t = 1 - (y - y0) / h; // 1 at the wall
-      const n = vn(x - x0, y, 7, 61) * 0.5;
-      if (t * t * 0.9 + n * t - 0.15 > bayer(x, y)) put(x, y, hash2(x, y + 3) < 0.15 ? 0xd0c8b8 : 0xc0b8aa);
+      const k = t * t * 0.9 + vk(x - x0, y, 7, 61) * 0.5 * t - 0.15;
+      if (k > 0.5) put(x, y, k > 0.8 ? 0xd0c8b8 : 0xc0b8aa);
     }
-    for (let i = 0; i < 30; i++) put(x0 + Math.floor(hash2(i, 63) * w), y0 + Math.floor(hash2(i, 64) * h * 0.7), 0x6a645c);
   });
   // dusty shoe prints
-  A.cell('prints', 256, 160, 64, 128, (x0, y0, w, h) => {
+  cell('prints', 256, 160, 64, 128, (x0, y0, w, h) => {
     const shoe = (cx, cy, flip, s) => {
-      for (let y = -9; y <= 9; y++) for (let x = -4; x <= 4; x++) {
-        const heel = y > 4, ok = heel ? (x * x) / 12 + ((y - 7) * (y - 7)) / 6 < 1 : (x * x) / 16 + ((y + 1) * (y + 1)) / 36 < 1;
-        if (ok && !(y === 4 || y === 3) && ((x + y) % 2 === 0 || hash2(x + s, y) < 0.4) && hash2(x + s * 3, y + s) < 0.75) put(cx + (flip ? -x : x), cy + y, 0xc4bcb0);
+      for (let y = -9 * K; y <= 9 * K; y++) for (let x = -4 * K; x <= 4 * K; x++) {
+        const X = x / K, Y = y / K;
+        const heel = Y > 4, ok = heel ? (X * X) / 12 + ((Y - 7) * (Y - 7)) / 6 < 1 : (X * X) / 16 + ((Y + 1) * (Y + 1)) / 36 < 1;
+        const sole = (Math.floor(Y * 1.5) + 99) % 2 === 0; // the tread bars across the sole
+        if (ok && !(Y > 2.6 && Y < 4.4) && sole && hash2(Math.floor(X * 2) + s * 3, Math.floor(Y * 2) + s) < 0.8) put(cx + (flip ? -x : x), cy + y, 0xc4bcb0);
       }
     };
-    shoe(x0 + 20, y0 + 16, false, 1); shoe(x0 + 40, y0 + 44, true, 2); shoe(x0 + 22, y0 + 74, false, 3); shoe(x0 + 42, y0 + 104, true, 4);
+    shoe(x0 + 20 * K, y0 + 16 * K, false, 1); shoe(x0 + 40 * K, y0 + 44 * K, true, 2); shoe(x0 + 22 * K, y0 + 74 * K, false, 3); shoe(x0 + 42 * K, y0 + 104 * K, true, 4);
   });
-  // steel grating for the trench drain (opaque)
-  A.cell('grate', 320, 160, 128, 24, (x0, y0, w, h) => {
+  // steel grating for the trench drain (opaque): bearing bars every 4.6 cm, a cross bar every 14 cm
+  cell('grate', 320, 160, 128, 24, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
-      const edge = y === y0 || y === y0 + h - 1 || y === y0 + 1 || y === y0 + h - 2;
-      const bar = (x - x0) % 4 === 0;
-      const cross = (y - y0) % 12 === 6;
+      const ey = Math.min(y - y0, y0 + h - 1 - y), edge = ey < 2 * K;
+      const bar = (x - x0) % (4 * K) < K;
+      const cross = Math.abs(((y - y0) % (12 * K)) - 6 * K) < Math.ceil(K / 2);
       let c = 0x1c1a18;
-      if (edge) c = y === y0 || y === y0 + h - 1 ? 0x5e5a54 : 0x7a766e;
-      else if (bar || cross) c = (x + y) % 7 === 0 ? 0x6a4a32 : 0x6e6a64;
-      if (!edge && (bar || cross) && vn(x, y, 6, 71) > 0.62) c = 0x8a5a36; // rust
+      if (edge) c = ey < K ? 0x5e5a54 : 0x7a766e;
+      else if (bar || cross) c = (x - x0) % (4 * K) === 0 ? 0x86827a : 0x6e6a64; // a lit edge on each bar
+      if (!edge && (bar || cross) && vk(x, y, 6, 71) > 0.62) c = 0x8a5a36; // rust
       put(x, y, c);
     }
   });
   // grime around a switch / door handle
-  A.cell('smudge', 448, 160, 32, 32, (x0, y0, w, h) => {
+  cell('smudge', 448, 160, 32, 32, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
-      const d = Math.hypot(x - x0 - 16, (y - y0 - 16) * 0.8) / 15;
-      if (d < 1 && (1 - d) * 0.9 + vn(x, y, 3, 81) * 0.3 - 0.25 > bayer(x, y)) put(x, y, 0xa29e96);
+      const d = Math.hypot(x - x0 - w / 2, (y - y0 - h / 2) * 0.8) / (15 * K);
+      if (d < 1 && (1 - d) * 0.9 + vk(x, y, 3, 81) * 0.3 - 0.25 > 0.5) put(x, y, 0xa29e96);
     }
   });
   // dusty patch / swept arc
-  A.cell('dust', 256, 288, 96, 96, (x0, y0, w, h) => {
+  cell('dust', 256, 288, 96, 96, (x0, y0, w, h) => {
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
       const d = Math.hypot(x - x0 - w / 2, y - y0 - h / 2) / (w / 2);
-      if (d < 1 && (1 - d) * 0.8 + vn(x, y, 6, 91) * 0.5 - 0.42 > bayer(x, y)) put(x, y, hash2(x, y) < 0.1 ? 0x8a847a : 0xc2baac);
+      const k = (1 - d) * 0.8 + vk(x, y, 6, 91) * 0.5 - 0.42;
+      if (d < 1 && k > 0.5) put(x, y, k > 0.75 ? 0xb4ac9e : 0xc2baac);
     }
   });
   // rusty can rings left on the floor
-  A.cell('rings', 352, 288, 48, 48, (x0, y0) => {
-    for (const [cx, cy, r] of [[16, 18, 9], [31, 30, 8], [22, 36, 6]]) for (let a = 0; a < 6.28; a += 0.04) {
+  cell('rings', 352, 288, 48, 48, (x0, y0) => {
+    for (const [cx, cy, r] of [[16, 18, 9], [31, 30, 8], [22, 36, 6]]) for (let a = 0; a < 6.28; a += 0.04 / K) {
       if (hash2(Math.round(a * 30), r) < 0.18) continue;
-      put(Math.round(x0 + cx + Math.cos(a) * r), Math.round(y0 + cy + Math.sin(a) * r), 0x8a6a4a);
+      for (let t = 0; t < Math.ceil(K / 1.5); t++) put(Math.round(x0 + (cx + Math.cos(a) * r) * K) + 0, Math.round(y0 + (cy + Math.sin(a) * r) * K) + t, 0x8a6a4a);
     }
   });
   // cracked, patched mortar repair (opaque-ish lighter patch)
-  A.cell('patch', 0, 240, 96, 64, (x0, y0, w, h) => {
+  cell('patch', 0, 240, 96, 64, (x0, y0, w, h) => {
     blob(x0, y0, w, h, 101, [[1.0, 0xb8b2a6], [0.94, 0xaaa498]], { lobes: 3, warp: 0.25 });
-    for (let i = 0; i < 40; i++) put(x0 + 10 + Math.floor(hash2(i, 103) * 76), y0 + 8 + Math.floor(hash2(i, 104) * 48), 0x9c968a);
+    for (let i = 0; i < 40; i++) dot(x0 + (10 + Math.floor(hash2(i, 103) * 76)) * K, y0 + (8 + Math.floor(hash2(i, 104) * 48)) * K, Math.ceil(K / 2), 0x9c968a);
   });
   // wet, darker concrete by the drain and the sink
-  A.cell('damp', 96, 240, 96, 64, (x0, y0, w, h) => blob(x0, y0, w, h, 111, [[1.0, 0x9a9488], [0.6, 0x8c867a]], { lobes: 5, warp: 0.3 }));
+  cell('damp', 96, 240, 96, 64, (x0, y0, w, h) => blob(x0, y0, w, h, 111, [[1.0, 0x9a9488], [0.6, 0x8c867a]], { lobes: 5, warp: 0.3 }));
   DECALS = A.done();
   return DECALS;
 }

@@ -769,14 +769,14 @@ export class Town {
     const hw = !lp || o.hdWalls !== false, cv = (mat) => (lp ? this.coverMat(mat) : mat);
     B.push(o.x, o.y0 || 0, o.z, side > 0 ? 0 : Math.PI);
     const base = o.y0 ? 0 : (o.base ?? 0.4);
-    if (base && !lp) B.box(m.found, W + 0.08, base, D + 0.08, 0, 0, -D / 2, { uv: [seed, 0] });
+    if (base && hw) B.box(cv(m.found), W + 0.08, base, D + 0.08, 0, 0, -D / 2, { uv: [seed, 0] });
     const h1 = o.h1 ?? 2.65, h2 = (o.floors ?? 2) > 1 ? (o.h2 ?? 2.55) : 0;
     const fy = [base, base + h1];
     const wallA = o.wallA || m.wallCream, wallB = o.wallB || wallA;
     if (hw) B.box(cv(wallA), W, h1, D, 0, base, -D / 2, { uv: [seed % 3, 0], ao: o.y0 ? 0 : 0.22 });
     let top = base + h1;
     if (h2) {
-      if (!lp) B.box(m.pv, W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, { tint: o.trim ?? 0x6a5a4a });
+      if (hw) B.box(cv(m.pv), W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, { tint: o.trim ?? 0x6a5a4a });
       if (hw) B.box(cv(wallB), W, h2, D, 0, top, -D / 2, { uv: [seed % 5, 0.4] });
       top += h2;
     }

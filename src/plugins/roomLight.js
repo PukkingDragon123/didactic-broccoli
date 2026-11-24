@@ -70,9 +70,18 @@ export function install(game) {
   // your room (#102): the round ceiling lamp, and a small light over the kitchen strip on the same switch
   {
     const O = V(80, 0, -80), R = ROOM;
+    // by day the window is the key (skylight through it, the frame, the sashes and the balcony rail in its shadow) and
+    // the ceiling lamp the fill; after dark the lamp is the key and a small light over the kitchen strip the fill
+    const wx = O.x + (R.win.x0 + R.win.x1) / 2, wz = O.z + R.z0;
     offMap('room', box(O.x + R.x0, 0, O.z + R.z0, O.x + R.x1, R.H, O.z + R.z1), {
       at: V(O.x + 0.2, 1.3, O.z - 0.7),
-      lights: (d) => [lamp(d.lamp, { dy: -0.05 }), d.lamp && lamp({ ...d.lamp, x: O.x - 0.4, z: O.z + 1.35, y: R.H - 0.06, intensity: d.lamp.intensity * 0.45 }, { range: 4.5, angle: 1.25 })],
+      lights: (d) => {
+        const day = Math.max(0, Math.min(1, (Lg?.state?.day ?? 0) * 1.4 - 0.15));
+        const ceil = lamp(d.lamp, { dy: -0.05 });
+        if (day > 0.02) return [{ p: [wx + 0.15, 2.35, wz - 0.95], t: [wx - 0.1, 0, wz + 1.5], color: 0xf2f5ff, i: 26 * day, angle: 0.62, pen: 0.45, range: 7, soft: 7 }, ceil];
+        return [ceil, d.lamp && lamp({ ...d.lamp, x: O.x - 0.4, z: O.z + 1.35, y: R.H - 0.06, intensity: d.lamp.intensity * 0.45 }, { range: 4.5, angle: 1.25 })];
+      },
+      key2: () => Math.round(Math.max(0, (Lg?.state?.day ?? 0)) * 4),
     });
   }
   // Flat 103: the kitchen tube (key), the back room's round lamp (fill); the bathroom gets a pooled ceiling light
@@ -98,7 +107,7 @@ export function install(game) {
     const O = V(120, 0, -80);
     offMap('ramen', box(O.x - 3, 0, O.z - 2.5, O.x + 3, 2.6, O.z + 2.5), {
       at: V(O.x + 0.4, 1.35, O.z + 0.9),
-      key: { dy: -0.1, angle: 1.38, s: 1.8 }, fill: { angle: 1.3, s: 1.5 },
+      key: { dy: -0.1, angle: 1.38, s: 1.15 }, fill: { angle: 1.3, s: 1.5 },
     });
     // the two outer pendants as short warm lights of their own (the light pool picks them up while you're inside)
     const pend = () => {

@@ -5409,14 +5409,14 @@
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 7998,
-  "tex": 848,
+  "tris": 11652,
+  "tex": 744,
   "size": [
    0.922,
    0.891,
    0.63
   ],
-  "bytes": 446928
+  "bytes": 473088
  },
  "rice_bowl2": {
   "id": "rice_bowl2",
@@ -7503,7 +7503,7 @@
    1.032,
    0.756
   ],
-  "bytes": 69816
+  "bytes": 77008
  },
  "typewriter": {
   "id": "typewriter",

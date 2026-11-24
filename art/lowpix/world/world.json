@@ -3962,7 +3962,9 @@
    "ppm": 400,
    "tris": 1600,
    "cap": 512,
-   "name": "Twin tub (our own model, hand-painted)"
+   "name": "Twin tub (our own model, hand-painted)",
+   "ramps": 4,
+   "grain": 0.08
   },
   {
    "id": "drink_cans_own",
@@ -4005,7 +4007,7 @@
    "src": "art/lowpix/world/made/recycle_cage.glb",
    "h": 0.891,
    "ppm": 320,
-   "tris": 8000,
+   "tris": 12000,
    "cap": 1024,
    "alpha": true,
    "name": "Recycle cage with cans and PET bottles (our own model, hand-painted)"

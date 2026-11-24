@@ -9,6 +9,7 @@
 // lot x∈[11.45,20.2] and the vacant lot x∈[20.35,26] south of the street. The warehouse face is at x=11.45
 // (z∈[-23,-4.93]) and the railway retaining wall at x=26.
 //   buildPark(town) -> { spots, route, bounds, entrance, gate }
+import { hasHD, hdMap } from '../gfx/hdtex.js';
 import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { townPix } from '../gfx/textures.js';
@@ -90,7 +91,7 @@ export function buildPark(t) {
 // ------------------------------------------------------------------ materials
 function parkMats(t) {
   if (t._parkMats) return t._parkMats;
-  const map = tiled4(townPix('fenceMesh', 16, 16).texture());
+  const map = hasHD('town_fenceMesh') ? hdMap('town_fenceMesh') : tiled4(townPix('fenceMesh', 16, 16).texture()); // HD chain-link (src/gfx/hdtex.js)
   const fence = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.35, side: THREE.DoubleSide });
   // unlit, vertex-coloured paint for the lamp-lit studio seen through the villa's window
   const flat = detailize(new THREE.MeshBasicMaterial({ vertexColors: true }), 'paint');

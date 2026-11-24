@@ -1256,10 +1256,10 @@ def ballast():
 
 @recipe('roofTile', (2, 2))
 def roof_tile():
-    """Kawara (瓦) roofs, seen from the lane: rows of S-profile clay tiles, 128 px/m (roofs are far surfaces)."""
+    """Kawara (瓦) roofs: rows of S-profile clay tiles, 256 px/m (low porch roofs come within reach)."""
     rng = np.random.default_rng(437)
-    return corrugated(256, 256, 7, 'grey_roof_tiles', rng, '#80868e', ramp=(0.7, 0.86, 1.02, 1.14, 1.18, 1.1, 0.98, 0.84, 0.72, 0.62),
-                      rust=0, ppm=128, courses=8, k=22)
+    return corrugated(px(2), px(2), 7, 'grey_roof_tiles', rng, '#80868e', ramp=(0.7, 0.86, 1.02, 1.14, 1.18, 1.1, 0.98, 0.84, 0.72, 0.62),
+                      rust=0, courses=8, k=22)
 
 
 @recipe('slateRoof', (2, 2))

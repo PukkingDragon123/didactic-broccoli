@@ -39,9 +39,12 @@ function outsidePix() {
 }
 /** Frosted wired glass like the garage's own pane (src/world/Garage.js). */
 function frostPix() {
-  const p = new Pix(32, 32, 5);
+  // drawn at 256 px/m (docs/ART.md): the frosted pane's grain in clean clusters, the wire mesh every 2.3 cm with a lit edge
+  const W = 128, H = 256, p = new Pix(W, H, 5);
   p.fill(0xdde6e6);
-  for (let i = 0; i < 32; i += 6) { p.rect(i, 0, 1, 32, 0xb8c4c4); p.rect(0, i, 32, 1, 0xb8c4c4); }
+  for (let i = 0; i < 140; i++) { const x = Math.floor(p.r() * W), y = Math.floor(p.r() * H), w = 2 + Math.floor(p.r() * 5); p.rect(x, y, w, 2, p.r() < 0.5 ? 0xd6e0e0 : 0xe4ecec); }
+  for (let i = 0; i < W; i += 24) { p.rect(i, 0, 1, H, 0xb8c4c4); p.rect(i + 1, 0, 1, H, 0xeef2f2); }
+  for (let i = 0; i < H; i += 24) { p.rect(0, i, W, 1, 0xb8c4c4); p.rect(0, i + 1, W, 1, 0xeef2f2); }
   return p;
 }
 

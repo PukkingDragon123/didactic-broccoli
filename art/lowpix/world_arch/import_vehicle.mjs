@@ -71,7 +71,8 @@ if (process.env.DEBUG) {
 }
 // cut: drop a material's triangles inside boxes (metres, after the fit): a maker's emblem modelled into a grille
 for (const m of root.listMeshes()) for (const p of m.listPrimitives()) {
-  const boxes = CFG.cut?.[p.getMaterial()?.getName()];
+  const nm = p.getMaterial()?.getName();
+  const boxes = CFG.cut?.[nm] || (CFG.cutAll && !(CFG.cutKeep || []).includes(nm) ? CFG.cutAll : null);
   const I = p.getIndices();
   if (!boxes || !I) continue;
   const P = p.getAttribute('POSITION'), v = [0, 0, 0], keep = [];
@@ -187,16 +188,11 @@ for (const tex of root.listTextures()) {
       let g = 0;
       if (wy < 0.38) g = Math.max(g, (0.38 - wy) / 0.38 * 0.38); // road grime up the sills and bumpers
       for (const c of wheels) { const r = Math.hypot(wy - c[1], wz - c[2]); if (Math.abs(wx) > 0.3 && r > WR && r < WR + 0.12) g = Math.max(g, 0.42 * (1 - (r - WR) / 0.12)); } // mud round the arches
-      const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
-      if (g > 0 && ((h % 1000) / 1000) < 0.55 + g) { px[k] = px[k] * (1 - g) + 88 * g; px[k + 1] = px[k + 1] * (1 - g) + 74 * g; px[k + 2] = px[k + 2] * (1 - g) + 58 * g; }
+      // (only a soft tone, no per-texel stipple: the game's car-wear shader paints the pixel dirt, src/world/carModels.js)
+      if (g > 0) { const t = g * 0.5; px[k] = px[k] * (1 - t) + 88 * t; px[k + 1] = px[k + 1] * (1 - t) + 74 * t; px[k + 2] = px[k + 2] * (1 - t) + 58 * t; }
     }
   }
-  // a worn, lighter lip on the edge of each panel (a texel on the border of a painted island)
-  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
-    const o = y * W + x;
-    if (done[o] !== 1 || (done[o - 1] && done[o + 1] && done[o - W] && done[o + W])) continue;
-    const k = o * 4; px[k] = Math.min(255, px[k] * 1.08 + 6); px[k + 1] = Math.min(255, px[k + 1] * 1.08 + 6); px[k + 2] = Math.min(255, px[k + 2] * 1.08 + 6);
-  }
+
   const png = await sharp(Buffer.from(px.buffer), { raw: { width: W, height: H, channels: 4 } }).png({ palette: true, colours: CFG.colours || 40, dither: 0, effort: 10 }).toBuffer();
   tex.setImage(png); tex.setMimeType('image/png');
   console.log('texture', tex.getName() || tex.getURI(), meta.width + 'px ->', W + 'px', '(' + Math.round(Math.sqrt(uvA / Math.max(1e-9, wA)) * W) + ' px/m)', mats.join(','));

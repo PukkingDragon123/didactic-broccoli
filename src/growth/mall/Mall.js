@@ -526,7 +526,8 @@ export class Mall {
         pixText(x, i ? '新作入荷' : 'ガチャ祭', 20, 4, { size: 10, align: 'center', color: i ? T.accent : '#c8322c' });
       }, 0, 2.55, z, 0);
       b.material.side = THREE.DoubleSide;
-      const str = new THREE.Mesh(new THREE.BoxGeometry(0.01, CH - 2.95, 0.01), this.mats.metal); str.position.copy(Z.L(0, 2.95 + (CH - 2.95) / 2, z)); Z.group.add(str);
+      // (a plain mesh: its own material without vertex colours, or the missing colour attribute renders it black)
+      const str = new THREE.Mesh(new THREE.BoxGeometry(0.01, CH - 2.95, 0.01), this.mats.wire ||= Z.mat(new THREE.MeshStandardMaterial({ color: 0x9aa0a8, roughness: 0.3, metalness: 0.6 }))); str.position.copy(Z.L(0, 2.95 + (CH - 2.95) / 2, z)); Z.group.add(str);
     }
     // capsule-toy posters on the front wall, pixel art only
     for (const [x, i] of [[-12.2, 0], [12.2, 1]]) neon(0.9, 1.25, 30, 42, (c) => this.drawPoster(c, i + n), x, 1.6, Z1 - 0.12, Math.PI);

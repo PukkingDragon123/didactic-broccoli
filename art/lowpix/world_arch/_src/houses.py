@@ -31,7 +31,7 @@ BLOCKS = {  # two shared atlases (near side, far side); the walls are not in the
     'lane_far': (['hf-2325_1630', 'hf-1810_1590', 'hf-1242_1490', 'hf-450_1650', 'hf140_1660', 'hf725_1600', 'hf1270_1840', 'hf1820_1600'], 48),
 }
 LITE_PPM = 24  # the second rows behind (background, seen over the roofs): one atlas for all of them
-# The wall faces (wallA, wallB, the tile skirt) are drawn by the game with the HD wall surfaces at 256 px/m
+# The wall faces (wallA, wallB, the tile skirt, the floor band, the foundation) are drawn by the game with the HD wall surfaces at 256 px/m
 # (src/world/Town.js house(), src/gfx/hdtex.js), so the atlases only carry roofs, casings, gutters and services.
 WALLS_IN_GAME = True
 
@@ -130,7 +130,7 @@ class House:
         wallA = mname(o.get('wallA'), 'wallCream')
         wallB = mname(o.get('wallB'), wallA)
         back = ['back'] if self.hide_back else []
-        if base:
+        if base and not WALLS_IN_GAME:  # (the foundation is drawn by the game too, in HD concrete)
             self.box('found', W + 0.08, base, D + 0.08, 0, 0, -D / 2, style='found', hide=['bottom', 'top'] + back,
                      paint={'layers': self.vents(W, base, o)})
         if not WALLS_IN_GAME:
@@ -138,7 +138,8 @@ class House:
                  paint={'layers': self.streaks(0, W, fy, o) + self.splash(base, 0)})
         top = base + h1
         if h2:
-            self.box('band', W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, hide=['bottom'] + back, **self.tint(o.get('trim', 0x6a5a4a), 2.8, style='wood'))
+            if not WALLS_IN_GAME:
+              self.box('band', W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, hide=['bottom'] + back, **self.tint(o.get('trim', 0x6a5a4a), 2.8, style='wood'))
             if not WALLS_IN_GAME:
                 self.box('wallB', W, h2, D, 0, top, -D / 2, style=self.wall_style(wallB), hide=['bottom'] + back,
                          paint={'layers': self.streaks(1, W, fy, o) + self.soot(o)})
