@@ -3,7 +3,15 @@
 import os, random
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 H = os.path.dirname(os.path.abspath(__file__))
-FONT = '/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf'
+# every font is pixel art (CLAUDE.md): DotGothic16 at clean multiples of its 16 px grid, hard pixels, no stroke
+FONT = os.path.join(H, '..', '..', '..', '..', 'shots', '.art-cache', 'fonts', 'DotGothic16-Regular.ttf')
+_tt = ImageFont.truetype
+ImageFont.truetype = lambda path, size, *a, **k: _tt(path, max(16, int(round(size / 16)) * 16), *a, **k)
+_text = ImageDraw.ImageDraw.text
+def _pixtext(self, xy, text, *a, **k):
+    k.pop('stroke_width', None); k.pop('stroke_fill', None); self.fontmode = '1'
+    return _text(self, xy, text, *a, **k)
+ImageDraw.ImageDraw.text = _pixtext
 random.seed(7)
 def grime(im, amt=18):
     """Wear without speckle: soft darker blotches, a few scratches and edge dirt (no per-pixel noise)."""
@@ -84,7 +92,7 @@ x0, y0 = cell(1); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(206, 202, 188)
 fs = ImageFont.truetype(FONT, 9); fb = ImageFont.truetype(FONT, 22)
 d.text((x0 + 8, y0 + 6), '杜王新聞 夕刊', font=fb, fill=(40, 40, 40))
 for col in range(4):
-    for r in range(22): d.text((x0 + 8 + col * 62, y0 + 40 + r * 9.5), ''.join(random.choice('の地町店駅市日本人時間今年月円会社') for _ in range(5)), font=fs, fill=(70, 70, 70))
+    for r in range(13): d.text((x0 + 8 + col * 62, y0 + 40 + r * 16), ''.join(random.choice('の地町店駅市日本人時間今年月円会社') for _ in range(5)), font=fs, fill=(70, 70, 70))
 d.rectangle([x0 + 140, y0 + 120, x0 + 240, y0 + 200], fill=(150, 146, 138))
 x0, y0 = cell(2); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(232, 230, 222))
 for _ in range(60):
@@ -133,7 +141,7 @@ im = Image.new('RGB', (512, 512), (236, 234, 228)); d = ImageDraw.Draw(im)
 d.rectangle([0, 0, 255, 511], fill=(238, 236, 230))
 d.rectangle([90, 150, 166, 200], fill=(40, 36, 34)); d.rectangle([100, 168, 156, 190], fill=(60, 110, 200))
 d.ellipse([108, 250, 148, 290], fill=(70, 70, 74)); d.ellipse([118, 260, 138, 280], fill=(200, 200, 204))
-d.text((70, 60), '瞬間湯沸器', font=ImageFont.truetype(FONT, 24), fill=(70, 70, 76)); d.text((88, 330), 'TOKYO GAS-KI', font=ImageFont.truetype(FONT, 12), fill=(130, 60, 50))
+d.text((70, 60), '瞬間湯沸器', font=ImageFont.truetype(FONT, 24), fill=(70, 70, 76)); d.text((88, 330), 'MORIOH GAS', font=ImageFont.truetype(FONT, 12), fill=(130, 60, 50))
 for r in range(380, 470, 10): d.line([40, r, 216, r], fill=(200, 198, 192), width=4)
 d.rectangle([256, 0, 511, 255], fill=(226, 224, 218)); d.rectangle([256, 256, 511, 383], fill=(184, 150, 96)); d.rectangle([256, 384, 511, 511], fill=(176, 180, 186))
 grime(im, 8).save(os.path.join(H, 'waterheater.png'))
@@ -221,7 +229,7 @@ for k in range(0, 128, 10): d.line([x0 + 128 + k, y0 + 190, x0 + 136 + k, y0 + 2
 x0, y0 = C(8); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(70, 30, 34))
 for k in range(6):
     a, b = x0 + 20 + (k % 3) * 76, y0 + 30 + (k // 3) * 110; d.ellipse([a, b, a + 50, b + 50], fill=(220, 210, 180)); d.ellipse([a + 6, b + 6, a + 44, b + 44], fill=(246, 244, 236)); d.line([a + 25, b + 25, a + 25, b + 10], fill=(30, 30, 30), width=2); d.line([a + 25, b + 25, a + 36, b + 28], fill=(30, 30, 30), width=2); d.rectangle([a + 18, b + 48, a + 32, b + 80], fill=(110, 70, 40))
-x0, y0 = C(9); d.rectangle([x0, y0, x0 + 255, y0 + 127], fill=(240, 200, 60)); d.text((x0 + 20, y0 + 20), 'うまか棒', font=J(0, 40), fill=(200, 40, 40)); d.text((x0 + 30, y0 + 76), '10円 30本入', font=J(0, 22), fill=(60, 40, 30))
+x0, y0 = C(9); d.rectangle([x0, y0, x0 + 255, y0 + 127], fill=(240, 200, 60)); d.text((x0 + 20, y0 + 20), 'コーン棒', font=J(0, 40), fill=(200, 40, 40)); d.text((x0 + 30, y0 + 76), '10円 30本入', font=J(0, 22), fill=(60, 40, 30))
 for k in range(16): d.rectangle([x0 + k * 16, y0 + 128, x0 + k * 16 + 12, y0 + 255], fill=random.choice([(240, 200, 60), (230, 120, 60), (120, 180, 220), (200, 80, 120)]))
 # 10 dagashi rack fronts: rows of sweets   11 counter showcase front (glass, goods behind)
 x0, y0 = C(10); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(176, 140, 98))

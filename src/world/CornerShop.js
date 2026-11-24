@@ -179,7 +179,7 @@ export function buildCornerShop(t) {
   };
 
   // ---- floor: concrete doma, a door mat
-  box(I(m.conc), x1 - x0 - 0.5, 0.06, MK.ZP - MK.ZI0 + 0.1, cx, -0.052, (MK.ZI0 + MK.ZP) / 2, { k: 0.85 });
+  box(I(t.M('domaFloor', { roughness: 0.9, bump: 0.6 })), x1 - x0 - 0.5, 0.06, MK.ZP - MK.ZI0 + 0.1, cx, -0.052, (MK.ZI0 + MK.ZP) / 2, { k: 0.85 }); // the doma: HD worn concrete (src/gfx/hdtex.js)
   box(pv, 1.2, 0.012, 0.55, (dx0 + dx1) / 2, 0, MK.ZI0 + 0.32, { tint: 0x6a4a3a });
 
   // ---- the back room: agari-kamachi edge, tatami, kamoi beam, fusuma, the old man's things

@@ -1976,6 +1976,24 @@
   ],
   "bytes": 75160
  },
+ "drink_cans_own": {
+  "id": "drink_cans_own",
+  "name": "Drink cans (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/drink_cans.glb",
+  "title": "Drink cans (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/drink_cans.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 886,
+  "tex": 480,
+  "size": [
+   0.315,
+   0.12,
+   0.292
+  ],
+  "bytes": 29412
+ },
  "drinking_fountain": {
   "id": "drinking_fountain",
   "name": "Drinking Fountain",
@@ -3560,6 +3578,24 @@
   ],
   "bytes": 151492
  },
+ "laundry_pole_own": {
+  "id": "laundry_pole_own",
+  "name": "Laundry pole (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/laundry_pole.glb",
+  "title": "Laundry pole (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/laundry_pole.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 358,
+  "tex": 512,
+  "size": [
+   2.042,
+   1.82,
+   0.444
+  ],
+  "bytes": 23596
+ },
  "litter_can": {
   "id": "litter_can",
   "name": "Crushed can (our own model, hand-painted)",
@@ -4403,6 +4439,24 @@
   ],
   "bytes": 125968
  },
+ "park_clock_own": {
+  "id": "park_clock_own",
+  "name": "Park clock (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/park_clock.glb",
+  "title": "Park clock (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/park_clock.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 386,
+  "tex": 376,
+  "size": [
+   0.6,
+   3.62,
+   0.24
+  ],
+  "bytes": 28640
+ },
  "park_lamp": {
   "id": "park_lamp",
   "name": "Classic Street Lamp Post",
@@ -4421,6 +4475,24 @@
    0.745
   ],
   "bytes": 52424
+ },
+ "park_litter_own": {
+  "id": "park_litter_own",
+  "name": "Park litter (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/park_litter.glb",
+  "title": "Park litter (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/park_litter.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 162,
+  "tex": 448,
+  "size": [
+   0.646,
+   0.1,
+   0.345
+  ],
+  "bytes": 17708
  },
  "payphone_red": {
   "id": "payphone_red",
@@ -5020,6 +5092,24 @@
    0.736
   ],
   "bytes": 72184
+ },
+ "recycle_cage_own": {
+  "id": "recycle_cage_own",
+  "name": "Recycle cage (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/recycle_cage.glb",
+  "title": "Recycle cage (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/recycle_cage.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 132,
+  "tex": 512,
+  "size": [
+   1.247,
+   0.92,
+   0.644
+  ],
+  "bytes": 85984
  },
  "rice_bowl2": {
   "id": "rice_bowl2",
@@ -7034,6 +7124,24 @@
    0.471
   ],
   "bytes": 25724
+ },
+ "twin_tub_own": {
+  "id": "twin_tub_own",
+  "name": "Twin tub (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/twin_tub.glb",
+  "title": "Twin tub (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/twin_tub.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1360,
+  "tex": 512,
+  "size": [
+   0.898,
+   0.92,
+   0.442
+  ],
+  "bytes": 78700
  },
  "typewriter": {
   "id": "typewriter",

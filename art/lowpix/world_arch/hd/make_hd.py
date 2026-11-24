@@ -325,6 +325,34 @@ def surface(asset, W, H, rng, std=0.08, flat=0.3, sat=0.8, ppm=PPM, blend=None):
     return detail_std(a, std)
 
 
+def concrete_surface(asset, W, H, rng, low=0.06, grit=0.05, sat=0.4, blend=None, ppm=PPM):
+    """Concrete as a pixel artist paints it: the scan split into its broad tone (blurred, +-`low`) and its fine grit (a
+    high-pass, +-`grit`), recombined, so the surface has real aggregate and soft clouding but no kuwahara cells or
+    camouflage blotches. Hue from the scan (desaturated)."""
+    from PIL import Image as _I, ImageFilter as _F
+    def split(asset_):
+        src = L.seamless(L.flatten(L.at_ppm(L.photo(asset_), ppm), 0.2))
+        im = L.tile_to(src, W, H, rng)
+        g = L.lum(im)
+        g8 = _I.fromarray((np.clip(g, 0, 1) * 255).astype(np.uint8))
+        lo = np.asarray(g8.filter(_F.GaussianBlur(14)), np.float32) / 255
+        mid = np.asarray(g8.filter(_F.GaussianBlur(2)), np.float32) / 255
+        hi = g - mid
+        lo = (lo - lo.mean()) / max(lo.std(), 1e-3)
+        hi = hi / max(hi.std(), 1e-3)
+        return im, lo, hi
+    im, lo, hi = split(asset)
+    if blend:
+        _, lo2, hi2 = split(blend[0])
+        lo = lo * (1 - blend[1]) + lo2 * blend[1]
+        hi = hi * (1 - blend[1]) + hi2 * blend[1]
+    chroma = im.reshape(-1, 3).mean(0)
+    chroma = chroma / max(chroma.mean(), 1e-3)
+    chroma = 1 + (chroma - 1) * sat
+    t = 0.6 * (1 + np.clip(lo, -3, 3) * low + np.clip(hi, -3, 3) * grit)
+    return np.clip(t[..., None] * chroma[None, None, :], 0, 1)
+
+
 def joints(a, xs=(), ys=(), w=2, dark=0.55, lip=1.12, rng=None, spall=0.0):
     """Saw cuts / panel seams: `w` px dark lines with a lit lip, the odd spalled chip along them."""
     H, W = a.shape[:2]
@@ -391,6 +419,20 @@ def garage_slab():
         for _ in range(2):
             L.crack(b, x + 2, rng.integers(0, H), rng.integers(40, 140), rng, f=0.66, dx=rng.choice([-1, 1]), dy=rng.normal(0, 0.6))
     cracks(b, rng, 3, f=0.7)
+    return L.snap(to8(b), pal)
+
+
+@recipe('domaFloor', (4, 4))
+def doma_floor():
+    """Mikawa-ya's doma (土間): an old trowelled concrete floor polished by fifty years of shoes: grey with a warm cast,
+    soft clouding, fine grit, polished paths, hairline cracks, a saw-cut joint."""
+    rng = np.random.default_rng(181)
+    W = H = px(4)
+    a = concrete_surface('concrete_floor_03', W, H, rng, low=0.06, grit=0.05, sat=0.5)
+    a = L.grade(a, mean='#86817a')
+    img, pal = L.pixel_art(a, k=22, seed=33, paint=0, clean_passes=2)
+    b = cracks(f32(img), rng, 6, length=(40, 180), f=0.62)
+    joints(b, xs=(0,), ys=(0,), w=1, dark=0.72, lip=1.06)
     return L.snap(to8(b), pal)
 
 
@@ -475,11 +517,59 @@ def blocks(W, H, bw, bh, asset, rng, mean, joint=3, k=24, seed=5, std=0.08, mort
     return L.snap(to8(np.clip(b, 0, 1)), pal)
 
 
+def cblocks(W, H, bw, bh, rng, mean, joint=3, mortar='#8a867e', seed=5, k=18):
+    """Japanese concrete blocks (ブロック): 40 x 20 cm, stretcher bond. Each face one flat cast tone (+-5 %) with the
+    photo's fine grit only (a high-pass of the scan: no camo blotches), pores as little 2-texel pits with a lit lip,
+    a lit top edge and a shaded underside per block, chipped arrises, raked joints in the shadow of the block above,
+    faint rain runs from the joints."""
+    from PIL import Image as _I, ImageFilter as _F
+    src = L.seamless(L.flatten(L.at_ppm(L.photo('concrete_floor_02'), PPM), 0.0))
+    g = L.lum(src)
+    blur = np.asarray(_I.fromarray((np.clip(g, 0, 1) * 255).astype(np.uint8)).filter(_F.GaussianBlur(2.5)), np.float32) / 255
+    grit = g - blur
+    grit = grit / max(grit.std(), 1e-3)
+    base = np.array(L.hexrgb(mean), np.float32)
+    mort = np.array(L.hexrgb(mortar), np.float32)
+    a = np.zeros((H, W, 3), np.float32)
+    a[:] = mort
+    cells = []
+    for r in range(H // bh):
+        off = (bw // 2) * (r % 2)
+        for c in range(-1, W // bw + 1):
+            x0, y0 = c * bw + off + joint // 2, r * bh + joint // 2
+            w, h = bw - joint, bh - joint
+            gp = L.cut(grit[..., None], int(rng.integers(0, W)), int(rng.integers(0, H)), w, h)[..., 0]
+            face = base * rng.uniform(0.95, 1.05) * (1 + np.clip(gp, -2.5, 2.5) * 0.045)[..., None]
+            xs = np.arange(x0, x0 + w) % W
+            a[y0:y0 + h][:, xs] = face
+            cells.append((x0, y0, w, h))
+    for _ in range(12):  # faint rain runs from the joints, and splash grime
+        L.streak(a, rng.integers(0, W), rng.integers(0, H), rng.integers(20, 120), f=rng.uniform(0.9, 0.95), rng=rng, width=2)
+    pal = L.palette(np.clip(a, 0, 1), k, seed)
+    b = f32(L.snap(to8(a), pal))
+    for (x0, y0, w, h) in cells:
+        xs = np.arange(x0, x0 + w) % W
+        for _ in range(int(w * h * 0.006)):  # pores
+            px_, py_ = x0 + int(rng.integers(1, w - 2)), y0 + int(rng.integers(1, h - 2))
+            L.wpx(b, px_, py_, f=0.72); L.wpx(b, px_ + (1 if rng.random() < 0.5 else 0), py_ + 1, f=0.8); L.wpx(b, px_ - 1, py_ - 1, f=1.08)
+        b[y0, xs] *= 1.1
+        b[y0 + h - 1, xs] *= 0.82
+        b[y0:y0 + h, x0 % W] *= 1.05
+        b[y0:y0 + h, (x0 + w - 1) % W] *= 0.88
+        b[(y0 + h) % H, xs] *= 0.7  # the joint below sits in this block's shadow
+        if rng.random() < 0.3:
+            cx = x0 if rng.random() < 0.5 else x0 + w - 1
+            for d in range(int(rng.integers(2, 5))):
+                for e in range(3 - min(d, 2)):
+                    L.wpx(b, cx + (d if cx == x0 else -d), y0 + e, c=mort * 0.92)
+    return L.snap(to8(np.clip(b, 0, 1)), pal)
+
+
 @recipe('blockHD', (2, 2))
 def block_hd():
     """Concrete block wall (ブロック塀): 40 x 20 cm porous blocks in stretcher bond."""
     rng = np.random.default_rng(45)
-    return blocks(px(2), px(2), px(0.4), px(0.2), 'concrete_floor_02', rng, '#99958c')
+    return cblocks(px(2), px(2), px(0.4), px(0.2), rng, '#9c988f')
 
 
 def corrugated(W, H, ribs, asset, rng, mean, ramp=(0.78, 0.92, 1.08, 1.16, 1.1, 0.96, 0.82, 0.72), k=26, seed=6, bolts=(), rust=8, ppm=PPM, courses=0):
@@ -1233,7 +1323,7 @@ def sf_concrete():
 @recipe('sf_cblock', (4, 4))
 def sf_cblock():
     rng = np.random.default_rng(1964)
-    return blocks(px(4), px(4), px(0.4), px(0.2), 'concrete_floor_02', rng, '#9a9890', mortar='#76736c')
+    return cblocks(px(4), px(4), px(0.4), px(0.2), rng, '#a09c94', mortar='#7c7972')
 
 
 @recipe('sf_park_ground', (4, 4))

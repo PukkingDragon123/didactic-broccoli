@@ -222,6 +222,12 @@ export const PROP_MODELS = {
   gr_stack_green: { id: 'lowpix/world/route_green' },
   gr_stack_black: { id: 'lowpix/world/route_black' },
   gacha_twin: { id: 'lowpix/world/gacha_twin_m' },
+  twin_tub: { id: 'lowpix/world/twin_tub_own' },
+  drink_cans: { id: 'lowpix/world/drink_cans_own' },
+  park_litter: { id: 'lowpix/world/park_litter_own' },
+  park_clock: { id: 'lowpix/world/park_clock_own' },
+  laundry_pole: { id: 'lowpix/world/laundry_pole_own' },
+  recycle_cage: { id: 'lowpix/world/recycle_cage_own' },
   // ---- the voxel builds and self-made boxes of the home, the food and the goods, redrawn with imported models
   piggy_bank: { id: 'lowpix/world/piggy_bank_c' },
   bed_base: { id: 'lowpix/world/futon_set', fit: 'stretch' }, // the futon, made up (src/places/room/Room.js)
