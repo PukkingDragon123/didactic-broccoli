@@ -80,10 +80,11 @@ save(im, 'tt_side')
 AQUA = (130, 196, 200)
 im, d = paint(256, 256, AQUA); save(im, 'tt_deck')
 for name, label, W in (('tt_lid_wash', 'WASH', 512), ('tt_lid_spin', 'SPIN', 256)):
-    im, d = paint(W, 384, (176, 206, 214), k=(0.97, 1.03))
-    for x in range(12, W - 12, 16): d.line([x, 30, x, 300], fill=(160, 192, 202), width=3)   # moulded ribs
-    d.rectangle([W // 2 - 60, 318, W // 2 + 60, 366], fill=(120, 160, 172))                  # the finger pull
-    d.line([W // 2 - 58, 320, W // 2 + 58, 320], fill=(90, 126, 140), width=2)
+    # (the lids share the deck's aqua: a paler blue would bridge the cream body and the aqua in lowpix's colour groups)
+    im, d = paint(W, 384, (136, 198, 202), k=(0.97, 1.03))
+    for x in range(12, W - 12, 16): d.line([x, 30, x, 300], fill=(118, 180, 186), width=3)   # moulded ribs
+    d.rectangle([W // 2 - 60, 318, W // 2 + 60, 366], fill=(96, 150, 158))                   # the finger pull
+    d.line([W // 2 - 58, 320, W // 2 + 58, 320], fill=(70, 116, 126), width=2)
     text(d, (W // 2, 14), label, 16, (40, 70, 86), 'mt')
     d.rectangle([0, 0, W - 1, 383], outline=(110, 150, 164), width=3)
     save(im, name)
@@ -116,8 +117,8 @@ d.rectangle([58, 14, 70, 64], fill=(206, 52, 46)); save(im, 'tt_knob')
 im = Image.new('RGB', (128, 128), (200, 202, 200)); d = ImageDraw.Draw(im)
 for x in range(0, 128, 8): d.rectangle([x, 0, x + 3, 127], fill=(168, 170, 168))
 save(im, 'tt_knob_side')
-im = Image.new('RGB', (128, 512), (150, 156, 160)); d = ImageDraw.Draw(im)
-for y in range(0, 512, 12): d.rectangle([0, y, 127, y + 4], fill=(118, 124, 128)); d.line([0, y + 6, 127, y + 6], fill=(176, 182, 186))
+im = Image.new('RGB', (128, 512), (104, 110, 116)); d = ImageDraw.Draw(im)
+for y in range(0, 512, 12): d.rectangle([0, y, 127, y + 4], fill=(80, 86, 92)); d.line([0, y + 6, 127, y + 6], fill=(132, 138, 144))
 save(im, 'tt_hose')
 im, d = paint(128, 128, (52, 52, 56)); save(im, 'tt_rubber')
 im, d = paint(256, 128, (92, 96, 100)); scuffs(d, 256, 128, 12, (120, 124, 126)); save(im, 'tt_plinth')

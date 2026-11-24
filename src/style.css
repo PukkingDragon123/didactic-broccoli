@@ -71,7 +71,9 @@ body.free-look #app canvas { cursor: crosshair; }
 #hint .k .px-icon, #hint .k [data-icon]::before { display: block; margin: 0 -2px; }
 #hint .px-icon { vertical-align: middle; margin: -4px 4px -2px 0; }
 #hint .t { display: inline; }
-#hint .sub { display: block; font-size: 16px; line-height: 20px; color: var(--muted); opacity: .9; }
+#hint .sub { display: block; font-size: 16px; line-height: 20px; color: var(--muted); opacity: .9;
+  /* long details wrap (balanced) instead of running off the strip and the screen */
+  white-space: normal; width: max-content; max-width: min(34em, 86vw); margin: 0 auto; text-wrap: balance; }
 #hint .sub:empty { display: none; }
 
 /* money counter */
