@@ -64,7 +64,7 @@ export class RoomGI {
     this.rooms = new Map();
     this.cur = null;
     this.on = 0; // the volume's fade (0..1)
-    this.mix = 1; // crossfade after a rebake
+    this.rigK = 1; // the rig's fade in an on-map room you walk into
     this.burst = 0;
     this.lampOff = 0; // 1: the active room's lamps are the rig's (src/places/Places.js turns its painted lamp term off)
     this.enabled = true;
@@ -86,7 +86,7 @@ export class RoomGI {
     const fill = this.fill = new THREE.SpotLight(0xffffff, 0, 6, 1.2, 0.8, 2);
     fill.name = 'gi:fill';
     for (const L of [key, fill]) { L.position.copy(PARK); L.target.position.copy(PARK).y -= 1; scene.add(L, L.target); }
-    this.R.registerShadowLight(key, 0.5);
+    this.R.registerShadowLight(key, 0.75);
   }
 
   /** The preset's probe spacing (m) and probes per frame. */
@@ -135,21 +135,22 @@ export class RoomGI {
       this.cur = r;
       this.on = r?.vol?.has ? 1 : 0;
       this.burst = 1.2; // a door fade or a walk in: bake fast for a moment
+      this.rigK = r?.active ? 1 : 0; // (teleported in behind a fade: at once; walked in: fades up)
     }
     this.burst = Math.max(0, this.burst - dt);
     const v = r?.vol;
     const want = v?.has ? 1 : 0;
     this.on += (want - this.on) * Math.min(1, dt * 3);
     if (want && this.on > 0.995) this.on = 1;
-    this.mix = Math.min(1, this.mix + dt * 0.8);
+    this.rigK = Math.min(1, this.rigK + dt * 2.5);
     const U = GI;
     if (v && v.has) {
-      U.ggPVTex.value = v.rt[0].texture; U.ggPVTex0.value = v.rt[1].texture;
+      U.ggPVTex.value = v.rt[0].texture;
       U.ggPVMin.value.copy(v.min); U.ggPVStep.value.copy(v.step); U.ggPVRes.value.copy(v.res);
       U.ggPVBias.value = Math.min(0.3, v.step.x * 0.45);
       U.ggBoxMin.value.copy(r.box.min); U.ggBoxMax.value.copy(r.box.max);
-      U.ggPVOn.value = this.on; U.ggPVMix.value = this.mix; U.ggPVK.value = this.K * (r.k ?? 1);
-    } else { U.ggPVOn.value = 0; U.ggPVTex.value = null; U.ggPVTex0.value = null; }
+      U.ggPVOn.value = this.on; U.ggPVK.value = this.K * (r.k ?? 1);
+    } else { U.ggPVOn.value = 0; U.ggPVTex.value = null; }
     // the room's reflection probe, box-projected, while you're inside it
     const inside = r && (r.active ? true : r.box.distanceToPoint(_v) < 0.3);
     if (r?.global && r.env) this.baseEnv = r.env;
@@ -179,7 +180,7 @@ export class RoomGI {
       L.position.set(d.p[0], d.p[1], d.p[2]);
       if (d.t) L.target.position.set(d.t[0], d.t[1], d.t[2]); else L.target.position.set(d.p[0], d.p[1] - 1, d.p[2]);
       L.color.set(d.color ?? 0xfff0dc);
-      L.intensity = d.i;
+      L.intensity = d.i * this.rigK;
       L.angle = d.angle ?? 1.25; L.penumbra = d.pen ?? 0.75; L.distance = d.range ?? 7; L.decay = 2;
       if (i === 0) { L.shadow.radius = d.soft ?? (this.R.quality.giSoft ?? 4); L.shadow.camera.far = L.distance; }
       L.updateMatrixWorld(); L.target.updateMatrixWorld();
@@ -202,7 +203,7 @@ export class RoomGI {
       t.texture.generateMipmaps = false;
       return t;
     };
-    return { res, min, step, rt: [mk(), mk(), mk()], has: false, i: -1, pass: 0, count: res.x * res.y * res.z };
+    return { res, min, step, rt: [mk(), mk()], has: false, i: -1, pass: 0, count: res.x * res.y * res.z };
   }
 
   ensureTools() {
@@ -230,27 +231,29 @@ export class RoomGI {
   }
 
   /** Bake what the active room needs, within this frame's budget. */
-  bake({ all = false } = {}) {
+  bake({ all = false, limit = Infinity } = {}) {
     const r = this.cur;
-    if (!r || !this.enabled) return;
+    if (!r || !this.enabled) return false;
     const q = this.q;
-    const key = r.key?.() ?? '';
+    // key: a change rebakes two passes (a lamp switched, the shutter); minor: one pass on top of the current volume (the
+    // sun moving on through the window)
+    const major = r.key?.() ?? '', key = major + '|' + (r.minor?.() ?? '');
     if (!r.vol) { r.vol = this.makeVolume(r); r.volKey = null; }
     const v = r.vol;
     if (v.i < 0) {
-      if (v.pass >= 2 && key === r.volKey) { if (r.envKey !== key) this.bakeEnv(r, key); return; }
-      if (key !== r.volKey) v.pass = 0; // (a change: two more passes)
+      if (v.pass >= 2 && key === r.volKey) { if (r.envKey !== key) { this.bakeEnv(r, key); return true; } return false; }
+      if (key !== r.volKey) v.pass = v.has && r.volKey?.split('|')[0] === major ? 1 : 0;
       v.i = 0; v.bakingKey = key;
     }
-    const per = all ? 1e9 : this.burst > 0 ? Math.max(24, q.per * 8) : q.per;
+    const per = all ? limit : this.burst > 0 ? Math.max(24, q.per * 8) : q.per;
     const t0 = performance.now();
     const gl = this.gl, scene = this.scene, U = GI;
     this.ensureTools();
     // the probes see direct light plus the current volume (the bounce so far); no sky fill, no reflections
-    const save = { on: U.ggPVOn.value, k: U.ggPVK.value, mix: U.ggPVMix.value, env: U.ggEnvBox.value, envI: scene.environmentIntensity, bg: scene.background, auto: gl.shadowMap.autoUpdate, need: gl.shadowMap.needsUpdate, au: scene.matrixWorldAutoUpdate, ac: gl.autoClear, rt: gl.getRenderTarget(), t0: U.ggPVTex.value, t1: U.ggPVTex0.value };
-    U.ggPVOn.value = 1; U.ggPVMix.value = 1; U.ggEnvBox.value = 0;
+    const save = { on: U.ggPVOn.value, k: U.ggPVK.value, env: U.ggEnvBox.value, envI: scene.environmentIntensity, bg: scene.background, auto: gl.shadowMap.autoUpdate, need: gl.shadowMap.needsUpdate, au: scene.matrixWorldAutoUpdate, ac: gl.autoClear, rt: gl.getRenderTarget(), t0: U.ggPVTex.value };
+    U.ggPVOn.value = 1; U.ggEnvBox.value = 0;
     U.ggPVK.value = v.has ? this.K * (r.k ?? 1) : 0;
-    if (v.has) { U.ggPVTex.value = v.rt[0].texture; U.ggPVTex0.value = v.rt[0].texture; } else { U.ggPVTex.value = v.rt[1].texture; U.ggPVTex0.value = v.rt[1].texture; }
+    U.ggPVTex.value = v.rt[0].texture;
     U.ggPVMin.value.copy(v.min); U.ggPVStep.value.copy(v.step); U.ggPVRes.value.copy(v.res); U.ggBoxMin.value.copy(r.box.min); U.ggBoxMax.value.copy(r.box.max);
     U.ggPVBias.value = Math.min(0.3, v.step.x * 0.45);
     scene.environmentIntensity = 0;
@@ -261,7 +264,7 @@ export class RoomGI {
     this.hideFor(r, hidden);
     const size = r.box.getSize(_v);
     for (const c of this.cube.children) c.far = Math.max(6, size.length() + (r.sky ? 8 : 1));
-    const build = v.rt[2];
+    const build = v.rt[1];
     let n = 0;
     try {
       while (v.i < v.count && n < per) {
@@ -283,7 +286,7 @@ export class RoomGI {
       }
     } finally {
       for (const o of hidden) o.visible = true;
-      U.ggPVOn.value = save.on; U.ggPVK.value = save.k; U.ggPVMix.value = save.mix; U.ggEnvBox.value = save.env; U.ggPVTex.value = save.t0; U.ggPVTex0.value = save.t1;
+      U.ggPVOn.value = save.on; U.ggPVK.value = save.k; U.ggEnvBox.value = save.env; U.ggPVTex.value = save.t0;
       scene.environmentIntensity = save.envI; scene.background = save.bg;
       gl.shadowMap.autoUpdate = save.auto; gl.shadowMap.needsUpdate = save.need;
       scene.matrixWorldAutoUpdate = save.au; gl.autoClear = save.ac;
@@ -291,15 +294,14 @@ export class RoomGI {
     }
     this.stats.probes += n; this.stats.ms += performance.now() - t0;
     if (v.i >= v.count) {
-      // a pass is done: it becomes the volume shown, the one before it fades out
+      // a pass is done: it becomes the volume shown
       v.i = -1; v.pass++;
-      const [a, b, c] = v.rt; v.rt = [c, a, b];
-      if (v.has) this.mix = 0;
+      v.rt.reverse();
       v.has = true;
       r.volKey = v.bakingKey;
       this.stats.passes++;
-      if (all) this.bake({ all });
     }
+    return true;
   }
 
   /** The room's reflection probe (one cube, prefiltered), with its volume lighting it. */
@@ -329,13 +331,13 @@ export class RoomGI {
     gl.setRenderTarget(save.rt);
   }
 
-  /** Bake everything the active room still needs, now (tools, tests). */
-  finish() {
-    const r = this.cur;
-    if (!r) return false;
-    for (let k = 0; k < 4; k++) { this.burst = 1; this.bake({ all: true }); }
-    this.on = 1; this.mix = 1;
-    return true;
+  /** Bake what the active room still needs, now, up to `limit` probes; true while more is left (tools, tests: call it
+   *  again after a fence, a software GPU drops the context when handed thousands of draws at once). */
+  finish(limit = Infinity) {
+    if (!this.cur) return false;
+    const did = this.bake({ all: true, limit });
+    this.on = 1;
+    return did;
   }
 }
 

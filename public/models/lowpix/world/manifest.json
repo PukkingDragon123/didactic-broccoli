@@ -91,6 +91,42 @@
   ],
   "bytes": 65884
  },
+ "asagao_bloom": {
+  "id": "asagao_bloom",
+  "name": "Morning glory in bloom (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/asagao_bloom.glb",
+  "title": "Morning glory in bloom (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/asagao_bloom.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1800,
+  "tex": 512,
+  "size": [
+   0.312,
+   0.76,
+   0.308
+  ],
+  "bytes": 85152
+ },
+ "asagao_vine": {
+  "id": "asagao_vine",
+  "name": "Morning glory vine (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/asagao_vine.glb",
+  "title": "Morning glory vine (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/asagao_vine.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1512,
+  "tex": 512,
+  "size": [
+   0.319,
+   0.76,
+   0.314
+  ],
+  "bytes": 77636
+ },
  "ashtray_own": {
   "id": "ashtray_own",
   "name": "Standing ashtray (our own model, hand-painted)",
@@ -427,6 +463,24 @@
    0.552
   ],
   "bytes": 71712
+ },
+ "binfill_own": {
+  "id": "binfill_own",
+  "name": "Bin fill (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/binfill.glb",
+  "title": "Bin fill (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/binfill.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 699,
+  "tex": 152,
+  "size": [
+   0.156,
+   0.06,
+   0.156
+  ],
+  "bytes": 29744
  },
  "blanket_pillows": {
   "id": "blanket_pillows",
@@ -1904,24 +1958,23 @@
   ],
   "bytes": 41104
  },
- "donut_m": {
-  "id": "donut_m",
-  "name": "Glazed donut_simple model",
-  "src": "sketchfab:0bc473ee934f44c6bd124717cdf58c93",
-  "title": "Glazed donut_simple model",
-  "author": "JoelHdez",
-  "authorUrl": "https://sketchfab.com/JoelHdez",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/glazed-donut-simple-model-0bc473ee934f44c6bd124717cdf58c93",
-  "site": "Sketchfab",
-  "tris": 3000,
+ "donut_seat_own": {
+  "id": "donut_seat_own",
+  "name": "Giant donut seat (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/donut_seat.glb",
+  "title": "Giant donut seat (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/donut_seat.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 672,
   "tex": 512,
   "size": [
-   0.207,
-   0.08,
-   0.207
+   0.915,
+   0.25,
+   0.915
   ],
-  "bytes": 60684
+  "bytes": 75160
  },
  "drinking_fountain": {
   "id": "drinking_fountain",
@@ -2688,24 +2741,23 @@
   ],
   "bytes": 7516
  },
- "gumball_machine": {
-  "id": "gumball_machine",
-  "name": "Vintage Gum Ball Machine",
-  "src": "sketchfab:4fccac6257d64c3680bd81fc8f34675d",
-  "title": "Vintage Gum Ball Machine",
-  "author": "gozdemrl",
-  "authorUrl": "https://sketchfab.com/gozdemrl",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/vintage-gum-ball-machine-4fccac6257d64c3680bd81fc8f34675d",
-  "site": "Sketchfab",
-  "tris": 2928,
-  "tex": 512,
+ "gumball_own": {
+  "id": "gumball_own",
+  "name": "Gumball machine (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/gumball_machine_own.glb",
+  "title": "Gumball machine (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/gumball_machine_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1120,
+  "tex": 272,
   "size": [
-   0.197,
-   0.4,
-   0.209
+   0.344,
+   1.2,
+   0.354
   ],
-  "bytes": 91500
+  "bytes": 50088
  },
  "hair_dryer": {
   "id": "hair_dryer",
@@ -2867,14 +2919,14 @@
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 188,
-  "tex": 64,
+  "tris": 196,
+  "tex": 46,
   "size": [
-   0.019,
-   0.025,
-   0.044
+   0.023,
+   0.042,
+   0.045
   ],
-  "bytes": 9712
+  "bytes": 8940
  },
  "iron_antique": {
   "id": "iron_antique",
@@ -3806,22 +3858,21 @@
  },
  "mirror_pole": {
   "id": "mirror_pole",
-  "name": "Blind spot traffic mirror",
-  "src": "sketchfab:6b7baf381f6c45ef8d92411e0467492b",
-  "title": "Blind spot traffic mirror",
-  "author": "Insane Ninja",
-  "authorUrl": "https://sketchfab.com/guru2fifa",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b",
-  "site": "Sketchfab",
-  "tris": 2967,
-  "tex": 512,
+  "name": "Curve mirror (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/mirror_pole.glb",
+  "title": "Curve mirror (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mirror_pole.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 860,
+  "tex": 488,
   "size": [
-   1.048,
-   3.104,
-   0.502
+   0.632,
+   3,
+   0.304
   ],
-  "bytes": 39036
+  "bytes": 56836
  },
  "mk_ashtray": {
   "id": "mk_ashtray",
@@ -4876,6 +4927,25 @@
   ],
   "bytes": 23576
  },
+ "pumpkin_trio": {
+  "id": "pumpkin_trio",
+  "name": "Carved Pumpkin Trio",
+  "src": "sketchfab:0917d2e5b6fc425f9e266d088fe20c17",
+  "title": "Carved Pumpkin Trio",
+  "author": "W_illness",
+  "authorUrl": "https://sketchfab.com/W_illness",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/carved-pumpkin-trio-0917d2e5b6fc425f9e266d088fe20c17",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   1.025,
+   0.45,
+   0.681
+  ],
+  "bytes": 160956
+ },
  "rack_worn": {
   "id": "rack_worn",
   "name": "Worn Metal Rack",
@@ -5366,6 +5436,114 @@
   ],
   "bytes": 20084
  },
+ "route_black": {
+  "id": "route_black",
+  "name": "Route machines, black (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/route_machine_black.glb",
+  "title": "Route machines, black (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/route_machine_black.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 548,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.95,
+   0.478
+  ],
+  "bytes": 73708
+ },
+ "route_blue": {
+  "id": "route_blue",
+  "name": "Route machines, blue (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/route_machine_blue.glb",
+  "title": "Route machines, blue (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/route_machine_blue.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 548,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.95,
+   0.478
+  ],
+  "bytes": 86372
+ },
+ "route_green": {
+  "id": "route_green",
+  "name": "Route machines, green (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/route_machine_green.glb",
+  "title": "Route machines, green (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/route_machine_green.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 548,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.95,
+   0.478
+  ],
+  "bytes": 85372
+ },
+ "route_pink": {
+  "id": "route_pink",
+  "name": "Route machines, pink (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/route_machine_pink.glb",
+  "title": "Route machines, pink (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/route_machine_pink.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 548,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.95,
+   0.478
+  ],
+  "bytes": 85308
+ },
+ "route_red": {
+  "id": "route_red",
+  "name": "Route machines, red (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/route_machine_red.glb",
+  "title": "Route machines, red (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/route_machine_red.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 548,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.95,
+   0.478
+  ],
+  "bytes": 89676
+ },
+ "route_yellow": {
+  "id": "route_yellow",
+  "name": "Route machines, yellow (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/route_machine_yellow.glb",
+  "title": "Route machines, yellow (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/route_machine_yellow.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 548,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.95,
+   0.478
+  ],
+  "bytes": 86932
+ },
  "rubbishpile": {
   "id": "rubbishpile",
   "name": "Rubbish pile",
@@ -5719,6 +5897,24 @@
   ],
   "bytes": 52688
  },
+ "shower_own": {
+  "id": "shower_own",
+  "name": "Wash-place shower (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/shower.glb",
+  "title": "Wash-place shower (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shower.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 700,
+  "tex": 176,
+  "size": [
+   0.416,
+   1.17,
+   0.161
+  ],
+  "bytes": 26648
+ },
  "sink_round": {
   "id": "sink_round",
   "name": "Round Steel Sink",
@@ -5849,6 +6045,25 @@
   ],
   "bytes": 51840
  },
+ "soroban": {
+  "id": "soroban",
+  "name": "Abacus",
+  "src": "sketchfab:ee04aa74fcd04b839d4b964a17fc1a20",
+  "title": "Abacus",
+  "author": "hky111111",
+  "authorUrl": "https://sketchfab.com/hky111111",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/abacus-ee04aa74fcd04b839d4b964a17fc1a20",
+  "site": "Sketchfab",
+  "tris": 1994,
+  "tex": 512,
+  "size": [
+   0.212,
+   0.12,
+   0.032
+  ],
+  "bytes": 98024
+ },
  "sponge": {
   "id": "sponge",
   "name": "Sponge",
@@ -5905,6 +6120,25 @@
    0.053
   ],
   "bytes": 19924
+ },
+ "spring_horse": {
+  "id": "spring_horse",
+  "name": "Wooden Playground Horse",
+  "src": "sketchfab:aa1c440f48a44e558dcc9097b35a6a6d",
+  "title": "Wooden Playground Horse",
+  "author": "Batuhan13",
+  "authorUrl": "https://sketchfab.com/Batuhan13",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-playground-horse-aa1c440f48a44e558dcc9097b35a6a6d",
+  "site": "Sketchfab",
+  "tris": 1756,
+  "tex": 512,
+  "size": [
+   0.324,
+   0.85,
+   0.719
+  ],
+  "bytes": 76988
  },
  "squeegee_own": {
   "id": "squeegee_own",
@@ -6092,6 +6326,25 @@
    0.23
   ],
   "bytes": 68832
+ },
+ "swingset": {
+  "id": "swingset",
+  "name": "Swing Set",
+  "src": "sketchfab:8712f53da0e04736802f1bc84ca7df97",
+  "title": "Swing Set",
+  "author": "Glowbox 3D",
+  "authorUrl": "https://sketchfab.com/glowbox3d",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/swing-set-8712f53da0e04736802f1bc84ca7df97",
+  "site": "Sketchfab",
+  "tris": 2986,
+  "tex": 512,
+  "size": [
+   3.161,
+   2.2,
+   1.273
+  ],
+  "bytes": 153440
  },
  "table_coffee": {
   "id": "table_coffee",
@@ -6958,14 +7211,14 @@
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 384,
-  "tex": 148,
+  "tris": 140,
+  "tex": 256,
   "size": [
-   0.278,
+   0.289,
    0.11,
-   0.139
+   0.206
   ],
-  "bytes": 17084
+  "bytes": 23496
  },
  "vase_brass": {
   "id": "vase_brass",

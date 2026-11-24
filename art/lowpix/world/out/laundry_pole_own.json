@@ -1,0 +1,77 @@
+{
+ "id": "laundry_pole_own",
+ "src": "art/lowpix/world/made/laundry_pole.glb",
+ "credit": {
+  "title": "Laundry pole (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/laundry_pole.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 358,
+ "tex": 512,
+ "size": [
+  2.042,
+  1.82,
+  0.444
+ ],
+ "colours": 33,
+ "palette": {
+  "m0": [
+   "#444d65",
+   "#5c6981",
+   "#788698",
+   "#98a2ac",
+   "#b7bdc1",
+   "#c3c6c8",
+   "#cecfcf",
+   "#d8d8d8",
+   "#e1e1e1"
+  ],
+  "m1": [
+   "#1c205f",
+   "#27337a",
+   "#344a94",
+   "#4162ac",
+   "#587fbb",
+   "#7298c1",
+   "#8baec9",
+   "#a3c1d1",
+   "#bad1da"
+  ],
+  "m2": [
+   "#7b1034",
+   "#9e1839",
+   "#c0213b",
+   "#d83341",
+   "#dc5a5a",
+   "#de7c73",
+   "#e19a8c",
+   "#e5b4a3",
+   "#eacaba"
+  ],
+  "m3": [
+   "#802f3c",
+   "#a34049",
+   "#bb5e5e",
+   "#c88c87",
+   "#d7b4ad",
+   "#dbc2ba",
+   "#dfcfc6",
+   "#e4dad2",
+   "#eae4dd"
+  ],
+  "m4": [
+   "#821b38",
+   "#a72640",
+   "#ca3345",
+   "#d25b5f",
+   "#da8783",
+   "#dd9f96",
+   "#e1b5a9",
+   "#e5c7ba",
+   "#ead7cc"
+  ]
+ },
+ "warnings": []
+}

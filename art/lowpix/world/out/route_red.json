@@ -1,0 +1,99 @@
+{
+ "id": "route_red",
+ "src": "art/lowpix/world/made/route_machine_red.glb",
+ "credit": {
+  "title": "Route machines, red (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/route_machine_red.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 548,
+ "tex": 512,
+ "size": [
+  0.9,
+  1.95,
+  0.478
+ ],
+ "colours": 56,
+ "palette": {
+  "m0": [
+   "#0f0e14",
+   "#141319",
+   "#19181e",
+   "#1e1d23",
+   "#232327",
+   "#414245",
+   "#616161",
+   "#7f7f7f",
+   "#9d9d9d"
+  ],
+  "m1": [
+   "#955e3c",
+   "#b78559",
+   "#c8ab89",
+   "#dacdb6",
+   "#efebe1",
+   "#f1eee6",
+   "#f2f1ea",
+   "#f4f4ef",
+   "#f7f7f3"
+  ],
+  "m2": [
+   "#680c27",
+   "#85122b",
+   "#a2192b",
+   "#bd2128",
+   "#d6312b",
+   "#d85c4b",
+   "#dc826b",
+   "#e0a289",
+   "#e6bea6"
+  ],
+  "m3": [
+   "#48232b",
+   "#5b2f35",
+   "#6e3d40",
+   "#804d4b",
+   "#91615b",
+   "#a07a71",
+   "#ac948b",
+   "#baaba3",
+   "#c8c1bb"
+  ],
+  "m4": [
+   "#0d146e",
+   "#13268e",
+   "#1b3dac",
+   "#2459c9",
+   "#3a7ad8",
+   "#5898da",
+   "#75b1de",
+   "#92c6e2",
+   "#add8e7"
+  ],
+  "m5": [
+   "#205836",
+   "#2c7142",
+   "#39884b",
+   "#479f54",
+   "#5ab060",
+   "#75b874",
+   "#92c08d",
+   "#abcaa5",
+   "#c2d5bb"
+  ],
+  "m6": [
+   "#823700",
+   "#a85602",
+   "#cc7a06",
+   "#efa40b",
+   "#f2c230",
+   "#f1d64f",
+   "#f1e66e",
+   "#f2f28b",
+   "#f3f3a8"
+  ]
+ },
+ "warnings": []
+}

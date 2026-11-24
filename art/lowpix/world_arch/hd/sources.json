@@ -200,6 +200,11 @@
    "kenchi"
   ]
  },
+ "grass_ground": {
+  "source": "https://polyhaven.com/a/grass_ground",
+  "license": "CC0-1.0",
+  "metres": 2.51
+ },
  "gravel": {
   "source": "https://polyhaven.com/a/gravel",
   "license": "CC0-1.0",

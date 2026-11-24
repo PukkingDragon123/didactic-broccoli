@@ -378,3 +378,6 @@ html body.phys-ui #pause .ph-grille { min-height: 160px; }
   html body.phys-ui #simclock .sc-time { font-size: 64px; line-height: 64px; }
   html body.phys-ui #simclock .sc-date, html body.phys-ui #simclock .sc-day { font-size: 48px; line-height: 50px; }
 }
+/* the nameplate's gear grows with its title */
+@media (min-height: 900px) and (min-width: 1200px) { html body.phys-ui #pause .panel-title [data-icon]::before, html body.phys-ui #share .panel-title [data-icon]::before { width: calc(var(--icon-w, 16px) * 2); height: calc(var(--icon-h, 16px) * 2); } }
+@media (min-height: 1300px) and (min-width: 1700px) { html body.phys-ui #pause .panel-title [data-icon]::before, html body.phys-ui #share .panel-title [data-icon]::before { width: calc(var(--icon-w, 16px) * 3); height: calc(var(--icon-h, 16px) * 3); } }

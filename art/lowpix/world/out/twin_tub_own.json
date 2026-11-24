@@ -1,0 +1,66 @@
+{
+ "id": "twin_tub_own",
+ "src": "art/lowpix/world/made/twin_tub.glb",
+ "credit": {
+  "title": "Twin tub (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/twin_tub.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1360,
+ "tex": 512,
+ "size": [
+  0.898,
+  0.92,
+  0.442
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#826348",
+   "#a48765",
+   "#b8a98e",
+   "#cec7b6",
+   "#e6e4dc",
+   "#e9e8e2",
+   "#ecebe7",
+   "#efefec",
+   "#f2f2f1"
+  ],
+  "m1": [
+   "#214564",
+   "#2d6180",
+   "#3b7f9b",
+   "#4a9fb4",
+   "#6ab3bd",
+   "#81c1c3",
+   "#98cac8",
+   "#add3ce",
+   "#c2dbd6"
+  ],
+  "m2": [
+   "#313a68",
+   "#435484",
+   "#576fa0",
+   "#768eaf",
+   "#96aabe",
+   "#a7b8c5",
+   "#b7c5cc",
+   "#c6d1d4",
+   "#d4dcdd"
+  ],
+  "m3": [
+   "#110f16",
+   "#16151b",
+   "#1c1a21",
+   "#212126",
+   "#27272b",
+   "#454548",
+   "#646464",
+   "#818181",
+   "#9f9f9f"
+  ]
+ },
+ "warnings": []
+}

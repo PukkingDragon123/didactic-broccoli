@@ -5,3 +5,4 @@ dist
 shots/
 docs/steam/raw/
 __pycache__/
+.vitecache*/

@@ -99,13 +99,14 @@ export default {
   // (loaded with the prop library, so Mikawa-san's fedora is on his head from the first frame: src/places/mikawaya/oldman.js)
   hm_fedora: M('wear_fedora', 0.13),
   // the furniture catalogue's gumball machine and fan (src/build/models.js), the closet's wall shelves
-  hm_gumball_machine: M('gumball_machine', 0.9),
+  hm_gumball_machine: M('gumball_own', 1.2),
   hm_fan: M('fan_floor', 0.85),
   hm_shelf_wall: M('shelf_wall4', 0.12),
   hm_shelf_ledge: { asset: { id: 'lowpix/world/shelf_wall4', size: [0.74, 0.06, 0.17], fit: 'stretch' } }, // (the figure shelf's ledges, #102)
   hm_pigeon: M('pigeon_lp2', 0.25),
   hm_tomato: M('tomato_plant', 0.5),
   hm_condiments: M('condiments', 0.15),
+  hm_shower: M('shower_own', 1.17),
   // flat #103: the spare room's chest of drawers, shelves and wall things, the bath's mirror, bottles and basket
   hm_tansu: M('tansu', 0.95),
   hm_cube_shelf: M('room_bookshelf', 0.91),

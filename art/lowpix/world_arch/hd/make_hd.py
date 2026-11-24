@@ -1150,6 +1150,14 @@ def shop_floor():
     return finish(a, st, '#76522f', k=26)
 
 
+@recipe('grassFloor', (2, 2))
+def grass_floor():
+    """Short grass (verges, the garden patches): blades and clumps from the photo, a little bare earth showing."""
+    rng = np.random.default_rng(568)
+    a = surface('grass_ground', px(2), px(2), rng, std=0.14, sat=1.0)
+    return finish(a, None, '#60af46', k=22, paint=1, sat=0.9)
+
+
 # ------------------------------------------------------------------ Gacha Kaikan (src/growth/mall): floors and ceiling
 MALL = {1: ('#f6e8ec', '#e8a8bc', '#c8889c'), 2: ('#eef8f6', '#9adcd0', '#6ab8ac'), 3: ('#f4e2c4', '#c8784a', '#9a5a38'),
         4: ('#2a2630', '#5a4a2a', '#d4a83a')}  # src/growth/mall/layout.js THEMES a, b, grout

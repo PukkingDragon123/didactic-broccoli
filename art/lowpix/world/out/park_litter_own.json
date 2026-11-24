@@ -1,0 +1,66 @@
+{
+ "id": "park_litter_own",
+ "src": "art/lowpix/world/made/park_litter.glb",
+ "credit": {
+  "title": "Park litter (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/park_litter.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 162,
+ "tex": 448,
+ "size": [
+  0.646,
+  0.1,
+  0.345
+ ],
+ "colours": 29,
+ "palette": {
+  "m0": [
+   "#906340",
+   "#b2895d",
+   "#c4ad8b",
+   "#d7cdb6",
+   "#edeae0",
+   "#efede5",
+   "#f1f0ea",
+   "#f3f3ee",
+   "#f6f6f2"
+  ],
+  "m1": [
+   "#132662",
+   "#1b3b7e",
+   "#245399",
+   "#2e6fb2",
+   "#3c8cc8",
+   "#5aa5cc",
+   "#77bad2",
+   "#93ccd8",
+   "#aedbe0"
+  ],
+  "m2": [
+   "#743205",
+   "#954d09",
+   "#b56e0f",
+   "#d49215",
+   "#e6b428",
+   "#e6ca49",
+   "#e8db68",
+   "#eae987",
+   "#ededa5"
+  ],
+  "m3": [
+   "#7d3b21",
+   "#a0582e",
+   "#c1793d",
+   "#ca9b64",
+   "#d4b88a",
+   "#d8c69c",
+   "#dcd2ae",
+   "#e2ddbe",
+   "#e7e6cf"
+  ]
+ },
+ "warnings": []
+}

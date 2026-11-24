@@ -104,8 +104,10 @@ export class Annex {
       glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
     };
     // wall strips: grimy and freshly painted
-    this.dirty = M(new THREE.MeshStandardMaterial({ map: pixMat('plaster', {}).map, color: 0x8e8068, roughness: 0.95 }));
-    this.clean = M(new THREE.MeshStandardMaterial({ map: pixMat('plaster', {}).map, color: 0xfff6e2, roughness: 0.9 }));
+    // (these faces' UVs run at half a unit a metre: the plaster's repeat is doubled so it stays at its 256 px/m)
+    const pl = pixMat('plaster', {}).map.clone(); pl.repeat.multiplyScalar(2);
+    this.dirty = M(new THREE.MeshStandardMaterial({ map: pl, color: 0x8e8068, roughness: 0.95 }));
+    this.clean = M(new THREE.MeshStandardMaterial({ map: pl, color: 0xfff6e2, roughness: 0.9 }));
     this.tubeOn = new THREE.MeshBasicMaterial({ color: 0xf4faff });
     this.tubeOff = M(new THREE.MeshStandardMaterial({ color: 0x6a6e72, roughness: 0.4 }));
   }

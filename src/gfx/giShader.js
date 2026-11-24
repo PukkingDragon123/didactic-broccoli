@@ -21,8 +21,8 @@ import * as THREE from 'three';
 const v3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 /** The shared uniforms (roomGI writes them once per frame; every lit material reads them). */
 export const GI = {
-  ggPVTex: { value: null }, ggPVTex0: { value: null },
-  ggPVOn: { value: 0 }, ggPVMix: { value: 1 }, ggPVK: { value: 1 },
+  ggPVTex: { value: null },
+  ggPVOn: { value: 0 }, ggPVK: { value: 1 },
   ggPVMin: { value: v3() }, ggPVStep: { value: v3(1, 1, 1) }, ggPVRes: { value: v3(2, 2, 2) }, ggPVBias: { value: 0.25 },
   ggBoxMin: { value: v3(1e9, 1e9, 1e9) }, ggBoxMax: { value: v3(-1e9, -1e9, -1e9) },
   ggEnvBox: { value: 0 }, ggEnvPos: { value: v3() }, ggEnvMin: { value: v3() }, ggEnvMax: { value: v3() },
@@ -31,8 +31,7 @@ export const GI = {
 const PARS = /* glsl */`
 #ifdef GG_GI
 uniform highp sampler3D ggPVTex;
-uniform highp sampler3D ggPVTex0;
-uniform float ggPVOn, ggPVMix, ggPVK, ggPVBias, ggEnvBox;
+uniform float ggPVOn, ggPVK, ggPVBias, ggEnvBox;
 uniform vec3 ggPVMin, ggPVStep, ggPVRes, ggBoxMin, ggBoxMax, ggEnvPos, ggEnvMin, ggEnvMax;
 // 1 inside the room's box, 0 past its walls (a short soft edge)
 float ggBoxW( vec3 p ) {
@@ -40,19 +39,18 @@ float ggBoxW( vec3 p ) {
 	return smoothstep( -0.15, 0.05, min( min( d.x, d.y ), d.z ) );
 }
 // irradiance from one volume: three blocks of slices, one per colour channel, each (L00, L1y, L1z, L1x)
-vec3 ggSH( highp sampler3D t, vec3 uvw, vec4 b ) {
-	vec4 r = texture( t, vec3( uvw.xy, uvw.z * ( 1.0 / 3.0 ) ) );
-	vec4 g = texture( t, vec3( uvw.xy, ( uvw.z + 1.0 ) * ( 1.0 / 3.0 ) ) );
-	vec4 c = texture( t, vec3( uvw.xy, ( uvw.z + 2.0 ) * ( 1.0 / 3.0 ) ) );
+// (one sampler only: lit materials are already close to the texture-unit and varying limits of some GPUs)
+vec3 ggSH( vec3 uvw, vec4 b ) {
+	vec4 r = texture( ggPVTex, vec3( uvw.xy, uvw.z * ( 1.0 / 3.0 ) ) );
+	vec4 g = texture( ggPVTex, vec3( uvw.xy, ( uvw.z + 1.0 ) * ( 1.0 / 3.0 ) ) );
+	vec4 c = texture( ggPVTex, vec3( uvw.xy, ( uvw.z + 2.0 ) * ( 1.0 / 3.0 ) ) );
 	return max( vec3( dot( r, b ), dot( g, b ), dot( c, b ) ), vec3( 0.0 ) );
 }
 vec3 ggIrradiance( vec3 p, vec3 n ) {
 	// (clamped to the probe grid: a texel centre in its own block, so the channels never blend into each other)
 	vec3 uvw = ( clamp( ( p - ggPVMin ) / ggPVStep, vec3( 0.0 ), ggPVRes - 1.0 ) + 0.5 ) / ggPVRes;
 	vec4 b = vec4( 0.886227, 1.023328 * n.y, 1.023328 * n.z, 1.023328 * n.x );
-	vec3 e = ggSH( ggPVTex, uvw, b );
-	if ( ggPVMix < 0.999 ) e = mix( ggSH( ggPVTex0, uvw, b ), e, ggPVMix );
-	return e * ggPVK;
+	return ggSH( uvw, b ) * ggPVK;
 }
 #if defined( USE_ENVMAP ) && defined( ENVMAP_TYPE_CUBE_UV )
 // the environment seen along a reflected ray that ends on the room's walls (box projection)

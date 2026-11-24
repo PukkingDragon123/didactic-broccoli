@@ -1,0 +1,88 @@
+{
+ "id": "asagao_bloom",
+ "src": "art/lowpix/world/made/asagao_bloom.glb",
+ "credit": {
+  "title": "Morning glory in bloom (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/asagao_bloom.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1800,
+ "tex": 512,
+ "size": [
+  0.312,
+  0.76,
+  0.308
+ ],
+ "colours": 47,
+ "palette": {
+  "m0": [
+   "#112055",
+   "#19326d",
+   "#214785",
+   "#2a5e9b",
+   "#3478b0",
+   "#4796c4",
+   "#67aeca",
+   "#87c3d2",
+   "#a5d4da"
+  ],
+  "m1": [
+   "#22100e",
+   "#2c1813",
+   "#352119",
+   "#3e2a1f",
+   "#463426",
+   "#67533c",
+   "#877353",
+   "#a19271",
+   "#b4ad95"
+  ],
+  "m2": [
+   "#123e1c",
+   "#195021",
+   "#206124",
+   "#2a7129",
+   "#3a8032",
+   "#539d42",
+   "#72b459",
+   "#93bf7c",
+   "#b1cc9d"
+  ],
+  "m3": [
+   "#724322",
+   "#916030",
+   "#b0803f",
+   "#c09e5c",
+   "#cab77f",
+   "#cfc593",
+   "#d5d1a6",
+   "#dbdbb9",
+   "#e2e2ca"
+  ],
+  "m4": [
+   "#271362",
+   "#2c1b7e",
+   "#2f2499",
+   "#302eb2",
+   "#3c46c8",
+   "#5a6ccc",
+   "#778dd2",
+   "#93a9d8",
+   "#aec2e0"
+  ],
+  "m5": [
+   "#4720ba",
+   "#6943da",
+   "#8e7de3",
+   "#bab6ed",
+   "#ececfa",
+   "#eff0fa",
+   "#f2f3fb",
+   "#f4f6fb",
+   "#f7f9fc"
+  ]
+ },
+ "warnings": []
+}

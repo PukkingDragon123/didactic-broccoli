@@ -1,55 +1,65 @@
 {
  "id": "mirror_pole",
- "src": "sketchfab:6b7baf381f6c45ef8d92411e0467492b",
+ "src": "art/lowpix/world/made/mirror_pole.glb",
  "credit": {
-  "title": "Blind spot traffic mirror",
-  "author": "Insane Ninja",
-  "authorUrl": "https://sketchfab.com/guru2fifa",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b",
-  "site": "Sketchfab"
+  "title": "Curve mirror (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mirror_pole.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
  },
- "tris": 2967,
- "tex": 512,
+ "tris": 860,
+ "tex": 488,
  "size": [
-  1.048,
-  3.104,
-  0.502
+  0.632,
+  3,
+  0.304
  ],
- "colours": 22,
+ "colours": 32,
  "palette": {
   "m0": [
-   "#675158",
-   "#836d72",
-   "#9a8d90",
-   "#b2aeae",
-   "#cccccc",
-   "#d3d3d3",
-   "#dadada",
-   "#e1e1e1",
-   "#e8e8e8"
+   "#243980",
+   "#3256a3",
+   "#4777c1",
+   "#6f9bcb",
+   "#96bad6",
+   "#a6c8da",
+   "#b6d3de",
+   "#c5dde3",
+   "#d4e6e9"
   ],
   "m1": [
-   "#5c001e",
-   "#78001e",
-   "#950018",
-   "#b1000e",
-   "#cc0201",
-   "#f21a05",
-   "#f74d2a",
-   "#f67e55",
-   "#f6a77f"
+   "#592925",
+   "#723d33",
+   "#8a5341",
+   "#a06b51",
+   "#ae866a",
+   "#b69c81",
+   "#bfaf98",
+   "#c9c0ae",
+   "#d4d0c2"
   ],
   "m2": [
-   "#010103",
-   "#010104",
-   "#010205",
-   "#020205",
-   "#020306",
-   "#142039",
-   "#294469",
-   "#3f6c98",
-   "#6395b9"
+   "#690e0a",
+   "#861e10",
+   "#a33316",
+   "#be4c1d",
+   "#d96926",
+   "#db8b47",
+   "#dea767",
+   "#e2bf86",
+   "#e7d3a4"
+  ],
+  "m3": [
+   "#37394e",
+   "#4b4f63",
+   "#606577",
+   "#767c89",
+   "#8f9399",
+   "#a1a3a4",
+   "#b1b1b1",
+   "#c0c0c0",
+   "#cfcfcf"
   ]
  },
  "warnings": []

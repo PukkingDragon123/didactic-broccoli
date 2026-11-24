@@ -13,7 +13,7 @@ import * as THREE from 'three';
 import { hash2 } from '../core/util.js';
 import { townPix } from '../gfx/textures.js';
 import { archPlace } from './archModels.js';
-import { detailize } from './surfaces.js';
+import { detailize, boxUV } from './surfaces.js';
 import { tiled4 } from './Town.js';
 
 export const PARK = {
@@ -122,7 +122,7 @@ function passage(t, mats) {
   // a covered drain along the west side, its lids, a water-meter lid
   B.box(m.lid, 0.26, 0.012, 9.9, P.ax0 + 0.13, 0, 0.18, { uv: [0, 0.5] });
   B.plane(t.decal('lidSquare', 24, 24, 0.6), 0.4, 0.4, 10.9, 0.006, -1.8, { unit: true });
-  B.plane(t.decal('lidValve', 12, 12, 0.6), 0.22, 0.22, 10.2, 0.006, 3.4, { unit: true });
+  B.plane(t.decal('lidValve', 24, 24, 0.6), 0.22, 0.22, 10.2, 0.006, 3.4, { unit: true });
   // side walls where the yards meet the passage, the closing wall behind NE2's back garden
   for (const [x, z0, z1, h] of [[P.ax0 - 0.075, 1.4, ZB - 0.15, 1.3], [P.ax1 + 0.075, 3.9, ZB - 0.15, 1.3], [P.ax1 + 0.075, P.zP, -2.85, 1.6], [P.ax0 - 0.075, -4.93, -4.75, 1.8]]) {
     B.box(m.block, 0.15, h, z1 - z0, x, 0, (z0 + z1) / 2, { uv: [z0 * 0.7, 0], ao: 0.15 });
@@ -587,7 +587,7 @@ function studio(t, mats, x0, x1, z0, z1, y0, y1) {
     col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
   }
   shell.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  shell.deleteAttribute('uv');
+  boxUV(shell); // world-metre UVs for the plaster detail map
   const sm = new THREE.Mesh(shell, mats.flatBack);
   sm.matrixAutoUpdate = false;
   t.add(sm);

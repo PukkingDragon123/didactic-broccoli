@@ -30,7 +30,11 @@ export function install(game) {
   gi.add({
     id: 'garage', box: box(GARAGE.minX, 0, GARAGE.minZ, GARAGE.maxX, GARAGE.height, GARAGE.maxZ), sky: true, global: true,
     at: V(0.2, 1.4, 0.5),
-    key: () => [G.lightsOn, game.bills?.powerOn !== false, Math.round(Math.max(0, G.shutterOpen) * 4), hour(), Math.round(Lg?.dimLevel ?? 0), (G.lights?.tubes || []).map((t) => (t.dead ? 0 : 1)).join('')].join(),
+    // the two tube fixtures' shadowed share, as one wide spot under the ceiling between them (src/game/Lighting.js
+    // turns the tubes' point lights down while it's on)
+    lights: () => [{ p: [0, GARAGE.height - 0.25, -0.6], t: [0, 0, -0.4], color: 0xf2f4ff, i: 16 * (Lg?.tubeLight ?? 0), angle: 1.36, pen: 0.6, range: 9, soft: 3 }],
+    key: () => [G.lightsOn, game.bills?.powerOn !== false, Math.round(Math.max(0, G.shutterOpen) * 4), Math.round(Lg?.dimLevel ?? 0), (G.lights?.tubes || []).map((t) => (t.dead ? 0 : 1)).join(''), night()].join(),
+    minor: () => hour(1),
   });
 
   // ---- Mikawa-ya (on the lane): its fluorescent fixtures become a real shadowed light while you're in the shop
@@ -44,7 +48,8 @@ export function install(game) {
         const pw = game.bills?.powerOn !== false ? 1 : 0;
         return [lamp({ x: -12.5, y: MK.H1 - 0.2, z: 16.6, intensity: 2.6 * pw, color: 0xfff2e2 }, { angle: 1.38, pen: 0.6, range: 8 })];
       },
-      key: () => [hour(1), night(), game.bills?.powerOn !== false].join(),
+      key: () => [night(), game.bills?.powerOn !== false].join(),
+      minor: () => hour(1),
     });
   }
 

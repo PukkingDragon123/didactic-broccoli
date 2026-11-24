@@ -1,0 +1,33 @@
+{
+ "id": "park_clock_own",
+ "src": "art/lowpix/world/made/park_clock.glb",
+ "credit": {
+  "title": "Park clock (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/park_clock.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 386,
+ "tex": 376,
+ "size": [
+  0.6,
+  3.62,
+  0.24
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#163628",
+   "#1e4531",
+   "#265338",
+   "#30613f",
+   "#3a6e46",
+   "#4d8a56",
+   "#64a268",
+   "#85b184",
+   "#a6c1a3"
+  ]
+ },
+ "warnings": []
+}

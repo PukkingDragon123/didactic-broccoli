@@ -110,15 +110,17 @@ export class Lighting {
       tubeK *= Math.random() < 0.45 ? 0.08 : 1;
     }
     const d = 1 - this.dimLevel * 0.93;
+    // (in and around the garage the renderer's room light carries most of the tubes' light as one shadowed key, see
+    // src/plugins/roomLight.js: the tubes' point lights keep a share as soft fill)
+    const gi = g.renderer?.gi, keyed = gi?.cur?.id === 'garage' ? gi.rigK : 0;
     let live = 0;
     for (const tb of L.tubes) {
       const k = tb.dead ? 0 : tubeK; // a dead tube stays dark until it's replaced
-      // (the shadowed key below carries most of the tubes' light: the points keep a share as soft fill)
-      tb.light.intensity = tb.base * k * d * (L.tubeKey ? 0.45 : 1);
+      tb.light.intensity = tb.base * k * d * (1 - 0.55 * keyed);
       tb.mat.color.setScalar(0.15 + 2.05 * k * d);
       live += k;
     }
-    if (L.tubeKey) L.tubeKey.light.intensity = L.tubeKey.base * d * live / Math.max(1, L.tubes.length);
+    this.tubeLight = d * live / Math.max(1, L.tubes.length); // (the key's share: src/plugins/roomLight.js)
     const lightsK = g.garage.lightsOn && power ? 1 : 0;
     // the sun by day, the moon by night (one shadow-casting light, so the renderer's god rays keep finding it)
     const sun = L.sun, useMoon = S.moonI > S.sunI;

@@ -12,7 +12,8 @@ import * as THREE from 'three';
 import { audio } from '../../core/audio.js';
 import { bgm } from '../../core/bgm.js';
 import { playSong } from '../../room/sfx.js';
-import { propGeometry } from '../../world/props.js';
+import { propGeometry, propAsset, maskedMaterials } from '../../world/props.js';
+import { voxelMaterials } from '../../voxel/materials.js';
 import { capsuleCost } from '../../game/economy.js';
 import { SERIES_BY_ID } from '../../data/series/index.js';
 import { Zone, V, canvasMat, pixText, grain, goTo, sfx, brightVoxel, bright } from '../kit.js';
@@ -445,7 +446,8 @@ export class Mall {
     for (const [c, arr] of by) {
       const geo = propGeometry(`gr_stack_${c}`);
       if (!geo) continue;
-      const near = new THREE.InstancedMesh(geo, brightVoxel(), arr.length);
+      // a module drawn with its model (src/data/propModels.js) keeps the model's own textured materials (mall-lit)
+      const near = new THREE.InstancedMesh(geo, propAsset(`gr_stack_${c}`) ? bright(maskedMaterials(geo, voxelMaterials('normal'))) : brightVoxel(), arr.length);
       const far = new THREE.InstancedMesh(farGeo(), farMats(c), arr.length);
       const mats = arr.map((s) => new THREE.Matrix4().compose(Z.L(s.x, y, s.z), q.setFromAxisAngle(Y, s.ry), one));
       for (const im of [near, far]) { im.receiveShadow = true; im.frustumCulled = false; Z.group.add(im); }

@@ -1,0 +1,34 @@
+{
+ "id": "spring_horse",
+ "src": "sketchfab:aa1c440f48a44e558dcc9097b35a6a6d",
+ "credit": {
+  "title": "Wooden Playground Horse",
+  "author": "Batuhan13",
+  "authorUrl": "https://sketchfab.com/Batuhan13",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/wooden-playground-horse-aa1c440f48a44e558dcc9097b35a6a6d",
+  "site": "Sketchfab"
+ },
+ "tris": 1756,
+ "tex": 512,
+ "size": [
+  0.324,
+  0.85,
+  0.719
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3b1210",
+   "#4b1d16",
+   "#5b2a1d",
+   "#6b3925",
+   "#794a2d",
+   "#98673d",
+   "#b48751",
+   "#bfa475",
+   "#ccbd97"
+  ]
+ },
+ "warnings": []
+}

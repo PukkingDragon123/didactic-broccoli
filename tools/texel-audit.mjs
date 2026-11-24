@@ -172,6 +172,8 @@ try {
   await pg.evaluate(() => { window.__game.places.setWhere(null); window.dbg.view(0, 2, 0, 0); });
   await pg.waitForTimeout(3000);
   const res = await pg.evaluate(measure, [+CLOSE, +FAR]);
+  mkdirSync(resolve(root, outDir), { recursive: true });
+  writeFileSync(resolve(root, outDir, 'texel.json'), JSON.stringify(res, null, 1));
   // ---- report
   const C = +CLOSE, F = +FAR;
   const short = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
@@ -186,11 +188,9 @@ try {
   const head = [`TEXEL DENSITY AUDIT ${new Date().toISOString()}  standard: close >= ${C} px/m, far >= ${F} px/m (docs/ART.md)`,
     `UNDER STANDARD: ${bad.length} surface groups (texture x mesh); close ${bad.filter((b) => b.zone === 'close').length}, far ${bad.filter((b) => b.zone === 'far').length}`,
     `GPU TEXTURE MEMORY (all textures on meshes, RGBA8 + mips): ${res.mem.mb} MB in ${res.mem.textures} textures`, ''];
-  mkdirSync(resolve(root, outDir), { recursive: true });
   writeFileSync(resolve(root, outDir, 'lowres_list.txt'), [...head, 'density (area-weighted median), zone, area, texture size, repeat, where, texture source', ...bad.map(fmt), '', ...(errors.length ? ['CONSOLE ERRORS:', ...errors.slice(0, 20)] : [])].join('\n') + '\n');
-  const all = res.rows.filter((r) => !r.proj).map((r) => ({ ...r, zone: r.close ? 'close' : 'far', d: (r.close || r.far).p50, area: (r.close || r.far).area, need: r.close ? C : F })).sort((x, y) => y.area - x.area);
+  const all = res.rows.filter((r) => !r.proj && (r.close || r.far)).map((r) => ({ ...r, zone: r.close ? 'close' : 'far', d: (r.close || r.far).p50, area: (r.close || r.far).area, need: r.close ? C : F })).sort((x, y) => y.area - x.area);
   writeFileSync(resolve(root, outDir, 'texel_all.txt'), [...head, ...all.map(fmt), '', 'WORLD-PROJECTED (no uv):', ...res.rows.filter((r) => r.proj).map((r) => `  ${r.who}  ${r.tex}  ${r.px.join('x')}`), '', 'TEXTURES BY MEMORY:', ...res.texList.map((x) => `  ${String(x.mb).padStart(6)} MB  ${x.w}x${x.h}  ${short(x.name, 70).padEnd(70)}  ${x.users.join(', ')}`)].join('\n') + '\n');
-  writeFileSync(resolve(root, outDir, 'texel.json'), JSON.stringify(res, null, 1));
   console.log(head.join('\n'));
   console.log('written', outDir + '/lowres_list.txt', 'errors:', errors.length);
 } catch (e) { console.error('ERROR', e.message); }

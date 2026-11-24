@@ -1454,11 +1454,12 @@
   },
   {
    "id": "mirror_pole",
-   "src": "sketchfab:6b7baf381f6c45ef8d92411e0467492b",
-   "h": 3.104,
-   "ppm": 100,
-   "tris": 3000,
-   "name": "Blind spot traffic mirror",
+   "src": "art/lowpix/world/made/mirror_pole.glb",
+   "h": 3.0,
+   "ppm": 200,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Curve mirror (our own model, hand-painted)",
    "prop": "mirror_pole"
   },
   {
@@ -3639,15 +3640,6 @@
    "name": "Pigeon - Low poly"
   },
   {
-   "id": "gumball_machine",
-   "src": "sketchfab:4fccac6257d64c3680bd81fc8f34675d",
-   "h": 0.4,
-   "ppm": 400,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Vintage Gum Ball Machine"
-  },
-  {
    "id": "milk_carton2",
    "src": "sketchfab:24373fdaccb94e2faa494d046ccde627",
    "h": 0.2,
@@ -3709,15 +3701,6 @@
    "tris": 894,
    "cap": 512,
    "name": "Victorian Street Lamp"
-  },
-  {
-   "id": "donut_m",
-   "src": "sketchfab:0bc473ee934f44c6bd124717cdf58c93",
-   "h": 0.08,
-   "ppm": 600,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Glazed donut_simple model"
   },
   {
    "id": "spoon_old",
@@ -3839,11 +3822,209 @@
   {
    "id": "hook_m",
    "src": "art/lowpix/world/made/hook.glb",
-   "h": 0.025,
+   "h": 0.042,
    "ppm": 3000,
-   "tris": 200,
+   "tris": 300,
    "cap": 64,
    "name": "Sign hook (our own model, hand-painted)"
+  },
+  {
+   "id": "soroban",
+   "src": "sketchfab:ee04aa74fcd04b839d4b964a17fc1a20",
+   "h": 0.12,
+   "ppm": 900,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Abacus"
+  },
+  {
+   "id": "pumpkin_trio",
+   "src": "sketchfab:0917d2e5b6fc425f9e266d088fe20c17",
+   "h": 0.45,
+   "ppm": 400,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Carved Pumpkin Trio"
+  },
+  {
+   "id": "swingset",
+   "src": "sketchfab:8712f53da0e04736802f1bc84ca7df97",
+   "h": 2.2,
+   "ppm": 140,
+   "tris": 3000,
+   "cap": 512,
+   "name": "Swing Set"
+  },
+  {
+   "id": "gumball_own",
+   "src": "art/lowpix/world/made/gumball_machine_own.glb",
+   "h": 1.2,
+   "ppm": 300,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Gumball machine (our own model, hand-painted)"
+  },
+  {
+   "id": "asagao_bloom",
+   "src": "art/lowpix/world/made/asagao_bloom.glb",
+   "h": 0.76,
+   "ppm": 500,
+   "tris": 1800,
+   "cap": 512,
+   "name": "Morning glory in bloom (our own model, hand-painted)"
+  },
+  {
+   "id": "asagao_vine",
+   "src": "art/lowpix/world/made/asagao_vine.glb",
+   "h": 0.76,
+   "ppm": 500,
+   "tris": 1700,
+   "cap": 512,
+   "name": "Morning glory vine (our own model, hand-painted)"
+  },
+  {
+   "id": "donut_seat_own",
+   "src": "art/lowpix/world/made/donut_seat.glb",
+   "h": 0.25,
+   "ppm": 400,
+   "tris": 700,
+   "cap": 512,
+   "name": "Giant donut seat (our own model, hand-painted)"
+  },
+  {
+   "id": "binfill_own",
+   "src": "art/lowpix/world/made/binfill.glb",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 700,
+   "cap": 256,
+   "name": "Bin fill (our own model, hand-painted)"
+  },
+  {
+   "id": "shower_own",
+   "src": "art/lowpix/world/made/shower.glb",
+   "h": 1.17,
+   "ppm": 500,
+   "tris": 900,
+   "cap": 256,
+   "name": "Wash-place shower (our own model, hand-painted)"
+  },
+  {
+   "id": "route_red",
+   "src": "art/lowpix/world/made/route_machine_red.glb",
+   "h": 1.95,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 512,
+   "name": "Route machines, red (our own model, hand-painted)"
+  },
+  {
+   "id": "route_blue",
+   "src": "art/lowpix/world/made/route_machine_blue.glb",
+   "h": 1.95,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 512,
+   "name": "Route machines, blue (our own model, hand-painted)"
+  },
+  {
+   "id": "route_yellow",
+   "src": "art/lowpix/world/made/route_machine_yellow.glb",
+   "h": 1.95,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 512,
+   "name": "Route machines, yellow (our own model, hand-painted)"
+  },
+  {
+   "id": "route_pink",
+   "src": "art/lowpix/world/made/route_machine_pink.glb",
+   "h": 1.95,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 512,
+   "name": "Route machines, pink (our own model, hand-painted)"
+  },
+  {
+   "id": "route_green",
+   "src": "art/lowpix/world/made/route_machine_green.glb",
+   "h": 1.95,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 512,
+   "name": "Route machines, green (our own model, hand-painted)"
+  },
+  {
+   "id": "route_black",
+   "src": "art/lowpix/world/made/route_machine_black.glb",
+   "h": 1.95,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 512,
+   "name": "Route machines, black (our own model, hand-painted)"
+  },
+  {
+   "id": "spring_horse",
+   "src": "sketchfab:aa1c440f48a44e558dcc9097b35a6a6d",
+   "h": 0.85,
+   "ppm": 300,
+   "tris": 1800,
+   "cap": 512,
+   "name": "Wooden Playground Horse"
+  },
+  {
+   "id": "twin_tub_own",
+   "src": "art/lowpix/world/made/twin_tub.glb",
+   "h": 0.92,
+   "ppm": 400,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Twin tub (our own model, hand-painted)"
+  },
+  {
+   "id": "drink_cans_own",
+   "src": "art/lowpix/world/made/drink_cans.glb",
+   "h": 0.12,
+   "ppm": 800,
+   "tris": 900,
+   "cap": 512,
+   "name": "Drink cans (our own model, hand-painted)"
+  },
+  {
+   "id": "park_litter_own",
+   "src": "art/lowpix/world/made/park_litter.glb",
+   "h": 0.1,
+   "ppm": 500,
+   "tris": 400,
+   "cap": 512,
+   "name": "Park litter (our own model, hand-painted)"
+  },
+  {
+   "id": "park_clock_own",
+   "src": "art/lowpix/world/made/park_clock.glb",
+   "h": 3.62,
+   "ppm": 180,
+   "tris": 800,
+   "cap": 512,
+   "name": "Park clock (our own model, hand-painted)"
+  },
+  {
+   "id": "laundry_pole_own",
+   "src": "art/lowpix/world/made/laundry_pole.glb",
+   "h": 1.82,
+   "ppm": 200,
+   "tris": 600,
+   "cap": 512,
+   "name": "Laundry pole (our own model, hand-painted)"
+  },
+  {
+   "id": "recycle_cage_own",
+   "src": "art/lowpix/world/made/recycle_cage.glb",
+   "h": 0.92,
+   "ppm": 300,
+   "tris": 300,
+   "cap": 512,
+   "name": "Recycle cage (our own model, hand-painted)"
   }
  ]
 }

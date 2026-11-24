@@ -1,0 +1,66 @@
+{
+ "id": "asagao_vine",
+ "src": "art/lowpix/world/made/asagao_vine.glb",
+ "credit": {
+  "title": "Morning glory vine (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/asagao_vine.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1512,
+ "tex": 512,
+ "size": [
+  0.319,
+  0.76,
+  0.314
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#123e1c",
+   "#195021",
+   "#206124",
+   "#2a7129",
+   "#3a8032",
+   "#539d42",
+   "#72b459",
+   "#93bf7c",
+   "#b1cc9d"
+  ],
+  "m1": [
+   "#112055",
+   "#19316d",
+   "#214684",
+   "#2a5e9a",
+   "#3477af",
+   "#4695c3",
+   "#67adca",
+   "#86c2d1",
+   "#a4d4da"
+  ],
+  "m2": [
+   "#724322",
+   "#916030",
+   "#b0803f",
+   "#c09e5c",
+   "#cab77f",
+   "#cfc593",
+   "#d5d1a6",
+   "#dbdbb9",
+   "#e2e2ca"
+  ],
+  "m3": [
+   "#22100e",
+   "#2c1813",
+   "#352119",
+   "#3e2a1f",
+   "#463426",
+   "#67533c",
+   "#877353",
+   "#a19271",
+   "#b4ad95"
+  ]
+ },
+ "warnings": []
+}

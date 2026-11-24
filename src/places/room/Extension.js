@@ -280,17 +280,15 @@ export class Extension {
     this.tub = tub;
     Z.prop('gr_bath_stool', X1 - 0.75, 0, 2.05, 0.3);
     Z.prop('gr_oke', X1 - 0.45, 0, 2.35, 0);
-    B.box(M.metal, 0.04, 0.9, 0.04, X1 - 0.03, 0.9, 2.2, { tint: 0xc8ccd2 }); // shower bar
-    B.box(M.metal, 0.06, 0.14, 0.06, X1 - 0.06, 1.75, 2.2, { tint: 0xd8dce0 });
+    Z.prop('hm_shower', X1 - 0.09, 0.33, 2.32, -Math.PI / 2, 1); // the mixer, hose, riser bar and hand shower (our own model)
     // the wash place: a real mirror, shampoo bottles, a sponge and a bath basket with a folded towel
-    Z.prop('hm_mirror', X1 - 0.015, 0.95, 2.0, -Math.PI / 2, 1);
+    Z.prop('hm_mirror', X1 - 0.015, 0.95, 1.68, -Math.PI / 2, 1);
     Z.prop('hm_bottle', X1 - 0.12, 0.0, 1.62, -0.4, 1);
     Z.prop('hm_bottle', X1 - 0.2, 0.0, 1.55, 0.3, 0.9);
     Z.prop('hm_sponge', X1 - 0.3, 0.0, 1.7, 0.8, 1);
     Z.prop('hm_basket', 1.15, 0.0, 2.5, 0.2, 1);
     Z.prop('hm_towel', 1.15, 0.12, 2.5, 0.1, 0.9);
     Z.prop('hm_bottle', 1.05, 0.12, 2.42, 0, 0.8);
-    B.box(M.metal, 0.12, 0.08, 0.2, X1 - 0.06, 0.6, 2.0, { tint: 0xc8ccd2 }); // taps
     // a frosted sliding door, half open, onto the kitchen (x 0.8)
     B.quad(M.paint, 0.36, 1.85, 0.8 - 0.06, 0, 1.62, { ry: Math.PI / 2, tint: 0xd8e0e6 });
     // the water heater panel by the door, inside: "fill the bath"

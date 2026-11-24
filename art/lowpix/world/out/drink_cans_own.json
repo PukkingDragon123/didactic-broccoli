@@ -1,0 +1,99 @@
+{
+ "id": "drink_cans_own",
+ "src": "art/lowpix/world/made/drink_cans.glb",
+ "credit": {
+  "title": "Drink cans (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/drink_cans.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 886,
+ "tex": 480,
+ "size": [
+  0.315,
+  0.12,
+  0.292
+ ],
+ "colours": 54,
+ "palette": {
+  "m0": [
+   "#474a6e",
+   "#61678c",
+   "#8189a2",
+   "#a3aab7",
+   "#c4c8ce",
+   "#ced0d3",
+   "#d7d8d9",
+   "#dfdfdf",
+   "#e7e7e7"
+  ],
+  "m1": [
+   "#0c0c5c",
+   "#111a76",
+   "#182c8f",
+   "#2041a7",
+   "#285abe",
+   "#3b7ad1",
+   "#5d99d6",
+   "#7fb4db",
+   "#9ecbe2"
+  ],
+  "m2": [
+   "#600c25",
+   "#7c1128",
+   "#961828",
+   "#b01f26",
+   "#c82e28",
+   "#d55240",
+   "#d97a62",
+   "#dd9c82",
+   "#e3baa1"
+  ],
+  "m3": [
+   "#347a4f",
+   "#479c61",
+   "#65b476",
+   "#8bc393",
+   "#b0d3b2",
+   "#bdd7bc",
+   "#cbdcc8",
+   "#d7e2d4",
+   "#e1e8df"
+  ],
+  "m4": [
+   "#8a4100",
+   "#b46400",
+   "#db8d03",
+   "#f8b810",
+   "#f6d23c",
+   "#f5e359",
+   "#f4f176",
+   "#f4f492",
+   "#f5f5ad"
+  ],
+  "m5": [
+   "#6f2842",
+   "#8e3750",
+   "#ab485c",
+   "#ba6770",
+   "#c6898b",
+   "#cc9e9b",
+   "#d2b2ad",
+   "#d9c4be",
+   "#e1d4cf"
+  ],
+  "m6": [
+   "#0d4435",
+   "#13573f",
+   "#196947",
+   "#207b4c",
+   "#288c50",
+   "#35ac5b",
+   "#4cc368",
+   "#71cb7e",
+   "#94d599"
+  ]
+ },
+ "warnings": []
+}

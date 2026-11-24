@@ -1,0 +1,55 @@
+{
+ "id": "shower_own",
+ "src": "art/lowpix/world/made/shower.glb",
+ "credit": {
+  "title": "Wash-place shower (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shower.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 700,
+ "tex": 176,
+ "size": [
+  0.416,
+  1.17,
+  0.161
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#47496c",
+   "#606689",
+   "#7f87a0",
+   "#a1a7b5",
+   "#c1c5cb",
+   "#cbced1",
+   "#d5d6d7",
+   "#dedede",
+   "#e5e5e5"
+  ],
+  "m1": [
+   "#670e26",
+   "#84152a",
+   "#a01c2a",
+   "#bb2528",
+   "#d23c32",
+   "#d56551",
+   "#d98870",
+   "#dea68d",
+   "#e4c1aa"
+  ],
+  "m2": [
+   "#0f166a",
+   "#172888",
+   "#1f3ea5",
+   "#2858c1",
+   "#3c78d2",
+   "#5a95d5",
+   "#77afd9",
+   "#93c4de",
+   "#aed6e4"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,99 @@
+{
+ "id": "donut_seat_own",
+ "src": "art/lowpix/world/made/donut_seat.glb",
+ "credit": {
+  "title": "Giant donut seat (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/donut_seat.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 672,
+ "tex": 512,
+ "size": [
+  0.915,
+  0.25,
+  0.915
+ ],
+ "colours": 55,
+ "palette": {
+  "m0": [
+   "#6e2716",
+   "#8d3e1f",
+   "#aa5929",
+   "#c77735",
+   "#ce9656",
+   "#d2ac70",
+   "#d7bf89",
+   "#dcd0a1",
+   "#e3ddb9"
+  ],
+  "m1": [
+   "#ab0679",
+   "#dc0c8b",
+   "#f02d94",
+   "#f162a2",
+   "#f496b8",
+   "#f4a6bc",
+   "#f5b5c2",
+   "#f5c4ca",
+   "#f7d3d4"
+  ],
+  "m2": [
+   "#86182b",
+   "#ab232e",
+   "#d02f2f",
+   "#d66359",
+   "#dd9182",
+   "#e0a895",
+   "#e3bba8",
+   "#e7ccba",
+   "#ebdbcb"
+  ],
+  "m3": [
+   "#981e8e",
+   "#c22baa",
+   "#d451b4",
+   "#dd80be",
+   "#e7adcf",
+   "#e9bad1",
+   "#ebc6d6",
+   "#eed2db",
+   "#f1dde2"
+  ],
+  "m4": [
+   "#19804e",
+   "#24a45c",
+   "#30c765",
+   "#54d276",
+   "#7cd98d",
+   "#90dc98",
+   "#a4e0a5",
+   "#bae4b7",
+   "#cee9c9"
+  ],
+  "m5": [
+   "#0025a2",
+   "#0042d4",
+   "#0969fc",
+   "#3d98fa",
+   "#70bdf9",
+   "#86cff8",
+   "#9bdef7",
+   "#afeaf8",
+   "#c3f3f8"
+  ],
+  "m6": [
+   "#b51f85",
+   "#da3b9a",
+   "#e174ac",
+   "#ebabc7",
+   "#f7e0e8",
+   "#f8e5ea",
+   "#f8e9ec",
+   "#f9eeef",
+   "#faf2f2"
+  ]
+ },
+ "warnings": []
+}

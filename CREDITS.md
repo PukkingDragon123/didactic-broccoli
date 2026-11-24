@@ -2666,6 +2666,7 @@ by `tools/pixelart.py`.
 Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert --style pixel-hd`), then scaled, re-textured and compressed by tools/lowpix-world.mjs. Shipped in `models/lowpix/world/`.
 
 - AA batteries by Gacha Garage (made for the game, art/lowpix/world/made/batterypack.glb), CC0 1.0. Shipped as `models/lowpix/world/batterypack.glb`
+- Bin fill (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/binfill.glb), CC0 1.0. Shipped as `models/lowpix/world/binfill_own.glb`
 - Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0. Shipped as `models/lowpix/world/busstop.glb`
 - capsule return by Gacha Garage (made for the game, art/lowpix/world/made/capsulereturn.glb), CC0 1.0. Shipped as `models/lowpix/world/capsulereturn.glb`
 - Cardboard mess by Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb), CC0 1.0. Shipped as `models/lowpix/world/cardboardmess.glb`
@@ -2673,14 +2674,17 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - coin changer by Gacha Garage (made for the game, art/lowpix/world/made/coinchanger.glb), CC0 1.0. Shipped as `models/lowpix/world/coinchanger.glb`
 - Coin tray (カルトン) by Gacha Garage (made for the game, art/lowpix/world/made/cointray.glb), CC0 1.0. Shipped as `models/lowpix/world/cointray.glb`
 - Crushed can (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/can_crushed.glb), CC0 1.0. Shipped as `models/lowpix/world/litter_can.glb`
+- Curve mirror (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/mirror_pole.glb), CC0 1.0. Shipped as `models/lowpix/world/mirror_pole.glb`
 - dagashi rack by Gacha Garage (made for the game, art/lowpix/world/made/dagashirack.glb), CC0 1.0. Shipped as `models/lowpix/world/dagashirack.glb`
 - Dust pile by Gacha Garage (made for the game, art/lowpix/world/made/dustpile.glb), CC0 1.0. Shipped as `models/lowpix/world/dustpile.glb`
 - Dust pile (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/dustpile_own.glb), CC0 1.0. Shipped as `models/lowpix/world/dustpile_own.glb`
 - Fire buckets (消火用) by Gacha Garage (made for the game, art/lowpix/world/made/firebuckets.glb), CC0 1.0. Shipped as `models/lowpix/world/firebuckets.glb`
 - Garbage station (ごみ集積所) by Gacha Garage (made for the game, art/lowpix/world/made/garbagestation.glb), CC0 1.0. Shipped as `models/lowpix/world/garbagestation.glb`
 - Gas water heater (瞬間湯沸器) by Gacha Garage (made for the game, art/lowpix/world/made/waterheater.glb), CC0 1.0. Shipped as `models/lowpix/world/waterheater.glb`
+- Giant donut seat (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/donut_seat.glb), CC0 1.0. Shipped as `models/lowpix/world/donut_seat_own.glb`
 - Glass marble (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/marble.glb), CC0 1.0. Shipped as `models/lowpix/world/marble_m.glb`
 - Gumball (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball.glb), CC0 1.0. Shipped as `models/lowpix/world/gumball_m.glb`
+- Gumball machine (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball_machine_own.glb), CC0 1.0. Shipped as `models/lowpix/world/gumball_own.glb`
 - Kamidana (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/kamidana_own.glb), CC0 1.0. Shipped as `models/lowpix/world/kamidana_own.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsmilk.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/milkcarton.glb), CC0 1.0. Shipped as `models/lowpix/world/milkcarton.glb`
@@ -2691,10 +2695,18 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - mk puff box by Gacha Garage (made for the game, art/lowpix/world/made/goodspuff.glb), CC0 1.0. Shipped as `models/lowpix/world/goodspuff.glb`
 - mk puff box by Gacha Garage (made for the game, art/lowpix/world/made/puffbox.glb), CC0 1.0. Shipped as `models/lowpix/world/puffbox.glb`
 - mk watch case by Gacha Garage (made for the game, art/lowpix/world/made/watchcase.glb), CC0 1.0. Shipped as `models/lowpix/world/watchcase.glb`
+- Morning glory in bloom (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/asagao_bloom.glb), CC0 1.0. Shipped as `models/lowpix/world/asagao_bloom.glb`
+- Morning glory vine (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/asagao_vine.glb), CC0 1.0. Shipped as `models/lowpix/world/asagao_vine.glb`
 - Paint roller (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/roller.glb), CC0 1.0. Shipped as `models/lowpix/world/roller_m.glb`
 - Pink phone (ピンク電話) by Gacha Garage (made for the game, art/lowpix/world/made/pinkphone.glb), CC0 1.0. Shipped as `models/lowpix/world/pinkphone.glb`
 - Robot vacuum dock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb), CC0 1.0. Shipped as `models/lowpix/world/vacuum_dock_m.glb`
 - room cupnoodle by Gacha Garage (made for the game, art/lowpix/world/made/goodsnoodle.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsnoodle.glb`
+- Route machines, black (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_black.glb), CC0 1.0. Shipped as `models/lowpix/world/route_black.glb`
+- Route machines, blue (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_blue.glb), CC0 1.0. Shipped as `models/lowpix/world/route_blue.glb`
+- Route machines, green (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_green.glb), CC0 1.0. Shipped as `models/lowpix/world/route_green.glb`
+- Route machines, pink (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_pink.glb), CC0 1.0. Shipped as `models/lowpix/world/route_pink.glb`
+- Route machines, red (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_red.glb), CC0 1.0. Shipped as `models/lowpix/world/route_red.glb`
+- Route machines, yellow (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_yellow.glb), CC0 1.0. Shipped as `models/lowpix/world/route_yellow.glb`
 - Rubbish pile by Gacha Garage (made for the game, art/lowpix/world/made/rubbishpile.glb), CC0 1.0. Shipped as `models/lowpix/world/rubbishpile.glb`
 - Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb), CC0 1.0. Shipped as `models/lowpix/world/kakigori.glb`
 - shop counter by Gacha Garage (made for the game, art/lowpix/world/made/showcase.glb), CC0 1.0. Shipped as `models/lowpix/world/showcase.glb`
@@ -2706,6 +2718,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb), CC0 1.0. Shipped as `models/lowpix/world/tomare.glb`
 - Street light by Gacha Garage (made for the game, art/lowpix/world/made/streetlight.glb), CC0 1.0. Shipped as `models/lowpix/world/streetlight.glb`
 - tube box by Gacha Garage (made for the game, art/lowpix/world/made/tubebox.glb), CC0 1.0. Shipped as `models/lowpix/world/tubebox.glb`
+- Wash-place shower (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/shower.glb), CC0 1.0. Shipped as `models/lowpix/world/shower_own.glb`
 - Window squeegee (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/squeegee.glb), CC0 1.0. Shipped as `models/lowpix/world/squeegee_own.glb`
 - Wrapped fruit candy (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/candy_own.glb), CC0 1.0. Shipped as `models/lowpix/world/candy_own.glb`
 - Alarm Clock 01 by Yann Kervran, James Ray Cock (https://polyhaven.com/a/alarm_clock_01), CC0 1.0. Shipped as `models/lowpix/world/clock_alarm.glb`
@@ -2817,6 +2830,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - A Backpack For An Adventure by Thomas Lean (https://sketchfab.com/3d-models/a-backpack-for-an-adventure-2ad86321197a49feb54b7726743d7fd0), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_satchel.glb`
 - A lollipop by Fluffrier (https://sketchfab.com/3d-models/a-lollipop-8c73bdf9f6304a3899b406483b5a6834), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/lollipop_m.glb`
 - a pot by bikutoria258 (https://sketchfab.com/3d-models/a-pot-2d609d3adf9e49ac945b62b5ce98573e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pot_a.glb`
+- Abacus by hky111111 (https://sketchfab.com/3d-models/abacus-ee04aa74fcd04b839d4b964a17fc1a20), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/soroban.glb`
 - Abandoned Beer Crates & Bottles Low Poly by Fevzi_Beydili (https://sketchfab.com/3d-models/abandoned-beer-crates-bottles-low-poly-2be722c87cfd404698506f33f575b219), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/beer_crates.glb`
 - Akira and Tetsuko's Celebration Kokeshi doll by ShadowAssetsStore (https://sketchfab.com/3d-models/akira-and-tetsukos-celebration-kokeshi-doll-d3c152a1c4154f279cb590b6643e1640), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kokeshi.glb`
 - Antique Iron by VitoMaiorana3D (https://sketchfab.com/3d-models/antique-iron-d7020887e0b54a06845627e41dfe3622), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/iron_antique.glb`
@@ -2839,7 +2853,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - BFBBR - Bamboo Fence 01 by SMF Features Developed From Cheryl Hill (https://sketchfab.com/3d-models/bfbbr-bamboo-fence-01-c7c5f6cc7adb455b908fb352be5051c2), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bamboo_fence.glb`
 - Black Glasses by nazarchi091 (https://sketchfab.com/3d-models/black-glasses-8425ebedb9334fc3a1e6d7a72f5612b4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_frames.glb`
 - Blanket and Pillows - Low Poly by Antipov Alexsander (https://sketchfab.com/3d-models/blanket-and-pillows-low-poly-65d0993e7b1741e9ab061d5f97504c31), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/blanket_pillows.glb`
-- Blind spot traffic mirror by Insane Ninja (https://sketchfab.com/3d-models/blind-spot-traffic-mirror-6b7baf381f6c45ef8d92411e0467492b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mirror_pole.glb`
 - Bonsai by Vermos (https://sketchfab.com/3d-models/bonsai-8b73fd97545b468288cd9ba03c93d358), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bonsai.glb`
 - Bowl by cloud (https://sketchfab.com/3d-models/bowl-6c6d124baca54d09871af6bc77738b81), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/bowl_empty.glb`
 - Bucket hat by landout (https://sketchfab.com/3d-models/bucket-hat-68c6eda73171436b911c77f8e16bdd2d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_boonie.glb`
@@ -2852,6 +2865,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Cardboard Box by Andrew.Mischenko (https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cat_bed.glb`
 - Cardboard Box by Andrew.Mischenko (https://sketchfab.com/3d-models/cardboard-box-f43199f19c3142c68cc672db55d9a40d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/noodle_box.glb`
 - Carton Box_03_Open by Molfgang (https://sketchfab.com/3d-models/carton-box-03-open-fb9958f7f2c74095a25589837e62aa9d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_snack_carton.glb`
+- Carved Pumpkin Trio by W_illness (https://sketchfab.com/3d-models/carved-pumpkin-trio-0917d2e5b6fc425f9e266d088fe20c17), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pumpkin_trio.glb`
 - Cassette tapes by FEDDYFAZBARE (https://sketchfab.com/3d-models/cassette-tapes-820777808625494581401700ccc3e7f7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_trinket_cassette.glb`
 - Casual Jar of Raspberry Jam by Incg5764 (https://sketchfab.com/3d-models/casual-jar-of-raspberry-jam-61bc4a8ef3184b169ab368946fcf2135), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/jam_jar.glb`
 - Cat Ears by neutralize (https://sketchfab.com/3d-models/cat-ears-5911b20f4604472fba0fcbf4974c10ae), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_catears.glb`
@@ -2913,7 +2927,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Geta by Akio (https://sketchfab.com/3d-models/geta-70e95901d171405092883675660419cc), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/sandals.glb`
 - Glass of Tea by Tiago Lopes (https://sketchfab.com/3d-models/glass-of-tea-7669b27d4e634e7b9cd114d50c33af97), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tea_glass.glb`
 - Glasses 09 by Dokono Kinokoda (https://sketchfab.com/3d-models/glasses-09-5d4ef7145b1b426cb129e3d661f7c2e6), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_round.glb`
-- Glazed donut_simple model by JoelHdez (https://sketchfab.com/3d-models/glazed-donut-simple-model-0bc473ee934f44c6bd124717cdf58c93), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/donut_m.glb`
 - Gourd Bottle by Akio (https://sketchfab.com/3d-models/gourd-bottle-fc5c13c5194241339121d8c2e99ae1c7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_hyotan.glb`
 - grandma's sewing machine by iamgleb (https://sketchfab.com/3d-models/grandmas-sewing-machine-5afe6ca7cf9e4bdea2b85e56537a044c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/sewing_machine2.glb`
 - Grocery store Shelf by Palmart Productions (https://sketchfab.com/3d-models/grocery-store-shelf-fe8010f2d2e4495599506deb4af9da9d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/goods_shelf.glb`
@@ -3080,6 +3093,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - straw boater hat w/ black silk ribbon by clairenicole22 (https://sketchfab.com/3d-models/straw-boater-hat-w-black-silk-ribbon-cd78d72dca1748048c7badfbb2f4e06c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_boater.glb`
 - Stuffed animal of Shark (サメのぬいぐるみ) by horse_water (https://sketchfab.com/3d-models/stuffed-animal-of-shark-ec56e06c502a4cf2adf1b6beea43dc28), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_shark.glb`
 - Sweat Band For Gorilla Tag Fan Game NO TEXTURES by bluemonkez (https://sketchfab.com/3d-models/sweat-band-for-gorilla-tag-fan-game-no-textures-99178c593c12413fab594caa2056b17c), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_sweatband.glb`
+- Swing Set by Glowbox 3D (https://sketchfab.com/3d-models/swing-set-8712f53da0e04736802f1bc84ca7df97), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/swingset.glb`
 - Taiyaki by patrakeevasveta (https://sketchfab.com/3d-models/taiyaki-a8ca187f40504b9084b9052c569e5122), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/taiyaki.glb`
 - Tansu by Museo de Zaragoza (https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tansu.glb`
 - Tau Noodle Cup by Squishy (https://sketchfab.com/3d-models/tau-noodle-cup-74399ab3073d47d196621eecee0bfad3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cup_noodle2.glb`
@@ -3103,7 +3117,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Utility Sink by Janet Peña (https://sketchfab.com/3d-models/utility-sink-69eacffafcfe40378bf4de7822eaf0f5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/utility_sink.glb`
 - Victorian Street Lamp by Sir Red Alfredo (https://sketchfab.com/3d-models/victorian-street-lamp-5340eca1404742c3945d3862fcabcaed), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/street_lamp_v.glb`
 - Vintage  Camera by EricKos (https://sketchfab.com/3d-models/vintage-camera-dd2608dcbd3e4944b4614b2f2de4c73b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/camera_vintage.glb`
-- Vintage Gum Ball Machine by gozdemrl (https://sketchfab.com/3d-models/vintage-gum-ball-machine-4fccac6257d64c3680bd81fc8f34675d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/gumball_machine.glb`
 - Vintage Motorcycle Helmet by gozdemrl (https://sketchfab.com/3d-models/vintage-motorcycle-helmet-539728553e314ede87d9c4e9fa129641), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_moto2.glb`
 - Vintage retro payphone by patrakeevasveta (https://sketchfab.com/3d-models/vintage-retro-payphone-ef9c3fbe009e403092bece69c8557c9f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/payphone_red.glb`
 - Vintage Toaster by Kommander Karl (https://sketchfab.com/3d-models/vintage-toaster-f1d04726212f4bfea15fa57fd45420bf), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/toaster.glb`
@@ -3120,6 +3133,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Wooden Floor Lamp by Atalaya22 (https://sketchfab.com/3d-models/wooden-floor-lamp-4766a03aa796440598426f8d5e975fec), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/floor_lamp.glb`
 - Wooden Ladle by Dr_Kryzel (https://sketchfab.com/3d-models/wooden-ladle-a234707b21b340e0a544276e215e2bae), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/ladle.glb`
 - Wooden ladles and spoons by Enkarra (https://sketchfab.com/3d-models/wooden-ladles-and-spoons-8f40e348779749fdbaa599f2c6226beb), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/ladles_wood.glb`
+- Wooden Playground Horse by Batuhan13 (https://sketchfab.com/3d-models/wooden-playground-horse-aa1c440f48a44e558dcc9097b35a6a6d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/spring_horse.glb`
 - Wooden Train Toy by Mattyew (https://sketchfab.com/3d-models/wooden-train-toy-3078ed18f3c444f3aadb9f7b48f1e1b5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/toy_train.glb`
 - Worn Traffic Cone by Kuutti Siitonen (https://sketchfab.com/3d-models/worn-traffic-cone-1cbffb4169684e5a84ba186882bd55d7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cone.glb`
 - Zafu and zabuton by Thomas Deneuville (https://sketchfab.com/3d-models/zafu-and-zabuton-1e2b4dc9efe348548b681a1fe0a1343b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_zabuton.glb`

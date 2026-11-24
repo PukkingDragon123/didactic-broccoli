@@ -1,0 +1,56 @@
+{
+ "id": "swingset",
+ "src": "sketchfab:8712f53da0e04736802f1bc84ca7df97",
+ "credit": {
+  "title": "Swing Set",
+  "author": "Glowbox 3D",
+  "authorUrl": "https://sketchfab.com/glowbox3d",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/swing-set-8712f53da0e04736802f1bc84ca7df97",
+  "site": "Sketchfab"
+ },
+ "tris": 2986,
+ "tex": 512,
+ "size": [
+  3.161,
+  2.2,
+  1.273
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#312553",
+   "#3d336a",
+   "#484280",
+   "#535294",
+   "#666aa5",
+   "#7e85ae",
+   "#959db8",
+   "#acb3c4",
+   "#c1c7d0"
+  ],
+  "m1": [
+   "#574321",
+   "#6f5d2d",
+   "#86773b",
+   "#9c934a",
+   "#adab5d",
+   "#b5b576",
+   "#bebe8f",
+   "#c8c8a6",
+   "#d4d4bd"
+  ],
+  "m2": [
+   "#3e3135",
+   "#4f4245",
+   "#5f5456",
+   "#6d6767",
+   "#7b7b7b",
+   "#8d8d8d",
+   "#9f9f9f",
+   "#b1b1b1",
+   "#c4c4c4"
+  ]
+ },
+ "warnings": []
+}

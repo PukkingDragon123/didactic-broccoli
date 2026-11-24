@@ -1,0 +1,45 @@
+{
+ "id": "soroban",
+ "src": "sketchfab:ee04aa74fcd04b839d4b964a17fc1a20",
+ "credit": {
+  "title": "Abacus",
+  "author": "hky111111",
+  "authorUrl": "https://sketchfab.com/hky111111",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/abacus-ee04aa74fcd04b839d4b964a17fc1a20",
+  "site": "Sketchfab"
+ },
+ "tris": 1994,
+ "tex": 512,
+ "size": [
+  0.212,
+  0.12,
+  0.032
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#050001",
+   "#060000",
+   "#070100",
+   "#090201",
+   "#0a0301",
+   "#471c08",
+   "#823e12",
+   "#bb681d",
+   "#dd9740"
+  ],
+  "m1": [
+   "#240b00",
+   "#2e1200",
+   "#391b00",
+   "#442600",
+   "#4f3300",
+   "#886402",
+   "#c09d06",
+   "#f4dc0d",
+   "#f3f049"
+  ]
+ },
+ "warnings": []
+}

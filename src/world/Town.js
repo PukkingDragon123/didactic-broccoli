@@ -63,6 +63,8 @@ import { assetNow } from '../kit/assets.js';
 import { LP_HOUSES, archAsset } from '../kit/lowpixArch.js';
 import { treeInstances, foliageTick, Leaves, potGeometry } from './foliage.js';
 import { trainCars } from './trainModel.js';
+import { buildMachineModel } from './machineModels.js';
+import { bannerTexture } from '../gfx/banner.js';
 
 // ------------------------------------------------------------------ layout
 const ZB = 5.3, ZG0 = 5.75, ZG1 = 6.1, ZR1 = 13.35, ZG3 = 13.7, ZF = 14.9;
@@ -600,7 +602,9 @@ export class Town {
     this.shop.openG.add(this.vmesh(mergeGeometries(bulbs), this.G));
     // out front: dagashiya-style things (open) — weeds and a taped notice (closed)
     const O = this.shop.openG, C = this.shop.closedG;
-    this.single('gacha_twin', -2.55, 0, 5.62, 0, {}, O);
+    // two 1970s countertop machines on their fruit crates (the lowpix machine models; the old voxel twin as fallback)
+    const twin = this.twinGacha();
+    if (twin) { twin.position.set(-2.55, 0, 5.62); O.add(twin); } else this.single('gacha_twin', -2.55, 0, 5.62, 0, {}, O);
     this.single('shop_bench', 2.75, 0, 5.52, 0, {}, O);
     this.shop.obs = [this.game.player.addObstacle(-3.02, -2.08, 5.4, 5.84), this.game.player.addObstacle(2.27, 3.23, 5.34, 5.7)];
     this.single('kakigori_flag', 3.95, 0, 5.48, -0.25, {}, O);
@@ -617,6 +621,24 @@ export class Town {
     CL.build(C, { name: 'leaves:closed' });
     const notice = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshStandardMaterial({ map: posterTexture('museumSign', 48, 64), roughness: 0.95, color: 0xc8c0b0 }));
     notice.position.set(-3.5, 1.45, 5.27); notice.rotation.z = 0.04; C.add(notice);
+  }
+
+  /** The pair of retro gacha machines out front (decor, not playable): lowpix models with faded banners, or null. */
+  twinGacha() {
+    try {
+      const g = new THREE.Group(), T = this.game.thumbs;
+      if (!T) return null;
+      for (const [x, series, no] of [[-0.22, 'teruteru', 7], [0.22, 'henshin', 8]]) {
+        const b = buildMachineModel('retro', { banner: bannerTexture(series, T, { faded: true }), no });
+        if (!b.lowpix) return null;
+        b.group.position.x = x;
+        b.group.rotation.y = x < 0 ? 0.04 : -0.05;
+        g.add(b.group);
+      }
+      g.name = 'twinGacha';
+      g.traverse((o) => { o.userData.noRim = true; if (o.isMesh) o.raycast = () => {}; });
+      return g;
+    } catch (e) { console.warn('Town: twin gacha models', e); return null; }
   }
 
   /** 暖簾 over the doorway: three indigo panels with a white capsule mark (shown while open). */
@@ -1230,13 +1252,14 @@ export class Town {
     B.push(x, y, z, ry);
     B.box(m.found, L + 0.04, 0.075 * s, D + 0.04, 0, 0, 0, { tint: 0xb4b0a6 });
     B.box(m.pv, L - 0.04, 0.02, D - 0.04, 0, 0.075 * s, 0, { tint: 0x4a3828 });
-    B.box(m.pv, L - 0.2 * s, H * 0.8, D - 0.16 * s, 0, 0.12 * s, 0, { tint: 0x1c3220 });
-    const n = Math.max(2, Math.round(L / (0.55 * s))), clumps = [];
+    // no solid core: two layers of overlapping leaf masses, so the inside reads as shaded leaves, never a green slab
+    const n = Math.max(2, Math.round(L / (0.45 * s))), clumps = [];
     for (let i = 0; i < n; i++) {
       const cx = -L / 2 + (i + 0.5) * L / n, k = hash2(Math.round(x * 10) + i, Math.round(z * 10));
-      clumps.push([cx, 0.56 * H + k * 0.04 * s, 0, L / n * 0.72, 0.46 * H, D * 0.56]);
+      clumps.push([cx, 0.56 * H + k * 0.04 * s, 0, L / n * 0.85, 0.47 * H, D * 0.58]);
+      clumps.push([cx + L / n * 0.4, 0.5 * H, 0, L / n * 0.6, 0.34 * H, D * 0.38]);
     }
-    this.leaves.bush(B.top, null, null, { clumps, kind: o.kind || 'kaname', mix: o.mix || ['azalea', 0.18], size: 0.36 * Math.max(0.8, s), density: 1.7, seed: x * 3 + z });
+    this.leaves.bush(B.top, null, null, { clumps, kind: o.kind || 'kaname', mix: o.mix || ['azalea', 0.18], size: 0.34 * Math.max(0.8, s), density: 2.4, seed: x * 3 + z });
     B.pop();
   }
 

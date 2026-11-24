@@ -388,7 +388,7 @@ export function buildCornerShop(t) {
   });
   const fixtures = mergeVoxelProps(modelled(big), vm), detail = mergeVoxelProps(modelled(small), vm);
   fixtures.name = 'mikawaya:fixtures'; detail.name = 'mikawaya:detail';
-  shop.add(fixtures, detail);
+  for (const mm of [fixtures, detail]) if (mm.geometry?.attributes?.position?.count) shop.add(mm); // (all modelled: nothing left to merge)
   const tv = tvScreen();
   const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.235, 0.19), new THREE.MeshBasicMaterial({ map: tv.tex, color: 0xc8c8c8 }));
   _q.setFromEuler(_e.set(0, 2.2, 0));

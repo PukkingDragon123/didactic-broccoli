@@ -1,0 +1,100 @@
+{
+ "id": "pumpkin_trio",
+ "src": "sketchfab:0917d2e5b6fc425f9e266d088fe20c17",
+ "credit": {
+  "title": "Carved Pumpkin Trio",
+  "author": "W_illness",
+  "authorUrl": "https://sketchfab.com/W_illness",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/carved-pumpkin-trio-0917d2e5b6fc425f9e266d088fe20c17",
+  "site": "Sketchfab"
+ },
+ "tris": 2999,
+ "tex": 512,
+ "size": [
+  1.025,
+  0.45,
+  0.681
+ ],
+ "colours": 55,
+ "palette": {
+  "m0": [
+   "#7c1403",
+   "#9f2906",
+   "#c2430b",
+   "#e36311",
+   "#ec882e",
+   "#eca64e",
+   "#ecbe6c",
+   "#eed28a",
+   "#f0e2a7"
+  ],
+  "m1": [
+   "#b76200",
+   "#ef9400",
+   "#ffbf27",
+   "#fedd60",
+   "#fdf099",
+   "#fcf8a8",
+   "#fbfbb7",
+   "#fbfbc6",
+   "#fbfbd4"
+  ],
+  "m2": [
+   "#172c17",
+   "#21381f",
+   "#2c4428",
+   "#384f32",
+   "#45593c",
+   "#607453",
+   "#7b8d6b",
+   "#96a08a",
+   "#b0b4a8"
+  ],
+  "m3": [
+   "#840a39",
+   "#aa0f3e",
+   "#ce163f",
+   "#e42c45",
+   "#e6555d",
+   "#e7726f",
+   "#e99388",
+   "#ebafa0",
+   "#eec7b8"
+  ],
+  "m4": [
+   "#96280c",
+   "#c04512",
+   "#e5691f",
+   "#e7944e",
+   "#ebb87c",
+   "#ecc990",
+   "#edd8a3",
+   "#efe3b6",
+   "#f2edc8"
+  ],
+  "m5": [
+   "#8d0004",
+   "#b50d03",
+   "#dc2507",
+   "#f44b1a",
+   "#f37b46",
+   "#f29a62",
+   "#f2b47d",
+   "#f3ca98",
+   "#f4dcb1"
+  ],
+  "m6": [
+   "#361020",
+   "#451626",
+   "#531d2b",
+   "#61242f",
+   "#6e2c33",
+   "#8e3d3f",
+   "#ac5550",
+   "#ba7d73",
+   "#c8a196"
+  ]
+ },
+ "warnings": []
+}

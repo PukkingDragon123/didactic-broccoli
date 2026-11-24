@@ -44,7 +44,7 @@ try {
       ctx = await browser.newContext({ viewport: { width: W, height: H } });
       await ctx.addInitScript((qq) => { try { localStorage.setItem('gacha-garage-save-v2', JSON.stringify({ settings: { quality: qq } })); } catch { /* */ } }, q);
       pg = await ctx.newPage();
-      pg.on('console', (m) => { if (m.type() === 'error' && !/GPU stall|willReadFrequently/.test(m.text())) errors.push(`${m.text()}`); });
+      pg.on('console', (m) => { const t = m.text(); if ((m.type() === 'error' || /GL_INVALID|WebGL: |room light/.test(t)) && !/GPU stall|willReadFrequently/.test(t)) errors.push(`[${m.type()}] ${t}`); });
       pg.on('pageerror', (e) => errors.push(`[pageerror] ${e.stack || e.message}`));
       await pg.goto(`http://127.0.0.1:${server.httpServer.address().port}/index.html?autotest&q=${q}`, { waitUntil: 'load', timeout: 240000 });
       await pg.waitForFunction(() => window.__ready === true, null, { timeout: 300000 });
@@ -56,18 +56,24 @@ try {
       const [view, when] = name.split('_');
       if (!VIEWS[view]) continue;
       const setup = VIEWS[view][1];
-      const res = await pg.evaluate(async ({ setup, hour, frames, shot }) => {
-        const g = window.__game, dbg = window.dbg;
+      // the room's light probes, in chunks with a fence between them (a software GPU loses the context otherwise)
+      await pg.evaluate(({ setup, hour }) => {
+        const g = window.__game, dbg = window.dbg, R = g.renderer;
         try { if (g.places?.where) g.places.setWhere(null); } catch { /* */ }
         dbg.time(hour);
         // eslint-disable-next-line no-new-func
         new Function('game', 'dbg', setup)(g, dbg);
         dbg.time(hour);
         dbg.step(1.5);
-        const R = g.renderer;
-        // settle: autofocus, light pool fades, the room's light probes, eye adaptation
         for (let i = 0; i < 2; i++) { g.update(1 / 30); R.render(1 / 30, g.time); }
-        R.gi?.finish?.();
+      }, { setup, hour: HOURS[when] ?? 13 });
+      for (let k = 0; k < 400; k++) {
+        const more = await pg.evaluate(() => { const R = window.__game.renderer, gl = R.renderer.getContext(); const m = R.gi?.finish?.(6); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4)); return !!m; });
+        if (!more) break;
+      }
+      const res = await pg.evaluate(async ({ setup, hour, frames, shot }) => {
+        const g = window.__game, R = g.renderer;
+        // settle: autofocus, light pool fades, eye adaptation
         for (let i = 0; i < 4; i++) { g.update(1 / 30); R.render(1 / 30, g.time); }
         const gl = R.renderer.getContext(), px = new Uint8Array(4);
         let ms = 0;
@@ -83,10 +89,10 @@ try {
         const calls = info.render.calls, tris = info.render.triangles;
         info.autoReset = true;
         R.render(1 / 60, g.time);
-        return { ms: ms / frames, url: shot ? R.renderer.domElement.toDataURL('image/png') : '', calls, tris };
+        return { ms: ms / frames, url: shot ? R.renderer.domElement.toDataURL('image/png') : '', calls, tris, lost: gl.isContextLost() };
       }, { setup, hour: HOURS[when] ?? 13, frames: FRAMES, shot: !PERF });
       if (!PERF) writeFileSync(resolve(dir, name + '.png'), Buffer.from(res.url.split(',')[1], 'base64'));
-      times[name] = { ms: +res.ms.toFixed(1), calls: res.calls, tris: res.tris };
+      times[name] = { ms: +res.ms.toFixed(1), calls: res.calls, tris: res.tris, ...(res.lost ? { lost: true } : {}) };
       console.log(q, name, times[name]);
     }
     writeFileSync(resolve(dir, 'times.json'), JSON.stringify(times, null, 1));

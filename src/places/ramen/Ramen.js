@@ -29,6 +29,7 @@ import { FOODS } from '../../needs/foods.js';
 import { kanji } from '../vending/canArt.js';
 import { PanelMode } from '../vending/panel.js';
 import { pixCanvas, hitBox, prop, sitDown, standUp, paperFill } from '../util.js';
+import { pixMat } from '../../gfx/geo.js';
 import { payCash, earnCash, yen } from '../money.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -108,7 +109,8 @@ export class Ramen {
     // signboard, noren, lantern, the standing menu, a nobori flag
     this.sign = pixCanvas(800, 160);
     this.sign.tex.minFilter = THREE.LinearMipmapLinearFilter; this.sign.tex.generateMipmaps = true; this.sign.tex.anisotropy = 4;
-    const sign = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.46, 0.06), [t.P(0.7), t.P(0.7), t.P(0.7), t.P(0.7), new THREE.MeshStandardMaterial({ map: this.sign.tex, roughness: 0.6 }), t.P(0.7)]);
+    const signWood = pixMat('woodDark', { roughness: 0.6, bump: 0.3 }); // (the board's edges and back: textured wood, not flat paint)
+    const sign = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.46, 0.06), [signWood, signWood, signWood, signWood, new THREE.MeshStandardMaterial({ map: this.sign.tex, roughness: 0.6 }), signWood]);
     sign.position.set(dx - 0.3, 2.68, z - 0.06); sign.rotation.y = Math.PI;
     grp.add(sign);
     this.noren = pixCanvas(192, 128);
@@ -132,12 +134,12 @@ export class Ramen {
     const board = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.75), new THREE.MeshStandardMaterial({ map: this.board.tex, roughness: 0.85 }));
     board.position.set(11.6, 0.62, 15.35); board.rotation.set(-0.12, Math.PI + 0.25, 0);
     grp.add(board);
-    for (const sx of [-0.22, 0.22]) { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.0, 0.04), t.P(0.8)); leg.position.set(11.6 + sx * Math.cos(0.25), 0.5, 15.38 - sx * Math.sin(0.25)); leg.rotation.y = 0.25; grp.add(leg); }
+    for (const sx of [-0.22, 0.22]) { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.0, 0.04), pixMat('woodDark', { roughness: 0.7, bump: 0.3 })); leg.position.set(11.6 + sx * Math.cos(0.25), 0.5, 15.38 - sx * Math.sin(0.25)); leg.rotation.y = 0.25; grp.add(leg); }
     this.flag = pixCanvas(64, 256);
     const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 1.4), new THREE.MeshStandardMaterial({ map: this.flag.tex, roughness: 0.9, side: THREE.DoubleSide }));
     flag.position.set(15.05, 1.45, 15.2); flag.rotation.y = Math.PI;
     grp.add(flag);
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 2.3, 6), t.P(0.4, 0.6));
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 2.3, 6), pixMat('steel', { roughness: 0.4, metalness: 0.6, bump: 0.2 }));
     pole.position.set(15.25, 1.15, 15.2); grp.add(pole);
     g.player.addObstacle(11.35, 11.85, 15.15, 15.55);
     this.redrawArt();
@@ -167,7 +169,8 @@ export class Ramen {
     const g = this.game, t = this.town, m = t.m, P = this.places;
     const B = new t.B.constructor();
     const M = (mat) => P.mat(mat);
-    const floor = M(m.tile), plaster = M(m.shikkui), koshi = M(m.koshi), ceil = M(m.ceil), wood = M(m.wood), woodL = M(m.woodL), paint = M(t.P(0.6)), steel = M(t.P(0.35, 0.6));
+    const tinted = (mt) => { const c = mt.clone(); c.vertexColors = true; return c; };
+    const floor = M(m.tile), plaster = M(m.shikkui), koshi = M(m.koshi), ceil = M(m.ceil), wood = M(m.wood), woodL = M(m.woodL), paint = M(tinted(pixMat('plaster', { roughness: 0.7, bump: 0.25 }))), steel = M(tinted(pixMat('steel', { roughness: 0.35, metalness: 0.6, bump: 0.2 }))); // (textured, tinted per part: no flat colours)
     B.push(O.x, 0, O.z);
     B.plane(floor, 6, 5, 0, 0, 0, { tint: 0x8a7a6a });
     B.box(ceil, 6, 0.05, 5, 0, 2.6, 0, { tint: 0xf0e4d0 });
@@ -333,9 +336,9 @@ export class Ramen {
     this.group.add(root);
     root.updateMatrixWorld(true);
     const body = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1.55, 0.45).translate(0, 0.775, 0), P.mat(t.P(0.4, 0.2)));
-    body.material = P.mat(new THREE.MeshStandardMaterial({ color: 0xd8dce0, roughness: 0.4, metalness: 0.2 }));
+    body.material = P.mat(pixMat('steel', { roughness: 0.4, metalness: 0.3, bump: 0.2 })); // (textured steel cabinet, no flat colour)
     root.add(body);
-    const slot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.04), P.mat(new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.5 })));
+    const slot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.04), P.mat(pixMat('steel', { roughness: 0.5, metalness: 0.4, color: 0x3a3a3e })));
     slot.position.set(0, 0.55, 0.23); root.add(slot);
     this.tm = { root, canvas: pixCanvas(400, 496), sel: 0 };
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.67), new THREE.MeshBasicMaterial({ map: this.tm.canvas.tex, color: 0xdedede }));

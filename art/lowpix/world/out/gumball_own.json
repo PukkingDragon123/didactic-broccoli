@@ -1,0 +1,110 @@
+{
+ "id": "gumball_own",
+ "src": "art/lowpix/world/made/gumball_machine_own.glb",
+ "credit": {
+  "title": "Gumball machine (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/gumball_machine_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1120,
+ "tex": 272,
+ "size": [
+  0.344,
+  1.2,
+  0.354
+ ],
+ "colours": 62,
+ "palette": {
+  "m0": [
+   "#186740",
+   "#22834c",
+   "#2d9f55",
+   "#39ba5b",
+   "#53c668",
+   "#6ecb77",
+   "#87d188",
+   "#a4d7a0",
+   "#bedfb8"
+  ],
+  "m1": [
+   "#18141a",
+   "#201b21",
+   "#272228",
+   "#2e2a2e",
+   "#343234",
+   "#4f4f4f",
+   "#6b6b6b",
+   "#878787",
+   "#a3a3a3"
+  ],
+  "m2": [
+   "#2b1767",
+   "#412085",
+   "#5c2aa1",
+   "#7936bb",
+   "#9650c8",
+   "#ac6bcd",
+   "#bf85d2",
+   "#cf9ed9",
+   "#ddb6e0"
+  ],
+  "m3": [
+   "#590923",
+   "#720e26",
+   "#8a1426",
+   "#a21b24",
+   "#b82422",
+   "#d43e2e",
+   "#d86b53",
+   "#dd9176",
+   "#e3b298"
+  ],
+  "m4": [
+   "#860a7a",
+   "#ac1090",
+   "#d018a0",
+   "#e430a6",
+   "#e65aaa",
+   "#e773ac",
+   "#e98cb1",
+   "#eba3ba",
+   "#efbac6"
+  ],
+  "m5": [
+   "#071e7c",
+   "#0c359f",
+   "#1251c1",
+   "#1972e1",
+   "#3c96e6",
+   "#5ab0e7",
+   "#76c6e8",
+   "#92d7ea",
+   "#ade5ee"
+  ],
+  "m6": [
+   "#3a5679",
+   "#4f769b",
+   "#7097b1",
+   "#96b4c1",
+   "#baced4",
+   "#c5d6d8",
+   "#cfdcdd",
+   "#d9e3e3",
+   "#e3e9e8"
+  ],
+  "m7": [
+   "#790c00",
+   "#9c1e03",
+   "#bd3606",
+   "#de540b",
+   "#f0781e",
+   "#ef9a40",
+   "#efb661",
+   "#f0cc81",
+   "#f2dea0"
+  ]
+ },
+ "warnings": []
+}
