@@ -306,6 +306,7 @@ export const LP_WORLD = {
   sofa_wood: { size: [2.451, 1.281, 0.787], credit: "Painted Wooden Sofa by Kirill Sannikov (CC0 1.0)" },
   softserve_m: { size: [0.13, 0.25, 0.127], credit: "Low-Poly Stylized Ice Cream Cone by kinto3d (CC BY 4.0)" },
   sponge: { size: [0.192, 0.048, 0.128], credit: "Sponge by Aullwen (CC BY 4.0)" },
+  spoon_old: { size: [0.329, 0.15, 1.513], credit: "Old spoon by SusanKing (CC BY 4.0)" },
   spray_bottle: { size: [0.069, 0.192, 0.053], credit: "Spray Bottle by Yanez Designs (CC BY 4.0)" },
   squeegee_own: { size: [0.277, 0.27, 0.037], credit: "Window squeegee (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/squeegee.glb) (CC0 1.0)" },
   star_lamp: { size: [1.575, 1.5, 0.644], credit: "Star Lamp by dm3V (CC BY 4.0)" },

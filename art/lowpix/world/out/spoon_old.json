@@ -1,0 +1,34 @@
+{
+ "id": "spoon_old",
+ "src": "sketchfab:e55af322cf8f43fa9b4fb2b368bafd0f",
+ "credit": {
+  "title": "Old spoon",
+  "author": "SusanKing",
+  "authorUrl": "https://sketchfab.com/krolzuzannapl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-spoon-e55af322cf8f43fa9b4fb2b368bafd0f",
+  "site": "Sketchfab"
+ },
+ "tris": 2579,
+ "tex": 368,
+ "size": [
+  0.329,
+  0.15,
+  1.513
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#393544",
+   "#4b4856",
+   "#5d5b68",
+   "#717078",
+   "#868687",
+   "#979797",
+   "#a8a8a8",
+   "#b8b8b8",
+   "#c9c9c9"
+  ]
+ },
+ "warnings": []
+}

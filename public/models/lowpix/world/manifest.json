@@ -5642,6 +5642,25 @@
   ],
   "bytes": 7260
  },
+ "spoon_old": {
+  "id": "spoon_old",
+  "name": "Old spoon",
+  "src": "sketchfab:e55af322cf8f43fa9b4fb2b368bafd0f",
+  "title": "Old spoon",
+  "author": "SusanKing",
+  "authorUrl": "https://sketchfab.com/krolzuzannapl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-spoon-e55af322cf8f43fa9b4fb2b368bafd0f",
+  "site": "Sketchfab",
+  "tris": 2579,
+  "tex": 368,
+  "size": [
+   0.329,
+   0.15,
+   1.513
+  ],
+  "bytes": 82996
+ },
  "spray_bottle": {
   "id": "spray_bottle",
   "name": "Spray Bottle",

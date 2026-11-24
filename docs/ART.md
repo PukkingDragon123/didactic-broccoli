@@ -41,6 +41,25 @@ job now is to raise its quality without losing the look.
   Voxels only where a thing is genuinely blocky in real life.
 - Textures: realistic content, crisp detailed pixel art, natural colours, real wear; never cartoon, never flat.
 
+## Texel density (the standard; owner, November 2026: "high-res pixel art", never chunky or blurry up close)
+Textures stay hand-painted pixel art (nearest magnification, a limited palette, clean clusters, no speckle), but the
+pixels are fine. Measured as texture pixels per metre of surface (`tools/slot.sh node tools/texel-audit.mjs`, which
+lists everything under the standard, worst first, in shots/textures/lowres_list.txt):
+- **Close surfaces: 256 px/m** (pass >= 230). Everything the player can walk up to: floors, walls, ceilings, counters,
+  roads, pavements, lane-side walls below 3.5 m, furniture, machines, interior props. At the eye height of 1.6 m (72°
+  FOV) one texel is about 2 screen pixels on the floor at 1080p and 2.5 at 1440p, 4-5 at arm's length: crisp, fine
+  pixel art, never a smear and never a blocky 4 cm pixel.
+- **Far surfaces: 128 px/m** (pass >= 115). Roofs, upper storeys above 3.5 m, the skyline, anything more than 6 m
+  from where you can walk.
+- **Hand-held things and toys: 512 px/m** (looked at from 0.3-0.5 m).
+- How: surfaces are baked offline from real CC0 photos (Poly Haven) at the target density and turned into pixel art
+  (art/lowpix/world_arch/hd/make_hd.py -> public/textures/hd/*.webp, loaded by src/gfx/hdtex.js wherever the old
+  recipe key was used). Never upscale an old texture (no smoothing, no nearest-neighbour blow-ups): re-bake it from
+  its sources. One repeat covers 2-4 m (floors 4 m) with per-tile / per-board variation, stains and cracks placed by
+  rule, so no repeat lines up; 1-2 m only for small parts.
+- Memory: lossless WebP on disk; on the GPU RGBA8 + mipmaps (trilinear, anisotropy 4). At most 1024 px for a 4 m
+  floor, 512 px for a 2 m wall; 2048 px only for a model atlas that needs it.
+
 ## 2D
 - UI is paper in detailed pixel art (src/ui/paper.js). Speech is plain floating text.
 - Drinks, products, posters and display cards are detailed art built from real photographs where possible, with

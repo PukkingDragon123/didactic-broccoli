@@ -23,12 +23,14 @@ import { ORIGINS, yen } from '../data.js';
 import { X0, X1, Z0, Z1, FH, CH, FLOORS, FLAT, RUN, PATH, GAPS, LIFT, MALL_SLOTS, STACK_WALLS, ISLANDS, THEMES, CENTRE_Z, SPEED, stepY, pathZ, minusHoles } from './layout.js';
 import { buildEscalators, ceilingWell } from './Escalator.js';
 import { Elevator } from './Elevator.js';
+import { hasHD, hdMap } from '../../gfx/hdtex.js';
 
 const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
 const RIDE_SPEED = SPEED; // the same speed as the steps (layout.js)
 
 /** A repeating floor-tile texture (two colours, a grout line), 0.5 m tiles. */
-function tileTex(a, b, grout, kind = 'checker') {
+function tileTex(a, b, grout, kind = 'checker', hd = null) {
+  if (hd && hasHD(hd)) return hdMap(hd); // the HD floor (src/gfx/hdtex.js, 256 px/m, the same colours)
   const c = document.createElement('canvas'); c.width = c.height = 32;
   const x = c.getContext('2d');
   for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) { x.fillStyle = kind === 'checker' ? ((i + j) % 2 ? b : a) : a; x.fillRect(i * 16, j * 16, 16, 16); }
@@ -136,8 +138,8 @@ export class Mall {
     const paint = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }));
     const metal = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.6 }));
     const glow = new THREE.MeshBasicMaterial({ vertexColors: true });
-    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout), vertexColors: true, roughness: 0.32, metalness: 0.05 }));
-    const ceil = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex('#f4f4f2', '#f4f4f2', '#d8d8d4', 'grid'), vertexColors: true, roughness: 0.8 }));
+    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout, 'checker', 'mallTile' + n), vertexColors: true, roughness: 0.32, metalness: 0.05 }));
+    const ceil = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex('#f4f4f2', '#f4f4f2', '#d8d8d4', 'grid', 'mallCeil'), vertexColors: true, roughness: 0.8 }));
     this.mats = { paint, metal, glow };
     const below = n > 1 ? GAPS[n - 1].well : null, above = n < FLOORS ? GAPS[n].well : null;
     // floor (with the well of the escalators from below), ceiling (with the well to the floor above)
@@ -278,7 +280,7 @@ export class Mall {
    *  machines painted at its edges. */
   stub(Z, n, m, y, well, gapBelow = null) {
     const T = THEMES[m], B = Z.B;
-    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout), vertexColors: true, roughness: 0.32 }));
+    const floor = Z.mat(new THREE.MeshStandardMaterial({ map: tileTex(T.a, T.b, T.grout, 'checker', 'mallTile' + m), vertexColors: true, roughness: 0.32 }));
     const G = gapBelow || GAPS[n];
     const r = { x0: well.x0 - 3.5, x1: well.x1 + 3.5, z0: Math.min(well.z0, G.z0, G.z1) - 2.5, z1: Math.max(well.z1, G.z0, G.z1) + 2.5 };
     for (const q of minusHoles(r, y > 0 ? [well] : [])) B.plane(floor, q.x1 - q.x0, q.z1 - q.z0, (q.x0 + q.x1) / 2, y, (q.z0 + q.z1) / 2);

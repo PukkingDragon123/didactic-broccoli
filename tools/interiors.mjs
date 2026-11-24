@@ -19,13 +19,15 @@ const VIEWS = {
   garage: [null, 'game.gachaDebug.setup(); dbg.view(0.6, 3.4, 0.35, -0.12);'],
   mikawaya: [null, 'dbg.view(-12.4, 15.55, Math.PI, -0.06);'],
   ramen: [null, 'dbg.needs.enter("ramen"); game.player.pitch = -0.08;'],
-  room: [null, 'dbg.growth.go("room"); game.player.pitch = -0.1;'],
-  back103: [null, 'dbg.growth.own("home103", "hobby"); dbg.growth.go("home103", 0.2, 0.9, -0.15, -0.08);'],
+  room: [null, 'dbg.growth.go("room"); game.player.pos.set(80.75, 0, -79.6); game.player.yaw = 0.45; game.player.pitch = -0.12;'],
+  back103: [null, 'dbg.growth.own("home103", "hobby"); dbg.growth.go("home103", 1.6, -0.5, 0.8, -0.12);'],
   kitchen: [null, 'dbg.growth.own("home103"); dbg.growth.go("home103", -0.4, 0.85, Math.PI + 0.25, -0.22);'],
-  bath: [null, 'dbg.growth.own("home103"); dbg.growth.go("home103", 1.25, 2.45, -0.55, -0.25);'],
+  bath: [null, 'dbg.growth.own("home103"); dbg.growth.go("home103", 1.3, 2.3, -0.35, -0.4);'],
 };
 const HOURS = { day: 13, night: 21.5 };
 const list = flag('views', Object.keys(VIEWS).flatMap((v) => [v + '_day', v + '_night']).join(',')).split(',');
+// --perf: one boot, every preset in --q switched at runtime, only timings (no pictures)
+const PERF = args.includes('--perf');
 
 let chromium;
 try { ({ chromium } = await import('playwright')); } catch { ({ chromium } = createRequire('/opt/node-tools/node_modules/')('playwright')); }
@@ -35,14 +37,18 @@ await server.listen();
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
 const errors = [];
 try {
+  let ctx = null, pg = null;
+  const perfAll = {};
   for (const q of QS) {
-    const ctx = await browser.newContext({ viewport: { width: W, height: H } });
-    await ctx.addInitScript((qq) => { try { localStorage.setItem('gacha-garage-save-v2', JSON.stringify({ settings: { quality: qq } })); } catch { /* */ } }, q);
-    const pg = await ctx.newPage();
-    pg.on('console', (m) => { if (m.type() === 'error' && !/GPU stall|willReadFrequently/.test(m.text())) errors.push(`[${q}] ${m.text()}`); });
-    pg.on('pageerror', (e) => errors.push(`[${q} pageerror] ${e.stack || e.message}`));
-    await pg.goto(`http://127.0.0.1:${server.httpServer.address().port}/index.html?autotest&q=${q}`, { waitUntil: 'load', timeout: 240000 });
-    await pg.waitForFunction(() => window.__ready === true, null, { timeout: 300000 });
+    if (!pg || !PERF) {
+      ctx = await browser.newContext({ viewport: { width: W, height: H } });
+      await ctx.addInitScript((qq) => { try { localStorage.setItem('gacha-garage-save-v2', JSON.stringify({ settings: { quality: qq } })); } catch { /* */ } }, q);
+      pg = await ctx.newPage();
+      pg.on('console', (m) => { if (m.type() === 'error' && !/GPU stall|willReadFrequently/.test(m.text())) errors.push(`${m.text()}`); });
+      pg.on('pageerror', (e) => errors.push(`[pageerror] ${e.stack || e.message}`));
+      await pg.goto(`http://127.0.0.1:${server.httpServer.address().port}/index.html?autotest&q=${q}`, { waitUntil: 'load', timeout: 240000 });
+      await pg.waitForFunction(() => window.__ready === true, null, { timeout: 300000 });
+    } else await pg.evaluate((qq) => { window.__game.renderer.setQuality(qq); }, q);
     const dir = resolve(root, 'shots/render', TAG, q);
     mkdirSync(dir, { recursive: true });
     const times = {};
@@ -50,7 +56,7 @@ try {
       const [view, when] = name.split('_');
       if (!VIEWS[view]) continue;
       const setup = VIEWS[view][1];
-      const res = await pg.evaluate(async ({ setup, hour, frames }) => {
+      const res = await pg.evaluate(async ({ setup, hour, frames, shot }) => {
         const g = window.__game, dbg = window.dbg;
         try { if (g.places?.where) g.places.setWhere(null); } catch { /* */ }
         dbg.time(hour);
@@ -59,26 +65,35 @@ try {
         dbg.time(hour);
         dbg.step(1.5);
         const R = g.renderer;
-        // settle: autofocus, light pool fades, eye adaptation
+        // settle: autofocus, light pool fades, the room's light probes, eye adaptation
+        for (let i = 0; i < 2; i++) { g.update(1 / 30); R.render(1 / 30, g.time); }
+        R.gi?.finish?.();
         for (let i = 0; i < 4; i++) { g.update(1 / 30); R.render(1 / 30, g.time); }
         const gl = R.renderer.getContext(), px = new Uint8Array(4);
         let ms = 0;
+        const info = R.renderer.info;
+        info.autoReset = false;
         for (let i = 0; i < frames; i++) {
+          info.reset();
           const t0 = performance.now();
           g.update(1 / 60); R.render(1 / 60, g.time);
           gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); // (a fence: waits for the frame)
           ms += performance.now() - t0;
         }
+        const calls = info.render.calls, tris = info.render.triangles;
+        info.autoReset = true;
         R.render(1 / 60, g.time);
-        return { ms: ms / frames, url: R.renderer.domElement.toDataURL('image/png'), calls: R.renderer.info.render.calls, tris: R.renderer.info.render.triangles };
-      }, { setup, hour: HOURS[when] ?? 13, frames: FRAMES });
-      writeFileSync(resolve(dir, name + '.png'), Buffer.from(res.url.split(',')[1], 'base64'));
+        return { ms: ms / frames, url: shot ? R.renderer.domElement.toDataURL('image/png') : '', calls, tris };
+      }, { setup, hour: HOURS[when] ?? 13, frames: FRAMES, shot: !PERF });
+      if (!PERF) writeFileSync(resolve(dir, name + '.png'), Buffer.from(res.url.split(',')[1], 'base64'));
       times[name] = { ms: +res.ms.toFixed(1), calls: res.calls, tris: res.tris };
       console.log(q, name, times[name]);
     }
     writeFileSync(resolve(dir, 'times.json'), JSON.stringify(times, null, 1));
-    await ctx.close();
+    perfAll[q] = times;
+    if (!PERF) { await ctx.close(); pg = null; }
   }
+  if (PERF) writeFileSync(resolve(root, 'shots/render', TAG, 'perf.json'), JSON.stringify(perfAll, null, 1));
 } catch (e) { console.error('ERROR', e.stack || e.message); }
 finally {
   if (errors.length) console.log('console errors:\n' + errors.slice(0, 30).join('\n'));

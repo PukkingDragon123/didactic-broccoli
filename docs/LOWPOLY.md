@@ -38,7 +38,7 @@ photos. Downloads are reference only. Never scans, never AI models. Tool: lowpix
 - Hand-paint on top: ramps with 5–7 steps, a key light from upper left, ambient occlusion in creases, a light rim on
   edges, wear on corners, dirt in recesses, stitches and seams as painted lines. Keep the saturation of the
   reference; a model must never look greyer than its photo.
-- Texel density per CLAUDE.md, nearest filtering; then the pixel-hd finish (crisp pixels, no speckle noise).
+- Texel density per docs/ART.md ("Texel density": 256 px/m close, 128 px/m far, 512 px/m hand-held), nearest filtering; then the pixel-hd finish (crisp pixels, no speckle noise).
 
 ## 5. Check before showing anyone
 - Render front / three-quarter / top next to the reference photo at the same angle. Ask: does the outline match?

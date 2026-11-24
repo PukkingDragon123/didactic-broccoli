@@ -1137,6 +1137,47 @@ def shop_floor():
     return finish(a, st, '#76522f', k=26)
 
 
+# ------------------------------------------------------------------ Gacha Kaikan (src/growth/mall): floors and ceiling
+MALL = {1: ('#f6e8ec', '#e8a8bc', '#c8889c'), 2: ('#eef8f6', '#9adcd0', '#6ab8ac'), 3: ('#f4e2c4', '#c8784a', '#9a5a38'),
+        4: ('#2a2630', '#5a4a2a', '#d4a83a')}  # src/growth/mall/layout.js THEMES a, b, grout
+
+
+def mall_tile(n):
+    """A floor of the department store: 50 cm polished porcelain tiles in the floor's two colours, a fine grout line,
+    a soft polish sheen near one corner of each tile, scuffs from trolleys."""
+    a_, b_, g_ = MALL[n]
+    rng = np.random.default_rng(700 + n)
+    W = H = px(2)
+    face = L.flatten(L.at_ppm(L.photo('marble_tiles'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 4, 4, [a_, b_], rng, face_src=face, face_contrast=0.35, grout=L.hexrgb(g_), gw=2, jitter=0.02)
+    stains(a, rng, 6, r=(20, 60), f=(0.93, 0.97))
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=22, seed=30 + n, paint=1)
+    b = tile_strokes(f32(img), cells, rng, L.hexrgb(g_), gw=2, bevel=(1.06, 0.9), chip=0.02, crackp=0.0)
+    for (x0, y0, w, h) in cells:  # the polish: a dithered sheen in the top-left quarter
+        L.dither_patch(b, x0 + w * 0.3, y0 + h * 0.3, int(w * 0.2), int(h * 0.15), f=1.05, k=0.5)
+    return L.snap(to8(np.clip(b, 0, 1)), pal)
+
+
+for _n in MALL:
+    recipe('mallTile%d' % _n, (2, 2))(lambda n=_n: mall_tile(n))
+
+
+@recipe('mallCeil', (2, 2))
+def mall_ceil():
+    """The store's ceiling: 50 cm white acoustic boards, pin-hole pattern, a grey T-bar grid."""
+    rng = np.random.default_rng(799)
+    W = H = px(2)
+    face = L.flatten(L.at_ppm(L.photo('beige_wall_001'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 4, 4, ['#f4f4f2'], rng, face_src=face, face_contrast=0.3, grout=L.hexrgb('#c8c8c4'), gw=4, jitter=0.01)
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=12, seed=40, paint=1)
+    b = f32(img)
+    for (x0, y0, w, h) in cells:
+        for yy in range(y0 + 6, y0 + h - 4, 7):
+            for xx in range(x0 + 6 + (yy // 7 % 2) * 3, x0 + w - 4, 7):
+                L.wpx(b, xx, yy, f=0.88)
+    return L.snap(to8(b), pal)
+
+
 # ------------------------------------------------------------------ src/world/surfaces.js (were 128 px/m PNGs)
 @recipe('sf_asphalt', (4, 4))
 def sf_asphalt():
